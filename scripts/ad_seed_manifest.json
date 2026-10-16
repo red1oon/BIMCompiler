@@ -3046,5 +3046,21 @@
   "activeOnly": false,
   "prevRows": 0,
   "prevCols": 0
+ },
+ {
+  "table": "AD_Form",
+  "case": "canonical",
+  "where": null,
+  "activeOnly": true,
+  "prevRows": 0,
+  "prevCols": 0
+ },
+ {
+  "table": "ad_val_rule",
+  "case": "lower",
+  "where": null,
+  "activeOnly": false,
+  "prevRows": 0,
+  "prevCols": 0
  }
 ]

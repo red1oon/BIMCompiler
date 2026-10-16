@@ -44,6 +44,30 @@ memory project_modeller_vision_lock + project_walker_guards_rosettastone + feedb
 - **✅ THIS RESUME IS FULLY DRAINED — W-UX 1–6 + viewer-BOM-deprecate all DONE.** Merged: bim-ootb PR #546
   (W-UX-1..5), #547 (W-UX-6 P1), #548 (W-UX-6 P2). All witness-first, shared main fast-forwarded, 0 unpushed.
 
+## ▶ 2026-07-30 — ARCH CALL (b) MADE (Sonnet, dispatched per MODELLER_MASTER.md §OPEN LIST row 5):
+## 3-SURFACE UNIFICATION = UNIFY INCREMENTALLY, six slices, via the already-proven §ONE-DISC-TAB wrap
+**Verdict: the ONE-PANEL doctrine (VISION-LOCK sentence 5) stands — it is already ~80% structurally true
+(one `#bonsai-outliner`, one `_categories` registry, one shared eye/filter/virtualization/group-select
+engine). The real violation is STR being represented TWICE (bomtree's own STR disc node AND the separate
+`strwalk` dashboard category), plus `disctrunk` still un-merged. Do NOT attempt a single rewrite.**
+- What the STR tab renders that the tree can't yet express: a live diagnostic dashboard
+  (`str_walker_outliner.js:71-122` — grid/columns, girders + RED/ORANGE/GREEN, confidence mean + top-6
+  low-confidence, geomap audit top-6, live exceptions log fed by the `GM.commit` wrap `:693-741`).
+- The proof the merge is absorbable already SHIPPED: `modeller.html:4560-4605` `§ONE-DISC-TAB` spliced the
+  disc roster into `bomtree.tree()` via a non-invasive `origTree`/`origOnWalk` wrap with dedup — zero
+  edits to `bom_tree_outliner.js`.
+- **Ordered slices (each independently shippable + witnessed):** 1 merge `disctrunk` (W-ONE-DISC-TRUNK) →
+  2 merge STR static summary rows under the STR disc node (W-STR-SUMMARY-MERGE; ⚠ repoint
+  `discWalk('STR')`'s hardcoded `tcat|strwalk` at `modeller.html:3475` or it dead-ends) → 3 confidence
+  rows (NaN-guard `bonsai_outliner.js:739`; §OLGROUPSELECT must not zoom non-fid rows) → 4 geomap-audit
+  rows → 5 live exceptions log (⚠ highest risk: re-folded with the FULL tree on every grid-drag
+  `refresh()` — witness must measure grid-drag→refresh ms at Terminal scale, not just correctness) →
+  6 retire the `strwalk` registration, keep the engine (mirror W-UX-2's keep-engine/drop-registration).
+- Risks named: disc-click double-binding (slice 2), §V3 auto-expand of deeper diagnostic rows,
+  §V4a windowing budget competition at Terminal scale.
+- **User decision: none load-bearing** — only a sequencing option (defer slices 3-5's Terminal perf risk
+  until after the 🟥 grid-lock crux below, if preferred). Slices 1-2 can start today.
+
 ## 🟥 NEXT SESSION — SERIOUS-WEIGHT HARD PROBLEM: GRID-LOCK TO ARC/STR (user-flagged 2026-06-27)
 **This is the load-bearing crux — treat it as HEAVY, not a tidy-up.** Evidence (re-run `node scripts/witness_walkback_str.js`, W-WALKBACK-STR 5/5):
 - The Terminal STR walk's **column RMSE = 0.104 m IS the grid-lock RESIDUAL**, and it is the **BASELINE / PRE-EDIT walk** (swbInit fresh; NO `GEOM_GRID_MOVE`/`swbReplay` in the witness). So ~10 cm of looseness exists *before* any user edit — every grid drag inherits it.

@@ -13,7 +13,9 @@ One browser. **View** a building · **author** geometry · **run** the ERP. Zero
     us, nothing is tracked, nothing phones home, and no model is fed your data. Every result is deterministic
     and traces to a line of open code you can read.
 
-    [**Read the full guarantee — how the trust model works →**](EnterpriseAuthentication.md)
+    [**Read the full guarantee — how the trust model works →**](EnterpriseAuthentication.md) · want to
+    run it fully cut off from the network once installed? [**Fully Offline / Air-Gapped Install
+    guide →**](OFFLINE_INSTALL_GUIDE.md)
 
 ![The Matrix landing — choose your door](assets/matrix_landing.png)
 
@@ -60,7 +62,8 @@ New here recently? Check **[What's New](WhatsNew.md)** for a running log of ship
 
     What BIM OOTB is, and how to keep it. It's a **frictionless PWA** — your browser can *install* it (add to home screen) so it runs **offline, no server**. The same box has a **Run it yourself (DIY)** tab: download a one-step install script + README to self-host the whole stack on your own machine.
 
-    _Front door → the **About** icon (above)_ · [Self-host guide](SYSTEMS_INSTALLER_GUIDE.md)
+    _Front door → the **About** icon (above)_ · [Self-host guide](SYSTEMS_INSTALLER_GUIDE.md) ·
+    [Fully offline / air-gapped install](OFFLINE_INSTALL_GUIDE.md)
 
 -   <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-5px"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg> __Clear Cache__
 

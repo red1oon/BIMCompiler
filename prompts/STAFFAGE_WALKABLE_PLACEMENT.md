@@ -1222,3 +1222,145 @@ against the live scene BVH — that is the new cost. The user's memory of "preca
   precomputed "is this cell under a roof" mask built once per building load (the §PHOTO_STAFFAGE_PRELOAD
   moment) rather than per-press raycasts. Measure build_ms before/after — target back under ~1s.
 - Witness: `§PHOTO_STAFFAGE build_ms` must drop materially with badIndoor/badInMesh STILL 0.
+
+## §STAFFAGE_PERSIST — save/reopen loses the Alt+P placement (2026-07-26 evening)
+User: *"saved this with the Alt-P results but when opening back it is gone."* Filed read-only by a
+parallel session; **do not assume a root cause without reading this file's own §STAFFAGE_PERSIST
+notes below first.** User directive 2026-07-26: *"on Save, Open should retain persist the alt-p
+results"* — i.e. the round-trip is wanted working, not merely explained.
+**Not a guess at a new bug — persistence for this exact case is already a NAMED, existing mechanism**
+(`viewer/effects.js` `A.togglePopulate`, its own comment block, undated but present before this
+report): a building saved WITH staffage carries a `staffage_instances` table, written by
+`A._exportBuildingDb()` (`viewer/scene.js:570`, via `_writeStaffageTable()`) at Save time. The FIRST
+`Alt+P` press on a building whose DB carries that table is supposed to call
+`A._restoreStaffageInstances()` and rehydrate the exact saved placement instead of generating a fresh
+one. So the feature the user expected already exists in code — this report means either the round-trip
+has a real bug, or the user's specific save/reopen steps didn't go through the path that writes/reads
+that table. Both are plausible; neither is confirmed. Do not fix blind.
+
+**Grounded trace, this session (read-only, no code changed):**
+- `Alt+P` → `A.togglePopulate()` (`viewer/effects.js:1940`, bound in `viewer/scene.js:2066` and the
+  keyboard-shortcut list at `viewer/scene.js:1452`).
+- `Ctrl+S` → `A.saveModelDb()` (`viewer/scene.js:605`) → calls `A._exportBuildingDb()` → exports SQLite
+  bytes as a `Blob`, then EITHER a native "Save As…" dialog (Chromium File System Access API,
+  `window.showSaveFilePicker`) OR, if that API is unavailable, a plain browser file **download** to a
+  NEW `.db` file. **It does not write back to, or update, the building's live/served source** (e.g. the
+  OCI URL the viewer opened `?db=` from) — the saved file only exists wherever the browser/OS put it.
+- `Ctrl+O` → `A._openDbBytes()` (`viewer/scene.js` ~627) is the counterpart that loads a picked local
+  `.db` file back into the viewer via the cache store (`import://` key).
+
+**Leading hypothesis (unverified — ask the user their exact steps before touching code):** "opening
+back" most likely means re-visiting the SAME building normally (same URL, browser back, or the app's
+own last-building resume) rather than explicitly `Ctrl+O`-picking the exact file `Ctrl+S` produced. A
+normal re-open reloads from the ORIGINAL served source, which never had a `staffage_instances` table
+written into it — so of course no staffage restores; this would be user-workflow confusion, not a code
+bug, and the fix would be a clearer save/reload UX cue (e.g. "Saved — reopen via Ctrl+O / Open Building
+to restore this exact scene, staffage included"), not a code change to the persistence mechanism.
+
+**Alternative hypothesis, NOT yet checked:** a real bug in the `_writeStaffageTable()` write path or
+the `_restoreStaffageInstances()` read path (e.g. the freshness/version check `_populateBuilding !==
+A.activeBuilding` in `togglePopulate()` misfiring, or `_hasTable` sqlite_master probe failing silently
+on a re-opened file for a reason not yet traced).
+
+**Next session, in order — do not skip straight to a fix:**
+1. Ask the user the exact sequence: which save action (native Save-As vs download?), and exactly how
+   they "opened back" (Ctrl+O picking that same file, vs re-navigating/refreshing the same URL?).
+2. If it was a same-URL re-open (not `Ctrl+O` on the saved file): this is the leading hypothesis above
+   — confirm by checking the reopened building's DB for a `staffage_instances` table (it shouldn't
+   have one) — if confirmed, this is a UX/expectation gap, file the messaging fix, not an engine fix.
+3. If it WAS `Ctrl+O` on the exact saved file and staffage still didn't restore: trace
+   `_writeStaffageTable()` → export → `_openDbBytes()` → `togglePopulate()`'s `_hasTable`/`savedRows`
+   read live with `§`-tagged logging at each step (this file's own standing rule: witness logs, never
+   ad-hoc browser testing) to find exactly where the round-trip breaks.
+
+## SESSION 2026-07-26 — §STAFFAGE_OUTSIDE_VARIETY + §STAFFAGE_FLOOR_PHANTOM (bim-ootb PR #1021)
+
+User, on JKR: *"Alt-P made outside standing persons the same, should be the diff standing sprites.
+And some will stand in air outside first floor etc."* Their log: `placed=3`, all three the same male.
+
+### Defect 1 — the exterior pose pool contained exactly ONE asset (deterministic, not draw luck)
+```js
+var outsidePoses = _STAFFAGE_PEOPLE.filter(p => p.role === 'stand' && p.facing === 'toward');
+var pose = outsidePoses[placedP % outsidePoses.length];
+```
+Exactly one entry of `_STAFFAGE_PEOPLE` satisfies both predicates — `person_standing_casual_male`
+(the other `'stand'` pose is `'away'`). So `length === 1`, the modulo was **always 0**, and every
+exterior figure on every building was that one cutout. Not intermittent; it could never have varied.
+
+Widening it **applies** §STAFFAGE_FACING rather than re-litigating it: that doctrine says route each
+pose to where its fixed orientation makes sense, and its own worked example is *"the lady with
+bags... facing to the building"* — an `'away'` pose reads as moving toward whatever is beyond her,
+which outside a building is the building. `'toward'` reads fine outdoors too. Only `'sit'` is
+excluded: there is nothing to sit on out there. Pool 1 → **4**, shuffled per press
+(§STAFFAGE_SHUFFLE) so repeat presses differ.
+
+### Defect 2 — `_floorThreeY` is a pure bbox test, and this file already knows bboxes lie
+The floor lookup accepted any slab whose **axis-aligned bounding rectangle** covers the sample point
+(`|x−cx| ≤ w/2+0.5 && |y−cy| ≤ d/2+0.5`). An exterior candidate on the silhouette ring can sit inside
+an upper slab's bounding rectangle while being nowhere near its real geometry — the notch of an
+L-shaped plate, a courtyard, or just past a facade edge inside the 0.5 m tolerance — and gets lifted
+to that floor with nothing under it. This is the same defect class as §STAFFAGE_GROUNDSNAP and
+§STAFFAGE_WALK_FLOOR_FIX, which this file already fixed for the *interior/walk* path; the exterior
+path still had it.
+
+Same remedy, same machinery already trusted here: when the chosen slab would lift a figure more than
+`_FLOOR_PHANTOM_MIN_LIFT` (0.75 m) above ground, ask the **real rendered triangles** via the BVH
+raycaster whether anything is actually beneath; if not, fall back to `groundY` and log it. Only above
+that lift threshold — at ground level a coincident-surface ray can self-miss, and a false reject
+would be worse than the symptom.
+
+### Witness — `witness_staffage_outside.js`, 4/4 on JKR (the reporter's own building)
+Drives a real Alt+P keypress and reads the §-lines (whitebox first, per doctrine).
+
+| gate | result |
+|---|---|
+| G1 exterior pose pool > 1 asset | **pool=4** |
+| G2 a multi-figure press is not all one sprite | **3 placed → 3 distinct**, all three presses |
+| G3 phantom lifts caught, never silent | **2 caught**: `bbox slab at y=−0.40 (lift=3.50m)` and `y=−0.35 (lift=3.55m)`, both with no geometry beneath, both fell back to `groundY=−3.90` |
+| G4 control: unfixed tip pool is exactly 1 | **pool=1**, read from the unfixed source |
+
+**3.5 m in the air** is the reported "stand in air outside first floor", reproduced and measured.
+G3 reports **NOT EXERCISED** rather than a green when a building yields no bbox-only slabs (Duplex
+and Hospital both do) — a gate that passes on zero evidence proves nothing. G4 is derived from the
+baseline's *source*, because the unfixed tip cannot emit a log that does not exist in it.
+
+New per-press witness fields: `§STAFFAGE_OUTSIDE_VARIETY pool=N used=[...] distinct=N`, and
+`floor=slab:N/ground:N/phantom:N` on `§PHOTO_STAFFAGE`.
+
+### ANSWERED 2026-07-26 (late) — the data is NOT lost; reopen simply never rehydrates
+Round-trip driven programmatically through the REAL export/open API (`A._exportBuildingDb()` →
+`A._openDbBytes()`, i.e. exactly what Ctrl+S / Ctrl+O call), Duplex:
+
+| step | staffage instances | table in DB |
+|---|---|---|
+| after Alt+P | **8** | — |
+| after export (Ctrl+S bytes) | — | **present, 8 rows** |
+| after open (Ctrl+O path) | **0** | **present** |
+| after one more Alt+P | **8** | present |
+
+`§STAFFAGE_SAVE rows=8` → `§STAFFAGE_RESTORE rows=8` → `§PHOTO_POPULATE ... restored=8`.
+
+**So the save/reopen round-trip already works end-to-end. Nothing is lost.** The gap is that restore
+is wired to the *first Alt+P press* (`effects.js` `togglePopulate`, the `freshBuilding` branch), not
+to load. Reopen the saved file and the scene is empty until you press Alt+P again — which is exactly
+what "when opening back it is gone" looks like from the outside. The parallel session's leading
+hypothesis (user reopened the URL, not the saved file) is therefore **not needed** to explain the
+report, and should not be assumed: even with the correct Ctrl+O on the correct file, you see nothing.
+
+**Fix for the user's directive** (*"on Save, Open should retain persist the alt-p results"*): on
+building load, if the DB carries `staffage_instances`, call `A._restoreStaffageInstances()` straight
+away instead of waiting for a keypress. The restore function, the table, the writer and the reader
+all already exist and are proven by the table above — this is a trigger change, not a feature.
+
+**"Scene jumping" — NOT reproduced on this path.** Camera moved **0.00 m** and the controls target
+**0.00 m** across the same save→open round-trip. Whatever the user is seeing comes from somewhere
+else (a different reopen route, or a later moment) — needs its own repro before anyone touches it.
+
+**Sprite storage — already a reference, not pixels** (user: *"saved DB should carry the sprite
+reference.. not the image i hope.. to do instancing, saves space"*). Confirmed from the schema in
+`viewer/scene.js:582`:
+```sql
+CREATE TABLE staffage_instances (kind TEXT, file TEXT, ifc_x REAL, ifc_y REAL, ifc_z REAL, rot_y REAL)
+```
+`file` holds the asset PATH (e.g. `people/person_standing_casual_male.png`); no image bytes are ever
+written. 8 placed figures = 8 short rows. Already the instancing-friendly shape the user wants.

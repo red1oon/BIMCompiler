@@ -1,0 +1,10 @@
+✅ .sh (Mac/Linux): fetches app zip first
+✅ .sh (Mac/Linux): fetches mesh.db from the OCI bucket
+✅ .sh (Mac/Linux): order is zip-extract THEN mesh.db fetch THEN serve
+✅ .sh (Mac/Linux): mesh.db fetch degrades gracefully on failure (no `set -e`/`exit` abort tied to it)
+✅ .bat (Windows): fetches app zip first
+✅ .bat (Windows): fetches mesh.db from the OCI bucket
+✅ .bat (Windows): order is zip-extract THEN mesh.db fetch THEN serve
+✅ .bat (Windows): mesh.db fetch degrades gracefully on failure (no `set -e`/`exit` abort tied to it)
+
+§W-DIY-INSTALLER-MESH-FETCH 8/8 ALL PASS

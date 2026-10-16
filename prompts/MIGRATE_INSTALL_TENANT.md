@@ -1,5 +1,9 @@
 # ⚠ DO NOT REMOVE — Migrate ACTUALLY installs a loadable tenant (Client 12 Odoo + 13 iDempiere)
-# STATUS: PLAN / not started — a multi-phase arc (user: "this is a huge job"). Captured 2026-06-05.
+# STATUS: STALE HEADER — P0/P1/P2 Odoo done 2026-06-05→06; P1-iDempiere, said BLOCKED below, was actually
+#   UNBLOCKED+SHIPPED (PK re-band 2026-06-11 + idempiere_agent.zip via a DIFFERENT lane, ABOUT_BOX_CONSOLIDATE.md,
+#   by 2026-06-19) — this file was never updated to say so. See `§2026-07-22 AUDIT` at the bottom for current
+#   state + the REAL remaining gaps (offline/network dependency of the install flow, doc coverage). Originally
+#   captured 2026-06-05 as PLAN/not-started (stale, kept for history below).
 # SCOPE: today the Migrate dialogs are real VERIFY/PREVIEW flows, not INSTALL flows — going through them
 #   does NOT leave you with logged-in Client 12 (Odoo) + Client 13 (iDempiere). Close that gap.
 #   Spec-first · §-log first · NON-INVENT · delegate-to-install (browser never touches the source DB).
@@ -137,3 +141,54 @@ in the pill/overlay language. Then the existing ERPKernel re-fold table.
 ## ▶ DEPENDENCY (user-owned, blocks P1 for iDempiere)
 iDempiere PG connection (host/port/db/user/password) + which tenant → Client 13. Until then P1-Odoo is done,
 P1-iDempiere is BLOCKED. P2/P3 can proceed on Odoo (Client 12) alone as the proof.
+
+## §2026-07-22 AUDIT — user asked "how is the installer now, does ERPUserGuide document it running offline"
+
+**Correcting the stale header above:** iDempiere P1 did ship. `erp/idempiere_agent.zip` (Node + Docker-CLI `psql`
++ better-sqlite3, mirrors `odoo_agent.zip`) exists, is precached, and has its own dialog→persist witness
+(`W-INSTALL-IDMP`, `erp/tests/poc_install_idmp.js` — reload survives 8/8 orders, guarded re-install, preview
+balanced — see [[project_new_client_mgmt]]). PK-collision root cause (un-banded GardenWorld ids silently dropped
+by `INSERT OR IGNORE`) was fixed via a 13-family `CL*100000` re-band in `gen_ad_idmp.sh`. So: **P0/P1/P2 done for
+BOTH Odoo (12) and iDempiere (13)**, P3 switcher done (`project_new_client_mgmt` "P3 LOGIN CLIENT SWITCHER").
+Treat this file's earlier "PLAN/BLOCKED" framing as historical, not current.
+
+**Three DIFFERENT "install" concepts exist in this codebase — don't conflate them in future work:**
+1. **This one** — migrate a legacy Odoo/iDempiere/SAP/Oracle/Dynamics tenant into the app (delegate-agent zip
+   run natively → produces a `.db` shard → browser `fetch()`s + merges + persists it to IndexedDB).
+2. **Genesis** ("birth a new tenant from scratch", `prompts/SYSTEM_ADMIN_LANE.md`) — pure in-memory op-log fold,
+   no network fetch needed. Already offline-capable by construction. Not this lane's concern.
+3. **Self-host installer** (`common/about_diy.js`, generates `bim-ootb-install.sh`/`.bat`) — installs the WHOLE
+   APP on a fresh machine (git zip + `python -m http.server`). Unrelated to tenant install; don't merge scope.
+
+**ERPUserGuide.md (docs/ERPUserGuide.md) coverage of this flow, as it reads today:**
+- §"Initial Tenant Setup" (lines 99-122) documents Genesis (concept 2 above), marked (LIVE).
+- §2 "Bring your data in — the DIY box" (lines 140-224) documents THIS flow (concept 1): describes the
+  delegate-to-install doctrine ("the browser never connects to your database") and the 5-tenant table
+  (12 Odoo real / 13 iDempiere real / 14-16 SAP/Oracle/Dynamics marked PoC, agents "on the roadmap").
+- **Gap found: nowhere does the guide state whether this flow works offline-after-download.** The guide's
+  "runs fully offline"/"offline-first" claims (lines 5-6, 51, 227-253) are scoped to the general engine and to
+  the initial app-boot seed load (§11) — not to fetching a tenant shard `.db` or downloading an agent zip. It
+  neither claims nor disclaims offline behavior for this specific flow — a silent gap, not a wrong claim.
+- **Code-confirmed reality (the gap the guide should state honestly):** `sw.js` (bim-ootb/erp/) deliberately
+  excludes ALL `.db` files from the service worker (`if (url.endsWith('.db')) return;`, ~line 182) — so
+  `12-odoo.db`/`13-idempiere.db`/etc. always hit the network, no offline fallback. The agent `.zip`s are not in
+  `PRECACHE_ASSETS` either — first download needs network (subsequent ones may hit the browser HTTP cache, but
+  the app does nothing to guarantee it). By contrast the app shell + Genesis + the base demo tenant (GardenWorld)
+  ARE fully offline-capable once cached. **So: the "install a migrated tenant" flow is NOT offline-capable
+  today, unlike the rest of the app — and nothing in code or docs currently says so either way.**
+
+**NEXT TASK for a future session (spec, not yet built):**
+1. Confirm intent with user: should shard-`.db` fetch + agent-`.zip` first-download be made offline-capable
+   (add both to `sw.js` PRECACHE_ASSETS — cheap, since the 5 shard files + 2 zips are static and small), or is
+   "needs network once to install a new tenant, offline after" an acceptable/intended line to hold? Either
+   answer is fine — the bug is that neither is currently written down anywhere.
+2. Once decided, update `docs/ERPUserGuide.md` §2 with an explicit, honest line (e.g. "downloading a tenant
+   shard or agent needs a network connection once; after that, the installed tenant works fully offline like
+   the rest of the app" — verify that second half against `installShard()`'s IndexedDB persistence before
+   asserting it).
+3. `docs/LegacyMigrationJourney.md`, named in the OLD `archive/NEW_CLIENT_MGMT.md` STOP CONDITION as "the
+   one-page direction," **does not exist** (confirmed by search, 2026-07-22) — either write it or strike the
+   requirement; don't let a future session assume it exists because an old backlog card names it.
+4. Not urgent, but worth a look while in this area: `TRILOGY_STALE_CODE_AUDIT.md` flags `erp/idempiere_agent.zip`
+   as a tracked BINARY duplicating the tracked SOURCE dir `erp/idempiere_agent/` (same pattern as `odoo_agent.zip`)
+   — a DB/binary-distribution-policy flag already on record there, not new, just adjacent to this area.

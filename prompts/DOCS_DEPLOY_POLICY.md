@@ -31,3 +31,12 @@ Worktrees isolate your working-dir + checked-out branch. They do NOT isolate the
 which files you touched. The fix is the guard, not the worktree.
 
 See memory `feedback_docs_deploy_landmine.md`.
+
+## ⚠ Known guard trip (2026-09-27): `glassbowl_data.db` is live but not in git
+`glassbowl.html` / `glassbowl_gravity.html` load `glassbowl_data.db` (94,208 B). It was untracked by the 2026-09-01 LFS cleanup
+(`0daef3b36`, *.db untracked — binary DBs are banned from git), so ANY deploy from a fresh worktree/clone aborts with
+`§GUARD-DELETE would DELETE live page: glassbowl_data.db`. **Do NOT bless it with ALLOW_SHRINK** — that would break the live
+glassbowl pages. Fix used 2026-09-27: copy the local, byte-identical file into the deploy tree first (it is gitignored, never
+committed): `cp ~/bim-compiler/docs/glassbowl_data.db <worktree>/docs/` (sha256 prefix `efed6b5b8e4b195e` == live), then
+`scripts/safe_gh_deploy.sh` → guard PASS 292/292. If the local copy is ever missing, fetch it from the live site first:
+`curl -o docs/glassbowl_data.db https://red1oon.github.io/BIMCompiler/glassbowl_data.db`.

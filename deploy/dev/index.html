@@ -416,6 +416,17 @@
 </style>
 </head>
 <body>
+<!-- Implementing prompts/Viewer/BLANK_VIEWER_LANDING_CARD.md §2 — Witness: witness_blank_viewer_card.js -->
+<div id="blank-open-overlay" style="display:none;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;flex-direction:column;background:rgba(10,10,20,0.55);color:#fff;font-family:'Segoe UI',sans-serif;text-align:center">
+  <div style="padding:32px 40px;border:2px dashed rgba(255,255,255,0.35);border-radius:12px;background:rgba(20,20,35,0.85)">
+    <div style="font-size:16px;font-weight:600;margin-bottom:10px">Blank Viewer — no building loaded</div>
+    <div style="font-size:13px;color:#aaa;margin-bottom:16px">Drop a .db file here, or</div>
+    <label style="display:inline-block;padding:8px 20px;background:#0277bd;color:#fff;border-radius:6px;cursor:pointer;font-size:13px">
+      Open .db File
+      <input id="blank-open-input" type="file" accept=".db,.sqlite" style="display:none">
+    </label>
+  </div>
+</div>
 <div id="hud" style="display:none!important">
   <h2 onclick="togglePanel('hud-body');resetHudAutoCollapse()" style="cursor:pointer" data-trl="source_app">BIM OOTB v3</h2>
   <div id="hud-body" class="panel-body">
@@ -773,7 +784,18 @@
 <script src="panels.js?v=29" onerror="console.warn('§LOAD_FAIL panels.js')"></script>
 <script src="tools.js?v=26" onerror="console.warn('§LOAD_FAIL tools.js')"></script>
 <script src="picking.js?v=25" onerror="console.warn('§LOAD_FAIL picking.js')"></script>
-<script src="tour.js?v=3" onerror="console.warn('§LOAD_FAIL tour.js')"></script>
+<!-- §R5-A (FLY_TOUR_CORRIDOR_GRAPH.md §R5-A) — the occupant room-graph stack tour.js v19 routes on.
+     Dependency order matters and is NOT arbitrary: room_graph.js reads window.StoreyRaster at
+     buildGraph() time and window.RoomHabitability for its utility-room routing penalty, and
+     hallway_backbone.js reads window.RoomGraph at its OWN top-level IIFE — so raster + habitability
+     load first, room_graph next, hallway_backbone after it, bridge last. Any of them failing to load
+     leaves getRoomGraph() returning null and the LEGACY tour flying, unchanged. -->
+<script src="room_habitability.js?v=1" onerror="console.warn('§LOAD_FAIL room_habitability.js')"></script>
+<script src="storey_raster.js?v=1" onerror="console.warn('§LOAD_FAIL storey_raster.js')"></script>
+<script src="room_graph.js?v=1" onerror="console.warn('§LOAD_FAIL room_graph.js')"></script>
+<script src="hallway_backbone.js?v=1" onerror="console.warn('§LOAD_FAIL hallway_backbone.js')"></script>
+<script src="room_graph_bridge.js?v=2" onerror="console.warn('§LOAD_FAIL room_graph_bridge.js')"></script>
+<script src="tour.js?v=4" onerror="console.warn('§LOAD_FAIL tour.js')"></script>
 <script src="clash_report.js?v=1" onerror="console.warn('§LOAD_FAIL clash_report.js')"></script>
 <script src="clash_snag.js?v=1" onerror="console.warn('§LOAD_FAIL clash_snag.js')"></script>
 <script src="clash_matrix.js?v=1" onerror="console.warn('§LOAD_FAIL clash_matrix.js')"></script>
@@ -827,12 +849,13 @@
 <script src="grid_assembler.js?v=2" onerror="console.warn('[GridAssembler] grid_assembler.js skipped')"></script>
 <script src="print_sheet.js?v=3" onerror="console.warn('[PrintSheet] print_sheet.js skipped')"></script>
 <script src="ghostglass.js?v=2" onerror="console.warn('§LOAD_FAIL ghostglass.js')"></script>
+<script src="blank_open.js?v=1" onerror="console.warn('§LOAD_FAIL blank_open.js')"></script>
 <script src="wizard_orientation.js?v=1" onerror="console.warn('§LOAD_FAIL wizard_orientation.js')"></script>
 <script src="wizard_storeys.js?v=1" onerror="console.warn('§LOAD_FAIL wizard_storeys.js')"></script>
 <script src="wizard_classify.js?v=1" onerror="console.warn('§LOAD_FAIL wizard_classify.js')"></script>
 <script src="precision_cam.js?v=2" onerror="console.warn('§LOAD_FAIL precision_cam.js')"></script>
 <script src="time_machine.js?v=48" onerror="console.warn('§LOAD_FAIL time_machine.js')"></script>
-<script src="main.js?v=35"></script>
+<script src="main.js?v=36"></script>
 <!-- Styled tooltip bubbles for [data-trl-title] buttons — appended to body, not clipped by overflow:hidden -->
 <style>#ootb-tip{display:none;position:fixed;z-index:9990;background:rgba(10,10,30,0.92);color:#4fc3f7;font-size:11px;padding:3px 10px;border-radius:4px;border:1px solid rgba(79,195,247,0.35);pointer-events:none;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.4)}</style>
 <script>

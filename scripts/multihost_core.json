@@ -1,0 +1,25 @@
+{
+  "__doc": "The NETWORK CORE for W-MULTIHOST-SYNC (prompts/BACKEND_SUBSTRATE_LANE.md §MH.3): the modules whose change can alter multi-host sync behaviour. scripts/check_multihost_gate.js FAILS when any of these differs from what scripts/multihost_run.json recorded at the last PASS — content-keyed, so a stale pass is impossible. bim_compiler paths hash the working tree (build/erp is the source of truth); bim_ootb_origin_main paths hash the origin/main blob (what ships — never a possibly-stale checkout, the same reason check_erp_twins.js does). Confirmed from the tree 2026-09-03: erp_persist_ui.js from the spec's starting list is NOT on bim-ootb origin/main (PR #203 never merged) so it is not declared; erp_sequencer.js (the order contract the relay mirrors), erp_key_epochs.js (the roster §RELAY_AUTH admits /push against) and erp_period_close.js (checkpoint = what a replica bootstraps from) were added. 'instrument' = the witness itself: editing it forces a re-run too.",
+  "bim_compiler": [
+    "build/erp/kernel_ops.js",
+    "build/erp/erp_replica_client.js",
+    "build/erp/erp_snapshot_sign.js",
+    "build/erp/erp_relay_client.js",
+    "build/erp/erp_relay_server.js",
+    "build/erp/erp_sync_fsm.js",
+    "build/erp/erp_sequencer.js",
+    "build/erp/erp_key_epochs.js",
+    "build/erp/erp_period_close.js",
+    "scripts/gen_replica_snapshot.js"
+  ],
+  "bim_ootb_origin_main": [
+    "erp/erp_sync_relay.js",
+    "erp/erp_persist.js",
+    "erp/erp_signer.js"
+  ],
+  "instrument": [
+    "scripts/witness_multihost_sync.js",
+    "scripts/multihost_core.js",
+    "scripts/multihost_core.json"
+  ]
+}

@@ -307,7 +307,7 @@ const _ociMatch = location.href.match(/(https:\/\/objectstorage\.[^/]+\/n\/[^/]+
 const _base = _ociMatch ? _ociMatch[1] : '';
 
 // All buildings use full-download viewer (no httpvfs — too slow over network)
-const viewerFile = 'sandbox/index.html?_v=' + Date.now();
+const viewerFile = _VIEWER + '?_v=' + Date.now();
 
 const DISC_COLORS = {
   ARC: '#4488ff', STR: '#44cccc', MEP: '#44cc44',
@@ -396,13 +396,35 @@ function saveViewed() {
 }
 
 // DB files served from production bucket — dev only overrides viewer/JS
-const _prodBase = 'https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb-live/o/';
+const _prodBase = 'https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/';   // §CLINIC_LANDING_REPOINT 2026-09-02: data bucket is `bim-ootb` (live object already had this; the repo copy was stale)
+
+// Implementing prompts/Viewer/BLANK_VIEWER_LANDING_CARD.md §3 — Witness: witness_blank_viewer_card.js
+function openBlankViewer() {
+  const viewerUrl = _VIEWER;
+  const url = viewerUrl + '?blank=1';
+  const win = window.open(url, 'bim_blank');
+  if (!win) { location.href = url; return; }
+  trackTab('Blank', '3D', win);
+}
+
+function buildBlankCard(container) {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed rgba(2,119,189,0.4)';
+  card.innerHTML = `
+    <div class="name" style="color:#0277bd">&#10133; ${_TRL.landing_blank_viewer||'Blank Viewer'}</div>
+    <div class="meta" style="text-align:center">${_TRL.landing_blank_viewer_desc||'Open your own .db file'}</div>
+    <button class="open-btn" onclick="event.stopPropagation(); openBlankViewer()">${_TRL.landing_open_viewer||'Open 3D Viewer'} &#9889;</button>
+  `;
+  card.addEventListener('click', () => openBlankViewer());
+  container.appendChild(card);
+}
 
 function openViewer(archName, repBuilding) {
   const bld = BUILDINGS[archName];
   if (!bld) { alert(`No DB for ${archName}`); return; }
   const bldBase = _prodBase + 'buildings/';
-  const viewerUrl = _base ? _base + 'sandbox/index.html' : 'sandbox/index.html';
+  const viewerUrl = _VIEWER;
   const url = viewerUrl + `?db=${bldBase}${bld.db}`; // single DB — lib param retired (S242)
   const win = window.open(url, 'bim_' + archName);
   // window.open returns null if popup is blocked (some mobile browsers)
@@ -481,7 +503,7 @@ function clearAllCache() {
 // ── Launch city viewer (all 786 buildings from cached DBs) ──
 function launchCity() {
   const bldBase = _prodBase + 'buildings/';
-  const viewerUrl = _base ? _base + 'sandbox/index.html' : 'sandbox/index.html';
+  const viewerUrl = _VIEWER;
   const url = viewerUrl + `?city=${bldBase}city_index.db&bldbase=${bldBase}`;
   const win = window.open(url, 'bim_city_1M');
   trackTab('City 1M', '3D', win);
@@ -493,6 +515,9 @@ window._TRL = window._TRL || {};
 // ── Load manifest ──
 async function loadManifest() {
   const loadingEl = document.getElementById('loading');
+  // Blank Viewer — always first, independent of manifest fetch success/failure (§3 BLANK_VIEWER_LANDING_CARD.md)
+  const _instantGridEarly = document.getElementById('instant-grid');
+  if (_instantGridEarly) buildBlankCard(_instantGridEarly);
   try {
     const url = (_base || '') + 'manifest.json';
     const ctrl = new AbortController();
@@ -534,7 +559,7 @@ async function loadManifest() {
     updateCityProgress();
 
     // ── Health check: verify viewer is reachable ──
-    const _viewerCheck = (_base || '') + 'sandbox/index.html';
+    const _viewerCheck = _VIEWER;
     fetch(_viewerCheck, { method: 'HEAD' }).then(r => {
       if (!r.ok) {
         document.body.insertAdjacentHTML('afterbegin',
@@ -772,7 +797,7 @@ async function openProject(key, btnEl, opts) {
   if (((opts && opts.wizard) || isMesh) && !wizardDone) {
     wizardParam = '&wizard=1&wizardKey=' + encodeURIComponent(key);
   }
-  const viewerUrl = (_base || '') + 'sandbox/index.html?db=' +
+  const viewerUrl = _VIEWER + '?db=' +
     encodeURIComponent(dbUrl) + '&lib=' + encodeURIComponent(libUrl) + diffParam + wizardParam;
   const win = window.open(viewerUrl, '_blank');
   trackTab(record.meta.name || key, '3D', win);
@@ -820,7 +845,7 @@ async function openCompare(key, idxA, idxB) {
     tx.oncomplete = resolve;
   });
 
-  const viewerUrl = (_base || '') + 'sandbox/index.html?db=' +
+  const viewerUrl = _VIEWER + '?db=' +
     encodeURIComponent(urlA) + '&lib=' + encodeURIComponent(urlA) +
     '&diffdb=' + encodeURIComponent(urlB);
   window.open(viewerUrl, '_blank');
@@ -1588,7 +1613,7 @@ function downloadDIYScript() {
       card.querySelector('[data-contributed]').onclick = function() {
         var fname = this.dataset.contributed;
         var bldBase = _prodBase + 'contributed/';
-        var viewerUrl = (_base || '') + 'sandbox/index.html';
+        var viewerUrl = _VIEWER;
         var url = viewerUrl + '?db=' + encodeURIComponent(bldBase + fname);
         console.log('§COMMUNITY open file=' + fname);
         window.open(url, '_blank');

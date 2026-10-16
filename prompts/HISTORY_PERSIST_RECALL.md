@@ -278,3 +278,111 @@ Discuss phase is CLOSED (see §LOCKED + §DECISIONS-ALL-MADE). Confirm the two �
 implement in the shared module + witness + PR. Frame the demo around the novel bit: a **serverless,
 SIGNED history that survives tab-close and rehydrates on return** — across landing ↔ viewer ↔ ERP, no
 backend; the append-only chain you can re-genesis but never silently edit.
+
+---
+
+## ▶ §VERIFY-FIRST ITEM 1 — ANSWERED 2026-07-30 (it re-fetches; here is exactly why)
+
+**User report:** the ERP red-pill Zoom-Across (`prompts/ZOOM_ACROSS_SCOPE_SESSION.md`) opens the Viewer
+and re-downloads the SAME building that is already sitting in IndexedDB. Their session log (Hospital,
+GH-Pages): `§CACHE_MISS_READ url=Hospital_extracted.db — not in IDB, will fetch` → 404 → `§DB_404_OCI_RETRY`
+→ `§CACHE_WRITE_OK url=Hospital_extracted.db size=251.1MB`. Same tab-reopen, same building, full 251MB again.
+
+### §ROOT CAUSE — the cache is keyed on the URL STRING, and the two entry points use two different strings
+`viewer/scene.js` `A.cachedFetch(url)` stores and looks up the blob under the **raw `url` argument**
+(`objectStore.get(url)` / `.put(buf, url)`). The two ways a user reaches the same building build
+DIFFERENT strings for the same bytes:
+
+| entry point | code | `db=` param it builds |
+|---|---|---|
+| Landing / hub card | `index.html:489` `var base=bld.gh\|\|_prodBase` | `https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/buildings/Hospital_extracted.db` |
+| ERP red pill (Zoom-Across) | `erp/idempiere.html:4716,4733` | `../buildings/Hospital_extracted.db` |
+| PWA resume default | `viewer/config.js:25` `_base + 'Duplex_extracted.db'` | absolute OCI form |
+
+`A.DB_URL` is that param verbatim (`config.js:25`), and `streaming.js:1842,1913` hand it straight to
+`cachedFetch`. So: **open from the landing → cached under the OCI key. Red-pill across → looks up the
+relative key → MISS → 404 on GH-Pages → OCI retry → 251MB down the wire → written back under a SECOND
+key.** One building, two cache entries, 502MB, and the red pill misses forever. This is not eviction and
+not LFS — it is a key mismatch, deterministic and reproducible.
+
+### §THREE CONTRIBUTING BUGS (all in the same function — each one alone re-breaks "don't fetch again")
+- **C1 (the bug above)** — key = raw URL string. `scene.js:670-693`.
+- **C2 — storage is best-effort, never made persistent.** `navigator.storage.persist()` is called ONLY
+  inside the PWA-install overlay (`scene.js:1692`, `_ensureBuildingCached`). A normal viewer load never
+  asks, so Chrome is free to silently evict the whole origin's IndexedDB — a 251MB blob is the first thing
+  to go. Nothing in the log tells you it happened; you just see `§CACHE_MISS_READ` next time.
+- **C3 — one over-quota write nukes EVERY cached building.** `scene.js:765` `tx.onabort` →
+  `objectStore.clear()` (`§CACHE_EVICT clearing all cached DBs for space`). A single big write that
+  exceeds quota throws away all the other buildings that were fitting fine. The LRU path
+  (`_evictOldest`, cap `_MAX_CACHE_ENTRIES = 80`) already exists and is the correct behaviour.
+
+### §SPEC — the fix (three bounded changes, witness each)
+- **F1 — canonical cache key (the actual fix).** New PURE function `DbResolve.cacheKey(url, prodBase)` in
+  `viewer/db_resolve.js`, same house style as the existing `ociRetryUrl` (pure decision + rule list +
+  witness). Rules, each a test case:
+  - K1 `import://…` → returned verbatim (IDB-only identity, never rewritten).
+  - K2 a **production** building asset — `<rel-or-PROD_BASE>/buildings/<file>` — → `buildings/<file>`.
+        Collapses `../buildings/X`, `buildings/X`, `/buildings/X`, and `<prodBase>buildings/X` onto ONE key.
+  - K3 a path containing `/deploy/` or `/modeller/` → returned verbatim. **Non-negotiable:** the dev bench
+        (`viewer/dlod_bench.html:29,33,37`) serves `/bim-compiler/deploy/dev/buildings/Terminal_extracted.db`
+        AND `/bim-compiler/deploy/buildings/Hospital_extracted.db` — same filenames, DIFFERENT bytes.
+        Collapsing those would serve wrong geometry on a dev machine. Only the shipped `buildings/` set folds.
+  - K4 anything else (`../erp/ad_seed.db`, `*_positions.bin` outside `buildings/`) → verbatim, unchanged.
+  - `cachedFetch` uses `cacheKey(url)` for BOTH the `get` and the `put`; the network fetch still uses the
+    real `url` (+ existing OCI retry). Log the key: `§CACHE_KEY url=<file> key=<key>` so the next session
+    can CHECK this rather than re-derive it.
+- **F2 — request persistent storage at boot**, not only on PWA install (`scene.js`, next to the `§QUOTA`
+  probe). Log `§PERSIST granted=<bool>`. This is what stops C2's silent whole-origin eviction.
+- **F3 — quota abort evicts LRU, never `.clear()`.** Replace the `tx.onabort` nuke with a loop over
+  `_evictOldest` until the write fits (bounded retries), logging `§CACHE_EVICT_LRU` per pass. Keep the
+  final give-up log honest (`§CACHE_EVICT_WRITE_FAIL — quota too small`).
+
+### §WITNESS (this is what the fix must PROVE — name the issue, per Standing Rules)
+- `tests/witness_db_cache_key.js` — pure, headless, no browser: K1–K4 as explicit cases, plus the
+  REGRESSION case that IS this bug: `cacheKey('../buildings/Hospital_extracted.db') ===
+  cacheKey(PROD_BASE + 'buildings/Hospital_extracted.db')`. Fails on today's code (raw URL), passes after F1.
+- Browser §-log, real building, the actual user path: open Hospital from the LANDING (absolute OCI form)
+  → expect `§CACHE_MISS_READ` + `§CACHE_WRITE_OK`; then open the SAME building via the ERP red pill
+  (relative form) → **expect `§CACHE_HIT Hospital_extracted.db size=251.1MB` and ZERO network bytes for
+  the .db.** That second line is the whole deliverable. Today it reads `§CACHE_MISS_READ`.
+- Regression: `tests/witness_db_404_oci_retry.js` must stay green (F1 must not disturb the 404 self-heal).
+
+### §MISSING WALLS — same tab, likely the same cause, NOT yet proven
+User also reported Hospital showing missing walls on one side **in the tab that was re-fetching**. Not
+recorded anywhere before this. Working hypothesis (UNPROVEN — do not report as fact): the re-download
+races the geometry stream, so the scene paints from an incomplete set. Note the same session logged
+`§CONTRACT_FAIL guidMap=63182 but meta=63200 — 18 orphaned GUIDs` — 18 is far too few to be a facade, so
+the orphan check is NOT the explanation. Verify AFTER F1 lands: if a clean `§CACHE_HIT` open renders the
+walls, it was the re-fetch; if the walls are still absent from a fully-cached load, it is an extraction
+gap in `Hospital_extracted.db` and needs its own lane (count `IfcWall%` in the DB vs streamed).
+
+### ✅ DONE 2026-07-30 — bim-ootb PR #1088 `fix/db-cache-key` (sw v884, scene.js?v=54, db_resolve.js?v=2)
+F1+F2+F3 shipped as specified, plus one extra found while witnessing: **`A._checkCache` kept the raw key
+too**, so streaming.js's diagnostic size probe fired a HEAD at the network for an already-cached building
+— the `§OFFLINE-GATEWAY-LEAK` its own comment (`streaming.js:2051`) warns about, live in the user's log as
+`§DB_SIZE_CHECK size=0MB src=network`. Both call sites now share `DbResolve.cacheKey`.
+Added beyond spec: **legacy adopt** — a pre-fix profile's raw-url entry is re-keyed IN PLACE
+(`§CACHE_KEY_LEGACY_HIT` → `§CACHE_KEY_REKEY_OK`), so existing users don't pay one more full download for
+the fix itself. Without it every cached building would have been orphaned on upgrade.
+
+**WITNESSED (logs read, not exit codes):**
+- `viewer/tests/witness_db_cache_key.js` — pure, headless, **16/16**. Proven to FAIL on the old raw-url
+  behaviour (`§OLDCODE BUG-red-pill-vs-landing folded=false`), pass after. Carries both the bug assertion
+  (red-pill key == landing key) and the guard (dev-bench key != prod-bench key).
+- `viewer/tests/poc_db_cache_key_live.js` — real browser, real `HHS_Office_Federated_extracted.db`
+  (72.1MB), ONE context, the two real url forms, **7/7, 0 pageerrors**:
+  `load A §CACHE_MISS_READ → §CACHE_WRITE_OK 72.1MB, db requests=2` ;
+  `load B §CACHE_KEY key=buildings/… → §CACHE_HIT 72.1MB, db requests=0` ;
+  `§DB_SIZE_CHECK src=network (A) → src=cache (B)`. **Zero network requests on load B is the deliverable.**
+- Regression `W-DB-404-OCI-RETRY` 12/12 · `tests/audit_script_tags.js` 140/140 exit 0.
+- `tests/audit_specs.js` FAILS on `38-sh-dx-2d-runtime.spec.js` (5 SKIP paths) — **PRE-EXISTING on main,
+  verified against the baseline checkout, untouched by this PR.** Not fixed here; it is someone's lane.
+
+**HONEST GAP:** `§PERSIST granted=false` in headless Chromium (no engagement signal) — the call fires and
+is logged, but "the browser now actually keeps our 251MB" is NOT proven by this witness and can only be
+observed on a real profile. Check `§PERSIST granted=` on a real load before claiming F2 works in the field.
+
+**STILL OPEN — the missing walls.** Unchanged from the §MISSING WALLS note above: verify on a clean
+`§CACHE_HIT` open of Hospital now that the re-fetch is gone. Walls present ⇒ it was the re-fetch race,
+close it. Walls still absent ⇒ extraction gap in `Hospital_extracted.db`, needs its own lane (count
+`IfcWall%` in the DB vs the streamed count).

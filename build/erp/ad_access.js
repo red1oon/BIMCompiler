@@ -136,7 +136,15 @@
     }
     if (!orgs.length) orgs = [role.ad_org_id, 0];
     // entity types active in the dictionary (the role's scope is the active set unless overridden).
-    var entityTypes = (opts.entityTypes || db.prepare("SELECT entitytype AS et FROM ad_entitytype WHERE isactive='Y'").all().map(function (r) { return r.et; }));
+    // Defensive: ad_entitytype is absent from some trimmed seeds (the browser's ad_seed.db carries the
+    // AD-Window/Process/Form/Role surface but not this table) — empty set = entityTypeAllowed permissive
+    // (its own documented default), never a hard failure of window/process/form/record gating, which is
+    // independent of dictionary-scope filtering. Same defensive-query idiom as idmp_session.js's isShowAcct.
+    var entityTypes = opts.entityTypes;
+    if (!entityTypes) {
+      try { entityTypes = db.prepare("SELECT entitytype AS et FROM ad_entitytype WHERE isactive='Y'").all().map(function (r) { return r.et; }); }
+      catch (e) { entityTypes = []; }
+    }
     return new RoleContext({
       AD_Role_ID: role.ad_role_id, name: role.name, userLevel: role.userlevel,
       isAccessAllOrgs: role.isaccessallorgs === 'Y',

@@ -64,6 +64,54 @@
   if (typeof module !== 'undefined' && module.exports) { module.exports = COACH; return; }
   if (typeof document === 'undefined') return;
 
+  // ════════════════════════════════════════════════════════════════════════
+  // HOST ADAPTER (the lift — UI_OVERLAY_GOVERNANCE §host contract / docs/TourGuideHostContract.md).
+  // The overlay needs 3 things from its host: a MOUNT container, a NAV interface (drive ShowMe), and a
+  // LOCATE projection (key → screen pos, to place numbered badges + the card). The DEFAULTS below REPRODUCE
+  // today's glassbowl behavior VERBATIM (document.body + window.setFocus/setTrace/openDossierTab + the SVG
+  // projection N/idx/project/px/py/k/radius), so an un-init'd page (glassbowl) is behaviorally diff=0.
+  // A host (idempiere) calls window.__help.init({host, nav}) to REBIND — same module, different chrome. NO FORK.
+  // ════════════════════════════════════════════════════════════════════════
+  var HOST = document.body;
+  // glassbowl projection: key → {x,y,r,rRaw} or null (off-screen/unknown). r = screen radius (card gap),
+  // rRaw = unclamped node radius (badge offset) — preserves the ORIGINAL screenPt + positionBadges maths.
+  function gbLocate(key) {
+    try {
+      if (key && typeof N !== 'undefined' && typeof idx !== 'undefined' && idx[key] != null && typeof project === 'function') {
+        var n = N[idx[key]]; project(n); var kk = (typeof k === 'number' ? k : 1);
+        var rr = (typeof radius === 'function' ? radius(n) : 14);
+        return { x: px + n.sx * kk, y: py + n.sy * kk, r: Math.max(12, rr * kk), rRaw: rr };
+      }
+    } catch (e) {}
+    return null;
+  }
+  var NAV = {
+    trace:   function (on)       { if (window.setTrace) window.setTrace(on); },
+    focus:   function (key)      { if (window.setFocus) window.setFocus(key); },
+    openTab: function (key, tab) { if (window.openDossierTab) window.openDossierTab(key, tab); },
+    has:     function (key)      { return typeof idx !== 'undefined' && idx[key] != null; },
+    locate:  gbLocate,
+    jive:    function (which, dir) {
+      try {
+        if (which === 'help'   && typeof helpJive   === 'function') helpJive();
+        if (which === 'nav'    && typeof navJive    === 'function') navJive(dir);
+        if (which === 'showme' && typeof showmeJive === 'function') showmeJive();
+      } catch (e) {}
+    }
+  };
+  // init — a host rebinds the adapter: re-parent the chrome into its container and merge its nav fns.
+  function init(opts) {
+    opts = opts || {};
+    if (opts.host && opts.host !== HOST) {
+      HOST = opts.host;
+      if (wrap.parentNode !== HOST) HOST.appendChild(wrap);
+      if (card.parentNode !== HOST) HOST.appendChild(card);
+    }
+    if (opts.nav) { for (var key in opts.nav) { if (opts.nav[key]) NAV[key] = opts.nav[key]; } }
+    console.log('§TOUR overlay=help_overlay host=' + (opts.hostName || 'custom') + ' forked=0 mounts=2 init=ok');
+    return window.__help;
+  }
+
   // ── injected CSS (self-contained module) ──
   var css = document.createElement('style');
   css.textContent =
@@ -92,8 +140,8 @@
 
   var wrap = document.createElement('label'); wrap.id = 'needHelpWrap';
   wrap.innerHTML = '<input type="checkbox" id="needHelpCk"><span>NeedHelp?</span>';
-  document.body.appendChild(wrap);
-  var card = document.createElement('div'); card.id = 'helpCard'; document.body.appendChild(card);
+  HOST.appendChild(wrap);                                  // HOST defaults to document.body (glassbowl); init() re-parents
+  var card = document.createElement('div'); card.id = 'helpCard'; HOST.appendChild(card);
   var ck = document.getElementById('needHelpCk');
 
   function readmeUrl(ref) { if (!ref) return '#'; var p = String(ref).split('#'); return README_BASE + p[0].replace(/\.md$/, '') + '/' + (p[1] ? ('#' + p[1]) : ''); }
@@ -136,11 +184,11 @@
   // A kind:'process' step ALSO drives the coach vocabulary (READSHOWME §guide-vocabulary): reveal+pulse the
   // Process affordance (key-addressed, never auto-fired) and highlight the live status bar — asserts NOTHING.
   function showMe(step) {
-    if (typeof showmeJive === 'function') showmeJive();
-    if (window.setTrace) window.setTrace(true);
-    if (step.kind === 'overview' || !step.target) { console.log('§SHOWME op=' + step.op + ' drove=[setTrace] kind=overview'); return; }
-    if (window.setFocus) window.setFocus(step.target);
-    if (window.openDossierTab && step.tab) window.openDossierTab(step.target, step.tab);
+    NAV.jive('showme');
+    NAV.trace(true);
+    if (step.kind === 'overview' || !step.target) { console.log('§SHOWME op=' + step.op + ' drove=[trace] kind=overview via=host-globals'); return; }
+    NAV.focus(step.target);
+    if (step.tab) NAV.openTab(step.target, step.tab);
     positionCard();
     if (step.kind === 'process') {
       var plan = COACH.coachPlan(step);
@@ -148,20 +196,12 @@
       var live = highlightStatusBar();
       console.log('§HELP coach key=' + step.key + ' drove=[' + plan.drove.join(',') + '] asserts=' + plan.asserts + ' barRead=' + JSON.stringify(live));
     }
-    console.log('§SHOWME op=' + step.op + ' key=' + step.key + ' drove=[setTrace,setFocus:' + step.target + (step.tab ? ',tab:' + step.tab : '') + '] invented=0');
+    console.log('§SHOWME op=' + step.op + ' key=' + step.key + ' drove=[trace,focus:' + step.target + (step.tab ? ',tab:' + step.tab : '') + '] via=host-globals invented=0');
   }
 
-  // screen point {x,y,r} for a bubble key (reuses page projection), or null if off/unknown.
-  function screenPt(target) {
-    try {
-      if (target && typeof N !== 'undefined' && typeof idx !== 'undefined' && idx[target] != null && typeof project === 'function') {
-        var n = N[idx[target]]; project(n); var kk = (typeof k === 'number' ? k : 1);
-        var r = (typeof radius === 'function' ? radius(n) : 14);
-        return { x: px + n.sx * kk, y: py + n.sy * kk, r: Math.max(12, r * kk) };
-      }
-    } catch (e) {}
-    return null;
-  }
+  // screen point {x,y,r,rRaw} for a key — DELEGATES to the host adapter's locate (glassbowl projection by
+  // default, idempiere getBoundingClientRect after init). null if off-screen/unknown.
+  function screenPt(target) { return NAV.locate(target); }
   // all chain bubbles the card must NOT obscure (every step's target on screen).
   function chainPts() { var a = []; STEPS.forEach(function (s) { var p = screenPt(s.target); if (p) a.push(p); }); return a; }
   // count how many chain bubbles a card rect (L,T,w,h) would cover (expanded by each bubble's radius).
@@ -280,11 +320,11 @@
   function goTo(i, nav) {
     if (i < 0 || i >= STEPS.length) return;
     var dir = i > cur ? 1 : -1; cur = i;
-    if (nav && typeof navJive === 'function') navJive(dir);
+    if (nav) NAV.jive('nav', dir);
     card.classList.add('open'); renderCard();
     console.log('§READSHOWME step=' + i + ' key=' + STEPS[i].key + ' target=' + (STEPS[i].target || '-') + ' para=' + STEPS[i].readmeAnchor);
   }
-  function open(i) { if (typeof helpJive === 'function') helpJive(); goTo(i == null ? 0 : i, false); }
+  function open(i) { NAV.jive('help'); goTo(i == null ? 0 : i, false); }
   function close() { card.classList.remove('open'); dragged = false; }   // reopening re-anchors to the chain
 
   function buildSteps() {
@@ -295,24 +335,23 @@
   function buildBadges() {
     clearBadges();
     STEPS.forEach(function (s, i) {
-      if (!s.target || typeof idx === 'undefined' || idx[s.target] == null) return;
+      if (!s.target || !NAV.has(s.target)) return;          // host KNOWS this key → it gets a numbered badge
       var q = document.createElement('div'); q.className = 'help-q'; q.textContent = String(s.ordinal);
       q.title = 'Help ' + s.ordinal + ': ' + s.title; q.setAttribute('data-i', i);
       q.addEventListener('click', function (ev) { ev.stopPropagation(); open(i); });
-      document.body.appendChild(q); badges.push({ el: q, step: s });
+      HOST.appendChild(q); badges.push({ el: q, step: s });
     });
   }
   function clearBadges() { badges.forEach(function (b) { if (b.el.parentNode) b.el.parentNode.removeChild(b.el); }); badges = []; }
   function positionBadges() {
     if (!on) return;
     badges.forEach(function (b) {
-      try {
-        if (idx[b.step.target] == null) { b.el.style.display = 'none'; return; }
-        var n = N[idx[b.step.target]]; project(n); var r = (typeof radius === 'function' ? radius(n) : 14);
-        b.el.style.display = 'flex';
-        b.el.style.left = (px + n.sx * k + r * 0.7) + 'px';
-        b.el.style.top = (py + n.sy * k - r - 10) + 'px';
-      } catch (e) {}
+      var p = NAV.locate(b.step.target);                    // null → currently off-screen → hide
+      if (!p) { b.el.style.display = 'none'; return; }
+      var rRaw = (p.rRaw != null ? p.rRaw : p.r);           // hosts may report a single radius
+      b.el.style.display = 'flex';
+      b.el.style.left = (p.x + rRaw * 0.7) + 'px';
+      b.el.style.top = (p.y - rRaw - 10) + 'px';
     });
   }
   function loop() { if (!on) { raf = 0; return; } positionBadges(); if (card.classList.contains('open')) positionCard(); raf = requestAnimationFrame(loop); }
@@ -326,6 +365,17 @@
   }
   function disable() { on = false; if (raf) { cancelAnimationFrame(raf); raf = 0; } clearBadges(); close(); console.log('§HELP mode=off'); }
   ck.addEventListener('change', function () { if (ck.checked) enable(); else disable(); });
+
+  // setOps(store) — ADDITIVE host extension (NO FORK; same spirit as init()). A host (idempiere) context-gates
+  // the ShowMe content by handing the overlay a different ops store per stage: pre-client = an onboarding store,
+  // in-client = the AD tour. store=null/undefined RESTORES the default (fetch help_ops.json). Callers that never
+  // invoke it (glassbowl, erp.html) are behaviorally diff=0. If ShowMe is currently on, rebuild from the new store.
+  function setOps(store) {
+    HELP = store || null;
+    cur = -1;
+    console.log('§HELP setOps store=' + (store ? ('custom/' + Object.keys(store).filter(function (k) { return k !== '__meta'; }).length) : 'default'));
+    if (on) { disable(); enable(); }
+  }
 
   // ── veer (§veer): an off-path action on the shared bus SUSPENDS the guide — it does NOT kill Help.
   // NeedHelp? stays ON (badges live); no §VIEWLOG / timeline tag (a veer is not a Next); the step number
@@ -351,7 +401,8 @@
   });
 
   setupDrag();
-  window.__help = { enable: enable, disable: disable, goTo: goTo, suspend: suspend, resume: resume,
-                    suspended: function () { return suspended; }, steps: function () { return STEPS; } };
+  window.__help = { init: init, enable: enable, disable: disable, goTo: goTo, suspend: suspend, resume: resume,
+                    showMe: showMe, setOps: setOps, suspended: function () { return suspended; }, steps: function () { return STEPS; },
+                    adapter: function () { return { host: HOST, nav: NAV }; } };
   console.log('§HELP layer mounted (NeedHelp? ready)');
 })();

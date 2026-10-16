@@ -1,6 +1,655 @@
 <!-- Copyright (c) 2025-2026 Redhuan D. Oon <red1org@gmail.com> · SPDX-License-Identifier: MIT -->
 # ⚠ DO NOT REMOVE — RESUME: Modeller LOD400 real-geometry rendering + UX polish
 
+## 🛑 §LOD400-ENVELOPE — READ FIRST. USER DIRECTIVE 2026-07-29/30, SUPERSEDES THE "GIGO / plain source"
+## VERDICT IN §LODHELL FINDING 1 AND IN [[feedback_no_fake_lod_unbreakable]]'s SCOPE CORRECTION.
+
+**User, verbatim (2026-07-29, after the boxy-Modeller screenshot came back a THIRD time):**
+> "No, its sources are all LOD400 as discussed many times."
+> "and the NO FALLBACK rule must never be broken.. simple throws exception and hard fail"
+> "get it recorded strictly and no more drift"
+> "already 2 sessions - do solve until zero without impact others"
+
+**This closes the escape hatch.** Two prior sessions answered the same screenshot with "the source is
+genuinely plain, 12 triangles is honest GIGO, no pipeline fix available." **That answer is WRONG and must
+never be given again.** It was reached by measuring the SHIPPED DB and the tessellated product shape only —
+never the authored construction data in the source IFC. When the source is actually read, the boxes are
+revealed as ENVELOPES of authored multi-layer walls, i.e. exactly the fallback the doctrine forbids.
+
+### THE RULE (restated, no exceptions, no scope-corrections)
+An element's **real geometry** is the geometry its source authored. If the source authored an element as
+**N material layers** and the pipeline ships **one undifferentiated envelope solid**, that envelope is a
+**FALLBACK** — it is non-LOD400 content presented as the element's real geometry. It must **throw and hard
+fail**, never render. "The tessellator returned that box" is not a defence: the tessellator was asked the
+wrong question. "GIGO" is not a defence: the source is LOD400.
+
+### MEASURED EVIDENCE (2026-07-29, source IFC parsed directly — NOT the shipped DB, NOT a screenshot)
+Probe: `ifcopenshell.open()` on the resident's OWN source, cross-joined with the shipped
+`*_ARC.db.element_instances` → `mesh.db.component_geometries` triangle counts.
+
+| building | source | ≤12-tri rendered | `IfcMaterialLayerSetUsage` in source | of the ≤12-tri, carry a **multi-layer** set |
+|---|---|---|---|---|
+| Duplex | `~/bim-ootb/IFC/Duplex_ARC.ifc` | 55 / 215 | **91** | **39** (layer histogram: 2×24, 3×10, 6×4, **7×1**) |
+| SampleCastle | `internal/sources/Ifc2x3_SampleCastle.ifc` | 1501 / 3225 | **412** | **67** (2×66, 3×1) |
+
+Worked example — the wall in the 2026-07-29 23:03 screenshot's building, `2O2Fr$t4X7Zf8NOew3FKRi`
+"Basic Wall: Party Wall - CMU Residential Unit Dimising Wall":
+- shipped geometry: **12 triangles** (one box)
+- authored material: **7 layers** — Plasterboard 16mm / Metal Stud 41mm / CMU 193mm / Air Space 50mm /
+  CMU 193mm / Metal Stud 41mm / Plasterboard 16mm
+- ⇒ the Modeller is drawing a 7-layer cavity wall as a single blank slab and calling it real geometry.
+
+### THE MECHANISM (where the LOD400 is thrown away — three separate losses, all in OUR code)
+1. `DAGCompiler/python/extractIFCtoDB.py:638 extract_material_layers()` writes `material_layers` keyed by
+   **`layer_set_name` only**. `get_material_for_element()` (`:442`) collapses an element's whole
+   `IfcMaterialLayerSetUsage` to **one material NAME string**. ⇒ **there is no element→layer-set link table
+   anywhere in the schema.** The layer data survives; the link from a wall to its own layers does not.
+2. The tessellation pass asks `create_shape()` for the **product** shape. For a Revit-exported compound
+   wall that is one `IfcExtrudedAreaSolid` of the TOTAL thickness — the envelope. The per-layer geometry is
+   implied by `IfcMaterialLayerSetUsage` (`ForLayerSet` + `LayerSetDirection` + `DirectionSense` +
+   `OffsetFromReferenceLine`) and is never computed.
+3. The ARC packaging that produces the Modeller residents **drops `material_layers` and `surface_styles`
+   entirely**. Verified: `Duplex_extracted.db` has `material_layers` (41 rows) + `surface_styles` (33 rows);
+   `Duplex_ARC.db`'s table list is `project_metadata, elements_meta, element_transforms, element_instances,
+   schedules, tasks, task_sequences, task_elements, spatial_structure` — neither table is present. Same for
+   `SampleCastle_ARC.db`. So even a Modeller that WANTED to honour layers has nothing to read.
+
+### WHAT IS *NOT* THE PROBLEM (do not re-audit these — re-measured 2026-07-29, all clean)
+- The renderer. Duplex **215/215** instances resolve a real mesh; `§GEOM-HARDFAIL` never fires.
+- Decimation. Per-GUID triangle compare, `Duplex_ARC.db`+`mesh.db` vs the compiler's `Duplex_extracted.db`:
+  **194/203 identical**, 7 richer in the Modeller store, 2 stair flights 1152→1062 (tessellation param).
+  `mesh.db` is byte-faithful, not a proxy store. `git diff HEAD origin/main` on `mesh.db`, `Duplex_ARC.db`,
+  `real_geometry.js`, `arc_editable.js` = **empty**, so the live gh-pages page serves exactly these bytes.
+- Openings. All 30 Duplex `rel_fills_host` hosts carry 28–120 tris — cuts are applied, none at 12.
+- VOID-CONSUMED (§LODHELL FINDING 2-CORRECTED) — still correct, still closed, unrelated to this.
+
+### THE FIX — three items, in this order. Order is load-bearing: gating before supplying the layers would
+### refuse 39 Duplex walls and empty the building.
+- **§LOD400-LAYERS-EXTRACT — ✅ DONE (witness) 2026-07-29.** `rel_material_layer_set (element_guid,
+  layer_set_name, layer_count, total_thickness_m, layer_set_direction, direction_sense,
+  offset_from_reference_line, provenance)` + `extract_rel_material_layer_set()` /
+  `write_rel_material_layer_set()` in `DAGCompiler/python/extractIFCtoDB.py`. Pure extraction from
+  `IfcMaterialLayerSetUsage`, no computation, no invention — closes loss #1.
+  **Measured on Duplex: 91 edges, 80 multi-layer, 91/91 carry DirectionSense, 91/91 a real summed
+  thickness** (`§LOD400-LAYERS` log line). Witness `scripts/witness_lod400_envelope.py` **8/8**.
+- **§LOD400-LAYERS-REAL — ✅ EXTRACTOR HALF DONE (witness) 2026-07-30, see the dated build record
+  below (§LOD400-LAYERS-REAL BUILD).** Per-layer geometry compiled by slicing the authored envelope
+  along the authored `LayerSetDirection` at the authored cumulative thicknesses. **This is COMPILATION
+  FROM AUTHORED DATA, not invention** — thickness, order, sense and offset are all in the source; it is
+  precisely what `IfcMaterialLayerSetUsage` *means*. Witness `scripts/witness_lod400_envelope.py`
+  **12/12**, Duplex gate GREEN exit 0. ~~Still OPEN (next slice): ship layers + `surface_styles` into
+  the ARC residents (patch + self-heal loader per the DB policy, never a binary) + the Modeller half.~~
+  **✅ SHIPPED 2026-07-30 — see §LOD400-LAYERS-RESIDENTS below (Duplex live; SampleCastle deliberately
+  NOT shipped while its `sporenkap` refusal stands).**
+- **§LOD400-ENVELOPE-GATE — ✅ DONE (witness) 2026-07-29, extractor half.** P10 `LOD400_ENVELOPE` prints
+  `§ILLEGAL_LOD_FALLBACK` **naming every offender** (guid + layer count + layer-set name, not just a
+  count) and turns §PROOF red ⇒ non-zero exit via the existing `f7d00240b` path. Witnessed on Duplex:
+  `§PROOF RESULT: 7 PASS, 1 FAIL`, `LOD400_ENVELOPE 79/80`, **exit=1**; worst offender
+  `2O2Fr$t4X7Zf8NOew3FNbT` = 7 layers, "Party Wall - CMU Residential Unit Dimising Wall".
+  **⚠ INTENDED CONSEQUENCE, do not "fix" it by softening the gate:** any re-extraction of a building with
+  authored multi-layer elements now EXITS NON-ZERO until §LOD400-LAYERS-REAL ships. That is the point —
+  an envelope DB can no longer be produced silently. The remedy is to supply the layers, never to lower
+  the gate, add a threshold, or grant a per-building exemption.
+  **Modeller half still OPEN** — refuse to seed an envelope element as real geometry once the residents
+  carry the layer data (needs §LOD400-LAYERS-REAL first, or the refusal empties the building).
+
+### ANTI-DRIFT — the exact sentences that must never be written again about this
+- ~~"46.4% of what renders is genuinely a 12-triangle box at SOURCE … GIGO, not a violation"~~ — the
+  element's SHAPE is 12 triangles; its authored CONSTRUCTION is not. Shape ≠ what the source authored.
+- ~~"no pipeline fix available"~~ — three named fixes, all in our own code, listed above.
+- ~~"this building's source IFC is genuinely simple"~~ — 91 layer-set usages in Duplex, 412 in SampleCastle.
+- The [[feedback_no_fake_lod_unbreakable]] "scope correction" (GIGO is not a violation / pipeline-fidelity
+  only) **does not apply where the source carries authored richness the pipeline discards.** Fidelity is to
+  the SOURCE, not to whatever the tessellator happened to hand back.
+
+### §LOD400-DISPATCH — the task prompt. **ASSIGN: Sonnet** (this is a reason-it-out + explain job, and it
+### contains one architecture call). Fable5 takes over ONLY for step 3, after the call in step 2 is made.
+Per [[feedback_model_allocation_mastermind_vs_execution]]. Requested by the user 2026-07-29 after five
+rounds of me explaining this badly: *"Put this as a prompt for Fable5 session or Sonnet — which can reason
+out the facts and cause and remedy for me to understand?"*
+
+**⚠ Read the whole §LOD400-ENVELOPE section above first. Read the log after every run (Log Mandate). Do NOT
+re-derive the measured facts below — they are witnessed; spend the session on steps 1–3, not on re-proving.**
+
+**ALREADY SETTLED — quote these, do not re-measure:**
+| fact | number |
+|---|---|
+| duplex parts the Modeller loads (architecture + structure only, by design) | **218** |
+| duplex parts the Viewer loads (same building, federated, incl. 904 pipe/duct pieces) | **1119** |
+| duplex parts resolving a real mesh in the Modeller | **215 / 215**, zero fallbacks fired |
+| duplex walls that are a plain 12-triangle box | **35 / 57** (corrected 2026-07-30 by direct query — histogram over `Duplex_ARC.db⋈mesh.db`, tris = `length(faces)/12`) |
+| duplex walls with a door/window hole cut through them | **18**, at 28–120 triangles ⇒ proves real mesh, a fake box cannot carry a hole (corrected 2026-07-30 — the old 21 (and the "30 hosts" phrasing) counted 10 IfcFurnishingElement + 1 IfcSlab hosts; wall hosts = 18 by `rel_fills_host⋈elements_meta WHERE ifc_class LIKE 'IfcWall%'`) |
+| the party wall's own shipped mesh | **14 triangles** (hash `d4bad00ddbda7d4e`, 42 verts — a plain box is 12; corrected 2026-07-30, Watchdog-caught) |
+| `IfcMaterialLayerSetUsage` in the duplex source / castle source | **91 / 412** |
+| the worst offender | `2O2Fr$t4X7Zf8NOew3FNbT` — **7 authored layers**, shipped as one box |
+| element→layer-set edges now extracted (just built, witnessed 8/8) | **91**, 80 of them multi-layer |
+| the extractor gate, just built | prints `§ILLEGAL_LOD_FALLBACK` per offender, §PROOF red, **exit 1** |
+
+**THE THREE STEPS — work top-to-bottom to zero ([[feedback_work_to_zero]]).**
+
+1. **WRITE THE EXPLANATION THE USER ASKED FOR — this is the primary deliverable, not a preamble to code.**
+   A short plain-English page: what a wall actually is in the file (one outer solid + a list of layer
+   thicknesses, never layer shapes), why the box is real and not a fake, why the Viewer looks richer
+   (904 extra pipe/duct parts on screen, identical walls), and why the 2026-07-02 fake-box fix looked
+   dramatic on the castle and invisible on the duplex (a fake box is 12 triangles; a plain wall's real
+   shape is *also* 12 triangles). **Language rules are binding here — [[feedback_terse]]: one-line verdict
+   first, plain words, no jargon, every number something the user can picture. This exact topic has already
+   cost five rounds of rephrasing; a wordy answer is a failed deliverable.** Put it in
+   `docs/ModellerGuide.md` (a short "what a wall is made of" subsection) so it is answered permanently
+   and publicly, not just in chat.
+
+2. **⛔ MAKE THE ARCHITECTURE CALL, then say it in one line.** To draw 7 layers you need 7 shapes where
+   there is 1. `element_instances` is keyed one-row-per-guid — one element, one mesh. Two ways:
+   (a) **N sub-instances** — synthesize a child guid per layer; truthful and queryable, but touches every
+   downstream consumer of `element_instances` (Viewer, Modeller, BOM, rooms, 4D);
+   (b) **one layered mesh per element** — keep one row, store the layer slabs as one mesh plus a per-layer
+   index; no schema blast radius, but layers are not individually selectable.
+   Recommend (b) first — it is reversible, ships behind the existing hash, and answers the visual question
+   without a fleet-wide migration. State the choice, then proceed. Do not build both.
+
+   **✅ CALL MADE 2026-07-30 (Sonnet, dispatched per MODELLER_MASTER.md §OPEN LIST row 1): (b) — one row
+   per element, one layered mesh (concatenated per-layer slab buffer) behind the existing `geometry_hash`,
+   with a new sibling index table keyed by hash. Not (a).** Grounds (verified, cited by the deciding
+   session): every mesh-resolution path assumes one geometry per guid (`real_geometry.js:93`,
+   `viewer/streaming.js:71-137`, `arc_editable.js:129` + `§GEOM-HARDFAIL :159-166`); geometry is already
+   addressed by HASH not element (dedup), so a hash can carry a richer composite mesh with zero guid-side
+   change; (a) would force new guid rows onto every guid-keyed consumer (BOM lines, rooms, 4D
+   `task_elements`) — the fleet-wide migration is real, not hypothetical. **Index location:**
+   `component_geometry_layers (geometry_hash, layer_seq, material_name, thickness_m, face_start,
+   face_count, PK(geometry_hash, layer_seq))` in the same geo store as `component_geometries` — the
+   geometry-side analogue of `rel_material_layer_set`. **Witness claim for §LOD400-LAYERS-REAL:** the hash
+   resolved for `2O2Fr$t4X7Zf8NOew3FNbT` contains 7 concatenated slab solids (72 tris = 7×12);
+   `component_geometry_layers` has exactly 7 rows for it; `SUM(thickness_m)` == `total_thickness_m`
+   (0.550 m); falsified by deleting one `material_layers` row and asserting extraction hard-fails (never
+   silently ships 6 slabs). Step 1's guide subsection: **✅ DONE same day** — "What a wall is made of" in
+   `docs/ModellerGuide.md` (after Realistic glass; deploy via `safe_gh_deploy.sh` once merged).
+   §LOD400-LAYERS-REAL (step 3) is now unblocked for Fable5.
+
+3. **§LOD400-LAYERS-REAL — build it. Fable5-suitable once step 2 is chosen (mechanical, fully specified).**
+   Slice the authored envelope across its thickness at the authored cumulative thicknesses, in the authored
+   direction. Every number comes from `rel_material_layer_set` (just added: `layer_set_name`, `layer_count`,
+   `total_thickness_m`, `layer_set_direction`, `direction_sense`, `offset_from_reference_line`) joined to
+   `material_layers` (per-layer `material_name`, `thickness_m`). **Nothing may be assumed or defaulted — if
+   a thickness or sense is missing, refuse that element loudly, never guess** ([[feedback_no_invent_rules]]).
+   Ship the layers + `surface_styles` into the Modeller residents as a **patch + self-heal loader, never a
+   binary** (the DB policy in `CLAUDE.md`; mirror `str_walker_outliner.js _applyPendingPatch()`).
+   Then the extractor gate goes green on its own, and the Modeller half of §LOD400-ENVELOPE-GATE can refuse
+   any element still shipping as an envelope.
+   *Issue the witness must prove:* that the 7-layer party wall `2O2Fr$t4X7Zf8NOew3FNbT` renders as **7
+   slabs whose thicknesses sum to the authored total**, and that `scripts/witness_lod400_envelope.py`
+   (currently 8/8 with the gate RED at 79/80) goes to gate-GREEN — falsified by removing one layer row and
+   asserting the run fails again.
+
+**Out of scope — do not touch:** the renderer's mesh resolution (measured clean), the VOID-CONSUMED
+classifier (§LODHELL FINDING 2-CORRECTED, closed), the ARC-only load filter (deliberate — the user set that
+purpose themselves and it is NOT the cause of anything here; do not "fix" it or re-explain it as the cause).
+
+### ✅ §LOD400-LAYERS-REAL BUILD — 2026-07-30 (Fable5, extractor half; branch `feat/lod400-layers-real`)
+**Built exactly per the CALL (option b):** `compile_layer_geometry()` in `DAGCompiler/python/extractIFCtoDB.py`
+rewrites every multi-layer element's envelope mesh as N concatenated layer slabs behind the SAME
+`geometry_hash`, indexed by the new `component_geometry_layers (geometry_hash, layer_seq, material_name,
+thickness_m, face_start, face_count, PK(hash,seq))` in the same store as the mesh blobs. Runs inside every
+extraction, before §PROOF; P10 now counts a multi-layer element as an envelope only when its hash does NOT
+carry a matching layer index — compiled elements pass, refusals keep it RED (gate semantics unchanged,
+nothing softened). New CLI `--compile-layers --ref <db> [--library <db>]` = idempotent compile + verify on
+an existing DB (the falsification surface + the future resident-patch generator).
+- **Slicing mechanism (stated per spec):** no OCC boolean available here (no pythonocc; ifcopenshell 0.8.4
+  exposes none in python) → plane-clip of the tessellated closed solid: Sutherland-Hodgman sides + caps from
+  edge-key-chained cross-section loops triangulated by GEOS constrained Delaunay (shapely 2.1, hole-aware,
+  no Steiner points). Every slab PROVEN: welded, watertight, extent==authored thickness (±0.5 mm stated
+  tol), slab volumes re-sum to the envelope volume (rel 1e-4). Any miss → loud `§LAYER-REFUSE`, envelope
+  kept, gate stays red — a wrong-but-silent slice is worse than a loud refusal.
+- **Two-mode boundary anchoring, both pure authored data (measured on Duplex):** ABSOLUTE — boundaries at
+  `offset_from_reference_line ± cumsum(thickness)` when both body faces land on authored boundaries; the
+  body may cover a contiguous WHOLE-layer subset. RELATIVE — body extent == authored total: anchor at the
+  DirectionSense face (needed for the 13 Duplex ceilings: offset=0, body at z≈2.6). Neither fits → refuse.
+- **MEASURED FINDING (corrects this file's own witness claim):** the party wall `2O2Fr$t4X7Zf8NOew3FNbT`'s
+  authored BODY spans only **0.493 m of its 0.550 m layer set** — body faces sit exactly on authored
+  boundaries b₀/b₅; layers 5-6 (neighbour-side stud+plasterboard) have NO body in this element (they belong
+  to the neighbour wall's own body, Revit unit-demising). So it compiles as **7 index rows summing 0.550
+  (5 slabs with geometry, extents 16/41/193/50/193 mm exact; L5/L6 face_count=0)**, announced loudly as
+  `§LAYER-PARTIAL` — never invented. The "72 tris = 7×12" guess in the CALL was wrong anyway (buffer = 124
+  tris); the witness asserts structure, not triangle counts.
+- **Two real upstream defects found + fixed en route:** (1) `extract_material_layers`/
+  `extract_rel_material_layer_set` stored RAW source units into `*_m` columns — correct only for metre
+  files; SampleCastle is mm (total 90.0 vs body 0.09 m). Now scaled by the authored length unit. (2) some
+  source envelopes carry MIXED triangle winding (castle party wall: ~21 m³ solid, signed volume −2.08) —
+  `_orient_coherently()` normalizes winding (BFS propagation + positive-volume flip; refuses non-orientable
+  or nested-cavity meshes).
+- **Witness `scripts/witness_lod400_envelope.py` 12/12** (kept the original 8, now green-path): Duplex
+  fresh extraction gate GREEN exit 0; 79/79 multi-layer elements compiled (230 slabs, 4 authored-empty
+  rows, 0 refused); party-wall rows/tiling/extents as above; FALSIFY: delete one `material_layers` row →
+  `--compile-layers` exits 1 with `§LAYER-VERIFY-FAIL` naming the element (never ships 6 slabs as 7).
+- **SampleCastle measured: 74/75 compiled, 1 honest refusal** (`2vGfAAaCDC$u2rePIbFqLy` "sporenkap", a
+  pitched rafter-roof IfcSlab whose body spans 0.692 m along AXIS3 vs an authored flat 0.206 m set — not
+  sliceable from authored data). Castle extraction therefore still exits 1 BY DESIGN. Consequence:
+  `scripts/witness_lodhell_classify.py` L3 (castle §PROOF green) was already red since the gate landed
+  2026-07-29 (75/75 offenders then) and stays red for this 1 element — do not "fix" it by softening P10.
+- ~~**Still OPEN (next slice, NOT this branch):** ship layers + `surface_styles` to the ARC residents
+  (patch + self-heal loader), then the Modeller half of §LOD400-ENVELOPE-GATE.~~ ✅ DONE — next section.
+
+### ✅ §LOD400-LAYERS-RESIDENTS — 2026-07-30 (Fable5, residents half; bim-compiler `feat/lod400-layers-ship`
+### + bim-ootb `feat/layers-to-residents`). Duplex ONLY (SampleCastle excluded while `sporenkap` refuses).
+**The compiled layer slabs now reach the live Modeller, and the Modeller-half §LOD400-ENVELOPE-GATE is armed.**
+- **HASH LANDMINE (measured, do not assume otherwise):** a fresh extraction's `geometry_hash` ids do NOT
+  match the shipped residents' — all 155 Duplex ARC hashes are absent from a fresh extraction (old store:
+  unwelded buffers, different local anchors, some rotation baked into the blob; e.g. one wall is 17.8 m
+  along Y with rot 0 in the old store vs 17.8 m along X with rot π/2 fresh). So layered buffers carry over
+  **by GUID with a per-guid measured change of basis** `v_old = R_old⁻¹(C_f − C_o + R_f·v_fresh)` — both
+  transforms are extracted data; VERIFIED per guid: all 79 layered guids agree old-vs-fresh in world space
+  < 1e-5 m; layered guids are yaw-only in both stores (script REFUSES tilt rather than guess an Euler).
+- **`scripts/gen_layered_geo_db.py`** — rebuilds a resident `*_geo.db`: swaps the layered buffers in under
+  their EXISTING old hashes + adds `component_geometry_layers`, dedup-regroup aware (a guid whose group
+  representative fails the world-AABB check gets a split hash + an `element_instances` re-point emitted for
+  the patch — Duplex needed 0 splits), then verifies the OUTPUT: 155/155 hashes resolve, per-slab thin-axis
+  extents == authored thicknesses (±1.5 mm). Duplex result: 71 buffers swapped, 229 layer rows / 71 hashes.
+- **`scripts/gen_layer_tables_patch.py`** — sibling of `gen_void_anchor_patch.py`: emits
+  `rel_material_layer_set` (91) + `material_layers` (41) + `surface_styles` (33) as the idempotent
+  self-heal section appended to bim-ootb `modeller/patches/Duplex_ARC.db.sql`.
+- **bim-ootb (`feat/layers-to-residents`):** `arc_editable.js` **§LAYER-GATE** — runtime-schema-armed
+  (only when the ARC db carries `rel_material_layer_set` AND a geometry substrate exists): an authored
+  multi-layer element whose resolved hash has no `component_geometry_layers` rows is REFUSED
+  (`§LAYER-ENVELOPE-REFUSE` console.error + skip, mirror of §GEOM-HARDFAIL, never softened). Residents
+  without the tables take zero new code paths. Duplex `geoV` 3→4, sw.js CACHE v40→v41. New witness
+  `modeller/tests/witness_e2e_layers_residents.js` **8/8** (L0-L7): party wall `2O2Fr$t4X7Zf8NOew3FNbT`
+  hash `d4bad00ddbda7d4e` = 124 tris (pre-fix 14, RED run against the old geo file proves the witness sees
+  it), 7 rows Σ0.550 m, slab extents 16/41/193/50/193 mm + 2 honest empty rows, full face coverage,
+  196 ops / 0 hardfail / 0 refusals armed, falsification (delete one hash's rows → refusal fires, op count
+  drops by exactly 1), unpatched-ARC disarmed. Regressions: W-ARC-EDITABLE 10/10, W-GLASS-PARITY 4/4,
+  anchor sweep green. **W-E2E-LOD-MATCH A3/A4 were RED on pristine origin/main BEFORE this branch**
+  (SampleHouse door verts 3230 vs db 762, tris equal — a welding-count drift, likely the mesh-dedup lane;
+  verified identical on untouched main) — pre-existing, NOT introduced here, left for its own lane.
+- **Geo hosting (§GEO-SERVED pipeline reused):** rebuilt `Duplex_geo.db` uploaded to the same OCI object
+  `bim-ootb/o/modeller/Duplex_geo.db` with `--content-type application/octet-stream`; fetched BACK and
+  byte-verified (SQLite magic + the party-wall 124-tri/7-row query against the fetched copy).
+- **Per-layer render COLOR deliberately not wired** (optional item): the data ships (surface_styles joins
+  material_layers.material_name 17/17 clean — fully non-invent), but painting slabs needs face-group
+  material arrays threaded through the signed-op fold payload into `bonsai_kernel._buildMesh` — not cheap,
+  its own slice. Nothing invented, nothing lost: the tables are already in the resident.
+- **Still OPEN after this:** SampleCastle layer shipping (blocked on its honest `sporenkap` refusal);
+  per-layer slab colors (above); other residents' layer tables when their extractions go gate-green.
+
+---
+
+## ✅ 2026-07-30 — §ANCHOR-EXTRACT-SHIPPED: extractor half of the void-consumed anchor (OPEN item 1,
+## USER-APPROVED same day) — built, witnessed 7/7 incl. RED falsification. bim-ootb half still open.
+
+**What shipped (branch `feat/void-anchor-extract`, extractor half ONLY — no Modeller JS touched):**
+- `extractIFCtoDB.py`: when an element classifies VOID-CONSUMED, the extractor now KEEPS what it had
+  already computed instead of discarding it — `is_void_consumed()` returns the pre-boolean Body ITEM's
+  LOCAL bbox extent (captured from the SAME classification tessellation, never a second one), and the
+  world placement comes from `shape.transformation.matrix` via `decompose_iterator_matrix()`, the S173
+  decomposition factored out VERBATIM (one implementation, shared with the normal path; P4 ROT_TRUTH
+  still checks it at the event). Persisted as ONE `elements_meta` row + ONE `element_transforms` row
+  per host, flushed AFTER the iterator loop so normal elements keep bit-identical ids.
+- **Anchor marking (the user's binding condition, built in, not a follow-up):** `elements_meta.is_anchor
+  INTEGER DEFAULT 0` (=1 on anchors) AND `element_transforms.transform_source='void_anchor'` — doubly
+  unmistakable. One `§ANCHOR` log line per persisted host + an `anchors=N` count of their OWN on the
+  §PROOF header (never folded into `elements=`). NO `element_instances` row (no geometry hash — nothing
+  to render), NO `elements_rtree` row (never pickable). Excluded from: §NORMALIZE centroid (offset stays
+  bit-identical; the offset still APPLIES to anchors so they share the frame), P1 SCALE, the by-class /
+  by-discipline / materials summaries. `bbox_x/y/z` on a `void_anchor` row = the ITEM's LOCAL extent
+  (NOT the world AABB the normal path stores) — the marker names the convention. Placement/tessellation
+  unavailable ⇒ loud `§ANCHOR-SKIP` line, that host persists nothing (pre-anchor behaviour).
+- `scripts/gen_void_anchor_patch.py` (mirrors `gen_rel_fills_host_patch.py`): reads a fresh extraction,
+  emits the self-heal patch section for a shipped `modeller/<X>_ARC.db` (ALTER + `INSERT OR IGNORE` +
+  flag UPDATEs; `--append` for merging into an existing patch file). **Measured finding baked into its
+  frame guard:** shipped ARC `element_transforms.center_*` are world-AABB MIDPOINTS, not placement
+  origins — the guard compares fresh rtree midpoints vs target centers and REFUSES on a systematic
+  per-axis |meanΔ| > 0.05 m (SC measured: (0.0072, −0.0104, −0.0232) m, per-element scatter ≤ 2.6 m from
+  tessellator-version AABB drift, not a frame error).
+- **SC patch artifact (committed): `migration/modeller_patches/SampleCastle_ARC.db.sql`** — 65 anchors;
+  the target already carried all 65 as meta-only rows (the FINDING 2 population), 0/65 transforms.
+  Verified applied against a COPY of the real shipped `SampleCastle_ARC.db`: 65 flagged, transforms
+  3225→3290, `element_instances` 3225 unchanged, meta count 3342 unchanged.
+- Witness `scripts/witness_void_anchor_extract.py` — **7/7 PASS** (log: `logs/witness_void_anchor/`):
+  A1 65 anchor rows doubly-marked · A2 real data (0 null/degenerate; 65/65 in the `rel_fills_host` host
+  set; probe `1A9aTEU4z9SwaqEUwI8Lx4` extent = (1.210, 0.114, 1.850) m — the documented hand-probe) ·
+  A3 `element_instances` 3583→3583, 0 anchor instances/rtree rows · A4 `elements=3583 failed=0
+  void_consumed=65` identical pre↔post, `anchors=65` separate · A5 65 distinct `§ANCHOR` lines +
+  summary · A6 gate set identical pre↔post (7 PASS + P10 FAIL), both exits 1 attributable to the ONE
+  known honest `sporenkap` `2vGfAAaCDC$u2rePIbFqLy` §LAYER-REFUSE alone — unchanged by design, do not
+  chase · A7 FALSIFICATION RED on pre-change code (`4e1c5756d`): no `is_anchor` column, 0 anchor rows,
+  no `§ANCHOR` log. Regression: `witness_lod400_envelope.py` Duplex **12/12 exit 0**, `anchors=0`
+  (no-op where nothing is void-consumed).
+- ⚠ `§ANCHORED` (datum-plane cadence) is a DIFFERENT, pre-existing tag — grep `§ANCHOR ` with the
+  trailing space/boundary, or you will count 1426 datum edges as anchors.
+
+**Still open (the coordinated bim-ootb half, separate slice):** `buildSeedOps` `params.anchorOnly`
+branch → `foldInsert` invisible mesh (`visible=false`), anchors excluded from every count/pick/audit
+in the Modeller per the binding condition; ship the 65 SC rows by appending the generated section to
+bim-ootb `modeller/patches/SampleCastle_ARC.db.sql` (loader `_applyPendingPatch` already exists);
+witness = SC `stretchRide` reach 9/74 → ≥70/74, counts identical before/after anchors load.
+
+## ⚠ 2026-07-30 WATCHDOG CORRECTIONS (post-ship, live-queried) — item 1 ✅ RESOLVED 2026-07-30 (§ROW33 below); item 2 (row 34) still open, next session starts THERE
+1. ~~**Party wall renders 5 slabs, not 7.**~~ ✅ RESOLVED — see §ROW33-EMPTY-SLAB-REFUSAL below. (Original directive kept for history: layers 5-6 of `2O2Fr$t4X7Zf8NOew3FNbT` had `face_count=0`; the witness's two reconciliation sums were blind by construction. Directive: `face_count>0` per-layer assertion; an empty slab is a REFUSAL, not a row; root-cause first. ⚠ One factual premise in the directive was WRONG and is corrected in §ROW33: the walls are NOT opening-cut — they carry ZERO openings.)
+2. **Anchor export/save leak unchecked.** The §ANCHOR guardrail proved render/Outliner/pick/audit invisibility but no witness covers `bonsai_ifc.js` export or `sdg_save.js` snapshot — both fold from an op-log that now carries 65 anchor ops. → MODELLER_MASTER row 34.
+3. ~~**Anchor `elements_meta` rows write `building=NULL`**~~ ✅ FIXED 2026-08-03 (found merging this
+   branch with `origin/master`). Two independent same-day commits never saw each other: §ANCHOR's insert
+   (`4abc9dbfa`, on `fix/lod400-envelope-hardfail`) didn't set `building`; §KUL001 (`dcd5260e9`, on this
+   branch) added that column to the OTHER insert only. Verified via `git blame` — not tampering, a
+   genuine integration gap, first met at merge commit `127a695e5`. Fix: `extractIFCtoDB.py:2417-2422`
+   anchor INSERT now also writes `_building_label` (same variable the normal path already uses, in scope
+   in the same function). Note: the already-shipped `migration/modeller_patches/SampleCastle_ARC.db.sql`
+   self-heal patch was NEVER affected — `gen_void_anchor_patch.py` already reads `building` from the
+   target DB's own rows — so this gap only ever lived in the raw extractor, never in anything distributed
+   to a live building. Regression check: `scripts/witness_void_anchor_extract.py --pre-ref 4abc9dbfa~1`
+   (a real pre-anchor baseline, not the script's post-merge-stale `merge-base` default) — **7/7 PASS**.
+
+### ✅ §ROW33-EMPTY-SLAB-REFUSAL — 2026-07-30 (row 33 executed: measured first, then refusal armed;
+### bim-compiler branch `fix/layer-empty-slab-refusal`)
+**ROOT CAUSE, MEASURED (logs: scratchpad `measure_row33.log` / `measure_row33_profile.log`, source
+`~/bim-ootb/IFC/Duplex_ARC.ifc`):** the Watchdog's opening-boolean-cut hypothesis is **FALSE** — both
+affected walls (`2O2Fr$t4X7Zf8NOew3FNbT`, `2O2Fr$t4X7Zf8NOew3FKRi`) carry **ZERO** `IfcRelVoidsElement`
+(`§M-OPENINGS count=0`), and their body extent is byte-identical with and without opening subtraction
+(0.4930 m both ways). The shipped §LAYER-PARTIAL diagnosis was CORRECT and is now deeper: the authored
+base solid IS the full 7-layer prism (`IfcRectangleProfileDef YDim=0.550`), but an **authored
+`IfcPolygonalBoundedHalfSpace` clip in the Body itself sits exactly at the layer-4/5 boundary
+(y=−0.218)** and trims the neighbour-side Metal Stud (41 mm) + Plasterboard (16 mm) off the wall's full
+length — Revit unit-demising: that material belongs to the neighbour wall's body. Duplex has FOUR
+7-layer party walls; the other two (`…FKRH` 44 tris, `…FKau` 76 tris) span the full 0.550 m (their
+clips are partial-length, AABB-invisible). So the source genuinely does not author layers 5-6 in the
+two trimmed elements → **per the directive, the refusal stands; the walls are honestly RED.**
+**BUILT (extractor half):**
+- `compile_layer_geometry()`: an uncovered layer now raises `LayerRefusal` naming the layer, its
+  material, and the body span — "an empty slab is a refusal, not a row (row 33)". §LAYER-PARTIAL and
+  the `empty_slabs` bookkeeping are GONE; the schema comment on `component_geometry_layers` now states
+  `face_count MUST be > 0`.
+- `verify_layer_geometry()`: per-row `face_count>0` assertion FIRST in the loop (so a re-introduced
+  empty row is named as such, not caught incidentally by the tiling sum) — the row-33 falsification
+  surface. `gen_layered_geo_db.py` output-verify likewise hard-fails on any `face_count=0` row.
+- **Witness `scripts/witness_lod400_envelope.py` 16/16** (`logs/witness_row33/witness_run1.log`):
+  Duplex gate now honestly RED — `2/80` multi-layer elements ship as envelopes (the two trimmed
+  walls), **exit 1 BY DESIGN** (same honest-refusal posture as SampleCastle's sporenkap — do NOT
+  "fix" by softening). New checks: exemplar moved to full-span `…FKRH` (7 real slabs, extents
+  16/41/193/50/193/41/16 mm exact, 424-tri buffer tiled); `NO_EMPTY_ROWS_ANYWHERE` (0 rows with
+  `face_count<=0` store-wide); `TRIMMED_WALLS_REFUSED` (both walls `§LAYER-REFUSE`d by name with the
+  row-33 reason); `TRIMMED_KEEP_ENVELOPE` (0 layer rows behind their hashes); `FALSIFY_EMPTY_ROW`
+  (UPDATE one row to `face_count=0` → `--compile-layers` exit 1 naming the empty slab).
+  **RED-first proven** (`witness_red_prefix.log`): against the pre-fix extractor exactly the 4 new
+  checks FAIL (4 empty rows found, no refusals, 14 rows behind the trimmed hashes, wrong falsify
+  message) — the blind-witness shape the Watchdog flagged is dead.
+- ⚠ The 2026-07-30 §LOD400-LAYERS-REAL claim "12/12 exit 0 / gate GREEN on Duplex" above is
+  SUPERSEDED by this policy: Duplex exits 1 by design while the two trimmed walls refuse.
+**✅ Residents half SHIPPED (same session, second slice — bim-ootb PR #1099):** live `Duplex_geo.db`
+still carried the partial ship (2 hashes `582223c5f6b2c1ae` + `d4bad00ddbda7d4e`, 124-tri layered
+buffers + 7 index rows of which 2 empty). Fixed = both hashes' ORIGINAL envelope buffers restored
+(12/14 tris, recovered from the pre-layer store) + their 14 index rows deleted → store now 215
+rows / 69 layered hashes / ZERO `face_count<=0`; re-uploaded to OCI, fetch-back **byte-identical**
+(md5 match, `application/octet-stream`). `geoV` 4→5, sw v41→v42. Witness
+`witness_e2e_layers_residents.js` rewritten for the refusal posture and **8/8 against the LIVE geo
+URL** — RED-first: against the pre-fix live bytes exactly the row-33 checks fail (4/8). Exemplar
+moved to the full-span party wall `…FKRH` hash `50e205190088c27a` (7 real slabs
+16/41/193/50/193/41/16 mm exact); L5 proves BOTH trimmed walls refused BY NAME with 2 loud
+`§LAYER-ENVELOPE-REFUSE` console.error lines, ops 196→194, and all 215 instances / 155 hashes still
+resolve; L6 falsification deletes the EXEMPLAR's rows → layerRefused=3 (gate live per-hash, not
+hardcoded). Headless real-user open: 194 meshes, `§LAYER-GATE armed multiLayer=80 layeredHashes=69
+refused=2`, `§GEOM-HARDFAIL total=0 of 194`. Regressions: W-ARC-EDITABLE 10/10, W-GLASS-PARITY 4/4
+(after fixing ITS latent race: it sampled before the ARC seed landed on a cold OCI fetch — now
+waits on the real seeded-meshes condition), W-E2E-VOID-ANCHOR 19/19, anchor sweep green through
+HHS (later untouched residents cut by runner timeout only). **The live Duplex now renders the two
+trimmed walls NOT AT ALL, by design — loud console refusal instead of a 5-slabs-as-7 partial.
+"Until resolved" = a future authored-data decision (e.g. trim the authored usage to 5 layers at
+source), not a rendering compromise.**
+
+### ✅ §ROW33-EXCEPTION — 2026-07-31, USER + WATCHDOG RULING (same day, supersedes the refusal end-state
+### above; bim-compiler PR #62 + bim-ootb PR #1102)
+**The user overturned the refusal for this case:** *"that is exception if it is a legit material part
+of the wall. It is granted free, it is not a blocky fall back."* Watchdog concurred: five authored
+slabs of real material IS LOD400 — nothing invented, nothing substituted. **The no-fallback rule bans
+INVENTED content, not fewer parts than the type list advertised.** The two conflated checks were
+split; only one was ever right:
+- **KEEP — `face_count>0` on every row that exists** (row 33 proper): a zero-face slab row is a lie.
+  All falsification surfaces stay (empty-row injection → RED; set-inconsistency → RED).
+- **DROP — slab count == authored `layer_count`:** a clipped instance carrying a whole-layer subset
+  is normal and honest. Extractor announces it as `§LAYER-CLIP` naming the absent layers; the index
+  records exactly the layers the instance's body carries (absent seq, never an empty row);
+  `verify_layer_geometry` accepts per-sequence-matching subsets; P10 counts an envelope only when a
+  hash has NO rows.
+**Result:** Duplex gate **GREEN again** (0/80, exit 0) — W-LOD400-ENVELOPE **15/15**, RED-first (the
+refusing extractor fails exactly the 2 new subset checks). Residents: `Duplex_geo.db` **v6** on OCI
+(byte-verified) — both walls render **5 real slabs** seqs [0-4] Σ0.493 m, 225 rows / 71 hashes / 0
+empty; geoV 5→6, sw v42→v43; `arc_editable.js` UNTOUCHED (§LAYER-GATE was always rows-existence-based
+— subsets pass naturally, and the L6 falsification proves it still refuses a rows-less hash).
+W-E2E-LAYERS-RESIDENTS **8/8 vs LIVE** (RED-first 5/8 vs pre-upload bytes); headless real-user open:
+**196 meshes** (the walls are back), `refused=0`, hardfail 0/196; W-GLASS-PARITY 4/4, W-ARC-EDITABLE
+10/10. SampleCastle's sporenkap still refuses — body misaligned with the authored set is a DIFFERENT
+failure than a whole-layer clip; do not extend the exception to it.
+
+## 🧭 START HERE — handoff as of 2026-07-28. Read this block, then only the sections it points at.
+
+**Everything below §LODHELL-ROOTCAUSE is closed unless it is listed as OPEN here.** Do not re-walk the
+2026-07-02/03 review sections looking for work — their surviving items are folded into the list below.
+**⚠ §LODHELL FINDING 1's "GIGO" verdict is SUPERSEDED by §LOD400-ENVELOPE above — read that first.**
+
+### Closed this pass (do NOT re-open, do NOT re-derive)
+| what | proof | where |
+|---|---|---|
+| "LOD hell" root cause | W-LODHELL-CLASSIFY 5/5 | §LODHELL-ROOTCAUSE below |
+| VOID-CONSUMED classifier, all-fails printing, honest P5, new P9, red §PROOF ⇒ exit≠0 | `f7d00240b` | `extractIFCtoDB.py` |
+| dead no-boolean tier DELETED (measured: doesn't work + would invent uncut walls) | same commit | §LODHELL-FIX-2 |
+| `rel_fills_host` shipped to SampleCastle / Duplex / SampleHouse | #1051, #1065 | `modeller/patches/*.sql` |
+| IFC-open rendered ZERO ARC geometry — fixed, falsification-checked | #1062, W-ARC-SOURCE-PARITY 8/8 | `str_walker_outliner.js §IFC-OPEN-SEED-FIX` |
+| published guide: hosted-door claim made true, Walk-ALL + IFC-open documented | live on gh-pages | `docs/ModellerGuide.md` |
+| the 4 "stranded" Modeller branches | 3 were already landed; all deleted | PROGRESS.md §OPEN |
+
+### OPEN — ranked, each one actionable as written
+1. **⛔ DESIGN CALL (user's, not a build task): should a VOID-CONSUMED host be a non-rendered logical
+   anchor?** Today a `kozijn` wall correctly has no geometry, so it never becomes a scene feature, so
+   `fidByGuid[host_guid]` is null and `stretchRide()` skips its edge. Measured reach of the shipped
+   relation: **SampleHouse 7/7 · Duplex 36/38 · SampleCastle 9/74**. SampleCastle is the outlier precisely
+   because 65 of its 71 hosts are void-consumed. Making those hosts participate in the cascade WITHOUT
+   rendering them would close the gap — but it means inventing a scene participant that has no geometry,
+   which is a doctrine question, not an implementation one. **Do not build this unilaterally.**
+   **▶ SONNET ANALYSIS 2026-07-30 (dispatched per MODELLER_MASTER.md §OPEN LIST row 4; user's word still
+   required before any build):** recommendation = **yes-but-only-after-Y**, Y = the extractor first
+   persisting the host's placement+extent. Data finding: the shipped DBs carry NOTHING for the 65 hosts
+   (no `element_transforms`, no `element_instances`) — but the extractor DISCARDS data it already touches,
+   it doesn't lack it: `shape.transformation.matrix` is free on the shape object, and `is_void_consumed()`
+   (`extractIFCtoDB.py:770-808`) already tessellates the pre-boolean Body ITEM to classify, then throws
+   the verts away (`:1247-1252` early `continue`). So persisting is "keep what's already computed," pure
+   extract, no invention. Mechanism constraint (verified): a bare `fidByGuid` map entry will NOT work —
+   `bonsai_gridmove.js:220-231 _buildBoxByFid()` requires a real `m.isMesh` in the scene group; the anchor
+   must be an actual `THREE.Mesh` with `.visible=false` (seams: extractor flag row → `buildSeedOps`
+   `params.anchorOnly` branch → `foldInsert` invisible-mesh branch; `sdg_cascade.js` untouched).
+   Doctrine-against noted honestly: the extent is the PRE-boolean body repurposed, and §GEOM-HARDFAIL's
+   skip is by design — carving an exception class needs its own spec. **THE ONE QUESTION FOR THE USER:
+   should void-consumed hosts (65/71 on SampleCastle) get an invisible-but-real scene mesh — built from
+   the host's own pre-boolean placement and body extent, never rendered — purely so `stretchRide()` can
+   ride their fillings, or should this gap stay closed (SampleCastle 9/74 stays as-is)?**
+   **✅ APPROVED — USER, 2026-07-30: "yes, build it."** Their grounds, recorded: the frame walls ARE
+   architecture (author-drawn, absent only because the window ate the strip); keeping what the extractor
+   already computes is extraction, not invention; never drawn ⇒ the LOD400 rule is untouched; payoff is
+   SC 9/74 → nearly all. **ONE BINDING CONDITION, part of THIS spec, not a follow-up: the invisible
+   anchor must be EXCLUDED from every count, pick, and audit, and tagged in the log as an anchor**
+   (`§ANCHOR` line per seed; excluded from element/mesh counts, raycast/pick sets, `gmAudit`,
+   `§DB_IDENTITY`-style coverage lines, and any witness that counts rendered geometry) — otherwise a
+   future session finds 65 shapes with no visible geometry and reads it as the box bug all over again.
+   Build spec = the Sonnet mechanism above (extractor persists placement+extent for void-consumed →
+   `elements_meta`+`element_transforms` rows flagged anchor → `buildSeedOps` `params.anchorOnly` branch →
+   `foldInsert` invisible mesh, `visible=false`, no material cost → residents get the 65 SC rows via
+   `modeller/patches/SampleCastle_ARC.db.sql` + the existing `_applyPendingPatch()` loader, never a
+   binary). Witness: SC `stretchRide` reach 9/74 → ≥70/74; anchors contribute 0 to every count/pick/audit
+   (falsify by asserting counts identical before/after anchors load); a stretched kozijn host's window
+   rides instead of warping.
+   **▶ EXTRACTOR HALF SHIPPED 2026-07-30 — see §ANCHOR-EXTRACT-SHIPPED at the top of this file
+   (witness 7/7 incl. RED falsification; SC patch SQL committed). Remaining: the bim-ootb
+   seeding/invisible-mesh half.**
+2. ~~**Clinic / Hospital / Terminal have no `rel_fills_host`**~~ ✅ CLOSED by bim-ootb #1749 (2026-09-18) — see §ROW34 correction. Original (stale) text: their source IFCs are not in this checkout,
+   so there is nothing to recover from. Not an oversight. When a source lands, one command finishes it:
+   `python3 scripts/gen_rel_fills_host_patch.py --ifc <src> --target ~/bim-ootb/modeller/<X>_ARC.db --out <wt>/modeller/patches/<X>_ARC.db.sql`
+   The generator imports `extract_rel_fills_host()` (one recovery implementation) and measures reach
+   against the real target. ⚠ `docs/ModellerGuide.md`'s Grid-Stretch section names only SH/DX/SC by
+   design — **extend that sentence when a new building gains the relation**, or the guide goes stale.
+3. **Walk-ALL row reuses the singular tooltip** — `bonsai_outliner.js:602` still renders
+   `title="Walk this discipline"` on the synthetic `__ALL__` row. One string. Verified still open 07-28.
+4. **§SEL-TINT-REFOLD** — a re-fold drops the selection tint while `_selSet` still holds the mesh. Zero
+   hits for the tag in `modeller/`, so still unbuilt. Small, well-specified selection plumbing.
+5. **Terminal-scale proxy-mode downgrade is silent to the user** — `modeller.html:3904` announces the walk
+   start but nothing signals the batch-hold fallback. Geometry is identical either way (low severity).
+6. **Window/opening composition as a BOM** — the original §NEW ARCHITECTURE QUESTION further below. It is
+   now PARTLY answered: the host↔filling relation no longer has to be proximity-clustered, it is
+   extracted (see FINDING 4). What remains is whether a multi-part window should fold as one assembly.
+
+### Landmines — read before touching this area
+- **Verify branches by CONTENT, never `git cherry`.** On 4 stale Modeller branches patch-id reported every
+  commit as undelivered and was wrong every time; 300+ commits of drift changes patch-ids.
+- **A 12-triangle mesh is not evidence of a fake box.** 46.4% of SampleCastle is genuinely 12-tri at
+  source — a plain extruded rectangle IS 12 triangles. GIGO, not a violation.
+- **An empty tessellation is not automatically a defect** — classify against the element's own openings
+  first (`is_void_consumed()`), or you will report an author's deliberate void as a source bug.
+- The renderer is clean and was re-measured (3225/3225 real meshes, mesh.db byte-faithful to the
+  extractor). **Do not re-audit `real_geometry.js` for this.**
+
+## 🔴 2026-07-27 — §LODHELL-ROOTCAUSE: "why is the LOD hell still there" — MEASURED. Renderer is clean; the
+## loss is UPSTREAM, in extraction. Read this before touching `real_geometry.js`/`arc_editable.js` again.
+
+Triggered by the live screenshot (`~/Pictures/Screenshots/Screenshot from 2026-07-27 14-08-06.png`,
+`red1oon.github.io/bim-ootb/modeller/modeller.html`, SampleCastle, detailed lower facade + boxy upper masses,
+`selected feature #2362`). Guids in the Outliner confirmed against `SampleCastle_ARC.db` — building identified
+by query, not by eye. All figures below are SQL over the SHIPPED artifacts, no browser, no screenshot as
+evidence (FUNDAMENTAL LAW). Resident under test: `str_walker_outliner.js:41` →
+`db: SampleCastle_ARC.db`, `geoDb: mesh.db`.
+
+**FINDING 0 — the renderer is NOT the culprit; stop re-auditing it.**
+- `element_instances` = 3225 rows; **3225/3225 (100%) resolve a real mesh in `mesh.db`**. `hash_MISSING = 0`,
+  `distinct_missing = 0`, `null_hash = 0`. `real_geometry.js buildGeometryIndex()` has nothing to fail on.
+- `mesh.db` is **byte-faithful to the extractor**: of the 1924 hashes SampleCastle needs, all 1924 exist in
+  `deploy/buildings/SampleCastle_extracted.db` too and `length(faces)` differs on **0** of them. `mesh.db` is
+  not a proxy/decimated store — it carries exactly what the compiler emitted.
+- `arc_editable.js:159-168` `§GEOM-HARDFAIL` is behaving correctly (refuse + log + skip, never a fake box).
+  There is **no LOD-doctrine violation here** ([[feedback_no_fake_lod_unbreakable]] scope: pipeline fidelity,
+  not source richness). Nothing shown is invented. What's wrong is what's MISSING and what's THIN.
+
+**FINDING 1 — ⚠ SUPERSEDED 2026-07-29 by §LOD400-ENVELOPE at the top of this file. The COUNTS below are
+correct and still usable; the VERDICT ("GIGO, not a violation") is WRONG — 67 of these ≤12-tri SampleCastle
+elements are authored MULTI-LAYER (412 `IfcMaterialLayerSetUsage` in the source), so the box is an envelope
+fallback, not the authored geometry. Do not cite this finding's conclusion.**
+
+~~46.4% of what renders is genuinely a 12-triangle box at SOURCE (1498/3225).~~ This is the boxy
+mass in the screenshot. Per class (`rendered` / `12-tri` / %):
+
+| class | rendered | 12-tri | % |
+|---|---|---|---|
+| IfcWallStandardCase | 231 | 230 | **99.6** |
+| IfcWall | 648 | 324 | 50.0 |
+| IfcRailing | 90 | 42 | 46.7 |
+| IfcBuildingElementPart | 277 | 126 | 45.5 |
+| IfcCovering | 1214 | 515 | 42.4 |
+| IfcSlab | 279 | 116 | 41.6 |
+| IfcWindow | 259 | 92 | 35.5 |
+| IfcDoor | 205 | 49 | 23.9 |
+
+A plain uncut rectangular solid legitimately tessellates to 12 triangles, so this alone is GIGO, **not** a
+violation — but `IfcWallStandardCase` at **230/231** is the tell, and Finding 2 explains it.
+
+**FINDING 2 — the real defect: every wall that has an opening cut into it LOST ITS GEOMETRY and is not
+rendered at all.** Parsed `internal/sources/Ifc2x3_SampleCastle.ifc` (714,485 entities): the source has
+**79 `IFCRELVOIDSELEMENT` / 79 `IFCOPENINGELEMENT` / 74 `IFCRELFILLSELEMENT`** → 71 unique host elements
+(60 `IfcWallStandardCase` named `kozijn` = Dutch *window frame*, 14 `IfcBuildingElementProxy`, 3 `IfcCovering`,
+2 `IfcSlab`). Cross-joined against the shipped DBs:
+- **65 of those 71 opening-hosts have NO `element_instances` row, NO `element_transforms` row, no geometry
+  anywhere.** Only 6 survive with geometry.
+- They are part of a **117-row meta-only population** identical in all three DBs
+  (`deploy/buildings/SampleCastle_extracted.db` 3621 meta / 3504 inst; ootb `SampleCastle_extracted.db` and
+  `SampleCastle_ARC.db` both 3342 / 3225) — i.e. this originates in the COMPILER, not in the ARC filter or
+  the ootb copy. Breakdown: `IfcWallStandardCase` 51, `IfcCovering` 48, `IfcBuildingElementProxy` 14,
+  `IfcWall` 4 (`kozijn`, `dakopstand`).
+- `extractIFCtoDB.py:1351-1366` writes `elements_meta` + `element_instances` + `element_transforms` **in one
+  block**, so a meta-only row cannot come from the geometry loop. These 117 have meta but zero transform ⇒
+  written by a later meta-only pass (the BOM stage's `INSERT OR IGNORE INTO elements_meta (guid, discipline,
+  ifc_class, element_name, element_type)` in `BOMTypeSystem.java:392` / `BOMBuilder.java:213` /
+  `FloorAssemblyBuilder.java:340`), while the geometry pass had already dropped them into `failed`
+  (`extractIFCtoDB.py:1426-1429`, which only prints the first 5).
+- ~~Net effect: the frame-walls that carry the windows are hard-failed and never drawn.~~ **← RETRACTED,
+  see FINDING 2-CORRECTED. The elements are absent, but that is CORRECT, not a loss.**
+
+**FINDING 2-CORRECTED (2026-07-27, same day, by RUNNING the extractor — this supersedes the "lost geometry"
+reading above; do not re-cite it).** Baseline re-extraction of the same IFC
+(`log: scratchpad/lodhell/baseline.log`, `imported=3583 failed=65 bbox_fallback=0`, `§PATHB 79 host edges
+recovered`) plus a per-element probe give the actual mechanism:
+- All 65 empty-tessellation elements are the opening-hosts. Their **body representation tessellates
+  perfectly** — probed `create_shape()` on the `Body` `IfcExtrudedAreaSolid` ITEM directly for
+  `1A9aTEU4z9SwaqEUwI8Lx4`: **8 verts / 12 tris**, a 1.210 × 0.114 × 1.850 m strip.
+- Its authored opening (`merk B1sp-R`) measures **1.210 × 0.342 × 1.850 m** — equal in width and height,
+  *thicker* than the wall. The boolean subtraction correctly removes **100%** of the body ⇒ empty product.
+- Classified all 65 programmatically: **65/65 VOID-CONSUMED** (body tessellates + has `HasOpenings` +
+  product empty). **0** with an empty body, **0** empty without openings. There is no geometry defect here.
+- And the content is not missing: `rel_fills_host` in the fresh DB has 79 rows / 74 with a filling, and
+  **74/74 fillings (the actual windows/doors) DO have geometry**. A `kozijn` is the wall strip that exists
+  only to host a window; the window is what you are meant to see. The author voided it deliberately.
+- ⇒ **The "LOD hell" is FINDING 1 alone** — SampleCastle's own source detail (46.4% literal 12-tri boxes,
+  `IfcWallStandardCase` 230/231). GIGO, honest, no pipeline fix available. What IS broken is the REPORTING
+  around it (Finding 3) — a correct outcome is being screamed at as an illegal fallback.
+
+**FINDING 3 — the reporting is wrong in three ways, and the "fix" I first proposed for it is wrong too.**
+- `extractIFCtoDB.py:1179` raises `§ILLEGAL_PARAMETRIC_FALLBACK … "Add to NON_GEOMETRIC_CLASSES or fix IFC
+  source"` for all 65 — **a correct, authored geometric outcome reported as a source defect.**
+- `:1426-1429` prints only `if failed <= 5`. 60 of 65 are invisible. A genuine defect hiding among them
+  would never be seen.
+- P5 `FAIL_RATE` counts them ⇒ **`§PROOF RESULT: 5 PASS, 1 FAIL` (65/3648 = 1.78%)** — the gate cries wolf
+  on every run, **and the script still `exit 0`** (verified). The one check that could have caught a real
+  loss is permanently red for a non-reason and non-blocking.
+- ⚠ **The Tier-2 no-boolean fallback must NOT be wired** (this reverses my own earlier fix-2 proposal).
+  Measured: `DISABLE_BOOLEAN_RESULT=True` (readback confirmed `True`) still yields **v=0 t=0** at product
+  level on ifcopenshell 0.8.4 — it does not work. And even if it did, it would resurrect a wall the author
+  deliberately voided and render it as an uncut solid — **inventing content, a direct
+  [[feedback_no_fake_lod_unbreakable]] violation.** `settings_no_bool` (`:1119-1123`) and
+  `BOOL_DEPTH_THRESHOLD` (`:1125`) are unreferenced dead code and must be **deleted**, not activated.
+
+**FINDING 4 — correction to an existing memory claim, do not re-cite it.**
+[[project_modeller_lod400_real_geometry]] and the 2026-07-02 NIGHT note (item 1) state SampleCastle has no
+`rel_fills_host` "confirmed absent in both the DB and the source IFC." **The DB half is true; the source-IFC
+half is FALSE** — the IFC has 79 RelVoids / 74 RelFills. The relations are **dropped by the pipeline**, not
+missing from the source. This changes the §STRETCH-RIDE / proximity-clustering design question below: the
+host↔opening relation does not have to be re-derived by a geometry-clustering heuristic — it can be
+**extracted**, which is the Prime-Rule-compliant path.
+
+**FINDING 4 — correction to an existing memory claim, do not re-cite it.**
+[[project_modeller_lod400_real_geometry]] and the 2026-07-02 NIGHT note (item 1) state SampleCastle has no
+`rel_fills_host` "confirmed absent in both the DB and the source IFC." **The DB half is true; the source-IFC
+half is FALSE** — the IFC has 79 RelVoids / 74 RelFills, and `extract_rel_fills_host()`
+(`extractIFCtoDB.py:757`, called at `:1532`) already recovers all 79 verbatim. The shipped DBs simply predate
+that function. So the §STRETCH-RIDE host↔opening relation does **not** need a proximity-clustering heuristic —
+it is already extracted, it just was never shipped to the Modeller.
+
+---
+
+### §LODHELL-FIX — SPEC (written before code, per Spec-First). Three items, in order.
+
+**§LODHELL-FIX-1 — classify empty tessellation; report all of it; make the gate mean something.**
+*Issue it proves/disproves:* whether a genuine geometry loss can be distinguished from an authored full-void
+in the extraction log, and whether the §PROOF gate can still fire on the genuine one.
+- In the iterator loop, when `len(verts) < 3 or len(faces) < 1`, do NOT unconditionally raise. First classify,
+  using authored data only (non-invent — no thresholds, no heuristics):
+  - element has ≥1 `HasOpenings` **and** at least one `Body` representation ITEM that tessellates non-empty
+    ⇒ **`§VOID-CONSUMED`**: the author's own opening removed the whole body. Counted in `void_consumed`,
+    NOT `failed`. Recorded (see below), not rendered — the filling element carries the visible geometry.
+  - anything else ⇒ real failure, keep the existing `§ILLEGAL_PARAMETRIC_FALLBACK` raise.
+- Print **every** real `§FAIL` (drop the `failed <= 5` cap). Print `§VOID-CONSUMED` as one summary line plus
+  a capped sample, since it is expected output, not an error.
+- P5 `FAIL_RATE` counts real `failed` only. Add **P9 `VOID_CONSUMED`**: informational PASS carrying the count,
+  and FAIL if any void-consumed element's **filling has no geometry** (that is the one case where a consumed
+  host really does leave a hole — the check that would have caught a true loss).
+- `main()` returns non-zero when `_proof_fail > 0`. A red §PROOF must fail the run, not exit 0.
+- *Witness:* `scripts/witness_lodhell_classify.py` — re-extract SampleCastle, assert
+  `failed == 0`, `void_consumed == 65`, `§PROOF RESULT` has 0 FAIL, exit code 0; then falsify it by forcing
+  one host's filling out of the DB and asserting P9 turns FAIL + exit non-zero.
+
+**§LODHELL-FIX-2 — delete the dead no-boolean tier (NOT wire it).** Evidence in FINDING 3: it does not work
+on ifcopenshell 0.8.4 and activating it would invent uncut walls. Remove `settings_no_bool` and
+`BOOL_DEPTH_THRESHOLD`, leave a comment recording the measurement so nobody re-adds it.
+*Issue it proves:* that no code path can resurrect an author-voided body as real geometry.
+
+**§LODHELL-FIX-3 — ship `rel_fills_host` to the Modeller's SampleCastle.** The extractor already produces it;
+the shipped DBs have no such table, which is why `sdg_cascade.js stretchRide()` silently no-ops (2026-07-02
+NIGHT item 1). Per the project DB policy (**patch + self-heal loader together, never a binary**):
+`modeller/patches/SampleCastle_ARC.db.sql` = `CREATE TABLE IF NOT EXISTS rel_fills_host (…)` + 79 `INSERT OR
+IGNORE` rows generated from the freshly-extracted DB, applied by the existing
+`str_walker_outliner.js _applyPendingPatch()`.
+*Issue it proves:* that `stretchRide()` stops no-opping on SampleCastle — a hosted window rides its wall
+instead of warping.
+
 ## 🔎 2026-07-03 — deeper competitive-polish pass, see dedicated spec
 5 more parallel investigations (Outliner↔canvas wiring, visual consistency, IFC/BCF interop, 3D-grid geometric
 accuracy, authoring-toolset+canvas-render polish) went into their own file, not inline here — it's a big enough
@@ -27,8 +676,9 @@ Sonnet = the user's own architecture/scoping call, Opus = well-scoped-but-nontri
    to solve. **Assign: Sonnet dialogue with you first** (the design call was already flagged as yours to make —
    this just gives it a precise mechanism to design against), **then Opus to implement** (a real geometry-
    clustering heuristic + BOM synthesis, not mechanical).
-2. **"Walk ALL Disciplines" reuses the singular per-row tooltip** — `modeller/bonsai_outliner.js:267`: hovering
-   the synthetic ALL row still says "Walk this discipline." **Assign: Fable5** (one string, fully specified).
+2. ⛔ **STILL OPEN (re-verified 2026-07-28)** — **"Walk ALL Disciplines" reuses the singular per-row tooltip.**
+   The line moved: it is now `modeller/bonsai_outliner.js:602`, still `title="Walk this discipline"` on the
+   synthetic `__ALL__` row. **Assign: Fable5** (one string, fully specified).
 3. **The Outliner 3-surface unification was descoped, not shipped, and it's undocumented that it was.**
    `modeller/modeller.html:2902-2906` has its own comment admitting the "risky Outliner restructure" was
    dropped in favor of just adding an ALL-row to the existing category — STR Walker tab and "Route trunk"
@@ -36,12 +686,13 @@ Sonnet = the user's own architecture/scoping call, Opus = well-scoped-but-nontri
    code, but worth deciding whether it's still wanted. **Assign: Sonnet to re-scope** (is the restructure still
    wanted, what's a safe incremental path that doesn't risk the surfaces that already work) **→ Opus to build**
    if greenlit (multi-file UI refactor, real regression risk).
-4. **Zero end-user documentation for Walk-All-Disciplines or §STRETCH-RIDE's hosted-door behavior** in
-   `docs/ModellerGuide.md` (bim-compiler side, confirmed by a full front-to-back read + grep — the only "all
-   disciplines" hits are in `archive/`/`internal/`). Grid-Stretch's section says an attached wall translates
-   but never states a hosted door/window rides along, even though that's this session's own shipped fix.
-   **Assign: Fable5** (the features are built and understood, existing guide has an established voice/format
-   to match — this is a documentation-writing task with a known spec, not a design task).
+4. ✅ **DONE 2026-07-28 — do not re-assign.** ~~Zero end-user documentation for Walk-All-Disciplines or
+   §STRETCH-RIDE's hosted-door behavior in `docs/ModellerGuide.md`.~~ Both now written and **live on
+   gh-pages** (verified by content poll, not just a canary 200). Two corrections to the note as written:
+   (a) the §STRETCH-RIDE half was already documented — the real defect was that the sentence was FALSE,
+   because no resident shipped `rel_fills_host`; fixed at the source (#1051/#1065), not in prose;
+   (b) IFC direct-open was ALSO undocumented and is now covered. ⚠ The Grid-Stretch text names only
+   SH/DX/SC by design — extend it when another building gains the relation (OPEN item 2 in §START HERE).
 5. **Terminal-scale proxy-mode downgrade is invisible to the user** — `modeller/modeller.html:2374-2384` only
    `console.log`s the batch-hold fallback; final geometry is identical either way (low severity) but nothing
    in the UI signals reduced reveal quality during a big walk. **Assign: Fable5** (add a small toast/badge,
@@ -401,3 +1052,150 @@ until this is on `main`.
   green" without a visual check. See `feedback_test_real_user_path_not_seams` memory.
 - Don't re-run the 32-file witness audit — it's done, 0 flagged, detail in this session's transcript if ever
   needed, not worth re-deriving.
+
+## §WALK-LOD400-ONLY — SPEC (2026-09-27, red1: "One first principle is no BBoxes or cubes, or LOD200 fallback. All must be LOD400 or fail hard")
+```
+SCOPE: bim-ootb modeller/modeller.html — _discWalkOne (gate before register/render/commit), _renderDiscWalk (no box path),
+_renderDiscAssembly (no box path). Reference-only harvest unchanged (Duplex/Terminal, WalkerDoctrine §2). Read the log after every run.
+```
+**Measured violation (2026-09-27, §DW-PRIM-LOD):** SampleCastle walks render ELEC 270 + ACMV 12 + PLB 84 = **366 LOD200 boxes**
+(legacy fallback walk after `§SCHED-FALLBACK`: placements carry no `device` and no `geometry_hash` — only a generic class, so no
+reference mesh can be bound without inventing). Duplex ELEC/PLB rendered `lod200=102/18` in runs where the walk resolved before
+`__dwGeoBuf` had loaded (race; `lod400=102` otherwise). FP borrowed from terminal_rules is already LOD400 on SampleCastle (126).
+§5's "POC = primitive box" is superseded by §11 / the unbreakable no-fake-LOD rule.
+**Rule:** a walked placement is kept ONLY if its `geometry_hash` resolves to a real mesh in the building's geo buffer. Otherwise it is
+REFUSED — not registered, not rendered, not committed — and logged `§DW-LOD400-REFUSE disc=… refused=N kept=M (class×count …)`.
+The gate first waits for the geo buffer (cap 60 s) so a resident's own meshes never refuse from a race. All refused → the walk
+returns the existing honest REFUSE path (0 fabricated). `_renderDiscWalk` never calls the box/LOD300 path; assembly parts with no
+real mesh are refused, not boxed. `§DW-PRIM-LOD` must read `lod300=0 lod200=0` on every walk.
+**Witness W-WALK-LOD400-ONLY:** SampleCastle ELEC/ACMV/PLB → lod200=0, all 366 refused and logged, 0 box meshes under dwRoot;
+SampleCastle FP → lod400=126 kept; Duplex ELEC walked immediately after open → lod400=102, lod200=0. RED on base (lod200=270).
+**Next (separate item):** ARC seed `§GEO-SERVED-DEGRADED` (geo fetch fails → measured bounding boxes rendered, arc_editable path)
+violates the same rule → must hard-fail/refuse instead.
+**§WALK-LOD400-ONLY — ✅ DONE (witness) 2026-09-27** on bim-ootb `test/modeller-net-audit` (no PR): W-WALK-LOD400-ONLY 7/0 (base 4/3).
+**§FOLD-NO-BOX — ✅ DONE (witness) 2026-09-27 PM, bim-ootb PR #1788 (auto-merge on) — see §FOLD-NO-BOX-DONE below. Original WIP note kept:** ⏸ WIP, PAUSED (red1) 2026-09-27. Finding: a reopened building folded every saved walk op as a box (Duplex 102/102) because
+`foldInsert` fell back to `boxArrays(bbox)` when `realGeomHash` was unregistered. Fix (committed WIP): fold throws §LOD400-REFUSE (never boxes);
+saved walk meshes registered from the building geo on open → 102/102 real after reload. Node witnesses now pass `registerGeometry` like production
+(5 recovered; sdg_gate 11/0 with A1 restated; arc_editable A3/A4-extent retired → W-ANCHOR-SWEEP, A10 = unit guard).
+**RESUME HERE — still red on the WIP:** arc_editable A9 (matched-catalog half), opening_slide 0/8 (slide rule requires a "plain axis-aligned box"
+host — real-mesh hosts refuse; decide: slide on real hosts vs refuse), room_move T3, arc_3axis_rotation R1/R2 (real=0 — check its own registration),
+e2e_instpick P4. Then: `_renderDiscAssembly` box parts, ARC seed §GEO-SERVED-DEGRADED bbox path, catalog inserts without a mesh (fold boxes;
+527/794 products have no matching mesh — tie to §CATALOG-REBIND). Preview ghosts/gizmos are UI, not element geometry.
+
+### ✅ §FOLD-NO-BOX-DONE — 2026-09-27 PM (bim-ootb `test/modeller-net-audit` → PR #1788, auto-merge on)
+The 5 WIP reds, triaged on real geometry (read the §-log, not the exit code):
+- **arc_editable A9** — stale: `foldInsert`'s own rule is *own registered mesh wins over a catalog match*; the 1 matched
+  SampleHouse door folds its own 762-vertex mesh. Assertion now strict vertex-count. 8/1 → **9/0**.
+- **opening_slide 0/8** — ⚖ decided REFUSE (the no-invent default, reversible): fills come only from extracted IFC hosts and
+  every one carries a BAKED opening (host meshes 106/106/44 tris), so sliding would leave the hole behind. **Finding: the
+  #1710 slide was never reachable by a real user** — its witness passed only on box-folded hosts. S0 proves the refusal,
+  S1–S7 INCONCLUSIVE. → 2/0/7 INC. **⛔ OPEN for red1: build slide-on-real-walls?** (needs pre-boolean host body + the
+  opening as a GEOM_CUT void — the §CUT-MOVE machinery then carries it.)
+- **room_move T3** — on real meshes no filling centre lies inside any room footprint (nearest: window 13 at 6.2 mm, door 8
+  at 26 mm — they sit in the boundary walls); "SampleHouse has one" was a box artefact. T3 real-data + T3b constructed
+  counterfactual (excluded with fills, swept without). 9/1 → **11/0**.
+- **arc_3axis R1/R2**, **e2e_instpick P4** — green on the merged branch, no change needed.
+Then the two spec'd follow-ons:
+- **`_renderDiscAssembly`** — parts render only from a resolved `geometry_hash`; the Ø×length box is gone. `assemble()` emits
+  no mesh today ⇒ every part refused + `§DW-LOD400-REFUSE asm` logged. W-E2E-INSTPICK 8/0 (new P2c).
+- **ARC seed `§GEO-SERVED-DEGRADED`** — no geometry substrate ⇒ every element refused (`no-geometry-substrate`), nothing
+  seeded as a box, loud `§GEOM-HARDFAIL`. New W-SEED-NO-SUBSTRATE 3/0, RED on main (39 ops, 38 boxes).
+Regression: node sweep 51 → branch 46 green / main 35; only branch-vs-main regression W-DW-OPLOG (SampleHouse FP's 17
+hashless placements now refuse) retargeted to Duplex ELEC 102 real-mesh → 6/0. 13 browser witnesses green (list in PR).
+**Still open (needs red1):** catalog inserts fold a box at LOD200 or when the product has no mesh (527/794) — refusing
+them removes the LOD200 option + makes those products un-insertable; tied to row 14 / §CATALOG-REBIND. Pre-existing red,
+not touched: W-E2E-INSTHIDE H1-rig (no fixture pose on main too ⇒ its assembly leg H5–H8 unexercised); node
+dw_rot_units · git_history · terminal_walk · render_fidelity (red on main).
+
+---
+
+## §ROW34-ANCHOR-SAVE — SPEC 2026-09-27 (MODELLER_MASTER row 34, re-verified against bim-ootb origin/main `363ba414` first)
+**Re-verify result (code read, not grep):**
+- **IFC export half — ALREADY CLOSED** by bim-ootb #1747 (`58bce229`, 2026-09-18): `bonsai_ifc.js:181`
+  `if (P.anchorOnly) { seedAnchors++; continue; }`, `§IFC-SEED … anchorsExcluded=N`, witness
+  `witness_ifc_export_seed.js` E4 ANCHORS-OUT asserts SampleCastle 65 excluded. Not re-opened.
+- **Save half — STILL UNWITNESSED.** `runSave()` (`modeller.html:2867`) → `Bonsai.exportDb()` (`:3113`)
+  writes the signed op-log bytes VERBATIM (`O.db.export()`), so the 65 `GEOM_INSERT params.anchorOnly`
+  ops are IN every Save/Native-.db snapshot. That is correct by construction — they are part of the
+  signed hash chain (dropping them breaks `verifyChain`) and the cascade needs them after re-open. So the
+  leak question is NOT "are they in the bytes" but **"does a re-opened snapshot still treat them as
+  anchors"** (invisible, out of every count/gate/export). The one save/re-open witness
+  (`witness_e2e_export_db.js` E4) runs on **Duplex = 0 anchors ⇒ VACUOUS for this question.**
+- Mechanism that SHOULD make it hold (read, unproven): `importBytes` (`bonsai_oplog.js:234`) re-folds
+  the ops; the fold keys on `params.anchorOnly` → `bonsai_kernel.js:257` invisible `userData.anchor`
+  mesh; `_gateBoxes` (`modeller.html:2710`) and IFC export both key on that flag, not on the seed-time
+  `window.__arcAnchorFids`.
+
+**BUILD (bim-ootb):**
+1. `§EXPORT-NATIVE` log line gains `anchors=N` (count of `GEOM_INSERT` ops whose parameters carry
+   `anchorOnly`, read from the SAME `O.db` bytes being exported) — the save path becomes §ANCHOR-tagged,
+   as the row-34 spec requires. Log-only, no behaviour change.
+2. Witness **W-E2E-ANCHOR-SAVE-ROUNDTRIP** (`modeller/tests/witness_e2e_anchor_save_roundtrip.js`),
+   SampleCastle, real `#b-open ▸ Open local .db…` door:
+   - **R0 NON-VACUOUS** — baseline anchor meshes == anchorOnly ops == 65, else INCONCLUSIVE (not PASS).
+   - **R1 TAGGED** — exported bytes carry exactly 65 anchorOnly ops AND `§EXPORT-NATIVE … anchors=65`.
+   - **R2 RE-OPEN STAYS ANCHORED** — after `oplog.clear()` + re-open from the file: 65 `userData.anchor`
+     meshes, all `visible=false`; visible-mesh count, `_gateBoxes` key count IDENTICAL to baseline.
+   - **R3 EXPORT AFTER RE-OPEN** — IFC build on the re-opened model: `seeded` == baseline,
+     `anchorsExcluded` == 65.
+   - **R4 FALSIFY** — the same bytes with ONE op's `anchorOnly` stripped, re-opened: anchors 64, visible
+     meshes baseline+1 (the flag in the bytes is what drives it; the witness sees a real leak), and
+     `verify=false` (the chain detects the tamper).
+**Done =** R0–R4 PASS, log read, PR merged. If R2/R3 FAIL, the leak is real → fix, RED-first.
+
+### ✅ §ROW34-ANCHOR-SAVE — DONE (witness) 2026-09-27, bim-ootb PR #1787 (`feat/anchor-save-roundtrip`, auto-merge on)
+**No leak. It was never a leak, only unproven.** W-E2E-ANCHOR-SAVE-ROUNDTRIP **6/6**, SampleCastle:
+- R0 baseline: 65 anchor meshes == 65 anchorOnly ops, 0 visible · 3225 visible meshes · 3225 gate boxes · IFC 3225 seeded + 65 excluded.
+- R1 snapshot 2,375,680 bytes carries 65 anchorOnly ops; `§EXPORT-NATIVE ops=3290 anchors=65 sealed=3290` (new tag;
+  RED on prior code by construction — the line had no `anchors=`).
+- R2/R3 after `clear()` + real Open-local-.db door: `verify=true`, every number above IDENTICAL.
+- R4 falsify (one anchorOnly stripped in the bytes): anchors 64 · visible 3226 · gate 3226 · IFC 3226/64 · `verify=false`.
+Regression W-E2E-EXPORT-DB 6/6. sw v60→v61. Logs: session scratchpad `ancsave_run1.log`, `expdb.log`.
+**This file's LOD400 lane has no open build items left.** Still open elsewhere, not here: SampleCastle layer
+shipping (blocked on `sporenkap`'s honest refusal); per-layer slab colours (optional).
+⚠ CORRECTION (user, same day): `rel_fills_host` for the other residents is NOT open and was never blocked on
+sources — bim-ootb #1749 shipped HHS/Clinic/Hospital/Garage on 2026-09-18; Terminal's source authors no
+void/fill chain. The 'sources not in this checkout' line in §START HERE OPEN 2 was stale; always check
+`reference_source_ifc_locations` memory before repeating a 'source missing' claim.
+
+---
+
+## §SLIDE-REAL-WALLS — SPEC 2026-09-27 (red1 direction: "It should allow … the embedded ARCs are cohesive designs with own openings and trappings and they are editable likewise")
+```
+SCOPE: slide a door/window along its REAL host wall in the Modeller, for the embedded ARC residents' own authored
+openings (rel_fills_host). No invention: the wall and the opening are both authored in the source IFC. Read the log after
+every run. User-imported IFCs take the same path only if their open path writes rel_fills_host (unverified — not in scope).
+```
+**Why it fails today (measured, §FOLD-NO-BOX-DONE):** the shipped host mesh has the opening BAKED IN (the tessellator
+subtracted `IfcRelVoidsElement` at extraction), so sliding the door would leave the hole behind → refused.
+**IFC fact this rests on:** a wall's `Body` is authored UNCUT; openings are separate `IfcOpeningElement`s applied by the
+consumer. So the extractor can obtain (a) the host body with opening subtraction DISABLED and (b) each opening's own solid —
+both pure extraction. The Modeller already has the rest: `GEOM_CUT` (kernel box-void subtraction) and §CUT-MOVE (a cut rides
+its filling).
+**Phase M (measure — decides cost, no build):** per building (SampleHouse, Duplex, SampleCastle), per `IfcRelFillsElement`:
+  M1 opening solid kind — a plain axis-aligned rectangular extrusion (kernel-cuttable box) vs anything else (arched, polygon,
+     clipped → REFUSE, never approximated);
+  M2 host body kind with openings disabled — plain extrusion vs boolean/clipped/brep;
+  M3 the source's own cut: host tris with openings vs without (proves the bake is exactly the opening subtraction);
+  M4 box opening vs host frame: opening axis-aligned in the host's local frame (yaw-only), fully through the wall thickness.
+  Log `§SLIDE-MEASURE bldg=… fills=N boxOpenings=a hostPlain=b through=c` + per-row reasons for every non-box.
+**Phase B (build, only for rows that pass M1–M4):** extractor persists host uncut body (own geometry hash) + opening box
+params; residents get them via the patch + self-heal loader (never a binary); the seed folds the host as uncut body +
+one `GEOM_CUT` per opening; slide then runs through the existing engine + §CUT-MOVE. Rows failing M keep today's honest
+refusal, named. **Witness W-SLIDE-REAL-WALL:** the re-cut host (kernel) matches the source's baked mesh (AABB + volume within
+tolerance) BEFORE any move; after a slide the hole is at the new position and the old position is solid; undo restores;
+RED on today's main (refusal).
+**Phase M RESULT — 2026-09-27** (`scripts/measure_slide_real_walls.py`, logs `logs/slide_measure/`, source IFCs read directly):
+| building | fills | box opening, through wall | host is a plain box | host fully consumed | **slideable** | refused (named) |
+|---|---|---|---|---|---|---|
+| SampleHouse | 7 | 7 | 2 | 0 | **7** | — |
+| Duplex | 38 | 36 | 18 | 0 | **36** | 2 host has NULL Representation |
+| SampleCastle | 74 | 70 | 74 | 65 | **5** | 65 host = the opening strip (void-consumed) · 4 opening not a box · 4 no bake |
+In every slideable row the shipped bake is exactly the opening subtraction (tris uncut ≠ cut). **Cost verdict: build it.**
+The one new geometry need — re-cutting a NON-box host (SampleHouse 5, Duplex 18) — already exists in the kernel: the
+§LAYER-SOLID-SEED path sews a real triangulated wall into a solid (`buildTriFace` + `sewAndSolidify`) for layered walls; a
+single-range seed opens it to plain walls. Order for Phase B: SampleHouse (7) → Duplex (36) → SampleCastle (5).
+**Direction link (red1 2026-09-27, "macro editing — inserting openings, placing and snapping to walls"):** Phase B's host model
+(uncut body + one GEOM_CUT per opening, the filling riding its cut) is the same model "insert a door INTO a wall" needs — today
+item-drag only snaps a wall-hung item flush to a wall face and the cut is a separate manual tool. Insert-with-opening is the
+follow-on slice on the same substrate.

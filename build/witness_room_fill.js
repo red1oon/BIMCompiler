@@ -9,14 +9,36 @@
 //      rect's worth (the honest stop bound).
 //   F2 identity: N rect rows in the DB still form exactly the logical room count via room_guid
 //      (COUNT(DISTINCT room_guid) == logical rooms; every sub-rect row shares its parent's
-//      name/predefined_type; SUSPECT rooms have exactly ONE row).
+//      name/predefined_type; SUSPECT rooms have exactly ONE row — EXCEPT the two mechanisms that
+//      postdate this witness's 2026-07-11 freeze and legitimately emit multi-rect suspects
+//      (§S74 addendum 2026-08-23, measured on Clinic/Hospital/Terminal, py+js byte-identical):
+//      R-MERGE rect-concat with a suspect representative (room_walker.js:990-998, merged_from>1)
+//      and R-REJECT's post-decompose SUSPECT_OPEN flag (room_walker.js:1063, enclosure below
+//      SUSPECT_OPEN_ENCLOSURE). A multi-row suspect explained by NEITHER is still the original
+//      defect (suspects must not decompose — _decomposeRegion's single flag) and stays a FAIL.
 //   F3 rel purity: rel_contained_in_space keys logical room guids only (no lettered sub-rect guid).
 // Read the log after every run — exit code alone is not evidence.
 const fs = require('fs');
-const initSqlJs = require('/home/red1/bim-compiler/node_modules/sql.js');
+const path = require('path');
+const ROOT = path.resolve(__dirname, '..');
+// §S74 candidate 1 (2026-08-23): no hardcoded absolute requires (witness_disc_walk_shim.js pattern).
+function loadSqlJs() {
+  const cands = [path.join(ROOT, 'node_modules/sql.js'), 'sql.js'];
+  for (const c of cands) { try { return require(c); } catch (e) { /* next */ } }
+  throw new Error('sql.js not found (npm install, or NODE_PATH to a node_modules with sql.js)');
+}
+const initSqlJs = loadSqlJs();
 const RoomWalker = require('./room_walker.js');
 
-const LIVEWIRE = '/tmp/wt-fable-livewire/modeller';
+// §S74 candidate 1 (2026-08-23): the old hardcoded '/tmp/wt-fable-livewire/modeller' died with its
+// pruned worktree → all-SKIP vacuous green. Env override → long-lived home → old path; first
+// existing dir wins. Per-building SKIP below still covers genuinely absent DBs.
+const ARC_CANDIDATES = [
+  process.env.ARC_DB_DIR,
+  path.join(process.env.HOME || '', 'bim-ootb/modeller'),
+  '/tmp/wt-fable-livewire/modeller',
+].filter(Boolean);
+const LIVEWIRE = ARC_CANDIDATES.find(d => fs.existsSync(d)) || ARC_CANDIDATES[ARC_CANDIDATES.length - 1];
 const BUILDINGS = ['SampleCastle', 'HHS', 'Clinic', 'Garage', 'Hospital', 'Terminal'];
 
 function median(a) { const s = [...a].sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : 0; }
@@ -65,12 +87,22 @@ function rows(db, sql) {
     const distinctRoom = new Set(rr.map(r => r.room_guid)).size;
     const byRoom = {};
     rr.forEach(r => (byRoom[r.room_guid] = byRoom[r.room_guid] || []).push(r));
+    const byGuid = {};
+    compiled.rooms.forEach(r => { byGuid[r.guid] = r; });
     let identBad = 0, suspectMulti = 0;
     Object.keys(byRoom).forEach(g => {
       const grp = byRoom[g];
       const names = new Set(grp.map(r => r.name)), pts = new Set(grp.map(r => r.pt));
       if (names.size !== 1 || pts.size !== 1) identBad++;
-      if (grp[0].pt.indexOf('SUSPECT_') === 0 && grp.length !== 1) suspectMulti++;
+      if (grp[0].pt.indexOf('SUSPECT_') === 0 && grp.length !== 1) {
+        // §S74 addendum (2026-08-23): exempt the two sanctioned multi-rect-suspect producers —
+        // R-MERGE (merged_from>1) and R-REJECT's late SUSPECT_OPEN (enclosure-flagged after
+        // decomposition). Anything else multi-row + suspect is the original single-rect defect.
+        const cr = byGuid[g] || {};
+        const explained = (cr.merged_from > 1) ||
+          (cr.suspect === 'OPEN' && cr.enclosure < RoomWalker.SUSPECT_OPEN_ENCLOSURE);
+        if (!explained) suspectMulti++;
+      }
     });
     ok(distinctRoom === logical && identBad === 0 && suspectMulti === 0,
       `${b} F2 identity: rows=${rr.length} logicalRooms=${logical} distinctRoomGuid=${distinctRoom} identBad=${identBad} suspectMulti=${suspectMulti}`);

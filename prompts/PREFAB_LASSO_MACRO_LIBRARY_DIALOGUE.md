@@ -146,3 +146,65 @@ minimum brief whoever picks this up with these four sharper questions instead of
   engineering-analytical rule-library DEPTH (code-mandated soft-clashes, discipline-pair exclusions beyond
   `fillsPairs`) is the genuinely hard part — a multi-year data-sourcing marathon in the same class as the
   residential-clearance mining already shipped and the UBBL recon now underway, not an algorithmic problem.
+
+## §6 — 2026-08-11 follow-up: what Revit's daily-routine presets already solve, and what's still grunt work
+Chat-only session, no code touched. Triggered by: "in the event that we have an equitable modeller, will
+their setup albeit all private schema, be more easier thru ours?" Answers the two open questions this
+section had been carrying (which building-authoring grunt work is real vs already solved elsewhere) with a
+concrete before/after against how a Revit modeller actually works day to day.
+
+**What a Revit user already has (the "measure up" baseline, not a gap):** an office `.rte` template
+(preloaded families, view/sheet templates, shared parameters, IFC export mapping already configured once
+per firm), a firm content library (thousands of pre-typed families), **type catalogs** (parameter grunt
+work done once per type, every instance inherits it free), and groups/assemblies + copy-paste for repeated
+units (a typical apartment layout pasted across floors). This independently confirms — same mechanism, from
+a different lane — the "type-level leverage" already measured in `JKR_SKATA_COMPLIANCE_LANE.md
+§WHERE THE GRUNT WORK ACTUALLY IS`: Hospital's 63,415 instances collapse to 339 distinct types, top 20
+covering 61.7%. Revit modellers do not place-and-parameterize per instance; they pick a type once and it
+propagates. Any "we're easier than Revit" claim that ignores this baseline is comparing against a strawman.
+
+**Why Revit doesn't bind IFC metadata at that same onset moment (strategic, not an oversight):** IFC is a
+competitor-neutral schema, not Autodesk's own — baking it in as the native truth would erode the lock-in
+their format provides. The same native object can legitimately need different IFC classes/Psets depending
+on the project's Exchange Information Requirements, so a fixed mapping can't be set once. The IFC schema
+itself version-drifts (2x3/4/4.3). And a real share of Pset data (fire rating, cost code, O&M) isn't known
+at placement time — it's filled by different roles at different project phases. Keeping IFC an export-time
+layer is a deliberate, defensible choice on their side, not just unfinished work.
+
+**Residual grunt work Revit users still eat despite all their presets** (the actual target, not placement
+mechanics which they've largely solved):
+1. **Project-specific IFC/Pset/classification filling** — the firm template only covers firm defaults; each
+   client's EIR differs. Concretely traced in `JKR_SKATA_COMPLIANCE_LANE.md`: Assembly Code is a manual
+   TYPE-parameter set once in Manage → Additional Settings, and it's a **silent-loss trap** if the IFC
+   exporter isn't separately told to write it — present in Revit, absent from the IFC, indistinguishable
+   from "nobody coded it."
+2. **Matching a real/site condition to the closest existing type** — still a human judgment call per
+   instance, even though the same judgment repeats across many buildings of the same class.
+3. Clash-driven rework and genuinely irregular one-offs — unavoidable either way, not a target.
+
+**Where we already measure up (checked against live schema today, not asserted):** `build/duplex_rules.db`
+`rule_placement` already binds `ifc_class` + geometry pattern (`dx/dy/dz`, `spacing_x_m/y_m`, `z_band_lo/hi`,
+`storey_scope`) from measured precedent, so gap #2 is closed for any building class/discipline already
+mined — the walker doesn't make a human re-pick a type each time the way even a fast Revit type-catalog
+click still does. This is the real, narrow edge: it only covers classes we've mined (SH/DX/SC…), not novel
+design — extract-only by PRIME RULE, same boundary already stated two sections up.
+
+**Where we do NOT yet measure up (the honest gap, not the edge):** gap #1 is still open on our side too —
+`rule_placement`'s schema (checked 2026-08-11) carries no Pset/classification columns, so within our own
+extract-only footprint we close type-selection grunt work but not IFC-metadata-filling grunt work. And the
+§4a/§4b clipboard/macro-capture primitive this doc already named as a total gap ("zero clipboard/copy/paste/
+duplicate hits anywhere in `modeller/`") is the direct equivalent of Revit's groups+copy-paste — still
+unbuilt, still the cheapest literal parity item on this list.
+
+**Positioning, in the user's own words:** not "replace Revit for every user" — "for the long tail of users/
+buildings where a rule DB already has measured precedent, skip the grunt work Revit still makes even ITS
+own users do by hand." Same shape as `docs/internal/RevitParity.md`'s "long tail the big tools over-serve"
+stance, already established there for analysis tools — this extends the identical logic to authoring/
+placement instead.
+
+**Two concrete close-the-gap candidates surfaced, neither started:**
+- Mine Pset/classification per `ifc_class` into the rules DB (new column set on `rule_placement` or a
+  sibling table, new mining pass over source IFCs — not a schema tweak) so placement emits IFC-complete
+  metadata directly, closing gap #1.
+- Build the §4a static clipboard (smallest, already-specified) — the literal Revit-groups/copy-paste parity
+  move, independent of the above.

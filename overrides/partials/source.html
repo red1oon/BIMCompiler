@@ -1,0 +1,15 @@
+{#-
+  Based on material/templates/partials/source.html, with one change: the title is
+  the full "owner/repo" path (matching the bim-compiler widget next to it in
+  header.html) instead of the theme's generic lang.t('source') ("Go to repository"),
+  so hovering either repo widget always shows which repo it actually points to.
+-#}
+<a href="{{ config.repo_url }}" title="{{ config.repo_url | replace('https://github.com/', '') }} on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    {% set icon = config.theme.icon.repo or "fontawesome/brands/git-alt" %}
+    {% include ".icons/" ~ icon ~ ".svg" %}
+  </div>
+  <div class="md-source__repository">
+    {{ config.repo_name }}
+  </div>
+</a>

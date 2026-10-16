@@ -11,7 +11,12 @@ cd "$(git rev-parse --show-toplevel)"
 FAIL=0
 
 # ── Gate 1: Block library/ DB binary commits ──
-if git diff --cached --name-only | grep '^library/' | grep -Evq '(BOM\.db|output_template\.db|schema_snapshot_.*\.sql)$'; then
+# `--diff-filter=d` (lowercase = EXCLUDE deletions), added 2026-09-01: the gate's job is to stop a
+# library/ binary ENTERING the repo, but it also fired on REMOVING one — which is the same thing the
+# gate wants, only permanent. Hit for real while untracking library/component_library.db during the
+# LFS cleanup (prompts/LFS_QUOTA_AUDIT.md §4): 32 versions of that one file were 5.76 GB of the
+# repo's 8.53 GB LFS storage. Adds and modifications are still blocked exactly as before.
+if git diff --cached --name-only --diff-filter=d | grep '^library/' | grep -Evq '(BOM\.db|output_template\.db|schema_snapshot_.*\.sql)$'; then
     echo "GATE 1 BLOCKED: library/ files cannot be committed (except BOM.db)."
     echo "DB changes must be recorded as migration scripts in migration/."
     echo "Run: git reset HEAD library/"

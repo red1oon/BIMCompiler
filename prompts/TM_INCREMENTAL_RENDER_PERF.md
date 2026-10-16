@@ -340,3 +340,10 @@ Findings measured 2026-07-19 during PR bim-ootb#891 (§GROUP_SPARK). Full measur
 including three retracted perf hypotheses (`§RENDER_LOOP total`, per-tick `ad_seed.db` refetch, and
 the spark-side micro-optimisations that benchmarked as no-ops), is in that PR's second commit
 message and in `HOSPITAL_4D_SUPERSTRUCTURE_DURATION_ANOMALY.md` §GROUP_SPARK.
+
+## §POINTER 2026-08-08
+This file is retired (see header: "ALL THREE PHASES DONE — history, not a work queue"), so new
+active work doesn't belong here. Its own still-unresolved "17.4s `§BVH_DEFERRED` thread contention"
+hypothesis got re-measured at 41-54s on LTU_AHouse (worse on a WARM cache, ruling out cold-cache as
+the driver) — full numbers, the ruled-out theories, and the priority "chase to zero" directive are
+in `prompts/Viewer/FLY_TOUR_DLOD_SCALE.md` §26/§27, not here.

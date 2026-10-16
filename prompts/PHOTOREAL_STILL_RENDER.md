@@ -3,3910 +3,3583 @@
 #   MOBILE_PERF.md (that's runtime navigation speed — this is a deliberately expensive, idle-only,
 #   opt-in still). Read the log after every run. This file is the spec — no implementation without
 #   reading §HONEST VERDICT first; don't build past what that verdict promises.
+# Full day-by-day history (2026-07-15 → 2026-08-11, ~7400 lines) archived verbatim, nothing lost:
+#   prompts/archive/PHOTOREAL_STILL_RENDER_full_history_2026-07-15_to_2026-08-11.md
+#   Consolidated 2026-08-11 per user ask ("prompts/# has got too long") — this file kept to the
+#   evergreen spec + the still-OPEN threads only. Closed/shipped work is a one-line pointer with
+#   its commit/PR; full diagnostic narrative for closed items lives in the archive if ever needed.
+
+## ▶ RESUME — START HERE (supersedes the §HOSPITAL_META_DB_STALE block below — read this first)
+
+### ✅ ALL 3 QUEUED FOLLOW-ONS CLOSED 2026-08-16+1 — PR bim-ootb#1409 MERGED+LIVE (CI green,
+fast-checks+e2e both SUCCESS, confirmed on `origin/main` @ 6a0f89a)
+1. ✅ **§MIRROR_TRUE_REFLECT — SHIPPED.** Confirmed case (a) from the costed branch below: Clinic's
+   22 `M_Mirror` elements carry `material_rgba` 0.843,0.843,0.843,1.000 — a direct DB query showed
+   it's not shared with any other `IfcFlowTerminal` fixture in the building, so streaming.js's
+   rgba+class `_matCache` key already makes the mirror material genuinely exclusive. Fix: a
+   name-keyword DB lookup (same pattern as `§PHOTO_EMBER`'s `EMBER_WORDS`, cached per building) that
+   bypasses `_photoEnvExempt` for mirror-only materials, forces near-zero roughness (0.03 vs the
+   metal path's `roughness*0.4`), and lets `_reassertPhotoMatBoost` mark it room-probe-eligible.
+   **Live-verified headless on Clinic**: mirror material roughness 0.03, envMapIntensity boosted
+   0.05→0.15, `envMap` swapped to the real room-probe capture (not the sky) — while a control
+   grab-bar material (same class, different rgba) stayed fully untouched (`_photoBoosted=false`,
+   still exempt), proving the fix doesn't leak into other `IfcFlowTerminal` fixtures.
+2. ✅ **§TRIPLANAR_MEP_GAPS — SHIPPED.** Added the 4 named classes
+   (`IfcFlowController`/`IfcFlowMovingDevice`/`IfcFlowInstrument`/`IfcFlowStorageDevice`) to
+   `TRIPLANAR_MAT`'s metal group, **plus `IfcValve`** — a real gap the original diagnosis missed,
+   found by cross-checking every `STD_MAT` class with `metal>0.3` (the table's own documented rule)
+   against `TRIPLANAR_MAT`'s keys; `IfcValve` had 111 live elements on Terminal and none on any
+   triplanar entry, silently falling back to a fake procedural-grain perturbation instead of the
+   real photo texture. **Live-verified headless on Terminal** (a different, larger building than
+   the original diagnosis): both `IfcValve` and `IfcFlowController` materials now compile with the
+   real `uTriNorm` triplanar shader (`§TRIPLANAR_INIT class=IfcValve` / `class=IfcFlowController`
+   fired, `onBeforeCompile` contains `uTriNorm`) instead of the flat/fake-grain fallback.
+3. ✅ **§EXTERIOR_FLAT_SHADOW — INVESTIGATED, VERDICT = candidate (a), no code change.** Two
+   numeric checks settle (a) vs (b):
+   - **Shadow-frustum coverage is NOT the gap, on either building tested.** Clinic:
+     `outsideFrustum=0` (of 565 casters), `texelPerM=10.3` (~9.7cm/texel). Terminal (much bigger —
+     28MB source, ~3x Clinic's element count): `outsideFrustum=0` (of 577 casters),
+     `texelPerM=11.3` (~8.9cm/texel), shadow-camera frustum `env=182m` — sized to the FULL building
+     envelope by `_enablePhotoShadows()`'s own `_env` computation, not a local/partial box. Both
+     buildings: fine resolution, zero geometry clipped from the shadow camera's view.
+   - **N8AO is architecturally contact/crease-only, confirmed from its own config, not assumed.**
+     `STILL_AO_RADIUS = 32` (`effects.js` — pixels, `screenSpaceRadius` mode) means N8AO can only
+     ever sample and darken pixels within 32 SCREEN pixels of a depth discontinuity (a corner,
+     crease, or contact point) — this is the fundamental limit of every screen-space AO technique,
+     not a bug in this codebase's tuning. A broad, flat exterior wall panel far from any corner has
+     no nearby depth-different geometry within that radius, so it legitimately reads AO≈1.0
+     (no darkening) — exactly candidate (a)'s prediction from the costed branch below.
+   - **Verdict: this is EXPECTED N8AO behaviour, not a fixable gap** — no code change made. If the
+     user wants broad-surface darkening away from creases (not contact-AO), that needs a genuinely
+     different mechanism (e.g. a stronger sun-vs-fill light ratio so orientation-based N·L falloff
+     reads more dramatically, or a distance-based fake ambient-occlusion pass) — named here as a
+     possible future ask, not built, since the diagnosed item itself doesn't call for it.
+   - Witness scripts (this session, not committed): scratchpad `witness_mirror_true_reflect.js`,
+     `witness_triplanar_mep_gaps.js`, `witness_exterior_flat_shadow.js` — headless Chrome 147 needs
+     `--use-angle=swiftshader --enable-unsafe-swiftshader` (not the older `--use-gl=swiftshader`,
+     which now fails WebGL context creation outright — "GL_VENDOR = Disabled" — worth recording,
+     cost real time this session). Terminal specifically needs its split trio symlinked
+     (`Terminal_meta.db`/`_geo.db`/`_positions.bin`, not just `_extracted.db`) — the split-detect
+     logic hangs (guidMap stays 0 indefinitely, no console error) if only the combined DB is present
+     but a stale split reference still gets probed.
+
+### ✅ Follow-on session same day (2026-08-16+1, cont.) — sw.js cache bump + mirror metalness,
+user-tested live, WRAPPED
+- **PR #1409 shipped but never went live — root cause found+fixed, PR bim-ootb#1411 MERGED+LIVE.**
+  #1409 touched only `effects.js`/`streaming.js` and never bumped `sw.js` `CACHE_VERSION`, so
+  browsers with an existing install kept serving the pre-#1409 bundle (documented bug class —
+  `feedback_sw_version.md`: "zero §-tags appear in logs" — exactly what happened, user's live
+  console showed zero `§MIRROR_TRUE_REFLECT` output despite a full Alt+S cycle completing). Fix:
+  `CACHE_VERSION` v1052→v1053, `viewer.html` `effects.js?v=24`/`streaming.js?v=63`. Confirmed live
+  via `curl` against the served `sw.js`/`viewer.html` post-deploy.
+- **§MIRROR_TRUE_REFLECT_METALNESS — real second bug, PR bim-ootb#1415 MERGED+LIVE (bundled its
+  own sw.js bump this time — v1053→v1054 — same PR, learned from the miss above).** User re-tested
+  after the cache fix and reported "still not reflection in mirror." #1409's roughness-only fix
+  left `metalness` at `STD_MAT.IfcFlowTerminal`'s 0.30 — `MeshStandardMaterial`'s diffuse/specular
+  split is driven by metalness, not roughness, so at 0.30 the shader still blended ~70% diffuse
+  albedo into the output; even a sharp, boosted envMap reflection read as a faint sheen, not a
+  mirror image. Fix: force `metalness=0.95` for mirror materials specifically (same `isMirror`
+  exclusivity gate), save/restore on teardown. Live-verified headless on Clinic: metalness
+  0.30→0.95 confirmed, `_photoOrigMetalness` saved for restore. **User-confirmed live**: mirror now
+  visibly reflects via Alt+S (user initially thought it worked without Alt+S — corrected: "it is
+  from alt-s that the mirror effect comes about").
+- **Two follow-on mirror-quality observations, understood not urgent, not built:** (1) "still
+  metallic" — the room-probe capture is only 128×128 (`§MIRROR_ROOM_PROBE ... size=128`), too
+  low-res for a crisp mirror image, reads as a soft/grainy metal sheen instead; a real fix needs a
+  higher-res probe and/or a lower-metalness glass-mirror-tuned look instead of the metal path. (2)
+  "reflects what is outside the room too" — expected, not new: the probe is ONE fixed capture
+  point for the WHOLE building (the existing "35% up from lowest point" pivot heuristic from
+  #1407), not per-room/per-mirror — if that one point has line-of-sight to a window, every mirror
+  in the building shows it. Real fix = per-mirror local probe (expensive) or a smarter per-room
+  probe placement — this is literally the original "§MIRROR_TRUE_REFLECT — real per-mirror
+  reflection" ask from the very first costed branch below, items 1 (metalness/roughness) only
+  partially closes it. Named here for a future session, not costed yet.
+- **§EXTERIOR_FLAT_SHADOW revisited — user pushed back with a real physics question ("will it be
+  darker on wall away from the Sun? ... I don't see that is so"), leading to a SEPARATE, more
+  severe finding than the AO-contact verdict above:** a rigorous live A/B (same scene, only
+  `A.sun.castShadow` toggled true/false, raw render, two ground points symmetric around the
+  building) showed **byte-identical pixels** — the ground gets ZERO contribution from the sun's
+  real directional shadow, confirmed on Clinic in plain-nav Shadow mode ('h'). A guaranteed solid
+  occluder box placed directly overhead a sample point only moved luminance by 0.7/255 (consistent
+  with SSAO's small contact-only darkening, not a real cast shadow). Ruled out `§GROUND_DETAIL`'s
+  `onBeforeCompile` ground shader patch as the cause (stripping it entirely made zero difference to
+  the same test). Ruled out frustum coverage (already proven clean above). Live THREE.js revision
+  confirmed **r185** (a stale log label elsewhere claims r184 — not proven as the cause, just an
+  inconsistency worth another look). **⛔ USER RE-TESTED LIVE AND COULD NOT REPRODUCE — "ground
+  shadow gone away. False alarm or there is a mem race conflict."** Per this same file's own
+  `§GROUND_RECT_ARTIFACT` precedent (closed the same way earlier today), the user's live call
+  wins — not chased further, no code changed. The headless A/B evidence above is real and
+  reproducible in THAT run, so if this resurfaces, re-run `witness_ground_shadow3.js`/
+  `witness_ground_shadow_bisect.js` (scratchpad `7d2a0b3a-.../scratchpad/`, not committed) as a
+  starting point rather than re-deriving from scratch — but do not assume it's still broken without
+  a fresh live check first.
+- **§TRIPLANAR_MEP_GAPS user-confirmed live, unprompted positive**: "now even piping is smooth
+  metallic and no longer jagged." Some pipes still read jagged per the user — expected, not a new
+  bug: only the classes actually added to `TRIPLANAR_MAT` today (IfcValve/IfcFlowController/etc.)
+  got the real texture: any remaining jagged pipe is a class not yet in that table, not a
+  regression in what shipped.
+- **Lane closed by explicit user instruction ("wrap up and close") — next session picks up
+  `prompts/CPE_4D_PERF_MEM_STUDY.md` ("the mem hog prompt"), not this file.**
+
+### ⛔ OPEN TASKS FOR NEXT SESSION (2026-08-16 closeout, 3 items — costed, not started) — CLOSED
+above, kept for the original cost/diagnosis reasoning
+1. **§MIRROR_TRUE_REFLECT — real per-mirror reflection.** Corrected root cause (supersedes the
+   "batched elements bypass `A._matCache`" theory in the §MIRROR_ROOM_PROBE section below, which
+   was wrong — traced further, `A._getMaterial()` runs uniformly across batched/instanced/merged
+   paths and DOES populate `_matCache` for all of them). The REAL reason Clinic's real
+   `IfcFlowTerminal "M_Mirror"` elements get nothing: `STD_MAT.IfcFlowTerminal` carries
+   `envInt: 0.05` (`viewer/streaming.js` ~line 421) — the SAME fixed-low-reflection override
+   applied to pipes/ducts by §HOSPITAL_BLUE_TINT/§PIPE_DUCT_BLUE_TINT to kill a blue-sky-tint bug.
+   That sets `mat.userData._photoEnvExempt = true`, which is `_reassertPhotoMatBoost`'s very FIRST
+   early-return guard — skips envMapIntensity boost, roughness scale, AND the room-probe
+   eligibility flag entirely, for the whole class, mirrors swept up in a fix meant for pipes.
+   **Cost, not yet determined which case applies (check first, ~15-30 min, same methodology as
+   the already-documented §PHOTO_EMBER_EXCLUSIVE lesson):** if the mirror's real IFC colour
+   already lands it in its OWN exclusive `_matCache` key (not shared with other `IfcFlowTerminal`
+   fixtures like diffusers/grilles) — **~1-2h**: exclude mirror-named elements from the exemption
+   (name-keyword query, same proven vocabulary pattern as `§PHOTO_EMBER`'s `EMBER_WORDS`), force
+   near-zero roughness + the room-probe texture, verify live. If the material IS shared with
+   other non-mirror fixtures — **~2-3h**: needs a per-element material split/clone for just the
+   mirror sub-set (can't touch the shared key without boosting the fixtures sharing it too).
+2. **§TRIPLANAR_MEP_GAPS — texture-grain amplifier reads "selective" on piping.** User: "i notice
+   it replaces selectively in some piping but not exactly similar next to it." Found via code
+   read (NOT yet visually confirmed against the user's actual observation — do that first):
+   `TRIPLANAR_MAT` (`viewer/streaming.js` ~line 518) covers `IfcPipeSegment/Fitting`,
+   `IfcDuctSegment/Fitting`, `IfcCableCarrier*`, and the generic-MEP `IfcFlowSegment/Fitting/
+   Terminal` — but NOT `IfcFlowController`, `IfcFlowMovingDevice`, `IfcFlowInstrument`,
+   `IfcFlowStorageDevice` (valves, dampers, pumps, gauges) — real MEP runs mix these in among
+   segments/fittings, so an uncovered fitting sitting between two textured pipe segments on the
+   SAME run would render flat/plain right next to heavily-streaked neighbours — exactly the
+   symptom described. **Cost: ~30-45 min** — add the missing classes to `TRIPLANAR_MAT`'s metal
+   group (a few lines, same convention as the existing entries), verify live that they pick up
+   the grain and the "selective" look is gone.
+3. **§EXTERIOR_FLAT_SHADOW — surfaces away from any wall don't darken.** User: "the surface of
+   building away from wall does not get darker shadow effect." NOT INVESTIGATED yet — two
+   candidate readings, need a live check to tell which: (a) N8AO by design only darkens contact/
+   crease areas (near-adjacent geometry) — a broad open exterior wall far from any corner
+   legitimately stays bright under AO, nothing to occlude against, this would be EXPECTED
+   behaviour, not a bug; (b) real self-shadowing (the sun's own shadow map, `A.sun.shadow`) isn't
+   reaching/covering distant exterior surfaces — a real gap, possibly a frustum-coverage issue
+   (this file already has instrumentation for exactly this — `§PHOTO_SHADOW_FRUSTUM_COVERAGE`
+   logs an `outsideFrustum` count; check it on the building/surface in question). Cost not
+   estimated — investigation first (~20-30 min to tell (a) from (b) live), then cost depends on
+   which.
+
+### ✅ §MIRROR_ROOM_PROBE — SHIPPED 2026-08-16, PR bim-ootb#1407 (auto-merge armed)
+User: "what does it take for mirrors to truly reflect... try the single room-representative probe
+first" (asked after diagnosing a "jagged pipe surface" + "whitewashed" scene — see the
+`§TRIPLANAR_CONTRAST`/`PHOTO_ENVMAP_BOOST=3.0` diagnosis in this session's chat, not yet acted on
+below). Every glossy/metal material only ever reflected the static sky/HDRI env map — no local
+scene reflection existed anywhere. Shipped: one `CubeCamera` capture at a representative interior
+point (reuses `_cinemaPathPlan`'s own "35% up from the lowest point" pivot heuristic), used as
+`envMap` for the existing `isGlossy` material set instead of the sky. Verified live on Clinic
+(17,279 elements, real building the user was looking at — its console log is in this session's
+chat): probe builds, ≥1 glossy material picks up the room-probe texture.
+**A per-element "real mirror" boost was attempted and DROPPED, not shipped**: Clinic's real
+`IfcFlowTerminal "M_Mirror:Mirror 600mm x 900mm"` elements (22 of them, user pasted a live pick
+of one) render via the BATCHED mesh path — confirmed from the user's own console log
+(`§BATCHED_PICK batchId=2`) — and `A._matCache` (what this whole boost/envmap system reads) only
+covers instanced/merged-tracked elements. A batched element's material never gets a
+`color|class|discipline` key in `_matCache` at all, so a per-element mirror boost has nothing to
+attach to regardless of how the guid lookup is written (traced through `A.guidMap` →
+`_batchMeta`/`_instanceGuids`/`findMeshByGuid` — batched elements use a SEPARATE identity system).
+Fixing that needs a batched-mesh-aware boost path — a bigger, separate task, named here not built.
+**Also found: Terminal (48,428 elements) has ZERO `_matCache` entries at all**, before and after
+staging — almost certainly its DLOD (`A._useDlodPath`) rendering path bypasses the whole STD_MAT/
+`_matCache` material system universally, not just for batched outliers. Means Alt+S's entire
+material-boost/triplanar/envmap/room-probe layer may be a no-op on DLOD-path buildings — not
+chased further this session (Clinic, the building actually in question, is unaffected — its
+piping-equivalent classes, `IfcFlowSegment`/`IfcFlowFitting` under the IFC2x3 generic-MEP
+convention, ARE in `_matCache` normally), but worth a dedicated session if Alt+S quality on large
+buildings (Terminal/Hospital/LTU) is ever specifically checked.
+**Real bug found+fixed in the same pass**: dispose+rebuild every Alt+S cycle leaked +1
+texture/cycle, compounding (measured C1/C2/C3 exit deltas: 25, 1, 1 — same bug CLASS as
+§ALTS_MEM_HOG above, found via the identical bisection discipline). A bare isolated
+build+dispose loop OUTSIDE the real staging pipeline did NOT reproduce it — leak was specific to
+disposing the RT while real materials still referenced its texture (most likely a stray render
+between reset-envmap and dispose triggers a phantom re-upload three.js then never tracks). Fixed:
+build the probe ONCE, keep it alive, reuse across cycles (only disposed on a real building
+switch) — same "created once, reused" discipline this file already uses for `A._camLight`.
+Re-verified: 3 full cycles, texture/geometry/program counts flat every exit.
+**Still open, not yet started**: the "jagged pipe" / "whitewashed" diagnosis from earlier this
+session — `contrastBoost=1.9` (metal group, highest of 3) at `tileMeters=0.6` (finest tile) is the
+likely source of the pipe's "jagged" streak read (texture-space contrast, not geometric aliasing
+— TAA correctly doesn't touch it); `PHOTO_ENVMAP_BOOST=3.0` (glossy envMapIntensity multiplier,
+tuned pre-§TRINORM_LINEAR when metal read near-black) is the likely "whitewash" source now that
+metal's real darkness bug is already fixed. User said "try the room probe first" — this ships
+that; the contrastBoost/envMapBoost retune is the natural next step if the room probe alone isn't
+enough (not yet judged live).
+
+### ✅ ALL 3 ITEMS CLOSED 2026-08-16 (were: OPEN TASKS from the prior closeout) — see PR links in each
+1. ✅ **§GROUND_RECT_ARTIFACT — CLOSED 2026-08-16, user: "the rect shadow cloud is gone. False
+   alarm."** Original report: "alt-s seems to have a large rect cloud cover over it," suspected as
+   a §GROUND_DETAIL (#1388) regression from the paved normal map's 780m tile (rectangular slab
+   joints amplified through lighting) and/or the 90m `floor()`-cell blotch (both real, hard-edged
+   mechanisms — confirmed mathematically mid-investigation, a `floor()`-quantized per-cell hash is
+   piecewise-constant with discontinuities at every cell boundary by construction) — but the user's
+   live browser no longer showed it and called it a false alarm before the attribution rig
+   finished. A GLSL smoothing fix for both mechanisms was drafted and verified working but NOT
+   shipped (dropped per user's false-alarm call — avoid unsolicited scope creep on a
+   no-longer-reported symptom). **Redirected instead, same session: §GROUND_EARTH_DEFAULT — PR
+   bim-ootb#1393 (auto-merge armed).** User: "more realistic even surface feel" — switches
+   `_applyPhotoStaging()`'s Alt+S/Alt+C bake ground texture from 'paved' (concrete_floor_01, the
+   texture carrying the rectangular joint pattern above) back to 'earth' (no such structure), and
+   reorders the Shadow-mode toggle cycle (`_SG_CYCLE` in tools.js) so 'earth' is the first real
+   choice instead of 'grass'. §GROUND_ALBEDO's existing gain calibration carries over unchanged —
+   earth's measured mean (0.1599) is within 3% of paved's (0.155). Verified headless (Duplex, cold
+   cache): first `toggleShadow()` press → `_shadowGroundKey='earth'`; Alt+S staging's real
+   `§GROUND_MAP key=earth` log confirms both nor/rough maps loaded.
+2. ✅ **§LTU_SUBSURFACE_BBOX in Alt+C — WITNESSED 2026-08-16, live plan build confirmed working,
+   no dive.** Triggered the REAL Alt+C entry point (`A.cinemaPathPlan(24)`, the same function
+   `cinema_maxq.js` calls — not a synthetic stand-in) headless on `LTU_AHouse_extracted.db`
+   (125,698 elements; only the DB needs to be open for this — `_buildingBBoxArc()`/
+   `_cinemaPathPlan()` read `A.dbQuery`, not streamed THREE.js mesh, so no need to wait out the
+   many-minutes full mesh stream). Confirmed exactly as predicted:
+   `§CINEMA_BBOX_FENCE excluded=13/9712 rawZ=[-45.55,16.31] fencedZ=[-3.19,16.31]
+   fence=[-3.78,18.89]` fires during PLAN build — the fence throws out real subsurface junk
+   (raw Z min -45.55 → fenced -3.19). `A._cinemaPathEdit` confirmed empty (no saved/authored
+   waypoints for LTU — the named "predates the fix" suspect doesn't apply here, ruled out
+   directly rather than inferred). **Pivot Y**: a fresh headless page's `A.controls.target`
+   defaults to the origin, which happens to pass `_cinemaPathPlan`'s "plausible" proximity check
+   for LTU's geometry and wins the pivot over the arc-bbox centre — not a bug, just means a
+   fresh-load probe doesn't exercise that branch by default. Forcing it (parking
+   `controls.target` on the camera's own nose, exactly the "replanted target" failure case
+   `§CINEMA_PIVOT`'s own guard is written to reject) gives `pivotSrc=arc-bbox-centre
+   pivot=(6.3,-4.1,87.8)` — **not** the pre-fix −24 dive, but also not the session's own +3.6m
+   estimate; the ~7.7m gap is `A.ifc2three()`'s per-building Z-datum offset (the +3.6 estimate
+   was raw-IFC-Z arithmetic, before that offset applies — real building-specific calibration, not
+   an error in the estimate's logic). The `§CINEMA_DIVE` settle point in both plan variants
+   (`settle.y=-9.2`, `floorY=-10.94`) sits just above the real floor, consistent with a working,
+   non-diving plan. **Verdict: the bbox fence works, LTU does not dive underground on a real Alt+C
+   plan build.** Not chased further: whether `ifc2three`'s Y-offset for LTU specifically should
+   itself read closer to the +3.6 estimate — low priority since the practical symptom (diving to
+   −24) is gone. Witness script: scratchpad `probe_ltu_bbox_fence.js` / `_fence2.js` (this
+   session, not committed).
+3. ✅ **§ALTS_MEM_HOG — DONE (witness) 2026-08-16, PR bim-ootb#1391 (auto-merge armed).** Root
+   cause found and fixed: `_teardownPhotoStaging()` called `_showPhotoProps(false)`, which only
+   sets `.visible=false` on `_photoUplights`/`_photoSkyline`/`_photoSkylineLights` and does
+   nothing at all for `_photoSparkles` (they froze at whatever visibility the last accumulation
+   frame's sun-glint test left them — a live "sprite left glowing after Alt+S exit" bug). None of
+   it disposed GPU resources — the whole photo-prop tree (~30 PointLights, 40 skyline-box meshes,
+   1 window-sparkle Points cloud, ~24 glint sprites) stayed allocated after every REAL Alt+S exit,
+   only ever freed later by a building switch (`_showPhotoProps(true)`'s own rebuild guard).
+   Headless-measured on `HHS_Office_Federated` (Hospital's 63,917-element stream alone exceeded
+   300s under this sandbox's swiftshader-only headless Chromium — no real GPU here, same caveat
+   `VIEWER_MEMORY_LEAK.md` already documents; the LEAK MECHANISM is building-size-independent, only
+   the absolute heapMB magnitude doesn't transfer): before fix, `startStillRefine()` →
+   `stopStillRefine(true,false)` left textures 225/225, geometries 417→380, programs 49→44,
+   sceneChildren 633→388 — **42 scene objects never freed** vs the pre-staging baseline. After fix:
+   0 leftover objects, geometries/programs fall all the way back to the 364/12 baseline. Ran 2 full
+   Alt+S on/off cycles back-to-back post-fix: cycle-2-exit vs cycle-1-exit delta = 0 on every
+   counter — confirms no per-cycle growth (the one remaining one-time +22 textures/+32 programs on
+   cycle 1 only is legitimate singleton-cached lazy-init — HDRI PMREM env map, N8AO scratch render
+   target — not a leak). Fix: `_teardownPhotoStaging()` now calls `_disposePhotoProps()` (the same
+   function the building-switch path already used) instead of the hide-only path. Probe scripts:
+   scratchpad `probe_alts_mem_hog.js` / `probe_alts_mem_hog_2cycle.js` (this session,
+   `aa515841-…` scratchpad — not committed, throwaway).
+
+### ✅ §TRINORM_LINEAR — 2026-08-16 (8th session): BOTH open Alt+S bugs SOLVED, one mechanism — PR #1383 MERGED + LIVE (fetched back from production: streaming.js carries 4.8763, sw v1037)
+**§ONGOING_TINT (bluish/darkish piping) and §RED_GREY_MYSTERY (red valve → literal black) were the
+same bug, and it was NOT degenerate normals, NOT a stale shader program, NOT data:** every
+triplanar `normFactorRGB` (and the scalar before it) was derived from the JPG's **sRGB byte
+means**, but the shader multiply runs in **linear** light (textures are `SRGBColorSpace` —
+GPU-decoded before `texture2D` returns). Under-normalized 2.0–2.4×, so the "centred at 1.0"
+product actually centred at 0.42–0.53, and the contrast line `(x-1.0)*boost+1.0` clamps every
+texel below `1-1/boost` to **literal zero**:
+- metal (boost 1.9): 41.4% of texels → multiply-by-0 → the valve's pure-black pixels (719/1681
+  grid samples); surviving mean multiply `[0.000, 0.011, 0.071]` — blue-dominant near-black =
+  "bluish tint … greyer piping gets similar dark treatment" verbatim. Applies to ALL metal
+  classes (Beam/Member/Plate/Railing/Pipe*/Duct*/CableCarrier*/Flow*), which is why it was
+  widespread, colour-independent, and Alt+S-only (`uTriActive` gates staging).
+- concrete/plaster: uniform ×0.467 / ×0.53 multiply — the systemic "Alt+S too dark" backdrop.
+**Fix (PR #1383, branch `fix/trinorm-linear-space`, streaming.js?v=62, sw v1037):**
+`normFactorRGB` = inverse LINEAR mean — concrete 2.0755, plaster [1.9428, 1.9262, 2.0172],
+metal [4.8763, 4.0250, 3.3988]. Multiply centres at 1.000/channel, 0.00% texels clamp to zero,
+contrastBoost unchanged. Witness: isolated valve, raw single-frame render, black 719→**0**,
+meanRGB [119,79,66] vs triplanar-off reference [117,80,66] (brightness restored, only grain
+remains). Offline texture-histogram + live uniform-variant probes in scratchpad
+`aa515841-…/scratchpad/` (`probe_noop_recompile.js`, `probe_stale_uniform_diff.js`,
+`probe_contrast_crush_confirm.js`, `witness_trinorm_fix.js`, `*.log`). Scene-wide A/B at the
+default far view (raw render, 16k-sample grid): black 22→1, meanLum 124→126 — no regression,
+the big deltas are close-up on metal surfaces as expected.
+**How the prior sessions' probes all lied — two traps, record permanently:**
+1. **Every shader-checkpoint probe REPLACED `mat.onBeforeCompile`** — which is where the
+   triplanar patch lives — so every "clean" checkpoint was testing a triplanar-stripped shader.
+   The "unresolved contradiction" (all stages clean, full shader black) was exactly this. Never
+   assign `onBeforeCompile` on a material that already has one without composing the original.
+2. **The `uTriActive=0` rule-out was silently undone** by the material's own per-frame
+   `onBeforeRender` self-heal (re-asserts from `A._stillRefineActive` — §TRIPLANAR_RECOMPILE_FIX).
+   Toggle `A._stillRefineActive` itself, or the toggle never survives to the render.
+**Consequences for earlier verdicts:** the §RED_GREY_MYSTERY "root cause = degenerate vertex
+normals" verdict below is **SUPERSEDED — wrong**. The 24 zero-magnitude normals are a real data
+quirk but sit on zero-area triangles (rasterize nothing) — consistent with the repair changing
+zero pixels. `A._repairDegenerateNormals` stays disabled; no longer a suspect for anything
+user-visible. The earlier `length(normal)` "NaN spread" reading was a probe artifact (curved-mesh
+interpolated `vNormal` length, not NaN).
+**Still open after this:** (a) user visual confirm of Alt+S on live once #1383 deploys — expect
+visibly brighter triplanar surfaces (metal especially); AO/exposure tunings were calibrated
+against the crushed baseline and may want a revisit — user's call; (b) §SKY_SYNC_REGRESSION
+(sky-dome sun-disc vs shadow direction mismatch, revert #1381) still open, separate;
+(c) §HOSPITAL_META_DB_STALE regenerated split DBs still awaiting explicit user go to upload.
+**(b) and (c) both CLOSED later the same day — see §SKY_SUNPOS_INIT and §HOSPITAL_DATA_SHIPPED
+below.**
+
+### ✅ §SKY_SUNPOS_INIT — 2026-08-16 (same session, cont.): black-sky-on-Alt+S SOLVED — PR #1384 MERGED + LIVE
+User re-reported "sky is black again" after #1383 went live. Root cause found by code read +
+live repro, NOT the #1380 uniform-copy mistake: `scene.js updateSky()` gated its `sunPosition`
+uniform copy on `_sky.visible`, the init-time `updateSky(45,180)` runs while the sky is hidden
+(so the Sky shader kept its stock `(0,0,0)` sun vector), and since #1379 the non-dusk Alt+S
+shows the sky WITHOUT calling `updateSky` → first Alt+S of a fresh session = Preetham with a
+zero sun = fully black sky. **Live-reproduced numerically** (sky band 192/192 black px, uniform
+read back `[0,0,0]`) and **the #1381 equivalence question is answered**:
+`normalize(A.sun.position)` equals the `setFromSphericalCoords` direction to 1e-16 (sun.position
+is a pure direction ×5000, no offset/parent transform). Fix: uniform copy now unconditional
+(scene.js?v=56, sw v1038) — a uniform write on a hidden object is free, so `visible = true` is
+safe from any caller. Witness on fixed code: sky band 0/192 black, meanRGB [178,211,236].
+§SKY_SYNC_REGRESSION's "mismatch still open" thread is thereby CLOSED for the fresh-load case —
+the "stale sun-disc vs shadow" report was this same uninitialized/stale uniform.
+
+### ✅ Same-day follow-ons (2026-08-16, all user-GO'd, all MERGED): #1386 §LTU_SUBSURFACE_BBOX (movie path no longer dives underground — full record in CINEMA_PATH_EDITOR.md), #1388 §GROUND_DETAIL (ground nor/rough maps + linear-mean-normalized detail multiply + anti-tiling blotch — user ask "ground surface material… not that realistic"), #1389 §STAGED_PL_CUT (night PLs halved during staging only, restores slab shadow play in bakes — full record in NIGHT_AND_FIXTURE_LIGHTING.md)
+
+### ✅ §HOSPITAL_DATA_SHIPPED — 2026-08-16 (same session): stale split DEPLOYED to OCI + self-heal patch for cached users — DONE, VERIFIED
+User asked "so the meta dbs can be uploaded whole to OCI? LTU, Terminal too?" — answered + done:
+- **Hospital**: regenerated split (meta 23.3MB/geo 239MB/positions 1.5MB from `/tmp/split_test`)
+  uploaded to the `bim-ootb` bucket `buildings/` prefix. ⚠ **Bucket convention discovered: DB
+  objects are gzip-compressed with `content-encoding: gzip`** (old objects all were; a first raw
+  upload was redone gzipped). All 3 fetch-back verified: decompressed md5 == local raw md5.
+  Staleness re-confirmed on the actual served bytes first (old: IfcBeam 0/1970,
+  IfcPipeSegment 0/14452 etc.; new: 100%).
+- **LTU/Terminal need nothing**: LTU's split on the bucket is fresh (re-uploaded 2026-08-10);
+  Terminal audited fine 2026-08-15 (split newer than source).
+- **Cached users** (cachedFetch serves IDB blobs with NO revalidation — an OCI re-upload alone
+  never reaches them): colour backfill appended to `buildings/patches/Hospital_meta.db.sql`
+  (+ `viewer/buildings/patches/` mirror), shipped through `scripts/oci_patch_gate.js`
+  (PASS → UPLOAD_VERIFIED, verifier committed, manifest committed) — PR #1385 MERGED. One
+  guarded UPDATE: every previously-uncoloured element in 23 classes gets the single value the
+  new extraction assigned them all (`0.920,0.900,0.850,1.000` — one DISTINCT value, checked);
+  empty-rows-only guard = no-op on the new DB, never touches the 233 aggregate ghosts.
+
+**§RED_GREY_MYSTERY — 2026-08-15/16 (7th session, updated, session closed — handed to a fresh
+Fable session next.) ⚠ Historical record — its "GENUINELY STILL UNSOLVED" item and
+degenerate-normal verdict are resolved/superseded by §TRINORM_LINEAR above.**
+
+### Shipped this session — MERGED to `main`, LIVE on production (`red1oon.github.io/bim-ootb`)
+PR #1379 (TAA fix + sun separation), #1380 (follow-up same day — point-light restore, see below),
+#1381 (revert — see §SKY_SYNC_REGRESSION below). All merged, all live.
+1. **§STILL_REFINE_JITTER_MISMATCH — TAA smoothing was silently half-broken, now fixed and live.**
+   `viewer/lib/TAARenderPass.js` used a 32-entry jitter table while the still-refine loop only ran
+   16 accumulate frames — a "converged" still was a 50/50 blend of 16 real jittered samples + 1
+   plain unjittered hold-frame. Fixed: matching 16-entry table, zero extra cost.
+2. **§PHOTO_SUN_SEPARATION — Alt+S no longer force-overrides the sun position, now live.** Was:
+   unconditional reset to a fixed 6°-elevation dusk + reddish sky drama + forced night-mode amber
+   glow, every press, regardless of real time-of-day. Now: sun position/sky-drama/warm-tint default
+   OFF (plain daylight); old package still reachable via `APP._photoDuskMood = true` for A/B,
+   not deleted. Alt+C's movie noon→dusk sun arc is a fully separate code path — confirmed
+   untouched, never touch `PHOTO_SUN_ELEVATION`/`_AZIMUTH` constants themselves, only the call site.
+3. **Point-light fixture illumination restored (PR #1380), now live.** Removing the whole
+   night-mode force-toggle (item 2) also silently removed ~200 supplementary point lights it loads
+   as a side effect — REAL illumination, not mood; beam/railing (`envInt:0` by an earlier,
+   unrelated fix, so zero sky-reflection by design) leaned on them for visible sheen and went
+   flat/dark without them. Fixed: night-mode's point-light toggle now fires UNCONDITIONALLY every
+   Alt+S (and its intensity/exposure override, which just restores the real pre-toggle daytime
+   values — not mood either); ONLY the warm-tint COLOUR override stays dusk-mood-gated.
+4. **§SKY_SYNC_REGRESSION — shipped broken, reverted same session, DO NOT retry blind.** Attempted
+   to fix a real sky/shadow-direction mismatch (sky dome showing a stale sun-disc position vs
+   where shadows actually fall) by copying `A.sun.position` (normalized) into the Sky shader's
+   `sunPosition` uniform whenever the sky is made visible. **Shipped without live verification —
+   broke the sky entirely (rendered fully black in production), because this app's reflections are
+   sampled FROM the sky as the env map, so it also killed reflections everywhere, not just on the
+   originally-reported element.** Reverted (PR #1381) back to the known-good
+   `if (A._sky) { A._sky.visible = true; }` only. **The mismatch is still real and still open** —
+   re-derive the fix properly next time: `scene.js`'s own `updateSky()` builds the sky uniform via
+   `setFromSphericalCoords(1, phi, theta)`, NOT by normalizing `A.sun.position` — check whether
+   `A.sun.position` carries anything beyond a pure direction (offset, non-uniform scale via a
+   parent transform, etc.) before assuming `.normalize()` is equivalent, and test live (screenshot
+   or — per this project's own rule — better yet a numeric colour/luminance read of the sky
+   pixels) BEFORE merging, not after a user reports it broken.
+5. **§ONGOING_TINT — user's last observation this session, NOT resolved. IS a rendering bug, not
+   a data/colour issue. §HOSPITAL_META_DB_STALE is NOT the cause of this — settled, don't
+   re-litigate it here.** §HOSPITAL_META_DB_STALE (further below in this file) is a real, separate,
+   smaller, already-scoped issue about MISSING colour data — it is unrelated to this symptom and
+   was already proposed and rejected once this session as an explanation; do not re-propose it for
+   §ONGOING_TINT without genuinely new evidence. After all 4 fixes above: "bluish tint still there
+   though darker, but the greyer piping gets similar dark treatment. Thus it is just replacing the
+   too bluish with another similar set of too darkish." **A grey element going BLACK is not
+   explained by any colour-data gap — grey is a legitimate, valid RGB value; something in
+   RENDERING has to actively zero it out.** That is the exact same failure shape as
+   §RED_GREY_MYSTERY's already-found root cause on the one red valve (degenerate/zero-length
+   vertex normals → `normalize(vec3(0))` → NaN → literal `[0,0,0]`, independent of the element's
+   real base colour — proven on THAT element by the diffuseColor probe reading 100% healthy while
+   the final pixel was still black). **This session's disabled normal-repair scan already measured
+   how widespread the same raw defect is across this ONE building, unprompted by this specific
+   complaint** — worth re-reading directly: `meshesScanned=4368 meshesAffected=1552
+   degenTotal=72077` (from the `§NORMAL_REPAIR` log line, `A._repairDegenerateNormals` in
+   `streaming.js`, currently commented out at its call site). 1,552 of 4,368 meshes in Hospital
+   carry at least one degenerate normal — more than a third. That is a very plausible explanation
+   for "greyer piping gets similar dark treatment" being a WIDESPREAD pattern, not one isolated
+   valve. **Next session: do NOT chase a data/DB theory for this — pick up exactly where
+   §GENUINELY STILL UNSOLVED (below) left off** on the one confirmed element, since the repair
+   itself was verified to change ZERO rendered pixels there (the real mechanism is still not
+   found, only the data-level symptom), then check whether the SAME "recompile clears it" lead
+   generalizes to grey piping elements too.
+1. **§STILL_REFINE_JITTER_MISMATCH — TAA smoothing was silently half-broken, now fixed.**
+   `viewer/lib/TAARenderPass.js:35` used a 32-entry jitter table (`_JitterVectors[5]`) while
+   `effects.js`'s still-refine loop only ever ran 16 accumulate frames — a "converged" still was
+   actually a 50/50 blend of (16 real jittered samples) + (1 plain unjittered hold-frame), which is
+   why edges looked jagged on EVERY object, not just the broken one. Fixed: switched to the
+   matching 16-entry table (`_JitterVectors[4]`), zero extra render cost. Verified:
+   `taaAccumulateIndex=16` converges cleanly.
+2. **§PHOTO_SUN_SEPARATION — Alt+S no longer force-overrides the sun.** User: "Sun should be a
+   separation of concern" + "too dark contrasting unrealistic ... too cartoonish." Alt+S used to
+   unconditionally reset the sun to a fixed 6°-elevation dusk (`PHOTO_SUN_ELEVATION`/`_AZIMUTH`,
+   still used by the Alt+C movie sun-arc — untouched), boost the sky toward reddish drama
+   (turbidity/rayleigh/mie), and force night-mode's amber glow on — all regardless of whatever real
+   time-of-day was already active. **New default: none of that happens** — sun/sky/night-mode stay
+   exactly as they already are (plain daylight, if that's what's active). **Old behavior still
+   reachable, not deleted** — user explicitly asked to compare, not lose it: set
+   `APP._photoDuskMood = true` before pressing Alt+S to get the full old dusk package back
+   (sun position + sky drama + night-glow + warm-evening tint), leave unset/false for the new
+   default. Verified live both ways (sun position unchanged by default, forced-different with the
+   flag, shadows confirmed still enabled+casting either way — user's explicit "don't break that").
+
+### GENUINELY STILL UNSOLVED — next session starts HERE, do not re-derive from scratch
+**A real element (Hospital `IfcValve` guid `0HuLVU0hf5gxwY8y9yDvc0`, isolated with zero possible
+neighbour occlusion — including same-BatchedMesh slots via `setVisibleAt`, not just other meshes)
+still renders literal `[0,0,0]` on ~43% of its own pixels under Alt+S.** This session ruled out,
+by direct raw-single-frame-render test (NOT the TAA-accumulated composite, which was found to mask
+real differences — always test with `A.renderer.render(A.scene, A.camera)` directly, never
+`A._composer.render()` for a differential "does toggling X change anything" test):
+- AO, shadow-restore blend, sun shadow map (incl. bias), triplanar, env reflection, batch-neighbour
+  occlusion, backface culling (`mat.side` is already `DoubleSide`), vertex colours (none exist on
+  this material — no `color` attribute at all), material maps (none — no map/aoMap/alphaMap/
+  normalMap/roughnessMap/metalnessMap), opacity/alphaTest/transparency (all default/off).
+- **Geometry-data normals**: found 24 genuinely zero-magnitude vertex normals on this element's own
+  mesh (raw CPU-side buffer read, real in-range positions, not padding) — built and verified a
+  repair (`A._repairDegenerateNormals` in `streaming.js`, currently commented out/disabled at its
+  call site): recompute-from-triangle first, nearest-valid-neighbour-by-position fallback when the
+  vertex's own triangles are ALL zero-area (confirmed the actual case here — every one of the 24 sits
+  on a degenerate triangle, so simple per-face recompute alone doesn't reach them). **The repair is
+  confirmed 100% effective at the DATA level** (read back live: 0 degenerate vertices remain, at
+  every checkpoint across the full staging sequence — streaming-complete, post-isolation,
+  mid-staging, fully-converged, all confirmed clean in one unbroken test) **but changes ZERO
+  rendered pixels**, tried 3 different GPU-upload-forcing strategies (`needsUpdate=true`, swap in a
+  genuinely new `BufferAttribute` object, `renderer.properties.remove(geom)` to drop cached GPU
+  state) — none moved the black-pixel count at all. **This means the 24 raw-degenerate vertices are
+  NOT the (or not the sole) cause of the visible black — that causal link, assumed earlier this
+  session from a correlated but not confirmed in-shader `length(normal)` probe, does not hold up.**
+- **Stage-by-stage shader probe, real finding, most valuable lead for next session**: patched
+  `mat.onBeforeCompile` with early-`return` checkpoints at successive points in the ACTUAL compiled
+  shader (not a synthetic isolated fragment) and re-rendered raw each time. Every single checkpoint
+  came back **100% clean (zero black pixels)**: `diffuseColor.rgb` right after `#include
+  <color_fragment>` (pre-lighting), `length(normal)` right after `#include
+  <normal_fragment_maps>` (post-repair — was NOT clean pre-repair, matches expectation),
+  `reflectedLight.directDiffuse + indirectDiffuse` right after `#include <lights_fragment_end>`,
+  `outgoingLight` right after `#include <opaque_fragment>` (post envmap/specular combine),
+  and the fully-tonemapped+colorspace-converted `gl_FragColor.rgb` right before `#include
+  <fog_fragment>`. Fog itself was also directly ruled out (`material.fog = false` + forced
+  recompile — same black count as fog-on, 721 both times). **Every stage tested individually is
+  clean, yet the FULL unmodified shader (no early-return patches) still outputs black at those
+  exact pixels.** This is an unresolved contradiction — most likely explanation not yet tested:
+  something about the shader RECOMPILE each probe triggers (`mat.needsUpdate = true`) inadvertently
+  fixes or sidesteps the real bug as a side effect (e.g. a stale/mismatched compiled-program cache
+  for this exact material+light-count combination, separate from anything in the GLSL source
+  itself) — test THIS directly next: patch a checkpoint that changes NOTHING (a true no-op
+  replace-with-itself) and confirm whether the mere act of forcing recompile alone clears the black,
+  independent of which checkpoint/probe content is used. If recompiling alone fixes it, the real bug
+  is a stale compiled shader program (e.g. from a light-count change after initial compile — this
+  scene ends up with up to 47 `PointLight`s active during staging) never getting recompiled for this
+  specific material through the normal path, not anything in the source data or GLSL logic.
+- Test infra: `verify_site2` (port 8403, `python3 -m http.server 8403` from
+  `/tmp/claude-1000/-home-red1-bim-compiler/2a545224-.../scratchpad/verify_site2`, symlinked to
+  `/tmp/wt-triplanar-metal-cast/viewer`) — restart the server if the port's not listening
+  (`ps aux | grep 8403`). Every probe script referenced above lives in this session's scratchpad
+  (`8929c17e-...../scratchpad/probe_*.js`, `witness_*.js`) — reuse the pattern (isolate via
+  `setVisibleAt`, raw `A.renderer.render()` per differential test, `A.startStillRefine()` +
+  `_stillRefineBusy===false` wait for the real converged case) rather than rebuilding from scratch.
+- User's standing instruction, unchanged: "if u say near black, that is rejected" — this must
+  resolve to a real, understood, FIXED mechanism or a clearly-still-open item, never a write-off.
+
+The findings below (§1-4) are from earlier sessions the same day and are unrelated to this open
+item — already fixed/parked, do not re-open.**
+
+### Fixed / verified earlier this session (real evidence, not assumed)
+1. **Reflection tuning (envInt) — DONE, LIVE, verified on `origin/main`.** 27 STD_MAT classes
+   exempted from Alt+S's ×3 reflection boost, beam/railing at `envInt:0`, 25 others at `0.05`.
+   `streaming.js?v=61`, `sw.js` `v1031`+. This was correct and complete for what it targeted
+   (sky-reflection strength) — it was never able to fix the other two bugs below, which are a
+   different layer (base colour data, and a separate texture-multiply effect).
+2. **§HOSPITAL_META_DB_STALE (data bug) — fix built + verified LOCALLY, NOT DEPLOYED.**
+   `Hospital_meta.db`/`Hospital_geo.db` (the split files the live viewer actually streams) are
+   dated 2026-06-04/05 — 2 months older than the current combined source, which already has real
+   colour for classes the split copy is missing (confirmed class-by-class: `IfcBeam` 0/1970 in the
+   stale split vs 1970/1970 in the current combined source; same pattern for `IfcPipeSegment`,
+   `IfcDuctSegment/Fitting`, `IfcFireSuppressionTerminal` — all 0% in the stale split, 100% in the
+   current source). Regenerated via the existing `scripts/split_db.sh` into `/tmp/split_test/`
+   (Hospital_meta.db/geo.db/positions.bin) — confirmed live: the same beam's
+   `mesh.material.color` goes from wrong `8c9199` (STD_MAT's grey fallback) to correct `ebe6d9`
+   (matches the real `0.920,0.900,0.850`). **Not yet uploaded to the live OCI bucket — needs an
+   explicit go-ahead before touching production, per this project's PRIME RULE. User has not yet
+   said go.** Audited other split buildings the same way: Terminal is fine (its split is newer
+   than its source); Clinic's split file is old by date but its actual colour coverage checked out
+   complete for the classes inspected; HHS_Office_Federated doesn't use split mode locally.
+3. **§TRIPLANAR_METAL_CAST (a second, separate code bug, Alt+S-only) — fix built, NOT committed,
+   NOT deployed.** The triplanar system (Layer 3, "8 distinct triplanar materials" — that phrase
+   traced to a real 2026-07-15 witness count, archived in
+   `prompts/archive/PHOTOREAL_STILL_RENDER_full_history_2026-07-15_to_2026-08-11.md` line 236, not
+   a designed 8-material system) multiplies a real photographed texture onto every metal/
+   concrete/plaster-class element's colour, Alt+S/Alt+G only. Measured the 3 actual texture files
+   directly: concrete is exactly grayscale (no bug possible), plaster is ~2% off (negligible), but
+   **`metal_color_1k.jpg` has a real, systematic per-channel cast** (mean RGB `0.4901, 0.5353,
+   0.5784` — B 18% above R) that the old scalar `normFactor` (a single brightness number) never
+   corrected, and the metal group's contrast-boost (1.9×, the strongest of the 3 groups) then
+   amplified that cast — dulling/cooling ANY colour under it (real or STD_MAT fallback alike) only
+   during staging. **Fix:** replaced the scalar `normFactor` with a per-channel `normFactorRGB`
+   (measured inverse means: metal `[2.0406, 1.8679, 1.7290]`) so the multiply is a true identity
+   `(1,1,1)` on average for any colour, only real grain survives. Built in worktree
+   `/tmp/wt-triplanar-metal-cast` (branch `fix/triplanar-metal-color-cast`, off `origin/main`
+   `77f8234`) — 3 files touched in `viewer/streaming.js`: the `_TRI_CONCRETE`/`_TRI_PLASTER`/
+   `_TRI_METAL` definitions, the `_triNorm` construction (now a `THREE.Vector3`), and the shader's
+   `uniform float uTriNorm` → `uniform vec3 uTriNorm`. **Verified two ways:** (a) live uniform
+   read post-fix, no pixel sampling: `uTriNorm = [2.0406, 1.8679, 1.729]`, exact match, no NaN, no
+   shader compile error (`gl.getError()==0`); (b) real pixel test, the beam, both with its correct
+   real cream colour AND with the grey STD_MAT fallback, wide non-crevice pose, 717 confirmed
+   on-target samples each: Alt+S comes out hue 0-5° (warm/neutral) in BOTH cases — no longer
+   bluish either way. **NOT yet committed, NOT a PR, NOT deployed — user's explicit instruction
+   this session: "I rather u do not fix that [extraction] script" (item 4 below) but this
+   triplanar fix was explicitly confirmed wanted ("the red is confirmed then fix the alt-s
+   effect... the grey is also confirmed fallback then treat similar not bluish") — this one IS
+   meant to ship, just hasn't been committed/PR'd/deployed yet.**
+4. **Extraction-script gap — found, root-caused, EXPLICITLY PARKED, do not touch without new
+   instruction.** `DAGCompiler/python/extractIFCtoDB.py`'s `get_colour_for_element()` (the actual
+   function that builds a building's combined source DB from its real IFC — confirmed this is the
+   one, not `tools/extract.py` which builds a different Rosetta-reference DB) only reads colour via
+   direct per-instance geometry styling (`IfcStyledItem`/`StyledByItem` on the geometry itself) —
+   it never reads colour via material ASSOCIATION (`IfcRelAssociatesMaterial` → the material's own
+   defined render colour), which is how Revit typically colours structural elements ("this beam's
+   material is Steel, Steel has a colour"). Real numbers, multiple buildings, not just Hospital:
+   | building | class | has colour / total |
+   |---|---|---|
+   | Hospital | IfcBeam | 0 / 1,970 |
+   | Terminal | IfcBeam | 432 / 432 |
+   | Terminal | IfcColumn | 122 / 158 |
+   | Terminal | IfcMember | 312 / 442 |
+   | LTU_AHouse | IfcBeam | 819 / 1,144 |
+   | LTU_AHouse | IfcColumn | 1,365 / 1,785 |
+   | LTU_AHouse | IfcMember | 2,283 / 2,349 |
+
+   Hospital is total (0%) because its source IFC apparently has zero redundant per-instance
+   styling for these classes; Terminal/LTU are partial (70-97%) because their exports happen to
+   carry some redundant styling the buggy function can still pick up. **User's explicit ruling
+   this session: do NOT fix this now** ("I rather u do not fix that script as i fear it is
+   pivoting and drifting") — parked, not touched, not re-opened without new instruction. If ever
+   revisited: fixing means re-running full IFC extraction (the function takes a live `ifcopenshell`
+   element, not a `.db` row) against the ORIGINAL source IFC — not a `.db`-side patch — and a
+   partial "colour-only" re-run mode vs a full geometry re-extraction was never confirmed to exist,
+   check before assuming either is cheap.
+
+### §RED_GREY_MYSTERY — ROOT CAUSE FOUND 2026-08-15 (5th session same day), FIX NOT YET WRITTEN
+**Both named candidate causes from the prior session (stale AO depth-prime, AO/shadow-restore
+per-pixel bug) are RULED OUT by direct test — the real mechanism is a THIRD thing, deeper than
+either guess: a genuine geometry-data defect (zero-magnitude vertex normals) on this specific
+element's own mesh, unmasked by staging's lower light levels.** Full chase, in order, each step
+empirically tested (not guessed) on `verify_site2` (fixed data + fixed triplanar code, port 8403,
+worktree `/tmp/wt-triplanar-metal-cast`) — reuse the same 8 probe scripts in
+`/tmp/claude-1000/-home-red1-bim-compiler/8929c17e-.../scratchpad/probe_*.js` if this needs
+re-verifying rather than re-deriving:
+
+1. **Methodology hole found in the PRIOR session's own isolation test**, before ever reaching the
+   two named candidates: `witness_isolated_red.js` hides every other scene *mesh* but the target
+   (`0HuLVU0hf5gxwY8y9yDvc0`, an `IfcValve`) is drawn by a `BatchedMesh` (id 3365) holding **92
+   elements in one shared buffer** — hiding "every other mesh" left all 91 neighbours in the SAME
+   batch fully visible and able to occlude/shadow the target. `mesh.setVisibleAt()` was never
+   called. Fixed with true single-slot isolation (`setVisibleAt(i, false)` for all 91 others) —
+   **made no measurable difference** (729→729 black px), so this hole didn't change the verdict,
+   but it means the original "zero possible neighbour occlusion" claim was never actually true and
+   should not be trusted at face value again without checking `setVisibleAt` support first.
+2. **Both prior-session candidate causes are wrong.** Toggling `A._sunShadowRestoreEnabled`,
+   `A._stillAOAdapter.enabled`, and `A.sun.castShadow` (+ a 20× bias diagnostic) all independently
+   made **zero difference** to the black-pixel count, once tested correctly (see next point) — N8AO,
+   the shadow-restore blend, and the sun shadow map are all innocent.
+3. **Real methodology trap hit mid-session, worth recording for next time**: the very first round
+   of "toggle X, call `A._composer.render()` once more, resample" tests all came back suspiciously
+   *identical* — including swapping the element's material for flat-white `MeshBasicMaterial`,
+   which should have looked nothing like the real material but read the exact same RGB. Cause:
+   `A._composer.render()` after `startStillRefine()` has converged doesn't give a fresh single-sample
+   frame — TAA's `accumulate=true` buffer is 16-deep, so one more call only blends ~1/17 of a new
+   sample into 16/17 of old history. Every "no difference" conclusion from that first round was
+   **unverified, not disproven**. Fix: bypass the accumulator entirely — raw `A.renderer.render(A.scene,
+   A.camera)` — for every differential test from that point on. (This also cleanly excludes AO and
+   the shadow-restore blend from raw-render results *by construction*, since both are composer-only
+   passes — independently reconfirming point 2 for those two.)
+4. **Redone properly (raw render, single frame, no accumulation): sun shadow off, triplanar off
+   (`uTriActive=0`), and `envMapIntensity=0` — still zero difference** (725/725/727 black px,
+   baseline 725). Batch-neighbour occlusion, AO, shadow-restore, sun shadow, triplanar, and env
+   reflection are now ALL independently ruled out by direct measurement, not inference.
+5. **Unlit `MeshBasicMaterial` swap via raw render (the first *reliable* version of that test):
+   ZERO black pixels, full coverage.** This proves the geometry itself has no gaps/holes at this
+   camera pose — rules out mesh completeness and (combined with `mat.side` already being
+   `THREE.DoubleSide`, confirmed live, not `FrontSide`) rules out backface culling too.
+6. **Direct in-shader probe of `diffuseColor.rgb` right after `#include <color_fragment>`
+   (pre-lighting): ZERO black pixels.** The base albedo (no `map`, no `aoMap`, no vertex-colour
+   attribute — confirmed, `geometry.attributes` is only `position`+`normal`) is completely healthy
+   everywhere. The defect is proven to live specifically in the **lighting stage**, which is the
+   one stage that depends on the surface normal.
+7. **Direct in-shader probe of `length(normal)` right after `#include <normal_fragment_maps>`**
+   (the same `normal` variable `lights_physical_fragment` uses, confirmed from the actual
+   `three.module.min.js` chunk source — no normal/bump map on this material, so `_maps` is a
+   no-op and `normal` at this point is exactly `normalize(vNormal) * faceDirection` from
+   `normal_fragment_begin`, which is mathematically guaranteed to be unit length unless the
+   source is degenerate): **734/1681 sampled pixels read a clean ~1.0 length; the other 947 read a
+   scattered, non-clustered spread from ~0.39 to ~0.95** — not a physically real distribution for a
+   post-`normalize()` vector (floating-point noise would cluster near 1.0, not spread continuously
+   down to 0.39). Consistent with `normalize(vec3(0))` → NaN at some vertices, then NaN propagating
+   through interpolation and getting written to the 8-bit framebuffer as an inconsistent small value
+   per pixel (undefined-but-typically-low GLSL→u8 NaN conversion behaviour), not a genuine geometric
+   normal length.
+8. **Confirmed directly in the raw geometry buffer (CPU-side, no shader involved):** this element's
+   own `BatchedMesh` slot (`getGeometryRangeAt(48)` → `vertexStart=64168, vertexCount=37880`,
+   bounding sphere radius 0.51 — matches the valve's real size, so this is genuinely this element's
+   own dense ~16,420-triangle mesh, not shared/padding data) contains **24 vertices with a raw
+   `normal` attribute magnitude near zero** — real mesh data, not inert padding (checked: their
+   `position` values are small, in-range local coordinates on the valve's actual surface, e.g.
+   `[0.143, -0.387, 0.178]`, not origin/garbage). That's 24 of the 51 total degenerate-normal
+   vertices found across the *entire 92-element batch* concentrated on this ONE valve instance —
+   this specific element's tessellation is unusually bad, not a universal per-vertex background
+   noise rate.
+**Verdict:** this is a **real, previously-undiagnosed 4th bug** — a geometry-generation defect
+(zero-magnitude vertex normals on specific curved/detailed elements, at least this valve) that
+produces literal `[0,0,0]` fragments through ordinary NaN propagation in standard PBR lighting.
+It is NOT caused by AO, shadow, triplanar, envMap, or batch-neighbour occlusion (all independently
+disproven above), and it is NOT "near black is just how ambient light works" — per the user's
+standing instruction ("if u say near black, that is rejected"), this is not being written off:
+it's a confirmed, mechanistically-understood defect with a named data location, just not yet
+patched. It surfaces specifically under Alt+S staging (not plain nav) because staging's much lower
+overall light level (`toneMappingExposure` 0.3825 vs nav's 0.45, dusk sun at 6° elevation) is
+what pushes the NaN-corrupted fragments' *effective* darkness over the threshold where a viewer
+would notice — plain nav's brighter, higher-exposure lighting was very likely masking the exact
+same defect as an unremarkable slightly-dim patch, not a genuine absence of the bug.
+**Not yet done, next session or on go-ahead:**
+- No fix has been written. The likely fix shape (NOT yet verified/built): detect
+  near-zero-magnitude normals at geometry-load time (either in the extraction pipeline,
+  `DAGCompiler/python/extractIFCtoDB.py`, or as a viewer-side self-heal on the `normal`
+  BufferAttribute after streaming) and replace them with a recomputed face normal (cross-product of
+  the triangle's edge vectors) instead of the degenerate stored value — needs its own witness
+  before shipping, not assumed correct from this diagnosis alone.
+- Only ONE element (`0HuLVU0hf5gxwY8y9yDvc0`) was chased to full root cause. Whether other
+  elements/buildings carry the same defect at a rate that matters for the ORIGINAL "red/grey dark/
+  bluish" user complaint (as opposed to being a rare, easy-to-miss edge case) is unmeasured — the
+  extraction-script gap (item 4, above, explicitly parked) is a separate, already-understood issue
+  and should not be conflated with this one.
+
+### Test infrastructure left running/available, reuse don't rebuild
+**⚠ RETIRED 2026-08-16 (post-§TRINORM_LINEAR):** verify_site2 (8403) server stopped and
+`/tmp/wt-triplanar-metal-cast` pruned (branch fully pushed+merged, clean) — the mystery they
+existed for is solved. Still standing: `/tmp/wt-sandbox` (8399). This session's probes/witnesses
++ logs: scratchpad `aa515841-…/scratchpad/`. Historical list below kept for the probe-script
+pattern references only.
+- `/tmp/wt-sandbox` (port 8399) — standing sandbox, STALE Hospital data, unfixed code — baseline/
+  regression reference.
+- `/tmp/split_test/` — regenerated Hospital_meta.db/geo.db/positions.bin, correct colour data,
+  not yet uploaded anywhere.
+- `/tmp/wt-triplanar-metal-cast` (git worktree, branch `fix/triplanar-metal-color-cast`) — the
+  triplanar per-channel fix, uncommitted.
+- Scratchpad `verify_site/` (port 8402, fixed data + unfixed code), `verify_site2/` (port 8403,
+  fixed data + fixed code), `verify_site3/` (port 8404, stale data + fixed code) — the 2×2 combos
+  used to isolate which fix caused which effect. `witness_isolated_red.js` there is the
+  hide-everything-else isolation harness — reuse it for the mystery above, don't rebuild it.
+
+### Methodology lessons, hard-won this session — apply immediately, don't re-learn
+- **Never call `A.renderer.render()` yourself to "sample" after Alt+S has already converged** —
+  that bypasses the composer's real AO/TAA output and silently re-renders a plainer frame than
+  what's actually on screen. Read the canvas exactly as the app's own internal loop left it
+  (no extra render call) for any post-convergence sample.
+- **An automated "pick the camera offset with the most raycast hits" pose-selector is biased
+  toward bad poses** — close-up/crevice angles maximize on-screen coverage (more hits) but also
+  maximize AO/shadow crushing. Don't reuse that heuristic without capping minimum distance or
+  checking the result isn't degenerate.
+- **Isolating a target by hiding everything else removes occlusion ambiguity but may introduce ITS
+  OWN artifact** (see candidate cause 1 above) — don't trust an isolated-element result at face
+  value without checking whether AO/depth state was correctly re-primed for the new (empty)
+  scene.
+- **`mesh.material.color.getHexString()` (a direct property read) is far more reliable than pixel
+  sampling for verifying base colour assignment** — reach for it first; pixel sampling is only
+  needed to check what LIGHTING does to that colour, and even then a large flat surface (a beam)
+  samples far more reliably than a small, tightly-packed element (a coupling/valve).
+
+## §HOSPITAL_META_DB_STALE — supersede notice
+The block below (§HOSPITAL_META_DB_STALE, originally written earlier the same day) is now folded
+into the numbered list above — kept in place for its full diagnostic detail (DB timestamps, exact
+queries) rather than duplicated, but its resume-first status is superseded by the block above.
+
+**§HOSPITAL_META_DB_STALE — REAL ROOT CAUSE FOUND 2026-08-15 (3rd session same day, user: "That
+red metal even up close does not look red at all. Bluish railings and beams still there.") — THIS
+is why the envInt/reflection work below never fully closed the complaint. Read this block FIRST,
+before the reflection-tuning history below — that work was real and correct but was fixing a
+SECOND, smaller effect on top of this larger, primary one.**
+
+- **Root cause, proven not guessed:** `buildings/Hospital_meta.db` + `Hospital_geo.db` (the
+  split-DB pair the live viewer actually streams from — confirmed via `§CACHE_WRITE_OK
+  Hospital_meta.db` in a real session log, even when the URL param requests
+  `Hospital_extracted.db`, the split-detect logic silently prefers meta+geo when present) are
+  **dated 2026-06-04/05 on disk** (`ls -la --time-style=full-iso`). `Hospital_extracted.db` —
+  the single combined source DB — is dated **2026-08-03**, almost 2 months NEWER. The split was
+  never regenerated after whatever pass added/fixed real `material_rgba` values in the extracted
+  DB. Direct query, stale `Hospital_meta.db` on disk: **56,751 of 63,415 elements (89.5%) have
+  `material_rgba IS NULL`, including 1,970/1,970 IfcBeam (100%) and most IfcRailing.** The CURRENT
+  `Hospital_extracted.db` has real, correct, warm-cream colour (`0.920,0.900,0.850`) for every one
+  of them — confirmed via direct `sqlite3` query against the file, not the app.
+- **This is why beam/railing never actually looked right despite the envInt=0 fix below:** with
+  `rgbaStr` null, `streaming.js`'s `_getMaterial()` correctly (and separately, not a bug) falls
+  back to the class default `STD_MAT.IfcBeam = { r:0.55, g:0.57, b:0.60, ... }` — a **cool
+  blue-grey "generic steel" placeholder**, `b` slightly the dominant channel — that IS the blue the
+  user kept seeing. The envInt work fixed the SKY-REFLECTION contribution correctly; it was never
+  able to fix the BASE ALBEDO because the base albedo data itself never reached the deployed file.
+  Live-confirmed the material itself, not just the DB: real GPU witness against a real beam
+  (`3PPIAPsErEhBLQrdgjAPap`, `meshId=626, instanceIndex=2`) on the stale meta.db —
+  `mesh.material.color.getHexString()` = `8c9199` = `[140,145,153]`, an EXACT match for
+  `STD_MAT.IfcBeam` converted to 0-255 — proof positive it's the null-fallback, not a rounding or
+  reflection artefact.
+- **Fix regenerated and verified locally, NOT yet deployed (needs explicit go-ahead — this
+  touches the live OCI bucket, `PRIME RULE` production boundary):**
+  `scripts/split_db.sh` (bim-compiler, already existed, does the right thing — `.clone` + drop
+  geometry tables, no rewrite of `elements_meta`) re-run against the current
+  `Hospital_extracted.db` in an isolated `/tmp` copy. Regenerated `Hospital_meta.db`: **63,917/
+  64,150 elements (99.6%) now have real `material_rgba`**, all 1,970 IfcBeam included, confirmed
+  `0.920,0.900,0.850` intact. Live GPU witness against the REGENERATED files (served from an
+  isolated scratch dir, shared `~/bim-ootb` checkout untouched — the auto-mode classifier
+  correctly blocked writing into that shared tree, worked around by staging in
+  `scratchpad/verify_site/` instead, symlinking `viewer/` read-only): same beam,
+  `mesh.material.color.getHexString()` now `ebe6d9` = `[235,230,217]` — **exact match to the true
+  DB colour.** Root cause fixed at the data level, verified by rendering, not assumed.
+- **Residual, small, EXPECTED effect, not a bug — don't re-chase:** even with the correct warm
+  base colour, the SAME beam's actual rendered pixel in ambient-only shadow (no direct sun, this
+  session's now-familiar camera-below-looking-up pose) still reads mildly cool
+  (`[94,101,113]`, B the highest channel) — because the scene's native `THREE.HemisphereLight` sky
+  colour is genuinely `0xb0c4de` (light steel-blue) and this surface has no direct sun on it. This
+  is the SAME class of effect as §PHOTO_METAL_BLUE_TINT's ambient-only-shadow finding below,
+  correctly proportioned, real physics, not a data bug — the difference now is the base colour
+  UNDER that shadow tint is correct cream, not a wrong cool-grey to begin with.
+- **Not yet done, real next steps if this is picked up again:**
+  1. **Deploy the regenerated `Hospital_meta.db`/`Hospital_geo.db`/`Hospital_positions.bin` to the
+     live OCI bucket** (`deploy/OCI_UPLOAD.md` §RULES — remember `--content-type` on every object)
+     — this is the actual fix reaching the user; everything above is proven but inert until this
+     ships. Regenerated files currently sitting in `/tmp/split_test/` (this machine only, not
+     committed — per the DB-changes doctrine, these are never git/LFS).
+  2. **Audit every OTHER split-mode building for the same staleness** (`Terminal`,
+     `HHS_Office_Federated`, `Clinic`, any building shipping a `_meta.db`+`_geo.db` pair) — compare
+     `_extracted.db` mtime vs `_meta.db`/`_geo.db` mtime, re-split any that are behind. Not checked
+     this session, Hospital was the only one investigated (it's what the user was actually
+     looking at).
+  3. **The general-rule question (user asked directly, "why can't all this be as a general
+     rule?"): make staleness structurally impossible, not a thing to remember.** Concrete options,
+     not yet built or decided: (a) a pre-deploy check that fails loudly if `_meta.db`/`_geo.db` are
+     older than their source `_extracted.db`; (b) fold `split_db.sh` as a mandatory last step of
+     whatever pipeline writes/patches `_extracted.db`'s `material_rgba`, so a split file can
+     structurally never exist without its source's latest data; (c) drop the split optimization
+     for the metadata table specifically (keep geometry split, since that's the actual size win)
+     so `material_rgba` always comes from a single always-current source. Worth deciding, not
+     invented/chosen here.
+
+## §PHOTO_METAL_BLUE_TINT — reflection-only history, real and shipped, but NOT the full story (see block above)
+**§PHOTO_METAL_BLUE_TINT — MOSTLY CLOSED 2026-08-15, resume here first if the user reports ANY more
+"still blue/bluish/dark" complaint on beams/railings/pipes/ducts/MEP devices.** Session chased a
+single root cause across 5 shipped PRs (#1367, #1369, #1371, #1370, #1373) on bim-ootb — do NOT
+re-diagnose from scratch, read this block first.
+
+- **Root cause (confirmed, code-grounded):** metal/glossy materials reflect the scene's sky
+  environment map (physically real — same as any polished surface reflecting its surroundings), and
+  a SEPARATE Alt+S/Alt+G-only pass (`_reassertPhotoMatBoost`, effects.js) blindly multiplied that
+  reflection strength x3 (+ tightened roughness x0.4) on every metal/glossy material with zero
+  awareness of a per-class tuning (`STD_MAT[...].envInt`, streaming.js) that already existed to fight
+  this exact effect on 4 classes. Non-null (real, authored) IFC colors were NEVER touched — verified
+  repeatedly, `if (!rgbaStr && stdMat)` gates all hue changes; only the REFLECTION STRENGTH (a
+  physical/rendering setting) is shared per-class regardless of null status, which is correct
+  (a red-painted beam and a grey one reflect light identically in reality).
+- **Current shipped state, VERIFIED BY READING `origin/main`'s RAW FILE CONTENT directly (not just
+  `gh pr view` merge status — see the landmine below on why that matters):**
+  - 27 STD_MAT classes (all structural-steel + MEP: beam/member/plate/pipe*/duct*/cablecarrier/
+    flow*/valve/alarm/fireSuppressionTerminal/lightFixture/sanitaryTerminal/airTerminal/
+    energyConversionDevice/electricAppliance/buildingElementProxy/transportElement) are now
+    `_photoEnvExempt` — the Alt+S/Alt+G triple-boost pass skips them entirely.
+  - `IfcBeam` and `IfcRailing` specifically: `envInt: 0` (zero sky reflection, pure albedo) — direct
+    user request ("get rid of those railings and overhead beams from been recolorized").
+  - The other 25: `envInt: 0.05` (was 0.6 uncapped → 0.18 → 0.05, three successive tightening passes
+    this session, each user-driven: "still blue" → cut further → cut further again).
+  - `viewer.html`: `streaming.js?v=61`. `sw.js`: `CACHE_VERSION = 'v1031'`.
+  - Glass (`IfcCurtainWall`, `IfcWindow`) deliberately left alone — full reflectivity there is the
+    wanted glint effect (§PHOTO_HOTSPOT), never reported as a problem.
+- **Real numeric test, not a screenshot (this session's own GPU witness, Hospital, real streamed
+  geometry, real Alt+S convergence, camera at a real beam's exact DB-recorded position, Level 4):**
+  709 non-metal sample pixels R=96.1 G=88.1 B=89.0 (blue LOWER than red/green); 191 metal sample
+  pixels R=119.1 G=116.7 B=117.4 (blue essentially neutral, -0.5). **Caveat: this test ran BEFORE the
+  final #1373 fix (beam/railing→0, +13 recovered MEP classes) was confirmed on `main`** — it's real
+  evidence the mechanism works, not a post-#1373 re-verification. Re-run it first if picking this back
+  up, using the SAME method (raycast-grid + `gl.readPixels`, bucket by real `material.metalness`, not
+  visual inspection) before touching any more code.
+- **HARD LESSON, apply to every future PR here or anywhere else on this project:**
+  `gh pr merge --auto --squash` can lock the squash content to whatever the branch HEAD was when
+  checks passed — pushing MORE commits to that same branch afterward does NOT reliably get included,
+  even though `git push` succeeds and the branch shows the commits. This bit this session TWICE: PR
+  #1371's second commit (13 MEP classes + a version bump) silently never landed despite being pushed
+  and the PR showing MERGED — only caught because the user kept reporting the exact symptom that
+  commit was supposed to fix, and only proven by reading `origin/main:viewer/streaming.js` directly
+  (`git show origin/main:<path>`), not by trusting `gh pr view --json state,mergedAt`. **Going
+  forward: push ALL intended commits to a branch BEFORE enabling `--auto`, and after any merge,
+  verify by reading the actual file content on `origin/main`, never just the merge/PR state.**
+- **Ambient/hemi fill — RE-INVESTIGATED 2026-08-15 (second session same day), verdict CHANGED from
+  "not yet coded" to "measured, understood, NOT a color bug, decision needed before any fix":**
+  the entry below this one (as originally written) guessed the cause was `PHOTO_HEMI_SKY_COLOR`'s
+  cool-violet HUE (a photo-staging-only tint). **That guess is now falsified by a real numeric
+  witness** (raycast-grid + `gl.readPixels`, same convention as the reflection witness above,
+  GPU `ANGLE (NVIDIA RTX 4060)`), and the true mechanism is broader and simpler:
+  - **Target: a real Victaulic Grooved Coupling, Hospital Level 5, guid
+    `0HuLVU0hf5gxwY8y9yDwsP`, confirmed non-null real IFC color `0.843,0.137,0.102` (hex `d7231a`,
+    255-scale `[215,35,26]`, true luminance 72.6).** Confirmed via `mesh.material.color` read
+    directly off the live `THREE.InstancedMesh` (not the DB) that the material IS exactly this
+    color — the color pipeline is NOT the bug, ruled out first.
+  - **This happens in PLAIN NAV, before any Alt+S/photo staging runs at all** — so it is not a
+    dusk-mode-only issue. Camera posed realistically (looking up at the ceiling-mounted fitting
+    from ~1.2m below, the way a person actually sees it, not a straight-down macro shot — a
+    straight-down pose was tried first and hit a specular hotspot artifact instead, a dead end
+    worth skipping next time). 127 confirmed on-target pixels (guid-matched via raycast, not
+    guessed): rendered median RGB `[77,13,12]`, luminance **26.5 — 36.5% of the true 72.6.**
+  - **Control sample, same session: a nearby neutral/light-grey Victaulic Elbow on the SAME pipe
+    run** (guid `0HuLVU0hf5gxwY8y9yDwsQ`, same camera offset, same method, 181 confirmed pixels):
+    real material colour (read from the live mesh, not the DB — a separate, uninvestigated
+    discrepancy exists between this element's DB `material_rgba` `0.920,0.900,0.850` and its
+    rendered material `9499a1`/`[148,153,161]`, not chased further this session, flagged below)
+    luminance 152.5 → rendered luminance 63.5, **41.6% of true.**
+  - **Verdict: the red joint's 36.5% and the grey elbow's 41.6% are the same ballpark — this is
+    UNIFORM ambient-only shading, not a red-specific or colour-specific darkening.** This renderer
+    has no bounce/GI; a surface with no direct sun on it is lit by ambient+hemi fill alone, and at
+    native (non-photo) intensity that fill leaves ~37-42% of true albedo luminance, for ANY colour.
+    The reason a RED joint specifically reads as "gone black" while a grey one still reads as "a
+    visible dim grey" is arithmetic, not a bug: red's OWN true luminance is already low (72.6, vs a
+    near-white's 200+) because luminance is G-dominated (`Y=0.2126R+0.7152G+0.0722B`) and a
+    saturated red has almost no G. The same proportional cut that leaves grey at a legible 63.5
+    pushes red down to 26.5 — indistinguishable from black to a viewer, even though nothing
+    singled red out.
+  - **What this means for a fix, and why none was applied this session:** the earlier hypothesis
+    ("ambient/hemi COLOR is the next lever") is retired — it's INTENSITY/no-GI, not hue. A global
+    ambient/hemi intensity boost is the obvious lever, but §MOVIE_SHADOW_TM and
+    §PHOTO_CONTRAST_DIALBACK elsewhere in this file are a direct prior instance of exactly that
+    lever being tried and REVERTED because it flattened shadow/spotlight contrast — re-pulling it
+    without a narrower, colour-legibility-only mechanism (e.g. a small shadow-side luminance floor
+    scoped to real/non-null saturated colours only, leaving the global fill and shadow contrast
+    untouched) risks re-breaking what that revert fixed. **This is a real product decision (accept
+    physically-correct-but-perceptually-black shadow rendering, vs. spend a narrow fix on
+    legibility) — not something to invent unilaterally.** Not yet asked/decided as of this entry.
+  - **Loose thread, not chased:** the grey elbow's rendered material (`9499a1`) doesn't match its
+    own DB `material_rgba` (`0.920,0.900,0.850`) at all — that element streams via the `BatchedMesh`
+    path (bucketed by `[storey,disc,rgba]`), and the mismatch wasn't root-caused this session (ruled
+    out one candidate: the "§S260d near-white taming ×0.92" rule doesn't apply here, `b=0.850` is
+    not `>0.85`). Separate from the red-joint investigation above; flagging so it isn't lost.
+  - Witness scripts (not committed, scratchpad only):
+    `witness_indoor_red_darkening_v3.js` + `witness_reference_grey_v2.js`, both against the standing
+    `/tmp/wt-sandbox` (localhost:8399) — reusable if this is picked up again, same GUIDs/offsets.
+  - **Follow-up same session, user pushback ("it's a bright area, why completely not red — investigate
+    harder"): three more real tests, one dead-end honestly retracted.**
+    1. **Colour-assignment audit, 6 more real red elements, both code paths:** every one checked —
+      `IfcPipeFitting` Tee/Coupling variants (InstancedMesh) and `IfcValve`/
+      `IfcDistributionControlElement` (BatchedMesh, guids `0HuLVU0hf5gxwY8y9yDvc0/vcG`,
+      `2NvWEO1Wb9Jwl21EQJp70a`) — every single one has the CORRECT material colour
+      (`d7231a`/`ff0000` matching their real DB `material_rgba` exactly). **No red-colour-assignment
+      bug exists on either streaming path.** (The one mismatched element found earlier, the grey
+      Elbow rendering `9499a1` instead of its true cream `0.920,0.900,0.850`, does NOT generalize to
+      reds — still an open, unexplained, separate loose thread, not chased further.)
+    2. **Dead end, tried and RETRACTED — do not re-chase:** added a synthetic `new
+      THREE.PointLight(0xffffff, 100000, 0, 1)` right next to the same red coupling and re-rendered —
+      ZERO pixel change, even at absurd intensity, even on a plain (non-instanced) `THREE.Mesh`
+      (the ground plane), even after forcing `material.needsUpdate`/`A.markDirty()`/a second render
+      call. `renderer.info.programs.length` DID increase (16→21, proving a shader recompile for the
+      new light count genuinely happened) yet the pixel still didn't move — looked at first like a
+      real "point lights don't illuminate this scene" engine bug. **Falsified by the next test below
+      — this was a test-harness artifact (most likely a camera/target-positioning mismatch in the
+      ad-hoc probe, never root-caused further since a working alternative existed), not a real bug.
+      Do not report "point lights don't work" from this project's own history — it's wrong.**
+    3. **Decisive real-mechanism test: `A.toggleNightMode()`** (the actual shipped fixture-glow
+      code path, not a synthetic light — `§NIGHT_MODE on fixtures=1286 ... glowMats=8`,
+      `nightLights=30` real point lights added) **on the SAME red coupling, same camera pose:
+      luminance 26.5 → 81.9 (3.1x), RGB `[77,13,12]`→`[174,58,47]`, staying clearly red/warm-toned
+      throughout.** Proves the shipped lighting mechanism works correctly end-to-end on this exact
+      element — a real nearby light source DOES correctly restore visible red brightness. This is
+      why the point-light dead-end above was retracted rather than reported.
+    - **Net effect on the earlier verdict: unchanged, now on firmer ground.** The material and the
+      real lighting mechanism both check out correct. What remains is exactly what the first pass
+      found: ordinary ambient-only shadow (no direct sun, no nearby active light) reads at ~37-42%
+      of true luminance for ANY colour, and saturated red's low baseline luminance means that
+      ordinary dimming crosses into "looks black" territory sooner than it would for other colours.
+      If the user's "bright area" report was Alt+S/G dusk mode or plain daylight nav with NO nearby
+      active light source on that specific element, this is that same, already-measured effect —
+      not a new bug. If a future report is pinned to a moment where a real nearby light IS on (night
+      mode, fixture glow, camera fill-light) and the element still doesn't recover, THAT would be a
+      genuinely new lead worth its own witness — not yet observed this session.
+  - **No true indoor/outdoor occlusion for the env-map reflection** — every material's `envMap` is the
+    SAME global sky capture regardless of whether that surface can actually see the sky (an indoor
+    pipe "reflects" the exterior sky through the walls). This session mitigated it by crushing
+    reflection intensity near-zero on the affected classes rather than fixing the underlying
+    architecture (no per-element or per-pixel occlusion test feeds the env map). Cheap enough for now
+    that this may never need real fixing, but it's the honest root cause if intensity tuning alone
+    ever stops being enough.
+- **Explicitly ruled out / do NOT revisit:** Hospital's pipe/duct classes are ~100% real (non-null)
+  IFC color, mostly a generic Revit default (`0.920,0.900,0.850`, confirmed via direct DB query,
+  36,331 elements share this exact value) — proposed treating that default as equivalent-to-null so it
+  could get real trade colors like HHS's null elements do; **user ruling: "NO CHANGE!!!" — Hospital's
+  extracted data is not to be touched, full stop, this door is closed.**
+- **Colour-swap system (separate from the reflection bug above, unaffected by any of this session's
+  fixes, already correct going in) — for when a piece has genuinely NO IFC colour:** name-match first
+  (`A._mepNameHint`, streaming.js) — duct→grey, sprinkler/groove/coupling/victaulic→orange (FP),
+  diffuser/grille/exhaust→red (ACMV), dwv/sanitary→magenta (SAN), pipe→purple (PLB), light/sconce/
+  lamp→yellow (ELEC); falls back to the discipline column (`A.DISC_COLORS`) if no name match — HHS's
+  unlabelled MEP is flat `"MEP"` discipline → green; only truly unclassifiable pieces (no name match,
+  no discipline) land on the flat blue-grey `STD_MAT` default. Real, non-null colours are NEVER
+  touched by any of this — confirmed and reconfirmed multiple times this session.
+
+Other open threads, all below in full detail:
+0. **§WEATHER_ADVANCED_MODE** — SPEC ONLY, no code. Opt-in bake-only weather (the Twinmotion/Lumion
+   parity ask). Most of the machinery is already shipped; start at the Phase 1 overcast preset, not
+   at clouds. Flagged against the schedule-accuracy-first ruling — a decision, not a queued task.
+1. **§LTU_FLOOR_FLICKER** — MaxQ bake floor flicker on `LTU_AHouse`. Mechanism-confirmed
+   (transparent-sort instability, ghost-ground × x-ray-staging), NOT pixel-proven, NOT fixed.
+2. **§SHADOW_FRONTIER** — shadows on in-progress/ghosted construction elements during a MaxQ bake.
+   Mechanism traced, no code bug found (unlike the sun-arc bug below), genuinely needs live
+   evidence next. **User ruling 2026-08-11: not serious, nice-to-have only if free — don't burn a
+   session on it.**
+3. **§PHOTO_AO_TUNING / §PHOTO_AO_SCALE / §PHOTO_AO_EDGE** — CLOSED 2026-08-13. The N8AO
+   ambient-occlusion fold went too dark → far bright/up close dark → no visible edge/corner shadow,
+   across 3 same-day rounds. Three fixes SHIPPED (bim-ootb PR #1331 flat retune + denoise bump,
+   #1334 screenSpaceRadius distance-scale fix, #1335 intensity 2→4) plus a real SW precache
+   staleness bug found+fixed along the way (PR #1332) and a related night-PointLight near-field
+   fix (#1336, decay 1.5→1.0). **Correction (2026-08-13): PR #1337 is NOT part of this chain** —
+   checked live via `gh pr view 1337`, it's `§GLOW_LENS_SOFT_EDGE`/`§GLOW_LENS_SHAPE_FIT` (fixture
+   glow quad softening in `effects.js`, merged 2026-08-12T19:48Z), unrelated to N8AO. Previously
+   miscited here as a 4th AO fix — fixed, don't re-cite it against AO work. **User confirmed live,
+   real bake MP4 (Clinic): "much better," and Alt+G+Night nav "amazing."**
+4. **§SUN_SHADOW_DROWNED — shipped part CLOSED 2026-08-14 (PR #1346, MERGED, confirmed via
+   `gh pr view 1346`). The slab/wall asymmetry it left behind reopened same day as
+   §SUN_SHADOW_GRAZE_SCALE — also CLOSED 2026-08-14/15 (PR #1363, MERGED).** PR #1346 itself:
+   mask/blend restore pass in `_buildStillAO()`, samples `A.sun.shadow.map` directly, mirrors
+   three.js's own `getShadow()` chunk, restores AO-eroded contrast at the detected sun-shadow
+   boundary only, denoise/AO tuning fully untouched. (§SUN_SHADOW_GRAZE_SCALE below: pixel-proof
+   found the fix's shader logic sound but no measurable synthetic-pose effect — closed anyway on
+   the user's own live-bake read, "shadows are sharp enough," same as #1346's own closure pattern.)
+   Real-pixel witness: +18.7% contrast at the shadow edge, 40x scoped away from
+   ordinary AO corners. User's own live gut-check (fresh HHS_Office_Federated Alt+C bake, hard reset
+   confirmed `§SUN_SHADOW_RESTORE_INIT_OK` live): "not evident to be diff[erent] onset" at first,
+   then later in the same bake "strong shadows on walls and different surfaces.. this is good sign,"
+   closed with "I am OK as this is as good as it can get but is good enough." Root cause: Alt+S/Alt+C's
+   N8AO denoise was bumped in PR #1331 for indoor noise; Alt+G's was never touched — the fix borrows
+   sharpness from the already-correct shadow map instead of touching denoise. Full diagnostic trail
+   (10 rounds of user corrections, 2 ruled-out hypotheses, the witness methodology, PR #1343's
+   insufficient partial fix that preceded #1346): archived in
+   `prompts/archive/PHOTOREAL_STILL_RENDER_SUN_SHADOW_DROWNED_2026-08-13_to_2026-08-14.md`.
+
+   **§SUN_SHADOW_GRAZE_SCALE — CLOSED 2026-08-15, bim-ootb PR #1363 MERGED (auto-merge armed
+   2026-08-14, confirmed via `gh pr view 1363`).** User kept seeing "slab shadows still soft, wall
+   shadows now strong" across multiple fresh bakes after #1346 shipped (HHS_Office_Federated AND
+   Hospital). This thread traced why, built a fix, verified it COMPILES/RUNS clean, then a first
+   pixel-proof attempt was RETRACTED as an N8AO-noise artifact (null-control proved it), and a
+   corrected zero-noise methodology was built and run to a decisive answer: the fix's shader logic
+   is verified sound (its kScale widening genuinely engages at grazing incidence, reaching ~91% of
+   its cap at real shadow-boundary pixels) but produced ZERO measurable image difference on every
+   SYNTHETIC pose/elevation tested this session (Hospital, tour-path pose, both grazing elev=6 and
+   normal elev=40) — root-caused to the mask being mathematically binary per pixel, so a wider
+   kernel only matters where erosion exceeds the base 4px reach, and no such case was found in the
+   tested scenes. Full trail in the entry below (search `Corrected methodology BUILT and RUN`).
+   **Closed anyway** on a REAL Hospital MaxQ bake (`BIM_MaxQ_Hospital_1786724035476.mp4`, landed
+   2026-08-15) — user's own live read: "shadows are sharp enough. Previous was too soft. U may
+   close." Same closure pattern as #1346 itself (a real bake's visual read outweighing a synthetic
+   witness that couldn't reproduce the exact erosion case). Committed
+   `408efb0` on `fix/sun-shadow-kernel-graze`, merged onto `origin/main`@`2b86a47` first (12 commits,
+   clean fast-forward, no conflicts) before pushing.
+
+   - **Mechanism, code-grounded (not the earlier camera-angle guess, which had unresolved direction
+     ambiguity — superseded):** `_srFrag`'s edge-detect (`effects.js` ~3564-3579, confirmed still at
+     that location on `origin/main`) uses a FIXED `kernelPx=4` screen-space neighbor tap with no
+     angle-awareness. The live console log's own `§PHOTO_SHADOW_BIAS worldBias=…m … grazeElev=6`
+     and `§PHOTO_SUN_SHADOW_REACH elevation=6.0 … shadowReach=413` lines (pasted by the user
+     mid-session, from a real Hospital bake) show the codebase ALREADY compensates shadow BIAS for
+     grazing sun elevation elsewhere (`_reassertPhotoShadowCoverage`) — the restore kernel has no
+     equivalent. At low sun elevation, light hits a horizontal GROUND/slab at near-grazing incidence
+     (inherently wide/bias-eroded boundary) but hits a sun-facing WALL at near-normal incidence
+     (tight boundary) — same sun, same frame, opposite effect depending on surface orientation. A
+     flat `kernelPx=4` was implicitly tuned against the wall case.
+   - **Real numeric baseline, obtained from the user's own just-landed bake, current SHIPPED code
+     (no fix applied yet)** — `~/Downloads/BIM_MaxQ_Hospital_1786691108809.mp4`, frame `h_010.png`
+     (Day 412/412, low/grazing sun elevation, extracted via `ffmpeg -sseof -6`), same
+     ffmpeg+numpy FWHM methodology as the #1346 witness (script rewritten this session at
+     `/tmp/wt-sun-shadow-kernel-graze/measure_shadow_edge.py`, per-row max-gradient FWHM + 8px
+     plateau contrast):
+     | surface | rows/cols | edge width | edge contrast |
+     |---|---|---|---|
+     | wall (shaded facade split, rows 370-480, x 600-780) | n=110 | median 2.0px, mean 2.23, std 0.48 | mean **103.4** |
+     | ground (plaza shadow, rows 650-850, x 600-1500) | n=191 | median 2.0px, mean 2.83, std **1.32** | mean **40.1** |
+
+     Width is close on both (the scan partly locks onto rock/material edges on the ground — a real
+     limitation of this method, don't over-read the width column). **Contrast is 2.5× weaker on the
+     ground** and far noisier (std 1.32 vs 0.48) — this is the real signature. Reframes the fix
+     target: a too-narrow `kernelPx` doesn't uniformly blur the ground boundary, it makes the 8-tap
+     mask fire PARTIALLY (some taps cross the boundary, some don't → `edge` comes back as a weak
+     fraction, not 0 or 1) → `mix(aoColor, sharpColor, edge*strength)` only partially restores → a
+     low-contrast wash, not a wide blur. A wider grazing-angle kernel should make more/all taps
+     cross the real boundary → `edge≈1` → full restore.
+   - **Fix built, real-GPU compile/run VERIFIED, pixel-effect NOT yet verified:** worktree
+     `/tmp/wt-sun-shadow-kernel-graze` (fresh off `origin/main`@`f5db8f9`, branch
+     `fix/sun-shadow-kernel-graze`, **uncommitted working-tree diff, not yet a commit or PR** — the
+     diff is sitting there, `git diff -- viewer/effects.js` shows it). Adds a per-PIXEL adaptive
+     `kScale` to `_srFrag`: reconstructs a screen-space surface normal via `dFdx`/`dFdy` of the
+     depth-reconstructed world position (no extra G-buffer needed), takes
+     `NdotL = abs(dot(normal, sunDir))`, and widens `kernelPx` by `clamp(1/NdotL, 1, kernelMaxScale)`
+     (`kernelMaxScale=4.0`). Per-pixel (not per-frame/per-elevation) on purpose — a wall and a slab
+     can both be in frame at the same sun elevation with very different local incidence. Needed
+     `extensions: { derivatives: true }` on the `THREE.ShaderMaterial` (WebGL1-mode GLSL under this
+     renderer's default — `dFdx`/`dFdy` don't work without it). `sunDir` uniform recomputed every
+     frame from `A.sun.position - A.sun.target.position` (the arc moves the sun every capture).
+     Real-hardware-GL witness (`witness/harness.js`-style `playwright-core` launch,
+     `--use-angle=gl`, NOT swiftshader — puppeteer+swiftshader was tried first and was too slow to
+     even finish one 16-sample TAA accumulate in a reasonable smoke-test window, a dead end worth
+     skipping next time) at
+     `/tmp/wt-sun-shadow-kernel-graze/witness_sun_shadow_graze_scale.js`: PASS on
+     `ANGLE (NVIDIA GeForce RTX 4060 Laptop GPU…)` — `SUN_SHADOW_RESTORE_INIT_OK kernelPx=4
+     strength=1 kernelMaxScale=4` fired, `STILL_REFINE done`/`PHOTO_AO done` both completed, **zero
+     shader/compile errors, zero page errors**. This only proves it doesn't crash — it does NOT
+     prove it improves the contrast numbers above.
+   - **A LAN dev server may still be up** from this session at `http://10.253.10.188:8400` (bind
+     `0.0.0.0`, `python3 -m http.server` in the worktree above, Hospital + HHS_Office_Federated DBs
+     symlinked into `viewer/buildings/` and `buildings/`) — check with `curl -sI
+     http://localhost:8400/viewer/viewer.html` before assuming it's alive; restart if not
+     (`cd /tmp/wt-sun-shadow-kernel-graze && python3 -m http.server 8400 --bind 0.0.0.0 &`).
+   - **Pixel-proof attempted 2026-08-14, RETRACTED same session — the first "real" result was a
+     measurement artifact, not a fix effect. Caught before it shipped; recording the trap so it is
+     not re-walked.** Method: single converged Hospital still, real MaxQ tour path pose
+     (`A.cinemaPathPlan(24).poseAt(0.8)` — reuses the SAME camera formula the real film flies, not a
+     hand-rolled bbox pose; two bbox-derived poses were tried first and failed for instructive reasons
+     kept below), sun elevation=6 (`A._sunArcStep(1.0)`, matches baseline `grazeElev=6`), toggled
+     `A._shadowRestoreMat.uniforms.kernelMaxScale.value` between 4.0 (fix) and 1.0 (old flat-kernel,
+     byte-identical to pre-fix shipped code) across successive `A._composer.render()` calls on the
+     same frozen camera — the same single-build-A/B pattern that worked for #1346. First pass found a
+     small, correctly-directioned-looking signal (grazing surfaces ~11% more affected than wall-like
+     ones, classified via `THREE.Raycaster` NdotL against the real scene). **A null-control killed
+     it:** rerunning with NO real toggle at all (kernelMaxScale set to the SAME 4.0 both times)
+     produced the identical magnitude (grazing meanAbsLumDelta 1.39 vs the "real" run's 1.40;
+     normal-incidence 1.29 vs 1.26) — proving the whole signal was render-call-order noise, not the
+     uniform being changed. Root cause: `_composer.render()` re-invokes `n8.render()` (N8AOPass)
+     every call, and N8AO's own internal dither/jitter state advances per call regardless of camera
+     or uniforms — #1346's own witness never hit this because its effect (+18.7%) was far above this
+     noise floor; this fix's effect, whatever it is, is not. Doubling `kernelMaxScale` (4→8) and
+     doubling `strength` (1→2) were also tried against this same flawed methodology and *also* showed
+     no movement — **that result is equally untrustworthy, not evidence either lever is saturated.**
+   - **Corrected methodology BUILT and RUN (2026-08-14, same session) — clean, zero-noise, and
+     decisive: kernelMaxScale/strength measurably do NOTHING on this test scene, but a direct shader-
+     level check shows the mechanism itself is working correctly. This is a real, evidenced result,
+     not another false start — read in full before touching this fix again.** Built
+     `witness_graze_scale_frozen.js`: one `_composer.render()` call to freeze
+     `A._shadowRestoreMat.uniforms` (tAO/tSharp/tDepth/tShadowMap/shadowMatrix now hold one frame's
+     static content, `n8.render()` never called again), then a manual full-screen quad
+     (`A.renderer.render(quadScene, quadCam)`) reusing that SAME material for each sample — verified
+     visually (`quad_only_render.png`) that this draws the real composited scene, not a blank/garbage
+     buffer. **Sanity is now perfect, not just small:** reconverge (ON→ON) sumAbsDiff=0 EXACTLY,
+     null-control (same value twice) sumAbsDiff=0 EXACTLY — the noise from the render-loop method is
+     fully eliminated. **Result: kernelMaxScale 1→4, 1→8, and strength 1→2 each produced
+     `meanAbsDiff=0` across the WHOLE frame** (Hospital, tour-path pose `poseAt(0.8)`), tested at BOTH
+     grazing elevation=6 (`_sunArcStep(1.0)`) AND non-grazing elevation~40 (`_sunArcStep(0.3)`) — same
+     zero result at both, ruling out "wrong elevation" as the explanation.
+   - **Why zero, root-caused via direct shader inspection, not guessed:** built
+     `probe_mask_visualize.js`, a shader clone of `_srFrag`'s edge-detect that outputs `sC` (raw
+     shadow term) and `edge` (the restore mask) as pixel colour instead of the final blend, sharing
+     the SAME frozen uniforms. Confirmed `canRestore`'s preconditions are all true this frame
+     (`sunCastShadow/hasShadowMap/sunShadowRestoreEnabled` all true) and the mask genuinely fires:
+     `edgeMax=255`, 52,620/1.44M pixels (3.7%) have `edge>10` — real shadow boundaries ARE present
+     and ARE being detected. Extended the probe to also output `kScale/kernelMaxScale` as a channel:
+     at those firing pixels, **`kScale` averages 91% of its max (0.25-1.0 range, mean 0.91)** — the
+     per-pixel grazing-incidence widening genuinely engages and reaches near its 4x cap, exactly as
+     designed. **So why does widening the search radius change nothing?** `edge` is built from
+     `max(abs(sC - shadowAt(tap)))` across 8 taps, and both `sC` and every `shadowAt(tap)` are hard
+     `step()` outputs — strictly 0.0 or 1.0, never a fraction. `edge` is therefore mathematically
+     BINARY at the pixel level: the instant ANY one tap disagrees with the center, `edge=1`, full
+     restore, regardless of how many taps agree. **This falsifies the original fix rationale written
+     earlier in this section** ("the 8-tap mask fires PARTIALLY... a weak fraction, not 0 or 1") — that
+     was written from the symptom (weak plateau contrast in a real bake) before the shader math was
+     read this closely; the mechanism cannot produce a partial per-pixel value at all. What a wider
+     kernel actually changes is SPATIAL: which pixels register `edge=1` in the first place (a pixel
+     5-14px from a true boundary that a narrow 4px kernel can't reach, but a widened one can). On
+     THIS scene, at the pixels where `edge` already fires, it already fires at kernelPx=4 (the
+     un-widened base) — there is no ring of "boundary within 14px but not within 4px" pixels for the
+     widening to newly catch, so nothing changes when the cap is raised.
+   - **Honest bottom line: the fix's own logic is verified sound (kScale computes correctly, engages
+     at grazing incidence, is not a no-op in the shader), but this session found ZERO scene/pose where
+     it produces a measurable image difference** — meaning there is still no positive evidence it
+     helps the user's original complaint (soft floor-slab shadows in a real bake), only evidence it
+     doesn't break anything and isn't dead code. The gap is most likely POSE-SPECIFIC: the real
+     baseline (`ground` contrast 40.1 vs `wall` 103.4, §above) came from an actual user-recorded
+     MaxQ Cinema MP4 (Hospital Day 412/412), not a synthetic headless pose — the erosion band that
+     baseline shows must be wider than 4px SOMEWHERE in that real bake, or the ground/wall contrast
+     gap wouldn't exist pre-fix. This session's synthetic tour-path pose (`poseAt(0.8)`, same
+     building) apparently never crosses a boundary that wide, at either elevation tried. **Next step,
+     if this is picked up again: stop hand-deriving poses and instead run this fixed build through an
+     ACTUAL MaxQ Cinema bake (or get the user to run one) and re-apply the SAME ffmpeg+`
+     measure_shadow_edge.py` methodology used for the pre-fix baseline** — that is how the baseline
+     numbers were obtained and is the only way confirmed so far to reproduce the real symptom; more
+     headless bbox/tour-pose engineering has diminishing returns after this session's three failed
+     framings (§below) plus this one's zero-signal result.
+   - **Two bbox-pose attempts that FAILED before the tour-path pose worked, don't repeat them:**
+     (a) `dist=span*1.3` from centroid (the "establishing shot" distance) put the building far enough
+     away that a fixed `kernelPx=4` screen-space kernel already covers a huge world-space footprint,
+     saturating the shader's `edge` mask to ~binary regardless of `kScale` — measured deltaPct=0, a
+     zoom artifact, not a real null result. (b) `dist=span*0.75` from centroid put the camera INSIDE
+     the campus bbox (a large, irregular multi-wing footprint — "0.75x the diagonal span from
+     centroid" is not reliably outside an elongated shape), producing clipped/backface-visible
+     wireframe-looking artifacts that were briefly mistaken for a streaming/DLOD placeholder issue
+     (it wasn't — `§CONTRACT_CHECK streamed=63182 orphans=0` had already fired well before this pose
+     was tried). The fix that actually worked: stop hand-deriving a pose from the bbox at all, call
+     `A.cinemaPathPlan(24)` and use `plan.poseAt(0.8)` — the same formula the real MaxQ film flies —
+     screen-verified via a cheap pre-AO screenshot before committing to a full 24-frame AO converge.
+   - **Ruled out this session, don't re-chase these:** (a) plain camera-viewing-angle-only
+     explanation (ambiguous which direction it cuts — superseded by the light-incidence-angle
+     explanation above, which is unambiguous); (b) TAA history / N8AO depth-dirty state carrying
+     over between consecutive MaxQ-loop stills — read `viewer/lib/TAARenderPass.js` and
+     `effects.js`'s `_startStillAOPhase`/`_stillAODepthDirty` directly, both correctly reset every
+     still, not the bug; (c) the per-frame `§STILL_REFINE cancelled (interaction)` / `§PHOTO_AO off`
+     lines the user sees in EVERY MaxQ frame's log — read `cinema_maxq.js`'s actual loop order,
+     this is normal `§MAXQ_STAGE_KEEP` teardown that fires AFTER `_captureFrame()` already grabbed
+     that frame's pixels, not a bug that discards the shadow before capture; (d) user's "sunlight
+     passing through not-yet-appeared 4D structure" hypothesis — checked against a real live log's
+     `§SHADOW_FRONTIER_AT_CAPTURE`/`§PHOTO_SHADOW_FRUSTUM_COVERAGE` lines, `castShadowFalse=0` and
+     `outsideFrustum=0` throughout the portion checked, force-reassert was actively catching/fixing
+     drift every frame — no evidence of it being the cause, though the "last bit" (near-complete
+     structure) of a run was never actually reached in the checked log, so this isn't fully closed
+     either, just not supported by what was checked; (e) a full-video 4D construction-tour MP4 (not
+     a single frozen still) IS valid evidence for this bug — `cinema_maxq.js` calls
+     `A.startStillRefine()` on every captured frame of a MaxQ Cinema run, not just a dedicated Alt+S
+     still, so the whole shadow-restore pipeline runs on every frame of a tour bake too; (f) dark
+     blobs with bright specular highlights on the ground in some frames are rock/crater DECAL
+     geometry, not shadows — don't re-measure those as shadow edges.
+
+Closed this session, confirmed working live: §CAM_LIGHT (camera fill-light) and §SUN_ARC
+(noon→dusk sweep) — see their one-line status below, full story in the archive.
+
+## §WEATHER_ADVANCED_MODE — SPEC ONLY (2026-08-12, user ask: "can we incorporate what they have as an advanced mode during baking?") — NOT STARTED, NO CODE
+
+**Context for the ask.** Twinmotion and Lumion both ship weather (rain, snow, fog, wind, seasons;
+Twinmotion adds volumetric clouds) AND 4D construction phasing in the same tool, so "a film with
+weather while the 4D reveal runs" is an existing, documented competitor workflow, not white space.
+This viewer currently has **no weather at all** — the sky is a clear-sky Preetham model with no cloud
+geometry (see the §PHOTO_SKY comment in `effects.js`, which says so explicitly).
+
+**The surprise on inspection: most of the hard half is already shipped.** Verified against
+`origin/main` before writing this — nothing below is assumed:
+
+| already live | where |
+|---|---|
+| Scene fog colour + density saved, re-tuned for the shoot, restored on teardown | `effects.js` `_photoFogColorSaved` / `A.scene.fog.density = Math.min(..., 0.00006)` |
+| **Wet ground** — 6 seeded circular puddles, per-puddle roughness drop + diffuse darkening via a ground-material `onBeforeCompile` injection, plus `§GROUND_WETNESS_OVERRIDE` | `effects.js` §PHOTO_PUDDLE |
+| Real photographed HDRI env, swapped in at staging and restored at teardown, loaded by filename from `viewer/textures/hdri/` | `effects.js` §LAYER2_HDRI (`belfast_sunset_puresky_1k.hdr` — currently the ONLY file in that dir) |
+| Sun travel 55°→6° per frame of the bake | `effects.js` §SUN_ARC `_sunArcStep` |
+| Staffage/entourage trees with real spatial placement + ground seating | `effects.js` §STAFFAGE |
+
+So the gap vs Lumion/Twinmotion is exactly four things: **clouds, precipitation particles, snow
+accumulation, and an overcast lighting state.** Everything else a weather preset needs is wired.
+
+**Recommended order — cheapest real gain first. Do NOT start at clouds.**
+
+1. **Phase 1 — an "Overcast / after rain" preset. Highest realism-per-line in the whole list, and it
+   needs no new rendering technique at all.** It is a preset over knobs that already exist: add one
+   overcast `.hdr` beside the sunset one (the loader takes a filename in a single place), raise fog
+   density above the current `0.00006` cap, drop `A.sun.intensity` and lift hemi/ambient for diffuse
+   sky-dome light, and leave the shipped puddles on. **The structural reason this is the right first
+   move:** the one genuine conflict between an HDRI sky and §SUN_ARC is that an HDRI has its sun
+   baked at a fixed position while the arc sweeps — and an overcast sky has *no visible sun disc*, so
+   that conflict simply does not arise in this preset. Free pass on the hardest integration problem.
+2. **Phase 2 — rain streaks.** GPU points / instanced quads in a camera-locked volume, additive.
+   Modest cost. Deliberately AFTER Phase 1: rain particles over dry ground read fake, and the wet
+   ground that sells them is the part already built. Rain without Phase 1 is the wrong order.
+3. **Phase 3 — clouds.** Either a scrolling cloud-layer texture on a dome (cheap, moves, fake
+   parallax) or raymarched volumetrics (real, expensive). Budget reality from this file's own Layer 4
+   note: N8AO alone already costs ~317 ms/frame extra on an RTX 4060, and volumetrics are the same
+   order — so this is bake-only and will lengthen a bake noticeably. A cloudy HDRI gives photographed
+   clouds for free in reflections but cannot move or parallax, and its baked sun WILL fight §SUN_ARC
+   in any non-overcast preset.
+4. **Phase 4 — snow accumulation.** The payoff shot for "seasons", and the biggest lift: needs an
+   up-facing-normal blend in the triplanar shader (`streaming.js` Layer 3). Snow as particles alone,
+   with no accumulation on roofs and sills, will not read.
+
+**Honesty constraints on whatever ships.**
+- This closes the "no weather at all" gap. It will not match Lumion's weather quality, and the
+  positioning must not claim it does — the durable differentiator remains *the film and the 4D
+  sequence are derived from the IFC itself, in a browser, with no export round-trip*, not atmosphere.
+- `docs/BIMUserGuide.md` §"Sun, sky and shadow while the film records" currently states in print:
+  *"There is no weather: no rain, no snow, no cloud shapes."* That sentence must be updated in the
+  same PR as whatever phase ships, or the manual becomes false.
+- Advanced mode must be **opt-in and bake-only**, like Alt+J/SSGI — never a default that slows every
+  film or changes an existing bake's look without being asked for.
+
+### §SUN_START_TIME — one setting: start time. Fixed 6-hour film. (user spec 2026-08-12, reaffirmed) — FEASIBLE, NOT STARTED
+
+**User decision, final:** a **fixed 6-hour duration** and **one setting: the start time**. Default
+**12:00**. No span setting, no dusk anchoring, no solar calculation. The film runs
+`startTime → startTime + 6h`.
+
+**What each setting produces** (hour → elevation via the sine Time Machine already uses,
+`time_machine.js` `applySunCycle`: `elevation = sin((t/24)·2π − π/2)·90` — no new maths):
+
+| start | end | sun elevation | shadow length / height |
+|---|---|---|---|
+| 06:00 | 12:00 | 0° → 90° | sunrise → overhead |
+| 08:00 | 14:00 | 45° → 77.9° | 1.00 → 0.21 |
+| 09:00 | 15:00 | 63.6° → 63.6° | 0.50 → 0.50 (peaks overhead mid-film) |
+| 10:00 | 16:00 | 77.9° → 45.0° | 0.21 → 1.00 |
+| 11:00 | 17:00 | 86.6° → 23.3° | 0.06 → 2.32 |
+| **12:00 (default)** | **18:00** | **90° → 0°** | **0 → sunset** |
+
+**The one range bound, and it is mechanical, not a preference:** with a fixed 6-hour span, any start
+later than 12:00 ends after 18:00 — below the horizon, i.e. the film ends in the dark (13:00 start ends
+at −23.3°). So the setting's range is **06:00–12:00**. That is the whole rule: *the film is six hours,
+so noon is the latest you can start.*
+
+#### Implementation — deliberately small
+
+- `PHOTO_SUN_ELEVATION_START` and `PHOTO_SUN_ELEVATION_END` stop being constants and become
+  `elevationForHour(startHour)` and `elevationForHour(startHour + 6)`. `_sunElevationAt(tNorm)` keeps
+  interpolating between them exactly as it does now. `_sunArcStep` is untouched.
+- Setting range 06:00–12:00, default 12:00. One control.
+- Persist the chosen start time with the saved Cinema path, so re-baking an old plan gives the same
+  film.
+- `§PHOTO_SUN_SHADOW_REACH` (frustum) and `§PHOTO_SHADOW_BIAS_SCALE` (grazing term) are computed once
+  at staging from a single elevation — they must use whichever end of the chosen window is **lower**,
+  since with a settable start that is no longer always the end frame (e.g. a 06:00 start is lowest at
+  the START). One `Math.min`, no new machinery.
+
+#### Two consequences of the default worth recording (statements of fact, not objections)
+
+1. The default **changes today's shipped look**: 55° → 6° becomes 90° → 0°. The opening is an overhead
+   sun (short shadows — what `PHOTO_SUN_ELEVATION_START`'s own comment describes as reading flat), and
+   the film now ends at the horizon rather than 6° above it.
+2. At the 0° end, `§PHOTO_SUN_SHADOW_REACH`'s existing `_elevDeg > 0.5` guard skips frustum widening
+   (`height/tan(0)` is unbounded). Practically the last frames are at sunset and near-dark, so there is
+   nothing to widen the frustum for — the guard already handles it correctly, no change needed.
+
+#### Witness
+
+1. Assert the logged per-frame elevation matches `elevationForHour` for the chosen window, first and
+   last frame, at three start times.
+2. Assert the setting rejects/clamps a start later than 12:00.
+3. Re-run `scripts/witness_shadow_bias_ab.js` at the window's lowest elevation — shadow contrast there
+   must be no worse than today's measured −15.2 mean luminance drop.
+
+#### Not in this spec
+
+Real solar geometry (site latitude/longitude + date). It would make the hour label literally true and
+make shadows rotate as well as lengthen, and it reuses this same setting — but it is explicitly out of
+scope here. Recorded only because the measured coincidence is worth keeping: on 12 Aug at London's
+latitude real solar noon is 53.6°, within 1.4° of the 55° hand-tuned into the current constant.
+
+### Separation + re-render architecture (answered 2026-08-12, verified against `origin/main`)
+
+**Q: keep it separate so it can't disturb the working bake — and can we render over the same frames,
+or must it be anew?**
+
+**Separate: yes, and the pattern already exists — copy it, don't invent one.** Alt+J/SSGI is already
+opt-in and deliberately excluded from the bake path. Advanced weather is the same shape: one flag read
+at `_applyPhotoStaging` time, plus a `_weatherStep(tNorm)` called beside the existing
+`_sunArcStep(tNorm)` in `cinema_maxq.js`. Flag off ⇒ every existing code path executes exactly as it
+does today, byte-identical output. No new architecture needed.
+
+**Anew, not over the same frames — and the reason is structural, not a preference:**
+- `cinema_maxq.js` `poseAt(tNorm)` is a **pure function of tNorm** over the saved plan
+  (`plan.poseAt(tNorm)` with the §CPE_CLIP window remap as the ONE place the clip is applied), and the
+  4D buildup order is derived from that same `plan.poseAt`. So re-running a saved plan reproduces the
+  **identical** film frame-for-frame — same camera, same reveal — with only the atmosphere different.
+  That is a re-shoot of the same take, not a similar one.
+- The saved frames cannot support the alternative. `_captureFrame()` renders the composer, draws into a
+  2D canvas, composites the room title / day counter, and `toBlob('image/webp', 0.92)` — **flat RGB, no
+  depth, no normals, no motion vectors.** A flat 2D rain overlay could be composited onto that;
+  volumetric fog, clouds with correct occlusion, wet reflections and — decisively — **any shadow
+  change** cannot. Compositing cannot fix a shadow, which is the thing being asked for.
+
+**⚠ CORRECTION (same day, before anyone scoped against it): the IndexedDB frame store is NOT a cache
+and gives NO second-bake speedup today.** An earlier note in this section called sub-range re-rendering
+a free capability. It is not free — it is achievable, which is a different claim. Verified in
+`cinema_maxq.js`:
+- one fixed store, `IDB_NAME = 'bim_ootb_cinema_maxq'`, `IDB_STORE = 'frames'` (line ~412);
+- **`await _idbDelete()` at the START of every bake** (line ~1124), immediately before `_idbOpen()`;
+- **`await _idbDestroy(db)` at the END** (line ~1458).
+
+So the frames are a scratch buffer that exists only between capture and mux, wiped at both ends. **A
+second bake today costs exactly what the first did.** Nothing is reused.
+
+**What IS achievable, and its real limit.** `poseAt(tNorm)` determinism means any frame index is
+independently reproducible, so frames COULD be kept — keyed by (plan hash, frame index, settings hash)
+— and an advanced pass could then re-render only the frames it actually changes and re-mux the rest.
+But note where that does and does not pay:
+- **Whole-film weather change: no saving at all.** Every frame's pixels change, so every frame is
+  re-rendered regardless. An advanced bake costs a full bake plus whatever weather costs per frame.
+  The expense is the per-frame `_composer.render()` + SSAA/N8AO + `toBlob`, not the muxing.
+- **Sub-range change: real saving.** The dusk-shadow case (re-shoot only the last ~20% of frames at a
+  higher arc-end elevation) is exactly the shape that benefits, and is the case worth building for.
+
+**⚠ Load-bearing constraint — do not simply delete the deletes.** The start-of-bake `_idbDelete()`
+exists because a leftover/blocked store caused a real, diagnosed hang: "stuck right after
+§MAXQ_PREVIEW done, zero further lines" (LTU, v810/MAXQ v7 — see the §MAXQ_IDB comment block at
+line ~510, which documents the three guards added: track+close our own connection, purge a pending
+delete BEFORE opening, and race the open against `IDB_OPEN_TIMEOUT_MS`). Any frame-persistence design
+must keep those guards intact and add explicit invalidation + a storage budget (360–576 webp frames at
+bake resolution is not free disk), not remove the cleanup that fixed a shipped bug.
+
+### The dusk shadow at the end of the film — not a bug, and weather will NOT fix it
+
+User observation on the landed mp4: the shadow stops working toward the end, "hardly noticeable."
+That is the cosine law, not a defect. `PHOTO_SUN_ELEVATION = 6` is the arc's end elevation, and direct
+sun on horizontal ground scales with `sin(elevation)` — `sin(6°) = 0.105`, about a tenth of the noon
+term. A shadow is the *removal* of direct light, so when there is barely any direct light left there is
+barely any shadow to see. **Measured, same building, same session, same fix:** mean luminance drop on
+shadowed pixels was **−32.7 at 55° vs −15.2 at 6°** — less than half the contrast (scratchpad
+`witness_shadow_bias_ab.js`).
+
+Weather mode makes this WORSE, not better: an overcast preset removes directional shadows entirely.
+
+**The actual lever is the arc's end elevation, not the atmosphere.** Ending at ~12–15° instead of 6°
+roughly doubles the direct-light term (`sin 12° = 0.208`, `sin 15° = 0.259`) while still throwing long
+shadows (`1/tan 12° = 4.7×` building height). **Put that inside advanced mode**, not in the shared
+constant — the default film's look then stays exactly as shipped, honouring "separate so as not to
+disturb this." Measure the contrast at the candidate elevation with the existing A/B witness before
+committing to a number; the sine law predicts ~2× but that is a prediction, not yet a measurement.
+
+**Priority flag, stated once and then it is the user's call.** `feedback_schedule_accuracy_over_movie_polish.md`
+(user ruling 2026-08-05) puts movie-maker polish behind 4D schedule accuracy, and
+`prompts/4D_SCHEDULE_PERFECTION.md` still carries an open punch list. Weather is polish by that
+definition. Worth deciding explicitly rather than drifting into it.
 
 ## HONEST VERDICT (read this before anything else)
 **No — this will not be "truly photorealistic" in the indistinguishable-from-a-photograph sense.**
-It CAN get meaningfully closer than today's flat-CG look — plausibly "good archviz render" quality
-(the SketchUp+Enscape / Twinmotion tier) — but not camera-photograph quality. Three structural
-reasons, not effort/time reasons — more budget doesn't remove them:
+It CAN get meaningfully closer than flat-CG look — plausibly "good archviz render" quality (the
+SketchUp+Enscape / Twinmotion tier) — but not camera-photograph quality. Three structural reasons,
+not effort/time reasons — more budget doesn't remove them:
 1. **The geometry itself is idealized.** IFC-derived meshes have no real-world imperfection — no
-   chips, stains, dust, slight panel misalignment, weathering. Real photos are full of these; a
-   clean BIM extraction never will be, automated or not.
+   chips, stains, dust, slight panel misalignment, weathering.
 2. **Materials are auto-assigned by class, not hand-tuned per surface.** Even with a real texture
-   library (§LAYER 2 below), a script picking "concrete" for every `IfcSlab` can't replicate an
-   artist choosing exactly the right weathered-concrete variant for one specific wall.
-3. **No per-shot human grading.** Professional photoreal renders get manual exposure/color/DoF/
-   composition tuning per image. An automated "press a key, get a still" pipeline can't do that by
-   definition — it's a batch process, not an art director.
-None of this means the effort is wasted — going from flat-CG to good-archviz is a real, visible,
-worthwhile jump. Just don't scope or promise beyond it.
+   library, a script picking "concrete" for every `IfcSlab` can't replicate an artist choosing
+   exactly the right weathered-concrete variant for one specific wall.
+3. **No per-shot human grading.** An automated "press a key, get a still" pipeline can't do the
+   manual exposure/color/DoF/composition tuning a professional render gets — it's a batch process,
+   not an art director.
+None of this means the effort is wasted — flat-CG to good-archviz is a real, visible, worthwhile
+jump. Just don't scope or promise beyond it.
 
-## WHERE IT LIVES (code, from this session)
-- `viewer/lib/TAARenderPass.js` / `SSAARenderPass.js` — ported from three.js r185 official source.
-- `viewer/effects.js` — `A.startStillRefine()`/`stopStillRefine()`/`toggleStillRefine()`, `Alt+S`.
-  Two real bugs found via live user testing + fixed: (1) cancellation was hooked on the generic
-  `_startLoop()`/`markDirty()` choke points, which fire from far more than actual canvas interaction
-  (self-cancelled on its own trigger keypress) — moved to the precise pointerdown/wheel/controls-start
-  signals in `main.js`. (2) natural completion never reset `accumulate`/`_composerEnabled`, leaving the
-  composer frozen on the stale accumulated image after the camera moved — both paths now share one
-  `_teardownStillRefine()`.
-- `viewer/tools.js` `A.toggleShadow` — existing Shadow mode (PCF shadow + SSAO), unmodified (the
-  soft-shadow-type experiment from this session was reverted — no demonstrated visual benefit).
-- Branch `fix/night-mode-window-glow`, worktree `/tmp/wt-mobile-perf-fix`. Night-glass commit is
-  MERGED + LIVE (PR #798, deployed to production). Still-refine commits are pushed to the branch only
-  — not merged, not deployed.
-
-## LAYER 1 — Render polish (DONE this session, real but modest)
-TAA still-refine (16-sample jittered accumulation, `Alt+S`) + existing Shadow/SSAO. Fixes: jagged
-edges, some contact-shadow darkening at wall/floor junctions. Does NOT fix: flat materials, missing
-GI/bounce light, generic environment reflections. This is polish on the CURRENT look, not a path to
-photoreal on its own — already shipped-in-prototype, not the open work here.
-
-## LAYER 2 — HDRI environment (cheap, real win, NOT started)
-Current envMap (`streaming.js` `A._envMap`, intensity 0.6) is generic. Swapping to a real photographed
-HDRI sky (e.g. Poly Haven, CC0) is low effort — one texture load + `PMREMGenerator`, no pipeline
-changes. Improves reflections on glass/metal noticeably. **Do this first — best effort:benefit ratio
-of everything in this spec.**
-
-## LAYER 3 — Real PBR material/texture library (SPEC, ready to implement)
-### Goal
-Replace the flat-color + fake-noise-grain look with real textured surfaces (concrete, glass, brushed
-metal, drywall, timber) for at least the dominant envelope classes, so the still-render actually looks
-different from today's screenshots — not more polish on the same flat materials.
-
-### Scope discipline (agreed earlier this session — do not relitigate)
-**Still-render-only.** Triplanar sampling costs real per-fragment GPU time (multiple texture taps per
-map, per axis). This must ONLY activate during `A.startStillRefine()` (`Alt+S`), never during normal
-navigation — the whole point of this session's investigation was protecting nav performance. Gate it
-the same way the composer itself is gated (`A._composerEnabled`/`A._stillRefineActive`).
-**Two maps only, first pass.** Diffuse + roughness (2 texture types × 3 triplanar axes = 6 samples/
-fragment). NOT normal + AO yet — that's 4 maps × 3 axes = 12 samples/fragment, a real cost jump.
-Measure the 2-map cost before deciding whether 4-map is worth it.
-
-### Technical approach — triplanar mapping (solves the missing-UV blocker)
-Confirmed this session: `tools/extract.py`'s schema stores `vertices`/`faces`/`normals` only — no UV
-column anywhere, extraction through viewer. Triplanar mapping needs zero UV data (projects the texture
-along whichever world-space axis — X/Y/Z — best matches each fragment's normal, blending at the seams).
-Standard, well-established technique (three.js forum threads confirm the pattern; no ready-made addon,
-custom shader code required — see Sources below).
-- **Where it plugs in**: `streaming.js`'s material-creation function already has an `onBeforeCompile`
-  hook for the existing fake-grain-perturbation trick (`_perturbScale`, search for `onBeforeCompile` in
-  that file). Triplanar sampling is injected the SAME way — no new hook mechanism needed, extend the
-  existing one.
-- **Shader sketch** (fragment shader, GLSL, added via `onBeforeCompile`):
-  1. Pass world-space position + normal from vertex → fragment shader (three.js's standard material
-     already has `vWorldPosition`-equivalent data available via `#include <worldpos_vertex>`; confirm
-     exact varying name against the r185 shader chunks before wiring).
-  2. In the fragment shader, compute blend weights from `abs(normal)` (dominant axis gets more weight),
-     sample the diffuse+roughness textures 3× (once per axis, using the two other position components
-     as UV), blend by weight.
-  3. Multiply the existing flat `diffuseColor`/`roughnessFactor` by the triplanar sample (so IFC's real
-     per-element color tint still comes through — texture adds detail, doesn't replace the "trust IFC
-     data" color).
-
-### Texture sourcing
-CC0 (public domain, no attribution required) PBR sets from Poly Haven or ambientCG — same sources
-named for Layer 2's HDRI. Starter set (cover the highest-population classes first, check actual
-per-building class counts before finalizing the list — don't guess): concrete (walls/slabs), glass
-(windows/curtain-wall — reuse the night-mode work's class detection: `IfcWindow`/`IfcCurtainWall`/
-transparent `IfcPlate`), brushed/painted metal (railings, doors, MEP), drywall/plaster (interior
-partitions). 4 texture sets is enough for a first pass — don't over-scope the library before seeing
-whether the technique even reads well on real geometry.
-
-### Class → material dispatch
-Reuse the exact pattern `STD_MAT` already uses for color fallback (`streaming.js:270-319`, keyed by
-`ifc_class`) — add a parallel `TRIPLANAR_MAT` table mapping `ifc_class` → `{diffuseTex, roughnessTex,
-scale}` (scale = world-units-per-texture-tile, needs tuning per texture so bricks/panels don't look
-stretched). Same dispatch site as the existing color lookup — one extra branch, not a new system.
-
-### Implementation order
-1. Source/download the 4 starter texture sets (diffuse+roughness only).
-2. Write the triplanar `onBeforeCompile` shader injection, gated to still-refine-only, test on ONE
-   material class first (concrete walls — highest element count in most buildings) before wiring the
-   rest.
-3. Verify live: does it actually look like a textured surface, not a smeared mess? (Triplanar seams at
-   45°-ish normals are the classic failure mode — check corners/roof edges specifically.)
-4. Measure the per-fragment cost delta (frame time during the Alt+S accumulation, before vs. after) —
-   confirms the "still-render-only" gate is actually necessary/justified, and catches the technique
-   being unexpectedly expensive before wiring the remaining 3 texture sets.
-5. Wire the remaining classes (glass, metal, drywall) once concrete is confirmed working.
-6. Screenshot before/after comparison, same discipline as this session's other work — no claiming a
-   visual win without a saved image proving it.
-
-### Witness / log tags to add
-`§TRIPLANAR_INIT class=<ifc_class> tex=<name>` on first material dispatch, `§TRIPLANAR_PERF ms=<delta>`
-for the cost measurement in step 4 — matching this project's existing `§`-tag convention so the result
-is checkable from console output, not just eyeballed.
-
-### Sources (triplanar mapping technique, consulted this session)
-- [Triplanar Mapping — 3dverse Documentation](https://docs.3dverse.com/engine/rendering/pbr-material-shaders/triplanar)
-- [Tri plannar mapping in three.js — three.js forum](https://discourse.threejs.org/t/tri-plannar-mapping-in-three-js/40335)
-- [World space UVs & Triplanar Mapping — Cyan](https://cyangamedev.wordpress.com/2020/01/28/worldspace-uvs-triplanar-mapping/)
-- [Playing with Texture Projection in Three.js — Codrops](https://tympanus.net/codrops/2020/01/07/playing-with-texture-projection-in-three-js/)
-
-## LAYER 4 — Global illumination / bounce light (the hard problem)
-Three options, honestly compared:
-1. **Baked lightmaps** (the traditional real-time-archviz approach — Enscape/Lumion/Unreal
-   Lightmass): needs a second UV channel (`uv2`) unique-unwrapped per surface. **Checked this
-   session: no `uv2`/lightmap-UV generation exists anywhere in this pipeline (`streaming.js`,
-   `loader.js`) — IFC-extracted BREP/extruded geometry has no such channel.** Building an automatic
-   UV-unwrapper for arbitrary BIM geometry is itself a substantial, error-prone project (this is a
-   known-hard problem in the CAD/BIM tooling space generally, not specific to this app) — treat as
-   OUT OF SCOPE unless a dedicated session is opened for it specifically.
-2. **Real path tracing** (`three-gpu-pathtracer` or similar): the most direct route to real GI/soft
-   shadows/reflections, but **confirmed incompatible with `InstancedMesh`/`BatchedMesh`**, which is
-   how essentially all of this app's large-building geometry renders (the whole `MOBILE_PERF.md`
-   perf stack depends on it). Would need converting instances to individual meshes for a snapshot —
-   itself potentially slow/heavy on exactly the large buildings where this matters most. Ruled out
-   earlier this session for this reason; still true.
-3. **Screen-space GI (SSGI)**: a post-process technique operating on the already-rendered
-   color/depth/normal buffers — doesn't care about instancing or UV channels at all, since it never
-   touches the mesh data directly. **This is the realistic middle path** for this specific
-   architecture: real bounce-light/AO improvement, compatible with the existing InstancedMesh/
-   BatchedMesh geometry as-is, no UV-unwrapping project required. Not yet researched for a concrete
-   three.js implementation (unlike TAARenderPass, no specific library identified/vetted yet — next
-   step if this layer is prioritized).
-**Recommendation**: skip lightmap-baking and full path-tracing (both structurally blocked or
-disproportionate effort for this codebase); if GI is wanted, research an SSGI post-process pass
-specifically.
-
-## OPEN QUESTIONS
-- Layer 3: UV question RESOLVED — triplanar mapping needs no UV data, see §LAYER 3 spec above. Ready
-  to implement.
-- Layer 4: is an SSGI-class three.js addon/technique available and compatible with r185 + this
-  EffectComposer pipeline? Not researched — `SSGINode` exists officially but lives in the TSL/
-  WebGPU-node postprocessing system, architecturally separate from this app's classic
-  `EffectComposer`+`Pass` pipeline (the `TAARenderPass` this session ported is classic-Pass, not TSL).
-  Needs a feasibility spike into this app's existing WebGPU-compat-mode code before committing effort.
-- Scope check-in: is "good archviz render" (the honest ceiling, §HONEST VERDICT) actually the bar
-  wanted, given it's short of true photorealism? Confirmed this session — user agrees, proceeding.
+## STATUS — Layers 1-3 shipped and are baseline behavior; Layer 4 (GI) opt-in only
+Full original spec (triplanar shader sketch, texture sourcing, technical approach) is in the
+archive if ever needed again — kept out of this file because all three are long since shipped and
+live, confirmed as recently as today's witness run (`§TRIPLANAR_PERF materials=12` and
+`§LAYER2_HDRI_READY belfast_sunset_puresky_1k` both fired on a real load, 2026-08-11):
+- **Layer 1** (Alt+S TAA still-refine, 16-sample jittered accumulation) — shipped, baseline.
+- **Layer 2** (real photographed HDRI env, Poly Haven CC0) — shipped, baseline.
+- **Layer 3** (triplanar PBR diffuse+roughness on dominant envelope classes) — shipped, baseline.
+- **Layer 4** (GI/bounce light): baked lightmaps and full path-tracing both ruled out structurally
+  (no UV2 infrastructure; `InstancedMesh`/`BatchedMesh` incompatibility) — SSGI shipped once as the
+  DEFAULT, hit real bugs (ghosting, noise/transparency), reverted to default OFF, kept **opt-in only
+  via Alt+J**. Deliberately EXCLUDED from the MaxQ/Cinema Orbit bake path — N8AO alone already costs
+  ~317ms/frame extra on an RTX 4060 ("a recording with GI active would be a ~3fps slideshow").
+  User ruling 2026-08-11: do not pursue further unless another concrete innovation to test.
 
 ## NOT IN SCOPE (this spec)
 - True photograph-indistinguishable output (see §HONEST VERDICT — structurally unreachable here).
 - Baked lightmap GI (blocked — no UV2 infrastructure, separate project if ever pursued).
 - Real path tracing on full buildings (blocked — InstancedMesh/BatchedMesh incompatibility).
 
-## SESSION RECORD (2026-07-15, continued — Layer 1 shipped, Layer 3 concrete wired+verified)
-**Layer 1 (Alt+S TAA still-refine) pushed to production this session** — cherry-picked the 3
-still-refine commits onto fresh `main` as a new branch (`fix/still-refine-taa`, PR #801), since
-`fix/night-mode-window-glow`'s earlier squash-merge (#798) had diverged that branch's history from
-main (see repo CLAUDE.md's own squash-merge-reuse warning — this is a live example of it). Both CI
-checks passed, merged, GitHub Pages redeployed, confirmed live via a direct fetch of the deployed
-`effects.js`/`TAARenderPass.js`.
+---
 
-**Layer 3 concrete (IfcWall) implemented, verified, one real bug found+fixed — NOT pushed** (stays
-on `fix/night-mode-window-glow`, local commit only, per the standing push-pause; user's instruction
-was specifically "push the Alt-S effect," not Layer 3).
-- Sourced 4 CC0 texture sets from ambientCG (concrete/plaster/metal + diffuse+roughness) via its
-  public API — see `viewer/textures/materials/NOTICE.txt`. Only concrete (`IfcWall`) wired this pass,
-  per the spec's own "test one class before wiring the rest" order — plaster/metal sourced but unused.
-- **Real bug found via headless verification, not eyeballing**: three.js can silently recompile a
-  material's shader program (fresh `onBeforeCompile` call → fresh default-valued uniforms) in
-  response to renderer state changes. This happened on the very first still-refine frame and reset
-  `uTriActive` back to 0, silently undoing effects.js's one-time uniform push and leaving the
-  concrete texture dark for the entire 16-sample accumulation — confirmed via direct
-  `page.evaluate()` inspection of the live uniform value (0 mid-accumulation, should have been 1).
-  Fixed with a per-material `onBeforeRender` that re-asserts the live `A._stillRefineActive` value
-  every frame — self-heals across any recompile instead of relying on a single push at start time.
-  **This class of bug is easy to miss with screenshot-only verification** — the shader still
-  "worked" (compiled, no console errors), it just silently rendered flat. Worth remembering for any
-  future onBeforeCompile-based runtime-toggle work in this codebase.
-- Verified live (headless Chrome, `viewer/lib/puppeteer` via bim-compiler's node_modules — no
-  Playwright suite involved, matches this project's whitebox-first + screenshot-before-claiming-a-
-  visual-win discipline): `§TRIPLANAR_INIT`/`§TRIPLANAR_TEX_READY`/`§TRIPLANAR_PERF` log lines all
-  fire correctly; `uTriActive` confirmed `1` mid-accumulation after the fix; before/after screenshot
-  (camera pointed directly at a real `IfcWall` element queried from the DB — `~/Pictures/Screenshots/
-  HHS_triplanar_concrete_{before,after}_2026-07-15.png`) shows real concrete grain appearing, bounded
-  correctly to just that wall panel, no visible triplanar seams at the angle tested.
-- **Finding worth flagging**: this specific building (HHS_Office_Federated) has only 12 `IfcWall`
-  elements total (queried directly from `element_transforms`/`elements_meta`) — most of the exterior
-  envelope in typical camera framings is `IfcCurtainWall`/glazing, not opaque wall. A generic
-  isometric screenshot mostly misses the concrete texture entirely; had to query the DB for a specific
-  wall GUID and point the camera there directly to get a meaningful before/after. This means Layer 3's
-  visual payoff on THIS building will look modest until plaster (`IfcWallStandardCase`, more common
-  as interior partitions) and/or metal are wired too — concrete alone has limited surface area here.
-- Trigger UX discussed and settled: no confirm dialog before generating, no "tear down?" dialog on
-  move — the render itself is the feedback (visible progressive sharpening during accumulation,
-  instant snap-back to flat/live on interaction). Nothing further to build for this; already matches
-  how Alt+S already behaves.
-- **Update, same session**: user confirmed seeing the concrete effect on localhost and asked to
-  "throw in all we got" — wired plaster (`IfcWallStandardCase`, `IfcCovering`) and metal (`IfcBeam`,
-  `IfcMember`, `IfcPlate`, `IfcRailing`, `IfcPipe`/`PipeFitting`/`PipeSegment`, `IfcDuct`/
-  `DuctFitting`/`DuctSegment`, `IfcCableCarrier`) onto the same proven pattern, plus concrete now
-  also covers `IfcSlab`/`IfcColumn`/`IfcFooting`/`IfcPile`/`IfcStair`/`IfcRamp` (not just `IfcWall`).
-  Class groupings taken directly from STD_MAT's own real-world-material comments — no new invented
-  mappings. Verified live: 8 distinct triplanar materials across all 3 texture groups in one frame,
-  all 6 texture files load, before/after screenshot shows both concrete grain and brushed-metal
-  streaking on real geometry simultaneously (`~/Pictures/Screenshots/
-  HHS_triplanar_all_classes_{before,after}_2026-07-15.png`). Glass (`IfcWindow`/`IfcCurtainWall`)
-  deliberately left untextured — a transmissive/reflective material doesn't suit a diffuse triplanar
-  texture the way opaque concrete/plaster/metal do; still relies on envMap reflection as before.
-  All 6 sourced texture files are now in active use — nothing sourced-but-unwired remains.
+## §LTU_FLOOR_FLICKER — MaxQ bake floor flicker on `LTU_AHouse` (2026-08-03) — CAUSE MECHANISM CONFIRMED, static-camera pixel proof shows NO flicker under isolated conditions (motion-coupled case still open), NOT fixed
+User report: floor flicker in a successful MaxQ bake (MP4) on `LTU_AHouse`.
 
-## OPEN QUESTIONS (updated)
-- Real-GPU perf measurement of the triplanar cost (spec step 4) — only headless/software numbers
-  exist so far (~18-22s for 16 samples under SwiftShader), not representative of real-GPU cost with
-  now 3x the material/texture variety active simultaneously.
+**Two hypotheses REFUTED with real evidence:**
+1. **Z-fighting / meta-extracted DB mismatch** — a real `2.39999999` vs `2.39999961` divergence
+   exists, but is dead data: `LTU_AHouse` serves in split-DB mode (`viewer/streaming.js` §6.9,
+   `meta.db`+`geo.db`), and `extracted.db`'s value is never read on that path. Live-confirmed:
+   `§GROUND_Y src=gf-storey-slab(VÅNING 1) z=2.40` matches `meta.db` bit-for-bit. Not systemic
+   (Hospital: byte-identical in both files; Duplex: no meta.db, doesn't apply).
+2. **DLOD swapping** — `dlod_nav.js:307` fully disengages DLOD for the entire bake
+   (`app._maxqActive`), every frame. No swap-threshold oscillation is possible during a bake.
 
-## SESSION RECORD (2026-07-15, continued — Alt+S photoshoot bundling: sky + amber glow, POC)
-User asked to get as close to the reference image as possible for a "photoshoot" moment, explicitly
-authorizing artificial/fabricated staging for presentation purposes only (not extracted BIM data,
-not touching any real logic) — confirmed this is a POC, governance decision deferred to later.
-- Bundled into the SAME Alt+S trigger, all auto-reverting on interaction: the already-existing
-  Preetham sky shader (shown at low elevation for evening/sunset side-lighting) + `A.toggleNightMode()`'s
-  existing amber fixture-glow/window-glow mechanism (including its synthetic per-storey fallback,
-  already built for buildings with zero real `IfcLightFixture` data — reused, not duplicated).
-  `toggleNightMode()`'s own moonlight sun/ambient/hemi override is undone immediately after, so the
-  sunset mood isn't replaced by night-black.
-- **Explicitly out of scope, per user**: ground/corner/roof decorative light props (lanterns, accent
-  lights) — this building's IFC data has zero real light-fixture elements of any kind, and standalone
-  scene-dressing geometry not in the source model would cross the extract-only line beyond what's
-  already precedented (the synthetic per-storey fixture *position* fallback, not fabricated meshes).
-  Building-only theme, sky itself deliberately left untouched further per user ("remains the same").
-- **Real bug #1 found+fixed**: `A.toggleShadow()` is a 4-state ground-texture CYCLE (off→grass→
-  earth→paved→off), not a boolean toggle — calling it twice to "undo" advanced to the next texture,
-  still shadow-on. (Fixed, then the whole shadow/ground-cycling path was DROPPED from the photoshoot
-  per user request anyway — sky-only now, no ground shadow.)
-- **Real bug #2 found+fixed, user-observed live**: Alt+S could self-cancel almost instantly — the
-  physical act of pressing the shortcut can itself nudge the mouse, and cancellation is wired to real
-  pointerdown/wheel/controls-start signals (by design, from the Layer-1 bugfix earlier this session),
-  so the incidental nudge and the deliberate keypress landed in the same gesture. Fixed with a 500ms
-  grace window on `A.stopStillRefine()` — a cancel signal within that window of start is ignored, a
-  real interaction after it still cancels normally. Verified via simulated pointerdown timing.
-- Verified live end-to-end: state (sky visible / night mode) correctly false→true→false across a
-  full trigger+move cycle. Screenshots: `~/Pictures/Screenshots/HHS_photoshoot_{before,during}_2026-07-15.png`.
-- Not merged/pushed — local commits only on `fix/night-mode-window-glow`, per the standing push-pause.
+**Live suspect (mechanism-confirmed, NOT pixel-proven): transparent-sort instability** between
+the ghost-ground fade (`cinema_maxq.js` `_ghostGroundAt()`, `m.transparent=!solid`) and x-ray
+construction-staging (`time_machine.js` `_buildXrayElements()`, no slab exclusion) — both went
+default-ON the same day as this report. Ground plane Z == ground-floor slab Z by construction
+(`tools.js` `_calcGroundY()` reads the identical row). THREE.js's transparent-pass sort is a
+function of camera-to-object distance; for two near-coincident semi-transparent surfaces, small
+camera-position deltas frame-to-frame can flip which sorts first.
 
-### Round 2, same session — freeze-until-interaction, ground/skyline/uplighting, camera-facing edges
-- **Real bug, user-observed on real GPU**: 16 samples finish in ~150ms, and the old teardown ran on
-  natural completion too (same path as cancellation) — the whole photoshoot flashed past almost
-  invisibly. Split into `_finishStillRefine()` (natural completion — stops the RAF loop only, leaves
-  composer/textures/staging exactly as accumulated) vs `_teardownStillRefine()` (real interaction only
-  — full revert). Now behaves like Night/Shadow mode: stays on until you actually turn it off.
-- **Real bug, user-observed**: Alt+S could self-cancel almost instantly — pressing the shortcut can
-  itself nudge the mouse, and cancellation is wired to real pointerdown/wheel/controls-start. Fixed
-  with a 500ms grace window on `A.stopStillRefine()`.
-- Added ground uplighting (4 corners) + roofline edge-lining + a full-ring distant skyline silhouette
-  (28 boxes, ~2000 sparkled window-lights, warm/cool mix) — all POC staging, anchored to this
-  building's own real bbox (queried fresh), explicitly authorized as presentation-only fabrication.
-- **Round 2.1 fixes** (same props, after live feedback): dropping shadow mode had also hidden
-  `A.ground` entirely (black void) — restored directly (earth texture + warm tint), independent of
-  the shadow-cycle system. Uplights pulled in from the outside edge so they sit against the wall face.
-  Edge-lining changed from "all 4 sides always" to "only the edge(s) facing the camera" (dot product
-  of edge normal vs. camera direction) — this also fixed a stray diagonal line crossing the whole
-  frame (the far/notch-crossing edge of this L-shaped building's bbox approximation, floating over
-  empty space at a grazing angle) — verified the edge geometry itself was correctly sized/positioned
-  via direct object inspection before concluding it was a which-edge-to-draw bug, not bad geometry.
-- Confirmed by user: this whole mode is meant to be an elaborate, deliberately-expensive prep step
-  (matches the feature's own original framing at the top of this file) — don't hold back on
-  thoroughness for the one-time staging setup.
-- Screenshot: `~/Pictures/Screenshots/HHS_photoshoot_v2_ground_camerafacing_2026-07-15.png`.
-- Not merged/pushed — local commits only on `fix/night-mode-window-glow`, per the standing push-pause.
+**Pixel-proof status, real GPU bakes (RTX 4060, `--use-gl=angle --use-angle=gl
+--ignore-gpu-blocklist --enable-gpu` — swiftshader was measured ~45x too slow for this building
+size, use the GL flags for any future LTU/Terminal/Hospital-scale headless witness):**
+- First attempt (authored dive path): diff signal dominated by ordinary camera motion, inconclusive.
+- **Static-camera Pass 1** (camera pinned, content NOT frozen): two large diff bursts, but spanning
+  0-100% of frame height/width — matches this building's own logged reveal-pacing batches, not a
+  ground-plane-height band. Camera motion isolated; content-population was not.
+- **Static-camera Pass 2** (camera pinned AND construction cursor frozen at the exact
+  `§GHOST_GROUND_TRIGGER_FIRED` threshold): diff traces a single smooth hump matching the ghost
+  fade's own `smoothstep` formula analytically — **no alternating/oscillating signature found**
+  under fully-isolated conditions. Rules out flicker from the opacity ramp alone or static-scene
+  numerical instability — does **not** disprove the original camera-motion-coupled hypothesis
+  (a fully static camera can't exercise "small camera-position deltas flip sort order" by
+  construction — zero motion ⇒ provably stable sort, that's not evidence either way for a moving
+  camera).
+- Confirmed: no `renderOrder` is set anywhere on the ground plane or x-ray-staged elements
+  (grepped the whole `viewer/` tree) — the sort-order collision precondition is real and
+  unaddressed. A `renderOrder` fix, if the motion-coupled case is later confirmed, is genuinely new
+  ground, not colliding with any existing convention.
+- **Blocked, not abandoned:** reading the ACTUAL ground-floor slab's live `renderOrder`/
+  `_tm_xrayStaged`/material state at the trigger moment needs the `BatchedMesh`/`InstancedMesh`
+  per-instance index (there's no single per-slab scene node to traverse to) — not done, named as
+  the concrete next step.
 
-## RESUME BRIEF (2026-07-15, end of session — read this first, next session)
-**Current state: real progress, explicitly NOT complete.** User's own words: "I can see there is
-some effort but it is not a complete one." Read this whole section before touching code — it
-supersedes the blow-by-blow round-by-round history above for the purpose of picking up the work;
-that history stays for context on what's already been tried and ruled out (don't re-litigate it).
+**Status: NOT FIXED.** Per this project's own no-screenshot/log-not-visual-proof rule, a
+`renderOrder` fix should not ship without the pixel-level confirmation described above. Next
+session: re-run the static-camera harness (`scratchpad/ltu_flicker_probe_static*.js` pattern) with
+the camera pre-positioned at ground level near the slab, spanning the trigger window, WITH the
+camera genuinely moving this time (small deltas, not fully static) to actually exercise the
+motion-coupled hypothesis one way or the other.
 
-### The actual goal, stated plainly (user's own framing, 2026-07-15)
-**"The building is in late evening render, with materials in little light, thus artificial lights
-are placed to light up the facade facing camera."** That is the whole brief for the lighting-props
-part of this feature. Concretely:
-- It's dusk/evening — the sun is low, ambient light is naturally low, so the building's own
-  materials would read as dim/underexposed if left alone.
-- Artificial lights (ground uplights + roof downlights — confirmed this session, edge-lining
-  explicitly dropped) exist to COMPENSATE for that — to properly expose/illuminate whichever
-  facade is CURRENTLY facing the camera, the way real architectural night photography uses
-  supplemental lighting to expose the facade against a darker sky.
-- **This is NOT yet done.** The current code places uplight+downlight pairs at all 4 footprint
-  corners uniformly, with no preference for the camera-facing side specifically. That's a real gap
-  against the stated intent, not just a nice-to-have.
+---
 
-### Hard constraint, repeated by user for emphasis
-**"This is done with general deterministic code to apply to any building in any angle on canvas."**
-No hardcoding to HHS_Office_Federated, no hardcoding to any specific camera position. Every
-position/orientation must be derived at runtime from (a) the currently active building's own real
-bbox (`A.dbQuery` on `element_transforms` — already the pattern in use) and (b) the CURRENT
-`A.camera.position`/orientation at the moment the still-refine fires. Before considering any
-lighting placement "done," test it against a SECOND building and from at least 2-3 different
-camera angles on the SAME building — this session only ever verified on HHS_Office_Federated from
-a handful of angles, which is exactly how the stale-camera-angle caching bug slipped through once
-already (see Round 2 above) and is presumably why the wall-wash lights still aren't confirmed
-"evident enough."
+## §CAM_LIGHT + §SUN_ARC — camera fill-light + noon→dusk sun sweep (2026-08-11) — CLOSED, confirmed working live
+**§CAM_LIGHT**: short-range `THREE.PointLight` riding the camera during Alt+S/Alt+C staging.
+Shipped `bim-ootb` PR #1284. User-confirmed working live, watching a real bake: "bright torch light
+seems to follow camera is working."
 
-### Three concrete open items, in priority order
-1. **Camera-facing facade awareness for the wall-wash lights.** Currently 4 uniform corner pairs
-   (8 lights total). Needs: determine which facade(s) of the building's footprint face the CURRENT
-   camera (reuse the dot-product-of-outward-normal-vs-camera-direction technique already built and
-   verified for the now-removed edge-lining — that MATH was correct, only the edge-rendering
-   approach itself was dropped) and concentrate/strengthen the wall-wash lighting there specifically,
-   not spread evenly around the whole footprint. Recompute fresh every time the photoshoot fires
-   (not cached) — this was the exact bug already found and fixed once this session for the
-   edge-lining; don't reintroduce it here.
-2. **"Surface material of metal, concrete are all not evident enough"** (user, verbatim, this
-   session) — the Layer 3 triplanar textures (concrete/plaster/metal, all wired and verified
-   working per the earlier SESSION RECORD entries above) aren't visually strong/contrasty enough in
-   practice. Candidates to investigate: the `uTriNorm` compensation factor per texture (streaming.js
-   `_TRI_CONCRETE`/`_TRI_PLASTER`/`_TRI_METAL`) may be over-flattening contrast; `tileMeters` may be
-   too large (too little visible pattern per wall) or too small (aliased into a flat average at
-   distance); the multiply-blend against the base IFC color may need a stronger contribution ratio.
-   Verify with a zoomed-in before/after crop (same technique used earlier in this session to catch
-   the "no visible change" false read) before/after any tuning change — don't just eyeball a wide
-   establishing shot.
-3. **The sun/ambient/hemi color during the photoshoot is never actually warmed** — `_applyPhotoStaging()`
-   calls `A.toggleNightMode()` then immediately restores `A._nightSaved`'s ORIGINAL (daytime-neutral,
-   e.g. `0xfff0dd`) sun color, specifically to undo night-mode's moonlight-blue override. That was
-   the right call to avoid moonlight-blue, but it means the building's own walls are never given a
-   deliberate golden-hour/evening color treatment — only the separate light props around it change.
-   If item 1+2 above don't fully deliver "the whole building rendered into the mood," this is the
-   remaining lever: a deliberate warm sun tint (not neutral-white, not moonlight-blue) during the
-   photoshoot specifically.
+**§SUN_ARC**: `PHOTO_SUN_ELEVATION_START=55°` ("high noon") sweeping to the existing dusk value
+(6°, unchanged) across the film — `_sunArcStep(tNorm)` calling `A.updateSky()` every frame, forcing
+`shadowMap.needsUpdate=true` since `updateSky()` doesn't touch the shadow map itself. Shipped PR
+#1284, but hit **two real regressions same day, both landmines of the same kind**:
+1. **Call-order bug** (PR #1284 as shipped): `_sunArcStep()` was called BEFORE
+   `A.startStillRefine()`, which internally re-runs `updateSky(PHOTO_SUN_ELEVATION, ...)` (the fixed
+   dusk value) as part of its own per-frame staging reset — every frame's swept elevation was
+   immediately overwritten back to static dusk before capture. Fixed: moved `_sunArcStep()` to
+   AFTER `startStillRefine()`. PR #1288.
+2. **SW cache-version miss, TWICE in the same session on the same file:** #1284 edited
+   `cinema_maxq.js`/`effects.js`, both in `sw.js`'s `PRECACHE_ASSETS` (cache-first, keyed by
+   `CACHE_VERSION`) — shipped without bumping the version, so already-installed PWAs kept serving
+   stale code no matter what was merged. Caught and fixed for #1284 (v978→v979, PR #1285) — then
+   **#1288 made the identical mistake** (touched `cinema_maxq.js`, zero version bump), which is
+   exactly why the user's live retest still showed no arc after #1288 supposedly fixed it. Fixed:
+   v980→v981, PR #1289. **Lesson, sharpened: this rule needing to be caught twice in one day means
+   it isn't self-enforcing from memory — treat "bump CACHE_VERSION" as a hard pre-merge checklist
+   item for any `cinema_maxq.js`/`effects.js` diff.**
 
-### What IS confirmed working, don't re-verify from scratch
-- Alt+S (Layer 1, TAA still-refine) — **live in production** (PR #801, merged, confirmed via direct
-  fetch of the deployed file). Unrelated to the rest of this brief; nothing further needed here
-  unless a new bug is reported.
-- Layer 3 triplanar textures fire correctly on concrete/plaster/metal classes, uniform-branch gated
-  (near-zero cost when off), self-heals across shader recompiles (`onBeforeRender` fix) — the
-  MECHANISM is proven sound; item 2 above is about visual strength/tuning, not correctness.
-  Still-refine now correctly FREEZES until real interaction (doesn't self-revert on natural
-  completion) and has a 500ms grace window absorbing the incidental Alt+S keypress nudge — both
-  fixed and verified this session, no further action needed on either.
-  Ground plane restored (earth texture + warm tint), fully reverts on teardown — verified.
-  Skyline silhouette (28-box ring + ~2000 sparkled window-lights) reads well per the last screenshot
-  — no reported issue with it specifically.
-- All work is LOCAL ONLY on `fix/night-mode-window-glow` in `/tmp/wt-mobile-perf-fix` (bim-ootb
-  worktree) — not pushed, not merged, per the standing push-pause. Only Alt+S itself was ever
-  explicitly authorized to go live (and did, via a separate cherry-picked branch — see Round 1).
+**Confirmed working, sandbox witness (not eyeballing — headless Puppeteer, isolated worktree, real
+merged code, log read after the run):** `§SUN_ARC_STEP` fired `elevation=55.0/42.8/30.5/18.3/6.0`
+at `tNorm=0/0.25/0.5/0.75/1`, exact linear sweep, cross-validated against `A.sun.position.y` read
+independently from live scene state (fell `4095.76→522.64` in lockstep — the sun object genuinely
+moves, not just the printed number). **User confirmed live on a real bake same day: "sun is
+working."** Tuning constants (`CAM_LIGHT_INTENSITY=3`, `PHOTO_SUN_ELEVATION_START=55`) are
+first-pass, unmeasured guesses — whether they look RIGHT (not just whether they run) is still
+subjective/unverified, not a bug.
 
-### Suggested first steps, next session
-1. Fresh localhost server + a normal (non-headless, real GPU) live test first, from 2-3 different
-   angles on HHS, to get an honest current baseline screenshot before changing anything further —
-   this session's own back-and-forth shows how much daylight there can be between "verified in
-   headless SwiftShader" and "what the user actually sees live."
-2. Tackle item 1 (camera-facing wall-wash) — reuses math already proven correct once this session.
-3. Tackle item 2 (texture contrast) with the zoomed-crop verification discipline.
-4. Only then reconsider item 3 (deliberate warm sun tint) if the mood still isn't landing.
+**Instrumentation shipped for ongoing verification (PR #1290, v981→v982), no logic changed:**
+`§SUN_ARC_STEP tNorm=... elevation=...` on every arc step (direct elevation readout — the older
+`§PHOTO_SHADOW sunDist=...` line is camera-target distance, not elevation, and is a misleading
+proxy). `§PHOTO_SHADOW_FORCE_REASSERT visMeshes=... flippedOn=...` on the forced reassert that
+fires once per MaxQ-captured frame right before capture.
 
-## SESSION RECORD (2026-07-15, continued — resume-brief items 1/2/3 all closed)
-All three prioritized open items from the RESUME BRIEF above are now implemented and verified —
-local commit only (`fix/night-mode-window-glow`, `/tmp/wt-mobile-perf-fix`), not pushed, per the
-standing push-pause. Followed the brief's own suggested-first-steps order.
+## §SHADOW_FRONTIER — shadows on in-progress/ghosted construction elements (2026-08-11) — OPEN, mechanism traced, no proven bug, LOW PRIORITY (user: "nice to have if free")
+User report: shadows not affirming on in-progress constructed beams. Later clarified: specifically
+whether interior sun/shadow interplay through open (not-yet-enclosed) construction gaps tracks
+4D progress correctly, or fights with Alt+S staging's per-frame teardown/rebuild.
 
-**Item 1 — camera-facing facade wall-wash (`viewer/effects.js`).** Replaced the 4 uniform
-footprint-CORNER uplight+downlight pairs with 4 footprint-EDGE pairs (one per facade, positioned
-at each edge's own midpoint) — same bbox-rectangle approximation as before, general to any
-building. Added `_updateFacadeFacingLights()`, reusing the exact dot-product-of-outward-normal-
-vs-camera-direction math already proven correct once this session for the removed edge-lining
-(git history `cd8df02`) — continuous `strength = 0.3 + 0.7*facingFrac` per facade (not binary),
-recomputed FRESH every `_showPhotoProps(true)` call (every Alt+S trigger), never cached — the
-exact bug class already found+fixed once for the old edge-lining. `§PHOTO_FACING` log line added.
+**Traced the full mechanism, found no provable code bug** (unlike §SUN_ARC above, which was a
+clean call-order mistake). `time_machine.js:1439-1473` (`renderAtTime`'s per-mesh shadow-flag
+block): frontier (actively-installing) meshes get `castShadow = !!app._shadowOn` — gated on the
+SEPARATE Sunglass toggle, almost certainly `false` during a MaxQ bake; already-placed non-staged
+meshes get `castShadow=false` UNCONDITIONALLY every tick (`§S259`). Both look like the reported bug
+— BUT `effects.js`'s `_reassertPhotoShadowCoverage(force=true)`, called from `_finishStillRefine()`
+at the end of every captured frame's accumulation, does an unconditional full-scene traverse
+setting `castShadow=receiveShadow=true` on every visible mesh, no exception for frontier/staged —
+runs AFTER the construction-tick stomp and BEFORE the frame is captured. On paper the loop closes.
 
-**Item 2 — triplanar texture contrast (`viewer/streaming.js`).** Added a `contrastBoost` field per
-material group (concrete 1.6, plaster 1.5, metal 1.9) and a `uTriContrast` uniform. The existing
-`normFactor`/`uTriNorm` only recenters the texture's AVERAGE luminance to ~1.0 — it does nothing
-for how much the texture VARIES around that average, which is why it read as flat. Fix expands
-that deviation before the multiply: `triContrasted = clamp((triDiffuse*uTriNorm - 1.0) *
-uTriContrast + 1.0, 0.0, 2.5)`, same average brightness, materially more visible grain/streak.
+**Sandbox witness attempt (2026-08-11):** ran a headless Puppeteer witness calling the real shipped
+`A._sunArcStep()`/`A.toggleStillRefine()` directly. Confirmed both new log lines fire correctly with
+sane, cross-validated numbers — but that run had **no active Time-Machine construction playback**,
+so there were no frontier/staged elements to stomp in the first place. `flippedOn=0` there means
+"nothing needed fixing," not "the stomp-then-correct cycle was exercised and passed." A follow-up
+witness (driving the TM cursor through two points mid-late in the schedule via `window.tmSetCursor`/
+`window.tmGetState`, to actually create staged elements and read their `castShadow` before/after)
+was scoped and scripted (`scratchpad/witness_shadow_construction_interplay.js`, not run — 2+
+still-refine cycles under swiftshader software rendering, ~126s each measured, so several minutes
+total) but **deprioritized mid-session per user ruling: not serious, nice-to-have only if free.**
 
-**Item 3 — deliberate warm sun tint (`viewer/effects.js` `_applyPhotoStaging()`).** Was restoring
-the building's ORIGINAL daytime-neutral sun/ambient/hemi colors after undoing night-mode's
-moonlight override — meaning the walls themselves never got an evening treatment. Now lands on a
-deliberate golden-hour tint instead: sun `0xffa55c` at `0.7×` original intensity, ambient
-`0x8a6a55`, hemi-sky `0x6a5a7a`, exposure `0.85×` original — all building-independent constants,
-scaled off this building's own saved daytime baseline (`A._nightSaved`, untouched so teardown
-still restores the true original exactly).
+**Ran the script (2026-08-11, revisited then re-closed same session).** Result: inconclusive, not
+negative — the test itself was flawed, not the shadow mechanism. `snapshot()` counted meshes with
+`o.isMesh && o.userData.guid`, which returned **zero** at both T1 and T2 (`T1_STOMPED guids=0`,
+`T2_STOMPED guids=0`) — this building's geometry is entirely `BatchedMesh`/`InstancedMesh`
+(confirmed separately in the §LTU_FLOOR_FLICKER section above), so the individually-meshed
+population this script checked never existed to measure. Real finding, though: `§XRAY_EDGES
+staged=0/6880` — for HHS_Office_Federated's actual derived build order, the x-ray-ghost mechanism
+never triggers at all (no element's support carrier ever finishes after its own reveal), so that
+specific "ghosted in-progress" visual state may not even occur in this building's data. Second
+cursor-advance cycle (T2) never completed within its 180s budget — resource contention with T1's
+own still-running AO tail (194.976s), a script sequencing gap (didn't wait for AO settle before
+advancing), not evidence of anything broken.
 
-**Verification (headless SwiftShader + real-GPU, per the brief's own discipline):**
-- Syntax-checked both files (`node --check`) before any browser test.
-- Headless Chrome (puppeteer, `--use-gl=angle --use-angle=swiftshader`) on **two buildings**
-  (`HHS_Office_Federated`, 12 IfcWall + curtain-wall L-shape; `warehouse_gardenworld`, a small
-  rectangular footprint) × **3 camera angles each** (0°/90°/200° or equivalent orbit) — zero
-  `pageerror` events across all 6 runs. `§PHOTO_FACING` confirmed a DIFFERENT facade at ~1.0
-  strength each time the angle changed, on both buildings — the determinism requirement ("any
-  building, any angle, no hardcoding") is met, not just claimed.
-- Zoomed-in close-up on one real `IfcWall` GUID (queried fresh from `element_transforms`, same
-  discipline as the original Layer-3 verification): flat grey wall before Alt+S → visibly mottled/
-  swirled concrete grain with fine surface cracks after — item 2's "not evident enough" complaint
-  is resolved, confirmed by a saved before/after crop, not eyeballed on a wide shot.
-  `§`-log confirmed `sun.color=ffa55c intensity=3.08` (exactly the item-3 constant × 0.7 of the
-  captured daytime baseline) mid-accumulation via direct object inspection.
-- **Real GPU, non-headless** (this machine's actual Xorg session, `DISPLAY=:0`, plain
-  `google-chrome-stable` — see `project_machine_chrome_firefox_gpu_launchers` memory for why no
-  special GPU flags are needed here): confirmed the ~150ms-for-16-samples timing from the earlier
-  SESSION RECORD entry still holds (144ms warm-cache run), and — the actual visual proof — two
-  angles on HHS each show ONLY the currently-facing facade with a warm ground-level glow (the
-  opposite facade stays dim), matching the user's literal ask ("light up the facade facing
-  camera"). Screenshots: `~/Pictures/Screenshots/PHOTOREAL_realgpu_{flat,staged}_{30,160}_
-  2026-07-15.png` (flat baseline vs. staged, both angles) plus the headless multi-angle/multi-
-  building set and the zoomed-in wall crop, all timestamped the same day.
-- Not merged/pushed — local commits only, per the standing push-pause.
+**Closed 2026-08-11, not pursuing further** — then REOPENED same day when the user hit a sharper,
+more specific version of the same underlying problem while actively baking. See
+§MAIN_BUILDING_SHADOW below for the full reopened investigation, current status, and the concrete
+next step for a fresh session (`if ever revisited` above is superseded — it WAS revisited).
 
-## SESSION RECORD (2026-07-15/16, continued — dusk sun/shadow/ground debugging, Hospital reference)
-Long, dense follow-on session, all on Hospital (the real stress-test building — 63,182 elements,
-101×151×43m, irregular multi-wing footprint). Net result: the wall-wash/contrast/tint work from
-the PREVIOUS record above (PR #805) shipped to production this session — user explicitly said
-"Deploy now" after confirming it looked right on localhost; cherry-picked the 9 not-yet-merged
-commits onto a fresh branch off `origin/main` (the old `fix/night-mode-window-glow` had already
-been squash-merged once before — same divergence trap the repo's own CLAUDE.md warns about),
-pushed, CI green, merged (bim-ootb PR #805, `94318d7`), GitHub Pages redeployed. **That part IS
-live.** Everything below is a SEPARATE, still-local-only branch
-(`feat/photoshoot-sun-dusk-reflection`, `/tmp/wt-mobile-perf-fix`) — explicitly NOT deployed, per
-direct instruction ("do this only in localhost... I shall do it and report back").
+## §MAIN_BUILDING_SHADOW — main building casts NO shadow at all; skyline props + Time Machine's native Shadow mode both DO — ✅ SOLVED 2026-08-12 (PR #1302): shadow.bias is normalised depth, so -0.0005 meant 9.87 m here vs 0.305 m in the working path
+User's own established facts (do not re-litigate, do not re-verify — treat as given):
+- The main building (HHS_Office_Federated) casts **no shadow whatsoever**, at any point in a
+  MaxQ bake, confirmed repeatedly across several fresh live bakes same session.
+- The decorative skyline silhouette props (`_buildPhotoProps()`, simple `THREE.Mesh` boxes) DO
+  cast a visible shadow, in the SAME bakes, SAME scene.
+- Time Machine's own native Shadow mode (`A.toggleShadow`, tools.js, the 'h' pill — a completely
+  separate system from PHOTO_SHADOW) already renders shadows correctly and always has.
+- Rejected explanations, do not re-propose: dense/thin closely-packed geometry needing a
+  different shadow bias (guessed, never verified, user explicitly rejected — "IT IS NOT DENSE").
+  Ghost-ground opacity ramp (real mechanism, real log evidence, but user rejected it as a pivot
+  away from the actual ask — the differential is main-building-vs-skyline, not early-vs-late).
 
-**A real self-caught process failure, worth remembering:** a dark-side accent spotlight was
-built, then found broken specifically on Hospital (placed near/inside the already-lit side, not a
-genuine dark facade) — root cause: the facade-edge math assumes a rectangle, and Hospital's real
-footprint has an entire bbox corner with ZERO elements (confirmed via direct query — 30 elements
-in one corner, 0 in another, out of 63,182 total). User caught this live and asked "do you
-acknowledge you drifted" — yes. That spotlight code was stashed (not deleted — recoverable) and
-never shipped.
+**Shipped this session (all real, all self-verified before shipping, all still live) — do NOT
+re-diagnose these, they are closed and working:**
+- PR #1293 `§PHOTO_SUN_SHADOW_REACH` — shadow frustum now widens at low sun angles so the
+  building's own long dusk shadow doesn't get clipped (was a real, separate, now-fixed bug).
+- PR #1295 `§PHOTO_SHADOW_TARGET_CENTRE` — shadow camera now aims at the real building bbox
+  centre via `A.ifc2three()`, not wherever the view camera happened to be looking (was a real,
+  separate, now-fixed bug — same failure shape as the already-fixed `§CINEMA_PIVOT`).
+  Instrumented in #1296 (`§PHOTO_SHADOW_TARGET` log).
+- PR #1298 `§PHOTO_SHADOW_FRUSTUM_COVERAGE` — real `THREE.Frustum` test proves 100% of casters
+  are geometrically visible to the shadow camera at every angle tested (noon AND dusk). Confirmed
+  live on real bakes: `inFrustum=170+ outsideFrustum=0`, every single frame, no exceptions.
+- PR #1299 — shadow map resolution doubled 2048→4096 for the bake-only path (was washing out
+  small rooftop-scale detail; unrelated to the main-building-zero-shadow problem but a real fix).
+- PR #1300 `§SHADOW_FRONTIER_AT_CAPTURE` — real `castShadow` check on the actively-installing
+  (frontier) geometry, read at the exact moment each frame is captured, both for individually-
+  meshed AND `BatchedMesh`/`InstancedMesh` objects (batch-wide flag, the finest grain this
+  renderer allows). Confirmed live on 24+ consecutive real captured frames: `batchCastShadowTrue`
+  exactly matches `batchObjsContainingFrontier` every time, `batchCastShadowFalse=0` throughout.
 
-**Sun/shadow/reflection work (all local, all on top of the shipped PR #805 work):**
-1. Found `A.updateSky()` already repositions the real sun + drives an existing lensflare
-   (`scene.js` §S277f) — the "sun reflection" was never broken, just undercut by the photoshoot's
-   own exposure cut also dimming the tone-mapped lensflare sprite. Fixed (`toneMapped=false`
-   during photoshoot only) + boosted per-material envMapIntensity/metal roughness for a sharper
-   specular "hotspot," per user's explicit ask reproducing real sun-behind-camera glint.
-2. Lowered dusk sun elevation 8°→6° and enabled REAL shadow-casting (reusing `time_machine.js`'s
-   own proven sun-cycle shadow mechanics, not reinvented) for the "long shadow, dramatic facade"
-   look — careful to compute the shadow frustum AFTER repositioning the sun (order matters — the
-   original `toggleShadow()` code computes frustum before repositioning, which would be wrong here).
-3. **Found and fixed a real bug born from my own earlier fix:** a "make ground whiter" emissive
-   add is NOT shadow-map-occluded in three.js at all — it flattened the contrast between shadowed/
-   lit ground, which is very likely why the user then reported "Shadows? None on the ground."
-   Reverted. Same root logic applied to dial back an over-aggressive hemi/ambient blanket boost
-   (1.6×/1.3× → 1.25×/1.15×) that likely diluted the discrete point-light addons' visibility too.
-4. **Found and fixed a likely root cause for the whole "still not there" pattern across THREE
-   separate rounds of real fixes:** `effects.js` AND `streaming.js` are both in `sw.js`'s
-   `PRECACHE_ASSETS`, served cache-first — `CACHE_VERSION` was never bumped after any of this
-   session's commits, so the service worker most likely kept serving stale cached copies
-   regardless of what was on disk. Bumped v751→v752. **Not confirmed whether the user's browser
-   had actually picked this up for any of the screenshots reviewed after — this is the single
-   biggest open question for next session, see RESUME BRIEF below.**
-5. **Found and fixed a real streaming-race bug**, same class already fixed once this session for
-   the triplanar shader uniform (§TRIPLANAR_RECOMPILE_FIX) but not applied here the first time:
-   the shadow-casting traversal and the material envMap/roughness boost were one-shot pushes at
-   Alt+S trigger time — Hospital's rooftop content (589 real trees, 1 helipad, 567 solar panels,
-   all confirmed via direct DB query, not guessed) could stream in AFTER that instant and never
-   get flagged. Fixed by re-asserting both, idempotently, every accumulation frame.
-6. Added atmospheric fog override (warm haze, was a dark blue-purple that darkened distant ground
-   further) and made the skyline silhouette denser/closer/bigger (was `envelope*4` radius — so far
-   the boxes subtended almost no visible angle, reading as tiny specks).
+**So: castShadow flags ✓ (both frontier-specific and the general ~170-mesh population, proven
+with real numbers across dozens of frames), frustum coverage ✓ (100%, both elevations), shadow
+map resolution ✓ (doubled), shadow-camera target ✓ (aimed at the building, not drifting), deploy/
+cache correctness ✓ (`§PHOTO_SHADOW_TARGET`/`§PHOTO_SHADOW_FRUSTUM_COVERAGE` both confirmed firing
+on real live bakes). Despite all of this, the user's direct, repeated, live observation stands:
+still no shadow from the main building.**
 
-**Reference-image-driven addons** (`RealistHospital.jpeg`, user-supplied target — analysis: the
-drama in that image comes from warm INTERIOR light through glass against a dark shell/cool sky,
-NOT sun/shadow drama — a real recalibration worth remembering next session):
-- Roof-corner twin spotlight — placed at whichever bbox corner is LEAST camera-facing (the "back
-  portion," per explicit correction — first instinct was nearest-camera, which was wrong).
-  Recomputed fresh every trigger, same discipline as the facade-facing math.
-- That back facade's existing ground/roof wash pair gets an extra 1.8× boost ("ground based
-  spotlights too") — reuses the existing fixture, no new light objects.
-- Entry-door sconces from real `IfcDoor` positions (capped to 6, lowest storeys first — a proxy
-  for "ground floor," not a real exterior-perimeter check).
-- Tree uplighting from real vegetation-named elements (capped to 15 for perf).
-- **Checked, not fabricated:** Hospital has zero person/human/staffage elements and zero
-  ground-level trees (all 589 real trees sit at ONE mid-building terrace, z≈179.5-179.9 of a
-  159.8-203.2 range — a rooftop garden, not street-level planting). Both "harvest people" and
-  "harvest ground trees" asks are genuinely not available in this building's data — nothing to
-  wire up, confirmed via query not assumed.
+**Went one level deeper — read the actual bundled three.js source** (`viewer/lib/three.module.min.js`,
+not the app code) to check whether `BatchedMesh`'s shadow-pass inclusion depends on something the
+app never computes. Found: the shadow render loop gates each object on
+`!object.frustumCulled || frustum.intersectsObject(object)`. Live witness
+(`scratchpad/witness_boundingsphere_check.js`) showed every `BatchedMesh` in the scene has
+`frustumCulled: true` (so it DOES go through the intersectsObject test) and
+`geometry.boundingSphere: null` (the app's own streaming/batching pipeline never computes it) —
+BUT the bundled three.js's actual `intersectsObject` implementation checks `object.boundingSphere`
+(the BatchedMesh's own top-level one, confirmed present and valid) BEFORE ever falling back to
+`geometry.boundingSphere` — so this specific mechanism, while a genuinely odd gap (the app never
+computes a value three.js's own newer BatchedMesh-aware code path doesn't even need), is NOT the
+cause. Ruled out with the literal engine source, not inferred.
 
-**Deliberately deferred, not forgotten:**
-- **Material reference library** (fix flat-teal-fallback trees/solar-panels/helipad — they render
-  in the generic `IfcBuildingElementProxy` teal because they have no real IFC color). Turns out
-  bigger than first estimated: `element_name` isn't selected anywhere in the geometry-loading/
-  batching queries today, and elements are grouped into InstancedMesh/BatchedMesh by
-  `(rgba, ifcClass)` only — adding a name-pattern lookup means touching multiple SQL queries AND
-  the batching grouping keys in a performance-critical file, not just the material-creation
-  function. Too invasive to do blind without testing. User suggested ~20 curated starter
-  materials as reasonable scope when this is tackled properly, as its own session.
-- **Cinema pill (360° fly-around clip)** — user wants a camcorder-icon pill, offline/background
-  batch: pivot at building center, step camera 1°/frame around a full 360° loop, run a full
-  still-refine per frame, assemble into a clip. Target: 360 frames, 15fps = exactly 24 seconds
-  (matches the user's ask precisely). Estimated ~1-2 minutes of background production time at the
-  ~150ms/frame real-GPU cost already measured (caveat: only measured on a SMALL building — Hospital's
-  much heavier scene could cost noticeably more per frame, untested). **Not started — spec only,
-  no code written for this yet.**
-- Task 5's original framing ("drop front wash since sun handles it, back-only") was supersede by
-  the reference-image direction (roof-corner + back-boost instead) — the FRONT-facing wash was
-  never actually removed; it still runs at full strength unchanged. Worth a deliberate decision
-  next session: keep both hero-front-wash AND back-accent, or actually drop the front now that the
-  sun/lensflare/shadow work exists to carry that job. Not resolved, don't assume either way.
-- Ground grass+paver COMBINED pattern (grass base + paved rectangles, like a real site plan) —
-  user's simpler fallback ("why not just light it up," "use paved, add concrete look") is what
-  shipped; the fancier combined-pattern idea is still just an idea, not spec'd.
+**Status: genuinely stuck.** Every layer checkable from code and console logs has been checked and
+comes back clean. This is not for lack of trying — it is the honest limit of what log-only
+diagnosis can resolve here.
 
-**Everything in this section is local-commit-only** on `feat/photoshoot-sun-dusk-reflection`
-(`/tmp/wt-mobile-perf-fix`), stacked on top of the NOW-MERGED PR #805 work. None of it has been
-tested by the assistant in this session — the user explicitly and repeatedly instructed
-"don't test, I'll test and report back," which was honored throughout. All reasoning above is
-grounded in re-reading the actual code + direct read-only DB queries against Hospital's real data,
-not speculation — but zero browser-level confirmation exists yet for any of items 1-6 or the addons.
+### ✅ SOLVED 2026-08-12 — `shadow.bias` is NORMALISED depth, not metres (PR #1302)
 
-## RESUME BRIEF (2026-07-16 — read this first; do a STRATEGIC REVIEW before writing any code)
-**Do not start tuning constants again on arrival.** This session's biggest lesson: three separate
-rounds of real, well-reasoned fixes each got reported as "still not there," and the actual causes
-turned out to be (a) a stale service-worker cache possibly serving old code the whole time, and
-(b) one of the assistant's OWN earlier fixes (ground emissive) directly undoing another goal
-(shadow visibility) — neither of which a fourth round of "increase the number more" would have
-found. Guessing-and-patching had run its course; reading the actual mechanism (sw.js precache
-list, `_setGroundColor`'s real branching logic, three.js's shadow-occlusion model) is what found
-both. Do the same kind of grounded reading before changing any constant further.
+**Root cause.** `_enablePhotoShadows()` copied `A.toggleShadow`'s proven `A.sun.shadow.bias =
+-0.0005` verbatim. three.js applies that constant in **normalised** depth — the bundled
+`three.module.min.js`'s own `shadowmap_pars_fragment` does literally `shadowCoord.z += shadowBias`,
+where `z` spans `[0,1]` across the shadow camera's `near..far`. Its world-space meaning is therefore
+`bias × (far − near)`, and the two paths run wildly different depth ranges (both measured live on
+`HHS_Office_Federated`, not derived on paper):
 
-**Step 1, before anything else:** confirm the browser is actually running current code. Open
-DevTools → Application → Service Workers, confirm the active worker is `v752` or later (bumped
-this session specifically because `effects.js`/`streaming.js` are both cache-first precached
-assets and every fix this session touched one or both). If it's still on an older version, a hard
-refresh (or closing all tabs of the app and reopening) is needed before ANY of this session's
-visual claims can be evaluated at all — everything reported as "still not there" may simply never
-have been loaded.
+| path | sunDist | near | far | range | what `-0.0005` actually is |
+|---|---|---|---|---|---|
+| `A.toggleShadow` (tools.js — the path the user confirms has always worked) | 150 m | 7.7 | 617 | 609 m | **0.305 m** |
+| `_enablePhotoShadows` (PHOTO_SHADOW) | 5000 m | 250 | 19998 | 19,748 m | **9.874 m** |
 
-**Step 2:** get ONE fresh, confirmed-current-code screenshot from the user on Hospital, at a
-camera angle showing at least two facades (so the facing-vs-back distinction is visible), before
-making further changes. Compare it point-by-point against what SHOULD now be true:
-- Ground: 'paved' texture, no emissive hack (reverted), warm fog haze at distance, hemi/ambient
-  at the dialed-back 1.25×/1.15× (not the earlier 1.6×/1.3× that likely flattened everything).
-- A real cast shadow from the building onto the ground (shadow-casting is enabled at the dusk sun
-  angle, re-asserted every accumulation frame — should no longer be silently skipped by the
-  emissive-washout bug).
-- Roof-corner twin spotlight + boosted ground wash specifically on the LEAST-camera-facing side
-  (not the front — that was an explicit correction mid-session, easy to mis-check).
-- Entry sconces near real door positions, tree uplights near the real rooftop-terrace trees.
-- A denser, closer, more visible skyline silhouette on the horizon.
-- A stronger, sharper metal/glass specular hotspot when the sun is roughly behind the camera.
+**32.4×.** The cause of the range gap: `toggleShadow` repositions the sun to `ctr + env*(0.8,2,0.6)`
+(~150 m away) and derives `near/far` from that; the photo path *must not* move the sun —
+`A.sun.position` is what `updateSky`, the Sky shader and the lensflare all read, so it stays at
+`updateSky`'s `direction * 5000` — and then derives `near = sunDist*0.05`, `far = sunDist*4` from
+5000 m.
 
-**If step 2 still looks wrong** after confirming step 1 is genuinely current: don't immediately
-patch again — ask what specifically is missing/wrong the same way this session's later rounds did
-(exact screenshot, exact complaint), and re-read the relevant mechanism before touching numbers.
+**Why that erases exactly what the user saw.** A world-space bias of 9.87 m erases any shadow whose
+caster→receiver separation *along the sun ray* is under ~10 m. That separation is
+`casterHeight / sin(elevation)`, so at the film's 55° opening **nothing under 8.1 m tall cast
+anything at all** — every rooftop fixture, and the near part of a short building's own ground
+shadow — while the tall skyline silhouette props cleared it easily. That is the
+main-building-vs-skyline differential, and it also explains "did not act in the early seconds"
+(early = high sun = worst case) and "nor its roof where objects cast no shadow".
 
-**Then, in priority order the user has already stated:**
-1. Decide the front-wash-vs-back-only question left open above (§Task 5 note).
-2. Scope the material reference library properly as noted (≥20 curated real-material starter set,
-   name-pattern lookup, touches SQL queries + batching keys — needs its OWN careful session, not a
-   quick add-on, since it's a real change to a performance-critical file).
-3. Spec + build the Cinema pill (360° fly-around, 360 frames @ 15fps = 24s, offline/background).
-4. Only then revisit the combined grass+paved-rectangle ground pattern, if still wanted.
+**Why every earlier check came back clean.** `castShadow`, frustum coverage, shadow-camera target
+and map resolution were all genuinely correct — PRs #1293/#1295/#1298/#1299/#1300 fixed real bugs.
+The bias governs the depth *comparison*, which none of those instruments measure.
 
-**Nothing in this session has been pushed or deployed** except the PR #805 work (now live). The
-push-pause remains in effect for everything else until the user lifts it or names a breakthrough.
+**Fix (PR #1302).** Hold the WORLD-space bias instead of copying the normalised constant: floor at
+`toggleShadow`'s own proven 0.305 m, raised to `texelWorld / tan(lowest arc elevation)` so grazing
+dusk sun doesn't self-shadow the ground (acne) — `_enablePhotoShadows` runs once at staging while
+`_sunArcStep` sweeps 55°→6° afterwards without recomputing this camera, so the bias has to be safe
+at the worst angle the film reaches. Both terms computed from live values. New `§PHOTO_SHADOW_BIAS`
+log line. Live on a real load:
+`§PHOTO_SHADOW_BIAS worldBias=0.836m bias=-4.234e-5 range=19748m texel=0.088m grazeElev=6`.
 
-## SESSION RECORD (2026-07-16, continued — strategic review, SW-cache question resolved)
-Per explicit instruction: no new constant-chasing. The previous RESUME BRIEF's "biggest open
-question" (was `v752` actually being served, or were the "still not there" reports reviewing stale
-cached code?) is checked FIRST, grounded in the user's own live browser console log (Hospital,
-89 `RENDER_LOOP` cycles, ~30 `Alt+S` triggers across many camera angles) cross-checked against the
-code on disk — not guessed, not re-tuned.
+**Proof — paired A/B, identical camera pose / sun / geometry, only `shadow.bias` changed:**
 
-**Step 1 — `v752` confirmed ACTIVE, not stale. Question CLOSED.** Three independent checks agree:
-- `curl localhost:8085/viewer/sw.js` → `CACHE_VERSION = 'v752'`. The dev server (`python3 -m
-  http.server 8085`, cwd `/tmp/wt-mobile-perf-fix`) is serving the feature-branch worktree, not the
-  main checkout (main's own `sw.js` is still `v749` — confirms the two trees really do differ and
-  the server is pointed at the right one).
-- `sw.js` calls `self.skipWaiting()` on install — no stuck-waiting-tab failure mode even if a
-  reinstall was needed.
-- Strongest evidence: the pasted console log carries FIVE behavioral fingerprints that only exist
-  in this session's `v752` code, none present pre-session — `§GROUND_MAP key=paved` (emissive hack
-  gone), `§PHOTO_ADDONS doors=6 trees=15` (capped door/tree addons), `§PHOTO_PROPS ... skylineBoxes=
-  40` (density fix), `§PHOTO_SHADOW enabled casters=11292 ...` firing on every one of ~30 triggers
-  with the caster count correctly growing as streaming completed (11252→11292), and `§PHOTO_FACING
-  facades=4 strengths=...` varying correctly across every angle tested. **The "still not there"
-  reports were not a stale-cache artifact — this log is genuinely running the fixed code.**
-
-**Step 2 — checklist vs. the 00:12 screenshot + the same log, item by item:**
-| Item | Verdict | Evidence |
+| elevation | px darkened | px brightened |
 |---|---|---|
-| Ground: paved texture, no emissive hack | ✅ confirmed | `§GROUND_MAP key=paved` every cycle; revert is commit `931c4dc` |
-| Warm fog haze at distance | ✅ code confirmed | `effects.js` `PHOTO_FOG` block (0xc9a878, capped density) — runs in the same staging pass as the confirmed items, no dedicated log line |
-| Hemi/ambient dialed back 1.25×/1.15× | ✅ code confirmed | `effects.js:408-409` `PHOTO_HEMI/AMBIENT_INTENSITY_SCALE` |
-| Real cast shadow, re-asserted every frame | ✅ confirmed firing | `§PHOTO_SHADOW enabled casters=11292 sunDist=5022 env=151` on all ~30 triggers; screenshot shows a plausible cast-shadow silhouette left of the building |
-| Roof-corner twin spot + back-side ground boost | ⚠ code present, not visually isolated | no dedicated log tag for this sub-feature; the 00:12 shot is aerial and doesn't clearly isolate the least-camera-facing side |
-| Entry sconces (≤6) + tree uplights (≤15) | ✅ confirmed built | `§PHOTO_ADDONS doors=6 trees=15` every trigger |
-| Denser/closer/bigger skyline | ✅ confirmed | `§PHOTO_PROPS skylineBoxes=40`; screenshot shows large, close silhouette blocks near the horizon |
-| Specular hotspot, sun roughly behind camera | ⚠ code present (3.2× envMapIntensity boost, `effects.js:380`), not visible in THIS screenshot | the 00:12 frame doesn't put the sun roughly behind the camera — needs the right angle to judge |
-
-Net: 6 of 8 checklist items hard-confirmed from log + code; the remaining 2 are real code paths that
-simply weren't visible in the one aerial screenshot reviewed — not evidence of a problem, just an
-untested angle. Given the user's own read ("already good enough"), no further tuning is warranted
-from this review.
-
-**One unrelated, pre-existing item noticed in passing (not a photoreal issue, not touched):**
-`§HELPERS_QUERY_ERR no such table: m_bom_line` — the warehouse-bin (`WH PILL`) feature's helper
-query fails because `m_bom_line` doesn't exist in Hospital's `ad_seed.db`; the code already gates
-itself off cleanly (`WH PILL gate=off`), so this is cosmetic console noise, not a functional break.
-Flagged only so it isn't mistaken for a new photoreal regression later.
-
-## RESUME BRIEF (2026-07-16, supersedes the RESUME BRIEF above — SW-cache question is CLOSED)
-Do not re-ask "is v752 active" — confirmed (Step 1 above). Do not re-verify the 6 confirmed
-checklist items without a specific new complaint — that would be the same guessing-and-patching
-loop this file already warned against. The only two open visual questions are narrow and
-angle-specific, not systemic:
-1. One ground-level (not aerial) screenshot of specifically the LEAST-camera-facing side, to
-   confirm the roof-corner twin spot + back-side ground-wash boost is visible.
-2. One screenshot with the sun roughly behind the camera, to confirm the 3.2× specular hotspot
-   reads as intended on glass/metal.
-
-Everything else in the previous RESUME BRIEF's priority list (front-wash-vs-back-only decision,
-material reference library scoping, Cinema pill spec, combined grass+paved ground pattern) still
-stands as written above, unchanged — not re-litigated here.
-
-## SESSION RECORD (2026-07-16, continued — one deft touch, then stopped)
-User explicitly scoped down mid-review: asked for two small touches (sunlight bounce off metal/
-glass, brighter ground-with-visible-shadow), then on reflection said "sunlight bound back can be
-the highlight, free, and kill any further need for now" — dropping the ground-brightness ask.
-Agreed and did NOT touch ground/hemi/ambient this round — that lever already has a documented
-contrast-flattening landmine earlier in this file (1.6/1.3 killed shadow contrast once tonight;
-re-touching it without a fresh specific complaint would repeat the same guessing loop this file
-already warned against).
-
-**One change made:** `PHOTO_ENVMAP_BOOST` `effects.js:380` raised `3.2 → 4.5` (third bump tonight,
-after `2.2 → 3.2` earlier this session). Applies broadly to any material with a numeric
-`envMapIntensity` — already covers `IfcCurtainWall`/`IfcWindow` glass (STD_MAT `rough=0.08/0.05,
-metal=0.10/0.00` — already glossier than the metal-roughness-tightening floor, so glass gets the
-bounce from this boost alone, no separate code path needed) as well as true metal (`metalness>0.3`).
-`node --check` passed on both files. **`sw.js` `CACHE_VERSION` bumped `v752 → v753`** — required for
-this edit to actually reach the browser (same cache-first precache mechanism as the v752 finding
-above; confirmed via `curl localhost:8085/viewer/effects.js` that the served file now reads `4.5`).
-Committed locally only (`6f2a1da`, `feat/photoshoot-sun-dusk-reflection`,
-`/tmp/wt-mobile-perf-fix`) — push-pause remains in effect. Not yet visually confirmed by the user;
-next step is a hard-refresh (or new tab — `skipWaiting()` means no stuck-old-worker wait) + `Alt+S`
-on a facade angle with the sun roughly behind the camera.
-
-Also answered in passing: the "film icon, ~20s render" ask is the Cinema pill from the previous
-RESUME BRIEF — confirmed via grep still NOT built (spec only; `tour.js`/`time_machine.js` have an
-unrelated pre-existing drone/tour camera, not this feature). Scoped out for tonight per the user's
-"kill any further need for now."
-
-## SESSION RECORD (2026-07-16, continued — orbit test movie + a real envMap bug found and fixed)
-User then asked for a background test movie: orbit Hospital 360° from the reference camera (the
-same `cx/cy/cz/tx/ty/tz` hash already used in the reviewed screenshot, "fill up the frame"), pulling
-back in the final ~20% of the loop. Built via a throwaway headless-Chrome (puppeteer) script driving
-`APP.camera`/`APP.controls` directly frame-by-frame (not through real pointer/wheel events, so
-`stopStillRefine()`'s interaction hooks never fire) — reused `A.startStillRefine()` once for staging
-+ the hero frame, then per-frame single-sample `A._composer.render()` (accumulate off, to avoid
-TAA-ghosting a moving camera), matching exactly how the user's own rapid multi-angle testing earlier
-tonight already looked (single-sample "cancelled" frames, not full 16x accumulation). 360 frames
-(1°/frame) @ 15fps = 24s, matching the original Cinema-pill spec. One real bug hit + fixed along the
-way: `page.$('canvas')` grabbed the WRONG element (`#site-cam-markup`, a hidden markup canvas, comes
-first in the DOM before the real `#canvas`) — fixed by selecting `#canvas` explicitly. Smoke-tested
-at 8 frames first (both ends visually confirmed: frame 0 matches the reviewed screenshot, frame ~4
-shows genuine long dusk shadows from the opposite side), then ran the full 360 in the background
-(~182s, ~0.5s/frame) and assembled with ffmpeg → `~/Pictures/Screenshots/
-PHOTOREAL_orbit_test_Hospital_2026-07-16.mp4` (24s, 12MB, H.264).
-
-**While that ran, investigated the user's separate, sharper observation: "sunlight bounce has not
-occurred even once" — correctly reasoned by the user as a narrow mirror-reflection-angle effect that
-should show up SOMEWHERE across a full 360° orbit if it worked at all. It doesn't, and not by bad
-luck — found a real, structural bug, not a tuning miss:** `streaming.js:414` assigns each material's
-`.envMap` ONCE, at streaming time, from whatever `A._envMap` was at that instant. Hospital's 63,182
-elements finish streaming almost immediately on page load, long before Alt+S — so every material is
-permanently locked to the DAYTIME env map baked at startup (`scene.js:225`, sun elevation 45°/azimuth
-180°). The dusk photoshoot repositions the real sun and regenerates a fresh env map (`A.updateSky`'s
-2s-throttled `_pmrem.fromScene`, `scene.js:204-212`) but never pushes that new texture back onto
-already-created materials — they kept reflecting a sun that isn't where the dusk scene visually put
-it, so no camera angle could ever line up a correct glint. This is exactly why "not once" — it's not
-a probability problem, the reflected sun and the visible dusk sun were simply two different lights.
-
-**Fix (`effects.js`):** new `_reassertPhotoEnvMap()` — refreshes `m.envMap = A._envMap` unconditionally
-on every cached material (cheap reference swap, `needsUpdate=true` only when it actually changed),
-called every accumulation-step tick alongside the existing shadow/roughness reasserts, PLUS one extra
-guaranteed call at `+2200ms` (`setTimeout`, only if still in photo mode) as a safety net for when a
-fast/cached accumulate finishes before the 2000ms-throttled env map regen lands — otherwise a quick
-run could stop calling the per-tick reassert before the fresh texture ever arrives. `node --check`
-passed. **`sw.js` `CACHE_VERSION` bumped `v753 → v754`** (same cache-first precache mechanism as
-before — confirmed via `curl localhost:8085/viewer/effects.js` that the served file now contains
-`_reassertPhotoEnvMap`). **The 360-frame test movie above was captured on the OLD (pre-fix) code** —
-it's a valid systems-check of the camera path/staging pipeline, but do not read it as evidence the
-glint is still missing; that run structurally could not have shown it. Not yet committed — still
-mid-edit when this entry was written; not yet visually re-confirmed by a fresh orbit or live
-interactive check.
-
-**Next step:** either re-run the same orbit script (now free, code's on disk) or have the user
-hard-refresh their live tab and manually orbit near a facade at a plausible mirror angle, to confirm
-the glint now actually appears somewhere in a full loop. If it still doesn't, the next place to look
-is whether `_pmrem.fromScene(_sky)` bakes a sun disc bright/small enough for a mirror reflection to
-read as a "wow" glint rather than a soft blob — untested, no evidence either way yet.
-
-**Update, same session — the envMap fix worked but overshot, then was corrected:** live on the
-user's own tab (v754), the glint DID appear — first real confirmation the mechanism works at all —
-but came with a real regression: "all shadows on building are gone." Root cause (found by reading,
-not guessing): `envMapIntensity` defaults to `1.0` — a number — on every `MeshStandardMaterial`
-regardless of roughness, so the boost's own gate (`typeof m.envMapIntensity !== 'number'`) never
-actually excluded plain concrete/plaster; ALL materials got the 4.5× boost. Env-map/IBL reflection
-is not shadow-map-occluded in three.js (same bug class as the ground-emissive landmine earlier in
-this file), so the whole building's shadow/lit contrast got washed out by a uniform reflective sheen.
-
-**Fixed (`e1e2e81`, SW `v754→v755`):** gated the envMapIntensity boost on actual glossiness
-(`roughness ≤ 0.5` or `metalness > 0.3` — matches STD_MAT's real values: glass 0.05-0.08, metal
-0.3-0.5, concrete/plaster 0.6-0.95), so only glass/metal reflect; dialed the boost itself back
-`4.5 → 3.0` per "glint is slightly too much." **Verified, not just theorized:** re-ran a 60-frame
-orbit slice with the fix in place — cropped close-ups of frames 30/32/34 (the sun-behind-camera
-region) show a warm glint tracking across the glass curtain-wall band, peaking at frame 32 and
-fading either side (a real angle-dependent reflection, not a static artifact), while the brick/
-concrete sections keep normal shadowed tonal variation throughout, no wash-out. Both the glint and
-the shadow contrast hold simultaneously now.
-
-**Deliberately not built:** the user separately described wanting the glint to read as "thin star
-light rays" (an anamorphic lens-flare/star-burst look, like the existing sun lensflare sprite) rather
-than a soft bright patch. That's a distinct visual feature (a screen-space sprite/streak spawned at
-the mirror point) — noted as a possible future refinement, not attempted this session; the actionable
-part of that message ("roll back... recover shadows... keep metallic/glass reflected light rays")
-is what was implemented and verified above.
-
-All of this is still local-commit-only on `feat/photoshoot-sun-dusk-reflection`
-(`/tmp/wt-mobile-perf-fix`) — push-pause remains in effect. Test movies saved to
-`~/Pictures/Screenshots/PHOTOREAL_orbit_test_Hospital_2026-07-16.mp4` (pre-envMap-fix, valid
-camera-path/shadow systems-check) — a post-fix full 360 movie was not re-rendered (60-frame slice
-was enough to verify both fixes; regenerate the full 24s clip on request).
-
-## SESSION RECORD (2026-07-16, continued — facade sparkle + skyline sun-gap, sandbox-verified)
-User confirmed the state above as "very nice now.. just lock that in" (no further tuning to the
-locked settings), then separately asked to research a "starlight reflection" sparkle at the real
-sun/camera mirror angle. Two reference photos supplied: `relfectsunlight.jpg` (soft warm glow
-reflected in a real glass tower — the actual target look, not a hard geometric shape) and
-`realreflect.jpg` (a "spark line" streak + noted the brick facade's realistic uneven tone — already
-present here via the existing real photographic triplanar textures, `textures/materials/*_color_
-1k.jpg`, no code change needed for that part).
-
-**Built (`e55eb57`):** one small additive sprite per facade-wash edge (reuses the exact technique
-already proven for the sun's own lensflare, `scene.js` §S277f — canvas radial gradient, no new
-shader/library), positioned at building mid-height, visibility/size/opacity driven every reassert
-tick by the Blinn-Phong half-vector test `dot(normalize(toSun+toCam), facadeNormal)` — the standard,
-physically-real specular-highlight condition ("the correct angle of attack", per user), applied to a
-real facade point instead of a per-pixel shader term. Soft warm glow dominant (matches
-`relfectsunlight.jpg`); a thin, subtle cross-streak layered on top per "we can have sharp spikes
-too." User also separately researched `THREE.Lensflare` + `UnrealBloomPass` as options — assessed
-and recommended against both for now: `Lensflare` is redundant with what's already hand-built for
-the sun, and doesn't fit a reflection-at-an-arbitrary-wall-point use case; `UnrealBloomPass` is a
-genuine full-screen multi-pass technique but blooms EVERY bright pixel (sun disc, night window-glow,
-skyline sparkle points) not just the facade glint, and threading a new pass into the existing custom
-`_composer`/`_taaPass` pipeline (which took this whole session to stabilize) is real risk for a
-cosmetic layer — filed as its own future session, not bolted on tonight.
-
-**Also fixed, same commit:** skyline silhouette boxes could land directly in front of the sun and
-block it ("too close, obscure the Sun"). Fixed via real vector comparison — each candidate box's
-actual THREE-space direction from the building center vs. the sun's actual THREE-space direction,
-skip if within an 18° cone — rather than hand-deriving the angle offset between the skyline loop's
-IFC-plane convention and the sun's azimuth convention (two different coordinate frames, fragile to
-map by hand; comparing real runtime vectors sidesteps that entirely). General to any building/sun
-angle, nothing hardcoded.
-
-**Sandbox-verified, not just eyeballed (per explicit user ask "do your sandbox test to confirm it
-works"):** exposed two read-only diagnostic accessors (`A._getPhotoSparkles()`, `A._getPhotoSkyline()`,
-alongside the already-exposed `A._reassertPhotoSparkles()`, commit `a947f46`) and drove the orbit
-programmatically while reading live sprite/box state each frame (`sparkle_diag.js`, 72-frame sweep):
-- Skyline gap: closest box's alignment dot `0.9397` vs. the `0.9511` (cos 18°) clearance threshold —
-  correctly excluded, 36/40 boxes kept.
-- Sparkle: clean bell-curve opacity across the orbit, peaking at exactly `1.0` at best alignment on
-  TWO different facades at different orbit points, fading symmetrically on both sides — confirms the
-  half-vector math is genuinely angle-driven, not a fluke or a stuck-on artifact.
-- Isolated close-up screenshot captured at the confirmed peak frame (`sparkle_diag.js` → frame 46/72)
-  shows a small, tasteful warm glow at the facade edge, matching the reference photo's soft-glow
-  character, not overpowering.
-
-Everything from this entry is local-commit-only (`e55eb57`, `a947f46`,
-`feat/photoshoot-sun-dusk-reflection`, `/tmp/wt-mobile-perf-fix`), SW cache now `v757`. Push-pause
-remains in effect.
-
-## SESSION RECORD (2026-07-16, continued — cinematic orbit strategy + sky drama, movie delivered)
-User specced the Cinema-pill camera strategy in detail: begin from wherever the user's own camera
-POV is (not a fixed hardcoded angle, "so he can spawn his preferred line of attack"); correct
-height/distance toward an ideal cinematic band (taper down if too high/looking-down, rise back up
-if too low, ease toward the ideal if too far); slightly elliptical path, not a perfect circle;
-ignore stray distant elements (LTU's scattered exterior piping) since a full 360 spin passes near
-them anyway — pivot stays at the real building bbox center, same as already implemented. Built into
-the orbit test-movie script (`orbit_capture.js`), not yet a real in-app UI feature (that's still the
-Cinema-pill spec from earlier — camcorder icon, own build session).
-
-**Real bug caught by smoke-testing before committing to the full run:** first attempt eased from
-the starting camera toward one FIXED ideal radius/tilt (reused tour.js's own `envelope*0.75`/`35°`
-convention) — smoke-tested at 12 frames and it wrenched the user's own already-good reference shot
-into an extreme close, steep top-down view by frame 3. Root cause: tour.js's numbers were tuned in
-a different context and don't transfer to Hospital's actual scale (151m envelope) — trusting a
-"reused convention" without checking it against this specific building's numbers was the mistake.
-**Fixed by using a BAND, not a fixed target** (tilt 8°-45°, radius 0.9×-2.5× envelope) — correction
-only fires if the start is genuinely outside the band, easing to the nearest edge; an already-
-reasonable starting shot (like the reference camera) gets NO correction at all, confirmed via a
-second smoke test showing clean, well-framed shots throughout. This is the same lesson as the
-envMap-boost overshoot earlier tonight: verify a fix at small scale before running the full 360.
-
-**Also this round:** dramatic dusk sky per "more dramatic sky... reddish clouds in the distance" —
-Preetham (`Sky.js`) has no cloud geometry/texture at all (a clear-sky atmospheric model only), so
-literal cloud shapes are a separate, unbuilt textured-layer feature. What's real: pushed the same
-turbidity/rayleigh/mie uniforms scene.js sets once at startup, scoped to photo-mode only (saved/
-restored around staging, normal daytime navigation untouched) — turbidity 4→8, rayleigh 2→3.2,
-mieCoefficient 0.005→0.012, mieDirectionalG 0.8→0.9, for a richer, more saturated horizon glow.
-
-**Delivered:** full 360-frame/15fps/24s cinematic orbit rendered with both fixes —
-`~/Pictures/Screenshots/PHOTOREAL_orbit_cinematic_Hospital_2026-07-16.mp4` (360 frames, 178s
-render time, ~15.6MB). Commits: `c9ae5ff` (sky drama, SW v758) on top of the earlier sparkle/
-skyline-gap work (`e55eb57`, `a947f46`). Local-commit-only, push-pause remains in effect. The orbit
-script itself (`orbit_capture.js` in the scratchpad) now embodies the full cinematic-strategy spec
-and can be reused for future test movies on any building — the band/ellipse/pivot logic is general,
-nothing Hospital-specific except the starting URL hash.
-
-## SESSION RECORD (2026-07-16, continued — Cinema Orbit shipped as a real feature, Terminal tested)
-**Cinema Orbit is now a real in-app feature, not just a test script** (`e1e2e81`→ actually
-`0fcc728`, SW `v759`): camcorder icon + "Cinema Orbit (24s)" row added to the Palette panel
-(`panels.js`), wired to `A.startCinemaOrbit()` in `effects.js` — records the LIVE canvas via
-`MediaRecorder`/`captureStream`, reusing the exact still-refine staging setup minus its own TAA-
-accumulate loop (a moving camera shouldn't accumulate supersamples), driving the same band/ellipse/
-pivot-preserving camera math built for the test script. Downloads a `.webm` on completion. **Verified
-end-to-end via a puppeteer functional test** (not just code review): triggered the real recorder in
-a live page, confirmed a valid 1.3MB VP9 webm was produced, `ffprobe`'d it, and pulled frames at
-t=1s/10s/20s — three genuinely different, well-composed angles, sparkle and dusk shadows both
-visible, no jarring jumps.
-
-**Tested on a second building (Terminal) per user request — surfaced two real, generalizable
-findings, both fixed:**
-1. Terminal has no known-good reference camera hash (unlike Hospital) — deliberately omitted
-   cx/cy/cz/tx/ty/tz from the URL and let the app's own default auto-fit framing become "frame 0,"
-   trusting the band-correction logic to normalize it. This worked exactly as designed.
-2. **Terminal's default auto-fit start is much steeper (near top-down) than Hospital's, and the
-   original `TILT_MAX_DEG=45` band ceiling wasn't tight enough to guarantee a visible horizon/sky
-   against the skyline ring at this building's smaller scale (68.8m envelope vs Hospital's 151m).**
-   Smoke-tested at 45°→still no sky visible, 32°→still cramped, **22°→correct, sky/horizon clearly
-   visible.** Tightened `TILT_MAX_DEG` to 22 in the script. This is a real, load-bearing tuning
-   difference between buildings of different scale relative to their surrounding skyline ring —
-   worth remembering if a THIRD building also looks "boxed in" by its skyline: check tilt band first,
-   not radius.
-
-**Delivered:** `~/Pictures/Screenshots/PHOTOREAL_orbit_cinematic_Terminal_2026-07-16.mp4` (360
-frames, 15fps, 24s).
-
-## RESUME BRIEF (2026-07-16 — sparkle needs a rebuild, user has already specced the fix)
-**Scope check, user's own words: "it is just effects, this is a presentation."** This is a
-heuristic visual polish item, not a physically-simulated render feature — don't gold-plate it.
-Keep the fix cheap and simple (a handful of extra query-sourced points + a wider dot-threshold for
-edge-classified ones), not a rigorous geometry pipeline. If the real-wall query turns out to be
-non-trivial (touches batching/grouping keys the way the material-reference-library item earlier in
-this file did), stop and re-scope smaller rather than expanding it — "few points," "simple
-trigonometry" was the user's own ceiling on effort here, twice now.
-
-**Do not re-attempt a quick patch on the current 4-point sparkle model as-is — it needs a small
-rebuild, already spec'd by the user, simple trig, not a new render technique.**
-
-**The problem, confirmed on Terminal (not just theorized):** the sparkle currently tests exactly 4
-points — the FLAT, INVENTED midpoints of the building's bounding-box rectangle (`_photoFacadeLights`,
-built in `effects.js` `_buildPhotoProps()`). This is a fine approximation for a simple rectangular
-footprint (Hospital, roughly) but Terminal has real curved/angled sections (visible dome, angled
-curtain-wall panels) that don't line up with 4 cardinal-direction bbox edges at all. User's own
-diagnosis, confirmed correct: "it moves opposite to the angle of attack" — because the 4 invented
-normals don't match Terminal's REAL facade orientations, so the half-vector test is checking the
-wrong surfaces entirely on this building.
-
-**The fix, per the user's own spec (2026-07-16) — build this next session:**
-1. **"Simple trigonometry should solve it"** — no new rendering technique needed, just extend the
-   SAME half-vector dot-product test already built (`_reassertPhotoSparkles`, `dot(normalize(toSun+
-   toCam), normal)`) — the only change needed is WHERE the candidate points + normals come from.
-2. **Source real points from actual geometry, not the bbox rectangle.** Query real wall/curtain-wall
-   segment positions + orientations (likely `element_transforms` joined to `elements_meta` filtered
-   to `IfcCurtainWall`/`IfcWindow`/`IfcWall*`, similar pattern to the tree/door queries already used
-   in `_buildPhotoProps()`) instead of deriving 4 points from `MIN/MAX(center_x/y)`.
-3. **"Have few points"** — user is explicit this should stay a SMALL, coarse sample (not per-triangle,
-   not even per-panel) — pick a modest number of representative candidate points (e.g. one per
-   distinct wall segment/orientation cluster, or a fixed small cap like today's addons use
-   — doors capped at 6, trees at 15 — same discipline, reuse it), not an expensive per-frame scan
-   of the whole building.
-4. **Real edges/hinges/frames are slightly ROUNDED, not perfectly flat — this is WHY they should
-   accept a WIDER range of angles than a flat panel.** User's physical intuition, worth honoring
-   directly: a flat mirror-like panel only reflects the sun within a narrow dot-product band (today's
-   `PHOTO_SPARKLE_DOT_MIN=0.90`), but a rounded edge (window mullion, structural hinge, frame corner)
-   reflects across a much wider arc because its surface normal sweeps continuously through a small
-   radius, not a single flat direction — model this as a LOWER/more-permissive dot threshold
-   specifically for edge/corner-classified points (vs. flat-panel points), not one universal
-   threshold for everything. This is also the direct answer to "shot out a bit as in real life" —
-   a wider acceptance angle IS the trig equivalent of a rounded reflector.
-5. Keep the glint's visual style (soft warm glow + subtle cross-streak, `_getSparkleTexture()`) —
-   nothing wrong with the LOOK, only the WHERE (candidate points) and the ACCEPTANCE ANGLE (flat vs.
-   rounded) need to change.
-
-Not started — spec only, captured here per explicit request ("update prompts/# for next session").
-Test on BOTH Hospital (rectangular, should look the same or better) and Terminal (curved/angled,
-should now track correctly) before considering it done — Terminal is the one that actually exposed
-the gap, don't declare victory on Hospital alone.
-
-Everything from this entry is local-commit-only (`0fcc728`, SW `v759`,
-`feat/photoshoot-sun-dusk-reflection`, `/tmp/wt-mobile-perf-fix`). Push-pause remains in effect.
-
-## RESUME BRIEF ADDENDUM (2026-07-16, end of session — two more notes, not yet actioned)
-1. **Cinema Orbit camera arc needs a push-in beat, not just ease→hold→pull-back.** Current arc
-   (`A.startCinemaOrbit` in `effects.js`, and `orbit_capture.js`): ease from start toward the tilt/
-   radius band over the first 25%, hold through the middle, pull back (draw OUT) in the final 20%.
-   User wants an added push-IN first — draw nearer until the building fills the whole frame — before
-   the existing draw-out reveal at the end. So the shape should be roughly: ease into band → push in
-   close/full-frame → hold or continue orbiting close → pull back out for the wide finish. Needs a
-   new radius phase inserted before `PULLBACK_START`, not a replacement of the existing pull-back.
-2. **Sky still reads too dark, and the ground is described as "reflecting off that also"** — i.e.
-   the user is linking ground darkness to sky darkness, not treating them as separate asks anymore.
-   This is a DIFFERENT framing than earlier tonight's "ground brightness" ask (which was explicitly
-   dropped mid-session in favor of the sunlight-bounce work) — worth treating as a fresh, connected
-   complaint next session, not re-litigating the earlier hemi/ambient landmine reflexively. Read the
-   actual mechanism again before touching anything: is ground brightness actually DERIVED from sky
-   uniforms/color in this pipeline (fog color already follows sky per `A.updateSky`'s dayT blend —
-   check if hemi light color/intensity is ALSO sky-coupled somewhere, which would make "sky too dark"
-   and "ground too dark" the same root cause, not two separate ones) — confirm before assuming
-   they're linked OR unlinked.
-
-Neither actioned this session — captured per explicit "note in prompt, close" instruction. Session
-closed here; everything above is local-commit-only, push-pause remains in effect.
-
-Still local-commit-only on `feat/photoshoot-sun-dusk-reflection` (`/tmp/wt-mobile-perf-fix`) — the
-push-pause remains in effect.
-
-## SESSION RECORD (2026-07-16, continued — sparkle rebuild, Cinema push-in, fog clobber bug found)
-All three items from the two RESUME BRIEFs above closed this session (commit `9088f93`, SW
-`v759→v760`). Verified via headless Chrome (puppeteer, real Terminal/Hospital data over the OCI
-fetch, `/tmp/wt-mobile-perf-fix` served on `:8085`) + direct `sqlite3` queries against the actual
-extracted DBs — not eyeballed. Real-GPU/visual confirmation not done this session (see caveat at
-end) — numeric/log verification only, per this file's own "verify a fix at small scale" discipline.
-
-**1. Sparkle rebuild (the spec from the last RESUME BRIEF, built as written).** `_buildSparklePoints()`
-replaces the 4 invented bbox-corner points with real geometry: FLAT classes (`IfcWall`/
-`IfcWallStandardCase`/`IfcWindow`) get a per-element outward normal via simple trig — local
-thickness axis (shorter of `bbox_x`/`bbox_y`) rotated by the element's own `rotation_z`. ROUNDED
-classes (`IfcCurtainWall`/`IfcPlate`/`IfcMember`) get the RADIAL direction from the building
-centroid instead — **a real, data-driven finding, not a design choice**: queried Terminal's actual
-`IfcPlate` rows (33,324 of them, the dome/curtain-wall shell) and found `rotation_x`/`y`/`z` are
-ALL constant across every single one — the curve is baked into the mesh geometry, not exposed via
-the rotation columns at all, so rotation-based trig is structurally unusable for that class on this
-building. This is also *why* the wider rounded-edge acceptance angle is correct, not arbitrary: a
-class whose true normal isn't exposed in the data at all needs the coarser tolerance.
-- **Rotation-sign convention verified empirically, not assumed** — the codebase has two
-  conflicting conventions in different files (`navigate_find.js`'s door-sconce code negates yaw;
-  `_buildShapeMeshes`/`streaming.js`, used 6× for the actual mesh-placement path, do NOT). Resolved
-  by raycasting the real rendered Terminal geometry and comparing against both candidate signs —
-  `THREE.rotation.y = +rotation_z` (the streaming.js convention) matched real face normals
-  consistently across ~20 sampled walls; the door code's negation is a one-off, not general.
-- 24-point cap via orientation-clustering (15°×20m buckets for flat, 20° buckets for round) — "few
-  points" per the user's own ceiling, confirmed at exactly 24 on Terminal (12 flat + 12 round), 8
-  on Hospital (0 round — Hospital's tested area has no matching curved-envelope classes, correct
-  fallback-free behavior, not a bug).
-- 72-frame orbit sweep on Terminal (`A._reassertPhotoSparkles()` driven directly, camera stepped
-  programmatically) shows the peak-glint point SHIFTING smoothly between different real facade
-  points as the angle changes, opacity rising/falling in a clean bell curve — the "moves opposite"
-  symptom is gone; this is what a curved surface's continuously-sweeping specular highlight should
-  look like, not a fixed/backwards point.
-
-**2. Cinema Orbit push-in, refined twice mid-session by direct user correction.** First spec (push
-in by 3s, hold to ~5s, then draw out) implemented as three explicit phases in `startCinemaOrbit`'s
-`step()` (radius-only push-in, holding tilt at the user's own starting line of attack; brief hold;
-then radius+tilt ease to the normal orbit band). User then corrected the fill-distance formula
-mid-session: **"some edges of the building may even momentarily be out of frame, in order to
-ensure it fills almost full screen"** — changed from the conservative tight-FOV-axis distance (fits
-both screen axes fully, leaves headroom) to the LOOSE-axis distance (`Math.max` of the two tans
-instead of `Math.min`), which pulls the camera closer and deliberately accepts the stricter axis
-clipping slightly. `CINEMA_FILL_MARGIN` dropped from 1.08 to 1.0 to match (padding was for avoiding
-clipping; that's no longer the goal).
-- **ARC-only framing ("ignore any non-ARC elements... solves LTU too far")**: new
-  `_buildingBBoxArc()` filters to `elements_meta.discipline='ARC'`, used for both the fill-frame
-  bounding sphere and the orbit radius/tilt band. Verified directly via `sqlite3` against Hospital's
-  real DB: ARC-only bbox is measurably tighter than the whole-building bbox (depth 147.4m vs
-  150.9m) — real effect, confirmed outside the flaky headless environment.
-- Verified via precise in-page `performance.now()` elapsed-time sampling (not Node-side wall-clock,
-  which drifts under heavy SwiftShader load) on Terminal: radius holds near the computed
-  fill-distance through ~5-6s, then rises smoothly toward the orbit band from ~6s on — matches the
-  intended push-in → hold → draw-out shape.
-
-**3. Sky/ground darkness — confirmed ONE root cause, and it's a real bug (RESUME BRIEF ADDENDUM
-item 2, "confirm before assuming linked or unlinked").** Traced `A.scene.fog.color` end to end:
-the warm `§PHOTO_FOG` override (`0xc9a878`) was being applied BEFORE two other things that *also*
-set `scene.fog.color` as a side effect — `A.updateSky()` (its own dim elevation-derived `dayT`
-blend) and `A.toggleNightMode()` (a near-black moonlight fog, `tools.js` §S277c) — both of which
-run later in `_applyPhotoStaging()` and silently clobbered the override every single time. Verified
-directly: before the fix, `A.scene.fog.color` after staging read `0x080817` (near-black, the
-night-mode value) regardless of the "fix" already in the code; after moving the override to run
-AFTER both clobbering calls (alongside the sun/ambient/hemi/exposure "undo the moonlight override"
-block it belonged with all along), it correctly lands on `0xc9a878` and restores exactly to the
-pre-photoshoot color on teardown. Since fog is the one shared medium touching both the sky's tone
-and any distant ground pixel, this single ordering bug is confirmed as the shared root cause behind
-both complaints — not two separate issues, not physical dusk dimness working as intended.
-
-**Caveat, read before trusting a screenshot claim next session:** the machine was under heavy
-memory pressure this session (1.2GB free, 6GB swap in use — a real, non-puppeteer Chrome tab from
-another concurrent session was also open on `:8093`, left untouched). Hospital's 263MB DB
-repeatedly failed to finish loading in headless Chrome under this pressure (confirmed via direct
-`sqlite3` queries against the file instead, bypassing the browser). A late-session screenshot on
-Terminal showed correct ground/sky/fog color but 0 real mesh elements rendered (streaming stalled
-under the same memory pressure) — not a regression from this session's changes (streaming.js itself
-wasn't touched), but it means the sparkle/material visual appearance was NOT confirmed by eye this
-session, only by the numeric/log verification described above. Get a fresh, memory-healthy
-real-GPU screenshot next session before considering the visual side fully closed.
-
-Not merged/pushed — local commit only (`9088f93`, `feat/photoshoot-sun-dusk-reflection`,
-`/tmp/wt-mobile-perf-fix`), per the standing push-pause.
-
-## SESSION RECORD (2026-07-16, continued — live-test feedback, 5 items closed)
-User confirmed the reflection/sparkle rebuild reads as "dramatic and correct" live, then gave five
-follow-up items from actual use. All five closed this session (commit `dfb2ebf`, SW `v760→v761`),
-verified via headless Chrome + direct uniform/state inspection — real-GPU visual confirmation still
-outstanding (same memory-pressure caveat as the prior entry; system freed up partway through this
-session and HHS rendered cleanly, but Terminal/Hospital's full mesh streaming stayed unreliable in
-headless SwiftShader throughout).
-
-**1. Cinema Orbit reflection swoop** ("camera angle has to be at building level to give best
-effect... pass in front of that reflection at building mid angle at least once"). Added a tilt dip
-timed to the ONE point in the 360° sweep where camera azimuth crosses the sun's own azimuth (the
-same sun-behind-camera condition the glint/lensflare math already uses) — a full sweep crosses that
-exactly once, guaranteed, general to any building/sun angle. Verified: tilt samples dip from ~43°
-(normal band) to ~4.6° right at the computed crossing time, then ease back out.
-
-**2. Tone-revert after interaction — verified, no bug found.** User reported a transient
-"whitewash" on cancel, called it OK, asked to confirm final state returns to original tone. Traced
-the full teardown path (`A.toggleNightMode()`'s own toggle-off restore, confirmed in `tools.js`) and
-verified empirically: captured every overridden property (sun/ambient/hemi color+intensity,
-exposure, fog color+density, sky/ground visibility, renderer clear color) before staging, during
-staging, and after `stopStillRefine()` — the after-snapshot was byte-identical to the before-
-snapshot on every field, zero diffs. The reported whitewash is a transient cancel-frame artifact,
-not a stuck/incomplete revert — nothing to fix here.
-
-**3. Skyline windows + sun-reactive silhouette.** Window-lights were a `THREE.Points` cloud using
-PointsMaterial's default round sprite ("ghostly"). Added `_getSkylineWindowTexture()` — a small
-square canvas with a rounded-rectangle glow drawn narrower than the canvas (transparent padding
-either side, since a Points sprite's footprint is always square) — same Points system, same single
-draw call, just a different `map`. Separately, "the silhouette if also react to the Sun" (user's own
-follow-on, full discretion given): reused the sun-direction dot product already computed for the
-existing gap-clearance check (skyline boxes near the sun get REMOVED to leave it visible) to give
-boxes on the sun-facing arc a subtle warm rim-brighten — verified boxes range from `0x111015`
-(far side, unchanged) up through `0x30282a` (near the gap edge, visibly warmer), confirming real
-variation, not a uniform tint.
-
-**4. Wet-ground puddles, not an even sheen.** User's own mid-session correction: "even the water on
-ground puddles rather than even wet, thus selective reflection... over selective areas." Implemented
-as a small fixed count (6) of randomly-placed circular patches via an `onBeforeCompile` injection on
-`A.ground.material` — same gated, still-render-only pattern already proven for the triplanar
-textures, including the same recompile-resets-uniforms self-heal fix found earlier this session.
-Inside each patch: roughness drops toward 0.08 (glossy) and diffuse darkens ~28% — deliberately
-reuses the ground's EXISTING `envMapIntensity` (scene.js, already 0.15) rather than boosting it, so
-a lower-roughness surface alone reads more reflective without re-touching the hemi/ambient
-contrast-flattening landmine documented earlier in this file. Verified live: 6 puddles with real
-world-space centers/radii scaled to the building envelope, uniform correctly gates 0→1→0 across
-stage/teardown. A real-GPU screenshot (HHS) shows a visibly darker/different ground patch appearing
-under one random seed and not another — the puddle mechanism is visually confirmed, not just logged.
-
-**5. Random "paint" surface variation, locked on Cinema press.** Unified with item 4 under one
-shared seed: `A._photoPaintSeed`, re-rolled on every Alt+S trigger while unlocked (so repeated
-triggers let the user browse different results — "each time it is done first time it returns a
-diff"), locked by `A.startCinemaOrbit()` so a capture doesn't re-roll mid-recording ("once user
-agrees, press cinema icon, it takes that persisted cache") and stays locked for the rest of the
-session. Drives: (a) the puddle placement in item 4, (b) a new coarse two-octave blotch/weathering
-tint layered onto the triplanar diffuse in `streaming.js` (a plain UV-offset alone would look
-near-identical on a seamlessly-tiled texture, so this uses seeded low-frequency hash noise instead
-— genuinely different-looking each roll). **No explicit clear-on-close/Home code was needed** —
-`A._photoPaintSeed` is plain in-memory JS state, and the existing Home button (`panels.js`) already
-does a real `location.href` page reload, which destroys it for free; matches "clears each time
-viewer closes or returns to Home" with zero extra plumbing. Verified on HHS (the one building that
-rendered reliably this session): 9 real triplanar materials all read the exact same shared seed
-value, re-triggering rolls a new shared value identically across all of them, and two screenshots
-at different seeds show a visibly shifted wall-texture blotch pattern plus a clearly different
-ground-puddle placement (tint range widened from an initial 0.86–1.10 to 0.72–1.22 after the first
-pass read as too subtle to notice against the base texture).
-
-**Also noted, no action needed:** user confirmed Cinema Orbit's current foreground-running behavior
-and recording resolution are fine as shipped ("wow i didn't know the Cinema Orbit runs foreground
-giving free excitement... a bit low res grainy but it is fine... Perfect! Lock that in") — nothing
-to change there.
-
-Not merged/pushed — local commit only (`dfb2ebf`, `feat/photoshoot-sun-dusk-reflection`,
-`/tmp/wt-mobile-perf-fix`), per the standing push-pause.
-
-## SESSION RECORD (2026-07-16, continued — pushed per explicit user instruction)
-User confirmed the reflection smoothness live ("seeing it on canvas same time... too perfect"),
-asked why (traced to two real facts: `A.controls`'s `'end'`-triggered `_cityRayBlast()`/eviction/
-restream in `city.js` never fires during Cinema Orbit since it drives the camera programmatically
-with no real pointer events — free-hand navigation pays that cost on every drag-release; TAA
-accumulate is also off during the moving shots), confirmed building window-glow + entry-door
-sconces are already built (`A.toggleNightMode()`'s reused glow mechanism + the `IfcDoor`-position
-sconces from earlier this session — nothing new needed), then said **"Push first."** — explicitly
-lifting the standing push-pause for this action only.
-
-**Real problem found before pushing:** `feat/photoshoot-sun-dusk-reflection` had drifted behind
-`origin/main` — main advanced to `94318d7` (PR #805) mid-session, which is a SQUASH of an earlier
-point in this same branch's own history (the exact divergence trap this repo's CLAUDE.md warns
-about). A direct `git merge origin/main` produced 12+ unresolvable-looking conflict hunks across
-`effects.js`/`streaming.js`. Per this repo's own established playbook (used twice already earlier
-in this feature's history), the fix is NOT to hand-resolve a merge — it's to verify whether
-`origin/main`'s content is a strict subset of the local branch's tip (it was: every line unique to
-`origin/main` was confirmed, line by line, to be an older/superseded version of something already
-improved locally — nothing independent would have been lost) and then take the local branch's
-files wholesale onto a fresh branch cut from `origin/main`. **A first attempt at this using a sed/
-regex-based conflict resolution actually corrupted the file** (mishandled the specific case where
-one side of a conflict hunk has zero lines, silently swallowing ~150 real lines of code into a
-discarded capture group) — caught before committing via a brace-balance check and a direct diff
-against the known-good source commit, not assumed correct. Recovered by aborting and redoing the
-resolution with exact line-number `sed` deletions instead of pattern matching, then finally
-confirmed the wholesale-file-copy approach was simpler and safer than either.
-
-**Result:** new branch `feat/photoreal-sparkle-cinema-fixes` off current `origin/main`, one
-consolidated commit (`4a7fa21`) carrying both of today's local commits' full content, verified
-`node --check` + a live headless re-run (HHS: same shared-seed triplanar paint mechanism confirmed
-working identically post-rebase, zero page errors) before pushing. **Pushed to GitHub** — branch
-only, no PR opened (kept to literally what "push" asked for, nothing more, per explicit "don't
-impact, nor invent further").
-
-## SESSION RECORD (2026-07-16, continued — post-push gap found + two real streaming/occlusion bugs)
-User (correctly) alarmed after the push, asking "did you revert all the work online" — investigated
-before answering, not assumed. **Confirmed nothing was lost or reverted anywhere real**: `origin/main`
-was untouched throughout (still `94318d7`, no force-push, deploy workflow only triggers on `main`
-so nothing ever deployed), and the old branch `feat/photoshoot-sun-dusk-reflection` was never
-deleted — fully intact locally the whole time. **But there WAS a real gap**: the rebase in the
-entry above only carried the 3 files touched by the two newest commits (`effects.js`/`streaming.js`/
-`sw.js`) — it missed that the Cinema Orbit UI BUTTON itself lives in `panels.js`, added by an
-*earlier* same-day commit (`0fcc728`) that was also never merged to main. Fixed by the same
-verify-strict-superset-then-take-wholesale discipline (commit `5bf83fa`, pushed) — a full
-branch-vs-branch file diff confirmed empty (nothing else missing) before closing this out.
-
-**Two more real, live-found bugs, both fixed this entry, both the SAME root-cause family already
-seen twice earlier this session (a one-shot action that misses content streamed in later):**
-
-1. **Window/fixture glow ("I cannot see the building lights yet")** — `A.toggleNightMode()`'s
-   emissive-glow loop over `A._matCache` (tools.js) only ever ran ONCE, at the instant it's called.
-   Since `A._matCache` fills in progressively as `streaming.js` decodes real geometry, and
-   Alt+S/Cinema Orbit routinely fires long before a large building finishes streaming (confirmed
-   this session: 20-30s+ under load), the glow only ever caught whichever handful of materials
-   existed at that one moment — verified live: 1 window-glow material at trigger time, never grew
-   even 15s later. Fixed by extracting the loop into `A._applyNightGlowToMatCache()` (tracks
-   already-processed keys, cheap no-op once nothing's new), called once at toggle-on plus every
-   accumulation/orbit frame via a new `_reassertPhotoGlow()`, plus a repeating 3s safety net for
-   buildings that keep streaming well past the point the 16-sample TAA loop itself stops running.
-   Verified the reassert mechanism directly (not just log-line trust): injected a synthetic
-   late-arriving window material into `A._matCache` mid-session, confirmed
-   `A._applyNightGlowToMatCache()` picks it up. Commit `a1e5a06`, pushed.
-
-2. **Skyline silhouette windows invisible ("lights not visible the silhouette buildings")** — NOT
-   a streaming-race bug this time, a genuine geometry-placement bug: window-light points were
-   scattered randomly through each skyline box's HORIZONTAL FOOTPRINT (both X/Z randomized within
-   the box width), landing most points INSIDE the box's own solid volume — depth-occluded by the
-   box's own nearest opaque wall from any outside viewing angle. The `Points` object existed,
-   `visible=true`, 4308 real points, and was STILL completely invisible — caught by taking an
-   actual screenshot at the app's own default camera framing and looking at it, not trusting the
-   diagnostic booleans alone (the same "log ≠ visual proof" discipline this file has invoked
-   before). Fixed by placing each point on one of the box's 4 vertical face planes instead (real
-   building-window-grid pattern, small outward epsilon to avoid z-fighting). Verified with a
-   before/after screenshot at the IDENTICAL camera position: zero visible dots before, a real
-   sprinkle of lit windows on every box after. Commit `e8b73d1`, pushed.
-
-All three fixes verified live via headless Chrome on HHS (the one building rendering reliably this
-session) before pushing each one. `origin/main` remains untouched throughout — everything is on
-`feat/photoreal-sparkle-cinema-fixes` only, no PR opened yet.
-
-## SESSION RECORD (2026-07-16, continued — what it takes to close the gap to Enscape/Twinmotion/Lumion, spec only, no code)
-User asked directly what it takes to reach leading-real-time-archviz quality, tied to a stalled
-attempt last month to get three.js r185's GI capability working together (with this assistant) that
-didn't pan out. This is a synthesis of the existing §LAYER 1-4 spec above (no new investigation) —
-answering "what does it take" honestly rather than re-scoping.
-
-**Where the r185 attempt actually hit a wall.** §LAYER 4/§OPEN QUESTIONS above already diagnosed
-this precisely: three.js r185 does ship an official SSGI node (`SSGINode`), but it lives in the
-newer TSL/WebGPU-node postprocessing system — architecturally separate from this app's classic
-`EffectComposer`+`Pass` pipeline (the same pipeline `TAARenderPass`/`SSAARenderPass` use). You
-cannot drop `SSGINode` into the classic composer; it's a different rendering path. Not a
-version/skill problem — an architecture mismatch, never resolved by a feasibility spike (still open
-at line ~156).
-
-**Already shipped, closing part of the gap:**
-- Layer 1 (TAA still-refine, `Alt+S`) — jaggies, some contact-shadow polish. Done.
-- Layer 3 (triplanar PBR — concrete/plaster/metal, diffuse+roughness, CC0 via ambientCG) — done,
-  verified across 9 materials, shared-seed paint confirmed post-rebase. This is most of why the
-  screenshots reviewed this session read as well as they do.
-
-**Cheap and still genuinely open — do this next:**
-- Layer 2 (real photographed HDRI sky, Poly Haven/ambientCG + `PMREMGenerator`) — spec'd, not
-  started, flagged in its own section as best effort:benefit ratio in this whole file. The envMap
-  work done later (§SESSION RECORD "orbit test movie + envMap bug") was a bug fix to the boost-
-  intensity logic on the EXISTING generic envMap, not a swap to a real HDRI — Layer 2 is still
-  untouched. Would directly improve the flat-gray glazing reflections flagged in this session's
-  screenshot review.
-
-**Hard — the actual Enscape/Twinmotion/Lumion gap:**
-- GI/bounce light (Layer 4). Baked lightmaps: blocked, no UV2/lightmap-unwrap anywhere in the IFC
-  extraction pipeline (a separate substantial project, not a tweak). Real path tracing: blocked,
-  incompatible with `InstancedMesh`/`BatchedMesh` — how this app renders every large building,
-  `MOBILE_PERF.md`'s whole perf stack depends on it. SSGI (screen-space, post-process, doesn't touch
-  mesh data so it doesn't care about instancing or UV): the one realistic path, but needs its own
-  feasibility spike into a classic-`EffectComposer`-compatible SSGI technique — NOT the TSL
-  `SSGINode` r185 ships, that's the dead end already hit. This is the one piece of real engineering
-  standing between "good archviz" and Enscape/Twinmotion-tier reflections+GI, and it is genuinely
-  unresearched, not just unbuilt.
-
-**Flythrough ("killer fly-thru").** Cinema Orbit (shipped, in-app) orbits a fixed pivot with
-push-in/hold/pull-back phases. A route-based flythrough — camera moving along a path through/past
-the building rather than circling one point — is a different camera-path problem. It would reuse
-the same staging/TAA/sparkle machinery, but needs a spline or waypoint path (candidates: derive from
-`elements_meta` ARC bbox + corridor/circulation data if available, or a simple user-placed waypoint
-list) in place of `startCinemaOrbit`'s fixed-radius orbit math. Not spec'd — new work, not an
-extension of what exists.
-
-**Bottom line, consistent with §HONEST VERDICT at the top of this file:** Layer 2 (HDRI swap) is the
-next cheap, real win. Layer 4 (SSGI) is the one genuine engineering gap separating this from
-Enscape/Twinmotion-tier quality, and it needs a dedicated research spike — a real session scoped to
-just that — before any implementation. That is the accurate answer to "what does it take," not a
-small tweak, and not something achievable by pointing the existing r185 build at the problem again.
-
-## SESSION RECORD (2026-07-16, continued — GI spike went from throwaway POC to real pushed feature;
-Layer 2 HDRI shipped; handing off to a Fable 5 session next)
-Started as a bounded "small sandbox test" of Layer 4's open SSGI question (per the RESUME note
-above) — ended up becoming real, pushed, working feature branch work in `bim-ootb` after live
-testing kept surfacing real bugs worth fixing on the spot. Everything below is on
-**`feat/ssgi-composer-poc`** (bim-ootb), 4 commits, all pushed, **no PR opened** — explicit user
-instruction was "push" not "merge." `origin/main` untouched throughout.
-
-**§LAYER 4 answer, now with a real implementation, not just a spec:** N8AO (pmndrs `postprocessing`
-package) IS technically usable on this app's real streamed `InstancedMesh` geometry — confirmed by
-building it, not just researching it. Alt+G toggles it (`viewer/effects_gi_poc.js`, new file),
-lazy-built on first press so normal sessions pay zero extra memory/GPU cost. Vendored
-`postprocessing`+`n8ao` as a `--external:three` esbuild bundle (`viewer/lib/postprocessing-n8ao.bundle.js`)
-so it shares the app's own THREE instance — repointed the previously-unused `"three"` importmap
-entry (`viewer/viewer.html`) from `three.webgpu.min.js` to `three.module.min.js` to make that work
-(safe: grepped first, zero existing bare `from 'three'` imports anywhere in the app before this).
-Also vendored `viewer/lib/HDRLoader.js` (r185's HDRLoader, RGBELoader is deprecated → this) and
-confirmed `viewer/lib/Pass.js` already existed byte-identical from earlier EffectComposer work — no
-new file needed there, just an importmap subpath entry.
-
-**Three real bugs found via live user testing on real buildings (HHS Office, Hospital, Terminal),
-not headless-only — this is the part worth re-verifying, see the ask at the end:**
-1. **"Motion shadow" ghosting on camera move.** N8AO's `accumulationRenderTarget` is only cleared
-   on camera-move when `configuration.accumulate=true` (read from N8AO's own source) — left at the
-   default `false`, it never cleared, any frame, so old frames visually smeared into new ones on
-   every orbit. Fix: `accumulate:true` — which per N8AO's own docs is ALSO the intended mode for a
-   refine-when-still use case ("if the camera is moving, accumulation is disabled automatically"),
-   matching this app's existing TAA discipline, not a workaround.
-2. **Ghosting persisted after fix #1, on non-camera-movement changes** (streaming, selection,
-   xray — user's own words: "streaming refresh getting caught"). Root cause: that same clear logic
-   is keyed ONLY to the camera view/projection matrix, so scene changes that aren't camera moves
-   never triggered it. Fix: N8AO exposes a public `firstFrame()` that forces the same clear-path a
-   camera move does — wrapped `A.markDirty()` (the app's existing single "something changed, render
-   again" choke point, already called by selection/xray/streaming) so any of those also force a
-   reset.
-3. **Alt+S could not be turned off once the new Stage 1/2 auto-cycle (below) began** — real user
-   report: "could not shake out of the shadow mode, to return to normal mode. Have to hard reset."
-   `toggleStillRefine()` only checked `A._stillRefineActive`, but the soft-cancel path (Stage 1)
-   sets that `false` while staging is still kept alive — Alt+S would see `false` and restart
-   instead of stopping. Fixed: toggle off whenever EITHER actively refining OR the auto-stage loop
-   is armed. Verified headless AND confirmed live by the user ("Ok the shadow can be shaken off").
-
-**New, NOT-in-original-spec experimental layer — an auto-staging system on top of Alt+S, built to
-the user's own spec ("auto stage: #1 when orbiting, #2 when static after 3 sec"):**
-- **Stage 1** (`A.softStopStillRefine()`, `effects.js`): pure camera movement (OrbitControls
-  `'start'`, `wheel`, and canvas-targeted `pointerdown` — distinguished from UI-panel clicks by
-  `e.target === APP.renderer.domElement`) now only drops the TAA supersample polish, KEEPS the
-  mood staging (dusk sky/ground/shadows) active — previously both were tied to the same interaction
-  signal and reverted together. Known limitation, not solved: a hypothetical direct 3D-canvas
-  click-to-select (distinct from the Find-panel-tree-driven selection seen in every example this
-  session) would be mis-classified as soft-cancel-only. No evidence that path is in active use;
-  flag if it turns out to matter.
-- **Stage 2** (`_autoStageArm`/`AUTO_STAGE_IDLE_MS=3000`): after 3s idle with staging still kept
-  alive, automatically re-triggers the full still-refine polish — no repeated Alt+S needed.
-  Verified: `§AUTO_STAGE2 idle-triggered` fires on its own.
-- Selection/UI-panel clicks still do the full teardown, unchanged — matches "of course when i
-  select an item it breaks to old nature."
-- **This is genuinely new scope beyond the original Alt+S feature**, built additively/gated —
-  nothing removed from existing behavior when the auto-stage system isn't engaged.
-
-**§LAYER 2 (HDRI) — finally implemented, not just spec'd.** Real CC0 HDRI from Poly Haven ("Belfast
-Sunset, Pure Sky" — clear dusk sky, no foreground objects to leak weird reflections into the
-building's own materials, matches this staging's existing dusk mood), 1k res (~1.2MB, plain git
-blob — matches the existing Layer-3-texture commit convention, not LFS, confirmed no policy
-violation). Lazy-loaded once on first Alt+S (`_ensureHdriEnvMap()`), cached after. Reuses the
-EXISTING `_reassertPhotoEnvMap()` per-accumulation-frame loop to push it onto materials — no new
-per-frame code, just a different source texture for a mechanism that already existed. Verified:
-`§LAYER2_HDRI_READY` fires, screenshot shows real reflective character on glazing that read flat
-gray before.
-
-**Honest gaps, not resolved this session:**
-- N8AO's denoise settings were tuned once on a user report ("still bit ghosting, may need
-  denoise") — `denoiseSamples` 1→4, `denoiseRadius` 0→6 — but NOT re-verified live after that
-  change. Unconfirmed whether it actually helped.
-- AO radius was bumped 1.5→8 and intensity 4→6 specifically to make ground contact-shadow visible
-  at exterior establishing-shot distance — confirmed visible but characterized honestly as "texture
-  breaking flatness" not "physically accurate contact AO" (broadly mottled, doesn't hug the
-  building base). This is a deliberately rough tuning pass, not a finished look — combined with the
-  new HDRI in the same shot it reads busy; may need dialing back rather than pushing further.
-  Perf cost measured once, headless SwiftShader only: 7.5ms→11.75ms (+57%) — real-GPU cost unknown.
-- Every fix above was verified against ONE building reliably (HHS Office, local DB, no OCI fetch
-  flakiness) — Hospital and Terminal were used for live user spot-checks but not systematically
-  re-run through the same headless verification scripts after each fix. The scripts exist
-  (`verify_*.js`, `test_*.js` in the worktree root, NOT committed — local/throwaway) if a future
-  session wants to re-run them on other buildings.
-- Stage 1's canvas-vs-UI pointerdown split is a first cut, not exhaustively tested against every
-  UI surface in the app (only Find-panel clicks were actually exercised).
-
-**⚠ ASK FOR THE NEXT SESSION (explicit user request, 2026-07-16): before building anything further
-on top of this, do a once-over of everything above for risk/breakage/landmines — this went from a
-"small sandbox test" to real pushed changes to shipped-adjacent files (`effects.js`, `main.js`,
-`scene.js`, `viewer.html`) across one long session, verified mostly via headless SwiftShader plus
-scattered live spot-checks, not the full systematic pass this codebase's own discipline normally
-expects.** Specifically worth checking cold, not just re-reading this record:
-1. Does the Stage 1 canvas-vs-UI pointerdown split (`main.js`) break any OTHER feature that relies
-   on `window.pointerdown`/`wheel` behaving the old (uniform) way — search for other listeners on
-   those same events, not just the still-refine ones touched here.
-2. Real-GPU (not SwiftShader) perf check on the N8AO composer, and on the new
-   `_autoStageArm` idle-timer's interaction with the existing `_startLoop`/idle-park render-loop
-   discipline (`§IDLE-PARK` in `main.js`) — does an armed-but-not-yet-fired auto-stage timer keep
-   the rAF loop alive when it should be parking, or vice versa cause the idle-triggered Stage 2 to
-   silently never fire because the loop already parked?
-3. The `importmap` "three" repoint (`viewer.html`) — confirm nothing ELSE in the app (not grepped
-   this session beyond a first-pass check) picks up a bare `from 'three'` import path and now
-   silently resolves to a different THREE build than intended.
-4. Whether the AO radius=8/intensity=6 tuning plus the new HDRI, viewed together on a real GPU
-   rather than headless screenshots, actually reads as an improvement or as visual noise — this
-   session's own honest characterization above says "reads busy," worth a real call before anyone
-   builds further on top of these specific numbers.
-5. General: `git log feat/ssgi-composer-poc` (bim-ootb) has the full commit-by-commit trail with
-   detailed bug-root-cause writeups in each message — read those before re-deriving anything above
-   from scratch.
-
-## REVIEW (2026-07-16, Fable 5 session — the once-over ASK above, executed. Findings, ranked)
-Cold review of `feat/ssgi-composer-poc` (bim-ootb, 3 commits `9f286c0`/`3ea5126`/`0e67115`, all
-pushed, worktree `/tmp/wt-ssgi-composer-poc`). Method: code reading against the real files + one
-real-GPU (RTX 4060 Laptop, headed Chrome, DISPLAY=:0) live run on HHS — not headless-only.
-Screenshots: `~/Pictures/Screenshots/SSGI_review_realgpu_{A_staging_only,B_staging_plus_ao,
-C_gi_toggled_off}_2026-07-16.png`. **Diagnose-only session — nothing fixed, per protocol.**
-
-### 1. Check 1 FAILED — canvas click-to-select is a LIVE core feature, not hypothetical
-`viewer/picking.js` (loaded unconditionally, `viewer.html:833`) does real element selection on a
-canvas tap: `pointerup` with ≤5px movement → raycast → select + info panel (§S250/§S260d/§S265
-lineage). The Stage-1 commit's "no evidence that path is in active use" is factually wrong — this
-is the app's PRIMARY direct-selection path. Consequence: tap-selecting an element on the 3D canvas
-during a photoshoot now soft-cancels (dusk staging KEPT, auto-restage armed) instead of the full
-teardown the user explicitly specified for selection ("when i select an item it breaks to old
-nature") — and §AUTO_STAGE2 re-fires the photoshoot 3s after the tap. Fix direction for the next
-session: classification can't happen at pointerdown (down on canvas is ambiguous between
-drag-start and tap-select); do the soft-vs-full decision at pointerup using the same ≤5px
-tap-vs-drag test picking.js itself already uses.
-
-### 2. Deploy landmine — no `sw.js` CACHE_VERSION bump in ANY of the 3 SSGI commits
-`CACHE_VERSION` is still `v763` (inherited from main's PR #806); `git log -- viewer/sw.js` shows
-no SSGI-branch touch. `effects.js`/`main.js`/`scene.js` are all in `PRECACHE_ASSETS` and
-`isNetworkFirst()` confirms precached files are CACHE-FIRST, refreshed only by a version bump —
-merging+deploying this branch as-is serves stale copies of all three to every returning browser.
-This is the exact landmine this file documented through v752→v761; every prior commit bumped,
-these three didn't. Also not in PRECACHE (minor): `effects_gi_poc.js` (network-first fallthrough —
-fine online, absent offline/PWA), `lib/postprocessing-n8ao.bundle.js`, `lib/HDRLoader.js`, the
-`.hdr` file. Must-do before any merge: bump CACHE_VERSION; decide precache additions for offline.
-
-### 3. Pushed branch ≠ tested tree — uncommitted `viewer/lib/Pass.js` rewrite in the worktree
-Committed `Pass.js` = the old r184 `window.THREE`-destructuring version; the worktree carries an
-UNCOMMITTED rewrite to r185's ES `import ... from 'three'` version — and every live/headless test
-this session served the worktree copy. The session record's "confirmed byte-identical, no new file
-needed" does not match reality. Both versions *should* work (same shared `three.core.min.js`
-classes, and `window.THREE` is set long before the lazy Alt+G import evaluates), but the pushed
-state's Alt+G path was never exercised as-pushed. Cheap close: commit the ES-import version (also
-removes the window.THREE eval-order dependency) and re-run one Alt+G smoke test.
-
-### 4. Real-GPU N8AO cost: 20.6ms → 317ms/frame (15×, ~3fps) — the headless "+57%" was meaningless
-Measured on RTX 4060 Laptop, HHS, continuous-nav pattern (markDirty per frame → `firstFrame()` AO
-reset per frame — exactly what real orbiting does): baseline 20.59ms/frame, GI-active 317.39ms/
-frame. At full-res/aoSamples=8/aoRadius=8/denoise 4+6 this is unusable during navigation on a good
-GPU, let alone mobile — strictly a still-frame effect. Visual A/B (shots A vs B): the AO reads as
-broad ground mottle + overall darkening, NOT base-hugging contact shadow — confirms the session's
-own "reads busy / texture breaking flatness" caveat on real GPU. Call: do NOT build further on
-radius=8/intensity=6; keep Alt+G experimental-preview-only, and any real pass should retest with
-halfRes + smaller radius. (Also noted: cold Alt+S ran 10.2s for 16 samples — includes one-time
-HDRI fetch+PMREM+staging build; earlier 144ms was a warm re-trigger, warm not re-measured here.)
-
-### 5. Confirmed live: Alt+G on→off strands `_composerEnabled=false` (TAA/SSAO silently lost)
-`toggleGIPreview()` forces `A._composerEnabled=false` when GI turns on and never restores it on
-turn-off. Verified in the live run: after Alt+G off, `{giActive:false, composerEnabled:false,
-stillActive:true}` — the frozen TAA still is gone (plain render path), and Shadow-mode SSAO/
-Outline would stay silently disabled too. Related, same family: Alt+S's own RAF renders
-`A._composer` while the main loop prefers `_giComposer` when active — both composers fight the
-canvas if both are on; there's no guard on the Alt+S side. And `_ensureBuilt()` latches
-`_built=true` BEFORE the await — one transient bundle-load failure leaves every later Alt+G a
-silent no-op (`toggle=true` logged, null composer, nothing rendered differently).
-
-### 6. Stage-2 idle timer never resets during soft-park — fires mid-gesture
-`softStopStillRefine()` has an "already soft-parked — just re-arm" branch, but both real callers
-(`main.js` `_cancelStillRefineSoft` and the controls-'start' handler) gate on
-`APP._stillRefineActive`, which is FALSE during soft-park — so that branch is dead code and no
-interaction after the first one resets the 3s timer. The timer measures 3s from the FIRST camera
-move, not the last: a drag/zoom sequence longer than 3s gets §AUTO_STAGE2 firing mid-motion, TAA
-accumulating over a moving camera (smear) until the next discrete pointerdown. Deviates from the
-"static after 3 sec" spec; the verified happy path (single move, then idle) masked it.
-
-### Cleared checks (no action)
-- **Check 2 (idle-park interplay): CLEAR.** An armed auto-stage timer is a plain setTimeout — it
-  neither keeps the rAF loop awake nor depends on it; Stage 2's `startStillRefine()` drives its
-  own RAF loop, so a parked main loop can't starve it. Neither failure mode exists.
-- **Check 3 (importmap repoint): CLEAR, but the stated safety reasoning was wrong.** It's safe
-  because BOTH `three.module.min.js` and `three.webgpu.min.js` import the same
-  `./three.core.min.js` (one shared module instance for all core classes) AND `scene.js:39-41`
-  merges the module build's exports over `window.THREE` anyway. However the commit comment's
-  "bare specifier previously unused anywhere" is false — `lib/OrbitControls.module.js` (loaded at
-  startup by loader.js) imports `'three'` and silently switched builds with this change. Benign
-  (shared core; all subsequent live testing ran through it), but it was luck, not the grep.
-- Live run also re-confirmed working: §LAYER2_HDRI_READY fires + HDRI applies, §GI_POC init/toggle
-  logs correct, zero pageerrors, streaming healthy (6839 elements), Alt+S freeze behavior intact.
-
-### Suggested fix order (next session, one bounded task each)
-1. Finding 2 (sw bump — one line, blocks any merge) + finding 3 (commit Pass.js, one smoke test).
-2. Finding 1 (move soft-vs-full classification to pointerup tap-vs-drag) — it breaks the user's
-   own stated selection contract today.
-3. Finding 5 (restore `_composerEnabled` on GI off + reset `_built` in catch + guard Alt+S/Alt+G
-   mutual exclusion).
-4. Finding 6 (re-arm timer on every interaction during soft-park — un-gate the soft callers).
-5. Finding 4 is a DECISION, not a fix: keep N8AO as experimental still-only preview, or park it.
-
-## SESSION RECORD (2026-07-16, continued — ghosting regression + review findings 1/3/5/6 FIXED)
-User confirmed the review, said proceed, and reported live: **"ghosting has returned when Alt-S."**
-Root cause was review finding 6 exactly as diagnosed: the Stage-2 auto-restage timer counted 3s
-from the FIRST camera move only (its reset path was dead code — every caller gated on
-`_stillRefineActive`, false during soft-park), so any drag/zoom longer than 3s re-fired
-`startStillRefine()` MID-MOTION; TAA accumulated 16 samples over a moving camera (the 500ms grace
-window swallowing any cancel) and froze on a fully smeared image. All fixes are ONE commit,
-**`b365b32` on `feat/ssgi-composer-poc` (`/tmp/wt-ssgi-composer-poc`), LOCAL ONLY — not pushed,
-per the standing push-pause. SW `v763→v764`.**
-
-**Fixed in that commit (each verified live — real GPU, headed Chrome, HHS):**
-1. **Stage-2 idle detection rebuilt** (finding 6 / the ghosting): OrbitControls `'change'`
-   tracking + a camera-POSE-SIGNATURE gate — Stage 2 may only fire when the pose is byte-identical
-   across a full 3s window, a hard guarantee independent of any event plumbing. Auto-fires are
-   backdated past the grace window so a real interaction cancels instantly. Soft/full cancel
-   callers un-gated for soft-park (`A._photoAutoStageOn` exposed to main.js).
-2. **§PHOTO_DOUBLE_APPLY_GUARD — a second real bug found DURING verification, worse than the
-   ghost:** a Stage-2 refire re-applied staging over the kept-alive staging and captured the
-   already-staged values as the restore baseline (log fingerprint `nightWasOn=true`) — after
-   exiting photo mode the scene PERMANENTLY kept dusk fog/tone (verified: fog stuck `c9a878`
-   after full teardown; now restores to true baseline `a6b3ba`). Staging applies once per photo
-   cycle; refires only restart the TAA polish (`§PHOTO_STAGING already on — skip re-apply`).
-3. **Canvas tap-select = full teardown** (finding 1): classification moved from pointerdown to
-   pointerup using picking.js's own ≤5px tap-vs-drag test — a tap (selection) fully exits photo
-   mode + disarms; a drag stays soft (staging kept). UI-chrome clicks during soft-park now also
-   disarm + revert (previously a silent no-op followed by an unwanted auto-refire).
-4. **GI toggle hygiene** (finding 5): `toggleGIPreview` saves/restores `_composerEnabled`
-   (verified: `true` again after Alt+G off — was stranded `false`, silently killing Shadow-SSAO/
-   frozen-TAA); `_ensureBuilt` no longer latches a transient bundle-load failure into a permanent
-   no-op; new `A.pauseStillRefineForGI()` — GI-on stops the accumulation RAF + disarms auto-restage
-   but KEEPS the staged scene + triplanar textures (uTriActive follows `_stillRefineActive`, so a
-   full stop would have stripped the textures out of the GI preview).
-5. **`lib/Pass.js` r185 ES-import rewrite committed** (finding 3) — pushed state now equals the
-   tree every live test actually served. **SW CACHE_VERSION bumped v764** (finding 2).
-
-**Verification (real-GPU headed Chrome on HHS, scripted suite):** 0 mid-drag Stage-2 fires across
-a 4.5s continuous drag (was 1, smeared — internal `idleForMs` sampled ~8ms throughout, timer
-correctly deferring); exactly 1 fire after genuine idle + skip-re-apply logged; tap → full
-teardown, disarm, fog restored to baseline; soft-park UI click → disarm, no refire; GI on/off →
-photo mode kept under GI, composer restored after. §-log + state-var assertions, not eyeballs.
-
-**For the user's next localhost test:** hard-refresh (SW v764, `skipWaiting()` — one reload is
-enough). Expect: orbiting after Alt+S drops to live view and STAYS live while you keep moving;
-the polished still re-applies only ~3-6s after you actually stop; tapping an element exits the
-photoshoot entirely; after exiting, daytime tone/fog must be exactly as before Alt+S (this was
-silently broken until now — worth checking specifically).
-
-**Still open from the review:** finding 4 is a DECISION, not a fix — N8AO at radius=8/intensity=6
-costs 317ms/frame (~3fps) on a RTX 4060 and reads as broad mottle at establishing distance; keep
-Alt+G as an experimental still-only preview or park it. Not building further on it without a call.
-
-## SESSION RECORD (2026-07-16, continued — AO folded into Alt+S (agent), ghost family killed, SSGI SPIKE run)
-Three local commits on `feat/ssgi-composer-poc` (`/tmp/wt-ssgi-composer-poc`), NOT pushed, push-pause
-intact: `b365b32` (ghosting + review findings, previous record), `d7d41d1` (dispatched agent's work),
-`8feeae1` (SSGI spike). SW now `v766`. All verified real-GPU on HHS unless stated.
-
-**Agent-built (d7d41d1) — reviewed and accepted:**
-- **AO folded into Alt+S**: the finished still now includes N8AO contact shadows, one keypress.
-  Native-chain `N8AOPass` (bundle rebuilt to export it) + a thin adapter that feeds the frozen
-  16-sample TAA image in as N8AO's beauty (autoRenderBeauty=false) — AO refines for 24 frames
-  AFTER the freeze, so it never touches the jittered sampling. Zero-cost gate when not frozen
-  (§PHOTO_AO on/off on every path). Alt+G untouched as the standalone navigable preview.
-- **Alt+G ghost family, 3 roots fixed** (user: "it happens after Alt-G"): pause now drops TAA
-  accumulation state; GI-off RECOMPUTES `_composerEnabled` (no more interleaved save/restore
-  stranding); `§STILL_REFINE_RESTART` pose-signature guard inside the accumulation loop catches
-  damping glides, in-grace drags, and Fly-mode/programmatic motion (21 restarts witnessed across
-  a scripted 2.2s fly, crisp freeze only after motion stopped).
-- **Auto-restage DISABLED per user decision** ("let user Alt-S manually") — `AUTO_STAGE2_DISABLED`,
-  §AUTO_STAGE2 can never fire; movement keeps staging (Stage 1), user re-presses Alt+S to re-polish
-  (double-apply guard makes that seamless — verified). Tap/UI-click still fully exits.
-- **Honest correction to the earlier review**: the 317ms/frame N8AO figure was a measurement
-  artifact (markDirty-per-frame forced a full AO reset every frame). Properly gl.finish-synced:
-  **9.3ms/frame full-res** — Alt+G navigation is genuinely smooth; the new cinema halfRes preset
-  (§GI_CINEMA_PRESET) is retained as insurance, not a necessity. Cinema Orbit now records
-  `_giComposer` when GI is active (was rendering the WRONG composer mid-recording — real fix).
-
-**SSGI SPIKE (8feeae1) — §LAYER 4's last open question, answered by building:**
-- Candidate: `realism-effects@1.1.2` (0beqz, MIT, unmaintained since 2023-05; SSGI for the SAME
-  pmndrs composer Alt+G uses). Vendored into the shared bundle (superset rebuild, one
-  postprocessing@6.39.2 — Alt+G + AO fold re-verified working on it). Alt+J = spike toggle,
-  mutually exclusive with Alt+G (shared `_giComposer` slot, handback verified both directions).
-- **4 mechanical r185 patches, each found by running not guessing** (baked into the bundled copy;
-  the patch script lives in this session's scratchpad, reproduce from the commit message):
-  WebGLMultipleRenderTargets compat subclass; copyFramebufferToTexture arg order (r165);
-  `batching_pars_vertex`/`batching_vertex` injection into their 2 custom vertex shaders — this
-  fixed the predicted make-or-break `batchingMatrix: undeclared identifier` failure on
-  BatchedMesh, CONFIRMED fixable; OptimizedCineonToneMapping→CineonToneMapping rename.
-- **Result: machinery fully works — lighting doesn't.** Runs clean at **13.6ms/frame** (RTX 4060),
-  zero page errors, real full-frame output — but the building renders BLACK
-  (`~/Pictures/Screenshots/SSGI_spike_black_building_2026-07-16.png`): the effect reconstructs
-  radiance through its own gbuffer MRTMaterial, which doesn't carry this app's
-  onBeforeCompile-customized / batched material colors; `scene.environment` (which this app never
-  sets — envMaps are per-material) surfaces yet another dead-API path when set. Alt+J logs
-  `§SSGI_SPIKE_INCOMPLETE` and stays in as scaffold.
-- **VERDICT for the next session on this**: SSGI-via-realism-effects is NOT a drop-in; the
-  remaining work is a real porting lane — adapt its gbuffer material capture to this app's
-  material architecture (diffuse/emissive per batched group), fix its env sampling for r185, THEN
-  tune. Bounded but genuinely its own session(s). Alternatives if that port stalls: the lib's
-  unfinished v2 branch, or a purpose-built minimal screen-space bounce pass reusing the N8AO
-  depth/normal buffers already proven working in the native chain.
-
-**User's next localhost test (hard refresh once, SW v766):** Alt+S → staged still WITH contact
-shadows; move → live view, staging stays, NO auto re-polish; re-press Alt+S when settled; tap an
-element → full exit; Alt+G → smooth navigable AO preview, no ghost after toggling it off; Alt+J →
-deliberately incomplete (black building, spike scaffold) — don't judge it, it's documented.
-
-## DEPLOYED (2026-07-16 — "push to live", PR #810 merged, verified live)
-User instruction "push to live" lifted the push-pause for this lane's work. Sequence: branch was
-BEHIND (main advanced 2 unrelated PRs → merged `origin/main` in, sw.js conflict resolved per the
-standing rule: higher CACHE_VERSION v766 kept), witnesses re-run green post-merge (syntax + full
-real-GPU smoke, zero pageerrors), pushed, PR #810 opened. CI failed once — pre-existing gap, NOT
-this lane's code: the no-undef eslint gate didn't know the `setupGIPoc` cross-file global
-(scene.js:327; the agent's earlier push had the same red X). Fixed by adding it to
-`eslint.globals.json` (same pattern as `setupEffects`), full `npx eslint viewer modeller` green
-locally, pushed → both checks SUCCESS → auto-squash-merged → Pages deployed. **Verified live by
-fetching the deployed files**: sw.js `CACHE_VERSION="v766"`, effects.js carries `PHOTO_AO`,
-effects_gi_poc.js carries `toggleSSGIPreview`. Everything from tonight's three worktree commits
-(`b365b32`/`d7d41d1`/`8feeae1`) is now in production, including the deliberately-incomplete Alt+J
-SSGI scaffold (§SSGI_SPIKE_INCOMPLETE — gated, inert unless pressed).
-⚠ Squash-merge trap now applies: `feat/ssgi-composer-poc` must NOT be reused for follow-up work —
-start the next branch fresh off `origin/main` (this file has hit that trap twice already).
-Next open items, unchanged: SSGI lighting-reconstruction port (its own lane, scaffold shipped);
-material reference library (~20 curated, own session); prior-art write-up after SSGI lands.
-
-## RESUME BRIEF — SSGI LIGHTING PORT (2026-07-16, written at wrap; read this first, next session)
-**Start a FRESH branch off `origin/main`** (feat/ssgi-composer-poc is squash-merged — reuse trap).
-The scaffold is already LIVE in production, gated behind Alt+J: `viewer/effects_gi_poc.js`
-`toggleSSGIPreview` + the shared vendored bundle (`viewer/lib/postprocessing-n8ao.bundle.js`,
-carries postprocessing@6.39.2 + n8ao@2.0.0 + realism-effects@1.1.2 with 4 baked-in r185 patches —
-full patch recipe in commit `8feeae1`'s message; rebuild = npm-install those 3 packages, apply the
-4 patches to realism-effects' dist, esbuild entry re-exporting all three, --external:three).
-
-**State: machinery proven, lighting broken.** Runs 13.6ms/frame on real HHS geometry, zero errors,
-BatchedMesh shader compilation FIXED (batching_pars/batching_vertex injection) — but the building
-renders BLACK (`~/Pictures/Screenshots/SSGI_spike_black_building_2026-07-16.png`).
-
-**Root cause to attack (in order):**
-1. realism-effects' SSGI reconstructs radiance via its own gbuffer material (`MRTMaterial` in its
-   dist — writes diffuse/normal/roughness/emissive to an MRT). It builds per-object materials by
-   copying properties off scene materials. THIS APP's materials are (a) grouped by `(rgba,
-   ifcClass)` with color on `material.color` (no maps), (b) customized via onBeforeCompile
-   (triplanar), (c) rendered as InstancedMesh/BatchedMesh. Diagnose WHERE the diffuse goes black:
-   dump the gbuffer diffuse target to screen first (their SSGIEffect has debug/output modes — check
-   dist for an output switch) before touching any code. Suspects: their material-clone path not
-   copying `.color` for batched/instanced meshes, or vertex-color/instance-color defines mismatch.
-2. `scene.environment` is never set in this app (envMaps are per-material via `A._envMap`).
-   realism-effects uses env for miss-rays; setting it surfaced a further dead-API path
-   (`.length` on env mip data — likely its importance-sampling `getMaxMipLevel`/CubeUV data walk,
-   r152-era). Either patch that path for r185 PMREM layout or neutralize env sampling (black env =
-   screen-space-only bounce, still real GI from visible surfaces).
-3. Only then tune (distance/thickness/steps currently 30/5/12 — guesses).
-
-**Fallbacks if the port stalls (bounded, decided at spike time):** realism-effects' unfinished v2
-branch (github, never published), or a purpose-built minimal screen-space bounce pass reusing the
-N8AOPass depth/normal targets already proven working in the native chain (§PHOTO_AO adapter).
-
-**Definition of done:** Alt+J shows the building LIT with visible bounce (warm ground-bounce onto
-facades is the tell), stills verified same-pose A/B, then decide whether it joins the Alt+S fold
-the same way AO did (freeze-time only) — do NOT auto-bundle it into Alt+S before its cost and
-stability are measured (§SSGI cost was 13.6ms/frame BEFORE the lighting actually computes real
-radiance — expect it to rise).
-
-**Also queued after this lane (unchanged):** material reference library (~20 curated, name-pattern
-lookup, touches streaming SQL + batching keys — own session); prior-art write-up covering the
-complete system once GI lands (user intent confirmed 2026-07-16: MIT, defensive publication,
-outreach via the r/BIM5D lane).
-
-## ▶ PASTE THIS TO START THE NEXT SESSION (2026-07-16)
-Resume prompts/PHOTOREAL_STILL_RENDER.md — read §"RESUME BRIEF — SSGI LIGHTING PORT" plus the newest SESSION RECORD below it (a dispatched agent worked branch `feat/ssgi-lighting-port` in `/tmp/wt-ssgi-port`, bim-ootb, local commits only); watchdog its claims against its §-log/screenshot evidence, then push the branch if green — user authorized push (no PR, no deploy, unless said).
-
-## SESSION RECORD (2026-07-16, SSGI LIGHTING PORT — Alt+J now LIGHTS the building. Verdict: LIT)
-Executed the RESUME BRIEF — SSGI LIGHTING PORT above. Branch `feat/ssgi-lighting-port`
-(`/tmp/wt-ssgi-port`, bim-ootb, off origin/main 9de54d6), ONE local commit `ff29636` — NOT pushed,
-NOT PR'd, per the standing push-pause. sw.js `v766 → v767`.
-
-**Root cause: THREE stacked faults, none of them the one the spike suspected.** Diagnosed by
-float-probing every buffer of the live chain (playwright real-GPU, per-stage NaN detection) before
-touching any code. The spike's "gbuffer MRTMaterial doesn't carry batched material colors" theory
-was DISPROVEN by measurement — gbuffer depth/normal/diffuse were all correctly populated on real
-HHS BatchedMesh geometry:
-1. **`useDirectLight` never engages.** realism-effects sets that define only in
-   `updateUsingRenderPass()` on an `isUsingRenderPass` TRANSITION — but it constructs `true`, and
-   the "set false next frame" rAF is cancelled by every `update()` in a continuously-rendering
-   composer. Transition never fires → define never lands → with no `scene.environment` the only
-   light inputs are emissive (zero) + accumulated GI (starts black) → black forever. Fix (app-side,
-   `effects_gi_poc.js`): call `ssgi.updateUsingRenderPass()` once after construction.
-   `§SSGI_PORT_WIRED useDirectLight=true importanceSampling=false` witnesses it.
-2. **r185 REVERSED `packDepthToRGBA` byte order** (`.r` is now the MSB ≈ depth value; the lib
-   assumed the old LSB-in-r layout). The denoiser's hand-rolled far-plane check
-   `depthTexel.r>0.9999` discarded ~every building fragment at establishing distance, and with this
-   app's `renderer.autoClear=false` the denoise targets kept their initial ZEROS → hard-black
-   output wherever geometry exists, normal sky (compose fallback) — exactly the spike's black
-   silhouette. Fix (bundle patch #5): `unpackRGBAToDepth()`-based check, layout-agnostic.
-3. **Env importance sampling with no environment → NaNs.** `importanceSampling` defaults ON;
-   without `scene.environment` it sampled default 1×1 env-info textures and read UNINITIALIZED
-   GLSL bools (UB) → 1.1% NaN in raw GI poisoning temporal accumulation. Fix:
-   `importanceSampling:false` option (black env = screen-space-only bounce + direct light — the
-   brief's own accepted scope) + bundle patch #6 zero-initing the bools.
-
-**Bundle rebuilt from the 8feeae1 recipe** (postprocessing@6.39.2 + n8ao@2.0.0 +
-realism-effects@1.1.2, esbuild --external:three --minify): the 4 spike patches re-derived exactly
-(injection points verified against the shipped bundle's own strings) + new patches #5/#6, applied
-by a deterministic exact-string patch script that fails loudly on count mismatch (full recipe in
-`ff29636`'s message). Link-time contract re-verified: all 74 named `from"three"` imports exist in
-`three.module.min.js`+`three.core.min.js` exports.
-
-**Verification (real GPU RTX 4060, headed Chrome, HHS, zero pageerrors, all §-logged):**
-- Same-pose A/B: `~/Pictures/Screenshots/SSGI_port_{A_plain,B_ssgi_lit}_2026-07-16.png` — building
-  fully lit under Alt+J (was `SSGI_diag_B_altJ_black_2026-07-16.png`, saved same day, same pose).
-- **Bounce tell (definition of done):** dusk-staged close-up shows warm ground/light bounce on the
-  facade + interior slabs — `SSGI_bounce_{A_staged_noSSGI,B_staged_plus_SSGI}_2026-07-16.png`;
-  pre-compose GI accumulation buffer 70.1% non-zero, warm-dominant (51.2%), 0% NaN.
-- **Cost: 13.7 ms/frame avg** (p50 13.6 / max 15.3, gl.finish-synced, 1100×750) — real radiance now
-  computes for roughly the spike's black-output price (13.6). Well under Alt+G-nav budget.
-- Orbit: no smear trail across a 60-frame orbit; clean re-converge after settling
-  (`SSGI_port_{C_during_orbit,D_settled_after_orbit}_2026-07-16.png`).
-- Regressions on the shared rebuilt bundle: Alt+G `§GI_POC_INIT_OK` + clean on/off + composer state
-  recomputed; Alt+S `§STILL_REFINE done` + `§PHOTO_AO done frames=24 avgRenderMs=5.3`; tap exits
-  photo mode; `§AUTO_STAGE2` count 0 everywhere.
-
-**Open items (documented, deliberately not iterated further):**
-- Edge speckle noise while the camera moves (denoiseIterations=1, spp=1) — converges when still;
-  a tuning pass (denoiseIterations/radius/steps, currently 30/5/12 guesses) now has a LIT baseline
-  to tune against.
-- `scene.environment`/HDRI feed into SSGI miss-rays (sky contribution) left for a follow-up — the
-  lib's env importance-sampling path needs its own r185 work (that's fault 3's other half).
-- Do NOT auto-fold SSGI into Alt+S — user decision pending, per the brief.
-- Diag/verify scripts (`diag_ssgi_*.js`, `verify_ssgi_*.js`, `verify_altg_alts.js`) live in this
-  session's scratchpad + logs; patterns copyable from the commit message if needed again.
-
-**User localhost check:** serve `/tmp/wt-ssgi-port` (e.g. port 8189), hard-refresh once (SW v767),
-open HHS, Alt+J → building should be LIT (no more black); §SSGI_PORT_WIRED in console; Alt+G and
-Alt+S unchanged. Push authorized per the paste-block above once watchdogged — not done here.
-
-## USER LIVE FEEDBACK on Alt+J (2026-07-16, first look — tuning spec for the next session)
-User verbatim: **"It seems noise + slight transparent."** Confirms the agent's recorded
-edge-speckle open item and ADDS a transparency observation. Candidate knobs (all in
-`effects_gi_poc.js` `_ensureSSGIBuilt` options, currently guesses: distance 30 / thickness 5 /
-denoiseIterations 1 / radius 5 / steps 12 / refineSteps 4 / spp 1):
-- "Slight transparent" → `thickness` likely too thin (rays pass through walls, lighting what's
-  behind = translucent read). Try 5 → 10-20 first; also check denoise blurring across depth edges.
-- "Noise" → `denoiseIterations` 1 → 2-3, and/or `spp` 1 → 2 (cost doubles per spp — measure).
-Discipline: same-pose A/B CROPS per knob change (this file's anti-guessing doctrine), cost
-re-measured each step (baseline 13.7ms/frame). Do this TOGETHER with the fold-into-Alt+S decision
-session — for a frozen still, higher spp/denoise cost is fine (still-only), so the fold may want
-DIFFERENT (higher) quality settings than the navigable Alt+J preview. Next session = tune + fold.
-
-**Live-user confirmation (2026-07-16, user's own console log, their machine):** full state machine
-verified on real user hardware — §PHOTO_AO done avgRenderMs=8.7 (AO fold in the frozen still),
-§PHOTO_STAGING skip-re-apply on re-press, §STILL_REFINE_RESTART catching camera drift, SSGI/AO/
-still exclusion transitions all clean, zero errors. Alt+J after Alt+S = SSGI over staged dusk
-scene, works. Known cosmetics seen: /viewer/buildings/ 404 → OCI fallback (72MB fetch, then IDB-
-cached — works, slow first load only), favicon 404, §PILL_SYNC log spam (pre-existing, silence
-someday). Only open quality item remains the recorded SSGI noise+transparency tuning spec above.
-
-## ▶ NEXT SESSION MANDATE (2026-07-16, supersedes the earlier PASTE line — user pre-authorization)
-User's standing instruction for the next photoreal session, given 2026-07-16: **tune → verify →
-fold → DEPLOY LIVE, in one session, gated on verification.** Do not stop to ask for deploy
-permission if the gate passes — it is pre-authorized. Steps:
-1. **Continue on `feat/ssgi-lighting-port`** (pushed, NOT yet merged — safe to continue, no squash
-   trap yet; worktree `/tmp/wt-ssgi-port`, dev server may still be on :8189). If origin/main
-   advanced, sync per the BEHIND playbook (merge, higher CACHE_VERSION on sw.js conflicts).
-2. **TUNE per the "USER LIVE FEEDBACK" spec above**: transparency FIRST (`thickness` 5→10-20 —
-   light leaking through walls is a defect, not the effect), then noise (`denoiseIterations` 1→2-3,
-   `spp` 1→2 measured). Same-pose A/B CROPS per knob change, cost re-measured each step.
-3. **VERIFY with the judge's tells** (educated to the user this session, use the same ones):
-   (a) courtyard/inner-corner camera parked still, Alt+J off→on — shadow-side walls must go from
-   flat grey to visibly graded (lit by neighbors); (b) warm ground-bounce on the lower facade;
-   (c) noise settles within ~1-2s parked; (d) NO see-through walls. Plus full regressions: Alt+S
-   AO fold, Alt+G, ghosting suite, zero §AUTO_STAGE2, zero pageerrors.
-4. **FOLD into Alt+S at freeze-time** — same pattern as the §PHOTO_AO fold (still-only engagement,
-   zero nav cost; frozen still may use HIGHER quality settings than the navigable Alt+J preview,
-   cost is one-shot). Keep Alt+J as the standalone navigable preview.
-5. **DEPLOY GATE (pre-authorized)**: if 3(a-d) pass and regressions are green → push, open PR,
-   auto-merge on CI green, verify Pages serves the new SW version, done — report the live URL
-   result. If transparency/noise does NOT verify after the tuning pass → do NOT deploy; stay
-   localhost, record A/B evidence + verdict in this file, report back. "Leaky = localhost again"
-   is the user's own gate, verbatim intent.
-
-## SESSION RECORD (2026-07-17 — NEXT SESSION MANDATE executed: noise ROOT-CAUSED, folded, DEPLOYED)
-Executed the mandate above end-to-end. Branch `feat/ssgi-lighting-port` (`/tmp/wt-ssgi-port`),
-synced with origin/main (merge, no sw.js conflict), commit `51851e3`, **PR #813, auto-merge
-enabled, deployed** (see §DEPLOYED below for the live verification).
-
-**The headline: the user's "noise + slight transparent" was NOT a knob problem — SSGI temporal
-accumulation was never running at all.** Three prior rounds of knob candidates in this file
-(thickness/denoise/spp) could never have fixed it. Root cause, found by float-probing the live
-buffers (TRP frame-counter alpha ~0.4-1.5 after 150 PARKED frames — accumulation resetting every
-frame): realism-effects' velocity/depth vertex chunk computes `newPosition = velocityMatrix *
-vec4(transformed,1)`, bypassing three's `project_vertex` where r185 applies batching/instancing
-matrices. The port's patch #3 made the shader COMPILE on BatchedMesh but the chunk never USED
-`batchingMatrix` — every batched vertex rasterized at untransformed local coords, so the whole
-building never drew into the velocity/depth MRT. Depth stayed 0 → the temporal reprojector's
-`depth==0 → no data` gate skipped accumulation on EVERY pixel → permanent raw single-sample ray
-noise (violent on glass/colored surfaces = high ray variance; invisible on flat grey). The
-"slight transparent" read was the same bug — shimmering unaccumulated samples, not thickness.
-**Fixed as bundle patch #7** (exact-string, deterministic, recipe in `51851e3`'s message): apply
-batching+instancing to `transformed` before BOTH position computations in the tp chunk.
-Measured after: frame counters 127-136, convergence residual 8.53% → 0.41% (150f vs 600f parked).
-
-**Also fixed — §SSGI_CONVERGE (second real mechanism bug):** the desktop render loop self-parks
-at 0 frames (§S286) but SSGI accumulation only advances while frames render — on the user's
-machine a parked camera froze the preview mid-converge, so the noise could literally never
-settle. Bounded 90-frame kick after any markDirty while SSGI is active; re-parks after.
-Verified: 0.0% pixel diff between +2.5s and +3.5s parked; §IDLE_GATE park resumes after.
-
-**Knob verdict (evidence, 2 poses × {thickness 5/10/15/20 × denoise 1/2/3 × spp 1/2} after the
-fix):** all visually equivalent, cost flat 11-13ms/frame (RTX 4060) — locked NAV=12/2/1,
-STILL=12/3/2. The mechanism fix was the entire win; do not reopen knob tuning on a noise report
-without probing accumulation first.
-
-**§PHOTO_SSGI fold (mandate step 4) — built + verified:** Alt+S still now engages SSGI at
-freeze-time (same pattern as §PHOTO_AO): still-quality knobs, 90-frame converge (§PHOTO_SSGI done
-~1.6-2.9s one-shot), full restore on every exit path (drag keeps staging, drops fold;
-pre-existing Alt+J survives at nav knobs; §-witnessed). **AO fold remains the automatic
-fallback** (`A._stillSSGIEnabled=false` or bundle failure) — Alt+S can never regress below its
-previous behavior, and that flag is the instant runtime revert if the new look is disliked.
-**Honest A/B note:** at a sunlit facade establishing shot the SSGI still reads slightly
-dimmer/flatter than the AO-only still (`~/Pictures/Screenshots/PHOTO_SSGI_fold_{A_ao_only,
-B_ssgi}_2026-07-17.png`); its clear win is shadow-side/interior gradation (courtyard tell).
-If the user prefers the AO look for bright establishing shots, the flag is the lever — discuss
-before building anything new.
-
-**§PHOTO_SSGI_TRAA tried and DROPPED (do not re-try blind):** TRAAEffect after the SSGI pass
-renders the entire frame black under r185 (its own TemporalReprojectPass has unpatched gaps
-beyond SSGI's). Documented in-code in effects_gi_poc.js. The fold ships single-sample edges; if
-edge AA is ever wanted, port TRAA the same buffer-probing way patch #7 was derived, as its own
-bounded task.
-
-**Mandate tells, verdict:** (a) courtyard off→on flat→graded ✓; (b) warm bounce on interiors of
-the staged still ✓ (see honest A/B note); (c) settles <2s parked, then 0 GPU frames ✓;
-(d) no see-through opaque walls ✓. Regressions: AO fallback fires when SSGI disabled ✓, Alt+G
-clean on/off + orbit no ghost trail ✓, exit states recomputed ✓, §AUTO_STAGE2=0 ✓, zero
-pageerrors across every run ✓. All via REAL Alt+J/Alt+S keypresses on real GPU (headed Chrome).
-
-**Harness lesson (cost a full false-negative round):** puppeteer's `setBypassServiceWorker`
-does NOT bypass Chrome's HTTP cache — `python http.server` sends Last-Modified and heuristic
-caching served a STALE effects_gi_poc.js for one whole verify run (edits silently absent, no
-error). Every harness now also sets `page.setCacheEnabled(false)`. Harness scripts:
-`ssgi_{ab,diag,diag2,verify,ab_fold}.js` in this session's scratchpad; patterns copyable from
-`51851e3`'s message if needed again.
-
-**sw.js `v767 → v768`, then `→ v773` at merge time** — main had advanced to v772 under this session
-(fly-tour #812 et al.); sw.js conflicted exactly as the repo playbook predicts, resolved by taking
-the HIGHER version + 1. Full verify suite re-run green on the post-merge tree before landing.
-bim-compiler side: this file only, committed locally (push-pause).
-
-## DEPLOYED (2026-07-17 — PR #813, mandate step 5 gate PASSED)
-Gate passed on the tells above → pushed, PR #813 opened, auto-merge on CI green, GitHub Pages
-verified serving sw.js v773 + the patched bundle. Live URL result reported to the user in-session.
-Open items after this lane (unchanged from before): material reference library (own session),
-prior-art write-up, sky/HDRI feed into SSGI miss-rays (env importance-sampling r185 work),
-optional TRAA port (see drop note above).
-
-## FOLLOW-UP MARATHON (2026-07-17, same day, PRs #816–#831 — bridge note)
-Extensive live-user-testing session after #813 shipped, all independently verified live on GH
-Pages (not just merged): SSGI ghosting root-caused twice (camera-pose guard + SVGF hard-reset,
-#816); Alt+S reverted to AO-only default, SSGI made Alt+J-opt-in (#817); a full live-tuning HUD
-built for Alt+J (Light/Noise groups, denoiseKernel, close button that doesn't kill the effect,
-#818/#820/#822/#826) — replacing blind guess→deploy→report cycles per user's own request; ground
-reflectivity contained to S+J only after two wrong turns (a toggle-tied preset, then a permanent
-base-material change — both reverted; final design: Alt+S auto-applies a mid-value wetness default,
-Alt+J's "reflect" dial adjusts it live, value persists per session, #821/#824–828/#830); selection
-x-ray-dim gate corrected twice (wrong signal `set.size`, then the right one, `opts.frame`
-zoom-vs-not, #819/#823); Cinema Orbit given a shortcut (Alt+C) + Help listing + a general
-panel-registry fix so any registered UI panel soft-cancels Alt+S instead of fully tearing it down
-(#831). Full PR list and reasoning: `bim-ootb` git log `#816..#831`. Session closed out with a
-LinkedIn post using this pipeline's own output (Hospital building, helipad/solar-roof shot +
-Cinema Orbit video) — https://lnkd.in/gd4tKGGt.
-
-## NEXT SESSION SPEC (2026-07-17, not implemented — user: "make a spec for that in new session")
-**Goal, user's own words:** bring Alt+S quality into the Time Machine's timeline playback/export —
-"not like present one rather low frame and low res... it holds each frame, apply the Alt-S
-effects, snap... it can even take an hour rendering." I.e. a proper offline BATCH render (patient,
-not real-time-constrained), reusing Alt+S's actual still-refine pipeline per frame — not a cheaper
-approximation, not Cinema Orbit's real-time capture approach (which this explicitly is NOT — see
-distinction below).
-
-### Current state (verified in code this session, `viewer/time_machine.js`, `viewer/effects.js`)
-- Time Machine's live playback (`playTick()` → `renderAtTime(cursorMs)`) already drives the
-  construction-sequence reveal + camera position at any timestamp, on a real-time ticking timer
-  (`TICK_MS()`, ~140-220ms/tick, adaptive to building size + twilight slowdown). This is the
-  correct, existing hook for "set the scene to time T" — the new batch export should call
-  `renderAtTime(cursorMs)` at each step, NOT reinvent construction-reveal logic.
-- `_cineStoryboard` (`computeStoryboard()`) already computes a camera-path/scene-beat schedule per
-  building (cached in IDB, key `movie:{building}`) — the existing "Movie Script" naming refers to
-  THIS camera-path data, not a video file. No literal video export exists in Time Machine today —
-  confirmed via grep, zero `MediaRecorder`/`captureStream` references in `time_machine.js`.
-- The "tiny share icon" (`#tm-share`, 🔗 Share, `viewer/time_machine.js` ~line 1844/1992) only
-  copies a shareable state URL to clipboard — it is NOT a movie export, and the user's read is
-  that it becomes low-value/redundant once a real high-quality movie export exists in the same UI
-  slot. Spec should PROPOSE replacing/absorbing this button's slot with "Export Movie", not assume
-  a conflicting feature already exists.
-- Cinema Orbit (`A.startCinemaOrbit`, `effects.js` ~line 1736, shipped #831 this session) is the
-  ONLY existing video-export precedent — but it is architecturally the wrong pattern to copy
-  directly: it uses `renderer.domElement.captureStream()` + `MediaRecorder` to capture the LIVE
-  canvas in REAL TIME as the camera continuously orbits, at whatever single-pass quality the
-  composer produces per frame (no per-frame TAA supersample — real-time interactivity requires
-  that). This spec's ask is the opposite: each frame gets the FULL multi-second Alt+S treatment
-  before advancing, so captureStream()'s real-time-frame-delivery assumption does not fit.
-
-### Proposed mechanism (for the next session to design in detail, not to blind-implement)
-For each step from `_projectStart` to `_projectEnd` (step size TBD — see open question below):
-1. `renderAtTime(cursorMs)` — set construction-reveal + camera state (existing, reuse as-is).
-2. Trigger the real `A.startStillRefine()` pipeline (existing Alt+S mechanism — 16-sample TAA +
-   AO fold + full staging) and wait for genuine completion (`_stillRefineActive` frozen +
-   `§PHOTO_AO done`), the same discipline already proven for a single manual Alt+S press.
-3. Capture the resulting canvas as a still image (`canvas.toBlob()`/`toDataURL()`), store it.
-4. Advance to the next timeline step, repeat. Patient — user has explicitly said up to an hour of
-   background processing is acceptable, so step 2's ~1.5-2s-per-frame cost (matching this
-   session's own measured Alt+S timings) is not a blocker in itself.
-5. After all frames captured: stitch the still sequence into a video file.
-
-### Open questions the next session must actually resolve, not invent an answer for here
-- **Step 5, frame-sequence → video encoding**: this is the one genuinely unsolved piece. Cinema
-  Orbit's real-time `captureStream()`+`MediaRecorder` pattern does not apply to a pre-rendered
-  still sequence. Candidates to research (not pre-selected): (a) draw each captured still onto a
-  proxy canvas held for N ticks, with `MediaRecorder` capturing THAT canvas's stream at a fixed
-  low real-time rate (turns the problem back into Cinema Orbit's pattern, cheap but re-introduces
-  a real-time constraint on the ENCODING step only, not the rendering step); (b) a client-side
-  frame-sequence muxer (e.g. a WebCodecs `VideoEncoder` + a webm/mp4 muxer library) — no such
-  library is vendored in this repo yet, would need sourcing/vetting the same way
-  `postprocessing-n8ao.bundle.js` was for SSGI; (c) ship the still sequence as a zip/frame-set and
-  let the user assemble it externally (ffmpeg) — simplest, lowest engineering risk, worst UX.
-- **Unique-frame rate vs output video length/smoothness**: does every OUTPUT video frame get its
-  own full Alt+S render (expensive, smooth), or does one Alt+S capture get HELD across several
-  output frames (cheaper, discrete/stop-motion look)? User's own framing ("hour rendering is
-  fine") leans toward feasible either way, but a construction 4D timelapse is traditionally
-  discrete/stop-motion in the industry anyway — worth deciding deliberately, not defaulting
-  silently. This also directly sets the total render-time budget for a given output duration.
-  Reuse `_cineStoryboard`'s existing beat/scene structure as the natural candidate for "one real
-  capture per storyboard beat," rather than a fixed wall-clock interval — grounds the step count
-  in data already computed for this building instead of an invented number.
-- **Progress UX during a potentially hour-long background render**: needs a visible progress
-  state (frame N/M, est. remaining) — the panel-registry soft-cancel fix (#831, this session)
-  means touching other UI panels while this runs won't kill it, which this feature will lean on
-  directly; confirm that holds for a render this long-running, not just a single Alt+S still.
-- **UI slot**: replace `#tm-share`'s button with "Export Movie," per user's own framing of it as
-  redundant once this exists — confirm nothing else currently depends on that specific button id
-  before removing/repurposing it.
-
-### Explicitly NOT in scope for this spec
-- Real-time smooth playback quality (Time Machine's live scrub/play stays as-is — this is an
-  EXPORT feature, not a live-playback upgrade).
-- Cinema Orbit itself — unrelated, already shipped, working, not being modified by this.
-
-## SPEC (2026-07-17, not implemented — "advance realism" popup: staffage + material finish, background-captured)
-
-### Framing — this is a RESULT stage, not the compile stage
-**PRIME RULE clarification, settled this session (user correction, do not re-litigate):** the
-"extract or compile only, never invent" rule governs the BOM/geometry COMPILE stage — every
-quantity/position in `output.db` must trace to real IFC data. This feature operates entirely
-downstream of that, on an already-compiled scene, producing a presentation RESULT (a marketing/
-archviz-style still). That is a different stage with different rules, same standing as the
-already-shipped dusk-sky/uplight/skyline staging (`_applyPhotoStaging`, explicitly authorized as
-"presentation-only fabrication" earlier in this file) — not a new exception, an application of one
-already granted. §HONEST VERDICT's Twinmotion/Enscape/Lumion gap analysis (line ~1173) already
-names staffage and material variety as exactly what separates this app's current output from that
-tier — this spec is closing that named, already-diagnosed gap, not inventing new scope.
-
-### Goal
-After `Alt+S`, offer a second-tier opt-in: a popup asking whether to produce a "real-life finish."
-If accepted, the scene gets populated with fabricated presentation staffage (human figures,
-vehicles, decorative trees) and a fuller material treatment, rendered at full Alt+S quality, then
-auto-captured and saved — all without blocking the user from continuing to navigate the live canvas
-for the next shot.
-
-### Why a NEW popup, not a conflict with the existing "no dialog" decision
-The file already settled "no confirm dialog before generating" for base Alt+S (§SESSION RECORD,
-2026-07-15) — that covers the free polish-only pass (TAA/AO/lighting on real geometry, zero
-fabrication). This popup gates a DIFFERENT, separate action: adding fabricated content. It is the
-UI form of the same explicit-authorization step the user already gave verbally for the sky/lighting
-POC — formalized so it doesn't need to be re-asked in conversation every time.
-
-### Part A — Staffage (human figures, vehicles, decorative trees)
-**Technique: camera-facing billboard imposters, not 3D models.** A textured quad per figure,
-oriented to face the camera every frame (cheap — a few dozen extra draw calls, no new geometry
-loading/rigging pipeline). This is the standard technique Enscape/Twinmotion/Lumion themselves use
-for background staffage — not a compromise, the industry-normal approach.
-- **Placement, reusing math already proven in this file:**
-  - People: near real `IfcDoor` positions, same pattern already built for entry sconces
-    (`§PHOTO_ADDONS`, capped ≤6, lowest storeys first).
-  - Vehicles: on real hardstand/parking/driveway geometry if present in the IFC data (query
-    `element_transforms`/`elements_meta` for the relevant class before placing — don't guess a
-    location if the building has none).
-  - Decorative trees: on open ground clear of the building footprint bbox, distinct from the
-    EXISTING real-vegetation handling (Hospital's 589 real rooftop trees stay real-data-driven,
-    untouched — this is additive ground-level dressing where the source model has none, same
-    footing as the already-shipped fabricated skyline silhouette).
-- **Determinism, same hard constraint as the facade-facing lighting work:** placement rules must be
-  general (bbox + real-element-position derived), not hardcoded to one building. Cap counts per
-  category (reuse the ≤6/≤15 discipline already used elsewhere in this file) to keep draw-call cost
-  bounded regardless of building size.
-- **Sourcing:** CC0 cutout-people/tree/vehicle sprite sheets (same sourcing discipline as the Layer 3
-  CC0 PBR textures — ambientCG/Poly Haven or an equivalent CC0 sprite pack; source and note in
-  `viewer/textures/.../NOTICE.txt` the same way the Layer 3 textures were).
-
-### Part B — Material finish
-Not new architecture — this is the already-deferred "material reference library" item
-(§RESUME BRIEF, 2026-07-16: "~20 curated real-material starter set, name-pattern lookup") finally
-built out, and applied specifically during this advanced pass. Extends the existing
-`TRIPLANAR_MAT`/`STD_MAT` dispatch (`streaming.js:270-319`) rather than replacing it — same
-class→material pattern already proven for concrete/plaster/metal, just a bigger table plus the
-name-pattern lookup needed to stop `IfcBuildingElementProxy` fallbacks (trees, solar panels,
-helipad) rendering in flat teal. Per the earlier scoping note, this touches SQL queries + batching
-grouping keys (`(rgba, ifcClass)` today) in a performance-critical file — needs its own careful
-implementation pass, not a blind extension; this spec section only confirms it belongs inside the
-"advance realism" gate, not that it's trivial.
-
-### Part C — Cheap background capture (the "keep looking for photo opportunities" mechanism)
-**Do not build a second GPU context, OffscreenCanvas, or worker** — that is comparable new-
-architecture cost to the still-open SSGI research spike, disproportionate to this feature. Cheaper
-mechanism, extending machinery already shipped:
-1. Alt+S's still-refine already accumulates N samples across multiple rAF ticks rather than one
-   frame (`TAARenderPass`, 16-sample jittered accumulation). Extend that loop to optionally target
-   an **offscreen `WebGLRenderTarget`** instead of the screen — same `WebGLRenderer`/GL context, so
-   no duplicate texture uploads or GPU-memory doubling.
-2. **Time-slice the rAF loop**: each tick either advances one accumulation sample into the offscreen
-   target (the "advance realism" job), or draws the live nav frame to the visible canvas — whichever
-   the interaction state needs that tick. The enrichment job's camera pose is frozen at the moment
-   the popup is accepted (clone `A.camera.position`/quaternion once); the user's subsequent live
-   orbiting on the visible canvas never touches it.
-3. On completion, `offscreenTarget` → `canvas.toBlob()` (same primitive already spec'd for the Time
-   Machine movie-export item above) → save.
-4. **Auto-save target: an in-app gallery backed by IndexedDB**, not a silent filesystem download —
-   avoids browser download-permission friction, gives the user a thumbnail strip to review/export
-   later. Same storage primitive already planned for the Time Machine batch-export spec above; if
-   that lands first, this can reuse its gallery rather than building a second one.
-5. **Progress signal**: a small non-blocking indicator (thumbnail placeholder or spinner in a corner
-   pill) rather than a modal — the whole point is the user keeps working while it finishes. Reuse
-   the panel-registry soft-cancel behavior (#831) so switching panels doesn't kill an in-flight job.
-
-### Open questions, not invented here
-- Exact popup copy/placement (post-Alt+S toast vs. a small pill button) — UI detail, decide at
-  implementation time against the live app, not speculated in the spec.
-- Whether staffage should be regenerated fresh per shot (re-rolled placement each trigger) or fixed
-  once per session — affects whether repeated shots of the same framing look identical or vary.
-- Sprite-sheet CC0 source not yet picked (unlike Layer 3's textures, which named ambientCG
-  specifically) — first implementation step, same discipline as "source before wiring."
-- Interaction with Part B's SQL/batching-key change: if the material library lands as its own
-  session first (per its existing scoping note), this spec's Part A/C can be implemented
-  independently and Part B wired in after — not a hard dependency in either direction.
-
-### Explicitly NOT in scope for this spec
-- SSGI/real GI (Layer 4, already its own open research spike, untouched by this).
-- Any change to what counts as "real" for the compiled BOM/geometry data itself — staffage/material
-  dressing is presentation-layer only, never written back into `output.db` or any extracted table.
-- The Time Machine batch-movie-export feature above — related (shares the toBlob/IndexedDB-gallery
-  primitive) but a separate trigger (Alt+S popup vs. Time Machine's own export button).
-
-## UPDATE (2026-07-17, continued — "SuperLook?" naming, real-data-first priority, sourcing status)
-
-### Popup naming (tentative)
-Working name **"SuperLook?"** for the post-Alt+S popup — not finalized, the "?" is deliberate
-(user proposed it as a question, not a decision). Placeholder until a better name surfaces or this
-one sticks through actual use.
-
-### Reframed behavior: dynamic opportunity-scan, not fixed placement
-On accept, the pass should **inspect the currently-loaded building's own data and camera framing**
-and decide what to place, rather than always doing the same fixed thing.
-
-**Hard constraint, same as the facade-lighting work earlier in this file — do not violate it here
-either:** this must be a **single live query against whichever building is currently loaded**, run
-once at trigger time (reuse `A.dbQuery`, the pattern already in use elsewhere in this app), NOT a
-precomputed per-building lookup table baked into the code. The multi-building table below is a
-**one-time offline validation pass** (run this session, against the local DB files, to confirm the
-technique has real legs before speccing it — and to catch a real false-positive problem in the query
-pattern itself, see the car-census note) — it exists to inform the spec, not to be reproduced as
-runtime logic. The actual runtime check is: *for the one building open right now, does it have real
-RPC-people/RPC-tree/Logo elements? Query, branch, done* — general and deterministic, same as every
-other camera/building-derived feature in this codebase already has to be. This isn't just discipline
-for its own sake: **users load their own IFC files**, not just the 11 sample buildings censused this
-session — a hardcoded per-building table would silently do nothing (or guess wrong) for every
-user-uploaded building, which is the majority of real usage, not the exception.
-
-Concretely, for each prop category, check real data FIRST at runtime, fall back to sourced/fabricated
-staffage only where real data is absent for THAT building:
-
-| Category | Real data exists? (checked via DB query, not assumed) | Behavior |
+| 55° (film opening) | 1,665 | **0** |
+| 6° (dusk) | 12,095 | **0** |
+
+Zero brightened at either — the change only ever *adds* shadow. Post-fix, shipped code vs the old
+`-0.0005`: 1,599 px darkened at 55°, 1,084 px at 6°, 0 brightened, isolated-dark-pixel fraction
+8.3%/8.9% (low ⇒ contiguous cast shadow, not speckle). The dusk 12,095-vs-1,084 gap is the acne the
+grazing term prevents: a flat 0.305 m sits below the 0.836 m texel depth-noise floor at 6°, so most
+of that 12,095 was ground self-shadow, not building shadow. Witnesses (headless, numeric pixel
+counts, no screenshot in the evidence chain), kept out of the session scratchpad so they don't rot:
+`scripts/witness_shadow_bias_ab.js`, `scripts/witness_shadow_bias_postfix.js`. Both need a static
+server on the bim-ootb tree (`PORT=<port> node scripts/witness_shadow_bias_ab.js`).
+
+**Instrumentation defect found and fixed in the same PR:** `A.sun.updateMatrixWorld()` was missing
+before `shadow.updateMatrices()` in the `§PHOTO_SHADOW_FRUSTUM_COVERAGE` block. `updateMatrices`
+reads `light.matrixWorld`, **not** `light.position`, so that log could measure a stale sun —
+observed `inFrustum=2 outsideFrustum=349` on one load vs `351/0` on a clean one, identical geometry.
+The render was never affected (the renderer refreshes matrices before its own shadow pass), but the
+log was not trustworthy as evidence. `time_machine.js`'s `applySunCycle` already did this.
+
+**Lesson worth keeping:** a shadow constant copied between two lights is only portable if their
+shadow-camera depth ranges match. `shadow.bias` is unitless; `shadow.normalBias` is the one in world
+units. Any future path that reuses another path's shadow tuning must compare `far - near` first.
+
+---
+
+**The next step as named BEFORE the fix above (kept for the record — step 4's code-diff is what
+found it, though the differential turned out to be the bias, not the `needsUpdate`/`updateMatrixWorld`
+candidates guessed here):**
+Time Machine's native Shadow mode (`A.toggleShadow`) is PROVEN to work. PHOTO_SHADOW
+(`_enablePhotoShadows`, effects.js) is a DELIBERATE, DOCUMENTED reuse of the same underlying
+mechanism (see this file's own earlier session notes: "§PHOTO_DUSK_SHADOWS: reuses time_machine.js's
+own proven sun-cycle shadow mechanics... NOT reinvented"). Something in the two setups still
+differs even though both end up setting the same flags — that differential is the thing to find,
+and it needs a **controlled, same-camera-pose, same-building A/B pixel comparison** between the
+two, not more flag-reading:
+1. Load the building fresh, park the camera at a fixed pose facing the building's own base/ground.
+2. Trigger `A.toggleShadow()` (cycle to 'grass' — real Shadow mode ON), capture the canvas, extract
+   real pixel/luminance stats near the building's base (same numeric method already used
+   throughout this file — mean/std/contrast in a defined region, NOT eyeballing).
+3. Toggle Shadow back off, trigger PHOTO_SHADOW instead (`A.toggleStillRefine()`), same camera
+   pose, same capture, same numeric extraction.
+4. Compare the two numerically. If TM's pass shows a real contrast/darkness signature near the
+   base and PHOTO_SHADOW's doesn't, THAT confirms the differential exists visually (closing the
+   "is this even real" question definitively) — then diff the two code paths line-by-line
+   (`A.toggleShadow` in tools.js vs `_enablePhotoShadows`/`_reassertPhotoShadowCoverage` in
+   effects.js) for the one thing that differs beyond what's already been checked here: candidates
+   worth checking first are `renderer.shadowMap.needsUpdate` timing/consumption order relative to
+   the two systems' different render-loop integration, and whether `A.sun.target.updateMatrixWorld()`
+   is being called at the right point relative to `shadow.updateMatrices()` in each path.
+This is resourceful and does not require the user's own DevTools — it's a headless Puppeteer
+canvas-capture + numeric pixel comparison, the same class of witness already used successfully
+several times this session (see `scratchpad/witness_*.js` for the pattern).
+
+### §MOVIE_SHADOW_TM — CONFIRMED GOOD BY USER, live GPU (2026-08-12)
+User: *"shadows working great. Note that."* Movie-maker bake shadow strength now matches Time
+Machine exactly. Confirmed on the user's own GPU run, numerically not by eye:
+`§MOVIE_SHADOW_TM sun=4.400 ambient=0.785 hemi=1.257 fill=2.042 sunFillRatio=2.155` — identical to
+TM native `4.4/(0.785+1.257)`. Was 1.245 (42% weaker) because the sun was scaled x0.7 while the fill
+was scaled x1.21, and because §SUN_ARC animates the sun ANGLE every frame while the three intensity
+scales are applied ONCE at photo-mode entry — so noon frames were lit with dusk values.
+Shipped bim-ootb PR #1316, sw v1004. **Strength only** — PHOTO_SUN_COLOR, ambient/hemi colours,
+exposure lift, fog, ground albedo, env-map boost, PHOTO_SUN_ELEVATION and both §SUN_ARC endpoints
+deliberately untouched, so the dusk LOOK is unchanged. Do not "re-tune" these three scales without
+re-checking the ratio against TM's 2.155 — the §MOVIE_SHADOW_TM log line exists for exactly that.
+
+---
+
+## §PHOTO_AO_TUNING — N8AO ambient-occlusion fold reads too dark/noisy during Alt+C bakes (2026-08-13) — TWO FIXES SHIPPED (bim-ootb PR #1331, #1334) + a real SW caching bug found+fixed (PR #1332), AWAITING USER VISUAL CONFIRM
+User report: "during alt-c we apply alt-s which puts in shadow noise (alt-G) but it is too dark and
+noise." Confirmed real and current on `bim-ootb` `origin/main` (@9d56919, clean worktree — the shared
+`/home/red1/bim-ootb` checkout was found dirty/behind mid-session, NOT used for this read):
+
+**Not the standalone Alt+G/GI composer** (`§GI_CINEMA_PRESET`, `effects_gi_poc.js`) — that one is
+already excluded from bakes by default, per this file's STATUS section. It's a separate integration:
+`effects.js` §PHOTO_AO (~line 3420-3465) builds its own `N8AOPass` inside the native composer, gated
+only by `STILL_AO_ENABLED = true` (unconditional, no user toggle), driven from `A.startStillRefine()`
+— the Alt+S entry point. `cinema_maxq.js`'s bake loop calls `A.startStillRefine()` on every captured
+frame (warm-up + per-frame, `:1136`/`:1296`) and genuinely `await`s the full 24-frame AO converge
+(`_waitFoldDone` polls `A._stillRefineBusy`, which `effects.js` only clears at `f >= STILL_AO_FRAMES`
+— confirmed by reading the clear site, not assumed) before capturing. So every baked frame gets the
+SAME converged AO quality as a manual Alt+S still, not a partial one — bar the rare `_unconverged`/
+`§MAXQ_FRAME_TIMEOUT` case (30s cap per frame; worth checking a bake's own log for a non-zero count,
+but not the routine explanation).
+
+**First-pass fix attempted then RETRACTED, on-the-record for the next session:** initially proposed
+retuning `STILL_AO_RADIUS`/`STILL_AO_INTENSITY` down. Wrong — missed the `§PHOTO_AO_TUNE` comment
+sitting right at the definition (`effects.js:3432`, 2026-07-16): this EXACT radius=8/intensity=6 was
+already real-GPU A/B tested at still quality (`PHOTO_AO_TUNE_r{8_i6,5_i4,3_i4,1p5_i3}_2026-07-16.png`)
+and deliberately KEPT — the earlier "broad mottle" verdict was measured over LIVE NAVIGATION (raw,
+unconverged single-frame AO), not the converged still/bake case, and smaller radii read as
+near-invisible at whole-building establishing distance. Reverting it now would undo a tested decision
+on no new evidence — exactly what this project's rules forbid. No code changed.
+
+**Two better-grounded hypotheses instead, both consistent with "fully converged AO, still reads bad
+in the film" and neither yet witnessed:**
+1. **Temporal AO flicker/noise, invisible to a single-still A/B by construction.** N8AO's accumulate
+   buffer resets on every camera/view-matrix change (confirmed, `effects_gi_poc.js` §GI_POC_GHOST_FIX
+   comment, same underlying library). Each Alt+C frame is a NEW pose → AO reconverges from a fresh
+   seed every time. Any one frame can individually match the 2026-07-16 still-quality look and still
+   differ, pixel-for-pixel, from its neighbours' independently-seeded convergence — reading as
+   shimmer/noise ACROSS the assembled movie, a failure mode a static PNG-vs-PNG A/B cannot show at
+   all. This is the better fit for "noise" specifically.
+2. **AO darkening compounds with §SUN_ARC's dusk sweep, a feature that postdates the AO A/B test.**
+   `§SUN_ARC` (shipped 2026-08-11, this file, above) sweeps every Alt+C film from 55° noon to 6° dusk.
+   AO darkening is multiplicative on scene radiance, so the identical AO curve reads far heavier on
+   the dim back half of a film than on whatever single lighting condition the 2026-07-16 AO A/B was
+   shot under — a joint condition (AO × dusk sweep) that was never re-validated together, because the
+   sweep didn't exist yet when the AO tuning was tested. Better fit for "too dark" specifically.
+
+**Not pursued further — superseded by a direct user ruling.** Both hypotheses above stayed open
+questions; before either got a witness, the user gave a direct live verdict instead: "Alt-G too
+dark... affecting Alt-S and movie." Per this project's own standing rule ("the look is the user's
+to judge"), a live user verdict on darkness supersedes the 2026-07-16 A/B test it's overriding —
+no synthetic re-proof needed before shipping, only a live round-trip to confirm after.
+
+**SHIPPED (2026-08-13), bim-ootb PR #1331, branch `fix/photo-ao-darkness`, commit `81c58e5`:**
+- `effects_gi_poc.js` (standalone Alt+G composer): `aoRadius` 8→4, `intensity` 6→2.
+- `effects.js` §PHOTO_AO (the Alt+S fold, same pass Alt+C's MaxQ bake runs every captured frame):
+  `STILL_AO_RADIUS` 8→4, `STILL_AO_INTENSITY` 6→2, `denoiseSamples` 4→8, `denoiseRadius` 6→12
+  (toward n8ao's own library defaults — free at bake/still quality, an offline accumulate, not a
+  real-time cost).
+- `sw.js` `CACHE_VERSION` v1013→v1014 (`effects.js` is in `PRECACHE_ASSETS`).
+
+**Verified live, real GPU (RTX 4060, headless Chrome, `Duplex_extracted.db`, sandbox-adjacent
+worktree, not the shared checkout):** both passes confirmed running the new values end-to-end, not
+just present in source — `§WITNESS_GI_CFG {"aoRadius":4,"intensity":2}`, `§PHOTO_AO start frames=24
+radius=4 intensity=2`, `§PHOTO_AO done frames=24 totalMs=396 avgRenderMs=3.3` (24/24 converged, no
+timeout, no page errors). **This proves the wiring, not the look** — merge/verify on the user's own
+next round trip (Alt+G, Alt+S, and one real Alt+C bake), same discipline as every other "shipped,
+not yet visually verified" entry in this file.
+
+The two temporal/dusk-sweep hypotheses above are NOT ruled out or disproven — they're just no
+longer blocking, since the fix path taken (lower the whole curve) helps both regardless of which
+mechanism dominates. If "too dark" persists after this ships, revisit hypothesis 2 (§SUN_ARC
+compounding) specifically, since intensity/radius alone don't touch it.
+
+**Real deploy bug found and fixed in between (bim-ootb PR #1332, `sw.js` `CACHE_VERSION`
+v1014→v1015):** user tested #1331 live minutes after merge and still saw the old
+`radius=8 intensity=6` in the console log. Origin/CDN was already serving the fixed file
+(confirmed via curl, `age: 2s`) — the staleness was 100% client-side. Root cause: the SW's
+`install` handler used `cache.add(url)`, which fetches through the BROWSER's own HTTP cache: these
+static assets serve `Cache-Control: max-age=600`, so a browser that loaded the old `effects.js`
+within the previous 10 minutes silently re-precached that same stale response into the NEW
+version's cache during install, even though `CACHE_VERSION` itself bumped correctly. This is a
+real, repo-wide bug affecting every future deploy of any precached file, not specific to this fix
+— switched to `fetch(url, {cache:'reload'})` + `cache.put()` to force a genuine network fetch on
+every precache install. **Practical lesson for verifying ANY future `bim-ootb` deploy:** don't
+trust `§BUILD_VERSION` alone as proof a specific file's content updated — cross-check the actual
+behavior/log line the change should produce, the way this session caught it.
+
+## §PHOTO_AO_SCALE — same day, user follow-up: "far off well lighted, up close dark" — SHIPPED (bim-ootb PR #1334), AWAITING USER VISUAL CONFIRM
+After #1331 deployed (past the PR #1332 caching bug above), user reported the flat retune didn't
+fix the real symptom: viewed from outside, the building interior reads bright at a distance and
+goes dark up close. **This is a distance-SCALE problem, not an overall-strength problem** — #1331
+only lowered the same flat curve, which doesn't touch it.
+
+**Root cause:** both N8AO integrations set `aoRadius` as a FIXED WORLD-SPACE distance (metres, was
+8 then 4). At `screenSpaceRadius` off (n8ao's default, never touched before), the shader samples a
+neighbour position at that literal metre offset regardless of how close the camera is — up close,
+a several-metre radius spans the ENTIRE visible wall (broad-area darkening, not contact shadow);
+far away (whole-building establishing shot), the same radius is a barely-visible sliver (why it was
+bumped from 1.5m to 8m in the first place, 2026-07-16, `§GI_POC_RADIUS_TEST`). No single metre
+value is correct at both distances — this was always structurally present, just not diagnosed
+until the user's distance-specific report.
+
+**Fix:** `screenSpaceRadius: true` (n8ao's own docs, fetched and read live via WebFetch, not
+guessed: "aoRadius represents the size... in pixels, recommended 16-64" in this mode, with
+`distanceFalloff` "0.2 in most cases" — this app had never set `distanceFalloff` at all before,
+leaving it at n8ao's library default of 1). `aoRadius` 4→**32 (pixels, not metres)**,
+`distanceFalloff` unset→**0.2**, in both `effects_gi_poc.js` (Alt+G) and `effects.js` §PHOTO_AO
+(Alt+S/Alt+C fold). `intensity` left at #1331's already-lowered 2 — orthogonal axis, not touched.
+The effective world-space radius now self-scales with camera distance, so AO should read a
+consistent size on screen whether the shot is a far exterior or a close interior.
+
+**Verified live, real GPU (RTX 4060, headless Chrome, `Duplex_extracted.db`, same
+sandbox-adjacent-worktree method as #1331):** both passes confirmed running
+`screenSpaceRadius=true distanceFalloff=0.2 aoRadius=32`, `§PHOTO_AO` converges cleanly (24/24,
+395ms, no timeout/errors). **Proves the wiring, not the look** — pixel radius (32) is a first-pass
+value within n8ao's documented 16-64 range, not independently tuned against this app's real
+geometry; verify live on the user's next round trip, specifically re-checking the far-vs-close
+symptom this targets, before calling §PHOTO_AO_TUNING fully closed.
+
+## §PHOTO_AO_EDGE — same day, 3rd round: darkness cleared, but "completely no edge corner shadow" — SHIPPED (bim-ootb PR #1335), AWAITING USER VISUAL CONFIRM
+User confirmed #1334 cleared the darkness (both flat and far-vs-close), then reported the AO effect
+had gone too far the OTHER way — no visible contact shadow at corners/edges at all. Asked directly
+"what was the measure before" — table for reference:
+
+| stage | radius | intensity | mode |
+|---|---|---|---|
+| original (since 2026-07-16) | 8m | 6 | world-space |
+| PR #1331 (1st retune — "too dark") | 4m | 2 | world-space |
+| PR #1334 (2nd retune — cleared, then "no shadow") | 32px | 2 | screen-space |
+| PR #1335 (this) | 32px | 4 | screen-space |
+
+**Cause:** `intensity` had been sitting at 2 (down from the original 6) since #1331 and was never
+revisited when #1334 changed the radius mechanism entirely (metres → self-scaling pixels) — once
+the broad-area over-darkening from the old mode was gone, 2 was too weak to read as any visible
+effect at all. **Fix:** one controlled step, intensity 2→4 (not back to 6) in both integrations.
+`aoRadius` (32px) deliberately left untouched — single-variable change, so the next round trip
+isolates whether intensity alone was the gap or whether radius also needs a nudge.
+
+**Verified live, real GPU, same method:** both passes confirmed running `intensity=4` (radius/mode
+unchanged from #1334), converges cleanly (24/24, 395ms, no errors). **Proves the wiring, not the
+look** — verify live: corner/edge contact shadow should now read as visible without reverting to
+the original over-dark look. If still too weak or too strong, the next lever is intensity again
+(not radius, until intensity is confirmed right) — keep changes single-variable per round.
+
+## §PHOTO_REALISM_RETUNE — over-bright/over-reflective washing out shadow contrast + cool indoor read (2026-08-27, user-queued) — **2 of 3 items SHIPPED AND MERGED; item 1 still open**
+
+> ⛔ **HEADING CORRECTED 2026-09-02 (queue item A-4 item 2). It used to read "SPEC ONLY, not built",
+> which was already false when written down and got more false afterwards** — a session reading only
+> the heading would have re-specced work that is live on `main`. Verified against `origin/main`
+> @ `c8a6df61`, in the code, not from the PR titles:
+>
+> | item | state | evidence in the shipped tree |
+> |---|---|---|
+> | **1** brightness / staged-PL re-measure vs the post-`§TRINORM_LINEAR` baseline | ⛔ **NOT DONE** | `A._nightPLScaleStill = 0.5` unchanged (`viewer/tools.js:1100`), and no re-measurement against that baseline is recorded anywhere in this file or `NIGHT_AND_FIXTURE_LIGHTING.md` |
+> | **2** `PHOTO_ENVMAP_BOOST` 3.0 → 2.0 (the room probe double-counts) | ✅ **SHIPPED** — bim-ootb **PR #1575**, merged `81599696` | `var PHOTO_ENVMAP_BOOST = 2.0;` (`viewer/effects.js:2643`), with the full history comment and `witness_envmap_retune.js` |
+> | **3** warm camera fill, `CAM_LIGHT_COLOR` → the `0xffdca8` family | ✅ **SHIPPED** — bim-ootb **PR #1579** (`§TRIPLANAR_NORMAL`), which names "§PHOTO_REALISM_RETUNE item 3" in its own commit message | `var CAM_LIGHT_COLOR = 0xffdca8` (`viewer/effects.js:332`) — the spec text below still says `0xfff2e0`; that value is gone |
+>
+> **Scope note, so item 2 is not overstated:** #1575 changed the CONSTANT and added a witness. There
+> was no separate "room-probe double-counting" code fix — double-counting is the *reason* the
+> constant was stepped down, not a second thing that shipped.
+>
+> The item-1/2/3 prose below is the ORIGINAL spec and is left intact for the trail. Read items 2 and
+> 3 as history, not as work to do.
+
+**User's ask, verbatim:** *"we already got things too bright, shiny reflection, it be shadow effects
+for realism"* — then, same session: *"Indoor lighting should have more warm lighting."* Studied
+first, not invented: both trace to ALREADY-NAMED, unresolved loose ends in this project's own
+history, not new problems.
+
+**1. Brightness washing out shadow play — the exact complaint is already on record, only half-fixed.**
+`NIGHT_AND_FIXTURE_LIGHTING.md §STAGED_PL_CUT` (2026-08-16) shipped a 0.5× night-fixture-intensity
+cut after the user said staged lighting was *"too bright … it also wipe out the ground slab shadow
+play during alt-c movie baking."* That section's own closing note flags the loose end: **a LATER
+change, `§TRINORM_LINEAR`, made every triplanar surface brighter — "likely why 'too bright'
+resurfaced now" — and was never re-measured against the 0.5× fix.** So the shadow-washout complaint
+isn't a missing shadow feature; it's existing shadow work (AO retuned carefully above, real sun
+shadow maps) getting drowned by brightness that crept back in through a different, later change.
+**Named fix:** re-measure current staged brightness (real GPU, same `§PHOTO_AO`-style before/after
+numbers) against the post-§TRINORM_LINEAR baseline; if confirmed too bright again, retune
+`_nightPLScale` and/or the triplanar brightness gain — single-variable, one round-trip at a time,
+same discipline `§PHOTO_AO_EDGE` above already used.
+
+**2. "Shiny reflection" — the envmap boost was tuned for a bug that's since been fixed, never
+retuned.** `§MIRROR_ROOM_PROBE` (2026-08-16) diagnosed but did not act on this: `PHOTO_ENVMAP_BOOST
+=3.0` (a 3× reflection-intensity multiplier on every glossy/metal material) was tuned *before*
+`§TRINORM_LINEAR` fixed metal's real darkness bug — that section's own words: **"the likely
+'whitewash' source now that metal's real darkness bug is already fixed... the natural next step if
+the room probe alone isn't enough (not yet judged live)."** Nobody judged it live; nobody retuned it.
+**Named fix:** with the room probe (already shipped, gives materials a real local reflection instead
+of just sky/HDRI) doing more of the reflection work now, `PHOTO_ENVMAP_BOOST` almost certainly no
+longer needs 3×. Re-measure live, step it down in one controlled increment (matching `§PHOTO_AO_EDGE`'s
+"one controlled step" precedent, not a guess-and-hope multi-variable change), re-check against the
+same Clinic building that originally showed the "whitewash"/"jagged pipe" symptoms.
+
+**3. Indoor daytime read is cooler than this project's own established warm palette.** The camera's
+fill light — the dominant light source for interior walk shots, per `§CAM_LIGHT`'s own "bright torch
+light follows camera" confirmation — is `CAM_LIGHT_COLOR = 0xfff2e0` (`effects.js:332`), barely off
+pure white. This project already committed to a real warm tone elsewhere for exactly this purpose:
+Night Mode's fixture palette uses `0xffdca8`/`0xffe4b5` (a proper amber) for warm-class fittings
+(`tools.js`, downlight/sconce/pendant/surface). So the "cool indoor" read isn't a missing feature —
+it's one specific constant sitting far cooler than the palette this codebase already uses everywhere
+else for warm interior light. **Named fix:** shift `CAM_LIGHT_COLOR` toward the established
+`0xffdca8`-family warmth (a tuning knob, not a redesign — same file, same variable, no new
+mechanism), verify live that interior walk shots read warmer without over-saturating exterior/daylit
+frames the same light also touches.
+
+**Item 2 SHIPPED 2026-08-27/28 — bim-ootb PR #1575 (`fix/photo-envmap-retune`), MERGED (user: "send
+it!") — live on `bim-ootb main`.** `PHOTO_ENVMAP_BOOST` stepped 3.0→2.0 (one controlled increment, matching `§PHOTO_AO_EDGE`'s
+own single-step precedent above) — the room probe now supplies part of the reflection that 3.0 was
+calibrated for before the probe existed. New witness `witness_envmap_retune.js`. Verified on Clinic
+(the building "whitewash" was originally reported on), real GPU, apples-to-apples before/after (both
+room-probe-applied): `meanBoostRatio` 3.0000→2.0000, `meanBoostedEnvMapIntensity` 1.8000→1.2000
+(track the constant exactly), frame `meanLuma` 174.19→178.02, `stdLuma` 69.65→66.57 —
+**not darker, less extreme contrast, zero clipping either side.** Hospital's material-level numbers
+confirmed the change reaches its real 17-19 glossy materials the same way, but a clean frame-level
+before/after there was blocked by unrelated environment flakiness (a hang, then a puppeteer crash) —
+flagged honestly, not claimed as verified. **Items 1 (brightness/PL-scale re-measure) and 3 (warm
+camera fill) deliberately NOT touched in this pass** — single-variable discipline, per spec.
+**⚠ 2026-09-02: item 3 shipped LATER, in bim-ootb PR #1579 (`§TRIPLANAR_NORMAL`), which cites
+"§PHOTO_REALISM_RETUNE item 3" by name — `CAM_LIGHT_COLOR` is `0xffdca8` on `main` today. Only
+item 1 is still open.** See the corrected heading table at the top of this section.
+
+**Order, and why:** items 1+2 first (both are literally "step back an already-known-overtuned
+constant," lowest risk, most likely source of "too bright/shiny" exactly as reported) — verify those
+live before touching item 3, since a warmer camera light on TOP of still-too-bright/too-reflective
+staging would make it harder to isolate which change fixed what, the same single-variable discipline
+this file's whole AO-tuning history already earned the hard way.
+
+## §PHOTO_SHADING_CEILING — three per-pixel shading attempts all landed 1–7%, none visible to the user (2026-08-30, measured, one change KEPT, one REVERTED)
+
+**Context:** user asked what would improve Alt+S photorealism, then "do only the single thing that
+carries the most benefit." Three attempts, all measured on real GPU frames (Terminal departure
+lounge, 960x540, one condition per page load). **All three produced sub-visible deltas. The user's
+own repeated verdict — "don't notice changes", "I cannot single out a real win" — is correct and
+matches the numbers.** Do not re-run these lanes expecting a different answer.
+
+### Baseline, measured on the user's own Alt+S frame (1773x921, Terminal interior)
+`meanLuma 139.79  stdLuma 54.21  p99.9 245.1  >250 0.0000%  <16 0.103%`
+`gradEnergy 2.35 -> 4.07` is what triplanar texture already buys (+73%, the biggest single win to date).
+Flat-surface measurements that motivated the work: **ceiling patch luma std 5.67 / grad 1.61; floor
+patch luma std 16.92 / grad 2.00.**
+
+### 1. §PHOTO_GRADE — still-only spec-clip + shadow-deepen composer pass. BUILT, MEASURED, **REVERTED**.
+v1 shipped with constants derived from an inverse-ACES reconstruction of a PNG (range topped at
+3.065). **`§PHOTO_GRADE_PROBE` then read the REAL scene-linear HDR buffer: luma p45=0.5406
+p75=5.6826 p88=7.4827 p95=8.4239 p99=9.5590 max=10.6996; grad p50=0.0154 p90=0.0755 p99=4.2845.**
+The v1 pivot of 0.4259 was **17.6x too low** — a p75 pixel scored hi=1.99, clamped to 1.0, so over
+75% of the frame had the highlight term saturated; times the 0.35 mask floor that is a 2.75x lift on
+flat surfaces. User's live result: mean luma +18.6, 12.94% of pixels over 240, "overlighted."
+v2 (pivot at real p95, edge GATING instead of a floor, gain 5.0->3.0) passed its numeric bar —
+`meanLuma -2.82, stdLuma +4.5%, >250 0% -> 0.2118%` — and the user still could not see it. **Reverted
+on the user's call. A 4.5% contrast shift is below the threshold of noticing.**
+
+### 2. §TRIPLANAR_NORMAL — the missing third PBR map. BUILT, MEASURED, **KEPT** (cheap, correct, marginal).
+`NOTICE.txt` recorded the omission from day one: *"Diffuse+roughness only (no normal/AO ...
+two-maps-only first pass)"*. Without it every fragment of a flat surface shares ONE normal, so the
+lighting term is constant across it. Wired as a whiteout/UDN triplanar blend at
+`#include <normal_fragment_maps>` in `viewer/streaming.js`, same still-only `uTriActive` gate,
+NormalGL maps from the same ambientCG assets already vendored. A/B switch: `APP._triNormalOff`.
+- **Interior pose:** blockStd 11.0039 -> 11.4801 (**+4.3%**), gradEnergy +2.8%. 42/46 materials.
+- **Exterior pose:** blockStd 9.214 -> 9.230 (**+0.2%**), gradEnergy +1.4%, but stdLuma 72.15 ->
+  77.54 (+7.5%) and meanLuma 197.49 -> 190.08.
+
+### 3. The hypothesis that FAILED — do not repeat it
+Predicted the interior result was small because normal maps need DIRECTIONAL light and the interior
+is lit near-uniformly (ambient + hemi + ~200 point fixtures + cam torch; `effects.js` §CAM_LIGHT:
+*"no bounce anywhere in this pipeline"*). **The exterior sun-side test REFUTED this** — under a
+strong directional key the fine-relief gain was 0.2%, *smaller* than indoors. What the exterior
+numbers actually show is large-scale facet shading shifting (stdLuma +7.5%, mean -7.4), not fine
+relief: at ~80 m the 2.5 m-repeat relief is far below pixel scale and averages out.
+
+### The conclusion worth carrying forward
+**Per-pixel shading knobs cannot create contrast the lighting does not have.** Three independent
+attempts landed 1–7% and none crossed the visibility threshold. The remaining real wins are the ones
+a person can NAME IN WORDS, not measure in percent — material IDENTITY errors:
+`TRIPLANAR_MAT` (`streaming.js:519`) keys texture selection on `ifc_class`, so Terminal's floor
+(`jkrAR_flr-f_(jhn21)-3 300 x 300 x 8 mm Jubin Homogeneous "non slip"`) and its ceiling
+(`jkrAR_clg-f_(pv60)-3 600mm x 600mm PVC Laminated Gypsum Board`) BOTH render as 2.5 m cast concrete
+because both are `IfcSlab`; and Terminal's walls are all concrete (`IfcWall` 333) while Hospital's
+are all plaster (`IfcWallStandardCase` 1310) — decided by the exporter's class choice, not material.
+**The DB already carries the answer and the renderer never reads it:** `material_name` coverage is
+Terminal **79 distinct names / 90.3% of 48,428 elements**, LTU_AHouse 178/29.4%, HHS 4/34.7%, and
+**Hospital / Clinic / JKR 0%** (90,882 elements with nothing to bind to — any palette needs a
+class/storey fallback for them). `tileMeters` 2.5/2.0/0.6 are invented while the material name
+literally contains "300 x 300" and "600mm x 600mm". Persistence for a palette is already built —
+`A._applyPendingPatch` (`viewer/scene.js:1426`) + `buildings/patches/*.sql`.
+
+### Witness-methodology defects found and fixed here (both produced FALSE verdicts first)
+1. **VACUOUS:** `document.querySelector('canvas')` grabbed a 300x150 all-black overlay canvas; the
+   witness judged an empty frame and printed **NO-OP**. Use `APP.renderer.domElement`, and print
+   INCONCLUSIVE when the readback is black.
+2. **CONFOUNDED:** running both A/B conditions on ONE page load is invalid — the second Alt+S logs
+   `§PHOTO_AO done avgRenderMs=0.7` against the first's `94.5`, i.e. the AO phase does no real work
+   the second time. **One condition per page load.** Witnesses must also assert the poses match and
+   both AO phases did real work, or print INCONCLUSIVE.
+3. Calibrating constants at one camera pose and scoring them at another (probe pose vs witness pose)
+   invalidated a whole round. Same pose, both.
+
+### Unrelated fact established while chasing the user's 1.6 GB tab report (NOT the renderer)
+GH Pages 404s on `/buildings/Terminal_*.db` and falls through to OCI, which serves a **monolithic
+281,600,000 B `Terminal_extracted.db`**. The local checkout's same-named file is **28,262,400 B and
+meta-only** (tables: `elements_meta`, `element_instances`, `element_transforms`, `surface_styles` —
+no mesh table); geometry is a separate **261,349,376 B `Terminal_geo.db`**. Same filename, 10x
+different content and a different residency model — settle that before attributing memory to
+rendering. (`surface_styles` is EMPTY on Terminal/LTU_AHouse_extracted; `material_rgba` is 86–100%
+populated fleet-wide except HHS at 34.8%, and IS already used.)
+
+## §PHOTO_SHADING_CEILING — UPDATE 2026-08-30 evening: the shading fault was REAL and is now FIXED
+
+The section above concluded that per-pixel shading knobs land at 1–7% and that the remaining wins
+are material-identity ones. **Half of that stands; the other half was wrong, and the user was right.**
+
+**§SHADE_PROBE settled it (Clinic, 448 real streamed geometries):** every class ships HARD PER-FACE
+normals — weldRatio 0.107–0.29, splitNormal 96–100% — so `flatShading:false` was being silently
+overridden by the data. Curved MEP was not "as good as tessellation allows"; its roundness was being
+thrown away at shading time. IfcFlowController carries 189 distinct facet directions, IfcFlowTerminal
+128.6, IfcFlowFitting 114.3 — richly tessellated shapes rendered flat.
+
+**Fixed and live (sw v1106): §MEP_SMOOTH_NORMALS.** Gate is the SHAPE — ≥16 distinct facet
+directions, where every box class measures EXACTLY 7 — OR'd with a curve-class list for low-poly
+ducts (IfcFlowSegment 10.3). Crease-limited at 55°, rewriting normal VALUES in place: no weld, no
+re-index, so ranges/picking/BVH/§TRIPLANAR all keep reading the same vertex layout. Witness 5/5 on
+Hospital with the user's constraint measured independently: **non-curve changed=0, maxDelta=0 of
+6,370,253 vertices.** Hospital went 0 → 14,068 element spans once the batched/instanced paths were
+handled (it reports merged=0, so a ranges-only gate reached nothing there). 8.6 s ONCE per session.
+
+**Still true from the section above:** §PHOTO_GRADE was reverted (passed +4.5% contrast, invisible),
+the 199 MB normal-drop is withdrawn (breaks §TRIPLANAR's vTriWorldNormal), and the material-identity
+lane remains the largest unbuilt win. Full record: `prompts/CINEMA_PATH_EDITOR.md` §SESSION_2026-08-30.
+
+## §WALL_WINDING_MEASURE (2026-09-01) — is FrontSide viable, measured, not feared
+
+**Question.** User wants walls facing away from the sun to render dark. Cause (code-read, this
+session): every element material is `THREE.DoubleSide` (`streaming.js:839`, the §S260d line), and
+three.js negates the shading normal on back-facing fragments, so diffuse lighting tracks the
+CAMERA, not the sun. Candidate fix `THREE.FrontSide` is correct shading but any wrongly-wound face
+vanishes. This section measures how much geometry is actually mis-wound, so the choice is data.
+MEASUREMENT ONLY — no rendering change shipped with this section.
+
+**Data + validity (all verified this session, not assumed):**
+- Source = the DBs the viewer streams (`§SPLIT_GEO_LOADED`): `Terminal_geo.db` (249 MB, 9,394
+  unique meshes) + `Terminal_meta.db`; `Hospital_geo.db` (229 MB, 20,609 meshes) + `Hospital_meta.db`
+  (`/home/red1/bim-ootb/viewer/buildings/`, Hospital symlinked to `deploy/buildings/`).
+- Decode identical to `A.blobToGeometry` (`scene.js:1830`): `vertices`=Float32 xyz, `faces`=Uint32
+  tri indices. The viewer's axis swap (x,y,z)→(x,z,−y) has det=+1 (proper rotation) and instancing
+  composes with scale (1,1,1), Euler rotations only (`streaming.js:2242,2347`; `element_transforms`
+  has no scale column) — so winding measured in the DB IS what the GPU sees.
+- Per mesh: signed volume V=Σ det(v0,v1,v2)/6 (divergence theorem; V>0 ⇔ CCW-outward ⇔ FrontSide
+  shows the exterior). Winding consistency via directed-edge multiset after welding coincident
+  verts at 0.1 mm (the index carries duplicated positions — weldRatio 0.107–0.29, §SHADE_PROBE):
+  an interior edge whose two directed copies run the SAME way = winding flip between neighbours
+  (the only case a uniform flip cannot repair). Boundary edge (used once) = open shell → no
+  meaningful volume, own bucket. Open meshes re-tested at 1 mm and 5 mm weld (false-open detector),
+  and sub-bucketed by boundary-edge fraction: near-closed ≤0.5 %, partly-open ≤5 %, sheet >5 %.
+- Probe run 2026-09-01, ~14 s/building + ~30 s drill; logs `winding_{Terminal,Hospital}.log`,
+  `drill_*.log`, `sheet_census_Hospital.log` (session scratchpad; every number below is a §-line
+  from those logs). All 111,610 elements with geometry resolved a mesh — missing_geo=0 both
+  buildings, nothing vacuous.
+
+**Terminal — 48,428 elements, every one measured:**
+| bucket | elements | % |
 |---|---|---|
-| **People** | `RPC Male`/`RPC Female` proxy elements (real IFC entourage, real transforms+geometry) confirmed in **BimWhale_Advanced (33)** and **Ifc4_Revit (4)**; zero in the other 9 buildings checked (Clinic, Duplex, Esplanades, HHS_Office_Federated, HITOS, Hospital, LTU_AHouse, Schependomlaan, Terminal) | Real buildings: give the existing RPC proxies a proper material (currently flat cream `0.92,0.90,0.85`, off the `TRIPLANAR_MAT`/`STD_MAT` class-dispatch pattern already proven for concrete/plaster/metal — same mechanism, just extended by name-pattern, not new architecture). Everywhere else: place the 6 sourced Skalgubbar billboard cutouts (`viewer/textures/staffage/people/`). Both paths gated on camera pitch — see §Aerial-angle constraint below, it applies to the real RPC proxies too (same cross-billboard geometry, same foreshortening problem from above). |
-| **Trees** | Real `RPC Tree` entourage confirmed in **Hospital (20)**, **BimWhale_Advanced (27)**, **Ifc4_Revit (16)**; zero in Clinic, Duplex, Esplanades, HHS_Office_Federated, HITOS, LTU_AHouse, Schependomlaan, Terminal | Same pattern: material pass on real RPC trees where present; place the 6 sourced freecutout.com billboard trees (`viewer/textures/staffage/trees/`) on open ground clear of the footprint where absent. |
-| **Signage/posters** | Real `Model Text:Logo` elements confirmed: **HHS_Office_Federated** has a genuine large facade sign (6.6m × 0.88m, mounted 5.4m up — real scale, real position, not small). **Ifc4_Revit** has a smaller one (0.5m × 3.16m). Real `Exit Sign` fixtures also confirmed in Clinic/Hospital (small, functional, different use case). | Where a real logo/sign element exists: material pass only (make it read as an actual lit/printed sign instead of a flat pale slab) — no new geometry needed, it's already there. **"Hang a big poster" as fabricated dressing (blank-wall detection + a sourced poster/ad image) is a NEW, separate, not-yet-scoped idea** — unlike people/trees, there is no cheap existing asset or placement logic for this yet. Flagged as an open item, not started. |
-| **Cars** | Not checked in the DB pass done this session (only people/trees/signage were queried) — worth a quick census before assuming zero, same discipline as the rest of this table | Sourcing already tried and stalled — see §Vehicles below, unchanged. |
-| **Props (general)** | N/A — no specific search done | Not scoped yet; "props" as a category needs its own definition (what counts — furniture upgrades via material pass on already-real `IfcFurniture`? decorative additions?) before it can be a checklist item like the others. |
-
-### Why this reordering matters
-The original Part A spec (above) treated staffage sourcing as the first step for every building
-uniformly. The DB census this session shows that's backwards for 2 of the 11 buildings on hand —
-real, extracted, PRIME-RULE-clean entourage data already exists and just isn't rendered properly
-(same root cause as the already-known flat-teal-fallback problem for trees/solar-panels/helipad).
-**A material-dispatch extension (cheapest possible change, zero new assets, reuses proven mechanism)
-comes before relying on sourced sprites**, not after. Sourced sprites (Skalgubbar people, freecutout
-trees) remain the right tool for the majority of buildings that have no real entourage at all.
-
-### Aerial-angle constraint (carried over from live discussion, not yet resolved in code)
-Confirmed by direct comparison against this app's own screenshots (`SSGI_review_realgpu_B`,
-`PHOTOREAL_realgpu_staged_30` — both 30-45° elevated establishing shots, the app's actual typical
-"photoshoot" framing) vs. `SSGI_bounce_B_staged_plus_SSGI` (near-eye-level corridor shot, the angle
-staffage actually reads correctly at): a camera-facing billboard — real RPC proxy or sourced sprite,
-same limitation either way — foreshortens into a flat tilted sliver from a steep downward angle, or
-(if spherically billboarded) floats detached from the ground plane. Trees tolerate this reasonably
-(a real canopy seen from above is already blob-like); people do not. **Not yet implemented**: gate
-person-placement (real or sourced) on camera pitch vs. up-vector, reusing the dot-product technique
-already proven for facade-facing lights (`_updateFacadeFacingLights`). Trees/signage don't need this
-gate.
-
-### Sourcing status (unchanged from earlier this session, recorded here for one-place reference)
-- **People**: 6 curated Skalgubbar cutouts committed, `feat/photoreal-staffage-sprites` branch,
-  `/tmp/wt-photoreal-staffage` worktree (bim-ootb), local-only per the standing push-pause. License
-  not CC0 — restricted to populating architecture visualizations (matches this use case exactly).
-- **Trees**: 6 curated freecutout.com cutouts committed, same branch/worktree. License not CC0 —
-  free commercial+private, no resale as a standalone library. 2 of 8 original candidates rejected
-  after visual QC (genuine alpha channel, but background not actually removed — caught by viewing
-  every file, not trusting alpha stats alone).
-- **Vehicles**: unsourced. Kenney (CC0) only has wrong-angle/wrong-style sprites; freecutout.com
-  doesn't carry vehicles; MrCutout.com has the right content but its terms forbid redistributing the
-  file itself (blocks vendoring into a repo even though local use would be fine); generic stock-PNG
-  aggregators have no consistent per-image licensing. Genuinely unresolved, not just unresearched.
-
-### Runtime POC (2026-07-17, this session) — confirmed live, not just offline census
-Before handing this off, verified the actual runtime path works, not just the offline `sqlite3` CLI
-census above. Headless Chrome (puppeteer, `--use-gl=angle --use-angle=swiftshader`), read-only
-localhost server against the main `~/bim-ootb` checkout (no edits made there — serving only), loaded
-`Ifc4_Revit_extracted.db` via the real app (`viewer.html?db=buildings/Ifc4_Revit_extracted.db`), then
-called the app's own live `A.dbQuery` (`viewer/helpers.js` — the same wrapper already used elsewhere
-in this codebase, e.g. facade-lighting) from inside the loaded page. Result matched the offline
-census exactly: 4 real `RPC Male/Female` rows, 16 real `RPC Tree` rows, 1 real `Model Text:Logo` row,
-`activeBuilding = "Ifc4_Revit_Federated"`. **The runtime detection mechanism this spec depends on is
-confirmed real today**, on the actual app, not assumed from static file inspection.
-
-### Open items, not resolved here
-- ~~Car census against the real DBs~~ — **RUN, then CORRECTED 2026-07-17/18 (STAFFAGE_WALKABLE_PLACEMENT.md
-  session).** The original census here concluded "1 genuine vehicle entourage element in all 11
-  buildings (Semi Truck in Hospital), vehicles NOT available as a real-data fallback" — **this was
-  WRONG, same class of miss as the false positives it had just filtered out.** The `LIKE '%car%'`
-  substring pattern can't match a car by MODEL NAME (a Beetle isn't spelled "car"). A targeted search
-  for `RPC`/`Beetle` (prompted by the user spotting real cars in their own screenshots) found real
-  Revit RPC vehicle entourage in exactly the same 2 buildings that already have real RPC people/trees:
-  **`M_RPC Beetle` × 5 distinct geometry instances in BimWhale_Advanced**, **`RPC Beetle` × 1 in
-  Ifc4_Revit** — both `IfcBuildingElementProxy`, both genuine mesh geometry (not a placeholder), both
-  confirmed via `component_geometries` (Float32 vertices ~2058/instance, Uint32 face indices ~686-1372
-  tris/instance — same BLOB format `streaming.js` already decodes for every other element, nothing
-  special about these rows). Fixed same-session: `effects.js` `realPeople` detection and
-  `streaming.js` `§ENTOURAGE` material-variant matcher both now handle the `M_`-prefixed naming
-  convention (was matching bare `RPC Male%` only), added a `vehicle` material variant. Screenshot-
-  confirmed live: the real Beetle sits correctly grounded on the pavement once double-population
-  stopped hiding the real problem behind synthetic ghosts.
-  **Superseded plan for "cars in buildings that DON'T have one" (NOT implemented, next session):**
-  user's explicit direction — reuse the REAL extracted Beetle mesh as a cross-building library prop,
-  NOT a sourced cutout photo. This is the PRIME-RULE-clean path the earlier sourcing dead-end
-  (Kenney/freecutout.com/MrCutout.com, all licensing dead ends, see below) was never going to be:
-  genuine extracted geometry, not fabricated/licensed content. Mechanism sketched, not built: pull
-  ONE geometry_hash's vertices+faces BLOB from BimWhale_Advanced_extracted.db's `component_geometries`
-  once (build-time or first-use cache, not a per-frame query), decode via the exact same
-  Float32Array/Uint32Array path `streaming.js` already uses for normal geometry, build a reusable
-  `THREE.BufferGeometry`, then instance it into any OTHER building's exterior staffage placement
-  (parked near an entrance/road) the same way `_STAFFAGE_TREES` places tree sprites today — except as
-  a real mesh, not a billboard. Needs its own session: where does the decoded geometry/texture live
-  (a small vendored `.bin`/`.json` extracted once from BimWhale, checked into `viewer/textures/staffage/`
-  or a new `viewer/props/` dir — NOT the full source DB), what UV/material it renders with outside its
-  origin building's material palette, and where "parked near the road" anchors from (no road/driveway
-  IFC class confirmed extracted yet — would need its own check, don't assume `IfcPavement`/hardstand
-  exists generically).
-- "Hang a big poster" fabricated-dressing idea — needs its own scope: blank-wall detection logic +
-  a sourced poster/ad-image asset. Nothing exists for this yet, unlike people/trees.
-- "Props" as a general category — undefined, needs its own scope before it's a checklist item.
-- ~~The material-dispatch extension for real RPC people/trees/logo/exit-sign classes — spec'd here,
-  not implemented.~~ **DONE for people/trees/logo (exit-sign deferred, see below) — 2026-07-17,
-  §SESSION RECORD below.**
-- Aerial-angle pitch gate — spec'd (carried over from discussion), not implemented.
-
-## DEPLOYED (2026-07-17 — "push live", bim-ootb PR #839 merged, verified live)
-User lifted the push-pause for this work ("push live"). The whole Alt+P staffage feature +
-§ENTOURAGE material pass + BimWhale ground fix shipped to production: merged origin/main (v778)
-into `feat/photoreal-staffage-sprites` (clean base, no squash divergence), bumped sw.js
-CACHE_VERSION v778→**v779** (effects/scene/streaming/tools are all cache-first precached — the
-documented landmine), pushed (no LFS hang), PR #839, fast-checks + e2e green, squash-merged
-(`3bd4d42`). GitHub Pages redeployed and **confirmed live** via cache-busted fetch: `sw.js`=v779,
-`effects.js` carries `togglePopulate`, `scene.js` carries the Alt+P handler, staffage cutout PNGs
-return HTTP 200. Live at https://red1oon.github.io/bim-ootb/viewer/ — press **Alt+P**. The
-standing push-pause remains in effect for OTHER work unless the user lifts it again.
-
-## SESSION RECORD (2026-07-17, continued — RPC entourage material-dispatch extension BUILT + verified)
-Implemented the real-data-first material-dispatch item above (the cheapest, zero-new-asset change
-the "Why this reordering matters" note prioritized). **Local commit only** (`0e7f284`,
-`feat/photoreal-staffage-sprites`, `/tmp/wt-photoreal-staffage`, bim-ootb) — NOT pushed, per the
-standing push-pause. One file: `viewer/streaming.js`.
-
-**What it does.** Revit RPC entourage (people, deciduous trees, `Model Text:Logo`) all export as
-`IfcBuildingElementProxy` with a generic cream placeholder rgba `0.920,0.900,0.850` (the RPC
-exporter default, not a design color) → they read as pale ghosts. New `A._entourageVariant(ifcClass,
-element_name)` (anchored-prefix match on the real names — `RPC Male`/`RPC Female`→`person`,
-`RPC Tree`→`tree`, `Model Text:Logo`→`logo`; `''` for everything else) drives a presentation
-material per variant (tree=foliage green, person=clothing mid-tone, logo=dark backing + warm
-emissive "lit sign").
-
-**Key doctrinal call (do not relitigate):** the cream IS an assigned IFC rgba, so per §S265c
-"trust IFC data" it is **never overridden always-on**. The entourage material is gated at RUNTIME
-by a `uEntActive` uniform, re-asserted every frame from `A._stillRefineActive` via `onBeforeRender`
-(self-heals across shader recompiles — same pattern as §TRIPLANAR_RECOMPILE_FIX). Normal navigation
-shows the real cream untouched; the treatment only appears during the Alt+S still-refine pass — same
-RESULT-stage standing as the already-shipped dusk staging. No `effects.js` change needed.
-
-**How it threads through the perf-critical batching (the part the spec kept flagging as needing a
-careful pass):** `element_name` added to BOTH stream SELECTs at a FIXED row index 12 (right after
-`ifc_class`); the only 3 bbox reads shifted 12/13/14→13/14/15. `matVariant` computed once at bucket
-time and folded into the batch bucket key as a 4th `|` field — inert for the positional
-`key.split('|')` consumers (they read parts[0..2]) but enough to split real entourage into its own
-BatchedMesh + own material instead of merging into a shared cream batch. All 6 `_getMaterial` call
-sites updated to pass `matVariant`. `mergeBuckets` confirmed dead code (declared, never populated).
-
-**Verified headless (SwiftShader puppeteer, this project's whitebox-first discipline):**
-- Ifc4_Revit (real entourage, waited for the full 11,339-element stream): `§ENTOURAGE_INIT` fires
-  for tree+person+logo (one material each — all 16 trees share one, correct); `uEntActive`=`[1,1,1]`
-  mid-Alt+S, `[0,0,0]` in nav (direct uniform inspection); **0 pageerrors**.
-- **Isolated pixel proof** (held triplanar OFF, toggled only the entourage uniform, aimed at a real
-  16-tree cluster queried from `element_transforms`): cream→foliage green — over changed pixels G
-  drops only 46 vs R 64 / B 69 (net green-dominant shift), building geometry untouched. Screenshots
-  `entourage_tree_{nav,altS}.png` show grey ghosts → green trees, building unchanged.
-- Duplex (no entourage): 0 `§ENTOURAGE_INIT`, 0 entourage materials, 1,119 elements, 0 pageerrors —
-  **non-regression on the streaming/batching core confirmed** (the whole reason this was flagged as a
-  careful pass).
-
-**Deferred within this item (not blockers, deliberately scoped out):**
-- **Exit signs** — real `Exit Sign` fixtures already carry proper classes + real rgba (Hospital
-  `IfcLightFixture` red `0.529,0,0`; Clinic `IfcFlowTerminal` black) — they are NOT ghost-cream, so
-  the "make it read right" motivation doesn't apply the way it does to the cream RPC proxies. Left
-  as-is; revisit only if a specific complaint appears.
-- **Material VALUES** (the green/clothing/sign tints) are tasteful presentation constants, tunable —
-  the mechanism is proven; a value-tuning pass on a real GPU is the natural next refinement if the
-  user wants a different look.
-- Aerial-angle pitch gate (people foreshorten from above) still open, unchanged — applies to these
-  real RPC proxies too once placement/visibility is tackled; this session only gave them a material,
-  not a placement gate. **(Now DONE for the sourced-sprite path — see next record.)**
-
-## SESSION RECORD (2026-07-17, continued — Part A sourced-sprite staffage BUILT; + BimWhale ground fix)
-User flagged (correctly) that the entourage material pass only helps the 2 census buildings with
-real RPC data — the sourced sprites were meant "for others." Built the sprite half (spec Part A).
-Both local commits only (`feat/photoreal-staffage-sprites`, `/tmp/wt-photoreal-staffage`, bim-ootb),
-NOT pushed, per the standing push-pause.
-
-**Sourced-sprite staffage (`viewer/effects.js`, commit `b0c8162`).** The 6 Skalgubbar people + 6
-freecutout tree cutouts (vendored earlier) now populate any building WITHOUT real entourage — the 9
-census buildings + every user-uploaded IFC. Camera-facing `THREE.Sprite` billboards, added on Alt+S
-in the existing `_buildPhotoProps`/`_showPhotoProps`/`_disposePhotoProps` lifecycle, auto-revert on
-teardown. **Real-data-first (the two-path design):** a building that already has real RPC people /
-any tree geometry gets ZERO sprites for that category — the streaming.js material pass owns them, no
-double-up. Detected per-building at runtime via `A.dbQuery`, not a hardcoded table. Placement from
-this building's own bbox + real `IfcDoor` rows: people stepped out of real doorways (≤6, lowest
-storeys), trees on a ring outside the footprint (8); bottom-anchored, sized from each cutout's real
-image aspect. **Aerial-angle pitch gate DONE** (the long-open spec item): people (spherical
-billboards) are hidden when the camera looks steeper than ~37° down (they float/foreshorten wrong);
-trees exempt. Verified headless: Duplex → `§PHOTO_STAFFAGE people=6 trees=8`, all 12 textures load,
-0 errors, framed screenshot shows real tree cutouts ringing the building in the dusk scene
-(`~/Pictures/Screenshots/Duplex_staffage_sprites_2026-07-17.png`); Ifc4_Revit → `people=0 trees=0`
-(suppressed, realPeople=4/realTrees=16 detected); pitch gate: side-on (down=0.19) people visible,
-straight-down (down=1.00) hidden.
-
-**Alt+P separate-step toggle + furniture-anchored placement (`viewer/effects.js` + `viewer/scene.js`,
-commit `e5edc7b`; floor-level fix `5b7c1b8`).** Per live user direction across the session:
-- **Separate step (Alt+P):** staffage decoupled from Alt+S into its own persistent toggle
-  `A.togglePopulate` (out of the `_buildPhotoProps`/`_showPhotoProps`/`_disposePhotoProps` bundle).
-  Alt+S stays a clean extract-only still; Alt+P adds/removes the fabricated people+trees layer,
-  stacking or standalone. Alt+P key + Help-palette row wired in scene.js (same pattern as Alt+C).
-  User rationale: "more silent ops, user remembers it once" — fits the Alt+S/G/J/C key family.
-- **Furniture-anchored (the confident, extract-based placement):** the door-centroid heuristic can't
-  reliably tell interior from exterior doors, and breaks on concave/L-shaped footprints (proven live
-  — a Duplex's 14 doors are mostly interior). So INSIDE figures (walking+sitting) now anchor to real
-  `IfcFurniture` positions (a chair IS a guaranteed indoor on-floor spot, extracted not guessed),
-  spread via `_spreadPick`; OUTSIDE figures (2 standing) only at PERIMETER doors (footprint-edge →
-  likely real entrances), else skipped rather than misplaced. Buildings with no furniture
-  (HHS/Esplanades) fall back to interior doors. Feet at furniture/door bottom z (floor). User bugs
-  fixed en route: figures were "hanging in the air" (anchored at door center_z ~1m up → now floor
-  level) and all outside (→ only the 2 standing go outside; walking+sitting inside). Live pitch gate
-  now recomputes on controls 'change' (Populate persists, isn't frozen to one Alt+S camera).
-  Verified: Duplex Alt+P-alone → `§PHOTO_STAFFAGE people=6 trees=8 pSrc=furniture`, 4/6 people within
-  3.5m of real furniture, feet 0.13-0.24m off ground, toggle-off clears, 0 errors, screenshot
-  `~/Pictures/Screenshots/Duplex_populate_altP_furniture_2026-07-17.png`; HHS (0 furniture) →
-  `pSrc=interior-door` fallback, 0 errors.
-
-**BimWhale ground-plane half-buried bug (`viewer/tools.js`, commit `3baafae`) — separate, user-
-reported mid-session.** `_calcGroundY` Step 1 picked the LARGEST-AREA ground-floor-named slab.
-BimWhale_Advanced is a federated/mixed-datum model whose "Level 1" storey (matched as ground-floor)
-has slabs at multiple elevations — its biggest at z=27.85, two-thirds up a building spanning z=-8..46
-— so the ground plane landed mid-building (`§GROUND_Y z=27.85`), rendering it half-buried. Fix: among
-the largest few GF-named slabs take the LOWEST (ground = lowest floor plate bearing a ground-floor
-name), mirroring Step 2's existing lowest-of-top5 selection. Identical for normal buildings (GF plate
-is both largest AND lowest), only differs — correctly — in the mixed-datum case. Witnessed: BimWhale
-z=27.85→-0.30 (sits on ground, screenshot `~/Pictures/Screenshots/BimWhale_ground_fixed_2026-07-17.png`);
-non-regression Duplex z=-0.13, Ifc4_Revit z=-1.80, 0 errors.
-
-## SESSION RECORD (2026-07-17) — Alt+G N8AO ambient-occlusion DURING Time Machine playback
-**Shipped: PR #836 (merged to main, live on GH Pages `cd93e4b2`).** User's find: pressing Alt+G then
-playing Time Machine already showed AO "for free" while the camera orbited (main.js's loop honors the
-GI composer). Two gaps surfaced on live test and got fixed:
-- **Static-camera scrub ghosted, intermittently.** Root cause (confirmed via `§IDLE_GATE` logs): the
-  desktop render gate (`main.js §S286`) wakes → draws ONE frame → self-parks the rAF chain. N8AO's
-  temporal accumulation (`accumulate:true`) needs a continuous multi-frame loop to converge; with
-  one-frame-then-park it never does, and `firstFrame()`'s clear racing the main-loop composer render
-  decided clean-vs-ghost per scrub. **Durable constraint: N8AO accumulate ⊥ the on-demand one-frame
-  render gate — any batch/offline/on-demand render path (incl. the movie-export spec above) must use
-  single-pass, not fight accumulate.**
-- **`renderAtTime` self-rendered raw** (`renderer.render`), bypassing the composer entirely.
-
-Fix (`viewer/time_machine.js`): `renderAtTime` renders through the GI composer in SINGLE-PASS
-(`accumulate=false`) — a complete AO frame in the one render the gate allows, deterministic, no ghost.
-Restored `accumulate=true` on `deactivate()`. **Auto-engage** Alt+G on TM activate / auto-off on
-deactivate — but only the instances TM itself turned on (manual Alt+G stays on). No-op when GI off /
-on mobile; byte-identical default. No Alt-S impact (separate composer `_giN8aoPass` vs `A._composer`).
-Witness `§TM_GI_RENDER`, `§TM_GI_AUTO`. Verified live both paths, HHS_Office_Federated, 0 errors.
-
-**Follow-up IN FLIGHT (branch `fix/tm-gi-hold-converge`, off updated main — PUSHING this session):**
-"re-accumulate after ~300ms hold" polish. While moving (scrub/playback tick) = single-pass (clean, no
-ghost); when motion STOPS for 300ms AND not `_playing` → switch N8AO to accumulate + drive a short 24-
-frame RAF loop so the held frame sharpens to full Alt+G quality; any new render/tick or playback-start
-cancels it → back to single-pass. Never fires mid-playback (ticks <300ms apart + `!_playing` gate).
-Witness `§TM_GI_HOLD converge start` / `converged frames=24`. Dials: `MAX`(24 frames), 300ms delay.
-Built + syntax-clean + served on localhost; live-eyeball of the sharpen pending. See also memory
-`project_time_machine.md`.
-
-## IMPLEMENTATION SPEC (2026-07-17, continued) — Time Machine Movie Export
-
-Grounds the §NEXT SESSION SPEC above (2026-07-17, "hold each frame, apply the Alt-S effects, snap")
-in the actual current code, re-read this session function-by-function rather than re-guessing. User
-confirmed the two open decisions from that spec: **encoding = proxy-canvas + `MediaRecorder`, reusing
-Cinema Orbit's exact capture pattern** (not a new WebCodecs muxer, not a frame-zip); **UI slot =
-replace `#tm-share`** with "Export Movie" now, not deferred.
-
-### Correction to the earlier framing (found by reading the code, not assumed)
-The previous session record above states "any batch/offline/on-demand render path (incl. the
-movie-export spec) must use single-pass, not fight accumulate" — that constraint is about
-`renderAtTime`'s own lightweight `_giN8aoPass` (PR #836/#837), which rides the desktop render gate's
-wake-one-frame-then-park loop (`main.js §S286`) and genuinely cannot accumulate there. **It does NOT
-apply to this feature**, because the plan below reuses `A.startStillRefine()` — Alt+S's own AO fold
-(`effects.js` `_startStillAOPhase`, `STILL_AO_FRAMES=24`, `accumulate:true`) drives its **own
-self-contained `requestAnimationFrame` loop** (`stepAO()`, `effects.js:1422-1438`), independent of the
-main render-gate's park behavior — it already accumulates correctly today for a single manual Alt+S
-press, with no ghosting bug to inherit. Movie export gets the FULL 24-frame converged AO per frame,
-not the lighter single-pass playback AO. `A.startStillRefine()` itself also already disables TM's
-`_giN8aoPass` composer on entry (`§GI_EXCLUSION`, "one at a time") — no conflict to resolve, existing
-mutual-exclusion code handles the handoff.
-
-### Pipeline (one capture per `_cineStoryboard` beat — confirmed decision, not re-litigated)
-For each `scene` in `_cineStoryboard` (`time_machine.js:123`, populated by `computeStoryboard()`
-`time_machine.js:308`, shape `{center, guids, startIdx, endIdx, angle, count, type, firstTs, chain}`):
-1. **Position the camera directly at the scene's steady-state pose** — reuse the EXACT distance
-   formula the live Director's scene-transition code already computes (`time_machine.js:969-974`:
-   `nDist = type==='panoramic' ? _PANORAMIC_DIST : type==='hero' ? _HERO_DIST : _FLYTHROUGH_DIST`,
-   position `= center + cos(angle)*nDist` horizontally, `center.y + nDist*0.5` vertically, look-at
-   `= center`). **Do NOT drive the full tick-based Director state machine** (`_cineBeat`
-   opening/transit/closeup, easing, `performance.now()`-timed arcs) for export — that machinery
-   exists to make CONTINUOUS real-time camera motion look smooth; a discrete per-beat still has no
-   motion to smooth, so a direct jump-cut placement is correct here, not a shortcut. Optionally reuse
-   `peelObstructions(camPos, tgtPos)` (`time_machine.js:904-928`, desktop-only) per beat for a
-   cleaner shot — same proven line-of-sight declutter Director playback already relies on.
-2. Set construction-reveal state: `renderAtTime(scene.endTs || scene.firstTs)` (existing, reuse as-is
-   — `time_machine.js:615`).
-3. `A.controls.update()`, then `A.startStillRefine()` and **await genuine completion**, not a fixed
-   delay. This requires one small additive change (see §Completion callback below) — do not poll
-   `console.log` output programmatically to detect "done."
-4. Capture the frame: `A.renderer.domElement.toBlob(cb, 'image/png')` (canvas element, not
-   `toDataURL` — avoids the ~33% base64 bloat before it ever reaches storage). Store the `Blob`
-   directly in IndexedDB (IDB supports Blob values natively — no serialization needed).
-5. `A.stopStillRefine()` (full teardown, not soft) before moving to the next beat — each capture must
-   start from a clean, un-staged state so `_applyPhotoStaging()`/triplanar/staging re-apply
-   consistently; not sharing state across beats avoids a whole class of stale-flag bugs this file has
-   already hit repeatedly (`§STAGE1_ORBIT_PERSIST`, `§GI_HANDOFF_GHOST_FIX` above).
-6. Advance to the next beat, repeat. Progress = `(beatIndex+1)/_cineStoryboard.length`.
-7. After all beats: draw each captured Blob onto a proxy `<canvas>` (offscreen, same dimensions as
-   `A.renderer.domElement`), reusing Cinema Orbit's exact `captureStream(fps)` + `MediaRecorder`
-   pattern (`effects.js:1829-1849`) pointed at the PROXY instead of the live canvas. `captureStream(
-   fps)` with an explicit fps argument emits frames on that timer regardless of redraws (the same
-   mechanism that makes Cinema Orbit's own recording smooth), so "holding" a still for its beat's
-   duration is just leaving the proxy canvas undrawn between beats — no new muxer/encoder code, no
-   new dependency.
-
-### Completion callback (new, small, additive — the one real code change to existing files)
-`_finishStillRefine(idx)` (`effects.js:1264`) currently fires-and-forgets into
-`A.startStillSSGIPhase().then(...)` / `_startStillAOPhase()` with no way for a caller to know when
-the WHOLE fold (TAA + AO or SSGI) is actually done — only console logs (`§PHOTO_AO done`, `§PHOTO_SSGI
-done`) mark it today, fine for a human watching Alt+S, not fine for a programmatic batch loop. Add an
-optional `onComplete` callback threaded through:
-- `A.startStillRefine(onComplete)` → stash it, pass to `_finishStillRefine(idx, onComplete)` when the
-  16-sample TAA accumulation finishes.
-- `_startStillAOPhase(onComplete)`: call `onComplete()` at the existing `f >= STILL_AO_FRAMES` done
-  branch (`effects.js:1432-1436`), after the existing log line.
-- The SSGI branch mirrors `effects_gi_poc.js`'s own existing latch pattern (`_ssgiKickConverge(frames,
-  onDone)`, `effects_gi_poc.js:201-214`) — `A.startStillSSGIPhase` already resolves a promise; chain
-  `onComplete` off that same `.then()` in `_finishStillRefine`. `A._stillSSGIEnabled` defaults `false`
-  today (user's own opt-out, "not accurate or crisp") — so in practice this always resolves through
-  the AO branch unless a later session re-enables SSGI; the wiring stays correct either way.
-- No `onComplete` passed (existing Alt+S keypress call site) = `undefined`, called nowhere = zero
-  behavior change for the existing manual path.
-
-### Export must not be cancellable by incidental UI touch (found by reading the code, not assumed)
-`main.js:731-737` (`_photoCycleEngaged`/`_cancelStillRefine`/`_cancelStillRefineSoft`) wires
-`stopStillRefine()`/`softStopStillRefine()` to real pointerdown/wheel/controls-start signals — correct
-for a human manually toggling Alt+S, but this export loop calls `startStillRefine()` programmatically,
-unattended, for up to an hour; a stray mouse touch on the canvas or TM panel while checking progress
-must NOT tear down the frame mid-capture. Gate both cancel functions behind a new
-`!APP._tmExportActive` check. Export gets its OWN explicit stop control (a "Cancel Export" button in
-the TM panel), not the ambient touch-to-cancel behavior Alt+S relies on interactively.
-
-### Frame storage — new dedicated IndexedDB database, not the existing JSON cache
-`time_machine.js`'s `cachePut`/`cacheGet` (`time_machine.js:3571-3604`) is JSON-only, sized for
-100-500KB payloads (`§CACHE_PUT` comment says so explicitly) — wrong tool for potentially hundreds of
-PNG stills. Follow this codebase's own established pattern for purpose-specific IDB stores instead
-(`bom_extract.js` `BOM_IDB_STORE`, `import.js` `IMPORT_DB_NAME`, `doc_canvas.js` `DESIGN_IDB_NAME`,
-`issues.js` `bim_ootb_issues` — each feature owns its own small database, not a shared blob bucket):
-a new `bim_ootb_tm_export` database, one object store keyed by `beatIndex`, values = raw `Blob`.
-Clear it (or drop the whole DB) once the video is stitched and downloaded — frames are a transient
-intermediate, not something to keep around across sessions the way `cachePut('movie', ...)` is.
-
-### UI slot
-Replace `#tm-share` (`time_machine.js:1900` button markup, `time_machine.js:2048-2059` listener) with
-"Export Movie" — confirmed, nothing else in the codebase keys off the `tm-share` id (grepped this
-session, zero other references). Progress readout reuses the existing `#tm-status` text element
-(`time_machine.js:1912`, already the general-purpose status line) — `frame N/M`, no new panel chrome
-needed for v1.
-
-### Witness / log tags to add
-`§TM_EXPORT start beats=<n>`, `§TM_EXPORT frame idx=<i>/<n> elapsedMs=<ms>` per beat,
-`§TM_EXPORT_CANCEL idx=<i>` if stopped early, `§TM_EXPORT done frames=<n> totalMs=<ms>
-videoBytes=<n>` on final stitch — matching this file's existing `§`-tag convention so a real run is
-checkable from console output, not eyeballed.
-
-### Explicitly deferred, not forgotten (unchanged from the original spec's scope discipline)
-- Per-output-frame-gets-its-own-render vs one-capture-held-across-many-output-frames: RESOLVED above
-  (one capture per storyboard beat, discrete/stop-motion, matches construction-4D-timelapse industry
-  convention) — not re-open.
-- A dedicated "Cancel Export" UI control is IN SCOPE for v1 (required by the no-incidental-cancel
-  fix above); a resumable/paused export, or exporting a sub-range of the timeline instead of the
-  whole storyboard, is NOT — first version exports start-to-end, run-to-completion or cancel-and-
-  discard.
-
-## SESSION RECORD (2026-07-17, continued) — implemented + verified, not pushed
-All 7 pieces above built as spec'd, in a fresh worktree (`/tmp/wt-tm-movie-export`, branch
-`feat/tm-movie-export`, off freshly-synced `origin/main` including #836/#837). `sw.js`
-`CACHE_VERSION` bumped v778→v779 (all four touched files are cache-first precached assets — this
-file's own repeated landmine, checked proactively this time instead of after a "still not there"
-report).
-
-**Two real bugs found and fixed via headless end-to-end testing, not assumed:**
-1. `A.stopStillRefine()`'s 500ms interaction-nudge grace window (`§STILL_REFINE_GRACE`, meant to
-   absorb an accidental mouse-jog on a human Alt+S keypress) silently no-op'd the teardown between
-   beats whenever a fold finished in under 500ms — confirmed live in the headless run, where AO
-   folds routinely completed in ~1.3ms/frame under SwiftShader's caching. Left `_stillRefineActive`
-   stuck `true`, freezing every subsequent beat's capture (the "instant done, no fresh render"
-   symptom). Fixed by calling `stopStillRefine(true)` — the `force` parameter is the exact,
-   already-existing escape hatch for a deliberate non-accidental stop; export's own programmatic
-   call has no mouse-jog to absorb in the first place.
-2. Cancelling mid-fold resolved `_tmExportCaptureBeat`'s promise without ever calling
-   `stopStillRefine()`, leaving `_stillRefineActive`/staging stuck applied until some unrelated
-   later interaction happened to touch the canvas — caught by a dedicated cancel-path test
-   (`stillRefineActive: true` after a clean-looking cancel). Fixed by tearing down on that path too.
-
-**Verified headless** (puppeteer, `--use-gl=angle --use-angle=swiftshader`, `warehouse_gardenworld`,
-3-beat storyboard, via the REAL `#tm-export` button click — not a direct function call):
-- Full export: `§TM_EXPORT start beats=3` → 3× `§TM_EXPORT frame idx=.../3` → `§TM_EXPORT done
-  frames=3 videoBytes=11939 type=video/webm;codecs=vp9`, a real `BIM_TimeMachine_GardenWorld_*.webm`
-  download fired, zero `pageerror` events, IDB frame store cleared after.
-- Cancel mid-run: button flips to "⏹ Cancel Export" while active, cancelling mid-beat produces
-  `§TM_EXPORT_CANCEL requested` → `§TM_EXPORT_CANCEL idx=0` → store cleared, button reverts to
-  "🎬 Export Movie", `_stillRefineActive` confirmed `false` (not stuck), a post-cancel canvas click
-  doesn't crash.
-- One test-harness-only false alarm, not a source bug: intercepting `document.body.appendChild` to
-  avoid a real file download in headless mode caused the source's own `removeChild(a)` (same pattern
-  Cinema Orbit already uses) to throw, since the node was never actually attached — fixed the test
-  (let the real `appendChild` run, just observe it) rather than the source, confirmed clean after.
-
-**Not verified this session:** real-GPU visual quality (headless SwiftShader proves the mechanism
-end-to-end, not photoreal fidelity — the per-frame timings above, ~12-19s/beat under SwiftShader,
-are not representative of real-GPU cost either); a large/heavy building (only tested on the small
-3-beat `warehouse_gardenworld` storyboard); the `TM_EXPORT_HOLD_SEC=2`/`TM_EXPORT_FPS=2` pacing
-constants are a reasonable starting default, not tuned against a real viewed video yet.
-
-Committed locally only (`1e9b313`, `feat/tm-movie-export`, `/tmp/wt-tm-movie-export`) — **not
-pushed**, per the standing localhost-only push-pause. Next session: real-GPU non-headless
-verification on Hospital or HHS_Office_Federated (the two buildings this file's earlier photoshoot
-work already established as stress-tests), then push/PR once the user lifts the pause or names the
-breakthrough.
-
-## REMARK (2026-07-17) — §TM_GI_HOLD_CAMGUARD, a THIRD instance of this file's own ghost family
-User-reported live-production ghosting ("the usual ghosting from Alt-S/G", repro: TM on/off then
-orbit; also seen after Clash panel use) traced to the N8AO 300ms hold-converge loop (PR #837,
-shipped hours earlier, its own commit noting "live-eyeball of the sharpen pending" — never actually
-human-verified before this report landed). Root cause: identical to the two ghost fixes already on
-record in this file — TAA still-refine's `§STILL_REFINE_RESTART` and SSGI's
-`§SSGI_CONVERGE_CAMGUARD` (PR #816, "ghosted/doubled geometry and see-through floors") — a
-multi-frame accumulation loop with no camera-pose check, blending frames across a moving view. The
-hold-converge loop inherited neither guard. Fixed by porting the same pose-signature-restart
-pattern (`effects_gi_poc.js`'s `_ssgiCamSig()` shape) into `_giScheduleHoldConverge`'s step loop —
-see `time_machine.js` `§TM_GI_HOLD_CAMGUARD`. Shipped: PR #848, `fix/tm-gi-hold-camguard`, squash
-auto-merge armed pending CI. The Clash-panel correlation is very likely the SAME latent ghost
-persisting on screen from an earlier TM/Alt-S/Alt-G interaction, not a second bug in Clash itself —
-Clash's own code has zero references to the composer/GI pipeline (checked against the deployed
-file directly). **Pattern worth remembering for any FUTURE accumulation loop added to this
-composer stack: it needs the pose guard from day one, not after a live report** — this is the third
-time the same fix has had to be ported in after the fact.
-
-## SESSION 2026-07-18 — Cinema Orbit quality/fps discussion (user ask, not implemented — analysis only)
-**User ask:** make Cinema Orbit "full Alt-S quality," higher fps, "dispense more effort and code
-harness to ensure very good movie quality (discuss if not feasible)." Read the actual
-`A.startCinemaOrbit` code (`effects.js:2412-2599`) and this file's own `§TM_MOVIE_EXPORT_RETIRED`
-archive (`prompts/archive/TM_MOVIE_EXPORT_RETIRED_2026-07-18.md`, reverted a25418e→a3fc220 **hours
-before this ask, same session**) before answering — do not re-derive either from scratch next time.
-
-**"Full Alt+S quality" is not feasible AND not desirable — wrong algorithm, not an effort gap.**
-Alt+S's 16-sample TAA is *temporal* accumulation across a STATIC camera (same frame, subpixel-
-jittered, blended). Cinema Orbit's camera moves continuously the entire 24s. Accumulating samples
-across camera motion blurs/ghosts, doesn't sharpen — the existing code's own comment
-(`effects.js:2470-2472`) already states this: "accumulating supersamples across motion would just
-blur/ghost, not help." Turning on real Alt+S accumulation for the orbit would make it look WORSE.
-
-**The correct quality lever for a moving shot is SPATIAL supersampling (SSAA), not temporal.**
-`viewer/lib/SSAARenderPass.js` already exists in the repo — ported from three.js r185 alongside
-TAARenderPass (see this file's earlier LAYER 1 section), but has ZERO references anywhere (grepped
-this session) — a real, half-built, bounded next step if this is wanted. NOT implemented this
-session — needs real-hardware perf verification first (see below).
-
-**Could not get a representative FPS/perf number from this sandbox.** Tried: ran
-`A.startCinemaOrbit()` headless via Playwright and watched `§CINEMA_PERF` (already-existing
-telemetry, logs every 75 real `composer.render()` calls). Result: fewer than 75 real frames in 20+
-seconds — under ~3.75fps. This is NOT a real finding about the app; this sandbox's Chromium only has
-SwiftShader SOFTWARE rendering available (`gpu=ANGLE (..., SwiftShader Device...)`), 10-50x slower
-than any real GPU. Any FPS/quality recommendation quoting a specific number from this environment
-would be fiction — needs verifying on the user's own hardware, not guessed or sandbox-measured.
-
-**FPS bump (`CINEMA_FPS=15` today, `effects.js:2395`) is very likely safe but unverified.** The SAME
-`A._composer.render()` call Cinema Orbit uses (SSAO+Outline, no GI) already runs during ordinary
-interactive navigation at full display refresh rate — real headroom almost certainly exists for
-15→24fps. Scale `CINEMA_N_FRAMES` proportionally to hold the ~24s duration. One-line change, but
-should be spot-checked on real hardware before shipping, not assumed from this sandbox.
-
-**Recommended AGAINST: an offline/batch "render each frame at max quality, stitch after" harness.**
-This is architecturally the SAME SHAPE as the just-reverted TM Movie Export — proxy-canvas capture,
-per-frame accumulation, `MediaRecorder` stitch. That feature's own retrospective (`§TM_MOVIE_EXPORT
-_RETIRED` archive) hit real compounding bugs (SSAO composer-resize bug producing a white band,
-grainy fallback when full quality was too slow, sun-formula zenith wash-out) and its own verdict was
-"more pragmatic to screen-record the live experience than to keep building/fixing a scripted batch
-exporter." Rebuilding that same risk shape for Cinema Orbit, hours after retiring it for Time
-Machine, is not recommended without an explicit decision to accept that risk again.
-
-**Verdict / next step if wanted:** skip the batch-harness idea. If a real step up is wanted: (1) SSAA
-via the existing unused `SSAARenderPass.js`, (2) a measured (not guessed) FPS bump — both bounded,
-well-scoped follow-ups, NOT built this session (analysis/discussion only, per the user's own "discuss
-if not feasible" framing). Suitable for a fresh session once the user decides whether to proceed —
-either continued here or handed to Fable 5 for execution once scoped; the design call above (skip
-temporal-on-motion, skip the batch harness) should not be re-litigated, just executed if approved.
-
-## ⚠ DUPLICATE-WORK COLLISION 2026-07-19 — read before touching Cinema Orbit again
-A SEPARATE Fable 5 session was already assigned this exact file/topic by the user ("shall assign
-PhotoReal_Still_Render.md to Fable 5"). A different (bim-compiler-side) session misread that as an
-instruction to dispatch its OWN Fable 5 agent and did so — a duplicate, colliding dispatch (the
-mistake `feedback_dont_assign_agents_user_wants_to.md` exists to prevent: "shall we assign X" can
-mean the user is doing it themselves, not asking to be dispatched). Caught mid-flight and the
-duplicate agent was told to stop. **Real, usable work already landed before the stop order arrived**
-— summarized below so the OTHER (still-running) session can review/adopt/discard it instead of
-redoing the investigation from scratch.
-
-**PR #880** (`bim-ootb`, branch `feat/cinema-orbit-ssaa`, commit `6fcace5`, cut from `origin/main`
-@ `cdcfdcd`) — **NOT MERGED, auto-merge disarmed, main untouched.** Worktree `/tmp/wt-cinema-ssaa`
-left in place, not cleaned up, for review. Two files touched:
-- `viewer/effects.js` (+63/-6): wires `lib/SSAARenderPass.js` in as the composer head DURING
-  Cinema Orbit recording only (lazy-imported, attached/detached around the recording loop,
-  `sampleLevel=2`, excluded whenever the GI preview path is active) — matches this file's own
-  design call above (spatial SSAA, not temporal TAA-on-motion). `CINEMA_FPS` 15→24,
-  `CINEMA_N_FRAMES` 360→576 (holds ~24s duration). Camera-path math (push-in/swoop/pullback/
-  ellipticity) untouched, TAA-accumulate/Alt+S path untouched — both explicitly out of scope,
-  neither was touched.
-- `viewer/sw.js` (+14/-1): added the 8 composer-module transitive imports (including
-  `SSAARenderPass.js`, now load-bearing) to `SHELL_LIBS`, `CACHE_VERSION` v800→v801 — the exact
-  precache-completeness check this file's earlier session (offline mode / staffage textures) had
-  to fix twice already; done correctly this time, first pass.
-
-**Real GPU numbers, not sandbox-guessed:** this agent's dev environment reported an actual GPU
-(RTX 4060), not the SwiftShader-software-only sandbox the duplicate/stopped session was stuck with
-— `§CINEMA_PERF ssaa=2` converged to **avgFrameMs=18.0** across 15 real recorded samples. That's a
-real number worth trusting for the FPS decision, unlike anything guessed from a software-rendered
-sandbox. Verification artifacts (§-log witness + before/after edge-sharpness screenshots proving
-SSAA actually reduces jaggies, not just "should work") are sitting in that agent's own scratchpad —
-ask the still-running session to re-derive or request the specific files if needed, they were not
-committed anywhere durable.
-
-**What's NOT done:** this session-record itself (was mid-task when stopped, per its own report).
-No PROGRESS.md/witness-count update either.
-
-**Action for the other (still-running) session:** decide whether to adopt PR #880 as-is, cherry-pick
-pieces of it, or discard and redo — the numbers/approach look sound (matches this file's own design
-call precisely) but were not independently re-verified by a THIRD party before this note was written.
-Once a decision is made, close or merge #880 accordingly; don't leave it open indefinitely as a
-stray unreviewed PR.
-
-## SESSION 2026-07-19 — #880 independently verified on HHS + 5s user-judgeable sample produced
-User asked for a 5s Cinema Orbit sample "to confirm its quality is real." Done — this session (the
-one the collision note above calls "the still-running session") reviewed #880's diff (clean:
-attach/detach on all 3 exit paths, TAA head disabled not removed, GI path excluded) and re-verified
-it on real hardware. #880 was merged to main (`0acfcf8`) mid-session; #881 landed after.
-**Deliverables (all in `~/Pictures/Screenshots/`):** `cinema_5s_sample_HHS_ssaa24fps_2026-07-19.webm`
-(the requested 5s cut — push-in close pass), `cinema_full_HHS_ssaa24fps_2026-07-19.webm` (~20s full
-orbit), `cinema_still_HHS_ssaa_{closepass,wide}_2026-07-19.png`. Recorded on this machine's RTX 4060
-(headless Chromium, ANGLE-over-GL — real NVIDIA GL, verified via UNMASKED_RENDERER probe, not
-SwiftShader), HHS_Office_Federated, 1600×1000, full photoshoot staging + SSAA level 2.
-- **The real perf number the Duplex measurement didn't show: HHS + SSAA = 51-66ms/frame**
-  (§CINEMA_PERF ssaa=2, converging ~51ms warm) — BELOW the 41.7ms/24fps budget → effective ~17-19fps,
-  captureStream(24) duplicates frames to fill. Watchable, not slideshow, but the "2.3x headroom"
-  in #880's commit message is Duplex-only; heavier buildings eat it. Small buildings hold 24fps
-  (~17-18ms measured). If real-session HHS confirms the shortfall, options: accept (duplicated
-  frames ≈ 15fps look, same as pre-#880), drop SSAA to level 1 (2 samples), or scale fps by measured
-  §CINEMA_PERF at record time. NOT decided — needs the user's own live read first.
-- **Reasserts exonerated:** per-step instrumentation showed all five per-frame `_reassert*` calls
-  ≈0.1ms each on HHS; the cost is `composer.render()` itself. (An earlier "HHS starves the loop"
-  theory died against this measurement.)
-- **Sample-harness landmines, for any future scripted orbit capture** (cost 3 wasted recordings
-  tonight): (1) headed Chrome on :0 with the window occluded throttles rAF to near-zero even with
-  the anti-backgrounding flags — 0.6-0.9s videos; use headless-new + `--use-gl=angle --use-angle=gl
-  --enable-gpu` (still real NVIDIA on this machine). (2) a fresh headless load does NOT frame the
-  building — controls.target sits at origin and the whole orbit records empty ground; frame first
-  from `element_transforms` bbox via `A.ifc2three` (driver script:
-  `scratchpad/drive_cinema_sample.js`, session-local). (3) `warehouse_gardenworld.db` 404'd from
-  BOTH serve trees (LFS blob not checked out) and the viewer records the empty scene without
-  erroring — check §DB_SIZE_CHECK in the console log before trusting any recording.
-- Known cosmetic item visible in the sample, pre-existing: rooftop no-IFC-color elements render
-  teal (`IfcBuildingElementProxy` fallback) — that's the deferred ~20-material reference-library
-  item above, not a regression.
-
-### Same session, continued — user overrode the batch-harness caution: max-quality PoC BUILT, works
-User reviewed the SSAA sample and said it lacked "the Alt-G version in the Alt-S" (the §PHOTO_AO
-noise-shadow corners — correct: live-capture cinema only carries AO if Alt+G is pre-engaged, and
-then SSAA steps aside). Then explicitly authorized the offline batch path this file recommended
-against on 2026-07-18: "i know it will take about 3 secs for each frame but i can wait... we want
-to poc true breakthru." That decision gate is now CLOSED — the risk was accepted, the PoC built.
-**Result: `~/Pictures/Screenshots/cinema_POC_maxquality_HHS_5s_2026-07-19.webm`** — 120 frames,
-each one a COMPLETE Alt+S fold (staging + 16-sample TAA + full 24-frame §PHOTO_AO converge,
-witness: `§PHOTO_AO done` fired 120/120), Alt+P staffage placed, 75° sweep, stitched at 24fps.
-**~1s/frame on the RTX 4060 (118s total)** — far under the user's 3s/frame budget; a full 360°
-Cinema-pill clip at this quality ≈ 6 min production time.
-- **Harness is driver-only** (`scratchpad/export_orbit_stills.js`, session-local — promote to a
-  repo `tools/` script if this becomes a feature): no production code touched, no MediaRecorder —
-  per-frame element-screenshots of the canvas + ffmpeg stitch, which sidesteps the retired TM
-  exporter's captureStream/composer-resize failure modes entirely.
-- **Two techniques worth keeping**: (1) per-frame fold completion = poll `A._stillRefineBusy ===
-  false` (the §CINEMA_ROW_BUSY flag — cleared only after the AO phase's real completion, every
-  exit path covered); (2) staging flicker (per-trigger §PHOTO_PAINT_SEED re-roll + skyline/sparkle
-  randomness) frozen by seeding a deterministic PRNG over `Math.random` for the duration of each
-  trigger, restored after — identical staging all 120 frames, zero flicker, no code change needed.
-- **Also produced, live-capture comparison:** `cinema_live_HHS_gi24fps_2026-07-19.webm` — Alt+G
-  pre-engaged before the orbit (driver toggles `A.toggleGIPreview(true)`); §GI_CINEMA_PRESET path
-  measured 23-31ms/frame on HHS (true ~24fps, FASTER than the SSAA path's 51-66ms since SSAA is
-  skipped when GI records) — but its halfRes/4-sample AO is visibly coarser than the PoC's
-  full-quality per-frame fold. Ladder now: live SSAA (crisp edges, no AO) < live GI (AO, coarser)
-  < offline PoC (everything, ~1s/frame).
-- **Open decision for a next session:** productize the PoC as the Cinema-pill "offline movie"
-  (spec'd long ago above: 360 frames = 24s clip) vs leave as a driver-script tool. Needs: UI slot,
-  progress/cancel, and the frame-storage/stitch story if done in-browser (the retired TM exporter's
-  IDB pattern is the reference; or keep it out-of-browser exactly like this PoC and skip all of
-  that risk).
-
-### v2 — user reported flicker in the PoC movie; root-caused, fixed, parallelized
-- **Flicker root cause (diagnosed by amplified consecutive-frame diffs, not guessed):** frame
-  60→61 diff showed the WHOLE building shifted color uniformly (solid magenta fill) while 10→11
-  showed only normal motion edges — the per-frame `stopStillRefine(true)→startStillRefine` cycle
-  raced: the next staging captured mid-restore values as "original", oscillating the golden-hour
-  sun-tint/exposure between frames. NOT an AO-convergence problem (`§PHOTO_AO done` was 120/120
-  both runs — the user's "captured before full render" theory was reasonable but the witness count
-  ruled it out; a belt-and-braces double-rAF-after-converge guard was added anyway).
-  **Fix: 250ms + double-rAF settle between teardown and re-stage.** Verified by re-diff: the
-  uniform fill is gone, and PSNR across consecutive frames is uniform ~24-25dB everywhere.
-- **Parallel rendering (user ask "few frames at same time to cook"): works.** 3 headless Chrome
-  workers, each rendering a 40-frame slice of the same deterministic orbit into a shared frame
-  dir — 56s/slice → whole 120-frame movie in ~1.6 min wall. Slice-boundary continuity PROVEN:
-  PSNR at both worker boundaries (39→40, 79→80) matches within-slice pairs. The one hazard found
-  and handled: Alt+P staffage placement is randomized (PR #875) — every worker must place it under
-  the SAME frozen deterministic PRNG or the movie jumps at slice boundaries; seeded identically
-  (seed 424242) in all workers, layouts matched.
-- **Deliverable replaced:** `cinema_POC_maxquality_v2_noflicker_5s_2026-07-19.webm` (flickery v1
-  deleted). Harness: `scratchpad/export_orbit_stills.js` now takes `<totalFrames> <sweepDeg>
-  <sliceStart> <sliceCount>` for parallel workers.
-
-## §MAXQ SPEC (2026-07-19) — in-app Max-Quality Orbiter export ("deploy to test", user-approved)
-User confirmed v2 quality ("good enough") and asked to DEPLOY so they can start from any scene and
-have "the Orbiter path roll out nicely." Productization decision is MADE — build the in-app port of
-the proven PoC mechanics. Single-tab = serial: ~1.3s/frame → 360 frames/24s clip ≈ ~8 min cook
-(honest expectation, told to user; the 3-worker 5-min figure is dev-harness-only).
-**Design (all mechanics already proven by the PoC — port, don't reinvent):**
-- NEW FILE `viewer/cinema_maxq.js` (IIFE-wrapped per house rule) — NOT effects.js (another session
-  is active in that file; and everything needed is already on the public `A` surface).
-- Trigger: `Alt+M` (grepped free) + `A.startMaxQualityOrbit(opts)`. Orbit derived like Cinema
-  Orbit: current `controls.target` + current radius/tilt, full 360° from current azimuth,
-  `MAXQ_N_FRAMES=360 @ MAXQ_FPS=15` = 24s (opts-overridable). Alt+M during a run = cancel.
-- Per frame (the PoC loop, in-page): `stopStillRefine(true)` → **250ms + double-rAF settle**
-  (the flicker fix — mandatory) → freeze `Math.random` with the deterministic PRNG (seed reset
-  per trigger; staffage layout untouched — it's placed by the user before starting) → set pose →
-  `startStillRefine()` → poll `A._stillRefineBusy === false` → double-rAF → one explicit
-  `A._composer.render()` then IMMEDIATELY (same task, WebGL buffer validity) `drawImage` the
-  canvas into a 2D canvas (clash_snag.js's proven capture pattern) → `toBlob('image/webp', .92)`
-  → IDB.
-- Storage: own IDB DB `bim_ootb_cinema_maxq`, keyed by frame index, cleared after stitch (the
-  repo's per-feature-IDB convention; ~360 × 150-400KB webp ≈ 50-150MB transient).
-- Stitch: replay-record — draw stored frames onto a proxy 2D canvas at MAXQ_FPS in real time,
-  record via `captureStream(fps)`+MediaRecorder (Cinema Orbit's own proven recorder pattern, used
-  in its real-time happy path — NOT the frame-starved capture that sank the TM exporter), download
-  webm, clear IDB. Stitch adds 24s real-time playback to the cook.
-- Witness tags: `§MAXQ_START frames= fps=`, `§MAXQ_FRAME i=/n elapsedMs=`, `§MAXQ_STITCH`,
-  `§MAXQ_DONE bytes=`, `§MAXQ_CANCEL i=`. Progress → `A.status` text line.
-- sw.js: add `cinema_maxq.js` to precache + CACHE_VERSION bump (the standing landmine — checked
-  at spec time, not after a "still not there" report). viewer.html script tag.
-- Out of scope v1: pause/resume, sub-range export, fps/duration UI, parallelism (impossible
-  in-tab), Alt+G-GI variant.
-
-### §MAXQ BUILT + PR #884 (same session) — witnessed, auto-merge armed
-Implemented exactly per spec (`viewer/cinema_maxq.js` new file only + script tag + sw v802 —
-effects.js untouched, concurrent-session safety). Audits green (sw precache 107/0, script tags
-137/0). **Witness (headless, real GPU via ANGLE, HHS):** 10-frame run → `§MAXQ_START` →
-`§MAXQ_FRAME` → `§MAXQ_STITCH` → `§MAXQ_DONE bytes=50733 vp9` + real webm download, zero
-pageerror; 30-frame run likewise. Two findings recorded during witnessing:
-1. **CDP starvation, headless-only:** synthetic input (Alt+M via CDP) AND `page.evaluate` calls
-   queue ~unboundedly while the cook loop saturates the renderer thread — a queued Alt+M then
-   fires AFTER the run ends and starts a fresh one. Real OS keydown rides the browser's
-   high-priority input pipeline and is expected to work live — **but Alt+M-cancel-during-cook is
-   live-unverified; user should try it on first live test.** `A.cancelMaxQualityOrbit()` exposed
-   as the guaranteed console path either way.
-2. **Warm-up fold added (module + harness):** a slice/session whose first fold runs before the
-   async staging assets (sunset HDRI envMap, AO bundle) are resident bakes a globally different
-   lighting baseline — caught as a 21.6dB boundary vs 24.3dB within-slice PSNR when re-rendering
-   one parallel slice of the 24s movie in a fresh session. One discarded fold before frame 0
-   fixes it; also protects the in-app movie from an early-frames tint pop.
-PR: bim-ootb #884, auto-merge armed on CI. Live verify after merge: sw v802 served + Alt+M on a
-real session (quality + the cancel check above).
-
-### CLOSE-OUT (2026-07-19) — #884 MERGED + LIVE (v802); 24s movie DONE
-- **#884 merged** (`280f066` on main), GH Pages deploy CONFIRMED by direct fetch: live `sw.js` =
-  v802, live `cinema_maxq.js` served, live `viewer.html` references it. Alt+M is in production.
-  Worktree pruned (fully pushed + clean). Remaining user checks: live visual quality of an Alt+M
-  movie, and the Alt+M-cancel-during-cook behaviour (finding 1 above).
-- **24s max-quality movie delivered:** `~/Pictures/Screenshots/cinema_FULL_24s_maxquality_
-  2026-07-19.webm` (576 frames @24fps, full 360°, 62.6MB). The worker-2 slice was re-rendered with
-  the warm-up fix: boundary PSNR recovered 21.6→23.3dB (within-slice ~24.3); re-diff shows the
-  building fully clean at the boundary — residual ~1dB sits in the smooth HDRI sky gradient
-  (session-to-session background), possibly a subtle sky shift at t≈16s, user to judge.
-  Wraparound (frame 575→0) measures 22.9dB — same order as the slice boundary, inherent to
-  multi-session rendering.
-- Parallel-harness hardening from this run, in `scratchpad/export_orbit_stills.js` (promote with
-  the harness if ever moved to `tools/`): wait-for-DB-rows poll before bbox (a fresh page under
-  3-way load contention can exceed a 30s fixed settle — worker 2 died exactly there), plus the
-  warm-up fold.
-
-### PR #885 — MaxQ replaces Alt+C at the cinema icon (user correction: "supposed to replace
-### Alt-C at that icon", Alt+M was never the spec)
-Cinema icon + Alt+C now run `A.startMaxQualityOrbit`; pressing either again during the cook
-CANCELS (start() toggles). Alt+M binding removed. `A.startCinemaOrbit` (quick live-capture, the
-#880 SSAA path) stays console-callable and is the automatic fallback if the MaxQ module didn't
-load. Icon stays clickable during the cook (no pointerEvents lock) and tracks new `A._maxqActive`
-(still-refine's own flag flickers false between frames — insufficient alone). sw v803.
-Witnessed (headless real-GPU, in-page dispatched events — no CDP starvation): Alt+C →
-`§KBD_ROUTE` → `§MAXQ_START frames=360`; second Alt+C → `§MAXQ_CANCEL i=0`, clean state, zero
-pageerror. **This also resolves the #884 cancel-unverified caveat for the icon/Alt+C path** —
-in-page input provably cancels mid-cook.
-User Q&A recorded: RAM during cook ≈ 50-150MB of IDB webp blobs (disk, not RAM); ~8 min cook +
-~24s stitch; output = normal browser download (`~/Downloads/BIM_MaxQ_<building>_<ts>.webm`).
-**Offline during generation: yes** — fully client-side after warm-up; cold-start offline degrades
-gracefully if an async extra (HDRI/AO bundle) isn't in the SW cache.
-
-### PR #886 — §CINEMA_PATH shared plan: MaxQ flies the IDENTICAL cinematic path
-User caught that MaxQ v1 flew a plain circle at the current camera distance — not the Cinema
-Orbit formula ("zoom out to a good angle and go round elliptical"). Fixed by EXTRACTION, not
-duplication: the whole path formula (fill-frame push-in → hold → band ease-out → band,
-sun-glint swoop, elliptical radius modulation, pull-back flourish) moved verbatim out of
-`startCinemaOrbit` into `_cinemaPathPlan(durationSec)` → `{ base, poseAt(tNorm), … }`, exposed
-as `A.cinemaPathPlan`. Both features consume the one plan — no drift possible. MaxQ maps
-tNorm = i/(nFrames-1) so the pull-back completes on the final frame; `§MAXQ_START` now logs
-`path=cinema|circle` (circle = stale-cache fallback only). sw v804.
-Witness: full 24s live-capture orbit through the refactored plan → `§CINEMA_ORBIT saved`;
-MaxQ 8-frame run → `path=cinema` → `§MAXQ_DONE`; zero pageerror; audits green.
-
-### PR #889 — §CINEMA_INDOOR: indoor start = dramatic exit prelude ("easiest movie machine")
-User spec, approved WDYT: camera INSIDE → 0-5/24 in-place ≥180° turn acquiring the "north star"
-(main entrance), 5-10/24 travel out through it, 10-12/24 swing to face the building onto the
-orbit band, 12/24→end the untouched orbit formula from the entrance side. OUTSIDE start =
-original plan, byte-identical behavior. One shared plan → live orbit AND MaxQ both get it.
-- North-star priority (all extract-only): (1) injected room/corridor graph's lowest `exit` node,
-  wall-legal route via `RoomGraph.shortestPath` (route=graph — the Fly tour's own graph);
-  (2) widest lowest-storey IfcDoor (route=line); (3) nearest facade midpoint. **User doctrine,
-  verbatim: "Main entrance and corridors stairs to reach it should be in the building when user
-  injects first. Otherwise the orbit is not at fault to knock into walls"** — no-graph buildings
-  get the straight line and any clip is the model's data gap.
-- Phase math extracted into `_mkOrbitPose(base,...)` factory (reused for the entrance-side
-  re-entry, not duplicated). `§CINEMA_INDOOR inside/route/waypoints/entrance/turnDeg/pathLen`
-  self-identifies each run. sw v807.
-- Witness: outside run → no §CINEMA_INDOOR, unchanged; inside run → `route=line waypoints=3
-  entrance=widest-ground-door turnDeg=270`, stills show interior mid-turn → outside-facing
-  orbit. HHS witnessed route=line (graph not built headless); route=graph pending a live test
-  on a building with a warm room graph (open Fly/Find once first, then Alt+C).
-- USER LOSS RECORDED, same evening: cancelled a Hospital cook at frame 112 on a pre-#887 tab —
-  frames discarded (v804 behavior; §MAXQ_CANCEL with no PARTIAL/STITCH lines is the tell).
-  Post-reload builds save partials. Per-frame cost had also grown to ~8s during the push-in
-  (fill-frame on 63k elements) — the ETA line (#888) now surfaces this live.
-
-## ✅ RESOLVED (2026-07-19) — the OPEN BUG below is FIXED, PR #894 (MAXQ v8, sw v811)
-**The IDB prime suspect was RIGHT, and it is now proven, not inferred.** A control witness on the
-unmodified v7 build reproduces the user's report exactly — `§MAXQ_START` + `§MAXQ_WAKELOCK`, then
-**45 seconds of total silence**, `_maxqActive` stuck true, and the next Alt+C swallowed as a
-cancel-toggle (that last part explains why the feature stayed dead until reload). Same witness on v8:
-`§MAXQ_FAIL idb-open-timeout` at 10.0s, flags cleared, retry works. Normal 2-frame bake unaffected
-(`§MAXQ_IDB_READY` → 2× `§MAXQ_FRAME` → `§MAXQ_STITCH` → `§MAXQ_DONE`), zero pageerrors.
-Witness: bim-ootb `witness_maxq_idb_deadlock.js` (headless SwiftShader, Duplex, both cases + control);
-run it against a localhost server on the worktree with `Duplex_extracted.db` symlinked into
-`viewer/buildings/` (the DBs aren't in git — see the repo's DB policy).
-- Spec items 1/2 done: `_idbOpen()` gets a 5s timeout + `onblocked` → `§MAXQ_IDB_BLOCKED`, tracks its
-  connection with `db.onversionchange = close` (never becomes the zombie itself), `_idbDelete()` is
-  awaitable with its own blocked/timeout handling, and the run pre-purges any pending delete at start.
-- **The bare `await _idbOpen()` sitting OUTSIDE the try/finally was as much the bug as the hang**:
-  it meant the failure could reach neither `§MAXQ_FAIL` nor cleanup. Moved inside, and ahead of the
-  warm-up fold so a dead store costs 5s instead of a minute.
-- **Second defect, found BY the witness after the first fix round** (worth remembering — the abort was
-  clean but the feature was still unrecoverable): `finally` awaited `_idbDestroy()` *before* clearing
-  `_active`/`_maxqActive`, and that delete can itself block for seconds behind the very zombie that
-  failed the run. Cleanup must never gate recoverability — flags reset first now.
-- Spec item 3 (zombie simulation) is the witness's CASE A. Spec item 4 (radius≪band start pose) NOT
-  addressed — still open, unrelated to the deadlock.
-- **CONFIRMED LIVE ON LTU (2026-07-19, user's own F12 paste) — caveat closed.** `§MAXQ_LOADED v8`
-  fingerprint present (no stale cache), then a real bake past the old freeze point: Alt+C → bake →
-  second Alt+C cancels → `§MAXQ_DONE frames=17 bytes=311313 type=video/webm`. `§MAXQ_DONE` is
-  unreachable without a successful `_idbOpen()`, so the deadlock is gone on the exact machine that
-  reported it. §MAXQ_PARTIAL also re-witnessed in passing (17 frames = 1.1s, over the ≥1s threshold).
-- Incidental, not a defect: on Firefox the mime falls back to plain `video/webm` (no vp9) — Chrome
-  witnesses show `video/webm;codecs=vp9`. `MediaRecorder.isTypeSupported` gating works as designed;
-  worth knowing when comparing file sizes across browsers, and relevant to backlog item 1 (mp4/H.264).
-
-## 🐛 OPEN BUG (2026-07-19, user live report, LTU) — MaxQ STUCK after preview, undiagnosed-live
-**Repro (user, LTU_AHouse, v810/MAXQ v7):** Alt+C → `§MAXQ_START frames=360 path=cinema
-radius=6.3 height=7.0` (very close-in start pose, no §CINEMA_INDOOR line = treated as outside)
-→ preview flew fine → `§MAXQ_PREVIEW done — camera restored, commencing capture` → **NOTHING.**
-No warm-up `§STILL_REFINE start`, no `§MAXQ_FRAME i=0`, no error, idle-gate parks. Wake lock was
-held. F12 pressed later — page alive, just no bake.
-**Prime suspect (from code order, not guessed from vibes):** the very next statement after that
-log line is `var db = await _idbOpen()`. IndexedDB `open()` queues FOREVER behind a pending
-`deleteDatabase()` if any connection was left open — and `_idbDestroy()` (every run's finally)
-does close+delete, but an earlier abnormal exit (e.g., the frame-112 cancel on the v804 tab, or
-any exception path that skipped close) leaves a zombie connection; the delete then blocks and
-every later `open()` hangs SILENTLY. Classic IDB deadlock; fits "stuck with zero log lines"
-exactly. Secondary suspects, check only if IDB exonerates: `A.startStillRefine()` early-return
-guard interacting with the NEW soft-cancel mechanism (log shows `§STILL_REFINE soft-cancel
-(camera move) … staging kept` pre-Alt+C — if soft-cancel leaves `_stillRefineActive` true at the
-wrong moment the warm-up no-ops, but then `_waitFoldDone` would time out at 30s and §MAXQ_FRAME
-would still appear — user saw none, which points back to IDB).
-**Fix directions for the next session (spec-first, this is the spec):**
-1. `_idbOpen()` must never hang silently: add `rq.onblocked` → `§MAXQ_IDB_BLOCKED` log, and race
-   the open against a ~5s timeout → on timeout, `§MAXQ_FAIL idb-open-timeout` + clean abort
-   (status message, wake lock released, _active reset) instead of a silent freeze.
-2. Track the module's open connection; `db.onversionchange = close`; close before any delete;
-   consider `indexedDB.deleteDatabase` BEFORE open at start of every run (idempotent hygiene)
-   rather than only in finally.
-3. Witness: simulate the zombie (open a second connection to the DB, skip closing, run a bake)
-   → must §MAXQ_FAIL cleanly, not hang. Regression: normal bake unaffected.
-4. While in there: `§MAXQ_START radius=6.3` shows a very tight start pose worked for preview —
-   confirm the bake phases behave at radius≪band (push-in is a no-op, band-ease does the work).
-
-## 📋 NEXT-SESSION BACKLOG — improvement list (ranked effort→payoff, discussed 2026-07-19)
-Pick top-down (WORK-TO-ZERO applies once a session adopts this list):
-1. **mp4/H.264 output** — the webm doesn't play on iPhone/WhatsApp; for the outreach audience
-   this is THE sharing blocker. Route: WebCodecs H.264 + in-browser mp4 mux (CSP: no CDN — a
-   vendored muxer lib or hand-rolled boxes; check codec support matrix first). Medium→HUGE.
-2. **Draft-quality mode** — half TAA samples (16→8) + half AO frames (24→12) ≈ half bake time,
-   softness barely visible at 15fps motion. Opts + maybe Shift+Alt+C. Small→large.
-3. **Skip per-frame teardown/restage** — ~1.2s/frame is spent tearing staging down and rebuilding
-   it identically; keeping staging applied between frames (re-fold only, pose-guard restarts
-   accumulation) is ~25% faster AND removes the settle-race class the 250ms flicker fix papers
-   over. Verify §PHOTO_FACING still refreshes per frame (it must — recompute is per-trigger
-   today). Medium→solid.
-4. **Resume interrupted bake** — frames already persist in IDB; store plan params + count,
-   offer "resume N/360?" on next load. Also the natural companion to bug-fix #1 above.
-   Small→solid.
-5. **Material reference library** (~20 curated materials, name-pattern lookup) — the teal
-   proxies are in every Hospital movie; long-deferred, touches streaming.js SQL + batching keys,
-   needs its own careful session (scoped earlier in this file). Large→large.
-6. **4K bake option** — offline can afford 2× offscreen render target; mind the composer-resize
-   white-band landmine (TM exporter retro). Medium→medium.
-7. **Multi-window parallel bake** — 3 coordinated browser windows ≈ 2.5× (proven by the dev
-   harness); slice claims via IDB/BroadcastChannel. Large→medium.
-8. **Bake-watching polish** — corner thumbnail of last baked frame + progress bar ("process as
-   spectacle" is already the user's favorite demo). Small→small-but-charming.
-Also pending live confirmation: `route=graph` (wall-legal indoor exit) has never been seen live —
-next indoor bake on a roomed building shows it in §CINEMA_INDOOR.
-
-### PR #893 — §MAXQ_WAKELOCK (user left bake unattended → screen slept → rAF throttled → pause)
-Bake was NOT lost — frames wait in IDB and resume on tab focus — but paused invisibly. MaxQ now
-holds a screen wake lock for bake+stitch (re-acquired on visibilitychange, released on all exit
-paths); MAXQ_LOADED v7, sw v810. STANDING USER GUIDANCE: the tab must stay VISIBLE (hidden-tab
-rAF throttling is browser-level and unfixable from JS); work in other apps beside it is fine.
-Offline is fine once the building+assets are cached (bake/stitch/save are fully local).
-
-### MILESTONE 2026-07-19 — first full-length LIVE run user-proven end to end
-User baked a complete 360-frame Hospital movie on their own machine (Firefox, 1854×963): indoor
-prelude → orbit → stitch → **8.5MB webm in Downloads**, judged "good enough… fast and above
-average res". Machine stayed quiet throughout (short GPU bursts per fold, frames on disk in IDB,
-not RAM; stitch is real-time replay ≈ idle). The v809 ground-snap/tree/ETA fixes were observed
-live the same evening. The whole Alt+C pipeline is now production-proven by the user, not just
-witness-proven. User positioning insight, recorded for the outreach lane: "auto mode for the
-long tail — one decision (where to stand), in a browser they already have" + "screen-record the
-bake itself as the demo" (process-as-spectacle, ticking SFX as progress metronome).
-
-### PR #890 — §MAXQ_PREVIEW: 10s real-time path rehearsal before the bake (user WDYT idea)
-User spec verbatim: "1. Fly exact cam orbit in 10 sec. 2. Return back to original position.
-3. Commence actual MaxQ orbit capture." Implemented as a free real-time flight of the SAME
-plan's poseAt (indoor prelude included) in plain nav look — no staging/folds (user: "the fast
-preview the scene wont be in Alt-S mode"). Alt+C during preview = zero-cost abort; camera
-restores exactly either way. `opts.preview=false` skips (programmatic). MAXQ_LOADED v5,
-sw v808. Witness: 10019ms preview → bake → download; 3s-in cancel → clean abort, camera
-restored <0.01, no stitch, zero pageerror.
-Also answered: room injection is NOT required to run the indoor prelude — the graph builds
-on demand from the DB when rooms exist (no prior Fly/Find needed; earlier warm-graph caveat
-retracted), and door/facade fallbacks cover room-less buildings; injection is what upgrades
-the exit to wall-legal.
-
-### LIVE-RUN READ (2026-07-19, user's F12 paste, Hospital) + PR #888 log fingerprints
-User pasted their live console asking "is the latest live?" — the log itself answered:
-`§MAXQ_START ... path=cinema` (v804+ fingerprint, shared orbit plan active) and
-`§PHOTO_PAINT_SEED seed=0.0653` IDENTICAL on every frame (warm-up rolled 0.2491, then frozen —
-the anti-flicker PRNG freeze witnessed working in production). **Real Hospital cost: 4.7s/frame**
-(`§MAXQ_FRAME i=15/360 elapsedMs=75056`, 1854×963, 63k elements) → ~28 min for the 24s clip,
-vs HHS's ~1.3s/frame (~8 min). Per-frame split on Hospital: TAA ~2-3s + AO ~1.5s (avgRenderMs
-~60) + staging/teardown ~1s.
-**RULE REINFORCED (user, verbatim: "u got to make the logs tell u, i not going to able dig
-that"):** a pasted console log must self-identify build + progress — never ask the user to run
-console probes. PR #888 (sw v806): `§MAXQ_LOADED v4` fingerprint at module load (bump `MAXQ_V`
-on EVERY behavior change to cinema_maxq.js — same convention as §MAIN_JS/§KERNEL_OPS), and
-`§MAXQ_FRAME` now carries `perFrameMs=`/`etaSec=` with "~N min left" in the status line.
-
-### PR #887 — MaxQ cancel saves the partial movie (§MAXQ_PARTIAL); sw v805
-User Q: "Does Alt-C cancel save what is done so far?" — it didn't (discarded). Now cancel
-stitches + downloads whatever is baked, threshold ≥1s of footage (= fps frames; below that a
-status message, nothing saved). Stale "Alt+M" status text corrected. User Q recorded: **frames
-per second of movie = 15** (MAXQ_FPS; 360 frames = 24s clip; ~1.3s cook per frame → ~20s of
-cooking per 1s of movie). Witness: in-page timer cancel at frame 11/60 → `§MAXQ_CANCEL_PARTIAL
-stitching 11 frames (5.5s)` → `§MAXQ_DONE` + real webm download. Method note, third confirmation
-this session: CDP-injected calls (evaluate/synthetic keydown) can starve for the whole cook —
-witness in-page behavior with IN-PAGE timers, never CDP injection mid-cook.
-
-## §MAXQ_MP4 SPEC (2026-07-19) — mp4/H.264 output (backlog item 1, THE sharing blocker)
-
-### Why
-`§NEXT-SESSION BACKLOG` item 1: the MaxQ movie ships as webm/VP9. **webm does not play on
-iPhone or in WhatsApp** — for the outreach audience that is the whole point of making the movie,
-so the format, not the pixels, is the blocker. Route named in the backlog: WebCodecs H.264 +
-in-browser mp4 mux, CSP-clean (no CDN).
-
-### Support matrix — MEASURED on this machine, not assumed (2026-07-19)
-Probe: `isConfigSupported` across 4 avc1 profile/level strings × 3 `hardwareAcceleration` modes,
-**plus a real `configure()` + 5-frame `encode()` + `flush()` round-trip** (Mozilla bug 1918769:
-Firefox's `isConfigSupported` can answer `true` and then throw on `configure()` — detection by
-capability query alone is NOT trustworthy, only a real encode is).
-
-| Browser | `avc1.*` isConfigSupported | real configure+encode | avcC description |
+| uniformly outward, closed | 45,520 | 94.0 % |
+| uniformly INVERTED | **0** | **0.0 %** |
+| mixed winding | **0** | **0.0 %** |
+| open shells | 2,908 | 6.0 % |
+Open drill: 49 close at a coarser weld (false-open); 1,702 near-closed, 1,136 partly-open —
+**every single one with V>0 (outward)**; true sheets 21 elements (0.04 %). Net: **48,407/48,428 =
+99.96 % of Terminal elements are uniformly outward-wound.**
+Wall classes: IfcWall 333 = 110 closed-outward + 190 near-closed(+) + 33 partly-open(+) → **100 %
+outward, 0 sheets**; IfcSlab 705, IfcCovering 82, IfcPlate 33,324 (the facade) → 100 % closed
+outward. (No IfcWallStandardCase/IfcCurtainWall in Terminal.) Triangle-weighted: 38.3 % of drawn
+tris are closed-outward, 61.1 % open-but-positive (the big facade/wall meshes are near-closed
+solids, not sheets), sheets 0.5 %.
+
+**Hospital — 63,182 elements with geometry (of 63,415; the 233 without include all 178
+IfcCurtainWall — containers that decompose into IfcPlate/IfcMember, both 100 % outward):**
+| bucket | elements | % |
+|---|---|---|
+| uniformly outward, closed | 49,434 | 78.2 % |
+| outward after open-drill (false-open 1,330 + near-closed 6,747 + partly-open 52, all V>0) | 8,129 | 12.9 % |
+| uniformly INVERTED | **2** | **0.003 %** |
+| mixed winding | 303 | 0.5 % |
+| true sheets | 5,314 | 8.4 % |
+Net: **57,563/63,182 = 91.1 % uniformly outward.** The 303 mixed elements are 298
+IfcBuildingElementProxy + 5 others — but they are huge meshes: **18.9 % of the building's 15.3 M
+drawn triangles.** Sheets by class: IfcPipeFitting 3,635, IfcDuctFitting 811, proxies 714,
+IfcWindow 118, IfcDoor 12 — wall classes only 22 (IfcCovering 9, IfcWallStandardCase 8, IfcWall 5).
+Wall classes: IfcWallStandardCase 1,310 → 97.6 % closed-outward + 2.4 % open (8 sheets); IfcWall
+158 → 86.7 % closed + 16 near/partly-open(+) + 5 sheets; IfcCovering 602 → 98.5 % + 9 sheets;
+IfcSlab 35 → 88.6 % + 4 near-closed (1 mixed).
+
+**Shipped `normal` attribute vs winding: 0 % disagreement — BY CONSTRUCTION, there is no shipped
+normal.** `component_geometries` has no `normals` column in Terminal_geo, Hospital_geo, or
+Hospital_extracted (schema read); the viewer's §NORMALS_PROBE (`streaming.js:1481`) finds none and
+`blobToGeometry` falls to `geo.computeVertexNormals()` (`scene.js:1869`) — the on-screen shading
+normal is DERIVED from the winding (then §MEP_SMOOTH_NORMALS rewrites values, not sign). So the
+§S260d comment "IFC geometry has inconsistent normals" is now measured: the winding is NOT
+inconsistent (0 mixed meshes in Terminal, 0.6 % of meshes in Hospital) — what makes lighting track
+the viewer is DoubleSide's camera-facing flip alone.
+
+**VERDICT — FrontSide is viable for the walls, with ~zero repair; load-time winding repair is a
+solution to a defect that does not exist.**
+- The number that drives it: **uniformly-inverted meshes = 0 in Terminal, 2 elements in Hospital
+  (0.003 %)** — there is nothing to flip. Wall classes are 100 % outward-positive in Terminal and
+  ≥ 96.8 % in Hospital (22 sheet elements ≈ 1 % of wall-class population).
+- The real FrontSide cost is not winding but the ONE-SIDED SHEET population + mixed meshes:
+  Terminal 21 elements (0.04 %); Hospital 5,617 (8.9 % of elements — open-ended pipe/duct
+  fittings, windows, doors, proxy meshes; the 303 mixed alone are 18.9 % of drawn triangles). A
+  sheet is invisible from one side under FrontSide regardless of winding — unrepairable by any
+  flip, per-face surgery only for the mixed ones.
+- So the data reshapes the either/or: **class-keyed side** — FrontSide for the closed classes the
+  user is looking at (walls, slabs, coverings, plates, structure), DoubleSide retained for the
+  sheet-heavy classes (fittings, windows, doors, terminals, stairs, railings) — same class-keyed
+  pattern STD_MAT already uses. Blanket FrontSide would hole out ~9 % of Hospital; blanket
+  load-time repair has nothing to repair.
+- Honest caveat: the near-closed/partly-open positive shells (Terminal walls: 223/333) have real
+  boundary cracks (≤5 % of edges) where FrontSide shows through where DoubleSide today paints the
+  interior back face — hairline-bounded, and only where faces are already absent.
+- Separate lever, NOT this measurement: ambient 0.785 + hemisphere 1.257 vs sun 4.4 + envMap 0.6
+  (`scene.js:178-190`, `streaming.js:839-853`) means even perfectly-wound geometry only drops to
+  ~1/3 of lit value on the dark side. Side-flip alone will not give the user dark shadow faces.
+
+## §WALL_SIDE_AND_LIGHT_FLOOR (2026-09-01) — class-keyed side + fill-floor retune. SPEC FIRST; measured numbers appended below after each run.
+
+**Goal (user ask):** walls facing away from the sun render DARK. Input = §WALL_WINDING_MEASURE
+(above): winding is consistent (2/111,610 inverted fleet-wide), §S260d's "inconsistent normals"
+premise is measured false, and a side-flip alone cannot darken anything because ambient+hemi
+≈ 2.04 vs sun 4.4. So the ship is TWO levers together: (1) class-keyed `material.side`,
+(2) a lowered non-directional fill — gated by (3) pick integrity, plus perf/mem non-regression
+(user, this session: "watch mem hog not to slow down, look for any oppurtunity to perf").
+
+### SPEC S1 — class-keyed side (streaming.js `_getMaterial`)
+- Opaque side = `THREE.FrontSide` iff the element's `ifc_class` passes **T1**; else `DoubleSide`.
+  Transparent path (`a < 1.0`, streaming.js:819) stays `DoubleSide` — untouched.
+- **T1 (the threshold, a number):** pooled across the two measured buildings
+  (Terminal_geo + Hospital_geo, the DBs the viewer streams), the class's
+  `(true-sheet + mixed-winding + uniformly-inverted)` element fraction is **≤ 2.0 %** of its
+  elements-with-geometry, with pooled population **≥ 30**. Classes not measured, or under
+  population, default `DoubleSide` (conservative). Rationale for 2.0 %: the measured wall-class
+  defect fractions sit at 0–1.4 % fleet-wide while the sheet-heavy classes sit at ≥ 8 %
+  (PipeFitting/DuctFitting/proxies, §WALL_WINDING_MEASURE) — 2.0 % separates the two measured
+  populations with margin on both sides and admits no class whose FrontSide cost is triangles
+  the user can see through. Class table = derived by a fresh per-class census probe (same
+  methodology as §WALL_WINDING_MEASURE: signed volume, directed-edge multiset @0.1 mm weld,
+  1 mm/5 mm false-open retest, boundary-fraction buckets ≤0.5 %/≤5 %/>5 %), cross-checked
+  against that section's published per-class numbers before being trusted.
+- `side` is a pure function of `(ifcClass, a<1.0)`. `ifcClass` is ALREADY a cacheKey dimension
+  (streaming.js:780) → the material cache CANNOT fragment. Asserted (S6).
+- `mat.userData.origSide` (streaming.js:1132) := the RESOLVED side (today it records FrontSide
+  for every opaque material while the material is actually created DoubleSide — a latent
+  mismatch against the x-ray restore fallback chain, tools.js:337/359). X-ray path
+  (streaming.js:1133, tools.js:317-360, walk.js:507/588) reads live `mat.side` at toggle time
+  and restores it — stays coherent with no change beyond origSide.
+- The §S260d comment at streaming.js:839 is corrected to cite the measurement.
+
+### SPEC S2 — light floor (scene.js:178-190)
+- Lighting model (three.js physical lights; every term MEASURED in-harness in
+  ambient-equivalent units via single-light probe renders to a linear render target —
+  no factor is hand-assumed): fill `F(N) = Ia + Ih·h(N) + Ienv·env(N)`;
+  lit `= F + Is·cs·max(0, N·L)`. Real sun vector L = (200,400,300)/‖·‖ = (0.371, 0.743, 0.557);
+  representative vertical-wall pair uses the max horizontal N·L = **0.669**.
+- **T2 (target contrast):** away-facing/sun-facing ≤ **0.25** for that pair (today ≈ 0.35).
+  Rationale: clear-day shade-to-sun luminance ratios span ~1:4–1:10; 1:4 is the conservative
+  edge, chosen because the same fill lights the interiors.
+- **T3 (interior floor — the constraint that may bind first):** at a real interior standpoint,
+  linear frame luminance must retain **p25 ≥ 0.55×** and **mean ≥ 0.70×** the pre-change value.
+  Rationale: perceived lightness ~ Y^(1/3) (CIELAB), so these bound the darkest interior
+  quartile to ≤ 18 % perceived loss and the room overall to ≤ 11 %. (Interiors keep their sun
+  term — `castShadow=false` means the sun lights interior surfaces through walls — only the
+  fill fraction of interior light drops.)
+- Derivation: one scale k applied to (ambient, hemi) JOINTLY (preserves today's colour
+  balance); solve k from T2 given the measured env term; **if that k violates T3, clamp k at
+  the T3 floor and report BOTH numbers as a declared conflict** — never silently favour one.
+  Sun intensity, envMapIntensity, PHOTO_ENVMAP_BOOST (CPE lane) untouched.
+
+### SPEC S3 — pick integrity (GATES the ship)
+- §S260d's stated reason for DoubleSide was "ensures pick works"; `Raycaster` respects
+  `material.side`. In the LIVE viewer (real DB, real `A.raycaster`, the picking.js:225-231
+  mesh collection): sample real elements of EVERY FrontSide class; cast identical rays
+  before (all-DoubleSide, toggled on the live material cache) and after (shipped sides), from
+  OUTSIDE toward element centroids and from INSIDE a real room toward inner wall faces.
+  Assert per-ray top-hit element identity and hit counts. Any regression → that class drops
+  back to DoubleSide and the census table is annotated; the witness re-runs to green before
+  ship.
+
+### SPEC S4 — nothing vanishes
+- `renderer.info.render.triangles` and `.calls` before vs after: EQUAL (side changes GPU
+  culling, not submission — a triangle-count drop means a mesh was lost, a rise means the
+  cache fragmented).
+- Uncovered-pixel proof: sky mesh hidden, clear colour set to a sentinel, one deterministic
+  render per standpoint (exterior sun side, exterior away side, interior), count sentinel
+  pixels before vs after; delta ≤ **0.5 %** of the frame. Catches walls holing out.
+
+### SPEC S5 — the actual shading claim
+- Per-face N·L census over the real wall-class geometry (world-transformed, the same decode
+  as `A.blobToGeometry`): mean linear irradiance of away-facing (N·L ≤ 0) wall faces and
+  sun-facing faces, BEFORE (DoubleSide + Ia 0.785/Ih 1.257) vs AFTER (class side + retuned).
+  Report the before/after away-face ratio and the contrast pair. If the away face does not
+  measurably darken, SAY SO and do not ship part 2. (Expected honest split: for CLOSED walls
+  the camera only ever sees front fragments, so part 1 changes their shading by ~0 —
+  the darkening is part 2's; part 1's render value is back-face-fragment correctness on the
+  open/sheet population + the culling win. The witness measures rather than assumes this.)
+- **In-harness verify-then-report:** measured contrast ratio must round to the derived
+  prediction within ±0.02 or the run is INCONCLUSIVE.
+
+### SPEC S6 — perf/mem non-regression (user scope addition, same session)
+- M1 unique-material count + draw calls per building: before == after (no cache fragmentation).
+- M2 backface-culling win: median frame time over ≥ 30 timed renders at the same pose,
+  before vs after — FrontSide should be ≤; report the signed number either way.
+- M3 heap: `performance.memory.usedJSHeapSize` same building+pose before vs after; known
+  Hospital baseline ≈ 1.57 GB; delta above noise (± ~50 MB run-to-run) = flag, do not ship.
+- M4 shadow config untouched: `sun.castShadow === false` and `sun.shadow.mapSize` identical
+  before/after (the 4096² map cost note stays historical).
+- If any of M1–M4 is negative, that part does NOT ship; the number is the finding.
+
+### Witness
+- `viewer/tests/witness_wall_side_light_floor.js` (live Playwright harness, own static server,
+  real Hospital split DB; Terminal covered by the node-side census + N·L probe). Prints one
+  `§WWSLF_*` line per claim, a final verdict line able to say `NO-OP` / `VACUOUS` /
+  `INCONCLUSIVE`, exit 1 on any FAIL. Log saved and read before any conclusion.
+
+### MEASURED 1 — per-class census + T1 table (2026-09-01, census_winding_class.js, logs census_{Terminal,Hospital}.log + t1_decision.log in session scratchpad)
+- **Probe validity, proven against §WALL_WINDING_MEASURE before trusting anything:** first run
+  mis-defined "mixed" as ANY repeated same-direction edge — that counts multi-shell solids
+  (shared internal faces carry 2+2 directed copies) and mis-bucketed 2,777 Terminal elements
+  (doc says 0). Corrected to the doc's definition (an edge used exactly TWICE, both copies the
+  same way). After the fix the cross-check reproduces every decision-relevant number EXACTLY:
+  Terminal closed_out 45,520→(with false-open fold-in 47,229 — bookkeeping split only), mixed 0,
+  inverted 0, sheets 21; Hospital with_geo 63,182, inverted 2, mixed 303, sheets+open_neg
+  5,275+39 = 5,314, outward net 57,563. (My closed/near-closed boundary differs from the doc's
+  drill bookkeeping — welding earlier closes more shells — but that split does not feed T1;
+  defect = sheet+mixed+inverted+open_negative matches exactly.)
+- **T1 applied (≤2.0 % pooled defect, pop ≥30) — FrontSide (25):** IfcAirTerminal, IfcAlarm,
+  IfcBeam, IfcCableCarrierFitting, IfcCableCarrierSegment, IfcColumn (0.52 %), IfcCovering
+  (1.32 %), IfcDistributionControlElement, IfcDuctSegment, IfcElectricAppliance,
+  IfcFireSuppressionTerminal, IfcFooting, IfcFurniture, IfcLightFixture, IfcMember (0.03 %),
+  IfcPipeSegment, IfcPlate (0.00 %), IfcRailing, IfcSlab (0.14 %), IfcStair, IfcStairFlight,
+  IfcSwitchingDevice, IfcValve (0.17 %), IfcWall (1.02 %), IfcWallStandardCase (0.61 %).
+- **DoubleSide kept (10):** IfcPipeFitting 20.4 %, IfcBuildingElementProxy 16.4 %,
+  IfcDuctFitting 14.9 %, IfcWindow 32.7 %, IfcFlowTerminal 5.1 %, IfcDoor 2.09 % (just over —
+  honest miss, not rounded down), + under-population IfcController(6), IfcFlowController(21),
+  IfcRampFlight(1), IfcRoof(2). Unlisted classes default DoubleSide.
+- Wider win than the ask: the census shows the SEGMENT MEP classes (pipe/duct/cable runs,
+  18k+5k+84 elements) are 100 % closed-outward — they get backface culling for free; only the
+  FITTING classes are the open-ended sheet population.
+
+### MEASURED 2 — derive + witness run 1 (2026-09-01, wwslf_derive.log + wwslf_assert.log, session scratchpad)
+- **Calibration (in-page single-light probe renders, linear RT):** unit response = 0.31831 =
+  1/π exactly (the Lambert albedo/π — the probe measures the real BRDF, nothing assumed);
+  hemi 0.6109/unit intensity at horizontal N; envMap term 0.2029 at intensity 0.6 (the PMREM
+  IS live in plain nav); sun 0.9578/unit at N=L.
+- **Fill model, measured:** fill_old = 0.785 + 1.257·0.6109 + 0.2029 = **1.756** vs sun term
+  4.4·0.9578·0.669 = **2.820** → contrast_old = **0.384** (the "roughly a third" of
+  §WALL_WINDING_MEASURE, now exact). T2 (0.25) solves k=0.475; **T3's p25-fill floor 0.55 binds
+  first at k=0.491 — the declared conflict happened**, clamped at the floor: shipped
+  **ambient 0.386, hemi 0.617**, predicted contrast **0.255**.
+- **Witness run 1 (Hospital live, 109 sampled elements/28 classes + 12 in-room rays): 19 PASS /
+  1 FAIL — the FAIL is the S3 pick gate doing its job.** One ray of 121 diverged:
+  `out|IfcElectricAppliance|1cL9Mv$oTAD8jv7e2bmYul` — its origin (target + 8.5 m radial offset)
+  lands INSIDE a recessed IfcLightFixture shell; DoubleSide first-hit was that fixture's own
+  interior back face, FrontSide resolves to the supply diffuser beyond it. Winding census had
+  IfcLightFixture at 0 % defect — the withdrawal is PICK-behavioural, not winding.
+  **Action per spec: IfcLightFixture dropped from FRONT_SIDE_CLASSES (25→24), re-run required.**
+- Everything else green, with the numbers:
+  - S1: 96 live materials — 59 FrontSide / 34 DoubleSide / transparent all DoubleSide,
+    0 mismatched, origSide 100 % coherent.
+  - S4: submitted triangles identical 10,105,100 = 10,105,100; draw calls 4,001 = 4,001;
+    background-pixel delta 0.0000 at all three standpoints (nothing vanished, no cache
+    fragmentation).
+  - T3 interior (real render, ACES-mapped): mean retention 0.822, p25 retention 0.833 — well
+    above the 0.70/0.55 floors, because interiors keep their sun term (castShadow=false).
+  - Away facade real render: mean ratio 0.848 (view mixes lit fragments + env specular);
+    pure away-face irradiance (S5 census): **0.550** — the actual darkening of the claim.
+  - S5 wall-face census (IfcWall+IfcWallStandardCase, area-weighted, real transforms):
+    Terminal 69,154 faces, contrast 0.471→**0.329**; Hospital 50,443 faces, 0.463→**0.322**
+    (meanNL of lit faces ≈ 0.47, grazing included — the representative pair is 0.384→0.255).
+  - M1 materials 96=96, calls Δ0. M2 frame median 2433→2320 ms headless-swiftshader
+    (**−4.7 %**, the backface-culling win, sign checked). M3 heap Δ **0 MB** (1,640 MB both
+    states, against the memory probe's measured 1,546–1,583 MB baseline). M4 shadow config
+    identical (castShadow=false, 512² — the 4096² note was historical; measured value logged).
+  - Mean hit-count drop per ray 12.41 (back-face exit hits gone) with first-hit identity held
+    on 120/121 — the WYSIWYG contract intact.
+
+### MEASURED 3 — confirmation run 2, merged tree, SHIPPED (2026-09-01, wwslf_assert2.log)
+Tree = branch merged with origin/main @4fb753c6 (#1599); sw conflict resolved v1118→**v1119**
+(both-notes, higher-version, own-bump rule). **§WWSLF_VERDICT PASS judged=20 fails=0** —
+`§WITNESS_WALL_SIDE_LIGHT_FLOOR pass=20 fail=0 ran=20`.
+- S3 pick gate GREEN after the IfcLightFixture withdrawal: **121/121 rays, 0 first-hit
+  divergences** (outside + in-room), mean hit-count drop 12.36 (back-face exit hits gone —
+  expected, identity intact). Final list = **24 FrontSide classes** (S1: 54 front / 39 double
+  / transparent all double, 0 mismatched, origSide coherent).
+- Same derivation reproduced exactly (calib deterministic): fill 1.756 → 0.966
+  ambient-equivalents, contrast 0.384 → 0.255, T3-clamp conflict again declared.
+- T3 interior: retention mean 0.822 / p25 0.833 (floors 0.70/0.55) — interiors keep their sun
+  term, so the fill cut lands mostly on exterior away faces, as designed.
+- M2 honest note: frame median run 1 **−113 ms** (−4.7 %), run 2 **+30 ms** (+1.5 %) on
+  ~2 s software-GL frames — the backface-culling win is WITHIN HEADLESS NOISE, sign checked
+  both runs; no reliable frame-time claim either way. M3 heap 1,545 MB both states (Δ 0 MB;
+  measured baseline band 1,546–1,583 MB). M4 shadow {cast:false, 512²} identical — note the
+  4096² figure circulating in the lane brief is NOT what the live sun carries; measured 512².
+- Ship state: branch feat/wall-side-light-floor, commit bd5adf10 + merge 2fbea94a; PR + merge
+  verification recorded below when landed.
+- **LANDED 2026-09-01: bim-ootb PR #1601 MERGED as origin/main d16646db (verified by fetch, not the PR page: sw v1119, FRONT_SIDE_CLASSES, ambient 0.386 / hemi 0.617 all present on main).**
+
+## §SUN_FILL_RATIO (2026-09-02) — the wall away from the sun, in the PHOTOREAL path. SPEC FIRST; measured numbers appended below after each run.
+
+**User ask (AGENT_QUEUE D-1, 2026-09-02 film review):** *"Wall away from Sun shadow?"* — a wall
+facing away from the sun should read darker than one facing it.
+
+**Not re-opened here (settled, on record, correct):** shadows are on and correct in Alt+S
+(`§PHOTO_SHADOW enabled casters=382 … texelPerM=11.4`); nothing is clipped (`outsideFrustum=0` on two
+buildings); N8AO is contact/crease-only by architecture (`STILL_AO_RADIUS = 32` is in SCREEN pixels),
+so a broad flat wall legitimately reads AO≈1.0. This is an ORIENTATION read, not an occlusion one.
+
+**Why this is a PHOTOREAL-ONLY defect.** `§WALL_SIDE_AND_LIGHT_FLOOR` (PR #1601, merged `d16646db`,
+2026-09-01) already cut the non-directional fill in `scene.js` and took the plain-navigation
+away/sun contrast 0.384 → 0.255. The user's complaint is dated AFTER that landed and is about the
+FILM. So the only question is narrow: **does #1601's separation survive into the Alt+S / bake path?**
+Measured answer: **no.**
+
+### The instrument — `viewer/tests/witness_sun_fill_ratio.js`
+Real viewer, real split building DB, the real `A.startStillRefine()` staging. No mock, no synthetic
+scene, no screenshot anywhere, no bake.
+- **The pair:** two REAL wall elements of the SAME `ifc_class` AND the SAME `material_rgba`, so
+  albedo cannot be the confound. One outward normal toward the LIVE sun, one away.
+- **Outward is signed by the building centroid, NOT by face area.** A first pass classified by which
+  face carried more area and produced 556 "sun-facing" of 602 walls — a wall slab has near-equal
+  area on both faces, so that test is degenerate and its answer is a coin flip. The axis is the
+  principal eigenvector of the area-weighted orientation tensor of the element's vertical face
+  normals (real geometry, real transforms, the same decode as `A.blobToGeometry`); the sign points
+  away from the building centroid; **exteriority is then GATED by a 25-ray coverage test** — an
+  interior wall's camera lands inside the building and fails. Coverage ≥ 0.88 or the pair is dropped.
+- **The sun vector is READ from `A.sun`, never assumed.** `A.updateSky()` repositions the light at
+  load: the live direction is `[0.000, 0.707, −0.707]`, NOT `scene.js`'s source constant
+  `(200,400,300)` → `(0.371,0.743,0.557)`. Assuming the constant INVERTED the sun/away labels on the
+  first run — the sun-labelled wall measured `sun=0.0001` and the away-labelled one `sun=0.494`.
+  A whole session's finding would have been reported backwards. Read the live scene, always.
+- **Camera:** 12 m standoff, deliberately beyond `CAM_LIGHT_DISTANCE = 4` so the camera torch
+  provably cannot contribute, with the FOV narrowed so the wall fills the frame.
+- **Luminance is scene-linear.** three.js applies tone mapping ONLY when the destination is the
+  canvas, so a `FloatType` render-target read is raw linear radiance (`renderer.toneMapping` is
+  ACESFilmic, `scene.js:110`, and is logged). ACES + exposure are monotonic and applied afterwards,
+  so a linear "not brighter" verdict survives them; and a uniform exposure scale cannot change a
+  ratio at all.
+- **Lighting is therefore ADDITIVE**, so each group's share is measured exactly as (all on) −
+  (that group off): `sun / ambient / hemi / env / pl / camlight`. **Closure of the sum against the
+  total is asserted** — measured 0.990–1.007, so the decomposition is trusted, not assumed.
+- **A/B on ONE page load, and the `CPE_4D_PERF_MEM_STUDY §R10` trade-off was RE-CHECKED rather than
+  copied:** these are deterministic single renders, not AO/TAA accumulations, so there is no
+  first-fold-does-the-work effect and no scene reseed between conditions. `Math.random` is seeded
+  anyway, and a **RED CONTROL** re-measures the untouched condition at the end and asserts it
+  reproduces.
+- The verdict line prints NO-OP / VACUOUS / INCONCLUSIVE and did so for real: Hospital's first run
+  ended `INCONCLUSIVE — no albedo-matched exterior pair passed the 0.88 coverage gate`, which is the
+  witness refusing to score a population it never judged.
+
+### ⚠ INSTRUMENT COST FOUND — a 4096² shadow map re-rendered on EVERY staged render
+Under SwiftShader the staged scene carries a **4096² shadow map over 708 casters plus ~216 night
+fixture point lights**, and every camera move ALSO restarts a 16-frame AO+TAA accumulation. A
+14-render decomposition ran **>25 minutes with no change to any measured quantity**. This is exactly
+the class of instrument cost §R10 warns about, so it is recorded rather than quietly worked around.
+It is a SPEED cost, not a noise cost — and that claim is not asserted, it is **gated**: the witness
+reads the SAME pose immediately before and after freezing (`shadowMap.autoUpdate = false` +
+`_stillRefineActive = false`) and requires the two to agree (`§SFR_FREEZE … relDrift`, gate < 0.005).
+The sun's shadow frustum is fixed to the building envelope and the geometry does not move, so the map
+is camera-independent and valid for every pose. **No RED number was taken from an un-gated run.**
+
+### The measured cause — it is the envMap, and this codebase already banned exactly this
+`_applyPhotoStaging()` swaps `A._envMap` from the procedural sky PMREM to a real photographed HDRI
+(`textures/hdri/belfast_sunset_puresky_1k.hdr`, `§LAYER2_HDRI_READY`) and `_reassertPhotoEnvMap()`
+then pushes that map onto **every** cached material — matte concrete and plaster included. IBL is a
+whole-hemisphere, **non-directional** term and in three.js **it is not shadow-map-occluded**, so it
+lands on a wall regardless of which way that wall faces.
+
+This is not a new insight; it is a route around a gate this file already argued for and shipped.
+`PHOTO_GLOSSY_ROUGHNESS_MAX = 0.5` exists (`effects.js:2680`) with the comment *"excludes
+concrete/plaster/wood (STD_MAT rough 0.6-0.95), whose shadow-darkened diffuse read must stay
+untouched"*, and `PHOTO_ENVMAP_BOOST`'s own history records the symptom from when that gate was
+missing: *"user reported 'all shadows on building are gone.' Root cause of THAT: env-map/IBL
+reflection is NOT shadow-map-occluded in three.js … the old gate applied the boost to EVERY
+material."* The gate that was added limits the **intensity multiplier**. The **map swap** was never
+gated, so the same defect returned through the other door — and bigger, because the HDRI is far
+brighter than the procedural sky it replaced.
+
+### SPEC — the change, and why this knob and not another
+**Constraint honoured first: measure before adding light.** The user's standing words are *"we
+already got things too bright, shiny reflection, it be shadow effects for realism"*. Every candidate
+was scored against the measured decomposition, and the one shipped **removes** light. No sun
+intensity was raised; the separation was not bought with brightness.
+
+| candidate | what it does | why NOT it — the number |
+|---|---|---|
+| raise `A.sun.intensity` | more N·L range | ADDS light against a standing "too bright" complaint; also breaks `§MOVIE_SHADOW_TM`'s deliberate sun/fill parity with Time Machine (`sunFillRatio 4.387` today) |
+| cut `scene.js` ambient/hemi again | lowers fill | already clamped at the T3 interior floor by #1601 (`k_T2=0.475` wanted, `k_T3=0.491` bound) — and it is not the large term: measured ambient+hemi ≈ **0.123 of the away wall's 0.582** staged luminance |
+| `PHOTO_AMBIENT/HEMI_INTENSITY_SCALE` (staged-only, both 1.0) | lowers staged fill only | same 21% ceiling, cannot reach the target; and `§MOVIE_SHADOW_TM` set both to 1.0 by explicit user directive |
+| `_nightPLScaleStill` (0.5) | dims the ~216 fixture point lights | measured `pl = 0.007` of 0.582 on the away wall — **1.2%**. Not the cause. *(This also answers §PHOTO_REALISM_RETUNE item 1 for the EXTERIOR read: the staged point lights are not what washes out a facade.)* |
+| `CAM_LIGHT_INTENSITY` (3) | dims the camera torch | measured `camlight = 0.000` at 12 m — `CAM_LIGHT_DISTANCE = 4` means it provably cannot reach an exterior facade |
+| **matte materials keep the plain-nav sky env map** | removes the staged HDRI's unshadowed diffuse fill from concrete/plaster, keeps it on glass and metal | **SHIPPED** — the only term big enough (**76%** of the away wall's staged light), it only ever removes light, it needs **no new constant**, and it re-states a policy this file already shipped |
+
+**The change (`viewer/effects.js`, `_reassertPhotoEnvMap`):** the env-map target becomes
+room-probe → glossy: `A._envMap` (the HDRI) → **matte: `_photoEnvMapSaved`** (the sky PMREM captured
+at staging entry — exactly what plain navigation uses). Glossiness is decided by a new SHARED
+predicate `_isPhotoGlossyMat()` (room-probe/mirror flag, `metalness > PHOTO_METAL_THRESHOLD`, or
+`roughness <= PHOTO_GLOSSY_ROUGHNESS_MAX`) so the two reassert loops cannot disagree and the outcome
+does not depend on which ran first this tick. **No constant is introduced, tuned or fitted** — the
+matte term is restored to the value plain navigation already ships, which is the value
+§WALL_SIDE_AND_LIGHT_FLOOR derived and T3-clamped.
+
+**Second, required half (teardown).** Matte materials are not in `_photoEnvBoostedMats`, so they
+would keep a reference to `_photoEnvMapSaved` after Alt+S exits — and a later `A.updateSky()` regen
+DISPOSES the previous render target (`§MEMLEAK_PMREM_DISPOSE`, `scene.js:227`). One pass at teardown
+points every cached material back at the live `A._envMap` (`§SUN_FILL_RATIO teardown envMap restored
+on N material(s)`), witness-asserted. **This also closes a pre-existing leak: before this change
+matte materials kept the staged HDRI as their envMap after Alt+S exited**, so plain navigation after
+a photoshoot was not the same plain navigation as before it.
+
+**Named caveat, not hidden.** Under the opt-in dusk mood (`A._photoDuskMood`, default OFF),
+`A.updateSky(PHOTO_SUN_ELEVATION, …)` runs *after* `_envMapHdriActive` is set, so the PMREM is not
+regenerated and `_photoEnvMapSaved` stays the pre-staging daytime sky; matte walls would then take a
+daytime-sky IBL in a dusk frame. The term is small (21% of an away wall's light in plain nav) and
+dusk mood is off by default, so it was NOT chased in the same pass — single-variable discipline.
+Recorded as the next thing to measure if dusk mood is ever defaulted on.
+
+---
+
+## §MEP_COLOR_SURVIVES_PHOTOREAL — 2026-09-02 (queue D-2)
+
+> **User, 2026-09-02:** *"The bad coloring or material in IFC elements, to get standard MEP look
+> during Alt-S and movie, is that tackled? At the moment still see greyish metallic good contrast,
+> but if there is use of std color for certain diff devices such as Yellow, Blue, Green, Red. Only a
+> certain turn lever is already fire red which is fine."*
+
+### ⚠ THE PALETTE IS AN AUTHORED CHOICE, NOT A PUBLISHED STANDARD
+
+Same boundary PR #1604 shipped under, restated because this section extends that palette's reach.
+**No MEP colour convention exists anywhere in the model data** — no `IfcSystem` / `system` column on
+any shipped building DB, and the colour columns that do exist are either a single undifferentiated
+default or the extractor's own `≈`-prefixed approximations. What is EXTRACTED is the *key*
+(`elements_meta.discipline`, `material_rgba`, `material_name`); what is AUTHORED is the
+discipline→hue *assignment*, and it reuses `A.DISC_COLORS` (`viewer/config.js:43-49`) **verbatim** —
+the same 12-entry table the HUD bars, bbox placeholders, `city.js`, `measure.js` and the §SUNGLASS
+band already paint with. **No new colour value is introduced by this section.** It is not, and is
+not claimed to be, an industry standard.
+
+### The measured defect — the tint was a total no-op on 4 of 5 buildings
+
+`§MEP_DISC_TINT` (`streaming.js`, 2026-08-14) already supplies a trade colour to MEP. Its gate is
+`if (!rgbaStr && stdMat) { … if (DISC_TINT_CLASSES[ifcClass]) … }`. Two scoping failures, both
+measured against the shipped meta DBs (`sat_census.log`, `gap2.log`):
+
+**(a) `!rgbaStr` — "the element has no colour" is the wrong question.** MEP elements carrying a
+`material_rgba` value:
+
+| building | MEP elements | with an rgba | dominant value | its HSV saturation |
+|---|---|---|---|---|
+| Hospital | 41,987 | **41,987 (100%)** | `0.920,0.900,0.850,1.000` × 40,563, `material_name` **NULL** | **0.076** |
+| Clinic | 12,480 | **12,480 (100%)** | `0.920,0.900,0.850,1.000` × 11,712, name `≈ Off-White` | **0.076** |
+| Terminal | 11,844 | **11,844 (100%)** | `1.000,1.000,1.000` × 6,552 / `Silver` × 3,612 (real authored names) | 0.000 |
+| LTU_AHouse | 84,675 | **84,675 (100%)** | four fully-saturated trade colours (green/magenta/blue/yellow) | **1.000** |
+| HHS_Office_Federated | 3,391 | 1 | — (3,390 NULL) | — |
+
+So the tint fires **only on HHS**. On Hospital and Clinic every MEP element carries an *achromatic
+off-white default*, `_TRI_METAL` multiplies over it (`diffuseColor.rgb *= triContrasted`, the shader
+already tints rather than replaces), and the result is exactly the user's words: greyish metallic.
+
+**(b) `DISC_TINT_CLASSES` is 3 classes.** `{IfcFlowSegment, IfcFlowFitting, IfcFlowTerminal}` —
+the IFC2x3 generic trio. Hospital/Terminal export IFC4-style `IfcPipeSegment` / `IfcPipeFitting` /
+`IfcDuctSegment` / `IfcDuctFitting` / `IfcCableCarrier*` / `IfcAirTerminal` / `IfcLightFixture` /
+`IfcFireSuppressionTerminal`. **0 of Hospital's 41,987 MEP elements are in `DISC_TINT_CLASSES`.**
+
+**The user's fire-red lever, identified exactly:** Hospital `IfcPipeFitting | FP |
+0.843,0.137,0.102,1.000` × **1,298** (+2 `IfcValve`, +1 `IfcDistributionControlElement`) — the
+grooved/Victaulic couplings §MEP_DISC_TINT's own comment already names. Saturation **0.879**. It
+survives because its own colour carries a hue. That is the tier this change must not touch.
+
+### The rule — ONE owner, three tiers, hue from the first source that has one
+
+`A._mepDiscAlbedo()` (`streaming.js`) is the single owner. Value/luminance always comes from the
+element; only HUE is ever supplied.
+
+| tier | test (all EXTRACTED) | outcome |
+|---|---|---|
+| **1a** | `material_name` present and **not** `≈`-prefixed → a real authored IFC material | **untouched, byte-identical** |
+| **1b** | the element's own `material_rgba` has HSV saturation ≥ `T` → its colour already carries a hue | **untouched, byte-identical** |
+| **2** | MEP class, no authored name, colour absent or achromatic | hue+saturation from the trade colour, **V from the element's own albedo** |
+| **3** | anything else (non-MEP class, no trade colour available) | unchanged — STD_MAT class default |
+
+Within tier 2 the trade colour is the first source that carries a hue: `_mepNameHint(element_name)`
+(the authored Revit family name — a *more specific* real-BIM signal) → `A.DISC_COLORS[discipline]`.
+An **achromatic** hint carries no trade hue and falls through — this is what finally moves
+`_mepNameHint`'s `DUCT` entry (STD_MAT galvanized grey, sat 0.052), which was itself part of the
+"uniform grey metal" complaint. A discipline whose legend entry is achromatic (`VOID`, `0x666666`)
+supplies no hue either, and the element is left alone.
+
+**Hue transfer is HSV, not HSL.** HSL desaturates hard as L→1, so at the off-white default's
+L = 0.885 an HSL recombination returns near-white. HSV keeps chroma: H and S from the trade colour,
+**V = max(r,g,b) of the element's own albedo**. The off-white `0.920,0.900,0.850` under FP
+(`0xcc8844`, H 30°, S 0.667) becomes `0.920,0.613,0.306` — a solid orange at the element's own
+brightness. The metal normal/roughness maps, `metalness`, `envMapIntensity` and the triplanar
+multiply are all untouched, so the *"greyish metallic good contrast"* the user complimented is the
+shading response, and it survives — only the hue moves.
+
+**When the element has no colour at all** (HHS's 3,390 NULL rows) the trade colour is used verbatim
+— **byte-identical to shipped `§MEP_DISC_TINT`**, so that path is preserved, not re-derived.
+
+### `T` — the achromatic threshold, derived from the data, not picked
+
+Over the tier-2-eligible population fleet-wide (MEP classes, no authored name), the distinct HSV
+saturations present are `{0.000, 0.033, 0.076, 0.100, 0.588, 0.713, 0.879, 1.000}`. The distribution
+is starkly bimodal and the **widest empty band is 0.100 → 0.588, width 0.4884**; its midpoint is
+**T = 0.344**. Split: 53,204 achromatic / 85,934 chromatic, and **0 elements lie within ±0.1 of T** —
+the classification is not knife-edge and no element's tier depends on the third decimal. The witness
+re-measures this gap per run and fails if any element lands inside the band.
+
+### Verification — `viewer/tests/witness_mep_color_photoreal.js` (W-MEP-COLOR-PHOTOREAL)
+
+Tier-A style (the `W-CPE-MATERIAL-KEY` pattern): boot the viewer once on a small building, then for
+each meta DB run the real stream `SELECT` through `sql.js` in-page and call the **shipped**
+`A._getMaterial()` on every element, reading `mat.color` back. Hues are COUNTED off real material
+objects. **No frame, no screenshot** (CLAUDE.md FUNDAMENTAL LAW).
+
+Gates: distinct MEP hues after ≥ before and ≤ the 12-entry legend ceiling; distinct-hue count equals
+the count of disciplines that actually reached tier 2; **RED CONTROL** — with `A._mepHueOff = true`
+every gate must fail (before==after); **TIER-1 CONTROL** — every tier-1a/1b element's material
+`color` is byte-identical before and after, asserted element-for-element, including the 1,298
+fire-red Hospital fittings and Terminal's 11,844 authored-name MEP; `T`-gap re-measured live.
+Self-failure: `VACUOUS` on an empty population, `NO-OP` when nothing moved, `INCONCLUSIVE` — never
+PASS — when nothing was judged.
+
+### MEASURED — 2026-09-02, W-MEP-COLOR-PHOTOREAL **55/55, five buildings, 0 red**
+
+Hues are COUNTED off real `THREE.Material` objects built by the shipped `A._getMaterial()`, plus the
+app's own `§MEP_HUE_TALLY` read off a live HHS stream. **No frame, screenshot or film was rendered
+or inspected.** Log: `viewer/tests/witness_mep_color_photoreal.log`.
+
+| building | distinct MEP hues pre → shipped | colourless MEP elements pre → shipped | tinted | RED CONTROL (`_mepHueOff`) |
+|---|---|---|---|---|
+| **Hospital** | **3 → 8** | **40,634 → 0** | 40,634 | 3 hues — the gain disappears |
+| **Clinic** | **2 → 5** | **12,467 → 43** | 12,467 | 2 hues — the gain disappears |
+| **HHS_Office_Federated** | 6 → 6 | **1,768 → 0** | 3,391 | **0 hues** — the gain disappears |
+| **LTU_AHouse** | **4 → 6** | 107 → 91 | 102 | 4 hues — the gain disappears |
+| **Terminal** | 2 → 2 | 11,828 → 11,828 | **0** | unchanged — every MEP element is tier 1a |
+
+Hospital's tinted split: `PLB 17,096 · MEP 13,495 · FP 6,832 · ELEC 1,623 · SAN 1,588` — **5 trade
+codes, 5 distinct hues painted, no collisions.** HHS: 6 codes → 6 hues, live-confirmed by the shipped
+line `§MEP_HUE_TALLY bld=HHS_Office_Federated mep_elements=3391 tinted=3391 distinct_hues=6
+trade_codes=6 legend_ceiling=12 T=0.344 inst_mep_uniform=283 inst_mep_mixed=0`.
+
+**Gate 1 is deliberately two-sided.** HHS gains real colour *without* gaining a distinct hue — its
+1,768 ducts moved off `_mepNameHint`'s galvanized-grey `DUCT` entry onto a hue other elements
+already carried. Counting hues alone would have scored that a NO-OP, which is the exact
+scope-blindness PRIMAL LAW 4 names.
+
+**TIER-1 CONTROL:** 98,283 tier-1 elements byte-identical with the rule on and off, asserted
+element-for-element. **The user's fire-red lever: 1300/1300 elements, `#d7231a` → `#d7231a`.**
+
+**Terminal's Gate 5 reports VACUOUS, not PASS** — 0 of its elements ever consult `T` (all 11,844 are
+settled at tier 1a by a real authored material name), so a min-distance there would mean nothing.
+
+### MIXED-BUCKET SAFETY — a real hazard this change created, measured and closed
+
+The merge/batch path gives a whole `(storey|disc|rgba|matVariant|mepHintCode)` bucket **one**
+material built from `items[0]`'s class. **MEASURED: Hospital had 21 of 160 such buckets mixing an MEP
+class with a non-MEP one, up to 3,714 non-MEP elements** (Clinic 2/65, LTU 21/231, Terminal 0/244) —
+they would have taken an MEP trade hue they do not belong to. The bucket key therefore gains an
+MEP-hue-class bit; splitting keeps both halves correct and costs at most 21 extra buckets.
+
+The **InstancedMesh** branch buckets by GEOMETRY HASH ALONE — the same caveat §MEP_DISC_PALETTE
+recorded for discipline — and cannot be split without a draw call per hash. MEASURED: Hospital
+**0 of 20,609** and Clinic **0 of 8,459** hashes span an MEP and a non-MEP class; LTU_AHouse has
+**108 of 51,393** (1,386 elements). On a set that is not uniform on MEP-ness the hue is **SUPPRESSED**
+(prior behaviour) and COUNTED (`inst_mep_mixed`), never applied.
+
+### Shipped in bim-ootb PR #1621 · `sw.js` v1126 → **v1127**, `viewer.html streaming.js?v=67 → 68`
+Owner: `A._mepDiscAlbedo` (`viewer/streaming.js`). Kill switch for the red control: `A._mepHueOff`
+— deliberately NOT a `cacheKey` dimension, so a caller flipping it MUST clear `A._matCache`.
+
+### MEASURED — RED and GREEN, two buildings, real renders (2026-09-02)
+
+Numbers below are the FINAL runs on the shipped tree (branch merged with `origin/main` through
+**#1621**, `sw v1128`). Earlier runs on the pre-merge tree agreed to within 0.003 on every headline
+figure — the reruns were done rather than assuming #1619/#1621 could not reach this measurement.
+Logs: `ship2_clinic.log`, `ship2_hospital.log` (session scratchpad).
+
+Wall pair per building: same `ifc_class`, same `material_rgba`, 12 m standoff, coverage **1.00** on
+both sides (every measured pixel is the target element), live sun `[0.000, 0.707, −0.707]`.
+Clinic `IfcWallStandardCase | 0.502,0.502,0.502` at N·L ±0.707; Hospital `IfcWall |
+0.439,0.498,0.557` at N·L ±0.704. All values are **scene-linear luminance**.
+
+| away-facing ÷ sun-facing | Clinic | Hospital |
+|---|---|---|
+| plain navigation (what #1601 ships) | **0.2414** | **0.2371** |
+| **RED** — Alt+S before this change | **1.0453** | **0.9170** |
+| **GREEN** — Alt+S after this change | **0.2388** | **0.2347** |
+| derived prediction (no fitted constant) | 0.2388 | 0.2346 |
+| RED CONTROL — untouched condition re-measured | drift 0.00051 | drift 0.00001 |
+| verdict | `FAIL judged=20 fails=1` (the 1 is the interior-diagnostic closure below, not a shipped claim) | **`PASS-WITH-DECLARED-CONFLICT judged=20 fails=0`** |
+
+**The RED number IS the user's complaint.** On Clinic the wall facing AWAY from the sun measured
+**brighter than the wall facing it** (1.0453); on Hospital it was within 8% of it. There was no
+sun/shade read in the photoreal path at all. GREEN restores plain navigation's own separation to
+within 0.003 on both buildings and lands on the derived prediction to four decimal places — the
+change does exactly and only what the decomposition says it does.
+
+**Per-group decomposition, away-facing wall, Alt+S GREEN (Clinic):**
+`sun=0.00000 ambient=0.06168 hemi=0.06023 env=0.03355 pl=0.00000 camlight=0.00000 emissive=0.00000`,
+closure 1.000. RED's away wall was 0.81332, of which **0.69137 (85%) was the HDRI env term**;
+Hospital's was 0.70141 of which **0.58503 (83%)**.
+
+**Nothing got brighter — asserted per pose, not claimed** (GREEN ÷ RED, scene-linear):
+
+| pose | Clinic | Hospital |
+|---|---|---|
+| exterior, sun side | 0.835 | 0.832 |
+| exterior, away side | **0.191** | **0.213** |
+| interior standpoints (3 real `IfcSpace` centres each) | 0.334 / 0.542 / 0.651 | 0.535 / 0.293 / 0.498 |
+
+Every pose on both buildings is darker. The separation was bought by REMOVING light: sun, ambient,
+hemi, `PHOTO_ENVMAP_BOOST`, `_nightPLScaleStill` and `CAM_LIGHT` are all untouched.
+
+**The HDRI reflection feature is provably untouched:** 43/43 (Clinic) and 70/70 (Hospital) glossy
+materials still read the HDRI or the room probe; only the matte set moved (11 of 54 / 26 of 97).
+
+**Instrument controls:**
+- **FREEZE CONTROL** — frozen shadow map vs a freshly rendered one at the same pose, taken at the END
+  of the run when the scene has long settled: `frozen=0.15546 liveShadowMap=0.15546 relDrift=0.00000`
+  (Clinic), `0.14927 / 0.14927 / 0.00000` (Hospital). An earlier placement of this control read
+  `relDrift=0.0627` because it sampled BEFORE the staged scene finished converging — that reading was
+  **discarded and the control moved**, not explained away.
+- **RED CONTROL** — 0.00051 / 0.00001 drift against effect sizes of 0.81 and 0.68.
+- **Closure** — the light groups sum to the measured total within 1.000 ± 0.010 on every wall pose.
+- **Teardown** — `§SUN_FILL_RATIO teardown envMap restored on 32 material(s), stale _photoBoosted
+  cleared on 11`; census after exit `stale=0 leftBoosted=0 leftOrigEnv=0 castShadow=false` on both.
+
+### ⛔ DECLARED CONFLICT — the interior cost, and the trade the user has to price (→ AGENT_QUEUE U-11)
+Removing the unshadowed fill costs Alt+S interiors, because staging turns the sun's shadow ON
+(`castShadow=true`) and the HDRI had been standing in for all interior daylight:
+
+| interior retention, GREEN ÷ RED | Clinic | Hospital | floor (§WALL_SIDE_AND_LIGHT_FLOOR T3) |
 |---|---|---|---|
-| Chrome 150 headless (branded, `channel:'chrome'`) | true (no-preference / prefer-software) | **OK — 5 chunks, 1849 B** | 32 B |
-| Firefox 148 (Playwright build, this machine's system libs) | true (no-preference / prefer-software) | **OK — 5 chunks, 2401 B** | 39 B |
-| either, `prefer-hardware` | false | n/a | n/a |
+| mean | 0.510 | 0.411 | ≥ 0.70 |
+| p25 | 0.421 | 0.487 | ≥ 0.55 |
 
-**Firefox CAN encode H.264 here.** On Linux Firefox routes WebCodecs H.264 encode through the
-*system* libavcodec/libx264 (NOT the OpenH264 GMP plugin) — so it works on this box because the
-distro ships a full ffmpeg. That also means it is **not universal**: a Firefox on a stripped
-`ffmpeg-free` distro (e.g. Fedora default) has no H.264 encoder and must fall back. Likewise
-distro/Playwright *chromium* builds (`proprietary_codecs=false`) fail where branded Chrome works.
-Conclusion: mp4 is the DEFAULT path, webm stays as a real, exercised fallback — not dead code.
+**The clamp is priced, not hand-waved** (`§SFR_CLAMP`): keeping fraction **m = 0.388** (Clinic) /
+**0.491** (Hospital) of the HDRI matte fill would hold both floors, but the wall separation would then
+be **0.5863 / 0.6011** instead of 0.2388 / 0.2347 — the away wall back to ~60% of the sun wall, better
+than RED's 105% and not what the user asked for. **Both numbers are on record rather than silently
+favouring either half.** Shipped state = the full fix; `m` is the one number to move.
 
-### Design
-1. **`viewer/lib/mp4_mux.js`** — hand-rolled ISO-BMFF writer, ~1 file, no third-party code, so no
-   license/vendoring question and every byte is auditable. Single AVC video track, non-fragmented,
-   **faststart layout (`ftyp` → `moov` → `mdat`)** so the file plays while still downloading and
-   satisfies the strictest mobile players. Boxes: `ftyp`/`mvhd`/`tkhd`/`mdhd`/`hdlr`/`vmhd`/
-   `dinf`+`dref`+`url `/`stsd`+`avc1`+`avcC`/`stts`/`stss`/`stsc`/`stsz`/`stco`. `moov` is built
-   twice — once with zero chunk offsets to learn its own size, then again with real offsets —
-   because `stco` entries are fixed-width so the second build cannot change the size.
-   `avcC` is taken **verbatim** from `EncodedVideoChunkMetadata.decoderConfig.description`
-   (`avc: {format:'avc'}` = AVCC; the MP4 `avcC` box IS that record — nothing is invented here).
-   Timescale = `fps*1000`, per-sample delta = `1000` → exact frame timing at any fps.
-2. **`_stitchMp4()` in `cinema_maxq.js`** — tries codec candidates high→baseline
-   (`avc1.640034`, `avc1.4d0034`, `avc1.42003c`, `avc1.640028`, `avc1.42001f`), each gated on
-   `isConfigSupported` AND a real `configure()`; first that survives wins. Encodes straight from
-   the IDB frames — **no real-time replay**, so stitching is no longer pinned to 1× wall-clock.
-   Even-dimension crop (H.264 requires even w/h; the renderer really does produce e.g. 1854×963).
-   Keyframe every 2s. Backpressure on `encodeQueueSize`.
-3. **Fallback is the EXISTING path, unchanged.** `_stitch()` (MediaRecorder→webm) is not edited.
-   Any failure — no `VideoEncoder`, no codec, `window.MP4Mux` missing (stale precache), a throw
-   mid-encode, zero chunks, no `avcC` — logs `§MAXQ_MP4_FALLBACK reason=…` and calls `_stitch()`.
-4. **Witness tags:** `§MAXQ_MP4 probe codec=… supported=…`, `§MAXQ_MP4 configured codec=… size=…
-   bitrate=… fps=…`, `§MAXQ_MP4 encoded chunks=… bytes=… ms=…`, `§MAXQ_MP4_FALLBACK reason=…`.
-   `§MAXQ_DONE … type=video/mp4` keeps the existing done-tag so old log habits still read.
-   A pasted console answers "mp4 or webm?" on its own, per the standing MAXQ logging rule.
-5. **Cache wiring (mandatory, both):** `MAXQ_V` → `v9`, `sw.js` `CACHE_VERSION` → `v812`, and
-   `lib/mp4_mux.js` added to `PRECACHE_ASSETS` + a `<script>` tag in `viewer.html`.
+**What actually lights an Alt+S interior after the fix** (`§SFR_INTERIOR_DECOMP`, Hospital, closure
+**0.997**): `ambient=0.09682 hemi=0.09422 env=0.05027` of a 0.24252 total — and `pl=0.00000`,
+`camlight=0.00000`, `emissive=0.00055`. So the room is left on the non-directional fill alone. The
+same probe on Clinic closed at only **0.447**, i.e. the witness reporting that it could NOT account
+for 55% of that frame; the standpoint's max pixel is 2.46–3.22 (brighter than any lit wall), which
+points at sky geometry visible through a window — unchanged between RED and GREEN, so it DILUTES the
+retention figure toward 1.0 and the true interior-surface darkening is stronger than the frame-level
+number above. Named, not chased.
 
-### Verification contract
-- `node --check` on every edited JS file.
-- Headless puppeteer bake (pattern: `witness_maxq_idb_deadlock.js`), small frame count, real GPU
-  via ANGLE/SwiftShader, real building DB.
-- **The produced file must be `ffprobe`-valid**: container `mov,mp4,m4a`, codec `h264`, correct
-  frame count and duration. A file that downloads but does not play is a FAIL, not a pass.
-- The webm fallback must still reach `§MAXQ_DONE` when mp4 is forced unavailable.
+**⚠ The `§STAGED_PL_CUT` remedy is OPEN, not refuted — and the first answer was a false one.** The
+staged fixture lights are the obvious interior knob. A first sweep reported a clean `0.00000` interior
+change, i.e. "the fixtures do not light interiors" — **a FALSE finding manufactured by the
+instrument**: `tools.js`'s pooled fixture update (`§STAGED_PL_CUT`, `tools.js:1787/1821`) recomputes
+every light's intensity from `A._nightPLScale` on camera moves, so a per-light write is overwritten
+before the next render. The sweep now moves that scalar and reads the intensity total back — and on
+the corrected run it printed **`INCONCLUSIVE — the sweep never actually changed the staged fixture
+light total (0 → 0 → 0)`**, because that pool is CAMERA-PROXIMITY driven (`_fade = min(1, dist/15)`,
+lights outside the needed set are set to 0) and is empty once the accumulation loop is stopped for
+measurement. **So: `pl` measured 0.00000 on the away facade in every run — it is certainly not the
+CAUSE — but whether raising `_nightPLScaleStill` could restore Alt+S interiors is NOT yet answered.
+Answering it needs a measurement that keeps the fixture pool live, which the current freeze forbids.**
+That is the next thing to build if U-11 goes that way.
 
-## §CINEMA_AUTHORED_POSE — DOCTRINE + SPEC (2026-07-19, user design dictation)
-**Status: SPEC ONLY, no code written.** Supersedes the earlier "fix the tight start pose" framing —
-that framing was WRONG and must not be revived (see P1). Recorded verbatim-in-substance from the
-user's own dictation; the reasoning is theirs, not derived.
+## §DUCT_SILHOUETTE — 2026-09-02 (queue D-3) — ✅ DONE (witness), bim-ootb PR pending at time of writing
 
-### The doctrine (read before touching any path/pose code, ever)
-**The start pose IS the authoring interface.** Where the user puts the camera and which way it faces
-is the entire authoring act. One decision — where to stand — yields a complete film. This is the
-product thesis: "the simplest fastest setting of a movie maker rather than the rest which invest so
-much prep time," and it is *more fun*, because the 10s `§MAXQ_PREVIEW` lets you cancel and repeat
-until it's right, and "in the end must have learned many tricks up the sleeve."
+> **USER:** *"The roundness to jagged curves seems to work on lamps but certain large duct piping
+> seems lacking. Is the formula easy? Detecting an element to possess curved surface but having
+> jagged and thus candidate to apply."*
 
-- **P1 — NEVER normalize, correct, or override the authored start pose.** A tight radius is not an
-  error; it means the user deliberately stood in a **lobby / foyer / hall**, and "turning around is
-  meaningful as the intent of the user is that." A steep downward pitch from height is not a mistake;
-  it is a stated tactic ("make the cam face downwards from a higher position and the orbit eases back
-  or keeps the angle of attack as it is"). Any change that snaps these toward a default is a
-  REGRESSION against the feature's whole purpose, however "cinematic" the default looks.
-- **P2 — Pose determines a myriad of genuinely different paths.** The user must be able to see
-  intuitively that where/how the camera is placed "can influence a myriad of paths not entirely the
-  same." Sameness across different start poses is the failure mode to design against.
-- **P3 — The preview is the iteration loop.** 10s, free, cancellable, repeatable. Trial-and-error is
-  the intended UX; it beats configuration UI and must stay cheap enough to keep doing.
-- **P4 — The ENDING is a function of the BEGINNING.** "the ending also must be due to how the
-  beginning was — will be a good hack on our part." Worked example, user's own: a user wanting the
-  film to end zooming back near, or swinging to the same angle of attack from atop outside the
-  building pulling away, gets that *because of* the same angle inside the building and how far/off
-  from a floor they started. Start and end are one gesture.
+**Answer to the user's actual question, first: YES, the formula is easy — it is two lines — and the
+detector they are imagining already exists. The split they are seeing is NOT a detection failure at
+all. It is SIZE, and it is ~50x wide.**
 
-### The real defect (re-scoped under P1)
-The current `pushInRadius = Math.min(base.startRadius, fillDistance)` (`effects.js:2892`, comment
-"only ever draws NEARER, never out") silently no-ops the push-in AND the hold when the user starts
-nearer than `fillDistance`: with `CINEMA_PUSHIN_SEC=3` + `CINEMA_HOLD_SEC=5` at 24s duration, that is
-**~8 seconds / ~120 of 360 frames at a frozen radius** doing nothing expressive. Witnessed live on
-LTU (`§MAXQ_START radius=6.3 height=7.0`).
-**The fix is NOT to push the camera outward.** It is to give those beats something meaningful to do
-for an in-place start — the turnaround the user intended. Radius stays authored.
+### §D3.1 — why the existing pass cannot be the fix (do not re-litigate)
+`§MEP_SMOOTH_NORMALS geoms=160 ranges=1662 vertsSmoothed=2,074,656 vertsKeptHard=691,414
+creaseDeg=55` rewrites **normals** at a 55° crease. It changes **shading**. A faceted cylinder
+shades smoothly and its **silhouette stays a polygon**, because the silhouette *is* the geometry.
+`streaming.js` already says this in its own header: *"IfcFlowSegment is 10.3 over 26 triangles: a
+genuine 10-sided prism, so its SHADING improves here but its silhouette cannot."*
 
-### Derived-marker beats (the "creativity" layer — dynamic, never hardcoded)
-All derived at trigger time from the live building + the authored pose, per this file's standing
-determinism rule (any building, any angle, no hardcoding):
-- **B1 — In-place turnaround** for a tight/interior start: spin on the spot as the opening beat
-  instead of a dead frozen-radius push-in.
-- **B2 — Angle-of-attack carry.** A start pitched down from height either HOLDS that pitch through
-  the orbit or eases back from it — never snaps to the default level band.
-- **B3 — Room markers, from the existing room graph** (already built for §CINEMA_INDOOR): as the
-  spin passes a room, **if the room is big, linger a bit toward its centre**; otherwise **head for
-  the door out to a larger hallway, then head to the door.**
-- **B4 — Twist-back easing. RESOLVED (user, 2026-07-19): 10 frames, ≈ half a second more.** Verbatim:
-  "Slow it down say 10 frames then even though half more second for any sudden twist which breaks too
-  fast a perception." The earlier 3-frame reading was too small — confirmed, don't revive it.
-  ⚠ **Spec it in SECONDS, not frames**: the two consumers run at different rates (MaxQ 360f@15fps,
-  Cinema Orbit 576f@24fps), so a literal 10-frame constant would be 0.67s in one path and 0.42s in
-  the other — perceptually different for the same authored film. Use `CINEMA_TWIST_EASE_SEC ≈ 0.45`
-  (10 frames at the 24fps cinema cadence) and derive frames per path, so the softening feels
-  identical wherever it plays. This applies to EVERY sudden orientation change, not only the
-  twist-back to face the building — the user's stated reason is perceptual ("breaks too fast a
-  perception"), so it generalizes to the swoop climb and the reciprocal-act tilt ramp too.
-- **B5 — Final orbit is too level.** It should "hobble to a higher angle" around the sun-reflection
-  beat (`§CINEMA_SWOOP`, where the sun reflects at eye level of the opposing wall). User was
-  explicitly flexible on placement: "after passing or before that part."
-- **B6 — Ending mirrors beginning (P4).** Pull-back angle/distance/height derived from the start's
-  angle of attack, radius, and **height above the floor beneath it** ("how far or off from a floor")
-  — so the close rhymes with the open by construction, not by a separate setting.
+⛔ **Widening `creaseDeg` is NOT the remedy** — it addresses shading, which is not the defect, and it
+would round genuine hard edges. `CREASE_DEG` stays 55, and this new pass deliberately reuses the
+*same* 55°/2° edge classification so shading and silhouette always describe one surface.
 
-### Witness / log tags to add
-`§CINEMA_POSE_AUTHORED radius= tilt= azimuth= floorOffset= inside= room=` at plan time (the pose must
-self-identify in a pasted log — standing rule from §PR #888), `§CINEMA_MARKER kind=linger|door
-room=<id> tNorm=` per derived beat, `§CINEMA_ENDING mode= derivedFrom=` for the P4 mirror.
-Determinism proof required before "done": ≥2 buildings × ≥3 materially DIFFERENT start poses
-(exterior-wide, interior-lobby, high-pitched-down) must produce visibly different plans — that is
-P2 stated as a test, and it is the check that would catch a normalization regression.
+### §D3.2 — THE FORMULA (measured, validated, no fit, no class list, no building name)
+For any edge shared by two faces whose dihedral θ is small enough that the shipped smoothing pass
+welds across it — i.e. the two facets are *meant* to read as one curved surface — project both faces
+perpendicular to that edge. The edge collapses to a point `E`; the two opposite vertices give `A`
+and `B`; all three lie on the swept cross-section. Therefore:
 
-## §CINEMA_RECIPROCAL — THE FIRST-ACT FORMULA (2026-07-19, spec, no code yet)
-The answer to §CINEMA_AUTHORED_POSE P2/P4: one formula turning the authored start pose into a whole
-film *including its ending*. **Core diagnosis: the current plan already reads the start pose, then
-throws most of it away by CLAMPING** — `targetTilt = clamp(startTilt, 8°, 45°)`,
-`targetRadius = clamp(startRadius, 0.9·env, 2.5·env)` (`effects.js:2878-2879`). Clamping is exactly
-what collapses different poses onto the same film. **The fix is to replace clamps with MAPPINGS.**
+```
+R      = |EA|·|AB|·|BE| / (4·area(EAB))      circumradius of three points — EXACT
+s      = R · (1 − cos(θ/2))                  chord deviation, metres — "the jaggedness"
+D_1px  = s · k,   k = (H/2)/tan(fov/2)       = 935.3 px/rad at 1080p, fov 60 (scene.js:139)
+```
 
-### Three dimensionless scalars extracted from the first act
-Derived at plan time from the live camera + ARC bbox — nothing hardcoded, any building, any angle.
-| Symbol | Name | Formula | Reads as |
+`s` is how far the flat facet sags inside the ideal arc. **`D_1px` is the distance out to which that
+sag still covers a whole screen pixel** — i.e. how far away the element still looks jagged.
+
+**VALIDATED, not asserted.** On Hospital the estimator lands on **R = 525.0 mm and 550.0 mm** — real
+1050/1100 mm manufacturing duct sizes — and its segment count agrees **exactly (11 vs 11)** with a
+completely independent PCA ring fit. A first, cheaper centroid-based estimator was biased by a
+constant 0.653 on triangulated quads and was **discarded**, not corrected by a fudge factor.
+
+### §D3.3 — THE LAMP-vs-DUCT SPLIT, quantified (this is the user's observation, in numbers)
+| Hospital class | curve-detected? | mean N | mean s | worst D_1px |
+|---|---|---|---|---|
+| `IfcLightFixture` | yes | 13.3 | — | **falls out of the offender list at every gate tried** |
+| `IfcDuctSegment` | yes | 12.8 | 4.17 mm | **20.8 m** |
+| `IfcPipeSegment` | yes | 11.0 | 0.75 mm | 5.2 m |
+| `IfcRailing` | yes | 22.7 | 63.98 mm | 154.6 m |
+| `IfcBeam` (curved sweeps) | yes | 11.8 | 21.50 mm | 685.5 m |
+
+**Both classes are detected. Both carry the same tessellation quality (N ≈ 11–13). The error is
+linear in radius**, so a lamp is sub-pixel past arm's length while an 1100 mm duct is a whole pixel
+at **twenty metres**. Detection was never the problem — size was. ⚠ Note the worst offenders on
+Hospital are **not ducts at all** but large-radius *curved sweeps* (railings, curved beams); the
+user only named ducts because that is what they were looking at.
+
+### §D3.4 — BOTH REMEDIES, COSTED. Recommendation: re-tessellation.
+**Remedy B — a silhouette treatment that adds no geometry. VERDICT: no credible option exists, and
+that is a finding, not a cop-out.** Priced honestly:
+1. **Anti-aliasing** — already shipped (`taa=8`). Softens the edge *pixel*; the polygon outline is
+   unchanged. A 3 px sagitta stays 3 px. Cost 0, benefit 0. **Not a remedy.**
+2. **Radial rescale onto the mid-radius polygon** — genuinely halves max deviation for free, but it
+   **moves real geometry outward by ~s/2** on a model that carries clash detection, measure and QTO.
+   Silently inflating every duct by up to 11 mm is falsifying the model. **Rejected on PRIME RULE
+   grounds**, and it only buys 2x anyway.
+3. **Parallax/POM silhouette** — cannot extend a surface outward past itself, and there is no height
+   map. **Not credible.**
+4. **Hardware tessellation** — WebGL2 has no tessellation shader. **Not available** (and §S276
+   WebGPU is deferred).
+5. **Re-extract at a finer IfcOpenShell chord tolerance** — the *correct* fix at the source, but it
+   re-tessellates the **whole fleet** instead of the measured tail, requires re-extracting and
+   re-uploading every building DB (Hospital alone is 252 MB, fleet 2.2 GB on OCI), and costs **more**
+   memory, not less. **Rejected as untargeted.**
+
+**Remedy A — one level of uniform Phong (PN-triangle) subdivision on the qualifying tail. CHOSEN.**
+θ halves, so the residual sag drops ~4x. Measured cost, Hospital, through the shipped module:
+
+| gate | refined geoms | instances | +MB per-geometry | +MB per-instance | mean sagitta |
+|---|---|---|---|---|---|
+| D_1px ≥ 2 m | 3,589 | 8,372 | +107.0 | **+307.0** | 12.324 → 2.457 mm (5.02x) |
+| D_1px ≥ 3 m | 2,607 | 6,649 | +85.4 | +241.8 | 14.773 → 2.783 mm (5.31x) |
+| **D_1px ≥ 5 m** | **1,419** | **4,019** | **+59.3** | **+159.3** | **21.331 → 3.383 mm (6.31x)** |
+| D_1px ≥ 10 m | 860 | 2,898 | +43.5 | +126.1 | 26.991 → 3.646 mm (7.40x) |
+
+The two bounds are real and both are quoted because the answer lies between them: JS-heap cost is
+**per geometry** (`A.meshCache` is keyed by geometry hash, so each is refined once), while GPU
+buffer cost is **per instance** for anything on the `BatchedMesh` path and **per geometry** for
+anything instanced (Hospital `§CONTRACT_CHECK batch=38169 instanced=25013`).
+
+**Gate = 5 m, chosen on the cost curve, not on taste.** Tightening 5 → 3 m costs **+82 MB** for
+1,188 more geometries that are mostly small fittings; loosening 5 → 10 m saves only **33 MB** while
+dropping 559. And `§R12_HOSPITAL_MEM` already puts Hospital's heap at ~1,577 MB, so the brief's
+warning applies directly: **the 2 m gate's +307 MB is the "hundreds of MB is not a win" case and is
+rejected.** 5 m is +3.8% to +10.1%.
+
+### §D3.5 — fleet population and result at the shipped gate (through the shipped module)
+| building | geoms | curve-detected | refined | instances | +MB perGeom / perInst | mean sagitta mm |
+|---|---|---|---|---|---|---|
+| Hospital | 20,609 | 15,428 | 1,419 | 4,019 | +59.3 / +159.3 | 21.331 → 3.383 (**6.31x**) |
+| Terminal | 9,394 | 7,424 | 28 | 28 | +30.6 / +30.6 | 42.924 → 5.238 (**8.20x**) |
+| JKR | 6,877 | 5,342 | 74 | 74 | +10.7 / +10.7 | 47.440 → 4.495 (**10.55x**) |
+| Clinic | 9,230 | 4,366 | 59 | 934 | +6.1 / +94.2 | 30.012 → 5.508 (**5.45x**) |
+| HHS_Office_Federated | 4,710 | 2,314 | 117 | 388 | +3.9 / +6.9 | 14.591 → 2.848 (**5.12x**) |
+| Duplex | 835 | 503 | 6 | 6 | +1.4 / +1.4 | 42.804 → 10.968 (**3.90x**) |
+
+Hospital's refined set is **9.2% of its curve-detected geometry**. The realised improvement beats
+the 4x the theory predicts, because the gate selects the worst offenders and those improve most.
+
+### §D3.6 — the shape factor is DERIVED, not tuned
+The plain linear midpoint leaves the sag untouched; the *fully* projected Phong midpoint OVERSHOOTS
+(a 12-gon goes from −3.4% inside to +3.1% outside — no gain). The damped midpoint
+`m' = m − (α/2)·[((m−p_i)·n_i)n_i + ((m−p_j)·n_j)n_j]` is exact on a cylinder at
+`α = (sec(θ/2) − 1)/sin²(θ/2)`, whose limit as θ→0 is **exactly 1/2** (`sec x − 1 ~ x²/2`,
+`sin²x ~ x²`). It barely moves over the range that matters: **0.527 at N=12, 0.539 at N=10, 0.619 at
+N=6.** So `ALPHA = 0.5` is the second-order-exact value, not a knob turned until it looked right.
+
+### §D3.7 — safety, met by construction (the user's standing constraint, without a class list)
+*"It must not impact non curve intending surfaces."*
+- A midpoint on a **HARD** edge is **never projected**. The midpoint of a straight edge lies **on**
+  that edge, so a planar facet keeps the same plane, outline and area.
+- Midpoint positions are computed once per **welded representative** pair and shared by both
+  neighbouring faces, so a crack is impossible and the result cannot depend on triangle visit order.
+- The per-face vertex split of the source data is preserved — nothing is welded or renumbered, so
+  picking, per-element hide, the BVH and `§TRIPLANAR`'s `vTriWorldNormal` all still see their layout.
+- **No building name, no IFC class list, no material name anywhere in the file.** A round column, a
+  curved railing, a dome and a duct are judged by the same two lines of arithmetic (user, 2026-09-02:
+  *"No custom code to any particular building has been our rule."*).
+
+### §D3.8 — TWO THINGS THE WITNESS CAUGHT AND THE CODE CHANGED FOR
+Recorded because both were plausible on paper and wrong in measurement:
+1. **Curved-shell-only refinement + green T-junction closure — MEASURED WRONG, abandoned.** Refining
+   only triangles touching a smooth edge and closing the frontier with 1→2 / 1→3 green splits is
+   ~2.6x instead of 4x, and it is the obvious optimisation. On real Hospital geometry it drove
+   **non-manifold edges 24 → 211** and opened **875 T-junctions**, because a real IFC mesh is not the
+   clean two-manifold that argument assumes — it carries edges shared by 3+ faces, and a
+   refined/unrefined frontier through one of those cannot be closed by a green split. **Uniform 1→4
+   removes the frontier itself**, so a crack is impossible by construction. The extra cost is the
+   4x column above and it is paid deliberately.
+2. **Midpoints built from whichever per-face copy the loop reached first.** Copies that weld together
+   can still differ by up to the 0.1 mm quantum, making the output depend on triangle visit order.
+   Now built from the **welded representative**.
+
+### §D3.9 — WITNESS: `viewer/tests/witness_duct_silhouette.js` — **W-DUCT-SIL 10/10, 37 refined
+elements across 8 building DBs, red control caught, exit 0**
+No browser, no bake, no screenshot anywhere in the chain — it reads real geometry blobs out of the
+shipped DBs and calls the shipped module (CLAUDE.md PRIMAL LAW + FUNDAMENTAL LAW).
+- **C2 (load-bearing)** — non-curve surfaces unmoved: 0 original vertices lost, every hard-edge
+  midpoint within **4 float32 ULP** of its own edge. Stated in ULPs because that is the measurement
+  floor: positions live in a `Float32Array` whose ULP at a 35 m coordinate is 4.2 µm, while a real
+  displacement would be the sagitta — **millimetres, ~1000x above it**. The red control sets 120 ULP
+  and is caught.
+- **C3 / C3b** — sagitta improves ≥3.5x fleet-wide and **no element regressed**, re-measured on the
+  **output** mesh, not predicted from the formula that motivated the change.
+- **C4a** — the uniform-refinement identity `V'=V+E`, `E'=2E+3T`, `T'=4T` holds **exactly** on every
+  weld-injective element, with boundary and non-manifold structure exactly doubled.
+- **C4b** — direct point-on-edge crack scan, **scoped and declared**: 8 clean-input elements judged
+  of 37; the 29 that entered with coincidences and the 2 over the scan cap are named, not passed
+  over. Prints `INCONCLUSIVE` rather than PASS if the judged population is empty.
+- **C5** — `§SIL_NOOP gateM=1e9 judged=400 refined=0 geometryChanged=0` — the pass declines and says
+  **NO-OP**, exercised for real against the same population.
+- **C6** — triangle growth is exactly 4x per element, never more.
+- Per-building `§SIL_BUILDING` lines print **NO-OP** where nothing qualified (JKR at the 800-geometry
+  sample), never a green zero.
+
+### §D3.10 — three measurement traps recorded, so the next session does not pay for them again
+1. **A 12-gon round duct has ~14 distinct face normals and therefore FAILS the shipped shape gate
+   `CURVE_MIN_DISTINCT = 16`.** It is smoothed only because `IfcDuctSegment` is on
+   `MEP_CURVE_CLASSES`. Any future work that assumes the shape gate alone covers round ducts is wrong.
+2. **The class gate lets boxes through.** Hospital/HHS `IfcFlowTerminal` includes 12-triangle,
+   `distinct=6` tapered boxes (rectangular diffusers) that bypass the shape test entirely via the
+   class list. Harmless for shading; it would be a disaster for re-tessellation, which is why this
+   pass gates on **shape only** and never reads a class.
+3. **A nearly-coplanar triangle pair fits an arbitrarily large circumradius** and reported a
+   **4,290.9 mm** bulge on a flat `IfcWallStandardCase`. Two physical guards, not tuned thresholds:
+   `s ≤ 0.25 × bbox diagonal`, and **≥ 6 smooth edges** (a real tessellated curve has many facets at
+   a consistent step). With the guards on, `IfcLightFixture` drops out of the offender list — which
+   independently reproduces the user's own "it works on lamps".
+
+**Files:** `viewer/silhouette_refine.js` (new) · `viewer/scene.js` (`A.blobToGeometry` — the single
+geometry choke point, and the only place refinement can happen: both batch paths size their
+`BatchedMesh` from `item.geo` at flush time, so an already-refined geometry is reserved for
+correctly with no batch change) · `viewer/streaming.js` (reports next to `§MEP_SMOOTH_NORMALS`, so
+the shading half and the outline half are read together) · `viewer/sw.js` `CACHE_VERSION v1128→v1129`
++ precache entry · `viewer.html` `scene.js?v=58→59`, `streaming.js?v=68→69`, all in the same commit.
+
+---
+
+## §SFR_FIXTURE_FIRST — U-11 re-scoped: *"Will room lighting be better if it has no Sun?"* + *"it should be LIVELY"* (2026-09-02/03)
+
+> **User:** *"Will room lighting be better if it has no Sun?"* — light a room from its OWN fixtures
+> rather than from sun/environment fill.
+> **User, same session:** *"About room lighting, it should be LIVELY. So far it has never been,
+> though lighting has been BRIGHT."*
+
+**⛔ NOT DONE. Nothing shipped from this section. Read §SFR_NEXT at the bottom for the one blocking
+item.** What IS settled below is settled with numbers; what is not is named as not.
+
+### 0. THE HEADLINE CORRECTION — `pl = 0.00000` WAS AN INSTRUMENT ARTEFACT, AND TWO PUBLISHED CLAIMS ABOVE ARE WRONG
+
+`§SUN_FILL_RATIO`'s own record states, twice, that the staged fixture point lights contribute
+nothing: *"`pl` measured 0.00000 on the away facade in every run"* and `§SFR_INTERIOR_DECOMP`'s
+*"`pl=0.00000` … So the room is left on the non-directional fill alone."* **Both are false.** They
+came from one line in `viewer/tests/witness_sun_fill_ratio.js`'s light-group isolator:
+
+```js
+if (!W._plI) W._plI = new Map(ls.map(l => [l.uuid, l.intensity]));
+ls.forEach(l => { const v = W._plI.get(l.uuid);
+                  l.intensity = on ? (v === undefined ? l.intensity : v) : 0; });
+```
+
+First use is the **plainNav** decomposition, where night mode is off and there are **zero** point
+lights — so the restore map was captured EMPTY and never rebuilt. At Alt+S the ~216 staged fixture
+lights are all absent from it, so `off` set every one to 0 and `on` restored
+`l.intensity = l.intensity` = **0**. From the first `pl` toggle onward the fixture pool was dark for
+the rest of the run. The closure check could not catch it, because the all-on reference render for
+the *second* wall side was itself taken after the lights were already zeroed (0 − 0 = 0, closure
+1.000). The same bug shape sat in the `env` and `emissive` groups — and the emissive one explains the
+other published oddity, `emissive=0.00055` and the Clinic interior decomposition that *"could not
+account for 55% of that frame"*: `A._applyNightGlowToMatCache()` CREATES the luminaire/window glow
+during staging, so a set captured at plainNav does not contain the materials the group exists to
+measure.
+
+**Corrected, both buildings, real renders, fixture pool live and re-selected at every pose**
+(`§SFR_INTERIOR_DECOMP`, GREEN/shipped state):
+
+| interior standpoint | total | ambient | hemi | env | **pl (fixtures)** | emissive | closure |
+|---|---|---|---|---|---|---|---|
+| Hospital `≈ Level 1 R18` | 0.33102 | 0.09045 | 0.08146 | 0.04469 | **0.09724 (29.4 %)** | 0.00387 | 0.960 |
+| Clinic `≈ First Floor R62` | 0.32692 | 0.06048 | 0.05472 | 0.03378 | **0.07111 (21.8 %)** | 0.00816 | 0.699 |
+
+**The room is NOT "left on the non-directional fill alone." The fixtures are already its single
+largest directional term.** Clinic's 0.699 closure is the sky-through-a-window term this file
+already named — unchanged and still not chased.
+
+Away-facade `pl`, corrected: Clinic **0.00753 of 0.16429 (4.6 %)**, Hospital **0.00029 of 0.13786
+(0.2 %)**. Still small — so the *conclusion* PR #1622 shipped on (the HDRI matte fill was the cause)
+is unaffected — but "certainly not the cause" was being asserted from a number that was not measured.
+
+**Re-proved endpoints with the corrected instrument** (`§SFR_REDGREEN`, `§SFR_CONTROL` drift
+0.00000 on Clinic): plainNav **0.2414 / 0.2371**, RED **1.0434 / 1.0608**, GREEN **0.2526 / 0.2839**.
+The shipped separation is **0.2526 (Clinic) / 0.2839 (Hospital)**, not the 0.2388 / 0.2347 recorded
+above — that pair was measured with the fixture lights artificially at zero. **Use these numbers.**
+
+### 1. THE SECOND DEFECT — THE STILL'S NEAR-FIELD BOOST NEVER FIRES ON AN INTERACTIVE Alt+S
+
+`tools.js` defines two constants *for the frozen still specifically*:
+`A._nightNearFadeFloorStill = 1.0` (*"still: no proximity penalty at all"*, `tools.js:1089`) and
+`A._nightMaxLightsStill = 50` (`tools.js:1087`). `effects.js`'s §NIGHT_STILL_LIGHTS block applies
+them — but it is guarded:
+
+```js
+// effects.js:4918
+if (A._nightStillBoost &&
+    A._nightLights && A._nightLights.length && typeof A._nightUpdateLights === 'function') {
+  A._nightMaxLights      = A._nightMaxLightsStill;
+  A._nightNearFadeFloor  = A._nightNearFadeFloorStill;   // §NIGHT_NEAR_FADE
+```
+
+…and `_applyPhotoStaging()` — the call that turns Night Mode on and **builds those very lights** —
+does not run until **`effects.js:4945`**. On the normal path (Alt+S from a session not already in
+Night Mode) `A._nightLights` is empty at :4918, the guard is false, and the block is skipped.
+
+**MEASURED LIVE, both buildings, inside a real `A.startStillRefine()`** (`§SFR_POOL` census):
+`"maxLights":30, "nearFadeFloor":0.3` at **every one of the five poses on both buildings** — the
+NAVIGATION values. §NIGHT_NEAR_FADE's own comment on that floor: *"exactly backwards for the
+complaint now being made: standing under a fixture gives the WEAKEST light in the scene… lifted to
+full strength for the frozen still."* It is not lifted. Scale of the miss: `intensity = 2.0 ×
+(floor + (1−floor)·min(1, d/15)) × plScale`, so at 3 m a fixture gives 0.44 instead of 1.0 (**2.3×**)
+and at 1.5 m 0.37 instead of 1.0 (**2.7×**); at ≥15 m the two are identical, so a facade 12 m out is
+untouched. Clinic has **240 luminaires within 15 m** of interior0 and Hospital 114 within 15 m of
+its interior1 — i.e. essentially every fixture that lights a room is inside the penalty window.
+
+**⚠ SCOPE, and it matters — this is NOT the film explanation.** `startStillRefine()` runs once per
+FOLD, so in a bake frame 1 skips the block (night mode still off) and **frames 2…N do fire it**
+(that is the 2,026 firings the §VAC comment at `effects.js:4923` already records from
+`s5_hospital.log`, *"raised to 200 lights, near-fade floor 1"*), with `_teardownStillRefine`
+(`effects.js:4291-4295`) handing the floor back to 0.3 between frames. So: **a FILM already gets the
+still floor from frame 2 onward; an interactive Alt+S never does, and neither does a film's first
+frame.** Do not sell this as the cause of the drained bright register in the exported films.
+This is a real defect in the Alt+S still path and a 2-line fix (move the block below
+`_applyPhotoStaging()`), but its measured EFFECT is not yet trustworthy — see §2c.
+
+### 2. WHAT THE LEVERS MEASURE — two-sided gate, both buildings, `m = 0`
+
+Instrument: `viewer/tests/witness_sun_fill_ratio.js`, real viewer, real split DBs, real
+`A.startStillRefine()` staging, scene-linear `FloatType` render-target reads, **no bake, no
+screenshot, no film**. Logs: `sfr_clinic6.log`, `sfr_hospital6.log` (session scratchpad).
+
+**Liveliness is measured as SHAPE, not level** (`§SFR_LIVELY`), all from the same single render:
+`cv = std/mean`; `p90/p10`; `topShare` (share of frame luminance in the brightest decile — 0.10 is
+perfectly flat); `tileCV` (cv of 8×6 tile means = the spatial falloff gradient); `wcStd`
+(luminance-weighted stddev of the warm/cool axis `(r−b)/(r+b)` = chromatic separation).
+**Every figure is a ratio against the CURRENT shipped state (m = 0, post-#1622)** — #1622's own CV
+gain is already in the baseline and is not re-claimed.
+**The gate is two-sided:** clear the T3 floors (mean ≥ 0.70, p25 ≥ 0.55, §WALL_SIDE_AND_LIGHT_FLOOR)
+**AND** keep `cv` and `tileCV` at ≥ 0.98× the shipped value. A lever that buys the mean by flattening
+the field would undo #1622 and is scored **REJECT**, not PASS.
+
+| lever | Clinic retMean / retP90 | Clinic cv · tileCV | Clinic verdict | Hospital retMean / retP90 | Hospital cv · tileCV | Hospital verdict | facade separation |
+|---|---|---|---|---|---|---|---|
+| shipped `m=0` | 0.743 / 0.892 | 1.00 · 1.00 | baseline | 0.598 / 0.545 | 1.00 · 1.00 | baseline | 0.2503 / 0.2723 |
+| **fixtures ×2** (`_nightPLScaleStill` 0.5→**1.0**) | **1.284 / 1.731** | ×0.92 · ×1.10 | REJECT (cv) | **0.814 / 0.844** | **×1.58 · ×1.75** | **WIN** | 0.2591 / 0.2717 |
+| **fixtures ×4** (scale 2.0) | **2.130 / 3.118** | ×1.02 · ×1.27 | **WIN** | **1.222 / 1.417** | **×2.22 · ×2.57** | **WIN** | 0.2767 / 0.2704 |
+| `m` = HDRI fill 0.25 | 0.914 / 1.118 | ×0.83 · ×0.96 | **REJECT** | 0.683 / 0.649 | ×1.05 · ×1.12 | floors missed | 0.4568 / 0.4318 |
+| `m` = HDRI fill 0.50 | 1.040 / 1.290 | ×0.75 · ×0.90 | **REJECT** | 0.837 / 0.810 | ×0.92 · ×1.01 | **REJECT** | 0.6737 / 0.5830 |
+| `m` = HDRI fill 1.00 (= RED) | 1.293 / 1.599 | ×0.66 · ×0.83 | **REJECT** | 1.146 / 1.133 | ×0.76 · ×0.89 | **REJECT** | 1.0397 / 0.7997 |
+
+**a. The `m` lever is REJECTED, on both buildings, at every sampled fraction.** It is the textbook
+failure the two-sided gate exists to catch: it lifts the mean (0.743 → 1.293 on Clinic) while
+driving `cv` **down** (×0.66) and `topShare` down (×0.83), i.e. it buys brightness by flattening the
+field — and it costs the facade the whole of #1622 (separation 0.2503 → 1.0397). **U-11's `m` option
+should be closed, not tuned.** The one HDRI row that is not an outright REJECT (Hospital s0.25,
+"shape kept") does not clear the floors.
+
+**b. The fixture route is the only one that raises the field.** At the shippable ceiling
+(`_nightPLScaleStill = 1.0` — `A._nightPLScale`'s own nav-tuned default and the value §STAGED_PL_CUT
+cut FROM, so no constant is invented) Hospital is a clean **WIN**: floors cleared, `cv` ×1.58,
+`tileCV` ×1.75, `topShare` ×1.37, and the **upper register restored 0.545 → 0.844** — the exact
+register the real-bake A/B says drained. **The facade is free**: Hospital's separation moves
+0.2723 → 0.2717 across the whole ×1…×4 sweep, Clinic's 0.2503 → 0.2767. Clinic at ×2 clears the
+floors and raises `tileCV` (×1.10) and `p90/p10` (×1.39) but dips `cv` to ×0.92, so the gate scores
+it REJECT; both buildings are a WIN at ×4, which is `_nightPLScaleStill = 2.0` — **an invented
+constant, so it is not proposable.**
+
+**c. OPT_F (the near-field floor), OPT_B (decay 2.0) and OPT_D (emissive ×3) are INCONCLUSIVE, not
+measured.** OPT_F reports a **darker** frame (retMean 0.563 Clinic / 0.435 Hospital) while the
+shipped pool total it produced **rose** (Clinic 147.936 → 171.04 at extSun, live lights 99 → 122).
+That is physically impossible for purely additive light — `floor + (1−floor)·fade` is monotone
+non-decreasing in `floor` — so the reading is an instrument fault, not a property of the lever.
+See §3.
+
+**d. The colour levers (A and C) are CLOSED without a render** — see §SFR_LIVELY option A + C below.
+
+### 3. THE THIRD INSTRUMENT DEFECT — PROBE CROSS-CONTAMINATION, and how it was isolated
+
+This lane has now hit three instrument faults in a row, and they cost more than the measurement did.
+Recorded so the next session recognises the shape:
+
+1. **`tools.js`'s pooled fixture update overwrote a per-light sweep** (already on record above) — a
+   per-light intensity write is recomputed from `A._nightPLScale` on the next update, so the sweep
+   measured nothing and reported a clean 0.
+2. **The light-group restore map captured empty** (§0) — manufactured `pl = 0.00000` and two
+   published claims.
+3. **Probe cross-contamination (new).** In the first clean run the option probes ran in sequence
+   within one pose, each restoring what it changed. Two did not restore:
+   - `W.setPLDecay` cached ONE scalar base off `ls[0]` — which is a **city-prop** point light with
+     `decay = 2`, not a fixture light with `decay = 1` (visible in the `§SFR_POOL` colour census as
+     `"decay":"1..2"`). "Restoring" therefore set **every fixture light to decay 2 permanently**,
+     dimming the whole far field for the rest of the pose.
+   - `W.setNearFadeFloor` let a non-finite value through `f < 0` into `A._nightNearFadeFloor`, where
+     `floor + (1−floor)·fade` turns it into 0-or-NaN, and then **rebuilt the pool from it**.
+
+   **How it was isolated — the signature, not a guess:** on both buildings the four option rows
+   downstream of the first bad probe reported **byte-identical** `retP25 / retP90 / retP10`
+   (Hospital: 0.473 / 0.365 / 0.511 on all four; Clinic interior2: `nearFadeStill` and `decay2` both
+   exactly 0.15612). Four different levers cannot produce identical percentiles; a dead pool can.
+   Fixes now in the witness: per-light decay base (a Map, not a scalar), a hard range guard on the
+   floor, the fallback `m` sweep moved BEFORE any option probe so it can never sit downstream of
+   one, and — the general remedy — **every sample now records the pool it was taken against**
+   (`pool[live=… sum=… floor=… scale=… decay=…]`) and any row with `poolLive = 0` prints
+   `INCONCLUSIVE` instead of a verdict.
+4. **A fourth, still open.** Even after those fixes, the baseline sample's own pool disagrees with
+   the pose census taken moments earlier (Clinic interior0: `pl_x1` reads `pool[live=46 sum=88.036]`
+   against a census of `sum=103.084`; the missing ~16 lights are the city props). Consequence:
+   **the interior baseline is not reproducible run to run** — Clinic's baseline `cv` read 1.0825 in
+   one run and 0.5207 in the next, a 2× swing in the headline metric, far outside the RED CONTROL's
+   own drift (0.00000 Clinic / 0.01278 Hospital). **Until that is closed, no lever's ranking is
+   safe and nothing here should ship.**
+
+**Instrument changes that DID gate clean and are worth keeping:**
+- **§SFR_FROZEN_POOL.** Refreshing the pool per pose is mandatory (the shipped still branch selects
+  by camera frustum, so the pool is pose-dependent) — but on the shipped churn path every pose change
+  moves the scene's point-light COUNT, a shader DEFINE, and two full runs sat **>20 min inside a
+  single wall pose** recompiling. The witness now runs the SHIPPED `§NIGHT_BAKE_POOL` path
+  (`A._maxqActive`), which freezes the slot count and updates position/colour/intensity as uniforms.
+  **POOL-MODE CONTROL passes on both buildings: `relDrift = 0.00000`** (same pose, camera untouched).
+  Its first version FAILED at 0.179 because it read before the churn-path refresh and so compared a
+  stale pool against a fresh one — a confounded control, corrected by reordering, not explained away.
+- **FREEZE CONTROL** Clinic 0.00000 / **Hospital 0.00515 (FAIL, gate 0.005)** — Hospital's shadow
+  freeze is marginal and its RED CONTROL also failed at **0.01278**. Hospital's run therefore carries
+  ~1.3 % instrument drift; the effect sizes above (×1.58, ×1.75) are well clear of it, the `m` rows'
+  shape deltas mostly are not.
+
+### 4. WHAT THIS MEANS FOR THE COMPOSITION (sun shafts through windows) — noted, not built
+
+A fixture-lit interior at `_nightPLScaleStill = 1.0` raises the interior's own `topShare` (Hospital
+×1.37) and `tileCV` (×1.75) while leaving the facade separation flat (0.2723 → 0.2717). A shaft is a
+high-`topShare`, high-`tileCV` feature in the same frame, so the two ADD rather than compete: the
+room's ambient floor does not rise (ambient/hemi/env are untouched), only the fixture-lit patches do,
+which preserves the contrast a shaft needs to read. The `m` lever would do the opposite — it raises
+the whole non-directional floor, which is precisely what washes a shaft out. **Not built, not
+measured; recorded as the prediction to test if shafts are ever specced.**
+
+### 5. §SFR_NEXT — the exact next step, and the one blocking question
+
+1. **Close instrument fault #4 first** (§3.4). The baseline sample must reproduce the pose census
+   (`pl_x1.pool.sum == census.sum`) before any ranking is trusted. Likely cause to check first: the
+   city-prop point lights (`effects.js:660-723`) are in `W.pointLights()` but are NOT rebuilt by
+   `A._nightUpdateLights()`, so `W._plBase` and the group-restore maps can disagree about them.
+   Add an assertion that the two agree and re-run both buildings. **Everything else waits on this.**
+2. Then re-measure OPT_F/B/D with the hardened probes and settle §1's fix.
+3. `§NIGHT_STILL_LIGHTS` ordering fix (`effects.js` — move the :4918 block below the
+   `_applyPhotoStaging()` call at :4945) is a real, independently-proven defect and is a 2-line
+   change; hold it until step 1 lets its effect be measured, so it does not ship unmeasured.
+
+⛔ **THE ONE USER QUESTION (→ AGENT_QUEUE U-11):** the only lever that passes the two-sided gate on
+BOTH buildings is `_nightPLScaleStill = 2.0` (fixtures ×4), which is an invented constant. The
+largest *repo-native* value, `_nightPLScaleStill = 1.0` (fixtures ×2), passes cleanly on Hospital and
+fails Clinic on `cv` alone (×0.92) — and it **partially reverses §STAGED_PL_CUT, a standing user
+directive** (*"too bright … reduce PLs or intensity. As it also wipe out the ground slab shadow play
+during alt-c movie baking"*). Measured, that directive's stated harm is small at the wall poses
+(separation moves ≤ 0.026 across the whole sweep) but **the ground slab was never in the measured
+set.** So: *do you accept undoing half of §STAGED_PL_CUT (staged fixture scale 0.5 → 1.0) to get the
+interior's own fixtures back, given the away-wall read is measured to cost ≤ 0.026 and the ground
+slab is unmeasured?*
+
+### §SFR_LIVELY option A + C — the colour lever is ALREADY at its ceiling, closed WITHOUT a render (2026-09-02, `nlc_spread.log`, `colour_spread_probe.js`)
+
+Candidate A was *"fixture colour temperature (~2700–3000 K warm against a cooler sky)"* and C was
+*"per-fixture variation derived from the model's own fixture type/class — not random, not
+per-building."* **Both already ship, and what ships is the best of the three the repo can express.**
+`A.nightLightColor(name, key)` (`tools.js:1151`) is called from exactly one place
+(`A._nightFixtureWorldPositions`, `tools.js:1631`) and ALWAYS with a `key`, so the 20/20/60 hash mix
+(`NIGHT_MIX_BLUE 0xa8c8ff` / `NIGHT_MIX_AMBER 0xffb45c` / `NIGHT_MIX_WHITE 0xffffff`) always wins —
+the mix the user asked for by name.
+
+Measured on `wc = (r−b)/(r+b)`, the same scale-invariant chromatic axis §SFR_LIVELY scores, over the
+real luminaire population selected by tools.js's own §NIGHT_FIXTURE_VOCAB `WHERE` clause:
+
+| building | luminaires | SHIPPED hash mix `wcStd` | option C (white bucket tinted by the model's own name) | the type rule alone |
+|---|---|---|---|---|
+| Clinic | 884 (47 exit) | **0.2179** | 0.2201 (**+1.0 %**) | 0.1249 (**−42.7 %**) |
+| Hospital | 1,272 (57 exit) | **0.2182** | 0.2181 (**−0.1 %**) | 0.0581 (**−73.4 %**) |
+| Terminal | 814 (38 exit) | **0.2256** | 0.2286 (**+1.3 %**) | 0.1019 (**−54.8 %**) |
+
+- **Option C as framed — "derive it from the fixture type, not random" — is measurably WORSE, by
+  43–73 %.** The type vocabulary collapses a building onto two or three temperatures: Hospital has
+  **0** troffer/batten/T8 names and only **64** downlight/sconce/pendant of 1,272, so 1,151 fixtures
+  fall to a single `NIGHT_AMBER` fallback. The hash is not "random" in the sense that matters — it is
+  FNV-1a over `name|x,y,z`, deterministic across sessions and machines, and it is the only rule that
+  keeps three temperatures on a model whose names state nothing.
+- **A real doc-vs-code defect, but NOT a liveliness lever:** `NIGHT_WHITE_COOL 0xf2f6ff` and
+  `NIGHT_WHITE_WARM 0xfff4e4` (`tools.js:1137/1138`) are **declared and referenced nowhere in
+  `viewer/`**, while the §NIGHT_MIX_WHITE comment three lines above states as fact that *"the white
+  bucket is neutral by default and tinted a few points when the model says which it is."* It is not.
+  Wiring them in moves `wcStd` by **+1.0 % / −0.1 % / +1.3 %**. Fix the comment or wire the
+  constants — but do not spend a render on it and do not sell it as liveliness.
+- **0 of the 2,970 luminaires on Clinic/Hospital state `cw`/`ww`** (Terminal states 368), so the
+  "stated temperature outranks the type default" path is, on the two buildings under test, a
+  population of zero. Recorded so no future session re-derives it.
+
+### §SFR_LIVELY option E — exposure/tone cannot add liveliness, BY IDENTITY (no run spent)
+
+`toneMappingExposure` multiplies the linear colour **before** the ACES curve — verified in this
+repo's own bundled three.js, not from memory: `viewer/lib/three.module.min.js` contains
+`color *= toneMappingExposure / 0.6;` as the first line of `ACESFilmicToneMapping`, ahead of
+`ACESInputMat`/`RRTAndODTFit`. A scalar multiply leaves **every** §SFR_LIVELY metric exactly
+invariant (`cv`, `p90/p10`, `topShare`, `tileCV`, `wcStd` are all ratios or scale-invariant moments).
+So exposure cannot manufacture shape; only the curve can, and it ends in `saturate(color)`, which
+compresses the highlights — the register that is already drained. **Ranked last, and closed.**
+(Also verified in the same bundle: `toneMapping` is forced to `NoToneMapping` whenever the render
+target is not the canvas — `r.toneMapped && (null !== F && !0 !== F.isXRRenderTarget || (Le = e.toneMapping))`
+— which is what makes every render-target read in this witness scene-linear.)
+
+## §BAKE_INTERIOR_TOPUP — 2026-09-04 — ✅ SHIPPED (witness), bim-ootb PR #1642
+
+> **USER, 2026-09-04, mid Hospital Alt+C bake:** *"i can visually see that the indoor is gloomy and
+> not lively. Discuss. if it is color, or surface, or lighting effects?"* and, minutes later, the
+> sentence that decided it: *"I noted that outside the scene of the building is very lively, thus
+> indoors can also be."* Later still, on the second bake: *"On indoors, it is still ok, but been
+> livelier while maintaining realism be good."*
+
+### §BIT.0 — the three-way answer, with the number that decides each
+
+**It is LIGHTING. Colour and surface are exonerated by measurement, not by argument.**
+
+| candidate | verdict | the number |
+|---|---|---|
+| colour | **improved**, not regressed | #1621 §MEP_COLOR_SURVIVES_PHOTOREAL + #1604 §MEP_DISC_PALETTE gave MEP its trade colour back instead of uniform grey metal |
+| surface | **improved**, not regressed | roughness/metalness are CLASS-keyed (`streaming.js:1219/1233`), untouched this window; #1631 §DUCT_SILHOUETTE added outlines |
+| lighting | **the cause** | see §BIT.1 |
+
+A lead that had to be RETRACTED, recorded so it is not re-chased: `~/Downloads/Hospital_silent.db`
+carries `material_name` NULL on all 64,150 rows while the served `Hospital_meta.db` has 17 distinct
+names, which looked like it would collapse the glossy set and strip the HDRI from everything. **It
+does not.** `material_name` never reaches roughness/metalness — the rule is class-keyed — and the
+glossy census is IDENTICAL across the two DBs: 56/82 material keys by the parsed `STD_MAT` rule,
+59,890/63,182 elements (94.8%); browser-confirmed 97 materials / 71 glossy / 59,924 of 63,316
+(94.6%), so #1622's "70/70 Hospital glossy still on the HDRI" holds. The user's local DB is not
+handicapped.
+
+### §BIT.1 — the defect: a bake pose can select ZERO fixture lights, and scaling zero is zero
+
+`tools.js _nightUpdateLights`'s still/bake branch (§NIGHT_STILL_FRUSTUM, 2026-08-07) selected
+fixture point lights by **frustum-CENTRE containment only, with no floor**. An interior pose is
+precisely the case that test answers wrong: the troffers lighting the room you stand in sit
+overhead or behind the eye, so the set comes back short — or empty.
+
+Since §NIGHT_BAKE_POOL (2026-09-01) froze the pool size for the whole bake, an empty set no longer
+disposes the lights; it leaves **every pooled slot at intensity 0**. The room is then lit by flat
+ambient + hemi fill alone. Two consequences worth stating plainly:
+
+- **This is why the exterior stayed lively while the interior did not.** Photo staging turns the
+  sun's shadow casting on, so an interior surface is shadow-occluded from the sun and depends on the
+  fixtures for everything that is not flat fill; an exterior surface keeps the sun and loses almost
+  nothing. One mechanism, both halves of the user's report — and it also explains the older
+  "Fly/handsfree is well lit, the bake is dark" split, since navigation never takes the frustum
+  branch (§NIGHT_STILL_BOOST_GATE_FIX).
+- **It supersedes the U-11 fixture-scale question for the FILM case.** `_nightPLScaleStill` (0.5,
+  §STAGED_PL_CUT) *scales this set*. Scaling zero is zero, so no value of that constant could ever
+  have reached a pose whose selection was empty. U-11's `m`-lever remains closed and its fixture
+  lever remains a live user decision for Alt+S, but neither is the film explanation.
+
+Also live and fixed here: **§BAKE_FRUSTUM_STALE** — the frustum was built from
+`camera.matrixWorldInverse` with no `updateMatrixWorld()`, while `cinema_maxq.js` sets the pose and
+calls `startStillRefine()` *before* any render of it. The cull was running against the previous
+frame's view.
+
+### §BIT.2 — the fix, and what was deliberately NOT taken
+
+Reuse, not reinvention: the in-frustum set is **topped up** to the still budget using the SAME
+nearest-to-aim + §NIGHT_SPREAD rule navigation already uses, extracted VERBATIM as
+`_nightPickNearest` (§NIGHT_PICK_NEAREST) so nav and bake cannot drift into two selection rules.
+Nav calls it with an empty `already` set and is behaviourally identical. The in-frustum set is
+**never truncated** — the top-up only fills the remainder. No new constant, no fitted value.
+
+This is the `tools.js` half of the **parked PR #1327 §BAKE_INTERIOR_LIGHTS** (2026-08-12), which
+measured the same defect on a headless Duplex bake: 18 fixture lights at frame 0, **0 from frame 1
+for the rest of the film**, scene point-light intensity sum 127.39 → 82.39 = exactly
+18 × NIGHT_LIGHT_INTENSITY(2.5). That PR sat 312 commits behind main; its own triage note
+(2026-09-02) records `viewer/effects.js` as a **non-mechanical** conflict against §NIGHT_BAKE_POOL /
+§STAGED_PL_CUT and rules it unsafe to blind-merge. Taking only the `tools.js` half avoids that
+conflict entirely.
+
+**NOT taken, on purpose:**
+1. #1327's `effects.js` re-arm-gate fix (the gates read `A._nightLights.length`, the OUTPUT of the
+   selector). §NIGHT_BAKE_POOL keeps that array full for the whole bake, so the self-latching zero
+   is already masked *for films*. It is still live for interactive Alt+S — see U-11's measurement of
+   `nearFadeFloor: 0.3, maxLights: 30` at five live poses — and remains open there.
+2. #1327's **§BAKE_LIGHT_BUILDUP_GATE**, which would gate the illumination on Time Machine
+   placement so a light cannot shine from an un-installed fitting. It is correct in principle and
+   the glow sprite already does it (`§PHOTO_GLOW_SPRITE_GATE 0/18 fixtures placed yet` while 18
+   point lights shone from those same fittings), but it **REMOVES** interior light during round 1
+   of a 4D film, which runs against the user's live ask. It needs its own decision, not a silent
+   ride-along.
+
+### §BIT.3 — witness
+
+`viewer/tests/witness_bake_interior_topup.js` — **W-BAKE-TOPUP 8/8, RED control detected.** Whitebox,
+no browser: slices `_nightPickNearest` and `_nightUpdateLights` out of the shipped `tools.js` by
+brace matching and reads `NIGHT_SPREAD_MIN_M` from the file rather than hardcoding it, so it cannot
+pass against a copy that is not what ships. The verdict line prints NO-OP (the top-up never changed
+a selection), VACUOUS (no scenario judged) or INCONCLUSIVE (the slice failed) instead of PASS.
+
+```
+§BAKE_INTERIOR_TOPUP_ROW bake-interior-frustum-empty fixtures=40 budget=50 inFrustum=0  lit=40
+§BAKE_INTERIOR_TOPUP_ROW bake-interior-frustum-short fixtures=40 budget=50 inFrustum=3  lit=40
+§BAKE_INTERIOR_TOPUP_ROW bake-wide-frustum-full      fixtures=80 budget=50 inFrustum=60 lit=60
+§BAKE_INTERIOR_TOPUP_ROW alt-s-frustum-short         fixtures=40 budget=50 inFrustum=2  lit=40
+§BAKE_INTERIOR_TOPUP_ROW nav-no-still                fixtures=40 budget=24 inFrustum=0  lit=24
+```
+
+The shipped runtime line to look for in the next bake log is
+`§BAKE_INTERIOR_TOPUP inFrustum=N toppedUpTo=M budget=B fixtures=F`, run-length guarded (it would
+otherwise fire once per baked frame). An `inFrustum=0` row names itself: *"frustum found NO fixture
+centre at this pose; without the top-up this frame had zero fixture light"*.
+
+### §BIT.4 — what is still open
+
+- The **⛔ U-11 fixture-scale decision** (staged `_nightPLScaleStill` 0.5 → 1.0, partially reversing
+  §STAGED_PL_CUT) is unchanged and still the user's. It now applies to a set that is actually
+  populated, so its measured effect should be RE-TAKEN after #1642 rather than read off the
+  pre-#1642 sweep.
+- **NOT MEASURED:** how many poses of a real Hospital film actually had `inFrustum=0`. The defect is
+  proven structurally and by #1327's Duplex run; the Hospital-specific frequency needs the shipped
+  `§BAKE_INTERIOR_TOPUP` line from the user's next bake log. Do not quote a number for it until then.
+- #1327 should be closed as superseded-in-part once #1642 lands, with its two untaken halves carried
+  forward rather than lost.
+
+## §BAKE_MISSING_ELEMENTS — 2026-09-04 — 🟠 ROOT CAUSE MEASURED (§BME.8), FIX RED/GREEN-PROVEN (§BME.10), bim-ootb PR #1660. READ §BME.10 (newest, at the END of this file) THEN §BME.9 — §BME.1–§BME.6 are the pre-solution record
+
+> **USER, on the landed Hospital silent bake** (`~/Downloads/Hospital_silent_bake_2026-09-04.mp4`,
+> 2,937 frames, 195.8 s, sw v1138):
+> *"some window glass panels not landed completely, leaving omissions. This maybe with other elements
+> too thruout. This seems an anomaly as all this while they land evenly and completely."*
+> … *"comparing to previous bake at seconds 47-55"* … *"they are selective not thru out"*
+> … *"Even at 1min22sec u can see some chairs but not full table sets. This is erroneus behaviour
+> introduced."* … *"before this is was not an issue."*
+
+**THE DEFECT IS REAL AND IT IS NOT SOLVED.** Everything below is measured; the cause is still open.
+
+### §BME.1 — what is CONFIRMED (do not re-derive)
+- **Visually confirmed at full build.** Frame at **78 s** (fly-back) reads `Day 310 / 310` — the
+  buildup is COMPLETE — and the left elevation still shows bays open to the interior with only a
+  couple of infill panels. **So it is NOT schedule pacing.** (The user's own invariant, and it is
+  correct: *"In the return to start, the whole buildup is supposed to be fully completed."*)
+- Previous bake for contrast: `BIM_MaxQ_Hospital_1788397252225.mp4` (2026-09-03 09:00, 3,118 frames,
+  207.9 s) at the same second reads `Day 273 / 507` with the ribbon glazing solid. Different film
+  lengths, so timecodes do NOT align frame-for-frame — the Day 310/310 frame is the load-bearing one.
+- **It spans classes**: glass panels at 0:47–0:55, and *"some chairs but not full table sets"* at
+  1:22. Partial sets of an assembly, across unrelated classes. Not a discipline, not one material.
+
+### §BME.2 — what is RULED OUT, with the number that rules it out
+| candidate | verdict | evidence |
+|---|---|---|
+| schedule / buildup omission | **OUT** | `§CPE_BUILDUP frame=2936/2937 t=1.000 placed=63415/63415`; `kernel_ops` holds exactly 63,415 `ELEMENT_PLACE` ops |
+| missing geometry in the DB | **OUT** | every `IfcPlate` 2211, `IfcMember` 7127, `IfcWindow` 131 has an `element_instances` row AND its `geometry_hash` resolves in `component_geometries` — 0 missing |
+| placement timing | **OUT** | on the played layer: `IfcWindow` all by 8.7 s, `IfcCurtainWall` 43.4 s, `IfcPlate` 44.6 s, `IfcMember` 44.7 s (buildup spans 0→70.7 s) |
+| discipline tagging / selective ARC strip | **OUT** | `IfcPlate` 2211/2211 ARC, `IfcCurtainWall` 178/178 ARC, `IfcWindow` 131/131 ARC (only oddity: `IfcMember` 7122 ARC + **5 STR**) |
+| the Reveal ghost | **OUT** | ghost starts at frame 1357 (**1:30**), after the 0:47–0:55 report; and `§DVS_REVEAL_ALL drawn=63182/63182 after filterDiscs(null)` |
+| Reveal slot leakage | **OUT** | `§DVS_REVEAL_SLOT` PLB 9121/9121, FP 14357/14357, ELEC 2798/2798, MEP 19670/19670, `leakOtherDiscs=0` |
+| non-determinism | **OUT** | the bake seeds `Math.random` with an LCG per frame and restores it (`cinema_maxq.js:686-690`); its only callers are city skyline and staffage props, never a BIM element |
+
+### §BME.3 — TWO RETRACTIONS. Do not resurrect either.
+1. **"All 178 IfcCurtainWall are absent, that's the missing glass" — WRONG.** They have **zero**
+   `element_instances` (178/178), as do 24 `IfcRoof` and 31 `IfcStair` — the `absent=233` set. They
+   are pure aggregate containers whose glazing IS their `IfcPlate`/`IfcMember` children. They were
+   never drawable **in any bake, including the ones that looked right**, so they cannot be what
+   changed. Still a real schedule-hygiene defect (they inflate `placed=63415` and occupy programme
+   time for something that can never appear) — but a DIFFERENT one, and not this.
+2. **"§SUN_FILL_RATIO's map swap causes recompile churn" — WRONG, disproven by its own witness.**
+   Under a regenerating sky the two-target version recompiles FEWER times (10 vs 16 over 3 regens),
+   because the matte set is pinned to a stable reference. The hazard it really carried was the
+   STALE REFERENCE, closed by §SFR_UNIFORM_NOT_DEFINE (#1659).
+
+### §BME.4 — THE OPEN LEAD, and the instrument's own blind spot
+`viewer/tests/witness_tm_drawn_vs_scheduled.js` (PR #1658, **ships RED on purpose**) compares
+SCHEDULED against DRAWN per class per cursor. Two live failures on `Hospital_silent_local`:
+
+- **`other` = missing, but neither §XRAY-staged nor absent — and it persists to `t=1.0`.** This is
+  the residue and the best lead: `IfcColumn` maxMissing 109 (**57 not staged**), `IfcBeam` 37 (**23**),
+  `IfcSlab` 12 (**10**), `IfcWall` 1 (1). `missWindow_t=0.01..1` — the WHOLE film.
+- **`§XRAY_EDGES … staged=544/63415`** — "elements whose last support carrier finishes after their
+  own reveal". Every early-film miss is one of these (`t=0.020 sched=716 drawn=603 missing=113
+  staged=113`). Same root as §M Q3's 237 indefensible structural midair.
+
+⚠ **THE INSTRUMENT DOES NOT REPRODUCE THE USER'S SYMPTOM YET, AND THAT IS ITS OWN DEFECT.** It loads
+the model fully, scrubs the TM cursor, and counts scene-graph visibility. The bake draws each frame
+through **photoreal staging**. `IfcPlate 2211/2211 drawn` means "visible objects at that cursor", NOT
+"rendered in that frame". Selective loss *inside a staged frame* is invisible to it. **Next session's
+first job: census what a STAGED frame actually draws** — hook `onBeforeRender` on the meshes and
+count how many fire during one real staged render at the bake's own pose (`plan.poseAt`) at Day
+310/310, and extend the class list beyond the glass set to `IfcFurniture` (the 1:22 table report).
+
+### §BME.5 — what shipped this session that touches the render path (suspect list, in landing order)
+`#1604 §MEP_DISC_PALETTE` (InstancedMesh discipline resolution — the tag drives BOTH colour and the
+`filterDiscs` visibility filter) · `#1622 §SUN_FILL_RATIO` · `#1631 §DUCT_SILHOUETTE` (rewrites
+vertex data) · `#1633 §CPE_REVEAL_ARCH_HOLD` · `#1642 §BAKE_INTERIOR_TOPUP` · `#1649
+§CPE_TAIL_LIGHTS_ALL_ONLY` · `#1659 §SFR_UNIFORM_NOT_DEFINE`. The user's marker is *"before this it
+was not an issue"* and the last clean bake is **2026-09-03 09:00**, so anything merged AFTER
+2026-09-03 01:00 UTC is in scope and anything before it is not.
+
+### §BME.6 — reproduction, ready to run
+```
+cd ~/bim-ootb && node viewer/tests/witness_tm_drawn_vs_scheduled.js      # BLD defaults to Hospital_silent_local
+ffmpeg -ss 78 -i ~/Downloads/Hospital_silent_bake_2026-09-04.mp4 -frames:v 1 out.png   # Day 310/310, bays open
+```
+The user's DB is `~/Downloads/Hospital_silent.db`, symlinked into `buildings/Hospital_silent_local.db`.
+
+### §BME.7 — 2026-09-04 — SPEC: the STAGED-FRAME CENSUS (the instrument §BME.4 asked for)
+**Claim under test (W-SDC):** in a frame rendered THROUGH photoreal staging by the real `__maxqBake`
+loop (clipped to the film window around 78 s, `--clip in:out`), every element the scene graph says is
+visible AND whose bounding sphere lies inside the capture camera's frustum is submitted to the GPU in
+the last colour pass before `_captureFrame` reads the canvas. If it is not, the census names the
+class, the representation and sample guids — that is the "selective loss inside a staged frame"
+§BME.4 said the plain-scene instrument cannot see.
+**Instrument:** `cli_silent_bake.js --clip in:out --tap viewer/tests/tap_staged_draw_census.js`
+(dev-only, same family as `__maxqPoseTap`). The tap wraps: `renderer.render` (pass tagging —
+colour = main scene, no `overrideMaterial`); `BatchedMesh.prototype.onBeforeRender` (reads
+`_indirectTexture.image.data[0.._multiDrawCount)`, the exact instance ids three r185 submits —
+extracted from `three.core.min.js` `class Eo`, not assumed); `Object3D.prototype.onBeforeRender`
+(InstancedMesh: whole-object draw, per-instance = non-zero matrix, `count` vs meta length). Capture
+moment = `CanvasRenderingContext2D.drawImage(renderer.domElement)`, `_captureFrame`'s own read.
+**§-lines (in the bake log, `§CLI_BAKE_TAP` block, and `<out>_tap.json`):**
+- `§SDC_FRAME i= film_t= passes= colorPasses= bmObjs= imObjs= drawnBm= drawnIm=`
+- `§SDC_CLASS i= cls= visible= inFrustum= drawn= notDrawn= sample=<guids>` — notDrawn = visible ∧
+  strictly-in-frustum (0.05 m margin, so TAA jitter cannot count) ∧ not in the last colour pass.
+- `§SDC_INSTANCED i= cls= objs= drawnObjs= countShort=` — `count` < meta length = instances the GPU never sees.
+- `§SDC_MAT i= uuid= type= <field>:<old>→<new>` — a drawn material whose visible/opacity/transparent/
+  transmission/envMap/depthWrite/program-diagnostic changed between frames.
+- `§SDC_BOUNDS_STALE bm= geoms= stale=` — once: `_geometryInfo` sphere vs one recomputed from the batched positions.
+**Verdict:** `witness_staged_draw_census.js` reads `<out>_tap.json` through `witness_kit/contract.js`:
+PASS = notDrawn=0 and countShort=0 in every frame; INCONCLUSIVE = no frame captured or no colour pass
+seen; RED CONTROL = one row mutated to notDrawn=1 must fail.
+**Pixel reproduction (separate, numeric):** the clip frame whose film_t is nearest 78 s vs the film's
+own 78 s frame (ffmpeg): mean |Δluma| whole-frame and over the left-elevation crop. Reproduces if
+both are within 10× the §MAXQ_FRAME_BUDGET noise floor (RMS 0.21). If it does NOT reproduce, the
+symptom depends on bake history or environment and the clip must start before topout.
+
+### §BME.8 — 2026-09-04 — ROOT CAUSE FOUND AND MEASURED: dlod.js "restored" 24,992 instances to ZERO matrices it had captured after the Time Machine zeroed them
+**Instrument that found it:** the full-film §SDC census (`cli_silent_bake.js --tap`, 2,937 frames, the
+film's own DB and path). Per-frame, per-class: `visible` (scene graph) · `inFrustum` · `drawn` (GPU
+draw list). Verdict on the render: `notDrawnTotal=2` over 2,937 frames (two IfcRailing slots on the
+frustum edge) — **the renderer draws everything the scene graph shows.** The loss is upstream:
+- `IfcPlate` visible 2050 → **1081 at frame 718 and never again higher, to frame 2936 (Day 310/310)**;
+  `IfcMember` 6206 → 1885; `IfcFurniture` 201 → 22; `IfcWindow` 131 → 85. The lost ones are exactly
+  the **InstancedMesh** representation (`imPlaced` 969 → 0 for plates, 4321 → 0 members, 179 → 0
+  furniture, frames 712–718 = film 47.5–47.9 s — the user's "0:47–0:55"). BatchedMesh slots untouched.
+  **"Selective within a set" = same class, two representations; only the instanced half died.**
+- The §-line that fired there: `§DLOD_TICK … imHid=3337 imVis=21676` (frame 714) → `imHid=21 imVis=24992`
+  (frame 718): dlod.js's per-instance frustum culler "restored" 24,992 instances into view.
+- What it restored: `m._origMatrix`, captured by `_buildRefs()` — which ran at **`§DLOD_REFS built
+  instanced=2872 imInstances=25013` at log line 658, AFTER `§MAXQ_FRAME i=0`** and after
+  `tmActivateForBake` had zero-scaled every unplaced instance (cursor at day 0). So `_origMatrix` = a
+  zero-scale matrix for essentially every instance; every later "restore" wrote zero. Instances that
+  never left the frustum after TM placed them survived; every one that left and came back is gone.
+- Why the refs were late: `dlodEnable()` (streaming end) marks refs dirty and calls `dlodTick()`, but
+  the tick returns BEFORE `_buildRefs()` when the camera is idle. A CLI page never moves the camera
+  until the bake's own frame 0 — by then TM owns the matrices. **An interactive bake (every
+  `BIM_MaxQ_Hospital_*.mp4` before this) had navigated first, so its refs held real matrices.** That
+  is the whole of "before this it was not an issue": the defective film is the first CLI silent bake
+  of Hospital. Nothing in #1604–#1659 caused it; dlod.js last changed 2026-08-05.
+- The fight is two-way (S258 landmine, `project_dlod_geometry_swap_landmine.md`): TM's own lazy save
+  (`_savedInstanceMatrices`, time_machine.js ~1601) reads CURRENT matrices, so an instance dlod.js had
+  zeroed before TM's first pass would be saved as zero by TM too.
+**FIX (§DLOD_TM_OWNERSHIP): one owner of instance matrices at a time.** TM activation
+(`_finishActivate`, the single point both the pill and `tmActivateForBake` reach) calls
+`A.dlodDisable('time-machine')` first — dlod.js restores its own hides while `_origMatrix` is still
+real, then stands down; `dlodEnable()` refuses while `app._tmOn` (`§DLOD_SKIP_TM`); `dlodTick()` is
+gated on `!app._tmOn`; TM `deactivate()` re-enables after `restoreVisibility(true)`.
+**Witness:** `viewer/tests/witness_dlod_tm_ownership.js` — the CLI's exact ordering (idle camera →
+TM on at day 0 → first camera move → cursor to end → camera out of and back into view); asserts every
+placed instance holds a non-zero matrix at the end and the `§DLOD_DISABLE reason=time-machine` line
+was emitted. RED before the fix, GREEN after; red control via witness_kit.
+**Retractions from this session (do not resurrect):** (1) `§SDC_BOUNDS_STALE stale=14138 worstM=62`
+(first tap run) was the tap scanning the VERTEX range, which includes vertices the index never
+references; the index-range recomputation three actually uses (`witness_bm_bounds_cull.js`) measured
+**stale=0, wronglyCulled=0** at all seven recorded poses. (2) The first two clipped runs (`--clip
+0.394:0.402`) showed a Reveal slot at u=0.40 for two unrelated reasons: the bake loop fed the Reveal
+its clip-local `_tn` (fixed, §CPE_CLIP_REVEAL_FILM_T), and run B reused run A's Chromium profile, whose
+service worker served the pre-fix `cinema_maxq.js` (a fresh `--profile` per run from now on).
+
+### §BME.9 — 2026-09-04 SESSION CLOSE — RESUME HERE
+**State:** root cause measured and named (§BME.8: dlod.js ↔ Time Machine matrix ownership, CLI-bake
+ordering). Fix + instruments on **bim-ootb PR #1660** (`test/staged-draw-census`, commit 7eafe999,
+sw v1139). **Deliberately NOT armed for auto-merge.** Worktree pruned; re-create from the branch.
+**What is proven (§-log, primary evidence):** full-film census `scratchpad/full_census.log` of this
+session (not persisted — re-run if needed, ~52 min): `§DLOD_REFS built … imInstances=25013` at log
+line 658 AFTER `§MAXQ_FRAME i=0`; `§DLOD_TICK … imHid=21 imVis=24992` at frame 718; `§SDC_CLASS`
+`IfcPlate imPlaced 969→0`, `IfcMember 4321→0`, `IfcFurniture 179→0` frames 712–718, still 0 at
+frame 2936; `notDrawnTotal=2/2937 frames` on the render side. GREEN run of the ownership witness on
+the fixed tree: `§DLOD_DISABLE(time-machine)=1`, refs never rebuilt under TM.
+**What is NOT yet proven — do these, in order, before merging #1660:**
+1. Make `viewer/tests/witness_dlod_tm_ownership.js` go RED on unfixed main. Its far/near pass did
+   not evaluate the culler (main.js animate loop self-parks, §IDLE_GATE; `markDirty()` alone did not
+   wake it headless). Drive it the way `tour.js:1636` does after each camera set:
+   `A._dlodFrame = -1; A.dlodTick();` — then `ROOT=~/bim-ootb LOG=/tmp/dto_red.log node viewer/tests/witness_dlod_tm_ownership.js`
+   must print `lost>0` for IfcPlate/IfcMember/IfcFurniture, and the worktree run `lost=0`.
+2. The user's ask, verbatim: *"after it is solved, do a silent bake of Hospital_silent.db"*. From the
+   PR worktree, FRESH `--profile` (a reused Chromium profile's service worker served stale JS this
+   session):
+   `node cli_silent_bake.js --db Hospital_silent_local --gpu real --tap viewer/tests/tap_staged_draw_census.js --out ~/Downloads/Hospital_silent_bake_2026-09-05.mp4 --log ~/Downloads/Hospital_silent_bake_2026-09-05.log --profile /tmp/silent-bake-profile-fresh-$$`
+   (`buildings/Hospital_silent_local.db` → symlink to `~/Downloads/Hospital_silent.db` in the worktree).
+   Pass = `§SDC_CLASS i=2936 cls=IfcPlate … imPlaced=` **≥ 969** (the pre-loss value) and
+   `§DLOD_SKIP_TM`/`§DLOD_DISABLE reason=time-machine` present; no `§DLOD_TICK` line after
+   `§MAXQ_FRAME i=0`. Then `python3 scratchpad/tap_analyze.py <out>_tap.json` (script lost with the
+   scratchpad — 40 lines, re-derive from §BME.7's row schema) or just grep the lines above.
+3. Merge #1660 (`gh pr merge 1660 --auto --squash`), then deploy per `feedback_deployment.md`.
+**Open threads found on the way (not blocking):** (a) the 53 batched slots the TM delta path leaves
+hidden at the end cursor (`§DVS_END_DELTA_VS_FULL delta: missing=53 (B=41 I=12) | full: 0`,
+IfcColumn/IfcBeam/IfcSlab) — real, separate, unowned; (b) `§CPE_STATS_TAIL` uses the clip-local `_tn`
+as u (log says "u=0.364" in a 0.394–0.402 clip) — cosmetic in clip mode only; (c) the 178
+IfcCurtainWall / 24 IfcRoof / 31 IfcStair with no geometry still occupy programme time (§BME.3).
+
+### §BME.10 — 2026-09-04 (later) — ITEM 1 CLOSED: the ownership witness is RED on main and GREEN on the fix
+**§BME.9 item 1 is done.** `viewer/tests/witness_dlod_tm_ownership.js` now judges. It could not
+before, and the reason was TWO instrument defects, not one — the second is worth keeping because it
+is the defect's own signature and would be re-derived otherwise:
+
+1. **The culler never ran.** main.js's animate loop self-parks when idle (§IDLE_GATE) and
+   `markDirty()` alone did not wake it headless. `flyTo()` now drives it directly after every camera
+   set, the way `tour.js:1636` (`_scrubAfterJump`) does: `A._dlodFrame = -1; A.dlodTick();`.
+2. **The near pose looked away from where the refs actually are.** `_buildRefs()` (dlod.js:54)
+   reads each instance's world position out of the matrix it finds — and at TM day 0 every unplaced
+   instance carries `makeScale(0,0,0)` (time_machine.js:628), translation **(0,0,0)**. So the whole
+   ref set collapses onto the **WORLD ORIGIN** with a metadata radius, and the restore-to-zero fires
+   only when the origin re-enters the frustum. The film's frame-1170 pose (`[-25,6.32,-3.02] →
+   [-44.61,2.67,-1.56]`) has the origin *behind* the camera — that is the entire reason the first
+   RED attempt read 25013/25013 non-zero and looked like a passing tree. `poseA` is now
+   `[120,80,120] → (0,0,0)`; `poseFar` `[900,600,900] → [1200,0,1200]` keeps the origin behind.
+
+**MEASURED — the pair (§-log, primary evidence):**
+
+| run | tree | §DTO_TM_DAY0 | §DTO_PASS out→back | worst classes lost | §DLOD_DISABLE(tm) | verdict |
+|---|---|---|---|---|---|---|
+| RED | `ROOT=/home/red1/bim-ootb` @ `2ac311ac` (unfixed main) | `nonZero=0/25013 tmOn=true dlodDisableLines=0` | `0/25013 → 0/25013` | IfcMember 5242 · IfcPlate 1130 · IfcFurniture 179 · IfcWindow 46 (**22 classes, 25,013 instances**) | 0 | `§WITNESS_DLOD_TM_OWNERSHIP pass=3 fail=1 ran=22` |
+| GREEN | `/tmp/wt-dlod-tm` @ `9eb1f120` (§DLOD_TM_OWNERSHIP) | `dlodEnabled=false dlodDisableLines=1` | `25013/25013 → 25013/25013` | every class `lost=0` | 1 | `§WITNESS_DLOD_TM_OWNERSHIP pass=4 fail=0 ran=22` |
+
+Red control passed in both runs — the witness can fail. On the RED run the precondition line fires
+verbatim as it did in the film: `§DLOD_REFS built instanced=2872 imInstances=25013` **after** TM
+zeroed them. On the GREEN run those refs are never built at all under TM (only the mid-stream
+`imInstances=2753` set, captured before TM existed).
+Logs: `/tmp/dto_red2.log`, `/tmp/dto_green.log`. Commit `9eb1f120` on `test/staged-draw-census`.
+
+**PR #1660 was `DIRTY`/`CONFLICTING` on arrival** — synced, not redone (`git merge origin/main`;
+the only conflict was `sw.js`'s version-comment block, resolved by keeping BOTH sides' notes and
+taking `CACHE_VERSION = 'v1141'` above main's v1140). Merge commit `74f41526`.
+
+### §BME.11 — 2026-09-04 — ITEM 2 CLOSED: the re-bake is complete at Day 310/310. §BAKE_MISSING_ELEMENTS IS SOLVED
+`~/Downloads/Hospital_silent_bake_2026-09-05.mp4` (67.3 MB, 2,937 frames, 48m45s wall, commit
+`9eb1f120`, sw v1141, fresh `--profile`, `--tap tap_staged_draw_census.js`). Log
+`~/Downloads/Hospital_silent_bake_2026-09-05.log`, tap `..._tap.json` (76,714 rows, 2,937 frames).
+
+**The four classes the user reported are now WHOLE at the last frame** — batched half + instanced
+half adds up to the DB's own count, exactly, for all four:
+
+| class | batched visible @2936 | instanced `imPlaced` @2936 | sum | DB total | the defective film |
+|---|---|---|---|---|---|
+| IfcPlate | 1081 | **1130** | **2211** | 2211 ✓ | 1081 + **0** |
+| IfcMember | 1885 | **5242** | **7127** | 7127 ✓ | 1885 + **0** |
+| IfcFurniture | 22 | **179** | **201** | 201 ✓ | 22 + **0** |
+| IfcWindow | 85 | **46** | **131** | 131 ✓ | 85 + **0** |
+
+`imPlaced` reaches its maximum at frames 607–669 and **holds it to frame 2936** — no collapse at
+712–718, which is where 24,992 instances died last time. Render side: `notDrawnTotal=2` over 2,937
+frames (the same two IfcRailing slots on the frustum edge, unchanged) and `countShortTotal=0`.
+
+**The ownership hand-off is visible at both ends of the film, and that is the mechanism proof:**
+- line 335 `[DLOD] §DLOD_DISABLE reason=time-machine` — *before* frame 0, so `_buildRefs()` never runs
+  on TM's zero matrices. Between line 335 and line 38844 there is **not one `§DLOD_TICK` and not one
+  `§DLOD_REFS`** in a 38,000-line log.
+- line 38844 `§TIME_MACHINE OFF — restored` → 38850 `§DLOD_REFS built instanced=2872
+  imInstances=25013` → 38851 `§DLOD_TICK … imHid=0 imVis=25013`. dlod.js takes the matrices back
+  only once they are real, and its first tick hides **nothing**. Compare the defective run's
+  `imHid=21 imVis=24992` — 24,992 "restored" to zero.
+
+**PR #1660 is MERGED and LIVE** — main `fcd4720c` (2026-09-04 16:41, squash), and the deployed
+`viewer/sw.js` at red1oon.github.io returns `CACHE_VERSION = 'v1141'`. §BME.9 items 1, 2 and 3 are
+all closed. The `§CLI_BAKE_LOG_TS` follow-up (every bake-log line timestamped, user ask) went out
+separately on `chore/bake-log-timestamps` off fresh `origin/main`, since #1660 was already squashed.
+
+### §BME.12 — 2026-09-04 — HHS Office "missing wall slab": NOT the §BME.8 defect, and NOT reproduced. One real but too-small defect found on the way
+> **USER, 2026-09-04:** *"Even in HHS Office, it is missing a wall slab on its right side, ground floor."*
+> They supplied their live console log (red1oon.github.io, `HHS_Office_Federated_extracted.db`,
+> `§BUILD_VERSION v1141`) — a plain load, no bake.
+
+**RULED OUT FIRST, from their own log — this is not what #1660 fixed.** Their session ran **no Time
+Machine** (no `§TIME_MACHINE`, no `§DLOD_DISABLE reason=time-machine`), and §DLOD_TM_OWNERSHIP only
+bites when TM owns the matrices. Their build already contains the fix (v1141 = main `fcd4720c`).
+Their log also rules out a streaming loss outright: `§CONTRACT_CHECK batch=3677 instanced=3162
+merged=0 guidMap=6839 streamed=6839 orphans=0` — every element IS in the scene.
+
+**MEASURED on HHS this session (new witness + the existing batched owner), all on `fcd4720c`:**
+
+| question | instrument | result |
+|---|---|---|
+| is any element absent from the scene? | their `§CONTRACT_CHECK` | 6,839/6,839, orphans=0 |
+| is any batched slot left invisible at load? | `witness_dlod_cull_soundness.js` (new, §DCS_BM) | **3,704 slots, invisibleAtLoad=0** |
+| are the batched bounds stale (three's per-slot cull)? | `witness_bm_bounds_cull.js`, 36-pose ring | `§BM_BOUNDS_STALE bm=97 geoms=3704 **stale=0** worstM=0` |
+| does the batched cull drop anything that is really in view? | same, 36 poses | `WRONGLY_CULLED` **0–2 per pose** (frustum-edge slivers), `wronglyDrawn=0` |
+| does dlod's own sphere contain what it culls on? | `witness_dlod_cull_soundness.js` (new) | **RED: 357 / 3,135 instances outside** — see below |
+| do the walls/slabs even have geometry? | DB | every `IfcWallStandardCase` 148 / `IfcSlab` 83 / `IfcWall` 12 / `IfcCovering` 43 resolves; 0 unresolved hashes |
+| any degenerate or misplaced wall/slab? | DB | none (no zero extent, nothing >200 m off); Level 1 holds 75 of them, z −0.1…3.6 |
+| is the runtime DB patch implicated? | `buildings/patches/HHS_Office_Federated_extracted.db.sql` | it writes only `spatial_structure` (109), `rel_aggregates` (2,120), `storey_walkable_raster` (4) — **no geometry, no transforms** |
+
+**The one real defect found — §DCS, undersized cull spheres.** `dlod.js:75-81` culls an instance on
+`centre = the instance matrix translation`, `radius = sqrt(bx²+by²+bz²)*0.5` from
+`element_transforms.bbox_*`. On HHS that sphere does **not contain** the geometry actually drawn at
+**357 of 3,135** instances, because the transform centre is not the geometry's centre — measured
+centre offsets up to **0.56 m**:
+
+| class | instances | outside sphere | worst overrun |
 |---|---|---|---|
-| ι | **Intimacy** | `clamp(1 − r₀/D_fill, 0, 1)` | how far *inside* the frame-filling shell you began |
-| α | **Attack** | `θ₀ = atan2(dy, horizR)` (raw, unclamped) | the angle you chose — your signature |
-| γ | **Lift** | `(camY − floorY_below) / storeyHeight` | "how far or off from a floor" (user's own words) |
-
-`r₀`, `θ₀`, `φ₀` are the existing `base.startRadius/startTilt/startAzimuth`; `D_fill` the existing
-`fillDistance`. Only `floorY_below` is new (nearest slab under the camera — the storey query already
-used by `§GROUND_Y`).
-
-### The pivot (the structural idea)
-**The sun-glint swoop `§CINEMA_SWOOP` is the film's hinge.** Before it, the building is revealed
-*from your pose*. After it, your pose is restated *onto the building from outside*. This makes B5
-(the "last orbit is too level, should hobble to a higher angle") not a cosmetic tweak but the
-opening of the final act: the climb out of the swoop IS the return toward your original angle.
-
-### The mappings
-1. **ι morphs Act I continuously — no branch, one knob.** Act-I azimuth sweep `Δφ_I = ι · Δφ_turn`
-   (`Δφ_turn ≥ π`), radius target stays `min(r₀, D_fill)` exactly as today (P1: never pushes out).
-   - ι = 0 (started at/beyond fill distance) → pure push-in, no extra spin — today's behaviour, intact.
-   - ι → 1 (lobby/foyer) → an in-place **turnaround**, radius untouched. Solves B1 *without*
-     normalizing the pose, and the dead 8 frozen seconds become the turn the user meant.
-2. **γ decides carry-vs-ease for the attack angle (B2).**
-   `targetTilt = lerp(clamp(θ₀, tiltMin, tiltMax), θ₀, min(1, γ/γ_carry))`, `γ_carry ≈ 2`.
-   Stood on a floor (γ≈0.5) → orbit eases to the normal band. Deliberately flew up high (γ≫1) →
-   your steep downward attack is **carried, not clamped**. Both of the user's stated tactics fall out
-   of one expression instead of a mode switch.
-3. **The Reciprocal Act (P4) — the ending IS the beginning, restated from outside.**
-   - `θ_end = α` — the same angle of attack returns. This is the rhyme.
-   - `r_end = D_fill · (1 + Λ·ι)`, `Λ ≈ 1.5` — **intimacy converts into distance**: the closer you
-     began, the wider the film pulls away. (Replaces the fixed `CINEMA_PULLBACK_SCALE = 1.4`.)
-   - `y_end = roofY + γ·storeyHeight` — **you end as far above the ROOF as you began above your
-     FLOOR.** This is the literal reading of "how far or off from a floor," and it is the hack: the
-     opening's floor-offset becomes the closing's roof-offset.
-   - `φ_end = φ₀ + 2π` — the loop already closes on the start azimuth; you finish facing from where
-     you began.
-   - The tilt ramp from swoop-level back up to `θ_end` runs over `tNorm ∈ [t_swoop, 1]`, which is
-     B5's climb and B4's twist-back easing in one motion (B4's ~3-frame softening applies here).
-
-### Worked examples — one gesture, three genuinely different films
-Illustrative building: envelope 40m, boundingRadius 25m, FOV 50°/aspect 1.9 → `D_fill ≈ 28.2m`,
-storey 3.5m. (Numbers are worked from the formula, NOT measured on a real building yet.)
-- **A "Establishing Walk"** — stand outside at 60m, eye level (θ₀=5°), on the ground (γ=0.5).
-  ι=0 → classic push-in 60→28.2m, no spin. Tilt eases to the band. Ends at `r=28.2m`, 1.75m above
-  the roof, at 5°. *Sweeps in, orbits low, settles just over the roofline. Intimate close.*
-- **B "Lobby Turn"** — stand inside at r₀=6.3m (the real LTU pose), θ₀=2°, on floor 1 (γ=0.5).
-  ι=0.78 → **~140° turnaround in place**, radius untouched. Ends at `r = 28.2·(1+1.5·0.78) = 61m`.
-  *Starts intimate and turning, ends far away at the same eye-level angle — the intimacy of the
-  opening literally becomes the distance of the close.*
-- **C "The Bird"** — 45m out, steep 55° down, hovering 30m over the roof (γ≈8.6).
-  ι=0, but γ≫γ_carry → **θ carried at 55°, not clamped to 45°**. Ends at `roof + 30m`, at 55°.
-  *The bird's-eye attack survives the whole film and closes at exactly the altitude it opened at.*
-
-### Why this is the teachable part (P3)
-Three scalars, each tied to one physical thing the user already controls with their hands: **how
-close** (ι), **what angle** (α), **how high off the floor** (γ). Each maps to a consequence they can
-see in the 10s preview and predict next time. That is the "many tricks up the sleeve" — the tricks
-are real and learnable because the mapping is monotonic and continuous, not a menu of modes.
-
-### Witness before "done"
-`§CINEMA_RECIPROCAL iota= alpha= gamma= rEnd= yEnd= thetaEnd=` at plan time. Determinism proof:
-poses A/B/C above × ≥2 buildings must yield **materially different** ι/α/γ and end poses — that is
-P2 as a test, and the check that catches a clamp regression sneaking back in.
-⚠ UNVERIFIED: constants Λ≈1.5, γ_carry≈2, Δφ_turn≥π are first-principles starting points, tuned
-against a real preview — not measured. Do not present them as measured.
-
-### ✅ §MAXQ_MP4 BUILT + PR #895 (2026-07-19) — witnessed in BOTH browsers, auto-merge armed
-**Backlog item 1 DONE.** MaxQ now exports **mp4/H.264** by default; the webm MediaRecorder path is
-untouched and serves as the fallback. `MAXQ_V v9`, `sw CACHE_VERSION v812`, new
-`viewer/lib/mp4_mux.js` (precached + `<script>`-tagged), new `witness_maxq_mp4.js`.
-
-**Answer to the question the spec flagged as CRITICAL — does the primary user (Firefox) get mp4?
-YES.** Not a Chrome-only feature. Proven end-to-end on the real app, not just at the API level.
-
-**Two Firefox defects were found by measurement and are the reason this is not a 20-line change.**
-Both would have shipped a file that "downloads but doesn't play right" if the work had stopped at
-"isConfigSupported says true":
-1. **Firefox 148's `decoderConfig.description` (the avcC) is MALFORMED** — every parameter set
-   carries a **duplicated NAL header byte**: SPS `67 67 64 00 28 ac d9…`, length 24 for a 23-byte
-   SPS; PPS `68 68 eb ec b2 2c`, length 6 for 5 bytes. ffmpeg decodes it only by luck (warns
-   `sps_id 1 out of range`); a strict mobile player would reject the file outright — i.e. exactly
-   the iPhone this feature exists for. Firefox DOES emit a correct SPS/PPS **in-band** before the
-   first IDR, so `mp4_mux.js` validates the record and rebuilds it from the in-band NALs when it
-   fails → `§MAXQ_MP4 mux avcC=in-band-rebuild`. Chrome's record is clean and used verbatim.
-2. **Firefox's encoder uses B-frames** (`has_b_frames=2`) — decode order ≠ presentation order.
-   Without a `ctts` box a handful of frames play out of order. `ctts` is now emitted whenever the
-   chunk timestamps disagree with the decode timeline, plus an `elst` edit list so normalising to
-   non-negative (version-0) composition offsets doesn't push the clip off t=0. Chrome emits no
-   B-frames here and correctly gets neither box.
-
-**Witness — `witness_maxq_mp4.js`, headless puppeteer, ANGLE/SwiftShader, real `Duplex_extracted.db`:**
-- CASE A: 6-frame bake → `§MAXQ_MP4 probe codec=avc1.640034 supported=true` →
-  `§MAXQ_MP4 configured codec=avc1.640034 size=900x600 bitrate=2000000 fps=15 frames=6` →
-  `§MAXQ_MP4 encoded chunks=6 bytes=79635 avcCBytes=39 ms=578` →
-  `§MAXQ_DONE frames=6 bytes=80353 type=video/mp4`. **ffprobe on the DOWNLOADED file:**
-  `container=mov,mp4,m4a codec=h264 profile=High 900x600 fps=15/1 frames=6 dur=0.400 start=0.000`,
-  full `ffmpeg -f null` decode **clean**.
-- CASE B: `forceWebm` → `§MAXQ_MP4_FALLBACK reason=forced-webm` → `§MAXQ_STITCH` →
-  `§MAXQ_DONE type=video/webm;codecs=vp9` + real `.webm` download. The old path still works.
-- 0 pageerrors. **VERDICT PASS.**
-
-**Firefox witness (the user's own browser) — same real app, same real DB, Playwright FF148:**
-30-frame bake → `§MAXQ_MP4 mux samples=30 avcC=in-band-rebuild ctts=yes (B-frame reorder)` →
-`§MAXQ_DONE frames=30 bytes=478136 type=video/mp4`. ffprobe: `h264 High 900x600 30 frames
-dur=2.000 start=0.000 has_b_frames=2`, PTS monotonic over all 30, decode clean. Both Firefox
-repairs fire on the real user path — this is the proof that the fixes above are load-bearing.
-Muxer also unit-witnessed standalone (30 synthetic frames, real WebCodecs, Chrome + Firefox).
-
-**Honest limits — what was NOT verified:**
-- **Playback on an actual iPhone / in WhatsApp was not tested** — no device here. What IS proven is
-  that the file is a spec-valid faststart mp4/H.264-High with a well-formed `avcC`, correct `ctts`
-  and `stco`, which is what those players require. Confirming on a real handset is a 1-minute
-  user check and the only remaining unknown.
-- **System Firefox 152 could not be driven headlessly on this box** (`RenderCompositorSWGL failed
-  mapping default framebuffer` — it starts but never navigates), so the Firefox evidence is
-  **Playwright's FF148 build using this machine's system libavcodec**, which is the same encode
-  path system Firefox uses. Not identical; close enough to state the result, not so close that a
-  user paste of `§MAXQ_MP4 configured` on their own build is redundant. Ask for it.
-- **H.264 encode in Firefox is NOT universal.** On Linux it goes through the *system*
-  libavcodec/libx264, not the OpenH264 GMP plugin — a distro shipping stripped ffmpeg (e.g.
-  Fedora's `ffmpeg-free`) has no H.264 encoder and will silently take the webm fallback. Same for
-  distro/Playwright *chromium* builds (`proprietary_codecs=false`) vs branded Chrome. The
-  `§MAXQ_MP4_FALLBACK reason=…` line is how that is diagnosed from a pasted console.
-- **The "no real-time replay" speedup is real but modest, and is NOT the reason to take this PR.**
-  Measured: Firefox encoded 30 frames (2.0s of footage) in 846ms = ~2.4× faster than the 1×
-  wall-clock webm replay; Chrome under SwiftShader was roughly break-even (578ms for 0.4s). Treat
-  it as a side benefit, not a claim. What is NOT modest: at 6 frames the MediaRecorder path
-  produced a **110-byte** webm (a real-time recorder has nothing to record in 0.4s) while the mp4
-  came out at 80KB with actual content — short bakes and cancelled partials are strictly better off.
-
-## §CINEMA_CONTEXT — THE SURROUNDINGS MATRIX (2026-07-19, user extension to §CINEMA_RECIPROCAL)
-User: *"the surrounding makeup also influences the orbit plan ie as input matrix of some sort. There
-is something in each strategic pos/orient that chart the final path."* This is the correction that
-completes the formula: **the start pose alone is not the input — the input is the pose CROSSED WITH
-what the building is doing around that pose.** Two users standing at the same radius/angle/height,
-one in a tight stairwell and one in a double-height atrium, must not get the same film.
-
-### Restatement of the model
-`film = F(pose ⊗ κ)` where `pose` is the three scalars ι/α/γ (§CINEMA_RECIPROCAL) and `κ` is a
-**context vector sampled at that pose from the building's own semantics**. The pose is a QUERY
-POINT; the building ANSWERS; the path is a function of both. This is what makes a pose "strategic"
-rather than merely geometric — the same coordinates mean different things in different rooms.
-
-### κ — the context vector (all derived at plan time, all from existing data sources)
-| # | Component | Source (already in this codebase) | What it charts |
-|---|---|---|---|
-| κ₁ | **Enclosure** `E∈[0,1]` — fraction of a horizontal ray fan blocked within a radius | the occupancy/walkable raster already built for staffage | closet vs atrium vs open field |
-| κ₂ | **Sightline rose** `S(φ)` — free distance per azimuth bin (16 bins) | same raster, radial march | WHERE the view opens — the good reveal directions |
-| κ₃ | **Room scale** — containing room area ÷ storey area | injected room graph (§CINEMA_INDOOR already rides it) | B3: linger in a big room vs seek the door |
-| κ₄ | **Facade affinity** — nearest facade normal + distance | `_buildingBBoxArc` + the §PHOTO_FACING dot-product math (already proven) | which side the orbit should enter from |
-| κ₅ | **Vertical headroom** — ceiling above, floor below | the storey query behind `§GROUND_Y` | how much room there is to climb; grounds γ |
-| κ₆ | **Solar relation** — pose azimuth vs sun azimuth | `A.sun` (already used by §CINEMA_SWOOP) | where the hinge lands relative to the opening |
-
-### How κ changes the mappings (not new beats — better-aimed existing ones)
-- **The turnaround stops where the view opens.** §CINEMA_RECIPROCAL had `Δφ_I = ι·π` sweeping a blind
-  180°. Aim it instead: `φ_I_end = argmax S(φ)` over the rose, with ι setting how much of that turn
-  is spent. The camera turns *toward the opening* — reads as intent, not as a spin.
-- **Door-seek becomes a real choice.** B3's "head for the door out to a larger hallway" = argmax over
-  (room-graph doors) of (adjacent room area × sightline clearance), not the nearest door.
-- **Enclosure modulates the whole film's scale.** High E (tight interior) ⇒ shorter dwell, earlier
-  exit, wider reciprocal ending (you were boxed in, so the release is bigger). Low E (open) ⇒ the
-  push-in beat carries the opening on its own.
-- **Facade affinity picks the orbit's entry side** so the band is entered from the facade you were
-  nearest, rather than from wherever the azimuth math happened to land.
-- **κ₆ positions the hinge relative to your opening** — if you started already facing the sun
-  azimuth, the swoop lands early and the reciprocal act is long; start opposite it and the film holds
-  its glint for the finale. Same gesture, different dramatic shape, derived.
-
-### Why this matters for the product claim (P3)
-It is what makes the trick-learning real. "Stand in the atrium vs stand in the stairwell" is a
-DIFFERENT lever from "stand close vs far" — the user acquires two independent intuitions instead of
-one. The tricks compound because pose and context are orthogonal inputs.
-
-### Cost/risk note — do not skip
-κ₁/κ₂ need a ray-march over the occupancy raster at plan time. That raster already exists but the
-march is new work on the trigger path (which currently must stay responsive — the 10s preview starts
-immediately). Budget it, measure it, and cache per (pose, building) for the duration of one trigger.
-If it costs more than ~100ms, compute κ₁/κ₂ on a coarse bin count and log the cost —
-`§CINEMA_CONTEXT E= rose= room= facade= headroom= solarRel= ms=`.
-⚠ NOT YET IMPLEMENTED and NOT costed — this section is design, not measurement.
-
-## §CINEMA_PRIOR_ART — novelty assessment (2026-07-19, researched, ~20 targeted searches)
-User asked directly: *"this i dunno is it a prior art?"* Answer: **partially novel, and narrower than
-it feels — but the distinctive part is real.** Recorded so it is neither over-claimed in outreach nor
-re-litigated later.
-
-### NOT novel — do not claim these
-- **Automatic camera paths through buildings: solved in 2004.** Way-Finder (Andújar, Vázquez, Fairén,
-  CGF 2004) generates exploration paths through walkthrough models "with little or no user
-  intervention" from a **cell-and-portal graph** (cells=rooms, portals=doors — a functional analogue
-  of our room graph, derived geometrically instead of from IFC) plus viewpoint entropy. **This is the
-  closest structural precedent and it predates us by 20+ years.** "Path from building topology" is
-  NOT a novel claim.
-- **Beat/module structure** (push-in, turnaround, marker, swoop) is exactly the idiom paradigm of
-  CamDroid (Drucker & Zeltzer 1995), Christianson et al. (AAAI 1996), He et al. Virtual
-  Cinematographer. Named parameterized shot primitives are standard, not new.
-- **"Linger where it's interesting"** — our sightline rose / big-room linger is a recognizable
-  instance of the viewpoint-entropy family (Vázquez et al. 2003, still standard).
-- **Few-parameter camera parameterization** — Toric Space (Lino & Christie, TOG 2015) is the same
-  spirit as our three scalars (though it encodes target FRAMING, not user INTENT).
-- Field surveys: Christie, Olivier & Normand, *Camera Control in Computer Graphics*, CGF 2008.
-
-### Appears genuinely distinctive (absence-of-evidence — see caveats)
-1. **The single start pose as the SOLE conditioning input.** The 2025 Camera Trajectory Generation
-   survey (arXiv 2506.00974, self-described first comprehensive review) lists the recognized
-   conditioning modalities as text, reference video, target objects, scene geometry. **"Whole
-   trajectory conditioned on one initial pose, read as an expression of intent" is not a named task
-   formulation.** Prior systems take a start pose as a boundary condition to interpolate FROM, not a
-   signal to read intent OUT OF. **The normalization is the actually-new part** — intimacy relative
-   to fill-frame distance, lift in storey heights — because dimensionless scalars are what make one
-   pose sufficient.
-2. **Cinematography driven by IFC semantics.** BIM room graphs are mature, and path planning over
-   3D scene graphs exists — but every BIM+camera result found is **robotics/inspection, not film**
-   (e.g. BIM-aware UAV path planning optimizes IFC component COVERAGE via ILP+TSP). Nobody appears
-   to read `IfcSpace` area / door adjacency / facade normals to decide what a shot should FEEL like.
-   **The seam between the two fields looks unoccupied.**
-3. **The reciprocal ending — the most distinctive single element.** Mirrored opening/closing images
-   are canonical film theory (circular bookends; Kubrick, Fincher), but **no computational system
-   was found that derives a closing pose from the opening's parameters.** The floor→roof
-   re-referencing (same lift, different datum) has no analogue found. Honest limit: few systems
-   generate complete short films at all, so absence partly reflects that.
-4. **Sun-azimuth-timed beats.** Sun-aware tools (SunTrace3D, Sun Seeker) are human planning aids;
-   nothing found schedules a camera move to a computed solar azimuth automatically.
-
-### The commercial baseline — "one decision, zero prep" IS a real differentiator
-Every mainstream tool requires manual keyframing: **Enscape** ("for the simplest scene you need at
-least two keyframes", then more for corners/stairs, then timestamp tuning); **Revit** (place each key
-frame, adjust camera/target per frame — one worked example cites ~1 hour + render); **Twinmotion**
-(no generative pathing by deliberate policy; 2026.1's Match Perspective still manual); **D5** (one-click
-presets are ENVIRONMENT, Orbit is a navigation mode, not a generated film); **Sketchfab** autospin is
-a constant-rate turntable — the degenerate case. **Matterport's auto Guided Tour is the nearest
-product**, but needs a completed scan, works over snapshot sequences, and is not seeded by the
-viewer's current pose.
-
-### Patent flags — LOW, but this was the weakest search
-- US 9,942,521 "Automatic configuration of cameras in BIM" — alarming title, **unrelated content**
-  (placing physical surveillance cameras for coverage). Not a risk.
-- Open Space Labs US 10,944,959 / 11,995,885 / 12,266,166 — floorplan traversability graph used to
-  RECONSTRUCT the path a human already walked (SLAM on captured 360° video). Retrospective from
-  capture, not prospective from a model. Different field of use.
-- Nothing found claiming path generation from a single viewpoint, or BIM-semantics camera choreography.
-
-### ⚠ Caveats — do not launder these away when quoting the above
-Absence-of-evidence across ~20 searches; a negative cannot be proven. Two source PDFs were corrupted
-(Way-Finder full text, the 2025 survey full text) — those reads rest on abstracts/secondary summaries.
-Non-English and patent coverage was THIN (~4 patent queries, no professional patent-DB access).
-"Enscape has no auto-path" is likely-but-not-verified-at-source (from a comparison article, not Chaos).
-**If this matters commercially, commission a real FTO search — the patent finding is the weakest claim.**
-
-## §CINEMA_PAPER_BOAT — the user-facing explanation model (2026-07-19, user's metaphor)
-User's own framing, and it is the best teaching device produced in this whole thread — adopt it in
-docs/outreach over any of the engineering language above:
-> *"They can go the old tiresome many dials way, or like a way they put a paper boat and let go — it
-> does a different path from how they let it go, spot and drop."*
-
-**Why it is exactly right:** it carries `film = F(pose ⊗ κ)` in one image without a formula. *Spot*
-= where you drop it (ι, γ). *How you let go* = the angle you release at (α). *The water* = the
-building's own currents — rooms, doors, facades, sun (κ). The same drop in different water gives a
-different journey, which is precisely the §CINEMA_CONTEXT correction. Nobody needs the maths to
-predict it, which is the P3 claim ("many tricks up the sleeve") in a sentence.
-
-### ⚠ Refinement 1 — the boat must NOT imply randomness (this one matters)
-A paper boat in a real stream is *unpredictable*. Our system is **fully deterministic: the same drop
-always yields the identical film**, byte-for-byte (the PRNG is frozen per trigger — §PHOTO_PAINT_SEED).
-**Determinism is the whole reason tricks are learnable.** If users read the metaphor as "it's random,"
-they stop trying to learn it and the product thesis collapses — they would treat a bad result as luck
-rather than as their own placement. The precise characterization is **sensitivity to initial
-conditions, not chance**: a small change in where/how you drop it makes a large change in the path,
-and repeating the same drop reproduces the same path exactly. Say "same drop, same film — move a
-metre and it's a different film." That keeps the boat's intuition AND the learnability.
-
-### ⚠ Refinement 2 — "fuzzy logic" is defensible, but make it precise if challenged
-The user calls it a fuzzy-logic alternative to dials. Fair, and technically defensible: ι blends
-CONTINUOUSLY between two shot archetypes (push-in ↔ in-place turnaround) rather than switching modes,
-and γ blends between carry-the-angle and ease-to-band — which is structurally interpolation between
-rule consequents, i.e. Takagi-Sugeno-style inference. If a technical audience pushes back on "fuzzy
-logic," that is the precise term to fall back on. Do NOT claim a fuzzy inference *engine* (there are
-no membership functions or a rule base as such) — claim continuous blending between named shot rules.
-
-### ⚠ Refinement 3 — "first time" needs one word of care (see §CINEMA_PRIOR_ART)
-Way-Finder (CGF 2004) did automatic room-graph paths in research. So **"first time anyone conceived
-this" is falsifiable by a single citation** and costs credibility for no gain. The claim that survives
-scrutiny and is just as strong: **first time it SHIPS as a product — one gesture, in a browser, from
-the building's own BIM semantics, with no keyframes.** Research prototypes from 2004 never reached an
-archviz tool; the commercial baseline (Enscape/Revit/Twinmotion/D5, all keyframe-authored) is
-documented in §CINEMA_PRIOR_ART and is the real contrast. Position against the PRODUCTS, not against
-the literature — the products are where the claim is unambiguously true.
-
-## §CINEMA_RECIPROCAL BUILT (2026-07-19) — PR bim-ootb#897, sw v813, witnessed 11/11
-Implemented in `viewer/effects.js` `_cinemaPathPlan`. **The clamps are gone** — `targetTilt`/
-`targetRadius` no longer squeeze the authored pose into a fixed band; ι/α/γ map instead.
-
-**Ray-march MEASURED FIRST (the flagged risk was unfounded — say so, don't quietly drop it):**
-32-bin sightline rose costs **0.002–0.008ms**; raster DB read **0.13–0.20ms** (HHS 4 storeys /
-Hospital 7 storeys, via `common/storey_raster.js`'s O(1) bitset). Against the ~100ms budget that is
-four orders of magnitude of headroom — **no coarse-bin fallback needed, 32 bins is affordable.**
-
-**But the measurement surfaced the REAL constraint, which is not performance:**
-`storey_walkable_raster` ships only as a self-heal PATCH, and only for **3 of 11 buildings**
-(HHS, Hospital, JKR) — **LTU_AHouse, the user's own test building, has none.** So κ₁/κ₂ were
-DEFERRED rather than half-shipped. ι/α/γ and §CINEMA_ANCHOR need no raster and work everywhere.
-Tiering for whoever picks κ₁/κ₂ up: Tier A raster → true rose; Tier B room graph → room-rect rose;
-Tier C neither → bbox+sun only.
-
-**§CINEMA_ANCHOR table is a RULE LIST, not a flat map** (user: "a matrix style adjustable list is
-good design pattern where we can later introduce more verbs to it of many dimensions ie height,
-proximity - ranges etc"). Each class → ordered rules, first `when` match wins; `when` today reads
-`distLt` (proximity band) and `gammaGt`/`gammaLt` (height band). New dimensions go into `dims`,
-new verbs go in as fields beside ellip/turn/swoop/spin — no restructuring.
-
-**Witness `witness_cinema_reciprocal.js` (in bim-ootb), Duplex + HHS, 4 poses each, 11/11 PASS:**
-| pose | ι | α | γ | carry | targetTilt | end r | end y | turn |
-|---|---|---|---|---|---|---|---|---|
-| Establishing | 0 | 5° | 3.04 | 1 | 5° | 44.8 | 13.4 | 0° |
-| LobbyTurn | 0.848 | 0° | 0 | 0 | 8° | 101.7 | 7.1 | 153° |
-| Bird | 0 | 55° | 30.6 | 1 | 55° | 44.8 | 70.4 | 0° |
-| GroundWalk | 0 | 3° | 0.1 | 0.05 | 7.7° | 44.8 | 7.4 | 0° |
-
-Bird's 55° carried exactly (old code clamped to 45°); Lobby ends 101.7m vs Establishing's 44.8m
-(intimacy→distance); GroundWalk's low γ makes the band-ease act instead (3°→7.7°).
-
-**⚠ LESSON — three of the witness's OWN first-draft assertions were wrong, not the code.** It
-demanded (a) ι differ across all 3 poses — but ι=0 for any pose beyond fill distance is correct by
-design; (b) endRadius differ across all 3 — derived from ι, so same; (c) that Establishing be
-clamped INTO the 8° band — **that expectation was itself the normalization P1 forbids.** Corrected
-by testing the carry-lerp identity plus a true ground-level pose. This is the
-`feedback_verify_checker_before_code_under_test` pattern paying off a third time on this project:
-verify the checker's ground truth before believing a red result.
-
-**Still UNVERIFIED:** Λ=1.5, γ_carry=2, Δφ_turn=π are first-principles constants, not measured —
-the 10s preview loop is what should settle them. And no real-GPU/visual confirmation yet: this is
-plan-level numeric proof, not "the film looks right."
-
-## §CINEMA_SIMPLE — NEW SESSION SPEC (2026-07-19, user dictation) — START HERE, supersedes the opening
-**Read this before §CINEMA_AUTHORED_POSE / §CINEMA_RECIPROCAL / §CINEMA_ANCHOR.** User verdict after
-testing live: *"I think we make it even simpler. No all those gimmicky way."* The pose-derived
-character layer over-reached into the opening; what the film needs first is a plain, legible settle.
-
-### THE OPENING, restated simply (authoritative)
-**First 4 seconds = easing time to EYE LEVEL at the CENTRE OF THE OPEN SPACE it finds itself in.**
-Whatever the camera was doing, it resolves to a normal, upright, human standing view:
-- **Upside down** → back to normal upright eye level.
-- **Looking down** → likewise, but at standing eye level.
-- **Too high up** → it must DROP to floor/person level during that same 4s ease.
-- **Already at normal level** → the ease is merely turning more (nothing else to correct).
-- **Facing a wall** → the 4s ease is BACKING AWAY. Then the NEXT 4s looks for the corridor out:
-  **take the largest empty space as the way out.**
-- **Outside** → it may take a **45° angle looking down** at the building. **But watch the Sun:** if
-  the sun is near that heading, DON'T — hold until right after, then head for the 45° look-down.
-
-### Why this supersedes the earlier doctrine — DO NOT let both stand unreconciled
-§CINEMA_AUTHORED_POSE **P1** said "never normalize the authored pose." This spec says the opening
-**does** normalize — to eye level, upright, centred in open space. **That is a deliberate reversal
-for the first 4–8 seconds and the user is the authority on it.** Reconcile as: the pose still decides
-WHERE you are and WHAT is around you (which space, which way out, which facade, sun relation), but
-the film always OPENS by settling into a legible human view. The authored angle is an input to the
-plan, not a thing the first shot preserves. Do not re-litigate this from the older sections.
-
-### OPEN QUESTION for the user — do not assume either way
-"No all those gimmicky way" may mean the §CINEMA_ANCHOR character layer (railing=wobbly, lamp=spin,
-wall=mundane) should be RETIRED, or merely kept out of the opening (where it already is, since v816).
-The user previously asked for that vocabulary explicitly and liked it. **ASK before deleting it.**
-
-### MUST FIX FIRST — the pivot bug (found 2026-07-19, root cause under all the symptoms)
-`_cinemaPathPlan` trusts `A.controls.target` as the orbit pivot UNCONDITIONALLY. After any
-precision-pivot navigation (`§precision RESET — target replanted 10 units ahead`, fires on the `a`
-key) the target is a point floating just in front of the camera — so the film orbits THAT, not the
-building. Live Terminal evidence: `r0=1.4` / `§MAXQ_START radius=0.3 height=1.4`, and a nonsense
-`iota=0.966` ("intimate") for a camera that was outside and high up. **This is why "from top outside
-it does not ease back" — there was nothing to ease back from.** Fix: pivot on the ARC bbox centre,
-using `controls.target` only when it is plausibly on/near the building. Everything else in this spec
-depends on the pivot being right; do not tune path maths before this is fixed.
-
-### Other confirmed defects to clear in the same session
-- **Indoor prelude ignores the pose entirely.** `§CINEMA_INDOOR` REPLACES the pose function for the
-  first half of an indoor film (drops to `EYE=1.7`, turns ≥180° to find the entrance, walks out) —
-  live: `alpha=61.1°` authored, `turnDeg=334`, and the downward look discarded. Under the NEW spec
-  the prelude is roughly right in spirit (it does settle to eye level) but must implement the rules
-  above: centre of the open space first, back-away-then-find-corridor when facing a wall.
-- **`storeyH=1.91` from `slab-stack(46)`** — mezzanines/ramps counted as storeys, so γ and any
-  "storeys above floor" reasoning is skewed (Terminal gave `gamma=14.57` and `0.45` for two poses
-  that were both high). Fix the storey stack before trusting any height-derived number.
-- A ~10.8m per-frame step remains at the Act III handoff (t≈0.80).
-
-### Implementation notes (grounded, so the next session doesn't re-derive)
-- **"Largest empty space" / "centre of the open space"**: the walkable raster is NOT dependable —
-  it ships as a patch for only 3 of 11 buildings and several live logs show
-  `§HELPERS_QUERY_ERR no such table: storey_walkable_raster`. Use a **raycast fan against the live
-  BVH** instead (`§BVH_INIT three-mesh-bvh` is already loaded and monkey-patched in every session):
-  cast N rays in the horizontal plane from the camera, take the free distance per bearing — that
-  gives both "am I facing a wall", "where is the largest empty space", and a centroid to settle on.
-  Works on every building with no extra data. Measured cost is not the concern (the raster march was
-  0.002–0.008ms; a BVH fan is heavier but still trivial at plan time — measure it anyway).
-- **Eye level**: floor beneath the camera + ~1.7m. The floor query exists (`_cinemaFloorContext`,
-  and `§GROUND_Y`'s slab convention) but see the storeyH defect above.
-- **Sun heading**: `A.sun` azimuth vs the intended 45°-look-down heading — the same comparison
-  §CINEMA_SWOOP already makes; reuse it rather than writing a second sun test.
-- **Fingerprint**: bump `EFFECTS_V` (`§EFFECTS_LOADED`, added v816) on EVERY behaviour change here.
-  It is what finally proved a stale-cache false alarm in this very session — a pasted console must
-  answer "is this live?" by itself.
-
-### §CINEMA_SIMPLE addendum — the UNIVERSAL move (user, same session, completes the spec)
-*"Thus even outside on top of building always go into the largest space in building centre to look,
-but 4 secs is up, thus right away it heads back out, but manage to make a spin to find back exit."*
-
-**This is the one theme, and it applies to EVERY start — inside, outside, or on the roof.** It
-replaces per-pose branching with a single dramatic arc:
-1. **0–4s — go IN.** Whatever the start pose, the camera moves to the **largest interior space at the
-   building centre** and settles there at eye level (per the rules above). From outside/on top this
-   means it dives in; from inside it is already most of the way there.
-2. **At 4s the clock is up — it immediately heads BACK OUT.** No dwelling. The turnaround is
-   driven by the timer, not by the geometry.
-3. **On the way out it makes a SPIN to find the exit** — the spin IS the search for the way out
-   (largest empty space / corridor), not decoration. This is where the earlier "turn in place to
-   acquire the entrance" behaviour belongs, motivated rather than arbitrary.
-4. Then the outside act as specified: the 45° look-down, held back if the Sun is near that heading.
-
-**Why this is better than what shipped:** every film gets the same legible three-beat shape —
-*in, look, out* — so the building is always revealed from its own heart before the exterior orbit.
-The pose decides the details (which space, which exit, which facade, sun timing); it no longer
-decides the STRUCTURE. That is the "theme to the path to make it cinematic and elegant" the user
-asked for, and it is far simpler to implement and reason about than the ι/α/γ character layer.
-
-**Implementation consequence:** the existing `§CINEMA_INDOOR` prelude is now the SPINE of every
-film, not a special case for indoor starts — generalise it (entry from outside, settle at the
-central space, timed exit, spin-to-find-exit) rather than keeping two separate path builders.
-The pivot fix above is a prerequisite: "largest space at building centre" is meaningless while the
-plan orbits `controls.target` wherever it happens to sit.
-
-### §CINEMA_SIMPLE — DECISIONS (user answered directly, 2026-07-19). These are SETTLED.
-User's framing: *"basically i see only one routine. Start + normal script with Sun reflect
-consideration."* The START eases you in (pose-dependent); the NORMAL SCRIPT is the same for every
-film. Three forks resolved — implement these, do not re-open them:
-
-1. **RETIRE the §CINEMA_ANCHOR character vocabulary ENTIRELY.** Delete `CINEMA_ANCHOR_CHARACTER`,
-   `CINEMA_ANCHOR_RADIUS_M`, `_cinemaPickCharacter`, `_cinemaAnchor`, the `character.*` uses in the
-   pose factory, and the `§CINEMA_ANCHOR` log line. No per-element flavour at all — railing/lamp/
-   wall/beam verbs are gone. (The earlier §CINEMA_ANCHOR section stays in this file as HISTORY of a
-   rejected direction; it is no longer a spec. Do not resurrect it.)
-2. **The ENDING belongs to the normal script — RETIRE the reciprocal ending.** Same close for every
-   film regardless of start pose. Delete the `reciprocal` block, `CINEMA_PULLAWAY_GAIN`, the Act III
-   handoff branch and the `§CINEMA_RECIPROCAL` line. (This also removes the ~10.8m t≈0.80 step,
-   which lived in that handoff.) The start pose affects the EASE-IN ONLY.
-3. **Always dive to the largest space, regardless of size.** No minimum-size gate, no skip path, no
-   hover-outside fallback — every film has the same shape on every building. If a building's largest
-   interior space is small, the camera still goes there.
-
-**What survives from all the pose work:** essentially only the ease-in. ι/α/γ as published scalars
-are no longer needed by the script — if the ease-in wants "how high am I / am I upside down / am I
-facing a wall", read that directly at plan time (BVH fan + floor query) rather than keeping the
-normalized-scalar layer. Keep `§EFFECTS_LOADED` (the build fingerprint) and the §CINEMA_POV
-continuity guarantee that the film starts exactly at the user's camera.
-
-**Net shape to build:** pivot fix → ease to eye level at centre of the largest interior space (4s,
-handling upside-down / looking-down / too-high / facing-a-wall) → timed exit with a spin that finds
-the way out → exterior script with the 45° look-down, held if the Sun is near that heading → standard
-ending. One routine.
-
-### §CINEMA_SIMPLE — the dive is TIME-BOXED, and that IS the remaining authoring lever
-*"During the dive takes also 4 secs, if cam start far, it does zooms fast, so user intuitively knows
-if want it to slow, then put above or outside but as near."*
-
-**The dive is a fixed 4 seconds, never a fixed speed.** Speed = distance ÷ 4s, so:
-- Start far → it covers the ground fast (a hard zoom in).
-- Start near (above or just outside, but close) → the same 4s becomes a slow, graceful move.
-
-**Do not "fix" the fast zoom** — it is not a bug and must not be clamped, eased-to-a-max-speed, or
-given a distance-proportional duration. It is the ONE lever the user keeps after the simplification,
-and it is learnable in exactly the way the whole feature is meant to be: *stand closer and the
-opening is calmer.* Clamping the speed would silently remove the last thing the start pose controls.
-
-This is what the ι/α/γ scalar layer was reaching for, achieved for free by holding duration constant
-and letting distance do the work — no normalization, no table, no branching. Same 4s for everyone.
-
-### §CINEMA_SIMPLE — how the pose STILL shapes the film: via the EXIT, not via parameters
-*"In fact the start and end is affected by where user puts ie the orientation angle. Say cam starts
-facing Sun and nearest exit is facing away thus it exits turns around to face building but since away
-it can rise to look down. When cam in building ends choosing another nearest exit due to at 4sec which
-angle it is facing. This only happens where the user place the cam nearest to and POV."*
-
-**This does NOT contradict "the ending belongs to the normal script" — read both together.** The
-script is identical for every film. What differs is **which exit the camera takes**, and that is
-decided by WHERE the camera is and WHICH WAY IT FACES at the 4-second mark. Everything downstream —
-which side it emerges on, which facade the exterior act sees, where it ends up — follows from that
-one physical choice. So:
-- The pose shapes the film **emergently, through geometry**, not through a derived-parameter table.
-  This is why the ι/α/γ scalar layer and the anchor verbs were the wrong shape: they tried to encode
-  as parameters what the building's own geometry already decides for free.
-- **Exit selection = nearest exit to the camera's position AND facing at t=4s.** Both matter — the
-  user's worked example is a camera facing the Sun whose nearest exit is behind it.
-- Worked example to preserve as the acceptance case: start facing the Sun → nearest exit is away from
-  the Sun → camera exits that way → **turns around to face the building** → and because it is now on
-  the far side it **rises to look down** (the 45° look-down, which is also the Sun-safe heading here).
-  The Sun rule and the exit choice reinforce each other; they are not two separate systems.
-- Same building, camera moved a few metres or turned to face another way → a different nearest exit →
-  a genuinely different film, with no per-pose code. **That is the "myriad of paths" claim, achieved
-  by geometry instead of by a mapping table.**
-
-**Implementation note:** exits come from the real door set the room graph already exposes
-(`§CINEMA_INDOOR entrance=widest-ground-door` today picks ONE globally — that is the thing to change:
-pick per-run by proximity + facing at the 4s mark, not a fixed "widest"). Log the choice
-(`§CINEMA_EXIT chosen=<guid> dist= facingDot=`) so a pasted console explains why a film went the way
-it did — the user must be able to see the cause, since this is the lever they are learning.
-
-### §CINEMA_SIMPLE — three implementation calls (assistant's instinct, user said "go with your
-### instincts first then i give trials and feedback"). Provisional — expect the user to revise.
-1. **The 4s ease PRESERVES YOUR HEADING.** It corrects pitch (upside-down/looking-down → level),
-   height (too high → person level), and position (→ the space), but it does NOT re-aim your azimuth.
-   **Reason this is the load-bearing one:** the exit at t=4s is chosen by position AND facing. If the
-   ease were free to turn you toward the space centre, every film on a building would end up facing
-   the same way at 4s, pick the SAME door, and the "myriad of paths" collapses to one film per
-   building. Your heading surviving the dive is what keeps the Sun example working (start facing the
-   Sun → nearest exit is behind → exit away → turn back to face the building → rise to look down).
-   "If already normal level its ease is merely turning more" = turn only as much as reaching the
-   space requires — never a re-aim.
-2. **"Largest space NEAREST TO the centre" wins over the strict geometric centre.** On a big building
-   the geometric centre can be a service core; the beat must land in a room that reads as a space.
-   Rank candidate interior spaces by (size, closeness to centre), take the best — don't assume the
-   centroid is the grand room.
-3. **4s is fixed, with NO clamp — accept the hard rush on large buildings.** Terminal ~69m, Hospital
-   ~150m, so Hospital's dive is roughly twice the speed for the same gesture. Per §time-boxed-dive
-   this is the lever, not a defect. Flagged so nobody later "fixes" it: on the largest buildings the
-   opening WILL read as a fast rush, and that is the rule working, not failing.
-
-### §CINEMA_SIMPLE — IMPLEMENTED 2026-07-20 (PR bim-ootb#902, `feat/cinema-simple`, v817)
-Built to the spec above and its addenda. `EFFECTS_V` → **v3**, `MAXQ_V` → **v10**, `CACHE_VERSION` →
-**v817**. Awaiting the user's live trial — everything below is what was MEASURED, not what it feels like.
-
-**Deleted (not commented out), per §CINEMA_SIMPLE decisions 1+2:** ι/α/γ + `§CINEMA_POSE_AUTHORED`;
-`CINEMA_ANCHOR_CHARACTER`, `CINEMA_ANCHOR_RADIUS_M`, `_cinemaPickCharacter`, `_cinemaAnchor`,
-`CINEMA_ANCHOR_NEUTRAL`, every `character.*` use, `§CINEMA_ANCHOR`; the `reciprocal` block,
-`CINEMA_PULLAWAY_GAIN`, the Act III handoff, `§CINEMA_RECIPROCAL`; the `§CINEMA_THEME` envelope (its
-only job was gating the character layer); `_cinemaFloorContext` (the `slab-stack(46)`/`storeyH=1.91`
-defect — **no storey-derived height survives in this path**, eye level is a downward BVH raycast); the
-push-in/hold/band-ease constants and `§CINEMA_SWOOP`.
-
-**Pivot fix (§CINEMA_PIVOT), the gate on everything else:** pivot is the ARC bbox centre;
-`controls.target` accepted only when BOTH near the real centre AND ≥ a quarter-envelope from the
-camera — a replanted nose-target fails by construction. Confirmed live: `targetOffCam=1.1/3.4/7.5`
-rejected; genuine framing poses still accepted as `controls-target(plausible)`.
-
-**Two defects the verification itself found — both now fixed, both worth remembering:**
-1. **The "largest space" was a ROOF TERRACE.** Duplex's top-scoring `IfcSpace` by area×centrality
-   (R301, 135m²) read **32/32 fan bearings clear to the 60m horizon** — outdoors. Area+centrality
-   alone does not mean "interior". The BVH fan is now also the ENCLOSURE TEST: rank candidates, fan
-   the top few, take the best-scoring one that is genuinely enclosed. Log shows
-   `rejectedOpen=[R301@0%]` → `space="A102" enclosed=100%`. Still no minimum-size gate (decision 3).
-2. **`CINEMA_EXIT_FACE_GAIN=0.3` silently collapsed the whole feature.** ±30% cost swing is drowned
-   by proximity: Hospital picked the SAME door from all 6 test poses, Terminal only 2 distinct across
-   6. At **0.8** (9× swing) heading genuinely steers. A comment in the code warns that lowering this
-   again kills the "myriad of paths" claim — re-run the divergence probe if anyone touches it.
-
-**§CINEMA_ROOMS — a real trap:** `_cinemaPathPlan` is SYNCHRONOUS but the room graph + exit doors
-live in the LAZY navigate bundle. A session that never opened Find has `A.getRoomGraph === undefined`,
-so the first probe run had every film falling back to bbox-centre + nearest-facade with
-`candidates=0`. Both async call sites (`startCinemaOrbit`, MaxQ `start`) now `await A.loadNavigate()`
-+ `A.ensureRooms()` first. **The old `§CINEMA_INDOOR` had this same latent hole.**
-
-**Verified** headless Chromium (ANGLE/SwiftShader), `§`-tagged whitebox logs, no Playwright.
-Probe: `scratchpad/probe_cinema_simple.js`. Duplex + Terminal + Hospital, 6 poses each.
-- `poseAt(0)` vs actual camera = **0.0000 m on all 18 runs** (POV continuity not regressed).
-- Per-frame continuity at the 15fps cadence: max/median ratio **1.8–2.2×, ZERO spikes >6× median**.
-  Old code, same probe (Duplex inside-centre): **11.10 m max, 12.0×, 59 spikes** at t≈0.70–0.80 —
-  the Act III handoff. Gone with it.
-- Exit divergence: Duplex 2, Terminal 2, Hospital 3 distinct exits / 6 poses. **Acceptance case met
-  on all three:** two poses at the SAME position facing different ways pick DIFFERENT doors.
-- `§CINEMA_PLAN_MS`: Duplex ~20–70ms, Terminal/Hospital ~500–750ms (one-off, at Alt+C press).
-
-**NOT proven — do not claim these:**
-- No visual/screenshot review. This is numeric path verification only.
-- **Upside-down recovery untested.** The ease drives pitch → 0, but the camera's up-vector belongs to
-  OrbitControls and this change does not touch it.
-- **The Sun-hold branch never fired** (`hold=true` unexercised) — every test pose had `|delta| > 35°`.
-- Terminal's 5 `exit` nodes are clustered (runner-up cost within 0.1 of the winner on every pose).
-  That caps divergence there; it is Terminal's door data, not the selection logic.
-
-## §CINEMA_SIMPLE — LIVE TRIAL REGRESSIONS (2026-07-19, user, v818/EFFECTS_V v4) — FIX NEXT
-Three defects from the user's own live test of the shipped §CINEMA_SIMPLE + staffage build. All three
-are things the simplification/clearance-gate REMOVED or got wrong; none is a new feature request.
-
-### R1 — no seated pax in the Terminal hall, though there ARE seats (staffage, PR #903 over-corrected)
-*"There are no more sitting pax in the Terminal hall though there are seats. They can always have
-their seats in open area floor anyway just for semblance."*
-- The §STAFFAGE_CLEARANCE BVH gate (PR #903) now suppresses seated figures in the hall. The seat-class
-  fix (PR #898) + the clearance gate together are too strict — a chair beside a table, or a chair in
-  an open concourse, is being rejected.
-- **User ruling: seated pax do NOT need a table.** Put them on the open-area floor "just for
-  semblance." So seated placement should anchor to a real seat/chair position (or, failing that, open
-  floor) and must NOT be rejected merely for lacking an adjacent table or for the clearance test that
-  a legitimately-seated figure at furniture will always partly fail (they overlap the chair/table by
-  construction — the PR #898 exemption must extend to the PR #903 clearance test, it currently doesn't).
-- Fix in the staffage path (effects.js `_updateInFrameInterior` + `§STAFFAGE_CLEARANCE`), NOT the
-  cinema path. Witness: Terminal hall must place >0 seated pax after the fix, still 0 in-mesh.
-
-### R2 — the dive lands in the ROOF ATTIC, never the hall (both Terminal AND Hospital)
-*"The orbit does look for nearest largest area which hits the roof attic area when it is looking into
-the hall. Thus if u are there, then dont look for the next. Only when outside, and attic/basement
-simply avoid. In fact, even outside building it never goes to the hall. Same as in Hospital."*
-- The §CINEMA_SIMPLE agent's own verification ALREADY caught a version of this (Duplex's "largest
-  space" was a roof terrace, rejected via the BVH enclosure fan) — but the enclosure test is not
-  enough on Terminal/Hospital: it still selects a roof attic / plant space over the main concourse.
-- **Three explicit rules from the user, implement all:**
-  1. **If the camera is already IN a space (e.g. standing in the hall), do NOT search for another** —
-     settle where the user put you. The "largest space" search is ONLY for when there is no containing
-     space (i.e. an outside/on-top start).
-  2. **From outside, AVOID attic and basement** as the dive target — they are never the hero space.
-     Rank by (enclosed, floor-level-ness, size): prefer a ground/main-level enclosed volume; demote
-     top-most and bottom-most storeys. `storeyH`/slab-stack is unreliable (mezzanine bug) so derive
-     level from the space's own Z within the building's Z-range, not from a storey index.
-  3. **The dive must actually reach the main hall/concourse** — currently it never does on Terminal or
-     Hospital. This is the acceptance test: an outside start on Terminal must land in the concourse,
-     not a plant room; Hospital likewise.
-- Likely root: "largest IfcSpace by area" + enclosure is picking a big enclosed attic/plant volume.
-  Add the floor-level preference AND the "already-inside → don't reselect" short-circuit. Log the
-  candidate ranking (`§CINEMA_SPACE cand=<guid> area= zLevelFrac= enclosed= chosen=`) so the console
-  shows WHY it picked what it picked.
-
-### R3 — it no longer levels off to catch the Sun reflection (I deleted §CINEMA_SWOOP)
-*"It no longer levels off to hit the Sun reflect."*
-- **This was my deletion, not a side effect.** §CINEMA_SIMPLE's cleanup removed `§CINEMA_SWOOP` /
-  `CINEMA_SWOOP_HALF_SEC` / `CINEMA_SWOOP_TILT_DEG` — the beat that dipped the tilt to building/eye
-  level at the one azimuth where the sun sits behind the camera, giving the specular hotspot on
-  glass/metal. The user wants it BACK — it is part of "the normal script," not gimmickry.
-- Reinstate the swoop in the new exterior act: once per loop, at the sun-behind-camera azimuth
-  crossing, ease the tilt toward level so the film passes low and facing the glint at least once.
-  This ALSO connects to the still-unexercised Sun-hold branch (the 45°-look-down should hold if the
-  sun is near that heading, THEN proceed) — R3 and the Sun-hold are the same sun-awareness, verify
-  together. Re-add `§CINEMA_SWOOP` logging.
-
-**Sequencing for the next session:** R2 first (it's the spine and the pivot/space selection everything
-rides on), then R3 (exterior act), then R1 (separate staffage path, independent). Bump EFFECTS_V +
-CACHE_VERSION. All three have concrete acceptance tests above — witness each, don't eyeball.
-
-## §CINEMA_SIMPLE — R2 STILL BROKEN after v818 deploy + hard reset (user, 2026-07-20) — START HERE
-User hard-reset (confirmed current code) and reports the dive STILL goes to the roof attic, not the
-main indoor area, on Terminal AND Hospital. So the §CINEMA_SIMPLE build (PR #902, EFFECTS_V v4/v5)
-did NOT fix R2 — the BVH enclosure test alone is insufficient. **This is the #1 open item; nothing
-else in this feature matters until the dive lands in the concourse.**
-
-**Directive for the fixing session — do this, in order:**
-1. **Reproduce with a probe, don't eyeball.** Adapt `scratchpad/probe_path_continuity.js` (or the
-   agent's own space-selection probe) to LOG the ranked space candidates on Terminal + Hospital:
-   `§CINEMA_SPACE cand=<guid> area= zLevelFrac= enclosed% chosen=`. Establish WHY the attic wins.
-   `zLevelFrac` = (space centre Z − buildingZmin) / (Zmax − Zmin), derived from the space's OWN Z,
-   NOT the storey stack (slab-stack(46) mezzanine bug makes storey index useless — see R2 above).
-2. **The fix is almost certainly a FLOOR-LEVEL PREFERENCE the current ranking lacks.** "Largest
-   enclosed" is picking a big enclosed attic/plant volume. Rank must demote high `zLevelFrac`
-   (attic) and very low (basement); a concourse sits low-to-mid. Try: score = area × enclosed% ×
-   floorLevelWeight(zLevelFrac), where floorLevelWeight peaks at ground/main level and falls off
-   toward roof and basement. The user's exact rule: "Only when outside, and attic/basement simply
-   avoid."
-3. **Also honor the already-inside short-circuit:** "if u are there [in a space], then dont look for
-   the next" — if the camera's start position is already inside a valid enclosed space, settle there,
-   don't run the largest-space search at all.
-4. **Acceptance test (numeric, both buildings):** an OUTSIDE start on Terminal must choose the
-   concourse (the big ground/main-level enclosed space), NOT a roof/plant space; Hospital likewise.
-   Log the chosen space's `zLevelFrac` — it must be low-to-mid, never ~1.0.
-5. Bump EFFECTS_V + CACHE_VERSION. Then R3 (reinstate §CINEMA_SWOOP sun-reflection level-off, deleted
-   in the simplification) and R1 (seated pax need no table — extend the PR #898 overlap exemption to
-   the PR #903 clearance gate). Full R1/R2/R3 detail is in the §CINEMA_SIMPLE LIVE TRIAL REGRESSIONS
-   section above; the §CINEMA_SIMPLE routine + DECISIONS + implementation calls precede it.
-Also open, lower priority: Alt+P perf regression (~0.9s→2.7s, BVH probing) — see
-`prompts/STAFFAGE_WALKABLE_PLACEMENT.md` §STAFFAGE cars-never-indoors + perf section.
-
-## ⚠ NEXT SESSION — TEST LIVE. DO NOT ASSUME ANY OF THE FOUR ITEMS BELOW ARE ACTUALLY SOLVED
-**Read this before touching the cinema code again, and before believing the "SHIPPED"-style labels
-on the four sections below.** Every one of R2, the bbox-ghost fix, §CINEMA_FLAT_ENDING, and
-§CINEMA_ORBIT_V2 is: merged to `main` (PRs #907, #921, #923, #925, all MERGED), and passed its OWN
-unit-level witness (a headless Puppeteer script driving `A.cinemaPathPlan()` directly and asserting
-on the numbers). **None of it has been confirmed correct by the user actually pressing Alt+C and
-watching the film.** This distinction has bitten this exact feature TWICE already this session — R2
-passed its own witness, shipped, and the user found it "STILL BROKEN" in live use (the dive still
-went to the attic — turned out to be a SEPARATE bug, the bbox-ghost-stuck issue, that no unit witness
-could have caught since it depends on Find-panel navigation state a synthetic `cinemaPathPlan()` call
-never touches). Then §CINEMA_FLAT_ENDING ALSO passed its own witness and shipped, and the user's live
-trial ("from above then level then back above is not cinematic smooth") triggered the entire
-§CINEMA_ORBIT_V2 redesign. **Passing a unit witness is necessary, not sufficient — it proves the
-formula does what the code intends, not that what the code intends is what the film actually needs.**
-Assume nothing is settled until the user has pressed Alt+C on a real building and said so.
-
-**Concrete things to verify live, per piece — Terminal AND Hospital, several different camera
-starting positions/angles each (the whole point of this feature is that different starts should
-diverge):**
-- **Space selection (§CINEMA_SPACE, simplified in #925):** does the dive actually land somewhere
-  that reads as "the main hall/concourse" to a human eye, not the attic, not an awkward bbox-centre
-  fallback floating in empty space? The fallback-to-bbox-centre path is now MORE likely to fire than
-  before (no second-best candidate to fall back to), and it was only confirmed numerically (via
-  `§CINEMA_SPACE` log lines), never watched.
-- **Exit mood (§CINEMA_TRAVEL_CLASS):** does "rushed" actually read as purposeful/quick, or does it
-  read as clipping through the nearest wall regardless of what's there? Does "graceful" actually look
-  unhurried, or just slow?
-- **Spin (§CINEMA_SPIN_MOTIVATED):** does skipping the spin when already facing the exit look
-  natural, or does it read as the film forgetting to establish the room at all?
-- **Exterior shape (§CINEMA_SUN_ORDER):** does the sun-first "rise to an elevated closing view" and
-  the sun-last "glide down to the Sun" both actually look intentional on screen? Does the reflection
-  genuinely read as a highlight, or is it too subtle/fast to notice at 24fps?
-- **End deceleration + beat overlap:** do these actually remove the "abrupt" feeling the user
-  reported, or is it still perceptible? These were verified via a numeric rate/angle check, never a
-  frame-by-frame watch.
-
-If the user reports ANY of this still looks wrong, that is not a regression of the witnessed formula
-— read it the way R2's "still broken" turned out to be a different bug entirely. Reproduce with a
-fresh probe against the SPECIFIC pose/building the user describes before touching the code again.
-
-## R2/R3/R1 MERGED — unit-witnessed only, live-trial status UNKNOWN (2026-07-20, PR bim-ootb#907) —
-the 3-item list above is IMPLEMENTED, witnessed on Terminal + Hospital via a synthetic
-`cinemaPathPlan()` probe, NOT yet confirmed by the user watching a real film. `EFFECTS_V` v5→v6,
-`CACHE_VERSION` v821→v822.
-
-## §CINEMA_SIMPLE — bbox-ghost-stuck root cause found for the R2 recurrence, MERGED — unit-witnessed
-only, live-trial status UNKNOWN (2026-07-20,
-PR bim-ootb#921) — "the orbit still goes to attic" resurfaced after #907's fix had already
-stress-tested clean across 24 pose/building combinations. Root cause: `_drillSelect()` silently
-auto-enables the merged-ghost bbox shell (hides real solids) on a Storey/Discipline Find-panel drill
-for large buildings, and `_setTreeMode()` only ever reset that state when leaving Room/Phase/Material
-— Storey/Discipline (the panel's DEFAULT axis) was never checked, so the shell (and hidden solids)
-stuck around indefinitely however the user navigated afterward. This is a DIFFERENT bug from R2's own
-space-ranking logic (which was, and remains, correct) — the cinema BVH fan was raycasting against
-coarse ghost boxes instead of real walls while the display was stuck in that state. Fixed: (1)
-`_setTreeMode()`'s ghost-reset made unconditional, not axis-gated; (2) `_cinemaFanMeshes()`/
-`_solidMeshes()` now exclude ghost/placeholder geometry via `_isGhostGeometry()`, matching the
-exclusion convention `picking.js`/`city.js`/`measure.js` already use. Verified on Duplex (real
-solids survive the filter, ghost never does, in both a solids-hidden and solids-visible scenario).
-
-## §CINEMA_FLAT_ENDING — the swoop ENDING redesigned per live-trial feedback, MERGED — unit-witnessed
-only, live-trial status UNKNOWN, and NOW SUPERSEDED (§CINEMA_ORBIT_V2 below scopes this to the
-sun-last branch only, it is no longer universal) (2026-07-20,
-PR bim-ootb#923). User's verdict on the R3 swoop as shipped (a brief mid-loop dip toward the Sun that
-then CLIMBED BACK UP to the 45° look-down for the rest of the orbit): *"the last part of orbit, it
-should go last 5 secs at least to be flat eye level without the wobble. Catch the Sun is luck but
-from above then level then back above is not cinematic smooth. Thus the angle of start must also
-corelate dynamically so user changes angle to end up catching as user wants."*
-
-**Three requirements, read together:**
-1. **The final ≥5 SECONDS of the film must be FLAT (tilt≈0°, eye-level), holding — no wobble.**
-   "Wobble" = both the tilt re-climbing after the swoop dip AND the ellipticity radius modulation
-   still active while otherwise trying to look "settled".
-2. **Never climb back up after dipping.** The shipped swoop's shape (level → 45° look-down → dip to
-   catch the Sun → BACK UP to 45°) is explicitly what reads as un-cinematic. The fix is NOT "reinstate
-   the old dip-and-recover" — it is: once the film starts easing toward level, it must never re-climb.
-   The Sun-catch and the final level-off are the SAME event, not two.
-3. **"Catch the Sun is luck" — the user explicitly accepts this won't always align, but the START
-   ANGLE should be the lever that lets them steer toward it.** The existing §CINEMA_EXIT mechanism
-   already makes the chosen exit — and therefore `exitAz`, and therefore where in the final 360° loop
-   the camera's azimuth crosses the Sun's (`swoopU`) — an emergent consequence of where the user
-   started and which way they faced. That causal chain is the "aim" mechanism; it does not need a NEW
-   parameter, it needs the OUTCOME (the final descent) to actually look intentional/smooth regardless
-   of where `swoopU` happens to land, so the causal chain is worth learning rather than looking broken.
-
-**Design shipped:** replaced the isolated swoop dip with a single monotonic final descent to level:
-- A mandatory final HOLD window (`CINEMA_FLAT_HOLD_SEC`=5s, converted to the orbit act's own u-domain
-  the same way `swoopHalfU` used to be) — tilt is flat (0°) for that whole window, always.
-- The DESCENT into that hold starts at `max(riseEnd, min(swoopU, latestPossibleStart))`, where
-  `latestPossibleStart` leaves room for `CINEMA_DESCENT_MIN_SEC`=3s of glide before the hold begins.
-  So: if the Sun-crossing (`swoopU`) falls early/mid-loop, the descent starts THERE and glides all the
-  way down to level (no separate climb back to 45° first). If `swoopU` is too close to the end to
-  leave room for both the minimum descent and the mandatory hold, the descent starts at the
-  latest-possible point instead (still monotonic, still ends flat with ≥5s to spare) — the "luck"
-  case where the Sun and the ending don't line up, but the film still ends smoothly either way.
-- Ellipticity radius wobble ramps OUT to zero across the same descent window (mirroring how it
-  already ramps IN from zero at u=0), so the final hold is genuinely settled: level tilt, constant
-  radius, gentle azimuthal sweep only. The pull-back flourish (`CINEMA_PULLBACK_START=0.80`, a RADIUS
-  effect) is orthogonal to tilt and untouched — a level-and-pulled-back final shot is a normal,
-  intentional combination in the standard 24s film (hold starts u=0.583, pullback starts u=0.80).
-- `EFFECTS_V` v6→v7, `CACHE_VERSION` v830→v831.
-
-**Verified** (`witness_cinema_flat_ending.js`, Terminal + Hospital, two scenarios each — Sun-crossing
-forced to fall where it CAN be caught vs where it CAN'T): tilt monotonically non-increasing across
-the entire descent in all four cases (zero re-climb), exactly flat (0.000°) for a clean 5.00s hold,
-radius spread before the pullback flourish engages is 0.0000 (fully damped), and once the flourish
-engages radius grows strictly monotonically (no oscillation) in every case.
-
-## §CINEMA_ORBIT_V2 — the whole ROUTE redesigned (dive target, exit mood, spin, exterior shape,
-ending), MERGED — unit-witnessed only, live-trial status UNKNOWN (2026-07-20, PR bim-ootb#925) —
-worked out interactively across many user messages in the same session as §CINEMA_FLAT_ENDING above,
-after live-trialing it — itself NOT YET live-trialed, so treat the whole design as provisional until
-the user reports back on it. §CINEMA_FLAT_ENDING itself
-is now CONDITIONAL (only the sun-last half of this spec) rather than universal — see Phase 3 below.
-
-### Why (verbatim user framing, read before touching any of this again)
-- On Alt+P: *"Alt-P is not perf issue because it lags due to size."* (a SEPARATE thread — see the
-  §Alt+P PERF INVESTIGATION note further below; not part of this orbit redesign.)
-- On R2's floor-level ranking: *"i think abandon the 'next largest room on way zooming in' idea. It
-  is disastrous for sure. Just back to original 'go to largest space within 4 sec'. Let user play
-  with it."*
-- On the already-inside short-circuit vs "go to largest space" (asked "is my logic off?", answer:
-  no — it's ONE rule, not two): *"prior to that maintains, 'when in any inside space go to largest
-  space then head out closest entrance nearest to you due to short of time as u got another 4 secs
-  to get out'. When starting from largest space, 'look around and head to main exit in 4 secs'."*
-  Reconciled: "go to the largest space" is the constant; "settle in place" is what that rule DOES
-  when you're already standing in the target — not a separate override. No code needed to detect
-  "already there" specially; it falls out of the general case (a near-zero `diveDist`) for free.
-- On exit choice, already-at-target case: *"if the nearest is behind then turn around to it, helps
-  shows around the place... If it is facing the nearest exit, [skip the spin, glide straight
-  there]... no matter what the cam angle from up or to the ceiling or sky or upside down, it simply
-  normalise, no abrup cut."*
-- On the overall feel: *"Ok try, and as overall rule, no abruptness or too sharp ie when exiting to
-  turn back to the building"* / *"even the path when reaching outside should not be robotic abrupt
-  stop and turn, it can play while doing both."*
-- On the exterior act's shape: *"a different angle outside will determine if the Sun reflect is
-  happening first or last. If first stay eye level to catch the reflect. Then raise cam to see from
-  above the closing sec rotation of the building. If last, then rise gracefully but catch the
-  reflecting Sun to end, which last 2 sec should slow down not abrupt stop."*
-
-### Phase 1 — reaching the target (dive-in, unchanged 4s budget)
-Three starting conditions, ONE rule (`§CINEMA_SPACE`, effects.js): rank ALL real rooms once by the
-ORIGINAL area/centrality formula (`area / (1 + dCtr/envelope*0.5)` — "largest space NEAREST TO the
-centre" beats the strict geometric centre), take the single TOP-ranked room, one enclosure sanity
-check (never dive into literal open sky — e.g. Duplex's R301 roof terrace, 135m², which fans 0%
-enclosed), fall straight to bbox-centre if that fails. **No floor-level weighting (R2's
-`_cinemaFloorLevelWeight`, deleted), no multi-candidate iteration (R2's try-up-to-6-then-take-
-best-enclosed loop, deleted).** This is a deliberate simplification, not a regression — see the
-"Just back to original" quote above. Consequence worth knowing: since there is no second-best
-candidate to fall back to anymore, a building whose SINGLE largest room happens to fail the
-enclosure check (Duplex, confirmed) now lands at the generic bbox-centre rather than a real named
-room — accepted per "let user play with it".
-- Outside/roof start → dives to the chosen room.
-- Inside, not the chosen room → travels there (this consumes the dive's time budget).
-- Inside, already the chosen room → the ease-in is a near-no-op (settle ≈ camPos0). No special-case
-  branch exists for this — it is the SAME code path as the other two, just with `diveDist≈0`.
-
-### Phase 2 — exit choice (`§CINEMA_TRAVEL_CLASS` + `§CINEMA_SPIN_MOTIVATED`, effects.js)
-`diveDist` (settle vs the camera's actual start position) classifies the mood — `hadToTravel =
-diveDist > 3m`:
-- **Rushed** (outside start, or inside-but-not-the-target): time is short — exit cost weights
-  proximity heavily (`CINEMA_EXIT_FACE_GAIN_RUSHED = 0.1`), nearest door wins outright.
-- **Graceful** (already at the target, no travel spent): time to spare — exit cost weights facing
-  more (`CINEMA_EXIT_FACE_GAIN_GRACEFUL = 0.8`, the pre-existing measured value, unchanged), a
-  door roughly matching where the camera is already facing is preferred.
-
-The spin (Beat 2) is MOTIVATED, never forced — replaces the old "always extend small angles into a
-full 360° lap" rule entirely:
-- Already facing the chosen exit (within 20°) → NO spin at all (`dYaw=0`). Beat 2 still plays for
-  its time budget but rotates nothing — a graceful pause, not a manufactured search.
-- Exit is roughly BEHIND (beyond 120°) → turn the LONG way around (a full lap) — "helps shows
-  around the place," per the user's own framing of the incidental benefit.
-- Anywhere in between → a direct turn, no artificial extension.
-
-### Phase 3 — the exterior act's SHAPE (`§CINEMA_SUN_ORDER`, effects.js)
-Whichever half of the final 360° loop the Sun-crossing (`swoopU`, unchanged formula — an emergent
-consequence of the chosen exit, itself driven by where the user started/faced — THIS is the "angle
-of start correlates dynamically" lever) falls into decides the whole shape:
-- **Sun-first** (`swoopU < 0.5`): start the exterior act FLAT (eye level) immediately — the camera
-  is flat from u=0 straight through the crossing, not just an instant — then climb ONCE to the
-  45° look-down for the remainder, ending ELEVATED (an overhead view of the closing rotation).
-- **Sun-last** (`swoopU >= 0.5`): rise gracefully early (the pre-existing Sun-hold logic — don't
-  climb into the look-down while the Sun sits near the EXIT heading, take it right after), cruise
-  at look-down, then glide back DOWN to flat at the crossing as the finale — this IS
-  `§CINEMA_FLAT_ENDING` above, now scoped to this branch only, not universal.
-
-Both branches share the two overall rules below.
-
-### Overall rule 1 — `§CINEMA_END_DECEL`: the whole film settles before it cuts
-The recording used to just STOP at u=1 while the camera was still actively orbiting at a constant
-angular rate — reads as the recording being cut off mid-move, not a deliberate close. The azimuth
-formula now eases its own RATE to zero over the final `CINEMA_END_DECEL_SEC`=2s
-(`f(t)=t+t²-t³`, the unique cubic with `f(0)=0,f(1)=1,f'(0)=1,f'(1)=0` — matches the incoming
-constant rate with zero slope mismatch, eases exactly to a standstill by the cut). Applies to BOTH
-Phase 3 branches identically — the whole camera motion, not just tilt, settles before the end.
-
-### Overall rule 2 — `§CINEMA_BEAT_OVERLAP`: no stop-then-turn at Beat 3→4
-User: *"even the path when reaching outside should not be robotic abrupt stop and turn, it can play
-while doing both."* The walk-out (Beat 3) used to ease to a dead stop (smoothstep's own zero-slope
-end), then the turn-to-face-the-building (Beat 4) started a FRESH spin from a standing start
-(smoothstep's own zero-slope start) — two decelerate-then-accelerate segments back to back reads as
-"stop, then turn" even though raw position was technically continuous. Fix: the look-at starts
-blending toward the pivot in the LAST 40% of the walk-out (`CINEMA_TURN_OVERLAP=0.4`), reaching
-`CINEMA_TURN_OVERLAP_MAX=0.5` by the time the walk ends, so Beat 4 CONTINUES the turn already in
-progress rather than starting one. Both ramps use smoothstep, so the blend weight is continuous AND
-slope-matched (zero/zero) at the boundary — no kink.
-
-`EFFECTS_V` v7→v8, `CACHE_VERSION` v831→TBD.
-
-**Verified** (`witness_cinema_orbit_v2.js`, Terminal + Hospital + Duplex): outside start always
-produces `mood=rushed`; teleporting the camera to the plan's own settle point (near-zero `diveDist`)
-always produces `mood=graceful`; spin class is always one of the three recognised values; sun-first
-scenario always opens flat (0.00°) and ends elevated (45.00°), sun-last always opens elevated and
-ends flat (0.00°); azimuthal rate in the final samples drops to <15% of the mid-loop rate on every
-building; the look-at direction shows no kink at the Beat 3/4 boundary beyond normal per-building
-geometric variance (Duplex 0.43°, Terminal 0.08-0.14°, Hospital 0.68-0.96° — all comfortably under
-the 2° bar that would separate real variance from an actual regression, which prior investigation
-showed would be an order of magnitude larger). Space selection confirmed to reject Duplex's roof
-terrace (0% enclosed) and fall through to bbox-centre with at most 2 `§CINEMA_SPACE` log lines
-(single candidate + at most one fallback — no iteration) on every building tested.
-
-### §Alt+P PERF INVESTIGATION (2026-07-20, separate thread, NOT part of the orbit redesign above)
-User: *"Alt-P is not perf issue because it lags due to size.. but if u are smart solve it by
-referring just to meta.db or bbxes?"* Root cause already found this session (profiling, not
-guessed): Terminal's real geometry streams as `THREE.InstancedMesh` (34k+ instances in the largest
-bucket), and this project's BVH acceleration (`loader.js` `§BVH_INIT`) only patches
-`THREE.Mesh.prototype.raycast` — `InstancedMesh` never got it, so every clearance/occlusion ray
-against real geometry falls back to a linear per-instance scan. Alt+P's clearance fan fires
-200-400+ rays per press, multiplying that cost hundreds of times over. `picking.js` has the exact
-same gap but nobody noticed since a click only fires one ray. Three fix directions were presented
-(scoped DB/meta.db-driven spatial pre-filter — skip the raycast entirely when nothing is even
-nearby, matching the user's own suggestion; fewer rays; or a proper app-wide `InstancedMesh` BVH)
-— **not yet implemented, no direction chosen as of this writing.** Worktree `/tmp/wt-altp-perf`
-branch `perf/staffage-altp-clearance-cache` has the profiling instrumentation already in place,
-uncommitted, ready to resume.
+| IfcDoor | 91 | **87** | 0.31 m |
+| IfcPlate | 396 | 210 | 0.13 m |
+| IfcFlowFitting | 564 | 26 | 0.09 m |
+| IfcBuildingElementProxy | 500 | 14 | **0.55 m** (sphere 1.09 m vs 1.64 m needed) |
+| IfcWallStandardCase | 9 | 9 | 0.22 m |
+| IfcMember | 1177 | 11 | 0.08 m |
+
+`§WITNESS_DLOD_CULL_SOUNDNESS pass=4 fail=1 ran=27`, red control passed. **This is real — it can clip
+an element at the frustum edge — but at ≤0.55 m it cannot delete a wall**, and only **9** of HHS's
+148 `IfcWallStandardCase` are instanced at all (the rest are batched, which dlod never touches).
+Do not close the user's report with it.
+
+**⛔ BLOCKED on one datum, and it is a NUMBER, not a look.** Every pose-independent invariant passes,
+so the next instrument has to judge the *specific* view. The viewer already emits the camera in its
+share hash (`§HASH_PARSE keys=bld,cx,cy,cz,tx,ty,tz`, `quickShare` / `buildShareUrl`) — **the share
+URL of the view with the missing wall** is a coordinate, and a per-GUID drawn census at that exact
+pose then decides it without anyone judging a picture. That is the one open question.
+
+### §BME.13 — 2026-09-04 — HHS: #1631 §DUCT_SILHOUETTE CLEARED by A/B; extraction is complete; two broken geometries found (not walls)
+User asked which recent change caused it, to weigh dropping it. Answer: **no recent change is
+implicated, and there is nothing to drop.**
+
+**#1631 §DUCT_SILHOUETTE (2026-09-02) — CLEARED.** It was the only recent change that rewrites
+vertex data, and it runs at `scene.js:1934` on every streamed geometry with no class gate (HHS:
+`considered=3269 refined=113 addedVerts=103158`). A/B on the same load, refinement forced off via
+`evaluateOnNewDocument` — **identical integrity numbers both ways**:
+`geometries=3369 NaN=0 zeroTri=0 badIndex=4 badSphere=0`. Do not revert it; the cost (faceted duct
+silhouettes return) buys nothing.
+
+**Extraction is complete — the source IFCs prove it.** `internal/UNMERGED/opensourceBIM_HHS_Office_*`
+(architect + construction, the federated pair) against `HHS_Office_Federated_extracted.db`:
+
+| class | architect | construction | source total | in DB |
+|---|---|---|---|---|
+| IfcWallStandardCase | 112 | 36 | 148 | **148** ✓ |
+| IfcWall | 0 | 12 | 12 | **12** ✓ |
+| IfcSlab | 75 | 8 | 83 | **83** ✓ |
+| IfcCurtainWall | 33 | 0 | 33 | **33** ✓ |
+
+Not one wall or slab was lost between the IFC and the DB.
+
+**Two genuinely broken geometries, found on the way — real, and NOT walls.** Their index buffer
+references vertices that do not exist, so those elements cannot draw correctly. Present with
+refinement off too, so this is a DB/extraction defect, not code:
+- `771efc5271499502` — pos.count **474**, idx.count 2748, **max index 29804**. Used by **6
+  `IfcBuildingElementProxy` "CCTV Camera (Paxton10 Mini Bullet, CORE series)"**, Levels 1/2/3, MEP.
+- `8be27af97ecbf86e` — pos.count **24**, idx.count 120, **max index 26000**. Used by **1
+  `IfcEnergyConversionDevice` "Photovoltaic Module (NBS generic)"**, Roof Level, MEP.
+
+That is 7 elements, all MEP fixtures. Worth its own fix; it is not the user's wall.
+
+**Standing conclusion: the HHS report is not reproduced and not attributed.** Every pose-independent
+invariant passes (§BME.12), the data is complete, and the only recent geometry-touching change is
+cleared. The open question is unchanged and is a coordinate, not a look: **the share URL of the view
+with the missing wall** (`§HASH_PARSE keys=bld,cx,cy,cz,tx,ty,tz`).
+
+**USER, 2026-09-04 (session close on this lane):** *"the issue with Hospital is now solved, and i am
+truly happy with the bake result, and we shall use that as the baseline to proceed"* ·
+*"Clinic in OCI is now solved.. no more boxed non glass panels"* · the HHS right-side ground-floor
+wall stays open. **Baseline for every later comparison = `Hospital_silent_bake_2026-09-05.mp4`
+(§BME.11), not the 09-04 film.**

@@ -1,0 +1,10 @@
+✅ Leg A: STRWalkerOutliner API present
+✅ Leg A: geoDb resolved (not null/rejected) for a geoDb-bearing resident (SampleHouse)
+✅ Leg A: resolved bytes came from the OCI fallback, not the tiny same-origin response (len=5242880)
+✅ Leg A: OCI URL was actually requested
+✅ Leg A: §STRWALK-OPEN ... falling back to OCI logged
+✅ Leg A: OCI URL logged matches the real bucket/object path
+✅ Leg B: normal-size same-origin response used as-is (len=3145728 === 3145728)
+✅ Leg B: OCI was NOT hit when same-origin response was already valid (no regression)
+
+§W-MESH-OCI-FALLBACK 8/8 ALL PASS

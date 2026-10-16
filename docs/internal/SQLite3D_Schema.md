@@ -221,7 +221,7 @@ web-ifc, sql.js, and Three.js each solve one problem. **No existing project comb
 2. **Extraction pipeline** — IFC entities → classified, instanced, centroid-recentred DB records
 3. **DB-to-GPU streaming** — SQLite BLOB → Float32Array → BufferGeometry with zero conversion
 4. **Round-trip** — browser edits → DB → IFC export, closing the loop without a server
-5. **R-tree clash detection** — `rtree-sql.js` WASM (2025) enables O(n log N) spatial clash queries entirely in the browser. The critical enabler for S245-S246 clash detection, proximity LOD, and deep-link sharing. See [VibeProgramming.md §Technology Convergence](VibeProgramming.md#the-technology-convergence--why-this-was-impossible-before-2025) for the full timeline.
+5. **R-tree clash detection** — `rtree-sql.js` WASM (2025) enables O(n log N) spatial clash queries entirely in the browser. The critical enabler for S245-S246 clash detection, proximity LOD, and deep-link sharing. See [VibeProgramming.md §Technology Convergence](../VibeProgramming.md#the-technology-convergence--why-this-was-impossible-before-2025) for the full timeline.
 
 ---
 

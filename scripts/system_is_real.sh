@@ -83,8 +83,17 @@ if [ ! -f "$ERP_WITNESS" ]; then
   verdict "erp" "SKIP" "$ERP_WITNESS not found"
 else
   ( bash build/erp/run_witness.sh "$ERP_WITNESS" ) >> "$LOG" 2>&1
-  if [ $? -eq 0 ]; then verdict "erp" "PASS" "$(basename "$ERP_WITNESS") exit 0";
-  else verdict "erp" "FAIL" "$(basename "$ERP_WITNESS") non-zero (read $LOG)"; RC=1; fi
+  E1=$?
+  EBASE=$(basename "$ERP_WITNESS" .js)
+  # Read the log, not the exit code alone (same contract as (a)'s G1/G2 grep and (d)'s §W-REDPILL
+  # grep): run_witness.sh prints "§RUN_WITNESS <base> VERDICT=PASS" ONLY after finding the witness's
+  # own pass marker in build/erp/<base>.log — a witness that silently no-ops and exits 0 has no
+  # marker and must FAIL here, never PASS.
+  if [ $E1 -eq 0 ] && grep -q "§RUN_WITNESS $EBASE VERDICT=PASS" "$LOG"; then
+    verdict "erp" "PASS" "$EBASE — exit 0 AND §RUN_WITNESS pass marker in log"
+  else
+    verdict "erp" "FAIL" "$EBASE non-green (exit=$E1; §RUN_WITNESS VERDICT=PASS absent — read $LOG)"; RC=1
+  fi
 fi
 [ "$RC" = 1 ] && { echo; echo "=== FAIL (fail-fast at erp) — read $LOG ==="; exit 1; }
 

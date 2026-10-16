@@ -5,6 +5,69 @@
 
 **NEVER TOUCH PRODUCTION.** `deploy/live/` is the production snapshot — do not edit directly. All dev work goes to `deploy/dev/` ONLY. Read `deploy/OCI_UPLOAD.md` §RULES before any OCI upload.
 
+## ⚖ PRIMAL LAW — WITNESS REPLACES EVERY HUMAN VISUAL CHECK (2026-08-26, user directive)
+> **USER, 2026-08-26:** *"Can u make it primal law now that WITNESS is to replace all human visual
+> checks"* … *"till Gantt chart editor to successfully edit the bars and it correctly works"*
+> Context they gave it in: *"How do i work with vibe coding like this? It is so wastefull long
+> sessions all this weeks. I have to remind u things."*
+
+**This ranks with the PRIME RULE. It is not advice and it is not scoped to geometry.**
+
+**0a. RE-READ THE SPEC BEFORE EACH THINKING PASS, not once at session start (user, 2026-08-27:
+*"Update the specs first, review each time u set out to think."*).** Reading `4D_MODEL_INTEGRITY.md`
+at startup and then working from memory produced THREE retractions in one session — every one of
+them an error that file already listed (§J.2). Before each new measurement or claim, re-open §E
+(the table of proxies measured wrong) and §I (the ownership table) and check what you are about to
+compute against them. **If the needle has not moved, stop and review the model, don't invent
+another metric** — a metric invented to fill a hole where a RULE should be is the square peg.
+
+**0. BEFORE you compute any 4D relation, read the OWNERSHIP TABLE — `prompts/4D_MODEL_INTEGRITY.md`
+§I.** It says which function owns each question (support, ground exemption, level, phase, duration,
+solve, audit, on-screen) and flags the three that have DUPLICATE, DISAGREEING implementations.
+Re-deriving an owned relation is this lane's single most expensive recurring defect — five times in
+two sessions. Find your question in the table and call the owner; if it is not there, add the row.
+
+**1. The user's eyes are never the test instrument.** Never ask them to look, open, scroll, click,
+confirm "does this look right", or report what they see. Never offer a screenshot as evidence.
+If a claim cannot be stated as a `§`-tagged value a witness asserts, the claim is not ready — say
+that instead of outsourcing the check.
+
+**2. The law reaches ALL THE WAY THROUGH THE GANTT EDITOR.** The end of the chain is not "the
+schedule generates" — it is **a bar is edited and the result is correct**. That whole path is
+witness territory: drag/resize/lock/undo a bar → the stored timeline changed by the asserted
+amount → every projection recomputed → persistence round-trips → the judge re-scores the NEW
+timeline. `witness_gantt_edit_coherence`, `witness_gantt_lock_integrity`, `witness_tm_edit_exception`,
+`witness_undo_dot_spawn`, `witness_whatif_authored_sync` are that chain; extend them, don't eyeball
+the UI. A green editor witness that never edited a bar is a §CRISIS-class defect
+(`prompts/WITNESS_INTERFACE_FRAMEWORK.md`).
+
+**3. The shipped `§`-log is PRIMARY EVIDENCE. Never suppress it.**
+Wrapping a pipeline call to silence `console.log` throws away the witness the code already emits
+and forces a hand re-derivation — which is how this lane got its wrong numbers. *(Committed twice
+in one session, 2026-08-26; the user's own words: "Why dont u refer WITNESS debug logging?")*
+`§HOSTED_BEFORE_HOST`, `§GEO_ORDER`, `§SUPPORT_CYCLE`, `§DEQ_REPAIR`, `§4D_BAND_MONOTONIC`,
+`§TPL_*` already answer most of what gets re-measured by hand. **Read the log first; re-derive
+only what it genuinely does not say — and when you must, add a `§` line so the next session
+doesn't pay again.**
+
+**4. A witness that cannot report its own failure is not a witness.** It must be able to say
+NO-OP, VACUOUS, and WRONG:
+  - **no-op** — the pass ran but changed nothing (`§TPL_LAYER_SELFCHECK moved=0`).
+  - **vacuous** — the population it judged was empty, so its 0 means nothing (`§D0_VACUOUS`; a
+    metric read 0 on all four buildings purely because every element was exempt, 2026-08-26).
+  - **scope-blind** — it passes because the defect is outside the pairs it inspects
+    (`§TPL_LAYER_SELFCHECK` returned PASS while regressing Hospital 13→15, because it skips
+    cross-task pairs).
+A verdict line must print `INCONCLUSIVE`, never `PASS`, when nothing was actually judged.
+
+**5. RUN ONCE, PERSIST, READ FOREVER — re-running is a waste the user is paying for.**
+`bim-ootb scripts/cache_4d_run.js` runs the shipped pipeline once per building with `§`-logging ON
+and persists `witness.log` + `run.json` under `~/.cache/bim4d/`, keyed on the building DB **and the
+content of `schedule_gate.js`/`schedule_author.js`/`support_sweep.js`/`cpm_schedule.js`/`rates.js`/
+`4D_template.json`, so a stale cache is impossible.** MEASURED: 4 buildings (119,568 elements) read
+back in **0.43 s** versus minutes to recompute. **Any probe/analysis reads the cache** — do not
+re-invoke `materializeZones` to answer a question that a persisted run already answers.
+
 ## ⏸ PUSH PAUSE — LIFTED 2026-07-17
 Stood 2026-07-11→2026-07-17 (local/localhost-only verification while a large merge burst got
 batch-verified). **User directive 2026-07-17: "now push permission is ON, ie always push to live
@@ -88,6 +151,9 @@ caller MUST pass `duplex_rules.db`. `§DWG` walks Terminal-on-small as a GENERAL
 4. Read the analysis doc for the building you're working on (`docs/{Building}Analysis.md`)
 5. Read the Java interface of whatever you're modifying
 6. Run `./scripts/run_RosettaStones.sh classify_{prefix}.yaml` to verify current state
+7. Writing a new witness (`witness_*.js`)? Start from `bim-ootb/witness_kit/contract.js` + the worked
+   example `bim-ootb/viewer/tests/witness_tm_schedule_output_of_truth.js` — not a copy-pasted old witness.
+   (Doesn't fit every shape — pixel-diff/DOM-interaction witnesses are still hand-rolled; use judgment.)
 
 ## Session Closeout
 **Auto-compact is OFF.** When context reaches ~5%, wrap up and exit cleanly to a new session.
@@ -139,7 +205,11 @@ Before ending, update PROGRESS.md with:
 - **OCI MIME Rule:** EVERY `oci os object put` MUST include `--content-type` — OCI does NOT infer it from the extension; omitting it → `X-Content-Type-Options: nosniff` block + silent script failure. Full MIME table: `deploy/OCI_UPLOAD.md §RULES`.
 - **Spec-First (ALL work):** Spec before code, spec before tests, spec before prompts. No implementation without a written spec section. New features: witness claim first, then implement.
 - **Tests expose issues:** Every test must name the issue it proves or disproves. A test that passes without revealing whether the issue is solved is not a test.
-- **Browser testing — §-log first, Playwright second:** Primary browser verification = whitebox `§`-tagged `console.log()` output. The coder reads `§` lines to confirm values, counts, and state are correct. Playwright is secondary — for wiring/deploy checks only (scripts load, buttons exist, DB returns data). Do NOT add Playwright tests for value verification — add a `§` log line instead. See `docs/TestArchitecture.md` §Browser Testing. Run `node deploy/dev/tests/audit_specs.js` after any Playwright changes — must exit 0.
+- **Verify a code claim before it's load-bearing (2026-08-18):** Before a code-behavior claim drives
+  a decision — dispatching on it, telling the user it's proven — re-read the file:lines and cite
+  them, unless already read this same turn. Don't re-verify casual mentions. Sibling:
+  `feedback_code_read_before_empirical_testing.md`. Example: `prompts/4D_GANTT_TM_REFACTOR.md` §S23 Part D.
+- **Browser testing — §-log first, Playwright second:** Primary browser verification = whitebox `§`-tagged `console.log()` output. The coder reads `§` lines to confirm values, counts, and state are correct. Playwright is secondary — for wiring/deploy checks only (scripts load, buttons exist, DB returns data). Do NOT add Playwright tests for value verification — add a `§` log line instead. See `docs/archive/TestArchitecture.md` §Browser Testing. Run `node deploy/dev/tests/audit_specs.js` after any Playwright changes — must exit 0.
 - **FUNDAMENTAL LAW — code and maths is the truth, never screenshots/visuals (hardened 2026-07-21,
   user had to repeat this after a prior-session warning was dropped):** For ANY continuous/geometric
   behavior — camera paths, orbits, motion over time, positions, angles, rates — the proof is the
@@ -154,7 +224,7 @@ Before ending, update PROGRESS.md with:
   ([[feedback_whitebox_deduce_not_browser]], [[feedback_whitebox_not_playwright]]) — those already said
   this; this entry exists because it was violated anyway (dispatched a screenshot-capturing agent for
   the §CINEMA_ORBIT_V2 live-trial check) and had to be corrected twice.
-- **Anti-Drift Policy:** Read `docs/TestArchitecture.md` §Anti-Drift before adding BOMs, products, or geometry paths
+- **Anti-Drift Policy:** Read `docs/archive/TestArchitecture.md` §Anti-Drift before adding BOMs, products, or geometry paths
 - **Pre-Flight Citation:** Before code changes, cite the spec: `// Implementing BBC.md §X.Y — Witness: W-NAME`
 - **Traceability:** Check `TestArchitecture.md` §Traceability Matrix before and after changes
 
@@ -182,13 +252,20 @@ target). Report status in those terms, not "blocked by LFS."
   to an already-distributed one via the patch+self-heal-loader pattern above.
 - **Deliverable = patch AND loader together, not the patch alone.** A committed-but-unapplied migration
   script is not "done" — the loader wiring is part of the same task, not a follow-up.
-- **A `git push` may still hang regardless of DB policy** — this is a separate, purely mechanical git-ops
-  fact, unrelated to the DB rule above: the `git-lfs` pre-push hook probes the LFS endpoint on every push
-  to `bim-ootb`/`bim-compiler` regardless of whether the diff touches LFS content, and that probe can hang
-  against a capped quota (confirmed empirically 2026-07-11, `bim-ootb` `fix/dw-datum-port` @ `4ff22c0`,
-  2+ min hang on a zero-LFS-diff push). If a push doesn't return within ~30s, stop and report — don't retry
-  in a loop. This can affect a normal code push same as anyone else's; it is NOT a reason to fall back to
-  committing a DB binary — the DB rule above holds regardless of whether pushes are currently fast or slow.
+- **A `git push` can be slow OR hang regardless of DB policy — it is INTERMITTENT, not a fixed cost and
+  not a hard quota block (corrected 2026-08-12, superseding the 2026-07-11 note below).**
+  `GIT_TRACE=1 git lfs pre-push` shows the mechanism: git-lfs first tries a "pure SSH transfer" protocol
+  GitHub doesn't support, fails after ~3-7s, retries once more, THEN falls back to `git-lfs-authenticate`
+  over SSH for the real push. **Measured behavior is inconsistent**, same repo, same session, back to back
+  (2026-08-12, `bim-ootb` batch of 49 branch pushes): branch 1 completed in ~18.5s, branch 2
+  (`feat/erp-odoo-descriptor`) still hadn't returned after 90s. Do not assume a longer fixed timeout
+  "fixes" it — it doesn't reliably. **Working approach for a batch of pushes:** try each with a ~90s
+  timeout; on a timeout, do NOT retry that same branch in a loop — skip it and move to the next one (this
+  is trying a *different* operation, not retry-looping a failing one). Come back to any skipped branches
+  standalone later. Applies to `bim-ootb`/`bim-compiler` regardless of whether the diff touches LFS
+  content, since the pre-push hook always runs. Not a reason to fall back to committing a DB binary — the
+  DB rule above holds regardless of push speed. (Original 2026-07-11 note, `bim-ootb` `fix/dw-datum-port` @
+  `4ff22c0`, 2+ min hang on a zero-LFS-diff push — consistent with this same intermittent mechanism.)
 - **Worktree/checkout caution, same mechanical cause:** don't `git worktree add`/`checkout` a branch whose
   LFS blobs aren't already in the local cache (`.git/lfs/objects`) without expecting a possible hang; branches
   already checked out in an existing worktree are safe (blobs already local). Applies to spawned Agent-tool
@@ -232,5 +309,5 @@ confirmed clean + 100+ commits stale first). Rules going forward:
   mined artifacts (written by `run_RosettaStones.sh`/`onboard_ifc.sh` each gate run, applied by `rebuild_erp.sh`),
   not ledger migrations; in-place regeneration is their normal lifecycle (decided 2026-07-03).
 - `BuildingCompiler.java` — main orchestrator, many dependencies
-- `RosettaStoneGateTest.java` — defines G1-G6 gates (compiler-reconstruction truth). NOTE: no CI in this repo runs it — "GREEN before commit" is a LOCAL discipline (Anti-Drift #5), not automation. See `docs/TestArchitecture.md` §Truth Model (2026). The headless smoke subset runs via `.github/workflows/ci.yml` + `scripts/system_is_real.sh`.
+- `RosettaStoneGateTest.java` — defines G1-G6 gates (compiler-reconstruction truth). NOTE: no CI in this repo runs it — "GREEN before commit" is a LOCAL discipline (Anti-Drift #5), not automation. See `docs/archive/TestArchitecture.md` §Truth Model (2026). The headless smoke subset runs via `.github/workflows/ci.yml` + `scripts/system_is_real.sh`.
 - `X_M_BOM.java` / `X_M_BOMLine.java` — EntityType guards, GodMode bypass

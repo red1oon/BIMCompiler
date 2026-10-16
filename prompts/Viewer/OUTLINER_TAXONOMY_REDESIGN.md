@@ -244,7 +244,7 @@ a live UI action that runs room compilation on-demand for whatever building is c
 offline script needed.
 
 **This is NOT a fresh idea — it's the exact gap already named and specced as Task 5** in
-`prompts/Modeller/DISC_Walker/VIEWER_FIND_PANEL_ROOM_ACCURACY.md` (own doc:
+`prompts/Viewer/FindRooms/VIEWER_FIND_PANEL_ROOM_ACCURACY.md` (own doc:
 `ROOM_WALKER_JS_PORT.md`): *"a user's OWN dropped IFC gets NO room data at all, today... confirmed
 `viewer/import_db_builder.js` never creates `spatial_structure`."* The real obstacle named there
 still holds: `compile_rooms.py`'s flood-fill/§DOOR-RESCUE/§DOOR-PARTITION algorithm is Python +
@@ -324,7 +324,7 @@ name that as a new gap rather than force-fitting it. Report only — don't add u
 
 ## §5 — Related, already-specced elsewhere (don't duplicate here)
 - Room highlight default (purple box shine-through, not fragmented yellow seams):
-  `prompts/Modeller/DISC_Walker/VIEWER_FIND_PANEL_ROOM_ACCURACY.md §8`.
+  `prompts/Viewer/FindRooms/VIEWER_FIND_PANEL_ROOM_ACCURACY.md §8`.
 - Room-to-room pathfinding (real door-graph, Dijkstra, unmerged): same doc, §7.
 - Find-panel isolate-tap camera zoom (shipped): `prompts/FIND_PANEL_ISOLATE_NO_CAMERA_ZOOM.md`
   (bim-ootb PR #745).

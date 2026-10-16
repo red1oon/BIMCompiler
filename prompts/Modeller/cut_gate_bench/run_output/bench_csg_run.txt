@@ -1,0 +1,213 @@
+=== §CUT_GATE_BENCH_CSG — candidate A (three-bvh-csg SUBTRACTION) vs 50 real Duplex wall meshes ===
+three-bvh-csg version: 0.0.18  three version: 0.185.1
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 0dxE1Sy6nDqfpDb5vIMN_Z "Basic Wall:Interior - Furring (152 mm Stud):194166" inTris=40 outTris=132 ms=22.009 volIn=1.64087 volOut=1.378331 volErrRel=0 watertight=false nonPaired=83 badWind=0 inputWatertight=false inputNonPaired=13
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 0dxE1Sy6nDqfpDb5vIMNiA "Basic Wall:Interior - Furring (152 mm Stud):193247" inTris=40 outTris=142 ms=5.184 volIn=1.64087 volOut=1.378331 volErrRel=0 watertight=false nonPaired=77 badWind=0 inputWatertight=false inputNonPaired=13
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 0iEHWY1$XA8eQeeULq4jDb "Basic Wall:Interior - Furring (152 mm Stud):190774" inTris=40 outTris=140 ms=3.906 volIn=0.975008 volOut=0.819007 volErrRel=0 watertight=false nonPaired=84 badWind=0 inputWatertight=false inputNonPaired=13
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 0iEHWY1$XA8eQeeULq4jE6 "Basic Wall:Interior - Furring (152 mm Stud):190933" inTris=40 outTris=144 ms=2.63 volIn=1.784753 volOut=1.499192 volErrRel=0 watertight=false nonPaired=79 badWind=0 inputWatertight=false inputNonPaired=13
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 0iEHWY1$XA8eQeeULq4jZ1 "Basic Wall:Interior - Furring (152 mm Stud):189074" inTris=40 outTris=134 ms=2.381 volIn=1.849329 volOut=1.553436 volErrRel=0 watertight=false nonPaired=78 badWind=0 inputWatertight=false inputNonPaired=13
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 0iEHWY1$XA8eQeeULq4j_U "Basic Wall:Interior - Furring (152 mm Stud):189901" inTris=40 outTris=141 ms=2.343 volIn=1.009781 volOut=0.848216 volErrRel=0 watertight=false nonPaired=83 badWind=0 inputWatertight=false inputNonPaired=13
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 0iEHWY1$XA8eQeeULq4jpl "Basic Wall:Interior - Partition (92mm Stud):190140" inTris=68 outTris=243 ms=3.21 volIn=0.50462 volOut=0.423881 volErrRel=0 watertight=false nonPaired=111 badWind=0 inputWatertight=false inputNonPaired=26
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 0jf0rYHfX3RAB3bSIRjmmy "Basic Wall:Exterior - Brick on Block:184944" inTris=152 outTris=544 ms=4.619 volIn=2.234787 volOut=1.877221 volErrRel=0 watertight=false nonPaired=207 badWind=0 inputWatertight=false inputNonPaired=65
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 0jf0rYHfX3RAB3bSIRjmoa "Basic Wall:Exterior - Brick on Block:185064" inTris=152 outTris=570 ms=3.755 volIn=2.128888 volOut=1.788266 volErrRel=0 watertight=false nonPaired=191 badWind=0 inputWatertight=false inputNonPaired=65
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 0jf0rYHfX3RAB3bSIRjmpw "Basic Wall:Exterior - Brick on Block:185014" inTris=152 outTris=572 ms=3.718 volIn=4.414465 volOut=3.708151 volErrRel=0 watertight=false nonPaired=188 badWind=0 inputWatertight=false inputNonPaired=65
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 0jf0rYHfX3RAB3bSIRjmr1 "Basic Wall:Exterior - Brick on Block:185101" inTris=152 outTris=536 ms=3.436 volIn=4.308567 volOut=3.619196 volErrRel=0 watertight=false nonPaired=202 badWind=0 inputWatertight=false inputNonPaired=65
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 1aj$VJZFn2TxepZUBcKpZw "Basic Wall:Interior - Partition (92mm Stud):203998" inTris=148 outTris=266 ms=2.141 volIn=0.356031 volOut=0.312278 volErrRel=0 watertight=false nonPaired=141 badWind=0 inputWatertight=false inputNonPaired=58
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 1aj$VJZFn2TxepZUBcKpee "Basic Wall:Interior - Partition (92mm Stud):204300" inTris=68 outTris=232 ms=2.266 volIn=0.210279 volOut=0.176635 volErrRel=0 watertight=false nonPaired=110 badWind=0 inputWatertight=false inputNonPaired=26
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 1aj$VJZFn2TxepZUBcKphf "Basic Wall:Interior - Partition (92mm Stud):204493" inTris=68 outTris=234 ms=1.719 volIn=0.210279 volOut=0.176635 volErrRel=0 watertight=false nonPaired=107 badWind=0 inputWatertight=false inputNonPaired=26
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 1aj$VJZFn2TxepZUBcKpvt "Basic Wall:Interior - Partition (92mm Stud):203347" inTris=148 outTris=271 ms=2.144 volIn=0.356031 volOut=0.315065 volErrRel=0 watertight=false nonPaired=142 badWind=0 inputWatertight=false inputNonPaired=58
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FKGS "Basic Wall:Interior - Partition (92mm Stud):139939" inTris=68 outTris=236 ms=1.8 volIn=1.241796 volOut=1.043109 volErrRel=0 watertight=false nonPaired=109 badWind=0 inputWatertight=false inputNonPaired=26
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FKIu "Basic Wall:Interior - Partition (92mm Stud):139783" inTris=68 outTris=245 ms=1.578 volIn=0.50462 volOut=0.423881 volErrRel=0 watertight=false nonPaired=108 badWind=0 inputWatertight=false inputNonPaired=26
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FKRH "Basic Wall:Party Wall - CMU Residential Unit Dimising Wall:139374" inTris=424 outTris=684 ms=3.518 volIn=2.856211 volOut=2.427256 volErrRel=0 watertight=false nonPaired=338 badWind=13 inputWatertight=false inputNonPaired=184
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FKRi "Basic Wall:Party Wall - CMU Residential Unit Dimising Wall:139347" inTris=124 outTris=458 ms=2.682 volIn=5.788705 volOut=4.862513 volErrRel=0 watertight=false nonPaired=173 badWind=0 inputWatertight=false inputNonPaired=52
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FKST "Basic Wall:Interior - Partition (92mm Stud):139682" inTris=148 outTris=391 ms=2.151 volIn=0.820014 volOut=0.763729 volErrRel=0 watertight=false nonPaired=228 badWind=0 inputWatertight=false inputNonPaired=58
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FKau "Basic Wall:Party Wall - CMU Residential Unit Dimising Wall:143239" inTris=784 outTris=1843 ms=11.287 volIn=25.830118 volOut=22.050513 volErrRel=0 watertight=false nonPaired=837 badWind=17 inputWatertight=false inputNonPaired=352
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FL8v "Basic Wall:Interior - Partition (92mm Stud):144518" inTris=160 outTris=290 ms=1.539 volIn=0.659914 volOut=0.586814 volErrRel=0 watertight=false nonPaired=152 badWind=0 inputWatertight=false inputNonPaired=64
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FL96 "Basic Wall:Interior - Partition (92mm Stud):144633" inTris=148 outTris=274 ms=1.802 volIn=0.488914 volOut=0.42397 volErrRel=0 watertight=false nonPaired=145 badWind=0 inputWatertight=false inputNonPaired=58
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FL9r "Basic Wall:Interior - Partition (92mm Stud):144586" inTris=148 outTris=390 ms=2.024 volIn=1.73277 volOut=1.544973 volErrRel=0 watertight=false nonPaired=239 badWind=0 inputWatertight=false inputNonPaired=58
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FLCm "Basic Wall:Interior - Plumbing (152mm Stud):144783" inTris=68 outTris=240 ms=1.14 volIn=0.863898 volOut=0.725675 volErrRel=0 watertight=false nonPaired=109 badWind=0 inputWatertight=false inputNonPaired=26
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FLEJ "Basic Wall:Interior - Partition (92mm Stud):144684" inTris=68 outTris=245 ms=1.198 volIn=0.582192 volOut=0.489042 volErrRel=0 watertight=false nonPaired=108 badWind=0 inputWatertight=false inputNonPaired=26
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FLIE "Basic Wall:Interior - Partition (92mm Stud):143921" inTris=148 outTris=396 ms=2.057 volIn=1.73277 volOut=1.544972 volErrRel=0 watertight=false nonPaired=236 badWind=0 inputWatertight=false inputNonPaired=58
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FLJd "Basic Wall:Interior - Partition (92mm Stud):143960" inTris=148 outTris=272 ms=1.727 volIn=0.488914 volOut=0.429723 volErrRel=0 watertight=false nonPaired=143 badWind=0 inputWatertight=false inputNonPaired=58
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FLKI "Basic Wall:Interior - Partition (92mm Stud):144301" inTris=68 outTris=245 ms=1.15 volIn=0.582192 volOut=0.489042 volErrRel=0 watertight=false nonPaired=108 badWind=0 inputWatertight=false inputNonPaired=26
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FLMr "Basic Wall:Interior - Plumbing (152mm Stud):144138" inTris=68 outTris=240 ms=1.238 volIn=0.863898 volOut=0.725675 volErrRel=0 watertight=false nonPaired=109 badWind=0 inputWatertight=false inputNonPaired=26
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FLOH "Basic Wall:Exterior - Brick on Block:143534" inTris=1072 outTris=1368 ms=5.08 volIn=6.545999 volOut=5.561628 volErrRel=0 watertight=false nonPaired=644 badWind=0 inputWatertight=false inputNonPaired=505
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FLPP "Basic Wall:Exterior - Brick on Block:143590" inTris=1192 outTris=1569 ms=5.627 volIn=16.741647 volOut=13.629392 volErrRel=0 watertight=false nonPaired=756 badWind=0 inputWatertight=false inputNonPaired=560
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FLQD "Basic Wall:Exterior - Brick on Block:143410" inTris=1072 outTris=1366 ms=4.96 volIn=6.545999 volOut=5.561628 volErrRel=0 watertight=false nonPaired=639 badWind=0 inputWatertight=false inputNonPaired=505
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FLR9 "Basic Wall:Exterior - Brick on Block:143478" inTris=1192 outTris=1552 ms=5.937 volIn=16.741647 volOut=13.629393 volErrRel=0 watertight=false nonPaired=747 badWind=0 inputWatertight=false inputNonPaired=560
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FLTF "Basic Wall:Interior - Partition (92mm Stud):143856" inTris=160 outTris=277 ms=1.382 volIn=0.659914 volOut=0.586041 volErrRel=0 watertight=false nonPaired=146 badWind=0 inputWatertight=false inputNonPaired=64
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FNau "Basic Wall:Interior - Partition (92mm Stud):139143" inTris=148 outTris=386 ms=2.386 volIn=0.820014 volOut=0.763729 volErrRel=0 watertight=false nonPaired=234 badWind=0 inputWatertight=false inputNonPaired=58
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FNbT "Basic Wall:Party Wall - CMU Residential Unit Dimising Wall:139234" inTris=124 outTris=462 ms=1.864 volIn=5.788705 volOut=4.862512 volErrRel=0 watertight=false nonPaired=187 badWind=0 inputWatertight=false inputNonPaired=52
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FNhv "Basic Wall:Exterior - Brick on Block:138310" inTris=528 outTris=851 ms=3.7 volIn=20.196183 volOut=16.913656 volErrRel=0 watertight=false nonPaired=388 badWind=0 inputWatertight=false inputNonPaired=240
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FNld "Basic Wall:Interior - Partition (92mm Stud):138584" inTris=68 outTris=236 ms=1.092 volIn=1.241796 volOut=1.043109 volErrRel=0 watertight=false nonPaired=109 badWind=0 inputWatertight=false inputNonPaired=26
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FNqI "Basic Wall:Exterior - Brick on Block:138157" inTris=528 outTris=922 ms=4.021 volIn=20.735239 volOut=17.301777 volErrRel=0 watertight=false nonPaired=401 badWind=0 inputWatertight=false inputNonPaired=240
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FNr2 "Basic Wall:Exterior - Brick on Block:138237" inTris=528 outTris=694 ms=3.282 volIn=5.137081 volOut=5.085373 volErrRel=0 watertight=false nonPaired=357 badWind=0 inputWatertight=false inputNonPaired=240
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 2O2Fr$t4X7Zf8NOew3FNtn "Basic Wall:Exterior - Brick on Block:138062" inTris=528 outTris=683 ms=3.274 volIn=5.676137 volOut=5.624413 volErrRel=0 watertight=false nonPaired=364 badWind=0 inputWatertight=false inputNonPaired=240
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 3Y4YRln2r91vflHcHE5ITm "Basic Wall:Interior - Furring (38 mm Stud):217578" inTris=40 outTris=147 ms=0.854 volIn=0.017653 volOut=0.014829 volErrRel=0 watertight=false nonPaired=80 badWind=0 inputWatertight=false inputNonPaired=13
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 3Y4YRln2r91vflHcHE5ITn "Basic Wall:Interior - Furring (38 mm Stud):217579" inTris=40 outTris=140 ms=0.794 volIn=0.016844 volOut=0.014149 volErrRel=0 watertight=false nonPaired=86 badWind=0 inputWatertight=false inputNonPaired=13
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 3Y4YRln2r91vflHcHE5ITp "Basic Wall:Interior - Furring (38 mm Stud):217577" inTris=40 outTris=147 ms=0.809 volIn=0.016844 volOut=0.014149 volErrRel=0 watertight=false nonPaired=78 badWind=0 inputWatertight=false inputNonPaired=13
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 3Y4YRln2r91vflHcHE5ITs "Basic Wall:Interior - Furring (38 mm Stud):217580" inTris=40 outTris=132 ms=0.82 volIn=0.017653 volOut=0.014829 volErrRel=0 watertight=false nonPaired=84 badWind=0 inputWatertight=false inputNonPaired=13
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 3Y4YRln2r91vflHcHE5IVI "Basic Wall:Interior - Furring (38 mm Stud):217416" inTris=40 outTris=140 ms=1.291 volIn=0.016844 volOut=0.014149 volErrRel=0 watertight=false nonPaired=86 badWind=0 inputWatertight=false inputNonPaired=13
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 3Y4YRln2r91vflHcHE5IVJ "Basic Wall:Interior - Furring (38 mm Stud):217417" inTris=40 outTris=132 ms=0.789 volIn=0.017653 volOut=0.014829 volErrRel=0 watertight=false nonPaired=84 badWind=0 inputWatertight=false inputNonPaired=13
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 3Y4YRln2r91vflHcHE5IVS "Basic Wall:Interior - Furring (38 mm Stud):217414" inTris=40 outTris=147 ms=0.788 volIn=0.016844 volOut=0.014149 volErrRel=0 watertight=false nonPaired=78 badWind=0 inputWatertight=false inputNonPaired=13
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+BVH: "maxLeafSize" option has been deprecated. Use "targetLeafSize", instead.
+§BENCH_A 3Y4YRln2r91vflHcHE5IVT "Basic Wall:Interior - Furring (38 mm Stud):217415" inTris=40 outTris=147 ms=0.806 volIn=0.017653 volOut=0.014829 volErrRel=0 watertight=false nonPaired=80 badWind=0 inputWatertight=false inputNonPaired=13
+
+=== §BENCH_A_SUMMARY ===
+total elements: 50
+success: 50  failed: 0
+watertight output: 0/50
+volume-integrity (relErr<1e-3): 50/50
+total wall-clock ms (all 50): 151.91
+mean ms/element: 3.038
+worst element: 0dxE1Sy6nDqfpDb5vIMN_Z "Basic Wall:Interior - Furring (152 mm Stud):194166" 22.009ms (inTris=40)
+NON-WATERTIGHT OUTPUTS:
+  0dxE1Sy6nDqfpDb5vIMN_Z nonPaired=83 badWind=0
+  0dxE1Sy6nDqfpDb5vIMNiA nonPaired=77 badWind=0
+  0iEHWY1$XA8eQeeULq4jDb nonPaired=84 badWind=0
+  0iEHWY1$XA8eQeeULq4jE6 nonPaired=79 badWind=0
+  0iEHWY1$XA8eQeeULq4jZ1 nonPaired=78 badWind=0
+  0iEHWY1$XA8eQeeULq4j_U nonPaired=83 badWind=0
+  0iEHWY1$XA8eQeeULq4jpl nonPaired=111 badWind=0
+  0jf0rYHfX3RAB3bSIRjmmy nonPaired=207 badWind=0
+  0jf0rYHfX3RAB3bSIRjmoa nonPaired=191 badWind=0
+  0jf0rYHfX3RAB3bSIRjmpw nonPaired=188 badWind=0
+  0jf0rYHfX3RAB3bSIRjmr1 nonPaired=202 badWind=0
+  1aj$VJZFn2TxepZUBcKpZw nonPaired=141 badWind=0
+  1aj$VJZFn2TxepZUBcKpee nonPaired=110 badWind=0
+  1aj$VJZFn2TxepZUBcKphf nonPaired=107 badWind=0
+  1aj$VJZFn2TxepZUBcKpvt nonPaired=142 badWind=0
+  2O2Fr$t4X7Zf8NOew3FKGS nonPaired=109 badWind=0
+  2O2Fr$t4X7Zf8NOew3FKIu nonPaired=108 badWind=0
+  2O2Fr$t4X7Zf8NOew3FKRH nonPaired=338 badWind=13
+  2O2Fr$t4X7Zf8NOew3FKRi nonPaired=173 badWind=0
+  2O2Fr$t4X7Zf8NOew3FKST nonPaired=228 badWind=0
+  2O2Fr$t4X7Zf8NOew3FKau nonPaired=837 badWind=17
+  2O2Fr$t4X7Zf8NOew3FL8v nonPaired=152 badWind=0
+  2O2Fr$t4X7Zf8NOew3FL96 nonPaired=145 badWind=0
+  2O2Fr$t4X7Zf8NOew3FL9r nonPaired=239 badWind=0
+  2O2Fr$t4X7Zf8NOew3FLCm nonPaired=109 badWind=0
+  2O2Fr$t4X7Zf8NOew3FLEJ nonPaired=108 badWind=0
+  2O2Fr$t4X7Zf8NOew3FLIE nonPaired=236 badWind=0
+  2O2Fr$t4X7Zf8NOew3FLJd nonPaired=143 badWind=0
+  2O2Fr$t4X7Zf8NOew3FLKI nonPaired=108 badWind=0
+  2O2Fr$t4X7Zf8NOew3FLMr nonPaired=109 badWind=0
+  2O2Fr$t4X7Zf8NOew3FLOH nonPaired=644 badWind=0
+  2O2Fr$t4X7Zf8NOew3FLPP nonPaired=756 badWind=0
+  2O2Fr$t4X7Zf8NOew3FLQD nonPaired=639 badWind=0
+  2O2Fr$t4X7Zf8NOew3FLR9 nonPaired=747 badWind=0
+  2O2Fr$t4X7Zf8NOew3FLTF nonPaired=146 badWind=0
+  2O2Fr$t4X7Zf8NOew3FNau nonPaired=234 badWind=0
+  2O2Fr$t4X7Zf8NOew3FNbT nonPaired=187 badWind=0
+  2O2Fr$t4X7Zf8NOew3FNhv nonPaired=388 badWind=0
+  2O2Fr$t4X7Zf8NOew3FNld nonPaired=109 badWind=0
+  2O2Fr$t4X7Zf8NOew3FNqI nonPaired=401 badWind=0
+  2O2Fr$t4X7Zf8NOew3FNr2 nonPaired=357 badWind=0
+  2O2Fr$t4X7Zf8NOew3FNtn nonPaired=364 badWind=0
+  3Y4YRln2r91vflHcHE5ITm nonPaired=80 badWind=0
+  3Y4YRln2r91vflHcHE5ITn nonPaired=86 badWind=0
+  3Y4YRln2r91vflHcHE5ITp nonPaired=78 badWind=0
+  3Y4YRln2r91vflHcHE5ITs nonPaired=84 badWind=0
+  3Y4YRln2r91vflHcHE5IVI nonPaired=86 badWind=0
+  3Y4YRln2r91vflHcHE5IVJ nonPaired=84 badWind=0
+  3Y4YRln2r91vflHcHE5IVS nonPaired=78 badWind=0
+  3Y4YRln2r91vflHcHE5IVT nonPaired=80 badWind=0
+wrote bench_result.json

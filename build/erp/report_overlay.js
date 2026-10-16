@@ -32,10 +32,8 @@
     // (AD_PROCESS_FOLD_LANE §P2-tail-leg6). The confirm-line table m_inoutlineconfirm has (a) NO `line` column →
     // `lineSort` names the ORDER BY column instead (m_inoutlineconfirm_id), and (b) NO m_product_id → `lineProductVia`
     // tells the db-aware caller to resolve each line's product through the parent shipment line (m_inoutline_id →
-    // m_inoutline.m_product_id) and set it on the row before folding. foldReceipt itself is UNCHANGED (it still reads
-    // r[fkProduct], now populated by the caller — exactly as the caller already resolves product NAMES). NON-FINANCIAL:
-    // a confirmation carries qty=ConfirmedQty (amount/price/total null); no c_bpartner_id on the header → partner null;
-    // no business date column → date null (honest, never invented). SAME foldReceipt, NO new fold verb.
+    // m_inoutline.m_product_id) and set it on the row before folding. foldReceipt itself is UNCHANGED. NON-FINANCIAL:
+    // qty=ConfirmedQty (amount/price/total null); no c_bpartner_id on the header → partner null; no business date → null.
     m_inoutconfirm:{key:'m_inoutconfirm',pk:'m_inoutconfirm_id',lineTable:'m_inoutlineconfirm',fk:'m_inoutconfirm_id',
                  fkProduct: 'm_product_id', amount: null,        qty: 'confirmedqty', price: null,
                  date: null, total: null, lineSort: 'm_inoutlineconfirm_id',
@@ -43,7 +41,8 @@
     // Rpt M_Movement (AD_Process 290, "Inventory Move Print") — the warehouse sibling of m_inout (AD_PROCESS_FOLD_LANE
     // §P2-tail-leg2). A material movement is NON-FINANCIAL (amount/price/total null) — header M_Movement + lines
     // M_MovementLine, the carried value is qty=MovementQty. SAME foldReceipt, NO new fold code. A movement has no
-    // c_bpartner_id (internal locator→locator) → partner folds honestly null.
+    // c_bpartner_id (internal locator→locator) → partner folds honestly null. The browser lc() helper aliases the
+    // bundle's CamelCase (DocumentNo/MovementQty/MovementDate) to these lowercase keys.
     m_movement:{ key: 'm_movement',pk: 'm_movement_id',lineTable: 'm_movementline',fk: 'm_movement_id',
                  fkProduct: 'm_product_id', amount: null,        qty: 'movementqty', price: null,
                  date: 'movementdate', total: null },
@@ -51,6 +50,7 @@
     // (AD_PROCESS_FOLD_LANE §P2-tail-leg3, after m_inout + m_movement). NON-FINANCIAL: a physical count carries
     // qty=QtyCount (the counted quantity), not money — amount/price/total null. Header M_Inventory + lines
     // M_InventoryLine; no c_bpartner_id column → partner folds honestly null. SAME foldReceipt, NO new fold code.
+    // The browser lc() helper aliases the bundle's CamelCase (DocumentNo/QtyCount/MovementDate) to these keys.
     m_inventory:{key: 'm_inventory',pk:'m_inventory_id',lineTable:'m_inventoryline',fk:'m_inventory_id',
                  fkProduct: 'm_product_id', amount: null,        qty: 'qtycount',    price: null,
                  date: 'movementdate', total: null },
@@ -59,15 +59,23 @@
     // (the required component quantity), not money — amount/price/total null. Header PP_Order + lines
     // PP_Order_BOMLine (line + m_product_id present → no fold-shape change). A production order is internal → no
     // c_bpartner_id → partner null. date=DatePromised (the populated scheduling date; DateStart is null in seed).
-    // SAME foldReceipt, NO new fold code — proves the verb generalises past sales/inventory to manufacturing.
+    // SAME foldReceipt, NO new fold code. The browser lc() helper aliases the CamelCase (DocumentNo/QtyRequiered).
     pp_order:  { key: 'pp_order',  pk: 'pp_order_id',  lineTable: 'pp_order_bomline',fk: 'pp_order_id',
                  fkProduct: 'm_product_id', amount: null,        qty: 'qtyrequiered',price: null,
                  date: 'datepromised', total: null },
+    // Rpt C_Project (AD_Process 217, "Project Print") — a KIND-1 report folded by the SAME foldReceipt as the
+    // order/invoice prints (no new fold code, AD_PROCESS_FOLD_LANE §P2-leg3). A project IS a document: header
+    // C_Project + lines C_ProjectLine; the planned amounts are its money (subtotal = Σ PlannedAmt, total = the
+    // header PlannedAmt). C_Project has no DocumentNo → docnoCol names its identifier column (Value). The browser
+    // lc() helper aliases the bundle's CamelCase (PlannedAmt/Value) to these lowercase keys.
+    c_project: { key: 'c_project', pk: 'c_project_id', lineTable: 'c_projectline', fk: 'c_project_id',
+                 fkProduct: 'm_product_id', amount: 'plannedamt', qty: 'plannedqty', price: 'plannedprice',
+                 date: 'datecontract', total: 'plannedamt', docnoCol: 'value' },
     // Rpt C_Payment (AD_Process 313, "Payment Print") — a HEADER-ONLY financial document (AD_PROCESS_FOLD_LANE
     // §P2-tail-leg5). A payment has NO line table; its amount is PayAmt on the header → folded by foldVoucher, NOT
     // foldReceipt. `amounts` names the real money columns; `total`=payamt is the document amount. The voucher's
     // amounts obey iDempiere's allocation invariant: PayAmt + Discount + Write-off − Over/Under = the settled
-    // invoice's GrandTotal (re-derived in W-PROC-PAYMENT, never asserted). headerOnly=Y → no line rows folded.
+    // invoice's GrandTotal (re-derived in W-PROC-PAYMENT). The browser lc() helper aliases the CamelCase columns.
     c_payment: { key: 'c_payment', pk: 'c_payment_id', docnoCol: 'documentno', date: 'datetrx',
                  total: 'payamt', headerOnly: true,
                  amounts: [ { col: 'payamt',      label: 'Payment Amount' },
@@ -76,14 +84,7 @@
                             { col: 'overunderamt', label: 'Over/Under Payment' },
                             { col: 'taxamt',       label: 'Tax' } ],
                  flags:   [ { col: 'isreceipt',    label: 'Receipt' },
-                            { col: 'tendertype',   label: 'Tender' } ] },
-    // Rpt C_Project (AD_Process 217, "Project Print") — a KIND-1 report folded by the SAME foldReceipt as the
-    // order/invoice prints (no new fold code, AD_PROCESS_FOLD_LANE §P2-leg3). A project IS a document: header
-    // C_Project + lines C_ProjectLine; the planned amounts are its money (subtotal = Σ PlannedAmt, total = the
-    // header PlannedAmt). C_Project has no DocumentNo → docnoCol names its identifier column (Value).
-    c_project: { key: 'c_project', pk: 'c_project_id', lineTable: 'c_projectline', fk: 'c_project_id',
-                 fkProduct: 'm_product_id', amount: 'plannedamt', qty: 'plannedqty', price: 'plannedprice',
-                 date: 'datecontract', total: 'plannedamt', docnoCol: 'value' }
+                            { col: 'tendertype',   label: 'Tender' } ] }
   };
 
   function num(v) { return (v == null || v === '') ? null : Number(v); }
@@ -494,87 +495,6 @@
   }
 
   // ════════════════════════════════════════════════════════════════════════
-  // foldQWeb — Odoo QWeb report def → print-tree manifest. Implementing ReportingFold.md §5 — Witness: W-ODOO-QWEB
-  //
-  // Declarative subset only: t-foreach line loop + t-field bindings + BigDecimal totals.
-  // Python t-set expressions, t-if conditionals, widget options are traversed for field discovery but not
-  // evaluated — the fold computes what the loop WOULD sum from real data, non-invent.
-  //
-  // PURE: no DB/clock/DOM. foldQWeb(reportKey, viewIndex, lineRows) -> manifest | null
-  //   - reportKey:  the ir.actions.report.report_name key (e.g. 'account.report_invoice')
-  //   - viewIndex:  {key: {arch, model}} built from qweb_view table
-  //   - lineRows:   the document's line records [{field: value, ...}] — host-injected, non-invent
-  // Output: { format, fields, rows, breaks:{groups,total}, foldsFrom:'qweb' }
-  //   compatible with the renderPrint manifest shape (fields + rows + breaks.total).
-  function foldQWeb(reportKey, viewIndex, lineRows) {
-    viewIndex = viewIndex || {}; lineRows = lineRows || [];
-
-    // follow t-call chain until we find the template that carries the LINE loop (not the outer docs loop)
-    // t-foreach="docs" is always the outermost document-set loop — skip it and keep descending
-    function hasLineLoop(arch) {
-      var re = /t-foreach="([^"]+)"/g, m;
-      while ((m = re.exec(arch)) !== null) { if (m[1] !== 'docs') return true; }
-      return false;
-    }
-    function findBody(key, visited) {
-      if (!key || visited[key]) return null;
-      visited[key] = 1;
-      var v = viewIndex[key]; if (!v) return null;
-      if (hasLineLoop(v.arch)) return { key: key, arch: v.arch };
-      var re = /t-call="([^"]+)"/g, m;
-      while ((m = re.exec(v.arch)) !== null) {
-        var found = findBody(m[1], visited);
-        if (found) return found;
-      }
-      return null;
-    }
-    var body = findBody(reportKey, {});
-    if (!body) return null;
-
-    // extract t-foreach alias (e.g. t-foreach="lines" t-as="line" → lineAlias='line')
-    var feMatch = body.arch.match(/t-foreach="([^"]+)"\s+t-as="([^"]+)"/);
-    var lineAlias = feMatch ? feMatch[2] : 'line';
-
-    // collect all t-field / t-out / t-esc bindings scoped to the line alias
-    var lineFieldSet = {};
-    var lfRe = new RegExp('t-(?:field|out|esc)="' + lineAlias + '\\.(\\w+)"', 'g');
-    var fm; while ((fm = lfRe.exec(body.arch)) !== null) lineFieldSet[fm[1]] = 1;
-
-    // also capture t-set accumulators: t-value="... + line.FIELD" → reveals summed money cols
-    var acRe = new RegExp('[+\\s]' + lineAlias + '\\.(\\w+)', 'g');
-    while ((fm = acRe.exec(body.arch)) !== null) lineFieldSet[fm[1]] = 1;
-
-    var lineFields = Object.keys(lineFieldSet);
-    var MONEY_COLS = { price_subtotal:1, price_total:1, price_unit:1, quantity:1, discount:1,
-                       linenetamt:1, priceactual:1, qtyordered:1 };
-    var moneyFields = lineFields.filter(function (f) { return MONEY_COLS[f] || MONEY_COLS[f.toLowerCase()]; });
-
-    // fold line rows: accumulate totals via BigDecimal (NON-INVENT — every value is from host lineRows)
-    var totals = {};
-    moneyFields.forEach(function (f) { totals[f] = BD.ZERO; });
-    var outRows = lineRows.map(function (r) {
-      var cells = {};
-      lineFields.forEach(function (f) { cells[f] = r[f] != null ? r[f] : (r[f.toLowerCase()] != null ? r[f.toLowerCase()] : null); });
-      moneyFields.forEach(function (f) {
-        var v = cells[f]; if (v == null || v === '') return;
-        totals[f] = totals[f].add(BD.of(String(v)));
-      });
-      return { cells: cells, children: [] };
-    });
-
-    var totalCells = {};
-    moneyFields.forEach(function (f) { totalCells[f] = money2(totals[f]); });
-
-    return {
-      format: { reportKey: reportKey, model: (viewIndex[reportKey] || {}).model || null, bodyKey: body.key },
-      fields: lineFields.map(function (f) { return { name: f, column: f, isMoney: !!(MONEY_COLS[f] || MONEY_COLS[f.toLowerCase()]) }; }),
-      rows: outRows,
-      breaks: { groups: [], total: totalCells },
-      foldsFrom: 'qweb'
-    };
-  }
-
-  // ════════════════════════════════════════════════════════════════════════
   // resolveScope — the PURE R-T2 default + fall-through (REPORTING_UI_DEFAULT_FALLTHROUGH.md). No DB/DOM/clock.
   // Picks the default report period DETERMINISTICALLY from the journal and resolves each non-calc column to a
   // c_period_id window, then GUARDS: if that scope matches 0 fact rows but the bundle DOES have facts, fall through
@@ -638,7 +558,7 @@
   }
 
   var CORE = { REPORT_MAP: REPORT_MAP, foldReceipt: foldReceipt, foldVoucher: foldVoucher, foldTrialBalance: foldTrialBalance, foldPnL: foldPnL,
-               foldStatement: foldStatement, foldPrint: foldPrint, foldQWeb: foldQWeb, resolveScope: resolveScope,
+               foldStatement: foldStatement, foldPrint: foldPrint, resolveScope: resolveScope,
                amtExpr: amtExpr, signedBalance: signedBalance, round2: round2 };
   if (typeof module !== 'undefined' && module.exports) { module.exports = CORE; return; }
   if (typeof document === 'undefined') return;
@@ -658,6 +578,15 @@
     if (!res || !res.length) return [];
     return res[0].values.map(function (v) { var o = {}; res[0].columns.forEach(function (c, i) { o[c] = v[i]; }); return o; });
   }
+  // lowercase-alias every column key (NON-INVENT, ADDITIVE) — the browser bundle stores DOCUMENT tables in
+  // canonical CamelCase (DocumentNo/GrandTotal/LineNetAmt), but REPORT_MAP keys + foldReceipt read lowercase
+  // (the verb is proven headless on all-lowercase ad_full.db). Without this the in-browser receipt read 0.00 /
+  // docno=undefined. Mirrors doc_poster.lc — all-lowercase rows alias to themselves → the headless verb unchanged.
+  function lc(row) {
+    if (!row || typeof row !== 'object') return row;
+    Object.keys(row).forEach(function (k) { var lk = k.toLowerCase(); if (lk !== k && !(lk in row)) row[lk] = row[k]; });
+    return row;
+  }
   // litId — prefer the row in the currently-traced O2C chain (the lit instance), else the first row
   // (mirrors crud_overlay.getRecord so Report and the ring agree on which document is focused).
   function litId(db, map) {
@@ -673,10 +602,10 @@
   // _renderReceipt — fold + render ONE document's receipt for an explicit record id (shared by show + printRecord).
   function _renderReceipt(db, key, map, id) {
     if (id == null) { renderUnsupported(db, key); return; }
-    var header = rowsOf(db.exec('SELECT * FROM ' + map.key + ' WHERE ' + map.pk + '=' + id + ' LIMIT 1'))[0] || null;
+    var header = lc(rowsOf(db.exec('SELECT * FROM ' + map.key + ' WHERE ' + map.pk + '=' + id + ' LIMIT 1'))[0]) || null;
     if (!header) { renderUnsupported(db, key); return; }
     var lines = [];
-    try { lines = rowsOf(db.exec('SELECT * FROM ' + map.lineTable + ' WHERE ' + map.fk + '=' + id + ' ORDER BY ' + (map.lineSort || 'line'))); } catch (e) {}
+    try { lines = rowsOf(db.exec('SELECT * FROM ' + map.lineTable + ' WHERE ' + map.fk + '=' + id + ' ORDER BY ' + (map.lineSort || 'line'))).map(lc); } catch (e) {}
     // lineProductVia (§P2-tail-leg6): the carried product lives on a PARENT line table, not this line row —
     // resolve it per line through the join and set it on the row, so foldReceipt reads r[fkProduct] unchanged.
     if (map.lineProductVia) { var via = map.lineProductVia;

@@ -114,9 +114,6 @@ details.fold[open]>summary::before{transform:rotate(90deg)}
 details.fold>summary:hover{background:rgba(124,179,66,.07)}
 details.fold>summary .hint{font-weight:400;font-size:12px;opacity:.55;margin-left:auto}
 details.fold .fbd{padding:6px 16px 14px}
-/* "At a glance" stat cards — whole card is a link */
-.glance-card{flex:1 1 150px;border-radius:12px;padding:10px 8px;text-align:center;text-decoration:none;color:inherit;display:block;transition:transform .12s ease,box-shadow .12s ease}
-.glance-card:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,.18)}
 /* "Proven ideas" pillar cards — one per row of the old table */
 .pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:18px 0}
 .pillar{border:1px solid var(--pc);border-radius:12px;background:var(--pcbg);display:flex;flex-direction:column;overflow:hidden}
@@ -190,37 +187,16 @@ details.fold .fbd{padding:6px 16px 14px}
 
  
 
-<div style="display:flex;gap:10px;flex-wrap:wrap;margin:16px 0" markdown="0">
-  <a class="glance-card" href="#dr-tco" style="background:rgba(255,160,0,.12);border:1px solid rgba(255,160,0,.5)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-label="cost savings" role="img" style="width:100%;height:72px;color:#ffa000;display:block;margin:0 auto 6px"><path d="M11 17h3v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3a3.16 3.16 0 0 0 2-2h1a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-1a5 5 0 0 0-2-4V3a4 4 0 0 0-3.2 1.6l-.3.4H11a6 6 0 0 0-6 6v1a5 5 0 0 0 2 4v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1z"/><path d="M16 10h.01"/><path d="M2 8v1a2 2 0 0 0 2 2h1"/></svg>
-    <div style="font-size:19px;font-weight:800;line-height:1.1;color:#ffa000">≥30×</div>
-    <div style="font-size:12px;margin-top:6px;opacity:.85">less disaster-recovery storage at equal guarantee (<b>TCO</b>)</div>
-  </a>
-  <a class="glance-card" href="#no-server" style="background:rgba(124,179,66,.12);border:1px solid rgba(124,179,66,.45)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-label="zero network round-trips" role="img" style="width:100%;height:72px;color:#7cb342;display:block;margin:0 auto 6px"><path d="M12 20h.01"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/><path d="M5 12.859a10 10 0 0 1 5.17-2.69"/><path d="M19 12.859a10 10 0 0 0-2.007-1.523"/><path d="M2 8.82a15 15 0 0 1 4.177-2.643"/><path d="M22 8.82a15 15 0 0 0-11.288-3.764"/><path d="m2 2 20 20"/></svg>
-    <div style="font-size:19px;font-weight:800;line-height:1.1;color:#7cb342">0</div>
-    <div style="font-size:12px;margin-top:6px;opacity:.85">network round-trips on the read / fold path</div>
-  </a>
-  <a class="glance-card" href="#speed" style="background:rgba(255,112,67,.12);border:1px solid rgba(255,112,67,.45)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-label="speed" role="img" style="width:100%;height:72px;color:#ff7043;display:block;margin:0 auto 6px"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>
-    <div style="font-size:19px;font-weight:800;line-height:1.1;color:#ff7043">~53×</div>
-    <div style="font-size:12px;margin-top:6px;opacity:.85">faster bootstrap from a signed checkpoint vs genesis replay</div>
-  </a>
-  <a class="glance-card" href="#realistic-conversion-estimate-loc" style="background:rgba(66,165,245,.12);border:1px solid rgba(66,165,245,.45)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-label="code bloat" role="img" style="width:100%;height:72px;color:#42a5f5;display:block;margin:0 auto 6px"><path d="M11 21a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1"/><path d="M16 16a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1"/><path d="M21 6a2 2 0 0 0-.586-1.414l-2-2A2 2 0 0 0 17 2h-3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1z"/></svg>
-    <div style="font-size:19px;font-weight:800;line-height:1.1;color:#42a5f5">≈21×</div>
-    <div style="font-size:12px;margin-top:6px;opacity:.85">less code at full iDempiere parity <i>(conservative)</i> — <i>≈51× engine-shell delivered today</i></div>
-  </a>
-  <a class="glance-card" href="#dr-tco" style="background:rgba(171,71,188,.12);border:1px solid rgba(171,71,188,.45)">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-label="database backup" role="img" style="width:100%;height:72px;color:#ab47bc;display:block;margin:0 auto 6px"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
-    <div style="font-size:19px;font-weight:800;line-height:1.1;color:#ab47bc">192 GB→0.78 GB</div>
-    <div style="font-size:12px;margin-top:6px;opacity:.85"><b>Back up the recipe, not the result.</b></div>
-  </a>
+<div style="max-width:1000px;margin:18px auto 8px;text-align:center" markdown="0">
+<a href="../TwoAppsOneKernelInfographicLandscape.html" title="Open the live infographic">
+<img src="../img/two_apps_one_kernel_infographic.png" alt="Two Apps, One Kernel — pie chart: 76% legacy bloat, 14% code logic (both ERP and BIM legacies), 10% ours split into kernel (4%), ERP (3%) and BIM (3%) logic, ~10× fewer lines even at full logic parity" style="width:100%;border-radius:10px;border:1px solid rgba(255,255,255,.12)">
+</a>
+<div style="margin-top:8px;font-size:12.5px;color:#78909c">Updated 2026-08-07, both apps (ERP + BIM). <a href="../TwoAppsOneKernelInfographicLandscape.html">Open the live infographic →</a> · <a href="../TwoAppsOneKernel/">full write-up →</a></div>
 </div>
  
 <span id="status"></span>
 
-<p style="margin:16px 0;font-size:15px"><a href="../migrate_status_panel.html"><b>What is Done and Pending</b> — the four-state migration honesty map &nbsp;🟢🟠🔴🔵&nbsp; ↗</a></p>
+<p style="margin:16px 0;font-size:15px"><a href="migrate_status_panel.html"><b>What is Done and Pending</b> — the four-state migration honesty map &nbsp;🟢🟠🔴🔵&nbsp; ↗</a></p>
 
 ---
 
@@ -411,7 +387,7 @@ You don't store the chessboard — you store the **move list**, and replay it. T
 | **Read / fold round-trips** | 1 network hop per interaction [^arch] | **0** — the kernel answers locally [^noround] | network off the hot path |
 | **Ownership / trust** | the server DB owns your record [^arch] | **you own a signed op-log**; the host is disposable [^own] | trust model inverted |
 | **Document schema** | ≈925 AD tables, each a hand-written model class [^bloat2] | **5 core relations** (containers · items · documents · document_lines · journal) + verbs — the rest of the AD rides as **data** [^reduce] | hardcoded schema, *not* ERP scope (the AD is unchanged — it's the seed) |
-| **Runtime code** | 1,427,147 Java LOC / 4,465 files [^bloat] | **28,184 JS LOC / 132 files** (the engine shell + flows folded so far) [^bloat] | ≈51× built-so-far · **~21× at conservative full parity** [below](#realistic-conversion-estimate-loc) |
+| **Runtime code** | 1,427,147 Java LOC / 4,465 files [^bloat] | **36,641 JS LOC / 131 files** (the engine shell + flows folded so far) [^bloat] | ≈39× built-so-far · **~19× at conservative full parity** [below](#realistic-conversion-estimate-loc) |
 | **Bootstrap** (open the books) | re-query the server [^arch] | **signed checkpoint** — 0.90 ms vs 47.70 ms genesis [^drive] | ≈53× |
 | **Seed DB** | 45.2 MB dump [^bloat] | **26.1 MB** full-width self-describing AD (was 12.7 MB sliced — completeness chosen over ratio) [^bloat] | ≈1.7× |
 | **Live DB → SQLite** | 143 MB Postgres [^bloat2] | **43 MB** SQLite (gzip 11.7 MB) [^bloat2] | ≈3.3× |
@@ -522,7 +498,26 @@ Source: `docs/DistributedERP.md` §0 (lines 53–85, server→serverless table) 
   <div class="gm-add"><b>+ the one thing git lacks, we add:</b> invariant enforcement — no double-spend — via the owner-gate + a single compare-and-set op-class</div>
 </div>
 
+**Live now — concurrent editing no longer loses writes.** With no server refereeing saves, the browser
+sidecar op-log is **append-only**: two windows or two people editing the same record each add a signed
+op, none overwriting another (witnessed **10 windows at once → 10/10 edits survive**, chain intact), and
+across machines a shared relay folds every device's log into **one identical signed history** (witnessed
+**10 devices → all converge to the same signed tip, 0 lost**). *Open piece:* cross-device *document-action*
+attribution (Complete/Void/Close re-signed under the merging device's key) awaits opt-in per-step signing
+— field edits are covered, same-device workflows unaffected. See the [Done & Pending map](migrate_status_panel.html).
+
 Full doctrine + the hard multi-writer cases (shared stock, credit limits, client version skew): [DistributedERP.md](DistributedERP.md) §0, §9.
+
+---
+
+<div class="blurb" markdown="0">
+  <div class="hook">Fold and local-first are two separate ideas. We're the intersection, not the inventors of either.</div>
+  <div class="teaser">Event sourcing (the log is truth) predates the browser by decades — CQRS, EventStoreDB, Datomic, git. Local-first (the client is authoritative, not a server) is a distinct, newer claim. Checked against the field, 2026-05-31: two systems already occupy the exact intersection we do.
+    <input type="checkbox" id="m-priorart" class="moretoggle">
+    <span class="rest">The two ideas are independently variable: most event-sourced systems run <i>on a server</i> (Axon, EventStoreDB); most local-first systems stay consistent with a <i>CRDT</i>, not a fold (Automerge, Yjs). What we do — <b>use a fold as the local-first consistency mechanism, instead of a CRDT</b> — is a specific, narrower intersection, and we are not first into it: <a href="https://github.com/orbitinghail/sqlsync">SQLSync</a> already ships "one deterministic reducer, both sides" — our core determinism lever — and <a href="https://livestore.dev/">LiveStore</a> already ships "event-log folds into reactive client SQLite" — our data-layer shape. Neither combines BIM geometry and a full ERP under one log, reduces iDempiere's ~925 AD tables to 5 relations + verbs, or hash-chains the log for tamper evidence. CRDTs (Automerge/Yjs, cr-sqlite) hit a documented ceiling by the field's own literature — they cannot enforce a business invariant like "don't double-allocate this pallet" — which is why money-touching ops stay on the deterministic kernel; the CRDT primitive is kept only where it's safe: geometry edits, which have no double-spend risk. Notion validated SQLite-WASM at real production scale (Web Worker + OPFS) — but chose server-of-record + disposable local projection, the opposite of a local-authoritative stance. Full per-system breakdown and sources: <a href="LocalFirstPriorArt.md">Local-First Prior Art</a>. <a class="serious" href="#v-priorart">Serious read</a></span>
+    <label for="m-priorart" class="morelnk"></label>
+  </div>
+</div>
 
 ---
 
@@ -530,7 +525,7 @@ Full doctrine + the hard multi-writer cases (shared stock, credit limits, client
   <div class="hook">Zero round-trips on the read path. Up to ~50,000× faster cross-region.</div>
   <div class="teaser">An ERP normally crosses the network for every gesture. The kernel answers locally and relays later — so the real win isn’t faster storage, it’s no network on the hot path.
     <input type="checkbox" id="m-vitals" class="moretoggle">
-    <span class="rest">On-box, durable Postgres beats us per-op (5.24 ms vs 208 ms for 1,000 ops) — and we say so. But an ERP is never on-box: every interaction crosses the network to the server of record, RTT-bound, and blocks when offline. Our kernel answers locally (~0.01 ms/op) and relays async, so per sale the legacy round-trip costs <b>256–674×</b> at 0.5 ms LAN and <b>~8,500–50,000×</b> cross-region, while ours stays flat. Bootstrap from a signed checkpoint is <b>~53×</b> faster than genesis replay (0.90 ms vs 47.70 ms); batched commit hits <b>~22,500 ops/s</b>; the fold stays linear to <b>20M ops</b>. On footprint: a 26.1 MB full-width seed (1.7× smaller than the 45.2 MB dump) and 28,184 JS LOC against 1,427,147 Java. The win isn’t faster storage — it’s <b>zero network on the hot path.</b> <a class="serious" href="#v-vitals">Serious read</a></span>
+    <span class="rest">On-box, durable Postgres beats us per-op (5.24 ms vs 208 ms for 1,000 ops) — and we say so. But an ERP is never on-box: every interaction crosses the network to the server of record, RTT-bound, and blocks when offline. Our kernel answers locally (~0.01 ms/op) and relays async, so per sale the legacy round-trip costs <b>256–674×</b> at 0.5 ms LAN and <b>~8,500–50,000×</b> cross-region, while ours stays flat. Bootstrap from a signed checkpoint is <b>~53×</b> faster than genesis replay (0.90 ms vs 47.70 ms); batched commit hits <b>~22,500 ops/s</b>; the fold stays linear to <b>20M ops</b>. On footprint: a 26.1 MB full-width seed (1.7× smaller than the 45.2 MB dump) and 36,641 JS LOC against 1,427,147 Java. The win isn’t faster storage — it’s <b>zero network on the hot path.</b> <a class="serious" href="#v-vitals">Serious read</a></span>
     <label for="m-vitals" class="morelnk"></label>
   </div>
 </div>
@@ -586,6 +581,27 @@ Full doctrine + the hard multi-writer cases (shared stock, credit limits, client
 <div class="fbd" markdown="1">
 
 The long read — the same topics as the blurbs above, in full: the tables, the witnesses, the honest caveats. Each **Serious read →** lands here.
+
+### Prior art — where this sits vs the field — serious read {#v-priorart}
+
+**Two separate ideas, checked against the field independently.** *Event sourcing* (the log is truth, state = replay) predates the browser by over a decade — CQRS (Greg Young, ~2010), EventStoreDB, Datomic, git itself. *Local-first* (the client, not a server, is authoritative) is a distinct, newer claim (Kleppmann / Ink & Switch, 2019). The two are independently variable — most event-sourced systems run server-side; most local-first systems stay consistent with a CRDT, not a fold. What this architecture does is the specific intersection: **a fold, used as the local-first consistency mechanism, in place of a CRDT.** Researched 2026-05-31 (sync engines), extended 2026-06-03 (SQLite-WASM at scale). Full detail, every source: [Local-First Prior Art](LocalFirstPriorArt.md).
+
+<div class="dtbl" markdown="1">
+
+| System | What it does | Where it's ahead of us | What it lacks that we don't |
+|---|---|---|---|
+| **SQLSync** ([source](https://github.com/orbitinghail/sqlsync)) | Rust reducer compiled to WASM, identical client/server — our exact determinism lever, shipped first | real multi-writer total order (server sequences, client rebases) — we only order by local id | tamper evidence (no hash chain/sign); reducer is opaque compiled WASM, not plain JS over real SQL |
+| **LiveStore** ([source](https://livestore.dev/)) | event-log folds into reactive client SQLite — our data-layer shape | — | BIM+ERP unification; a domain reduction (AD → 5 tables); still beta, needs a sync backend |
+| **cr-sqlite** ([source](https://github.com/vlcn-io/cr-sqlite)) | row-level CRDT, no sequencer needed | true decentralized multi-writer, no server at all | cannot enforce a business invariant — converges to a consistent but *wrong* number (e.g. a double-allocated pallet). Right primitive for our geometry ops only; never routed through `Fact_Acct` |
+| **Replicache / PowerSync / ElectricSQL** | optimistic client + server-authoritative reconciliation | mature, production-hardened, hosted | all three require a server of record; none has a true zero-server mode; conflict logic hand-coded per mutation |
+| **Automerge / Yjs (CRDTs)** | mathematical guaranteed convergence, no referee | no central sequencer needed at all | same invariant ceiling as cr-sqlite, by the field's own literature |
+| **Notion** ([blog](https://www.notion.com/blog/how-we-sped-up-notion-in-the-browser-with-wasm-sqlite)) | SQLite-WASM in a Web Worker + OPFS, at real production scale | validates the storage tier works at scale | chose server-of-record + disposable local projection — the opposite of local-authoritative |
+
+</div>
+
+**The honest verdict.** On the determinism lever alone, SQLSync got there first. On the data-layer shape alone, LiveStore is nearly identical. **No single technique here is novel in isolation.** What none of them do: put BIM geometry and a full ERP under the same log, reduce a 925-table Application Dictionary to 5 relations + verbs, or hash-chain and sign the log for tamper evidence. That combination — not any one lever — is the gap being filled.
+
+**Borrowed, not invented, for the next phase (§0.20):** SQLSync's rebase loop is the target design for multi-writer ordering (`sealChain()`'s full-recompute already makes a post-rebase re-seal cheap); cr-sqlite's site-id + logical-clock merge is the right fit for the geometry half of the log — kept away from money postings, which stay on the deterministic kernel.
 
 ### Disaster recovery &amp; TCO — serious read {#v-dr}
 
@@ -644,7 +660,7 @@ Three tables, not one wall. Columns are **architecture**, not a feature scorecar
 | **Bootstrap** (open the books) | re-query the server [^arch] | re-query the server [^arch] | re-query the server [^arch] | **~53× faster from checkpoint** — 0.90 ms vs 47.70 ms genesis replay, same result [^drive] |
 | **Commit throughput** (5000 ops) | n/a — architectural [^arch] | n/a [^arch] | n/a [^arch] | batch `commitGroup` **~22,492 ops/s = 2.4× naive** [^sync] |
 | **Fold/append ceiling** | n/a — architectural [^arch] | n/a [^arch] | n/a [^arch] | **linear to 20,000,000 ops** (~437 B/op; fold ~40M ops/s hot) [^ceiling] |
-| **Storage primitive** (1000 ops, 1 commit) | Postgres WAL+fsync **5.24 ms** (0.0052 ms/op) [^bench] | (same engine) [^arch] | n/a [^arch] | sql.js +sha256 chain **208.45 ms** — slower per-op, buys **no server**; Postgres durability/concurrency DEFERRED to the install [^bench] |
+| **Storage primitive** (1000 ops, 1 commit) | Postgres WAL+fsync **5.24 ms** (0.0052 ms/op) [^bench] | (same engine) [^arch] | n/a [^arch] | sql.js +sha256 chain **208.45 ms** — slower per-op, buys **no server**; Postgres crash-durability DEFERRED to the install — but multi-writer **concurrency is now handled** browser-side (append-only log + relay convergence, no lost writes) [^bench] |
 
 </div>
 
@@ -657,7 +673,7 @@ Three tables, not one wall. Columns are **architecture**, not a feature scorecar
 | Vital | iDempiere | Odoo | SAP | Our WASM event-source |
 |---|---|---|---|---|
 | **DB seed** | `Adempiere_pg.dmp` **45.2 MB** [^bloat] | n/a — diff schema [^arch] | n/a [^arch] | `erp/ad_seed.db` **26.1 MB** (≈**1.7× smaller**, full-width — the earlier 12.7 MB column-slice was 3.5× but left windows unreachable; completeness won); the 26.1 MB IS the self-describing AD [^bloat] |
-| **Runtime LOC** | **1,427,147 Java LOC** / 4,465 files + JVM + Postgres + 3.7 GB build [^bloat] | n/a — diff codebase [^arch] | n/a [^arch] | **28,184 JS LOC** / 132 files, static + SQLite-WASM, offline (≈**51× fewer** built-so-far; **~21× at conservative full parity**, zero server/JVM/DB) [^bloat] |
+| **Runtime LOC** | **1,427,147 Java LOC** / 4,465 files + JVM + Postgres + 3.7 GB build [^bloat] | n/a — diff codebase [^arch] | n/a [^arch] | **36,641 JS LOC** / 131 files, static + SQLite-WASM, offline (≈**39× fewer** built-so-far; **~19× at conservative full parity**, zero server/JVM/DB) [^bloat] |
 | **Live DB → SQLite** | Postgres **143 MB** on-disk (GardenWorld) [^bloat2] | n/a [^arch] | n/a [^arch] | **43 MB SQLite** (925 tables, 187,133 rows ≈ **3.3×**); gzip 11.7 MB (3.7×) [^bloat2] |
 
 </div>
@@ -687,6 +703,12 @@ Three tables, not one wall. Columns are **architecture**, not a feature scorecar
   (`build/erp/period_close_drive.log`, an in-browser drive).
 - Storage primitive sql.js-vs-Postgres (`build/erp/bench_oplog_pg.log`), batch throughput
   (`build/erp/sync_poc_smoke.log`), volume ceiling to 20M ops (`build/erp/poc_volume_ceiling.log`).
+- **Persistence-path caveat (honest):** the storage-primitive figure above is the *batched* engine
+  (1000 ops, one commit, in-memory). The *live per-Save* path is separate: it once re-exported the whole
+  sidecar DB to IndexedDB on every save (O(total size) per Save — an un-benchmarked tax that grew with
+  history), and is now an **O(1) append** of one signed op record as of the append-only fix (erp sw v766,
+  W-OPLOG-APPEND). So the shipped product now tracks the batched curve rather than diverging from it as
+  the log grows.
 - Bloat figures `du`/`wc`/sqlite-measured 2026-06-06 (`internal/BLOAT_MEASUREMENT.md`, summarised in
   the bloat memory).
 - The Odoo fold is against a **running Odoo 17** instance (`build/erp/odoo_fold_live.log`,
@@ -950,7 +972,7 @@ while iDempiere derives it from `C_Invoice` open amounts). Tracked: matrix **GAP
 <div class="fbd" markdown="1">
 <span id="realistic-conversion-estimate-loc"></span>
 
-51× is honest for the engine **shell** folded today (28,184 JS LOC, re-measured 2026-06-12 — down from 76× as real coverage grew, exactly as a non-overclaim should move) — but it measures the *thinnest, highest-compression* slice (order-to-cash + posting), where iDempiere is mostly generated boilerplate and ZK UI that collapse to ~0. It does **not** extrapolate to a full port: only **~1% of the `M*` business logic (104,940 code-LOC) is actually ported**. **We headline the *conservative* ~21× to avoid overclaiming.**
+39× is honest for the engine **shell** folded today (36,641 JS LOC, re-measured 2026-09-13 — down from 51× at 28,184/132, and from 76× before that, as real coverage grew: exactly as a non-overclaim should move) — but it measures the *thinnest, highest-compression* slice (order-to-cash + posting), where iDempiere is mostly generated boilerplate and ZK UI that collapse to ~0. It does **not** extrapolate to a full port: only **~1% of the `M*` business logic (104,940 code-LOC) is actually ported**. **We headline the *conservative* ~19× to avoid overclaiming.**
 
 > **Exhaustive coverage map → ERP Coverage Matrix.** Two axes, both measured from real `ad_full.db` queries (not asserted): the **interpreter-coverage ladder** — **6 covered / 33 partial / 3 gap** of 42 surfaces (closed for every seed-data surface; the first six flipped to *covered* 2026-06-11 when the live UI itself became the witness — the `W-AD-*-LIVE` family) — and the **equivalence axis** — **43 surfaces match the real iDempiere oracle** (16 cent-exact · 6 declarative diffed to the *live* Postgres · 21 model-layer `beforeSave`+FSM walks) **+ 3 rule-consistent**, each with a load-bearing §FALSIFIER. The surface-by-surface breakdown, witnesses, and M-class denominator live in the matrix + ERP_MODEL_ARCHETYPE.md (MOrder archetype + ~25 deltas, deepest deltas fold `maxDiff=0c`). The buckets below are measured, not asserted.
 
@@ -976,15 +998,15 @@ Folding that behavioural core into declarative verbs compresses ~5–8× (no Jav
 
 <div class="dtbl hl-last" markdown="1">
 
-| Scenario | irreducible folded | ÷ ratio | full JS (+ engine 28,184) | overall |
+| Scenario | irreducible folded | ÷ ratio | full JS (+ engine 36,641) | overall |
 |---|---|---|---|---|
-| Optimistic | 150K | 8× | **~47K** | ~30× |
-| Mid | 175K | 6.5× | **~55K** | ~26× |
-| **Conservative (headline)** | 200K | ~5× | **~68K** | **~21×** |
+| Optimistic | 150K | 8× | **~56K** | ~26× |
+| Mid | 175K | 6.5× | **~64K** | ~22× |
+| **Conservative (headline)** | 200K | ~5× | **~77K** | **~19×** |
 
 </div>
 
-**Realistic full parity — we headline the *conservative* ≈ 68K JS LOC ≈ ~21×** (mid ~55K/~26×, optimistic ~47K/~30×) — vs ~51× for the engine shell folded so far. Leading with the conservative bound is the point: it does not overclaim. The fold ratio is the one estimated input (GAPS #6); every LOC count is measured (incl. the M-class denominator — `M*.java` 104,940 code-LOC, ~1% folded/ported: ~205 LOC of transactional verbs + ≈830 LOC of cited `beforeSave` regions).
+**Realistic full parity — we headline the *conservative* ≈ 77K JS LOC ≈ ~19×** (mid ~64K/~22×, optimistic ~56K/~26×) — vs ~39× for the engine shell folded so far. Leading with the conservative bound is the point: it does not overclaim. The fold ratio is the one estimated input (GAPS #6); every LOC count is measured (incl. the M-class denominator — `M*.java` 104,940 code-LOC, ~1% folded/ported: ~205 LOC of transactional verbs + ≈830 LOC of cited `beforeSave` regions).
 
 ??? note "Full breakdown by iDempiere module (org.adempiere.base, org.adempiere.ui.zk, …) — expand"
 
@@ -1043,11 +1065,11 @@ Folding that behavioural core into declarative verbs compresses ~5–8× (no Jav
    either side) — `bench_oplog_pg.log` states this explicitly; do not extrapolate to whole-document cost.
 5. **Live-DB → SQLite (143 MB → 43 MB)** was measured on a static dump + repo (Docker Postgres was NOT
    running at measure time) — see the bloat memory caveat.
-6. **Full-conversion LOC (~68K / ~21×)** — the per-bucket LOC are *measured* (`find`/`wc` on
+6. **Full-conversion LOC (~77K / ~19×)** — the per-bucket LOC are *measured* (`find`/`wc` on
    `~/idempiere-dev-setup/idempiere`, 2026-06-08), but the **5–8× fold-compression ratio** on the irreducible
    business core — and the share of `M*` that is real logic vs accessor/lifecycle ceremony — are **estimates** (no
-   full port exists to measure them). Headline the **conservative ~21×** forecast (range ~21–30×); ~51× is the
-   *measured built-so-far* engine shell (28,184 LOC, 2026-06-12), a high-compression slice (~1% of the M-class logic) that does not extrapolate.
+   full port exists to measure them). Headline the **conservative ~19×** forecast (range ~19–26×); ~39× is the
+   *measured built-so-far* engine shell (36,641 LOC, 2026-09-13), a high-compression slice (~1% of the M-class logic) that does not extrapolate.
 7. **DR / TCO model constants** — the unit costs (314 B/op snapshot; fold, restore-to-op, per-branch additivity)
    are **measured**; the year-level storage/compute/bill figures are **derived** over modelled constants for the
    traditional side (no Postgres on the bench): `DB_BYTES_PER_ROW=230` (SQLite, no index — Postgres+index ≈ 1.5–3×
@@ -1186,7 +1208,7 @@ DRAFT (2026-06-08, currency pass 2026-06-21: the Kernel-ERP rebrand + iDempiere-
 [^dep]: `docs/DepreciationPerf.md` — iDempiere 40-year asset depreciation: per-row `saveEx` through the PO layer ≈ ~2 DB round-trips × ~480 periods/asset ≈ ~960/asset → a base of thousands of assets ≈ **~1M round-trips** (recalled ~20 min). The cost is the round-trips, not the maths.
 [^sync]: `build/erp/sync_poc_smoke.log` — 5,000 events: naive 9,390 ops/s; batch commitGroup 22,492 ops/s = 2.4× (corroborated `sync_poc_prod_smoke.log`).
 [^ceiling]: `build/erp/poc_volume_ceiling.log` — append/fold stay LINEAR; largestFit=20,000,000 ops, ~437 B/op retained; fold ~40.8M ops/s hot at 5M.
-[^bloat]: bloat memory (`reference_bloat_reduction.md`, Java side measured 2026-06-06 from `~/idempiere-dev-setup/idempiere`; JS side re-measured 2026-06-12 as the dedup union of `build/erp` + `origin/main:erp` non-lib non-min JS) — seed 45.2 MB → 26.1 MB full-width (≈1.7×; the earlier 12.7 MB/3.5× column-slice left windows unreachable — completeness won, bim-ootb #265); 1,427,147 Java LOC → 28,184 JS LOC / 132 files engine shell (≈51× built-so-far — was 76× at 18,614/60, the ratio falls as real coverage grows; ~21× at conservative full parity, ~68K JS). Full evidence `internal/BLOAT_MEASUREMENT.md`.
+[^bloat]: bloat memory (`reference_bloat_reduction.md`, Java side measured 2026-06-06 from `~/idempiere-dev-setup/idempiere`; JS side re-measured **2026-09-13** as the dedup union of `build/erp` + `origin/main:erp` non-lib non-min JS, tests excluded) — seed 45.2 MB → 26.1 MB full-width (≈1.7×; the earlier 12.7 MB/3.5× column-slice left windows unreachable — completeness won, bim-ootb #265); 1,427,147 Java LOC → **36,641 JS LOC / 131 files** engine shell (≈**39×** built-so-far — was 51× at 28,184/132 on 2026-06-12, and 76× at 18,614/60 before that: the ratio falls as real coverage grows; ~19× at conservative full parity, ~77K JS). **Now pinned:** `scripts/measure_bloat.js` makes this method executable and prints one `§BLOAT` line; `tests/witness_bloat_measure.js` proves R1–R6 with a redControl. It reproduces the 2026-06-12 basis to **131 files against 132** — within one file — so the figure is re-runnable on demand instead of re-derived by hand. Re-run it before citing this number. Full evidence `internal/BLOAT_MEASUREMENT.md`.
 [^bloat2]: same memory — LIVE GardenWorld DB Postgres 143 MB on-disk → 43 MB SQLite (925 tables, 187,133 rows, ≈3.3×); gzip 11.7 MB (3.7×).
 [^odoo]: `build/erp/odoo_fold_live.log` — `§ODOO-FOLD-LIVE PASS`: live odoodemo (Odoo 17, :8069) SO S00023, 5/5 hops mapped, newVerbs=[], total 5002.50 == oracle, GL ΣDr==ΣCr.
 [^b1]: `build/erp/b1_fold.log` — `§B1-FOLD PASS`: SAP Business One O2C + OJDT/JDT1, 5/5 hops, journal 770.00==770.00. Source = a hand-authored MOCK Service-Layer shape (user-authorized 2026-06-05), NOT a real export.

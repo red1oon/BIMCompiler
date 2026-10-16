@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Times Have Changed — And So Must ISO for ERP</title>
+<!-- ============================================================
+     POSITION PAPER — control-objective mapping for a serverless,
+     local-first, hash-chained ERP ledger, against COSO 2013,
+     SOX / PCAOB AS 2201, and ISO/IEC 27001:2022.
+     Register: assurance & controls professional (not public).
+     Non-invent: every citation below is a real, published standard
+     or profession paper. Nothing asserts certification.
+     ============================================================ -->
+<style>
+  /* LIGHT SKIN — matches the site's Material theme (blue-grey + orange) and the
+     4D / Migrate papers' green/red comparison semantics, on white. Print-friendly. */
+  :root{
+    --bg:#ffffff; --panel:#eceff1; --ink:#20272e; --dim:#5b6670; --line:#dbe1e6;
+    --primary:#37474f;                 /* blue-grey — site Material primary */
+    --green:#4f7c2b; --amber:#d97a00; --red:#c62828; --blue:#1565c0;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:-apple-system,system-ui,"Segoe UI",Roboto,sans-serif;
+    max-width:1040px;margin:0 auto;padding:40px 22px 64px;
+    background:var(--bg);color:var(--ink);line-height:1.58}
+  a{color:var(--blue)}
+  sup a{font-weight:700;text-decoration:none;padding:0 1px}
+  .kicker{font-size:11px;font-weight:800;letter-spacing:2.4px;text-transform:uppercase;color:var(--amber);margin:0 0 8px}
+  h1{font-size:33px;line-height:1.14;font-weight:850;margin:0 0 6px;letter-spacing:.2px;color:var(--primary)}
+  .sub{font-size:15.5px;color:var(--dim);margin:0 0 20px}
+  h2{font-size:23px;font-weight:820;margin:38px 0 12px;padding-bottom:7px;border-bottom:2px solid var(--line);color:var(--primary)}
+  h3{font-size:16.5px;font-weight:800;margin:22px 0 6px;color:#2f3a43}
+  p{font-size:16px;color:#37424b;max-width:80ch}
+  p b,li b{color:#161c22}
+  .abstract{border-left:4px solid var(--blue);background:rgba(21,101,192,.05);
+    border-radius:0 9px 9px 0;padding:16px 20px;font-size:15.5px;color:#33404a;margin:6px 0 8px;max-width:none}
+  .abstract b{color:#123f75}
+
+  .legend{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;
+    margin:22px 0 10px;padding:13px 16px;background:var(--panel);border:1px solid var(--line);border-radius:11px;font-size:13.5px;color:#37424b}
+  .legend .k{display:inline-flex;align-items:center;gap:7px}
+  .legend .dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
+  .legend .sep{color:var(--dim);opacity:.5}
+
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14px;display:block;overflow-x:auto}
+  th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.42;color:#37424b}
+  th{background:var(--primary);color:#fff;font-weight:800;font-size:11.5px;letter-spacing:.3px}
+  tr:nth-child(even) td{background:#f7f9fa}
+  td .st{font-weight:800;white-space:nowrap}
+  .s-g{color:var(--green)} .s-a{color:var(--amber)} .s-r{color:var(--red)} .s-b{color:var(--blue)}
+
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:16px 0}
+  @media (max-width:720px){.grid{grid-template-columns:1fr}}
+  .band{--bc:var(--green);border:1px solid var(--line);border-top:4px solid var(--bc);border-radius:13px;
+    background:#fff;box-shadow:0 1px 3px rgba(20,40,60,.06);display:flex;flex-direction:column;overflow:hidden}
+  .band.green{--bc:var(--green);background:rgba(79,124,43,.045)}
+  .band.amber{--bc:var(--amber);background:rgba(217,122,0,.05)}
+  .band.red{--bc:var(--red);background:rgba(198,40,40,.045)}
+  .band.blue{--bc:var(--blue);background:rgba(21,101,192,.045)}
+  .bh{padding:15px 17px 11px}
+  .tag{font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--bc)}
+  .ttl{font-size:17.5px;font-weight:800;line-height:1.22;margin:6px 0 3px;color:#1a2129}
+  .gloss{font-size:13px;color:var(--dim);line-height:1.45}
+  .band ul{list-style:none;margin:0;padding:11px 17px 15px;border-top:1px solid var(--line)}
+  .band li{font-size:14px;line-height:1.46;margin:0 0 10px;padding-left:15px;position:relative;color:#37424b}
+  .band li:last-child{margin-bottom:0}
+  .band li b{color:#161c22}
+  .band li::before{content:"";position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:50%;background:var(--bc);opacity:.85}
+  .ref{font-size:11px;font-weight:700;color:var(--bc);opacity:.95}
+  code{background:#eceff1;padding:1px 5px;border-radius:4px;font-size:.9em;color:#2f3a43}
+
+  .evidence{border:1px solid var(--line);border-left:4px solid var(--green);background:rgba(79,124,43,.05);
+    border-radius:0 10px 10px 0;padding:14px 18px;margin:14px 0;font-size:14.5px;color:#37424b}
+  .evidence b{color:var(--green)}
+  .evidence code{background:#e8ede9}
+
+  .disclaimer{border:1px solid rgba(217,122,0,.45);background:rgba(217,122,0,.07);border-radius:11px;
+    padding:14px 18px;margin:24px 0 8px;font-size:13.5px;color:#5a4a2a}
+  .disclaimer b{color:var(--amber)}
+
+  ol.refs{font-size:13.5px;color:#37424b;padding-left:26px;line-height:1.55}
+  ol.refs li{margin:0 0 8px}
+  ol.refs b{color:#161c22}
+  footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--dim)}
+</style>
+</head>
+<body>
+
+  <p class="kicker">Assurance &amp; Controls — Position Paper</p>
+  <h1>Times Have Changed — And So Must ISO for ERP</h1>
+  <p class="sub">The server of record is disappearing. The control <i>objectives</i> endure — but the audit approach and control-implementation guidance must adapt. A control-objective map for a serverless, local-first, hash-chained ERP ledger, against COSO (2013), SOX / PCAOB AS&nbsp;2201, and ISO/IEC&nbsp;27001:2022.</p>
+
+  <div class="abstract">
+    <b>The direction of travel.</b> Enterprise software is moving <i>off</i> the central server of record. Local-first and offline-first architectures place the authoritative copy of data on the user&rsquo;s own device — syncing peer-to-peer or through stateless relays rather than a cloud database that owns the truth<sup><a href="#r14">[14]</a></sup>; conflict-free replicated data types (CRDTs) have made multi-device convergence a solved primitive<sup><a href="#r15">[15]</a></sup>; and data-sovereignty regulation pushes the authoritative record toward the edge, not the centre<sup><a href="#r16">[16]</a></sup>. The assurance frameworks that govern financial reporting — SOX/PCAOB, COSO, ISO/IEC&nbsp;27001 — were written for the opposite world: a single locked database behind a corporate firewall.
+  </div>
+  <div class="abstract" style="border-left-color:var(--green);background:rgba(79,124,43,.06)">
+    <b style="color:#3a6b1e">The claim — objectives endure, the approach must adapt.</b> This is <i>not</i> an argument to weaken control. The control <b>objectives</b> do not change — completeness, existence/occurrence, authorisation, segregation of duties, retention. What must change is the <b>audit approach and control-implementation guidance</b>: <i>where</i> each objective is satisfied, and <i>how</i> it is tested, when no server owns the record. The profession has already taken the first step — the PCAOB holds that on-chain proof is <b>&ldquo;not sufficient appropriate audit evidence&rdquo;</b><sup><a href="#r7">[7]</a></sup>, and COSO frames blockchain risk <i>inside</i> the unchanged 2013 framework<sup><a href="#r5">[5]</a></sup>. Below is a control-objective framework to apply: per objective, where cryptographic assurance is <b>strengthened</b>, where the control <b>relocates</b> and must be designed, where it stays <b>open</b>, and where the limit is <b>invariant</b> to any ledger. It is a control map, not a certification.
+  </div>
+
+  <div class="legend">
+    <span class="k"><span class="dot" style="background:var(--green)"></span><b>Strengthened</b> — trusted-custodian → independently verifiable</span>
+    <span class="sep">·</span>
+    <span class="k"><span class="dot" style="background:var(--amber)"></span><b>Relocated</b> — objective intact, control moves layer</span>
+    <span class="sep">·</span>
+    <span class="k"><span class="dot" style="background:var(--red)"></span><b>Open</b> — compensating control required</span>
+    <span class="sep">·</span>
+    <span class="k"><span class="dot" style="background:var(--blue)"></span><b>Invariant</b> — no ledger removes it</span>
+  </div>
+
+  <h2>1 &nbsp;The shift is the <i>locus of trust</i>, not the control objective</h2>
+  <p>Traditional internal control over financial reporting (ICFR) locates assurance in a <b>central server of record</b>: a database whose integrity is trusted because privileged access, change management, and backup are controlled (the IT general controls, ITGC, tested under PCAOB AS&nbsp;2201<sup><a href="#r3">[3]</a></sup>). Remove that server and the <b>control objectives are unchanged</b> — completeness, existence/occurrence, authorisation, segregation of duties, retention — but the <i>mechanism</i> of assurance moves. Integrity is no longer <i>asserted by a custodian</i>; it is <b>verifiable by any party</b> against a signed, hash-chained log (the same tamper-evidence primitive as RFC&nbsp;6962 Certificate Transparency<sup><a href="#r11">[11]</a></sup> and RFC&nbsp;3161 trusted timestamping<sup><a href="#r12">[12]</a></sup>). In exchange, a <b>new crown-jewel risk</b> appears — signing-key custody (NIST SP&nbsp;800-57<sup><a href="#r10">[10]</a></sup>) — and a new completeness question — proving that <i>every</i> device&rsquo;s shard has reported. This paper is that trade, made explicit, objective by objective.</p>
+
+  <h2>2 &nbsp;Control-objective map — central server vs. local-first hash-chain</h2>
+  <table>
+    <thead><tr><th style="width:19%">Control objective</th><th style="width:33%">Central server-of-record — assured by</th><th style="width:33%">Local-first hash-chain — assured by / relocated to</th><th style="width:15%">State</th></tr></thead>
+    <tbody>
+      <tr><td><b>Record integrity</b> <span class="ref">SOX §802; ISO A.8.15</span></td><td>Trust in DBA / privileged-access &amp; change-management ITGC over the database</td><td>Signed SHA-256 hash chain; any post-hoc alteration breaks the chain and is detectable by any verifier — trust becomes verification</td><td><span class="st s-g">▲ Strengthened</span></td></tr>
+      <tr><td><b>Audit trail &amp; logging</b> <span class="ref">ISO A.8.15; AS 2201</span></td><td>Application/DB audit logs — a side-artefact that can be disabled or diverge from the data</td><td>The signed op-log <i>is</i> the system of record; there is no separate log to disable — the trail and the data are one object</td><td><span class="st s-g">▲ Strengthened</span></td></tr>
+      <tr><td><b>Re-performance</b> <span class="ref">AS 2201 evidence</span></td><td>Auditor re-computes on a <i>sample</i>; full re-computation is cost-prohibitive against a live server</td><td>Financial statements re-derive <b>deterministically</b> from the log — 100% re-performance, not a sample, at near-zero cost</td><td><span class="st s-g">▲ Strengthened</span></td></tr>
+      <tr><td><b>Access control / authorisation</b> <span class="ref">SOX §404; ISO A.5,A.8</span></td><td>Server-enforced role-based access control (RBAC) against a central identity store</td><td>No server to enforce RBAC; authorisation must be enforced at the op-gate and by key possession — <b>present but relocated</b> to client + key custody</td><td><span class="st s-a">◆ Relocated</span></td></tr>
+      <tr><td><b>Non-repudiation / identity</b> <span class="ref">ISO A.8; eIDAS</span></td><td>Server-side authenticated session bound to a directory identity</td><td>A signature binds a <i>key</i>, not a <i>person</i>; requires key→identity binding, lifecycle and revocation (a PKI / KYC discipline)</td><td><span class="st s-a">◆ Relocated</span></td></tr>
+      <tr><td><b>Records retention &amp; availability</b> <span class="ref">SOX §802; ISO A.8.13</span></td><td>Centrally-administered backup and 7-year retention</td><td>A ledger on an edge device needs an explicit <b>retention-relay / replica policy</b> to meet retention and availability — a designed control, not a default</td><td><span class="st s-a">◆ Relocated</span></td></tr>
+      <tr><td><b>Completeness (across the estate)</b> <span class="ref">Assertion: completeness</span></td><td>One database holds all rows; completeness is structural</td><td>State is sharded across devices; completeness requires proving <b>all shards reported</b> (quorum / attestation). See §4 evidence — a silent-loss defect was found and closed; cross-shard action attribution remains open</td><td><span class="st s-r">● Open</span></td></tr>
+      <tr><td><b>Segregation of duties (SoD)</b> <span class="ref">SOX §404; COSO CA</span></td><td>Server enforces that originator ≠ approver ≠ settler by role</td><td>A single device + single key can originate, approve and settle; SoD is <b>not inherent</b> — it must be imposed by multi-party / quorum signing on high-risk op-classes (a designed compensating control)</td><td><span class="st s-r">● Open</span></td></tr>
+      <tr><td><b>Validity / occurrence of the entry</b> <span class="ref">Assertion; PCAOB</span></td><td>Not solved by the server either — requires substantive audit procedures</td><td><b>Not solved by the chain.</b> A signed false entry is notarised as faithfully as a true one — integrity ≠ veracity. Substantive procedures still required<sup><a href="#r5">[5]</a><a href="#r7">[7]</a></sup></td><td><span class="st s-b">■ Invariant</span></td></tr>
+      <tr><td><b>Management override / collusion</b> <span class="ref">COSO — inherent limitation</span></td><td>An inherent limitation of internal control (COSO)<sup><a href="#r4">[4]</a></sup></td><td>Unchanged — collusion and override survive any cryptographic ledger</td><td><span class="st s-b">■ Invariant</span></td></tr>
+    </tbody>
+  </table>
+
+  <h2>3 &nbsp;The map read through COSO&rsquo;s five components<sup><a href="#r4">[4]</a><a href="#r5">[5]</a></sup></h2>
+  <div class="grid">
+
+    <div class="band green">
+      <div class="bh"><div class="tag">▲ Strengthened — Control Activities · Information &amp; Communication</div>
+        <div class="ttl">What the cryptography earns</div>
+        <div class="gloss">Assurance that previously rested on trusting a custodian becomes independently verifiable.</div></div>
+      <ul>
+        <li><b>Integrity &amp; audit trail unified</b> — the hash-chained op-log is simultaneously the data and its tamper-evident trail; there is no separable log to disable or backdate. <span class="ref">ISO/IEC 27001:2022 A.8.15 · SOX §802 <sup><a href="#r8">[8]</a><a href="#r1">[1]</a></sup></span></li>
+        <li><b>Total, not sampled, re-performance</b> — because reported state is a deterministic fold of the log, an auditor can re-derive the financial statements in full rather than test a sample — a qualitative change in evidence sufficiency under AS&nbsp;2201. <span class="ref">PCAOB AS 2201 <sup><a href="#r3">[3]</a></sup></span></li>
+        <li><b>Trust → verification</b> — the same tamper-evidence lineage as Certificate Transparency (Merkle proofs) and RFC&nbsp;3161 timestamping; a third party verifies the math, it is not asserted by the preparer. <span class="ref">RFC 6962 · RFC 3161 <sup><a href="#r11">[11]</a><a href="#r12">[12]</a></sup></span></li>
+      </ul>
+    </div>
+
+    <div class="band amber">
+      <div class="bh"><div class="tag">◆ Relocated — Control Environment · Risk Assessment</div>
+        <div class="ttl">Controls that must be designed, not inherited</div>
+        <div class="gloss">The objective is untouched; removing the server moves the control to a new layer.</div></div>
+      <ul>
+        <li><b>Authorisation → op-gate + key custody</b> — with no server RBAC, authorisation is enforced client-side at the write gate and by key possession; key management becomes a primary control (the ISACA control area). <span class="ref">ISACA Blockchain Framework · NIST SP 800-57 <sup><a href="#r9">[9]</a><a href="#r10">[10]</a></sup></span></li>
+        <li><b>Identity binding</b> — signatures must bind to real, revocable identities (PKI / KYC), or non-repudiation is nominal. <span class="ref">ISO/IEC 27001:2022 A.5, A.8 <sup><a href="#r8">[8]</a></sup></span></li>
+        <li><b>Retention &amp; availability → replica policy</b> — a designed retention-relay replaces central backup for §802 retention and availability. <span class="ref">SOX §802 · ISO A.8.13 <sup><a href="#r1">[1]</a><a href="#r8">[8]</a></sup></span></li>
+      </ul>
+    </div>
+
+    <div class="band red">
+      <div class="bh"><div class="tag">● Open — Control Activities · Monitoring</div>
+        <div class="ttl">Objectives not yet met — disclosed, not resolved</div>
+        <div class="gloss">Named honestly; each requires a compensating control before reliance.</div></div>
+      <ul>
+        <li><b>Segregation of duties</b> — a single key-holder can originate, approve and settle. Compensating control: multi-party / quorum signing on high-value op-classes (designed, not yet enforced by default). <span class="ref">SOX §404 · COSO Control Activities <sup><a href="#r1">[1]</a><a href="#r4">[4]</a></sup></span></li>
+        <li><b>Completeness across the estate</b> — assurance that every device&rsquo;s shard is present requires quorum attestation; a withheld shard is a completeness risk. <span class="ref">Assertion: completeness</span></li>
+        <li><b>Cross-device action attribution</b> — per-step, per-person attribution of workflow actions across devices is not yet cryptographically preserved on merge (see §4). <span class="ref">Non-repudiation of approvals</span></li>
+      </ul>
+    </div>
+
+    <div class="band blue">
+      <div class="bh"><div class="tag">■ Invariant — the profession&rsquo;s own boundary</div>
+        <div class="ttl">What no ledger design removes</div>
+        <div class="gloss">These are limits of internal control itself, not gaps to engineer away.</div></div>
+      <ul>
+        <li><b>Validity / occurrence (&ldquo;garbage-in&rdquo;)</b> — a chain proves a record was <i>not altered</i>, never that it was <i>true when made</i>. On-chain proof is &ldquo;not sufficient appropriate audit evidence.&rdquo; <span class="ref">PCAOB Crypto Spotlight · COSO <sup><a href="#r7">[7]</a><a href="#r5">[5]</a></sup></span></li>
+        <li><b>Management override &amp; collusion</b> — a named inherent limitation of internal control under COSO. <span class="ref">COSO 2013 <sup><a href="#r4">[4]</a></sup></span></li>
+        <li><b>Professional judgment &amp; materiality</b> — the auditor&rsquo;s judgment does not move onto the chain. <span class="ref">AICPA/CPA Canada <sup><a href="#r6">[6]</a></sup></span></li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>4 &nbsp;Empirical grounding — the &ldquo;Open&rdquo; column is evidenced, not asserted</h2>
+  <p>The credibility of a control map rests on disclosing its failures. Two are material and are stated with their test evidence:</p>
+  <div class="evidence">
+    <b>Completeness — a silent-loss defect, found and closed.</b> Concurrent edits on the same record could be lost at the storage layer while the interface reported success — a completeness failure. It was reproduced (two writers → 50% loss; ten writers → 90% loss), root-caused, and closed by an append-only op-store with a cross-writer commit lock. Re-tested: <code>10 of 10 concurrent edits survive, hash-chain intact</code> (witness&nbsp;W-OPLOG-APPEND). This is offered as evidence that the architecture&rsquo;s completeness assertion is <i>tested</i>, and that failures are disclosed and remediated rather than assumed away.
+  </div>
+  <div class="evidence" style="border-left-color:var(--amber);background:rgba(255,160,0,.05)">
+    <b style="color:var(--amber)">Cross-device attribution — open, and stated as open.</b> When two devices&rsquo; logs merge, field edits converge to one identical signed history (witness&nbsp;W-N-CONVERGE: <code>10 devices → one signed tip, 0 lost</code>), but multi-step <i>document actions</i> (Complete / Void / Close) are re-signed under the merging device&rsquo;s key — per-person attribution of those approval steps across devices is <b>not yet preserved</b>. The compensating direction is opt-in per-step signing. Until wired, cross-device approval trails are a disclosed control gap.
+  </div>
+
+  <h2>5 &nbsp;What changes for the auditor</h2>
+  <p>The engagement re-weights rather than disappears. <b>ITGC testing shifts</b> from privileged-access / change-management / backup over a central database to three concerns: (i) <b>verification of the chain and the deterministic fold</b> — cheaper and now total rather than sampled (AS&nbsp;2201 evidence<sup><a href="#r3">[3]</a></sup>); (ii) <b>key-management controls</b> — custody, rotation, revocation, and quorum policy become the crown-jewel ITGC (NIST SP&nbsp;800-57<sup><a href="#r10">[10]</a></sup>; ISACA key-management control area<sup><a href="#r9">[9]</a></sup>); and (iii) <b>completeness-of-estate</b> — attestation that all shards reported. Substantive procedures over <b>validity/occurrence</b> are unchanged: the chain notarises, it does not adjudicate. This is consistent with the PCAOB&rsquo;s stance that DLT can raise evidence <i>reliability</i> for what it records while leaving <i>sufficiency</i> for the entry&rsquo;s validity to substantive work<sup><a href="#r7">[7]</a></sup>, and with COSO&rsquo;s treatment of blockchain risk within the unchanged 2013 framework<sup><a href="#r5">[5]</a></sup>.</p>
+
+  <div class="disclaimer">
+    <b>Scope &amp; disclaimer.</b> This is a <b>control-mapping position paper</b> for a professional assurance audience. It is <b>not</b> legal, audit, or compliance advice, <b>not</b> an assertion that the described system is SOX-, SOC-, or ISO-certified, and <b>not</b> a substitute for an independent examination (e.g. SSAE&nbsp;18 / SOC&nbsp;2<sup><a href="#r2">[2]</a></sup>). Control objectives are cited from the frameworks named; their application here is the authors&rsquo; analysis. Open items in §3–§4 are <b>disclosed limitations</b>, not resolved claims.
+  </div>
+
+  <h2>References</h2>
+  <ol class="refs">
+    <li id="r1"><b>Sarbanes–Oxley Act of 2002</b>, Pub. L. 107-204 — §302 (corporate responsibility for financial reports), §404 (management assessment of internal control over financial reporting), §802 (retention of records; criminal penalties for altering documents), §906.</li>
+    <li id="r2"><b>AICPA</b>, Statement on Standards for Attestation Engagements (SSAE) No. 18; SOC&nbsp;2® Trust Services Criteria (security, availability, processing integrity, confidentiality, privacy).</li>
+    <li id="r3"><b>PCAOB Auditing Standard AS&nbsp;2201</b>, <i>An Audit of Internal Control Over Financial Reporting That Is Integrated with an Audit of Financial Statements</i> (formerly Auditing Standard No.&nbsp;5).</li>
+    <li id="r4"><b>COSO</b>, <i>Internal Control — Integrated Framework</i> (2013) — five components (Control Environment, Risk Assessment, Control Activities, Information &amp; Communication, Monitoring Activities) and 17 principles; management override cited as an inherent limitation of internal control.</li>
+    <li id="r5"><b>COSO</b>, <i>Blockchain and Internal Control: The COSO Perspective</i> (2020), sponsored by Deloitte &amp; Touche LLP (Burns, Steele, Cohen, Ramamoorti) — applying the 2013 framework to blockchain-related financial-reporting risk.</li>
+    <li id="r6"><b>CPA Canada &amp; AICPA</b>, <i>Blockchain Technology and Its Potential Impact on the Audit and Assurance Profession</i> (2017).</li>
+    <li id="r7"><b>PCAOB</b>, <i>Audit Considerations Related to Crypto Assets</i> — Staff Spotlight (June 2023); and PCAOB staff guidance, <i>Insights for Auditors Evaluating the Relevance and Reliability of Audit Evidence Obtained from External Sources</i>.</li>
+    <li id="r8"><b>ISO/IEC 27001:2022</b>, <i>Information security, cybersecurity and privacy protection — Information security management systems — Requirements</i>; Annex A controls, incl. A.8.15 (logging), A.8.13 (information backup), A.5/A.8 families. See also <b>ISO/IEC 27002:2022</b> for control guidance.</li>
+    <li id="r9"><b>ISACA</b>, <i>Blockchain Framework and Guidance</i> and the <i>Blockchain Framework Audit Program</i> — control areas: governance, infrastructure, data management, key management, and smart contracts.</li>
+    <li id="r10"><b>NIST</b>, Special Publication 800-57, <i>Recommendation for Key Management</i>.</li>
+    <li id="r11"><b>IETF RFC&nbsp;6962</b>, <i>Certificate Transparency</i> — Merkle-tree, append-only tamper-evident log (prior art for verifiable-log assurance).</li>
+    <li id="r12"><b>IETF RFC&nbsp;3161</b>, <i>Internet X.509 PKI Time-Stamp Protocol (TSP)</i> — trusted timestamping.</li>
+    <li id="r13"><b>ISO/TC&nbsp;307</b>, Blockchain and distributed ledger technologies — <b>ISO 22739</b> (vocabulary) and <b>ISO 23257:2022</b> (reference architecture).</li>
+    <li id="r14"><b>M. Kleppmann, A. Wiggins, P. van Hardenberg, M. McGranaghan</b>, <i>Local-First Software: You Own Your Data, in Spite of the Cloud</i>, Ink &amp; Switch (2019).</li>
+    <li id="r15"><b>M. Shapiro, N. Preguiça, C. Baquero, M. Zawirski</b>, <i>Conflict-Free Replicated Data Types</i>, INRIA / SSS 2011 — convergent multi-replica state without a central coordinator.</li>
+    <li id="r16"><b>Regulation (EU) 2016/679 (GDPR)</b> and comparable data-sovereignty / data-residency regimes — pressure toward edge-resident authoritative records.</li>
+  </ol>
+
+  <footer>
+    Position paper — control-objective mapping. Companion to the <a href="MigrateComparisonPaper/">Migrate Comparison Paper</a> and the <a href="migrate_status_panel.html">Done &amp; Pending map</a>. Non-invent: every reference is a real, published standard or profession paper; the application is the authors&rsquo; analysis, not a certification.
+  </footer>
+
+</body>
+</html>

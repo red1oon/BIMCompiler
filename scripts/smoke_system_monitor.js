@@ -28,13 +28,13 @@ var server = http.createServer(function (req, res) {
   await page.goto('http://localhost:' + port + '/system_monitor.html', { waitUntil: 'networkidle' });
   await page.waitForTimeout(600);
 
-  var sysmonLoaded = logs.some(function (l) { return /§SYSMON_LOADED/.test(l); });
+  var sysmonLoaded = logs.some(function (l) { return /§FIELDHEALTH_LOADED/.test(l); });
   var beaconLoaded = logs.some(function (l) { return /§SPIKE-BEACON installed=Y/.test(l); });
   var foldLines = logs.filter(function (l) { return /§MON-(FIELD_ERRORS|DURABILITY_LADDER|DB_SIZE_GAUGE|ENVIRONMENT)/.test(l); });
   var widgetCount = await page.evaluate(function () { return document.querySelectorAll('#panel > div > div').length; });
   var panelText = await page.evaluate(function () { return document.getElementById('panel').textContent; });
 
-  check('host loaded system_monitor.js (§SYSMON_LOADED)', sysmonLoaded);
+  check('host loaded field_health.js (§FIELDHEALTH_LOADED)', sysmonLoaded);
   check('beacon installed in the host (§SPIKE-BEACON)', beaconLoaded);
   check('all 4 widgets folded (§MON-* lines)', new Set(foldLines.map(function (l) { return l.split(' ')[0]; })).size === 4, 'distinct=' + new Set(foldLines.map(function (l) { return l.split(' ')[0]; })).size);
   check('panel painted widget rows', widgetCount >= 4, 'rows=' + widgetCount);

@@ -120,7 +120,16 @@ All panels collapse with **−/+**.
 
 - 3D orbit, pan, zoom (mouse or touch)
 - Click any element → IFC class, GUID, storey, discipline, material
-- Fly-tour — auto-orbits rendered buildings, click to stop
+- Fly-tour — plays a routed flight through the building (entrance → highlight room → storey-by-storey);
+  drag the scrub bar to seek anywhere in the tour, `◀◀`/`▶▶` to step beat-by-beat, `0.5x`/`1x`/`2x` speed,
+  pause/resume and loop — every position is deterministic (same timestamp always gives the same camera
+  pose), so scrubbing back and forth never drifts
+
+  ![Fly Tour's scrub bar — beat counter ("Entrance 2/43"), elapsed/total time, tick marks per beat,
+  play/pause/step controls, and speed toggles](img/viewer/fly-tour-scrub-bar.png)
+- Film-Maker (**Alt+C**) — derives a complete cinematic film of the building from its own room graph,
+  then lets you edit the flight by dragging the flight itself, and records it to an mp4 in the browser.
+  See [Cinema Film-Maker](#cinema-film-maker-altc-the-bim-ootb-film-maker) below
 - Indoor walk-through — follows IfcSpace/door graph through the building
 - X-Ray mode (Alt+Z) — a 3-state cycle: **Off → X-Ray → Bounding Boxes → Off**. X-Ray is the transparent
   see-through-walls view; Bounding Boxes swaps that for each element's envelope box instead — press again to cycle
@@ -134,6 +143,9 @@ All panels collapse with **−/+**.
 - City mode — 786 building bboxes, click to download + stream on demand
 
 ### Find panel — search, voice query, and axis lenses
+
+> **New: Ask.** Pick a question, get a computed answer, save the answers as one Excel file for your own AI —
+> **[Viewer Ask — First Steps](AskFirstSteps.md)** (5 minutes).
 
 The **Find** panel is the Viewer's search/navigate surface: a text or voice query box up top, and a
 single axis toggle underneath that re-groups the whole element tree (by storey, discipline, room,
@@ -274,6 +286,36 @@ stair flights it uses, and the rooms along the way stay highlighted.
 legs in sequence, not a single best-guess hop — each leg names the room and the door or stair flight
 it passes through.
 
+![Aerial X-ray view of Hospital with the Find panel open on the same ≈ Level 1 R35 to ≈ Level 4 R8 route, the yellow line now hugging the real corridors and stair flights on both levels instead of cutting across the open roof between wings, the panel listing three numbered room stops with each hop labelled through door: / via stair: / along Corridor — 3 doors · 1 stair · 124.7m](img/viewer/find-room-path-hospital-topview.png)
+
+![Straight-on facade view of the same Hospital route with the Find panel still open, the yellow line now tracking the real ground-floor corridor and climbing through the stair flight against the building mass instead of floating in front of it, the same three numbered stops and through door: / via stair: / along Corridor hop labels visible in the list — 3 doors · 1 stair · 124.7m](img/viewer/find-room-path-hospital-frontview.png)
+
+![Angled view along the Hospital building's length, same route — the yellow line now runs along the real corridor windows and through the doorways it uses on its way up the stair instead of floating outside the floor plates — 3 doors · 1 stair · 124.7m](img/viewer/find-room-path-hospital-sideview.png)
+
+*Fixed and verified live (2026-07-26):* the drawn-line defect shown in earlier versions of the
+screenshots above — a room-to-room path cutting straight through open air or atrium space instead of
+hugging the real walkable floor — is fixed. The same Hospital route (`≈ Level 1 R35 → ≈ Level 4 R8`,
+124.69m, same 3 doors and 1 stair as before) was re-run live after the fix: the 5 legality checks that
+used to fail no longer need rescuing at all — most of those stretches are simply on real floor now, and
+where a detour is still required (3 of 9 same-storey chords) one is found. **Zero**
+`§PATH_LEGAL_DETOUR_FAIL` remain, and all 15 same-storey legs measure **0 illegal sample points** (was
+265 across 3 unroutable legs). The extra waypoints in the drawn line (`polyPts` 15 → 19) are the fix's
+fingerprint, not a longer route — the 124.69m distance and the doors used did not change, deliberately,
+because the fix only changes the drawn line, never which rooms or doors a route uses. Fleet-wide on
+Hospital, a detour-failure sweep over 3023 real room pairs went **63.3% → 0.0%** with zero newly-broken
+pairs, room-pair pathability rose **69.4% → 91.2%**, and unreachable (deg-0) rooms fell **26 → 7**;
+Terminal's off-floor sampling went 352 → 0, Clinic's 49 → 0. Root cause, plainly: (a) the walkable-floor
+raster was consulted *instead of* the room data rather than *together with* it, so rooms compiled in the
+browser after the raster was built had no floor under them; (b) doorways and stairs — the only ways
+through a wall or between floors — weren't counted as walkable at all; (c) the raster builder picked
+floor slabs in a fixed height window that missed Hospital's real floor plates by 5cm, dropping an
+8270m² Level 4 plate entirely. Still imperfect, worth saying plainly: on Level 4 two chords needed a
+wider-than-local detour search (`§PATH_LEGAL_DETOUR_NONLOCAL`), and the line passes one door twice — a
+real ~3m back-step out of room R9 — so the drawn route is on real floor but not always the tidiest
+line. Full technical trail, for anyone who wants it:
+`prompts/Viewer/FindRooms/VIEWER_FIND_PANEL_ROOM_ACCURACY.md` §17 (supersedes §9–§16), shipped in
+bim-ootb PRs #1006–#1009.
+
 *Future feature — fire escape:* the same routing will pin a **Fire Escape** entry at the top of the
 path list — one tap from any room to the nearest building exit.
 
@@ -299,6 +341,8 @@ above for how to open it) has three more rows besides Find / Navigate:
 
 ### Inspect drawer — Measure, Clash, X-Ray, Section, Time Machine, 4D/5D, Fly Tour
 
+> **Road (civil works) model?** The same drawer gives extra road reports — clash between trades, earthworks volume, long / cross sections and a road Model Check. Walkthrough: **[Civil Works — Step by Step](CivilWorksGuide.md)**.
+
 The **Inspect** drawer (compass icon, next to Navigate on the toolbar rail) bundles seven tools behind
 one icon:
 
@@ -312,18 +356,24 @@ one icon:
   try a What-if slip, share a `?tm=play` link. On a large building (100K+ elements), a box-cube pill
   in the panel header trims GPU cost by rendering already-built-but-out-of-view elements as lightweight
   wireframe boxes, keeping whatever you're actually looking at full LOD400.
+  The schedule it plays is generated element-by-element from the model's own geometry, and it holds a
+  measured invariant — **no element appears before the first element it physically touches appears**
+  (0 violations across 266,954 elements on seven buildings; see
+  **[the generated 4D movie](4D5DAnalysis.md#the-generated-4d-movie-support-order-is-a-measured-invariant)**
+  for the numbers and the stated limits).
 
   <figure style="margin: 12px 0;">
   <a href="https://youtu.be/juwOrpqKhFE" target="_blank"><img src="https://img.youtube.com/vi/juwOrpqKhFE/hqdefault.jpg" alt="Time Machine box-proxy demo" style="width:100%; max-width:480px; border:1px solid #333; border-radius:8px;"/></a>
   <figcaption style="text-align:center; font-style:italic; color:#666; margin-top:6px;"><a href="https://youtu.be/juwOrpqKhFE">Watch on YouTube</a> — Time Machine playback on a large building with the box-cube proxy toggle.</figcaption>
   </figure>
 
-  Full authoring/playback walkthrough already lives in
-  **[Kernel-ERP User Guide → Time Machine](ERPUserGuide.md)** (not re-documented here — same building,
-  same feature, reached from either app), including the
-  **[ERP-side entry point](ERPUserGuide.md#author-the-4d5d-schedule--build-it-up-from-the-model-live)** —
-  picking an element in 3D (or a red **Zoom Across** pill on an ERP record) jumps the Time Machine
-  straight to that element's construction moment.
+  Full authoring/editing/import walkthrough — including direct Gantt drag/resize/link and the
+  **⏪ Pull Back** (reschedule-as-early-as-possible) action — lives on its own page:
+  **[Time Machine — the 4D construction timeline](TimeMachine.md)** (not re-documented here — same
+  building, same feature, reached from either app), including the
+  **[ERP-side entry point](TimeMachine.md)** — picking an
+  element in 3D (or a red **Zoom Across** pill on an ERP record) jumps the Time Machine straight to
+  that element's construction moment.
 - **4D / 5D** (key **4**) opens the analytics dashboard (`boq_charts.html`) for the loaded building in a
   new tab — full coverage: **[4D/5D Analysis guide](4D5DAnalysis.md)**.
 
@@ -338,6 +388,310 @@ The **Camera / View** drawer (camera icon) bundles three camera-control toggles:
 - **Reset Camera** (key **A**) — snaps the camera back to its default orbit position.
 - **Auto-Pivot** (key **Q**) — toggles automatic pivot-point recentring as you orbit, so the camera keeps
   turning around whatever's in view instead of a fixed point.
+
+### Cinema Film-Maker (Alt+C) — the BIM OOTB Film-Maker
+
+**Alt+C** computes a complete cinematic film of the building — dive in, settle on the largest occupiable
+space, walk out through a real door, orbit the exterior — in well under a second, from the model's own
+room graph. No camera path is authored by hand; the defaults come from measured geometry (room area,
+reachability, door position, clearance), not a guess.
+
+Before recording starts, a **Cinema path** panel opens with the whole film drawn as a yellow tube
+through the building. You edit the flight by dragging the flight itself — there is no separate
+storyboard or keyframe list:
+
+![The Cinema path panel the moment Alt+C is pressed, before any editing — the derived flight drawn as a yellow tube diving into the building and running out along the roof, and the panel listing just three bands (settle, one stick, stop) each with its x / z / height / length fields and aim angles, then the Whole path block: reach 15%, clip "whole film", the buildup checkbox, "saved — none yet —", total 53.9 s / 808 frames, and the derived line "walk 36.9m · 1.69 m/s · natural 53.9s · replan 91ms"](img/viewer/filmmaker-path-editor-initial.png)
+
+That is the whole film, derived, before you touch anything — and the footer says so: *"Unedited · OK
+records exactly the film the preview just showed."* Pressing **OK** here is already a complete take.
+
+#### The bands — the rows in the panel
+
+Every row is one straight **band** of the flight, listed in flight order with its own x, z, **height**
+(green) and **length** (orange) fields, plus its aim angles:
+
+- **settle** — where the dive lands and the camera looks around. Always the first row.
+- **stop** — end of the *walk*, not the film; its far end stretches the exterior orbit that follows.
+  Always the last row.
+- **stick** — any band you added yourself, labelled with how far along the walk it sits. A derived path
+  opens with one; the screenshot below has four.
+
+To work with them:
+
+1. **Click the tube** anywhere along the walk to drop a new **stick** there. A fresh stick lies exactly
+   along the curve, so the film does not move until you move it — dropping one costs nothing.
+2. **Drag a band's end** to pivot it about its far end (length is fixed, so this aims a leg — use it to
+   turn through a different doorway).
+3. **Drag a band's middle** to move the whole band without pivoting.
+4. **Press `×` on a stick's row** to remove it. *settle* and *stop* have no `×` — the dive lands on one
+   and the orbit stretches off the other, so removing either would change what the beats mean.
+5. **Anywhere else orbits the scene as normal** — no freeze, no modifier key. A drag moves in the plane
+   you are currently facing, so orbit to a side view when you need to change height.
+
+![The same panel after authoring — the yellow flight tube now bent through the model with draggable band handles along it, and the list grown to settle, four added sticks (each labelled with how far along the walk it sits and carrying a × to remove it) and stop, above the same Whole path block and the Preview / Cancel / Save this path / OK row](img/viewer/filmmaker-path-editor.png)
+
+#### Walk finger mode — walk into the shot, plant the stick where you stand
+
+Dropping sticks by clicking the tube works from the outside looking in. **Walk finger mode** does the
+same edit from the inside: you walk through the building in first person and plant the stick exactly
+where you are standing, aimed exactly where you are looking.
+
+1. Press the **eye** on the Cinema path panel's title row — the **POV frame** opens bottom-left,
+   showing the film's own camera view.
+2. Press the **shoes** (footprints) icon on the POV frame's header. You are now standing inside the
+   film, at the start of its walkable stretch, at walking height. (Optional shortcut: drag the
+   timeline bar to a point along the walk first, and the shoes start you there instead.)
+3. **Walk with the usual trackpad moves, all shown in the POV frame:** move your finger to look
+   around; pinch out or scroll to glide toward what you are facing (hold **Shift** to glide faster);
+   the **W A S D** keys do the same moving from the keyboard. The rest of the screen freezes while
+   you walk — that is deliberate, it keeps the walk smooth on large buildings.
+4. **Enter or Spacebar plants the stick** — where you stand becomes its position, where you look
+   becomes its aim — and drops you straight back into the editor to review it. A **click** plants
+   the stick and keeps you walking, for laying several in one pass. **Esc** leaves without planting.
+   Pressing the shoes again continues from the exact spot you left.
+
+Proof from a real session on the Terminal building: the user walked into the POV, hit Spacebar, and
+**stick @ 13%** appeared — the new row highlighted in the panel and its blue middle dot on the path
+in canvas right beside it. One keypress, one stick, position and aim both set:
+
+![Walk finger mode's result the moment Spacebar was hit — the Cinema path panel now lists a highlighted "stick @ 13%" row with its pinned aim coordinates, the same stick's blue middle dot visible on the yellow flight tube in canvas just left of the panel, the POV frame bottom-left still showing the walker's own view, and the Time Machine's construction timeline still running top-left](img/viewer/filmmaker-walk-stick13.png)
+
+Two small behaviours keep this honest: planting re-shapes the flight around the new stick immediately
+(the brief pause is the film re-deriving), and clicking again at the stick you just planted does
+**not** stack a duplicate — the editor reads it as "I'm done here" and returns you to review.
+
+#### Whole path — the controls that act on the entire film
+
+- **reach %** — how far a drag on the tube carries along the walk. Drag the tube *between* the bands and
+  it bends like a hose, falling off over that reach; a small reach edits locally, a large one sweeps the
+  whole flight.
+- **clip · mark in / mark out / whole film** — trims the film to a window without changing the path.
+  ⚠ **Marking uses the point of the film nearest your camera**, so put the camera close to the spot *on
+  the yellow tube* where the cut belongs before pressing — marking from a wide exterior view lands on
+  whichever part of the flight happens to pass closest to your eye. **whole film** clears the window.
+- **build the model as the camera flies** — the construction reveal. See the 4D note below.
+- **room titles** — a name card appears as the camera enters each room, sourced from the room's own
+  friendly name, never invented.
+- **Reveal** — cycles every discipline in the model past the camera in turn. See below.
+- **Clash pairs** — the model's mesh-true clash pairs (not the bounding-box list, part of which is false)
+  appear as red/blue pulsing markers from frame 0, so you see where the trouble is before it's built. A
+  pair that comes near the camera gets an on-screen label naming both sides, plus a `[tolerance mm /
+  clash mm]` line beneath them — the tolerance from that discipline pair's own rule, the clash figure
+  from the real mesh overlap depth, not a bounding-box estimate. The Reveal round's rotating stat
+  cards also gain a "N mesh-true clashes flagged" card while this is on.
+- **Measure** — the setting-out drawing, from the real column grid: numbered and lettered bubbles, bay
+  chains that sum to the overall, and storey rules. It is **up at frame 0** — built from the database, so
+  it does not wait for the model to load — and it is drawn **in the model's own planes**. The upright
+  storey rules occlude normally as the buildup rises — that occlusion is how you see them sitting
+  behind the building rather than painted on the lens. The ground plan lines shine through the
+  building instead: a live check found them fully hidden behind the building's own walls from every
+  camera angle otherwise, including the opening shot, so occluding them would mean they were never
+  actually seen. The chains are checked rather than
+  claimed — on Hospital, HHS and Terminal the bay chain sums to the overall exactly on all three axes
+  (`X 95.915 = 95.915`, and so on), with no per-building tuning.
+  ⚠ Where a federated model records the same storey at two elevations, the drawing **states the fault
+  and draws the levels as recorded** rather than choosing between them — resolving it would be inventing
+  a datum the file does not contain.
+- **Storey highlight** — each storey's facade (its exterior walls only, not the whole floor) glows
+  blue / green / yellow / orange in turn over the last 10 s before the closing orbit, with a
+  door-count and footprint HUD card for each shown in the same corner panel every other measure
+  uses. An exterior wall is already visible from the closing orbit shot on its own, so nothing else
+  in the building is touched, dimmed, or made transparent for this.
+  ⚠ The card's counts are read per storey **name**. On a federated model whose storey table carries alias
+  or duplicate names (one Terminal file lists 22 names for six real floors), the highlight can land on
+  alias rows and the card then reads `doors 0` — the doors are real, they are attributed to the storey
+  names the highlight did not pick.
+- **Silent-bake size** — a resolution/fps preset (720p, 1080p, or 1440p) for a *silent* bake only (see
+  below); an interactive Alt+C recording always uses the size of the window it's pressed in, so this
+  select doesn't resize anything here — it's just remembered on the saved path. There is currently no
+  time estimate shown next to it; picking 1440p over 720p costs real extra bake minutes with no on-screen
+  warning yet.
+
+![The Cinema path panel with Clash pairs ticked and Silent-bake size set to "this window (interactive)" — the Whole path block showing reach 15%, clip "whole film", build-the-model and room titles and Reveal and Clash pairs all checked, the Silent-bake size dropdown, the Day # counter set to top left, a saved plan selected, and the derived total 281.6s / 4225 frames line below](img/viewer/filmmaker-clash-and-bake-size.png)
+
+![The Cinema path panel with the full option set — seven bands (settle, five exit doors, stop) each with x / z / height / length and aim angles, then Whole path: reach 15%, clip "whole film" with mark in / mark out, and one button per film feature — Buildup (on), 4D/5D, Reveal, Clash pairs, Measure, Sun compass, Storey highlight, Load path freeze and Escape route — above Silent-bake size "this window (interactive)" with its copy-bake-command link, Day # counter "top right", the saved-plan list, and the derived total 97.9 s · 1468 frames to bake](img/viewer/filmmaker-measure-storey-panel.png)
+
+- **saved** — plans you stored for this building, with **open** and **delete**. Choosing one and pressing
+  **open** replaces the path you are editing; the line under it says how many bands, how many hose pulls,
+  the clip window and when it was saved.
+
+#### Timing, preview and recording
+
+The **total** field is seconds, and the line beneath it reports the derived reality: walk length, walking
+speed in m/s, the natural duration, and how far your edit has moved it. Total duration is derived per
+building from real walk distance and pull-back distance, never a fixed number — a small building's film
+is shorter than a large one's by construction, not by a setting.
+
+- **Preview** flies the current edit so you can watch it before committing to a bake. The panel tells you
+  when what you are looking at is older than your last edit.
+- **Save this path** stores the plan — both into the building (so it travels with the file when you save
+  it) and as a named entry in the **saved** list above.
+- **Cancel** discards; **OK** records the film exactly as previewed. If you touched nothing, that is
+  byte-identical to the un-edited default — opening the panel to look costs you nothing.
+
+#### The 4D reveal — and what it may honestly be called
+
+With **build the model as the camera flies** ticked, the model assembles as the film runs. What drives
+that order depends on the data in *your* building, and the viewer picks automatically:
+
+| your data | what drives the reveal | what to call it |
+|---|---|---|
+| no dated tasks | the derived build order, re-keyed to the flight | **"derived build order"** — never "the schedule" |
+| real dated tasks (a 4D schedule authored or imported into the building) | each element's own `schedule_start` | **"a linked 4D schedule"** |
+
+A building with a real schedule reveals by that schedule and nothing is re-ordered. The practical
+workflow is to **preview the Time Machine first** — its Gantt is in the Inspect drawer — and then place
+your **mark in / mark out** against what the programme actually shows.
+
+[Watch the film](https://youtu.be/sUTscAgnQMc) this feature produced on a real building.
+
+#### Discipline Reveal — walk it twice, once dressed, once bare
+
+Tick **Reveal** (beside **room titles**) and the film grows a second act after the normal walk-out
+ends, before the closing orbit:
+
+1. **A brief pull-out** from the spot the walk just ended on — the camera eases back a short distance,
+   still looking the way it was looking, a beat to mark that the walk itself is done.
+2. **A fast retrace back to where the walk began** — the camera flies back along the exact same route
+   it just walked, at a quicker pace than the walk itself, easing in and out so the motion reads as
+   one continuous flight, never a jump cut.
+3. **The same walk, a second time, with the architecture hidden.** Walls, slabs and structure fade out
+   of the shot for this lap only, so every other discipline present in the model — mechanical,
+   electrical, fire protection, plumbing, whatever the building actually has — shows through at once,
+   exactly where it really sits.
+4. **A parade, one discipline at a time.** Each discipline present takes its own short turn alone on
+   screen, named on the title card in place of the room name, smallest-average-element disciplines
+   first and MEP last — MEP's own ducts and pipework tend to be large and easy to spot even briefly, so
+   it doesn't need the early slot the finer trades do. Each hand-off holds both the outgoing and
+   incoming discipline on screen together for a moment rather than swapping instantly, before **All
+   Disciplines** together closes the parade.
+
+Every distance and duration in this second act is derived from the same real geometry the rest of the
+film uses — the pull-out, the retrace and the walk are each priced by a real speed times a real
+measured length, never a fixed number tuned to look right on one building.
+
+#### Sun, sky and shadow while the film records
+
+A recorded film is not lit the way the live viewport is. The moment recording starts, the viewer stages a
+photographic pass — and it keeps running *while the 4D reveal assembles the building*, so the light and the
+construction sequence advance together in the same take:
+
+| what happens | detail |
+|---|---|
+| **The sun travels** | It starts at a high 55° "late morning" angle and sinks to a 6° dusk by the last frame. Shadows lengthen and swing across the film — the sun is not parked. |
+| **Real cast shadows** | The building, its rooftop plant, and the distant skyline all cast real shadows onto the ground, at a 4096² shadow map for the recording only (the live viewport uses a cheaper one). The shadow frustum widens as the sun drops so a long dusk shadow isn't clipped at its tip. |
+| **Atmospheric sky** | A physically-based clear-sky scattering model (Preetham), pushed warmer and hazier for the shoot — deeper reds and a tighter sun glow near the horizon than normal navigation shows. |
+| **Photographic reflections** | Glass and metal reflect a real photographed sky (HDRI), refreshed as the sun moves, so the glint tracks where the sun actually is at that moment of the film. |
+| **Warm evening key light** | The sun tints warm and window/fixture glow comes up as the light falls. |
+
+You can also stage a **single still** rather than a whole film: **Alt+S** applies the same photographic pass
+and then refines the frozen frame over 16 jittered sub-pixel samples for clean edges. **Alt+J** adds an
+optional bounce-light (GI) pass — off by default, and deliberately excluded from film recording because it
+costs far more per frame than a film's frame budget allows.
+
+**What this is honestly not.** There is no weather: no rain, no snow, no cloud shapes — the sky model is a
+clear-sky one and has no cloud geometry at all. And it does not claim to be indistinguishable from a
+photograph: the geometry is idealised IFC with no real-world wear, materials are assigned by class rather
+than hand-tuned per surface, and nothing is colour-graded per shot. What it does target is the good-archviz
+tier — and, unlike a still-render tool, it does it *while the building assembles itself to the programme*.
+
+#### Baking without the browser — the silent bake (developers)
+
+Everything above records the film from the viewer window: press **Alt+C**, edit, press **OK**, and watch
+it bake. There is also a **command-line path that bakes the same film with no window and nobody
+watching**, added 2026-09-01. It is a development tool — it is gated behind an internal flag that a
+normal viewer session never sets, and there is no button for it.
+
+It exists because a film is expensive to check. A bake takes tens of minutes, so a defect in the HUD or
+the pacing used to be found only after sitting through the result. The silent bake lets the same film be
+produced, measured and re-run from a terminal, so what used to be a wait becomes a test.
+
+```
+node cli_silent_bake.js --db HospitalAjaibPath --out /tmp/hospital.mp4 \
+  [--plan NAME | --override file.json]          path source (default: the DB's cinema_path table)
+  [--buildup] [--label] [--reveal] [--clash] [--day tr|tl|br|bl|off]     turn a setting ON for this run
+  [--no-buildup] [--no-label] [--no-reveal] [--no-clash]                 turn a SAVED setting off for this run
+  [--frames N | --seconds S] [--fps N]          length (default: the plan's own pacing)
+  [--gpu sw|real|headful]
+  [--width W --height H] [--port P] [--log FILE] [--profile DIR]
+  [--stall-min N] [--max-frame-ms N]            health watchdog — aborts early, not at the end
+  [--timeout-min N]                             hard wall-clock cap
+```
+
+**With no flags at all, the saved path decides.** That is the normal way to use this — save the film
+you want in the viewer, then bake it from the terminal with nothing but `--db` and `--out`.
+
+**It bakes your saved path, not a fresh derived one.** When you press **Save this path**, the plan is
+written to two places: a browsable copy in the browser's own storage, and a portable copy in the
+building DB's `cinema_path` table that travels with the file. The command line reads the second one by
+default, so a path saved in the viewer bakes from the terminal with no export step. `--plan NAME` picks
+a named plan instead; `--override file.json` takes one directly.
+
+**The saved path carries its settings with it**, not just its shape — the buildup, the room titles, the
+Reveal round and the day-counter corner you had ticked are all restored. The run announces what it
+resolved, so there is no guessing whether a setting survived:
+
+```
+§CINEMA_PATH_RESTORE bands=4 total=278.8s holdCol=true flagCol=true buildup=1 roomTitle=1 reveal=1 dayCounter=tl
+§CLI_BAKE_RESOLVED source=db:cinema_path bands=4 total=278.8s buildup=1 roomTitle=1 reveal=1 dayCounter=tl
+```
+
+The corner is worth calling out on its own, because it moves more than the day counter: the HUD is one
+stacked column, so `dayCounter=tl` puts the day counter, the path-overview box and the panel beneath
+them all on the left. One preference, one column.
+
+**⚠ A file saved before 2026-09-04 carries no settings.** Until that date the portable table stored the
+path's shape and its beat seconds and nothing else, so a bake of an older `.db` resolves every setting
+OFF no matter what you had ticked when you saved it — the file was not wrong about the path, it simply
+never carried the answer. `§CINEMA_PATH_RESTORE` says which kind of file you have: `flagCol=false` is the
+old shape. **Re-save the path once from a current build and it travels properly from then on.** In the
+meantime the flags above still work, which is what they are for.
+
+**Arguments override the saved settings, in both directions.** A flag you do not pass leaves the saved
+value alone — that is why a bare `--db`/`--out` run reproduces exactly what you authored. Passing
+`--buildup` turns it on over a saved off; passing `--no-buildup` turns it off over a saved on. So one
+saved path can be baked several ways without re-saving it, which is how you compare two cuts of the same
+film:
+
+```
+node cli_silent_bake.js --db Hospital_silent --out /tmp/full.mp4      # exactly as authored
+node cli_silent_bake.js --db Hospital_silent --out /tmp/nobuild.mp4 --no-buildup   # same path, no 4D build-up
+```
+
+**Use `--gpu real`.** Headless Chrome defaults to software rendering, which is far too slow to finish a
+film. `--gpu real` reaches the machine's actual GPU with no display attached, and the run prints which
+renderer it got so the choice is never assumed. `--gpu sw` is kept only for comparison.
+
+**Measured on this machine (RTX 4060 laptop, headless).** A saved path is always shorter than the film
+it produces, because the Reveal round's second act is derived rather than authored:
+
+| building | elements | frames | film | wall clock | per frame |
+|---|---|---|---|---|---|
+| HHS Office (federated) | 6,880 | 1,901 | 126.7 s | **15 min 21 s** | 0.485 s |
+| Hospital | 63,415 | 2,937 | 195.8 s | **~30–45 min** | 0.6–0.9 s |
+
+**A later, separately-measured Hospital run** (2026-09-05/06, same building, `--clash` on, 1920×1080@24,
+same RTX 4060) came back **4,699 frames** for the same 195.8 s film — a different frame count for the same
+duration than the row above, most likely a later change to the film's own fps/pacing rather than this
+guide's row being wrong; not reconciled here. At that frame count: **5,476 s (~91 min)** wall clock full
+run, **~83 min** on a repeat run the same night — call it **80–90 minutes** at 1080p with clash markers on.
+1280p/1440p have not been measured.
+
+Hospital carries **9x** the elements for under **2x** the per-frame cost — the frame cost scales far
+better than the model does, and most of the difference in wall clock is simply that its film is longer
+(its walk is 278.8 s to HHS's 61 s, and its Reveal round adds 87.4 s of its own across four
+disciplines instead of one). Three shipped mechanisms are what make that rate possible, and each names
+itself in the log so a regression is visible rather than guessed: `§MAXQ_FRAME_BUDGET` (a baked frame
+costs 20 composer renders, not 40), `§NIGHT_BAKE_POOL` (the point-light count is frozen for the bake —
+a changed count recompiles every shader in the scene, measured at 13–53 s for such a frame against
+0.8–1.3 s when it holds), and `§GLOW_BUILDUP_EARLY_OUT`.
+
+**What this is honestly not.** It is not a faster renderer — it bakes the same frames at the same
+quality settings as the window does, and it will not make a film cheaper than the frame budget allows.
+It is not a user feature, and it does not replace watching the result; what it replaces is *guessing*.
+Its real value is that the film's own `§`-tagged log can be read afterwards and asserted against — which
+is how several shipped-but-unverified behaviours were finally confirmed to fire in a real bake rather
+than only in theory.
 
 ### Display options — Palette, Night, Shadow + Ground, Background, Sound FX
 
@@ -439,9 +793,15 @@ and dashboard graphs — off by default, pixel-identical until you turn it on.
 | **Shift + Drag** / **Right-click drag** | Pan camera |
 | **Scroll / Pinch** | Zoom |
 | **Click** element | Identify — IFC class, name, GUID, storey, material |
+| **'** (apostrophe) | Toggle **Hover Name** — hovering (no click) shows the friendly name + room of whatever's under the cursor; also a checkbox in the Find panel. Dead key on some international keyboard layouts (US-International, Spanish, Portuguese, French-Canadian) — fails harmlessly there, use the checkbox instead. |
 | **Front / Back / Left / Right** | Elevation views |
 | **Roof** | Roof plan view |
 | **Alt+Z** | Toggle X-ray mode |
+| **Alt+C** | [Film-Maker](#cinema-film-maker-altc-the-bim-ootb-film-maker) — derive a cinematic film, edit the flight, record |
+| **Alt+S** | [Photographic still](#sun-sky-and-shadow-while-the-film-records) — stages the sun/sky/shadow pass, then refines the frozen frame over 16 sub-pixel samples |
+| **Alt+J** | Bounce-light (GI) pass — optional, off by default, not used while recording a film |
+| **Click the flight tube** (in the Film-Maker) | Add a stick — a new band you can drag |
+| **Ctrl+Z / Ctrl+Shift+Z** (in the Film-Maker) | Undo / redo a path edit |
 | **F11** | Toggle fullscreen |
 | **F1** | Help — the full, live list of every toolbar action and its shortcut key |
 
@@ -453,10 +813,18 @@ and dashboard graphs — off by default, pixel-identical until you turn it on.
 
 | Doc | What |
 |-----|------|
+| [Civil Works — Step by Step](CivilWorksGuide.md) | Road models: discipline counts + cost, cross-vendor clash, earthworks volume, long / cross sections, road Model Check report |
 | [Kernel-ERP User Guide](ERPUserGuide.md) | iDempiere browser ERP — login → install → POS → reporting · [Tenancy](ERPUserGuide.md#hr-tenancy) |
 | [DAGeVu Modeller Guide](ModellerGuide.md) | Author geometry — the editable 3D Grid |
 | [Clash Detection](CLASH_DETECTION.md) | Clash detection engine |
 | [4D/5D Analysis](4D5DAnalysis.md) | nD analytics (4D–8D) |
+| [Asset Classification & JKR/SKATA](JKR_SKATA.md) | Classification codes, Malaysian handover compliance — what we measure, and what we don't yet certify |
+
+### For developers
+
+| Doc | What |
+|-----|------|
+| [Viewer Component Model](ViewerComponentModel.html) | The viewer's 128 JS modules as dependency strata, derived from the call graph — layers, fan-in, and where the scheduling subsystem sits |
 
 ---
 

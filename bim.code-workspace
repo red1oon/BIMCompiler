@@ -1,0 +1,43 @@
+{
+  // BIM OOTB — one window over the three trees.
+  // Written 2026-09-14. Rationale + the drift warning: prompts/LFS_QUOTA_AUDIT.md §6-§7.
+  // NOTE: no IDE can do go-to-definition in this codebase (1,684 plain <script> files,
+  // zero import/export, object written A.x but read APP.x). The symbol table is
+  // bim-ootb/internal/APP_SURFACE.md — regenerate with scripts/gen_app_surface.js.
+  "folders": [
+    { "name": "bim-ootb (the product)",      "path": "/home/red1/bim-ootb" },
+    { "name": "bim-compiler (lab + papers)", "path": "." },
+    { "name": "iDempiere (baseline)",        "path": "/home/red1/idempiere-dev-setup/idempiere" }
+  ],
+  "settings": {
+    // Keep search honest: deploy/ is the SANDBOX DEPLOY SOURCE, not duplication
+    // (minify_viewer.sh SRC="deploy/dev"; OCI_UPLOAD.md rule 5). It is excluded from
+    // search because its 196 filename collisions with bim-ootb drown real hits —
+    // it stays openable, it is simply not returned by a default search.
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/lib/**": true,
+      "**/*.min.js": true,
+      "**/archive/**": true,
+      "**/target/**": true,
+      "**/test-results/**": true,
+      "bim-compiler/deploy/**": true,
+      "bim-compiler/build/**": true
+    },
+    "files.watcherExclude": {
+      "**/node_modules/**": true,
+      "**/deploy/**": true,
+      "**/target/**": true,
+      "**/.git/objects/**": true
+    },
+    "files.exclude": { "**/.git": true },
+    "files.associations": { "*.dc.html": "html" },
+    "editor.rulers": [100],
+    "files.trimTrailingWhitespace": true,
+    "javascript.suggest.autoImports": false,
+    "javascript.validate.enable": true
+  },
+  "extensions": {
+    "recommendations": ["dbaeumer.vscode-eslint", "eamodio.gitlens", "alexcvzz.vscode-sqlite"]
+  }
+}

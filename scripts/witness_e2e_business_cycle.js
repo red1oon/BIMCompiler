@@ -93,10 +93,16 @@ function mkWaiter(page, tag) {
 }
 function waitForCrudPersist(waiter, table, timeoutMs) {
   var rxPersist = new RegExp('§CRUD-PERSIST key=' + table + ' '), rxReject = new RegExp('§CRUD-GATE key=' + table + '.*REJECT'),
-    rxSkip = new RegExp('§(CRUD-HOSTCREATE|INPLACE-NEW) table=' + table + ' skipped');
-  return waiter.wait([rxPersist, rxReject, rxSkip], timeoutMs).then(function (r) {
+    rxSkip = new RegExp('§(CRUD-HOSTCREATE|INPLACE-NEW) table=' + table + ' skipped'),
+    // 2026-09-02 (ERP_IDEMPIERE_UX_PARITY.md §P5): a field-validation REJECT (e.g. `required` on an AD-mandatory column
+    // the form now shows) is a real, named outcome — report it as such instead of a silent timeout.
+    rxValidate = new RegExp('§CRUD validate key=' + table + ' verb=create REJECT'),
+    rxHook = new RegExp('§AD-MODELVAL-LIVE table=' + table + ' verb=create hook=.*REJECT');
+  return waiter.wait([rxPersist, rxReject, rxSkip, rxValidate, rxHook], timeoutMs).then(function (r) {
     if (r.which === 0) return { committed: true, line: r.line };
     if (r.which === 1) return { committed: false, reason: 'owner-gate REJECT', line: r.line };
+    if (r.which === 3) return { committed: false, reason: 'validation REJECT: ' + r.line.slice(r.line.indexOf('errors=')), line: r.line };
+    if (r.which === 4) return { committed: false, reason: 'beforeSave hook REJECT: ' + r.line.slice(r.line.indexOf('hook=')), line: r.line };
     return { committed: false, reason: 'create not permitted', line: r.line };
   }).catch(function (e) { return { committed: false, reason: 'timeout: ' + e.message }; });
 }
@@ -140,7 +146,18 @@ async function fillField(page, col, value, kind) {
   if (!visible) return 'hidden';   // real AD DisplayLogic (§AD-LOGIC-LIVE) hid this field given current values
   var tag = await el.evaluate(function (e) { return e.tagName; });
   if (tag === 'SELECT') await page.selectOption(sel, String(value));
-  else await page.fill(sel, String(value));
+  else {
+    await page.fill(sel, String(value));
+    // §P7 (ERP_IDEMPIERE_UX_PARITY.md §P7-WITNESS-FIX) — a real user leaves the box before touching the next
+    //   field, and it is that BLUR that fires `change`; Playwright's fill() alone emits `input` only, and the
+    //   inline editor's dependent-lookup refresh (crud_overlay renderInline's `change` listener →
+    //   populateRefs{valRuleOnly}) is bound to `change`, exactly as iDempiere refreshes a dependent lookup from
+    //   GridField.setValue → updateContext. Without the blur a text-input FK (e.g. the CURATED m_inout
+    //   C_BPartner_ID, which folds to an INPUT not a SELECT) never re-narrows its @C_BPartner_ID@ dependents:
+    //   measured live, C_BPartner_Location_ID stayed `verdict=unresolved-tokens offered=0`, and with the blur it
+    //   is `after=1 offered=1 ctx={"C_BPartner_ID":"120"}`. Harness fidelity, not a product change.
+    await page.locator(sel).first().blur().catch(function () {});
+  }
   return true;
 }
 async function clickToolbarBtn(page, titlePrefix) {
@@ -175,10 +192,18 @@ async function rowIdByText(page, text) {
 //   for window 181's Purchase Order tab — same table, same code, no Sales-Order-specific defect. Click the
 //   POReference cell explicitly (present in both windows, deterministically non-crud-editable) so every
 //   caller reliably reaches the full form + DocAction bar, matching what a real user opening the record sees.
+//   2026-09-02 (bim-compiler prompts/ERP_IDEMPIERE_UX_PARITY.md §P1, W-PARITY-FIELDSET): POReference stopped being
+//   "deterministically non-crud-editable" the moment the curated-5 hand list was retired — the record's editor (and
+//   therefore _editGridCell) now carries the FULL AD field set, and POReference is AD-updateable, so that click opened
+//   a cell editor instead of the form (found by this witness, stage 1 `§INPLACE-CELL-OPEN … col=poreference`). The
+//   host's own gesture for "open the record" is the DocStatus chip cell (renderGrid: the status <td> has NO
+//   stopPropagation, so it reaches the row's click → form view) or the ▤ Form toolbar toggle — click the chip.
 async function clickRowOpen(row, opts) {
+  var stCell = await row.$('td[data-ad-col="DocStatus"]');
+  if (stCell) { await stCell.click(opts); return; }
   var poCell = await row.$('td[data-ad-col="POReference"]');
   if (poCell) { await poCell.click(opts); return; }
-  await row.click(opts);   // defensive fallback if that column isn't rendered on some other table/window
+  await row.click(opts);   // defensive fallback if neither column is rendered on some other table/window
 }
 function deepUrl(port, params) {
   var q = Object.keys(params).map(function (k) { return k + '=' + encodeURIComponent(params[k]); }).join('&');
@@ -316,6 +341,18 @@ function deepUrl(port, params) {
       await page.click('button[data-proc-run]');
       var r2 = await w.wait([/§AD-PROC-LIVE proc=118/], 10000).catch(function (e) { return null; });
       log('§E2E-RUN genship result-line=' + (r2 ? r2.line : 'NONE CAPTURED'));
+      await page.waitForTimeout(300);
+      // §GENPROCESS-CONFIRM (ERP_BUSINESS_CYCLE_E2E.md §Fix 2026-07-22) — the preview alone never commits;
+      // click the real "Confirm & Post" button (only rendered when the computed result is non-empty) so
+      // this witness proves the FULL user path, not just the preview half.
+      var cfBtn2 = await page.$('button[data-genprocess-confirm]');
+      if (cfBtn2) {
+        await cfBtn2.click();
+        var rc2 = await w.wait([/§GENPROCESS-CONFIRM/], 10000).catch(function () { return null; });
+        log('§E2E-CONFIRM genship result-line=' + (rc2 ? rc2.line : 'NONE CAPTURED'));
+      } else {
+        log('§E2E-CONFIRM genship: no Confirm button rendered (empty/absent computed result)');
+      }
       await page.waitForTimeout(800);
       var shipTip = await tipDocsFor(page, 'm_inout', newSoId);
       log('§E2E-STATE m_inout tipDocs for order ' + newSoId + ': ' + JSON.stringify(shipTip));
@@ -347,6 +384,15 @@ function deepUrl(port, params) {
       await page.click('button[data-proc-run]');
       var r3 = await w.wait([/§AD-PROC-LIVE proc=119/], 10000).catch(function () { return null; });
       log('§E2E-RUN geninv result-line=' + (r3 ? r3.line : 'NONE CAPTURED'));
+      await page.waitForTimeout(300);
+      var cfBtn3 = await page.$('button[data-genprocess-confirm]');
+      if (cfBtn3) {
+        await cfBtn3.click();
+        var rc3 = await w.wait([/§GENPROCESS-CONFIRM/], 10000).catch(function () { return null; });
+        log('§E2E-CONFIRM geninv result-line=' + (rc3 ? rc3.line : 'NONE CAPTURED'));
+      } else {
+        log('§E2E-CONFIRM geninv: no Confirm button rendered (empty/absent computed result)');
+      }
       await page.waitForTimeout(800);
       var invTip = await tipDocsFor(page, 'c_invoice', newSoId);
       log('§E2E-STATE c_invoice tipDocs for order ' + newSoId + ': ' + JSON.stringify(invTip));
@@ -457,6 +503,12 @@ function deepUrl(port, params) {
       await page.waitForSelector('#idmp-inline-mount [data-col="m_product_id"]', { timeout: 10000 });
       await fillField(page, 'c_order_id', String(newPoId));
       await fillField(page, 'c_bpartner_id', '120');
+      // §P7 (ERP_IDEMPIERE_UX_PARITY.md §P7-WITNESS-FIX): C_BPartner_Location_ID is AD-mandatory on a line and
+      //   is what Stage 1's SO line already types — this PO line silently omitted it and only saved because the
+      //   inline CREATE path never mandatory-checked an untouched field. iDempiere rejects that with
+      //   FillMandatory (GridTable.dataSave:1647-1653 → getMandatory:1973-2001). 114 = 'Small Village', the ONE
+      //   active IsShipTo location of vendor 120, i.e. exactly what AD_Val_Rule 167 admits once the BP is set.
+      await fillField(page, 'c_bpartner_location_id', '114');
       await fillField(page, 'dateordered', today);
       await fillField(page, 'line', '10');
       await fillField(page, 'm_warehouse_id', '103');
@@ -514,6 +566,24 @@ function deepUrl(port, params) {
         'fields=' + rcptFields.join(',') + ' (m_warehouse_id present=' + hasWarehouse + ', c_bpartner_id present=' + hasPartner + ')');
       await fillField(page, 'documentno', uniqRcptDoc);
       await fillField(page, 'movementdate', today);
+      // §P7 (ERP_IDEMPIERE_UX_PARITY.md §P7-WITNESS-FIX) — this stage USED to save a Material Receipt carrying
+      //   neither a vendor nor a warehouse, three lines after asserting in its own verdict that both are
+      //   "mandatory on a real M_InOut". It only passed because the inline CREATE path validated against its
+      //   post-render baseline, so an untouched empty mandatory field was never required-checked; iDempiere
+      //   answers that save with FillMandatory. The stage now types what a real user must, and every value is
+      //   what the dictionary's OWN val rule admits on window 184 / tab 296 (read from ad_seed.db):
+      //     c_doctype_id 122 'MM Receipt'  — AD_Val_Rule 52054 `DocBaseType IN ('MMR') AND IsSOTrx='N' AND
+      //                                       AD_Client_ID=@#AD_Client_ID@` admits {122, 147}
+      //     c_bpartner_id 120 'Seed Farm Inc.' — the same vendor Stage 6's PO uses (AD_Val_Rule 230)
+      //     c_bpartner_location_id 114 'Small Village' — AD_Val_Rule 167 `C_BPartner_ID=@C_BPartner_ID@ AND
+      //                                       IsShipTo='Y' AND IsActive='Y'`; BP 120 has exactly this one
+      //     m_warehouse_id 103 'HQ Warehouse' — the warehouse Stages 1/6 already use
+      //   Order matters: the BP must be set before the location, because 167 is a DEPENDENT lookup (@C_BPartner_ID@)
+      //   and the picker re-narrows on the BP's change event (§P3-EXTRACT E3).
+      await fillField(page, 'c_doctype_id', '122');
+      await fillField(page, 'c_bpartner_id', '120');
+      await fillField(page, 'c_bpartner_location_id', '114');
+      await fillField(page, 'm_warehouse_id', '103');
       await clickToolbarBtn(page, 'Save');
       var p7 = await waitForCrudPersist(w, 'm_inout', 15000);
       log('§E2E-SAVE table=m_inout committed=' + p7.committed + (p7.reason ? ' reason=' + p7.reason : ''));
@@ -526,9 +596,11 @@ function deepUrl(port, params) {
 
       var stage7Result = (!hasWarehouse || !hasPartner) ? 'ABSENT' : 'PASS';
       cycleLine(7, 'MaterialReceipt', 'UI', stage7Result,
-        'M_InOut id=' + newRcptId + ' created but header New form omits ' +
-        (!hasWarehouse ? 'M_Warehouse_ID ' : '') + (!hasPartner ? 'C_BPartner_ID ' : '') +
-        '(fields shown: ' + rcptFields.join(',') + '); no InOutGenerate-equivalent process exists for PO receipts ' +
+        'M_InOut id=' + newRcptId + ' created with doctype 122 / vendor 120 / location 114 / warehouse 103 — ' +
+        'every one AD-mandatory and every one admitted by that column\'s OWN val rule (§P7-WITNESS-FIX: this ' +
+        'stage previously saved a receipt with none of them, which iDempiere answers with FillMandatory) ' +
+        (!hasWarehouse ? 'M_Warehouse_ID-ABSENT ' : '') + (!hasPartner ? 'C_BPartner_ID-ABSENT ' : '') +
+        '(fields shown: ' + rcptFields.length + '); no InOutGenerate-equivalent process exists for PO receipts ' +
         '(inoutGenGate hard-requires IsSOTrx=\'Y\', confirmed by source read) so this manual path is the ONLY route to a Material Receipt at all');
     } catch (e) {
       log('🔴 Stage7 threw: ' + e.message);

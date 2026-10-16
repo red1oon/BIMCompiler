@@ -1315,8 +1315,18 @@ function setupStreaming(A) {
       var preloaded = await _wasmBinaryPromise;
       if (preloaded) sqlOpts.wasmBinary = preloaded;
     }
-    const SQL = await initSqlJs(sqlOpts);
-    A._SQL = SQL; // Cache for reuse (diff DB, import) — avoids re-downloading WASM
+    const SQL = A._SQL || await initSqlJs(sqlOpts);
+    A._SQL = SQL; // Cache for reuse (diff DB, import, re-entry from Blank-mode Open) — avoids re-downloading WASM
+
+    // Implementing prompts/Viewer/BLANK_VIEWER_LANDING_CARD.md §1 — Witness: witness_blank_viewer_card.js
+    // Blank mode with nothing opened yet: fetch(A.DB_URL) below would resolve '' to the page's own
+    // HTML and fail confusingly. blank_open.js re-enters A.init() once a local file is picked, by
+    // which point A.DB_URL is a real blob: URL and this guard no longer applies.
+    if (A.BLANK_MODE && !A.DB_URL) {
+      A.status.textContent = 'Blank scene — use Open to load a .db file';
+      console.log('§BLANK_MODE active=1 waiting_for_open=1');
+      return;
+    }
 
     if (A.CITY_URL) {
       // S250 §6: On mobile, defer city_index.db auto-load to save memory

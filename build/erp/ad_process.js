@@ -139,6 +139,8 @@
       };
     }
     registerHandler('report:c_payment', voucherHandler('c_payment'), { kind: 'report', reportKey: 'c_payment' });
+    registerAging();                                                   // FS-14 (§FS2l)
+    registerImportBPartner();                                          // FS-16 (§FS2n)
 
     // org.compiere.report.TrialBalance -> report_overlay.foldTrialBalance over the posted journal.
     registerHandler('org.compiere.report.TrialBalance', function (ctx, info) {
@@ -381,9 +383,138 @@
       return {
         ok: true, rows: built.lines.length,
         message: '@Created@ = 1 (' + built.lines.length + ' invoice line' + (built.lines.length === 1 ? '' : 's') + ')',
-        result: { ops: ops, lineCount: built.lines.length, header: ops[0], issotrx: ops[0].issotrx, deferredRule: built.deferredRule }
+        // §KIND2-READBACK (prompts/AGENT_QUEUE.md §K2RB.4) — crudMap publishes the spec's OWN engine-internal→
+        // real-column names so the commit seam can translate this op-group into the CRUD vocabulary
+        // crud_core.listTip folds. buildDoc writes `source_id`/`source_line_id` (engine names, not columns);
+        // the spec already knows the columns they stand for. EXTRACT — nothing new is decided here.
+        result: { ops: ops, lineCount: built.lines.length, header: ops[0], issotrx: ops[0].issotrx, deferredRule: built.deferredRule,
+                  crudMap: { docParent: INVOICE_SPEC.parentId, lineParent: INVOICE_SPEC.lineParentId } }
       };
     }, { kind: 'process', action: 'GenerateInvoice' });
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════════════════════════════════
+  // §Fix5 (prompts/ERP_P2P_INVOICE_MATCH.md §Fix5.3) — CreateFromInvoice (AD_Process 200143,
+  //   value 'C_Invoice_CreateFromProcess', classname org.compiere.process.CreateFromInvoice, isReport=N,
+  //   mandatory para C_Invoice_ID — all four read from ad_seed.db, not assumed). The P2P line-maker: it ADDS
+  //   lines to an EXISTING drafted vendor invoice, so it is NOT a buildDoc archetype like InvoiceGenerate.
+  //   This is the piece that unblocks M_MatchInv: erp_engine.completeInvoice already emits one M_MatchInv per
+  //   invoice line carrying m_inoutline_id, and crud_overlay.completeFanoutInvoice already runs it live — the
+  //   lane's measured `§INVOICE-FANOUT … lines=1 matchInvOps=0` was a line with no m_inoutline_id, because
+  //   nothing could create one (AD_Field locks M_InOutLine_ID/C_OrderLine_ID IsReadOnly='Y' on AD_Tab 291 —
+  //   a faithful port: in real iDempiere those columns are only ever set by THIS process).
+  // Java home (EXTRACT, do NOT invent):
+  //   CreateFromInvoice.createLines() — per selected row calls
+  //     invoice.createLineFrom(C_OrderLine_ID, M_InOutLine_ID, M_RMALine_ID, M_Product_ID, C_UOM_ID, QtyEntered)
+  //   MInvoice.createLineFrom (MInvoice.java:3262) — new MInvoiceLine, setQty(Qty)/setQtyInvoiced, resolve the
+  //     receipt line, then invoiceLine.setShipLine(inoutLine) ("overwrites", its own comment).
+  //   MInvoiceLine.setShipLine — the entire field-copy rule ported verbatim by shipLineFields() below.
+  //   MInOutLine.sameOrderLineUOM() — C_OrderLine_ID > 0 && oLine.C_UOM_ID == sLine.C_UOM_ID.
+  // Implementing ERP_P2P_INVOICE_MATCH.md §Fix 2026-09-04 — Witness: W-CREATEFROM-INVOICE
+  // ════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  // createFromInvoiceGate — the process's own preconditions as a verdict. Every branch names its source.
+  function createFromInvoiceGate(invoice, selection) {
+    // CreateFromInvoice.doIt: `if (p_C_Invoice_ID == 0) throw new AdempiereUserError("@NotFound@ @C_Invoice_ID@")`
+    if (!invoice || invoice.c_invoice_id == null) return { ok: false, missing: 'C_Invoice_ID', message: '@NotFound@ @C_Invoice_ID@' };
+    // Real iDempiere reaches CreateFrom only from a DRAFTED invoice's toolbar (the tab goes read-only once
+    // Processed='Y'); adding lines to a completed invoice would be a screen the product does not have.
+    if (String(invoice.processed || 'N').toUpperCase() === 'Y' || (invoice.docstatus && invoice.docstatus !== 'DR' && invoice.docstatus !== 'IP'))
+      return { ok: false, missing: 'DocStatus', message: 'Invoice is not drafted (CreateFrom is reachable only on a DR/IP invoice)' };
+    // CreateFromInvoice.doIt: `if (getProcessInfo().getAD_InfoWindow_ID() > 0) return createLines(); else throw "@NotSupported@"`
+    // — the Info Window IS the selection. No selection ⇒ the same refusal, never an invented line.
+    if (!selection || !selection.length) return { ok: false, missing: 'selection', message: '@NotSupported@ (no line selection — CreateFrom needs an Info-Window selection)' };
+    return { ok: true };
+  }
+
+  // sameOrderLineUOM — MInOutLine.sameOrderLineUOM() verbatim.
+  function sameOrderLineUOM(sLine, oLine) {
+    if (!sLine || Number(sLine.c_orderline_id || 0) <= 0) return false;
+    if (!oLine) return false;
+    return Number(oLine.c_uom_id || 0) === Number(sLine.c_uom_id || 0);
+  }
+
+  // shipLineFields — MInvoiceLine.setShipLine(sLine) ported field-for-field. `oLine` is the receipt line's
+  // C_OrderLine (null when it has none). Returns {fields, deferred[]} — a branch we cannot port is DECLARED,
+  // never silently skipped (the same law InOutGenerate's non-F/A DeliveryRules follow).
+  function shipLineFields(sLine, oLine, product) {
+    var f = {}, deferred = [];
+    // VERBATIM COPY, including 0. setShipLine calls the plain setters — it does not translate 0 to NULL, and
+    // `x || null` would: W-CREATEFROM-INVOICE caught exactly that on all 10 fixture rows
+    // (m_attributesetinstance_id op=null src=0). 0 and NULL are different values in the AD dictionary.
+    // Only the BRANCH tests below use the Java's own `== 0` semantics.
+    function copy(v) { return v != null ? v : null; }
+    f.m_inoutline_id = sLine.m_inoutline_id;
+    f.c_orderline_id = copy(sLine.c_orderline_id);
+    f.m_rmaline_id   = copy(sLine.m_rmaline_id);
+    f.line           = sLine.line;
+    f.isdescription  = sLine.isdescription || 'N';
+    f.description    = copy(sLine.description);
+    f.m_product_id   = copy(sLine.m_product_id);
+    // setC_UOM_ID: sLine's UOM when sameOrderLineUOM() OR there is no product; else the PRODUCT's UOM.
+    if (sameOrderLineUOM(sLine, oLine) || !Number(f.m_product_id || 0)) f.c_uom_id = sLine.c_uom_id;
+    else if (product && product.c_uom_id != null)          f.c_uom_id = product.c_uom_id;
+    else { f.c_uom_id = sLine.c_uom_id; deferred.push('product-uom-unavailable(cross-UOM: MUOMConversion)'); }
+    f.m_attributesetinstance_id = copy(sLine.m_attributesetinstance_id);
+    if (!Number(f.m_product_id || 0)) f.c_charge_id = copy(sLine.c_charge_id);   // `if (getM_Product_ID() == 0) setC_Charge_ID(...)`
+    if (Number(f.c_orderline_id || 0) !== 0 && oLine) {
+      // PriceEntered = oLine.PriceEntered when sameOrderLineUOM(), else oLine.PriceActual.
+      f.priceentered = sameOrderLineUOM(sLine, oLine) ? oLine.priceentered : oLine.priceactual;
+      f.priceactual  = oLine.priceactual;
+      f.pricelimit   = oLine.pricelimit;
+      f.pricelist    = oLine.pricelist;
+      f.c_tax_id     = oLine.c_tax_id;
+      f.linenetamt   = oLine.linenetamt;
+      f.c_project_id = oLine.c_project_id != null ? oLine.c_project_id : null;
+    } else if (Number(f.m_rmaline_id || 0) !== 0) {
+      deferred.push('rma-line-pricing(MRMALine — the RMA corpus)');     // setRMALine() branch
+    } else {
+      deferred.push('no-order-line(setPrice()/setTax() — the price-list engine)');
+    }
+    return { fields: f, deferred: deferred };
+  }
+
+  // registerCreateFromInvoice(engine) — wire the handler. ctx seams (same shape as the KIND-2 handlers):
+  //   fetchInvoice(info) -> the C_Invoice row · fetchReceiptLines(info) -> the SELECTED M_InOutLine rows
+  //   fetchOrderLine(id) -> a C_OrderLine row  · fetchProduct(id) -> a M_Product row (optional)
+  // info.params.selection (optional) = [{m_inoutline_id, qty}] — a per-row qty override, exactly the
+  // Info-Window's Qty column. Absent ⇒ each receipt line's own qtyentered, carried verbatim (non-invent).
+  function registerCreateFromInvoice(engine) {
+    registerHandler('org.compiere.process.CreateFromInvoice', function (ctx, info) {
+      var invoice = ctx.fetchInvoice ? ctx.fetchInvoice(info) : null;
+      var sLines  = (ctx.fetchReceiptLines ? ctx.fetchReceiptLines(info) : []) || [];
+      var gate = createFromInvoiceGate(invoice, sLines);
+      if (!gate.ok) return { ok: false, reason: 'createfrom-refused', message: gate.message, rows: 0, result: { gate: gate, ops: [] } };
+      var qtyBy = {};
+      ((info && info.params && info.params.selection) || []).forEach(function (sel) {
+        if (sel && sel.m_inoutline_id != null && sel.qty != null) qtyBy[String(sel.m_inoutline_id)] = sel.qty;
+      });
+      var ops = [], deferred = [];
+      sLines.forEach(function (sLine) {
+        var oLine = (Number(sLine.c_orderline_id || 0) !== 0 && ctx.fetchOrderLine) ? ctx.fetchOrderLine(sLine.c_orderline_id) : null;
+        var product = (sLine.m_product_id && ctx.fetchProduct) ? ctx.fetchProduct(sLine.m_product_id) : null;
+        var built = shipLineFields(sLine, oLine, product);
+        built.deferred.forEach(function (d) { if (deferred.indexOf(d) === -1) deferred.push(d); });
+        // createLineFrom: setQty(Qty) → QtyEntered, and QtyInvoiced = Qty unless a UOM conversion applies
+        // (MUOMConversion — named-deferred above, so the two stay equal here rather than being invented).
+        var qty = qtyBy[String(sLine.m_inoutline_id)];
+        if (qty == null) qty = (sLine.qtyentered != null ? sLine.qtyentered : sLine.movementqty);
+        var op = { op_type: 'CREATE_LINE', table: 'C_InvoiceLine', c_invoice_id: invoice.c_invoice_id,
+                   qtyentered: qty, qtyinvoiced: qty };
+        Object.keys(built.fields).forEach(function (k) { op[k] = built.fields[k]; });
+        ops.push(op);
+      });
+      // invoice.updateFrom(order) copies PaymentRule/C_PaymentTerm_ID/SalesRep_ID and the payment SCHEDULE.
+      // The schedule needs MOrderPaySchedule/MInvoicePaySchedule — declared, not silently skipped.
+      deferred.push('updateFrom(order)-payment-schedule(MOrderPaySchedule)');
+      console.log('§CREATEFROM-INVOICE invoice=' + invoice.c_invoice_id + ' selected=' + sLines.length +
+                  ' linesCreated=' + ops.length + ' withInOutLine=' + ops.filter(function (o) { return o.m_inoutline_id != null; }).length +
+                  ' withOrderLine=' + ops.filter(function (o) { return o.c_orderline_id != null; }).length +
+                  ' deferred=' + JSON.stringify(deferred));
+      return { ok: true, rows: ops.length,
+               message: '@Created@ = ' + ops.length,
+               result: { ops: ops, lineCount: ops.length, deferred: deferred } };
+    }, { kind: 'process', action: 'CreateFromInvoice' });
   }
 
   // registerInOutGenerate(engine) — wire the KIND-2 handler. ctx: fetchOrder(info)->C_Order row,
@@ -412,7 +543,12 @@
       return {
         ok: true, rows: built.lines.length,
         message: '@Created@ = 1 (' + built.lines.length + ' shipment line' + (built.lines.length === 1 ? '' : 's') + ')',
-        result: { ops: ops, lineCount: built.lines.length, header: ops[0], movementtype: ops[0].movementtype, deferredRule: built.deferredRule }
+        // §KIND2-READBACK (prompts/AGENT_QUEUE.md §K2RB.4) — crudMap publishes the spec's OWN engine-internal→
+        // real-column names so the commit seam can translate this op-group into the CRUD vocabulary
+        // crud_core.listTip folds. buildDoc writes `source_id`/`source_line_id` (engine names, not columns);
+        // the spec already knows the columns they stand for. EXTRACT — nothing new is decided here.
+        result: { ops: ops, lineCount: built.lines.length, header: ops[0], movementtype: ops[0].movementtype, deferredRule: built.deferredRule,
+                  crudMap: { docParent: SHIPMENT_SPEC.parentId, lineParent: SHIPMENT_SPEC.lineParentId } }
       };
     }, { kind: 'process', action: 'GenerateShipment' });
   }
@@ -442,7 +578,12 @@
       return {
         ok: true, rows: norm.length,
         message: '@C_Order_ID@ generated from project (' + norm.length + ' line' + (norm.length === 1 ? '' : 's') + ')',
-        result: { ops: ops, lineCount: norm.length, header: ops[0], issotrx: 'Y', docsubtypeso: 'WI' }
+        // §KIND2-READBACK (prompts/AGENT_QUEUE.md §K2RB.4) — crudMap publishes the spec's OWN engine-internal→
+        // real-column names so the commit seam can translate this op-group into the CRUD vocabulary
+        // crud_core.listTip folds. buildDoc writes `source_id`/`source_line_id` (engine names, not columns);
+        // the spec already knows the columns they stand for. EXTRACT — nothing new is decided here.
+        result: { ops: ops, lineCount: norm.length, header: ops[0], issotrx: 'Y', docsubtypeso: 'WI',
+                  crudMap: { docParent: GENORDER_SPEC.parentId, lineParent: GENORDER_SPEC.lineParentId } }
       };
     }, { kind: 'process', action: 'GenerateOrder' });
   }
@@ -451,7 +592,7 @@
   function readProcess(db, ad_process_id) {
     var p = db.prepare('SELECT ad_process_id,value,name,classname,isreport,procedurename,jasperreport,ad_reportview_id FROM ad_process WHERE ad_process_id=?').get(ad_process_id);
     if (!p) throw new Error('no ad_process row for ' + ad_process_id);
-    var paras = db.prepare('SELECT name,columnname,ismandatory,ad_reference_id,isrange,defaultvalue,seqno FROM ad_process_para WHERE ad_process_id=? ORDER BY seqno').all(ad_process_id);
+    var paras = db.prepare('SELECT name,columnname,ismandatory,ad_reference_id,isrange,defaultvalue,seqno,ad_val_rule_id FROM ad_process_para WHERE ad_process_id=? ORDER BY seqno').all(ad_process_id);
     return {
       AD_Process_ID: p.ad_process_id, value: p.value, name: p.name,
       classname: p.classname || '', isReport: p.isreport === 'Y',
@@ -460,7 +601,8 @@
         return {
           name: r.name, columnName: r.columnname, mandatory: r.ismandatory === 'Y',
           ad_reference_id: r.ad_reference_id, type: refType(r.ad_reference_id),
-          isRange: r.isrange === 'Y', defaultValue: r.defaultvalue, seqno: r.seqno
+          isRange: r.isrange === 'Y', defaultValue: r.defaultvalue, seqno: r.seqno,
+          ad_val_rule_id: r.ad_val_rule_id   // FS-9: a TableDir param with a val rule keeps its text box (named)
         };
       })
     };
@@ -527,6 +669,283 @@
       }
     });
     return { ok: missing.length === 0 && badType.length === 0, required: required, supplied: supplied, missing: missing, badType: badType };
+  }
+
+  // ══ FS-14 (bim-compiler prompts/ERP_FIRST_SETUP_GUIDE.md §FS2l — Witness: W-ERP-FIRST-SETUP S24c) — Aging ══════════
+  //   openItems(q, opts) = the RV_OpenItem view (live pg_get_viewdef, idempiere DB) over the bundle, with the PL/pgSQL it
+  //   calls transcribed: paymenttermduedate / paymenttermduedays (IsDueFixed branch included), invoiceopen (allocations ×
+  //   MultiplierAP, currency-converted; per pay schedule the allocations consume schedules in DueDate order), daysbetween.
+  //   agingFold(items, opts) = Aging.doIt (Aging.java:102-262) + MAging.add (MAging.java:157-235), bucket bounds verbatim.
+  //   q(sql) → array of lower-case-keyed rows. opts = { today:'YYYY-MM-DD', clientId, isSOTrx:'Y'|'N', bpartnerId, bpGroupId, orgId }.
+  function _agDay(v) { var s = String(v || '').slice(0, 10); var t = Date.parse(s + 'T00:00:00Z'); return isNaN(t) ? null : Math.floor(t / 86400000); }
+  function _agIso(d) { return new Date(d * 86400000).toISOString().slice(0, 10); }
+  function _agRound(x, p) { var f = Math.pow(10, p == null ? 2 : p); var v = Number(x) || 0; return Math.round(v * f + (v < 0 ? -1e-9 : 1e-9)) / f; }
+  function _agAddMonths(d, n) { var dt = new Date(d * 86400000); var y = dt.getUTCFullYear(), m = dt.getUTCMonth() + Number(n || 0), day = dt.getUTCDate();
+    var last = new Date(Date.UTC(y, m + 1, 0)).getUTCDate(); return Math.floor(Date.UTC(y, m, Math.min(day, last)) / 86400000); }
+  function _agMonthStart(d) { var dt = new Date(d * 86400000); return Math.floor(Date.UTC(dt.getUTCFullYear(), dt.getUTCMonth(), 1) / 86400000); }
+  function _agMonthLastDay(d) { var dt = new Date(d * 86400000); return new Date(Date.UTC(dt.getUTCFullYear(), dt.getUTCMonth() + 1, 0)).getUTCDate(); }
+  // paymenttermduedate(term, DocDate) → day number. IsDueFixed: FirstDay + (FixMonthDay-1) + FixMonthOffset months (+1 when the
+  // day-of-month offset > FixMonthCutoff); else TRUNC(DocDate) + NetDays.
+  function _agDueDate(pt, doc) {
+    if (!pt || doc == null) return doc;
+    if (String(pt.isduefixed || 'N') === 'Y') {
+      var first = _agMonthStart(doc), noDays = doc - first, due = first + (Number(pt.fixmonthday || 0) - 1);
+      due = _agAddMonths(due, Number(pt.fixmonthoffset || 0));
+      if (noDays > Number(pt.fixmonthcutoff || 0)) due = _agAddMonths(due, 1);
+      return due;
+    }
+    return doc + Number(pt.netdays || 0);
+  }
+  // paymenttermduedays(term, DocDate, PayDate) → PayDate - DueDate (the function's own IsDueFixed variant, transcribed).
+  function _agDueDays(pt, doc, pay) {
+    if (!pt || doc == null) return 0;
+    var due;
+    if (String(pt.isduefixed || 'N') === 'Y') {
+      var cal = doc, maxCut = _agMonthLastDay(cal), cut = Number(pt.fixmonthcutoff || 0), off = Number(pt.fixmonthoffset || 0), fmd = Number(pt.fixmonthday || 0);
+      cal = cut > maxCut ? _agMonthStart(cal) + maxCut - 1 : _agMonthStart(cal) + (cut - 1);
+      if (doc > cal) off = off + 1;
+      cal = _agAddMonths(cal, off);
+      var maxDay = _agMonthLastDay(cal);
+      due = (fmd > maxDay || (fmd >= 30 && maxDay > fmd)) ? _agMonthStart(cal) + (maxDay - 1) : _agMonthStart(cal) + (fmd - 1);
+    } else due = doc + Number(pt.netdays || 0);
+    return pay - due;
+  }
+  function _agRate(q, from, to, when) {                     // MConversionRate.getRate, same ORDER BY as crud_overlay _rate
+    if (!Number(from) || !Number(to) || Number(from) === Number(to)) return 1;
+    var r = q('SELECT multiplyrate FROM c_conversion_rate WHERE c_currency_id=' + Number(from) + ' AND c_currency_id_to=' + Number(to) +
+      " AND date('" + String(when || '').slice(0, 10) + "') BETWEEN date(validfrom) AND date(validto) AND upper(isactive)='Y' ORDER BY ad_client_id DESC, ad_org_id DESC, validfrom DESC LIMIT 1")[0];
+    return r && r.multiplyrate != null ? Number(r.multiplyrate) : null;
+  }
+  // invoiceopen(C_Invoice_ID, C_InvoicePaySchedule_ID) — the live function, transcribed.
+  function _agInvoiceOpen(q, inv, ipsId) {
+    var base = String(inv.docbasetype || ''), mulCM = base.charAt(2) === 'C' ? -1 : 1, mulAP = base.charAt(1) === 'P' ? -1 : 1;
+    var cur = Number(inv.c_currency_id || 0), pc = q('SELECT stdprecision FROM c_currency WHERE c_currency_id=' + cur)[0];
+    var prec = pc ? Number(pc.stdprecision) : 2, min = Math.pow(10, -prec);
+    var sched = String(inv.ispayschedulevalid || 'N') === 'Y'
+      ? q("SELECT c_invoicepayschedule_id, dueamt FROM c_invoicepayschedule WHERE c_invoice_id=" + Number(inv.c_invoice_id) + " AND isvalid='Y' ORDER BY duedate") : null;
+    var total = sched ? sched.reduce(function (a, s) { return a + Number(s.dueamt || 0) * mulCM; }, 0) : Number(inv.grandtotal || 0) * mulCM;
+    var paid = 0;
+    q("SELECT al.amount, al.discountamt, al.writeoffamt, a.c_currency_id, a.datetrx FROM c_allocationline al JOIN c_allocationhdr a ON a.c_allocationhdr_id=al.c_allocationhdr_id " +
+      "WHERE al.c_invoice_id=" + Number(inv.c_invoice_id) + " AND a.isactive='Y'").forEach(function (a) {
+      var t = (Number(a.amount || 0) + Number(a.discountamt || 0) + Number(a.writeoffamt || 0)) * mulAP;
+      var rt = _agRate(q, a.c_currency_id, cur, a.datetrx); paid += rt == null ? t : t * rt;
+    });
+    var open;
+    if (Number(ipsId) > 0 && sched) {
+      var rem = paid; open = total - paid;
+      sched.forEach(function (s) {
+        if (Number(s.c_invoicepayschedule_id) === Number(ipsId)) { open = Number(s.dueamt) * mulCM - rem; if (Number(s.dueamt) - rem < 0) open = 0; }
+        else { rem = rem - Number(s.dueamt); if (rem < 0) rem = 0; }
+      });
+    } else open = total - paid;
+    if (open > -min && open < min) open = 0;
+    return _agRound(open, prec);
+  }
+  function openItems(q, opts) {
+    opts = opts || {};
+    var today = _agDay(opts.today), out = [];
+    var where = "i.docstatus IN ('CO','CL') AND i.ispaid='N'" + (opts.clientId != null ? ' AND i.ad_client_id IN (0,' + Number(opts.clientId) + ')' : '');
+    q('SELECT i.*, d.docbasetype FROM c_invoice i LEFT JOIN c_doctype d ON d.c_doctype_id=i.c_doctype_id WHERE ' + where + ' ORDER BY i.c_invoice_id').forEach(function (inv) {
+      var doc = _agDay(inv.dateinvoiced), cm = String(inv.docbasetype || '').charAt(2) === 'C' ? -1 : 1;
+      var common = { ad_org_id: inv.ad_org_id, ad_client_id: inv.ad_client_id, c_invoice_id: inv.c_invoice_id, c_bpartner_id: inv.c_bpartner_id,
+        issotrx: inv.issotrx, dateinvoiced: inv.dateinvoiced, c_currency_id: inv.c_currency_id, c_activity_id: inv.c_activity_id,
+        c_campaign_id: inv.c_campaign_id, c_project_id: inv.c_project_id };
+      if (String(inv.ispayschedulevalid || 'N') !== 'Y') {        // branch 1 — JOIN C_PaymentTerm (inner)
+        var pt = q('SELECT * FROM c_paymentterm WHERE c_paymentterm_id=' + Number(inv.c_paymentterm_id || 0))[0];
+        if (!pt) return;
+        var open = _agInvoiceOpen(q, inv, 0); if (open === 0) return;
+        var row = Object.assign({}, common, { c_invoicepayschedule_id: 0, netdays: Number(pt.netdays || 0), duedate: _agIso(_agDueDate(pt, doc)),
+          daysdue: _agDueDays(pt, doc, today), grandtotal: Number(inv.grandtotal || 0) * cm, openamt: open });
+        out.push(row);
+      } else {                                                       // branch 2 — one row per valid schedule
+        q("SELECT * FROM c_invoicepayschedule WHERE c_invoice_id=" + Number(inv.c_invoice_id) + " AND isvalid='Y' ORDER BY c_invoicepayschedule_id").forEach(function (s) {
+          var o = _agInvoiceOpen(q, inv, s.c_invoicepayschedule_id); if (o === 0) return;
+          var dd = _agDay(s.duedate);
+          out.push(Object.assign({}, common, { c_invoicepayschedule_id: s.c_invoicepayschedule_id, netdays: dd - doc, duedate: _agIso(dd),
+            daysdue: today - dd, grandtotal: Number(s.dueamt || 0), openamt: o }));
+        });
+      }
+    });
+    return out;
+  }
+  var AGING_BUCKETS = ['dueamt', 'due0', 'due0_7', 'due0_30', 'due1_7', 'due8_30', 'due31_60', 'due31_plus', 'due61_90', 'due61_plus', 'due91_plus',
+    'pastdueamt', 'pastdue1_7', 'pastdue1_30', 'pastdue8_30', 'pastdue31_60', 'pastdue31_plus', 'pastdue61_90', 'pastdue61_plus', 'pastdue91_plus'];
+  function agingFold(items, opts) {
+    opts = opts || {};
+    var off = opts.statementOffset || 0, list = !!opts.isListInvoices, rows = [], cur = null;
+    var sorted = items.slice().sort(function (a, b) { return (a.c_bpartner_id - b.c_bpartner_id) || (a.c_currency_id - b.c_currency_id) || (a.c_invoice_id - b.c_invoice_id); });
+    sorted.forEach(function (oi) {
+      var inv = list ? Number(oi.c_invoice_id) : 0, ips = list ? Number(oi.c_invoicepayschedule_id || 0) : 0;
+      if (!cur || cur.c_bpartner_id !== oi.c_bpartner_id || cur.c_currency_id !== oi.c_currency_id || cur.c_invoice_id !== inv || cur.c_invoicepayschedule_id !== ips) {
+        cur = { c_bpartner_id: oi.c_bpartner_id, c_currency_id: oi.c_currency_id, c_invoice_id: inv, c_invoicepayschedule_id: ips, c_bp_group_id: oi.c_bp_group_id,
+                ad_org_id: oi.ad_org_id, issotrx: oi.issotrx, duedate: oi.duedate, invoicedamt: 0, openamt: 0, daysdue: 0, _n: 0, _sum: 0 };
+        AGING_BUCKETS.forEach(function (b) { cur[b] = 0; });
+        rows.push(cur);
+      }
+      var daysDue = Number(oi.daysdue) + off, amt = Number(oi.openamt) || 0;
+      cur.invoicedamt += Number(oi.grandtotal) || 0; cur.openamt += amt;
+      cur._n++; cur._sum += daysDue; cur.daysdue = Math.trunc(cur._sum / cur._n);
+      if (String(cur.duedate) > String(oi.duedate)) cur.duedate = oi.duedate;
+      if (daysDue <= 0) {
+        cur.dueamt += amt;
+        if (daysDue === 0) cur.due0 += amt;
+        if (daysDue >= -7) cur.due0_7 += amt;
+        if (daysDue >= -30) cur.due0_30 += amt;
+        if (daysDue <= -1 && daysDue >= -7) cur.due1_7 += amt;
+        if (daysDue <= -8 && daysDue >= -30) cur.due8_30 += amt;
+        if (daysDue <= -31 && daysDue >= -60) cur.due31_60 += amt;
+        if (daysDue <= -31) cur.due31_plus += amt;
+        if (daysDue <= -61 && daysDue >= -90) cur.due61_90 += amt;
+        if (daysDue <= -61) cur.due61_plus += amt;
+        if (daysDue <= -91) cur.due91_plus += amt;
+      } else {
+        cur.pastdueamt += amt;
+        if (daysDue <= 7) cur.pastdue1_7 += amt;
+        if (daysDue <= 30) cur.pastdue1_30 += amt;
+        if (daysDue >= 8 && daysDue <= 30) cur.pastdue8_30 += amt;
+        if (daysDue >= 31 && daysDue <= 60) cur.pastdue31_60 += amt;
+        if (daysDue >= 31) cur.pastdue31_plus += amt;
+        if (daysDue >= 61 && daysDue <= 90) cur.pastdue61_90 += amt;
+        if (daysDue >= 61) cur.pastdue61_plus += amt;
+        if (daysDue >= 91) cur.pastdue91_plus += amt;
+      }
+    });
+    rows.forEach(function (r) { delete r._n; delete r._sum; ['invoicedamt', 'openamt'].concat(AGING_BUCKETS).forEach(function (k) { r[k] = _agRound(r[k], 2); }); });
+    return rows;
+  }
+  function registerAging() {
+    registerHandler('org.compiere.process.Aging', function (ctx, info) {
+      var p = (info && info.params) || {}, q = ctx.query;
+      if (typeof q !== 'function') return { ok: false, message: 'Aging: no data accessor', rows: 0 };
+      if (String(p.DateAcct || 'N') === 'Y') return { ok: false, message: 'Aging DateAcct=Y (RV_OpenItemToDate / invoiceOpenToDate) is not ported — run without it', rows: 0 };
+      if (Number(p.ConvertAmountsInCurrency_ID) > 0) return { ok: false, message: 'Aging ConvertAmountsInCurrency_ID (currencyConvertInvoice) is not ported — run without it', rows: 0 };
+      var today = ctx.today || new Date().toISOString().slice(0, 10);
+      var stmt = p.StatementDate ? String(p.StatementDate).slice(0, 10) : today;
+      var offset = _agDay(stmt) - _agDay(today);                         // Aging.prepare :96-99 getDaysBetween(now, StatementDate)
+      var so = String(p.IsSOTrx == null ? 'Y' : p.IsSOTrx) === 'Y' ? 'Y' : 'N';
+      var bp = Number(p.C_BPartner_ID) > 0 ? Number(p.C_BPartner_ID) : 0, grp = Number(p.C_BP_Group_ID) > 0 ? Number(p.C_BP_Group_ID) : 0;
+      var org = Number(p.AD_Org_ID) > 0 ? Number(p.AD_Org_ID) : 0;
+      var items = openItems(q, { today: today, clientId: ctx.clientId });
+      var groups = {};
+      items = items.filter(function (oi) {
+        if (String(oi.issotrx) !== so) return false;
+        var g = groups[oi.c_bpartner_id]; if (g === undefined) { var r = q('SELECT c_bp_group_id FROM c_bpartner WHERE c_bpartner_id=' + Number(oi.c_bpartner_id))[0]; g = groups[oi.c_bpartner_id] = r ? r.c_bp_group_id : null; }
+        if (g === null) return false;                                     // INNER JOIN C_BPartner
+        oi.c_bp_group_id = g;
+        if (bp) return Number(oi.c_bpartner_id) === bp;
+        if (grp && Number(g) !== grp) return false;
+        if (org && Number(oi.ad_org_id) !== org) return false;
+        return true;
+      });
+      var rows = agingFold(items, { statementOffset: offset, isListInvoices: String(p.IsListInvoices || 'N') === 'Y' });
+      var tot = {}; ['invoicedamt', 'openamt'].concat(AGING_BUCKETS).forEach(function (k) { tot[k] = _agRound(rows.reduce(function (a, r) { return a + r[k]; }, 0), 2); });
+      var names = {}; rows.forEach(function (r) { if (names[r.c_bpartner_id] === undefined) { var n = q('SELECT name FROM c_bpartner WHERE c_bpartner_id=' + Number(r.c_bpartner_id))[0]; names[r.c_bpartner_id] = n ? n.name : String(r.c_bpartner_id); }
+        var c = q('SELECT iso_code FROM c_currency WHERE c_currency_id=' + Number(r.c_currency_id))[0]; r.bpname = names[r.c_bpartner_id]; r.iso = c ? c.iso_code : String(r.c_currency_id); });
+      if (typeof console !== 'undefined') console.log('§AGING stmt=' + stmt + ' offset=' + offset + ' isSOTrx=' + so + ' bp=' + bp + ' items=' + items.length + ' rows=' + rows.length +
+        ' open=' + tot.openamt + ' due=' + tot.dueamt + ' pastDue=' + tot.pastdueamt + ' totals=' + JSON.stringify(tot) + ' (Aging.java:102-262, MAging.add :157-235)');
+      return { ok: true, message: 'aging: ' + rows.length + ' row(s) from ' + items.length + ' open item(s) as of ' + stmt, rows: rows.length,
+               result: { aging: rows, totals: tot, statementDate: stmt, items: items.length } };
+    }, { kind: 'report' });
+  }
+
+  // ══ FS-16 (bim-compiler prompts/ERP_FIRST_SETUP_GUIDE.md §FS2n — Witness: W-ERP-FIRST-SETUP S25b) — ImportBPartner ═══
+  //   ImportBPartner.doIt (ImportBPartner.java:92-605) over the TIP of i_bpartner (rows the File Loader committed this
+  //   session). Pure: returns { ops } — ONE signed group of CRUD ops (staging updates + C_BPartner / C_Location /
+  //   C_BPartner_Location / AD_User creates, FKs as {__opRef:i}); the host commits it. ctx.tipRows(table) → lower-case rows.
+  function importBPartner(ctx, p) {
+    var q = ctx.query, tip = ctx.tipRows, cli = Number(p.AD_Client_ID);
+    var ops = [], log = { inserted: 0, updated: 0, errors: 0, contacts: 0, locations: 0 };
+    var std = ctx.stdDefaults || null;
+    function mk(op) { if (op.op_type === 'CRUD_CREATE' && std && !op.stdDefaults) op.stdDefaults = std; ops.push(op); return ops.length - 1; }
+    function create(table, fields) { return mk({ op_type: 'CRUD_CREATE', key: table, table: table, verb: 'create', id: null, fields: fields, cas: null }); }
+    function update(table, id, changes) { var ch = {}; Object.keys(changes).forEach(function (k) { ch[k] = { old: null, new: changes[k] }; }); return mk({ op_type: 'CRUD_UPDATE', key: table, table: table, verb: 'update', id: id, changes: ch }); }
+    var nz = function (v) { return v != null && String(v) !== ''; };
+    var rows = tip('i_bpartner').filter(function (r) { return Number(r.ad_client_id) === cli && String(r.i_isimported || 'N') !== 'Y'; });
+    var bps = tip('c_bpartner').filter(function (b) { return Number(b.ad_client_id) === cli; });
+    var users = tip('ad_user'), bpls = tip('c_bpartner_location'), locs = tip('c_location');
+    var defGroup = (q("SELECT MAX(value) AS v FROM c_bp_group WHERE isdefault='Y' AND ad_client_id=" + cli)[0] || {}).v;
+    rows.forEach(function (r) {                                           // ****	Prepare / validate (the UPDATE statements)	****
+      r._err = [];
+      r.ad_org_id = r.ad_org_id == null ? 0 : r.ad_org_id; r.isactive = r.isactive || 'Y';
+      if (!nz(r.groupvalue) && !nz(r.c_bp_group_id)) r.groupvalue = defGroup;
+      if (!nz(r.c_bp_group_id)) { var g = q("SELECT c_bp_group_id AS id FROM c_bp_group WHERE value='" + String(r.groupvalue || '').replace(/'/g, "''") + "' AND ad_client_id=" + cli)[0]; r.c_bp_group_id = g ? g.id : null; }
+      if (!nz(r.c_bp_group_id)) r._err.push('ERR=Invalid Group, ');
+      if (!nz(r.c_country_id)) { var c = q("SELECT c_country_id AS id FROM c_country WHERE countrycode='" + String(r.countrycode || '').trim().replace(/'/g, "''") + "' AND ad_client_id IN (0," + cli + ')')[0]; r.c_country_id = c ? c.id : null; }
+      if (!nz(r.c_country_id) && (nz(r.city) || nz(r.address1))) r._err.push('ERR=Invalid Country, ');
+      if (!nz(r.regionname) && !nz(r.c_region_id) && nz(r.c_country_id)) { var rd = q("SELECT MAX(name) AS n FROM c_region WHERE isdefault='Y' AND c_country_id=" + Number(r.c_country_id) + ' AND ad_client_id IN (0,' + cli + ')')[0]; r.regionname = rd ? rd.n : null; }
+      if (!nz(r.c_region_id) && nz(r.regionname) && nz(r.c_country_id)) { var rg = q("SELECT c_region_id AS id FROM c_region WHERE name='" + String(r.regionname).replace(/'/g, "''") + "' AND c_country_id=" + Number(r.c_country_id) + ' AND ad_client_id IN (0,' + cli + ')')[0]; r.c_region_id = rg ? rg.id : null; }
+      if (!nz(r.c_region_id) && nz(r.c_country_id) && (q('SELECT hasregion AS h FROM c_country WHERE c_country_id=' + Number(r.c_country_id))[0] || {}).h === 'Y') r._err.push('ERR=Invalid Region, ');
+      if (nz(r.email)) { var ue = users.filter(function (u) { return u.email === r.email && Number(u.ad_client_id) === cli; })[0]; if (ue) { r.c_bpartner_id = ue.c_bpartner_id; r.ad_user_id = ue.ad_user_id; } }
+      if (!nz(r.c_bpartner_id) && nz(r.value)) { var bm = bps.filter(function (b) { return b.value === r.value; })[0]; if (bm) r.c_bpartner_id = bm.c_bpartner_id; }
+      if (nz(r.c_bpartner_id) && !nz(r.ad_user_id) && nz(r.contactname)) { var uc = users.filter(function (u) { return u.name === r.contactname && String(u.c_bpartner_id) === String(r.c_bpartner_id); })[0]; if (uc) r.ad_user_id = uc.ad_user_id; }
+      if (nz(r.c_bpartner_id) && !nz(r.c_bpartner_location_id)) {           // Existing Location ? Exact Match
+        var same = function (a, b) { return (a == null || a === '') ? (b == null || b === '') : String(a) === String(b); };
+        var hit = bpls.filter(function (bl) { if (String(bl.c_bpartner_id) !== String(r.c_bpartner_id)) return false; var l = locs.filter(function (x) { return String(x.c_location_id) === String(bl.c_location_id); })[0];
+          return l && same(r.address1, l.address1) && same(r.address2, l.address2) && same(r.city, l.city) && same(r.postal, l.postal) && same(r.c_region_id, l.c_region_id) && String(r.c_country_id) === String(l.c_country_id); })[0];
+        if (hit) r.c_bpartner_location_id = hit.c_bpartner_location_id;
+      }
+      if (!nz(r.value)) r._err.push('ERR=Value is mandatory, ');
+    });
+    var validateOnly = String(p.IsValidateOnly || 'N') === 'Y';
+    var good = rows.filter(function (r) { return !r._err.length; }).sort(function (a, b) { return String(a.value) < String(b.value) ? -1 : String(a.value) > String(b.value) ? 1 : Number(a.i_bpartner_id) - Number(b.i_bpartner_id); });
+    rows.filter(function (r) { return r._err.length; }).forEach(function (r) { log.errors++; update('i_bpartner', r.i_bpartner_id, { i_isimported: 'N', i_errormsg: ' ' + r._err.join('') }); });
+    if (!validateOnly) {
+      var oldValue = null, bpRef = null, bplRef = null;
+      good.forEach(function (r) {
+        var stg = {};
+        if (String(r.value) !== String(oldValue)) {
+          oldValue = r.value; bplRef = null;
+          if (!nz(r.c_bpartner_id)) {                                       // new MBPartner(impBP) MBPartner.java:310-335 + setInitialDefaults
+            var bf = { ad_org_id: r.ad_org_id, value: r.value || r.email || r.contactname, name: r.name || r.contactname || r.email, name2: r.name2 || null,
+              description: r.description || null, duns: r.duns || null, taxid: r.taxid || null, naics: r.naics || null, c_bp_group_id: r.c_bp_group_id,
+              iscustomer: 'Y', isprospect: 'Y', isvendor: 'N', isemployee: 'N', issummary: 'N', issalesrep: 'N', istaxexempt: 'N', ispotaxexempt: 'N', isonetime: 'N',
+              so_creditlimit: 0, so_creditused: 0, totalopenbalance: 0, socreditstatus: 'X' };
+            if (r.isvendor === 'Y') { bf.isvendor = 'Y'; bf.iscustomer = 'N'; }   // setTypeOfBPartner :619-632
+            if (r.isemployee === 'Y') { bf.isemployee = 'Y'; bf.iscustomer = 'N'; }
+            if (r.iscustomer === 'Y') bf.iscustomer = 'Y';
+            bpRef = { __opRef: create('c_bpartner', bf) }; log.inserted++;
+          } else {                                                          // Update existing BPartner
+            var ch = {}; if (nz(r.name)) { ch.name = r.name; ch.name2 = r.name2 || null; }
+            ['duns', 'taxid', 'naics', 'description'].forEach(function (k) { if (nz(r[k])) ch[k] = r[k]; });
+            if (nz(r.c_bp_group_id)) ch.c_bp_group_id = r.c_bp_group_id;
+            if (Object.keys(ch).length) update('c_bpartner', r.c_bpartner_id, ch);
+            bpRef = r.c_bpartner_id; log.updated++;
+          }
+          if (nz(r.c_bpartner_location_id)) bplRef = r.c_bpartner_location_id;   // update of an existing location: named, not ported
+          else if (nz(r.c_country_id) && nz(r.address1) && nz(r.city)) {
+            var li = create('c_location', { ad_org_id: 0, c_country_id: r.c_country_id, c_region_id: r.c_region_id || null, city: r.city, address1: r.address1,
+              address2: r.address2 || null, postal: r.postal || null, postal_add: r.postal_add || null });
+            bplRef = { __opRef: create('c_bpartner_location', { ad_org_id: r.ad_org_id, c_bpartner_id: bpRef, c_location_id: { __opRef: li },
+              name: String(r.city || r.address1),                                  // MBPartnerLocation.beforeSave '.' → makeUnique level 0 (City)
+              phone: r.phone || null, phone2: r.phone2 || null, fax: r.fax || null, isbillto: 'Y', isshipto: 'Y', ispayfrom: 'Y', isremitto: 'Y', ispreservecustomname: 'N' }) };
+            log.locations++;
+          }
+        }
+        stg.c_bpartner_id = bpRef;
+        if (bplRef != null) stg.c_bpartner_location_id = bplRef;
+        if (!nz(r.ad_user_id) && (nz(r.contactname) || nz(r.email))) {          // New Contact — new MUser(bp)
+          stg.ad_user_id = { __opRef: create('ad_user', { ad_org_id: r.ad_org_id, c_bpartner_id: bpRef, name: r.contactname || r.email, title: r.title || null,
+            description: r.contactdescription || null, comments: r.comments || null, phone: r.phone || null, phone2: r.phone2 || null, fax: r.fax || null,
+            email: r.email || null, birthday: r.birthday || null, c_bpartner_location_id: bplRef }) };
+          log.contacts++;
+        }
+        stg.i_isimported = 'Y'; stg.processed = 'Y'; stg.processing = 'N'; stg.i_errormsg = ' ';
+        update('i_bpartner', r.i_bpartner_id, stg);
+      });
+    }
+    return { ops: ops, log: log, staged: rows.length, validateOnly: validateOnly };
+  }
+  function registerImportBPartner() {
+    registerHandler('org.compiere.process.ImportBPartner', function (ctx, info) {
+      var p = (info && info.params) || {};
+      if (typeof ctx.query !== 'function' || typeof ctx.tipRows !== 'function') return { ok: false, message: 'ImportBPartner: no data accessor', rows: 0 };
+      if (!(Number(p.AD_Client_ID) >= 0) || p.AD_Client_ID == null || p.AD_Client_ID === '') return { ok: false, message: 'AD_Client_ID is mandatory', rows: 0 };
+      var r = importBPartner(ctx, p);
+      if (typeof console !== 'undefined') console.log('§IMPORT-BP client=' + p.AD_Client_ID + ' staged=' + r.staged + ' inserted=' + r.log.inserted + ' updated=' + r.log.updated +
+        ' locations=' + r.log.locations + ' contacts=' + r.log.contacts + ' errors=' + r.log.errors + ' ops=' + r.ops.length + (r.validateOnly ? ' validateOnly=Y' : '') + ' (ImportBPartner.java:92-605)');
+      return { ok: true, message: (r.validateOnly ? 'Validated: ' : '') + r.log.inserted + ' business partner(s) inserted, ' + r.log.updated + ' updated, ' + r.log.errors + ' error(s)',
+               rows: r.log.inserted + r.log.updated, result: { commitOps: r.ops, importLog: r.log, staged: r.staged } };
+    }, { kind: 'process' });
   }
 
   // dispatch — the full spine: read → resolve classname → validate params → run handler → result.
@@ -627,10 +1046,13 @@
     genShipmentLines: genShipmentLines, SHIPMENT_SPEC: SHIPMENT_SPEC,
     registerInvoiceGenerate: registerInvoiceGenerate, invoiceGenGate: invoiceGenGate,
     genInvoiceLines: genInvoiceLines, INVOICE_SPEC: INVOICE_SPEC,
+    registerCreateFromInvoice: registerCreateFromInvoice, createFromInvoiceGate: createFromInvoiceGate,
+    shipLineFields: shipLineFields, sameOrderLineUOM: sameOrderLineUOM,
     readProcess: readProcess, resolveClassname: resolveClassname,
     validateParams: validateParams, dispatch: dispatch,
     pickUsedProcesses: pickUsedProcesses,
-    refType: refType, typeOk: typeOk, REF_TYPE: REF_TYPE
+    refType: refType, typeOk: typeOk, REF_TYPE: REF_TYPE,
+    openItems: openItems, agingFold: agingFold, AGING_BUCKETS: AGING_BUCKETS, importBPartner: importBPartner
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = API;   // node witness

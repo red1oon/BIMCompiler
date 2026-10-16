@@ -1,0 +1,70 @@
+=== §CUT_GATE_CLASSIFY — Duplex wallish (IfcWall*) candidates ===
+total wallish elements resolving a mesh: 57
+CUTTABLE (pass box test): 7
+  BOX 2O2Fr$t4X7Zf8NOew3FK04 IfcWallStandardCase Basic Wall:Foundation - Concrete (435mm):140987 tris=12 verts=34
+  BOX 2O2Fr$t4X7Zf8NOew3FK1b IfcWallStandardCase Basic Wall:Foundation - Concrete (435mm):141018 tris=12 verts=34
+  BOX 2O2Fr$t4X7Zf8NOew3FK3E IfcWallStandardCase Basic Wall:Foundation - Concrete (435mm):140913 tris=12 verts=34
+  BOX 2O2Fr$t4X7Zf8NOew3FK80 IfcWallStandardCase Basic Wall:Foundation - Concrete (417mm):140479 tris=12 verts=34
+  BOX 2O2Fr$t4X7Zf8NOew3FK9N IfcWallStandardCase Basic Wall:Foundation - Concrete (417mm):140520 tris=12 verts=34
+  BOX 2O2Fr$t4X7Zf8NOew3FKE5 IfcWallStandardCase Basic Wall:Foundation - Concrete (417mm):140602 tris=12 verts=34
+  BOX 2O2Fr$t4X7Zf8NOew3FKEr IfcWallStandardCase Basic Wall:Foundation - Concrete (417mm):140554 tris=12 verts=34
+REFUSE (fail box test): 50
+
+--- refusal class breakdown ---
+(a) layered wall (component_geometry_layers rows present): 50
+     0dxE1Sy6nDqfpDb5vIMN_Z Basic Wall:Interior - Furring (152 mm Stud):194166 layer_rows=2 tris=40 authored_layered=True
+     0dxE1Sy6nDqfpDb5vIMNiA Basic Wall:Interior - Furring (152 mm Stud):193247 layer_rows=2 tris=40 authored_layered=True
+     0iEHWY1$XA8eQeeULq4jDb Basic Wall:Interior - Furring (152 mm Stud):190774 layer_rows=2 tris=40 authored_layered=True
+     0iEHWY1$XA8eQeeULq4jE6 Basic Wall:Interior - Furring (152 mm Stud):190933 layer_rows=2 tris=40 authored_layered=True
+     0iEHWY1$XA8eQeeULq4jZ1 Basic Wall:Interior - Furring (152 mm Stud):189074 layer_rows=2 tris=40 authored_layered=True
+     0iEHWY1$XA8eQeeULq4j_U Basic Wall:Interior - Furring (152 mm Stud):189901 layer_rows=2 tris=40 authored_layered=True
+     0iEHWY1$XA8eQeeULq4jpl Basic Wall:Interior - Partition (92mm Stud):190140 layer_rows=3 tris=68 authored_layered=True
+     0jf0rYHfX3RAB3bSIRjmmy Basic Wall:Exterior - Brick on Block:184944 layer_rows=6 tris=152 authored_layered=True
+     0jf0rYHfX3RAB3bSIRjmoa Basic Wall:Exterior - Brick on Block:185064 layer_rows=6 tris=152 authored_layered=True
+     0jf0rYHfX3RAB3bSIRjmpw Basic Wall:Exterior - Brick on Block:185014 layer_rows=6 tris=152 authored_layered=True
+     0jf0rYHfX3RAB3bSIRjmr1 Basic Wall:Exterior - Brick on Block:185101 layer_rows=6 tris=152 authored_layered=True
+     1aj$VJZFn2TxepZUBcKpZw Basic Wall:Interior - Partition (92mm Stud):203998 layer_rows=3 tris=148 authored_layered=True
+     1aj$VJZFn2TxepZUBcKpee Basic Wall:Interior - Partition (92mm Stud):204300 layer_rows=3 tris=68 authored_layered=True
+     1aj$VJZFn2TxepZUBcKphf Basic Wall:Interior - Partition (92mm Stud):204493 layer_rows=3 tris=68 authored_layered=True
+     1aj$VJZFn2TxepZUBcKpvt Basic Wall:Interior - Partition (92mm Stud):203347 layer_rows=3 tris=148 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FKGS Basic Wall:Interior - Partition (92mm Stud):139939 layer_rows=3 tris=68 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FKIu Basic Wall:Interior - Partition (92mm Stud):139783 layer_rows=3 tris=68 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FKRH Basic Wall:Party Wall - CMU Residential Unit Dimising Wall:139374 layer_rows=7 tris=424 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FKRi Basic Wall:Party Wall - CMU Residential Unit Dimising Wall:139347 layer_rows=5 tris=124 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FKST Basic Wall:Interior - Partition (92mm Stud):139682 layer_rows=3 tris=148 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FKau Basic Wall:Party Wall - CMU Residential Unit Dimising Wall:143239 layer_rows=7 tris=784 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FL8v Basic Wall:Interior - Partition (92mm Stud):144518 layer_rows=3 tris=160 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FL96 Basic Wall:Interior - Partition (92mm Stud):144633 layer_rows=3 tris=148 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FL9r Basic Wall:Interior - Partition (92mm Stud):144586 layer_rows=3 tris=148 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FLCm Basic Wall:Interior - Plumbing (152mm Stud):144783 layer_rows=3 tris=68 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FLEJ Basic Wall:Interior - Partition (92mm Stud):144684 layer_rows=3 tris=68 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FLIE Basic Wall:Interior - Partition (92mm Stud):143921 layer_rows=3 tris=148 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FLJd Basic Wall:Interior - Partition (92mm Stud):143960 layer_rows=3 tris=148 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FLKI Basic Wall:Interior - Partition (92mm Stud):144301 layer_rows=3 tris=68 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FLMr Basic Wall:Interior - Plumbing (152mm Stud):144138 layer_rows=3 tris=68 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FLOH Basic Wall:Exterior - Brick on Block:143534 layer_rows=6 tris=1072 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FLPP Basic Wall:Exterior - Brick on Block:143590 layer_rows=6 tris=1192 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FLQD Basic Wall:Exterior - Brick on Block:143410 layer_rows=6 tris=1072 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FLR9 Basic Wall:Exterior - Brick on Block:143478 layer_rows=6 tris=1192 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FLTF Basic Wall:Interior - Partition (92mm Stud):143856 layer_rows=3 tris=160 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FNau Basic Wall:Interior - Partition (92mm Stud):139143 layer_rows=3 tris=148 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FNbT Basic Wall:Party Wall - CMU Residential Unit Dimising Wall:139234 layer_rows=5 tris=124 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FNhv Basic Wall:Exterior - Brick on Block:138310 layer_rows=6 tris=528 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FNld Basic Wall:Interior - Partition (92mm Stud):138584 layer_rows=3 tris=68 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FNqI Basic Wall:Exterior - Brick on Block:138157 layer_rows=6 tris=528 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FNr2 Basic Wall:Exterior - Brick on Block:138237 layer_rows=6 tris=528 authored_layered=True
+     2O2Fr$t4X7Zf8NOew3FNtn Basic Wall:Exterior - Brick on Block:138062 layer_rows=6 tris=528 authored_layered=True
+     3Y4YRln2r91vflHcHE5ITm Basic Wall:Interior - Furring (38 mm Stud):217578 layer_rows=2 tris=40 authored_layered=True
+     3Y4YRln2r91vflHcHE5ITn Basic Wall:Interior - Furring (38 mm Stud):217579 layer_rows=2 tris=40 authored_layered=True
+     3Y4YRln2r91vflHcHE5ITp Basic Wall:Interior - Furring (38 mm Stud):217577 layer_rows=2 tris=40 authored_layered=True
+     3Y4YRln2r91vflHcHE5ITs Basic Wall:Interior - Furring (38 mm Stud):217580 layer_rows=2 tris=40 authored_layered=True
+     3Y4YRln2r91vflHcHE5IVI Basic Wall:Interior - Furring (38 mm Stud):217416 layer_rows=2 tris=40 authored_layered=True
+     3Y4YRln2r91vflHcHE5IVJ Basic Wall:Interior - Furring (38 mm Stud):217417 layer_rows=2 tris=40 authored_layered=True
+     3Y4YRln2r91vflHcHE5IVS Basic Wall:Interior - Furring (38 mm Stud):217414 layer_rows=2 tris=40 authored_layered=True
+     3Y4YRln2r91vflHcHE5IVT Basic Wall:Interior - Furring (38 mm Stud):217415 layer_rows=2 tris=40 authored_layered=True
+(b) opening-cut host (rel_fills_host, no layer rows): 0
+(c) other real geometry (neither layered nor opening-host): 0
+
+=== SUMMARY TABLE ===
+total=57  cuttable_box=7  refuse=50  (a)layered=50  (b)opening_host=0  (c)other=0
+wrote classify_result.json
