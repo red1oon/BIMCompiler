@@ -422,9 +422,14 @@
     (input.gaps || []).forEach(function (g) {
       if (!g || !g.code || g.code === 'GAP:unmapped_layer') return;                     // folded into QF:layer_unmapped
       if (SUPERSEDABLE.indexOf(g.code) >= 0 && g.sheet !== undefined && (resolved[g.sheet] || []).indexOf(String(g.handle)) >= 0) { count('gaps_superseded'); return; }
+      var s = g.sheet !== undefined ? byId[g.sheet] : null;
       var shape = g.shape || (g.kind === 'door' || g.kind === 'window' ? 'openings' : null);
+      if (!shape && s && g.layer !== undefined) {                                       // L2.5 W3: the gap layer's rule type in that sheet's maps
+        var lr = null; (s.maps || []).some(function (m) { lr = B.matchRule(g.layer, m.rules); return !!lr; });
+        if (lr) shape = ['opening', 'glazing', 'elevdoor'].indexOf(lr.type) >= 0 ? 'openings' : ['wall', 'wallline'].indexOf(lr.type) >= 0 ? 'walls' : null;
+      }
       if (!shape) { var t = SHAPE_TABLE.find(function (x) { return x[0].test(g.code); }); shape = t ? t[1] : 'set'; }
-      var s = g.sheet !== undefined ? byId[g.sheet] : null, hs = typeof g.handle === 'string' || typeof g.handle === 'number' ? [String(g.handle)] : [];
+      var hs = typeof g.handle === 'string' || typeof g.handle === 'number' ? [String(g.handle)] : [];
       var e = s && hs.length ? s.all.find(function (x) { return x.handle === hs[0]; }) : null;
       var why = g.reason || (g.need ? 'need ' + g.need : '') || (g.layer ? 'layer ' + g.layer : '');
       var extra = {}; Object.keys(g).sort().forEach(function (k) { if (['code', 'shape', 'sheet', 'handle', 'run_id'].indexOf(k) < 0) extra[k] = g[k]; });

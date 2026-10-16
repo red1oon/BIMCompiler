@@ -191,6 +191,8 @@ only('QG2', 'an interior wall height no elevation shows passes without a stated 
 { const v = Q.qualify(set({ plan: { walltop: ['0,slab_above'] }, gaps: [wallGap] }).input, S);
   check('QG3', 'the user-stated @WALLTOP convention is not applied, or not recorded as user-stated', v.verdict === 'qualifies' && v.advisory.some(x => x.code === 'QF:convention_applied' && x.convention === 'user-stated') && v.conventions.length === 1 && v.conventions[0].source === 'user-stated' && v.conventions[0].level === 0, cc(v) + ' conventions=' + J(v.conventions)); }
 only('QG4', '@WALLTOP silenced a door height gap (it covers walls only)', { plan: { walltop: ['0,slab_above'] }, gaps: [wallGap, doorGap] }, ['GAP:no_elevation_height']);
+{ const v = Q.qualify(set({ gaps: [doorGap] }).input, S);
+  check('QG6', 'a door height gap (A-DOOR layer, no kind) is counted under walls (L2.5 W3)', v.blocking.length === 1 && v.blocking[0].shape === 'openings' && v.by_shape.walls.verdict === 'qualifies' && v.by_shape.openings.verdict === 'blocked', J(v.blocking.map(x => x.code + ':' + x.shape))); }
 only('QG5', '@WALLTOP naming no plan level passes', { plan: { walltop: ['7,slab_above'] } }, ['QF:walltop_unknown_storey']);
 // ---- L2.3 D5 drafting notes ----
 const N = (id, issue, d, wantB, wantA) => { const s5x = set({ plan: { extraDims: [d] } }), v = Q.qualify(s5x.input, S), h = s5x.D.x0;

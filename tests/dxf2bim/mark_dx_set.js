@@ -10,6 +10,10 @@ const DxfParser = require(path.join(__dirname, '../../deploy/dev/dxf-parser.js')
 const MK = require(path.join(__dirname, '../../deploy/dev/dxf2marks.js'));
 const ROOT = path.join(__dirname, '../..');
 const STD = process.argv[2] === 'std';
+// L2.5 W2: std grid axes sit on half mm (208.5); Math.round maps +208.5 -> 209 but -208.5 -> -208, a 1 mm error on mirrored elevations. The std profile
+// writes positions at 0.001 mm; the old profile keeps whole mm (its positions are integers, copies stay byte-identical).
+const RND = v => STD ? Number(v.toFixed(3)) : Math.round(v);
+const ELEV_TOL = 0.003, EXT_FACE_TOL = 0.010;   // L2.5 W1: CFG.elev_tol (the pipeline's height tolerance); L1.1 R4(b) exterior face tolerance
 const SRC = f => STD ? path.join(ROOT, '2D_Layout/output/STD/DX_' + f + '_std.dxf') : path.join(ROOT, '2D_Layout/output/DXF/DX_' + f + '_20260428_0636.dxf');
 const DB = path.join(ROOT, '2D_Layout/input/DX_extracted.db');
 const OUT = path.join(__dirname, STD ? 'out/marked_std' : 'out/marked'); fs.mkdirSync(OUT, { recursive: true });
@@ -33,7 +37,7 @@ function gridLines(d, vertical) {                                       // evide
     const cand = T.filter(t => { const [tx, ty] = pos(t); const along = vertical ? tx : ty, perp = vertical ? ty : tx;
       return Math.abs(along - c) <= 60 && ends.some(en => Math.abs(perp - (vertical ? en.y : en.x)) <= 700); }).map(t => ({ label: t.text.trim(), h: t.handle }));
     const labs = [...new Set(cand.map(x => x.label))];
-    if (labs.length === 1) { if (res[labs[0]] !== undefined && Math.abs(res[labs[0]].pos - c) > 1) { say('  REFUSE: label ' + labs[0] + ' on two lines'); refused = true; } res[labs[0]] = { pos: Math.round(c), line: l.handle, text: cand.map(x => x.h).join('/') }; }
+    if (labs.length === 1) { if (res[labs[0]] !== undefined && Math.abs(res[labs[0]].pos - c) > 1) { say('  REFUSE: label ' + labs[0] + ' on two lines'); refused = true; } res[labs[0]] = { pos: RND(c), line: l.handle, text: cand.map(x => x.h).join('/') }; }
     else { say('  REFUSE: grid line ' + l.handle + ' at ' + Math.round(c) + ' has ' + labs.length + ' candidate labels [' + labs + ']'); refused = true; }
   });
   return res;
@@ -43,8 +47,8 @@ function levelPairs(d) {                                                // trust
   const labs = d.entities.filter(e => e.type === 'TEXT' && LBL(e)).map(e => ({ z: Number(/([+-]\d+\.\d+)\s*$/.exec(e.text.trim())[1]), y: pos(e)[1], h: e.handle }));
   const lines = d.entities.filter(e => e.layer === (STD ? 'A-ANNO-LEVL' : 'A-ELEV-LEVL') && e.type === 'LINE' && Math.abs(e.vertices[0].y - e.vertices[1].y) <= 1e-9).map(e => ({ y: e.vertices[0].y, h: e.handle }));
   const out = new Map();
-  labs.forEach(l => { if (Math.abs(l.y - 1000 * l.z) <= 1) out.set(l.z, { z: l.z, y: Math.round(l.y), src: 'label ' + l.h }); });
-  labs.forEach(l => { if (!out.has(l.z)) { const ln = lines.find(x => Math.abs(x.y - 1000 * l.z) <= 1); if (ln) out.set(l.z, { z: l.z, y: Math.round(ln.y), src: 'line ' + ln.h }); } });
+  labs.forEach(l => { if (Math.abs(l.y - 1000 * l.z) <= 1) out.set(l.z, { z: l.z, y: RND(l.y), src: 'label ' + l.h }); });
+  labs.forEach(l => { if (!out.has(l.z)) { const ln = lines.find(x => Math.abs(x.y - 1000 * l.z) <= 1); if (ln) out.set(l.z, { z: l.z, y: RND(ln.y), src: 'line ' + ln.h }); } });
   return [...out.values()].sort((a, b) => a.z - b.z);
 }
 const planGrids = {};
@@ -59,6 +63,22 @@ for (const s of SET) {
     const lv = sql("select min(r.minZ) z from elements_meta m join elements_rtree r on r.id=m.id where m.ifc_class='IfcWall' and m.storey='" + s.storey + "'")[0].z;
     const lv3 = Number(lv.toFixed(3)); marks.push({ text: '@LEVEL=' + lv3 }); say('  LEVEL=' + lv3 + '  [FROM_SOURCE_MODEL: min wall z of ' + s.storey + ']');
     const gx = gridLines(d, true), gy = gridLines(d, false); planGrids[s.f] = { gx, gy };
+    if (STD) {                                                         // L2.5 W1: @WALLTOP only when the MODEL confirms slab_above for every interior wall
+      const W = sql("select m.id, round(r.minX,6) a, round(r.minY,6) b, round(r.maxX,6) c, round(r.maxY,6) d, round(r.maxZ,6) top from elements_meta m join elements_rtree r on r.id=m.id where m.ifc_class='IfcWall' and m.storey='" + s.storey + "' order by m.id");
+      const SL = sql("select m.id, round(r.minX,6) a, round(r.minY,6) b, round(r.maxX,6) c, round(r.maxY,6) d, round(r.minZ,6) z0 from elements_meta m join elements_rtree r on r.id=m.id where m.ifc_class='IfcSlab' order by m.id");
+      const E = [Math.min(...W.map(w => w.a)), Math.min(...W.map(w => w.b)), Math.max(...W.map(w => w.c)), Math.max(...W.map(w => w.d))];
+      const ext = w => Math.abs(w.a - E[0]) <= EXT_FACE_TOL || Math.abs(w.b - E[1]) <= EXT_FACE_TOL || Math.abs(w.c - E[2]) <= EXT_FACE_TOL || Math.abs(w.d - E[3]) <= EXT_FACE_TOL;
+      let ok = true, n = 0;
+      W.filter(w => !ext(w)).forEach(w => {
+        n++;
+        const above = SL.filter(q => q.z0 > lv3 + ELEV_TOL && Math.min(q.c, w.c) - Math.max(q.a, w.a) > 1e-9 && Math.min(q.d, w.d) - Math.max(q.b, w.b) > 1e-9);
+        const u = above.length ? Math.min(...above.map(q => q.z0)) : null, c = u !== null && Math.abs(w.top - u) <= ELEV_TOL;
+        if (!c) ok = false;
+        say('  WALLTOP wall ' + w.id + ' top=' + w.top + ' slab-above underside=' + u + (u !== null ? ' (slabs ' + above.filter(q => q.z0 === u).map(q => q.id).join(',') + ')' : '') + ' -> ' + (c ? 'confirmed' : 'NOT confirmed'));
+      });
+      if (ok && n) { marks.push({ text: '@WALLTOP=' + lv3 + ',slab_above' }); say('  WALLTOP=' + lv3 + ',slab_above  [FROM_SOURCE_MODEL: all ' + n + ' interior walls confirmed]'); }
+      else say('  WALLTOP not written for ' + s.storey + ' (' + (n ? 'not every interior wall reaches the slab underside' : 'no interior wall') + '; the wall-height gaps stay blocking)');
+    }
     Object.entries(gx).forEach(([l, v]) => { marks.push({ text: '@GRIDX=' + l, x: v.pos, y: 0 }); say('  GRIDX ' + l + ' x=' + v.pos + '  [grid line ' + v.line + ' label text ' + v.text + ']'); });
     Object.entries(gy).forEach(([l, v]) => { marks.push({ text: '@GRIDY=' + l, x: 0, y: v.pos }); say('  GRIDY ' + l + ' y=' + v.pos + '  [grid line ' + v.line + ' label text ' + v.text + ']'); });
   } else {
