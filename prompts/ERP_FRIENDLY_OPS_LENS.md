@@ -24,7 +24,7 @@ Confirm-and-do-next buttons that chain the follow-on documents (ship, invoice) i
 - [x] Spec written (this file).
 - [x] Odoo 17.0.1.3 started 2026-10-15 (docker `odoo` + `odoo-db`, localhost:8069, db `odoodemo`, admin/admin). Installed: sale_management, purchase, stock, account. **`mrp` is NOT installed**, so flow (c) needs `mrp` installed into this throwaway DB first; start with flows (a) and (b).
 - [x] Flow (c) measured on both: Odoo 8 gestures, twin 21 (§14).
-- [ ] FO-n candidate list with numbers (open item 1 in §13).
+- [ ] FO-n candidate list with numbers (open item 1 in §13): flow (c) §14, flow (a) §28 done (payment slice open), flow (b) open.
 
 ## 6. Lane split against the ERPNext work (so the two lenses never overlap)
 The ERPNext column already exists in `prompts/ERP_FIRST_SETUP_GUIDE.md §FS-ERPNEXT` (docs-only, first-setup/onboarding, ERP-depth session). Split by **lifecycle phase**, and record the owner on every `FO-n`:
@@ -368,3 +368,14 @@ Goal (§20.4): a bundle DECLARES the dictionary rows it provides; one engine wri
 - **Live probe** (`live_probe_2083.log`, public page, fresh profile): both bundles ACTIVE via `§PLUGIN-BUILTIN` x2, rail order unchanged with `ninjacreate` added after `ninja`, letter box N, Stop/Start toggles the pill, 0 page errors.
 - Observed, not changed: on a fresh profile the builtins finish installing after the rail has mounted, so their pills join the rail a moment after first paint (placed by `order`, not at the top).
 - Named, not built: the Ninja engines (ninja_*.js, SheetJS) stay page scripts loaded for everyone; lazy-loading them on the bundle's activation is a later slice.
+
+## 28. Flow (a) sales order measured on both (2026-10-17, session 5)
+Recorders: Odoo `scripts/odoo_observe/so_flow.js` + RPC verdict `verify_so.py`; twin `scripts/odoo_observe/twin_so_flow.js` (instrumented copy of bim-ootb `poc_depth_cycle_live.js` D1-D3). Logs `build/erp/logs_odoo_observe/{so_flow,so_verify,twin_so_flow}_2026-10-17.log`. G = clicks + selects + typed fields, login excluded.
+**Odoo 17** (customer Azure Interior, Large Cabinet x5, stock present): `§ODOO_GESTURES total=18 clicks=15 typed=3`; RPC `§ODOO_VERDICT PASS` (S00030 sale, delivery WH/OUT/00017 done, INV/2026/00008 posted + paid 1840). Chain: order (10) -> Delivery smart button + Validate (2) -> back (1) -> Create Invoice + dialog (2) -> Confirm invoice (1) -> Pay + Create Payment (2). S=3 screens, M=0 typed beyond customer/product/qty, R=0.
+**Twin** (POS Order, `§TWIN_VERDICT PASS`, one signed group wrote shipment + invoice + stock + postings, verifyChain ok): `§TWIN_GESTURES total=16 clicks=11 selects=4 typed=1 menu=3`. Chain: menu 3, New 1, 3 header picks (doctype, partner, org), Save 1, Lines tab 1, New 1, product pick 1, qty 1, Save 1, back to header tab 1, grid/form toggle 1, Complete 1. S=1 window. **Payment NOT included** (legacy POS payment is a separate Payment window, not yet recorded), so 16 vs 18 is NOT "twin faster": Odoo's count includes ship + invoice + pay as 8 visible steps the twin's Complete does in one group.
+**Comparable slice, order entered to Completed:** Odoo 10 (apps menu to Confirm) vs twin 16. The twin's extra gestures are mechanics, each checkable against legacy before it becomes a lens op:
+- FO-A1 order lines entered on the header form (no tab switch, no separate New/Save for the line): removes Lines tab, New, Save, back-tab, toggle = up to 5. Must still save header and line through `.save()`, `§EVENT_SEQ` equal to the tab path.
+- FO-A2 Save & Complete in one gesture = FO-M5 (built, slice 1): removes 1.
+- FO-A3 header picks: doctype/org have no legacy default (see §14.3), only partner is a real input; same deferred, low value.
+- FO-A4 payment from the record (Odoo "Pay"): needs the twin's payment gesture count first. OPEN.
+Owner lens per §6: all day-to-day documents = this lane. Flow (b) purchase and the payment slice remain to measure.
