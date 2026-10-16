@@ -17,6 +17,7 @@
     [/^GAP:slab_/, 'slabs'], [/^GAP:roof_/, 'roof'],
     [/^GAP:(wall_|no_elevation_height$|elevation_height_conflict$|no_elevation_for_face$|no_height$|duplicate_footprint$|zero_length$|bad_outline$|layers_sum_mismatch$)/, 'walls'],
     [/^GAP:(door_|window_|opening_|fill_|no_lod|lod|no_host|gap_height_conflict$|no_elevation_match$|unknown_block$|no_fill_geometry$|type_)/, 'openings']];
+  var NOTE_ONLY = /^(EQ|VERIFY|V\.?I\.?F\.?)$/i, NOTE_SUFFIX = /^(.*?)\s+(TYP\.?|TYPICAL|VERIFY|V\.?I\.?F\.?)$/i;   // L2.3 D5 recognised drafting notes
   var LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').filter(function (c) { return c !== 'I' && c !== 'O'; });
 
   function hnum(h) { var n = parseInt(h, 16); return isFinite(n) ? n : Infinity; }
@@ -81,8 +82,8 @@
   }
   function dimText(e, blocks) {                                                       // { text, override } | null (automatic)
     if (e.text !== undefined && e.text !== null && String(e.text) !== '') {
-      var o = clean(e.text); if (o === '<>') return null;
-      return { text: o, override: true };
+      var o = clean(e.text);
+      if (o !== '<>') return { text: o, override: true };                             // '<>' = the measurement: the block's rendered text is checked below (L2.3 D5)
     }
     var bl = blocks && e.block ? blocks[e.block] : null;
     var ts = bl && bl.entities ? bl.entities.filter(function (x) { return x.type === 'TEXT' || x.type === 'MTEXT'; }) : [];
@@ -171,7 +172,7 @@
     function block(code, sheet, handles, pos, message, extra, shape) { item(blocking, code, shape || 'set', sheet, handles, pos, message, extra); }
 
     // settings (no defaults, §L2.1)
-    var NEED = ['tol.grid', 'tol.dim', 'tol.level', 'tol.align', 'grid.min_wall_len', 'layers.grid', 'layers.dims', 'layers.bearing'];
+    var NEED = ['tol.grid', 'tol.dim', 'tol.level', 'tol.align', 'grid.min_wall_len', 'layers.grid', 'layers.dims'];   // layers.bearing removed (L2.3 D4)
     var missing = NEED.filter(function (k) { var v = get(settings, k); return k.indexOf('layers.') === 0 ? !Array.isArray(v) : !(typeof v === 'number' && isFinite(v) && v >= 0); });
     missing.forEach(function (k) { block('QF:setting_missing', null, [], null, 'setting ' + k + ' is not stated (no default is invented)', { need: k }); });
     var has = function (k) { return missing.indexOf(k) < 0; };
@@ -200,8 +201,9 @@
     var roled = SH.filter(function (s) { return s.desc.view; });
     var setNames = {}; roled.forEach(function (s) { if (s.desc.set !== undefined) (setNames[s.desc.set] = setNames[s.desc.set] || []).push(s.id); });
     if (Object.keys(setNames).length > 1) block('QF:set_mismatch', null, [], null, 'sheets carry different @SET: ' + Object.keys(setNames).sort().map(function (k) { return k + '=' + setNames[k].join(','); }).join(' / '));
-    var plans = roled.filter(function (s) { return s.desc.view === 'PLAN'; }), elevs = roled.filter(function (s) { return s.desc.view === 'ELEV'; });
+    var plans = roled.filter(function (s) { return s.desc.view === 'PLAN'; }), elevs = roled.filter(function (s) { return s.desc.view === 'ELEV'; }), roofs = roled.filter(function (s) { return s.desc.view === 'ROOF'; });
     if (!plans.length) block('QF:set_no_plan', null, [], null, 'no sheet is marked @VIEW=PLAN: the set has no storey');
+    if (!roofs.length) block('QF:set_no_roof', null, [], null, 'no sheet is marked @VIEW=ROOF: the roof outline has no roof plan (L2.3 D1)', null, 'roof');
     var lv = {}; plans.forEach(function (s) { if (typeof s.desc.level === 'number') (lv[s.desc.level] = lv[s.desc.level] || []).push(s.id); });
     Object.keys(lv).forEach(function (l) { if (lv[l].length > 1) block('QF:plan_level_duplicate', lv[l][0], [], null, 'two plans state @LEVEL=' + l + ': ' + lv[l].join(', '), { level: Number(l) }); });
     var leveled = plans.filter(function (s) { return typeof s.desc.level === 'number'; }).sort(function (a, b) { return a.desc.level - b.desc.level || (a.id < b.id ? -1 : 1); });
@@ -229,17 +231,24 @@
     SH.forEach(function (s) {
       var uname = s.desc.units || HEADER_UNITS[s.header.$INSUNITS], k = uname ? K[uname] : null;
       if (!k) return;
-      var lfac = typeof s.header.$DIMLFAC === 'number' && s.header.$DIMLFAC > 0 ? s.header.$DIMLFAC : 1;  // DXF reference default 1.0
       var unitEv = [], implied = {};
       s.ents.filter(function (e) { return e.type === 'DIMENSION'; }).forEach(function (e) {
         var meas = dimMeasured(e); if (meas === null) { count('dims_unchecked_type'); return; }
         count('dims_checked');
         var dt = dimText(e, s.blocks); if (!dt) return;
-        var L = parseLen(dt.text);
+        var note = null, L;
+        if (dt.override && NOTE_ONLY.test(dt.text)) {                                   // L2.3 D5: a recognised drafting note, shown with the measured value
+          item(advisory, 'QF:dim_note', 'set', s.id, [e.handle], posOf(e), s.id + ': dimension ' + e.handle + ' note "' + dt.text + '" (measures ' + r6(meas * k) + ' m)', { note: dt.text, measured_m: r6(meas * k) }); return;
+        }
+        var ns = dt.override ? NOTE_SUFFIX.exec(dt.text) : null;
+        if (ns && parseLen(ns[1])) { L = parseLen(ns[1]); note = ns[2]; } else L = parseLen(dt.text);
         if (!L) { if (dt.override) block('QF:dim_text_unreadable', s.id, [e.handle], posOf(e), s.id + ': dimension text override "' + dt.text + '" is not a length (G3 forbids overrides; it cannot be verified)', { text: dt.text }); else count('dims_block_text_unparsed'); return; }
         if (!has('tol.dim')) return;
-        var mm = meas * lfac, tm = L.unitless ? L.v * k : L.m, res = L.unitless ? L.res * k : L.res_m, tol = Math.max(tolD, res / 2) + EPS;
-        if (Math.abs(tm - mm * k) <= tol) { if (dt.override) item(advisory, 'QF:dim_override_equal', 'set', s.id, [e.handle], posOf(e), s.id + ': override "' + dt.text + '" equals the measurement (G3 forbids overrides)', { text: dt.text }); return; }
+        var mm = meas, tm = L.unitless ? L.v * k : L.m, res = L.unitless ? L.res * k : L.res_m, tol = Math.max(tolD, res / 2) + EPS;
+        if (Math.abs(tm - mm * k) <= tol) {
+          if (note) { item(advisory, 'QF:dim_note', 'set', s.id, [e.handle], posOf(e), s.id + ': dimension ' + e.handle + ' "' + dt.text + '" (' + note + '), length equals the measurement ' + r6(mm * k) + ' m', { note: dt.text, measured_m: r6(mm * k) }); return; }
+          if (dt.override) item(advisory, 'QF:dim_override_equal', 'set', s.id, [e.handle], posOf(e), s.id + ': override "' + dt.text + '" equals the measurement (G3 forbids overrides)', { text: dt.text }); return;
+        }
         if (!L.unitless) {
           var other = Object.keys(K).filter(function (u) { return u !== uname && Math.abs(tm - mm * K[u]) <= tol; });
           if (other.length === 1) { unitEv.push(e); implied[other[0]] = (implied[other[0]] || 0) + 1; return; }
@@ -254,7 +263,8 @@
     });
 
     // ---------- grid + plan dimension strings (PLAN with role + units) ----------
-    var gridOf = {};
+    var gridOf = {}, allWs = [];                                                      // L2.3 D4: stray grid tested against every plan's walls (L1.1 R2: one building grid)
+    plans.forEach(function (s) { if (input.plan_ops && input.plan_ops[s.id]) allWs = allWs.concat(wallRects(input.plan_ops[s.id])); });
     plans.forEach(function (s) {
       if (!s.k || !has('tol.grid') || !has('layers.grid')) return;
       var k = s.k, tolRaw = tolG / k, G = gridOf[s.id] = gridLines(s.ents, settings.layers.grid, tolRaw);
@@ -281,17 +291,17 @@
       var ws = wallRects(ops), env = envelopeOf(ws);
       if (!env) { block('QF:check_skipped', s.id, [], null, s.id + ': the plan has no wall pieces, grid and dimension strings not checked', { check: 'grid_axis,dim_strings', need: 'DXF_WALL' }); return; }
       G.lines.forEach(function (L) {
-        var P = L.pos * k, hit = ws.some(function (w) { if (w.thkAxis !== L.axis) return false; var r = w.rect, f0 = L.axis === 'x' ? r[0] : r[1], f1 = L.axis === 'x' ? r[2] : r[3]; return Math.abs(w.axisPos - P) <= tolG + EPS || Math.abs(f0 - P) <= tolG + EPS || Math.abs(f1 - P) <= tolG + EPS; });
+        var P = L.pos * k, hit = allWs.some(function (w) { if (w.thkAxis !== L.axis) return false; var r = w.rect, f0 = L.axis === 'x' ? r[0] : r[1], f1 = L.axis === 'x' ? r[2] : r[3]; return Math.abs(w.axisPos - P) <= tolG + EPS || Math.abs(f0 - P) <= tolG + EPS || Math.abs(f1 - P) <= tolG + EPS; });
         if (!hit) block('QF:grid_off_axis', s.id, L.handles, gpos(L), s.id + ': grid line ' + (L.label || '?') + ' at ' + L.axis + '=' + r6(P) + ' m is on no wall axis or face (tol ' + tolG + ' m)', { label: L.label, pos_m: r6(P) });
       });
-      if (has('layers.bearing') && has('grid.min_wall_len')) ['x', 'y'].forEach(function (ax) {
-        var bw = ws.filter(function (w) { return w.thkAxis === ax && settings.layers.bearing.indexOf(w.layer) >= 0 && w.len >= settings.grid.min_wall_len - EPS; }).sort(function (a, b) { return a.axisPos - b.axisPos || hnum(a.handle) - hnum(b.handle); });
+      if (has('grid.min_wall_len')) ['x', 'y'].forEach(function (ax) {                // L2.3 D4: exterior envelope axes only (the reader cannot know load-bearing)
+        var bw = ws.filter(function (w) { var r = w.rect, ext = ax === 'x' ? Math.abs(r[0] - env[0]) <= tolG + EPS || Math.abs(r[2] - env[2]) <= tolG + EPS : Math.abs(r[1] - env[1]) <= tolG + EPS || Math.abs(r[3] - env[3]) <= tolG + EPS; return w.thkAxis === ax && ext && w.len >= settings.grid.min_wall_len - EPS; }).sort(function (a, b) { return a.axisPos - b.axisPos || hnum(a.handle) - hnum(b.handle); });
         var cl = []; bw.forEach(function (w) { var c = cl[cl.length - 1]; if (c && w.axisPos - c[c.length - 1].axisPos <= tolG + EPS) c.push(w); else cl.push([w]); });
         cl.forEach(function (c) {
           var P = c.reduce(function (n, w) { return n + w.axisPos; }, 0) / c.length;
           if (G.lines.some(function (L) { return L.axis === ax && Math.abs(L.pos * k - P) <= tolG + EPS; })) return;
           var w0 = c[0], mid = ax === 'x' ? { x: r6(P / k), y: r6((w0.rect[1] + w0.rect[3]) / 2 / k) } : { x: r6((w0.rect[0] + w0.rect[2]) / 2 / k), y: r6(P / k) };
-          block('QF:grid_missing', s.id, c.map(function (w) { return w.handle; }), mid, s.id + ': bearing wall axis ' + ax + '=' + r6(P) + ' m (' + c.length + ' piece' + (c.length > 1 ? 's' : '') + ' on ' + c.map(function (w) { return w.layer; }).filter(function (v, i, a) { return a.indexOf(v) === i; }).join(',') + ') has no grid line (G1)', { axis: ax, pos_m: r6(P), walls: c.map(function (w) { return w.handle; }) });
+          block('QF:grid_missing', s.id, c.map(function (w) { return w.handle; }), mid, s.id + ': exterior wall axis ' + ax + '=' + r6(P) + ' m (' + c.length + ' piece' + (c.length > 1 ? 's' : '') + ' on ' + c.map(function (w) { return w.layer; }).filter(function (v, i, a) { return a.indexOf(v) === i; }).join(',') + ') has no grid line (G1)', { axis: ax, pos_m: r6(P), walls: c.map(function (w) { return w.handle; }) });
         });
       });
       // dimension strings per side (G3)
@@ -322,6 +332,11 @@
     });
 
     // ---------- elevations (G4) ----------
+    var stated = planLevels.concat(roofs.filter(function (r) { return typeof r.desc.level === 'number'; }).map(function (r) { return r.desc.level; })), bands = [];
+    elevs.forEach(function (s) {
+      if (typeof s.desc.roof !== 'number' || !has('tol.level')) return;                  // L2.3 D1: one roof top across the set
+      roofs.forEach(function (r) { if (typeof r.desc.roof === 'number' && Math.abs(r.desc.roof - s.desc.roof) > tolL + EPS) block('QF:roof_level_mismatch', s.id, [], null, s.id + ': @ROOF=' + s.desc.roof + ' but roof sheet ' + r.id + ' states @ROOF=' + r.desc.roof, { roof: s.desc.roof, roof_sheet: r.id, roof_sheet_value: r.desc.roof }, 'roof'); });
+    });
     elevs.forEach(function (s) {
       if (!s.k || !ref || !ref.k || !s.desc.haxis || !has('tol.align')) return;
       if (s.errors.some(function (e) { return e.code === 'MARK:missing'; })) return;          // its missing markings are already listed
@@ -329,6 +344,30 @@
       if (!al.map || !al.map.zOf) { al.errors.forEach(function (e) { block('QF:elev_align_fail', s.id, [], null, s.id + ': ' + e.code + ' ' + e.message + ' (against ' + ref.id + ')', { mark_code: e.code }); }); return; }
       var map = al.map, ke = s.k, zs = s.desc.zs.slice().sort(function (a, b) { return a.z - b.z; });
       var yOf = function (z) { return zs[0].y + (z - zs[0].z) / ke; };
+      // L2.3 D2: level bands = elevwall rectangles starting at one bottom z that together span the face width; never inferred from datum lines
+      if (has('tol.level') && has('tol.grid') && s.maps) {
+        var rects = [];
+        s.ents.forEach(function (e) {
+          if (!(e.type === 'LWPOLYLINE' || e.type === 'POLYLINE') || !e.shape || !e.vertices || e.vertices.length !== 4) return;
+          if (!s.maps.some(function (m) { var r = B.matchRule(e.layer, m.rules); return r && r.type === 'elevwall'; })) return;
+          var xs = e.vertices.map(function (v) { return v.x; }), ys = e.vertices.map(function (v) { return v.y; });
+          var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs), y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys), on = function (v, a, b) { return Math.abs(v - a) <= 1e-6 || Math.abs(v - b) <= 1e-6; };
+          if (!e.vertices.every(function (v) { return on(v.x, x0, x1) && on(v.y, y0, y1); })) return;
+          rects.push({ e: e, h0: x0, h1: x1, z0: map.zOf(y0) });
+        });
+        if (rects.length) {
+          var W0 = Math.min.apply(null, rects.map(function (r) { return r.h0; })), W1 = Math.max.apply(null, rects.map(function (r) { return r.h1; })), jt = tolG / ke + EPS;
+          var zg = []; rects.slice().sort(function (a, b) { return a.z0 - b.z0 || hnum(a.e.handle) - hnum(b.e.handle); }).forEach(function (r) { var g = zg[zg.length - 1]; if (g && Math.abs(r.z0 - g.z) <= tolL + EPS) g.rs.push(r); else zg.push({ z: r.z0, rs: [r] }); });
+          zg.forEach(function (g) {
+            var iv = g.rs.map(function (r) { return [r.h0, r.h1]; }).sort(function (a, b) { return a[0] - b[0]; }), cur = null, ok = true;
+            iv.forEach(function (x) { if (!cur) cur = x.slice(); else if (x[0] <= cur[1] + jt) cur[1] = Math.max(cur[1], x[1]); else ok = false; });
+            if (!ok || !cur || cur[0] > W0 + jt || cur[1] < W1 - jt) return;               // not a band across the face
+            if (stated.some(function (l) { return Math.abs(l - g.z) <= tolL + EPS; })) return;
+            var b = bands.find(function (q) { return Math.abs(q.z - g.z) <= tolL + EPS; }); if (!b) bands.push(b = { z: g.z, by: {} });
+            b.by[s.id] = (b.by[s.id] || []).concat(g.rs.map(function (r) { return r.e; }));
+          });
+        }
+      }
       // grid bubbles projected onto the face
       var RG = gridOf[ref.id];
       if (RG && has('tol.grid')) {
@@ -347,7 +386,7 @@
       if (!has('tol.level')) return;
       if (!s.maps || !s.maps.length) { block('QF:check_skipped', s.id, [], null, s.id + ': no layer map given, level datums and height dimensions not checked', { check: 'elev_levels', need: 'layer_maps (levelline)' }); return; }
       var lines = []; (s.maps || []).forEach(function (m) { s.ents.forEach(function (e) { var r = B.matchRule(e.layer, m.rules); if (!r || r.type !== 'levelline' || e.type !== 'LINE') return; var a = e.vertices[0], b = e.vertices[1]; if (Math.abs(a.y - b.y) > 1e-9) return; if (!lines.some(function (q) { return q.handle === e.handle; })) lines.push({ z: map.zOf(a.y), handle: e.handle, x: a.x, y: a.y }); }); });
-      var datums = planLevels.map(function (z) { return { z: z, what: 'plan level' }; });
+      var datums = stated.filter(function (z, i, a) { return a.indexOf(z) === i; }).map(function (z) { return { z: z, what: planLevels.indexOf(z) >= 0 ? 'plan level' : 'roof-sheet level' }; });
       if (typeof s.desc.roof === 'number' && !datums.some(function (d) { return Math.abs(d.z - s.desc.roof) <= EPS; })) datums.push({ z: s.desc.roof, what: '@ROOF' });
       datums.sort(function (a, b) { return a.z - b.z; });
       datums.forEach(function (d) {
@@ -362,15 +401,37 @@
       need.forEach(function (n) { if (!vd.some(function (q) { return Math.abs(q[0] - n[0]) <= tolD + EPS && Math.abs(q[1] - n[1]) <= tolD + EPS; })) block('QF:elev_height_dim_missing', s.id, [], { x: null, y: r6(yOf((n[0] + n[1]) / 2)) }, s.id + ': no height dimension ' + n[0] + '..' + n[1] + ' m (G4)', { span: n }); });
     });
 
-    // ---------- pipeline gaps ----------
+    bands.sort(function (a, b) { return a.z - b.z; }).forEach(function (b) {
+      var ids = Object.keys(b.by).sort(), es = b.by[ids[0]].slice().sort(byHandle);
+      block('QF:set_storey_unstated', ids[0], es.map(function (e) { return e.handle; }), posOf(es[0]), 'elevation' + (ids.length > 1 ? 's ' : ' ') + ids.join(', ') + ' show a level band at z=' + r6(b.z) + ' m but no PLAN (or ROOF) sheet states @LEVEL=' + r6(b.z) + ' (storeys come only from plans)', { level: r6(b.z), sheets: ids });
+    });
+
+    // ---------- conventions the user stated (L2.3 D3): @WALLTOP=<level>,slab_above; never a default ----------
+    var conventions = [];
+    roled.concat(SH.filter(function (s) { return !s.desc.view; })).forEach(function (s) {
+      (s.desc.walltop || []).forEach(function (w) {
+        var ent = s.all.find(function (e) { return e.handle === w.handle; });
+        if (planLevels.indexOf(w.level) < 0) { block('QF:walltop_unknown_storey', s.id, [w.handle], posOf(ent), s.id + ': @WALLTOP=' + w.level + ',' + w.rule + ' names no PLAN @LEVEL (' + planLevels.join(', ') + ')', { level: w.level }); return; }
+        if (!conventions.some(function (c) { return c.level === w.level && c.rule === w.rule; })) conventions.push({ level: w.level, rule: w.rule, sheet: s.id, handle: w.handle, source: 'user-stated' });
+      });
+    });
+    conventions.sort(function (a, b) { return a.level - b.level; });
+
+    // ---------- pipeline gaps (counted once, against the final stage: L2.3 D3) ----------
+    var resolved = input.resolved || {}, SUPERSEDABLE = ['GAP:no_host_cut', 'GAP:opening_unclassified'];
     (input.gaps || []).forEach(function (g) {
       if (!g || !g.code || g.code === 'GAP:unmapped_layer') return;                     // folded into QF:layer_unmapped
+      if (SUPERSEDABLE.indexOf(g.code) >= 0 && g.sheet !== undefined && (resolved[g.sheet] || []).indexOf(String(g.handle)) >= 0) { count('gaps_superseded'); return; }
       var shape = g.shape || (g.kind === 'door' || g.kind === 'window' ? 'openings' : null);
       if (!shape) { var t = SHAPE_TABLE.find(function (x) { return x[0].test(g.code); }); shape = t ? t[1] : 'set'; }
       var s = g.sheet !== undefined ? byId[g.sheet] : null, hs = typeof g.handle === 'string' || typeof g.handle === 'number' ? [String(g.handle)] : [];
       var e = s && hs.length ? s.all.find(function (x) { return x.handle === hs[0]; }) : null;
       var why = g.reason || (g.need ? 'need ' + g.need : '') || (g.layer ? 'layer ' + g.layer : '');
       var extra = {}; Object.keys(g).sort().forEach(function (k) { if (['code', 'shape', 'sheet', 'handle', 'run_id'].indexOf(k) < 0) extra[k] = g[k]; });
+      if (g.code === 'GAP:no_elevation_height' && s && s.desc.view === 'PLAN' && g.layer !== undefined && (s.maps || []).some(function (m) { var r = B.matchRule(g.layer, m.rules); return r && (r.type === 'wall' || r.type === 'wallline'); })) {
+        var cv = conventions.find(function (c) { return c.level === s.desc.level && c.rule === 'slab_above'; });
+        if (cv) { item(advisory, 'QF:convention_applied', shape, g.sheet, hs, posOf(e), g.sheet + ': ' + g.code + ' ' + hs[0] + ' covered by @WALLTOP=' + cv.level + ',slab_above (convention: user-stated)', { gap: g.code, convention: 'user-stated', walltop: cv.level }); return; }
+      }
       item(ADVISORY_GAP.test(g.code) ? advisory : blocking, g.code, shape, g.sheet === undefined ? null : g.sheet, hs, posOf(e), (g.sheet ? g.sheet + ': ' : '') + g.code + (hs.length ? ' ' + hs[0] : '') + (why ? ' (' + why + ')' : ''), { detail: extra });
     });
 
@@ -389,7 +450,7 @@
     return {
       verdict: blocking.length ? 'blocked' : 'qualifies', blocking: blocking, advisory: advisory, by_shape: by, counts: counts,
       sheets: SH.map(function (s) { return { id: s.id, view: s.desc.view || null, units: s.desc.units || null, level: s.desc.level === undefined ? null : s.desc.level, face: s.desc.face || null, roof: s.desc.roof === undefined ? null : s.desc.roof, region: s.region || null, entities: s.ents.length }; }),
-      reference_plan: ref ? ref.id : null, checks: ck
+      reference_plan: ref ? ref.id : null, conventions: conventions, checks: ck
     };
   }
 

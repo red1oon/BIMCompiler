@@ -1,15 +1,18 @@
 // ⚠ DO NOT REMOVE — SANDBOX marking tool for the Duplex set (SPEC §24/§25). Proposes markings ONLY from evidence found in each DXF
 // (title text, A-GRID lines + nearest labels, level lines/labels) and from the source model for storey levels (FROM_SOURCE_MODEL).
 // Writes MARKED COPIES to tests/dxf2bim/out/marked/; originals are never modified. Refuses (exit 1) when evidence is ambiguous.
-// Read the log after every run. Usage: node tests/dxf2bim/mark_dx_set.js
+// Read the log after every run. Usage: node tests/dxf2bim/mark_dx_set.js [std]
+// Profile `std` (lane spec L2.3): the L1 standard set 2D_Layout/output/STD/DX_*_std.dxf -> out/marked_std/ (level lines/texts on A-ANNO-LEVL, `+z.zzz` texts;
+// elevations also get @ROOF = T/ROOF from the model: max Z of IfcRoof, else of the highest IfcSlab, L1.1 R11). Same evidence rules otherwise.
 'use strict';
 const fs = require('fs'), path = require('path'), cp = require('child_process');
 const DxfParser = require(path.join(__dirname, '../../deploy/dev/dxf-parser.js'));
 const MK = require(path.join(__dirname, '../../deploy/dev/dxf2marks.js'));
 const ROOT = path.join(__dirname, '../..');
-const SRC = f => path.join(ROOT, '2D_Layout/output/DXF/DX_' + f + '_20260428_0636.dxf');
+const STD = process.argv[2] === 'std';
+const SRC = f => STD ? path.join(ROOT, '2D_Layout/output/STD/DX_' + f + '_std.dxf') : path.join(ROOT, '2D_Layout/output/DXF/DX_' + f + '_20260428_0636.dxf');
 const DB = path.join(ROOT, '2D_Layout/input/DX_extracted.db');
-const OUT = path.join(__dirname, 'out/marked'); fs.mkdirSync(OUT, { recursive: true });
+const OUT = path.join(__dirname, STD ? 'out/marked_std' : 'out/marked'); fs.mkdirSync(OUT, { recursive: true });
 const sql = q => JSON.parse(cp.execFileSync('sqlite3', ['-json', '-readonly', DB, q], { encoding: 'utf8' }) || '[]');
 const SET = [
   { f: 'FLOOR_GF', view: 'PLAN', storey: 'Level 1' }, { f: 'FLOOR_FF', view: 'PLAN', storey: 'Level 2' },
@@ -36,8 +39,9 @@ function gridLines(d, vertical) {                                       // evide
   return res;
 }
 function levelPairs(d) {                                                // trusted (z,y): label y equals 1000*z (+-1) or a level line sits at y = 1000*z of a label value
-  const labs = d.entities.filter(e => e.type === 'TEXT' && /LEVEL\s+([+-]\d+\.\d+)/.test(e.text || '')).map(e => ({ z: Number(/([+-]\d+\.\d+)\s*$/.exec(e.text.trim())[1]), y: pos(e)[1], h: e.handle }));
-  const lines = d.entities.filter(e => e.layer === 'A-ELEV-LEVL' && e.type === 'LINE').map(e => ({ y: e.vertices[0].y, h: e.handle }));
+  const LBL = STD ? (e => e.layer === 'A-ANNO-LEVL' && /\s[+-]\d+\.\d+\s*$/.test(e.text || '')) : (e => /LEVEL\s+([+-]\d+\.\d+)/.test(e.text || ''));
+  const labs = d.entities.filter(e => e.type === 'TEXT' && LBL(e)).map(e => ({ z: Number(/([+-]\d+\.\d+)\s*$/.exec(e.text.trim())[1]), y: pos(e)[1], h: e.handle }));
+  const lines = d.entities.filter(e => e.layer === (STD ? 'A-ANNO-LEVL' : 'A-ELEV-LEVL') && e.type === 'LINE' && Math.abs(e.vertices[0].y - e.vertices[1].y) <= 1e-9).map(e => ({ y: e.vertices[0].y, h: e.handle }));
   const out = new Map();
   labs.forEach(l => { if (Math.abs(l.y - 1000 * l.z) <= 1) out.set(l.z, { z: l.z, y: Math.round(l.y), src: 'label ' + l.h }); });
   labs.forEach(l => { if (!out.has(l.z)) { const ln = lines.find(x => Math.abs(x.y - 1000 * l.z) <= 1); if (ln) out.set(l.z, { z: l.z, y: Math.round(ln.y), src: 'line ' + ln.h }); } });
@@ -73,6 +77,11 @@ for (const s of SET) {
     Object.entries(gh).forEach(([l, v]) => { marks.push({ text: '@GRIDH=' + l, x: v.pos, y: 0 }); say('  GRIDH ' + l + ' h=' + v.pos + '  [grid line ' + v.line + ' label text ' + v.text + ']'); });
     const zs = levelPairs(d); zs.forEach(q => { marks.push({ text: '@Z=' + q.z, x: 0, y: q.y }); say('  Z ' + q.z + ' at y=' + q.y + '  [' + q.src + ']'); });
     if (zs.length < 2) { say('  REFUSE: fewer than 2 trusted level pairs'); refused = true; }
+    if (STD) {
+      const rr = sql("select max(r.maxZ) z from elements_meta m join elements_rtree r on r.id=m.id where m.ifc_class='IfcRoof'")[0].z, rs = sql("select max(r.maxZ) z from elements_meta m join elements_rtree r on r.id=m.id where m.ifc_class='IfcSlab'")[0].z;
+      const top = typeof rr === 'number' ? rr : rs; if (typeof top !== 'number') { say('  REFUSE: no IfcRoof / IfcSlab for @ROOF'); refused = true; }
+      else { const t3 = Number(top.toFixed(3)); marks.push({ text: '@ROOF=' + t3 }); say('  ROOF=' + t3 + '  [FROM_SOURCE_MODEL: max Z of ' + (typeof rr === 'number' ? 'IfcRoof' : 'the highest IfcSlab') + ', R11 T/ROOF]'); }
+    }
   }
   fs.writeFileSync(path.join(OUT, 'DX_' + s.f + '_marked.dxf'), MK.writeMarks(txt, marks));
 }
