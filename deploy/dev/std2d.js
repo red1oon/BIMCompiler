@@ -564,6 +564,41 @@
     return doc;
   }
 
+
+  // "Drawable?" report (lane spec §L5.1 b): what the model states and what the export can and cannot draw, every line with its count and source. Pure.
+  // R = writeStdSet result. Returns { drawable, reasons, rows:[{label, value, source, status:'ok'|'gap'|'info'}] }.
+  function drawableReport(R) {
+    const M = R.model, rows = [], reasons = [], gapN = {};
+    R.gaps.forEach(g => { gapN[g[0]] = (gapN[g[0]] || 0) + 1; });
+    const row = (label, value, source, status) => rows.push({ label, value, source, status: status || 'info' });
+    const walls = M.walls.length, doors = M.els.filter(e => e.cls === 'IfcDoor').length, wins = M.els.filter(e => e.cls === 'IfcWindow').length, cols = M.els.filter(e => e.cls === 'IfcColumn').length;
+    const plans = R.views.plan, ps = M.storeys;
+    row('Storeys', `${ps.length} (${plans.length} drawn as plans)`, 'IfcBuildingStorey, ' + (ps.some(s => /placement/.test(s.src)) ? 'placement' : 'min wall z'), plans.length ? 'ok' : 'gap');
+    if (!plans.length) reasons.push('no storey has walls reaching its cut plane (1.2 m above the storey)');
+    plans.forEach(v => row('  Plan ' + v.storey.name, `FFL ${fs(v.storey.elev, 3)} m`, v.storey.src, 'ok'));
+    row('Walls / doors / windows / columns', `${walls} / ${doors} / ${wins} / ${cols}`, 'IfcWall*, IfcDoor, IfcWindow, IfcColumn', walls ? 'ok' : 'gap');
+    if (!walls) reasons.push('the model has no IfcWall');
+    const hosts = (R.log.find(l => l.indexOf('§HOSTS') === 0) || '').match(/ifc=(\d+) mesh_void=(\d+) none=(\d+) ambiguous=(\d+)/);
+    if (hosts) {
+      const voided = R.log.filter(l => l.indexOf('gap=host_voided') > 0).length;
+      row('Openings with a stated host wall', `${hosts[1]} of ${+hosts[1] + +hosts[2] + +hosts[3] + +hosts[4]}`, 'IfcRelFillsElement', +hosts[3] || +hosts[4] ? 'gap' : 'ok');
+      row('Openings hosted by the wall mesh void', hosts[2], 'void in the wall mesh at the opening (not a guess)', 'info');
+      row('Openings in a wall the voids remove entirely', voided, 'model states the wall is only its void (§L1.7)', 'info');
+      row('Openings with no host in the model', hosts[3], 'listed as GAP:opening_no_host; not drawn as a gap, never guessed', +hosts[3] ? 'gap' : 'ok');
+    }
+    const arcs = R.log.filter(l => l.indexOf('§DOOR_ARC') === 0).length;
+    row('Doors with hinge and swing drawn', `${arcs} of ${doors}`, 'IfcDoor OperationType + axes (door_operation)', doors && arcs < doors ? 'gap' : 'ok');
+    row('Columns on the building grid', `${R.grid.gridded ? Array.from(R.grid.gridded).filter(g => M.by_guid[g] && M.by_guid[g].cls === 'IfcColumn').length : 0} of ${cols}`, 'column axis (point-symmetric section)', 'info');
+    row('Building grid', `${R.grid.x.length} x ${R.grid.y.length} lines`, 'load-bearing / exterior walls, columns (R4-R6, LB1-LB4)', R.grid.x.length >= 2 && R.grid.y.length >= 2 ? 'ok' : 'gap');
+    if (R.grid.x.length < 2 || R.grid.y.length < 2) reasons.push(`the building grid has ${R.grid.x.length} x ${R.grid.y.length} lines; the standard set needs at least 2 in each direction`);
+    row('Roof storey / T/ROOF', `${R.views.roof ? R.views.roof.name : 'none'} / ${M.roof_top === null ? 'none' : fs(M.roof_top, 3) + ' m'}`, 'IfcRoof or highest IfcSlab (R11)', R.views.roof && M.roof_top !== null ? 'ok' : 'gap');
+    if (!R.views.roof) reasons.push('no roof storey above the grid storey: no roof plan, and the importer needs one to qualify the set');
+    row('Sheets written', Object.keys(R.files).length, Object.keys(R.files).map(f => f.replace(/^.*?_(.*)_std\.dxf$/, '$1')).join(', '), 'ok');
+    const codes = Object.keys(gapN).sort();
+    if (codes.length) row('Gaps (listed, none filled in)', codes.map(c => c.replace('GAP:', '') + ' ' + gapN[c]).join(', '), 'log lines §GAP', 'gap');
+    return { drawable: reasons.length === 0, reasons, rows };
+  }
+
   // q(sql) -> array of row objects (Node-schema model DB). prefix names the files: <prefix>_<VIEW>_std.dxf
   function writeStdSet(q, prefix) {
     const log = new Log(), files = {};
@@ -582,5 +617,5 @@
     log.add('§GAP_SUMMARY {' + Object.keys(codes).map(k => `'${k}': ${codes[k]}`).join(', ') + '}');
     return { files, log: log.lines, gaps: log.gaps, grid, model, views: { plan: planStoreys(model).map(st => ({ view: planView(st.name), storey: st })), roof: rs } };
   }
-  return { ELEV_FACES, ELEV_HP: ELEV_FACES, columnAxis, writeStdSet, loadModel, deriveGrid, resolveHosts, planStoreys, LAYERS, PLAN_CUT_CLASSES };
+  return { drawableReport, ELEV_FACES, ELEV_HP: ELEV_FACES, columnAxis, writeStdSet, loadModel, deriveGrid, resolveHosts, planStoreys, LAYERS, PLAN_CUT_CLASSES };
 });
