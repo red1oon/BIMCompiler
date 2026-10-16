@@ -113,7 +113,9 @@ function pipeline(popt) {
   const LABELMAP = { M_Fixed: 'DUPLEX_SMALL_FIXED', M_Casement: 'DUPLEX_CASEMENT' };
   ST.forEach(st => {
     const sn = sql("select substr(m.element_name,1,instr(m.element_name,':')-1) k, r.minX a, r.minY b, r.maxX c, r.maxY d, r.minZ z0, r.maxZ z1 from elements_meta m join elements_rtree r on r.id=m.id where m.ifc_class='IfcWindow' and m.storey='" + st.name + "' and m.element_type='819mm x 759mm'");
-    const lr = T.applyLabels(st.after, { units: 'm', labels: sn.map(x => ({ class: 'window', x: (x.a + x.c) / 2, y: (x.b + x.d) / 2, z: (x.z0 + x.z1) / 2, text: LABELMAP[x.k] })) }, { m: 1 }, { snap_tol: CFG.snap_tol, level: st.level });
+    const labs = sn.map(x => ({ class: 'window', x: (x.a + x.c) / 2, y: (x.b + x.d) / 2, z: (x.z0 + x.z1) / 2, text: LABELMAP[x.k] }));
+    (R.labels = R.labels || {})[st.name] = labs;   // §12 LS-1: the labels applied, written to out/duplex_basic_shapes_labels.json
+    const lr = T.applyLabels(st.after, { units: 'm', labels: labs }, { m: 1 }, { snap_tol: CFG.snap_tol, level: st.level });
     st.labelGaps = lr.gaps.length;
     st.after = T.bindTypes(lr.ops, LIB, { bind: { size_tol: C.TYPES.size_tol, prefer: C.TYPES.prefer } }, {}).ops;
   });
@@ -436,6 +438,7 @@ if (!STDSET) {
     infillOf[e.guid] ? { infill: true, infill_of: infillOf[e.guid].infill_of, openings: infillOf[e.guid].openings } : {}, e.element_ref ? { element_ref: e.element_ref, geometry_hash: e.geometry_hash, family_id: e.family_id } : {}); });
   const nInf = rows.filter(x => x.infill).length;
   fs.writeFileSync(path.join(__dirname, 'out/duplex_basic_shapes_elements.json'), J({ run_id: R.run_id, storeys: R.ST.map(st => ({ name: st.name, level: st.level, run_id: st.run_id })), elements: rows }));
+  fs.writeFileSync(path.join(__dirname, 'out/duplex_basic_shapes_labels.json'), J({ run_id: R.run_id, labels: R.labels || {} }));   // §12 LS-1
   check('RUN-id', 'the set run_id differs between two full runs (not an identity of the inputs)', R.run_id === R2.run_id && typeof R.run_id === 'string', 'run_id=' + R.run_id);
   check('ELEM-dump', 'the element summary misses an infill box or an element', nInf === R.ST.reduce((n, st) => n + st.infill.length, 0) && rows.length === R.els.length, 'elements=' + rows.length + ' infill=' + nInf + ' -> out/duplex_basic_shapes_elements.json');
 }
