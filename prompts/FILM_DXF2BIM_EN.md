@@ -56,3 +56,13 @@ Take 11 (`scripts/film_dxf2bim_modeller.js`, BEAT_MIN `prompts/film_dxf2bim_beat
 - Capture: live UI from the CDP screencast (event-driven, ~2-10 fps, resampled to constant 24 fps); orbits, sheet zooms and fades stepped at 24 fps.
 - Not claimed: the raw set does NOT reach "Qualifies" (no door-schedule entry in the editor; 14 doors stay blocking); fills need the LOCAL library
   subset; L4 editor is PR #2067 (open), filmed from its branch; page C restores no op-log (fresh browser context per Modeller page).
+
+## v2 RESYNC (2026-10-16, lead review; NO re-record: take 11's silent master kept) -> `~/Videos/DXF2BIM_Demo_EN_1920x1080_24fps_2026-10-16_v2_resync.mp4`
+Found: on the late Modeller page the screencast delivered frames ~4-5 s after the DOM change, so paper cards o02/o03/l01/n01 appeared 3.97-4.87 s
+after their logged beat; their narration started while the previous card was up. Fitter turn subtitles also overlapped by up to 0.13 s (17 places).
+Fix (`prompts/film_dxf2bim_resync.py`): `cue` re-cues every card beat to max(beat t, first frame where its card is visible, measured from the
+frames); `check` clips subtitle overlaps and reports §SYNC_OVERLAP (audio max 0.000 s, subtitles 0.130 -> 0.000 s) and §SYNC_LEAD (worst lead
++0.00 s: no card narration starts before its card). o02 and n01 trimmed (numbers kept) to fit the shifted rooms; 21/21 DETAIL (n01 x1.011), 0 WRONG.
+Re-measured: frames 6593 == master, -17.1 LUFS, one 5.8 s tail silence, longest gap between lines 6.4 s, 0 black frames, 4 hard changes none < 1.5 s,
+grep first/only/client 0. Left as is (needs a re-record): a click ripple drawn over the "Seven more sheets" card (~2:42) is in the recorded frames
+(a click on the editor behind the card; the ripple layer sits above the card).
