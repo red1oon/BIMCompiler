@@ -749,6 +749,27 @@ async function extractToDb(ctx) {
   }
 
   // ── §REL_FILLS_HOST + §PSET_COMMON (bim-ootb DXF2BIM lane §L1.6 P0): authored relations, copied, nothing derived ──
+  // §L5.6 S5: element type name of every door/window, for the door schedule + tags in the markings: the IfcRelDefinesByType type's Name
+  // (IFC2X3 style or IFC4 type), else the occurrence's ObjectType attribute. Stated by the model, never inferred. Additive table `element_type`.
+  const typeRows = [];
+  try {
+    const refOf = v => (v && v.value !== undefined ? v.value : v), typeOfId = {};
+    const dbt2 = ifcApi.GetLineIDsWithType(modelID, WebIFC.IFCRELDEFINESBYTYPE);
+    for (let i = 0; i < dbt2.size(); i++) {
+      const rel = ifcApi.GetLine(modelID, dbt2.get(i));
+      if (!rel.RelatingType || !rel.RelatedObjects) continue;
+      for (const o of rel.RelatedObjects) typeOfId[refOf(o)] = refOf(rel.RelatingType);
+    }
+    for (const el of elements) {
+      if (el.ifcClass !== 'IfcDoor' && el.ifcClass !== 'IfcWindow') continue;
+      let name = null, source = null;
+      const tid = typeOfId[el.expressID];
+      if (tid != null) { const t = ifcApi.GetLine(modelID, tid); if (t && t.Name && t.Name.value) { name = t.Name.value; source = 'type'; } }
+      if (!name) { const d = ifcApi.GetLine(modelID, el.expressID); if (d && d.ObjectType && d.ObjectType.value) { name = d.ObjectType.value; source = 'occurrence'; } }
+      if (name) typeRows.push({ guid: el.guid, name, source });
+    }
+  } catch (e) { log(`§ELEMENT_TYPE_FAIL ${e.message}`); }
+  log(`§ELEMENT_TYPE rows=${typeRows.length}`);
   const relFills = [];   // { opening, host, filling, hostClass, fillingClass }
   const psetRows = [];   // { guid, pset, name, value, source }
   {
@@ -942,6 +963,9 @@ async function extractToDb(ctx) {
   for (const w of worldBbox) wbStmt.run(w.guid, ...w.b);
   const rfStmt = db.prepare("INSERT OR IGNORE INTO rel_fills_host VALUES (?,?,?,?,?,'ifc:recovered')");
   for (const r of relFills) rfStmt.run(r.opening, r.host, r.filling, r.hostClass, r.fillingClass);
+  db.exec(`CREATE TABLE element_type (guid TEXT PRIMARY KEY, type_name TEXT, source TEXT)`);
+  const etStmt = db.prepare('INSERT OR IGNORE INTO element_type VALUES (?,?,?)');
+  for (const r of typeRows) etStmt.run(r.guid, r.name, r.source);
   const psStmt = db.prepare('INSERT OR IGNORE INTO element_pset_common VALUES (?,?,?,?,?)');
   for (const r of psetRows) psStmt.run(r.guid, r.pset, r.name, r.value, r.source);
   log(`§WORLD_BBOX rows=${worldBbox.length}`);

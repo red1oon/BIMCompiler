@@ -45,7 +45,7 @@
   // ───────────────────────── model (Node-schema DB through q(sql) -> [{...}]) ─────────────────────────
   function loadModel(q, log) {
     log.add('§DB schema=node');
-    const rows = q(`SELECT m.guid guid, m.ifc_class cls, m.element_name name, COALESCE(m.storey,'') storey,
+    const rows = q(`SELECT m.guid guid, m.ifc_class cls, m.element_name name, COALESCE(m.storey,'') storey, (SELECT type_name FROM element_type et WHERE et.guid = m.guid) etype,
         r.minX x0, r.maxX x1, r.minY y0, r.maxY y1, r.minZ z0, r.maxZ z1, COALESCE(t.center_x,0) cx, COALESCE(t.center_y,0) cy, COALESCE(t.center_z,0) cz,
         b.vertices vb, b.faces fb
       FROM elements_meta m JOIN element_world_bbox r ON r.guid = m.guid LEFT JOIN element_transforms t ON t.guid = m.guid
@@ -66,7 +66,7 @@
       if (r.name in selev && selev[r.name] !== null && Math.abs(selev[r.name] - r.z) > 1e-9) { log.gap('GAP:storey_name_duplicate', r.name, 'two storeys share a name with different placements; R1 used'); selev[r.name] = null; }
       else if (!(r.name in selev)) selev[r.name] = r.z;
     });
-    const els = rows.map(r => ({ guid: r.guid, cls: r.cls, name: r.name || '', storey: r.storey, x0: r.x0, x1: r.x1, y0: r.y0, y1: r.y1, z0: r.z0, z1: r.z1,
+    const els = rows.map(r => ({ guid: r.guid, cls: r.cls, name: r.name || '', storey: r.storey, etype: r.etype || '', x0: r.x0, x1: r.x1, y0: r.y0, y1: r.y1, z0: r.z0, z1: r.z1,
       c: [r.cx, r.cy, r.cz], v: asF32(r.vb), f: asI32(r.fb) }));
     const walls = els.filter(e => WALLS.indexOf(e.cls) >= 0);
     const storeys = [];
@@ -93,8 +93,8 @@
     if (roofTop === null) log.gap('GAP:roof_top', '-', 'no IfcRoof / IfcSlab'); else log.add(`§LEVEL T/ROOF=${fx(roofTop, 4)} m from ${pyList(roofs.map(r => r.guid))} (R11)`);
     const doorOps = {};
     const dop = q("SELECT name FROM sqlite_master WHERE type='table' AND name='door_operation'").length
-      ? q('SELECT guid, operation_type op, source, x_axis x, y_axis y, z_axis z FROM door_operation ORDER BY guid') : null;
-    if (dop) { dop.forEach(r => { doorOps[r.guid] = { op: r.op, source: r.source, x: r.x ? JSON.parse(r.x) : null, y: r.y ? JSON.parse(r.y) : null, z: r.z ? JSON.parse(r.z) : null }; }); log.add(`§DOOR_OPS table=door_operation db=model rows=${dop.length}`); }
+      ? q('SELECT guid, operation_type op, source, x_axis x, y_axis y, z_axis z, overall_width w, overall_height h FROM door_operation ORDER BY guid') : null;
+    if (dop) { dop.forEach(r => { doorOps[r.guid] = { op: r.op, source: r.source, x: r.x ? JSON.parse(r.x) : null, y: r.y ? JSON.parse(r.y) : null, z: r.z ? JSON.parse(r.z) : null, w: r.w, h: r.h }; }); log.add(`§DOOR_OPS table=door_operation db=model rows=${dop.length}`); }
     else log.add('§DOOR_OPS none (no door_operation table): every door keeps GAP:door_hinge');
     const byGuid = {}; els.forEach(e => { byGuid[e.guid] = e; });
     return { els, walls, storeys, foundation: fnd, grid_storey: gridStorey, roofs, roof_top: roofTop, hosts, opening_of: openingOf, psets, voided_hosts: voided, by_guid: byGuid, door_ops: doorOps };
@@ -580,7 +580,7 @@
     const codes = {}; log.gaps.forEach(g => { codes[g[0]] = (codes[g[0]] || 0) + 1; });
     log.add(`§SUMMARY views=${Object.keys(files).length} grid_x=${pyList(grid.x.map(g => g[0]))} grid_y=${pyList(grid.y.map(g => g[0]))} gaps=${log.gaps.length}`);
     log.add('§GAP_SUMMARY {' + Object.keys(codes).map(k => `'${k}': ${codes[k]}`).join(', ') + '}');
-    return { files, log: log.lines, gaps: log.gaps, grid, model };
+    return { files, log: log.lines, gaps: log.gaps, grid, model, views: { plan: planStoreys(model).map(st => ({ view: planView(st.name), storey: st })), roof: rs } };
   }
-  return { columnAxis, writeStdSet, loadModel, deriveGrid, resolveHosts, planStoreys, LAYERS, PLAN_CUT_CLASSES };
+  return { ELEV_FACES, ELEV_HP: ELEV_FACES, columnAxis, writeStdSet, loadModel, deriveGrid, resolveHosts, planStoreys, LAYERS, PLAN_CUT_CLASSES };
 });
