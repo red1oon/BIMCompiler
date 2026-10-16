@@ -62,7 +62,7 @@ const ok = (id, name, cond, detail) => { console.log((cond ? '  ✅ ' : '  ❌ '
   GT.type++; await pg.fill(F('qtyentered'), '1'); await pg.locator(F('qtyentered')).first().blur().catch(() => {}); await pg.waitForTimeout(600);
   await hc('#idmp-toolbar [title^="Save"]'); await pg.waitForTimeout(2000);
   await hc('#idmp-tabstrip .idmp-adtab[title="TabLevel 0 · C_Order"]'); await pg.waitForTimeout(1000);
-  await hc('#idmp-toolbar [data-tb="toggle"]'); await pg.waitForTimeout(900);
+ 
 
   // ── D2/D3 · Complete
   n0 = logs.length; await hc('[data-doc-action="CO"]'); await pg.waitForTimeout(4500);
@@ -71,6 +71,28 @@ const ok = (id, name, cond, detail) => { console.log((cond ? '  ✅ ' : '  ❌ '
   const tables = (da.match(/tables=(\{.*?\})(?: msg|$)/) || [])[1] || '', has = t => new RegExp('"' + t + ':CREATE"').test(tables) || new RegExp('"' + t + ':UPDATE"').test(tables);
   ok('D3', 'ONE group wrote shipment + invoice + stock + transaction + postings', ['m_inout', 'c_invoice', 'm_storageonhand', 'm_transaction', 'fact_acct'].every(has), tables.slice(0, 220));
   ok('D3b', 'the group is signed and chain-verified', c.some(l => /§CRUD process committed key=c_order viaGroup=Y .*verifyChain=ok/.test(l)));
+
+  // ── payment slice (FO-A4 measurement, ERP_FRIENDLY_OPS_LENS §31): Payment window, receipt for the invoice this order just generated
+  let payOk = null; const GP0 = { ...GT };
+  if (process.env.PAY) {
+    const openWin = async (wid) => { const mid2 = await pg.evaluate((w) => { const r = window.__idmpDb.exec("SELECT AD_Menu_ID FROM AD_Menu WHERE Action='W' AND AD_Window_ID="+w+" AND IsActive='Y'"); return (r.length ? r[0].values.map(x => x[0]) : []).find(i => document.querySelector('#idmp-tree .idmp-row.leaf[data-menu-id="' + i + '"]')); }, wid);
+      const ch = await pg.evaluate(id => { const leaf = document.querySelector('#idmp-tree .idmp-row.leaf[data-menu-id="' + id + '"]'); const out = []; let n = leaf.parentElement.parentElement; while (n && n.id !== 'idmp-tree') { if (n.classList.contains('idmp-node')) out.unshift(n.querySelector(':scope > .idmp-row').getAttribute('data-menu-id')); n = n.parentElement; } return out; }, mid2);
+      for (const id of ch) { const open = await pg.evaluate(i => { const r = document.querySelector('#idmp-tree .idmp-row[data-menu-id="' + i + '"]'); return r && r.parentElement.classList.contains('open'); }, id); if (!open) await hc('#idmp-tree .idmp-row[data-menu-id="' + id + '"]'); }
+      await hc('#idmp-tree .idmp-row.leaf[data-menu-id="' + mid2 + '"]'); await pg.waitForSelector(NEWB); await pg.waitForTimeout(800); };
+    await openWin(195); const menuClicks = GT.click - GP0.click;
+    await hc(NEWB); await pg.waitForSelector('#idmp-inline-mount .cfrow'); await pg.waitForTimeout(800);
+    await pick('ad_org_id', /^HQ/); await pick('c_bpartner_id', /Joe Block/);
+    const inv = (await opts('c_invoice_id')).find(o => o.v === '-45' || /\(-\d+\)$/.test(o.t));
+    if (inv) { GT.select++; await pg.selectOption(F('c_invoice_id', 'select'), inv.v); await pg.waitForTimeout(2500); }
+    const amt = await pg.$eval(F('payamt'), e => e.value).catch(() => '?');
+    n0 = logs.length; await hc('#idmp-toolbar [title^="Save"]'); await pg.waitForTimeout(1800);
+    n0 = logs.length; await hc('[data-doc-action="CO"]'); await pg.waitForTimeout(4000);
+    const pd = logs.slice(n0).filter(l => /§MODEL-DOCACTION table=c_payment/.test(l)).pop() || '';
+    const pr = await tip('SELECT payamt AS a, c_invoice_id AS i, docstatus AS s FROM c_payment WHERE c_payment_id < 0 ORDER BY c_payment_id LIMIT 1'); const ir = await tip('SELECT grandtotal AS g, ispaid AS p FROM c_invoice WHERE c_invoice_id=-45'); console.log('§TWIN_PAY_DB payment=' + JSON.stringify(pr) + ' invoice=' + JSON.stringify(ir));
+    payOk = /ok=true status=CO/.test(pd) && pr.length && Number(pr[0].a) > 0;
+    console.log('§TWIN_PAY invoice=' + (inv ? inv.t : 'NONE') + ' payamt=' + amt + ' menu=' + menuClicks + ' gestures=' + ((GT.click + GT.select + GT.type) - (GP0.click + GP0.select + GP0.type)) + ' ' + pd.slice(0, 140));
+    console.log('§TWIN_PAY_VERDICT ' + (payOk ? 'PASS' : 'WRONG'));
+  }
   console.log('§TWIN_GESTURES total='+(GT.click+GT.select+GT.type)+' clicks='+GT.click+' selects='+GT.select+' typed='+GT.type+' menu='+(G0.click));
   console.log('§TWIN_VERDICT '+(fail===0&&pass>=5?'PASS':'WRONG')+' pass='+pass+' fail='+fail);
   await browser.close(); srv.close();
