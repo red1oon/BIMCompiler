@@ -37,10 +37,14 @@ var ctx = {
 var cov = C.coverageScan(db);
 console.log('§CALLOUT_COVERAGE cols=' + cov.cols + ' distinctMethodAtoms=' + cov.distinctClasses +
   ' registered=' + cov.registered + ' classesDispatched=' + cov.classesDispatched + ' colsDispatched=' + cov.colsDispatched +
-  ' (mechanism: 6 real line-callout atoms ported; ' + (cov.distinctClasses - cov.classesDispatched) + ' named-deferred)');
+  ' (mechanism: 6 real line-callout atoms + CalloutEngine.dateAcct ported; ' + (cov.distinctClasses - cov.classesDispatched) + ' named-deferred)');
 console.log('   note: matrix "148 classes" = COUNT(DISTINCT callout) whole-strings; ' + cov.distinctClasses + ' = distinct class.method atoms after splitting `;` combos (both real, different metrics)');
 verdict(cov.cols === 284, 'AD callout population matches the matrix (284 cols carry a callout)', 'cols=' + cov.cols);
-verdict(cov.colsDispatched > 0 && cov.registered === 6, 'registry dispatches a real subset (6 handlers), rest named-deferred', 'registered=' + cov.registered + ' colsDispatched=' + cov.colsDispatched);
+// PIN MOVED 6 -> 7, 2026-09-04 (prompts/AGENT_QUEUE.md §CALLOUT-CAMPAIGN §CC.4): CalloutEngine.dateAcct
+// joins installDefaultHandlers because it is the one new atom that needs NO bundle — it copies the document
+// date to DateAcct — and it is bound on FOUR document tables at once. Every other handler in that campaign
+// needs a real join and lives in crud_overlay.js's host glue, so this pin stays a tight, deliberate number.
+verdict(cov.colsDispatched > 0 && cov.registered === 7, 'registry dispatches a real subset (7 handlers), rest named-deferred', 'registered=' + cov.registered + ' colsDispatched=' + cov.colsDispatched);
 
 // ── the witness row: order line 124 — PriceActual 21.59 × QtyOrdered 10 = LineNetAmt 215.90 ─────────────
 var line = db.prepare('SELECT * FROM c_orderline WHERE c_orderline_id=124').get();

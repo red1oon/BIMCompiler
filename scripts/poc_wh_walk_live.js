@@ -40,7 +40,11 @@ var path = require('path');
 var puppeteer = require('puppeteer');
 
 var BIMC = path.join(__dirname, '..');
-var ROOT = process.env.WT_ROOT || '/tmp/wt-spatial';
+// STALE-INSTRUMENT FIX 2026-09-04 (prompts/AGENT_QUEUE.md §STALE-WITNESSES): the default ROOT was a
+// DEV WORKTREE PATH ('/tmp/wt-spatial') that no longer exists, so every asset 404'd and the run died on a
+// selector timeout that named the DOM instead of the missing tree. Default to the real checkout;
+// WT_ROOT still overrides for a worktree run, which is what it was there for.
+var ROOT = process.env.WT_ROOT || (process.env.HOME + '/bim-ootb');
 var WH_DB = path.join(BIMC, 'build', 'erp', 'warehouse_gardenworld.db');
 var PLAIN_DB = path.join(BIMC, 'deploy', 'buildings', 'SampleHouse_extracted.db');   // gate-off control
 var PORT = 8139;

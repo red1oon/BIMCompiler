@@ -52,7 +52,8 @@ CREATE TABLE IF NOT EXISTS project_metadata (
 );
 CREATE TABLE IF NOT EXISTS spatial_structure (
     guid TEXT PRIMARY KEY, type TEXT NOT NULL, name TEXT,
-    parent_guid TEXT, object_type TEXT, predefined_type TEXT
+    parent_guid TEXT, object_type TEXT, predefined_type TEXT,
+    elevation REAL
 );
 CREATE TABLE IF NOT EXISTS elements_meta (
     id INTEGER PRIMARY KEY, guid TEXT UNIQUE NOT NULL,
@@ -215,7 +216,7 @@ def _compute_alignment(ref_geo, other_geo):
 
 
 def merge_db(src_path: Path, dst: sqlite3.Connection, disc_label: str,
-             correction=(0.0, 0.0, 0.0, 0.0)):
+             correction=(0.0, 0.0, 0.0, 0.0), keep_blobs=False):
     """Merge src DB into dst. Applies coordinate correction (dx, dy, dz)
     and grid_north rotation (rotation_deg) to align this discipline's
     elements to the reference coordinate system.
@@ -237,12 +238,19 @@ def merge_db(src_path: Path, dst: sqlite3.Connection, disc_label: str,
         theta = 0.0
         cos_t, sin_t = 1.0, 0.0
 
-    # base_geometries — deduplicate by hash
-    # When --library is used, store NULL BLOBs (meshless DB — meshes live in library)
+    # base_geometries — deduplicate by hash.
+    # keep_blobs=False (--library mode): store NULL BLOBs — meshless DB, meshes live in library.
+    # keep_blobs=True (no library): the merged DB IS the mesh store — copy the blobs through.
+    # ⚠ Before 2026-08-10 the None,None was UNCONDITIONAL (the comment said "when --library is
+    # used" but the code never checked) — a no-library merge silently DESTROYED every mesh blob
+    # (measured: LTU_AHouse 59,917 hash-only rows, 0 vertices). §PROOF's BLOB_COVERAGE check
+    # below now fails the run outright if that ever regresses.
     for row in src.execute("SELECT * FROM base_geometries"):
         dst.execute(
             "INSERT OR IGNORE INTO base_geometries VALUES (?,?,?,?,?)",
-            (row["geometry_hash"], None, None,
+            (row["geometry_hash"],
+             row["vertices"] if keep_blobs else None,
+             row["faces"] if keep_blobs else None,
              row["vertex_count"], row["face_count"])
         )
 
@@ -341,11 +349,18 @@ def merge_db(src_path: Path, dst: sqlite3.Connection, disc_label: str,
                 pass
 
     # spatial_structure
+    # §S21 (prompts/4D_GANTT_TM_REFACTOR.md): elevation carried through the per-discipline merge —
+    # read by column name (sqlite3.Row), so this stays correct even if the source tmp_db (an older
+    # extractIFCtoDB.py run) predates the elevation column and doesn't have it. EXTRACT ONLY, no
+    # inference: a source row with no elevation stays NULL, never backfilled from another row.
+    src_cols = {r[1] for r in src.execute("PRAGMA table_info(spatial_structure)")}
+    _has_elevation = "elevation" in src_cols
     for row in src.execute("SELECT * FROM spatial_structure"):
         dst.execute(
-            "INSERT OR IGNORE INTO spatial_structure VALUES (?,?,?,?,?,?)",
+            "INSERT OR IGNORE INTO spatial_structure VALUES (?,?,?,?,?,?,?)",
             (row["guid"], row["type"], row["name"], row["parent_guid"],
-             row["object_type"], row["predefined_type"])
+             row["object_type"], row["predefined_type"],
+             row["elevation"] if _has_elevation else None)
         )
 
     # rel_contained_in_space
@@ -608,7 +623,7 @@ def main():
             print(f"  [{disc}] → discipline overridden to {override}")
 
         corr = corrections.get(ifc.stem, (0.0, 0.0, 0.0, 0.0))
-        merge_db(tmp_db, dst, disc, correction=corr)
+        merge_db(tmp_db, dst, disc, correction=corr, keep_blobs=not args.library)
 
         # S173: Copy BLOBs from temp DB → library (sequential, no lock contention)
         if args.library:
@@ -752,6 +767,13 @@ def main():
     _check("ELEMENT_COUNT",
            disc_sum == total,
            f"sum={disc_sum}  total={total}")
+
+    # M4b: BLOB_COVERAGE — self-contained (no --library) output must CARRY its meshes: every
+    # base_geometries row has a real vertices blob (guards the merge_db keep_blobs path above).
+    if not args.library:
+        _bc = dst.execute("SELECT COUNT(*), COUNT(vertices) FROM base_geometries").fetchone()
+        _check("BLOB_COVERAGE", _bc[0] > 0 and _bc[0] == _bc[1],
+               f"rows={_bc[0]}  with_blobs={_bc[1]} (self-contained: must be equal)")
 
     # M4: LIBRARY — geometry hashes resolvable (spot-check)
     if args.library:

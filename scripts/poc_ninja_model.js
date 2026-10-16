@@ -224,7 +224,10 @@ function sheetToAOA(wb, sheetName) {
     ' cols=' + totalRomoCols +
     ' vsOracle=' + vsOracle);
 
-  if (vsOracle !== 'MATCH') {
-    process.exit(1);
-  }
+  // §TWIN-CLASSIFIED-MARKERS: an explicit verdict line run_witness.sh recognises; the falsifier is now load-bearing
+  // on the exit code too (before, a failed falsifier printed FAIL and exited 0).
+  var ok = vsOracle === 'MATCH' && falsifierOk;
+  console.log(ok ? '🟢 W-NINJA-MODEL PASS — parse == PackOut oracle (' + oracleTables.length + ' tables, ' + totalRomoCols + ' cols) + falsifier'
+                 : '🔴 W-NINJA-MODEL FAIL — vsOracle=' + vsOracle + ' falsifier=' + (falsifierOk ? 'PASS' : 'FAIL'));
+  if (!ok) process.exit(1);
 })();

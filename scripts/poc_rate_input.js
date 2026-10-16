@@ -39,7 +39,7 @@ var path = require('path');
 var initSqlJs = require('sql.js');
 // §I-J money math via BigDecimal (feedback_numbers_via_bigdecimal): conversion is exact decimal, NEVER raw
 // float. amtBase is integer cents (string-safe); rate is a recorded-input STRING. convCents = round-half-up.
-var BigDecimal = require(path.join(__dirname, '..', 'site', 'bigdecimal.js'));
+var BigDecimal = require(path.join(__dirname, '..', 'build', 'erp', 'bigdecimal.js'));
 function convCents(baseCents, rateStr) {
   return Number(BigDecimal.of(String(baseCents)).multiply(BigDecimal.of(String(rateStr)))
                 .setScale(0, BigDecimal.RoundingMode.HALF_UP).toString());

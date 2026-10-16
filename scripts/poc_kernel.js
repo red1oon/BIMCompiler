@@ -23,7 +23,7 @@ var K = require('./erp_kernel');
 
 var AD = process.env.ERP_AD_FULL || path.join(__dirname, '..', 'build', 'erp', 'ad_full.db');
 var RULES = process.env.ERP_RULES_OUT || path.join(__dirname, '..', 'build', 'erp', 'erp_rules.db');
-var MANIFEST = require(path.join(process.env.HOME, 'bim-ootb', 'viewer', 'manifest.json'));
+var MANIFEST = require(path.join(process.env.HOME, 'bim-ootb', 'erp', 'manifest.json'));
 
 var fails = 0;
 function verdict(ok, label, detail) { if (!ok) fails++; console.log('   ' + (ok ? '🟢' : '🔴') + ' ' + label + (detail ? ' — ' + detail : '')); }

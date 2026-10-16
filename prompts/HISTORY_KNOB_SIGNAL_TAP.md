@@ -337,3 +337,14 @@ the unfixed file) and AFTER, same script:
   `idx=3` (monotonic, `idx1-1`), no push/tap_dot follows. `RESULT: PASS`.
 Logs: `/tmp/wt-hist-viewnav-fix/witness_{BEFORE,AFTER}.log`. Verified on localhost (`python3 -m http.server
 8955`), not CI, per PUSH PAUSE. Worktree not yet pruned (branch has unpushed commits).
+
+**⚠ STATUS CORRECTION 2026-07-20 — still NOT on `main`, one week after "✅ FIXED":** the branch WAS later
+pushed (`origin/fix/history-viewnav-drain-forward-snap`, commit `2d4acb4` + a companion cache-bust `4be8cb5`,
+2026-07-16) — push pause lifted 2026-07-17 so that part happened — but no PR was ever opened and it was never
+merged. `main` has since moved 161 commits ahead of the branch's base; `git merge-base --is-ancestor 2d4acb4
+main` → **NOT an ancestor**. `common/history_tap.js` itself hasn't been touched on `main` since before this
+branch was cut, so the real fix is still just the same clean 2-line diff (`_applyingView` guard in
+`feedCrumb()` + `HIST_VIEWNAV` in `DENY_TAG`) — cherry-picks with zero conflict. This is almost certainly what
+the user means by "world/history broken again": the bug was correctly diagnosed and fixed here, but the fix
+never reached the code users actually run. See `RESUME_WORLD_HISTORY_DEDUP_RESTORE.md`'s 2026-07-20 section
+for the cross-file pattern this is one instance of.

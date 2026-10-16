@@ -159,3 +159,28 @@ intended.
 **Commits:** local only in `/tmp/wt-xray-fixture-fix` (branch `fix/xray-fixture-classification`,
 bim-ootb) — standing PUSH PAUSE (`CLAUDE.md` §⏸) applies, not pushed/PR'd. This file (bim-compiler) has no
 equivalent lock; committed directly in the primary checkout.
+
+# DONE (2026-07-18) — merged, both follow-ups also closed
+
+This branch merged into bim-ootb `main` as part of PR #846 (`fix(modeller): X-ray reveal — correct
+glass/glow classification + depth-adaptive opacity`), combined with a genuinely new fix for the
+alpha-accumulation follow-up named above (item 2): `_xrayMeasureStackDepth()` measures the real stacking
+depth via a 6×6 grid of top-down raycasts through the actual structure mesh set, then solves for the glass
+opacity that keeps cumulative composited opacity at a fixed 35% target — Duplex (depth 22) 0.06→0.019,
+SampleCastle (depth 48) 0.06→0.015. `witness_xray_poc.js` and `witness_xray_sc_duplex.js` both PASS on the
+combined fix.
+
+Item 1 (`DW_FIXTURE_DOUBLE_RENDER_FINDING.md`'s double-render) is ALSO now fixed, separately, as bim-ootb
+PR #851 — see that file's own `# DONE 2026-07-18` for the account (a naive `.visible=false` fix broke
+click-to-identify, `witness_e2e_instpick.js` caught it before merge; the real fix keeps the individual
+fold-copy raycastable but invisible-to-rendering via `opacity:0`).
+
+**Guide-image swap done too** — `docs/ModellerGuide.md`'s `walk-fixtures.png` (bim-compiler) now shows the
+real SampleCastle X-ray walk, captured fresh against the fully-fixed code (both this fix and #851). Also
+added two new close-ups (`duplex-fixture-lod400-closeup.png`, `samplecastle-fixture-honestbox-closeup.png`)
+showing the real-mesh-vs-honest-box distinction directly, replacing a stale "always a box stand-in" claim
+the guide had carried since before the LIVEWIRE real-mesh mechanism existed.
+
+Not touched, named so it isn't lost: `witness_e2e_instpick.js`'s P2/P2b/P3 (click-to-identify) are broken
+independent of all of the above — confirmed via `git stash` to pristine `origin/main`, identical failure
+before any of this session's changes. Real, pre-existing, unrelated bug, still open.

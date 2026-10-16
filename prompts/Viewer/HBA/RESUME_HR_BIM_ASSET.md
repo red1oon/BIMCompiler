@@ -2649,7 +2649,7 @@ repo yet, and several pieces reuse infrastructure that's already real, just not 
 
 ### What already exists that this can be built FROM (checked directly, not assumed)
 - **Room-to-room pathfinding, real, door-guid-verified**: `common/room_graph.js` (§7 of
-  `prompts/Modeller/DISC_Walker/VIEWER_FIND_PANEL_ROOM_ACCURACY.md`) — Dijkstra over a real
+  `prompts/Viewer/FindRooms/VIEWER_FIND_PANEL_ROOM_ACCURACY.md`) — Dijkstra over a real
   shared-door adjacency graph, already surfaced as a Find-panel "Path" mode. **Status: real code, on
   bim-ootb branch `feat/room-pathfind-graph`, committed locally only, NOT pushed/merged.** This is
   the exact substrate an escape-route feature needs — reuse it, don't rebuild a second graph.

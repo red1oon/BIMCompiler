@@ -1,0 +1,24 @@
+=== §CUT_GATE_LAYER_BOX_VERIFY ===
+total layer rows across the 50 refusing elements: 184
+layer rows that ARE independently axis-aligned boxes: 0
+layer rows that are NOT boxes: 184
+  NON-BOX LAYER ('0dxE1Sy6nDqfpDb5vIMN_Z', 'Basic Wall:Interior - Furring (152 mm Stud):194166', 0, 'Metal - Stud Layer', 20, 12)
+  NON-BOX LAYER ('0dxE1Sy6nDqfpDb5vIMN_Z', 'Basic Wall:Interior - Furring (152 mm Stud):194166', 1, 'Plasterboard', 20, 12)
+  NON-BOX LAYER ('0dxE1Sy6nDqfpDb5vIMNiA', 'Basic Wall:Interior - Furring (152 mm Stud):193247', 0, 'Metal - Stud Layer', 20, 12)
+  NON-BOX LAYER ('0dxE1Sy6nDqfpDb5vIMNiA', 'Basic Wall:Interior - Furring (152 mm Stud):193247', 1, 'Plasterboard', 20, 12)
+  NON-BOX LAYER ('0iEHWY1$XA8eQeeULq4jDb', 'Basic Wall:Interior - Furring (152 mm Stud):190774', 0, 'Metal - Stud Layer', 20, 12)
+  NON-BOX LAYER ('0iEHWY1$XA8eQeeULq4jDb', 'Basic Wall:Interior - Furring (152 mm Stud):190774', 1, 'Plasterboard', 20, 12)
+  NON-BOX LAYER ('0iEHWY1$XA8eQeeULq4jE6', 'Basic Wall:Interior - Furring (152 mm Stud):190933', 0, 'Metal - Stud Layer', 20, 12)
+  NON-BOX LAYER ('0iEHWY1$XA8eQeeULq4jE6', 'Basic Wall:Interior - Furring (152 mm Stud):190933', 1, 'Plasterboard', 20, 12)
+  NON-BOX LAYER ('0iEHWY1$XA8eQeeULq4jZ1', 'Basic Wall:Interior - Furring (152 mm Stud):189074', 0, 'Metal - Stud Layer', 20, 12)
+  NON-BOX LAYER ('0iEHWY1$XA8eQeeULq4jZ1', 'Basic Wall:Interior - Furring (152 mm Stud):189074', 1, 'Plasterboard', 20, 12)
+  NON-BOX LAYER ('0iEHWY1$XA8eQeeULq4j_U', 'Basic Wall:Interior - Furring (152 mm Stud):189901', 0, 'Metal - Stud Layer', 20, 12)
+  NON-BOX LAYER ('0iEHWY1$XA8eQeeULq4j_U', 'Basic Wall:Interior - Furring (152 mm Stud):189901', 1, 'Plasterboard', 20, 12)
+  NON-BOX LAYER ('0iEHWY1$XA8eQeeULq4jpl', 'Basic Wall:Interior - Partition (92mm Stud):190140', 0, 'Plasterboard', 20, 12)
+  NON-BOX LAYER ('0iEHWY1$XA8eQeeULq4jpl', 'Basic Wall:Interior - Partition (92mm Stud):190140', 1, 'Metal - Stud Layer', 28, 16)
+  NON-BOX LAYER ('0iEHWY1$XA8eQeeULq4jpl', 'Basic Wall:Interior - Partition (92mm Stud):190140', 2, 'Plasterboard', 20, 12)
+  NON-BOX LAYER ('0jf0rYHfX3RAB3bSIRjmmy', 'Basic Wall:Exterior - Brick on Block:184944', 0, 'Masonry - Brick', 20, 12)
+  NON-BOX LAYER ('0jf0rYHfX3RAB3bSIRjmmy', 'Basic Wall:Exterior - Brick on Block:184944', 1, 'Misc. Air Layers - Air Space', 28, 16)
+  NON-BOX LAYER ('0jf0rYHfX3RAB3bSIRjmmy', 'Basic Wall:Exterior - Brick on Block:184944', 2, 'Insulation / Thermal Barriers - Rigid insulation', 28, 16)
+  NON-BOX LAYER ('0jf0rYHfX3RAB3bSIRjmmy', 'Basic Wall:Exterior - Brick on Block:184944', 3, 'Masonry - Concrete Block', 28, 16)
+  NON-BOX LAYER ('0jf0rYHfX3RAB3bSIRjmmy', 'Basic Wall:Exterior - Brick on Block:184944', 4, 'Metal - Stud Layer', 28, 16)

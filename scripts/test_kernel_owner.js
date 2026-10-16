@@ -35,7 +35,7 @@ var KERNEL = path.join(process.env.HOME, 'bim-ootb', 'viewer', 'kernel_ops.js');
 // fresh kernel instance per device — kernel_ops keeps one _tableCreated flag per module (one DB per
 // page). Same dodge as test_kernel_identity.js / test_kernel_sign.js.
 function freshK() { delete require.cache[require.resolve(KERNEL)]; require(KERNEL); return global.window.KernelOps; }
-require(path.join(process.env.HOME, 'bim-ootb', 'viewer', 'erp_replay.js'));   // browser-pure → attaches window.ErpReplay
+require(path.join(process.env.HOME, 'bim-ootb', 'erp', 'erp_replay.js'));   // browser-pure → attaches window.ErpReplay
 var R = global.window.ErpReplay;
 
 var fails = 0;

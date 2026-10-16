@@ -1,3 +1,17 @@
-library/component_library.db filter=lfs diff=lfs merge=lfs -text
-*.db filter=lfs diff=lfs merge=lfs -text
-DAGCompiler/lib/input/Hospital_extracted.db filter=lfs diff=lfs merge=lfs -text
+# ── NO BINARY DATABASES IN GIT — LFS TRACKING REMOVED 2026-09-01 ──────────────────────────────
+# MEASURED that day: this repo held 8.53 GB of LFS objects on its remote refs (303 objects) against
+# a 1 GB per-ACCOUNT free quota shared with bim-ootb (0.78 GB) — i.e. ~9.3x over. Breakdown:
+#   library/component_library.db  32 versions  5.76 GB  (68% of the total, one file)
+#   deploy/dev/buildings/*                     1.45 GB  (already served from OCI — pure duplicate)
+#   backup/db_snapshot_20260323_014819/*       1.19 GB  (long since out of HEAD, still billed)
+# The blanket `*.db filter=lfs` rule that lived here is what pulled 59 DBs (1.79 GB) into HEAD, and
+# it directly contradicted CLAUDE.md's DB POLICY: binary .db commits are banned OUTRIGHT and
+# UNCONDITIONALLY, regardless of LFS quota status. That policy is the permanent architecture, not a
+# workaround — DB content changes ship as migration/*.sql or <app>/patches/*.sql plus a self-heal
+# loader; full rebuilt binaries are distributed via OCI (deploy/OCI_UPLOAD.md §RULES), never git.
+#
+# ⚠ Removing these rules does NOT reclaim the 8.53 GB. GitHub bills every LFS object ever pushed and
+# offers no self-serve purge; this file only stops the growth. Audit: prompts/LFS_QUOTA_AUDIT.md.
+#
+# DO NOT re-add `*.db filter=lfs` (or any per-file .db LFS rule). If a DB must reach a consumer,
+# the answer is a patch script or an OCI upload, not a tracked binary.

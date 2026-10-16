@@ -60,7 +60,16 @@ PAUSED / teed-up:
   (C_ProjectPhase dates already chain finish-to-start). Viewer Blue Future = `viewer/blue_fold.js`
   (commitBlue/discardBlue/acceptBlue, branch_id). Twin = `_loadTwin`/`_computeVariance`/`drawVariance` in
   time_machine.js. Resume from prompts/TM_4D5D_VARIANCE_LANE.md §S6.
+  ⛔ **STALE POINTER — CORRECTED 2026-08-27. Do NOT "resume from §S6": it resumes into a CLOSED stage.**
+  §S6 has been **✅ DONE/LIVE since 2026-06-22** — PR #474 (engine `viewer/whatif.js`, W-WHATIF 13/13)
+  + #475 (UI `viewer/whatif_panel.js`); see `prompts/TM_4D5D_VARIANCE_LANE.md:179`.
+  ➡ **The live next step is W1 — witness `W-EAC`** (`TM_4D5D_VARIANCE_LANE.md:216`; the Phase-2 arc at
+  `:292` is W0 ✅ → **W1 W-EAC** → W2 W-CLAIM-CERT → W3 W-COCKPIT-LOOP). Text above kept as the record.
 - TRUE earn-the-actual (S5 option a, real C_ProjectIssue) — parked on the OPFS round-trip (now fixed → revisit).
+  ⚠ **Also corrected 2026-08-27:** W0/S5 earn-the-actual is **✅ DONE 2026-06-22** (PR #492, W-PC-EARN
+  8/8, `TM_4D5D_VARIANCE_LANE.md:146`) — but it shipped on source **(A) `PP_Order_Cost`**, NOT on
+  option (a) `C_ProjectIssue`, because that table is **MISSING** from the seed. So this bullet's
+  specific route is not merely "parked", it was **decided against on a measured absence**.
 
 ## §WITNESS INDEX (this lane, re-run as regression): viewer/tests/test_pp_zoom_tm.js · test_shop_dates.js ·
 #   test_pc_evm.js · erp/tests/test_pivot_pill.js · tests/poc_bim_overlay_authoritative.js

@@ -252,9 +252,9 @@
       </div>
       <div class="row">
         <div class="dim">Scale ceiling
-          <small>125k elements scrub smoothly in-browser; millions need DLOD — the open front</small></div>
-        <div class="score"><span class="num">6.0</span><div class="bar"><i style="width:60%"></i></div></div>
-        <div class="grade-cell"><span class="grade par">Partial</span></div>
+          <small>125k elements now DLOD-proxied in Time Machine (shipped 2026-07-20); millions still unproven</small></div>
+        <div class="score"><span class="num">7.0</span><div class="bar hot"><i style="width:70%"></i></div></div>
+        <div class="grade-cell"><span class="grade ok">Verified</span></div>
       </div>
       <div class="row">
         <div class="dim">Resource levelling
@@ -320,7 +320,7 @@
 
   <section>
     <h2>Where it loses — and the plan</h2>
-    <div class="h2-sub">Two open fronts, each with a concrete next move</div>
+    <div class="h2-sub">One open front left; the scale ceiling shipped</div>
     <div class="steps">
       <div class="step">
         <span class="n">01</span>
@@ -329,20 +329,23 @@
           <p>We import P6 and export MS Project, but a P6 shop can’t reingest our output natively.
             The fix is a serializer mirroring parsers we already own — verified by round-tripping through
             our own reader. Lands us at documented parity with Bexel, ahead of the unverified rest.</p>
-          <span class="st">Spec written · XER_PMXML_WRITER_LANE.md</span>
+          <span class="st">Spec written · XER_PMXML_WRITER_LANE.md · still open</span>
         </div>
       </div>
       <div class="step">
         <span class="n">02</span>
         <div>
-          <h4>Prove the scale ceiling — Pareto bbox-swap, demonstrated on LTU</h4>
-          <p>Box the inactive set, keep per-element mesh only on the layer under construction. The
-            field’s core dilemma is “merge <em>or</em> 4D”; this threads it. The bbox-proxy renderer
-            already ships in the Find Panel and is proven past 50k elements — and unlike Find, the
-            Time Machine carries no x-ray transparency weight, so LTU (125k) already plays. The build
-            is wiring that proven proxy in as TM’s inactive-set layer. Target: LTU with no visible lag
-            versus HHS (6.9k).</p>
-          <span class="st">Proxy exists (navigate_find.js) · wiring + LTU-vs-HHS capture pending</span>
+          <h4>✅ Scale ceiling wired — box-proxy shipped into Time Machine (2026-07-20)</h4>
+          <p>Box the inactive set, keep per-element mesh only for what's under construction AND actually
+            in view (camera-distance + frustum, the field's own LOD0/LOD2 convention). The field's core
+            dilemma is “merge <em>or</em> 4D”; this threads it. Live on LTU (122k elements) in
+            production: real construction-window geometry stays full LOD400, everything already-built
+            but out of view collapses to a lightweight wireframe box — verified on real hardware, not
+            just headless. What's still unproven: millions of elements (only tested to 122k), and no
+            formal LTU-vs-HHS side-by-side capture was produced — the verification here was live user
+            testing on the real target building, which is what caught and fixed a design gap
+            (time-based vs. view-based swap) a synthetic capture likely wouldn't have surfaced.</p>
+          <span class="st">Shipped · bim-ootb #918–#922 · red1oon.github.io/bim-ootb</span>
         </div>
       </div>
     </div>
@@ -354,7 +357,7 @@
     <div class="ledger">
       <div class="li">
         <span class="who">Our scores</span>
-        <p>Drawn directly from our own source code and stand behind. Scale is our sharpest edge and our honest limit at once: a 125k-element model now scrubs smoothly in a browser — where the desktop incumbents live and browser rivals cap out — but millions is not yet proven, and closing that is exactly what the roadmap’s step 02 (DLOD) targets.</p>
+        <p>Drawn directly from our own source code and stand behind. Scale is our sharpest edge and our honest limit at once: a 125k-element model now scrubs smoothly in a browser <em>and</em> plays back its full 4D construction sequence with a DLOD box-proxy (shipped 2026-07-20) — where the desktop incumbents live and browser rivals cap out — but millions is not yet proven; that's the next honest limit, not this one.</p>
       </div>
       <div class="li">
         <span class="who">Competitor claims</span>

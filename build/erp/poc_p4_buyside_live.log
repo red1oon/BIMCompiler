@@ -1,18 +1,5 @@
 
 ══ POC-P4-BUYSIDE-LIVE — fold Odoo P00011 from LIVE odoodemo (W-P4-BUYSIDE-LIVE) ══
 
-
-── live extract: PO=P00011 lines=1 receipt=WH/IN/00006 moves=1 bill=BILL/2026/06/0002 GL=3 total=6596.40
-
-── §LIVE-STATIC: live vs odoo_oracle_p2p.json ──
-
-── §BUY-FOLD: fold live chain through adapter + kernel verbs ──
-
-── §MATCH: 3-way settlement (receipt↔bill + PO↔bill) via erp_engine.match ──
-
-── §GL-BALANCE: AP GL balanced + total == live bill.amount_total ──
-
-── §FALSIFIER: corrupt partner → match produces 0 pairs ──
-
-§P4-BUYSIDE-LIVE chain mapped=5/5 verbs=[CREATE_DOCUMENT,CREATE_LINE,MATCH,POST,SET_STATUS] newVerbs=[] matcherCalls=2 maxDiff=0c
-§P4-BUYSIDE-LIVE PASS — Odoo P00011 procure-to-pay LIVE fold: newVerbs=[], all 5 hops, AP balanced, maxDiff=0c vs live AML, 3-way match via erp_engine.match, §FALSIFIER fires
+§P4-BUYSIDE-LIVE ERROR connect ECONNREFUSED 127.0.0.1:8069 Error: connect ECONNREFUSED 127.0.0.1:8069
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1549:16)

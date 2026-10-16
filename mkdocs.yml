@@ -2,6 +2,7 @@ site_name: BIM Intent Compiler
 site_description: Construction is manufacturing. A building IS its Bill of Materials.
 site_author: Redhuan D. Oon
 repo_url: https://github.com/red1oon/bim-ootb
+repo_name: OOTB
 
 theme:
   name: material
@@ -60,6 +61,7 @@ extra_css:
 
 extra_javascript:
   - javascripts/fold-footnotes.js
+  - javascripts/bim_compiler_source.js
 
 extra:
   analytics:
@@ -76,10 +78,13 @@ nav:
   - Start Here:
       - Home: index.md
       - "📖 User Guide": USER_GUIDE.md
+      - "🔒 Fully Offline / Air-Gapped Install": OFFLINE_INSTALL_GUIDE.md
       - "🆕 What's New": WhatsNew.md
       - About BIM OOTB: AboutMore.md
       - Feature Comparison: FeatureComparison.md
       - "Migrate & Compare (ERP)": MigrateComparisonPaper.md
+      - "Two Apps, One Kernel": TwoAppsOneKernel.md
+      - "One Page InfoGraphics - Landscape": TwoAppsOneKernelInfographicLandscape.html
       - "Benchmark Comparison (live)": bench_suite.html
       - "Does Your ERP Age? (live)": age_demo.html
       - The ERP World View: MANIFESTO.md
@@ -87,12 +92,17 @@ nav:
 
   - The 3 Apps:
       - "BIM Viewer Guide": BIMUserGuide.md
+      - "Viewer Ask — First Steps": AskFirstSteps.md
+      - "Modeller — First Steps": ModellerFirstSteps.md
       - "DAGeVu Modeller — User Guide": ModellerGuide.md
+      - "2D Drawings → BIM (DXF2BIM)": DXF2BIMGuide.md
       - "Kernel-ERP User Guide": ERPUserGuide.md
       - "HR / Tenancy / Operate Module": HRBIMAssetGuide.md
+      - "Civil Works — Step by Step": CivilWorksGuide.md
       - "Teams Overlay — Collaboration & Optics": TeamsOverlayGuide.md
 
   - Go Deeper:
+      - "Architecture Overview (for reviewers)": ArchitectureOverview.md
       - "Fold Engine Black Book (dev manual)": FoldEngineBlackBook.html
       - "The Holy Grail (editable rules, live)": HolyGrail.md
       - "Cross-ERP Rosetta Stone (concept + cost)": ERPConceptRosetta.html
@@ -101,18 +111,30 @@ nav:
       - "Spatial ERP × BIM × HR — One Building, One Log": SpatialERPIntegration.md
       - "Distributed ERP": DistributedERP.md
       - "How the Database Works (big picture)": SQLiteWasmArchitectureActual.html
+      - "Viewer Component Model (dev architecture)": ViewerComponentModel.html
       - "Red Pill — Design From Grammar": RED_PILL.md
       - "Clash Detection": CLASH_DETECTION.md
+      - "Asset Classification & JKR/SKATA": JKR_SKATA.md
+      - "IFC Export Guide (for the BIM author)": IFC_ExportGuide.md
+      - "Time Machine (4D Scheduling & Editing)": TimeMachine.md
       - "4D/5D Analysis": 4D5DAnalysis.md
       - "BIM → Project Order (ERP)": BIMtoProject.md
       - "Geometry as a Signed-Log Fold": ModellerKernelFold.md
 
   - Papers & Positioning:
+      - "Deterministic Spatial Compilation (academic paper)": SpatialCompilationPaper.md
+      - "DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)": DXF2BIM_TechnicalNote.md
+      - "Browser-Scale Benchmark (one tab, local first)": BrowserScaleBenchmark.md
       - "Construction Economy / ERP Wave": BIMERPPaper.md
       - "Enterprise Authentication (security)": EnterpriseAuthentication.md
       - "Strategic Positioning": StrategicIndustryPositioning.md
       - "Local-First Prior Art": LocalFirstPriorArt.md
+      - "Legacy-as-Oracle Adapter (migrate / test an ERP)": LegacyOracleAdapterSpec.md
       - "Enabling-Tech Timeline": EnablingTechTimeline.md
+      - "Vibe Programming — AI + Domain Expertise": VibeProgramming.md
+      - "The 4D Generator — Failure Catalogue & AI Findings": 4DGenerator.md
+      - "The Last Mile — drift tracking": LAST_MILE_PROBLEM.md
+      - "Project Chronology": PROJECT_CHRONOLOGY.md
       - "Beyond Buildings": ShipYard.md
       - "Find & Navigate (wayfinding)": RouteTemplate.md
       - "Self-Host (DIY installer)": SYSTEMS_INSTALLER_GUIDE.md

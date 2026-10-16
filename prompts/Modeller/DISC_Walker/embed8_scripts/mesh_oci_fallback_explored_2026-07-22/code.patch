@@ -1,0 +1,92 @@
+diff --git a/common/about_diy.js b/common/about_diy.js
+index 335c24e..ed5f1e0 100644
+--- a/common/about_diy.js
++++ b/common/about_diy.js
+@@ -234,6 +234,15 @@
+   // here (single source); the module never defers to a host page's copy, so the fix lands everywhere.
+   // GitHub archive of branch `main` extracts to `bim-ootb-main/`; the repo's own README.md ships inside it.
+   var REPO_ZIP = 'https://github.com/red1oon/bim-ootb/archive/refs/heads/main.zip';
++  // §OCI-FALLBACK (2026-07-22): mesh.db (the Modeller's shared LOD400 geometry, 114MB) is git-LFS-tracked,
++  // and the codeload zip above does NOT resolve LFS content — the app zip alone would leave the Modeller's
++  // 8 buildings with metadata but no real geometry (see prompts/Modeller/DISC_Walker/
++  // EMBED_8_ARC_BUILDINGS_MESH_DB.md §STATUS). "Fetch all and localize": pull the real file from OCI
++  // straight into the extracted app's modeller/ folder — same URL str_walker_outliner.js's _fetchGeoDb
++  // OCI-fallback uses, so once this succeeds the self-hosted copy never needs the network again. Best-
++  // effort: a failed/missing OCI object degrades to metadata-only Modeller (matches today's behavior),
++  // never blocks the rest of the install.
++  var MESH_DB_OCI_URL = 'https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/buildings/modeller_mesh.db';
+   function _downloadInstaller() {
+     var isWin = navigator.platform.indexOf('Win') > -1, script, filename, mime;
+     if (isWin) {
+@@ -244,6 +253,9 @@
+         'curl -sL -o app.zip "' + REPO_ZIP + '"',
+         'powershell -Command "Expand-Archive -Path app.zip -DestinationPath . -Force"', 'del app.zip',
+         'cd bim-ootb-main',
++        'echo Fetching Modeller geometry (mesh.db, ~114MB - this can take a while)...',
++        'curl -sL -o modeller\\mesh.db.tmp "' + MESH_DB_OCI_URL + '" && move /y modeller\\mesh.db.tmp modeller\\mesh.db >nul' +
++          ' || echo [!] mesh.db fetch failed - Modeller buildings will show metadata only, no 3D geometry, until this succeeds',
+         'echo Serving BIM + ERP at http://localhost:8080  (see README.md)',
+         'start http://localhost:8080', 'python -m http.server 8080'
+       ].join('\r\n');
+@@ -255,6 +267,9 @@
+         'echo "Downloading BIM/ERP OOTB..."',
+         'curl -sL -o app.zip "' + REPO_ZIP + '"',
+         'unzip -qo app.zip && rm app.zip && cd bim-ootb-main',
++        'echo "Fetching Modeller geometry (mesh.db, ~114MB - this can take a while)..."',
++        'curl -sL -o modeller/mesh.db.tmp "' + MESH_DB_OCI_URL + '" && mv modeller/mesh.db.tmp modeller/mesh.db ' +
++          '|| echo "[!] mesh.db fetch failed - Modeller buildings will show metadata only, no 3D geometry, until this succeeds"',
+         'echo "Serving BIM + ERP at http://localhost:8080  (see README.md)"',
+         'if [[ "$OSTYPE" == "darwin"* ]]; then open http://localhost:8080 &',
+         'elif command -v xdg-open &>/dev/null; then xdg-open http://localhost:8080 &; fi',
+diff --git a/modeller/str_walker_outliner.js b/modeller/str_walker_outliner.js
+index 8327ac6..4b1cfb1 100644
+--- a/modeller/str_walker_outliner.js
++++ b/modeller/str_walker_outliner.js
+@@ -440,6 +440,19 @@
+     } catch (e) { console.warn(TAG + ' §DB_IDENTITY failed for ' + key + ' — ' + (e && e.message)); }
+   }
+ 
++  // §OCI-FALLBACK (2026-07-22): mesh.db is git-LFS-tracked, and neither GitHub Pages nor a codeload-zip
++  // download resolves LFS content to the real file — both serve/download the ~134-byte pointer text
++  // instead (confirmed live: prompts/Modeller/DISC_Walker/EMBED_8_ARC_BUILDINGS_MESH_DB.md §STATUS).
++  // Same-origin fetch is tried FIRST (works once a self-host install has localized a real copy there, or
++  // once mesh.db is ever served for real same-origin); this OCI URL is the fallback/authoritative source
++  // otherwise. NOTE the failure signature differs from the web-ifc local-first/CDN-fallback pattern
++  // (§S284c in viewer/import_worker.js): a bad mesh.db fetch does NOT throw — Pages returns a normal 200
++  // with tiny content — so a plain try/catch would never catch this; a size sanity-gate is required.
++  var GEO_DB_MIN_BYTES = 1 * 1024 * 1024;   // real mesh.db is 114MB; an unresolved LFS pointer is ~134 bytes
++  function _geoDbOciUrl(filename) {
++    return 'https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/buildings/modeller_' + filename;
++  }
++
+   // §GEO-SPLIT: lazily fetch+cache a resident's SEPARATE geometry-mesh db (Terminal_geo.db), reusing the
+   // exact same IndexedDB cache pattern (_idbGetDb/_idbPutDb, its own URL key so it caches independently of
+   // the meta db) — cache-first, else fetch+persist. Residents with no `geoDb` field resolve null IMMEDIATELY,
+@@ -454,6 +467,18 @@
+       }
+       console.log(TAG + ' §STRWALK-OPEN ' + res.key + ' geoDb cache-MISS → fetch ' + url);
+       return fetch(url).then(function (r) { if (!r.ok) throw new Error('fetch ' + r.status); return r.arrayBuffer(); })
++        .then(function (buf) {
++          if (buf.byteLength >= GEO_DB_MIN_BYTES) return buf;
++          // §OCI-FALLBACK: same-origin responded 200 but too small to be real geometry — almost
++          // certainly an unresolved git-LFS pointer, not a network error. Fall back to OCI.
++          var ociUrl = _geoDbOciUrl(res.geoDb);
++          console.warn(TAG + ' §STRWALK-OPEN ' + res.key + ' geoDb same-origin file too small (' + buf.byteLength +
++            'B, expected multi-MB) — likely an unresolved git-LFS pointer, falling back to OCI ' + ociUrl);
++          return fetch(ociUrl).then(function (r2) {
++            if (!r2.ok) throw new Error('OCI fetch ' + r2.status);
++            return r2.arrayBuffer();
++          });
++        })
+         .then(function (buf) {
+           _idbPutDb(url, buf).then(function (p) {
+             console.log(TAG + ' §STRWALK-CACHE ' + res.geoDb + ' persisted=' + p + ' (next Open is local) ' + (buf.byteLength / 1024 / 1024).toFixed(1) + 'MB');
+@@ -722,6 +747,7 @@
+     },
+     onClear: onClear,
+     _openStrDb: openStrDb, _openIfcFile: openIfcFile, _category: category,
+-    _openResident: openResident, _openBuffer: _openBuffer, _residents: RESIDENTS, _modellerBase: _modellerBase
++    _openResident: openResident, _openBuffer: _openBuffer, _residents: RESIDENTS, _modellerBase: _modellerBase,
++    _fetchGeoDb: _fetchGeoDb
+   };
+ })();

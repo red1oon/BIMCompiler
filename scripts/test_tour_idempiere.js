@@ -30,7 +30,7 @@ var STORE   = JSON.parse(fs.readFileSync(P('build/erp/help_ops.json'), 'utf8'));
 var KEYMAP  = JSON.parse(fs.readFileSync(P('build/erp/help_idmp_keymap.json'), 'utf8'));
 var OVSRC   = fs.readFileSync(P('build/erp/help_overlay.js'), 'utf8');
 var ADSRC   = fs.readFileSync(P('build/erp/help_idmp.js'), 'utf8');
-var O2CDOC  = fs.readFileSync(P('docs/HelpO2C.md'), 'utf8');
+var O2CDOC  = fs.readFileSync(P('docs/internal/HelpO2C.md'), 'utf8');   // moved by 87bc56b47 (2026-06-30); §TWIN-CLASSIFIED-2
 
 var stepKeys = Object.keys(STORE).filter(function (k) { return k !== '__meta'; });
 var mapKeys  = Object.keys(KEYMAP).filter(function (k) { return k !== '__meta'; });

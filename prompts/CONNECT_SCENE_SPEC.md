@@ -26,6 +26,18 @@ STATUS: BUILDING. P0 ✅ + P1 ✅ (#383) + P2 ✅ (#384). NEXT = fold ERP into P
      authored chain) needs the authored→ERP bridge / real BIM-pushed project — do NOT fabricate.
   ↪ REBRAND (user decree): modeller 'Bonsai' → 'DAGeVu' (visible strings only — title/banner/toast;
      window.Bonsai API + bonsai_*.js + W-BONSAI-* ids unchanged, developer-facing).
+  ↪ 2026-09-13: `prompts/RATES_SOURCE_OF_TRUTH.md` names **P3 as the dependency** for a specific real use
+     case (edit a wall in the Modeller → switch to the Viewer → see the 4D/5D/cost consequence already
+     reflected) — the recommended alternative to ever teaching the Modeller its own scheduling-rates
+     machinery. Raises P3's priority; doesn't change its scope.
+     ↳ **USER DECIDED same day: that route STANDS** ("I am for it, if this is better organised reuse, now
+     by Modeller"). So P3 is no longer a recommended dependency, it is the AGREED one — the Modeller will
+     never carry rates/scheduling machinery, and this channel is how it sees 4D/5D consequence. Scope
+     unchanged: `W-CONNECT-COMMIT` as already written below. The §2 audit behind that decision also found
+     the Viewer's own `sequence_rules.json` is a MIRROR, not live for the 4D bake (§2-RESULT there) —
+     which is the concrete reason NOT to point a second surface at it.
+  ↪ 2026-09-30: red1 changed the display half of the 2026-09-13 decision — the Modeller now SHOWS an edit's cost/schedule Δ
+     itself via the Viewer-side owner (one engine, read-only lazy load). See `RATES_SOURCE_OF_TRUTH.md` §5 and `TM_4D5D_VARIANCE_LANE.md` §S8.
 LOG MANDATE: after ANY witness run, read the log before conclusions.
 ```
 

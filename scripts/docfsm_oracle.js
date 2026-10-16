@@ -7,7 +7,7 @@
 // actions nested under if (periodOpen) / if (isBackDateTrxAllowed) / if (canReactivateThisDocType(..))
 // carry gate tags ('periodOpen' / 'backDate' / 'canReact'); both BRACED gate blocks (frame until the
 // matching close brace) and BRACELESS ifs (gate applies to the next statement only) occur in
-// DocumentEngine.getValidActions:1016-1244 and are handled.
+// DocumentEngine.getValidActions:1016-1332 and are handled.
 //
 // NON-INVENT: every function PARSES the checkout at runtime (never a hand-transcribed table), so a
 // witness diff against the engine cannot be a tautology of the engine's own tables. Shared the way
@@ -33,7 +33,9 @@ function parseConstants(docActionSrc) {
 
 // slice getValidActions into the generic block + every per-table block, by the table-ID markers IN ORDER.
 // Returns { generic, byTable: { MOrder, MInOut, MInvoice, MPayment, MJournal, MAllocationHdr, MCash,
-// MBankStatement, MMovement, PP_Order, MProduction } } — each value is the raw source slice.
+// MBankStatement, MMovement, PP_Order, MProduction, PP_CostCollector, DD_Order, HR_Process, MRMA,
+// MBankTransfer, MDepositBatch } } — each value is the raw source slice. ALL 18 table arms of the method
+// are covered; the window ends at the DocOptions hook (:1333), NOT at a hard-coded line number.
 function sliceRegions(engineSrc) {
   var MARKERS = [
     ['MOrder', 'if (AD_Table_ID == MOrder.Table_ID)'],
@@ -47,7 +49,19 @@ function sliceRegions(engineSrc) {
     ['MMovement', 'else if (AD_Table_ID == MMovement.Table_ID'],          // …|| MInventory (shared block)
     ['PP_Order', 'else if (AD_Table_ID == I_PP_Order.Table_ID)'],
     ['MProduction', 'else if (AD_Table_ID == MProduction.Table_ID)'],
-    ['_end', 'else if (AD_Table_ID == I_PP_Cost_Collector.Table_ID)']
+    // ── the TAIL blocks (ERP_IDEMPIERE_UX_PARITY.md §P6.1). These six arms used to sit OUTSIDE the parse
+    // window — '_end' terminated at I_PP_Cost_Collector (:1248), so the oracle could not see them and
+    // reported "generic fall-through" for MRMA/MBankTransfer/MDepositBatch, sharing the engine's own blind
+    // spot (a witness that cannot report its own failure — CLAUDE.md PRIMAL LAW §4). Boundary EXTRACTED,
+    // not guessed: getValidActions carries 18 'AD_Table_ID ==' arms, and the per-table if/else chain ends
+    // at the DocOptions customization hook (:1333). Slices before this point are byte-identical.
+    ['PP_CostCollector', 'else if (AD_Table_ID == I_PP_Cost_Collector.Table_ID)'],  // :1248
+    ['DD_Order', 'else if (AD_Table_ID == I_DD_Order.Table_ID)'],                   // :1266
+    ['HR_Process', 'else if (AD_Table_ID == I_HR_Process.Table_ID)'],               // :1284
+    ['MRMA', 'else if (AD_Table_ID == MRMA.Table_ID)'],                             // :1302 IDEMPIERE-98
+    ['MBankTransfer', 'else if (AD_Table_ID == MBankTransfer.Table_ID)'],           // :1313
+    ['MDepositBatch', 'else if (AD_Table_ID == MDepositBatch.Table_ID)'],           // :1323
+    ['_end', 'if (po instanceof DocOptions)']                                       // :1333 end of the chain
   ];
   var gvaStart = engineSrc.indexOf('int index = 0;');
   if (gvaStart < 0) throw new Error('getValidActions start marker not found');

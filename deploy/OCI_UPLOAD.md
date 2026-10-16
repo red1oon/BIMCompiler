@@ -7,7 +7,13 @@
 3. **One file at a time. Verify after each.**
 4. **Landing = `SYSNOVA/index.html`. Viewer = `deploy/dev/index.html`. DO NOT MIX.**
 5. **Local `deploy/dev/` → bucket `sandbox/`. Local `SYSNOVA/` → bucket root `index.html`.**
-6. **ALWAYS specify `--content-type` on EVERY upload.** OCI does NOT infer MIME from extension.
+6. **A patch destined for this bucket goes through `scripts/oci_patch_gate.js` (bim-ootb), never by hand.**
+   It records the served object's live etag/content-md5 AND the verifying worktree's SHA + behind/dirty
+   state, downloads the served bytes ITSELF, applies the patch, runs a verifier, and refuses the upload
+   unless all of it passes. Both axes have already failed silently: a 156-room raster judged a 224-room
+   DB (#996), and a provenance check ran from a 25-commit-stale checkout. Manual discipline did not hold;
+   the gate does. `--upload` performs the put + fetch-back verify only past a PASS.
+7. **ALWAYS specify `--content-type` on EVERY upload.** OCI does NOT infer MIME from extension.
    - `.js` → `--content-type "application/javascript"` (without this, browser blocks the script with MIME mismatch)
    - `.html` → `--content-type "text/html"`
    - `.json` → `--content-type "application/json"`
@@ -15,6 +21,27 @@
    - `.wasm` → `--content-type "application/wasm"`
    - `.css` → `--content-type "text/css"`
    **Omitting this breaks the viewer.** The browser's `X-Content-Type-Options: nosniff` header blocks scripts served as `application/octet-stream`.
+8. **Building DB/bin objects in `bim-ootb` are GZIP-COMPRESSED with `--content-encoding gzip`.**
+   (Discovered 2026-08-16: every existing `buildings/*.db`/`*.bin` object serves
+   `content-encoding: gzip`; browsers decompress transparently. A raw upload works but ~4x the
+   download — e.g. Hospital_geo.db 239MB raw vs 60MB gzipped.) Upload pattern:
+   `gzip -9 -k <file>` then `oci os object put ... --file <file>.gz --name buildings/<file>
+   --content-type application/octet-stream --content-encoding gzip`. Verify with
+   `curl -s --compressed <url> | md5sum` == md5 of the raw local file. A local backup of a
+   downloaded object is the gzip bytes — `zcat` it before sqlite3, or "file is not a database".
+9. **`_extracted.db` and its `_meta.db`/`_geo.db` split pair are ONE UNIT — never upload one half
+   without the other, from the SAME build run.** Root-caused 2026-08-27 (`prompts/
+   LTU_TERMINAL_CLINIC_RENDER_CORRUPTION.md` §J): LTU_AHouse and Terminal shipped for weeks with a
+   `_meta.db` that silently disagreed with `_extracted.db` on ~8-27% of `element_transforms` rows
+   (up to 291m off) — not a bug in `split_db.sh` or `import_db_builder.js` (both are provably
+   faithful copies, verified line-by-line), but the two files having been uploaded at DIFFERENT
+   times from DIFFERENT build runs that had since diverged. Each file was internally consistent;
+   the pair wasn't. Before uploading a `_meta.db`/`_geo.db` split pair, verify it was split from
+   the SAME `_extracted.db` currently live on OCI (or that you are re-uploading `_extracted.db` in
+   the same session) — a quick `elements_meta` row-count + a handful of `element_transforms`
+   sample-row diff against the currently-served `_extracted.db` is enough to catch this before it
+   ships. `split_db.sh`'s own "Upload all three files to bucket" is a comment, not an enforced
+   check — treat it as one.
 
 ## Strategy
 

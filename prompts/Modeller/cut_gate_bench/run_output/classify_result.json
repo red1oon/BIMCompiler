@@ -1,0 +1,1093 @@
+{
+ "total": 57,
+ "cuttable": 7,
+ "refuse": 50,
+ "class_a_layered": 50,
+ "class_b_opening": 0,
+ "class_c_other": 0,
+ "results": [
+  {
+   "guid": "0dxE1Sy6nDqfpDb5vIMN_Z",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Furring (152 mm Stud):194166",
+   "hash": "b6ddf8656fba6916",
+   "nverts": 24,
+   "ntris": 40,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 2,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "0dxE1Sy6nDqfpDb5vIMNiA",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Furring (152 mm Stud):193247",
+   "hash": "f5dc3e655e247e16",
+   "nverts": 24,
+   "ntris": 40,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 2,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "0iEHWY1$XA8eQeeULq4jDb",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Furring (152 mm Stud):190774",
+   "hash": "fa02b731d5c25f5a",
+   "nverts": 24,
+   "ntris": 40,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 2,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "0iEHWY1$XA8eQeeULq4jE6",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Furring (152 mm Stud):190933",
+   "hash": "9e73cde501717ea6",
+   "nverts": 24,
+   "ntris": 40,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 2,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "0iEHWY1$XA8eQeeULq4jZ1",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Furring (152 mm Stud):189074",
+   "hash": "ae6d6915fef1aa9e",
+   "nverts": 24,
+   "ntris": 40,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 2,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "0iEHWY1$XA8eQeeULq4j_U",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Furring (152 mm Stud):189901",
+   "hash": "07c06295eedfdb2e",
+   "nverts": 24,
+   "ntris": 40,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 2,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "0iEHWY1$XA8eQeeULq4jpl",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Partition (92mm Stud):190140",
+   "hash": "ae5927d5ff43a7d6",
+   "nverts": 40,
+   "ntris": 68,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 3,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "0jf0rYHfX3RAB3bSIRjmmy",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Exterior - Brick on Block:184944",
+   "hash": "83a20ac908707032",
+   "nverts": 88,
+   "ntris": 152,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 6,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "0jf0rYHfX3RAB3bSIRjmoa",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Exterior - Brick on Block:185064",
+   "hash": "8c56cc250466cce6",
+   "nverts": 88,
+   "ntris": 152,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 6,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "0jf0rYHfX3RAB3bSIRjmpw",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Exterior - Brick on Block:185014",
+   "hash": "eef6bd65a31ecc1e",
+   "nverts": 88,
+   "ntris": 152,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 6,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "0jf0rYHfX3RAB3bSIRjmr1",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Exterior - Brick on Block:185101",
+   "hash": "32cbdec95d57a972",
+   "nverts": 88,
+   "ntris": 152,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 6,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "1aj$VJZFn2TxepZUBcKpZw",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Partition (92mm Stud):203998",
+   "hash": "063a2afda00446b6",
+   "nverts": 80,
+   "ntris": 148,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 3,
+   "is_opening_host": true,
+   "opening_count": 1
+  },
+  {
+   "guid": "1aj$VJZFn2TxepZUBcKpee",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Partition (92mm Stud):204300",
+   "hash": "66769d651c9244ae",
+   "nverts": 40,
+   "ntris": 68,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 3,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "1aj$VJZFn2TxepZUBcKphf",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Partition (92mm Stud):204493",
+   "hash": "baf8706555d932ae",
+   "nverts": 40,
+   "ntris": 68,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 3,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "1aj$VJZFn2TxepZUBcKpvt",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Partition (92mm Stud):203347",
+   "hash": "8ef86c2184190502",
+   "nverts": 80,
+   "ntris": 148,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 3,
+   "is_opening_host": true,
+   "opening_count": 1
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FK04",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Foundation - Concrete (435mm):140987",
+   "hash": "6b39488d3b8bf63e",
+   "nverts": 34,
+   "ntris": 12,
+   "is_box": true,
+   "reason": "box",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 0,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FK1b",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Foundation - Concrete (435mm):141018",
+   "hash": "7ced1fb51c158446",
+   "nverts": 34,
+   "ntris": 12,
+   "is_box": true,
+   "reason": "box",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 0,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FK3E",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Foundation - Concrete (435mm):140913",
+   "hash": "4b843f8de02e143e",
+   "nverts": 34,
+   "ntris": 12,
+   "is_box": true,
+   "reason": "box",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 0,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FK80",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Foundation - Concrete (417mm):140479",
+   "hash": "e1d387d5c0ef9906",
+   "nverts": 34,
+   "ntris": 12,
+   "is_box": true,
+   "reason": "box",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 0,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FK9N",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Foundation - Concrete (417mm):140520",
+   "hash": "ed949609c4a10e2a",
+   "nverts": 34,
+   "ntris": 12,
+   "is_box": true,
+   "reason": "box",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 0,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FKE5",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Foundation - Concrete (417mm):140602",
+   "hash": "602695d10394238a",
+   "nverts": 34,
+   "ntris": 12,
+   "is_box": true,
+   "reason": "box",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 0,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FKEr",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Foundation - Concrete (417mm):140554",
+   "hash": "c981f5f5da13a666",
+   "nverts": 34,
+   "ntris": 12,
+   "is_box": true,
+   "reason": "box",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 0,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FKGS",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Partition (92mm Stud):139939",
+   "hash": "9ad62789c577d25a",
+   "nverts": 40,
+   "ntris": 68,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 3,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FKIu",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Partition (92mm Stud):139783",
+   "hash": "c79616d564bd57d6",
+   "nverts": 40,
+   "ntris": 68,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 3,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FKRH",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Party Wall - CMU Residential Unit Dimising Wall:139374",
+   "hash": "50e205190088c27a",
+   "nverts": 232,
+   "ntris": 424,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 7,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FKRi",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Party Wall - CMU Residential Unit Dimising Wall:139347",
+   "hash": "582223c5f6b2c1ae",
+   "nverts": 72,
+   "ntris": 124,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 5,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FKST",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Partition (92mm Stud):139682",
+   "hash": "fe289c314fe84682",
+   "nverts": 80,
+   "ntris": 148,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 3,
+   "is_opening_host": true,
+   "opening_count": 1
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FKau",
+   "ifc_class": "IfcWall",
+   "name": "Basic Wall:Party Wall - CMU Residential Unit Dimising Wall:143239",
+   "hash": "ff2b3e6523bd0856",
+   "nverts": 406,
+   "ntris": 784,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 7,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FL8v",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Partition (92mm Stud):144518",
+   "hash": "5588b059bac3bc8a",
+   "nverts": 80,
+   "ntris": 160,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 3,
+   "is_opening_host": true,
+   "opening_count": 1
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FL96",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Partition (92mm Stud):144633",
+   "hash": "545aba85dd01f7d6",
+   "nverts": 80,
+   "ntris": 148,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 3,
+   "is_opening_host": true,
+   "opening_count": 1
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FL9r",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Partition (92mm Stud):144586",
+   "hash": "371bf03541347efe",
+   "nverts": 80,
+   "ntris": 148,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 3,
+   "is_opening_host": true,
+   "opening_count": 1
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FLCm",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Plumbing (152mm Stud):144783",
+   "hash": "88493c2d4ec49df6",
+   "nverts": 40,
+   "ntris": 68,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 3,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FLEJ",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Partition (92mm Stud):144684",
+   "hash": "698aa179e50a0352",
+   "nverts": 40,
+   "ntris": 68,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 3,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FLIE",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Partition (92mm Stud):143921",
+   "hash": "7639c81dff8de2f6",
+   "nverts": 80,
+   "ntris": 148,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 3,
+   "is_opening_host": true,
+   "opening_count": 1
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FLJd",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Partition (92mm Stud):143960",
+   "hash": "a172c8dd56e84e8e",
+   "nverts": 80,
+   "ntris": 148,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 3,
+   "is_opening_host": true,
+   "opening_count": 1
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FLKI",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Partition (92mm Stud):144301",
+   "hash": "f18667790c258352",
+   "nverts": 40,
+   "ntris": 68,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 3,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FLMr",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Plumbing (152mm Stud):144138",
+   "hash": "7c5a8b2d4a51b6f6",
+   "nverts": 40,
+   "ntris": 68,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 3,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FLOH",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Exterior - Brick on Block:143534",
+   "hash": "84fda5bda0b8625e",
+   "nverts": 500,
+   "ntris": 1072,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 6,
+   "is_opening_host": true,
+   "opening_count": 4
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FLPP",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Exterior - Brick on Block:143590",
+   "hash": "bbe96df27c99e4bf",
+   "nverts": 548,
+   "ntris": 1192,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 6,
+   "is_opening_host": true,
+   "opening_count": 5
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FLQD",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Exterior - Brick on Block:143410",
+   "hash": "18967b1d087e4fd6",
+   "nverts": 500,
+   "ntris": 1072,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 6,
+   "is_opening_host": true,
+   "opening_count": 4
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FLR9",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Exterior - Brick on Block:143478",
+   "hash": "060b332b4ad34044",
+   "nverts": 548,
+   "ntris": 1192,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 6,
+   "is_opening_host": true,
+   "opening_count": 5
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FLTF",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Partition (92mm Stud):143856",
+   "hash": "b1f49fd9b2bb84ea",
+   "nverts": 80,
+   "ntris": 160,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 3,
+   "is_opening_host": true,
+   "opening_count": 1
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FNau",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Partition (92mm Stud):139143",
+   "hash": "9ef37129b1f613b2",
+   "nverts": 80,
+   "ntris": 148,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 3,
+   "is_opening_host": true,
+   "opening_count": 1
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FNbT",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Party Wall - CMU Residential Unit Dimising Wall:139234",
+   "hash": "d4bad00ddbda7d4e",
+   "nverts": 72,
+   "ntris": 124,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 5,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FNhv",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Exterior - Brick on Block:138310",
+   "hash": "f12bdb716bf9c602",
+   "nverts": 264,
+   "ntris": 528,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 6,
+   "is_opening_host": true,
+   "opening_count": 2
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FNld",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Partition (92mm Stud):138584",
+   "hash": "9ad62789c577d25a",
+   "nverts": 40,
+   "ntris": 68,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 3,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FNqI",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Exterior - Brick on Block:138157",
+   "hash": "ec29154112a9657a",
+   "nverts": 264,
+   "ntris": 528,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 6,
+   "is_opening_host": true,
+   "opening_count": 2
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FNr2",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Exterior - Brick on Block:138237",
+   "hash": "703147053adbcc9e",
+   "nverts": 264,
+   "ntris": 528,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 6,
+   "is_opening_host": true,
+   "opening_count": 2
+  },
+  {
+   "guid": "2O2Fr$t4X7Zf8NOew3FNtn",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Exterior - Brick on Block:138062",
+   "hash": "6c9960a50f3d03be",
+   "nverts": 264,
+   "ntris": 528,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 6,
+   "is_opening_host": true,
+   "opening_count": 2
+  },
+  {
+   "guid": "3Y4YRln2r91vflHcHE5ITm",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Furring (38 mm Stud):217578",
+   "hash": "d8673549a8b848da",
+   "nverts": 24,
+   "ntris": 40,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 2,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "3Y4YRln2r91vflHcHE5ITn",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Furring (38 mm Stud):217579",
+   "hash": "c3213535e331eed6",
+   "nverts": 24,
+   "ntris": 40,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 2,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "3Y4YRln2r91vflHcHE5ITp",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Furring (38 mm Stud):217577",
+   "hash": "53e147353ac098d6",
+   "nverts": 24,
+   "ntris": 40,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 2,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "3Y4YRln2r91vflHcHE5ITs",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Furring (38 mm Stud):217580",
+   "hash": "cd2bd74920acafda",
+   "nverts": 24,
+   "ntris": 40,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 2,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "3Y4YRln2r91vflHcHE5IVI",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Furring (38 mm Stud):217416",
+   "hash": "c3213535e331eed6",
+   "nverts": 24,
+   "ntris": 40,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 2,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "3Y4YRln2r91vflHcHE5IVJ",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Furring (38 mm Stud):217417",
+   "hash": "cd2bd74920acafda",
+   "nverts": 24,
+   "ntris": 40,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 2,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "3Y4YRln2r91vflHcHE5IVS",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Furring (38 mm Stud):217414",
+   "hash": "53e147353ac098d6",
+   "nverts": 24,
+   "ntris": 40,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 2,
+   "is_opening_host": false,
+   "opening_count": 0
+  },
+  {
+   "guid": "3Y4YRln2r91vflHcHE5IVT",
+   "ifc_class": "IfcWallStandardCase",
+   "name": "Basic Wall:Interior - Furring (38 mm Stud):217415",
+   "hash": "d8673549a8b848da",
+   "nverts": 24,
+   "ntris": 40,
+   "is_box": false,
+   "reason": "non-box vertex",
+   "rot": [
+    0,
+    0,
+    0
+   ],
+   "is_layered_authored": true,
+   "layer_geo_rows": 2,
+   "is_opening_host": false,
+   "opening_count": 0
+  }
+ ]
+}

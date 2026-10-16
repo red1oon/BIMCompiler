@@ -229,3 +229,55 @@ Remaining open in this file: Part 2's bomb-clear-world-history path and tap-vs-l
 never live-exercised on Modeller — but Modeller has no such long-press pill-drawer framework at all (by design,
 LANE PARTITION: W-only, no fork/refold/bomb-clear), so that checklist item only ever applied to
 Viewer/iDempiere/Glassbowl.
+
+---
+
+## ▶ 2026-07-20 — user reports "world/history broken AGAIN" — root cause found: NOT a new bug, an unmerged fix
+
+**Immediate cause:** `HISTORY_KNOB_SIGNAL_TAP.md`'s "back-arrow snaps forward" fix (diagnosed 2026-07-12, coded
++ witnessed 2026-07-13, `common/history_tap.js` @ branch `fix/history-viewnav-drain-forward-snap` commit
+`2d4acb4`) was pushed to `origin` on 2026-07-16 but **no PR was ever opened and it was never merged to `main`**.
+Confirmed live (2026-07-20): `git merge-base --is-ancestor 2d4acb4 main` → not an ancestor; `main`'s
+`common/history_tap.js` still lacks the `_applyingView` guard in `feedCrumb()` and `HIST_VIEWNAV` from
+`DENY_TAG`. The branch is now 161 commits behind `main` but the 2-line fix still cherry-picks cleanly (file
+untouched on `main` since before the branch was cut) — this is a real, currently-live regression, not a
+recurrence of the underlying bug. Full detail + verified diff: `HISTORY_KNOB_SIGNAL_TAP.md`'s "STATUS
+CORRECTION 2026-07-20" note.
+
+**Why this keeps happening — the structural pattern (studied across ~60 commits / 34 days of history-family
+churn, not just this one incident):**
+1. **"World/History" is not one prompt file, it's at least 8**: `WORLD_HISTORY_BROKEN_RECALL.md` (this
+   pointer) → here, plus independently `HISTORY_KNOB_SIGNAL_TAP.md` (18 reopenings), `HISTORY_PERSIST_RECALL.md`
+   (12), `HISTORY_TAP_TO_IDEMPIERE.md` (10), `HISTORY_PARALLEL_TIMELINE.md` (7), `HISTORY_SCRUB_FIX.md` (6),
+   `UNIVERSAL_HISTORY.md`, `ERP_BOTTOM_BAR_AND_LIFECYCLE.md` — none cross-link the others. A session told
+   "world/history is broken again" has no single place to look, and (this session found) the actual live bug
+   was sitting in file #1 of 8, not the one the name "world/history" naturally points to. This directly
+   violates the project's own `feedback_prompt_file_organization.md` rule ("one canonical file per topic").
+2. **One logical engine, 3+ physically separate adapters** (viewer `universal_history.js`, ERP
+   `idmp_history.js`, Modeller `modeller_history.js`) each independently re-wiring the same subscribe/gate
+   logic against the shared `common/history_bar.js` + `common/whole_history.js` + `common/history_tap.js`
+   engines. The identical "sniffer built but never consumed" bug shipped, was fixed on viewer, then reappeared
+   one week later on ERP (#340 → #341) purely because there's no single call site to fix once.
+3. **Restore-path vs record-path gating asymmetry, recurring**: every "my own restore got logged as a new
+   action" bug (this one, plus the 07-06 undo-fork bug #670) traces to the same unenforced invariant —
+   restore-driven setter calls must skip the record path — with no structural guarantee it holds for every new
+   emitter. `history_tap.js`/`history_bar.js` have accreted ~11 distinct guard flags (`DENY_TAG`, `LIFECYCLE`,
+   `NOISE_LABEL`, 3-entry dedupe window, `_sniffing` recursion guard, `isApplying`/`_applyingView`,
+   `fromTap`, `significant()`, true-tip fork check, `readonly-post-undo` drop) patched on one at a time,
+   unevenly applied across emitters — exactly the shape of bug this incident is.
+4. **"Shipped — needs human merge" is a silent trapdoor.** Several fixes in this family (this one, #675's
+   Modeller port) end their prompt-file entry with "pushed, needs human merge" and the file is then marked
+   done/closed without confirming the merge actually happened. Nothing re-checks it later. Recommend: before
+   marking any history-family item ✅ DONE, verify with `git merge-base --is-ancestor <sha> origin/main`, not
+   just "PR opened" or "pushed."
+
+**✅ CLOSED same session 2026-07-20 — MERGED to main, `bbf8c9e`.** Reused the existing
+`/tmp/wt-hist-viewnav-fix` worktree, checked out a fresh branch off `origin/main`
+(`fix/history-viewnav-onto-main`), cherry-picked `2d4acb4` + `4be8cb5` — both applied clean, zero conflicts.
+Re-ran `witness_history_viewnav_backarrow.js` FRESH against this branch (not trusted from the old log) on
+localhost — `RESULT: PASS`. Pushed, PR **bim-ootb #924** — CI green (`fast-checks` 30s, `e2e-tests` 1m3s) —
+merged (auto-merge bot beat the manual `gh pr merge` call by seconds). Confirmed
+`git merge-base --is-ancestor bbf8c9e origin/main` on a fresh fetch. The back-arrow bug is now actually fixed
+on the code users run, not just in a prompt file. `fix/history-viewnav-drain-forward-snap` (the original stale
+branch, 161 commits behind) and its worktree are safe to prune — superseded, fully landed via the onto-main
+branch instead.

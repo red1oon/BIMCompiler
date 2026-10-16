@@ -23,9 +23,11 @@
 6. **DLOD off** (dlod.js) — r160 handles culling natively
 7. **WebGL context-lost handler** (scene.js) — banner + reload on Chrome idle-kill
 
-## THE GPU FALLBACK  (from project_s280c_perf)
-- **MergedMesh fallback** when `WEBGL_multi_draw` is ABSENT → 197 draws instead of 70K.
-  Affects Intel iGPU + **ALL mobile**. Witnesses: `§S280c_MULTI_DRAW`, `§S280c_PERF_REPORT`.
+## THE GPU FALLBACK  (from project_s280c_perf) — ⚠ **REMOVED FROM CODE 2026-05-27, see §2026-07-28 FINDING below**
+- ~~**MergedMesh fallback** when `WEBGL_multi_draw` is ABSENT → 197 draws instead of 70K.
+  Affects Intel iGPU + **ALL mobile**. Witnesses: `§S280c_MULTI_DRAW`, `§S280c_PERF_REPORT`.~~
+  **NO LONGER SHIPPED** — reverted by `68bd9a7`; `_hasMultiDraw` exists nowhere in `viewer/*.js` and
+  `mergeBuckets` is never filled. Kept here only as history. Read the 2026-07-28 finding section.
 
 ## DELIBERATELY NOT ON MOBILE  (proven net-negative — do NOT re-add without a fresh witness)
 - InstancedMesh zero-scale (buffer re-upload cost > savings)
@@ -237,6 +239,268 @@
      re-attempt a full headless orbit-drag session against LTU/HHS-scale geometry in this sandbox,
      it will not complete.
 
+## 2026-07-28 FINDING — the mobile MergedMesh low-draw path is DEAD CODE (regression, silent since 2026-05-27)
+**User recall was right ("mobile was fast due to some low mesh draw count") and it is NO LONGER TRUE.**
+Verified by code read against live `~/bim-ootb` HEAD (`73d3676`), not memory. This supersedes
+"THE GPU FALLBACK (from project_s280c_perf)" above — that stack item is now FALSE for current code.
+
+**What's gone (two mechanisms, both removed by ONE commit):**
+1. **`_hasMultiDraw` routing no longer exists anywhere in `viewer/*.js`** (grep: zero refs). S280c's
+   rule `BatchedMesh only when WEBGL_multi_draw is available, else MergedMesh` is gone. `scene.js:51`
+   still PROBES the extension, but `_md` is a local var used only for the `§RENDERER_CAPS` log line —
+   it feeds no routing decision. So a device without `multi_draw` now gets BatchedMesh anyway =
+   **one draw call per slot**, which is the exact 70K-draw case S280c was built to prevent.
+2. **The mobile merge path is unreachable.** `streaming.js:1013` declares `const mergeBuckets = {}`;
+   `streaming.js:1184` still has `if (A._isMobile) { for (... of Object.entries(mergeBuckets)) ... }` —
+   but **nothing ever pushes into `mergeBuckets`**. The routing loop (`streaming.js:1027-1033`) sends
+   EVERY single-instance element to `batchBuckets` unconditionally. It's a `const` local, so no other
+   file can fill it. Mobile therefore runs the identical BatchedMesh path as desktop; `mergedCount`
+   is always 0 and `§BATCHED_FLUSH` doesn't even print it.
+
+**When and why (not this week — 2 months stale):** `68bd9a7` "fix(S280d): revert streaming.js to
+pre-S280b logic — restore smooth TM + no lag" (2026-05-27 07:37, sw v501). Its own message names the
+real bug it was fixing: *"`_hasMultiDraw` was never defined → `_useMerge` always true → all ≤5 elements
+routed to MergedMesh → GUIDs lost → TM broken + CPU-heavy vertex baking caused lag."* The revert
+restored the merge **guard** to `A._isMobile` but deleted the routing that **fills** `mergeBuckets` —
+so it fixed desktop TM correctly and killed mobile's low-draw path as collateral, silently.
+(Chain for the record: `47a69ee` S280c added it → `675a5ac` S280d extended it to desktop →
+`d46a450` patched the missing declaration → `68bd9a7` reverted the lot.)
+
+**Why a straight revert is NOT the fix:** MergedMesh concatenates geometry and has **no per-GUID
+metadata** (this file's own §S280d Streaming Contract says so) — that is precisely what broke Time
+Machine/picking in May. Any restoration must keep the contract (every non-merged element in exactly
+one of `_batchMeta`/`_instanceMeta` + a `guidMap` entry), i.e. a merged path that carries a slot→GUID
+range map, not the 2026-05 naive merge.
+
+**Everything ELSE in "THE SHIPPED STACK" is still intact** (verified same pass): DPR 1.0/0.75 orbit
+scaling (`main.js:672,690,696`), mobile on-demand render gate (`main.js:847-860`), tab pause
+(`main.js:716`), `InstancedMesh.frustumCulled=false` hard constraint (`streaming.js:1037`),
+`§CONSOLIDATE` collapsing ~1040 progressive BatchedMeshes to ~40 (`streaming.js:1495`). The mobile
+`_isMobile` predicate itself is unchanged and consistent across `config.js:12`/`streaming.js:180`.
+So mobile's *whole* remaining draw-call story is: ~40 BatchedMesh objects post-consolidation —
+**~40 draw calls IF the device has `WEBGL_multi_draw`, tens of thousands if it does not.** There is
+no longer any fallback between those two outcomes.
+
+**THE ONE MEASUREMENT NEEDED (user, on the actual slow phone, 30 seconds — not derivable here):**
+open the viewer on the device, load the building that feels slow, and read two §-lines from the
+console (remote-debug via `chrome://inspect`, or Eruda/vConsole if easier):
+- `§RENDERER_CAPS multi_draw=<on|off> gpu=<...>`
+- `§CONSOLIDATE old_bm=<N> new_bm=<M> ...` (and `§BATCHED_FLUSH ... drawCalls=<D> mobile=true`)
+
+Decision table — no code changes until this is read:
+- `multi_draw=off` → **this IS the regression**; the missing S280c fallback is costing the device
+  one draw call per slot. Fix = re-introduce a contract-preserving merged path (or a `_hasMultiDraw`
+  gate that picks it), witnessed by draw-count before/after on that same device.
+- `multi_draw=on` and `new_bm` ≈ 40 → draw count is NOT the cause; the slowdown is elsewhere and the
+  next suspects are the already-documented ones in OPEN LEVERS 1/2 (sql.js full-DB residency, DB
+  fetch/parse) — do not touch the GPU stack (this file's own lever 4 rule).
+- Caveat when it reads `on`: ANGLE can *emulate* `WEBGL_multi_draw` over a native draw loop, so
+  "on" means "no JS-side per-draw cost", not necessarily "one GPU draw". If it reads `on` and the
+  device is still slow with ~40 batches, capture frame-ms before concluding.
+
+## SPEC (2026-07-28) — restoring the merged path WITH the GUID contract: what it costs
+**Question answered: "can the merged path be restored with GUID contract preserved, and what needs to
+break or be disabled on mobile?"** Grounded in a live code read of the consumers, not from memory.
+**GATE: do not implement any of this until the `§RENDERER_CAPS multi_draw=` reading from the real
+device is in.** `on` → merging buys nothing, the slowdown is elsewhere (levers 1/2). This spec is only
+worth executing on `off`.
+
+### Part 1 — identity is the EASY half (and comes out better than the old path)
+The merge loop (`streaming.js:1204-1256`) already walks `items` in order with running `vOff/iOff/vBase`
+offsets. Recording `{guid, storey, disc, ifcClass, idxStart, idxCount}` per item is one array push
+inside the existing loop — then `hit.faceIndex * 3` → binary search over sorted `idxStart` → **exact
+GUID**. Register into a `_mergedMeta[mesh.id]` (mirroring `_batchMeta`) plus `A.guidMap`, and the
+§S280d Streaming Contract line *"mobile single-instance → MergedMesh → no per-GUID metadata"* can be
+deleted rather than worked around.
+This is strictly BETTER than the 2026-05 merged path, which had no GUIDs at all and fell back to a
+nearest-centroid SQL query (`picking.js:348-372`: `ORDER BY dist2 ASC LIMIT 1` within storey+disc) —
+approximate by construction, returns the wrong element among close-packed neighbours.
+
+### Part 2 — the hard half is MUTABILITY, not identity
+A merged `THREE.Mesh` has none of the per-slot APIs the fleet is built on. Measured call sites:
+- **`setVisibleAt`** — 24 sites / 8 files (`dlod`, `grid_views`, `helpers`, `dlod_nav`, `doc_canvas`,
+  `streaming`, `panels`, `time_machine`)
+- **`setMatrixAt`** — 50 sites / 11 files (adds `ghostglass`, `grid_recompose`, `city`, `measure`,
+  `navigate_find`)
+- **`setColorAt`** — `hba_lens.js:59-84` per-element diffuse recolour
+On merged geometry each becomes an **O(vertices-of-that-element) buffer rewrite + re-upload** instead
+of an O(1) call. That, not picking, is the whole cost of this decision.
+
+### Part 3 — what actually breaks / must be disabled on mobile (the concrete list)
+1. **Time Machine — ALREADY SOLVED IN-TREE, no new work.** `time_machine.js:4374` `activate()` detects
+   `app._isMobile`, flips it to `false`, `clearStreamed()` + `streamBuilding()` re-streams unmerged,
+   then activates. `streaming.js:180`'s `?tm` URL opt-out forces the same. This is the original
+   unmerge-on-demand hatch and it still works — restoring merge does NOT re-break TM.
+   ⚠ **Side-finding, live TODAY and independent of this decision**: since merge is dead, that branch
+   fires on every mobile TM activation and re-streams the entire building **for nothing**. One-line
+   guard worth fixing regardless.
+2. **`filterByGuids` / Room Lens / isolate — THE ONE THAT SILENTLY BREAKS.** `panels.js:839-851`
+   collects three shapes: `isMesh && userData.guid !== undefined`, `isInstancedMesh`, `isBatchedMesh`.
+   A merged mesh is a plain `isMesh` carrying only `storey`/`disc`/`isMerged`/`mergedCount` — **no
+   `userData.guid`** → matches none of the three → an isolate leaves every merged element visible.
+   Silent-wrong, worse than an error. Fix = a `filterMergedMesh(mesh, pred)` that rebuilds the index
+   buffer from the visible ranges (O(total indices) per toggle, once per lens action, NOT per frame),
+   using the Part-1 range map. Without this, do not ship merge.
+3. **Per-element hide/move/recolour consumers** — split by whether they already exclude mobile:
+   - already mobile-excluded, no work: 2D grid_views/doc_canvas (`main.js:292` desktop-only), DLOD
+     (`_useDlodPath && !A._isMobile`, `streaming.js:1061`)
+   - NOT excluded, need promote-on-demand or an explicit mobile disable: `measure`, `grid_recompose`,
+     `city`, `ghostglass`, `hba_lens`, and kernel `ENACT_MOVE`/`GRID_MOVE`.
+4. **Storey/disc filter — no work.** Merge buckets are keyed `storey|disc|rgba`, so bucket-level
+   `mesh.visible` is already exact (`streaming.js:1265-1270` sets both from the key).
+
+### Part 4 — recommended shape (avoids disabling anything)
+- **Merge the bulk + keep identity**: range map → exact picking + `filterMergedMesh` for isolate.
+- **Promote-on-demand for mutation**: when one element must move/recolour, zero its index range
+  (degenerate triangles) and spawn a standalone `Mesh` from `A.meshCache[hash]` — source geometry is
+  session-resident (`scene.js:376`, shared, never disposed per `city.js:81`), so unmerge is cheap and
+  bounded by the number of TOUCHED elements, not by model size. Standard static-batch/unbatch pattern;
+  it is what makes item 3 a non-issue rather than a disable-list.
+- **Gate it twice**: re-introduce `A._hasMultiDraw` (the flag `scene.js:51` already computes as a
+  throwaway local `_md`) **and** an element-count threshold — engage merge only where BatchedMesh
+  genuinely degrades to per-slot draws on a model big enough to care.
+- **Witness (the issue it proves)**: on the same device + building, `§BATCHED_FLUSH`/`§CONSOLIDATE`
+  draw count before vs after, PLUS a picking round-trip proving `§MERGED_PICK guid=` equals the
+  `§BATCHED_PICK guid=` the unmerged path returns for the same screen coordinate (identity preserved),
+  PLUS `§FILTER_GUIDS isolate=N` leaving exactly N elements visible.
+
+### ✅ DONE 2026-07-28 — IMPLEMENTED (user go: "Do it as long as does not impact mobile strength — Walk and snag/share URL/GPS")
+Branch `feat/merged-guid-contract` @ `0a713e4`, pushed. Worktree /tmp/wt-merged-guid.
+**Gate note:** the user authorised this ahead of the §RENDERER_CAPS device reading. Built so that
+authorisation is safe either way — the merge routing is gated on `A._hasMultiDraw === false`, so on
+any device WITH multi_draw the change is inert (identical BatchedMesh path as today). The device
+reading now only decides whether the user SEES a gain, not whether this is safe to ship.
+
+**What shipped** (7 files):
+- `scene.js` — persists `A._hasMultiDraw` (S280c's flag was computed and discarded here; that is the
+  bug that made the whole path dead). Defaults TRUE on probe failure = never merge on unknown caps.
+- `streaming.js` — `_useMerge` routing; per-element `{guid,storey,disc,ifcClass,idxStart,idxCount,
+  hidden,AABB}` recorded inside the EXISTING bake loop → `_mergedMeta` + `_mergedIndex`. AABB from
+  the BAKED vertices (exact under rotation; the DB `bbox_x/y/z` is IFC-axis-aligned and would
+  understate a rotated element). Plus `_installMergedRaycast`, and the §S280d contract assertion now
+  counts merged as a first-class side instead of excusing it via `_isMobile`.
+- `picking.js` — exact guid from the range that produced the hit (O(1), tagged by the raycast). Old
+  nearest-centroid SQL guess demoted to a labelled fallback.
+- `helpers.js` — `filterMergedMesh()`: hides an element by writing DEGENERATE triangles into its
+  index slice. Deliberately not index compaction — compaction would shift every later `idxStart` and
+  invalidate the map picking/raycast depend on. Pristine index copy allocated lazily on first filter.
+- `panels.js` — `filterByGuids` gains the fourth collector (merged meshes matched none of the three).
+- `time_machine.js` — unmerge trigger is `_mergeActive` (not `_isMobile`), sets `_forceNoMerge`, and
+  is one-shot.
+- `tests/probe_merged_guid.js` — the witness.
+
+**Mobile strengths, as required — verified not regressed:**
+- **GPS** — pure `navigator.geolocation` (`walk.js:174/264`, `clash_snag.js:20`), no scene coupling.
+- **Walk Wall-X-Ray** — `walk.js:549` already falls back to DB-centroid marker spheres when no
+  per-mesh guid match exists; that fallback is the normal path today anyway (BatchedMesh/
+  InstancedMesh carry no `userData.guid` either), so merging changes nothing.
+- **Walk/fly frame cost** — the one real risk, engineered for: `sfx.js:445` fly-rayblast casts at
+  11Hz and a merged bucket has NO BVH (three-mesh-bvh builds boundsTree on the shared meshCache
+  source geometries, not on baked merged copies). Two-level raycast instead: ray→element-AABB slab
+  test, then the STOCK `Mesh.raycast` restricted by `drawRange` to the survivors. **Measured: 0.41%
+  of elements triangle-tested on HHS** (587 of 142,251), 60 casts in 75ms under swiftshader.
+- **snag** — GUIDs come from DB rows + the picked guid; picking is now exact rather than guessed.
+- **share URL** — `share.js:225` reads `#info-guid`; the probe asserts it carries the picked guid.
+
+**WITNESS — `tests/probe_merged_guid.js`, 16/16 PASS on BOTH Duplex and HHS_Office_Federated.**
+Real viewer, real DB, real 3D tap, SW blocked. Logs: `/tmp/probe_merged_guid_duplex2.log`,
+`/tmp/probe_merged_hhs.log`.
+- W-MERGED-ROUTE: Duplex 344 draws → 20 (17.2×); HHS 264 → 19 (13.9×)
+- W-MERGED-CONTRACT: `§CONTRACT_CHECK batch=0 instanced=4123 merged=2716 mergedIndex=2716 orphans=0`,
+  zero §CONTRACT_FAIL
+- W-MERGED-PICK: `§MERGED_PICK guid=3XrBtx9eX7mQE6EqWHPeuA` — and the SAME screen point on `?merge=0`
+  gives `§BATCHED_PICK guid=3XrBtx9eX7mQE6EqWHPeuA`. **Identity provably unchanged by merging.**
+- W-SHARE-URL: `#info-guid` = that guid
+- W-MERGED-FILTER: isolate → exactly 1 of 2716 merged elements visible, 1 bucket drawn; restore → all
+  2716 back
+- W-MERGED-RAYCAST: 60/60 aimed rays HIT (proves the AABB test isn't rejecting valid hits) at 0.41%
+  triangle-tested
+- W-MERGED-TM: `§TM_UNMERGE` exactly once → `mergedMetas=0 batchMetas=60`, zero PAGEERROR both runs
+
+**BUG THE WITNESS CAUGHT (worth keeping in mind, it is the same class as 68bd9a7's):** the first run
+passed every assertion while the log showed `§TM_UNMERGE` firing ~30×. `?merge=1` outranked
+`_forceNoMerge`, so TM's re-stream re-merged → activate() saw merged meshes → re-streamed again:
+an unbounded clearStreamed/streamBuilding loop. Fixed by ordering (`_forceNoMerge` wins) + a one-shot
+guard, and the probe now asserts `§TM_UNMERGE` count === 1. **A passing check-list did not mean a
+correct run — the log did.**
+
+**NOT done / deliberately deferred:**
+- **Promote-on-demand (Part 4)** is NOT implemented. Consumers that mutate individual elements on a
+  merged mesh — `measure`, `grid_recompose`, `city`, `ghostglass`, `hba_lens`, kernel `ENACT_MOVE`/
+  `GRID_MOVE` — are unchanged and will simply find no per-slot API. They are not broken today
+  because merging only engages without multi_draw; wire promote-on-demand if a no-multi_draw device
+  needs them.
+- **Not deployed.** No `sw.js` CACHE_VERSION bump, no PR merged — the branch is pushed only.
+- **Pre-existing leak observed, not fixed (out of scope, named so it is not re-discovered):**
+  `clearStreamed()` resets `_instanceMeta` but NOT `A.guidMap`, so guidMap grew 1119 → 11191 across
+  the looping re-streams. Harmless at one re-stream; real if something ever re-streams repeatedly.
+
+## ✅ DEPLOYED LIVE 2026-07-28 — sw `v873` (user: "deploy then i can only test in mobile")
+`bim-ootb` PR **#1071** (`f091f26`) + PR **#1073** (`5de3562`, the fix below). Live-verified by
+fetch-back from `https://red1oon.github.io/bim-ootb`: `CACHE_VERSION="v873"`; `streaming.js?v=58`
+`picking.js?v=30` `helpers.js?v=6` `panels.js?v=43` `scene.js?v=53` `time_machine.js?v=64`
+`hba_lens.js?v=7`; deployed code contains `MERGE_ROUTE` / `MERGED_PICK` / `_installMergedRaycast` /
+`filterMergedMesh` / `_hasMultiDraw` / `TM_UNMERGE` / `HBA_LAZY` / `ensureHbaData`.
+⚠ When fetch-back-grepping deployed files, **grep ASCII-only** (`MERGE_ROUTE`, not `§MERGE_ROUTE`) —
+the `§` through curl→grep returns 0 hits as an encoding artifact and reads exactly like missing code.
+
+**Shipped in #1071** (both witnesses re-run against the merged result, 16/16 + 11/11 PASS):
+1. §MERGED_GUID — the merged low-draw path with identity (spec above).
+2. §HBA_LAZY — HBA is opt-in; the `hbaFM` pill no longer casts itself onto the rail, and the whole
+   HBA compile (footprints, members, 7 demonstrator seeds, `ad_seed.db` fetch) no longer runs at load.
+   `§HBA_SEED ms=8.8 rooms=5` (Duplex) / `ms=10 rooms=14` (HHS) when actually invoked.
+
+**MERGE CONFLICT RESOLUTIONS — both kept BOTH sides, and one MATTERS for LTU:**
+- `streaming.js`: upstream **§S280e** (2026-07-25) raised the BatchedMesh cutoff from 1 instance to
+  `LOW_INSTANCE_BATCH_MAX = 3`, because LTU had **13,453 InstancedMesh scene objects averaging 2.7
+  instances each**, every one paying per-object frustum-cull traversal each frame. Kept verbatim; the
+  merge/batch target selection now applies INSIDE it, so ≤3-instance elements bake individually into
+  the merged buffer with their own ranges (Duplex merged elements went 758 → 929, draws 420 → 22).
+- `panels.js`: upstream's `_visibilityGen` bump kept alongside the new merged collector.
+
+**‼ SELF-INFLICTED DEPLOY FAILURE — the reason #1073 exists (read before serving test data):**
+Setting up a local `http.server` to run the probes, I ran `ln -sf ~/bim-ootb/buildings/<db>
+buildings/<db>` INSIDE the PR worktree. Duplex's DB is gitignored so its symlink was invisible to
+git — but `buildings/HHS_Office_Federated_extracted.db` is **TRACKED**, so `ln -sf` overwrote the real
+file and `git add -A` committed it: 75,579,392 bytes → a 63-byte symlink (mode 100644 → 120000).
+The Pages build for `f091f26` then FAILED (`tar: ... File removed before we read it`) and **#1071
+never reached the live site** until #1073 restored the blob (`0e2d157f`, byte-identical, verified
+`file` reports valid SQLite 18452 pages). **Never symlink into a repo worktree to serve test data —
+serve from a directory outside the checkout, or copy.** See [[feedback_never_symlink_into_repo_worktree]].
+
+## NEXT SESSION — open items, ranked (nothing here is blocked on code, only on a reading)
+1. **[THE GATE] `§RENDERER_CAPS multi_draw=` from the user's real phone on LTU.** User is testing.
+   `off` ⇒ merged path auto-engages, expect `§MERGE_ROUTE on` + `§MERGED_FLUSH buckets=N elements=M`
+   with M ≈ 10–20× N — that is the fly fix. `on` ⇒ inert by design; A/B by hand with `&merge=1` vs
+   `&merge=0`. **If `merge=1` does not help, draw calls are NOT the bottleneck** → go to lever 2
+   (sql.js full-DB residency), do NOT keep tuning the GPU stack.
+2. **Fly-on-LTU, if merging doesn't fix it.** Analysis done this session, not yet measured on device:
+   during a fly the camera signature changes EVERY frame (`dlod_nav.js:553`), so `_scanPending` never
+   clears and `_evalChunk` runs **every frame at `EVAL_CHUNK = 16384`** (`dlod_nav.js:51`) — on LTU's
+   122k that is ~7.5 frames per pass with 16K distance+frustum tests per frame, plus continuous
+   `_startFade` churn where each fade hoists a standalone copy mesh (MORE draw calls) for 10 frames.
+   **So `o` DLOD trades GPU draws for CPU scan + fade churn — expect a wash on a phone, which matches
+   the user's "with DLOD bboxes on even so."** Measure before changing it.
+3. **⛔ BLOCKED (needs one user fact): "its panel does not disappear even though touch empty spot as in
+   Desktop, or when deselect in pill tray."** Could NOT reproduce on Duplex at mobile viewport — the
+   HBA family drawer toggles closed correctly via the pill path, and outside-tap dismissal is
+   implemented ad-hoc per drawer (`panels.js:170` whist-drawer, `:1093` disc popup), NOT globally, so
+   the answer depends entirely on WHICH panel. May also be moot now that HBA no longer auto-wakes.
+   **The one question: which panel?**
+4. **§S280e is UNVERIFIED at LTU scale** — its own author flagged it "UNVERIFIED against TM/picking/
+   storey+disc filter... do not treat this as shipped/done until those three are re-tested on a large
+   building." This session's witnesses cover exactly those three ON THE MERGED PATH, but only on
+   Duplex/HHS. If picking or isolate misbehaves on LTU specifically, look here first.
+5. **guidMap does not contain merged elements** (by design — it is keyed by `mesh.id`, one-to-many for
+   a bucket; identity lives in `_mergedIndex`). Every guidMap-based consumer therefore cannot see
+   merged elements: `hba_lens` (25 refs — zone tinting silently no-ops), `city` (7), `ghostglass` (6),
+   `hba_avatars` (3). NOT a regression vs the 2026-05 merged path (it registered nothing either), but
+   a gap vs the BatchedMesh path. Only `hba_lens` is mobile-relevant; user closed it 2026-07-28
+   ("no need further featuring in mobile"). Cheapest fix if reopened is per-vertex colour over the
+   element's range + a cloned `vertexColors` material — NOT full promote-on-demand.
+6. **Pre-existing leak, named so it is not re-discovered:** `clearStreamed()` resets `_instanceMeta`
+   but NOT `A.guidMap` — observed growing 1119 → 11191 across repeated re-streams.
+
 ## TEST / WITNESS
 - Real device (preferred) or DevTools mobile emulation + CPU 4–6× + GPU throttle.
 - Capture per run, naming building + device: **draw calls · frame ms · DPR · first-load ms · peak RAM**.
@@ -248,3 +512,10 @@
 - Done prompts (bim-compiler/prompts/done/): `S280c_PERF_VERIFY.md`, `S250_mobile_desktop_polish.md`,
   `S207_mobile_ux_viewer.md`, `TIME_MACHINE_MOBILE_FIX.md`.
 - Docs: `docs/MOBILE_DEPLOY.md` (split-DB strategy), `prompts/ANALYSIS_SIDECAR.md` (OPFS pattern).
+
+## §2026-10-06 FINDING — two different `_isMobile` definitions
+Found by the dev-toolkit triage, `bim-ootb prompts/DEV_TOOLKIT_NO_AI.md` §7 (2026-10-06). Read from bim-ootb `origin/main` @ fb183ddf. Not fixed — this lane decides.
+- Owner: `viewer/config.js:12` — `('ontouchstart' in window || navigator.maxTouchPoints > 0) && screen.width < 1024`.
+- Re-derived locally WITHOUT the `ontouchstart` term: `viewer/effects.js:52`, `viewer/effects_gi_poc.js:14`
+  (also the `effects.js.pacefloor` copy). A device can be mobile to `config.js` and desktop to `effects.js`.
+  One-owner violation: effects should read `window._isMobile`.

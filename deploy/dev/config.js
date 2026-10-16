@@ -6,7 +6,9 @@ function setupConfig(A) {
   // Auto-resolve: if hosted on OCI Object Storage, use same bucket base for DB URLs
   const _ociMatch = location.href.match(/(https:\/\/objectstorage\.[^/]+\/n\/[^/]+\/b\/[^/]+\/o\/)/);
   const _base = _ociMatch ? _ociMatch[1] : '';
-  A.DB_URL = _params.get('db') || (_base ? _base + 'Duplex_extracted.db' : 'buildings/Duplex_extracted.db');
+  // Implementing prompts/Viewer/BLANK_VIEWER_LANDING_CARD.md §1 — Witness: witness_blank_viewer_card.js
+  A.BLANK_MODE = _params.get('blank') === '1';
+  A.DB_URL = A.BLANK_MODE ? '' : (_params.get('db') || (_base ? _base + 'Duplex_extracted.db' : 'buildings/Duplex_extracted.db'));
   A.CITY_URL = _params.get('city') || null;
   A.BLD_BASE = _params.get('bldbase') || '';
 

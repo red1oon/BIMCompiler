@@ -26,6 +26,10 @@ missing 4D, then deepen to manufacturing-grade cost — each layer a peer linked
    documented deterministic generator, carrying a 'generated' marker, byte-identical across runs.
 
 ## §STATE
+- S7 ⬜ SPEC'D 2026-09-13, NOT BUILT — "when + what it costs on the thing itself": the persisted 4D window
+  (`tasks`⋈`task_elements`, read via `schedule_read_4d.js`) beside S2's cost block in `#info-panel`, plus one
+  extra line on the existing `hover_name.js` label and a data-gated pill toggle. Grain decided up front (date =
+  element, cost = IFC class) — see S7 §S7-GRAIN. No pop-up-on-hover panel, by decision.
 - S6 ✅ DONE/LIVE 2026-06-22 — ENGINE (PR #474 `feat/tm-whatif-s6`, viewer sw v694; W-WHATIF 13/13 whitebox on REAL
   990000): `viewer/whatif.js` schedule what-if = blue branch op on C_ProjectPhase, F-S ripple (SeqNo chain + preserved
   lag), commit/discard/accept reuse Blue Future. `erp/tests/whatif_witness.js`. + UI (PR #475 `feat/tm-whatif-ui`,
@@ -191,40 +195,687 @@ WH pick-route is a scene+data swap, own card when reached.
 WITNESS: **W-WHATIF** (blue edit re-folds downstream in blue; accept re-baselines; discard restores; forward
 variance = planned vs blue).
 
-### §S6-SPEC (resolved 2026-06-21 — EXTRACT-only; the F-S chain is REAL in the seed)
-GROUNDING (verified `erp/ad_seed.db` C_Project 990000 'BIM: Hospital'): the 7 C_ProjectPhase rows are ALREADY a
-contiguous finish-to-start chain ordered by SeqNo — each phase StartDate == prior phase EndDate (lag=0):
-Substructure 06-13→07-06 · Superstructure →2027-05-15 · MEP Rough-in →2028-11-09 · Architecture →2029-03-27 ·
-MEP Final →2029-04-30 · Finishes →2029-05-14 · Unsequenced →2029-05-28. The forward-pass proj_fold ran (cursor+=days)
-IS the F-S dependency. So the "minimal F-S model" = **SeqNo order is the chain; lag_i = start_i − end_{i-1}** (read
-from the baseline, preserved on ripple). NO new dependency table, NO P6 network. Scope = single project's phases.
-ENGINE `viewer/whatif.js` (sibling of blue_fold.js, schedule-scoped, node-testable via sql.js — KernelOps op-log
-calls are guarded/optional exactly like blue_fold's `var ko=KO()`):
-- `ripple(phases, slips)` — PURE F-S forward pass. slips: `{seqno:{startDelta,durDelta}}` (days). phase k:
-  newStart=start+startDelta, newDur=max(0,dur+durDelta); for i>k in SeqNo order: start_i=end_{i-1}+lag_i (lag preserved),
-  end_i=start_i+dur_i. Returns rippled phase array + projectFinish.
-- `readPhases(db, projectId, branchId)` — SeqNo-ordered; branchId=null → official (branch_id IS NULL); branchId set
-  → overlay (blue row per seqno if present else official). Mirrors proj_control.contractSum branch param.
-- `scheduleWhatIf(db, projectId, slips)` → `{official, blue, forward}`; forward = finishSlipDays + PV-at-asOf on both
-  schedules (PV via the SAME linear-fraction × PlannedAmt, BigDecimal — money via site/bigdecimal.js). BAC unchanged
-  (same scope) — only dates+PV move = "finish+totals move".
-- `commitSlip(db, branchId, projectId, slips)` — ensure branch_id col on C_ProjectPhase; INSERT rippled blue phase
-  rows tagged branch_id (downstream re-fold), official rows untouched & invisible-filtered; if KernelOps present also
-  `commitGroup` a SCHEDULE_SLIP op on the branch (dot rail / op-log). `discardSlip` = DELETE blue phase rows
-  (+KernelOps.discardBranch) → official reverts (never moved). `acceptSlip` = copy blue StartDate/EndDate onto official
-  rows, DELETE blue rows (+KernelOps.acceptBranchUpTo) → re-baseline.
-WITNESS `erp/tests/whatif_witness.js` (W-WHATIF, whitebox §-log, real 990000 phases): (1) commitSlip on Substructure
-+30d → readPhases(blue) every downstream phase shifted +30d & projectFinish +30d, readPhases(official) UNCHANGED;
-(2) forward.finishSlipDays==30, blue PV ≠ official PV at a mid as-of; (3) acceptSlip → official now carries rippled
-dates; (4) fresh DB → commitSlip then discardSlip → official == original, zero blue rows. proj_control.js UNTOUCHED.
-UI ✅ SHIPPED (PR #475, sw v695) — `viewer/whatif_panel.js`: floating "What-if schedule" panel opened by the "What-if"
-btn in the Find selection row. Grey official F-S bars + per-phase −/+ slip steppers + blue downstream ripple bars +
-header (finish slip / PV move / BAC unchanged) + Accept(commitSlip→acceptSlip→OPFS persist) / Discard. Loads the same
-folded project the › ERP push uses (OPFS push-store first, else bundled erp/ad_seed.db 990000). ALL math via
-window.WhatIf. Playwright-verified (slip Super +21d→6 downstream re-fold, 2029-05-28→06-18, PV 64.7M→61.1M, accept
-re-baselines, 0 errors); wow-shot `docs/figs/whatif_ripple.png`. proj_control.js UNTOUCHED. §-log gated, not visual.
+### §S6-SPEC — ARCHIVED (closed: resolved 2026-06-21, and the engine it specs has been LIVE since 2026-06-22)
+
+> **ARCHIVED 2026-08-27 — moved out of this file, not deleted.** The pre-build, function-by-function contract for the F-S what-if engine — `ripple(phases, slips)` (the pure forward pass, lag preserved) · `readPhases(db, projectId, branchId)` · `scheduleWhatIf` · `commitSlip`/`discardSlip`/`acceptSlip` — plus its GROUNDING (the 7 C_ProjectPhase rows of C_Project 990000 are ALREADY a contiguous SeqNo-ordered F-S chain, so **"the minimal F-S model" = SeqNo order IS the chain, lag_i = start_i − end_{i-1}**: no new dependency table, no P6 network) and the W-WHATIF witness's four cases. **S6 shipped and is `✅ DONE/LIVE`** — bim-ootb PR #474 (engine `viewer/whatif.js`) + #475 (UI `viewer/whatif_panel.js`), W-WHATIF 13/13, sw v694/v695 — and the S6 stanza immediately above carries the live status and the one deferred piece (the banked WH-ROUTING SCENE). Zero citations of `§S6-SPEC` exist outside this file. Full text: `prompts/archive/TM_4D5D_VARIANCE_LANE_archived_2026-08-27.md`.
+
+## S7 — WHEN IT GETS BUILT, ON THE THING ITSELF  (hover + `#info-panel` 4D block)   ⬜ SPEC ONLY
+GOAL: answer "when does this get built, and what does it cost" **on the element the user is already
+looking at** — no Gantt, no Find panel, no ERP tab, no Time Machine activation. S2 put the COST on the
+selection; this stage puts the DATE beside it and makes both reachable by hover as well as click.
+Idea + go-ahead: user, 2026-09-13 ("an icon in the pill where a panel pops up during hover any item in
+the model, to show when they are likely to build and cost").
+
+### §S7-GROUND (verified in bim-ootb `main` @ `fc7e4ac6`, 2026-09-13 — every surface already exists)
+- **Hover surface: `viewer/hover_name.js`.** `pointermove` → rAF-throttled raycast → guid → `elements_meta`
+  → one-line `#hover-name-label` (`pointer-events:none`). Armed by the Find-panel "hover name" checkbox /
+  `'`. Its header records the budget trap it ALREADY solved: "raycast per pointermove is not free at 63k
+  elements" — an earlier draft re-raycast on a perpetual rAF loop and was replaced. `_lastGuid` early-return
+  means work happens once per TARGET CHANGE, not per frame.
+- **Click surface: `#info-panel`** (`viewer/viewer.html:515`) — Class/Name/GUID/Building/Storey/Discipline/
+  Material rows, then `#info-cost` (hidden, own top border), then `#snag-btn-row`.
+- **Cost already lands there (S2).** `find_erp_push.js _showClassCost` → `_foldClassTwin(ifcClass)` reads
+  `C_Project`/`C_ProjectLine`/`C_ProjectPhase` off `../erp/ad_seed.db`. It is NOT Zoom-Across-only:
+  `navigate_find.js:4865` already calls `_showClassCost(ifcClass, 1, guid)` on a plain pinpoint pick
+  (`:5188` on a scope). So the panel S7 extends is already wired to an ordinary click.
+- **The date exists in TWO places; only one is right for a panel:**
+  - `time_machine.js:9106 window.tmJumpToElement(guid)` (§360-IDENTITY) scans `_ops` for
+    `output_guid === guid` and uses `op.end_ts`. It needs TM **active** with `_ops` loaded, and it *jumps*
+    — it does not *read*. **NOT the source for S7.**
+  - The **persisted schedule**: `tasks(task_id, name, schedule_start, schedule_finish, resource,
+    total_float, is_critical, schedule_id, is_summary)` ⋈ `task_elements(task_id, guid)`, active schedule
+    via `ScheduleAuthor.activeSchedule(db)`. Already read by `viewer/schedule_read_4d.js` (pure, DOM-free,
+    node-testable, "computes NOTHING about when work happens"). **This is the source.**
+- DOCTRINE FIT: §3 *read the twin, don't recompute* — the date is READ from the record `schedule_author.js`
+  wrote. §4 *honest labels* — see §S7-GRAIN, which is the whole reason this stage has a grain section.
+
+### §S7-GRAIN — DECIDED FIRST, BEFORE ANY CODE (user agreed 2026-09-13: ship at IFC-class grain)
+The two halves of this panel do **not** share a grain, and that is the one thing that can make it lie.
+- **Date = TASK grain. ⚠ CORRECTED 2026-09-13 BY MEASUREMENT — it is NOT element grain.** The first
+  draft of this section claimed "this door is built 2027-04-12" is true of that door. It is not.
+  `task_elements` maps a guid to a TASK, and the element inherits that task's window — so the answer is
+  only ever as fine as the task grid, and the task grid is coarse:
+
+  | producer | leaf tasks | what a task IS | Hospital reality |
+  |---|---|---|---|
+  | `materializeDefault` | **7-8** | one per PHASE | 63,415 elements over 7 windows; MEP Rough-in alone is **275 days** |
+  | `materializeZones` + `opts.template` | **42** | phase × storey | 41 distinct windows; biggest task "MEP Rough-in — Level 3" holds **9,545 elements** |
+
+  (Measured on `Hospital_extracted.db` 64,150 elements and the authored `Hospital_silent.db` respectively.)
+  So the honest sentence is **"this door is in *MEP Rough-in — Level 3*, 2026-03-20 → 2026-04-28"**, never
+  "this door is built on the 12th". Say the task's NAME beside its window — the name is what makes the
+  coarseness legible instead of misleading.
+- **⇒ INJECTION MUST USE THE ZONE/TEMPLATE PATH, not `materializeDefault`.** 7 phase windows would answer
+  "when is this built?" with "sometime inside this 275-day phase", which is not worth a panel. This is a
+  correction to §S7-INJECT's mechanism, not a new requirement — see the note there.
+- **Cost = IFC-CLASS grain, NOT element.** `_foldClassTwin` joins `M_Product.Value = ifcClass` →
+  `C_ProjectLine.PlannedAmt` is the whole class's line, and per §DATA the line `CommittedAmt` is NULL by
+  design so the committed side folds from the PHASE. Hovering one door shows what **all 254 IfcDoor** cost.
+- **RULE (load-bearing, not cosmetic):** the cost row must NAME its grain inline — the class and its match
+  count — and must never render a bare money string next to the element's own name, where it reads as this
+  element's price. Reuse S2's existing "from records" honesty label; add the count.
+- **Per-element cost is explicitly OUT of S7.** It needs guid-grain pricing (`navigate_find` `selectionPriced`)
+  plus the per-line precision already logged as a follow-up in `FIND_OPENLINK_EXISTING_ORDERLINE.md`
+  ("Slice-1 grain = project-level"). Do not sneak it in; it is a separate, larger stage.
+
+### §S7-DATA-REALITY — MEASURED 2026-09-13, BEFORE ANY CODE. Read this before promising a demo.
+**No PUBLISHED building carries a persisted schedule.** Counted directly over `~/bim-ootb/buildings/*.db`:
+
+| DB | `schedules` | `tasks` | `task_elements` |
+|---|---|---|---|
+| `Hospital_silent.db` | 1 | 42 | 63,415 |
+| `HHS_Office_Federated_silent.db` | 1 | 21 | 6,880 |
+| every `*_extracted.db` / `*_meta.db` / `*_geo.db` | **0** | 0 | 0 |
+| `Terminal*`, `LTU_AHouse*`, `warehouse_gardenworld` | — | *no 4D tables at all* | — |
+
+Both DBs that DO have one are symlinks into `~/Downloads` and per [[bim-ootb-clone-readiness-oci]] the
+`_silent` DBs are **not published**. The only runtime writer of a `schedules`/`tasks` row is the ✎ Author
+wizard (`schedule_author_ui.js` → `ScheduleAuthor.materializeDefault` → `persistDb`) — a deliberate user
+action. `Duplex_meta.db` is 0 bytes in the shared checkout (known data problem, not a code defect).
+
+**CONSEQUENCE, stated plainly so no one demos into it:** on a freshly loaded published building, hovering
+or clicking an element yields **nothing** from S7 until a schedule exists. S7 is not a
+load-the-page-and-wow feature on today's published data; it is a wow the moment a schedule exists.
+↳ **RESOLVED by user decision the same day — see §S7-INJECT**: materialize one, once, on the fly, instead
+of requiring the user to find ✎ Author. The gate messaging below still stands for the cases injection
+refuses (a captured or baselined schedule) and for the window before injection completes.
+
+**WHAT THIS CHANGES IN THE DESIGN — one thing, and it is not the data source.** Do NOT switch the source to
+the Time Machine's runtime `_ops` to paper over this: that needs TM activated, which defeats the entire
+point of putting the answer on the element. Instead the GATE MUST SAY WHY IT IS EMPTY. `§S7-DO` item 4's
+data-gate hides the pill when there is no schedule; the panel block, when the pill IS on and the lookup
+misses, states the reason — "no schedule authored yet — ✎ Author" — rather than rendering blank. An empty
+row that looks broken is worse than an absent one; a row that names its own precondition is neither.
+
+**THE REAL FOLLOW-UP (out of S7's scope, do not fold it in):** decide whether the published building DBs
+should ship WITH a baked default schedule. That is a publishing/bake decision with its own size and its own
+lane — it is not a UI stage, and S7 must not grow into it. §S7-INJECT makes it OPTIONAL rather than
+required (every client materializes its own on first use); baking it at publish time would still save every
+user that one pass, which is why this stays on the list.
+
+### §S7-INJECT — USER DECISION 2026-09-13: materialize the schedule ONCE, on the fly
+User: *"Persisting schedule can be injected one time on the fly for the user convenience."* This resolves
+§S7-DATA-REALITY's consequence — the user does not have to know what ✎ Author is before S7 works.
+
+**MECHANISM — not new machinery.** It is the SAME call the ✎ Author wizard already makes
+(`schedule_author_ui.js:293`): `ScheduleAuthor.materializeDefault(db, rules, { start: '2026-01-01',
+laborRates, blank: false })` then `persistDb(db, DB_URL, opts)`, which writes back to the shared
+IndexedDB/OPFS building cache (§SE-6), so "one time" genuinely survives a reload.
+
+**NEVER OVERWRITE — the guard is already written.** Inject ONLY when `ScheduleAuthor.activeSchedule(db)`
+returns `null`. That function already reports `captured` / `hasBaseline` / `safeToRegen`, and its header
+states the rule this must honour: a captured (imported) schedule "must not be auto-touched, full stop",
+and once the user has set a baseline the schedule "is their edited product and must not be silently
+discarded". An auto-injection that ignores any of those is a data-loss bug, not a convenience.
+
+**DETERMINISM.** Keep `start: '2026-01-01'` as a literal. Never `Date.now()` — the same run must produce
+byte-identical dates (Prime Directive; the lane's PRIME RULE on the one generated layer).
+
+**HONESTY — and the marker is NOT where you would first reach for it.** Checked 2026-09-13:
+- All three writers (`schedule_author.js:1118/1645/1943`) name the row `'Authored Schedule…'` under
+  `schedule_id = 'SCH_AUTHORED'` — confirmed in both `_silent` DBs. So today an auto-injected schedule
+  would be **indistinguishable** from one the user authored by hand.
+- `schedules.display_authored` is **NOT** a provenance flag — it gates `materializeZones`' display-remap
+  spacing (`time_machine.js:5402`, §TM_REVEAL_TILED / §CAP_RESCALE_SKIP). Do not repurpose it.
+- `schedules.gen_version` is a regeneration epoch (§GANTT_SCHEDULE_STALE), not provenance either.
+- The `schedule_id` **must stay `'SCH_AUTHORED'`**: `activeSchedule` defines `authored` as exactly that
+  string, so any other id reads as `captured` — the one state the code must never auto-touch.
+⇒ **Provenance goes in `schedules.name`**: `'Default Programme (auto-generated)'` against the wizard's
+`'Authored Schedule (4D template)'`. `#info-4d` labels from that name, so a generated default never reads
+as the project's committed programme. This is §DOCTRINE 4 (honest labels) and the PRIME RULE's
+"'generated' marker", satisfied with one string and no schema change.
+
+**⚠ WHICH PRODUCER — CORRECTED, see §S7-GRAIN.** Inject via `materializeZones(db, rules, {template, …})`
+(the `_writeTemplateSchedule` path, `schedule_author.js:1575`), **not** `materializeDefault`.
+`materializeDefault` emits 7-8 PHASE-grain leaf tasks, which answers "when is this built?" with "somewhere
+in this 275-day phase". The template path emits 42 phase×storey tasks on the same building — still coarse,
+but legible. The template itself is already live-fetched on the viewer path (`time_machine.js:4177`
+`_load4DTemplate`, §TPL_WIRED), so nothing new has to be loaded to do this.
+
+**THE OWED MEASUREMENT — PART 1 DONE 2026-09-13** (`scratchpad/probe_inject_cost.js`, real fleet DBs, the
+rates.js EXECUTED table, sql.js in node; DB loaded from a buffer, nothing written to disk):
+
+| DB | size | elements | `materializeDefault` | `db.export()` |
+|---|---|---|---|---|
+| `Hospital_extracted.db` | 252MB | 64,150 | **581ms** | 91ms → 259MB |
+| `Clinic_extracted.db` | 124MB | 17,322 | 170ms | 50ms → 125MB |
+| `JKR_extracted.db` | 194MB | 9,410 | 131ms | 95ms → 195MB |
+| `Duplex_extracted.db` | 9MB | 1,193 | 13ms | 5ms → 9MB |
+
+~~**Verdict: lazy injection on first need is viable** — 581ms worst case.~~
+⚠ **OVERTURNED 2026-09-14 by PART 2 — the number above was for the WRONG FUNCTION.** §S7-GRAIN requires
+the TEMPLATE path, and it was never timed. Measured now (`scratchpad/probe_tpl_cost.js`, same method,
+`4D_template.json` v1.2.0, side-by-side on one tree):
+
+| DB | elements | `materializeZones`+template | leaf tasks | `materializeDefault` | leaf tasks |
+|---|---|---|---|---|---|
+| `Hospital_extracted.db` | 64,150 | **2,515ms** | 42 | 500ms | 7 |
+| `JKR_extracted.db` | 9,410 | 739ms | 24 | 137ms | 6 |
+| `Clinic_extracted.db` | 17,322 | 685ms | 35 | 133ms | 7 |
+| `Duplex_extracted.db` | 1,193 | 156ms | 19 | 14ms | 7 |
+
+The template path is **~5x** `materializeDefault` and **2.5s on Hospital** — over the ≲1s bar this spec
+set for a lazy trigger. ⇒ **Injection MUST be the pill's explicit one-time action ("Generate programme")
+with the existing status/progress surface. It must NOT sit on a hover or first-pick path.** Still one
+click, still one time — never a silent 2.5-second freeze on a mouse gesture.
+Sanity check on the output: the template path reproduces Hospital at **42 leaf tasks / 63,182
+task_elements**, against the shipped `Hospital_silent.db`'s 42 / 63,415. **The 233-row gap is now EXPLAINED
+— see §S7-BAKE-DRIFT.**
+
+### §S7-BAKE-DRIFT — ⚠ RETRACTED 2026-09-14, SAME DAY. THE 233 ROWS ARE A DATA GAP IN
+### `Hospital_extracted.db`, NOT CODE DRIFT. DO NOT RE-BAKE THE `_silent` DBs.
+The original entry (below, struck) concluded that current code had stopped scheduling aggregate
+containers, that the shipped artefact was therefore stale, and recommended re-baking both `_silent` DBs.
+**All three conclusions were wrong.** Measured before acting on the recommendation:
+
+1. **Current code reproduces the shipped output EXACTLY.** Re-running `materializeZones` on
+   `Hospital_silent.db` itself, at its own start epoch and its own `gen_version`, gives **41 leaf tasks /
+   63,415 task_elements — identical to what is already in the file.** Nothing dropped. There is no code
+   drift to re-bake away.
+2. **The comparison that produced "233" was apples-to-oranges.** I diffed a fresh materialize of
+   `Hospital_extracted.db` against the shipped `Hospital_silent.db` and attributed the difference to code.
+   They are two different files.
+3. **The actual cause, and it is a one-line fact:** `element_transforms` coverage.
+
+   | DB | elements_meta | element_transforms | aggregates with a transform |
+   |---|---|---|---|
+   | `Hospital_silent.db` | 64,150 | **64,150** (complete) | 263 |
+   | `Hospital_extracted.db` | 64,150 | **63,917** | 30 |
+
+   64,150 − 63,917 = **233**, exactly the gap. `materializeZones` can only schedule an element it has
+   geometry for, so those 233 aggregate-class rows (`IfcCurtainWall` 178 · `IfcRoof` 24 · `IfcStair` 31)
+   drop out of the `_extracted` run. **`Hospital_silent.db` is not stale — it is MORE COMPLETE.**
+
+**⛔ AND RE-BAKING WOULD HAVE CAUSED A REAL REGRESSION.** The probe also showed `display_authored` going
+**1 → 0** on both DBs, because the live path supplies `opts.displayRemap` (a `time_machine.js` closure)
+and a CLI re-bake does not. That flag gates §TM_REVEAL_TILED / §CAP_RESCALE_SKIP. A "harmless refresh of a
+shipped artefact" would have silently changed how both movie-bake DBs render. Checking the premise before
+executing the recommendation is the only reason that did not ship.
+
+**WHAT IS ACTUALLY TRUE, and it is small:** `Hospital_extracted.db` is missing `element_transforms` for 233
+aggregate-container elements. That is a completeness gap in the EXTRACTED db, owned by whatever lane
+produces it — not a scheduling defect, not a bake defect, and not S7's business. Reported, not chased.
+**`HHS_Office_Federated_silent.db` carries `gen_version` 38 against the current 39**, so the EXISTING
+§GANTT_SCHEDULE_STALE mechanism already flags it and will regenerate it on load — working as designed.
+(Current code on it yields 16 leaf tasks against its stored 20, with identical element coverage: 6,880.)
+
+**METHOD NOTE, the durable part.** This is the third time this session a plausible number stood in for a
+measurement: `materializeDefault` timed instead of the template path; a code comment's ~127MiB cap turned
+into a prediction; and now a cross-file diff read as code drift. All three were caught, but only because
+something forced a re-check. The rule §S7-INJECT-WHERE already earned — *a number that decides scope gets
+measured before it decides anything* — extends here: **a DIFF that decides scope must hold every variable
+but one.** I diffed two files and one code version at once, then blamed the code.
+
+<details><summary>⛔ ORIGINAL, RETRACTED TEXT — kept for the reasoning, not the conclusion</summary>
+
+- **`onlyInFresh = 0`.** The fresh materialize is a strict SUBSET — nothing new appeared, 233 elements
+  dropped OUT. That alone rules out "the new code invents work".
+- **The 233 are: `IfcCurtainWall` 178 · `IfcRoof` 24 · `IfcStair` 31** — every one an AGGREGATE CONTAINER
+  class. A curtain wall aggregates its `IfcPlate`/`IfcMember` panels and mullions; a stair aggregates its
+  `IfcStairFlight`s; a roof aggregates its slabs. Their PARTS are still scheduled — only the container is
+  no longer scheduled alongside them.
+- **`schedules.gen_version`: shipped = 39, fresh = null** (injection does not stamp one). So the shipped
+  artefact was baked by OLDER scheduling code, and current code deliberately stopped double-counting a
+  container against its own parts.
+⇒ **Expected drift, in the right direction.** No code change owed.
+
+**⚠ BUT THE STALE ARTEFACT IS ITS OWN RISK, AND THIS LANE HAS BEEN BITTEN BY EXACTLY IT BEFORE.**
+`Hospital_silent.db` is the DB every S7 witness measures against. It now encodes behaviour current code no
+longer produces — which is the §RULES_TABLE_SOURCE trap in a different costume (a mirror that drifted from
+the executed table, and every probe measuring the mirror). **RECOMMENDED: re-bake `Hospital_silent.db` and
+`HHS_Office_Federated_silent.db` from current code, stamping `gen_version`, and re-run the S7 set against
+the re-baked pair.** Not actioned here — re-baking a shipped artefact is a publishing decision, and it
+belongs to whatever lane owns the bake, not to a UI stage.
+
+</details>
+
+### §S7-MULTI-TASK — the uncovered branch: RECOMMENDATION IS DO NOT WRITE THE WITNESS.
+`windowForGuid`'s multi-task-per-guid branch has no test. `task_elements`' PK is `(task_id, guid)` so the
+schema permits it; MEASURED max is 1 in both real DBs, i.e. it does not happen today. Covering it would
+require inserting a synthetic `task_elements` row — fabricated input, which the Prime Directive forbids.
+**Leave it uncovered, deliberately, and say so.** The branch is already deterministic
+(`ORDER BY t.schedule_start ASC, t.task_id ASC` = the first real work the element is part of) and already
+logs `§4D_ON_ELEMENT_MULTI` when it fires. That log IS the detector. If it ever appears in a real run,
+THAT is the moment to write the witness — against the real data that produced it. A test built on a row no
+building has ever contained would assert a behaviour nobody has observed, and would quietly become the
+spec for it.
+
+### §S7-INJECT-WHERE — WHERE AN INJECTED SCHEDULE ACTUALLY LIVES (user question, 2026-09-14: "does it
+### have to be in the embedded DBs or is this just a test?"). Read before promising "one time".
+**It is not a test — and it is not in the embedded DBs either. It is IndexedDB, per browser profile.**
+`persistDb` (`schedule_author.js:3097`) exports the WHOLE db and `put()`s that single buffer into the
+`dbs` object store of the building cache, keyed by `DbResolve.cacheKey(url)` — the same key `scene.js`'s
+`cachedFetch` reads. So:
+- ✅ It genuinely survives a reload, on that device, in that browser profile. Real, not a demo.
+- ❌ It NEVER reaches the published/embedded DB. Those are static objects in the OCI bucket; a browser
+  cannot write to them. Every user injects their own, and pays the cost themselves.
+- ❌ It is evictable. `scene.js:539` says outright the browser "is free to silently evict the whole
+  origin's IndexedDB, and a 251MB building blob is the first thing it" goes for; §S260b keeps only 80
+  entries, LRU.
+
+### ⚠ CORRECTION 2026-09-14 — THE ~127MiB ABORT PREDICTION BELOW WAS WRONG. MEASURED, IT DOES NOT HAPPEN.
+W-S7-INJECT-PERSIST ran in a real Chromium (147.x) against the REAL full building DBs — the fixture
+fetches each `.db` whole and `persistDb` resolves true only on `tx.oncomplete`, so these are genuine
+full-size writes, not a trimmed stand-in:
+
+| building | materializeMs | persistMs | wallMs | persisted |
+|---|---|---|---|---|
+| `Duplex_extracted.db` (9.6MB) | 80 | 49 | 130 | **true** |
+| `JKR_extracted.db` (~196MB) | 509 | 498 | 1,009 | **true** |
+| `Hospital_extracted.db` (~252MB) | 2,031 | 688 | 2,728 | **true** |
+
+**Every building persisted. None aborted.** So "one time per device" is true for the WHOLE fleet, Hospital
+included, and the session-only path is a fallback that did not trigger — keep it (older Chrome, quota
+pressure, a loaded device), but do not present it as Hospital's expected outcome.
+
+**HOW I GOT IT WRONG, because the error mode matters more than the number.** I extrapolated from a CODE
+COMMENT (`schedule_author.js:3130`, "Chrome aborts … a single IDB value over ~127MiB") to a prediction
+about Hospital, and wrote it into this spec as a measured-sounding table. It was never measured — the
+section said so itself ("the ONLY remaining unknown") and I built a scope decision on it anyway. That is
+the SAME failure as part 1 of W-S7-INJECT-COST timing the wrong function: a plausible number, taken from
+a real source, standing in for the measurement nobody had run. The comment may predate a Chromium change,
+or describe a condition these writes do not hit; either way it is evidence about the past, not a
+prediction. **The rule this earns: a number that decides scope gets measured before it decides anything.**
+
+**⛔ THE ORIGINAL, NOW-DISPROVEN PREDICTION — kept for the reasoning, not the conclusion:** `persistDb`'s own comment
+(`schedule_author.js:3130`) names the mechanism: Chrome ABORTS a transaction on "a single IDB value over
+~127MiB (a big building's meta.db can reach it)". Measured sizes against that cap:
+
+| building | export size | vs ~127MiB IDB single-value cap |
+|---|---|---|
+| Hospital | **~260MB** (shipped `Hospital_silent.db` is **301MB**) | **~2x OVER — expect `§SCHED_PERSIST_ERR abort`** |
+| JKR | ~196MB | OVER |
+| Clinic | ~125MB | at the line |
+| HHS | 77MB | under — persists fine |
+| Duplex | 9MB | under |
+
+~~⇒ On Hospital, injection would spend 2,515ms materializing and then fail to save.~~ **DID NOT HAPPEN —
+see the correction above. Hospital persisted in 688ms.**
+
+**⇒ ~~THIS PROMOTES THE BAKE-AT-PUBLISH FOLLOW-UP FROM OPTIMISATION TO REQUIREMENT.~~ It does not — it
+stays an optimisation, worth one 2.7s wall on a first Hospital visit per device.** The paragraph below is
+kept because its OTHER observation is still true and still useful:** §S7-DATA-REALITY parked
+"should published DBs ship WITH a baked schedule?" as a separate lane. For Hospital-scale buildings it is
+not a nicety — it is the only mechanism that works, because the client-side one is capped out. The two
+shipped DBs that DO carry a schedule (`Hospital_silent.db`, `HHS_Office_Federated_silent.db`) were baked,
+not injected, which is the same conclusion arrived at from the other direction.
+~~**Do not build injection as the universal answer.** Scope it by export size: injection for buildings that
+fit the cap, a baked schedule for the rest.~~
+⚠ **SUPERSEDED the same day — the split was unnecessary, and my own measurement already disproved it.**
+The ~127MiB cap bites on **SAVING**, not on the feature working. `materializeZones` writes into the
+**in-memory** sql.js handle, and that is the same `A.db` the whole read path uses (`info_4d_panel.js:59`
+→ `windowForGuid(A.db, …)`). The cost probe is the proof and it was sitting in front of me: it ran
+`materializeZones` on a db built from a buffer, never persisted anything, and `SELECT COUNT(*) FROM tasks`
+immediately returned **42 leaf tasks / 63,182 task_elements** on Hospital.
+
+⇒ **ONE PATH, NO BUILDING-CLASS SPLIT. Injection works on every building.** What differs is only how long
+the answer survives:
+- **Materialize in memory** — always succeeds, 2,515ms worst case (Hospital). The panel works immediately.
+- **Persist — BEST EFFORT.** Under the cap (HHS 77MB, Duplex 9MB) it saves and survives reload: one time
+  per device. Over it (Hospital ~260MB, JKR ~196MB) the tx aborts and the schedule is **kept for this
+  session** — the user pays 2,515ms once per session instead of once per device.
+- **Say which happened.** "Saved — won't need regenerating" vs "Kept for this session (too large to cache)".
+  Never a silent abort, and never a dead-end "this building needs a baked schedule" message: the feature
+  is working in both cases, only its lifetime differs.
+
+**Baking at publish time stays a real follow-up, but it is now an OPTIMISATION again, not a prerequisite** —
+it saves Hospital/JKR users 2.5s per session. It does NOT gate S7. (And it remains the reason both shipped
+schedule-carrying DBs were baked, not injected.)
+
+**UI ruling (user, 2026-09-14): a progress bar, not a spinner.** At 2.5s on Hospital, and with a persist
+step that can fail, the action needs to show real stages ("materializing… / saving…") and REPORT the
+persist result rather than looking done when the save aborted.
+
+**⚠ THE REMAINING UNMEASURED LEG — `persistDb`'s real write.** The 91-99ms `export()` above is serialisation
+to a buffer in node. The browser then writes **~260MB** into IndexedDB/OPFS — a different cost on a real
+device, and now the ONLY remaining unknown. §S7-INJECT-WHERE above now predicts the ANSWER for the big
+buildings (an abort over the ~127MiB single-value cap) — so what is owed is the CONFIRMATION, in a real
+browser, reading the §SCHED_PERSIST / §SCHED_PERSIST_ERR log line per building, plus the wall time for the
+ones that do fit. New witness: **W-S7-INJECT-PERSIST** — for each fleet DB, injection either logs
+§SCHED_PERSIST ok with a size, or logs the abort and the UI SAYS SO — and in BOTH cases `#info-4d` resolves
+a real window afterwards, because the in-memory materialize already succeeded. *Proves the persist outcome
+changes the schedule's LIFETIME and the message, never whether the feature works.*
+
+### §S7-INJECT-WITNESS
+- **W-S7-INJECT** — on a building with `schedules=0`, injection creates exactly ONE schedule, `#info-4d`
+  then resolves for a guid that has a task, and a RELOAD still resolves it (it persisted). Re-running
+  injection is a no-op. *Proves the "one time" claim, including across reload.*
+- **W-S7-INJECT-GUARD** — injection REFUSES when `activeSchedule` returns a captured schedule, or one with
+  a baseline; the existing rows are byte-identical afterwards. *Proves convenience cannot eat a user's
+  own schedule — the data-loss case this feature would otherwise introduce.*
+- **W-S7-INJECT-HONEST** — the injected row's `name` marks it generated, and `#info-4d` renders that
+  distinction. *Proves a generated default never presents as the committed programme.*
+- **W-S7-INJECT-COST** — ✅ PARTS 1+2 DONE (tables above). Part 2 OVERTURNED part 1's verdict: the
+  template path is 2,515ms on Hospital, so injection is an explicit pill action, not a lazy trigger.
+  STILL OWED: `persistDb`'s real browser write of a ~260MB DB into IndexedDB/OPFS. *Proves which trigger design is honest; a design chosen without the
+  remaining two numbers is still a guess.*
+- **W-S7-TASK-GRAIN** — for a real building, the number of DISTINCT `(schedule_start, schedule_finish)`
+  windows is the task count, not the element count (Hospital: 41 windows over 63,415 elements), and
+  `#info-4d` renders the task's NAME beside the window. *Proves the panel cannot be read as a per-element
+  date — the exact misreading §S7-GRAIN was corrected to prevent.*
+
+### §S7-DO
+1. **`viewer/schedule_read_4d.js` gains `windowForGuid(db, guid, opts)`** — pure, one query, reusing the
+   module's own `activeSchedule`/`execRows`. Returns `{taskId, name, startDate, finishDate, resource,
+   totalFloat, isCritical}` or `null` (guid in no task / no active schedule / undated task). NO new module,
+   NO recompute, NO second copy of the reader — the same reason this file exists instead of living inside
+   `boq_charts.html`.
+2. **`#info-panel` gains `<div id="info-4d">`** — same position/pattern as `#info-cost` (hidden by default,
+   own top border), filled on pick from `windowForGuid`. Rows: task/phase · `start → finish` · trade ·
+   float, with a critical marker when `is_critical`. This is the answer to "what does *add a 4D window to
+   #info-panel* mean": one more sibling block in the panel that already opens on click, not a new panel.
+3. **Hover label gains ONE line**, not a panel: `<name> · <phase> <startDate>`, only when `windowForGuid`
+   hits. `#hover-name-label` stays `pointer-events:none` and one-line; the existing `_lastGuid` early-return
+   already bounds this to one query per target change.
+4. **Pill toggle** registered through `panels.js` PillBuilder (`:1303`, the declarative icon+panel wiring),
+   **data-gated** in the shipped convention — icon appears only when `ScheduleAuthor.activeSchedule(db)`
+   resolves (same rule as `hba_lens.js:1096` "no data → no icon, no clutter" and S2's own `§TM_VAR_GATE`).
+   Per §S7-DATA-REALITY this means the icon is ABSENT on every published building until ✎ Author runs —
+   that is correct, not a bug; and when the pill IS on but a given element misses, `#info-4d` states the
+   reason instead of rendering an empty block.
+
+### §S7-OPEN — the one thing legs 2-4 could not close, VERIFIED 2026-09-13 (needs a user decision)
+**`#info-4d` does not fire on a plain 3D-canvas click.** Both it and S2's `#info-cost` are wired only to the
+Find-panel-driven pick (`navigate_find.js:4870`). `viewer/picking.js` — the raw canvas click path — populates
+the Class/Name/GUID/Building/Storey/Discipline/Material rows and calls NEITHER block (grep-verified: no
+`showClassCost`/`show4DWindow`/`info-cost`/`info-4d` reference anywhere in that file).
+
+This is **pre-existing, not introduced by S7**: `#info-cost` has had the same coverage since S2 shipped, and
+§S7-DO item 2 explicitly said to follow that call site rather than invent a new one, so the leg was built
+correctly. But the headline interaction of leg 2 is "click an element and see when it is built", and the most
+common way a user clicks an element is the canvas — so today the feature is reachable only after the Find
+panel has loaded once.
+
+**The fix is small and the decision is not.** `picking.js:626` already has the guid (`g`) in scope on the exact
+line block that fills the info rows, so wiring `_show4DWindow(g)` there is ~2 lines. The real question is
+whether `_showClassCost` gets wired symmetrically at the same time — that would CHANGE EXISTING S2 BEHAVIOUR
+(cost would start appearing on picks where it never has), which is a product call, not a refactor. Options:
+1. wire 4D only — S7 works on a canvas click, S2's cost stays Find-only (asymmetric, but changes nothing shipped);
+2. wire both — consistent, but S2's surface silently widens;
+3. leave as-is — S7 stays Find-gated, matching S2 exactly.
+✅ **RESOLVED 2026-09-14 — user picked option 1. bim-ootb PR #1735, W-S7-CANVAS-PICK 14/14.**
+- **My "~2 lines at picking.js:626" estimate above was WRONG.** `find_erp_push.js` lives inside
+  `APP.loadNavigate()`'s LAZY bundle (`main.js` ~:187), so `A._show4DWindow` does not EXIST until Find
+  has been opened — calling it from `picking.js` would have no-oped exactly as before. The renderer had
+  to leave the lazy bundle first. `viewer/info_4d_panel.js` is that extraction (eager in `viewer.html`);
+  `_show4DWindow` is now a delegating seam. One renderer, two call sites, never a second copy.
+- **Option 1's boundary is GATED, not merely intended:** the witness asserts `#info-cost` stays hidden on
+  a canvas click, so S2's shipped cost surface cannot widen by accident later.
+- **The load-order assertion is the whole point of that witness.** It asserts
+  `APP._show4DWindow === undefined` BEFORE the click and again after. Without it the test would pass with
+  the fix reverted — any incidental Find load would supply the renderer — i.e. it would gate nothing.
+- Real click rendered `Architecture Envelope — Level 3 · 2026-09-28 → 2026-10-01`, Find bundle never
+  loaded. Occlusion-safe: it clicks candidate pixels until one lands and asserts on whatever resolved,
+  because demanding a specific guid would test camera framing, not the wire.
+- **TWO PRE-EXISTING DEFECTS found on the way, neither introduced by the fix.** (a) §SQLJS_MISSING again
+  (PR #1730's class): all four S7 node witnesses used a bare `require('sql.js')`, which resolves only when
+  a `node_modules` happens to sit above the file — **a fresh worktree has none, so they were unrunnable
+  outside the shared checkout** and had only ever been run where one existed. (b) The Node path has no
+  `window`: the first cut of the delegating seam looked it up there and broke two witnesses headlessly.
+  Both fixed in the same PR. Lesson worth keeping: "the witness passed" meant "passed where it was
+  written", not "passed anywhere" — the full suite now runs in a CLEAN worktree, 71 checks / 0 fail.
+
+### §S7-NOT-DOING (recorded so it isn't re-proposed)
+**A pop-up panel on hover.** It must chase the cursor, re-render on every target change, and stay
+`pointer-events:none` or it eats the very hover that opened it — and it duplicates `#info-panel`, which
+already opens on click and already carries the cost block. Two grains of detail, ONE panel: hover = one
+line, click = the block.
+
+### §S7-WITNESS (each NAMES the issue it proves or disproves)
+- **W-S7-WINDOW** — `windowForGuid` returns the SAME `schedule_start`/`schedule_finish` the persisted
+  `tasks` row holds for a guid present in `task_elements`; `null` for a guid in no task; `null` with no
+  active schedule. *Proves the date is READ from the record, not re-derived — the §3 doctrine breach this
+  stage would otherwise be.*
+- **W-S7-GRAIN** — the rendered cost row names its IFC class and match count; no element-grain money string
+  is ever emitted next to the element name. *Proves a class figure cannot be misread as this element's cost.*
+- **W-S7-GATE** — on a building with no `schedules` row, `#info-4d` stays `display:none` AND the pill icon
+  is absent. *Proves no empty panel and no dead icon — the clutter the data-gate convention exists to stop.*
+- **W-S7-HOVER-BUDGET** — hovering N distinct elements issues N `windowForGuid` calls, not N-per-frame;
+  the `_lastGuid` early-return still holds with the extra lookup attached. *Proves S7 does not re-open the
+  raycast/query budget `HOVER_NAME.md` already had to fix once.*
+
+### §S7-LOG
+`§4D_ON_ELEMENT guid= task= start= finish= resource= critical=` on a hit ·
+`§4D_ON_ELEMENT_GATE reason=no_active_schedule|guid_not_in_task|undated` on a miss (never silent — the
+same "REPORTS, never silently drops" rule `4D_template.json` states for itself).
+
+### §S7-STATUS
+⬜ **SPEC ONLY here.** Blocked on nothing; §S7-GRAIN and §S7-DATA-REALITY are both decided/measured. Do
+§S7-DO 1 + its witness (W-S7-WINDOW) FIRST — it is the only leg with a new engine surface, and legs 2-4 all
+consume its return shape, so building them in parallel would mean inventing that shape. 2-4 are wiring onto
+surfaces that already ship and overlap on `panels.js`/`navigate_find.js` (a worktree isolates the branch,
+NOT line-level conflicts on shared files).
+- ✅ **§S7-INJECT DONE 2026-09-14 — bim-ootb PR #1736** (`feat/s7-inject`, off main `c0131796`). New
+  `viewer/schedule_inject.js`: guards on `activeSchedule(db)===null`, materializes via `materializeZones`
+  + the real live-fetched template (reused through a new `window.tm4DTemplate`, never a second fetch),
+  stamps `schedules.name = 'Default Programme (auto-generated)'` with `schedule_id` left as `SCH_AUTHORED`,
+  persists best-effort, reports honestly through a 2-stage progress bar. The `sched4d` pill's gate moved
+  from "a schedule exists" to "engine capable", so it can offer **Generate programme** when there is none.
+  Witnesses, all re-run independently: **W-S7-INJECT 24/24 · W-S7-INJECT-GUARD 17/17 · W-S7-INJECT-HONEST
+  12/12 · W-S7-INJECT-PERSIST 21/21** (real Chromium, not skipped), with the existing set regression-clean
+  (**W-S7-WINDOW 13 · W-S7-TASK-GRAIN 12 · W-S7-GRAIN 10 · W-S7-GATE 25 · W-S7-CANVAS-PICK 14**) —
+  **148 checks, 0 fail.**
+  - Judgment calls, all sound: the PILL's visibility gate had to change (an invisible pill cannot offer
+    "Generate programme") while `#info-4d`'s own gate is unchanged; the progress bar is 2 real checkpoints
+    rather than fake percentages (non-invent); and `activeSchedule`'s `hasBaseline` only computes when
+    `currentGenVersion` is passed — which injection never does — so the guard queries `task_baseline`
+    directly instead of logging an always-false field. That last one is a real trap worth remembering.
+- ✅ **§S7-DO 2/3/4 DONE 2026-09-13 — bim-ootb PR #1733** (`feat/s7-panel-hover-pill`, off fresh origin/main
+  833f8f25). `#info-4d` block + `_show4DWindow`, one extra `hover_name.js` label line, data-gated `sched4d`
+  pill, and the cost row's match count now RENDERED (not just logged). Witnesses, all on real fleet DBs, all
+  re-run independently: **W-S7-TASK-GRAIN 12/12** (Hospital_silent 41 tasks / 63,415 elements / 9,545-element
+  biggest task — matches §S7-GRAIN exactly; every render carries the task name) · **W-S7-GRAIN 10/10** (class
+  name + real match count 1,970 IfcBeam render together) · **W-S7-GATE 22/22** (engine layer AND real DOM) ·
+  **W-S7-HOVER-BUDGET 9/9** (call counts [1..10] across 60 raw mousemoves = one call per TARGET, never per
+  frame). Leg 1's W-S7-WINDOW still 13/13 against the new tree.
+  - UI text, hit: hover `MEP Rough-in — Level 3 · 2026-03-20 → 2026-04-28`; panel "Construction window / Task:
+    … / Window: … → … / Trade / Float". Miss with a schedule present: `Not yet assigned to a dated task in
+    "<schedule>"`. No schedule at all: block hidden, pill absent. The spec's literal `<name> · <phase>
+    <startDate>` was not used — the task's own name already encodes phase+storey, and a bare start date is
+    exactly what §S7-GRAIN forbids. Correct call.
+  - Disclosed and verified: `schedule_read_4d.js` was never loaded by `viewer.html` before this PR (only
+    `boq_charts.html` had it) — a hard prerequisite, added. `windowForGuid` needed `{scheduleAuthor: SA}`
+    passed explicitly (the lazy global self-resolves only in a browser) — uses the already-documented override
+    seam, no browser behaviour change. The `sched4d` pill's gate poll is one-shot, mirroring
+    `wh_walk.js`/`hba_lens.js`'s same limitation: a mid-session building switch won't re-probe it, though
+    hover/click resolution stays live.
+- ✅ **§S7-DO 1 DONE 2026-09-13 — bim-ootb PR #1732** (`feat/s7-window-for-guid`). `windowForGuid` added to
+  `viewer/schedule_read_4d.js`; witness `viewer/tests/witness_s7_window.js`. **W-S7-WINDOW 13/13, fail=0**,
+  re-run independently. 61 `§4D_ON_ELEMENT` hits — one guid per member-bearing task across all 41
+  `Hospital_silent.db` leaf tasks + all 20 HHS tasks — each matched against an INDEPENDENT direct-SQL read,
+  not against the function's own output. Both negative gates fired (`reason=guid_not_in_task`,
+  `reason=no_active_schedule`). Scope held: exactly the two named files, +282/-1.
+  - **Multi-task-per-guid:** `task_elements`' PK is `(task_id, guid)`, so the schema permits it; MEASURED
+    max 1 in both real DBs, i.e. it never happens today. Made deterministic anyway
+    (`ORDER BY t.schedule_start ASC, t.task_id ASC` = the first real work the element is part of) and logs
+    `§4D_ON_ELEMENT_MULTI`. **Known gap, recorded not hidden:** that branch has no witness case, because
+    covering it would mean inserting a synthetic `task_elements` row — non-invent says no. Revisit only if
+    a real DB ever produces one.
+  - **Spec inaccuracy this leg found, verified here:** `Hospital_extracted.db`'s `tasks` table is an OLDER
+    COLUMN VINTAGE (`start_date`/`finish_date`/`duration_days`, no `schedule_start`, no `is_summary`) AND
+    has 0 rows. So `activeSchedule` returns null via a CAUGHT SQL ERROR on the missing column, not via an
+    honest "no dated rows" path. Same correct observable (null), different cause — and worth knowing,
+    because on a hypothetical old-vintage DB that DID hold task rows they would be silently invisible.
+  - **⇒ Why §S7-INJECT still works on published DBs:** `schedule_author.js` carries guarded ALTERs
+    (`:228/:238/:270/:280`) and MEASURED `§AUTHOR_MIGRATE tasks→widened legacyRows=0` fired on every
+    old-vintage DB in the cost probe, after which `materializeDefault` wrote its tasks successfully
+    (Hospital_extracted → `tasks=8`). The migration is what makes injection viable on shipped buildings —
+    do not remove it, and do not assume a published DB's `tasks` table is the current shape.
 
 # ═════════════════════════ PHASE 2 — THE WEDGE (from twin to commercial cockpit) ═════════════════════════
+## §S8 — EDIT → Δ ON THE THING  (a Modeller edit's cost + schedule consequence, on hover/click, BOTH surfaces)   ✅ BUILT + WITNESSED LIVE 2026-09-30 (bim-ootb #1796; viewer sw v1452, modeller sw v68)
+```
+# ⚠ DO NOT REMOVE — scope + log mandate
+SCOPE: when a wall is moved or stretched in the Modeller, the edited element shows what that edit changes in
+MATERIAL COST and in LABOUR TIME, on hover or click, in the Modeller AND the Viewer. ONE pure function computes it.
+No new rate, no new duration formula, no copy of any owner. Read the `§S8-*` log after every run; a witness that judged
+nothing prints INCONCLUSIVE, never PASS.
+```
+Idea + go-ahead: red1, 2026-09-30 ("a hover or click will reveal the edited artifact's change in materials cost and
+schedule variance impact"). Decision change that permits the Modeller to DISPLAY it: `RATES_SOURCE_OF_TRUTH.md` §5.
+Re-read before any 4D number: `4D_MODEL_INTEGRITY.md` §I (ownership table) and §E (proxies). Cached runs
+(`~/.cache/bim4d/`, `scripts/cache_4d_run.js`) are NOT consulted: this Δ is closed-form on one element and reads no
+solve output, so nothing needs a pipeline run (recorded so the omission is deliberate, PRIMAL LAW 5).
+
+### §S8-QTY — which quantity changes, and where it is read
+| edit (signed op) | changes | read from |
+|---|---|---|
+| `GEOM_MOVE {parent,dx,dy,dz}` | **no quantity** (length, area, volume, count all unchanged) → Δ = 0, printed as 0, labelled "a move changes no quantity" | the op log |
+| `GEOM_SCALE {parent,fx,fy,fz}` (net, multiplicative, LOCAL axes, edge-anchored) | the element's bbox dims `[bx,by,bz] × [fx,fy,fz]` → its length / dominant-face area / volume | net per parent = `bonsai_kernel.js:311-316` (the fold's own accumulation) |
+| `GEOM_GRID_MOVE` (stretch via gridline) | quantity changes but the per-command extents are not in the payload shape this stage reads | ⛔ **BLOCKED (S8 does not cover it): "does a `GEOM_GRID_MOVE` command carry the new span, or only the gridline delta?"** — shown as "quantity Δ not computed for grid-stretch" (never guessed) |
+- "before" = the element's RECORD: `element_transforms.bbox_x/y/z` joined to `elements_meta` by guid (the same rows
+  `analysis_sidecar.js compute5D` sums). "after" = before × the net scale.
+- **The quantity basis is the shipped 5D basis** (`compute5D`: length = longest bbox edge; area = longest × second-longest;
+  volume = bbox product; count). §E says a bbox test is a proxy — true, and it is the SAME proxy the existing 5D report and
+  the duration engine already use, so the Δ is consistent with them; it is labelled `basis: bbox` and is not a claim about the
+  true B-rep quantity.
+- featureId → guid: the Modeller's own `window.__arcGuidByFid` (the §ARC-1 bridge). The seed op rows carry NO guid
+  (measured: Duplex #82 params = bbox, color, provenance, ifc_class, realGeomHash, placement), so the Modeller adds the map
+  for EDITED features to its `identity` publish (additive field `edits:[{fid,guid}]`). The Viewer never guesses a guid.
+
+### §S8-COST — costΔ = quantity Δ × the EXISTING rate at the EXISTING grain
+- Rate owner: the **ACTIVE** `RATES[ifcClass] = {rate, unit}` — `viewer/rates.js` (CIDB 2024 hardcoded) **overridden by the user's locale pack** (`locale_loader.js` `applyRateOverrides`; measured 2026-09-30: en_US IfcWallStandardCase = **48/M2**, not 145). This is the table `analysis_sidecar.js apply5DRates` bills in the Viewer. **Found by W-CONNECT-COMMIT's equality falsifier** (first run: Modeller 398.75 vs Viewer 132.00 on the same wall) — the Modeller therefore lazily loads `locale_loader.js` with `window.__TRL_NO_AUTORUN=true` (no toast / DOM translate / `_TRL` merge) and applies the same `fetchLocale`+`applyRateOverrides`, so both surfaces price with the same pack. The label says "active rate pack", never "CIDB". Unit selects the quantity: `M`→length, `M2`→area, `M3`→volume, `EA`/unmapped→count
+  (an unmapped class bills rate 0 exactly as `apply5DRates` does — labelled "unpriced class", never a default rate).
+- **Grain: PER ELEMENT.** Not the S7 class-line grain. S7-GRAIN said per-element cost is "out of S7" because it needed guid-grain
+  pricing; the 5D quantity basis above already gives a per-element quantity from the record, and `rate × qty` is what the 5D
+  report sums per class. So `costΔ(element) = rate × (qty_after − qty_before)` is the SAME arithmetic at element grain — a
+  finer read of the same engine, not a new price. Labelled "material, CIDB rate table".
+- Money through `erp/bigdecimal.js` (rate as a decimal STRING, qty rounded to mm-precision strings), HALF_UP to 2 dp, printed
+  as decimal strings. Never `Number` money arithmetic.
+- Example (Duplex wall #82, IfcWallStandardCase, M2 @ 145): dims 0.417 × 17.383 × 1.25 → area = 17.383 × 1.25 = 21.729 m²;
+  `GEOM_SCALE fy=1.5` → 32.594 m² → costΔ = 145 × 10.865 = 1,575.4 (illustrative, the witness prints the measured value).
+
+### §S8-SCHED — does an element quantity feed a duration in the shipped pipeline? ANSWER FROM THE §I OWNER
+Owner: `schedule_author.js:100` `_installSecs(cls, rule, laborRates, realQty, lengthRatio)` (§I "how long does it take?"). Measured
+from the code, `schedule_author.js:552-563`:
+- **`realQty` (area) enters ONLY when the class is `_classFragmentation`-flagged** (avg area < `FRAGMENT_M2_FLOOR`).
+- **`lengthRatio` (this element's longest edge ÷ its class's average) enters ONLY for `RATES[cls].unit === 'M'` classes**
+  (beams, columns, ducts, pipes, cable trays) — `_linearWeighting`.
+- **Otherwise the install time is FLAT per element** — a stretched ordinary wall (M2, not fragmented) changes cost but its
+  labour time is unchanged. That is what the pipeline does, and S8 reports it as `schedΔ = 0 (flat per element: IfcWall M2)`,
+  not as a missing number.
+So `labourSecsΔ = _installSecs(after) − _installSecs(before)` via the owner, with `secsPerUnit = _productivity_basis_secs ÷ prod`;
+shown in working days (`÷ _productivity_basis_secs`, the owner's own 28,800 s/day).
+- **What S8 does NOT claim: a finish-date shift.** Labour seconds of one element → task duration → CPM start/finish goes through
+  crews, `max_crews`, dependencies and `computeSchedule`/`cpm_schedule.run`. Re-solving at hover time is not spec'd.
+  ⛔ **BLOCKED (finish-date Δ): "may a hover trigger a whole-programme re-solve (`computeSchedule` + `cpm_schedule.run`), or is the
+  labour-seconds Δ the agreed schedule variance?"** Until answered the label says `finish date: not re-solved`.
+- The class average length used by `lengthRatio` is held at its RECORD value (before the edit) for both before/after — the edit
+  moves the class average by 1/N, which is the redistribution effect the owner already documents; S8 does not model it.
+
+### §S8-LABEL — honest labels (§DOCTRINE 4)
+`costΔ` = "**projected** — active rate pack × bbox quantity Δ, this element" · the record it starts from = "**from records**"
+(element_transforms) · `schedΔ` = "**projected** — labour time per the shipped duration rule; finish date not re-solved".
+Never a bare money string next to an element name; the line always names the class, the unit and the quantity Δ.
+
+### §S8-FN — ONE pure function, called by both surfaces
+`viewer/edit_delta.js` → `window.EditDelta` / `module.exports` (DOM-free, node-testable; loads owners, never copies them):
+`netEdits(ops)` → Map fid→{dx,dy,dz,fx,fy,fz} · `readRecord(db,guid)` · `classCtx(db,env)` (calls the owners `_classFragmentation` /
+`_linearWeighting`) · `deltaFor(rec, net, ctx, env)` → `{guid, cls, unit, qtyBefore, qtyAfter, rate, costBefore, costAfter, costDelta,
+labourSecsBefore, labourSecsAfter, labourSecsDelta, labourDaysDelta, schedBasis, finish:'not re-solved', labels[]}`.
+Two declared TWINS exist (a twin without a parity gate is a drift; both are gated below): `netEdits` mirrors the fold's net-scale
+accumulation (`bonsai_kernel.js:311-316`); `qtyOf(unit,dims)` mirrors the `compute5D` / `_AREA_EXPR` SQL. `env` = the rates.js globals +
+`ScheduleAuthor` + `BigDecimal`, supplied by the caller (Viewer: already loaded; Modeller: lazily `<script>`-loaded from `../viewer/`,
+`../erp/`, on the first hover/click of an EDITED element — Open time unchanged).
+Log: `§S8-DELTA guid= cls= unit= qty=<before>-><after> rate= costDelta= schedDelta=<secs>s(<days>d) basis= surface=modeller|viewer`.
+
+### §S8-SURFACES
+- **Modeller** (additive only, `modeller/edit_delta_ui.js` + two `dispatchEvent` lines in `modeller.html`'s `setHover`/`setSelectionIds`):
+  hover → a small label near the cursor; click → the same line appended to the status line. Only for a feature with a net edit.
+- **Viewer** (`viewer/main.js`-side subscriber): `Connect.subscribe('identity')` → log `§CONNECT-ID-IN viewer` → read the shared signed
+  log (`localStorage bonsai_model_v1`, same origin, `kernel_ops WHERE undone=0` — what `Bonsai.oplog.reload()` reads) → `netEdits` →
+  `deltaFor` per edited guid → S7's hover label (`hover_name.js`) and `#info-panel` `#info-4d` block get the Δ line. Independent of any
+  persisted schedule (the S7 window line still needs one; the Δ line does not).
+- ⚠ Cascade defect (finding #1, `RESUME_MODELLER_GUIDE_SCREENSHOT_FIX.md` 2026-09-30): moving a wall that HOSTS a door/window is 3 ops
+  and one Ctrl+Z undoes one. S8 does not build on it: witnesses use a wall with no hosted filling (`SdgCascade.ridersFor` = []).
+- Scrub position: the log store has no cursor; `undone=1` (Ctrl+Z) is honoured, a slider scrub-back is carried by the existing
+  `timeline` channel and is out of S8.
+
+### §S8-WITNESS (each NAMES what it proves or disproves; RED first — on today's main neither surface prints any Δ)
+- **W-S8-PURE** (node) — `qtyOf` equals the `compute5D`/`_AREA_EXPR` SQL on every bbox of the real Duplex DB (sql.js), all four units;
+  `deltaFor` with net = identity returns 0/0; an M-unit class (a beam record) returns a non-zero labourΔ, an M2 wall returns 0.
+  *Disproves: a drifted quantity twin; a fabricated schedule number for a flat class.*
+- **W-S8-EDIT-DELTA** (Modeller, headless vs LIVE) — pick a wall with no hosted filling → drag its scale cube → hover → `§S8-DELTA` whose
+  `costDelta` equals, to the cent, the value the WITNESS recomputes independently from the DB (`rate × (area_after − area_before)`, area_after
+  read from the folded mesh's REAL bbox, not from the op) → Ctrl+Z → hover again → Δ = 0. A move (not a scale) prints costΔ 0.
+  *Disproves: Δ computed from the op instead of the fold; Δ surviving an undo; a move billed as a quantity change.* INCONCLUSIVE if the
+  scale commit did not land (op-log length unchanged) or the wall's quantity was 0.
+- **W-CONNECT-COMMIT** (Viewer, two pages one context, vs LIVE) — Modeller edit → Viewer logs `§CONNECT-ID-IN viewer tip=<the Modeller's tip>` →
+  hover the same guid in the Viewer → `§S8-DELTA … surface=viewer` with **costDelta and schedDelta byte-equal to the Modeller's** (the
+  cross-surface equality is the falsifier) → Ctrl+Z in the Modeller → Viewer Δ = 0 → `KernelOps.verifyChain` ok on the shared store.
+  *Disproves: a Viewer that never receives the edit (the P3 half-built state on main), or two surfaces computing different numbers.*
+
+### §S8-RESULT — MEASURED 2026-09-30 (logs: `/tmp/claude-1000/gs/{s8_pure_1,s8_edit_LIVE_green2,cc_LIVE1}.log`; RED first on the same witnesses)
+| witness | result | the measured evidence |
+|---|---|---|
+| **W-S8-PURE** (node, real DBs) | **7/7** | qtyOf == compute5D/_AREA_EXPR on **116,928** real elements (0 mismatched); identity net → 0.00/0 on 253 elements; wall ×1.5 costΔ 3,906.83 == independent BigDecimal; wall labour 2400→2400 (flat); Clinic IfcMember length×2 → labour 3149→6299s (length-weighted); GEOM_MOVE → 0.00; GEOM_GRID_MOVE flagged unsupported |
+| **W-S8-EDIT-DELTA** (Modeller, LIVE) | **9/9** (RED before deploy: D5 FAIL + D2 INCONCLUSIVE) | wall #18 `IfcWallStandardCase` M2, area 10.586→13.233 m², rate 48/M2 (en_US pack), **costΔ +127.03 == independent 127.03**, folded-mesh area Δ 2.6466 == displayed 2.6466 (netEdits twin == the fold), labour +0s (flat per element), hover label and click pin both show it, Ctrl+Z → 0.00 "edit undone", GEOM_MOVE → 0.00, owners NOT loaded until the first edited hover (lazy) |
+| **W-CONNECT-COMMIT** (Modeller + Viewer, LIVE) | **10/10** (RED before deploy: Viewer had no EditDelta) | Viewer received `§CONNECT-ID-IN viewer tip=<Modeller's tip>`, logged `§S8-DELTA … surface=viewer` with costDelta **127.03 / sched 0s / qty 10.586247→13.232809 — byte-equal to the Modeller**; the Viewer's hover label text is byte-equal to the Modeller's; undo → 0.00 and the Δ line leaves the label; `verifyChain` ok; 0 page errors |
+Defects the witnesses caught IN THE BUILD (each is why a witness beats a look): (1) rate mismatch 145 vs 48 (locale pack — above); (2) float32-vs-double record noise made two surfaces disagree by a cent → `readRecord` rounds dims to **0.1 mm** ("record precision"); (3) the store is per building (`mo_Duplex`), not `bonsai_model_v1` → the Modeller names its store in the `identity` payload (`store`, plus `edits:[{fid,guid}]`); (4) the first Viewer hover match compared a 12-char GUID prefix — every Duplex wall shares it — so the hover log now carries `full=<guid>` and the witness compares the whole guid; (5) `#82…#84` are BELOW-GRADE foundation walls (z −1.25..0): not hoverable; the witnesses pick above-grade walls with no hosted filling.
+
+### §S8-DEMO-MOVIE (later — a NOTE, no movie is made now)
+Beats, and the witness-proven state each shot must be cut from (a shot with no proven state is not filmed):
+1. Modeller, Duplex, one wall selected — state: W-S8-EDIT-DELTA "selected fid, hostedRiders=0".
+2. Drag the scale cube; hover the wall — the label reads the `§S8-DELTA` line whose numbers W-S8-EDIT-DELTA asserted (costΔ, qty before→after).
+3. Cut to the Viewer tab (Connect ON) — the same element, the same Δ line — state: W-CONNECT-COMMIT byte-equal numbers.
+4. Ctrl+Z in the Modeller; both labels return to 0 — state: the undo legs of both witnesses.
+5. Save — state: `§SAVE_SNAPSHOT bytes>0`. The finish-date shift is NOT shown (⛔ above) — the film must not imply it.
+Rule (`feedback_no_autonomous_bakes`): filming/baking needs red1's explicit go; nothing here authorises it.
+
+### §S8/§S9-ANSWERS — red1, 2026-09-30 (verbatim, then what was applied). "This is just POC, keep it simple."
+- **Q1 (VO price 81.90 vs S8 Δ 127.03), decision:** "ONE pricing basis. A VO is the priced difference of the order line it amends, so compute it with the SAME basis as the Project Order line (proj_fold), and make the S8 hover Δ use that same basis, so the user sees one number everywhere. The invariant witness: PlannedAmt(original PO) + VO == a fresh fold of the edited parts, to the cent (bigdecimal)."
+  **Applied:** the basis is `proj_fold`'s line amount = per class row `round(rate × qty)` to 0 dp HALF_UP. `EditDelta.deltaFor` now prices `costBefore/After` on it (`costΔ` = the difference, integer — 127 for the stretched wall, not 127.03). `ProjOrderState.voRowsFromEdit` builds one CHANGED row per class whose `rate` IS the difference to the order LINE it amends (`readState().lines`; a class already issued at the edited quantity yields no VO), and `vo_fold` runs UNCHANGED with a neutral `voConfig` (factors 1, no loading) so `GrandTotal == Σ difference`. The old ×1.3 × 1.3125 model is no longer used by S9. Witnessed: W-S9-PURE S7 (PO 171,428 + VO 1,953.00 == fresh fold 173,381; revised contract = fresh fold only after approval), W-S9-MODELLER-PROJECT P10 (PO 635 + VO 127.00 == fresh fold 762), W-S9-IFC-KEY K3 (PO 2,614 + VO 420.00 == fresh 3,034). Caveat recorded: S8's Δ is per ELEMENT and the VO per class row over the SELECTION; they are equal when the selection is the edited part (one element), and the panel's `scopeNote` warns when the order holds more than the selection — select all parts of the order for a whole-line VO.
+- **Q2 (VO approval in the Modeller):** "Approval is over at ERP side. Modeller just send and fetch by default, until a role condition is imposed from there." **Applied:** no approval UI. The panel lists the VOs on the project with their status READ from the ERP record, labelled Drafted / Approved / In progress / Reversed (`voStatusLabel`), and the send message says "approval is done on the ERP side". `vo_approve.js` stays ERP-side (W-S9-PURE S7 still exercises it as the ERP would). If the ERP later imposes a role condition the Modeller shows whatever status the record carries.
+- **Q3 (resident→ERP label only for Duplex):** "Can we make such abstract so that any user IFC ARC loaded, can do so?" **Applied:** `projectKey(residentKey, db)`: (1) the measured alias table (Duplex → `Ifc2x3_Duplex_Federated`, unchanged), (2) the model's own IfcBuilding/IfcProject NAME if the opened DB carries it in `spatial_structure`, (3) the model's own loaded name (`__dwName`; MEASURED: a `.ifc` opened straight from disk has NO spatial_structure names, so a user IFC is keyed by its file base name, e.g. `SampleHouse_ARC`). The source is logged (`§S9-BUILDING … source=`). If a DB lacks `element_transforms` the quantities fall back to the signed seed rows' bboxes (`EditDeltaUI.opRecord`; not exercised because the direct-IFC DB does carry that table). Witness **W-S9-IFC-KEY** (the local-IFC open path, `SampleHouse · ARC.ifc`): K1 key = `SampleHouse_ARC`, K2 Generate → ONE project, plannedAmt 2,614 == independent, K3 stretch → variant, VO 420.00, PO + VO == fresh fold; Duplex regression = W-S9-MODELLER-PROJECT P3/P4.
+- **Q4 (walked fixtures have no drag handle):** "keep the POC simple: drive the re-route with a real user gesture that exists today (a gridline drag, if W-MEP-REROUTE proves it)". **Result:** W-MEP-REROUTE does NOT prove a gridline re-routes — it commits a GEOM_MOVE on the fixture; a gridline drag moves walls and their hosted riders only (fixtures stay put), and clicking a walked fixture is identify-only (Move disabled). So no real gesture exists; the guide labels the step engine-driven, and MODELLER_MASTER row 35 records "drag handle for walked fixtures" (not built).
+- **Q5 (W-MEP-OPENPATH M0 185 vs 177):** root-caused from the §-logs: 185 → 177 is FP 46 → 38, exactly the 8 sprinklers of the UNDERGROUND FP band [-2.0, -0.5] m (`§NOSPACES-ZONE … band=[-2.0065,-0.5065] placed=8` in a solo FP walk; Walk-ALL's final FP is 38 = 15+14 host-bound + 9 floats, zones=4). #1768 (§GATE-STOREY-FLOOR, "clash gate stops sinking fixtures underground") measured those sprinklers ~1 m below the floor. A legitimate product fix; M0 re-baselined to 177 with the cause named (ACMV 19 / ELEC 102 / PLB 18 unchanged), RED-first: the old 185 counted the underground fixtures.
+- **Empty-grid MEP shots:** a REAL defect, not render-idle. After `Walk PLB` the group held 27 meshes, not 214 (196 ARC + walk): 214 × `§BONSAI insert fold fail … LOD400-REFUSE realGeomHash … not registered` — `bonsai_library.js ensureMesh`'s lazy catalog load replaced `_geom`, wiping the namespaced `rg:` real meshes registered at seed, so the next refold refused every ARC insert. Fixed (§GEOM-KEEP-RG: `_geom = Object.assign({}, j, this._geom)`); W-FIRST-STEPS-MEP now asserts `buildingMeshes >= 196` after the walk and after undoing it (MODELLER_MASTER row 36).
+
+## §S9 — FROM THE MODELLER: READ AND OPEN THE ERP PROJECT ORDER OF THE SELECTED PARTS (Generate · variant · A/B · launch)   ✅ BUILT + WITNESSED LIVE 2026-09-30 (bim-ootb #1797 + #1798; viewer sw v1454, modeller sw v70)
+```
+# ⚠ DO NOT REMOVE — scope + log mandate
+SCOPE: the Modeller reads the Project Order of the selected parts, offers Generate / (for an edited part of an existing order) A delete&re-issue or B Variation Order,
+and opens the order in the ERP app. ONE owner — `viewer/proj_order_state.js` — over the existing engines; the Modeller carries no fold, no rates, no ERP schema.
+Read the `§S9-*` logs after every run; a witness that judged nothing prints INCONCLUSIVE.
+```
+red1's decisions, 2026-09-30 (verbatim — they replace the earlier "how is a variant keyed" question):
+> "The ERP link as said, is context based. If it already has a Project Order, then it is a variant item in the same PO. If not, it generates a new Project Order. That should be the flow.
+> 1. User issues a PO to a selected item first.
+> 2. Made a variant on the same item or its sub. Thus to save from deleting the PO and start over, it just issue a VO.
+> Thus 2 options still open to the user. A. Delete the old PO, and issue a fresh one to save work as has not started. Or B. VO if Project Order already committed to vendor as a sub Purchase Order."
+
+### §S9-GROUND — what already exists (verified in bim-ootb `main`, 2026-09-30) — nothing below is invented
+- **Generate**: `viewer/proj_fold.js foldProjectOrder(db, building, pricedRows, opts)` — C_Project (find-or-create by `Value=building`) → C_ProjectPhase → C_ProjectTask → C_ProjectLine per IFC class; idempotent by natural key; money via BigDecimal. The Viewer's Find selection → "› ERP" (`find_erp_push.js _pushToErp`) calls it with `navigate_find.js _selectionPriced(set)` rows.
+- **Variation Order — the construct EXISTS** (`viewer/vo_fold.js foldVariationOrder`, `vo_approve.js`, `proj_control.js`; spec `docs/BIMtoProject.md` §H1/§F5): a VO is a **C_Order** (`Description='BIM VO: <building> #n'`, `IsSOTrx='N'`, `DocStatus='DR'`, `C_Project_ID`, `Ref_Order_ID` = the project's PO) with signed C_OrderLines; approving it (`DR→CO` through `ad_docfsm`) moves `C_Project.CommittedAmt/IsCommitment` and `ProjControl.contractSum` = original + approved VOs = revised. The diff→VO mapping is `diff.js A._diffToVoRows`: one row per (status × class), an **edited element = `CHANGED`**, `count` = elements, `rate` = `getRate(cls)`, unit EA; factors `ADDED 1.0 · REMOVED 0.3 · CHANGED 1.3`, loading `(1+0.10+0.15)(1+0.05)` = 1.3125, all in `vo_fold`. **S9 uses exactly that mapping.**
+- **Store**: OPFS `bim_analysis/bim_project_orders.db` — written by `find_erp_push.js` and `diff.js`, overlaid onto the seed by the ERP app at boot (`erp/bim_orders_overlay.js`, BIM PK band ≥ 990000). `diff.js _loadVoErpDb` is already OPFS-first. `find_erp_push.js _ensureErpDb` was seed-first → **changed to OPFS-first** (same helper) so an order generated by ANY surface is the one the next push amends — required by "if it already has a Project Order".
+- **Launch**: the Viewer's own link `../erp/idempiere.html?client=garden&window=130&record=<C_Project_ID>` (`find_erp_push.js`); the ERP logs `§IDEMPIERE-DEEPLINK record=<id> landed` once the record is in its scoped set.
+- The Modeller had none of it (0 hits for C_Project / zoomAcross in `modeller/`).
+
+### §S9-READ — what the panel shows (`ProjOrderState.readState`) — all from records
+`generated` (a C_Project with `Value=<building>` exists AND has a line for a selected class) · `projectId` · `plannedAmt` · project lines · the PO (`C_Order Description='BIM PO: <building>'`, present only when a supplier was given) · VOs (`C_Order C_Project_ID=? AND Description LIKE 'BIM VO:%'`) · `ProjControl.contractSum` (original / approved VOs / revised).
+**Committed = read from records, never guessed**: a purchase C_Order (`IsSOTrx='N'`, not a VO) on that project (by `C_Project_ID` or `Description='BIM PO: <building>'`) with `DocStatus IN ('CO','CL')`, OR `C_Project.IsCommitment='Y'`, OR `CommittedAmt>0` (what `vo_approve.js` moves). The panel prints WHICH of these is true.
+**Variant = the selected part carries a quantity-changing edit (S8 `netEdits`, scale ≠ 1) AND its class already has a line in the project.** A pure move changes no quantity → not a variant.
+`decide(state, edited)`: not generated → **Generate**; generated, unedited → read-only "in Project Order"; generated + edited → **variant**: `B Issue Variation Order` always; `A Delete & re-issue` only when NOT committed and no VO exists (else disabled with the reason, e.g. "committed to a vendor (purchase order #991001 is CO) - issue a Variation Order instead").
+Amounts: the selection's parts price via `pricedRowsFor` — the SAME `(disc,cls,storey,count,unit,qty,rate,cost)` shape as `_selectionPriced`, quantities from the S8 `qtyOf` twin (parity-gated in W-S9-PURE S1 against the SQL path) with the post-edit dims when edited.
+
+### §S9-ACTIONS
+- **Generate** → `ProjFold.foldProjectOrder` (unchanged). **A · Delete & re-issue** → deletes exactly the rows the fold wrote for that project (lines, tasks, phases, the DR PO + its lines, the project) then folds again from the **current selection** (post-edit quantities): exactly ONE project row remains. ⚠ It re-issues from the SELECTED parts: if the order held more for those classes than the selection prices at, the panel says so (`scopeNote`, from records) — the order does not record which guids it covers.
+- **B · Issue Variation Order** → `VoFold.foldVariationOrder` with the shipped mapping (rows: `CHANGED × class × count × getRate`). The VO is born `DR`; the base order's `PlannedAmt` does NOT change; the revised contract sum moves only when the VO is approved.
+- **Open in ERP** → the link above (new tab). Persistence after every action: OPFS, so the ERP overlay and the Viewer read the same file.
+
+### §S9-BLOCKED / QUESTIONS FOR red1 (built the rest; these are honest gaps, not guesses)
+1. ✅ ANSWERED (see §S8/§S9-ANSWERS Q1) — was: **"The PO's PlannedAmt changes by exactly the S8 cost Δ" does not hold for B under the shipped VO model, and I did not bend the model to make it.** The shipped VO prices the diff per ELEMENT: a stretched wall = 1 × CHANGED × rate 48 × 1.3 × 1.3125 = **81.90** (measured), while S8 prices the QUANTITY Δ: **+127.03** material. They answer different questions (rip-and-reinstall of the element, loaded, vs the extra m²). **Question: should a VO for a stretched element price the S8 quantity Δ (a proposal: an ADDED/REMOVED row with `count` = the Δ quantity in the class unit — needs a decision on whether `vo_fold` may carry a non-EA unit) or keep the shipped per-element CHANGED model?** S9 ships the shipped model unchanged and shows the S8 Δ beside it.
+2. ✅ ANSWERED (see §S8/§S9-ANSWERS Q2) — was: **Approving a VO (DR→CO) is not offered in the Modeller.** `vo_approve.js` exists and is witnessed (W-S9-PURE S7: revised contract = original + VO GrandTotal only after approval) but approval is a governance act (who signs?). **Question: is approval an ERP-only act (the "Open in ERP" link is the route), or should the Modeller expose it?**
+3. **Project Order fold semantics (existing, not changed):** `foldProjectOrder` sets `C_Project.PlannedAmt` to the sum of THIS fold's rows, so folding a subset of classes after a full one overwrites the total. S9 leaves it; recorded so it is not rediscovered.
+4. ✅ ANSWERED (see §S8/§S9-ANSWERS Q3) — was: **The ERP `C_Project.Value` is the Viewer's building LABEL, and the Modeller's resident key is not always that label.** Found by W-S9-MODELLER-PROJECT P4 on LIVE (first live run, 9/10): the Modeller generated `Value='Duplex'` while the Viewer's live Duplex reports `A.activeBuilding='Ifc2x3_Duplex_Federated'` — two surfaces, two Project Orders for one building. Fixed for the measured case with `ProjOrderState.projectKey(residentKey)` (a table of labels MEASURED on the live Viewer; anything else falls back to the resident key and says so in `§S9-BUILDING source=…`). **Question: is a resident→label table the right home, or should `modeller/buildings_manifest.json` carry an `erpValue` per resident (generated from the Viewer's DB label)?** Only Duplex is measured; the other 7 residents are unmeasured.
+
+### §S9-WITNESS (RED first: on today's live before deploy the button did not exist — P1 FAIL)
+- **W-S9-PURE** (node, real `ad_seed.db` + Duplex DB): S1 priced rows == the `_selectionPriced` SQL fold (94 guids, 9 groups, cost 171,428, all equal) · S2 not-generated → only Generate · S3 Generate → ONE project row, plannedAmt == independent BigDecimal sum, 2nd Generate +0 · S4 edited part → variant, offers `deleteReissue,issueVO` · S5 A → exactly ONE project row, plannedAmt 171,428→173,381 == independent 1,953 delta · S6 committed fixture (a completed sub-PO) → committed from records, A REFUSED with its reason, 0 rows changed · S7 B → one VO, GrandTotal 247.41 == independent (145×1.3×1.3125), revised contract moves only on approval by exactly the VO total · S8 launch URL carries the C_Project id. **8/8.**
+- **W-S9-MODELLER-PROJECT** (three real pages of one context: Modeller, Viewer, ERP; real clicks): P1 button visible and owners NOT loaded before the click · P2 read "not generated" · P3 Generate → 1 project, plannedAmt == independent · P4 the Viewer's own › ERP fold of the SAME guids reports the SAME plannedAmt with `lines=+0` (it SEES the order) and its `#find-erp-open` link carries the same id · P5 the clicked link == the ERP URL and the ERP page logs `§IDEMPIERE-DEEPLINK record=<id> landed` (overlay loaded the row) · P6 edit → variant, A and B offered, parts cost == independent edited cost · P7 A → exactly ONE project row, plannedAmt == independent post-edit sum, `scopeNote=more` said · P8 Ctrl+Z → parts cost back to the original · P9 committed fixture → A disabled with its reason, B enabled · P10 B → one VO, GrandTotal 81.90 == independent, the Viewer reads the same VO (`vos=1`, committed). **10/10 local; 10/10 vs LIVE** (RED first: on the pre-deploy live P1 FAILED — no button).
+
+### §S9-RESULT — LIVE 2026-09-30 (log `/tmp/claude-1000/gs/s9_LIVE2.log`)
+Duplex, two above-grade walls (#18, #16, `IfcWallStandardCase`), real clicks, three real pages (Modeller, Viewer, ERP): P1 button, owners NOT loaded before the click · P2 not generated (parts price at $765) · P3 Generate → project #990001 `Value=Ifc2x3_Duplex_Federated`, plannedAmt **765 == independent 765** · P4 the Viewer's own › ERP fold of the same guids: plannedAmt **765**, `lines=+0` (it found the Modeller's order), `#find-erp-open` → record 990001, same building key · P5 clicked link == `https://red1oon.github.io/bim-ootb/erp/idempiere.html?client=garden&window=130&record=990001`; the ERP page (auto-login) logged `§BIM_OVERLAY rows=460` and `§IDEMPIERE-DEEPLINK record=990001 landed` · P6 wall #18 stretched (fy ×1.25): variant, A and B offered, parts cost **508 → 635** == independent · P7 A: `projectRows 1->1`, plannedAmt 765 → **635** == independent post-edit, `scopeNote=more` said · P8 Ctrl+Z: parts cost back to **508** · P9 completed sub-PO (fixture) → committed from records, **A disabled: "committed to a vendor (purchase order #991001 is CO) - issue a Variation Order instead"**, B enabled · P10 B: `VO-…-001` GrandTotal **81.90 == 48 × 1.3 × 1.3125**, the Viewer reads the same order from OPFS (`vos=1`, committed). Defects the witness caught IN THE BUILD: (1) the Find/Navigate bundle is lazy (`APP.loadNavigate()` before `applyFindScope`); (2) the building-label mismatch above; (3) A re-issues from the SELECTION, so the panel now says when the order holds more than the selected parts (`scopeNote`).
+
 ## §WEDGE-STRATEGY (decided 2026-06-22 after the "is it a killer?" analysis)
 VERDICT of the analysis: the one-op-log BIM↔ERP twin is a killer *architecture* + killer *demo*; it is NOT yet a
 killer *product* because (a) it is demo-grade on the seed (990000), (b) "unifies 4 tools" is a feature list, not a
@@ -238,6 +889,15 @@ claim/forecast is a signed op-group = a defensible audit trail ("git for your cl
 to the model (no spreadsheet drift); EVM to-the-cent; what-if = forecast scenarios, reversible.
 THE TRAP (explicitly DO NOT build): CPM / resource leveling / calendars / critical-path. That is out-P6-ing P6 — a
 loss. Keep the minimal F-S what-if; say so in writeups. Gaps to close are the WEDGE's, not the scheduler's.
+  ℹ **SCOPE OF THE TRAP — cross-note 2026-08-27, so it stops reading as a contradiction of a shipped engine.**
+  This is a PRODUCT-SCOPE rule for **THIS lane's surface** (the QS/commercial ERP cockpit, W0–W3), not a repo-wide
+  ban on CPM code — the final clause above draws the line itself: *"not the scheduler's."* The BIM viewer's 4D CPM
+  engine (`viewer/cpm_schedule.js`) **is that scheduler**, it is SHIPPED and LIVE, and its architecture record is
+  `prompts/4D_SCHEDULE_ARCHITECTURE_REDESIGN.md` — which now carries the reciprocal note. Building/refining CPM
+  there does NOT breach this trap. **What WOULD breach it:** growing THIS lane's forecast/claim loop into a
+  scheduler — resource leveling, calendars or critical-path in W1–W3. This lane keeps the minimal F-S what-if only
+  (`viewer/whatif.js`, §S6 ✅ DONE/LIVE 2026-06-22). *(Previously reconciled only in a memory file, so each session
+  rediscovered the clash.)*
 
 ## W0 (keystone) = S5 EARN THE ACTUAL — do FIRST. Without real AC the whole cockpit is seeded → not defensible.
 (See S5 above: CommittedAmt = Σ real C_ProjectIssue + overhead via M_CostElement; EVM PV/EV/AC honest. W-PC-EARN.)
@@ -305,8 +965,39 @@ actuals too — AC is derived from the same signed op-log as the geometry, so th
   geometry/BOM/work-order/cost are the SAME folded data; (3) link structurally can't rot (single substrate, not a bridge).
 - ALREADY-SHIPPING (don't claim novel): 5D quantities→live-linked cost; 5D+EVM co-located; work-orders generated from model.
 - COVERAGE CAVEAT: CostX + RIB primary-sourced; ITcon Pishdad 2024 now primary-VERIFIED (above). STILL unverified:
-  Synchro / Navisworks TimeLiner / Vico / Procore / P6+EVM not individually primary-confirmed; Nature s41598-025-27546-0
+  Vico / Procore / P6+EVM not individually primary-confirmed; Nature s41598-025-27546-0
   "AC entered as aggregate, no audit trail to atomic rows" UNVERIFIED (source behind auth wall, couldn't re-fetch).
+  Navisworks TimeLiner + Synchro: PARTIALLY CLOSED 2026-09-13, see §OBJECT-TO-SCHEDULE below.
+
+### §OBJECT-TO-SCHEDULE — the S7 direction, checked 2026-09-13 (partially closed; ONE claim, narrow)
+Triggered by the user's question "so no other BIM player out there has such feature?" about S7 (select/hover an
+element → see when it is built). Checked ONLY the direction of the object↔task linkage, nothing else.
+
+- **Navisworks TimeLiner — PRIMARY-SOURCED, the linkage is TASK → OBJECTS ONLY.** The Tasks Tab documentation
+  describes `Attach Current Selection` — "attaches the currently selected items in the scene to the selected
+  tasks" — i.e. select objects, then attach them TO a task. **No documented method goes the other way**: there
+  is no way in that documentation to select a model object and discover which tasks are attached to it. The
+  TimeLiner Options' `Auto Select Attached Items` also runs task→items ("select any attached items in the Scene
+  View as you select each task"). [primary]
+  https://help.autodesk.com/cloudhelp/2024/ENU/Navisworks-Timeliner/files/GUID-91B08CFD-0B6B-4A2B-A853-BC8E173BA78C.htm
+  · Corroborating but NOT primary: an Autodesk forum thread describes bolting a Task ID onto objects via a linked
+    MS Access table + TimeLiner rules — a workaround that only makes sense if there is no native reverse lookup.
+  · ⚠ UNRESOLVED, do not paper over: that same thread also says "the TimeLiner properties tab displays only task
+    name, dates and laps info", which could mean a per-OBJECT TimeLiner properties tab exists. It more likely
+    refers to the per-TASK properties view, but this was NOT settled. **Absence of documentation is not absence
+    of feature** — treat Navisworks as "no documented reverse lookup", never as "cannot do it".
+- **Synchro 4D — ABSTAINED, not confirmed either way.** Every documented flow found runs the same direction
+  (e.g. the Bentley wiki "How can I select all the 3D Objects that are assigned to a selected Resource?"). The
+  KB article that would settle the reverse now 301s into a dynamic service-now page that could not be read.
+  **Do not claim anything about Synchro on this axis.**
+
+**WHAT THIS DOES AND DOES NOT LICENCE.** It does NOT make S7 novel — 4D object/task linkage is decades old and
+stays on the ALREADY-SHIPPING list. The narrow, and only, claim it supports is about DIRECTION: the incumbent
+tools are authored task-first, so "here is a task, which objects does it move" is native, while "here is this
+object, when does it get built" is not the documented flow. S7 answers the second question. That is a UX
+direction claim, not an architecture claim, and it is currently one-vendor-deep.
+And note §S7-GRAIN cuts the other way: S7 answers at phase×storey (Hospital: 41 windows over 63,415 elements),
+which is COARSER than a scheduler-authored task grid. Do not pitch S7 as finer-grained than the incumbents.
 
 ## §STARTUP READS
 - this lane (act from here) · viewer/time_machine.js (renderAtTime, drawVariance, drawDashboard, injectGantt,
@@ -317,5 +1008,9 @@ actuals too — AC is derived from the same signed op-log as the geometry, so th
 
 ## §WITNESS INDEX (in stage order)
 S1 W-PC-TWIN-SOURCE · W-PC-DRAWER  |  S2 W-PC-PANEL · W-PC-JUNCTURE · W-PC-HONEST  |  S3 W-4DGEN  |
-S4 W-SHOP-ELEMENTS · W-SHOP-BATCH · W-SHOP-SCURVE · W-SHOP-DATES · W-SHOP-SOURCE  |  S5 W-PC-EARN  |  S6 W-WHATIF ✅13/13
+S4 W-SHOP-ELEMENTS · W-SHOP-BATCH · W-SHOP-SCURVE · W-SHOP-DATES · W-SHOP-SOURCE  |  S5 W-PC-EARN  |  S6 W-WHATIF ✅13/13  |
+S7 W-S7-WINDOW ✅13/13 · W-S7-GRAIN · W-S7-GATE · W-S7-HOVER-BUDGET · W-S7-INJECT · W-S7-INJECT-GUARD ·
+W-S7-INJECT-HONEST · W-S7-INJECT ✅24/24 · W-S7-INJECT-GUARD ✅17/17 · W-S7-INJECT-HONEST ✅12/12 ·
+W-S7-INJECT-PERSIST ✅21/21 · W-S7-INJECT-COST ✅parts1+2 | S7 legs 2-4 ✅ W-S7-TASK-GRAIN 12/12 ·
+W-S7-GRAIN 10/10 · W-S7-GATE 22/22 · W-S7-HOVER-BUDGET 9/9 · W-S7-CANVAS-PICK 14/14 ✅#1735
 PHASE 2 (the wedge): W0=S5 W-PC-EARN (keystone) | W1 W-EAC | W2 W-CLAIM-CERT | W3 W-COCKPIT-LOOP

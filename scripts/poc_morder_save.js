@@ -4,7 +4,7 @@
 // poc_morder_save.js — W-MORDER-SAVE (FABLE5_MORDER_EQUIVALENCE.md §H-1.3).
 //
 // SPEC (§H-1.3): MOrder.beforeSave (MOrder.java:1183-1396) ported into ad_modelval
-//   (installMOrderSaveHooks — 11 hooks, each citing its Java lines) must agree with iDempiere on BOTH axes:
+//   (installMOrderSaveHooks — 14 hooks since 2026-09-02 (P1.5 added bpLocationDefault + salesRepFromCtx), each citing its Java lines) must agree with iDempiere on BOTH axes:
 //   (1) ACCEPT/REJECT — every STORED c_order (real iDempiere wrote it THROUGH this very beforeSave) must be
 //       accepted unchanged (8/8); records mutated per Java's EXPLICIT reject conditions must be rejected:
 //       AD_Client_ID=0 (:1195) · M_Warehouse_ID=0 without ctx (:1206, FillMandatoryException) · PrepayOrder
@@ -29,7 +29,12 @@
 'use strict';
 var path = require('path');
 var Database = require('better-sqlite3');
-var V = require('../build/erp/ad_modelval');
+// MODELVAL env seam (2026-09-02, ERP_IDEMPIERE_UX_PARITY.md §IMPL F7): `build/erp/ad_modelval.js` is a
+// SEPARATE, drifted copy of the shipped `erp/ad_modelval.js` (md5 differs; 11 witnesses run against the copy).
+// P1.5's two new hooks ship in the LIVE file, so this witness must be able to judge the live one. Default is
+// unchanged — the copy — so the other 10 witnesses and CI are untouched; pass MODELVAL=<path> to judge a
+// shipped/worktree file instead. Reconciling the copy itself is named-deferred, not this PR's scope.
+var V = require(process.env.MODELVAL || '../build/erp/ad_modelval');
 
 var db = new Database(path.join(__dirname, '..', 'build', 'erp', 'glassbowl_data.db'), { readonly: true });
 var fails = 0;
@@ -104,9 +109,38 @@ deriveDiff('C_DocTypeTarget default (:1311)', ['c_doctypetarget_id'], 'c_doctype
   var foreign = db.prepare('SELECT c_bpartner_location_id FROM c_bpartner_location WHERE c_bpartner_id<>? LIMIT 1').get(Number(probe.c_bpartner_id));
   probe.c_bpartner_location_id = foreign.c_bpartner_location_id;
   var r = fire(probe);
-  verdict(r.ok && r.derived.c_bpartner_location_id === null,
-    'foreign BP-location is CLEARED (derived null), not rejected — the :1243 set_ValueNoCheck(null) semantics',
-    'loc=' + foreign.c_bpartner_location_id + ' → derived=' + r.derived.c_bpartner_location_id);
+  // 2026-09-02 (ERP_IDEMPIERE_UX_PARITY.md §IMPL P1.5): the old expectation (derived === null) stopped ONE Java line
+  // short — :1243 clears the foreign location, then :1269 `if (getC_BPartner_Location_ID() == 0) setBPartner(bp)`
+  // re-derives it from the BP's own locations (setBPartner :756-769, ship-to else first). Oracle = the seed itself.
+  var own = db.prepare("SELECT c_bpartner_location_id FROM c_bpartner_location WHERE c_bpartner_id=? AND isactive='Y' AND isshipto='Y' ORDER BY c_bpartner_location_id").all(Number(probe.c_bpartner_id));
+  var ownLoc = own.length ? Number(own[own.length - 1].c_bpartner_location_id) : null;
+  verdict(r.ok && r.derived.c_bpartner_location_id === ownLoc && ownLoc !== null && ownLoc !== Number(foreign.c_bpartner_location_id),
+    'foreign BP-location is CLEARED (:1243) and then RE-DERIVED from the BP\'s own ship-to (:1269 → setBPartner :756-769), not rejected',
+    'loc=' + foreign.c_bpartner_location_id + ' → derived=' + r.derived.c_bpartner_location_id + ' (own ship-to=' + ownLoc + ')');
+})();
+
+// ── (1d) §P1 P1.5 — the two beforeSave defaults the port lacked until 2026-09-02 (ERP_IDEMPIERE_UX_PARITY.md §IMPL):
+//   MOrder.bpLocationDefault (:1269-1270 ∘ setBPartner :752-770) and MOrder.salesRepFromCtx (:1302-1307). Oracle =
+//   the stored rows: strip the column, the hook must put the STORED value back (real iDempiere derived it).
+(function () {
+  var locOk = 0, srOk = 0, billOk = 0;
+  orders.forEach(function (o) {
+    var p1 = clone(o); p1.c_bpartner_location_id = null; p1.bill_location_id = null;
+    var r1 = fire(p1);
+    if (r1.ok && Number(r1.derived.c_bpartner_location_id) === Number(o.c_bpartner_location_id)) locOk++;
+    if (r1.ok && Number(r1.derived.bill_location_id) === Number(o.bill_location_id)) billOk++;
+    var p2 = clone(o); p2.salesrep_id = null;
+    var r2 = fire(p2, null, { salesrep_id: Number(o.salesrep_id) });   // Env.SALESREP_ID = the login user; here = the stored value
+    if (r2.ok && Number(r2.derived.salesrep_id) === Number(o.salesrep_id)) srOk++;
+    console.log('§HARDEN surface=MOrder.beforeSave/defaults record_id=' + o.c_order_id + ' stripLocation→' + r1.derived.c_bpartner_location_id + '/' + o.c_bpartner_location_id +
+      ' stripBillLoc→' + r1.derived.bill_location_id + '/' + o.bill_location_id + ' stripSalesRep(ctx)→' + r2.derived.salesrep_id + '/' + o.salesrep_id);
+  });
+  verdict(locOk === orders.length, orders.length + '/' + orders.length + ' stripped C_BPartner_Location_ID re-derived to the STORED value (:1269 → setBPartner ship-to)', 'ok=' + locOk);
+  verdict(billOk === orders.length, orders.length + '/' + orders.length + ' stripped Bill_Location_ID re-derived to the STORED value (setBPartner bill-to → :1272-1279)', 'ok=' + billOk);
+  verdict(srOk === orders.length, orders.length + '/' + orders.length + ' stripped SalesRep_ID re-derived from ctx.salesrep_id (:1302-1307, Env.SALESREP_ID)', 'ok=' + srOk);
+  var noCtx = clone(orders[0]); noCtx.salesrep_id = null;
+  var r3 = fire(noCtx);
+  verdict(r3.ok && !('salesrep_id' in r3.derived), 'no ctx.salesrep_id → SalesRep stays unset (Java: `if (ii != 0)` — never invented)', JSON.stringify(r3.derived.salesrep_id));
 })();
 
 // ── (2) REJECT fixtures — real records mutated per the cited Java reject conditions (§FALSIFIERs) ────────

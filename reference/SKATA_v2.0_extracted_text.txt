@@ -1,0 +1,10584 @@
+KERAJAAN MALAYSIA
+
+SISTEM KOD ASET TAK ALIH
+KERAJAAN
+(SKATA)
+VERSI 2.0
+
+Urusetia JPAK,
+Pejabat Ketua Pengarah Kerja Raya Malaysia.
+
+PENAFIAN
+Penggunan Kod dalam Sistem Kod Aset Tak Alih (SKATA) merujuk kepada standard kod yang digunakan
+di Malaysia. Standard kod itu adalah:
+i.
+ii.
+
+Data Dictionary Sektor Awam (DDSA) ; dan
+Malaysia Standard Feature and Attribute Codes (MS 1759)
+
+Walaubagaimanapun, standard kod ini akan berlaku perubahan dan pengemaskian dari semasa ke
+semasa oleh pemegang standard tersebut.
+Semakan perubahan-perubahan yang berlaku akan dilakukan oleh Jawatankuasa Kerja SKATA, JPAK.
+Selain itu, jika terdapat kekurangan atau ketiadaan penggunaan kod pengguna perlu memaklumkan
+kepada pihak urusetia untuk diambil tindakan.
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+i
+
+KANDUNGAN
+BIL PERKARA
+
+HALAMAN
+
+Penafian
+
+i
+
+Senarai Rajah
+Senarai Jadual
+
+iii
+iv
+
+Glosari
+
+v
+
+Singkatan
+
+v
+
+1
+
+Pengenalan
+
+1
+
+2
+
+Objektif
+
+1
+
+3
+
+Skop SKATA
+
+1
+
+4
+
+Penggunaan SKATA Berdasarkan Kitar Hayat Aset (KHA)
+
+3
+
+5
+
+Struktur Pengekodan dan Kamus Data
+
+5
+
+5.1
+
+Daftar Premis Aset (DPA)
+
+5
+
+5.1.1
+
+Aset Bangunan
+
+5
+
+5.1.1.1
+
+5
+
+5.1.2
+
+Bangunan
+
+Aset Infrastruktur
+
+7
+
+5.1.2.1
+
+Infrastruktur Jalan
+
+7
+
+5.1.2.2
+
+Infrastruktur Air
+
+11
+
+5.1.2.3
+
+Infrastruktur Pembetungan
+
+13
+
+5.1.2.4
+
+Lain-lain Infrastruktur
+
+15
+
+5.2 Daftar Aset Khusus (DAK)
+5.2.1
+5.2.2
+
+6
+
+18
+
+Aset Bangunan
+
+18
+
+5.2.1.1
+
+18
+
+DAK Bangunan
+
+Aset Infrastruktur
+
+24
+
+5.2.2.1
+
+DAK Infrastruktur Jalan
+
+24
+
+5.2.2.2
+
+DAK Infrastruktur Air
+
+37
+
+5.2.2.3
+
+DAK Lain-lain Infrastruktur
+
+44
+
+Data Kod
+
+51
+
+6.1
+
+Daftar Premis Aset
+
+51
+
+6.2
+
+Daftar Aset Khusus
+
+54
+
+Penghargaan
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+368
+
+ii
+
+SENARAI RAJAH
+RAJAH
+3-1
+
+PERKARA
+
+HALAMAN
+
+Hierarki Aset Tak Alih
+
+2
+
+3-2
+
+Struktur Pengekodan Dalam SKATA
+
+2
+
+3-3
+4-1
+
+Skop Pengekodan SKATA
+Hubungan Penggunaan SKATA Dengan Aktiviti
+Pengurusan Aset Menyeluruh
+
+3
+4
+
+SENARAI JADUAL
+JADUAL
+
+PERKARA
+
+HALAMAN
+
+1
+
+Struktur DPA Bagi Bangunan
+
+6
+
+2
+
+Struktur DPA Utama Bagi Infrastruktur Jalan
+
+8
+
+3
+
+Struktur DPA Sub-DPA Bagi Infrastruktur Jalan
+
+9
+
+4
+
+Struktur DPA Bagi Infrastruktur Air
+
+11
+
+5
+
+Struktur DPA Bagi Infrastruktur Pembetungan
+
+14
+
+6
+
+Struktur DPA Bagi Lain-lain Infrastruktur
+
+16
+
+7
+8
+
+19
+21
+
+21
+
+Struktur DAK Blok Bangunan Bagi Bangunan
+Struktur DAK Binaan Luar Bagi Bangunan
+(Tanpa Aras Dan Ruang)
+Struktur DAK Binaan Luar Bagi Bangunan
+(Mempunyai Aras Dan Ruang)
+Struktur DAK Seksyen Bagi Infrastruktur Jalan
+- Kategori Jalan
+Struktur DAK Seksyen Bagi Infrastruktur Jalan
+- Kategori Jambatan
+Struktur DAK Seksyen Bagi Infrastruktur Jalan
+- Kategori Simpang
+Struktur DAK Seksyen Bagi Infrastruktur Jalan
+- Kategori Cerun
+Struktur DAK Seksyen Bagi Infrastruktur Jalan
+- Kategori Laluan Sikal
+Struktur DAK Blok Bangunan Bagi Infrastruktur Air
+Struktur DAK Binaan Struktur / Binaan Luar Bagi Infrastruktur Air
+(Tanpa Aras Dan Ruang)
+Struktur DAK Binaan Struktur / Binaan Luar Bagi Infrastruktur Air
+(Mempunyai Aras Dan Ruang)
+Struktur DAK Blok Bangunan Bagi Lain-lain Infrastruktur
+Struktur DAK Binaan Struktur Bagi Lain-lain Infrastruktur
+(Tanpa Aras Dan Ruang)
+Struktur DAK Binaan Struktur Bagi Lain-lain Infrastruktur
+(Mempunyai Aras Dan Ruang)
+Kod Kategori Premis Bangunan
+
+22
+
+Kod Kategori Premis Infrastruktur Air
+
+52
+
+23
+
+Kod Kategori Premis Infrastruktur Pembentungan
+
+52
+
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+23
+26
+28
+31
+33
+36
+38
+40
+42
+45
+47
+49
+51
+
+iii
+
+JADUAL
+
+PERKARA
+
+24
+
+Kod Kod Kategori Premis Lain-lain Infrastruktur
+
+53
+
+25
+
+Kod Jenis Laluan Jalan Persekutuan Infrastruktur Jalan
+
+53
+
+26
+
+Kod Fungsi Binaan
+
+54
+
+27
+
+Kod Jenis/Kategori/Fungsi Ruang
+
+56
+
+28
+
+Kod Binaan Luar
+
+63
+
+29
+
+Kod Binaan Struktur
+
+65
+
+30
+
+Kod Komponen
+
+66
+
+31
+
+Kod Bidang Kejuruteraan (kecuali Infrastruktur Jalan)
+
+350
+
+32
+
+Kod Sistem Dan Sub-sistem Aset Bangunan (kecuali Infrastruktur Jalan)
+
+351
+
+33
+
+Kod kategori / Aras / Posisi Jalan / Susur Infrastruktur Jalan
+
+363
+
+34
+
+Kod Sistem Dan Sub-sistem Bagi Infrastruktur Jalan
+- Kategori Jalan, Simpang Dan Laluan Sikal
+Kod Sistem Dan Sub-sistem Bagi Infrastruktur Jalan
+- Kategori Jambatan
+Kod Sistem Dan Sub-sistem Bagi Infrastruktur Jalan
+- Kategori Cerun
+
+364
+
+35
+36
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+HALAMAN
+
+365
+367
+
+iv
+
+GLOSARI
+Aras
+
+Merupakan kedudukan lapisan tingkat pada Aset Bangunan / Aset Infrastruktur.
+
+Aset Bangunan
+
+Merupakan suatu kawasan milik Kerajaan Persekutuan yang menempatkan
+kesemua jenis binaan yang ada di dalam lingkungan sempadannya selain
+daripada Aset Infrastruktur.
+
+Aset Infrastruktur
+
+Merupakan suatu binaan kemudahan asas yang membentuk sistem rangkaian
+bagi memberi perkhidmatan kepada komuniti.
+
+Blok Bangunan
+
+Merupakan binaan kekal yang berbumbung dan mempunyai aras serta ruang
+kerja khusus atau lain-lain fungsi seperti ruang penyimpanan perlindungan,
+kebudayaan/keagamaan, rekreasi, servis fasiliti atau penginapan.
+
+Binaan Luar
+
+Merupakan binaan kekal selain dari blok bangunan di dalam suatu premis.
+Contohnya padang, gelanggang, lanskap, jalan dalam premis atau pagar
+perimeter.
+
+Binaan Struktur
+
+Merupakan binaan kekal selain dari blok bangunan di dalam suatu premis
+Infrastuktur Air. Contohnya barrage, dam, pump house, breakwater atau
+riverlock.
+
+Infrastruktur Jalan
+
+Merupakan suatu kawasan yang diperuntukkan untuk laluan dan ia berada di
+bawah kawalan agensi yang dipertanggungjawabkan. Kawasan tersebut
+merentasi mukim atau daerah
+Merupakan suatu kawasan yang berada di bawah kawalan agensi yang
+dipertanggungjawabkan untuk lembangan sungai, badan air dan persisiran
+pantai. Ia termasuk binaan-binaan yang berkaitan sumber air di sepanjang
+sungai dan persisiran pantai serta binaan-binaan yang berkaitan sumber air.
+Merupakan satu kawasan dimiliki oleh satu-satu agensi dalam kawasan
+persempadanannya. Ianya merangkumi paip pembetungan, stesen pengepam,
+tempat pengolahan, tempat rawatan dan kelengkapan lain yang digunakan untuk
+mengumpul, membawa, mengepam, mengolah dan merawat air kumbahan
+dengan selamat sebelum disalurkan ke dalam sungai
+
+Infrastruktur Air
+
+Infrastruktur
+Pembetungan
+
+Komponen
+
+Merupakan bahagian-bahagian / produk yang praktikal untuk dijadikan objek
+dalam arahan kerja penyenggaraan.
+
+Lain-lain
+Infrastruktur
+
+Merupakan suatu kawasan Infrastruktur milik Kerajaan Persekutuan yang
+menempatkan kesemua jenis binaan yang ada di dalam lingkungan
+sempadannya. Contohnya: lapangan terbang, pelabuhan.
+
+Nombor Seksyen
+Jalan
+No.
+Sub-seksyen / Jarak
+Premis
+
+Merupakan nombor seksyen jalan yang ditandakan pada KM Post.
+
+Ruang
+
+Kawasan pada sesuatu bahagian blok bangunan yang mempunyai fungsi
+tertentu seperti ruang penyimpanan perlindungan, kebudayaan/keagamaan,
+rekreasi, servis fasiliti atau penginapan.
+
+Sistem
+
+Merujuk kepada satu set komponen yang berfungsi bersama untuk memberi
+sesuatu perkhidmatan.
+Merujuk kepada satu set komponen yang berfungsi bersama untuk memberi
+sesuatu perkhidmatan yang lebih khusus pada pecahan sistem berkaitan.
+
+Sub-sistem
+
+Merupakan jarak daripada nombor seksyen yang ditanda pada KM Post (jarak
+permulaan daripada sesuatu seksyen dalam unit meter)
+Sesuatu tapak tanah yang menempatkan Aset Bangunan dan Aset Infrastruktur.
+
+SINGKATAN
+DAK
+
+Daftar Aset Khusus
+
+DDSA
+
+Data Dictionary Sektor Awam
+
+DPA
+
+Daftar Premis Aset
+
+KHA
+
+Kitar Hayat Aset
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+v
+
+1.
+
+PENGENALAN
+
+1.1
+
+SKATA merupakan dokumen sokongan kepada Tatacara Pengurusan Aset Tak Alih Kerajaan
+(TPATA) – Pekeliling Am Bilangan 2 Tahun 2012.
+
+1.2
+
+Dokumen ini diwujudkan sebagai asas kepada pengekodan yang seragam untuk Aset Tak Alih
+milik Kerajaan Persekutuan. Ianya mengandungi nama, keterangan, saiz dan maklumat-maklumat
+lain yang berkaitan dengan penggunaan setiap elemen data. Ia juga digunakan sebagai kod
+rujukan dalam pembangunan aplikasi Sistem Pengurusan Aset Tak Alih Kerajaan.
+
+1.3
+
+Sistem kod aset adalah aspek penting dalam pengurusan aset kerajaan. Sistem kod yang tidak
+seragam akan menyebabkan data dari aplikasi sistem yang berlainan tidak dapat dikongsi
+bersama. Ini amat merugikan kerajaan kerana setiap agensi perlu mewujudkan aplikasi pengantara
+muka (interface) untuk menggunakan data yang sama di dalam pelbagai aplikasi.
+
+2.
+
+OBJEKTIF
+
+2.1
+
+Memastikan penggunaan kod Aset Tak Alih kerajaan adalah seragam dan konsisten;
+
+2.2
+
+Menyediakan struktur dan kod piawai bagi pembangunan aplikasi Sistem Pengurusan Aset Tak
+Alih (mySPATA) Kerajaan dan aplikasi-aplikasi lain yang berkaitan;
+
+2.3
+
+Memudahkan integrasi antara aplikasi sistem pengurusan aset yang diguna pakai di agensi-agensi
+kerajaan berdasarkan definisi dan format data yang sama; dan
+
+2.4
+
+Sebagai panduan asas terhadap penyediaan format piawai bagi label Aset Tak Alih kerajaan.
+
+3.
+
+SKOP SKATA
+
+3.1
+
+Dokumen ini menjelaskan struktur dan kod-kod Aset Tak Alih kerajaan meliputi:
+a)
+
+Aset Bangunan:
+- Bangunan.
+
+b)
+
+Aset Infrastruktur:
+- Infrastruktur Jalan;
+- Infrastruktur Air;
+- Infrastruktur Pembetungan; dan
+- Lain-lain Infrastruktur.
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+1
+
+Hierarki Aset Tak Alih adalah seperti ditunjukkan dalam Rajah 3-1 di bawah:
+
+Rajah 3-1: Hierarki Aset Tak Alih
+
+3.2
+
+Struktur pengekodan terbahagi kepada dua peringkat utama seperti Rajah 3-2 berikut:
+
+Peringkat Pertama
+(4 - 9 Sub peringkat Kod)
+
+Peringkat Kedua
+(9 - 11 Sub peringkat Kod)
+
+Rajah 3-2: Struktur Pengekodan Dalam SKATA
+
+3.3
+
+Kod Daftar Premis Aset
+Kod Daftar Premis Aset (DPA) adalah struktur kod aset peringkat pertama yang merupakan
+identifikasi lokasi dan pemilikan bagi sesuatu aset dalam pendaftaran Aset Tak Alih Kerajaan.
+DPA terdiri daripada gabungan kod yang mengandungi maklumat asas sesuatu aset seperti agensi
+pemilik, lokasi sesuatu aset, kategori premis aset dan lain-lain. Nombor DPA adalah unik dan
+menjadi nombor identiti rujukan sesebuah premis aset. Struktur pengekodannya terdiri daripada
+empat hingga sembilan peringkat. Sebahagian daripada maklumat asas sesuatu aset dalam DPA
+juga turut disediakan dengan Data Kod yang seragam.
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+2
+
+3.4
+
+Kod Daftar Aset Khusus
+Kod Daftar Aset Khusus (DAK) adalah struktur kod aset peringkat kedua yang merupakan
+identifikasi binaan dan komponen yang berkaitan bagi sesuatu aset dalam pendaftaran Aset Tak
+Alih Kerajaan. DAK terdiri daripada gabungan kod yang mengandungi identiti jenis dan susunatur
+binaan serta identiti komponen aset mengikut struktur kategori dan peringkat yang ditetapkan.
+Nombor DAK akan digunakan sebagai panduan pelabelan pada aset atau komponen yang
+berkaitan. Struktur pengekodannya terdiri daripada sembilan hingga sebelas peringkat. Sebahagian
+daripada maklumat asas sesuatu aset dalam DAK juga turut disediakan dengan Data Kod yang
+seragam.
+
+3.5
+
+Skop Pengekodan SKATA adalah seperti ditunjukkan dalam Rajah 3-3 :
+
+Rajah 3-3: Skop Pengekodan SKATA
+
+*Kod DAK untuk Infrastruktur Pembentungan adalah di bawah pengurusan agensi yang berkaitan.
+
+4.
+
+PENGGUNAAN SKATA BERDASARKAN KITAR HAYAT ASET (KHA)
+
+4.1
+
+Dokumen ini hendaklah dijadikan sebagai panduan oleh semua agensi kerajaan untuk memastikan
+SKATA dipatuhi dalam pengurusan Aset Tak Alih. Berdasarkan Kitar Hayat Aset (KHA), kod-kod
+yang telah dibangunkan dalam dokumen ini, perlu dijadikan asas dalam setiap aktiviti
+pembangunan aplikasi atau produk yang berkaitan bermula dari fasa reka bentuk hingga fasa
+pelupusan. Keperluan penggunaan kod-kod piawai ini dijelaskan melalui Rajah 4-1:
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+3
+
+Rajah 4-1 : Hubungan Penggunaan SKATA Dengan Aktiviti Pengurusan Aset Menyeluruh
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+4
+
+4.2
+
+Rajah 4-1 menjelaskan kedudukan penggunaan SKATA ke atas setiap produk dan dokumen
+berkaitan mengikut fasa pada KHA. Kesinambungan penggunaan kod yang seragam bermula dari
+fasa rekabentuk sehingga fasa pelupusan, membolehkan kesinambungan proses aliran data aset
+menjadi lebih mudah, konsisten dan sistematik. Ini akhirnya akan menghasilkan maklumat yang
+komprehensif dan seragam untuk disalurkan ke dalam aplikasi mySPATA.
+
+5.
+
+STRUKTUR PENGEKODAN DAN KAMUS DATA
+
+5.1
+
+Daftar Premis Aset (DPA)
+
+5.1.1
+
+Aset Bangunan
+
+5.1.1.1
+
+Bangunan
+a) Format kod yang diguna pakai adalah seperti berikut:
+
+9 999 999 AAA 99 99 99 AA 9999
+1.
+
+Kod Kumpulan Agensi
+
+2.
+
+Kod Kementerian
+
+3.
+
+Kod Jabatan
+
+4.
+
+Kod Negara
+
+5.
+
+Kod Negeri
+
+6.
+
+Kod Daerah
+
+7.
+
+Kod Mukim
+
+8.
+
+Kod Kategori Premis Aset
+
+9.
+
+Nombor ID
+
+b) Angka 9 (Sembilan) menunjukkan kod adalah berbentuk integer manakala huruf A
+mewakili kod berbentuk abjad.
+c) Penerangan dan contoh diterangkan seperti di Jadual 1
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+5
+
+Jadual 1 : Struktur DPA Bagi Bangunan
+FORMAT
+KOD
+
+PERINGKAT
+
+CONTOH
+
+MAKSUD
+KOD
+
+KETERANGAN MAKSUD
+
+1
+
+Aset milik Kerajaan Persekutuan
+
+999
+
+Kod Kumpulan
+Agensi
+Kod Kementerian
+
+101
+
+3
+
+999
+
+Kod Jab. Kerajaan
+
+113
+
+4
+5
+6
+7
+
+AAA
+99
+99
+99
+
+MYS
+01
+02
+02
+
+8
+
+AA
+
+Kod Negara
+Kod Negeri
+Kod Daerah
+Kod Mukim
+Kod Kategori Premis
+Aset
+
+9
+
+9999
+
+Nombor ID
+
+0003
+
+Jabatan Perdana Menteri
+Bahagian Hal Ehwal
+Undang-Undang
+Malaysia
+Johor
+Johor Bahru
+Johor Bahru
+Kategori Premis :
+BA – Residential (Kediaman)
+Nombor ini unik dan memberi identiti
+kepada setiap premis. Angka ini yang
+bermula dari digit 1 akan menokok
+jika kod premis peringkat 1 hingga 8
+adalah serupa.
+
+1
+
+9
+
+2
+
+BA
+
+CONTOH KOD DPA UNTUK PREMIS DI ATAS : 1 101 113 MYS 01 02 02 BA 0003
+
+d) Keterangan terperinci elemen-elemen data bagi struktur DPA
+– Bangunan
+No.
+
+Kamus Data
+Kod Kumpulan Agensi
+Keterangan
+
+1
+
+2
+
+3
+
+4
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Kod kumpulan agensi masing-masing antaranya 1 bagi Perkhidmatan
+Awam Persekutuan, 2 bagi Perkhidmatan Awam Negeri dan sebagainya.
+1 numeric character
+Berpandukan DDSA
+Rujuk DDSA
+Kod Kementerian
+Kod mewakili kementerian yang berkenaan.
+3 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Jabatan
+Kod mewakili jabatan yang berkenaan.
+3 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Negara
+Kod mewakili negara. Bagi Malaysia, kodnya ialah MYS.
+3 alpha characters
+Berpandukan DDSA
+Rujuk DDSA
+
+6
+
+5
+
+6
+
+7
+
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Keterangan
+8
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Keterangan
+9
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+5.1.2
+
+Kod Negeri
+Kod mewakili negeri yang berkenaan.
+2 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Daerah
+Kod mewakili daerah yang berkenaan.
+2 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Mukim
+Kod mewakili mukim yang berkenaan.
+2 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Kategori Premis Aset
+Kod mewakili kategori premis. Ia merujuk kepada aktiviti / kegunaan
+utama di premis tersebut.
+2 alpha characters
+Berpandukan MS 1759
+Rujuk Jadual 21
+Kod Nombor ID
+Kod yang merupakan bilangan kepada premis yang dalam kategori sama
+di lokasi yang sama.
+4 numeric characters
+4 angka maksimum mencukupi untuk bilangan premis untuk kategori
+yang sama.
+Tidak berkenaan
+
+Aset Infrastruktur
+
+5.1.2.1
+
+Infrastruktur Jalan
+
+DPA Premis Jalan mengandungi DPA Utama dan Sub-DPA. Sub-DPA wujud apabila DPA
+Utama merentasi negeri dan daerah. Kod Negeri dan Daerah akan menjadi tambahan
+struktur kod DPA Utama.
+
+DPA Utama
+
+DPA Utama mewakili satu laluan utama yang diwartakan sebagai Jalan Persekutuan.
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+7
+
+a) Format kod yang diguna pakai adalah seperti berikut:
+
+9 999 999 99999
+
+1.
+
+Kod Kumpulan Agensi
+
+2.
+
+Kod Kementerian
+
+3.
+
+Kod Jabatan
+
+4.
+
+Nombor Laluan
+
+b) Angka 9 (Sembilan) menunjukkan kod adalah berbentuk integer manakala huruf A
+mewakili kod berbentuk abjad.
+c) Penerangan dan contoh diterangkan seperti di Jadual 2.
+
+Jadual 2 : Struktur DPA Utama Bagi Infrastruktur Jalan
+PERINGKAT
+
+FORMAT
+KOD
+
+1
+
+9
+
+2
+3
+4
+
+CONTOH
+
+MAKSUD
+
+KOD
+
+KETERANGAN MAKSUD
+
+1
+
+Aset milik Kerajaan Persekutuan
+
+999
+999
+
+Kod Kumpulan
+Agensi
+Kod Kementerian
+Kod Jab. Kerajaan
+
+105
+101
+
+99999
+
+Nombor Laluan
+
+00001
+
+Kementerian Kerja Raya
+Jabatan Kerja Raya
+Johor Bharu-Seremban-ButterworthBukit Kayu Hitam
+
+CONTOH KOD DPA UNTUK PREMIS DI ATAS : 1 105 101 00001
+
+d)
+
+Keterangan terperinci elemen-elemen data bagi struktur DPA
+– DPA Utama Jalan
+
+No.
+
+Kamus Data
+
+Keterangan
+1
+
+2
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Kod Kumpulan Agensi
+Kod kumpulan agensi masing-masing antaranya 1 bagi Perkhidmatan
+Awam Persekutuan, 2 bagi Perkhidmatan Awam Negeri dan sebagainya.
+1 numeric character
+Berpandukan DDSA
+Rujuk DDSA
+Kod Kementerian
+Kod mewakili kementerian yang berkenaan.
+3 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+
+8
+
+3
+
+4
+
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Kod Jabatan
+Kod mewakili jabatan yang berkenaan.
+3 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Nombor Laluan
+Kod yang merupakan no. laluan kepada jenis kategori laluan yang sama.
+5 numeric characters
+5 angka maksimum mencukupi untuk menampung no. laluan bagi setiap
+kategori laluan yang sama.
+Rujuk Senarai Warta Jalan
+
+Sub-DPA
+
+Sub-DPA merupakan pecahan DPA Utama yang merentasi daerah dalam sesuatu negeri
+di sepanjang laluan tersebut.
+
+a) Format kod yang diguna pakai adalah seperti berikut:
+
+9 999 999 99999 99 99
+1.
+
+Kod Kumpulan Agensi
+
+2.
+
+Kod Kementerian
+
+3.
+
+Kod Jabatan
+
+4.
+
+Nombor Laluan
+
+5.
+
+Kod Negeri
+
+6.
+
+Kod Daerah
+b) Angka 9 (Sembilan) menunjukkan kod adalah berbentuk integer manakala huruf A
+mewakili kod berbentuk abjad.
+c) Penerangan dan contoh diterangkan seperti di Jadual 3.
+
+Jadual 3 : Struktur Sub-DPA Bagi Infrastruktur Jalan
+PERINGKAT
+
+FORMAT
+KOD
+
+1
+
+9
+
+2
+3
+
+CONTOH
+MAKSUD
+
+KOD
+
+KETERANGAN MAKSUD
+
+1
+
+Aset milik Kerajaan Persekutuan
+
+999
+999
+
+Kod Kumpulan
+Agensi
+Kod Kementerian
+Kod Jab. Kerajaan
+
+105
+101
+
+4
+
+99999
+
+Nombor Laluan
+
+00001
+
+5
+6
+
+99
+99
+
+Kementerian Kerja Raya
+Jabatan Kerja Raya
+Johor Bharu-Seremban-ButterworthBukit Kayu Hitam
+Johor
+Johor Bahru
+
+Kod Negeri
+Kod Daerah
+
+01
+02
+
+CONTOH KOD DPA UNTUK PREMIS DI ATAS : 1 105 101 00001 01 02
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+9
+
+d) Keterangan terperinci elemen-elemen data bagi struktur DPA
+– Sub-DPA Jalan
+No.
+
+Kamus Data
+Kod Kumpulan Agensi
+Keterangan
+
+1
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Kod kumpulan agensi masing-masing antaranya 1 bagi Perkhidmatan
+Awam Persekutuan, 2 bagi Perkhidmatan Awam Negeri dan sebagainya.
+1 numeric character
+Berpandukan DDSA
+Rujuk DDSA
+Kod Kementerian
+
+2
+
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Kod mewakili kementerian yang berkenaan.
+3 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Jabatan
+
+3
+
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Kod mewakili jabatan yang berkenaan.
+3 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Nombor Laluan
+
+4
+
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Kod yang merupakan no. laluan kepada jenis kategori laluan yang sama.
+5 numeric characters
+5 angka maksimum mencukupi untuk menampung no. laluan bagi setiap
+kategori laluan yang sama.
+Rujuk Senarai Warta Jalan
+Kod Negeri
+
+5
+
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Kod mewakili negeri yang berkenaan.
+2 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Daerah
+
+6
+
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Kod mewakili daerah yang berkenaan.
+2 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+
+10
+
+5.1.2.2
+
+Infrastruktur Air
+
+a) Format kod yang diguna pakai adalah seperti berikut:
+
+9 999 999 AAA 99 99 99 AA 9999
+1.
+
+Kod Kumpulan Agensi
+
+2.
+
+Kod Kementerian
+
+3.
+
+Kod Jabatan
+
+4.
+
+Kod Negara
+
+5.
+
+Kod Negeri
+
+6.
+
+Kod Daerah
+
+7.
+
+Kod Mukim
+
+8.
+
+Kod Kategori Premis Aset
+
+9.
+
+Nombor ID
+
+b) Angka 9 (Sembilan) menunjukkan kod adalah berbentuk integer manakala huruf A
+mewakili kod berbentuk abjad.
+c) Penerangan dan contoh diterangkan seperti di Jadual 4.
+
+Jadual 4 : Struktur DPA Bagi Infrastruktur Air
+PERINGKAT
+
+FORMAT
+KOD
+
+CONTOH
+MAKSUD
+KOD
+
+1
+
+9
+
+Kod Kumpulan
+Agensi
+
+1
+
+2
+
+999
+
+Kod Kementerian
+
+141
+
+3
+4
+5
+6
+7
+
+999
+AAA
+99
+99
+99
+
+108
+MYS
+10
+07
+04
+
+8
+
+AA
+
+Kod Jab. Kerajaan
+Kod Negara
+Kod Negeri
+Kod Daerah
+Kod Mukim
+Kod Kategori Premis
+Aset
+
+9
+
+9999
+
+Nombor ID
+
+0001
+
+HJ
+
+KETERANGAN MAKSUD
+Aset milik Kerajaan Persekutuan
+Kementerian Sumber Asli dan Alam
+Sekitar
+Jabatan Pengairan dan Saliran
+Malaysia
+Selangor
+Hulu Selangor
+Ulu Bernam
+Kategori Premis :
+HJ – River Structure
+Nombor ini unik dan memberi identiti
+kepada setiap premis. Angka ini yang
+bermula dari digit 1 akan menokok
+jika kod premis peringkat 1 hingga 8
+adalah serupa.
+
+CONTOH KOD DPA UNTUK PREMIS DI ATAS : 1 141 108 MYS 10 07 04 HJ 0001
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+11
+
+d) Keterangan terperinci elemen-elemen data bagi struktur DPA
+– Infrastruktur Air
+No.
+
+Kamus Data
+Kod Kumpulan Agensi
+Keterangan
+
+1
+
+2
+
+3
+
+4
+
+5
+
+6
+
+7
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Keterangan
+8
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Kod kumpulan agensi masing-masing antaranya 1 bagi Perkhidmatan
+Awam Persekutuan, 2 bagi Perkhidmatan Awam Negeri dan sebagainya.
+1 numeric character
+Berpandukan DDSA
+Rujuk DDSA
+Kod Kementerian
+Kod mewakili kementerian yang berkenaan.
+3 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Jabatan
+Kod mewakili jabatan yang berkenaan.
+3 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Negara
+Kod mewakili negara. Bagi Malaysia, kodnya ialah MYS.
+3 alpha characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Negeri
+Kod mewakili negeri yang berkenaan.
+2 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Daerah
+Kod mewakili daerah yang berkenaan.
+2 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Mukim
+Kod mewakili mukim yang berkenaan.
+2 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Kategori Premis Aset
+Kod mewakili kategori premis. Ia merujuk kepada aktiviti / kegunaan
+utama di premis tersebut.
+2 alpha characters
+Berpandukan MS 1759
+Rujuk Jadual 22
+
+12
+
+Kod Nombor ID
+Keterangan
+9
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+5.1.2.3
+
+Kod yang merupakan bilangan kepada premis yang dalam kategori sama
+di lokasi yang sama.
+4 numeric characters
+4 angka maksimum mencukupi untuk bilangan premis untuk kategori yang
+sama.
+Tidak berkenaan
+
+Infrastruktur Pembetungan
+
+a) Format kod yang diguna pakai adalah seperti berikut:
+
+9 999 999 AAA 99 99 AA AAA999
+1.
+
+Kod Kumpulan Agensi
+
+2.
+
+Kod Kementerian
+
+3.
+
+Kod Jabatan
+
+4.
+
+Kod Negara
+
+5.
+
+Kod Negeri
+
+6.
+
+Kod Daerah
+
+7.
+
+Kod Kategori Premis Aset
+
+8.
+
+Nombor Aset
+
+b) Angka 9 (Sembilan) menunjukkan kod adalah berbentuk integer manakala huruf A
+mewakili kod berbentuk abjad.
+c) Penerangan dan contoh diterangkan seperti di Jadual 5.
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+13
+
+Jadual 5 : Struktur DPA Bagi Infrastruktur Pembetungan
+FORMAT
+KOD
+
+PERINGKAT
+
+CONTOH
+MAKSUD
+KOD
+
+KETERANGAN MAKSUD
+
+1
+
+9
+
+Kod Kumpulan
+Agensi
+
+1
+
+2
+
+999
+
+Kod Kementerian
+
+147
+
+3
+4
+
+999
+AAA
+
+Kod Jab. Kerajaan
+Kod Negara
+
+103
+MYS
+
+Kementerian Tenaga, Teknologi Hijau
+& Air
+Jabatan Perkhidmatan Pembetungan
+Malaysia
+
+5
+
+99
+
+Kod Negeri
+
+08
+
+Perak
+
+6
+
+99
+
+Kod Daerah
+
+02
+
+Manjung
+
+7
+
+AA
+
+Kod Kategori Premis
+Aset
+
+UF
+
+Sistem Rawatan Kumbahan
+
+8
+
+AAA999
+
+Nombor Aset
+
+LPG015
+
+Aset milik Kerajaan Persekutuan
+
+Nombor aset di bawah pengurusan
+agensi yang berkaitan
+
+CONTOH KOD DPA UNTUK PREMIS DI ATAS : 1 147 103 MYS 08 02 UF LPG015
+
+d)
+
+Keterangan terperinci elemen-elemen data bagi struktur DPA
+– Infrastruktur Pembetungan
+
+No.
+
+Kamus Data
+
+Keterangan
+1
+
+2
+
+3
+
+4
+
+5
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Kod Kumpulan Agensi
+Kod kumpulan agensi masing-masing antaranya 1 bagi Perkhidmatan
+Awam Persekutuan, 2 bagi Perkhidmatan Awam Negeri dan sebagainya.
+1 numeric character
+Berpandukan DDSA
+Rujuk DDSA
+Kod Kementerian
+Kod mewakili kementerian yang berkenaan.
+3 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Jabatan
+Kod mewakili jabatan yang berkenaan.
+3 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Negara
+Kod mewakili negara. Bagi Malaysia, kodnya ialah MYS.
+3 alpha characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Negeri
+Kod mewakili negeri yang berkenaan.
+2 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+14
+
+6
+
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+
+7
+
+8
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+5.1.2.4
+
+Kod Daerah
+Kod mewakili daerah yang berkenaan.
+2 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Kategori Premis Aset
+Kod mewakili kategori premis. Ia merujuk kepada aktiviti / kegunaan
+utama di premis tersebut.
+2 alpha characters
+Berpandukan MS 1759
+Rujuk Jadual 23
+Kod Nombor Aset
+Kod nombor aset di bawah pengurusan agensi yang berkaitan.
+6 alpha numeric characters
+6 digit maksimum mencukupi untuk bilangan premis untuk kategori yang
+sama.
+Tidak berkenaan
+
+Lain-Lain Infrastruktur
+
+DPA Lain-lain Infrastruktur ialah merujuk kepada premis Infrastruktur. Kategori Premis ialah
+premis Infrastruktur sahaja dan berkod BJ (merujuk kepada MS1759).
+
+a) Format kod yang diguna pakai adalah seperti berikut:
+
+9 999 999 AAA 99 99 99 AA 9999
+1.
+
+Kod Kumpulan Agensi
+
+2.
+
+Kod Kementerian
+
+3.
+
+Kod Jabatan
+
+4.
+
+Kod Negara
+
+5.
+
+Kod Negeri
+
+6.
+
+Kod Daerah
+
+7.
+
+Kod Mukim
+
+8.
+
+Kod Kategori Premis Aset
+
+9.
+
+Nombor ID
+
+b) Angka 9 (Sembilan) menunjukkan kod adalah berbentuk integer manakala huruf A
+mewakili kod berbentuk abjad.
+c) Penerangan dan contoh diterangkan seperti di Jadual 6
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+15
+
+Jadual 6 : Struktur DPA Bagi Lain-lain Infrastruktur
+FORMAT
+KOD
+
+PERINGKAT
+
+CONTOH
+
+MAKSUD
+KOD
+Kod Kumpulan
+Agensi
+Kod Kementerian
+Kod Jab. Kerajaan
+Kod Negara
+Kod Negeri
+Kod Daerah
+Kod Mukim
+
+1
+
+9
+
+2
+3
+4
+5
+6
+7
+
+999
+999
+AAA
+99
+99
+99
+
+8
+
+AA
+
+Kod Kategori Premis
+Aset
+
+BJ
+
+9
+
+9999
+
+Nombor ID
+
+0001
+
+KETERANGAN MAKSUD
+
+1
+
+Aset milik Kerajaan Persekutuan
+
+104
+102
+MYS
+10
+10
+00
+
+Kementerian Pengangkutan
+Jabatan Penerbangan Malaysia
+Malaysia
+Selangor
+Sepang
+Tidak Berkenaan
+Kategori Premis :
+BJ– Infrastuktur
+Nombor ini unik dan memberi identiti
+kepada setiap premis. Angka ini yang
+bermula dari digit 1 akan menokok
+jika kod premis peringkat 1 hingga 8
+adalah serupa.
+
+CONTOH KOD DPA UNTUK PREMIS DI ATAS : 1 104 102 MYS 10 10 00 BJ 0001
+
+d) Keterangan terperinci elemen-elemen data bagi struktur DPA
+– Lain-lain Infrastruktur
+
+No.
+
+Kamus Data
+Kod Kumpulan Agensi
+Keterangan
+
+1
+
+2
+
+3
+
+4
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Kod kumpulan agensi masing-masing antaranya 1 bagi Perkhidmatan
+Awam Persekutuan, 2 bagi Perkhidmatan Awam Negeri dan sebagainya.
+1 numeric character
+Berpandukan DDSA
+Rujuk DDSA
+Kod Kementerian
+Kod mewakili kementerian yang berkenaan.
+3 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Jabatan
+Kod mewakili jabatan yang berkenaan.
+3 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Negara
+Kod mewakili negara. Bagi Malaysia, kodnya ialah MYS.
+3 alpha characters
+Berpandukan DDSA
+Rujuk DDSA
+
+16
+
+5
+
+6
+
+7
+
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Keterangan
+8
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Keterangan
+9
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Kod Negeri
+Kod mewakili negeri yang berkenaan.
+2 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Daerah
+Kod mewakili daerah yang berkenaan.
+2 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Mukim
+Kod mewakili mukim yang berkenaan.
+2 numeric characters
+Berpandukan DDSA
+Rujuk DDSA
+Kod Kategori Premis Aset
+Kod mewakili kategori premis. Ia merujuk kepada aktiviti / kegunaan
+utama di premis tersebut.
+2 alpha characters
+Berpandukan MS 1759
+Rujuk Jadual 24
+Kod Nombor ID
+Kod yang merupakan bilangan kepada premis yang dalam kategori sama
+di lokasi yang sama.
+4 numeric characters
+4 angka maksimum mencukupi untuk bilangan premis untuk kategori yang
+sama.
+Tidak berkenaan
+
+17
+
+5.2
+
+Daftar Aset Khusus (DAK)
+
+5.2.1
+
+Aset Bangunan
+
+5.2.1.1
+
+DAK Bangunan
+
+DAK Bangunan dipecahkan kepada dua kategori iaitu untuk Blok Bangunan dan Binaan
+Luar.
+
+Blok Bangunan
+
+a) Format kod yang diguna pakai adalah seperti berikut:
+
+AAA A9 9999 99 99 99 99 99 99 99
+1.
+
+Kod Blok
+
+2.
+
+Kod Aras
+
+3.
+
+Kod Ruang
+
+4.
+
+Kod komponen – Peringkat 1
+
+5.
+
+Kod komponen – Peringkat 2
+
+6.
+
+Kod komponen – Peringkat 3
+
+7.
+
+Kod komponen – Peringkat 4
+
+8.
+
+Kod komponen – Peringkat 5
+
+9.
+
+Kod komponen – Peringkat 6
+
+10.
+
+Kod komponen – Peringkat 7
+
+b) Angka 9 (Sembilan) menunjukkan kod adalah berbentuk integer manakala huruf A
+mewakili kod berbentuk abjad.
+c) Struktur kod pertama (1) hingga ketiga (3) menunjukkan lokasi / kedudukan komponen,
+manakala struktur kod keempat (4) hingga kesepuluh (10) menunjukkan kod bagi
+komponen aset tersebut.
+d) Penerangan dan contoh diterangkan seperti di Jadual 7.
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+18
+
+Jadual 7: Struktur DAK Blok Bangunan Bagi Bangunan
+CONTOH
+
+FORMAT
+KOD
+
+PERINGKAT
+1
+
+AAA
+
+2
+
+A9
+
+3
+
+9999
+
+4
+
+99
+
+5
+
+99
+
+6
+
+99
+
+7
+
+99
+
+8
+
+99
+
+9
+
+99
+
+10
+
+99
+
+MAKSUD
+KOD
+
+MAKSUD
+
+Kod Blok
+Kod Aras (Contoh 1)
+
+D
+B1
+
+Blok D
+Aras Basement 1
+
+Kod Aras (Contoh 2)
+Kod Ruang
+Kod Komponen
+– Peringkat 1
+Kod Komponen
+– Peringkat 2
+Kod Komponen
+– Peringkat 3
+Kod Komponen
+– Peringkat 4
+Kod Komponen
+– Peringkat 5
+Kod Komponen
+– Peringkat 6
+Kod Komponen
+– Peringkat 7
+
+04
+0002
+
+Aras 4
+Bilik AHU
+HVAC
+Specific
+Equipment / ACMV
+
+33
+
+Products
+
+and
+
+25
+
+Air Handling Units
+
+13
+
+Customized Air Handling Units
+
+11
+
+Customized Indoor Air Handling Units
+
+00
+
+Tidak berkenaan
+
+00
+
+Tidak berkenaan
+
+00
+
+Tidak berkenaan
+
+CONTOH 1 KOD DAK: D B1 0002 33 25 13 11 00 00 00
+CONTOH 2 KOD DAK: D 04 0002 33 25 13 11 00 00 00
+
+e) Keterangan terperinci elemen-elemen data bagi struktur DAK
+- Blok Bangunan
+
+No.
+
+Kamus Data
+Keterangan
+Saiz Medan
+
+1
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+2
+Rasional
+No. Jadual Carian Kod
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Kod Blok
+Kod mewakili blok.
+3 alpha characters dan berkembang seterusnya mengikut keperluan.
+Kod blok di dalam pangkalan data bermula daripada huruf 00A hingga
+ZZZ.
+Bersifat fleksibel dan jumlah huruf seterusnya hanya akan bertambah
+mengikut keperluan semasa dan mencukupi untuk menampung blok-blok
+di lokasi yang sama.
+Tidak Berkenaan
+Kod Aras
+Kod yang mewakili aras bagi satu blok.
+2 alpha numeric characters dan berkembang seterusnya mengikut
+keperluan.
+2 alpha numeric characters adalah bilangan maksimum aras pada blok
+yang sama. Bersifat fleksibel dan jumlah digit seterusnya hanya akan
+bertambah mengikut keperluan semasa.
+Tidak Berkenaan
+
+19
+
+Keterangan
+3
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+4
+
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Kod Ruang
+Kod yang mewakili ruang bagi setiap aras.
+4 numeric characters dan berkembang seterusnya mengikut keperluan.
+- *Satu Angka (min)
+4 numeric characters adalah bersifat fleksibel dan jumlah digit seterusnya
+hanya akan bertambah mengikut keperluan semasa pada setiap aras.
+Tidak berkenaan.
+Kod Komponen – Peringkat 1 hingga 7
+Kod yang mewakili komponen di dalam ruang berkaitan.
+2 numeric characters
+2 numeric characters adalah mencukupi untuk menerangkan Kod
+Komponen SKATA setiap peringkat.
+Rujuk Jadual 30
+
+Binaan Luar
+
+Binaan Luar dipecahkan kepada dua kategori iaitu binaan luar (tanpa aras dan ruang) dan
+binaan luar (mempunyai aras dan ruang)
+i)
+
+Binaan Luar (Tanpa Aras dan Ruang)
+
+a) Format kod yang diguna pakai adalah seperti berikut:
+
+AA9999 99 99 99 99 99 99 99 99
+1.
+
+Kod Binaan Luar
+
+2.
+
+Bilangan
+
+3.
+
+Kod komponen – Peringkat 1
+
+4.
+
+Kod komponen – Peringkat 2
+
+5.
+
+Kod komponen – Peringkat 3
+
+6.
+
+Kod komponen – Peringkat 4
+
+7.
+
+Kod komponen – Peringkat 5
+
+8.
+
+Kod komponen – Peringkat 6
+
+9.
+
+Kod komponen – Peringkat 7
+
+b) Angka 9 (Sembilan) menunjukkan kod adalah berbentuk integer manakala huruf A
+mewakili kod berbentuk abjad.
+c) Struktur kod pertama (1) hingga kedua (2) menunjukkan lokasi/kedudukan komponen,
+manakala struktur kod ketiga (3) hingga kesembilan (9) menunjukkan kod bagi
+komponen aset tersebut.
+d) Penerangan dan contoh diterangkan seperti di Jadual 8.
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+20
+
+Jadual 8 :
+
+Struktur DAK Binaan Luar Bagi Bangunan
+(Tanpa Aras dan Ruang)
+CONTOH
+
+FORMAT
+KOD
+
+MAKSUD
+
+1
+
+AA9999
+
+Kod Binaan Luar
+
+2
+
+99
+
+3
+
+99
+
+4
+
+99
+
+5
+
+99
+
+6
+
+99
+
+7
+
+99
+
+8
+
+99
+
+9
+
+99
+
+PERINGKAT
+
+KOD
+BG0092
+
+Bilangan
+Kod Komponen
+– Peringkat 1
+Kod Komponen
+– Peringkat 2
+Kod Komponen
+– Peringkat 3
+Kod Komponen
+– Peringkat 4
+Kod Komponen
+– Peringkat 5
+Kod Komponen
+– Peringkat 6
+Kod Komponen
+– Peringkat 7
+
+MAKSUD
+Cottage
+
+01
+
+Bilangan bagi Cottage yang pertama
+
+35
+
+Electrical and Lighting
+Product and Equipment
+
+47
+
+Electrical Lighting
+
+11
+
+Lighting fixtures
+
+11
+
+Non Weather Rated Lighting Fixtures
+
+11
+
+Non Weather Rated
+Lighting Fixtures
+
+00
+
+Tidak berkenaan
+
+00
+
+Tidak berkenaan
+
+Specific
+
+Fluorescent
+
+CONTOH KOD DAK: BG0092 01 35 47 11 11 11 00 00
+
+e)
+
+Keterangan terperinci elemen-elemen data bagi struktur DAK
+- Binaan Luar (Tanpa Aras dan Ruang)
+
+No.
+
+1
+
+Kamus Data
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+
+2
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+3
+
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Kod Binaan Luar
+Kod yang mewakili binaan luar dalam satu premis.
+6 alpha numeric characters.
+Berpandukan MS 1759
+Rujuk Jadual 28
+Kod Bilangan Binaan Luar
+Kod yang merupakan bilangan kepada kategori binaan luar yang sama.
+Bermula dengan 2 numeric characters dan berkembang seterusnya
+mengikut keperluan.
+Bersifat fleksibel dan jumlah digit hanya akan bertambah mengikut
+keperluan semasa.
+Tidak berkenaan
+Kod Komponen – Peringkat 1 hingga 7
+Kod yang mewakili komponen pada binaan luar berkaitan.
+2 numeric characters
+2 numeric characters adalah mencukupi untuk menerangkan Kod
+Komponen SKATA setiap peringkat.
+Rujuk Jadual 30
+
+21
+
+ii) Binaan Luar (Mempunyai Aras dan Ruang)
+a) Format kod yang diguna pakai adalah seperti berikut:
+
+AA9999 99 A9 9999 99 99 99 99 99 99 99
+1.
+
+Kod Binaan Luar
+
+2.
+
+Bilangan
+
+3.
+
+Kod Aras
+
+4.
+
+Kod Ruang
+
+5.
+
+Kod komponen – Peringkat 1
+
+6.
+
+Kod komponen – Peringkat 2
+
+7.
+
+Kod komponen – Peringkat 3
+
+8.
+
+Kod komponen – Peringkat 4
+
+9.
+
+Kod komponen – Peringkat 5
+
+10.
+
+Kod komponen – Peringkat 6
+
+11.
+
+Kod komponen – Peringkat 7
+
+b) Angka 9 (Sembilan) menunjukkan kod adalah berbentuk integer manakala huruf A
+mewakili kod berbentuk abjad.
+c) Struktur
+kod pertama (1) hingga keempat (4) menunjukkan lokasi/kedudukan
+komponen, manakala struktur kod kelima (5) hingga kesepuluh (11) menunjukkan kod
+bagi komponen aset tersebut.
+d) Penerangan dan contoh diterangkan seperti di Jadual 9.
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+22
+
+Jadual 9 : Struktur DAK Binaan Luar Bagi Bangunan
+(Mempunyai Aras dan Ruang)
+CONTOH
+
+FORMAT
+KOD
+
+MAKSUD
+
+1
+
+AA9999
+
+Kod Binaan Luar
+
+2
+
+99
+
+Bilangan
+
+01
+
+3
+
+A9
+
+Kod Aras (Contoh 1)
+
+02
+
+4
+
+9999
+
+0001
+
+5
+
+99
+
+6
+
+99
+
+7
+
+99
+
+8
+
+99
+
+9
+
+99
+
+10
+
+99
+
+11
+
+99
+
+Kod Ruang
+Kod Komponen
+– Peringkat 1
+Kod Komponen
+– Peringkat 2
+Kod Komponen
+– Peringkat 3
+Kod Komponen
+– Peringkat 4
+Kod Komponen
+– Peringkat 5
+Kod Komponen
+– Peringkat 6
+Kod Komponen
+– Peringkat 7
+
+PERINGKAT
+
+KOD
+
+MAKSUD
+
+HE0020
+
+Light House
+Bilangan bagi Light House yang
+pertama
+Aras 2
+
+35
+
+Ruang Tangga
+Electrical and Lighting
+Product and Equipment
+
+Specific
+
+47
+
+Electrical Lighting
+
+11
+
+Lighting fixtures
+
+11
+
+Non Weather Rated Lighting Fixtures
+
+11
+
+Non Weather Rated
+Lighting Fixtures
+
+00
+
+Tidak berkenaan
+
+00
+
+Tidak berkenaan
+
+Fluorescent
+
+CONTOH KOD DAK: HE0020 01 02 0001 35 47 11 11 11 00 00
+
+e) Keterangan terperinci elemen-elemen data bagi struktur DAK
+- Binaan Luar (Mempunyai Aras dan Ruang)
+
+No.
+
+1
+
+Kamus Data
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+
+2
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Kod Binaan Luar
+Kod yang mewakili binaan luar dalam satu premis.
+6 alpha numeric characters.
+Berpandukan MS 1759
+Rujuk Jadual 28
+Kod Bilangan Binaan Luar
+Kod yang merupakan bilangan kepada kategori binaan luar yang sama.
+Bermula dengan 2 numeric characters dan berkembang seterusnya
+mengikut keperluan.
+Bersifat fleksibel dan jumlah digit hanya akan bertambah mengikut
+keperluan semasa.
+Tidak berkenaan
+
+23
+
+Keterangan
+Saiz Medan
+3
+Rasional
+No. Jadual Carian Kod
+Keterangan
+4
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+5
+
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+5.2.2
+
+Kod Aras
+Kod yang mewakili aras bagi satu blok.
+2 alpha numeric characters dan berkembang seterusnya mengikut
+keperluan.
+2 alpha numeric characters adalah bilangan maksimum aras pada blok
+yang sama. Bersifat fleksibel dan jumlah digit seterusnya hanya akan
+bertambah mengikut keperluan semasa.
+Tidak Berkenaan
+Kod Ruang
+Kod yang mewakili ruang bagi setiap aras.
+4 numeric characters dan berkembang seterusnya mengikut keperluan.
+- *Satu Angka (min)
+4 numeric characters adalah bersifat fleksibel dan jumlah digit seterusnya
+hanya akan bertambah mengikut keperluan semasa pada setiap aras.
+Tidak berkenaan.
+Kod Komponen – Peringkat 1 hingga 7
+Kod yang mewakili komponen di dalam ruang berkaitan.
+2 numeric characters
+2 numeric characters adalah mencukupi untuk menerangkan Kod
+Komponen SKATA setiap peringkat.
+Rujuk Jadual 30
+
+Aset Infrastruktur
+
+5.2.2.1
+
+DAK Infrastruktur Jalan
+DAK Infrastruktur Jalan dipecahkan kepada lima kategori iaitu:
+
+i.
+
+DAK Seksyen Kategori Jalan;
+
+ii.
+
+DAK Seksyen Kategori Jambatan;
+
+iii. DAK Seksyen Kategori Simpang;
+iv. DAK Seksyen Kategori Cerun; dan
+v.
+
+DAK Seksyen Kategori Laluan Sikal.
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+24
+
+i.
+
+DAK Seksyen Kategori Jalan
+
+DAK Seksyen Kategori Jalan merupakan suatu laluan yang menghubungkan dari satu
+kawasan / tempat ke kawasan / tempat yang lain.
+
+a) Format kod yang diguna pakai adalah seperti berikut:
+
+9999 999 A9 9A 99 99 99 99 99 99 99
+
+1.
+
+Nombor Seksyen Jalan
+
+2.
+
+Sub-seksyen / Jarak
+
+3.
+
+Kod Kategori
+
+4.
+
+Aras & Posisi Jalan
+
+5.
+
+Kod komponen – Peringkat 1
+
+6.
+
+Kod komponen – Peringkat 2
+
+7.
+
+Kod komponen – Peringkat 3
+
+8.
+
+Kod komponen – Peringkat 4
+
+9.
+
+Kod komponen – Peringkat 5
+
+10.
+
+Kod komponen – Peringkat 6
+
+11.
+
+Kod komponen – Peringkat 7
+
+b) Angka 9 (Sembilan) menunjukkan kod adalah berbentuk integer manakala huruf A
+mewakili kod berbentuk abjad.
+c) Struktur
+kod pertama (1) hingga ketiga (3) menunjukkan lokasi/kedudukan
+komponen, manakala struktur kod keempat (4) hingga ketujuh (7) menunjukkan
+kod bagi komponen aset tersebut.
+d) Penerangan dan contoh diterangkan seperti di Jadual 10.
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+25
+
+Jadual 10: Struktur DAK Seksyen Bagi Infrastruktur Jalan
+- Kategori Jalan
+
+PERINGKAT
+
+FORMAT
+KOD
+
+CONTOH
+MAKSUD
+KOD
+
+MAKSUD
+
+1
+
+9999
+
+Nombor Seksyen
+Jalan
+
+0023
+
+2
+
+999
+
+Sub-seksyen / Jarak
+
+200
+
+3
+
+A9
+
+Kod Kategori
+
+R1
+
+4
+
+9A
+
+Aras & Posisi Jalan
+
+1L
+
+Kedudukan Aras 1 iaitu atas tanah
+dan posisi jalan adalah sebelah kiri
+pada jalan utama.
+
+5
+
+99
+
+39
+
+Utility and Transpotation Product
+
+6
+
+99
+
+11
+
+Roadway Monitoring and Control
+
+7
+
+99
+
+11
+
+Traffic Safety Barriers and Protections
+
+8
+
+99
+
+19
+
+Roadway Curbs / Road Kerb
+
+9
+
+99
+
+00
+
+Tidak berkenaan
+
+10
+
+99
+
+00
+
+Tidak berkenaan
+
+11
+
+99
+
+00
+
+Tidak berkenaan
+
+Kod Komponen
+– Peringkat 1
+Kod Komponen
+– Peringkat 2
+Kod Komponen
+– Peringkat 3
+Kod Komponen
+– Peringkat 4
+Kod Komponen
+– Peringkat 5
+Kod Komponen
+– Peringkat 6
+Kod Komponen
+– Peringkat 7
+
+No. Seksyen Jalan
+Sub-Seksyen Jalan Ke 200 di
+Seksyen 023
+Kod kategori Jalan ialah R dan jalan
+berada di atas aras tanah
+
+CONTOH KOD DAK: 0023 200 R1 1L 39 11 11 19 00 00 00
+
+e) Keterangan terperinci elemen-elemen data bagi struktur DAK Seksyen
+- Kategori Jalan
+
+Kamus Data
+
+No.
+
+1
+
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+
+2
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Nombor Seksyen Jalan
+Kod yang mewakili Nombor Seksyen Jalan.
+4 numeric characters
+4 numeric characters adalah mencukupi untuk menampung no. seksyen
+jalan yang ada.
+Tidak berkenaan
+Sub-seksyen / Jarak
+Kod yang mewakili nombor Sub-seksyen atau jarak daripada no.
+Seksyen Jalan.
+3 numeric characters
+3 numeric characters adalah mencukupi untuk menampung no. sub
+seksyen atau jarak jalan yang ada.
+Tidak berkenaan
+
+26
+
+Keterangan
+Saiz Medan
+3
+
+Rasional
+No. Jadual Carian Kod
+
+Keterangan
+4
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Keterangan
+5
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Kod Kategori
+Kod yang mewakili kategori jalan.
+2 alpha numeric characters
+2 alpha numeric characters adalah mencukupi untuk menampung
+kategori jalan yang ada.
+Rujuk Jadual 33
+Aras & Posisi
+Kod yang mewakili aras jalan dan kedudukan arah jalan di mana
+terletaknya komponen yang akan didaftarkan.
+2 alpha numeric characters
+2 alpha numeric character adalah mencukupi untuk menampung
+keterangan aras jalan dan kedudukan arah jalan yang ada.
+Rujuk Jadual 33
+Kod Komponen – Peringkat 1 hingga 7
+Kod yang mewakili komponen yang berada di Seksyen atau Sub-seksyen
+berkaitan.
+2 numeric characters
+2 numeric characters adalah mencukupi untuk menerangkan Kod
+Komponen SKATA setiap peringkat.
+Rujuk Jadual 30
+
+ii) DAK Seksyen Kategori Jambatan
+
+DAK Seksyen Kategori Jambatan adalah segala aset khusus yang terdapat pada
+Struktur Jambatan/ Culvert/ Flyover atau Pedestrian Bridge di sepanjang jalan
+persekutuan.
+
+a) Format kod yang diguna pakai adalah seperti berikut:
+
+9999 999 A9 9A 99 99 99 99 99 99 99
+
+1.
+
+Nombor Seksyen Jalan
+
+2.
+
+Sub-seksyen / Jarak
+
+3.
+
+Kod Kategori & Susur
+
+4.
+
+Aras & Posisi Jalan
+
+5.
+
+Kod komponen – Peringkat 1
+
+6.
+
+Kod komponen – Peringkat 2
+
+7.
+
+Kod komponen – Peringkat 3
+
+8.
+
+Kod komponen – Peringkat 4
+
+9.
+
+Kod komponen – Peringkat 5
+
+10.
+
+Kod komponen – Peringkat 6
+
+11.
+
+Kod komponen – Peringkat 7
+
+`
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+27
+
+b) Angka 9 (Sembilan) menunjukkan kod adalah berbentuk integer manakala huruf A
+mewakili kod berbentuk abjad.
+c) Struktur
+kod pertama (1) hingga ketiga (3) menunjukkan lokasi/kedudukan
+komponen, manakala struktur kod keempat (4) hingga ketujuh (7) menunjukkan
+kod bagi komponen aset tersebut.
+d) Penerangan dan contoh diterangkan seperti di Jadual 11.
+
+Jadual 11: Struktur DAK Seksyen Jalan Bagi Infrastruktur Jalan
+- Kategori Jambatan
+PERINGKAT
+
+FORMAT
+KOD
+
+CONTOH
+MAKSUD
+KOD
+
+1
+
+9999
+
+Nombor Seksyen
+Jalan
+
+0023
+
+2
+
+999
+
+Sub-seksyen / Jarak
+
+275
+
+3
+
+A9
+
+Kod Kategori & Susur
+
+B1
+
+4
+
+9A
+
+Aras & Posisi Jalan
+
+2L
+
+5
+
+99
+
+6
+
+99
+
+7
+
+99
+
+8
+
+99
+
+9
+
+99
+
+10
+
+99
+
+11
+
+99
+
+Kod Komponen
+– Peringkat 1
+Kod Komponen
+– Peringkat 2
+Kod Komponen
+– Peringkat 3
+Kod Komponen
+– Peringkat 4
+Kod Komponen
+– Peringkat 5
+Kod Komponen
+– Peringkat 6
+Kod Komponen
+– Peringkat 7
+
+MAKSUD
+No. Seksyen Jalan
+Kedudukan jambatan berada pada
+jarak 275 daripada seksyen 23
+Kod Kategori Jambatan ialah B dan
+susur pertama pada jambatan
+Kedudukan jambatan adalah aras 2
+iaitu tingkat 1 dari aras tanah dan
+Posisi jalan berada sebelah kanan di
+jambatan.
+
+39
+
+Utility and Transpotation Product
+
+13
+
+Tunnels and Bridgers
+
+13
+
+Bridgers
+
+13
+
+Bridge Beams
+
+00
+
+Tidak berkenaan
+
+00
+
+Tidak berkenaan
+
+00
+
+Tidak berkenaan
+
+CONTOH KOD DAK: 0023 275 B1 2L 39 13 13 13 00 00 00
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+28
+
+e) Keterangan terperinci elemen-elemen data bagi struktur DAK Seksyen
+-
+
+Kategori Jambatan
+
+Kamus Data
+
+No.
+
+1
+
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+
+2
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Keterangan
+3
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+
+4
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Keterangan
+5
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Nombor Seksyen Jalan
+Kod yang mewakili Nombor Seksyen Jalan.
+4 numeric characters
+4 numeric characters adalah mencukupi untuk menampung no. seksyen
+jalan yang ada.
+Tidak berkenaan
+Sub-seksyen / Jarak
+Kod yang mewakili nombor Sub-seksyen atau jarak daripada no.
+Seksyen Jalan.
+3 numeric characters
+3 numeric characters adalah mencukupi untuk menampung no. sub
+seksyen atau jarak jalan yang ada.
+Tidak berkenaan
+Kod Kategori & Susur
+Kod yang mewakili kategori jambatan dan ID bilangan susur bagi
+jejambat.
+2 alpha numeric characters
+2 alpha numeric characters adalah mencukupi untuk menampung
+kategori jalan yang ada.
+Rujuk Jadual 33
+Aras & Posisi
+Kod yang mewakili aras jalan dan kedudukan arah jalan di mana
+terletaknya komponen yang akan didaftarkan.
+2 alpha numeric characters
+2 alpha numeric character adalah mencukupi untuk menampung
+keterangan aras jalan dan kedudukan arah jalan yang ada.
+Rujuk Jadual 33
+Kod Komponen – Peringkat 1 hingga 7
+Kod yang mewakili komponen yang berada di Seksyen atau Sub-seksyen
+berkaitan.
+2 numeric characters
+2 numeric characters adalah mencukupi untuk menerangkan Kod
+Komponen SKATA setiap peringkat.
+Rujuk Jadual 30
+
+29
+
+iii) DAK Seksyen Kategori Simpang
+
+DAK Seksyen Kategori Simpang adalah kesemua aset-aset jalan yang terdapat pada
+persimpangan jalan atau jalan susur di sepanjang jalan persekutuan.
+
+a) Format kod yang diguna pakai adalah seperti berikut:
+
+9999 999 A9 9A 99 99 99 99 99 99 99
+
+1.
+
+Nombor Seksyen Jalan
+
+2.
+
+Sub-seksyen / Jarak
+
+3.
+
+Kod Kategori & Susur
+
+4.
+
+Aras & Posisi Jalan
+
+5.
+
+Kod komponen – Peringkat 1
+
+6.
+
+Kod komponen – Peringkat 2
+
+7.
+
+Kod komponen – Peringkat 3
+
+8.
+
+Kod komponen – Peringkat 4
+
+9.
+
+Kod komponen – Peringkat 5
+
+10.
+
+Kod komponen – Peringkat 6
+
+11.
+
+Kod komponen – Peringkat 7
+
+b)
+
+Angka 9 (Sembilan) menunjukkan kod adalah berbentuk integer manakala huruf A
+mewakili kod berbentuk abjad.
+c) Struktur
+kod pertama (1) hingga ketiga (3) menunjukkan lokasi/kedudukan
+komponen, manakala struktur kod keempat (4) hingga ketujuh (7) menunjukkan
+kod bagi komponen aset tersebut.
+d) Penerangan dan contoh diterangkan seperti di Jadual 12.
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+30
+
+Jadual 12 : Struktur DAK Seksyen Bagi Infrastruktur Jalan
+- Kategori Simpang
+
+PERINGKAT
+
+FORMAT
+KOD
+
+CONTOH
+MAKSUD
+KOD
+
+1
+
+9999
+
+Nombor Seksyen
+Jalan
+
+0023
+
+2
+
+999
+
+Sub-seksyen / Jarak
+
+275
+
+3
+
+A9
+
+Kod Kategori & Susur
+
+J1
+
+4
+
+9A
+
+Aras & Posisi Jalan
+
+1R
+
+5
+
+99
+
+6
+
+99
+
+7
+
+99
+
+8
+
+99
+
+9
+
+99
+
+10
+
+99
+
+11
+
+99
+
+Kod Komponen
+– Peringkat 1
+Kod Komponen
+– Peringkat 2
+Kod Komponen
+– Peringkat 3
+Kod Komponen
+– Peringkat 4
+Kod Komponen
+– Peringkat 5
+Kod Komponen
+– Peringkat 6
+Kod Komponen
+– Peringkat 7
+
+35
+
+MAKSUD
+No. Seksyen Jalan
+Kedudukan simpang berada pada
+jarak 275 daripada seksyen 23
+Kod Kategori Simpang ialah J dan
+susur pertama pada jalan utama
+Kedudukan simpang adalah aras 1
+iaitu atas aras tanah dan Posisi arah
+simpang adalah sebelah kanan dari
+jalan utama.
+Electrical and Lighting Specific
+Product and Equipment
+
+47
+
+Electrical Lighting
+
+11
+
+Lighting fixtures
+
+21
+
+Specialized Lighting fixtures
+
+13
+
+Lighting Poles
+
+00
+
+Tidak berkenaan
+
+00
+
+Tidak berkenaan
+
+CONTOH KOD DAK: 0023 275 J1 1R 35 47 11 21 13 00 00
+
+e)
+
+Keterangan terperinci elemen-elemen data bagi struktur DAK Seksyen
+-
+
+Kategori Simpang
+
+Kamus Data
+
+No.
+
+1
+
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Keterangan
+2
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Nombor Seksyen Jalan
+Kod yang mewakili Nombor Seksyen Jalan.
+4 numeric characters
+4 numeric characters adalah mencukupi untuk menampung no. seksyen
+jalan yang ada.
+Tidak berkenaan
+Sub-seksyen / Jarak
+Kod yang mewakili nombor Sub-seksyen atau jarak daripada no.
+Seksyen Jalan.
+3 numeric characters
+3 numeric characters adalah mencukupi untuk menampung no. sub
+seksyen atau jarak jalan yang ada.
+Tidak berkenaan
+
+31
+
+Keterangan
+3
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Keterangan
+4
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Keterangan
+5
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Kod Kategori & Susur
+Kod yang mewakili kategori simpang dan ID bilangan susur bagi
+simpang.
+2 alpha numeric characters
+2 alpha numeric characters adalah mencukupi untuk menampung
+kategori jalan yang ada.
+Rujuk Jadual 33
+Aras & Posisi
+Kod yang mewakili aras jalan dan kedudukan arah jalan di mana
+terletaknya komponen yang akan didaftarkan
+2 alpha numeric characters
+2 alpha numeric character adalah mencukupi untuk menampung
+keterangan aras jalan dan kedudukan arah jalan yang ada.
+Rujuk Jadual 33
+Kod Komponen – Peringkat 1 hingga 7
+Kod yang mewakili komponen yang berada di Seksyen atau Sub-seksyen
+berkaitan.
+2 numeric characters
+2 numeric characters adalah mencukupi untuk menerangkan Kod
+Komponen SKATA setiap peringkat.
+Rujuk Jadual 30
+
+iv) DAK Seksyen Kategori Cerun
+
+Kategori Cerun adalah cerun-cerun beserta komponen-komponennya yang
+terdapat di sepanjang jalan.
+
+a) Format kod yang diguna pakai adalah seperti berikut:
+
+9999 999 AA 9A 99 99 99 99 99 99 99
+
+1.
+
+Nombor Seksyen Jalan
+
+2.
+
+Sub-seksyen / Jarak
+
+3.
+
+Kod Kategori & Jenis
+
+4.
+
+Aras & Posisi Jalan
+
+5.
+
+Kod komponen – Peringkat 1
+
+6.
+
+Kod komponen – Peringkat 2
+
+7.
+
+Kod komponen – Peringkat 3
+
+8.
+
+Kod komponen – Peringkat 4
+
+9.
+
+Kod komponen – Peringkat 5
+
+10.
+
+Kod komponen – Peringkat 6
+
+11.
+
+Kod komponen – Peringkat 7
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+32
+
+b)
+
+Angka 9 (Sembilan) menunjukkan kod adalah berbentuk integer manakala huruf A
+mewakili kod berbentuk abjad.
+c) Struktur kod pertama (1) hingga ketiga (3) menunjukkan lokasi/ kedudukan
+komponen, manakala struktur kod keempat (4) hingga ketujuh (7) menunjukkan
+kod bagi komponen aset tersebut.
+d) Penerangan dan contoh diterangkan seperti di Jadual 13.
+
+Jadual 13: Struktur DAK Seksyen Bagi Infrastruktur Jalan
+- Kategori Cerun
+CONTOH
+
+PERINGKAT
+
+FORMAT
+KOD
+
+1
+
+9999
+
+Nombor Seksyen
+Jalan
+
+0023
+
+2
+
+999
+
+Sub-seksyen / Jarak
+
+275
+
+3
+
+AA
+
+Kod Kategori & Jenis
+
+SC
+
+4
+
+9A
+
+Aras & Posisi Jalan
+
+1R
+
+5
+
+99
+
+6
+
+99
+
+7
+
+99
+
+8
+
+99
+
+9
+
+99
+
+10
+
+99
+
+11
+
+99
+
+MAKSUD
+
+Kod Komponen
+– Peringkat 1
+Kod Komponen
+– Peringkat 2
+Kod Komponen
+– Peringkat 3
+Kod Komponen
+– Peringkat 4
+Kod Komponen
+– Peringkat 5
+Kod Komponen
+– Peringkat 6
+Kod Komponen
+– Peringkat 7
+
+KOD
+
+MAKSUD
+No. Seksyen Jalan
+Kedudukan cerun berada pada jarak
+275 daripada seksyen 23
+Kod Kategori Cerun ialah S dan jenis
+cerun Cut
+Kedudukan cerun adalah aras 1 iaitu
+atas aras tanah dan Posisi cerun
+adalah sebelah kanan dari jalan
+utama.
+
+11
+
+Site Product
+
+11
+
+Ground Anchorages
+
+13
+
+Earth Reinforcement Anchors
+
+11
+
+Earth Reinforcement Soil Nails
+
+00
+
+Tidak berkenaan
+
+00
+
+Tidak berkenaan
+
+00
+
+Tidak berkenaan
+
+CONTOH KOD DAK: 0023 275 SC 1R 11 11 13 11 00 00 00
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+33
+
+e) Keterangan terperinci elemen-elemen data bagi struktur DAK Seksyen
+-
+
+Kategori Cerun
+
+Kamus Data
+
+No.
+
+1
+
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Keterangan
+2
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+3
+
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Keterangan
+4
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Keterangan
+5
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Nombor Seksyen Jalan
+Kod yang mewakili Nombor Seksyen Jalan.
+4 numeric characters
+4 numeric characters adalah mencukupi untuk menampung no. seksyen
+jalan yang ada.
+Tidak berkenaan
+Sub-seksyen / Jarak
+Kod yang mewakili nombor Sub-seksyen atau jarak daripada no.
+Seksyen Jalan.
+3 numeric characters
+3 numeric characters adalah mencukupi untuk menampung no. sub
+seksyen atau jarak jalan yang ada.
+Tidak berkenaan
+Kod Kategori & Jenis
+Kod yang mewakili kategori cerun.
+2 alpha characters
+2 alpha characters adalah mencukupi untuk menampung kategori cerun
+yang ada.
+Rujuk Jadual 33
+Aras & Posisi
+Kod yang mewakili aras jalan dan kedudukan arah jalan di mana
+terletaknya komponen yang akan didaftarkan
+2 alpha numeric characters
+2 alpha numeric character adalah mencukupi untuk menampung
+keterangan aras jalan dan kedudukan arah jalan yang ada.
+Rujuk Jadual 33
+Kod Komponen – Peringkat 1 hingga 7
+Kod yang mewakili komponen yang berada di Seksyen atau Sub-seksyen
+berkaitan.
+2 numeric characters
+2 numeric characters adalah mencukupi untuk menerangkan Kod
+Komponen SKATA setiap peringkat.
+Rujuk Jadual 30
+
+34
+
+v) DAK Seksyen Kategori Laluan Sikal
+
+Kategori Laluan Sikal adalah semua aset khusus yang terdapat pada laluan sikal yang
+terdapat di sepanjang jalan persekutuan.
+
+a) Format kod yang diguna pakai adalah seperti berikut:
+
+9999 999 A9 9A 99 99 99 99 99 99 99
+
+1.
+
+Nombor Seksyen Jalan
+
+2.
+
+Sub-seksyen / Jarak
+
+3.
+
+Kod Kategori
+
+4.
+
+Aras & Posisi Jalan
+
+5.
+
+Kod komponen – Peringkat 1
+
+6.
+
+Kod komponen – Peringkat 2
+
+7.
+
+Kod komponen – Peringkat 3
+
+8.
+
+Kod komponen – Peringkat 4
+
+9.
+
+Kod komponen – Peringkat 5
+
+10.
+
+Kod komponen – Peringkat 6
+
+11.
+
+Kod komponen – Peringkat 7
+
+b)
+
+Angka 9 (Sembilan) menunjukkan kod adalah berbentuk integer manakala huruf A
+mewakili kod berbentuk abjad.
+c) Struktur kod pertama (1) hingga ketiga (3) menunjukkan lokasi/ kedudukan
+komponen, manakala struktur kod keempat (4) hingga ketujuh (7) menunjukkan
+kod bagi komponen aset tersebut.
+d) Penerangan dan contoh diterangkan seperti di Jadual 14.
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+35
+
+Jadual 14: Struktur DAK Seksyen Bagi Infrastruktur Jalan
+- Kategori Laluan Sikal
+
+PERINGKAT
+
+FORMAT
+KOD
+
+CONTOH
+MAKSUD
+KOD
+
+MAKSUD
+
+1
+
+9999
+
+Nombor Seksyen
+Jalan
+
+0023
+
+2
+
+999
+
+Sub-Seksyen / Jarak
+
+200
+
+3
+
+A9
+
+Kod Kategori
+
+C1
+
+4
+
+9A
+
+Aras & Posisi Jalan
+
+1L
+
+Kedudukan Aras 1 iaitu atas aras
+tanah dan posisi jalan
+adalah
+sebelah kiri pada jalan utama
+
+5
+
+99
+
+11
+
+Site Products
+
+6
+
+99
+
+21
+
+Pavements
+
+7
+
+99
+
+13
+
+Roadways
+
+8
+
+99
+
+13
+
+Roadway Surfacing / Tunnel surfacing
+/ Bridge surfacing
+
+9
+
+99
+
+12
+
+Asphalt / Tar / Premix
+
+10
+
+99
+
+00
+
+Tidak berkenaan
+
+11
+
+99
+
+00
+
+Tidak berkenaan
+
+Kod Komponen
+– Peringkat 1
+Kod Komponen
+– Peringkat 2
+Kod Komponen
+– Peringkat 3
+Kod Komponen
+– Peringkat 4
+Kod Komponen
+– Peringkat 5
+Kod Komponen
+– Peringkat 6
+Kod Komponen
+– Peringkat 7
+
+No. Seksyen Jalan
+Sub-Seksyen Jalan Ke 200 di
+Seksyen 023
+Kod Kategori Laluan sikal ialah C dan
+berada di atas tanah.
+
+CONTOH KOD DAK: 0023 200 C1 1L 11 21 13 13 12 00 00
+
+e) Keterangan terperinci elemen-elemen data bagi struktur DAK Seksyen
+-
+
+Kategori Laluan Sikal
+
+No.
+
+1
+
+Kamus Data
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Keterangan
+2
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Nombor Seksyen Jalan
+Kod yang mewakili Nombor Seksyen Jalan.
+4 numeric characters
+4 numeric characters adalah mencukupi untuk menampung no. seksyen
+jalan yang ada.
+Tidak berkenaan
+Sub-seksyen / Jarak
+Kod yang mewakili nombor Sub-seksyen atau jarak daripada no.
+Seksyen Jalan.
+3 numeric characters
+3 numeric characters adalah mencukupi untuk menampung no. sub
+seksyen atau jarak jalan yang ada.
+Tidak berkenaan
+
+36
+
+3
+
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Keterangan
+4
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Keterangan
+5
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+5.2.2.2
+
+Kod Kategori
+Kod yang mewakili kategori laluan sikal.
+2 alpha numeric characters
+2 alpha numeric characters adalah mencukupi untuk menampung
+kategori jalan yang ada.
+Rujuk Jadual 33
+Aras & Posisi
+Kod yang mewakili aras jalan dan kedudukan arah jalan di mana
+terletaknya komponen yang akan didaftarkan
+2 alpha numeric characters
+2 alpha numeric character adalah mencukupi untuk menampung
+keterangan aras jalan dan kedudukan arah jalan yang ada.
+Rujuk Jadual 33
+Kod Komponen – Peringkat 1 hingga 7
+Kod yang mewakili komponen yang berada di Seksyen atau Sub-seksyen
+berkaitan.
+2 numeric characters
+2 numeric characters adalah mencukupi untuk menerangkan Kod
+Komponen SKATA setiap peringkat.
+Rujuk Jadual 30
+
+DAK Infrastruktur Air
+
+DAK Air dipecahkan kepada tiga kategori iaitu untuk Blok Bangunan, Binaan Struktur dan
+Binaan Luar.
+
+Blok Bangunan
+
+a) Format kod yang diguna pakai adalah seperti berikut:
+
+AAA A9 9999 99 99 99 99 99 99 99
+1.
+
+Kod Blok
+
+2.
+
+Kod Aras
+
+3.
+
+Kod Ruang
+
+4.
+
+Kod komponen – Peringkat 1
+
+5.
+
+Kod komponen – Peringkat 2
+
+6.
+
+Kod komponen – Peringkat 3
+
+7.
+
+Kod komponen – Peringkat 4
+
+8.
+
+Kod komponen – Peringkat 5
+
+9.
+
+Kod komponen – Peringkat 6
+
+10.
+
+Kod komponen – Peringkat 7
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+37
+
+b)
+
+Angka 9 (Sembilan) menunjukkan kod adalah berbentuk integer manakala huruf A
+mewakili kod berbentuk abjad.
+c) Struktur kod pertama (1) hingga ketiga (3) menunjukkan lokasi / kedudukan komponen,
+manakala struktur kod keempat (4) hingga kesepuluh (10) menunjukkan kod bagi
+komponen aset tersebut.
+d) Penerangan dan contoh diterangkan seperti di Jadual 15.
+
+Jadual 15: Struktur DAK Blok Bangunan Bagi Infrastruktur Air
+CONTOH
+
+FORMAT
+KOD
+
+PERINGKAT
+1
+
+AAA
+
+2
+
+A9
+
+3
+
+9999
+
+4
+
+99
+
+5
+
+99
+
+6
+
+99
+
+7
+
+99
+
+8
+
+99
+
+9
+
+99
+
+10
+
+99
+
+MAKSUD
+KOD
+Kod Blok
+
+A
+
+Kod Aras (Contoh 1)
+Kod Aras (Contoh 2)
+Kod Ruang
+Kod Komponen
+– Peringkat 1
+Kod Komponen
+– Peringkat 2
+Kod Komponen
+– Peringkat 3
+Kod Komponen
+– Peringkat 4
+Kod Komponen
+– Peringkat 5
+Kod Komponen
+– Peringkat 6
+Kod Komponen
+– Peringkat 7
+
+B1
+04
+0012
+
+MAKSUD
+Blok A
+Aras Basement 1
+Aras 4
+Bilik Pam
+
+27
+
+General Facility Services Products
+
+17
+
+Pumps
+
+13
+
+Centrifugal Pumps
+
+00
+
+Tidak berkenaan
+
+00
+
+Tidak berkenaan
+
+00
+
+Tidak berkenaan
+
+00
+
+Tidak berkenaan
+
+CONTOH 1 KOD DAK: A B1 0012 27 17 13 00 00 00 00
+CONTOH 2 KOD DAK: A 04 0012 27 17 13 00 00 00 00
+
+e) Keterangan terperinci elemen-elemen data bagi struktur DAK
+- Blok Bangunan
+No.
+
+Kamus Data
+Kod Blok
+Keterangan
+Saiz Medan
+
+1
+Rasional
+No. Jadual Carian Kod
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Kod mewakili blok.
+3 alpha characters dan berkembang seterusnya mengikut keperluan.
+Kod blok di dalam pangkalan data bermula daripada huruf 00A hingga
+ZZZ.
+Bersifat fleksibel dan jumlah huruf seterusnya hanya akan bertambah
+mengikut keperluan semasa dan mencukupi untuk menampung blok-blok
+di lokasi yang sama.
+Tidak Berkenaan
+
+38
+
+Keterangan
+Saiz Medan
+2
+Rasional
+No. Jadual Carian Kod
+Keterangan
+3
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+4
+
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Kod Aras
+Kod yang mewakili aras bagi satu blok.
+2 alpha numeric characters dan berkembang seterusnya mengikut
+keperluan.
+2 alpha numeric characters adalah bilangan maksimum aras pada blok
+yang sama. Bersifat fleksibel dan jumlah digit seterusnya hanya akan
+bertambah mengikut keperluan semasa.
+Tidak Berkenaan
+Kod Ruang
+Kod yang mewakili ruang bagi setiap aras.
+4 numeric characters dan berkembang seterusnya mengikut keperluan.
+- *Satu Angka (min)
+4 numeric characters adalah bersifat fleksibel dan jumlah digit seterusnya
+hanya akan bertambah mengikut keperluan semasa pada setiap aras.
+Tidak berkenaan.
+Kod Komponen – Peringkat 1 hingga 7
+Kod yang mewakili komponen di dalam ruang berkaitan.
+2 numeric characters
+2 numeric characters adalah mencukupi untuk menerangkan Kod
+Komponen SKATA setiap peringkat.
+Rujuk Jadual 30
+
+Binaan Struktur / Binaan Luar
+
+Binaan Struktur / Binaan Luar dipecahkan kepada dua kategori
+
+iaitu binaan struktur /
+
+binaan luar (tanpa aras dan ruang) dan binaan struktur / binaan luar (mempunyai aras dan
+ruang)
+i)
+
+Binaan Struktur / Binaan Luar - (Tanpa Aras dan Ruang)
+
+a) Format kod yang diguna pakai adalah seperti berikut:
+
+AA9999 99 99 99 99 99 99 99 99
+1.
+
+Kod Binaan Struktur / Binaan Luar
+
+2.
+
+Bilangan
+
+3.
+
+Kod komponen – Peringkat 1
+
+4.
+
+Kod komponen – Peringkat 2
+
+5.
+
+Kod komponen – Peringkat 3
+
+6.
+
+Kod komponen – Peringkat 4
+
+7.
+
+Kod komponen – Peringkat 5
+
+8.
+
+Kod komponen – Peringkat 6
+
+9.
+
+Kod komponen – Peringkat 7
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+39
+
+b) Angka 9 (Sembilan) menunjukkan kod adalah berbentuk integer manakala huruf A
+mewakili kod berbentuk abjad.
+c) Struktur kod pertama (1) hingga kedua (2) menunjukkan lokasi/kedudukan komponen,
+manakala struktur kod ketiga (3) hingga kesembilan (9) menunjukkan kod bagi
+komponen aset tersebut.
+d) Penerangan dan contoh diterangkan seperti di Jadual 16.
+
+Jadual 16 : Struktur DAK Binaan Struktur / Binaan Luar Bagi Infrastruktur Air
+- (Tanpa Aras dan Ruang)
+FORMAT
+KOD
+
+PERINGKAT
+1
+
+AA9999
+
+2
+
+99
+
+3
+
+99
+
+4
+
+99
+
+5
+
+99
+
+6
+
+99
+
+7
+
+99
+
+8
+
+99
+
+9
+
+99
+
+CONTOH
+MAKSUD
+KOD
+
+MAKSUD
+
+Kod Binaan Struktur
+
+HJ0030
+
+Weir / Diversion Weir
+
+Kod Binaan Luar
+Bilangan
+(Binaan Struktur)
+Bilangan
+(Binaan Luar)
+Kod Komponen
+– Peringkat 1
+Kod Komponen
+– Peringkat 2
+Kod Komponen
+– Peringkat 3
+Kod Komponen
+– Peringkat 4
+Kod Komponen
+– Peringkat 5
+Kod Komponen
+– Peringkat 6
+Kod Komponen
+– Peringkat 7
+
+BG0410
+
+Lanscape
+Bilangan bagi Weir / Diversion Weir
+yang ketiga
+Bilangan
+bagi
+Lanscape
+yang
+pertama
+Electrical and Lighting Specific
+Product and Equipment
+
+03
+01
+35
+47
+
+Electrical Lighting
+
+11
+
+Lighting fixtures
+
+21
+
+Specialized Lighting fixtures
+
+13
+
+Lighting Poles
+
+00
+
+Tidak berkenaan
+
+00
+
+Tidak berkenaan
+
+CONTOH KOD DAK (BINAAN STRUKTUR) : HJ0030 03 35 47 11 21 13 00 00
+CONTOH KOD DAK (BINAAN LUAR)
+: BG0410 01 35 47 11 21 13 00 00
+
+e)
+
+Keterangan terperinci elemen-elemen data bagi struktur DAK
+- Binaan Struktur / Binaan Luar - (Tanpa Aras dan Ruang)
+
+No.
+
+1
+
+Kamus Data
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Kod Binaan Struktur / Binaan Luar
+Kod yang mewakili Binaan Struktur / Binaan Luar dalam satu premis.
+6 alpha numeric characters.
+Berpandukan MS 1759
+Rujuk Jadual 28 (Binaan Luar) / Jadual 29 (Binaan Struktur)
+
+40
+
+Keterangan
+2
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Keterangan
+3
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Kod Binaan Struktur / Binaan Luar
+Kod yang merupakan bilangan kepada kategori Binaan Struktur / Binaan
+Luar yang sama.
+Bermula dengan 2 numeric characters dan berkembang seterusnya
+mengikut keperluan.
+Bersifat fleksibel dan jumlah digit hanya akan bertambah mengikut
+keperluan semasa.
+Tidak berkenaan
+Kod Komponen – Peringkat 1 hingga 7
+Kod yang mewakili komponen pada Binaan Struktur / Binaan Luar
+berkaitan.
+2 numeric characters
+2 numeric characters adalah mencukupi untuk menerangkan Kod
+Komponen SKATA setiap peringkat.
+Rujuk Jadual 30
+
+ii) Binaan Struktur / Binaan Luar - (Mempunyai Aras dan Ruang)
+
+a) Format kod yang diguna pakai adalah seperti berikut:
+
+AA9999 99 A9 9999 99 99 99 99 99 99 99
+
+1.
+
+Kod Binaan Struktur / Binaan Luar
+
+2.
+
+Bilangan
+
+3.
+
+Kod Aras
+
+4.
+
+Kod Ruang
+
+5.
+
+Kod komponen – Peringkat 1
+
+6.
+
+Kod komponen – Peringkat 2
+
+7.
+
+Kod komponen – Peringkat 3
+
+8.
+
+Kod komponen – Peringkat 4
+
+9.
+
+Kod komponen – Peringkat 5
+
+10.
+
+Kod komponen – Peringkat 6
+
+11.
+
+Kod komponen – Peringkat 7
+
+b) Angka 9 (Sembilan) menunjukkan kod adalah berbentuk integer manakala huruf A
+mewakili kod berbentuk abjad.
+c) Struktur
+kod pertama (1) hingga keempat (4) menunjukkan lokasi/kedudukan
+komponen, manakala struktur kod kelima (5) hingga kesepuluh (11) menunjukkan kod
+bagi komponen aset tersebut.
+d) Penerangan dan contoh diterangkan seperti di Jadual 17.
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+41
+
+Jadual 17 : Struktur DAK Binaan Struktur / Binaan Luar Bagi Infrastruktur Air
+- (Mempunyai Aras dan Ruang)
+
+PERINGKAT
+
+1
+
+2
+
+FORMAT
+KOD
+AA9999
+
+99
+
+3
+4
+
+A9
+9999
+
+5
+
+99
+
+6
+
+99
+
+7
+
+99
+
+8
+
+99
+
+9
+
+99
+
+10
+
+99
+
+11
+
+99
+
+CONTOH
+MAKSUD
+KOD
+
+MAKSUD
+
+Kod Binaan Struktur
+
+UC0080
+
+Pump House
+
+Kod Binaan Luar
+Bilangan
+(Binaan Struktur)
+Bilangan
+(Binaan Luar)
+Kod Aras
+Kod Ruang
+Kod Komponen
+– Peringkat 1
+Kod Komponen
+– Peringkat 2
+Kod Komponen
+– Peringkat 3
+Kod Komponen
+– Peringkat 4
+Kod Komponen
+– Peringkat 5
+Kod Komponen
+– Peringkat 6
+Kod Komponen
+– Peringkat 7
+
+AB0030
+
+Aerodrome Control Tower
+Bilangan bagi pump house yang
+kedua
+Bilangan bagi Aerodrome Control
+Tower yang pertama
+Aras 1
+Bilik Pam
+Electrical and Lighting Specific
+Product and Equipment
+
+02
+01
+01
+0002
+35
+47
+
+Electrical Lighting
+
+11
+
+Lighting fixtures
+
+15
+
+Weather Rated Lighting Fixture
+
+11
+
+Weather Rated Fluorescent Fixture
+
+00
+
+Tidak berkenaan
+
+00
+
+Tidak berkenaan
+
+CONTOH KOD DAK (BINAAN STRUKTUR) : UC0080 02 01 0002 35 47 11 15 11 00 00
+CONTOH KOD DAK (BINAAN LUAR)
+: AB0030 01 01 0002 35 47 11 15 11 00 00
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+42
+
+e) Keterangan terperinci elemen-elemen data bagi struktur DAK
+- Binaan Struktur / Binaan Luar - (Mempunyai Aras dan Ruang)
+
+No.
+
+1
+
+Kamus Data
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Keterangan
+2
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+
+3
+Rasional
+No. Jadual Carian Kod
+Keterangan
+4
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+5
+
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Kod Binaan Struktur / Binaan Luar
+Kod yang mewakili Binaan Struktur / Binaan Luar dalam satu premis.
+6 alpha numeric characters.
+Berpandukan MS 1759
+Rujuk Jadual 28 (Binaan Luar) / Jadual 29 (Binaan Struktur)
+Kod Binaan Struktur / Binaan Luar
+Kod yang merupakan bilangan kepada kategori Binaan Struktur / Binaan
+Luar yang sama.
+Bermula dengan 2 numeric characters dan berkembang seterusnya
+mengikut keperluan.
+Bersifat fleksibel dan jumlah digit hanya akan bertambah mengikut
+keperluan semasa.
+Tidak berkenaan
+Kod Aras
+Kod yang mewakili aras bagi satu blok.
+2 alpha numeric characters dan berkembang seterusnya mengikut
+keperluan.
+2 alpha numeric characters adalah bilangan maksimum aras pada blok
+yang sama. Bersifat fleksibel dan jumlah digit seterusnya hanya akan
+bertambah mengikut keperluan semasa.
+Tidak Berkenaan
+Kod Ruang
+Kod yang mewakili ruang bagi setiap aras.
+4 numeric characters dan berkembang seterusnya mengikut keperluan.
+- *Satu Angka (min)
+4 numeric characters adalah bersifat fleksibel dan jumlah digit seterusnya
+hanya akan bertambah mengikut keperluan semasa pada setiap aras.
+Tidak berkenaan.
+Kod Komponen – Peringkat 1 hingga 7
+Kod yang mewakili komponen di dalam ruang berkaitan.
+2 numeric characters
+2 numeric characters adalah mencukupi untuk menerangkan Kod
+Komponen SKATA setiap peringkat.
+Rujuk Jadual 30
+
+43
+
+5.2.2.3
+
+DAK Lain-lain Infrastruktur
+
+DAK Lain-lain Infrastruktur dipecahkan kepada dua kategori iaitu untuk Blok Bangunan dan
+Binaan Luar.
+
+Blok Bangunan
+
+a) Format kod yang diguna pakai adalah seperti berikut:
+
+AAA A9 9999 99 99 99 99 99 99 99
+1.
+
+Kod Blok
+
+2.
+
+Kod Aras
+
+3.
+
+Kod Ruang
+
+4.
+
+Kod komponen – Peringkat 1
+
+5.
+
+Kod komponen – Peringkat 2
+
+6.
+
+Kod komponen – Peringkat 3
+
+7.
+
+Kod komponen – Peringkat 4
+
+8.
+
+Kod komponen – Peringkat 5
+
+9.
+
+Kod komponen – Peringkat 6
+
+10.
+
+Kod komponen – Peringkat 7
+
+b) Angka 9 (Sembilan) menunjukkan kod adalah berbentuk integer manakala huruf A
+mewakili kod berbentuk abjad.
+c) Struktur kod pertama (1) hingga ketiga (3) menunjukkan lokasi / kedudukan komponen,
+manakala struktur kod keempat (4) hingga kesepuluh (10) menunjukkan kod bagi
+komponen aset tersebut.
+d) Penerangan dan contoh diterangkan seperti di Jadual 18.
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+44
+
+Jadual 18: Struktur DAK Blok Bangunan Bagi Lain-lain Infrastruktur
+CONTOH
+
+FORMAT
+KOD
+
+PERINGKAT
+1
+
+AAA
+
+2
+
+A9
+
+3
+
+9999
+
+4
+
+99
+
+5
+
+99
+
+6
+
+99
+
+7
+
+99
+
+8
+
+99
+
+9
+
+99
+
+10
+
+99
+
+MAKSUD
+KOD
+
+MAKSUD
+
+Kod Blok
+Kod Aras (Contoh 1)
+
+E
+B2
+
+Blok E
+Aras Basement 2
+
+Kod Aras (Contoh 2)
+Kod Ruang
+Kod Komponen
+– Peringkat 1
+Kod Komponen
+– Peringkat 2
+Kod Komponen
+– Peringkat 3
+Kod Komponen
+– Peringkat 4
+Kod Komponen
+– Peringkat 5
+Kod Komponen
+– Peringkat 6
+Kod Komponen
+– Peringkat 7
+
+03
+0002
+
+Aras 3
+Bilik Sesalur Hose Reel
+Facility and Occupant
+Products
+
+29
+25
+
+Fire Fighting Equipment
+
+15
+
+Fire Hose Equipment
+
+17
+
+Fire Hose Reels
+
+00
+
+Tidak berkenaan
+
+00
+
+Tidak berkenaan
+
+00
+
+Tidak berkenaan
+
+Protection
+
+CONTOH 1 KOD DAK: E B2 0002 29 25 15 17 00 13 00
+00ONTOH 2 KOD DAK: E 03 0002 29 25 15 17 00 13 00
+
+e) Keterangan terperinci elemen-elemen data bagi struktur DAK
+- Blok Bangunan
+
+No.
+
+Kamus Data
+Keterangan
+Saiz Medan
+
+1
+Rasional
+No. Jadual Carian Kod
+Keterangan
+Saiz Medan
+2
+Rasional
+No. Jadual Carian Kod
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Kod Blok
+Kod mewakili blok.
+3 alpha characters dan berkembang seterusnya mengikut keperluan.
+Kod blok di dalam pangkalan data bermula daripada huruf 00A hingga
+ZZZ.
+Bersifat fleksibel dan jumlah huruf seterusnya hanya akan bertambah
+mengikut keperluan semasa dan mencukupi untuk menampung blok-blok
+di lokasi yang sama.
+Tidak Berkenaan
+Kod Aras
+Kod yang mewakili aras bagi satu blok.
+2 alpha numeric characters dan berkembang seterusnya mengikut
+keperluan.
+2 alpha numeric characters adalah bilangan maksimum aras pada blok
+yang sama. Bersifat fleksibel dan jumlah digit seterusnya hanya akan
+bertambah mengikut keperluan semasa.
+Tidak Berkenaan
+
+45
+
+Keterangan
+3
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+4
+
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+Kod Ruang
+Kod yang mewakili ruang bagi setiap aras.
+4 numeric characters dan berkembang seterusnya mengikut keperluan.
+- *Satu Angka (min)
+4 numeric characters adalah bersifat fleksibel dan jumlah digit seterusnya
+hanya akan bertambah mengikut keperluan semasa pada setiap aras.
+Tidak berkenaan.
+Kod Komponen – Peringkat 1 hingga 7
+Kod yang mewakili komponen di dalam ruang berkaitan.
+2 numeric characters
+2 numeric characters adalah mencukupi untuk menerangkan Kod
+Komponen SKATA setiap peringkat.
+Rujuk Jadual 30
+
+Binaan Luar
+
+Binaan Luar dipecahkan kepada dua kategori iaitu binaan luar (tanpa aras dan ruang) dan
+binaan luar (mempunyai aras dan ruang)
+
+i)
+
+Binaan Luar (Tanpa Aras dan Ruang)
+
+a) Format kod yang diguna pakai adalah seperti berikut:
+
+AA9999 99 99 99 99 99 99 99 99
+1.
+
+Kod Binaan Luar
+
+2.
+
+Bilangan
+
+3.
+
+Kod komponen – Peringkat 1
+
+4.
+
+Kod komponen – Peringkat 2
+
+5.
+
+Kod komponen – Peringkat 3
+
+6.
+
+Kod komponen – Peringkat 4
+
+7.
+
+Kod komponen – Peringkat 5
+
+8.
+
+Kod komponen – Peringkat 6
+
+9.
+
+Kod komponen – Peringkat 7
+b) Angka 9 (Sembilan) menunjukkan kod adalah berbentuk integer manakala huruf A
+mewakili kod berbentuk abjad.
+c) Struktur kod pertama (1) hingga ketiga (3) menunjukkan lokasi / kedudukan komponen,
+manakala struktur kod keempat (4) hingga kesepuluh (10) menunjukkan kod bagi
+komponen aset tersebut.
+d) Penerangan dan contoh diterangkan seperti di Jadual 19.
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+46
+
+Jadual 19 : Struktur DAK Binaan Luar Bagi Lain-lain Infrastruktur
+(Tanpa Aras dan Ruang)
+CONTOH
+
+FORMAT
+KOD
+
+MAKSUD
+
+1
+
+AA9999
+
+Kod Binaan Luar
+
+2
+
+99
+
+3
+
+99
+
+4
+
+99
+
+5
+
+99
+
+6
+
+99
+
+7
+
+99
+
+8
+
+99
+
+9
+
+99
+
+PERINGKAT
+
+KOD
+AB0230
+
+Bilangan
+Kod Komponen
+– Peringkat 1
+Kod Komponen
+– Peringkat 2
+Kod Komponen
+– Peringkat 3
+Kod Komponen
+– Peringkat 4
+Kod Komponen
+– Peringkat 5
+Kod Komponen
+– Peringkat 6
+Kod Komponen
+– Peringkat 7
+
+MAKSUD
+Radar
+
+01
+
+Bilangan bagi radar yang pertama
+
+39
+
+Utility and Transportation Products
+
+19
+
+Aviation Equipment
+
+11
+
+Aviation Monitoring and Control
+
+13
+
+Aviation Monitoring Equipment
+
+16
+
+Radar
+
+00
+
+Tidak berkenaan
+
+00
+
+Tidak berkenaan
+
+CONTOH KOD DAK: AB0230 01 39 19 11 13 16 00 00
+
+e) Keterangan terperinci elemen-elemen data bagi struktur DAK
+- Binaan Luar (Tanpa Aras dan Ruang)
+
+No.
+
+1
+
+Kamus Data
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+
+2
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+3
+
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Kod Binaan Luar
+Kod yang mewakili binaan luar dalam satu premis.
+6 alpha numeric characters.
+Berpandukan MS 1759
+Rujuk Jadual 28
+Kod Bilangan Binaan Luar
+Kod yang merupakan bilangan kepada kategori binaan luar yang sama.
+Bermula dengan 2 numeric characters dan berkembang seterusnya
+mengikut keperluan.
+Bersifat fleksibel dan jumlah digit hanya akan bertambah mengikut
+keperluan semasa.
+Tidak berkenaan
+Kod Komponen – Peringkat 1 hingga 7
+Kod yang mewakili komponen pada binaan luar berkaitan.
+2 numeric characters
+2 numeric characters adalah mencukupi untuk menerangkan Kod
+Komponen SKATA setiap peringkat.
+Rujuk Jadual 30
+
+47
+
+ii) Binaan Luar (Mempunyai Aras dan Ruang)
+
+a) Format kod yang diguna pakai adalah seperti berikut:
+
+AA9999 99 A9 9999 99 99 99 99 99 99 99
+1.
+
+Kod Binaan Luar
+
+2.
+
+Bilangan
+
+3.
+
+Kod Aras
+
+4.
+
+Kod Ruang
+
+5.
+
+Kod komponen – Peringkat 1
+
+6.
+
+Kod komponen – Peringkat 2
+
+7.
+
+Kod komponen – Peringkat 3
+
+8.
+
+Kod komponen – Peringkat 4
+
+9.
+
+Kod komponen – Peringkat 5
+
+10.
+
+Kod komponen – Peringkat 6
+
+11.
+
+Kod komponen – Peringkat 7
+
+b) Angka 9 (Sembilan) menunjukkan kod adalah berbentuk integer manakala huruf A
+mewakili kod berbentuk abjad.
+c) Struktur kod pertama (1) hingga ketiga (3) menunjukkan lokasi / kedudukan komponen,
+manakala struktur kod keempat (4) hingga kesepuluh (10) menunjukkan kod bagi
+komponen aset tersebut.
+d) Penerangan dan contoh diterangkan seperti di Jadual 20.
+
+\
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+48
+
+Jadual 20 : Struktur DAK Binaan Luar Bagi Lain-lain Infrastruktur
+(Mempunyai Aras dan Ruang)
+CONTOH
+
+FORMAT
+KOD
+
+MAKSUD
+
+1
+
+AA9999
+
+Kod Binaan Luar
+
+2
+
+99
+
+3
+
+A9
+
+4
+
+9999
+
+5
+
+99
+
+6
+
+99
+
+7
+
+99
+
+8
+
+99
+
+9
+
+99
+
+10
+
+99
+
+11
+
+99
+
+PERINGKAT
+
+KOD
+
+MAKSUD
+
+AB0030
+
+Menara Kawalan Udara
+Bilangan bagi menara kawalan udara
+yang pertama
+Basement 1
+
+Bilangan
+
+01
+
+Kod Aras (Contoh 1)
+
+B1
+
+Kod Aras (Contoh 2)
+Kod Ruang
+Kod Komponen
+– Peringkat 1
+Kod Komponen
+– Peringkat 2
+Kod Komponen
+– Peringkat 3
+Kod Komponen
+– Peringkat 4
+Kod Komponen
+– Peringkat 5
+Kod Komponen
+– Peringkat 6
+Kod Komponen
+– Peringkat 7
+
+08
+0002
+35
+
+Aras 8
+Bilik SSB
+Electrical and Lighting Specific
+Product and Equipment
+
+31
+
+Electrical Power Distribution Devices
+
+17
+
+Sub Switch Board (SSB)
+
+00
+
+Tidak berkenaan
+
+00
+
+Tidak berkenaan
+
+00
+
+Tidak berkenaan
+
+00
+
+Tidak berkenaan
+
+CONTOH 1 KOD DAK: AB0030 01 B1 0002 35 31 17 00 00 00 00
+CONTOH 2 KOD DAK: AB0030 01 08 0002 35 31 17 00 00 00 00
+
+e) Keterangan terperinci elemen-elemen data bagi struktur DAK
+- Binaan Luar (Mempunyai Aras dan Ruang)
+
+No.
+
+1
+
+Kamus Data
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+Keterangan
+
+2
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Kod Binaan Luar
+Kod yang mewakili binaan luar dalam satu premis.
+6 alpha numeric characters.
+Berpandukan MS 1759
+Rujuk Jadual 28
+Kod Bilangan Binaan Luar
+Kod yang merupakan bilangan kepada kategori binaan luar yang sama.
+Bermula dengan 2 numeric characters dan berkembang seterusnya
+mengikut keperluan.
+Bersifat fleksibel dan jumlah digit hanya akan bertambah mengikut
+keperluan semasa.
+Tidak berkenaan
+
+49
+
+Keterangan
+Saiz Medan
+3
+Rasional
+No. Jadual Carian Kod
+Keterangan
+4
+
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+5
+
+Keterangan
+Saiz Medan
+Rasional
+No. Jadual Carian Kod
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Kod Aras
+Kod yang mewakili aras bagi satu blok.
+2 alpha numeric characters dan berkembang seterusnya mengikut
+keperluan.
+2 alpha numeric characters adalah bilangan maksimum aras pada blok
+yang sama. Bersifat fleksibel dan jumlah digit seterusnya hanya akan
+bertambah mengikut keperluan semasa.
+Tidak Berkenaan
+Kod Ruang
+Kod yang mewakili ruang bagi setiap aras.
+4 numeric characters dan berkembang seterusnya mengikut keperluan.
+- *Satu Angka (min)
+4 numeric characters adalah bersifat fleksibel dan jumlah digit seterusnya
+hanya akan bertambah mengikut keperluan semasa pada setiap aras.
+Tidak berkenaan.
+Kod Komponen – Peringkat 1 hingga 7
+Kod yang mewakili komponen di dalam ruang berkaitan.
+2 numeric characters
+2 numeric characters adalah mencukupi untuk menerangkan Kod
+Komponen SKATA setiap peringkat.
+Rujuk Jadual 30
+
+50
+
+6.
+
+DATA KOD
+
+Merupakan data kod yang digunakan dalam aplikasi pengurusan Aset Tak Alih Kerajaan.
+
+6.1
+
+DPA
+Kod yang digunakan bagi DPA
+a)
+
+Jadual 21 : Kod Kategori Premis Bangunan
+
+BIL
+
+DPA
+
+1
+
+Bangunan
+
+2
+
+Bangunan
+
+KATEGORI
+PREMIS
+
+KOD
+
+DEFINISI
+
+Residential
+(Kediaman)
+
+BA
+
+Bangunan atau harta tanah ditetapkan untuk
+digunakan sebagai premis untuk unit-unit
+kediaman atau rumah
+
+Commercial
+(Komersial)
+
+BB
+
+Bangunan atau harta tanah yang dibina untuk
+kegunaan premis; aktiviti perniagaan seperti
+perdagangan dan perkhidmatan.
+
+3
+
+Bangunan
+
+Industrial
+(Industri)
+
+BC
+
+4
+
+Bangunan
+
+Institutional
+(Keinstitusian)
+
+BD
+
+5
+
+Bangunan
+
+Educational
+(Pendidikan)
+
+BE
+
+6
+
+Bangunan
+
+Religious
+(Rumah Ibadah)
+
+BF
+
+Bangunan atau harta tanah yang dibina untuk
+kegunaan premis; aktiviti pembuatan dan
+pemprosesan berkaitan industri, baik pulih,
+perkhidmatan,
+faundri
+dan
+gudang
+penyimpanan.
+Bangunan atau premis yang dibina khusus
+untuk kegunaan kerajaan dan agensinya,
+kedutaan asing dan lain-lain tujuan awam
+termasuk bangunan atau premis untuk
+kegunaan kesihatan dan keselamatan.
+Bangunan atau premis yang dibina bertujuan
+untuk pendidikan.
+Bangunan atau premis yang digunakan untuk
+hal-hal keagamaan dan aktiviti yang berkaitan
+dengan itu.
+Senarai di
+rekreasi:
+
+7
+
+Bangunan
+
+Recreational
+(Rekreasi)
+
+BG
+
+8
+
+Bangunan
+
+Cemetery
+(Perkuburan)
+
+BH
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+bawah
+
+merangkumi
+
+kawasan
+
+Stadium, Kompleks Sukan, Kompleks Renang,
+Kolam
+Renang,
+Velodrome,
+Taman
+Permainan, Padang Golf, Padang Polo,
+Taman, Taman Tema, Litar Lumba, Padang
+Lumba, Padang Sasar Golf dan Zoo.
+Tempat pengebumian.
+
+51
+
+b)
+
+Jadual 22 : Kod Kategori Premis Infrastruktur Air
+DPA
+
+B KATEGORI
+I
+PREMIS
+L
+
+KOD
+
+1
+
+Air
+
+Shoreline Structure
+
+HB
+
+2
+
+Air
+
+Port and Harbours
+
+HD
+
+3
+
+Air
+
+Inland Water
+
+HH
+
+4
+
+Air
+
+River Structure
+
+HJ
+
+5
+
+Air
+
+Hydrological
+Station
+
+HM
+
+6
+
+Air
+
+Relief Portrayal
+
+RA
+
+7
+
+Air
+
+Land
+Transportation
+
+TA
+
+8
+
+Air
+
+Water Supply
+
+UC
+
+c)
+
+DEFINISI
+
+Premis yang digunakan atau dibina untuk
+tujuan tebatan banjir, kawalan hakisan, kualiti
+air , pengairan, saliran pertanian, cerapan data,
+bekalan air, pengangkutan, rekreasi, akuakultur
+dan lain-lain.
+
+Jadual 23 : Kod Kategori Premis Infrastruktur Pembetungan
+
+BIL
+
+DPA
+
+1
+
+Pembentungan
+
+KATEGORI
+PREMIS
+Sistem
+Rawatan
+Kumbahan
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+KOD
+
+UF
+
+DEFINISI
+
+Loji Rawatan, Stesen Pengepam,
+Pembentung dan Lurang Sisa Buangan.
+
+Paip
+
+52
+
+d)
+
+BIL
+
+Jadual 24 : Kod Kategori Premis Lain-lain Infrastruktur
+
+KATEGORI
+PREMIS
+
+DPA
+
+1
+
+Infrastruktur
+
+e)
+
+Infrastructure /
+Built-Up
+
+KOD
+
+DEFINISI
+
+BJ
+
+Lapangan Terbang, Pelabuhan,Terminal Teksi,
+Terminal
+Bas,
+Terminal
+Penghubung
+Pengangkutan, Depoh Bas, Depoh Landasan,
+Depoh Kargo, Kompleks Stesen Janakuasa,
+Kompleks Sub-stesen Janakuasa, Kompleks
+Takungan, Kompleks Loji Rawatan Air,
+Kompleks Rumah Pam,
+Kompleks Tangki, Kompleks Satelit Bumi,
+Kompleks Stesen VSAT, Kompleks Pusat
+Stesen Radio Selular, Kompleks Pertukaran,
+Stesen Kompleks Bukit, Kompleks Stesen
+Radio, Kompleks Menara Antena, Kompleks
+Menara
+Telekom,
+Stesen
+Kompleks
+Pemindahan,
+Kompleks
+Loji
+Rawatan
+Buangan,
+Kompleks
+Loji
+Rawatan
+Pembetungan, Kompleks Loji Pembakaran,
+Kompleks
+Kebuk
+Sampah,
+Kompleks
+Tambakan Selamat, Stesen Kompleks Pam
+Pembetungan, Kompleks Kolam,
+Stesen
+Kompleks Pagar Utama, Stesen Petrol,
+Kawasan Letak Kereta dan Tapak Sejarah.
+
+Jadual 25 : Kod Jenis Laluan Jalan Persekutuan Infrastruktur Jalan
+
+BIL
+
+DPA
+
+JENIS LALUAN BAGI
+JALAN PERSEKUTUAN
+
+KOD
+
+DEFINISI
+
+1
+
+Jalan
+
+Jalan Persekutuan Utama
+
+1
+
+Jalan yang menghubungkan bandarbandar utama
+
+2
+
+Jalan
+
+Jalan Persekutuan Felda
+
+2
+
+Rangkaian jalan yang dibina dalam
+kawasan Lembaga Kemajuan Tanah
+Persekutuan (FELDA)
+
+3
+
+Jalan
+
+Jalan Masuk Ke Institusi
+Persekutuan Utama
+
+4
+
+Jalan
+
+Jalan Masuk Ke Kawasan
+Perindustrian
+
+4
+
+Jalan masuk ke kawasan perindustrian
+yang telah diwartakan
+
+5
+
+Jalan
+
+Jalan Masuk Ke Lembaga
+Tanah Kemajuan Wilayah
+
+5
+
+Jalan masuk ke kawasan Lembaga
+Kemajuan Wilayah seperti
+KETENGAH, DARA dan KESEDAR
+
+6
+
+Jalan
+
+Jalan Wilayah Persekutuan
+
+6
+
+7
+
+Jalan
+
+Jalan Persekutuan Felda
+(Perkampungan)
+
+7
+
+8
+
+Jalan
+
+Lebuhraya
+
+8
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+3
+
+Jalan masuk ke bangunan / institusi
+Kerajaan
+Persekutuan,
+lapangan
+terbang,
+pelabuhan
+atau
+stesen
+pemancar
+
+Merupakan jalan-jalan Persekutuan yang
+diwartakan
+di
+dalam
+Wilayah
+Persekutuan yang ditetapkan
+Merupakan rangkaian jalan di dalam
+kawasan perkampungan Felda
+Laluan express antara bandar yang
+mengenakan tol
+
+53
+
+6.2
+
+DAK
+Kod yang digunakan bagi DAK
+a)
+
+Jadual 26 : Kod Fungsi Binaan
+
+Jadual kod fungsi binaan ini adalah merujuk kepada dokumen Feature and Attribute Codes (MS-1759).
+Manakala jadual di bawah merupakan sebahagian senarai umum yang dicabut daripada dokumen
+tersebut.
+
+Bil.
+
+Kod
+Fungsi
+Binaan
+
+1
+
+BA0010
+
+2
+
+BB0010
+
+3
+
+BB0030
+
+4
+
+BB0031
+
+5
+
+BB0040
+
+6
+
+BB0050
+
+7
+
+BB0060
+
+8
+
+BB0061
+
+9
+
+BB0070
+
+10
+
+BB0080
+
+11
+
+BB0081
+
+12
+
+BB0082
+
+13
+
+BB0090
+
+14
+
+BB0100
+
+15
+
+BC0010
+
+16
+
+BD0010
+
+17
+
+BD0020
+
+18
+
+BD0021
+
+19
+
+BD0030
+
+20
+
+BD0040
+
+21
+
+BD0041
+
+Fungsi Binaan
+Bangunan Kediaman
+Residential Building
+Bangunan Komersial
+Commercial Building
+Pejabat
+Office
+Rumah Kedai
+Shop Office/Shop House
+Pejabat Pos
+Post Office
+Bank
+Bank
+Hotel
+Hotel
+Apartment dan Hotel
+Apartel
+Pasar
+Market
+Arked beli-belah
+Shopping Arcade/Complex
+Pasaraya
+Hypermarket/Supermarket
+Kedai Runcit
+Retail
+Pusat Hiburan
+Entertainment Centre
+Restoran
+Restaurant
+Kilang
+Industrial Building
+Bangunan Kerajaan
+Institutional Building
+Hospital
+Hospital
+Klinik
+Clinic
+Balai Bomba
+Fire and Rescue Station
+Balai Polis
+Police Station
+Pusat Latihan Polis
+Police Training Centre
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Bil.
+
+Kod
+Fungsi
+Binaan
+
+22
+
+BD0044
+
+23
+
+BD0045
+
+24
+
+BD0050
+
+25
+
+BD0051
+
+26
+
+BD0060
+
+27
+
+BD0061
+
+28
+
+BD0070
+
+29
+
+BD0071
+
+30
+
+BD0072
+
+31
+
+BD0080
+
+32
+
+BD0090
+
+33
+
+BD0100
+
+34
+
+BD0110
+
+35
+
+BD0120
+
+36
+
+BD0140
+
+37
+
+BD0150
+
+38
+
+BD0151
+
+39
+
+BD0152
+
+40
+
+BD0155
+
+41
+
+BD0160
+
+42
+
+BD0161
+
+Fungsi Binaan
+Pusat Pemulihan
+Rehabilitation Centre
+Penjara
+Prison
+Kem Tentera
+Army Camp
+Pusat Latihan Tentera
+Army Training Centre
+Pejabat Kerajaan
+Government Office
+Pejabat Kedutaan Asing
+Foreign Diplomatic Mission
+Parlimen
+Parliament House
+Dewan Undangan Negeri
+State Assembly House
+Dewan Bandar
+Town Hall
+Mahkamah
+Court
+Muzium
+Museum
+Pusat Sains
+Science Centre
+Pusat Seni/ Kebudayaan
+Art Theatre (National Theatre)
+Perpustakaan
+Library
+Istana
+Palace
+Rumah Guna sama
+Multi-Purpose House
+Dewan Komuniti
+Community Hall
+Asrama
+Hostel
+Rumah Kelab
+Club House
+Rumah Kebajikan
+Welfare Home
+Rumah Orang Tua
+Old Folk Home
+
+54
+
+Bil.
+
+Kod
+Fungsi
+Binaan
+
+43
+
+BD0042
+
+44
+
+BD0162
+
+45
+
+BD0170
+
+46
+
+BD0180
+
+47
+
+BE0010
+
+48
+
+BF0010
+
+49
+
+BG0010
+
+50
+
+BH0020
+
+51
+
+BH0040
+
+52
+
+BJ0010
+
+53
+
+BJ0020
+
+Bil.
+
+Kod
+Fungsi
+Binaan
+
+Pondok Polis
+Police Beat
+
+54
+
+BJ0030
+
+Stesen Keretapi
+Rail Terminal/Railway Station
+
+Rumah Orang Kurang Upaya
+Handicapped Home
+
+55
+
+BJ0040
+
+Terminal Bersepadu
+Integrated Transportation
+Terminal
+
+56
+
+BJ0050
+
+57
+
+BJ0060
+
+58
+
+BJ0080
+
+59
+
+BJ0030
+
+60
+
+BJ0371
+
+Fungsi Binaan
+
+Pusat Penyelidikan Pertanian
+Agricultural Station
+Pusat Penyelidikan/ Makmal
+Research Station / Laboratory
+Bangunan Pendidikan
+Educational Building
+Rumah Ibadat
+Building of Worship
+Stadium
+Stadium
+Pusat Pembakaran Mayat
+Crematorium
+Pusat Penyimpanan Abu Mayat
+Columbarium
+Stesen Teksi
+Taxi Terminal/Taxi Stand
+Stesen Bas
+Bus Terminal/Bus Stand
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+61
+
+BJ0430
+
+62
+
+BJ0440
+
+63
+
+BJ0450
+
+64
+
+BJ0460
+
+Fungsi Binaan
+
+Bengkel Bus
+Bus Depot
+Bengkel Keretapi
+Rail Depot
+Terminal Jeti
+Jetty Terminal
+Stesen Minyak
+Petrol Station
+Bagunan Parkir Kereta
+Parking Complex
+Bangunan Berpusat Penyaman
+Udara
+Centralised Air Conditioning
+Building
+Terminal Lapangan Terbang
+Airport Terminal
+Pondok Pengawal
+Guard House
+Tandas Awam
+Public Toilet
+
+55
+
+b)
+A 00 00
+A 01 00
+A 01 01
+A 01 05
+A 01 09
+A 01 13
+A 01 99
+A 02 00
+A 02 01
+A 02 99
+A 03 00
+A 03 01
+A 03 05
+A 03 09
+A 03 13
+A 03 17
+A 03 21
+A 03 25
+C 00 00
+C 01 00
+C 01 01
+C 01 05
+C 01 09
+C 01 13
+C 01 17
+C 01 99
+C 02 00
+C 02 01
+C 02 05
+C 02 09
+C 02 13
+C 02 17
+C 02 21
+C 02 25
+C 02 99
+C 03 00
+C 03 01
+C 03 05
+C 03 09
+C 03 13
+C 03 17
+C 03 99
+C 04 00
+C 04 01
+C 04 05
+C 04 99
+
+Jadual 27 : Kod Jenis/ Kategori/ Fungsi Ruang
+Ruang Kebudayaan / Keagamaan (Cultural Spaces)
+Ruang Ibadat
+Meditasi
+Ruang Sembahyang / Surau
+Altar
+Ruang Refleksi
+Ruang Ibadat Lain
+Ruang Transformasi
+Ruang Perkahwinan
+Ruang Transformasi Lain
+Ruang Contemplation
+Galeri Seni
+Galeri Muzium
+Galeri Pameran
+Sculpture Garden
+Taman Hiasan
+Dek Pemerhatian
+Zen Garden
+Ruang Sirkulasi (Circulation Spaces)
+Ruang Sirkulasi Mendatar
+Koridor/ Langkan / Lorong
+Dataran
+Ruang Legar
+Laluan Pejalan Kaki Bermotor / Bergerak
+Laluan OKU
+Ruang Sirkulasi Mendatar Lain
+Ruang Sirkulasi Menegak
+Tangga
+Tangga Jalan Keluar
+Tangga Istiadat
+Tangga Bermotor / Bergerak
+Tanjakan (Ramp)
+Gabungan Tangga dan Tanjakan
+Dumbwaiter
+Ruang Sirkulasi Menegak Lain
+Ruang Sirkulasi Transit
+Lobi Masuk
+Lobi lif
+Landing
+Ruang Antara (Ante - Room)
+Ruang Jaringan Udara (Air Lock)
+Ruang Edaran Transit Lain
+Ruang Pejalan Kaki (Luar Bangunan)
+Kaki Lima
+Laluan Pejalan Kaki (Pedastrian Way, Footpath, Gang way, Trail, Walkway)
+Laluan Pejalan Kaki Lain
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+56
+
+F 00 00
+F 01 00
+F 01 01
+F 01 05
+F 01 09
+F 01 13
+F 01 17
+F 01 99
+F 02 00
+F 02 01
+F 02 05
+F 02 09
+F 02 13
+F 02 17
+F 02 21
+F 02 25
+F 02 99
+F 03 00
+F 03 01
+F 03 05
+F 03 09
+F 03 13
+F 03 99
+H 00 00
+H 01 00
+H 01 01
+H 01 05
+H 01 09
+H 01 13
+H 01 99
+H 02 00
+H 02 01
+H 02 05
+H 02 09
+H 02 99
+H 03 00
+H 03 01
+H 03 05
+H 03 09
+H 03 99
+L 00 00
+L 01 00
+L 01 01
+L 01 05
+L 01 09
+L 01 13
+L 01 17
+L 01 21
+L 01 25
+L 01 99
+
+Ruang Servis Fasiliti (Facility Service Spaces)
+Ruang Kemudahan Perkhidmatan
+Akses Servis (Access Chamber)
+Laluan Servis
+Ruang Servis
+Laluan Udara (Air Shaft)
+Ruang Cahaya (Light Well)
+Ruang Kemudahan Perkhidmatan Lain
+Ruang Perkhidmatan Peralatan Infrastruktur
+Bilik Peralatan
+Bilik Server
+Bilik Mekanikal
+Bilik Elektrik
+Bilik Komunikasi
+Laluan Pemindahan ( Transfer Vault)
+Laluan Lif (Lift Shaft)
+Ruang Kemudahan Peralatan Lain-lain
+Ruang Pengagihan Perkhidmatan
+Ruang Pengagihan Kuasa
+Ruang Pengedaran Maklumat Bersyarat
+Ruang Pengagihan Gas
+Ruang Pengagihan Cecair
+Ruang Pengagihan Perkhidmatan Lain
+Ruang Penjagaan (Care Spaces)
+Ruang Rapi Diri (Grooming)
+Ruang Solek
+Ruang Memotong Rambut
+Ruang Bersih Diri (Tandas / Bilik Air / Wuduk / Bilik Basuh)
+Ruang Persalinan
+Ruang Rapi Lain
+Ruang Penjagaan Kanak-kanak
+Ruang Penjagaan Harian Kanak-kanak / Pra Sekolah
+Bilik Bermain
+Bilik Menyusu
+Ruang Penjagaan Kanak-kanak Lain
+Ruang Pemulihan Diri
+Bilik Wap
+Kolam Berpusar
+Sauna
+Ruang Pemulihan Lain
+Ruang Perlindungan / Larangan (Protection Spaces)
+Ruang Perlindungan Cuaca
+Parkir Berbumbung
+Anjung Masuk (Porch)
+Garaj
+Laluan Pejalan Kaki Berlindung
+Kanopi
+Bilik Dilindungi
+Bilik Pembendungan
+Ruang Perlindungan Cuaca Lain
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+57
+
+L 02 00
+L 02 01
+L 02 05
+L 02 09
+L 02 13
+L 02 99
+L 03 00
+L 03 01
+L 03 05
+L 03 09
+L 03 13
+L 03 17
+L 03 99
+
+Ruang Perlindungan
+Bilik Selamat
+Bilik Keselamatan
+Bunker
+Tempat Perlindungan Bom
+Ruang Perlindungan Lain
+Ruang Perlindungan Haiwan
+Sangkar
+Gerai Haiwan
+Stable
+Kennel
+Akuarium
+Ruang Perlindungan Haiwan Lain
+
+N 03 00
+N 03 01
+N 03 05
+N 03 09
+N 03 99
+
+Ruang Niaga (Commercial Spaces)
+Ruang Jual Beli
+Ruang Niaga Am / Kedai
+Kawasan Mesin Runcit
+Dewan / Ruang Pameran Niaga
+Ruang Demonstrasi
+Ruang Lelong
+Ruang Membeli, Menjual dan Lain –lain
+Ruang Kafeteria / Kantin
+Ruang Mencuci Tangan
+Ruang Makanan dan Minuman
+Ruang Kuih dan Lauk Pauk
+Ruang Kafeteria / Kantin Lain
+Ruang Perbankan
+Mesin ATM
+Ruang Mesin ATM
+Bilik Kebal Barang Berharga dan Wang
+Ruang Perbankan Lain
+
+P 00 00
+P 01 00
+P 01 01
+P 01 05
+P 01 09
+P 01 13
+P 01 17
+P 01 21
+P 01 25
+P 01 29
+P 01 33
+P 01 37
+P 01 41
+P 01 45
+P 01 49
+P 01 53
+P 01 99
+
+Ruang Interaksi (Interaction Space)
+Ruang Perjumpaan (Gathering Space) & Ruang Mesyuarat
+Ruang Taklimat
+Ruang Seminar
+Ruang Bilik Darjah/ Kuliah / Kelas
+Ruang Dewan / Dewan Perhimpunan / Serba Guna (Selain Dewan Makan)
+Ruang Kaunter Pertanyaan / Pendaftaran / Penerimaan / Resepsi
+Ruang Mesyuarat / Perbincangan
+Ruang Persidangan
+Ruang Sidang Media
+Ruang Media
+War Room / Operasi
+Ruang Pemprosesan
+Ruang Perundingan
+Ruang / Bilik Perkhidmatan (Khidmat Pelanggan / Kaunter)
+Ruang Pelawat / Balai Pelawat / Melawat
+Ruang Perjumpaan Lain
+
+N 00 00
+N 01 00
+N 01 01
+N 01 05
+N 01 09
+N 01 13
+N 01 17
+N 01 99
+N 02 00
+N 02 01
+N 02 05
+N 02 09
+N 02 99
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+58
+
+P 02 00
+P 02 01
+P 02 05
+P 02 09
+P 02 13
+P 02 17
+P 02 21
+P 02 99
+
+Ruang Persembahan Dan Jamuan
+Ruang Persembahan Umum
+Ruang Orang Kenamaan
+Ruang Penonton
+Ruang Sokongan Persembahan
+Ruang Bankuet
+Dewan Makan / Ruang Jamuan
+Ruang Persembahan dan Jamuan Lain
+
+Q 00 00
+Q 01 00
+Q 01 01
+Q 01 05
+Q 01 09
+Q 01 13
+Q 01 17
+Q 01 99
+
+Ruang Istirahat / Penginapan (Resting Spaces)
+Ruang Rehat Umum
+Kawasan Rehat
+Hentian Rehat
+Ruang Rehat Umum
+Bilik Rehat / Pantry
+Ruang Kenamaan (Duta / Pesuruhjaya Tinggi / VIP)
+Ruang Rehat Lain
+Ruang Penginapan
+Bilik Tidur
+Kuarters
+Loteng
+Rumah Askar
+Domitori
+Hotel / Peranginan
+Ruang Jemuran
+Ruang Penginapan Lain
+Ruang Menunggu
+Bilik Menunggu
+Ruang Beratur
+Bilik Persediaan
+Ruang Menunggu Lain
+
+Q 02 00
+Q 02 01
+Q 02 05
+Q 02 09
+Q 02 13
+Q 02 17
+Q 02 21
+Q 02 25
+Q 02 99
+Q 03 00
+Q 03 01
+Q 03 05
+Q 03 09
+Q 03 99
+R 00 00
+R 01 00
+R 01 01
+R 01 05
+R 01 09
+R 01 13
+R 01 17
+R 01 21
+R 01 25
+R 01 29
+R 01 33
+R 01 37
+R 01 99
+R 02 00
+R 02 01
+R 02 05
+R 02 99
+
+Ruang Rekreasi (Recreation Spaces)
+Ruang Bukan Olahraga
+Taman Permainan
+Astaka
+Taman Awam
+Bilik Media (Wartawan / TV / Radio / Akhbar)
+Ruang Rekreasi / Sukan
+Taman Permainan
+Bilik / Ruang Permainan / Gelanggang / Padang
+Lapang Sasar
+Ruang Hiburan
+Ruang Rekreasi Maya
+Ruang Bukan Olahraga Lain
+Ruang Olahraga
+Ruang Olahraga Berpasukan
+Ruang Olahraga Individu
+Ruang Olahraga Lain
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+59
+
+R 03 00
+R 03 01
+R 03 05
+R 03 09
+R 03 13
+R 03 99
+
+Ruang Kecergasan
+Ruang Senaman
+Ruang Latih Tubi
+Studio Aerobik
+Bilik Latihan
+Ruang Kecergasan Lain
+
+S 00 00
+S 01 00
+S 01 01
+S 01 05
+S 01 09
+S 01 13
+S 01 17
+S 01 21
+S 01 25
+S 01 29
+S 01 33
+S 01 37
+S 01 99
+
+S 03 00
+S 03 01
+S 03 05
+S 03 09
+S 03 13
+S 03 17
+S 03 21
+S 03 99
+
+Ruang Penyimpanan (Storage Spaces)
+Ruang Simpanan Tetap
+Ruang / Bilik Simpanan / Stor
+Bilik Kebal
+Ruang Simpanan Pakaian (Kot / Almari Pakaian / Coat Check)
+Bilik Loker
+Ruang Fail
+Bilik Bekalan
+Ruang Gudang
+Ruang Kenderaan
+Ruang Sisa
+Ruang Kitar Semula
+Ruang Simpanan Tetap Lain
+Ruang Simpanan Kawalan Alam Sekitar
+Bilik Alam Sekitar
+Kompartmen Penyejukbekuan
+Kompartmen Sejuk
+Ruang Simpanan Kompartmen Kering
+Ruang Simpanan Kawalan
+Ruang Simpanan Kompartmen Vakum
+Ruang Simpanan Alam Sekitar Lain
+Ruang Simpanan Khas
+Ruang Simpanan Bilik Sanitari
+Ruang Simpanan Bilik Kotor
+Ruang Simpanan Bahan Berbahaya
+Ruang Simpanan Organik Kekal
+Tuntutan Bagasi
+Bilik Bukti
+Ruang Simpanan Khas Lain
+
+W 00 00
+W 01 00
+W 01 01
+W 01 05
+W 01 09
+W 01 13
+W 01 17
+W 01 21
+W 01 25
+W 01 29
+W 01 99
+
+Ruang Kerja Khusus (Work Spaces)
+Ruang Pentadbiran dan Pejabat
+Ruang Kaunter Penyambut Tetamu / Pas Keselamatan
+Ruang Guru / Tenaga Pengajar / Pensyarah
+Bilik Pegawai
+Bilik Pembantu / Tutor / Pengawas / Penolong
+Bilik Pendaftar
+Bilik / Pejabat Ketua Bidang
+Pejabat Pengetua
+Bilik Jurubahasa
+Ruang Pentadbiran dan Pejabat Lain
+
+W 02 00
+W 02 01
+W 02 05
+W 02 09
+
+Ruang Pendidikan dan Kreatif
+Ruang Kreatif (Studio / Suntingan)
+Ruang Belajar / Study
+Ruang Komputer (Bilik / Makmal)
+
+S 02 00
+S 02 01
+S 02 05
+S 02 09
+S 02 13
+S 02 17
+S 02 21
+S 02 99
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+60
+
+W 02 13
+W 02 17
+W 02 21
+W 02 25
+W 02 99
+W 03 00
+W 03 01
+W 03 05
+W 03 09
+W 03 13
+W 03 17
+W 03 21
+W 03 25
+W 03 99
+W 04 00
+W 04 01
+W 04 05
+W 04 09
+W 04 13
+W 04 17
+W 04 21
+W 04 25
+W 04 29
+W 04 33
+W 04 37
+W 04 41
+W 04 45
+W 04 49
+W 04 53
+W 04 57
+W 04 61
+W 04 65
+W 04 69
+W 04 73
+W 04 77
+W 04 81
+W 04 85
+W 04 89
+W 04 93
+W 04 99
+W 05 00
+W 05 01
+W 05 05
+W 05 09
+W 05 13
+W 05 17
+W 05 21
+W 05 25
+W 05 29
+W 05 33
+W 05 37
+W 05 41
+W 05 45
+
+Makmal (Selain Komputer)
+Bengkel
+Pendidikan Khas
+Bilik Kaunseling
+Ruang Pendidikan dan Kreatif Lain
+Ruang Badan Kehakiman
+Ruang Bicara
+Bilik Keselamatan Juri
+Ruang Juri
+Kerusi Hakim
+Kamar Hakim / Majistret
+Ruang / Kandang Saksi
+Bilik Mendengar
+Ruang Badan Kehakiman Lain
+Ruang Kesihatan
+Ruang / Bilik Rawatan
+Ruang Pengimejan
+Ruang Kecemasan
+Ruang Pemeriksaan Fizikal
+Labour & Delivery
+Neonatal Intencive Care Unit (NICU)
+Intensive / Cardiac Care Unit (ICU / CCU)
+Central Sterile Services (CSS)
+Anaesthetist
+Patholagy & Blood Bank
+Haemodialysis
+Pergigian
+Mortuary
+Ruang Pemulihan
+Bilik Kaunseling
+Ruang Penjagaan / Wad
+Bilik Pengasingan
+Ruang Penjagaan Harian
+Ruang Pembedahan / Dewan Bedah
+Dewan / Bilik Bersalin
+Bilik Rehabilasi
+Bilik Pengimejan dan Pengimbasan
+Farmasi
+Rekod Perubatan
+Bilik Kesihatan Lain
+Ruang Perpustakaan
+Ruang Pembaca
+Ruang Koleksi
+Ruang Kawalan
+Ruang Audio / Video
+Ruang Proses
+Bilik Tayangan
+Bilik Rakaman
+Ruang Penyelenggaraan Bahan Media
+Ruang Bercerita
+Ruang Pemprosesan Data
+Ruang Untuk Golongan Istimewa
+Ruang Pembaikan Bahan
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+61
+
+W 05 49
+W 05 53
+W 05 57
+W 05 99
+W 06 00
+W 06 01
+W 06 05
+W 06 09
+W 06 99
+W 07 00
+W 07 01
+W 07 05
+W 07 09
+W 07 13
+W 07 99
+W 08 00
+W 08 01
+W 08 05
+W 08 09
+W 08 13
+W 08 99
+W 09 00
+W 09 01
+W 09 05
+W 09 09
+W 09 13
+W 09 17
+W 09 21
+W 09 25
+W 09 29
+W 09 33
+W 09 37
+W 09 41
+W 09 45
+W 09 49
+W 09 53
+W 09 57
+W 09 61
+W 09 65
+W 09 69
+W 09 99
+
+Ruang Pembelajaran Jarak jauh
+Bilik Karel
+Bilik Sumber / Bilik / Ruang Bacaan
+Ruang Perpustakaan Lain
+Ruang Pengeluaran, Pembuatan dan Pemprosesan
+Ruang Pengeluaran
+Ruang Pembuatan
+Ruang Pemprosesan
+Ruang Pengeluaran, Pembuatan dan Pemprosesan yang Lain
+Ruang Memasak
+Ruang Dapur Kering
+Ruang Dapur Basah
+Ruang Mencuci
+Ruang Penyediaan
+Ruang Masak Lain
+Ruang Operasi dan Kawalan
+Ruang Bilik Kawalan
+Ruang Kokpit
+Ruang Memandu
+Ruang Kawalan Kapal
+Ruang Operasi dan Kawalan Lain
+Ruang Keselamatan
+Ruang Tahanan / Lokap /Jel /reman
+Bilik Detil
+Bilik Kebajikan
+Bilik Pemeriksaan (Selain Kesihatan)
+Bilik Gerakan
+Bilik Siap Siaga
+Ruang Merotan
+Ruang Gantung
+Sally Port
+Ruang Soal Siasat
+Bilik Maklumat
+Bilik Gelap
+Bilik Pengecaman / Pemerhati
+Bilik Mengosongkan Senjata
+Tempat Barang Kes
+Stor Keselamatan (Senjata / Barang Kes / CSI)
+Stesen Minyak
+Sel / Penjara
+Ruang Keselamatan Lain
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+62
+
+c)
+
+Jadual 28 : Kod Binaan Luar
+
+Jadual kod binaan luar ini adalah merujuk kepada dokumen Feature and Attribute Codes (MS-1759).
+Manakala jadual di bawah merupakan sebahagian senarai umum yang dicabut daripada dokumen
+tersebut.
+
+1
+
+Kod
+Binaan
+Luar
+AB0030
+
+Aerodrome Control Tower
+
+2
+3
+4
+5
+6
+7
+
+AB0050
+AB0180
+AB0190
+AB0200
+AB0230
+AB0300
+
+8
+9
+10
+
+BB0020
+BD0130
+BG0021
+
+11
+
+BG0022
+
+12
+13
+14
+15
+
+BG0040
+BG0050
+BG0060
+BG0070
+
+16
+17
+18
+19
+20
+21
+
+BG0080
+BG0090
+BG0092
+BG0110
+BG0120
+BG0130
+
+Polo Field
+Park
+Cottage/ Wakaf
+
+22
+23
+24
+25
+26
+27
+
+BG0142
+BG0160
+BG0170
+BG0410
+BH0010
+BJ0021
+
+Stable
+Equestrian Centre
+Futsal Centre
+Lanscape
+Cemetery
+Bus Stop/ Taxi Stop
+
+28
+29
+30
+31
+32
+33
+
+BJ0070
+BJ0332
+BJ0370
+BJ0380
+BJ0400
+DA0760
+
+Freight Depot
+Petrol/ Diesel Pump
+Parking Area
+Historical Site
+Fencing
+Firing Range Reserve Area
+
+34
+35
+36
+37
+
+GD2100
+GD2200
+GD3100
+GD5000
+
+Mine Pit
+Mine Tailing Area
+Quarry Pit
+Stockpile
+
+Bil.
+
+38
+
+Kod
+Binaan
+Luar
+GG1300
+
+Groundwater Well
+
+Runway
+Taxiway
+Aircraft Parking Area
+Apron
+Radar
+Helicopter Landing Site
+
+39
+40
+41
+42
+43
+44
+
+HB0010
+HB0040
+HC0060
+HD0040
+HD0045
+HD0050
+
+Breakwater
+Revetment
+Fishing Platform
+Jetty/Pier
+Wharf/Quay
+Slipway
+
+Billboard
+Memorial
+Sport Court / Field
+Pavilion (Astaka)/ Tempat
+Duduk
+Swimming Pool
+Velodrome
+Play Ground
+Golf Course
+
+45
+46
+47
+
+HD0060
+HD0070
+HD0080
+
+Dockyard
+Pontoon
+Dry Dock
+
+48
+
+HD0100
+
+Floating Dock
+
+49
+
+HE0010
+
+Beacon
+
+50
+
+HE0020
+
+Light House
+
+51
+52
+53
+54
+55
+56
+
+HH0010
+HH0020
+HH0030
+HH0140
+HH0160
+HJ0030
+
+Dam
+Lake
+Reservoir
+Pool
+Tank
+Weir
+
+57
+58
+59
+60
+61
+62
+
+HL0010
+TA0010
+TA0060
+TA0100
+TA0110
+TA0112
+
+Inland Island/ Island
+Rail Line
+Road
+Round-About
+Track
+Walkway/pedestrian/footpath
+
+63
+64
+65
+66
+67
+68
+
+TA0140
+TA0150
+TA0160
+TA0210
+TA0230
+TA0240
+
+Overhead Crossing
+Toll Plaza
+Subway
+Cable Car Route
+Tunnel
+Bridge
+
+69
+70
+71
+72
+73
+74
+
+UB0130
+UB0180
+UC0020
+UC0080
+UC0170
+UD0070
+
+VSAT Station
+Telecommunication Tower
+Water Treatment Plant
+Pump House
+Chlorine Booster Station
+Gas Service Station
+
+Binaan Luar
+
+Racing Circuit
+Race Course
+Golf Driving Range
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Bil.
+
+Binaan Luar
+
+63
+
+75
+76
+77
+78
+
+Kod
+Binaan
+Luar
+UF0010
+UF0020
+UG0020
+UG0040
+
+Sewerage Treatment Plant
+Sewerage Pump Station
+Waste Treatment Plant
+Incineration Plant
+
+89
+90
+91
+92
+
+Kod
+Binaan
+Luar
+VA1070
+VA1190
+VA1270
+VA1290
+
+79
+80
+81
+82
+83
+
+UG0050
+UG0070
+UH0011
+UH0012
+UH0013
+
+Secure Landfill
+Bin House
+Automated Weather Station
+Climatological Station
+Rainfall Station
+
+84
+
+VA1020
+
+Cocoa
+
+85
+
+VA1030
+
+Coconut
+
+93
+94
+95
+96
+97
+98
+99
+
+VA1310
+VA2010
+VA2030
+VA2050
+VA2070
+VA2080
+VB0000
+
+86
+
+VA1040
+
+Rubber
+
+100
+
+VC1040
+
+87
+88
+
+VA1050
+VA1060
+
+Coffee
+Oil Palm
+
+101
+102
+
+VC1110
+XA0010
+
+Bil.
+
+Binaan Luar
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Bil.
+
+Binaan Luar
+Tea
+Mango
+Pepper
+Rumbia (Metroxylon sagu)
+Fruit Crops/ Mixed Fruit Crops
+Vegetable
+Banana
+Pineapple
+Tabacco
+Tuber Crop
+Forest
+Ornamental Plant (Flowers,
+Foliage and landscape plant)
+Grass
+Slope
+
+64
+
+d)
+
+Jadual 29 : Kod Binaan struktur
+
+Jadual kod binaan luar ini adalah merujuk kepada dokumen Feature and Attribute Codes (MS-1759).
+Manakala jadual di bawah merupakan sebahagian senarai umum yang dicabut daripada dokumen tersebut.
+
+1
+2
+3
+4
+5
+6
+
+Kod
+Binaan Struktur
+BJ0120
+BJ0270
+BJ0390
+BJ0410
+HB0010
+HB0020
+
+7
+8
+9
+10
+11
+12
+
+HB0030
+HB0040
+HB0050
+HB0060
+HB0070
+HD0040
+
+Reclamation Land
+Revetment
+Sea Wall
+Bund
+Outfall
+Jetties And Piers
+
+13
+14
+15
+16
+17
+18
+
+HH0010
+HH0180
+HH0190
+HH0210
+HH0210
+HH0210
+
+Dam
+Irrigation Drain
+Irrigation Channel
+Storage Pond
+Attenuation Pond
+Holding Pond
+
+19
+20
+21
+22
+23
+24
+
+HJ0010
+HJ0010
+HJ0020
+HJ0030
+HJ0030
+HJ0050
+
+Water Control Structure
+Intake / Offtake outfall / Inlet / Outlet Structure
+Riverbank Protection
+Wier
+Diversion Wier
+Riverlock
+
+25
+26
+27
+28
+29
+30
+
+HJ0060
+HJ0070
+HJ0080
+HJ0080
+HJ0090
+HM0010
+
+Barrage
+Tidal Control Gate
+Trap Boom
+Concrete Pipe GPT / Trash Rake / Log Boom
+Culvert
+Hidrological Station (Rainfall & Water Level)
+
+31
+32
+33
+34
+35
+36
+
+RA0080
+TA0060
+TA0230
+TA0240
+UC0080
+UC0160
+
+Embankment (River Bund)
+Farm Road
+Tunnel
+Bridge
+Pump House (PH)
+Interceptor
+
+37
+
+UG0020
+
+Fat, Oil and Grease (FOG)
+
+Bil.
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Binaan Struktur
+River Water Treatment Plant
+Waste Water Treatment Plant
+Baffle Wall
+Bypass Channel
+Breakwater
+Groyne
+
+65
+
+e)
+
+Jadual 30 : Kod Komponen
+Kod komponen ini digunakan sebagai No.ID kepada komponen Aset Tak Alih yang akan
+didaftarkan.
+
+i.
+
+Kaedah Penggunaan Jadual Kod Komponen SKATA
+
+Langkah-langkah penggunaan kod adalah seperti berikut:
+
+Struktur kod komponen dalam SKATA mengandungi 7 peringkat. Secara umumnya
+peringkat 1 hingga peringkat 2 menjelaskan tentang kumpulan bagi sesuatu komponen.
+Manakala peringkat 3 hingga peringkat 7 menunjukkan kedudukan komponen di bawah
+kumpulan berkaitan.
+Contoh pemilihan komponen yang berada pada peringkat 4
+(Emergency Lighting With Battery Backup)
+
+Langkah 1 :
+Kenalpasti komponen yang berkaitan dan kumpulannya pada peringkat 1
+(Electrical and Lighting Specific Products and Equipment)
+
+Langkah 2 :
+Kenalpasti kedudukan kumpulan komponen berkaitan di peringkat 2.
+(Electrical Lighting)
+
+Langkah 3 :
+Kenalpasti kedudukan kumpulan komponen berkaitan di peringkat 3.
+(Emergency Lighting)
+
+Langkah 4:
+Kenalpasti komponen yang dimaksudkan beserta kod yang digunakan
+(Emergency Lighting With Battery Backup)
+
+Kod Keseluruhan :
+Komponen
+Emergency Lighting with Battery Backup
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Kod
+35 47 13 13 00 00 00
+
+66
+
+KOD KOMPONEN SKATA
+Kod SKATA
+
+Peringkat 1
+
+Peringkat 2
+
+Peringkat 3
+
+Peringkat 4
+
+Peringkat 5
+
+Electrical
+Lighting
+
+35 47 00
+
+Peringkat 7
+
+Sinonim
+
+Definisi
+Products specifically related to electricity and
+lighting.
+Includes power transformers, filters,
+conditioners, luminaries, lighting, switches, and
+electrical and lighting control devices. See
+“General Facility Services Products” for
+conduits and wires.
+
+Electrical and
+Lighting Specific
+Products and
+Equipment
+
+35 00 00
+
+Peringkat 6
+
+The application of light to achieve some
+aesthetic or practical effect.
+Emergency
+Lighting
+
+35 47 13
+
+Hard Wired
+Emergency
+Lighting
+Emergency
+Lighting With
+Battery Backup
+Passive
+Emergency
+Lighting Strips
+Emergency
+Lighting Strobe
+
+35 47 13 11
+
+35 47 13 13
+
+35 47 13 15
+35 47 13 17
+Exit Illuminated
+Signs
+
+35 47 15
+
+Battery Backup
+Exit Illuminated
+Signs
+Hard Wired
+Backup Exit
+Illuminated
+Signs
+Self
+Illuminated Exit
+Illuminated
+Signs
+
+35 47 15 11
+
+35 47 15 13
+
+35 47 15 15
+
+Langkah 1
+
+SISTEM KOD ASETTAK ALIH (SKATA)
+
+Langkah 2
+
+Langkah 3
+
+Langkah 4
+
+67
+
+f)
+
+Jadual 31 : Kod Bidang Kejuruteraan (kecuali Infrastruktur Jalan)
+
+Kod
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Bidang Kejuruteraan
+
+A
+
+AWAM & ARKITEK
+
+B
+
+BIO PERUBATAN
+
+E
+
+ELEKTRIK
+
+M
+
+MEKANIKAL
+
+T
+
+ICT / ELV
+
+68
+
+g)
+
+Kod
+
+01
+
+02
+
+03
+
+04
+
+05
+
+06
+
+07
+
+Jadual 32 : Kod Sistem Dan Sub-sistem Aset Bangunan (kecuali Infrastruktur Jalan)
+
+Sistem / Kategori
+Komponen
+
+Sub Struktur
+
+Struktur
+(Super Structure)
+
+Bukaan & Binaan Ruang
+
+Bumbung
+
+Saliran / Perparitan
+
+Bekalan Air
+(Water Supply)
+
+Sewerage & Sanitary
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Kod
+
+Sub-sistem / Sub Kategori Komponen
+
+01
+
+Asas (Foundation)
+
+02
+
+Pangkal Tiang (Stump)
+
+03
+
+Rasuk Tanah (Ground Beam)
+
+04
+
+Tetopi Cerucuk (Pile Cap)
+
+01
+
+Papak (Slab)
+
+02
+
+Tiang (Column)
+
+03
+
+Rasuk (Beam)
+
+04
+
+Tangga (Stair)
+
+05
+
+Landas Angkat (Ramp)
+
+06
+
+Kabel / Rod
+
+07
+
+Dinding Galas Beban (Load Bearing Wall)
+
+08
+
+Apron
+
+09
+
+Platform Penyenggaraan
+
+01
+
+Siling
+
+02
+
+Dinding Dalam
+
+03
+
+Pintu
+
+04
+
+Tingkap
+
+05
+
+Dinding Luar (Building Skin / Facade)
+
+06
+
+Lantai
+
+01
+
+Kemasan Bumbung
+
+02
+
+Struktur / Kerangka Bumbung (Trusses)
+
+03
+
+Papak Bumbung (Bumbung rata / RC Flat Roof)
+
+01
+
+Saliran Permukaan
+
+02
+
+Saliran Bawah Tanah
+
+03
+
+Saliran Air Hujan
+
+01
+
+External Water Reticulation
+
+02
+
+Internal Cold Water Plumbing
+
+03
+
+Internal Hot Water Water Plumbing
+
+01
+
+Pembetungan (Sewerage)
+
+02
+
+Perpaipan Sanitari (Sanitary Plumbing)
+
+03
+
+Lekapan Sanitari / Tandas
+
+04
+
+Tangki Septik
+
+05
+
+Loji Rawatan Kumbahan (STP)
+
+69
+
+Kod
+
+08
+
+Sistem / Kategori
+Komponen
+
+Binaan Dalaman /
+Aksesori
+
+Kod
+01
+
+Perabut Pasang Siap
+
+02
+
+Ornamentasi (Elemen Hiasan)
+
+03
+
+Dinding Sesekat (Partition / Cubicle)
+
+04
+
+Railing
+
+05
+
+07
+
+Sengkuap (Awning)
+Penghadang Cahaya Matahari (Sun Shading
+Device)
+Papan Tanda (Signages)
+
+08
+
+Bidai
+
+09
+
+Raised Floor
+
+01
+
+Lanskap Kejur (Hardscape)
+
+02
+
+Lanskap Lembut (Softscape)
+
+01
+
+Jalan Dalaman (Road)
+
+02
+
+Pagar Perimeter
+
+03
+
+Dataran Kejat
+
+01
+
+Perparitan Cerun
+
+02
+
+Struktur Tembok Penahan Cerun
+
+03
+
+Sistem Pengukuhan Cerun
+
+04
+
+Tutupan Cerun
+
+05
+
+Perabut Cerun
+
+06
+
+Instrumen Cerun
+
+01
+
+Agihan Voltan Tinggi (VT) (HT)
+
+02
+
+Agihan Voltan Rendah (VR) (LV)
+
+03
+
+Sistem Frequency Converter
+
+01
+
+Janakuasa
+
+02
+
+Uniterruptible Power Supply (UPS)
+
+03
+
+Kuasa Solar
+
+04
+
+Mini Hidro
+
+05
+
+Wind Turbine
+
+06
+
+09
+
+10
+
+11
+
+12
+
+13
+
+Sub-sistem / Sub Kategori Komponen
+
+Lanskap
+
+External Work
+
+Cerun
+
+Pengagihan
+
+Bekalan & Bekalan
+Sokongan
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+70
+
+Kod
+
+14
+
+15
+
+16
+
+17
+
+18
+
+Sistem / Kategori
+Komponen
+
+Pencahayaan
+
+Pencahayaan Isyarat &
+Pandu Arah
+
+Agihan Mata Kuasa
+
+Pelindungan
+
+Air Conditioning and
+Mechanical Ventilation
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Kod
+
+Sub-sistem / Sub Kategori Komponen
+
+01
+
+Pencahayaan Dalaman
+
+02
+
+Pencahayaan Kecemasan
+
+03
+
+Pencahayaan Pentas
+
+04
+
+Pencahayaan Keselamatan
+
+05
+
+Pencahayaan Dewan Bedah
+
+06
+
+Pencahayaan Pemeriksaan Perubatan
+
+07
+
+Pencahayaan Limpah
+
+08
+
+Pencahayaan Papan Tanda
+
+09
+
+Pencahayaan Gelanggang
+
+10
+
+Pencahayaan Hiasan
+
+11
+
+Pencahayaan Kawasan & Taman
+
+12
+
+Pencahayaan Jalan
+
+13
+
+Pencahayaan Dalam Air
+
+01
+
+Pencahayaan Rumah Api
+
+02
+
+Pencahayaan Lapangan Terbang
+
+03
+
+Pencahayaan Helipad
+
+04
+
+Pencahayaan Lampu Isyarat
+
+01
+
+Soket Kuasa
+
+02
+
+Pengudaraan
+
+03
+
+Pemanas Air
+
+04
+
+Bekalan Kuasa Peralatan
+
+01
+
+Pelindungan Kilat
+
+02
+
+Pembumian (Elektrik/ Peralatan/ Janakuasa)
+
+01
+
+Water Cooled Chiller
+
+02
+
+Air Cooled Chiller
+
+03
+
+Water Cooled Package
+
+04
+
+Air Cooled Package
+
+05
+
+Air Cooled Split Unit
+
+06
+
+Air Cooled Multi Split Unit
+
+07
+
+Ice Storage
+
+08
+
+Mechanical Ventilation
+
+71
+
+Kod
+
+19
+
+20
+
+21
+
+22
+
+23
+
+24
+
+Sistem / Kategori
+Komponen
+
+Fire Protection
+
+Vertical & Horizontal
+Transportation
+
+Kod
+
+Sub-sistem / Sub Kategori Komponen
+
+01
+
+Hose Reel
+
+02
+
+Wet Riser
+
+03
+
+Dry Riser
+
+04
+
+Fire Alarm & Detection
+
+05
+
+Sprinkler
+
+06
+
+Pressurization
+
+07
+
+Smoke Spill
+
+08
+
+Total Flooding Gaseous Fire Protection
+
+09
+
+Foam
+
+10
+
+Wet Chemical
+
+11
+
+Pressurized External Hydrant
+
+01
+
+Lift/Elevator
+
+02
+
+Escalator
+
+03
+
+Travellator
+
+01
+
+Dumbwaiter
+
+02
+
+Passenger Loading Bridge
+
+03
+
+Pneumatic Tube
+
+04
+
+Baggage Handling
+
+05
+
+Building Maintenance Hoist Units
+
+06
+
+Winch
+
+07
+
+Slewing Jib Crane
+
+08
+
+Overhead Crane
+
+01
+
+Hardware
+
+02
+
+Software
+
+01
+
+Ventilation
+
+02
+
+Cookers
+
+03
+
+Cleaning
+
+04
+
+Aksesori
+
+05
+
+Hot Water Boiler
+
+01
+
+Cold Rooms
+
+02
+
+Freezer Room
+
+03
+
+Mortuary
+
+Material Handling
+
+Building Automation
+
+Kitchen Equipment
+
+Cold Storage
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+72
+
+Kod
+
+25
+
+26
+
+27
+28
+
+29
+
+30
+
+31
+
+32
+
+Sistem / Kategori
+Komponen
+
+Kod
+
+Sub-sistem / Sub Kategori Komponen
+
+01
+
+Oxygen
+
+02
+
+Medical air (4 bar)
+
+03
+
+Vacuum
+
+04
+
+Nitrogen
+
+05
+
+Surgical air (7 bar)
+
+06
+
+Nitrus Oxide
+
+07
+
+Etonox
+
+08
+
+Anaestatic Gas Scavenging
+
+09
+
+Liquid Petroleum Gas (LPG)
+
+10
+
+Natural Gas
+
+11
+
+Compressed Air
+
+Steam Boiler and Water
+Heater
+
+01
+
+Steam Boiler
+
+02
+
+Water Heater
+
+Swimming pool / Fountain
+Installations
+
+01
+
+Swimming Pool
+
+02
+
+Fountain
+
+Fuel Storage & Delivery
+
+01
+
+Bulk Fuel
+
+01
+
+Primary Plant
+
+02
+
+Secondary & Tertiary Plant
+
+03
+
+Grading Bunker
+
+04
+
+Premix Plant
+
+05
+
+Quaternery Plant
+
+06
+
+Sand Cone
+
+01
+
+Washer
+
+02
+
+Dryer
+
+03
+
+Ironer
+
+01
+
+Solid Waste
+
+02
+
+Waste Water
+
+03
+
+Incineration
+
+01
+
+Target Retrieval
+
+02
+
+Shooting Stalls and Ceiling Guards
+
+03
+
+Bullet Traps
+
+Piped Gas
+
+Quarry
+
+Laundry
+
+Waste Treatment
+
+Shooting Range Equipment
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+73
+
+Kod
+33
+
+34
+
+35
+36
+
+37
+
+38
+
+39
+
+40
+
+Sistem / Kategori
+Komponen
+Weighbridge
+
+Worksyop Equipments
+
+Kod
+
+Sub-sistem / Sub Kategori Komponen
+
+01
+
+Weighbridge Equipments
+
+01
+
+Vehicle Lift
+
+02
+
+Machining Equipments
+
+03
+
+Welding Equipments
+
+01
+
+Vehicle Testing Lane (VST) Equipments
+
+02
+
+Shower Test Equipments
+
+01
+
+Gate / Door
+
+01
+
+Horizontal Cabling
+
+02
+
+Vertical Cabling
+
+03
+
+External Cabling
+
+04
+
+Rak (Racking)
+
+05
+
+Under Floor Cabling
+
+06
+
+Closet
+
+01
+
+Network Equipment
+
+02
+
+Server
+
+03
+
+Data Centre / Server / TCR
+
+04
+
+System & Software
+
+01
+
+Variable Message / E-Bulletin Board
+
+02
+
+Interactive Kiosk
+
+03
+
+Queue Management
+
+01
+
+Surveillance
+
+02
+
+Security Access
+
+03
+
+Perimeter Intrusion Detection System (PIDS)
+
+04
+
+En-route Navigational Aids
+
+05
+
+Terminal Area Landing Aids
+
+Vehicle Testing Lane
+Door & Gate
+
+Infra Pasif
+
+Peralatan Aktif
+
+Paparan Elektronik
+
+Security & Surveillance
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+74
+
+Kod
+
+Sistem / Kategori
+Komponen
+
+Kod
+01
+
+Telephone
+
+02
+
+Radio Communication
+
+03
+04
+41
+
+42
+
+43
+
+44
+
+45
+
+Communication
+
+Navigation
+
+Air Traffic Management
+
+Audio, Visual &
+Broadcasting
+
+Stage
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Sub-sistem / Sub Kategori Komponen
+
+Aeronantical Fixed Telecommunication Network
+Messaging Switching System (AMSS)
+Automatic Dependent Surveillance and Controller Pilot Data Link Communication (ADS CPDLC)
+
+05
+
+Video Conferencing
+
+06
+
+Voice Communication & Control System (VCCS)
+
+07
+
+Search and Rescue Alert Notification (SARAN)
+
+08
+
+Malaysian Aeronautical Information Management
+System (MyAIMS)
+
+01
+
+Instrumen Landing System
+
+02
+
+Doppler VHF Omnidirectional Range (DVOR)
+
+03
+
+Non-Directional Beacon (NDB)
+
+04
+
+Distance Measuring Equipment (DME)
+
+05
+
+Ground Based Augmentation System (GBAS)
+
+01
+
+Flight Data Processing
+
+02
+
+Surveillance Data Processing
+
+03
+
+Controller Working Position
+
+04
+
+Auxiliary Display
+
+05
+
+Recording and Playback
+
+01
+
+SMATV (Satellite Master Antenna TV)
+
+02
+
+Public Address
+
+03
+
+Audio Visual
+
+04
+
+Conference
+
+05
+
+Sound Reinforcement
+
+06
+
+Integrated Control
+
+07
+
+Fireman Intercom
+
+08
+
+Intercom
+
+09
+
+Siren
+
+01
+
+Stage Curtain
+
+75
+
+Kod
+
+46
+
+47
+
+48
+
+49
+
+50
+
+51
+
+52
+
+53
+
+Sistem / Kategori
+Komponen
+
+Anesthesiology and
+Respiratory Products
+
+Kod
+
+Sub-sistem / Sub Kategori Komponen
+
+01
+
+Anesthesiology Furnishings
+
+02
+
+Anesthesiology Equipment
+
+03
+
+Anesthesiology Prefabricated Structures
+
+01
+
+Audiology Equipment
+
+02
+
+Audiology Prefabricated Structures
+
+01
+
+Autopsy and Postmortem Furnishings
+
+02
+
+Autopsy and Postmortem Equipment
+
+03
+
+Autopsy and Postmortem Prefabricated Structures
+
+04
+
+Autopsy and Postmortem Devices
+
+01
+
+Dental Furnishings
+
+02
+
+Dental Equipment
+
+03
+
+Dental Prefabricated Structures
+
+04
+
+Dental Simulation
+
+01
+
+Dermatology Furnishings
+
+02
+
+Dermatology Equipment
+
+03
+
+Dermatology Prefabricated Structures
+
+04
+
+Dermatology Devices
+
+01
+
+Emergency Trauma and Intensive Furnishings
+
+02
+
+Emergency Trauma and Intensive Equipment
+
+03
+
+Emergency Trauma and Intensive Prefabricated
+Structures
+
+01
+
+Endocrinology Equipment
+
+02
+
+Endocrinology Prefabricated Structures
+
+03
+
+Anesthesiology Furnishings
+
+01
+
+Gastroenterology Furnishings
+
+02
+
+Gastroenterology Equipment
+
+03
+
+Gastroenterology Prefabricated Structures
+
+04
+
+Gastroenterology Devices
+
+Audiology Products
+
+Autopsy and Postmortem
+Products
+
+Dental Products
+
+Dermatology Products
+(Hair Nail & Skin)
+
+Emergency Trauma and
+Intensive Care Products
+
+Endocrinology Products
+(Hormon)
+
+Gastroenterology and
+Hepatology Products (Perut)
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+76
+
+Kod
+
+54
+
+55
+
+56
+
+57
+
+Sistem / Kategori
+Komponen
+
+General Internal Medicine
+Products
+
+Therapeutic and Physical
+Therapy Products
+
+Hematology Products (Darah)
+
+Medical Gas Products
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Kod
+
+Sub-sistem / Sub Kategori Komponen
+
+01
+
+General Internal Medicine Furnishings
+
+02
+
+General Internal Medicine Equipment
+
+03
+
+General Internal Medicine Prefabricated Structures
+
+01
+
+Therapeutic and Physical Therapy Furnishings
+
+02
+
+Therapeutic and Physical Therapy Equipment
+
+03
+
+Health Exercise and Physical Therapy Prefabricated
+Structures
+
+01
+
+Hematology Furnishings
+
+02
+
+Hematology Equipment
+
+03
+
+Hematology Prefabricated Structures
+
+01
+
+Medical Air Pressure Control Cabinets
+
+02
+
+Medical Gas Alarm Modules
+
+03
+
+Medical Gas Cylinder Carts
+
+04
+
+Medical Gas Cylinder Stands
+
+05
+
+Medical Gas Delivery Columns
+
+06
+
+Medical Gas Filtering Equipment
+
+07
+
+Medical Gas Manifolds
+
+08
+
+Medical Gas Outlets
+
+09
+
+Medical Gas Service Tracks
+
+10
+
+Medical Gas Shutoff Valves
+
+11
+
+Medical Gas Treatment Equipment
+
+12
+
+Medical Gas Valve Boxes
+
+13
+
+Medical Gas Monitors
+
+14
+
+Gas Analyzers
+
+15
+
+Gas Regulators
+
+77
+
+Kod
+
+58
+
+59
+
+60
+
+61
+
+62
+
+63
+
+64
+
+Sistem / Kategori
+Komponen
+
+Nursing Products
+
+Obstetrics and Gynecology
+Products
+
+Ophthalmology Products
+(The Anatomy, Physiology
+and Diseases of The Eye)
+
+Kod
+01
+
+Nursing Furnishings
+
+02
+
+Nursing Equipment
+
+03
+
+Nursing Prefabricated Structures
+
+01
+
+Obstetrics and Gynecology Furnishings
+
+02
+
+Obstetrics and Gynecology Equipment
+
+03
+
+Obstetrics and Gynecology Prefabricated Structures
+
+01
+
+Ophthalmology Furnishings
+
+02
+
+Ophthalmology Equipment
+
+03
+
+Ophthalmology Prefabricated Structures
+
+01
+
+Orthopedics Furnishings
+
+02
+
+Orthopedics Equipment
+
+03
+
+Orthopedic And Prosthetic And Sports Medicine
+Products
+
+04
+
+Orthopedics Prefabricated Structures
+
+01
+
+Otolaryngology Equipment
+
+02
+
+Otolaryngology Prefabricated Structures
+
+03
+
+Patient Care Furnishings
+
+01
+
+Patient Care Equipment
+
+02
+
+Patient Care Prefabricated Structures
+
+03
+
+Patient Clinical Diagnostic Furnishings
+
+01
+
+Patient Clinical Diagnostic Equipment
+
+02
+
+Patient Clinical Diagnostic Prefabricated Structures
+
+03
+
+Nursing Furnishings
+
+Orthopedics Products
+
+Otolaryngology Products
+
+Patient Care Products
+
+Patient Clinical Diagnostic
+Products
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Sub-sistem / Sub Kategori Komponen
+
+78
+
+Kod
+
+Sistem / Kategori
+Komponen
+
+65
+
+Patient Transportation and
+Lifting Equipment
+
+66
+
+67
+
+68
+
+69
+
+70
+
+71
+
+72
+
+73
+
+Pediatrics Products
+
+Pharmacology Products
+
+Psychiatric and Psychology
+Products
+
+Sterilization Medical
+Products
+
+Surgical Products
+
+Veterinary and Animal
+Products
+
+X Ray and Imagery
+Products
+
+Biological Protection and
+Preservation Products
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Kod
+
+Sub-sistem / Sub Kategori Komponen
+
+01
+
+Patient Transport Products
+
+02
+
+Patient Lifts
+
+01
+
+Pediatrics Furnishings
+
+02
+
+Pediatrics Equipment
+
+03
+
+Pediatrics Prefabricated Structures
+
+01
+
+Pharmacology Furnishings
+
+02
+
+Pharmacology Equipment
+
+03
+
+Pharmacology Prefabricated Structures
+
+01
+
+Psychiatric and Psychology Furnishings
+
+02
+
+Psychiatric and Psychology Equipment
+
+03
+
+Psychiatric and Psychology Prefabricated Structures
+
+01
+
+Surgical Furnishings
+
+01
+
+Surgical Equipment
+
+02
+
+Surgical Prefabricated Structures
+
+03
+
+Veterinary and Animal Furnishings
+
+01
+
+Veterinary and Animal Equipment
+
+02
+
+Veterinary Equipment
+
+03
+
+Veterinary and Animal Prefabricated Structures
+
+04
+
+X Ray and Imagery Furnishings
+
+01
+
+X Ray and Imagery Equipment
+
+02
+
+X Ray and Imagery Prefabricated Structures
+
+03
+
+Specialized Medical Computer Equipment
+
+04
+
+Biological Safety Cabinets
+
+01
+
+Cabinet Bases
+
+02
+
+Patient Transport Products
+
+79
+
+Kod
+
+74
+
+75
+
+76
+
+77
+
+78
+
+79
+
+Sistem / Kategori
+Komponen
+Hazardous Materials
+Products
+
+Laboratory and Scientific
+Products
+
+Modular Medical Facilities
+
+Power Systems
+
+Robotic Systems
+
+Kod
+
+Sub-sistem / Sub Kategori Komponen
+
+01
+
+Hazardous Materials Cabinets
+
+02
+
+Hazardous Materials Refrigerators and Freezers
+
+01
+
+Laboratory Furnishings
+
+02
+
+Laboratory And Scientific Equipment
+
+01
+
+Modular Medical Facilities, Mobile
+
+02
+
+Modular Medical Facilities, Mobile, Dental
+
+03
+
+Modular Medical Facilities, Mobile, Ultrasound
+
+01
+
+Battery Chargers
+
+02
+
+Power Supplies, Line-Voltage Stabilization
+
+03
+
+Power Systems, Emergency
+
+01
+
+Stereotactic Systems
+
+01
+
+Testers
+
+02
+
+Training & Simulator
+
+Testers & Simulations
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+80
+
+h)
+
+Jadual 33 : Kod Kategori / Aras / Posisi Jalan / Susur Infrastruktur Jalan
+
+KOD
+R
+
+Kategori Jalan (Road)
+
+B
+
+Kategori Jambatan (Bridge)
+
+J
+
+Kategori Simpang (Junction)
+
+Kategori
+S
+
+Aras
+
+KETERANGAN
+
+C
+
+Kategori Cerun (Slope), Cut
+
+E
+
+Kategori Cerun (Slope), Embankment
+
+N
+
+Kategori Cerun (Slope), Natural
+
+C
+
+Kategori Laluan Sikal (Cycle Lane)
+
+1
+
+Aras Atas Tanah
+
+2..seterusnya
+
+Posisi Jalan
+
+Susur
+
+L
+
+Kiri (Left)
+
+M
+
+Tengah (Middle)
+
+R
+
+Kanan (Right)
+
+U
+
+Pusingan U (U-turn)
+
+1..seterusnya
+U
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Aras 1 dan seterusnya
+
+Susur Pertama dan seterusnya
+Pusingan U (U-turn)
+
+81
+
+i)
+
+Jadual 34 : Jadual Carian Kod Sistem Dan Sub-sistem Bagi Infrastruktur Jalan
+- Kategori Jalan, Simpang Dan Laluan Sikal
+
+Kod
+
+01
+
+02
+
+03
+
+04
+
+05
+
+06
+
+07
+
+08
+
+Sistem
+
+Kod
+
+Sub-sistem
+
+01
+
+Pavement System
+
+02
+
+Shoulder System
+
+03
+
+Traffic management
+
+04
+
+Traffic Safety Barrier
+
+05
+
+Traffic Sign
+
+06
+
+Longkang Jalan
+
+07
+
+Street light
+
+08
+
+Highmast
+
+09
+
+Jambatan/Jejambat/Jejantas
+
+10
+
+Terowong
+
+11
+
+Isyarat Lintasan Pejalan Kaki
+
+12
+
+Isyarat Lalulintas Kenderaan
+
+13
+
+Variable Message System
+
+14
+
+Arch
+
+15
+
+Box
+
+16
+
+Pipe
+
+17
+
+Longitudinal Ventilation System
+
+18
+
+Transverse Ventiltion System
+
+19
+
+Struktur
+
+20
+
+Pump
+
+21
+
+Elektrikal
+
+Carriageway
+
+Road Furniture System
+
+Drainage System
+
+Sistem Pencahayaan
+Luaran
+
+Sistem Pencahayaan
+Isyarat
+Sistem paparan elektronik
+
+Terowong
+
+Rumah Pam / Sistem Pam
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+82
+
+j)
+
+Kod
+
+01
+
+02
+
+03
+
+Jadual 35 : Jadual Carian Kod Sistem Dan Sub-sistem Bagi Infrastruktur Jalan
+- Kategori Jambatan
+
+Sistem
+(Jenis Jambatan)
+
+Sub-sistem
+(Sistem Jambatan)
+
+Kod
+01
+
+Simple Span
+
+02
+
+Continuous Girder
+
+03
+
+Cantilever
+
+04
+
+Arch
+
+05
+
+Bailey
+
+06
+
+Frame
+
+07
+
+Truss
+
+08
+
+Cable-stayed
+
+09
+
+Suspension
+
+10
+
+Semi-Integral
+
+11
+
+Fully-Integral
+
+99
+
+Other
+
+01
+
+Simple Span
+
+02
+
+Continuous Girder
+
+04
+
+Arch
+
+06
+
+Frame
+
+07
+
+Truss
+
+08
+
+Cable-stayed
+
+09
+
+Suspension
+
+99
+
+Other
+
+12
+
+Pipe Culvert
+
+13
+
+Box Culvert
+
+99
+
+Other
+
+Jambatan
+
+Jejantas
+
+Pembentung
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+83
+
+Kod
+
+04
+
+Sistem
+(Jenis Jambatan)
+
+Sub-sistem
+(Sistem Jambatan)
+
+Kod
+01
+
+Simple Span
+
+02
+
+Continuous Girder
+
+03
+
+Cantilever
+
+04
+
+Arch
+
+05
+
+Bailey
+
+06
+
+Frame
+
+07
+
+Truss
+
+08
+
+Cable-stayed
+
+09
+
+Suspension
+
+10
+
+Semi-Integral
+
+11
+
+Fully-Integral
+
+99
+
+Other
+
+Jejambat
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+84
+
+k)
+
+Jadual 36 : Jadual Carian Kod Sistem Dan Sub-sistem Bagi Infrastruktur Jalan
+- Kategori Cerun
+
+Kod
+
+01
+
+Sistem
+
+Kod
+
+Sub-sistem
+
+01
+
+Perparitan Cerun
+
+02
+
+Struktur Tembok Penahan Cerun
+
+03
+
+Sistem Pengukuhan Cerun
+
+04
+
+Tutupan Cerun
+
+05
+
+Perabut Cerun
+
+06
+
+Instrumen Cerun
+
+Cerun
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+85
+
+PENGHARGAAN
+Setinggi-tinggi penghargaan dan terima kasih dirakamkan kepada semua yang terlibat dalam
+pembangunan dokumen bagi Sistem Kod Aset Tak Alih (SKATA) samada yang terlibat secara langsung
+ataupun secara tidak langsung. Atas kerjasama dan komitmen yang tinggi daripada semua yang terlibat,
+kod-kod dapat didokumenkan dan dijadikan sebagai satu garis panduan dalam pendaftaran Aset Tak Alih
+kerajaan. Agensi yang terlibat terdiri daripada :
+
+
+Kementerian Kewangan Malaysia
+
+
+
+Kementerian Kesihatan Malaysia
+
+
+
+MAMPU
+
+
+
+Jabatan Kerja Raya
+
+
+
+Jabatan Penerbangan Awam
+
+
+
+Jabatan Pengaliran dan Saliran
+
+Urusetia
+Bahagian Perundingan Pengurusan Aset
+Cawangan Perancangan Aset Bersepadu
+JKR Malaysia
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+86
+
+JAWATANKUASA
+Pengerusi
+
+Ir. Hj. Mohd Daud Bin Harun
+
+JKR
+
+Timbalan Pengerusi
+
+Ir. Ramli Bin Mohd Yusoff
+
+JKR
+
+Ketua
+
+Ir. Mohd Sabri Bin Mat Deris
+
+JKR
+
+Mantan Timbalan Ketua
+
+Ir. Azizul Bin Ariffin
+
+JKR
+
+Timbalan Ketua
+
+Dzulhadi Bin Sapari
+
+JKR
+
+AJK
+
+Ir. Shabri Bin Shaharom
+
+JKR
+
+Abang Abdul Rahman Yusuf
+
+JKR
+
+Ir. Mohd Sabri Bin Deraman
+
+JKR
+
+Norizaludin Abd Karim
+
+JKR
+
+Roslan Bin Majid
+
+JKR
+
+Nor Haziman Bin Noh
+
+JKR
+
+Tukijah Binti Suradi
+
+JKR
+
+Syed Mahadhir Bin Wan Ibrahim
+
+JKR
+
+Syamil Musaddiq Bin Mohd Ashhar
+
+JKR
+
+Haizul Bin Abdul Halim
+
+JKR
+
+Muhamad Rafizzi Bin Aripin
+
+JPS
+
+Mohd Zulkhairi Bin Awang@Hashim
+
+JKR
+
+Nazrul Izham Bin Bisnan
+
+JKR
+
+Nor Azizi Bin Abdul Aziz
+
+JKR
+
+Mohd Firdhauz Bin Harun
+
+JKR
+
+PASUKAN KERJA SKATA
+
+Urus Setia
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+87
+
+Sumbangan Bersama
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+Muhammad Syukri Khasim
+
+JKR
+
+Maznida Shahila Binti Mat Salleh
+
+JKR
+
+Ir. Rosnita Binti Abdul Rani
+
+JKR
+
+Ir. Shahfizan Bin Md Nor
+
+JKR
+
+Esa A. Rahman
+
+JKR
+
+Mohammad Zaid Bin Saad
+
+JKR
+
+Mohd Shariffudin Mohd Saidin
+
+JKR
+
+Ahmad Syukri Bukhari
+
+JKR
+
+Mohd Nafie Bin Maslan
+
+JKR
+
+Zahran @ Abdullah Bin Awang
+
+JKR
+
+Siti Sazmilaila Mohd Saimi
+
+JKR
+
+Mohd Hasbullah Bin Mohammad Hussin
+
+JKR
+
+Mohd Nor Ibrahim
+
+JKR
+
+Mohd Rais Bin Abd Majid
+
+KKM
+
+Siti Hajar Binti Abd Aziz
+
+KKM
+
+Wisatawati Binti Darwis Harahap
+
+KKM
+
+Faizul Bechik
+
+DCA
+
+Akmal Bin Zainal Abidin
+
+JPS
+
+Baharudin Bin Ahmad
+
+JPS
+
+88
+
+Halaman ini sengaja dibiarkan kosong
+
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+89
+
+Urus Setia Jawatankuasa Pengurusan Aset Kerajaan
+Bahagian Perundingan Pengurusan Aset
+Cawangan Perancangan Aset Bersepadu
+Jabatan Kerja Raya Malaysia
+E-mail: jpak.jkr@1govuc.gov.my
+SISTEM KOD ASET TAK ALIH (SKATA)
+
+90
+
+

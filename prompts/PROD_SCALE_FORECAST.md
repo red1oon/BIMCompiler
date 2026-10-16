@@ -136,3 +136,103 @@ Run the envelope with each mitigation independently toggled so the forecast SHOW
 > Spec lineage: extends `docs/FoldEngineConstraints.md` (§2 cliff, §4 genesis) + the measured logs
 > `spike_writepath.log` (I-3/I-5), `sync_poc_smoke.log` (2.4×), `bootstrap_path.js` (25 s vs 9 ms). New
 > driver: `scripts/poc_scale_forecast.js`. Output: `build/erp/scale_forecast.md` + `…_forecast.json`.
+
+---
+
+## §10 — 2026-09-03 · W-SCALE-THRU's claim flipped to 0.82×. SPEC of the root cause and the fix.
+
+**Reported state (`build/erp/poc_scale_forecast.log`, 06:48):** `§SCALE-THRU naive=1228op/s
+batch=1001op/s speedup=0.82×` → `🔴 W-SCALE-FORECAST FAIL (1 of 3 measured claims broke)`, while the
+same run's VERDICT box printed *"MITIGATIONS EARN THEIR KEEP … batch = 0.8×"* — self-contradicting.
+
+### §10.1 MEASURED — the flip is contention-amplified, not a code regression
+Re-run on an idle machine, 6 consecutive runs of the unmodified witness:
+
+| run | naive op/s | batch op/s | speedup |
+|---|---|---|---|
+| logged 06:48 | 1,228 | 1,001 | **0.82×** |
+| 1 | 6,480 | 9,826 | 1.52× |
+| 2 | 5,639 | 12,060 | 2.14× |
+| 3 | 6,215 | 11,256 | 1.81× |
+| 4 | 6,102 | 12,322 | 2.02× |
+| 5 | 5,824 | 11,718 | 2.01× |
+| 6 | 5,877 | 8,294 | 1.41× |
+
+Both arms degrade under load; **the batch arm degrades ~2.5× harder** (11.7× down vs 4.7× down). The
+claim is a bare `speedup > 1` over a single un-repeated wall-clock pair, so it flips.
+
+### §10.2 ROOT CAUSE — `commitGroup` hashes every op TWICE (measured, not inferred)
+Digest counter wrapped around `crypto.subtle.digest` for one 2,000-op run of each arm:
+
+```
+§PROBE-NAIVE  digests=2000   (insert phase 0 + sealChain 2000)
+§PROBE-BATCH  digests=4040   (staged 2000 + 40 group hashes + sealFrom 2000)   = 2.02× the hashing
+§PROBE-SEALFROM  §KRN_SEAL_FROM fromId=0 sealed=2   ← a 2-op group re-seals BOTH of its own rows
+```
+
+`kernel_ops.js` `commitGroup` step 4 calls `sealFrom(db, tipRow)` where `tipRow` was captured **before**
+the INSERTs, so `WHERE id > tip.id` selects the group's own just-inserted rows and re-derives every hash
+it already staged, plus N `UPDATE`s. Its own comment states the intent it does not implement:
+*"Rows were inserted ALREADY-sealed … sealFrom is idempotent over them and confirms the tip."*
+Each digest is an `await`, so under CPU contention the extra 2,000 promise round-trips are what makes the
+batch arm lose — the mechanism behind §10.1's asymmetric degradation.
+
+### §10.3 THE FIX (two parts — the engine, then the instrument)
+**F1 · `commitGroup` skips the redundant re-seal in the clean case.** When `_lastSealedTip(db).id ===
+MAX(id)` (every existing row is sealed and the tip IS the last row), the staged hashes are already the
+chain — return `{ sealed: ids.length, tip: <last staged hash> }` without re-hashing.
+- **Contract preserved exactly:** `sealed === ids.length` is asserted by `poc_crud_group.js:91` and
+  `test_crud_process_writeloop.js:39`, and truth-tested by `poc_pos_deliverlater/register/replenish_staged`,
+  `poc_kitchen_queue`. The rows *were* sealed — at stage time — so the count stays honest.
+- **Dirty case unchanged:** if unsealed rows sit below the tip (a prior `commitOp` without a seal), the
+  full `sealFrom(db, tipRow)` still runs, because it must re-chain over those rows. It now emits
+  `§KRN_GROUP RESEAL` naming the gap, so the slow path is visible instead of silent.
+- **Falsifier:** `verifyChain` must return `ok` after a clean-case `commitGroup`, and the returned
+  `op_hashes`/`tip` must equal the rows actually stored. If skipping the re-seal broke the chain,
+  `verifyChain` fails — it is the same check `poc_crud_persist`/`poc_crud_docstatus` already run.
+
+**F2 · W-SCALE-THRU stops asserting on one un-repeated wall clock.** The arm is measured **3× per side,
+interleaved** (naive, batch, naive, batch, …) and the claim is asserted on the **median** speedup; min/max
+are printed so a flip is visible rather than silent. A `§SCALE-THRU-WORK` line reports the deterministic,
+contention-immune half of the claim — digests and row-writes per op for each arm — so a future regression
+in engine *work* is caught even when the machine is too loaded to time anything.
+
+### §10.4 Acceptance
+- `§SCALE-THRU-WORK batch_digests` drops **4040 → 2040** for 2,000 ops (the 40 group hashes remain).
+- `W-SCALE-FORECAST` PASSes 3/3 with the median claim, and the VERDICT box's "batch = N×" agrees with it.
+- `check_erp_twins.js` GREEN (both `kernel_ops.js` copies changed together), and the kernel_ops-judging
+  witnesses re-run with 0 regressions.
+
+### §10.5 RESULT — 2026-09-03, both parts shipped, measured
+`build/erp/poc_scale_forecast.log` after the fix:
+```
+§SCALE-THRU naive=7785op/s batch=27449op/s speedup=3.53× (median of 3 interleaved reps; per-rep 4.55× 3.53× 3.44×)
+§SCALE-THRU-WORK naive digests=2000 rows=2000 · batch digests=2040 rows=2000
+                 · batch/naive hashing=1.02× (contention-immune) · batch chain ok=true len=2000
+🟢 W-SCALE-FORECAST PASS — 5 measured claims hold
+```
+| | before | after |
+|---|---|---|
+| batch digests / 2,000 ops | 4,040 | **2,040** |
+| batch/naive hashing | 2.02× | **1.02×** |
+| speedup, isolated probe | 2.25× | **3.69×** |
+| speedup, in-witness | **0.82× (FAIL)** / 1.41–2.14× idle | **3.53× median, worst rep 3.44×** |
+| claims | 3 (one a bare un-repeated wall clock) | 5 (median + work-ratio + chain-verifiable) |
+
+**The new work-ratio claim is falsifier-proven, not decorative:** on the pre-fix engine it reads
+2.02× > 1.10 → 🔴. It would have caught this defect on ANY machine, loaded or idle.
+
+**Regression sweep — 73 kernel_ops-judging witnesses, run BEFORE and AFTER the engine change:**
+66 PASS / 7 FAIL, **identical set both times → 0 regressions**. The 7 are pre-existing and unrelated:
+`poc_kernel`, `test_kernel_owner`, `test_kernel_sign` are `MODULE_NOT_FOUND` (a path issue, the engine is
+never reached); `poc_kds_live`, `poc_pos_live`, `poc_replenish_live`, `poc_wh_cache` need a served app
+(Playwright). `check_erp_twins.js` GREEN — both `kernel_ops.js` copies moved together.
+
+**Shipped:** bim-ootb `fix/erp-commitgroup-seal-skip` (`erp/kernel_ops.js` + `erp/sw.js` v777→**v778**).
+
+**⬜ Left open, deliberately — the DIRTY-case hash inconsistency (pre-existing, NOT introduced here).**
+When unsealed rows sit below the tip, `commitGroup` returns `op_hashes`/`group_hash` staged off the OLD
+tip while `sealFrom` then re-chains the rows to DIFFERENT stored hashes — so the returned hashes and the
+`expectedHash` all-or-none gate disagree with what is on disk. The fix makes this path *visible*
+(`§KRN_GROUP RESEAL`) but does not change its semantics, because the gate's contract is a separate
+decision. Nothing in the tree hits it today (every live caller commits through groups only).

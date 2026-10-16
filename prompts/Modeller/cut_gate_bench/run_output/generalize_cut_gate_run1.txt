@@ -1,0 +1,6 @@
+§GENERALIZE building=SampleHouse ms=4713 total=8 box=2 layer=0 refused=6
+  classes={"IfcWallStandardCase":2,"IfcSlab":2,"IfcRoof":1,"IfcWall":3}
+  refusedSample=[{"fid":5,"ifc_class":"IfcWallStandardCase","hasHash":true},{"fid":20,"ifc_class":"IfcRoof","hasHash":true},{"fid":21,"ifc_class":"IfcWall","hasHash":true},{"fid":22,"ifc_class":"IfcWall","hasHash":true},{"fid":23,"ifc_class":"IfcWall","hasHash":true},{"fid":38,"ifc_class":"IfcSlab","hasHash":true}]
+§GENERALIZE building=SampleCastle ms=5577 total=1209 box=647 layer=0 refused=562
+  classes={"IfcSlab":279,"IfcWallStandardCase":282,"IfcWall":648}
+  refusedSample=[{"fid":1,"ifc_class":"IfcSlab","hasHash":true},{"fid":10,"ifc_class":"IfcSlab","hasHash":true},{"fid":11,"ifc_class":"IfcWall","hasHash":true},{"fid":16,"ifc_class":"IfcWall","hasHash":true},{"fid":31,"ifc_class":"IfcWall","hasHash":true},{"fid":38,"ifc_class":"IfcWall","hasHash":true},{"fid":39,"ifc_class":"IfcWall","hasHash":true},{"fid":43,"ifc_class":"IfcWall","hasHash":true}]

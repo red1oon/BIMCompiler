@@ -3,9 +3,15 @@
 // SPDX-License-Identifier: MIT
 // poc_generic_tail_fsm.js — W-GENERIC-TAIL-FSM (prompts/H2_ISOMORPH_TAIL.md — the generic-block classes).
 //
-// SPEC: the DocAction FSM for every tail class with NO DocumentEngine per-table block — getValidActions
-//   falls through to the GENERIC region (:1016-1062), so a completed doc offers ONLY Close. One family
-//   witness (the W-MINVENTORY-FAMILY-FSM precedent: classes sharing a block share a witness).
+// SPEC: the DocAction FSM for the document TAIL — 8 classes with NO DocumentEngine per-table block
+//   (getValidActions falls through to the GENERIC region :1016-1062, so a completed doc offers ONLY
+//   Close) PLUS the 3 that DO carry a trailing per-table block. One family witness (the
+//   W-MINVENTORY-FAMILY-FSM precedent: classes sharing a block share a witness).
+//   ⚠ §P6 CORRECTION (ERP_IDEMPIERE_UX_PARITY.md §P4-DEFECT): M_RMA :1302 · C_BankTransfer :1313 ·
+//   C_DepositBatch :1323 are NOT generic-only. They were mis-modelled as fall-through on BOTH sides
+//   because docfsm_oracle's parse window terminated at I_PP_Cost_Collector (:1248) — so this witness
+//   reported diff=0 by sharing the engine's blind spot, and its §FALSIFIER-A asserted the WRONG
+//   behaviour outright. Completed: RMA/BankTransfer → [CL,VO]; DepositBatch → [CL,VO,RE] (RE UNGATED).
 //   SEEDED (replayed): M_RMA 661 (1 doc, IP) · M_Requisition 702 (1, CO) · S_TimeExpense 486 (1, CO).
 //   0-SEED (⛔ stored-replay honestly n/a — SOURCE-PARSE FSM ONLY, the W-MINVENTORY-FAMILY-FSM precedent;
 //   NEVER a synthesized oracle): C_BankTransfer 200246 · C_DepositBatch 200056 · M_ProjectIssue 623 ·
@@ -34,7 +40,7 @@ function verdict(ok, label, detail) { if (!ok) fails++; console.log('   ' + (ok 
 function setEq(a, b) { return a.slice().sort().join(',') === b.slice().sort().join(','); }
 
 console.log('═══ W-GENERIC-TAIL-FSM — the generic-block document tail == iDempiere (oracle PARSED at runtime) ═══');
-console.log('    engine = ad_docfsm.legalActionsFor/transitionFor (8 generic-only tables) · oracle = DocumentEngine generic region + each class\n');
+console.log('    engine = ad_docfsm.legalActionsFor/transitionFor (8 generic-only + 3 trailing-block tables) · oracle = DocumentEngine generic region + the 3 parsed tail blocks + each class\n');
 
 var CODE = O.parseConstants(O.readDocAction());
 var engineSrc = O.readEngine();
@@ -43,26 +49,36 @@ var generic = O.parseBlockGated(R.generic, CODE);
 verdict(!!R.generic, 'generic getValidActions region parsed (:1016-1062) — completed docs offer ONLY Close');
 
 // ── DIFF 1: legal sets for ALL 8 tables == the parsed GENERIC region (no per-table narrowing exists) ────
-var TABLES = [[661, 'M_RMA'], [702, 'M_Requisition'], [486, 'S_TimeExpense'],
-              [200246, 'C_BankTransfer'], [200056, 'C_DepositBatch'], [623, 'M_ProjectIssue'],
-              [53137, 'A_Asset_Addition'], [53127, 'A_Asset_Disposed'], [53275, 'A_Asset_Reval'],
-              [53128, 'A_Asset_Transfer'], [53121, 'A_Depreciation_Entry']];
+// T = [ad_table_id, name, oracleBlockKey]. blockKey null = GENUINELY block-less (getValidActions falls
+// through to the generic region). The three non-null keys are the §P6 correction: MRMA/MBankTransfer/
+// MDepositBatch DO have per-table blocks (:1302/:1313/:1323) — they were invisible while the oracle's
+// parse window stopped at I_PP_Cost_Collector (:1248), so this witness diffed them against `{}` and
+// reported diff=0 by sharing the engine's blind spot (ERP_IDEMPIERE_UX_PARITY.md §P4-DEFECT/§P6).
+var TABLES = [[661, 'M_RMA', 'MRMA'], [702, 'M_Requisition', null], [486, 'S_TimeExpense', null],
+              [200246, 'C_BankTransfer', 'MBankTransfer'], [200056, 'C_DepositBatch', 'MDepositBatch'],
+              [623, 'M_ProjectIssue', null],
+              [53137, 'A_Asset_Addition', null], [53127, 'A_Asset_Disposed', null], [53275, 'A_Asset_Reval', null],
+              [53128, 'A_Asset_Transfer', null], [53121, 'A_Depreciation_Entry', null]];
+var BLK = {};
+TABLES.forEach(function (T) { if (T[2]) BLK[T[0]] = O.parseBlockGated(R.byTable[T[2]], CODE); });
+verdict(TABLES.filter(function (T) { return T[2]; }).every(function (T) { return !!R.byTable[T[2]]; }),
+  '3 per-table TAIL blocks located + parsed (MRMA :1302 · MBankTransfer :1313 · MDepositBatch :1323) — the arms the old parse window could not see');
 var STATUSES = ['DR', 'IP', 'IN', 'AP', 'NA', 'CO', 'WP', 'WC', 'CL', 'VO', 'RE'];
 var setDiffs = 0, fixtures = 0;
 TABLES.forEach(function (T) {
   STATUSES.forEach(function (s) {
-    [[true, true], [false, false]].forEach(function (g) {   // gate corners prove period/backdate INDEPENDENCE (no block)
+    [[true, true], [false, false]].forEach(function (g) {   // gate corners prove period/backdate INDEPENDENCE
       var eng = F.legalActionsFor(db, T[0], { docStatus: s, doctypeId: null, processing: 'N', periodOpen: g[0], isBackDateTrxAllowed: g[1] });
-      var ora = O.oracleSet(generic, {}, s, { periodOpen: g[0], backDate: g[1], canReact: false });
+      var ora = O.oracleSet(generic, BLK[T[0]] || {}, s, { periodOpen: g[0], backDate: g[1], canReact: false });
       fixtures++;
       var ok = setEq(eng, ora);
       if (!ok) setDiffs++;
       if ((s === 'CO' && g[0]) || !ok)
-        console.log('§HARDEN surface=' + T[1] + '.docaction.legal status=' + s + ' periodOpen=' + g[0] + ' engine=[' + eng.slice().sort().join(',') + '] oracle=[' + ora.slice().sort().join(',') + '](GENERIC) diff=' + (ok ? 0 : 'SET-MISMATCH'));
+        console.log('§HARDEN surface=' + T[1] + '.docaction.legal status=' + s + ' periodOpen=' + g[0] + ' engine=[' + eng.slice().sort().join(',') + '] oracle=[' + ora.slice().sort().join(',') + ']' + (T[2] ? '(BLOCK ' + T[2] + ')' : '(GENERIC)') + ' diff=' + (ok ? 0 : 'SET-MISMATCH'));
     });
   });
 });
-verdict(setDiffs === 0, fixtures + ' legal-set fixtures across 11 generic-only tables == the parsed generic region (CO→[CL] only — the fall-through IS the narrowing)', 'setDiffs=' + setDiffs);
+verdict(setDiffs === 0, fixtures + ' legal-set fixtures across 11 tail tables == the parsed oracle (8 generic-only: CO→[CL], the fall-through IS the narrowing · 3 with a trailing block: RMA/BankTransfer CO→[CL,VO], DepositBatch CO→[CL,VO,RE])', 'setDiffs=' + setDiffs);
 
 // ── DIFF 2: per-class outcomes, each parsed from its source ─────────────────────────────────────────────
 // [table, java, expected: PR, CO, VO@DR, VO@CO, RC@CO, RA@CO, RE@CO] — expectations asserted from parse below
@@ -159,20 +175,29 @@ console.log('§HARDEN surface=GenericTail.replay ⛔ C_BankTransfer/C_DepositBat
 
 // ── §FALSIFIERS ──────────────────────────────────────────────────────────────────────────────────────────
 (function () {
+  // §FALSIFIER-A — REWRITTEN by §P6. The previous version asserted the OPPOSITE and was simply WRONG:
+  // "Void from CO on M_RMA → rejected (… implemented in the class yet NEVER offered)". iDempiere DOES
+  // offer it (getValidActions:1302-1309, IDEMPIERE-98 "Implement void for completed RMAs"). The two arms
+  // below are load-bearing in OPPOSITE directions: A1 fires if the per-table block is ever dropped again
+  // (the regression this whole §P6 fix exists to make visible); A2 fires if someone over-corrects and
+  // pushes VO for the block-less tail too.
   var r = F.dispatchFor(db, 661, { docStatus: 'CO', doctypeId: null, processing: 'N', periodOpen: true, isBackDateTrxAllowed: true }, 'VO');
-  verdict(!r.ok && r.reason === 'illegal-action', '§FALSIFIER-A Void from CO on M_RMA → rejected (generic CO offers ONLY Close — MRMA.voidIt is implemented for CO yet NEVER offered)', 'legal=[' + (r.legalActions || []).join(',') + ']');
-  console.log('§FALSIFIER-A action=VO from=CO table=661 ok=' + r.ok + ' reason=' + r.reason);
+  verdict(r.ok && r.to === 'VO', '§FALSIFIER-A1 Void from CO on M_RMA → OFFERED and lands VO (:1302-1309 IDEMPIERE-98 — the arm the old parse window could not see)', 'ok=' + r.ok + ' to=' + r.to + ' legal=[' + (r.legalActions || []).join(',') + ']');
+  console.log('§FALSIFIER-A1 action=VO from=CO table=661 ok=' + r.ok + ' to=' + r.to + ' legal=[' + (r.legalActions || []).join(',') + '] (must be ok=true to=VO)');
+  var rq = F.dispatchFor(db, 702, { docStatus: 'CO', doctypeId: null, processing: 'N', periodOpen: true, isBackDateTrxAllowed: true }, 'VO');
+  verdict(!rq.ok && rq.reason === 'illegal-action', '§FALSIFIER-A2 Void from CO on M_Requisition (GENUINELY block-less) → still REJECTED — the tail correction must not leak into the fall-through classes', 'legal=[' + (rq.legalActions || []).join(',') + ']');
+  console.log('§FALSIFIER-A2 action=VO from=CO table=702 ok=' + rq.ok + ' reason=' + rq.reason + ' (must be ok=false illegal-action)');
   var mutated = F.legalActionsFor(db, 702, { docStatus: 'CO', doctypeId: null, processing: 'N', periodOpen: true, isBackDateTrxAllowed: true }).concat(['RA']);
   var ora = O.oracleSet(generic, {}, 'CO', { periodOpen: true, backDate: true, canReact: false });
   verdict(!setEq(mutated, ora), '§FALSIFIER-B inject RA into a generic CO set → set-diff vs parsed oracle fires', 'mutated=[' + mutated.sort().join(',') + '] oracle=[' + ora.sort().join(',') + ']');
   console.log('§FALSIFIER-B mutation=+RA@CO setEq=' + setEq(mutated, ora) + ' (must be false)');
 })();
 
-console.log('\n§HARDEN_RESIDUAL VO@CO modelled per parsed class body but UNREACHABLE via the legal set (generic CO=[CL]) for every class here — both facts diffed · ' +
+console.log('\n§HARDEN_RESIDUAL VO@CO modelled per parsed class body and UNREACHABLE via the legal set (generic CO=[CL]) for the 8 block-less classes; REACHABLE for the 3 trailing-block ones (M_RMA/C_BankTransfer→VO, C_DepositBatch→VO+RE) — both facts diffed · ' +
   'MRMA voidIt live-shipment gate + MDepositBatch reconciled/bank-statement-line gates = runtime DATA probes, named not synthesized · ' +
   'depreciation batch processing = docs/DepreciationPerf.md lane, out of scope');
 console.log('§HARDEN surface=GenericTail.docaction fixtures=' + (fixtures + tFix + 3) + ' diff=0 oracle=iDempiere(parsed-source+seed-replay-where-seeded)');
 console.log((fails === 0 ? '🟢 W-GENERIC-TAIL-FSM PASS' : '🔴 W-GENERIC-TAIL-FSM FAIL (' + fails + ')') +
-  ' — 11 generic-block document classes diffed against the runtime-parsed iDempiere source; the 3 seeded ones replayed, the 8 empty ones honestly ⛔ on stored-replay.');
+  ' — 11 tail document classes (8 generic-block + the 3 trailing-block arms recovered by §P6) diffed against the runtime-parsed iDempiere source; the 3 seeded ones replayed, the 8 empty ones honestly ⛔ on stored-replay.');
 db.close();
 process.exit(fails === 0 ? 0 : 1);

@@ -1,0 +1,32 @@
+§PRECHECK opsLen=196
+§RECONCILE-COUNTS classOnly(IfcWall*-class)=57 wallishByShape(class+size/shape)=29
+§RECONCILE-BREAKDOWN {"classOnlyBox":7,"classOnlyLayer":50,"classOnlyRefused":0,"wallishBox":2,"wallishLayer":27,"wallishRefused":0}
+§RECONCILE-EXCLUDED (IfcWall*-class but NOT wallish-by-shape, n=28):
+  fid=16 class=IfcWallStandardCase sz=[8.800000190734863,0.4169999957084656,0.609000027179718] bucket=Layer
+  fid=17 class=IfcWallStandardCase sz=[8.383000135421753,0.4169999957084656,0.609000027179718] bucket=Layer
+  fid=18 class=IfcWallStandardCase sz=[0.4169999957084656,17.382999420166016,0.609000027179718] bucket=Layer
+  fid=19 class=IfcWallStandardCase sz=[0.4169999957084656,16.965999126434326,0.609000027179718] bucket=Layer
+  fid=39 class=IfcWallStandardCase sz=[0.12399999797344208,3.4749999046325684,0.4880000054836273] bucket=Layer
+  fid=40 class=IfcWallStandardCase sz=[0.12399999797344208,3.4749999046325684,0.4880000054836273] bucket=Layer
+  fid=78 class=IfcWallStandardCase sz=[0.4350000023841858,1.7649999856948853,1.1230000257492065] bucket=Box
+  fid=81 class=IfcWallStandardCase sz=[8.800000190734863,0.4169999957084656,1.25] bucket=Box
+  fid=82 class=IfcWallStandardCase sz=[0.4169999957084656,17.382999420166016,1.25] bucket=Box
+  fid=83 class=IfcWallStandardCase sz=[0.4169999957084656,16.965999126434326,1.25] bucket=Box
+  fid=84 class=IfcWallStandardCase sz=[8.383000135421753,0.4169999957084656,1.25] bucket=Box
+  fid=90 class=IfcWall sz=[0.550000011920929,16.965999603271484,2.9000000953674316] bucket=Layer
+  fid=101 class=IfcWallStandardCase sz=[8.800000190734863,0.4169999957084656,2.9000000953674316] bucket=Layer
+  fid=102 class=IfcWallStandardCase sz=[0.4169999957084656,17.799999237060547,2.9000000953674316] bucket=Layer
+  fid=103 class=IfcWallStandardCase sz=[8.800000190734863,0.4169999957084656,2.9000000953674316] bucket=Layer
+  fid=104 class=IfcWallStandardCase sz=[0.4169999957084656,17.79999876022339,2.9000000953674316] bucket=Layer
+  fid=108 class=IfcWallStandardCase sz=[0.4169999957084656,16.965999603271484,3.0999999046325684] bucket=Layer
+  fid=110 class=IfcWallStandardCase sz=[0.4169999957084656,17.382999420166016,3.0999999046325684] bucket=Layer
+  fid=111 class=IfcWallStandardCase sz=[8.383000373840332,0.4169999957084656,3.0999999046325684] bucket=Layer
+  fid=112 class=IfcWallStandardCase sz=[8.800000190734863,0.4169999957084656,3.0999999046325684] bucket=Layer
+  fid=176 class=IfcWallStandardCase sz=[0.05400000140070915,1.13510000705719,0.2879999876022339] bucket=Layer
+  fid=177 class=IfcWallStandardCase sz=[1.0830999612808228,0.05400000140070915,0.2879999876022339] bucket=Layer
+  fid=178 class=IfcWallStandardCase sz=[1.0830999612808228,0.05400000140070915,0.2879999876022339] bucket=Layer
+  fid=179 class=IfcWallStandardCase sz=[0.05400000140070915,1.13510000705719,0.2879999876022339] bucket=Layer
+  fid=180 class=IfcWallStandardCase sz=[1.0830999612808228,0.05400000140070915,0.2879999876022339] bucket=Layer
+  fid=181 class=IfcWallStandardCase sz=[0.05400000140070915,1.13510000705719,0.2879999876022339] bucket=Layer
+  fid=182 class=IfcWallStandardCase sz=[1.0830999612808228,0.05400000140070915,0.2879999876022339] bucket=Layer
+  fid=183 class=IfcWallStandardCase sz=[0.05400000140070915,1.13510000705719,0.2879999876022339] bucket=Layer

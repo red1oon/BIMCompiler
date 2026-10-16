@@ -146,3 +146,54 @@ appendix (Watchdog rule). Anything needing a user fact → `⛔ BLOCKED: <one qu
   failures = the UNRELATED flaky viewer S274 GP.2 goto-timeout; passed on re-run; ERP-only diffs.)
   bim-compiler: 1122ddbe on `feat/erp-substrate-phase012`, pushed. Matrix C_DocType-FSM residuals + AD_Process
   seed-gate notes updated; UI_UNPARK_RESUME residual banner added; NEW_CLIENT_MGMT #5-install flipped ✅.
+
+---
+
+# CORRECTION-1 (2026-08-24, RETRACTED — see CORRECTION-2 below) — wrongly claimed the 5 scripts don't exist
+
+The first pass at this correction searched only **bim-ootb** (`find`/`grep -r` current tree + `git log --all
+-S` per string) and concluded the 5 §3 witness scripts were never committed. That search missed the actual
+location: **all 5 live in `bim-compiler/scripts/`** (this repo), not bim-ootb — a wrong-repo search error,
+not a missing-file finding. Left in place below, struck by CORRECTION-2, as a record of the mistake (don't
+repeat: when a witness name is "missing," check bim-compiler's own `scripts/`/`build/erp/` before concluding
+it never existed — the engine/witness code lives here, bim-ootb only hosts the deployed browser app).
+
+# CORRECTION-2 (2026-08-24) — the 5 §3 witnesses DO exist (bim-compiler `scripts/`), re-run live: 4 PASS, 1 FAILS FOR REAL
+
+All 5 are tracked, clean, on `origin/master`, committed by `1122ddbec` (`IDMP_FULLWIDTH_SEED §1-§4`, this
+card's own DONE commit): `scripts/poc_ad_docfsm_live.js`, `poc_ad_access_live.js`, `poc_ad_modelval_live.js`,
+`poc_ad_menu_prf_live.js`, `poc_ad_displaylogic_live.js`. Actually re-run (`bash build/erp/run_witness.sh
+scripts/poc_ad_<X>_live.js`, ERP_ROOT default `~/bim-ootb/erp`, 2026-08-24, fresh-synced bim-ootb `origin/main`):
+
+| witness | result |
+|---|---|
+| W-AD-DOCFSM-LIVE | 🟢 PASS — `build/erp/poc_ad_docfsm_live.log` |
+| W-AD-ACCESS-LIVE | 🟢 PASS — `build/erp/poc_ad_access_live.log` (role-scoped menu, real `ad_window_access` grants; note this witness's *territory* now overlaps `erp/tests/poc_access_gate_live.js` from bim-ootb PR #1495 — both live, not a replacement) |
+| W-AD-MODELVAL-LIVE | 🟢 PASS — `build/erp/poc_ad_modelval_live.log` |
+| W-AD-MENU-PRF-LIVE | 🟢 PASS — `build/erp/poc_ad_menu_prf_live.log` |
+| W-AD-DISPLAYLOGIC-LIVE | 🔴 **FAIL, exit 2** — `build/erp/poc_ad_displaylogic_live.log`: `shown=1 hiddenByLogic=0 ChargeAmt-rendered=0 DocumentNo-rendered=0` |
+
+**The DisplayLogic failure is a real, diagnosed regression, not a stale-witness artifact.** Root cause
+(diagnostic run capturing full console output against the same route, `?window=143&record=100`): the record
+now renders through a **different, newer UI path** — `crud_overlay.js`'s inline-edit overlay
+(`§INPLACE-EDIT table=c_order id=100 verb=update fields=8 mount=inline`, `§AD-LOGIC-LIVE key=c_order fields=8
+withLogic=0 visibilityFlips=0`) — instead of the original accordion/form render this witness was built
+against (`idempiere.html:2901-2914`, `.idmp-fld` markup, the real `§AD-DISPLAYLOGIC-LIVE table=… hidden=…`
+tag). **Both code paths still exist in `erp/idempiere.html`/`erp/ad_ui.js`** (verified: `.idmp-fld` at
+`idempiere.html:2817,2917`; `§AD-DISPLAYLOGIC-LIVE` tag still emitted at `idempiere.html:2914` and
+`ad_ui.js:183-195`) — the newer inline-edit overlay (`erp/crud_overlay.js`) has just taken over as the
+default render for this route, and its `§AD-LOGIC-LIVE` field-visibility pass reports `withLogic=0`: the
+DisplayLogic-hiding behavior (`docs/internal/ERP_COVERAGE_MATRIX.md:24`'s ✅ `AD_Field·DisplayLogic
+W-AD-AD-DISPLAYLOGIC-LIVE` row) is **not exercised on the current default record view** — same failure shape
+as the access-gate finding this whole T-0 pass started from (`ERP_PROJECT_REVIEW.md` §2.1: a proven-live
+behavior silently superseded by a newer code path, nobody re-witnessed). **Neither the evaluator nor its DOM
+wiring is broken** — `crud_overlay.js:483 applyAdLogic` correctly reads per-field displaylogic and calls the
+same proven `CORE.effectiveFlags`; the gap is that the inline editor's curated 8-field set for `c_order`
+happens to contain none of the 27 DisplayLogic-bearing columns the 60-field accordion form had. **Queued as
+a new named gap** —
+see `prompts/RESUME_ERP_T0_TRUTH_MAINTENANCE.md` item 8.
+
+**For the re-witness protocol itself:** the 5 scripts ARE re-runnable exactly as written in §3 above — no
+rewrite needed to run them, only to fix the one real failure. `poc_ad_displaylogic.js` at
+`bim-ootb/erp/tests/` (an unrelated, differently-scoped headless test, not this witness) is a false-friend
+name collision — don't confuse it with `poc_ad_displaylogic_live.js` here.

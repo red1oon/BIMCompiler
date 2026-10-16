@@ -1,5 +1,21 @@
 /* BIM Compiler — theme overrides (blue grey + orange accent) */
 
+/* ── Header: bim-compiler repo widget next to the built-in bim-ootb one ── */
+.md-header__source--stacked {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  width: auto;
+  max-width: none;
+}
+.md-source-totals {
+  font-size: .65rem;
+  opacity: .6;
+  white-space: nowrap;
+}
+
 /* ── Doc banner: one-liner thesis at top of every spec ── */
 .bim-banner {
   max-width: 620px;

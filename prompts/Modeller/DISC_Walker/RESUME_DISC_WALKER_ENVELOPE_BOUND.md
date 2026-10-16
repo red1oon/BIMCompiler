@@ -1,5 +1,42 @@
 # RESUME — disc_walker: area-scaled n_measured + envelope-bound placement (RouteWalker alignment)
 
+# ▶ NOTE (not a task directive, doesn't supersede the ENTRY POINT below — 2026-07-18): room_graph.js's
+# occupant graph (OCCUPANT_PATHFINDER.md — connectivity check, corridor-preference routing, storey-rescue,
+# all shipped bim-ootb branches this session) is NOT currently wired into `disc_walker.js` — verified by
+# grep, zero `RoomGraph` references in `modeller/disc_walker.js` or `modeller/routewalker.js`. Its own
+# `spacesOf()` reads rooms independently; its class-3 "run without recorded joins" reconstruction
+# (WalkerDoctrine.md §3) is raw XY nearest-neighbor distance, no wall/circulation awareness. The design
+# intent already links them — OCCUPANT_PATHFINDER.md's own opening line, verbatim user quote: "this is a
+# pathfinder for human occupants and basis for conduit routing and Disc Walker too." Where a future wire-up
+# would concretely help, if picked up:
+#   1. Class-3 proximity-reconstructed runs (WalkerDoctrine §3.3, e.g. SC's 60 rainwater downpipes) could
+#      route via `RoomGraph.shortestPath(graph, from, to, {metric:'doors'})` instead of a straight air-line —
+#      a wall/corridor-respecting path instead of one that can cross a solid wall, closer to WalkerDoctrine
+#      §4's "no fabricated networks" spirit.
+#   2. `RoomGraph.fullConnectivity()`'s island report (bim-ootb `feat/full-connectivity-island-report`)
+#      could run as a PRE-WALK substrate gate — surfacing disconnected/fixable zones before the walker tries
+#      to place a networked run across a gap that doesn't architecturally exist. Same spirit as
+#      WalkerDoctrine §12/§13 ("verify the oracle/reference data is real before trusting it"), one layer
+#      earlier — verify the substrate before walking it.
+#   3. C1's storey-rescue (`feat/c1-unknown-storey-door-rescue`) improves the graph substrate itself,
+#      independent of when/whether DiscWalk gets wired to it.
+# Not scoped as a task here — flagging the connection for whoever next touches class-3 routing or a
+# substrate-quality gate, per the design intent already on record.
+#
+# ▶ CORROBORATION (2026-07-25, independent re-derivation, Viewer-side session — same conclusion, sharper
+# scope, still not scoped as a task): generative MEP placement onto a zero-MEP building already works
+# fine WITHOUT this graph — density/single/array placement host-bound to real ARC surfaces (SH: 38 ELEC
+# outlets; SC: 151 FP sprinklers borrowed from Terminal rules) needs no connectivity data at all. The
+# gap this note's items 1-2 actually target is narrower: ROUTED-NETWORK placement (PLB pipes, ACMV
+# ducts) on a zero-MEP building refuses outright today — `WALKER_GUARDS_ROSETTASTONE_SPEC.md:398-401`
+# and this file's own SC section below ("`routeChains` cannot walk a network that isn't there, and
+# fabricating one is forbidden") — because it has no real evidence to route through. `RoomGraph`'s
+# connectivity edges (real doors/corridors, not guessed room shapes) are a categorically different kind
+# of evidence than the room-BOUNDARY approximations `WalkerDoctrine.md` §14/§15 correctly excludes from
+# placement — worth keeping that distinction explicit if this is ever picked up, so "DiscWalker doesn't
+# trust approximate rooms" doesn't get mis-read as "DiscWalker shouldn't trust real corridor connectivity
+# either." Still just a flagged connection, not scoped.
+
 # ▶▶▶▶▶▶▶▶▶ ENTRY POINT (2026-07-10 LATER STILL — supersedes every block below, including the one right
 # under it). MANAGER-verified + MERGED. Read this first, one task remains.
 #
@@ -2777,4 +2814,72 @@ guard — deliberately: every TBC shim row in both dialects has `height_m` NULL,
 and the instrumented run proved the branch doesn't fire on the affected walk; if a building ever shows
 this bug shape on a ceiling mount, derive the interval from the storey's own measured extent, through
 the same `_zOverlaps` gate. (2) SH's 13-fixture Roof-storey aboveRoof artifact above. (3) `reach_m`
+
+## ▶▶▶▶▶▶▶ ENTRY POINT (2026-07-22 — NEW SESSION START HERE, supersedes every block below). This section only: verified GREEN, stranded, not re-tested since.
+
+**Nothing chased further this session** — a check-only pass confirmed the §STOREY-ZBAND fix directly
+above is real and unmerged, then stopped there per user instruction (verify + note, no code work).
+
+**Status: the fix is done and verified, but stuck — not "stale," STRANDED.**
+- Commits `533f8dc` + `570cc29` (2026-07-13) are pushed to `origin/fix/xray-fixture-classification`.
+- Confirmed via `git log --all --oneline | grep <hash>` + `git branch -a --contains <hash>`: on that
+  branch only, NOT on `main`.
+- Confirmed via `gh pr list --state all --head fix/xray-fixture-classification`: **no PR exists, open
+  or closed, for this branch — nobody ever opened one.**
+- `git rev-list --count origin/main..origin/fix/xray-fixture-classification` = **5** commits ahead.
+- Elapsed: 2026-07-13 → today (2026-07-22) = **9 days pushed, unreviewed, unmerged.** PUSH PAUSE lifted
+  2026-07-17 (`CLAUDE.md` §⏸) — the branch sat through that transition too; lifting the pause didn't
+  move it forward on its own.
+
+**Task for whoever picks this up: land it, don't re-derive it.**
+1. Open a PR for `fix/xray-fixture-classification` → `main` (branch already pushed, nothing local to
+   redo).
+2. Per this project's standing discipline (`feedback_verify_checker_before_code_under_test`,
+   `DISC_WALKER_BRANCH_CLOSEOUT.md`'s own "stale green isn't evidence" lesson): re-verify FRESH from a
+   clean worktree off current `origin/main` before merging — `main` has moved since 2026-07-13, confirm
+   no drift/conflict, re-run `witness_dw_storey_band.js` + the X-ray regression witnesses
+   (`W-XRAY-SC-LIVE`, `W-XRAY-DUPLEX-REGRESSION`) and the fleet pass, not just trust the numbers logged
+   above.
+3. Once merged: the guide-image swap this section already flagged as "unblocked, not done here"
+   (`docs/ModellerGuide.md`'s `walk-fixtures.png` → SampleCastle) becomes available to do, if still wanted.
+4. Carry forward the three named residuals just above (TBC band-less guard, SH's 13-fixture artifact,
+   unmined `reach_m` constant) — none of them block this merge, all three are explicitly out-of-scope
+   for it.
+
+**Do not re-run the investigation, re-derive the fix, or re-read the whole file top-to-bottom** — this
+entry point plus the section immediately above it (§STOREY-ZBAND, 2026-07-13) is the complete, current
+state. Everything earlier in this file is superseded history.
+
+### 2026-07-22 (later, same day) — LANDED: PR bim-ootb#963 merged to main, entry point CLOSED
+
+Picked up the "land it, don't re-derive it" task above. Worktree `/tmp/wt-xray-fixture-fix` (branch
+`fix/xray-fixture-classification`) was 192 commits behind `origin/main` (9 days stale) — merged
+`origin/main` in fresh. One add/add conflict, doc-only (`DW_FIXTURE_DOUBLE_RENDER_FINDING.md`): resolved
+by taking `origin/main`'s side whole (it was a strict superset — the branch's copy was an earlier draft
+of the same investigation, already closed out and marked RESOLVED on main). Zero conflicts in code —
+confirmed only one commit touched `disc_walker.js` on main since the fork (`0885b74`, unrelated X-ray
+opacity fix), and it merged clean.
+
+Re-ran both regression witnesses FRESH post-merge (not trusting the 2026-07-13 numbers per this section's
+own mandate): `witness_dw_storey_band.js` → `W-DW-STOREY-BAND SC=PASS (placed=270 outliers=0
+aboveRoof=0) DUPLEX=PASS (placed=102 outliers=0 aboveRoof=0)`; `witness_xray_sc_duplex.js` →
+`W-XRAY-SC-LIVE=PASS W-XRAY-DUPLEX-REGRESSION=PASS`. (Fleet pass across HHS/Clinic/Hospital/
+HospitalGarage/Terminal/SampleHouse was NOT re-run this session — no committed script existed for it,
+only ad-hoc logs from 2026-07-13; it was report-only in that session, not a merge gate, and is not needed
+to re-derive since the touched code path — SIDE-branch `hostBind()` — is unchanged in shape.) Pushed the
+merge commit, opened PR bim-ootb#963 with the fresh evidence in the description.
+
+**CI auto-merged it** (`fast-checks` + `e2e-tests` both green) — squash-merged to `main` as `e5dd2bf`
+before any manual merge step was needed. Confirmed via `git log origin/main --oneline | grep STOREY-ZBAND`
+→ `e5dd2bf fix(disc-walker): STOREY-ZBAND — measured-interval Z guard for hostBind SIDE selection (#963)`.
+Remote branch deleted post-merge (routine hygiene, content preserved in `main`).
+
+**Residuals carried forward (named in PR body, none block anything, none done here):** TOP/BOTTOM/CENTER
+band-less guard (no known repro), SampleHouse's pre-existing 13-fixture Roof-storey artifact (0.64m over
+the 2m outlier bar, out of scope), unmined `reach_m` constant, and `docs/ModellerGuide.md`'s
+`walk-fixtures.png` guide-image swap (unblocked since 2026-07-13, still not done — next picker-upper's
+call, not a defect).
+
+**This resume file's job is done — nothing left to land.** If a new DISC_Walker task starts, it opens a
+fresh section, not a continuation of this one.
 default 6 in `_normShim` is still an unmined constant (pre-existing, untouched).

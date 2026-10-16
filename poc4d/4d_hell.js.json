@@ -1,0 +1,191 @@
+{
+  "provenance": {
+    "model": "composite",
+    "template": "4D_template.json v1.2.0",
+    "rules": "sequence_rules.json (MIRROR of rates.js — JS port must read the executed table)",
+    "fixture": "hell",
+    "unit": "crew-days",
+    "edges": "none — sibling order IS the order; task_sequences is derived"
+  },
+  "defects": [
+    "Wall upper L1 (L1 / Architecture Envelope) bears Slab L1 (L1 / Superstructure)",
+    "Wall N L1 (L1 / Architecture Envelope) bears Slab L1 (L1 / Superstructure)",
+    "Wall E L1 (L1 / Architecture Envelope) bears Slab L1 (L1 / Superstructure)",
+    "Wall W L1 (L1 / Architecture Envelope) bears Slab L1 (L1 / Superstructure)",
+    "Duct L1 (L1 / MEP Rough-in) bears Slab L1 (L1 / Superstructure)",
+    "Light L1 (L1 / MEP Final) bears Slab L1 (L1 / Superstructure)",
+    "Unlevelled proxy (<building-scope> / Architecture Envelope) bears Slab L1 (L1 / Superstructure)",
+    "Floor fin L2 (<building-scope> / Finishes) bears Column L2 (L2 / Superstructure)",
+    "Wall S L2 (L2 / Architecture Envelope) bears Slab L2 (L2 / Superstructure)",
+    "Duct L2 (L2 / MEP Rough-in) bears Slab L2 (L2 / Superstructure)",
+    "Riser L1-L2 (<building-scope> / MEP Rough-in) bears Slab L2 (L2 / Superstructure)",
+    "Floor fin L2 (<building-scope> / Finishes) bears Wall S L2 (L2 / Architecture Envelope)"
+  ],
+  "kernel_ops": [
+    {"guid": "SBX000", "start_ts": 0.0000, "end_ts": 0.1667, "task": "L1 / Substructure · layer 1", "cls": "IfcFooting", "trade": "CONCRETE_GANG"},
+    {"guid": "SBX001", "start_ts": 0.1667, "end_ts": 0.3333, "task": "L1 / Superstructure · layer 1", "cls": "IfcColumn", "trade": "STEEL_ERECTOR"},
+    {"guid": "SBX002", "start_ts": 0.3333, "end_ts": 0.3619, "task": "L1 / Superstructure · layer 2", "cls": "IfcSlab", "trade": "CONCRETE_GANG"},
+    {"guid": "SBX003", "start_ts": 0.3619, "end_ts": 0.4452, "task": "L1 / Architecture Envelope · layer 1", "cls": "IfcWallStandardCase", "trade": "MASON"},
+    {"guid": "SBX005", "start_ts": 0.3619, "end_ts": 0.4452, "task": "L1 / Architecture Envelope · layer 1", "cls": "IfcWallStandardCase", "trade": "MASON"},
+    {"guid": "SBX004", "start_ts": 0.4452, "end_ts": 0.5286, "task": "L1 / Architecture Envelope · layer 2", "cls": "IfcWallStandardCase", "trade": "MASON"},
+    {"guid": "SBX006", "start_ts": 0.4452, "end_ts": 0.5286, "task": "L1 / Architecture Envelope · layer 2", "cls": "IfcWallStandardCase", "trade": "MASON"},
+    {"guid": "SBX007", "start_ts": 0.5286, "end_ts": 0.6119, "task": "L1 / Architecture Envelope · layer 2", "cls": "IfcWallStandardCase", "trade": "MASON"},
+    {"guid": "SBX009", "start_ts": 0.6119, "end_ts": 0.6619, "task": "L1 / MEP Rough-in · layer 1", "cls": "IfcFlowSegment", "trade": "PLUMBER"},
+    {"guid": "SBX008", "start_ts": 0.6619, "end_ts": 0.8286, "task": "L1 / Architecture Closeup · layer 1", "cls": "IfcDoor", "trade": "CARPENTER"},
+    {"guid": "SBX010", "start_ts": 0.8286, "end_ts": 0.9119, "task": "L1 / MEP Final · layer 1", "cls": "IfcFlowTerminal", "trade": "HVAC_TECH"},
+    {"guid": "SBX011", "start_ts": 0.9119, "end_ts": 0.9619, "task": "L1 / Finishes · layer 1", "cls": "IfcCovering", "trade": "FINISHER"},
+    {"guid": "SBX012", "start_ts": 0.9619, "end_ts": 1.1286, "task": "L2 / Superstructure · layer 1", "cls": "IfcColumn", "trade": "STEEL_ERECTOR"},
+    {"guid": "SBX013", "start_ts": 1.1286, "end_ts": 1.1571, "task": "L2 / Superstructure · layer 2", "cls": "IfcSlab", "trade": "CONCRETE_GANG"},
+    {"guid": "SBX014", "start_ts": 1.1571, "end_ts": 1.2405, "task": "L2 / Architecture Envelope · layer 1", "cls": "IfcWallStandardCase", "trade": "MASON"},
+    {"guid": "SBX019", "start_ts": 1.1571, "end_ts": 1.2238, "task": "L2 / Architecture Envelope · layer 1", "cls": "IfcBuildingElementProxy", "trade": "MASON"},
+    {"guid": "SBX015", "start_ts": 1.2405, "end_ts": 1.2905, "task": "L2 / MEP Rough-in · layer 1", "cls": "IfcFlowSegment", "trade": "PLUMBER"},
+    {"guid": "SBX017", "start_ts": 1.2905, "end_ts": 1.3571, "task": "<building-scope> / Architecture Envelope · layer 1", "cls": "IfcBuildingElementProxy", "trade": "MASON"},
+    {"guid": "SBX018", "start_ts": 1.3571, "end_ts": 1.4071, "task": "<building-scope> / MEP Rough-in · layer 1", "cls": "IfcFlowSegment", "trade": "PLUMBER"},
+    {"guid": "SBX016", "start_ts": 1.4071, "end_ts": 1.4571, "task": "<building-scope> / Finishes · layer 1", "cls": "IfcCovering", "trade": "FINISHER"}
+  ],
+  "tasks": [
+    {"task_id": "BUILDING", "kind": "building", "depth": 0, "start": 0.0000, "finish": 1.4571, "lanes": 1},
+    {"task_id": "L1", "kind": "level", "depth": 1, "start": 0.0000, "finish": 0.9619, "lanes": 1},
+    {"task_id": "L1 / Substructure", "kind": "phase", "depth": 2, "start": 0.0000, "finish": 0.1667, "lanes": 1},
+    {"task_id": "L1 / Substructure · layer 1", "kind": "layer", "depth": 3, "start": 0.0000, "finish": 0.1667, "lanes": 3},
+    {"task_id": "L1 / Superstructure", "kind": "phase", "depth": 2, "start": 0.1667, "finish": 0.3619, "lanes": 1},
+    {"task_id": "L1 / Superstructure · layer 1", "kind": "layer", "depth": 3, "start": 0.1667, "finish": 0.3333, "lanes": 3},
+    {"task_id": "L1 / Superstructure · layer 2", "kind": "layer", "depth": 3, "start": 0.3333, "finish": 0.3619, "lanes": 3},
+    {"task_id": "L1 / Architecture Envelope", "kind": "phase", "depth": 2, "start": 0.3619, "finish": 0.6119, "lanes": 1},
+    {"task_id": "L1 / Architecture Envelope · layer 1", "kind": "layer", "depth": 3, "start": 0.3619, "finish": 0.4452, "lanes": 2},
+    {"task_id": "L1 / Architecture Envelope · layer 2", "kind": "layer", "depth": 3, "start": 0.4452, "finish": 0.6119, "lanes": 2},
+    {"task_id": "L1 / MEP Rough-in", "kind": "phase", "depth": 2, "start": 0.6119, "finish": 0.6619, "lanes": 1},
+    {"task_id": "L1 / MEP Rough-in · layer 1", "kind": "layer", "depth": 3, "start": 0.6119, "finish": 0.6619, "lanes": 2},
+    {"task_id": "L1 / Architecture Closeup", "kind": "phase", "depth": 2, "start": 0.6619, "finish": 0.8286, "lanes": 1},
+    {"task_id": "L1 / Architecture Closeup · layer 1", "kind": "layer", "depth": 3, "start": 0.6619, "finish": 0.8286, "lanes": 2},
+    {"task_id": "L1 / MEP Final", "kind": "phase", "depth": 2, "start": 0.8286, "finish": 0.9119, "lanes": 1},
+    {"task_id": "L1 / MEP Final · layer 1", "kind": "layer", "depth": 3, "start": 0.8286, "finish": 0.9119, "lanes": 2},
+    {"task_id": "L1 / Finishes", "kind": "phase", "depth": 2, "start": 0.9119, "finish": 0.9619, "lanes": 1},
+    {"task_id": "L1 / Finishes · layer 1", "kind": "layer", "depth": 3, "start": 0.9119, "finish": 0.9619, "lanes": 2},
+    {"task_id": "L2", "kind": "level", "depth": 1, "start": 0.9619, "finish": 1.2905, "lanes": 1},
+    {"task_id": "L2 / Superstructure", "kind": "phase", "depth": 2, "start": 0.9619, "finish": 1.1571, "lanes": 1},
+    {"task_id": "L2 / Superstructure · layer 1", "kind": "layer", "depth": 3, "start": 0.9619, "finish": 1.1286, "lanes": 3},
+    {"task_id": "L2 / Superstructure · layer 2", "kind": "layer", "depth": 3, "start": 1.1286, "finish": 1.1571, "lanes": 3},
+    {"task_id": "L2 / Architecture Envelope", "kind": "phase", "depth": 2, "start": 1.1571, "finish": 1.2405, "lanes": 1},
+    {"task_id": "L2 / Architecture Envelope · layer 1", "kind": "layer", "depth": 3, "start": 1.1571, "finish": 1.2405, "lanes": 2},
+    {"task_id": "L2 / MEP Rough-in", "kind": "phase", "depth": 2, "start": 1.2405, "finish": 1.2905, "lanes": 1},
+    {"task_id": "L2 / MEP Rough-in · layer 1", "kind": "layer", "depth": 3, "start": 1.2405, "finish": 1.2905, "lanes": 2},
+    {"task_id": "<building-scope>", "kind": "level", "depth": 1, "start": 1.2905, "finish": 1.4571, "lanes": 1},
+    {"task_id": "<building-scope> / Architecture Envelope", "kind": "phase", "depth": 2, "start": 1.2905, "finish": 1.3571, "lanes": 1},
+    {"task_id": "<building-scope> / Architecture Envelope · layer 1", "kind": "layer", "depth": 3, "start": 1.2905, "finish": 1.3571, "lanes": 2},
+    {"task_id": "<building-scope> / MEP Rough-in", "kind": "phase", "depth": 2, "start": 1.3571, "finish": 1.4071, "lanes": 1},
+    {"task_id": "<building-scope> / MEP Rough-in · layer 1", "kind": "layer", "depth": 3, "start": 1.3571, "finish": 1.4071, "lanes": 2},
+    {"task_id": "<building-scope> / Finishes", "kind": "phase", "depth": 2, "start": 1.4071, "finish": 1.4571, "lanes": 1},
+    {"task_id": "<building-scope> / Finishes · layer 1", "kind": "layer", "depth": 3, "start": 1.4071, "finish": 1.4571, "lanes": 2}
+  ],
+  "task_elements": [
+    {"task_id": "L1 / Substructure · layer 1", "guid": "SBX000"},
+    {"task_id": "L1 / Superstructure · layer 1", "guid": "SBX001"},
+    {"task_id": "L1 / Superstructure · layer 2", "guid": "SBX002"},
+    {"task_id": "L1 / Architecture Envelope · layer 1", "guid": "SBX003"},
+    {"task_id": "L1 / Architecture Envelope · layer 1", "guid": "SBX005"},
+    {"task_id": "L1 / Architecture Envelope · layer 2", "guid": "SBX004"},
+    {"task_id": "L1 / Architecture Envelope · layer 2", "guid": "SBX006"},
+    {"task_id": "L1 / Architecture Envelope · layer 2", "guid": "SBX007"},
+    {"task_id": "L1 / MEP Rough-in · layer 1", "guid": "SBX009"},
+    {"task_id": "L1 / Architecture Closeup · layer 1", "guid": "SBX008"},
+    {"task_id": "L1 / MEP Final · layer 1", "guid": "SBX010"},
+    {"task_id": "L1 / Finishes · layer 1", "guid": "SBX011"},
+    {"task_id": "L2 / Superstructure · layer 1", "guid": "SBX012"},
+    {"task_id": "L2 / Superstructure · layer 2", "guid": "SBX013"},
+    {"task_id": "L2 / Architecture Envelope · layer 1", "guid": "SBX014"},
+    {"task_id": "L2 / Architecture Envelope · layer 1", "guid": "SBX019"},
+    {"task_id": "L2 / MEP Rough-in · layer 1", "guid": "SBX015"},
+    {"task_id": "<building-scope> / Architecture Envelope · layer 1", "guid": "SBX017"},
+    {"task_id": "<building-scope> / MEP Rough-in · layer 1", "guid": "SBX018"},
+    {"task_id": "<building-scope> / Finishes · layer 1", "guid": "SBX016"}
+  ],
+  "task_sequences": "derived — sibling order IS the order",
+  "tree":
+  {"id": "BUILDING", "kind": "building", "start": 0.0000, "finish": 1.4571, "lanes": 1, "children": [
+    {"id": "L1", "kind": "level", "start": 0.0000, "finish": 0.9619, "lanes": 1, "children": [
+      {"id": "L1 / Substructure", "kind": "phase", "start": 0.0000, "finish": 0.1667, "lanes": 1, "children": [
+        {"id": "L1 / Substructure · layer 1", "kind": "layer", "start": 0.0000, "finish": 0.1667, "lanes": 3, "children": [
+          {"id": "SBX000", "kind": "element", "start": 0.0000, "finish": 0.1667, "guid": "SBX000", "cls": "IfcFooting", "trade": "CONCRETE_GANG", "name": "Footing L1"}
+        ]}
+      ]},
+      {"id": "L1 / Superstructure", "kind": "phase", "start": 0.1667, "finish": 0.3619, "lanes": 1, "children": [
+        {"id": "L1 / Superstructure · layer 1", "kind": "layer", "start": 0.1667, "finish": 0.3333, "lanes": 3, "children": [
+          {"id": "SBX001", "kind": "element", "start": 0.1667, "finish": 0.3333, "guid": "SBX001", "cls": "IfcColumn", "trade": "STEEL_ERECTOR", "name": "Column L1"}
+        ]},
+        {"id": "L1 / Superstructure · layer 2", "kind": "layer", "start": 0.3333, "finish": 0.3619, "lanes": 3, "children": [
+          {"id": "SBX002", "kind": "element", "start": 0.3333, "finish": 0.3619, "guid": "SBX002", "cls": "IfcSlab", "trade": "CONCRETE_GANG", "name": "Slab L1"}
+        ]}
+      ]},
+      {"id": "L1 / Architecture Envelope", "kind": "phase", "start": 0.3619, "finish": 0.6119, "lanes": 1, "children": [
+        {"id": "L1 / Architecture Envelope · layer 1", "kind": "layer", "start": 0.3619, "finish": 0.4452, "lanes": 2, "children": [
+          {"id": "SBX003", "kind": "element", "start": 0.3619, "finish": 0.4452, "guid": "SBX003", "cls": "IfcWallStandardCase", "trade": "MASON", "name": "Wall lower L1"},
+          {"id": "SBX005", "kind": "element", "start": 0.3619, "finish": 0.4452, "guid": "SBX005", "cls": "IfcWallStandardCase", "trade": "MASON", "name": "Wall N L1"}
+        ]},
+        {"id": "L1 / Architecture Envelope · layer 2", "kind": "layer", "start": 0.4452, "finish": 0.6119, "lanes": 2, "children": [
+          {"id": "SBX004", "kind": "element", "start": 0.4452, "finish": 0.5286, "guid": "SBX004", "cls": "IfcWallStandardCase", "trade": "MASON", "name": "Wall upper L1"},
+          {"id": "SBX006", "kind": "element", "start": 0.4452, "finish": 0.5286, "guid": "SBX006", "cls": "IfcWallStandardCase", "trade": "MASON", "name": "Wall E L1"},
+          {"id": "SBX007", "kind": "element", "start": 0.5286, "finish": 0.6119, "guid": "SBX007", "cls": "IfcWallStandardCase", "trade": "MASON", "name": "Wall W L1"}
+        ]}
+      ]},
+      {"id": "L1 / MEP Rough-in", "kind": "phase", "start": 0.6119, "finish": 0.6619, "lanes": 1, "children": [
+        {"id": "L1 / MEP Rough-in · layer 1", "kind": "layer", "start": 0.6119, "finish": 0.6619, "lanes": 2, "children": [
+          {"id": "SBX009", "kind": "element", "start": 0.6119, "finish": 0.6619, "guid": "SBX009", "cls": "IfcFlowSegment", "trade": "PLUMBER", "name": "Duct L1"}
+        ]}
+      ]},
+      {"id": "L1 / Architecture Closeup", "kind": "phase", "start": 0.6619, "finish": 0.8286, "lanes": 1, "children": [
+        {"id": "L1 / Architecture Closeup · layer 1", "kind": "layer", "start": 0.6619, "finish": 0.8286, "lanes": 2, "children": [
+          {"id": "SBX008", "kind": "element", "start": 0.6619, "finish": 0.8286, "guid": "SBX008", "cls": "IfcDoor", "trade": "CARPENTER", "name": "Door L1"}
+        ]}
+      ]},
+      {"id": "L1 / MEP Final", "kind": "phase", "start": 0.8286, "finish": 0.9119, "lanes": 1, "children": [
+        {"id": "L1 / MEP Final · layer 1", "kind": "layer", "start": 0.8286, "finish": 0.9119, "lanes": 2, "children": [
+          {"id": "SBX010", "kind": "element", "start": 0.8286, "finish": 0.9119, "guid": "SBX010", "cls": "IfcFlowTerminal", "trade": "HVAC_TECH", "name": "Light L1"}
+        ]}
+      ]},
+      {"id": "L1 / Finishes", "kind": "phase", "start": 0.9119, "finish": 0.9619, "lanes": 1, "children": [
+        {"id": "L1 / Finishes · layer 1", "kind": "layer", "start": 0.9119, "finish": 0.9619, "lanes": 2, "children": [
+          {"id": "SBX011", "kind": "element", "start": 0.9119, "finish": 0.9619, "guid": "SBX011", "cls": "IfcCovering", "trade": "FINISHER", "name": "Floor fin L1"}
+        ]}
+      ]}
+    ]},
+    {"id": "L2", "kind": "level", "start": 0.9619, "finish": 1.2905, "lanes": 1, "children": [
+      {"id": "L2 / Superstructure", "kind": "phase", "start": 0.9619, "finish": 1.1571, "lanes": 1, "children": [
+        {"id": "L2 / Superstructure · layer 1", "kind": "layer", "start": 0.9619, "finish": 1.1286, "lanes": 3, "children": [
+          {"id": "SBX012", "kind": "element", "start": 0.9619, "finish": 1.1286, "guid": "SBX012", "cls": "IfcColumn", "trade": "STEEL_ERECTOR", "name": "Column L2"}
+        ]},
+        {"id": "L2 / Superstructure · layer 2", "kind": "layer", "start": 1.1286, "finish": 1.1571, "lanes": 3, "children": [
+          {"id": "SBX013", "kind": "element", "start": 1.1286, "finish": 1.1571, "guid": "SBX013", "cls": "IfcSlab", "trade": "CONCRETE_GANG", "name": "Slab L2"}
+        ]}
+      ]},
+      {"id": "L2 / Architecture Envelope", "kind": "phase", "start": 1.1571, "finish": 1.2405, "lanes": 1, "children": [
+        {"id": "L2 / Architecture Envelope · layer 1", "kind": "layer", "start": 1.1571, "finish": 1.2405, "lanes": 2, "children": [
+          {"id": "SBX014", "kind": "element", "start": 1.1571, "finish": 1.2405, "guid": "SBX014", "cls": "IfcWallStandardCase", "trade": "MASON", "name": "Wall S L2"},
+          {"id": "SBX019", "kind": "element", "start": 1.1571, "finish": 1.2238, "guid": "SBX019", "cls": "IfcBuildingElementProxy", "trade": "MASON", "name": "Orphan"}
+        ]}
+      ]},
+      {"id": "L2 / MEP Rough-in", "kind": "phase", "start": 1.2405, "finish": 1.2905, "lanes": 1, "children": [
+        {"id": "L2 / MEP Rough-in · layer 1", "kind": "layer", "start": 1.2405, "finish": 1.2905, "lanes": 2, "children": [
+          {"id": "SBX015", "kind": "element", "start": 1.2405, "finish": 1.2905, "guid": "SBX015", "cls": "IfcFlowSegment", "trade": "PLUMBER", "name": "Duct L2"}
+        ]}
+      ]}
+    ]},
+    {"id": "<building-scope>", "kind": "level", "start": 1.2905, "finish": 1.4571, "lanes": 1, "children": [
+      {"id": "<building-scope> / Architecture Envelope", "kind": "phase", "start": 1.2905, "finish": 1.3571, "lanes": 1, "children": [
+        {"id": "<building-scope> / Architecture Envelope · layer 1", "kind": "layer", "start": 1.2905, "finish": 1.3571, "lanes": 2, "children": [
+          {"id": "SBX017", "kind": "element", "start": 1.2905, "finish": 1.3571, "guid": "SBX017", "cls": "IfcBuildingElementProxy", "trade": "MASON", "name": "Unlevelled proxy"}
+        ]}
+      ]},
+      {"id": "<building-scope> / MEP Rough-in", "kind": "phase", "start": 1.3571, "finish": 1.4071, "lanes": 1, "children": [
+        {"id": "<building-scope> / MEP Rough-in · layer 1", "kind": "layer", "start": 1.3571, "finish": 1.4071, "lanes": 2, "children": [
+          {"id": "SBX018", "kind": "element", "start": 1.3571, "finish": 1.4071, "guid": "SBX018", "cls": "IfcFlowSegment", "trade": "PLUMBER", "name": "Riser L1-L2"}
+        ]}
+      ]},
+      {"id": "<building-scope> / Finishes", "kind": "phase", "start": 1.4071, "finish": 1.4571, "lanes": 1, "children": [
+        {"id": "<building-scope> / Finishes · layer 1", "kind": "layer", "start": 1.4071, "finish": 1.4571, "lanes": 2, "children": [
+          {"id": "SBX016", "kind": "element", "start": 1.4071, "finish": 1.4571, "guid": "SBX016", "cls": "IfcCovering", "trade": "FINISHER", "name": "Floor fin L2"}
+        ]}
+      ]}
+    ]}
+  ]}
+}

@@ -57,7 +57,7 @@ after every run — exit code is not evidence.
    `Asian_Toilet` fixtures sit ~4m outside every currently-compiled room — that restroom was
    never captured as a room at all.
 
-8. **`prompts/Modeller/DISC_Walker/VIEWER_FIND_PANEL_ROOM_ACCURACY.md`** (582 ln) — MIXED. Tasks
+8. **`prompts/Viewer/FindRooms/VIEWER_FIND_PANEL_ROOM_ACCURACY.md`** (582 ln) — MIXED. Tasks
    0-2 DONE (PR #728, #732). Task 3 (plain-language labels) and Task 4 (end-to-end whitebox
    witness) NOT STARTED. §7 (corridor pathfinding, `common/room_graph.js`) DONE, later confirmed
    merged via file 9. §8 (room-highlight box-vs-fragment fix) has spec + DONE-WHEN criteria but

@@ -115,6 +115,17 @@ schedules/
 
 # local-only measurements/notes (never commit)
 internal/
+# E-7 (prompts/AGENT_QUEUE.md §HYGIENE-E7) — `internal/` above matches docs/internal/ too, so every NEW
+# document written there since the rule landed has been SILENTLY UNTRACKED. The 84 that are tracked
+# survive only because they were added before it (git keeps tracking a file it already knows), and
+# docs/internal/ERP_COVERAGE_MATRIX.md — the headline scoreboard — is one of those: one accident away
+# from being local-only. Markdown under docs/internal IS documentation, not a local measurement, so
+# un-ignore it by name. The directory must be un-ignored first (git cannot re-include a file whose
+# parent directory is excluded), then its contents re-excluded, then the .md re-included — so
+# docs/internal/guidepics/ (≈5 MB of PNGs) and anything else non-markdown stays ignored exactly as now.
+!docs/internal/
+docs/internal/*
+!docs/internal/*.md
 build/erp/.demo_controller_key.json
 /build/erp/shard_poc/
 /build/erp/shards/*.db
@@ -130,3 +141,17 @@ build/erp/.demo_controller_key.json
 
 # Raw pipeline input staging (large extraction DBs; canonical ignored copy lives under DAGCompiler/lib/)
 /input/
+
+# ── NO BINARY .db IN GIT — repo-wide, added 2026-09-01 with the LFS removal ────────────────────
+# CLAUDE.md DB POLICY: binary .db commits are banned outright and unconditionally. The blanket
+# `*.db filter=lfs` rule in .gitattributes had pulled 59 DBs (1.79 GB) into HEAD; they were
+# untracked (files kept on disk) and every path they lived in is closed here so they cannot come
+# back by accident. DB content reaches a consumer as migration/*.sql or <app>/patches/*.sql plus a
+# self-heal loader; full rebuilt binaries go to OCI (deploy/OCI_UPLOAD.md §RULES). See
+# prompts/LFS_QUOTA_AUDIT.md for the measurement this came from.
+*.db
+*.db-wal
+*.db-shm
+# The two SQL-defined exceptions stay tracked as TEXT, never as binaries:
+!migration/*.sql
+!**/patches/*.sql

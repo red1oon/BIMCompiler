@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Viewer Component Model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --ground:#eef1f3; --surface:#ffffff; --surface-2:#f6f8f9;
+  --ink:#16202a; --ink-2:#48606f; --ink-3:#7d94a1;
+  --rule:#d3dbe0; --rule-2:#e6ecef;
+  --steel:#4d6b7c; --steel-soft:#dae4e9;
+  --accent:#c2570a; --accent-soft:#fbe6d2;
+  --good:#2f6f52; --bad:#a33327;
+  --shadow:0 1px 2px rgba(22,32,42,.06),0 8px 24px -12px rgba(22,32,42,.18);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0f151a; --surface:#161f26; --surface-2:#1c272f;
+    --ink:#dde5ea; --ink-2:#9db0bc; --ink-3:#6d838f;
+    --rule:#2a3841; --rule-2:#222e36;
+    --steel:#8fb2c4; --steel-soft:#24343e;
+    --accent:#f0913f; --accent-soft:#3a2415;
+    --good:#6fbd94; --bad:#e08072;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0f151a; --surface:#161f26; --surface-2:#1c272f;
+  --ink:#dde5ea; --ink-2:#9db0bc; --ink-3:#6d838f;
+  --rule:#2a3841; --rule-2:#222e36;
+  --steel:#8fb2c4; --steel-soft:#24343e;
+  --accent:#f0913f; --accent-soft:#3a2415;
+  --good:#6fbd94; --bad:#e08072;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:56px 28px 96px;display:flex;flex-direction:column;gap:56px}
+code,.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+
+header{display:flex;flex-direction:column;gap:14px;border-bottom:2px solid var(--ink);padding-bottom:26px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:500}
+h1{font-size:clamp(2rem,4.4vw,2.9rem);line-height:1.08;letter-spacing:-.022em;font-weight:600;text-wrap:balance}
+.sub{color:var(--ink-2);max-width:64ch;font-size:1.05rem}
+.meta{display:flex;flex-wrap:wrap;gap:10px 26px;font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--ink-3);padding-top:6px}
+.meta b{color:var(--ink);font-weight:500;font-variant-numeric:tabular-nums}
+
+h2{font-size:1.5rem;letter-spacing:-.014em;font-weight:600;text-wrap:balance}
+h3{font-size:1.02rem;font-weight:600;letter-spacing:-.005em}
+section{display:flex;flex-direction:column;gap:20px}
+.lede{color:var(--ink-2);max-width:66ch}
+.sect-head{display:flex;flex-direction:column;gap:8px;border-left:3px solid var(--accent);padding-left:16px}
+
+/* ── strata diagram ── */
+.strata{display:flex;flex-direction:column;gap:3px;background:var(--surface);border:1px solid var(--rule);border-radius:3px;padding:18px;box-shadow:var(--shadow);overflow-x:auto}
+.stratum{display:grid;grid-template-columns:82px 1fr 132px;align-items:center;gap:16px;padding:13px 12px;border-radius:2px;background:var(--surface-2);border-left:4px solid var(--steel);min-width:640px}
+.stratum.roof{border-left-color:var(--accent)}
+.st-id{font-family:"IBM Plex Mono",monospace;font-size:.76rem;color:var(--ink-3);line-height:1.35}
+.st-id b{display:block;color:var(--ink);font-size:1.15rem;font-weight:600;font-variant-numeric:tabular-nums}
+.st-mods{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font-family:"IBM Plex Mono",monospace;font-size:.73rem;padding:3px 8px;border-radius:2px;background:var(--steel-soft);color:var(--ink);border:1px solid var(--rule);white-space:nowrap}
+.chip.hot{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
+.chip .n{color:var(--ink-3);font-size:.68rem;margin-left:5px;font-variant-numeric:tabular-nums}
+.chip.more{background:transparent;border-style:dashed;color:var(--ink-3)}
+.st-num{text-align:right;font-family:"IBM Plex Mono",monospace;font-size:.76rem;color:var(--ink-3);font-variant-numeric:tabular-nums;line-height:1.5}
+.st-num b{display:block;color:var(--ink);font-size:.94rem;font-weight:500}
+.ground-line{display:flex;align-items:center;gap:12px;margin-top:5px;padding-top:11px;border-top:2px dashed var(--rule);font-family:"IBM Plex Mono",monospace;font-size:.72rem;color:var(--ink-3);letter-spacing:.05em;text-transform:uppercase}
+
+/* ── callout ── */
+.callout{background:var(--surface);border:1px solid var(--rule);border-left:4px solid var(--good);border-radius:3px;padding:20px 22px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.callout.warn{border-left-color:var(--accent)}
+.callout h3{display:flex;align-items:baseline;gap:10px}
+.tag{font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:2px;background:var(--good);color:var(--surface);font-weight:600}
+.tag.warn{background:var(--accent)}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:3px;overflow:hidden}
+.split>div{background:var(--surface);padding:18px 20px;display:flex;flex-direction:column;gap:7px}
+.big{font-family:"IBM Plex Mono",monospace;font-size:1.9rem;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1}
+.big.ok{color:var(--good)} .big.no{color:var(--bad)}
+.cap{font-family:"IBM Plex Mono",monospace;font-size:.7rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+
+/* ── tables ── */
+.tw{overflow-x:auto;border:1px solid var(--rule);border-radius:3px;background:var(--surface);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.87rem}
+th{text-align:left;font-family:"IBM Plex Mono",monospace;font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);font-weight:500;padding:11px 14px;border-bottom:1px solid var(--rule);background:var(--surface-2)}
+td{padding:10px 14px;border-bottom:1px solid var(--rule-2);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.m,th.m{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+td.r,th.r{text-align:right}
+.dead{color:var(--bad);font-weight:600}
+
+/* ── flow ── */
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--rule);border-radius:3px;padding:18px;font-family:"IBM Plex Mono",monospace;font-size:.8rem;box-shadow:var(--shadow)}
+.node{padding:7px 12px;border-radius:2px;background:var(--surface-2);border:1px solid var(--rule)}
+.node.core{border-color:var(--steel);background:var(--steel-soft)}
+.node.acc{border-color:var(--accent);background:var(--accent-soft)}
+.arr{color:var(--ink-3)}
+ul{display:flex;flex-direction:column;gap:9px;padding-left:20px;color:var(--ink-2);max-width:70ch}
+li strong{color:var(--ink);font-weight:600}
+footer{border-top:1px solid var(--rule);padding-top:22px;color:var(--ink-3);font-size:.8rem;font-family:"IBM Plex Mono",monospace;line-height:1.75}
+@media (max-width:700px){
+  .split{grid-template-columns:1fr}
+  .stratum{grid-template-columns:66px 1fr;gap:10px}
+  .st-num{grid-column:1/-1;text-align:left}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Internal · Architecture Reference</div>
+  <h1>Viewer Component Model</h1>
+  <p class="sub">The browser viewer's JavaScript, drawn the way you'd read a section through a building — each stratum sits on the one below it and never reaches back down. Derived from the actual call graph, not the folder tree.</p>
+  <div class="meta">
+    <span><b>128</b> modules</span>
+    <span><b>95,756</b> lines</span>
+    <span><b>5</b> strata</span>
+    <span><b>0</b> circular dependencies</span>
+    <span>viewer/ · measured 2026-08-19</span>
+  </div>
+</header>
+
+<section>
+  <div class="sect-head">
+    <h2>How to read this</h2>
+    <p class="lede">A module's stratum is the longest dependency chain beneath it. Stratum 0 modules import nothing from their siblings — they are the bedrock. Nothing in a lower stratum ever calls upward.</p>
+  </div>
+
+  <div class="strata">
+    <div class="stratum roof">
+      <div class="st-id"><b>4</b>entry</div>
+      <div class="st-mods">
+        <span class="chip">navigate.js<span class="n">61</span></span>
+      </div>
+      <div class="st-num"><b>1 module</b>61 lines</div>
+    </div>
+    <div class="stratum">
+      <div class="st-id"><b>3</b>composition</div>
+      <div class="st-mods">
+        <span class="chip">panels.js<span class="n">2,459</span></span>
+        <span class="chip">grid_overlay.js<span class="n">1,933</span></span>
+        <span class="chip">grid_scissors.js<span class="n">707</span></span>
+        <span class="chip">print_sheet.js<span class="n">618</span></span>
+        <span class="chip">grid_door_arcs.js<span class="n">543</span></span>
+        <span class="chip">navigate_engine.js<span class="n">474</span></span>
+        <span class="chip more">+1 more</span>
+      </div>
+      <div class="st-num"><b>7 modules</b>7,145 lines</div>
+    </div>
+    <div class="stratum">
+      <div class="st-id"><b>2</b>orchestration</div>
+      <div class="st-mods">
+        <span class="chip hot">time_machine.js<span class="n">9,244</span></span>
+        <span class="chip">navigate_find.js<span class="n">5,453</span></span>
+        <span class="chip">cinema_path_editor.js<span class="n">3,669</span></span>
+        <span class="chip">scene.js<span class="n">3,065</span></span>
+        <span class="chip">measure.js<span class="n">1,902</span></span>
+        <span class="chip">tools.js<span class="n">1,694</span></span>
+        <span class="chip hot">schedule_engine.js<span class="n">141</span></span>
+        <span class="chip more">+5 more</span>
+      </div>
+      <div class="st-num"><b>12 modules</b>28,763 lines</div>
+    </div>
+    <div class="stratum">
+      <div class="st-id"><b>1</b>services</div>
+      <div class="st-mods">
+        <span class="chip">effects.js<span class="n">8,804</span></span>
+        <span class="chip">streaming.js<span class="n">2,734</span></span>
+        <span class="chip">tour.js<span class="n">2,282</span></span>
+        <span class="chip">doc_canvas.js<span class="n">2,116</span></span>
+        <span class="chip">dlod_nav.js<span class="n">2,030</span></span>
+        <span class="chip hot">schedule_author.js<span class="n">1,704</span></span>
+        <span class="chip hot">cpm_schedule.js<span class="n">651</span></span>
+        <span class="chip more">+31 more</span>
+      </div>
+      <div class="st-num"><b>38 modules</b>37,208 lines</div>
+    </div>
+    <div class="stratum">
+      <div class="st-id"><b>0</b>bedrock</div>
+      <div class="st-mods">
+        <span class="chip">routewalker.js<span class="n">1,294</span></span>
+        <span class="chip hot">schedule_gate.js<span class="n">1,223</span></span>
+        <span class="chip">import_worker.js<span class="n">1,047</span></span>
+        <span class="chip">cpe_room_title.js<span class="n">883</span></span>
+        <span class="chip">import.js<span class="n">854</span></span>
+        <span class="chip hot">schedule_editor_ui.js<span class="n">786</span></span>
+        <span class="chip">nlp.js<span class="n">687</span></span>
+        <span class="chip more">+63 more</span>
+      </div>
+      <div class="st-num"><b>70 modules</b>22,579 lines</div>
+    </div>
+    <div class="ground-line"><span>◆</span><span>Datum — loader.js (THREE, OrbitControls) carries 43 of the 128</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="sect-head">
+    <h2>The headline, and it is not what the bug reports suggest</h2>
+    <p class="lede">Two numbers from the same codebase, measured the same afternoon.</p>
+  </div>
+  <div class="split">
+    <div>
+      <span class="cap">Circular dependencies between modules</span>
+      <span class="big ok">0</span>
+      <p>No module pair imports each other. The 5 strata resolve cleanly, so the architecture is sound as drawn.</p>
+    </div>
+    <div>
+      <span class="cap">Largest cycle in the scheduling data</span>
+      <span class="big no">49,436</span>
+      <p>Elements in one strongly-connected component on Hospital — 78% of the building — inside a dependency graph the engine builds at runtime.</p>
+    </div>
+  </div>
+  <div class="callout">
+    <h3><span class="tag">Reading</span>The structure is clean; the model inside it is not</h3>
+    <p>An IDE's component view would show you the left-hand number and give this codebase a clean bill of health. The problem this project is actually chasing lives in data the engine constructs at load time — roughly 2.46 million inferred "supports before" relations on Hospital, about 39 per element — which no static tool can see. Worth knowing before investing in tooling that only reads source.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sect-head">
+    <h2>Scheduling subsystem</h2>
+    <p class="lede">Thirteen modules, 16,084 lines. This is where 4D lives, and it is the only cluster spanning three strata.</p>
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Module</th><th class="m r">Stratum</th><th class="m r">Lines</th><th>Depends on</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td class="m">schedule_gate.js</td><td class="m r">0</td><td class="m r">1,223</td><td class="m">—</td><td>Physics gates and the generative pass. Depends on nothing — the true bedrock of 4D.</td></tr>
+        <tr><td class="m">schedule_read_4d.js</td><td class="m r">0</td><td class="m r">268</td><td class="m">—</td><td>Reads the IFC-native task tables.</td></tr>
+        <tr><td class="m">foreign_schedule.js</td><td class="m r">0</td><td class="m r">548</td><td class="m">—</td><td>Imports P6 / MS Project.</td></tr>
+        <tr><td class="m">export_5d.js</td><td class="m r">0</td><td class="m r">466</td><td class="m">—</td><td>Cost export.</td></tr>
+        <tr><td class="m">schedule_diff.js</td><td class="m r">0</td><td class="m r">284</td><td class="m">—</td><td>Baseline comparison.</td></tr>
+        <tr><td class="m">schedule_author.js</td><td class="m r">1</td><td class="m r">1,704</td><td class="m">schedule_gate</td><td>Builds schedule elements from the DB. Declares the IFC-native tables the source of truth.</td></tr>
+        <tr><td class="m">cpm_schedule.js</td><td class="m r">1</td><td class="m r">651</td><td class="m">schedule_gate</td><td>The critical-path solver. Where the 49,436-element cycle forms and gets contracted.</td></tr>
+        <tr><td class="m dead">schedule_engine.js</td><td class="m r">2</td><td class="m r">141</td><td class="m">cpm_schedule, schedule_gate</td><td><span class="dead">Zero callers.</span> Built as stage 1 of the current refactor and never wired in.</td></tr>
+        <tr><td class="m">time_machine.js</td><td class="m r">2</td><td class="m r">9,244</td><td class="m">6 modules</td><td>The Gantt drawer, the 4D clock, the editing surface. 58% of the subsystem in one file.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Call path, load to bar</h3>
+  <div class="flow">
+    <span class="node">building .db</span><span class="arr">→</span>
+    <span class="node">schedule_author</span><span class="arr">→</span>
+    <span class="node core">schedule_gate</span><span class="arr">→</span>
+    <span class="node core">cpm_schedule</span><span class="arr">→</span>
+    <span class="node">time_machine</span><span class="arr">→</span>
+    <span class="node acc">Gantt bar</span>
+  </div>
+  <ul>
+    <li><strong>schedule_gate</strong> computes a start time per element from geometry — support below, host wall, carrier above — plus crew capacity.</li>
+    <li><strong>cpm_schedule</strong> rebuilds those relations as a graph and runs a forward pass. Physics edges and convention edges (trade order, storey order) go into the same graph, which is where the cycle comes from.</li>
+    <li><strong>time_machine</strong> groups the finished element times by <code>storey | phase</code> into Gantt bars. Each bar's span is the earliest start to the latest end of its members — a hull, not a scheduled activity.</li>
+  </ul>
+  <div class="callout warn">
+    <h3><span class="tag warn">Consequence</span>Scheduling happens per element; display and measurement happen per group</h3>
+    <p>Hospital schedules 63,182 elements individually, then draws them as roughly 54 bars. One outlier element stretches its whole bar — the effect the code itself calls <em>"one pile, full project length."</em> The same hulls are what the acceptance metric measures, so a stray element registers as a phase-ordering failure. Three symptoms, one cause: the unit of scheduling is not the unit anyone looks at.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sect-head">
+    <h2>Load-bearing modules</h2>
+    <p class="lede">Fan-in — how many of the 128 modules call into each. These are the ones where a change reaches furthest.</p>
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Module</th><th>Exports</th><th class="m r">Callers</th><th>Blast radius</th></tr></thead>
+      <tbody>
+        <tr><td class="m">loader.js</td><td class="m">THREE, OrbitControls</td><td class="m r">43</td><td>The 3D datum. A third of the codebase.</td></tr>
+        <tr><td class="m">kernel_ops.js</td><td class="m">KernelOps</td><td class="m r">14</td><td>Op-log write path — every mutation.</td></tr>
+        <tr><td class="m">universal_history.js</td><td class="m">UniversalHistory</td><td class="m r">8</td><td>Undo / redo / time travel.</td></tr>
+        <tr><td class="m">section_cut.js</td><td class="m">SectionCut</td><td class="m r">5</td><td>Clipping planes.</td></tr>
+        <tr><td class="m">schedule_gate.js</td><td class="m">ScheduleGate</td><td class="m r">4</td><td>All of 4D, plus the audit judges.</td></tr>
+        <tr><td class="m">grid_dims.js</td><td class="m">GridDims</td><td class="m r">3</td><td>Grid geometry.</td></tr>
+        <tr><td class="m">cpm_schedule.js</td><td class="m">CpmSchedule</td><td class="m r">2</td><td>The live solver.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="sect-head">
+    <h2>What an IDE would and would not tell you</h2>
+  </div>
+  <ul>
+    <li><strong>It would show</strong> the strata above, the fan-in table, and dead exports like <code>schedule_engine.js</code> — all of it derivable from source, which is how this page was built.</li>
+    <li><strong>It would not show</strong> the runtime dependency graph, which is where every open defect in 4D lives. That graph is constructed from bounding-box geometry at load time and exists only in memory: 2.46 million edges on Hospital, none of them written to any file.</li>
+    <li><strong>The gap matters</strong> because the fix is to persist those relations into <code>task_sequences</code> — an IFC-native table that already exists and holds zero rows on every shipped building. Once dependencies are data, they become reviewable, editable, and diffable. Until then no tool, IDE or otherwise, can inspect them.</li>
+  </ul>
+</section>
+
+<footer>
+  Generated from <code>viewer/*.js</code> at HEAD, 2026-08-19. Strata are longest-dependency-chain depth over
+  cross-module namespace references; minified vendor bundles excluded.<br>
+  Scheduling measurements: <code>prompts/4D_GANTT_TM_REFACTOR.md</code> §S26. Internal reference — not user documentation.
+</footer>
+
+</div>
+</body>
+</html>

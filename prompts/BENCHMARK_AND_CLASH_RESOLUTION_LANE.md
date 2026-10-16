@@ -92,6 +92,26 @@ The clash LIST uses the cheap proxy (bbox severity), which can be wrong. On TAP:
 - **Witness `W-MIDFLIGHT-CORRECT`:** a seeded proxy-false-positive on Terminal triggers the live demotion; §-log the
   interrupt + the corrected verdict. (This feature EXISTS to show we correct ourselves — no competitor does.)
 
+### §4a — two user-directed additions (2026-07-26, not yet built, fold into whichever session lands §4)
+1. **Persist the qualified verdict, not just correct it in the moment.** §4 as written re-derives the true-depth
+   verdict live every time a pair is tapped — nothing carries it forward. Once a pair is qualified (exact depth
+   computed, `CLASH`/`CLEAR`/`pierce`/`protrusion` decided), cache it keyed on the pair (both element GUIDs +
+   their transform state, so a later MOVE correctly invalidates a stale verdict — don't cache on GUID pair alone).
+   On Save, persist that cache into the saved `.db` (new table, e.g. `clash_verdicts(guid_a, guid_b, transform_hash,
+   verdict, depth_mm, type, checked_at)`) so a **future re-open of the same building starts pre-qualified** — the
+   list can show the true verdict immediately for any pair whose transforms haven't changed since last qualified,
+   without re-flying/re-computing. Falls back to the cheap bbox proxy for any pair not yet in the cache (new
+   pairs, or pairs whose `transform_hash` changed since caching — moved elements ARE genuinely stale and must
+   re-qualify, never trust an invalidated cache entry). This is the natural next step after §7's in-session
+   incremental reclash — same idea, extended across sessions via the DB instead of just across edits in one.
+2. **An explicit "Fine Mesh" button, alongside the implicit tap-and-fly trigger.** §4's mechanism is opportunistic
+   (the depth compute rides inside camera-fly time the user is already spending) — good for browsing one clash at
+   a time, but there's no way to deliberately run the deep check without flying to each candidate individually.
+   Add a button that runs §3's true-depth pass **on demand** — over the current filtered list, or a selection —
+   without requiring a camera fly per pair. Reuses the exact same §3 depth math and §4a-1's cache (a button-run
+   qualification should write to the SAME cache table, not a separate path) — this is a second trigger for the
+   same underlying computation, not a new feature to design from scratch.
+
 ## §5 Phase D — edit-impact resolution + play-button alternatives
 The depth normal (§3) IS the minimum translation vector to clear. So resolution is free:
 - **Auto-calc** the clearing move: translate A by `(depth+clearance)` along the contact normal. Enumerate alternatives:

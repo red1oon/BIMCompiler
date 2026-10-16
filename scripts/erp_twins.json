@@ -1,0 +1,165 @@
+{
+  "__doc": "Declared relationship between each bim-compiler build/erp/*.js module and the file that SHIPS at bim-ootb erp/*.js. Written 2026-09-02 (ERP_IDEMPIERE_UX_PARITY.md §IMPL-RESULT-F7) after a witness was found judging a drifted copy: W-MORDER-SAVE reported 4 FAILs that were purely the copy lacking hooks the shipped file has. Values: 'identical' = must stay byte-identical, drift is a FAIL. 'divergent' = the copy is deliberately a different shape (node/UMD harness vs browser); needs a stated reason, and check_erp_twins.js reports it every run so it can never be forgotten. 'unreviewed' = drifted today, nobody has yet decided which of the two it is — reported LOUDLY, does not fail the gate until classified. Never move a pair to 'divergent' to silence the gate; that is the one way this check can be defeated. 2026-09-02 §TWIN-CLASSIFIED: a pair whose COPY is AHEAD of origin/main (a forward-port pending a bim-ootb PR) stays 'unreviewed' with the branch named in 'why' — it is NOT 'divergent' (no harness/shape reason) and cannot be 'identical' until the merge; flip it the day the PR lands.",
+  "twins": {
+    "ad_access": {
+      "rel": "identical",
+      "why": "verified identical 2026-09-02"
+    },
+    "ad_callout": {
+      "rel": "identical",
+      "why": "verified identical 2026-09-02"
+    },
+    "ad_docfsm": {
+      "rel": "identical",
+      "why": "PR #1611 established and re-proved the md5-identity contract"
+    },
+    "ad_evaluator": {
+      "rel": "identical",
+      "why": "verified identical 2026-09-02"
+    },
+    "ad_modelval": {
+      "rel": "identical",
+      "why": "reconciled 2026-09-02 (§TWIN-CLASSIFIED): P1.5/§Fix2/§Fix4 hooks were shipped-only; copy <- shipped; W-MORDER-SAVE flipped FAIL->PASS (the §IMPL-RESULT-F7 artefact closed). Locked"
+    },
+    "ad_process": {
+      "rel": "identical",
+      "why": "verified identical 2026-09-02"
+    },
+    "ad_valrule": {
+      "rel": "identical",
+      "why": "ships for the first time with ERP_IDEMPIERE_UX_PARITY.md §P3 (the live FK picker consumes it); copied byte-identical from build/erp at that PR, locked so a later drift fails loudly"
+    },
+    "ad_workflow": {
+      "rel": "identical",
+      "why": "ships for the first time with bim-ootb #1840 (prompts/ERP_MODEL_LAYER.md — the DocAction workflow path); copy == origin/main, locked"
+    },
+    "bigdecimal": {
+      "rel": "identical",
+      "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"
+    },
+    "crud_core": {
+      "rel": "identical",
+      "why": "locked 2026-09-03 after bim-ootb #1632 merged (8b50598d): the :461 updatedby fix + the coordinator’s sibling :460 updated fix (94cea2bc) now SHIP; copy <- origin/main bytes re-derived (8e289713). Judged via crud_overlay’s transitive require (idiom c)"
+    },
+    "crud_overlay": {
+      "rel": "identical",
+      "why": "reconciled 2026-09-02 (§TWIN-CLASSIFIED): shipped is the §S60 shim over crud_core.js; copy was the pre-split monolith (89 CORE bodies identical, 32 older lines). copy <- shipped shim; crud_core judged via the transitive require (idiom c). Locked"
+    },
+    "erp_engine": {
+      "rel": "identical",
+      "why": "reconciled 2026-09-02 (§TWIN-CLASSIFIED): completeReceipt (§Fix 3) was shipped-only; copy <- shipped; poc_blue_future/poc_genesis_minimal unchanged. Locked"
+    },
+    "erp_key_epochs": {
+      "rel": "identical",
+      "why": "reconciled 2026-09-02 (§TWIN-CLASSIFIED): shipped v3 header says \"PORTED from bim-compiler … two upgrades\" (roster/verifyEpochSigsOps/verifyMultiDeviceOps); copy <- shipped; poc_rotate PASS. Locked"
+    },
+    "erp_period_close": {
+      "rel": "identical",
+      "why": "reconciled 2026-09-02 (§TWIN-CLASSIFIED): T3 archive-first + §PCLOSE-RACE (#640) were shipped-only; copy <- shipped; test_kernel_period_close moved to the T3 contract (confirming archiveSink, archive-first asserted). Locked"
+    },
+    "erp_relay_client": {
+      "rel": "identical",
+      "why": "matched what ships when the scan first included test_*.js witnesses 2026-09-02 (§TWIN-CLASSIFIED); locked so a later drift fails loudly"
+    },
+    "erp_replica_client": {
+      "rel": "identical",
+      "why": "matched what ships when the scan first included test_*.js witnesses 2026-09-02 (§TWIN-CLASSIFIED); locked so a later drift fails loudly"
+    },
+    "erp_snapshot_sign": {
+      "rel": "identical",
+      "why": "matched what ships when the gate was written 2026-09-02; locked so a later drift fails loudly"
+    },
+    "erp_sync_fsm": {
+      "rel": "identical",
+      "why": "reconciled 2026-09-02 (§TWIN-CLASSIFIED): S7 gid/branch_id/sig rebase survival (#930) was shipped-only; copy <- shipped; test_kernel_{sync,rebase,relay} re-paired to the ERP kernel (were loading viewer/kernel_ops.js v8). Locked"
+    },
+    "field_health": {
+      "rel": "identical",
+      "why": "paired 2026-09-02 (§TWIN-CLASSIFIED): build/erp/system_monitor.js was erp/field_health.js under the wrong name (#513 shipped it renamed; shipped erp/system_monitor.js is an unrelated modal) — renamed, 2 shipped lines taken (export name + load tag); poc_system_monitor PASS. Locked"
+    },
+    "genesis": {
+      "rel": "identical",
+      "why": "matched what ships when the gate was written 2026-09-02; locked so a later drift fails loudly"
+    },
+    "genesis_seed": {
+      "rel": "identical",
+      "why": "matched what ships when the TRANSITIVE scan (idiom c, §TWIN-CLASSIFIED) first saw it 2026-09-02 via genesis.js require(./genesis_seed.js) — the baseline gate never listed it; locked so a later drift fails loudly"
+    },
+    "help_idmp": {
+      "rel": "identical",
+      "why": "matched what ships when the scan first included test_*.js witnesses 2026-09-02 (§TWIN-CLASSIFIED); locked so a later drift fails loudly"
+    },
+    "help_overlay": {
+      "rel": "identical",
+      "why": "reconciled 2026-09-03 (§TWIN-CLASSIFIED-2): shipped-only host-adapter lift (init/NAV/setOps) all below the node early-return; copy <- shipped (05e00670); test_help_coach/nextgate PASS, test_tour_idempiere PASS once its moved fixture (docs/internal/HelpO2C.md) was re-pointed. Locked"
+    },
+    "img_store": {
+      "rel": "identical",
+      "why": "reconciled 2026-09-02 (§TWIN-CLASSIFIED): digestOf content-address check (#277) was shipped-only; both witnesses already await resolveImage; copy <- shipped; PASS. Locked"
+    },
+    "inout_confirm": {
+      "rel": "identical",
+      "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"
+    },
+    "kernel_ops": {
+      "rel": "identical",
+      "why": "reconciled 2026-09-02 (§TWIN-CLASSIFIED): copy was v9, shipped v13 — every diff line was the older form of T6/T2/T7/F1-F10/S7/S8; copy <- shipped, all 80 judging scripts re-run, 0 regressions (poc_rate_input newly runs+passes). Locked"
+    },
+    "kitchen_core": {
+      "rel": "identical",
+      "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"
+    },
+    "ninja_bundle": {
+      "rel": "identical",
+      "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"
+    },
+    "ninja_create": {
+      "rel": "identical",
+      "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"
+    },
+    "ninja_excel": {
+      "rel": "identical",
+      "why": "matched what ships when the gate was written 2026-09-02; locked so a later drift fails loudly"
+    },
+    "ninja_export": {
+      "rel": "identical",
+      "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"
+    },
+    "ninja_model": {
+      "rel": "identical",
+      "why": "locked 2026-09-03 after bim-ootb #1632 merged (8b50598d): the @callout grammar half now SHIPS (355ac9bb); copy == origin/main (d1d7a45a)"
+    },
+    "ninja_rule": {
+      "rel": "identical",
+      "why": "matched what ships when the gate was written 2026-09-02; locked so a later drift fails loudly"
+    },
+    "ninja_stage": {
+      "rel": "identical",
+      "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"
+    },
+    "ninja_starter": {
+      "rel": "identical",
+      "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"
+    },
+    "op_upcaster": {
+      "rel": "identical",
+      "why": "matched what ships when the gate was written 2026-09-02; locked so a later drift fails loudly"
+    },
+    "plugin_registry": {
+      "rel": "identical",
+      "why": "matched what ships when the gate was written 2026-09-02; locked so a later drift fails loudly"
+    },
+    "pos_core": {
+      "rel": "identical",
+      "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"
+    },
+    "report_overlay": {
+      "rel": "identical",
+      "why": "reconciled 2026-09-02 (§TWIN-CLASSIFIED): shipped-only lc() aliasing ported; the copy-only foldQWeb (no consumer in bim-ootb) EXTRACTED verbatim to build/erp/report_qweb.js (copy-only, NO-SHIP); W-ODOO-QWEB maxDiff=0.00c on the extracted module. Locked"
+    },
+    "vfs_detect": {
+      "rel": "identical",
+      "why": "matched what ships when the gate was written 2026-09-02; locked so a later drift fails loudly"
+    }
+  }
+}

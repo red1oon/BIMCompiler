@@ -1,0 +1,58 @@
+[
+  {
+    "key": "SampleHouse",
+    "lines": [
+      "§STRWALK-OL §STRWALK-OPEN SampleHouse geoDb cache-MISS → fetch ./mesh.db?v=2",
+      "§ARC §GEOM-HARDFAIL total=0 of 38 (geomTable=component_geometries realResolved=38/38)"
+    ]
+  },
+  {
+    "key": "Duplex",
+    "lines": [
+      "§STRWALK-OL §DB_IDENTITY name=SampleHouse path=SampleHouse_ARC.db meta=60 inst=58 geo=58/58 substrate=mesh.db substrateRows=9198 manifest=match",
+      "§STRWALK-OL §STRWALK-OPEN Duplex geoDb cache-HIT (local) 114.5MB",
+      "§STRWALK-OL §DB_IDENTITY name=Duplex path=Duplex_ARC.db meta=218 inst=215 geo=215/215 substrate=mesh.db substrateRows=9198 manifest=match",
+      "§ARC §GEOM-HARDFAIL total=0 of 196 (geomTable=component_geometries realResolved=196/196)"
+    ]
+  },
+  {
+    "key": "SampleCastle",
+    "lines": [
+      "§STRWALK-OL §STRWALK-OPEN SampleCastle geoDb cache-HIT (local) 114.5MB",
+      "§STRWALK-OL §DB_IDENTITY name=SampleCastle path=SampleCastle_ARC.db meta=3342 inst=3225 geo=3225/3225 substrate=mesh.db substrateRows=9198 manifest=match",
+      "§ARC §GEOM-HARDFAIL total=0 of 3225 (geomTable=component_geometries realResolved=3225/3225)"
+    ]
+  },
+  {
+    "key": "HHS",
+    "lines": []
+  },
+  {
+    "key": "Clinic",
+    "lines": [
+      "§STRWALK-OL §STRWALK-OPEN HHS geoDb cache-HIT (local) 114.5MB",
+      "§STRWALK-OL §DB_IDENTITY name=HHS path=HHS_ARC.db meta=2560 inst=2527 geo=2527/2527 substrate=mesh.db substrateRows=9198 manifest=match",
+      "§ARC §GEOM-HARDFAIL total=0 of 1077 (geomTable=component_geometries realResolved=1077/1077)"
+    ]
+  },
+  {
+    "key": "Hospital",
+    "lines": []
+  },
+  {
+    "key": "HospitalGarage",
+    "lines": [
+      "§STRWALK-OL §STRWALK-OPEN Clinic geoDb cache-HIT (local) 114.5MB",
+      "§STRWALK-OL §DB_IDENTITY name=Clinic path=Clinic_ARC.db meta=14641 inst=14409 geo=14409/14409 substrate=mesh.db substrateRows=9198 manifest=MISMATCH — EXPECTED meta=2620 inst=2586 geo=2586 (this build is NOT the manifested copy; render may be stale/partial)",
+      "§ARC §GEOM-HARDFAIL total=0 of 6929 (geomTable=component_geometries realResolved=6929/6929)"
+    ]
+  },
+  {
+    "key": "Terminal",
+    "lines": [
+      "§STRWALK-OL §STRWALK-OPEN Hospital geoDb cache-HIT (local) 114.5MB",
+      "§STRWALK-OL §DB_IDENTITY name=Hospital path=Hospital_ARC.db meta=1271 inst=1252 geo=1252/1252 substrate=mesh.db substrateRows=9198 manifest=MISMATCH — EXPECTED meta=14641 inst=14409 geo=14409 (this build is NOT the manifested copy; render may be stale/partial)",
+      "§ARC §GEOM-HARDFAIL total=0 of 496 (geomTable=component_geometries realResolved=496/496)"
+    ]
+  }
+]

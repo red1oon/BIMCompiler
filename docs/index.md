@@ -56,7 +56,7 @@ Built on [iDempiere](https://idempiere.org/) ERP conventions and [SQLite](https:
 
     Author B-rep geometry — insert library parts, sketch, extrude, sweep, edit the **3D Grid** — where the signed op-log *is* the feature tree.
 
-    [:octicons-arrow-right-24: Modeller Guide](ModellerGuide.md) · [Open](https://red1oon.github.io/bim-ootb/viewer/modeller.html)
+    [:octicons-arrow-right-24: Modeller Guide](ModellerGuide.md) · [Open](https://red1oon.github.io/bim-ootb/modeller/modeller.html)
 
 -   **📊 Kernel-ERP**
 
@@ -128,6 +128,7 @@ Built on [iDempiere](https://idempiere.org/) ERP conventions and [SQLite](https:
 | Understand the ERP world view | [MANIFESTO — read first](MANIFESTO.md) |
 | Compare to other tools | [Feature Comparison](FeatureComparison.md) · [Migrate & Compare (ERP)](MigrateComparisonPaper.md) |
 | See where this sits in the industry | [Strategic Positioning](StrategicIndustryPositioning.md) |
+| Understand how it was built | [Vibe Programming — AI + Domain Expertise](VibeProgramming.md) |
 | Author geometry as a fold | [DAGeVu Modeller — Geometry as a Fold](ModellerKernelFold.md) |
 | Walk to any element indoors | [Find & Navigate — Indoor Wayfinding](RouteTemplate.md) |
 | Distributed / offline ERP | [Distributed ERP](DistributedERP.md) |

@@ -247,6 +247,69 @@ Mobile mode granted on-the-fly.
 
 ---
 
+## The Generated 4D Movie — Support Order Is a Measured Invariant
+
+The tables above are the **task-level** 4D (the Python `nD_engine.py` path — phases, durations,
+S-curve). The viewer's **Time Machine** plays a second, finer thing: an **element-level** schedule
+generated in the browser from the same extracted DB — every element gets its own start and finish
+from real geometry, real labour rates and real crew caps, and the movie reveals the building in that
+order. Nothing is authored by hand; drop an IFC and the film exists.
+
+The hard part of that is not the arithmetic. It is that **an element must never appear before the
+thing holding it up.** Get it wrong and the film shows a roof over open air, a duct hanging in a
+void, a stair flight floating between storeys — the single defect that makes an automated 4D look
+fake to anyone who has been on a site.
+
+### The invariant
+
+> **No element appears before the first element it physically touches appears.**
+
+"Touches" is geometric and class-blind: bearing below, carrier above, or embedded within — the
+element's real bounding geometry against every other element's, with no whitelist of IFC classes and
+no dependence on the model author having modelled relationships correctly. Elements that form the
+ground layer of their own footprint are exempt: they rest on soil, which no IFC file contains.
+
+### Measured, on every shipped building
+
+Before this invariant was enforced, the schedule looked clean by every internal check the engine had
+— and the film still had visible hangings, because the old audit only compared an element against
+the supports it already knew about (structure and walls), which is a small slice of what an element
+actually rests on. The census below counts the real thing: elements whose neighbours are all still
+invisible at the moment they appear.
+
+| Building | Elements | Appeared with nothing they touch on screen | After |
+|---|---|---|---|
+| Terminal | 48,428 | 161 | **0** |
+| Hospital | 63,182 | 165 | **0** |
+| Duplex | 1,119 | 19 | **0** |
+| HHS Office (federated) | 6,839 | 156 | **0** |
+| Clinic | 16,071 | 345 | **0** |
+| LTU A-House | 122,330 | 4,605 | **0** |
+| JKR | 8,985 | 110 | **0** |
+| **Total** | **266,954** | **5,561** | **0** |
+
+Verification is a witness (`witness_midair_zero.js`, 22/22 across the seven buildings) that
+**re-derives the contact geometry itself** rather than asking the scheduler whether it is happy — a
+mis-wired or no-op repair fails the witness instead of certifying itself. Cost is a one-time
+0.02–1.8 s at generation, scaling with element count.
+
+### What this does not claim
+
+- **Orphans are reported, not repaired.** 972 elements across the seven buildings touch nothing
+  anywhere in the model at any time. No schedule can fix an element that has no neighbour; that is an
+  authoring/extraction fact, and it is printed rather than hidden.
+- **The invariant is "has appeared", not "is finished".** An element may arrive while its support is
+  still being installed — which is exactly how real trades work, and how the viewer draws it (an
+  in-progress element is on screen, lit as the active work front). The stricter "wait for the support
+  to complete" rule was built and measured: it moves elements by up to 103 days, still leaves
+  violations because the supports move too, and converges only by serialising the whole project —
+  destroying the overlapping trade train that makes a construction programme realistic. It is
+  therefore deliberately not enforced, and the population it would affect is reported every run.
+- **Seven buildings, not "all buildings".** The invariant is structural and class-blind, so it should
+  hold generally — but what is *measured* is the seven shipped fixtures, 266,954 elements.
+
+---
+
 ## No Other Player Does This
 
 ### What the industry charges for nD analytics

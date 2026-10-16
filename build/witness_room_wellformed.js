@@ -7,18 +7,45 @@
 //   W2 containment purity: rel_contained_in_space never references a SUSPECT_* room.
 //   W3 (smell B falsifier — "floor crosses through a wall"): re-rasterize each storey's walls
 //      INDEPENDENTLY (own grid code, not the walker's) and assert ZERO raw wall cells inside any
-//      non-SUSPECT room rect. This is exactly the defect the user saw; it cannot re-form silently.
+//      non-SUSPECT room rect at DEPTH >= 2 cells. This is exactly the defect the user saw; it
+//      cannot re-form silently. The depth qualifier is §S74's addendum (2026-08-23): §WALL-SNAP
+//      (room_walker.js:432-467, shipped 2026-07-13, two days after this witness froze) moves every
+//      rect side OUT to its wall's continuous near face, so the rect boundary now COINCIDES with
+//      the wall AABB by construction — the two independent quantizations here (round() rect cells
+//      vs floor() wall cells) then legitimately share a <=1-cell boundary band. Measured fleet-wide
+//      2026-08-23: 16,391 band hits (depth<=1), ZERO at depth>=2. A wall LINE genuinely crossing a
+//      rect sits at depth>=2 and still FAILs; the band is counted and reported, never asserted away.
 //   W4 (smell A falsifier — "corridor as room" / HHS door-partition collapse): HHS compiles via
 //      flood-fill on every level (zero INTERNAL_DOORPART rows), >0 rooms on each of Level 1/2/3.
 // Read the log after every run — exit code alone is not evidence.
 const fs = require('fs');
-const initSqlJs = require('/home/red1/bim-compiler/node_modules/sql.js');
+const path = require('path');
+const ROOT = path.resolve(__dirname, '..');
+// §S74 candidate 1 (2026-08-23): no hardcoded absolute requires (witness_disc_walk_shim.js pattern).
+function loadSqlJs() {
+  const cands = [path.join(ROOT, 'node_modules/sql.js'), 'sql.js'];
+  for (const c of cands) { try { return require(c); } catch (e) { /* next */ } }
+  throw new Error('sql.js not found (npm install, or NODE_PATH to a node_modules with sql.js)');
+}
+const initSqlJs = loadSqlJs();
 const RoomWalker = require('./room_walker.js');
 
-const LIVEWIRE = '/tmp/wt-fable-livewire/modeller';
+// §S74 candidate 1 (2026-08-23): the old hardcoded '/tmp/wt-fable-livewire/modeller' died with its
+// pruned worktree → all-SKIP vacuous green. Env override → long-lived home → old path; first
+// existing dir wins. Per-building SKIP below still covers genuinely absent DBs.
+const ARC_CANDIDATES = [
+  process.env.ARC_DB_DIR,
+  path.join(process.env.HOME || '', 'bim-ootb/modeller'),
+  '/tmp/wt-fable-livewire/modeller',
+].filter(Boolean);
+const LIVEWIRE = ARC_CANDIDATES.find(d => fs.existsSync(d)) || ARC_CANDIDATES[ARC_CANDIDATES.length - 1];
 const SCRATCH = '/tmp/w_room_wellformed';
 const BUILDINGS = ['SampleCastle', 'HHS', 'Clinic', 'Garage', 'Hospital', 'Terminal'];
-const KNOWN_TYPES = ['INTERNAL', 'INTERNAL_SMALL', 'INTERNAL_DOORPART', 'SUSPECT_NO_DOOR', 'SUSPECT_OPEN'];
+// SUSPECT_ELONGATED/SUSPECT_LARGE shipped 2026-07-13/14 while this witness was frozen at
+// 2026-07-11's five types — added 2026-08-23 (§S74 candidate 1, latent-misfire fix; zero rows of
+// either type across the six-building fleet today, so this is future-proofing, not a red fix).
+const KNOWN_TYPES = ['INTERNAL', 'INTERNAL_SMALL', 'INTERNAL_DOORPART', 'SUSPECT_NO_DOOR', 'SUSPECT_OPEN',
+  'SUSPECT_ELONGATED', 'SUSPECT_LARGE'];
 const RES = RoomWalker.RES;
 
 function rows(db, sql) {
@@ -74,7 +101,7 @@ function rows(db, sql) {
     const vertMin = ds.h > 0 ? RoomWalker.VERT_FACTOR * ds.h : 0.0;
     const anchors = RoomWalker.storeyZAnchors(db);
     const wallsBy = RoomWalker.storeyWalls(db, vertMin, anchors);
-    let checked = 0, crossings = 0;
+    let checked = 0, crossings = 0, bandTotal = 0;
     const byStorey = {};
     roomRows.forEach(r => {
       if (r.pt.indexOf('SUSPECT_') === 0) return; // suspects are review candidates, not trusted rects
@@ -105,18 +132,25 @@ function rows(db, sql) {
       byStorey[st].forEach(r => {
         const i0 = Math.round((r.cx - r.sx / 2 - xs0) / RES), i1 = Math.round((r.cx + r.sx / 2 - xs0) / RES) - 1;
         const j0 = Math.round((r.cy - r.sy / 2 - ys0) / RES), j1 = Math.round((r.cy + r.sy / 2 - ys0) / RES) - 1;
-        let hit = 0;
+        // §S74 addendum (2026-08-23): depth<=1 = the §WALL-SNAP boundary band (rect edge sits ON
+        // the wall near face by construction — expected contact, reported not failed); depth>=2 =
+        // a wall genuinely inside the room — the original smell-B defect, still a FAIL.
+        let snapBand = 0, deep = 0;
         for (let i = Math.max(0, i0); i <= Math.min(nx - 1, i1); i++)
           for (let j = Math.max(0, j0); j <= Math.min(ny - 1, j1); j++)
-            if (raw[i * ny + j]) hit++;
+            if (raw[i * ny + j]) {
+              const depth = Math.min(i - i0, i1 - i, j - j0, j1 - j);
+              if (depth >= 2) deep++; else snapBand++;
+            }
         checked++;
-        if (hit > 0) {
+        bandTotal += snapBand;
+        if (deep > 0) {
           crossings++;
-          console.log(`  wall-crossing: ${r.guid} rect ${r.sx.toFixed(1)}x${r.sy.toFixed(1)} @(${r.cx.toFixed(1)},${r.cy.toFixed(1)}) contains ${hit} raw wall cells`);
+          console.log(`  wall-crossing: ${r.guid} rect ${r.sx.toFixed(1)}x${r.sy.toFixed(1)} @(${r.cx.toFixed(1)},${r.cy.toFixed(1)}) contains ${deep} raw wall cells at depth>=2 (snap-band ${snapBand})`);
         }
       });
     });
-    ok(crossings === 0, `${b} W3 wall-crossing: ${checked} non-suspect rects checked, crossings=${crossings}`);
+    ok(crossings === 0, `${b} W3 wall-crossing: ${checked} non-suspect rects checked, crossings=${crossings} (snapBandHits=${bandTotal} expected §WALL-SNAP contact)`);
 
     // W4 — HHS-specific corridor falsifier
     if (b === 'HHS') {

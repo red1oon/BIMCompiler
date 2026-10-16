@@ -374,3 +374,340 @@ unaffected and stay.
 `prompts/Modeller/DISC_Walker/RESUME_DISC_WALKER_ENVELOPE_BOUND.md`'s 2026-07-09 dated section — that is now the
 canonical doc for this thread. Do not re-derive; do not re-attempt items 4/6's screenshots until that doc's §NEXT
 items 3/4 (the actual code fixes, numeric-witness-gated, spec-first) land.
+
+## 2026-08-07 — §3D-GRID-EDITOR ✅ SHIPPED (PR bim-compiler#70 + #71, both merged, live-verified) — user re-scoped this session to chase this ONE feature first, ahead of the broader stale-frame audit / room-move / item-drag brief
+
+**Re-scope, verbatim intent:** user interrupted mid-session to prioritize a new "3D Grid Editor" ModellerGuide
+subsection with real witness proof over the originally-dispatched stale-frame audit + room-move/item-drag work.
+That broader brief (see the MISSION this session was given) is **NOT started** — this section covers ONLY the
+grid-editor work; the rest is ⛔ carried to whoever picks this card up next, not abandoned.
+
+### What shipped
+- **New test** `modeller/tests/witness_e2e_gridmove_real.js` (bim-ootb, NOT yet upstreamed/committed there — it
+  lives only in the ephemeral worktree `/tmp/wt-guide-recapture` this session used; **⛔ open item: push this
+  test to bim-ootb** so it's not lost — see §NEXT below). Real-user E2E of the Grid-Stretch tool against
+  Duplex's **actual loaded geometry** (not the existing synthetic `#b-clear` scratch-wall demo
+  `witness_e2e_gridstretch.js` already covers, which stays in the guide as-is — deliberately not replaced,
+  see GUIDE_VISUAL_QUALITY.md's own "arguably clearer uncluttered" note).
+- **Final run: 8/8 § assertions green** (`/tmp/claude-1000/.../scratchpad/logs/witness_gridmove_real_FID106_run6.log`,
+  not preserved past session end — rerun to reproduce, recipe below). Real numbers, not asserted-then-forgotten:
+  - Real `pg.mouse` down→move→up on gridline "2" (world y=-6.80, wall106's own measured far edge) landed at
+    **delta=0.5000 m** exactly.
+  - Wall106's (`IfcWallStandardCase`, ground floor, real `rel_fills_host` host of a real `IfcDoor`) *rendered*
+    Y-extent grew **2.920 m → 3.420 m** — matches the committed op's delta to <1cm, read off the live mesh
+    post-commit, not assumed from the drag input.
+  - Hosted door rode **0.273 m** (not 0.500 m) — §STRETCH-RIDE's anchored-proportional mapping, asserted against
+    the door's OWN rider row (`GEOM_MOVE {parent:doorFid, induced:'hosted-by'}`), not just "did something move."
+  - **One** `GEOM_GRID_MOVE` + **9** induced rider `GEOM_MOVE`s landed as one gesture group (`opLen 196→206`),
+    `verifyChain=true`, one `undoToCursor` scrub restored cursor AND wall extent byte-exact.
+  - §SCALE_CHECK_FIX drag-session cache-once line cited from the log (not re-profiled) per the re-scope's
+    "cite the log line, don't profile" instruction.
+- **Two new real captures** embedded in `docs/ModellerGuide.md` under a new "On a real building, not a diagram"
+  subsection (Transform → Grid-Stretch): `docs/img/modeller/grid-editor-before.png` / `-after.png`. Real
+  interior view (Duplex ground floor near the stair), NOT the drag-camera (see §CAMERA-LESSON below) — a
+  separate `closeCam` placement used only for the two still frames, before/after the live gesture.
+- `mkdocs build --strict` exit 0. **Live, verified**: both images 200,
+  `curl .../ModellerGuide/ | grep "On a real building"` finds the new section text on the deployed page.
+
+### §CAMERA-LESSON (real finding, worth keeping — chased numerically, not by re-eyeballing)
+Every "dolly in on the wall from the whole-building fit direction" attempt (the harness's own `frameElement()`,
+proven elsewhere in this guide) and a straight-overhead plan view both rendered a **flat, textureless plane
+filling the frame** — traced to Duplex's sloped roof (z≈6.0–6.6): both camera strategies approached or looked
+through it at close range. Fix: pick a **ground-floor** wall (wall106, not the first-tried wall98 which is
+Level-1/z:3.1-6.0) so the grid line (always z=0, `bonsai_grid.js`) and the wall are vertically co-located, AND
+use a manually-placed **interior** camera (`closeCam`: 2.2m into the room, at the wall's own mid-height) for
+the STILL SHOTS only. The live drag gesture itself still needs `frameElement()`'s camera (or any camera that
+keeps the ground plane, z=0, on-screen) — the app's pointerdown/pointermove raycast a z=0 plane unconditionally
+regardless of which floor the dragged wall is on, so a close interior camera (whose target sits off the ground
+plane) can arm Move-Grid but the down/up screen points never land on a gridline and the gesture silently no-ops
+(`opLen` unchanged) — measured twice before finding this. Sequence that works: frameElement's camera for
+G3/G4 (the real gesture) → reposition to closeCam only for the "before"/"after" screenshots, taken with no
+gesture live.
+
+### §UNRELATED BLOCKER found + fixed en route: master was NOT a gh-pages superset
+`scripts/safe_gh_deploy.sh` aborted the first deploy attempt — gh-pages (last deployed from `fable/meshdb-livewire`
+@ `1afdb06e5`) has `JKR_SKATA.md` + `OFFLINE_INSTALL_GUIDE.md` + a richer `IFC_ExportGuide.md` that `master` never
+had (pre-existing gap, unrelated to this session's change). Per the deploy guard's own documented resolution
+("become the superset, never force"): cherry-picked the 5 real already-authored commits that account for the gap
+from `fable/meshdb-livewire` onto a fresh branch off master (PR bim-compiler#71, merged) — no invented content,
+no app-code changes, just docs + 2 new standalone python export-helper scripts that shipped alongside the
+original IFC_ExportGuide commit. Guard now PASSes; **if the next docs deploy still finds it merged, don't
+re-chase this — it's closed.**
+
+### §NEXT — what a resuming session should do
+1. **⛔ Push `witness_e2e_gridmove_real.js` to bim-ootb** (currently only in an ephemeral worktree,
+   `/tmp/wt-guide-recapture`, branch is a detached HEAD off `origin/main` — will be lost if that worktree is
+   pruned). Recipe to reproduce if the worktree is already gone: open Duplex, wait for `window.__arcGuidByFid`
+   to populate (poll, not a fixed sleep — see §CAMERA-LESSON commit for why), measure wall106
+   (`IfcWallStandardCase`, y:[-9.73,-6.80], ground floor, hosts a door), `Bonsai.grid.define({xs:[1.5,3.5],
+   ys:[-9.73,-6.80], xlabels:['A','B'], ylabels:['1','2']})`, `frameElement(106, 0.22)`, click `#b-gridmove`,
+   real mouse drag on gridline "2" by +0.5m, assert per the numbers above.
+2. **The ORIGINAL mission's tasks 1-4 are still fully open** (stale-frame audit of the 2026-07-03/07-07/07-09
+   batch, coverage cross-check, room-move + item-drag guide sections) — this session did NOT reach them. Not
+   ⛔-blocked on anything, just not started; pick up from the mission brief's own task list.
+3. Prune `/tmp/wt-guide-recapture` and `/tmp/wt-guide-land` if still present and clean/fully-pushed by the time
+   you read this (this session's own closeout should have done it — if not, verify before removing, per the
+   worktree-hygiene standing rule).
+
+### §AUDIT (partial — one-look verdicts only, NO recaptures executed this session; time ran out after the grid-editor lane above)
+Opened the highest-risk stale candidates directly (real eyes, per the mission's audit step) rather than
+inferring purely from capture date:
+- **`cut-select.png` (2026-07-03) — ❌ STALE, recommend recapture.** Real close-up of a wall corner with a
+  window: the glazing renders as a flat pale opaque panel, no visible see-through/depth — matches the
+  PRE-glass-parity-fix look (fix landed 2026-07-12), not the transparent glass `glass-window-transparent.png`
+  (07-11) or the guide's own "Realistic glass" section show. `cut-open.png` is the same wall/window context —
+  same verdict, not opened separately (would be redundant).
+- **`move-gizmo.png` (2026-07-08) — ❌ STALE, recommend recapture.** Still the wide whole-building shot flagged
+  as a "composition regression" back on 2026-07-02 (its neighbours `gizmo.png`/`scale-stretched.png`/
+  `rotate-yaw.png` got BOTH the close-up harness fix AND the glass-parity recapture on 07-13; `move-gizmo` was
+  explicitly deferred to the later-retired SampleCastle-swap lane and never circled back). Fix pattern is
+  proven and sitting right next to it in the same guide section — mirror whatever `witness_e2e_move.js`
+  capture recipe produced `gizmo.png`'s close-up framing.
+- **`insert-catalog.png` (2026-07-09) — borderline, NOT recaptured.** SampleCastle backdrop shows small window
+  panes that may or may not be pre-fix (hard to call at that render distance/angle), but the caption's subject
+  is the Insert catalog panel + ghost preview, not the glass — low material impact either way. Left as-is,
+  disclosed rather than silently skipped.
+- **`fillet-edges2/rounded`, `route-run/spine`, `sketch-profile/wall/dims-square/dims-angled/weld/circle/
+  circle-extruded` (07-03/07-07) — ✅ OK, not recaptured, none needed.** All use `t.clearGround()` /
+  `#b-clear` per `witness_e2e_*.js` (confirmed by reading the scripts, not assumed) — synthetic scratch
+  geometry, no real building glass ever in frame, so the glass-parity fix date is irrelevant to these.
+- **`workspace-open.png` (07-08, user's own manual capture)** — not opened this session ("replace only if
+  clearly stale" per the mission; no evidence gathered either way, genuinely unknown, not ⛔ — just unchecked).
+- **`snap-to-geometry.png`, `multiselect-marquee.png`, `gridstretch-before/after.png`** — confirmed out of
+  scope per the mission brief (synthetic-by-design), untouched.
+- **Orphan found, not cleaned up:** `docs/img/modeller/sketch-extruded.png` exists on disk but is NOT
+  referenced anywhere in `ModellerGuide.md` (grepped) — a leftover from the same naming-convention cleanup
+  the 2026-07-09 pass did for 9 other orphans. Cheap `git rm` for whoever's next, not done here (out of the
+  grid-editor lane's diff).
+
+### §NOT STARTED (⛔ — explicit, not silently dropped)
+- Recapturing `cut-select.png`/`cut-open.png`/`move-gizmo.png` (verdicts above, fix pattern known, not executed).
+- Coverage cross-check of the full module list in the original mission brief against guide sections (only
+  room-move/item-drag were confirmed gaps before this session started; the fuller sweep wasn't run).
+- **Room-move (`bonsai_roommove.js`) and item-drag (`bonsai_itemdrag.js`) new guide sections** — the mission's
+  other named gap, spec at `prompts/Modeller/ROOM_MOVE_AND_ITEM_DRAG_SPEC.md`, code shipped on bim-ootb
+  `origin/main` per the dispatching session's own witnesses (`witness_room_move.js` 10/10,
+  `witness_room_move_roundtrip.js` 7/7, `witness_item_drag_gate.js` 9/9, all green at tip `a06223e`) — guide
+  text + captures not written.
+
+## 2026-08-07 (round 2) — stale-frame recapture + Grid-Stretch behavior facts + roof witness — ✅/⛔ table
+
+Picked up the round-1 handoff's §NOT STARTED list (items 1-3 of the round-2 mission). Room-move/item-drag
+(§NOT STARTED item 4, mission task 6) was **not reached** — time went to a real regression found in item 1 and
+a from-scratch roof witness in item 3; both took longer than a straight recapture. Leaving item 4 ⛔ for the
+next session, same spec pointer as above, code+witnesses already shipped and green.
+
+| Item | Verdict | Evidence |
+|---|---|---|
+| `move-gizmo.png` recapture | ✅ DONE | Ported `witness_e2e_move.js` (bim-ootb) from a standalone script to `e2e_harness.js` (same rig as `witness_e2e_rotate.js`/`witness_e2e_scale.js`) so it gets a real `t.frameElement`+`t.shotClip` close-up. Found + fixed 2 real issues en route: (a) `pick({prefer:'wall'})` landed on a genuinely TILTED insert (Duplex fid69, `IfcWindow` with `placement.rotY=90°`) that a size-only heuristic can't detect — a gizmo's per-axis handle is LOCAL to the insert (same as `scale.js`'s documented `scaleX` behavior), so a world-axis drag on it produced an unrecorded 1.2m off-axis render shift; added `pick({axisSafe:true})` filtering on near-zero `rotX`/`rotY`. (b) `t.drag()`'s screen-linear interpolation drifts off a true world-axis line under perspective (measured `dy=-0.095m` on one run) — switched to per-point world-axis projection, matching `rotate.js`/`scale.js`'s existing pattern. Final clean run: 7/7 green, `delta=[1.1,0,0]` axis-pure. bim-ootb PR #1245 merged (CI e2e-tests green — confirms local flakiness below was environment, not logic). New `docs/img/modeller/move-gizmo.png` live. |
+| `cut-select.png`/`cut-open.png` recapture | ⛔ **found a real regression, did not embed** | Re-ran `witness_e2e_cut.js` (unmodified logic) twice — both times it honestly reproduces the ORIGINAL 2026-07-01 bug (flat gray slab, no wall/window/selection visible), not the currently-live "wall+window+door" frame. Root cause, numerically confirmed: of Duplex's "wallish" candidates, **zero** currently pass the production cut-eligibility gate (`Bonsai._insertCutBox`, `bonsai_kernel.js:152-169` — requires every vertex of the fold to lie on an axis-aligned box's face planes). Every window/door-bearing wall's fold has extra opening-reveal geometry, so it's honestly refused as non-box; the only 2 elements that pass are a windowless foundation wall (fid81, 8.8×0.42×1.25m, T/FDN layer) and a flat floor slab (fid32). A fresh capture would DOWNGRADE the guide vs. what's already live. Per the mission's fail-hard doctrine: left `cut-select.png`/`cut-open.png` **untouched** (still the pre-existing, better images). This needs an app-code fix (either `_insertCutBox` learning to subtract known opening geometry, or a different cut-target selection strategy) — out of a guide-screenshot lane's scope. ⛔ open question for whoever owns `bonsai_kernel.js`: should the cut gate accept a wall-with-openings by cutting through its already-carved fold, or should Duplex's DB be re-checked for why the box gate is now stricter than it used to be? |
+| Grid-Stretch behavior facts | ✅ DONE | Added a 4-item plain-language list to the "On a real building, not a diagram" subsection (wall recompose classification / ATTACH+EDGE+SPAN, `§GRAB-LOCALITY` blast-radius bounding, hosted-filling ride, furniture/fixture exclusion) — cited straight from the Watchdog's code-review facts in the mission brief, no new claims. bim-compiler PR #73 merged. |
+| Roof witness + guide sentence | ✅ DONE | Duplex has **zero** `IfcRoof` rows (checked `elements_meta`) — SampleHouse is the only resident with a real, axis-aligned one (fid 20, rot=0, X-span 14.8410m). New `witness_e2e_gridmove_roof.js` (bim-ootb): grid lines authored at the roof's own measured X edges (SPAN classification, same shape as the wall-SPAN case `witness_e2e_gridmove_real.js` already proves), real mouse drag +0.5000m on the far line. Result: roof's rendered X-extent grew **14.8410m → 15.3410m**, exactly +0.5000m, near edge unchanged (anchored), `recomposed=8` (`§STRETCH-RIDE riders=7`), undo byte-exact. 8/8 green, reproduced twice. Guide sentence + a real capture (`grid-editor-roof.png` — the barrel-vault roof visibly overhanging past its wall, status line reading the exact numbers) added right after the existing Duplex wall-drag case. bim-ootb PR #1245 + bim-compiler PR #73, both merged. |
+| Deploy | ✅ DONE | `mkdocs build --strict` exit 0. First deploy attempt soft-aborted on `move-gizmo.png` shrinking 563671B→423928B (a real, intentional close-up recrop, not a wipe) — re-ran with `ALLOW_SHRINK=1 paths="img/modeller/move-gizmo.png"` per the guard's own documented escape hatch. Guard PASS, published, all 7 canaries 200. Live-verified past CDN propagation lag: `move-gizmo.png` (423928B), `grid-editor-roof.png` (200), and the new guide text (`recomposed=8`, `Only the grabbed bay moves`, `roof stretched 0.5 m`) all confirmed live at `https://red1oon.github.io/BIMCompiler/`. |
+| Room-move / item-drag guide sections | ⛔ **not reached** | Same spec/witness pointers as round 1's §NOT STARTED entry above — code + witnesses already shipped and green on bim-ootb `origin/main`, only the guide text/captures are missing. Next session: same recipe pattern as this round's roof section (find real element → `pg.mouse` real drag → `§`-log the numbers → close-up capture → cite in guide). |
+
+**Environment note (not a code finding, but explains this session's repeated retries):** late in this session
+`uptime` load average hit ~29 (5 concurrent Claude Code sessions observed via `ps aux`), and headless Chrome
+under `--use-angle=swiftshader` started crashing mid-run ("Target closed" / "detached Frame") — confirmed
+NOT caused by this session's changes: `witness_e2e_rotate.js` (untouched all session) crashed identically
+under the same load. bim-ootb's own CI (`e2e-tests`, a clean runner) came back green on the exact same
+commits, closing the loop. If a future session sees the same crash signature on THIS shared dev machine, check
+`uptime`/`ps aux` for concurrent sessions before assuming a regression.
+
+**Worktrees used this round:** `/tmp/wt-guide-recapture` (bim-ootb, branch `fix/guide-recapture-batch2`, now
+merged — safe to prune) and `/tmp/wt-docs-two-apps` (bim-compiler, repurposed from an already-clean/unrelated
+worktree onto branch `docs/guide-recapture-batch2`, now merged — safe to prune). Both pruned at session close
+per the worktree-hygiene standing rule (checked: 0 ahead, 0 dirty, not live-occupied by another session, before
+removing).
+
+## 2026-08-07 (round 3) — cut-gate root-caused to architecture-scale (⛔ stop, not a fix), room-move/item-drag guide sections landed
+
+Picked up the round-2 handoff's two open items: the cut-gate regression and the room-move/item-drag guide
+gap. This session was explicitly authorized to touch bim-ootb app code (unlike round 1/2) — used that to
+root-cause the cut gate properly instead of re-documenting the same symptom, then made the stop/continue
+call the mission itself specified for an architecture-scale finding.
+
+| Task | Verdict | Evidence |
+|---|---|---|
+| 1. Cut-gate root-cause | ⛔ **root-caused, NOT a bug, architecture-scale — stopping per the mission's own criterion** | Not a regression in the accidental-bug sense: `Bonsai._insertCutBox` (`bonsai_kernel.js:152`, PR #608/`afa644b`, 2026-07-01) was deliberately built box-only — "rotated/non-box inserts return null … a measured future-work boundary, never an invented shape" (its own commit message). It predates two LATER, separately-good features that together starved its usable surface: §REAL-GEOM ("no silent box fallback", 2026-07-02) made real per-element mesh the default render for virtually every insert, and §LOD400-LAYERS (PR #1096, 2026-07-30) gave Duplex's multi-layer walls genuine compound multi-slab geometry ("the Duplex party wall … rendered as one 14-triangle envelope box presented as real geometry — the exact fallback §LOD400-ENVELOPE forbids"). Neither commit revisited the cut path. Measured fresh this session (`/tmp/wt-cut-diag`, `diag_cut_gate.js`, log saved): of 47 Duplex "wallish" GEOM_INSERT candidates, exactly **2 are cuttable** (fid77/fid79, `sz=4.20×0.43×1.25`, `tris=12` — plain envelope boxes with no registered real geometry) and **45 are refused** — every refused one has real multi-triangle geometry (`tris=40..424`, never 12). This corroborates round 2's independent finding (fid81 windowless foundation wall + floor slab fid32) almost exactly — same conclusion via a different fid seed order. **Why this stops here rather than getting fixed:** the worker's B-rep model is 1-box-per-feature (`bonsai_kernel_worker.js` `buildSolids` seedBoxes / `solids.get(op.parent)` — a single shape per parent id). A wall-with-window-reveal's real mesh is a box-minus-notch (not decomposable into stacked axis-aligned boxes); a multi-layer wall's real mesh IS decomposable per-layer (`component_geometry_layers(geometry_hash, layer_seq, face_start, face_count)` — each layer's own AABB is derivable from its face range) but making the cut path handle even that requires N seed boxes per feature, N boolean cuts, and an N-solid merge back into one rendered mesh — a structural change to the worker's solids-map keying, not a gate tweak. Combined with the window-reveal case (which needs real mesh-to-B-rep sewing, not box decomposition), this is the mission's own named stop condition: "requires general CSG on arbitrary meshes and the existing cut path is box-only by construction." **⛔ Architecture question for whoever owns `bonsai_kernel_worker.js` next:** is it worth building N-box-per-feature CSG (covers layered walls, not window reveals) as an incremental step, or does cut need real mesh-to-B-rep sewing to matter for Duplex at all? Not decided here — no code changed on this task, spec-first discipline held (no half-honest cut built). **✅ ANSWERED 2026-08-08 (bim-compiler `prompts/Modeller/CUT_GATE_CSG_SPEC.md`, spec-only session, zero app code changed):** evaluated three-bvh-csg (real mesh CSG) vs. per-layer boxes with real measurements against this exact Duplex population (57 wallish/7-box/50-refuse by a fresh static DB scan — corroborates this round's 47/2/45 in shape, exact-count gap flagged not reconciled, see that spec's §0). THE CALL: neither literally — build per-layer REAL-mesh solids (not idealized boxes, which §3b there proved would still invent-away small real corner-notch detail) seeded into the SAME `kernel.cut()` chain via the kernel's own already-vendored `buildTriFace`+`sewAndSolidify` (found unused in `lib/kernel/index.js` during this spec's blast-radius read) — covers 50/50 measured refusals with zero invented geometry and zero new boolean kernel, vs. three-bvh-csg's real but chain-incompatible second engine (breaks `GEOM_FILLET`/`SHELL`/`OFFSET`/`DRAFT`/`CHAMFER` on any mesh-cut result). Full measured tables, benchmark scripts, and named witness claims for the future build session in that spec file.|
+| 2. Recapture `cut-select.png`/`cut-open.png` | ⛔ **stays blocked** | Dependent on Task 1; Task 1 did not land a fix. Images left untouched (still round-1/2's pre-existing state, no re-attempt, no downgrade). |
+| 3. Room Move + Item Drag guide sections | ✅ **DONE** | Added `### Room Move` / `### Item Drag` to `docs/ModellerGuide.md` (bim-compiler PR #75, merged). Both engine modules (`bonsai_roommove.js`/`bonsai_itemdrag.js`) are shipped on bim-ootb `origin/main` (PR #1224/#1245) and proven by pure-node witnesses re-run fresh this session (logs saved): `witness_room_move.js` **10/10** (members=16 via rel_contained_in_space=12 + derived-footprint=4, T6 rigid-translation maxErr=2.38e-7m), `witness_room_move_roundtrip.js` **7/7** (R2 roundtrip maxResidual=0.000000mm over 16 members), `witness_item_drag_gate.js` **9/9** (G1/G2 WalkerGapError session refusal with zero op-log rows, G4 collision refusal naming the conflicting fids, G7 valid drop = exactly one `GEOM_MOVE` with a real-wall-face `snappedPos`). **No screenshot** — grepped `modeller.html` end to end: both files are `<script>`-loaded (lines 286-287) and NOTHING else in the app calls `window.Bonsai.roommove`/`itemdrag` — no button, no Outliner grab gesture, no canvas pointer listener. There is no clickable/draggable UI surface today, so no real user interaction exists to capture; fabricating one would violate the no-invent rule. Sections are marked inline "*(engine-ready — not yet on the toolbar)*" so a reader isn't misled into hunting for a control that doesn't exist. This is the exact, named blocker the mission anticipated for this case.|
+| 4. Land + deploy + record | ✅ **DONE** | `mkdocs build --strict` exit 0 (worktree `/tmp/wt-guide-roommove`, fresh off `origin/master`). bim-compiler PR #75 merged (`0403d80d2`). `scripts/safe_gh_deploy.sh`: guard PASS (275→275 files, within tolerance, no shrink/delete), published, all 7 canaries 200. Live-verified past propagation lag by polling `https://red1oon.github.io/BIMCompiler/ModellerGuide/` until it actually served the new text: "Room Move", "Item Drag", "GEOM_ROOM_MOVE", "not yet on the toolbar" all present. This section itself is the dated record (per this doc's own append-only convention).|
+
+**Worktrees used this round:** `/tmp/wt-cut-diag` (bim-ootb, detached at `origin/main`, diagnostic-only, no
+commits — safe to remove outright) and `/tmp/wt-guide-roommove` (bim-compiler, branch
+`docs/roommove-itemdrag-guide`, merged via #75 — safe to prune).
+
+## 2026-08-07 (round 4) — Room Move + Item Drag UI WIRED (bim-ootb PR #1247), guide's "not yet on the toolbar" markers removed, real screenshots landed
+
+Picked up round 3's exact named blocker (task 3 above: "no clickable/draggable UI surface today"). This
+session's mission was the UI wiring itself, so did that first (bim-ootb), then closed the guide out to match.
+
+| Task | Verdict | Evidence |
+|---|---|---|
+| 1. Wire Room Move into the UI | ✅ **DONE** | Grab target = a new **⛶** glyph on the Outliner's room node (spec §2.1 "implementer's choice" — an `IfcSpace` is never `GEOM_INSERT`-seeded, confirmed by grep, so there is nothing to raycast-pick in the 3D canvas; the Outliner is the only real grab target). `bom_tree.js`/`bom_tree_outliner.js` now carry the room's real IfcSpace guid through to the render node (storey-scoped, extracted not invented — the guid was already read off `spatial_structure`, just discarded before this session). Drag continues on the canvas ground plane, mirroring `bonsai_gridmove.js`'s arm→preview→commit structure exactly; grab happens via the Outliner click rather than a toolbar button (the op stays UI-agnostic per spec). One signed `GEOM_ROOM_MOVE` per release; refusals (§2.7 — bad guid, zero-member room) surface via the status bar, never swallowed.|
+| 2. Wire Item Drag into the UI | ✅ **DONE** | Dedicated `#b-itemdrag` toolbar button (mirrors `bonsai_gridmove.js`'s arm/cancel pattern) — deliberately NOT folded into the existing `#b-move` gizmo tool, because Move is ungated axis-constrained direct manipulation (already shipped, W-BONSAI-MOVE) while Item Drag needs a genuinely different contract (resolver-gated session start, collision/host `canDropAt` validation, snap-back on refusal); mixing them would have silently changed Move's own behavior. Session start gated by the real placement resolver (`WalkerGapError` = the item never lifts). Real, load-bearing finding made fixing this: the pointermove handler originally raycast against the world z=0 ground plane regardless of the grabbed item's height — correct for a floor item, wrong for a WALL/CEILING-hosted one (a sink at z≈1.3m does not share (x,y) with whatever the SAME screen pixel hits at z=0 unless the camera is dead top-down). Fixed to raycast a horizontal plane at the item's own pre-drag height. Both new modes added to `inSelectCtx()`'s exclusion list so the generic canvas select/marquee handlers don't double-fire during an armed drag — the exact collision risk this mission's own brief flagged on this shared pointer surface.|
+| 3. New E2E witnesses (real pointer input) | ✅ **DONE** | `witness_e2e_roommove_ui.js` **9/9** (real Duplex): a real click on a real ⛶ glyph arms a non-empty member session; a real mouse down→move→move→up on the canvas commits exactly one `GEOM_ROOM_MOVE`, dz=0; the committed member list is byte-identical to the grab-time session; a real member's rendered AABB centre shifted by exactly the committed delta; one scrub undo restores it exactly. `witness_e2e_itemdrag_ui.js` **8/8** (real Duplex), three real scenarios: (A) a real Drag-Item arm + real canvas pick on already-placed content refuses cleanly (zero ops) — this is §3.2's own anticipated v1 outcome (Q5, resolved against live code in `bonsai_itemdrag.js`'s own header): no already-committed element carries a UI-recoverable product hint today, since the identity rides only on a transient `_rw`/`_dw` sidecar object, never persisted to `kernel_ops`; (B) a grab via a caller-held hint (the only honest way to reach the MATCH path in a browser today, same reasoning the pure-node witness uses) + a real drag to a wall face found by scanning with the engine's own `canDropAt()` as the oracle commits one `GEOM_MOVE`, the dragged mesh's rendered centre landing on the exact committed delta; (C) the same grab dropped onto another real element's box refuses the commit and leaves the mesh exactly where it started. Regression sweep green on the same shared canvas pointer surface: `witness_e2e_gridmove_real.js` 8/8, `witness_arc_editable.js` 10/10. Pure-node engine witnesses re-confirmed unaffected: `witness_room_move.js` 10/10, `witness_room_move_roundtrip.js` 7/7, `witness_item_drag_gate.js` 9/9. All logs saved, read before this record was written.|
+| 4. bim-ootb PR + merge | ✅ **DONE** | PR bim-ootb#1247, `feat/roommove-itemdrag-ui` → `main`, auto-merge armed (`gh pr merge --auto --squash`) and confirmed merged before starting the guide half.|
+| 5. Guide text — remove "not yet on the toolbar", add real navigation steps | ✅ **DONE** | `docs/ModellerGuide.md` `### Room Move` / `### Item Drag`: dropped the `*(engine-ready — not yet on the toolbar)*` marker from both headings, added numbered step-by-step navigation matching the UI actually built (Outliner ⛶ glyph for Room Move; **Drag Item** toolbar button for Item Drag), and a short note on Item Drag explaining WHY a plain pick refuses on today's data (the Q5 finding above) rather than leaving that as an unexplained gap. Cited both new E2E witnesses alongside the existing pure-node ones.|
+| 6. Real captures | ✅ **DONE** | Two new images, both 2×DPR, 0 console errors (`NO-ERROR` assertion green in the witness runs that produced them), real Duplex, real pointer sequences — captured via a small `capture_guide_roommove_itemdrag.js` utility (NOT the audited witnesses; their own screenshots inherited whatever camera state `#b-fit` happened to leave, a steep close roof-corner crop, legible for nothing — one-look protocol caught this on the first pass, one recapture with deliberate `frameElement` framing fixed it). `docs/img/modeller/room-move.png` — the Outliner's ⛶ next to room "A101" grabbed, live drag status line visible. `docs/img/modeller/item-drag.png` — Drag Item armed, live "valid drop — release to commit" status line. Real, honest finding kept out of the embedded captions to avoid a tangent, logged here instead: committing even a small (~0.1m) room-move or a cross-room item-drop on this particular Duplex furniture layout reliably trips the (separate, already-shipped) conformity gate — tried 5 different rooms across 2 delta sizes, all clashed — because this floor plan's furniture already sits close to its walls; this is the gate doing its job, not a defect in Room Move/Item Drag, and out of this task's scope to tune.|
+| 7. Build + verify | ✅ **DONE** | `mkdocs build --strict` exit 0, no new broken refs/anchors (checked the build log specifically for `ModellerGuide`/`room-move`/`item-drag` — none). Both PNGs confirmed present under `site/img/modeller/` and referenced from the built `ModellerGuide/index.html`.|
+
+**Net: the round-3 blocker is closed for real** — Room Move and Item Drag are now on the toolbar/Outliner,
+proven end-to-end with real pointer input, and the guide shows the real UI instead of describing a feature
+with no click-path.
+
+**Worktrees used this round:** `/tmp/wt-guide-roommove` (bim-ootb, branch `feat/roommove-itemdrag-ui`,
+merged via bim-ootb#1247 — safe to prune) and `/tmp/wt-guide-roommove-docs` (bim-compiler, branch
+`docs/roommove-itemdrag-toolbar` — prune after this PR merges).
+
+## 2026-08-08 (round 5) — cut-gate FIXED FOR REAL (bim-ootb PR #1262, §LAYER-SOLID-SEED), but the
+## cut-select.png/cut-open.png recapture itself is ⛔ BLOCKED — not by the fix, by capture-environment friction
+
+Picked up round 3's exact named blocker: `CUT_GATE_CSG_SPEC.md` §THE CALL (per-layer real OCCT solids
+seeding the cut gate, not idealized boxes, not a second mesh-CSG engine) has now actually SHIPPED —
+bim-ootb PR #1262 (`fix/cut-gate-layer-solids`), merged, CI green (`fast-checks` + `e2e-tests` both pass on
+a clean runner). Full build detail, witness numbers, and the one real named open gap (fillet-after-
+layer-cut throws an OCCT exception — separate, not fixed this round): `CUT_GATE_CSG_SPEC.md` §10. Duplex's
+cut-eligible population is now **57/57 wallish IfcWall-class candidates seedable (7 box + 50 real-layer,
+0 refused)** — up from 2/57 pre-fix. This is the real, load-bearing fix round 3 stopped short of.
+
+### The recapture itself: real content proven, but no legible PNG landed this session
+- **The cut ITSELF is proven working end-to-end, repeatedly, numerically**: real click→select (via
+  `window.Bonsai.select(fid)`, modeller.html's own documented "witness/programmatic hook" — the SAME
+  `highlight`→`setSelectionIds`→`_paintSel`/`zoomToSelection` path a real click drives) → real `#b-cut`
+  click → `GEOM_CUT` committed → `verifyChain()==true` → **tri count genuinely changed (424→520,
+  reproduced identically across 3 separate runs)** on fid=87, Duplex's richest layered wall (7 layers, the
+  party wall `2O2Fr$t4X7Zf8NOew3FKRH` §CUT_GATE_CSG_SPEC.md §8 item 1 names). This is real, not assumed —
+  §-tagged numeric proof, read from saved logs, per this project's own doctrine.
+- **The screenshots themselves came out illegible THIS session, for two SEPARATE, now-diagnosed reasons —
+  neither is a defect in the cut-gate fix**:
+  1. **Local environment resource exhaustion** (this session ran dozens of concurrent headless-Chrome
+     puppeteer instances over many hours chasing this fix+recapture; `free -h` showed ~1.3GB/29GB free at
+     the worst point). At that point EVEN A FULL-PAGE, UNCROPPED screenshot of a correctly-cut, correctly-
+     selected, correctly-chained scene rendered as flat, textureless gray — reproduced identically on
+     `witness_e2e_cut.js`'s OWN pre-existing, unmodified box-wall capture path (fid=81/82) — proving this
+     wasn't specific to the new layer-cut code. After some concurrent load cleared, an IDENTICAL script
+     (`diag_fullpage.js`, same worktree) produced a real, detailed render (visible wall edges, roof,
+     shadows) — confirming the render pipeline itself is fine; the earlier blanks were a resource-exhaustion
+     artifact of this one long dev session, not an app bug. **If a future session sees the same "flat gray
+     screenshot despite correct op-log/tris" symptom, check `free -h`/concurrent Chrome count FIRST** before
+     assuming a code regression (same lesson as the documented W-E2E-MOVE/fid=112 swiftshader precedent,
+     now confirmed to generalize beyond just move ops).
+  2. **Even with the environment healthy, the specific crop (`e2e_harness.js`'s `frameElement`+`shotClip`,
+     via `bboxScreen`'s screen-space projection) still composed poorly for fid=87** — the clip region
+     consistently landed mostly on empty background with the actual wall only a sliver at one edge, across
+     several different `fill` values (0.42, 0.22) and two different selection-entry methods (`clickOn`'s
+     raycast-verified mouse click, and `window.Bonsai.select()`'s programmatic hook). This is a real,
+     reproducible composition issue with the CURRENT `frameElement`/`shotClip` pair specifically for this
+     subject/camera combination — separate from (1), and NOT chased to a root cause this round (time
+     budget spent proving/shipping the actual fix first, correctly per this mission's own priority). A
+     capture utility (`capture_guide_cut.js`, ad-hoc per round-4's own precedent for "NOT the audited
+     witnesses" — not committed to bim-ootb, lives only in the worktree below) encodes the full working
+     recipe (candidate selection by real per-layer seed eligibility, cold-worker tri-count polling instead
+     of a fixed sleep, `select()`+`#b-fit`+`frameElement` sequencing) — reusable, just needs either a
+     different `fill`/subject or a `bboxScreen` fix to land a properly-composed crop.
+- **Per this card's own established fail-hard doctrine** (§THREAD 2, 2026-07-01: "if the underlying [issue]
+  is not fixed, FAIL HARD — do not embed it"): `docs/img/modeller/cut-select.png`/`cut-open.png` are left
+  **UNTOUCHED** this round — no downgrade, no broken/blank embed. The guide's cut-tool text is also
+  UNCHANGED (still accurate — it never claimed a specific eligibility count that the fix changes).
+
+### §RESUME for whoever picks this up next
+1. **The fix does not need re-verification** — `CUT_GATE_CSG_SPEC.md` §10 has the full witness table;
+   bim-ootb `main` already has it (commit `0e719d2`, PR #1262).
+2. **Re-run the recapture with a clean environment** (check `free -h` and concurrent Chrome/puppeteer count
+   BEFORE starting — abort/wait if memory is tight, per finding 1 above). Reuse
+   `/tmp/wt-cut-recapture/modeller/tests/capture_guide_cut.js` if that worktree still exists (`git worktree
+   list`), else recreate off bim-ootb `origin/main` and re-derive the same script (short — the logic is
+   fully described above and in the file's own header comment).
+3. **If the crop still lands wrong** (finding 2), try: (a) a real click via `t.pick({cuttable:true,
+   prefer:'wall'})` instead of `window.Bonsai.select()` — may compose differently since it drives the
+   SAME code path a real user does, not tested combined with the cold-worker poll fix this round; (b) a
+   DIFFERENT subject than fid=87 — one of the other 26 wallish-shaped layer candidates (`§CAPTURE-POOL`
+   logs the full list) may frame better; (c) instrument `bboxScreen`/`shotClip`'s own NDC math with a
+   one-off console.log of the 8 projected corners to see exactly why the clip rect undershoots.
+4. Once a legible pair lands: `mkdocs build --strict`, PR off current `origin/master`, auto-merge,
+   `scripts/safe_gh_deploy.sh`, live-verify, append the dated record to this card in the SAME PR (this
+   card's own established convention) — do not open a separate docs PR for the record afterward.
+
+**Worktrees this round:** `/tmp/wt-cut-gate-build` (bim-ootb, `fix/cut-gate-layer-solids`, merged via
+bim-ootb#1262 — safe to prune), `/tmp/wt-cut-gate-docs` (bim-compiler, `docs/cut-gate-csg-spec-reconcile`,
+merged via bim-compiler#79 — safe to prune), `/tmp/wt-cut-recapture` (bim-ootb, detached at `origin/main`,
+carries the NOT-yet-landed `capture_guide_cut.js`/`diag_fullpage.js` diagnostic scripts — **do not prune
+yet**, the next session should reuse it per §RESUME step 2), `/tmp/wt-cut-gate-task3` (bim-compiler, this
+card's own PR branch — prune after merge).
+
+## 2026-08-10 (round 6) — PARKED mid-mission: a repo-wide review session pre-empted this card. Both
+## dispatched tasks reached a real, honest stopping point of their own accord before the pause landed —
+## nothing left mid-file, nothing left mid-witness. Record below, then STOP (per explicit wind-down order).
+
+Dispatched two parallel background sessions against this round's mission: (1) recapture
+`cut-select.png`/`cut-open.png` now that the cut-gate fix (PR #1262) is live, (2) root-cause the
+`§CHAIN-SURVIVES-LAYER-CUT` fillet-after-layer-cut OCCT exception §10 named as an open gap, build only if
+bounded. **Both finished and reported back before the wind-down order arrived** — their PRs (test-only /
+doc-only, no app code, no deploy) were already merged by that point. The wind-down order's real effect on
+this round was: no third task was started, and the two agents' worktrees were left parked rather than
+pruned. Per explicit user instruction this same session ("Leave PR #81 as-is... reverting would churn
+master during the review, which is worse... Stand down"), neither already-merged PR is being touched.
+
+| Task | Verdict | Evidence |
+|---|---|---|
+| 1. Recapture `cut-select.png`/`cut-open.png` | ⛔ **still blocked — new, narrower root cause than round 5's** | The cut-gate fix itself is rock-solid: `GEOM_CUT` on fid=89 (3-layer partition wall) committed, `verifyChain()===true`, tris 148→318, **identical across all 14 runs**. The blocker is pure screen-composition/render flakiness under headless-Chrome+swiftshader on this shared machine (load average 7–23 observed) — roughly 1-in-3 individual shots render legibly but the SAME run never lands both `cut-select` AND `cut-open` clean together, across 14 attempts, plus 2 Chrome crashes mid-run (same "detached Frame"/"Target closed" signature as round 2/5). A real, separate finding this round: fid=87 (round 5's subject) sits almost exactly at Duplex's own bbox centroid `[4.4,-8.9]`, so no `frameElement` camera-offset direction escapes into open room space — that's WHY round 5's harness-composition theory never resolved; it wasn't a `bboxScreen` bug, it was a bad subject. Switched to fid=89 (only 1 of 4 manually-placed-camera candidates probed that ever composes legibly) — proves a subject exists, doesn't yet prove a *repeatable clean run*. **No images embedded** — `docs/img/modeller/cut-select.png`/`cut-open.png` and `ModellerGuide.md` confirmed untouched (empty diff), per this card's own fail-hard doctrine. bim-ootb PR [#1270](https://github.com/red1oon/bim-ootb/pull/1270) **merged** (test-only — 7 diagnostic/capture scripts preserved: `capture_probe_candidates.js`, `capture_guide_cut.js`, `capture_guide_cut_v2.js`, `diag_fullpage.js`, `diag_candidate_z.js`, `diag_closecam_orient.js`, `diag_closecam_v2.js` — `§CAPTURE-POOL n=27` in the first script lists 23 more untried candidates). No bim-compiler docs PR (nothing to embed). |
+| 2. Fillet-after-layer-cut root-cause | ✅ **root-caused numerically, ruled NOT architecturally bounded — no app code shipped, correctly per its own dispatch instruction** | §10's compound hypothesis **confirmed, not just plausible**: `kernel.fuseAll()` on N touching layer solids produces a multi-body COMPOUND, never one manifold solid — measured `kernel.getSubShapes(combined,'solid').length` = **4** (fid=87, 7 layers, partial fusion) and **7** (fid=90, 7 layers, zero fusion). Both of the mission's own named "already-vendored, no new kernel surface" candidates were tried and BOTH fail: `kernel.unifySameDomain(combined)` — no effect (4→4, edge count dropped 490→144 but sub-solid count didn't move — it merges redundant coplanar geometry *within* a shape, not a boolean merge *across* separately-touching bodies); `kernel.healSolid(combined, 1e-3)` — itself throws a WASM exception on this input, doesn't even complete. Real methodology catch made en route: the fillet-failure path logs via `console.warn` not `console.error`, and an early diagnostic script's error-only console filter produced a FALSE 3/3-success read before this was caught — same "replay corruption" trap §10 already named (`oplog.commit` pushes the `GEOM_FILLET` row before the fold throws, so `opsLen` incrementing alone is never proof). Findings recorded in `CUT_GATE_CSG_SPEC.md` §11 (bim-compiler PR [#81](https://github.com/red1oon/BIMCompiler/pull/81), **merged** to `origin/master` as `0276832c5`/`bc2f0d388` — user explicitly confirmed leave-as-is, doc-only, no revert). One architecture question posed there for whoever owns `bonsai_kernel_worker.js`'s cut/fillet chain next: given neither already-vendored op works, does the project want (a) a new tolerance-bearing boolean fuse primitive, or (b) a layer-boundary-fillet-ownership semantics ruling + an honest UI refuse message instead of today's raw `[object WebAssembly.Exception]` reaching the user. **No bim-ootb PR** (correct outcome — nothing bounded to ship). |
+
+**Card status: NOT drainable, still open** — task 1 needs a genuinely repeatable clean capture run (composition
+theory now correct, reliability isn't there yet); task 2 is closed as a diagnosis (real root cause, real
+verdict, both candidate fixes exhausted) but the underlying gap itself is still live pending the architecture
+decision in §11. Do not re-walk either task's own reasoning above — resume from the concrete next steps below.
+
+### §RESUME for whoever picks this up next
+1. **Task 1**: fid=89 is a real, working subject (numerically proven cut, occasionally-legible frames) —
+   the open problem is run-to-run reliability, not subject/camera choice anymore. Try: (a) sample-based
+   render-completeness check (`pixsum`/variance) *before* calling `pg.screenshot()`, retrying the render
+   itself rather than the whole script, per round 6's own "what to try next" note; (b) run off-hours /
+   verify machine load is low first (`uptime`, `free -g`) — this round explicitly observed load 7–23 with
+   2 Chrome crashes, consistent with contention from concurrent sessions on this shared dev box, not a code
+   regression; (c) if fid=89 keeps flaking, the other 23 untried real-layer candidates are listed in
+   `capture_probe_candidates.js`'s own `§CAPTURE-POOL` log (now committed, bim-ootb PR #1270).
+2. **Task 2**: this is a real product decision, not a diagnosis gap — pick (a) or (b) from §11's own
+   question, or defer explicitly with a reason, before any future session attempts another fix pass. Don't
+   re-attempt `unifySameDomain`/`healSolid` — both are now proven not to work on this input, re-trying them
+   without a new approach would just re-spend the same diagnosis.
+3. Re-verify PR #81 and #1270 are still merged/live before trusting anything above as current (both were
+   merged 2026-08-10, should be stable, but this project's own doctrine is "verify against a fresh fetch,
+   don't trust a citation").
+
+**Worktrees this round (left PARKED, not pruned, per the wind-down order — verify still clean/unoccupied
+before reusing or removing):**
+- `/tmp/wt-fillet-diag` (bim-ootb, branch `fix/fillet-after-layer-cut`, **pushed** to
+  `origin/fix/fillet-after-layer-cut` this round — 2 scratch diagnostic scripts (`diag_fillet_clean.js`,
+  `diag_fillet_repro.js`) committed and preserved so they survive a prune; NOT a PR, not merged, holds no
+  app-code change — the verdict itself already landed via PR #81's spec text).
+- `/tmp/wt-fillet-diag-spec` (bim-compiler, branch `spec/fillet-after-layer-cut-diagnosis`, 1 local commit
+  — content already squash-merged into `origin/master` via PR #81, so this branch is redundant/safe to
+  prune once confirmed, not pushed this round since it would add nothing).
+- `/tmp/wt-cut-recapture` — **pruned this round** (bim-ootb agent's own closeout: fully pushed via #1270,
+  0 dirty, confirmed unoccupied before removal). If task 1 is resumed, recreate fresh off `origin/main`
+  rather than expecting it to still exist.
+- `/tmp/wt-winddown-park` (bim-compiler, branch `docs/cut-gate-winddown-park`, this section's own commit —
+  pushed, NOT merged, per the wind-down order's explicit "push to feature branch, do not merge" instruction).
+
+## 2026-09-30 — First Steps PoC (docs/ModellerFirstSteps.md) — witness_first_steps.js vs LIVE: 9 PASS / 0 FAIL / 0 INCONCLUSIVE
+Scope narrowed by red1 to one baby-steps flow (open → Duplex → click a wall → Move → Ctrl+Z → Save). Full-guide walk NOT done. Log: `/tmp/claude-1000/gs/first_steps_FINAL.log`.
+Product findings (not fixed; Modeller code untouched):
+1. **Move of a wall that hosts a door/window is 3 ops, Ctrl+Z reverts ONE.** Duplex wall #110 (IfcWallStandardCase): oplog 196→199 (host + 2 riders, `induced:'hosted-by'`), one Ctrl+Z → cursor 199→198, wall centre residual 0.417 m (NOT restored). The very next Save was refused: `§SAVE_BLOCKED reason=RED_CLASH count=1 detail=door-out(46,110) healed=8`. Expected: one user gesture = one undo step. Where: `modeller.html` doUndo (~3657) undoes one op; cascade commits at ~2854. The First Steps page therefore tells the user to pick a wall with no hosted fillings (asked of `SdgCascade.ridersFor`).
+2. Cosmetic: first Save status reads `Saved — v0 (1 version)` (`latestVersion=0`).
+3. Cosmetic: after a Ctrl+Z the history slider reads 196/196 with the redo step no longer shown as range (max=196).
+
+## §RESUME-GUIDE 2026-09-30 (PAUSED by red1 — tokens; nothing below is lost)
+**Merged and LIVE (bim-ootb):** #1791 witness_first_steps · #1796 S8 edit→Δ (viewer/edit_delta.js, edit_delta_viewer.js, modeller/edit_delta_ui.js) · #1797 S9 (viewer/proj_order_state.js, modeller/proj_order_ui.js, find_erp_push OPFS-first) · #1798 projectKey (Viewer building label) · #1799 layout offsets + hover label on-screen + witness_first_steps_mep.js. Live sw: viewer v1455, modeller v71. bim-compiler #152 (First Steps page, published).
+**On branches, NOT merged:**
+- bim-ootb `guide/final-runs` (/tmp/wt-guide-ootb): WIP witness tweaks only (S9 witness dolly-out before the 2nd shift-click; MEP witness tight crop + renderer nudge + see-through counts). Merge via a normal PR when resumed.
+- bim-compiler `guide/docs-s8s9mep` (/tmp/wt-guide-bc): spec §S8 result + §S9 (+RATES §5, CONNECT pointer), ModellerGuide new sections ("See what your edit costs", "Send it to ERP — Project Order, variant, VO") + corrected MEP lines + link to First Steps, ModellerFirstSteps Parts 2 and 3 (text complete), 27 new images `docs/img/modeller/first-steps-{s8,s9,mep}*.png`, this note.
+**Latest witness verdicts (all vs LIVE unless noted; logs in /tmp/claude-1000/gs/):** W-FIRST-STEPS 9/9 (first_steps_LIVE_final.log) and HOSTED-wall mode 9/9 (first_steps_LIVE_hosted.log: wall #110, 3 ops, ONE Ctrl+Z → cursor 199→196, Save PASS — finding #1 fixed, First Steps caveat dropped) · W-S8-PURE 7/7 (node) · W-S8-EDIT-DELTA 9/9 (s8_edit_LIVE_F2.log) · W-CONNECT-COMMIT 10/10 (cc_LIVE_F2.log) · W-S9-PURE 8/8 (node) · W-S9-MODELLER-PROJECT 10/10 (s9_LIVE_F3.log) · W-FIRST-STEPS-MEP 8/8 (mep_LIVE_F3.log; reroute_ms=524; Duplex 18 fixtures / 22 runs / 22 signed / 5 fittings; sizes 25.4 mm ×1 + 48.3 mm ×21).
+**Open findings / questions (also in TM_4D5D_VARIANCE_LANE §S8/§S9):** VO prices the shipped per-element model (81.90) not the S8 quantity Δ (127.03) ⛔; VO approval not in the Modeller ⛔; resident→ERP-Project-Value label only measured for Duplex ⛔; walked fixtures have NO drag handle (click = identify only, Move disabled) so the MEP "move a fixture" step is engine-driven; W-MEP-OPENPATH M0 control expects 185 placed, Duplex Walk-ALL now places 177 (expectation stale, not touched); **MEP screenshots mep3/mep7 show an EMPTY grid**: after the walk the witness counts 27 see-through / 0 solid meshes and after undoing the walk 0/0 — either the x-ray state is not restored and the building is invisible (a real defect) or the idle-gated renderer had not drawn; re-check with a hard render + read the `seeThroughMeshes/solidMeshes` numbers in step 3 and 7 BEFORE publishing mep3/mep7/mep8 images.
+**Left, in order:** 1) resolve the mep3/mep7 invisible-building question (above) and recapture MEP images (`node modeller/tests/witness_first_steps_mep.js`, copy `modeller/tests/first_steps_mep_shots/*` to `docs/img/modeller/first-steps-*`); 2) look once at each new image for framing (S9 pin/ERP-button layout was fixed in #1799); 3) `mkdocs build --strict` sanity, commit, PR `guide/docs-s8s9mep` → merge; 4) publish: `cd /tmp/wt-guide-bc && git show origin/gh-pages:glassbowl_data.db > docs/glassbowl_data.db; scripts/safe_gh_deploy.sh; rm docs/glassbowl_data.db` (never commit it); 5) fetch live `.../ModellerFirstSteps/` and `.../ModellerGuide/` and one new image; check text present + sha1 of the image bytes == the file in git; 6) final report (§ S8 EDIT→Δ / §S9 / §FIRST-STEPS-MEP formats).
+**Exact next command:** `cd /tmp/wt-guide-ootb && node modeller/tests/witness_first_steps_mep.js 2>&1 | grep -E "§FIRST_STEPS_MEP (step=[137]|SUMM)"` (then inspect `modeller/tests/first_steps_mep_shots/mep3-walk-done.png` once).
+
+### §RESUME-GUIDE 2026-09-30 — CLOSED (same day, after red1's answers Q1–Q5)
+Everything in the resume note above is done, merged and published: bim-ootb #1801 (one pricing basis, generic key, VO status, §GEOM-KEEP-RG fix, M0 re-baseline 177, W-S9-IFC-KEY), bim-compiler #156 (docs + spec §S8/§S9-ANSWERS + MODELLER_MASTER rows 35–37). Live witnesses: S8 9/9, CONNECT-COMMIT 10/10, S9-MODELLER-PROJECT 10/10, S9-IFC-KEY 3/3, FIRST-STEPS-MEP 8/8, FIRST-STEPS 9/9. Pages: /ModellerFirstSteps/ Parts 2–3, /ModellerGuide/#see-what-your-edit-costs, #send-it-to-erp-project-order-variant-vo (hash-checked).

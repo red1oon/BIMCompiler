@@ -14,7 +14,7 @@ global.window = global.window || {}; global.self = global.self || global;
 var path = require('path');
 var initSqlJs = require('sql.js');
 var ROOT = path.join(__dirname, '..');
-var Monitor = require(path.join(ROOT, 'build', 'erp', 'system_monitor.js'));
+var Monitor = require(path.join(ROOT, 'build', 'erp', 'field_health.js'));
 var OfflineQueue = require(path.join(ROOT, 'build', 'erp', 'offline_queue.js'));
 var VFS = require(path.join(ROOT, 'build', 'erp', 'vfs_detect.js'));
 var KERNEL = path.join(ROOT, 'build', 'erp', 'kernel_ops.js');

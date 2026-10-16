@@ -287,3 +287,45 @@ had already drifted off it independently — the same shortcut named earlier thi
 review was not strong"), now a second confirmed instance of the same pattern: flag a symptom,
 under-verify before asserting a cause. **#724 merged** (auto-merge armed) on the same terms as
 #722/#741. All 3 branches from Task 1 are now resolved.
+
+## ▶ FINAL CLOSEOUT (2026-07-17/18, Sonnet) — Task 2's guide-shot bug chased to its actual root causes, all fixed
+
+Picked back up from this file's own Task 2 verdict ("capture-script camera/styling bug, NOT a rendering
+defect. Fixed.") to actually get a clean SampleCastle guide shot shipped — the SampleCastle swap this file's
+own PUSH-PAUSE-era session had already tried and reverted (`177194f63` → `da27f8598`, both 2026-07-13).
+**That revert was correct** — three more bugs sat between "camera fixed" and "SampleCastle looks good",
+found one at a time by actually looking at real image bytes each step, not assumed from logs:
+
+1. **bim-ootb PR #838** — the guide-shot script's OWN "0 console errors" gate was tripping on the self-heal
+   patch-loader's benign 404 (permanent by design — most buildings ship no patch). Fixed by correlating
+   against real network responses instead of guessing from Chromium's URL-less console text.
+2. **bim-ootb PR #844** — `_commitDiscWalk`'s cat[0] fallback (an unmatched fixture class borrowed the
+   catalog's FIRST item regardless of class — a full-height Column for an electrical outlet). This was the
+   literal cause of SampleCastle's "wall spikes" under X-ray. New witness `witness_dw_honest_fallback.js`.
+3. **bim-ootb PR #846** — X-ray reveal's glass/glow classification was completely broken for EVERY building
+   (not just SampleCastle) since an unrelated material-parity change gave ARC elements a cosmetic colour
+   too, defeating `_fixtureColorMap()`'s "has colour = fixture" test. Fixed by keying off the `_dw`/`_rw`
+   op tag instead (pulled in from the already-existing, unmerged `fix/xray-fixture-classification` branch —
+   see `XRAY_FIXTURE_CLASSIFICATION_FIX.md`'s own closing note). Layered a real depth-adaptive-opacity fix
+   on top for the alpha-accumulation question that branch's own file had raised and left open.
+4. **bim-ootb PR #851** — the double-render bug `DW_FIXTURE_DOUBLE_RENDER_FINDING.md` had flagged
+   "NOT YET INVESTIGATED" turned out to be real: visually confirmed as z-fighting (a ceiling light z-fought
+   into a garbled oval next to a clean fan). Fixed — see that file's own closing note for the two
+   regressions caught (broken pick, broken X-ray-restore) before the fix was declared done.
+
+**`docs/ModellerGuide.md` (bim-compiler) updated twice, both shipped:**
+- `walk-fixtures.png` swapped to a real SampleCastle X-ray walk (commit `ebfb9b7b6`) — the swap this file
+  originally deferred, now safe because #844+#846+#851 are all in.
+- Two new close-ups added (commit `5e4c1ec89`): a real Duplex ceiling-fan LOD400 mesh vs a SampleCastle
+  honest-box fallback, replacing a stale guide claim that every fixture is "still a box stand-in."
+
+**This file's own arc is done.** Everything Task 1 and Task 2 named is either merged or explicitly flagged
+open below — nothing left silently unresolved.
+
+**Genuinely still open, not fixed here:**
+- `witness_e2e_instpick.js` P2/P2b/P3 (click-to-identify) — confirmed broken on pristine `origin/main`
+  before any of this file's fixes touched anything (`git stash` verified). Real, pre-existing, unrelated.
+- Ambient occlusion for the Modeller's own viewport — considered (came up discussing why Modeller
+  screenshots look flatter than the Viewer's Alt+G N8AO pass), deliberately not built. If ever picked up,
+  mirror the Viewer's own gated-toggle pattern exactly (`toggleGIPreview()`), never touching the
+  interactive edit/grid-drag path. Noted in `DW_FIXTURE_DOUBLE_RENDER_FINDING.md` too.

@@ -192,7 +192,7 @@ Led [ADempiere](https://www.adempierebr.com/User:Red1) (2006), paved the way for
 
 | | |
 |:---|:---|
-| **BIM OOTB (Browser)** | 88 files, 90K lines (JS + HTML), 155 Playwright tests |
+| **BIM OOTB (Browser)** | 331 files, ~311K lines (JS + HTML), 53 Playwright spec files |
 | **Java Compiler** | 1,207 files, 278K lines across 10 Maven modules |
 | **Java Tests** | 201 test classes; gate baseline 382 PASS / 94 intentional RED / 1 SKIP |
 | **SQL** | 178 migration scripts (append-only) |

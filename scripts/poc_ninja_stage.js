@@ -134,5 +134,7 @@ var OUT_DB_PATH   = path.resolve('/tmp', 'ninja_stage_test.db');
     ' render=' + (renderPass ? 'PASS' : 'FAIL') +
     ' rollback=' + (rollbackPass ? 'PASS' : 'FAIL'));
 
+  // §TWIN-CLASSIFIED-MARKERS: explicit verdict line (the §NINJA-STAGE line above carries the numbers).
+  console.log(pass ? '🟢 W-NINJA-STAGE PASS — render + rollback' : '🔴 W-NINJA-STAGE FAIL — render=' + renderPass + ' rollback=' + rollbackPass);
   if (!pass) process.exit(1);
 })();

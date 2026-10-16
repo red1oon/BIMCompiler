@@ -41,7 +41,9 @@ GT_IFC = "internal/sources/Ifc2x3_Duplex_Architecture.ifc"
 EXPECT = {
     "iou": {"recall": 13, "n": 21, "candidates": 15, "matched_cand": 13},
     "centroid": {"recall": 15, "n": 21, "candidates": 15, "matched_cand": 15},
-    "baseline_iou_recall": 1,
+    # baseline_iou_recall re-locked 1→3 on 2026-08-23 (§S74): flood_rooms improved between the
+    # 2026-07-02 claim and today (measured 3/21 over 3 candidates); topology's 13/21 still beats it.
+    "baseline_iou_recall": 3,
     "baseline_centroid_recall": 3,
 }
 

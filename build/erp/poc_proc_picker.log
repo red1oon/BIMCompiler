@@ -1,26 +1,6 @@
-── poc_proc_picker (exit 0) ──
-§PROC-PICKER-FALSIFIER byAccess=0 (must be 0)
-  ✓ §FALSIFIER: role=99999 → byAccess empty (access filter is load-bearing, not cosmetic)
-  ✓ §FALSIFIER: byWorkflow still populated (independent lens unaffected by role filter) — wf=9
+=== §PROC-PICKER witness (W-PROC-PICKER) — on-demand AD_Process picker vs live-oracle ===
+    Mechanism: AD_Process ⋈ AD_Process_Access ⋈ AD_WF_Node (GAP_CLOSURE_LANE §P3.5)
+    Engine: build/erp/ad_process.pickUsedProcesses on ad_full.db
+    Oracle: live iDempiere Postgres (postgres/idempiere)
 
-🟢 W-PROC-PICKER PASS — pickUsedProcesses returns the exactly-used subset: 451 processes (byAccess=451, byWorkflow=9) == live-oracle; §FALSIFIER fires (role 99999 → byAccess=0)
-ss=451 byWorkflow=9 union=451
-
-§PROC-PICKER-ACCESS engine=451 oracle=451 diff=0
-  ✓ access oracle has real data (processes with access grants) — count=451
-  ✓ byAccess: engine process-id set == oracle (AD_Process ⋈ AD_Process_Access) — diff=[]
-§PROC-PICKER-WORKFLOW engine=9 oracle=9 diff=0
-  ✓ workflow oracle has real data (wf_nodes with process refs) — count=9
-  ✓ byWorkflow: engine process-id set == oracle (AD_WF_Node ⋈ AD_Process) — diff=[]
-§PROC-PICKER-UNION engine=451 oracle=451 diff=0
-  ✓ union: engine process-id set == oracle (byAccess ∪ byWorkflow) — ORACLE-EQUIVALENT — diff=[]
-
-§PROC-PICKER-COVERAGE totalActive=451 picked(union)=451 named-deferred(corpus)=337
-  ✓ picker returns a non-empty subset (≤ totalActive) — picked=451 of 451
-
-§PROC-PICKER-FALSIFIER: restrict to non-existent role 99999 → byAccess must be empty
-§PROC-PICKER-FALSIFIER byAccess=0 (must be 0)
-  ✓ §FALSIFIER: role=99999 → byAccess empty (access filter is load-bearing, not cosmetic)
-  ✓ §FALSIFIER: byWorkflow still populated (independent lens unaffected by role filter) — wf=9
-
-🟢 W-PROC-PICKER PASS — pickUsedProcesses returns the exactly-used subset: 451 processes (byAccess=451, byWorkflow=9) == live-oracle; §FALSIFIER fires (role 99999 → byAccess=0)
+§PROC-PICKER-SKIP oracle Postgres unreachable → honest ⬜, not ✅

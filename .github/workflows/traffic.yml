@@ -15,11 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: full
+          ref: master
 
       - name: Collect traffic data
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.TRAFFIC_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p stats
           DATE=$(date -u +%Y-%m-%d)

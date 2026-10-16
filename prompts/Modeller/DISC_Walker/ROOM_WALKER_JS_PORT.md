@@ -15,7 +15,7 @@ ANCHORS: scripts/compile_rooms.py (the Python source of truth to port, byte-for-
 re-derived from scratch) · prompts/Modeller/DISC_Walker/ROOM_INJECTION_HYBRID.md (§DOOR-RESCUE/
 §DOOR-PARTITION, the algorithm; Task 3 "New Modeller Outliner 'Rooms' category," still NOT
 STARTED — this doc gives that task its concrete trigger mechanism) ·
-prompts/Modeller/DISC_Walker/VIEWER_FIND_PANEL_ROOM_ACCURACY.md (§2 Task 5, the live-import gap
+prompts/Viewer/FindRooms/VIEWER_FIND_PANEL_ROOM_ACCURACY.md (§2 Task 5, the live-import gap
 this closes) · bim-ootb modeller/disc_walker.js `dwWalk()` (the EXISTING walk-trigger convention to
 match — verify HOW it's actually invoked today, automatic-on-load vs explicit UI action, before
 assuming a button pattern; not confirmed either way this session, grep found no obvious caller
@@ -265,3 +265,92 @@ SampleCastle 51 (9 ⚠suspect), HHS 33 (2⚠ — flood-fill on all 3 levels now,
 triggers), Clinic 209 (26⚠), Garage 5 (3⚠), Hospital 213 (66⚠), Terminal 53 (10⚠). Ship channel:
 `embed8_scripts/ROOM009-014_*_wellformed.sql` (verified apply-identical, 6/6). The Task 3 table
 above (Terminal 53, HHS 105 etc.) is the HISTORY of the first port, not the current data.
+
+## §4 — 2026-07-21: Viewer's needle-vs-refresh finding, and why Modeller is the OPPOSITE case
+(cross-referenced from `prompts/Viewer/ROOM_INJECTOR_NEEDLE.md`'s `§ROOM_WALKER_VERSION_STAMP`
+stages 1-4, done same day on the Viewer side of this shared `room_walker.js`)
+
+**The Viewer finding:** `viewer/navigate_find.js`'s `A.ensureRooms()` now auto-heals every building
+(not just one pilot) via a `rooms_meta.version` vs `ROOM_WALKER_V` check — five callers (Fly Tour,
+Cinema, DLOD-nav, the manual needle, and now Find Panel's Room lens) all trigger it non-force. Net
+result: in the Viewer, the manual needle's `force:true` path is now **functionally redundant with a
+page refresh** for ordinary users — both reach the identical deterministic recompile once the stored
+version is stale, and a version match never needs forcing because Viewer has no way to change a
+building's walls/doors, so nothing except an algorithm bump can go stale in the first place.
+
+**§2's guardrail above ("wall/door editing → staleness is NOT yet a real scenario... grepped, found
+none") needs correcting for the Modeller, not re-confirming — checked again just now, not assumed:**
+`§ARC-1` (bim-ootb PR #571, merged 2026-06-29, `arc_editable.js`/`str_walker_outliner._forkEditable`,
+see `[[project_arc_editable_substrate]]`) shipped BEFORE this doc's Task 1-5 work and made real ARC
+walls/doors gizmo-draggable (`GEOM_MOVE`, real guid, not synthetic-only) — this doc's 2026-07-11 grep
+either missed it or was scoped to something narrower (topology add/remove, not position edits); either
+way, wall-position edits in the Modeller ARE a live capability today, unlike the Viewer. That is
+**exactly** the case where a force-recompute matters and a mere "refresh" does not: a user drags a
+real wall, the room shapes should reflect it, but no `ROOM_WALKER_V` bump occurred, so an
+auto-heal-on-version-match check (if Modeller even had one — see below) would trust the stale compile
+and do nothing. **Modeller's manual re-walk is the opposite of redundant — it's the one thing that
+covers a real, live edit path the Viewer structurally cannot have.**
+
+**Three concrete gaps found while checking this (verified against `origin/main` and the
+`fable/modeller-lod400-livewire` branch directly, not assumed from this doc's prose):**
+1. Task 4's "Room Walker" Outliner action was never merged to `bim-ootb main` — it exists only on
+   `fable/modeller-lod400-livewire` (worktree `/tmp/wt-fable-livewire`, commit `a5c6435`). This doc's
+   Task 4 status line (`✅ DONE 2026-07-11`) is true for that branch, not for production.
+2. That branch's own `modeller/room_walker.js` copy (last synced `fd7da67`, 2026-07-11) has **no**
+   `ROOM_WALKER_V` string at all — it predates the version-stamp work by 10 days (stages 1-4 shipped
+   2026-07-21) and is unaware of `rooms_meta` entirely.
+3. Per Task 4's own description above, the Outliner "Rooms" category is **browse-only once populated**
+   — `onWalk` only exists on the empty-state row, so there is currently no re-trigger mechanism at all
+   for an already-walked building, force or otherwise. Combined with (2), the Modeller today has
+   **neither** an auto self-heal **nor** a working manual override for a building whose rooms already
+   exist — a stale compile (from an algorithm fix OR a live wall edit) has no path back to fresh short
+   of a hand-written SQL migration (which is literally how `ROOM009-014_*_wellformed.sql` above got
+   shipped — manually, because no re-walk button reaches a populated building).
+
+**Not fixing any of this now** — flagging precisely, with exact code citations (verified directly on
+`/tmp/wt-fable-livewire`, not re-derived from this doc's prose), so the next session that picks up
+Modeller/DiscWalk work doesn't have to re-query any of it:
+
+- **`window.roomWalk()` (`modeller/modeller.html:3428-3449`) has no populated-check of its own** —
+  it guards only `!window.__dwBuf` ("no walk (open a building first)") and `!window.SQL ||
+  !window.RoomWalker` ("room_walker.js not ready"), then unconditionally builds a `SQL.Database`
+  from `window.__dwBuf` and calls `RoomWalker.walk(db, {write:true})`. The empty-vs-populated
+  guard lives entirely in the OUTLINER TREE below, not in the walk function itself — so
+  `window.roomWalk()` called directly (console, or a future button) would already re-walk a
+  populated building today, force or not. **The gap is UI reachability, not engine capability.**
+- **`room_walker_outliner.js`'s `tree()` (lines 30-48) confirmed as the actual blocker:** a
+  populated building's rows are plain `{id, label, kind:'element', sub}` objects with no `disc`
+  field; only the single empty-state row carries `{kind:'disc', disc:'ROOM'}` — the one thing
+  `bonsai_outliner.js:691`'s chokepoint (`if (cat.onWalk) cat.onWalk(disc)`) can dispatch through.
+  No other Rooms-category button/menu exists anywhere in `modeller.html` or the outliner file.
+  Once rows exist, `onWalk` is registered but structurally unreachable — dead code by construction,
+  not a bug, but exactly the reachability gap (2) above names.
+- **A ready-made invalidation hook already exists and nothing subscribes to it for rooms:**
+  `bonsai_oplog.js:284`'s `_emit(persist)` fires `window.dispatchEvent(new
+  CustomEvent('bonsai:oplog'))` unconditionally after every committed mutation (including a real
+  wall's `GEOM_MOVE`, from `commit()`/`_foldUpto()` call sites at lines 362/385/418/456/470/495).
+  Three files already listen (`bonsai_outliner.js:153` `this.refresh()`, `bonsai_grid.js:117`
+  `Grid.foldFromOplog()`, three spots in `modeller.html` at 685/988/1292 for selection-repaint/
+  shadow flags) — **none reference rooms or `RoomWalker`**. This is the Modeller-side equivalent
+  of the Viewer's `A._tourCacheBust()` wiring (`ROOM_INJECTOR_NEEDLE.md`'s `§TOUR_ROUTE_CACHE`
+  section) — a future "wall moved → room data may be stale" signal would attach a NEW listener
+  here (`window.addEventListener('bonsai:oplog', ...)`), not build a new emit mechanism from
+  scratch.
+- **Disc Walker itself has no analogous pattern to copy:** grepped all 2224 lines of
+  `disc_walker.js` — zero `addEventListener` calls, no `bonsai:oplog` subscription. Its only
+  staleness concept is `_logProvenance()` (lines 83-91, e.g. `'NO rules_meta (unstamped —
+  staleness undetectable)'`) checking the RULES-DB version, not geometry edits. Disc Walker itself
+  requires a manual re-click after any edit today — there is no existing "auto re-walk on geometry
+  change" precedent anywhere in this codebase yet; it would be new territory, not a port.
+- **`ROOM_WALKER_V`/`rooms_meta`: confirmed absent, full-file grep, all three files** —
+  `modeller/room_walker.js` (859 lines), `room_walker_outliner.js` (74 lines), `modeller.html` —
+  zero matches. Not a partial gap, a total one.
+
+**Real follow-up shape (for whenever this is picked up, still not now):** (a) merge/sync
+`room_walker.js` forward to carry `ROOM_WALKER_V`/`rooms_meta` before this branch's Task 4 merges to
+`main` — walking a building today stamps nothing, so even a future Modeller-side auto-heal would have
+no version to compare against; (b) give the Rooms category a force-re-walk row/affordance for
+populated buildings (mirror the Viewer needle's "stays available, subtle" pattern), since
+`window.roomWalk()` already supports it, only the Outliner reachability is missing; (c) if/when
+wall-edit-triggered staleness is worth solving (not decided here — it's a product call, not an
+engineering default), the attach point is a new `bonsai:oplog` listener, not a new emitter.
