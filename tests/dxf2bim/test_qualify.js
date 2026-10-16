@@ -65,6 +65,7 @@ function plan(o) {
     ['@SET=FX', '@VIEW=' + (o.view || 'PLAN'), '@NAME=PLAN', '@LEVEL=0'].concat(o.noUnits ? [] : ['@UNITS=mm']).forEach(t => w.mark(t));
     w.mark('@GRIDX=1', [100, 0]); w.mark('@GRIDX=2', [9900, 0]); w.mark('@GRIDY=A', [0, 100]); w.mark('@GRIDY=B', [0, 5900]);
     (o.walltop || []).forEach(t => { D.wt = w.mark('@WALLTOP=' + t); });
+    (o.rawMarks || []).forEach(t => w.mark(t));
   }
   return { text: w.out(), D };
 }
@@ -198,7 +199,10 @@ only('QR3', 'the roof sheet and the elevations disagree on the roof top and it p
 const wallGap = { code: 'GAP:no_elevation_height', sheet: 'FX_PLAN', handle: '100', layer: 'A-WALL-FULL' }, doorGap = { code: 'GAP:no_elevation_height', sheet: 'FX_PLAN', handle: '101', layer: 'A-DOOR' };
 only('QG2', 'an interior wall height no elevation shows passes without a stated convention', { gaps: [wallGap] }, ['GAP:no_elevation_height']);
 { const v = Q.qualify(set({ plan: { walltop: ['0,slab_above'] }, gaps: [wallGap] }).input, S);
-  check('QG3', 'the user-stated @WALLTOP convention is not applied, or not recorded as user-stated', v.verdict === 'qualifies' && v.advisory.some(x => x.code === 'QF:convention_applied' && x.convention === 'user-stated') && v.conventions.length === 1 && v.conventions[0].source === 'user-stated' && v.conventions[0].level === 0, cc(v) + ' conventions=' + J(v.conventions)); }
+  check('QG3', 'the stated @WALLTOP convention is not applied, or its source is not recorded (no @BY -> stated (file), L2.7)', v.verdict === 'qualifies' && v.advisory.some(x => x.code === 'QF:convention_applied' && x.convention === 'stated (file)') && v.conventions.length === 1 && v.conventions[0].source === 'stated (file)' && v.conventions[0].level === 0, cc(v) + ' conventions=' + J(v.conventions)); }
+{ const v = Q.qualify(set({ plan: { walltop: ['0,slab_above @BY=model'] }, gaps: [wallGap] }).input, S);
+  check('QG3b', 'a convention marked @BY=model is not shown as stated (model)', v.verdict === 'qualifies' && v.conventions[0] && v.conventions[0].source === 'stated (model)', J(v.conventions)); }
+only('QBY', 'a TEXT holding only @BY passes (MARK:by_invalid must block)', { plan: { rawMarks: ['@BY=model'] }, gaps: [] }, ['QF:mark_invalid']);
 only('QG4', '@WALLTOP silenced a door height gap (it covers walls only)', { plan: { walltop: ['0,slab_above'] }, gaps: [wallGap, doorGap] }, ['GAP:no_elevation_height']);
 { const v = Q.qualify(set({ gaps: [doorGap] }).input, S);
   check('QG6', 'a door height gap (A-DOOR layer, no kind) is counted under walls (L2.5 W3)', v.blocking.length === 1 && v.blocking[0].shape === 'openings' && v.by_shape.walls.verdict === 'qualifies' && v.by_shape.openings.verdict === 'blocked', J(v.blocking.map(x => x.code + ':' + x.shape))); }

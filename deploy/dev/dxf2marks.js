@@ -28,9 +28,16 @@
   }
 
   function describe(marks) {
-    var d = { gridsX: {}, gridsY: {}, gridsH: {}, zs: [], excludes: [], openings: [], labels: [], schedule: [], tags: [], allowance: {}, walltop: [], walltop_walls: [] }, errors = [];
+    var d = { gridsX: {}, gridsY: {}, gridsH: {}, zs: [], excludes: [], openings: [], labels: [], schedule: [], tags: [], allowance: {}, walltop: [], walltop_walls: [], by: {} }, errors = [];
     marks.forEach(function (m) {
-      var mt = /^@([A-Z]+)=(.*)$/.exec(m.raw);
+      // lane spec L2.7 (5): @BY=model|user is a SUFFIX in the same TEXT and qualifies only that TEXT's marking; none -> 'file'
+      var raw = m.raw, by = 'file', nBy = (raw.match(/@BY=/g) || []).length;
+      if (nBy) {
+        var bm = /^(.*\S)\s+@BY=(\S*)$/.exec(raw);
+        if (nBy > 1 || !bm || (bm[2] !== 'model' && bm[2] !== 'user') || /@BY=/.test(bm[1])) { errors.push(err('MARK:by_invalid', (nBy > 1 ? 'a second @BY' : !bm ? 'a TEXT holding only @BY' : '@BY must be model|user') + ': ' + raw, { handle: m.handle })); return; }
+        raw = bm[1]; by = bm[2];
+      }
+      var mt = /^@([A-Z]+)=(.*)$/.exec(raw);
       if (!mt) { errors.push(err('MARK:malformed', 'not @KEY=VALUE: ' + m.raw, { handle: m.handle })); return; }
       var key = mt[1], val = mt[2];
       if (SINGLE.indexOf(key) < 0 && MULTI.indexOf(key) < 0) { errors.push(err('MARK:unknown_key', '@' + key, { handle: m.handle })); return; }
@@ -53,7 +60,7 @@
         if (key === 'FACE' && ['minX', 'maxX', 'minY', 'maxY'].indexOf(val) < 0) { errors.push(err('MARK:malformed', '@FACE must be minX|maxX|minY|maxY: ' + val, { handle: m.handle })); return; }
         if (key === 'HAXIS' && ['+X', '-X', '+Y', '-Y'].indexOf(val) < 0) { errors.push(err('MARK:malformed', '@HAXIS must be +X|-X|+Y|-Y: ' + val, { handle: m.handle })); return; }
         if (name in d && d[name] !== val) { errors.push(err('MARK:conflict', '@' + key + ' has two values: ' + d[name] + ' / ' + val, { handle: m.handle })); return; }
-        d[name] = val;
+        d[name] = val; d.by[key] = by;
       } else if (key === 'OPENING') {
         var op = val.split(','), kind = op[0], on = op.slice(1).map(Number);
         if ((kind !== 'door' && kind !== 'window') || on.length !== 4 || on.some(function (n) { return !isFinite(n); })) { errors.push(err('MARK:malformed', '@OPENING needs door|window,h0,y0,h1,y1: ' + val, { handle: m.handle })); return; }
@@ -66,7 +73,7 @@
         if (['door', 'window', 'wall'].indexOf(lc) < 0 || lp.length < 4 || !isFinite(lx) || !isFinite(ly) || lp[1].trim() === '' || lp[2].trim() === '' || lt.trim() === '') { errors.push(err('MARK:malformed', '@LABEL needs door|window|wall,x,y,[z=m,]text: ' + val, { handle: m.handle })); return; }
         var ldup = d.labels.find(function (q) { return q.class === lc && q.x === lx && q.y === ly && q.z === lz; });
         if (ldup && ldup.text !== lt) { errors.push(err('MARK:conflict', '@LABEL ' + lc + ' at (' + lx + ',' + ly + (lz === undefined ? '' : ',z=' + lz) + ') has two texts: ' + ldup.text + ' / ' + lt, { handle: m.handle })); return; }
-        if (!ldup) { var le = { class: lc, x: lx, y: ly, text: lt }; if (lz !== undefined) le.z = lz; d.labels.push(le); }
+        if (!ldup) { var le = { class: lc, x: lx, y: ly, text: lt }; if (lz !== undefined) le.z = lz; le.by = by; d.labels.push(le); }
       } else if (key === 'TAG') {
         var tp = val.split(','), tc = tp[0], trest = tp.slice(1), tz;
         if (trest.length && /^z=/.test(trest[0])) {
@@ -76,7 +83,7 @@
         if (['door', 'window', 'wall'].indexOf(tc) < 0 || tt.trim() === '') { errors.push(err('MARK:malformed', '@TAG needs door|window|wall,[z=m,]text: ' + val, { handle: m.handle })); return; }
         var tdup = d.tags.find(function (q) { return q.class === tc && q.x === m.x && q.y === m.y && q.z === tz; });
         if (tdup && tdup.text !== tt) { errors.push(err('MARK:conflict', '@TAG ' + tc + ' at (' + m.x + ',' + m.y + ') has two texts: ' + tdup.text + ' / ' + tt, { handle: m.handle })); return; }
-        if (!tdup) { var te = { class: tc, x: m.x, y: m.y, text: tt }; if (tz !== undefined) te.z = tz; d.tags.push(te); }
+        if (!tdup) { var te = { class: tc, x: m.x, y: m.y, text: tt }; if (tz !== undefined) te.z = tz; te.by = by; d.tags.push(te); }
       } else if (key === 'ALLOWANCE') {
         var ap = val.split(','), ac = ap[0], an = ap.slice(1).map(Number);
         if ((ac !== 'door' && ac !== 'window') || ap.length !== 3 || ap.slice(1).some(function (t, i) { return t.trim() === '' || !isFinite(an[i]); })) { errors.push(err('MARK:malformed', '@ALLOWANCE needs door|window,w,h: ' + val, { handle: m.handle })); return; }
@@ -87,8 +94,8 @@
         if (!sok || sp[0].trim() === '' || sn.some(function (n, i) { return !isFinite(n) || sp[i + 2].trim() === ''; })) { errors.push(err('MARK:malformed', '@SCHEDULE needs text,door|window,w,h or text,wall,t: ' + val, { handle: m.handle })); return; }
         var sent = sc === 'wall' ? { text: sp[0], class: sc, t: sn[0] } : { text: sp[0], class: sc, w: sn[0], h: sn[1] };
         var sdup = d.schedule.find(function (q) { return q.text === sent.text && q.class === sent.class; });
-        if (sdup && JSON.stringify(sdup) !== JSON.stringify(sent)) { errors.push(err('MARK:conflict', '@SCHEDULE ' + sent.text + ' (' + sc + ') has two sizes', { handle: m.handle })); return; }
-        if (!sdup) d.schedule.push(sent);
+        if (sdup && JSON.stringify(Object.assign({}, sdup, { by: undefined })) !== JSON.stringify(sent)) { errors.push(err('MARK:conflict', '@SCHEDULE ' + sent.text + ' (' + sc + ') has two sizes', { handle: m.handle })); return; }
+        if (!sdup) { sent.by = by; d.schedule.push(sent); }
       } else if (key === 'WALLTOP') {                                                      // L2.3 D3: user-stated convention, never a default
         var wp = val.split(','), wl = Number(wp[0]);
         if (/^handle:/.test(wp[0])) {                                                       // L2.6 A: per-wall top, @WALLTOP=handle:<h>,<z_top_m>
@@ -97,11 +104,11 @@
           wh = wh.toUpperCase();
           var wd = d.walltop_walls.find(function (q) { return q.wall === wh; });
           if (wd && wd.z !== wz) { errors.push(err('MARK:conflict', '@WALLTOP handle ' + wh + ' has two tops: ' + wd.z + ' / ' + wz, { handle: m.handle })); return; }
-          if (!wd) d.walltop_walls.push({ wall: wh, z: wz, handle: m.handle });
+          if (!wd) d.walltop_walls.push({ wall: wh, z: wz, handle: m.handle, by: by });
           return;
         }
         if (wp.length !== 2 || wp[0].trim() === '' || !isFinite(wl) || wp[1] !== 'slab_above') { errors.push(err('MARK:malformed', '@WALLTOP needs <level>,slab_above or handle:<h>,<z_top_m>: ' + val, { handle: m.handle })); return; }
-        if (!d.walltop.some(function (q) { return q.level === wl; })) d.walltop.push({ level: wl, rule: wp[1], handle: m.handle });
+        if (!d.walltop.some(function (q) { return q.level === wl; })) d.walltop.push({ level: wl, rule: wp[1], handle: m.handle, by: by });
       } else if (key === 'EXCLUDE') {
         var xp = val.split(',').map(Number);
         if (xp.length !== 4 || xp.some(function (n) { return !isFinite(n); })) { errors.push(err('MARK:malformed', '@EXCLUDE needs x0,y0,x1,y1: ' + val, { handle: m.handle })); return; }

@@ -152,7 +152,8 @@ for (const s of SET) {
       else { marks.push({ text: '@ROOF=' + top.z }); say('  ROOF=' + top.z + '  [FROM_SOURCE_MODEL: ' + top.src + ', R11 T/ROOF]'); }
     }
   }
-  fs.writeFileSync(path.join(OUT, 'DX_' + s.f + '_marked.dxf'), MK.writeMarks(txt, marks));
+  // lane spec L2.7 (5): every std marking carries its source as a suffix in the same TEXT (@BY=model); the old profile writes none (stated (file))
+  fs.writeFileSync(path.join(OUT, 'DX_' + s.f + '_marked.dxf'), MK.writeMarks(txt, STD ? marks.map(m => Object.assign({}, m, { text: m.text + ' @BY=model' })) : marks));
 }
 if (refused) { say('REFUSED: evidence ambiguous, no claim of completeness'); process.exit(1); }
 say('marked copies written to ' + OUT);

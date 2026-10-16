@@ -243,8 +243,24 @@
       });
       return hits;
     }
+    if (q.opening_box) {                                                // L2.7 (4): the reader's opening box fixes the host: the wall line the hinge lies on, parallel to the closed leaf, jamb to jamb
+      var bx = q.opening_box, bai = bx.axis === 'x' ? 0 : 1, bci = 1 - bai, Jb = null;
+      [q.swing_start_deg, q.swing_end_deg].forEach(function (a) { var E = [Hh[0] + q.width * Math.cos(a * Math.PI / 180), Hh[1] + q.width * Math.sin(a * Math.PI / 180)]; if (Math.abs(E[bci] - Hh[bci]) <= tol) Jb = [r6(E[0]), r6(E[1])]; });
+      var bs = ws.filter(function (w) { var r = w.params.rect; return Math.abs(r[bci] - bx.band[0]) <= tol && Math.abs(r[bci + 2] - bx.band[1]) <= tol && (r[bai + 2] <= bx.s[0] + tol || r[bai] >= bx.s[1] - tol); })
+        .sort(function (p, r) { return p.params.rect[bai] - r.params.rect[bai]; });
+      var jb = bs.filter(function (w) { return w.params.rect[bai + 2] <= bx.s[0] + tol; }).slice(-1).concat(bs.filter(function (w) { return w.params.rect[bai] >= bx.s[1] - tol; }).slice(0, 1));   // the two jamb pieces
+      bs = jb;
+      if (!Jb || !bs.length) return { gap: 'GAP:door_no_strip' };
+      return { ai: bai, ci: bci, J: Jb, cr: [bx.band[0], bx.band[1]], strip: bs };
+    }
     var hits = pass(centre); if (!hits.length) hits = pass(face);
-    if (hits.length !== 1) return { gap: hits.length ? 'GAP:door_host_ambiguous' : 'GAP:door_no_strip' };
+    var nCand = hits.length;
+    if (hits.length > 1) hits = hits.filter(function (h) {           // L2.7 (4): only when several: the closed leaf's span is a wall-free gap bounded by strip pieces at both ends
+      var ai = h.ai, lo = Math.min(Hh[ai], h.J[ai]), hi = Math.max(Hh[ai], h.J[ai]);
+      return h.strip.some(function (w) { return w.params.rect[ai + 2] <= lo + tol; }) && h.strip.some(function (w) { return w.params.rect[ai] >= hi - tol; }) &&
+        !h.strip.some(function (w) { var r = w.params.rect; return r[ai] < hi - tol && r[ai + 2] > lo + tol; });
+    });
+    if (hits.length !== 1) return { gap: hits.length || nCand > 1 ? 'GAP:door_host_ambiguous' : 'GAP:door_no_strip' };
     return hits[0];
   }
 
@@ -365,7 +381,7 @@
       var cz = level + sill + q.height / 2, lc = [(G.bbox.min[0] + G.bbox.max[0]) / 2, (G.bbox.min[1] + G.bbox.max[1]) / 2, (G.bbox.min[2] + G.bbox.max[2]) / 2];
       var V = G.vertices.map(function (v) { return [r6(v[0] - lc[0] + cx), r6(v[1] - lc[1] + cy), r6(v[2] - lc[2] + cz)]; });
       var gw = alongX ? G.bbox.max[0] - G.bbox.min[0] : G.bbox.max[1] - G.bbox.min[1], gh = G.bbox.max[2] - G.bbox.min[2];
-      var mw = q.kind === 'window' ? Math.max(q.bbox[2] - q.bbox[0], q.bbox[3] - q.bbox[1]) : q.width;
+      var mw = q.kind === 'window' ? Math.max(q.bbox[2] - q.bbox[0], q.bbox[3] - q.bbox[1]) : (q.opening_box && q.opening_box.along ? r6(q.opening_box.along[1] - q.opening_box.along[0]) : r6(voidOf[o.output_guid].s[1] - voidOf[o.output_guid].s[0]));   // L2.7 (2): door = drawn frame extent (else the wall gap), not the leaf
       var dw = r6(gw - mw), dh = r6(gh - q.height);
       if (typeof opts.size_tol === 'number' && (Math.abs(dw) > opts.size_tol || Math.abs(dh) > opts.size_tol)) g('GAP:fill_size_mismatch', { delta_w: dw, delta_h: dh, element_ref: m.ref });
       els.push({ guid: hashHex(o.output_guid + '|fill|' + G.geometry_hash).slice(0, 32), class: q.kind === 'door' ? 'IfcDoor' : 'IfcWindow', handle: q.handle, layer: q.layer, piece: 0,

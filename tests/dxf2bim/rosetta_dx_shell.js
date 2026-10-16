@@ -24,6 +24,7 @@ const MUT = process.env.MUT || '';
 // §11: the pipeline configuration lives in ONE shared module (also copied verbatim into the Modeller import), not here.
 const C = require(path.join(__dirname, '../../deploy/dev/dxf2shell_config.js'));
 const { MAP_PLAN, MAP_ELEV, MAP_LEVL, MAP_ROOF } = STDSET ? require('./set_configs.js').STD : C, CFG = C.CFG;   // std: R12 layer names (set_configs.js STD), same CFG
+const CASING = 0.076;   // R1b door casing (moved up unchanged; L2.7 rule 2 passes it as the schedule head frame)
 const deps = { DxfParser, hashHex, library: [] };
 const lines = []; let fails = 0;
 const say = s => { lines.push(s); console.log(s); };
@@ -89,7 +90,7 @@ function pipeline(popt) {
     // L2.6 C: door tags on the plan label the doors before their heights; a door no elevation shows takes the scheduled height (height_source schedule)
     const pd = planDesc[st.f], sch = T.scheduleFromDesc(pd, MK.UNITS);
     if ((pd.tags || []).length) { const tg = T.applyTags(ops, [{ desc: pd }], MK.UNITS, { snap_tol: CFG.snap_tol, level: st.level }); ops = tg.ops; st.tagged = tg.labelled; }
-    const dh = E.applyDoorHeights(ops, elevs.map(e => ({ face: e.face, doors: e.doors })), CFG, { level: st.level, schedule: Object.keys(sch).length ? sch : null }); ops = dh.ops; st.doorRep = dh.report;
+    const dh = E.applyDoorHeights(ops, elevs.map(e => ({ face: e.face, doors: e.doors })), CFG, { level: st.level, schedule: Object.keys(sch).length ? sch : null, schedule_head_frame: CASING }); ops = dh.ops; st.doorRep = dh.report;
     st.after = ops;
   });
   R.ST = ST;
@@ -209,7 +210,6 @@ const unionLen = iv => { const a = iv.map(x => [Math.min(x[0], x[1]), Math.max(x
 
 // ---------------- WALLS ----------------
 say('\n===== WALLS =====');
-const CASING = 0.076;
 ST.forEach(st => {
   const ws = st.after.filter(o => o.op_type === 'DXF_WALL');
   const bySrc = ws.reduce((a, o) => (a[o.params.height_source || 'none'] = (a[o.params.height_source || 'none'] || 0) + 1, a), {});
