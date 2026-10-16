@@ -173,6 +173,42 @@ const runD = t => B.run(t, C.STD.MAP_PLAN, C.DX.CFG, { DxfParser, hashHex, libra
   check('BY7', 'mutation: @BY in a separate TEXT next to the marking was applied to it (must be by_invalid, marking stays file)', b7.errors.some(e => e.code === 'MARK:by_invalid') && b7.desc.walltop_walls[0].by === 'file', J(b7.errors.map(e => e.code)) + ' ' + J(b7.desc.walltop_walls));
 }
 
+// ================= L2.8 (1): wall base from the lowest stated source =================
+{
+  const Wl = (h, r, base, height, src) => ({ op_type: 'DXF_WALL', output_guid: 'g' + h, params: { handle: h, part: 0, rect: r, base, height, height_source: src } });
+  // FF level 3.1, GF level 0; section cut X = 2.30425, h = plan y
+  const sec = (ws) => ({ walls: ws, axis: 'X', at: 2.30425 });
+  const ff = [Wl('A', [0.417, -6.25, 2.506, -6.126], 0, 2.9, 'slab_above_marking'), Wl('E', [0, -0.417, 8.8, 0], 0, 2.9, 'elevation'), Wl('I', [6.294, -11.674, 8.383, -11.55], 0, 2.9, 'slab_above_marking')];
+  const gfPieces = [[0, -0.417, 8.8, 0]];
+  const swalls = [{ h: [-6.25, -6.126], bottom: 2.612, top: 3.1, handle: 'B5' }, { h: [-6.25, -6.126], bottom: 5.132, top: 6, handle: 'B7' }, { h: [-0.417, 0], bottom: 0, top: 3.1, handle: 'BD' }, { h: [-0.417, 0], bottom: 3.1, top: 3.2, handle: 'B3' }];
+  const r = S.applyWallBases(ff, { level: 3.1, lowerLevel: 0, lowerPieces: gfPieces, section: sec(swalls), tol: 0.001 }), by = h => r.ops.find(o => o.params.handle === h).params;
+  check('WB1', 'a section-cut piece does not take the section base (2.612)', by('A').base_source === 'section' && Math.abs(by('A').base - (2.612 - 3.1)) < 1e-9 && Math.abs(3.1 + by('A').base + by('A').height - 6) < 1e-9, J(by('A')));
+  check('WB2', 'a stacked lower-plan wall rect (BD 0..3.1, GF draws that line) was taken as the FF base', by('E').base_source === 'section' && by('E').base === 0, J([by('E').base, by('E').base_source, by('E').base_from]));
+  const gf = [Wl('G', [0.417, -10.218, 4.618, -9.725], 0, 2.795, 'elevation')], fnd = [{ h: [-10.218, -9.725], bottom: -1.25, top: 0, handle: 'A3' }, { h: [-10.218, -9.725], bottom: 0, top: 2.795, handle: 'AA' }];
+  const rg = S.applyWallBases(gf, { level: 0, section: sec(fnd), tol: 0.001 }).ops[0].params;
+  check('WB3', 'a foundation rect below the lowest plan was taken as a wall base', rg.base === 0 && rg.base_source === 'section', J([rg.base, rg.base_source, rg.base_from]));
+  check('WB4', 'an uncut interior piece did not fall back to the plan level with the advisory', by('I').base_source === 'plan_level' && by('I').base === 0 && r.advisories.some(a => a.handle === 'I' && a.code === 'GAP:wall_base_from_plan_level'), J(r.advisories));
+  const moved = swalls.map(w => w.handle === 'B5' ? Object.assign({}, w, { bottom: 2.562 }) : w), rm = S.applyWallBases(ff, { level: 3.1, lowerLevel: 0, lowerPieces: gfPieces, section: sec(moved), tol: 0.001 }).ops.find(o => o.params.handle === 'A').params;
+  check('WB5', 'mutation: the section rect moved 50 mm down and the base did not follow (or a slab was used)', Math.abs(rm.base - (2.562 - 3.1)) < 1e-9, J([rm.base, rm.base_from]));
+  // a cut through a door opening states the base of its two jamb pieces
+  const J1 = Wl('J1', [0.417, -6.25, 1.483, -6.126], 0, 2.9, 'slab_above_marking'), J2 = Wl('J2', [2.347, -6.25, 2.506, -6.126], 0, 2.9, 'slab_above_marking');
+  const dr = { op_type: 'DXF_OPENING', params: { handle: 'D', kind: 'door', opening_box: { axis: 'x', s: [1.483, 2.347], along: [1.407, 2.423], band: [-6.25, -6.126] } } };
+  const rj = S.applyWallBases([J1, J2, dr], { level: 3.1, lowerLevel: 0, lowerPieces: gfPieces, section: sec(swalls), tol: 0.001 }).ops;
+  check('WB6', 'a section cut inside a drawn door opening does not state the base of its jamb pieces', rj.filter(o => o.op_type === 'DXF_WALL').every(o => o.params.base_source === 'section' && Math.abs(o.params.base + 0.488) < 1e-9), J(rj.filter(o => o.op_type === 'DXF_WALL').map(o => [o.params.handle, o.params.base, o.params.base_source])));
+}
+
+// ================= L2.8 (2): one wall per footprint across consecutive plans =================
+{
+  const Wl = (h, r, base, height, src) => ({ op_type: 'DXF_WALL', output_guid: 'g' + h, params: { handle: h, part: 0, rect: r, base, height, height_source: src } });
+  const st = (lowOps, upOps) => [{ name: 'L1', level: 0, ops: lowOps }, { name: 'L2', level: 3.1, ops: upOps }];
+  const r1 = S.mergeStacked(st([Wl('a', [0, 0, 5, 0.2], 0, 6, 'elevation')], [Wl('b', [0, 0, 5, 0.2], -3.1, 6, 'elevation')]), 0.001, 0.003);
+  check('MS1', 'a two-storey wall drawn on both plans (heights 0..6 each) is counted twice', r1.storeys[0].ops.length === 1 && r1.storeys[1].ops.length === 0 && r1.storeys[0].ops[0].params.base === 0 && r1.storeys[0].ops[0].params.height === 6 && r1.merged.length === 1, J(r1.merged) + ' ' + J(r1.storeys.map(x => x.ops.length)));
+  const r2 = S.mergeStacked(st([Wl('a', [0, 0, 5, 0.2], 0, 6, 'elevation')], [Wl('b', [0.01, 0, 5.01, 0.2], -3.1, 6, 'elevation')]), 0.001, 0.003);
+  check('MS2', 'mutation: a footprint shifted 10 mm was still merged (must be two walls)', r2.storeys[0].ops.length === 1 && r2.storeys[1].ops.length === 1 && r2.merged.length === 0, J(r2.merged));
+  const r3 = S.mergeStacked(st([Wl('a', [0, 0, 5, 0.2], 0, 2.8, 'elevation')], [Wl('b', [0, 0, 5, 0.2], 0, 2.9, 'elevation')]), 0.001, 0.003);
+  check('MS3', 'walls separated by a z gap (0..2.8 / 3.1..6.0) were merged', r3.merged.length === 0 && r3.storeys[1].ops.length === 1, J(r3.merged));
+}
+
 say('\nSUMMARY fail=' + fails);
 fs.writeFileSync(path.join(__dirname, 'test_std_rules.log'), lines.join('\n') + '\n');
 process.exit(fails ? 1 : 0);

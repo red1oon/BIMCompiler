@@ -47,7 +47,7 @@ for (const st of STOREYS) {
   console.log('source walls on storey=' + allSrc.length + ' cut by plane z=' + cut + ' -> ' + srcCut.length);
   const inside = (r, R) => r[0] >= R[0] - 0.001 && r[1] >= R[1] - 0.001 && r[2] <= R[2] + 0.001 && r[3] <= R[3] + 0.001;
   // R1a precision: each of our pieces lies inside some source wall (cut ones)
-  // lane spec L1.5 P1: R1a precision against every wall the plane cuts, whatever its model storey (recall R1b stays storey-scoped)
+  // lane spec L1.5 P1 / L2.8 (3): R1a precision and R1b recall against every wall the plane cuts, whatever its model storey
   const cutAny = sql("select m.id id, r.minX a, r.minY b, r.maxX c, r.maxY d, r.minZ z0, r.maxZ z1 from elements_meta m join elements_rtree r on r.id=m.id where m.ifc_class='IfcWall'")
     .map(x => ({ id: x.id, rect: [x.a, x.b, x.c, x.d], cut: x.z0 <= cut && cut < x.z1 })).filter(x => x.cut);
   const host = ours.map(o => cutAny.find(s => inside(o.rect, s.rect)));
@@ -55,10 +55,11 @@ for (const st of STOREYS) {
   check('R1a ' + st.name, 'a wall piece we emit lies outside every source wall (invented geometry)', stray.length === 0, 'pieces=' + ours.length + ' inside a source wall=' + (ours.length - stray.length) + ' stray=' + stray.length);
   if (stray.length) console.log('  stray: ' + stray.map(o => o.h + ':' + o.layer + '[' + o.rect.map(v => +v.toFixed(3)) + ']').join(' '));
   // R1b recall: uncovered length of each source wall == widths of source doors/windows whose plan centre lies inside it
-  const srcOp = sql("select m.ifc_class k, r.minX a, r.minY b, r.maxX c, r.maxY d from elements_meta m join elements_rtree r on r.id=m.id where m.ifc_class in ('IfcDoor','IfcWindow') and m.storey='" + st.name + "'")
-    .map(x => ({ k: x.k, cx: (x.a + x.c) / 2, cy: (x.b + x.d) / 2, long: Math.max(x.c - x.a, x.d - x.b) }));
+  // L2.8 (3): recall over EVERY wall the plane cuts (any model storey) with the openings the plane cuts (any storey), symmetric with R1a
+  const srcOp = sql("select m.ifc_class k, r.minX a, r.minY b, r.maxX c, r.maxY d, r.minZ z0, r.maxZ z1 from elements_meta m join elements_rtree r on r.id=m.id where m.ifc_class in ('IfcDoor','IfcWindow')")
+    .filter(x => x.z0 <= cut && cut < x.z1).map(x => ({ k: x.k, cx: (x.a + x.c) / 2, cy: (x.b + x.d) / 2, long: Math.max(x.c - x.a, x.d - x.b) }));
   let bad = 0, adjOk = 0, rows = [], missed = [];
-  srcCut.forEach((S, i) => {
+  cutAny.forEach((S, i) => {
     const w = S.rect[2] - S.rect[0], h = S.rect[3] - S.rect[1], horiz = w >= h, L = horiz ? w : h;
     // R1b-u (BASIC_SHAPES_SPEC §2.4): UNION of intervals along the wall axis (stacked windows share one plan interval; mitre triangles overlap long pieces' bboxes)
     const pcs = ours.filter(o => inside(o.rect, S.rect)); const cov = unionLen(pcs.map(o => horiz ? [o.rect[0], o.rect[2]] : [o.rect[1], o.rect[3]]));
@@ -67,13 +68,14 @@ for (const st of STOREYS) {
     const opAdj = unionLen(ops.map(q => { const c = horiz ? q.cx : q.cy, h = q.long / 2 - (q.k === 'IfcDoor' ? CASING : 0); return [c - h, c + h]; })); const okAdj = Math.abs(unc - opAdj) <= 0.005; if (okAdj) adjOk++; else missed.push({ S, unc, opAdj });
     if (!ok) bad++; rows.push((ok ? ' ok ' : 'BAD ') + 'wall ' + S.id + ' L=' + L.toFixed(3) + ' pieces=' + pcs.length + ' covered=' + cov.toFixed(3) + ' uncovered=' + unc.toFixed(3) + ' source openings=' + ops.length + ' width sum=' + opW.toFixed(3));
   });
-  console.log('INFO R1b strict (superseded by D-2, source door bbox incl. casing): ' + (srcCut.length - bad) + '/' + srcCut.length + ' source walls reconstructed');
+  console.log('INFO R1b strict (superseded by D-2, source door bbox incl. casing): ' + (cutAny.length - bad) + '/' + cutAny.length + ' source walls reconstructed');
   rows.forEach(r => console.log('  ' + r));
   // evidence for the casing constant: the drawing has A-DOOR closed polylines with a 76 mm side
   const dd = new DxfParser().parseSync(DXF(st.file)); const ents = dd.entities;
   const has76 = ents.some(e => e.layer === 'A-DOOR' && e.type === 'LWPOLYLINE' && (() => { const xs = e.vertices.map(v => v.x), ys = e.vertices.map(v => v.y); const w = Math.max(...xs) - Math.min(...xs), h = Math.max(...ys) - Math.min(...ys); return Math.abs(w - 76) < 1 || Math.abs(h - 76) < 1; })());
   check('R1-evidence ' + st.name, 'casing constant 0.076 not supported by the drawing', has76, 'A-DOOR polyline with a 76 mm side present=' + has76);
-  check('R1b-stated ' + st.name, 'wall coverage + source openings (door casing 2 x 0.076 removed; union of intervals, R1b-u) does not reconstruct the source wall (tol 5 mm)', adjOk === srcCut.length, adjOk + '/' + srcCut.length + ' source walls reconstructed');
+  check('R1b-stated ' + st.name, 'wall coverage + source openings (door casing 2 x 0.076 removed; union of intervals, R1b-u) does not reconstruct the source wall (tol 5 mm)', adjOk === cutAny.length, adjOk + '/' + cutAny.length + ' source walls reconstructed');
+  if (!process.env.STD_DIR && adjOk !== cutAny.length) console.log('  KNOWN FINDING (lane spec L2.8 rule 3): the old set draws walls by storey membership; walls the plane cuts from another storey are missing from its plan (not reconstructed: ' + missed.map(m => m.S.id).join(',') + ').');
   // R1c: every miss explained by a logged gap or an ignored/unmapped entity overlapping the wall rect
   const bbox = e => { const vs = (e.vertices || []).map(v => [v.x * 0.001, v.y * 0.001]); if (e.center) vs.push([e.center.x * 0.001, e.center.y * 0.001]); if (!vs.length) return null; return [Math.min(...vs.map(v => v[0])), Math.min(...vs.map(v => v[1])), Math.max(...vs.map(v => v[0])), Math.max(...vs.map(v => v[1]))]; };
   const overlap = (a, R) => a && a[0] < R[2] - 0.001 && a[2] > R[0] + 0.001 && a[1] < R[3] - 0.001 && a[3] > R[1] + 0.001;
