@@ -102,6 +102,7 @@ function pipeline(popt) {
     const sd = parse(shellTxt.SECTION), sdesc = MK.describe(MK.readMarks(sd.entities)).desc, sal = MK.align(planDesc.FLOOR_GF, sdesc, C.MARK_ALIGN_TOL);
     R.section = sal.map ? S.sectionSlabs(sd.entities, require('./set_configs.js').STD.MAP_SECT, sal.map, [L1.level, L2.level], CFG, sdesc.roof) : { slabs: {}, roof: null, gaps: [{ code: 'GAP:section_align_fail', errors: sal.errors.map(e => e.code) }] };
     sopt = { section: R.section };
+    if (sdesc.cut && sal.map) { const cp = sdesc.cut.split(','); R.sectionCut = { axis: cp[0], at: Number(cp[1]) * MK.UNITS[sdesc.units] }; }
   }
   R.slabZ = { 'Level 1': S.slabZ({ level: L1.level, ops: L1.after }, null, CFG, sopt), 'Level 2': S.slabZ({ level: L2.level, ops: L2.after }, { level: L1.level, ops: L1.after }, CFG, sopt) };
   if (MUT === 'M-S1') R.slabZ['Level 2'] = S.slabZ({ level: L2.level, ops: L2.after }, { level: L1.level, ops: L1.after }, Object.assign({}, CFG, { elev_tol: -1e9 }));   // filter "ends below T" defeated
@@ -112,6 +113,13 @@ function pipeline(popt) {
   // L2.6 A: wall tops the plan's @WALLTOP markings state (per wall, or slab_above for the storey); nothing without markings
   ST.forEach(st => { const d = planDesc[st.f]; if (!(d.walltop || []).length && !(d.walltop_walls || []).length) return; const a = E.applyWallTops(st.after, st.before, d, st.level, U[st.name]); st.after = a.ops; st.wallTopRep = a.report; });
   ST.forEach(st => { st.slabAboveN = 0; if (!popt.convention) return; const a = S.applySlabAbove(st.after, st.before, typeof U[st.name] === 'number' ? U[st.name] : undefined, st.level); st.after = a.ops; st.slabAboveN = a.n; });
+  // lane spec L2.8 (1): wall base from the lowest stated source (section > elevation > plan level + advisory); (2): one wall per footprint across consecutive plans
+  ST.forEach((st, i) => {
+    const lower = ST[i - 1], sec = R.section && R.sectionCut ? { walls: R.section.walls || [], axis: R.sectionCut.axis, at: R.sectionCut.at } : null;
+    const wb = S.applyWallBases(st.after, { level: st.level, lowerLevel: lower ? lower.level : undefined, lowerPieces: lower ? lower.before.filter(o => o.op_type === 'DXF_WALL' && o.params.rect).map(o => o.params.rect) : [], section: sec, tol: CFG.snap_tol });
+    st.after = wb.ops; st.baseAdv = wb.advisories; st.baseRep = wb.report;
+  });
+
   // outlines (S-O / R-O)
   ST.forEach(st => { st.ring = S.innerRing(st.after, CFG); });
   if (MUT === 'M-S2') ST.forEach(st => { const E0 = st.ring.envelope; st.ring = { outline: [[E0[0], E0[1]], [E0[2], E0[1]], [E0[2], E0[3]], [E0[0], E0[3]]], gaps: [], envelope: E0 }; });
@@ -161,9 +169,12 @@ function pipeline(popt) {
     catch (e) { st.fills = { elements: [], gaps: e.gaps || [] }; st.hard = e.message; }
   });
   // ---------------- mesh ----------------
+  // L2.8 (2): one wall per footprint across consecutive plans, on the final element set
+  const ms = S.mergeStacked(ST.map(st => ({ name: st.name, level: st.level, ops: st.after.filter(o => o.op_type === 'DXF_WALL') })), CFG.snap_tol, CFG.elev_tol);
+  ms.storeys.forEach((x, i) => { ST[i].meshWalls = x.ops; }); R.merged = ms.merged;
   const els = [];
   ST.forEach(st => {
-    const wallOps = st.after.filter(o => o.op_type === 'DXF_WALL').concat(st.infill);
+    const wallOps = st.meshWalls.concat(st.infill);
     const m = M.meshFromOps(wallOps, { level: st.level, hashHex, snapTol: CFG.snap_tol });
     st.meshGaps = m.gaps;
     m.elements.forEach(e => els.push(Object.assign(e, { storey: st.name })));
@@ -186,13 +197,15 @@ function pipeline(popt) {
 const R = pipeline({ convention: false }), RB = pipeline({ convention: true });
 say('variant A (main): walls only with drawn (elevation) heights; variant B: + W-H3 slab_above convention for walls no elevation shows (separate OBJ, INFO only)');
 const ST = R.ST;
+R.ST.forEach(st => say(st.name + ' L2.8: wall bases ' + J(st.baseRep) + ' advisories wall_base_from_plan_level=' + st.baseAdv.length));
+say('L2.8 merged across plans (same footprint, z overlap/touch): ' + J(R.merged));
 R.ST.forEach(st => say(st.name + ' L2.6: tags labelled=' + (st.tagged || 0) + ' door heights ' + J(st.doorRep) + ' wall tops from markings ' + J(st.wallTopRep || null)));
 say('elevations: ' + R.elevs.map(e => e.name + ' face=' + e.face + ' @ROOF=' + e.roof + ' levellines=' + e.lines.length + ' errors=' + e.errors.length).join(' | '));
 // ---------------- LV: storey levels (markings FROM_SOURCE_MODEL) corroborated by drawn elevation rects ----------------
 ST.forEach(st => check('LV ' + st.name, 'the storey level used is not a drawn elevation boundary (level taken from the source model only)', st.levelDrawn.length > 0, 'level=' + st.level + ' elevation wall rects starting there=' + st.levelDrawn.length));
 
 // ---------------- answer key ----------------
-const srcRect = (cls, storeyCond) => sql("select m.id, m.element_name n, m.element_type t, m.guid, r.minX a, r.minY b, r.maxX c, r.maxY d, r.minZ z0, r.maxZ z1 from elements_meta m join elements_rtree r on r.id=m.id where m.ifc_class" + cls + (storeyCond ? " and " + storeyCond : ''))
+const srcRect = (cls, storeyCond) => sql("select m.id, m.storey, m.element_name n, m.element_type t, m.guid, r.minX a, r.minY b, r.maxX c, r.maxY d, r.minZ z0, r.maxZ z1 from elements_meta m join elements_rtree r on r.id=m.id where m.ifc_class" + cls + (storeyCond ? " and " + storeyCond : ''))
   .map(x => Object.assign(x, { rect: [x.a, x.b, x.c, x.d] }));
 function srcMesh(id) {
   const r = sql("select hex(g.vertices) v, hex(g.faces) f, t.center_x cx, t.center_y cy, t.center_z cz from elements_meta m join element_instances i on i.guid=m.guid join base_geometries g on g.geometry_hash=i.geometry_hash left join element_transforms t on t.guid=m.guid where m.id=" + id)[0];
@@ -219,26 +232,34 @@ ST.forEach(st => {
   const ours = st.before.filter(o => o.op_type === 'DXF_WALL').map(o => o.params);   // plan checks (R1a/R1b-u) on every plan piece; meshed = pieces with a drawn height
   say('  plan pieces=' + ours.length + ', meshed with a drawn height=' + ws.length + ', GAP:no_elevation_height (not meshed)=' + (gc['GAP:no_elevation_height'] || 0) + ' (walls and doors)');
   // lane spec L1.5 P1: a plan shows every wall its cut plane cuts, whatever the model storey; R1a (precision) checks against all of them.
-  // R1b-u (recall) below stays on the storey's own walls (unchanged; the other-storey cut walls are listed, not scored).
+  // R1b-u (recall) below: every wall the plane cuts (L2.8 rule 3).
   const srcCutAny = srcRect("='IfcWall'", null).filter(x => x.z0 <= cut && cut < x.z1), otherCut = srcCutAny.filter(x => !srcCut.some(y => y.id === x.id));
   if (otherCut.length) say('  other-storey walls cut by z=' + cut + ' (L1.5): ' + otherCut.map(x => x.id + ' ' + x.guid).join(', '));
   const stray = ours.filter(p => !srcCutAny.some(s => inside(p.rect, s.rect)));
   check('R1a ' + st.name, 'a wall piece lies outside every source wall (invented geometry)', stray.length === 0, 'pieces=' + ours.length + ' stray=' + stray.length + (stray.length ? ' ' + stray.map(p => p.handle).join(',') : ''));
-  const srcOp = srcRect(" in ('IfcDoor','IfcWindow')", "m.storey='" + st.name + "'");
+  // L2.8 (3): recall over EVERY wall the plane cuts (any model storey), with the openings the plane cuts (any storey) - symmetric with R1a
+  const srcOp = srcRect(" in ('IfcDoor','IfcWindow')", null).filter(q => q.z0 <= cut && cut < q.z1);
   let ok = 0; const bad = [];
-  srcCut.forEach(Sw => {
+  srcCutAny.forEach(Sw => {
     const w = Sw.rect[2] - Sw.rect[0], h = Sw.rect[3] - Sw.rect[1], hz = w >= h, L = hz ? w : h;
     const cov = unionLen(ours.filter(p => inside(p.rect, Sw.rect)).map(p => hz ? [p.rect[0], p.rect[2]] : [p.rect[1], p.rect[3]]));
     const exp = unionLen(srcOp.filter(q => inRect([(q.a + q.c) / 2, (q.b + q.d) / 2], Sw.rect, 0.001)).map(q => { const c = hz ? (q.a + q.c) / 2 : (q.b + q.d) / 2, hl = Math.max(q.c - q.a, q.d - q.b) / 2 - (q.n && /Door|Flush|Glass/.test(q.n) && q.t && !/Fixed|Casement/.test(q.n) ? CASING : 0); return [c - hl, c + hl]; }));
     if (Math.abs((L - cov) - exp) <= 0.005) ok++; else bad.push(Sw.id + ' uncovered=' + (L - cov).toFixed(3) + ' expected=' + exp.toFixed(3));
   });
-  check('R1b-u ' + st.name, 'plan walls + source openings (door casing removed, union of intervals) do not reconstruct a source wall (5 mm)', ok === srcCut.length, ok + '/' + srcCut.length + (bad.length ? ' bad: ' + bad.join('; ') : ''));
+  check('R1b-u ' + st.name, 'plan walls + source openings (door casing removed, union of intervals) do not reconstruct a source wall the plane cuts (5 mm)', ok === srcCutAny.length, ok + '/' + srcCutAny.length + (bad.length ? ' bad: ' + bad.join('; ') : ''));
+  if (!STDSET && ok !== srcCutAny.length) say('  KNOWN FINDING (lane spec L2.8 rule 3): the old set draws walls by storey membership, so its plan omits walls the cut plane cuts from another storey (' + srcCutAny.filter(x => x.storey !== st.name).map(x => x.id).join(',') + '); recall over every cut wall exposes it.');
   // R6-shell: z of our pieces vs the containing source wall
   const zr = { elevation: [0, 0, []], slab_above: [0, 0, []] };
   ws.forEach(o => { const p = o.params, k = p.height_source; if (!zr[k]) return; const s = srcCut.find(x => inside(p.rect, x.rect)); if (!s) return;
     const z0 = st.level + p.base, z1 = z0 + p.height, eq = Math.abs(z0 - s.z0) <= 0.01 && Math.abs(z1 - s.z1) <= 0.01;
     if (eq) zr[k][0]++; else { zr[k][1]++; zr[k][2].push(p.handle + (p.part ? '.' + p.part : '') + ' ours ' + r6(z0) + '..' + r6(z1) + ' src ' + s.id + ' ' + r6(s.z0) + '..' + r6(s.z1)); } });
   check('R6-shell ' + st.name, 'a wall height read from an elevation differs from the source wall containing the piece (10 mm)', zr.elevation[1] === 0, 'elevation: equal=' + zr.elevation[0] + ' differ=' + zr.elevation[1] + (zr.elevation[2].length ? ' ' + zr.elevation[2].join('; ') : ''));
+  // L2.8 (2): a piece merged across plans spans the stacked source walls holding it on the merged storeys (union of their z)
+  const stk = (st.meshWalls || []).filter(o => /^stacked:/.test(o.params.height_source || '')), stBad = [];
+  stk.forEach(o => { const p = o.params, sts = [st.name, p.merged_with.storey], hold = srcRect("='IfcWall'", null).filter(x => sts.indexOf(x.storey) >= 0 && inside(p.rect, x.rect));
+    const z0 = st.level + p.base, z1 = z0 + p.height, u0 = Math.min(...hold.map(x => x.z0)), u1 = Math.max(...hold.map(x => x.z1));
+    if (!hold.length || Math.abs(z0 - u0) > 0.01 || Math.abs(z1 - u1) > 0.01) stBad.push(p.handle + ' ours ' + r6(z0) + '..' + r6(z1) + ' src ' + hold.map(x => x.id).join('+') + ' ' + r6(u0) + '..' + r6(u1)); });
+  if (stk.length) check('R6-stacked ' + st.name, 'a wall merged across plans (L2.8) does not span the stacked source walls that hold it (10 mm)', stBad.length === 0, 'merged pieces=' + stk.length + (stBad.length ? ' bad: ' + stBad.join('; ') : ''));
 });
 
 // ---------------- SLABS and ROOF: exact area classification on a compressed grid ----------------
@@ -329,6 +350,11 @@ ST.forEach(st => {
     const needA = W0.z1 - o.z1 > 0.04, needB = o.z0 - W0.z0 > 0.04;
     const aboveOk = !needA || solidAt(cx, cy, o.z1 + 0.02), belowOk = !needB || solidAt(cx, cy, o.z0 - 0.02);
     let status = voidOk && aboveOk && belowOk ? 'ok' : 'FAIL', why = '';
+    if (status === 'FAIL' && voidOk && aboveOk && !belowOk) {     // L2.8 (1): the drawings state no base below the plan level for the host piece -> explained by its advisory
+      const inf = st.infill.find(q => inRect([cx, cy], q.params.rect, 0.001)), hosts = inf ? inf.params.infill_of : [];
+      const adv = st.baseAdv.find(a => { const pc = st.before.find(q => q.op_type === 'DXF_WALL' && q.params.handle === a.handle && q.params.part === a.part); return pc && (inRect([cx, cy], pc.params.rect, 0.001) || hosts.indexOf(a.handle) >= 0); });
+      if (adv) { status = 'explained'; why = 'host piece ' + adv.handle + ' GAP:wall_base_from_plan_level (no section or elevation states its base)'; }
+    }
     if (status === 'FAIL' && /Door/.test(o.n.split(':')[0]) || (status === 'FAIL' && /Flush|Glass/.test(o.n))) {
       const oc = [(o.a + o.c) / 2, (o.b + o.d) / 2], a = arcs.filter(x => gapByH[x.h] && Math.hypot(x.c[0] - oc[0], x.c[1] - oc[1]) <= 1.2).sort((p, q) => Math.hypot(p.c[0] - oc[0], p.c[1] - oc[1]) - Math.hypot(q.c[0] - oc[0], q.c[1] - oc[1]))[0];
       if (a) { status = 'explained'; why = 'door arc ' + a.h + ' ' + gapByH[a.h]; }
@@ -451,6 +477,7 @@ if (!MUT) {
     (st.ring.gaps || []).concat(sz.gaps || []).forEach(g => qg.push(Object.assign({ sheet, shape: 'slabs' }, pick(g))));
     st.bridge.gaps.concat(st.fills.gaps).forEach(g => qg.push(Object.assign({ sheet, shape: 'openings' }, pick(g))));
     st.meshGaps.forEach(g => qg.push(Object.assign({ sheet }, pick(g))));
+    (st.baseAdv || []).forEach(g => qg.push(Object.assign({ sheet, shape: 'walls' }, pick(g))));
     // L2.3 D3: handles the final shell/cut stage resolved (openings of bridged voids + their parts, placed fills)
     const opH = {}; st.after.filter(o => o.op_type === 'DXF_OPENING').forEach(o => { opH[o.params.handle] = (o.params.parts || []).map(q => q.handle); });
     const rs = new Set(); st.bridge.voids.forEach(v => v.openings.forEach(h => { rs.add(h); (opH[h] || []).forEach(x => rs.add(x)); }));
