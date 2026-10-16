@@ -105,10 +105,10 @@ const SNAP = { snap_tol: 0.001 }, lbl = (r, g) => r.ops.find(o => o.output_guid 
 // LB4 two overlapping elements
 { const ops = [RUN, WIN('w1', 0, 0, 1, 0.2), WIN('w2', 0.5, 0, 1.5, 0.2)], r = T.applyLabels(ops, desc(PL('m').concat([['@LABEL=window,0.75,0.1,X']])).desc, MK.UNITS, SNAP);
   check('LB4', 'ambiguous label point labelled one of several elements', lbl(r, 'w1') === undefined && lbl(r, 'w2') === undefined && r.gaps.length === 1 && r.gaps[0].params.code === 'GAP:label_ambiguous' && J(r.gaps[0].params.guids) === '["w1","w2"]', J(r.gaps.map(g => g.params.code))); }
-// LB5 door by hinge disc; a window at the same point is not a door
-{ const dr = open('d1', 'D1', 'door', 0.9, 2.1, { hinge: [1, 1] }), ops = [RUN, dr, WIN('w1', 0.9, 0.9, 1.1, 1.1)];
+// LB5 door by its swing box (lane spec L2.7 rule 3; was the hinge disc); a window at the same point is not a door
+{ const dr = open('d1', 'D1', 'door', 0.9, 2.1, { hinge: [1, 1], swing_start_deg: 0, swing_end_deg: 90 }), ops = [RUN, dr, WIN('w1', 0.9, 0.9, 1.1, 1.1)];
   const r = T.applyLabels(ops, desc(PL('m').concat([['@LABEL=door,1.5,1,DD']])).desc, MK.UNITS, SNAP), r2 = T.applyLabels(ops, desc(PL('m').concat([['@LABEL=door,3,3,DD']])).desc, MK.UNITS, SNAP);
-  check('LB5', 'door label outside its swing disc accepted, or class not respected', lbl(r, 'd1') === 'DD' && lbl(r, 'w1') === undefined && r2.gaps.length === 1 && r2.gaps[0].params.code === 'GAP:label_unmatched', 'inside=' + lbl(r, 'd1') + ' outside gaps=' + J(r2.gaps.map(g => g.params.code))); }
+  check('LB5', 'door label outside its swing box accepted, or class not respected', lbl(r, 'd1') === 'DD' && lbl(r, 'w1') === undefined && r2.gaps.length === 1 && r2.gaps[0].params.code === 'GAP:label_unmatched', 'inside=' + lbl(r, 'd1') + ' outside gaps=' + J(r2.gaps.map(g => g.params.code))); }
 // LB6 unit independence: 500 mm == 19.685039 in
 { const ops = [RUN, WIN('w1', 0.4, 0, 0.6, 0.2), WIN('w2', 2, 0, 3, 0.2)];
   const a = T.applyLabels(ops, desc(PL('mm').concat([['@LABEL=window,500,100,X']])).desc, MK.UNITS, SNAP), b = T.applyLabels(ops, desc(PL('in').concat([['@LABEL=window,19.6850394,3.9370079,X']])).desc, MK.UNITS, SNAP);

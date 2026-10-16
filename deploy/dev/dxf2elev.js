@@ -170,7 +170,8 @@
       if (found) { rep.elevation++; out.push(Object.assign({}, o, { params: Object.assign({}, P, { height: r6(found.z1 - found.z0), pending_elevation: false, height_source: 'elevation', face: found.face, elev_members: found.handles.slice() }) })); }
       else if (P.height_fallback !== null && P.height_fallback !== undefined) { rep.config++; out.push(Object.assign({}, o, { params: Object.assign({}, P, { height: P.height_fallback, pending_elevation: false, height_source: 'config' }) })); }
       else if (sched && P.label !== undefined && sched[P.label] && sched[P.label].class === 'door' && typeof sched[P.label].height === 'number') {   // L2.6 C: the door schedule via the door's tag/label
-        rep.schedule = (rep.schedule || 0) + 1; out.push(Object.assign({}, o, { params: Object.assign({}, P, { height: sched[P.label].height, pending_elevation: false, height_source: 'schedule', schedule_label: P.label }) }));
+        rep.schedule = (rep.schedule || 0) + 1; var hf = typeof opts.schedule_head_frame === 'number' ? opts.schedule_head_frame : 0;   // L2.7 (2): opening = schedule leaf + the head frame the drawings do not draw (caller's CASING)
+        out.push(Object.assign({}, o, { params: Object.assign({}, P, { height: r6(sched[P.label].height + hf), leaf_height: sched[P.label].height, head_frame: hf, pending_elevation: false, height_source: 'schedule', schedule_label: P.label }) }));
       }
       else { rep.none++; out.push(gapOp(o, 'GAP:no_elevation_height')); }
     });

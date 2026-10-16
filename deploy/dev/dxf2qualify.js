@@ -419,7 +419,7 @@
       (s.desc.walltop || []).forEach(function (w) {
         var ent = s.all.find(function (e) { return e.handle === w.handle; });
         if (planLevels.indexOf(w.level) < 0) { block('QF:walltop_unknown_storey', s.id, [w.handle], posOf(ent), s.id + ': @WALLTOP=' + w.level + ',' + w.rule + ' names no PLAN @LEVEL (' + planLevels.join(', ') + ')', { level: w.level }); return; }
-        if (!conventions.some(function (c) { return c.level === w.level && c.rule === w.rule; })) conventions.push({ level: w.level, rule: w.rule, sheet: s.id, handle: w.handle, source: 'user-stated' });
+        if (!conventions.some(function (c) { return c.level === w.level && c.rule === w.rule; })) conventions.push({ level: w.level, rule: w.rule, sheet: s.id, handle: w.handle, source: 'stated (' + (w.by || 'file') + ')' });   // L2.7 (5): the marking's @BY
       });
     });
     conventions.sort(function (a, b) { return a.level - b.level; });
@@ -442,11 +442,11 @@
       var extra = {}; Object.keys(g).sort().forEach(function (k) { if (['code', 'shape', 'sheet', 'handle', 'run_id'].indexOf(k) < 0) extra[k] = g[k]; });
       if (g.code === 'GAP:no_elevation_height' && s && hs.length && (s.desc.walltop_walls || []).some(function (w) { return w.wall === hs[0].toUpperCase(); })) {   // L2.6 A: a per-wall top is stated
         var ww = s.desc.walltop_walls.find(function (w) { return w.wall === hs[0].toUpperCase(); });
-        item(advisory, 'QF:height_stated', shape, g.sheet, hs, posOf(e), g.sheet + ': ' + g.code + ' ' + hs[0] + ' covered by @WALLTOP=handle:' + ww.wall + ',' + ww.z + ' (stated per wall)', { gap: g.code, z_top: ww.z }); return;
+        item(advisory, 'QF:height_stated', shape, g.sheet, hs, posOf(e), g.sheet + ': ' + g.code + ' ' + hs[0] + ' covered by @WALLTOP=handle:' + ww.wall + ',' + ww.z + ' (' + 'stated (' + (ww.by || 'file') + '))', { gap: g.code, z_top: ww.z, source: 'stated (' + (ww.by || 'file') + ')' }); return;
       }
       if (g.code === 'GAP:no_elevation_height' && s && s.desc.view === 'PLAN' && g.layer !== undefined && (s.maps || []).some(function (m) { var r = B.matchRule(g.layer, m.rules); return r && (r.type === 'wall' || r.type === 'wallline'); })) {
         var cv = conventions.find(function (c) { return c.level === s.desc.level && c.rule === 'slab_above'; });
-        if (cv) { item(advisory, 'QF:convention_applied', shape, g.sheet, hs, posOf(e), g.sheet + ': ' + g.code + ' ' + hs[0] + ' covered by @WALLTOP=' + cv.level + ',slab_above (convention: user-stated)', { gap: g.code, convention: 'user-stated', walltop: cv.level }); return; }
+        if (cv) { item(advisory, 'QF:convention_applied', shape, g.sheet, hs, posOf(e), g.sheet + ': ' + g.code + ' ' + hs[0] + ' covered by @WALLTOP=' + cv.level + ',slab_above (convention ' + cv.source + ')', { gap: g.code, convention: cv.source, walltop: cv.level }); return; }
       }
       item(ADVISORY_GAP.test(g.code) ? advisory : blocking, g.code, shape, g.sheet === undefined ? null : g.sheet, hs, posOf(e), (g.sheet ? g.sheet + ': ' : '') + g.code + (hs.length ? ' ' + hs[0] : '') + (why ? ' (' + why + ')' : ''), { detail: extra });
     });
