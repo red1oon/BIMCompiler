@@ -114,6 +114,7 @@ public class Oracle implements Runnable {
 			if ("pinstances".equals(op)) return pinstances(ctx, req);
 			if ("findquery".equals(op)) return findquery(ctx, req);
 			if ("initialquery".equals(op)) return initialquery(ctx, req);
+			if ("recentitems".equals(op)) return recentitems(ctx, req);
 			if ("userqueries".equals(op)) {   // §UDP-3: FindWindow's saved-query list (MUserQuery.get) + userCanSave per entry
 				JSONArray a = new JSONArray();
 				for (MUserQuery uq : MUserQuery.get(ctx, req.getInt("tab"))) a.put(new JSONObject().put("id", uq.getAD_UserQuery_ID()).put("name", uq.getName()).put("canSave", uq.userCanSave()));
@@ -211,7 +212,11 @@ public class Oracle implements Runnable {
 				t.query(tx, 0, 0);
 				int n = t.getRowCount();
 				JSONArray ids = new JSONArray();
-				for (int i = 0; i < n; i++) ids.put(String.valueOf(t.getKeyID(i)));
+				String idCol = req.optString("idColumn", null);
+				for (int i = 0; i < n; i++) {
+					Object v = idCol != null ? t.getValue(i, idCol) : null;
+					ids.put(v != null ? String.valueOf(v) : String.valueOf(t.getKeyID(i)));   // a tab without a key field: getKeyID = -1
+				}
 				o.put("rows", n).put("ids", ids);
 			}
 			return o;
@@ -219,6 +224,34 @@ public class Oracle implements Runnable {
 			gw.dispose();
 			Env.clearWinContext(ctx, windowNo);
 		}
+	}
+
+	// §UDP-6: drive the real MRecentItem (addModifiedField / touchUpdatedRecord, MRecentItem.java:225-299) for the login user, then list
+	// getFromUser (:336-349) with getLabel (:354-413). steps: [{op: add|touch, table (AD_Table_ID), record, uu, window, tab}]
+	private static JSONObject recentitems(Properties ctx, JSONObject req) {
+		int user = Env.getAD_User_ID(ctx), role = Env.getAD_Role_ID(ctx);
+		if (req.optBoolean("reset", false)) {   // the harness never deletes behind the model's back: PO delete + cache reset (MRecentItem keeps a static cache)
+			for (MRecentItem ri : new Query(ctx, MRecentItem.Table_Name, "AD_User_ID=? AND AD_Client_ID=?", null).setParameters(user, Env.getAD_Client_ID(ctx)).<MRecentItem>list()) ri.deleteEx(true);
+			CacheMgt.get().reset(MRecentItem.Table_Name);
+			CacheMgt.get().reset(MSysConfig.Table_Name);   // a SysConfig row the harness set (RecentItems_MaxSaved) must be seen
+		}
+		JSONArray steps = req.optJSONArray("steps");
+		if (steps != null) for (int i = 0; i < steps.length(); i++) {
+			JSONObject st = steps.getJSONObject(i);
+			String uu = st.optString("uu", null);
+			if ("touch".equals(st.optString("op"))) MRecentItem.touchUpdatedRecord(ctx, st.getInt("table"), st.optInt("record", 0), uu, user);
+			else MRecentItem.addModifiedField(ctx, st.getInt("table"), st.optInt("record", 0), uu, user, role, st.optInt("window", 0), st.optInt("tab", 0));
+			if (st.optLong("sleepMs", 0) > 0) try { Thread.sleep(st.getLong("sleepMs")); } catch (InterruptedException e) { }
+		}
+		JSONArray a = new JSONArray();
+		for (MRecentItem ri : MRecentItem.getFromUser(ctx, user)) {
+			String label = null;
+			try { label = ri.getLabel(); } catch (Exception e) { label = "THROWS " + e; }
+			a.put(new JSONObject().put("id", ri.getAD_RecentItem_ID()).put("table", ri.getAD_Table_ID()).put("record", ri.getRecord_ID())
+				.put("uu", ri.getRecord_UU() == null ? JSONObject.NULL : ri.getRecord_UU()).put("window", ri.getAD_Window_ID()).put("tab", ri.getAD_Tab_ID())
+				.put("role", ri.getAD_Role_ID()).put("label", label == null ? JSONObject.NULL : label));
+		}
+		return new JSONObject().put("ok", true).put("list", a);
 	}
 
 	private static JSONObject ctxDump(Properties ctx) {
