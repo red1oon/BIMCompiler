@@ -147,6 +147,14 @@ const PAPER = {
     { t: 'Voices: AI-generated (Kokoro, local). Script directed by red1. MIT licensed, on GitHub.' }] },
 };
 
+// overlay text other than the cards (sheet badges, the r03 rows, the end card); CARDS_JSON = a card definition in another language (cards + these labels)
+const LBL = { badgeGrid: 'DX_FLOOR_GF_std.dxf · grid <b>1–3, A–D</b> on the load-bearing wall axes', badgeDims: '<b>34</b> DIMENSION entities, chained, each equal to the model',
+  badgeDoors: 'DX_FLOOR_FF_std.dxf · <b>8</b> of the set’s <b>14</b> door arcs · hinge and swing from the IFC', r03Rows: ['All eight sheets: {t} suggestions ticked', '{a} values picked or typed'],
+  end: { kicker: 'BIM OOTB · MODELLER', t1: 'DXF2BIM', t2: 'thanks for watching', line: 'All work MIT licensed, on GitHub.', tag: null } };
+if (process.env.CARDS_JSON) { const J = JSON.parse(fs.readFileSync(process.env.CARDS_JSON, 'utf8')); Object.assign(CARD, J.CARD || {}); Object.assign(LBL, J.LBL || {});
+  for (const k of Object.keys(J.PAPER || {})) PAPER[k] = k === 'r03' ? (x => () => JSON.parse(JSON.stringify(x)))(J.PAPER[k]) : J.PAPER[k];
+  say('§FILM_CARDS from ' + process.env.CARDS_JSON + ' cards=' + Object.keys(J.CARD || {}).length + ' papers=' + Object.keys(J.PAPER || {}).length); }
+
 (async () => {
   await new Promise(r => server.listen(0, r));
   const base = 'http://localhost:' + server.address().port;
@@ -177,14 +185,16 @@ const PAPER = {
   const frames = []; let T0 = null, cdp = null, cutting = false, cutTotal = 0, cutAt = 0, stepping = false, stepWaiter = null;
   const CUTS = [];   // removed wall intervals {a, b, d}; a frame is placed by its arrival time
   const filmTs = T => { if (cutting && T >= cutAt) return null; let d = 0; for (const c of CUTS) { if (T >= c.a && T < c.b) return null; if (T >= c.b) d += c.d; } return T - d; };
-  let dropUntil = 0, dropN = 0;
+  let dropUntil = 0, dropN = 0, freshAfter = 0, lastMeta = 0, stepAfter = 0;   // swap-time (metadata.timestamp) guards: same clock as Date.now (measured)
   async function castOn(p, dropSec) {
     if (cdp) await cdp.send('Page.stopScreencast').catch(() => {});
-    dropUntil = Date.now() / 1000 + (dropSec || 0); dropN = dropSec ? 4 : 0;
+    dropUntil = 0; dropN = 0; freshAfter = dropSec ? Date.now() / 1000 + 0.05 : 0;   // a newly cast page first delivers frames composited before its card was restored
     cdp = await p.context().newCDPSession(p); const me = cdp;
     me.on('Page.screencastFrame', f => {
       if (me !== cdp) return;
-      if (stepping) { if (stepWaiter) { const w = stepWaiter; stepWaiter = null; w(f); } me.send('Page.screencastFrameAck', { sessionId: f.sessionId }).catch(() => {}); return; }
+      if (f.metadata.timestamp < freshAfter) { me.send('Page.screencastFrameAck', { sessionId: f.sessionId }).catch(() => {}); return; }
+      lastMeta = Math.max(lastMeta, f.metadata.timestamp);
+      if (stepping) { if (stepWaiter && f.metadata.timestamp >= stepAfter) { const w = stepWaiter; stepWaiter = null; w(f); } me.send('Page.screencastFrameAck', { sessionId: f.sessionId }).catch(() => {}); return; }
       const ts = (Date.now() / 1000 < dropUntil || dropN > 0) ? null : filmTs(Date.now() / 1000); if (dropN > 0) dropN--;   // ARRIVAL time, the same clock as the cut intervals (swap timestamps of a newly cast page proved unreliable)
       if (ts !== null) { const fn = path.join(FR, String(frames.length).padStart(6, '0') + '.jpg'); fs.writeFileSync(fn, Buffer.from(f.data, 'base64'));
         frames.push({ fn, ts }); if (T0 === null) T0 = Date.now() / 1000; }
@@ -209,8 +219,8 @@ const PAPER = {
     const wall0 = Date.now() / 1000, film0 = wall0 - cutTotal; let lastFn = frames.length ? frames[frames.length - 1].fn : null, miss = 0;
     stepping = true;
     for (let i = 0; i < n; i++) {
-      await fnStep(i, n);
-      const f = await Promise.race([new Promise(r => { stepWaiter = r; }), new Promise(r => setTimeout(() => r(null), 4000))]); stepWaiter = null;
+      await fnStep(i, n); stepAfter = Date.now() / 1000;   // the frame taken must be composited AFTER this step (the screencast can lag seconds behind on a busy page)
+      const f = await Promise.race([new Promise(r => { stepWaiter = r; }), new Promise(r => setTimeout(() => r(null), 12000))]); stepWaiter = null;
       const fn = path.join(FR, String(frames.length).padStart(6, '0') + '.jpg');
       if (f) { fs.writeFileSync(fn, Buffer.from(f.data, 'base64')); lastFn = fn; } else { miss++; if (lastFn) fs.copyFileSync(lastFn, fn); }
       if (f || lastFn) frames.push({ fn, ts: film0 + i / 24 });
@@ -247,7 +257,13 @@ const PAPER = {
     const had = await page.evaluate(() => document.getElementById('__cd').classList.contains('on') && getComputedStyle(document.getElementById('__cd')).opacity === '1');
     await page.evaluate(([k, o, had]) => { if (!had) window.__card.op(0); window.__card[k](o, had); }, [kind, o, had]);
     if (!had) await stepFrames(fadeSteps(0.7), async (i, N) => { await page.evaluate(v => window.__card.op(v), (i + 1) / N); }, 'card in');
-    await page.evaluate(() => window.__card.op(1)); await hold(200); }
+    await page.evaluate(() => window.__card.op(1)); if (had) await waitVisible(Date.now() / 1000, 'card ' + kind); await hold(200); }
+  async function waitVisible(S, why) {   // the beat is logged only when a frame composited after the change has arrived (cut: the wait is not shown)
+    const t = Date.now(); cutStart('visible', true); try { while (lastMeta < S && Date.now() - t < 20000) await new Promise(r => setTimeout(r, 40)); } finally { cutEnd(true); }
+    if (Date.now() - t > 300) say('§FILM_VISIBLE ' + why + ' lag=' + ((Date.now() - t) / 1000).toFixed(2) + 's'); }
+  async function switchQuiet(p) {   // opaque paper card: the same card on a light page, cast when its fresh frame is there
+    const s = await page.evaluate(() => window.__card.snapshot()); await p.bringToFront(); await p.evaluate(s => { window.__card.restore(s); window.__card.op(1); }, s); await p.waitForTimeout(400);
+    await castOn(p, 1.0); page = p; await page.evaluate(() => window.__card.op(0.999)); await hold(80); await page.evaluate(() => window.__card.op(1)); await waitVisible(Date.now() / 1000, 'switch'); }
   async function uncard() {
     await stepFrames(fadeSteps(0.7), async (i, N) => { await page.evaluate(v => window.__card.op(v), 1 - (i + 1) / N); }, 'card out');
     await page.evaluate(() => { window.__card.hide(); window.__card.op(0); }); await hold(150); await page.evaluate(() => window.__card.clearInline()); await hold(150); }
@@ -366,9 +382,9 @@ const PAPER = {
     await stepFrames(fadeSteps(1.2), async (i, N) => { await page.evaluate(v => { window.scene.gridOp(1 - v); window.scene.stageOp(v); }, (i + 1) / N); }, 'thumbnails -> GF sheet');
     await hold(1200);
     fact('hl.grid', await page.evaluate(() => window.scene.hl('grid')));
-    await page.evaluate(() => window.scene.badge('DX_FLOOR_GF_std.dxf · grid <b>1–3, A–D</b> on the load-bearing wall axes')); await hold(3600);
+    await page.evaluate(t => window.scene.badge(t), LBL.badgeGrid); await hold(3600);
     await page.evaluate(() => window.scene.hl('grid', false)); fact('hl.dims', await page.evaluate(() => window.scene.hl('dims')));
-    await page.evaluate(() => window.scene.badge('<b>34</b> DIMENSION entities, chained, each equal to the model'));
+    await page.evaluate(t => window.scene.badge(t), LBL.badgeDims);
     { const c = await page.evaluate(() => window.scene.centre('dims')); await hold(800); await sheetMove([c[0], 560, 1.9], 2.2, 'GF dims top'); await hold(1600); }
     await cardHold(0);
     await beat('s03', 'FF plan: door arcs');
@@ -377,7 +393,7 @@ const PAPER = {
     fact('sheet.FF', JSON.stringify(await page.evaluate(() => { const r = window.scene.sheet('FLOOR_FF'); window.scene.stageOp(0); return r; })));
     await stepFrames(fadeSteps(0.8), async (i, N) => { await page.evaluate(v => window.scene.stageOp(v), (i + 1) / N); }, 'FF in'); await hold(900);
     fact('hl.doors', await page.evaluate(() => window.scene.hl('doors')));
-    await page.evaluate(() => window.scene.badge('DX_FLOOR_FF_std.dxf · <b>8</b> of the set’s <b>14</b> door arcs · hinge and swing from the IFC'));
+    await page.evaluate(t => window.scene.badge(t), LBL.badgeDoors);
     await hold(1800); { const c = await page.evaluate(() => window.scene.centre('doors')); await sheetMove([c[0], c[1], 1.7], 2.2, 'FF doors'); }
     await hold(2400);
     await cardHold(0);
@@ -476,7 +492,7 @@ const PAPER = {
     await hold(900);
     await jump('the rest of the GF sheet, the other seven sheets + wall tops, through the same editor actions', async () => { for (const n of Object.keys(ORIG)) await fillSheet(n); await fillWalltops(); await idle(); });
     fact('fill.total', 'ticks=' + FT.ticks + ' picked_or_typed=' + FT.actions + ' sheets=8');
-    await page.evaluate(([t, a]) => { const r = document.querySelector('#__cd .rows'); if (r) r.innerHTML = '<div class="row">All eight sheets: ' + t + ' suggestions ticked</div><div class="row">' + a + ' values picked or typed</div>'; }, [FT.ticks, FT.actions]);
+    await page.evaluate(([rows]) => { const r = document.querySelector('#__cd .rows'); if (r) r.innerHTML = rows.map(x => '<div class="row">' + x + '</div>').join(''); }, [LBL.r03Rows.map(x => x.replace('{t}', FT.ticks).replace('{a}', FT.actions))]);
     // behind the card: the verdict section open on its blocking list
     await page.evaluate(() => { const S = window.DxfMetaEditor.state; S.open = {}; S.sec.sheets = false; S.sec.units = false; S.sec.walltops = false; S.sec.verdict = true; S.vtab = 'blocking'; window.DxfMetaEditor.show(); });
     await cardHold(0);
@@ -496,8 +512,12 @@ const PAPER = {
     }
     // ════ 7 CONTEXT + 8 LIMITS (cards) ════
     if (STOP >= 7) {
-    for (const id of ['o01', 'o02', 'o03', 'l01', 'n01']) { await card('paper', PAPER[id]); await beat(id, 'card ' + PAPER[id].kicker); await cardHold(0); }
-    await uncard(); await card('chapter', { kicker: 'BIM OOTB · MODELLER', t1: 'DXF2BIM', t2: 'thanks for watching', line: 'All work MIT licensed, on GitHub.', tag: null });
+    for (const id of ['o01', 'o02', 'o03', 'l01', 'n01']) {
+      if (id === 'o01') { await card('paper', Object.assign({}, PAPER[id], { rows: [] }));   // title only on the Modeller page, then the light page types the rows
+        const D = await jump('a light page for the opaque cards (the Modeller page delays its frames by seconds)', async () => { const p = await ctx.newPage(); wire(p, 'D'); await p.goto(base + '/__film/blank.html', { waitUntil: 'load' }); await p.waitForFunction(() => !!window.__card); return p; }); await switchQuiet(D); }
+      await card('paper', PAPER[id]);
+      await beat(id, 'card ' + PAPER[id].kicker); await cardHold(0); }
+    await uncard(); await card('chapter', LBL.end);
     fact('end.card', await page.evaluate(() => Array.from(document.querySelectorAll('#__cd')).map(e => e.className + ':' + e.innerText.replace(/\s+/g, ' ').slice(0, 60)).join(' | ')));
     await beat('end', 'end card'); await hold(1500); await cardHold(0); await hold(1500);
     await beat('zz', 'tail'); await hold(1000);
