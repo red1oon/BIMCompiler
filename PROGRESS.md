@@ -18,6 +18,9 @@ constraints. A session picking up work reads that; PROGRESS.md is state, not que
 - **Dubai paper** (outside repo): `~/Projects/Dubai/OpenBIM_Paper.docx` = IEEE format, conformed to abstract v4; log in `~/Projects/Dubai/PROMPT.md`.
 - ⛔ user call: 4 zero-byte DBs in bim-ootb/buildings (`city_index`, `city_index_v2`, `Duplex_meta`, `SampleCastle_extracted`).
 
+## ▶ 2026-10-14 — NinjaExcel Report (ninja_template) — PR #175 draft + bim-ootb `feat/ninja-template-pill` (no PR yet) — read `prompts/NINJAEXCEL_TEMPLATE_ENGINE.md` ▶ RESUME HERE
+Done: Thai trial balance + Sales Register templates, browser port in the Excel Report pill, standard GardenWorld use-case set with proved reset, 49 gates green, manual LIVE (https://red1oon.github.io/BIMCompiler/NinjaExcelReport_UserManual/), films 1+2 + cards + long film EN/TH in `~/Videos/NinjaExcelReport_film/` (NO movies in git). Next: open the bim-ootb PR; native Thai check; SELECT-only guard + template pre-flight (Planned); unify with `ninja_excel.js`. Detail and landmines in the prompt file.
+
 ## Modeller lane — 2026-10-02 close: read `prompts/MODELLER_MASTER.md` §RESUME 2026-10-02 (START HERE).
 
 ## Current State — 2026-09-08 (session 2, take-over close) — ⚠ RESUME HERE: §36 W1–W6 ✅, W7 bakes gated; PR #1697 MERGED (Measure live), PR for feat/measure-indoor pending

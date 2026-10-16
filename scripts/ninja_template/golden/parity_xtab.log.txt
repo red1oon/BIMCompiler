@@ -1,0 +1,13 @@
+I2 Address is String 12110
+J2 Address is String 14120
+K2 Address is String 41000
+L2 Address is String 51100
+I3 Address is String 12110
+I4 Address is Numeric 445.85
+J3 Address is String 14120
+J4 Address is Numeric -633.41
+K3 Address is String 41000
+K4 Address is Numeric -1023.98
+L3 Address is String 51100
+L4 Address is Numeric 966.41
+4 CROSS TAB CANVAS: @sum(a.amtacctdr-a.amtacctcr) as amt@4C3+
