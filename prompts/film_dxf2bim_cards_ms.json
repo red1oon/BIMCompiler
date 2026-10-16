@@ -1,0 +1,184 @@
+{
+ "CARD": {
+  "c1": {
+   "kicker": "DXF2BIM · AWAL · BENTUK ASAS",
+   "t1": "Lukisan 2D masuk,",
+   "t2": "model BIM keluar",
+   "line": "Dinding, lantai, bumbung, pintu dan tingkap: dibina dalam Modeller daripada lukisan, setiap nilai dikesan ke sumbernya.",
+   "tag": "DXF2BIM"
+  },
+  "k1": {
+   "kicker": "BAB 1 · MODEL",
+   "t1": "Bermula dari",
+   "t2": "model yang kami ada",
+   "line": "Duplex, dibuka dalam Modeller.",
+   "tag": "1 · MODEL"
+  },
+  "k2": {
+   "kicker": "BAB 2 · DIRINGKAS KE 2D",
+   "t1": "Set 2D piawai,",
+   "t2": "ditulis, bukan dilukis",
+   "line": "Grid pada paksi dinding, dimensi sama dengan model, hayunan pintu dari IFC.",
+   "tag": "2 · DIRINGKAS KE 2D"
+  },
+  "k3": {
+   "kicker": "BAB 3 · IMPORT",
+   "t1": "Buka helaian",
+   "t2": "dalam Modeller",
+   "line": "Setiap helaian diletak di aras, muka, bumbung atau keratannya.",
+   "tag": "3 · IMPORT"
+  },
+  "k4": {
+   "kicker": "BAB 4 · METADATA",
+   "t1": "Apa setiap helaian,",
+   "t2": "dan siapa yang kata",
+   "line": "Editor Drawing metadata dan keputusannya.",
+   "tag": "4 · METADATA"
+  },
+  "k5": {
+   "kicker": "BAB 5 · CONVERT",
+   "t1": "Satu klik,",
+   "t2": "bangunannya",
+   "line": "Dinding, lantai, bumbung, bukaan dipotong, pintu dan tingkap dari pustaka.",
+   "tag": "5 · CONVERT"
+  },
+  "k6": {
+   "kicker": "BAB 6 · LUKISAN MENTAH",
+   "t1": "Tiada tanda?",
+   "t2": "Isi tempat kosong",
+   "line": "Lapan helaian yang sama, lapisan tanda dibuang.",
+   "tag": "6 · LUKISAN MENTAH"
+  }
+ },
+ "PAPER": {
+  "r03": {
+   "kicker": "BAB 6 · LUKISAN MENTAH",
+   "title": "Tujuh helaian lagi, cara yang sama",
+   "tag": "6 · LUKISAN MENTAH",
+   "typeSec": 4,
+   "rows": []
+  },
+  "o01": {
+   "kicker": "CARA ORANG LAIN",
+   "title": "Karya terdahulu, seperti yang kami temui (2026-10-11)",
+   "tag": "7 · KONTEKS",
+   "typeSec": 11,
+   "rows": [
+    {
+     "t": "Revit, ArchiCAD: lukisan dikesan dengan tangan."
+    },
+    {
+     "t": "CrossBIM (projek pelajar): tiang, rasuk, papak, daripada nama lapisan yang ditaip dalam borang. Tiada dinding, pintu atau tingkap."
+    },
+    {
+     "t": "IfcOpenShell isu #1950: garisan jadi lengkung IFC. Tiada dinding, tiada ketinggian."
+    },
+    {
+     "t": "co2tools: panel disemperit untuk pembuatan, bukan bangunan."
+    },
+    {
+     "t": "Tiada alat DXF-ke-BIM sumber terbuka yang umum dan deterministik ditemui dalam carian kami.",
+     "q": 1
+    }
+   ]
+  },
+  "o02": {
+   "kicker": "KOD IKUT RASA BUTA SAIZ",
+   "title": "Satu lukisan contoh terbuka, dua bacaan",
+   "tag": "7 · KONTEKS",
+   "typeSec": 12,
+   "rows": [
+    {
+     "t": "Kepala fail: $INSUNITS = 4, milimeter."
+    },
+    {
+     "t": "Dinding dibaca sebagai milimeter: 0.80 × 0.56 m. Rumah anak patung, semua ujian tetap hijau."
+    },
+    {
+     "t": "Jejari hayunan pintu pada lukisan: 24, 28, 30, 36. Lebar daun pintu dalam inci."
+    },
+    {
+     "t": "Dinding dibaca sebagai inci: 20.2 × 14.3 m. Sebuah rumah."
+    },
+    {
+     "t": "Kini unit membawa sumbernya, dan tekaan dari kepala fail memberi amaran.",
+     "q": 1
+    }
+   ]
+  },
+  "o03": {
+   "kicker": "APA YANG KAMI UBAH SUAI",
+   "title": "Peraturan yang diajar lukisan sebenar",
+   "tag": "7 · KONTEKS",
+   "typeSec": 10,
+   "rows": [
+    {
+     "t": "Dinding sekatan memutuskan garisan dinding: kepingan kini bercantum merentas jurang hingga satu tebal dinding."
+    },
+    {
+     "t": "Dek anjung nampak macam dinding: ditanda sebagai zon pengecualian dan diketepikan."
+    },
+    {
+     "t": "Peraturan berubah apabila lukisan membuktikannya. Nilai tak pernah direka.",
+     "q": 1
+    }
+   ]
+  },
+  "l01": {
+   "kicker": "HAD YANG JUJUR",
+   "title": "Tidak didakwa",
+   "tag": "8 · HAD",
+   "typeSec": 13,
+   "rows": [
+    {
+     "t": "Pustaka pintu dan tingkap (subset LOD400) setempat, pada mesin ini, buat masa ini."
+    },
+    {
+     "t": "Farmhouse, lukisan orang luar, masih separa: keputusan qualify disekat (49)."
+    },
+    {
+     "t": "39 tapak dinding diambil dari aras pelan: ditanda sebagai nasihat, bukan sekatan."
+    },
+    {
+     "t": "Set lama buatan tangan melukis aras bumbung 43 mm di atas model."
+    },
+    {
+     "t": "Belum untuk sebarang DXF: set piawai Duplex yang ditukar."
+    }
+   ]
+  },
+  "n01": {
+   "kicker": "SETERUSNYA · KREDIT",
+   "title": "Seterusnya, dan kredit",
+   "tag": "8 · HAD",
+   "typeSec": 9,
+   "rows": [
+    {
+     "t": "Jadual pintu dalam editor. Lebih banyak bangunan. Pustaka dalam talian."
+    },
+    {
+     "t": "Lukisan American Farmhouse: Jay Osborne, freefarmhouse.com, CC BY-SA."
+    },
+    {
+     "t": "Suara: dijana AI (Microsoft Edge TTS, awan). Skrip diarahkan oleh red1. Berlesen MIT, di GitHub."
+    }
+   ]
+  }
+ },
+ "LBL": {
+  "badgeGrid": "DX_FLOOR_GF_std.dxf · grid <b>1–3, A–D</b> pada paksi dinding galas beban",
+  "badgeDims": "<b>34</b> entiti DIMENSION, bersambung, setiap satu sama dengan model",
+  "badgeDoors": "DX_FLOOR_FF_std.dxf · <b>8</b> daripada <b>14</b> lengkok pintu set ini · engsel dan hayunan dari IFC",
+  "r03Rows": [
+   "Kesemua lapan helaian: {t} cadangan ditanda",
+   "{a} nilai dipilih atau ditaip"
+  ],
+  "end": {
+   "kicker": "BIM OOTB · MODELLER",
+   "t1": "DXF2BIM",
+   "t2": "terima kasih kerana menonton",
+   "line": "Semua kerja berlesen MIT, di GitHub.",
+   "tag": null
+  }
+ }
+}
