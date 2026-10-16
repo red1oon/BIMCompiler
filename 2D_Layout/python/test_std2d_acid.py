@@ -70,6 +70,10 @@ class Model:
             f = np.frombuffer(fb, dtype=np.int32).reshape(-1, 3) if fb else np.zeros((0, 3), dtype=np.int32)
             self.els[g] = dict(guid=g, cls=c, storey=st, b=(x0, x1, y0, y1, z0, z1), v=v, f=f)
         self.fills = dict(con.execute('SELECT filling_guid, host_guid FROM m_fills'))
+        # SS L1.7 V1 (own query, same definition as E5): authored wall host with a void row and no bbox/mesh
+        self.voided = {h for (h,) in con.execute(
+            "SELECT DISTINCT host_guid FROM m_openings WHERE host_guid IS NOT NULL AND host_guid NOT IN (SELECT guid FROM m_bbox) "
+            "AND host_guid IN (SELECT guid FROM elements_meta WHERE ifc_class IN ('IfcWall','IfcWallStandardCase'))")}
         self.lbv = dict(con.execute("SELECT guid, value FROM m_psets WHERE name='LoadBearing'"))
         names = [r[0] for r in con.execute("SELECT name FROM spatial_structure WHERE type='IfcBuildingStorey'")]
         place = {}
@@ -272,7 +276,7 @@ def op1(M, sheets):
             if lt.upper() in ('HIDDEN', 'DASHED') and doc.linetypes.has_entry(lt) and guid_of(e):   # a defined dashed linetype
                 dashed[guid_of(e)] = True
         ops = M.of(('IfcDoor', 'IfcWindow'), st)
-        n = dict(model=len(ops), wall_hosted=0, gap=0, above=0, above_dashed=0, no_host=0, host_no_geom=0, host_not_wall=0, host_not_cut=0)
+        n = dict(model=len(ops), wall_hosted=0, gap=0, above=0, above_dashed=0, no_host=0, host_voided=0, host_no_geom=0, host_not_wall=0, host_not_cut=0)
         missed = []
         for o in sorted(ops, key=lambda e: e['guid']):
             h, src = M.host(o)
@@ -284,6 +288,9 @@ def op1(M, sheets):
                 n['no_host'] += 1
                 continue
             hw = M.els.get(h)
+            if hw is None and h in M.voided:
+                n['host_voided'] += 1
+                continue
             if hw is None:
                 n['host_no_geom'] += 1
                 continue
