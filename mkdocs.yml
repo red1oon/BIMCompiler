@@ -92,12 +92,17 @@ nav:
 
   - The 3 Apps:
       - "BIM Viewer Guide": BIMUserGuide.md
+      - "Viewer Ask — First Steps": AskFirstSteps.md
+      - "Modeller — First Steps": ModellerFirstSteps.md
       - "DAGeVu Modeller — User Guide": ModellerGuide.md
+      - "2D Drawings → BIM (DXF2BIM)": DXF2BIMGuide.md
       - "Kernel-ERP User Guide": ERPUserGuide.md
       - "HR / Tenancy / Operate Module": HRBIMAssetGuide.md
+      - "Civil Works — Step by Step": CivilWorksGuide.md
       - "Teams Overlay — Collaboration & Optics": TeamsOverlayGuide.md
 
   - Go Deeper:
+      - "Architecture Overview (for reviewers)": ArchitectureOverview.md
       - "Fold Engine Black Book (dev manual)": FoldEngineBlackBook.html
       - "The Holy Grail (editable rules, live)": HolyGrail.md
       - "Cross-ERP Rosetta Stone (concept + cost)": ERPConceptRosetta.html
@@ -118,10 +123,13 @@ nav:
 
   - Papers & Positioning:
       - "Deterministic Spatial Compilation (academic paper)": SpatialCompilationPaper.md
+      - "DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)": DXF2BIM_TechnicalNote.md
+      - "Browser-Scale Benchmark (one tab, local first)": BrowserScaleBenchmark.md
       - "Construction Economy / ERP Wave": BIMERPPaper.md
       - "Enterprise Authentication (security)": EnterpriseAuthentication.md
       - "Strategic Positioning": StrategicIndustryPositioning.md
       - "Local-First Prior Art": LocalFirstPriorArt.md
+      - "Legacy-as-Oracle Adapter (migrate / test an ERP)": LegacyOracleAdapterSpec.md
       - "Enabling-Tech Timeline": EnablingTechTimeline.md
       - "Vibe Programming — AI + Domain Expertise": VibeProgramming.md
       - "The 4D Generator — Failure Catalogue & AI Findings": 4DGenerator.md

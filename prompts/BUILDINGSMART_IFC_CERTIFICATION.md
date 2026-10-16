@@ -84,3 +84,17 @@ extract, and we measure what we drop.*
 - https://www.buildingsmart.org/compliance/software-certification/ifc/
 - https://technical.buildingsmart.org/services/certification/benefits/
 - https://help.autodesk.com/cloudhelp/2023/ENU/Revit-DocumentPresent/files/GUID-6708CFD6-0AD7-461F-ADE8-6527423EC895.htm
+
+## §2026-10-08 — validator + IDS facts (primary sources fetched this date)
+- **bSI Validation Service** = https://validate.buildingsmart.org/ — open source (MIT, github.com/buildingSMART/validate);
+  runs Syntax, Schema and Gherkin-rules checks; bSDD check currently disabled. This is the P3 tool.
+- **buildingsmart.org pages return 403 to automated fetch** — the cost/membership rows in §VIABILITY remain secondary-sourced;
+  confirm by hand before P4.
+- **IDS checking** = an IDS XML (applicability + requirements; facets: entity/predefined type, attribute, classification,
+  property/quantity, material, partOf; values exact, enumeration, regex pattern, bounds) run by a checker against an IFC.
+  Free checker: **IfcTester** (part of IfcOpenShell; `specs.validate(model)`; reports Console/JSON/HTML/SQLite/ODS/BCF —
+  https://docs.ifcopenshell.org/ifctester.html). .NET: Xbim.IDS.Validator (IFC2x3/IFC4/IFC4.3).
+  `ifcopenshell` is NOT importable in this machine's system python (checked 2026-10-08) — install before use.
+- Recommended order unchanged: P1 W-IFC-ROUNDTRIP first; IDS then states WHAT must survive, the round trip shows WHETHER it did.
+- User context 2026-10-07: IFC set → merge → save → reopen works (SQLite round trip, not IFC export); BCF export witnessed
+  (`modeller/tests/witness_e2e_bcf.js`).

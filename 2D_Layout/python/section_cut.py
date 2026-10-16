@@ -17,6 +17,10 @@ Usage:
 """
 
 import sqlite3
+import os as _os
+import sys as _sys
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import model_db  # noqa: E402
 import sys
 import os
 import argparse
@@ -330,7 +334,7 @@ def detect_storeys(conn):
     rows = conn.execute("""
         SELECT m.storey, MIN(r.minZ) as floor_z, COUNT(*) as n
         FROM elements_meta m
-        JOIN elements_rtree r ON m.id = r.id
+        JOIN m_bbox r ON r.guid = m.guid
         WHERE m.storey IS NOT NULL
         GROUP BY m.storey
         ORDER BY floor_z
@@ -360,7 +364,7 @@ def section_cut(db_path, cut_z=None, storey_name=None):
     Returns:
         List of ElementSection objects for all classified elements.
     """
-    conn = sqlite3.connect(db_path)
+    conn = model_db.connect(db_path)   # §L1.6 P0: Node or old schema, one view shape
 
     # --- Determine cut height ---
     if cut_z is None:
@@ -406,8 +410,8 @@ def section_cut(db_path, cut_z=None, storey_name=None):
                COALESCE(et.center_z, 0.0)
         FROM elements_meta m
         JOIN element_instances ei ON m.guid = ei.guid
-        JOIN base_geometries bg ON ei.geometry_hash = bg.geometry_hash
-        JOIN elements_rtree r ON m.id = r.id
+        JOIN m_geom bg ON ei.geometry_hash = bg.geometry_hash
+        JOIN m_bbox r ON r.guid = m.guid
         LEFT JOIN element_transforms et ON m.guid = et.guid
         WHERE r.minZ < :cut_z AND r.maxZ > :cut_z
     """
@@ -461,7 +465,7 @@ def section_cut(db_path, cut_z=None, storey_name=None):
         SELECT m.guid, m.ifc_class, m.element_name, m.storey,
                r.minX, r.maxX, r.minY, r.maxY
         FROM elements_meta m
-        JOIN elements_rtree r ON m.id = r.id
+        JOIN m_bbox r ON r.guid = m.guid
         WHERE r.maxZ <= :cut_z
     """
     below_rows = conn.execute(below_query, {"cut_z": cut_z}).fetchall()
@@ -486,7 +490,7 @@ def section_cut(db_path, cut_z=None, storey_name=None):
         SELECT m.guid, m.ifc_class, m.element_name, m.storey,
                r.minX, r.maxX, r.minY, r.maxY
         FROM elements_meta m
-        JOIN elements_rtree r ON m.id = r.id
+        JOIN m_bbox r ON r.guid = m.guid
         WHERE r.minZ >= :cut_z
     """
     above_rows = conn.execute(above_query, {"cut_z": cut_z}).fetchall()

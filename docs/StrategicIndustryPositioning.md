@@ -81,20 +81,38 @@ ERP — is a projection of the same verified BOM.
 
 These work now, in a browser tab, no install. Each carries a witness you can run.
 
-**Currency note, 2026-07-07:** the Viewer/IFC-handoff row below was independently RE-VERIFIED this
-session, not just carried forward — `W-MV-PARITY` (Modeller ≡ Viewer on the same real building,
-re-run fresh) confirmed 12/12 PASS, max residual 1.44e-5m across 215 shared real elements, after
-finding+fixing a real 18m displacement bug. Full detail: `docs/internal/WalkerDoctrine.md`, Tier 3
-below. **The ERP rows (BIM↔ERP fold, EVM, POS, iDempiere extraction) received no new work or
-re-verification this session** — stated here plainly so the table isn't read as freshly confirmed
-when only the Viewer/geometry half was actually touched today.
+**Currency note, 2026-09-27:** three rows re-verified, one corrected, two more sourced facts folded
+in that bear on rows above without being their own row, everything else carried forward untouched.
+**Verified merged and live:** the ERP UX-parity row — bim-ootb PR #1613/#1626/#1636, read live off
+`erp/ad_seed.db`; the Viewer's clash + narrated fly-through row — PR #1697/#1699 merged,
+`viewer/sw.js` now `v1449` on `origin/main`; and the 4D Time Machine row's editor claim —
+`witness_gantt_edit_coherence` had been silently judging a dead scheduling model, now fixed to judge
+the canonical one, with a live editor test confirming drag/clamp/cascade/persist off real `§`-logs
+(PR #1553, 7 PRs total, merged 2026-08-27). **One caveat carried honestly:** a fleet-wide
+construction-sequencing check still fails on 6 of 7 test buildings on floor-ordering grounds
+(`§CPM_FLEET_VERDICT`, re-verified 2026-09-15) — a schedule-data gap, not an editor defect.
+**Corrected, not carried forward:** `W-MV-PARITY`'s prior 12/12 no longer holds. The Modeller now
+renders each building from its own per-resident `_geo.db`, while the witness still checks it against
+`Duplex_extracted.db`; the two disagree on triangle count for 82 of 203 shared geometry hashes.
+Parked, not fixed — full detail in Tier 3 below. **Two more verified facts, not their own row:** a
+photoreal-still defect that silently dropped whole element classes (glazing, furniture) from Alt+S
+bakes mid-playback, traced to a camera-culler/Time-Machine matrix-ownership conflict and fixed (PR
+#1660); and a 2026-09-04 audit that found three things believed live on bim-ootb's GitHub Pages —
+a version stamp, JS minification, both ERP agent-download zips — were 404 despite green CI, caught
+only by fetching the live URL (`§PAGES-SERVES-THE-BRANCH`, PR #1680: the zips are fixed and
+re-verified by `curl`; the minification/version-stamp gap is a live repo-settings question, still
+unresolved). **Not independently re-verified this pass, carried forward as before:** the BIM↔ERP
+fold row, EVM, POS, iDempiere extraction, and the 5D cost row.
 
 | Capability | What it does | Witness |
 |---|---|---|
 | **IFC handoff** | Drop IFC/OBJ/STL/DAE/GLB/glTF/3DS/FBX → queryable DB → view, classify, export back to IFC. Geometry hell resolved at import. | Rosetta gates; `import.js` round-trip |
-| **4D Time Machine** | Construction-sequence playback from BOM depth; stacked S-curve folded from real orders (Σ == PlannedAmt). | `W-SHOP-SCURVE` |
+| **4D Time Machine** | Construction-sequence playback from BOM depth; stacked S-curve folded from real orders (Σ == PlannedAmt). The Gantt editor's own edit path (drag/resize/lock/undo a bar) is now witnessed end to end, not just the playback. Click any element in the 3D view to see its scheduled task, dates and derived cost — closing a slice of the Navisworks TimeLiner/Synchro object-to-schedule gap. | `W-SHOP-SCURVE`; `witness_gantt_edit_coherence`, `witness_gantt_lock_integrity`; `W-S7-CANVAS-PICK` 14/14 |
 | **5D cost (editable)** | BOQ + cost rollup with **editable** per-jurisdiction rate templates; Variation Order Excel (FIDIC Clause 12). | `4D5DAnalysis.md`; VO demo [[10]](#ref10) |
 | **BIM↔ERP — to the cent** | A BIM-pushed building folds into a real procurement/project order and ERP documents, reproducing iDempiere/Odoo output at **`maxDiff=0c`**. **No other tool connects BIM to ERP over one signed log.** | `W-PROJ-FOLD`, `W-GW-HOSP-FOLD`, `W-FOLD-COMPLETE` |
+| **ERP screens — AD-driven, not a hand-list** | The five core document screens (Sales Order, Shipment, Invoice, Payment, Allocation Line) now render iDempiere's own AD field set per window instead of a curated shortlist — `c_order` 8→56 fields, `c_payment` 4→78, 139 DisplayLogic-bearing fields now evaluated live off the same AD metadata iDempiere reads, plus live AD_Ref_List/Yes-No editors and AD_Val_Rule-filtered FK pickers. | `W-PARITY-FIELDSET`, `W-PARITY-REFLIST`, `W-PARITY-VALRULE`, `W-AD-DISPLAYLOGIC-LIVE` |
+| **MEP clash + narrated fly-through** | A camera-directed tour of the building (Cinema Path Editor) surfaces real, triangle-exact clashes (not bounding-box proxies) as persistent world markers, reveals disciplines one at a time (finest-detail discipline first, MEP always last) as it passes, and overlays live measurements (spans, clear heights, room areas) — an automated clash-and-measure narration, not a static report. | `witness_clash_mesh_narrowphase`, `witness_clash_film_labels`/`_markers`, `witness_datum_stability`, `witness_indoor_beats`, `witness_linear_beat`, `witness_storey_walkable_card` |
+| **Photoreal still render (Alt+S)** | A physically-lit single-frame render from any camera pose, in the same browser tab — light comes only from the building's own modelled fixtures and openings (fabricated staging lights were found and removed outright), with zone-based daylight visibility and shadow cascades. **Under active accuracy tuning, stated plainly:** a light-intensity-scale audit run the same day this note was written found part of the scale unsourced, and an exterior-wall darkening defect is being fixed on an unmerged branch. | `witness_sky_view_field`, `witness_zone_glare`, `witness_still_shadow_fit`, `viewer/tests/smoke_alts.js` |
 | **Budget vs Actual (EVM)** | Planned vs Committed at project + phase + task grain; CV/SV/CPI/SPI in BigDecimal; cost overrun surfaced on the 4D S-curve. | `W-GW-HOSP-COSTVAR`; `proj_control.js` |
 | **What-If (cost)** | Speculative VO branch — revised = original + approved + pending — kept separate from the official ledger, reversible. | `W-FIN-BLUE-SPEC` (5/5) |
 | **Dashboard / analytics** | Generic multi-view over **any** data model: donut grid, "By-X" group-by chips that fill the grid, pivot lens, scrubbable timeline filmstrip, CSV/SVG/PNG export. Field-driven, not hardcoded per table. | `W-DASHBOARD`; `pivot_lens.html` |
@@ -142,11 +160,36 @@ evident), and **IFC4 export that round-trips** (`IfcWall` + profile + `IfcOpenin
 re-imports exact). A user can *today* author a few walls, a door, an opening, and MEP runs,
 and export usable IFC — without Revit.
 
-**Update 2026-07-07 — real movement, correcting a stale gap and adding what actually shipped:**
-the incremental regen cache listed below as a gap was WRONG — it landed same-cycle as the rest
-of the depth track (`W-BONSAI-REGEN`, op_hash-keyed, re-confirmed live this session) and should
-not be re-flagged as open. Since then, real, witnessed progress on both halves of what "author
-a building" needs:
+**Update 2026-09-27 — the working thesis changed (generate, then edit minimally), real generation
+now lands end-to-end, a real defect was found by finally auditing the witnesses themselves, and one
+claim in this section needs correcting.**
+
+Since 2026-09-24 the strategy is no longer "hand-author a wall at a time." It is **generate, then
+edit minimally**: open an ARC-only (architecture-only) building, let walkers generate the structure
+and MEP from measured rules, correct the result with a few signed edits — Open → Walk → Route →
+Sign → Review → Edit → Re-walk/re-route → Save/Export. Merged and measured on real buildings
+(bim-ootb #1762/#1768 plus the PRs below): routing now reaches the production walk path (it was
+silently dead on 7 of 8 sample buildings) and a generated network can be signed — Terminal's
+plumbing runs went 0 → 2,915 signed sweeps; a walk is one undo-able gesture (Ctrl+Z removes the
+whole generated layer, Ctrl+Y restores it); moving a fixture re-routes its pipes. One measured "Walk
+ALL Services" pass, generated / flagged-for-review per building: SampleHouse 60/0, Duplex 206/29,
+SampleCastle 514/9, HHS 3,415/0, Clinic 5,140/0, Hospital 39,979/22, HospitalGarage 13,965/0,
+Terminal 7,854/60 — read as "little is left to fix," not as an "N× faster" claim, since there is
+still no hand-modelling baseline to compare against.
+
+**That same push found a 3-month-old defect no witness had caught: the product catalog was silently
+loading 0 products** (a path typo after a June refactor), so every bend fitting failed to render
+while every witness stayed green (fixed, bim-ootb #1770). That is the direct reason a systematic
+audit of the Modeller's own witness suite was run next — and it is still open: **19 of 58 browser
+witnesses came back red on `main`**, nothing in CI catches this today. Four real product bugs (not
+test bugs) were found and fixed this way: the Outliner's adjacency lens was dead on every
+ARC-seeded pick, eye-toggles never repainted after opening a building, x-ray silently reverted to
+opaque after any re-fold, and a route-walk's tag was dropped at commit (so x-ray treated its pipes
+as structure). Separately, 6 of 8 sample buildings were opening with **zero rooms**, because the
+Modeller never called the room walker the Viewer already runs — fixed, `W-MODELLER-ROOM-INJECT`
+25/0. **All of this lives on bim-ootb branch `test/modeller-net-audit`, pushed, no PR yet — found,
+fixed, and witnessed, but not merged and not live.**
+
 - **Kernel breadth** — 6 more occt shoulders wired in one session (`GEOM_REVOLVE`/`SHELL`/
   `OFFSET`/`FILLET_VARIABLE`/`CHAMFER_DIST_ANGLE`/`DRAFT`, `W-BONSAI-TIER1` 20/20), plus
   `GEOM_ARRAY`/`GEOM_LOFT` (formula-driven instancing, real curve-following). `GEOM_REVOLVE` is
@@ -158,10 +201,13 @@ a building" needs:
   `resolveRealPlacement()` gate now HARD-FAILS rather than silently substituting invented
   geometry anywhere in the leaf-placement path — a structural fix, not a point patch. Full
   detail: `docs/internal/WalkerDoctrine.md §7-§10`.
-- **Cross-app trust, independently re-verified, not assumed** — `W-MV-PARITY` (Modeller ≡ Viewer
-  on the same real building) re-run fresh this session: 12/12 PASS, max residual **1.44e-5m
-  (14 microns)** across 215 shared real elements on Duplex, after finding+fixing a real 18m
-  displacement bug in an earlier pass. The two apps provably agree on where every element sits.
+- **Cross-app trust — correcting the prior claim, not carrying it forward.** `W-MV-PARITY`
+  (Modeller ≡ Viewer on the same real building) is **no longer 12/12.** The Modeller now renders
+  each building from its own per-resident `_geo.db`, while the witness still checks it against
+  `Duplex_extracted.db` — the two geometry sources disagree on triangle count for 82 of 203 shared
+  geometry hashes (121 agree, 12 missing). Parked, not fixed, pending a call on which geometry
+  source is canonical (`test/modeller-net-audit`, 2026-09-27). Stated plainly because the Tier-1
+  currency note above previously cited this witness's old 12/12 result as current.
 - **Dimension-driven parametric edit — first real increment, not yet the whole gap.** `p2p_distance`
   (width) is wired and PROVEN by exact numeric position assertion (not a screenshot) — real
   Playwright interaction, hand-computed expected geometry, `witness_e2e_sketch_dims.js` 10/10.
@@ -169,13 +215,13 @@ a building" needs:
   "constraint-solving on fixed hand-drawn geometry" and Grasshopper/Dynamo-class "geometry as a
   function of parameters" — most of it still open.
 
-**Honest distance to the mountain top: ~40-45%** (up from the prior ~35% estimate, reasoned not
-rounded — kernel breadth and MEP domain trust both moved concretely; the still-open gap is
-dominated by constraint-solving depth and the direct-manipulation UI, both explicitly scoped as
-their own separate tracks in `prompts/BONSAI_KERNEL_RESEARCH.md §GAP-TO-COMPETITIVE`, not vague
-remaining work). The read stands: **weeks-to-months, not years** for the remaining Tier-2/3 gap —
-kernel fidelity, signed history, IFC round-trip, and now real-vs-invented geometry trust are all
-proven; what's left is UX depth (constraint richness, manipulation), not new physics.
+**Honest distance to the mountain top: ~40-45%**, carried forward from the 2026-07-25 estimate —
+no source read this pass gives a revised figure, so the number is not re-rounded. What moved since
+then is breadth of what generates automatically (the loop above) and the discovery of how much of
+the existing witness net was not actually checking what it claimed to; neither is the same axis as
+"kernel/constraint completeness," so it does not by itself move this %. The still-open gap remains
+constraint-solving depth and the direct-manipulation UI, per `prompts/BONSAI_KERNEL_RESEARCH.md
+§GAP-TO-COMPETITIVE`. Read: **weeks-to-months, not years**, unchanged.
 
 Witnesses: `W-BONSAI-*` (`bonsai_signed_live.js`, `bonsai_ifc_live.js`, `bonsai_sweep_live.js`,
 `bonsai_fillet_live.js`, `bonsai_move_live.js`, `bonsai_tier1_live.js`), `W-MV-PARITY`

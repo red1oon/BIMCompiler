@@ -29,6 +29,10 @@
       "rel": "identical",
       "why": "ships for the first time with ERP_IDEMPIERE_UX_PARITY.md §P3 (the live FK picker consumes it); copied byte-identical from build/erp at that PR, locked so a later drift fails loudly"
     },
+    "ad_workflow": {
+      "rel": "identical",
+      "why": "ships for the first time with bim-ootb #1840 (prompts/ERP_MODEL_LAYER.md — the DocAction workflow path); copy == origin/main, locked"
+    },
     "bigdecimal": {
       "rel": "identical",
       "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"

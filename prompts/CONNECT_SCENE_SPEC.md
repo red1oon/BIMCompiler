@@ -36,6 +36,8 @@ STATUS: BUILDING. P0 ✅ + P1 ✅ (#383) + P2 ✅ (#384). NEXT = fold ERP into P
      unchanged: `W-CONNECT-COMMIT` as already written below. The §2 audit behind that decision also found
      the Viewer's own `sequence_rules.json` is a MIRROR, not live for the 4D bake (§2-RESULT there) —
      which is the concrete reason NOT to point a second surface at it.
+  ↪ 2026-09-30: red1 changed the display half of the 2026-09-13 decision — the Modeller now SHOWS an edit's cost/schedule Δ
+     itself via the Viewer-side owner (one engine, read-only lazy load). See `RATES_SOURCE_OF_TRUTH.md` §5 and `TM_4D5D_VARIANCE_LANE.md` §S8.
 LOG MANDATE: after ANY witness run, read the log before conclusions.
 ```
 

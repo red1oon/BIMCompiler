@@ -144,6 +144,9 @@ All panels collapse with **−/+**.
 
 ### Find panel — search, voice query, and axis lenses
 
+> **New: Ask.** Pick a question, get a computed answer, save the answers as one Excel file for your own AI —
+> **[Viewer Ask — First Steps](AskFirstSteps.md)** (5 minutes).
+
 The **Find** panel is the Viewer's search/navigate surface: a text or voice query box up top, and a
 single axis toggle underneath that re-groups the whole element tree (by storey, discipline, room,
 material, phase, or the newest axis, building **Parts**).
@@ -338,6 +341,8 @@ above for how to open it) has three more rows besides Find / Navigate:
 
 ### Inspect drawer — Measure, Clash, X-Ray, Section, Time Machine, 4D/5D, Fly Tour
 
+> **Road (civil works) model?** The same drawer gives extra road reports — clash between trades, earthworks volume, long / cross sections and a road Model Check. Walkthrough: **[Civil Works — Step by Step](CivilWorksGuide.md)**.
+
 The **Inspect** drawer (compass icon, next to Navigate on the toolbar rail) bundles seven tools behind
 one icon:
 
@@ -504,7 +509,7 @@ Two small behaviours keep this honest: planting re-shapes the flight around the 
 
 ![The Cinema path panel with Clash pairs ticked and Silent-bake size set to "this window (interactive)" — the Whole path block showing reach 15%, clip "whole film", build-the-model and room titles and Reveal and Clash pairs all checked, the Silent-bake size dropdown, the Day # counter set to top left, a saved plan selected, and the derived total 281.6s / 4225 frames line below](img/viewer/filmmaker-clash-and-bake-size.png)
 
-![The Cinema path panel with the full option set — the three derived bands (settle, exit door, stop) each with x / z / height / length and aim angles, then Whole path: reach 15%, clip "whole film", "build the model as the film plays" ticked, and the unticked room titles, Reveal, Clash pairs, Measure and Storey highlight boxes each carrying its own one-line explanation, above Silent-bake size "this window (interactive)" with its copy-bake-command link, Day # counter "top right", and a saved plan](img/viewer/filmmaker-measure-storey-panel.png)
+![The Cinema path panel with the full option set — seven bands (settle, five exit doors, stop) each with x / z / height / length and aim angles, then Whole path: reach 15%, clip "whole film" with mark in / mark out, and one button per film feature — Buildup (on), 4D/5D, Reveal, Clash pairs, Measure, Sun compass, Storey highlight, Load path freeze and Escape route — above Silent-bake size "this window (interactive)" with its copy-bake-command link, Day # counter "top right", the saved-plan list, and the derived total 97.9 s · 1468 frames to bake](img/viewer/filmmaker-measure-storey-panel.png)
 
 - **saved** — plans you stored for this building, with **open** and **delete**. Choosing one and pressing
   **open** replaces the path you are editing; the line under it says how many bands, how many hose pulls,
@@ -808,6 +813,7 @@ and dashboard graphs — off by default, pixel-identical until you turn it on.
 
 | Doc | What |
 |-----|------|
+| [Civil Works — Step by Step](CivilWorksGuide.md) | Road models: discipline counts + cost, cross-vendor clash, earthworks volume, long / cross sections, road Model Check report |
 | [Kernel-ERP User Guide](ERPUserGuide.md) | iDempiere browser ERP — login → install → POS → reporting · [Tenancy](ERPUserGuide.md#hr-tenancy) |
 | [DAGeVu Modeller Guide](ModellerGuide.md) | Author geometry — the editable 3D Grid |
 | [Clash Detection](CLASH_DETECTION.md) | Clash detection engine |
