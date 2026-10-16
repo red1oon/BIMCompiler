@@ -115,6 +115,7 @@ public class Oracle implements Runnable {
 			if ("findquery".equals(op)) return findquery(ctx, req);
 			if ("initialquery".equals(op)) return initialquery(ctx, req);
 			if ("recentitems".equals(op)) return recentitems(ctx, req);
+			if ("tabcust".equals(op)) return tabcust(ctx, req);
 			if ("userqueries".equals(op)) {   // §UDP-3: FindWindow's saved-query list (MUserQuery.get) + userCanSave per entry
 				JSONArray a = new JSONArray();
 				for (MUserQuery uq : MUserQuery.get(ctx, req.getInt("tab"))) a.put(new JSONObject().put("id", uq.getAD_UserQuery_ID()).put("name", uq.getName()).put("canSave", uq.userCanSave()));
@@ -252,6 +253,28 @@ public class Oracle implements Runnable {
 				.put("role", ri.getAD_Role_ID()).put("label", label == null ? JSONObject.NULL : label));
 		}
 		return new JSONObject().put("ok", true).put("list", a);
+	}
+
+	// §GRID-CUSTOM: drive the real MTabCustomization.saveData (MTabCustomization.java :124-147) for the login user + tab, one step at a time,
+	// and read the row back through MTabCustomization.get (:90-93) after each step. steps: [{custom, displayedGrid, autoHide}] (null = not set).
+	// reset: delete the user's rows for that tab THROUGH the model first (the harness never deletes behind the model's back).
+	private static JSONObject tabcust(Properties ctx, JSONObject req) {
+		int user = Env.getAD_User_ID(ctx), tab = req.getInt("tab");
+		if (req.optBoolean("reset", false))
+			for (org.adempiere.model.MTabCustomization t : new Query(ctx, org.adempiere.model.MTabCustomization.Table_Name, "AD_User_ID=? AND AD_Tab_ID=?", null).setParameters(user, tab).<org.adempiere.model.MTabCustomization>list()) t.deleteEx(true);
+		JSONArray out = new JSONArray(), steps = req.optJSONArray("steps");
+		if (steps != null) for (int i = 0; i < steps.length(); i++) {
+			JSONObject st = steps.getJSONObject(i);
+			boolean ok = org.adempiere.model.MTabCustomization.saveData(ctx, tab, user, st.isNull("custom") ? null : st.optString("custom"), st.isNull("displayedGrid") ? null : st.optString("displayedGrid", null), null, false, st.isNull("autoHide") ? null : st.optString("autoHide", null));
+			org.adempiere.model.MTabCustomization r = org.adempiere.model.MTabCustomization.get(ctx, user, tab, null);
+			JSONObject o = new JSONObject().put("ok", ok).put("exists", r != null);
+			if (r != null) o.put("custom", r.getCustom() == null ? JSONObject.NULL : r.getCustom()).put("isdisplayedgrid", r.getIsDisplayedGrid() == null ? JSONObject.NULL : r.getIsDisplayedGrid())
+				.put("isautohideemptycolumn", r.getIsAutoHideEmptyColumn() == null ? JSONObject.NULL : r.getIsAutoHideEmptyColumn()).put("isquickform", r.isQuickForm() ? "Y" : "N");
+			out.put(o);
+		}
+		if (req.optBoolean("cleanup", true))
+			for (org.adempiere.model.MTabCustomization t : new Query(ctx, org.adempiere.model.MTabCustomization.Table_Name, "AD_User_ID=? AND AD_Tab_ID=?", null).setParameters(user, tab).<org.adempiere.model.MTabCustomization>list()) t.deleteEx(true);
+		return new JSONObject().put("ok", true).put("steps", out);
 	}
 
 	private static JSONObject ctxDump(Properties ctx) {
