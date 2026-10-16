@@ -10,8 +10,7 @@ const CONTROL = process.env.FARM_HEIGHTS_CONTROL || '', IN = 0.0254;
 const txt = fs.readFileSync(process.argv[2], 'utf8');
 let fails = 0; const check = (id, issue, ok, d) => { if (!ok) fails++; console.log((ok ? 'PASS ' : 'FAIL ') + id + ' | ' + issue + ' | ' + d); };
 // plan run exactly as farm_walls.js: pair walls, elevation mode, NO height/base in config, no fallback
-const MAP = { version: 1, rules: [{ match: 'exact', pattern: '1', type: 'wallline' }].concat(['0', '2', '3', '5', 'A-TEXTx', 'A-DIMSx', 'A-LINK', 'A-SYMB', 'L-PLNT', 'A-ELEC', 'A-TEXT', '0-NPLT', 'A-DIMS'].map(l => ({ match: 'exact', pattern: l, type: 'ignore' }))) };
-const CFG = { version: 1, units: 'in', snap_tol: 0.0005, wall_mode: 'pair', wall: { height_from_elevation: true, pair_thicknesses: [3.5 * IN], pair_tol: 0.0005, pair_min_overlap: 12 * IN, pair_join_gap: 3.5 * IN } };
+const { MAP, CFG } = require('./set_configs.js').FARM;   // moved to set_configs.js (shared with rosetta_qualify.js), values unchanged
 const SANDBOX = { level_text_dy_in: 12, face_side_in: 6, chain_tol_in: 0.05 };
 console.log('control=' + (CONTROL || 'none') + ' ; sandbox tolerances ' + JSON.stringify(SANDBOX) + ' ; config ' + JSON.stringify(CFG));
 

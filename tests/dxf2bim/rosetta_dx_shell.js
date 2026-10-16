@@ -19,17 +19,7 @@ const sql = q => sqlj(DB, q), lsql = q => sqlj(LIBDB, q);
 const txt = f => fs.readFileSync(path.join(OUT, 'DX_' + f + '_marked.dxf'), 'utf8');
 const ORIG = f => fs.readFileSync(path.join(ROOT, '2D_Layout/output/DXF/DX_' + f + '_20260428_0636.dxf'), 'utf8');
 const MUT = process.env.MUT || '';
-const MAP_PLAN = { version: 1, rules: [
-  { match: 'exact', pattern: 'A-WALL-FULL', type: 'wall' }, { match: 'exact', pattern: 'A-WALL-PRTN', type: 'wall' }, { match: 'exact', pattern: 'A-WALL-PATT', type: 'ignore' },
-  { match: 'exact', pattern: 'A-DOOR', type: 'opening' }, { match: 'exact', pattern: 'A-GLAZ', type: 'glazing' },
-  { match: 'exact', pattern: 'A-GRID', type: 'ignore' }, { match: 'exact', pattern: 'A-ANNO-TEXT', type: 'ignore' }, { match: 'exact', pattern: 'A-ANNO-DIMS', type: 'ignore' },
-  { match: 'exact', pattern: 'A-FURN', type: 'ignore' }, { match: 'exact', pattern: 'A-TTLB', type: 'ignore' }, { match: 'exact', pattern: '0', type: 'ignore' } ] };
-const MAP_ELEV = { version: 1, rules: [{ match: 'exact', pattern: 'A-GLAZ', type: 'glazing' }, { match: 'exact', pattern: 'A-ELEV-WALL', type: 'elevwall' }, { match: 'exact', pattern: 'A-DOOR', type: 'elevdoor' }] };
-const MAP_LEVL = { version: 1, rules: [{ match: 'exact', pattern: 'A-ANNO-LEVL', type: 'levelline' }, { match: 'exact', pattern: 'A-ELEV-LEVL', type: 'levelline' }] };
-const MAP_ROOF = { version: 1, rules: [{ match: 'exact', pattern: 'A-ROOF', type: 'roof' }, { match: 'exact', pattern: 'A-GLAZ', type: 'glazing' }] };
-// NO wall/door/window heights and NO slab values in config. elev_tol 0.003, gap_min/gap_max, min_thickness, host_tol, door.min_width: SANDBOX (as rosetta_dx_types.js)
-const CFG = { version: 1, units: 'mm', snap_tol: 0.001, elev_tol: 0.003, host_tol: 0.3, align_tol: 0.05, wall_mode: 'footprint',
-  wall: { height_from_elevation: true, min_thickness: 0.05, polygon_footprint: true }, opening: { door: { from_elevation: true, min_width: 0.5 }, window: { from_elevation: true }, gap_min: 0.3, gap_max: 5 } };
+const { MAP_PLAN, MAP_ELEV, MAP_LEVL, MAP_ROOF, CFG } = require('./set_configs.js').DX;   // moved to set_configs.js (shared with rosetta_qualify.js); NO wall/door/window heights and NO slab values in config
 const deps = { DxfParser, hashHex, library: [] };
 const lines = []; let fails = 0;
 const say = s => { lines.push(s); console.log(s); };
@@ -392,5 +382,20 @@ check('MESH-shell', 'a wall/slab/roof element is open or inside-out', badS.lengt
 check('MESH-guid', 'duplicate element ids', new Set(els.map(e => e.guid)).size === els.length, 'unique=' + new Set(els.map(e => e.guid)).size + '/' + els.length);
 const R2 = pipeline({ convention: false }), h2 = hashHex(R2.obj);
 check('MESH-det', 'the OBJ differs between two full runs', h1 === h2, 'run1=' + h1.slice(0, 16) + ' run2=' + h2.slice(0, 16));
+// ---------------- L2 qualify input (DXF2BIM_MODELLER_LANE §L2.1): every gap of the main variant A, git-ignored, read by rosetta_qualify.js ----------------
+if (!MUT) {
+  const qg = [], pick = g => { const o = Object.assign({}, g); delete o.run_id; return o; };
+  R.ST.forEach(st => {
+    const sheet = 'DX_' + st.f, sz = R.slabZ[st.name];
+    st.after.filter(o => o.op_type === 'DXF_GAP').forEach(o => qg.push(Object.assign({ sheet }, pick(o.params))));
+    (st.ring.gaps || []).concat(sz.gaps || []).forEach(g => qg.push(Object.assign({ sheet, shape: 'slabs' }, pick(g))));
+    st.bridge.gaps.concat(st.fills.gaps).forEach(g => qg.push(Object.assign({ sheet, shape: 'openings' }, pick(g))));
+    st.meshGaps.forEach(g => qg.push(Object.assign({ sheet }, pick(g))));
+  });
+  R.roofPlan.gaps.concat(R.roofZ.gaps || []).forEach(g => qg.push(Object.assign({ sheet: 'DX_ROOF', shape: 'roof' }, pick(g))));
+  const inputs = {}; ['FLOOR_GF', 'FLOOR_FF'].forEach(f => { inputs['DX_' + f] = hashHex(txt(f)); }); ELEVS.forEach(f => { inputs['DX_' + f] = hashHex(shellTxt[f]); }); inputs.DX_ROOF = hashHex(ORIG('ROOF'));
+  fs.writeFileSync(path.join(OUTS, 'dx_shell_gaps.json'), J({ variant: 'A', inputs, gaps: qg }, null, 1) + '\n');
+  say('L2 qualify input: ' + qg.length + ' gap records (variant A) -> out/marked_shell/dx_shell_gaps.json');
+}
 say('\nSUMMARY fail=' + fails);
 fs.writeFileSync(path.join(__dirname, 'rosetta_dx_shell.log'), lines.join('\n') + '\n');
