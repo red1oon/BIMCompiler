@@ -4334,13 +4334,15 @@ def main():
                         help='Standard 2D set from the model (lane spec §L1): grid from wall axes, '
                              'chained DIMENSION strings, levels; output/STD/{PREFIX}_*_std.dxf, no timestamp')
     parser.add_argument('--png', action='store_true', help='with --std: render FLOOR_GF + FRONT PNGs')
+    parser.add_argument('--door-ops', default=None,
+                        help='with --std: DB holding the door_operation table (§L1.2) for door hinges')
     args = parser.parse_args()
 
     if args.std:
         # §L1: deterministic standard set (std2d.py); never overwrites the timestamped sets
         from std2d import write_std_set
         out_std = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'output', 'STD')
-        r = write_std_set(args.db_path, os.path.normpath(out_std), png=args.png)
+        r = write_std_set(args.db_path, os.path.normpath(out_std), png=args.png, door_ops=args.door_ops)
         for v, pth in r['paths'].items():
             print(f'{v}: {pth}')
         print(f"gaps={len(r['gaps'])} (read output/STD/log_*_std.txt)")

@@ -9,13 +9,17 @@ Every value is from the DB (elements_meta, elements_rtree, element_transforms,
 base_geometries, rel_fills_host, spatial_structure) or is a named convention
 constant below. Unresolvable values are logged as §GAP; nothing is guessed.
 
+Door hinges (§L1.2): from a `door_operation` table (scripts/extractIFC2DB.js) in the DB itself or
+in --door-ops <db> (the Node-extracted DB), joined on GUID. Absent -> GAP:door_hinge, no arc.
+
 Usage (also via drawing_writer_dxf.py --std):
-    python3 std2d.py <DX_extracted.db> [--out DIR] [--png]
+    python3 std2d.py <DX_extracted.db> [--door-ops DB] [--out DIR] [--png]
 Output: DIR/{PREFIX}_{FLOOR_GF,FLOOR_FF,FRONT,REAR,LEFT,RIGHT}_std.dxf
         DIR/log_{PREFIX}_std.txt   (read it: §GRID, §DIM, §LEVEL, §GAP lines)
 """
 import os
 import sys
+import json
 import math
 import sqlite3
 import argparse
@@ -35,6 +39,8 @@ BEAR_OVERLAP = 0.50         # R4(a) share of wall length over the foundation wal
 FACE_PT_TOL = 0.005         # m, R8 contour vertex on the face line
 PT_MERGE = 0.001            # m, R8
 LEAF_MIRROR_TOL = 0.001     # m, R9 a vertex coordinate with no mirror partner = leaf
+VERTICAL_TOL = 1e-6         # §L1.2 H1: door z_axis must be (0,0,1)
+SINGLE_SWING = ('SINGLE_SWING_LEFT', 'SINGLE_SWING_RIGHT')   # §L1.2 H1: the only types drawn
 CUT_OFFSET = 1.2            # m, R7 (existing §5.1a)
 # ── R7/R11 sheet conventions (paper mm at 1:100; model = paper * SCALE) ──
 SCALE = 100
@@ -92,7 +98,27 @@ def _orthogonal(verts, faces):
     return bool(np.all((nx < 1e-3) | (ny < 1e-3)))
 
 
-def load_model(db_path, log):
+def load_door_ops(db_path, door_ops_db, log):
+    """§L1.2 D1: guid -> door_operation row, from the DB itself, else from door_ops_db. {} if neither."""
+    for src in (db_path, door_ops_db):
+        if not src:
+            continue
+        con = sqlite3.connect(src)
+        try:
+            if not con.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='door_operation'").fetchone():
+                continue
+            rows = con.execute("""SELECT guid, operation_type, source, x_axis, y_axis, z_axis
+                                  FROM door_operation ORDER BY guid""").fetchall()
+        finally:
+            con.close()
+        log(f'§DOOR_OPS table=door_operation db={os.path.basename(src)} rows={len(rows)}')
+        return {g: dict(op=op, source=sc, x=json.loads(x) if x else None, y=json.loads(y) if y else None,
+                        z=json.loads(z) if z else None) for g, op, sc, x, y, z in rows}
+    log('§DOOR_OPS none (no door_operation table): every door keeps GAP:door_hinge')
+    return {}
+
+
+def load_model(db_path, log, door_ops_db=None):
     con = sqlite3.connect(db_path)
     rows = con.execute(
         """SELECT m.guid, m.ifc_class, m.element_name, COALESCE(m.storey,''),
@@ -151,9 +177,10 @@ def load_model(db_path, log):
         log.gap('GAP:roof_top', '-', 'no IfcRoof / IfcSlab')
     else:
         log(f'§LEVEL T/ROOF={roof_top:.4f} m from {[r["guid"] for r in roofs]} (R11)')
+    door_ops = load_door_ops(db_path, door_ops_db, log)
     return dict(els=els, walls=walls, storeys=storeys, foundation=fnd,
                 grid_storey=grid_storey, roofs=roofs, roof_top=roof_top, hosts=hosts,
-                by_guid={e['guid']: e for e in els})
+                by_guid={e['guid']: e for e in els}, door_ops=door_ops)
 
 
 def wall_axis(w):
@@ -251,6 +278,61 @@ def door_swing(d):
     if np.all(inner < 0):
         return ('x' if ta == 0 else 'y', -1)
     return None
+
+
+def _leaf_values(t):
+    """R9 leaf test along one axis: coordinates (about the bbox centre) with no mirror partner within 1 mm."""
+    t = t - (t.min() + t.max()) / 2
+    vals = np.unique(np.round(t, 4))
+    inner = [x for x in vals if not np.any(np.abs(vals + x) <= LEAF_MIRROR_TOL)]
+    return t, inner
+
+
+def _components(n, faces):
+    """Face-connected vertex sets (union-find over triangle edges)."""
+    par = list(range(n))
+
+    def find(a):
+        while par[a] != a:
+            par[a] = par[par[a]]
+            a = par[a]
+        return a
+    for a, b, c in faces:
+        for x, y in ((a, b), (b, c)):
+            rx, ry = find(int(x)), find(int(y))
+            if rx != ry:
+                par[rx] = ry
+    return np.array([find(i) for i in range(n)])
+
+
+def door_hinge(d, op, swing):
+    """§L1.2 H1-H5. Returns ('ok', dict(hinge, width, X, Y, closed)) or (gap_code, detail). Never guesses."""
+    if op is None:
+        return 'GAP:door_hinge', 'no door_operation row; no arc drawn'
+    if op['op'] not in SINGLE_SWING:
+        return 'GAP:door_hinge', f"operation_type={op['op']} not drawn (H1: single swing only); no arc drawn"
+    if not (op['x'] and op['y'] and op['z']) or np.max(np.abs(np.array(op['z']) - [0, 0, 1])) > VERTICAL_TOL:
+        return 'GAP:door_hinge', f"placement axes missing or not vertical z={op['z']} (H1); no arc drawn"
+    X, Y = np.array(op['x'][:2], float), np.array(op['y'][:2], float)
+    ta, sgn = swing                                   # R9 leaf offset (world axis, sign)
+    r9 = np.array([sgn, 0.0]) if ta == 'x' else np.array([0.0, sgn])
+    if float(np.dot(r9, Y)) <= 0.5:                   # H5: the mesh leaf must sit on the +Y side
+        return 'GAP:door_handing_conflict', (f"mesh leaf offset {ta}{sgn:+d} vs IFC +Y={Y.round(6).tolist()} "
+                                             f"op={op['op']}; no arc drawn")
+    v = d['v']
+    t, inner = _leaf_values(v[:, :2] @ Y)
+    if not inner:
+        return 'GAP:door_swing', 'no leaf along y_axis (H4)'
+    seed = np.any(np.abs(np.round(t, 4)[:, None] - np.array(inner)[None, :]) <= 1e-9, axis=1)
+    comp = _components(len(v), d['f'])
+    leaf = np.isin(comp, np.unique(comp[seed]))      # H4: the mesh components holding a leaf vertex
+    w2 = v[leaf, :2] + np.array(d['c'][:2])           # world plan coordinates
+    s, tt = w2 @ X, w2 @ Y
+    s0, s1, t1 = float(s.min()), float(s.max()), float(tt.max())
+    left = op['op'].endswith('LEFT')
+    sh = s0 if left else s1                           # H3: LEFT = -X jamb, RIGHT = +X jamb
+    hinge = sh * X + t1 * Y                           # at the leaf's +Y face (H4)
+    return 'ok', dict(hinge=hinge, width=s1 - s0, X=X, Y=Y, closed=(X if left else -X))
 
 
 # ─────────────────────────────── DXF ───────────────────────────────
@@ -389,8 +471,23 @@ def write_plan(model, grid, storey, view, db_path, out_path, log):
             continue
         ta, sgn = sw_
         log(f"§DOOR guid={d['guid']} swing_axis={ta} swing_sign={sgn:+d} (R9 leaf offset)")
-        # hinge: not in DB (R9)
-        log.gap('GAP:door_hinge', d['guid'], 'DB has no placement X axis / OperationType; no arc drawn')
+        op = model['door_ops'].get(d['guid'])
+        code, res = door_hinge(d, op, sw_)
+        if code == 'ok':   # §L1.2: leaf line + 90 deg arc, hinge from the IFC operation type and axes
+            H, w, Y, C = res['hinge'], res['width'], res['Y'], res['closed']
+            hm = (mm(H[0]), mm(H[1]))
+            O = H + w * Y
+            ln = msp.add_line(hm, (mm(O[0]), mm(O[1])), dxfattribs={'layer': 'A-DOOR'})
+            _tag(ln, d['guid'])
+            a_c, a_o = math.degrees(math.atan2(C[1], C[0])), math.degrees(math.atan2(Y[1], Y[0]))
+            ccw = C[0] * Y[1] - C[1] * Y[0] > 0          # closed -> open is counter-clockwise
+            st, en = (a_c, a_o) if ccw else (a_o, a_c)
+            arc = msp.add_arc(hm, mm(w), round(st % 360, 6), round(en % 360, 6), dxfattribs={'layer': 'A-DOOR'})
+            _tag(arc, d['guid'])
+            log(f"§DOOR_ARC guid={d['guid']} op={op['op']} source={op['source']} hinge=({hm[0]:.2f},{hm[1]:.2f}) "
+                f"width={w * 1000:.1f} swing=+Y({float(Y[0]):.6f},{float(Y[1]):.6f}) arc={st % 360:.1f}->{en % 360:.1f}")
+            continue
+        log.gap(code, d['guid'], res)
         half = ((d['x1'] - d['x0']) if ta == 'x' else (d['y1'] - d['y0'])) / 2
         off = half + 0.2
         nx, ny = (cx + sgn * off, cy) if ta == 'x' else (cx, cy + sgn * off)
@@ -551,12 +648,12 @@ def plan_storeys(model):
     return out
 
 
-def write_std_set(db_path, out_dir, prefix=None, png=False):
+def write_std_set(db_path, out_dir, prefix=None, png=False, door_ops=None):
     os.makedirs(out_dir, exist_ok=True)
     prefix = prefix or os.path.basename(db_path).split('_')[0].upper()
     log = Log()
     log(f'§ENTRY std2d db={os.path.basename(db_path)} prefix={prefix}')
-    model = load_model(db_path, log)
+    model = load_model(db_path, log, door_ops)
     grid = derive_grid(model, log)
     paths = {}
     for i, s in enumerate(plan_storeys(model)):
@@ -604,8 +701,9 @@ def main():
     ap.add_argument('db_path')
     ap.add_argument('--out', default=os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'output', 'STD'))
     ap.add_argument('--png', action='store_true', help='also render FLOOR_GF and FRONT PNGs')
+    ap.add_argument('--door-ops', default=None, help='DB holding door_operation (§L1.2), joined on GUID')
     a = ap.parse_args()
-    r = write_std_set(a.db_path, os.path.normpath(a.out), png=a.png)
+    r = write_std_set(a.db_path, os.path.normpath(a.out), png=a.png, door_ops=a.door_ops)
     for v, p in r['paths'].items():
         print(f'{v}: {p}')
     print(f'gaps={len(r["gaps"])} log={os.path.normpath(a.out)}/log_*_std.txt')

@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-# ⚠ DO NOT REMOVE: scope = lane spec §L1 / §L1.1 (bim-ootb prompts/DXF2BIM_MODELLER_LANE.md), tests W1-W7
+# ⚠ DO NOT REMOVE: scope = lane spec §L1 / §L1.1 / §L1.2 (bim-ootb prompts/DXF2BIM_MODELLER_LANE.md), tests W1-W7
 # for the standard 2D set written by std2d.py. Read the log after every run (exit code is not evidence).
 # Expectations are recomputed here from the DB with their own queries (not std2d's functions).
 # The source IFC (when given) is the independent oracle for door swing/hinge (W5) and storey elevations (W6).
 """
 Usage:
-    python3 test_std2d.py <DX_extracted.db> [--ifc Duplex_ARC.ifc] [--old-dir DIR]
+    python3 test_std2d.py <DX_extracted.db> [--ifc Duplex_ARC.ifc] [--door-ops DB] [--old-dir DIR]
+      --door-ops: DB with the door_operation table (scripts/extractIFC2DB.js, §L1.2); W5 then expects
+                  one arc per IFC single-swing door, hinge + swing checked against the IFC
       --old-dir: folder with the earlier timestamped DX_FLOOR_*_20260428_0636.dxf (INFO only:
                  how many of their door arcs agree with the IFC)
 Prints PASS/FAIL per test with the issue it proves; also writes output/STD/test_std2d.log.
@@ -268,9 +270,13 @@ def w4(plan_dxf):
 
 
 def ifc_doors(ifc_path):
+    """IFC oracle per door (mm, plan): +X/+Y of the placement, OperationType (type/style, else occurrence),
+    OverallWidth, and the Plan swing arc (IfcTrimmedCurve on IfcCircle) centre = the drawn hinge."""
     import ifcopenshell
     import ifcopenshell.util.placement as P
+    import ifcopenshell.util.unit as U
     f = ifcopenshell.open(ifc_path)
+    ls = U.calculate_unit_scale(f)
     out = {}
     for d in f.by_type('IfcDoor'):
         M = P.get_local_placement(d.ObjectPlacement)
@@ -284,8 +290,14 @@ def ifc_doors(ifc_path):
                     for c in getattr(gs, 'Elements', []) or []:
                         if c.is_a('IfcTrimmedCurve') and c.BasisCurve.is_a('IfcCircle'):
                             lc = c.BasisCurve.Position.Location.Coordinates
-                            hinge = (M @ np.array([lc[0], lc[1], 0, 1.0]))[:2] * 1000
-        out[d.GlobalId] = dict(y=M[:3, 1][:2], hinge=hinge)
+                            hinge = (M @ np.array([lc[0], lc[1], 0, 1.0]))[:2] * ls * 1000
+        t = None
+        for r in list(getattr(d, 'IsTypedBy', None) or []) + [r for r in d.IsDefinedBy or [] if r.is_a('IfcRelDefinesByType')]:
+            t = r.RelatingType
+        op = getattr(t, 'OperationType', None) if t is not None else None
+        op = op or getattr(d, 'OperationType', None)
+        out[d.GlobalId] = dict(x=M[:3, 0][:2], y=M[:3, 1][:2], hinge=hinge, op=op,
+                               w=(d.OverallWidth * ls * 1000) if d.OverallWidth else None)
     return out
 
 
@@ -295,41 +307,125 @@ def ifc_storeys(ifc_path):
     return {s.Name: float(s.Elevation) for s in f.by_type('IfcBuildingStorey')}
 
 
-def w5(plan_dxfs, db, ifc_path, log_lines, tag='W5'):
+def _door_marks(plan_dxfs):
+    """guid -> {'arcs': [...], 'lines': [...], 'notes': [...]} from A-DOOR ARC/LINE and A-ANNO-NOTE TEXT (BIMGUID xdata)."""
+    out = {}
+
+    def g_of(e):
+        return e.get_xdata('BIMGUID')[0][1] if e.has_xdata('BIMGUID') else None
+    for path in plan_dxfs:
+        msp = ezdxf.readfile(path).modelspace()
+        for a in msp.query('ARC[layer=="A-DOOR"]'):
+            out.setdefault(g_of(a), {'arcs': [], 'lines': [], 'notes': []})['arcs'].append(
+                dict(c=np.array([a.dxf.center.x, a.dxf.center.y]), r=a.dxf.radius, s=a.dxf.start_angle, e=a.dxf.end_angle))
+        for ln in msp.query('LINE[layer=="A-DOOR"]'):
+            out.setdefault(g_of(ln), {'arcs': [], 'lines': [], 'notes': []})['lines'].append(
+                (np.array([ln.dxf.start.x, ln.dxf.start.y]), np.array([ln.dxf.end.x, ln.dxf.end.y])))
+        for t in msp.query('TEXT[layer=="A-ANNO-NOTE"]'):
+            out.setdefault(g_of(t), {'arcs': [], 'lines': [], 'notes': []})['notes'].append(
+                np.array([t.dxf.align_point.x, t.dxf.align_point.y]))
+    return out
+
+
+def w5(plan_dxfs, db, ifc_path, log_lines, tag='W5', expect_arcs=False, verbose=False):
+    """§L1.2 W5: per door, an arc's hinge (position + jamb), swing side and radius vs the IFC; otherwise a hinge GAP."""
     if not ifc_path:
         say(f'SKIP {tag} | swing wrong | no IFC oracle given (--ifc); not a PASS')
         return None
     oracle = ifc_doors(ifc_path)
     doors = {g: (x0, x1, y0, y1) for g, x0, x1, y0, y1 in q(db, """SELECT m.guid, r.minX, r.maxX, r.minY, r.maxY
             FROM elements_meta m JOIN elements_rtree r ON r.id=m.id WHERE m.ifc_class='IfcDoor'""")}
-    gap_hinge = {ln.split('guid=')[1].split()[0] for ln in log_lines if ln.startswith('§GAP GAP:door_hinge')}
-    bad, n_note, n_arc = [], 0, 0
-    for path in plan_dxfs:
-        msp = ezdxf.readfile(path).modelspace()
-        for t in msp.query('TEXT[layer=="A-ANNO-NOTE"]'):
-            g = t.get_xdata('BIMGUID')[0][1] if t.has_xdata('BIMGUID') else None
-            if g not in doors or g not in oracle:
-                bad.append(f'note without door guid {g}')
-                continue
-            x0, x1, y0, y1 = doors[g]
-            c = np.array([(x0 + x1) / 2, (y0 + y1) / 2]) * 1000
-            v = np.array([t.dxf.align_point.x, t.dxf.align_point.y]) - c
-            if float(np.dot(v, oracle[g]['y'])) <= 0:
-                bad.append(f'{g}: swing note on the wrong side')
-            n_note += 1
-        for a in msp.query('ARC[layer=="A-DOOR"]'):
+    gap_hinge = {ln.split('guid=')[1].split()[0] for ln in log_lines
+                 if ln.startswith('§GAP GAP:door_hinge') or ln.startswith('§GAP GAP:door_handing_conflict')}
+    marks = _door_marks(plan_dxfs)
+    bad, n_arc, n_gap, rows = [], 0, 0, []
+    for g in sorted(set(marks) - set(doors)):
+        bad.append(f'mark without a door guid {g}')
+    for g in sorted(doors):
+        o, mk = oracle.get(g), marks.get(g, {'arcs': [], 'lines': [], 'notes': []})
+        if o is None:
+            bad.append(f'{g}: not in IFC')
+            continue
+        x0, x1, y0, y1 = doors[g]
+        c = np.array([(x0 + x1) / 2, (y0 + y1) / 2]) * 1000
+        if mk['arcs']:
             n_arc += 1
-            ctr = np.array([a.dxf.center.x, a.dxf.center.y])
-            g = min(oracle, key=lambda k: np.inf if oracle[k]['hinge'] is None else np.linalg.norm(oracle[k]['hinge'] - ctr))
-            h = oracle[g]['hinge']
-            mid = np.radians((a.dxf.start_angle + a.dxf.end_angle) / 2)
-            if h is None or np.linalg.norm(h - ctr) > 5 or np.dot([np.cos(mid), np.sin(mid)], oracle[g]['y']) <= 0:
-                bad.append(f'arc at {ctr.round(1)} not at IFC hinge / swing side')
-            if g in gap_hinge:
-                bad.append(f'{g}: arc drawn although hinge is a GAP (invented)')
-    ok = not bad and n_note == len(doors) and len(gap_hinge) + n_arc >= len(doors)
-    return check(tag, 'swing wrong (swing side vs IFC +Y; arc hinge vs IFC hinge; no arc for a hinge GAP)', ok,
-                 f'doors={len(doors)} swing notes={n_note} arcs={n_arc} hinge GAPs={len(gap_hinge)} {bad[:4]}')
+            if len(mk['arcs']) != 1:
+                bad.append(f'{g}: {len(mk["arcs"])} arcs')
+            a = mk['arcs'][0]
+            span = (a['e'] - a['s']) % 360
+            mid = np.radians(a['s'] + span / 2)
+            md = np.array([np.cos(mid), np.sin(mid)])
+            d_h = None if o['hinge'] is None else float(np.linalg.norm(o['hinge'] - a['c']))
+            want_jamb = -1 if str(o['op']).endswith('LEFT') else 1 if str(o['op']).endswith('RIGHT') else 0
+            got_jamb = int(np.sign(np.dot(a['c'] - c, o['x'])))
+            swing = float(np.dot(md, o['y']))
+            leaf_ok = any(np.linalg.norm(s0 - a['c']) <= 1 and np.dot((e0 - s0) / max(np.linalg.norm(e0 - s0), 1e-9), o['y']) > 0.999
+                          and abs(np.linalg.norm(e0 - s0) - a['r']) <= 1 for s0, e0 in mk['lines'])
+            ok = (d_h is not None and d_h <= 5 and want_jamb != 0 and got_jamb == want_jamb and swing > 0
+                  and leaf_ok and abs(span - 90) <= 1e-6 and o['w'] is not None and abs(a['r'] - o['w']) <= 2
+                  and g not in gap_hinge)
+            rows.append(f"  {g} op={o['op']} hinge jamb IFC={want_jamb:+d} drawn={got_jamb:+d} | hinge to IFC Plan arc centre="
+                        f"{'none' if d_h is None else f'{d_h:.2f}'} mm | swing·IFC+Y={swing:+.3f} | leaf line={leaf_ok} | "
+                        f"r={a['r']:.1f} IFC width={o['w'] if o['w'] is None else round(o['w'], 1)} | {'ok' if ok else 'BAD'}")
+            if not ok:
+                bad.append(f'{g}: arc hinge/swing/width wrong')
+        else:
+            if g not in gap_hinge:
+                bad.append(f'{g}: no arc and no hinge GAP')
+            n_gap += 1
+            for v in mk['notes']:
+                if float(np.dot(v - c, o['y'])) <= 0:
+                    bad.append(f'{g}: swing note on the wrong side')
+            if len(mk['notes']) != 1:
+                bad.append(f'{g}: {len(mk["notes"])} swing notes')
+    want_arcs = sum(1 for g in doors if str(oracle.get(g, {}).get('op')) in ('SINGLE_SWING_LEFT', 'SINGLE_SWING_RIGHT'))
+    if expect_arcs and n_arc != want_arcs:
+        bad.append(f'arcs {n_arc} != IFC single-swing doors {want_arcs}')
+    if verbose:
+        for r in rows:
+            say(r)
+    return check(tag, 'swing wrong (arc hinge position + jamb vs IFC Plan arc / OperationType, swing side vs IFC +Y, '
+                      'radius vs OverallWidth; no arc without a hinge GAP)', not bad,
+                 f'doors={len(doors)} arcs={n_arc} hinge GAPs={n_gap} IFC single-swing={want_arcs} problems={len(bad)} {bad[:3]}')
+
+
+def _mirror_marks(src, dst, oracle, db, axis):
+    """Control: reflect every door mark across its door centre along the IFC 'x' (hinge flip) or 'y' (swing flip) axis."""
+    doors = {g: (x0, x1, y0, y1) for g, x0, x1, y0, y1 in q(db, """SELECT m.guid, r.minX, r.maxX, r.minY, r.maxY
+             FROM elements_meta m JOIN elements_rtree r ON r.id=m.id WHERE m.ifc_class='IfcDoor'""")}
+    doc = ezdxf.readfile(src)
+    msp = doc.modelspace()
+    for e in list(msp.query('ARC[layer=="A-DOOR"]')) + list(msp.query('LINE[layer=="A-DOOR"]')) + \
+            list(msp.query('TEXT[layer=="A-ANNO-NOTE"]')):
+        if not e.has_xdata('BIMGUID'):
+            continue
+        g = e.get_xdata('BIMGUID')[0][1]
+        x0, x1, y0, y1 = doors[g]
+        c = np.array([(x0 + x1) / 2, (y0 + y1) / 2]) * 1000
+        n = oracle[g][axis] / np.linalg.norm(oracle[g][axis])
+
+        def rp(p):
+            p = np.array([p[0], p[1]])
+            return p - 2 * np.dot(p - c, n) * n
+
+        def rd(deg):
+            d = np.array([np.cos(np.radians(deg)), np.sin(np.radians(deg))])
+            d = d - 2 * np.dot(d, n) * n
+            return np.degrees(np.arctan2(d[1], d[0])) % 360
+        if e.dxftype() == 'ARC':
+            ctr = rp(e.dxf.center)
+            s_, e_ = rd(e.dxf.end_angle), rd(e.dxf.start_angle)   # a reflection reverses the sweep
+            e.dxf.center = (ctr[0], ctr[1])
+            e.dxf.start_angle, e.dxf.end_angle = s_, e_
+        elif e.dxftype() == 'LINE':
+            a, b = rp(e.dxf.start), rp(e.dxf.end)
+            e.dxf.start, e.dxf.end = (a[0], a[1]), (b[0], b[1])
+        else:
+            a = rp(e.dxf.align_point)
+            e.dxf.align_point = (a[0], a[1])
+            e.dxf.insert = e.dxf.align_point
+    doc.saveas(dst)
 
 
 def w6(elev_dxfs, db, ifc_path):
@@ -359,13 +455,14 @@ def main():
     ap.add_argument('db')
     ap.add_argument('--ifc', default=None)
     ap.add_argument('--old-dir', default=None)
+    ap.add_argument('--door-ops', default=None, help='DB with the door_operation table (§L1.2), passed to std2d')
     a = ap.parse_args()
     out_dir = os.path.normpath(os.path.join(HERE, '..', 'output', 'STD'))
     tmp = tempfile.mkdtemp(prefix='std2d_')
     try:
         # W1 determinism
-        r1 = std2d.write_std_set(a.db, os.path.join(tmp, 'run1'))
-        std2d.write_std_set(a.db, os.path.join(tmp, 'run2'))
+        r1 = std2d.write_std_set(a.db, os.path.join(tmp, 'run1'), door_ops=a.door_ops)
+        std2d.write_std_set(a.db, os.path.join(tmp, 'run2'), door_ops=a.door_ops)
         f1 = sorted(os.path.basename(p) for p in glob.glob(os.path.join(tmp, 'run1', '*')))
         diff = [f for f in f1 if sha(os.path.join(tmp, 'run1', f)) != sha(os.path.join(tmp, 'run2', f))]
         check('W1', 'nondeterminism (two runs from the same DB differ)', not diff and len(f1) >= 7,
@@ -389,34 +486,29 @@ def main():
         for p in elevs:
             w3_elev(p, a.db, tag=f'W3[{os.path.basename(p)}]')
         w4(P['FLOOR_GF'])
-        # W5 + control
-        res5 = w5(plans, a.db, a.ifc, r1['log'])
+        # W5 + controls (§L1.2): hinge flip and swing flip must each FAIL
+        res5 = w5(plans, a.db, a.ifc, r1['log'], expect_arcs=bool(a.door_ops), verbose=True)
         if res5 is not None:
-            ctl = os.path.join(tmp, 'w5ctl')
-            os.makedirs(ctl)
-            mirrored = []
-            for p in plans:
-                doc = ezdxf.readfile(p)
-                doors = {g: (x0, x1, y0, y1) for g, x0, x1, y0, y1 in q(a.db, """SELECT m.guid, r.minX, r.maxX,
-                         r.minY, r.maxY FROM elements_meta m JOIN elements_rtree r ON r.id=m.id
-                         WHERE m.ifc_class='IfcDoor'""")}
-                for t in doc.modelspace().query('TEXT[layer=="A-ANNO-NOTE"]'):
-                    g = t.get_xdata('BIMGUID')[0][1]
-                    x0, x1, y0, y1 = doors[g]
-                    cx, cy = (x0 + x1) * 500, (y0 + y1) * 500
-                    ap_ = t.dxf.align_point
-                    t.dxf.align_point = (2 * cx - ap_.x, 2 * cy - ap_.y)
-                    t.dxf.insert = t.dxf.align_point
-                np_ = os.path.join(ctl, os.path.basename(p))
-                doc.saveas(np_)
-                mirrored.append(np_)
-            say('-- W5 control: every swing note mirrored across its door centre (must FAIL) --')
-            n_before = len(FAILS)
-            c = w5(mirrored, a.db, a.ifc, r1['log'], tag='W5-control')
-            if not c:
-                FAILS.pop()   # expected failure is the control passing
-            check('W5-mutation', 'the W5 check cannot see a mirrored swing', c is False and len(FAILS) == n_before,
-                  'control FAILED as required' if c is False else 'control PASSED: W5 is blind')
+            oracle = ifc_doors(a.ifc)
+            controls = [('y', 'W5-control-swing', 'every door mark mirrored across its door centre along IFC Y (other face)')]
+            if a.door_ops:   # a hinge exists to flip only when arcs are drawn
+                controls.insert(0, ('x', 'W5-control-hinge', 'every door mark mirrored across its door centre along IFC X (hinge on the other jamb)'))
+            for axis, name, what in controls:
+                ctl = os.path.join(tmp, name)
+                os.makedirs(ctl)
+                mirrored = []
+                for p in plans:
+                    np_ = os.path.join(ctl, os.path.basename(p))
+                    _mirror_marks(p, np_, oracle, a.db, axis)
+                    mirrored.append(np_)
+                say(f'-- {name}: {what} (must FAIL) --')
+                n_before = len(FAILS)
+                c = w5(mirrored, a.db, a.ifc, r1['log'], tag=name, expect_arcs=bool(a.door_ops))
+                if not c:
+                    FAILS.pop()   # expected failure is the control passing
+                blind = 'W5 cannot see a mirrored hinge' if axis == 'x' else 'W5 cannot see a mirrored swing'
+                check(name + '-mutation', blind, c is False and len(FAILS) == n_before,
+                      'control FAILED as required' if c is False else 'control PASSED: W5 is blind')
         w6(elevs, a.db, a.ifc)
         # W7 mutation: shift one interior load-bearing wall 50 mm
         _, _, ilb = exp_grid(a.db)
@@ -437,7 +529,7 @@ def main():
         stale3 = w3_plan(P['FLOOR_GF'], mdb, gs, tag='W7.stale-W3')
         caught = (not stale2) and (not stale3)
         del FAILS[n0:]   # stale failures are the expected outcome
-        rm = std2d.write_std_set(mdb, os.path.join(tmp, 'mut'))
+        rm = std2d.write_std_set(mdb, os.path.join(tmp, 'mut'), door_ops=a.door_ops)
         n1 = len(FAILS)
         fresh2 = w2(rm['paths']['FLOOR_GF'], mdb, tag='W7.fresh-W2')
         fresh3 = w3_plan(rm['paths']['FLOOR_GF'], mdb, gs, tag='W7.fresh-W3')
