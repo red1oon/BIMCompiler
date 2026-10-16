@@ -4,17 +4,17 @@
 """
 std2d.py: standard 2D set (plans + elevations) written from the model DB.
 
-Spec: bim-ootb prompts/DXF2BIM_MODELLER_LANE.md §L1 (G1-G8) + §L1.1 (R1-R14).
-Every value is from the DB (elements_meta, elements_rtree, element_transforms,
-base_geometries, rel_fills_host, spatial_structure) or is a named convention
-constant below. Unresolvable values are logged as §GAP; nothing is guessed.
+Spec: bim-ootb prompts/DXF2BIM_MODELLER_LANE.md §L1 (G1-G8) + §L1.1 (R1-R14) + §L1.6 (multi-storey:
+openings from the host relation, columns, model storeys, one building grid).
+Every value is from ONE model DB (Node extractor scripts/extractIFC2DB.js, or the old schema; read through
+model_db.py) or is a named convention constant below. Unresolvable values are logged as §GAP; nothing is guessed.
 
 Door hinges (§L1.2): from a `door_operation` table (scripts/extractIFC2DB.js) in the DB itself or
 in --door-ops <db> (the Node-extracted DB), joined on GUID. Absent -> GAP:door_hinge, no arc.
 
 Usage (also via drawing_writer_dxf.py --std):
     python3 std2d.py <DX_extracted.db> [--door-ops DB] [--out DIR] [--png]
-Output: DIR/{PREFIX}_{FLOOR_GF,FLOOR_FF,FRONT,REAR,LEFT,RIGHT}_std.dxf
+Output: DIR/{PREFIX}_{FLOOR_<storey name>...,FRONT,REAR,LEFT,RIGHT,ROOF,SECTION}_std.dxf
         DIR/log_{PREFIX}_std.txt   (read it: §GRID, §DIM, §LEVEL, §GAP lines)
 """
 import os
@@ -24,12 +24,18 @@ import math
 import sqlite3
 import argparse
 
+import re
+
 import numpy as np
 import ezdxf
+from shapely.geometry import Polygon, LineString, box
+from shapely.ops import unary_union
+from shapely.validation import make_valid
 from ezdxf.enums import TextEntityAlignment
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from section_cut import section_cut as run_section_cut, slice_mesh, chain_segments  # noqa: E402
+import model_db  # noqa: E402
 
 # ── R4/R5 grid rule constants (stated in §L1.1) ──
 GRID_MERGE_TOL = 0.010      # m, R5
@@ -52,7 +58,13 @@ ELEV_DIM_CHAIN, ELEV_DIM_OVERALL = 10, 18
 DIM_NARROW = 4.5           # paper mm, narrow-dim text offset (R7)
 LEVEL_EXT = 6               # paper mm, datum line beyond the face extents
 ROMAN_SKIP = ('I', 'O')
-PLAN_NAMES = ['GF', 'FF', 'SF', 'TF']   # convention: ground/first/second/third floor
+WALLS = ('IfcWall', 'IfcWallStandardCase')
+OPENINGS = ('IfcDoor', 'IfcWindow')
+PLAN_CUT_CLASSES = WALLS + OPENINGS + ('IfcColumn', 'IfcStair', 'IfcStairFlight')   # §L1.5 P1 + §L1.6 C1 / stairs (cut outline)
+GAP_MIN_AREA = 1.0          # mm², §L1.6 O2: overlap / piece below this is no wall
+HOST_TOL = 0.001            # m, §L1.6 O1(b): opening centre inside the wall bbox
+GAP_ACROSS = 0.001          # m, §L1.6 O2: gap rectangle across = host bbox +- 1 mm
+LEVEL_DIFF_TOL = 0.001      # m, §L1.6 R1': placement vs R1 difference logged
 
 LAYERS = {   # R12: name -> (ACI colour, lineweight 1/100 mm, linetype)
     'A-WALL-FULL': (7, 50, 'Continuous'), 'A-WALL-PRTN': (7, 35, 'Continuous'),
@@ -63,6 +75,9 @@ LAYERS = {   # R12: name -> (ACI colour, lineweight 1/100 mm, linetype)
     'A-ANNO-NOTE': (1, 18, 'Continuous'), 'A-ANNO-TTLB': (7, 25, 'Continuous'),
     'A-ROOF': (5, 35, 'Continuous'),
     'A-SECT': (7, 50, 'Continuous'), 'S-SLAB': (2, 50, 'Continuous'),   # §L1.4 F5 section cut layers
+    'S-COLS': (2, 50, 'Continuous'), 'A-COLS': (7, 50, 'Continuous'),    # §L1.6 C1 columns (filled section)
+    'A-GLAZ-OVHD': (4, 18, 'DASHED'), 'A-DOOR-OVHD': (3, 18, 'DASHED'),  # §L1.6 O3 openings above the cut plane (DASHED: ezdxf's standard set has no HIDDEN)
+    'A-FLOR-STRS': (7, 18, 'Continuous'),                                 # §L1.6 stairs: cut outline only
 }
 
 
@@ -99,6 +114,22 @@ def _orthogonal(verts, faces):
     return bool(np.all((nx < 1e-3) | (ny < 1e-3)))
 
 
+def column_axis(v):
+    """§L1.6 C2: the column axis = the mean of its distinct plan vertices (0.1 mm), accepted when the section is
+    point-symmetric about it or all its vertices are equidistant from it, within 1 mm (rectangle, square, rotated
+    rectangle, regular polygon of a round column, odd segment counts included). Else None."""
+    if len(v) == 0:
+        return None
+    u = np.unique(np.round(v[:, :2], 4), axis=0)
+    c = u.mean(0)
+    d = u - c
+    r = np.hypot(d[:, 0], d[:, 1])
+    if r.max() - r.min() <= 0.001:
+        return (float(c[0]), float(c[1]))
+    sym = all(np.min(np.hypot(*(d + p).T)) <= 0.001 for p in d)
+    return (float(c[0]), float(c[1])) if sym else None
+
+
 def load_door_ops(db_path, door_ops_db, log):
     """§L1.2 D1: guid -> door_operation row, from the DB itself, else from door_ops_db. {} if neither."""
     for src in (db_path, door_ops_db):
@@ -120,22 +151,33 @@ def load_door_ops(db_path, door_ops_db, log):
 
 
 def load_model(db_path, log, door_ops_db=None):
-    con = sqlite3.connect(db_path)
+    con = model_db.connect(db_path)   # §L1.6 P0: one DB, Node or old schema
+    log(f'§DB schema={model_db.schema(con)}')
     rows = con.execute(
         """SELECT m.guid, m.ifc_class, m.element_name, COALESCE(m.storey,''),
                   r.minX, r.maxX, r.minY, r.maxY, r.minZ, r.maxZ,
                   COALESCE(t.center_x,0), COALESCE(t.center_y,0), COALESCE(t.center_z,0),
                   b.vertices, b.faces, b.vertex_count, b.face_count
-           FROM elements_meta m JOIN elements_rtree r ON r.id = m.id
+           FROM elements_meta m JOIN m_bbox r ON r.guid = m.guid
            LEFT JOIN element_transforms t ON t.guid = m.guid
            LEFT JOIN element_instances i ON i.guid = m.guid
-           LEFT JOIN base_geometries b ON b.geometry_hash = i.geometry_hash
+           LEFT JOIN m_geom b ON b.geometry_hash = i.geometry_hash
            WHERE m.ifc_class IN ('IfcWall','IfcWallStandardCase','IfcDoor','IfcWindow',
-                                 'IfcSlab','IfcRoof','IfcFooting')
+                                 'IfcSlab','IfcRoof','IfcFooting','IfcColumn','IfcOpeningElement')
            ORDER BY m.guid""").fetchall()
     storey_names = [r[0] for r in con.execute(
         "SELECT name FROM spatial_structure WHERE type='IfcBuildingStorey' ORDER BY guid")]
-    hosts = dict(con.execute("SELECT element_guid, host_guid FROM rel_fills_host ORDER BY element_guid"))
+    hosts = dict(con.execute("SELECT filling_guid, host_guid FROM m_fills ORDER BY filling_guid"))
+    opening_of = {f: o for f, o in con.execute("SELECT filling_guid, opening_guid FROM m_fills ORDER BY filling_guid") if o}
+    psets = {(g, n): v for g, n, v in con.execute("SELECT guid, name, value FROM m_psets ORDER BY guid, pset, name")}
+    selev = {}
+    if con.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='storey_elevation'").fetchone():
+        for n, z in con.execute("SELECT name, placement_z_m FROM storey_elevation WHERE placement_z_m IS NOT NULL ORDER BY guid"):
+            if n in selev and abs(selev[n] - z) > 1e-9:
+                log.gap('GAP:storey_name_duplicate', n, 'two storeys share a name with different placements; R1 used')
+                selev[n] = None
+            elif n not in selev:
+                selev[n] = z
     con.close()
     els = []
     for (g, cls, name, st, x0, x1, y0, y1, z0, z1, cx, cy, cz, vb, fb, vc, fc) in rows:
@@ -145,17 +187,23 @@ def load_model(db_path, log, door_ops_db=None):
                         x0=x0, x1=x1, y0=y0, y1=y1, z0=z0, z1=z1,
                         c=(cx, cy, cz), v=v, f=f))
     walls = [e for e in els if e.get('cls') in ('IfcWall', 'IfcWallStandardCase')]
-    # R1 storey elevation = min minZ of contained walls
+    # R1' storey elevation = the model storey placement z (§L1.6); R1 (min minZ of contained walls) is the fallback
     storeys = []
     for s in sorted(set(storey_names)):
         sw = [w for w in walls if w['storey'] == s]
-        if not sw:
-            log.gap('GAP:storey_no_walls', s, 'no IfcWall in storey; no datum drawn')
-            continue
-        storeys.append(dict(name=s, elev=min(w['z0'] for w in sw)))
+        r1 = min(w['z0'] for w in sw) if sw else None
+        pz = selev.get(s)
+        if pz is not None:
+            storeys.append(dict(name=s, elev=pz, src="R1' storey placement", has_walls=bool(sw)))
+            if r1 is not None and abs(r1 - pz) > LEVEL_DIFF_TOL:
+                log(f'§LEVEL_R1_DIFF storey={s!r} placement={pz:.4f} R1_min_wall={r1:.4f} diff={r1 - pz:+.4f} m')
+        elif sw:
+            storeys.append(dict(name=s, elev=r1, src='R1 min wall minZ', has_walls=True))
+        else:
+            log.gap('GAP:storey_no_walls', s, 'no IfcWall in storey and no storey placement; no datum drawn')
     storeys.sort(key=lambda s: (s['elev'], s['name']))
     for s in storeys:
-        log(f"§LEVEL storey={s['name']!r} elev={s['elev']:.4f} m (R1 min wall minZ)")
+        log(f"§LEVEL storey={s['name']!r} elev={s['elev']:.4f} m ({s['src']})")
     fnd_st = sorted({e['storey'] for e in els if e['cls'] == 'IfcFooting'})
     if len(fnd_st) != 1:
         log.gap('GAP:foundation_storey', '-', f'storeys with IfcFooting={fnd_st}; need exactly 1')
@@ -163,7 +211,7 @@ def load_model(db_path, log, door_ops_db=None):
     else:
         fnd = fnd_st[0]
     fnd_elev = next((s['elev'] for s in storeys if s['name'] == fnd), None)
-    above = [s for s in storeys if fnd_elev is None or s['elev'] > fnd_elev]
+    above = [s for s in storeys if s['has_walls'] and (fnd_elev is None or s['elev'] > fnd_elev)]
     grid_storey = above[0]['name'] if above else None
     log(f'§STOREY foundation={fnd!r} grid_storey={grid_storey!r} (R2)')
     # R11 roof element: IfcRoof, else the highest IfcSlab
@@ -180,8 +228,8 @@ def load_model(db_path, log, door_ops_db=None):
         log(f'§LEVEL T/ROOF={roof_top:.4f} m from {[r["guid"] for r in roofs]} (R11)')
     door_ops = load_door_ops(db_path, door_ops_db, log)
     return dict(els=els, walls=walls, storeys=storeys, foundation=fnd,
-                grid_storey=grid_storey, roofs=roofs, roof_top=roof_top, hosts=hosts,
-                by_guid={e['guid']: e for e in els}, door_ops=door_ops)
+                grid_storey=grid_storey, roofs=roofs, roof_top=roof_top, hosts=hosts, opening_of=opening_of,
+                psets=psets, by_guid={e['guid']: e for e in els}, door_ops=door_ops)
 
 
 def wall_axis(w):
@@ -198,39 +246,69 @@ def envelope(walls):
             min(w['y0'] for w in walls), max(w['y1'] for w in walls))
 
 
+def _bears_on(ax, pos, a, b, L, others):
+    """R4(a) test: a parallel wall in `others` whose thickness band strictly contains the axis, overlap >= 50 % of L."""
+    for f in others:
+        fax, _, (fa, fb), _ = wall_axis(f)
+        if fax != ax:
+            continue
+        lo, hi = (f['y0'], f['y1']) if ax == 'y' else (f['x0'], f['x1'])
+        if lo < pos < hi and min(b, fb) - max(a, fa) >= BEAR_OVERLAP * L:
+            return f['guid']
+    return None
+
+
 def derive_grid(model, log, gaps=True):
-    """G1/R3-R6. Returns dict(x=[(label,pos,guids)], y=[...], gridded=set(guids))."""
+    """G1/R3-R6 + §L1.6 M/LB/C2: one building grid from the evidence of every plan storey.
+    Returns dict(x=[(label,pos,guids)], y=[...], gridded=set(guids), env)."""
     gs = model['grid_storey']
-    gw = [w for w in model['walls'] if w['storey'] == gs]
-    fw = [w for w in model['walls'] if w['storey'] == model['foundation']]
-    env = envelope(gw)
+    fnd = model['foundation']
+    fw = [w for w in model['walls'] if w['storey'] == fnd]
+    wall_storeys = [s['name'] for s in model['storeys'] if s['has_walls']]
     ent = {'x': [], 'y': []}
     gridded = set()
-    for w in gw:
-        if not _orthogonal(w['v'], w['f']):
-            if gaps:
-                log.gap('GAP:wall_not_orthogonal', w['guid'], 'not gridded (R3)')
-            continue
-        ax, pos, (a, b), L = wall_axis(w)
-        bear = False
-        for f in fw:
-            fax, _, (fa, fb), _ = wall_axis(f)
-            if fax != ax:
+    log(f"§GRID_EVIDENCE regime={'footing (R4a on the grid storey)' if fnd else 'no footing (LB1 pset, LB2 continuity, LB3 exterior, LB4 columns)'}")
+    for st in plan_storeys(model):
+        sname = st['name']
+        sw = [w for w in model['walls'] if w['storey'] == sname]
+        env = envelope(sw)
+        k = wall_storeys.index(sname)
+        adj = [w for w in model['walls'] if w['storey'] in wall_storeys[max(0, k - 1):k] + wall_storeys[k + 1:k + 2]]
+        for w in sw:
+            if not _orthogonal(w['v'], w['f']):
+                if gaps:
+                    log.gap('GAP:wall_not_orthogonal', w['guid'], 'not gridded (R3)')
                 continue
-            lo, hi = (f['y0'], f['y1']) if ax == 'y' else (f['x0'], f['x1'])
-            ov = min(b, fb) - max(a, fa)
-            if lo < pos < hi and ov >= BEAR_OVERLAP * L:
-                bear = True
-                break
-        if ax == 'y':
-            ext = abs(w['y0'] - env[2]) <= EXT_FACE_TOL or abs(w['y1'] - env[3]) <= EXT_FACE_TOL
-        else:
-            ext = abs(w['x0'] - env[0]) <= EXT_FACE_TOL or abs(w['x1'] - env[1]) <= EXT_FACE_TOL
-        keep = (bear or ext) and L >= GRID_MIN_WALL_LEN
-        log(f"§WALL guid={w['guid']} axis={ax}={pos:.4f} len={L:.3f} bear={bear} ext={ext} gridded={keep}")
-        if keep:
-            ent[ax].append((pos, w['guid']))
-            gridded.add(w['guid'])
+            ax, pos, (a, b), L = wall_axis(w)
+            bear = lb = False
+            stack = None
+            if fnd:
+                bear = sname == gs and _bears_on(ax, pos, a, b, L, fw) is not None
+            else:
+                stated = model['psets'].get((w['guid'], 'LoadBearing'))   # LB1: the model's statement wins
+                lb = stated == 'TRUE'
+                stack = _bears_on(ax, pos, a, b, L, adj) if stated not in ('TRUE', 'FALSE') else None   # LB2 only unstated
+            if ax == 'y':
+                ext = abs(w['y0'] - env[2]) <= EXT_FACE_TOL or abs(w['y1'] - env[3]) <= EXT_FACE_TOL
+            else:
+                ext = abs(w['x0'] - env[0]) <= EXT_FACE_TOL or abs(w['x1'] - env[1]) <= EXT_FACE_TOL
+            keep = (bear or ext or lb or stack is not None) and L >= GRID_MIN_WALL_LEN
+            log(f"§WALL guid={w['guid']} storey={sname!r} axis={ax}={pos:.4f} len={L:.3f} bear={bear} ext={ext} "
+                f"pset_lb={lb} stacked={stack} gridded={keep}")
+            if keep:
+                ent[ax].append((pos, w['guid']))
+                gridded.add(w['guid'])
+        for c in sorted((e for e in model['els'] if e['cls'] == 'IfcColumn' and e['storey'] == sname), key=lambda e: e['guid']):
+            ca = column_axis(c['v'] + np.array(c['c']))
+            if ca is None:
+                if gaps:
+                    log.gap('GAP:column_not_symmetric', c['guid'], 'plan section neither point-symmetric nor a ring about its vertex mean; not gridded (C2)')
+                continue
+            cx, cy = ca
+            ent['x'].append((cx, c['guid']))
+            ent['y'].append((cy, c['guid']))
+            gridded.add(c['guid'])
+            log(f"§COLUMN_GRID guid={c['guid']} storey={sname!r} centre=({cx:.4f},{cy:.4f}) (C2)")
     out = {}
     for ax in ('x', 'y'):
         clusters = []
@@ -247,7 +325,7 @@ def derive_grid(model, log, gaps=True):
         for lab, p, gs_ in lines:
             log(f'§GRID {lab} axis={ax} pos={p:.4f} m walls={len(gs_)}')
     out['gridded'] = gridded
-    out['env'] = env
+    out['env'] = envelope([w for w in model['walls'] if w['storey'] == gs])
     return out
 
 
@@ -267,9 +345,10 @@ def door_swing(d):
     v = d['v']
     if len(v) == 0:
         return None
+    v = v - (v.max(0) + v.min(0)) / 2   # §L1.6 P0: about the bbox centre (the Node DB stores meshes about the vertex mean)
     ext = v.max(0) - v.min(0)
     ta = 0 if ext[0] < ext[1] else 1
-    vals = np.unique(np.round(v[:, ta], 3))
+    vals = np.unique(np.round(v[:, ta], 4))   # §L1.6 P0: 0.1 mm (3 dp flipped -0.2085/+0.2085 to -0.208/+0.209 on web-ifc meshes)
     # the frame/casing is mirror-symmetric about the door centre; the leaf is not
     inner = np.array([x for x in vals if not np.any(np.abs(vals + x) <= LEAF_MIRROR_TOL)])
     if len(inner) == 0:
@@ -435,17 +514,202 @@ def _run_ends(runs, env_ends):
     return out
 
 
+def _slice_poly(e, z):
+    """Plan section of element e's world mesh at height z -> shapely geometry (m), or None."""
+    if len(e['v']) == 0 or len(e['f']) == 0:
+        return None
+    seg = slice_mesh(e['v'] + np.array(e['c']), e['f'], z)
+    polys = []
+    for ch in chain_segments(seg):
+        if len(ch) < 3:
+            continue
+        P = Polygon([(float(p[0]), float(p[1])) for p in ch])
+        if not P.is_valid:
+            P = make_valid(P)
+        if P.area > 0:
+            polys.append(P)
+    return unary_union(polys) if polys else None
+
+
+def _hole(w, e, cache):
+    """§L1.6 O1(b)/O2: the void of wall w around opening e, measured in w's own mesh sliced at e's mid-height, along the
+    wall centre line: (a0, a1) in m along the wall axis, or None when e's centre is not in a hole bounded on both sides."""
+    zm = round((e['z0'] + e['z1']) / 2, 6)
+    key = (w['guid'], zm)
+    if key not in cache:
+        cache[key] = _slice_poly(w, zm)
+    U = cache[key]
+    if U is None:
+        return None
+    ax, pos, (wa, wb), _ = wall_axis(w)
+    oc = (e['x0'] + e['x1']) / 2 if ax == 'y' else (e['y0'] + e['y1']) / 2
+    line = LineString([(wa - 1, pos), (wb + 1, pos)] if ax == 'y' else [(pos, wa - 1), (pos, wb + 1)])
+    inter = U.intersection(line)
+    k = 0 if ax == 'y' else 1
+    ivs = []
+    for g in getattr(inter, 'geoms', [inter]):
+        if g.is_empty or g.geom_type != 'LineString':
+            continue
+        cs = [c[k] for c in g.coords]
+        ivs.append((min(cs), max(cs)))
+    if any(a <= oc <= b for a, b in ivs):
+        return None
+    left = [b for a, b in ivs if b <= oc]
+    right = [a for a, b in ivs if a >= oc]
+    if not left or not right:
+        return None
+    return (max(left), min(right))
+
+
+def resolve_hosts(model, log):
+    """§L1.6 O1: host of every IfcDoor/IfcWindow. (a) authored rel_fills_host; (b) else the one wall whose own mesh has a
+    void at the opening (mesh_void). Sets model['host_all'], model['host_src'], model['hole'] (along-wall gap, m)."""
+    cache = {}
+    walls = model['walls']
+    host_all, host_src, hole = {}, {}, {}
+    n = {'ifc': 0, 'mesh_void': 0, 'none': 0, 'ambiguous': 0}
+    for e in model['els']:
+        if e['cls'] not in OPENINGS:
+            continue
+        g = e['guid']
+        h = model['hosts'].get(g)
+        if h is not None:
+            host_all[g], host_src[g] = h, 'ifc'
+            n['ifc'] += 1
+            hw = model['by_guid'].get(h)
+            if hw is not None and hw['cls'] in WALLS:
+                hv = _hole(hw, e, cache)
+                if hv is not None:
+                    hole[g] = (hv, 'mesh_hole')
+                else:
+                    o = model['by_guid'].get(model['opening_of'].get(g))
+                    src_e, src = (o, 'opening_bbox') if o is not None else (e, 'filling_bbox')
+                    ax = wall_axis(hw)[0]
+                    hole[g] = (((src_e['x0'], src_e['x1']) if ax == 'y' else (src_e['y0'], src_e['y1'])), src)
+            continue
+        cx, cy, cz = (e['x0'] + e['x1']) / 2, (e['y0'] + e['y1']) / 2, (e['z0'] + e['z1']) / 2
+        cand = []
+        for w in walls:
+            if not (w['x0'] - HOST_TOL <= cx <= w['x1'] + HOST_TOL and w['y0'] - HOST_TOL <= cy <= w['y1'] + HOST_TOL
+                    and w['z0'] < cz < w['z1']):
+                continue
+            hv = _hole(w, e, cache)
+            if hv is not None:
+                cand.append((w['guid'], hv))
+        if len(cand) == 1:
+            host_all[g], host_src[g] = cand[0][0], 'mesh_void'
+            hole[g] = (cand[0][1], 'mesh_hole')
+            n['mesh_void'] += 1
+        elif not cand:
+            log.gap('GAP:opening_no_host', g, f"{e['cls']} storey={e['storey']!r}: no rel_fills_host row and no wall has a void at it")
+            n['none'] += 1
+        else:
+            log.gap('GAP:opening_no_host', g, f"{e['cls']}: {len(cand)} walls have a void at it {[c[0] for c in cand]} (ambiguous)")
+            n['ambiguous'] += 1
+    log(f"§HOSTS openings={sum(n.values())} ifc={n['ifc']} mesh_void={n['mesh_void']} none={n['none']} ambiguous={n['ambiguous']} (O1)")
+    model['host_all'], model['host_src'], model['hole'] = host_all, host_src, hole
+
+
+def _overlap(pts, R, k):
+    """O2: the pieces of a contour (mm) inside the gap rectangle that are wall, not a rounding sliver: area > 1 mm² and
+    longer than 1 mm along the wall (k = 0: wall along X, 1: along Y)."""
+    P = Polygon(pts)
+    if not P.is_valid:
+        P = make_valid(P)
+    I = P.intersection(R)
+    out = []
+    for g in getattr(I, 'geoms', [I]):
+        if g.geom_type == 'Polygon' and g.area > GAP_MIN_AREA and g.bounds[2 + k] - g.bounds[k] > PT_MERGE * 1000:
+            out.append(g)
+    return P, out
+
+
+def _plan_orthogonal(contours, rect, k):
+    """O2: inside the gap rectangle, every edge of the host's plan contour longer than 1 mm is X- or Y-aligned (within
+    1e-3); mitred corners elsewhere on the wall do not matter."""
+    R = box(*rect)
+    for pts in contours:
+        for g in _overlap(pts, R, k)[1]:
+            q = list(g.exterior.coords)[:-1]
+            for (x0, y0), (x1, y1) in zip(q, q[1:] + q[:1]):
+                L = math.hypot(x1 - x0, y1 - y0)
+                if L > 1.0 and abs(x1 - x0) > 1e-3 * L and abs(y1 - y0) > 1e-3 * L:
+                    return False
+    return True
+
+
+def _subtract(contours, rect, k):
+    """O2: wall contour polygons (mm) minus the gap rectangle; unchanged when no wall piece lies in it (_overlap)."""
+    R = box(*rect)
+    out, changed = [], False
+    for pts in contours:
+        P, ov = _overlap(pts, R, k)
+        if not ov:
+            out.append(pts)
+            continue
+        changed = True
+        D = P.difference(R)
+        for g in getattr(D, 'geoms', [D]):
+            if g.geom_type != 'Polygon' or g.area < GAP_MIN_AREA:
+                continue
+            out.append([(round(x, 2), round(y, 2)) for x, y in list(g.exterior.coords)[:-1]])
+    return out, changed
+
+
+def plan_openings(model, storey, cut_z, cut_walls, polys, log):
+    """§L1.6 O2/O3 for one plan: cut the gap of every storey door/window in its host's contour (polys: guid -> [pts mm]).
+    Returns [(element, pos)] for the O3 symbols."""
+    res = []
+    for e in model['els']:
+        if e['cls'] not in OPENINGS or e['storey'] != storey['name']:
+            continue
+        g = e['guid']
+        pos = 'above' if e['z0'] >= cut_z else ('below' if e['z1'] <= cut_z else 'cut')
+        h = model['host_all'].get(g)
+        if h is None:
+            log(f"§OPENING guid={g} cls={e['cls']} host=None pos={pos} gap=none")
+            res.append((e, pos))
+            continue
+        hw = model['by_guid'].get(h)
+        if hw is None:
+            log.gap('GAP:opening_host_no_geometry', g, f'host={h} has no mesh/bbox in the DB (not drawn on any plan)')
+            res.append((e, pos))
+            continue
+        if hw['cls'] not in WALLS:
+            log.gap('GAP:opening_host_not_wall', g, f"host={h} class={hw['cls']}")
+            res.append((e, pos))
+            continue
+        if h not in cut_walls:
+            log.gap('GAP:opening_host_not_cut', g, f'host={h} z=({hw["z0"]:.3f},{hw["z1"]:.3f}) cut_z={cut_z:.3f}')
+            res.append((e, pos))
+            continue
+        (a0, a1), hsrc = model['hole'][g]
+        ax = wall_axis(hw)[0]
+        if ax == 'y':
+            rect = (mm(a0), mm(hw['y0'] - GAP_ACROSS), mm(a1), mm(hw['y1'] + GAP_ACROSS))
+        else:
+            rect = (mm(hw['x0'] - GAP_ACROSS), mm(a0), mm(hw['x1'] + GAP_ACROSS), mm(a1))
+        k = 0 if ax == 'y' else 1
+        if not _plan_orthogonal(polys.get(h, []), rect, k):
+            log.gap('GAP:opening_host_not_orthogonal', g, f'host={h}: its plan contour inside the gap has an edge neither X- nor Y-aligned')
+            res.append((e, pos))
+            continue
+        polys[h], changed = _subtract(polys.get(h, []), rect, k)
+        log(f"§OPENING guid={g} cls={e['cls']} host={h} host_source={model['host_src'][g]} pos={pos} "
+            f"gap={'drawn' if changed else 'in_cut'} along=({a0 * 1000:.2f},{a1 * 1000:.2f}) from={hsrc}")
+        res.append((e, pos))
+    return res
+
+
 def write_plan(model, grid, storey, view, db_path, out_path, log):
-    """G1-G3, G5-G7 for one storey."""
+    """G1-G3, G5-G7 for one storey (+ §L1.6 O/C)."""
     log(f"§VIEW {view} storey={storey['name']!r} elev={storey['elev']:.4f}")
     doc = new_doc()
     msp = doc.modelspace()
     cut_z = storey['elev'] + CUT_OFFSET
     cut = run_section_cut(db_path, cut_z=cut_z)
     # §L1.5 P1: every element the cut plane cuts (section_cut CUT: minZ < cut_z < maxZ), whatever its storey
-    cut = sorted([c for c in cut if c.category == 'CUT'
-                  and c.ifc_class in ('IfcWall', 'IfcWallStandardCase', 'IfcDoor', 'IfcWindow', 'IfcColumn')],
-                 key=lambda c: c.guid)
+    cut = sorted([c for c in cut if c.category == 'CUT' and c.ifc_class in PLAN_CUT_CLASSES], key=lambda c: c.guid)
     sw = [w for w in model['walls'] if w['z0'] < cut_z < w['z1']]
     other = sorted(f"{w['guid']}@{w['storey']}" for w in sw if w['storey'] != storey['name'])
     log(f"§PLAN_CUT view={view} cut_z={cut_z:.3f} walls={len(sw)} (other-storey walls={len(other)}: {' '.join(other)})")
@@ -457,19 +721,29 @@ def write_plan(model, grid, storey, view, db_path, out_path, log):
         ax, pos, _, _ = wall_axis(w)
         if any(abs(pos - p) <= GRID_MERGE_TOL for _, p, _ in grid[ax]):
             on_axis.add(w['guid'])
-    n_w = 0
+    polys = {}
     for c in cut:
-        for ct in c.contours:
-            pts = [(mm(p[0]), mm(p[1])) for p in ct.points]
-            if len(pts) < 3:
-                continue
-            if c.ifc_class in ('IfcWall', 'IfcWallStandardCase', 'IfcColumn'):
-                layer = 'A-WALL-FULL' if c.guid in on_axis else 'A-WALL-PRTN'
-                pl = msp.add_lwpolyline(pts, close=True, dxfattribs={'layer': layer})
-                _tag(pl, c.guid)
-                h = msp.add_hatch(color=8, dxfattribs={'layer': 'A-WALL-PATT'})
-                h.paths.add_polyline_path(pts, is_closed=True)
-                n_w += 1
+        polys[c.guid] = [pl for pl in ([(mm(p[0]), mm(p[1])) for p in ct.points] for ct in c.contours) if len(pl) >= 3]
+    ops = plan_openings(model, storey, cut_z, {w['guid'] for w in sw}, polys, log)   # §L1.6 O2
+    n_w = n_c = 0
+    for c in cut:
+        for pts in polys.get(c.guid, []):
+            if c.ifc_class in WALLS + ('IfcColumn',):
+                if c.ifc_class == 'IfcColumn':   # §L1.6 C1: own layer, filled section
+                    layer = 'A-COLS' if model['psets'].get((c.guid, 'LoadBearing')) == 'FALSE' else 'S-COLS'
+                    pl = msp.add_lwpolyline(pts, close=True, dxfattribs={'layer': layer})
+                    _tag(pl, c.guid)
+                    h = msp.add_hatch(color=256, dxfattribs={'layer': layer})
+                    h.paths.add_polyline_path(pts, is_closed=True)
+                    _tag(h, c.guid)
+                    n_c += 1
+                else:
+                    layer = 'A-WALL-FULL' if c.guid in on_axis else 'A-WALL-PRTN'
+                    pl = msp.add_lwpolyline(pts, close=True, dxfattribs={'layer': layer})
+                    _tag(pl, c.guid)
+                    h = msp.add_hatch(color=8, dxfattribs={'layer': 'A-WALL-PATT'})
+                    h.paths.add_polyline_path(pts, is_closed=True)
+                    n_w += 1
                 for side, on, along in (('S', lambda q: abs(q[1] - E[2]) <= FACE_PT_TOL * 1000, 0),
                                         ('N', lambda q: abs(q[1] - E[3]) <= FACE_PT_TOL * 1000, 0),
                                         ('W', lambda q: abs(q[0] - E[0]) <= FACE_PT_TOL * 1000, 1),
@@ -477,11 +751,26 @@ def write_plan(model, grid, storey, view, db_path, out_path, log):
                     run = [q[along] for q in pts if on(q)]
                     if len(run) >= 2 and max(run) - min(run) > PT_MERGE * 1000:
                         face_runs[side].append((min(run), max(run)))   # R8 run on the face
+            elif c.ifc_class in ('IfcStair', 'IfcStairFlight'):   # §L1.6: stair cut outline only (no symbol)
+                pl = msp.add_lwpolyline(pts, close=True, dxfattribs={'layer': 'A-FLOR-STRS'})
+                _tag(pl, c.guid)
             else:
                 layer = 'A-DOOR' if c.ifc_class == 'IfcDoor' else 'A-GLAZ'
                 pl = msp.add_lwpolyline(pts, close=True, dxfattribs={'layer': layer})
                 _tag(pl, c.guid)
-    log(f'§PLAN wall contours={n_w} cut_z={cut_z:.3f}')
+    log(f'§PLAN wall contours={n_w} column contours={n_c} cut_z={cut_z:.3f}')
+    # ── §L1.6 O3: openings not crossed by the cut plane (above: dashed overhead; below: seen, continuous) ──
+    n_o = {'above': 0, 'below': 0}
+    for e, pos in ops:
+        if pos == 'cut':
+            continue
+        door = e['cls'] == 'IfcDoor'
+        layer = ('A-DOOR-OVHD' if door else 'A-GLAZ-OVHD') if pos == 'above' else ('A-DOOR' if door else 'A-GLAZ')
+        x0, x1, y0, y1 = mm(e['x0']), mm(e['x1']), mm(e['y0']), mm(e['y1'])
+        pl = msp.add_lwpolyline([(x0, y0), (x1, y0), (x1, y1), (x0, y1)], close=True, dxfattribs={'layer': layer})
+        _tag(pl, e['guid'])
+        n_o[pos] += 1
+    log(f"§PLAN openings above cut={n_o['above']} (dashed) below cut={n_o['below']}")
     # ── G6 doors (R9) ──
     doors = [e for e in model['els'] if e['cls'] == 'IfcDoor' and e['storey'] == storey['name']]
     for d in doors:
@@ -518,9 +807,9 @@ def write_plan(model, grid, storey, view, db_path, out_path, log):
     wins = [e for e in model['els'] if e['cls'] == 'IfcWindow' and e['storey'] == storey['name']]
     seen = set()
     for wdw in wins:
-        host = model['by_guid'].get(model['hosts'].get(wdw['guid']))
-        if not host:
-            log.gap('GAP:window_no_host', wdw['guid'], 'no rel_fills_host')
+        host = model['by_guid'].get(model['host_all'].get(wdw['guid']))
+        if not host or host['cls'] not in WALLS:
+            log.gap('GAP:window_no_host', wdw['guid'], 'no wall host (rel_fills_host or mesh void, §L1.6 O1)')
             continue
         ax, _, _, _ = wall_axis(host)
         if ax == 'y':   # wall along X: lines at host y faces across window x-range
@@ -562,7 +851,7 @@ def write_plan(model, grid, storey, view, db_path, out_path, log):
                 else:
                     _dim(msp, (fc, a), (fc, b), (base_c, a), 90, log, f'{view}/{side}/{tier}', (sg, 0))
     # title
-    _text(msp, f"{view.replace('_', ' ')} PLAN - {storey['name'].upper()} (FFL {storey['elev']:+.3f})  1:{SCALE}",
+    _text(msp, f"{storey['name'].upper()} PLAN (FFL {storey['elev']:+.3f})  1:{SCALE}",
           ((E[0] + E[1]) / 2, E[2] - (BUBBLE_C + 14) * SCALE), TXT_TITLE, 'A-ANNO-TTLB')
     _save(doc, out_path)
     log(f'§WRITE {os.path.basename(out_path)}')
@@ -600,7 +889,7 @@ def write_elevation(model, grid, face, out_path, log):
     fwg = {w['guid'] for w in fw}
     n_op = 0
     for e in model['els']:
-        if e['cls'] not in ('IfcDoor', 'IfcWindow') or model['hosts'].get(e['guid']) not in fwg:
+        if e['cls'] not in ('IfcDoor', 'IfcWindow') or model['host_all'].get(e['guid']) not in fwg:
             continue
         along_x = (e['x1'] - e['x0']) >= (e['y1'] - e['y0'])
         if along_x != (side in ('y0', 'y1')):   # R11: opening must run along this face
@@ -655,6 +944,11 @@ def write_elevation(model, grid, face, out_path, log):
     log(f'§WRITE {os.path.basename(out_path)}')
 
 
+def plan_view(name):
+    """§L1.6 N: plan view key from the model storey name (upper case, non-alphanumeric runs -> '_')."""
+    return 'FLOOR_' + (re.sub(r'[^A-Z0-9]+', '_', name.upper()).strip('_') or 'UNNAMED')
+
+
 def plan_storeys(model):
     """Storeys from the grid storey up whose walls reach their own cut plane."""
     gs = model['grid_storey']
@@ -674,7 +968,7 @@ def roof_storey(model):
     gs = model['grid_storey']
     g_el = next(s['elev'] for s in model['storeys'] if s['name'] == gs)
     planned = {s['name'] for s in plan_storeys(model)}
-    cand = [s for s in model['storeys'] if s['elev'] > g_el and s['name'] not in planned]
+    cand = [s for s in model['storeys'] if s['elev'] > g_el and s['name'] not in planned and s['has_walls']]
     return cand[-1] if cand else None
 
 
@@ -831,10 +1125,11 @@ def write_std_set(db_path, out_dir, prefix=None, png=False, door_ops=None):
     log = Log()
     log(f'§ENTRY std2d db={os.path.basename(db_path)} prefix={prefix}')
     model = load_model(db_path, log, door_ops)
+    resolve_hosts(model, log)   # §L1.6 O1
     grid = derive_grid(model, log)
     paths = {}
-    for i, s in enumerate(plan_storeys(model)):
-        view = f'FLOOR_{PLAN_NAMES[i] if i < len(PLAN_NAMES) else "L" + str(i)}'
+    for s in plan_storeys(model):
+        view = plan_view(s['name'])   # §L1.6 N: from the model storey
         p = os.path.join(out_dir, f'{prefix}_{view}_std.dxf')
         write_plan(model, grid, s, view, db_path, p, log)
         paths[view] = p
@@ -861,7 +1156,7 @@ def write_std_set(db_path, out_dir, prefix=None, png=False, door_ops=None):
     with open(os.path.join(out_dir, f'log_{prefix}_std.txt'), 'w') as fh:
         fh.write('\n'.join(log.lines) + '\n')
     if png:
-        for v in ('FLOOR_GF', 'FRONT', 'ROOF', 'SECTION'):
+        for v in [k for k in paths if k.startswith('FLOOR_')][:1] + ['FRONT', 'ROOF', 'SECTION']:
             if v in paths:
                 render_png(paths[v], paths[v][:-4] + '.png')
     return dict(paths=paths, grid=grid, model=model, gaps=log.gaps, log=log.lines)
