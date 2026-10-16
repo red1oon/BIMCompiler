@@ -118,6 +118,13 @@ for (const s of SET) {
         here.forEach(x => { const p = [Number(((x.a + x.c) / 2 * 1000).toFixed(3)), Number(((x.b + x.d) / 2 * 1000).toFixed(3))];
           if (types.indexOf(x.t) < 0) return; marks.push({ text: '@TAG=door,' + x.t, x: p[0], y: p[1] }); say('  TAG door ' + x.t + ' at ' + p.join(',') + '  [FROM_SOURCE_MODEL: door ' + x.guid + ' plan bbox centre]'); });
       }
+      // §14 LF-4 (lead 2026-10-17): the 819x759 window products IN the drawing as @TAG=window,z=<mid z>,<family id> at the window's plan bbox
+      // centre: the same points and texts rosetta_dx_shell.js applied as source-model labels (LABELMAP, round trip), now a marking (@BY=model), no sidecar
+      const WLAB = { M_Fixed: 'DUPLEX_SMALL_FIXED', M_Casement: 'DUPLEX_CASEMENT' };
+      sql("select m.guid, substr(m.element_name,1,instr(m.element_name,':')-1) k, r.minX a, r.minY b, r.maxX c, r.maxY d, r.minZ z0, r.maxZ z1 from elements_meta m join elements_rtree r on r.id=m.id where m.ifc_class='IfcWindow' and m.storey='" + s.storey + "' and m.element_type='819mm x 759mm' order by m.guid")
+        .forEach(x => { if (!WLAB[x.k]) { say('  TAG window ' + x.guid + ': REFUSED, no family for ' + x.k); refused = true; return; }
+          const p = [Number(((x.a + x.c) / 2 * 1000).toFixed(3)), Number(((x.b + x.d) / 2 * 1000).toFixed(3))], z = Number(((x.z0 + x.z1) / 2).toFixed(4));
+          marks.push({ text: '@TAG=window,z=' + z + ',' + WLAB[x.k], x: p[0], y: p[1] }); say('  TAG window z=' + z + ' ' + WLAB[x.k] + ' at ' + p.join(',') + '  [FROM_SOURCE_MODEL: window ' + x.guid + ' ' + x.k + ' plan bbox centre, mid z]'); });
     }
     Object.entries(gx).forEach(([l, v]) => { marks.push({ text: '@GRIDX=' + l, x: v.pos, y: 0 }); say('  GRIDX ' + l + ' x=' + v.pos + '  [grid line ' + v.line + ' label text ' + v.text + ']'); });
     Object.entries(gy).forEach(([l, v]) => { marks.push({ text: '@GRIDY=' + l, x: 0, y: v.pos }); say('  GRIDY ' + l + ' y=' + v.pos + '  [grid line ' + v.line + ' label text ' + v.text + ']'); });

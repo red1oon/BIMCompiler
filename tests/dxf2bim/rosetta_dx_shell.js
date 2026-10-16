@@ -139,7 +139,8 @@ function pipeline(popt) {
   const LABELMAP = { M_Fixed: 'DUPLEX_SMALL_FIXED', M_Casement: 'DUPLEX_CASEMENT' };
   ST.forEach(st => {
     const sn = sql("select substr(m.element_name,1,instr(m.element_name,':')-1) k, r.minX a, r.minY b, r.maxX c, r.maxY d, r.minZ z0, r.maxZ z1 from elements_meta m join elements_rtree r on r.id=m.id where m.ifc_class='IfcWindow' and m.storey='" + st.name + "' and m.element_type='819mm x 759mm'");
-    const labs = sn.map(x => ({ class: 'window', x: (x.a + x.c) / 2, y: (x.b + x.d) / 2, z: (x.z0 + x.z1) / 2, text: LABELMAP[x.k] }));
+    // §14 LF-4: the std set carries these as @TAG markings in its plans (mark_dx_set.js std), applied above; no source-model labels for it
+    const labs = STDSET ? [] : sn.map(x => ({ class: 'window', x: (x.a + x.c) / 2, y: (x.b + x.d) / 2, z: (x.z0 + x.z1) / 2, text: LABELMAP[x.k] }));
     (R.labels = R.labels || {})[st.name] = labs;   // §12 LS-1: the labels applied, written to out/duplex_basic_shapes_labels.json
     const lr = T.applyLabels(st.after, { units: 'm', labels: labs }, { m: 1 }, { snap_tol: CFG.snap_tol, level: st.level });
     st.labelGaps = lr.gaps.length;
