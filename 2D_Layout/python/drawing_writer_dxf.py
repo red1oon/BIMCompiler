@@ -4330,7 +4330,21 @@ def main():
                         help='Convert DXF→SVG proof renders (implied by --all)')
     parser.add_argument('--scale', type=int, default=100,
                         help='Drawing scale denominator (default 100 = 1:100)')
+    parser.add_argument('--std', action='store_true',
+                        help='Standard 2D set from the model (lane spec §L1): grid from wall axes, '
+                             'chained DIMENSION strings, levels; output/STD/{PREFIX}_*_std.dxf, no timestamp')
+    parser.add_argument('--png', action='store_true', help='with --std: render FLOOR_GF + FRONT PNGs')
     args = parser.parse_args()
+
+    if args.std:
+        # §L1: deterministic standard set (std2d.py); never overwrites the timestamped sets
+        from std2d import write_std_set
+        out_std = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'output', 'STD')
+        r = write_std_set(args.db_path, os.path.normpath(out_std), png=args.png)
+        for v, pth in r['paths'].items():
+            print(f'{v}: {pth}')
+        print(f"gaps={len(r['gaps'])} (read output/STD/log_*_std.txt)")
+        return
 
     if not os.path.exists(args.db_path):
         print(f"Database not found: {args.db_path}", file=sys.stderr)
