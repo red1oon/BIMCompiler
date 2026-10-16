@@ -116,6 +116,7 @@ public class Oracle implements Runnable {
 			if ("initialquery".equals(op)) return initialquery(ctx, req);
 			if ("recentitems".equals(op)) return recentitems(ctx, req);
 			if ("tabcust".equals(op)) return tabcust(ctx, req);
+			if ("tabmode".equals(op)) return tabmode(ctx, req);
 			if ("userqueries".equals(op)) {   // §UDP-3: FindWindow's saved-query list (MUserQuery.get) + userCanSave per entry
 				JSONArray a = new JSONArray();
 				for (MUserQuery uq : MUserQuery.get(ctx, req.getInt("tab"))) a.put(new JSONObject().put("id", uq.getAD_UserQuery_ID()).put("name", uq.getName()).put("canSave", uq.userCanSave()));
@@ -275,6 +276,34 @@ public class Oracle implements Runnable {
 		if (req.optBoolean("cleanup", true))
 			for (org.adempiere.model.MTabCustomization t : new Query(ctx, org.adempiere.model.MTabCustomization.Table_Name, "AD_User_ID=? AND AD_Tab_ID=?", null).setParameters(user, tab).<org.adempiere.model.MTabCustomization>list()) t.deleteEx(true);
 		return new JSONObject().put("ok", true).put("steps", out);
+	}
+
+	// §OPEN-MODE: the presentation a tab opens in - GridTab.isSingleRow() (:1617-1622: the user's MTabCustomization.IsDisplayedGrid wins, else AD_Tab.IsSingleRow)
+	// for every tab of a window; with "cust":{"tab":T,"mode":"Y|N|null"} the user's row is written through saveData first and removed after.
+	private static JSONObject tabmode(Properties ctx, JSONObject req) throws Exception {
+		int wid = req.getInt("window"), windowNo = 9000 + (int) (System.nanoTime() % 900), user = Env.getAD_User_ID(ctx);
+		JSONObject cu = req.optJSONObject("cust");
+		if (cu != null) {
+			int ct = cu.getInt("tab");
+			for (org.adempiere.model.MTabCustomization t : new Query(ctx, org.adempiere.model.MTabCustomization.Table_Name, "AD_User_ID=? AND AD_Tab_ID=?", null).setParameters(user, ct).<org.adempiere.model.MTabCustomization>list()) t.deleteEx(true);
+			org.adempiere.model.MTabCustomization.saveData(ctx, ct, user, cu.optString("custom", null), cu.isNull("mode") ? null : cu.optString("mode", null), null, false, null);
+		}
+		GridWindow gw = GridWindow.get(ctx, windowNo, wid);
+		if (gw == null) return new JSONObject().put("ok", false).put("error", "no window " + wid);
+		try {
+			JSONArray a = new JSONArray();
+			for (int i = 0; i < gw.getTabCount(); i++) {
+				gw.initTab(i);
+				GridTab t = gw.getTab(i);
+				a.put(new JSONObject().put("id", t.getAD_Tab_ID()).put("singleRow", t.isSingleRow()).put("name", t.getName()));
+			}
+			return new JSONObject().put("ok", true).put("tabs", a);
+		} finally {
+			gw.dispose();
+			Env.clearWinContext(ctx, windowNo);
+			if (cu != null)
+				for (org.adempiere.model.MTabCustomization t : new Query(ctx, org.adempiere.model.MTabCustomization.Table_Name, "AD_User_ID=? AND AD_Tab_ID=?", null).setParameters(user, cu.getInt("tab")).<org.adempiere.model.MTabCustomization>list()) t.deleteEx(true);
+		}
 	}
 
 	private static JSONObject ctxDump(Properties ctx) {
