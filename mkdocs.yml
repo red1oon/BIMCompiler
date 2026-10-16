@@ -122,6 +122,7 @@ nav:
 
   - Papers & Positioning:
       - "Deterministic Spatial Compilation (academic paper)": SpatialCompilationPaper.md
+      - "DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)": DXF2BIM_TechnicalNote.md
       - "Browser-Scale Benchmark (one tab, local first)": BrowserScaleBenchmark.md
       - "Construction Economy / ERP Wave": BIMERPPaper.md
       - "Enterprise Authentication (security)": EnterpriseAuthentication.md
