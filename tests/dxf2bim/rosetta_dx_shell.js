@@ -74,8 +74,8 @@ function pipeline(popt) {
   const R = { gaps: [], notes: [], storeys: {} };
   const planDesc = {}; ['FLOOR_GF', 'FLOOR_FF'].forEach(f => { planDesc[f] = MK.describe(MK.readMarks(parse(txt(f)).entities)).desc; });
   const elevs = ELEVS.map(f => { const d = parse(shellTxt[f]), de = MK.describe(MK.readMarks(d.entities)), al = MK.align(planDesc.FLOOR_GF, de.desc, C.MARK_ALIGN_TOL);
-    return { name: f, face: de.desc.face, roof: de.desc.roof, errors: de.errors.filter(e => e.code !== 'MARK:missing'), map: al.map, lines: S.levelLinesZ(d.entities, MAP_LEVL, al.map),
-      clusters: E.elevClusters(d.entities, MAP_ELEV, al.map, CFG.snap_tol, 'glazing'), walls: E.elevWallRects(d.entities, MAP_ELEV, al.map), doors: E.elevClusters(d.entities, MAP_ELEV, al.map, CFG.snap_tol, 'elevdoor') }; });
+    return { name: f, face: de.desc.face, roof: de.desc.roof, errors: de.errors.filter(e => e.code !== 'MARK:missing'), map: al.map, lines: S.levelLinesZ(d.entities, MK.withLayers(MAP_LEVL, de.desc), al.map),
+      clusters: E.elevClusters(d.entities, MK.withLayers(MAP_ELEV, de.desc), al.map, CFG.snap_tol, 'glazing'), walls: E.elevWallRects(d.entities, MK.withLayers(MAP_ELEV, de.desc), al.map), doors: E.elevClusters(d.entities, MK.withLayers(MAP_ELEV, de.desc), al.map, CFG.snap_tol, 'elevdoor') }; });
   R.elevs = elevs;
   const allRects = [].concat(...elevs.map(e => e.walls));
   const ST = [{ name: 'Level 1', f: 'FLOOR_GF' }, { name: 'Level 2', f: 'FLOOR_FF' }];
@@ -84,7 +84,7 @@ function pipeline(popt) {
     st.levelDrawn = allRects.filter(r => Math.abs(r.z0 - st.level) <= CFG.elev_tol).map(r => r.handle);
     const nxt = ST[i + 1] ? planDesc[ST[i + 1].f].level : Math.max(...allRects.filter(r => Math.abs(r.z0 - st.level) <= CFG.elev_tol).map(r => r.z1));
     st.top = nxt;                                                   // storey z range for window matching: next drawn level, or top of this storey's elevation rects
-    const run = B.run(txt(st.f), MAP_PLAN, CFG, deps); st.before = run.ops; st.planGaps = run.report.gaps; st.run_id = run.run_id;
+    const run = B.run(txt(st.f), MK.withLayers(MAP_PLAN, planDesc[st.f]), CFG, deps); st.before = run.ops; st.planGaps = run.report.gaps; st.run_id = run.run_id;   // lane spec L4.2: the sheet's @LAYER rules first in every map (identity without them)
     let ops = E.applyElevations(run.ops, elevs.map(e => ({ face: e.face, clusters: e.clusters })), Object.assign({}, CFG, { wall: Object.assign({ height: r6(nxt - st.level) }, CFG.wall) }), { level: st.level, hashHex }).ops;
     ops = E.applyWallHeights(ops, elevs.map(e => ({ face: e.face, walls: e.walls })), CFG, { level: st.level }).ops;
     // L2.6 C: door tags on the plan label the doors before their heights; a door no elevation shows takes the scheduled height (height_source schedule)
@@ -100,7 +100,7 @@ function pipeline(popt) {
   let sopt = null;
   if (shellTxt.SECTION) {
     const sd = parse(shellTxt.SECTION), sdesc = MK.describe(MK.readMarks(sd.entities)).desc, sal = MK.align(planDesc.FLOOR_GF, sdesc, C.MARK_ALIGN_TOL);
-    R.section = sal.map ? S.sectionSlabs(sd.entities, C.STD.MAP_SECT, sal.map, [L1.level, L2.level], CFG, sdesc.roof) : { slabs: {}, roof: null, gaps: [{ code: 'GAP:section_align_fail', errors: sal.errors.map(e => e.code) }] };
+    R.section = sal.map ? S.sectionSlabs(sd.entities, MK.withLayers(C.STD.MAP_SECT, sdesc), sal.map, [L1.level, L2.level], CFG, sdesc.roof) : { slabs: {}, roof: null, gaps: [{ code: 'GAP:section_align_fail', errors: sal.errors.map(e => e.code) }] };
     sopt = { section: R.section };
     if (sdesc.cut && sal.map) { const cp = sdesc.cut.split(','); R.sectionCut = { axis: cp[0], at: Number(cp[1]) * MK.UNITS[sdesc.units] }; }
   }
@@ -125,7 +125,7 @@ function pipeline(popt) {
   if (MUT === 'M-S2') ST.forEach(st => { const E0 = st.ring.envelope; st.ring = { outline: [[E0[0], E0[1]], [E0[2], E0[1]], [E0[2], E0[3]], [E0[0], E0[3]]], gaps: [], envelope: E0 }; });
   if (shellTxt.ROOF) {
     const roofD = parse(shellTxt.ROOF), roofDesc = MK.describe(MK.readMarks(roofD.entities)).desc;
-    R.roofPlan = S.roofPlan(roofD.entities, MAP_ROOF, MK.UNITS[roofDesc.units], L2.ring.envelope, L2.ring.outline, CFG);   // §11: factor from the roof plan's @UNITS marking
+    R.roofPlan = S.roofPlan(roofD.entities, MK.withLayers(MAP_ROOF, roofDesc), MK.UNITS[roofDesc.units], L2.ring.envelope, L2.ring.outline, CFG);   // §11: factor from the roof plan's @UNITS marking
   } else R.roofPlan = { ok: false, holes: [], gaps: [] };                                    // std set: no roof plan sheet (qualify reports QF:set_no_roof)
   // §13: the std run's identity also covers its SECTION sheet (it states the slabs) and the std layer maps it used; the DX run_id is unchanged
   R.run_id = C.runId(B.canon, hashHex, ST.map(st => st.run_id), ['FLOOR_GF', 'FLOOR_FF'].map(f => hashHex(txt(f))).concat(ELEVS.map(f => hashHex(shellTxt[f])), shellTxt.ROOF ? [hashHex(shellTxt.ROOF)] : [], shellTxt.SECTION ? [hashHex(shellTxt.SECTION)] : []),
