@@ -7,14 +7,7 @@ const DxfParser = require(path.join(__dirname, '../../deploy/dev/dxf-parser.js')
 const D = require(path.join(__dirname, '../../deploy/dev/dxf2bim.js'));
 const hashHex = s => crypto.createHash('sha256').update(s).digest('hex');
 const txt = fs.readFileSync(process.argv[2], 'utf8');
-const MAP = { version: 1, rules: [          // SANDBOX seed: human choice from layer names seen in the file
-  { match: 'suffix', pattern: 'A-WALL', type: 'wall' }, { match: 'suffix', pattern: 'A-OPENING', type: 'opening' },
-  { match: 'suffix', pattern: 'S-SLAB', type: 'slab' },
-  { match: 'exact', pattern: 'A-DIMS-1', type: 'ignore' }, { match: 'exact', pattern: 'A-NOTE', type: 'ignore' },
-  { match: 'exact', pattern: 'A-TEXT', type: 'ignore' }, { match: 'exact', pattern: 'ANNTEXT', type: 'ignore' },
-  { match: 'exact', pattern: 'Defpoints', type: 'ignore' }, { match: 'exact', pattern: '0', type: 'ignore' } ] };
-const CFG = { version: 1, units: 'in', snap_tol: 0.0127, host_tol: 0.15, wall: { thickness: 0.2, height: 3.0, base: 0.0 }, slab: { thickness: 0.2, level: 0.0 },
-  opening: { door: { height: 2.1 }, rect: { sill: 0.9, height: 1.2 } } }; // SANDBOX values (snap_tol = 0.5 in)
+const { MAP, CFG } = require('./set_configs.js').JSCAD;   // moved to set_configs.js (shared with rosetta_qualify.js): SANDBOX seed map (human choice from layer names) + SANDBOX config values, unchanged
 const t0 = Date.now();
 const r1 = D.run(txt, MAP, CFG, { DxfParser, hashHex, library: [] });
 const ms = Date.now() - t0;
