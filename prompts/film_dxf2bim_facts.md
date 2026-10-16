@@ -43,5 +43,5 @@ Text sources (no number from a run):
 - o02 settled by evidence: `docs/DXF2BIM_SPEC.md` l.211.
 - o03 rules a real drawing taught: `docs/DXF2BIM_SPEC.md` l.450 (T-joint: join across gaps up to one wall thickness), l.451 (porch decking: 2 exclusion zones).
 - r04 / n01 no door schedule in the editor: bim-ootb `modeller/dxf_meta_editor.js` `vocab()` (schedule read from @SCHEDULE markings only; no UI path adds one); measured in Node: std set minus @SCHEDULE -> blocked 28 (same 14 + 14).
-- l01 library local: bim-ootb `prompts/DXF2BIM_MODELLER_LANE.md` §L3.2 (subset written to a git-ignored dir; deploy open). Farmhouse partial: `~/Projects/SYSNOVA/DXF2BIM/FILM_PLAN.md` §4b.
+- l01 library local: bim-ootb `prompts/DXF2BIM_MODELLER_LANE.md` §L3.2 (subset written to a git-ignored dir; deploy open). Farmhouse partial: the local film plan §4b (not in repo).
 - n01 credit: `tests/dxf2bim/external/farmhouse/ATTRIBUTION.txt` ("American Farmhouse" CAD files by Jay Osborne, freefarmhouse.com, CC BY-SA). MIT: bim-ootb LICENSE.
