@@ -3,19 +3,9 @@
 // Values are unchanged from their scripts; their comments there still state the source of each value.
 'use strict';
 const IN = 0.0254;
-// ---- DX (rosetta_dx_shell.js) ----
-const DX_MAP_PLAN = { version: 1, rules: [
-  { match: 'exact', pattern: 'A-WALL-FULL', type: 'wall' }, { match: 'exact', pattern: 'A-WALL-PRTN', type: 'wall' }, { match: 'exact', pattern: 'A-WALL-PATT', type: 'ignore' },
-  { match: 'exact', pattern: 'A-DOOR', type: 'opening' }, { match: 'exact', pattern: 'A-GLAZ', type: 'glazing' },
-  { match: 'exact', pattern: 'A-GRID', type: 'ignore' }, { match: 'exact', pattern: 'A-ANNO-TEXT', type: 'ignore' }, { match: 'exact', pattern: 'A-ANNO-DIMS', type: 'ignore' },
-  { match: 'exact', pattern: 'A-FURN', type: 'ignore' }, { match: 'exact', pattern: 'A-TTLB', type: 'ignore' }, { match: 'exact', pattern: '0', type: 'ignore' } ] };
-const DX_MAP_ELEV = { version: 1, rules: [{ match: 'exact', pattern: 'A-GLAZ', type: 'glazing' }, { match: 'exact', pattern: 'A-ELEV-WALL', type: 'elevwall' }, { match: 'exact', pattern: 'A-DOOR', type: 'elevdoor' }] };
-const DX_MAP_LEVL = { version: 1, rules: [{ match: 'exact', pattern: 'A-ANNO-LEVL', type: 'levelline' }, { match: 'exact', pattern: 'A-ELEV-LEVL', type: 'levelline' }] };
-const DX_MAP_ROOF = { version: 1, rules: [{ match: 'exact', pattern: 'A-ROOF', type: 'roof' }, { match: 'exact', pattern: 'A-GLAZ', type: 'glazing' }] };
-// NO wall/door/window heights and NO slab values in config. elev_tol 0.003, gap_min/gap_max, min_thickness, host_tol, door.min_width: SANDBOX (as rosetta_dx_types.js)
-const DX_CFG = { version: 1, units: 'mm', snap_tol: 0.001, elev_tol: 0.003, host_tol: 0.3, align_tol: 0.05, wall_mode: 'footprint',
-  wall: { height_from_elevation: true, min_thickness: 0.05, polygon_footprint: true }, opening: { door: { from_elevation: true, min_width: 0.5 }, window: { from_elevation: true }, gap_min: 0.3, gap_max: 5 } };
-// ---- FARM (farm_heights.js) ----
+// ---- DX (rosetta_dx_shell.js): ONE source, deploy/dev/dxf2shell_config.js (also copied verbatim into the Modeller import) ----
+const _DX = require('../../deploy/dev/dxf2shell_config.js');
+const DX_MAP_PLAN = _DX.MAP_PLAN, DX_MAP_ELEV = _DX.MAP_ELEV, DX_MAP_LEVL = _DX.MAP_LEVL, DX_MAP_ROOF = _DX.MAP_ROOF, DX_CFG = _DX.CFG;
 const FARM_MAP = { version: 1, rules: [{ match: 'exact', pattern: '1', type: 'wallline' }].concat(['0', '2', '3', '5', 'A-TEXTx', 'A-DIMSx', 'A-LINK', 'A-SYMB', 'L-PLNT', 'A-ELEC', 'A-TEXT', '0-NPLT', 'A-DIMS'].map(l => ({ match: 'exact', pattern: l, type: 'ignore' }))) };
 const FARM_CFG = { version: 1, units: 'in', snap_tol: 0.0005, wall_mode: 'pair', wall: { height_from_elevation: true, pair_thicknesses: [3.5 * IN], pair_tol: 0.0005, pair_min_overlap: 12 * IN, pair_join_gap: 3.5 * IN } };
 // ---- JSCAD (t8_sandbox.js) ----
