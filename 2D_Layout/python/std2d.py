@@ -733,6 +733,18 @@ def write_plan(model, grid, storey, view, db_path, out_path, log):
     polys = {}
     for c in cut:
         polys[c.guid] = [pl for pl in ([(mm(p[0]), mm(p[1])) for p in ct.points] for ct in c.contours) if len(pl) >= 3]
+        # §L1.8 S1: an orthogonal wall is rectilinear (R3); a contour of it whose mean width (area / longest bbox side) is below the plan merge
+        # tolerance is a tessellation sliver of a rectilinear remnant (web-ifc meshes a 0.6 mm wall end as a wedge) and becomes its bounding rectangle
+        w = model['by_guid'].get(c.guid)
+        if c.ifc_class in WALLS and w is not None and _orthogonal(w['v'], w['f']):
+            for i, pl in enumerate(polys[c.guid]):
+                xs, ys = [q[0] for q in pl], [q[1] for q in pl]
+                L = max(max(xs) - min(xs), max(ys) - min(ys))
+                a = abs(sum(pl[k][0] * pl[(k + 1) % len(pl)][1] - pl[(k + 1) % len(pl)][0] * pl[k][1] for k in range(len(pl)))) / 2
+                rect = len(set(xs)) <= 2 and len(set(ys)) <= 2   # already an axis-aligned rectangle: nothing to regularise
+                if L > 0 and a / L < PT_MERGE * 1000 and not rect:
+                    polys[c.guid][i] = [(min(xs), min(ys)), (max(xs), min(ys)), (max(xs), max(ys)), (min(xs), max(ys))]
+                    log(f"§SLIVER_RECT guid={c.guid} cls={c.ifc_class} area={a:.2f} mm2 mean_width={a / L:.3f} mm -> bounding rectangle (§L1.8 S1)")
     ops = plan_openings(model, storey, cut_z, {w['guid'] for w in sw}, polys, log)   # §L1.6 O2
     n_w = n_c = 0
     for c in cut:
