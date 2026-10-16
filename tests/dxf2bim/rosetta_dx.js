@@ -21,11 +21,13 @@ const CASING = 0.076;   // observed: drawn door jamb polylines on A-DOOR are 76 
 let fails = 0; const check = (id, issue, ok, d) => { if (!ok) fails++; console.log((ok ? 'PASS ' : 'FAIL ') + id + ' | ' + issue + ' | ' + d); };
 const STOREYS = [{ name: 'Level 1', file: 'FLOOR_GF', level: 0 }, { name: 'Level 2', file: 'FLOOR_FF', level: 3.1 }];   // levels FROM_SOURCE_MODEL (storey minZ)
 // FROM_SOURCE_MODEL: wall z range of Level 1 is 0..3.1 for exterior walls; interior walls vary 2.795/3.1: single height is a simplification
-const CFG = { version: 1, units: 'mm', snap_tol: 0.001, host_tol: 0.3, align_tol: 0.05, wall_mode: 'footprint', wall: { height: 3.1, base: 0, min_thickness: 0.05 }, slab: { thickness: 0.2, level: 0 },
-  opening: { door: { height: 2.1, min_width: 0.5 }, rect: { sill: 0.9, height: 1.2 }, window: { sill: 0.9, height: 1.2 } } };
+const CFG = { version: 1, units: 'mm', snap_tol: 0.001, host_tol: 0.3, align_tol: 0.05, wall_mode: 'footprint', wall: { height: 3.1, base: 0, min_thickness: 0.05, polygon_footprint: true }, slab: { thickness: 0.2, level: 0 },
+  opening: { door: { height: 2.1, min_width: 0.5 }, rect: { sill: 0.9, height: 1.2 }, window: { sill: 0.9, height: 1.2 }, gap_min: 0.3, gap_max: 5 } };
+// BASIC_SHAPES_SPEC §2.1/§2.2 (2026-10-16): polygon_footprint (mitred outlines kept exactly) and gap_min/gap_max (SANDBOX, as rosetta_dx_types.js) so §46 stub orientation and F5b run
 console.log('config: ' + JSON.stringify(CFG) + '  (levels/height FROM_SOURCE_MODEL; min_thickness/min_width/host_tol/door+window heights SANDBOX)');
 const deps = { DxfParser, hashHex, library: [] };
 const near = (a, b) => Math.abs(a - b) <= 0.001 + 1e-9;
+const unionLen = iv => { const a = iv.map(x => [Math.min(x[0], x[1]), Math.max(x[0], x[1])]).sort((p, q) => p[0] - q[0]); let n = 0, c = null; a.forEach(x => { if (!c || x[0] > c[1]) { if (c) n += c[1] - c[0]; c = x.slice(); } else c[1] = Math.max(c[1], x[1]); }); if (c) n += c[1] - c[0]; return n; };
 const sameRect = (a, b) => near(a[0], b[0]) && near(a[1], b[1]) && near(a[2], b[2]) && near(a[3], b[3]);
 
 for (const st of STOREYS) {
@@ -52,10 +54,11 @@ for (const st of STOREYS) {
   let bad = 0, adjOk = 0, rows = [], missed = [];
   srcCut.forEach((S, i) => {
     const w = S.rect[2] - S.rect[0], h = S.rect[3] - S.rect[1], horiz = w >= h, L = horiz ? w : h;
-    const pcs = ours.filter(o => inside(o.rect, S.rect)); const cov = pcs.reduce((n, o) => n + (horiz ? o.rect[2] - o.rect[0] : o.rect[3] - o.rect[1]), 0);
+    // R1b-u (BASIC_SHAPES_SPEC §2.4): UNION of intervals along the wall axis (stacked windows share one plan interval; mitre triangles overlap long pieces' bboxes)
+    const pcs = ours.filter(o => inside(o.rect, S.rect)); const cov = unionLen(pcs.map(o => horiz ? [o.rect[0], o.rect[2]] : [o.rect[1], o.rect[3]]));
     const ops = srcOp.filter(q => q.cx >= S.rect[0] - 0.001 && q.cx <= S.rect[2] + 0.001 && q.cy >= S.rect[1] - 0.001 && q.cy <= S.rect[3] + 0.001);
     const opW = ops.reduce((n, q) => n + q.long, 0), unc = L - cov, ok = Math.abs(unc - opW) <= 0.005;
-    const opAdj = ops.reduce((n, q) => n + q.long - (q.k === 'IfcDoor' ? 2 * CASING : 0), 0); const okAdj = Math.abs(unc - opAdj) <= 0.005; if (okAdj) adjOk++; else missed.push({ S, unc, opAdj });
+    const opAdj = unionLen(ops.map(q => { const c = horiz ? q.cx : q.cy, h = q.long / 2 - (q.k === 'IfcDoor' ? CASING : 0); return [c - h, c + h]; })); const okAdj = Math.abs(unc - opAdj) <= 0.005; if (okAdj) adjOk++; else missed.push({ S, unc, opAdj });
     if (!ok) bad++; rows.push((ok ? ' ok ' : 'BAD ') + 'wall ' + S.id + ' L=' + L.toFixed(3) + ' pieces=' + pcs.length + ' covered=' + cov.toFixed(3) + ' uncovered=' + unc.toFixed(3) + ' source openings=' + ops.length + ' width sum=' + opW.toFixed(3));
   });
   console.log('INFO R1b strict (superseded by D-2, source door bbox incl. casing): ' + (srcCut.length - bad) + '/' + srcCut.length + ' source walls reconstructed');
@@ -64,7 +67,7 @@ for (const st of STOREYS) {
   const dd = new DxfParser().parseSync(DXF(st.file)); const ents = dd.entities;
   const has76 = ents.some(e => e.layer === 'A-DOOR' && e.type === 'LWPOLYLINE' && (() => { const xs = e.vertices.map(v => v.x), ys = e.vertices.map(v => v.y); const w = Math.max(...xs) - Math.min(...xs), h = Math.max(...ys) - Math.min(...ys); return Math.abs(w - 76) < 1 || Math.abs(h - 76) < 1; })());
   check('R1-evidence ' + st.name, 'casing constant 0.076 not supported by the drawing', has76, 'A-DOOR polyline with a 76 mm side present=' + has76);
-  check('R1b-stated ' + st.name, 'wall coverage + source openings (door casing 2 x 0.076 removed) does not reconstruct the source wall (tol 5 mm)', adjOk === srcCut.length, adjOk + '/' + srcCut.length + ' source walls reconstructed');
+  check('R1b-stated ' + st.name, 'wall coverage + source openings (door casing 2 x 0.076 removed; union of intervals, R1b-u) does not reconstruct the source wall (tol 5 mm)', adjOk === srcCut.length, adjOk + '/' + srcCut.length + ' source walls reconstructed');
   // R1c: every miss explained by a logged gap or an ignored/unmapped entity overlapping the wall rect
   const bbox = e => { const vs = (e.vertices || []).map(v => [v.x * 0.001, v.y * 0.001]); if (e.center) vs.push([e.center.x * 0.001, e.center.y * 0.001]); if (!vs.length) return null; return [Math.min(...vs.map(v => v[0])), Math.min(...vs.map(v => v[1])), Math.max(...vs.map(v => v[0])), Math.max(...vs.map(v => v[1]))]; };
   const overlap = (a, R) => a && a[0] < R[2] - 0.001 && a[2] > R[0] + 0.001 && a[1] < R[3] - 0.001 && a[3] > R[1] + 0.001;

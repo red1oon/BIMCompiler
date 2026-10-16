@@ -102,6 +102,13 @@
 
     walls.forEach(function (w) {
       if (w.params.height === null || w.params.height === undefined) { gap('GAP:no_height', w, { kind: 'wall' }); return; }
+      if (w.params.outline) {                                   // BASIC_SHAPES_SPEC §2.1 F9: polygon wall = prism of its drawn outline; no cut here
+        var pm = prism(w.params.outline, level + w.params.base + w.params.height, w.params.height);
+        if (!pm) { gap('GAP:bad_outline', w); return; }
+        openings.filter(function (o) { return o.params.host_wall === w.output_guid; }).forEach(function (o) { gap('GAP:opening_in_polygon_wall', o, { wall: w.params.handle }); });
+        els.push({ guid: hashHex(w.output_guid + '|0').slice(0, 32), class: 'IfcWall', handle: w.params.handle, layer: w.params.layer, piece: 0, vertices: pm.vertices, faces: pm.faces });
+        return;
+      }
       var P = w.params, a = P.start, dx = P.end[0] - a[0], dy = P.end[1] - a[1], L = Math.hypot(dx, dy), u = [dx / L, dy / L];
       var zb = level + P.base, zt = zb + P.height, t = P.thickness, wallAng = Math.atan2(u[1], u[0]);
       var mine = openings.filter(function (o) { return o.params.host_wall === w.output_guid; });
