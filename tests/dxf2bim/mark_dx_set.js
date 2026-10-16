@@ -17,7 +17,10 @@ const DOOR_OPS = STD && process.argv[3] ? path.resolve(process.argv[3]) : null; 
 // writes positions at 0.001 mm; the old profile keeps whole mm (its positions are integers, copies stay byte-identical).
 const RND = v => STD ? Number(v.toFixed(3)) : Math.round(v);
 const ELEV_TOL = 0.003, EXT_FACE_TOL = 0.010;   // L2.5 W1: CFG.elev_tol (the pipeline's height tolerance); L1.1 R4(b) exterior face tolerance
-const SRC = f => STD ? path.join(ROOT, '2D_Layout/output/STD/DX_' + f + '_std.dxf') : path.join(ROOT, '2D_Layout/output/DXF/DX_' + f + '_20260428_0636.dxf');
+// lane spec §L1.6 N: std2d names plan sheets after the model storey (FLOOR_<STOREY NAME>); this Duplex harness keeps its own sheet keys
+// (FLOOR_GF/FF, used by every downstream script) and finds the std sheet of the storey each key stands for (SET below).
+const STD_PLAN = f => { const s = SET.find(x => x.f === f && x.view === 'PLAN'); return s ? 'FLOOR_' + s.storey.toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_+|_+$/g, '') : f; };
+const SRC = f => STD ? path.join(ROOT, '2D_Layout/output/STD/DX_' + STD_PLAN(f) + '_std.dxf') : path.join(ROOT, '2D_Layout/output/DXF/DX_' + f + '_20260428_0636.dxf');
 const DB = path.join(ROOT, '2D_Layout/input/DX_extracted.db');
 const OUT = path.join(__dirname, STD ? 'out/marked_std' : 'out/marked'); fs.mkdirSync(OUT, { recursive: true });
 const sql = q => JSON.parse(cp.execFileSync('sqlite3', ['-json', '-readonly', DB, q], { encoding: 'utf8' }) || '[]');

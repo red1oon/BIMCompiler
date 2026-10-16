@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# ⚠ DO NOT REMOVE: scope = lane spec §L1 / §L1.1 / §L1.2 / §L1.4 / §L1.5 (bim-ootb prompts/DXF2BIM_MODELLER_LANE.md), tests W1-W7
+# ⚠ DO NOT REMOVE: scope = lane spec §L1 / §L1.1 / §L1.2 / §L1.4 / §L1.5 / §L1.6 (one DB, either schema; model storeys) (bim-ootb prompts/DXF2BIM_MODELLER_LANE.md), tests W1-W7
 # for the standard 2D set written by std2d.py. Read the log after every run (exit code is not evidence).
 # Expectations are recomputed here from the DB with their own queries (not std2d's functions).
 # The source IFC (when given) is the independent oracle for door swing/hinge (W5) and storey elevations (W6).
@@ -18,6 +18,7 @@ import glob
 import shutil
 import sqlite3
 import hashlib
+import re
 import argparse
 import tempfile
 import subprocess
@@ -28,6 +29,7 @@ import ezdxf
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import std2d  # noqa: E402  (writer under test; only write_std_set is called)
+import model_db  # noqa: E402  (§L1.6 P0: one view shape over the Node or the old DB schema)
 
 TOL = 0.5          # mm, W3/W6
 GRID_TOL = 0.5     # mm, W2 (grid position vs expected mean)
@@ -50,7 +52,7 @@ def check(tid, issue, ok, detail):
 # ───────────── independent expectations from the DB (spec §L1.1 R1-R5) ─────────────
 
 def q(db, sql, args=()):
-    con = sqlite3.connect(db)
+    con = model_db.connect(db)
     try:
         return con.execute(sql, args).fetchall()
     finally:
@@ -58,22 +60,27 @@ def q(db, sql, args=()):
 
 
 def exp_levels(db):
-    rows = q(db, """SELECT m.storey, MIN(r.minZ) FROM elements_meta m JOIN elements_rtree r ON r.id=m.id
+    rows = q(db, """SELECT m.storey, MIN(r.minZ) FROM elements_meta m JOIN m_bbox r ON r.guid=m.guid
                     WHERE m.ifc_class IN ('IfcWall','IfcWallStandardCase') GROUP BY m.storey""")
     lv = {s: z for s, z in rows}
+    # §L1.6 R1': the model storey placement when the DB carries it (Node extractor), R1 otherwise
+    if q(db, "SELECT 1 FROM sqlite_master WHERE type='table' AND name='storey_elevation'"):
+        for s, z in q(db, "SELECT name, placement_z_m FROM storey_elevation WHERE placement_z_m IS NOT NULL"):
+            if s in lv:
+                lv[s] = z
     fnd = q(db, "SELECT DISTINCT storey FROM elements_meta WHERE ifc_class='IfcFooting'")[0][0]
     grid = min((s for s in lv if lv[s] > lv[fnd]), key=lambda s: lv[s])
-    roof = q(db, """SELECT MAX(r.maxZ) FROM elements_meta m JOIN elements_rtree r ON r.id=m.id
+    roof = q(db, """SELECT MAX(r.maxZ) FROM elements_meta m JOIN m_bbox r ON r.guid=m.guid
                     WHERE m.ifc_class='IfcRoof'""")[0][0]
     if roof is None:
-        roof = q(db, """SELECT MAX(r.maxZ) FROM elements_meta m JOIN elements_rtree r ON r.id=m.id
+        roof = q(db, """SELECT MAX(r.maxZ) FROM elements_meta m JOIN m_bbox r ON r.guid=m.guid
                         WHERE m.ifc_class='IfcSlab'""")[0][0]
     return lv, fnd, grid, roof
 
 
 def walls_bbox(db, storey):
     return q(db, """SELECT m.guid, r.minX, r.maxX, r.minY, r.maxY FROM elements_meta m
-                    JOIN elements_rtree r ON r.id=m.id
+                    JOIN m_bbox r ON r.guid=m.guid
                     WHERE m.ifc_class IN ('IfcWall','IfcWallStandardCase') AND m.storey=? ORDER BY m.guid""",
              (storey,))
 
@@ -90,7 +97,7 @@ def exp_grid(db):
     def ax(w):
         g, x0, x1, y0, y1 = w
         return ('y', (y0 + y1) / 2, x0, x1) if x1 - x0 >= y1 - y0 else ('x', (x0 + x1) / 2, y0, y1)
-    for w in W:
+    for w in W + [w for s in plan_storeys_of(db) if s != gs for w in _ext_only(walls_bbox(db, s))]:
         a, p, lo, hi = ax(w)
         L = hi - lo
         bear = False
@@ -120,6 +127,40 @@ def exp_grid(db):
 PLAN_CUT = 1.2   # m above the storey elevation (R7 / §5.1a), stated here, not imported from the writer
 
 
+def plan_storeys_of(db):
+    """Storeys from the grid storey up with a wall of their own reaching their cut plane (recomputed here)."""
+    lv, _, gs, _ = exp_levels(db)
+    out = []
+    for s in sorted((s for s in lv if lv[s] >= lv[gs]), key=lambda s: lv[s]):
+        cz = lv[s] + PLAN_CUT
+        if q(db, """SELECT 1 FROM elements_meta m JOIN m_bbox r ON r.guid=m.guid WHERE m.ifc_class IN
+                     ('IfcWall','IfcWallStandardCase') AND m.storey=? AND r.minZ <= ? AND r.maxZ > ? LIMIT 1""", (s, cz, cz)):
+            out.append(s)
+    return out
+
+
+def _ext_only(W):
+    """§L1.6 M: a non-grid plan storey contributes its exterior walls (own envelope) in the footing regime."""
+    if not W:
+        return []
+    ex0, ex1 = min(w[1] for w in W), max(w[2] for w in W)
+    ey0, ey1 = min(w[3] for w in W), max(w[4] for w in W)
+    out = []
+    for w in W:
+        g, x0, x1, y0, y1 = w
+        if x1 - x0 >= y1 - y0:
+            if abs(y0 - ey0) <= 0.01 or abs(y1 - ey1) <= 0.01:
+                out.append(w)
+        elif abs(x0 - ex0) <= 0.01 or abs(x1 - ex1) <= 0.01:
+            out.append(w)
+    return out
+
+
+def view_key(name):
+    """§L1.6 N: the plan sheet key the spec names for a model storey (FLOOR_ + upper case, non-alphanumerics -> _)."""
+    return 'FLOOR_' + re.sub(r'[^A-Z0-9]+', '_', name.upper()).strip('_')
+
+
 def cut_z_of(db, storey):
     lv, _, _, _ = exp_levels(db)
     return lv[storey] + PLAN_CUT
@@ -127,7 +168,7 @@ def cut_z_of(db, storey):
 
 def walls_cut(db, cut_z):
     """§L1.5 P1: walls whose DB z-range contains the plan cut height, any storey."""
-    return q(db, """SELECT m.guid, m.storey FROM elements_meta m JOIN elements_rtree r ON r.id=m.id
+    return q(db, """SELECT m.guid, m.storey FROM elements_meta m JOIN m_bbox r ON r.guid=m.guid
                     WHERE m.ifc_class IN ('IfcWall','IfcWallStandardCase') AND r.minZ < ? AND r.maxZ > ? ORDER BY m.guid""",
              (cut_z, cut_z))
 
@@ -137,7 +178,7 @@ def wall_world_coords(db, storey):
     cz = cut_z_of(db, storey)
     rows = q(db, """SELECT t.center_x, t.center_y, b.vertices FROM elements_meta m
                     JOIN element_transforms t ON t.guid=m.guid JOIN element_instances i ON i.guid=m.guid
-                    JOIN base_geometries b ON b.geometry_hash=i.geometry_hash JOIN elements_rtree r ON r.id=m.id
+                    JOIN m_geom b ON b.geometry_hash=i.geometry_hash JOIN m_bbox r ON r.guid=m.guid
                     WHERE m.ifc_class IN ('IfcWall','IfcWallStandardCase') AND r.minZ < ? AND r.maxZ > ?""", (cz, cz))
     xs, ys = set(), set()
     for cx, cy, vb in rows:
@@ -351,7 +392,7 @@ def w5(plan_dxfs, db, ifc_path, log_lines, tag='W5', expect_arcs=False, verbose=
         return None
     oracle = ifc_doors(ifc_path)
     doors = {g: (x0, x1, y0, y1) for g, x0, x1, y0, y1 in q(db, """SELECT m.guid, r.minX, r.maxX, r.minY, r.maxY
-            FROM elements_meta m JOIN elements_rtree r ON r.id=m.id WHERE m.ifc_class='IfcDoor'""")}
+            FROM elements_meta m JOIN m_bbox r ON r.guid=m.guid WHERE m.ifc_class='IfcDoor'""")}
     gap_hinge = {ln.split('guid=')[1].split()[0] for ln in log_lines
                  if ln.startswith('§GAP GAP:door_hinge') or ln.startswith('§GAP GAP:door_handing_conflict')}
     marks = _door_marks(plan_dxfs)
@@ -410,7 +451,7 @@ def w5(plan_dxfs, db, ifc_path, log_lines, tag='W5', expect_arcs=False, verbose=
 def _mirror_marks(src, dst, oracle, db, axis):
     """Control: reflect every door mark across its door centre along the IFC 'x' (hinge flip) or 'y' (swing flip) axis."""
     doors = {g: (x0, x1, y0, y1) for g, x0, x1, y0, y1 in q(db, """SELECT m.guid, r.minX, r.maxX, r.minY, r.maxY
-             FROM elements_meta m JOIN elements_rtree r ON r.id=m.id WHERE m.ifc_class='IfcDoor'""")}
+             FROM elements_meta m JOIN m_bbox r ON r.guid=m.guid WHERE m.ifc_class='IfcDoor'""")}
     doc = ezdxf.readfile(src)
     msp = doc.modelspace()
     for e in list(msp.query('ARC[layer=="A-DOOR"]')) + list(msp.query('LINE[layer=="A-DOOR"]')) + \
@@ -456,7 +497,7 @@ def w8(roof_dxf, db, plan_storey_names):
     W = walls_bbox(db, rs)
     exp_o = [min(w[1] for w in W) * 1000, max(w[2] for w in W) * 1000, min(w[3] for w in W) * 1000, max(w[4] for w in W) * 1000]
     sky = {g: (x0 * 1000, x1 * 1000, y0 * 1000, y1 * 1000) for g, x0, x1, y0, y1 in q(db, """SELECT m.guid, r.minX, r.maxX, r.minY, r.maxY
-           FROM elements_meta m JOIN elements_rtree r ON r.id=m.id WHERE m.ifc_class='IfcWindow' AND m.storey=?""", (rs,))}
+           FROM elements_meta m JOIN m_bbox r ON r.guid=m.guid WHERE m.ifc_class='IfcWindow' AND m.storey=?""", (rs,))}
     bad = []
     if roof_dxf is None:
         return check('W8', 'roof plan invented or missing (no ROOF sheet although the model has a roof storey)', False, f'storey={rs}')
@@ -489,7 +530,7 @@ def w9(sect_dxf, db):
     exp, _, _ = exp_grid(db)
     X = (exp['x'][0] + exp['x'][1]) / 2
     rows = {g: (c, x0 * 1000, x1 * 1000, y0 * 1000, y1 * 1000, z0 * 1000, z1 * 1000) for g, c, x0, x1, y0, y1, z0, z1 in q(db, """SELECT m.guid, m.ifc_class,
-            r.minX, r.maxX, r.minY, r.maxY, r.minZ, r.maxZ FROM elements_meta m JOIN elements_rtree r ON r.id=m.id
+            r.minX, r.maxX, r.minY, r.maxY, r.minZ, r.maxZ FROM elements_meta m JOIN m_bbox r ON r.guid=m.guid
             WHERE m.ifc_class IN ('IfcSlab','IfcRoof','IfcWall','IfcWallStandardCase')""")}
     msp = ezdxf.readfile(sect_dxf).modelspace()
     title = [t.dxf.text for t in msp.query('TEXT[layer=="A-ANNO-TTLB"]')]
@@ -596,20 +637,23 @@ def main():
         elevs = [P[k] for k in ('FRONT', 'REAR', 'LEFT', 'RIGHT')]
         lv, fnd, gs, _ = exp_levels(a.db)
         storey_of = {}
-        plan_storeys = sorted([s for s in lv if lv[s] >= lv[gs]], key=lambda s: lv[s])
-        names = ['GF', 'FF', 'SF', 'TF']
-        for i, s in enumerate(plan_storeys):
-            if i < len(names) and f'FLOOR_{names[i]}' in P:
-                storey_of[P[f'FLOOR_{names[i]}']] = s
+        pss = plan_storeys_of(a.db)
+        for s in pss:
+            if view_key(s) in P:
+                storey_of[P[view_key(s)]] = s
+        check('W-N', 'plan sheets not named from the model storeys (§L1.6 N)', len(storey_of) == len(plans) == len(pss),
+              f'model plan storeys={pss} sheets={sorted(k for k in P if k.startswith("FLOOR_"))}')
+        GF = P[view_key(pss[0])]   # the lowest plan (the grid storey's)
+        FF = P[view_key(pss[1])] if len(pss) > 1 else None
         # W2 / W3 / W4
-        w2(P['FLOOR_GF'], a.db)
+        w2(GF, a.db)
         for p in plans:
-            if p != P['FLOOR_GF']:
+            if p != GF:
                 w2(p, a.db, tag=f'W2[{os.path.basename(p)}]')
             w3_plan(p, a.db, storey_of[p], tag=f'W3[{os.path.basename(p)}]')
         for p in elevs:
             w3_elev(p, a.db, tag=f'W3[{os.path.basename(p)}]')
-        w4(P['FLOOR_GF'])
+        w4(GF)
         # W5 + controls (§L1.2): hinge flip and swing flip must each FAIL
         res5 = w5(plans, a.db, a.ifc, r1['log'], expect_arcs=bool(a.door_ops), verbose=True)
         if res5 is not None:
@@ -636,7 +680,7 @@ def main():
         w6(elevs, a.db, a.ifc)
         for p in plans:   # §L1.5 W10 + control
             w10(p, a.db, storey_of[p], tag=f'W10[{os.path.basename(p)}]')
-        ffp = P.get('FLOOR_FF')
+        ffp = FF
         if ffp:
             ff_other = [g for g, st in walls_cut(a.db, cut_z_of(a.db, storey_of[ffp])) if st != storey_of[ffp]]
             if ff_other:
@@ -676,22 +720,26 @@ def main():
         shutil.copy(a.db, mdb)
         con = sqlite3.connect(mdb)
         dx, dy = (0.05, 0.0) if target[0] == 'x' else (0.0, 0.05)
-        con.execute("""UPDATE elements_rtree SET minX=minX+?, maxX=maxX+?, minY=minY+?, maxY=maxY+?
-                       WHERE id=(SELECT id FROM elements_meta WHERE guid=?)""", (dx, dx, dy, dy, target[2]))
+        if con.execute("SELECT 1 FROM sqlite_master WHERE name='element_world_bbox'").fetchone():   # Node DB
+            con.execute("""UPDATE element_world_bbox SET minX=minX+?, maxX=maxX+?, minY=minY+?, maxY=maxY+?
+                           WHERE guid=?""", (dx, dx, dy, dy, target[2]))
+        else:
+            con.execute("""UPDATE elements_rtree SET minX=minX+?, maxX=maxX+?, minY=minY+?, maxY=maxY+?
+                           WHERE id=(SELECT id FROM elements_meta WHERE guid=?)""", (dx, dx, dy, dy, target[2]))
         con.execute("UPDATE element_transforms SET center_x=center_x+?, center_y=center_y+? WHERE guid=?",
                     (dx, dy, target[2]))
         con.commit()
         con.close()
         say(f'-- W7: wall {target[2]} (axis {target[0]}={target[1]:.1f} mm) shifted 50 mm in a DB copy --')
         n0 = len(FAILS)
-        stale2 = w2(P['FLOOR_GF'], mdb, tag='W7.stale-W2')
-        stale3 = w3_plan(P['FLOOR_GF'], mdb, gs, tag='W7.stale-W3')
+        stale2 = w2(GF, mdb, tag='W7.stale-W2')
+        stale3 = w3_plan(GF, mdb, gs, tag='W7.stale-W3')
         caught = (not stale2) and (not stale3)
         del FAILS[n0:]   # stale failures are the expected outcome
         rm = std2d.write_std_set(mdb, os.path.join(tmp, 'mut'), door_ops=a.door_ops)
         n1 = len(FAILS)
-        fresh2 = w2(rm['paths']['FLOOR_GF'], mdb, tag='W7.fresh-W2')
-        fresh3 = w3_plan(rm['paths']['FLOOR_GF'], mdb, gs, tag='W7.fresh-W3')
+        fresh2 = w2(rm['paths'][view_key(pss[0])], mdb, tag='W7.fresh-W2')
+        fresh3 = w3_plan(rm['paths'][view_key(pss[0])], mdb, gs, tag='W7.fresh-W3')
         del FAILS[n1:]
         check('W7', 'a 50 mm wall shift in the model is not reported by W2/W3 (or the writer does not follow it)',
               caught and fresh2 and fresh3,
@@ -701,7 +749,7 @@ def main():
         if a.old_dir and a.ifc:
             oracle = ifc_doors(a.ifc)
             doors = {g: (x0, x1, y0, y1) for g, x0, x1, y0, y1 in q(a.db, """SELECT m.guid, r.minX, r.maxX,
-                     r.minY, r.maxY FROM elements_meta m JOIN elements_rtree r ON r.id=m.id WHERE m.ifc_class='IfcDoor'""")}
+                     r.minY, r.maxY FROM elements_meta m JOIN m_bbox r ON r.guid=m.guid WHERE m.ifc_class='IfcDoor'""")}
             tot = side_ok = hinge_ok = 0
             for p in sorted(glob.glob(os.path.join(a.old_dir, 'DX_FLOOR_?F_20260428_0636.dxf'))):
                 for arc in ezdxf.readfile(p).modelspace().query('ARC[layer=="A-DOOR"]'):

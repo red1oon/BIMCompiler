@@ -12,7 +12,8 @@ const ROOT = path.join(__dirname, '../..');
 const DB = path.join(ROOT, '2D_Layout/input/DX_extracted.db');
 // STD_DIR set (lane spec §L1.3 F2): read the std set DX_<view>_std.dxf from it; otherwise the old timestamped set
 const STD_DIR = process.env.STD_DIR || null;
-const DXF = n => fs.readFileSync(STD_DIR ? path.join(STD_DIR, 'DX_' + n + '_std.dxf') : path.join(ROOT, '2D_Layout/output/DXF/DX_' + n + '_20260428_0636.dxf'), 'utf8');
+const STD_KEY = { FLOOR_GF: 'FLOOR_LEVEL_1', FLOOR_FF: 'FLOOR_LEVEL_2' };   // lane spec §L1.6 N: std plan sheets are named after the model storey (STOREYS below)
+const DXF = n => fs.readFileSync(STD_DIR ? path.join(STD_DIR, 'DX_' + (STD_KEY[n] || n) + '_std.dxf') : path.join(ROOT, '2D_Layout/output/DXF/DX_' + n + '_20260428_0636.dxf'), 'utf8');
 const sql = q => JSON.parse(cp.execFileSync('sqlite3', ['-json', '-readonly', DB, q], { encoding: 'utf8', maxBuffer: 1 << 26 }) || '[]');
 const MAP = { version: 1, rules: [
   { match: 'exact', pattern: 'A-WALL-FULL', type: 'wall' }, { match: 'exact', pattern: 'A-WALL-PRTN', type: 'wall' }, { match: 'exact', pattern: 'A-WALL-PATT', type: 'ignore' },
