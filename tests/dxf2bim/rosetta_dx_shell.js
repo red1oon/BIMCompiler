@@ -19,7 +19,9 @@ const sql = q => sqlj(DB, q), lsql = q => sqlj(LIBDB, q);
 const txt = f => fs.readFileSync(path.join(OUT, 'DX_' + f + '_marked.dxf'), 'utf8');
 const ORIG = f => fs.readFileSync(path.join(ROOT, '2D_Layout/output/DXF/DX_' + f + '_20260428_0636.dxf'), 'utf8');
 const MUT = process.env.MUT || '';
-const { MAP_PLAN, MAP_ELEV, MAP_LEVL, MAP_ROOF, CFG } = require('./set_configs.js').DX;   // moved to set_configs.js (shared with rosetta_qualify.js); NO wall/door/window heights and NO slab values in config
+// §11: the pipeline configuration lives in ONE shared module (also copied verbatim into the Modeller import), not here.
+const C = require(path.join(__dirname, '../../deploy/dev/dxf2shell_config.js'));
+const { MAP_PLAN, MAP_ELEV, MAP_LEVL, MAP_ROOF, CFG } = C;
 const deps = { DxfParser, hashHex, library: [] };
 const lines = []; let fails = 0;
 const say = s => { lines.push(s); console.log(s); };
@@ -41,12 +43,26 @@ ELEVS.forEach(f => {
   say('MARK-ROOF ' + f + ': text ' + roofT[0].handle + ' "' + roofT[0].text.trim() + '" -> @ROOF=' + z + ' (copy out/marked_shell/DX_' + f + '_shell.dxf)');
 });
 
+// §11 roof-plan role marking (the marker's step, like @ROOF above): a COPY of the ROOF plan gets @SET (the plans' set), @VIEW=PLAN,
+// @UNITS from its header ($INSUNITS 4 = mm, DXF code table) and @ROOF = the value every marked elevation agrees on. A PLAN view with
+// @ROOF and no @LEVEL is the roof plan. Refuses (no copy, run stops) when the elevations disagree or the header units are not 4.
+{
+  const roofT0 = ORIG('ROOF'), rd0 = parse(roofT0), setV = MK.describe(MK.readMarks(parse(txt('FLOOR_GF')).entities)).desc.set;
+  const rv = [...new Set(ELEVS.map(f => MK.describe(MK.readMarks(parse(shellTxt[f]).entities)).desc.roof).filter(v => typeof v === 'number'))];
+  const iu = rd0.header && rd0.header.$INSUNITS, ro = rd0.entities.find(e => e.layer === 'A-ROOF' && (e.type === 'LWPOLYLINE' || e.type === 'POLYLINE') && e.shape);
+  if (rv.length !== 1 || iu !== 4 || !ro || !setV) { say('MARK-ROOFPLAN: REFUSED roof values=' + J(rv) + ' $INSUNITS=' + iu + ' outline=' + !!ro + ' set=' + setV); process.exit(1); }
+  const p0 = ro.vertices[0];
+  shellTxt.ROOF = MK.writeMarks(roofT0, ['@SET=' + setV, '@VIEW=PLAN', '@UNITS=mm', '@NAME=ROOF PLAN', '@ROOF=' + rv[0]].map(t => ({ text: t, x: p0.x, y: p0.y })));
+  fs.writeFileSync(path.join(OUTS, 'DX_ROOF_shell.dxf'), shellTxt.ROOF);
+  say('MARK-ROOFPLAN: @SET=' + setV + ' @VIEW=PLAN @UNITS=mm ($INSUNITS ' + iu + ') @ROOF=' + rv[0] + ' at A-ROOF ' + ro.handle + ' vertex 0 (copy out/marked_shell/DX_ROOF_shell.dxf)');
+}
+
 // ---------------- the pipeline (a function, run twice for determinism) ----------------
 function pipeline(popt) {
   popt = popt || {};
   const R = { gaps: [], notes: [], storeys: {} };
   const planDesc = {}; ['FLOOR_GF', 'FLOOR_FF'].forEach(f => { planDesc[f] = MK.describe(MK.readMarks(parse(txt(f)).entities)).desc; });
-  const elevs = ELEVS.map(f => { const d = parse(shellTxt[f]), de = MK.describe(MK.readMarks(d.entities)), al = MK.align(planDesc.FLOOR_GF, de.desc, 0.001);
+  const elevs = ELEVS.map(f => { const d = parse(shellTxt[f]), de = MK.describe(MK.readMarks(d.entities)), al = MK.align(planDesc.FLOOR_GF, de.desc, C.MARK_ALIGN_TOL);
     return { name: f, face: de.desc.face, roof: de.desc.roof, errors: de.errors.filter(e => e.code !== 'MARK:missing'), map: al.map, lines: S.levelLinesZ(d.entities, MAP_LEVL, al.map),
       clusters: E.elevClusters(d.entities, MAP_ELEV, al.map, CFG.snap_tol, 'glazing'), walls: E.elevWallRects(d.entities, MAP_ELEV, al.map), doors: E.elevClusters(d.entities, MAP_ELEV, al.map, CFG.snap_tol, 'elevdoor') }; });
   R.elevs = elevs;
@@ -57,7 +73,7 @@ function pipeline(popt) {
     st.levelDrawn = allRects.filter(r => Math.abs(r.z0 - st.level) <= CFG.elev_tol).map(r => r.handle);
     const nxt = ST[i + 1] ? planDesc[ST[i + 1].f].level : Math.max(...allRects.filter(r => Math.abs(r.z0 - st.level) <= CFG.elev_tol).map(r => r.z1));
     st.top = nxt;                                                   // storey z range for window matching: next drawn level, or top of this storey's elevation rects
-    const run = B.run(txt(st.f), MAP_PLAN, CFG, deps); st.before = run.ops; st.planGaps = run.report.gaps;
+    const run = B.run(txt(st.f), MAP_PLAN, CFG, deps); st.before = run.ops; st.planGaps = run.report.gaps; st.run_id = run.run_id;
     let ops = E.applyElevations(run.ops, elevs.map(e => ({ face: e.face, clusters: e.clusters })), Object.assign({}, CFG, { wall: Object.assign({ height: r6(nxt - st.level) }, CFG.wall) }), { level: st.level, hashHex }).ops;
     ops = E.applyWallHeights(ops, elevs.map(e => ({ face: e.face, walls: e.walls })), CFG, { level: st.level }).ops;
     ops = E.applyDoorHeights(ops, elevs.map(e => ({ face: e.face, doors: e.doors })), CFG, { level: st.level }).ops;
@@ -76,10 +92,11 @@ function pipeline(popt) {
   // outlines (S-O / R-O)
   ST.forEach(st => { st.ring = S.innerRing(st.after, CFG); });
   if (MUT === 'M-S2') ST.forEach(st => { const E0 = st.ring.envelope; st.ring = { outline: [[E0[0], E0[1]], [E0[2], E0[1]], [E0[2], E0[3]], [E0[0], E0[3]]], gaps: [], envelope: E0 }; });
-  const roofD = parse(ORIG('ROOF'));
-  R.roofPlan = S.roofPlan(roofD.entities, MAP_ROOF, 0.001, L2.ring.envelope, L2.ring.outline, CFG);   // ROOF plan units mm ($INSUNITS 4), not marked; factor stated
+  const roofD = parse(shellTxt.ROOF), roofDesc = MK.describe(MK.readMarks(roofD.entities)).desc;
+  R.roofPlan = S.roofPlan(roofD.entities, MAP_ROOF, MK.UNITS[roofDesc.units], L2.ring.envelope, L2.ring.outline, CFG);   // §11: factor from the roof plan's @UNITS marking
+  R.run_id = C.runId(B.canon, hashHex, ST.map(st => st.run_id), ['FLOOR_GF', 'FLOOR_FF'].map(f => hashHex(txt(f))).concat(ELEVS.map(f => hashHex(shellTxt[f])), [hashHex(shellTxt.ROOF)]));
   // type binding (rosetta_dx_types chain): prefer DUPLEX_NOMINAL (SANDBOX sets by id prefix), 819x759 windows labelled from the SOURCE model (round trip, as its E7)
-  const setOf = id => /^DUPLEX_/.test(id) ? 'DUPLEX_NOMINAL' : /^US_/.test(id) ? 'US_BBOX' : undefined;
+  const setOf = C.setOf;
   const fams = lsql('select family_id id, opening_type ot, ifc_class, default_width_mm w, default_height_mm h, description d from ad_opening_family where is_active=1');
   const wallT = lsql('select wall_type_id id, total_mm t from ad_wall_type where is_active=1');
   const LIB = { wall: wallT.filter(w => w.id !== 'NONE').map(w => ({ id: w.id, thickness: w.t / 1000 })),
@@ -89,7 +106,7 @@ function pipeline(popt) {
     const sn = sql("select substr(m.element_name,1,instr(m.element_name,':')-1) k, r.minX a, r.minY b, r.maxX c, r.maxY d, r.minZ z0, r.maxZ z1 from elements_meta m join elements_rtree r on r.id=m.id where m.ifc_class='IfcWindow' and m.storey='" + st.name + "' and m.element_type='819mm x 759mm'");
     const lr = T.applyLabels(st.after, { units: 'm', labels: sn.map(x => ({ class: 'window', x: (x.a + x.c) / 2, y: (x.b + x.d) / 2, z: (x.z0 + x.z1) / 2, text: LABELMAP[x.k] })) }, { m: 1 }, { snap_tol: CFG.snap_tol, level: st.level });
     st.labelGaps = lr.gaps.length;
-    st.after = T.bindTypes(lr.ops, LIB, { bind: { size_tol: 0.005, prefer: ['DUPLEX_NOMINAL'] } }, {}).ops;
+    st.after = T.bindTypes(lr.ops, LIB, { bind: { size_tol: C.TYPES.size_tol, prefer: C.TYPES.prefer } }, {}).ops;
   });
   // openings bridged in drawn gaps (§6)
   ST.forEach(st => {
@@ -113,7 +130,7 @@ function pipeline(popt) {
   ST.forEach(st => {
     let ops = st.after;
     if (MUT === 'M-F3') ops = ops.map(o => o.op_type === 'DXF_OPENING' && o.params.kind === 'window' ? Object.assign({}, o, { params: Object.assign({}, o.params, { sill: 0 }) }) : o);
-    try { st.fills = S.placeFills(ops, libRows, { level: st.level, hashHex, size_tol: 0.005, voidOf: st.voidOf }); st.hard = null; }
+    try { st.fills = S.placeFills(ops, libRows, { level: st.level, hashHex, size_tol: C.FILL.size_tol, voidOf: st.voidOf }); st.hard = null; }
     catch (e) { st.fills = { elements: [], gaps: e.gaps || [] }; st.hard = e.message; }
   });
   // ---------------- mesh ----------------
@@ -396,6 +413,17 @@ if (!MUT) {
   const inputs = {}; ['FLOOR_GF', 'FLOOR_FF'].forEach(f => { inputs['DX_' + f] = hashHex(txt(f)); }); ELEVS.forEach(f => { inputs['DX_' + f] = hashHex(shellTxt[f]); }); inputs.DX_ROOF = hashHex(ORIG('ROOF'));
   fs.writeFileSync(path.join(OUTS, 'dx_shell_gaps.json'), J({ variant: 'A', inputs, gaps: qg }, null, 1) + '\n');
   say('L2 qualify input: ' + qg.length + ' gap records (variant A) -> out/marked_shell/dx_shell_gaps.json');
+}
+// §11 element summary for the Modeller import witness (bim-ootb modeller/tests/witness_dxf_convert.js C1): same element ids as the OBJ.
+{
+  const infillOf = {}; R.ST.forEach(st => st.infill.forEach(o => { infillOf[hashHex(o.output_guid + '|0').slice(0, 32)] = { infill_of: o.params.infill_of, openings: o.params.openings }; }));
+  const bb = e => { const mn = [0, 1, 2].map(a => Math.min(...e.vertices.map(v => v[a]))), mx = [0, 1, 2].map(a => Math.max(...e.vertices.map(v => v[a]))); return mn.concat(mx).map(r6); };
+  const rows = R.els.map(e => { const b = bb(e); return Object.assign({ guid: e.guid, class: e.class, storey: e.storey, handle: e.handle, layer: e.layer, bbox: b, centre: [0, 1, 2].map(a => r6((b[a] + b[a + 3]) / 2)), volume: e.volume },
+    infillOf[e.guid] ? { infill: true, infill_of: infillOf[e.guid].infill_of, openings: infillOf[e.guid].openings } : {}, e.element_ref ? { element_ref: e.element_ref, geometry_hash: e.geometry_hash, family_id: e.family_id } : {}); });
+  const nInf = rows.filter(x => x.infill).length;
+  fs.writeFileSync(path.join(__dirname, 'out/duplex_basic_shapes_elements.json'), J({ run_id: R.run_id, storeys: R.ST.map(st => ({ name: st.name, level: st.level, run_id: st.run_id })), elements: rows }));
+  check('RUN-id', 'the set run_id differs between two full runs (not an identity of the inputs)', R.run_id === R2.run_id && typeof R.run_id === 'string', 'run_id=' + R.run_id);
+  check('ELEM-dump', 'the element summary misses an infill box or an element', nInf === R.ST.reduce((n, st) => n + st.infill.length, 0) && rows.length === R.els.length, 'elements=' + rows.length + ' infill=' + nInf + ' -> out/duplex_basic_shapes_elements.json');
 }
 say('\nSUMMARY fail=' + fails);
 fs.writeFileSync(path.join(__dirname, 'rosetta_dx_shell.log'), lines.join('\n') + '\n');
