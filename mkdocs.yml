@@ -95,6 +95,7 @@ nav:
       - "Viewer Ask — First Steps": AskFirstSteps.md
       - "Modeller — First Steps": ModellerFirstSteps.md
       - "DAGeVu Modeller — User Guide": ModellerGuide.md
+      - "2D Drawings → BIM (DXF2BIM)": DXF2BIMGuide.md
       - "Kernel-ERP User Guide": ERPUserGuide.md
       - "HR / Tenancy / Operate Module": HRBIMAssetGuide.md
       - "Teams Overlay — Collaboration & Optics": TeamsOverlayGuide.md
