@@ -29,7 +29,7 @@ import ezdxf
 from ezdxf.enums import TextEntityAlignment
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from section_cut import section_cut as run_section_cut  # noqa: E402
+from section_cut import section_cut as run_section_cut, slice_mesh, chain_segments  # noqa: E402
 
 # ── R4/R5 grid rule constants (stated in §L1.1) ──
 GRID_MERGE_TOL = 0.010      # m, R5
@@ -62,6 +62,7 @@ LAYERS = {   # R12: name -> (ACI colour, lineweight 1/100 mm, linetype)
     'A-ANNO-DIMS': (7, 18, 'Continuous'), 'A-ANNO-LEVL': (6, 18, 'Continuous'),
     'A-ANNO-NOTE': (1, 18, 'Continuous'), 'A-ANNO-TTLB': (7, 25, 'Continuous'),
     'A-ROOF': (5, 35, 'Continuous'),
+    'A-SECT': (7, 50, 'Continuous'), 'S-SLAB': (2, 50, 'Continuous'),   # §L1.4 F5 section cut layers
 }
 
 
@@ -665,6 +666,162 @@ def plan_storeys(model):
     return out
 
 
+def roof_storey(model):
+    """§L1.4 F4: the highest storey above the grid storey that gets no floor plan (its walls do not reach a cut plane)."""
+    gs = model['grid_storey']
+    g_el = next(s['elev'] for s in model['storeys'] if s['name'] == gs)
+    planned = {s['name'] for s in plan_storeys(model)}
+    cand = [s for s in model['storeys'] if s['elev'] > g_el and s['name'] not in planned]
+    return cand[-1] if cand else None
+
+
+def _plan_dims(msp, E, grid, log, view):
+    """T2 grid-to-grid + T1 overall on 4 sides (no T3: nothing is cut). E = envelope in mm."""
+    gx = [mm(p) for _, p, _ in grid['x']]
+    gy = [mm(p) for _, p, _ in grid['y']]
+    sides = {'S': (E[2], -1, True), 'N': (E[3], +1, True), 'W': (E[0], -1, False), 'E': (E[1], +1, False)}
+    for side, (fc, sg, horiz) in sides.items():
+        for tier, off, pts in (('T2', DIM_T2, gx if horiz else gy), ('T1', DIM_T1, [E[0], E[1]] if horiz else [E[2], E[3]])):
+            base_c = fc + sg * off * SCALE
+            for a, b in zip(pts, pts[1:]):
+                if horiz:
+                    _dim(msp, (a, fc), (b, fc), (a, base_c), 0, log, f'{view}/{side}/{tier}', (0, sg))
+                else:
+                    _dim(msp, (fc, a), (fc, b), (base_c, a), 90, log, f'{view}/{side}/{tier}', (sg, 0))
+
+
+def _grid_plan(msp, E, grid):
+    ge, bc = GRID_END * SCALE, BUBBLE_C * SCALE
+    for lab, p, _ in grid['x']:
+        x = mm(p)
+        msp.add_line((x, E[2] - ge), (x, E[3] + ge), dxfattribs={'layer': 'A-GRID'})
+        _bubble(msp, x, E[2] - bc, lab)
+        _bubble(msp, x, E[3] + bc, lab)
+    for lab, p, _ in grid['y']:
+        y = mm(p)
+        msp.add_line((E[0] - ge, y), (E[1] + ge, y), dxfattribs={'layer': 'A-GRID'})
+        _bubble(msp, E[0] - bc, y, lab)
+        _bubble(msp, E[1] + bc, y, lab)
+
+
+def write_roof_plan(model, grid, storey, out_path, log):
+    """§L1.4 F4: roof outline (A-ROOF) = the roof storey's wall envelope, skylights (A-GLAZ) = its IfcWindow bboxes,
+    grid, T2/T1 dims, level texts (storey + T/ROOF). No markings (std2d writes none)."""
+    log(f"§VIEW ROOF storey={storey['name']!r} elev={storey['elev']:.4f}")
+    doc = new_doc()
+    msp = doc.modelspace()
+    rw = sorted((w for w in model['walls'] if w['storey'] == storey['name']), key=lambda w: w['guid'])
+    env = envelope(rw)
+    E = [mm(v) for v in env]
+    pl = msp.add_lwpolyline([(E[0], E[2]), (E[1], E[2]), (E[1], E[3]), (E[0], E[3])], close=True, dxfattribs={'layer': 'A-ROOF'})
+    _tag(pl, ','.join(w['guid'] for w in rw)[:255])
+    log(f'§ROOF_OUTLINE env=({E[0]:.2f},{E[2]:.2f})-({E[1]:.2f},{E[3]:.2f}) walls={len(rw)} (envelope of the roof storey walls)')
+    sky = sorted((e for e in model['els'] if e['cls'] == 'IfcWindow' and e['storey'] == storey['name']), key=lambda e: e['guid'])
+    for k in sky:
+        x0, x1, y0, y1 = mm(k['x0']), mm(k['x1']), mm(k['y0']), mm(k['y1'])
+        p2 = msp.add_lwpolyline([(x0, y0), (x1, y0), (x1, y1), (x0, y1)], close=True, dxfattribs={'layer': 'A-GLAZ'})
+        _tag(p2, k['guid'])
+        log(f"§SKYLIGHT guid={k['guid']} box=({x0:.2f},{y0:.2f})-({x1:.2f},{y1:.2f})")
+    _grid_plan(msp, E, grid)
+    _plan_dims(msp, E, grid, log, 'ROOF')
+    tx = E[0] + 1.0 * SCALE
+    ty = E[3] - 4.0 * SCALE
+    _text(msp, f"{storey['name'].upper()} {storey['elev']:+.3f}", (tx, ty), TXT_LEVEL, 'A-ANNO-LEVL', align=TextEntityAlignment.BOTTOM_LEFT)
+    if model['roof_top'] is not None:
+        _text(msp, f"T/ROOF {model['roof_top']:+.3f}", (tx, ty - 4.0 * SCALE), TXT_LEVEL, 'A-ANNO-LEVL', align=TextEntityAlignment.BOTTOM_LEFT)
+    _text(msp, f"ROOF PLAN - {storey['name'].upper()} ({storey['elev']:+.3f})  1:{SCALE}",
+          ((E[0] + E[1]) / 2, E[2] - (BUBBLE_C + 14) * SCALE), TXT_TITLE, 'A-ANNO-TTLB')
+    _save(doc, out_path)
+    log(f'§WRITE {os.path.basename(out_path)}')
+
+
+def section_x(grid):
+    """§L1.4 F5 convention: constant-X plane midway between grid lines 1 and 2 (first bay)."""
+    xs = [p for _, p, _ in grid['x']]
+    return round((xs[0] + xs[1]) / 2, 6) if len(xs) >= 2 else None
+
+
+def cut_x(e, x):
+    """Slice an element mesh by the plane X = x; contours in (y, z) metres (section_cut engine, axes permuted)."""
+    if len(e['v']) == 0 or len(e['f']) == 0:
+        return []
+    w = e['v'] + np.array(e['c'])
+    if not (w[:, 0].min() < x < w[:, 0].max()):
+        return []
+    seg = slice_mesh(np.column_stack([w[:, 1], w[:, 2], w[:, 0]]), e['f'], x)
+    return [c for c in chain_segments(seg) if len(c) >= 3]
+
+
+def write_section(model, grid, out_path, log):
+    """§L1.4 F5: building section at X = section_x, viewed toward -X (h = plan y). S-SLAB cut slabs (not the R11 roof
+    element), A-ROOF cut roof element, A-SECT cut walls (+ poché), levels, height dims, Y grid bubbles."""
+    X = section_x(grid)
+    if X is None:
+        log.gap('GAP:section_no_bay', '-', 'fewer than 2 X grid lines; no section')
+        return False
+    log(f'§VIEW SECTION cut X={X * 1000:.2f} mm viewed toward -X (h = +y)')
+    doc = new_doc()
+    msp = doc.modelspace()
+    roof_g = {r['guid'] for r in model['roofs']}
+    n = {'S-SLAB': 0, 'A-ROOF': 0, 'A-SECT': 0}
+    zlo, zhi = [], []
+    for e in sorted(model['els'], key=lambda e: e['guid']):
+        if e['guid'] in roof_g:
+            layer = 'A-ROOF'
+        elif e['cls'] in ('IfcSlab', 'IfcRoof'):
+            layer = 'S-SLAB'
+        elif e['cls'] in ('IfcWall', 'IfcWallStandardCase'):
+            layer = 'A-SECT'
+        else:
+            continue
+        for ct in cut_x(e, X):
+            pts = [(mm(p[0]), mm(p[1])) for p in ct]
+            pl = msp.add_lwpolyline(pts, close=True, dxfattribs={'layer': layer})
+            _tag(pl, e['guid'])
+            if layer == 'A-SECT':
+                h = msp.add_hatch(color=8, dxfattribs={'layer': 'A-WALL-PATT'})
+                h.paths.add_polyline_path(pts, is_closed=True)
+            n[layer] += 1
+            zs = [p[1] for p in pts]
+            zlo.append(min(zs))
+            zhi.append(max(zs))
+            log(f"§SECT_CUT guid={e['guid']} class={e['cls']} layer={layer} z=({min(zs):.2f},{max(zs):.2f}) "
+                f"h=({min(p[0] for p in pts):.2f},{max(p[0] for p in pts):.2f})")
+    log(f'§SECTION contours={n}')
+    gs = model['grid_storey']
+    g_el = next(s['elev'] for s in model['storeys'] if s['name'] == gs)
+    levels = [(s['name'].upper(), s['elev']) for s in model['storeys'] if s['elev'] >= g_el]
+    if model['roof_top'] is not None:
+        levels.append(('T/ROOF', model['roof_top']))
+    levels.sort(key=lambda l: l[1])
+    env = envelope([w for w in model['walls'] if w['storey'] == gs])
+    H0, H1 = mm(env[2]), mm(env[3])
+    lx0, lx1 = H0 - LEVEL_EXT * SCALE, H1 + LEVEL_EXT * SCALE
+    for name, z in levels:
+        Z = mm(z)
+        msp.add_line((lx0, Z), (lx1, Z), dxfattribs={'layer': 'A-ANNO-LEVL', 'linetype': 'DASHED'})
+        t = 1.5 * SCALE
+        msp.add_lwpolyline([(lx1, Z), (lx1 - t, Z + t), (lx1 + t, Z + t)], close=True, dxfattribs={'layer': 'A-ANNO-LEVL'})
+        _text(msp, f'{name} {z:+.3f}', (lx1 + 2.5 * SCALE, Z + 0.4 * SCALE), TXT_LEVEL, 'A-ANNO-LEVL',
+              align=TextEntityAlignment.BOTTOM_LEFT)
+        log(f'§LEVEL_DRAWN SECTION {name} z={z:.4f}')
+    zs = [mm(z) for _, z in levels]
+    for a, b in zip(zs, zs[1:]):
+        _dim(msp, (H0, a), (H0, b), (H0 - ELEV_DIM_CHAIN * SCALE, a), 90, log, 'SECTION/H/chain', (-1, 0))
+    if len(zs) > 1:
+        _dim(msp, (H0, zs[0]), (H0, zs[-1]), (H0 - ELEV_DIM_OVERALL * SCALE, zs[0]), 90, log, 'SECTION/H/overall', (-1, 0))
+    zb, zt = min(zs + zlo), max(zs + zhi) + LEVEL_EXT * SCALE
+    for lab, p, _ in grid['y']:
+        h = mm(p)
+        msp.add_line((h, zb - ELEV_GRID_END * SCALE), (h, zt), dxfattribs={'layer': 'A-GRID'})
+        _bubble(msp, h, zb - ELEV_BUBBLE_C * SCALE, lab)
+    _text(msp, f'SECTION A-A AT X={X * 1000:.2f}  1:{SCALE}', ((H0 + H1) / 2, zb - (ELEV_BUBBLE_C + 12) * SCALE),
+          TXT_TITLE, 'A-ANNO-TTLB')
+    _save(doc, out_path)
+    log(f'§WRITE {os.path.basename(out_path)}')
+    return True
+
+
 def write_std_set(db_path, out_dir, prefix=None, png=False, door_ops=None):
     os.makedirs(out_dir, exist_ok=True)
     prefix = prefix or os.path.basename(db_path).split('_')[0].upper()
@@ -682,6 +839,16 @@ def write_std_set(db_path, out_dir, prefix=None, png=False, door_ops=None):
         p = os.path.join(out_dir, f'{prefix}_{face}_std.dxf')
         write_elevation(model, grid, face, p, log)
         paths[face] = p
+    rs = roof_storey(model)   # §L1.4 F4
+    if rs is None:
+        log.gap('GAP:no_roof_storey', '-', 'no storey above the grid storey without a floor plan; no roof plan')
+    else:
+        p = os.path.join(out_dir, f'{prefix}_ROOF_std.dxf')
+        write_roof_plan(model, grid, rs, p, log)
+        paths['ROOF'] = p
+    p = os.path.join(out_dir, f'{prefix}_SECTION_std.dxf')   # §L1.4 F5
+    if write_section(model, grid, p, log):
+        paths['SECTION'] = p
     log(f'§SUMMARY views={len(paths)} grid_x={[g[0] for g in grid["x"]]} grid_y={[g[0] for g in grid["y"]]} '
         f'gaps={len(log.gaps)}')
     codes = {}
@@ -691,7 +858,7 @@ def write_std_set(db_path, out_dir, prefix=None, png=False, door_ops=None):
     with open(os.path.join(out_dir, f'log_{prefix}_std.txt'), 'w') as fh:
         fh.write('\n'.join(log.lines) + '\n')
     if png:
-        for v in ('FLOOR_GF', 'FRONT'):
+        for v in ('FLOOR_GF', 'FRONT', 'ROOF', 'SECTION'):
             if v in paths:
                 render_png(paths[v], paths[v][:-4] + '.png')
     return dict(paths=paths, grid=grid, model=model, gaps=log.gaps, log=log.lines)

@@ -9,8 +9,8 @@
   'use strict';
   var LAYER = 'DXF2BIM-MARK';
   var K = { mm: 0.001, cm: 0.01, m: 1, 'in': 0.0254, ft: 0.3048 };
-  var SINGLE = ['SET', 'VIEW', 'NAME', 'UNITS', 'LEVEL', 'FACE', 'HAXIS', 'REGION', 'ROOF'], MULTI = ['GRIDX', 'GRIDY', 'GRIDH', 'Z', 'EXCLUDE', 'OPENING', 'LABEL', 'SCHEDULE', 'TAG', 'ALLOWANCE', 'WALLTOP'];
-  var NEED = { PLAN: ['SET', 'VIEW', 'LEVEL', 'UNITS'], ELEV: ['SET', 'VIEW', 'FACE', 'HAXIS', 'UNITS'], ROOF: ['SET', 'VIEW', 'LEVEL', 'UNITS', 'ROOF'] };   // ROOF view: lane spec L2.3 D1
+  var SINGLE = ['SET', 'VIEW', 'NAME', 'UNITS', 'LEVEL', 'FACE', 'HAXIS', 'REGION', 'ROOF', 'CUT'], MULTI = ['GRIDX', 'GRIDY', 'GRIDH', 'Z', 'EXCLUDE', 'OPENING', 'LABEL', 'SCHEDULE', 'TAG', 'ALLOWANCE', 'WALLTOP'];
+  var NEED = { PLAN: ['SET', 'VIEW', 'LEVEL', 'UNITS'], ELEV: ['SET', 'VIEW', 'FACE', 'HAXIS', 'UNITS'], ROOF: ['SET', 'VIEW', 'LEVEL', 'UNITS', 'ROOF'], SECTION: ['SET', 'VIEW', 'UNITS', 'HAXIS', 'CUT'] };   // ROOF view: lane spec L2.3 D1; SECTION: L1.4 F5
 
   function err(code, message, extra) { return Object.assign({ code: code, message: message }, extra || {}); }
 
@@ -43,7 +43,12 @@
           if (rp.length !== 4 || rp.some(function (n) { return !isFinite(n); })) { errors.push(err('MARK:malformed', '@REGION needs x0,y0,x1,y1: ' + val, { handle: m.handle })); return; }
           val = [Math.min(rp[0], rp[2]), Math.min(rp[1], rp[3]), Math.max(rp[0], rp[2]), Math.max(rp[1], rp[3])].join(',');
         }
-        if (key === 'VIEW' && val !== 'PLAN' && val !== 'ELEV' && val !== 'ROOF') { errors.push(err('MARK:malformed', '@VIEW must be PLAN|ELEV|ROOF: ' + val, { handle: m.handle })); return; }
+        if (key === 'VIEW' && val !== 'PLAN' && val !== 'ELEV' && val !== 'ROOF' && val !== 'SECTION') { errors.push(err('MARK:malformed', '@VIEW must be PLAN|ELEV|ROOF|SECTION: ' + val, { handle: m.handle })); return; }
+        if (key === 'CUT') {                                                               // L1.4 F5: <X|Y>,<plan coordinate in the sheet's @UNITS>
+          var cp = val.split(','), cv = Number(cp[1]);
+          if (cp.length !== 2 || (cp[0] !== 'X' && cp[0] !== 'Y') || cp[1].trim() === '' || !isFinite(cv)) { errors.push(err('MARK:malformed', '@CUT needs X|Y,<coordinate>: ' + val, { handle: m.handle })); return; }
+          val = cp[0] + ',' + cv;
+        }
         if (key === 'UNITS' && !(val in K)) { errors.push(err('MARK:malformed', '@UNITS must be mm|cm|m|in|ft: ' + val, { handle: m.handle })); return; }
         if (key === 'FACE' && ['minX', 'maxX', 'minY', 'maxY'].indexOf(val) < 0) { errors.push(err('MARK:malformed', '@FACE must be minX|maxX|minY|maxY: ' + val, { handle: m.handle })); return; }
         if (key === 'HAXIS' && ['+X', '-X', '+Y', '-Y'].indexOf(val) < 0) { errors.push(err('MARK:malformed', '@HAXIS must be +X|-X|+Y|-Y: ' + val, { handle: m.handle })); return; }
@@ -104,7 +109,7 @@
         bag[val] = pos;
       }
     });
-    if (d.view === 'ELEV') {      // z comes from the position in an elevation; checked after the loop because marker order is not guaranteed
+    if (d.view === 'ELEV' || d.view === 'SECTION') {      // z comes from the position in an elevation; checked after the loop because marker order is not guaranteed
       d.tags = d.tags.filter(function (q) { if (q.z === undefined) return true; errors.push(err('MARK:malformed', '@TAG z= is not allowed in an ELEV view (z comes from the position): ' + q.text)); return false; });
     }
     {
@@ -112,13 +117,14 @@
       if (d.view === 'PLAN') {
         if (Object.keys(d.gridsX).length < 2) need.push('GRIDX(>=2)');
         if (Object.keys(d.gridsY).length < 2) need.push('GRIDY(>=2)');
-      } else if (d.view === 'ELEV') {
+      } else if (d.view === 'ELEV' || d.view === 'SECTION') {
         if (Object.keys(d.gridsH).length < 2) need.push('GRIDH(>=2)');
         if (d.zs.length < 2) need.push('Z(>=2)');
-        if (d.face && d.haxis) {
+        if (d.view === 'ELEV' && d.face && d.haxis) {
           var faceAxis = d.face.slice(3), hax = d.haxis.slice(1);
           if (faceAxis === hax) errors.push(err('MARK:axis_face', '@HAXIS ' + d.haxis + ' is not perpendicular to face ' + d.face));
         }
+        if (d.view === 'SECTION' && d.cut && d.haxis && d.cut.split(',')[0] === d.haxis.slice(1)) errors.push(err('MARK:axis_cut', '@HAXIS ' + d.haxis + ' runs along the cut axis ' + d.cut));
       } else if (d.view === undefined) need = ['VIEW'].concat(need);
       if (need.length) errors.push(err('MARK:missing', need.join(','), { keys: need }));
     }
