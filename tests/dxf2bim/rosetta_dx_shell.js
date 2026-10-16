@@ -13,7 +13,9 @@ const T = require(path.join(__dirname, '../../deploy/dev/dxf2types.js'));
 const S = require(path.join(__dirname, '../../deploy/dev/dxf2shell.js'));
 const hashHex = s => crypto.createHash('sha256').update(s).digest('hex');
 const ROOT = path.join(__dirname, '../..');
-const OUT = path.join(__dirname, 'out/marked'), OUTS = path.join(__dirname, 'out/marked_shell'), DB = path.join(ROOT, '2D_Layout/input/DX_extracted.db'), LIBDB = path.join(ROOT, 'deploy/component_library.db');
+// DXSET=std (lane spec L2.3 convergence): the same pipeline on the L1 standard set marked by `mark_dx_set.js std` (out/marked_std), with the std layer maps.
+const DXSET = process.env.DXSET || '', STDSET = DXSET === 'std', SFX = STDSET ? '_std' : '';
+const OUT = path.join(__dirname, STDSET ? 'out/marked_std' : 'out/marked'), OUTS = path.join(__dirname, STDSET ? 'out/marked_std_shell' : 'out/marked_shell'), DB = path.join(ROOT, '2D_Layout/input/DX_extracted.db'), LIBDB = path.join(ROOT, 'deploy/component_library.db');
 const sqlj = (db, q) => JSON.parse(cp.execFileSync('sqlite3', ['-json', '-readonly', db, q], { encoding: 'utf8', maxBuffer: 1 << 28 }) || '[]');
 const sql = q => sqlj(DB, q), lsql = q => sqlj(LIBDB, q);
 const txt = f => fs.readFileSync(path.join(OUT, 'DX_' + f + '_marked.dxf'), 'utf8');
@@ -21,7 +23,7 @@ const ORIG = f => fs.readFileSync(path.join(ROOT, '2D_Layout/output/DXF/DX_' + f
 const MUT = process.env.MUT || '';
 // §11: the pipeline configuration lives in ONE shared module (also copied verbatim into the Modeller import), not here.
 const C = require(path.join(__dirname, '../../deploy/dev/dxf2shell_config.js'));
-const { MAP_PLAN, MAP_ELEV, MAP_LEVL, MAP_ROOF, CFG } = C;
+const { MAP_PLAN, MAP_ELEV, MAP_LEVL, MAP_ROOF } = STDSET ? require('./set_configs.js').STD : C, CFG = C.CFG;   // std: R12 layer names (set_configs.js STD), same CFG
 const deps = { DxfParser, hashHex, library: [] };
 const lines = []; let fails = 0;
 const say = s => { lines.push(s); console.log(s); };
@@ -35,7 +37,9 @@ fs.mkdirSync(OUTS, { recursive: true });
 const ELEVS = ['FRONT', 'REAR', 'LEFT', 'RIGHT'];
 const shellTxt = {};
 ELEVS.forEach(f => {
-  const t0 = txt(f), d = parse(t0), roofT = d.entities.filter(e => e.type === 'TEXT' && e.layer === 'A-ANNO-LEVL' && /^ROOF LEVEL\s+\+?(-?\d+\.\d+)\s*$/.test((e.text || '').trim()));
+  const t0 = txt(f), d = parse(t0), roofM = MK.describe(MK.readMarks(d.entities)).desc.roof;
+  if (typeof roofM === 'number') { shellTxt[f] = t0; fs.writeFileSync(path.join(OUTS, 'DX_' + f + '_shell.dxf'), t0); say('MARK-ROOF ' + f + ': already marked @ROOF=' + roofM + ' (copy unchanged)'); return; }
+  const roofT = d.entities.filter(e => e.type === 'TEXT' && e.layer === 'A-ANNO-LEVL' && /^ROOF LEVEL\s+\+?(-?\d+\.\d+)\s*$/.test((e.text || '').trim()));
   if (roofT.length !== 1) { say('MARK-ROOF ' + f + ': REFUSED, roof level texts found=' + roofT.length); shellTxt[f] = t0; return; }
   const z = Number(/(-?\d+\.\d+)\s*$/.exec(roofT[0].text.trim())[1]), p = roofT[0].startPoint || roofT[0].position;
   shellTxt[f] = MK.writeMarks(t0, [{ text: '@ROOF=' + z, x: p.x, y: p.y }]);
@@ -43,18 +47,21 @@ ELEVS.forEach(f => {
   say('MARK-ROOF ' + f + ': text ' + roofT[0].handle + ' "' + roofT[0].text.trim() + '" -> @ROOF=' + z + ' (copy out/marked_shell/DX_' + f + '_shell.dxf)');
 });
 
-// §11 roof-plan role marking (the marker's step, like @ROOF above): a COPY of the ROOF plan gets @SET (the plans' set), @VIEW=PLAN,
-// @UNITS from its header ($INSUNITS 4 = mm, DXF code table) and @ROOF = the value every marked elevation agrees on. A PLAN view with
-// @ROOF and no @LEVEL is the roof plan. Refuses (no copy, run stops) when the elevations disagree or the header units are not 4.
-{
+// §11 roof-plan role marking (the marker's step, like @ROOF above): a COPY of the ROOF plan gets @SET (the plans' set), @VIEW=ROOF (lane spec L2.3 D1,
+// superseding CF-2's PLAN+@ROOF), @LEVEL = the "Roof" storey level FROM_SOURCE_MODEL (R1: min wall minZ, as mark_dx_set.js does for plans),
+// @UNITS from its header ($INSUNITS 4 = mm, DXF code table) and @ROOF = the value every marked elevation agrees on.
+// Refuses (no copy, run stops) when the elevations disagree or the header units are not 4. The std set has no roof plan: stage skipped, reported.
+if (STDSET) { shellTxt.ROOF = null; say('MARK-ROOFPLAN: the std set has no roof plan sheet (L1 writes none); roof-plan stage not run'); } else {
   const roofT0 = ORIG('ROOF'), rd0 = parse(roofT0), setV = MK.describe(MK.readMarks(parse(txt('FLOOR_GF')).entities)).desc.set;
   const rv = [...new Set(ELEVS.map(f => MK.describe(MK.readMarks(parse(shellTxt[f]).entities)).desc.roof).filter(v => typeof v === 'number'))];
   const iu = rd0.header && rd0.header.$INSUNITS, ro = rd0.entities.find(e => e.layer === 'A-ROOF' && (e.type === 'LWPOLYLINE' || e.type === 'POLYLINE') && e.shape);
   if (rv.length !== 1 || iu !== 4 || !ro || !setV) { say('MARK-ROOFPLAN: REFUSED roof values=' + J(rv) + ' $INSUNITS=' + iu + ' outline=' + !!ro + ' set=' + setV); process.exit(1); }
-  const p0 = ro.vertices[0];
-  shellTxt.ROOF = MK.writeMarks(roofT0, ['@SET=' + setV, '@VIEW=PLAN', '@UNITS=mm', '@NAME=ROOF PLAN', '@ROOF=' + rv[0]].map(t => ({ text: t, x: p0.x, y: p0.y })));
+  const p0 = ro.vertices[0], rl = sql("select min(r.minZ) z from elements_meta m join elements_rtree r on r.id=m.id where m.ifc_class='IfcWall' and m.storey='Roof'")[0].z;
+  if (typeof rl !== 'number') { say('MARK-ROOFPLAN: REFUSED, the model has no wall in storey Roof (no @LEVEL)'); process.exit(1); }
+  const rl3 = Number(rl.toFixed(3));
+  shellTxt.ROOF = MK.writeMarks(roofT0, ['@SET=' + setV, '@VIEW=ROOF', '@UNITS=mm', '@NAME=ROOF PLAN', '@LEVEL=' + rl3, '@ROOF=' + rv[0]].map(t => ({ text: t, x: p0.x, y: p0.y })));
   fs.writeFileSync(path.join(OUTS, 'DX_ROOF_shell.dxf'), shellTxt.ROOF);
-  say('MARK-ROOFPLAN: @SET=' + setV + ' @VIEW=PLAN @UNITS=mm ($INSUNITS ' + iu + ') @ROOF=' + rv[0] + ' at A-ROOF ' + ro.handle + ' vertex 0 (copy out/marked_shell/DX_ROOF_shell.dxf)');
+  say('MARK-ROOFPLAN: @SET=' + setV + ' @VIEW=ROOF @UNITS=mm ($INSUNITS ' + iu + ') @LEVEL=' + rl3 + ' [FROM_SOURCE_MODEL: min wall z of storey Roof] @ROOF=' + rv[0] + ' at A-ROOF ' + ro.handle + ' vertex 0 (copy out/marked_shell/DX_ROOF_shell.dxf)');
 }
 
 // ---------------- the pipeline (a function, run twice for determinism) ----------------
@@ -92,9 +99,11 @@ function pipeline(popt) {
   // outlines (S-O / R-O)
   ST.forEach(st => { st.ring = S.innerRing(st.after, CFG); });
   if (MUT === 'M-S2') ST.forEach(st => { const E0 = st.ring.envelope; st.ring = { outline: [[E0[0], E0[1]], [E0[2], E0[1]], [E0[2], E0[3]], [E0[0], E0[3]]], gaps: [], envelope: E0 }; });
-  const roofD = parse(shellTxt.ROOF), roofDesc = MK.describe(MK.readMarks(roofD.entities)).desc;
-  R.roofPlan = S.roofPlan(roofD.entities, MAP_ROOF, MK.UNITS[roofDesc.units], L2.ring.envelope, L2.ring.outline, CFG);   // §11: factor from the roof plan's @UNITS marking
-  R.run_id = C.runId(B.canon, hashHex, ST.map(st => st.run_id), ['FLOOR_GF', 'FLOOR_FF'].map(f => hashHex(txt(f))).concat(ELEVS.map(f => hashHex(shellTxt[f])), [hashHex(shellTxt.ROOF)]));
+  if (shellTxt.ROOF) {
+    const roofD = parse(shellTxt.ROOF), roofDesc = MK.describe(MK.readMarks(roofD.entities)).desc;
+    R.roofPlan = S.roofPlan(roofD.entities, MAP_ROOF, MK.UNITS[roofDesc.units], L2.ring.envelope, L2.ring.outline, CFG);   // §11: factor from the roof plan's @UNITS marking
+  } else R.roofPlan = { ok: false, holes: [], gaps: [] };                                    // std set: no roof plan sheet (qualify reports QF:set_no_roof)
+  R.run_id = C.runId(B.canon, hashHex, ST.map(st => st.run_id), ['FLOOR_GF', 'FLOOR_FF'].map(f => hashHex(txt(f))).concat(ELEVS.map(f => hashHex(shellTxt[f])), shellTxt.ROOF ? [hashHex(shellTxt.ROOF)] : []));
   // type binding (rosetta_dx_types chain): prefer DUPLEX_NOMINAL (SANDBOX sets by id prefix), 819x759 windows labelled from the SOURCE model (round trip, as its E7)
   const setOf = C.setOf;
   const fams = lsql('select family_id id, opening_type ot, ifc_class, default_width_mm w, default_height_mm h, description d from ad_opening_family where is_active=1');
@@ -381,7 +390,7 @@ RB.ST.forEach(st => {
     if (Math.abs(z0 - s2.z0) <= 0.01 && Math.abs(z1 - s2.z1) <= 0.01) eq[0]++; else { eq[1]++; eq[2].push(p.handle + ' ours ' + r6(z0) + '..' + r6(z1) + ' src ' + s2.id + ' ' + r6(s2.z0) + '..' + r6(s2.z1)); } });
   say('INFO slab_above ' + st.name + ': pieces=' + st.slabAboveN + ' equal to source=' + eq[0] + ' differ=' + eq[1] + (eq[2].length ? ' -> ' + eq[2].join('; ') : ''));
 });
-fs.writeFileSync(path.join(__dirname, 'out/duplex_basic_shapes_convention.obj'), RB.obj);
+fs.writeFileSync(path.join(__dirname, 'out/duplex_basic_shapes_convention' + SFX + '.obj'), RB.obj);
 say('variant B OBJ tests/dxf2bim/out/duplex_basic_shapes_convention.obj elements=' + RB.els.length + ' ' + J(RB.els.reduce((a, e) => (a[e.class] = (a[e.class] || 0) + 1, a), {})) + ' sha256=' + hashHex(RB.obj));
 
 // ---------------- MESH, OBJ, determinism ----------------
@@ -390,7 +399,7 @@ const els = R.els, byC = els.reduce((a, e) => (a[e.class] = (a[e.class] || 0) + 
 const shell = els.filter(e => /IfcWall|IfcSlab|IfcRoof/.test(e.class)), badS = shell.filter(e => !e.watertight || !(e.volume > 0));
 const fillsClosed = els.filter(e => /IfcDoor|IfcWindow/.test(e.class) && e.watertight).length;
 fs.mkdirSync(path.join(__dirname, 'out'), { recursive: true });
-fs.writeFileSync(path.join(__dirname, 'out/duplex_basic_shapes.obj'), R.obj);
+fs.writeFileSync(path.join(__dirname, 'out/duplex_basic_shapes' + SFX + '.obj'), R.obj);
 const h1 = hashHex(R.obj);
 say('elements=' + els.length + ' by class ' + J(byC) + ' triangles=' + tris + ' (of IfcWall: infill boxes around voids=' + R.ST.reduce((n, st) => n + st.infill.length, 0) + ')' + ' | z ' + Math.min(...els.flatMap(e => e.vertices.map(v => v[2]))) + '..' + Math.max(...els.flatMap(e => e.vertices.map(v => v[2]))));
 say('volumes m3: walls=' + r6(els.filter(e => e.class === 'IfcWall').reduce((n, e) => n + e.volume, 0)) + ' slabs=' + r6(els.filter(e => e.class === 'IfcSlab').reduce((n, e) => n + e.volume, 0)) + ' roof=' + r6(els.filter(e => e.class === 'IfcRoof').reduce((n, e) => n + e.volume, 0)) + ' | library fills closed=' + fillsClosed + '/' + els.filter(e => /IfcDoor|IfcWindow/.test(e.class)).length + ' (library meshes, reported not asserted)');
@@ -401,21 +410,26 @@ const R2 = pipeline({ convention: false }), h2 = hashHex(R2.obj);
 check('MESH-det', 'the OBJ differs between two full runs', h1 === h2, 'run1=' + h1.slice(0, 16) + ' run2=' + h2.slice(0, 16));
 // ---------------- L2 qualify input (DXF2BIM_MODELLER_LANE §L2.1): every gap of the main variant A, git-ignored, read by rosetta_qualify.js ----------------
 if (!MUT) {
-  const qg = [], pick = g => { const o = Object.assign({}, g); delete o.run_id; return o; };
+  const qg = [], resolved = {}, pick = g => { const o = Object.assign({}, g); delete o.run_id; return o; };
   R.ST.forEach(st => {
     const sheet = 'DX_' + st.f, sz = R.slabZ[st.name];
     st.after.filter(o => o.op_type === 'DXF_GAP').forEach(o => qg.push(Object.assign({ sheet }, pick(o.params))));
     (st.ring.gaps || []).concat(sz.gaps || []).forEach(g => qg.push(Object.assign({ sheet, shape: 'slabs' }, pick(g))));
     st.bridge.gaps.concat(st.fills.gaps).forEach(g => qg.push(Object.assign({ sheet, shape: 'openings' }, pick(g))));
     st.meshGaps.forEach(g => qg.push(Object.assign({ sheet }, pick(g))));
+    // L2.3 D3: handles the final shell/cut stage resolved (openings of bridged voids + their parts, placed fills)
+    const opH = {}; st.after.filter(o => o.op_type === 'DXF_OPENING').forEach(o => { opH[o.params.handle] = (o.params.parts || []).map(q => q.handle); });
+    const rs = new Set(); st.bridge.voids.forEach(v => v.openings.forEach(h => { rs.add(h); (opH[h] || []).forEach(x => rs.add(x)); }));
+    st.fills.elements.forEach(e => { if (typeof e.handle === 'string') rs.add(e.handle); });
+    resolved[sheet] = [...rs].sort((a, b) => parseInt(a, 16) - parseInt(b, 16));
   });
   R.roofPlan.gaps.concat(R.roofZ.gaps || []).forEach(g => qg.push(Object.assign({ sheet: 'DX_ROOF', shape: 'roof' }, pick(g))));
-  const inputs = {}; ['FLOOR_GF', 'FLOOR_FF'].forEach(f => { inputs['DX_' + f] = hashHex(txt(f)); }); ELEVS.forEach(f => { inputs['DX_' + f] = hashHex(shellTxt[f]); }); inputs.DX_ROOF = hashHex(ORIG('ROOF'));
-  fs.writeFileSync(path.join(OUTS, 'dx_shell_gaps.json'), J({ variant: 'A', inputs, gaps: qg }, null, 1) + '\n');
-  say('L2 qualify input: ' + qg.length + ' gap records (variant A) -> out/marked_shell/dx_shell_gaps.json');
+  const inputs = {}; ['FLOOR_GF', 'FLOOR_FF'].forEach(f => { inputs['DX_' + f] = hashHex(txt(f)); }); ELEVS.forEach(f => { inputs['DX_' + f] = hashHex(shellTxt[f]); }); if (shellTxt.ROOF) inputs.DX_ROOF = hashHex(shellTxt.ROOF);
+  fs.writeFileSync(path.join(OUTS, 'dx_shell_gaps.json'), J({ variant: 'A', set: DXSET || 'dx', inputs, gaps: qg, resolved }, null, 1) + '\n');
+  say('L2 qualify input: ' + qg.length + ' gap records (variant A), resolved handles ' + J(Object.keys(resolved).map(k => k + ':' + resolved[k].length)) + ' -> ' + path.relative(__dirname, OUTS) + '/dx_shell_gaps.json');
 }
-// §11 element summary for the Modeller import witness (bim-ootb modeller/tests/witness_dxf_convert.js C1): same element ids as the OBJ.
-{
+// §11 element summary for the Modeller import witness (bim-ootb modeller/tests/witness_dxf_convert.js C1): same element ids as the OBJ. Not for the std set.
+if (!STDSET) {
   const infillOf = {}; R.ST.forEach(st => st.infill.forEach(o => { infillOf[hashHex(o.output_guid + '|0').slice(0, 32)] = { infill_of: o.params.infill_of, openings: o.params.openings }; }));
   const bb = e => { const mn = [0, 1, 2].map(a => Math.min(...e.vertices.map(v => v[a]))), mx = [0, 1, 2].map(a => Math.max(...e.vertices.map(v => v[a]))); return mn.concat(mx).map(r6); };
   const rows = R.els.map(e => { const b = bb(e); return Object.assign({ guid: e.guid, class: e.class, storey: e.storey, handle: e.handle, layer: e.layer, bbox: b, centre: [0, 1, 2].map(a => r6((b[a] + b[a + 3]) / 2)), volume: e.volume },
@@ -426,4 +440,4 @@ if (!MUT) {
   check('ELEM-dump', 'the element summary misses an infill box or an element', nInf === R.ST.reduce((n, st) => n + st.infill.length, 0) && rows.length === R.els.length, 'elements=' + rows.length + ' infill=' + nInf + ' -> out/duplex_basic_shapes_elements.json');
 }
 say('\nSUMMARY fail=' + fails);
-fs.writeFileSync(path.join(__dirname, 'rosetta_dx_shell.log'), lines.join('\n') + '\n');
+fs.writeFileSync(path.join(__dirname, 'rosetta_dx_shell' + SFX + '.log'), lines.join('\n') + '\n');

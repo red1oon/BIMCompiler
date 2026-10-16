@@ -15,7 +15,7 @@ const J = JSON.stringify, parse = t => new DxfParser().parseSync(t);
 const lines = []; let fails = 0;
 const say = s => { lines.push(s); console.log(s); };
 const check = (id, issue, ok, d) => { if (!ok) fails++; say((ok ? 'PASS ' : 'FAIL ') + id + ' | ' + issue + ' | ' + d); };
-const MARKING = /^QF:(sheet_no_role|units_unstated|plan_no_level|mark_missing|mark_invalid|set_mismatch|set_no_plan|plan_level_duplicate|face_no_elev)$/;
+const MARKING = /^QF:(sheet_no_role|units_unstated|plan_no_level|mark_missing|mark_invalid|set_mismatch|set_no_plan|set_no_roof|plan_level_duplicate|face_no_elev)$/;
 
 function report(name, v) {
   say('\n===== ' + name + ' =====');
@@ -24,7 +24,7 @@ function report(name, v) {
   say('blocking by code ' + J(v.counts));
   const ac = {}; v.advisory.forEach(x => { ac[x.code] = (ac[x.code] || 0) + 1; }); say('advisory by code ' + J(ac));
   say('sheets ' + J(v.sheets.map(s => s.id + ':' + (s.view || '-') + (s.level !== null ? '@' + s.level : '') + (s.face ? '/' + s.face : '') + ' units=' + s.units + ' n=' + s.entities)));
-  say('checks ' + J(v.checks));
+  say('checks ' + J(v.checks) + ' conventions ' + J(v.conventions));
   v.blocking.forEach(x => say('  B ' + x.code + ' [' + x.shape + '] ' + x.sheet + ' h=' + x.handles.slice(0, 6).join(',') + (x.handles.length > 6 ? ',…(' + x.handles.length + ')' : '') + ' pos=' + J(x.pos) + ' | ' + x.message));
   v.advisory.forEach(x => say('  A ' + x.code + ' [' + x.shape + '] ' + x.sheet + ' h=' + x.handles.slice(0, 3).join(',') + ' | ' + x.message));
 }
@@ -35,14 +35,14 @@ function twice(name, input, settings) {                                // determ
   return v1;
 }
 
-// ================= Duplex marked (plans: out/marked; elevations: out/marked_shell with @ROOF; ROOF plan: original, no marking role exists) =================
+// ================= Duplex marked (plans: out/marked; elevations + ROOF plan (@VIEW=ROOF, L2.3 D1): out/marked_shell) =================
 const DX = C.DX, OUTM = path.join(__dirname, 'out/marked'), OUTS = path.join(__dirname, 'out/marked_shell');
 const gapsFile = path.join(OUTS, 'dx_shell_gaps.json');
 if (!fs.existsSync(gapsFile)) { say('REFUSED: ' + gapsFile + ' missing; run rosetta_dx_shell.js first'); process.exit(1); }
 const G = JSON.parse(fs.readFileSync(gapsFile, 'utf8'));
 const dxText = {
   DX_FLOOR_GF: fs.readFileSync(path.join(OUTM, 'DX_FLOOR_GF_marked.dxf'), 'utf8'), DX_FLOOR_FF: fs.readFileSync(path.join(OUTM, 'DX_FLOOR_FF_marked.dxf'), 'utf8'),
-  DX_ROOF: fs.readFileSync(path.join(ROOT, '2D_Layout/output/DXF/DX_ROOF_20260428_0636.dxf'), 'utf8') };
+  DX_ROOF: fs.readFileSync(path.join(OUTS, 'DX_ROOF_shell.dxf'), 'utf8') };
 ['FRONT', 'REAR', 'LEFT', 'RIGHT'].forEach(f => { dxText['DX_' + f] = fs.readFileSync(path.join(OUTS, 'DX_' + f + '_shell.dxf'), 'utf8'); });
 const stale = Object.keys(G.inputs).filter(k => G.inputs[k] !== hashHex(dxText[k]));
 check('DX gaps fresh', 'the pipeline gaps were computed on other files than the ones qualified', stale.length === 0, 'variant ' + G.variant + ', ' + G.gaps.length + ' gap records, stale=' + J(stale));
@@ -51,7 +51,7 @@ const dxParsed = {}; Object.keys(dxText).forEach(k => { dxParsed[k] = parse(dxTe
 const dxFiles = Object.keys(dxText).sort().map(k => ({ name: k, dxf: dxParsed[k], layer_maps: mapsOf(k) }));
 const deps = { DxfParser, hashHex, library: [] };
 const planOps = { DX_FLOOR_GF: B.run(dxText.DX_FLOOR_GF, DX.MAP_PLAN, DX.CFG, deps).ops, DX_FLOOR_FF: B.run(dxText.DX_FLOOR_FF, DX.MAP_PLAN, DX.CFG, deps).ops };   // the plan call of rosetta_dx_shell
-const vM = twice('DX marked', { files: dxFiles, plan_ops: planOps, gaps: G.gaps }, DX.QUALIFY);
+const vM = twice('DX marked', { files: dxFiles, plan_ops: planOps, gaps: G.gaps, resolved: G.resolved }, DX.QUALIFY);
 report('Q1 Duplex marked set (today\'s sheets; L1 pending)', vM);
 
 // ================= Q2 Duplex stripped (mark layer removed in memory; no pipeline can run without markings) =================
@@ -108,6 +108,29 @@ q5new.forEach(x => say('  Q5 new B ' + x.code + ' ' + x.sheet + ' h=' + x.handle
 check('Q5 mutation', 'a doctored DIMENSION text is not reported, or not with its handle', q5new.length === 1 && q5new[0].code === 'QF:dim_text_mismatch' && q5new[0].handles[0] === victim.handle && fsh.blocking.length + 1 === vQ5.blocking.length,
   'new blocking items=' + q5new.length + ' ' + J(q5new.map(x => x.code + ':' + x.handles[0])) + ' total ' + fsh.blocking.length + ' -> ' + vQ5.blocking.length);
 say('Q5 on Duplex: not applicable today, the Duplex sheets hold ' + Object.values(dxParsed).reduce((n, d) => n + d.entities.filter(e => e.type === 'DIMENSION').length, 0) + ' DIMENSION entities (dimensions are exploded LINE+TEXT, reported as QF:dim_not_entity)');
+
+// ================= L2.3 convergence: the L1 standard set, marked from the model (mark_dx_set.js std), pipeline gaps from DXSET=std rosetta_dx_shell =================
+const STD = C.STD, OSM = path.join(__dirname, 'out/marked_std'), OSS = path.join(__dirname, 'out/marked_std_shell'), sgFile = path.join(OSS, 'dx_shell_gaps.json');
+if (!fs.existsSync(sgFile)) { say('REFUSED: ' + sgFile + ' missing; run mark_dx_set.js std, then DXSET=std rosetta_dx_shell.js'); fails++; }
+else {
+  const SG = JSON.parse(fs.readFileSync(sgFile, 'utf8'));
+  const stText = { DX_FLOOR_GF: fs.readFileSync(path.join(OSM, 'DX_FLOOR_GF_marked.dxf'), 'utf8'), DX_FLOOR_FF: fs.readFileSync(path.join(OSM, 'DX_FLOOR_FF_marked.dxf'), 'utf8') };
+  ['FRONT', 'REAR', 'LEFT', 'RIGHT'].forEach(f => { stText['DX_' + f] = fs.readFileSync(path.join(OSS, 'DX_' + f + '_shell.dxf'), 'utf8'); });
+  const sStale = Object.keys(SG.inputs).filter(k => SG.inputs[k] !== hashHex(stText[k] || ''));
+  check('STD gaps fresh', 'the std pipeline gaps were computed on other files than the ones qualified', sStale.length === 0 && Object.keys(SG.inputs).length === Object.keys(stText).length, SG.gaps.length + ' gap records, stale=' + J(sStale));
+  const stMaps = id => /FLOOR/.test(id) ? [STD.MAP_PLAN] : [STD.MAP_ELEV, STD.MAP_LEVL, STD.EXCL_ELEV];
+  const stOps = { DX_FLOOR_GF: B.run(stText.DX_FLOOR_GF, STD.MAP_PLAN, DX.CFG, deps).ops, DX_FLOOR_FF: B.run(stText.DX_FLOOR_FF, STD.MAP_PLAN, DX.CFG, deps).ops };
+  const stInput = txts => ({ files: Object.keys(txts).sort().map(k => ({ name: k, dxf: parse(txts[k]), layer_maps: stMaps(k) })), plan_ops: stOps, gaps: SG.gaps, resolved: SG.resolved });
+  const vStd = twice('STD marked', stInput(stText), STD.QUALIFY);
+  report('L2.3 std set (L1 writer, marked from the model)', vStd);
+  // the same with the interior-wall convention stated (what the L4 editor would write when the USER states it; never a default)
+  const MKm = require(DD + 'dxf2marks.js'), wt = Object.assign({}, stText);
+  ['DX_FLOOR_GF', 'DX_FLOOR_FF'].forEach(k => { const lv = MKm.describe(MKm.readMarks(parse(stText[k]).entities)).desc.level; wt[k] = MKm.writeMarks(stText[k], [{ text: '@WALLTOP=' + lv + ',slab_above' }]); });
+  const vW = Q.qualify(Object.assign(stInput(wt), { plan_ops: { DX_FLOOR_GF: B.run(wt.DX_FLOOR_GF, STD.MAP_PLAN, DX.CFG, deps).ops, DX_FLOOR_FF: B.run(wt.DX_FLOOR_FF, STD.MAP_PLAN, DX.CFG, deps).ops } }), STD.QUALIFY);
+  report('L2.3 std set + @WALLTOP=<level>,slab_above on both plans (USER-STATED convention, simulated here; not written by any marking tool)', vW);
+  check('STD walltop', 'the stated convention did not cover the interior wall-height gaps, or was not recorded as user-stated', vW.conventions.length === 2 && vW.conventions.every(c => c.source === 'user-stated') && !vW.blocking.some(x => x.code === 'GAP:no_elevation_height' && /WALL/.test((x.detail || {}).layer || '')),
+    'conventions=' + J(vW.conventions.map(c => c.level + ':' + c.rule + ':' + c.source)) + ' wall no_elevation_height left=' + vW.blocking.filter(x => x.code === 'GAP:no_elevation_height').length);
+}
 
 say('\nSUMMARY fail=' + fails);
 fs.writeFileSync(path.join(__dirname, 'rosetta_qualify.log'), lines.join('\n') + '\n');

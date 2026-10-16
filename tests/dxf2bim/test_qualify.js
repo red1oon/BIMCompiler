@@ -58,11 +58,13 @@ function plan(o) {
   w.dim('A-ANNO-DIMS', [0, 0], [0, 6000], 90, [-2600, 3000]); w.dim('A-ANNO-DIMS', [0, 100], [0, 5900], 90, [-1800, 3000]);
   w.dim('A-ANNO-DIMS', [10000, 0], [10000, 6000], 90, [12600, 3000]); w.dim('A-ANNO-DIMS', [10000, 100], [10000, 5900], 90, [11800, 3000]);
   if (o.splitSouth && o.splitDims) { w.dim('A-ANNO-DIMS', [0, 0], [4000, 0], 0, [2000, -1000]); w.dim('A-ANNO-DIMS', [4000, 0], [5000, 0], 0, [4500, -1000]); w.dim('A-ANNO-DIMS', [5000, 0], [10000, 0], 0, [7500, -1000]); }
+  (o.extraDims || []).forEach((d, i) => { D['x' + i] = w.dim('A-ANNO-DIMS', d[0], d[1], 0, [5000, -3400 - 200 * i], d[2], d[3]); });
   if (o.exploded) D.ex = w.text('A-ANNO-DIMS', [5000, -2500], '10000');
   if (o.junk) D.junk = w.line('JUNK', [0, 0], [1, 1]);
   if (!o.noMarks) {
     ['@SET=FX', '@VIEW=' + (o.view || 'PLAN'), '@NAME=PLAN', '@LEVEL=0'].concat(o.noUnits ? [] : ['@UNITS=mm']).forEach(t => w.mark(t));
     w.mark('@GRIDX=1', [100, 0]); w.mark('@GRIDX=2', [9900, 0]); w.mark('@GRIDY=A', [0, 100]); w.mark('@GRIDY=B', [0, 5900]);
+    (o.walltop || []).forEach(t => { D.wt = w.mark('@WALLTOP=' + t); });
   }
   return { text: w.out(), D };
 }
@@ -72,6 +74,7 @@ const FACE = { FRONT: ['minY', '+X', [[100, '1'], [9900, '2']], x => x], REAR: [
 function elev(name, o) {
   o = o || {}; const [face, hax, grids, hOf] = FACE[name], w = W(), span = name === 'FRONT' || name === 'REAR' ? 10000 : 6000;
   w.rect('A-ELEV-WALL', 0, 0, span, 3000);
+  (o.bands || []).forEach(b => w.rect('A-ELEV-WALL', b[0], b[1], b[2], b[3]));
   w.line('A-ANNO-LEVL', [-500, 0], [span + 500, 0]); w.line('A-ANNO-LEVL', [-500, o.roofLineY || 3000], [span + 500, o.roofLineY || 3000]);
   grids.forEach(([p, l]) => { if (o.dropGrid === l) return; const h = hOf(p); w.line('A-GRID', [h, -1300], [h, 3500]); w.bubble('A-GRID', l, [h, -1700]); });
   if (!o.noHeightDim) w.dim('A-ANNO-DIMS', [-500, 0], [-500, 3000], 90, [-1000, 1500]);
@@ -82,13 +85,19 @@ function elev(name, o) {
   }
   return { text: w.out() };
 }
+function roof(o) {
+  o = o || {}; const w = W(); w.rect('A-ROOF', 0, 0, 10000, 6000);
+  ['@SET=FX', '@VIEW=ROOF', '@UNITS=mm', '@NAME=ROOF', '@LEVEL=3', '@ROOF=' + (o.top || 3)].forEach(t => w.mark(t));
+  return { text: w.out() };
+}
 const ELEV_EXCL = { version: 1, rules: ['A-GRID', 'A-ANNO-TEXT', 'A-ANNO-DIMS'].map(p => ({ match: 'exact', pattern: p, type: 'ignore' })) };   // fixture's own exclusions
 const deps = { DxfParser, hashHex, library: [] };
 function set(o) {
   o = o || {}; const P = plan(o.plan), files = [{ name: 'FX_PLAN', dxf: parse(P.text), layer_maps: [C.DX.MAP_PLAN] }];
   Object.keys(FACE).forEach(n => { if ((o.dropElev || []).indexOf(n) >= 0) return; const E = elev(n, Object.assign({ noMarks: o.plan && o.plan.noMarks }, (o.elev || {})[n])); files.push({ name: 'FX_' + n, dxf: parse(E.text), layer_maps: [C.DX.MAP_ELEV, C.DX.MAP_LEVL, ELEV_EXCL] }); });
+  if (!o.noRoof) { const Rf = roof(Object.assign({}, o.roof)); const d = parse(Rf.text); files.push({ name: 'FX_ROOF', dxf: (o.plan && o.plan.noMarks) ? Object.assign({}, d, { entities: d.entities.filter(e => e.layer !== 'DXF2BIM-MARK') }) : d, layer_maps: [C.DX.MAP_ROOF] }); }
   const run = B.run(P.text, C.DX.MAP_PLAN, C.DX.CFG, deps);
-  const input = { files, plan_ops: o.noOps ? undefined : { FX_PLAN: run.ops }, gaps: (o.gaps || run.report.gaps.map(g => Object.assign({ sheet: 'FX_PLAN' }, g))) };
+  const input = { files, plan_ops: o.noOps ? undefined : { FX_PLAN: run.ops }, gaps: (o.gaps || run.report.gaps.map(g => Object.assign({ sheet: 'FX_PLAN' }, g))), resolved: o.resolved };
   return { input, D: P.D, run };
 }
 const S = C.DX.QUALIFY, codes = v => v.blocking.map(x => x.code), cc = v => J(v.counts);
@@ -101,7 +110,7 @@ check('Q1', 'a complete, correct marked set is not accepted (false block)', v1.v
 
 // ======== Q2 ========
 const v2 = Q.qualify(set({ plan: { noMarks: true } }).input, S);
-const want2 = ['QF:face_no_elev', 'QF:face_no_elev', 'QF:face_no_elev', 'QF:face_no_elev', 'QF:set_no_plan'].concat(Array(5).fill('QF:sheet_no_role'), Array(5).fill('QF:units_unstated')).sort();
+const want2 = ['QF:face_no_elev', 'QF:face_no_elev', 'QF:face_no_elev', 'QF:face_no_elev', 'QF:set_no_plan', 'QF:set_no_roof'].concat(Array(6).fill('QF:sheet_no_role'), Array(6).fill('QF:units_unstated')).sort();
 check('Q2', 'stripped markings not listed exactly (something missing, or a non-marking item leaks in)', J(codes(v2).slice().sort()) === J(want2), cc(v2));
 
 // ======== Q3 (jscad-like: header mm, feet-inch dimension texts, an unmapped layer) ========
@@ -123,14 +132,14 @@ check('Q3b', 'stating the right @UNITS does not clear the conflict (or a false c
   ['@SET=FX', '@VIEW=PLAN', '@UNITS=mm', '@LEVEL=0'].forEach(t => w.mark(t)); w.mark('@GRIDX=1', [100, 0]); w.mark('@GRIDX=2', [9900, 0]); w.mark('@GRIDY=A', [0, 100]); w.mark('@GRIDY=B', [0, 5900]);
   ['@SET=FX', '@VIEW=ELEV', '@UNITS=mm', '@FACE=minY', '@HAXIS=+X'].forEach(t => w.mark(t, [60000, 0])); w.mark('@GRIDH=1', [60100, 0]); w.mark('@GRIDH=2', [69900, 0]); w.mark('@Z=0', [60000, 0]); w.mark('@Z=3', [60000, 3000]);
   w.rect('A-WALL-FULL', 0, 0, 10000, 200);
-  const eq = w.dim('A-ANNO-DIMS', [0, 0], [5000, 0], 0, [2500, -1000], 'EQ'), same = w.dim('A-ANNO-DIMS', [0, 0], [10000, 0], 0, [5000, -2000], '10000');
+  const eq = w.dim('A-ANNO-DIMS', [0, 0], [5000, 0], 0, [2500, -1000], 'VARIES'), same = w.dim('A-ANNO-DIMS', [0, 0], [10000, 0], 0, [5000, -2000], '10000');
   const outJunk = w.line('JUNK', [30000, 0], [30001, 1]), outDim = w.dim('A-ANNO-DIMS', [30000, 0], [31000, 0], 0, [30500, -500], '7');
   const f = { name: 'FX_REG', dxf: parse(w.out()), layer_maps: [C.DX.MAP_PLAN, ELEV_EXCL] };
   const sh = Q.sheets([f]), v4 = Q.qualify({ files: [f] }, S), all = v4.blocking.concat(v4.advisory);
   check('Q4a', 'two regions not read as two sheets', J(sh.map(s => s.id + ':' + s.view)) === J(['FX_REG#1:PLAN', 'FX_REG#2:ELEV']), J(sh));
   check('Q4b', 'an entity outside every region was judged (not part of the set)', !all.some(x => x.handles.indexOf(outJunk) >= 0 || x.handles.indexOf(outDim) >= 0), 'items on outside handles=' + all.filter(x => x.handles.indexOf(outJunk) >= 0 || x.handles.indexOf(outDim) >= 0).length);
-  check('Q4c', 'an unverifiable override (EQ) passed, or an equal override blocked', v4.blocking.some(x => x.code === 'QF:dim_text_unreadable' && x.handles[0] === eq) && v4.advisory.some(x => x.code === 'QF:dim_override_equal' && x.handles[0] === same) && !v4.blocking.some(x => x.handles[0] === same),
-    'EQ->' + J(all.filter(x => x.handles[0] === eq).map(x => x.code)) + ' equal->' + J(all.filter(x => x.handles[0] === same).map(x => x.code)));
+  check('Q4c', 'an unverifiable override (VARIES) passed, or an equal override blocked', v4.blocking.some(x => x.code === 'QF:dim_text_unreadable' && x.handles[0] === eq) && v4.advisory.some(x => x.code === 'QF:dim_override_equal' && x.handles[0] === same) && !v4.blocking.some(x => x.handles[0] === same),
+    'VARIES->' + J(all.filter(x => x.handles[0] === eq).map(x => x.code)) + ' equal->' + J(all.filter(x => x.handles[0] === same).map(x => x.code)));
 }
 
 // ======== Q5 mutation: one DIMENSION text changed ========
@@ -140,8 +149,9 @@ check('Q5', 'a doctored DIMENSION text is not blocked, or not with exactly its h
 
 // ======== one test per check (each a single stated break of the Q1 set) ========
 const only = (id, issue, o, want, extra) => { const v = Q.qualify(set(o).input, extra || S); check(id, issue, J(codes(v).slice().sort()) === J(want.slice().sort()), cc(v) + ' | ' + v.blocking.slice(0, 3).map(x => x.message).join(' ; ')); return v; };
-only('G1a', 'a bearing interior wall without a grid line passes (G1 grid missing)', { plan: { interior: 'A-WALL-FULL' } }, ['QF:grid_missing']);
-only('G1b', 'a partition, or a bearing wall shorter than grid.min_wall_len, is demanded a grid (invented requirement)', { plan: { interior: 'A-WALL-PRTN', shortFull: true } }, []);
+only('QD4a', 'an interior wall (any layer) is demanded a grid line: the reader cannot know load-bearing (L2.3 D4)', { plan: { interior: 'A-WALL-FULL', shortFull: true } }, []);
+only('G1b', 'a partition is demanded a grid (invented requirement)', { plan: { interior: 'A-WALL-PRTN' } }, []);
+only('QD4b', 'an exterior envelope axis without a grid line passes (L2.3 D4)', { plan: { gx: [[100, '1']] } }, ['QF:grid_missing']);
 const g1c = Q.qualify(set({ plan: { gx: [[100, '1'], [9500, '2']] } }).input, S);
 check('G1c', 'a grid line on no wall axis/face passes', g1c.blocking.some(x => x.code === 'QF:grid_off_axis' && x.pos_m === 9.5) && g1c.blocking.some(x => x.code === 'QF:grid_missing' && x.pos_m === 9.9), cc(g1c));
 const g2a = Q.qualify(set({ plan: { gx: [[100, 'A'], [9900, 'B']], gy: [[100, '1'], [5900, '2']] } }).input, S);
@@ -166,6 +176,31 @@ check('L1-detail', 'the unmapped layer item does not carry its handle / position
 only('M1', 'an invalid marking (@VIEW=SECTION) passes', { plan: { view: 'SECTION' } }, ['QF:mark_invalid', 'QF:set_no_plan', 'QF:sheet_no_role']);
 only('K1', 'a check that could not run (no plan ops) passes silently', { noOps: true }, ['QF:check_skipped']);
 only('S1', 'a missing setting is defaulted silently', {}, ['QF:setting_missing'], Object.assign({}, S, { tol: Object.assign({}, S.tol, { grid: undefined }) }));
+// ---- L2.3 D1 roof role ----
+only('QR2', 'a set with no roof plan is not blocked on the roof (or blocks other shapes)', { noRoof: true }, ['QF:set_no_roof']);
+{ const v = Q.qualify(set({ noRoof: true }).input, S); check('QR2-shape', 'set_no_roof blocks a shape other than the roof', v.by_shape.roof.verdict === 'blocked' && ['walls', 'slabs', 'openings'].every(k => v.by_shape[k].verdict === 'qualifies'), J(v.by_shape)); }
+only('QR3', 'the roof sheet and the elevations disagree on the roof top and it passes', { roof: { top: 3.5 } }, Array(4).fill('QF:roof_level_mismatch'));
+// ---- L2.3 D2 storeys only from plans ----
+{ const v = Q.qualify(set({ elev: { FRONT: { bands: [[0, 1500, 10000, 3000], [3000, 2000, 6000, 3000]] } } }).input, S);
+  check('QS1', 'an elevation band with no plan passes, or a wall piece above a window is taken for a storey', J(codes(v)) === '["QF:set_storey_unstated"]' && v.blocking[0].level === 1.5, cc(v) + ' ' + (v.blocking[0] ? v.blocking[0].message : '')); }
+// ---- L2.3 D3 gaps once / user-stated convention ----
+{ const v = Q.qualify(set({ gaps: [{ code: 'GAP:no_host_cut', sheet: 'FX_PLAN', handle: 'AAA' }, { code: 'GAP:opening_unclassified', sheet: 'FX_PLAN', handle: 'BBB' }, { code: 'GAP:no_host_cut', sheet: 'FX_PLAN', handle: 'CCC' }], resolved: { FX_PLAN: ['AAA', 'BBB'] } }).input, S);
+  check('QG1', 'a gap the final stage resolved is still counted, or an unresolved one is dropped', J(v.blocking.map(x => x.code + ':' + x.handles[0])) === '["GAP:no_host_cut:CCC"]' && v.checks.gaps_superseded === 2, cc(v) + ' superseded=' + v.checks.gaps_superseded); }
+const wallGap = { code: 'GAP:no_elevation_height', sheet: 'FX_PLAN', handle: '100', layer: 'A-WALL-FULL' }, doorGap = { code: 'GAP:no_elevation_height', sheet: 'FX_PLAN', handle: '101', layer: 'A-DOOR' };
+only('QG2', 'an interior wall height no elevation shows passes without a stated convention', { gaps: [wallGap] }, ['GAP:no_elevation_height']);
+{ const v = Q.qualify(set({ plan: { walltop: ['0,slab_above'] }, gaps: [wallGap] }).input, S);
+  check('QG3', 'the user-stated @WALLTOP convention is not applied, or not recorded as user-stated', v.verdict === 'qualifies' && v.advisory.some(x => x.code === 'QF:convention_applied' && x.convention === 'user-stated') && v.conventions.length === 1 && v.conventions[0].source === 'user-stated' && v.conventions[0].level === 0, cc(v) + ' conventions=' + J(v.conventions)); }
+only('QG4', '@WALLTOP silenced a door height gap (it covers walls only)', { plan: { walltop: ['0,slab_above'] }, gaps: [wallGap, doorGap] }, ['GAP:no_elevation_height']);
+only('QG5', '@WALLTOP naming no plan level passes', { plan: { walltop: ['7,slab_above'] } }, ['QF:walltop_unknown_storey']);
+// ---- L2.3 D5 drafting notes ----
+const N = (id, issue, d, wantB, wantA) => { const s5x = set({ plan: { extraDims: [d] } }), v = Q.qualify(s5x.input, S), h = s5x.D.x0;
+  check(id, issue, J(v.blocking.filter(x => x.handles[0] === h).map(x => x.code)) === J(wantB) && J(v.advisory.filter(x => x.handles[0] === h).map(x => x.code)) === J(wantA), 'blocking ' + J(v.blocking.map(x => x.code)) + ' advisory ' + J(v.advisory.map(x => x.message))); };
+N('QN1', 'an EQ note blocks (it is a recognised drafting note)', [[0, 0], [10000, 0], 'EQ'], [], ['QF:dim_note']);
+N('QN2', 'a TYP note whose number equals the measurement blocks', [[0, 0], [10000, 0], '10000 TYP'], [], ['QF:dim_note']);
+N('QN3', 'a TYP note whose number differs from the measurement passes', [[0, 0], [10000, 0], '9999 TYP'], ['QF:dim_text_mismatch'], []);
+N('QN4', 'an unrecognised word override (VARIES) passes', [[0, 0], [10000, 0], 'VARIES'], ['QF:dim_text_unreadable'], []);
+N('QN5', 'a dimension block that renders another value than its measurement passes', [[0, 0], [10000, 0], '<>', '9000'], ['QF:dim_text_mismatch'], []);
+N('QN6', 'a V.I.F. note blocks', [[0, 0], [10000, 0], 'V.I.F.'], [], ['QF:dim_note']);
 // pipeline gaps: advisory vs blocking, shape attribution
 const gp = Q.qualify(set({ gaps: [{ code: 'GAP:type_unbound', sheet: 'FX_PLAN', handle: '100', kind: 'window' }, { code: 'GAP:label_unmatched', sheet: 'FX_PLAN' }, { code: 'GAP:schedule_conflict', sheet: 'FX_PLAN' }, { code: 'GAP:unmapped_layer', sheet: 'FX_PLAN', handle: '101' }] }).input, S);
 check('P1', 'an advisory gap (type_unbound / label_* / schedule_conflict) blocks, or unmapped_layer is double-listed', gp.verdict === 'qualifies' && gp.advisory.filter(x => /^GAP:/.test(x.code)).length === 3 && gp.advisory.find(x => x.code === 'GAP:type_unbound').pos.x === 0, cc(gp) + ' advisory=' + J(gp.advisory.map(x => x.code + ':' + x.shape)));
