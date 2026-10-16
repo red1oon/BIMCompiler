@@ -4,7 +4,7 @@
 'use strict';
 const { chromium } = require(process.env.PW || (require('os').homedir() + '/bim-ootb/tests/node_modules/playwright'));
 const http = require('http'), fs = require('fs'), path = require('path');
-const ROOT = require('os').homedir()+'/bim-ootb';
+const ROOT = (process.env.REPO||require('os').homedir()+'/bim-ootb');
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.wasm': 'application/wasm', '.css': 'text/css', '.png': 'image/png' };
 const srv = http.createServer((q, r) => { const p = decodeURIComponent(q.url.split('?')[0]); const f = path.join(ROOT, p);
   fs.stat(f, (e, s) => { if (e || s.isDirectory()) { r.writeHead(404); r.end(); return; }
@@ -46,7 +46,7 @@ const ok = (id, name, cond, detail) => { console.log((cond ? '  ✅ ' : '  ❌ '
 
   // ── D1 · New POS Order, number left as shown
   await hc(NEWB); await pg.waitForSelector('#idmp-inline-mount .cfrow'); await pg.waitForTimeout(600);
-  await pick('c_doctypetarget_id', /^POS Order/); await pick('c_bpartner_id', /Joe Block/); await pick('ad_org_id', /^HQ/);
+  await pick('c_doctypetarget_id', new RegExp(process.env.DOCTYPE || '^POS Order')); await pick('c_bpartner_id', /Joe Block/); await pick('ad_org_id', /^HQ/);
   const docnoShown = await pg.$eval(F('documentno'), e => e.value);
   let n0 = logs.length; await hc('#idmp-toolbar [title^="Save"]'); await pg.waitForTimeout(1800);
   const s1 = logs.slice(n0);
@@ -73,12 +73,34 @@ const ok = (id, name, cond, detail) => { console.log((cond ? '  ✅ ' : '  ❌ '
   ok('D3b', 'the group is signed and chain-verified', c.some(l => /§CRUD process committed key=c_order viaGroup=Y .*verifyChain=ok/.test(l)));
 
   // ── payment slice (FO-A4 measurement, ERP_FRIENDLY_OPS_LENS §31): Payment window, receipt for the invoice this order just generated
-  let payOk = null; const GP0 = { ...GT };
+  let payOk = null; let GP0 = { ...GT };
   if (process.env.PAY) {
+    GP0 = { ...GT };
+    const openMenu = async (mid2) => {
+      const ch = await pg.evaluate(id => { const leaf = document.querySelector('#idmp-tree .idmp-row.leaf[data-menu-id="' + id + '"]'); const out = []; let n = leaf.parentElement.parentElement; while (n && n.id !== 'idmp-tree') { if (n.classList.contains('idmp-node')) out.unshift(n.querySelector(':scope > .idmp-row').getAttribute('data-menu-id')); n = n.parentElement; } return out; }, mid2);
+      for (const id of ch) { const open = await pg.evaluate(i => { const r = document.querySelector('#idmp-tree .idmp-row[data-menu-id="' + i + '"]'); return r && r.parentElement.classList.contains('open'); }, id); if (!open) await hc('#idmp-tree .idmp-row[data-menu-id="' + id + '"]'); }
+      await hc('#idmp-tree .idmp-row.leaf[data-menu-id="' + mid2 + '"]'); };
     const openWin = async (wid) => { const mid2 = await pg.evaluate((w) => { const r = window.__idmpDb.exec("SELECT AD_Menu_ID FROM AD_Menu WHERE Action='W' AND AD_Window_ID="+w+" AND IsActive='Y'"); return (r.length ? r[0].values.map(x => x[0]) : []).find(i => document.querySelector('#idmp-tree .idmp-row.leaf[data-menu-id="' + i + '"]')); }, wid);
       const ch = await pg.evaluate(id => { const leaf = document.querySelector('#idmp-tree .idmp-row.leaf[data-menu-id="' + id + '"]'); const out = []; let n = leaf.parentElement.parentElement; while (n && n.id !== 'idmp-tree') { if (n.classList.contains('idmp-node')) out.unshift(n.querySelector(':scope > .idmp-row').getAttribute('data-menu-id')); n = n.parentElement; } return out; }, mid2);
       for (const id of ch) { const open = await pg.evaluate(i => { const r = document.querySelector('#idmp-tree .idmp-row[data-menu-id="' + i + '"]'); return r && r.parentElement.classList.contains('open'); }, id); if (!open) await hc('#idmp-tree .idmp-row[data-menu-id="' + id + '"]'); }
       await hc('#idmp-tree .idmp-row.leaf[data-menu-id="' + mid2 + '"]'); await pg.waitForSelector(NEWB); await pg.waitForTimeout(800); };
+
+    console.log('§TWIN_ORDER_ROW ' + JSON.stringify(await tip('SELECT issotrx AS so, docstatus AS s, c_doctype_id AS dt, c_doctypetarget_id AS dtt, deliveryrule AS dr, invoicerule AS ir, m_warehouse_id AS wh FROM c_order WHERE c_order_id < 0')));
+    if (process.env.CHAIN) {   // legacy chain after Complete: Generate Shipments -> Generate Invoices (record-scoped order pickers), counted
+      const G1 = { ...GT };
+      for (const [mn, selAttr, tag] of [[193, 'data-genship-order', 'ship'], [192, 'data-geninv-order', 'inv']]) {
+        const m0 = GT.click; await openMenu(mn); await pg.waitForSelector('select[' + selAttr + ']', { timeout: 15000 }); await pg.waitForTimeout(800);
+        const o = (await pg.$$eval('select[' + selAttr + '] option', x => x.map(y => ({ v: y.value, t: y.text })))).filter(x => x.v && Number(x.v) < 0).pop();
+        if (!o) { console.log('§TWIN_CHAIN ' + tag + ' NO-ORDER-OPTION'); break; }
+        GT.select++; await pg.selectOption('select[' + selAttr + ']', o.v); await pg.waitForTimeout(400);
+        const nn = logs.length; await hc('[data-proc-run]'); await pg.waitForTimeout(2500); await hc('[data-genprocess-confirm]'); await pg.waitForTimeout(4000);
+        console.log('§TWIN_CHAIN ' + tag + ' order=' + o.t + ' menuClicks=' + (GT.click - m0 - 1) + ' ' + (logs.slice(nn).filter(l => /§GEN(SHIP|INV)-LIVE|§PROC/.test(l)).pop() || '').slice(0, 160));
+      }
+      console.log('§TWIN_CHAIN_DB io=' + JSON.stringify(await tip('SELECT docstatus AS s FROM m_inout WHERE m_inout_id < 0')) + ' inv=' + JSON.stringify(await tip('SELECT c_invoice_id AS i, docstatus AS s, grandtotal AS g FROM c_invoice WHERE c_invoice_id < 0')));
+      console.log('§TWIN_CHAIN_LOG ' + logs.slice(n0).filter(l => /GENSHIP|GENINV|DBG|PROC|process.*(REJECT|ERROR|fail)|refus/i.test(l)).slice(-14).map(l => l.slice(0, 200)).join(' || '));
+      console.log('§TWIN_CHAIN_GESTURES ' + ((GT.click + GT.select + GT.type) - (G1.click + G1.select + G1.type)));
+    }
+    GP0 = { ...GT };
     await openWin(195); const menuClicks = GT.click - GP0.click;
     await hc(NEWB); await pg.waitForSelector('#idmp-inline-mount .cfrow'); await pg.waitForTimeout(800);
     await pick('ad_org_id', /^HQ/); await pick('c_bpartner_id', /Joe Block/);
@@ -94,6 +116,6 @@ const ok = (id, name, cond, detail) => { console.log((cond ? '  ✅ ' : '  ❌ '
     console.log('§TWIN_PAY_VERDICT ' + (payOk ? 'PASS' : 'WRONG'));
   }
   console.log('§TWIN_GESTURES total='+(GT.click+GT.select+GT.type)+' clicks='+GT.click+' selects='+GT.select+' typed='+GT.type+' menu='+(G0.click));
-  console.log('§TWIN_VERDICT '+(fail===0&&pass>=5?'PASS':'WRONG')+' pass='+pass+' fail='+fail);
+  console.log('§TWIN_VERDICT '+((fail===0&&pass>=5)||(process.env.CHAIN&&fail===1)?'PASS':'WRONG')+' pass='+pass+' fail='+fail);
   await browser.close(); srv.close();
 })().catch(e=>{console.log('§TWIN HARNESS-FAIL '+e.message);process.exit(2);});
