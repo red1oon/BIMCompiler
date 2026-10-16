@@ -51,7 +51,10 @@ ELEVS.forEach(f => {
 // superseding CF-2's PLAN+@ROOF), @LEVEL = the "Roof" storey level FROM_SOURCE_MODEL (R1: min wall minZ, as mark_dx_set.js does for plans),
 // @UNITS from its header ($INSUNITS 4 = mm, DXF code table) and @ROOF = the value every marked elevation agrees on.
 // Refuses (no copy, run stops) when the elevations disagree or the header units are not 4. The std set has no roof plan: stage skipped, reported.
-if (STDSET) { shellTxt.ROOF = null; say('MARK-ROOFPLAN: the std set has no roof plan sheet (L1 writes none); roof-plan stage not run'); } else {
+if (STDSET) {                                                          // L2.6 E: the std set's ROOF and SECTION sheets, marked by mark_dx_set.js std
+  shellTxt.ROOF = txt('ROOF'); shellTxt.SECTION = txt('SECTION');
+  say('MARK-ROOFPLAN: std ROOF + SECTION sheets read as marked by mark_dx_set.js std (out/marked_std)');
+} else {
   const roofT0 = ORIG('ROOF'), rd0 = parse(roofT0), setV = MK.describe(MK.readMarks(parse(txt('FLOOR_GF')).entities)).desc.set;
   const rv = [...new Set(ELEVS.map(f => MK.describe(MK.readMarks(parse(shellTxt[f]).entities)).desc.roof).filter(v => typeof v === 'number'))];
   const iu = rd0.header && rd0.header.$INSUNITS, ro = rd0.entities.find(e => e.layer === 'A-ROOF' && (e.type === 'LWPOLYLINE' || e.type === 'POLYLINE') && e.shape);
@@ -83,18 +86,30 @@ function pipeline(popt) {
     const run = B.run(txt(st.f), MAP_PLAN, CFG, deps); st.before = run.ops; st.planGaps = run.report.gaps; st.run_id = run.run_id;
     let ops = E.applyElevations(run.ops, elevs.map(e => ({ face: e.face, clusters: e.clusters })), Object.assign({}, CFG, { wall: Object.assign({ height: r6(nxt - st.level) }, CFG.wall) }), { level: st.level, hashHex }).ops;
     ops = E.applyWallHeights(ops, elevs.map(e => ({ face: e.face, walls: e.walls })), CFG, { level: st.level }).ops;
-    ops = E.applyDoorHeights(ops, elevs.map(e => ({ face: e.face, doors: e.doors })), CFG, { level: st.level }).ops;
+    // L2.6 C: door tags on the plan label the doors before their heights; a door no elevation shows takes the scheduled height (height_source schedule)
+    const pd = planDesc[st.f], sch = T.scheduleFromDesc(pd, MK.UNITS);
+    if ((pd.tags || []).length) { const tg = T.applyTags(ops, [{ desc: pd }], MK.UNITS, { snap_tol: CFG.snap_tol, level: st.level }); ops = tg.ops; st.tagged = tg.labelled; }
+    const dh = E.applyDoorHeights(ops, elevs.map(e => ({ face: e.face, doors: e.doors })), CFG, { level: st.level, schedule: Object.keys(sch).length ? sch : null }); ops = dh.ops; st.doorRep = dh.report;
     st.after = ops;
   });
   R.ST = ST;
   // slabs and roof z (S-Z, R-Z) from elevation-derived heights only
   const L1 = ST[0], L2 = ST[1];
-  R.slabZ = { 'Level 1': S.slabZ({ level: L1.level, ops: L1.after }, null, CFG), 'Level 2': S.slabZ({ level: L2.level, ops: L2.after }, { level: L1.level, ops: L1.after }, CFG) };
+  // L2.6 E: a marked SECTION sheet states slab top / underside (Dxf2Shell.sectionSlabs, lane spec L1.4 F5)
+  let sopt = null;
+  if (shellTxt.SECTION) {
+    const sd = parse(shellTxt.SECTION), sdesc = MK.describe(MK.readMarks(sd.entities)).desc, sal = MK.align(planDesc.FLOOR_GF, sdesc, C.MARK_ALIGN_TOL);
+    R.section = sal.map ? S.sectionSlabs(sd.entities, require('./set_configs.js').STD.MAP_SECT, sal.map, [L1.level, L2.level], CFG, sdesc.roof) : { slabs: {}, roof: null, gaps: [{ code: 'GAP:section_align_fail', errors: sal.errors.map(e => e.code) }] };
+    sopt = { section: R.section };
+  }
+  R.slabZ = { 'Level 1': S.slabZ({ level: L1.level, ops: L1.after }, null, CFG, sopt), 'Level 2': S.slabZ({ level: L2.level, ops: L2.after }, { level: L1.level, ops: L1.after }, CFG, sopt) };
   if (MUT === 'M-S1') R.slabZ['Level 2'] = S.slabZ({ level: L2.level, ops: L2.after }, { level: L1.level, ops: L1.after }, Object.assign({}, CFG, { elev_tol: -1e9 }));   // filter "ends below T" defeated
   R.roofZ = S.roofZ({ level: L2.level, ops: L2.after }, MUT === 'M-R1' ? elevs.map(e => Object.assign({}, e, { roof: undefined })) : elevs, CFG);
   // W-H3 convention for walls no elevation shows: underside of the slab above (L1: Level-2 slab underside; L2: roof bottom)
   const U = { 'Level 1': R.slabZ['Level 2'].bottom, 'Level 2': R.roofZ.bottom };
   // variant A (main, the claim): a wall no elevation shows stays GAP:no_elevation_height (not meshed). Variant B adds the W-H3 convention (labelled slab_above).
+  // L2.6 A: wall tops the plan's @WALLTOP markings state (per wall, or slab_above for the storey); nothing without markings
+  ST.forEach(st => { const d = planDesc[st.f]; if (!(d.walltop || []).length && !(d.walltop_walls || []).length) return; const a = E.applyWallTops(st.after, st.before, d, st.level, U[st.name]); st.after = a.ops; st.wallTopRep = a.report; });
   ST.forEach(st => { st.slabAboveN = 0; if (!popt.convention) return; const a = S.applySlabAbove(st.after, st.before, typeof U[st.name] === 'number' ? U[st.name] : undefined, st.level); st.after = a.ops; st.slabAboveN = a.n; });
   // outlines (S-O / R-O)
   ST.forEach(st => { st.ring = S.innerRing(st.after, CFG); });
@@ -170,6 +185,7 @@ function pipeline(popt) {
 const R = pipeline({ convention: false }), RB = pipeline({ convention: true });
 say('variant A (main): walls only with drawn (elevation) heights; variant B: + W-H3 slab_above convention for walls no elevation shows (separate OBJ, INFO only)');
 const ST = R.ST;
+R.ST.forEach(st => say(st.name + ' L2.6: tags labelled=' + (st.tagged || 0) + ' door heights ' + J(st.doorRep) + ' wall tops from markings ' + J(st.wallTopRep || null)));
 say('elevations: ' + R.elevs.map(e => e.name + ' face=' + e.face + ' @ROOF=' + e.roof + ' levellines=' + e.lines.length + ' errors=' + e.errors.length).join(' | '));
 // ---------------- LV: storey levels (markings FROM_SOURCE_MODEL) corroborated by drawn elevation rects ----------------
 ST.forEach(st => check('LV ' + st.name, 'the storey level used is not a drawn elevation boundary (level taken from the source model only)', st.levelDrawn.length > 0, 'level=' + st.level + ' elevation wall rects starting there=' + st.levelDrawn.length));
@@ -288,6 +304,7 @@ say('\n===== ROOF =====');
   }
   check('RF-c', 'roof bottom differs from the source roof (10 mm)', typeof rz.bottom === 'number' && Math.abs(rz.bottom - src.z0) <= 0.01, 'ours=' + rz.bottom + ' source=' + r6(src.z0));
   check('RF-d', 'roof top differs from the source roof (10 mm)', typeof rz.top === 'number' && Math.abs(rz.top - src.z1) <= 0.01, 'ours=' + rz.top + ' (drawn ROOF LEVEL line) source=' + r6(src.z1) + ' diff=' + (typeof rz.top === 'number' ? r6(rz.top - src.z1) : 'n/a'));
+  if (!STDSET && !(typeof rz.top === 'number' && Math.abs(rz.top - src.z1) <= 0.01)) say('  KNOWN FINDING (BASIC_SHAPES §10.3): the old set draws ROOF LEVEL at 6.5; the source roof top is 6.457.');
 }
 
 // ---------------- OPENINGS: void cut + wall above/below (sampling our solids) ----------------
@@ -362,14 +379,15 @@ ST.forEach(st => {
     const d = doors.find(o => inRect(o.params.hinge, x.rect, 0.02));
     if (!d) { const a = arcs.find(e => defect.some(g => g.handle === e.handle) && Math.hypot(e.center.x * 0.001 - (x.a + x.c) / 2, e.center.y * 0.001 - (x.b + x.d) / 2) <= 1.2);
       if (a) { tally.explained++; dRows.push(x.id + ' ' + x.t + ' explained: arc ' + a.handle + ' GAP:door_below_min_width r=' + (a.radius * 0.001).toFixed(3) + ' (export defect, SPEC.md §21)'); } else { tally.FAIL++; dRows.push(x.id + ' FAIL no door'); } return; }
-    const wOk = Math.abs(d.params.width - Math.max(x.c - x.a, x.d - x.b)) <= 0.002, hw = allSrcW[hostOf[x.guid]];
+    const wOk = Math.abs(d.params.width - (Math.max(x.c - x.a, x.d - x.b) - 2 * CASING)) <= 0.002, hw = allSrcW[hostOf[x.guid]];
     const sw = S.doorSwing(d, plan.filter(o => o.op_type === 'DXF_WALL'), CFG.snap_tol), H = sw.gap ? null : { params: { handle: sw.strip.join('+') } };
     const hostOk = !sw.gap && !!hw && sw.strip.every(h => plan.some(o => o.op_type === 'DXF_WALL' && o.params.handle === h && inside(o.params.rect, hw.rect)));
     if (wOk && hostOk) tally.ok++; else tally.FAIL++;
-    dRows.push(x.id + ' ' + x.t + ' arc ' + d.params.handle + ' width ' + d.params.width + (wOk ? ' =src' : ' != src ' + Math.max(x.c - x.a, x.d - x.b).toFixed(3)) + ' host ' + (H ? H.params.handle : '-') + (hostOk ? ' in src wall ' + hw.id : ' NOT in src host') + (sw.gap ? ' | ' + sw.gap : ' | swing: opens to ' + sw.opens_to + ', hinge at ' + sw.hinge_jamb + ' jamb'));
+    dRows.push(x.id + ' ' + x.t + ' arc ' + d.params.handle + ' width ' + d.params.width + (wOk ? ' =src leaf' : ' != src leaf ' + (Math.max(x.c - x.a, x.d - x.b) - 2 * CASING).toFixed(3) + ' (bbox long side - 2 x CASING)') + ' host ' + (H ? H.params.handle : '-') + (hostOk ? ' in src wall ' + hw.id : ' NOT in src host') + (sw.gap ? ' | ' + sw.gap : ' | swing: opens to ' + sw.opens_to + ', hinge at ' + sw.hinge_jamb + ' jamb'));
   });
   dRows.forEach(r => say('  ' + r));
   check('DW-doors ' + st.name, 'a source door has no plan door of its width hosted in its source wall, with no logged gap explaining it', tally.FAIL === 0, 'source doors=' + sd.length + ' ok=' + tally.ok + ' explained=' + tally.explained + ' FAIL=' + tally.FAIL);
+  if (!STDSET && tally.FAIL) say('  KNOWN FINDING (lane spec L2.6 F, lead decision): the old set draws door arcs at the casing-inclusive bbox (radius = leaf + 2 x CASING), so on the leaf rule its doors FAIL. The old drawings are wrong; no rule accepts them.');
   let wins = st.after.filter(o => o.op_type === 'DXF_OPENING' && o.params.kind === 'window'), sw2 = srcRect("='IfcWindow'", "m.storey='" + st.name + "'");
   let wok = 0, wexp = 0; const wbad = [], w8bad = [], wexpl = [];
   // L2.5 W2 controls: M-W2 removes the first window op (a window vanishes, no gap: the check must FAIL); M-W2g removes it but logs a gap on its glazing (explained)
@@ -435,8 +453,9 @@ if (!MUT) {
     st.fills.elements.forEach(e => { if (typeof e.handle === 'string') rs.add(e.handle); });
     resolved[sheet] = [...rs].sort((a, b) => parseInt(a, 16) - parseInt(b, 16));
   });
+  ((R.section && R.section.gaps) || []).forEach(g => qg.push(Object.assign({ sheet: 'DX_SECTION', shape: 'slabs' }, pick(g))));
   R.roofPlan.gaps.concat(R.roofZ.gaps || []).forEach(g => qg.push(Object.assign({ sheet: 'DX_ROOF', shape: 'roof' }, pick(g))));
-  const inputs = {}; ['FLOOR_GF', 'FLOOR_FF'].forEach(f => { inputs['DX_' + f] = hashHex(txt(f)); }); ELEVS.forEach(f => { inputs['DX_' + f] = hashHex(shellTxt[f]); }); if (shellTxt.ROOF) inputs.DX_ROOF = hashHex(shellTxt.ROOF);
+  const inputs = {}; ['FLOOR_GF', 'FLOOR_FF'].forEach(f => { inputs['DX_' + f] = hashHex(txt(f)); }); ELEVS.forEach(f => { inputs['DX_' + f] = hashHex(shellTxt[f]); }); if (shellTxt.SECTION) inputs.DX_SECTION = hashHex(shellTxt.SECTION); if (shellTxt.ROOF) inputs.DX_ROOF = hashHex(shellTxt.ROOF);
   fs.writeFileSync(path.join(OUTS, 'dx_shell_gaps.json'), J({ variant: 'A', set: DXSET || 'dx', inputs, gaps: qg, resolved }, null, 1) + '\n');
   say('L2 qualify input: ' + qg.length + ' gap records (variant A), resolved handles ' + J(Object.keys(resolved).map(k => k + ':' + resolved[k].length)) + ' -> ' + path.relative(__dirname, OUTS) + '/dx_shell_gaps.json');
 }

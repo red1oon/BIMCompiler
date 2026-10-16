@@ -422,13 +422,18 @@
     } else if (oSegs.length) {
       var tolS = config.snap_tol;
       var near = function (p, q) { return Math.hypot(p[0] - q[0], p[1] - q[1]) <= tolS; };
-      // D1 door parts
-      oSegs.forEach(function (sg) {
-        for (var i = 0; i < doorPts.length; i++) {
-          if (near(sg.a, doorPts[i].p) || near(sg.b, doorPts[i].p)) {
-            doorPts[i].door.params.parts.push({ handle: sg.e.handle, part: sg.part }); sg.used = true; return;
-          }
-        }
+      // D1 door parts (lane spec L2.6 B): an entity whose outline (any vertex or segment) passes within snap_tol of a door's hinge or arc end
+      // is that door's part, WHOLE (all its segments). Touching two doors -> GAP:door_part_ambiguous (not absorbed).
+      var segD = function (p, a, b) { var dx = b[0] - a[0], dy = b[1] - a[1], L = dx * dx + dy * dy, t = L ? ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / L : 0; t = Math.max(0, Math.min(1, t)); return Math.hypot(p[0] - a[0] - t * dx, p[1] - a[1] - t * dy); };
+      var byEnt = {}, entOrder = [];
+      oSegs.forEach(function (sg) { if (!byEnt[sg.e.handle]) { byEnt[sg.e.handle] = []; entOrder.push(sg.e.handle); } byEnt[sg.e.handle].push(sg); });
+      entOrder.sort(function (p, q) { return hnum(p) - hnum(q); }).forEach(function (h) {
+        var segs = byEnt[h], hit = [];
+        doorPts.forEach(function (dp) { if (hit.indexOf(dp.door) < 0 && segs.some(function (sg) { return segD(dp.p, sg.a, sg.b) <= tolS; })) hit.push(dp.door); });
+        if (!hit.length) return;
+        segs.forEach(function (sg) { sg.used = true; });
+        if (hit.length > 1) { gap('GAP:door_part_ambiguous', segs[0].e, { doors: hit.map(function (d) { return d.e.handle; }).sort(function (p, q) { return hnum(p) - hnum(q); }) }); return; }
+        segs.forEach(function (sg) { hit[0].params.parts.push({ handle: sg.e.handle, part: sg.part }); });
       });
       elems.forEach(function (x) { if (x.params.parts) x.params.parts.sort(function (p, q) { return hnum(p.handle) - hnum(q.handle) || p.part - q.part; }); });
       // W1 rectangle clusters among unconsumed segments

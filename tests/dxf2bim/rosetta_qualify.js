@@ -114,22 +114,21 @@ const STD = C.STD, OSM = path.join(__dirname, 'out/marked_std'), OSS = path.join
 if (!fs.existsSync(sgFile)) { say('REFUSED: ' + sgFile + ' missing; run mark_dx_set.js std, then DXSET=std rosetta_dx_shell.js'); fails++; }
 else {
   const SG = JSON.parse(fs.readFileSync(sgFile, 'utf8'));
-  const stText = { DX_FLOOR_GF: fs.readFileSync(path.join(OSM, 'DX_FLOOR_GF_marked.dxf'), 'utf8'), DX_FLOOR_FF: fs.readFileSync(path.join(OSM, 'DX_FLOOR_FF_marked.dxf'), 'utf8') };
+  const stText = {};
+  ['FLOOR_GF', 'FLOOR_FF', 'ROOF', 'SECTION'].forEach(f => { stText['DX_' + f] = fs.readFileSync(path.join(OSM, 'DX_' + f + '_marked.dxf'), 'utf8'); });
   ['FRONT', 'REAR', 'LEFT', 'RIGHT'].forEach(f => { stText['DX_' + f] = fs.readFileSync(path.join(OSS, 'DX_' + f + '_shell.dxf'), 'utf8'); });
   const sStale = Object.keys(SG.inputs).filter(k => SG.inputs[k] !== hashHex(stText[k] || ''));
-  check('STD gaps fresh', 'the std pipeline gaps were computed on other files than the ones qualified', sStale.length === 0 && Object.keys(SG.inputs).length === Object.keys(stText).length, SG.gaps.length + ' gap records, stale=' + J(sStale));
-  const stMaps = id => /FLOOR/.test(id) ? [STD.MAP_PLAN] : [STD.MAP_ELEV, STD.MAP_LEVL, STD.EXCL_ELEV];
+  check('STD gaps fresh', 'the std pipeline gaps were computed on other files than the ones qualified', sStale.length === 0 && Object.keys(SG.inputs).length === Object.keys(stText).length, SG.gaps.length + ' gap records, stale=' + J(sStale) + ' sheets=' + Object.keys(SG.inputs).length);
+  const stMaps = id => /FLOOR/.test(id) ? [STD.MAP_PLAN] : id === 'DX_ROOF' ? [STD.MAP_ROOF] : id === 'DX_SECTION' ? [STD.MAP_SECT] : [STD.MAP_ELEV, STD.MAP_LEVL, STD.EXCL_ELEV];
   const stOps = { DX_FLOOR_GF: B.run(stText.DX_FLOOR_GF, STD.MAP_PLAN, DX.CFG, deps).ops, DX_FLOOR_FF: B.run(stText.DX_FLOOR_FF, STD.MAP_PLAN, DX.CFG, deps).ops };
-  const stInput = txts => ({ files: Object.keys(txts).sort().map(k => ({ name: k, dxf: parse(txts[k]), layer_maps: stMaps(k) })), plan_ops: stOps, gaps: SG.gaps, resolved: SG.resolved });
-  const vStd = twice('STD marked', stInput(stText), STD.QUALIFY);
-  report('L2.3 std set (L1 writer, marked from the model)', vStd);
-  // the same with the interior-wall convention stated (what the L4 editor would write when the USER states it; never a default)
-  const MKm = require(DD + 'dxf2marks.js'), wt = Object.assign({}, stText);
-  ['DX_FLOOR_GF', 'DX_FLOOR_FF'].forEach(k => { const lv = MKm.describe(MKm.readMarks(parse(stText[k]).entities)).desc.level; wt[k] = MKm.writeMarks(stText[k], [{ text: '@WALLTOP=' + lv + ',slab_above' }]); });
-  const vW = Q.qualify(Object.assign(stInput(wt), { plan_ops: { DX_FLOOR_GF: B.run(wt.DX_FLOOR_GF, STD.MAP_PLAN, DX.CFG, deps).ops, DX_FLOOR_FF: B.run(wt.DX_FLOOR_FF, STD.MAP_PLAN, DX.CFG, deps).ops } }), STD.QUALIFY);
-  report('L2.3 std set + @WALLTOP=<level>,slab_above on both plans (USER-STATED convention, simulated here; not written by any marking tool)', vW);
-  check('STD walltop', 'the stated convention did not cover the interior wall-height gaps, or was not recorded as user-stated', vW.conventions.length === 2 && vW.conventions.every(c => c.source === 'user-stated') && !vW.blocking.some(x => x.code === 'GAP:no_elevation_height' && /WALL/.test((x.detail || {}).layer || '')),
-    'conventions=' + J(vW.conventions.map(c => c.level + ':' + c.rule + ':' + c.source)) + ' wall no_elevation_height left=' + vW.blocking.filter(x => x.code === 'GAP:no_elevation_height').length);
+  const stInput = { files: Object.keys(stText).sort().map(k => ({ name: k, dxf: parse(stText[k]), layer_maps: stMaps(k) })), plan_ops: stOps, gaps: SG.gaps, resolved: SG.resolved };
+  const vStd = twice('STD marked', stInput, STD.QUALIFY);
+  report('L2.6 std set (8 sheets: L1 writer; markings from the model by mark_dx_set.js std)', vStd);
+  check('STD roles', 'a std sheet (ROOF / SECTION included) has no role', vStd.sheets.every(x => x.view), J(vStd.sheets.map(x => x.id + ':' + x.view)));
+  // causes, as the lane reports them
+  const cause = x => /door|opening_unclassified/.test(x.code + ' ' + J(x.detail || {}) + ' ' + x.message) && x.shape === 'openings' ? 'doors' : x.shape;
+  const bc = {}; vStd.blocking.forEach(x => { const k = cause(x) + ' ' + x.code; bc[k] = (bc[k] || 0) + 1; });
+  say('std blocking by cause: ' + J(bc));
 }
 
 say('\nSUMMARY fail=' + fails);

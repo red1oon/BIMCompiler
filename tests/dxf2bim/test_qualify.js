@@ -90,11 +90,20 @@ function roof(o) {
   ['@SET=FX', '@VIEW=ROOF', '@UNITS=mm', '@NAME=ROOF', '@LEVEL=3', '@ROOF=' + (o.top || 3)].forEach(t => w.mark(t));
   return { text: w.out() };
 }
+// SECTION sheet (lane spec L1.4 / L2.6 E): cut X=5000 through the fixture box, horizontal axis +Y (h = plan y), grid A/B at 100/5900, @Z 0/3
+function section(o) {
+  o = o || {}; const w = W(); w.rect('S-SLAB', 0, -200, 6000, 0); w.rect('A-ROOF', 0, 3000, 6000, 3200);
+  ['@SET=FX', '@VIEW=SECTION', '@UNITS=mm', '@NAME=SECTION', '@CUT=X,5000', '@HAXIS=+Y', '@ROOF=' + (o.top || 3)].forEach(t => w.mark(t));
+  w.mark('@GRIDH=A', [100, 0]); w.mark('@GRIDH=B', [o.badGrid ? 6600 : 5900, 0]); w.mark('@Z=0', [0, 0]); w.mark('@Z=3', [0, 3000]);
+  return { text: w.out() };
+}
+const SECT_MAP = { version: 1, rules: [{ match: 'exact', pattern: 'S-SLAB', type: 'sectslab' }, { match: 'exact', pattern: 'A-ROOF', type: 'roof' }] };
 const ELEV_EXCL = { version: 1, rules: ['A-GRID', 'A-ANNO-TEXT', 'A-ANNO-DIMS'].map(p => ({ match: 'exact', pattern: p, type: 'ignore' })) };   // fixture's own exclusions
 const deps = { DxfParser, hashHex, library: [] };
 function set(o) {
   o = o || {}; const P = plan(o.plan), files = [{ name: 'FX_PLAN', dxf: parse(P.text), layer_maps: [C.DX.MAP_PLAN] }];
   Object.keys(FACE).forEach(n => { if ((o.dropElev || []).indexOf(n) >= 0) return; const E = elev(n, Object.assign({ noMarks: o.plan && o.plan.noMarks }, (o.elev || {})[n])); files.push({ name: 'FX_' + n, dxf: parse(E.text), layer_maps: [C.DX.MAP_ELEV, C.DX.MAP_LEVL, ELEV_EXCL] }); });
+  if (o.section) files.push({ name: 'FX_SECTION', dxf: parse(section(o.section).text), layer_maps: [SECT_MAP] });
   if (!o.noRoof) { const Rf = roof(Object.assign({}, o.roof)); const d = parse(Rf.text); files.push({ name: 'FX_ROOF', dxf: (o.plan && o.plan.noMarks) ? Object.assign({}, d, { entities: d.entities.filter(e => e.layer !== 'DXF2BIM-MARK') }) : d, layer_maps: [C.DX.MAP_ROOF] }); }
   const run = B.run(P.text, C.DX.MAP_PLAN, C.DX.CFG, deps);
   const input = { files, plan_ops: o.noOps ? undefined : { FX_PLAN: run.ops }, gaps: (o.gaps || run.report.gaps.map(g => Object.assign({ sheet: 'FX_PLAN' }, g))), resolved: o.resolved };
@@ -193,6 +202,13 @@ only('QG2', 'an interior wall height no elevation shows passes without a stated 
 only('QG4', '@WALLTOP silenced a door height gap (it covers walls only)', { plan: { walltop: ['0,slab_above'] }, gaps: [wallGap, doorGap] }, ['GAP:no_elevation_height']);
 { const v = Q.qualify(set({ gaps: [doorGap] }).input, S);
   check('QG6', 'a door height gap (A-DOOR layer, no kind) is counted under walls (L2.5 W3)', v.blocking.length === 1 && v.blocking[0].shape === 'openings' && v.by_shape.walls.verdict === 'qualifies' && v.by_shape.openings.verdict === 'blocked', J(v.blocking.map(x => x.code + ':' + x.shape))); }
+{ const v = Q.qualify(set({ section: {} }).input, S);
+  check('QSEC1', 'a SECTION sheet is not accepted as a role (L2.6 E) or blocks a correct set', v.verdict === 'qualifies' && v.sheets.some(x => x.id === 'FX_SECTION' && x.view === 'SECTION'), cc(v)); }
+only('QSEC2', 'a section roof top that disagrees with the roof sheet passes', { section: { top: 3.5 } }, ['QF:roof_level_mismatch']);
+only('QSEC3', 'a section whose grid markings disagree with the plan passes', { section: { badGrid: true } }, ['QF:elev_align_fail']);
+{ const v = Q.qualify(set({ plan: { walltop: ['handle:100,2.9'] }, gaps: [wallGap] }).input, S);
+  check('QG7', 'a per-wall @WALLTOP (L2.6 A) does not cover its wall-height gap, or covers it silently', v.verdict === 'qualifies' && v.advisory.some(x => x.code === 'QF:height_stated' && x.handles[0] === '100' && x.z_top === 2.9), cc(v) + ' ' + J(v.advisory.map(x => x.code))); }
+only('QG8', 'mutation: a per-wall @WALLTOP on another handle covered the gap', { plan: { walltop: ['handle:1FF,2.9'] }, gaps: [wallGap] }, ['GAP:no_elevation_height']);
 only('QG5', '@WALLTOP naming no plan level passes', { plan: { walltop: ['7,slab_above'] } }, ['QF:walltop_unknown_storey']);
 // ---- L2.3 D5 drafting notes ----
 const N = (id, issue, d, wantB, wantA) => { const s5x = set({ plan: { extraDims: [d] } }), v = Q.qualify(s5x.input, S), h = s5x.D.x0;
