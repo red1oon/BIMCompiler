@@ -20,23 +20,11 @@ const JSCAD_CFG = { version: 1, units: 'in', snap_tol: 0.0127, host_tol: 0.15, w
 module.exports = { DX: { MAP_PLAN: DX_MAP_PLAN, MAP_ELEV: DX_MAP_ELEV, MAP_LEVL: DX_MAP_LEVL, MAP_ROOF: DX_MAP_ROOF, CFG: DX_CFG },
   FARM: { MAP: FARM_MAP, CFG: FARM_CFG }, JSCAD: { MAP: JSCAD_MAP, CFG: JSCAD_CFG } };
 // ---- L2 qualify settings (DXF2BIM_MODELLER_LANE §L2.1); each value names its source, none is read from a drawing ----
-const DX_QUALIFY = { tol: { grid: 0.010 /* L1.1 R5 grid_merge_tol */, dim: 0.0005 /* L1 W3 */, level: DX_CFG.elev_tol /* rosetta_dx_shell CFG */, align: 0.001 /* rosetta_dx_shell MK.align call */ },
-  grid: { min_wall_len: 1.0 /* L1.1 R4 */ }, layers: { grid: ['A-GRID'], dims: ['A-ANNO-DIMS'] /* NCS names, L1.1 R12 */ } };   // layers.bearing removed (L2.3 D4)
+const DX_QUALIFY = _DX.QUALIFY;   // §13: moved verbatim to deploy/dev/dxf2shell_config.js
 module.exports.DX.QUALIFY = DX_QUALIFY;
 // Farmhouse / jscad: tolerances as DX (same stated sources); dims layer = the layer holding the DIMENSION entities (SANDBOX seed, human choice from layer names,
 // as the maps above). Grid layers are NOT stated for these drawings (they have no grid layer): qualify reports QF:setting_missing.
 module.exports.FARM.QUALIFY = { tol: DX_QUALIFY.tol, grid: DX_QUALIFY.grid, layers: { dims: ['A-DIMSx'] } };
 module.exports.JSCAD.QUALIFY = { tol: DX_QUALIFY.tol, grid: DX_QUALIFY.grid, layers: { dims: ['A-DIMS-1'] } };
-// ---- STD: the L1 standard set (2D_Layout/python/std2d.py), lane spec L2.3. New constants, built from the R12 layer names (not copied): ----
-// plans = the DX plan map + the R12 layers it lacks (A-GLAZ-SILL, A-ANNO-NOTE, A-ANNO-TTLB ignored); elevations: A-WALL is the elevation outline (R12),
-// A-GLAZ glazing, A-DOOR door; level lines A-ANNO-LEVL; the rest of the R12 elevation layers are excluded (ignore).
-const ign = l => ({ match: 'exact', pattern: l, type: 'ignore' });
-module.exports.STD = {
-  MAP_PLAN: { version: 1, rules: DX_MAP_PLAN.rules.concat(['A-GLAZ-SILL', 'A-ANNO-NOTE', 'A-ANNO-TTLB'].map(ign)) },
-  MAP_ELEV: { version: 1, rules: [{ match: 'exact', pattern: 'A-GLAZ', type: 'glazing' }, { match: 'exact', pattern: 'A-WALL', type: 'elevwall' }, { match: 'exact', pattern: 'A-DOOR', type: 'elevdoor' }] },
-  MAP_LEVL: DX_MAP_LEVL,
-  // lane spec L1.4 F4/F5: the std ROOF plan (DX roof map + the R12 annotation layers ignored) and the SECTION sheet
-  MAP_ROOF: { version: 1, rules: DX_MAP_ROOF.rules.concat(['A-GRID', 'A-ANNO-DIMS', 'A-ANNO-LEVL', 'A-ANNO-TTLB'].map(ign)) },
-  MAP_SECT: { version: 1, rules: [{ match: 'exact', pattern: 'S-SLAB', type: 'sectslab' }, { match: 'exact', pattern: 'A-ROOF', type: 'roof' }, { match: 'exact', pattern: 'A-SECT', type: 'sectwall' }].concat(['A-WALL-PATT', 'A-GRID', 'A-ANNO-DIMS', 'A-ANNO-LEVL', 'A-ANNO-TTLB'].map(ign)) },
-  EXCL_ELEV: { version: 1, rules: ['A-GLAZ-SILL', 'A-ROOF', 'A-GRID', 'A-ANNO-DIMS', 'A-ANNO-NOTE', 'A-ANNO-TTLB'].map(ign) },
-  QUALIFY: DX_QUALIFY };
+// ---- STD: the L1 standard set (2D_Layout/python/std2d.py), lane spec L2.3: §13 moved verbatim to deploy/dev/dxf2shell_config.js (copied into the Modeller) ----
+module.exports.STD = _DX.STD;
