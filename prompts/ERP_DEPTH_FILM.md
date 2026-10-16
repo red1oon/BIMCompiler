@@ -527,3 +527,8 @@ Each login writes ONE signed `AD_Session` (WebSession = this tab's random id, Se
 ### §UDP-5 / §UDP-9 - decisions (nothing built)
 **§UDP-5 AD_Issue ⛔:** legacy writes an issue for EVERY SEVERE log record when `AD_System.IsAutoErrorReport='Y'` (MIssue.create :64-95 via CLogErrorBuffer :215-240; pilot: 1,858 issues). The twin's error logger (`error_beacon.js`) is deliberately local-only, PII-free and bounded to 50 entries (spike S1, "no telemetry"). Writing AD_Issue into the signed op-log (which can sync) reverses that design. QUESTION: may twin errors (window.onerror / unhandled rejection / §...ERROR lines) become AD_Issue rows in the op-log, and with which retention (legacy: none)?
 **§UDP-9 AD_ChangeLog ⛔ (as listed):** persist legacy-shaped rows beside the signed op-log, or derive them from it.
+
+### USER DECISIONS 2026-10-16 (verbatim)
+1. §UDP-6 zoom seam: *"Yes, have to for the same legacy behaviour i reckoned"* -> the core publishes a zoom (AEnv.zoom port) for Home gadgets.
+2. §UDP-5 AD_Issue: *"Yes, it is to help in debug, and if it is not spammy, small size, selective, from WITNESS logging, as we do not want the bloat that happens to legacy. Also The System 'server' monitor can double up as a browser bloat manager where it turns red glow panel listing those tables with OK to Housekeep, but we avoid Saved Parameters."* -> AD_Issue rows come from SELECTED §-witness ERROR/FAIL lines (not every log), deduplicated, size-capped; the System Server Monitor shows a red-glow panel of tables that are OK to housekeep (runtime/log tables over a threshold), never AD_PInstance named rows (Saved Parameters).
+Still open: §UDP-9 AD_ChangeLog, R5 blank Record_UU, §UDP-3 LIKE-on-uuid LEGACY-ERROR.
