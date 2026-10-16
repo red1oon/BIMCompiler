@@ -218,7 +218,11 @@ ST.forEach(st => {
   const cut = st.level + 1.2, srcW = srcRect("='IfcWall'", "m.storey='" + st.name + "'"), srcCut = srcW.filter(x => x.z0 <= cut && cut < x.z1);
   const ours = st.before.filter(o => o.op_type === 'DXF_WALL').map(o => o.params);   // plan checks (R1a/R1b-u) on every plan piece; meshed = pieces with a drawn height
   say('  plan pieces=' + ours.length + ', meshed with a drawn height=' + ws.length + ', GAP:no_elevation_height (not meshed)=' + (gc['GAP:no_elevation_height'] || 0) + ' (walls and doors)');
-  const stray = ours.filter(p => !srcCut.some(s => inside(p.rect, s.rect)));
+  // lane spec L1.5 P1: a plan shows every wall its cut plane cuts, whatever the model storey; R1a (precision) checks against all of them.
+  // R1b-u (recall) below stays on the storey's own walls (unchanged; the other-storey cut walls are listed, not scored).
+  const srcCutAny = srcRect("='IfcWall'", null).filter(x => x.z0 <= cut && cut < x.z1), otherCut = srcCutAny.filter(x => !srcCut.some(y => y.id === x.id));
+  if (otherCut.length) say('  other-storey walls cut by z=' + cut + ' (L1.5): ' + otherCut.map(x => x.id + ' ' + x.guid).join(', '));
+  const stray = ours.filter(p => !srcCutAny.some(s => inside(p.rect, s.rect)));
   check('R1a ' + st.name, 'a wall piece lies outside every source wall (invented geometry)', stray.length === 0, 'pieces=' + ours.length + ' stray=' + stray.length + (stray.length ? ' ' + stray.map(p => p.handle).join(',') : ''));
   const srcOp = srcRect(" in ('IfcDoor','IfcWindow')", "m.storey='" + st.name + "'");
   let ok = 0; const bad = [];

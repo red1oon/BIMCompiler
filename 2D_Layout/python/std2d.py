@@ -442,10 +442,13 @@ def write_plan(model, grid, storey, view, db_path, out_path, log):
     msp = doc.modelspace()
     cut_z = storey['elev'] + CUT_OFFSET
     cut = run_section_cut(db_path, cut_z=cut_z)
-    cut = sorted([c for c in cut if c.category == 'CUT' and c.storey == storey['name']
+    # §L1.5 P1: every element the cut plane cuts (section_cut CUT: minZ < cut_z < maxZ), whatever its storey
+    cut = sorted([c for c in cut if c.category == 'CUT'
                   and c.ifc_class in ('IfcWall', 'IfcWallStandardCase', 'IfcDoor', 'IfcWindow', 'IfcColumn')],
                  key=lambda c: c.guid)
-    sw = [w for w in model['walls'] if w['storey'] == storey['name']]
+    sw = [w for w in model['walls'] if w['z0'] < cut_z < w['z1']]
+    other = sorted(f"{w['guid']}@{w['storey']}" for w in sw if w['storey'] != storey['name'])
+    log(f"§PLAN_CUT view={view} cut_z={cut_z:.3f} walls={len(sw)} (other-storey walls={len(other)}: {' '.join(other)})")
     env = envelope(sw)
     E = [mm(v) for v in env]   # x0,x1,y0,y1 in mm
     face_runs = {'S': [], 'N': [], 'W': [], 'E': []}

@@ -47,7 +47,10 @@ for (const st of STOREYS) {
   console.log('source walls on storey=' + allSrc.length + ' cut by plane z=' + cut + ' -> ' + srcCut.length);
   const inside = (r, R) => r[0] >= R[0] - 0.001 && r[1] >= R[1] - 0.001 && r[2] <= R[2] + 0.001 && r[3] <= R[3] + 0.001;
   // R1a precision: each of our pieces lies inside some source wall (cut ones)
-  const host = ours.map(o => srcCut.find(s => inside(o.rect, s.rect)));
+  // lane spec L1.5 P1: R1a precision against every wall the plane cuts, whatever its model storey (recall R1b stays storey-scoped)
+  const cutAny = sql("select m.id id, r.minX a, r.minY b, r.maxX c, r.maxY d, r.minZ z0, r.maxZ z1 from elements_meta m join elements_rtree r on r.id=m.id where m.ifc_class='IfcWall'")
+    .map(x => ({ id: x.id, rect: [x.a, x.b, x.c, x.d], cut: x.z0 <= cut && cut < x.z1 })).filter(x => x.cut);
+  const host = ours.map(o => cutAny.find(s => inside(o.rect, s.rect)));
   const stray = ours.filter((_, i) => !host[i]);
   check('R1a ' + st.name, 'a wall piece we emit lies outside every source wall (invented geometry)', stray.length === 0, 'pieces=' + ours.length + ' inside a source wall=' + (ours.length - stray.length) + ' stray=' + stray.length);
   if (stray.length) console.log('  stray: ' + stray.map(o => o.h + ':' + o.layer + '[' + o.rect.map(v => +v.toFixed(3)) + ']').join(' '));
