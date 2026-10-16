@@ -23,8 +23,8 @@ const ORIG = f => fs.readFileSync(path.join(ROOT, '2D_Layout/output/DXF/DX_' + f
 const MUT = process.env.MUT || '';
 // §11: the pipeline configuration lives in ONE shared module (also copied verbatim into the Modeller import), not here.
 const C = require(path.join(__dirname, '../../deploy/dev/dxf2shell_config.js'));
-const { MAP_PLAN, MAP_ELEV, MAP_LEVL, MAP_ROOF } = STDSET ? require('./set_configs.js').STD : C, CFG = C.CFG;   // std: R12 layer names (set_configs.js STD), same CFG
-const CASING = 0.076;   // R1b door casing (moved up unchanged; L2.7 rule 2 passes it as the schedule head frame)
+const { MAP_PLAN, MAP_ELEV, MAP_LEVL, MAP_ROOF } = STDSET ? C.STD : C, CFG = C.CFG;   // std: R12 layer names (set_configs.js STD), same CFG
+const CASING = C.CASING;   // R1b door casing 0.076 (§13: moved verbatim to deploy/dev/dxf2shell_config.js; L2.7 rule 2 passes it as the schedule head frame)
 const deps = { DxfParser, hashHex, library: [] };
 const lines = []; let fails = 0;
 const say = s => { lines.push(s); console.log(s); };
@@ -100,7 +100,7 @@ function pipeline(popt) {
   let sopt = null;
   if (shellTxt.SECTION) {
     const sd = parse(shellTxt.SECTION), sdesc = MK.describe(MK.readMarks(sd.entities)).desc, sal = MK.align(planDesc.FLOOR_GF, sdesc, C.MARK_ALIGN_TOL);
-    R.section = sal.map ? S.sectionSlabs(sd.entities, require('./set_configs.js').STD.MAP_SECT, sal.map, [L1.level, L2.level], CFG, sdesc.roof) : { slabs: {}, roof: null, gaps: [{ code: 'GAP:section_align_fail', errors: sal.errors.map(e => e.code) }] };
+    R.section = sal.map ? S.sectionSlabs(sd.entities, C.STD.MAP_SECT, sal.map, [L1.level, L2.level], CFG, sdesc.roof) : { slabs: {}, roof: null, gaps: [{ code: 'GAP:section_align_fail', errors: sal.errors.map(e => e.code) }] };
     sopt = { section: R.section };
     if (sdesc.cut && sal.map) { const cp = sdesc.cut.split(','); R.sectionCut = { axis: cp[0], at: Number(cp[1]) * MK.UNITS[sdesc.units] }; }
   }
@@ -127,7 +127,9 @@ function pipeline(popt) {
     const roofD = parse(shellTxt.ROOF), roofDesc = MK.describe(MK.readMarks(roofD.entities)).desc;
     R.roofPlan = S.roofPlan(roofD.entities, MAP_ROOF, MK.UNITS[roofDesc.units], L2.ring.envelope, L2.ring.outline, CFG);   // §11: factor from the roof plan's @UNITS marking
   } else R.roofPlan = { ok: false, holes: [], gaps: [] };                                    // std set: no roof plan sheet (qualify reports QF:set_no_roof)
-  R.run_id = C.runId(B.canon, hashHex, ST.map(st => st.run_id), ['FLOOR_GF', 'FLOOR_FF'].map(f => hashHex(txt(f))).concat(ELEVS.map(f => hashHex(shellTxt[f])), shellTxt.ROOF ? [hashHex(shellTxt.ROOF)] : []));
+  // §13: the std run's identity also covers its SECTION sheet (it states the slabs) and the std layer maps it used; the DX run_id is unchanged
+  R.run_id = C.runId(B.canon, hashHex, ST.map(st => st.run_id), ['FLOOR_GF', 'FLOOR_FF'].map(f => hashHex(txt(f))).concat(ELEVS.map(f => hashHex(shellTxt[f])), shellTxt.ROOF ? [hashHex(shellTxt.ROOF)] : [], shellTxt.SECTION ? [hashHex(shellTxt.SECTION)] : []),
+    STDSET ? { plan: C.STD.MAP_PLAN, elev: C.STD.MAP_ELEV, levl: C.STD.MAP_LEVL, roof: C.STD.MAP_ROOF, sect: C.STD.MAP_SECT } : undefined);
   // type binding (rosetta_dx_types chain): prefer DUPLEX_NOMINAL (SANDBOX sets by id prefix), 819x759 windows labelled from the SOURCE model (round trip, as its E7)
   const setOf = C.setOf;
   const fams = lsql('select family_id id, opening_type ot, ifc_class, default_width_mm w, default_height_mm h, description d from ad_opening_family where is_active=1');
@@ -490,17 +492,17 @@ if (!MUT) {
   fs.writeFileSync(path.join(OUTS, 'dx_shell_gaps.json'), J({ variant: 'A', set: DXSET || 'dx', inputs, gaps: qg, resolved }, null, 1) + '\n');
   say('L2 qualify input: ' + qg.length + ' gap records (variant A), resolved handles ' + J(Object.keys(resolved).map(k => k + ':' + resolved[k].length)) + ' -> ' + path.relative(__dirname, OUTS) + '/dx_shell_gaps.json');
 }
-// §11 element summary for the Modeller import witness (bim-ootb modeller/tests/witness_dxf_convert.js C1): same element ids as the OBJ. Not for the std set.
-if (!STDSET) {
+// §11 element summary for the Modeller import witness (bim-ootb modeller/tests/witness_dxf_convert.js C1): same element ids as the OBJ. §13: also for the std set (suffix _std).
+{
   const infillOf = {}; R.ST.forEach(st => st.infill.forEach(o => { infillOf[hashHex(o.output_guid + '|0').slice(0, 32)] = { infill_of: o.params.infill_of, openings: o.params.openings }; }));
   const bb = e => { const mn = [0, 1, 2].map(a => Math.min(...e.vertices.map(v => v[a]))), mx = [0, 1, 2].map(a => Math.max(...e.vertices.map(v => v[a]))); return mn.concat(mx).map(r6); };
   const rows = R.els.map(e => { const b = bb(e); return Object.assign({ guid: e.guid, class: e.class, storey: e.storey, handle: e.handle, layer: e.layer, bbox: b, centre: [0, 1, 2].map(a => r6((b[a] + b[a + 3]) / 2)), volume: e.volume },
     infillOf[e.guid] ? { infill: true, infill_of: infillOf[e.guid].infill_of, openings: infillOf[e.guid].openings } : {}, e.element_ref ? { element_ref: e.element_ref, geometry_hash: e.geometry_hash, family_id: e.family_id } : {}); });
   const nInf = rows.filter(x => x.infill).length;
-  fs.writeFileSync(path.join(__dirname, 'out/duplex_basic_shapes_elements.json'), J({ run_id: R.run_id, storeys: R.ST.map(st => ({ name: st.name, level: st.level, run_id: st.run_id })), elements: rows }));
-  fs.writeFileSync(path.join(__dirname, 'out/duplex_basic_shapes_labels.json'), J({ run_id: R.run_id, labels: R.labels || {} }));   // §12 LS-1
+  fs.writeFileSync(path.join(__dirname, 'out/duplex_basic_shapes_elements' + SFX + '.json'), J({ run_id: R.run_id, storeys: R.ST.map(st => ({ name: st.name, level: st.level, run_id: st.run_id })), elements: rows }));
+  fs.writeFileSync(path.join(__dirname, 'out/duplex_basic_shapes_labels' + SFX + '.json'), J({ run_id: R.run_id, labels: R.labels || {} }));   // §12 LS-1
   check('RUN-id', 'the set run_id differs between two full runs (not an identity of the inputs)', R.run_id === R2.run_id && typeof R.run_id === 'string', 'run_id=' + R.run_id);
-  check('ELEM-dump', 'the element summary misses an infill box or an element', nInf === R.ST.reduce((n, st) => n + st.infill.length, 0) && rows.length === R.els.length, 'elements=' + rows.length + ' infill=' + nInf + ' -> out/duplex_basic_shapes_elements.json');
+  check('ELEM-dump', 'the element summary misses an infill box or an element', nInf === R.ST.reduce((n, st) => n + st.infill.length, 0) && rows.length === R.els.length, 'elements=' + rows.length + ' infill=' + nInf + ' -> out/duplex_basic_shapes_elements' + SFX + '.json');
 }
 say('\nSUMMARY fail=' + fails);
 fs.writeFileSync(path.join(__dirname, 'rosetta_dx_shell' + SFX + '.log'), lines.join('\n') + '\n');
