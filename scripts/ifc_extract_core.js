@@ -974,5 +974,13 @@ async function extractToDb(ctx) {
   log(`§SUMMARY elements=${elements.length} geometries=${geometries.length} uniqueHashes=${seenHashes.size} 4D_tasks=${tasks.length}`);
   log(`§S18_SPATIAL_STRUCTURE buildings=${Object.keys(buildingMap).length} storeys=${Object.keys(storeyMap).length} storeysWithElevation=${Object.values(storeyElevation).filter(v => v != null).length} storeysWithRealParent=${Object.keys(storeyParentBuildingGuid).length} relAggregates=${Object.keys(storeyParentBuildingGuid).length}`);
 }
-return { extractToDb, classifyDisc, DISC_MAP };
+// Browser helpers: Uint8Array stand-in for Node's Buffer (from/concat only), and a sql.js Database wrapped to the exec/prepare().run() surface the core writes through.
+const browserBuf = {
+  from: ab => new Uint8Array(ab.slice ? ab.slice(0) : ab),
+  concat: parts => { const n = parts.reduce((a, p) => a + p.length, 0), o = new Uint8Array(n); let k = 0; parts.forEach(p => { o.set(p, k); k += p.length; }); return o; }
+};
+function sqljsDb(sqlDb) {
+  return { exec: sql => { sqlDb.run(sql); }, prepare: sql => { const st = sqlDb.prepare(sql); return { run: (...a) => { st.run(a); } }; }, close: () => {} };
+}
+return { extractToDb, classifyDisc, DISC_MAP, browserBuf, sqljsDb };
 });
