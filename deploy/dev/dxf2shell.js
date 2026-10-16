@@ -89,9 +89,14 @@
     return ws.filter(function (o) { var r = o.params.rect; return o.params.height_source === 'elevation' && (Math.abs(r[0] - E[0]) <= tol || Math.abs(r[1] - E[1]) <= tol || Math.abs(r[2] - E[2]) <= tol || Math.abs(r[3] - E[3]) <= tol); });
   }
   function agree(list, tol) { var d = uniq(list.map(function (x) { return r6(x.z); })); return { ok: d.length && d[d.length - 1] - d[0] <= tol, values: d, z: d[0] }; }
-  function slabZ(upper, lower, cfg) {
+  function slabZ(upper, lower, cfg, opts) {
     var tol = typeof cfg.elev_tol === 'number' ? cfg.elev_tol : cfg.snap_tol, gaps = [];
     var tops = exteriorElev(upper.ops, cfg).map(function (o) { return { z: upper.level + o.params.base, h: o.params.handle }; });
+    var sx = opts && opts.section && opts.section.slabs && opts.section.slabs[String(upper.level)];
+    if (sx) {                                                                                  // L1.4 F5: the section states top and underside
+      if (tops.length) { var T0 = agree(tops, tol); if (!T0.ok || Math.abs(T0.z - sx.top) > tol) gaps.push({ code: 'GAP:slab_top_conflict', values: T0.values, section: sx.top }); }
+      return { top: sx.top, bottom: sx.bottom, thickness: sx.thickness, gaps: gaps, source: 'section', section_from: sx.from };
+    }
     if (!tops.length) return { top: null, bottom: null, thickness: null, gaps: [{ code: 'GAP:slab_no_top' }] };
     var T = agree(tops, tol);
     if (!T.ok) return { top: null, bottom: null, thickness: null, gaps: [{ code: 'GAP:slab_top_conflict', values: T.values }] };
@@ -107,6 +112,43 @@
     if (!(top - bottom > tol)) { gaps.push({ code: 'GAP:slab_bad_thickness', top: top, bottom: bottom }); return res; }
     res.bottom = bottom; res.thickness = r6(top - bottom); res.underside_from = unders.map(function (x) { return x.h; });
     return res;
+  }
+
+  // ---- lane spec L1.4 F5: slab top / underside from a marked SECTION sheet ----
+  // entities: the section sheet; layerMap types 'sectslab' (S-SLAB) and 'roof' (A-ROOF); map: MK.align(plan, sectionDesc).map;
+  // levels: stated plan levels (m); roofMark: the section's @ROOF (optional). Every closed polyline is read as a rectangle in (plan h, z).
+  function sectionSlabs(entities, layerMap, map, levels, cfg, roofMark) {
+    var tol = typeof cfg.elev_tol === 'number' ? cfg.elev_tol : cfg.snap_tol, gaps = [], slabs = [], roofs = [];
+    (entities || []).forEach(function (e) {
+      var rule = Dxf2Bim.matchRule(e.layer, layerMap.rules); if (!rule || (rule.type !== 'sectslab' && rule.type !== 'roof')) return;
+      if (!((e.type === 'LWPOLYLINE' || e.type === 'POLYLINE') && e.shape)) return;
+      var p = e.vertices.map(function (q) { return [r6(map.toPlan(q.x)), r6(map.zOf(q.y))]; });
+      var hs = p.map(function (q) { return q[0]; }), zs = p.map(function (q) { return q[1]; });
+      var r = [Math.min.apply(null, hs), Math.min.apply(null, zs), Math.max.apply(null, hs), Math.max.apply(null, zs)];
+      var onEdge = p.every(function (q, i) { var n = p[(i + 1) % p.length];                 // rectilinear edges, every vertex on the bbox boundary
+        return (Math.abs(q[0] - n[0]) <= tol || Math.abs(q[1] - n[1]) <= tol) && (Math.abs(q[0] - r[0]) <= tol || Math.abs(q[0] - r[2]) <= tol || Math.abs(q[1] - r[1]) <= tol || Math.abs(q[1] - r[3]) <= tol); });
+      if (!onEdge) { gaps.push({ code: 'GAP:section_not_rect', handle: e.handle, layer: e.layer }); return; }
+      (rule.type === 'roof' ? roofs : slabs).push({ handle: e.handle, h: [r[0], r[2]], bottom: r[1], top: r[3] });
+    });
+    slabs.sort(function (a, b) { return hnum(a.handle) - hnum(b.handle); }); roofs.sort(function (a, b) { return hnum(a.handle) - hnum(b.handle); });
+    var out = {};
+    (levels || []).slice().sort(function (a, b) { return a - b; }).forEach(function (L) {
+      var at = slabs.filter(function (s) { return Math.abs(s.top - L) <= tol; });
+      if (!at.length) { gaps.push({ code: 'GAP:section_no_slab', level: L }); return; }
+      var B = agree(at.map(function (s) { return { z: s.bottom }; }), tol);
+      if (!B.ok) { gaps.push({ code: 'GAP:section_slab_conflict', level: L, values: B.values }); return; }
+      var bottom = r6(B.z), top = r6(L);
+      if (!(top - bottom > tol)) { gaps.push({ code: 'GAP:section_bad_thickness', level: L, top: top, bottom: bottom }); return; }
+      out[String(L)] = { level: L, top: top, bottom: bottom, thickness: r6(top - bottom), source: 'section', from: at.map(function (s) { return s.handle; }) };
+    });
+    var roof = null;
+    if (roofs.length) {
+      var RB = agree(roofs.map(function (s) { return { z: s.bottom }; }), tol), RT = agree(roofs.map(function (s) { return { z: s.top }; }), tol);
+      if (!RB.ok || !RT.ok) gaps.push({ code: 'GAP:section_roof_conflict', bottoms: RB.values, tops: RT.values });
+      else if (typeof roofMark === 'number' && Math.abs(RT.z - roofMark) > tol) gaps.push({ code: 'GAP:section_roof_top_conflict', drawn: r6(RT.z), marked: roofMark });
+      else roof = { bottom: r6(RB.z), top: r6(RT.z), thickness: r6(RT.z - RB.z), source: 'section', from: roofs.map(function (s) { return s.handle; }) };
+    }
+    return { slabs: out, roof: roof, gaps: gaps };
   }
 
   // ---- §5.2 roof bottom / top ----
@@ -328,6 +370,6 @@
     return { elements: els, gaps: gaps };
   }
 
-  return { prismRect: prismRect, innerRing: innerRing, envelope: envelope, slabZ: slabZ, roofZ: roofZ, levelLinesZ: levelLinesZ, roofPlan: roofPlan, closedRects: closedRects,
+  return { prismRect: prismRect, innerRing: innerRing, envelope: envelope, slabZ: slabZ, sectionSlabs: sectionSlabs, roofZ: roofZ, levelLinesZ: levelLinesZ, roofPlan: roofPlan, closedRects: closedRects,
     applySlabAbove: applySlabAbove, bridgeOpenings: bridgeOpenings, doorSwing: doorSwing, doorStrip: doorStrip, placeFills: placeFills, familyToRef: familyToRef, pairKey: pairKey };
 });

@@ -34,6 +34,9 @@ const ign = l => ({ match: 'exact', pattern: l, type: 'ignore' });
 module.exports.STD = {
   MAP_PLAN: { version: 1, rules: DX_MAP_PLAN.rules.concat(['A-GLAZ-SILL', 'A-ANNO-NOTE', 'A-ANNO-TTLB'].map(ign)) },
   MAP_ELEV: { version: 1, rules: [{ match: 'exact', pattern: 'A-GLAZ', type: 'glazing' }, { match: 'exact', pattern: 'A-WALL', type: 'elevwall' }, { match: 'exact', pattern: 'A-DOOR', type: 'elevdoor' }] },
-  MAP_LEVL: DX_MAP_LEVL, MAP_ROOF: DX_MAP_ROOF,
+  MAP_LEVL: DX_MAP_LEVL,
+  // lane spec L1.4 F4/F5: the std ROOF plan (DX roof map + the R12 annotation layers ignored) and the SECTION sheet
+  MAP_ROOF: { version: 1, rules: DX_MAP_ROOF.rules.concat(['A-GRID', 'A-ANNO-DIMS', 'A-ANNO-LEVL', 'A-ANNO-TTLB'].map(ign)) },
+  MAP_SECT: { version: 1, rules: [{ match: 'exact', pattern: 'S-SLAB', type: 'sectslab' }, { match: 'exact', pattern: 'A-ROOF', type: 'roof' }].concat(['A-SECT', 'A-WALL-PATT', 'A-GRID', 'A-ANNO-DIMS', 'A-ANNO-LEVL', 'A-ANNO-TTLB'].map(ign)) },
   EXCL_ELEV: { version: 1, rules: ['A-GLAZ-SILL', 'A-ROOF', 'A-GRID', 'A-ANNO-DIMS', 'A-ANNO-NOTE', 'A-ANNO-TTLB'].map(ign) },
   QUALIFY: DX_QUALIFY };

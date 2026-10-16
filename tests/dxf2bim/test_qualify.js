@@ -173,7 +173,7 @@ only('F1', 'a building face without an elevation passes', { dropElev: ['LEFT'] }
 only('U1', 'units not user-stated pass ($INSUNITS trusted)', { plan: { noUnits: true } }, ['QF:units_unstated']);
 const l1 = only('L1', 'a layer neither mapped nor excluded passes', { plan: { junk: true } }, ['QF:layer_unmapped']);
 check('L1-detail', 'the unmapped layer item does not carry its handle / position', l1.blocking[0] && l1.blocking[0].layer === 'JUNK' && l1.blocking[0].handles.length === 1 && l1.blocking[0].pos !== null, J(l1.blocking[0]));
-only('M1', 'an invalid marking (@VIEW=SECTION) passes', { plan: { view: 'SECTION' } }, ['QF:mark_invalid', 'QF:set_no_plan', 'QF:sheet_no_role']);
+only('M1', 'an invalid marking (@VIEW=DETAIL; SECTION became a valid view in lane spec L1.4) passes', { plan: { view: 'DETAIL' } }, ['QF:mark_invalid', 'QF:set_no_plan', 'QF:sheet_no_role']);
 only('K1', 'a check that could not run (no plan ops) passes silently', { noOps: true }, ['QF:check_skipped']);
 only('S1', 'a missing setting is defaulted silently', {}, ['QF:setting_missing'], Object.assign({}, S, { tol: Object.assign({}, S.tol, { grid: undefined }) }));
 // ---- L2.3 D1 roof role ----

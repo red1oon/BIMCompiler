@@ -20,6 +20,7 @@ import sqlite3
 import hashlib
 import argparse
 import tempfile
+import subprocess
 
 import numpy as np
 import ezdxf
@@ -428,6 +429,80 @@ def _mirror_marks(src, dst, oracle, db, axis):
     doc.saveas(dst)
 
 
+def w8(roof_dxf, db, plan_storey_names):
+    """§L1.4 F4 roof plan vs the DB, recomputed here: outline = wall bbox union of the highest storey above the
+    plans that has walls but no plan; skylights = that storey's IfcWindow bboxes."""
+    lv, fnd, gs, _ = exp_levels(db)
+    cand = sorted((s for s in lv if lv[s] > lv[gs] and s not in plan_storey_names), key=lambda s: lv[s])
+    if not cand:
+        return check('W8', 'roof plan invented or missing', roof_dxf is None, 'no roof storey in the DB; sheet=' + str(roof_dxf))
+    rs = cand[-1]
+    W = walls_bbox(db, rs)
+    exp_o = [min(w[1] for w in W) * 1000, max(w[2] for w in W) * 1000, min(w[3] for w in W) * 1000, max(w[4] for w in W) * 1000]
+    sky = {g: (x0 * 1000, x1 * 1000, y0 * 1000, y1 * 1000) for g, x0, x1, y0, y1 in q(db, """SELECT m.guid, r.minX, r.maxX, r.minY, r.maxY
+           FROM elements_meta m JOIN elements_rtree r ON r.id=m.id WHERE m.ifc_class='IfcWindow' AND m.storey=?""", (rs,))}
+    bad = []
+    if roof_dxf is None:
+        return check('W8', 'roof plan invented or missing (no ROOF sheet although the model has a roof storey)', False, f'storey={rs}')
+    msp = ezdxf.readfile(roof_dxf).modelspace()
+    ro = list(msp.query('LWPOLYLINE[layer=="A-ROOF"]'))
+    if len(ro) != 1:
+        bad.append(f'A-ROOF outlines={len(ro)}')
+    else:
+        p = list(ro[0].get_points('xy'))
+        got = [min(x for x, _ in p), max(x for x, _ in p), min(y for _, y in p), max(y for _, y in p)]
+        if any(abs(a - b) > TOL for a, b in zip(got, exp_o)) or len(p) != 4:
+            bad.append(f'outline {got} != wall envelope {exp_o}')
+    gl = {}
+    for e in msp.query('LWPOLYLINE[layer=="A-GLAZ"]'):
+        p = list(e.get_points('xy'))
+        gl[e.get_xdata('BIMGUID')[0][1]] = (min(x for x, _ in p), max(x for x, _ in p), min(y for _, y in p), max(y for _, y in p))
+    if set(gl) != set(sky):
+        bad.append(f'skylights {sorted(gl)} != model {sorted(sky)}')
+    for g in set(gl) & set(sky):
+        if any(abs(a - b) > TOL for a, b in zip(gl[g], sky[g])):
+            bad.append(f'{g}: box {gl[g]} != {sky[g]}')
+    return check('W8', 'roof plan invented or wrong (outline != roof-storey wall envelope, skylights != model windows)', not bad,
+                 f'storey={rs} outline exp={[round(v, 1) for v in exp_o]} skylights={len(gl)}/{len(sky)} {bad[:3]}')
+
+
+def w9(sect_dxf, db):
+    """§L1.4 F5 section vs the DB: cut X = midway between the first two grid lines (recomputed); every slab whose plan
+    x-range contains X has a contour on S-SLAB/A-ROOF whose z extent equals its DB z extent (0.5 mm); every contour lies
+    inside its element's DB box (h = y)."""
+    exp, _, _ = exp_grid(db)
+    X = (exp['x'][0] + exp['x'][1]) / 2
+    rows = {g: (c, x0 * 1000, x1 * 1000, y0 * 1000, y1 * 1000, z0 * 1000, z1 * 1000) for g, c, x0, x1, y0, y1, z0, z1 in q(db, """SELECT m.guid, m.ifc_class,
+            r.minX, r.maxX, r.minY, r.maxY, r.minZ, r.maxZ FROM elements_meta m JOIN elements_rtree r ON r.id=m.id
+            WHERE m.ifc_class IN ('IfcSlab','IfcRoof','IfcWall','IfcWallStandardCase')""")}
+    msp = ezdxf.readfile(sect_dxf).modelspace()
+    title = [t.dxf.text for t in msp.query('TEXT[layer=="A-ANNO-TTLB"]')]
+    bad, seen = [], {}
+    if not any(f'AT X={X:.2f}' in t for t in title):
+        bad.append(f'title {title} does not state X={X:.2f}')
+    for e in msp.query('LWPOLYLINE'):
+        if e.dxf.layer not in ('S-SLAB', 'A-ROOF', 'A-SECT'):
+            continue
+        g = e.get_xdata('BIMGUID')[0][1]
+        c, x0, x1, y0, y1, z0, z1 = rows[g]
+        p = list(e.get_points('xy'))
+        h0, h1, zz0, zz1 = min(a for a, _ in p), max(a for a, _ in p), min(b for _, b in p), max(b for _, b in p)
+        if not (x0 < X < x1):
+            bad.append(f'{g}: not cut by X')
+        if h0 < y0 - TOL or h1 > y1 + TOL or zz0 < z0 - TOL or zz1 > z1 + TOL:
+            bad.append(f'{g}: contour outside its DB box')
+        seen.setdefault(g, []).append((zz0, zz1, e.dxf.layer))
+    slabs = [g for g, r in rows.items() if r[0] in ('IfcSlab', 'IfcRoof') and r[1] < X < r[2]]
+    for g in slabs:
+        z = seen.get(g)
+        if not z:
+            bad.append(f'{g}: slab cut by X but not drawn')
+        elif abs(min(a for a, _, _ in z) - rows[g][5]) > TOL or abs(max(b for _, b, _ in z) - rows[g][6]) > TOL:
+            bad.append(f'{g}: z {z} != DB {rows[g][5:]}')
+    return check('W9', 'section invented or wrong (cut plane, slab/roof z extents vs the DB, contours outside their element)', not bad,
+                 f'X={X:.2f} slabs cut={len(slabs)} drawn elements={len(seen)} {bad[:3]}')
+
+
 def w6(elev_dxfs, db, ifc_path):
     lv, fnd, gs, roof = exp_levels(db)
     exp = sorted([v * 1000 for s, v in lv.items() if v >= lv[gs]] + [roof * 1000])
@@ -467,6 +542,26 @@ def main():
         diff = [f for f in f1 if sha(os.path.join(tmp, 'run1', f)) != sha(os.path.join(tmp, 'run2', f))]
         check('W1', 'nondeterminism (two runs from the same DB differ)', not diff and len(f1) >= 7,
               f'files={len(f1)} differing={diff}')
+        # W1-proc (§L1.3 F1): 5 separate CLI processes, each a different hash seed, must be byte-identical;
+        # control: the same 5 runs with _stable_classes disabled must differ (proves the seeds change hash order)
+        def cli_runs(tag, disable):
+            digests = []
+            for seed in range(1, 6):
+                od = os.path.join(tmp, f'{tag}{seed}', *(['d' * seed] * seed))   # §L1.4 F3: a different folder name + depth per run
+                argv = [os.path.join(HERE, 'std2d.py'), a.db, '--out', od] + (['--door-ops', a.door_ops] if a.door_ops else [])
+                code = (f'import sys; sys.path.insert(0, {HERE!r}); sys.argv = {argv!r}; import std2d; '
+                        + ('std2d._stable_classes = lambda doc: None; ' if disable else '') + 'std2d.main()')
+                subprocess.run([sys.executable, '-c', code], check=True, capture_output=True,
+                               env=dict(os.environ, PYTHONHASHSEED=str(seed)))
+                fs_ = sorted(f for f in os.listdir(od) if f.endswith('.dxf'))
+                digests.append(hashlib.sha256(b''.join(open(os.path.join(od, f), 'rb').read() for f in fs_)).hexdigest()[:12])
+            return digests
+        dg = cli_runs('proc', False)
+        check('W1-proc', 'nondeterminism across separate processes (hash-seeded CLASS order)', len(set(dg)) == 1,
+              f'5 CLI runs, PYTHONHASHSEED=1..5, set digests={dg}')
+        dc = cli_runs('procctl', True)
+        check('W1-proc-control', 'W1-proc cannot see hash-order output (fix disabled must differ)', len(set(dc)) > 1,
+              f'fix disabled: digests={dc} distinct={len(set(dc))}')
         P = r1['paths']
         plans = [P[k] for k in sorted(P) if k.startswith('FLOOR_')]
         elevs = [P[k] for k in ('FRONT', 'REAR', 'LEFT', 'RIGHT')]
@@ -510,6 +605,23 @@ def main():
                 check(name + '-mutation', blind, c is False and len(FAILS) == n_before,
                       'control FAILED as required' if c is False else 'control PASSED: W5 is blind')
         w6(elevs, a.db, a.ifc)
+        w8(P.get('ROOF'), a.db, set(storey_of.values()))
+        w9(P['SECTION'], a.db)
+        # W8/W9 controls: the roof outline / the highest S-SLAB contour moved 50 mm in a copy must FAIL
+        for tag, src, layer, pick in (('W8', P.get('ROOF'), 'A-ROOF', lambda es: es[0]),
+                                      ('W9', P['SECTION'], 'S-SLAB', lambda es: max(es, key=lambda e: min(y for _, y in e.get_points('xy'))))):
+            if not src:
+                continue
+            doc = ezdxf.readfile(src)
+            ent = pick(list(doc.modelspace().query(f'LWPOLYLINE[layer=="{layer}"]')))
+            ent.set_points([(x, y - 50) for x, y in ent.get_points('xy')], format='xy')
+            mp = os.path.join(tmp, f'{tag}_ctl.dxf')
+            doc.saveas(mp)
+            n0 = len(FAILS)
+            say(f'-- {tag}-control: {layer} {ent.dxf.handle} moved 50 mm in a copy (must FAIL) --')
+            c = w8(mp, a.db, set(storey_of.values())) if tag == 'W8' else w9(mp, a.db)
+            del FAILS[n0:]
+            check(f'{tag}-mutation', f'{tag} cannot see a 50 mm move', c is False, 'control FAILED as required' if c is False else 'control PASSED: blind')
         # W7 mutation: shift one interior load-bearing wall 50 mm
         _, _, ilb = exp_grid(a.db)
         target = sorted(ilb, key=lambda t: t[2])[0]
