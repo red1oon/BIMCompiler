@@ -242,6 +242,32 @@ const PL = [['8800', 8.8], ['3200mm', 3.2], ["3'-1\"", 0.93980], ["6'-6\"", 1.98
 const plBad = PL.filter(([t, m]) => { const r = Q.parseLen(t); const got = r ? (r.unitless ? r.v * 0.001 : r.m) : null; return m === null ? got !== null : got === null || Math.abs(got - m) > 1e-5; });
 check('T1', 'a dimension text is read as the wrong length, or a non-length is read as one', plBad.length === 0, 'bad=' + J(plBad) + ' (unitless read in mm here)');
 
+// ======== L4.2 @LAYER (bim-ootb lane spec §L4.2): a stated layer rule overrides the set's rule for that layer, on that sheet only ========
+{
+  const MKq = require(DD + 'dxf2marks.js');
+  const restate = (input, name, text, marks) => Object.assign({}, input, { files: input.files.map(f => f.name === name ? Object.assign({}, f, { dxf: parse(MKq.writeMarks(text, marks.map(t => ({ text: t })))) }) : f) });
+  const key = x => x.code + '|' + x.sheet + '|' + x.handles.join(',');
+  // QL1 an unmapped layer stated ignore: its layer_unmapped goes, and the verdict lists the rule with its source
+  const j = set({ plan: { junk: true } }), vj = Q.qualify(j.input, S), vj2 = Q.qualify(restate(j.input, 'FX_PLAN', plan({ junk: true }).text, ['@LAYER=JUNK,ignore @BY=user']), S);
+  check('QL1', 'a layer stated ignore by @LAYER is still unmapped, or the verdict does not list the stated rule with its source',
+    vj.blocking.some(x => x.code === 'QF:layer_unmapped' && x.layer === 'JUNK') && !vj2.blocking.some(x => x.code === 'QF:layer_unmapped') && vj2.verdict === 'qualifies' &&
+    J((vj2.layer_rules || []).map(r => [r.sheet, r.layer, r.type, r.source])) === J([['FX_PLAN', 'JUNK', 'ignore', 'user']]) && vj.layer_rules === undefined,
+    'before ' + cc(vj) + ' after ' + cc(vj2) + ' layer_rules=' + J(vj2.layer_rules));
+  // QL2 MUTATION: FRONT states its level-line layer as ignore (wrong type) -> exactly the 2 level datums of FRONT are reported
+  const vm = Q.qualify(restate(base.input, 'FX_FRONT', elev('FRONT').text, ['@LAYER=A-ANNO-LEVL,ignore']), S);
+  const k1 = new Set(v1.blocking.map(key)), nw = vm.blocking.filter(x => !k1.has(key(x)));
+  check('QL2', 'a wrong @LAYER type (level lines stated ignore) is not reported exactly as the missing level datums of that sheet',
+    nw.length === 2 && nw.every(x => x.code === 'QF:elev_level_mismatch' && x.sheet === 'FX_FRONT') && J(nw.map(x => x.level).sort()) === J([0, 3]) && vm.blocking.length === v1.blocking.length + 2,
+    'new=' + J(nw.map(x => x.code + ' ' + x.sheet + ' z=' + x.level)));
+  // QL3 @LAYER …,grid makes a grid layer for THAT sheet only (settings without grid layers: the plan states A-GRID as grid -> its grid is read; the elevations, which do not, find no bubble)
+  const S0 = Object.assign({}, S, { layers: Object.assign({}, S.layers, { grid: [] }) });
+  const g0 = Q.qualify(base.input, S0), g1 = Q.qualify(restate(base.input, 'FX_PLAN', plan().text, ['@LAYER=A-GRID,grid']), S0);
+  const n = (v, code, sh) => v.blocking.filter(x => x.code === code && x.sheet === sh).length;
+  check('QL3', 'a sheet\'s @LAYER grid rule is not applied to that sheet, or leaks to another sheet',
+    n(g0, 'QF:grid_missing', 'FX_PLAN') > 0 && n(g1, 'QF:grid_missing', 'FX_PLAN') === 0 && n(g1, 'QF:elev_grid_missing', 'FX_FRONT') > 0,
+    'plan grid_missing ' + n(g0, 'QF:grid_missing', 'FX_PLAN') + '->' + n(g1, 'QF:grid_missing', 'FX_PLAN') + ', FRONT elev_grid_missing (its A-GRID not stated) ' + n(g0, 'QF:elev_grid_missing', 'FX_FRONT') + '->' + n(g1, 'QF:elev_grid_missing', 'FX_FRONT'));
+}
+
 say('\nSUMMARY fail=' + fails);
 fs.writeFileSync(path.join(__dirname, 'test_qualify.log'), lines.join('\n') + '\n');
 process.exit(fails ? 1 : 0);
