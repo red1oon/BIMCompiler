@@ -1053,6 +1053,60 @@ until this is on `main`.
 - Don't re-run the 32-file witness audit — it's done, 0 flagged, detail in this session's transcript if ever
   needed, not worth re-deriving.
 
+## §WALK-LOD400-ONLY — SPEC (2026-09-27, red1: "One first principle is no BBoxes or cubes, or LOD200 fallback. All must be LOD400 or fail hard")
+```
+SCOPE: bim-ootb modeller/modeller.html — _discWalkOne (gate before register/render/commit), _renderDiscWalk (no box path),
+_renderDiscAssembly (no box path). Reference-only harvest unchanged (Duplex/Terminal, WalkerDoctrine §2). Read the log after every run.
+```
+**Measured violation (2026-09-27, §DW-PRIM-LOD):** SampleCastle walks render ELEC 270 + ACMV 12 + PLB 84 = **366 LOD200 boxes**
+(legacy fallback walk after `§SCHED-FALLBACK`: placements carry no `device` and no `geometry_hash` — only a generic class, so no
+reference mesh can be bound without inventing). Duplex ELEC/PLB rendered `lod200=102/18` in runs where the walk resolved before
+`__dwGeoBuf` had loaded (race; `lod400=102` otherwise). FP borrowed from terminal_rules is already LOD400 on SampleCastle (126).
+§5's "POC = primitive box" is superseded by §11 / the unbreakable no-fake-LOD rule.
+**Rule:** a walked placement is kept ONLY if its `geometry_hash` resolves to a real mesh in the building's geo buffer. Otherwise it is
+REFUSED — not registered, not rendered, not committed — and logged `§DW-LOD400-REFUSE disc=… refused=N kept=M (class×count …)`.
+The gate first waits for the geo buffer (cap 60 s) so a resident's own meshes never refuse from a race. All refused → the walk
+returns the existing honest REFUSE path (0 fabricated). `_renderDiscWalk` never calls the box/LOD300 path; assembly parts with no
+real mesh are refused, not boxed. `§DW-PRIM-LOD` must read `lod300=0 lod200=0` on every walk.
+**Witness W-WALK-LOD400-ONLY:** SampleCastle ELEC/ACMV/PLB → lod200=0, all 366 refused and logged, 0 box meshes under dwRoot;
+SampleCastle FP → lod400=126 kept; Duplex ELEC walked immediately after open → lod400=102, lod200=0. RED on base (lod200=270).
+**Next (separate item):** ARC seed `§GEO-SERVED-DEGRADED` (geo fetch fails → measured bounding boxes rendered, arc_editable path)
+violates the same rule → must hard-fail/refuse instead.
+**§WALK-LOD400-ONLY — ✅ DONE (witness) 2026-09-27** on bim-ootb `test/modeller-net-audit` (no PR): W-WALK-LOD400-ONLY 7/0 (base 4/3).
+**§FOLD-NO-BOX — ✅ DONE (witness) 2026-09-27 PM, bim-ootb PR #1788 (auto-merge on) — see §FOLD-NO-BOX-DONE below. Original WIP note kept:** ⏸ WIP, PAUSED (red1) 2026-09-27. Finding: a reopened building folded every saved walk op as a box (Duplex 102/102) because
+`foldInsert` fell back to `boxArrays(bbox)` when `realGeomHash` was unregistered. Fix (committed WIP): fold throws §LOD400-REFUSE (never boxes);
+saved walk meshes registered from the building geo on open → 102/102 real after reload. Node witnesses now pass `registerGeometry` like production
+(5 recovered; sdg_gate 11/0 with A1 restated; arc_editable A3/A4-extent retired → W-ANCHOR-SWEEP, A10 = unit guard).
+**RESUME HERE — still red on the WIP:** arc_editable A9 (matched-catalog half), opening_slide 0/8 (slide rule requires a "plain axis-aligned box"
+host — real-mesh hosts refuse; decide: slide on real hosts vs refuse), room_move T3, arc_3axis_rotation R1/R2 (real=0 — check its own registration),
+e2e_instpick P4. Then: `_renderDiscAssembly` box parts, ARC seed §GEO-SERVED-DEGRADED bbox path, catalog inserts without a mesh (fold boxes;
+527/794 products have no matching mesh — tie to §CATALOG-REBIND). Preview ghosts/gizmos are UI, not element geometry.
+
+### ✅ §FOLD-NO-BOX-DONE — 2026-09-27 PM (bim-ootb `test/modeller-net-audit` → PR #1788, auto-merge on)
+The 5 WIP reds, triaged on real geometry (read the §-log, not the exit code):
+- **arc_editable A9** — stale: `foldInsert`'s own rule is *own registered mesh wins over a catalog match*; the 1 matched
+  SampleHouse door folds its own 762-vertex mesh. Assertion now strict vertex-count. 8/1 → **9/0**.
+- **opening_slide 0/8** — ⚖ decided REFUSE (the no-invent default, reversible): fills come only from extracted IFC hosts and
+  every one carries a BAKED opening (host meshes 106/106/44 tris), so sliding would leave the hole behind. **Finding: the
+  #1710 slide was never reachable by a real user** — its witness passed only on box-folded hosts. S0 proves the refusal,
+  S1–S7 INCONCLUSIVE. → 2/0/7 INC. **⛔ OPEN for red1: build slide-on-real-walls?** (needs pre-boolean host body + the
+  opening as a GEOM_CUT void — the §CUT-MOVE machinery then carries it.)
+- **room_move T3** — on real meshes no filling centre lies inside any room footprint (nearest: window 13 at 6.2 mm, door 8
+  at 26 mm — they sit in the boundary walls); "SampleHouse has one" was a box artefact. T3 real-data + T3b constructed
+  counterfactual (excluded with fills, swept without). 9/1 → **11/0**.
+- **arc_3axis R1/R2**, **e2e_instpick P4** — green on the merged branch, no change needed.
+Then the two spec'd follow-ons:
+- **`_renderDiscAssembly`** — parts render only from a resolved `geometry_hash`; the Ø×length box is gone. `assemble()` emits
+  no mesh today ⇒ every part refused + `§DW-LOD400-REFUSE asm` logged. W-E2E-INSTPICK 8/0 (new P2c).
+- **ARC seed `§GEO-SERVED-DEGRADED`** — no geometry substrate ⇒ every element refused (`no-geometry-substrate`), nothing
+  seeded as a box, loud `§GEOM-HARDFAIL`. New W-SEED-NO-SUBSTRATE 3/0, RED on main (39 ops, 38 boxes).
+Regression: node sweep 51 → branch 46 green / main 35; only branch-vs-main regression W-DW-OPLOG (SampleHouse FP's 17
+hashless placements now refuse) retargeted to Duplex ELEC 102 real-mesh → 6/0. 13 browser witnesses green (list in PR).
+**Still open (needs red1):** catalog inserts fold a box at LOD200 or when the product has no mesh (527/794) — refusing
+them removes the LOD200 option + makes those products un-insertable; tied to row 14 / §CATALOG-REBIND. Pre-existing red,
+not touched: W-E2E-INSTHIDE H1-rig (no fixture pose on main too ⇒ its assembly leg H5–H8 unexercised); node
+dw_rot_units · git_history · terminal_walk · render_fidelity (red on main).
+
 ---
 
 ## §ROW34-ANCHOR-SAVE — SPEC 2026-09-27 (MODELLER_MASTER row 34, re-verified against bim-ootb origin/main `363ba414` first)
@@ -1103,3 +1157,45 @@ shipping (blocked on `sporenkap`'s honest refusal); per-layer slab colours (opti
 sources — bim-ootb #1749 shipped HHS/Clinic/Hospital/Garage on 2026-09-18; Terminal's source authors no
 void/fill chain. The 'sources not in this checkout' line in §START HERE OPEN 2 was stale; always check
 `reference_source_ifc_locations` memory before repeating a 'source missing' claim.
+
+---
+
+## §SLIDE-REAL-WALLS — SPEC 2026-09-27 (red1 direction: "It should allow … the embedded ARCs are cohesive designs with own openings and trappings and they are editable likewise")
+```
+SCOPE: slide a door/window along its REAL host wall in the Modeller, for the embedded ARC residents' own authored
+openings (rel_fills_host). No invention: the wall and the opening are both authored in the source IFC. Read the log after
+every run. User-imported IFCs take the same path only if their open path writes rel_fills_host (unverified — not in scope).
+```
+**Why it fails today (measured, §FOLD-NO-BOX-DONE):** the shipped host mesh has the opening BAKED IN (the tessellator
+subtracted `IfcRelVoidsElement` at extraction), so sliding the door would leave the hole behind → refused.
+**IFC fact this rests on:** a wall's `Body` is authored UNCUT; openings are separate `IfcOpeningElement`s applied by the
+consumer. So the extractor can obtain (a) the host body with opening subtraction DISABLED and (b) each opening's own solid —
+both pure extraction. The Modeller already has the rest: `GEOM_CUT` (kernel box-void subtraction) and §CUT-MOVE (a cut rides
+its filling).
+**Phase M (measure — decides cost, no build):** per building (SampleHouse, Duplex, SampleCastle), per `IfcRelFillsElement`:
+  M1 opening solid kind — a plain axis-aligned rectangular extrusion (kernel-cuttable box) vs anything else (arched, polygon,
+     clipped → REFUSE, never approximated);
+  M2 host body kind with openings disabled — plain extrusion vs boolean/clipped/brep;
+  M3 the source's own cut: host tris with openings vs without (proves the bake is exactly the opening subtraction);
+  M4 box opening vs host frame: opening axis-aligned in the host's local frame (yaw-only), fully through the wall thickness.
+  Log `§SLIDE-MEASURE bldg=… fills=N boxOpenings=a hostPlain=b through=c` + per-row reasons for every non-box.
+**Phase B (build, only for rows that pass M1–M4):** extractor persists host uncut body (own geometry hash) + opening box
+params; residents get them via the patch + self-heal loader (never a binary); the seed folds the host as uncut body +
+one `GEOM_CUT` per opening; slide then runs through the existing engine + §CUT-MOVE. Rows failing M keep today's honest
+refusal, named. **Witness W-SLIDE-REAL-WALL:** the re-cut host (kernel) matches the source's baked mesh (AABB + volume within
+tolerance) BEFORE any move; after a slide the hole is at the new position and the old position is solid; undo restores;
+RED on today's main (refusal).
+**Phase M RESULT — 2026-09-27** (`scripts/measure_slide_real_walls.py`, logs `logs/slide_measure/`, source IFCs read directly):
+| building | fills | box opening, through wall | host is a plain box | host fully consumed | **slideable** | refused (named) |
+|---|---|---|---|---|---|---|
+| SampleHouse | 7 | 7 | 2 | 0 | **7** | — |
+| Duplex | 38 | 36 | 18 | 0 | **36** | 2 host has NULL Representation |
+| SampleCastle | 74 | 70 | 74 | 65 | **5** | 65 host = the opening strip (void-consumed) · 4 opening not a box · 4 no bake |
+In every slideable row the shipped bake is exactly the opening subtraction (tris uncut ≠ cut). **Cost verdict: build it.**
+The one new geometry need — re-cutting a NON-box host (SampleHouse 5, Duplex 18) — already exists in the kernel: the
+§LAYER-SOLID-SEED path sews a real triangulated wall into a solid (`buildTriFace` + `sewAndSolidify`) for layered walls; a
+single-range seed opens it to plain walls. Order for Phase B: SampleHouse (7) → Duplex (36) → SampleCastle (5).
+**Direction link (red1 2026-09-27, "macro editing — inserting openings, placing and snapping to walls"):** Phase B's host model
+(uncut body + one GEOM_CUT per opening, the filling riding its cut) is the same model "insert a door INTO a wall" needs — today
+item-drag only snaps a wall-hung item flush to a wall face and the cut is a separate manual tool. Insert-with-opening is the
+follow-on slice on the same substrate.

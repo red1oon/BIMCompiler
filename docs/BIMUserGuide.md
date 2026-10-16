@@ -144,6 +144,9 @@ All panels collapse with **−/+**.
 
 ### Find panel — search, voice query, and axis lenses
 
+> **New: Ask.** Pick a question, get a computed answer, save the answers as one Excel file for your own AI —
+> **[Viewer Ask — First Steps](AskFirstSteps.md)** (5 minutes).
+
 The **Find** panel is the Viewer's search/navigate surface: a text or voice query box up top, and a
 single axis toggle underneath that re-groups the whole element tree (by storey, discipline, room,
 material, phase, or the newest axis, building **Parts**).

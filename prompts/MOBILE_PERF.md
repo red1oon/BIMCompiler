@@ -512,3 +512,10 @@ serve from a directory outside the checkout, or copy.** See [[feedback_never_sym
 - Done prompts (bim-compiler/prompts/done/): `S280c_PERF_VERIFY.md`, `S250_mobile_desktop_polish.md`,
   `S207_mobile_ux_viewer.md`, `TIME_MACHINE_MOBILE_FIX.md`.
 - Docs: `docs/MOBILE_DEPLOY.md` (split-DB strategy), `prompts/ANALYSIS_SIDECAR.md` (OPFS pattern).
+
+## §2026-10-06 FINDING — two different `_isMobile` definitions
+Found by the dev-toolkit triage, `bim-ootb prompts/DEV_TOOLKIT_NO_AI.md` §7 (2026-10-06). Read from bim-ootb `origin/main` @ fb183ddf. Not fixed — this lane decides.
+- Owner: `viewer/config.js:12` — `('ontouchstart' in window || navigator.maxTouchPoints > 0) && screen.width < 1024`.
+- Re-derived locally WITHOUT the `ontouchstart` term: `viewer/effects.js:52`, `viewer/effects_gi_poc.js:14`
+  (also the `effects.js.pacefloor` copy). A device can be mobile to `config.js` and desktop to `effects.js`.
+  One-owner violation: effects should read `window._isMobile`.

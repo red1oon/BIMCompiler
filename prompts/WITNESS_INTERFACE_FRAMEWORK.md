@@ -543,3 +543,103 @@ All five cinema/aim witnesses share the shape and all five get instrumented:
 `witness_cpe_stick_hold.js`, `witness_cpe_hose.js`. No product code is touched — this is entirely
 harness-side, so it cannot perturb any measured number, and every existing `§`-line keeps its exact
 text (progress lines are a NEW tag, not a rewrite of an old one).
+
+## §MODELLER-NET-AUDIT — SPEC, 2026-09-26. Priority 1 from the Modeller assessment (MODELLER_MASTER ⚖ block).
+```
+SCOPE: every bim-ootb modeller/tests/witness_*.js. Find witnesses that PASS without judging the claim they name.
+Read the log after every run. Report per witness; fix or mark, one PR per batch.
+```
+**Why (measured 2026-09-26, all hidden behind green witnesses):** catalog empty 3 months (W-TERMINAL-WALKALL-PERF T6 saw
+pageerror only — 1,194 fold failures unseen); the Outliner roof row never walked (engine-seam witnesses bypassed discWalk);
+W-ROUTE-PATTERN-BRIDGE tested an opts-less walk production never runs; W-E2E-CUT C6 compared pixels after a click that hit
+another element; W-SAVE-BLOCKED-HEAL-INDUCED's fixture found nothing since §XEDGE-3AXIS; W-E2E-WALK read the op-log before the seed.
+**Per witness, classify (write the table into this section):**
+1. WRONG-PATH — drives an engine seam / hook where users go through a UI handler (discWalk, Outliner rows, toast buttons).
+2. SCOPE-BLIND — asserts pageerror/exit only while the app logs failures as console lines (grep the run log for fail/refuse/
+   unknown/REFUSE/§*-FAIL that no check reads).
+3. VACUOUS — a check that passes over an empty population (0 rows, 0 placed, no fixture found) without printing INCONCLUSIVE.
+4. RACE — snapshots before the ARC seed / history settle (op-log length 0, before.oplogLen=0).
+5. PIXEL-AS-PROOF — framebuffer sums used as the verdict (Primal Law: numbers, not pixels).
+**Done when:** every witness has a class (or "sound"), each non-sound one is fixed or retired with a reason, and each fix shows
+base-vs-fix numbers. Method that worked: probe the app's own state numerically before trusting a red (C6: bbox + selection).
+
+### §MODELLER-NET-AUDIT — RESULT batch 1 (2026-09-26, PAUSED — machine suspend). bim-ootb branch `test/modeller-net-audit`, pushed, **NO PR yet**.
+**Scope done:** the 58 `e2e_harness` witnesses, run at 3-parallel on untouched `origin/main` (baseline), then serially, then on 1069c70c (09-25).
+**Headline:** 19/58 were RED on main. 8 of them pass serially (load flakes); 11 were red serially too, and 10 of those were already red on 09-25. Nothing runs these in CI, so nobody saw it.
+**SCOPE-BLIND (harness `§NET-FAILLOG`, report-only):** the 39 green witnesses hide NO product failure line. Every hit was noise (favicon, `total=0`/`refused=0` summaries) or intended (ITEMDRAG REFUSED, simulated quota). One real data gap: `ELEC/EMERGENCY_LIGHT` has no catalog mesh (row 14). ⚠ The 46 direct-puppeteer witnesses do not use the harness — NOT yet covered.
+| witness | class | root cause (measured) | base → fix |
+|---|---|---|---|
+| W-E2E-SCALE | RACE | a §ZOOM-SEL fly outlived flySettle's 15 s cap at load, overwrote the frame; press landed (1251,866) off a 1200×850 viewport → move, not scale | 4/3 → 7/0 |
+| W-E2E-RSARM | RACE | the scale commit re-selects → fly; ring pixels projected mid-fly; ring grabbed at 0° where it crosses the X arrow (rotZ@4.16 vs x@4.18) | 7/1 → 8/0 |
+| W-E2E-DM-SNAPGEOM | RACE | the select-fly lands the camera 2 m away → drag target off-canvas, no commit | 2/5 → 7/0 |
+| W-E2E-FLOATDIM | RACE | D1 commit re-select fly moved the camera under D4's ring press | 5/1 → 6/0 (3/3 under load) |
+| W-E2E-SEL-TINT-REFOLD | RACE | re-click while #stat='cutting…'; bCut's trailing highlight(null) wiped it | 6/3 → 9/0 |
+| W-E2E-INSTPICK | WRONG-VIEW + RACE | camera 0.6 m ABOVE a ceiling fixture → slab 175 hit first; P2b camera overwritten by P2's fly | 4/3 → 7/0 |
+| W-E2E-LOD-MATCH | WRONG-PROXY | raw vertex count (renderer splits per face: 762→3230) vs geometry; now tris + distinct positions (758=758) | 4/2 → 6/0 |
+| W-E2E-VOID-ANCHOR G6 | STALE-BASELINE | 07-30 file predates §XEDGE-3AXIS (varied code AND anchors); now a same-run control: live == stripped, kept differs (+350 abuts) | 18/1 → 19/0 |
+| W-E2E-INSTHIDE H1-rig | ⛔ FIXTURE GONE | twin match was centre-vs-base (fixed via `_dw.cz`, 0/480 → matched); still no pose shows 5 unoccluded (best=2) → prints INCONCLUSIVE. Needs a fixture redesign | 2/1 (honest) |
+| W-E2E-ROW7-GEO-REINIT R4 | env | `Terminal_arcstr_proof.db` is gitignored, only in the main checkout → correct INCONCLUSIVE in a worktree | — |
+| disc_density D3/D4, walkall_terminal_scale T5 | VACUOUS | `[].every()` / `envChecked===0` passed on nothing; guards added. **NOT RUN yet** | — |
+**⛔ OPEN before any PR:** a post-fix 3-parallel run (loadavg ~38 vs ~31 at baseline) went red on CUT C4, CUT-LAYERS L6, SKETCH K5b (PIXEL-AS-PROOF framebuffer sums) and GRIDMOVE-ROOF R6 — all green at baseline. Re-run these serially on the branch vs main to separate a harness regression (the flySettle yield) from load. Then run the 51 node witnesses + the 46 direct-puppeteer ones (not yet touched).
+
+### §MODELLER-NET-AUDIT — RESULT batch 2 (2026-09-27, PAUSED — suspend). bim-ootb branch `test/modeller-net-audit`, pushed, **still NO PR**.
+**Batch-1 open item CLOSED:** CUT C4 / CUT-LAYERS L6 / SKETCH K5b flipped with no code change (serial, load ~0: C4 red on main and
+green on the branch; L6 the reverse) → PIXEL-AS-PROOF, retired as verdicts (numeric C6 / K5 / L6-tris carry the claim).
+GRIDMOVE-ROOF is green on both serially (load flake).
+**Two PRODUCT bugs found + fixed (both red identically on main):**
+- `bonsai_outliner.js`: the ⇄ adjacency lens was keyed on the numeric `_selId` while rows are GUID-keyed → dead for every ARC-seeded pick (W-UX-XEDGE 7/3→10/0).
+- `str_walker_outliner.js`: nothing repainted the Outliner after the ARC bridge landed → 0 leaf eye toggles on open (W-E2E-OLEYE 2/3→5/0).
+**Node-run set (51):** 27 red at first, mostly ENV: playwright lives in `~/bim-ootb/tests/node_modules` (set NODE_PATH); gitignored
+fixtures `Terminal_arcstr_proof.db` / `Terminal_plates_proof.db` / `JKR_ARC.db` must be copied into a worktree; render_fidelity needs
+a server on :8399. Real ones fixed: green_report (MEP oracle read the ARC-only DB since c63939a3; 0→11,567 MEP), grid_tilt_guard
+(missing cut_move.js copy since #1711), ux_pill A5 and pill_verbs D5 (hardcoded counts), stretch_gate_smoke S4 (stretched outward),
+dw_dedup_render D3 (sampled before the routed sweeps committed), olsync (fly race).
+**⛔ Questions for red1 (a data/doctrine call, not a witness edit):**
+1. SampleHouse has 0 IfcSpace in both DBs, but W-UX-PILL A8 expects 3 rooms. Were rooms lost in the 07-10 ARC-only embed, or never there?
+2. Since #1770 (catalog loads), 274/281 SampleCastle ELEC IfcFlowFitting render as `FITTING_BEND_PVC_DWV` (a plumbing drain bend).
+   Allowed borrow, or wrong class? (W-DW-HONEST-FALLBACK is red on this.)
+**Parked with cause:** W-TERM-WALK (asserts SampleHouse loads terminal_rules, which contradicts the Walker Doctrine; needs repointing
+to the Terminal resident and re-validating 7 claims); W-DW-ROT-UNITS R4/R5 (all 5 yaw≈π/2 fixtures are square now → INCONCLUSIVE);
+W-E2E-INSTHIDE H1 (fixture gone); W-MODELLER-GIT-HISTORY G6 (labelled KNOWN GAP).
+**NEXT (resume here):** the direct-puppeteer batch ran 45/46 on the branch. Untriaged reds: mv_parity, gridstretch_multi,
+grid_clear_leak_round2, hba_iot_scanline_fix, walk_gesture, xray_poc, residents_anchor_sweep, xray_regression_sh,
+grid_scale_yaw_hardening, xray_sc_duplex; walkall_terminal_scale did not finish. Check each against main first, then root-cause.
+Then PR the branch (a bot auto-merges, so only once every listed change is witnessed green).
+
+### §MODELLER-NET-AUDIT — RESULT batch 3 (2026-09-27). Branch `test/modeller-net-audit`, pushed, NO PR yet (full 155 re-run in progress).
+**Two more PRODUCT bugs fixed (red on main, each shown falsifiable):**
+- **§XRAY-REFOLD** — x-ray was never re-applied after a re-fold: any commit / undo / a walk's late routed commits while x-ray was ON
+  returned the building to opaque with the button still lit. SampleCastle: structureLeaked 3144, fixtures glowing 0/274. Now
+  re-applied on 'bonsai:refold' + after _redrawAllDiscWalks. New X-REFOLD claim: fix disabled → leaked 3151/174 FAIL; fix → 0 PASS.
+- **§RW-TAG-SIGNED** — `oplog.commit` signs only {op_type, parameters}; route-walk ops carried `_rw` at the op's top level, so the tag
+  never reached the log and x-ray treated every route-walk fixture as structure (glow 0/21). Moved inside `parameters`.
+**Witness fixes:** residents_anchor_sweep (read the retired `mesh.db` → each resident's own `_geo.db` from `GEO_BASE`; 32/0 on all 8
+residents), grid_scale_yaw_hardening (cut_move.js copy), hba_iot_scanline_fix (pre-fix ref = `4a2e3f65^`, HEAD had become the fix),
+grid_clear_leak_round2 (detached-row retry), xray_poc / xray_sc_duplex (routed-run `dwChain` mesh is not a fixture bucket),
+routewalk self-tests (planned − refused, not a literal 23), gridstretch_multi / walk_gesture (load waits).
+**Parked with cause:** W-MV-PARITY Leg M — asserts against `Duplex_extracted.db` (253 el) while the resident renders `Duplex_ARC.db` +
+`Duplex_geo.db` (196 el); the two Duplex geometry sources disagree on triangle count for 82/203 hashes (121 agree, 12 missing).
+**⛔ New question 3 for red1:** should ROUTED RUNS (conduit/pipe tubes, `dwChain`) glow in x-ray like fixtures? Today they stay opaque.
+**⛔ Question 4:** which Duplex geometry is canonical — `Duplex_geo.db` (served) or `Duplex_extracted.db` (82 hashes differ)?
+**Full 155 re-run on the branch (2026-09-27, 3-parallel, may have spanned a machine suspend) — NOT a verdict:** 25 non-zero, incl. 6
+that are green serially this session (xray_sc_duplex, oleye, instpick, e2e_scale, residents_anchor_sweep, dw_dedup_render) → load /
+suspend suspects. **Resume:** re-run these 25 SERIALLY on the branch AND on main (same env: NODE_PATH, fixtures copied, :8399 server):
+arc_3axis_rotation, arc_source_parity, dw_rot_units*, dw_dedup_render, e2e_instance_hide*, e2e_instpick, e2e_mv_parity*, e2e_oleye,
+e2e_rotate, e2e_scale, e2e_seedtrunk, e2e_terminal_open, e2e_zoom_to_selection, ifc_export_seed, modeller_disc_walk,
+modeller_git_history*, modeller_terminal_walk*, modeller_ux_pill*, e2e_scale_check_terminal, render_fidelity, route_pattern_bridge,
+residents_anchor_sweep, sdg_cascade_smoke, sdg_gate_smoke, xray_sc_duplex (* = parked/known). Any red on branch but green on main
+= a regression from this branch → fix before the PR. Logs: session scratchpad `full/`.
+**2026-09-27 update — question 1 ANSWERED + FIXED (red1: "all have rooms. Rooms injection does not work?"):** the Modeller never ran
+the room walker; 6/8 residents opened with 0 rooms. Fixed (ROOM_INJECTION_HYBRID.md §MODELLER-ROOM-INJECT, W-MODELLER-ROOM-INJECT
+25/0, RED without it). W-UX-PILL A8 green. Of the 25-list: olsync = load flake (6/0 alone); dw_dedup_render fixed (waits for the refold);
+modeller_disc_walk B3/B4 red identically with and without the room hook (pre-existing, still to triage).
+
+## §2026-10-06 FINDING — the kit is skipped, and most witnesses only run on one machine
+Measured by the dev-toolkit triage (`bim-ootb prompts/DEV_TOOLKIT_NO_AI.md` §9.1), bim-ootb `origin/main`.
+- `viewer/tests/witness_*.js`: **265**; on `witness_kit/contract.js`: **54**. Of the 211 hand-rolled, **135 were
+  written AFTER the kit existed** (2026-08-25 `5c73a5dd`) — 69 plain Node, 66 browser. 29 kit witnesses drive a
+  browser, so shape is not the reason. Nothing gates it: `ci.yml` runs **0** witnesses, no lint requires the kit.
+- **110** witnesses hard-code `/home/red1/...` (41 `require('/home/red1/bim-compiler/node_modules/puppeteer')`) —
+  unrunnable on any other dev's machine.
+- Tool side (bim-ootb DEV_TOOLKIT T14) will lint NEW/changed witnesses for both. Migrating the existing 211 and
+  wiring witnesses into CI is this lane's decision.

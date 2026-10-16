@@ -93,7 +93,10 @@ nav:
 
   - The 3 Apps:
       - "BIM Viewer Guide": BIMUserGuide.md
+      - "Viewer Ask — First Steps": AskFirstSteps.md
+      - "Modeller — First Steps": ModellerFirstSteps.md
       - "DAGeVu Modeller — User Guide": ModellerGuide.md
+      - "2D Drawings → BIM (DXF2BIM)": DXF2BIMGuide.md
       - "Kernel-ERP User Guide": ERPUserGuide.md
       - "Kernel-ERP — Your First Setup": ERP_FirstSetup.md
       - "HR / Tenancy / Operate Module": HRBIMAssetGuide.md
@@ -101,6 +104,7 @@ nav:
       - "Teams Overlay — Collaboration & Optics": TeamsOverlayGuide.md
 
   - Go Deeper:
+      - "Architecture Overview (for reviewers)": ArchitectureOverview.md
       - "Fold Engine Black Book (dev manual)": FoldEngineBlackBook.html
       - "The Holy Grail (editable rules, live)": HolyGrail.md
       - "Cross-ERP Rosetta Stone (concept + cost)": ERPConceptRosetta.html
@@ -121,6 +125,7 @@ nav:
 
   - Papers & Positioning:
       - "Deterministic Spatial Compilation (academic paper)": SpatialCompilationPaper.md
+      - "DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)": DXF2BIM_TechnicalNote.md
       - "Browser-Scale Benchmark (one tab, local first)": BrowserScaleBenchmark.md
       - "Construction Economy / ERP Wave": BIMERPPaper.md
       - "Enterprise Authentication (security)": EnterpriseAuthentication.md

@@ -703,6 +703,179 @@ NOT line-level conflicts on shared files).
     do not remove it, and do not assume a published DB's `tasks` table is the current shape.
 
 # ═════════════════════════ PHASE 2 — THE WEDGE (from twin to commercial cockpit) ═════════════════════════
+## §S8 — EDIT → Δ ON THE THING  (a Modeller edit's cost + schedule consequence, on hover/click, BOTH surfaces)   ✅ BUILT + WITNESSED LIVE 2026-09-30 (bim-ootb #1796; viewer sw v1452, modeller sw v68)
+```
+# ⚠ DO NOT REMOVE — scope + log mandate
+SCOPE: when a wall is moved or stretched in the Modeller, the edited element shows what that edit changes in
+MATERIAL COST and in LABOUR TIME, on hover or click, in the Modeller AND the Viewer. ONE pure function computes it.
+No new rate, no new duration formula, no copy of any owner. Read the `§S8-*` log after every run; a witness that judged
+nothing prints INCONCLUSIVE, never PASS.
+```
+Idea + go-ahead: red1, 2026-09-30 ("a hover or click will reveal the edited artifact's change in materials cost and
+schedule variance impact"). Decision change that permits the Modeller to DISPLAY it: `RATES_SOURCE_OF_TRUTH.md` §5.
+Re-read before any 4D number: `4D_MODEL_INTEGRITY.md` §I (ownership table) and §E (proxies). Cached runs
+(`~/.cache/bim4d/`, `scripts/cache_4d_run.js`) are NOT consulted: this Δ is closed-form on one element and reads no
+solve output, so nothing needs a pipeline run (recorded so the omission is deliberate, PRIMAL LAW 5).
+
+### §S8-QTY — which quantity changes, and where it is read
+| edit (signed op) | changes | read from |
+|---|---|---|
+| `GEOM_MOVE {parent,dx,dy,dz}` | **no quantity** (length, area, volume, count all unchanged) → Δ = 0, printed as 0, labelled "a move changes no quantity" | the op log |
+| `GEOM_SCALE {parent,fx,fy,fz}` (net, multiplicative, LOCAL axes, edge-anchored) | the element's bbox dims `[bx,by,bz] × [fx,fy,fz]` → its length / dominant-face area / volume | net per parent = `bonsai_kernel.js:311-316` (the fold's own accumulation) |
+| `GEOM_GRID_MOVE` (stretch via gridline) | quantity changes but the per-command extents are not in the payload shape this stage reads | ⛔ **BLOCKED (S8 does not cover it): "does a `GEOM_GRID_MOVE` command carry the new span, or only the gridline delta?"** — shown as "quantity Δ not computed for grid-stretch" (never guessed) |
+- "before" = the element's RECORD: `element_transforms.bbox_x/y/z` joined to `elements_meta` by guid (the same rows
+  `analysis_sidecar.js compute5D` sums). "after" = before × the net scale.
+- **The quantity basis is the shipped 5D basis** (`compute5D`: length = longest bbox edge; area = longest × second-longest;
+  volume = bbox product; count). §E says a bbox test is a proxy — true, and it is the SAME proxy the existing 5D report and
+  the duration engine already use, so the Δ is consistent with them; it is labelled `basis: bbox` and is not a claim about the
+  true B-rep quantity.
+- featureId → guid: the Modeller's own `window.__arcGuidByFid` (the §ARC-1 bridge). The seed op rows carry NO guid
+  (measured: Duplex #82 params = bbox, color, provenance, ifc_class, realGeomHash, placement), so the Modeller adds the map
+  for EDITED features to its `identity` publish (additive field `edits:[{fid,guid}]`). The Viewer never guesses a guid.
+
+### §S8-COST — costΔ = quantity Δ × the EXISTING rate at the EXISTING grain
+- Rate owner: the **ACTIVE** `RATES[ifcClass] = {rate, unit}` — `viewer/rates.js` (CIDB 2024 hardcoded) **overridden by the user's locale pack** (`locale_loader.js` `applyRateOverrides`; measured 2026-09-30: en_US IfcWallStandardCase = **48/M2**, not 145). This is the table `analysis_sidecar.js apply5DRates` bills in the Viewer. **Found by W-CONNECT-COMMIT's equality falsifier** (first run: Modeller 398.75 vs Viewer 132.00 on the same wall) — the Modeller therefore lazily loads `locale_loader.js` with `window.__TRL_NO_AUTORUN=true` (no toast / DOM translate / `_TRL` merge) and applies the same `fetchLocale`+`applyRateOverrides`, so both surfaces price with the same pack. The label says "active rate pack", never "CIDB". Unit selects the quantity: `M`→length, `M2`→area, `M3`→volume, `EA`/unmapped→count
+  (an unmapped class bills rate 0 exactly as `apply5DRates` does — labelled "unpriced class", never a default rate).
+- **Grain: PER ELEMENT.** Not the S7 class-line grain. S7-GRAIN said per-element cost is "out of S7" because it needed guid-grain
+  pricing; the 5D quantity basis above already gives a per-element quantity from the record, and `rate × qty` is what the 5D
+  report sums per class. So `costΔ(element) = rate × (qty_after − qty_before)` is the SAME arithmetic at element grain — a
+  finer read of the same engine, not a new price. Labelled "material, CIDB rate table".
+- Money through `erp/bigdecimal.js` (rate as a decimal STRING, qty rounded to mm-precision strings), HALF_UP to 2 dp, printed
+  as decimal strings. Never `Number` money arithmetic.
+- Example (Duplex wall #82, IfcWallStandardCase, M2 @ 145): dims 0.417 × 17.383 × 1.25 → area = 17.383 × 1.25 = 21.729 m²;
+  `GEOM_SCALE fy=1.5` → 32.594 m² → costΔ = 145 × 10.865 = 1,575.4 (illustrative, the witness prints the measured value).
+
+### §S8-SCHED — does an element quantity feed a duration in the shipped pipeline? ANSWER FROM THE §I OWNER
+Owner: `schedule_author.js:100` `_installSecs(cls, rule, laborRates, realQty, lengthRatio)` (§I "how long does it take?"). Measured
+from the code, `schedule_author.js:552-563`:
+- **`realQty` (area) enters ONLY when the class is `_classFragmentation`-flagged** (avg area < `FRAGMENT_M2_FLOOR`).
+- **`lengthRatio` (this element's longest edge ÷ its class's average) enters ONLY for `RATES[cls].unit === 'M'` classes**
+  (beams, columns, ducts, pipes, cable trays) — `_linearWeighting`.
+- **Otherwise the install time is FLAT per element** — a stretched ordinary wall (M2, not fragmented) changes cost but its
+  labour time is unchanged. That is what the pipeline does, and S8 reports it as `schedΔ = 0 (flat per element: IfcWall M2)`,
+  not as a missing number.
+So `labourSecsΔ = _installSecs(after) − _installSecs(before)` via the owner, with `secsPerUnit = _productivity_basis_secs ÷ prod`;
+shown in working days (`÷ _productivity_basis_secs`, the owner's own 28,800 s/day).
+- **What S8 does NOT claim: a finish-date shift.** Labour seconds of one element → task duration → CPM start/finish goes through
+  crews, `max_crews`, dependencies and `computeSchedule`/`cpm_schedule.run`. Re-solving at hover time is not spec'd.
+  ⛔ **BLOCKED (finish-date Δ): "may a hover trigger a whole-programme re-solve (`computeSchedule` + `cpm_schedule.run`), or is the
+  labour-seconds Δ the agreed schedule variance?"** Until answered the label says `finish date: not re-solved`.
+- The class average length used by `lengthRatio` is held at its RECORD value (before the edit) for both before/after — the edit
+  moves the class average by 1/N, which is the redistribution effect the owner already documents; S8 does not model it.
+
+### §S8-LABEL — honest labels (§DOCTRINE 4)
+`costΔ` = "**projected** — active rate pack × bbox quantity Δ, this element" · the record it starts from = "**from records**"
+(element_transforms) · `schedΔ` = "**projected** — labour time per the shipped duration rule; finish date not re-solved".
+Never a bare money string next to an element name; the line always names the class, the unit and the quantity Δ.
+
+### §S8-FN — ONE pure function, called by both surfaces
+`viewer/edit_delta.js` → `window.EditDelta` / `module.exports` (DOM-free, node-testable; loads owners, never copies them):
+`netEdits(ops)` → Map fid→{dx,dy,dz,fx,fy,fz} · `readRecord(db,guid)` · `classCtx(db,env)` (calls the owners `_classFragmentation` /
+`_linearWeighting`) · `deltaFor(rec, net, ctx, env)` → `{guid, cls, unit, qtyBefore, qtyAfter, rate, costBefore, costAfter, costDelta,
+labourSecsBefore, labourSecsAfter, labourSecsDelta, labourDaysDelta, schedBasis, finish:'not re-solved', labels[]}`.
+Two declared TWINS exist (a twin without a parity gate is a drift; both are gated below): `netEdits` mirrors the fold's net-scale
+accumulation (`bonsai_kernel.js:311-316`); `qtyOf(unit,dims)` mirrors the `compute5D` / `_AREA_EXPR` SQL. `env` = the rates.js globals +
+`ScheduleAuthor` + `BigDecimal`, supplied by the caller (Viewer: already loaded; Modeller: lazily `<script>`-loaded from `../viewer/`,
+`../erp/`, on the first hover/click of an EDITED element — Open time unchanged).
+Log: `§S8-DELTA guid= cls= unit= qty=<before>-><after> rate= costDelta= schedDelta=<secs>s(<days>d) basis= surface=modeller|viewer`.
+
+### §S8-SURFACES
+- **Modeller** (additive only, `modeller/edit_delta_ui.js` + two `dispatchEvent` lines in `modeller.html`'s `setHover`/`setSelectionIds`):
+  hover → a small label near the cursor; click → the same line appended to the status line. Only for a feature with a net edit.
+- **Viewer** (`viewer/main.js`-side subscriber): `Connect.subscribe('identity')` → log `§CONNECT-ID-IN viewer` → read the shared signed
+  log (`localStorage bonsai_model_v1`, same origin, `kernel_ops WHERE undone=0` — what `Bonsai.oplog.reload()` reads) → `netEdits` →
+  `deltaFor` per edited guid → S7's hover label (`hover_name.js`) and `#info-panel` `#info-4d` block get the Δ line. Independent of any
+  persisted schedule (the S7 window line still needs one; the Δ line does not).
+- ⚠ Cascade defect (finding #1, `RESUME_MODELLER_GUIDE_SCREENSHOT_FIX.md` 2026-09-30): moving a wall that HOSTS a door/window is 3 ops
+  and one Ctrl+Z undoes one. S8 does not build on it: witnesses use a wall with no hosted filling (`SdgCascade.ridersFor` = []).
+- Scrub position: the log store has no cursor; `undone=1` (Ctrl+Z) is honoured, a slider scrub-back is carried by the existing
+  `timeline` channel and is out of S8.
+
+### §S8-WITNESS (each NAMES what it proves or disproves; RED first — on today's main neither surface prints any Δ)
+- **W-S8-PURE** (node) — `qtyOf` equals the `compute5D`/`_AREA_EXPR` SQL on every bbox of the real Duplex DB (sql.js), all four units;
+  `deltaFor` with net = identity returns 0/0; an M-unit class (a beam record) returns a non-zero labourΔ, an M2 wall returns 0.
+  *Disproves: a drifted quantity twin; a fabricated schedule number for a flat class.*
+- **W-S8-EDIT-DELTA** (Modeller, headless vs LIVE) — pick a wall with no hosted filling → drag its scale cube → hover → `§S8-DELTA` whose
+  `costDelta` equals, to the cent, the value the WITNESS recomputes independently from the DB (`rate × (area_after − area_before)`, area_after
+  read from the folded mesh's REAL bbox, not from the op) → Ctrl+Z → hover again → Δ = 0. A move (not a scale) prints costΔ 0.
+  *Disproves: Δ computed from the op instead of the fold; Δ surviving an undo; a move billed as a quantity change.* INCONCLUSIVE if the
+  scale commit did not land (op-log length unchanged) or the wall's quantity was 0.
+- **W-CONNECT-COMMIT** (Viewer, two pages one context, vs LIVE) — Modeller edit → Viewer logs `§CONNECT-ID-IN viewer tip=<the Modeller's tip>` →
+  hover the same guid in the Viewer → `§S8-DELTA … surface=viewer` with **costDelta and schedDelta byte-equal to the Modeller's** (the
+  cross-surface equality is the falsifier) → Ctrl+Z in the Modeller → Viewer Δ = 0 → `KernelOps.verifyChain` ok on the shared store.
+  *Disproves: a Viewer that never receives the edit (the P3 half-built state on main), or two surfaces computing different numbers.*
+
+### §S8-RESULT — MEASURED 2026-09-30 (logs: `/tmp/claude-1000/gs/{s8_pure_1,s8_edit_LIVE_green2,cc_LIVE1}.log`; RED first on the same witnesses)
+| witness | result | the measured evidence |
+|---|---|---|
+| **W-S8-PURE** (node, real DBs) | **7/7** | qtyOf == compute5D/_AREA_EXPR on **116,928** real elements (0 mismatched); identity net → 0.00/0 on 253 elements; wall ×1.5 costΔ 3,906.83 == independent BigDecimal; wall labour 2400→2400 (flat); Clinic IfcMember length×2 → labour 3149→6299s (length-weighted); GEOM_MOVE → 0.00; GEOM_GRID_MOVE flagged unsupported |
+| **W-S8-EDIT-DELTA** (Modeller, LIVE) | **9/9** (RED before deploy: D5 FAIL + D2 INCONCLUSIVE) | wall #18 `IfcWallStandardCase` M2, area 10.586→13.233 m², rate 48/M2 (en_US pack), **costΔ +127.03 == independent 127.03**, folded-mesh area Δ 2.6466 == displayed 2.6466 (netEdits twin == the fold), labour +0s (flat per element), hover label and click pin both show it, Ctrl+Z → 0.00 "edit undone", GEOM_MOVE → 0.00, owners NOT loaded until the first edited hover (lazy) |
+| **W-CONNECT-COMMIT** (Modeller + Viewer, LIVE) | **10/10** (RED before deploy: Viewer had no EditDelta) | Viewer received `§CONNECT-ID-IN viewer tip=<Modeller's tip>`, logged `§S8-DELTA … surface=viewer` with costDelta **127.03 / sched 0s / qty 10.586247→13.232809 — byte-equal to the Modeller**; the Viewer's hover label text is byte-equal to the Modeller's; undo → 0.00 and the Δ line leaves the label; `verifyChain` ok; 0 page errors |
+Defects the witnesses caught IN THE BUILD (each is why a witness beats a look): (1) rate mismatch 145 vs 48 (locale pack — above); (2) float32-vs-double record noise made two surfaces disagree by a cent → `readRecord` rounds dims to **0.1 mm** ("record precision"); (3) the store is per building (`mo_Duplex`), not `bonsai_model_v1` → the Modeller names its store in the `identity` payload (`store`, plus `edits:[{fid,guid}]`); (4) the first Viewer hover match compared a 12-char GUID prefix — every Duplex wall shares it — so the hover log now carries `full=<guid>` and the witness compares the whole guid; (5) `#82…#84` are BELOW-GRADE foundation walls (z −1.25..0): not hoverable; the witnesses pick above-grade walls with no hosted filling.
+
+### §S8-DEMO-MOVIE (later — a NOTE, no movie is made now)
+Beats, and the witness-proven state each shot must be cut from (a shot with no proven state is not filmed):
+1. Modeller, Duplex, one wall selected — state: W-S8-EDIT-DELTA "selected fid, hostedRiders=0".
+2. Drag the scale cube; hover the wall — the label reads the `§S8-DELTA` line whose numbers W-S8-EDIT-DELTA asserted (costΔ, qty before→after).
+3. Cut to the Viewer tab (Connect ON) — the same element, the same Δ line — state: W-CONNECT-COMMIT byte-equal numbers.
+4. Ctrl+Z in the Modeller; both labels return to 0 — state: the undo legs of both witnesses.
+5. Save — state: `§SAVE_SNAPSHOT bytes>0`. The finish-date shift is NOT shown (⛔ above) — the film must not imply it.
+Rule (`feedback_no_autonomous_bakes`): filming/baking needs red1's explicit go; nothing here authorises it.
+
+### §S8/§S9-ANSWERS — red1, 2026-09-30 (verbatim, then what was applied). "This is just POC, keep it simple."
+- **Q1 (VO price 81.90 vs S8 Δ 127.03), decision:** "ONE pricing basis. A VO is the priced difference of the order line it amends, so compute it with the SAME basis as the Project Order line (proj_fold), and make the S8 hover Δ use that same basis, so the user sees one number everywhere. The invariant witness: PlannedAmt(original PO) + VO == a fresh fold of the edited parts, to the cent (bigdecimal)."
+  **Applied:** the basis is `proj_fold`'s line amount = per class row `round(rate × qty)` to 0 dp HALF_UP. `EditDelta.deltaFor` now prices `costBefore/After` on it (`costΔ` = the difference, integer — 127 for the stretched wall, not 127.03). `ProjOrderState.voRowsFromEdit` builds one CHANGED row per class whose `rate` IS the difference to the order LINE it amends (`readState().lines`; a class already issued at the edited quantity yields no VO), and `vo_fold` runs UNCHANGED with a neutral `voConfig` (factors 1, no loading) so `GrandTotal == Σ difference`. The old ×1.3 × 1.3125 model is no longer used by S9. Witnessed: W-S9-PURE S7 (PO 171,428 + VO 1,953.00 == fresh fold 173,381; revised contract = fresh fold only after approval), W-S9-MODELLER-PROJECT P10 (PO 635 + VO 127.00 == fresh fold 762), W-S9-IFC-KEY K3 (PO 2,614 + VO 420.00 == fresh 3,034). Caveat recorded: S8's Δ is per ELEMENT and the VO per class row over the SELECTION; they are equal when the selection is the edited part (one element), and the panel's `scopeNote` warns when the order holds more than the selection — select all parts of the order for a whole-line VO.
+- **Q2 (VO approval in the Modeller):** "Approval is over at ERP side. Modeller just send and fetch by default, until a role condition is imposed from there." **Applied:** no approval UI. The panel lists the VOs on the project with their status READ from the ERP record, labelled Drafted / Approved / In progress / Reversed (`voStatusLabel`), and the send message says "approval is done on the ERP side". `vo_approve.js` stays ERP-side (W-S9-PURE S7 still exercises it as the ERP would). If the ERP later imposes a role condition the Modeller shows whatever status the record carries.
+- **Q3 (resident→ERP label only for Duplex):** "Can we make such abstract so that any user IFC ARC loaded, can do so?" **Applied:** `projectKey(residentKey, db)`: (1) the measured alias table (Duplex → `Ifc2x3_Duplex_Federated`, unchanged), (2) the model's own IfcBuilding/IfcProject NAME if the opened DB carries it in `spatial_structure`, (3) the model's own loaded name (`__dwName`; MEASURED: a `.ifc` opened straight from disk has NO spatial_structure names, so a user IFC is keyed by its file base name, e.g. `SampleHouse_ARC`). The source is logged (`§S9-BUILDING … source=`). If a DB lacks `element_transforms` the quantities fall back to the signed seed rows' bboxes (`EditDeltaUI.opRecord`; not exercised because the direct-IFC DB does carry that table). Witness **W-S9-IFC-KEY** (the local-IFC open path, `SampleHouse · ARC.ifc`): K1 key = `SampleHouse_ARC`, K2 Generate → ONE project, plannedAmt 2,614 == independent, K3 stretch → variant, VO 420.00, PO + VO == fresh fold; Duplex regression = W-S9-MODELLER-PROJECT P3/P4.
+- **Q4 (walked fixtures have no drag handle):** "keep the POC simple: drive the re-route with a real user gesture that exists today (a gridline drag, if W-MEP-REROUTE proves it)". **Result:** W-MEP-REROUTE does NOT prove a gridline re-routes — it commits a GEOM_MOVE on the fixture; a gridline drag moves walls and their hosted riders only (fixtures stay put), and clicking a walked fixture is identify-only (Move disabled). So no real gesture exists; the guide labels the step engine-driven, and MODELLER_MASTER row 35 records "drag handle for walked fixtures" (not built).
+- **Q5 (W-MEP-OPENPATH M0 185 vs 177):** root-caused from the §-logs: 185 → 177 is FP 46 → 38, exactly the 8 sprinklers of the UNDERGROUND FP band [-2.0, -0.5] m (`§NOSPACES-ZONE … band=[-2.0065,-0.5065] placed=8` in a solo FP walk; Walk-ALL's final FP is 38 = 15+14 host-bound + 9 floats, zones=4). #1768 (§GATE-STOREY-FLOOR, "clash gate stops sinking fixtures underground") measured those sprinklers ~1 m below the floor. A legitimate product fix; M0 re-baselined to 177 with the cause named (ACMV 19 / ELEC 102 / PLB 18 unchanged), RED-first: the old 185 counted the underground fixtures.
+- **Empty-grid MEP shots:** a REAL defect, not render-idle. After `Walk PLB` the group held 27 meshes, not 214 (196 ARC + walk): 214 × `§BONSAI insert fold fail … LOD400-REFUSE realGeomHash … not registered` — `bonsai_library.js ensureMesh`'s lazy catalog load replaced `_geom`, wiping the namespaced `rg:` real meshes registered at seed, so the next refold refused every ARC insert. Fixed (§GEOM-KEEP-RG: `_geom = Object.assign({}, j, this._geom)`); W-FIRST-STEPS-MEP now asserts `buildingMeshes >= 196` after the walk and after undoing it (MODELLER_MASTER row 36).
+
+## §S9 — FROM THE MODELLER: READ AND OPEN THE ERP PROJECT ORDER OF THE SELECTED PARTS (Generate · variant · A/B · launch)   ✅ BUILT + WITNESSED LIVE 2026-09-30 (bim-ootb #1797 + #1798; viewer sw v1454, modeller sw v70)
+```
+# ⚠ DO NOT REMOVE — scope + log mandate
+SCOPE: the Modeller reads the Project Order of the selected parts, offers Generate / (for an edited part of an existing order) A delete&re-issue or B Variation Order,
+and opens the order in the ERP app. ONE owner — `viewer/proj_order_state.js` — over the existing engines; the Modeller carries no fold, no rates, no ERP schema.
+Read the `§S9-*` logs after every run; a witness that judged nothing prints INCONCLUSIVE.
+```
+red1's decisions, 2026-09-30 (verbatim — they replace the earlier "how is a variant keyed" question):
+> "The ERP link as said, is context based. If it already has a Project Order, then it is a variant item in the same PO. If not, it generates a new Project Order. That should be the flow.
+> 1. User issues a PO to a selected item first.
+> 2. Made a variant on the same item or its sub. Thus to save from deleting the PO and start over, it just issue a VO.
+> Thus 2 options still open to the user. A. Delete the old PO, and issue a fresh one to save work as has not started. Or B. VO if Project Order already committed to vendor as a sub Purchase Order."
+
+### §S9-GROUND — what already exists (verified in bim-ootb `main`, 2026-09-30) — nothing below is invented
+- **Generate**: `viewer/proj_fold.js foldProjectOrder(db, building, pricedRows, opts)` — C_Project (find-or-create by `Value=building`) → C_ProjectPhase → C_ProjectTask → C_ProjectLine per IFC class; idempotent by natural key; money via BigDecimal. The Viewer's Find selection → "› ERP" (`find_erp_push.js _pushToErp`) calls it with `navigate_find.js _selectionPriced(set)` rows.
+- **Variation Order — the construct EXISTS** (`viewer/vo_fold.js foldVariationOrder`, `vo_approve.js`, `proj_control.js`; spec `docs/BIMtoProject.md` §H1/§F5): a VO is a **C_Order** (`Description='BIM VO: <building> #n'`, `IsSOTrx='N'`, `DocStatus='DR'`, `C_Project_ID`, `Ref_Order_ID` = the project's PO) with signed C_OrderLines; approving it (`DR→CO` through `ad_docfsm`) moves `C_Project.CommittedAmt/IsCommitment` and `ProjControl.contractSum` = original + approved VOs = revised. The diff→VO mapping is `diff.js A._diffToVoRows`: one row per (status × class), an **edited element = `CHANGED`**, `count` = elements, `rate` = `getRate(cls)`, unit EA; factors `ADDED 1.0 · REMOVED 0.3 · CHANGED 1.3`, loading `(1+0.10+0.15)(1+0.05)` = 1.3125, all in `vo_fold`. **S9 uses exactly that mapping.**
+- **Store**: OPFS `bim_analysis/bim_project_orders.db` — written by `find_erp_push.js` and `diff.js`, overlaid onto the seed by the ERP app at boot (`erp/bim_orders_overlay.js`, BIM PK band ≥ 990000). `diff.js _loadVoErpDb` is already OPFS-first. `find_erp_push.js _ensureErpDb` was seed-first → **changed to OPFS-first** (same helper) so an order generated by ANY surface is the one the next push amends — required by "if it already has a Project Order".
+- **Launch**: the Viewer's own link `../erp/idempiere.html?client=garden&window=130&record=<C_Project_ID>` (`find_erp_push.js`); the ERP logs `§IDEMPIERE-DEEPLINK record=<id> landed` once the record is in its scoped set.
+- The Modeller had none of it (0 hits for C_Project / zoomAcross in `modeller/`).
+
+### §S9-READ — what the panel shows (`ProjOrderState.readState`) — all from records
+`generated` (a C_Project with `Value=<building>` exists AND has a line for a selected class) · `projectId` · `plannedAmt` · project lines · the PO (`C_Order Description='BIM PO: <building>'`, present only when a supplier was given) · VOs (`C_Order C_Project_ID=? AND Description LIKE 'BIM VO:%'`) · `ProjControl.contractSum` (original / approved VOs / revised).
+**Committed = read from records, never guessed**: a purchase C_Order (`IsSOTrx='N'`, not a VO) on that project (by `C_Project_ID` or `Description='BIM PO: <building>'`) with `DocStatus IN ('CO','CL')`, OR `C_Project.IsCommitment='Y'`, OR `CommittedAmt>0` (what `vo_approve.js` moves). The panel prints WHICH of these is true.
+**Variant = the selected part carries a quantity-changing edit (S8 `netEdits`, scale ≠ 1) AND its class already has a line in the project.** A pure move changes no quantity → not a variant.
+`decide(state, edited)`: not generated → **Generate**; generated, unedited → read-only "in Project Order"; generated + edited → **variant**: `B Issue Variation Order` always; `A Delete & re-issue` only when NOT committed and no VO exists (else disabled with the reason, e.g. "committed to a vendor (purchase order #991001 is CO) - issue a Variation Order instead").
+Amounts: the selection's parts price via `pricedRowsFor` — the SAME `(disc,cls,storey,count,unit,qty,rate,cost)` shape as `_selectionPriced`, quantities from the S8 `qtyOf` twin (parity-gated in W-S9-PURE S1 against the SQL path) with the post-edit dims when edited.
+
+### §S9-ACTIONS
+- **Generate** → `ProjFold.foldProjectOrder` (unchanged). **A · Delete & re-issue** → deletes exactly the rows the fold wrote for that project (lines, tasks, phases, the DR PO + its lines, the project) then folds again from the **current selection** (post-edit quantities): exactly ONE project row remains. ⚠ It re-issues from the SELECTED parts: if the order held more for those classes than the selection prices at, the panel says so (`scopeNote`, from records) — the order does not record which guids it covers.
+- **B · Issue Variation Order** → `VoFold.foldVariationOrder` with the shipped mapping (rows: `CHANGED × class × count × getRate`). The VO is born `DR`; the base order's `PlannedAmt` does NOT change; the revised contract sum moves only when the VO is approved.
+- **Open in ERP** → the link above (new tab). Persistence after every action: OPFS, so the ERP overlay and the Viewer read the same file.
+
+### §S9-BLOCKED / QUESTIONS FOR red1 (built the rest; these are honest gaps, not guesses)
+1. ✅ ANSWERED (see §S8/§S9-ANSWERS Q1) — was: **"The PO's PlannedAmt changes by exactly the S8 cost Δ" does not hold for B under the shipped VO model, and I did not bend the model to make it.** The shipped VO prices the diff per ELEMENT: a stretched wall = 1 × CHANGED × rate 48 × 1.3 × 1.3125 = **81.90** (measured), while S8 prices the QUANTITY Δ: **+127.03** material. They answer different questions (rip-and-reinstall of the element, loaded, vs the extra m²). **Question: should a VO for a stretched element price the S8 quantity Δ (a proposal: an ADDED/REMOVED row with `count` = the Δ quantity in the class unit — needs a decision on whether `vo_fold` may carry a non-EA unit) or keep the shipped per-element CHANGED model?** S9 ships the shipped model unchanged and shows the S8 Δ beside it.
+2. ✅ ANSWERED (see §S8/§S9-ANSWERS Q2) — was: **Approving a VO (DR→CO) is not offered in the Modeller.** `vo_approve.js` exists and is witnessed (W-S9-PURE S7: revised contract = original + VO GrandTotal only after approval) but approval is a governance act (who signs?). **Question: is approval an ERP-only act (the "Open in ERP" link is the route), or should the Modeller expose it?**
+3. **Project Order fold semantics (existing, not changed):** `foldProjectOrder` sets `C_Project.PlannedAmt` to the sum of THIS fold's rows, so folding a subset of classes after a full one overwrites the total. S9 leaves it; recorded so it is not rediscovered.
+4. ✅ ANSWERED (see §S8/§S9-ANSWERS Q3) — was: **The ERP `C_Project.Value` is the Viewer's building LABEL, and the Modeller's resident key is not always that label.** Found by W-S9-MODELLER-PROJECT P4 on LIVE (first live run, 9/10): the Modeller generated `Value='Duplex'` while the Viewer's live Duplex reports `A.activeBuilding='Ifc2x3_Duplex_Federated'` — two surfaces, two Project Orders for one building. Fixed for the measured case with `ProjOrderState.projectKey(residentKey)` (a table of labels MEASURED on the live Viewer; anything else falls back to the resident key and says so in `§S9-BUILDING source=…`). **Question: is a resident→label table the right home, or should `modeller/buildings_manifest.json` carry an `erpValue` per resident (generated from the Viewer's DB label)?** Only Duplex is measured; the other 7 residents are unmeasured.
+
+### §S9-WITNESS (RED first: on today's live before deploy the button did not exist — P1 FAIL)
+- **W-S9-PURE** (node, real `ad_seed.db` + Duplex DB): S1 priced rows == the `_selectionPriced` SQL fold (94 guids, 9 groups, cost 171,428, all equal) · S2 not-generated → only Generate · S3 Generate → ONE project row, plannedAmt == independent BigDecimal sum, 2nd Generate +0 · S4 edited part → variant, offers `deleteReissue,issueVO` · S5 A → exactly ONE project row, plannedAmt 171,428→173,381 == independent 1,953 delta · S6 committed fixture (a completed sub-PO) → committed from records, A REFUSED with its reason, 0 rows changed · S7 B → one VO, GrandTotal 247.41 == independent (145×1.3×1.3125), revised contract moves only on approval by exactly the VO total · S8 launch URL carries the C_Project id. **8/8.**
+- **W-S9-MODELLER-PROJECT** (three real pages of one context: Modeller, Viewer, ERP; real clicks): P1 button visible and owners NOT loaded before the click · P2 read "not generated" · P3 Generate → 1 project, plannedAmt == independent · P4 the Viewer's own › ERP fold of the SAME guids reports the SAME plannedAmt with `lines=+0` (it SEES the order) and its `#find-erp-open` link carries the same id · P5 the clicked link == the ERP URL and the ERP page logs `§IDEMPIERE-DEEPLINK record=<id> landed` (overlay loaded the row) · P6 edit → variant, A and B offered, parts cost == independent edited cost · P7 A → exactly ONE project row, plannedAmt == independent post-edit sum, `scopeNote=more` said · P8 Ctrl+Z → parts cost back to the original · P9 committed fixture → A disabled with its reason, B enabled · P10 B → one VO, GrandTotal 81.90 == independent, the Viewer reads the same VO (`vos=1`, committed). **10/10 local; 10/10 vs LIVE** (RED first: on the pre-deploy live P1 FAILED — no button).
+
+### §S9-RESULT — LIVE 2026-09-30 (log `/tmp/claude-1000/gs/s9_LIVE2.log`)
+Duplex, two above-grade walls (#18, #16, `IfcWallStandardCase`), real clicks, three real pages (Modeller, Viewer, ERP): P1 button, owners NOT loaded before the click · P2 not generated (parts price at $765) · P3 Generate → project #990001 `Value=Ifc2x3_Duplex_Federated`, plannedAmt **765 == independent 765** · P4 the Viewer's own › ERP fold of the same guids: plannedAmt **765**, `lines=+0` (it found the Modeller's order), `#find-erp-open` → record 990001, same building key · P5 clicked link == `https://red1oon.github.io/bim-ootb/erp/idempiere.html?client=garden&window=130&record=990001`; the ERP page (auto-login) logged `§BIM_OVERLAY rows=460` and `§IDEMPIERE-DEEPLINK record=990001 landed` · P6 wall #18 stretched (fy ×1.25): variant, A and B offered, parts cost **508 → 635** == independent · P7 A: `projectRows 1->1`, plannedAmt 765 → **635** == independent post-edit, `scopeNote=more` said · P8 Ctrl+Z: parts cost back to **508** · P9 completed sub-PO (fixture) → committed from records, **A disabled: "committed to a vendor (purchase order #991001 is CO) - issue a Variation Order instead"**, B enabled · P10 B: `VO-…-001` GrandTotal **81.90 == 48 × 1.3 × 1.3125**, the Viewer reads the same order from OPFS (`vos=1`, committed). Defects the witness caught IN THE BUILD: (1) the Find/Navigate bundle is lazy (`APP.loadNavigate()` before `applyFindScope`); (2) the building-label mismatch above; (3) A re-issues from the SELECTION, so the panel now says when the order holds more than the selected parts (`scopeNote`).
+
 ## §WEDGE-STRATEGY (decided 2026-06-22 after the "is it a killer?" analysis)
 VERDICT of the analysis: the one-op-log BIM↔ERP twin is a killer *architecture* + killer *demo*; it is NOT yet a
 killer *product* because (a) it is demo-grade on the seed (990000), (b) "unifies 4 tools" is a feature list, not a
