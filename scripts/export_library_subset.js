@@ -18,9 +18,9 @@
  * Usage: node scripts/export_library_subset.js --elements <summary.json> [--labels <labels.json>] [--lib <component_library.db>] --out <file.json>
  *
  * FULL mode (§14, bim-ootb prompts/DXF2BIM_MODELLER_LANE.md §L3.4): the whole binder universe for the OCI-hosted Modeller library:
- *   node scripts/export_library_subset.js --full --out-dir <dir> [--labels <labels.json> ...] [--lib <component_library.db>]
- * writes <dir>/<sha12>/index.json + <dir>/<sha12>/shard_XX.json (XX = geometry_hash[0:2]), <dir>/labels/<run_id>.json per labels file,
- * <dir>/latest.json. Universe = all active ad_opening_family + ad_wall_type, every IfcDoor/IfcWindow ad_geometry_map row (deduped
+ *   node scripts/export_library_subset.js --full --out-dir <dir> [--lib <component_library.db>]
+ * writes <dir>/<sha12>/index.json + <dir>/<sha12>/shard_XX.json (XX = geometry_hash[0:2]) + <dir>/latest.json. Library data only:
+ * run data (labels) is not exported, a drawing states its products as @TAG markings (§14 LF-4). Universe = all active ad_opening_family + ad_wall_type, every IfcDoor/IfcWindow ad_geometry_map row (deduped
  * element_ref|hash, as above) and its mesh (same decoding). Same inputs -> byte-identical files. Not committed (library data).
  */
 'use strict';
@@ -29,10 +29,9 @@ const ROOT = path.join(__dirname, '..');
 const S = require(path.join(ROOT, 'deploy/dev/dxf2shell.js'));
 
 const arg = k => { const i = process.argv.indexOf('--' + k); return i > 0 ? process.argv[i + 1] : null; };
-const args = k => process.argv.reduce((a, v, i) => (v === '--' + k && process.argv[i + 1] ? a.concat([process.argv[i + 1]]) : a), []);
 const LIB = arg('lib') || path.join(ROOT, 'deploy/component_library.db'), ELS = arg('elements'), LABS = arg('labels'), OUT = arg('out');
 const FULL = process.argv.indexOf('--full') > 0, OUTDIR = arg('out-dir');
-if (FULL ? !OUTDIR : (!ELS || !OUT)) { console.error('usage: --elements <summary.json> [--labels <labels.json>] [--lib <db>] --out <file.json>\n       --full --out-dir <dir> [--labels <labels.json> ...] [--lib <db>]'); process.exit(2); }
+if (FULL ? !OUTDIR : (!ELS || !OUT)) { console.error('usage: --elements <summary.json> [--labels <labels.json>] [--lib <db>] --out <file.json>\n       --full --out-dir <dir> [--lib <db>]'); process.exit(2); }
 const sha = b => crypto.createHash('sha256').update(b).digest('hex');
 const sqlj = q => JSON.parse(cp.execFileSync('sqlite3', ['-json', '-readonly', LIB, q], { encoding: 'utf8', maxBuffer: 1 << 28 }) || '[]');
 const q1 = s => "'" + String(s).replace(/'/g, "''") + "'";
@@ -80,12 +79,6 @@ function full() {                                                       // §14:
     shard_key: 'geometry_hash[0:2]', counts, missing_meshes: missing,
     rows: { ad_opening_family: fams, ad_wall_type: walls, ad_geometry_map: rows.map(m => Object.assign({}, m, { shard: shardOf(m.geometry_hash) })) },
     geometry_shard: hashes.reduce((o, h) => (o[h] = shardOf(h), o), {}), shards: shardInfo });
-  args('labels').forEach(f => {
-    const t = fs.readFileSync(f), L = JSON.parse(t);
-    if (!L.run_id || !L.labels) refuse('labels file ' + f + ' has no run_id/labels');
-    put('labels/' + L.run_id + '.json', { format: 'dxf2bim-labels/1', run_id: L.run_id, source: { file: path.basename(f), sha256: sha(t) },
-      note: 'window labels the Node run applied, from the source model (round trip, stated); applied only to a drawing set with this run_id', labels: L.labels });
-  });
   put('latest.json', { format: 'dxf2bim-library-latest/1', library_sha256: libSha, index: sha12 + '/index.json' });
   const tot = written.reduce((a, w) => a + w.bytes, 0), shTot = shardInfo.reduce((a, s) => a + s.bytes, 0);
   written.filter(w => !/shard_/.test(w.rel)).forEach(w => console.log('§LIB-FULL wrote ' + w.rel + ' bytes=' + w.bytes + ' sha256=' + w.sha256));
