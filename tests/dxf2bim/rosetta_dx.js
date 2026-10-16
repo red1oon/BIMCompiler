@@ -10,7 +10,9 @@ const M = require(path.join(__dirname, '../../deploy/dev/dxf2mesh.js'));
 const hashHex = s => crypto.createHash('sha256').update(s).digest('hex');
 const ROOT = path.join(__dirname, '../..');
 const DB = path.join(ROOT, '2D_Layout/input/DX_extracted.db');
-const DXF = n => fs.readFileSync(path.join(ROOT, '2D_Layout/output/DXF/DX_' + n + '_20260428_0636.dxf'), 'utf8');
+// STD_DIR set (lane spec §L1.3 F2): read the std set DX_<view>_std.dxf from it; otherwise the old timestamped set
+const STD_DIR = process.env.STD_DIR || null;
+const DXF = n => fs.readFileSync(STD_DIR ? path.join(STD_DIR, 'DX_' + n + '_std.dxf') : path.join(ROOT, '2D_Layout/output/DXF/DX_' + n + '_20260428_0636.dxf'), 'utf8');
 const sql = q => JSON.parse(cp.execFileSync('sqlite3', ['-json', '-readonly', DB, q], { encoding: 'utf8', maxBuffer: 1 << 26 }) || '[]');
 const MAP = { version: 1, rules: [
   { match: 'exact', pattern: 'A-WALL-FULL', type: 'wall' }, { match: 'exact', pattern: 'A-WALL-PRTN', type: 'wall' }, { match: 'exact', pattern: 'A-WALL-PATT', type: 'ignore' },
@@ -24,6 +26,7 @@ const STOREYS = [{ name: 'Level 1', file: 'FLOOR_GF', level: 0 }, { name: 'Level
 const CFG = { version: 1, units: 'mm', snap_tol: 0.001, host_tol: 0.3, align_tol: 0.05, wall_mode: 'footprint', wall: { height: 3.1, base: 0, min_thickness: 0.05, polygon_footprint: true }, slab: { thickness: 0.2, level: 0 },
   opening: { door: { height: 2.1, min_width: 0.5 }, rect: { sill: 0.9, height: 1.2 }, window: { sill: 0.9, height: 1.2 }, gap_min: 0.3, gap_max: 5 } };
 // BASIC_SHAPES_SPEC §2.1/§2.2 (2026-10-16): polygon_footprint (mitred outlines kept exactly) and gap_min/gap_max (SANDBOX, as rosetta_dx_types.js) so §46 stub orientation and F5b run
+console.log('set: ' + (STD_DIR ? 'std ' + STD_DIR : 'old timestamped 20260428_0636'));
 console.log('config: ' + JSON.stringify(CFG) + '  (levels/height FROM_SOURCE_MODEL; min_thickness/min_width/host_tol/door+window heights SANDBOX)');
 const deps = { DxfParser, hashHex, library: [] };
 const near = (a, b) => Math.abs(a - b) <= 0.001 + 1e-9;
@@ -85,11 +88,12 @@ for (const st of STOREYS) {
   // doors
   const doors = run.ops.filter(o => o.op_type === 'DXF_OPENING' && o.params.kind === 'door').map(o => o.params.width).sort((p, q) => p - q);
   const sdoor = sql("select r.minX a,r.minY b,r.maxX c,r.maxY d from elements_meta m join elements_rtree r on r.id=m.id where m.ifc_class='IfcDoor' and m.storey='" + st.name + "'");
-  const sw = sdoor.map(x => +Math.max(x.c - x.a, x.d - x.b).toFixed(3)).sort((p, q) => p - q);
+  // §L1.3 F2: R3 compares with the LEAF width = bbox long side - 2 x CASING (the same constant + rule as R1b-stated)
+  const sw = sdoor.map(x => +(Math.max(x.c - x.a, x.d - x.b) - 2 * CASING).toFixed(3)).sort((p, q) => p - q);
   const pool = sw.slice(); let subset = true; doors.forEach(w => { const i = pool.findIndex(v => Math.abs(v - w) <= 0.002); if (i < 0) subset = false; else pool.splice(i, 1); });
   const lowGaps = run.report.gaps.filter(g => g.code === 'GAP:door_below_min_width').length;
-  console.log('door arcs emitted widths(m)=' + JSON.stringify(doors.map(v => +v.toFixed(3))) + ' | source doors=' + sdoor.length + ' ' + JSON.stringify(sw));
-  check('R3 ' + st.name, 'an emitted door width is not a source door width, or a missing door is unexplained', subset && doors.length + lowGaps === sdoor.length,
+  console.log('door arcs emitted widths(m)=' + JSON.stringify(doors.map(v => +v.toFixed(3))) + ' | source door leaf widths (bbox - 2 x CASING)=' + sdoor.length + ' ' + JSON.stringify(sw));
+  check('R3 ' + st.name, 'an emitted door arc radius is not a source door leaf width, or a missing door is unexplained', subset && doors.length + lowGaps === sdoor.length,
     'emitted=' + doors.length + ' door_below_min_width gaps=' + lowGaps + ' source doors=' + sdoor.length + ' widths subset of source=' + subset);
   // R4 windows
   const wins = run.ops.filter(o => o.op_type === 'DXF_OPENING' && o.params.kind === 'window');

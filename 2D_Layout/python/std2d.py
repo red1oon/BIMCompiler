@@ -337,6 +337,23 @@ def door_hinge(d, op, swing):
 
 # ─────────────────────────────── DXF ───────────────────────────────
 
+def _stable_classes(doc):
+    """§L1.3 F1 (R13 across processes): ezdxf adds one CLASS per DXF type in use by iterating a set
+    (hash order, salted per process). Register them first in a fixed order: ezdxf's REQUIRED_CLASSES
+    list, then the types in use sorted. ClassesSection.register skips existing keys, so the save-time
+    call adds nothing in hash order."""
+    from ezdxf.sections.classes import REQUIRED_CLASSES, REQ_R2004
+    for name in REQUIRED_CLASSES.get(doc.dxfversion, REQ_R2004):
+        doc.classes.add_class(name)
+    for name in sorted(doc.entitydb.dxf_types_in_use()):
+        doc.classes.add_class(name)
+
+
+def _save(doc, path):
+    _stable_classes(doc)
+    doc.saveas(path)
+
+
 def new_doc():
     ezdxf.options.write_fixed_meta_data_for_testing = True   # R13
     doc = ezdxf.new('R2010', setup=True)
@@ -543,7 +560,7 @@ def write_plan(model, grid, storey, view, db_path, out_path, log):
     # title
     _text(msp, f"{view.replace('_', ' ')} PLAN - {storey['name'].upper()} (FFL {storey['elev']:+.3f})  1:{SCALE}",
           ((E[0] + E[1]) / 2, E[2] - (BUBBLE_C + 14) * SCALE), TXT_TITLE, 'A-ANNO-TTLB')
-    doc.saveas(out_path)
+    _save(doc, out_path)
     log(f'§WRITE {os.path.basename(out_path)}')
 
 
@@ -630,7 +647,7 @@ def write_elevation(model, grid, face, out_path, log):
         _bubble(msp, h, zb - ELEV_BUBBLE_C * SCALE, lab)
     _text(msp, f'{face} ELEVATION  1:{SCALE}', ((H0 + H1) / 2, zb - (ELEV_BUBBLE_C + 12) * SCALE),
           TXT_TITLE, 'A-ANNO-TTLB')
-    doc.saveas(out_path)
+    _save(doc, out_path)
     log(f'§WRITE {os.path.basename(out_path)}')
 
 

@@ -20,6 +20,7 @@ import sqlite3
 import hashlib
 import argparse
 import tempfile
+import subprocess
 
 import numpy as np
 import ezdxf
@@ -467,6 +468,26 @@ def main():
         diff = [f for f in f1 if sha(os.path.join(tmp, 'run1', f)) != sha(os.path.join(tmp, 'run2', f))]
         check('W1', 'nondeterminism (two runs from the same DB differ)', not diff and len(f1) >= 7,
               f'files={len(f1)} differing={diff}')
+        # W1-proc (§L1.3 F1): 5 separate CLI processes, each a different hash seed, must be byte-identical;
+        # control: the same 5 runs with _stable_classes disabled must differ (proves the seeds change hash order)
+        def cli_runs(tag, disable):
+            digests = []
+            for seed in range(1, 6):
+                od = os.path.join(tmp, f'{tag}{seed}')
+                argv = [os.path.join(HERE, 'std2d.py'), a.db, '--out', od] + (['--door-ops', a.door_ops] if a.door_ops else [])
+                code = (f'import sys; sys.path.insert(0, {HERE!r}); sys.argv = {argv!r}; import std2d; '
+                        + ('std2d._stable_classes = lambda doc: None; ' if disable else '') + 'std2d.main()')
+                subprocess.run([sys.executable, '-c', code], check=True, capture_output=True,
+                               env=dict(os.environ, PYTHONHASHSEED=str(seed)))
+                fs_ = sorted(f for f in os.listdir(od) if f.endswith('.dxf'))
+                digests.append(hashlib.sha256(b''.join(open(os.path.join(od, f), 'rb').read() for f in fs_)).hexdigest()[:12])
+            return digests
+        dg = cli_runs('proc', False)
+        check('W1-proc', 'nondeterminism across separate processes (hash-seeded CLASS order)', len(set(dg)) == 1,
+              f'5 CLI runs, PYTHONHASHSEED=1..5, set digests={dg}')
+        dc = cli_runs('procctl', True)
+        check('W1-proc-control', 'W1-proc cannot see hash-order output (fix disabled must differ)', len(set(dc)) > 1,
+              f'fix disabled: digests={dc} distinct={len(set(dc))}')
         P = r1['paths']
         plans = [P[k] for k in sorted(P) if k.startswith('FLOOR_')]
         elevs = [P[k] for k in ('FRONT', 'REAR', 'LEFT', 'RIGHT')]
