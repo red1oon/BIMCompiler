@@ -28,7 +28,7 @@
   }
 
   function describe(marks) {
-    var d = { gridsX: {}, gridsY: {}, gridsH: {}, zs: [], excludes: [], openings: [], labels: [], schedule: [], tags: [], allowance: {}, walltop: [] }, errors = [];
+    var d = { gridsX: {}, gridsY: {}, gridsH: {}, zs: [], excludes: [], openings: [], labels: [], schedule: [], tags: [], allowance: {}, walltop: [], walltop_walls: [] }, errors = [];
     marks.forEach(function (m) {
       var mt = /^@([A-Z]+)=(.*)$/.exec(m.raw);
       if (!mt) { errors.push(err('MARK:malformed', 'not @KEY=VALUE: ' + m.raw, { handle: m.handle })); return; }
@@ -91,7 +91,16 @@
         if (!sdup) d.schedule.push(sent);
       } else if (key === 'WALLTOP') {                                                      // L2.3 D3: user-stated convention, never a default
         var wp = val.split(','), wl = Number(wp[0]);
-        if (wp.length !== 2 || wp[0].trim() === '' || !isFinite(wl) || wp[1] !== 'slab_above') { errors.push(err('MARK:malformed', '@WALLTOP needs <level>,slab_above: ' + val, { handle: m.handle })); return; }
+        if (/^handle:/.test(wp[0])) {                                                       // L2.6 A: per-wall top, @WALLTOP=handle:<h>,<z_top_m>
+          var wh = wp[0].slice(7).trim(), wz = Number(wp[1]);
+          if (wp.length !== 2 || !/^[0-9A-Fa-f]+$/.test(wh) || wp[1].trim() === '' || !isFinite(wz)) { errors.push(err('MARK:malformed', '@WALLTOP=handle:<h>,<z_top_m> expected: ' + val, { handle: m.handle })); return; }
+          wh = wh.toUpperCase();
+          var wd = d.walltop_walls.find(function (q) { return q.wall === wh; });
+          if (wd && wd.z !== wz) { errors.push(err('MARK:conflict', '@WALLTOP handle ' + wh + ' has two tops: ' + wd.z + ' / ' + wz, { handle: m.handle })); return; }
+          if (!wd) d.walltop_walls.push({ wall: wh, z: wz, handle: m.handle });
+          return;
+        }
+        if (wp.length !== 2 || wp[0].trim() === '' || !isFinite(wl) || wp[1] !== 'slab_above') { errors.push(err('MARK:malformed', '@WALLTOP needs <level>,slab_above or handle:<h>,<z_top_m>: ' + val, { handle: m.handle })); return; }
         if (!d.walltop.some(function (q) { return q.level === wl; })) d.walltop.push({ level: wl, rule: wp[1], handle: m.handle });
       } else if (key === 'EXCLUDE') {
         var xp = val.split(',').map(Number);
@@ -137,6 +146,7 @@
     d.schedule.sort(function (p, q) { return p.text < q.text ? -1 : p.text > q.text ? 1 : p.class < q.class ? -1 : p.class > q.class ? 1 : 0; });
     d.excludes.sort(function (p, q) { return p[0] - q[0] || p[1] - q[1] || p[2] - q[2] || p[3] - q[3]; });
     d.walltop.sort(function (p, q) { return p.level - q.level; });
+    d.walltop_walls.sort(function (p, q) { return parseInt(p.wall, 16) - parseInt(q.wall, 16); });
     return { desc: d, errors: errors };
   }
 

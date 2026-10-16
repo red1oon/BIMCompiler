@@ -201,7 +201,7 @@
     var roled = SH.filter(function (s) { return s.desc.view; });
     var setNames = {}; roled.forEach(function (s) { if (s.desc.set !== undefined) (setNames[s.desc.set] = setNames[s.desc.set] || []).push(s.id); });
     if (Object.keys(setNames).length > 1) block('QF:set_mismatch', null, [], null, 'sheets carry different @SET: ' + Object.keys(setNames).sort().map(function (k) { return k + '=' + setNames[k].join(','); }).join(' / '));
-    var plans = roled.filter(function (s) { return s.desc.view === 'PLAN'; }), elevs = roled.filter(function (s) { return s.desc.view === 'ELEV'; }), roofs = roled.filter(function (s) { return s.desc.view === 'ROOF'; });
+    var plans = roled.filter(function (s) { return s.desc.view === 'PLAN'; }), elevs = roled.filter(function (s) { return s.desc.view === 'ELEV'; }), roofs = roled.filter(function (s) { return s.desc.view === 'ROOF'; }), sections = roled.filter(function (s) { return s.desc.view === 'SECTION'; });   // SECTION: lane spec L1.4 / L2.6 E
     if (!plans.length) block('QF:set_no_plan', null, [], null, 'no sheet is marked @VIEW=PLAN: the set has no storey');
     if (!roofs.length) block('QF:set_no_roof', null, [], null, 'no sheet is marked @VIEW=ROOF: the roof outline has no roof plan (L2.3 D1)', null, 'roof');
     var lv = {}; plans.forEach(function (s) { if (typeof s.desc.level === 'number') (lv[s.desc.level] = lv[s.desc.level] || []).push(s.id); });
@@ -333,7 +333,14 @@
 
     // ---------- elevations (G4) ----------
     var stated = planLevels.concat(roofs.filter(function (r) { return typeof r.desc.level === 'number'; }).map(function (r) { return r.desc.level; })), bands = [];
-    elevs.forEach(function (s) {
+    // L2.6 E: a SECTION sheet (stated source of slab top/underside) aligns with the reference plan like an elevation; no face, no G4 datum checks
+    sections.forEach(function (s) {
+      if (!s.k || !ref || !ref.k || !s.desc.haxis || !has('tol.align')) return;
+      if (s.errors.some(function (e) { return e.code === 'MARK:missing'; })) return;
+      var al = MK.align(ref.desc, s.desc, tolA);
+      if (!al.map || !al.map.zOf) al.errors.forEach(function (e) { block('QF:elev_align_fail', s.id, [], null, s.id + ': ' + e.code + ' ' + e.message + ' (section against ' + ref.id + ')', { mark_code: e.code }); });
+    });
+    elevs.concat(sections).forEach(function (s) {
       if (typeof s.desc.roof !== 'number' || !has('tol.level')) return;                  // L2.3 D1: one roof top across the set
       roofs.forEach(function (r) { if (typeof r.desc.roof === 'number' && Math.abs(r.desc.roof - s.desc.roof) > tolL + EPS) block('QF:roof_level_mismatch', s.id, [], null, s.id + ': @ROOF=' + s.desc.roof + ' but roof sheet ' + r.id + ' states @ROOF=' + r.desc.roof, { roof: s.desc.roof, roof_sheet: r.id, roof_sheet_value: r.desc.roof }, 'roof'); });
     });
@@ -433,6 +440,10 @@
       var e = s && hs.length ? s.all.find(function (x) { return x.handle === hs[0]; }) : null;
       var why = g.reason || (g.need ? 'need ' + g.need : '') || (g.layer ? 'layer ' + g.layer : '');
       var extra = {}; Object.keys(g).sort().forEach(function (k) { if (['code', 'shape', 'sheet', 'handle', 'run_id'].indexOf(k) < 0) extra[k] = g[k]; });
+      if (g.code === 'GAP:no_elevation_height' && s && hs.length && (s.desc.walltop_walls || []).some(function (w) { return w.wall === hs[0].toUpperCase(); })) {   // L2.6 A: a per-wall top is stated
+        var ww = s.desc.walltop_walls.find(function (w) { return w.wall === hs[0].toUpperCase(); });
+        item(advisory, 'QF:height_stated', shape, g.sheet, hs, posOf(e), g.sheet + ': ' + g.code + ' ' + hs[0] + ' covered by @WALLTOP=handle:' + ww.wall + ',' + ww.z + ' (stated per wall)', { gap: g.code, z_top: ww.z }); return;
+      }
       if (g.code === 'GAP:no_elevation_height' && s && s.desc.view === 'PLAN' && g.layer !== undefined && (s.maps || []).some(function (m) { var r = B.matchRule(g.layer, m.rules); return r && (r.type === 'wall' || r.type === 'wallline'); })) {
         var cv = conventions.find(function (c) { return c.level === s.desc.level && c.rule === 'slab_above'; });
         if (cv) { item(advisory, 'QF:convention_applied', shape, g.sheet, hs, posOf(e), g.sheet + ': ' + g.code + ' ' + hs[0] + ' covered by @WALLTOP=' + cv.level + ',slab_above (convention: user-stated)', { gap: g.code, convention: 'user-stated', walltop: cv.level }); return; }

@@ -229,13 +229,21 @@
 
   // ---- §6 OP-1b door strip: the swing end point that lies on a wall strip's axis line through the hinge (closed leaf along the wall) ----
   function doorStrip(door, ws, tol) {
-    var q = door.params, Hh = q.hinge, hits = [];
-    [q.swing_start_deg, q.swing_end_deg].forEach(function (a) {
-      var E = [Hh[0] + q.width * Math.cos(a * Math.PI / 180), Hh[1] + q.width * Math.sin(a * Math.PI / 180)];
-      var ai = Math.abs(E[1] - Hh[1]) <= tol ? 0 : Math.abs(E[0] - Hh[0]) <= tol ? 1 : -1; if (ai < 0) return;
-      var ci = 1 - ai, strip = ws.filter(function (w) { var r = w.params.rect, hz = (r[2] - r[0]) > (r[3] - r[1]) + tol; return (ai === 0 ? hz : !hz && (r[3] - r[1]) > (r[2] - r[0]) + tol) && Math.abs((r[ci] + r[ci + 2]) / 2 - Hh[ci]) <= tol; });
-      if (strip.length) hits.push({ ai: ai, ci: ci, J: [r6(E[0]), r6(E[1])], cr: [strip[0].params.rect[ci], strip[0].params.rect[ci + 2]], strip: strip });
-    });
+    // lane spec L2.6 G: the hinge on the strip's centre line (old set); only when no direction finds one, the hinge on a face line of the strip (std set, L1.2 R9)
+    var q = door.params, Hh = q.hinge;
+    function centre(r, ci) { return Math.abs((r[ci] + r[ci + 2]) / 2 - Hh[ci]) <= tol; }
+    function face(r, ci) { return Math.abs(r[ci] - Hh[ci]) <= tol || Math.abs(r[ci + 2] - Hh[ci]) <= tol; }
+    function pass(onLine) {
+      var hits = [];
+      [q.swing_start_deg, q.swing_end_deg].forEach(function (a) {
+        var E = [Hh[0] + q.width * Math.cos(a * Math.PI / 180), Hh[1] + q.width * Math.sin(a * Math.PI / 180)];
+        var ai = Math.abs(E[1] - Hh[1]) <= tol ? 0 : Math.abs(E[0] - Hh[0]) <= tol ? 1 : -1; if (ai < 0) return;
+        var ci = 1 - ai, strip = ws.filter(function (w) { var r = w.params.rect, hz = (r[2] - r[0]) > (r[3] - r[1]) + tol; return (ai === 0 ? hz : !hz && (r[3] - r[1]) > (r[2] - r[0]) + tol) && onLine(r, ci); });
+        if (strip.length) hits.push({ ai: ai, ci: ci, J: [r6(E[0]), r6(E[1])], cr: [strip[0].params.rect[ci], strip[0].params.rect[ci + 2]], strip: strip });
+      });
+      return hits;
+    }
+    var hits = pass(centre); if (!hits.length) hits = pass(face);
     if (hits.length !== 1) return { gap: hits.length ? 'GAP:door_host_ambiguous' : 'GAP:door_no_strip' };
     return hits[0];
   }
