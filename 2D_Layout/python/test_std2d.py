@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# ⚠ DO NOT REMOVE: scope = lane spec §L1 / §L1.1 / §L1.2 (bim-ootb prompts/DXF2BIM_MODELLER_LANE.md), tests W1-W7
+# ⚠ DO NOT REMOVE: scope = lane spec §L1 / §L1.1 / §L1.2 / §L1.4 / §L1.5 (bim-ootb prompts/DXF2BIM_MODELLER_LANE.md), tests W1-W7
 # for the standard 2D set written by std2d.py. Read the log after every run (exit code is not evidence).
 # Expectations are recomputed here from the DB with their own queries (not std2d's functions).
 # The source IFC (when given) is the independent oracle for door swing/hinge (W5) and storey elevations (W6).
@@ -117,12 +117,28 @@ def exp_grid(db):
     return out, (ex0 * 1000, ex1 * 1000, ey0 * 1000, ey1 * 1000), interior_lb
 
 
+PLAN_CUT = 1.2   # m above the storey elevation (R7 / §5.1a), stated here, not imported from the writer
+
+
+def cut_z_of(db, storey):
+    lv, _, _, _ = exp_levels(db)
+    return lv[storey] + PLAN_CUT
+
+
+def walls_cut(db, cut_z):
+    """§L1.5 P1: walls whose DB z-range contains the plan cut height, any storey."""
+    return q(db, """SELECT m.guid, m.storey FROM elements_meta m JOIN elements_rtree r ON r.id=m.id
+                    WHERE m.ifc_class IN ('IfcWall','IfcWallStandardCase') AND r.minZ < ? AND r.maxZ > ? ORDER BY m.guid""",
+             (cut_z, cut_z))
+
+
 def wall_world_coords(db, storey):
-    """Raw mesh vertices (centre + local) of the storey's walls, mm: independent of section_cut."""
+    """Raw mesh vertices (centre + local) of the walls the storey's plan cut plane cuts (§L1.5), mm: independent of section_cut."""
+    cz = cut_z_of(db, storey)
     rows = q(db, """SELECT t.center_x, t.center_y, b.vertices FROM elements_meta m
                     JOIN element_transforms t ON t.guid=m.guid JOIN element_instances i ON i.guid=m.guid
-                    JOIN base_geometries b ON b.geometry_hash=i.geometry_hash
-                    WHERE m.ifc_class IN ('IfcWall','IfcWallStandardCase') AND m.storey=?""", (storey,))
+                    JOIN base_geometries b ON b.geometry_hash=i.geometry_hash JOIN elements_rtree r ON r.id=m.id
+                    WHERE m.ifc_class IN ('IfcWall','IfcWallStandardCase') AND r.minZ < ? AND r.maxZ > ?""", (cz, cz))
     xs, ys = set(), set()
     for cx, cy, vb in rows:
         v = np.frombuffer(vb, dtype=np.float32).reshape(-1, 3).astype(np.float64)
@@ -503,6 +519,19 @@ def w9(sect_dxf, db):
                  f'X={X:.2f} slabs cut={len(slabs)} drawn elements={len(seen)} {bad[:3]}')
 
 
+def w10(plan_dxf, db, storey, tag='W10'):
+    """§L1.5 P1: the plan's wall contours are exactly the walls its cut plane cuts (any storey)."""
+    cz = cut_z_of(db, storey)
+    exp = {g: st for g, st in walls_cut(db, cz)}
+    msp = ezdxf.readfile(plan_dxf).modelspace()
+    got = {e.get_xdata('BIMGUID')[0][1] for e in msp.query('LWPOLYLINE') if e.dxf.layer in ('A-WALL-FULL', 'A-WALL-PRTN') and e.has_xdata('BIMGUID')}
+    missing, extra = sorted(set(exp) - got), sorted(got - set(exp))
+    other = sorted(g + '@' + st for g, st in exp.items() if st != storey)
+    return check(tag, 'an element cut by the plan cut plane is missing (storey membership used), or one not cut is drawn',
+                 not missing and not extra, f'{os.path.basename(plan_dxf)} cut_z={cz:.3f} walls exp={len(exp)} drawn={len(got)} '
+                 f'other-storey cut walls={other} missing={missing[:4]} extra={extra[:4]}')
+
+
 def w6(elev_dxfs, db, ifc_path):
     lv, fnd, gs, roof = exp_levels(db)
     exp = sorted([v * 1000 for s, v in lv.items() if v >= lv[gs]] + [roof * 1000])
@@ -605,6 +634,24 @@ def main():
                 check(name + '-mutation', blind, c is False and len(FAILS) == n_before,
                       'control FAILED as required' if c is False else 'control PASSED: W5 is blind')
         w6(elevs, a.db, a.ifc)
+        for p in plans:   # §L1.5 W10 + control
+            w10(p, a.db, storey_of[p], tag=f'W10[{os.path.basename(p)}]')
+        ffp = P.get('FLOOR_FF')
+        if ffp:
+            ff_other = [g for g, st in walls_cut(a.db, cut_z_of(a.db, storey_of[ffp])) if st != storey_of[ffp]]
+            if ff_other:
+                doc = ezdxf.readfile(ffp)
+                gone = [e for e in doc.modelspace().query('LWPOLYLINE') if e.has_xdata('BIMGUID') and e.get_xdata('BIMGUID')[0][1] == ff_other[0]]
+                for e in gone:
+                    doc.modelspace().delete_entity(e)
+                cp = os.path.join(tmp, 'W10_ctl.dxf')
+                doc.saveas(cp)
+                say(f'-- W10-control: the {len(gone)} contour(s) of other-storey wall {ff_other[0]} deleted from the FF plan copy (must FAIL) --')
+                n0 = len(FAILS)
+                c = w10(cp, a.db, storey_of[ffp], tag='W10-control')
+                del FAILS[n0:]
+                check('W10-mutation', 'W10 cannot see a cut wall missing from the plan', c is False and len(gone) > 0,
+                      'control FAILED as required' if c is False else 'control PASSED: blind')
         w8(P.get('ROOF'), a.db, set(storey_of.values()))
         w9(P['SECTION'], a.db)
         # W8/W9 controls: the roof outline / the highest S-SLAB contour moved 50 mm in a copy must FAIL
