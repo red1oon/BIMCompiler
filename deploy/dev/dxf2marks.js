@@ -9,7 +9,7 @@
   'use strict';
   var LAYER = 'DXF2BIM-MARK';
   var K = { mm: 0.001, cm: 0.01, m: 1, 'in': 0.0254, ft: 0.3048 };
-  var SINGLE = ['SET', 'VIEW', 'NAME', 'UNITS', 'LEVEL', 'FACE', 'HAXIS', 'REGION'], MULTI = ['GRIDX', 'GRIDY', 'GRIDH', 'Z', 'EXCLUDE', 'OPENING', 'LABEL', 'SCHEDULE', 'TAG', 'ALLOWANCE'];
+  var SINGLE = ['SET', 'VIEW', 'NAME', 'UNITS', 'LEVEL', 'FACE', 'HAXIS', 'REGION', 'ROOF'], MULTI = ['GRIDX', 'GRIDY', 'GRIDH', 'Z', 'EXCLUDE', 'OPENING', 'LABEL', 'SCHEDULE', 'TAG', 'ALLOWANCE'];
   var NEED = { PLAN: ['SET', 'VIEW', 'LEVEL', 'UNITS'], ELEV: ['SET', 'VIEW', 'FACE', 'HAXIS', 'UNITS'] };
 
   function err(code, message, extra) { return Object.assign({ code: code, message: message }, extra || {}); }
@@ -37,7 +37,7 @@
       if (val === '') { errors.push(err('MARK:malformed', '@' + key + ' has no value', { handle: m.handle })); return; }
       if (SINGLE.indexOf(key) >= 0) {
         var name = key.toLowerCase();
-        if (key === 'LEVEL') { var n = Number(val); if (!isFinite(n)) { errors.push(err('MARK:malformed', '@LEVEL not a number: ' + val, { handle: m.handle })); return; } val = n; }
+        if (key === 'LEVEL' || key === 'ROOF') { var n = Number(val); if (!isFinite(n)) { errors.push(err('MARK:malformed', '@' + key + ' not a number: ' + val, { handle: m.handle })); return; } val = n; }   // ROOF: BASIC_SHAPES_SPEC §5.3
         if (key === 'REGION') {
           var rp = val.split(',').map(Number);
           if (rp.length !== 4 || rp.some(function (n) { return !isFinite(n); })) { errors.push(err('MARK:malformed', '@REGION needs x0,y0,x1,y1: ' + val, { handle: m.handle })); return; }

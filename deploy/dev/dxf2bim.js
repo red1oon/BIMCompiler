@@ -115,6 +115,32 @@
    * @param {Object} deps       { DxfParser, hashHex(string)->hex, library: [block names], sink?(opType, params, inputGuids, outputGuid) }
    * @returns {{run_id, ops:Array, report:Object}}
    */
+  // BASIC_SHAPES_SPEC §2.1 F9: cleaned simple polygon (collinear vertices removed, CCW) or null
+  function polyOutline(fv, tol) {
+    var p = fv.slice(), changed = true;
+    while (changed && p.length > 3) {
+      changed = false;
+      for (var i = 0; i < p.length; i++) {
+        var a = p[(i + p.length - 1) % p.length], b = p[i], c = p[(i + 1) % p.length];
+        var L = Math.hypot(c[0] - a[0], c[1] - a[1]); if (L === 0) { p.splice(i, 1); changed = true; break; }
+        var d = Math.abs((c[0] - a[0]) * (b[1] - a[1]) - (c[1] - a[1]) * (b[0] - a[0])) / L;
+        if (d <= tol + 1e-9) { p.splice(i, 1); changed = true; break; }
+      }
+    }
+    if (p.length < 3) return null;
+    function o(a, b, c) { return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]); }
+    var n = p.length;
+    for (var i = 0; i < n; i++) for (var j = i + 1; j < n; j++) {
+      if (j === i + 1 || (i === 0 && j === n - 1)) continue;
+      var p1 = p[i], p2 = p[(i + 1) % n], p3 = p[j], p4 = p[(j + 1) % n];
+      var d1 = o(p3, p4, p1), d2 = o(p3, p4, p2), d3 = o(p1, p2, p3), d4 = o(p1, p2, p4);
+      if (((d1 > 1e-12 && d2 < -1e-12) || (d1 < -1e-12 && d2 > 1e-12)) && ((d3 > 1e-12 && d4 < -1e-12) || (d3 < -1e-12 && d4 > 1e-12))) return null;
+    }
+    if (area(p) < 0) p.reverse();
+    if (Math.abs(area(p)) <= 1e-12) return null;
+    return p.map(function (q) { return [r6(q[0]), r6(q[1])]; });
+  }
+
   function run(dxfText, layerMap, config, deps) {
     validateMap(layerMap);
     var hashHex = deps.hashHex;
@@ -184,7 +210,7 @@
     var K = UNIT[units];
     function m(x) { return r6(x * K); }
 
-    var openingEnts = [], glazEnts = [], wlEnts = [], footSeen = null;
+    var openingEnts = [], glazEnts = [], wlEnts = [], footSeen = null, thinCands = [];
     var elems = [], gaps = [], ignored = [], counts = { entities: ents.length };
     function gap(code, e, extra) { gaps.push(Object.assign({ code: code, handle: e.handle, layer: e.layer, entity: e.type }, extra || {})); }
     function guid(e, part) { return hashHex(runId + '|' + e.handle + '|' + part).slice(0, 32); }       // N4
@@ -205,12 +231,27 @@
         if (fv.length > 1 && fv[0][0] === fv[fv.length - 1][0] && fv[0][1] === fv[fv.length - 1][1]) fv.pop();
         var ftol = has(config, ['snap_tol']) ? config.snap_tol : 0;
         var rects = rectsOf(fv, ftol);                                                                      // F1 rectangle, else F6 rectilinear split
+        var poly = null;
+        if (!rects && config.wall && config.wall.polygon_footprint === true) {                              // BASIC_SHAPES_SPEC §2.1 F9: exact polygon (mitres), never a bbox
+          poly = polyOutline(fv, ftol);
+          if (poly) rects = [[Math.min.apply(null, poly.map(function (q) { return q[0]; })), Math.min.apply(null, poly.map(function (q) { return q[1]; })),
+            Math.max.apply(null, poly.map(function (q) { return q[0]; })), Math.max.apply(null, poly.map(function (q) { return q[1]; }))]];
+        }
         if (!rects) { gap('GAP:wall_footprint_not_rect', e); return; }
         footSeen = footSeen || {};
         rects.forEach(function (rc, part) {
           var split = rects.length > 1;
           var fw = r6(rc[2] - rc[0]), fh = r6(rc[3] - rc[1]);
-          if (has(config, ['wall', 'min_thickness']) && Math.min(fw, fh) < config.wall.min_thickness) { gap('GAP:wall_below_min_thickness', e, { part: part, thickness: Math.min(fw, fh) }); return; }
+          if (has(config, ['wall', 'min_thickness']) && Math.min(fw, fh) < config.wall.min_thickness) {
+            var tg = { code: 'GAP:wall_below_min_thickness', handle: e.handle, layer: e.layer, entity: e.type, part: part, thickness: Math.min(fw, fh) };
+            gaps.push(tg);
+            if (!poly && has(config, ['opening', 'gap_max'])) {                                              // BASIC_SHAPES_SPEC §2.2 F5b: decided after stub orientation
+              var thz = r6(Math.min(fw, fh)), wdz = wallDims(config), hz = fw >= fh;
+              if (wdz.ok) thinCands.push({ gapRef: tg, el: { op: 'DXF_WALL', e: e, part: part, thin: true, params: { start: hz ? [r6(rc[0]), r6((rc[1] + rc[3]) / 2)] : [r6((rc[0] + rc[2]) / 2), r6(rc[1])], end: hz ? [r6(rc[2]), r6((rc[1] + rc[3]) / 2)] : [r6((rc[0] + rc[2]) / 2), r6(rc[3])],
+                length: hz ? fw : fh, thickness: thz, height: wdz.height, base: wdz.base, pending_elevation: wdz.pending, height_fallback: wdz.fallback, footprint: true, rect: [r6(rc[0]), r6(rc[1]), r6(rc[2]), r6(rc[3])], square: fw === fh, split_from: split } } });
+            }
+            return;
+          }
           var fkey = rc.map(function (v) { return Math.round(v / (ftol || 1e-6)); }).join(',');
           if (footSeen[fkey]) { gap('GAP:duplicate_footprint', e, { part: part, first: footSeen[fkey] }); return; }
           footSeen[fkey] = e.handle;
@@ -218,8 +259,10 @@
           if (!wd.ok) { gap('GAP:no_dimension', e, { part: part, need: 'wall.height,base' }); return; }
           var horiz = fw >= fh, fcx = r6((rc[0] + rc[2]) / 2), fcy = r6((rc[1] + rc[3]) / 2);
           var fa = horiz ? [r6(rc[0]), fcy] : [fcx, r6(rc[1])], fb = horiz ? [r6(rc[2]), fcy] : [fcx, r6(rc[3])];
-          elems.push({ op: 'DXF_WALL', e: e, part: part, params: { start: fa, end: fb, length: horiz ? fw : fh, thickness: horiz ? fh : fw,
-            height: wd.height, base: wd.base, pending_elevation: wd.pending, height_fallback: wd.fallback, footprint: true, rect: [r6(rc[0]), r6(rc[1]), r6(rc[2]), r6(rc[3])], square: fw === fh, split_from: split } });
+          var wp = { start: fa, end: fb, length: horiz ? fw : fh, thickness: horiz ? fh : fw,
+            height: wd.height, base: wd.base, pending_elevation: wd.pending, height_fallback: wd.fallback, footprint: true, rect: [r6(rc[0]), r6(rc[1]), r6(rc[2]), r6(rc[3])], square: fw === fh, split_from: split };
+          if (poly) { wp.polygon = true; wp.outline = poly; }
+          elems.push({ op: 'DXF_WALL', e: e, part: part, params: wp });
         });
         return;
       }
@@ -491,10 +534,11 @@
     (function () {
       if (!has(config, ['opening', 'gap_max'])) return;
       var gmax = config.opening.gap_max, st = has(config, ['snap_tol']) ? config.snap_tol : 0, eq = function (a, b) { return Math.abs(a - b) <= st + 1e-9; };
-      var W = elems.filter(function (w) { return w.op === 'DXF_WALL' && w.params.footprint && !w.params.pair && w.params.rect && !eq(w.params.rect[2] - w.params.rect[0], w.params.rect[3] - w.params.rect[1]); });
+      var W = elems.filter(function (w) { return w.op === 'DXF_WALL' && w.params.footprint && !w.params.pair && !w.params.polygon && w.params.rect && !eq(w.params.rect[2] - w.params.rect[0], w.params.rect[3] - w.params.rect[1]); });
+      var T = thinCands.map(function (c) { return c.el; }).filter(function (w) { return !eq(w.params.rect[2] - w.params.rect[0], w.params.rect[3] - w.params.rect[1]); });   // F5b: thin candidates are subjects, never voters
       var isH = function (w) { var r = w.params.rect || w.params.bbox; return (r[2] - r[0]) - (r[3] - r[1]) > st + 1e-9; };
       var V = W.concat(elems.filter(function (w) { return w.op === 'DXF_OPENING' && w.params.kind === 'window' && w.params.bbox && !eq(w.params.bbox[2] - w.params.bbox[0], w.params.bbox[3] - w.params.bbox[1]); }));   // W-S2b windows vote too
-      var dec = W.map(function (P) {
+      var dec = W.concat(T).map(function (P) {
         var r = P.params.rect, votes = { h: [], v: [] };
         V.forEach(function (N) {
           if (N === P) return; var n = N.params.rect || N.params.bbox;
@@ -505,7 +549,7 @@
       });
       dec.forEach(function (d) {
         var P = d.P, h = d.votes.h, v = d.votes.v, r = P.params.rect;
-        if (h.length && v.length) { gap('GAP:wall_orientation_ambiguous', P.e, { part: P.part, rect: r }); return; }
+        if (h.length && v.length) { if (!P.thin) gap('GAP:wall_orientation_ambiguous', P.e, { part: P.part, rect: r }); return; }
         if (!h.length && !v.length) return;
         var wantH = h.length > 0; if (wantH === isH(P)) return;
         var voters = (wantH ? h : v).slice().sort(function (a, b) { return hnum(a.e.handle) - hnum(b.e.handle); }), cx = r6((r[0] + r[2]) / 2), cy = r6((r[1] + r[3]) / 2), fw = r6(r[2] - r[0]), fh = r6(r[3] - r[1]);
@@ -514,10 +558,20 @@
       });
     })();
 
+    // BASIC_SHAPES_SPEC §2.2 F5b: a thin candidate whose oriented thickness reaches min_thickness is a wall (its gap removed); else the gap stays
+    thinCands.forEach(function (c) {
+      if (!(c.el.params.thickness >= config.wall.min_thickness)) return;
+      gaps.splice(gaps.indexOf(c.gapRef), 1);
+      c.el.params.min_thickness_after_orientation = true;
+      var hk = hnum(c.el.e.handle), at = elems.length;
+      for (var i = 0; i < elems.length; i++) { var x = elems[i]; if (x.op !== 'DXF_WALL' || hnum(x.e.handle) > hk || (hnum(x.e.handle) === hk && x.part > c.el.part)) { at = i; break; } }
+      elems.splice(at, 0, c.el);
+    });
+
     // extent (metres) of all emitted element geometry — logged so a wrong unit is visible (N11)
     var xs = [], ys = [];
     elems.forEach(function (x) {
-      var P = x.params; var pts = P.start ? [P.start, P.end] : P.outline ? P.outline : P.position ? [P.position] : [];
+      var P = x.params; var pts = P.rect ? [[P.rect[0], P.rect[1]], [P.rect[2], P.rect[3]]] : P.start ? [P.start, P.end] : P.outline ? P.outline : P.position ? [P.position] : [];   // footprint pieces: their drawn rectangle (BASIC_SHAPES_SPEC §2.2: a reoriented pier's axis is not its extent)
       pts.forEach(function (q) { xs.push(q[0]); ys.push(q[1]); });
     });
     var extent = xs.length ? { min: [Math.min.apply(null, xs), Math.min.apply(null, ys)], max: [Math.max.apply(null, xs), Math.max.apply(null, ys)] } : null;
