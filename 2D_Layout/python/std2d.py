@@ -170,6 +170,11 @@ def load_model(db_path, log, door_ops_db=None):
     hosts = dict(con.execute("SELECT filling_guid, host_guid FROM m_fills ORDER BY filling_guid"))
     opening_of = {f: o for f, o in con.execute("SELECT filling_guid, opening_guid FROM m_fills ORDER BY filling_guid") if o}
     psets = {(g, n): v for g, n, v in con.execute("SELECT guid, name, value FROM m_psets ORDER BY guid, pset, name")}
+    # §L1.7 V1: authored wall host with >=1 void row and no bbox/mesh row = the voids removed it entirely
+    voided_hosts = {h for (h,) in con.execute(
+        "SELECT DISTINCT o.host_guid FROM m_openings o WHERE o.host_guid IS NOT NULL "
+        "AND o.host_guid NOT IN (SELECT guid FROM m_bbox) AND o.host_guid IN "
+        "(SELECT guid FROM elements_meta WHERE ifc_class IN ('IfcWall','IfcWallStandardCase')) ORDER BY o.host_guid")}
     selev = {}
     if con.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='storey_elevation'").fetchone():
         for n, z in con.execute("SELECT name, placement_z_m FROM storey_elevation WHERE placement_z_m IS NOT NULL ORDER BY guid"):
@@ -229,7 +234,7 @@ def load_model(db_path, log, door_ops_db=None):
     door_ops = load_door_ops(db_path, door_ops_db, log)
     return dict(els=els, walls=walls, storeys=storeys, foundation=fnd,
                 grid_storey=grid_storey, roofs=roofs, roof_top=roof_top, hosts=hosts, opening_of=opening_of,
-                psets=psets, by_guid={e['guid']: e for e in els}, door_ops=door_ops)
+                psets=psets, voided_hosts=voided_hosts, by_guid={e['guid']: e for e in els}, door_ops=door_ops)
 
 
 def wall_axis(w):
@@ -671,6 +676,10 @@ def plan_openings(model, storey, cut_z, cut_walls, polys, log):
             res.append((e, pos))
             continue
         hw = model['by_guid'].get(h)
+        if hw is None and h in model['voided_hosts']:
+            log(f"§OPENING guid={g} cls={e['cls']} host={h} host_source={model['host_src'][g]} pos={pos} gap=host_voided (§L1.7 V1)")
+            res.append((e, pos))
+            continue
         if hw is None:
             log.gap('GAP:opening_host_no_geometry', g, f'host={h} has no mesh/bbox in the DB (not drawn on any plan)')
             res.append((e, pos))
