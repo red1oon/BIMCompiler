@@ -119,6 +119,57 @@ def _orthogonal(verts, faces):
     return bool(np.all((nx < 1e-3) | (ny < 1e-3)))
 
 
+# §L1.26: the wing-only rules promoted to every set. STD2D_NO_PROMOTE=<l117,l118,l119,l121> switches rules OFF (tests only: the falsifier).
+import os as _os_l126
+_OFF = set((_os_l126.environ.get('STD2D_NO_PROMOTE') or '').split(','))
+
+
+def promote(rule):
+    return rule not in _OFF
+
+
+ORTHO_LONG_SHARE = 0.9   # §L1.17
+COLLINEAR_TOL = 0.001    # §L1.19, mm
+
+
+def _orthogonal_long(verts, faces):
+    """§L1.17: the vertical faces on the wall's own axes carry >= ORTHO_LONG_SHARE of the vertical-face area (the rest are end faces); the contour is NOT changed."""
+    if faces is None or len(faces) == 0:
+        return False
+    a, b, c = verts[faces[:, 0]], verts[faces[:, 1]], verts[faces[:, 2]]
+    n = np.cross(b - a, c - a)
+    ln = np.linalg.norm(n, axis=1)
+    ok = ln > 1e-12
+    n = n[ok] / ln[ok, None]
+    ln = ln[ok]
+    vert = np.abs(n[:, 2]) < 0.01
+    nx, ny = np.abs(n[vert, 0]), np.abs(n[vert, 1])
+    allv = float(ln[vert].sum())
+    on = float(ln[vert][(nx < 1e-3) | (ny < 1e-3)].sum())
+    return allv > 0 and on / allv >= ORTHO_LONG_SHARE
+
+
+def _drop_collinear(pl):
+    """§L1.19: drop every vertex on the straight line through its two neighbours (<= COLLINEAR_TOL mm); same polygon, fewer vertices; never below 3."""
+    p = list(pl)
+    changed = True
+    while changed and len(p) > 3:
+        changed = False
+        i = 0
+        while i < len(p) and len(p) > 3:
+            a, b, c = p[(i - 1) % len(p)], p[i], p[(i + 1) % len(p)]
+            dx, dy = c[0] - a[0], c[1] - a[1]
+            L = math.hypot(dx, dy)
+            d = abs((b[0] - a[0]) * dy - (b[1] - a[1]) * dx) / L if L > 0 else math.hypot(b[0] - a[0], b[1] - a[1])
+            between = ((b[0] - a[0]) * dx + (b[1] - a[1]) * dy) / (L * L) if L > 0 else 0
+            if d <= COLLINEAR_TOL and 0 <= between <= 1:
+                p.pop(i)
+                changed = True
+                i -= 1
+            i += 1
+    return p
+
+
 def column_axis(v):
     """§L1.6 C2: the column axis = the mean of its distinct plan vertices (0.1 mm), accepted when the section is
     point-symmetric about it or all its vertices are equidistant from it, within 1 mm (rectangle, square, rotated
@@ -334,10 +385,13 @@ def derive_grid(model, log, gaps=True):
         k = wall_storeys.index(sname)
         adj = [w for w in model['walls'] if w['storey'] in wall_storeys[max(0, k - 1):k] + wall_storeys[k + 1:k + 2]]
         for w in sw:
-            if not _orthogonal(w['v'], w['f']):
+            strict = _orthogonal(w['v'], w['f'])
+            if not (strict or (promote('l117') and _orthogonal_long(w['v'], w['f']))):
                 if gaps:
                     log.gap('GAP:wall_not_orthogonal', w['guid'], 'not gridded (R3)')
                 continue
+            if not strict and gaps:   # §L1.17
+                log(f"§ENDFACE_R3 guid={w['guid']} axes from the long faces; end faces off-axis, contour unchanged")
             ax, pos, (a, b), L = wall_axis(w)
             bear = lb = False
             stack = None
@@ -929,6 +983,39 @@ def write_plan(model, grid, storey, view, db_path, out_path, log):
                 if L > 0 and a / L < PT_MERGE * 1000 and not rect:
                     polys[c.guid][i] = [(min(xs), min(ys)), (max(xs), min(ys)), (max(xs), max(ys)), (min(xs), max(ys))]
                     log(f"§SLIVER_RECT guid={c.guid} cls={c.ifc_class} area={a:.2f} mm2 mean_width={a / L:.3f} mm -> bounding rectangle (§L1.8 S1)")
+    if promote('l119'):   # §L1.19
+        for c in cut:
+            nl = []
+            for pl in polys.get(c.guid, []):
+                q = _drop_collinear(pl)
+                if len(q) != len(pl):
+                    log(f"§COLLINEAR_DROP guid={c.guid} cls={c.ifc_class} before={len(pl)} after={len(q)}")
+                nl.append(q)
+            polys[c.guid] = nl
+    if promote('l121'):   # §L1.21: a door whose swing cannot be drawn is ONE footprint rectangle (a door WITH an arc is not touched)
+        for c in cut:
+            if c.ifc_class != 'IfcDoor':
+                continue
+            parts = polys.get(c.guid, [])
+            if len(parts) < 2:
+                continue
+            dd = model['by_guid'].get(c.guid)
+            if dd is None:
+                continue
+            sw0 = door_swing(dd)
+            op0 = model['door_ops'].get(dd['guid'])
+            code0 = (door_hinge(dd, op0, sw0) if sw0 is not None else door_hinge_ifc(dd, op0))[0]
+            if code0 == 'ok':
+                continue
+            axis_rect = lambda P: len(P) == 4 and all(abs(P[i][0] - P[(i + 1) % 4][0]) <= 0.001 or abs(P[i][1] - P[(i + 1) % 4][1]) <= 0.001 for i in range(4))
+            if not all(axis_rect(P) for P in parts):
+                log(f"§DOOR_NOSWING_SKIP guid={c.guid} reason=part_not_axis_rect")
+                continue
+            xs = [q[0] for P in parts for q in P]
+            ys = [q[1] for P in parts for q in P]
+            x0, x1, y0, y1 = min(xs), max(xs), min(ys), max(ys)
+            polys[c.guid] = [[(x0, y0), (x1, y0), (x1, y1), (x0, y1)]]
+            log(f"§DOOR_NOSWING_BBOX guid={c.guid} parts={len(parts)} bbox={x1 - x0:.1f} x {y1 - y0:.1f} mm ({code0})")
     for g, c in curt.items():   # C1: the band as a one-polygon contour; its doors cut their gaps in it below (C2)
         r = c['rect']
         polys[g] = [[(r[0], r[1]), (r[2], r[1]), (r[2], r[3]), (r[0], r[3])]]
@@ -1109,7 +1196,15 @@ def write_elevation(model, grid, face, out_path, log):
         a, b = hp(e['x0'], e['y0']), hp(e['x1'], e['y1'])
         return (mm(min(a, b)), mm(max(a, b)))
 
-    fw = [w for w in model['walls'] if w['storey'] in vis and abs(w[side] - fv) <= EXT_FACE_TOL]
+    # §L1.18: a stepped building has a different outline per storey; the exterior walls of a storey are the walls on THAT storey's own envelope face
+    side_idx = {'x0': 0, 'x1': 1, 'y0': 2, 'y1': 3}[side]
+    storey_face = {}
+    if promote('l118'):
+        for s_ in model['storeys']:
+            sw_l = [w for w in model['walls'] if w['storey'] == s_['name']]
+            if sw_l:
+                storey_face[s_['name']] = envelope(sw_l)[side_idx]
+    fw = [w for w in model['walls'] if w['storey'] in vis and abs(w[side] - (storey_face[w['storey']] if w['storey'] in storey_face else fv)) <= EXT_FACE_TOL]
     for w in fw:
         h0, h1 = hr(w)
         pl = msp.add_lwpolyline([(h0, mm(w['z0'])), (h1, mm(w['z0'])), (h1, mm(w['z1'])), (h0, mm(w['z1']))],
