@@ -103,8 +103,11 @@ fi
 # ── (d) RED PILL — G8-GOVERNANCE round-trip (bim-ootb) ──────────────────────────
 section "(d) Red Pill — G8-GOVERNANCE round-trip (§REDPILL-RS)"
 RP="$BIMOOTB/viewer/tests/poc_redpill_rosetta.js"
+RP_FIX="$BIMOOTB/viewer/tests/fixtures/SampleCastle_extracted.db"   # the witness reads this fixture; it is not in a clean checkout (large DB, not in git)
 if [ ! -f "$RP" ]; then
   verdict "redpill" "SKIP" "bim-ootb Red Pill witness not found at $RP (set BIMOOTB=)"
+elif [ ! -f "$RP_FIX" ]; then
+  verdict "redpill" "SKIP" "fixture $RP_FIX absent (not in git): run the Red Pill witness locally or in bim-ootb"
 else
   ( cd "$BIMOOTB" && node viewer/tests/poc_redpill_rosetta.js ) >> "$LOG" 2>&1
   if [ $? -eq 0 ] && grep -q "§W-REDPILL-ROSETTA ALL PASS" "$LOG"; then
