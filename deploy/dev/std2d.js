@@ -214,7 +214,8 @@
       }
       Object.keys(curtainBands(model, st.elev + CUT_OFFSET, log)).sort().forEach(cwg => {   // C6: a curtain-wall facade is an exterior wall: its axis is grid evidence
         const [x0, x1, y0, y1] = curtainBands(model, st.elev + CUT_OFFSET, log)[cwg].env, cax = (x1 - x0) >= (y1 - y0) ? 'y' : 'x', cpos = cax === 'y' ? (y0 + y1) / 2 : (x0 + x1) / 2, cL = cax === 'y' ? x1 - x0 : y1 - y0;
-        const cext = cax === 'y' ? (Math.abs(y0 - env[2]) <= EXT_FACE_TOL || Math.abs(y1 - env[3]) <= EXT_FACE_TOL) : (Math.abs(x0 - env[0]) <= EXT_FACE_TOL || Math.abs(x1 - env[1]) <= EXT_FACE_TOL), ckeep = cext && cL >= GRID_MIN_WALL_LEN;
+        const bandsAll = Object.values(curtainBands(model, st.elev + CUT_OFFSET, log)), envC = [Math.min(...bandsAll.map(b => b.env[0])), Math.max(...bandsAll.map(b => b.env[1])), Math.min(...bandsAll.map(b => b.env[2])), Math.max(...bandsAll.map(b => b.env[3]))];
+        const ex = e => cax === 'y' ? (Math.abs(y0 - e[2]) <= EXT_FACE_TOL || Math.abs(y1 - e[3]) <= EXT_FACE_TOL) : (Math.abs(x0 - e[0]) <= EXT_FACE_TOL || Math.abs(x1 - e[1]) <= EXT_FACE_TOL), cext = ex(env) || ex(envC), ckeep = cext && cL >= GRID_MIN_WALL_LEN;   // exterior: on the storey envelope or on the envelope of the curtain bands (the facade)
         log.add(`§CURTAIN_GRID guid=${cwg} storey='${sname}' axis=${cax}=${fx(cpos, 4)} len=${fx(cL, 3)} ext=${cext ? 'True' : 'False'} gridded=${ckeep ? 'True' : 'False'}`);
         if (ckeep) { ent[cax].push([cpos, cwg]); gridded.add(cwg); extGuids.add(cwg); }
       });

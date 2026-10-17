@@ -360,11 +360,13 @@ def derive_grid(model, log, gaps=True):
                 if ext:
                     ext_guids.add(w['guid'])
         bands = curtain_bands(model, st['elev'] + CUT_OFFSET, log)   # §L1.14 C6: a curtain-wall facade is an exterior wall: its axis is grid evidence
+        env_curt = (min(b['env'][0] for b in bands.values()), max(b['env'][1] for b in bands.values()), min(b['env'][2] for b in bands.values()), max(b['env'][3] for b in bands.values())) if bands else None
         for cwg in sorted(bands):
             x0, x1, y0, y1 = bands[cwg]['env']
             cax = 'y' if (x1 - x0) >= (y1 - y0) else 'x'
             cpos, cL = ((y0 + y1) / 2, x1 - x0) if cax == 'y' else ((x0 + x1) / 2, y1 - y0)
-            cext = (abs(y0 - env_all[2]) <= EXT_FACE_TOL or abs(y1 - env_all[3]) <= EXT_FACE_TOL) if cax == 'y' else (abs(x0 - env_all[0]) <= EXT_FACE_TOL or abs(x1 - env_all[1]) <= EXT_FACE_TOL)
+            ex = lambda e: (abs(y0 - e[2]) <= EXT_FACE_TOL or abs(y1 - e[3]) <= EXT_FACE_TOL) if cax == 'y' else (abs(x0 - e[0]) <= EXT_FACE_TOL or abs(x1 - e[1]) <= EXT_FACE_TOL)
+            cext = ex(env_all) or ex(env_curt)   # exterior: on the storey envelope, or on the envelope of the curtain bands themselves (the facade)
             ckeep = cext and cL >= GRID_MIN_WALL_LEN
             log(f"§CURTAIN_GRID guid={cwg} storey={sname!r} axis={cax}={cpos:.4f} len={cL:.3f} ext={cext} gridded={ckeep}")
             if ckeep:
