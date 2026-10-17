@@ -323,6 +323,12 @@ public class Oracle implements Runnable {
 			try {
 				int client = DB.getSQLValue(null, "SELECT AD_Client_ID FROM " + table + " WHERE " + table + "_ID=?", id);
 				org.compiere.model.MAcctSchema[] ass = org.compiere.model.MAcctSchema.getClientAcctSchema(ctx, client);
+				if (req.has("costingMethod")) {   // §UDP-7 costing sweep: every schema of the client posts with this method, inside the rolled-back trx
+					DB.executeUpdateEx("UPDATE C_AcctSchema SET CostingMethod=? WHERE AD_Client_ID=? AND IsActive='Y'", new Object[] { req.getString("costingMethod"), client }, trxName);
+					org.compiere.model.MAcctSchema[] fresh = new org.compiere.model.MAcctSchema[ass.length];
+					for (int a = 0; a < ass.length; a++) fresh[a] = new org.compiere.model.MAcctSchema(ctx, ass[a].getC_AcctSchema_ID(), trxName);
+					ass = fresh;
+				}
 				long t0 = System.currentTimeMillis();
 				String err;
 				try { err = org.compiere.acct.DocManager.postDocument(ass, tid, id, true, req.optBoolean("repost", true), trxName); }
@@ -330,6 +336,14 @@ public class Oracle implements Runnable {
 				o.put("error", err == null ? JSONObject.NULL : err);
 				o.put("posted", String.valueOf(DB.getSQLValueString(trxName, "SELECT Posted FROM " + table + " WHERE " + table + "_ID=?", id)));
 				o.put("facts", DB.getSQLValue(trxName, "SELECT COUNT(*) FROM Fact_Acct WHERE AD_Table_ID=? AND Record_ID=?", tid, id));
+				if (req.optBoolean("facts", false)) {
+					JSONArray fa = new JSONArray();
+					try (PreparedStatement ps = DB.prepareStatement("SELECT C_AcctSchema_ID, Account_ID, AmtSourceDr, AmtSourceCr, AmtAcctDr, AmtAcctCr, Qty, M_Product_ID, Line_ID, C_Currency_ID FROM Fact_Acct WHERE AD_Table_ID=? AND Record_ID=? ORDER BY C_AcctSchema_ID, Fact_Acct_ID", trxName)) {
+						ps.setInt(1, tid); ps.setInt(2, id);
+						try (ResultSet rs = ps.executeQuery()) { while (rs.next()) fa.put(new JSONObject().put("s", rs.getInt(1)).put("a", rs.getInt(2)).put("sdr", rs.getBigDecimal(3).toPlainString()).put("scr", rs.getBigDecimal(4).toPlainString()).put("dr", rs.getBigDecimal(5).toPlainString()).put("cr", rs.getBigDecimal(6).toPlainString()).put("qty", rs.getBigDecimal(7) == null ? "0" : rs.getBigDecimal(7).toPlainString()).put("p", rs.getInt(8)).put("l", rs.getInt(9))); }
+					}
+					o.put("factRows", fa);
+				}
 				JSONArray notes = new JSONArray();
 				try (PreparedStatement ps = DB.prepareStatement("SELECT n.AD_Note_ID, m.Value, n.TextMsg, n.Reference, n.AD_User_ID, n.AD_Client_ID, n.AD_Org_ID, n.Processed FROM AD_Note n LEFT JOIN AD_Message m ON m.AD_Message_ID=n.AD_Message_ID WHERE n.AD_Table_ID=? AND n.Record_ID=? AND n.Created>=?", null)) {
 					ps.setInt(1, tid); ps.setInt(2, id); ps.setTimestamp(3, new Timestamp(t0 - 1000));
