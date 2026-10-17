@@ -106,6 +106,18 @@ if os.environ.get('FILM_SET') == 'highway3':
              'tech': ('NOVEL ART', 'A film derived from the road itself'),             # §ALTC_V2 route = A.civilDriveRoute
              'compliance': ('BIM KILLER', 'Compliance report in place of the MEP bill')}  # §MC_MOCKUP model_check_report.html
     CLIPS = {}
+# §DXF2BIM BricsCAD chapter (prompts/FILM_DXF2BIM_BRICSCAD.md, red1 2026-10-18: "use the Chapter cards which others been using"): FILM_SET=bricscad, FOUR chapters, no badges, no cutaways.
+if os.environ.get('FILM_SET') == 'bricscad':
+    CARDS = {
+        1: ('CHAPTER 1', 'OPEN', 'A COMMON DRAWING', 'Three BricsCAD sheets, no markings.'),
+        2: ('CHAPTER 2', 'MEANING', 'FROM THE DRAWING', 'Suggested, never silent. Yellow until it is yours.'),
+        3: ('CHAPTER 3', 'BODIES', 'AS DRAWN', 'Columns and footings. Nothing guessed.'),
+        4: ('CHAPTER 4', 'AN ORDER', 'FROM THE MODEL', 'IFC, database, cost and the ERP.'),
+    }
+    TAG = {1: 'OPEN', 2: 'MEANING', 3: 'BODIES', 4: 'AN ORDER'}
+    SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
 os.makedirs(out, exist_ok=True)
 txt = open(log).read()
 chap = {int(m.group(1)): float(m.group(2)) for m in re.finditer(r'§FILM_CHAPTER n=(\d+) key=\S+ t=([\d.]+)', txt)}
@@ -113,7 +125,7 @@ end = max(float(m.group(1)) for m in re.finditer(r'§FILM_BEAT id=\S+ t=([\d.]+)
 back = dict(l.split(' ', 1) for l in open(bfile).read().strip().split('\n'))
 back = {int(k[1:]): v.strip() for k, v in back.items()}
 print(f'§CARDS chapters={len(chap)} end={end:.2f} backdrops={len(back)}')
-if len(chap) != 6 or any(n not in back or not os.path.exists(back[n]) for n in chap): sys.exit('§CARDS FAIL missing chapter or backdrop')
+if len(chap) != len(CARDS) or any(n not in back or not os.path.exists(back[n]) for n in chap): sys.exit('§CARDS FAIL missing chapter or backdrop')   # N chapters (every set has len(CARDS) of them; was 6)
 
 # ── 1. video: dimmed still over the footage inside each card window ──
 inputs = ['-i', video]
