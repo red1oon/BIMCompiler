@@ -192,7 +192,9 @@
     const wallStoreys = model.storeys.filter(s => s.has_walls).map(s => s.name), ent = { x: [], y: [] }, gridded = new Set(), extGuids = new Set();
     log.add(`§GRID_EVIDENCE regime=${fnd ? 'footing (R4a on the grid storey)' : 'no footing (LB1 pset, LB2 continuity, LB3 exterior, LB4 columns)'}`);
     for (const st of planStoreys(model)) {
-      const sname = st.name, sw = model.walls.filter(w => w.storey === sname), env = envelope(sw), k = wallStoreys.indexOf(sname);
+      const sname = st.name, sw = model.walls.filter(w => w.storey === sname), k = wallStoreys.indexOf(sname);
+      let env = envelope(sw);
+      Object.values(curtainBands(model, st.elev + CUT_OFFSET, log)).forEach(cb => { const e = cb.env; env = [Math.min(env[0], e[0]), Math.max(env[1], e[1]), Math.min(env[2], e[2]), Math.max(env[3], e[3])]; });   // C3
       const adjN = wallStoreys.slice(Math.max(0, k - 1), k).concat(wallStoreys.slice(k + 1, k + 2));
       const adj = model.walls.filter(w => adjN.indexOf(w.storey) >= 0);
       for (const w of sw) {
@@ -210,6 +212,12 @@
         log.add(`§WALL guid=${w.guid} storey='${sname}' axis=${ax}=${fx(pos, 4)} len=${fx(L, 3)} bear=${B(bear)} ext=${B(ext)} pset_lb=${B(lb)} stacked=${stack === null ? 'None' : "'" + stack + "'"} gridded=${B(keep)}`);
         if (keep) { ent[ax].push([pos, w.guid]); gridded.add(w.guid); if (ext) extGuids.add(w.guid); }
       }
+      Object.keys(curtainBands(model, st.elev + CUT_OFFSET, log)).sort().forEach(cwg => {   // C6: a curtain-wall facade is an exterior wall: its axis is grid evidence
+        const [x0, x1, y0, y1] = curtainBands(model, st.elev + CUT_OFFSET, log)[cwg].env, cax = (x1 - x0) >= (y1 - y0) ? 'y' : 'x', cpos = cax === 'y' ? (y0 + y1) / 2 : (x0 + x1) / 2, cL = cax === 'y' ? x1 - x0 : y1 - y0;
+        const cext = cax === 'y' ? (Math.abs(y0 - env[2]) <= EXT_FACE_TOL || Math.abs(y1 - env[3]) <= EXT_FACE_TOL) : (Math.abs(x0 - env[0]) <= EXT_FACE_TOL || Math.abs(x1 - env[1]) <= EXT_FACE_TOL), ckeep = cext && cL >= GRID_MIN_WALL_LEN;
+        log.add(`§CURTAIN_GRID guid=${cwg} storey='${sname}' axis=${cax}=${fx(cpos, 4)} len=${fx(cL, 3)} ext=${cext ? 'True' : 'False'} gridded=${ckeep ? 'True' : 'False'}`);
+        if (ckeep) { ent[cax].push([cpos, cwg]); gridded.add(cwg); extGuids.add(cwg); }
+      });
       model.els.filter(e => e.cls === 'IfcColumn' && e.storey === sname).sort((p, q) => (p.guid < q.guid ? -1 : 1)).forEach(c => {
         const ca = columnAxis(c.v, c.c);
         if (!ca) { log.gap('GAP:column_not_symmetric', c.guid, 'plan section neither point-symmetric nor a ring about its vertex mean; not gridded (C2)'); return; }
@@ -346,7 +354,7 @@
       if (!hw && model.voided_hosts.has(h)) { log.add(`§OPENING guid=${g} cls=${e.cls} host=${h} host_source=${model.host_src[g]} pos=${pos} gap=host_voided (§L1.7 V1)`); res.push([e, pos]); continue; }
       if (!hw) { log.gap('GAP:opening_host_no_geometry', g, `host=${h} has no mesh/bbox in the DB (not drawn on any plan)`); res.push([e, pos]); continue; }
       if (hw.cls === 'IfcCurtainWall') {   // §L1.14 C2: the gap in the curtain band, from the door's own extent along the run
-        const band = (model._cb && model._cb[String(Number(cutZ.toFixed(6)))] || {})[h];
+        const band = ((model._cb && model._cb[String(Number(cutZ.toFixed(6)))] || {}).out || {})[h];
         if (!band) { log.gap('GAP:opening_host_not_cut', g, `host=${h} curtain wall not drawn at cut_z=${fx(cutZ, 3)}`); res.push([e, pos]); continue; }
         const r = band.rect, ax = (r[2] - r[0]) >= (r[3] - r[1]) ? 'y' : 'x', [a0, a1] = ax === 'y' ? [e.x0, e.x1] : [e.y0, e.y1];
         const rr = ax === 'y' ? [mm(a0), r[1] - GAP_ACROSS * 1000, mm(a1), r[3] + GAP_ACROSS * 1000] : [r[0] - GAP_ACROSS * 1000, mm(a0), r[2] + GAP_ACROSS * 1000, mm(a1)];
@@ -471,23 +479,27 @@
   // Cached per cut plane (the log is written once, by the first call).
   function curtainBands(model, cutZ, log) {
     const cache = model._cb = model._cb || {}, key = String(Number(cutZ.toFixed(6)));
-    if (cache[key]) return cache[key];
-    const out = {};
-    for (const cw of model.curtains) {
-      if (!(cw.z0 < cutZ && cutZ < cw.z1)) continue;
-      let xs0 = Infinity, xs1 = -Infinity, ys0 = Infinity, ys1 = -Infinity, n = 0, any = false;
-      for (const k of cw.parts) {
-        if (!(k.z0 < cutZ && cutZ < k.z1) || !k.v.length || !k.f.length) continue;
-        for (const ch of G.chainSegments(G.sliceMesh(worldVerts(k), k.f, cutZ))) if (ch.length >= 3) { n++; any = true; ch.forEach(q => { xs0 = Math.min(xs0, q[0]); xs1 = Math.max(xs1, q[0]); ys0 = Math.min(ys0, q[1]); ys1 = Math.max(ys1, q[1]); }); }
+    if (!cache[key]) {
+      const out = {}, lines = [], gaps = [];
+      for (const cw of model.curtains) {
+        if (!(cw.z0 < cutZ && cutZ < cw.z1)) continue;
+        let xs0 = Infinity, xs1 = -Infinity, ys0 = Infinity, ys1 = -Infinity, n = 0, any = false;
+        for (const k of cw.parts) {
+          if (!(k.z0 < cutZ && cutZ < k.z1) || !k.v.length || !k.f.length) continue;
+          for (const ch of G.chainSegments(G.sliceMesh(worldVerts(k), k.f, cutZ))) if (ch.length >= 3) { n++; any = true; ch.forEach(q => { xs0 = Math.min(xs0, q[0]); xs1 = Math.max(xs1, q[0]); ys0 = Math.min(ys0, q[1]); ys1 = Math.max(ys1, q[1]); }); }
+        }
+        if (!any) continue;
+        const thin = Math.min(xs1 - xs0, ys1 - ys0), length = Math.max(xs1 - xs0, ys1 - ys0);
+        if (thin <= CURTAIN_MAX_THICK && length >= 2 * thin) {
+          out[cw.guid] = { rect: [mm(xs0), mm(ys0), mm(xs1), mm(ys1)], env: [xs0, xs1, ys0, ys1], parts: cw.parts.length, cut: n };
+          lines.push(`§CURTAIN guid=${cw.guid} cut_z=${fx(cutZ, 3)} rect=(${fx(mm(xs0), 2)},${fx(mm(ys0), 2)})-(${fx(mm(xs1), 2)},${fx(mm(ys1), 2)}) parts=${cw.parts.length} cut=${n}`);
+        } else gaps.push(['GAP:curtainwall_not_a_run', cw.guid, `section at cut_z=${fx(cutZ, 3)} is ${fx(thin * 1000, 0)} x ${fx(length * 1000, 0)} mm (band needs thickness <= ${fx(CURTAIN_MAX_THICK * 1000, 0)} and length >= 2 x thickness); not drawn`]);
       }
-      if (!any) continue;
-      const thin = Math.min(xs1 - xs0, ys1 - ys0), length = Math.max(xs1 - xs0, ys1 - ys0);
-      if (thin <= CURTAIN_MAX_THICK && length >= 2 * thin) {
-        out[cw.guid] = { rect: [mm(xs0), mm(ys0), mm(xs1), mm(ys1)], env: [xs0, xs1, ys0, ys1], parts: cw.parts.length, cut: n };
-        if (log) log.add(`§CURTAIN guid=${cw.guid} cut_z=${fx(cutZ, 3)} rect=(${fx(mm(xs0), 2)},${fx(mm(ys0), 2)})-(${fx(mm(xs1), 2)},${fx(mm(ys1), 2)}) parts=${cw.parts.length} cut=${n}`);
-      } else if (log) log.gap('GAP:curtainwall_not_a_run', cw.guid, `section at cut_z=${fx(cutZ, 3)} is ${fx(thin * 1000, 0)} x ${fx(length * 1000, 0)} mm (band needs thickness <= ${fx(CURTAIN_MAX_THICK * 1000, 0)} and length >= 2 x thickness); not drawn`);
+      cache[key] = { out, lines, gaps, emitted: false };
     }
-    cache[key] = out; return out;
+    const c = cache[key];
+    if (log && !c.emitted) { c.emitted = true; c.lines.forEach(l => log.add(l)); c.gaps.forEach(g => log.gap(g[0], g[1], g[2])); }   // the first caller with a log writes them (deriveGrid runs before the plans)
+    return c.out;
   }
   function buildingEnv(model, gs, gEl, log) {   // walls of the grid storey + the curtain bands at its cut plane (C3)
     let env = envelope(model.walls.filter(w => w.storey === gs));

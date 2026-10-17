@@ -326,6 +326,11 @@ def derive_grid(model, log, gaps=True):
         sname = st['name']
         sw = [w for w in model['walls'] if w['storey'] == sname]
         env = envelope(sw)
+        env_all = env
+        for cb in curtain_bands(model, st['elev'] + CUT_OFFSET, log).values():   # §L1.14 C3: the curtain facade is part of the exterior envelope
+            e_ = cb['env']
+            env_all = (min(env_all[0], e_[0]), max(env_all[1], e_[1]), min(env_all[2], e_[2]), max(env_all[3], e_[3]))
+        env = env_all
         k = wall_storeys.index(sname)
         adj = [w for w in model['walls'] if w['storey'] in wall_storeys[max(0, k - 1):k] + wall_storeys[k + 1:k + 2]]
         for w in sw:
@@ -354,6 +359,18 @@ def derive_grid(model, log, gaps=True):
                 gridded.add(w['guid'])
                 if ext:
                     ext_guids.add(w['guid'])
+        bands = curtain_bands(model, st['elev'] + CUT_OFFSET, log)   # §L1.14 C6: a curtain-wall facade is an exterior wall: its axis is grid evidence
+        for cwg in sorted(bands):
+            x0, x1, y0, y1 = bands[cwg]['env']
+            cax = 'y' if (x1 - x0) >= (y1 - y0) else 'x'
+            cpos, cL = ((y0 + y1) / 2, x1 - x0) if cax == 'y' else ((x0 + x1) / 2, y1 - y0)
+            cext = (abs(y0 - env_all[2]) <= EXT_FACE_TOL or abs(y1 - env_all[3]) <= EXT_FACE_TOL) if cax == 'y' else (abs(x0 - env_all[0]) <= EXT_FACE_TOL or abs(x1 - env_all[1]) <= EXT_FACE_TOL)
+            ckeep = cext and cL >= GRID_MIN_WALL_LEN
+            log(f"§CURTAIN_GRID guid={cwg} storey={sname!r} axis={cax}={cpos:.4f} len={cL:.3f} ext={cext} gridded={ckeep}")
+            if ckeep:
+                ent[cax].append((cpos, cwg))
+                gridded.add(cwg)
+                ext_guids.add(cwg)
         for c in sorted((e for e in model['els'] if e['cls'] == 'IfcColumn' and e['storey'] == sname), key=lambda e: e['guid']):
             ca = column_axis(c['v'] + np.array(c['c']))
             if ca is None:
@@ -783,7 +800,7 @@ def plan_openings(model, storey, cut_z, cut_walls, polys, log):
             res.append((e, pos))
             continue
         if hw['cls'] == 'IfcCurtainWall':   # §L1.14 C2: the gap in the curtain band, from the door's own extent along the run
-            band = model.get('_cb', {}).get(round(cut_z, 6), {}).get(h)
+            band = model.get('_cb', {}).get(round(cut_z, 6), {}).get('out', {}).get(h)
             if band is None:
                 log.gap('GAP:opening_host_not_cut', g, f'host={h} curtain wall not drawn at cut_z={cut_z:.3f}')
                 res.append((e, pos))
@@ -829,33 +846,38 @@ def curtain_bands(model, cut_z, log=None):
     else GAP:curtainwall_not_a_run. Returns {guid: dict(rect=[x0,y0,x1,y1] mm, env=(x0,x1,y0,y1) m, parts=n, cut=n)}. Cached per cut plane; logs once."""
     cache = model.setdefault('_cb', {})
     key = round(cut_z, 6)
-    if key in cache:
-        return cache[key]
-    out = {}
-    for cw in model['curtains']:
-        if not (cw['z0'] < cut_z < cw['z1']):
-            continue
-        pts, n = [], 0
-        for k in cw['parts']:
-            if not (k['z0'] < cut_z < k['z1']) or len(k['v']) == 0 or len(k['f']) == 0:
+    if key not in cache:
+        out, lines, gaps = {}, [], []
+        for cw in model['curtains']:
+            if not (cw['z0'] < cut_z < cw['z1']):
                 continue
-            for ch in chain_segments(slice_mesh(k['v'] + np.array(k['c']), k['f'], cut_z)):
-                if len(ch) >= 3:
-                    pts.extend((float(q[0]), float(q[1])) for q in ch)
-                    n += 1
-        if not pts:
-            continue
-        x0, x1 = min(q[0] for q in pts), max(q[0] for q in pts)
-        y0, y1 = min(q[1] for q in pts), max(q[1] for q in pts)
-        thin, length = min(x1 - x0, y1 - y0), max(x1 - x0, y1 - y0)
-        if thin <= CURTAIN_MAX_THICK and length >= 2 * thin:
-            out[cw['guid']] = dict(rect=[mm(x0), mm(y0), mm(x1), mm(y1)], env=(x0, x1, y0, y1), parts=len(cw['parts']), cut=n)
-            if log:
-                log(f"§CURTAIN guid={cw['guid']} cut_z={cut_z:.3f} rect=({mm(x0):.2f},{mm(y0):.2f})-({mm(x1):.2f},{mm(y1):.2f}) parts={len(cw['parts'])} cut={n}")
-        elif log:
-            log.gap('GAP:curtainwall_not_a_run', cw['guid'], f'section at cut_z={cut_z:.3f} is {thin * 1000:.0f} x {length * 1000:.0f} mm (band needs thickness <= {CURTAIN_MAX_THICK * 1000:.0f} and length >= 2 x thickness); not drawn')
-    cache[key] = out
-    return out
+            pts, n = [], 0
+            for k in cw['parts']:
+                if not (k['z0'] < cut_z < k['z1']) or len(k['v']) == 0 or len(k['f']) == 0:
+                    continue
+                for ch in chain_segments(slice_mesh(k['v'] + np.array(k['c']), k['f'], cut_z)):
+                    if len(ch) >= 3:
+                        pts.extend((float(q[0]), float(q[1])) for q in ch)
+                        n += 1
+            if not pts:
+                continue
+            x0, x1 = min(q[0] for q in pts), max(q[0] for q in pts)
+            y0, y1 = min(q[1] for q in pts), max(q[1] for q in pts)
+            thin, length = min(x1 - x0, y1 - y0), max(x1 - x0, y1 - y0)
+            if thin <= CURTAIN_MAX_THICK and length >= 2 * thin:
+                out[cw['guid']] = dict(rect=[mm(x0), mm(y0), mm(x1), mm(y1)], env=(x0, x1, y0, y1), parts=len(cw['parts']), cut=n)
+                lines.append(f"§CURTAIN guid={cw['guid']} cut_z={cut_z:.3f} rect=({mm(x0):.2f},{mm(y0):.2f})-({mm(x1):.2f},{mm(y1):.2f}) parts={len(cw['parts'])} cut={n}")
+            else:
+                gaps.append(('GAP:curtainwall_not_a_run', cw['guid'], f'section at cut_z={cut_z:.3f} is {thin * 1000:.0f} x {length * 1000:.0f} mm (band needs thickness <= {CURTAIN_MAX_THICK * 1000:.0f} and length >= 2 x thickness); not drawn'))
+        cache[key] = dict(out=out, lines=lines, gaps=gaps, emitted=False)
+    c = cache[key]
+    if log and not c['emitted']:   # the first caller with a log writes the lines (derive_grid runs before the plans)
+        c['emitted'] = True
+        for ln in c['lines']:
+            log(ln)
+        for g in c['gaps']:
+            log.gap(*g)
+    return c['out']
 
 
 def building_env(model, gs, g_el, log=None):
