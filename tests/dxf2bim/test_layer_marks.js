@@ -35,6 +35,13 @@ const SET = { version: 1, rules: [{ match: 'exact', pattern: 'A-FURN', type: 'wa
 const wl = MK.withLayers(SET, r1.desc), wg = MK.withLayers(SET, r3c.desc);
 check('LM5', 'a stated layer rule does not override the set\'s rule, or touches another layer', B.matchRule('A-FURN', wl.rules).type === 'ignore' && B.matchRule('A-WALL', wl.rules).type === 'wall' && B.matchRule('X,WALLS', wl.rules).type === 'wall' &&
   MK.withLayers(SET, read(PLAN).desc) === SET && B.matchRule('X', wg.rules).type === 'ignore', J(wl.rules.slice(0, 3)));
+// LM8 (bim-ootb lane L7.10) BODY kinds: valid on ANY view, mapped to 'ignore' for the existing readers, an unknown kind still refused
+const ELEVM = ['@SET=T', '@VIEW=ELEV', '@FACE=minY', '@HAXIS=+X', '@UNITS=mm'].map(t => T(t)).concat([T('@GRIDH=A', 0, 0), T('@GRIDH=B', 8800, 0), T('@Z=0', 0, 0), T('@Z=3', 0, 3000)]);
+const r8a = read(PLAN.concat([T('@LAYER=Col,column'), T('@LAYER=Bm,beam')])), r8b = read(ELEVM.concat([T('@LAYER=Col,column')])), r8c = read(PLAN.concat([T('@LAYER=Col,flux')]));
+const w8 = MK.withLayers({ version: 1, rules: [{ match: 'exact', pattern: 'Col', type: 'wall' }] }, r8a.desc);
+check('LM8', 'a BODY kind is refused on a view, an unknown kind is accepted, or a typed body layer is still read as a wall by the existing readers',
+  !r8a.errors.length && J(r8a.desc.layers.map(q => q.type).sort()) === J(['beam', 'column']) && !r8b.errors.some(e => e.code === 'MARK:layer_type') && r8b.desc.layers.length === 1 && codes(r8c).includes('MARK:layer_type') && B.matchRule('Col', w8.rules).type === 'ignore' && MK.LAYER_TYPES.BODY.length === 6,
+  'PLAN ' + J(codes(r8a)) + ' ELEV ' + J(r8b.desc.layers.map(q => q.type)) + ' unknown kind ' + J(codes(r8c)) + ' Col overrides the set wall rule -> ' + B.matchRule('Col', w8.rules).type);
 // LM6 the PLAN list is exactly what the plan reader accepts: every listed type runs, a type outside it throws
 const IDN = { DxfParser, hashHex: s => crypto.createHash('sha256').update(s).digest('hex'), library: [] }, CFG = { version: 1, units: 'mm', snap_tol: 0.001, wall: { thickness: 0.2, height: 3, base: 0 } };
 const runs = MK.LAYER_TYPES.PLAN.map(t => { try { B.run(base, { version: 1, rules: [{ match: 'exact', pattern: 'X,WALLS', type: t }] }, CFG, IDN); return null; } catch (e) { return t + ': ' + e.message; } }).filter(Boolean);
