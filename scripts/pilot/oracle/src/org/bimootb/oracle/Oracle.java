@@ -528,6 +528,28 @@ public class Oracle implements Runnable {
 			else if (v != null) para.setP_String(v.toString());
 			para.saveEx();
 		}
+		// §CREATEFROM (ERP_FRIENDLY_OPS_LENS.md §43 P4): an Info Window process takes its rows from T_Selection / T_Selection_InfoWindow of this AD_PInstance_ID, exactly as the
+		//   info window writes them on OK (InfoWindow.saveSelectionDetail): req.infoWindow = AD_InfoWindow_ID, req.selection = [{ColumnName: value, ...}] one object per picked row
+		//   (ViewID = the row's AD_Table_ID column when given, else the info window's table; *_ID and Qty values go to Value_Number, others to Value_String).
+		int iwId = req.optInt("infoWindow", 0);
+		if (iwId > 0) {
+			pi.setAD_InfoWindow_ID(iwId);
+			JSONArray sel = req.optJSONArray("selection");
+			int tid = DB.getSQLValue(null, "SELECT AD_Table_ID FROM AD_InfoWindow WHERE AD_InfoWindow_ID=?", iwId);
+			for (int i = 0; sel != null && i < sel.length(); i++) {
+				JSONObject row = sel.getJSONObject(i);
+				int tsId = (i + 1);
+				DB.executeUpdateEx("INSERT INTO T_Selection (AD_PInstance_ID, T_Selection_ID, ViewID) VALUES (?,?,?)", new Object[] { inst.getAD_PInstance_ID(), tsId, String.valueOf(row.has("AD_Table_ID") ? row.getInt("AD_Table_ID") : tid) }, null);
+				java.util.Iterator<String> it = row.keys();
+				while (it.hasNext()) {
+					String col = it.next(); Object val = row.get(col);
+					if (val == JSONObject.NULL) continue;
+					boolean num = col.toUpperCase().endsWith("_ID") || col.equalsIgnoreCase("Qty") || val instanceof Number;
+					DB.executeUpdateEx("INSERT INTO T_Selection_InfoWindow (AD_PInstance_ID, T_Selection_ID, ColumnName, Value_String, Value_Number) VALUES (?,?,?,?,?)",
+						new Object[] { inst.getAD_PInstance_ID(), tsId, col, num ? null : val.toString(), num ? new BigDecimal(val.toString()) : null }, null);
+				}
+			}
+		}
 		pi.setParameter(list.toArray(new ProcessInfoParameter[0]));
 		Trx trx = Trx.get(Trx.createTrxName("oracle"), true);
 		boolean ok;

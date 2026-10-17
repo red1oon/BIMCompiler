@@ -1,0 +1,121 @@
+[
+ {
+  "name": "cp_createfrominout_po",
+  "process": 200141,
+  "recordId": 1005106,
+  "tableId": 319,
+  "params": [
+   {
+    "name": "M_InOut_ID",
+    "value": 1005106
+   }
+  ],
+  "infoWindow": 200022,
+  "selection": [
+   {
+    "C_OrderLine_ID": 1009503,
+    "C_Order_ID": 1009591,
+    "C_UOM_ID": 100,
+    "M_Product_ID": 136,
+    "Qty": 40,
+    "AD_Table_ID": 260
+   },
+   {
+    "C_OrderLine_ID": 1009504,
+    "C_Order_ID": 1009591,
+    "C_UOM_ID": 100,
+    "M_Product_ID": 125,
+    "Qty": 12,
+    "AD_Table_ID": 260
+   }
+  ],
+  "preSql": [
+   "UPDATE ad_sequence SET currentnext=1009900 WHERE name='AD_PInstance' AND currentnext<1009900",
+   "DELETE FROM m_inoutline WHERE m_inout_id=1005106",
+   "UPDATE m_inout SET c_order_id=NULL WHERE m_inout_id=1005106"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "c_order",
+    "where": "c_order_id=1009591"
+   },
+   {
+    "table": "c_orderline",
+    "where": "c_order_id=1009591"
+   },
+   {
+    "table": "m_inout",
+    "where": "m_inout_id=1005106"
+   },
+   {
+    "table": "m_inoutline",
+    "where": "m_inout_id=1005106"
+   }
+  ],
+  "ignoreTables": [
+   "ad_process",
+   "ad_pinstance",
+   "ad_pinstance_para",
+   "ad_pinstance_log",
+   "ad_changelog",
+   "ad_session",
+   "ad_user",
+   "ad_issue",
+   "t_selection",
+   "t_selection_infowindow",
+   "ad_sequence"
+  ],
+  "note": "W-CREATEFROM-INOUT (ERP_FRIENDLY_OPS_LENS.md \u00a743 P4): the real CreateFromInOut vs ours, 2 PO lines of CP-1009591 onto draft receipt 1005106. ad_sequence ignored: only ID counters move (no documentno is allocated by this process)."
+ },
+ {
+  "name": "cp_createfrominout_empty",
+  "process": 200141,
+  "recordId": 1005106,
+  "tableId": 319,
+  "params": [
+   {
+    "name": "M_InOut_ID",
+    "value": 1005106
+   }
+  ],
+  "infoWindow": 200022,
+  "selection": [],
+  "preSql": [
+   "UPDATE ad_sequence SET currentnext=1009900 WHERE name='AD_PInstance' AND currentnext<1009900",
+   "DELETE FROM m_inoutline WHERE m_inout_id=1005106",
+   "UPDATE m_inout SET c_order_id=NULL WHERE m_inout_id=1005106"
+  ],
+  "alignFromSeed": [
+   {
+    "table": "c_order",
+    "where": "c_order_id=1009591"
+   },
+   {
+    "table": "c_orderline",
+    "where": "c_order_id=1009591"
+   },
+   {
+    "table": "m_inout",
+    "where": "m_inout_id=1005106"
+   },
+   {
+    "table": "m_inoutline",
+    "where": "m_inout_id=1005106"
+   }
+  ],
+  "ignoreTables": [
+   "ad_process",
+   "ad_pinstance",
+   "ad_pinstance_para",
+   "ad_pinstance_log",
+   "ad_changelog",
+   "ad_session",
+   "ad_user",
+   "ad_issue",
+   "t_selection",
+   "t_selection_infowindow",
+   "ad_sequence"
+  ],
+  "note": "empty selection: legacy creates nothing and still runs updateFrom(null,null,null) -> Created = 0; judged against the real process"
+ }
+]
