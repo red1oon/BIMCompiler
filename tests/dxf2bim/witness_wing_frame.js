@@ -35,6 +35,13 @@ Object.keys(base.files).forEach(f => { const a = sig(base.files[f]), b = sig(F.f
   const keys = new Set(Object.keys(a.n).concat(Object.keys(b.n))), diffs = [...keys].filter(k => a.n[k] !== b.n[k]).map(k => `${k} base=${a.n[k] || 0} wing=${b.n[k] || 0}`);
   const tdiff = JSON.stringify(a.tx) !== JSON.stringify(b.tx);
   say(!diffs.length && !tdiff, `SET ${f.replace(/^D_|_std\.dxf$/g, '')}`, diffs.length ? diffs.slice(0, 5).join('; ') : tdiff ? 'texts differ' : `entities + texts equal (${Object.values(a.n).reduce((x, y) => x + y, 0)})`); });
+// W-L119-AREA / W-L119-CONTROL (§L1.19): dropCollinear removes vertices on a straight edge, keeps area + extent, and never straightens a real kink
+const area = P => { let a = 0; for (let i = 0; i < P.length; i++) { const q = P[(i + 1) % P.length]; a += P[i][0] * q[1] - q[0] * P[i][1]; } return Math.abs(a) / 2; };
+const rect = [[0, 0], [915, 0], [915, 51], [0, 51]], padded = [[0, 0], [300, 0], [915, 0], [915, 20.3], [915, 51], [400, 51], [0, 51], [0, 30]];
+const dc = S.dropCollinear(padded), ext = P => [Math.min(...P.map(p => p[0])), Math.max(...P.map(p => p[0])), Math.min(...P.map(p => p[1])), Math.max(...P.map(p => p[1]))].join();
+say(dc.length === 4 && Math.abs(area(dc) - area(padded)) < 1e-9 && ext(dc) === ext(padded) && Math.abs(area(dc) - area(rect)) < 1e-9, 'W-L119-AREA', `8 vertices -> ${dc.length}, area ${area(padded)} == ${area(dc)}, extent equal`);
+const kink = [[0, 0], [450, 4], [915, 0], [915, 51], [0, 51]];   // a 0.5 deg bend of 4 mm: real, kept
+say(S.dropCollinear(kink).length === 5, 'W-L119-CONTROL', `a real kink is kept (${S.dropCollinear(kink).length} of 5 vertices)`);
 const C = S.writeWingSet(q, 'D', { name: 'C', angle: 0, premodel: pre });
 say(!C.wing || C.wing.framed < W.wing.framed || C.gaps.length > W.gaps.length, 'control', `frame at 0 deg on the rotated model: framed ${C.wing ? C.wing.framed : 0} of ${W.wing.framed + (C.wing ? 0 : 0)} walls, gaps ${C.gaps.length} vs ${W.gaps.length}`);
 console.log(fail ? `FAIL (${fail})` : 'ALL PASS'); process.exit(fail ? 1 : 0);
