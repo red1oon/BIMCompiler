@@ -131,6 +131,20 @@
     return dx >= dy ? ['y', (w.y0 + w.y1) / 2, [w.x0, w.x1], dx] : ['x', (w.x0 + w.x1) / 2, [w.y0, w.y1], dy];
   }
   const envelope = ws => [Math.min(...ws.map(w => w.x0)), Math.max(...ws.map(w => w.x1)), Math.min(...ws.map(w => w.y0)), Math.max(...ws.map(w => w.y1))];
+  // §L1.17 (wing sets only, model.longFaceR3): a wall is orthogonal when the vertical faces parallel/perpendicular to its axes carry >= ORTHO_LONG_SHARE of the vertical-face area;
+  // the rest are end faces (mitred / angled junction ends). The contour is NOT changed: the plan still draws the true polygon.
+  const ORTHO_LONG_SHARE = 0.9;
+  function orthogonalLong(V, F) {
+    let on = 0, all = 0;
+    for (let t = 0; t + 2 < F.length; t += 3) {
+      const a = F[t] * 3, b = F[t + 1] * 3, c = F[t + 2] * 3;
+      const u = [V[b] - V[a], V[b + 1] - V[a + 1], V[b + 2] - V[a + 2]], w = [V[c] - V[a], V[c + 1] - V[a + 1], V[c + 2] - V[a + 2]];
+      const n = [u[1] * w[2] - u[2] * w[1], u[2] * w[0] - u[0] * w[2], u[0] * w[1] - u[1] * w[0]], ln = Math.hypot(n[0], n[1], n[2]);
+      if (!(ln > 1e-12) || Math.abs(n[2] / ln) >= 0.01) continue;
+      all += ln; if (Math.abs(n[0] / ln) < 1e-3 || Math.abs(n[1] / ln) < 1e-3) on += ln;
+    }
+    return all > 0 && on / all >= ORTHO_LONG_SHARE;
+  }
   function orthogonal(V, F) {   // R3
     for (let t = 0; t + 2 < F.length; t += 3) {
       const a = F[t] * 3, b = F[t + 1] * 3, c = F[t + 2] * 3;
@@ -166,6 +180,21 @@
     const L = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').filter(c => ROMAN_SKIP.indexOf(c) < 0);
     return i < L.length ? L[i] : L[Math.floor(i / L.length) - 1] + L[i % L.length];
   }
+  // §L1.19: drop every vertex on the straight line through its two neighbours (perpendicular distance <= COLLINEAR_TOL mm); same polygon, fewer vertices. Repeats until stable; never below 3.
+  const COLLINEAR_TOL = 0.001;
+  function dropCollinear(pl) {
+    let p = pl.slice(), changed = true;
+    while (changed && p.length > 3) {
+      changed = false;
+      for (let i = 0; i < p.length && p.length > 3; i++) {
+        const a = p[(i + p.length - 1) % p.length], b = p[i], c = p[(i + 1) % p.length], dx = c[0] - a[0], dy = c[1] - a[1], L = Math.hypot(dx, dy);
+        const d = L > 0 ? Math.abs((b[0] - a[0]) * dy - (b[1] - a[1]) * dx) / L : Math.hypot(b[0] - a[0], b[1] - a[1]);
+        const between = L > 0 ? ((b[0] - a[0]) * dx + (b[1] - a[1]) * dy) / (L * L) : 0;
+        if (d <= COLLINEAR_TOL && between >= 0 && between <= 1) { p.splice(i, 1); changed = true; i--; }
+      }
+    }
+    return p;
+  }
   function planStoreys(model) {
     const g = model.storeys.find(s => s.name === model.grid_storey).elev;
     return model.storeys.filter(s => s.elev >= g && model.walls.some(w => w.storey === s.name && w.z0 <= s.elev + CUT_OFFSET && s.elev + CUT_OFFSET < w.z1));
@@ -198,7 +227,9 @@
       const adjN = wallStoreys.slice(Math.max(0, k - 1), k).concat(wallStoreys.slice(k + 1, k + 2));
       const adj = model.walls.filter(w => adjN.indexOf(w.storey) >= 0);
       for (const w of sw) {
-        if (!orthogonal(w.v, w.f)) { log.gap('GAP:wall_not_orthogonal', w.guid, 'not gridded (R3)'); continue; }
+        const ortho = model.longFaceR3 ? (orthogonal(w.v, w.f) || orthogonalLong(w.v, w.f)) : orthogonal(w.v, w.f);
+        if (!ortho) { log.gap('GAP:wall_not_orthogonal', w.guid, 'not gridded (R3)'); continue; }
+        if (model.longFaceR3 && !orthogonal(w.v, w.f)) log.add(`§ENDFACE_R3 guid=${w.guid} axes from the long faces; end faces off-axis, contour unchanged`);
         const [ax, pos, [a, b], L] = wallAxis(w);
         let bear = false, lb = false, stack = null;
         if (fnd) bear = sname === gs && bearsOn(ax, pos, a, b, L, fw) !== null;
@@ -532,6 +563,18 @@
         return pl;
       });
     });
+    if (model.perStoreyEnv) cut.forEach(c => { polys[c.guid] = (polys[c.guid] || []).map(pl => { const q = dropCollinear(pl); if (q.length !== pl.length) log.add(`§COLLINEAR_DROP guid=${c.guid} cls=${c.cls} before=${pl.length} after=${q.length}`); return q; }); });   // §L1.19 (wing sets)
+    if (model.perStoreyEnv) cut.forEach(c => {   // §L1.21: a door whose swing cannot be drawn is ONE footprint rectangle (a door WITH an arc is not touched)
+      if (c.cls !== 'IfcDoor') return;
+      const parts = polys[c.guid] || []; if (parts.length < 2) return;
+      const sw_ = doorSwing(c), op = model.door_ops[c.guid], code = (sw_ ? doorHinge(c, op, sw_) : doorHingeIfc(c, op))[0];
+      if (code === 'ok') return;
+      const axisRect = P => P.length === 4 && P.every((q, i) => { const n = P[(i + 1) % 4]; return Math.abs(q[0] - n[0]) <= 0.001 || Math.abs(q[1] - n[1]) <= 0.001; });
+      if (!parts.every(axisRect)) { log.add(`§DOOR_NOSWING_SKIP guid=${c.guid} reason=part_not_axis_rect`); return; }
+      const xs = [].concat(...parts.map(P => P.map(q => q[0]))), ys = [].concat(...parts.map(P => P.map(q => q[1]))), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+      polys[c.guid] = [[[x0, y0], [x1, y0], [x1, y1], [x0, y1]]];
+      log.add(`§DOOR_NOSWING_BBOX guid=${c.guid} parts=${parts.length} bbox=${fx(x1 - x0, 1)} x ${fx(y1 - y0, 1)} mm (${code})`);
+    });
     Object.keys(curt).forEach(g => { const r = curt[g].rect; polys[g] = [[[r[0], r[1]], [r[2], r[1]], [r[2], r[3]], [r[0], r[3]]]]; });   // C1
     const ops = planOpenings(model, storey, cutZ, new Set(sw.map(w => w.guid).concat(Object.keys(curt))), polys, log);
     let nW = 0, nC = 0;
@@ -628,7 +671,10 @@
     const env = buildingEnv(model, model.grid_storey, gEl), fv = { x0: env[0], x1: env[1], y0: env[2], y1: env[3] }[side];   // C3
     const hr = e => { const a = hp(e.x0, e.y0), b = hp(e.x1, e.y1); return [mm(Math.min(a, b)), mm(Math.max(a, b))]; };
     const rect = (h0, h1, z0, z1) => [[h0, mm(z0)], [h1, mm(z0)], [h1, mm(z1)], [h0, mm(z1)]];
-    const fw = model.walls.filter(w => vis.has(w.storey) && Math.abs(w[side] - fv) <= EXT_FACE_TOL);
+    // §L1.18 (wing sets only, model.perStoreyEnv): a stepped building has a different outline per storey; the exterior walls of a storey are the walls on THAT storey's own envelope face
+    const sideIdx = { x0: 0, x1: 1, y0: 2, y1: 3 }[side], storeyFace = {};
+    if (model.perStoreyEnv) model.storeys.forEach(s => { const sw = model.walls.filter(w => w.storey === s.name); if (sw.length) storeyFace[s.name] = envelope(sw)[sideIdx]; });
+    const fw = model.walls.filter(w => vis.has(w.storey) && Math.abs(w[side] - (model.perStoreyEnv && w.storey in storeyFace ? storeyFace[w.storey] : fv)) <= EXT_FACE_TOL);
     fw.forEach(w => { const [h0, h1] = hr(w); doc.lwpoly('A-WALL', rect(h0, h1, w.z0, w.z1), true, tag(w.guid)); });
     const fcw = model.curtains.filter(c => Math.abs(c[side] - fv) <= EXT_FACE_TOL), pst = planStoreys(model);   // C4: an elevation rectangle PER STOREY with a band (importer pairing by storey level)
     fcw.forEach(w => { const [h0, h1] = hr(w); pst.forEach((ps, i) => {
@@ -763,6 +809,9 @@
     const log = new Log(), files = {}, whole = {}, scoped = {};
     log.add(`§ENTRY std2d db=model prefix=${prefix}`);
     const model = loadModel(q, log);
+    if (opts.premodel) opts.premodel(model);
+    let wing = null;
+    if (opts.wing) wing = frameWing(model, opts.wing, log);   // §L1.16: this set is ONE wing, drawn in its own frame
     resolveHosts(model, log);
     const grid = deriveGrid(model, log);
     let scopes = opts.scopes || null;
@@ -788,7 +837,133 @@
     const codes = {}; log.gaps.forEach(g => { codes[g[0]] = (codes[g[0]] || 0) + 1; });
     log.add(`§SUMMARY views=${Object.keys(files).length} grid_x=${pyList(grid.x.map(g => g[0]))} grid_y=${pyList(grid.y.map(g => g[0]))} gaps=${log.gaps.length}`);
     log.add('§GAP_SUMMARY {' + Object.keys(codes).map(k => `'${k}': ${codes[k]}`).join(', ') + '}');
-    return { files, whole, scoped, scopes, log: log.lines, gaps: log.gaps, grid, model, views: { plan: planStoreys(model).map(st => ({ view: planView(st.name), storey: st })), roof: rs } };
+    return { files, whole, scoped, scopes, wing, log: log.lines, gaps: log.gaps, grid, model, views: { plan: planStoreys(model).map(st => ({ view: planView(st.name), storey: st })), roof: rs } };
   }
-  return { primaryClusters, drawableReport, ELEV_FACES, ELEV_HP: ELEV_FACES, columnAxis, writeStdSet, loadModel, deriveGrid, resolveHosts, planStoreys, LAYERS, PLAN_CUT_CLASSES };
+
+  // ───────────────────────── §L1.16 per-wing frame ─────────────────────────
+  // The principal plan direction of an element, from its vertical faces: area-weighted circular mean of the face-normal angle folded mod 90 deg (4-theta trick).
+  // Returns {deg: [0,90), q: 0..1} (q = 1 when every vertical face is parallel/perpendicular to deg), or null when the element has no vertical face.
+  function elementAngle(e) {
+    const V = e.v, F = e.f; let sx = 0, sy = 0, w = 0;
+    for (let t = 0; t + 2 < F.length; t += 3) {
+      const a = F[t] * 3, b = F[t + 1] * 3, c = F[t + 2] * 3;
+      const u = [V[b] - V[a], V[b + 1] - V[a + 1], V[b + 2] - V[a + 2]], v = [V[c] - V[a], V[c + 1] - V[a + 1], V[c + 2] - V[a + 2]];
+      const n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]], ln = Math.hypot(n[0], n[1], n[2]);
+      if (!(ln > 1e-12) || Math.abs(n[2] / ln) > 0.01) continue;
+      const th = Math.atan2(n[1], n[0]), area = ln / 2; sx += area * Math.cos(4 * th); sy += area * Math.sin(4 * th); w += area;
+    }
+    if (!(w > 0)) return null;
+    let d = Math.atan2(sy, sx) / 4 * 180 / Math.PI; d = ((d % 90) + 90) % 90;
+    return { deg: d, q: Math.hypot(sx, sy) / w };
+  }
+  const angDiff90 = (a, b) => { const d = Math.abs(a - b) % 90; return Math.min(d, 90 - d); };
+  // Rotate the plan coordinates of every element about (ox, oy) by deg (CCW). World = v + c, so c moves with the rotation and v turns about the origin. Bboxes are recomputed
+  // from the mesh (an element without a mesh: from its rotated bbox corners). Door-operation axes turn with the model. Pure on the arrays; mutates the model.
+  function rotateModel(model, deg, ox, oy) {
+    const th = deg * Math.PI / 180, co = Math.cos(th), si = Math.sin(th), rot = (x, y) => [co * x - si * y, si * x + co * y];
+    const done = new Set();
+    const each = e => {
+      if (done.has(e)) return; done.add(e);
+      if (e.parts) { e.parts.forEach(each); const k = e.parts; e.x0 = Math.min(...k.map(p => p.x0)); e.x1 = Math.max(...k.map(p => p.x1)); e.y0 = Math.min(...k.map(p => p.y0)); e.y1 = Math.max(...k.map(p => p.y1)); return; }
+      const cs = [[e.x0, e.y0], [e.x1, e.y0], [e.x1, e.y1], [e.x0, e.y1]].map(p => { const r = rot(p[0] - ox, p[1] - oy); return [r[0] + ox, r[1] + oy]; });
+      const c = rot(e.c[0] - ox, e.c[1] - oy); e.c = [c[0] + ox, c[1] + oy, e.c[2]];
+      if (e.v.length) {
+        const V = e.v; let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+        for (let k = 0; k < V.length; k += 3) { const r = rot(V[k], V[k + 1]); V[k] = r[0]; V[k + 1] = r[1]; x0 = Math.min(x0, r[0] + e.c[0]); x1 = Math.max(x1, r[0] + e.c[0]); y0 = Math.min(y0, r[1] + e.c[1]); y1 = Math.max(y1, r[1] + e.c[1]); }
+        e.x0 = x0; e.x1 = x1; e.y0 = y0; e.y1 = y1;
+      } else { e.x0 = Math.min(...cs.map(p => p[0])); e.x1 = Math.max(...cs.map(p => p[0])); e.y0 = Math.min(...cs.map(p => p[1])); e.y1 = Math.max(...cs.map(p => p[1])); }
+    };
+    model.els.forEach(each); (model.curtains || []).forEach(each);
+    Object.values(model.door_ops || {}).forEach(d => ['x', 'y', 'z'].forEach(k => { if (d[k] && d[k].length >= 2) { const r = rot(d[k][0], d[k][1]); d[k] = [r[0], r[1]].concat(d[k].slice(2)); } }));
+    return model;
+  }
+  // Keep only the elements that sit in the wing's frame: walls (and columns/stairs) whose principal direction is within `tol` deg of `angle` (mod 90) and whose faces are
+  // consistent, plus the doors/windows hosted by a kept wall. Everything else is NOT framed: it is counted, never drawn in this wing, never snapped.
+  // Returns {kept, unframed:{cls:n}, total} and replaces the model's element lists.
+  const WING_Q_MIN = 0.5, WING_TOL = 1.0;
+  function frameModel(model, angle, tol) {
+    tol = tol === undefined ? WING_TOL : tol;
+    const keep = new Set(), FRAMED = WALLS.concat(['IfcColumn', 'IfcStair', 'IfcStairFlight', 'IfcSlab', 'IfcRoof', 'IfcFooting']);
+    model.els.forEach(e => { if (FRAMED.indexOf(e.cls) < 0) return; const a = elementAngle(e); if (a && a.q >= WING_Q_MIN && angDiff90(a.deg, angle) <= tol) keep.add(e.guid); });
+    // §L1.23: a curtain wall is framed like a wall: the most common consistent angle of its plate/member parts decides; kept ones keep their parts and (via the host) their door parts
+    const curtKept = [];
+    (model.curtains || []).forEach(cw => {
+      const h = {}; cw.parts.forEach(p => { const a = elementAngle(p); if (a && a.q >= WING_Q_MIN) { const b = Math.round(a.deg) % 90; h[b] = (h[b] || 0) + 1; } });
+      const ks = Object.keys(h).map(Number).sort((a, b) => h[b] - h[a] || a - b);
+      if (ks.length && angDiff90(ks[0], angle) <= tol) { keep.add(cw.guid); cw.parts.forEach(p => keep.add(p.guid)); curtKept.push(cw); }
+    });
+    frameModel.lastCurt = { kept: curtKept.length, unframed: (model.curtains || []).length - curtKept.length };
+    const unframed = {}; let total = 0;
+    model.els.forEach(e => { if (FRAMED.indexOf(e.cls) >= 0) { total++; if (!keep.has(e.guid)) unframed[e.cls] = (unframed[e.cls] || 0) + 1; } });
+    const hostEls = model.els.filter(e => keep.has(e.guid)), inBox = (e, h) => { const cx = (e.x0 + e.x1) / 2, cy = (e.y0 + e.y1) / 2; return cx >= h.x0 && cx <= h.x1 && cy >= h.y0 && cy <= h.y1; };
+    model.els.forEach(e => {   // an opening follows its host (wall, roof, slab); one with no IFC host follows the kept element whose bbox holds its centre (resolved later by the mesh void, as in the whole set)
+      if (OPENINGS.indexOf(e.cls) < 0) return;
+      if ((model.hosts[e.guid] !== undefined && model.by_guid[model.hosts[e.guid]]) ? keep.has(model.hosts[e.guid]) : hostEls.some(h => inBox(e, h))) keep.add(e.guid);
+    });
+    // §L1.22b: a rotationally symmetric column (round: no direction) belongs to the wing of its NEAREST wall (plan-bbox distance, ties to the smaller wall guid); one owner per column
+    {
+      const allWalls = model.els.filter(e => WALLS.indexOf(e.cls) >= 0).sort((p, q) => (p.guid < q.guid ? -1 : 1));
+      let symKept = 0, symOther = 0;
+      if (allWalls.length) model.els.forEach(e => {
+        if (e.cls !== 'IfcColumn' || keep.has(e.guid)) return;
+        const a = elementAngle(e); if (a && a.q >= WING_Q_MIN) return;   // has a direction: the angle rule already decided
+        if (columnAxis(e.v, e.c) === null) return;                       // not symmetric either: stays unframed
+        const cx = (e.x0 + e.x1) / 2, cy = (e.y0 + e.y1) / 2; let best = null, bd = Infinity;
+        allWalls.forEach(w => { const dx = Math.max(w.x0 - cx, 0, cx - w.x1), dy = Math.max(w.y0 - cy, 0, cy - w.y1), d = Math.hypot(dx, dy); if (d < bd) { bd = d; best = w; } });
+        if (best && keep.has(best.guid)) { keep.add(e.guid); symKept++; } else symOther++;
+      });
+      unframed.IfcColumn = model.els.filter(e => e.cls === 'IfcColumn' && !keep.has(e.guid)).length; if (!unframed.IfcColumn) delete unframed.IfcColumn;
+      frameModel.lastSym = { kept: symKept, outside: symOther };
+    }
+    model.els = model.els.filter(e => keep.has(e.guid)); model.walls = model.els.filter(e => WALLS.indexOf(e.cls) >= 0);
+    model.curtains = curtKept; model.roofs = model.roofs.filter(r => keep.has(r.guid)); model.by_guid = {}; model.els.forEach(e => { model.by_guid[e.guid] = e; }); curtKept.forEach(c => { model.by_guid[c.guid] = c; });
+    return { kept: keep.size, unframed, total };
+  }
+  function wingDominant(model) {   // the angle (deg, mod 90) carrying the most walls, 1-deg bins, ties to the smaller angle
+    const h = {}; model.walls.forEach(w => { const a = elementAngle(w); if (a && a.q >= WING_Q_MIN) { const b = Math.round(a.deg) % 90; h[b] = (h[b] || 0) + 1; } });
+    const ks = Object.keys(h).map(Number).sort((a, b) => h[b] - h[a] || a - b); return ks.length ? { deg: ks[0], n: h[ks[0]], hist: h } : null;
+  }
+  // the angle families of a model's walls (deg mod 90, 1-deg bins) that carry >= minShare of the walls with a consistent direction: [{deg, n}] largest first. The export panel offers these as wings.
+  function wingAngles(model, minShare) {
+    const d = wingDominant(model); if (!d) return [];
+    const tot = Object.values(d.hist).reduce((a, b) => a + b, 0), min = Math.max(1, (minShare === undefined ? 0.05 : minShare) * tot);
+    return Object.keys(d.hist).map(Number).filter(k => d.hist[k] >= min).sort((a, b) => d.hist[b] - d.hist[a] || a - b).map(k => ({ deg: k, n: d.hist[k] }));
+  }
+  // wingOpts: { name, angle (deg; default = dominant), tol }. Filters the model to the wing and rotates it by -angle about the centre of the kept walls. Logs §WING.
+  function frameWing(model, wo, log) {
+    const dom = wo.angle === undefined ? wingDominant(model) : { deg: wo.angle };
+    if (!dom) { log.gap('GAP:wing_no_walls', '-', 'no wall with a consistent plan direction'); return null; }
+    const angle = dom.deg, name = wo.name || 'WING' + angle, tol = wo.tol === undefined ? WING_TOL : wo.tol;
+    const fr = frameModel(model, angle, tol), wl = model.walls;
+    if (!wl.length) { log.gap('GAP:wing_no_walls', '-', `no wall within ${tol} deg of ${angle}`); return null; }
+    const env0 = envelope(wl), ox = (env0[0] + env0[1]) / 2, oy = (env0[2] + env0[3]) / 2;
+    rotateModel(model, -angle, ox, oy);
+    model.longFaceR3 = true; model.perStoreyEnv = true;   // §L1.17, §L1.18
+    if (frameModel.lastCurt) log.add(`§WING_CURTAINS kept=${frameModel.lastCurt.kept} unframed=${frameModel.lastCurt.unframed}`);
+    if (frameModel.lastSym) log.add(`§WING_COLUMNS_SYMMETRIC kept=${frameModel.lastSym.kept} owned_by_another_wing=${frameModel.lastSym.outside}`);
+    log.add(`§WING name=${name} angle=${angle} tol=${tol} centre=${fx(ox, 4)},${fx(oy, 4)} kept=${fr.kept} framed_walls=${wl.length} unframed=${JSON.stringify(fr.unframed)}`);
+    return { name, angle, ox, oy, framed: wl.length, unframed: fr.unframed, total: fr.total };
+  }
+  // opts: { name, angle (deg; default = dominant), tol, premodel(model) (test hook: applied right after loading) } -> plan sheets of ONE wing, in the wing's own frame
+  function writeWingSet(q, prefix, opts) {
+    opts = opts || {};
+    const log = new Log(), files = {};
+    log.add(`§ENTRY std2d wing db=model prefix=${prefix}`);
+    const model = loadModel(q, log);
+    if (opts.premodel) opts.premodel(model);
+    const dom = opts.angle === undefined ? wingDominant(model) : { deg: opts.angle };
+    if (!dom) { log.gap('GAP:wing_no_walls', '-', 'no wall with a consistent plan direction'); return { files, log: log.lines, gaps: log.gaps }; }
+    const angle = dom.deg, name = opts.name || 'WING' + angle;
+    const fr = frameModel(model, angle, opts.tol);
+    const wl = model.walls; if (!wl.length) { log.gap('GAP:wing_no_walls', '-', `no wall within ${opts.tol === undefined ? WING_TOL : opts.tol} deg of ${angle}`); return { files, log: log.lines, gaps: log.gaps }; }
+    const env0 = envelope(wl), ox = (env0[0] + env0[1]) / 2, oy = (env0[2] + env0[3]) / 2;
+    rotateModel(model, -angle, ox, oy);
+    log.add(`§WING name=${name} angle=${angle} tol=${opts.tol === undefined ? WING_TOL : opts.tol} centre=${fx(ox, 4)},${fx(oy, 4)} kept=${fr.kept} framed_walls=${wl.length} unframed=${JSON.stringify(fr.unframed)}`);
+    resolveHosts(model, log);
+    const grid = deriveGrid(model, log);
+    for (const s of planStoreys(model)) { const view = planView(s.name), doc = writePlan(model, grid, s, view, log); files[`${prefix}_${view}__${name}_std.dxf`] = doc.toString(); log.add(`§WRITE ${prefix}_${view}__${name}_std.dxf`); }
+    log.add(`§SUMMARY wing=${name} views=${Object.keys(files).length} grid_x=${pyList(grid.x.map(g => g[0]))} grid_y=${pyList(grid.y.map(g => g[0]))} gaps=${log.gaps.length}`);
+    return { files, log: log.lines, gaps: log.gaps, grid, model, wing: { name, angle, ox, oy, framed: wl.length, unframed: fr.unframed, total: fr.total } };
+  }
+  return { primaryClusters, drawableReport, ELEV_FACES, ELEV_HP: ELEV_FACES, columnAxis, writeStdSet, writeWingSet, wingAngles, dropCollinear, elementAngle, rotateModel, frameModel, wingDominant, loadModel, deriveGrid, resolveHosts, planStoreys, LAYERS, PLAN_CUT_CLASSES };
 });
