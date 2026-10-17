@@ -11,6 +11,7 @@ const http = require('http'), fs = require('fs'), path = require('path'), { exec
 
 const REPO = process.env.ERP_REPO || path.join(require('os').homedir(), 'bim-ootb');   // ERP_REPO = a worktree, to film a fix before it merges
 const OUT = path.resolve(process.argv[2] || '.'); const FR = path.join(OUT, 'frames'); fs.mkdirSync(FR, { recursive: true });
+const FL = process.env.FILM_LANG || 'en';   // FILM_LANG=zh: Chinese chapter/census cards (UI stays the dictionary's English; narration + subtitles carry the language)
 const ONLY = process.env.ONLY_LANG || '';   // ONLY_LANG=th_TH: Thai narration + Thai UI through login and the first panel; UI → English when the first panel (Sales Order window) is on screen
 let curLang = ONLY || 'en_US';
 const LOG = [], PAGELOG = [];
@@ -211,10 +212,10 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
       await page.evaluate(({ title, sub, heads, rows }) => {
         const old = document.getElementById('__ledger'); if (old) old.remove();
         const d = document.createElement('div'); d.id = '__ledger';
-        d.style.cssText = 'position:fixed;inset:0;z-index:2147483000;background:#10151c;color:#e8edf3;font-family:DejaVu Sans,Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;padding:0 90px';
+        d.style.cssText = 'position:fixed;inset:0;z-index:2147483000;background:#10151c;color:#e8edf3;font-family:Noto Sans CJK SC,DejaVu Sans,Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;padding:0 90px';
         const tone = { L: '#7fd1ff', B: '#ff9b8a', G: '#7ee0a0', A: '#ffd479', N: '#c9d4e0' };
         const cell = (c) => '<td style="padding:12px 20px;text-align:center;font-size:40px;font-weight:700;color:' + (tone[c.t] || tone.N) + '">' + c.v + (c.s ? '<div style="font-size:16px;font-weight:400;color:#8fa0b3;margin-top:4px">' + c.s + '</div>' : '') + '</td>';
-        d.innerHTML = '<div style="font-size:21px;letter-spacing:.14em;color:#8fa0b3;text-transform:uppercase">Why iDempiere, exactly</div><div style="font-size:48px;font-weight:700;margin:6px 0 4px">' + title + '</div><div style="font-size:22px;color:#b8c4d2;margin-bottom:26px">' + sub + '</div>' +
+        d.innerHTML = '<div style="font-size:21px;letter-spacing:.14em;color:#8fa0b3;text-transform:uppercase">'+(window.__K||'Why iDempiere, exactly')+'</div><div style="font-size:48px;font-weight:700;margin:6px 0 4px">' + title + '</div><div style="font-size:22px;color:#b8c4d2;margin-bottom:26px">' + sub + '</div>' +
           '<table style="border-collapse:collapse;width:100%"><tr style="font-size:20px;color:#8fa0b3"><td></td>' + heads.map(h => '<td style="text-align:center;padding:6px 20px">' + h + '</td>').join('') + '</tr>' +
           rows.map(r => '<tr style="border-top:1px solid #243040"><td style="padding:12px 20px;font-size:25px;color:#c9d4e0;width:32%">' + r[0] + '</td>' + r.slice(1).map(cell).join('') + '</tr>').join('') + '</table>';
         document.body.appendChild(d);
@@ -226,13 +227,19 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     const V = (v, t, s) => ({ v: String(v), t: t || 'N', s: s || null });
 
 
+
+    const ZHT = { kicker: '为什么完全照搬 iDempiere', c0: ['久经验证的数据模型', ['一个应用字典：每个窗口、栏位、流程和单据都是其中的一行', '久经验证，所以我们一行一行照着做，而不是另起炉灶']],
+      c1: ['一行一行对照', '在真正的 iDempiere 和浏览器孪生中，数出的有效字典行数', ['真正的 iDempiere', '浏览器孪生'], { ad_table: '表', ad_column: '列', ad_field: '栏位', ad_process: '流程', ad_menu: '菜单项', ad_window: '窗口', ad_tab: '标签页' }, '一致'],
+      c2: ['一样的外观和操作', ['菜单树、窗口、标签页、表格和表单', '工具栏：同样的图标、同样的顺序、同样的提示文字', '原样照搬，所以没有学习成本']],
+      c3: ['扩展功能放在旁边', ['扩展功能放在药丸托盘里', '较大的模块以插件形式加入', 'iDempiere 自己的界面从不被改动']], end: ['学一次就够', ['同一个字典。同一套界面。同样的习惯。', '扩展功能从不碍事']] };
+    const K = FL === 'zh' ? ZHT.kicker : 'Why iDempiere, exactly';
     // chapter card: kicker / title / bullet lines (dark house style); REPLACES any card in the same tick
     const chapter = async (kicker, title, lines) => {
       fact('chapter.' + title.replace(/\W+/g, '_').slice(0, 30), lines.join(' | '));
       await page.evaluate(({ kicker, title, lines }) => {
         const old = document.getElementById('__ledger'); if (old) old.remove();
         const d = document.createElement('div'); d.id = '__ledger';
-        d.style.cssText = 'position:fixed;inset:0;z-index:2147483000;background:#000;color:#ebeef2;font-family:Noto Sans,DejaVu Sans,Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;padding:0 140px';
+        d.style.cssText = 'position:fixed;inset:0;z-index:2147483000;background:#000;color:#ebeef2;font-family:Noto Sans CJK SC,Noto Sans,DejaVu Sans,Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;padding:0 140px';
         d.innerHTML = '<div style="font-size:30px;font-weight:700;letter-spacing:.12em;color:#ff8c1a;text-transform:uppercase">' + kicker + '</div><div style="font-size:92px;font-weight:700;margin:18px 0 34px;color:#4fc3f7">' + title + '</div>' +
           lines.map(l => '<div style="font-size:38px;color:#c9d4e0;margin:10px 0;padding-left:26px;border-left:6px solid #ff8c1a">' + l + '</div>').join('');
         document.body.appendChild(d);
@@ -248,15 +255,16 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     // ===== GardenAdmin =====
     await login('GardenWorld', 'GardenAdmin'); await castOn(page); await page.mouse.move(720, 400); await hold(600);
     await beat('c0', 'en', 'chapter 1');
-    await chapter('Why iDempiere, exactly', 'A proven data model', ['One application dictionary: every window, field, process and document is a row', 'Proven in production - so we follow it row for row, we do not invent another']);
+    const Z = FL === 'zh'; await page.evaluate(k => { window.__K = k; }, K);
+    await chapter(K, Z ? ZHT.c0[0] : 'A proven data model', Z ? ZHT.c0[1] : ['One application dictionary: every window, field, process and document is a row', 'Proven in production - so we follow it row for row, we do not invent another']);
     await cardFor();
     await beat('c1', 'en', 'dictionary census');
     const twinN = {}; for (const [t] of TBL) twinN[t] = Number(await dbq("SELECT count(*) FROM " + t + " WHERE isactive='Y'")); fact('twin.dictionary', JSON.stringify(twinN));
-    await card('Row for row', 'Active dictionary rows, counted in real iDempiere and in the twin', ['Real iDempiere', 'Browser twin'],
-      TBL.map(([t, lab]) => [lab, V(legacyN[t], 'L'), V(twinN[t], legacyN[t] === twinN[t] ? 'G' : 'A', legacyN[t] === twinN[t] ? 'identical' : (twinN[t] - legacyN[t] > 0 ? '+' : '') + (twinN[t] - legacyN[t]))]));
+    await card(Z ? ZHT.c1[0] : 'Row for row', Z ? ZHT.c1[1] : 'Active dictionary rows, counted in real iDempiere and in the twin', Z ? ZHT.c1[2] : ['Real iDempiere', 'Browser twin'],
+      TBL.map(([t, lab]) => [Z ? ZHT.c1[3][t] : lab, V(legacyN[t], 'L'), V(twinN[t], legacyN[t] === twinN[t] ? 'G' : 'A', legacyN[t] === twinN[t] ? (Z ? ZHT.c1[4] : 'identical') : (twinN[t] - legacyN[t] > 0 ? '+' : '') + (twinN[t] - legacyN[t]))]));
     await cardFor();
     await beat('c2', 'en', 'chapter 2');
-    await chapter('Why iDempiere, exactly', 'Same look and feel', ['The menu tree, the windows, the tabs, the grid and the form', 'The toolbar: its icons, its order, its tooltips', 'Verbatim - so there is no learning curve']);
+    await chapter(K, Z ? ZHT.c2[0] : 'Same look and feel', Z ? ZHT.c2[1] : ['The menu tree, the windows, the tabs, the grid and the form', 'The toolbar: its icons, its order, its tooltips', 'Verbatim - so there is no learning curve']);
     await cardFor();
     await uncard(); await beat('c2b', 'en', 'live: Sales Order, icon toolbar');
     await page.mouse.move(300, 300); await hold(900);
@@ -272,7 +280,7 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     fact('moreMenu', await page.$$eval('#idmp-tb-more .more-row', r => r.map(x => x.textContent).join(', ')));
     await page.mouse.click(1100, 18); await hold(500);
     await beat('c3', 'en', 'chapter 3');
-    await chapter('Why iDempiere, exactly', 'The extras stay beside it', ['Extras live in the pill tray', 'Bigger modules arrive as plugins', 'iDempiere\'s own screens are never touched']);
+    await chapter(K, Z ? ZHT.c3[0] : 'The extras stay beside it', Z ? ZHT.c3[1] : ['Extras live in the pill tray', 'Bigger modules arrive as plugins', 'iDempiere\'s own screens are never touched']);
     await cardFor();
     await uncard(); await beat('c3b', 'en', 'live: pill tray, plugin engine');
     await hclick('#idmp-pill-trigger'); await hold(1200);
@@ -282,7 +290,7 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     fact('pluginEngine', last(n3, /§PLUGIN-PILL/) + ' | ' + last(n3, /§PLUGIN-OFFER/));
     await hold(2500);
     await beat('end', 'en', 'closing');
-    await chapter('Why iDempiere, exactly', 'Learn it once', ['Same dictionary. Same screens. Same habits.', 'The extras never get in the way']); await hold(6500); await beat('fin', 'en', '');
+    await chapter(K, Z ? ZHT.end[0] : 'Learn it once', Z ? ZHT.end[1] : ['Same dictionary. Same screens. Same habits.', 'The extras never get in the way']); await hold(6500); await beat('fin', 'en', '');
 
     say('§ERP_FILM_CURSOR clicks=' + clicks + ' cursorOnTarget=' + cursorOk + (clicks === cursorOk ? ' OK' : ' WRONG'));
   } catch (e) { say('§ERP_FILM_ERROR ' + e.message.split('\n').slice(0, 4).join(' | ')); try { say('§ERP_FILM_DEBUG ' + JSON.stringify(await page.evaluate(() => ({ win: (document.querySelector('.idmp-wintab.active .lbl') || {}).textContent, status: (document.getElementById('idmp-status') || {}).innerText, tb: [...document.querySelectorAll('#idmp-toolbar [data-tb]')].map(b => b.getAttribute('data-tb') + (b.disabled ? '(dis)' : '')), tabs: [...document.querySelectorAll('#idmp-tabstrip .idmp-adtab')].map(t => t.title), ov: !!document.getElementById('__ledger'), form: !!document.getElementById('idmp-form'), inline: !!document.getElementById('idmp-inline-mount') })))); } catch (e2) {} }
