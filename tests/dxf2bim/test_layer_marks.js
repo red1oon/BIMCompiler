@@ -42,6 +42,11 @@ const w8 = MK.withLayers({ version: 1, rules: [{ match: 'exact', pattern: 'Col',
 check('LM8', 'a BODY kind is refused on a view, an unknown kind is accepted, or a typed body layer is still read as a wall by the existing readers',
   !r8a.errors.length && J(r8a.desc.layers.map(q => q.type).sort()) === J(['beam', 'column']) && !r8b.errors.some(e => e.code === 'MARK:layer_type') && r8b.desc.layers.length === 1 && codes(r8c).includes('MARK:layer_type') && B.matchRule('Col', w8.rules).type === 'ignore' && MK.LAYER_TYPES.BODY.length === 6,
   'PLAN ' + J(codes(r8a)) + ' ELEV ' + J(r8b.desc.layers.map(q => q.type)) + ' unknown kind ' + J(codes(r8c)) + ' Col overrides the set wall rule -> ' + B.matchRule('Col', w8.rules).type);
+// LM9 (bim-ootb lane L7.14) @BODYZ=<kind>,<z0>,<z1>: the z range the user states for a body kind no elevation shows
+const r9a = read(PLAN.concat([T('@BODYZ=footing,-1.4478,-1.143'), T('@BODYZ=gradebeam,-0.3,0')])), r9b = read(PLAN.concat([T('@BODYZ=flux,0,1')])), r9c = read(PLAN.concat([T('@BODYZ=footing,1,0')])), r9d = read(PLAN.concat([T('@BODYZ=footing,0,1'), T('@BODYZ=footing,0,2')]));
+check('LM9', '@BODYZ is accepted for a non-body kind or an inverted range, a conflicting restatement is not a conflict, or a sheet without it gains a field wrongly',
+  !r9a.errors.length && J(r9a.desc.bodyz.map(q => [q.kind, q.z0, q.z1])) === J([['footing', -1.4478, -1.143], ['gradebeam', -0.3, 0]]) && codes(r9b).includes('MARK:malformed') && codes(r9c).includes('MARK:malformed') && codes(r9d).includes('MARK:conflict') && J(read(PLAN).desc.bodyz) === '[]',
+  J(r9a.desc.bodyz) + ' flux ' + J(codes(r9b)) + ' inverted ' + J(codes(r9c)) + ' two ranges ' + J(codes(r9d)));
 // LM6 the PLAN list is exactly what the plan reader accepts: every listed type runs, a type outside it throws
 const IDN = { DxfParser, hashHex: s => crypto.createHash('sha256').update(s).digest('hex'), library: [] }, CFG = { version: 1, units: 'mm', snap_tol: 0.001, wall: { thickness: 0.2, height: 3, base: 0 } };
 const runs = MK.LAYER_TYPES.PLAN.map(t => { try { B.run(base, { version: 1, rules: [{ match: 'exact', pattern: 'X,WALLS', type: t }] }, CFG, IDN); return null; } catch (e) { return t + ': ' + e.message; } }).filter(Boolean);
