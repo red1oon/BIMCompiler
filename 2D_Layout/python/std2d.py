@@ -39,6 +39,8 @@ import model_db  # noqa: E402
 
 # ── R4/R5 grid rule constants (stated in §L1.1) ──
 GRID_MERGE_TOL = 0.010      # m, R5
+GRID_READABLE_MAX = 40      # lines per axis a 1:100 sheet side holds (§L1.11)
+GRID_SUPPORT_MIN = 3        # §L1.11 starting support (distinct elements on a line) when the grid is too dense
 GRID_MIN_WALL_LEN = 1.0     # m, R4
 EXT_FACE_TOL = 0.010        # m, R4(b) outer face on envelope
 BEAR_OVERLAP = 0.50         # R4(a) share of wall length over the foundation wall
@@ -274,6 +276,7 @@ def derive_grid(model, log, gaps=True):
     wall_storeys = [s['name'] for s in model['storeys'] if s['has_walls']]
     ent = {'x': [], 'y': []}
     gridded = set()
+    ext_guids = set()
     log(f"§GRID_EVIDENCE regime={'footing (R4a on the grid storey)' if fnd else 'no footing (LB1 pset, LB2 continuity, LB3 exterior, LB4 columns)'}")
     for st in plan_storeys(model):
         sname = st['name']
@@ -305,6 +308,8 @@ def derive_grid(model, log, gaps=True):
             if keep:
                 ent[ax].append((pos, w['guid']))
                 gridded.add(w['guid'])
+                if ext:
+                    ext_guids.add(w['guid'])
         for c in sorted((e for e in model['els'] if e['cls'] == 'IfcColumn' and e['storey'] == sname), key=lambda e: e['guid']):
             ca = column_axis(c['v'] + np.array(c['c']))
             if ca is None:
@@ -317,6 +322,7 @@ def derive_grid(model, log, gaps=True):
             gridded.add(c['guid'])
             log(f"§COLUMN_GRID guid={c['guid']} storey={sname!r} centre=({cx:.4f},{cy:.4f}) (C2)")
     out = {}
+    primary = False
     for ax in ('x', 'y'):
         clusters = []
         for pos, g in sorted(ent[ax]):
@@ -324,6 +330,17 @@ def derive_grid(model, log, gaps=True):
                 clusters[-1].append((pos, g))
             else:
                 clusters.append([(pos, g)])
+        if len(clusters) > GRID_READABLE_MAX:   # §L1.11: primary lines only
+            n0, k = len(clusters), GRID_SUPPORT_MIN
+            top = max(len({c[1] for c in cl}) for cl in clusters)
+            while True:
+                keep = [cl for cl in clusters if len({c[1] for c in cl}) >= k or any(c[1] in ext_guids for c in cl)]
+                if len(keep) <= GRID_READABLE_MAX or k > top:
+                    break
+                k += 1
+            primary = True
+            log(f"§GRID_PRIMARY axis={ax} lines={n0} -> {len(keep)} support>={k} dropped={n0 - len(keep)}" + ('' if len(keep) <= GRID_READABLE_MAX else f' (only exterior lines remain, above the cap {GRID_READABLE_MAX})'))
+            clusters = keep
         lines = []
         for i, cl in enumerate(clusters):
             p = round(sum(c[0] for c in cl) / len(cl), 4)
@@ -331,6 +348,9 @@ def derive_grid(model, log, gaps=True):
         out[ax] = lines
         for lab, p, gs_ in lines:
             log(f'§GRID {lab} axis={ax} pos={p:.4f} m walls={len(gs_)}')
+    if primary:   # §L1.11: a wall/column is gridded only when it lies on a kept line of some axis
+        on_line = {g for ax in ('x', 'y') for L in out[ax] for g in L[2]}
+        gridded = {g for g in gridded if g in on_line}
     out['gridded'] = gridded
     out['env'] = envelope([w for w in model['walls'] if w['storey'] == gs])
     return out
