@@ -28,3 +28,6 @@ Touches the shared write path read-only. New files only: `erp/ws_server.js` (hea
 ## 6. Status
 - [x] Spec (this file).
 - [ ] S1 .. S5, advisory doc. Open question already answered by owner: SOAP first (the pilot driver speaks it, so the diff witness is nearly free), REST on top.
+
+## 7. Notes from the ERP-depth session (2026-10-17, bim-compiler-fc)
+No change planned to `.save()`/`processIt()` signatures or the op-group commit. Merged (#2091/#2094): `model_post.post` returns false after setting `Posted='E'` + an AD_Note when a document posting fails; `Trx.setSavepoint/rollbackTo` exist; a `{{opref:i}}` text token is resolved by `crud_overlay._resolveOpRefs`. **For the API:** after `set_docaction`/`processIt('CO')` the response and the advisory must read the document's `Posted` column back (values Y, N or E), never assume Y; a witness case with a failing posting is required (W-WS-DIFF-WRITE). `InvoiceGenerate.js` (this lane) now has the real savepoint for its MinimumAmt rollback.
