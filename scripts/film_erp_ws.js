@@ -261,7 +261,7 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
         document.body.appendChild(d);
       }, { kicker, title, blocks });
     };
-    const KICK = 'ERP web services'; await page.evaluate(k => { window.__K = k; }, KICK);
+    const Z = FL === 'zh', T = (en, zh) => (Z ? zh : en); const KICK = T('ERP web services', 'ERP 网络服务'); await page.evaluate(k => { window.__K = k; }, KICK);
     // ── everything below is REAL: it runs the advisory's own commands and requests against a real host before the camera rolls, and the cards show what came back ──
     const fs2 = require('fs'), os2 = require('os'), pth = path;
     const ERPDIR = path.join(REPO, 'erp'), Agent = require(path.join(ERPDIR, 'ws_agent.js')), WSS = require(path.join(ERPDIR, 'ws_server.js')), WK = require(path.join(ERPDIR, 'ws_kernel.js'));
@@ -297,8 +297,8 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     // ===== GardenAdmin =====
     await login('GardenWorld', 'GardenAdmin'); await castOn(page); await page.mouse.move(720, 400); await hold(600);
     await beat('c0', 'en', 'chapter: same web service as iDempiere');
-    await card('Same requests, same answers', 'The same requests sent to real iDempiere and to the twin; the answers compared field by field', ['Identical'], [
-      ['Read records', [V(diffs.read, 'G')]], ['Create / update / delete', [V(diffs.write, 'G')]], ['Document actions (Complete, Void)', [V(diffs.docaction, 'G')]], ['Run a process', [V(diffs.process, 'G')]], ['The JSON door', [V(diffs.json, 'G')]]].map(r => [r[0]].concat(r[1])));
+    await card(T('Same requests, same answers', '同样的请求，同样的回答'), T('The same requests sent to real iDempiere and to the twin; the answers compared field by field', '同一批请求，分别发给真正的 iDempiere 和孪生系统，逐个栏位比较回答'), [T('Identical', '完全一致')], [
+      [T('Read records', '读取记录'), [V(diffs.read, 'G')]], [T('Create / update / delete', '新建 / 修改 / 删除'), [V(diffs.write, 'G')]], [T('Document actions (Complete, Void)', '单据动作（完成、作废）'), [V(diffs.docaction, 'G')]], [T('Run a process', '运行流程'), [V(diffs.process, 'G')]], [T('The JSON door', 'JSON 接口'), [V(diffs.json, 'G')]]].map(r => [r[0]].concat(r[1])));
     await cardFor();
     await beat('c1', 'en', 'live: Plugin Engine, Web Services installed but stopped'); await uncard();
     await hold(600); await pill('plugin'); await hold(1500);
@@ -312,24 +312,24 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     fact('panel', await page.$eval('#idmp-ws-panel', e => e.innerText.replace(/\s+/g, ' ').slice(0, 330)));
     await hold(2200); await hclick('#idmp-ws-panel [data-ws="export"]'); await hold(1800);
     await beat('c2', 'en', 'chapter: six rules'); await page.evaluate(() => { const p = document.getElementById('idmp-ws-panel'); if (p) p.remove(); });
-    await chapter(KICK, 'Six rules for an AI', ['Off until you switch it on', 'Its own identity, one organisation', 'Only the service types you name', 'Drafts, never finishing', 'Everything recorded under its name', 'One switch stops it']);
+    await chapter(KICK, T('Six rules for an AI', '给 AI 的六条规则'), Z ? ['你不打开，它就是关着的', '它有自己的身份，只限一个组织', '只开放你点名的服务类型', '只做草稿，从不完成单据', '一切都以它的名字记录', '一个开关就能让它停下'] : ['Off until you switch it on', 'Its own identity, one organisation', 'Only the service types you name', 'Drafts, never finishing', 'Everything recorded under its name', 'One switch stops it']);
     await cardFor();
     await beat('c3', 'en', 'terminal: identity');
-    await term(KICK, 'Step 2: the AI gets its own identity', [
+    await term(KICK, T('Step 2: the AI gets its own identity', '第二步：给 AI 它自己的身份'), [
       { cmd: 'node erp/ws_agent.js create --dir agents --name sales-assistant --write --read C_BPartner:... --read C_Order:... --create C_Order:... --create C_OrderLine:... --docaction C_Order:PR', out: ['§WS-AGENT created agents/agent-000-sales-assistant.sql', 'user: ' + CR.user + '   password: ' + '•'.repeat(12) + '   role ' + CR.roleId + '   org ' + CR.orgId, 'service types: ' + CR.serviceTypes.join(', ')] },
       { cmd: 'node erp/ws_agent.js create ... --docaction C_Order:CO', out: [refusedFinal] }]);
     await cardFor();
     await beat('c4', 'en', 'terminal: host and first read');
-    await term(KICK, 'Step 3 and 4: start the host, first read', [
+    await term(KICK, T('Step 3 and 4: start the host, first read', '第三、四步：启动主机，第一次读取'), [
       { cmd: 'node erp/ws_server.js 8089 --config ws_host.json --agents agents --journal ws_journal.jsonl', out: ['§WS listening port=8089 plugin=ACTIVE'] },
       { cmd: 'POST .../model_adservice/query_data   (AI_Query_C_BPartner, value=\'C&W\')', out: [oneLine(calls['read-partner'].answer, 330)] },
       { cmd: 'the same, asking for a column the type does not allow', out: [oneLine(calls['read-not-allowed'].answer, 200)] }]);
     await cardFor();
     await beat('c5', 'en', 'chapter: the sample prompt');
-    await chapter(KICK, 'The sample prompt', pr.slice(0, 7).map(s => s.length > 118 ? s.slice(0, 115) + '...' : s));
+    await chapter(KICK, T('The sample prompt', '示范提示词（英文原文）'), pr.slice(0, 7).map(s => s.length > 118 ? s.slice(0, 115) + '...' : s));
     await cardFor();
     await beat('c6', 'en', 'terminal: the draft order');
-    await term(KICK, 'Draft an order, never complete it', [
+    await term(KICK, T('Draft an order, never complete it', '起草订单，绝不完成'), [
       { cmd: 'create_data   AI_Create_C_Order', out: [oneLine(calls['create-order'].answer, 140)] },
       { cmd: 'create_data   AI_Create_C_OrderLine', out: [oneLine(calls['create-line'].answer, 140)] },
       { cmd: 'set_docaction AI_DocAction_C_Order_PR   docAction=PR', out: [oneLine(calls['prepare-order'].answer, 140)] },
@@ -337,12 +337,12 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
       { cmd: 'create_data   CreateBPartner   (a type nobody granted)', out: [(/<_0:Error>([^<]*)/.exec(calls['not-granted'].answer) || [])[1]] }]);
     await cardFor();
     await beat('c7', 'en', 'terminal: audit');
-    await term(KICK, 'Everything under its name', [
+    await term(KICK, T('Everything under its name', '一切都以它的名字记录'), [
       { cmd: 'node erp/ws_agent.js audit --journal ws_journal.jsonl', out: ['§WS-AUDIT ' + JSON.stringify({ ok: ver.ok, entries: ver.entries, actors: ver.actors })] },
       { cmd: '(one journal line edited by hand)', out: ['§WS-AUDIT ' + JSON.stringify({ ok: ver2.ok, brokenAt: ver2.brokenAt, why: ver2.why }) + '   chain broken at line ' + ver2.brokenAt] }]);
     await cardFor();
     await beat('c8', 'en', 'terminal: stop it');
-    await term(KICK, 'One switch stops it', [
+    await term(KICK, T('One switch stops it', '一个开关就能让它停下'), [
       { cmd: 'node erp/ws_agent.js revoke --dir agents --name sales-assistant', out: ['the next call: ' + afterErr] },
       { cmd: 'Stop the Web Services plugin (ws_host.json state = STOPPED)', out: ['the host answers HTTP ' + darkS + ' to every request'] }]);
     await cardFor();
@@ -352,7 +352,7 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     fact('plugin.stopped', await page.$eval(rowSel + ' .pe-chip', e => e.textContent).catch(() => '?')); await hold(1800);
     await page.evaluate(() => { const c = document.querySelector('.pe-x'); if (c) c.click(); }); await hold(600);
     fact('pill.afterStop', await page.locator('#pill-webservices').count());
-    await beat('end', 'en', 'closing'); await chapter(KICK, 'Off by default. Safe by design.', ['Its own identity. Only what you grant.', 'Drafts, not finishing. A person completes.', 'Everything recorded. One switch stops it.']); await hold(6500); await beat('fin', 'en', '');
+    await beat('end', 'en', 'closing'); await chapter(KICK, T('Off by default. Safe by design.', '默认关闭，设计上就安全'), Z ? ['它有自己的身份，只能做你授权的事', '只做草稿，由人来完成', '一切有记录，一个开关就能停'] : ['Its own identity. Only what you grant.', 'Drafts, not finishing. A person completes.', 'Everything recorded. One switch stops it.']); await hold(6500); await beat('fin', 'en', '');
     srv.close();
 
     say('§ERP_FILM_CURSOR clicks=' + clicks + ' cursorOnTarget=' + cursorOk + (clicks === cursorOk ? ' OK' : ' WRONG'));
