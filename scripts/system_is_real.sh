@@ -79,8 +79,11 @@ else verdict "audit" "WARN" "audit_specs has violations — pre-existing debt, s
 
 # ── (c) ERP — one headless witness ──────────────────────────────────────────────
 section "(c) ERP — $ERP_WITNESS"
+ERP_DATA="${ERP_DATA:-build/erp/glassbowl_data.db}"   # oracle-captured (scripts/extract_fact_acct.sh needs the live iDempiere Postgres): never in git
 if [ ! -f "$ERP_WITNESS" ]; then
   verdict "erp" "SKIP" "$ERP_WITNESS not found"
+elif [ -n "${CI:-}" ] && [ ! -f "$ERP_DATA" ]; then
+  verdict "erp" "SKIP" "$ERP_DATA absent (oracle-captured, not in git): the ERP regime is covered in CI by the no-oracle bundle step (run_bundle.sh --no-oracle); run this witness locally"
 else
   ( bash build/erp/run_witness.sh "$ERP_WITNESS" ) >> "$LOG" 2>&1
   E1=$?
