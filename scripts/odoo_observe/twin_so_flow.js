@@ -88,15 +88,17 @@ const ok = (id, name, cond, detail) => { console.log((cond ? '  ✅ ' : '  ❌ '
     console.log('§TWIN_ORDER_ROW ' + JSON.stringify(await tip('SELECT issotrx AS so, docstatus AS s, c_doctype_id AS dt, c_doctypetarget_id AS dtt, deliveryrule AS dr, invoicerule AS ir, m_warehouse_id AS wh FROM c_order WHERE c_order_id < 0')));
     if (process.env.CHAIN) {   // legacy chain after Complete: Generate Shipments -> Generate Invoices (record-scoped order pickers), counted
       const G1 = { ...GT };
-      for (const [mn, selAttr, tag] of [[193, 'data-genship-order', 'ship'], [192, 'data-geninv-order', 'inv']]) {
-        const m0 = GT.click; await openMenu(mn); await pg.waitForSelector('select[' + selAttr + ']', { timeout: 15000 }); await pg.waitForTimeout(800);
-        const o = (await pg.$$eval('select[' + selAttr + '] option', x => x.map(y => ({ v: y.value, t: y.text })))).filter(x => x.v && Number(x.v) < 0).pop();
-        if (!o) { console.log('§TWIN_CHAIN ' + tag + ' NO-ORDER-OPTION'); break; }
-        GT.select++; await pg.selectOption('select[' + selAttr + ']', o.v); await pg.waitForTimeout(400);
-        const nn = logs.length; await hc('[data-proc-run]'); await pg.waitForTimeout(2500); await hc('[data-genprocess-confirm]'); await pg.waitForTimeout(4000);
-        console.log('§TWIN_CHAIN ' + tag + ' order=' + o.t + ' menuClicks=' + (GT.click - m0 - 1) + ' ' + (logs.slice(nn).filter(l => /§GEN(SHIP|INV)-LIVE|§PROC/.test(l)).pop() || '').slice(0, 160));
+      for (const [mn, tag, procId] of [[193, 'ship', 118], [192, 'inv', 119]]) {   // both through the GENERIC parameter form (verbatim ports)
+        const m0 = GT.click; await openMenu(mn); await pg.waitForSelector('[data-proc-param]', { timeout: 15000 }); await pg.waitForTimeout(800);
+        const oo = (await tip('SELECT c_order_id AS i, m_warehouse_id AS w, c_bpartner_id AS b FROM c_order WHERE c_order_id < 0 ORDER BY c_order_id DESC LIMIT 1'))[0];
+        const setP = async (name, v) => { const t2 = await pg.$eval('[data-proc-param="' + name + '"]', e => e.tagName).catch(() => null); if (!t2) return;
+          if (t2 === 'SELECT') await pg.evaluate(([n, val]) => { const e = document.querySelector('[data-proc-param="' + n + '"]'); if (!Array.from(e.options).some(o => o.value === String(val))) { const o = document.createElement('option'); o.value = String(val); o.text = String(val); e.appendChild(o); } e.value = String(val); }, [name, v]);
+          else await pg.fill('[data-proc-param="' + name + '"]', String(v)); GT.type++; };
+        if (procId === 118) { await setP('M_Warehouse_ID', oo.w); await setP('C_BPartner_ID', oo.b); } else await setP('C_Order_ID', oo.i);
+        const nn = logs.length; await hc('[data-proc-run]'); await pg.waitForTimeout(6000);
+        console.log('§TWIN_CHAIN ' + tag + ' menuClicks=' + (GT.click - m0 - 1) + ' ' + (logs.slice(nn).filter(l => /§AD-PROC-LIVE proc=(118|119) .*dispatched=/.test(l)).pop() || '').slice(0, 200));
       }
-      console.log('§TWIN_CHAIN_DB io=' + JSON.stringify(await tip('SELECT docstatus AS s FROM m_inout WHERE m_inout_id < 0')) + ' inv=' + JSON.stringify(await tip('SELECT c_invoice_id AS i, docstatus AS s, grandtotal AS g FROM c_invoice WHERE c_invoice_id < 0')));
+      console.log('§TWIN_CHAIN_DB io=' + JSON.stringify(await tip('SELECT docstatus AS s FROM m_inout WHERE m_inout_id < 0')) + ' inv=' + JSON.stringify(await tip('SELECT c_invoice_id AS i, docstatus AS s, grandtotal AS g, ispaid AS p FROM c_invoice WHERE c_invoice_id < 0')));
       console.log('§TWIN_CHAIN_LOG ' + logs.slice(n0).filter(l => /GENSHIP|GENINV|DBG|PROC|process.*(REJECT|ERROR|fail)|refus/i.test(l)).slice(-14).map(l => l.slice(0, 200)).join(' || '));
       console.log('§TWIN_CHAIN_GESTURES ' + ((GT.click + GT.select + GT.type) - (G1.click + G1.select + G1.type)));
     }
@@ -105,14 +107,18 @@ const ok = (id, name, cond, detail) => { console.log((cond ? '  ✅ ' : '  ❌ '
     await hc(NEWB); await pg.waitForSelector('#idmp-inline-mount .cfrow'); await pg.waitForTimeout(800);
     await pick('ad_org_id', /^HQ/); await pick('c_bpartner_id', /Joe Block/);
     const inv = (await opts('c_invoice_id')).find(o => o.v === '-45' || /\(-\d+\)$/.test(o.t));
+    n0 = logs.length;
     if (inv) { GT.select++; await pg.selectOption(F('c_invoice_id', 'select'), inv.v); await pg.waitForTimeout(2500); }
-    const amt = await pg.$eval(F('payamt'), e => e.value).catch(() => '?');
+    console.log('§TWIN_PAY_CALLOUTLOG ' + logs.slice(n0).filter(l => /CALLOUT|callout|invoiceOpen|PAYAMT|payment/i.test(l)).slice(-10).map(l => l.slice(0, 220)).join(' || '));
+    let amt = await pg.$eval(F('payamt'), e => e.value).catch(() => '?'), typedAmt = 0;
+    if (inv && Number(amt) === 0) {   // KNOWN twin defect (ERP_FRIENDLY_OPS_LENS §34): the invoice callout drops a session-made (negative synthetic) id, so PayAmt stays 0; type it, count it separately
+      const ig = (await tip('SELECT grandtotal AS g FROM c_invoice WHERE c_invoice_id=' + inv.v))[0]; await pg.fill(F('payamt'), String(ig.g)); await pg.locator(F('payamt')).first().blur().catch(() => {}); await pg.waitForTimeout(600); GT.type++; typedAmt = 1; amt = String(ig.g); }
     n0 = logs.length; await hc('#idmp-toolbar [title^="Save"]'); await pg.waitForTimeout(1800);
     n0 = logs.length; await hc('[data-doc-action="CO"]'); await pg.waitForTimeout(4000);
     const pd = logs.slice(n0).filter(l => /§MODEL-DOCACTION table=c_payment/.test(l)).pop() || '';
-    const pr = await tip('SELECT payamt AS a, c_invoice_id AS i, docstatus AS s FROM c_payment WHERE c_payment_id < 0 ORDER BY c_payment_id LIMIT 1'); const ir = await tip('SELECT grandtotal AS g, ispaid AS p FROM c_invoice WHERE c_invoice_id=-45'); console.log('§TWIN_PAY_DB payment=' + JSON.stringify(pr) + ' invoice=' + JSON.stringify(ir));
+    const pr = await tip('SELECT payamt AS a, c_invoice_id AS i, docstatus AS s FROM c_payment WHERE c_payment_id < 0 ORDER BY c_payment_id LIMIT 1'); const ir = await tip('SELECT grandtotal AS g, ispaid AS p FROM c_invoice WHERE c_invoice_id=' + (inv ? inv.v : -45)); console.log('§TWIN_PAY_DB payment=' + JSON.stringify(pr) + ' invoice=' + JSON.stringify(ir));
     payOk = /ok=true status=CO/.test(pd) && pr.length && Number(pr[0].a) > 0;
-    console.log('§TWIN_PAY invoice=' + (inv ? inv.t : 'NONE') + ' payamt=' + amt + ' menu=' + menuClicks + ' gestures=' + ((GT.click + GT.select + GT.type) - (GP0.click + GP0.select + GP0.type)) + ' ' + pd.slice(0, 140));
+    console.log('§TWIN_PAY invoice=' + (inv ? inv.t : 'NONE') + ' payamt=' + amt + ' typedAmtWorkaround=' + typedAmt + ' menu=' + menuClicks + ' gestures=' + ((GT.click + GT.select + GT.type) - (GP0.click + GP0.select + GP0.type)) + ' ' + pd.slice(0, 140));
     console.log('§TWIN_PAY_VERDICT ' + (payOk ? 'PASS' : 'WRONG'));
   }
   console.log('§TWIN_GESTURES total='+(GT.click+GT.select+GT.type)+' clicks='+GT.click+' selects='+GT.select+' typed='+GT.type+' menu='+(G0.click));
