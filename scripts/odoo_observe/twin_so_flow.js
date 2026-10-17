@@ -32,8 +32,8 @@ const ok = (id, name, cond, detail) => { console.log((cond ? '  ✅ ' : '  ❌ '
   const onhand = async () => (await tip('SELECT COALESCE(SUM(qtyonhand),0) AS n FROM m_storageonhand WHERE m_product_id=' + PROD))[0].n;
 
   // open Sales Order (window 143) through the menu
-  const mid = await pg.evaluate(() => { const r = window.__idmpDb.exec("SELECT AD_Menu_ID FROM AD_Menu WHERE Action='W' AND AD_Window_ID=143 AND IsActive='Y'");
-    return (r.length ? r[0].values.map(x => x[0]) : []).find(i => document.querySelector('#idmp-tree .idmp-row.leaf[data-menu-id="' + i + '"]')); });
+  const mid = await pg.evaluate((WIN) => { const r = window.__idmpDb.exec("SELECT AD_Menu_ID FROM AD_Menu WHERE Action='W' AND AD_Window_ID=" + WIN + " AND IsActive='Y'");
+    return (r.length ? r[0].values.map(x => x[0]) : []).find(i => document.querySelector('#idmp-tree .idmp-row.leaf[data-menu-id="' + i + '"]')); }, process.env.WIN || 143);
   const chain = await pg.evaluate(id => { const leaf = document.querySelector('#idmp-tree .idmp-row.leaf[data-menu-id="' + id + '"]'); const out = []; let n = leaf.parentElement.parentElement;
     while (n && n.id !== 'idmp-tree') { if (n.classList.contains('idmp-node')) out.unshift(n.querySelector(':scope > .idmp-row').getAttribute('data-menu-id')); n = n.parentElement; } return out; }, mid);
   for (const id of chain) { const open = await pg.evaluate(i => { const r = document.querySelector('#idmp-tree .idmp-row[data-menu-id="' + i + '"]'); return r && r.parentElement.classList.contains('open'); }, id);
@@ -46,7 +46,7 @@ const ok = (id, name, cond, detail) => { console.log((cond ? '  ✅ ' : '  ❌ '
 
   // ── D1 · New POS Order, number left as shown
   await hc(NEWB); await pg.waitForSelector('#idmp-inline-mount .cfrow'); await pg.waitForTimeout(600);
-  await pick('c_doctypetarget_id', new RegExp(process.env.DOCTYPE || '^POS Order')); await pick('c_bpartner_id', /Joe Block/); await pick('ad_org_id', /^HQ/);
+  await pick('c_doctypetarget_id', new RegExp(process.env.DOCTYPE || '^POS Order')); await pick('c_bpartner_id', new RegExp(process.env.BP || 'Joe Block')); await pick('ad_org_id', /^HQ/);
   const docnoShown = await pg.$eval(F('documentno'), e => e.value);
   let n0 = logs.length; await hc('#idmp-toolbar [title^="Save"]'); await pg.waitForTimeout(1800);
   const s1 = logs.slice(n0);
@@ -58,7 +58,7 @@ const ok = (id, name, cond, detail) => { console.log((cond ? '  ✅ ' : '  ❌ '
   // line: Mulch × 1
   await hc('#idmp-tabstrip .idmp-adtab[title="TabLevel 1 · C_OrderLine"]'); await pg.waitForTimeout(1200);
   await hc(NEWB); await pg.waitForTimeout(900);
-  await pick('m_product_id', /Mulch/); await pg.waitForTimeout(800);
+  await pick('m_product_id', new RegExp(process.env.PRODRE || 'Mulch')); await pg.waitForTimeout(800);
   GT.type++; await pg.fill(F('qtyentered'), '1'); await pg.locator(F('qtyentered')).first().blur().catch(() => {}); await pg.waitForTimeout(600);
   await hc('#idmp-toolbar [title^="Save"]'); await pg.waitForTimeout(2000);
   await hc('#idmp-tabstrip .idmp-adtab[title="TabLevel 0 · C_Order"]'); await pg.waitForTimeout(1000);
@@ -105,7 +105,7 @@ const ok = (id, name, cond, detail) => { console.log((cond ? '  ✅ ' : '  ❌ '
     GP0 = { ...GT };
     await openWin(195); const menuClicks = GT.click - GP0.click;
     await hc(NEWB); await pg.waitForSelector('#idmp-inline-mount .cfrow'); await pg.waitForTimeout(800);
-    await pick('ad_org_id', /^HQ/); await pick('c_bpartner_id', /Joe Block/);
+    await pick('ad_org_id', /^HQ/); await pick('c_bpartner_id', new RegExp(process.env.BP || 'Joe Block'));
     const inv = (await opts('c_invoice_id')).find(o => o.v === '-45' || /\(-\d+\)$/.test(o.t));
     n0 = logs.length;
     if (inv) { GT.select++; await pg.selectOption(F('c_invoice_id', 'select'), inv.v); await pg.waitForTimeout(2500); }
