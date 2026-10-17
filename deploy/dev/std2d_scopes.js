@@ -104,10 +104,11 @@
     const inExtra = (i, n) => extras[n].indexOf(i) >= 0;
     const isExtra = i => Object.keys(extras).some(n => inExtra(i, n));
     const gridOk = (m, n) => m.grid && (m.grid.axis === 'x' ? keepX[n].has(m.grid.pos) : keepY[n].has(m.grid.pos));
+    const maxHandle = doc.h - 1;   // every handle of every sheet (whole plan + scope extras) is <= this
     const key = doc.toString((m, i) => !isExtra(i) && !m.guid);   // annotation: grid, dimensions, level/title texts (marks are added by the marker)
     const sheets = live.map(s => ({ name: s.name, rect: s.rect.map(num), owned: ownedBy[s.name].length,
       text: doc.toString((m, i) => (m.guid && owners[m.guid] === s.name) || gridOk(m, s.name) || inExtra(i, s.name)) }));
-    return { owners, key, sheets, E, unowned: 0, rest: hasRest, names };
+    return { owners, key, sheets, E, maxHandle, unowned: 0, rest: hasRest, names };
   }
   return { BUDGET, suggest, split, ownersOf, centreOf, scopeAt, nameOf, gridKeep };
 });

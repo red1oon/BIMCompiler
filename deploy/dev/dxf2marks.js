@@ -250,6 +250,7 @@
       else if (inEnt && c === '0' && v === 'ENDSEC') { endIdx = i; break; }
     }
     if (endIdx < 0) throw new Error('writeMarks: no ENTITIES section');
+    if (opts.handleBase > maxH) maxH = opts.handleBase;   // §L6: a KEY sheet's markings must not reuse a handle of a scope sheet's entity
     var out = [];
     marks.forEach(function (m, n) {
       var h = (maxH + 1 + n).toString(16).toUpperCase();

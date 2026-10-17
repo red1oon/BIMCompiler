@@ -65,7 +65,7 @@
         if (M.roof_top === null) say('  §MARK_GAP no @ROOF (no IfcRoof / IfcSlab)'); else marks.push({ text: '@ROOF=' + r3(M.roof_top) });
         say('  HAXIS/GRIDH/Z/ROOF from the model');
       }
-      out[name] = deps.MK.writeMarks(scopeSheet === 'KEY' ? R.files[name] : txt, marks.map(m => Object.assign({}, m, { text: m.text + ' @BY=model' })));
+      out[name] = deps.MK.writeMarks(scopeSheet === 'KEY' ? R.files[name] : txt, marks.map(m => Object.assign({}, m, { text: m.text + ' @BY=model' })), scopeSheet === 'KEY' ? { handleBase: R.scoped[view].maxHandle } : undefined);
       say('  marks=' + marks.length);
     }
     return { files: out, log };
