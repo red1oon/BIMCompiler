@@ -195,6 +195,19 @@
     }
     return p;
   }
+  // §L1.20 / §L1.20b pure: the parts (rings, mm) of ONE door/window -> {kind, rings}. 'union' = touching parts united into one ring; 'bbox' = disjoint axis-aligned rectangle parts drawn as their
+  // own plan bbox; 'skip' = disjoint and a part is not an axis-aligned rectangle (parts kept); 'hole' = the union has a hole (parts kept).
+  function openingOutline(parts) {
+    const area = P => { let a = 0; for (let i = 0; i < P.length; i++) { const q = P[(i + 1) % P.length]; a += P[i][0] * q[1] - q[0] * P[i][1]; } return Math.abs(a) / 2; };
+    let U; try { U = PC.union(toPoly(parts[0]), ...parts.slice(1).map(toPoly)); } catch (e) { U = null; }
+    if (!U || U.some(poly => poly.length !== 1)) return { kind: 'hole' };
+    const rings = U.map(poly => dropCollinear(poly[0].slice(0, -1))), aS = parts.reduce((a, p) => a + area(p), 0), aU = rings.reduce((a, r) => a + area(r), 0);
+    if (rings.length === 1) return { kind: 'union', rings, unionRings: 1, aS, aU };
+    const axisRect = P => P.length === 4 && P.every((q, i) => { const n = P[(i + 1) % 4]; return Math.abs(q[0] - n[0]) <= 0.001 || Math.abs(q[1] - n[1]) <= 0.001; });
+    if (!parts.every(axisRect)) return { kind: 'skip', unionRings: rings.length, aS, aU };
+    const xs = [].concat(...parts.map(P => P.map(q => q[0]))), ys = [].concat(...parts.map(P => P.map(q => q[1]))), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+    return { kind: 'bbox', rings: [[[x0, y0], [x1, y0], [x1, y1], [x0, y1]]], unionRings: rings.length, aS, aU, w: x1 - x0, d: y1 - y0 };
+  }
   function planStoreys(model) {
     const g = model.storeys.find(s => s.name === model.grid_storey).elev;
     return model.storeys.filter(s => s.elev >= g && model.walls.some(w => w.storey === s.name && w.z0 <= s.elev + CUT_OFFSET && s.elev + CUT_OFFSET < w.z1));
@@ -564,6 +577,15 @@
       });
     });
     if (model.perStoreyEnv) cut.forEach(c => { polys[c.guid] = (polys[c.guid] || []).map(pl => { const q = dropCollinear(pl); if (q.length !== pl.length) log.add(`§COLLINEAR_DROP guid=${c.guid} cls=${c.cls} before=${pl.length} after=${q.length}`); return q; }); });   // §L1.19 (wing sets)
+    if (model.perStoreyEnv) cut.forEach(c => {   // §L1.20: one outline per door/window
+      const parts = polys[c.guid] || []; if (c.cls !== 'IfcDoor' || parts.length < 2) return;
+      const o = openingOutline(parts);
+      if (o.kind === 'hole') { log.add(`§OPEN_UNION_HOLE guid=${c.guid} cls=${c.cls} parts=${parts.length} (kept as parts)`); return; }
+      log.add(`§OPEN_UNION guid=${c.guid} cls=${c.cls} parts=${parts.length} -> rings=${o.unionRings} area_sum=${fx(o.aS, 2)} area_union=${fx(o.aU, 2)}`);
+      if (o.kind === 'skip') { log.add(`§OPEN_BBOX_SKIP guid=${c.guid} cls=${c.cls} reason=part_not_axis_rect`); return; }
+      polys[c.guid] = o.rings;
+      if (o.kind === 'bbox') log.add(`§OPEN_BBOX guid=${c.guid} cls=${c.cls} parts=${parts.length} bbox=${fx(o.w, 1)} x ${fx(o.d, 1)} mm`);
+    });
     Object.keys(curt).forEach(g => { const r = curt[g].rect; polys[g] = [[[r[0], r[1]], [r[2], r[1]], [r[2], r[3]], [r[0], r[3]]]]; });   // C1
     const ops = planOpenings(model, storey, cutZ, new Set(sw.map(w => w.guid).concat(Object.keys(curt))), polys, log);
     let nW = 0, nC = 0;
@@ -929,5 +951,5 @@
     log.add(`§SUMMARY wing=${name} views=${Object.keys(files).length} grid_x=${pyList(grid.x.map(g => g[0]))} grid_y=${pyList(grid.y.map(g => g[0]))} gaps=${log.gaps.length}`);
     return { files, log: log.lines, gaps: log.gaps, grid, model, wing: { name, angle, ox, oy, framed: wl.length, unframed: fr.unframed, total: fr.total } };
   }
-  return { primaryClusters, drawableReport, ELEV_FACES, ELEV_HP: ELEV_FACES, columnAxis, writeStdSet, writeWingSet, wingAngles, dropCollinear, elementAngle, rotateModel, frameModel, wingDominant, loadModel, deriveGrid, resolveHosts, planStoreys, LAYERS, PLAN_CUT_CLASSES };
+  return { primaryClusters, drawableReport, ELEV_FACES, ELEV_HP: ELEV_FACES, columnAxis, writeStdSet, writeWingSet, wingAngles, dropCollinear, openingOutline, elementAngle, rotateModel, frameModel, wingDominant, loadModel, deriveGrid, resolveHosts, planStoreys, LAYERS, PLAN_CUT_CLASSES };
 });
