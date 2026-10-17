@@ -1115,11 +1115,19 @@ def write_elevation(model, grid, face, out_path, log):
         pl = msp.add_lwpolyline([(h0, mm(w['z0'])), (h1, mm(w['z0'])), (h1, mm(w['z1'])), (h0, mm(w['z1']))],
                                 close=True, dxfattribs={'layer': 'A-WALL'})
         _tag(pl, w['guid'])
-    fcw = [c for c in model['curtains'] if abs(c[side] - fv) <= EXT_FACE_TOL]   # §L1.14 C4: a curtain wall is an elevation wall over its parts' z range
+    # §L1.14 C4: a curtain wall is an elevation wall rectangle PER STOREY (the importer pairs plan bands with elevation rectangles by storey level, as walls):
+    # for every plan storey where the wall has a band, z from the storey level to the next plan storey's level (the top storey: the wall's top), within the parts' z range
+    fcw = [c for c in model['curtains'] if abs(c[side] - fv) <= EXT_FACE_TOL]
+    pst = plan_storeys(model)
     for w in fcw:
         h0, h1 = hr(w)
-        pl = msp.add_lwpolyline([(h0, mm(w['z0'])), (h1, mm(w['z0'])), (h1, mm(w['z1'])), (h0, mm(w['z1']))], close=True, dxfattribs={'layer': 'A-WALL'})
-        _tag(pl, w['guid'])
+        for i, ps in enumerate(pst):
+            if w['guid'] not in curtain_bands(model, ps['elev'] + CUT_OFFSET):
+                continue
+            zt = pst[i + 1]['elev'] if i + 1 < len(pst) else w['z1']
+            zt = min(zt, w['z1'])
+            pl = msp.add_lwpolyline([(h0, mm(ps['elev'])), (h1, mm(ps['elev'])), (h1, mm(zt)), (h0, mm(zt))], close=True, dxfattribs={'layer': 'A-WALL'})
+            _tag(pl, w['guid'])
     fwg = {w['guid'] for w in fw} | {w['guid'] for w in fcw}
     n_op = 0
     for e in model['els']:

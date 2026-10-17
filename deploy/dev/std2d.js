@@ -630,8 +630,12 @@
     const rect = (h0, h1, z0, z1) => [[h0, mm(z0)], [h1, mm(z0)], [h1, mm(z1)], [h0, mm(z1)]];
     const fw = model.walls.filter(w => vis.has(w.storey) && Math.abs(w[side] - fv) <= EXT_FACE_TOL);
     fw.forEach(w => { const [h0, h1] = hr(w); doc.lwpoly('A-WALL', rect(h0, h1, w.z0, w.z1), true, tag(w.guid)); });
-    const fcw = model.curtains.filter(c => Math.abs(c[side] - fv) <= EXT_FACE_TOL);   // C4: a curtain wall is an elevation wall over its parts' z range
-    fcw.forEach(w => { const [h0, h1] = hr(w); doc.lwpoly('A-WALL', rect(h0, h1, w.z0, w.z1), true, tag(w.guid)); });
+    const fcw = model.curtains.filter(c => Math.abs(c[side] - fv) <= EXT_FACE_TOL), pst = planStoreys(model);   // C4: an elevation rectangle PER STOREY with a band (importer pairing by storey level)
+    fcw.forEach(w => { const [h0, h1] = hr(w); pst.forEach((ps, i) => {
+      if (!curtainBands(model, ps.elev + CUT_OFFSET)[w.guid]) return;
+      const zt = Math.min(i + 1 < pst.length ? pst[i + 1].elev : w.z1, w.z1);
+      doc.lwpoly('A-WALL', rect(h0, h1, ps.elev, zt), true, tag(w.guid));
+    }); });
     const fwg = new Set(fw.map(w => w.guid).concat(fcw.map(w => w.guid))); let nOp = 0;
     for (const e of model.els) {
       if (OPENINGS.indexOf(e.cls) < 0 || !fwg.has(model.host_all[e.guid])) continue;
