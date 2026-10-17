@@ -65,6 +65,7 @@ ROMAN_SKIP = ('I', 'O')
 WALLS = ('IfcWall', 'IfcWallStandardCase')
 OPENINGS = ('IfcDoor', 'IfcWindow')
 PLAN_CUT_CLASSES = WALLS + OPENINGS + ('IfcColumn', 'IfcStair', 'IfcStairFlight')   # §L1.5 P1 + §L1.6 C1 / stairs (cut outline)
+CURTAIN_MAX_THICK = 0.6     # m, §L1.14: a curtain-wall band is thinner than this and at least 2 x its thickness long
 GAP_MIN_AREA = 1.0          # mm², §L1.6 O2: overlap / piece below this is no wall
 HOST_TOL = 0.001            # m, §L1.6 O1(b): opening centre inside the wall bbox
 GAP_ACROSS = 0.001          # m, §L1.6 O2: gap rectangle across = host bbox +- 1 mm
@@ -72,7 +73,7 @@ LEVEL_DIFF_TOL = 0.001      # m, §L1.6 R1': placement vs R1 difference logged
 
 LAYERS = {   # R12: name -> (ACI colour, lineweight 1/100 mm, linetype)
     'A-WALL-FULL': (7, 50, 'Continuous'), 'A-WALL-PRTN': (7, 35, 'Continuous'),
-    'A-WALL-PATT': (8, 13, 'Continuous'), 'A-WALL': (7, 35, 'Continuous'),
+    'A-WALL-PATT': (8, 13, 'Continuous'), 'A-WALL': (7, 35, 'Continuous'), 'A-WALL-CURT': (4, 25, 'Continuous'),   # §L1.14 curtain wall band (glazing)
     'A-DOOR': (3, 25, 'Continuous'), 'A-GLAZ': (4, 18, 'Continuous'),
     'A-GLAZ-SILL': (4, 25, 'Continuous'), 'A-GRID': (1, 18, 'CENTER'),
     'A-ANNO-DIMS': (7, 18, 'Continuous'), 'A-ANNO-LEVL': (6, 18, 'Continuous'),
@@ -154,6 +155,17 @@ def load_door_ops(db_path, door_ops_db, log):
     return {}
 
 
+def _has_table(con, name):
+    return bool(con.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (name,)).fetchone())
+
+
+def _curtain_parts_clause(con):
+    """§L1.14: the panels (IfcPlate) and mullions (IfcMember) of every curtain wall are loaded with their meshes; other plates/members are not."""
+    if not _has_table(con, 'element_parts'):
+        return ''
+    return "OR m.guid IN (SELECT child_guid FROM element_parts WHERE parent_class = 'IfcCurtainWall' AND child_class IN ('IfcPlate','IfcMember'))"
+
+
 def load_model(db_path, log, door_ops_db=None):
     con = model_db.connect(db_path)   # §L1.6 P0: one DB, Node or old schema
     log(f'§DB schema={model_db.schema(con)}')
@@ -168,12 +180,15 @@ def load_model(db_path, log, door_ops_db=None):
            LEFT JOIN m_geom b ON b.geometry_hash = i.geometry_hash
            WHERE m.ifc_class IN ('IfcWall','IfcWallStandardCase','IfcDoor','IfcWindow',
                                  'IfcSlab','IfcRoof','IfcFooting','IfcColumn','IfcOpeningElement')
-           ORDER BY m.guid""").fetchall()
+              {curtain_parts}
+           ORDER BY m.guid""".replace('{curtain_parts}', _curtain_parts_clause(con))).fetchall()
     storey_names = [r[0] for r in con.execute(
         "SELECT name FROM spatial_structure WHERE type='IfcBuildingStorey' ORDER BY guid")]
     hosts = dict(con.execute("SELECT filling_guid, host_guid FROM m_fills ORDER BY filling_guid"))
     opening_of = {f: o for f, o in con.execute("SELECT filling_guid, opening_guid FROM m_fills ORDER BY filling_guid") if o}
     psets = {(g, n): v for g, n, v in con.execute("SELECT guid, name, value FROM m_psets ORDER BY guid, pset, name")}
+    parts_rows = con.execute("SELECT parent_guid, child_guid, child_class FROM element_parts WHERE parent_class = 'IfcCurtainWall' ORDER BY parent_guid, child_guid").fetchall() if _has_table(con, 'element_parts') else []
+    cw_rows = con.execute("SELECT guid, element_name FROM elements_meta WHERE ifc_class = 'IfcCurtainWall' ORDER BY guid").fetchall() if parts_rows else []
     # §L1.7 V1: authored wall host with >=1 void row and no bbox/mesh row = the voids removed it entirely
     voided_hosts = {h for (h,) in con.execute(
         "SELECT DISTINCT o.host_guid FROM m_openings o WHERE o.host_guid IS NOT NULL "
@@ -196,6 +211,25 @@ def load_model(db_path, log, door_ops_db=None):
                         x0=x0, x1=x1, y0=y0, y1=y1, z0=z0, z1=z1,
                         c=(cx, cy, cz), v=v, f=f))
     walls = [e for e in els if e.get('cls') in ('IfcWall', 'IfcWallStandardCase')]
+    curtains = []   # §L1.14
+    by_el = {e['guid']: e for e in els}
+    if parts_rows:
+        pk = {}
+        for pg, cg, cc in parts_rows:
+            pk.setdefault(pg, []).append((cg, cc))
+        for guid, name in cw_rows:
+            kids = [by_el[cg] for cg, cc in pk.get(guid, []) if cc in ('IfcPlate', 'IfcMember') and cg in by_el]
+            doors = [cg for cg, cc in pk.get(guid, []) if cc == 'IfcDoor']
+            if not kids:
+                continue
+            cw = dict(guid=guid, cls='IfcCurtainWall', name=name or '', storey='',
+                      x0=min(k['x0'] for k in kids), x1=max(k['x1'] for k in kids), y0=min(k['y0'] for k in kids), y1=max(k['y1'] for k in kids),
+                      z0=min(k['z0'] for k in kids), z1=max(k['z1'] for k in kids), c=(0, 0, 0), v=np.zeros((0, 3)), f=np.zeros((0, 3), dtype=np.int32),
+                      parts=kids, doors=doors)
+            curtains.append(cw)
+            for dg in doors:
+                hosts.setdefault(dg, guid)   # a door that is a part of the curtain wall is hosted by it (§L1.14 C2)
+        log(f'§CURTAINS walls={len(curtains)} parts={sum(len(c["parts"]) for c in curtains)} doors={sum(len(c["doors"]) for c in curtains)}')
     # R1' storey elevation = the model storey placement z (§L1.6); R1 (min minZ of contained walls) is the fallback
     storeys = []
     for s in sorted(set(storey_names)):
@@ -235,10 +269,20 @@ def load_model(db_path, log, door_ops_db=None):
         log.gap('GAP:roof_top', '-', 'no IfcRoof / IfcSlab')
     else:
         log(f'§LEVEL T/ROOF={roof_top:.4f} m from {[r["guid"] for r in roofs]} (R11)')
+    # §L1.14 C2: a curtain wall's door parts carry storey 'Unknown' (the parts are not contained in a storey): they stand on the highest storey whose level is at or below the door's base
+    for cw in curtains:
+        for dg in cw['doors']:
+            d = by_el.get(dg)
+            if d is None or d['storey'] not in ('', 'Unknown'):
+                continue
+            below = [st for st in storeys if st['elev'] <= d['z0'] + 0.05]
+            if below:
+                d['storey'] = below[-1]['name']
+                log(f"§STOREY_BY_Z guid={dg} z0={d['z0']:.3f} -> {d['storey']!r} (curtain-wall door part)")
     door_ops = load_door_ops(db_path, door_ops_db, log)
     return dict(els=els, walls=walls, storeys=storeys, foundation=fnd,
                 grid_storey=grid_storey, roofs=roofs, roof_top=roof_top, hosts=hosts, opening_of=opening_of,
-                psets=psets, voided_hosts=voided_hosts, by_guid={e['guid']: e for e in els}, door_ops=door_ops)
+                psets=psets, voided_hosts=voided_hosts, curtains=curtains, by_guid=dict(by_el, **{c['guid']: c for c in curtains}), door_ops=door_ops)
 
 
 def wall_axis(w):
@@ -633,9 +677,9 @@ def resolve_hosts(model, log):
         g = e['guid']
         h = model['hosts'].get(g)
         if h is not None:
-            host_all[g], host_src[g] = h, 'ifc'
-            n['ifc'] += 1
             hw = model['by_guid'].get(h)
+            host_all[g], host_src[g] = h, ('ifc_part' if (hw is not None and hw['cls'] == 'IfcCurtainWall') else 'ifc')   # §L1.14 C2
+            n['ifc'] += 1
             if hw is not None and hw['cls'] in WALLS:
                 hv = _hole(hw, e, cache)
                 if hv is not None:
@@ -738,6 +782,22 @@ def plan_openings(model, storey, cut_z, cut_walls, polys, log):
             log.gap('GAP:opening_host_no_geometry', g, f'host={h} has no mesh/bbox in the DB (not drawn on any plan)')
             res.append((e, pos))
             continue
+        if hw['cls'] == 'IfcCurtainWall':   # §L1.14 C2: the gap in the curtain band, from the door's own extent along the run
+            band = model.get('_cb', {}).get(round(cut_z, 6), {}).get(h)
+            if band is None:
+                log.gap('GAP:opening_host_not_cut', g, f'host={h} curtain wall not drawn at cut_z={cut_z:.3f}')
+                res.append((e, pos))
+                continue
+            r = band['rect']
+            ax = 'y' if (r[2] - r[0]) >= (r[3] - r[1]) else 'x'
+            a0, a1 = (e['x0'], e['x1']) if ax == 'y' else (e['y0'], e['y1'])
+            rect = (mm(a0), r[1] - GAP_ACROSS * 1000, mm(a1), r[3] + GAP_ACROSS * 1000) if ax == 'y' else (r[0] - GAP_ACROSS * 1000, mm(a0), r[2] + GAP_ACROSS * 1000, mm(a1))
+            k = 0 if ax == 'y' else 1
+            polys[h], changed = _subtract(polys.get(h, []), rect, k)
+            log(f"§OPENING guid={g} cls={e['cls']} host={h} host_source={model['host_src'][g]} pos={pos} gap={'drawn' if changed else 'in_cut'} "
+                f"along=({a0 * 1000:.2f},{a1 * 1000:.2f}) from=part_bbox")
+            res.append((e, pos))
+            continue
         if hw['cls'] not in WALLS:
             log.gap('GAP:opening_host_not_wall', g, f"host={h} class={hw['cls']}")
             res.append((e, pos))
@@ -764,6 +824,49 @@ def plan_openings(model, storey, cut_z, cut_walls, polys, log):
     return res
 
 
+def curtain_bands(model, cut_z, log=None):
+    """§L1.14 C1: per curtain wall, the union of its parts' sections at the cut plane is drawn as ONE band when it is thin (<= CURTAIN_MAX_THICK) and at least twice as long;
+    else GAP:curtainwall_not_a_run. Returns {guid: dict(rect=[x0,y0,x1,y1] mm, env=(x0,x1,y0,y1) m, parts=n, cut=n)}. Cached per cut plane; logs once."""
+    cache = model.setdefault('_cb', {})
+    key = round(cut_z, 6)
+    if key in cache:
+        return cache[key]
+    out = {}
+    for cw in model['curtains']:
+        if not (cw['z0'] < cut_z < cw['z1']):
+            continue
+        pts, n = [], 0
+        for k in cw['parts']:
+            if not (k['z0'] < cut_z < k['z1']) or len(k['v']) == 0 or len(k['f']) == 0:
+                continue
+            for ch in chain_segments(slice_mesh(k['v'] + np.array(k['c']), k['f'], cut_z)):
+                if len(ch) >= 3:
+                    pts.extend((float(q[0]), float(q[1])) for q in ch)
+                    n += 1
+        if not pts:
+            continue
+        x0, x1 = min(q[0] for q in pts), max(q[0] for q in pts)
+        y0, y1 = min(q[1] for q in pts), max(q[1] for q in pts)
+        thin, length = min(x1 - x0, y1 - y0), max(x1 - x0, y1 - y0)
+        if thin <= CURTAIN_MAX_THICK and length >= 2 * thin:
+            out[cw['guid']] = dict(rect=[mm(x0), mm(y0), mm(x1), mm(y1)], env=(x0, x1, y0, y1), parts=len(cw['parts']), cut=n)
+            if log:
+                log(f"§CURTAIN guid={cw['guid']} cut_z={cut_z:.3f} rect=({mm(x0):.2f},{mm(y0):.2f})-({mm(x1):.2f},{mm(y1):.2f}) parts={len(cw['parts'])} cut={n}")
+        elif log:
+            log.gap('GAP:curtainwall_not_a_run', cw['guid'], f'section at cut_z={cut_z:.3f} is {thin * 1000:.0f} x {length * 1000:.0f} mm (band needs thickness <= {CURTAIN_MAX_THICK * 1000:.0f} and length >= 2 x thickness); not drawn')
+    cache[key] = out
+    return out
+
+
+def building_env(model, gs, g_el, log=None):
+    """The exterior envelope used by the elevations/section: the walls of the grid storey plus the curtain-wall bands at its cut plane (§L1.14 C3: a curtain facade IS the edge)."""
+    env = envelope([w for w in model['walls'] if w['storey'] == gs])
+    for c in curtain_bands(model, g_el + CUT_OFFSET, log).values():
+        e = c['env']
+        env = (min(env[0], e[0]), max(env[1], e[1]), min(env[2], e[2]), max(env[3], e[3]))
+    return env
+
+
 def write_plan(model, grid, storey, view, db_path, out_path, log):
     """G1-G3, G5-G7 for one storey (+ §L1.6 O/C)."""
     log(f"§VIEW {view} storey={storey['name']!r} elev={storey['elev']:.4f}")
@@ -776,7 +879,10 @@ def write_plan(model, grid, storey, view, db_path, out_path, log):
     sw = [w for w in model['walls'] if w['z0'] < cut_z < w['z1']]
     other = sorted(f"{w['guid']}@{w['storey']}" for w in sw if w['storey'] != storey['name'])
     log(f"§PLAN_CUT view={view} cut_z={cut_z:.3f} walls={len(sw)} (other-storey walls={len(other)}: {' '.join(other)})")
+    curt = curtain_bands(model, cut_z, log)   # §L1.14
     env = envelope(sw)
+    for c in curt.values():   # C3: a curtain-wall facade is part of the plan envelope
+        env = (min(env[0], c['env'][0]), max(env[1], c['env'][1]), min(env[2], c['env'][2]), max(env[3], c['env'][3]))
     E = [mm(v) for v in env]   # x0,x1,y0,y1 in mm
     face_runs = {'S': [], 'N': [], 'W': [], 'E': []}
     on_axis = set()
@@ -799,7 +905,10 @@ def write_plan(model, grid, storey, view, db_path, out_path, log):
                 if L > 0 and a / L < PT_MERGE * 1000 and not rect:
                     polys[c.guid][i] = [(min(xs), min(ys)), (max(xs), min(ys)), (max(xs), max(ys)), (min(xs), max(ys))]
                     log(f"§SLIVER_RECT guid={c.guid} cls={c.ifc_class} area={a:.2f} mm2 mean_width={a / L:.3f} mm -> bounding rectangle (§L1.8 S1)")
-    ops = plan_openings(model, storey, cut_z, {w['guid'] for w in sw}, polys, log)   # §L1.6 O2
+    for g, c in curt.items():   # C1: the band as a one-polygon contour; its doors cut their gaps in it below (C2)
+        r = c['rect']
+        polys[g] = [[(r[0], r[1]), (r[2], r[1]), (r[2], r[3]), (r[0], r[3])]]
+    ops = plan_openings(model, storey, cut_z, {w['guid'] for w in sw} | set(curt), polys, log)   # §L1.6 O2
     n_w = n_c = 0
     for c in cut:
         for pts in polys.get(c.guid, []):
@@ -834,6 +943,21 @@ def write_plan(model, grid, storey, view, db_path, out_path, log):
                 pl = msp.add_lwpolyline(pts, close=True, dxfattribs={'layer': layer})
                 _tag(pl, c.guid)
     log(f'§PLAN wall contours={n_w} column contours={n_c} cut_z={cut_z:.3f}')
+    n_cw = 0
+    for g in sorted(curt):   # §L1.14 C1: layer A-WALL-CURT, tagged with the curtain wall's GUID, no hatch (glazing)
+        for pts in polys.get(g, []):
+            pl = msp.add_lwpolyline(pts, close=True, dxfattribs={'layer': 'A-WALL-CURT'})
+            _tag(pl, g)
+            n_cw += 1
+            for side, on, along in (('S', lambda q: abs(q[1] - E[2]) <= FACE_PT_TOL * 1000, 0),
+                                    ('N', lambda q: abs(q[1] - E[3]) <= FACE_PT_TOL * 1000, 0),
+                                    ('W', lambda q: abs(q[0] - E[0]) <= FACE_PT_TOL * 1000, 1),
+                                    ('E', lambda q: abs(q[0] - E[1]) <= FACE_PT_TOL * 1000, 1)):
+                run = [q[along] for q in pts if on(q)]
+                if len(run) >= 2 and max(run) - min(run) > PT_MERGE * 1000:
+                    face_runs[side].append((min(run), max(run)))
+    if curt:
+        log(f'§PLAN curtain walls={n_cw}')
     # ── §L1.6 O3: openings not crossed by the cut plane (above: dashed overhead; below: seen, continuous) ──
     n_o = {'above': 0, 'below': 0}
     for e, pos in ops:
@@ -954,7 +1078,7 @@ def write_elevation(model, grid, face, out_path, log):
     for s in model['storeys']:
         if s['name'] not in vis:
             log(f"§ELEV_SKIP storey={s['name']!r} elev={s['elev']:.4f} below grid storey (R11)")
-    env = envelope([w for w in model['walls'] if w['storey'] == gs])
+    env = building_env(model, gs, g_el)   # §L1.14 C3
     fv = {'x0': env[0], 'x1': env[1], 'y0': env[2], 'y1': env[3]}[side]
 
     def hr(e):
@@ -967,7 +1091,12 @@ def write_elevation(model, grid, face, out_path, log):
         pl = msp.add_lwpolyline([(h0, mm(w['z0'])), (h1, mm(w['z0'])), (h1, mm(w['z1'])), (h0, mm(w['z1']))],
                                 close=True, dxfattribs={'layer': 'A-WALL'})
         _tag(pl, w['guid'])
-    fwg = {w['guid'] for w in fw}
+    fcw = [c for c in model['curtains'] if abs(c[side] - fv) <= EXT_FACE_TOL]   # §L1.14 C4: a curtain wall is an elevation wall over its parts' z range
+    for w in fcw:
+        h0, h1 = hr(w)
+        pl = msp.add_lwpolyline([(h0, mm(w['z0'])), (h1, mm(w['z0'])), (h1, mm(w['z1'])), (h0, mm(w['z1']))], close=True, dxfattribs={'layer': 'A-WALL'})
+        _tag(pl, w['guid'])
+    fwg = {w['guid'] for w in fw} | {w['guid'] for w in fcw}
     n_op = 0
     for e in model['els']:
         if e['cls'] not in ('IfcDoor', 'IfcWindow') or model['host_all'].get(e['guid']) not in fwg:
@@ -1187,7 +1316,7 @@ def write_section(model, grid, out_path, log):
     if model['roof_top'] is not None:
         levels.append(('T/ROOF', model['roof_top']))
     levels.sort(key=lambda l: l[1])
-    env = envelope([w for w in model['walls'] if w['storey'] == gs])
+    env = building_env(model, gs, g_el)   # §L1.14 C3
     H0, H1 = mm(env[2]), mm(env[3])
     lx0, lx1 = H0 - LEVEL_EXT * SCALE, H1 + LEVEL_EXT * SCALE
     for name, z in levels:
