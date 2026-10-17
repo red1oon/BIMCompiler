@@ -158,6 +158,40 @@ def e4(tag, db, ifc):
                  not miss and not extra and not diff, f'rows={len(got)} oracle={len(exp)} missing={miss[:2]} extra={extra[:2]} differ={diff[:2]}')
 
 
+def v1_hosts(db):
+    con = sqlite3.connect(db)
+    r = {h for (h,) in con.execute(
+        "SELECT DISTINCT o.host_guid FROM rel_fills_host o WHERE o.host_guid IS NOT NULL "
+        "AND o.host_guid NOT IN (SELECT guid FROM element_world_bbox) AND o.host_guid IN "
+        "(SELECT guid FROM elements_meta WHERE ifc_class IN ('IfcWall','IfcWallStandardCase'))")}
+    con.close()
+    return r
+
+
+def e5_core(ifc, hosts):
+    import ifcopenshell.geom as G
+    f = ifcopenshell.open(ifc)
+    s_sub, s_raw = G.settings(), G.settings()
+    s_raw.set('disable-opening-subtractions', True)
+    bad = []
+    for gid in sorted(hosts):
+        w = f.by_guid(gid)
+        def nv(st):
+            try:
+                return len(G.create_shape(st, w).geometry.verts)
+            except Exception:
+                return 0
+        if not (nv(s_raw) and not nv(s_sub)):
+            bad.append(gid)
+    return bad
+
+
+def e5(tag, db, ifc):
+    hosts = v1_hosts(db)
+    bad = e5_core(ifc, hosts)
+    return check(f'E5[{tag}]', 'a V1 host (SS L1.7) that is not entirely removed by its voids', not bad, f'v1_hosts={len(hosts)} not_fully_voided={bad[:3]}'), hosts
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--node-modules', default=os.path.join(ROOT, 'node_modules'))
@@ -186,6 +220,13 @@ def main():
             e2(tag, n, ifc)
             e3(tag, n)
             e4(tag, n, ifc)
+            _, h5 = e5(tag, n, ifc)
+            if tag == 'SC':
+                con = sqlite3.connect(n)
+                solid = con.execute("SELECT m.guid FROM elements_meta m JOIN element_world_bbox b ON b.guid=m.guid WHERE m.ifc_class='IfcWallStandardCase' ORDER BY m.guid LIMIT 1").fetchone()[0]
+                con.close()
+                bad = e5_core(ifc, h5 | {solid})
+                check('E5-control', 'E5 cannot see a non-voided wall slipped into the V1 set', bad == [solid], f'injected={solid} flagged={bad[:2]}')
         if os.path.exists(a.old_duplex_db):
             e3_old(dbs['DXFED'], a.old_duplex_db)
         else:

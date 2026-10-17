@@ -1,0 +1,20 @@
+// ⚠ DO NOT REMOVE — W-L124 (lane spec §L1.24): @WALLTOP=handle:<h>,<z_top_m>[,<z_base_m>]. Issue each proves: PARSE = the third value is read (and a bad one refused), a 2-value marking is unchanged;
+// APPLY = a stated base gives base = z_base - level and height = z_top - z_base (and beats the storey rule), no base gives base 0 as before. Control: a wrong expectation must FAIL.
+'use strict';
+const MK = require('../../deploy/dev/dxf2marks.js'), E = require('../../deploy/dev/dxf2elev.js');
+let fail = 0; const say = (ok, n, d) => { if (!ok) fail++; console.log(`${ok ? 'PASS' : 'FAIL'} ${n} | ${d}`); };
+const desc = lines => MK.describe(lines.map((t, i) => ({ raw: t, x: 0, y: 0, handle: (0x100 + i).toString(16).toUpperCase() })));
+let d = desc(['@WALLTOP=handle:A4,170.611', '@WALLTOP=handle:B2,176.8,171.611']);
+const a4 = d.desc.walltop_walls.find(w => w.wall === 'A4'), b2 = d.desc.walltop_walls.find(w => w.wall === 'B2');
+say(a4 && a4.z === 170.611 && a4.base === undefined && b2 && b2.z === 176.8 && b2.base === 171.611 && d.errors.filter(e => e.code !== 'MARK:missing').length === 0, 'W-L124-PARSE', `2-value unchanged (base ${a4 && a4.base}), 3-value base ${b2 && b2.base}, marking errors ${d.errors.filter(e => e.code !== 'MARK:missing').length} (MARK:missing VIEW ignored: the test has no sheet header)`);
+say(desc(['@WALLTOP=handle:C1,176.8,abc']).errors.some(e => e.code === 'MARK:malformed') && desc(['@WALLTOP=handle:C1,176.8,171.6,5']).errors.some(e => e.code === 'MARK:malformed'), 'W-L124-PARSE-BAD', 'a non-numeric base and a 4th value are malformed');
+say(desc(['@WALLTOP=handle:D1,176.8,171.6', '@WALLTOP=handle:D1,176.8,171.0']).errors.some(e => e.code === 'MARK:conflict'), 'W-L124-PARSE-CONFLICT', 'one handle with two different bases is a conflict');
+const wall = h => ({ op_type: 'DXF_WALL', params: { handle: h, part: 0, run_id: 'r', layer: 'A-WALL-PRTN' }, output_guid: 'g' + h }), gap = h => ({ op_type: 'DXF_GAP', params: { code: 'GAP:no_elevation_height', handle: h, part: 0, run_id: 'r', layer: 'A-WALL-PRTN' }, input_guids: [], output_guid: null });
+const before = [wall('A4'), wall('B2'), wall('E5')], after = [gap('A4'), gap('B2'), gap('E5')];
+const dd = { walltop: [{ level: 171.811, rule: 'slab_above' }], walltop_walls: [{ wall: 'A4', z: 176.8 }, { wall: 'B2', z: 176.8, base: 171.611 }] };
+const r = E.applyWallTops(after, before, dd, 171.811, 176.8), P = h => r.ops.find(o => o.params.handle === h).params;
+say(P('A4').base === 0 && Math.abs(P('A4').height - (176.8 - 171.811)) < 1e-9, 'W-L124-APPLY-NOBASE', `base ${P('A4').base} height ${P('A4').height.toFixed(3)} (unchanged behaviour)`);
+say(Math.abs(P('B2').base - (171.611 - 171.811)) < 1e-9 && Math.abs(P('B2').height - (176.8 - 171.611)) < 1e-9 && P('B2').height_source === 'marking', 'W-L124-APPLY-BASE', `base ${P('B2').base.toFixed(3)} (= -0.200) height ${P('B2').height.toFixed(3)} (= 5.189), source ${P('B2').height_source}`);
+say(P('E5').height_source === 'slab_above_marking' && P('E5').base === 0, 'W-L124-APPLY-STOREY', 'a wall with no per-handle marking still gets the storey rule');
+say(!(Math.abs(P('B2').base) < 1e-9), 'W-L124-CONTROL', 'a stated base is not silently flattened to 0 (a reader that ignored the base would FAIL this)');
+console.log(fail ? `FAIL (${fail})` : 'ALL PASS'); process.exit(fail ? 1 : 0);

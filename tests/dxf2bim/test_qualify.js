@@ -47,6 +47,7 @@ function plan(o) {
   if (o.splitSouth) { w.rect('A-WALL-FULL', 0, 0, 4000, 200); w.rect('A-WALL-FULL', 5000, 0, 10000, 200); } else w.rect('A-WALL-FULL', 0, 0, 10000, 200);
   w.rect('A-WALL-FULL', 0, 5800, 10000, 6000); w.rect('A-WALL-FULL', 0, 200, 200, 5800); w.rect('A-WALL-FULL', 9800, 200, 10000, 5800);
   if (o.interior) w.rect(o.interior, 4900, 200, 5100, 5800);
+  (o.cols || []).forEach(c => w.rect('S-COLS', c[0] - c[2], c[1] - c[2], c[0] + c[2], c[1] + c[2]));   // L2.9: [x, y, half size] mm
   if (o.shortFull) w.rect('A-WALL-FULL', 4900, 200, 5100, 1000);
   const gx = o.gx || [[100, '1'], [9900, '2']], gy = o.gy || [[100, 'A'], [5900, 'B']];
   gx.forEach(([x, l]) => { w.line('A-GRID', [x, -3300], [x, 9300]); w.bubble('A-GRID', l, [x, -3700]); w.bubble('A-GRID', l, [x, 9700]); });
@@ -164,6 +165,10 @@ only('G1b', 'a partition is demanded a grid (invented requirement)', { plan: { i
 only('QD4b', 'an exterior envelope axis without a grid line passes (L2.3 D4)', { plan: { gx: [[100, '1']] } }, ['QF:grid_missing']);
 const g1c = Q.qualify(set({ plan: { gx: [[100, '1'], [9500, '2']] } }).input, S);
 check('G1c', 'a grid line on no wall axis/face passes', g1c.blocking.some(x => x.code === 'QF:grid_off_axis' && x.pos_m === 9.5) && g1c.blocking.some(x => x.code === 'QF:grid_missing' && x.pos_m === 9.9), cc(g1c));
+const g1d = Q.qualify(set({ plan: { gx: [[100, '1'], [9500, '2']], cols: [[9500, 3000, 200]] } }).input, S);
+check('L2.9a', 'a grid line through a column centre is judged off axis (columns are grid evidence)', !g1d.blocking.some(x => x.code === 'QF:grid_off_axis' && x.pos_m === 9.5), cc(g1d));
+const g1e = Q.qualify(set({ plan: { gx: [[100, '1'], [9500, '2']], cols: [[9300, 3000, 200]] } }).input, S);
+check('L2.9b', 'a column 200 mm beside the line (outside tolerance) is read as evidence for it', g1e.blocking.some(x => x.code === 'QF:grid_off_axis' && x.pos_m === 9.5), cc(g1e));
 const g2a = Q.qualify(set({ plan: { gx: [[100, 'A'], [9900, 'B']], gy: [[100, '1'], [5900, '2']] } }).input, S);
 check('G2a', 'letters on constant-X lines (G2 series) pass', g2a.blocking.filter(x => x.code === 'QF:grid_label_series').length === 4 && g2a.blocking.every(x => /grid_label_series|elev_grid_missing|dim_missing/.test(x.code)), cc(g2a));
 only('G2b', 'grid labels out of order pass', { plan: { gx: [[100, '2'], [9900, '1']] }, elev: { FRONT: {}, REAR: {} } }, ['QF:grid_label_order', 'QF:elev_grid_missing', 'QF:elev_grid_missing', 'QF:elev_grid_missing', 'QF:elev_grid_missing']);
