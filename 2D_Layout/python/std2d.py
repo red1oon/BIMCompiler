@@ -985,12 +985,17 @@ def plan_storeys(model):
 
 
 def roof_storey(model):
-    """§L1.4 F4: the highest storey above the grid storey that gets no floor plan (its walls do not reach a cut plane)."""
+    """§L1.4 F4: the highest storey above the grid storey that gets no floor plan (its walls do not reach a cut plane).
+    §L1.9: when none has walls, the highest unplanned storey above the grid storey takes the roof plan if the model states a roof element
+    (IfcRoof, else the highest IfcSlab, R11): its outline is then that element's envelope."""
     gs = model['grid_storey']
     g_el = next(s['elev'] for s in model['storeys'] if s['name'] == gs)
     planned = {s['name'] for s in plan_storeys(model)}
     cand = [s for s in model['storeys'] if s['elev'] > g_el and s['name'] not in planned and s['has_walls']]
-    return cand[-1] if cand else None
+    if cand:
+        return cand[-1]
+    nowall = [s for s in model['storeys'] if s['elev'] > g_el and s['name'] not in planned and model['roofs']]
+    return nowall[-1] if nowall else None
 
 
 def _plan_dims(msp, E, grid, log, view):
@@ -1029,11 +1034,15 @@ def write_roof_plan(model, grid, storey, out_path, log):
     doc = new_doc()
     msp = doc.modelspace()
     rw = sorted((w for w in model['walls'] if w['storey'] == storey['name']), key=lambda w: w['guid'])
+    src = 'envelope of the roof storey walls'
+    if not rw:   # §L1.9: the roof storey holds no wall; the outline is the envelope of the model's roof element(s)
+        rw = sorted(model['roofs'], key=lambda e: e['guid'])
+        src = 'envelope of the roof element(s), §L1.9'
     env = envelope(rw)
     E = [mm(v) for v in env]
     pl = msp.add_lwpolyline([(E[0], E[2]), (E[1], E[2]), (E[1], E[3]), (E[0], E[3])], close=True, dxfattribs={'layer': 'A-ROOF'})
     _tag(pl, ','.join(w['guid'] for w in rw)[:255])
-    log(f'§ROOF_OUTLINE env=({E[0]:.2f},{E[2]:.2f})-({E[1]:.2f},{E[3]:.2f}) walls={len(rw)} (envelope of the roof storey walls)')
+    log(f'§ROOF_OUTLINE env=({E[0]:.2f},{E[2]:.2f})-({E[1]:.2f},{E[3]:.2f}) walls={len(rw)} ({src})')
     sky = sorted((e for e in model['els'] if e['cls'] == 'IfcWindow' and e['storey'] == storey['name']), key=lambda e: e['guid'])
     for k in sky:
         x0, x1, y0, y1 = mm(k['x0']), mm(k['x1']), mm(k['y0']), mm(k['y1'])

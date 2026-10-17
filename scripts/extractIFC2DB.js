@@ -20,11 +20,12 @@ const Database = require('better-sqlite3');
 const Core = require('./ifc_extract_core.js');
 
 const args = process.argv.slice(2);
-let ifcPath = null, outPath = null, discOverride = null;
+let ifcPath = null, outPath = null, discOverride = null, alsoPath = null;
 for (let i = 0; i < args.length; i++) {
   if (args[i] === '--ifc' && args[i+1]) ifcPath = args[++i];
   else if (args[i] === '-o' && args[i+1]) outPath = args[++i];
   else if (args[i] === '--disc' && args[i+1]) discOverride = args[++i];
+  else if (args[i] === '--also' && args[i+1]) alsoPath = args[++i];   // §L5.8: a second IFC contributes only its columns (grid evidence)
 }
 if (!ifcPath || !outPath) {
   console.error('Usage: node scripts/extractIFC2DB.js --ifc <file.ifc> -o <output.db> [--disc HEAT]');
@@ -51,6 +52,14 @@ async function main() {
   await Core.extractToDb({ WebIFC, ifcApi, ifcData, db, Buf: Buffer, discOverride,
     buildingName: path.basename(ifcPath, '.ifc').replace(/\.ifc$/i, ''), sourceName: path.basename(ifcPath),
     log: console.log, progress: m => process.stdout.write('\r  ' + m + '...') });
+  if (alsoPath) {
+    const edb = new Database(':memory:');
+    await Core.extractToDb({ WebIFC, ifcApi, ifcData: new Uint8Array(fs.readFileSync(alsoPath)), db: edb, Buf: Buffer, discOverride,
+      buildingName: path.basename(alsoPath, '.ifc'), sourceName: path.basename(alsoPath), log: () => {}, progress: () => {} });
+    const qm = sql => db.prepare(sql).all(), qe = sql => edb.prepare(sql).all();
+    Core.mergeElements(db, qm, qe, ['IfcColumn'], console.log);
+    edb.close();
+  }
   db.close();
   const fileSize = fs.statSync(outPath).size;
   console.log(`§DB_WRITTEN ${outPath} size=${(fileSize/1024/1024).toFixed(1)}MB`);

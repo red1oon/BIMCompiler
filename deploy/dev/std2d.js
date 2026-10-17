@@ -145,10 +145,12 @@
     const g = model.storeys.find(s => s.name === model.grid_storey).elev;
     return model.storeys.filter(s => s.elev >= g && model.walls.some(w => w.storey === s.name && w.z0 <= s.elev + CUT_OFFSET && s.elev + CUT_OFFSET < w.z1));
   }
-  function roofStorey(model) {
+  function roofStorey(model) {   // §L1.4 F4 + §L1.9 (a roof storey without walls takes the roof plan when the model states a roof element)
     const g = model.storeys.find(s => s.name === model.grid_storey).elev, planned = new Set(planStoreys(model).map(s => s.name));
     const cand = model.storeys.filter(s => s.elev > g && !planned.has(s.name) && s.has_walls);
-    return cand.length ? cand[cand.length - 1] : null;
+    if (cand.length) return cand[cand.length - 1];
+    const nowall = model.storeys.filter(s => s.elev > g && !planned.has(s.name) && model.roofs.length);
+    return nowall.length ? nowall[nowall.length - 1] : null;
   }
   const planView = name => 'FLOOR_' + ((name.toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_+|_+$/g, '')) || 'UNNAMED');
 
@@ -520,9 +522,11 @@
   }
   function writeRoofPlan(model, grid, storey, log) {
     log.add(`§VIEW ROOF storey='${storey.name}' elev=${fx(storey.elev, 4)}`);
-    const doc = newDoc(), rw = model.walls.filter(w => w.storey === storey.name).sort((a, b) => (a.guid < b.guid ? -1 : 1)), E = envelope(rw).map(mm);
+    const doc = newDoc(); let rw = model.walls.filter(w => w.storey === storey.name).sort((a, b) => (a.guid < b.guid ? -1 : 1)), src = 'envelope of the roof storey walls';
+    if (!rw.length) { rw = model.roofs.slice().sort((a, b) => (a.guid < b.guid ? -1 : 1)); src = 'envelope of the roof element(s), §L1.9'; }   // §L1.9
+    const E = envelope(rw).map(mm);
     doc.lwpoly('A-ROOF', [[E[0], E[2]], [E[1], E[2]], [E[1], E[3]], [E[0], E[3]]], true, tag(rw.map(w => w.guid).join(',').slice(0, 255)));
-    log.add(`§ROOF_OUTLINE env=(${fx(E[0], 2)},${fx(E[2], 2)})-(${fx(E[1], 2)},${fx(E[3], 2)}) walls=${rw.length} (envelope of the roof storey walls)`);
+    log.add(`§ROOF_OUTLINE env=(${fx(E[0], 2)},${fx(E[2], 2)})-(${fx(E[1], 2)},${fx(E[3], 2)}) walls=${rw.length} (${src})`);
     model.els.filter(e => e.cls === 'IfcWindow' && e.storey === storey.name).sort((a, b) => (a.guid < b.guid ? -1 : 1)).forEach(k => {
       const x0 = mm(k.x0), x1 = mm(k.x1), y0 = mm(k.y0), y1 = mm(k.y1);
       doc.lwpoly('A-GLAZ', [[x0, y0], [x1, y0], [x1, y1], [x0, y1]], true, tag(k.guid));
