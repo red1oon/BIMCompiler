@@ -117,6 +117,7 @@ public class Oracle implements Runnable {
 			if ("recentitems".equals(op)) return recentitems(ctx, req);
 			if ("tabcust".equals(op)) return tabcust(ctx, req);
 			if ("tabmode".equals(op)) return tabmode(ctx, req);
+			if ("postdoc".equals(op)) return postdoc(ctx, req);
 			if ("userqueries".equals(op)) {   // §UDP-3: FindWindow's saved-query list (MUserQuery.get) + userCanSave per entry
 				JSONArray a = new JSONArray();
 				for (MUserQuery uq : MUserQuery.get(ctx, req.getInt("tab"))) a.put(new JSONObject().put("id", uq.getAD_UserQuery_ID()).put("name", uq.getName()).put("canSave", uq.userCanSave()));
@@ -304,6 +305,45 @@ public class Oracle implements Runnable {
 			if (cu != null)
 				for (org.adempiere.model.MTabCustomization t : new Query(ctx, org.adempiere.model.MTabCustomization.Table_Name, "AD_User_ID=? AND AD_Tab_ID=?", null).setParameters(user, cu.getInt("tab")).<org.adempiere.model.MTabCustomization>list()) t.deleteEx(true);
 		}
+	}
+
+	// §UDP-7: post existing pilot documents through the REAL DocManager.postDocument inside ONE transaction that is ROLLED BACK (Posted, Fact_Acct and
+	// the document are untouched afterwards). MNote is saved by Doc.post OUTSIDE that trx (null trx), so the op reads the notes it made and deletes them.
+	// req: table (name), ids [..], optional repost (default true). Result per id: error (postDocument's return), posted (column read in the trx), facts, notes[{msg,text}].
+	private static JSONObject postdoc(Properties ctx, JSONObject req) throws Exception {
+		String table = req.getString("table");
+		MTable mt = MTable.get(ctx, table);
+		int tid = mt.getAD_Table_ID();
+		JSONArray out = new JSONArray(), ids = req.getJSONArray("ids");
+		for (int i = 0; i < ids.length(); i++) {
+			int id = ids.getInt(i);
+			String trxName = Trx.createTrxName("PostProbe");
+			Trx trx = Trx.get(trxName, true);
+			JSONObject o = new JSONObject().put("id", id);
+			try {
+				int client = DB.getSQLValue(null, "SELECT AD_Client_ID FROM " + table + " WHERE " + table + "_ID=?", id);
+				org.compiere.model.MAcctSchema[] ass = org.compiere.model.MAcctSchema.getClientAcctSchema(ctx, client);
+				long t0 = System.currentTimeMillis();
+				String err;
+				try { err = org.compiere.acct.DocManager.postDocument(ass, tid, id, true, req.optBoolean("repost", true), trxName); }
+				catch (Throwable e) { err = "EXC " + e.getClass().getSimpleName() + ": " + String.valueOf(e.getMessage()); }
+				o.put("error", err == null ? JSONObject.NULL : err);
+				o.put("posted", String.valueOf(DB.getSQLValueString(trxName, "SELECT Posted FROM " + table + " WHERE " + table + "_ID=?", id)));
+				o.put("facts", DB.getSQLValue(trxName, "SELECT COUNT(*) FROM Fact_Acct WHERE AD_Table_ID=? AND Record_ID=?", tid, id));
+				JSONArray notes = new JSONArray();
+				try (PreparedStatement ps = DB.prepareStatement("SELECT n.AD_Note_ID, m.Value, n.TextMsg, n.Reference, n.AD_User_ID, n.AD_Client_ID, n.AD_Org_ID, n.Processed FROM AD_Note n LEFT JOIN AD_Message m ON m.AD_Message_ID=n.AD_Message_ID WHERE n.AD_Table_ID=? AND n.Record_ID=? AND n.Created>=?", null)) {
+					ps.setInt(1, tid); ps.setInt(2, id); ps.setTimestamp(3, new Timestamp(t0 - 1000));
+					try (ResultSet rs = ps.executeQuery()) { while (rs.next()) notes.put(new JSONObject().put("noteId", rs.getInt(1)).put("msg", rs.getString(2)).put("text", rs.getString(3)).put("reference", rs.getString(4)).put("user", rs.getInt(5)).put("client", rs.getInt(6)).put("org", rs.getInt(7)).put("processed", rs.getString(8))); }
+				}
+				for (int k = 0; k < notes.length(); k++) DB.executeUpdateEx("DELETE FROM AD_Note WHERE AD_Note_ID=?", new Object[] { notes.getJSONObject(k).getInt("noteId") }, null);
+				o.put("notes", notes);
+			} finally {
+				trx.rollback();
+				trx.close();
+			}
+			out.put(o);
+		}
+		return new JSONObject().put("ok", true).put("docs", out);
 	}
 
 	private static JSONObject ctxDump(Properties ctx) {
