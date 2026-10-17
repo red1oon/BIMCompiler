@@ -1056,7 +1056,12 @@ def roof_storey(model):
     if cand:
         return cand[-1]
     nowall = [s for s in model['storeys'] if s['elev'] > g_el and s['name'] not in planned and model['roofs']]
-    return nowall[-1] if nowall else None
+    if nowall:
+        return nowall[-1]
+    if model['roofs'] and min(r['z0'] for r in model['roofs']) > g_el:   # §L1.13: no storey left: a pseudo-storey at the roof element's lowest z
+        z = min(r['z0'] for r in model['roofs'])
+        return dict(name='ROOF', elev=z, src='roof element z0', has_walls=False)
+    return None
 
 
 def _plan_dims(msp, E, grid, log, view):
