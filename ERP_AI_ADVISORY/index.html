@@ -1586,10 +1586,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#the-six-rules" class="md-nav__link">
+  <a href="#the-nine-rules" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The six rules
+        The nine rules
       
     </span>
   </a>
@@ -2631,10 +2631,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#the-six-rules" class="md-nav__link">
+  <a href="#the-nine-rules" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The six rules
+        The nine rules
       
     </span>
   </a>
@@ -2835,17 +2835,22 @@
 <h1 id="letting-an-ai-work-on-the-kernel-erp-safely">Letting an AI work on the Kernel ERP — safely<a class="headerlink" href="#letting-an-ai-work-on-the-kernel-erp-safely" title="Permanent link">&para;</a></h1>
 <blockquote>
 <p><strong>Status: SPEC + verified recipe (2026-10-17).</strong> Every request block below that carries a <code>ws-run</code> marker is <strong>executed by a witness</strong> (<code>erp/tests/witness_ws_advisory.js</code>) against a real host, and its stated outcome is checked; a block that stops working turns that witness red. Nothing here is a promise about what an AI will <em>do</em> — only about what the twin will <em>allow</em> it to do.</p>
+<p><strong>Read this first — evaluation host.</strong> In this release the web-service host keeps its data <strong>in memory</strong>: what an AI writes through it is <strong>not saved</strong> when the host stops, and it does not touch the books in your browser. Use it to learn, test an integration, and rehearse the safety controls below. Persisting writes into a real company is a separate step that is not built yet. Treat the control model on this page as the part that carries over.</p>
 </blockquote>
 <p>The Kernel ERP can speak the <strong>same web-service API as iDempiere</strong> (ADInterface, XML and JSON). Anything that can make an HTTP call — a script, an automation tool, an AI agent — can use it by changing the base URL. That is useful, and it is also the moment most people hand an AI their own login. <strong>Don't.</strong> This page is the safe way.</p>
-<h2 id="the-six-rules">The six rules<a class="headerlink" href="#the-six-rules" title="Permanent link">&para;</a></h2>
+<h2 id="the-nine-rules">The nine rules<a class="headerlink" href="#the-nine-rules" title="Permanent link">&para;</a></h2>
 <ol>
 <li><strong>It is off until you turn it on.</strong> The <em>Web Services</em> plugin is installed <strong>stopped</strong>. The host serves nothing (HTTP 404) until you export its config from the plugin.</li>
 <li><strong>The AI gets its own identity</strong> — its own user and its own role, limited to <strong>one organisation</strong>. Never your login, never an administrator role.</li>
-<li><strong>Least privilege, by name.</strong> The role is granted exactly the service types you list. There is no "all". A write type needs <code>--write</code>; a type that <strong>completes, closes, voids or reverses</strong> a document needs a further <code>--allow-final</code>. No row, no access — the twin answers with iDempiere's own refusal.</li>
+<li><strong>Least privilege, by name.</strong> The role is granted exactly the service types you list. There is no "all". A write type needs <code>--write</code>; a type that <strong>completes, closes, voids or reverses</strong> a document needs a further <code>--allow-final</code>. No row, no access — the twin answers with iDempiere's own refusal. (OWASP <em>LLM06 Excessive Agency</em>: minimise functionality, permissions and autonomy.)</li>
 <li><strong>Draft, don't finish.</strong> Let the AI <em>read</em> and <em>prepare drafts</em>. A person completes. A doc-action type has its action <strong>fixed</strong> by the type (iDempiere's constant parameter): the AI cannot ask for a different one.</li>
-<li><strong>Everything it does is recorded under its name</strong>, in a hash-chained journal. Edit one line and the chain breaks.</li>
+<li><strong>Short-lived and rate-limited, by the host.</strong> An identity switches itself off after <code>--expires</code> hours (default <strong>7 days</strong>), is capped at <code>--max-calls-per-minute</code> (default <strong>120</strong>) and <code>--max-writes-per-hour</code> (default <strong>50</strong>). A refused call writes nothing and raises a <code>§WS-ALERT</code>. A looping model cannot talk past a counter.</li>
+<li><strong>A person approves what matters, bound to the exact request.</strong> With <code>--approve-writes</code> every write is <em>staged</em>, not run; the person sees its digest and approves <em>that request</em> with <code>ws_agent.js approve</code>. A different request cannot ride on the approval, and an approval runs once.</li>
+<li><strong>Never pair it with a way out.</strong> An agent that can read private data, reads text an attacker could write (a customer note, a product description), <strong>and</strong> can send data out (email, web, chat) can be tricked into leaking — Simon Willison's <em>lethal trifecta</em>. The ERP side has no outbound channel; <strong>do not give the model one</strong>. If it must have one, give it a different, read-nothing identity.</li>
+<li><strong>Everything it does is recorded under its name</strong>, in a hash-chained journal (and, for approved writes, who approved). Edit one line and the chain breaks.</li>
 <li><strong>One switch stops it</strong>: revoke the identity (the next call is refused) or stop the plugin (the host goes dark).</li>
 </ol>
+<p><em>Why these:</em> the controls follow the published guidance — <a href="https://genai.owasp.org/llmrisk/llm062025-excessive-agency/">OWASP LLM06:2025</a> and its <a href="https://cheatsheetseries.owasp.org/cheatsheets/AI_Agent_Security_Cheat_Sheet.html">AI Agent Security cheat sheet</a> (least privilege, approval bound to the exact action, budgets and limits, logging), the <a href="https://modelcontextprotocol.io/specification/draft/basic/security_best_practices">MCP security best practices</a> (scope minimisation, loopback-only plain HTTP), the NSA/CISA <em>Careful Adoption of Agentic AI Services</em> (per-agent identity, short-lived credentials, incremental rollout), and Willison's trifecta. None of them says a prompt is a control; neither do we.</p>
 <h2 id="before-you-connect">Before you connect<a class="headerlink" href="#before-you-connect" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -2873,14 +2878,18 @@
 <h3 id="1-turn-the-plugin-on-export-its-config">1 — Turn the plugin on, export its config<a class="headerlink" href="#1-turn-the-plugin-on-export-its-config" title="Permanent link">&para;</a></h3>
 <p>In the ERP open <strong>Plugins &amp; Releases</strong>, find <strong>Web Services (ADInterface)</strong> (state: <em>Installed</em>), click <strong>Enable</strong>. A <strong>Web Services</strong> pill appears in the tray; open it and click <strong>Export host config</strong>. Save <code>ws_host.json</code> next to where you will run the host. (Stopping the plugin and re-exporting — or deleting the file — switches the host off again, at once.)</p>
 <h3 id="2-give-your-ai-its-own-identity">2 — Give your AI its own identity<a class="headerlink" href="#2-give-your-ai-its-own-identity" title="Permanent link">&para;</a></h3>
-<p><div class="highlight"><pre><span></span><code>node<span class="w"> </span>erp/ws_agent.js<span class="w"> </span>create<span class="w"> </span>--dir<span class="w"> </span>agents<span class="w"> </span>--name<span class="w"> </span>sales-assistant<span class="w"> </span>--client<span class="w"> </span><span class="m">11</span><span class="w"> </span>--org<span class="w"> </span><span class="m">11</span><span class="w"> </span>--write<span class="w"> </span><span class="se">\</span>
+<p><div class="highlight"><pre><span></span><code>node<span class="w"> </span>erp/ws_agent.js<span class="w"> </span>create<span class="w"> </span>--dir<span class="w"> </span>agents<span class="w"> </span>--name<span class="w"> </span>sales-assistant<span class="w"> </span>--client<span class="w"> </span><span class="m">11</span><span class="w"> </span>--org<span class="w"> </span><span class="m">11</span><span class="w"> </span>--write<span class="w"> </span>--expires<span class="w"> </span><span class="m">24</span><span class="w"> </span>--max-writes-per-hour<span class="w"> </span><span class="m">20</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--read<span class="w"> </span>C_BPartner:Value,Name,IsCustomer,SO_CreditLimit<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--read<span class="w"> </span>C_Order:DocumentNo,DocStatus,GrandTotal,C_BPartner_ID<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--create<span class="w"> </span>C_Order:AD_Org_ID,C_BPartner_ID,C_BPartner_Location_ID,C_DocTypeTarget_ID,M_Warehouse_ID,M_PriceList_ID,C_Currency_ID,C_PaymentTerm_ID,SalesRep_ID,DateOrdered,DateAcct,DatePromised,Description<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--create<span class="w"> </span>C_OrderLine:AD_Org_ID,C_Order_ID,Line,M_Product_ID,QtyEntered,QtyOrdered,C_UOM_ID,PriceEntered,PriceActual,PriceList,C_Tax_ID<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--docaction<span class="w"> </span>C_Order:PR
 </code></pre></div>
-This writes <code>agents/agent-000-sales-assistant.sql</code> and prints the credentials <strong>once</strong> (store the password as a secret). The identity can: read partners and orders (only the columns listed), create an order and its lines, and <strong>Prepare</strong> an order. It cannot complete one, change a partner, or see another organisation. (<code>--docaction C_Order:CO</code> would be refused without <code>--allow-final</code>.)</p>
+This writes <code>agents/agent-000-sales-assistant.sql</code> and prints the credentials <strong>once</strong> (store the password as a secret). The identity can: read partners and orders (only the columns listed), create an order and its lines, and <strong>Prepare</strong> an order. It cannot complete one, change a partner, or see another organisation. (<code>--docaction C_Order:CO</code> would be refused without <code>--allow-final</code>.) It also expires in 24 hours and may make at most 20 writes an hour. Add <code>--approve-writes</code> to have a person approve every write:</p>
+<div class="highlight"><pre><span></span><code>node erp/ws_agent.js pending --dir agents                       # lists staged requests with their digest
+node erp/ws_agent.js approve --dir agents --id 1 --digest &lt;the 12 characters shown&gt;
+node erp/ws_agent.js reject  --dir agents --id 1
+</code></pre></div>
 <h3 id="3-start-the-host">3 — Start the host<a class="headerlink" href="#3-start-the-host" title="Permanent link">&para;</a></h3>
 <p><div class="highlight"><pre><span></span><code>node<span class="w"> </span>erp/ws_server.js<span class="w"> </span><span class="m">8089</span><span class="w"> </span>--config<span class="w"> </span>ws_host.json<span class="w"> </span>--agents<span class="w"> </span>agents<span class="w"> </span>--journal<span class="w"> </span>ws_journal.jsonl
 </code></pre></div>
@@ -2890,7 +2899,7 @@ This writes <code>agents/agent-000-sales-assistant.sql</code> and prints the cre
 <!-- ws-run id=read-partner method=query_data expect="C&amp;W Construction" -->
 <p><div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
 <span class="nt">&lt;ModelCRUDRequest</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;http://idempiere.org/ADInterface/1_0&quot;</span><span class="nt">&gt;</span>
-<span class="w">  </span><span class="nt">&lt;ModelCRUD&gt;&lt;serviceType&gt;</span>AI_Query_C_BPartner<span class="nt">&lt;/serviceType&gt;&lt;TableName&gt;</span>C_BPartner<span class="nt">&lt;/TableName&gt;&lt;RecordID&gt;</span>0<span class="nt">&lt;/RecordID&gt;</span>
+<span class="w">  </span><span class="nt">&lt;ModelCRUD&gt;&lt;serviceType&gt;</span>AI_{{AGENT}}_Query_C_BPartner<span class="nt">&lt;/serviceType&gt;&lt;TableName&gt;</span>C_BPartner<span class="nt">&lt;/TableName&gt;&lt;RecordID&gt;</span>0<span class="nt">&lt;/RecordID&gt;</span>
 <span class="w">    </span><span class="nt">&lt;Filter&gt;</span>value=&#39;C<span class="ni">&amp;amp;</span>W&#39;<span class="nt">&lt;/Filter&gt;&lt;Action&gt;</span>Read<span class="nt">&lt;/Action&gt;&lt;/ModelCRUD&gt;</span>
 <span class="w">  </span><span class="nt">&lt;ADLoginRequest&gt;&lt;user&gt;</span>{{USER}}<span class="nt">&lt;/user&gt;&lt;pass&gt;</span>{{PASS}}<span class="nt">&lt;/pass&gt;&lt;lang&gt;</span>en_US<span class="nt">&lt;/lang&gt;&lt;ClientID&gt;</span>{{CLIENT}}<span class="nt">&lt;/ClientID&gt;</span>
 <span class="w">    </span><span class="nt">&lt;RoleID&gt;</span>{{ROLE}}<span class="nt">&lt;/RoleID&gt;&lt;OrgID&gt;</span>{{ORG}}<span class="nt">&lt;/OrgID&gt;&lt;WarehouseID&gt;</span>{{WH}}<span class="nt">&lt;/WarehouseID&gt;&lt;stage&gt;</span>0<span class="nt">&lt;/stage&gt;&lt;/ADLoginRequest&gt;</span>
@@ -2900,7 +2909,7 @@ The answer lists only the four columns the type allows. Ask for a column it does
 <!-- ws-run id=read-not-allowed method=query_data expect="input column Description not allowed" -->
 <div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
 <span class="nt">&lt;ModelCRUDRequest</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;http://idempiere.org/ADInterface/1_0&quot;</span><span class="nt">&gt;</span>
-<span class="w">  </span><span class="nt">&lt;ModelCRUD&gt;&lt;serviceType&gt;</span>AI_Query_C_BPartner<span class="nt">&lt;/serviceType&gt;&lt;TableName&gt;</span>C_BPartner<span class="nt">&lt;/TableName&gt;&lt;RecordID&gt;</span>0<span class="nt">&lt;/RecordID&gt;</span>
+<span class="w">  </span><span class="nt">&lt;ModelCRUD&gt;&lt;serviceType&gt;</span>AI_{{AGENT}}_Query_C_BPartner<span class="nt">&lt;/serviceType&gt;&lt;TableName&gt;</span>C_BPartner<span class="nt">&lt;/TableName&gt;&lt;RecordID&gt;</span>0<span class="nt">&lt;/RecordID&gt;</span>
 <span class="w">    </span><span class="nt">&lt;Action&gt;</span>Read<span class="nt">&lt;/Action&gt;&lt;DataRow&gt;&lt;field</span><span class="w"> </span><span class="na">column=</span><span class="s">&quot;Description&quot;</span><span class="nt">&gt;&lt;val&gt;</span>x<span class="nt">&lt;/val&gt;&lt;/field&gt;&lt;/DataRow&gt;&lt;/ModelCRUD&gt;</span>
 <span class="w">  </span><span class="nt">&lt;ADLoginRequest&gt;&lt;user&gt;</span>{{USER}}<span class="nt">&lt;/user&gt;&lt;pass&gt;</span>{{PASS}}<span class="nt">&lt;/pass&gt;&lt;lang&gt;</span>en_US<span class="nt">&lt;/lang&gt;&lt;ClientID&gt;</span>{{CLIENT}}<span class="nt">&lt;/ClientID&gt;</span>
 <span class="w">    </span><span class="nt">&lt;RoleID&gt;</span>{{ROLE}}<span class="nt">&lt;/RoleID&gt;&lt;OrgID&gt;</span>{{ORG}}<span class="nt">&lt;/OrgID&gt;&lt;WarehouseID&gt;</span>{{WH}}<span class="nt">&lt;/WarehouseID&gt;&lt;stage&gt;</span>0<span class="nt">&lt;/stage&gt;&lt;/ADLoginRequest&gt;</span>
@@ -2909,7 +2918,7 @@ The answer lists only the four columns the type allows. Ask for a column it does
 <h3 id="5-the-same-call-as-json">5 — The same call as JSON<a class="headerlink" href="#5-the-same-call-as-json" title="Permanent link">&para;</a></h3>
 <p>Send <code>Content-Type: application/json</code> to the <strong>same URL</strong>. Numbers stay numbers, a null is <code>{"@nil":true}</code>, one child is an object, several are an array (iDempiere's own JSON binding):</p>
 <!-- ws-run id=read-partner-json method=query_data format=json expect="C&W Construction" -->
-<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;ModelCRUDRequest&quot;</span><span class="p">:{</span><span class="nt">&quot;ModelCRUD&quot;</span><span class="p">:{</span><span class="nt">&quot;serviceType&quot;</span><span class="p">:</span><span class="s2">&quot;AI_Query_C_BPartner&quot;</span><span class="p">,</span><span class="nt">&quot;TableName&quot;</span><span class="p">:</span><span class="s2">&quot;C_BPartner&quot;</span><span class="p">,</span><span class="nt">&quot;RecordID&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;ModelCRUDRequest&quot;</span><span class="p">:{</span><span class="nt">&quot;ModelCRUD&quot;</span><span class="p">:{</span><span class="nt">&quot;serviceType&quot;</span><span class="p">:</span><span class="s2">&quot;AI_{{AGENT}}_Query_C_BPartner&quot;</span><span class="p">,</span><span class="nt">&quot;TableName&quot;</span><span class="p">:</span><span class="s2">&quot;C_BPartner&quot;</span><span class="p">,</span><span class="nt">&quot;RecordID&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span>
 <span class="w"> </span><span class="nt">&quot;Filter&quot;</span><span class="p">:</span><span class="s2">&quot;value=&#39;C&amp;W&#39;&quot;</span><span class="p">,</span><span class="nt">&quot;Action&quot;</span><span class="p">:</span><span class="s2">&quot;Read&quot;</span><span class="p">},</span>
 <span class="w"> </span><span class="nt">&quot;ADLoginRequest&quot;</span><span class="p">:{</span><span class="nt">&quot;user&quot;</span><span class="p">:</span><span class="s2">&quot;{{USER}}&quot;</span><span class="p">,</span><span class="nt">&quot;pass&quot;</span><span class="p">:</span><span class="s2">&quot;{{PASS}}&quot;</span><span class="p">,</span><span class="nt">&quot;lang&quot;</span><span class="p">:</span><span class="s2">&quot;en_US&quot;</span><span class="p">,</span><span class="nt">&quot;ClientID&quot;</span><span class="p">:{{</span><span class="err">CLIENT</span><span class="p">}},</span><span class="nt">&quot;RoleID&quot;</span><span class="p">:{{</span><span class="err">ROLE</span><span class="p">}},</span>
 <span class="w"> </span><span class="nt">&quot;OrgID&quot;</span><span class="p">:{{</span><span class="err">ORG</span><span class="p">}},</span><span class="nt">&quot;WarehouseID&quot;</span><span class="p">:{{</span><span class="err">WH</span><span class="p">}},</span><span class="nt">&quot;stage&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">}}}</span>
@@ -2919,7 +2928,7 @@ The answer lists only the four columns the type allows. Ask for a column it does
 <!-- ws-run id=create-order method=create_data capture=ORDER_ID expect="RecordID=" -->
 <p><div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
 <span class="nt">&lt;ModelCRUDRequest</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;http://idempiere.org/ADInterface/1_0&quot;</span><span class="nt">&gt;</span>
-<span class="w">  </span><span class="nt">&lt;ModelCRUD&gt;&lt;serviceType&gt;</span>AI_Create_C_Order<span class="nt">&lt;/serviceType&gt;&lt;TableName&gt;</span>C_Order<span class="nt">&lt;/TableName&gt;&lt;RecordID&gt;</span>0<span class="nt">&lt;/RecordID&gt;&lt;Action&gt;</span>Create<span class="nt">&lt;/Action&gt;</span>
+<span class="w">  </span><span class="nt">&lt;ModelCRUD&gt;&lt;serviceType&gt;</span>AI_{{AGENT}}_Create_C_Order<span class="nt">&lt;/serviceType&gt;&lt;TableName&gt;</span>C_Order<span class="nt">&lt;/TableName&gt;&lt;RecordID&gt;</span>0<span class="nt">&lt;/RecordID&gt;&lt;Action&gt;</span>Create<span class="nt">&lt;/Action&gt;</span>
 <span class="w">    </span><span class="nt">&lt;DataRow&gt;</span>
 <span class="w">      </span><span class="nt">&lt;field</span><span class="w"> </span><span class="na">column=</span><span class="s">&quot;AD_Org_ID&quot;</span><span class="nt">&gt;&lt;val&gt;</span>11<span class="nt">&lt;/val&gt;&lt;/field&gt;&lt;field</span><span class="w"> </span><span class="na">column=</span><span class="s">&quot;C_BPartner_ID&quot;</span><span class="nt">&gt;&lt;val&gt;</span>117<span class="nt">&lt;/val&gt;&lt;/field&gt;</span>
 <span class="w">      </span><span class="nt">&lt;field</span><span class="w"> </span><span class="na">column=</span><span class="s">&quot;C_BPartner_Location_ID&quot;</span><span class="nt">&gt;&lt;val&gt;</span>112<span class="nt">&lt;/val&gt;&lt;/field&gt;&lt;field</span><span class="w"> </span><span class="na">column=</span><span class="s">&quot;C_DocTypeTarget_ID&quot;</span><span class="nt">&gt;&lt;val&gt;</span>133<span class="nt">&lt;/val&gt;&lt;/field&gt;</span>
@@ -2937,7 +2946,7 @@ Add a line (dates need the full <code>yyyy-mm-dd hh:mm:ss</code> form — iDempi
 <!-- ws-run id=create-line method=create_data expect="RecordID=" -->
 <p><div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
 <span class="nt">&lt;ModelCRUDRequest</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;http://idempiere.org/ADInterface/1_0&quot;</span><span class="nt">&gt;</span>
-<span class="w">  </span><span class="nt">&lt;ModelCRUD&gt;&lt;serviceType&gt;</span>AI_Create_C_OrderLine<span class="nt">&lt;/serviceType&gt;&lt;TableName&gt;</span>C_OrderLine<span class="nt">&lt;/TableName&gt;&lt;RecordID&gt;</span>0<span class="nt">&lt;/RecordID&gt;&lt;Action&gt;</span>Create<span class="nt">&lt;/Action&gt;</span>
+<span class="w">  </span><span class="nt">&lt;ModelCRUD&gt;&lt;serviceType&gt;</span>AI_{{AGENT}}_Create_C_OrderLine<span class="nt">&lt;/serviceType&gt;&lt;TableName&gt;</span>C_OrderLine<span class="nt">&lt;/TableName&gt;&lt;RecordID&gt;</span>0<span class="nt">&lt;/RecordID&gt;&lt;Action&gt;</span>Create<span class="nt">&lt;/Action&gt;</span>
 <span class="w">    </span><span class="nt">&lt;DataRow&gt;</span>
 <span class="w">      </span><span class="nt">&lt;field</span><span class="w"> </span><span class="na">column=</span><span class="s">&quot;AD_Org_ID&quot;</span><span class="nt">&gt;&lt;val&gt;</span>11<span class="nt">&lt;/val&gt;&lt;/field&gt;&lt;field</span><span class="w"> </span><span class="na">column=</span><span class="s">&quot;C_Order_ID&quot;</span><span class="nt">&gt;&lt;val&gt;</span>{{ORDER_ID}}<span class="nt">&lt;/val&gt;&lt;/field&gt;</span>
 <span class="w">      </span><span class="nt">&lt;field</span><span class="w"> </span><span class="na">column=</span><span class="s">&quot;Line&quot;</span><span class="nt">&gt;&lt;val&gt;</span>10<span class="nt">&lt;/val&gt;&lt;/field&gt;&lt;field</span><span class="w"> </span><span class="na">column=</span><span class="s">&quot;M_Product_ID&quot;</span><span class="nt">&gt;&lt;val&gt;</span>134<span class="nt">&lt;/val&gt;&lt;/field&gt;</span>
@@ -2954,7 +2963,7 @@ Prepare the order. This is the <strong>only</strong> document action the identit
 <!-- ws-run id=prepare-order method=set_docaction expect="RecordID=" -->
 <p><div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
 <span class="nt">&lt;ModelSetDocActionRequest</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;http://idempiere.org/ADInterface/1_0&quot;</span><span class="nt">&gt;</span>
-<span class="w">  </span><span class="nt">&lt;ModelSetDocAction&gt;&lt;serviceType&gt;</span>AI_DocAction_C_Order_PR<span class="nt">&lt;/serviceType&gt;&lt;tableName&gt;</span>C_Order<span class="nt">&lt;/tableName&gt;</span>
+<span class="w">  </span><span class="nt">&lt;ModelSetDocAction&gt;&lt;serviceType&gt;</span>AI_{{AGENT}}_DocAction_C_Order_PR<span class="nt">&lt;/serviceType&gt;&lt;tableName&gt;</span>C_Order<span class="nt">&lt;/tableName&gt;</span>
 <span class="w">    </span><span class="nt">&lt;recordID&gt;</span>{{ORDER_ID}}<span class="nt">&lt;/recordID&gt;&lt;docAction&gt;</span>PR<span class="nt">&lt;/docAction&gt;&lt;/ModelSetDocAction&gt;</span>
 <span class="w">  </span><span class="nt">&lt;ADLoginRequest&gt;&lt;user&gt;</span>{{USER}}<span class="nt">&lt;/user&gt;&lt;pass&gt;</span>{{PASS}}<span class="nt">&lt;/pass&gt;&lt;lang&gt;</span>en_US<span class="nt">&lt;/lang&gt;&lt;ClientID&gt;</span>{{CLIENT}}<span class="nt">&lt;/ClientID&gt;</span>
 <span class="w">    </span><span class="nt">&lt;RoleID&gt;</span>{{ROLE}}<span class="nt">&lt;/RoleID&gt;&lt;OrgID&gt;</span>{{ORG}}<span class="nt">&lt;/OrgID&gt;&lt;WarehouseID&gt;</span>{{WH}}<span class="nt">&lt;/WarehouseID&gt;&lt;stage&gt;</span>0<span class="nt">&lt;/stage&gt;&lt;/ADLoginRequest&gt;</span>
@@ -2964,7 +2973,7 @@ Prepare the order. This is the <strong>only</strong> document action the identit
 <!-- ws-run id=try-complete method=set_docaction expect="RecordID=" assert-order-status=IP -->
 <p><div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
 <span class="nt">&lt;ModelSetDocActionRequest</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;http://idempiere.org/ADInterface/1_0&quot;</span><span class="nt">&gt;</span>
-<span class="w">  </span><span class="nt">&lt;ModelSetDocAction&gt;&lt;serviceType&gt;</span>AI_DocAction_C_Order_PR<span class="nt">&lt;/serviceType&gt;&lt;tableName&gt;</span>C_Order<span class="nt">&lt;/tableName&gt;</span>
+<span class="w">  </span><span class="nt">&lt;ModelSetDocAction&gt;&lt;serviceType&gt;</span>AI_{{AGENT}}_DocAction_C_Order_PR<span class="nt">&lt;/serviceType&gt;&lt;tableName&gt;</span>C_Order<span class="nt">&lt;/tableName&gt;</span>
 <span class="w">    </span><span class="nt">&lt;recordID&gt;</span>{{ORDER_ID}}<span class="nt">&lt;/recordID&gt;&lt;docAction&gt;</span>CO<span class="nt">&lt;/docAction&gt;&lt;/ModelSetDocAction&gt;</span>
 <span class="w">  </span><span class="nt">&lt;ADLoginRequest&gt;&lt;user&gt;</span>{{USER}}<span class="nt">&lt;/user&gt;&lt;pass&gt;</span>{{PASS}}<span class="nt">&lt;/pass&gt;&lt;lang&gt;</span>en_US<span class="nt">&lt;/lang&gt;&lt;ClientID&gt;</span>{{CLIENT}}<span class="nt">&lt;/ClientID&gt;</span>
 <span class="w">    </span><span class="nt">&lt;RoleID&gt;</span>{{ROLE}}<span class="nt">&lt;/RoleID&gt;&lt;OrgID&gt;</span>{{ORG}}<span class="nt">&lt;/OrgID&gt;&lt;WarehouseID&gt;</span>{{WH}}<span class="nt">&lt;/WarehouseID&gt;&lt;stage&gt;</span>0<span class="nt">&lt;/stage&gt;&lt;/ADLoginRequest&gt;</span>
@@ -3047,6 +3056,11 @@ Two task prompts that work with it: <em>"List the customers with a credit limit 
 <td><code>W-WS-AGENT</code> 8/8</td>
 </tr>
 <tr>
+<td>Expiry, rate/volume limits, staged approval by digest, alerts</td>
+<td>✅</td>
+<td><code>W-WS-LIMITS</code> 8/8</td>
+</tr>
+<tr>
 <td>Plugin default off, export, stop</td>
 <td>✅</td>
 <td><code>W-WS-PLUGIN</code> 6/6</td>
@@ -3096,10 +3110,26 @@ Two task prompts that work with it: <em>"List the customers with a credit limit 
 <td><code>java.lang.IllegalStateException: Status=CO - Invalid Actions: Process=CO, Doc=CO</code></td>
 <td>That action is not valid in the document's current status.</td>
 </tr>
+<tr>
+<td><code>Web Service Error: write limit reached for this identity (N per hour); nothing was written</code></td>
+<td>The host's volume cap. Raise it on purpose, or investigate why the agent is looping. A <code>§WS-ALERT write-limit</code> line is in the host log.</td>
+</tr>
+<tr>
+<td><code>Web Service Error: call limit reached for this identity (N per minute)</code></td>
+<td>The per-minute call cap.</td>
+</tr>
+<tr>
+<td><code>Pending approval: request #N … NOTHING was written</code></td>
+<td>The identity runs with <code>--approve-writes</code>. A person approves it by digest (<code>ws_agent.js pending</code> / <code>approve</code>). The agent should stop and report, not retry.</td>
+</tr>
+<tr>
+<td><code>Error login - User invalid</code> after it worked yesterday</td>
+<td>The identity expired (<code>--expires</code>) or was revoked. Create a new one.</td>
+</tr>
 </tbody>
 </table>
 <h2 id="evidence">Evidence<a class="headerlink" href="#evidence" title="Permanent link">&para;</a></h2>
-<p><code>erp/tests/witness_ws_diff_read.js</code>, <code>…_write.js</code>, <code>…_docaction.js</code>, <code>…_process.js</code>, <code>…_json.js</code> (each sends the same requests to a real iDempiere and to the twin and diffs them), <code>witness_ws_agent.js</code>, <code>witness_ws_plugin.js</code>, and <code>witness_ws_advisory.js</code> (runs this page). Spec and history: <code>prompts/ERP_WS_API.md</code>.</p>
+<p><code>erp/tests/witness_ws_diff_read.js</code>, <code>…_write.js</code>, <code>…_docaction.js</code>, <code>…_process.js</code>, <code>…_json.js</code> (each sends the same requests to a real iDempiere and to the twin and diffs them), <code>witness_ws_agent.js</code>, <code>witness_ws_limits.js</code>, <code>witness_ws_plugin.js</code>, and <code>witness_ws_advisory.js</code> (runs this page). Spec and history: <code>prompts/ERP_WS_API.md</code>.</p>
 
 
 
