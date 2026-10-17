@@ -112,6 +112,7 @@ nav:
       - "Spatial ERP — Every Record Has a Place": SpatialERP_OOTB.md
       - "Spatial ERP × BIM × HR — One Building, One Log": SpatialERPIntegration.md
       - "Distributed ERP": DistributedERP.md
+      - "Letting an AI work on the ERP, safely": ERP_AI_ADVISORY.md
       - "How the Database Works (big picture)": SQLiteWasmArchitectureActual.html
       - "Viewer Component Model (dev architecture)": ViewerComponentModel.html
       - "Red Pill — Design From Grammar": RED_PILL.md
