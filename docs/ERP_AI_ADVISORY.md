@@ -2,16 +2,23 @@
 
 > **Status: SPEC + verified recipe (2026-10-17).** Every request block below that carries a `ws-run` marker is **executed by a witness** (`erp/tests/witness_ws_advisory.js`) against a real host, and its stated outcome is checked; a block that stops working turns that witness red. Nothing here is a promise about what an AI will *do* — only about what the twin will *allow* it to do.
 
+> **Read this first — evaluation host.** In this release the web-service host keeps its data **in memory**: what an AI writes through it is **not saved** when the host stops, and it does not touch the books in your browser. Use it to learn, test an integration, and rehearse the safety controls below. Persisting writes into a real company is a separate step that is not built yet. Treat the control model on this page as the part that carries over.
+
 The Kernel ERP can speak the **same web-service API as iDempiere** (ADInterface, XML and JSON). Anything that can make an HTTP call — a script, an automation tool, an AI agent — can use it by changing the base URL. That is useful, and it is also the moment most people hand an AI their own login. **Don't.** This page is the safe way.
 
-## The six rules
+## The nine rules
 
 1. **It is off until you turn it on.** The *Web Services* plugin is installed **stopped**. The host serves nothing (HTTP 404) until you export its config from the plugin.
 2. **The AI gets its own identity** — its own user and its own role, limited to **one organisation**. Never your login, never an administrator role.
-3. **Least privilege, by name.** The role is granted exactly the service types you list. There is no "all". A write type needs `--write`; a type that **completes, closes, voids or reverses** a document needs a further `--allow-final`. No row, no access — the twin answers with iDempiere's own refusal.
+3. **Least privilege, by name.** The role is granted exactly the service types you list. There is no "all". A write type needs `--write`; a type that **completes, closes, voids or reverses** a document needs a further `--allow-final`. No row, no access — the twin answers with iDempiere's own refusal. (OWASP *LLM06 Excessive Agency*: minimise functionality, permissions and autonomy.)
 4. **Draft, don't finish.** Let the AI *read* and *prepare drafts*. A person completes. A doc-action type has its action **fixed** by the type (iDempiere's constant parameter): the AI cannot ask for a different one.
-5. **Everything it does is recorded under its name**, in a hash-chained journal. Edit one line and the chain breaks.
-6. **One switch stops it**: revoke the identity (the next call is refused) or stop the plugin (the host goes dark).
+5. **Short-lived and rate-limited, by the host.** An identity switches itself off after `--expires` hours (default **7 days**), is capped at `--max-calls-per-minute` (default **120**) and `--max-writes-per-hour` (default **50**). A refused call writes nothing and raises a `§WS-ALERT`. A looping model cannot talk past a counter.
+6. **A person approves what matters, bound to the exact request.** With `--approve-writes` every write is *staged*, not run; the person sees its digest and approves *that request* with `ws_agent.js approve`. A different request cannot ride on the approval, and an approval runs once.
+7. **Never pair it with a way out.** An agent that can read private data, reads text an attacker could write (a customer note, a product description), **and** can send data out (email, web, chat) can be tricked into leaking — Simon Willison's *lethal trifecta*. The ERP side has no outbound channel; **do not give the model one**. If it must have one, give it a different, read-nothing identity.
+8. **Everything it does is recorded under its name**, in a hash-chained journal (and, for approved writes, who approved). Edit one line and the chain breaks.
+9. **One switch stops it**: revoke the identity (the next call is refused) or stop the plugin (the host goes dark).
+
+*Why these:* the controls follow the published guidance — [OWASP LLM06:2025](https://genai.owasp.org/llmrisk/llm062025-excessive-agency/) and its [AI Agent Security cheat sheet](https://cheatsheetseries.owasp.org/cheatsheets/AI_Agent_Security_Cheat_Sheet.html) (least privilege, approval bound to the exact action, budgets and limits, logging), the [MCP security best practices](https://modelcontextprotocol.io/specification/draft/basic/security_best_practices) (scope minimisation, loopback-only plain HTTP), the NSA/CISA *Careful Adoption of Agentic AI Services* (per-agent identity, short-lived credentials, incremental rollout), and Willison's trifecta. None of them says a prompt is a control; neither do we.
 
 ## Before you connect
 
@@ -28,14 +35,20 @@ In the ERP open **Plugins & Releases**, find **Web Services (ADInterface)** (sta
 
 ### 2 — Give your AI its own identity
 ```bash
-node erp/ws_agent.js create --dir agents --name sales-assistant --client 11 --org 11 --write \
+node erp/ws_agent.js create --dir agents --name sales-assistant --client 11 --org 11 --write --expires 24 --max-writes-per-hour 20 \
   --read C_BPartner:Value,Name,IsCustomer,SO_CreditLimit \
   --read C_Order:DocumentNo,DocStatus,GrandTotal,C_BPartner_ID \
   --create C_Order:AD_Org_ID,C_BPartner_ID,C_BPartner_Location_ID,C_DocTypeTarget_ID,M_Warehouse_ID,M_PriceList_ID,C_Currency_ID,C_PaymentTerm_ID,SalesRep_ID,DateOrdered,DateAcct,DatePromised,Description \
   --create C_OrderLine:AD_Org_ID,C_Order_ID,Line,M_Product_ID,QtyEntered,QtyOrdered,C_UOM_ID,PriceEntered,PriceActual,PriceList,C_Tax_ID \
   --docaction C_Order:PR
 ```
-This writes `agents/agent-000-sales-assistant.sql` and prints the credentials **once** (store the password as a secret). The identity can: read partners and orders (only the columns listed), create an order and its lines, and **Prepare** an order. It cannot complete one, change a partner, or see another organisation. (`--docaction C_Order:CO` would be refused without `--allow-final`.)
+This writes `agents/agent-000-sales-assistant.sql` and prints the credentials **once** (store the password as a secret). The identity can: read partners and orders (only the columns listed), create an order and its lines, and **Prepare** an order. It cannot complete one, change a partner, or see another organisation. (`--docaction C_Order:CO` would be refused without `--allow-final`.) It also expires in 24 hours and may make at most 20 writes an hour. Add `--approve-writes` to have a person approve every write:
+
+```text
+node erp/ws_agent.js pending --dir agents                       # lists staged requests with their digest
+node erp/ws_agent.js approve --dir agents --id 1 --digest <the 12 characters shown>
+node erp/ws_agent.js reject  --dir agents --id 1
+```
 
 ### 3 — Start the host
 ```bash
@@ -50,7 +63,7 @@ The AI (or you, with `curl`) sends the request below to `POST http://127.0.0.1:8
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <ModelCRUDRequest xmlns="http://idempiere.org/ADInterface/1_0">
-  <ModelCRUD><serviceType>AI_Query_C_BPartner</serviceType><TableName>C_BPartner</TableName><RecordID>0</RecordID>
+  <ModelCRUD><serviceType>AI_{{AGENT}}_Query_C_BPartner</serviceType><TableName>C_BPartner</TableName><RecordID>0</RecordID>
     <Filter>value='C&amp;W'</Filter><Action>Read</Action></ModelCRUD>
   <ADLoginRequest><user>{{USER}}</user><pass>{{PASS}}</pass><lang>en_US</lang><ClientID>{{CLIENT}}</ClientID>
     <RoleID>{{ROLE}}</RoleID><OrgID>{{ORG}}</OrgID><WarehouseID>{{WH}}</WarehouseID><stage>0</stage></ADLoginRequest>
@@ -62,7 +75,7 @@ The answer lists only the four columns the type allows. Ask for a column it does
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <ModelCRUDRequest xmlns="http://idempiere.org/ADInterface/1_0">
-  <ModelCRUD><serviceType>AI_Query_C_BPartner</serviceType><TableName>C_BPartner</TableName><RecordID>0</RecordID>
+  <ModelCRUD><serviceType>AI_{{AGENT}}_Query_C_BPartner</serviceType><TableName>C_BPartner</TableName><RecordID>0</RecordID>
     <Action>Read</Action><DataRow><field column="Description"><val>x</val></field></DataRow></ModelCRUD>
   <ADLoginRequest><user>{{USER}}</user><pass>{{PASS}}</pass><lang>en_US</lang><ClientID>{{CLIENT}}</ClientID>
     <RoleID>{{ROLE}}</RoleID><OrgID>{{ORG}}</OrgID><WarehouseID>{{WH}}</WarehouseID><stage>0</stage></ADLoginRequest>
@@ -74,7 +87,7 @@ Send `Content-Type: application/json` to the **same URL**. Numbers stay numbers,
 
 <!-- ws-run id=read-partner-json method=query_data format=json expect="C&W Construction" -->
 ```json
-{"ModelCRUDRequest":{"ModelCRUD":{"serviceType":"AI_Query_C_BPartner","TableName":"C_BPartner","RecordID":0,
+{"ModelCRUDRequest":{"ModelCRUD":{"serviceType":"AI_{{AGENT}}_Query_C_BPartner","TableName":"C_BPartner","RecordID":0,
  "Filter":"value='C&W'","Action":"Read"},
  "ADLoginRequest":{"user":"{{USER}}","pass":"{{PASS}}","lang":"en_US","ClientID":{{CLIENT}},"RoleID":{{ROLE}},
  "OrgID":{{ORG}},"WarehouseID":{{WH}},"stage":0}}}
@@ -87,7 +100,7 @@ Create the header. The answer carries the new `RecordID` (the witness keeps it a
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <ModelCRUDRequest xmlns="http://idempiere.org/ADInterface/1_0">
-  <ModelCRUD><serviceType>AI_Create_C_Order</serviceType><TableName>C_Order</TableName><RecordID>0</RecordID><Action>Create</Action>
+  <ModelCRUD><serviceType>AI_{{AGENT}}_Create_C_Order</serviceType><TableName>C_Order</TableName><RecordID>0</RecordID><Action>Create</Action>
     <DataRow>
       <field column="AD_Org_ID"><val>11</val></field><field column="C_BPartner_ID"><val>117</val></field>
       <field column="C_BPartner_Location_ID"><val>112</val></field><field column="C_DocTypeTarget_ID"><val>133</val></field>
@@ -107,7 +120,7 @@ Add a line (dates need the full `yyyy-mm-dd hh:mm:ss` form — iDempiere's rule,
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <ModelCRUDRequest xmlns="http://idempiere.org/ADInterface/1_0">
-  <ModelCRUD><serviceType>AI_Create_C_OrderLine</serviceType><TableName>C_OrderLine</TableName><RecordID>0</RecordID><Action>Create</Action>
+  <ModelCRUD><serviceType>AI_{{AGENT}}_Create_C_OrderLine</serviceType><TableName>C_OrderLine</TableName><RecordID>0</RecordID><Action>Create</Action>
     <DataRow>
       <field column="AD_Org_ID"><val>11</val></field><field column="C_Order_ID"><val>{{ORDER_ID}}</val></field>
       <field column="Line"><val>10</val></field><field column="M_Product_ID"><val>134</val></field>
@@ -126,7 +139,7 @@ Prepare the order. This is the **only** document action the identity has:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <ModelSetDocActionRequest xmlns="http://idempiere.org/ADInterface/1_0">
-  <ModelSetDocAction><serviceType>AI_DocAction_C_Order_PR</serviceType><tableName>C_Order</tableName>
+  <ModelSetDocAction><serviceType>AI_{{AGENT}}_DocAction_C_Order_PR</serviceType><tableName>C_Order</tableName>
     <recordID>{{ORDER_ID}}</recordID><docAction>PR</docAction></ModelSetDocAction>
   <ADLoginRequest><user>{{USER}}</user><pass>{{PASS}}</pass><lang>en_US</lang><ClientID>{{CLIENT}}</ClientID>
     <RoleID>{{ROLE}}</RoleID><OrgID>{{ORG}}</OrgID><WarehouseID>{{WH}}</WarehouseID><stage>0</stage></ADLoginRequest>
@@ -138,7 +151,7 @@ Prepare the order. This is the **only** document action the identity has:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <ModelSetDocActionRequest xmlns="http://idempiere.org/ADInterface/1_0">
-  <ModelSetDocAction><serviceType>AI_DocAction_C_Order_PR</serviceType><tableName>C_Order</tableName>
+  <ModelSetDocAction><serviceType>AI_{{AGENT}}_DocAction_C_Order_PR</serviceType><tableName>C_Order</tableName>
     <recordID>{{ORDER_ID}}</recordID><docAction>CO</docAction></ModelSetDocAction>
   <ADLoginRequest><user>{{USER}}</user><pass>{{PASS}}</pass><lang>en_US</lang><ClientID>{{CLIENT}}</ClientID>
     <RoleID>{{ROLE}}</RoleID><OrgID>{{ORG}}</OrgID><WarehouseID>{{WH}}</WarehouseID><stage>0</stage></ADLoginRequest>
@@ -200,6 +213,7 @@ Two task prompts that work with it: *"List the customers with a credit limit abo
 | `run_process` | ✅ for processes with a verbatim port (e.g. *Product BOM Verify*); an unported one answers like a missing class | `W-WS-DIFF-PROCESS` 7/7 |
 | JSON binding (same URL) | ✅ same keys and types | `W-WS-DIFF-JSON` 15/15 |
 | Own identity, least privilege, journal, revoke | ✅ | `W-WS-AGENT` 8/8 |
+| Expiry, rate/volume limits, staged approval by digest, alerts | ✅ | `W-WS-LIMITS` 8/8 |
 | Plugin default off, export, stop | ✅ | `W-WS-PLUGIN` 6/6 |
 
 ## Not there yet (named, not hidden)
@@ -217,6 +231,10 @@ Password hashing (plain compare, as a local test host); role inclusion (`AD_Role
 | `… input column Y not allowed` | The type's input whitelist does not include `Y`. |
 | `Cannot save record in T: …` | The model refused it (mandatory, unique, foreign key, validator). Read the text. |
 | `java.lang.IllegalStateException: Status=CO - Invalid Actions: Process=CO, Doc=CO` | That action is not valid in the document's current status. |
+| `Web Service Error: write limit reached for this identity (N per hour); nothing was written` | The host's volume cap. Raise it on purpose, or investigate why the agent is looping. A `§WS-ALERT write-limit` line is in the host log. |
+| `Web Service Error: call limit reached for this identity (N per minute)` | The per-minute call cap. |
+| `Pending approval: request #N … NOTHING was written` | The identity runs with `--approve-writes`. A person approves it by digest (`ws_agent.js pending` / `approve`). The agent should stop and report, not retry. |
+| `Error login - User invalid` after it worked yesterday | The identity expired (`--expires`) or was revoked. Create a new one. |
 
 ## Evidence
-`erp/tests/witness_ws_diff_read.js`, `…_write.js`, `…_docaction.js`, `…_process.js`, `…_json.js` (each sends the same requests to a real iDempiere and to the twin and diffs them), `witness_ws_agent.js`, `witness_ws_plugin.js`, and `witness_ws_advisory.js` (runs this page). Spec and history: `prompts/ERP_WS_API.md`.
+`erp/tests/witness_ws_diff_read.js`, `…_write.js`, `…_docaction.js`, `…_process.js`, `…_json.js` (each sends the same requests to a real iDempiere and to the twin and diffs them), `witness_ws_agent.js`, `witness_ws_limits.js`, `witness_ws_plugin.js`, and `witness_ws_advisory.js` (runs this page). Spec and history: `prompts/ERP_WS_API.md`.
