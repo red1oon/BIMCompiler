@@ -203,7 +203,7 @@ Two task prompts that work with it: *"List the customers with a credit limit abo
 | Plugin default off, export, stop | ✅ | `W-WS-PLUGIN` 6/6 |
 
 ## Not there yet (named, not hidden)
-Password hashing (plain compare, as a local test host); role inclusion (`AD_Role_Included`); `IWSValidator` hooks; `@variable@` filters and request-context variables; lookup-by-name (`<lval>`) input; `get_list`, `create_update_data`; the separate `idempiere-rest` plugin (`/api/v1/…`) is **not** part of the iDempiere stack here, so it is not offered; a posting that fails must be read back (`Posted` = `E`) — the API answers success for the *document action* while the books say otherwise, exactly as iDempiere does.
+Password hashing (plain compare, as a local test host); role inclusion (`AD_Role_Included`); `IWSValidator` hooks; `@variable@` filters and request-context variables; lookup-by-name (`<lval>`) input; `get_list`, `create_update_data`; the separate `idempiere-rest` plugin (`/api/v1/…`) is **not** part of the iDempiere stack here, so it is not offered; a successful document action does not guarantee a successful posting: read the document's `Posted` column back (`Y`, `N` or `E` = posting error) — an API witness case for a failing posting is still open.
 
 ## Troubleshooting (the twin's answers, iDempiere's words)
 
