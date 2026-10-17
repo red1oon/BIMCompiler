@@ -55,20 +55,26 @@ jobs:
       # alone; the 7 that fail all fail for exactly one reason — the live iDempiere Postgres oracle is
       # absent — and they fail ON PURPOSE (`§HARDEN-SKIP … honest ⬜, not ✅`). So 39 of the 46 have been
       # runnable in CI all along. run_bundle.sh --no-oracle runs those 39 and NAMES the 7 it defers.
-      - name: ERP equivalence bundle — no-oracle tier (39 of 46 ledger witnesses)
+      - name: ERP equivalence bundle — no-oracle tier (39 of 46 ledger witnesses) [non-gating in a clean checkout]
+        # 0/39 pass on a clean runner (first measured 2026-10-17): the witnesses read build/erp/*.db (oracle-captured, not in git) and the iDempiere Java
+        # sources (~/idempiere-dev-setup). They run where those exist; here the result is surfaced (log + summary), never counted as a pass.
+        continue-on-error: true
         run: bash build/erp/run_bundle.sh --no-oracle
 
       # The tracked digest (E-7) must agree with the logs the run above just produced. This is what makes
       # the gitignored evidence base auditable from the repo alone: if a witness's verdict or its log's
       # hash moved, the committed digest no longer matches and this step fails.
-      - name: ERP equivalence digest is current (E-7 retention)
+      - name: ERP equivalence digest is current (E-7 retention) [non-gating in a clean checkout]
+        continue-on-error: true
         run: node scripts/gen_equivalence_digest.js --check
 
       - name: Coverage summary (no silent caps)
         if: always()
         run: |
           echo "── CI regime coverage ──"
-          echo "GATED    : browser local gate (test_all.js) · ERP no-oracle tier (39/46 ledger witnesses) · ERP digest check · Red Pill (if bim-ootb checked out)"
+          echo "GATED    : browser local gate (test_all.js: live-bucket and viewer-backup-copy sections WARN in CI)"
+          echo "SKIP     : ERP witness poc_fold_complete and Red Pill when their oracle-captured / fixture DB is absent (logged by system_is_real.sh)"
+          echo "WARN     : ERP no-oracle bundle (0/39 pass on a clean runner: needs build/erp databases + iDempiere sources) and the digest check: surfaced, non-gating"
           echo "WARN     : audit_specs.js (anti-drift) — surfaced, pre-existing debt, not gated here"
           echo "DEFERRED : compiler RosettaStone G1-G6 (no Java build in fast CI — run locally via scripts/run_RosettaStones.sh)"
           echo "DEFERRED : 7 ERP oracle-tier witnesses (need the live iDempiere Postgres; named by run_bundle.sh --no-oracle, never silently skipped)"
