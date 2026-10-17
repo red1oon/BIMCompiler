@@ -28,6 +28,13 @@ plans.forEach(f => { const view = f.replace(/^D_/, '').replace(/_std\.dxf$/, '')
   say(!tdiff, `TXT ${view}`, tdiff ? `texts differ (base ${a.tx.length}, wing ${b.tx.length})` : `${a.tx.length} texts (grid labels, dimension values) equal`); });
 const gl = r => JSON.stringify([r.grid.x.map(g => g[0]), r.grid.y.map(g => g[0])]);
 say(gl(base) === gl(W), 'grid', `grid labels equal ${gl(W)}`);
+// the FULL standard set (plans, elevations, roof, section) of the wing equals the unrotated Duplex set file for file
+const F = S.writeStdSet(q, 'D', { wing: { name: 'W' }, premodel: pre });
+say(JSON.stringify(Object.keys(F.files).sort()) === JSON.stringify(Object.keys(base.files).sort()), 'set files', `wing set ${Object.keys(F.files).length} files == base ${Object.keys(base.files).length}`);
+Object.keys(base.files).forEach(f => { const a = sig(base.files[f]), b = sig(F.files[f] || '');
+  const keys = new Set(Object.keys(a.n).concat(Object.keys(b.n))), diffs = [...keys].filter(k => a.n[k] !== b.n[k]).map(k => `${k} base=${a.n[k] || 0} wing=${b.n[k] || 0}`);
+  const tdiff = JSON.stringify(a.tx) !== JSON.stringify(b.tx);
+  say(!diffs.length && !tdiff, `SET ${f.replace(/^D_|_std\.dxf$/g, '')}`, diffs.length ? diffs.slice(0, 5).join('; ') : tdiff ? 'texts differ' : `entities + texts equal (${Object.values(a.n).reduce((x, y) => x + y, 0)})`); });
 const C = S.writeWingSet(q, 'D', { name: 'C', angle: 0, premodel: pre });
 say(!C.wing || C.wing.framed < W.wing.framed || C.gaps.length > W.gaps.length, 'control', `frame at 0 deg on the rotated model: framed ${C.wing ? C.wing.framed : 0} of ${W.wing.framed + (C.wing ? 0 : 0)} walls, gaps ${C.gaps.length} vs ${W.gaps.length}`);
 console.log(fail ? `FAIL (${fail})` : 'ALL PASS'); process.exit(fail ? 1 : 0);
