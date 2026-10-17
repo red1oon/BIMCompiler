@@ -54,6 +54,8 @@ DIM_T3, DIM_T2, DIM_T1 = 10, 18, 26
 GRID_END, BUBBLE_C, BUBBLE_R = 33, 37, 4.0
 TXT_DIM, TXT_BUBBLE, TXT_NOTE, TXT_TITLE, TXT_LEVEL = 2.5, 3.5, 2.0, 5.0, 2.5
 ELEV_GRID_END, ELEV_BUBBLE_C = 12, 16
+BUBBLE_MIN_SPACING = 840    # mm model, §L1.10: grid lines closer than this (1.05 x bubble diameter) get staggered bubbles
+GRID_STAGGER = 900          # mm model, §L1.10: tier t extends line and bubble outward by t x this
 ELEV_DIM_CHAIN, ELEV_DIM_OVERALL = 10, 18
 DIM_NARROW = 4.5           # paper mm, narrow-dim text offset (R7)
 LEVEL_EXT = 6               # paper mm, datum line beyond the face extents
@@ -480,6 +482,18 @@ def _text(msp, s, pos, h, layer, align=TextEntityAlignment.MIDDLE_CENTER, rot=0,
     return t
 
 
+def _tiers(pos):
+    """§L1.10: stagger tier of each grid line position (mm), greedy in ascending position: the lowest tier with no earlier line of that tier closer than
+    BUBBLE_MIN_SPACING. Returned aligned to the input order."""
+    t = {}
+    for i in sorted(range(len(pos)), key=lambda i: (pos[i], i)):
+        k = 0
+        while any(t[j] == k and abs(pos[j] - pos[i]) < BUBBLE_MIN_SPACING for j in t):
+            k += 1
+        t[i] = k
+    return [t[i] for i in range(len(pos))]
+
+
 def _bubble(msp, cx, cy, label):
     msp.add_circle((cx, cy), BUBBLE_R * SCALE, dxfattribs={'layer': 'A-GRID', 'linetype': 'Continuous'})
     _text(msp, label, (cx, cy), TXT_BUBBLE, 'A-GRID')
@@ -845,16 +859,16 @@ def write_plan(model, grid, storey, view, db_path, out_path, log):
             _tag(ln, wdw['guid'])
     # ── G1/G2 grid ──
     ge, bc = GRID_END * SCALE, BUBBLE_C * SCALE
-    for lab, p, _ in grid['x']:
-        x = mm(p)
-        msp.add_line((x, E[2] - ge), (x, E[3] + ge), dxfattribs={'layer': 'A-GRID'})
-        _bubble(msp, x, E[2] - bc, lab)
-        _bubble(msp, x, E[3] + bc, lab)
-    for lab, p, _ in grid['y']:
-        y = mm(p)
-        msp.add_line((E[0] - ge, y), (E[1] + ge, y), dxfattribs={'layer': 'A-GRID'})
-        _bubble(msp, E[0] - bc, y, lab)
-        _bubble(msp, E[1] + bc, y, lab)
+    for (lab, p, _), t in zip(grid['x'], _tiers([mm(g[1]) for g in grid['x']])):   # §L1.10 staggered tiers
+        x, o = mm(p), t * GRID_STAGGER
+        msp.add_line((x, E[2] - ge - o), (x, E[3] + ge + o), dxfattribs={'layer': 'A-GRID'})
+        _bubble(msp, x, E[2] - bc - o, lab)
+        _bubble(msp, x, E[3] + bc + o, lab)
+    for (lab, p, _), t in zip(grid['y'], _tiers([mm(g[1]) for g in grid['y']])):
+        y, o = mm(p), t * GRID_STAGGER
+        msp.add_line((E[0] - ge - o, y), (E[1] + ge + o, y), dxfattribs={'layer': 'A-GRID'})
+        _bubble(msp, E[0] - bc - o, y, lab)
+        _bubble(msp, E[1] + bc + o, y, lab)
     # ── G3 dimension strings per side ──
     gx = [mm(p) for _, p, _ in grid['x']]
     gy = [mm(p) for _, p, _ in grid['y']]
@@ -955,10 +969,11 @@ def write_elevation(model, grid, face, out_path, log):
     # grid bubbles projected on the face (perpendicular grid lines)
     ax = 'x' if face in ('FRONT', 'REAR') else 'y'
     zb, zt = zs[0], zs[-1] + LEVEL_EXT * SCALE
-    for lab, p, _ in grid[ax]:
-        h = mm(hp(p, 0) if ax == 'x' else hp(0, p))
-        msp.add_line((h, zb - ELEV_GRID_END * SCALE), (h, zt), dxfattribs={'layer': 'A-GRID'})
-        _bubble(msp, h, zb - ELEV_BUBBLE_C * SCALE, lab)
+    hs = [mm(hp(g[1], 0) if ax == 'x' else hp(0, g[1])) for g in grid[ax]]
+    for (lab, p, _), h, t in zip(grid[ax], hs, _tiers(hs)):   # §L1.10 staggered tiers (bubble end only)
+        o = t * GRID_STAGGER
+        msp.add_line((h, zb - ELEV_GRID_END * SCALE - o), (h, zt), dxfattribs={'layer': 'A-GRID'})
+        _bubble(msp, h, zb - ELEV_BUBBLE_C * SCALE - o, lab)
     _text(msp, f'{face} ELEVATION  1:{SCALE}', ((H0 + H1) / 2, zb - (ELEV_BUBBLE_C + 12) * SCALE),
           TXT_TITLE, 'A-ANNO-TTLB')
     _save(doc, out_path)
@@ -1015,16 +1030,16 @@ def _plan_dims(msp, E, grid, log, view):
 
 def _grid_plan(msp, E, grid):
     ge, bc = GRID_END * SCALE, BUBBLE_C * SCALE
-    for lab, p, _ in grid['x']:
-        x = mm(p)
-        msp.add_line((x, E[2] - ge), (x, E[3] + ge), dxfattribs={'layer': 'A-GRID'})
-        _bubble(msp, x, E[2] - bc, lab)
-        _bubble(msp, x, E[3] + bc, lab)
-    for lab, p, _ in grid['y']:
-        y = mm(p)
-        msp.add_line((E[0] - ge, y), (E[1] + ge, y), dxfattribs={'layer': 'A-GRID'})
-        _bubble(msp, E[0] - bc, y, lab)
-        _bubble(msp, E[1] + bc, y, lab)
+    for (lab, p, _), t in zip(grid['x'], _tiers([mm(g[1]) for g in grid['x']])):   # §L1.10 staggered tiers
+        x, o = mm(p), t * GRID_STAGGER
+        msp.add_line((x, E[2] - ge - o), (x, E[3] + ge + o), dxfattribs={'layer': 'A-GRID'})
+        _bubble(msp, x, E[2] - bc - o, lab)
+        _bubble(msp, x, E[3] + bc + o, lab)
+    for (lab, p, _), t in zip(grid['y'], _tiers([mm(g[1]) for g in grid['y']])):
+        y, o = mm(p), t * GRID_STAGGER
+        msp.add_line((E[0] - ge - o, y), (E[1] + ge + o, y), dxfattribs={'layer': 'A-GRID'})
+        _bubble(msp, E[0] - bc - o, y, lab)
+        _bubble(msp, E[1] + bc + o, y, lab)
 
 
 def write_roof_plan(model, grid, storey, out_path, log):
@@ -1138,10 +1153,11 @@ def write_section(model, grid, out_path, log):
     if len(zs) > 1:
         _dim(msp, (H0, zs[0]), (H0, zs[-1]), (H0 - ELEV_DIM_OVERALL * SCALE, zs[0]), 90, log, 'SECTION/H/overall', (-1, 0))
     zb, zt = min(zs + zlo), max(zs + zhi) + LEVEL_EXT * SCALE
-    for lab, p, _ in grid['y']:
-        h = mm(p)
-        msp.add_line((h, zb - ELEV_GRID_END * SCALE), (h, zt), dxfattribs={'layer': 'A-GRID'})
-        _bubble(msp, h, zb - ELEV_BUBBLE_C * SCALE, lab)
+    hs = [mm(g[1]) for g in grid['y']]
+    for (lab, p, _), h, t in zip(grid['y'], hs, _tiers(hs)):   # §L1.10
+        o = t * GRID_STAGGER
+        msp.add_line((h, zb - ELEV_GRID_END * SCALE - o), (h, zt), dxfattribs={'layer': 'A-GRID'})
+        _bubble(msp, h, zb - ELEV_BUBBLE_C * SCALE - o, lab)
     _text(msp, f'SECTION A-A AT X={X * 1000:.2f}  1:{SCALE}', ((H0 + H1) / 2, zb - (ELEV_BUBBLE_C + 12) * SCALE),
           TXT_TITLE, 'A-ANNO-TTLB')
     _save(doc, out_path)

@@ -41,11 +41,15 @@ out = {}
 for p in sorted(glob.glob(os.path.join(sys.argv[1], '*.dxf'))):
     d = ezdxf.readfile(p); c = Counter()
     dims = []
+    grid = []
     for e in d.modelspace():
         c[e.dxftype() + ':' + e.dxf.layer] += 1
+        if e.dxf.layer == 'A-GRID':
+            if e.dxftype() == 'LINE': grid.append(['L'] + [round(v, 2) for v in (e.dxf.start.x, e.dxf.start.y, e.dxf.end.x, e.dxf.end.y)])
+            elif e.dxftype() == 'CIRCLE': grid.append(['C'] + [round(v, 2) for v in (e.dxf.center.x, e.dxf.center.y)])
         if e.dxftype() == 'DIMENSION':
             dims.append([round(v, 2) for v in (e.dxf.defpoint.x, e.dxf.defpoint.y, e.dxf.defpoint2.x, e.dxf.defpoint2.y, e.dxf.defpoint3.x, e.dxf.defpoint3.y, e.dxf.angle)])
-    out[os.path.basename(p)] = dict(counts=c, dims=sorted(dims))
+    out[os.path.basename(p)] = dict(counts=c, dims=sorted(dims), grid=sorted(grid))
 json.dump(out, sys.stdout)`;
 const rd = dir => JSON.parse(cp.execFileSync('python3', ['-c', counter, dir], { encoding: 'utf8', maxBuffer: 1 << 28 }));
 const P = rd(tmp), J = rd(jsDir); let nb = 0; const lines = [];
@@ -54,6 +58,7 @@ new Set(Object.keys(P).concat(Object.keys(J))).forEach(f => {
   const keys = new Set(Object.keys(P[f].counts).concat(Object.keys(J[f].counts)));
   keys.forEach(k => { if ((P[f].counts[k] || 0) !== (J[f].counts[k] || 0)) { nb++; lines.push(`  ${f} ${k}: py=${P[f].counts[k] || 0} js=${J[f].counts[k] || 0}`); } });
   if (JSON.stringify(P[f].dims) !== JSON.stringify(J[f].dims)) { nb++; lines.push(`  ${f} DIMENSION points differ`); }
+  if (JSON.stringify(P[f].grid) !== JSON.stringify(J[f].grid)) { nb++; lines.push(`  ${f} A-GRID line/bubble coordinates differ (§L1.10 stagger)`); }
 });
 console.log(`${nb ? 'FAIL' : 'PASS'} W-ENT | entity count per layer and DIMENSION points per file equal (ezdxf reads both) | files py=${Object.keys(P).length} js=${Object.keys(J).length}${nb ? '\n' + lines.slice(0, 20).join('\n') : ''}`);
 const ctl = cmpLogs(pyLog, R.log.map((l, i) => (i === R.log.findIndex(x => x.startsWith('§GRID ')) ? l.replace('pos=', 'pos=9') : l)));
