@@ -143,13 +143,13 @@ def load_door_ops(db_path, door_ops_db, log):
         try:
             if not con.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='door_operation'").fetchone():
                 continue
-            rows = con.execute("""SELECT guid, operation_type, source, x_axis, y_axis, z_axis
+            rows = con.execute("""SELECT guid, operation_type, source, x_axis, y_axis, z_axis, overall_width
                                   FROM door_operation ORDER BY guid""").fetchall()
         finally:
             con.close()
         log(f'§DOOR_OPS table=door_operation db={os.path.basename(src)} rows={len(rows)}')
         return {g: dict(op=op, source=sc, x=json.loads(x) if x else None, y=json.loads(y) if y else None,
-                        z=json.loads(z) if z else None) for g, op, sc, x, y, z in rows}
+                        z=json.loads(z) if z else None, w=w) for g, op, sc, x, y, z, w in rows}
     log('§DOOR_OPS none (no door_operation table): every door keeps GAP:door_hinge')
     return {}
 
@@ -440,6 +440,26 @@ def door_hinge(d, op, swing):
     sh = s0 if left else s1                           # H3: LEFT = -X jamb, RIGHT = +X jamb
     hinge = sh * X + t1 * Y                           # at the leaf's +Y face (H4)
     return 'ok', dict(hinge=hinge, width=s1 - s0, X=X, Y=Y, closed=(X if left else -X))
+
+
+def door_hinge_ifc(d, op):
+    """§L1.12: the swing when the mesh gives no leaf offset (R9) but the IFC states everything a swing needs: a single-swing operation type, the placement axes
+    (vertical z, X axis-aligned) and the door's OverallWidth. IFC convention: a swinging door opens toward +Y of its placement. The hinge is the LEFT (-X) or RIGHT (+X)
+    jamb of the opening: the bbox centre along X -/+ OverallWidth/2, at the bbox centre along Y. Returns ('ok', dict(hinge, width, X, Y, closed)) or (gap_code, detail)."""
+    if op is None or op['op'] not in SINGLE_SWING:
+        return 'GAP:door_swing', 'leaf offset not found (R9)'
+    if not (op['x'] and op['y'] and op['z']) or np.max(np.abs(np.array(op['z']) - [0, 0, 1])) > VERTICAL_TOL:
+        return 'GAP:door_swing', 'leaf offset not found (R9); placement axes missing or not vertical, no IFC-convention swing (§L1.12)'
+    X, Y = np.array(op['x'][:2], float), np.array(op['y'][:2], float)
+    if not (min(abs(X[0]), abs(X[1])) < 1e-6 and min(abs(Y[0]), abs(Y[1])) < 1e-6) or not op.get('w'):
+        return 'GAP:door_swing', 'leaf offset not found (R9); axes not axis-aligned or no OverallWidth, no IFC-convention swing (§L1.12)'
+    cs = [np.array(c) @ X for c in ((d['x0'], d['y0']), (d['x1'], d['y0']), (d['x1'], d['y1']), (d['x0'], d['y1']))]
+    ct = [np.array(c) @ Y for c in ((d['x0'], d['y0']), (d['x1'], d['y0']), (d['x1'], d['y1']), (d['x0'], d['y1']))]
+    sc, tc = (min(cs) + max(cs)) / 2, (min(ct) + max(ct)) / 2
+    w = float(op['w'])
+    left = op['op'].endswith('LEFT')
+    sh = sc - w / 2 if left else sc + w / 2
+    return 'ok', dict(hinge=sh * X + tc * Y, width=w, X=X, Y=Y, closed=(X if left else -X))
 
 
 # ─────────────────────────────── DXF ───────────────────────────────
@@ -831,13 +851,19 @@ def write_plan(model, grid, storey, view, db_path, out_path, log):
     for d in doors:
         sw_ = door_swing(d)
         cx, cy = (d['x0'] + d['x1']) / 2, (d['y0'] + d['y1']) / 2
-        if sw_ is None:
-            log.gap('GAP:door_swing', d['guid'], 'leaf offset not found (R9)')
-            continue
-        ta, sgn = sw_
-        log(f"§DOOR guid={d['guid']} swing_axis={ta} swing_sign={sgn:+d} (R9 leaf offset)")
         op = model['door_ops'].get(d['guid'])
-        code, res = door_hinge(d, op, sw_)
+        basis = ''
+        if sw_ is None:   # §L1.12: no leaf offset in the mesh (symmetric glass leaf): the IFC-stated swing, or the gap as before
+            code, res = door_hinge_ifc(d, op)
+            if code != 'ok':
+                log.gap(code, d['guid'], res)
+                continue
+            basis = ' basis=ifc_convention'
+            log(f"§DOOR guid={d['guid']} swing=ifc_convention (R9 leaf offset not found; opens toward +Y of the IFC placement)")
+        else:
+            ta, sgn = sw_
+            log(f"§DOOR guid={d['guid']} swing_axis={ta} swing_sign={sgn:+d} (R9 leaf offset)")
+            code, res = door_hinge(d, op, sw_)
         if code == 'ok':   # §L1.2: leaf line + 90 deg arc, hinge from the IFC operation type and axes
             H, w, Y, C = res['hinge'], res['width'], res['Y'], res['closed']
             hm = (mm(H[0]), mm(H[1]))
@@ -850,7 +876,7 @@ def write_plan(model, grid, storey, view, db_path, out_path, log):
             arc = msp.add_arc(hm, mm(w), round(st % 360, 6), round(en % 360, 6), dxfattribs={'layer': 'A-DOOR'})
             _tag(arc, d['guid'])
             log(f"§DOOR_ARC guid={d['guid']} op={op['op']} source={op['source']} hinge=({hm[0]:.2f},{hm[1]:.2f}) "
-                f"width={w * 1000:.1f} swing=+Y({float(Y[0]):.6f},{float(Y[1]):.6f}) arc={st % 360:.1f}->{en % 360:.1f}")
+                f"width={w * 1000:.1f} swing=+Y({float(Y[0]):.6f},{float(Y[1]):.6f}) arc={st % 360:.1f}->{en % 360:.1f}{basis}")
             continue
         log.gap(code, d['guid'], res)
         half = ((d['x1'] - d['x0']) if ta == 'x' else (d['y1'] - d['y0'])) / 2
