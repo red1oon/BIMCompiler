@@ -1269,6 +1269,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#shed-example-poc-how-long-it-takes-and-how-big-it-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shed example POC: how long it takes and how big it is
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2820,6 +2831,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#shed-example-poc-how-long-it-takes-and-how-big-it-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shed example POC: how long it takes and how big it is
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3140,6 +3162,53 @@ node<span class="w"> </span>tests/dxf2bim/rosetta_qualify.js<span class="w">    
 Every check has a deliberately broken control that must fail. Code is MIT licensed.</p>
 <p><em>Test drawing credit: the American Farmhouse drawings used as an independent test are by Jay Osborne
 (freefarmhouse.com), CC BY-SA; they are not included in the repository.</em></p>
+<hr />
+<h2 id="shed-example-poc-how-long-it-takes-and-how-big-it-is">Shed example POC: how long it takes and how big it is<a class="headerlink" href="#shed-example-poc-how-long-it-takes-and-how-big-it-is" title="Permanent link">&para;</a></h2>
+<p><em>Measured 2026-10-18 on one laptop (CPU only, headless browser with software rendering, no GPU), the real eight-sheet shed set, 2,368 CAD entities, about 0.9 MB of DXF in total. Times are wall-clock from the run logs; they exclude the time a person spends typing the facts in <a href="../DXF2BIM_Yellow_List/">the yellow list</a>.</em></p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Time</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Open the eight settings sheets to a verdict (<em>Qualifies</em>)</td>
+<td><strong>2.0 s</strong></td>
+<td>roles, grid, 445 bodies ready (448 with <em>Complete</em>)</td>
+</tr>
+<tr>
+<td><strong>Convert</strong> to 3D: click to 448 bodies on the canvas</td>
+<td><strong>0.18 s</strong></td>
+<td>448 bodies with material colours and metadata</td>
+</tr>
+<tr>
+<td>Export IFC4 in the page</td>
+<td>0.3 s</td>
+<td>731,626 bytes (about 0.7 MB)</td>
+</tr>
+<tr>
+<td>IFC → database (the in-browser extractor)</td>
+<td>0.66 s</td>
+<td><strong>802,816 bytes (0.8 MB; 169 KB compressed)</strong></td>
+</tr>
+<tr>
+<td>Open that database in the Viewer, 3D fully rendered</td>
+<td>1.6 s</td>
+<td>448 elements</td>
+</tr>
+<tr>
+<td>The same whole shed from the command line (read sheets, 448 bodies, bill, IFC4)</td>
+<td><strong>0.75 s</strong></td>
+<td>about 190 MB of memory</td>
+</tr>
+</tbody>
+</table>
+<p>So the machine part, from an opened set of sheets to a rendered Viewer, is <strong>about five seconds</strong>; the 3D itself appears in under a fifth of a second after Convert. The three-minute film is slow because it narrates and types, not because the software is.</p>
+<p>The database holds 448 elements (about 150 KB is mesh geometry across 125 distinct shapes, about 270 KB the per-mesh provenance rows with their index, the rest names, materials, colours and bounding boxes). A 0.9 MB set of drawings becomes a 0.8 MB database.</p>
+<p>A caution on method: this is one machine and one building, measured by the run logs, not a benchmark; a larger building will take longer (the Hospital extraction in the Node CLI takes minutes). An earlier measurement of the command-line extractor looked slow (16 s) because every row was its own disk commit; that is fixed in the extractor (0.4 s), and the numbers above use the fixed one.</p>
 
 
 
