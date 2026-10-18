@@ -77,6 +77,11 @@ check('LM14', '@LAYER=<name>,net is refused on an elevation or net is not a BODY
 const r15 = read(PLAN.concat([T('@LAYER=Rod,doorswing')]));
 check('LM15', '@LAYER=<name>,doorswing is refused on a plan or doorswing is not a BODY kind',
   !r15.errors.some(e => e.code === 'MARK:layer_type') && J(r15.desc.layers.map(q => [q.layer, q.type])) === J([['Rod', 'doorswing']]) && MK.LAYER_TYPES.BODY.includes('doorswing'), J(r15.desc.layers) + ' ' + J(codes(r15)));
+// LM16 (bim-ootb lane L18) @DEFAULT=<dotted.key>,<value>: a setting the user states for an element type the drawings do not carry
+const r16a = read(PLAN.concat([T('@DEFAULT=door.height,2.4'), T('@DEFAULT=synth.slab.thickness,0.2')])), r16b = read(PLAN.concat([T('@DEFAULT=noDot,1')])), r16c = read(PLAN.concat([T('@DEFAULT=door.height,')])), r16d = read(PLAN.concat([T('@DEFAULT=door.height,2.1'), T('@DEFAULT=door.height,2.4')])), r16e = read(PLAN.concat([T('@DEFAULT=door.height,2.1'), T('@DEFAULT=door.height,2.1')]));
+check('LM16', '@DEFAULT is accepted with a key that is not dotted or an empty value, a conflicting restatement is not a conflict, an identical one is duplicated, or a sheet without it gains a field wrongly',
+  !r16a.errors.length && J(r16a.desc.defaults.map(q => [q.key, q.value])) === J([['door.height', '2.4'], ['synth.slab.thickness', '0.2']]) && codes(r16b).includes('MARK:malformed') && codes(r16c).includes('MARK:malformed') && codes(r16d).includes('MARK:conflict') && r16e.desc.defaults.length === 1 && J(read(PLAN).desc.defaults) === '[]',
+  J(r16a.desc.defaults) + ' nodot ' + J(codes(r16b)) + ' empty ' + J(codes(r16c)) + ' two ' + J(codes(r16d)) + ' restated ' + r16e.desc.defaults.length);
 // LM6 the PLAN list is exactly what the plan reader accepts: every listed type runs, a type outside it throws
 const IDN = { DxfParser, hashHex: s => crypto.createHash('sha256').update(s).digest('hex'), library: [] }, CFG = { version: 1, units: 'mm', snap_tol: 0.001, wall: { thickness: 0.2, height: 3, base: 0 } };
 const runs = MK.LAYER_TYPES.PLAN.map(t => { try { B.run(base, { version: 1, rules: [{ match: 'exact', pattern: 'X,WALLS', type: t }] }, CFG, IDN); return null; } catch (e) { return t + ': ' + e.message; } }).filter(Boolean);
