@@ -15,6 +15,7 @@ A 2D drawing carries only some of what a model needs. Everything it does not sta
 | **Body heights nothing draws** (e.g. footing depth from a detail, beam depth range) | Body heights section → `@BODYZ` | no elevation shows a buried footing |
 | **Areas to leave out** (e.g. an expansion-joint strip that looks like a beam) | Exclude areas → `@EXCLUDE` | the joint would become a false beam |
 | **A stated size** where a label and the drawn length disagree (e.g. a beam drawn 10 in deep, labelled 12 in) | Stated sizes section → `@SIZE` | the label's number is used; you may correct it |
+| **A details sheet** (optional): a sheet of notes and schedules with no body layers | add it to the set; nothing to type | its text states the concrete grade, casting ratios and the footing / column schedules; it is read, never guessed, and a column schedule's below-grade section replaces a typed setting |
 | **Building type** (`General` or `Farming Shed`) | Element defaults → Building type | selects cited type-specific defaults |
 | Anything in section B you know better | Element defaults → type a value and **Set** | the default is a guess or a standard value, not your fact |
 
@@ -51,6 +52,8 @@ A 2D drawing carries only some of what a model needs. Everything it does not sta
 | `railing.post_spacing` | IfcRailing | m | **1.2** | guess | typical post spacing | 1.0, 1.2, 1.5 |
 | `ramp.slope` | IfcRamp | ratio | **0.0833** | guess | 1:12, a typical accessible ramp | 0.0625, 0.0833, 0.1 |
 | `roof.slope_deg` | IfcRoof | deg | **15.0** | guess | typical light roof pitch; used only when no gable or section gives the slope | 10, 15, 17.5, 22.5 |
+| `synth.column.belowgrade.size` | IfcColumn | m | **0** | guess | 0 = not stated: no below-grade column is built; a column schedule that states the section (e.g. 14 x 14 in = 0.3556) sets it, an explicit value overrides the schedule | |
+| `synth.column.grade_to_base` | IfcColumn | m | **0.6096** | guess | grade to the column base (plinth): 2 ft, the datum read from a column detail | |
 | `synth.roof.overhang` | IfcRoof | m | **0.0** | guess | the roof is cut at the gable planes until an overhang is stated | 0, 0.4572, 0.6 |
 | `synth.roof.sheet_thickness` | IfcRoof | m | **0.0254** | guess | display thickness of a roofing sheet (1 in); the cost is by area | 0.0254, 0.05 |
 | `synth.slab.footprint` | IfcSlab | text | **outermost grid lines** | guess | the slab edge is taken at the outermost grid lines of the base plan | outermost grid lines |
@@ -82,7 +85,7 @@ It also lists the components a farming shed is expected to contain (fans, nets/p
 
 ## D. What *Complete the building* adds (amber, estimated)
 
-Ticking **Complete the building** adds a floor slab and the gabled roof the drawings imply. They are computed from drawn evidence plus the stated conventions `synth.slab.*` and `synth.roof.*` above, shown **amber** (derived), and their defaults are listed in yellow.
+Ticking **Complete the building** adds a floor slab and the gabled roof the drawings imply, and, where a column schedule states a section below grade, the **below-grade column parts** (footing top to grade at that section, grade to the base at the column's own section; `synth.column.*`). They are computed from drawn evidence plus the stated conventions `synth.slab.*` and `synth.roof.*` above, shown **amber** (derived), and their defaults are listed in yellow.
 
 ## E. How evidence is shown
 
@@ -107,6 +110,10 @@ By default the canvas shows each body in its **material's standard colour** (dis
 | Door height | **drawn** when the elevation's door-frame layer is typed (96 / 94 in on the shed), else 2.1 m |
 | Four unlabelled 21.7 in swings with no open leaf | listed, not built (they sweep 75°, not a door's quarter turn) |
 | Evaporative pads | not built: labelled, but no outline or length is drawn |
+| False ceiling, slats (cross-section) | not built: labelled on the section, no closed plane, size or spacing is drawn |
+| Polythene and compacted sand under the slab | not built: labelled, no thickness stated |
+| Footing top: the detail section sums footing top to plinth to 84 in, the stated footing height (`@BODYZ`) puts it 69 in below the plinth | the stated value is kept; the 15 in difference is listed here |
+| Beam reinforcement | not read: bars are labels on the section drawings, not a schedule (only the footing and column schedules are read) |
 | 24 in "support wall" text against the 96 / 98 in brick drawn on the elevations | both kept; the brick is built as drawn |
 | A beam drawn 10 in deep but labelled 12 in | conflict row; the label's number is used |
 | `410'-0"` dimension text against 1,560 in drawn | conflict row in the dimension audit |

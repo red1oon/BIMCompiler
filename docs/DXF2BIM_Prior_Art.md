@@ -22,7 +22,7 @@
 *"Not found" means not found in this search, not "does not exist".* Each item is something you can check in the tool.
 
 1. **No guessing, and the gaps are the product.** A value the drawing does not state is a visible **yellow** setting with its basis ([the yellow list](DXF2BIM_Yellow_List.md)), never a silent default. The vendor tools above apply default heights and thicknesses at generation; ours records which ones were applied, how sure the source is (**std** or **guess**), and keeps your overrides **inside the drawing set** as markings.
-2. **Provenance on every body.** Each element carries the sheet, the entity handle, the layer and how each size was obtained (drawn, derived, assumed). It survives into the IFC (`Pset_Dxf2Bim`) and the database.
+2. **Provenance on every body.** Each element carries the sheet, the entity handle, the layer and how each size was obtained (drawn, derived, assumed). It survives into the IFC (`Pset_Dxf2Bim`, which also carries the concrete grade, casting ratios and schedule rows a details sheet states) and the database.
 3. **Deterministic, no AI on your drawings.** Same drawings, same markings, same model, byte for byte; no recognition rate to quote because nothing is recognised by a model. The price is that you state the few facts a drawing cannot.
 4. **Proof against an answer key.** The Duplex was written to a standard 2D set and rebuilt within 1 mm of the source model (96 wall pieces, 2 slabs, 1 roof, 14 doors, 22 windows). Where there is no 3D model (the shed), the rebuilt model is written back to 2D and compared with the original sheets: columns, grid lines and doors within 0.02 mm. We do not claim this for "any DXF".
 5. **The settings travel in the DXF itself** (layer `DXF2BIM-MARK`, plain text), so the file stays an ordinary DXF in any CAD program. No sidecar.
@@ -34,7 +34,7 @@
 
 | From | What we took | What we did differently |
 |---|---|---|
-| **WiseBIM AI** | The user must fix the **scale** first and give default heights, sill, thickness per class. | Units are **confirmed by you** (the file header is shown, never applied by itself); the defaults are a registry of 41 listed settings, not parameters buried in a dialog. |
+| **WiseBIM AI** | The user must fix the **scale** first and give default heights, sill, thickness per class. | Units are **confirmed by you** (the file header is shown, never applied by itself); the defaults are a registry of 43 listed settings, not parameters buried in a dialog. |
 | **ARCHLine.XP Blueprint** | Pattern recognition meets limits (the vendor warns about pergolas). | We chose not to recognise: a layer name is not evidence, so **you type what each layer is**. |
 | **CYPE** | Treat the DXF as a **template** and keep a separate module for it. | Our reader is one module set, MIT, not a paid add-on. |
 | **CrossBIM** | The simplest honest tables: **layer → dimensions per category**, typed by the user. | Readable source, provenance, gap reporting; the tables live in the DXF, not a web form. |

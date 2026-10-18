@@ -138,8 +138,9 @@ drawing and its schedule is reported (`GAP:schedule_conflict`), never silently r
 
 ## A building drawn only in 2D: a farm shed
 
-A common CAD set (here a BricsCAD drawing set saved as DXF) with **no 3D model behind it**: eight sheets, a floor
-plan, four elevations, a beam layout, a foundation plan and a truss section. There is no answer key, so the check
+A common CAD set (here a BricsCAD drawing set saved as DXF) with **no 3D model behind it**: nine sheets, a floor
+plan, four elevations, a beam layout, a foundation plan, a truss section and a details sheet (grades, casting
+ratios, footing and column schedules). There is no answer key, so the check
 is different: every body traces to a drawn entity, a setting you stated, or a **yellow default** you can see.
 The method (units, grid from dimension ticks, level and datum) is the same as above; what differs is that the
 building is made of **bodies** read from layers you type, not of walls and slabs.
@@ -156,12 +157,23 @@ building is made of **bodies** read from layers you type, not of walls and slabs
    would build false bodies (an expansion-joint strip).
 5. **Complete the building** (optional): adds the floor slab and gabled roof the drawings imply, in amber, with
    their thickness listed as yellow defaults.
-6. **Convert.** The whole shed lands on the canvas: 448 bodies (32 columns, 32 footings, 35 beams, 41 wall panels,
-   13 fans, 3 nets, 4 doors, the truss members and plates, a slab and a roof). Each body is in its **material's
+6. **Convert.** The whole shed lands on the canvas: 512 bodies (96 column parts: 32 columns, each with a below-grade
+   part and a grade-to-base part; 32 footings, 35 beams, 41 wall panels, 13 fans, 3 nets, 4 doors, the truss members
+   and plates, a slab and a roof). Each body is in its **material's
    standard colour** and carries its class, the drawing's own type label, its material, its storey and its
    **source** (sheet, handle, layer, how each size was obtained).
 
-![The converted shed on the canvas: material colours, 448 bodies](img/dxf2bim/shed_canvas.jpg)
+   **The details sheet.** A sheet that states notes but draws no body (it has no role) is accepted as a *notes sheet*,
+   not refused. Its text is read by a fixed grammar and carried as properties, each with the cell it came from:
+   the concrete grade (f'c, fy) on every concrete body, each casting ratio on exactly the elements it names (footing,
+   column, grade beam, floor: not the beams), and the **footing and column schedules**, read by cell position
+   against their headers, on the footings and columns (the schedule has one row per kind and the bodies carry no
+   type name, so the properties say *single schedule row*). The column schedule also states a larger section
+   **below grade** (14 x 14 in): each column then continues from its footing to grade at that section, with no
+   setting typed (a stated `@DEFAULT` still wins). Not built, because the drawings give only labels: the false
+   ceiling and the slats of the cross-section.
+
+![The converted shed on the canvas: material colours, 512 bodies](img/dxf2bim/shed_canvas.jpg)
 
 7. **Save and open elsewhere.** *Export → IFC4* writes the typed model with materials, colours and a property set
    `Pset_Dxf2Bim` (Provenance, SourceSheet, SourceHandle, SourceLayer, Kind, SizeBasis) per mesh. The usual
@@ -187,7 +199,7 @@ the wall faces to 0.004 mm. This proves the reading is self-consistent; it is no
 ## The yellow list: what you fill in, and the defaults used
 
 A drawing never states everything a model needs. **[The yellow list](DXF2BIM_Yellow_List.md)** gives, in one place:
-**(A)** the facts you are asked to state, **(B)** all 41 default settings with their value, whether it is a
+**(A)** the facts you are asked to state, **(B)** all 43 default settings with their value, whether it is a
 standard or a guess, and its basis, **(C)** the *Farming Shed* building-type values and their sources,
 **(D)** what *Complete the building* adds, **(E)** how drawn / derived / assumed evidence is shown, and
 **(F)** the items the shed drawings left open. You may ignore it: the defaults stay applied and every one is listed.
@@ -245,19 +257,19 @@ Every check has a deliberately broken control that must fail. Code is MIT licens
 
 ## Shed example POC: how long it takes and how big it is
 
-*Measured 2026-10-18 on one laptop (CPU only, headless browser with software rendering, no GPU), the real eight-sheet shed set, 2,368 CAD entities, about 0.9 MB of DXF in total. Times are wall-clock from the run logs; they exclude the time a person spends typing the facts in [the yellow list](DXF2BIM_Yellow_List.md).*
+*Measured 2026-10-19 on one laptop (CPU only, headless browser with software rendering, no GPU), the real nine-sheet shed set (with the details sheet), 2,943 CAD entities, about 1.05 MB of DXF in total. Times are wall-clock from the run logs; they exclude the time a person spends typing the facts in [the yellow list](DXF2BIM_Yellow_List.md).*
 
 | Step | Time | Output |
 |---|---|---|
-| Open the eight settings sheets to a verdict (*Qualifies*) | **2.0 s** | roles, grid, 445 bodies ready (448 with *Complete*) |
-| **Convert** to 3D: click to 448 bodies on the canvas | **0.18 s** | 448 bodies with material colours and metadata |
-| Export IFC4 in the page | 0.3 s | 731,626 bytes (about 0.7 MB) |
-| IFC → database (the in-browser extractor) | 0.66 s | **802,816 bytes (0.8 MB; 169 KB compressed)** |
-| Open that database in the Viewer, 3D fully rendered | 1.6 s | 448 elements |
-| The same whole shed from the command line (read sheets, 448 bodies, bill, IFC4) | **0.75 s** | about 190 MB of memory |
+| Open the nine settings sheets to a verdict (*Qualifies*) | **2.1 s** | roles, grid, 445 bodies ready (512 with *Complete*) |
+| **Convert** to 3D: click to 512 bodies on the canvas | **0.23 s** | 512 bodies with material colours and metadata |
+| Export IFC4 in the page | 0.4 s | 1,001,552 bytes (about 1.0 MB) |
+| IFC → database (the in-browser extractor) | 0.5 s | **1,118,208 bytes (1.1 MB; about 230 KB compressed)** |
+| Open that database in the Viewer, 3D fully rendered | 2.3 s | 512 elements |
+| The same whole shed from the command line (read sheets, 512 bodies, bill, IFC4) | **0.88 s** | about 198 MB of memory |
 
-So the machine part, from an opened set of sheets to a rendered Viewer, is **about five seconds**; the 3D itself appears in under a fifth of a second after Convert. The three-minute film is slow because it narrates and types, not because the software is.
+So the machine part, from an opened set of sheets to a rendered Viewer, is **about five and a half seconds**; the 3D itself appears in under a quarter of a second after Convert. The five-minute film is slow because it narrates and types, not because the software is.
 
-The database holds 448 elements (about 150 KB is mesh geometry across 125 distinct shapes, about 270 KB the per-mesh provenance rows with their index, the rest names, materials, colours and bounding boxes). A 0.9 MB set of drawings becomes a 0.8 MB database.
+The database holds 512 elements (about 160 KB is mesh geometry across 133 distinct shapes, about 550 KB the per-mesh provenance and notes rows (4,961 rows) with their index, the rest names, materials, colours and bounding boxes). A 1.05 MB set of drawings becomes a 1.1 MB database. (The compressed size and the split by table were measured on the equivalent page-extracted database of the film take, same pipeline.)
 
 A caution on method: this is one machine and one building, measured by the run logs, not a benchmark; a larger building will take longer (the Hospital extraction in the Node CLI takes minutes). An earlier measurement of the command-line extractor looked slow (16 s) because every row was its own disk commit; that is fixed in the extractor (0.4 s), and the numbers above use the fixed one.
