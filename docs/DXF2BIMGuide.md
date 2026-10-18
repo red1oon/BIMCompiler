@@ -240,3 +240,24 @@ Every check has a deliberately broken control that must fail. Code is MIT licens
 
 *Test drawing credit: the American Farmhouse drawings used as an independent test are by Jay Osborne
 (freefarmhouse.com), CC BY-SA; they are not included in the repository.*
+
+---
+
+## Shed example POC: how long it takes and how big it is
+
+*Measured 2026-10-18 on one laptop (CPU only, headless browser with software rendering, no GPU), the real eight-sheet shed set, 2,368 CAD entities, about 0.9 MB of DXF in total. Times are wall-clock from the run logs; they exclude the time a person spends typing the facts in [the yellow list](DXF2BIM_Yellow_List.md).*
+
+| Step | Time | Output |
+|---|---|---|
+| Open the eight settings sheets to a verdict (*Qualifies*) | **2.0 s** | roles, grid, 445 bodies ready (448 with *Complete*) |
+| **Convert** to 3D: click to 448 bodies on the canvas | **0.18 s** | 448 bodies with material colours and metadata |
+| Export IFC4 in the page | 0.3 s | 731,626 bytes (about 0.7 MB) |
+| IFC → database (the in-browser extractor) | 0.66 s | **802,816 bytes (0.8 MB; 169 KB compressed)** |
+| Open that database in the Viewer, 3D fully rendered | 1.6 s | 448 elements |
+| The same whole shed from the command line (read sheets, 448 bodies, bill, IFC4) | **0.75 s** | about 190 MB of memory |
+
+So the machine part, from an opened set of sheets to a rendered Viewer, is **about five seconds**; the 3D itself appears in under a fifth of a second after Convert. The three-minute film is slow because it narrates and types, not because the software is.
+
+The database holds 448 elements (about 150 KB is mesh geometry across 125 distinct shapes, about 270 KB the per-mesh provenance rows with their index, the rest names, materials, colours and bounding boxes). A 0.9 MB set of drawings becomes a 0.8 MB database.
+
+A caution on method: this is one machine and one building, measured by the run logs, not a benchmark; a larger building will take longer (the Hospital extraction in the Node CLI takes minutes). An earlier measurement of the command-line extractor looked slow (16 s) because every row was its own disk commit; that is fixed in the extractor (0.4 s), and the numbers above use the fixed one.
