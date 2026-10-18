@@ -194,6 +194,15 @@ standard or a guess, and its basis, **(C)** the *Farming Shed* building-type val
 
 ---
 
+## Prior art
+
+What already exists, what we believe is new, what we learned from others, and what using them would cost:
+**[Prior art](DXF2BIM_Prior_Art.md)**. Short version: other tools detect walls, doors and windows with default
+parameters and ask a subscription; we state the gaps, keep provenance on every body, and ask nothing but the facts
+in the yellow list. No head-to-head benchmark has been run.
+
+---
+
 ## What it does not do yet
 
 Honest limits of the preliminary version:
