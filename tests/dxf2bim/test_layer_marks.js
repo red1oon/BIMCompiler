@@ -40,7 +40,7 @@ const ELEVM = ['@SET=T', '@VIEW=ELEV', '@FACE=minY', '@HAXIS=+X', '@UNITS=mm'].m
 const r8a = read(PLAN.concat([T('@LAYER=Col,column'), T('@LAYER=Bm,beam')])), r8b = read(ELEVM.concat([T('@LAYER=Col,column')])), r8c = read(PLAN.concat([T('@LAYER=Col,flux')]));
 const w8 = MK.withLayers({ version: 1, rules: [{ match: 'exact', pattern: 'Col', type: 'wall' }] }, r8a.desc);
 check('LM8', 'a BODY kind is refused on a view, an unknown kind is accepted, or a typed body layer is still read as a wall by the existing readers',
-  !r8a.errors.length && J(r8a.desc.layers.map(q => q.type).sort()) === J(['beam', 'column']) && !r8b.errors.some(e => e.code === 'MARK:layer_type') && r8b.desc.layers.length === 1 && codes(r8c).includes('MARK:layer_type') && B.matchRule('Col', w8.rules).type === 'ignore' && MK.LAYER_TYPES.BODY.length === 7,
+  !r8a.errors.length && J(r8a.desc.layers.map(q => q.type).sort()) === J(['beam', 'column']) && !r8b.errors.some(e => e.code === 'MARK:layer_type') && r8b.desc.layers.length === 1 && codes(r8c).includes('MARK:layer_type') && B.matchRule('Col', w8.rules).type === 'ignore' && MK.LAYER_TYPES.BODY.length === 8,
   'PLAN ' + J(codes(r8a)) + ' ELEV ' + J(r8b.desc.layers.map(q => q.type)) + ' unknown kind ' + J(codes(r8c)) + ' Col overrides the set wall rule -> ' + B.matchRule('Col', w8.rules).type);
 // LM9 (bim-ootb lane L7.14) @BODYZ=<kind>,<z0>,<z1>: the z range the user states for a body kind no elevation shows
 const r9a = read(PLAN.concat([T('@BODYZ=footing,-1.4478,-1.143'), T('@BODYZ=gradebeam,-0.3,0')])), r9b = read(PLAN.concat([T('@BODYZ=flux,0,1')])), r9c = read(PLAN.concat([T('@BODYZ=footing,1,0')])), r9d = read(PLAN.concat([T('@BODYZ=footing,0,1'), T('@BODYZ=footing,0,2')]));
@@ -58,6 +58,12 @@ const r11a = read(ELEVP.concat([T('@LAYER=Wall,panel')])), r11b = read(PLAN.conc
 check('LM11', '@LAYER=<name>,panel is refused on an elevation or plan, is not listed as a BODY kind, or an unknown kind is accepted',
   !r11a.errors.some(e => e.code === 'MARK:layer_type') && J(r11a.desc.layers.map(q => [q.layer, q.type])) === J([['Wall', 'panel']]) && !r11b.errors.some(e => e.code === 'MARK:layer_type') && MK.LAYER_TYPES.BODY.includes('panel') && codes(r11c).includes('MARK:layer_type'),
   J(r11a.desc.layers) + ' plan ' + J(codes(r11b)) + ' flux ' + J(codes(r11c)));
+// LM12 (bim-ootb lane L14) @LAYER=<name>,bar on a SECTION sheet (line members); bar is a BODY kind
+const SECP = ['@SET=T', '@VIEW=SECTION', '@HAXIS=+Y', '@CUT=X,5000', '@UNITS=mm'].map(t => T(t)).concat([T('@GRIDH=1', 0, 5), T('@GRIDH=2', 8800, 5), T('@Z=0', 5, 0), T('@Z=3', 5, 3000)]);
+const r12 = read(SECP.concat([T('@LAYER=Fo,bar'), T('@LAYER=Pur,member'), T('@LAYER=Gus,plate')]));
+check('LM12', '@LAYER=<name>,bar is refused on a SECTION sheet, bar is not a BODY kind, or member/plate stop being accepted there',
+  !r12.errors.some(e => e.code === 'MARK:layer_type') && J(r12.desc.layers.map(q => [q.layer, q.type]).sort()) === J([['Fo', 'bar'], ['Gus', 'plate'], ['Pur', 'member']]) && MK.LAYER_TYPES.BODY.includes('bar'),
+  J(r12.desc.layers) + ' errors ' + J(codes(r12)));
 // LM6 the PLAN list is exactly what the plan reader accepts: every listed type runs, a type outside it throws
 const IDN = { DxfParser, hashHex: s => crypto.createHash('sha256').update(s).digest('hex'), library: [] }, CFG = { version: 1, units: 'mm', snap_tol: 0.001, wall: { thickness: 0.2, height: 3, base: 0 } };
 const runs = MK.LAYER_TYPES.PLAN.map(t => { try { B.run(base, { version: 1, rules: [{ match: 'exact', pattern: 'X,WALLS', type: t }] }, CFG, IDN); return null; } catch (e) { return t + ': ' + e.message; } }).filter(Boolean);
