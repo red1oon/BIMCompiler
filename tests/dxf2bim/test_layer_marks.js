@@ -47,6 +47,11 @@ const r9a = read(PLAN.concat([T('@BODYZ=footing,-1.4478,-1.143'), T('@BODYZ=grad
 check('LM9', '@BODYZ is accepted for a non-body kind or an inverted range, a conflicting restatement is not a conflict, or a sheet without it gains a field wrongly',
   !r9a.errors.length && J(r9a.desc.bodyz.map(q => [q.kind, q.z0, q.z1])) === J([['footing', -1.4478, -1.143], ['gradebeam', -0.3, 0]]) && codes(r9b).includes('MARK:malformed') && codes(r9c).includes('MARK:malformed') && codes(r9d).includes('MARK:conflict') && J(read(PLAN).desc.bodyz) === '[]',
   J(r9a.desc.bodyz) + ' flux ' + J(codes(r9b)) + ' inverted ' + J(codes(r9c)) + ' two ranges ' + J(codes(r9d)));
+// LM10 (bim-ootb lane L10) @SIZE=<body id>,<x|y|w|d>,<metres>: the number the user states for one body side
+const r10a = read(PLAN.concat([T('@SIZE=body-column-0-1B5,x,0.35'), T('@SIZE=body-beam-0-A+B,d,0.45')])), r10b = read(PLAN.concat([T('@SIZE=b1,q,0.3')])), r10c = read(PLAN.concat([T('@SIZE=b1,x,-1')])), r10d = read(PLAN.concat([T('@SIZE=b1,x,0.3'), T('@SIZE=b1,x,0.4')])), r10e = read(PLAN.concat([T('@SIZE=b1,x,0.3'), T('@SIZE=b1,x,0.3')]));
+check('LM10', '@SIZE is accepted with an unknown axis or a non-positive value, a conflicting restatement is not a conflict, an identical one is duplicated, or a sheet without it gains a field wrongly',
+  !r10a.errors.length && J(r10a.desc.sizes.map(q => [q.id, q.axis, q.value])) === J([['body-beam-0-A+B', 'd', 0.45], ['body-column-0-1B5', 'x', 0.35]]) && codes(r10b).includes('MARK:malformed') && codes(r10c).includes('MARK:malformed') && codes(r10d).includes('MARK:conflict') && r10e.desc.sizes.length === 1 && J(read(PLAN).desc.sizes) === '[]',
+  J(r10a.desc.sizes) + ' axis q ' + J(codes(r10b)) + ' negative ' + J(codes(r10c)) + ' two values ' + J(codes(r10d)) + ' restated ' + r10e.desc.sizes.length);
 // LM6 the PLAN list is exactly what the plan reader accepts: every listed type runs, a type outside it throws
 const IDN = { DxfParser, hashHex: s => crypto.createHash('sha256').update(s).digest('hex'), library: [] }, CFG = { version: 1, units: 'mm', snap_tol: 0.001, wall: { thickness: 0.2, height: 3, base: 0 } };
 const runs = MK.LAYER_TYPES.PLAN.map(t => { try { B.run(base, { version: 1, rules: [{ match: 'exact', pattern: 'X,WALLS', type: t }] }, CFG, IDN); return null; } catch (e) { return t + ': ' + e.message; } }).filter(Boolean);
