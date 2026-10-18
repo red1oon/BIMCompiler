@@ -54,4 +54,4 @@
 | **Build your own on ezdxf + IfcOpenShell** | $0 licence (MIT, LGPL-3.0) | all of the building logic, plus LGPL obligations if you ship it |
 | **This pipeline** | **$0**, MIT | state the facts in [the yellow list, part A](DXF2BIM_Yellow_List.md): units, set name, level, datum, which layer is what, heights nothing draws, areas to leave out; review the listed defaults |
 
-**Read the table as orders of magnitude, not a quote.** Our effort is real: on the shed it took stating the facts once (about nine typed layers, five datums, two ranges, one exclusion) and reviewing nine yellow defaults. What the others save you in typing they spend in guessing, and what they ask in fees we do not ask.
+**Read the table as orders of magnitude, not a quote.** Our effort is real: on the shed it took stating the facts once (ten layer typings, five datums, two height ranges, one exclusion) and reviewing nine yellow defaults. What the others save you in typing they spend in guessing, and what they ask in fees we do not ask.
