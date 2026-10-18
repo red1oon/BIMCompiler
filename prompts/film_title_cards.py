@@ -118,6 +118,19 @@ if os.environ.get('FILM_SET') == 'bricscad':
     SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
     NOVEL = {}
     CLIPS = {}
+# §DXF2BIM shed chapter (bim-ootb prompts/DXF2BIM_MODELLER_LANE.md §L26, red1 2026-10-18): FILM_SET=shed, FIVE chapters: the whole shed from a common BricsCAD 2D set to a model, a schedule and a cost.
+if os.environ.get('FILM_SET') == 'shed':
+    CARDS = {
+        1: ('CHAPTER 1', 'OPEN', 'A COMMON DRAWING', 'Eight BricsCAD sheets, nothing marked.'),
+        2: ('CHAPTER 2', 'MEANING', 'FROM THE DRAWING', 'Suggested, never silent. Yellow until it is yours.'),
+        3: ('CHAPTER 3', 'BODIES', 'THE WHOLE SHED', 'As drawn. Estimates listed as defaults.'),
+        4: ('CHAPTER 4', 'THE MODEL', 'IN A DATABASE', 'Materials, colours, and every mesh\'s source.'),
+        5: ('CHAPTER 5', 'THE VIEWER', 'IN 3D, 4D, 5D', 'The same database. Nothing converted twice.'),
+    }
+    TAG = {1: 'OPEN', 2: 'MEANING', 3: 'BODIES', 4: 'THE MODEL', 5: 'THE VIEWER'}
+    SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
 os.makedirs(out, exist_ok=True)
 txt = open(log).read()
 chap = {int(m.group(1)): float(m.group(2)) for m in re.finditer(r'§FILM_CHAPTER n=(\d+) key=\S+ t=([\d.]+)', txt)}
