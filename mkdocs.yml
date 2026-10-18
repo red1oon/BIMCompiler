@@ -97,6 +97,7 @@ nav:
       - "Modeller — First Steps": ModellerFirstSteps.md
       - "DAGeVu Modeller — User Guide": ModellerGuide.md
       - "2D Drawings → BIM (DXF2BIM)": DXF2BIMGuide.md
+      - "DXF2BIM — the yellow list (what you fill in, defaults used)": DXF2BIM_Yellow_List.md
       - "Kernel-ERP User Guide": ERPUserGuide.md
       - "Kernel-ERP — Your First Setup": ERP_FirstSetup.md
       - "HR / Tenancy / Operate Module": HRBIMAssetGuide.md
