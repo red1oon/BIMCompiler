@@ -19,7 +19,7 @@
     ROOF: ['roof', 'glazing', 'ignore'],                                               // Dxf2Shell.roofPlan
     SECTION: ['sectslab', 'sectwall', 'roof', 'ignore'],                               // Dxf2Shell.sectionSlabs (+ L2.8 section walls)
     ANY: ['dims', 'grid'],
-    BODY: ['column', 'beam', 'footing', 'gradebeam', 'member', 'plate'] };   // bim-ootb lane L7.10: the user types a layer with a BODY kind (any view); every existing reader maps it to 'ignore', the bodies module reads it
+    BODY: ['column', 'beam', 'footing', 'gradebeam', 'member', 'plate', 'wallpanel', 'wallpair'] };   // bim-ootb lane L7.10/L10: the user types a layer with a BODY kind (any view; wallpanel = a wall drawn as a hatch/outline in an elevation, wallpair = a wall drawn as two parallel lines in a plan); every existing reader maps it to 'ignore', the bodies module reads it
   function err(code, message, extra) { return Object.assign({ code: code, message: message }, extra || {}); }
 
   // entities: parsed by dxf-parser (TEXT/MTEXT with .text and .startPoint/.position)
