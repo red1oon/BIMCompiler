@@ -2684,6 +2684,11 @@
 <td>the label's number is used; you may correct it</td>
 </tr>
 <tr>
+<td><strong>A details sheet</strong> (optional): a sheet of notes and schedules with no body layers</td>
+<td>add it to the set; nothing to type</td>
+<td>its text states the concrete grade, casting ratios and the footing / column schedules; it is read, never guessed, and a column schedule's below-grade section replaces a typed setting</td>
+</tr>
+<tr>
 <td><strong>Building type</strong> (<code>General</code> or <code>Farming Shed</code>)</td>
 <td>Element defaults → Building type</td>
 <td>selects cited type-specific defaults</td>
@@ -2954,6 +2959,24 @@
 <td>10, 15, 17.5, 22.5</td>
 </tr>
 <tr>
+<td><code>synth.column.belowgrade.size</code></td>
+<td>IfcColumn</td>
+<td>m</td>
+<td><strong>0</strong></td>
+<td>guess</td>
+<td>0 = not stated: no below-grade column is built; a column schedule that states the section (e.g. 14 x 14 in = 0.3556) sets it, an explicit value overrides the schedule</td>
+<td></td>
+</tr>
+<tr>
+<td><code>synth.column.grade_to_base</code></td>
+<td>IfcColumn</td>
+<td>m</td>
+<td><strong>0.6096</strong></td>
+<td>guess</td>
+<td>grade to the column base (plinth): 2 ft, the datum read from a column detail</td>
+<td></td>
+</tr>
+<tr>
 <td><code>synth.roof.overhang</code></td>
 <td>IfcRoof</td>
 <td>m</td>
@@ -3112,7 +3135,7 @@
 </table>
 <p>It also lists the components a farming shed is expected to contain (fans, nets/pads, doors, roof, slab) and the typical ranges used for the <strong>Typology</strong> advisories (open-sided width 15–25 ft, environment-controlled 40 ft and wider, eave 6–7 ft, centre 10–12 ft). Advisories compare and never change a body or a setting; a missing expected part is reported, never invented (an evaporative pad with no drawn length is not built).</p>
 <h2 id="d-what-complete-the-building-adds-amber-estimated">D. What <em>Complete the building</em> adds (amber, estimated)<a class="headerlink" href="#d-what-complete-the-building-adds-amber-estimated" title="Permanent link">&para;</a></h2>
-<p>Ticking <strong>Complete the building</strong> adds a floor slab and the gabled roof the drawings imply. They are computed from drawn evidence plus the stated conventions <code>synth.slab.*</code> and <code>synth.roof.*</code> above, shown <strong>amber</strong> (derived), and their defaults are listed in yellow.</p>
+<p>Ticking <strong>Complete the building</strong> adds a floor slab and the gabled roof the drawings imply, and, where a column schedule states a section below grade, the <strong>below-grade column parts</strong> (footing top to grade at that section, grade to the base at the column's own section; <code>synth.column.*</code>). They are computed from drawn evidence plus the stated conventions <code>synth.slab.*</code> and <code>synth.roof.*</code> above, shown <strong>amber</strong> (derived), and their defaults are listed in yellow.</p>
 <h2 id="e-how-evidence-is-shown">E. How evidence is shown<a class="headerlink" href="#e-how-evidence-is-shown" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -3186,6 +3209,22 @@
 <tr>
 <td>Evaporative pads</td>
 <td>not built: labelled, but no outline or length is drawn</td>
+</tr>
+<tr>
+<td>False ceiling, slats (cross-section)</td>
+<td>not built: labelled on the section, no closed plane, size or spacing is drawn</td>
+</tr>
+<tr>
+<td>Polythene and compacted sand under the slab</td>
+<td>not built: labelled, no thickness stated</td>
+</tr>
+<tr>
+<td>Footing top: the detail section sums footing top to plinth to 84 in, the stated footing height (<code>@BODYZ</code>) puts it 69 in below the plinth</td>
+<td>the stated value is kept; the 15 in difference is listed here</td>
+</tr>
+<tr>
+<td>Beam reinforcement</td>
+<td>not read: bars are labels on the section drawings, not a schedule (only the footing and column schedules are read)</td>
 </tr>
 <tr>
 <td>24 in "support wall" text against the 96 / 98 in brick drawn on the elevations</td>
