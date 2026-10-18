@@ -16,7 +16,7 @@
         <link rel="prev" href="../ModellerGuide/">
       
       
-        <link rel="next" href="../ERPUserGuide/">
+        <link rel="next" href="../DXF2BIM_Yellow_List/">
       
       
         
@@ -868,6 +868,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -1211,6 +1215,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#a-building-drawn-only-in-2d-a-farm-shed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A building drawn only in 2D: a farm shed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-yellow-list-what-you-fill-in-and-the-defaults-used" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The yellow list: what you fill in, and the defaults used
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prior-art" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prior art
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#what-it-does-not-do-yet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1236,6 +1273,62 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Yellow_List/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — the yellow list (what you fill in, defaults used)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Prior_Art/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — prior art (what is new, what we learned, cost of using others)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1396,8 +1489,6 @@
   
     
     
-      
-        
       
         
       
@@ -1691,34 +1782,6 @@
     
   
     Distributed ERP
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../ERP_AI_ADVISORY/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Letting an AI work on the ERP, safely
   
 
     
@@ -2703,6 +2766,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#a-building-drawn-only-in-2d-a-farm-shed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A building drawn only in 2D: a farm shed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-yellow-list-what-you-fill-in-and-the-defaults-used" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The yellow list: what you fill in, and the defaults used
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prior-art" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prior art
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#what-it-does-not-do-yet" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2752,8 +2848,11 @@ model inside the <strong>DAGeVu Modeller</strong>, and export it as IFC4 with re
 runs on your drawings</strong> — the code reads geometry and the labels you (or the drawing) state. Anything the
 drawing cannot tell it is listed as a <strong>gap</strong>, never guessed.</p>
 <blockquote>
-<p><strong>Status: preliminary (basic shapes).</strong> Walls, floor slabs, roof, door and window openings, and door/window
-fills. Proven end-to-end on the Duplex set and partly on an independent drawing. See
+<p><strong>Status: preliminary.</strong> Two paths. (1) <strong>Standard sets</strong> (walls, floor slabs, roof, door and window openings,
+fills): proven end-to-end on the Duplex, which has a 3D answer key. (2) <strong>Structure sets</strong> drawn only in 2D
+(columns, footings, beams, wall panels, fans, nets, doors, trusses): worked on a real farm-shed drawing set, see
+<a href="#a-building-drawn-only-in-2d-a-farm-shed">A building drawn only in 2D</a>. Anything a drawing does not state is a
+<strong>yellow</strong> setting: see <a href="../DXF2BIM_Yellow_List/">the yellow list</a>. Read
 <a href="#what-it-does-not-do-yet">What it does not do yet</a> before you try your own drawings.</p>
 </blockquote>
 <hr />
@@ -2956,10 +3055,67 @@ it in any CAD program, or let the editor write it.</p>
 cannot decide (which product, which schedule mark, how tall an interior wall is). A difference between the
 drawing and its schedule is reported (<code>GAP:schedule_conflict</code>), never silently resolved.</p>
 <hr />
+<h2 id="a-building-drawn-only-in-2d-a-farm-shed">A building drawn only in 2D: a farm shed<a class="headerlink" href="#a-building-drawn-only-in-2d-a-farm-shed" title="Permanent link">&para;</a></h2>
+<p>A common CAD set (here a BricsCAD drawing set saved as DXF) with <strong>no 3D model behind it</strong>: eight sheets, a floor
+plan, four elevations, a beam layout, a foundation plan and a truss section. There is no answer key, so the check
+is different: every body traces to a drawn entity, a setting you stated, or a <strong>yellow default</strong> you can see.
+The method (units, grid from dimension ticks, level and datum) is the same as above; what differs is that the
+building is made of <strong>bodies</strong> read from layers you type, not of walls and slabs.</p>
+<ol>
+<li><strong>Open</strong> the sheets. Each one lists three yellow suggestions it can prove (units from the file header, view and
+   name from the title). <strong>Accept all</strong> also takes the grid from the dimension ticks and the ground datum from the
+   heavy ground line.</li>
+<li><strong>State the few facts only a person can</strong> (set name, plan level, the datum height, e.g. a plinth line 2 ft above
+   ground read from the column detail). They are written into the sheets themselves, so the <strong>settings sheets
+   reopen together</strong> next time.</li>
+<li><strong>Type the layers that mean something:</strong> column, footing, beam, wall-panel hatch, fan, net, door swing, truss
+   bar, door frame. Nothing else is chosen for you.</li>
+<li><strong>Give heights nothing draws</strong> (footing depth, beam range) under <em>Body heights</em>, and leave out the areas that
+   would build false bodies (an expansion-joint strip).</li>
+<li><strong>Complete the building</strong> (optional): adds the floor slab and gabled roof the drawings imply, in amber, with
+   their thickness listed as yellow defaults.</li>
+<li><strong>Convert.</strong> The whole shed lands on the canvas: 448 bodies (32 columns, 32 footings, 35 beams, 41 wall panels,
+   13 fans, 3 nets, 4 doors, the truss members and plates, a slab and a roof). Each body is in its <strong>material's
+   standard colour</strong> and carries its class, the drawing's own type label, its material, its storey and its
+   <strong>source</strong> (sheet, handle, layer, how each size was obtained).</li>
+</ol>
+<p><img alt="The converted shed on the canvas: material colours, 448 bodies" src="../img/dxf2bim/shed_canvas.jpg" /></p>
+<ol>
+<li><strong>Save and open elsewhere.</strong> <em>Export → IFC4</em> writes the typed model with materials, colours and a property set
+   <code>Pset_Dxf2Bim</code> (Provenance, SourceSheet, SourceHandle, SourceLayer, Kind, SizeBasis) per mesh. The usual
+   IFC → database extractor gives a database with the material name, the colour and one provenance row per mesh.
+   The <strong>Viewer</strong> opens that database (3D in the material colours, Find, per-element information), and so does the
+   <strong>4D/5D page</strong>.</li>
+</ol>
+<p><img alt="The same database in the Viewer" src="../img/dxf2bim/shed_viewer.jpg" /></p>
+<p><img alt="The 4D/5D page on the shed database: cost by discipline, schedule, resources" src="../img/dxf2bim/shed_4d5d.jpg" /></p>
+<p><strong>Read these numbers as what they are.</strong> The 5D cost is the Viewer's rate-based <strong>estimate</strong>, not a tender. The 4D
+schedule is the Viewer's <strong>generated default</strong> (phases by discipline), not the farm's real construction sequence.
+The repeated trusses are <strong>assumed</strong> (the drawings show one section, not its spacing), shown red under the
+<em>Evidence colours</em> option.</p>
+<p><strong>Closing the loop on the drawing itself.</strong> The shed's IFC was written back to a standard 2D set and compared with
+the original plan at 1 mm: all 32 columns, all 18 grid centre lines and the 4 doors match to under 0.02 mm, and
+the wall faces to 0.004 mm. This proves the reading is self-consistent; it is not a comparison with a 3D reference.</p>
+<hr />
+<h2 id="the-yellow-list-what-you-fill-in-and-the-defaults-used">The yellow list: what you fill in, and the defaults used<a class="headerlink" href="#the-yellow-list-what-you-fill-in-and-the-defaults-used" title="Permanent link">&para;</a></h2>
+<p>A drawing never states everything a model needs. <strong><a href="../DXF2BIM_Yellow_List/">The yellow list</a></strong> gives, in one place:
+<strong>(A)</strong> the facts you are asked to state, <strong>(B)</strong> all 41 default settings with their value, whether it is a
+standard or a guess, and its basis, <strong>(C)</strong> the <em>Farming Shed</em> building-type values and their sources,
+<strong>(D)</strong> what <em>Complete the building</em> adds, <strong>(E)</strong> how drawn / derived / assumed evidence is shown, and
+<strong>(F)</strong> the items the shed drawings left open. You may ignore it: the defaults stay applied and every one is listed.</p>
+<hr />
+<h2 id="prior-art">Prior art<a class="headerlink" href="#prior-art" title="Permanent link">&para;</a></h2>
+<p>What already exists, what we believe is new, what we learned from others, and what using them would cost:
+<strong><a href="../DXF2BIM_Prior_Art/">Prior art</a></strong>. Short version: other tools detect walls, doors and windows with default
+parameters and ask a subscription; we state the gaps, keep provenance on every body, and ask nothing but the facts
+in the yellow list. No head-to-head benchmark has been run.</p>
+<hr />
 <h2 id="what-it-does-not-do-yet">What it does not do yet<a class="headerlink" href="#what-it-does-not-do-yet" title="Permanent link">&para;</a></h2>
 <p>Honest limits of the preliminary version:</p>
 <ul>
-<li><strong>Basic shapes only:</strong> walls, slabs, roof, openings, door/window fills. No stairs, ramps, MEP, furniture.</li>
+<li><strong>Basic shapes only:</strong> walls, slabs, roof, openings, door/window fills, and for structure sets the bodies listed above. No stairs, railings, ramps, piles, ceilings, curtain walls or furniture are built from a 2D set yet (their defaults are in the yellow list, ready for the builders; no drawing used so far carries them).</li>
+<li><strong>Structure sets and standard sets are not mixed yet:</strong> a set that types body layers (column, beam...) and also wall/slab/opening layers is refused with that reason.</li>
+<li><strong>Evaporative pads, the shed's false ceiling and its detail sheet</strong> (concrete grades, below-grade column size) are labelled or drawn but not read yet.</li>
 <li><strong>Rectilinear buildings:</strong> skewed and curved walls are reported as gaps; roofs are flat outlines (pitched or
   curved roofs are not drawn correctly yet).</li>
 <li><strong>Columns</strong> are cut and drawn, but not yet as column symbols on the grid.</li>
