@@ -58,7 +58,8 @@ function decodeMeshes(hashes) {                                         // compo
 if (FULL) { full(); process.exit(0); }
 function full() {                                                       // §14: the binder universe, sharded by geometry_hash[0:2]
   const libBytes = fs.readFileSync(LIB), libSha = sha(libBytes), sha12 = libSha.slice(0, 12), shardOf = h => 'shard_' + h.slice(0, 2);
-  const fams = sqlj(FAMQ), walls = sqlj(WALLQ), seen = {}, rows = [];
+  const BT = require('./library_building_types.js'), btMap = JSON.parse(fs.readFileSync(path.join(__dirname, 'library_building_types.json'), 'utf8'));   // §L23
+  const fams = BT.tag('ad_opening_family', 'family_id', sqlj(FAMQ), btMap), walls = BT.tag('ad_wall_type', 'wall_type_id', sqlj(WALLQ), btMap), seen = {}, rows = [];
   sqlj(MAPQ).forEach(m => { const k = m.element_ref + '|' + m.geometry_hash; if (!seen[k]) { seen[k] = 1; rows.push(m); } });
   const hashes = [...new Set(rows.map(m => m.geometry_hash))].sort(), meshes = decodeMeshes(hashes);
   const missing = hashes.filter(h => !meshes[h]);
@@ -76,7 +77,7 @@ function full() {                                                       // §14:
     generator: 'BIMCompiler scripts/export_library_subset.js --full (docs/DXF2BIM_BASIC_SHAPES_SPEC.md §14)',
     source: { db: path.basename(LIB), sha256: libSha, bytes: libBytes.length }, encoding: ENCODING,
     universe: 'all active ad_opening_family + ad_wall_type; IfcDoor/IfcWindow ad_geometry_map rows deduped element_ref|geometry_hash, with their component_geometries',
-    shard_key: 'geometry_hash[0:2]', counts, missing_meshes: missing,
+    shard_key: 'geometry_hash[0:2]', building_types: BT.typesOf(fams, walls), counts, missing_meshes: missing,
     rows: { ad_opening_family: fams, ad_wall_type: walls, ad_geometry_map: rows.map(m => Object.assign({}, m, { shard: shardOf(m.geometry_hash) })) },
     geometry_shard: hashes.reduce((o, h) => (o[h] = shardOf(h), o), {}), shards: shardInfo });
   put('latest.json', { format: 'dxf2bim-library-latest/1', library_sha256: libSha, index: sha12 + '/index.json' });
