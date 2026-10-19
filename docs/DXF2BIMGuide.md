@@ -176,7 +176,7 @@ building is made of **bodies** read from layers you type, not of walls and slabs
 ![The converted shed on the canvas: material colours, 512 bodies](img/dxf2bim/shed_canvas.jpg)
 
 7. **Save and open elsewhere.** *Export → IFC4* writes the typed model with materials, colours and a property set
-   `Pset_Dxf2Bim` (Provenance, SourceSheet, SourceHandle, SourceLayer, Kind, SizeBasis) per mesh. The usual
+   `Dxf2Bim_Evidence` (Provenance, SourceSheet, SourceHandle, SourceLayer, Kind, SizeBasis; the `Pset_` prefix is reserved for buildingSMART's own sets, so the product's set does not use it) per mesh. The usual
    IFC → database extractor gives a database with the material name, the colour and one provenance row per mesh.
    The **Viewer** opens that database (3D in the material colours, Find, per-element information), and so does the
    **4D/5D page**.
@@ -189,6 +189,8 @@ building is made of **bodies** read from layers you type, not of walls and slabs
 schedule is the Viewer's **generated default** (phases by discipline), not the farm's real construction sequence.
 The repeated trusses are **assumed** (the drawings show one section, not its spacing), shown red under the
 *Evidence colours* option.
+
+**The IFC is checked by an independent validator.** The shed's IFC4 from both writers (headless and the page) is validated with IfcOpenShell at schema level: zero statements (it was 23: every door carried derived-attribute markers and the STEP header had no author or organisation; both are fixed, and a witness puts the old defect back to prove the validator catches it). The EXPRESS WHERE rules and the buildingSMART online validation service have not been run yet. The file formats and their versions are written down in [the format contract](DXF2BIM_FORMAT.md).
 
 **Closing the loop on the drawing itself.** The shed's IFC was written back to a standard 2D set and compared with
 the original plan at 1 mm: all 32 columns, all 18 grid centre lines and the 4 doors match to under 0.02 mm, and
