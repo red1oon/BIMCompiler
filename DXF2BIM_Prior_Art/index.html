@@ -16,7 +16,7 @@
         <link rel="prev" href="../DXF2BIM_Yellow_List/">
       
       
-        <link rel="next" href="../ERPUserGuide/">
+        <link rel="next" href="../DXF2BIM_FORMAT/">
       
       
         
@@ -872,6 +872,8 @@
       
         
       
+        
+      
     
     
     
@@ -1202,6 +1204,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_FORMAT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — format contract (marks, outputs, registry, codes; generated)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -2660,7 +2690,7 @@
 <p><em>"Not found" means not found in this search, not "does not exist".</em> Each item is something you can check in the tool.</p>
 <ol>
 <li><strong>No guessing, and the gaps are the product.</strong> A value the drawing does not state is a visible <strong>yellow</strong> setting with its basis (<a href="../DXF2BIM_Yellow_List/">the yellow list</a>), never a silent default. The vendor tools above apply default heights and thicknesses at generation; ours records which ones were applied, how sure the source is (<strong>std</strong> or <strong>guess</strong>), and keeps your overrides <strong>inside the drawing set</strong> as markings.</li>
-<li><strong>Provenance on every body.</strong> Each element carries the sheet, the entity handle, the layer and how each size was obtained (drawn, derived, assumed). It survives into the IFC (<code>Pset_Dxf2Bim</code>, which also carries the concrete grade, casting ratios and schedule rows a details sheet states) and the database.</li>
+<li><strong>Provenance on every body.</strong> Each element carries the sheet, the entity handle, the layer and how each size was obtained (drawn, derived, assumed). It survives into the IFC (<code>Dxf2Bim_Evidence</code>, which also carries the concrete grade, casting ratios and schedule rows a details sheet states) and the database.</li>
 <li><strong>Deterministic, no AI on your drawings.</strong> Same drawings, same markings, same model, byte for byte; no recognition rate to quote because nothing is recognised by a model. The price is that you state the few facts a drawing cannot.</li>
 <li><strong>Proof against an answer key.</strong> The Duplex was written to a standard 2D set and rebuilt within 1 mm of the source model (96 wall pieces, 2 slabs, 1 roof, 14 doors, 22 windows). Where there is no 3D model (the shed), the rebuilt model is written back to 2D and compared with the original sheets: columns, grid lines and doors within 0.02 mm. We do not claim this for "any DXF".</li>
 <li><strong>The settings travel in the DXF itself</strong> (layer <code>DXF2BIM-MARK</code>, plain text), so the file stays an ordinary DXF in any CAD program. No sidecar.</li>
