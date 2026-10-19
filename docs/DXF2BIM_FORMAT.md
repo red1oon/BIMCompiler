@@ -85,6 +85,8 @@ JSON Schemas (draft-07) in `modeller/schemas/`: `dxf2bim-verdict.schema.json`, `
 Evidence tiers on every body (`prov`): **drawn** (measured from a drawn entity), **derived** (computed from drawn evidence plus a stated convention), **assumed** (no drawn evidence for its existence or position).
 Evidence properties on every body (set `Dxf2Bim_Evidence`): `Provenance`, `SourceSheet`, `SourceHandle`, `SourceLayer`, `Kind`, `SizeBasis`; from a details sheet also `Note_<key>` + `NoteSource_<key>` and `Sched_<Kind>_<header>` + `SchedSource_<kind>` + `SchedBasis_<kind>`.
 
+**Layer ledger** (`verdict.layer_ledger`, `dxf2ledger.js`): for every layer of every sheet, the entities on it, how it was typed, how many source entities produced a body, and a status: `settings`, `annotation`, `ignored_by_choice`, `used`, `partly_used`, `evidence`, `typed_no_output`, `unread`. `unread` = geometry on a layer nobody typed; `typed_no_output` = typed with a body kind but nothing was built; `partly_used` = some of its entities produced a body (the ratio is in `used_entities` / `geometry`); `evidence` = an elevation or section layer that gave heights or profiles. The entity account (`§ACCOUNT`) only says the DXF parser read every entity; the ledger says what was USED.
+
 ## 5. Settings registry (`modeller/element_defaults.json`): 43 rows
 
 | Key | Element | Unit | Kind | Default | Basis |
