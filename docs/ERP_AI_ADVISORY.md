@@ -216,8 +216,11 @@ Two task prompts that work with it: *"List the customers with a credit limit abo
 | Expiry, rate/volume limits, staged approval by digest, alerts | ✅ | `W-WS-LIMITS` 8/8 |
 | Plugin default off, export, stop | ✅ | `W-WS-PLUGIN` 6/6 |
 
+## Who asked the agent? (signed on-behalf-of)
+The journal always names the agent. To also record the **person** who stood behind a call, create the identity with `--principals alice,bob` (and `--require-principal` to refuse anything unsigned). Each person gets a signing key, printed once, **to give to that person, never to the agent**. A call carries the headers `X-On-Behalf-Of: alice` and `X-On-Behalf-Sig: HMAC-SHA256(key, sha256(request body))`. The host verifies the signature against the exact body: a wrong key, another person's key, an unregistered name, or a signature copied onto a different request is refused and nothing is written. A verified call is journalled with `onBehalfOf`; `ws_agent.js audit` counts calls per person and `(unsigned)`. Witness `W-WS-PRINCIPAL` 9/9.
+
 ## Not there yet (named, not hidden)
-Password hashing (plain compare, as a local test host); role inclusion (`AD_Role_Included`); `IWSValidator` hooks; `@variable@` filters and request-context variables; lookup-by-name (`<lval>`) input; `get_list`, `create_update_data`; the separate `idempiere-rest` plugin (`/api/v1/…`) is **not** part of the iDempiere stack here, so it is not offered; a successful document action does not guarantee a successful posting: read the document's `Posted` column back (`Y`, `N` or `E` = posting error) — an API witness case for a failing posting is still open.
+Password hashing (plain compare, as a local test host); role inclusion (`AD_Role_Included`); `IWSValidator` hooks; `@variable@` filters and request-context variables; `get_list`, `create_update_data`; the separate `idempiere-rest` plugin (`/api/v1/…`) is **not** part of the iDempiere stack here, so it is not offered; a successful document action does not guarantee a successful posting: read the document's `Posted` column back (`Y`, `N` or `E` = posting error) — an API witness case for a failing posting is still open.
 
 ## Troubleshooting (the twin's answers, iDempiere's words)
 
