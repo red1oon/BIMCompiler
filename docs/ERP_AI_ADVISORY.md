@@ -2,7 +2,7 @@
 
 > **Status: SPEC + verified recipe (2026-10-17).** Every request block below that carries a `ws-run` marker is **executed by a witness** (`erp/tests/witness_ws_advisory.js`) against a real host, and its stated outcome is checked; a block that stops working turns that witness red. Nothing here is a promise about what an AI will *do* — only about what the twin will *allow* it to do.
 
-> **Read this first — evaluation host.** In this release the web-service host keeps its data **in memory**: what an AI writes through it is **not saved** when the host stops, and it does not touch the books in your browser. Use it to learn, test an integration, and rehearse the safety controls below. Persisting writes into a real company is a separate step that is not built yet. Treat the control model on this page as the part that carries over.
+> **Read this first — evaluation host.** The web-service host keeps its data **in memory**, separate from the books in your browser. Start it with `--journal ws_journal.jsonl` and what an AI writes is **replayed from that signed journal when the host restarts** (the chain is verified first; one edited line and the host refuses to start). It is still a standalone host: writing into your browser company's own books is a separate step that is not built. Use it to learn, test an integration, and rehearse the safety controls below; the control model on this page is the part that carries over.
 
 The Kernel ERP can speak the **same web-service API as iDempiere** (ADInterface, XML and JSON). Anything that can make an HTTP call — a script, an automation tool, an AI agent — can use it by changing the base URL. That is useful, and it is also the moment most people hand an AI their own login. **Don't.** This page is the safe way.
 
@@ -215,12 +215,14 @@ Two task prompts that work with it: *"List the customers with a credit limit abo
 | Own identity, least privilege, journal, revoke | ✅ | `W-WS-AGENT` 8/8 |
 | Expiry, rate/volume limits, staged approval by digest, alerts | ✅ | `W-WS-LIMITS` 8/8 |
 | Plugin default off, export, stop | ✅ | `W-WS-PLUGIN` 6/6 |
+| get_list, create_update_data, composite (one transaction, rollback, request variables), AD_Role_Included | ✅ | `W-WS-DIFF-MISC` 23/23, `W-WS-DIFF-COMPOSITE` 15/15 (byte-compared with the real iDempiere) |
+| Writes survive a restart (signed journal replay) | ✅ | `W-WS-PERSIST` 5/5 |
 
 ## Who asked the agent? (signed on-behalf-of)
 The journal always names the agent. To also record the **person** who stood behind a call, create the identity with `--principals alice,bob` (and `--require-principal` to refuse anything unsigned). Each person gets a signing key, printed once, **to give to that person, never to the agent**. A call carries the headers `X-On-Behalf-Of: alice` and `X-On-Behalf-Sig: HMAC-SHA256(key, sha256(request body))`. The host verifies the signature against the exact body: a wrong key, another person's key, an unregistered name, or a signature copied onto a different request is refused and nothing is written. A verified call is journalled with `onBehalfOf`; `ws_agent.js audit` counts calls per person and `(unsigned)`. Witness `W-WS-PRINCIPAL` 9/9.
 
 ## Not there yet (named, not hidden)
-Password hashing (plain compare, as a local test host); role inclusion (`AD_Role_Included`); `IWSValidator` hooks; `@variable@` filters and request-context variables; `get_list`, `create_update_data`; the separate `idempiere-rest` plugin (`/api/v1/…`) is **not** part of the iDempiere stack here, so it is not offered; a successful document action does not guarantee a successful posting: read the document's `Posted` column back (`Y`, `N` or `E` = posting error) — an API witness case for a failing posting is still open.
+Argon2 password hashes (SHA-512 and PBKDF2 are done: start the host with `--hash-passwords`, create agents with `--hash-password`; `W-WS-DIFF-PASSWORD` proves the real iDempiere accepts our hashes); validators are twin-side JS (`--validators module.js`, the IWSValidator hook points, `W-WS-VALIDATOR`) - legacy's are OSGi Java, so there is no diff to run; the separate `idempiere-rest` plugin (`/api/v1/…`) is **not** part of the iDempiere stack here, so it is not offered; a successful document action does not guarantee a successful posting: read the document's `Posted` column back (`Y`, `N` or `E` = posting error). A true `Posted=E` over the API is **not yet witnessed**: the real iDempiere gives `Posted=E` (AverageCostingNegativeQty) when Average-PO stock would go negative, and the twin does not yet reproduce the cost-history-as-of-DateAcct rule behind it (named in `prompts/ERP_DEPTH_FILM.md`).
 
 ## Troubleshooting (the twin's answers, iDempiere's words)
 

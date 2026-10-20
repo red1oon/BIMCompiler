@@ -25,12 +25,18 @@ INSERT INTO ws_webservicefieldoutput (ad_client_id,ad_org_id,ad_column_id,ws_web
 DELETE FROM ad_role_included WHERE ad_role_id=920100;
 DELETE FROM ad_user_roles WHERE ad_role_id=920100;
 DELETE FROM ad_role_orgaccess WHERE ad_role_id=920100;
-DELETE FROM ad_role WHERE ad_role_id=920100;
 CREATE TEMP TABLE r1 AS SELECT * FROM ad_role WHERE ad_role_id=102;
 UPDATE r1 SET ad_role_id=920100, name='WsfIncluding', ad_role_uu=gen_random_uuid();
-INSERT INTO ad_role SELECT * FROM r1;
+INSERT INTO ad_role SELECT * FROM r1 WHERE NOT EXISTS (SELECT 1 FROM ad_role WHERE ad_role_id=920100);   -- sessions may reference it: never delete the role
 CREATE TEMP TABLE r2 AS SELECT * FROM ad_role_orgaccess WHERE ad_role_id=102;
 UPDATE r2 SET ad_role_id=920100, ad_role_orgaccess_uu=gen_random_uuid();
 INSERT INTO ad_role_orgaccess SELECT * FROM r2;
 INSERT INTO ad_user_roles (ad_client_id,ad_org_id,ad_role_id,ad_user_id,created,createdby,updated,updatedby,isactive,ad_user_roles_uu) VALUES (11,0,920100,101,now(),100,now(),100,'Y',gen_random_uuid());
 INSERT INTO ad_role_included (ad_client_id,ad_org_id,ad_role_id,included_role_id,seqno,created,createdby,updated,updatedby,isactive,ad_role_included_uu) VALUES (11,0,920100,102,10,now(),100,now(),100,'Y',gen_random_uuid());
+
+-- W-WS-DIFF-COMPOSITE fixture (S9): 920008 = a composite type (service CompositeInterface 200001, method composite 200001). Restart the pilot server after applying.
+DELETE FROM ws_webservicetypeaccess WHERE ws_webservicetype_id = 920008;
+DELETE FROM ws_webservicetype WHERE ws_webservicetype_id = 920008;
+INSERT INTO ws_webservicetype (ad_client_id,ad_org_id,isactive,name,value,ws_webservice_id,ws_webservicemethod_id,ws_webservicetype_id,ws_webservicetype_uu,created,createdby,updated,updatedby)
+  VALUES (11,0,'Y','WsfComposite','WsfComposite',200001,200001,920008,gen_random_uuid(),now(),100,now(),100);
+INSERT INTO ws_webservicetypeaccess (ad_client_id,ad_org_id,ad_role_id,createdby,updatedby,ws_webservicetype_id,ws_webservicetypeaccess_uu) VALUES (11,0,102,100,100,920008,gen_random_uuid());
