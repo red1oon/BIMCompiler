@@ -1,10 +1,14 @@
-# HalalTrace — farm-to-fork track and trace on a local-first, AD-defined data model
+# Halalan Thayiban System — Not just Halal but Goodness
 
-*Technical paper, 2026-10-21. Status: design plus a working prototype. All names, certificate numbers and quantities in the screens are invented sample data.*
+*Farm-to-fork track and trace on a local-first, AD-defined data model*
+
+*Technical paper, 2026-10-21. Status: design plus a working prototype you can open: <https://red1oon.github.io/BIMCompiler/halal/>. All names, certificate numbers and quantities in the screens are invented sample data.*
 
 ## 1. Abstract
 
-A shopper scans one QR code on a pack of frozen meat. The phone shows whether the pack is halal, which certificate covers it, where it has been, which container carried it, and whether it stayed cold. Veterinary officers, customs officers and halal auditors use the same records to trace a lot backward to the farms and forward to the shops.
+![Opening screen: one door each for shoppers, suppliers, and authorities and auditors](img/halaltrace/d0_landing.png)
+
+"Halalan Thayiban" means lawful and good. A shopper scans one QR code on a pack of frozen meat. The phone shows whether the pack is halal, which certificate covers it, where it has been, which container carried it, and a **Thayiban score** for goodness: how the animal was fed, kept and handled, and how the meat travelled. Veterinary officers, customs officers and halal auditors use the same records to trace a lot backward to the farms and forward to the shops.
 
 The design rests on one premise: **each player shares only what the next player needs**, namely product types, volume and a certificate reference. Everything else stays in the player's own local ledger, committed by hash and revealed only to an authority that asks. The data model is defined in the ERP Application Dictionary (AD), so any player's app can grow into a spatial ERP with no second model.
 
@@ -63,7 +67,7 @@ Qualitative requirements only. Costs and effort have not been measured.
 
 | Party | Must do | Must provide | Gets in return |
 |---|---|---|---|
-| **Farm** | Tag animals; scan the tag at movement | Ear-tag list and movement permit per consignment | A place in a promoted chain; proof of origin |
+| **Farm** | Tag animals; scan the tag at movement; keep feed, treatment and barn records | Ear-tag list and movement permit per consignment; husbandry score attested by an auditor | A place in a promoted chain; proof of origin |
 | **Abattoir and packing plant** | Print GS1 labels; scan cartons onto pallets and containers; run the dock rules | Manifest per hand-off; certificate reference; lot commitment | Green lane; fewer disputes; faster recall; promotion |
 | **Halal certifying body** | Expose certificate number, scope, plants and dates in a checkable form; agree to vouch for plant signing keys | Certificate registry entry per plant and product | The certificate becomes visible to the shopper; fake logos become checkable |
 | **Veterinary service** | Record inspections as events; place and release holds | Health certificate reference and result | Faster lookup of lots by animal and farm; targeted holds |
@@ -78,7 +82,33 @@ Qualitative requirements only. Costs and effort have not been measured.
 
 Common to every player: a phone or handheld scanner, a label printer where labels are made, an enrolled signing key, and the local app. No RFID and no integration with the party's own ERP is required to start.
 
-## 7. Players and parts
+## 7. Thayiban: goodness beyond halal
+
+Halal says the meat is lawful. **Thayiban says it is good**: wholesome, from an animal that was fed well, kept healthy and housed decently. These are often overlooked, and a certificate says nothing about them. The same chain that carries halal evidence can carry this too.
+
+The prototype scores each lot out of 100 from five components, each a plain count of checks passed:
+
+| Component | What is checked | Where it comes from |
+|---|---|---|
+| **Nutrition** | feed ration recorded; no unauthorised growth promoters declared; clean water always available; feed supplier traceable; finishing diet logged | the farm's records |
+| **Animal health** | vaccinations current; treatment withdrawal periods honoured; veterinary visit in the last 90 days; mortality within the herd norm; pre-slaughter inspection passed | the farm's records and the veterinary service |
+| **Barn conditions** | space per head meets the minimum; ventilation and bedding adequate; shade and shelter; cleaning log; welfare audit within 12 months | the farm's records and its audit |
+| **Cold chain** | share of legs whose readings stayed within the limit | sensor readings |
+| **Container hygiene** | cleaned after conventional cargo | the container's cleaning record |
+
+Equal weights, equal checks, nothing hidden. The shopper sees the lot's score and the bars; the list of what is checked is one tap away.
+
+![Thayiban score on the shopper's phone](img/halaltrace/m2b_score.png)
+
+**Privacy follows the same rule as everything else.** A farm's feed, treatment and barn records are private. A farm auditor attests the component scores, and the lot score is the animal-weighted mean of its farms. The shopper sees only lot scores. An authority can ask to see the by-farm scores, and that reveal is logged.
+
+![Console: the lot score, by farm, and what is checked](img/halaltrace/d1c_score.png)
+
+**What this is not.** The criteria, the weights and the thresholds are a **proposal**. What counts as good husbandry is for veterinarians, religious scholars and standards bodies to set, not for this prototype. The sample scores are invented, and a farm that attests its own scores is weaker than one an independent auditor visits. A score can be gamed, and the design relies on audits and on the reveal to catch that.
+
+**Why a score at all.** It gives a good farm something to show, and gives the green lanes and the promotion described above something to attach to: promoting "traceable halal" is good, and promoting "traceable halal and good" is better.
+
+## 8. Players and parts
 
 Eleven parties appear in the chain. Authorities see more than players, but only by asking, and every reveal is logged.
 
@@ -88,9 +118,9 @@ The card for each party shows how many kinds of record it keeps private and how 
 
 ![A certifying authority's view](img/halaltrace/d1b_player_authority.png)
 
-Across the chain the eleven parties hold 19 kinds of private record and share 13 items.
+Across the chain the eleven parties hold 19 kinds of private record and share 14 items.
 
-## 8. Identifiers
+## 9. Identifiers
 
 | Thing | Identifier | Carried by |
 |---|---|---|
@@ -104,7 +134,7 @@ Across the chain the eleven parties hold 19 kinds of private record and share 13
 
 A plain phone camera opens the link, so the consumer needs no app.
 
-## 9. The manifest and minimal disclosure
+## 10. The manifest and minimal disclosure
 
 At each hand-off the sender signs one manifest. It contains only:
 
@@ -121,14 +151,14 @@ At each hand-off the sender signs one manifest. It contains only:
 
 An authority that needs the lot asks the owner, who reveals the salt. The recomputed hash either matches the manifest or it does not; a wrong salt discloses nothing.
 
-## 10. Federated trace
+## 11. Federated trace
 
 A trace walks the chain by asking each hop for its own step. In the prototype, six hops answer from the shop back to the farms. If one player is silent, the trace stops there and nothing beyond it is guessed.
 
 ![A trace stopped by a silent distribution centre](img/halaltrace/d3_trace_silent.png)
 ![The same trace with every player answering](img/halaltrace/d3b_trace_full.png)
 
-## 11. Data model in the AD
+## 12. Data model in the AD
 
 Every table is defined in `AD_Table` and `AD_Column`, so it opens in the generic window with no per-window code. Core tables below were checked in the ERP's AD seed.
 
@@ -143,11 +173,11 @@ Every table is defined in `AD_Table` and `AD_Column`, so it opens in the generic
 | Internal move, count | `M_Movement`, `M_Inventory` | — |
 | Carcass to cuts to packs | `M_ProductionLine` | — |
 
-Extension tables, also AD-defined: `HT_Certificate`, `HT_CertificatePlant`, `HT_Event` (EPCIS-shaped), `HT_Reading` (sensor values), `HT_Hold`, `HT_Manifest`, `HT_Commitment`, `HT_Reveal`, `HT_Scan`, `HT_Review`, `HT_Rule`.
+Extension tables, also AD-defined: `HT_Certificate`, `HT_CertificatePlant`, `HT_Event` (EPCIS-shaped), `HT_Reading` (sensor values), `HT_Husbandry` (auditor-attested nutrition, health and barn scores), `HT_Hold`, `HT_Manifest`, `HT_Commitment`, `HT_Reveal`, `HT_Scan`, `HT_Review`, `HT_Rule`.
 
 **Spatial hook.** `M_Locator.X/Y/Z` places a pallet in a cold-store room, and `HT_Event` places an event at a site by GLN. A spatial ERP draws the room from the same rows. A plant that runs the app already holds its stock, locations and shipments, so track and trace is a view of data it keeps anyway.
 
-## 12. The rules
+## 13. The rules
 
 | Rule | Checks | If it fails |
 |---|---|---|
@@ -160,7 +190,7 @@ Extension tables, also AD-defined: `HT_Certificate`, `HT_CertificatePlant`, `HT_
 | R7 | cold-chain readings stay within the limit | the excursion is shown and the lot flagged |
 | R8 | a veterinary or customs hold stops downstream use | pack shows "on hold" |
 
-## 13. The shopper's phone
+## 14. The shopper's phone
 
 **Scan.** The camera reads the pack's QR code.
 
@@ -184,14 +214,14 @@ Extension tables, also AD-defined: `HT_Certificate`, `HT_CertificatePlant`, `HT_
 
 ![Report with photo](img/halaltrace/m7_review.png)
 
-## 14. The dock worker's phone
+## 15. The dock worker's phone
 
 Each carton is scanned onto the container. Rule R1 checks it on the spot.
 
 ![Dock scan](img/halaltrace/m8_worker.png)
 ![A pork carton is refused from a halal container](img/halaltrace/m9_worker_block.png)
 
-## 15. The console
+## 16. The console
 
 The plant's own app and the authority views share the generic grid. The dashboard shows alerts, including the blocked scan above.
 
@@ -199,13 +229,13 @@ The plant's own app and the authority views share the generic grid. The dashboar
 ![Containers: content listing against certificates](img/halaltrace/d5_containers.png)
 ![Recall: packs, pallets, shops and shoppers who scanned](img/halaltrace/d6_recall.png)
 
-## 16. Local-first mechanics
+## 17. Local-first mechanics
 
 The signed, hash-chained, sealed-to-recipient event pattern is reused from our ThaiGoldPawn prototype: append-only events, device-bound keys that cannot be exported, tokens sealed to the recipient's key, state as a fold over the chain, and an offline queue that syncs on reconnect. Here the author is the player key, the recipient is the next player's key, and the token is the manifest.
 
-## 17. What the checks prove
+## 18. What the checks prove
 
-Twenty-three scripted checks run against the prototype. All passed on 2026-10-21; the log is `witness_ui.log`.
+Twenty-six scripted checks run against the prototype. All passed on 2026-10-21; the log is `witness_ui.log`.
 
 | Check | Issue it proves or disproves |
 |---|---|
@@ -217,12 +247,14 @@ Twenty-three scripted checks run against the prototype. All passed on 2026-10-21
 | W-HT-R1 | a pork carton is refused; a beef carton is loaded |
 | W-HT-TRACK | the tracking card has 11 steps, six stages, and scrolls |
 | W-HT-REV | a review is saved locally with its photo, rating, link and verdict |
+| W-HT-SCORE | the Thayiban score is computed from its parts | five components; the lot score equals their mean and the figure on screen; the farm-weighted mean equals the lot component; a cold-chain excursion lowers the cold-chain score |
+| W-HT-LANDING | the opening screen has the three doors | three doors, the headline, and the eleven parties |
 | W-HT-PLAYERS | 11 players fit the window |
 | W-HT-NOOVERFLOW, W-HT-NOERR | no console view scrolls sideways; no page errors |
 
 These prove the prototype is consistent with the design. They do not prove the design works in a real chain.
 
-## 18. Limits and open questions
+## 19. Limits and open questions
 
 - **No real integration.** Certificate lookup against a Thai certifying body's registry is assumed. Whether such a registry can be queried by number is unknown.
 - **Key trust.** Who vouches that a signing key belongs to a plant is open; a certifying body could, if it agrees.
@@ -230,5 +262,6 @@ These prove the prototype is consistent with the design. They do not prove the d
 - **Cold-chain data** is trustworthy only if sensors capture it; typed values would be labelled lower trust.
 - **Hosting** of the public record for a plant with no web presence.
 - **Thai text** for religious wording must be reviewed by a qualified native speaker before consumer use.
+- **Thayiban criteria** are a proposal. What counts as good nutrition, health and barn conditions, and how to weigh them, is for veterinarians, scholars and standards bodies.
 - **Unread sources:** the NTUST thesis and the Indonesian study.
 - **No field trial.** The only comparable pilot we read used RFID over 109 cartons.
