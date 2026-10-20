@@ -39,7 +39,46 @@ What is needed is a record that follows the goods, tells each party only what it
 6. **QR and barcode capture first.** No RFID, no ERP integration required to join.
 7. **The result of every rule is shown.** A rule that did not run says so.
 
-## 5. Players and parts
+## 5. The hard part: getting a whole chain to cooperate
+
+The technology is the smaller problem. A traceable chain is only as strong as its weakest hop, and no party gains much by joining first: a farm gains nothing from a plant that does not scan, and a shop gains nothing from a supplier that does not send a manifest. We found no evidence yet of how willing any Thai party is to take part; a pilot has to measure that, and this paper cannot claim it.
+
+The proposal is to make taking part a **reward, not a burden**:
+
+- **Green lanes.** A consignment whose manifest matches what is scanned, and whose certificate checks out, can be treated as lower risk by the authorities that inspect it. Customs and border veterinary officers spend their inspections where data is missing or does not match. Customs services already run risk-based fast-track schemes for trusted operators; whether and how one would apply here is for those departments to decide (⛔ to confirm with them).
+- **Promotion by the participants.** Participating retailers, exporters and the consumer halal movement list and promote products whose chain is traceable. A shopper who scans a pack sees the verified chain, so the promotion is something the shopper can check for themselves.
+- **Cheaper trouble.** A lot that can be located in one query is a smaller recall, a faster release from a hold, and a shorter argument with a buyer.
+- **No penalty at the start.** Non-participants are not blocked. Their packs simply show "no traceable record", and the contrast does the work. Any stronger step is for the authorities and certifying bodies to decide later.
+
+Why this can fail, stated plainly:
+
+1. **Chicken and egg.** The reward appears only when enough parties take part. A pilot should pick one product on one route with willing parties at every hop.
+2. **Free riding.** A party can take the promotion and send thin data. Rules R1 to R8 and the audit reveal exist to catch this, and a green lane must be removable.
+3. **Trust in the data.** An authority will only relax inspection if it trusts the manifests. That needs signed records, sensor-captured temperatures and audits, and trust takes time to earn.
+4. **Different incentives for authorities.** A department's reward is fewer wasted inspections and better recall, not revenue. It will join if the data arrives in a form it can use without new systems.
+
+## 6. What it takes, party by party
+
+Qualitative requirements only. Costs and effort have not been measured.
+
+| Party | Must do | Must provide | Gets in return |
+|---|---|---|---|
+| **Farm** | Tag animals; scan the tag at movement | Ear-tag list and movement permit per consignment | A place in a promoted chain; proof of origin |
+| **Abattoir and packing plant** | Print GS1 labels; scan cartons onto pallets and containers; run the dock rules | Manifest per hand-off; certificate reference; lot commitment | Green lane; fewer disputes; faster recall; promotion |
+| **Halal certifying body** | Expose certificate number, scope, plants and dates in a checkable form; agree to vouch for plant signing keys | Certificate registry entry per plant and product | The certificate becomes visible to the shopper; fake logos become checkable |
+| **Veterinary service** | Record inspections as events; place and release holds | Health certificate reference and result | Faster lookup of lots by animal and farm; targeted holds |
+| **Customs and border control** | Compare the declaration with the manifest; release or hold | Clearance reference | Inspection effort moves to mismatches; a basis for green lanes |
+| **Port and carrier** | Scan container arrival; share reefer readings | Arrival, dwell and temperature | Less argument over who caused a delay or excursion |
+| **Cold store and distribution centre** | Scan pallets in and out; share temperature summaries | Pallet scans; readings | Proof the goods were kept cold |
+| **Retailer** | Scan cartons received; show the promotion | Cartons-received event | Shoppers can verify what is on the shelf |
+| **Consumer halal movement and religious bodies** | Recognise the verified chain; promote participating products | Their endorsement and directory | A way to check claims without trusting a logo |
+| **Standards body (identifier issuer)** | Issue company prefixes and location numbers | GLN and prefix register | Wider use of the standard |
+| **Government commerce and export promotion** | Back the green-lane and promotion scheme | Policy and promotion | A visible quality mark for exports |
+| **Data-protection authority** | Review what is shared and what is kept private | A view on the manifest design | A design that shares need-to-know only |
+
+Common to every player: a phone or handheld scanner, a label printer where labels are made, an enrolled signing key, and the local app. No RFID and no integration with the party's own ERP is required to start.
+
+## 7. Players and parts
 
 Eleven parties appear in the chain. Authorities see more than players, but only by asking, and every reveal is logged.
 
@@ -51,7 +90,7 @@ The card for each party shows how many kinds of record it keeps private and how 
 
 Across the chain the eleven parties hold 19 kinds of private record and share 13 items.
 
-## 6. Identifiers
+## 8. Identifiers
 
 | Thing | Identifier | Carried by |
 |---|---|---|
@@ -65,7 +104,7 @@ Across the chain the eleven parties hold 19 kinds of private record and share 13
 
 A plain phone camera opens the link, so the consumer needs no app.
 
-## 7. The manifest and minimal disclosure
+## 9. The manifest and minimal disclosure
 
 At each hand-off the sender signs one manifest. It contains only:
 
@@ -82,14 +121,14 @@ At each hand-off the sender signs one manifest. It contains only:
 
 An authority that needs the lot asks the owner, who reveals the salt. The recomputed hash either matches the manifest or it does not; a wrong salt discloses nothing.
 
-## 8. Federated trace
+## 10. Federated trace
 
 A trace walks the chain by asking each hop for its own step. In the prototype, six hops answer from the shop back to the farms. If one player is silent, the trace stops there and nothing beyond it is guessed.
 
 ![A trace stopped by a silent distribution centre](img/halaltrace/d3_trace_silent.png)
 ![The same trace with every player answering](img/halaltrace/d3b_trace_full.png)
 
-## 9. Data model in the AD
+## 11. Data model in the AD
 
 Every table is defined in `AD_Table` and `AD_Column`, so it opens in the generic window with no per-window code. Core tables below were checked in the ERP's AD seed.
 
@@ -108,7 +147,7 @@ Extension tables, also AD-defined: `HT_Certificate`, `HT_CertificatePlant`, `HT_
 
 **Spatial hook.** `M_Locator.X/Y/Z` places a pallet in a cold-store room, and `HT_Event` places an event at a site by GLN. A spatial ERP draws the room from the same rows. A plant that runs the app already holds its stock, locations and shipments, so track and trace is a view of data it keeps anyway.
 
-## 10. The rules
+## 12. The rules
 
 | Rule | Checks | If it fails |
 |---|---|---|
@@ -121,7 +160,7 @@ Extension tables, also AD-defined: `HT_Certificate`, `HT_CertificatePlant`, `HT_
 | R7 | cold-chain readings stay within the limit | the excursion is shown and the lot flagged |
 | R8 | a veterinary or customs hold stops downstream use | pack shows "on hold" |
 
-## 11. The shopper's phone
+## 13. The shopper's phone
 
 **Scan.** The camera reads the pack's QR code.
 
@@ -145,14 +184,14 @@ Extension tables, also AD-defined: `HT_Certificate`, `HT_CertificatePlant`, `HT_
 
 ![Report with photo](img/halaltrace/m7_review.png)
 
-## 12. The dock worker's phone
+## 14. The dock worker's phone
 
 Each carton is scanned onto the container. Rule R1 checks it on the spot.
 
 ![Dock scan](img/halaltrace/m8_worker.png)
 ![A pork carton is refused from a halal container](img/halaltrace/m9_worker_block.png)
 
-## 13. The console
+## 15. The console
 
 The plant's own app and the authority views share the generic grid. The dashboard shows alerts, including the blocked scan above.
 
@@ -160,11 +199,11 @@ The plant's own app and the authority views share the generic grid. The dashboar
 ![Containers: content listing against certificates](img/halaltrace/d5_containers.png)
 ![Recall: packs, pallets, shops and shoppers who scanned](img/halaltrace/d6_recall.png)
 
-## 14. Local-first mechanics
+## 16. Local-first mechanics
 
 The signed, hash-chained, sealed-to-recipient event pattern is reused from our ThaiGoldPawn prototype: append-only events, device-bound keys that cannot be exported, tokens sealed to the recipient's key, state as a fold over the chain, and an offline queue that syncs on reconnect. Here the author is the player key, the recipient is the next player's key, and the token is the manifest.
 
-## 15. What the checks prove
+## 17. What the checks prove
 
 Twenty-three scripted checks run against the prototype. All passed on 2026-10-21; the log is `witness_ui.log`.
 
@@ -183,7 +222,7 @@ Twenty-three scripted checks run against the prototype. All passed on 2026-10-21
 
 These prove the prototype is consistent with the design. They do not prove the design works in a real chain.
 
-## 16. Limits and open questions
+## 18. Limits and open questions
 
 - **No real integration.** Certificate lookup against a Thai certifying body's registry is assumed. Whether such a registry can be queried by number is unknown.
 - **Key trust.** Who vouches that a signing key belongs to a plant is open; a certifying body could, if it agrees.
