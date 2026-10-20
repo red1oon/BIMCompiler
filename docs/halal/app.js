@@ -17,7 +17,8 @@ const I = {
   recall: '<path d="M4 12a8 8 0 108-8M4 4v5h5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>'
 };
 const ic = (k, c) => `<svg viewBox="0 0 24 24"${c ? ' class="' + c + '"' : ''}>${I[k]}</svg>`;
-if (window.__film) document.documentElement.classList.add('film');
+if (window.__filmband) document.documentElement.classList.add('film');
+I18N.init();
 const St = { mode: 'landing', view: 'scan', hand: 'A', scanning: false, cur: null, open: null, cview: 'dash', cont: 1, trace: null, recall: null, wres: null, card: null, tl: 0, tcode: '' };
 const $ = s => document.querySelector(s); const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const num = n => Number(n).toLocaleString('en-US');
@@ -26,8 +27,8 @@ const handIndex = id => (id === 'A' ? 1203 : id === 'B' ? 17 : id === 'C' ? 301 
 function qrSvg(url) { const q = qrcode(0, 'M'); q.addData(url); q.make(); return q.createSvgTag(4, 0); }
 
 function topbar() {
-  const m = [['landing', 'Home'], ['shopper', 'Shopper (phone)'], ['worker', 'Dock worker (phone)'], ['console', 'Console (desktop)']];
-  return `<div class="top"><div class="brand" data-mode="landing" style="cursor:pointer">${ic('shield')}<span>Halalan Thayiban System</span></div><div class="modes">${m.map(([k, l]) => `<button data-mode="${k}" class="${St.mode === k ? 'on' : ''}">${l}</button>`).join('')}</div><div class="sp"></div><div class="who">${St.mode === 'landing' ? 'Choose who you are' : St.mode === 'console' ? 'Signed in: regulator view' : St.mode === 'worker' ? 'Signed in: dock worker, Rio Verde Meat Plant' : 'No sign-in needed'}</div></div>`;
+  const m = [['landing', 'home', 'Home'], ['shopper', 'scan', 'Shopper'], ['worker', 'box', 'Dock'], ['console', 'users', 'Console']];
+  return `<div class="top"><div class="brand" data-mode="landing" style="cursor:pointer">${ic('shield')}<span>Halalan Thayiban</span></div><div class="modes">${m.map(([k, i, l]) => `<button data-mode="${k}" class="${St.mode === k ? 'on' : ''}">${ic(i)}<small>${l}</small></button>`).join('')}</div><div class="sp"></div><label class="lg">${ic('globe')}<select id="lang">${['en', 'th', 'ms', 'ar'].map(l => `<option value="${l}" ${I18N.lang === l ? 'selected' : ''}>${I18N.NAMES[l][0]}</option>`).join('')}</select></label></div>`;
 }
 /* ---------- shopper phone ---------- */
 function shopperScreen() {
@@ -69,18 +70,16 @@ function tempChart(t) {
 }
 function shopper() {
   const steps = [['scan', 'Scan the QR on the pack'], ['verdict', 'Read the verdict'], ['journey', 'Follow the journey'], ['container', 'Check the container'], ['cold', 'Check the cold chain']];
-  const tabs = St.view === 'scan' ? '' : `<div class="ptabs">${[['verdict', 'shield', 'Verdict'], ['journey', 'route', 'Journey'], ['container', 'box', 'Container'], ['cold', 'snow', 'Cold'], ['review', 'chat', 'Report'], ['scan', 'scan', 'Scan']].map(([k, i, t]) => `<button data-view="${k}" class="${St.view === k ? 'on' : ''}">${ic(i)}${t}</button>`).join('')}</div>`;
-  return `<div class="stage"><div class="side"><h2>Any phone camera.<br>No app.</h2><p>The shopper scans the code on the pack and the page opens.</p><div class="trail">${steps.map(([k, t], n) => `<div class="${St.view === k ? 'on' : ''}"><b>${n + 1}</b>${t}</div>`).join('')}</div></div>
-  <div class="phone"><div class="screen"><div class="notch"><span>9:41</span><span>Halalan Thayiban</span><span>5G ▮▮▮</span></div><div class="pbody" id="pb">${shopperScreen()}</div>${tabs}</div></div><div></div></div>`;
+  const tabs = St.view === 'scan' ? '' : `<div class="ptabs">${[['verdict', 'shield', 'Verdict'], ['journey', 'route', 'Track'], ['container', 'box', 'Box'], ['cold', 'snow', 'Cold'], ['review', 'chat', 'Report'], ['scan', 'scan', 'Scan']].map(([k, i, t]) => `<button data-view="${k}" class="${St.view === k ? 'on' : ''}">${ic(i)}${t}</button>`).join('')}</div>`;
+  return `<div class="stage"><div class="phone"><div class="screen"><div class="notch"><span>9:41</span><span>Halalan Thayiban</span><span>5G ▮▮▮</span></div><div class="pbody" id="pb">${shopperScreen()}</div>${tabs}</div></div></div>`;
 }
 /* ---------- worker phone ---------- */
 function worker() {
   const C = HT.conts[2], pct = (C.loaded / C.declaredCartons * 100).toFixed(1), r = St.wres;
   const ov = r ? (r.ok ? `<div class="res ok">${ic('check')}<h1>Loaded</h1><p>${num(r.loaded)} of ${num(r.of)} cartons in container ${C.no}</p><button data-act="wclose">Next carton</button></div>` : `<div class="res bad">${ic('x')}<h1>BLOCK</h1><p>${esc(r.ev.text)}</p><p>The carton is not loaded. The auditor has been alerted.</p><button data-act="wclose">Set the carton aside</button></div>`) : '';
   const cartons = [['B', 'B26241-C0097', 'Frozen Beef Mince · 10 packs'], ['P', 'P26240-C0412', 'Frozen Pork Belly · 10 packs']];
-  return `<div class="stage"><div class="side"><h2>The dock scan.</h2><p>Each carton is scanned onto the container. A carton that does not belong is refused on the spot.</p><div class="trail"><div class="on"><b>1</b>Scan the carton barcode</div><div><b>2</b>Rule R1 checks its certificate</div><div><b>3</b>Loaded, or blocked and logged</div></div></div>
-  <div class="phone"><div class="screen"><div class="notch"><span>10:41</span><span>Halalan Thayiban · Dock</span><span>Wi-Fi</span></div><div class="pbody"><div class="wbar"><h3>Loading container ${C.no}</h3><small>Seal ${C.seal} · halal beef, lot ${HT.lots.B.lot}</small><div class="prog"><i style="width:${pct}%"></i></div><small><b id="wc">${num(C.loaded)}</b> of ${num(C.declaredCartons)} cartons</small></div>
-  <div style="padding:12px 14px 2px;color:var(--mu);font-size:.85em">Cartons at the dock — tap to scan the barcode</div>${cartons.map(([k, c, t]) => `<button class="carton" data-load="${k}"><span class="bars"></span><span><b>${c}</b><small>${t}</small></span></button>`).join('')}</div>${ov}</div></div><div></div></div>`;
+  return `<div class="stage"><div class="phone"><div class="screen"><div class="notch"><span>10:41</span><span>Halalan Thayiban · Dock</span><span>Wi-Fi</span></div><div class="pbody"><div class="wbar"><h3>Loading container ${C.no}</h3><small>Seal ${C.seal} · halal beef, lot ${HT.lots.B.lot}</small><div class="prog"><i style="width:${pct}%"></i></div><small><b id="wc">${num(C.loaded)}</b> of ${num(C.declaredCartons)} cartons</small></div>
+  <div style="padding:12px 14px 2px;color:var(--mu);font-size:.85em">Cartons at the dock — tap to scan the barcode</div>${cartons.map(([k, c, t]) => `<button class="carton" data-load="${k}"><span class="bars"></span><span><b>${c}</b><small>${t}</small></span></button>`).join('')}</div>${ov}</div></div></div>`;
 }
 /* ---------- console ---------- */
 const lotsArr = () => Object.values(HT.lots);
@@ -123,8 +122,8 @@ function cview() {
   }
 }
 function consoleUI() {
-  const nav = [['chain', 'users', 'Players and parts'], ['score', 'shield', 'Thayiban score'], ['disc', 'lock', 'Disclosure'], ['fed', 'route', 'Trace across players'], ['dash', 'home', 'Dashboard'], ['trace', 'search', 'Trace'], ['cont', 'box', 'Containers'], ['vet', 'vet', 'Veterinary'], ['cust', 'cust', 'Customs'], ['certs', 'doc', 'Certificates'], ['recall', 'recall', 'Recall']];
-  return `<div class="cons"><div class="nav"><div class="sec">Console</div>${nav.map(([k, i, t]) => `<button data-cv="${k}" class="${St.cview === k ? 'on' : ''}">${ic(i)}${t}</button>`).join('')}</div><div class="main" id="mn">${cview()}</div></div>`;
+  const nav = [['chain', 'users', 'Parties'], ['score', 'shield', 'Score'], ['disc', 'lock', 'Share'], ['fed', 'route', 'Hops'], ['dash', 'home', 'Board'], ['trace', 'search', 'Trace'], ['cont', 'box', 'Boxes'], ['vet', 'vet', 'Vet'], ['cust', 'cust', 'Customs'], ['certs', 'doc', 'Certs'], ['recall', 'recall', 'Recall']];
+  return `<div class="cons"><div class="nav">${nav.map(([k, i, t]) => `<button data-cv="${k}" class="${St.cview === k ? 'on' : ''}">${ic(i)}<small>${t}</small></button>`).join('')}</div><div class="main" id="mn">${cview()}</div></div>`;
 }
 function cardUI() {
   const c = St.card; if (!c) return '';
@@ -135,6 +134,7 @@ function cardUI() {
 function render() {
   const keep = $('#pb') ? $('#pb').scrollTop : 0, keepm = $('#mn') ? $('#mn').scrollTop : 0;
   $('#root').innerHTML = topbar() + '<div class="app">' + (St.mode === 'landing' ? V2.landing() : St.mode === 'shopper' ? shopper() : St.mode === 'worker' ? worker() : consoleUI()) + '</div>' + cardUI();
+  I18N.apply($('#root'));
   if ($('#pb')) $('#pb').scrollTop = keep; if ($('#mn')) $('#mn').scrollTop = keepm;
 }
 function scan() {

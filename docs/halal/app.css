@@ -1,6 +1,6 @@
 :root{--g:#0e6b4f;--gd:#0a4a37;--gl:#e3f2ec;--bg:#f3f6f4;--card:#fff;--tx:#1d2a26;--mu:#6b7a74;--ln:#dde5e1;--ok:#1b7f4b;--warn:#b26a00;--bad:#b3261e;--hold:#b26a00;--conv:#5a6a73;--font:15px}
 *{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:'Noto Sans','DejaVu Sans',system-ui,sans-serif;font-size:var(--font);background:var(--bg);color:var(--tx);line-height:1.4}
+body{font-family:'Noto Sans','Noto Sans Thai','Noto Sans Arabic','Tahoma','DejaVu Sans',system-ui,sans-serif;font-size:var(--font);background:var(--bg);color:var(--tx);line-height:1.4}
 button{font:inherit;cursor:pointer;border:0}
 .top{height:54px;background:var(--gd);color:#fff;display:flex;align-items:center;gap:18px;padding:0 20px}
 .brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:1.15em;letter-spacing:.02em}
@@ -152,3 +152,29 @@ html.film .phone{height:calc(100vh - 54px - 90px - 16px)}
 .foot{text-align:center;color:var(--mu);font-size:.8em;padding:8px 0 20px;margin:0}
 @media(max-width:900px){.doors{grid-template-columns:1fr;margin-top:0}.strip .sn{width:58px}.hero{padding:22px 16px}}
 .sb{display:grid;grid-template-columns:128px 1fr 30px;gap:8px;align-items:center;font-size:.8em;margin:5px 0}.sb .tr2{height:9px;background:#e1e9e5;border-radius:5px;overflow:hidden}.sb .tr2 i{display:block;height:100%;border-radius:5px}.sb b{text-align:right}
+
+.lang{display:flex;gap:4px}.lang button{background:rgba(255,255,255,.12);color:#fff;border-radius:99px;padding:5px 11px;font-size:.82em}.lang button.on{background:#5df2b1;color:#06281c;font-weight:700}
+html[dir=rtl] th,html[dir=rtl] td{text-align:right}html[dir=rtl] td.n,html[dir=rtl] th.n{text-align:left}
+html[dir=rtl] .pl:after{right:auto;left:-17px;transform:scaleX(-1)}html[dir=rtl] .strip .ar{transform:scaleX(-1)}
+html[dir=rtl] .stg .s:before{left:50%;right:-50%}html[dir=rtl] .nav{border-right:0;border-left:1px solid var(--ln)}
+html[dir=rtl] .tri ul,html[dir=rtl] .door ul,html[dir=rtl] .chk{padding-right:18px;padding-left:0}html[dir=rtl] .ov .cl2 li{padding:9px 44px 9px 0}html[dir=rtl] .ov .cl2 li:before{left:auto;right:6px}
+html[dir=rtl] .tr .rail{order:0}html[dir=rtl] .stage .side{text-align:right}html[dir=rtl] .vf .ctl,html[dir=rtl] .res{direction:rtl}
+html[dir=rtl] .hash,html[dir=rtl] pre.js,html[dir=rtl] .pack,html[dir=rtl] .carton .bars{direction:ltr;unicode-bidi:isolate}
+@media(max-width:520px){.lang button{padding:4px 7px;font-size:.72em}.top .who{display:none}}
+
+/* sleek pass: icon tabs with one short keyword */
+.top{height:58px;gap:14px}.brand span{font-weight:600;letter-spacing:.01em}
+.modes{margin-left:18px;gap:2px}.modes button{background:none;border-radius:12px;padding:6px 14px;display:flex;flex-direction:column;align-items:center;gap:1px;color:#ffffffaa}
+.modes button svg{width:21px;height:21px}.modes button small{font-size:.66em;letter-spacing:.04em}.modes button.on{background:#ffffff22;color:#fff;font-weight:600}
+.lg{display:flex;align-items:center;gap:5px;background:#ffffff1c;border-radius:99px;padding:4px 10px;color:#fff}.lg svg{width:17px;height:17px}.lg select{background:none;border:0;color:#fff;font:inherit;font-size:.85em;outline:0;cursor:pointer}.lg option{color:#111}
+.app{height:calc(100% - 58px)}html.film body{height:calc(100% - 90px)}
+.stage{display:flex;justify-content:center;align-items:center;gap:0;padding:8px}
+.cons{grid-template-columns:84px 1fr}.nav{padding:10px 6px;gap:2px;align-items:stretch}
+.nav button{flex-direction:column;gap:3px;padding:9px 2px 7px;font-size:.78em;text-align:center;justify-content:center;align-items:center;border-radius:12px}.nav button svg{width:22px;height:22px}.nav small{font-size:.74em;letter-spacing:.02em}
+.main h2+.sub{display:none}.main h2{font-size:1.15em;margin-bottom:10px}
+.hero{padding:26px 24px 20px}.hero p{margin-bottom:12px}.door{padding:18px}.door p{margin-bottom:14px;font-size:1.02em}.door .btn{display:inline-flex;align-items:center;gap:7px}.door .btn svg{width:17px;height:17px}
+.strip .sn span{width:38px;height:38px}
+.ptabs button{padding:8px 0 7px;font-size:.66em}.ptabs svg{width:21px;height:21px}
+html[dir=rtl] .nav{border-left:1px solid var(--ln);border-right:0}
+@media(max-width:900px){.cons{grid-template-columns:1fr;grid-template-rows:auto 1fr}.nav{flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--ln)}.nav button{min-width:62px}}
+@media(max-width:520px){.brand span{display:none}.modes{margin-left:2px}.modes button{padding:5px 8px}}
