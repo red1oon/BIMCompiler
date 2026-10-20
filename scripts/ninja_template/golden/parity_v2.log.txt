@@ -1,0 +1,1361 @@
+I2 Address is String 5
+I3 Address is String Cost of Goods Sold
+I4 Address is Numeric 429
+J2 Address is String 51100
+J3 Address is String Product CoGs
+J4 Address is Numeric 430
+K2 Address is String 51110
+K3 Address is String Cost Of Production
+K4 Address is Numeric 50010
+L2 Address is String 51120
+L3 Address is String Scrap
+L4 Address is Numeric 50016
+M2 Address is String 51130
+M3 Address is String Outside Processing (Subcontract)
+M4 Address is Numeric 50011
+N2 Address is String 51200
+N3 Address is String Product Expense
+N4 Address is Numeric 431
+O2 Address is String 51300
+O3 Address is String Cost Adjustments
+O4 Address is Numeric 781
+P2 Address is String 51400
+P3 Address is String Inventory Clearing
+P4 Address is Numeric 780
+Q2 Address is String 51800
+Q3 Address is String Commissions Paid
+Q4 Address is Numeric 778
+R2 Address is String 52000
+R3 Address is String Services Purchases
+R4 Address is Numeric 432
+S2 Address is String 53000
+S3 Address is String Sideline Purchases
+S4 Address is Numeric 433
+T2 Address is String 54000
+T3 Address is String Freight in
+T4 Address is Numeric 434
+U2 Address is String 55
+U3 Address is String Returns
+U4 Address is Numeric 435
+V2 Address is String 55100
+V3 Address is String Returns Expense
+V4 Address is Numeric 436
+W2 Address is String 55200
+W3 Address is String Returns to Vendors
+W4 Address is Numeric 437
+X2 Address is String 56
+X3 Address is String Inventory CoGs
+X4 Address is Numeric 438
+Y2 Address is String 56100
+Y3 Address is String Inventory Shrinkage
+Y4 Address is Numeric 439
+Z2 Address is String 56200
+Z3 Address is String Inventory Write Down Below Cost
+Z4 Address is Numeric 440
+AA2 Address is String 56300
+AA3 Address is String Inventory Adjustment
+AA4 Address is Numeric 441
+AB2 Address is String 56400
+AB3 Address is String Inventory Revaluation
+AB4 Address is Numeric 442
+AC2 Address is String 57000
+AC3 Address is String Direct Labor
+AC4 Address is Numeric 634
+AD2 Address is String 58
+AD3 Address is String CoGS Variances
+AD4 Address is Numeric 443
+AE2 Address is String 58100
+AE3 Address is String Invoice price variance
+AE4 Address is Numeric 444
+AF2 Address is String 58200
+AF3 Address is String Purchase price variance
+AF4 Address is Numeric 445
+AG2 Address is String 58300
+AG3 Address is String Purchase price variance Offset
+AG4 Address is Numeric 635
+AH2 Address is String 58400
+AH3 Address is String Using Variance
+AH4 Address is Numeric 50001
+AI2 Address is String 58500
+AI3 Address is String Method Change Variance
+AI4 Address is Numeric 50002
+AJ2 Address is String 58600
+AJ3 Address is String Rate Variance
+AJ4 Address is Numeric 50003
+AK2 Address is String 58700
+AK3 Address is String Mix Variance
+AK4 Address is Numeric 50004
+AL2 Address is String 58800
+AL3 Address is String Average Cost Variance
+AL4 Address is Numeric 50017
+AM2 Address is String 58900
+AM3 Address is String Landed Cost Clearing
+AM4 Address is Numeric 200000
+AN2 Address is String 59
+AN3 Address is String CoGs/Sales Discounts
+AN4 Address is Numeric 446
+AO2 Address is String 59100
+AO3 Address is String Trade discounts received
+AO4 Address is Numeric 447
+AP2 Address is String 59101
+AP3 Address is String Trade Discounts
+AP4 Address is Numeric 426
+AQ2 Address is String 59200
+AQ3 Address is String Payment discount revenue
+AQ4 Address is Numeric 448
+AR2 Address is String 59201
+AR3 Address is String Payment discount revenue
+AR4 Address is Numeric 427
+AS2 Address is String 59300
+AS3 Address is String Promotion Discounts
+AS4 Address is Numeric 428
+AT2 Address is String 6
+AT3 Address is String Expenses
+AT4 Address is Numeric 449
+AU2 Address is String 60
+AU3 Address is String Payroll Expenses
+AU4 Address is Numeric 450
+AV2 Address is String 60110
+AV3 Address is String Wages
+AV4 Address is Numeric 772
+AW2 Address is String 60120
+AW3 Address is String Wages Owners
+AW4 Address is Numeric 636
+AX2 Address is String 60130
+AX3 Address is String Salaries
+AX4 Address is Numeric 451
+AY2 Address is String 60210
+AY3 Address is String Vacation Pay
+AY4 Address is Numeric 452
+AZ2 Address is String 60220
+AZ3 Address is String Vacation Pay Owners
+AZ4 Address is Numeric 453
+BA2 Address is String 60230
+BA3 Address is String Sick Pay
+BA4 Address is Numeric 637
+BB2 Address is String 60240
+BB3 Address is String Sick Pay Owners
+BB4 Address is Numeric 454
+BC2 Address is String 60300
+BC3 Address is String Retirement (Pension, Profit Sharing, 401k)
+BC4 Address is Numeric 455
+BD2 Address is String 60410
+BD3 Address is String FICA Tax
+BD4 Address is Numeric 638
+BE2 Address is String 60420
+BE3 Address is String FICA Tax Owners
+BE4 Address is Numeric 456
+BF2 Address is String 60430
+BF3 Address is String Federal/State Unemployment
+BF4 Address is Numeric 457
+BG2 Address is String 60440
+BG3 Address is String Federal/State Unemployment Owners
+BG4 Address is Numeric 458
+BH2 Address is String 60510
+BH3 Address is String Health Insurance Premium
+BH4 Address is Numeric 639
+BI2 Address is String 60520
+BI3 Address is String Health Insurance Premium Owners
+BI4 Address is Numeric 459
+BJ2 Address is String 60580
+BJ3 Address is String Health Insurance Employee Contribution
+BJ4 Address is Numeric 460
+BK2 Address is String 60590
+BK3 Address is String Health Insurance Cobra Payments
+BK4 Address is Numeric 461
+BL2 Address is String 60600
+BL3 Address is String Workers Compensation Insurance
+BL4 Address is Numeric 462
+BM2 Address is String 60710
+BM3 Address is String Disability Insurance Premium
+BM4 Address is Numeric 463
+BN2 Address is String 60720
+BN3 Address is String Disability Insurance Premium Owners
+BN4 Address is Numeric 464
+BO2 Address is String 60790
+BO3 Address is String Disability Insurance Employee Contribution
+BO4 Address is Numeric 465
+BP2 Address is String 60810
+BP3 Address is String Life Insurance Premium
+BP4 Address is Numeric 466
+BQ2 Address is String 60820
+BQ3 Address is String Life Insurance Premium Owners
+BQ4 Address is Numeric 467
+BR2 Address is String 60890
+BR3 Address is String Life Insurance Employee Contribution
+BR4 Address is Numeric 468
+BS2 Address is String 60900
+BS3 Address is String Other Benefit Expense
+BS4 Address is Numeric 469
+BT2 Address is String 60910
+BT3 Address is String Staff Gifts & Perks
+BT4 Address is Numeric 470
+BU2 Address is String 60920
+BU3 Address is String Staff Picnic (100% Deductible)
+BU4 Address is Numeric 471
+BV2 Address is String 60990
+BV3 Address is String Payroll Processing Expense
+BV4 Address is Numeric 472
+BW2 Address is String 61
+BW3 Address is String Occupancy Cost
+BW4 Address is Numeric 473
+BX2 Address is String 61100
+BX3 Address is String Rent Expense
+BX4 Address is Numeric 474
+BY2 Address is String 61200
+BY3 Address is String Utilities
+BY4 Address is Numeric 475
+BZ2 Address is String 61300
+BZ3 Address is String Other Occupancy Costs
+BZ4 Address is Numeric 476
+CA2 Address is String 62
+CA3 Address is String Advertising
+CA4 Address is Numeric 477
+CB2 Address is String 62100
+CB3 Address is String Media Advertising
+CB4 Address is Numeric 478
+CC2 Address is String 62200
+CC3 Address is String Catalog, Newsletter
+CC4 Address is Numeric 479
+CD2 Address is String 62300
+CD3 Address is String Events
+CD4 Address is Numeric 480
+CE2 Address is String 62400
+CE3 Address is String Joint Advertising
+CE4 Address is Numeric 640
+CF2 Address is String 62500
+CF3 Address is String Web Hosting
+CF4 Address is Numeric 481
+CG2 Address is String 62800
+CG3 Address is String Other Advertising & Promotion
+CG4 Address is Numeric 482
+CH2 Address is String 62900
+CH3 Address is String Vendor Advertising Allowances
+CH4 Address is Numeric 483
+CI2 Address is String 63
+CI3 Address is String Telephone and Communications
+CI4 Address is Numeric 641
+CJ2 Address is String 63100
+CJ3 Address is String Telephone
+CJ4 Address is Numeric 484
+CK2 Address is String 63200
+CK3 Address is String Mobile Telephone
+CK4 Address is Numeric 485
+CL2 Address is String 63300
+CL3 Address is String Network Charges
+CL4 Address is Numeric 486
+CM2 Address is String 64
+CM3 Address is String Professional Services
+CM4 Address is Numeric 642
+CN2 Address is String 64100
+CN3 Address is String Legal Fees
+CN4 Address is Numeric 487
+CO2 Address is String 64200
+CO3 Address is String Accounting Fees
+CO4 Address is Numeric 488
+CP2 Address is String 64300
+CP3 Address is String Inventory Verification Fees
+CP4 Address is Numeric 489
+CQ2 Address is String 64500
+CQ3 Address is String Other Consulting Fees
+CQ4 Address is Numeric 643
+CR2 Address is String 65
+CR3 Address is String Stationary & Supplies
+CR4 Address is Numeric 490
+CS2 Address is String 65100
+CS3 Address is String Stationary & Supplies - Office Use
+CS4 Address is Numeric 491
+CT2 Address is String 65500
+CT3 Address is String Janitorial Supplies
+CT4 Address is Numeric 492
+CU2 Address is String 66
+CU3 Address is String Data Processing
+CU4 Address is Numeric 644
+CV2 Address is String 66100
+CV3 Address is String Data Processing Supplies
+CV4 Address is Numeric 493
+CW2 Address is String 66200
+CW3 Address is String Data Processing Rental
+CW4 Address is Numeric 494
+CX2 Address is String 66300
+CX3 Address is String Outside Computer Services
+CX4 Address is Numeric 495
+CY2 Address is String 66900
+CY3 Address is String Data Processing Other Expense
+CY4 Address is Numeric 645
+CZ2 Address is String 67
+CZ3 Address is String Depreciation Expense
+CZ4 Address is Numeric 496
+DA2 Address is String 67120
+DA3 Address is String Building Depreciation
+DA4 Address is Numeric 497
+DB2 Address is String 67130
+DB3 Address is String Land Improvement Depreciation
+DB4 Address is Numeric 773
+DC2 Address is String 67140
+DC3 Address is String Building Improvement Depreciation
+DC4 Address is Numeric 646
+DD2 Address is String 67150
+DD3 Address is String Leasehold Improvement Depreciation
+DD4 Address is Numeric 498
+DE2 Address is String 67210
+DE3 Address is String Furniture Depreciation
+DE4 Address is Numeric 499
+DF2 Address is String 67220
+DF3 Address is String Fixtures Depreciation
+DF4 Address is Numeric 500
+DG2 Address is String 67230
+DG3 Address is String Equipment Depreciation
+DG4 Address is Numeric 501
+DH2 Address is String 67240
+DH3 Address is String Vehicles Depreciation
+DH4 Address is Numeric 647
+DI2 Address is String 67250
+DI3 Address is String Data Processing Equipment Depreciation
+DI4 Address is Numeric 502
+DJ2 Address is String 67260
+DJ3 Address is String Software Depreciation
+DJ4 Address is Numeric 503
+DK2 Address is String 68
+DK3 Address is String Business Travel
+DK4 Address is Numeric 504
+DL2 Address is String 68100
+DL3 Address is String Business Travel - Plane/Train/Taxi
+DL4 Address is Numeric 648
+DM2 Address is String 68200
+DM3 Address is String Business Travel - Auto Reimbursement
+DM4 Address is Numeric 505
+DN2 Address is String 68300
+DN3 Address is String Business Travel - Hotel
+DN4 Address is Numeric 649
+DO2 Address is String 68400
+DO3 Address is String Business Meals & Entertainment (50%)
+DO4 Address is Numeric 650
+DP2 Address is String 68500
+DP3 Address is String Staff Meeting Food (100%)
+DP4 Address is Numeric 651
+DQ2 Address is String 68600
+DQ3 Address is String Employee expense
+DQ4 Address is Numeric 652
+DR2 Address is String 68900
+DR3 Address is String Business Travel Other Expense
+DR4 Address is Numeric 653
+DS2 Address is String 69
+DS3 Address is String Insurance
+DS4 Address is Numeric 654
+DT2 Address is String 69100
+DT3 Address is String Business Insurance
+DT4 Address is Numeric 655
+DU2 Address is String 69200
+DU3 Address is String Real Estate Insurance
+DU4 Address is Numeric 656
+DV2 Address is String 69300
+DV3 Address is String Vehicle Insurance
+DV4 Address is Numeric 657
+DW2 Address is String 69400
+DW3 Address is String Other Insurance
+DW4 Address is Numeric 658
+DX2 Address is String 7
+DX3 Address is String 7-Expenses
+DX4 Address is Numeric 783
+DY2 Address is String 70
+DY3 Address is String Payment Processor Costs
+DY4 Address is Numeric 659
+DZ2 Address is String 70100
+DZ3 Address is String Credit Card Service Charges
+DZ4 Address is Numeric 660
+EA2 Address is String 70200
+EA3 Address is String Bank Service Charges
+EA4 Address is Numeric 661
+EB2 Address is String 70900
+EB3 Address is String Other Payment Service Charges
+EB4 Address is Numeric 662
+EC2 Address is String 71
+EC3 Address is String Dues & Subscription
+EC4 Address is Numeric 663
+ED2 Address is String 71100
+ED3 Address is String Association Membership Fees
+ED4 Address is Numeric 664
+EE2 Address is String 71200
+EE3 Address is String Subscription Fees
+EE4 Address is Numeric 665
+EF2 Address is String 72
+EF3 Address is String Office Expense
+EF4 Address is Numeric 666
+EG2 Address is String 72100
+EG3 Address is String Office Expense
+EG4 Address is Numeric 667
+EH2 Address is String 73
+EH3 Address is String Posting & Shipping
+EH4 Address is Numeric 668
+EI2 Address is String 73100
+EI3 Address is String Postage Expense
+EI4 Address is Numeric 669
+EJ2 Address is String 73200
+EJ3 Address is String Customer Package Expense
+EJ4 Address is Numeric 759
+EK2 Address is String 73290
+EK3 Address is String Customer Postage Fees Received
+EK4 Address is Numeric 670
+EL2 Address is String 73300
+EL3 Address is String Shipping Expenses
+EL4 Address is Numeric 671
+EM2 Address is String 74
+EM3 Address is String Taxes and Licenses
+EM4 Address is Numeric 672
+EN2 Address is String 74100
+EN3 Address is String Tax expense
+EN4 Address is Numeric 760
+EO2 Address is String 74200
+EO3 Address is String Inventory & Use Taxes
+EO4 Address is Numeric 673
+EP2 Address is String 74300
+EP3 Address is String Real Estate Taxes
+EP4 Address is Numeric 674
+EQ2 Address is String 74400
+EQ3 Address is String Business Licenses & Fees
+EQ4 Address is Numeric 675
+ER2 Address is String 74900
+ER3 Address is String Licenses & Fees - Other
+ER4 Address is Numeric 775
+ES2 Address is String 75
+ES3 Address is String Education
+ES4 Address is Numeric 676
+ET2 Address is String 75100
+ET3 Address is String Education Course Fees
+ET4 Address is Numeric 761
+EU2 Address is String 75200
+EU3 Address is String Education Travel
+EU4 Address is Numeric 677
+EV2 Address is String 75300
+EV3 Address is String Education Meals & Entertainment (50%)
+EV4 Address is Numeric 678
+EW2 Address is String 75900
+EW3 Address is String Education Other
+EW4 Address is Numeric 679
+EX2 Address is String 76
+EX3 Address is String Equipment Rent
+EX4 Address is Numeric 762
+EY2 Address is String 76100
+EY3 Address is String Office Equipment Rent
+EY4 Address is Numeric 680
+EZ2 Address is String 76200
+EZ3 Address is String Store Equipment Rent
+EZ4 Address is Numeric 681
+FA2 Address is String 76900
+FA3 Address is String Equipment Rent Other
+FA4 Address is Numeric 763
+FB2 Address is String 77
+FB3 Address is String Repairs & Maintenance
+FB4 Address is Numeric 682
+FC2 Address is String 77100
+FC3 Address is String Building Repairs & Maintenance
+FC4 Address is Numeric 683
+FD2 Address is String 77200
+FD3 Address is String Furniture, Equipment Repairs & Maintenance
+FD4 Address is Numeric 684
+FE2 Address is String 77300
+FE3 Address is String Data Processing Repairs & Maintenance
+FE4 Address is Numeric 764
+FF2 Address is String 77400
+FF3 Address is String Software Maintenance
+FF4 Address is Numeric 685
+FG2 Address is String 77500
+FG3 Address is String Vehicle Repairs & Maintenance
+FG4 Address is Numeric 686
+FH2 Address is String 77900
+FH3 Address is String Repairs & Maintenance Other
+FH4 Address is Numeric 687
+FI2 Address is String 78
+FI3 Address is String Other Operating Expenses
+FI4 Address is Numeric 688
+FJ2 Address is String 78100
+FJ3 Address is String Bad Debts Write-off
+FJ4 Address is Numeric 765
+FK2 Address is String 78200
+FK3 Address is String Collection Expense
+FK4 Address is Numeric 689
+FL2 Address is String 78300
+FL3 Address is String Petty Cash Over/Short
+FL4 Address is Numeric 690
+FM2 Address is String 78400
+FM3 Address is String Recruitment Costs
+FM4 Address is Numeric 691
+FN2 Address is String 78500
+FN3 Address is String Vehicle Expense
+FN4 Address is Numeric 692
+FO2 Address is String 78600
+FO3 Address is String Amortization Expense
+FO4 Address is Numeric 693
+FP2 Address is String 78700
+FP3 Address is String Penalties
+FP4 Address is Numeric 766
+FQ2 Address is String 78800
+FQ3 Address is String Franchise Fee / Royalty Fees
+FQ4 Address is Numeric 694
+FR2 Address is String 78900
+FR3 Address is String Miscellaneous Expense
+FR4 Address is Numeric 695
+FS2 Address is String 79
+FS3 Address is String Default/Suspense Accounts
+FS4 Address is Numeric 696
+FT2 Address is String 79100
+FT3 Address is String Default account
+FT4 Address is Numeric 697
+FU2 Address is String 79200
+FU3 Address is String Suspense balancing
+FU4 Address is Numeric 698
+FV2 Address is String 79300
+FV3 Address is String Suspense error
+FV4 Address is Numeric 699
+FW2 Address is String 79400
+FW3 Address is String Cash book expense
+FW4 Address is Numeric 700
+FX2 Address is String 79600
+FX3 Address is String Charge expense
+FX4 Address is Numeric 702
+FY2 Address is String 82
+FY3 Address is String Other Expense
+FY4 Address is Numeric 716
+FZ2 Address is String 82100
+FZ3 Address is String Interest Expense
+FZ4 Address is Numeric 717
+GA2 Address is String 82200
+GA3 Address is String Mortgage Interest Expense
+GA4 Address is Numeric 718
+GB2 Address is String 82300
+GB3 Address is String Uninsured Casualty Loss
+GB4 Address is Numeric 768
+GC2 Address is String 82400
+GC3 Address is String Charitable Contributions
+GC4 Address is Numeric 719
+GD2 Address is String 825
+GD3 Address is String Currency Loss
+GD4 Address is Numeric 720
+GE2 Address is String 82510
+GE3 Address is String Bank revaluation loss
+GE4 Address is Numeric 721
+GF2 Address is String 82520
+GF3 Address is String Bank settlement loss
+GF4 Address is Numeric 769
+GG2 Address is String 82530
+GG3 Address is String Unrealized loss
+GG4 Address is Numeric 722
+GH2 Address is String 82540
+GH3 Address is String Realized loss
+GH4 Address is Numeric 723
+GI2 Address is String 82550
+GI3 Address is String Currency balancing
+GI4 Address is Numeric 724
+GJ2 Address is String 82700
+GJ3 Address is String Capital Gains Loss
+GJ4 Address is Numeric 725
+GK2 Address is String 82800
+GK3 Address is String Fixed Asset Sale Loss
+GK4 Address is Numeric 726
+GL2 Address is String 82900
+GL3 Address is String Other Expense
+GL4 Address is Numeric 727
+GM2 Address is String 83
+GM3 Address is String Expense (Absorbed)
+GM4 Address is Numeric 50008
+GN2 Address is String 83100
+GN3 Address is String Labor (Absorbed)
+GN4 Address is Numeric 50007
+GO2 Address is String 83200
+GO3 Address is String Burden (Absorbed)
+GO4 Address is Numeric 50009
+GP2 Address is String 89
+GP3 Address is String Income Tax & Summary
+GP4 Address is Numeric 728
+GQ2 Address is String 89100
+GQ3 Address is String Federal Income Tax
+GQ4 Address is Numeric 770
+GR2 Address is String 89200
+GR3 Address is String State Income Tax
+GR4 Address is Numeric 729
+GS2 Address is String 89300
+GS3 Address is String Local Income Tax
+GS4 Address is Numeric 730
+GT2 Address is String 89900
+GT3 Address is String Income Summary
+GT4 Address is Numeric 771
+I6 Address is String Agri-Tech
+J6 Address is String C&W Construction
+K6 Address is String GardenUser BP
+L6 Address is String Joe Block
+M6 Address is String Patio Fun, Inc.
+N6 Address is String Seed Farm Inc.
+O6 Address is String Standard
+E3+1 >>formula>> F3+1
+D3*2 >>formula>> E3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(D203:D203) >>formula>> COUNTA(E203:E203)
+F3+1 >>formula>> G3+1
+E3*2 >>formula>> F3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(E203:E203) >>formula>> COUNTA(F203:F203)
+G3+1 >>formula>> H3+1
+F3*2 >>formula>> G3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(F203:F203) >>formula>> COUNTA(G203:G203)
+H3+1 >>formula>> I3+1
+G3*2 >>formula>> H3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(G203:G203) >>formula>> COUNTA(H203:H203)
+I3+1 >>formula>> J3+1
+H3*2 >>formula>> I3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(H203:H203) >>formula>> COUNTA(I203:I203)
+J3+1 >>formula>> K3+1
+I3*2 >>formula>> J3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(I203:I203) >>formula>> COUNTA(J203:J203)
+K3+1 >>formula>> L3+1
+J3*2 >>formula>> K3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(J203:J203) >>formula>> COUNTA(K203:K203)
+L3+1 >>formula>> M3+1
+K3*2 >>formula>> L3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(K203:K203) >>formula>> COUNTA(L203:L203)
+M3+1 >>formula>> N3+1
+L3*2 >>formula>> M3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(L203:L203) >>formula>> COUNTA(M203:M203)
+N3+1 >>formula>> O3+1
+M3*2 >>formula>> N3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(M203:M203) >>formula>> COUNTA(N203:N203)
+O3+1 >>formula>> P3+1
+N3*2 >>formula>> O3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(N203:N203) >>formula>> COUNTA(O203:O203)
+P3+1 >>formula>> Q3+1
+O3*2 >>formula>> P3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(O203:O203) >>formula>> COUNTA(P203:P203)
+Q3+1 >>formula>> R3+1
+P3*2 >>formula>> Q3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(P203:P203) >>formula>> COUNTA(Q203:Q203)
+R3+1 >>formula>> S3+1
+Q3*2 >>formula>> R3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(Q203:Q203) >>formula>> COUNTA(R203:R203)
+S3+1 >>formula>> T3+1
+R3*2 >>formula>> S3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(R203:R203) >>formula>> COUNTA(S203:S203)
+T3+1 >>formula>> U3+1
+S3*2 >>formula>> T3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(S203:S203) >>formula>> COUNTA(T203:T203)
+U3+1 >>formula>> V3+1
+T3*2 >>formula>> U3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(T203:T203) >>formula>> COUNTA(U203:U203)
+V3+1 >>formula>> W3+1
+U3*2 >>formula>> V3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(U203:U203) >>formula>> COUNTA(V203:V203)
+W3+1 >>formula>> X3+1
+V3*2 >>formula>> W3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(V203:V203) >>formula>> COUNTA(W203:W203)
+X3+1 >>formula>> Y3+1
+W3*2 >>formula>> X3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(W203:W203) >>formula>> COUNTA(X203:X203)
+Y3+1 >>formula>> Z3+1
+X3*2 >>formula>> Y3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(X203:X203) >>formula>> COUNTA(Y203:Y203)
+Z3+1 >>formula>> AA3+1
+Y3*2 >>formula>> Z3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(Y203:Y203) >>formula>> COUNTA(Z203:Z203)
+AA3+1 >>formula>> AB3+1
+Z3*2 >>formula>> AA3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(Z203:Z203) >>formula>> COUNTA(AA203:AA203)
+AB3+1 >>formula>> AC3+1
+AA3*2 >>formula>> AB3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AA203:AA203) >>formula>> COUNTA(AB203:AB203)
+AC3+1 >>formula>> AD3+1
+AB3*2 >>formula>> AC3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AB203:AB203) >>formula>> COUNTA(AC203:AC203)
+AD3+1 >>formula>> AE3+1
+AC3*2 >>formula>> AD3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AC203:AC203) >>formula>> COUNTA(AD203:AD203)
+AE3+1 >>formula>> AF3+1
+AD3*2 >>formula>> AE3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AD203:AD203) >>formula>> COUNTA(AE203:AE203)
+AF3+1 >>formula>> AG3+1
+AE3*2 >>formula>> AF3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AE203:AE203) >>formula>> COUNTA(AF203:AF203)
+AG3+1 >>formula>> AH3+1
+AF3*2 >>formula>> AG3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AF203:AF203) >>formula>> COUNTA(AG203:AG203)
+AH3+1 >>formula>> AI3+1
+AG3*2 >>formula>> AH3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AG203:AG203) >>formula>> COUNTA(AH203:AH203)
+AI3+1 >>formula>> AJ3+1
+AH3*2 >>formula>> AI3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AH203:AH203) >>formula>> COUNTA(AI203:AI203)
+AJ3+1 >>formula>> AK3+1
+AI3*2 >>formula>> AJ3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AI203:AI203) >>formula>> COUNTA(AJ203:AJ203)
+AK3+1 >>formula>> AL3+1
+AJ3*2 >>formula>> AK3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AJ203:AJ203) >>formula>> COUNTA(AK203:AK203)
+AL3+1 >>formula>> AM3+1
+AK3*2 >>formula>> AL3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AK203:AK203) >>formula>> COUNTA(AL203:AL203)
+AM3+1 >>formula>> AN3+1
+AL3*2 >>formula>> AM3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AL203:AL203) >>formula>> COUNTA(AM203:AM203)
+AN3+1 >>formula>> AO3+1
+AM3*2 >>formula>> AN3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AM203:AM203) >>formula>> COUNTA(AN203:AN203)
+AO3+1 >>formula>> AP3+1
+AN3*2 >>formula>> AO3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AN203:AN203) >>formula>> COUNTA(AO203:AO203)
+AP3+1 >>formula>> AQ3+1
+AO3*2 >>formula>> AP3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AO203:AO203) >>formula>> COUNTA(AP203:AP203)
+AQ3+1 >>formula>> AR3+1
+AP3*2 >>formula>> AQ3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AP203:AP203) >>formula>> COUNTA(AQ203:AQ203)
+AR3+1 >>formula>> AS3+1
+AQ3*2 >>formula>> AR3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AQ203:AQ203) >>formula>> COUNTA(AR203:AR203)
+AS3+1 >>formula>> AT3+1
+AR3*2 >>formula>> AS3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AR203:AR203) >>formula>> COUNTA(AS203:AS203)
+AT3+1 >>formula>> AU3+1
+AS3*2 >>formula>> AT3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AS203:AS203) >>formula>> COUNTA(AT203:AT203)
+AU3+1 >>formula>> AV3+1
+AT3*2 >>formula>> AU3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AT203:AT203) >>formula>> COUNTA(AU203:AU203)
+AV3+1 >>formula>> AW3+1
+AU3*2 >>formula>> AV3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AU203:AU203) >>formula>> COUNTA(AV203:AV203)
+AW3+1 >>formula>> AX3+1
+AV3*2 >>formula>> AW3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AV203:AV203) >>formula>> COUNTA(AW203:AW203)
+AX3+1 >>formula>> AY3+1
+AW3*2 >>formula>> AX3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AW203:AW203) >>formula>> COUNTA(AX203:AX203)
+AY3+1 >>formula>> AZ3+1
+AX3*2 >>formula>> AY3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AX203:AX203) >>formula>> COUNTA(AY203:AY203)
+AZ3+1 >>formula>> BA3+1
+AY3*2 >>formula>> AZ3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AY203:AY203) >>formula>> COUNTA(AZ203:AZ203)
+BA3+1 >>formula>> BB3+1
+AZ3*2 >>formula>> BA3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(AZ203:AZ203) >>formula>> COUNTA(BA203:BA203)
+BB3+1 >>formula>> BC3+1
+BA3*2 >>formula>> BB3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BA203:BA203) >>formula>> COUNTA(BB203:BB203)
+BC3+1 >>formula>> BD3+1
+BB3*2 >>formula>> BC3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BB203:BB203) >>formula>> COUNTA(BC203:BC203)
+BD3+1 >>formula>> BE3+1
+BC3*2 >>formula>> BD3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BC203:BC203) >>formula>> COUNTA(BD203:BD203)
+BE3+1 >>formula>> BF3+1
+BD3*2 >>formula>> BE3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BD203:BD203) >>formula>> COUNTA(BE203:BE203)
+BF3+1 >>formula>> BG3+1
+BE3*2 >>formula>> BF3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BE203:BE203) >>formula>> COUNTA(BF203:BF203)
+BG3+1 >>formula>> BH3+1
+BF3*2 >>formula>> BG3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BF203:BF203) >>formula>> COUNTA(BG203:BG203)
+BH3+1 >>formula>> BI3+1
+BG3*2 >>formula>> BH3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BG203:BG203) >>formula>> COUNTA(BH203:BH203)
+BI3+1 >>formula>> BJ3+1
+BH3*2 >>formula>> BI3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BH203:BH203) >>formula>> COUNTA(BI203:BI203)
+BJ3+1 >>formula>> BK3+1
+BI3*2 >>formula>> BJ3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BI203:BI203) >>formula>> COUNTA(BJ203:BJ203)
+BK3+1 >>formula>> BL3+1
+BJ3*2 >>formula>> BK3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BJ203:BJ203) >>formula>> COUNTA(BK203:BK203)
+BL3+1 >>formula>> BM3+1
+BK3*2 >>formula>> BL3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BK203:BK203) >>formula>> COUNTA(BL203:BL203)
+BM3+1 >>formula>> BN3+1
+BL3*2 >>formula>> BM3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BL203:BL203) >>formula>> COUNTA(BM203:BM203)
+BN3+1 >>formula>> BO3+1
+BM3*2 >>formula>> BN3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BM203:BM203) >>formula>> COUNTA(BN203:BN203)
+BO3+1 >>formula>> BP3+1
+BN3*2 >>formula>> BO3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BN203:BN203) >>formula>> COUNTA(BO203:BO203)
+BP3+1 >>formula>> BQ3+1
+BO3*2 >>formula>> BP3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BO203:BO203) >>formula>> COUNTA(BP203:BP203)
+BQ3+1 >>formula>> BR3+1
+BP3*2 >>formula>> BQ3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BP203:BP203) >>formula>> COUNTA(BQ203:BQ203)
+BR3+1 >>formula>> BS3+1
+BQ3*2 >>formula>> BR3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BQ203:BQ203) >>formula>> COUNTA(BR203:BR203)
+BS3+1 >>formula>> BT3+1
+BR3*2 >>formula>> BS3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BR203:BR203) >>formula>> COUNTA(BS203:BS203)
+BT3+1 >>formula>> BU3+1
+BS3*2 >>formula>> BT3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BS203:BS203) >>formula>> COUNTA(BT203:BT203)
+BU3+1 >>formula>> BV3+1
+BT3*2 >>formula>> BU3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BT203:BT203) >>formula>> COUNTA(BU203:BU203)
+BV3+1 >>formula>> BW3+1
+BU3*2 >>formula>> BV3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BU203:BU203) >>formula>> COUNTA(BV203:BV203)
+BW3+1 >>formula>> BX3+1
+BV3*2 >>formula>> BW3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BV203:BV203) >>formula>> COUNTA(BW203:BW203)
+BX3+1 >>formula>> BY3+1
+BW3*2 >>formula>> BX3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BW203:BW203) >>formula>> COUNTA(BX203:BX203)
+BY3+1 >>formula>> BZ3+1
+BX3*2 >>formula>> BY3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BX203:BX203) >>formula>> COUNTA(BY203:BY203)
+BZ3+1 >>formula>> CA3+1
+BY3*2 >>formula>> BZ3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BY203:BY203) >>formula>> COUNTA(BZ203:BZ203)
+CA3+1 >>formula>> CB3+1
+BZ3*2 >>formula>> CA3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(BZ203:BZ203) >>formula>> COUNTA(CA203:CA203)
+CB3+1 >>formula>> CC3+1
+CA3*2 >>formula>> CB3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CA203:CA203) >>formula>> COUNTA(CB203:CB203)
+CC3+1 >>formula>> CD3+1
+CB3*2 >>formula>> CC3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CB203:CB203) >>formula>> COUNTA(CC203:CC203)
+CD3+1 >>formula>> CE3+1
+CC3*2 >>formula>> CD3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CC203:CC203) >>formula>> COUNTA(CD203:CD203)
+CE3+1 >>formula>> CF3+1
+CD3*2 >>formula>> CE3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CD203:CD203) >>formula>> COUNTA(CE203:CE203)
+CF3+1 >>formula>> CG3+1
+CE3*2 >>formula>> CF3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CE203:CE203) >>formula>> COUNTA(CF203:CF203)
+CG3+1 >>formula>> CH3+1
+CF3*2 >>formula>> CG3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CF203:CF203) >>formula>> COUNTA(CG203:CG203)
+CH3+1 >>formula>> CI3+1
+CG3*2 >>formula>> CH3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CG203:CG203) >>formula>> COUNTA(CH203:CH203)
+CI3+1 >>formula>> CJ3+1
+CH3*2 >>formula>> CI3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CH203:CH203) >>formula>> COUNTA(CI203:CI203)
+CJ3+1 >>formula>> CK3+1
+CI3*2 >>formula>> CJ3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CI203:CI203) >>formula>> COUNTA(CJ203:CJ203)
+CK3+1 >>formula>> CL3+1
+CJ3*2 >>formula>> CK3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CJ203:CJ203) >>formula>> COUNTA(CK203:CK203)
+CL3+1 >>formula>> CM3+1
+CK3*2 >>formula>> CL3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CK203:CK203) >>formula>> COUNTA(CL203:CL203)
+CM3+1 >>formula>> CN3+1
+CL3*2 >>formula>> CM3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CL203:CL203) >>formula>> COUNTA(CM203:CM203)
+CN3+1 >>formula>> CO3+1
+CM3*2 >>formula>> CN3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CM203:CM203) >>formula>> COUNTA(CN203:CN203)
+CO3+1 >>formula>> CP3+1
+CN3*2 >>formula>> CO3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CN203:CN203) >>formula>> COUNTA(CO203:CO203)
+CP3+1 >>formula>> CQ3+1
+CO3*2 >>formula>> CP3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CO203:CO203) >>formula>> COUNTA(CP203:CP203)
+CQ3+1 >>formula>> CR3+1
+CP3*2 >>formula>> CQ3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CP203:CP203) >>formula>> COUNTA(CQ203:CQ203)
+CR3+1 >>formula>> CS3+1
+CQ3*2 >>formula>> CR3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CQ203:CQ203) >>formula>> COUNTA(CR203:CR203)
+CS3+1 >>formula>> CT3+1
+CR3*2 >>formula>> CS3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CR203:CR203) >>formula>> COUNTA(CS203:CS203)
+CT3+1 >>formula>> CU3+1
+CS3*2 >>formula>> CT3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CS203:CS203) >>formula>> COUNTA(CT203:CT203)
+CU3+1 >>formula>> CV3+1
+CT3*2 >>formula>> CU3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CT203:CT203) >>formula>> COUNTA(CU203:CU203)
+CV3+1 >>formula>> CW3+1
+CU3*2 >>formula>> CV3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CU203:CU203) >>formula>> COUNTA(CV203:CV203)
+CW3+1 >>formula>> CX3+1
+CV3*2 >>formula>> CW3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CV203:CV203) >>formula>> COUNTA(CW203:CW203)
+CX3+1 >>formula>> CY3+1
+CW3*2 >>formula>> CX3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CW203:CW203) >>formula>> COUNTA(CX203:CX203)
+CY3+1 >>formula>> CZ3+1
+CX3*2 >>formula>> CY3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CX203:CX203) >>formula>> COUNTA(CY203:CY203)
+CZ3+1 >>formula>> DA3+1
+CY3*2 >>formula>> CZ3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CY203:CY203) >>formula>> COUNTA(CZ203:CZ203)
+DA3+1 >>formula>> DB3+1
+CZ3*2 >>formula>> DA3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(CZ203:CZ203) >>formula>> COUNTA(DA203:DA203)
+DB3+1 >>formula>> DC3+1
+DA3*2 >>formula>> DB3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DA203:DA203) >>formula>> COUNTA(DB203:DB203)
+DC3+1 >>formula>> DD3+1
+DB3*2 >>formula>> DC3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DB203:DB203) >>formula>> COUNTA(DC203:DC203)
+DD3+1 >>formula>> DE3+1
+DC3*2 >>formula>> DD3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DC203:DC203) >>formula>> COUNTA(DD203:DD203)
+DE3+1 >>formula>> DF3+1
+DD3*2 >>formula>> DE3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DD203:DD203) >>formula>> COUNTA(DE203:DE203)
+DF3+1 >>formula>> DG3+1
+DE3*2 >>formula>> DF3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DE203:DE203) >>formula>> COUNTA(DF203:DF203)
+DG3+1 >>formula>> DH3+1
+DF3*2 >>formula>> DG3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DF203:DF203) >>formula>> COUNTA(DG203:DG203)
+DH3+1 >>formula>> DI3+1
+DG3*2 >>formula>> DH3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DG203:DG203) >>formula>> COUNTA(DH203:DH203)
+DI3+1 >>formula>> DJ3+1
+DH3*2 >>formula>> DI3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DH203:DH203) >>formula>> COUNTA(DI203:DI203)
+DJ3+1 >>formula>> DK3+1
+DI3*2 >>formula>> DJ3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DI203:DI203) >>formula>> COUNTA(DJ203:DJ203)
+DK3+1 >>formula>> DL3+1
+DJ3*2 >>formula>> DK3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DJ203:DJ203) >>formula>> COUNTA(DK203:DK203)
+DL3+1 >>formula>> DM3+1
+DK3*2 >>formula>> DL3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DK203:DK203) >>formula>> COUNTA(DL203:DL203)
+DM3+1 >>formula>> DN3+1
+DL3*2 >>formula>> DM3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DL203:DL203) >>formula>> COUNTA(DM203:DM203)
+DN3+1 >>formula>> DO3+1
+DM3*2 >>formula>> DN3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DM203:DM203) >>formula>> COUNTA(DN203:DN203)
+DO3+1 >>formula>> DP3+1
+DN3*2 >>formula>> DO3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DN203:DN203) >>formula>> COUNTA(DO203:DO203)
+DP3+1 >>formula>> DQ3+1
+DO3*2 >>formula>> DP3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DO203:DO203) >>formula>> COUNTA(DP203:DP203)
+DQ3+1 >>formula>> DR3+1
+DP3*2 >>formula>> DQ3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DP203:DP203) >>formula>> COUNTA(DQ203:DQ203)
+DR3+1 >>formula>> DS3+1
+DQ3*2 >>formula>> DR3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DQ203:DQ203) >>formula>> COUNTA(DR203:DR203)
+DS3+1 >>formula>> DT3+1
+DR3*2 >>formula>> DS3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DR203:DR203) >>formula>> COUNTA(DS203:DS203)
+DT3+1 >>formula>> DU3+1
+DS3*2 >>formula>> DT3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DS203:DS203) >>formula>> COUNTA(DT203:DT203)
+DU3+1 >>formula>> DV3+1
+DT3*2 >>formula>> DU3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DT203:DT203) >>formula>> COUNTA(DU203:DU203)
+DV3+1 >>formula>> DW3+1
+DU3*2 >>formula>> DV3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DU203:DU203) >>formula>> COUNTA(DV203:DV203)
+DW3+1 >>formula>> DX3+1
+DV3*2 >>formula>> DW3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DV203:DV203) >>formula>> COUNTA(DW203:DW203)
+DX3+1 >>formula>> DY3+1
+DW3*2 >>formula>> DX3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DW203:DW203) >>formula>> COUNTA(DX203:DX203)
+DY3+1 >>formula>> DZ3+1
+DX3*2 >>formula>> DY3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DX203:DX203) >>formula>> COUNTA(DY203:DY203)
+DZ3+1 >>formula>> EA3+1
+DY3*2 >>formula>> DZ3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DY203:DY203) >>formula>> COUNTA(DZ203:DZ203)
+EA3+1 >>formula>> EB3+1
+DZ3*2 >>formula>> EA3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(DZ203:DZ203) >>formula>> COUNTA(EA203:EA203)
+EB3+1 >>formula>> EC3+1
+EA3*2 >>formula>> EB3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(EA203:EA203) >>formula>> COUNTA(EB203:EB203)
+EC3+1 >>formula>> ED3+1
+EB3*2 >>formula>> EC3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(EB203:EB203) >>formula>> COUNTA(EC203:EC203)
+ED3+1 >>formula>> EE3+1
+EC3*2 >>formula>> ED3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(EC203:EC203) >>formula>> COUNTA(ED203:ED203)
+EE3+1 >>formula>> EF3+1
+ED3*2 >>formula>> EE3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(ED203:ED203) >>formula>> COUNTA(EE203:EE203)
+EF3+1 >>formula>> EG3+1
+EE3*2 >>formula>> EF3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(EE203:EE203) >>formula>> COUNTA(EF203:EF203)
+EG3+1 >>formula>> EH3+1
+EF3*2 >>formula>> EG3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(EF203:EF203) >>formula>> COUNTA(EG203:EG203)
+EH3+1 >>formula>> EI3+1
+EG3*2 >>formula>> EH3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(EG203:EG203) >>formula>> COUNTA(EH203:EH203)
+EI3+1 >>formula>> EJ3+1
+EH3*2 >>formula>> EI3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(EH203:EH203) >>formula>> COUNTA(EI203:EI203)
+EJ3+1 >>formula>> EK3+1
+EI3*2 >>formula>> EJ3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(EI203:EI203) >>formula>> COUNTA(EJ203:EJ203)
+EK3+1 >>formula>> EL3+1
+EJ3*2 >>formula>> EK3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(EJ203:EJ203) >>formula>> COUNTA(EK203:EK203)
+EL3+1 >>formula>> EM3+1
+EK3*2 >>formula>> EL3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(EK203:EK203) >>formula>> COUNTA(EL203:EL203)
+EM3+1 >>formula>> EN3+1
+EL3*2 >>formula>> EM3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(EL203:EL203) >>formula>> COUNTA(EM203:EM203)
+EN3+1 >>formula>> EO3+1
+EM3*2 >>formula>> EN3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(EM203:EM203) >>formula>> COUNTA(EN203:EN203)
+EO3+1 >>formula>> EP3+1
+EN3*2 >>formula>> EO3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(EN203:EN203) >>formula>> COUNTA(EO203:EO203)
+EP3+1 >>formula>> EQ3+1
+EO3*2 >>formula>> EP3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(EO203:EO203) >>formula>> COUNTA(EP203:EP203)
+EQ3+1 >>formula>> ER3+1
+EP3*2 >>formula>> EQ3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(EP203:EP203) >>formula>> COUNTA(EQ203:EQ203)
+ER3+1 >>formula>> ES3+1
+EQ3*2 >>formula>> ER3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(EQ203:EQ203) >>formula>> COUNTA(ER203:ER203)
+ES3+1 >>formula>> ET3+1
+ER3*2 >>formula>> ES3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(ER203:ER203) >>formula>> COUNTA(ES203:ES203)
+ET3+1 >>formula>> EU3+1
+ES3*2 >>formula>> ET3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(ES203:ES203) >>formula>> COUNTA(ET203:ET203)
+EU3+1 >>formula>> EV3+1
+ET3*2 >>formula>> EU3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(ET203:ET203) >>formula>> COUNTA(EU203:EU203)
+EV3+1 >>formula>> EW3+1
+EU3*2 >>formula>> EV3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(EU203:EU203) >>formula>> COUNTA(EV203:EV203)
+EW3+1 >>formula>> EX3+1
+EV3*2 >>formula>> EW3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(EV203:EV203) >>formula>> COUNTA(EW203:EW203)
+EX3+1 >>formula>> EY3+1
+EW3*2 >>formula>> EX3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(EW203:EW203) >>formula>> COUNTA(EX203:EX203)
+EY3+1 >>formula>> EZ3+1
+EX3*2 >>formula>> EY3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(EX203:EX203) >>formula>> COUNTA(EY203:EY203)
+EZ3+1 >>formula>> FA3+1
+EY3*2 >>formula>> EZ3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(EY203:EY203) >>formula>> COUNTA(EZ203:EZ203)
+FA3+1 >>formula>> FB3+1
+EZ3*2 >>formula>> FA3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(EZ203:EZ203) >>formula>> COUNTA(FA203:FA203)
+FB3+1 >>formula>> FC3+1
+FA3*2 >>formula>> FB3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FA203:FA203) >>formula>> COUNTA(FB203:FB203)
+FC3+1 >>formula>> FD3+1
+FB3*2 >>formula>> FC3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FB203:FB203) >>formula>> COUNTA(FC203:FC203)
+FD3+1 >>formula>> FE3+1
+FC3*2 >>formula>> FD3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FC203:FC203) >>formula>> COUNTA(FD203:FD203)
+FE3+1 >>formula>> FF3+1
+FD3*2 >>formula>> FE3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FD203:FD203) >>formula>> COUNTA(FE203:FE203)
+FF3+1 >>formula>> FG3+1
+FE3*2 >>formula>> FF3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FE203:FE203) >>formula>> COUNTA(FF203:FF203)
+FG3+1 >>formula>> FH3+1
+FF3*2 >>formula>> FG3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FF203:FF203) >>formula>> COUNTA(FG203:FG203)
+FH3+1 >>formula>> FI3+1
+FG3*2 >>formula>> FH3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FG203:FG203) >>formula>> COUNTA(FH203:FH203)
+FI3+1 >>formula>> FJ3+1
+FH3*2 >>formula>> FI3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FH203:FH203) >>formula>> COUNTA(FI203:FI203)
+FJ3+1 >>formula>> FK3+1
+FI3*2 >>formula>> FJ3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FI203:FI203) >>formula>> COUNTA(FJ203:FJ203)
+FK3+1 >>formula>> FL3+1
+FJ3*2 >>formula>> FK3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FJ203:FJ203) >>formula>> COUNTA(FK203:FK203)
+FL3+1 >>formula>> FM3+1
+FK3*2 >>formula>> FL3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FK203:FK203) >>formula>> COUNTA(FL203:FL203)
+FM3+1 >>formula>> FN3+1
+FL3*2 >>formula>> FM3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FL203:FL203) >>formula>> COUNTA(FM203:FM203)
+FN3+1 >>formula>> FO3+1
+FM3*2 >>formula>> FN3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FM203:FM203) >>formula>> COUNTA(FN203:FN203)
+FO3+1 >>formula>> FP3+1
+FN3*2 >>formula>> FO3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FN203:FN203) >>formula>> COUNTA(FO203:FO203)
+FP3+1 >>formula>> FQ3+1
+FO3*2 >>formula>> FP3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FO203:FO203) >>formula>> COUNTA(FP203:FP203)
+FQ3+1 >>formula>> FR3+1
+FP3*2 >>formula>> FQ3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FP203:FP203) >>formula>> COUNTA(FQ203:FQ203)
+FR3+1 >>formula>> FS3+1
+FQ3*2 >>formula>> FR3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FQ203:FQ203) >>formula>> COUNTA(FR203:FR203)
+FS3+1 >>formula>> FT3+1
+FR3*2 >>formula>> FS3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FR203:FR203) >>formula>> COUNTA(FS203:FS203)
+FT3+1 >>formula>> FU3+1
+FS3*2 >>formula>> FT3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FS203:FS203) >>formula>> COUNTA(FT203:FT203)
+FU3+1 >>formula>> FV3+1
+FT3*2 >>formula>> FU3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FT203:FT203) >>formula>> COUNTA(FU203:FU203)
+FV3+1 >>formula>> FW3+1
+FU3*2 >>formula>> FV3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FU203:FU203) >>formula>> COUNTA(FV203:FV203)
+FW3+1 >>formula>> FX3+1
+FV3*2 >>formula>> FW3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FV203:FV203) >>formula>> COUNTA(FW203:FW203)
+FX3+1 >>formula>> FY3+1
+FW3*2 >>formula>> FX3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FW203:FW203) >>formula>> COUNTA(FX203:FX203)
+FY3+1 >>formula>> FZ3+1
+FX3*2 >>formula>> FY3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FX203:FX203) >>formula>> COUNTA(FY203:FY203)
+FZ3+1 >>formula>> GA3+1
+FY3*2 >>formula>> FZ3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FY203:FY203) >>formula>> COUNTA(FZ203:FZ203)
+GA3+1 >>formula>> GB3+1
+FZ3*2 >>formula>> GA3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(FZ203:FZ203) >>formula>> COUNTA(GA203:GA203)
+GB3+1 >>formula>> GC3+1
+GA3*2 >>formula>> GB3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(GA203:GA203) >>formula>> COUNTA(GB203:GB203)
+GC3+1 >>formula>> GD3+1
+GB3*2 >>formula>> GC3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(GB203:GB203) >>formula>> COUNTA(GC203:GC203)
+GD3+1 >>formula>> GE3+1
+GC3*2 >>formula>> GD3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(GC203:GC203) >>formula>> COUNTA(GD203:GD203)
+GE3+1 >>formula>> GF3+1
+GD3*2 >>formula>> GE3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(GD203:GD203) >>formula>> COUNTA(GE203:GE203)
+GF3+1 >>formula>> GG3+1
+GE3*2 >>formula>> GF3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(GE203:GE203) >>formula>> COUNTA(GF203:GF203)
+GG3+1 >>formula>> GH3+1
+GF3*2 >>formula>> GG3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(GF203:GF203) >>formula>> COUNTA(GG203:GG203)
+GH3+1 >>formula>> GI3+1
+GG3*2 >>formula>> GH3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(GG203:GG203) >>formula>> COUNTA(GH203:GH203)
+GI3+1 >>formula>> GJ3+1
+GH3*2 >>formula>> GI3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(GH203:GH203) >>formula>> COUNTA(GI203:GI203)
+GJ3+1 >>formula>> GK3+1
+GI3*2 >>formula>> GJ3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(GI203:GI203) >>formula>> COUNTA(GJ203:GJ203)
+GK3+1 >>formula>> GL3+1
+GJ3*2 >>formula>> GK3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(GJ203:GJ203) >>formula>> COUNTA(GK203:GK203)
+GL3+1 >>formula>> GM3+1
+GK3*2 >>formula>> GL3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(GK203:GK203) >>formula>> COUNTA(GL203:GL203)
+GM3+1 >>formula>> GN3+1
+GL3*2 >>formula>> GM3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(GL203:GL203) >>formula>> COUNTA(GM203:GM203)
+GN3+1 >>formula>> GO3+1
+GM3*2 >>formula>> GN3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(GM203:GM203) >>formula>> COUNTA(GN203:GN203)
+GO3+1 >>formula>> GP3+1
+GN3*2 >>formula>> GO3*2
+ROW()*1 >>formula>> ROW()*1
+COUNTA(GN203:GN203) >>formula>> COUNTA(GO203:GO203)
