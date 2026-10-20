@@ -85,6 +85,7 @@ nav:
       - Feature Comparison: FeatureComparison.md
       - "Migrate & Compare (ERP)": MigrateComparisonPaper.md
       - "Two Apps, One Kernel": TwoAppsOneKernel.md
+      - "Halal Track & Trace (technical paper)": HalalTrace.md
       - "One Page InfoGraphics - Landscape": TwoAppsOneKernelInfographicLandscape.html
       - "Benchmark Comparison (live)": bench_suite.html
       - "Does Your ERP Age? (live)": age_demo.html
