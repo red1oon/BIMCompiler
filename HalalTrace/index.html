@@ -2649,10 +2649,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#19-limits-and-open-questions" class="md-nav__link">
+  <a href="#19-languages" class="md-nav__link">
     <span class="md-ellipsis">
       
-        19. Limits and open questions
+        19. Languages
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#20-limits-and-open-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        20. Limits and open questions
       
     </span>
   </a>
@@ -3091,7 +3102,7 @@
 <h2 id="17-local-first-mechanics">17. Local-first mechanics<a class="headerlink" href="#17-local-first-mechanics" title="Permanent link">&para;</a></h2>
 <p>The signed, hash-chained, sealed-to-recipient event pattern is reused from our ThaiGoldPawn prototype: append-only events, device-bound keys that cannot be exported, tokens sealed to the recipient's key, state as a fold over the chain, and an offline queue that syncs on reconnect. Here the author is the player key, the recipient is the next player's key, and the token is the manifest.</p>
 <h2 id="18-what-the-checks-prove">18. What the checks prove<a class="headerlink" href="#18-what-the-checks-prove" title="Permanent link">&para;</a></h2>
-<p>Twenty-six scripted checks run against the prototype. All passed on 2026-10-21; the log is <code>witness_ui.log</code>.</p>
+<p>Thirty-two scripted checks run against the prototype. All passed on 2026-10-21; the log is <code>witness_ui.log</code>.</p>
 <table>
 <thead>
 <tr>
@@ -3141,6 +3152,10 @@
 <td>the opening screen has the three doors</td>
 </tr>
 <tr>
+<td>W-HT-I18N, W-HT-RTL</td>
+<td>no English text is left on any screen in Thai, Malay or Arabic; Arabic is right-to-left; no page errors</td>
+</tr>
+<tr>
 <td>W-HT-PLAYERS</td>
 <td>11 players fit the window</td>
 </tr>
@@ -3151,14 +3166,19 @@
 </tbody>
 </table>
 <p>These prove the prototype is consistent with the design. They do not prove the design works in a real chain.</p>
-<h2 id="19-limits-and-open-questions">19. Limits and open questions<a class="headerlink" href="#19-limits-and-open-questions" title="Permanent link">&para;</a></h2>
+<h2 id="19-languages">19. Languages<a class="headerlink" href="#19-languages" title="Permanent link">&para;</a></h2>
+<p>The prototype speaks <strong>English, Thai, Malay and Arabic</strong> (right-to-left). The language menu is the globe at the top right; the choice is remembered on the phone. Numbers, identifiers, dates and company names stay as they are.</p>
+<p><img alt="Thai" src="../img/halaltrace/l_th_verdict.png" />
+<img alt="Arabic, right to left" src="../img/halaltrace/l_ar_verdict.png" /></p>
+<p>The translations were written by the model, not by native speakers, and religious wording in particular needs review before any consumer use. A script walks every screen and state in each language and fails if any English text is left over. It passed for all three on 2026-10-21, which proves coverage, not quality.</p>
+<h2 id="20-limits-and-open-questions">20. Limits and open questions<a class="headerlink" href="#20-limits-and-open-questions" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>No real integration.</strong> Certificate lookup against a Thai certifying body's registry is assumed. Whether such a registry can be queried by number is unknown.</li>
 <li><strong>Key trust.</strong> Who vouches that a signing key belongs to a plant is open; a certifying body could, if it agrees.</li>
 <li><strong>Multi-hop trace</strong> needs each player online or its answers cached. The cache rule is undefined.</li>
 <li><strong>Cold-chain data</strong> is trustworthy only if sensors capture it; typed values would be labelled lower trust.</li>
 <li><strong>Hosting</strong> of the public record for a plant with no web presence.</li>
-<li><strong>Thai text</strong> for religious wording must be reviewed by a qualified native speaker before consumer use.</li>
+<li><strong>Translations</strong> into Thai, Malay and Arabic are model-written; religious wording must be reviewed by qualified native speakers before consumer use.</li>
 <li><strong>Thayiban criteria</strong> are a proposal. What counts as good nutrition, health and barn conditions, and how to weigh them, is for veterinarians, scholars and standards bodies.</li>
 <li><strong>Unread sources:</strong> the NTUST thesis and the Indonesian study.</li>
 <li><strong>No field trial.</strong> The only comparable pilot we read used RFID over 109 cartons.</li>

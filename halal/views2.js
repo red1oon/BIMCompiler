@@ -1,6 +1,7 @@
 // ⚠ DO NOT REMOVE — UI for HALAL_TRACE_SPEC.md §7.1 (review) and §11 (players, disclosure, federated trace). Data only from HT (data.js, model.js).
 'use strict';
 Object.assign(I, {
+  globe: '<circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" fill="none" stroke="currentColor" stroke-width="1.8"/>',
   lock: '<rect x="5" y="11" width="14" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 11V8a4 4 0 018 0v3" fill="none" stroke="currentColor" stroke-width="2"/>',
   eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/>',
   mail: '<rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 7l9 6 9-6" fill="none" stroke="currentColor" stroke-width="2"/>',
@@ -26,7 +27,7 @@ V2.cv.chain = () => {
   const pl = HT.players, sel = pl.find(p => p.k === St.pl);
   const tot = pl.reduce((a, p) => { a.h += p.hold.length; a.s += p.share.length; return a; }, { h: 0, s: 0 });
   return `<h2>Players and parts</h2><p class="sub">Who is in the chain, what each keeps, and what travels with the goods</p>
-  <div class="leg"><span><i style="background:var(--g)"></i>Player</span><span><i style="background:#3b5bb5;border-radius:4px"></i>Authority (sees more only by asking; every reveal is logged)</span><span><i style="background:#7a5a2a;border-radius:2px"></i>Part</span><span><i style="background:#8a3a8f"></i>Consumer</span><span>›  signed manifest handed on with the goods</span></div>
+  <div class="leg"><span><i style="background:var(--g)"></i>Player</span><span><i style="background:#3b5bb5;border-radius:4px"></i>Authority</span><span><i style="background:#7a5a2a;border-radius:2px"></i>Part</span><span><i style="background:#8a3a8f"></i>Consumer</span><span>› manifest</span></div>
   <div class="chainrow">${pl.map(p => `<button class="pl ${p.kind} ${p.k === St.pl ? 'on' : ''}" data-v2="pl:${p.k}"><span class="bub">${ic(p.ic)}</span><b>${p.n}</b><span class="cnt"><span>${ic('lock')}${p.hold.length}</span><span>${ic('mail')}${p.share.length}</span></span></button>`).join('')}</div>
   <div class="panel"><h3 style="display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:50%;background:var(--g);color:#fff;display:grid;place-items:center">${ic(sel.ic).replace('<svg', '<svg width="20" height="20"')}</span>${sel.n} <span class="tag ${sel.kind === 'authority' ? 'warn' : sel.kind === 'player' ? '' : 'na'}">${sel.kind}</span></h3>
   <div class="tri"><div class="col priv"><h4>${ic('lock')}Kept private</h4><ul>${sel.hold.map(x => `<li>${x}</li>`).join('')}</ul></div><div class="col shr"><h4>${ic('mail')}Shared in the manifest</h4><ul>${sel.share.map(x => `<li>${x}</li>`).join('')}</ul></div><div class="col see"><h4>${ic('eye')}Sees from others</h4><ul>${sel.see.map(x => `<li>${x}</li>`).join('')}</ul></div></div>
@@ -55,7 +56,7 @@ V2.cv.fed = () => {
 };
 V2.msg = () => {
   const R = St.rev, c = St.cur, L = c.L, V = HT.verdictOf(L);
-  return `Report about ${L.product}\nLot ${L.lot} · pack ${HT.serialStr(c.i)}\nVerdict when scanned: ${V.title}\n${R.rating ? 'Rating: ' + R.rating + '/5\n' : ''}${R.kind ? 'Type: ' + R.kind + '\n' : ''}${R.shop ? 'Bought at: ' + R.shop + '\n' : ''}${R.text ? '\n' + R.text + '\n' : ''}\nPhotos: ${R.photos.length}\nTrace: ${HT.packUrl(L, c.i)}`;
+  return `Report about ${L.product}\nLot ${L.lot} · pack ${HT.serialStr(c.i)}\nVerdict when scanned: ${V.title}\n${R.rating ? 'Rating: ' + R.rating + '/5\n' : ''}${R.kind ? 'Type: ' + R.kind + '\n' : ''}${R.shop ? 'Bought at: ' + R.shop + '\n' : ''}${R.text ? '\n' + R.text + '\n' : ''}\nPhotos: ${R.photos.length}\nTrace: ${HT.packUrl(L, c.i)}`.replace(/^(.*)$/s, x => I18N.tr(x));
 };
 V2.review = () => {
   const R = St.rev, L = St.cur.L, kinds = ['Praise', 'Quality', 'Damaged or thawed', 'Label looks wrong', 'Suspected not halal'];
@@ -87,9 +88,10 @@ V2.act = d => {
     St.rev = { photos: [], rating: 0, kind: '', text: '', shop: '', ch: '', sheet: false };
   }
 };
-document.addEventListener('click', e => { const t = e.target.closest('[data-v2]'); if (!t) return; e.stopPropagation(); V2.act(t.dataset); render(); }, true);
+document.addEventListener('click', e => { const lb = e.target.closest('[data-lang]'); if (lb) { I18N.set(lb.dataset.lang); console.log('§HT_LANG ' + lb.dataset.lang); render(); return; } const t = e.target.closest('[data-v2]'); if (!t) return; e.stopPropagation(); V2.act(t.dataset); render(); }, true);
 document.addEventListener('input', e => { if (e.target.id === 'rtext') St.rev.text = e.target.value; });
 document.addEventListener('change', e => {
+  if (e.target.id === 'lang') { I18N.set(e.target.value); console.log('§HT_LANG ' + e.target.value); render(); return; }
   if (e.target.id === 'slot') { St.slot = e.target.value; render(); }
   if (e.target.id === 'rshop') St.rev.shop = e.target.value;
   if (e.target.id === 'fedoff') St.fedOff = e.target.value;
@@ -110,13 +112,13 @@ V2.cv.score = () => { const sel = St.slot || 'A', L = HT.lots[sel], T = HT.thayi
   <div class="panel"><h3>What is checked</h3><div class="tri">${['nutrition', 'health', 'barn'].map(k => `<div class="col shr"><h4>${{ nutrition: 'Nutrition', health: 'Animal health', barn: 'Barn conditions' }[k]}</h4><ul>${T.crit[k].map(x => `<li>${x}</li>`).join('')}</ul></div>`).join('')}</div></div>`; };
 V2.landing = () => {
   const pl = HT.players, shared = pl.reduce((a, p) => a + p.share.length, 0), priv = pl.reduce((a, p) => a + p.hold.length, 0);
-  const door = (cls, ico, t, sub, bl, btns) => `<div class="door ${cls}"><div class="di">${ic(ico)}</div><h3>${t}</h3><p>${sub}</p><ul>${bl.map(b => `<li>${b}</li>`).join('')}</ul><div class="db">${btns.map((b, i) => `<button class="btn ${i ? 'ghost' : ''}" data-v2="enter:${b[1]}">${b[0]}</button>`).join('')}</div></div>`;
-  return `<div class="land"><div class="hero"><div class="hk">Halalan Thayiban System</div><h1>Not just Halal<b>but Goodness</b></h1><p>One scan from farm to fork. Lawful, and good — checked at every hand-off, shared only on a need-to-know basis.</p>
-  <div class="strip">${pl.map((p, i) => `<div class="sn ${p.kind}"><span>${ic(p.ic)}</span><small>${p.n.replace('Abattoir and packing plant', 'Plant').replace('Halal certifying body', 'Certifier').replace('Veterinary service', 'Vet').replace('Customs and border vet', 'Customs').replace('Container and seal', 'Container').replace('Port and carrier', 'Port').replace('Distribution centre', 'DC')}</small></div>${i < pl.length - 1 ? '<i class="ar">›</i>' : ''}`).join('')}</div>
+  const door = (cls, ico, t, sub, btns) => `<div class="door ${cls}"><div class="di">${ic(ico)}</div><h3>${t}</h3><p>${sub}</p><div class="db">${btns.map((b, i) => `<button class="btn ${i ? 'ghost' : ''}" data-v2="enter:${b[2]}">${ic(b[1])}${b[0]}</button>`).join('')}</div></div>`;
+  return `<div class="land"><div class="hero"><div class="hk">Halalan Thayiban System</div><h1>Not just Halal<b>but Goodness</b></h1><p>Lawful and good. One scan, farm to fork.</p>
+  <div class="strip">${pl.map((p, i) => `<div class="sn ${p.kind}"><span>${ic(p.ic)}</span></div>${i < pl.length - 1 ? '<i class="ar">›</i>' : ''}`).join('')}</div>
   <div class="facts"><span><b>${pl.length}</b> parties</span><span><b>${priv}</b> kinds of private record</span><span><b>${shared}</b> items shared</span><span><b>8</b> rules, every result shown</span></div></div>
-  <div class="doors">${door('d1', 'scan', 'Shopper', 'Scan the pack. Know it is halal and good.', ['Verdict, certificate and goodness checks', 'Follow the parcel from farm to shelf', 'Send a review with a photo, your own way'], [['Scan a pack', 'shopper']])}
-  ${door('d2', 'plant', 'Supplier', 'Plants, carriers, cold stores and shops. Share only what the next one needs.', ['Scan cartons onto containers; a wrong carton is blocked', 'Send a signed manifest; keep everything else private', 'See exactly what you share'], [['Dock scan', 'worker'], ['What I share', 'console:disc']])}
-  ${door('d3', 'cust', 'Authorities and auditors', 'Veterinary service, customs, halal certifying body, regulators.', ['Trace a pack to the farms, a lot to the shops', 'Hold, release and recall', 'Ask a player to reveal; every reveal is logged'], [['Open the console', 'console:dash'], ['Trace', 'console:fed']])}</div>
+  <div class="doors">${door('d1', 'scan', 'Shopper', 'Know what you buy.', [['Scan a pack', 'scan', 'shopper']])}
+  ${door('d2', 'plant', 'Supplier', 'Share only what is needed.', [['Dock scan', 'box', 'worker'], ['What I share', 'lock', 'console:disc']])}
+  ${door('d3', 'cust', 'Authorities and auditors', 'See, hold, recall.', [['Open the console', 'users', 'console:dash'], ['Trace', 'route', 'console:fed']])}</div>
   <p class="foot">Sample data is invented. Nothing here is a real certificate, company or consignment.</p></div>`;
 };
 window.V2 = V2;
