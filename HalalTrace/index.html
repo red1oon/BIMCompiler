@@ -1,0 +1,3335 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Construction is manufacturing. A building IS its Bill of Materials.">
+      
+      
+        <meta name="author" content="Redhuan D. Oon">
+      
+      
+      
+        <link rel="prev" href="../TwoAppsOneKernel/">
+      
+      
+        <link rel="next" href="../TwoAppsOneKernelInfographicLandscape.html">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Halal Track & Trace (technical paper) - BIM Intent Compiler</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  <script data-goatcounter="https://red1oon.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#halaltrace-farm-to-fork-track-and-trace-on-a-local-first-ad-defined-data-model" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="BIM Intent Compiler" class="md-header__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BIM Intent Compiler
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Halal Track & Trace (technical paper)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source md-header__source--stacked">
+        <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+        <a href="https://github.com/red1oon/BIMCompiler" title="red1oon/BIMCompiler on GitHub" class="md-source" id="bim-compiler-source" target="_blank" rel="noopener">
+          <div class="md-source__icon md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+          </div>
+          <div class="md-source__repository" id="bim-compiler-repository">
+            Compiler
+          </div>
+        </a>
+        <span id="repo-totals" class="md-source-totals" title="Combined stars / forks across both repos"></span>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href=".." class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start Here
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../BIMUserGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  The 3 Apps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../ArchitectureOverview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Go Deeper
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../SpatialCompilationPaper/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Papers & Positioning
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="BIM Intent Compiler" class="md-nav__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    BIM Intent Compiler
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href=".." class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start Here
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start Here
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMToolsGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🧰 BIM Tools — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFFLINE_INSTALL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔒 Fully Offline / Air-Gapped Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WhatsNew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🆕 What's New
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AboutMore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About BIM OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FeatureComparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feature Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrateComparisonPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrate & Compare (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two Apps, One Kernel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Halal Track & Trace (technical paper)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Halal Track & Trace (technical paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-abstract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Abstract
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The problem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-prior-art-and-what-we-actually-read" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Prior art, and what we actually read
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-design-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Design principles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-players-and-parts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Players and parts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-identifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Identifiers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-the-manifest-and-minimal-disclosure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. The manifest and minimal disclosure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-federated-trace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Federated trace
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-data-model-in-the-ad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Data model in the AD
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-the-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. The rules
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-the-shoppers-phone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. The shopper's phone
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-the-dock-workers-phone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. The dock worker's phone
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-the-console" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. The console
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-local-first-mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Local-first mechanics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#15-what-the-checks-prove" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. What the checks prove
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#16-limits-and-open-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16. Limits and open questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernelInfographicLandscape.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One Page InfoGraphics - Landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bench_suite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Comparison (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../age_demo.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Does Your ERP Age? (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANIFESTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The ERP World View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 3 Apps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The 3 Apps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Viewer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AskFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Ask — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modeller — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DAGeVu Modeller — User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIMGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2D Drawings → BIM (DXF2BIM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Yellow_List/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — the yellow list (what you fill in, defaults used)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Prior_Art/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — prior art (what is new, what we learned, cost of using others)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_FORMAT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — format contract (marks, outputs, registry, codes; generated)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_FirstSetup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP — Your First Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HRBIMAssetGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HR / Tenancy / Operate Module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CivilWorksGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Civil Works — Step by Step
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TeamsOverlayGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teams Overlay — Collaboration & Optics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ArchitectureOverview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview (for reviewers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FoldEngineBlackBook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fold Engine Black Book (dev manual)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HolyGrail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Holy Grail (editable rules, live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPConceptRosetta.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-ERP Rosetta Stone (concept + cost)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIM_Modeller_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Modeller OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERP_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP — Every Record Has a Place
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERPIntegration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP × BIM × HR — One Building, One Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DistributedERP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SQLiteWasmArchitectureActual.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How the Database Works (big picture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ViewerComponentModel.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Component Model (dev architecture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RED_PILL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Pill — Design From Grammar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLASH_DETECTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clash Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JKR_SKATA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Classification & JKR/SKATA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IFC_ExportGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IFC Export Guide (for the BIM author)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TimeMachine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Time Machine (4D Scheduling & Editing)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4D5DAnalysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4D/5D Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMtoProject/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → Project Order (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerKernelFold/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry as a Signed-Log Fold
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Papers & Positioning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Papers & Positioning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialCompilationPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deterministic Spatial Compilation (academic paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_TechnicalNote/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BrowserScaleBenchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser-Scale Benchmark (one tab, local first)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMERPPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Construction Economy / ERP Wave
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnterpriseAuthentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enterprise Authentication (security)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../StrategicIndustryPositioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategic Positioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LocalFirstPriorArt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local-First Prior Art
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LegacyOracleAdapterSpec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy-as-Oracle Adapter (migrate / test an ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnablingTechTimeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enabling-Tech Timeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VibeProgramming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibe Programming — AI + Domain Expertise
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4DGenerator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 4D Generator — Failure Catalogue & AI Findings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAST_MILE_PROBLEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Last Mile — drift tracking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT_CHRONOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Chronology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ShipYard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beyond Buildings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RouteTemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Find & Navigate (wayfinding)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SYSTEMS_INSTALLER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Host (DIY installer)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-abstract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Abstract
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The problem
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-prior-art-and-what-we-actually-read" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Prior art, and what we actually read
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-design-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Design principles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-players-and-parts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Players and parts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-identifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Identifiers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-the-manifest-and-minimal-disclosure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. The manifest and minimal disclosure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-federated-trace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Federated trace
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-data-model-in-the-ad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Data model in the AD
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-the-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. The rules
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-the-shoppers-phone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. The shopper's phone
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-the-dock-workers-phone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. The dock worker's phone
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-the-console" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. The console
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-local-first-mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Local-first mechanics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#15-what-the-checks-prove" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. What the checks prove
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#16-limits-and-open-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16. Limits and open questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="halaltrace-farm-to-fork-track-and-trace-on-a-local-first-ad-defined-data-model">HalalTrace — farm-to-fork track and trace on a local-first, AD-defined data model<a class="headerlink" href="#halaltrace-farm-to-fork-track-and-trace-on-a-local-first-ad-defined-data-model" title="Permanent link">&para;</a></h1>
+<p><em>Technical paper, 2026-10-21. Status: design plus a working prototype. All names, certificate numbers and quantities in the screens are invented sample data.</em></p>
+<h2 id="1-abstract">1. Abstract<a class="headerlink" href="#1-abstract" title="Permanent link">&para;</a></h2>
+<p>A shopper scans one QR code on a pack of frozen meat. The phone shows whether the pack is halal, which certificate covers it, where it has been, which container carried it, and whether it stayed cold. Veterinary officers, customs officers and halal auditors use the same records to trace a lot backward to the farms and forward to the shops.</p>
+<p>The design rests on one premise: <strong>each player shares only what the next player needs</strong>, namely product types, volume and a certificate reference. Everything else stays in the player's own local ledger, committed by hash and revealed only to an authority that asks. The data model is defined in the ERP Application Dictionary (AD), so any player's app can grow into a spatial ERP with no second model.</p>
+<p>This paper states the design, the prior art we could and could not read, the data model, the rules, and the prototype's screens. It is a technical demonstration, not a business plan.</p>
+<h2 id="2-the-problem">2. The problem<a class="headerlink" href="#2-the-problem" title="Permanent link">&para;</a></h2>
+<p>Halal assurance today is a chain of paper and logos. A shopper cannot tell a valid certificate from a copied logo. An auditor cannot easily see what else shared a container with halal meat. A veterinary or customs officer who must recall a lot has to ask each party in turn.</p>
+<p>What is needed is a record that follows the goods, tells each party only what it must know, and lets an authorised party go further on request.</p>
+<h2 id="3-prior-art-and-what-we-actually-read">3. Prior art, and what we actually read<a class="headerlink" href="#3-prior-art-and-what-we-actually-read" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>What it shows</th>
+<th>How we know</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://www.gs1nz.org/assets/Resources/Case-Studies/Supply-chain-traceability-Halal-meat-products.pdf">GS1 New Zealand, 2014</a></td>
+<td>109 cartons of halal beef products from a New Zealand plant to Kuala Lumpur over 11 nodes. Carton = serialised GTIN in an RFID tag, container = GIAI, places = GLN, events in EPCIS. Where RFID was impractical, events were typed in.</td>
+<td><strong>Read in full</strong></td>
+</tr>
+<tr>
+<td>Same paper, limits</td>
+<td>RFID struggles near moisture and metal; tags fail and must be pre-tested; site networks are unreliable. It recommends adding barcodes, 2-D codes and manual entry "to promote increased and faster user adoption".</td>
+<td><strong>Read in full</strong></td>
+</tr>
+<tr>
+<td><a href="https://www.scitepress.org/Papers/2018/99410">Precision Halalization, Chulalongkorn Halal Science Center with CICOT and HSIT, 2018</a></td>
+<td>Thai halal certification, forensic lab, a management standard (HAL-Q), raw-material ID (IQRAH) and SPHERE, a digital exchange of halal data.</td>
+<td><strong>Abstract only</strong>; it does not say whether SPHERE has QR or consumer lookup</td>
+</tr>
+<tr>
+<td><a href="https://etheses.lib.ntust.edu.tw/thesis/detail/33369e85e1abb8e0d5cacee9d78e263a/?seq=5">NTUST thesis</a> (EPCIS halal-meat design)</td>
+<td>Conceptual design, untested in a real chain</td>
+<td>Search summary only; <strong>not read</strong> (server refused)</td>
+</tr>
+<tr>
+<td><a href="https://e-journal.unair.ac.id/JESTT/article/view/28971">Indonesian QR + EPC study</a></td>
+<td>QR label with EPC code as a consumer guarantee</td>
+<td>Search summary only; <strong>not read</strong></td>
+</tr>
+<tr>
+<td><a href="https://www.foodnavigator.com/Article/2018/05/17/First-of-its-kind-blockchain-technology-to-trace-Halal-food-launched-in-Dubai/">HalalChain, Dubai, 2018</a></td>
+<td>IoT and QR; current status unverified</td>
+<td>News report only</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Reading.</strong> The identifiers and event standards exist (GS1 GTIN, SSCC, GLN; EPCIS). The one real pilot we read used RFID and recommends cheaper capture. We found no source that joins certificate, veterinary and customs data behind a single scan; that only means two searches found none.</p>
+<h2 id="4-design-principles">4. Design principles<a class="headerlink" href="#4-design-principles" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Each player owns a local ledger.</strong> No central database holds everyone's records.</li>
+<li><strong>A hand-off is the only thing shared</strong>, as a signed manifest that travels with the goods.</li>
+<li><strong>The manifest carries need-to-know only.</strong></li>
+<li><strong>Private values are committed, not published.</strong> Lot, animals and farms appear as salted hashes.</li>
+<li><strong>Trace is federated.</strong> An authority asks the next hop; each player answers for its own step.</li>
+<li><strong>QR and barcode capture first.</strong> No RFID, no ERP integration required to join.</li>
+<li><strong>The result of every rule is shown.</strong> A rule that did not run says so.</li>
+</ol>
+<h2 id="5-players-and-parts">5. Players and parts<a class="headerlink" href="#5-players-and-parts" title="Permanent link">&para;</a></h2>
+<p>Eleven parties appear in the chain. Authorities see more than players, but only by asking, and every reveal is logged.</p>
+<p><img alt="Players and parts" src="../img/halaltrace/d1_players.png" /></p>
+<p>The card for each party shows how many kinds of record it keeps private and how many items it shares. Selecting one lists what it keeps, what it shares, and what it sees:</p>
+<p><img alt="A certifying authority's view" src="../img/halaltrace/d1b_player_authority.png" /></p>
+<p>Across the chain the eleven parties hold 19 kinds of private record and share 13 items.</p>
+<h2 id="6-identifiers">6. Identifiers<a class="headerlink" href="#6-identifiers" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Thing</th>
+<th>Identifier</th>
+<th>Carried by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Consumer pack</td>
+<td>GTIN + lot + serial</td>
+<td>QR, as a GS1 Digital Link <code>https://&lt;domain&gt;/01/&lt;GTIN&gt;/10/&lt;LOT&gt;/21/&lt;SERIAL&gt;</code></td>
+</tr>
+<tr>
+<td>Carton</td>
+<td>GTIN + lot</td>
+<td>linear barcode</td>
+</tr>
+<tr>
+<td>Pallet</td>
+<td>SSCC</td>
+<td>pallet label</td>
+</tr>
+<tr>
+<td>Container</td>
+<td>ISO 6346 number + seal number</td>
+<td>the door and the seal</td>
+</tr>
+<tr>
+<td>Place</td>
+<td>GLN</td>
+<td>site register</td>
+</tr>
+<tr>
+<td>Animal</td>
+<td>national ear-tag number</td>
+<td>tag</td>
+</tr>
+<tr>
+<td>Certificate</td>
+<td>certificate number</td>
+<td>certificate registry</td>
+</tr>
+</tbody>
+</table>
+<p>A plain phone camera opens the link, so the consumer needs no app.</p>
+<h2 id="7-the-manifest-and-minimal-disclosure">7. The manifest and minimal disclosure<a class="headerlink" href="#7-the-manifest-and-minimal-disclosure" title="Permanent link">&para;</a></h2>
+<p>At each hand-off the sender signs one manifest. It contains only:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"> </span><span class="nt">&quot;v&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;container&quot;</span><span class="p">:</span><span class="s2">&quot;MSKU 481236 9&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;seal&quot;</span><span class="p">:</span><span class="s2">&quot;HT-0048213&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;lines&quot;</span><span class="p">:[{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Beef - frozen&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;class&quot;</span><span class="p">:</span><span class="s2">&quot;halal&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;cartons&quot;</span><span class="p">:</span><span class="mi">240</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;kg&quot;</span><span class="p">:</span><span class="mi">2400</span><span class="w"> </span><span class="p">}],</span>
+<span class="w">  </span><span class="nt">&quot;cert&quot;</span><span class="p">:{</span><span class="w"> </span><span class="nt">&quot;no&quot;</span><span class="p">:</span><span class="s2">&quot;HC-26-001843&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;issuer&quot;</span><span class="p">:</span><span class="s2">&quot;Southern Cone Halal Certification Board&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;lot&quot;</span><span class="p">:</span><span class="s2">&quot;sha256:…&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;prev&quot;</span><span class="p">:</span><span class="s2">&quot;sha256:…&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;from&quot;</span><span class="p">:</span><span class="s2">&quot;…&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;to&quot;</span><span class="p">:</span><span class="s2">&quot;…&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;at&quot;</span><span class="p">:</span><span class="s2">&quot;2026-08-29&quot;</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<p><code>lot</code> is <code>sha256(lot ‖ salt)</code>. <code>prev</code> is the hash of the previous manifest, so the manifests form a chain. Prices, customers, recipes, other lots and internal locations never appear.</p>
+<p><img alt="One manifest: shared on the left, private on the right" src="../img/halaltrace/d2_disclosure.png" /></p>
+<p>An authority that needs the lot asks the owner, who reveals the salt. The recomputed hash either matches the manifest or it does not; a wrong salt discloses nothing.</p>
+<h2 id="8-federated-trace">8. Federated trace<a class="headerlink" href="#8-federated-trace" title="Permanent link">&para;</a></h2>
+<p>A trace walks the chain by asking each hop for its own step. In the prototype, six hops answer from the shop back to the farms. If one player is silent, the trace stops there and nothing beyond it is guessed.</p>
+<p><img alt="A trace stopped by a silent distribution centre" src="../img/halaltrace/d3_trace_silent.png" />
+<img alt="The same trace with every player answering" src="../img/halaltrace/d3b_trace_full.png" /></p>
+<h2 id="9-data-model-in-the-ad">9. Data model in the AD<a class="headerlink" href="#9-data-model-in-the-ad" title="Permanent link">&para;</a></h2>
+<p>Every table is defined in <code>AD_Table</code> and <code>AD_Column</code>, so it opens in the generic window with no per-window code. Core tables below were checked in the ERP's AD seed.</p>
+<table>
+<thead>
+<tr>
+<th>Concept</th>
+<th>AD table</th>
+<th>Columns used</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Player, site</td>
+<td><code>C_BPartner</code>, <code>C_BPartner_Location</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Product type</td>
+<td><code>M_Product</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Lot, serial, best-before</td>
+<td><code>M_Lot</code>, <code>M_AttributeSetInstance</code></td>
+<td><code>Lot</code>, <code>SerNo</code>, <code>GuaranteeDate</code></td>
+</tr>
+<tr>
+<td>A hand-off</td>
+<td><code>M_InOut</code>, <code>M_InOutLine</code></td>
+<td>the manifest derives from these lines</td>
+</tr>
+<tr>
+<td>Carton, pallet, container</td>
+<td><code>M_Package</code>, <code>M_PackageLine</code></td>
+<td><code>TrackingNo</code>, <code>Weight</code>, <code>Qty</code>, <code>M_Product_ID</code></td>
+</tr>
+<tr>
+<td>Cold-store room, dock, rack</td>
+<td><code>M_Warehouse</code>, <code>M_Locator</code></td>
+<td><strong><code>X</code>, <code>Y</code>, <code>Z</code></strong></td>
+</tr>
+<tr>
+<td>Internal move, count</td>
+<td><code>M_Movement</code>, <code>M_Inventory</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Carcass to cuts to packs</td>
+<td><code>M_ProductionLine</code></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>Extension tables, also AD-defined: <code>HT_Certificate</code>, <code>HT_CertificatePlant</code>, <code>HT_Event</code> (EPCIS-shaped), <code>HT_Reading</code> (sensor values), <code>HT_Hold</code>, <code>HT_Manifest</code>, <code>HT_Commitment</code>, <code>HT_Reveal</code>, <code>HT_Scan</code>, <code>HT_Review</code>, <code>HT_Rule</code>.</p>
+<p><strong>Spatial hook.</strong> <code>M_Locator.X/Y/Z</code> places a pallet in a cold-store room, and <code>HT_Event</code> places an event at a site by GLN. A spatial ERP draws the room from the same rows. A plant that runs the app already holds its stock, locations and shipments, so track and trace is a view of data it keeps anyway.</p>
+<h2 id="10-the-rules">10. The rules<a class="headerlink" href="#10-the-rules" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Checks</th>
+<th>If it fails</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R1</td>
+<td>every item loaded in a container has a valid certificate for its class</td>
+<td>the dock scan is <strong>blocked</strong> and logged</td>
+</tr>
+<tr>
+<td>R2</td>
+<td>a halal container's listing is halal only</td>
+<td>the container cannot be sealed</td>
+</tr>
+<tr>
+<td>R3</td>
+<td>the certificate covers this plant and product</td>
+<td>pack shows "not verified"</td>
+</tr>
+<tr>
+<td>R4</td>
+<td>the certificate was valid on the production date</td>
+<td>pack shows "not verified"</td>
+</tr>
+<tr>
+<td>R5</td>
+<td>a container that last carried non-halal cargo has a cleaning record</td>
+<td>seal refused</td>
+</tr>
+<tr>
+<td>R6</td>
+<td>a named, certified slaughterer was on that line and date</td>
+<td>lot cannot be created</td>
+</tr>
+<tr>
+<td>R7</td>
+<td>cold-chain readings stay within the limit</td>
+<td>the excursion is shown and the lot flagged</td>
+</tr>
+<tr>
+<td>R8</td>
+<td>a veterinary or customs hold stops downstream use</td>
+<td>pack shows "on hold"</td>
+</tr>
+</tbody>
+</table>
+<h2 id="11-the-shoppers-phone">11. The shopper's phone<a class="headerlink" href="#11-the-shoppers-phone" title="Permanent link">&para;</a></h2>
+<p><strong>Scan.</strong> The camera reads the pack's QR code.</p>
+<p><img alt="Scan" src="../img/halaltrace/m1_scan.png" /></p>
+<p><strong>Verdict.</strong> The page states the verdict, the certificate, the issuer, the validity dates and the plant. The phone checks the signature itself.</p>
+<p><img alt="Verdict" src="../img/halaltrace/m2_verdict.png" /></p>
+<p><strong>Tracking card.</strong> Like a parcel tracker: the status and a six-step bar at the top, then a scrollable list, newest first, of every handling step. Tapping a step shows who handled it and the evidence.</p>
+<p><img alt="Tracking card" src="../img/halaltrace/m3_track_top.png" />
+<img alt="Scrolled, with one step opened" src="../img/halaltrace/m4_track_scrolled.png" /></p>
+<p><strong>Container and cold chain.</strong> The container number, seal, previous cargo and cleaning record, the content listing with each line's certificate, and a temperature chart for each leg against the limit.</p>
+<p><img alt="Container" src="../img/halaltrace/m5_container.png" />
+<img alt="Cold chain" src="../img/halaltrace/m6_cold.png" /></p>
+<p><strong>Report or review, with a photo.</strong> The shopper photographs the pack, rates it, picks a type and the shop, and writes a note. The message carries the pack link and the verdict shown at scan time. It is sent through the phone's own share sheet (WhatsApp, LINE, email or any installed app), with <code>mailto:</code> and <code>wa.me</code> links as fallbacks, or saved. The report is stored on the phone first and works offline. HalalTrace sees nothing unless the shopper sends it there. The status stops at "Shared", because a share sheet cannot tell us more.</p>
+<p><img alt="Report with photo" src="../img/halaltrace/m7_review.png" /></p>
+<h2 id="12-the-dock-workers-phone">12. The dock worker's phone<a class="headerlink" href="#12-the-dock-workers-phone" title="Permanent link">&para;</a></h2>
+<p>Each carton is scanned onto the container. Rule R1 checks it on the spot.</p>
+<p><img alt="Dock scan" src="../img/halaltrace/m8_worker.png" />
+<img alt="A pork carton is refused from a halal container" src="../img/halaltrace/m9_worker_block.png" /></p>
+<h2 id="13-the-console">13. The console<a class="headerlink" href="#13-the-console" title="Permanent link">&para;</a></h2>
+<p>The plant's own app and the authority views share the generic grid. The dashboard shows alerts, including the blocked scan above.</p>
+<p><img alt="Dashboard" src="../img/halaltrace/d4_dashboard.png" />
+<img alt="Containers: content listing against certificates" src="../img/halaltrace/d5_containers.png" />
+<img alt="Recall: packs, pallets, shops and shoppers who scanned" src="../img/halaltrace/d6_recall.png" /></p>
+<h2 id="14-local-first-mechanics">14. Local-first mechanics<a class="headerlink" href="#14-local-first-mechanics" title="Permanent link">&para;</a></h2>
+<p>The signed, hash-chained, sealed-to-recipient event pattern is reused from our ThaiGoldPawn prototype: append-only events, device-bound keys that cannot be exported, tokens sealed to the recipient's key, state as a fold over the chain, and an offline queue that syncs on reconnect. Here the author is the player key, the recipient is the next player's key, and the token is the manifest.</p>
+<h2 id="15-what-the-checks-prove">15. What the checks prove<a class="headerlink" href="#15-what-the-checks-prove" title="Permanent link">&para;</a></h2>
+<p>Twenty-three scripted checks run against the prototype. All passed on 2026-10-21; the log is <code>witness_ui.log</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Issue it proves or disproves</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>W-HT-MIN</td>
+<td>the manifest has only the agreed fields; lot, animals, farms, price, customer are absent in clear</td>
+</tr>
+<tr>
+<td>W-HT-COMMIT</td>
+<td>the right salt reproduces the commitment; a wrong salt fails</td>
+</tr>
+<tr>
+<td>W-HT-CHAIN</td>
+<td>each manifest's <code>prev</code> equals the previous manifest's hash</td>
+</tr>
+<tr>
+<td>W-HT-FED</td>
+<td>a silent player stops the trace; later hops are "not reached"</td>
+</tr>
+<tr>
+<td>W-HT-AGG</td>
+<td>2,400 packs trace to 48 animals on 6 farms and add up</td>
+</tr>
+<tr>
+<td>W-HT-R1</td>
+<td>a pork carton is refused; a beef carton is loaded</td>
+</tr>
+<tr>
+<td>W-HT-TRACK</td>
+<td>the tracking card has 11 steps, six stages, and scrolls</td>
+</tr>
+<tr>
+<td>W-HT-REV</td>
+<td>a review is saved locally with its photo, rating, link and verdict</td>
+</tr>
+<tr>
+<td>W-HT-PLAYERS</td>
+<td>11 players fit the window</td>
+</tr>
+<tr>
+<td>W-HT-NOOVERFLOW, W-HT-NOERR</td>
+<td>no console view scrolls sideways; no page errors</td>
+</tr>
+</tbody>
+</table>
+<p>These prove the prototype is consistent with the design. They do not prove the design works in a real chain.</p>
+<h2 id="16-limits-and-open-questions">16. Limits and open questions<a class="headerlink" href="#16-limits-and-open-questions" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>No real integration.</strong> Certificate lookup against a Thai certifying body's registry is assumed. Whether such a registry can be queried by number is unknown.</li>
+<li><strong>Key trust.</strong> Who vouches that a signing key belongs to a plant is open; a certifying body could, if it agrees.</li>
+<li><strong>Multi-hop trace</strong> needs each player online or its answers cached. The cache rule is undefined.</li>
+<li><strong>Cold-chain data</strong> is trustworthy only if sensors capture it; typed values would be labelled lower trust.</li>
+<li><strong>Hosting</strong> of the public record for a plant with no web presence.</li>
+<li><strong>Thai text</strong> for religious wording must be reviewed by a qualified native speaker before consumer use.</li>
+<li><strong>Unread sources:</strong> the NTUST thesis and the Indonesian study.</li>
+<li><strong>No field trial.</strong> The only comparable pilot we read used RFID over 109 cartons.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/red1oon/bim-ootb" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/red1oon/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "toc.follow", "content.tabs.link"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../javascripts/fold-footnotes.js"></script>
+      
+        <script src="../javascripts/bim_compiler_source.js"></script>
+      
+    
+  </body>
+</html>
