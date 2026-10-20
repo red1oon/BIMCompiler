@@ -4,5 +4,5 @@ SET search_path=adempiere;
 INSERT INTO ws_webservicetypeaccess (ad_client_id, ad_org_id, ad_role_id, createdby, updatedby, ws_webservicetype_id, ws_webservicetypeaccess_uu)
 SELECT 11, 0, 102, 100, 100, t.ws_webservicetype_id, gen_random_uuid()
 FROM ws_webservicetype t JOIN ws_webservicemethod m USING (ws_webservicemethod_id)
-WHERE m.value IN ('queryData', 'readData') AND t.ws_webservicetype_id IN (200005)
+WHERE m.value IN ('queryData', 'readData', 'getList') AND t.ws_webservicetype_id IN (200005, 200003)
   AND NOT EXISTS (SELECT 1 FROM ws_webservicetypeaccess a WHERE a.ws_webservicetype_id = t.ws_webservicetype_id AND a.ad_role_id = 102);
