@@ -92,6 +92,95 @@ Click any verdict item to jump to it:
 
 ![Clicking a verdict item zooms the canvas to the offending entity](img/dxf2bim/editor_verdict_zoom.jpg)
 
+The rest of this step is written from a first-time walk through the real Modeller (2026-10-22) on the Duplex
+standard set with every marking removed (8 sheets, the plain drawings a CAD program would hand you). The walk
+reached **Qualifies**, and **Convert** built 135 elements with 36 openings cut, the same numbers as the editor's
+own end-to-end check. The counts below are the clicks and typed values of that walk.
+
+#### 3a · What yellow means
+A **yellow row** is a value the editor read from the drawing (or a default it applied) that is **not yours yet**.
+Each row names its source: `PR-UNITS: file says mm`, `PR-GRID: grid line 190 + label 1`, `PR-Z: level text B5 +
+level line B3`. Tick one row, or press **Accept all**; the value then shows **you**. Ignoring a yellow default
+is allowed (the default stays applied and is listed); ignoring a yellow *suggestion* leaves the field empty.
+
+The list grows as you answer. On the plain Duplex set it came in four rounds:
+
+| Round | Appears after | Rows | What they are |
+|---|---|---|---|
+| 1 | opening the sheets | 10 | units of each sheet (8), the section's view and name (2) |
+| 2 | you choose each sheet's role | 49 | grid lines on the plans and elevations, level datums (`@Z`) from level texts, elevation faces, the section cut |
+| 3 | you type the set name once | 7 | the same set name for the other sheets |
+| 4 | you type the plan levels | 5 | the horizontal axis (`@HAXIS`) of each elevation and the section, fitted to the plan grid |
+
+**Accept all** sits **under** the list. With 49 rows it is about 1,200 pixels below the visible part of the panel:
+scroll the panel to the end of the list to find it (a three-storey office set gave 135 rows in round 2 and the
+button 4,500 pixels down).
+
+**Check the section cut before you accept.** On both standard sets walked (Duplex and a three-storey office), the
+suggested `@CUT` was wrong: it paired two grid bubbles that carry the same letter as the section (`A`), so it
+proposed `Y,-17591.5` while the section's own title says `SECTION A-A AT X=2304.25`. Type the cut from the title
+(`X,2304.25`) after you accept. Every other suggestion of the walk matched the values the model itself writes.
+
+![Round 2 of the yellow list: one row per grid line, datum and face, each with its source](img/dxf2bim/walk_yellow_list.jpg)
+
+#### 3b · The sheet facts and datums: what you state, and how
+| Marking | What it is | Where it comes from in the walk | How you give it |
+|---|---|---|---|
+| Role (`@VIEW`) | plan, elevation, roof plan or section | suggested only when the title **ends** in PLAN / ELEVATION / SECTION; titles with a scale after them (`FRONT ELEVATION  1:100`) are not read | pick from the list on each sheet card (7 of 8 sheets) |
+| `@SET` | the name of the set | nothing in the drawing | type once; the other sheets get it as yellow |
+| `@UNITS` | drawing units | the file header (`$INSUNITS`), shown as yellow | accept |
+| `@LEVEL` | a plan's storey level, metres | the plan title states it (`LEVEL 2 PLAN (FFL +3.100)`) but it is not read | type on each plan and on the roof plan (3 values) |
+| `@ROOF` | the roof top, metres | the section and every elevation draw it as the top level datum (`@Z=6.457`) | type on the roof plan, each elevation and the section (6 times, the same number) |
+| `@Z` | a level datum on an elevation or section: a height in metres at a drawing y | level texts paired with their level lines; else the heavy ground line as z 0 | accept; a second datum is typed as **z** plus **drawing y** (see the shed) |
+| `@GRIDX` / `@GRIDY` / `@GRIDH` | which grid label sits on which line | grid lines with their labels, or dimension ticks | accept |
+| `@FACE` | which side of the building an elevation shows | the sheet name or title (FRONT, LEFT, SOUTH...) | accept |
+| `@HAXIS` | which plan axis runs left to right on an elevation | fitted to the plan grid after the plan levels exist | accept (round 4) |
+| `@CUT` | where the section cuts the plan | see the warning above | type from the section title |
+
+On the Duplex this was 7 role picks and 11 typed values (set name 1, levels 3, roof top 6, cut 1). Nothing else
+had to be typed for the sheets.
+
+#### 3c · Wall tops
+After the sheets are complete, **Wall tops** lists the interior walls no elevation shows (17 on the ground floor,
+27 on the first floor of the Duplex). Tick **Interior walls run to the slab above** once per plan; the list
+empties. A wall that stops lower than the slab can still be given its own top in the field beside it.
+
+![Wall tops: one tick per plan clears the interior walls the elevations cannot show](img/dxf2bim/walk_wall_tops.jpg)
+
+#### 3d · Blocking items: what they mean and what to do
+A **blocking** item stops Convert. An **advisory** item does not. The verdict lists them; click one to zoom to it.
+What blocked the plain Duplex after the sheets were complete, and how each was cleared:
+
+| Item | Meaning | What to do |
+|---|---|---|
+| `QF:elev_roof_unstated`, `QF:elev_height_dim_missing` | an elevation has no roof top | type `@ROOF` on that elevation |
+| `GAP:no_elevation_height` on `A-WALL-PRTN` | interior walls with no height | Wall tops (3c) |
+| `GAP:no_elevation_height` + `GAP:no_host_cut` on `A-DOOR` | a door with no schedule mark: its height is unknown and its opening is not cut | Doors (below) |
+| `GAP:fill_unbound` | a window with no product: the plan cannot tell three windows stacked at one position apart | Tags, picked on an elevation (below) |
+| `QF:layer_unmapped` | a layer the set does not read | Layers: choose what it holds, or *ignore* |
+
+**Doors.** The plain drawings carry the door widths (the drawn leaf) but **no door heights**: you bring them from the
+door schedule. In **Doors**, add one schedule row per door type (mark, width, height in mm, then **+**). Then
+**Tag doors**, click a door in the list (the canvas zooms to it), click the door's **arc** on the canvas, pick the
+mark, **Tag**. Click the arc itself: a click beside it, or on the leaf line, answers *No door here*. The Duplex has
+14 doors of 4 widths: 4 schedule rows and 14 tags, about 4 clicks per door.
+
+![Doors: the schedule row, the picked door (17D, leaf 1250 mm) and its Tag card](img/dxf2bim/walk_door_tag.jpg)
+
+**Stacked windows.** In **Tags**, turn on the Tag tool, turn the view to face an elevation, click a window's glazing
+there (the plan position and height come from the elevation), choose the product, **Add**. The product list holds
+every window family of the library (37 on the walk) by name, without sizes: choose the one whose name matches the
+drawn width (on the Duplex, the 819 mm family). A wrong family is reported as `GAP:type_size_mismatch` and the tag
+can be removed with its bin icon.
+
+When the last blocking item is cleared the badge reads **Qualifies** and Convert is enabled.
+
+#### 3e · How long the plain Duplex took
+Clicks and typed values of the walk, from opening to Qualifies: 3 to open, 4 *Accept all*, 7 role picks, 11 typed
+sheet values, 2 wall-top ticks, then 83 actions for the 14 doors (16 for the schedule rows) and 41 for the 12 stacked
+windows. The doors and windows are about four fifths of the work. The machine time between steps was under 2 s
+each (a verdict re-run takes 0.2 to 0.8 s on this set).
+
 ### 4 · Save the marked copies
 **Save marked copies** downloads `<name>_marked.dxf` for every sheet, with your metadata written in. The
 originals are never modified. Next time you open the marked copies, everything is already filled.
@@ -109,6 +198,15 @@ element contained in its storey. On the Duplex standard set: 96 wall pieces, 2 s
 22 windows, 2 storeys.
 
 ---
+
+### If something goes wrong
+| What you see | Why | What to do |
+|---|---|---|
+| **Convert** gives an empty canvas, the badge still says *Qualifies* | a model from an earlier conversion is still in this browser's history and the new one could not be committed (the console says `§DXF-CONVERT failed GEOM_CUT parent … not found`; the panel says nothing yet) | **Clear** (the bin icon at the top of the dock), then **Convert** again |
+| *No door here: click a door's arc or leaf* | the click was beside the door's swing box | click on the arc itself |
+| a suggested `@CUT` that disagrees with the section's title | grid bubbles with the section's letter were read as the section line | type the cut from the title |
+| *PR-VIEW not proposed: no title text ending PLAN / ELEVATION / SECTION* | the title has more text after the view word (a scale such as `1:100`) | choose the role from the list |
+| **Save marked copies** asks to allow several downloads | one file per sheet is downloaded | allow it; the copies keep every value you stated |
 
 ## The metadata, for CAD users
 
@@ -150,11 +248,23 @@ building is made of **bodies** read from layers you type, not of walls and slabs
    heavy ground line.
 2. **State the few facts only a person can** (set name, plan level, the datum height, e.g. a plinth line 2 ft above
    ground read from the column detail). They are written into the sheets themselves, so the **settings sheets
-   reopen together** next time.
+   reopen together** next time. In the walk of 2026-10-22 on the nine raw sheets: the set name typed once, `@LEVEL=0`
+   typed on the three plans (floor, beam layout, foundation layout), and on each of the four elevations and the
+   section a second level datum: **z** `0.6096` and the **drawing y** of the plinth line (a CAD coordinate such as
+   `-4446.6`, read in the CAD program; the editor has no pick for it yet). That is 10 typed values for the datums.
+   Each typed y lay 24.0 in (within 0.02 in) above the ground line the editor had already accepted as z 0, so the
+   value you type is the plinth height; the y only places it.
 3. **Type the layers that mean something:** column, footing, beam, wall-panel hatch, fan, net, door swing, truss
-   bar, door frame. Nothing else is chosen for you.
+   bar, door frame. Nothing else is chosen for you. In **Layers** this is 10 choices; two of them hold only on one
+   sheet (the `Dim` layer is a beam on the beam layout only, layer `0` is a column on the South elevation only): use
+   the split button of that row to choose sheet by sheet. The door frame on the elevations is listed as **door**.
+   Once the first body layer is chosen the set is read as a structure set and the dimension-text items of the
+   standard check (18 on this set) no longer block.
 4. **Give heights nothing draws** (footing depth, beam range) under *Body heights*, and leave out the areas that
-   would build false bodies (an expansion-joint strip).
+   would build false bodies (an expansion-joint strip). The heights are typed in **metres** even when the sheets are
+   in inches (`-1.4478` for -57 in). Nothing flags the expansion joint: without the exclude box the walk built 516
+   bodies, the four extra being beams along the joint; with it, 512. Use *Exclude areas*, pick the beam layout and
+   drag a box over the joint.
 5. **Complete the building** (optional): adds the floor slab and gabled roof the drawings imply, in amber, with
    their thickness listed as yellow defaults.
 6. **Convert.** The whole shed lands on the canvas: 512 bodies (96 column parts: 32 columns, each with a below-grade
