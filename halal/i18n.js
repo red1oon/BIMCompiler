@@ -213,7 +213,7 @@ const I18N = (() => {
     ["Frozen beef (halal)", "เนื้อวัวแช่แข็ง (ฮาลาล)", "Daging lembu beku (halal)", "لحم بقر مجمد (حلال)"],
     ["Frozen Beef Striploin", "เนื้อสันนอกวัวแช่แข็ง", "Sirloin lembu beku", "ستريبلوين بقر مجمد"],
     ["Frozen Beef Mince", "เนื้อวัวบดแช่แข็ง", "Daging lembu kisar beku", "لحم بقر مفروم مجمد"],
-    ["Frozen Beef Shin", "สะโพกน่องวัวแช่แข็ง", "Betis lembu beku", "ساق بقر مجمدة"],
+    ["Frozen Beef Shin", "น่องวัวแช่แข็ง", "Betis lembu beku", "ساق بقر مجمدة"],
     ["Frozen Pork Belly", "สามชั้นหมูแช่แข็ง", "Perut babi beku", "بطن خنزير مجمد"],
     ["Beef Striploin", "เนื้อสันนอกวัว", "Sirloin lembu", "ستريبلوين بقر"],
     ["Beef Mince", "เนื้อวัวบด", "Daging lembu kisar", "لحم بقر مفروم"],
