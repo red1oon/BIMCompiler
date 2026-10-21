@@ -249,7 +249,7 @@ Thirty-two scripted checks run against the prototype. All passed on 2026-10-21; 
 | W-HT-REV | a review is saved locally with its photo, rating, link and verdict |
 | W-HT-SCORE | the Thayiban score is computed from its parts | five components; the lot score equals their mean and the figure on screen; the farm-weighted mean equals the lot component; a cold-chain excursion lowers the cold-chain score |
 | W-HT-LANDING | the opening screen has the three doors | three doors, the headline, and the eleven parties |
-| W-HT-I18N, W-HT-RTL | no English text is left on any screen in Thai, Malay or Arabic; Arabic is right-to-left; no page errors |
+| W-HT-I18N, W-HT-RTL | no English text is left on any screen in Thai, Malay, Arabic or Mandarin; Arabic is right-to-left; no page errors |
 | W-HT-PLAYERS | 11 players fit the window |
 | W-HT-NOOVERFLOW, W-HT-NOERR | no console view scrolls sideways; no page errors |
 
@@ -257,12 +257,12 @@ These prove the prototype is consistent with the design. They do not prove the d
 
 ## 19. Languages
 
-The prototype speaks **English, Thai, Malay and Arabic** (right-to-left). The language menu is the globe at the top right; the choice is remembered on the phone. Numbers, identifiers, dates and company names stay as they are.
+The prototype speaks **English, Thai, Malay, Arabic** (right-to-left) and **Mandarin** (Simplified). The language menu is the globe at the top right; the choice is remembered on the phone. Numbers, identifiers, dates and company names stay as they are.
 
 ![Thai](img/halaltrace/l_th_verdict.png)
 ![Arabic, right to left](img/halaltrace/l_ar_verdict.png)
 
-The translations were written by the model, not by native speakers, and religious wording in particular needs review before any consumer use. A script walks every screen and state in each language and fails if any English text is left over. It passed for all three on 2026-10-21, which proves coverage, not quality.
+The translations were written by the model, not by native speakers, and religious wording in particular needs review before any consumer use. A script walks every screen and state in each language and fails if any English text is left over. It passed for all four on 2026-10-21, which proves coverage, not quality.
 
 ## 20. Limits and open questions
 
@@ -271,7 +271,7 @@ The translations were written by the model, not by native speakers, and religiou
 - **Multi-hop trace** needs each player online or its answers cached. The cache rule is undefined.
 - **Cold-chain data** is trustworthy only if sensors capture it; typed values would be labelled lower trust.
 - **Hosting** of the public record for a plant with no web presence.
-- **Translations** into Thai, Malay and Arabic are model-written; religious wording must be reviewed by qualified native speakers before consumer use.
+- **Translations** into Thai, Malay, Arabic and Mandarin are model-written; religious wording must be reviewed by qualified native speakers before consumer use.
 - **Thayiban criteria** are a proposal. What counts as good nutrition, health and barn conditions, and how to weigh them, is for veterinarians, scholars and standards bodies.
 - **Unread sources:** the NTUST thesis and the Indonesian study.
 - **No field trial.** The only comparable pilot we read used RFID over 109 cartons.
