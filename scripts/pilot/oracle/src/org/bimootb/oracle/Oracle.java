@@ -120,6 +120,7 @@ public class Oracle implements Runnable {
 			if ("tabmode".equals(op)) return tabmode(ctx, req);
 			if ("postdoc".equals(op)) return postdoc(ctx, req);
 			if ("creditmemo".equals(op)) return creditmemo(ctx, req);
+			if ("makedoc".equals(op)) return makedoc(ctx, req);
 			if ("userqueries".equals(op)) {   // §UDP-3: FindWindow's saved-query list (MUserQuery.get) + userCanSave per entry
 				JSONArray a = new JSONArray();
 				for (MUserQuery uq : MUserQuery.get(ctx, req.getInt("tab"))) a.put(new JSONObject().put("id", uq.getAD_UserQuery_ID()).put("name", uq.getName()).put("canSave", uq.userCanSave()));
@@ -426,6 +427,65 @@ public class Oracle implements Runnable {
 			out.put(o);
 		}
 		return new JSONObject().put("ok", true).put("docs", out);
+	}
+
+
+	// §MAKEDOC (ERP_FRIENDLY_OPS_LENS.md §54): a fixture document built through the REAL model classes inside one rolled-back trx - header PO + line POs (MTable.getPO, set_ValueOfColumn),
+	//   DocAction (processIt) on the header, then the rows of the asked queries (SQL with ? = the new header id), and a rollback. The twin builds the same document with the same field values.
+	private static JSONObject makedoc(Properties ctx, JSONObject req) throws Exception {
+		String trxName = Trx.createTrxName("MakeDocProbe");
+		Trx trx = Trx.get(trxName, true);
+		JSONObject o = new JSONObject();
+		try {
+			JSONObject h = req.getJSONObject("header");
+			PO hdr = MTable.get(ctx, h.getString("table")).getPO(0, trxName);
+			JSONObject hf = h.getJSONObject("fields");
+			for (String k : hf.keySet()) hdr.set_ValueOfColumn(k, hf.get(k) == JSONObject.NULL ? null : fromPlain(hdr, k, hf.get(k)));
+			hdr.saveEx();
+			int id = hdr.get_ID();
+			o.put("id", id);
+			JSONArray ls = req.optJSONArray("lines");
+			for (int i = 0; ls != null && i < ls.length(); i++) {
+				JSONObject l = ls.getJSONObject(i);
+				PO line = MTable.get(ctx, l.getString("table")).getPO(0, trxName);
+				line.set_ValueOfColumn(l.getString("parentColumn"), id);
+				JSONObject lf = l.getJSONObject("fields");
+				for (String k : lf.keySet()) line.set_ValueOfColumn(k, lf.get(k) == JSONObject.NULL ? null : fromPlain(line, k, lf.get(k)));
+				line.saveEx();
+			}
+			hdr.load(trxName);
+			if (req.has("action")) {
+				org.compiere.process.DocAction da = (org.compiere.process.DocAction) hdr;
+				boolean ok = da.processIt(req.getString("action"));
+				hdr.saveEx();
+				o.put("processed", ok).put("docStatus", da.getDocStatus()).put("processMsg", da.getProcessMsg() == null ? JSONObject.NULL : da.getProcessMsg());
+			}
+			JSONObject qs = req.optJSONObject("queries"), res = new JSONObject();
+			if (qs != null) for (String name : qs.keySet()) {
+				JSONArray rows = new JSONArray();
+				try (PreparedStatement ps = DB.prepareStatement(qs.getString(name), trxName)) {
+					ps.setInt(1, id);
+					try (ResultSet rs = ps.executeQuery()) { ResultSetMetaData md = rs.getMetaData(); while (rs.next()) { JSONObject r = new JSONObject(); for (int c = 1; c <= md.getColumnCount(); c++) r.put(md.getColumnLabel(c).toLowerCase(), toJson(rs.getObject(c))); rows.put(r); } }
+				}
+				res.put(name, rows);
+			}
+			o.put("rows", res);
+		} catch (Throwable e) {
+			o.put("exception", e.getClass().getSimpleName() + ": " + String.valueOf(e.getMessage()));
+		} finally {
+			trx.rollback();
+			trx.close();
+		}
+		return new JSONObject().put("ok", true).put("doc", o);
+	}
+	private static Object fromPlain(PO po, String col, Object v) {
+		int idx = po.get_ColumnIndex(col);
+		Class<?> c = idx >= 0 ? POInfo.getPOInfo(po.getCtx(), po.get_Table_ID()).getColumnClass(idx) : null;
+		if (c == Integer.class) return Integer.valueOf(v.toString());
+		if (c == BigDecimal.class) return new BigDecimal(v.toString());
+		if (c == Timestamp.class) return Timestamp.valueOf(v.toString().length() == 10 ? v + " 00:00:00" : v.toString());
+		if (c == Boolean.class) return "Y".equals(v.toString()) || "true".equals(v.toString());
+		return v.toString();
 	}
 
 	private static JSONObject ctxDump(Properties ctx) {
