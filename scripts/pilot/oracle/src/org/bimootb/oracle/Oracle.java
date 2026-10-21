@@ -19,6 +19,7 @@ import java.util.*;
 import org.adempiere.base.Core;
 import org.adempiere.util.ServerContext;
 import org.compiere.model.*;
+import org.compiere.process.DocAction;
 import org.compiere.process.ProcessInfo;
 import org.compiere.process.ProcessInfoParameter;
 import org.compiere.process.ProcessInfoLog;
@@ -118,6 +119,7 @@ public class Oracle implements Runnable {
 			if ("tabcust".equals(op)) return tabcust(ctx, req);
 			if ("tabmode".equals(op)) return tabmode(ctx, req);
 			if ("postdoc".equals(op)) return postdoc(ctx, req);
+			if ("creditmemo".equals(op)) return creditmemo(ctx, req);
 			if ("userqueries".equals(op)) {   // §UDP-3: FindWindow's saved-query list (MUserQuery.get) + userCanSave per entry
 				JSONArray a = new JSONArray();
 				for (MUserQuery uq : MUserQuery.get(ctx, req.getInt("tab"))) a.put(new JSONObject().put("id", uq.getAD_UserQuery_ID()).put("name", uq.getName()).put("canSave", uq.userCanSave()));
@@ -351,6 +353,72 @@ public class Oracle implements Runnable {
 				}
 				for (int k = 0; k < notes.length(); k++) DB.executeUpdateEx("DELETE FROM AD_Note WHERE AD_Note_ID=?", new Object[] { notes.getJSONObject(k).getInt("noteId") }, null);
 				o.put("notes", notes);
+			} finally {
+				trx.rollback();
+				trx.close();
+			}
+			out.put(o);
+		}
+		return new JSONObject().put("ok", true).put("docs", out);
+	}
+
+
+	// §ARCAPC (ERP_FRIENDLY_OPS_LENS.md §51): the REAL InvoiceCreateCreditMemo.credit() body (org.idempiere.process) + processIt(CO) + DocManager.postDocument for each source invoice,
+	//   all inside one rolled-back trx - the pilot holds no ARC/APC fixture, this makes one per shared ARI/API and returns its header, lines and Fact_Acct. Nothing is committed.
+	private static JSONObject creditmemo(Properties ctx, JSONObject req) throws Exception {
+		JSONArray out = new JSONArray(), ids = req.getJSONArray("ids");
+		for (int i = 0; i < ids.length(); i++) {
+			int id = ids.getInt(i);
+			String trxName = Trx.createTrxName("CreditMemoProbe");
+			Trx trx = Trx.get(trxName, true);
+			JSONObject o = new JSONObject().put("id", id);
+			try {
+				MInvoice inv = new MInvoice(ctx, id, trxName);
+				boolean so = inv.isSOTrx();
+				int dt = DB.getSQLValue(trxName, "SELECT MIN(C_DocType_ID) FROM C_DocType WHERE AD_Client_ID=? AND DocBaseType=? AND IsActive='Y'", inv.getAD_Client_ID(), so ? "ARC" : "APC");
+				Timestamp d = req.has("date") ? Timestamp.valueOf(req.getString("date") + " 00:00:00") : inv.getDateInvoiced();
+				MInvoice cm = MInvoice.copyFrom(inv, d, d, dt, so, false, trxName, true);
+				if (cm == null) throw new IllegalStateException("copyFrom null");
+				MInvoiceLine[] oLines = inv.getLines(false), rLines = cm.getLines(true);
+				for (int k = 0; k < rLines.length; k++) {
+					MInvoiceLine r = rLines[k], l = oLines[k];
+					r.setQtyEntered(l.getQtyEntered()); r.setQtyInvoiced(l.getQtyInvoiced()); r.setLineNetAmt(l.getLineNetAmt()); r.setTaxAmt(l.getTaxAmt()); r.setLineTotalAmt(l.getLineTotalAmt());
+					r.setPriceActual(l.getPriceActual()); r.setPriceList(l.getPriceList()); r.setPriceLimit(l.getPriceLimit()); r.setPriceEntered(l.getPriceEntered());
+					r.setC_UOM_ID(l.getC_UOM_ID()); r.setM_AttributeSetInstance_ID(l.getM_AttributeSetInstance_ID()); r.saveEx(trxName);
+				}
+				if (MInvoice.PAYMENTRULE_Cash.equals(cm.getPaymentRule())) cm.setPaymentRule(MInvoice.PAYMENTRULE_OnCredit);
+				cm.setC_Order_ID(inv.getC_Order_ID()); cm.setPOReference(inv.getDocumentNo()); cm.setRelatedInvoice_ID(inv.getC_Invoice_ID()); cm.saveEx(trxName);
+				boolean done = cm.processIt(DocAction.ACTION_Complete); cm.saveEx(trxName);
+				o.put("creditMemoId", cm.getC_Invoice_ID()).put("docType", dt).put("docStatus", cm.getDocStatus()).put("processMsg", cm.getProcessMsg() == null ? JSONObject.NULL : cm.getProcessMsg()).put("completed", done);
+				JSONObject h = new JSONObject();
+				for (String c : new String[] { "C_BPartner_ID", "C_BPartner_Location_ID", "C_Currency_ID", "C_PaymentTerm_ID", "PaymentRule", "M_PriceList_ID", "TotalLines", "GrandTotal", "IsSOTrx", "IsTaxIncluded", "ChargeAmt", "C_Charge_ID", "C_ConversionType_ID", "DateInvoiced", "DateAcct" })
+					h.put(c, toJson(cm.get_Value(c)));
+				o.put("header", h);
+				JSONArray ls = new JSONArray();
+				for (MInvoiceLine r : cm.getLines(true)) ls.put(new JSONObject().put("line", r.getLine()).put("product", r.getM_Product_ID()).put("charge", r.getC_Charge_ID()).put("qty", toJson(r.getQtyInvoiced())).put("net", toJson(r.getLineNetAmt())).put("tax", r.getC_Tax_ID()));
+				o.put("lines", ls);
+				JSONArray psa = new JSONArray();
+				try (PreparedStatement ps = DB.prepareStatement("SELECT DueAmt, DiscountAmt, DueDate, DiscountDate, IsValid FROM C_InvoicePaySchedule WHERE C_Invoice_ID=? ORDER BY DueDate, C_InvoicePaySchedule_ID", trxName)) {
+					ps.setInt(1, cm.getC_Invoice_ID());
+					try (ResultSet rs = ps.executeQuery()) { while (rs.next()) psa.put(new JSONObject().put("due", rs.getBigDecimal(1).toPlainString()).put("disc", rs.getBigDecimal(2).toPlainString()).put("dueDate", String.valueOf(rs.getTimestamp(3)).substring(0, 10)).put("discDate", String.valueOf(rs.getTimestamp(4)).substring(0, 10)).put("valid", rs.getString(5))); }
+				}
+				o.put("paySchedule", psa).put("payScheduleValid", String.valueOf(DB.getSQLValueString(trxName, "SELECT IsPayScheduleValid FROM C_Invoice WHERE C_Invoice_ID=?", cm.getC_Invoice_ID())));
+				if (done) {
+					org.compiere.model.MAcctSchema[] ass = org.compiere.model.MAcctSchema.getClientAcctSchema(ctx, cm.getAD_Client_ID());
+					String err;
+					try { err = org.compiere.acct.DocManager.postDocument(ass, MInvoice.Table_ID, cm.getC_Invoice_ID(), true, true, trxName); }
+					catch (Throwable e) { err = "EXC " + e.getClass().getSimpleName() + ": " + String.valueOf(e.getMessage()); }
+					o.put("error", err == null ? JSONObject.NULL : err);
+					o.put("posted", String.valueOf(DB.getSQLValueString(trxName, "SELECT Posted FROM C_Invoice WHERE C_Invoice_ID=?", cm.getC_Invoice_ID())));
+					JSONArray fa = new JSONArray();
+					try (PreparedStatement ps = DB.prepareStatement("SELECT C_AcctSchema_ID, Account_ID, AmtSourceDr, AmtSourceCr, AmtAcctDr, AmtAcctCr, Qty, M_Product_ID, Line_ID FROM Fact_Acct WHERE AD_Table_ID=? AND Record_ID=?", trxName)) {
+						ps.setInt(1, MInvoice.Table_ID); ps.setInt(2, cm.getC_Invoice_ID());
+						try (ResultSet rs = ps.executeQuery()) { while (rs.next()) fa.put(new JSONObject().put("s", rs.getInt(1)).put("a", rs.getInt(2)).put("sdr", rs.getBigDecimal(3).toPlainString()).put("scr", rs.getBigDecimal(4).toPlainString()).put("dr", rs.getBigDecimal(5).toPlainString()).put("cr", rs.getBigDecimal(6).toPlainString()).put("qty", rs.getBigDecimal(7) == null ? "0" : rs.getBigDecimal(7).toPlainString()).put("p", rs.getInt(8)).put("l", rs.getInt(9))); }
+					}
+					o.put("factRows", fa);
+				}
+			} catch (Throwable e) {
+				o.put("exception", e.getClass().getSimpleName() + ": " + String.valueOf(e.getMessage()));
 			} finally {
 				trx.rollback();
 				trx.close();

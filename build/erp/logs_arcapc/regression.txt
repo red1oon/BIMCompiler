@@ -1,0 +1,6 @@
+witness_post_invoice_diff exit=3 §WPI-SUMMARY INCONCLUSIVE pass=2 fail=0 inconclusive=2
+witness_post_matchinv_diff exit=3 §WPI-SUMMARY INCONCLUSIVE pass=1 fail=0 inconclusive=3
+witness_model_void_reversal exit=0 §W-VOID-SUMMARY cases=9 pass=9 fail=0 inconclusive=0 verdict=PASS
+witness_ws_diff_docaction exit=0 §WSA_VERDICT GREEN judged=25 failed=0 successfulDocActionsCompared=5 journalEntries=17
+witness_post_error exit=0 §WPE-SUMMARY PASS 8/8
+witness_friendly_rows exit=0 §FOA2_VERDICT GREEN judged=10 failed=0
