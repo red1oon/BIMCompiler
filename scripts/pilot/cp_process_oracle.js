@@ -163,9 +163,10 @@ function project(rows, tbl, newIds, keyCol) {
       const itid = (E.query('SELECT ad_table_id AS t FROM ad_infowindow WHERE ad_infowindow_id=?', [c.infoWindow])[0] || {}).t;
       E.query('DELETE FROM t_selection WHERE ad_pinstance_id=?', [PIN]); E.query('DELETE FROM t_selection_infowindow WHERE ad_pinstance_id=?', [PIN]);
       (c.selection || []).forEach((row, i) => {
-        E.query('INSERT INTO t_selection (ad_pinstance_id, t_selection_id, viewid) VALUES (?,?,?)', [PIN, i + 1, String(row.AD_Table_ID != null ? row.AD_Table_ID : itid)]);
-        Object.keys(row).forEach(col => { const v = row[col]; if (v == null) return; const num = /_ID$/i.test(col) || /^qty$/i.test(col) || typeof v === 'number';
-          E.query('INSERT INTO t_selection_infowindow (ad_pinstance_id, t_selection_id, columnname, value_string, value_number) VALUES (?,?,?,?,?)', [PIN, i + 1, col, num ? null : String(v), num ? Number(v) : null]); });
+        const tsId = row.T_Selection_ID != null ? Number(row.T_Selection_ID) : i + 1;   // the row key, as InfoPanel writes it (getSaveKeys); position only for legacy fixtures that name none
+        E.query('INSERT INTO t_selection (ad_pinstance_id, t_selection_id, viewid) VALUES (?,?,?)', [PIN, tsId, String(row.AD_Table_ID != null ? row.AD_Table_ID : itid)]);
+        Object.keys(row).forEach(col => { const v = row[col]; if (v == null || col === 'T_Selection_ID') return; const num = /_ID$/i.test(col) || /^qty$/i.test(col) || typeof v === 'number';
+          E.query('INSERT INTO t_selection_infowindow (ad_pinstance_id, t_selection_id, columnname, value_string, value_number) VALUES (?,?,?,?,?)', [PIN, tsId, col, num ? null : String(v), num ? Number(v) : null]); });
       });
     }
     if (E.P.JAVA[procRow.classname]) ours = E.P.runJava(E.query, env, { AD_PInstance_ID: c.infoWindow ? PIN : 0, AD_InfoWindow_ID: c.infoWindow || 0, AD_Process_ID: c.process, className: procRow.classname, title: procRow.name, Record_ID: c.recordId || 0, Table_ID: c.tableId || 0, params });

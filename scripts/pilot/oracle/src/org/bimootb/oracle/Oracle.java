@@ -606,12 +606,12 @@ public class Oracle implements Runnable {
 			int tid = DB.getSQLValue(null, "SELECT AD_Table_ID FROM AD_InfoWindow WHERE AD_InfoWindow_ID=?", iwId);
 			for (int i = 0; sel != null && i < sel.length(); i++) {
 				JSONObject row = sel.getJSONObject(i);
-				int tsId = (i + 1);
+				int tsId = row.has("T_Selection_ID") ? row.getInt("T_Selection_ID") : (i + 1);   // the row key (InfoPanel.getSaveKeys -> DB.createT_SelectionNewNP)
 				DB.executeUpdateEx("INSERT INTO T_Selection (AD_PInstance_ID, T_Selection_ID, ViewID) VALUES (?,?,?)", new Object[] { inst.getAD_PInstance_ID(), tsId, String.valueOf(row.has("AD_Table_ID") ? row.getInt("AD_Table_ID") : tid) }, null);
 				java.util.Iterator<String> it = row.keys();
 				while (it.hasNext()) {
 					String col = it.next(); Object val = row.get(col);
-					if (val == JSONObject.NULL) continue;
+					if (val == JSONObject.NULL || "T_Selection_ID".equals(col)) continue;
 					boolean num = col.toUpperCase().endsWith("_ID") || col.equalsIgnoreCase("Qty") || val instanceof Number;
 					DB.executeUpdateEx("INSERT INTO T_Selection_InfoWindow (AD_PInstance_ID, T_Selection_ID, ColumnName, Value_String, Value_Number) VALUES (?,?,?,?,?)",
 						new Object[] { inst.getAD_PInstance_ID(), tsId, col, num ? null : val.toString(), num ? new BigDecimal(val.toString()) : null }, null);
