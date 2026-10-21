@@ -131,6 +131,18 @@ if os.environ.get('FILM_SET') == 'shed':
     SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
     NOVEL = {}
     CLIPS = {}
+# §DXF2BIM 2D wand film (bim-ootb prompts/FILM_DXF2BIM_WAND.md, 2026-10-21): FILM_SET=wand, FOUR chapters: one wing of the Hospital sample out of the 3D as 2D sheets.
+if os.environ.get('FILM_SET') == 'wand':
+    CARDS = {
+        1: ('CHAPTER 1', 'THE HOSPITAL', 'LOADED', 'The open sample, in the browser.'),
+        2: ('CHAPTER 2', 'THE BOX', 'ON ONE WING', 'A plane, its length, its depth. Nothing is cut.'),
+        3: ('CHAPTER 3', 'JUST', 'THE WING', 'The view at the plane, a plan, the section.'),
+        4: ('CHAPTER 4', 'LIMITS', 'STATED', 'What it does not do yet.'),
+    }
+    TAG = {1: 'THE HOSPITAL', 2: 'THE BOX', 3: 'JUST THE WING', 4: 'LIMITS'}
+    SERIES = 'BIM OOTB  ·  VIEWER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
 os.makedirs(out, exist_ok=True)
 txt = open(log).read()
 chap = {int(m.group(1)): float(m.group(2)) for m in re.finditer(r'§FILM_CHAPTER n=(\d+) key=\S+ t=([\d.]+)', txt)}
