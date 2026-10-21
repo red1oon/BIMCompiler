@@ -670,11 +670,11 @@ Sources = vendor documentation and community answers read on 2026-10-21, behavio
 
 ## 57. LIBERO TO ZERO (owner 2026-10-21: "LiberoMfg is incomplete, thus your insight are welcomed. Proceed to resolve all, before fit to get a good film.") - WORK LIST, top to bottom
 Owner invited the judgement calls, so each upstream defect below is FIXED as a DECLARED deviation (the "explode once" precedent: a `SOURCE` flag restores the verbatim behaviour, a break proves the witness sees it).
-1. Milestone self-close (§MILESTONE quirk): every milestone report is refused upstream because closeActivities starts AT the reporting activity. FIX: start at the previous node (the reporting activity completes on its own qty rule). Flag `SOURCE.milestoneSelfClose`.
-2. Q-M6-1 receipt posting doubles WIP credit across schemas. FIX: `SOURCE.detailsPerSchema = true` (B10e already proves the books close).
-3. MPPMRP static C_Order_ID leak: FIX = the SO ids reach ONLY the MO created from that SO line (createMOMakeTo), never unrelated rows. Flag `SOURCE.ferryStatic`.
-4. Make-to-Order / Make-to-Kit: `MPPMRP.createMOMakeTo` (+ `createMO`, product planning, plant) and `MFG_Validator.updateMPPOrder` (kit completed by the shipment). Labelled fixture (the seed has no O/K BOM).
-5. Witness the vendor-receipt -> subcontract-collector hook (coded in #2240).
-6. Distribution (DRP): DD_Order / DD_OrderLine and the M_Movement hook - check whether Libero ships the DD tables; port or name.
-7. Planned components before Save (FO-M1): legacy shows them after Save; recommendation = NOT built (no legacy equivalent; the Order Receipt & Issue form already shows them once saved). Recorded as a decision, not a gap.
-8. Then: film fitness pass (the recorders open the gear first, §45.1).
+1. ✅ DONE (#2241, W-LIBERO-ACTIVITY A6/A6b/A6c, break msquirk 4 red) Milestone self-close (§MILESTONE quirk): every milestone report is refused upstream because closeActivities starts AT the reporting activity. FIX: start at the previous node (the reporting activity completes on its own qty rule). Flag `SOURCE.milestoneSelfClose`.
+2. ✅ DONE (#2241, W-LIBERO-BACKFLUSH B10e default, break perschema red) Q-M6-1 receipt posting doubles WIP credit across schemas. FIX: `SOURCE.detailsPerSchema = true` (B10e already proves the books close).
+3. ✅ DONE (#2242, W-LIBERO-MTO M6/M7, break ferry red; MPPMRP.PP_Order/BOMLine now carry the SO ids as upstream) MPPMRP static C_Order_ID leak: FIX = the SO ids reach ONLY the MO created from that SO line (createMOMakeTo), never unrelated rows. Flag `SOURCE.ferryStatic`.
+4. ✅ DONE (#2242, libero_mto.mjs, W-LIBERO-MTO 12/12 incl. CRP schedule + kit by shipment; named: createWFActivity, unavailability, MO product-change void) Make-to-Order / Make-to-Kit: `MPPMRP.createMOMakeTo` (+ `createMO`, product planning, plant) and `MFG_Validator.updateMPPOrder` (kit completed by the shipment). Labelled fixture (the seed has no O/K BOM).
+5. ✅ DONE (#2241, A9c: a real vendor receipt fires the hook) Witness the vendor-receipt -> subcontract-collector hook (coded in #2240).
+6. ⏳ IN PROGRESS (a worker: feat/dd-distribution-orders, LIBERO_DD_SPEC.md) - DD tables exist in legacy + the twin dictionary but not physically; core MDDOrder/MDDOrderLine (1945 Java lines) + Libero hooks. Distribution (DRP): DD_Order / DD_OrderLine and the M_Movement hook - check whether Libero ships the DD tables; port or name.
+7. ✅ DECIDED (not built) Planned components before Save (FO-M1): legacy shows them after Save; recommendation = NOT built (no legacy equivalent; the Order Receipt & Issue form already shows them once saved). Recorded as a decision, not a gap.
+8. ✅ DONE (#2244: all 5 recorders DRY clean - intro 46/46, part2 17/17, part3 13/13, ad_dev 8/8, part4 28/28; 0 page errors) Then: film fitness pass (the recorders open the gear first, §45.1).
