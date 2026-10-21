@@ -1165,6 +1165,67 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="3 · Raw drawings: fill in what is missing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3a-what-yellow-means" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3a · What yellow means
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3b-the-sheet-facts-and-datums-what-you-state-and-how" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3b · The sheet facts and datums: what you state, and how
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3c-wall-tops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3c · Wall tops
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3d-blocking-items-what-they-mean-and-what-to-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3d · Blocking items: what they mean and what to do
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3e-how-long-the-plain-duplex-took" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3e · How long the plain Duplex took
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1194,6 +1255,17 @@
     <span class="md-ellipsis">
       
         6 · Export IFC
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#if-something-goes-wrong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        If something goes wrong
       
     </span>
   </a>
@@ -2755,6 +2827,67 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="3 · Raw drawings: fill in what is missing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3a-what-yellow-means" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3a · What yellow means
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3b-the-sheet-facts-and-datums-what-you-state-and-how" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3b · The sheet facts and datums: what you state, and how
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3c-wall-tops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3c · Wall tops
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3d-blocking-items-what-they-mean-and-what-to-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3d · Blocking items: what they mean and what to do
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3e-how-long-the-plain-duplex-took" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3e · How long the plain Duplex took
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -2784,6 +2917,17 @@
     <span class="md-ellipsis">
       
         6 · Export IFC
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#if-something-goes-wrong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        If something goes wrong
       
     </span>
   </a>
@@ -3016,6 +3160,196 @@ becomes metadata until you tick it.</strong></p>
 <p><img alt="Raw drawings: every sheet needs a role; suggestions wait for your tick; Convert is refused" src="../img/dxf2bim/editor_raw.jpg" /></p>
 <p>Click any verdict item to jump to it:</p>
 <p><img alt="Clicking a verdict item zooms the canvas to the offending entity" src="../img/dxf2bim/editor_verdict_zoom.jpg" /></p>
+<p>The rest of this step is written from a first-time walk through the real Modeller (2026-10-22) on the Duplex
+standard set with every marking removed (8 sheets, the plain drawings a CAD program would hand you). The walk
+reached <strong>Qualifies</strong>, and <strong>Convert</strong> built 135 elements with 36 openings cut, the same numbers as the editor's
+own end-to-end check. The counts below are the clicks and typed values of that walk.</p>
+<h4 id="3a-what-yellow-means">3a · What yellow means<a class="headerlink" href="#3a-what-yellow-means" title="Permanent link">&para;</a></h4>
+<p>A <strong>yellow row</strong> is a value the editor read from the drawing (or a default it applied) that is <strong>not yours yet</strong>.
+Each row names its source: <code>PR-UNITS: file says mm</code>, <code>PR-GRID: grid line 190 + label 1</code>, <code>PR-Z: level text B5 +
+level line B3</code>. Tick one row, or press <strong>Accept all</strong>; the value then shows <strong>you</strong>. Ignoring a yellow default
+is allowed (the default stays applied and is listed); ignoring a yellow <em>suggestion</em> leaves the field empty.</p>
+<p>The list grows as you answer. On the plain Duplex set it came in four rounds:</p>
+<table>
+<thead>
+<tr>
+<th>Round</th>
+<th>Appears after</th>
+<th>Rows</th>
+<th>What they are</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>opening the sheets</td>
+<td>10</td>
+<td>units of each sheet (8), the section's view and name (2)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>you choose each sheet's role</td>
+<td>49</td>
+<td>grid lines on the plans and elevations, level datums (<code>@Z</code>) from level texts, elevation faces, the section cut</td>
+</tr>
+<tr>
+<td>3</td>
+<td>you type the set name once</td>
+<td>7</td>
+<td>the same set name for the other sheets</td>
+</tr>
+<tr>
+<td>4</td>
+<td>you type the plan levels</td>
+<td>5</td>
+<td>the horizontal axis (<code>@HAXIS</code>) of each elevation and the section, fitted to the plan grid</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Accept all</strong> sits <strong>under</strong> the list. With 49 rows it is about 1,200 pixels below the visible part of the panel:
+scroll the panel to the end of the list to find it (a three-storey office set gave 135 rows in round 2 and the
+button 4,500 pixels down).</p>
+<p><strong>Check the section cut before you accept.</strong> On both standard sets walked (Duplex and a three-storey office), the
+suggested <code>@CUT</code> was wrong: it paired two grid bubbles that carry the same letter as the section (<code>A</code>), so it
+proposed <code>Y,-17591.5</code> while the section's own title says <code>SECTION A-A AT X=2304.25</code>. Type the cut from the title
+(<code>X,2304.25</code>) after you accept. Every other suggestion of the walk matched the values the model itself writes.</p>
+<p><img alt="Round 2 of the yellow list: one row per grid line, datum and face, each with its source" src="../img/dxf2bim/walk_yellow_list.jpg" /></p>
+<h4 id="3b-the-sheet-facts-and-datums-what-you-state-and-how">3b · The sheet facts and datums: what you state, and how<a class="headerlink" href="#3b-the-sheet-facts-and-datums-what-you-state-and-how" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Marking</th>
+<th>What it is</th>
+<th>Where it comes from in the walk</th>
+<th>How you give it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Role (<code>@VIEW</code>)</td>
+<td>plan, elevation, roof plan or section</td>
+<td>suggested only when the title <strong>ends</strong> in PLAN / ELEVATION / SECTION; titles with a scale after them (<code>FRONT ELEVATION  1:100</code>) are not read</td>
+<td>pick from the list on each sheet card (7 of 8 sheets)</td>
+</tr>
+<tr>
+<td><code>@SET</code></td>
+<td>the name of the set</td>
+<td>nothing in the drawing</td>
+<td>type once; the other sheets get it as yellow</td>
+</tr>
+<tr>
+<td><code>@UNITS</code></td>
+<td>drawing units</td>
+<td>the file header (<code>$INSUNITS</code>), shown as yellow</td>
+<td>accept</td>
+</tr>
+<tr>
+<td><code>@LEVEL</code></td>
+<td>a plan's storey level, metres</td>
+<td>the plan title states it (<code>LEVEL 2 PLAN (FFL +3.100)</code>) but it is not read</td>
+<td>type on each plan and on the roof plan (3 values)</td>
+</tr>
+<tr>
+<td><code>@ROOF</code></td>
+<td>the roof top, metres</td>
+<td>the section and every elevation draw it as the top level datum (<code>@Z=6.457</code>)</td>
+<td>type on the roof plan, each elevation and the section (6 times, the same number)</td>
+</tr>
+<tr>
+<td><code>@Z</code></td>
+<td>a level datum on an elevation or section: a height in metres at a drawing y</td>
+<td>level texts paired with their level lines; else the heavy ground line as z 0</td>
+<td>accept; a second datum is typed as <strong>z</strong> plus <strong>drawing y</strong> (see the shed)</td>
+</tr>
+<tr>
+<td><code>@GRIDX</code> / <code>@GRIDY</code> / <code>@GRIDH</code></td>
+<td>which grid label sits on which line</td>
+<td>grid lines with their labels, or dimension ticks</td>
+<td>accept</td>
+</tr>
+<tr>
+<td><code>@FACE</code></td>
+<td>which side of the building an elevation shows</td>
+<td>the sheet name or title (FRONT, LEFT, SOUTH...)</td>
+<td>accept</td>
+</tr>
+<tr>
+<td><code>@HAXIS</code></td>
+<td>which plan axis runs left to right on an elevation</td>
+<td>fitted to the plan grid after the plan levels exist</td>
+<td>accept (round 4)</td>
+</tr>
+<tr>
+<td><code>@CUT</code></td>
+<td>where the section cuts the plan</td>
+<td>see the warning above</td>
+<td>type from the section title</td>
+</tr>
+</tbody>
+</table>
+<p>On the Duplex this was 7 role picks and 11 typed values (set name 1, levels 3, roof top 6, cut 1). Nothing else
+had to be typed for the sheets.</p>
+<h4 id="3c-wall-tops">3c · Wall tops<a class="headerlink" href="#3c-wall-tops" title="Permanent link">&para;</a></h4>
+<p>After the sheets are complete, <strong>Wall tops</strong> lists the interior walls no elevation shows (17 on the ground floor,
+27 on the first floor of the Duplex). Tick <strong>Interior walls run to the slab above</strong> once per plan; the list
+empties. A wall that stops lower than the slab can still be given its own top in the field beside it.</p>
+<p><img alt="Wall tops: one tick per plan clears the interior walls the elevations cannot show" src="../img/dxf2bim/walk_wall_tops.jpg" /></p>
+<h4 id="3d-blocking-items-what-they-mean-and-what-to-do">3d · Blocking items: what they mean and what to do<a class="headerlink" href="#3d-blocking-items-what-they-mean-and-what-to-do" title="Permanent link">&para;</a></h4>
+<p>A <strong>blocking</strong> item stops Convert. An <strong>advisory</strong> item does not. The verdict lists them; click one to zoom to it.
+What blocked the plain Duplex after the sheets were complete, and how each was cleared:</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Meaning</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>QF:elev_roof_unstated</code>, <code>QF:elev_height_dim_missing</code></td>
+<td>an elevation has no roof top</td>
+<td>type <code>@ROOF</code> on that elevation</td>
+</tr>
+<tr>
+<td><code>GAP:no_elevation_height</code> on <code>A-WALL-PRTN</code></td>
+<td>interior walls with no height</td>
+<td>Wall tops (3c)</td>
+</tr>
+<tr>
+<td><code>GAP:no_elevation_height</code> + <code>GAP:no_host_cut</code> on <code>A-DOOR</code></td>
+<td>a door with no schedule mark: its height is unknown and its opening is not cut</td>
+<td>Doors (below)</td>
+</tr>
+<tr>
+<td><code>GAP:fill_unbound</code></td>
+<td>a window with no product: the plan cannot tell three windows stacked at one position apart</td>
+<td>Tags, picked on an elevation (below)</td>
+</tr>
+<tr>
+<td><code>QF:layer_unmapped</code></td>
+<td>a layer the set does not read</td>
+<td>Layers: choose what it holds, or <em>ignore</em></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Doors.</strong> The plain drawings carry the door widths (the drawn leaf) but <strong>no door heights</strong>: you bring them from the
+door schedule. In <strong>Doors</strong>, add one schedule row per door type (mark, width, height in mm, then <strong>+</strong>). Then
+<strong>Tag doors</strong>, click a door in the list (the canvas zooms to it), click the door's <strong>arc</strong> on the canvas, pick the
+mark, <strong>Tag</strong>. Click the arc itself: a click beside it, or on the leaf line, answers <em>No door here</em>. The Duplex has
+14 doors of 4 widths: 4 schedule rows and 14 tags, about 4 clicks per door.</p>
+<p><img alt="Doors: the schedule row, the picked door (17D, leaf 1250 mm) and its Tag card" src="../img/dxf2bim/walk_door_tag.jpg" /></p>
+<p><strong>Stacked windows.</strong> In <strong>Tags</strong>, turn on the Tag tool, turn the view to face an elevation, click a window's glazing
+there (the plan position and height come from the elevation), choose the product, <strong>Add</strong>. The product list holds
+every window family of the library (37 on the walk) by name, without sizes: choose the one whose name matches the
+drawn width (on the Duplex, the 819 mm family). A wrong family is reported as <code>GAP:type_size_mismatch</code> and the tag
+can be removed with its bin icon.</p>
+<p>When the last blocking item is cleared the badge reads <strong>Qualifies</strong> and Convert is enabled.</p>
+<h4 id="3e-how-long-the-plain-duplex-took">3e · How long the plain Duplex took<a class="headerlink" href="#3e-how-long-the-plain-duplex-took" title="Permanent link">&para;</a></h4>
+<p>Clicks and typed values of the walk, from opening to Qualifies: 3 to open, 4 <em>Accept all</em>, 7 role picks, 11 typed
+sheet values, 2 wall-top ticks, then 83 actions for the 14 doors (16 for the schedule rows) and 41 for the 12 stacked
+windows. The doors and windows are about four fifths of the work. The machine time between steps was under 2 s
+each (a verdict re-run takes 0.2 to 0.8 s on this set).</p>
 <h3 id="4-save-the-marked-copies">4 · Save the marked copies<a class="headerlink" href="#4-save-the-marked-copies" title="Permanent link">&para;</a></h3>
 <p><strong>Save marked copies</strong> downloads <code>&lt;name&gt;_marked.dxf</code> for every sheet, with your metadata written in. The
 originals are never modified. Next time you open the marked copies, everything is already filled.</p>
@@ -3029,6 +3363,43 @@ step</strong>.</p>
 element contained in its storey. On the Duplex standard set: 96 wall pieces, 2 slabs, 1 roof, 14 doors,
 22 windows, 2 storeys.</p>
 <hr />
+<h3 id="if-something-goes-wrong">If something goes wrong<a class="headerlink" href="#if-something-goes-wrong" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>What you see</th>
+<th>Why</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Convert</strong> gives an empty canvas, the badge still says <em>Qualifies</em></td>
+<td>a model from an earlier conversion is still in this browser's history and the new one could not be committed (the console says <code>§DXF-CONVERT failed GEOM_CUT parent … not found</code>; the panel says nothing yet)</td>
+<td><strong>Clear</strong> (the bin icon at the top of the dock), then <strong>Convert</strong> again</td>
+</tr>
+<tr>
+<td><em>No door here: click a door's arc or leaf</em></td>
+<td>the click was beside the door's swing box</td>
+<td>click on the arc itself</td>
+</tr>
+<tr>
+<td>a suggested <code>@CUT</code> that disagrees with the section's title</td>
+<td>grid bubbles with the section's letter were read as the section line</td>
+<td>type the cut from the title</td>
+</tr>
+<tr>
+<td><em>PR-VIEW not proposed: no title text ending PLAN / ELEVATION / SECTION</em></td>
+<td>the title has more text after the view word (a scale such as <code>1:100</code>)</td>
+<td>choose the role from the list</td>
+</tr>
+<tr>
+<td><strong>Save marked copies</strong> asks to allow several downloads</td>
+<td>one file per sheet is downloaded</td>
+<td>allow it; the copies keep every value you stated</td>
+</tr>
+</tbody>
+</table>
 <h2 id="the-metadata-for-cad-users">The metadata, for CAD users<a class="headerlink" href="#the-metadata-for-cad-users" title="Permanent link">&para;</a></h2>
 <p>Metadata is plain text on the layer <strong><code>DXF2BIM-MARK</code></strong>, one marking per text entity, <code>@KEY=value</code>. You can type
 it in any CAD program, or let the editor write it.</p>
@@ -3120,11 +3491,23 @@ building is made of <strong>bodies</strong> read from layers you type, not of wa
    heavy ground line.</li>
 <li><strong>State the few facts only a person can</strong> (set name, plan level, the datum height, e.g. a plinth line 2 ft above
    ground read from the column detail). They are written into the sheets themselves, so the <strong>settings sheets
-   reopen together</strong> next time.</li>
+   reopen together</strong> next time. In the walk of 2026-10-22 on the nine raw sheets: the set name typed once, <code>@LEVEL=0</code>
+   typed on the three plans (floor, beam layout, foundation layout), and on each of the four elevations and the
+   section a second level datum: <strong>z</strong> <code>0.6096</code> and the <strong>drawing y</strong> of the plinth line (a CAD coordinate such as
+   <code>-4446.6</code>, read in the CAD program; the editor has no pick for it yet). That is 10 typed values for the datums.
+   Each typed y lay 24.0 in (within 0.02 in) above the ground line the editor had already accepted as z 0, so the
+   value you type is the plinth height; the y only places it.</li>
 <li><strong>Type the layers that mean something:</strong> column, footing, beam, wall-panel hatch, fan, net, door swing, truss
-   bar, door frame. Nothing else is chosen for you.</li>
+   bar, door frame. Nothing else is chosen for you. In <strong>Layers</strong> this is 10 choices; two of them hold only on one
+   sheet (the <code>Dim</code> layer is a beam on the beam layout only, layer <code>0</code> is a column on the South elevation only): use
+   the split button of that row to choose sheet by sheet. The door frame on the elevations is listed as <strong>door</strong>.
+   Once the first body layer is chosen the set is read as a structure set and the dimension-text items of the
+   standard check (18 on this set) no longer block.</li>
 <li><strong>Give heights nothing draws</strong> (footing depth, beam range) under <em>Body heights</em>, and leave out the areas that
-   would build false bodies (an expansion-joint strip).</li>
+   would build false bodies (an expansion-joint strip). The heights are typed in <strong>metres</strong> even when the sheets are
+   in inches (<code>-1.4478</code> for -57 in). Nothing flags the expansion joint: without the exclude box the walk built 516
+   bodies, the four extra being beams along the joint; with it, 512. Use <em>Exclude areas</em>, pick the beam layout and
+   drag a box over the joint.</li>
 <li><strong>Complete the building</strong> (optional): adds the floor slab and gabled roof the drawings imply, in amber, with
    their thickness listed as yellow defaults.</li>
 <li><strong>Convert.</strong> The whole shed lands on the canvas: 512 bodies (96 column parts: 32 columns, each with a below-grade

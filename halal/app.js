@@ -28,7 +28,7 @@ function qrSvg(url) { const q = qrcode(0, 'M'); q.addData(url); q.make(); return
 
 function topbar() {
   const m = [['landing', 'home', 'Home'], ['shopper', 'scan', 'Shopper'], ['worker', 'box', 'Dock'], ['console', 'users', 'Console']];
-  return `<div class="top"><div class="brand" data-mode="landing" style="cursor:pointer">${ic('shield')}<span>Halalan Thayiban</span></div><div class="modes">${m.map(([k, i, l]) => `<button data-mode="${k}" class="${St.mode === k ? 'on' : ''}">${ic(i)}<small>${l}</small></button>`).join('')}</div><div class="sp"></div><label class="lg">${ic('globe')}<select id="lang">${['en', 'th', 'ms', 'ar', 'zh'].map(l => `<option value="${l}" ${I18N.lang === l ? 'selected' : ''}>${I18N.NAMES[l][0]}</option>`).join('')}</select></label></div>`;
+  return `<div class="top"><div class="brand" data-mode="landing" style="cursor:pointer">${ic('shield')}<span>Halalan Thayiban</span></div><div class="modes">${m.map(([k, i, l]) => `<button data-mode="${k}" class="${St.mode === k ? 'on' : ''}">${ic(i)}<small>${l}</small></button>`).join('')}</div><div class="sp"></div><a class="lg man" href="manuals/" target="_blank" rel="noopener" title="${({ en: 'Manual', th: 'คู่มือ', ms: 'Panduan', ar: 'دليل', zh: '手册' })[I18N.lang]}">${ic('book')}</a><label class="lg">${ic('globe')}<select id="lang">${['en', 'th', 'ms', 'ar', 'zh'].map(l => `<option value="${l}" ${I18N.lang === l ? 'selected' : ''}>${I18N.NAMES[l][0]}</option>`).join('')}</select></label></div>`;
 }
 /* ---------- shopper phone ---------- */
 function shopperScreen() {

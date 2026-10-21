@@ -178,3 +178,5 @@ html[dir=rtl] .hash,html[dir=rtl] pre.js,html[dir=rtl] .pack,html[dir=rtl] .cart
 html[dir=rtl] .nav{border-left:1px solid var(--ln);border-right:0}
 @media(max-width:900px){.cons{grid-template-columns:1fr;grid-template-rows:auto 1fr}.nav{flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--ln)}.nav button{min-width:62px}}
 @media(max-width:520px){.brand span{display:none}.modes{margin-left:2px}.modes button{padding:5px 8px}}
+
+.lg.man{text-decoration:none;margin-right:6px;padding:4px 8px}
