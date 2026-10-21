@@ -59,7 +59,7 @@ structure, MEP, the 4D schedule, the 5D cost and the ERP auto-complete by *crawl
 
 ---
 
-> **New: 2D drawings → BIM.** Open a set of `.dxf` plans, elevations, roof and section and convert them into a model — see [2D Drawings → BIM (DXF2BIM)](DXF2BIMGuide.md).
+> **New: 2D drawings → BIM.** Open a set of `.dxf` plans, elevations, roof and section and convert them into a model — see [2D Drawings → BIM (DXF2BIM)](DXF2BIMGuide.md); for what a plain drawing set asks of you (the yellow rows, the datums, doors and windows) and how long it took, see [Raw drawings: fill in what is missing](DXF2BIMGuide.md#3-raw-drawings-fill-in-what-is-missing).
 
 ## The workspace
 
