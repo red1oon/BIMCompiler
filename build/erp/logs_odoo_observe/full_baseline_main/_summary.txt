@@ -1,0 +1,20 @@
+witness_changelog_rule exit=1
+witness_core_untouched exit=0
+witness_dashboard_dict exit=1
+witness_dashboard_docstatus exit=1
+witness_dashboard_performance exit=1
+witness_dashboard_select exit=1
+witness_dict_census exit=1
+witness_fn_parity exit=1
+witness_goal_engine exit=1
+witness_gridtab_live exit=124
+witness_libero_orderend exit=1
+witness_nc5bcd_gainloss exit=1
+witness_quicksetup exit=1
+witness_setup_lens exit=1
+witness_udp1_pinstance exit=3
+witness_udp2_engine exit=1
+witness_udp3_find_engine exit=1
+witness_view_window_first exit=1
+witness_window_lens exit=1
+DONE
