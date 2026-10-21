@@ -543,10 +543,11 @@ const I18N = (() => {
     ["Pallets", "พาเลท", "Pallet", "الطبليات"],
     ["Pallet", "พาเลท", "Pallet", "الطبلية"]
   ];
-  const LANGS = { th: 1, ms: 2, ar: 3 };
-  const NAMES = { en: ['EN', 'English'], th: ['ไทย', 'Thai'], ms: ['BM', 'Malay'], ar: ['عربي', 'Arabic'] };
+  const ZHM = (typeof I18N_ZH !== 'undefined') ? I18N_ZH : (typeof require !== 'undefined' ? require('./i18n_zh.js') : {});
+  const LANGS = { th: 1, ms: 2, ar: 3, zh: 4 };
+  const NAMES = { en: ['EN', 'English'], th: ['ไทย', 'Thai'], ms: ['BM', 'Malay'], ar: ['عربي', 'Arabic'], zh: ['中文', 'Mandarin'] };
   const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const build = k => { const m = new Map(); D.forEach(r => { if (!m.has(r[0])) m.set(r[0], r[k]); }); const keys = [...m.keys()].sort((a, b) => b.length - a.length); const re = new RegExp(keys.map(s => (/^\w/.test(s) ? '\\b' : '') + esc(s) + (/\w$/.test(s) ? '\\b' : '')).join('|'), 'g'); return { m, re }; };
+  const build = k => { const m = new Map(); D.forEach(r => { if (!m.has(r[0])) m.set(r[0], k === 4 ? (ZHM[r[0]] || r[0]) : r[k]); }); const keys = [...m.keys()].sort((a, b) => b.length - a.length); const re = new RegExp(keys.map(s => (/^\w/.test(s) ? '\\b' : '') + esc(s) + (/\w$/.test(s) ? '\\b' : '')).join('|'), 'g'); return { m, re }; };
   const T = {}; Object.keys(LANGS).forEach(l => T[l] = build(LANGS[l]));
   let lang = 'en';
   const tr = s => { if (lang === 'en' || !s) return s; const t = T[lang]; return s.replace(t.re, x => t.m.get(x) || x); };

@@ -1,6 +1,6 @@
 :root{--g:#0e6b4f;--gd:#0a4a37;--gl:#e3f2ec;--bg:#f3f6f4;--card:#fff;--tx:#1d2a26;--mu:#6b7a74;--ln:#dde5e1;--ok:#1b7f4b;--warn:#b26a00;--bad:#b3261e;--hold:#b26a00;--conv:#5a6a73;--font:15px}
 *{box-sizing:border-box}html,body{margin:0;height:100%}
-body{font-family:'Noto Sans','Noto Sans Thai','Noto Sans Arabic','Tahoma','DejaVu Sans',system-ui,sans-serif;font-size:var(--font);background:var(--bg);color:var(--tx);line-height:1.4}
+body{font-family:'Noto Sans','Noto Sans Thai','Noto Sans Arabic','Noto Sans CJK SC','PingFang SC','Microsoft YaHei','Tahoma','DejaVu Sans',system-ui,sans-serif;font-size:var(--font);background:var(--bg);color:var(--tx);line-height:1.4}
 button{font:inherit;cursor:pointer;border:0}
 .top{height:54px;background:var(--gd);color:#fff;display:flex;align-items:center;gap:18px;padding:0 20px}
 .brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:1.15em;letter-spacing:.02em}
