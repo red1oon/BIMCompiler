@@ -13,8 +13,26 @@ const { chromium } = require(require('os').homedir() + '/bim-ootb/tests/node_mod
 const http = require('http'), fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
 const HOME = require('os').homedir(), DRY = !!process.env.DRY;
 const FL = process.env.FILM_LANG || 'en';   // FILM_LANG=zh: Mandarin UI (zh_CN pack, labelled machine fill for the rest) + Mandarin cards; the narration carries the language
-const T = (e, z) => (FL === 'zh' ? z : e);
-const LANGQ = FL === 'zh' ? 'zh_CN' : 'en_US';
+// Thai (standing rule, ERP_DEPTH_FILM.md): Thai narration + Thai subtitles; the UI is Thai through login and the FIRST panel, then English (legacy users know the English wording).
+const TH_MAP = {
+  'Purchasing and Stock Replenishment': 'การจัดซื้อและการเติมสต็อก', 'Buying, step by step': 'ซื้อของ ทีละขั้นตอน', 'The shortcut': 'ทางลัด', 'Moving stock between shops': 'ย้ายสต็อกระหว่างสาขา', 'Topping up': 'เติมสต็อก',
+  '["Order it","Receive it","Pay for it"]': ['สั่งซื้อ', 'รับของ', 'จ่ายเงิน'], '["The same steps, from one menu","Optional - installed a minute ago"]': ['ขั้นตอนเดิม แต่จากเมนูเดียว', 'เป็นส่วนเสริม เพิ่งติดตั้งเมื่อครู่'],
+  '["An Inventory Move takes goods from one warehouse to another","On the road they are \\"in transit\\" until the shop confirms"]': ['การย้ายสินค้า คือการนำของจากคลังหนึ่งไปอีกคลังหนึ่ง', 'ระหว่างทางเรียกว่า “อยู่ระหว่างขนส่ง” จนกว่าสาขาจะยืนยัน'],
+  '["Every product has a lowest and a highest stock level","The Replenish Report compares them with what is on the shelf"]': ['สินค้าทุกชนิดมีระดับสต็อกต่ำสุดและสูงสุด', 'รายงานเติมสต็อกเทียบระดับเหล่านี้กับของที่อยู่บนชั้น'],
+  'Counted in this film': 'นับกันในหนังเรื่องนี้', 'A step is a click, a pick from a list or a typed field. Both ways end with the goods received.': 'หนึ่งขั้นตอน คือหนึ่งคลิก หนึ่งการเลือกจากรายการ หรือหนึ่งช่องที่พิมพ์ ทั้งสองวิธีจบที่ได้รับของเหมือนกัน',
+  '["The standard way","The shortcut"]': ['วิธีมาตรฐาน', 'ทางลัด'], 'Steps to receive the goods': 'ขั้นตอนในการรับของ', 'from opening the window to lines on the receipt': 'ตั้งแต่เปิดหน้าต่างจนมีรายการในใบรับของ', 'gear, Receive, OK on the result': 'เฟือง, Receive, กดตกลง',
+  'What runs underneath': 'สิ่งที่ทำงานอยู่ข้างใต้', 'the same process, one button': 'กระบวนการเดียวกัน แต่ปุ่มเดียว',
+  'Where the ten went': 'ต้นไม้สิบต้นหายไปไหน', 'Elm Tree, ten sent from HQ Warehouse to Store Central. Eight arrived and one of those was scrapped. Two never arrived. Read from the stock tables.': 'Elm Tree ส่งจาก HQ Warehouse ไป Store Central สิบต้น ถึงแปดต้น และหนึ่งในนั้นถูกทิ้ง อีกสองต้นไม่ถึง ตัวเลขอ่านจากตารางสต็อก',
+  '["Before","After"]': ['ก่อน', 'หลัง'], 'HQ Warehouse (sent from)': 'HQ Warehouse (ต้นทาง)', 'Store Central (sent to)': 'Store Central (ปลายทาง)', 'Loss recorded at HQ Warehouse': 'ความสูญหายที่บันทึกที่ HQ Warehouse', 'Scrapped at Store Central': 'ทิ้งที่ Store Central', 'Counted': 'ตรวจนับ',
+  'every unit accounted for, books balance': 'ทุกต้นมีที่มา และบัญชีสมดุล',
+  'The rules it checks': 'กฎที่รายงานตรวจ', 'Head office warehouse. Each product has a lowest and a highest level, read from the stock tables.': 'HQ Warehouse สินค้าแต่ละชนิดมีระดับต่ำสุดและสูงสุด อ่านจากตารางสต็อก',
+  '["On the shelf","Lowest","Highest","Below the lowest?"]': ['บนชั้น', 'ต่ำสุด', 'สูงสุด', 'ต่ำกว่าระดับต่ำสุด?'], 'yes': 'ใช่', 'no': 'ไม่',
+  'What was checked, and against what': 'ตรวจอะไรไปบ้าง และเทียบกับอะไร', 'Each line is a witness run against the real iDempiere, or a judged accounting rule. Numbers are read from the saved logs.': 'แต่ละบรรทัดคือการทดสอบเทียบกับ iDempiere ตัวจริง หรือกฎบัญชีที่ตัดสินแล้ว ตัวเลขอ่านจากไฟล์บันทึกที่เก็บไว้',
+  '["Result"]': ['ผลลัพธ์'], 'Receipt lines from an order (Create Lines From)': 'รายการรับของจากใบสั่งซื้อ (Create Lines From)', 'Purchase-order matches posted like iDempiere': 'การจับคู่ใบสั่งซื้อ ลงบัญชีเหมือน iDempiere', 'Inventory moves posted like iDempiere': 'การย้ายสินค้า ลงบัญชีเหมือน iDempiere',
+  'Move confirmation, in transit and back': 'ยืนยันการย้าย ทั้งระหว่างขนส่งและขากลับ', 'Physical inventory documents': 'เอกสารตรวจนับสต็อก', 'Replenish Report, row for row': 'รายงานเติมสต็อก ทีละแถว' };
+const TH_RULES = [[/^(\d+) in an inventory document$/, (m) => m[1] + ' ต้น บันทึกในเอกสารสินค้าคงคลัง'], [/^(\d+) posting rows this session$/, (m) => 'รอบนี้ลงบัญชีทั้งหมด ' + m[1] + ' รายการ'], [/^(\d+) postings, all balanced$/, (m) => 'ลงบัญชี ' + m[1] + ' รายการ สมดุลทั้งหมด']];
+const T = (e, z) => { if (FL === 'zh') return z; if (FL !== 'th') return e; const k = typeof e === 'string' ? e : JSON.stringify(e); if (k in TH_MAP) return TH_MAP[k]; for (const [rx, f] of TH_RULES) { const m = typeof e === 'string' && rx.exec(e); if (m) return f(m); } throw new Error('no Thai string for ' + k); };
+const LANGQ = FL === 'zh' ? 'zh_CN' : FL === 'th' ? 'th_TH' : 'en_US';
 const REPO = process.env.ERP_REPO || path.join(HOME, 'bim-ootb');
 const OUT = path.resolve(process.argv[2] || '.'); const FR = path.join(OUT, 'frames'); fs.mkdirSync(FR, { recursive: true });
 const FACTS_FILE = process.env.PARITY_FACTS || path.join(HOME, 'Videos', 'purchasing_work', 'facts.json');
@@ -95,6 +113,8 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
   const F = (c, t) => '#idmp-inline-mount ' + (t || 'input') + '[data-col="' + c + '"]';
   const NEWB = '#idmp-toolbar [data-tb="new"]', SAVEB = '#idmp-toolbar [data-tb="save"]', TOGGLE = '#idmp-toolbar [data-tb="toggle"]';
   const optBy = async (col, re) => { const o = (await page.$$eval('#idmp-inline-mount select[data-col="' + col + '"] option', os => os.map(x => ({ v: x.value, t: x.text })))).find(x => x.v && re.test(x.t)); if (!o) throw new Error('no option ' + col + ' ' + re); return o; };
+  let curLang = LANGQ;
+  async function setLang(code) { if (code === curLang) return; curLang = code; const n0 = PAGELOG.length; await hclick('#idmp-lang'); await page.selectOption('#idmp-lang', code); for (let i = 0; i < 60 && !lastLog(n0, new RegExp('§I18N lang=' + code)); i++) await page.waitForTimeout(50); fact('i18n.' + code, lastLog(n0, /§I18N lang=/) || 'NO §I18N LINE'); await hold(300); }
   const status = () => page.$eval('#idmp-status', e => e.innerText).catch(() => '');
   const gearItems = async () => { const on = await page.$eval('#idmp-toolbar [data-tb="process"]', e => !e.disabled).catch(() => false); if (!on) return []; await ipc('#idmp-toolbar [data-tb="process"]'); await page.waitForSelector('#idmp-proc-ov', { timeout: 8000 }).catch(() => {}); const v = await page.$$eval('#idmp-proc-ov [data-tbb]', e => e.map(x => x.getAttribute('data-tbb') + '=' + x.textContent)); await page.keyboard.press('Escape'); await ipc('#idmp-proc-ov').catch(() => {}); await page.evaluate(() => { const o = document.getElementById('idmp-proc-ov'); if (o) o.remove(); }); return v; };
 
@@ -129,7 +149,7 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     await page.evaluate(({ kicker, title, lines }) => {
       const old = document.getElementById('__ledger'); if (old) old.remove();
       const d = document.createElement('div'); d.id = '__ledger';
-      d.style.cssText = 'position:fixed;inset:0;z-index:2147483000;background:#000;color:#ebeef2;font-family:Noto Sans CJK SC,Noto Sans,DejaVu Sans,Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;padding:0 140px 180px';
+      d.style.cssText = 'position:fixed;inset:0;z-index:2147483000;background:#000;color:#ebeef2;font-family:Noto Sans CJK SC,Noto Sans Thai,Noto Sans,DejaVu Sans,Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;padding:0 140px 180px';
       d.innerHTML = '<div style="font-size:30px;font-weight:700;letter-spacing:.12em;color:#ff8c1a;text-transform:uppercase">' + kicker + '</div><div style="font-size:92px;font-weight:700;margin:18px 0 34px;color:#4fc3f7">' + title + '</div>' +
         lines.map(l => '<div style="font-size:38px;color:#c9d4e0;margin:10px 0;padding-left:26px;border-left:6px solid #ff8c1a">' + l + '</div>').join('');
       document.body.appendChild(d);
@@ -141,7 +161,7 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     await page.evaluate(({ title, sub, heads, rows, kick, compact }) => {
       const old = document.getElementById('__ledger'); if (old) old.remove();
       const d = document.createElement('div'); d.id = '__ledger';
-      d.style.cssText = 'position:fixed;inset:0;z-index:2147483000;background:#10151c;color:#e8edf3;font-family:Noto Sans CJK SC,Noto Sans,DejaVu Sans,Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;padding:0 90px 190px';
+      d.style.cssText = 'position:fixed;inset:0;z-index:2147483000;background:#10151c;color:#e8edf3;font-family:Noto Sans CJK SC,Noto Sans Thai,Noto Sans,DejaVu Sans,Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;padding:0 90px 190px';
       const tone = { L: '#7fd1ff', B: '#ff9b8a', G: '#7ee0a0', A: '#ffd479', N: '#c9d4e0' };
       const cell = (c) => '<td style="padding:' + (compact ? 4 : 9) + 'px 20px;text-align:center;font-size:' + (c.sm ? (compact ? 24 : 30) : (compact ? 30 : 40)) + 'px;font-weight:700;color:' + (tone[c.t] || tone.N) + '">' + c.v + (c.s ? '<div style="font-size:16px;font-weight:400;color:#8fa0b3;margin-top:4px">' + c.s + '</div>' : '') + '</td>';
       d.innerHTML = '<div style="font-size:21px;letter-spacing:.14em;color:#8fa0b3;text-transform:uppercase">' + kick + '</div><div style="font-size:' + (compact ? 40 : 48) + 'px;font-weight:700;margin:6px 0 4px">' + title + '</div><div style="font-size:' + (compact ? 19 : 22) + 'px;color:#b8c4d2;margin-bottom:' + (compact ? 12 : 26) + 'px">' + sub + '</div>' +
@@ -164,6 +184,7 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     const c = vis ? hclick : ipc, sel = async (col, re) => { const o = await optBy(col, re); if (vis) await hselect(F(col, 'select'), o.v); else { await page.selectOption(F(col, 'select'), o.v); await hold(500); } };
     const ty = async (s, t) => { if (vis) await htype(s, t); else { await page.fill(s, t); await page.locator(s).first().blur().catch(() => {}); await hold(350); } };
     if (vis) await openWinById(181); else await openPlain(181);
+    if (hooks && hooks.opened) await hooks.opened();
     await c(NEWB); await page.waitForSelector('#idmp-inline-mount .cfrow', { timeout: 10000 }); await hold(800);
     await sel('c_doctypetarget_id', /^Purchase Order/); await sel('c_bpartner_id', /Seed Farm/); await sel('ad_org_id', /^HQ/); await hold(500);
     await c(SAVEB); await hold(1800);
@@ -203,7 +224,7 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     // ═══ A2 log in; a purchase order, typed on the screen ═══
     await beat('a2', 'login + purchase order A'); await login('GardenWorld', 'GardenAdmin', true);
     const mulch0 = await onhand(SRC); fact('mulch.onhandBefore', mulch0);
-    const A = await makePO(true, 5, { lines: async () => { await beat('a2b', 'purchase order A: line and Complete'); } });
+    const A = await makePO(true, 5, { opened: async () => { if (FL === 'th') await setLang('en_US'); }, lines: async () => { await beat('a2b', 'purchase order A: line and Complete'); } });
     fact('poA', JSON.stringify(A.po) + ' ok=' + A.ok); fact('poA.log', A.log);
     fact('poA.gear', JSON.stringify(await gearItems()));
 
@@ -354,11 +375,11 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     // ═══ D0 the parity card, numbers read from persisted witness logs ═══
     await beat('d0', 'card: what was checked');
     const PF = readFacts(), ok = (k) => PF[k] && PF[k][0] === PF[k][1];
-    const nn = (k) => PF[k] ? (FL === 'zh' ? PF[k][0] + ' / ' + PF[k][1] + ' 一致' : PF[k][0] + ' of ' + PF[k][1]) : 'NOT VERIFIED';
+    const nn = (k) => PF[k] ? (FL === 'zh' ? PF[k][0] + ' / ' + PF[k][1] + ' 一致' : FL === 'th' ? PF[k][0] + ' จาก ' + PF[k][1] : PF[k][0] + ' of ' + PF[k][1]) : 'NOT VERIFIED';
     const row = (lab, k) => [lab, V(nn(k), ok(k) ? 'G' : 'B', null, false)];
     fact('parity.facts', PF);
     await card(T('What was checked, and against what', '检查了什么，对照什么'), T('Each line is a witness run against the real iDempiere, or a judged accounting rule. Numbers are read from the saved logs.', '每一行都是对照真实 iDempiere 跑出来的见证测试，或判定过的会计规则。数字读自保存的日志。'), T(['Result'], ['结果']),
-      [row(T('Receipt lines from an order (Create Lines From)', '按订单生成收货明细行（Create Lines From）'), 'createfrom'), [T('Purchase-order matches posted like iDempiere', '采购订单匹配过账与 iDempiere 一致'), V(PF.matchpo ? (FL === 'zh' ? PF.matchpo[0] + ' / ' + PF.matchpo[1] + ' 一致' : PF.matchpo[0] + ' of ' + PF.matchpo[1]) : 'NOT VERIFIED', ok('matchpo') ? 'G' : 'B')],
+      [row(T('Receipt lines from an order (Create Lines From)', '按订单生成收货明细行（Create Lines From）'), 'createfrom'), [T('Purchase-order matches posted like iDempiere', '采购订单匹配过账与 iDempiere 一致'), V(PF.matchpo ? (FL === 'zh' ? PF.matchpo[0] + ' / ' + PF.matchpo[1] + ' 一致' : FL === 'th' ? PF.matchpo[0] + ' จาก ' + PF.matchpo[1] : PF.matchpo[0] + ' of ' + PF.matchpo[1]) : 'NOT VERIFIED', ok('matchpo') ? 'G' : 'B')],
        [T('Inventory moves posted like iDempiere', '库存调拨过账与 iDempiere 一致'), V(PF.movement_facts ? T(PF.movement_facts + ' postings, all balanced', PF.movement_facts + ' 笔过账，全部平衡') : 'NOT VERIFIED', PF.movement_facts ? 'G' : 'B', null, true)],
        row(T('Move confirmation, in transit and back', '调拨确认（在途及回来）'), 'confirm'), row(T('Physical inventory documents', '实物盘点单据'), 'inventory'), row(T('Replenish Report, row for row', '补货报表，逐行对照'), 'replenish')], true);
     await cardFor();

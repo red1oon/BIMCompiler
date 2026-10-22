@@ -11,8 +11,23 @@ def f(sz, bold=False):
     base = '/usr/share/fonts/truetype/noto/NotoSansThai-' if TH else '/usr/share/fonts/truetype/noto/NotoSans-'
     return ImageFont.truetype(base + ('Bold.ttf' if bold else 'Regular.ttf'), sz)
 im = Image.new('RGB', (W, H), (0, 0, 0)); d = ImageDraw.Draw(im)
-d.text((180, 300), A[0], font=f(40, True), fill=(255, 140, 26))
-d.text((180, 390), A[1], font=f(120, True), fill=(235, 238, 242))
-d.text((180, 530), A[2], font=f(120, True), fill=(79, 195, 247))
-d.text((180, 720), A[3], font=f(44), fill=(160, 168, 176))
+def put(xy, s, sz, fill, bold=False):   # Thai: Thai runs in Noto Sans Thai, everything else (Latin, digits, punctuation) in Noto Sans - each face only has its own glyphs
+    if not TH: d.text(xy, s, font=f(sz, bold), fill=fill); return
+    x, y = xy; ft = ImageFont.truetype('/usr/share/fonts/truetype/noto/NotoSansThai-' + ('Bold.ttf' if bold else 'Regular.ttf'), sz); fl = ImageFont.truetype('/usr/share/fonts/truetype/noto/NotoSans-' + ('Bold.ttf' if bold else 'Regular.ttf'), sz)
+    run, cur = '', None
+    def flush(x):
+        nonlocal run
+        if run: fo = ft if cur else fl; d.text((x, y), run, font=fo, fill=fill); x += d.textlength(run, font=fo); run = ''
+        return x
+    for ch in s:
+        t = '\u0e00' <= ch <= '\u0e7f'
+        if ch == ' ' and cur is not None: t = cur
+        if cur is None: cur = t
+        if t != cur: x = flush(x); cur = t
+        run += ch
+    flush(x)
+put((180, 300), A[0], 40, (255, 140, 26), True)
+put((180, 390), A[1], 120, (235, 238, 242), True)
+put((180, 530), A[2], 120, (79, 195, 247), True)
+put((180, 720), A[3], 44, (160, 168, 176))
 im.save(out); print('§NC_CARD wrote', out)

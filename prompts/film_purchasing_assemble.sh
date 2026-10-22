@@ -1,5 +1,5 @@
 #!/bin/bash
-# usage: [L=zh] film_purchasing_assemble.sh <take dir> <tsv> <out.mp4>   (L=en default; L=zh = Mandarin: Chinese title + process cards, zh narration with the English meaning as the second subtitle)
+# usage: [L=zh] film_purchasing_assemble.sh <take dir> <tsv> <out.mp4>   (L=en default; L=th = Thai, Thai subtitles only, UI Thai until the first panel; L=zh = Mandarin: Chinese title + process cards, zh narration with the English meaning as the second subtitle)
 #   was: film_purchasing_assemble.sh <take dir> <tsv> <out.mp4>   "Purchasing and Stock Replenishment": house title card + the recorded take (<take>/erp_film_purch.mp4 + erp_film.log from scripts/film_erp_purchasing.js)
 #   + the black five-step process card at the back + English narration + subtitles. Work dir ~/Videos/purchasing_work. The TSV's r0 row is spoken over the title card (card = speech + 1.6 s), its p row over the process card (hold = speech + 2.0 s).
 #   READ the printed POLY_TONE / DETAIL counts and the silence list.
@@ -7,6 +7,7 @@ set -e
 P=$(dirname "$(readlink -f "$0")")
 L=${L:-en}; TAKE=$1; TSV=$2; OUT=$3; W=~/Videos/purchasing_work; cd $W; mkdir -p $W/cards
 if [ "$L" = zh ]; then python3 $P/film_nc_title_card.py $W/cards/card_title_zh.png "KERNEL ERP · iDEMPIERE 孪生" "采购与" "库存补货" "买进货、调拨与补货" > /dev/null; TC=$W/cards/card_title_zh.png
+elif [ "$L" = th ]; then python3 $P/film_nc_title_card.py $W/cards/card_title_th.png "KERNEL ERP · คู่แฝดของ iDEMPIERE" "การจัดซื้อและ" "การเติมสต็อก" "ซื้อ ย้าย และเติมสต็อก" > /dev/null; TC=$W/cards/card_title_th.png
 else python3 $P/film_nc_title_card.py $W/cards/card_title.png "KERNEL ERP · TWIN OF iDEMPIERE" "Purchasing and" "Stock Replenishment" "buying, moving and topping up stock" > /dev/null; TC=$W/cards/card_title.png; fi
 python3 $P/film_depth_process_card.py $W/cards/card_proc_$L.png $L > /dev/null
 rm -rf meas_$L; for i in 1 2 3 4 5; do python3 $P/film_narration_poly.py $TSV measure meas_$L 900 > meas_$L.log 2>&1; grep -q "lang=$L wrong=0 rc=0" meas_$L.log && break; sleep 3; done
