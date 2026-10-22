@@ -161,11 +161,9 @@ if os.environ.get('FILM_SET') == 'why':
     CARDS = {
         1: ('CHAPTER 1', 'AS', 'DRAWN', 'Nine drawings, each its own flat world.'),
         2: ('CHAPTER 2', 'DEFAULTED', 'BEFORE YOUR EYES', 'Each yellow value moves its sheet.'),
-        3: ('CHAPTER 3', 'WHAT A PERSON', 'STATES', 'The set name, the heights, what each layer is.'),
-        4: ('CHAPTER 4', 'ONE', 'SHED', 'Converted, with the floor slab and the roof.'),
-        5: ('CHAPTER 5', 'OPENS PLACED', 'NEXT TIME', 'The saved set needs no replay.'),
+        3: ('CHAPTER 3', 'WHAT A PERSON', 'STATES', 'Set name, heights, layers, then Convert.'),
     }
-    TAG = {1: 'AS DRAWN', 2: 'DEFAULTED BEFORE YOUR EYES', 3: 'WHAT A PERSON STATES', 4: 'ONE SHED', 5: 'OPENS PLACED NEXT TIME'}
+    TAG = {1: 'AS DRAWN', 2: 'DEFAULTED BEFORE YOUR EYES', 3: 'WHAT A PERSON STATES'}   # v4: chapters 4 (the model in a database) and 5 (the viewer) are spliced from the earlier shed film
     SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
     NOVEL = {}
     CLIPS = {}
