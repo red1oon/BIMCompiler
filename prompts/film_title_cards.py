@@ -156,6 +156,19 @@ if os.environ.get('FILM_SET') == 'yellow':
     SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
     NOVEL = {}
     CLIPS = {}
+# §DXF2BIM Why-markings film (bim-ootb prompts/FILM_DXF2BIM_WHY_MARKINGS.md, 2026-10-22): FILM_SET=why, FIVE chapters: a BricsCAD set as drawn, defaulted before your eyes, the heights a person states, the shed, limits.
+if os.environ.get('FILM_SET') == 'why':
+    CARDS = {
+        1: ('CHAPTER 1', 'AS', 'DRAWN', 'Nine drawings, each its own flat world.'),
+        2: ('CHAPTER 2', 'DEFAULTED', 'BEFORE YOUR EYES', 'Each yellow value moves its sheet.'),
+        3: ('CHAPTER 3', 'ONE', 'HEIGHT MISSING', 'What the drawing does not say, a person states.'),
+        4: ('CHAPTER 4', 'ONE', 'SHED', 'The arranged sheets, converted.'),
+        5: ('CHAPTER 5', 'LIMITS', 'STATED', 'What this does not do yet.'),
+    }
+    TAG = {1: 'AS DRAWN', 2: 'DEFAULTED BEFORE YOUR EYES', 3: 'ONE HEIGHT MISSING', 4: 'ONE SHED', 5: 'LIMITS'}
+    SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
 os.makedirs(out, exist_ok=True)
 txt = open(log).read()
 chap = {int(m.group(1)): float(m.group(2)) for m in re.finditer(r'§FILM_CHAPTER n=(\d+) key=\S+ t=([\d.]+)', txt)}
