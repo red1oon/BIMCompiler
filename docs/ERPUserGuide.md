@@ -7,6 +7,12 @@ no install. This guide walks from first load to POS sale to financial report.*
 
 > **New here?** Start at the [BIM OOTB User Guide](USER_GUIDE.md) for the full picture.
 
+> **New since the last edition (2026-10-22):** the trade cycle now completes and posts more documents
+> ([credit memos, matches, pay schedules](#more-of-the-trade-cycle-documents-the-kernel-now-completes-and-posts)),
+> [stock move / count / replenish](#stock-move-count-replenish), [Libero manufacturing](#manufacturing-libero-as-a-plugin),
+> the [opt-in friendly shortcuts](#the-friendlier-operations-plugin-opt-in-shortcuts), and a plain
+> reading of [what "twin parity" proves](#twin-parity-what-is-proven-and-how-to-read-noted-as-designed).
+
 ![The landing page — "The Server Is Obsolete" — explains the concept before you open the app](figs/glassbowl_landing.png)
 
 > **Where to read the full concept:** the landing page links to
@@ -480,8 +486,23 @@ When a menu leaf or a form has a **▶ Process** button (type P/R in the menu), 
 The op-log is append-only: every change has a timestamp, a hash chain, and a reversible trail.
 No traditional row-update happens; the current state is the fold of all ops on that record.
 
-**Unregistered classnames** show an honest "absent handler" card (the 333-falsifier) — 454 of the
-476 `SvrProcess` handlers are named-deferred; the 5 registered ones cover the demo flows.
+**Unregistered classnames** show an honest "absent handler" card (the 333-falsifier) — a process the
+kernel has not ported says so instead of pretending. Ported so far (`erp/processes`, 2026-10-22): 42
+process classes — Generate Shipments / Invoices, Create Lines From (receipt and invoice), Create
+Invoice from Receipt, Copy From, Replenish Report, Pay Selection, Period / Year control and more —
+each a line-for-line port of the iDempiere Java, not a re-design.
+
+### The gear — where a record's processes live
+
+On a window's toolbar the **gear (Process ▶)** icon opens the same popup iDempiere shows: first the
+processes that belong to this tab (for a Sales Order, *Copy Lines* and *Generate Receipt from
+Invoice*), a separator line, then a **Document Action** group with only the actions the document may
+legally take now (*Complete*, *Prepare*, *Void* …). The gear is greyed when there is nothing to offer.
+A process that needs the record's own values (warehouse, partner, order) opens its dialog already
+filled from that record.
+
+> *Proven by* **W-AD-TOOLBARBUTTON** (`witness_ad_toolbarbutton.js`): 15 of 15 reachable tabs list the
+> same gear items, in the same order, as the legacy `getToolbarButtons`.
 
 ---
 
@@ -611,6 +632,183 @@ entries and project-issue postings — fold to the cent against the real compile
 source documents for them out of the box). They ride the same Posting-Preview/Trial-Balance surfaces as
 everything above; see `docs/internal/ERP_COVERAGE_MATRIX.md` (B-3, W-POST-B3) for the per-class detail —
 this guide's walkthrough stays the trade cycle.
+
+---
+
+## More of the trade cycle — documents the kernel now completes and posts
+
+Since the walkthrough above was written, the kernel has taken over document classes that used to be
+previewed only. They now **complete through the model layer and write their own `Fact_Acct`**, the same
+rows iDempiere writes, checked document by document against a running legacy iDempiere (the *oracle*).
+
+| Document | What you do | What lands in the books | Checked against legacy |
+|---|---|---|---|
+| **Vendor invoice (API)** | Complete it | Tax credit DR · inventory clearing / expense DR · vendor liability CR | 4 of 4 equal |
+| **Customer / vendor credit memo (ARC / APC)** | *Copy Lines* from the invoice, Complete | The invoice's mirror image, including quantity | ARC 4 of 4, APC 2 of 2 equal |
+| **Match Invoice** | Created when a bill line is matched to a receipt line | Not-invoiced-receipts DR · inventory clearing CR, plus the price-variance split | 18 of 18 equal |
+| **Match PO** | Created when a receipt (or bill) is matched to an order line | Price-variance pair under Standard costing; nothing under Average costing, as legacy | 74 of 74 equal (37 matches × Average and Standard) |
+
+**Payment terms with a schedule.** An order or invoice on a split term (for example 50 % / 50 %) now
+completes. The schedule rows are created, the last row carries the rounding remainder (114.43 + 114.42
+on invoice 109), and an invoice generated from the order inherits the order's schedule.
+
+**Buying the legacy way — *Create Lines From*.** On a Material Receipt (or a vendor invoice) the
+**Create Lines From** button opens an **Info Window**: a searchable list of the open order lines. Tick the
+lines, edit the quantity or locator in the grid if you wish, press the process button, answer **OK**.
+That is the whole selection engine — one generic window driven by `AD_InfoWindow`, the same one every
+other info window uses. From *New Material Receipt* to lines created is 13 steps on this path.
+
+> *Proven by* **W-CREATEFROM-INFOWIN** (8 of 8: a row picked with its quantity edited 5 → 3 became
+> one receipt line of 3, linked to the order line, header linked to the order) and
+> **W-CREATEFROM-INVOICE-IW** (7 of 7, ending in one `M_MatchInv` of 4). Posting:
+> **W-POST-INVOICE**, **W-POST-CREDITMEMO**, **W-POST-MATCHINV**, **W-POST-MATCHPO**,
+> **W-ORDER-PAYSCHED** (6 of 6).
+
+---
+
+## Stock — move, count, replenish
+
+Everything here is core iDempiere and a verbatim port; none of it is a plugin.
+
+### Inventory Move, and the in-transit two-step
+
+Open the **Inventory Move** window (find it by name in the menu), create a move and complete it. Stock leaves the source
+locator and arrives at the target in one step, and a move between two organisations books the
+intercompany Due-To / Due-From lines so each organisation still balances.
+
+If the move's document type is **In Transit**, completing it stops at *In Progress* and creates a
+**Move Confirm**. Until the confirm is completed the goods are *in transit*: nothing is posted, the stock
+stays at the source, and the lines cannot be edited. Completing the confirm moves the stock and posts.
+On the confirm you may record a **Difference Qty** (lost on the way) or a **Scrapped Qty**: the kernel
+then creates the matching **Physical Inventory** documents — the difference at the *source* locator, the
+scrapped quantity at the *target* — exactly as legacy does.
+
+> **Read this before relying on in-transit.** In iDempiere "in transit" is a *state*, not a *place*:
+> while the confirm is open the group's inventory total is right, but between organisations the goods
+> still show at the sender, and the shipping month must stay open until the confirm is completed.
+> The kernel behaves the same way on purpose.
+
+> *Proven by* **W-POST-MOVEMENT** (all 114 completed pilot moves × own and Standard costing = 228 fact
+> sets equal to the real posting engine) and **W-MOVEMENT-CONFIRM** (51 of 51: facts balance per schema
+> and per organisation, value is conserved, a reversal nets every fact to zero).
+
+### Physical Inventory, Internal Use, Cost Adjustment
+
+**Physical Inventory** documents (window of the same name) complete through the model layer: count
+differences move stock, an internal use posts to its charge, a cost adjustment moves value without
+quantity. A count that takes a product below zero balances itself as legacy does.
+
+> *Proven by* **W-INVENTORY** (125 of 125): 115 completed pilot counts × own and Standard costing — 230
+> fact sets equal to the real engine, and the stored legacy rows equal field for field; the twin's
+> facts are balanced per schema and organisation and value is conserved per line.
+
+### Replenish Report
+
+**Replenish Report** (a report-type menu leaf of the same name) is the real process, not a lookalike: report
+only, or create purchase orders, requisitions or movements from the proposal. The POS *Replenishment*
+pill (§7) now calls the same calculation, so there is one reorder rule in the ERP.
+
+> **Two things worth knowing.** (1) The report counts on-hand, sales and purchase reservations and open
+> production only. A *drafted* order it created, a requisition, or an open movement is invisible to the
+> next run, so running it twice before anything is completed orders the same goods twice. That is
+> iDempiere's behaviour and the kernel keeps it. Complete (or void) the orders it made. (2) An order
+> quantity between 0 and 1 is raised to the product's *Order Min*.
+
+> *Proven by* **W-REPLENISH** (24 of 24 against the live pilot: report rows equal across 187 columns,
+> and the purchase orders and requisitions it creates equal field for field; 7 cases noted as designed).
+
+### Product attributes and lots
+
+The **Attribute Set Instance** editor is generic over all 93 attribute columns. A product whose set
+requires an instance asks for it on the order and the shipment; shipments pick lots by expiry and
+locator priority, receipts fill negative stock first and can generate a lot, and a batch-lot shipment
+reverses lot by lot.
+
+---
+
+## Manufacturing — Libero, as a plugin
+
+Manufacturing is **not core** (see *Extending the ERP*). It arrives as the **Libero** bundle from the
+plugin tray and, once installed, behaves like any other window set: *Manufacturing Order* and
+*Order Receipt & Issue* among them.
+
+What the bundle covers today, each witnessed against the real classes:
+
+- **Order → issue → receipt** with back-flush, activity reporting and **milestones** (a milestone report
+  completes the activity that reported it).
+- **Make-to-Order / Make-to-Kit**: a sales-order line creates its own manufacturing order; the kit is
+  completed by the shipment.
+- **Subcontracting**: a vendor receipt feeds the subcontract collector.
+- **Method change, activity and rate variances, lot genealogy.**
+- **Distribution Orders**, with the core Movement underneath.
+
+> **Three deliberate differences from upstream Libero.** The twin completes a milestone report
+> (upstream refuses every one), posts a receipt's WIP credit once per accounting schema (upstream
+> doubles it), and sends a sales order's ids only to the manufacturing order made from that line
+> (upstream leaks them to unrelated rows). Each sits behind a switch that restores the verbatim
+> behaviour; the owner chose them knowing Libero is not in the core book.
+
+---
+
+## The friendlier-operations plugin — opt-in shortcuts
+
+The kernel looks and behaves like iDempiere on purpose, so people who know it lose nothing. For people
+who want fewer steps there is an **opt-in plugin**, *Friendly operations lens* (offered under **Plugins &
+Releases**; off by default). While it is on:
+
+| Where | Gear item | It runs |
+|---|---|---|
+| Sales Order, once completed with quantity still open | **Ship** | the legacy *Generate Shipments* process for this order |
+| Sales Order, once shipped with quantity still to bill | **Invoice** | the legacy *Generate Invoices* process for this order |
+| Purchase Order, completed and not fully received | **Receive** | a receipt created from the order's open lines, completed |
+| Purchase Order, received and not yet billed | **Create Bill** | *Generate Invoice from Receipt*, completed |
+| Completed Sales Order | *Receive payment* (overlay button, not in the gear) | opens a new Payment for the order — no legacy equivalent |
+| A record being edited | *Preview* (overlay button) | shows what Save will write, without saving — no legacy equivalent |
+
+Every item sits in the **gear popup** like any other process: the top toolbar stays exactly as legacy.
+An item appears only while it applies. Turn the plugin off and every row, parameter and button is
+removed; the documents it made stay, and they are identical to documents made the long way.
+
+**What it saves, counted:** *Receive* is 2 gestures; the plain path (receipt, partner, organisation,
+save, Create Lines From, criteria, tick, quantity, run, OK) is 13.
+
+> *Proven by* **W-FRIENDLY-ROWS** (11 of 11) and **W-FRIENDLY-PURCHASE** (11 of 11): the model events
+> and the books are equal with the plugin on and off; with it off nothing is offered.
+
+---
+
+## Twin parity — what is proven, and how to read "noted as designed"
+
+The kernel ERP is a **twin** of iDempiere: the same operations, the same books, the same look and feel,
+with no accepted difference. The proof is a *parallel run*: the same document is made on a running legacy
+iDempiere and on the kernel, and the rows are compared field by field.
+
+How to read a result line:
+
+| You see | It means |
+|---|---|
+| **EQUAL / MATCH** n of n | Every compared row and column is identical. |
+| **RED then GREEN** | The witness first failed against the missing behaviour, then passed once it was ported. A witness that never failed proves nothing. |
+| **INCONCLUSIVE** | Nothing shared could be judged (no common fixture). It is never counted as a pass. |
+| **Named refusal** | A branch of the legacy code the kernel has not ported *says so* in plain words rather than guessing (for example reversal of a match, or landed cost). |
+| **NOTED-AS-DESIGNED** | Legacy could not be run for that case. The behaviour is ported from the legacy source, and the books are judged by accounting practice: each fact set balances per schema and organisation, value is conserved by a transfer, goods in transit stay on the books, a reversal nets to zero. Never counted as a pass. |
+
+Legacy itself is never changed to make the two agree.
+
+---
+
+## Web Services and the AI advisory
+
+The kernel can answer the **iDempiere web-service calls** (read, create/update, document action,
+process, composite) in both the XML and the JSON form. The plugin ships installed and **off by
+default**; a caller reads `Posted` (Y / N / E) back from the response.
+[Letting an AI work on the ERP, safely](ERP_AI_ADVISORY.md) is the published rule-set for letting an AI agent use that door: nine rules,
+limits and approval flags, and a per-agent type name. The WS output matches legacy in every witnessed
+case, with two stated exceptions — a zero that legacy prints as `0.0`, and asset-creating products,
+which belong to the asset plugin.
+
+> *Proven by* **W-WS-DIFF-READ / WRITE / DOCACTION / PROCESS / JSON** (14, 18, 25, 15, 21 cases,
+> including a third shipment that legacy and the kernel both book as `Posted=E`).
 
 ---
 
@@ -1093,8 +1291,27 @@ needed if you see an old `CACHE_VERSION` number in the console.
 | `AD_Val_Rule` picklist filter | ✅ engine ready | Render-wiring parked |
 | `AD_Workflow` node-walk | 🟡 `ad_workflow.js` built, no seed activity oracle | Parked |
 | Column-level / Record-level access | `AD_Column_Access` / `AD_Record_Access` empty in seed | n/a |
-| 454 SvrProcess handlers | 5 registered, 454 named-deferred | Honest absent-handler card shown |
+| Remaining `SvrProcess` handlers | 42 process classes ported (2026-10-22); the rest named-deferred | Honest absent-handler card shown |
 | `stale fork`: `report_overlay.js` in bim-ootb | 256 vs 908 lines in build/erp — lacks foldStatement/foldPrint | Needs sync + sw bump |
+
+### Named twin gaps (2026-10-22) — refused by name, never guessed
+
+Each of these is a legacy branch the kernel does not port yet. The kernel stops with a plain message
+instead of producing a different answer.
+
+| Area | Not ported / not compared | Why it is listed |
+|---|---|---|
+| Match Invoice | reversal; foreign-currency gain/loss and rounding; credit-memo match; shipment match; cash-basis schema | no shared fixture with legacy |
+| Match PO | reversal; landed-cost allocation; tax-included correction | same |
+| Credit memos (ARC / APC) | tax-included, reversal, header charge, trade-discount posting; a credit memo of a *matched* invoice (legacy itself refuses it) | named in the posting witness |
+| Create Lines From | the RMA (returns) branch | refused loudly |
+| Inventory Move | same-organisation posting, reversal, landed cost and batch-lot without a lot row, not yet compared with legacy | no shared fixture |
+| Documents of a closed period | the *back-date days* check under Average costing | named refusal, as for other documents |
+| Product attributes | RMA return copying the shipment's lot rows; attribute tables outside core (come by plugin) | named |
+| Libero | creating a workflow activity from a manufacturing order, resource unavailability, voiding after a product change | named in the plugin's witnesses |
+| Web Services | a zero that legacy prints as `0.0` (SQLite numbers carry no per-value scale); asset-creating products (asset plugin) | stated limits |
+
+---
 
 ### Coverage matrix summary (2026-06-12)
 
