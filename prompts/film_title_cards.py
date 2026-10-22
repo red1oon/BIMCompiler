@@ -143,6 +143,19 @@ if os.environ.get('FILM_SET') == 'wand':
     SERIES = 'BIM OOTB  ·  VIEWER  ·  DXF2BIM'
     NOVEL = {}
     CLIPS = {}
+# §DXF2BIM Yellow Markings film (bim-ootb prompts/FILM_DXF2BIM_YELLOW_MARKINGS.md, 2026-10-22): FILM_SET=yellow, FIVE chapters: what a marking is, the yellow rule, the datums, the verdict, the round trip.
+if os.environ.get('FILM_SET') == 'yellow':
+    CARDS = {
+        1: ('CHAPTER 1', 'INSIDE', 'THE DRAWING', 'A marking is a short text in the DXF.'),
+        2: ('CHAPTER 2', 'YELLOW', 'UNTIL YOURS', 'Suggested, never silent. Accept, or type over.'),
+        3: ('CHAPTER 3', 'THE', 'DATUMS', 'Role, set, level, roof, face, axis, heights, grid, cut.'),
+        4: ('CHAPTER 4', 'THE', 'VERDICT', 'What is missing is listed, never filled.'),
+        5: ('CHAPTER 5', 'IT', 'TRAVELS', 'Saved inside the drawing; opened again with no choices.'),
+    }
+    TAG = {1: 'INSIDE THE DRAWING', 2: 'YELLOW UNTIL YOURS', 3: 'THE DATUMS', 4: 'THE VERDICT', 5: 'IT TRAVELS'}
+    SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
 os.makedirs(out, exist_ok=True)
 txt = open(log).read()
 chap = {int(m.group(1)): float(m.group(2)) for m in re.finditer(r'§FILM_CHAPTER n=(\d+) key=\S+ t=([\d.]+)', txt)}
