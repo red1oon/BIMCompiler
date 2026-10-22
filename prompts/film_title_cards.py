@@ -167,6 +167,17 @@ if os.environ.get('FILM_SET') == 'why':
     SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
     NOVEL = {}
     CLIPS = {}
+# Malay version of the why film (bim-ootb prompts/FILM_DXF2BIM_WHY_MARKINGS.md §MS, 2026-10-23): FILM_SET=why_ms, the same three chapters, app terms kept as users say them.
+if os.environ.get('FILM_SET') == 'why_ms':
+    CARDS = {
+        1: ('BAB 1', 'SEPERTI', 'DILUKIS', 'Sembilan lukisan, masing-masing dunia rata tersendiri.'),
+        2: ('BAB 2', 'NILAI LALAI', 'DI DEPAN MATA', 'Setiap nilai kuning menggerakkan helaiannya.'),
+        3: ('BAB 3', 'APA YANG', 'MANUSIA NYATAKAN', 'Nama set, ketinggian, lapisan, kemudian Convert.'),
+    }
+    TAG = {1: 'SEPERTI DILUKIS', 2: 'NILAI LALAI DI DEPAN MATA', 3: 'APA YANG MANUSIA NYATAKAN'}
+    SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
 os.makedirs(out, exist_ok=True)
 txt = open(log).read()
 chap = {int(m.group(1)): float(m.group(2)) for m in re.finditer(r'§FILM_CHAPTER n=(\d+) key=\S+ t=([\d.]+)', txt)}
