@@ -1,7 +1,8 @@
 #!/bin/bash
-# usage: film_purchasing_beatmin.sh <tsv>   → prints the BEAT_MIN json (speech + 0.8 s per beat) from film_narration_poly.py measure, for scripts/film_erp_purchasing.js
-set -e; TSV=$1; W=~/Videos/purchasing_work; cd $W; rm -rf meas_bm
-for i in 1 2 3 4 5; do python3 ~/bim-compiler/prompts/film_narration_poly.py $TSV measure meas_bm 900 > meas_bm.log 2>&1; grep -q "lang=en wrong=0 rc=0" meas_bm.log && break; sleep 3; done
+# usage: [L=zh] film_purchasing_beatmin.sh <tsv>   → prints the BEAT_MIN json (speech + 0.8 s per beat) from film_narration_poly.py measure, for scripts/film_erp_purchasing.js
+set -e
+P=$(dirname "$(readlink -f "$0")"); L=${L:-en}; TSV=$1; W=~/Videos/purchasing_work; cd $W; rm -rf meas_bm
+for i in 1 2 3 4 5; do python3 $P/film_narration_poly.py $TSV measure meas_bm 900 > meas_bm.log 2>&1; grep -q "lang=$L wrong=0 rc=0" meas_bm.log && break; sleep 3; done
 python3 - <<'PY'
 import re, json, os
 d = {}

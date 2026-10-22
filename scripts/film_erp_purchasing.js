@@ -12,6 +12,9 @@
 const { chromium } = require(require('os').homedir() + '/bim-ootb/tests/node_modules/playwright');
 const http = require('http'), fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
 const HOME = require('os').homedir(), DRY = !!process.env.DRY;
+const FL = process.env.FILM_LANG || 'en';   // FILM_LANG=zh: Mandarin UI (zh_CN pack, labelled machine fill for the rest) + Mandarin cards; the narration carries the language
+const T = (e, z) => (FL === 'zh' ? z : e);
+const LANGQ = FL === 'zh' ? 'zh_CN' : 'en_US';
 const REPO = process.env.ERP_REPO || path.join(HOME, 'bim-ootb');
 const OUT = path.resolve(process.argv[2] || '.'); const FR = path.join(OUT, 'frames'); fs.mkdirSync(FR, { recursive: true });
 const FACTS_FILE = process.env.PARITY_FACTS || path.join(HOME, 'Videos', 'purchasing_work', 'facts.json');
@@ -48,10 +51,12 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
   const fact = (k, v) => say('§ERP_FILM_FACT ' + k + '=' + String(typeof v === 'string' ? v : JSON.stringify(v)).replace(/\s+/g, ' ').slice(0, 420) + (T0 !== null ? '  @' + now().toFixed(1) : ''));
 
   // ── setup OFF CAMERA: fresh page; the twin-only in-transit document type (legacy has none and is not touched); the take opens on a card over the login screen ──
-  await page.goto(base + '/idempiere.html?lang=en_US', { waitUntil: 'networkidle' });
+  await page.goto(base + '/idempiere.html?lang=' + LANGQ, { waitUntil: 'networkidle' });
   for (const n of ['erp_cache', 'fold_plugins']) await page.evaluate(x => new Promise(r => { const q = indexedDB.deleteDatabase(x); q.onsuccess = q.onerror = q.onblocked = () => r(); }), n);
-  await page.goto(base + '/idempiere.html?lang=en_US', { waitUntil: 'networkidle' });
+  await page.goto(base + '/idempiere.html?lang=' + LANGQ, { waitUntil: 'networkidle' });
   await page.waitForFunction(() => !!window.__idmpDb && !!window.PluginRelease && document.querySelector('#idmp-login-clients') && document.querySelector('#idmp-login-clients').children.length > 0, null, { timeout: 30000 });
+  await page.evaluate(() => window.ErpI18n && window.ErpI18n.preload && window.ErpI18n.preload()); await hold(1500);
+  fact('uiLang', LANGQ);
   await page.evaluate(() => { const db = window.__idmpDb; const cols = db.exec('PRAGMA table_info(c_doctype)')[0].values.map(r => r[1]).filter(c => c !== 'c_doctype_id' && c !== 'c_doctype_uu');
     db.run('INSERT INTO c_doctype (c_doctype_id,' + cols.join(',') + ') SELECT 9100143,' + cols.join(',') + ' FROM c_doctype WHERE c_doctype_id=143');
     db.run("UPDATE c_doctype SET isintransit='Y', name='Inventory Move (in transit)' WHERE c_doctype_id=9100143"); });
@@ -118,13 +123,13 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
   };
 
   // ── cards: chapter (house dark style) + a generic table card; each REPLACES any card in the same tick ──
-  const KICK = 'Purchasing and Stock Replenishment';
+  const KICK = T('Purchasing and Stock Replenishment', '采购与库存补货');
   const chapter = async (kicker, title, lines) => {
     fact('chapter.' + title.replace(/\W+/g, '_').slice(0, 30), lines.join(' | '));
     await page.evaluate(({ kicker, title, lines }) => {
       const old = document.getElementById('__ledger'); if (old) old.remove();
       const d = document.createElement('div'); d.id = '__ledger';
-      d.style.cssText = 'position:fixed;inset:0;z-index:2147483000;background:#000;color:#ebeef2;font-family:Noto Sans,DejaVu Sans,Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;padding:0 140px 180px';
+      d.style.cssText = 'position:fixed;inset:0;z-index:2147483000;background:#000;color:#ebeef2;font-family:Noto Sans CJK SC,Noto Sans,DejaVu Sans,Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;padding:0 140px 180px';
       d.innerHTML = '<div style="font-size:30px;font-weight:700;letter-spacing:.12em;color:#ff8c1a;text-transform:uppercase">' + kicker + '</div><div style="font-size:92px;font-weight:700;margin:18px 0 34px;color:#4fc3f7">' + title + '</div>' +
         lines.map(l => '<div style="font-size:38px;color:#c9d4e0;margin:10px 0;padding-left:26px;border-left:6px solid #ff8c1a">' + l + '</div>').join('');
       document.body.appendChild(d);
@@ -136,7 +141,7 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     await page.evaluate(({ title, sub, heads, rows, kick, compact }) => {
       const old = document.getElementById('__ledger'); if (old) old.remove();
       const d = document.createElement('div'); d.id = '__ledger';
-      d.style.cssText = 'position:fixed;inset:0;z-index:2147483000;background:#10151c;color:#e8edf3;font-family:Noto Sans,DejaVu Sans,Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;padding:0 90px 190px';
+      d.style.cssText = 'position:fixed;inset:0;z-index:2147483000;background:#10151c;color:#e8edf3;font-family:Noto Sans CJK SC,Noto Sans,DejaVu Sans,Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;padding:0 90px 190px';
       const tone = { L: '#7fd1ff', B: '#ff9b8a', G: '#7ee0a0', A: '#ffd479', N: '#c9d4e0' };
       const cell = (c) => '<td style="padding:' + (compact ? 4 : 9) + 'px 20px;text-align:center;font-size:' + (c.sm ? (compact ? 24 : 30) : (compact ? 30 : 40)) + 'px;font-weight:700;color:' + (tone[c.t] || tone.N) + '">' + c.v + (c.s ? '<div style="font-size:16px;font-weight:400;color:#8fa0b3;margin-top:4px">' + c.s + '</div>' : '') + '</td>';
       d.innerHTML = '<div style="font-size:21px;letter-spacing:.14em;color:#8fa0b3;text-transform:uppercase">' + kick + '</div><div style="font-size:' + (compact ? 40 : 48) + 'px;font-weight:700;margin:6px 0 4px">' + title + '</div><div style="font-size:' + (compact ? 19 : 22) + 'px;color:#b8c4d2;margin-bottom:' + (compact ? 12 : 26) + 'px">' + sub + '</div>' +
@@ -182,7 +187,7 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
 
   try {
     // ═══ A0 chapter card 1 over the login screen ═══
-    await chapter(KICK, 'Buying, step by step', ['Order it', 'Receive it', 'Pay for it']);
+    await chapter(KICK, T('Buying, step by step', '一步一步买进货'), T(['Order it', 'Receive it', 'Pay for it'], ['下订单', '收货', '付款']));
     await cast(); await page.mouse.move(720, 500); await beat('a0', 'chapter 1: buying'); await cardFor();
 
     // ═══ A1 an optional plugin, installed from Plugins & Releases on the login page ═══
@@ -226,7 +231,7 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
 
     // ═══ A4 chapter card: the shortcut. Behind it: the same supplier and product, a second order (in-page clicks) ═══
     await beat('a4', 'chapter: the shortcut');
-    await chapter(KICK, 'The shortcut', ['The same steps, from one menu', 'Optional - installed a minute ago']);
+    await chapter(KICK, T('The shortcut', '快捷方式'), T(['The same steps, from one menu', 'Optional - installed a minute ago'], ['同样的步骤，一个菜单搞定', '可选功能，一分钟前才安装']));
     const B = await makePO(false, 5); fact('poB', JSON.stringify(B.po) + ' ok=' + B.ok);
     fact('poB.gear', JSON.stringify(await gearItems()));
     await cardFor();
@@ -247,15 +252,15 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     await beat('a6', 'card: counted');
     const gLegacy = (() => { const m = LOG.filter(l => /§ERP_FILM_GESTURES beat=a3 /.test(l)).pop() || ''; const r = /G=(\d+)/.exec(m); return r ? Number(r[1]) : null; })();
     fact('count.legacy', gLegacy); const gS = FEXTRA.g_FO_Order_Receive;
-    await card('Counted in this film', 'A step is a click, a pick from a list or a typed field. Both ways end with the goods received.', ['The standard way', 'The shortcut'],
-      [['Steps to receive the goods', V(gLegacy, 'L', 'from opening the window to lines on the receipt', false), V(gS, 'G', 'gear, Receive, OK on the result', false)],
-       ['What runs underneath', V('Create Lines From', 'N', null, true), V('the same process, one button', 'N', null, true)]]);
+    await card(T('Counted in this film', '用本片的点击数来算'), T('A step is a click, a pick from a list or a typed field. Both ways end with the goods received.', '一步 = 一次点击、一次从列表中选择或一次输入。两种做法最后都收到了货。'), T(['The standard way', 'The shortcut'], ['标准做法', '快捷方式']),
+      [[T('Steps to receive the goods', '收货需要的步骤'), V(gLegacy, 'L', T('from opening the window to lines on the receipt', '从打开窗口到收货单上有明细行'), false), V(gS, 'G', T('gear, Receive, OK on the result', '齿轮、Receive、点确定'), false)],
+       [T('What runs underneath', '底层运行的是'), V('Create Lines From', 'N', null, true), V(T('the same process, one button', '同一个流程，一个按钮'), 'N', null, true)]]);
     await cardFor();
     await uncard();
 
     // ═══ B0 chapter card: stock between shops. Behind it the in-transit move is typed (in-page clicks) ═══
     await beat('b0', 'chapter: moving stock');
-    await chapter(KICK, 'Moving stock between shops', ['An Inventory Move takes goods from one warehouse to another', 'On the road they are "in transit" until the shop confirms']);
+    await chapter(KICK, T('Moving stock between shops', '在门店之间调拨库存'), T(['An Inventory Move takes goods from one warehouse to another', 'On the road they are "in transit" until the shop confirms'], ['库存调拨：把货从一个仓库运到另一个仓库', '货在路上叫“在途”，直到门店确认收货']));
     const elmSrc0 = await elmOn(SRC), elmTgt0 = await elmOn(TGT); fact('elm.before', { source: elmSrc0, target: elmTgt0 });
     await openPlain(170); await ipc(NEWB); await page.waitForSelector('#idmp-inline-mount .cfrow'); await hold(700);
     const pickQ = async (col, re) => { const o = await optBy(col, re); await page.selectOption(F(col, 'select'), o.v); await hold(500); };
@@ -292,10 +297,10 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     // ═══ B3 the two inventory documents the confirm created ═══
     await beat('b3', 'the inventory documents');
     await openWinById(168); await findOk(true); await toForm(true);
-    await hclick('#idmp-toolbar button[title="Last record"]'); await hold(2200);
+    await hclick('#idmp-toolbar button[title="Last record"], #idmp-toolbar button[title="最后记录"]'); await hold(2200);
     const invs = await tip('SELECT i.m_inventory_id AS id, i.documentno AS d, i.docstatus AS s, i.m_warehouse_id AS w, l.m_locator_id AS loc, l.qtybook AS b, l.qtycount AS c FROM m_inventory i JOIN m_inventoryline l ON l.m_inventory_id=i.m_inventory_id WHERE i.m_inventory_id<0 ORDER BY i.m_inventory_id');
     fact('inventory.docs', invs);
-    await hclick('#idmp-toolbar button[title="Previous record"]'); await hold(2200);
+    await hclick('#idmp-toolbar button[title="Previous record"], #idmp-toolbar button[title="上一记录"]'); await hold(2200);
 
     // ═══ B4 card: where the ten went ═══
     await beat('b4', 'card: stock before and after');
@@ -305,15 +310,15 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     const badBooks = await tip('SELECT c_acctschema_id AS s, ad_org_id AS o FROM fact_acct WHERE record_id<0 GROUP BY 1,2 HAVING ABS(SUM(amtacctdr)-SUM(amtacctcr))>0.005'), nFacts = Number((await oneRow('SELECT COUNT(*) AS n FROM fact_acct WHERE record_id<0')).n);
     fact('books.balanced', { factRows: nFacts, unbalancedSchemaOrgs: badBooks.length }); const booksOk = nFacts > 0 && badBooks.length === 0;
     const conserved = (elmSrc0 - elmSrc1) === 10 && (elmTgt1 - elmTgt0) === 8 - 1 && dSrc === 2 && dTgt === 1; fact('elm.conserved', conserved);
-    await card('Where the ten went', 'Elm Tree, ten sent from HQ Warehouse to Store Central. Eight arrived and one of those was scrapped. Two never arrived. Read from the stock tables.', ['Before', 'After'],
-      [['HQ Warehouse (sent from)', V(elmSrc0, 'L'), V(elmSrc1, 'G')], ['Store Central (sent to)', V(elmTgt0, 'L'), V(elmTgt1, 'G')],
-       ['Loss recorded at HQ Warehouse', V('', 'N'), V(dSrc + ' in an inventory document', 'A', null, true)], ['Scrapped at Store Central', V('', 'N'), V(dTgt + ' in an inventory document', 'A', null, true)],
-       ['Counted', V('', 'N'), V(conserved && booksOk ? 'every unit accounted for, books balance' : 'NOT VERIFIED', conserved && booksOk ? 'G' : 'B', nFacts + ' posting rows this session', true)]]);
+    await card(T('Where the ten went', '这十棵去哪儿了'), T('Elm Tree, ten sent from HQ Warehouse to Store Central. Eight arrived and one of those was scrapped. Two never arrived. Read from the stock tables.', 'Elm Tree（榆树），从 HQ Warehouse 发往 Store Central 十棵。到了八棵，其中一棵报废。两棵没到。数据读自库存表。'), T(['Before', 'After'], ['之前', '之后']),
+      [[T('HQ Warehouse (sent from)', 'HQ Warehouse（发出）'), V(elmSrc0, 'L'), V(elmSrc1, 'G')], [T('Store Central (sent to)', 'Store Central（收到）'), V(elmTgt0, 'L'), V(elmTgt1, 'G')],
+       [T('Loss recorded at HQ Warehouse', '总部记录的途中损失'), V('', 'N'), V(T(dSrc + ' in an inventory document', dSrc + ' 棵，记在库存单据里'), 'A', null, true)], [T('Scrapped at Store Central', '门店报废'), V('', 'N'), V(T(dTgt + ' in an inventory document', dTgt + ' 棵，记在库存单据里'), 'A', null, true)],
+       [T('Counted', '核对'), V('', 'N'), V(conserved && booksOk ? T('every unit accounted for, books balance', '每一棵都有交代，账目平衡') : 'NOT VERIFIED', conserved && booksOk ? 'G' : 'B', T(nFacts + ' posting rows this session', '本次共 ' + nFacts + ' 条过账记录'), true)]]);
     await cardFor();
 
     // ═══ C0 chapter card: topping up ═══
     await beat('c0', 'chapter: replenishment');
-    await chapter(KICK, 'Topping up', ['Every product has a lowest and a highest stock level', 'The Replenish Report compares them with what is on the shelf']);
+    await chapter(KICK, T('Topping up', '补货'), T(['Every product has a lowest and a highest stock level', 'The Replenish Report compares them with what is on the shelf'], ['每种商品都有最低和最高库存', '补货报表把它们和货架上的实际库存做比较']));
     await cardFor();
 
     // ═══ C1 the report creates purchase orders ═══
@@ -328,9 +333,9 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     const lv = await tip('SELECT p.name AS n, (SELECT COALESCE(SUM(s.qtyonhand),0) FROM m_storageonhand s JOIN m_locator l ON l.m_locator_id=s.m_locator_id WHERE s.m_product_id=r.m_product_id AND l.m_warehouse_id=r.m_warehouse_id) AS oh, r.level_min AS mn, r.level_max AS mx FROM m_replenish r JOIN m_product p ON p.m_product_id=r.m_product_id WHERE r.m_warehouse_id=103 AND r.m_product_id IN (124,137,134) ORDER BY p.name');
     fact('levels', lv);
     await hclick('#idmp-content [data-proc-run]');
-    await card('The rules it checks', 'Head office warehouse. Each product has a lowest and a highest level, read from the stock tables.', ['On the shelf', 'Lowest', 'Highest', 'Below the lowest?'],
-      lv.map(r => [r.n, V(Number(r.oh), 'L'), V(Number(r.mn), 'N'), V(Number(r.mx), 'N'), V(Number(r.oh) < Number(r.mn) ? 'yes' : 'no', Number(r.oh) < Number(r.mn) ? 'A' : 'G', null, true)]));
-    await page.waitForFunction(() => /OK #|Failed|Error/.test((document.querySelector('#idmp-content') || {}).innerText || ''), null, { timeout: 60000, polling: 250 }).catch(async () => { fact('replenish.timeout', await page.evaluate(() => ((document.querySelector('#idmp-content') || {}).innerText || 'no content').replace(/\s+/g, ' ').slice(0, 300) + ' | dlg=' + !!document.querySelector('#idmp-procdlg'))); }); await hold(2500);
+    await card(T('The rules it checks', '它检查的规则'), T('Head office warehouse. Each product has a lowest and a highest level, read from the stock tables.', 'HQ Warehouse。每种商品都有最低和最高库存，数据读自库存表。'), T(['On the shelf', 'Lowest', 'Highest', 'Below the lowest?'], ['货架上', '最低', '最高', '低于最低库存？']),
+      lv.map(r => [r.n, V(Number(r.oh), 'L'), V(Number(r.mn), 'N'), V(Number(r.mx), 'N'), V(Number(r.oh) < Number(r.mn) ? T('yes', '是') : T('no', '否'), Number(r.oh) < Number(r.mn) ? 'A' : 'G', null, true)]));
+    await page.waitForFunction(() => /#\d+ - |Failed|Error|失败|错误/.test((document.querySelector('#idmp-content') || {}).innerText || ''), null, { timeout: 60000, polling: 250 }).catch(async () => { fact('replenish.timeout', await page.evaluate(() => ((document.querySelector('#idmp-content') || {}).innerText || 'no content').replace(/\s+/g, ' ').slice(0, 300) + ' | dlg=' + !!document.querySelector('#idmp-procdlg'))); }); await hold(2500);
     await uncard(); await beat('c1c', 'report result'); await hold(1200);
     fact('replenish.result', await page.evaluate(() => (document.querySelector('#idmp-content') || {}).innerText.replace(/\s+/g, ' ').slice(0, 200)));
     const rep = await tip('SELECT m_product_id AS p, qtyonhand AS oh, level_min AS mn, level_max AS mx, qtytoorder AS q FROM t_replenish ORDER BY m_product_id');
@@ -340,21 +345,22 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
 
     // ═══ C2 the drafted orders, in the Purchase Order window ═══
     await beat('c2', 'the drafted purchase orders');
-    await hclick('#idmp-content button:text-is("Close")').catch(() => {}); await hold(600);
+    await page.evaluate(() => { const b = [...document.querySelectorAll('#idmp-content button')].pop(); if (b) b.setAttribute('data-film-close', '1'); }); await hclick('#idmp-content [data-film-close="1"]').catch(() => {}); await hold(600);
     await openWinById(181); await toForm(true);
-    await hclick('#idmp-toolbar button[title="Last record"]'); await hold(2200);
+    await hclick('#idmp-toolbar button[title="Last record"], #idmp-toolbar button[title="最后记录"]'); await hold(2200);
     fact('lastPO', { status: await status(), doc: await oneRow("SELECT documentno AS d, docstatus AS s FROM c_order WHERE c_order_id<0 AND documentno>='600000' ORDER BY documentno DESC LIMIT 1") });
     await hold(2200);
 
     // ═══ D0 the parity card, numbers read from persisted witness logs ═══
     await beat('d0', 'card: what was checked');
     const PF = readFacts(), ok = (k) => PF[k] && PF[k][0] === PF[k][1];
-    const row = (lab, k, sub) => [lab, V(PF[k] ? PF[k][0] + ' of ' + PF[k][1] : 'NOT VERIFIED', ok(k) ? 'G' : 'B', sub, false)];
+    const nn = (k) => PF[k] ? (FL === 'zh' ? PF[k][0] + ' / ' + PF[k][1] + ' 一致' : PF[k][0] + ' of ' + PF[k][1]) : 'NOT VERIFIED';
+    const row = (lab, k) => [lab, V(nn(k), ok(k) ? 'G' : 'B', null, false)];
     fact('parity.facts', PF);
-    await card('What was checked, and against what', 'Each line is a witness run against the real iDempiere, or a judged accounting rule. Numbers are read from the saved logs.', ['Result'],
-      [row('Receipt lines from an order (Create Lines From)', 'createfrom'), ['Purchase-order matches posted like iDempiere', V(PF.matchpo ? PF.matchpo[0] + ' of ' + PF.matchpo[1] : 'NOT VERIFIED', ok('matchpo') ? 'G' : 'B')],
-       ['Inventory moves posted like iDempiere', V(PF.movement_facts ? PF.movement_facts + ' postings, all balanced' : 'NOT VERIFIED', PF.movement_facts ? 'G' : 'B', null, true)],
-       row('Move confirmation, in transit and back', 'confirm'), row('Physical inventory documents', 'inventory'), row('Replenish Report, row for row', 'replenish')], true);
+    await card(T('What was checked, and against what', '检查了什么，对照什么'), T('Each line is a witness run against the real iDempiere, or a judged accounting rule. Numbers are read from the saved logs.', '每一行都是对照真实 iDempiere 跑出来的见证测试，或判定过的会计规则。数字读自保存的日志。'), T(['Result'], ['结果']),
+      [row(T('Receipt lines from an order (Create Lines From)', '按订单生成收货明细行（Create Lines From）'), 'createfrom'), [T('Purchase-order matches posted like iDempiere', '采购订单匹配过账与 iDempiere 一致'), V(PF.matchpo ? (FL === 'zh' ? PF.matchpo[0] + ' / ' + PF.matchpo[1] + ' 一致' : PF.matchpo[0] + ' of ' + PF.matchpo[1]) : 'NOT VERIFIED', ok('matchpo') ? 'G' : 'B')],
+       [T('Inventory moves posted like iDempiere', '库存调拨过账与 iDempiere 一致'), V(PF.movement_facts ? T(PF.movement_facts + ' postings, all balanced', PF.movement_facts + ' 笔过账，全部平衡') : 'NOT VERIFIED', PF.movement_facts ? 'G' : 'B', null, true)],
+       row(T('Move confirmation, in transit and back', '调拨确认（在途及回来）'), 'confirm'), row(T('Physical inventory documents', '实物盘点单据'), 'inventory'), row(T('Replenish Report, row for row', '补货报表，逐行对照'), 'replenish')], true);
     await cardFor();
 
     // ═══ END ═══

@@ -12,6 +12,12 @@ T = {'en': ('HOW EVERY FILM HERE IS MADE', [
         'Fix them the iDempiere way, then prove it again',
         'Move on to the next task',
         'Your turn: suggest an important task for us to check']),
+     'zh': ('这里每部片子是怎么做的', [
+        'SQLite 与 iDempiere 对等：同一个任务并排运行',
+        '找出缺口：每一处差异都记录在案',
+        '按 iDempiere 的方式修好，再证明一次',
+        '继续做下一个任务',
+        '轮到你了：建议一个我们应该检查的重要任务']),
      'th': ('ภาพยนตร์ทุกเรื่องที่นี่ทำอย่างไร', [
         'SQLite กับ iDempiere ทำงานเดียวกันแบบคู่ขนาน เทียบกันทีละขั้น',
         'สืบหาช่องว่าง ทุกความต่างถูกบันทึกไว้',
@@ -26,7 +32,9 @@ def _f(paths, sz):
 LAT = {False: ['/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf', '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'], True: ['/usr/share/fonts/truetype/noto/NotoSans-Bold.ttf', '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf']}
 THA = {False: ['/usr/share/fonts/truetype/noto/NotoSansThai-Regular.ttf'], True: ['/usr/share/fonts/truetype/noto/NotoSansThai-Bold.ttf', '/usr/share/fonts/truetype/noto/NotoLoopedThai-Bold.ttf']}
 def is_thai(ch): return '\u0e00' <= ch <= '\u0e7f'
-def mixed(d, x, y, text, sz, fill, bold=False):     # Thai runs in Noto Sans Thai, everything else (Latin, digits) in Noto Sans — each font only has its own glyphs
+def mixed(d, x, y, text, sz, fill, bold=False):
+    if LANG == 'zh':   # Noto Sans CJK SC has the Han glyphs AND the Latin ones
+        d.text((x, y), text, font=ImageFont.truetype('/usr/share/fonts/opentype/noto/NotoSansCJK-' + ('Bold' if bold else 'Regular') + '.ttc', sz, index=2), fill=fill); return     # Thai runs in Noto Sans Thai, everything else (Latin, digits) in Noto Sans — each font only has its own glyphs
     fl, ft_ = _f(LAT[bold], sz), _f(THA[bold], sz); run, cur = '', None
     def flush(x):
         nonlocal run
