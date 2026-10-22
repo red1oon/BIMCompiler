@@ -131,20 +131,20 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
       window.__keepCard = d; clearInterval(window.__keepIv); window.__keepIv = setInterval(() => { if (window.__keepCard && !document.getElementById('__ledger')) document.body.appendChild(window.__keepCard); }, 100);
     }, { kicker, title, lines });
   };
-  const card = async (title, sub, heads, rows) => {
+  const card = async (title, sub, heads, rows, compact) => {
     rows.forEach(r => fact('card.' + title.replace(/\W+/g, '_').slice(0, 24) + '.' + String(r[0]).replace(/\W+/g, '_').slice(0, 30), r.slice(1).map(c => c.v).join(' | ')));
-    await page.evaluate(({ title, sub, heads, rows, kick }) => {
+    await page.evaluate(({ title, sub, heads, rows, kick, compact }) => {
       const old = document.getElementById('__ledger'); if (old) old.remove();
       const d = document.createElement('div'); d.id = '__ledger';
       d.style.cssText = 'position:fixed;inset:0;z-index:2147483000;background:#10151c;color:#e8edf3;font-family:Noto Sans,DejaVu Sans,Arial,sans-serif;display:flex;flex-direction:column;justify-content:center;padding:0 90px 190px';
       const tone = { L: '#7fd1ff', B: '#ff9b8a', G: '#7ee0a0', A: '#ffd479', N: '#c9d4e0' };
-      const cell = (c) => '<td style="padding:9px 20px;text-align:center;font-size:' + (c.sm ? 30 : 40) + 'px;font-weight:700;color:' + (tone[c.t] || tone.N) + '">' + c.v + (c.s ? '<div style="font-size:16px;font-weight:400;color:#8fa0b3;margin-top:4px">' + c.s + '</div>' : '') + '</td>';
-      d.innerHTML = '<div style="font-size:21px;letter-spacing:.14em;color:#8fa0b3;text-transform:uppercase">' + kick + '</div><div style="font-size:48px;font-weight:700;margin:6px 0 4px">' + title + '</div><div style="font-size:22px;color:#b8c4d2;margin-bottom:26px">' + sub + '</div>' +
+      const cell = (c) => '<td style="padding:' + (compact ? 4 : 9) + 'px 20px;text-align:center;font-size:' + (c.sm ? (compact ? 24 : 30) : (compact ? 30 : 40)) + 'px;font-weight:700;color:' + (tone[c.t] || tone.N) + '">' + c.v + (c.s ? '<div style="font-size:16px;font-weight:400;color:#8fa0b3;margin-top:4px">' + c.s + '</div>' : '') + '</td>';
+      d.innerHTML = '<div style="font-size:21px;letter-spacing:.14em;color:#8fa0b3;text-transform:uppercase">' + kick + '</div><div style="font-size:' + (compact ? 40 : 48) + 'px;font-weight:700;margin:6px 0 4px">' + title + '</div><div style="font-size:' + (compact ? 19 : 22) + 'px;color:#b8c4d2;margin-bottom:' + (compact ? 12 : 26) + 'px">' + sub + '</div>' +
         '<table style="border-collapse:collapse;width:100%"><tr style="font-size:20px;color:#8fa0b3"><td></td>' + heads.map(h => '<td style="text-align:center;padding:6px 20px">' + h + '</td>').join('') + '</tr>' +
-        rows.map(r => '<tr style="border-top:1px solid #243040"><td style="padding:9px 20px;font-size:25px;color:#c9d4e0;width:34%">' + r[0] + '</td>' + r.slice(1).map(cell).join('') + '</tr>').join('') + '</table>';
+        rows.map(r => '<tr style="border-top:1px solid #243040"><td style="padding:' + (compact ? 4 : 9) + 'px 20px;font-size:' + (compact ? 21 : 25) + 'px;color:#c9d4e0;width:34%">' + r[0] + '</td>' + r.slice(1).map(cell).join('') + '</tr>').join('') + '</table>';
       document.body.appendChild(d);
       window.__keepCard = d; clearInterval(window.__keepIv); window.__keepIv = setInterval(() => { if (window.__keepCard && !document.getElementById('__ledger')) document.body.appendChild(window.__keepCard); }, 100);
-    }, { title, sub, heads, rows, kick: KICK });
+    }, { title, sub, heads, rows, kick: KICK, compact: !!compact });
   };
   const uncard = async () => { await page.evaluate(() => { window.__keepCard = null; clearInterval(window.__keepIv); const d = document.getElementById('__ledger'); if (d) d.remove(); }); };
   const V = (v, t, s, sm) => ({ v: String(v), t: t || 'N', s: s || null, sm: !!sm });
@@ -354,7 +354,7 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     await card('What was checked, and against what', 'Each line is a witness run against the real iDempiere, or a judged accounting rule. Numbers are read from the saved logs.', ['Result'],
       [row('Receipt lines from an order (Create Lines From)', 'createfrom'), ['Purchase-order matches posted like iDempiere', V(PF.matchpo ? PF.matchpo[0] + ' of ' + PF.matchpo[1] : 'NOT VERIFIED', ok('matchpo') ? 'G' : 'B')],
        ['Inventory moves posted like iDempiere', V(PF.movement_facts ? PF.movement_facts + ' postings, all balanced' : 'NOT VERIFIED', PF.movement_facts ? 'G' : 'B', null, true)],
-       row('Move confirmation, in transit and back', 'confirm'), row('Physical inventory documents', 'inventory'), row('Replenish Report, row for row', 'replenish')]);
+       row('Move confirmation, in transit and back', 'confirm'), row('Physical inventory documents', 'inventory'), row('Replenish Report, row for row', 'replenish')], true);
     await cardFor();
 
     // ═══ END ═══
