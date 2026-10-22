@@ -8,102 +8,173 @@ It is **deterministic**: the same drawings and the same metadata give the same m
 runs on your drawings** — the code reads geometry and the labels you (or the drawing) state. Anything the
 drawing cannot tell it is listed as a **gap**, never guessed.
 
-> **Status: preliminary (basic shapes).** Walls, floor slabs, roof, door and window openings, and door/window
-> fills. Proven end-to-end on the Duplex set and partly on an independent drawing. See
-> [What it does not do yet](#what-it-does-not-do-yet) before you try your own drawings.
+> **Status.** Proven end to end on two sets: the Duplex (walls, slabs, roof, openings) and a steel-frame shed
+> (columns, beams, footings, cladding, roof members), from raw 2D sheets to a model you can open in the Viewer for
+> 3D, 4D and 5D. See [What it does not do yet](#what-it-does-not-do-yet) before you try your own drawings.
 
 ---
 
-## The idea in one picture
+## The idea in one paragraph
 
-1. **A standard 2D set.** Grid lines on the real wall axes (1, 2, 3… across; A, B, C… up, skipping I and O),
-   dimension strings in three tiers (overall · grid-to-grid · detail), level marks, door swings, window sills.
-2. **Metadata.** Each sheet says what it is (plan of which level, which elevation face, roof, section) and the
-   few facts geometry cannot decide (units, wall tops, door sizes from the schedule). The metadata lives
-   **inside the DXF**, on its own layer, so the file stays a normal DXF any CAD program opens.
-3. **A verdict.** Before anything is built, the drawings are checked. Green = *Qualifies*. Red = a clickable
-   list of exactly what is missing or inconsistent.
-4. **Convert.** One click builds the model. Every element remembers the DXF entity (handle and layer) it came from.
+Each 2D sheet is its own flat world. What joins the sheets (which face, which way up, which height, which storey, which
+unit) is written on a drawing only for a person. The Modeller **reads it from the drawing where it is there, defaults it
+where a convention exists (shown yellow), asks you for it where nothing can decide (shown red)**, checks the whole set
+(**Qualifies** or a clickable list of what blocks), and only then converts. The facts you state are stored **inside the
+DXF** on its own layer (`DXF2BIM-MARK`), so the file stays a normal DXF any CAD program opens. Every element remembers
+the DXF entity (handle and layer) it came from.
 
 ---
 
-## What a standard sheet looks like
+## Three jobs
 
-![Ground floor plan from the standard writer: grid 1–3 / A–D, three dimension tiers, door swings and window sills](img/dxf2bim/std_plan_gf.jpg)
-
-*Ground floor plan of the Duplex, written from the model by the standard 2D writer. Grid bubbles at both ends;
-dimension strings: overall (8800 / 17800), grid-to-grid (4192 + 4192, 7620 / 2143 / 7620) and detail (walls
-and openings). Every dimension is a real CAD dimension measured between its two points — never typed text.*
-
-| | |
+| You want to… | Go to |
 |---|---|
-| ![Front elevation with level datums](img/dxf2bim/std_front.jpg) | ![Building section through both storeys and the roof](img/dxf2bim/std_section.jpg) |
-| *Front elevation: walls and openings on that face, level datums and height dimensions.* | *Section: slabs and roof cut through, with their levels — this is where slab thickness comes from.* |
-
-**Rules the writer follows** (drafting conventions, stated as choices):
-
-- A floor plan shows **everything the cut plane passes through** — cut at the storey level + 1.2 m.
-- Grid lines sit on **load-bearing and exterior wall axes**, never snapped to a module.
-- Door arcs: the **hinge** from the IFC door type (left/right hand), the **swing side** from the door leaf, the
-  **radius = leaf width** (not the frame). No hinge data → a `HINGE ?` note, never a guessed arc.
-- Slab thickness is read from the **section**, not from elevations.
+| **Open a model** that already exists (a `.db` or `.ifc`) | **Open** pill in the [Modeller Guide](ModellerGuide.md) |
+| **Turn 2D drawings into a model** | [Step by step](#step-by-step-2d-drawings-to-a-model) below |
+| **Edit** the model afterwards | the [Modeller Guide](ModellerGuide.md): sketch, move, cut openings, history |
 
 ---
 
-## Step by step in the Modeller
+## Step by step: 2D drawings to a model
+
+The walk-through uses a real set, a steel-frame **shed**: 9 raw BricsCAD sheets (3 plans, 4 elevations, a section,
+a details sheet), no markings in any of them. The numbers in the text are what that set gives you. Yours will differ;
+the order of the steps does not.
 
 **Open:** [red1oon.github.io/bim-ootb/modeller/modeller.html](https://red1oon.github.io/bim-ootb/modeller/modeller.html) (desktop browser).
 
 ### 1 · Open the drawings
-**📂 Open → Open 2D drawings (.dxf)…** and select **all** sheets of the set at once (plans, elevations, roof,
-section). The **2D Drawings** panel lists each sheet with its role; the canvas shows each sheet placed in 3D —
-plans at their level, elevations on their face, the section on its cut plane.
+1. Click **Open** (top of the left toolbar).
+2. In the chooser click **Open 2D drawings (.dxf)…**
+3. Select **all** the sheets of the set at once and confirm.
 
-![The 2D Drawings panel and the Drawing metadata editor, standard set loaded: verdict Qualifies](img/dxf2bim/import_sheets.jpg)
+Two panels appear: **2D Drawings** (one row per sheet) and **Drawing metadata**. The chip at the top of the metadata
+panel is the verdict: **Blocked · 58** on the raw shed, which means 58 things still have to be stated before it can
+convert. Nothing is converted yet and nothing has been guessed: every sheet starts as flat as it was drawn (1 unit = 1 mm,
+all nine sheets lying metres apart: 9.3 × 2.6 m pile, the floor plan and foundation plan 7.4 m apart).
 
-### 2 · Check the metadata
-Press **Metadata**. The **Drawing metadata** panel shows, per section:
+![Raw set just opened: 25 defaulted rows listed, each with what it was read from; verdict Blocked · 58](img/dxf2bim/raw_open_defaults.jpg)
 
-| Section | What you set | Notes |
-|---|---|---|
-| **Sheets** | role (plan / elevation / roof / section), level, face, cut | a plan's level defines a storey |
-| **Units** | mm, m, in, ft | **you confirm** — the file header is shown ("file says mm") but never applied by itself |
-| **Layers** | which layer holds walls, doors, glazing, dims, grid, levels; or ignore | templates for common layer standards |
-| **Tags** | click an element on the canvas, pick its mark / type | e.g. a door mark that links to the schedule |
-| **Exclude areas** | drag a box around decking, furniture, landscaping | its contents are ignored |
-| **Wall tops** | "walls stop under the slab above", or a height per wall | interior wall heights are never visible in elevations |
-| **Verdict** | live result | click an item to zoom to it on the drawing |
+### 2 · Watch the sheets place themselves
+A raw set (one with at least one defaulted row) plays an **arrangement** on open; press **Arrange** to see it again.
+It runs four phases, 54 steps on the shed: **1 Scale** (inches to metres) · **2 Orient** (plans to their level,
+elevations stood up) · **3 Assemble** (onto one grid, each elevation onto its face, North mirrored) · **4 Name**.
+A caption at the bottom names the sheet, what is being done and **how sure it is**.
 
-Every value shows **where it came from**: *from file*, *from model*, or *you*.
+![The arrangement caption: phase, sheet, the step, and a DEFAULT tag](img/dxf2bim/raw_morph_caption.jpg)
 
-![Editor with the standard set: units confirmed, layers mapped, verdict Qualifies](img/dxf2bim/editor_std.jpg)
+A set that already carries its markings opens **placed**, with no replay.
 
-### 3 · Raw drawings: fill in what is missing
-A drawing without metadata opens with **red** fields and the verdict **Blocked**. The editor lists
-**suggestions** it can prove from the drawing (e.g. a title text "GROUND FLOOR PLAN" → role = plan) — **nothing
-becomes metadata until you tick it.**
+**The colour legend** (rows in the panel, lines on the canvas):
 
-![Raw drawings: every sheet needs a role; suggestions wait for your tick; Convert is refused](img/dxf2bim/editor_raw.jpg)
+| Colour | Meaning |
+|---|---|
+| **Yellow** | defaulted or read from the file: applied, **not yours yet** |
+| **Orange** | inferred from the geometry or a convention (e.g. `@LEVEL=0` for plans that state no level) |
+| **Red outline** | required: you must state it |
+| **Solid** (no tint) | stated by you |
 
-Click any verdict item to jump to it:
+Click any row to see its evidence on the sheet. The yellow rows never silently become facts: **Convert stays
+refused until you accept or change them.**
 
-![Clicking a verdict item zooms the canvas to the offending entity](img/dxf2bim/editor_verdict_zoom.jpg)
+### 3 · Accept what you agree with
+Click **Accept all** in the *All defaults* box. On the shed: 25 yellow rows turn solid and the chip drops
+**58 → 48**. Press **Convert** now and it refuses and says why (`Convert refused: qualify verdict blocked, 48
+blocking item(s)`). The 48 are the things only you can state:
 
-### 4 · Save the marked copies
-**Save marked copies** downloads `<name>_marked.dxf` for every sheet, with your metadata written in. The
-originals are never modified. Next time you open the marked copies, everything is already filled.
+![Convert refused while 48 items still block](img/dxf2bim/raw_refused.jpg)
+
+### 4 · State what only you can state
+Work down the red-outlined fields. Each fix updates the chip. You never type outside the panel; each value is written
+as a marking in the sheet's own copy (see [the metadata](#the-metadata-for-cad-users)).
+
+1. **The set name, once.** Type one word (`SHED`) into **Set** on the first sheet; it fills the same row on all
+   eight others. Chip **48 → 45**.
+
+   ![Set name typed once](img/dxf2bim/raw_set_name.jpg)
+
+2. **A second height for each elevation and the section.** Each sheet knows one level (ground, drawn at one `y`) and asks
+   for a second, with the exact question: *"One height is known: 0 m at y -3919.192. Give a second: read a level text or a
+   dimension on this sheet, type it in metres, and the y where it is drawn."* Type the height in the **height** box and the
+   y of that line in the next, then **Add**. Five sheets on the shed. Chip: 45 → 48 (the sheets are now usable, so
+   what each layer means can now be asked).
+
+   ![The height question on an elevation](img/dxf2bim/raw_height_question.jpg)
+
+3. **What each CAD layer is.** In **Layers**, for every layer pick what it holds: column, beam, footing, panel, fan, door…
+   The same layer name can mean different things on different sheets (`Dim` is a beam on the beam plan and a net on the
+   elevations; `0` is a column on the south elevation only). Use the small arrow beside a layer to **split it by sheet**.
+   Ten layers on the shed. Chip **→ 0**: the verdict turns **Qualifies**.
+
+   ![Layer meanings, per role and per sheet](img/dxf2bim/raw_layers.jpg)
+
+4. **Body heights.** No elevation shows the z-range of beams and footings; the **Body heights** section asks for them
+   (metres, from the drawing's detail). Until you state them those bodies are left out, never guessed.
+
+   ![Body heights stated for beams and footings](img/dxf2bim/raw_body_heights.jpg)
+
+5. **Leave out what is not building.** In **Exclude areas** choose the sheet, click **Drag a box**, then drag across the
+   stray drawing on the canvas. On the shed this removes 4 bodies (449 → 445).
+
+   ![Exclude tool armed on the beam plan](img/dxf2bim/raw_exclude_drag.jpg)
 
 ### 5 · Convert
-**Convert** is enabled only when the verdict is **Qualifies**. It builds walls, floor slabs, the roof, cuts the
-door and window openings, and places the door and window fills from the component library — as **one undo
-step**.
+1. Tick **Complete the building (floor slab, roof): amber, estimated** if you want the slab and roof; they are
+   estimated, so they show **amber**.
+2. Click **Convert**. It is enabled only when the verdict is **Qualifies**, and runs as **one undo step**.
 
-![The converted Duplex: two storeys, openings cut, doors and glazing placed](img/dxf2bim/converted.jpg)
+On the shed: **512 bodies**: 96 columns, 35 beams, 32 footings, 41 walls, 1 slab, 2 roof pieces and 168 members; **4
+left out**, listed as advisory with the reason (no elevation, or conflicting heights). The status line says so.
 
-### 6 · Export IFC
-**Export → IFC4.** The file has a proper spatial structure (Project → Site → Building → Storeys) and every
-element contained in its storey. On the Duplex standard set: 96 wall pieces, 2 slabs, 1 roof, 14 doors,
-22 windows, 2 storeys.
+![Complete the building ticked; 512 bodies will be built, 4 left out](img/dxf2bim/raw_complete_convert.jpg)
+
+![The converted shed](img/dxf2bim/raw_shed.jpg)
+
+### 6 · Export, then open it in the Viewer
+Click **Export** (right toolbar), then **Viewer database (.db)**. The file downloads, and it is the same database the
+Viewer's own extractor makes from an IFC of the model (checked: equal to the extractor's output for the same shed;
+it opens in the Viewer as the 512-element shed). Open it in the **Viewer** for 3D, 4D (a generated schedule) and 5D
+(a rate-based cost estimate with its coverage line).
+To carry on authoring, the same file reopens in the Modeller (**Open ▸ Open local .db / .ifc…**): on the shed all
+512 elements come back, structure included (the ARC-only filter applies to `.ifc` files, not to this database).
+
+![Export menu: Viewer database (.db) is the second entry](img/dxf2bim/raw_export_menu.jpg)
+
+The other entries: **Native .db** (the signed op-log, reopens in the Modeller), **IFC (IFC4)** with a proper spatial
+structure, **BCF issue**, **2D drawings (DXF)**.
+
+### 7 · Save the marked copies (optional but recommended)
+**Save marked copies** (bottom of the metadata panel) downloads `<name>_marked.dxf` for every sheet with everything you
+stated written in. The originals are never modified. Open the marked copies next time and the set opens **placed**, with
+0 blocking items and nothing to replay.
+
+### If it says Blocked
+The verdict lists **each blocking item** by sheet and field; click one to jump to it. Nothing is built from a guess:
+what the drawings do not say is either asked for, left out (and listed), or marked yellow/amber so you can see it was assumed.
+
+---
+
+## If your set already carries markings (the standard set)
+
+Sets written by the standard 2D writer, or marked by a previous run, open already placed and **Qualify** with nothing
+to type. The Duplex's standard set is an example:
+
+![Ground floor plan from the standard writer: grid 1–3 / A–D, three dimension tiers, door swings and window sills](img/dxf2bim/std_plan_gf.jpg)
+
+| | |
+|---|---|
+| ![Front elevation with level datums](img/dxf2bim/std_front.jpg) | ![Building section through both storeys and the roof](img/dxf2bim/std_section.jpg) |
+| *Front elevation: walls and openings on that face, level datums and height dimensions.* | *Section: slabs and roof cut through, with their levels: this is where slab thickness comes from.* |
+
+**Rules the writer follows** (drafting conventions, stated as choices):
+
+- A floor plan shows **everything the cut plane passes through**, cut at the storey level + 1.2 m.
+- Grid lines sit on **load-bearing and exterior wall axes**, never snapped to a module.
+- Door arcs: the **hinge** from the IFC door type, the **swing side** from the door leaf, the **radius = leaf width**.
+  No hinge data → a `HINGE ?` note, never a guessed arc.
+- Slab thickness is read from the **section**, not from elevations.
+
+On the Duplex, **Export → IFC4** gives 96 wall pieces, 2 slabs, 1 roof, 14 doors, 22 windows, 2 storeys.
 
 ---
 
@@ -135,18 +206,15 @@ drawing and its schedule is reported (`GAP:schedule_conflict`), never silently r
 
 ## What it does not do yet
 
-Honest limits of the preliminary version:
-
-- **Basic shapes only:** walls, slabs, roof, openings, door/window fills. No stairs, ramps, MEP, furniture.
-- **Rectilinear buildings:** skewed and curved walls are reported as gaps; roofs are flat outlines (pitched or
-  curved roofs are not drawn correctly yet).
-- **Columns** are cut and drawn, but not yet as column symbols on the grid.
-- **Openings above or below the plan cut** (e.g. high bathroom windows) — being changed so every opening of
-  the storey is shown from its host wall regardless of height.
-- **"Any DXF"** is not claimed. Your drawing needs the metadata above; the editor helps you add it, the verdict
-  tells you when it is complete.
-- **The component library** (door/window geometry) is loaded locally during this preliminary stage; on the
-  public site Convert reports the library as unreachable until it is published.
+- **What is built is what the sheets show.** Columns, beams, footings, panels, fans, walls, members, slab and roof come
+  from the sheets; anything no sheet shows is **left out and listed** (4 on the shed), never invented.
+- **Roof and slab** are estimated when you tick *Complete the building* (amber), not read from a drawing.
+- **Door and window schedules**, and roof rules beyond the default, are not read yet.
+- **Rectilinear buildings:** skewed and curved walls are reported as gaps.
+- **"Any DXF"** is not claimed. A set needs a role per sheet, a second height on each elevation and section, and the layer
+  meanings; the panel asks for each and the verdict tells you when it is complete.
+- **The component library** (door/window geometry) loads locally; on the public site Convert reports the library as
+  unreachable until it is published, so door and window fills may be 0.
 
 ---
 
