@@ -2127,6 +2127,25 @@ narration later via `prompts/FILM_NARRATION.md` ▶ PLAYBOOK.
 - *Reading:* for a 9-to-5 office workflow the layer is comfortable up to **one department of ~30 staff per space on GitHub, ~100 on a web relay/bucket with staggered visits**, **provided** the fold is made incremental. Larger = several spaces (one per department/branch) and a transport without GitHub's per-account cap.
 - *Not covered:* a phone's CPU; more than 9 simulated devices (projection only); real network latency; the Apps Script per-request time.
 
+
+#### §13.12.I.1 Build spec — base hash and base-row scope (2026-10-24, read from `comm_store.js`/`comm_admit.js`; user: "build the base hash and base-row scope next")
+**Where the code stands (read, not assumed):** admission scope comes only from the record's CREATE — `comm_store.js` `order()`: `scope: cr ? _scopeOfCreate(cr) : null`, and `comm_admit.js:21` `if (!ctx.scope) return REFUSED 'scope-unknown'`. GENESIS params = `{name, nonce, founder{…}}`, and `space = ROS.spaceOf(params)` (the space id is the hash of the genesis params).
+**1. Base hash**
+- `CommStore.newSpace(name, founder, personUu, personName, adRoleId, opts)` — new optional `opts.base = {name, sha256, bytes, version}` copied into `params.base`. Because the space id hashes the params, **a different base is a different space id** — the binding is automatic and tamper-evident. A space without `opts.base` behaves exactly as today (additive).
+- `store.baseInfo()` → the genesis `base` object or `null` (read from the folded roster; no new op type).
+- Host check `CommStore.checkBase(store.baseInfo(), loaded)` where `loaded = {sha256, bytes?}` is what the host computed from the DB it actually has: returns `{ok:true}` or `{ok:false, reason:'base-mismatch', have, want}`; it is a pure function. The host (ERP `team_sync.js`, Modeller adapter) calls it **before** opening the store for folding and shows the plain message of §13.12.I rule 3; it never folds onto a mismatching base. For the ERP the thing hashed is the shipped seed the sidecar sits on (state the exact file in the host change); for the Modeller the loaded model DB.
+- Ops stamp `manifest` (existing field, §11.8) with a short form of the base sha256; an op whose `manifest` base differs from the genesis base is **REFUSED `base-skew`** at admission (after signature, before access).
+**2. Base-row scope**
+- `CommStore.open(db, opts)` gains `opts.baseRow(table, uu) → {client, org} | null` — supplied by the host from the **verified** base DB (e.g. `SELECT ad_client_id, ad_org_id FROM <table> WHERE <table>_uu=?`). The engine stays DB-agnostic.
+- In `order()`: `scope = cr ? _scopeOfCreate(cr) : (opts.baseRow ? opts.baseRow(table, uu) : null)`. Precedence: a CREATE in the log wins; else the base row; else `scope-unknown` as today. An UPDATE/DELETE whose target is a base row is admitted or refused by the SAME `canUpdate(role, client, org, table)` as any other op — no special case per table.
+- The refusal reasons stay the same plus **`base-row-missing`** when `opts.baseRow` is supplied and returns null for a uu that is not created in the log (an op against a record that exists nowhere).
+- ERP host change (`erp/team_sync.js`): `translate()` currently marks an UPDATE/DELETE of a seeded record (positive pk) local-only (`uuOf` returns null for non-negative ids). With a base present it resolves the seeded row's `<table>_uu` from the base DB and sends the op; `STATION_LOCAL` tables stay excluded. Remove the "seeded edits are local-only" limit text from the chip/guide only after the witness is green.
+**3. Witnesses** (each with a control; INCONCLUSIVE when nothing was judged)
+- `W-BASE-HASH` (`scripts/witness_comm_base.js`, node): space created with `base`; same base → `checkBase` ok; one flipped byte of the DB → `base-mismatch` with have/want; a space without `base` still folds as before; the space id differs when the base differs; an op stamped with another base is REFUSED `base-skew`.
+- `W-BASE-EDIT` (node + the ERP two-browser harness): a base record (real seeded row with a `_uu`) is edited by A (role with write on its org) → B sees it after a Visit; a role WITHOUT write on that org is REFUSED by the base row's scope with `access:` reason; an op on a uu that is in neither the log nor the base is REFUSED `base-row-missing`; the Complete of §13.7 now sends the `m_storagereservation` write and it is ADMITTED (before: `scope-unknown`) — printed as before/after counts of `refused`.
+- Regression: all comm witnesses, `witness_team_so/docaction/desktop/pill`, `witness_team_modeller` unchanged (spaces without `base` must behave identically).
+**4. Out of scope here:** releases/fast-forward (`W-BASE-RELEASE`), thin base, serving the base (policy directory). Named so they are not silently skipped.
+
 ### §14.1 Novelty — what is and isn't new (checked 2026-10-23)
 
 - **The building blocks are known.**
