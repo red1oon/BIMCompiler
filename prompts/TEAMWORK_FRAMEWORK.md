@@ -991,3 +991,71 @@ Both logs were read in full (Log Mandate).
 
 **Next:** CL3 — `comm.db` + an in-memory pipe and a shared-folder pipe, ported to bim-ootb `common/comm/`, with two real
 browser contexts.
+
+### §12.4 Build spec — CL3: `comm.db` + pipes, two real browser contexts (user: *"proceed"*, 2026-10-23)
+
+**Open question carried forward:** ⛔ whether ops unrelated to a missing op may fold provisionally, which needs
+target-level deps (§12.3). It isn't decided, so CL3 keeps author-level deps and **parks**; the PARKED count is reported,
+never hidden.
+
+**Modules** (bim-compiler `build/comm/` canonical, copied byte-identical to bim-ootb `common/comm/`):
+
+**`comm_pipe.js`** — the four-verb contract of §11.2: `put(name, bytes)` / `get(name)` / `list(prefix)`.
+- `memPipe()` — in memory.
+- `httpPipe(base)` — `PUT|GET <base>/f/<name>`, `GET <base>/list?prefix=`. It reaches a dumb file directory served by
+  any static/writable host. In the witness that is a ~30-line node folder server with no logic; it is the same contract
+  as a bucket.
+- `folderPipe(dir)` — node `fs`, for the node witness.
+
+**`comm_store.js`** — the §11.11 tables CL3 needs, on an injected sql.js database:
+- Tables: `cl_device, cl_self, cl_op (UNIQUE(author_kid,author_seq)), cl_equivocation, cl_verdict, cl_fetched,
+  cl_outbox, cl_head_seen`.
+- `author({target, body, intent, base})`:
+  - assigns `seq` and `prev`;
+  - sets `deps` = other authors' heads that changed since my last op;
+  - validates, signs and stores the op as `OWN`.
+- `ingest(env, pipe)`:
+  - known device + valid signature + valid envelope → `VERIFIED`;
+  - a second op at an occupied `(author, seq)` → `cl_equivocation` (the first stays, the second is not stored as an op).
+- `order()` → `comm_order.linearize` over OWN+VERIFIED; writes `cl_verdict` as MERGED / PARKED / EQUIVOCATED.
+- `sync(pipe)` — the post-office visit, in a fixed order:
+  1. publish `d/<kid>` (my public key);
+  2. put new bundles and read each back (hash = name) → SENT;
+  3. list `d/` and learn devices;
+  4. list `o/` and fetch only unseen names;
+  5. ingest;
+  6. order;
+  7. put my signed head `h/<kid>`;
+  8. list `h/` and verify heads into `cl_head_seen`.
+  - Logs one line: `§COMM_SYNC kid=… sent=… fetched=… ingested=… placed=… parked=… equivocations=…`.
+- `delivery()` — per own op: SAVED → SENT (read-back) → SEEN-by-[kid] (that peer's signed head frontier covers my seq),
+  the receipt of §11.15.
+- **Bundle = a tiny SQLite file** (§11.21 item 1): one table `ops(op_hash, envelope)`.
+  - Its name is `o/<kid>/<from>-<to>.<h12>.bimpack`, where `h12` is the first 12 hex of sha256 over the op hashes in seq
+    order — the canonical row stream, not the file bytes (§11.21 ⛔ byte-stability).
+- **⚠ CL3-only temporary trust:** a device key read from `d/<kid>` is accepted as-is. CL4 replaces it with signed ENROLL
+  ops (§11.5). The log prints `§COMM_TRUST mode=CL3-temporary`, so no later reader mistakes it for the real roster.
+
+**Witnesses:**
+
+**`W-STORE-NODE`** (`scripts/witness_comm_cl3_store.js`) — 3 devices over `memPipe` and over `folderPipe`:
+- `§STORE-CONVERGE` — after two visits each, every store holds the same op set and the same order hash.
+- `§STORE-RECEIPT` — before B visits, A's ops are SENT and not SEEN; after B visits, A sees SEEN-by-B.
+- `§STORE-WITHHOLD` — the pipe drops one bundle → descendants PARKED (count logged); the bundle restored → converge.
+- `§STORE-EQUIVOCATE` — a device publishes two different ops at one seq → `cl_equivocation` on every peer.
+- `§STORE-FORGE` — an op signed by an unknown key, and one with a tampered body, are both refused on ingest.
+- `§STORE-INCREMENTAL` — a second visit with nothing new fetches 0 names.
+
+**`W-FOLDER-2CTX`** (bim-ootb `common/tests/witness_comm_cl3_folder.js`):
+- Setup: two real Playwright `BrowserContext`s (separate storage, the S5 setting), Chromium with `--disable-gpu`, on
+  `common/comm/comm_poc.html`.
+- They reach ONE folder only through the dumb folder server — no relay code, no shared storage.
+- Each context: mints its own WebCrypto key; creates an order (UU) and edits it; visits.
+- Assert:
+  - both contexts reach the same op count and order hash;
+  - both fold, through the REAL `erp/kernel_ops.js` + `erp/crud_core.js` `listTip`, to identical `c_order` rows with
+    each order carrying its own edit — the CL1 defect scenario, now across two real browsers;
+  - each context sees the other's receipt (SEEN);
+  - the folder holds only `d/ o/ h/` objects.
+- Driven through `page.evaluate` on the POC page's API. This is an engine-in-real-browser test, not a UI test; the user
+  path is CL-P.
