@@ -1767,3 +1767,83 @@ narration later via `prompts/FILM_NARRATION.md` ▶ PLAYBOOK.
 - A slim AD seed for the phone (the 27 MB first load is visible on camera).
 - A role picker on Approve (for beat 7).
 - One clean end-to-end take on the user's real phone, read back from GitHub.
+
+### §13.4 CL8 results 2026-10-23 — encryption ✅ DONE (witness, node + 2 real browsers + real GitHub/Gmail)
+
+**`W-PIPE-OPAQUE` PASS judged=44 fails=0** (`scripts/witness_comm_cl8_opaque.js`, log `build/comm/logs/witness_comm_cl8_opaque.log`),
+22 judgements each over memPipe and folderPipe:
+
+| Arm | Measured (log line) |
+|---|---|
+| CONVERGE | `§OPAQUE-CONVERGE business=6/6/6 order=e62363741ed9744c/e62363741ed9744c/e62363741ed9744c` — A, B, C: one op set, one order |
+| RAW | `§OPAQUE-RAW pipe objects=7 bytes=66812 sealed-rows=6 needles=14 hits=0` — documentno strings, 3 + 3 totals, `grandtotal`, `documentno`, `c_order`; every object searched |
+| RAW control | `§OPAQUE-RAW control (plaintext space) needles found=5/5 sealed-rows=0` — the same search finds them in a pre-CL8 space, so the 0 above can fail |
+| OUTSIDER | `§OPAQUE-OUTSIDER identity ops read=8 roster devices=3 business ops read=0 placed=0 sealed=6 foldable=0` |
+| NOGRANT | `§OPAQUE-NOGRANT E enrolled without dh_jwk: in roster=true epochs=none business placed=0 sealed=6` (the "ENROLL without dhJwk still works, just no grant" promise) |
+| LATE | `§OPAQUE-LATE before enrol: business placed=0 sealed=6` → `after grant: opened=6 sealed=0 business placed=6 order(L)=…=order(A)` |
+| NOKEY | `§OPAQUE-NOKEY raw epoch-1 key found in comm.db=false in pipe=0 ; fresh comm.db re-derived epochs=1 placed=6` |
+| TAMPER | `§COMM_SEAL … TAMPERED op=… refused (GCM)`; `§OPAQUE-TAMPER … flipped 1 bit … tampered=1 op-in-store=0 placed=5/6` → after restoring the honest bytes `tampered=0 placed=6/6` |
+| REVOKE | `§COMM_REKEY kid=… epoch=2 excludes=<C> grants=3`; `§OPAQUE-REVOKE B epochs=1,2 ; C epochs=1 revoked=true C placed=6 sealed=1 ; A placed=7 L placed=7 B placed=7`; `B's post-rekey row is enc:2: ; C forcing its epoch-1 key on it → refused` |
+| RAW after rekey | `§OPAQUE-RAW after rekey: objects=13 sealed-rows=7 hits=0` |
+
+- **The witness can fail.** Mutation check: with `_seal` removed from `bundleNew` (business ops go out in plaintext), the same
+  witness goes red on RAW (`hits=18 sealed=0`), OUTSIDER, NOGRANT, LATE, REVOKE and the post-rekey RAW.
+- A first run failed on TAMPER (`placed=4/6`): the flipped op was a CREATE, so the UPDATE that read it parked. That was
+  the witness's expectation, not the code. It now flips the last sealed row of a bundle.
+
+**What was built** (`build/comm/`, ported byte-identical to bim-ootb `common/comm/`):
+- `newDevice()` also makes a P-256 ECDH pair (private non-extractable). `ensureDh(dev)` upgrades a device object saved
+  before CL8 (useful only before it is enrolled). `newSpace` puts `dh_jwk` in the founder block; a founder without one makes a
+  plaintext space, exactly as before.
+- Identity ops `KEYGRANT {kid, epoch, from_kid, wrapped}` and `REKEY {epoch, excludes}` (comm_roster.js). A grant is the
+  epoch key `AES-KW`-wrapped under `HKDF-SHA256(ECDH(granter priv, device pub))`, with space, epoch, from and to bound into
+  the HKDF info, so a grant cannot be replayed to another device or epoch. Business envelopes are `AES-GCM-256`,
+  AAD = `space|epoch`.
+- Roster rules I had to decide (the spec was silent):
+  - A KEYGRANT is valid only if its signer is a comm-admin or the same person as the grantee, **and holds that epoch**
+    (the founder holds epoch 1, a REKEY's author holds its epoch, a grantee holds what it was granted).
+  - A REKEY needs an admin and must be exactly `max epoch + 1`; the first in fold order wins, a second for the same epoch
+    is `REFUSED epoch-exists`.
+  - Both read the epoch record (`ROS.epochUU`), so they order after the GENESIS / REKEY that created the epoch.
+- The store derives keys in `keyring()` from the accepted grants at fold time and memoises on the fold result. Nothing
+  symmetric is ever written to `comm.db`.
+- `enroll(kid, jwk, personUu, dhJwk?)` with `dhJwk` also grants every epoch the enroller holds, in the same visit.
+- `sync()` order is now: collect (sealed rows → `cl_sealed`) → open what a key now opens → housekeeping → send my news.
+  - Housekeeping (`autoKeys`): an admin's visit after a REVOKE of a key holder writes REKEY + a grant to every
+    non-revoked device with a key; an admin or same-person device also issues any epoch grant a device still lacks (the
+    repair path). It never re-issues a grant it already authored.
+  - **Never plaintext:** in an encrypted space a business op the device cannot yet encrypt (no key, or no trusted genesis
+    yet) is not put in a bundle; the bundle stops before it. Identity ops still go out.
+  - A tampered row (key held, GCM refuses) is dropped, counted (`rep.tampered`), and its bundle is forgotten
+    (`cl_fetched`) so an honest copy heals it on a later visit.
+- `readBundle` returns `{hash, env:null, enc:<epoch>}` for a row it cannot open. New `keyring()` and `sealed()` on the store.
+
+**Existing witnesses changed (only where the new flow requires it):**
+- `witness_comm_cl3_store.js`, `_cl5_conflict.js`, `_cl3b_github.js`, `_gmail_log.js`: `enroll(...)` now passes `dhPubJwk`,
+  otherwise the enrolled device has no key and (correctly) cannot read the founder's ops.
+- `witness_comm_cl3_store.js`: the §STORE-WITHHOLD late joiner used to be an unenrolled `newDevice()` that read everything;
+  it is now enrolled and granted, since an unenrolled reader sees nothing (that is what CL8 is).
+- `witness_comm_cl3b_github.js`: op counts 5 → 7 and A's SEEN ops 4 → 6 (the 2 KEYGRANTs).
+- bim-ootb `witness_comm_cl3_folder.js`: A's own ops before the first visit 5 → 7. `comm_poc.html` passes `dh_jwk` through
+  `init` / `enrollPeer`. `witness_comm_cl4_admit.js` needed no change (28 ops written instead of 27: the founder's self-grant).
+
+**Regression (each log read):**
+- W-UU-NO-COLLIDE PASS 23/0 · W-ORDER-PERMUTE PASS 12/0 · W-STORE-NODE PASS 25/0 · W-ADMIT-FOLD PASS 23/0 · W-CONFLICT PASS 12/0.
+- W-GH-PIPE-2DEV PASS 7/0 (real GitHub, now with ciphertext bundles: `A blob bytes read=90012`). Run twice: the first run
+  failed on the two op-count assertions above, which were then corrected.
+- W-GMAIL-LOG PASS 5/0 (real Gmail, 4 notes matched by message id).
+- bim-ootb: W-FOLDER-2CTX PASS 16/0 (two real browsers). W-PHONE-PAGE PASS 13/0 (two real browsers, real GitHub + Gmail post box, 10 notes read back, `errors=0`; the phone's join request carries `dh_jwk` and Approve calls `enroll(kid, jwk, person_uu, dh_jwk)`). Its first run crashed with `waitForSelector` timeout on the phone's last visit: the post-box call hung past 90 s (no `§PHONE_NOTE` printed for it; the box answered a probe in 2 s right after). The rerun passed; the visit-log fetch has no timeout of its own, which is a separate small item.
+
+**Named limits (not hidden):**
+- **Two admins revoking at once** each write REKEY epoch n+1. The second is refused, and any business op its author wrote
+  under that epoch before seeing the winner stays sealed for everyone else. Not witnessed.
+- The pipe still sees **metadata**: author kids, bundle names (seq range, hash), sizes, head timestamps, and all identity ops
+  (names, role ids, public keys, wrapped keys).
+- A revoked device keeps the epochs it already had (it can still read history it could always read).
+- **Local plaintext:** `comm.db` on a device holds the ops it can read in the clear, as the business DB does. CL8 protects
+  the pipe, not a stolen unlocked device.
+- Existing spaces are plaintext (the founder block is part of the space id, so it cannot gain a key later). Only a space
+  founded by a device with a `dhPubJwk` is encrypted.
+- A phone paired before CL8 has no ECDH key: `ensureDh` gives it one on page load, but it only helps if the device is not
+  yet enrolled. Already-enrolled phones need re-pairing to read an encrypted space.
+- The epoch key is held extractable in memory (needed to re-grant it); the ECDH private key is not extractable.

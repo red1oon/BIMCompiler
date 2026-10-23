@@ -62,7 +62,7 @@ function tableId(n) { var t = ADDB.prepare('SELECT ad_table_id AS id FROM ad_tab
   var sp = await STORE.newSpace('cl5', A, A.person_uu, 'A', 102);
   function mk(d) { return STORE.open(new SQL.Database(), { SQL: SQL, space: sp.space, self: d, access: access, messageText: messageText, tableId: tableId, log: quiet }); }
   var SA = mk(A), SB = mk(Bd);
-  await SA.genesis(sp.params); await SA.addPerson({ person_uu: Bd.person_uu, name: 'B', ad_role_id: 102, comm_admin: false }); await SA.enroll(Bd.kid, Bd.pubJwk, Bd.person_uu);
+  await SA.genesis(sp.params); await SA.addPerson({ person_uu: Bd.person_uu, name: 'B', ad_role_id: 102, comm_admin: false }); await SA.enroll(Bd.kid, Bd.pubJwk, Bd.person_uu, Bd.dhPubJwk);
   var O = {}; for (var n of ['O1', 'O2', 'O3', 'O4']) { O[n] = uuid();
     await SA.author({ target: { table: 'c_order', uu: O[n] }, intent: 'K2', body: { op_type: 'CRUD_CREATE', params: { fields: { documentno: n, description: 'x', grandtotal: 100, ad_client_id: 11, ad_org_id: 11 } } } }); }
   async function both() { await SA.sync(pipe); await SB.sync(pipe); await SA.sync(pipe); await SB.sync(pipe); }

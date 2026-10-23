@@ -51,7 +51,7 @@ async function commitsOn(branch) { var r = await gh('GET', '/commits?sha=' + enc
   var PA = PIPE.ghPipe({ owner: OWNER, repo: REPO, token: TOKEN, self: A.kid, minGapMs: GAP }), PB = PIPE.ghPipe({ owner: OWNER, repo: REPO, token: TOKEN, self: Bd.kid, minGapMs: GAP });
   var created = [];
   try {
-    await SA.genesis(sp.params); await SA.addPerson({ person_uu: Bd.person_uu, name: 'B', ad_role_id: 102, comm_admin: false }); await SA.enroll(Bd.kid, Bd.pubJwk, Bd.person_uu);
+    await SA.genesis(sp.params); await SA.addPerson({ person_uu: Bd.person_uu, name: 'B', ad_role_id: 102, comm_admin: false }); await SA.enroll(Bd.kid, Bd.pubJwk, Bd.person_uu, Bd.dhPubJwk);
     var uu = nodeCrypto.randomUUID();
     await SA.author({ target: { table: 'c_order', uu: uu }, intent: 'K2', body: { op_type: 'CRUD_CREATE', params: { fields: { documentno: 'GH-1', grandtotal: 100, ad_client_id: 11, ad_org_id: 11 } } } });
     var visits = { A: 0, B: 0 }, perVisit = [];
@@ -66,11 +66,11 @@ async function commitsOn(branch) { var r = await gh('GET', '/commits?sha=' + enc
 
     console.log('\n§GH-CONVERGE');
     var oA = await SA.order(), oB = await SB.order(), hA = oA.order.join(','), hB = oB.order.join(',');
-    verdict(oA.order.length === 5 && hA === hB, 'both devices: the same 5 ops in the same order, via GitHub only', 'A=' + oA.order.length + ' B=' + oB.order.length);
+    verdict(oA.order.length === 7 && hA === hB, 'both devices: the same 7 ops (5 + the 2 CL8 KEYGRANTs) in the same order, via GitHub only', 'A=' + oA.order.length + ' B=' + oB.order.length);
     console.log('\n§GH-RECEIPT');
     var dA = SA.delivery();
     console.log('   §GH delivery A: ' + dA.map(function (x) { return x.seq + ':' + x.state; }).join(' '));
-    verdict(dA.length === 4 && dA.every(function (x) { return x.state === 'SEEN' && x.seenBy.indexOf(Bd.kid) >= 0; }), "A's 4 ops SEEN by B (B's signed head read from GitHub)");
+    verdict(dA.length === 6 && dA.every(function (x) { return x.state === 'SEEN' && x.seenBy.indexOf(Bd.kid) >= 0; }), "A's 6 ops (4 + the 2 CL8 KEYGRANTs) SEEN by B (B's signed head read from GitHub)");
     console.log('\n§GH-ONE-COMMIT');
     var cA = await commitsOn(PA.branchOf(A.kid)), cB = await commitsOn(PB.branchOf(Bd.kid));
     console.log('   §GH commits on GitHub: dev/A=' + cA + ' (visits ' + visits.A + ')  dev/B=' + cB + ' (visits ' + visits.B + ')');

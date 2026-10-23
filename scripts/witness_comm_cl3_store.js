@@ -47,7 +47,7 @@ async function run(SQL, pipeName, makePipe) {
   function mk(d) { return STORE.open(new SQL.Database(), { SQL: SQL, space: SPACE, self: d, access: access, log: slog }); }
   for (var i2 = 0; i2 < 3; i2++) S.push(mk(devs[i2]));
   await S[0].genesis(sp.params);
-  for (var i3 = 1; i3 < 3; i3++) { await S[0].addPerson({ person_uu: persons[i3], name: 'P' + i3, ad_role_id: 102, comm_admin: false }); await S[0].enroll(devs[i3].kid, devs[i3].pubJwk, persons[i3]); }
+  for (var i3 = 1; i3 < 3; i3++) { await S[0].addPerson({ person_uu: persons[i3], name: 'P' + i3, ad_role_id: 102, comm_admin: false }); await S[0].enroll(devs[i3].kid, devs[i3].pubJwk, persons[i3], devs[i3].dhPubJwk); }
   await S[0].sync(pipe); await S[1].sync(pipe); await S[2].sync(pipe);
   var idOps = S[0].query("SELECT COUNT(*) AS n FROM cl_op WHERE author_kid=?", [devs[0].kid])[0].n;
   var uus = S.map(function () { return nodeCrypto.randomUUID(); });
@@ -112,8 +112,11 @@ async function run(SQL, pipeName, makePipe) {
     var P2 = PIPE.memPipe('mem-withhold'), W = [];
     for (var w = 0; w < 3; w++) W.push(STORE.open(new SQL.Database(), { SQL: SQL, space: SPACE, self: devs[w], access: access, log: slog }));
     await W[0].genesis(sp.params);
-    for (var w2 = 1; w2 < 3; w2++) { await W[0].addPerson({ person_uu: persons[w2], name: 'P' + w2, ad_role_id: 102, comm_admin: false }); await W[0].enroll(devs[w2].kid, devs[w2].pubJwk, persons[w2]); }
+    for (var w2 = 1; w2 < 3; w2++) { await W[0].addPerson({ person_uu: persons[w2], name: 'P' + w2, ad_role_id: 102, comm_admin: false }); await W[0].enroll(devs[w2].kid, devs[w2].pubJwk, persons[w2], devs[w2].dhPubJwk); }
     await W[0].sync(P2); await W[1].sync(P2); await W[2].sync(P2);
+    // CL8 (§13.2): the pipe is now ciphertext, so the late joiner must be an ENROLLED device with a key grant (an unenrolled reader sees nothing — W-PIPE-OPAQUE proves that)
+    var lj = await STORE.newDevice(); lj.person_uu = nodeCrypto.randomUUID();
+    await W[0].addPerson({ person_uu: lj.person_uu, name: 'LJ', ad_role_id: 102, comm_admin: false }); await W[0].enroll(lj.kid, lj.pubJwk, lj.person_uu, lj.dhPubJwk); await W[0].sync(P2);
     var setupBundles = await P2.list('o/' + W[0].kid + '/');
     var wu = [nodeCrypto.randomUUID(), nodeCrypto.randomUUID(), nodeCrypto.randomUUID()];
     await edit(W[0], wu[0], 0); await W[0].sync(P2);
@@ -121,7 +124,7 @@ async function run(SQL, pipeName, makePipe) {
     await W[1].sync(P2); await edit(W[1], wu[0], 1); await W[1].sync(P2);      // B edits A's record: B's op READS A's op
     await edit(W[2], wu[2], 0); await W[2].sync(P2);                            // C's own op is independent
     P2._withhold(hidden);
-    var W3 = STORE.open(new SQL.Database(), { SQL: SQL, space: SPACE, self: await STORE.newDevice(), access: access, log: slog });   // a late joiner (reads only)
+    var W3 = STORE.open(new SQL.Database(), { SQL: SQL, space: SPACE, self: lj, access: access, log: slog });   // a late joiner (reads only; enrolled + granted, see above)
     var r1 = await W3.sync(P2);
     console.log('   §STORE-WITHHOLD late joiner with A\'s bundle hidden: placed=' + r1.placed + ' parked=' + r1.parked);
     var b1 = (await W3.placedEnvelopes()).length;

@@ -35,7 +35,7 @@ async function gh(method, p) { var r = await fetch('https://api.github.com/repos
   var SA = mk(A), SB = mk(Bd), PA = PIPE.ghPipe({ owner: 'red1oon', repo: 'bim-teams-pipe', token: TOKEN, self: A.kid, minGapMs: 8000 }), PBp = PIPE.ghPipe({ owner: 'red1oon', repo: 'bim-teams-pipe', token: TOKEN, self: Bd.kid, minGapMs: 8000 });
   var notes = [];
   try {
-    await SA.genesis(sp.params); await SA.addPerson({ person_uu: Bd.person_uu, name: 'B', ad_role_id: 102, comm_admin: false }); await SA.enroll(Bd.kid, Bd.pubJwk, Bd.person_uu);
+    await SA.genesis(sp.params); await SA.addPerson({ person_uu: Bd.person_uu, name: 'B', ad_role_id: 102, comm_admin: false }); await SA.enroll(Bd.kid, Bd.pubJwk, Bd.person_uu, Bd.dhPubJwk);
     async function visit(name, s, p) { var rep = await s.sync(p), n = await LOG.noteVisit(s, rep, CFG); notes.push({ name: name, kid: s.kid, n: n }); console.log('   §LOG ' + name + ' visit → note ' + JSON.stringify(n)); }
     await visit('A', SA, PA); await visit('B', SB, PBp);
     await SB.author({ target: { table: 'c_order', uu: nodeCrypto.randomUUID() }, intent: 'K2', body: { op_type: 'CRUD_CREATE', params: { fields: { documentno: 'GM-1', grandtotal: 1, ad_client_id: 11, ad_org_id: 11 } } } });
