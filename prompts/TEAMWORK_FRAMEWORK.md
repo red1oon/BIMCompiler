@@ -81,7 +81,7 @@ round-trip, not fleet size (`poc_quorum_cas`), 10k stations ~4.6k ops/s (`poc_po
 
 | # | Conflict | Side A | Side B | Recommended resolution |
 |---|---|---|---|---|
-| C1 | Who sets order | relay assigns seq (`DistributedERP §6`) | client `(ts,id)` (`teams/engine.js:36-60`, `ERP.md §0.21`) | **Relay seq wins.** Client clock is a hint only; ordering by client clock lets a device backdate to win. |
+| C1 | Who sets order | relay assigns seq (`DistributedERP §6`) | client `(ts,id)` (`teams/engine.js:36-60`, `ERP.md §0.21`) | ~~Relay seq wins.~~ **Revised 2026-10-23 → §11.4: nobody assigns order; it is computed from the ops' own causal links + hashes.** The client clock never decides order. |
 | C2 | LWW | rejected (`ERP.md §0.18(c)`) | planned HLC + per-field LWW (`ERP_Roadmap R6`); live relay is already LWW by seq | LWW only for cold, invariant-free fields **and the loser is told** (§4). Everything else per §4. |
 | C3 | What "CAS" means | compare-and-set (`DistributedERP`) | content-addressed storage (`teams/PROTOCOL.md`); `crud_ops.json` "cas" points at a lease column | Rename: `CAS` = compare-and-set only; storage = `CAStore`; lease = `lease`. |
 | C4 | Trustless relay | yes (`teams/DESIGN §7`) | no; it can equivocate (`DistributedERP §12`, `poc_equivocation`) | Not trustless. Signed-tip gossip is required (§6 I-6). |
@@ -212,6 +212,9 @@ These go past "async, relay, merge rules". Each one reuses a part that already e
 
 ## §8 Roadmap (PROPOSAL — each phase = spec section → witness → implement → witness log read)
 
+> **Superseded in cut order by §11.12 (2026-10-23).** The phases below stay as the feature list; §11.12 re-cuts them so
+> the local comm layer lands first and the relay site becomes the LAST, configuration-only step.
+
 Cut order: **substrate before features, ERP before BIM, invisible before visible.**
 
 | Phase | Goal | Main deliverable | Gate witness (issue it proves) | Deletion budget |
@@ -251,3 +254,273 @@ bim-ootb `origin/main`: `teams/{DESIGN,PROTOCOL,ROADMAP,IDEAS,ERP_CONTEXT,TEAM_O
 `erp/crud_overlay.js` · `erp/erp_sync_fsm.js` · `erp/erp_key_epochs.js` · `erp/ad_access.js` · `erp/erp_replay.js` ·
 `common/history_bar.js`.
 iDempiere oracle: `org.adempiere.base/src/org/compiere/model/GridTable.java:1692,3482` · `PO.java:423`.
+
+---
+
+## §11 The Local Comm Layer — mechanism spec (2026-10-23, user: *"work out the proposals … before even actually relay site … the outside local comm layer schema to hold state that removes any grunt ID work in any relay"*)
+
+**Status: PROPOSAL / SPEC. No code.** Facts this section rests on were re-read this turn and are cited inline.
+
+### §11.0 The idea in one line
+
+**Every device keeps all sync state in its own local "comm" store, and every op is self-identifying, self-ordering and
+self-authorising — so whatever carries the ops (bucket, git repo, shared folder, WhatsApp, a server) only stores and
+lists bytes.** No id minting, no sequencing, no dedup, no auth logic, no mapping anywhere outside the devices.
+
+⚠ **Doctrine flag:** `BACKEND_SUBSTRATE_LANE §MH.1` says "only multi-writer sequencing needs the one compute relay" and
+"must NOT be re-litigated". This section does not dispute what static hosts can do; it **removes the need for a
+sequencer** (§11.4). If ratified, §MH.1's second sentence becomes "no relay needs sequencing logic". ⛔ needs the user's
+yes (§11.13 D1) — the user's own request above is the reason it is proposed.
+
+### §11.1 Grunt work today, and who does it after
+
+| Grunt job | Today (EXTRACTED) | After (§ref) |
+|---|---|---|
+| Op identity | `op_uuid` + local integer `id`; chain hash covers local `id` (`kernel_ops.js:306`) so it changes on rebase | op hash of a signed envelope + `(author, seq)` minted by the author (§11.3) |
+| Record identity in ops | ops carry integer `table, id` (`crud_core.js:325,704`); PK is synthesised locally (`crud_core.js:474`) → ids collide across stations (`ERP_PARALLEL_RUN_PILOT §9-R`) | `<table>_uu` only. The CREATE op's uuid already becomes the record's `_UU` (`crud_core.js:475-477`, mirroring `PO.saveNew`). 842 of 845 seed tables have a `_UU` column (`ad_seed.db`, counted this turn). Integer PKs stay a per-device projection detail, never in an op. |
+| Legacy iDempiere integer ids | n/a | learned from the REST bridge response and published as a signed `IDMAP` op by the bridge device — the mapping travels as data |
+| DocumentNo | four rules (§3 C8) | org/station-level sequence, owned by the station (`IsOrgLevelSequence`, pilot §DECISIONS) — an ownership fact, not a relay job |
+| Total order | sequencer arrival order (`erp_sequencer.js:30-42`) or client `(ts,id)` | computed from causal links + hash (§11.4) |
+| Dedup | relay dedups by `op_uuid` (`erp_relay_server.js`) | free — an object's name is its hash; the same op can only ever be the same file |
+| Who may write | relay checks roster + signature (`erp_relay_server.js:26-50`) | every reader checks, at fold time (§11.6); roster is itself ops (§11.5) |
+| Roster distribution | not built (`ERP_MULTIUSER_CONCURRENCY_POC §Explicitly NOT`) | free — ENROLL / REVOKE ops travel in the same stream |
+| Revocation position | `id >= revoked[signer]` on one linear log (`erp_key_epochs.js:126`) — a position that moves when logs merge | REVOKE names the revoked device's own last good `seq` (§11.5) — never moves |
+| Signatures surviving merge | v1 sigs die on rebase (§5 S-9) | signature is over the envelope, which never changes; local order is a view |
+
+### §11.2 What a pipe must do (the whole relay contract)
+
+Four verbs: `put(name, bytes)`, `get(name)`, `list(prefix)`, and optionally `watch(prefix)` for speed.
+**Rule: one writer per name.** Every name sits under the author's own device prefix, so two devices can never write the
+same object — the pipe never sees a write conflict, so it never needs locks or merge logic.
+
+```
+s/<space>/genesis                         founder-signed space genesis; space id = its hash   (write once)
+s/<space>/o/<kid>/<seqFrom>-<seqTo>.<h12>  bundle of that device's ops, encrypted              (write once)
+s/<space>/h/<kid>                         that device's signed head {seq, hash, frontier}     (overwrite, single writer)
+s/<space>/p/<kid>                         presence + claims, short-lived                      (overwrite, single writer)
+s/<space>/k/<ckpt-hash>                   period-close checkpoint                             (write once)
+```
+
+Pipes are rated, not trusted — a row per pipe in `cl_pipe.caps`:
+
+| Pipe | Write from a browser? | Freshness | Use |
+|---|---|---|---|
+| Shared folder (File System Access API / a Drive-synced folder / USB) | yes | seconds–minutes | first build target: no network code at all |
+| Clipboard / WhatsApp / email (`#1665` clipboard relay already exists) | manual | human | offline hand-off |
+| OCI bucket | ⛔ verify: whether a pre-authenticated request can be scoped to one device's prefix | strong read-after-write | main pipe candidate |
+| GitHub repo | not safely (token) — read-only mirror, owner pushes | CDN-cached minutes | backup / public mirror |
+| Compute relay (`erp_relay_server.js`) | yes | sub-second, can push | optional "fast pipe" for presence and claims — **another pipe, never a requirement** |
+
+Because names are hashes, **the same bundles can sit on several pipes at once** with no coordination. The existing
+3-host replica (W-REPLICA, W-MULTIHOST-SYNC) becomes the default case, not a special one.
+
+### §11.3 The op envelope (v3) — what makes an op self-describing
+
+```
+{ v:3,
+  space:    <space id>,
+  author:   <device kid>,           seq: <n, gap-free per author>,
+  prev:     <hash of this author's op n-1>,               // per-author chain: never rewritten
+  deps:     [<head hash of each OTHER author I had folded and that changed since my last op>],
+  manifest: <schema/kernel manifest hash>,  policy: <policy hash>,          // §11.8
+  intent:   <K-class, read from the dictionary>,                            // §4
+  target:   { table, uu, cols:[…] },
+  base:     <hash of the last op that wrote target.uu>,   // the distributed "Updated" — §11.7
+  ts:       <business time, shown to users, NEVER used for order>,
+  attrib:   { person_uu, pin_proof? },                    // erp_attrib.js today
+  body:     { op_type, params }                           // the current kernel op, ids as UU
+}  + sig (ECDSA P-256, existing erp_signer.js)
+op hash = sha256(canonical envelope)
+```
+
+The kernel's `kernel_ops` row keeps working as the local World log; it stores the envelope hash and the envelope. Its
+own `prev_hash` chain becomes a **local** integrity check only. `rebase()` keeps its job (re-fold in the new order) but
+never re-signs anything.
+
+### §11.4 Order without a sequencer
+
+1. The ops form a graph: each op points to `prev` (its author's previous op) and `deps` (what its author had already seen).
+2. **Order = walk the graph so every op comes after everything it points to; when several ops are ready at once, take
+   the lowest op hash first.** Any device holding the same set of ops gets the same order, whatever order they arrived in.
+3. A newly arrived op may slot in earlier than ops already folded → re-fold from that point. Checkpoints (§11.10) bound
+   how far back that can reach; the measured fold rate (`poc_volume`: 43M ops/s) makes it cheap.
+4. **The clock cannot win.** `ts` is not in the ordering at all, which closes the backdating hole in §3 C1.
+5. Residual, named: among *truly concurrent* ops (neither saw the other), hash order is arbitrary. An author who did see
+   an op but leaves it out of `deps` can try many variants of their own op to sort first. That only matters for K1 cold
+   fields, which the doctrine already accepts as low-value. K2–K4 don't depend on hash order (§11.7) — they use `base`
+   or an owner.
+
+### §11.5 Identity: people, devices, roster — all as ops
+
+- **Genesis.** The founder's device signs `GENESIS {space name, founder kid, admin person}`. Space id = its hash. Invite
+  links carry the space id, which pins the trust root the same way `erp_snapshot_sign` pins a controller key today.
+- **Person.** `PERSON {person_uu, ad_user_uu}`, signed by an admin device.
+- **Device.** `ENROLL {kid, sig_pub, dh_pub, person_uu}`, signed by an admin or by an already-enrolled device of the
+  same person (shows a QR / short code on the new device). A person with a phone and a laptop = one `person_uu`, two
+  kids → fixes §5 S-5 with no person-level private key (browser keys are non-extractable, so there can't be one).
+- **Roles.** Role grants are ordinary `AD_User_Roles` ops, so "what could this person do *at this op*" is answered by the
+  fold itself.
+- **Revoke.** `REVOKE {kid, last_good_seq}`. That device's ops up to `last_good_seq` stay valid; later ones are refused on
+  every peer, whatever order they arrive in. ROTATE keeps the existing countersign rule (`erp_key_epochs.js:108-112`).
+- **Roster = the fold of these ops.** Nothing separate to distribute.
+
+### §11.6 Admission at fold time (closes §5 S-2)
+
+`admit(envelope, world_before)` is a pure function run on every op, on every device, in fold order:
+
+| Check | Source of the rule | On failure |
+|---|---|---|
+| signature valid, `kid` enrolled and not revoked at this `seq` | §11.5 | REFUSED `sig` / `revoked` |
+| author chain intact (`prev` matches, no second op with the same `seq`) | §11.3 | REFUSED + equivocation record (§11.9) |
+| every `deps` hash present | §11.3 | PARKED `deps` (not folded yet, fetched from other pipes) |
+| `manifest` known | §11.8 | PARKED `schema` |
+| person's role may write this table/record/org at this point | `ad_access.js` `gateRecord`, run on `world_before` | REFUSED `access` — **fail-closed for foreign ops** (today it fails open, `crud_core.js:1058-1092`) |
+| owner / compare-and-set / lease | `erp_replay.js:42-108` (gets its first caller) | per §11.7 |
+| `scope` | `erp_seam.js:36-49` | REFUSED `scope` |
+
+Every op ends with exactly one verdict in `cl_verdict`: `MERGED / REFUSED / RECONCILED / PARKED / STALE`. A witness can
+count them; a sync that judged zero ops prints `INCONCLUSIVE` (PRIMAL LAW §4).
+
+### §11.7 Conflict mechanisms (§4 classes, worked out)
+
+- **K2 — matching iDempiere's stale-save refusal.** iDempiere compares the `Updated`/`Processed` the user loaded with the
+  database (`GridTable.java:3482-3510`) and refuses with `CurrentRecordModified` (`GridTable.java:1692-1700`); `PO.java:423`
+  locks on `Updated`. The distributed equivalent is `base`: the hash of the last op that wrote the record when the user
+  opened it. 838 of 845 seed tables have `Updated` (counted this turn).
+  - **When a pipe is reachable:** on Save, read the record's latest known `base` (fresh `h/` heads). If it moved, show
+    iDempiere's own `CurrentRecordModified` and refresh — **same moment, same message as legacy.**
+  - **When two saves cross anyway** (offline, or inside the pipe's delay): both cite the same `base`. The fold keeps the
+    one that sorts first (§11.4) and marks the other `REFUSED stale` — the same outcome iDempiere gives the second saver,
+    only later. The loser gets a **Notice** (iDempiere `AD_Note`, window 193 *Notice* — present in `ad_seed.db`) with
+    their lost values.
+  - ⛔ **Twin question (D3):** iDempiere has no offline mode, so a "saved, then refused after sync" experience has no
+    legacy equivalent. The user must rule how that is shown.
+- **K3 — invariants (stock, credit, allocation).** Each guarded resource has an owner (a device or role), set by a signed
+  `OWNER` op. A non-owner writes `REQUEST`; only the owner's `GRANT` / `DENY` op settles it; until then the requester's
+  effect is shown provisional. That is the existing reservation guard (`DistributedERP §4` G-RESERVATION), carried as ops.
+  Customer-wide entitlements use the quorum pattern (`poc_quorum_cas`). No pipe arbitrates.
+- **K4 — doc-actions.** Complete/Void/Close need `base` = the document's current state; the second one becomes `REFUSED`;
+  completed documents are immutable, so there's nothing to merge after that.
+- **Merge Exception (I-1), twin-native.** No new window: K3/K4 losers raise an iDempiere **Request** (`R_Request`, window
+  201 *Request* — present in `ad_seed.db`) linked to both records, routed to the loser's My Work. K1/K2 losers get a
+  Notice. A witness counts them.
+- **K6/K9 — geometry and craft trunk.** Owner = the `(discipline × zone)` or trunk claim, set by a signed `OWNER` op from
+  the project lead. Non-owner geometry ops are refused at write time (`teams/engine.js:18` owner-gate), so no work is
+  lost. A craft lock is a lease the owner grants (`LEASE` ops, `erp_replay.js:72-111`).
+
+### §11.8 Version skew (§5 S-4)
+
+- Every op carries `manifest` = the hash of the schema + handler set that wrote it.
+- An admin `ADOPT {manifest}` op says which versions the space accepts. A device may only author under an adopted
+  manifest, so the mixed-version window stays bounded.
+- Unknown manifest → PARKED `schema` with the message "update the app to see 3 ops from Ali". **Never folded wrong,
+  never dropped.**
+- Known older manifest → fold through a registered translator (`cl_manifest.translators`), or under that version's
+  frozen handlers (`ERP.md §18.7`).
+- `syncNow` must stop bypassing the schema check (`crud_overlay.js:1962` calls `rebase` directly, skipping `runSync`).
+
+### §11.9 Honesty of pipes and authors (§3 C4, I-6)
+
+- **Content-addressed names + signed envelopes:** a pipe cannot forge, alter or reorder anything. Its only power is
+  **withholding**.
+- **Withholding shows itself:** a `deps` hash I can't fetch is a gap → `cl_missing`, fetched from other pipes. Heads
+  (`h/<kid>`) seen on different pipes are compared in `cl_head_seen`; two different signed heads for the same author and
+  seq is proof.
+- **An author who forks their own chain** (two ops, same `seq`) has signed both → stored as proof in `cl_equivocation`, a
+  Request to the admin, and further ops from that kid are PARKED until the admin rules.
+- This makes "the relay is untrusted" actually true, which `teams/DESIGN §7` claimed and `poc_equivocation` showed was
+  not true without gossip.
+
+### §11.10 Compaction and joining late
+
+- A period-close checkpoint (`erp_period_close.js`, W-PCLOSE) is signed by the controller role and records the frontier
+  it covers.
+- A new device fetches the latest checkpoint and the bundles after its frontier — measured ~52–59× faster than replaying
+  from genesis (W-PCLOSE browser POC).
+- Bundles before a checkpoint can be archived from fast pipes.
+
+### §11.11 The local comm store (`comm.db`, separate from the business DB)
+
+Sits **outside** the kernel. The kernel only ever sees admitted ops, in order. Same storage mechanism the ERP uses today
+(sql.js + IndexedDB records, append-only per #913).
+
+```sql
+-- trust and identity (a view rebuilt from ops; kept for speed)
+cl_space      (space_id PK, genesis_hash, founder_kid, name, pinned_at)
+cl_person     (person_uu PK, ad_user_uu, enrolled_by_op)
+cl_device     (kid PK, sig_pub, dh_pub, person_uu, enrolled_by_op, revoked_after_seq NULL, status)
+cl_manifest   (manifest_hash PK, kernel_version, adopted_by_op, translators_json)
+cl_owner      (resource_key PK, owner_kind, owner_ref, set_by_op)              -- K3/K6/K9 owners
+
+-- me as an author
+cl_self       (space_id, kid, next_seq, head_hash, dh_priv_ref)
+
+-- everything received or written
+cl_op         (op_hash PK, space_id, author_kid, author_seq, prev_hash, deps_json,
+               manifest_hash, intent, target_table, target_uu, base_hash, ts_business,
+               envelope BLOB, sig, first_pipe, received_at,
+               state CHECK(state IN ('RECEIVED','VERIFIED','PARKED_DEPS','PARKED_SCHEMA','ADMITTED','REFUSED')),
+               UNIQUE(author_kid, author_seq))           -- a second op at the same seq trips this = equivocation
+cl_frontier   (author_kid PK, contiguous_seq, head_hash)  -- what I have, per author
+cl_missing    (op_hash PK, wanted_by_op, first_seen, tries)
+cl_verdict    (op_hash PK, fold_pos, verdict, reason, notice_uu NULL, request_uu NULL, world_hash_after)
+cl_equivocation(author_kid, seq, hash_a, hash_b, detected_at, PRIMARY KEY(author_kid, seq))
+
+-- pipes
+cl_pipe       (pipe_id PK, kind, url, caps_json, enabled)
+cl_pipe_cursor(pipe_id, author_kid, listed_to_seq, etag, last_ok, PRIMARY KEY(pipe_id, author_kid))
+cl_outbox     (bundle_name PK, from_seq, to_seq, bundle_hash, pipe_id, state, tries)
+cl_head_seen  (author_kid, pipe_id, seq, head_hash, sig, seen_at, PRIMARY KEY(author_kid, pipe_id))
+
+-- awareness (short-lived, never folded into the books)
+cl_claim      (author_kid, target_key, kind, expires_at, seen_at, PRIMARY KEY(author_kid, target_key))
+cl_checkpoint (ckpt_hash PK, frontier_json, signed_by, world_hash)
+```
+
+**Sync loop** (identical for every pipe):
+`list` new names → `get` → decrypt → verify → `cl_op` → resolve deps → **preview fold on a throwaway copy** (I-3; the same
+throwaway-DB pattern `erp_persist_ui` restore already uses) → show verdicts → admit into the kernel → write `cl_verdict` →
+`put` my new bundle and head.
+
+**Encryption (pipe sees only ciphertext):** bundles are encrypted with a space key; the key is wrapped to each device's
+`dh_pub` inside its ENROLL op. P-256 signing keys can't do key exchange, so each device holds a second ECDH key.
+Personal fields can later be encrypted under a per-person key, so deleting that key erases the person while the books
+stay identical (I-9, `poc_erase`).
+
+### §11.12 Revised cut order — the relay site comes last
+
+| Step | Builds | Needs network? | Gate witness (the issue it proves) |
+|---|---|---|---|
+| CL0 | ratify §3 + §11.13 | no | — |
+| CL1 | envelope v3 + UU-only refs, in node | no | `W-UU-NO-COLLIDE` — two stations each create order "1" today → ids collide (reproduce RED first); with v3 → two distinct records |
+| CL2 | deterministic order | no | `W-ORDER-PERMUTE` — N=10 authors, 100 random arrival orders → one identical tip; a backdated `ts` changes nothing |
+| CL3 | `comm.db` + in-memory pipe + shared-folder pipe | no | `W-FOLDER-2CTX` — two real browser contexts converge through a folder only |
+| CL4 | identity as ops + admission at fold | no | `W-ADMIT-FOLD` — a no-access role's op REFUSED on every peer; `W-REVOKE-SEQ` — the revoke cut-off holds under any arrival order |
+| CL5 | K2 `base` + Notice; K3/K4 owner + Request | no | `W-STALE-SAVE-TWIN` — same two-user save on iDempiere and on SQLite → same `CurrentRecordModified`; `W-NO-SILENT-LOSS` — N=10 contested, every loser has a Notice/Request |
+| CL6 | manifest parking + translators | no | `W-SKEW-PARK` — an op from a newer app parks, then folds after upgrade, same tip as a fresh device |
+| CL7 | equivocation + withholding detection | no | `W-PIPE-WITHHOLD` — a pipe hiding one bundle is detected and healed from a second pipe |
+| CL8 | encryption | no | `W-PIPE-OPAQUE` — pipe contents reveal no field values |
+| CL9 | **pick the relay site(s)** = add rows to `cl_pipe` | yes | `W-MULTIHOST-SYNC` re-run through the comm layer |
+| then | P6 presence/claims, P7 preview UI, P8 BIM teams, P9 cross-product (§8) | | |
+
+Each step names what it deletes (AD-LAYER LAW §4): CL4 removes relay-side auth from the required path; CL2 removes the
+need for `erp_sequencer.js`; CL1 removes integer ids from ops.
+
+### §11.13 Decisions needed (⛔, in addition to §7)
+
+- **D1** Ratify "no sequencer": order is computed from the ops (§11.4), which amends `BACKEND_SUBSTRATE_LANE §MH.1`.
+- **D2** Ratify UU-only references in ops (§11.1). This changes the op body shape, so existing logs need a one-time
+  wrap-and-sign import per device.
+- **D3** Twin rule: how a "saved offline, refused after sync" save is shown, since iDempiere has no offline mode (§11.7).
+- **D4** Who can enrol a device: admin only, or also the person's own already-enrolled device (§11.5).
+- (§7's relay-hosting question becomes CL9 configuration, no longer a blocker for CL1–CL8.)
+
+### §11.14 Risks this design adds (named, not hidden)
+
+- A long-parked op (missing deps) holds back every op that depends on it. Mitigated by several pipes; it must surface
+  as a visible PARKED count, never as a silent stall.
+- `deps` lists grow with team size. Only list heads that changed since your last op; checkpoints reset the baseline.
+- Re-fold cost when a late op slots in early: bounded by checkpoints. Log it as a `§COMM_REFOLD from=<pos> ops=<n> ms=<t>`
+  line (PERF BUDGET).
+- Browser storage for `comm.db` comes out of the same ~2GB limit (`HolyGrail` scale). Archive bundles behind checkpoints.
+- Hash-order grinding on K1 cold fields (§11.4 point 5) — accepted floor, same class as `DistributedERP §9-F`.
