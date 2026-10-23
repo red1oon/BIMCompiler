@@ -78,16 +78,17 @@ ERP Sales Order window, and explained in a narrated essentials film. It is a **p
    - phone-first layout;
    - an old-space warning;
    - the Team Panel (§11.17).
-3. **⛔ User decision:** `STATION_LOCAL` table list in `erp/team_sync.js` (`ad_sequence`, `ad_sequence_no`,
+3. ✅ **DECIDED 2026-10-24 (user: "go with your advice"): keep the named `STATION_LOCAL` list.** Reason: the dictionary has no flag to read (`AD_Table.ReplicationType='L'` on all 1003 tables) and adding an AD column would make our dictionary differ from legacy (TWIN rule). It stays the ONE table list in `team_sync.js`, with its reason in the comment. (Was: `STATION_LOCAL` table list in `erp/team_sync.js` (`ad_sequence`, `ad_sequence_no`,
    `ad_recentitem`, `ad_session`, `ad_changelog`) — keep the named list, or add an AD flag? It is an AD-LAYER LAW tension
-   (§13.3).
-4. **ERP gaps from W1** (§13.3):
+   (§13.3).)
+4. **Team pill + trial (§13.8) shipped (PR #2355); owed: the trial token (user creates it).**
+5. **ERP gaps from W1** (§13.3):
    - DocumentNo collides across devices — needs a station-owned sequence (§11.1);
    - edits to **seeded** records aren't shared (scope needs the CREATE);
    - ~~DocActions (W2)~~ ✅ DONE 2026-10-24, §13.7 (bim-ootb PR #2352);
    - **K3: `m_storagereservation` write on a seeded row is REFUSED (`scope-unknown`) and is an absolute old/new — two devices reserving at once lose an update** (§13.7-4);
    - the phone page and ERP share one device identity, so they must not both author.
-5. **Still-owed engine steps:**
+6. **Still-owed engine steps:**
    - CL6 manifest/version skew;
    - CL7 multi-pipe heal;
    - two admins re-keying concurrently (not witnessed);
@@ -95,7 +96,7 @@ ERP Sales Order window, and explained in a narrated essentials film. It is a **p
    - the confirm-by-read-back path of the visit log is not yet exercised by a forced lost reply;
    - retire the older `?relay=` path (after W1 parity, with the user's go);
    - CL4b: run the canUpdate truth table against live iDempiere.
-6. **Novelty:** say "to our knowledge" until a proper prior-art search is done (§14.1).
+7. **Novelty:** say "to our knowledge" until a proper prior-art search is done (§14.1).
 
 **Lessons from this exercise (the education the user asked to keep)**
 - **Test the real user path.** Three bugs only showed in a real browser:
@@ -1861,6 +1862,40 @@ Consequence on the other device: the grid column says CO but the DocStatus bar (
   VACUOUS guard: the arm prints INCONCLUSIVE if the order had no consequence rows to hold back.
 - `§DA-LOCALONLY` the previous W1 arm (an `applyOp` DocAction with no resolvable target) still ends local-only.
 - Regression: `witness_team_so.js` (its `§TEAM-LOCALONLY` arm used `PR` with `id:null`; stays local-only).
+
+
+### §13.8 Team pill, system-default setup, one-cycle trial, usage tracking (2026-10-24, user)
+
+> User: *"We need to know also how team setting is done. A pill icon showing two human head avatar as its feature? Then the setup values we can default as we already setup. In team user guide we note that this is our system default which they can setup too (catch on our Github side but place a limit to test only a single cycle. Then we can know if users really been using. Track usage ie if can get its IP at least."*
+> Decisions (asked, answered): delivery = **trial repo + expiring token**; the cycle = **one Sales Order Complete**.
+
+**Facts checked before designing (so nothing is promised that can't be delivered):**
+- **IP cannot be had from GitHub or from the Apps Script post box.** GitHub's API/traffic data gives the repo owner counts (views, clones), never client addresses; an Apps Script web app is not given the caller's address. So "track usage" here = what the pipe itself shows: devices, spaces, bundles, rows, first/last activity (+ the Gmail visit log). Getting an address would need an edge function we run — a server, which the concept deliberately avoids; not built, offered only if the user wants it.
+- A key shipped in a public page is readable by anyone. Hence a **separate trial repo** (`red1oon/bim-teams-trial`, private, created 2026-10-24) and a **fine-grained token limited to that one repo, Contents read/write, with an expiry date**. The real pipe (`bim-teams-pipe`) is never in the page. **The token is created by the user in GitHub's settings** (no API makes fine-grained tokens) and pasted into `common/comm/team_defaults.js`; until then the panel says "trial key not installed".
+
+**Design (generic, no window-specific code):**
+| # | Piece | Rule |
+|---|---|---|
+| T1 | **Team pill** (`id:"team"`, Lucide `users` — two heads — added verbatim to `icons.js`) in `pills_idmp.json`, always on the bar | opens the Team panel. Pill present with and without `?team=1` (discoverability); without team mode the page otherwise stays untouched. |
+| T2 | **Team panel** `erp/team_panel.js` | shows: mode (off / not paired / ready), setup values (repo, key, visit-log address), "Turn on team mode" (stores `localStorage.teamMode=1`, reloads with `?team=1`), "Pair this browser" (opens `common/comm/comm_phone.html`), trial status. Values default from `team_defaults.js`; **"System default"** badge; the user may replace repo/key (stored in the same IndexedDB `comm_phone` cfg) → badge becomes "Your own". |
+| T3 | **Defaults** `common/comm/team_defaults.js` | `{owner:'red1oon', repo:'bim-teams-trial', token:'', postbox:{}, trialCycles:1}`. The phone page and `team_sync.js` read cfg first, defaults second. `cfg.trial` is true only while the default repo+key are in use. |
+| T4 | **One-cycle trial limit** `common/comm/team_trial.js` (pure functions + tiny state) | While `cfg.trial`: a space may author business ops until the log holds one document `SET_STATUS` to `CO` (the cycle: order → line → Complete) plus its group; after that, new business ops are **not sent** (local-only reason `trial-finished`) and the panel/chip say "Trial cycle finished — use your own repo and key to continue". Safety cap: 60 business ops per space. Enforced in `team_sync.onCommit` (client side, soft) and by the token's expiry (hard). A user with their own repo/key is not limited. |
+| T5 | **Usage report** `scripts/team_trial_usage.js` (bim-compiler, node, `gh api`) | reads `bim-teams-trial` branches/trees: per space → devices, bundles, rows, first/last commit time; prints `§USAGE` lines; prints `INCONCLUSIVE` when the repo has no traffic (never "0 users" as a pass). Says plainly: no IP. |
+| T6 | **Team user guide** `erp/team_guide.html` (bim-ootb; served same-origin so the panel can link it) | how to turn on, pair, the system-default note, how to use your own repo/key, what the trial limit is and why, what we can and cannot see about usage. |
+
+**Witnesses:**
+- `W-TEAM-TRIAL-LIMIT` (node, pure): cap + cycle logic over fixed op lists — before Complete allowed; after Complete refused; own-repo never limited; empty list is INCONCLUSIVE.
+- `W-TEAM-PILL` (Playwright, `erp/tests/witness_team_pill.js`): the pill is on the bar without `?team=1` and the page loads no comm script; clicking it opens the panel; panel shows System default badge, the repo name from `team_defaults.js`, and "trial key not installed" while the token is empty; "Turn on team mode" reloads with `?team=1` and the chip appears (paired fixture) — each a `§` line.
+- `W-TEAM-DOCACTION` extended: with `cfg.trial=true` a second order after the first Complete is `local-only reason=trial-finished`.
+
+
+**✅ DONE (witness) 2026-10-24 — bim-ootb PR #2355 (sw v901); bim-compiler `scripts/team_trial_usage.js`.** Logs read in full:
+`§W-TEAM-PILL PASS 14/0` · `§W-TEAM-TRIAL-LIMIT PASS 5/0` (+1 INCONCLUSIVE-by-design: an empty space is "open", not a pass) · `§W-TEAM-DOCACTION PASS 21/0` (new `§DA-TRIAL`:
+trial on → a new order after the Complete is `local-only reason=trial-finished`, nothing sent, chip says "Trial cycle finished"; trial off → the same action is sent) ·
+`§W-TEAM-SO PASS 19/0` · `§W-PHONE-PAGE PASS 18/0` (real GitHub, branches cleaned up) · `audit_sw_precache` 0 missing.
+`node scripts/team_trial_usage.js` → trial repo: `INCONCLUSIVE` (no device branches yet); against the real pipe it lists 2 old device branches, 0 scoped spaces (they predate §13.6).
+**Still owed by the user:** create the fine-grained token for `red1oon/bim-teams-trial` (Contents read/write, that repo only, with an expiry) and paste it into `common/comm/team_defaults.js` —
+until then the panel says "Trial key not installed". Not built: pairing inside the ERP panel (it links to `comm_phone.html`); an edge function for IP (would be a server — only if you want it).
 
 ---
 
