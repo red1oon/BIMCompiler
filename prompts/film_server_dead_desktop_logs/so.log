@@ -1,0 +1,128 @@
+═══ W-TEAM-SO — the real Sales Order window in team mode, two real browsers (TEAMWORK_FRAMEWORK §13.1) ═══
+
+§TEAM-OFF
+   🟢 without ?team=1: no chip, no conflict box, no TeamSync/CommStore global, no comm_*/team_sync script tags — {"chip":false,"conf":false,"ts":"undefined","cs":"undefined","scripts":0}
+   🟢 without ?team=1 the page emits no §TEAM log line — lines=0
+
+§TEAM-PAIR
+     [A] §COMM_SYNC kid=c3416194ade3c54a pipe=gh:red1oon/bim-teams-pipe sent=2 fetched=0 received=0 placed=2 parked=0 refused=0 gaps=0 equivocations=0
+     [A] §COMM_SYNC kid=c3416194ade3c54a pipe=gh:red1oon/bim-teams-pipe sent=3 fetched=0 received=0 placed=5 parked=0 refused=0 gaps=0 equivocations=0
+     [B] §COMM_SYNC kid=b7e8cc91d9bf521e pipe=gh:red1oon/bim-teams-pipe sent=0 fetched=2 received=5 placed=5 parked=0 refused=0 gaps=0 equivocations=0
+   🟢 phone pages paired: founder A approved B's code B7E8-CC91, B says enrolled — B7E8-CC91 | ✓ enrolled — you are in the team
+     [A] §TEAM_BOOT device=c3416194ade3c54a space=7a4070e148bd store=seeded-from-phone-page pipe=http://127.0.0.1:45905/pipe sent=0 localOnly=0
+     [A] §TEAM_STATION_LOCAL op=CRUD_CREATE station-owned ad_session (not shared by design)
+     [B] §TEAM_BOOT device=b7e8cc91d9bf521e space=7a4070e148bd store=seeded-from-phone-page pipe=http://127.0.0.1:45905/pipe sent=0 localOnly=0
+     [B] §TEAM_STATION_LOCAL op=CRUD_CREATE station-owned ad_session (not shared by design)
+   🟢 the ERP chip shows device code · team devices 2 · a Visit button with the hand cursor (A) — {"text":"Team · C341-6194 · team devices 2 Visit my ops 5 · seen 0 · refused 0 · waiting on 0 · last visit never","cursor":"pointer","conflicts":0,"localonly":0}
+   🟢 the ERP chip reads B's identity from the phone page storage (B) — {"text":"Team · B7E8-CC91 · team devices 2 Visit my ops 0 · seen 0 · refused 0 · waiting on 0 · last visit never","cursor":"pointer","conflicts":0,"localonly":0}
+
+§TEAM-SO-SYNC
+     [A] §TEAM_OUT op=CRUD_CREATE table=c_order uu=a2e3f13f seq=6 refs=0 hash=08c543da8e92
+     [A] §TEAM_STATION_LOCAL op=CRUD_UPDATE station-owned ad_sequence (not shared by design)
+     [A] §TEAM_STATION_LOCAL op=CRUD_CREATE station-owned ad_recentitem (not shared by design)
+     [A] §TEAM_OUT op=CRUD_CREATE table=c_orderline uu=3cc91ce1 seq=7 refs=1 hash=4ad2228be67d
+     [A] §TEAM_OUT op=CRUD_UPDATE table=c_order uu=a2e3f13f seq=8 refs=0 hash=d33cc5ab313d
+     [A] §TEAM_STATION_LOCAL op=CRUD_UPDATE station-owned ad_recentitem (not shared by design)
+   §TEAM A created order pk=-3 (header op lines=2, line op lines=1)
+   🟢 A: the header CREATE and the line CREATE were each turned into a v3 envelope; the line carries its header as a ref (CL1b FK rule) — 2 header op(s), line: §TEAM_OUT op=CRUD_CREATE table=c_orderline uu=3cc91ce1 seq=7 refs=1 hash=4ad2228be67d
+   §TEAM A chip after save: {"text":"Team · C341-6194 · team devices 2 Visit my ops 8 · seen 0 · refused 0 · waiting on 0 · last visit never","cursor":"pointer","conflicts":0,"localonly":0}
+     [A] §COMM_SYNC kid=c3416194ade3c54a pipe=http://127.0.0.1:45905/pipe sent=3 fetched=0 received=0 placed=8 parked=0 refused=0 gaps=0 equivocations=0
+     [A] §TEAM-REBUILD rows=8 was=8 tombstoned=3 verifyChain=ok
+     [A] §TEAM_VISIT sent=3 fetched=0 received=0 placed=8 parked=0 refused=0 gaps=0 | projection kept=5 projected=3 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+     [A] §TEAM-REFRESH rekeyed=4 tables=c_order,c_orderline view=form
+     [B] §COMM_SYNC kid=b7e8cc91d9bf521e pipe=http://127.0.0.1:45905/pipe sent=0 fetched=3 received=3 placed=8 parked=0 refused=0 gaps=0 equivocations=0
+     [B] §TEAM-REBUILD rows=4 was=1 tombstoned=0 verifyChain=ok
+     [B] §TEAM_VISIT sent=0 fetched=3 received=3 placed=8 parked=0 refused=0 gaps=0 | projection kept=1 projected=3 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+     [B] §TEAM-REFRESH rekeyed=0 tables= view=grid
+   🟢 B's grid shows the order A created (rows 5 → 6) — §TEAM_VISIT sent=0 fetched=3 received=3 placed=8 parked=0 refused=0 gaps=0 | projection kept=1 projected=3 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+   🟢 B's header form carries A's Description — description=W1-A-one
+   §TEAM B Order Line tab: rows=1 pks=[-3] link(c_order_id)=-2 header pk=-2
+   🟢 B: Order Line tab shows exactly 1 row, filtered by the header's CURRENT pk (parent id per row = -2) — rows=1 link=-2
+   🟢 B: every projected line row carries the header's local pk as its c_order_id (FK {uu} → local pk) — lines with c_order_id=-2: 1
+   🟢 B: header → Order Line → header → Order Line WITHOUT Save keeps 1 row on the same parent — rows=1 link=-2
+
+§TEAM-EDIT
+     [B] §TEAM_OUT op=CRUD_UPDATE table=c_order uu=a2e3f13f seq=1 refs=0 hash=a1a56bb95231
+     [B] §TEAM_STATION_LOCAL op=CRUD_CREATE station-owned ad_recentitem (not shared by design)
+     [B] §COMM_SYNC kid=b7e8cc91d9bf521e pipe=http://127.0.0.1:45905/pipe sent=1 fetched=0 received=0 placed=9 parked=0 refused=0 gaps=0 equivocations=0
+     [B] §TEAM-REBUILD rows=6 was=6 tombstoned=4 verifyChain=ok
+     [B] §TEAM_VISIT sent=1 fetched=0 received=0 placed=9 parked=0 refused=0 gaps=0 | projection kept=2 projected=4 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+     [B] §TEAM-REFRESH rekeyed=3 tables=c_order,c_orderline view=form
+     [A] §COMM_SYNC kid=c3416194ade3c54a pipe=http://127.0.0.1:45905/pipe sent=0 fetched=1 received=1 placed=9 parked=0 refused=0 gaps=0 equivocations=0
+     [A] §TEAM-REBUILD rows=9 was=11 tombstoned=3 verifyChain=ok
+     [A] §TEAM_VISIT sent=0 fetched=1 received=1 placed=9 parked=0 refused=0 gaps=0 | projection kept=5 projected=4 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+     [A] §TEAM-REFRESH rekeyed=0 tables=c_order,c_orderline view=form
+   🟢 A shows B's edit of the header Description after both Visit — A description=W1-A-one edited-by-B
+
+§TEAM-CL1
+     [A] §TEAM_OUT op=CRUD_CREATE table=c_order uu=fd958d85 seq=9 refs=0 hash=c2359d8494a3
+     [A] §TEAM_STATION_LOCAL op=CRUD_UPDATE station-owned ad_sequence (not shared by design)
+     [A] §TEAM_STATION_LOCAL op=CRUD_CREATE station-owned ad_recentitem (not shared by design)
+     [B] §TEAM_OUT op=CRUD_CREATE table=c_order uu=8bf4a2d4 seq=2 refs=0 hash=300bcaa13c7b
+     [B] §TEAM_STATION_LOCAL op=CRUD_UPDATE station-owned ad_sequence (not shared by design)
+     [B] §TEAM_STATION_LOCAL op=CRUD_CREATE station-owned ad_recentitem (not shared by design)
+   §TEAM-CL1 synthetic pks at creation: A=-13 B=-11  (differ)
+     [A] §TEAM_OUT op=CRUD_UPDATE table=c_order uu=fd958d85 seq=10 refs=0 hash=af9a88e634a6
+     [A] §TEAM_STATION_LOCAL op=CRUD_UPDATE station-owned ad_recentitem (not shared by design)
+     [B] §TEAM_OUT op=CRUD_UPDATE table=c_order uu=8bf4a2d4 seq=3 refs=0 hash=df801ae81c66
+     [B] §TEAM_STATION_LOCAL op=CRUD_UPDATE station-owned ad_recentitem (not shared by design)
+     [A] §COMM_SYNC kid=c3416194ade3c54a pipe=http://127.0.0.1:45905/pipe sent=2 fetched=0 received=0 placed=11 parked=0 refused=0 gaps=0 equivocations=0
+     [A] §TEAM-REBUILD rows=14 was=17 tombstoned=9 verifyChain=ok
+     [A] §TEAM_VISIT sent=2 fetched=0 received=0 placed=11 parked=0 refused=0 gaps=0 | projection kept=8 projected=6 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+     [A] §TEAM-REFRESH rekeyed=3 tables=c_order,c_orderline view=form
+     [B] §COMM_SYNC kid=b7e8cc91d9bf521e pipe=http://127.0.0.1:45905/pipe sent=2 fetched=1 received=2 placed=13 parked=0 refused=0 gaps=0 equivocations=0
+     [B] §TEAM-REBUILD rows=13 was=15 tombstoned=10 verifyChain=ok
+     [B] §TEAM_VISIT sent=2 fetched=1 received=2 placed=13 parked=0 refused=0 gaps=0 | projection kept=5 projected=8 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+     [B] §TEAM-REFRESH rekeyed=3 tables=c_order,c_orderline view=form
+     [A] §COMM_SYNC kid=c3416194ade3c54a pipe=http://127.0.0.1:45905/pipe sent=0 fetched=1 received=2 placed=13 parked=0 refused=0 gaps=0 equivocations=0
+     [A] §TEAM-REBUILD rows=16 was=23 tombstoned=9 verifyChain=ok
+     [A] §TEAM_VISIT sent=0 fetched=1 received=2 placed=13 parked=0 refused=0 gaps=0 | projection kept=8 projected=8 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+     [A] §TEAM-REFRESH rekeyed=3 tables=c_order,c_orderline view=form
+     [B] §COMM_SYNC kid=b7e8cc91d9bf521e pipe=http://127.0.0.1:45905/pipe sent=0 fetched=0 received=0 placed=13 parked=0 refused=0 gaps=0 equivocations=0
+     [B] §TEAM-REBUILD rows=13 was=23 tombstoned=10 verifyChain=ok
+     [B] §TEAM_VISIT sent=0 fetched=0 received=0 placed=13 parked=0 refused=0 gaps=0 | projection kept=5 projected=8 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+     [B] §TEAM-REFRESH rekeyed=0 tables=c_order,c_orderline view=form
+   §TEAM-CL1 A sees ["CL1-A edited","CL1-B edited","W1-A-one edited-by-B"]  B sees ["CL1-A edited","CL1-B edited","W1-A-one edited-by-B"]
+   🟢 both devices hold the SAME three orders, each carrying its OWN edit (no edit landed on another device's record) — A=["CL1-A edited","CL1-B edited","W1-A-one edited-by-B"] B=["CL1-A edited","CL1-B edited","W1-A-one edited-by-B"]
+
+§TEAM-CONFLICT
+     [A] §TEAM_OUT op=CRUD_UPDATE table=c_order uu=fd958d85 seq=11 refs=0 hash=c02c3140b4ec
+     [A] §TEAM_STATION_LOCAL op=CRUD_UPDATE station-owned ad_recentitem (not shared by design)
+     [B] §TEAM_OUT op=CRUD_UPDATE table=c_order uu=fd958d85 seq=4 refs=0 hash=44b0b8848d7b
+     [B] §TEAM_STATION_LOCAL op=CRUD_CREATE station-owned ad_recentitem (not shared by design)
+     [A] §COMM_SYNC kid=c3416194ade3c54a pipe=http://127.0.0.1:45905/pipe sent=1 fetched=0 received=0 placed=14 parked=0 refused=0 gaps=0 equivocations=0
+     [A] §TEAM-REBUILD rows=18 was=27 tombstoned=18 verifyChain=ok
+     [A] §TEAM_VISIT sent=1 fetched=0 received=0 placed=14 parked=0 refused=0 gaps=0 | projection kept=9 projected=9 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+     [A] §TEAM-REFRESH rekeyed=3 tables=c_order,c_orderline view=form
+     [B] §COMM_SYNC kid=b7e8cc91d9bf521e pipe=http://127.0.0.1:45905/pipe sent=1 fetched=1 received=1 placed=15 parked=0 refused=0 gaps=0 equivocations=0
+     [B] §TEAM-REBUILD rows=14 was=25 tombstoned=19 verifyChain=ok
+     [B] §TEAM_VISIT sent=1 fetched=1 received=1 placed=15 parked=0 refused=0 gaps=0 | projection kept=6 projected=8 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+     [B] §TEAM-REFRESH rekeyed=3 tables=c_order,c_orderline view=form
+     [A] §COMM_SYNC kid=c3416194ade3c54a pipe=http://127.0.0.1:45905/pipe sent=0 fetched=1 received=1 placed=15 parked=0 refused=0 gaps=0 equivocations=0
+     [A] §TEAM-REBUILD rows=17 was=36 tombstoned=19 verifyChain=ok
+     [A] §TEAM_VISIT sent=0 fetched=1 received=1 placed=15 parked=0 refused=0 gaps=0 | projection kept=9 projected=8 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+     [A] §TEAM-REFRESH rekeyed=0 tables=c_order,c_orderline view=form
+     [B] §COMM_SYNC kid=b7e8cc91d9bf521e pipe=http://127.0.0.1:45905/pipe sent=0 fetched=0 received=0 placed=15 parked=0 refused=0 gaps=0 equivocations=0
+     [B] §TEAM-REBUILD rows=14 was=33 tombstoned=19 verifyChain=ok
+     [B] §TEAM_VISIT sent=0 fetched=0 received=0 placed=15 parked=0 refused=0 gaps=0 | projection kept=6 projected=8 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+     [B] §TEAM-REFRESH rekeyed=0 tables=c_order,c_orderline view=form
+   §TEAM-CONFLICT A=["⚠ c_order 50001 (fd958d85) · description: values \"CROSS-from-B\" / \"CROSS-from-A\", kept \"CL1-A edited\" — Current record was changed by another user, please ReQuery"]
+   §TEAM-CONFLICT B=["⚠ c_order 50001 (fd958d85) · description: values \"CROSS-from-B\" / \"CROSS-from-A\", kept \"CL1-A edited\" — Current record was changed by another user, please ReQuery"]
+   🟢 both devices show ONE conflict naming both values, with iDempiere's CurrentRecordModified text — A=1 B=1
+   §TEAM-CONFLICT descriptions A={"-28":"W1-A-one edited-by-B","-29":"CL1-B edited","-31":"CL1-A edited"} B={"-26":"W1-A-one edited-by-B","-27":"CL1-B edited","-29":"CL1-A edited"}
+   🟢 pk numbers are NOT portable between the devices (the §12.1 defect precondition is real): pk -29 is "CL1-B edited" on A but "CL1-A edited" on B — and every edit above still landed on its own record — 1 clashing pk(s)
+   🟢 both devices keep the last agreed value on the record (Description = "CL1-A edited") — A pk=-31 B pk=-29
+
+§TEAM-LOCALONLY
+     [A] §TEAM_LOCALONLY op=SET_STATUS table=c_order uuid=20b20fdd reason=target-not-a-team-record (uu-unresolved table=c_order id=null) — the comm layer admits an op only against its record's CREATE scope (NOT SENT)
+   🟢 a DocAction is NOT sent and the chip shows a visible local-only warning — §TEAM_LOCALONLY op=SET_STATUS table=c_order uuid=20b20fdd reason=target-not-a-team-record (uu-unresolved table=c_order id=null) — the comm layer admits an op on | chip.localonly 0 → 1
+
+§TEAM-XOFN
+   §TEAM-XOFN windows N=373 | generically covered (>=1 tab on a table with <t>_uu, not station-owned)=240 | every tab covered=168 | no tabs=1 | no translatable tab=132 | witnessed=1 (window 143 Sales Order: header + Order Line)
+   🟢 X of N: the generic hook covers 240 of 373 AD windows (168 with every tab); witnessed 1 of 373 — NOT "all windows work"
+
+§TEAM-NOERR
+   🟢 zero page errors on both devices — errors=0
+
+──────────────────────────────────────────────
+§W-TEAM-SO PASS judged=19 fails=0 inconclusive=0 pageerrors=0
