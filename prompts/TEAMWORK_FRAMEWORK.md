@@ -1602,3 +1602,21 @@ secret is the one given at setup.
 - After the user's phone test, read both branches on GitHub and record the result here.
 - Witness the confirm-by-read-back path with a forced lost reply.
 - CL6 manifest skew, CL7 multi-pipe heal, CL8 encryption.
+
+### §12.15 User report 2026-10-23 — "saved … but doesn't react" → fixed (bim-ootb PR #2333)
+
+- **Reproduced on the live Pages URL.** Save pressed at 2.6 s → pageerror `Cannot read properties of undefined (reading
+  'kid')`; the page was ready only at 7.0 s. The page downloads the 27 MB `ad_seed.db` first, and an early press ran
+  before the device existed. The rehearsal never pressed early, so it couldn't see this.
+- **Fix:**
+  - Buttons stay disabled, with a download-progress line, until the page is ready.
+  - Actions wait for readiness.
+  - Saved token and post box fields are refilled on reload.
+  - A failed start says so on the page.
+- **`W-PHONE-PAGE` 11/11** with a new `§PHONE-EARLY` arm: disabled + progress while loading, then enabled with Save
+  working.
+- The user's second report, *"Sorry, unable to open the file at present"*, is Google's page for opening the post box
+  `exec` URL directly in a browser signed into several Google accounts. That URL is not for opening; the page calls it
+  in the background, and the post box reads back fine (§12.14).
+- **Owed:** the 27 MB download is heavy for a phone. A slim seed with only the role and access tables
+  (`ad_role`, `ad_role_orgaccess`, `ad_table_access`, `ad_table`) would be under 1 MB — a follow-up.
