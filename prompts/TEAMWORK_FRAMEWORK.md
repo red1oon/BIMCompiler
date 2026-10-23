@@ -493,6 +493,8 @@ stay identical (I-9, `poc_erase`).
 | CL2 | deterministic order | no | `W-ORDER-PERMUTE` — N=10 authors, 100 random arrival orders → one identical tip; a backdated `ts` changes nothing |
 | CL3 | `comm.db` + in-memory pipe + shared-folder pipe | no | `W-FOLDER-2CTX` — two real browser contexts converge through a folder only |
 | CL3b | GitHub-repo pipe (§11.16) + enrol-by-own-device (§11.5) | yes (GH API) | `W-GH-PIPE-2DEV` — laptop + phone: enrol by code, edit, converge to one tip; `W-GH-BUDGET` — writes per minute/hour logged and under §11.16 caps |
+| CL3c | Gmail postbox pipe (§11.19) | yes (Apps Script) | `W-GMAIL-DELIVER` — 50 test bundles by email: delivered / spam / blocked counted (must be 50/0/0); `W-POSTBOX-BOARD` — panel board == the signed heads posted, verified on the device |
+| CL-P | Team Panel (§11.17) + EODA rules (§11.18) | reads a pipe | `W-PANEL-ADVICE` — fixed scenarios (only local work / unsent stock doc / open conflict / others touched my record) each give the expected advice and reason; zero pending prints `INCONCLUSIVE`, not "all good" |
 | CL4 | identity as ops + admission at fold | no | `W-ADMIT-FOLD` — a no-access role's op REFUSED on every peer; `W-REVOKE-SEQ` — the revoke cut-off holds under any arrival order |
 | CL5 | K2 `base` + Notice; K3/K4 owner + Request | no | `W-STALE-SAVE-TWIN` — same two-user save on iDempiere and on SQLite → same `CurrentRecordModified`; `W-NO-SILENT-LOSS` — N=10 contested, every loser has a Notice/Request |
 | CL6 | manifest parking + translators | no | `W-SKEW-PARK` — an op from a newer app parks, then folds after upgrade, same tip as a fresh device |
@@ -515,6 +517,9 @@ need for `erp_sequencer.js`; CL1 removes integer ids from ops.
 - **D4 ✅** Admin OR the person's own already-enrolled device may enrol a device. User: *"Yes, can test ie my mobile
   device or any other as this is just POC."* → the first two-device test is the user's laptop + phone (§11.16, CL3b).
 - **Pipe:** User: *"we can use GH repo if it allows and no breach any limit caps such as LFS"* → §11.16.
+- **✅ Chooser + repo:** User: *"Yes to whatever u need."* → the mine/theirs/before chooser (§11.15) is approved under the
+  twin rule as a user-directed addition; creating the private pipe repo (§11.16) is approved — done when CL3b starts.
+- **Team Panel, check-in, EODA, Gmail postbox:** User, same day → §11.17–§11.19 (quotes there).
 
 ### §11.14 Risks this design adds (named, not hidden)
 
@@ -621,3 +626,143 @@ pipe returns, with no duplicate and no loss.
   ("Ali last sent 2 min ago", read from heads). Live presence and claims need a fast pipe later (P6).
 - **Ceiling, named honestly:** roughly 10–30 active writers per repo at a 1–5 minute send gap. Past that, either split
   the space across several repos (pipes are additive and names are content-addressed, so this is free) or add OCI (CL9).
+
+### §11.17 Team Panel — the post office (user, 2026-10-23)
+
+> User: *"some 'Team Panel' page where users can see status of their last clock in, and how long has elapsed, and whether
+> it is recommended to check in to refresh which is dependent on what they been doing since. Some are totally local …
+> their comm can be minimal ie just to update status such as 'Yes, here is me, and i do have transactions in attachment'."*
+> … *"The panel page fetches from the relay that has latest status to inform the user. It is like a post office to check
+> mail from others and to note your visit."*
+
+**A visit = one check-in = one exchange with the post office:**
+1. **Note my visit:** post my signed head — *"I'm here; my last op is seq N; I have seen everyone up to frontier F"* — plus
+   a bundle of my shared ops since my last visit, if I have any. A visit with no ops is still worth making: the frontier in
+   it is everyone else's **SEEN receipt** (§11.15).
+2. **Collect my mail:** read the board (every device's latest signed head) and fetch only the bundles I don't have.
+
+The relay holds **only the latest signed head per device and the bundles**. It computes nothing; the panel verifies every
+head itself. On GitHub the board is one `matching-refs` call (§11.16); on the Gmail postbox it's one `doGet` (§11.19).
+
+**What the panel shows** (one row per person; their devices fold under it):
+
+| Column | Source |
+|---|---|
+| Last visit, time elapsed | that person's newest signed head, `ts_business` (shown, never used for order) |
+| Devices | `cl_device` for that `person_uu` |
+| Sent / waiting to send | my own `cl_outbox` (my row only) |
+| Mail for me | ops on the board that touch records I own, have open, or am named on; open conflicts; Notices and Requests addressed to me |
+| Delivery of my last send | SENT / STORED / SEEN by whom / SETTLED (§11.15) |
+| **Advice** | ✅ no need · 🟡 check in soon · 🔴 check in now — **always with the reason** |
+
+**What counts as "totally local":** a new intent class **K-LOCAL**. These ops never leave the device unless the user
+promotes them:
+- private post-its (`teams/overlay/postit.js` is already private-first);
+- view state and history-knob moves;
+- unsaved drafts.
+
+They show on the panel as "14 local only", and they never raise the advice level.
+
+**How advice is worked out:** a pure function over `comm.db` + the board + the EODA rules (§11.18). It uses:
+- what I've done since my last visit (the count and class of my unsent ops);
+- what others have done that touches my work (from the board);
+- the time elapsed.
+
+Same inputs, same advice, so a witness can assert it. Example: *"Last visit 3 h 12 min ago. Since then: 14 local only,
+3 to send — 1 Shipment moves stock. Rule `EODA-STOCK-2H`: stock documents must be sent within 2 h → 🔴 check in now."*
+
+**Where it lives:** one shared page used by both ERP and Modeller (the Teams home, `project_teams_people_dimension_architecture`).
+A status chip ("🔴 3 to send") sits in each app's status line and opens the panel. This is a user-directed addition with
+no legacy screen, like the chooser in §11.15.
+
+### §11.18 EODA — End-Of-Day Activity rules, as iDempiere Alerts
+
+- **The term:** EODA is the user's own; it isn't in the repo yet.
+- **The doctrine behind it:**
+  - the daily one-way circle, branch → HQ → branch (`DistributedERP §1`);
+  - end-of-day van settlement (`DistributedERP` "Van / DSD").
+- **Mechanism, copied from legacy:** iDempiere already runs scheduled rule checks.
+  - The **Alert** window (276) holds `AD_Alert` + `AD_AlertRule` (SQL rules with recipients).
+  - The **Alert Processor** window (312) and the **Scheduler** window (305) run them. All three are in `ad_seed.db`,
+    checked this turn.
+  - An EODA rule is an **AD_AlertRule row** whose SQL runs over the local world + `comm.db` views. No new rule engine, no
+    per-rule code (AD-LAYER LAW).
+- **What it produces:** a hit raises the panel advice with the rule's name as the reason, plus a Notice.
+- **Example rules (illustrative, to be set per client):**
+  - `EODA-STOCK-2H` — a stock-moving document not sent within 2 h.
+  - `EODA-CONFLICT` — any open conflict → check in now.
+  - `EODA-DAYCLOSE` — before a station's day close, every shared op must be SEEN by HQ. The day-close op is refused
+    until it is. This is the delivery guarantee turned into a business rule.
+  - `EODA-IDLE` — no visit in 24 h while holding unsent shared ops.
+
+### §11.19 Gmail as a post box (user, 2026-10-23)
+
+> User: *"I can give a gmail acct that can auto respond and act as a post box. Email comm is already in iDempiere legacy,
+> so we be simply copying and double it up as a convenient lazy but solid relay … we can encrypt payload … not sure if
+> gmail has filters to suspect it as malicious."*
+
+**The legacy precedent is exact.**
+- iDempiere sends mail through `org.compiere.util.EMail` with client SMTP (`AD_SMTP`) and has a Mail Template window (204).
+- It **reads a mailbox and turns mails into Requests** in `RequestEMailProcessor`. Its own doc line gives the example
+  `imaps://imap.gmail.com:993` (`org.adempiere.base.process/.../RequestEMailProcessor.java:58`), with the Request Processor
+  window (203).
+- So "post box by email" is twin-native, and the legacy server can join as a peer through that same path.
+
+**Three layers on the one Gmail account:**
+
+| Layer | How | Who uses it |
+|---|---|---|
+| **A. Auto (the panel)** | an Apps Script web app owned by the postbox account: `doPost` = put, `doGet` = list / get / board. Bundles are stored as files in the account's Drive. | every browser device; no email involved, so no spam filter is involved |
+| **B. Email visit** | mail to the postbox: subject `[BIMTEAM] <space12> <kid12> <seqFrom>-<seqTo>`, plain-text body = the signed head, attachment = one `.bimpack`. A time trigger (every 5 min) files it into the same Drive store. | phone users sharing through the Gmail app (Web Share with files); anyone offline-first |
+| **C. Legacy** | iDempiere SMTP out to the postbox; `RequestEMailProcessor` over IMAP in | the bridge / legacy server |
+
+- **Not Gmail's vacation responder:** it can't attach files and replies at most once per sender every few days. The
+  "auto respond" is the Apps Script trigger.
+- **Replies only when needed:** a receipt mail goes back only on path B. Path A users read the board instead.
+
+**Will Gmail treat it as malicious?** What Gmail says it blocks (`support.google.com/mail/answer/6590`, fetched
+2026-10-23):
+- executable and script types (`.exe .js .bat .jar .apk .msi .ps1 …`);
+- those types inside archives;
+- **password-protected archives with archived content**;
+- documents with malicious macros.
+
+A `.bimpack` is **one encrypted binary file, not an archive, with an extension not on that list**, so none of the stated
+rules match.
+
+What the page does **not** say is how Gmail treats an encrypted non-archive file it can't scan. That's ⛔ unverified, so
+it gets a witness, not a guess: `W-GMAIL-DELIVER` sends 50 test bundles and counts delivered / spam / blocked. Mitigations
+on the postbox:
+- a filter `subject:[BIMTEAM]` → *Never send to Spam*, label it, skip the inbox;
+- plain text only, no links;
+- senders are the team's own Gmail accounts, so SPF/DKIM pass;
+- path A avoids mail scanning entirely.
+
+**Caps** (Apps Script quotas, `developers.google.com/apps-script/guides/services/quotas`, fetched 2026-10-23, consumer
+gmail.com vs Workspace):
+
+| Quota | gmail.com | Workspace |
+|---|---|---|
+| Email recipients per day | **100** | 1,500 |
+| Gmail read/write per day | 20,000 | 50,000 |
+| URL fetch per day | 20,000 | 100,000 |
+| Trigger runtime per day | 90 min | 6 h |
+| Per run | 6 min | 6 min |
+| Attachments per message | 25 MB total | 25 MB total |
+
+- **100 recipients a day** is why receipts go by mail only on path B.
+- Drive file-creation limits aren't listed on that page (⛔ verify). The postbox logs its own counts as
+  `§POSTBOX_BUDGET put_day=… mail_day=… trigger_min=…`.
+
+**Security:**
+- Payloads are AES-GCM under the space key (§11.11), so Google sees only ciphertext.
+- Metadata in the subject (device id, seq range) is the only clear text.
+- The web app URL carries a space secret, to keep strangers from filling the quota.
+- Integrity never depends on Google: the name is the hash, the content is signed, and readers verify everything.
+
+**What we need from the user** (when CL3c starts): the postbox Gmail address, and one-time installation of the Apps Script
+in that account. The script will be written into the repo for them to paste; it can't be installed from outside the
+account.
+
+**Order of pipes:** GitHub first (CL3b): no script to install, and Git's own forward-only ref check. Gmail second (CL3c):
+adds the email path, phone sharing and legacy. **Both carry identical bundles**, so a device can use either or both.
