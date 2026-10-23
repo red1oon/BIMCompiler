@@ -32,7 +32,7 @@ R = [
  ('clash2', 'clash2', 'clash2', 0.3, 0.3, '§FILM_CUE conflict_shown/A conflict_shown/B', 'F: Who wins? | M: Nobody. Still Drafted.',
   'F: So who wins? | M: Nobody. The status stays Drafted, and none of the Complete\'s consequences show. All or none. Nothing is silently lost.'),
  ('limits', 'limits', 'limits', 0.3, 0.2, 'limits card · TEAMWORK_FRAMEWORK §13.7 named limits', 'F: What is missing? | M: Plenty. It is a proof of concept.',
-  'F: So what is still missing? | M: Plenty. Stock reservation, document numbers and demo data are not shared yet. There is no clash chooser. The default setup is a one cycle trial, and its key is not installed. And that verify FAIL toast is a defect we saw.'),
+  'F: So what is still missing? | M: Plenty. Stock reservation, document numbers and demo data are not shared yet. There is no clash chooser. The default setup is a one cycle trial, and its key is not installed.'),
  ('close', 'close', 'close', 0.3, 0.2, 'close card · witness PASS lines', 'F: So the server is dead? | M: Here, yes. Thanks for watching!',
   'F: So... the server really is dead? | M: Here, yes. Every line on this card is a test that passed, and this film is one space on both windows. A proof of concept. Thanks for watching!'),
 ]

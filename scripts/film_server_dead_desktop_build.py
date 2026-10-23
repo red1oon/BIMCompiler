@@ -14,20 +14,24 @@ PW, PH, GAP, PY = 954, 536, 12, 95   # pane size, gap, top
 FPS = 25
 
 # ---- timeline: cards and clips (take-time seconds; ×speed) ----
+_cj = json.load(open(os.path.join(TAKE, 'cues.json')))['cues']
+def C(n, w='A'):
+    return [c['t'] for c in _cj if c['name'] == n and c['who'] == w][0]
+# clip bounds are ANCHORED to cues from the take's own §FILM_CUE log (offsets = the cut points chosen on the first take, v1)
 TL = [
   ('card', 'title', 5.0),
   ('card', 'problem', 11.0),
   ('card', 'bench', 13.0),
-  ('clip', 'on',      13.0, 24.4, 1, '1 · User A turns team mode on from the Team pill'),
-  ('clip', 'found',   28.8, 45.3, 1, '2 · Start a team  →  an invite link (blurred in this film)'),
-  ('clip', 'join',    53.5, 66.0, 1, '3 · User B opens the invite in a private window and presses Join'),
-  ('clip', 'approve', 66.0, 88.5, 1, '4 · User A approves B\'s code and picks a role · User B visits → paired'),
-  ('clip', 'enter',  102.6, 124.8, 4, '5 · User A enters a Sales Order and one line'),
-  ('clip', 'visit1', 124.8, 138.0, 1, '5 · Visit on both  →  the order is on User B'),
-  ('clip', 'complete', 145.5, 165.0, 1, '6 · User A presses Complete · User B visits → Completed here too'),
-  ('clip', 'tax',    172.0, 179.2, 1, '6 · …and its consequence came across: an Order Tax row'),
-  ('clip', 'clash',  240.0, 262.5, 1, '7 · The clash: both complete the same order before visiting'),
-  ('clip', 'clash2', 296.0, 307.0, 1, '7 · Both: "changed by another user, please ReQuery" · status stays Drafted'),
+  ('clip', 'on',      C('panel_open') - 3.88, C('mode_click') + 2.49, 1, '1 · User A turns team mode on from the Team pill'),
+  ('clip', 'found',   C('chip_unpaired') - 1.63, C('founded') + 4.75, 1, '2 · Start a team  →  an invite link (blurred in this film)'),
+  ('clip', 'join',    C('invite_opened', 'B') - 2.89, C('requests_listed') - 2.93, 1, '3 · User B opens the invite in a private window and presses Join'),
+  ('clip', 'approve', C('requests_listed') - 2.93, C('b_paired', 'B') + 4.19, 1, '4 · User A approves B\'s code and picks a role · User B visits → paired'),
+  ('clip', 'enter',  C('order_new'), C('line_saved'), 4, '5 · User A enters a Sales Order and one line'),
+  ('clip', 'visit1', C('line_saved'), C('b_grid_has_order', 'B') + 2.9, 1, '5 · Visit on both  →  the order is on User B'),
+  ('clip', 'complete', C('a_form_open') - 1.13, C('visitB2', 'B') + 6.9, 1, '6 · User A presses Complete · User B visits → Completed here too'),
+  ('clip', 'tax',    C('b_tax_tab', 'B') - 3.05, C('b_tax_tab', 'B') + 4.15, 1, '6 · …and its consequence came across: an Order Tax row'),
+  ('clip', 'clash',  C('clash_start') + 0.26, C('visit_B_x2', 'B') + 5.4, 1, '7 · The clash: both complete the same order before visiting'),
+  ('clip', 'clash2', C('conflict_shown') - 1.4, C('conflict_shown') + 9.6, 1, '7 · Both: "changed by another user, please ReQuery" · status stays Drafted'),
   ('card', 'limits', 14.0),
   ('card', 'close', 12.0),
 ]
@@ -50,11 +54,14 @@ def wit(name):
     sys.exit('no § verdict in ' + name)
 W_DESK, W_DOC, W_SO = wit('desktop.log'), wit('docaction.log'), wit('so.log')
 verdict = [l for l in rec if l.startswith('§FILM_REC_VERDICT')][0].strip()
+chain = [l for l in rec if l.startswith('§FILM_CHAIN')][0].strip()
+assert 'fail_or_torn_or_toast_lines=0' in chain and 'PASS' in verdict, 'take is not clean: ' + chain + ' ' + verdict
+print('§FILM_BUILD_CHAIN ' + chain)
 space = re.search(r'§FILM_SPACE who=A space=(\w+)', open(os.path.join(TAKE, 'pageA.log')).read()).group(1)
 spaceB = re.search(r'§FILM_SPACE who=B space=(\w+)', open(os.path.join(TAKE, 'pageB.log')).read()).group(1)
 pipe = [l for l in rec if l.startswith('§FILM_PIPE')][0].strip()
 assert space == spaceB, 'space differs between panes'
-sha = subprocess.run(['git', '-C', '/tmp/wt-film-erp', 'rev-parse', '--short', 'HEAD'], capture_output=True, text=True).stdout.strip()
+sha = subprocess.run(['git', '-C', '/tmp/wt-film-erp2', 'rev-parse', '--short', 'HEAD'], capture_output=True, text=True).stdout.strip()
 print(f'§FILM_BUILD space={space} spaceB={spaceB} {pipe} bim-ootb={sha}')
 
 # ---- film-time map ----
@@ -135,10 +142,9 @@ CARDS['limits'] = page('''<div class=t>Honest limits: this is a proof of concept
 <li>Document numbers: each device numbers its own orders</li>
 <li>Edits to demo-data records: only records created inside the team are shared</li>
 <li>A clash is shown on both screens; the chooser to resolve it is not built</li></ul></div>
-<div class=card><h3 class=amber>Setup and one defect seen while filming</h3><ul>
+<div class=card><h3 class=amber>Setup</h3><ul>
 <li>The system default setup is a one-cycle trial (one order, one Complete); its key is not installed yet, so this film used a folder</li>
-<li>Not run here: the real GitHub path of the in-panel pairing, more than two users</li>
-<li>The Complete toast says &ldquo;verify FAIL&rdquo;: the local chain check logs &ldquo;group torn&rdquo; after a team rebuild; the next Visit re-seals it (verifyChain=ok). Not fixed.</li></ul></div></div>''')
+<li>Not run here: the real GitHub path of the in-panel pairing, more than two users</li></ul></div></div>''')
 def short(l): return html.escape(re.sub(r'\s+', ' ', l))
 CARDS['close'] = page('''<div class=t>Witnessed, not promised</div><div class="card dark"><div class=mono>
 %s<br>%s<br>%s<br>%s<br><br><b>one space on both windows:</b> %s &nbsp;·&nbsp; pipe objects: %s<br>
