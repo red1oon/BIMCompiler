@@ -1154,3 +1154,96 @@ So the gossip-shaped deps were pure cost: they didn't make anything safer, they 
     per window of recent seqs.
 - **The timeline display orders by business `ts`** (shown, never used for order). Fold order follows data, so two
   unrelated ops may fold in an order that doesn't match the wall clock; that's correct and invisible in results.
+
+### §12.7 Build spec — CL4: identity as ops + admission at fold (user: *"Proceed"*, 2026-10-23)
+
+**Facts re-read this turn (load-bearing):**
+- iDempiere's data-level write check is `MRole.canUpdate` (`MRole.java:2335-2390`), **not** window access. It runs:
+  - System user level → always true;
+  - then the client/org level rules;
+  - `isClientAccess(rw)` (`:1161`), `isOrgAccess(rw)` (`:1246`);
+  - `isTableAccess` (`:1369`) with `isTableAccessLevel` (`:1426`).
+- `erp/ad_access.js` has window/process/form gates and `gateRecord` but **no `canUpdate`**. `gateRecord` would deny the
+  System role, which `canUpdate` allows — a twin divergence. So CL4 ports `canUpdate` into `ad_access.js` (the generic AD
+  layer, AD-LAW §5) instead of reusing `gateRecord`.
+- Real roles in `build/erp/ad_full.db`:
+
+  | Role | User level | Org access (rw) |
+  |---|---|---|
+  | 0 System Administrator | `S  ` | — |
+  | 102 GardenWorld Admin | ` CO` | 11: 0, 11, 12, 50000–50007 |
+  | 103 GardenWorld User | `  O` | 11: 11, 50000, 50001, 50007 |
+  | 50004 Web Service Execution | ` CO` | 11: 0, 11, 12 |
+
+  - `c_order` is AD_Table 259 with AccessLevel 1 (Org).
+  - `ad_table_access` has 1 row (role 103, table 520, rule E = export — not an "Accessing" rule).
+  - `ad_record_access` has 0 rows.
+
+**Identity ops** (ordinary v3 envelopes; `build/comm/comm_roster.js`):
+- **GENESIS** — the founder's seq 1.
+  - `params = {name, nonce, founder:{kid, jwk, person_uu, name, ad_role_id}}`.
+  - **space = sha256(canonical(params))**, so the space id pins the founder key with no separate trust step. An invite
+    = the space id.
+  - It creates the space record and the founder's device and person records; the founder is comm-admin.
+- **PERSON** `{person_uu, name, ad_role_id, comm_admin}` — signed by a comm-admin.
+- **ENROLL** `{kid, jwk, person_uu}` — signed by a comm-admin **or by an enrolled device of the same person** (D4).
+  `kid` must equal `kidOf(jwk)`.
+- **ROLE** `{person_uu, ad_role_id?, comm_admin?, from_seq:{kid:n}}` — signed by a comm-admin.
+  - It applies to that person's device ops with `seq > from_seq[kid]` (an unlisted device = from 0).
+- **REVOKE** `{kid, last_good_seq}` — signed by a comm-admin or the same person.
+  - Ops of `kid` with `seq ≤ last_good_seq` stay valid; later ones are refused.
+- **Authority changes take effect from a seq cut-off named by the authority**, so a verdict never depends on arrival
+  order and a member can't keep old rights by citing an old version.
+- Identity ops read the space, signer device and signer person records, so they are ordered after what they rely on.
+- **Roster fold:** walk the identity ops in order. Re-walk with the accepted REVOKE cut-offs known from the start, until
+  the accepted set is stable (≤5 walks; unstable → `§COMM_ROSTER INCONCLUSIVE`).
+
+**Admission** (`build/comm/comm_admit.js`), per business op, against the folded roster — pure:
+
+| Check | On failure |
+|---|---|
+| device enrolled | PARKED `unknown-device` (an ENROLL may still arrive) |
+| signature valid under the enrolled key | REFUSED `signature` |
+| `seq ≤ last_good_seq` if revoked | REFUSED `revoked` |
+| `ad_role_id` at `(kid, seq)` → `AdAccess` `canUpdate(client, org, table)` on the real AD rows | REFUSED `access:<missing>` |
+| unknown table, unknown role, unknown record scope | REFUSED (**fail-closed**; today's write-time gate fails open) |
+
+- Record scope = `ad_client_id`/`ad_org_id` from a CREATE's fields or `stdDefaults`; for later ops, from that record's
+  CREATE op.
+- An op that read a REFUSED version is REFUSED `dep-refused`, since the version it saw never happened.
+- An equivocation is recorded only when **both** ops carry valid signatures. An unsigned fake at someone's slot is
+  REFUSED `signature` and can't knock out the real op (denial-of-service guard).
+
+**Store changes:**
+- `ingest` keeps structural checks only (the key may arrive later). Signatures are checked at fold time against the
+  roster.
+- `d/<kid>` key files are retired: keys travel inside ENROLL ops.
+- `§COMM_TRUST mode=CL3-temporary` becomes `§COMM_TRUST mode=roster genesis=<space12>`.
+
+**Witness `W-ADMIT-FOLD`** (`scripts/witness_comm_cl4_admit.js`, node, real `ad_access.js` canUpdate on real
+`ad_full.db` rows):
+- `§ADMIT-GENESIS` — a genesis whose params don't hash to the pinned space, or that is signed by another key, is not
+  trusted, and nothing is placed.
+- `§ADMIT-ENROLL`:
+  - accepted: admin enrols person P (role 103) and device D1; D1 enrols P's phone D2 (D4);
+  - refused: a stranger self-enrolling; D1 enrolling a device for another person.
+- `§ADMIT-ACCESS` — c_order creates:
+
+  | Role | Org | Expected |
+  |---|---|---|
+  | 103 | 11 | MERGED |
+  | 103 | 12 | REFUSED `access` |
+  | 103 | 0 | REFUSED `access` |
+  | 50004 | 11 | MERGED — data access, as iDempiere's web-service role has |
+  | 0 | 11 | MERGED — System |
+
+- `§ADMIT-REVOKE` — `REVOKE D2 last_good_seq=1` → D2 seq 1 MERGED, seq 2 REFUSED, the same over 20 arrival orders.
+- `§ADMIT-ROLE` — P moved 102→103 with `from_seq {D1:2}` → D1 seq 2 at org 12 MERGED, seq 3 at org 12 REFUSED.
+- `§ADMIT-FAILCLOSED` — unknown table → REFUSED; op from an unenrolled kid → PARKED; an op reading a refused version →
+  REFUSED `dep-refused`.
+- `§ADMIT-FAKE-EQUIV` — a badly signed op at D1's slot does not displace D1's real op.
+- `§ADMIT-PERMUTE` — every verdict is identical across 20 arrival orders.
+- Regression: `W-STORE-NODE` and `W-FOLDER-2CTX` re-run on roster trust; `scripts/poc_access.js` (W-ACCESS) stays green
+  after the `ad_access.js` addition.
+- **Twin check (named, not done here):** the `canUpdate` port is checked against the MRole source lines. Running the
+  same truth table against a live iDempiere over the REST bridge is CL4b.
