@@ -19,7 +19,7 @@ FT = 0.3048
 CITED = {
     'ELEC': dict(ifc_class='IfcLightFixture', spacing=10 * FT, area=(10 * FT) ** 2, above_floor=(7 * FT, 8 * FT), below_ceiling=None, library_ref='M_Pendant Light - Hemisphere:150W - 120V:150W - 120V', mesh_source='Duplex',
                  provenance='cited:TNAU Poultry House Construction (agritech.tnau.ac.in): lights hung from the ceiling 7-8 ft above ground level, incandescent bulbs every 10 ft'),
-    'FP': dict(ifc_class='IfcFireSuppressionTerminal', spacing=15 * FT, area=225 * FT * FT, above_floor=None, below_ceiling=(12 * 0.0254, 1 * 0.0254),
+    'FP': dict(ifc_class='IfcFireSuppressionTerminal', spacing=15 * FT, area=225 * FT * FT, above_floor=None, below_ceiling=(12 * 0.0254, 1 * 0.0254),   # §D65: the walk's BOM tree picks the shallowest depth in this band at which the 177 mm assembly + the branch clear
                provenance='cited:NFPA 13 light hazard (max 15 ft between sprinklers, 225 ft2 per sprinkler; deflector 1-12 in below the ceiling); an option: farm sheds are usually exempt (IBC Group U)'),
 }
 
@@ -61,18 +61,29 @@ def main():
         out.execute('INSERT INTO rule_mesh_binding (disc, ifc_class, geometry_hash, n_of, n_total, provenance, src_guids) VALUES (?,?,?,?,?,?,?)',
                     (disc, c['ifc_class'], mb[0][0], 1, 1, mprov, ''))
         rows.append((disc, c['ifc_class'], round(lo, 3), round(hi, 3), round(c['spacing'], 3), mb[0][0]))
+    # §D65 the FP pipework = the Java compiler's BOM template, read from the library (roles, connector diameters, assembly height); main side / riser position = stated conventions
+    import re as _re
+    roles = [r[0] for r in q(lib, "SELECT role FROM ad_bom_child WHERE bom_id='FP_PIPE_ASSEMBLY' ORDER BY sequence")]
+    conn = {r[0]: r[1] for r in q(lib, "SELECT connector_type, diameter_mm FROM ad_assembly_connector WHERE assembly_id='SPRINKLER_PENDANT_ASSEMBLY'")}
+    desc = (q(lib, "SELECT description FROM ad_bom WHERE bom_id='SPRINKLER_PENDANT_ASSEMBLY'") or [('',)])[0][0]; hm = _re.search(r'(\d+)\s*mm total height', desc or '')
+    if not (roles and 'MAIN_HOOKUP' in conn and 'BRANCH_OUT' in conn and hm): sys.exit('§FARM-RULES REFUSED: the library lacks the FP BOM template (roles=%s connectors=%s height=%s)' % (roles, conn, desc))
+    params = {'bom': 'FP_PIPE_ASSEMBLY', 'assembly': 'SPRINKLER_PENDANT_ASSEMBLY', 'assembly_height_m': int(hm.group(1)) / 1000.0, 'main_dia_mm': conn['MAIN_HOOKUP'], 'branch_dia_mm': conn['BRANCH_OUT'],
+              'roles': roles, 'main_side': 'min', 'riser': 'main-mid'}
+    out.execute('INSERT INTO rule_routing (disc, from_kind, to_kind, pattern, params_json, n_measured, provenance, src_guids) VALUES (?,?,?,?,?,?,?,?)',
+                ('FP', 'IfcFireSuppressionTerminal', 'FP_MAIN', 'bom-tree', json.dumps(params, sort_keys=True), 0, 'library:component_library.db ad_bom FP_PIPE_ASSEMBLY + SPRINKLER_PENDANT_ASSEMBLY (the Java compiler BOM template); main_side / riser = stated conventions', ''))
+    rows.append(('FP', 'bom-tree', params['assembly_height_m'], params['main_dia_mm'], params['branch_dia_mm'], ','.join(roles)))
     fr = q(ref, "SELECT m.ifc_class, COUNT(*), AVG(t.center_z) FROM elements_meta m JOIN element_transforms t ON t.guid=m.guid GROUP BY 1 HAVING COUNT(*) >= 5 ORDER BY 1")
     for cls, n, mz in fr: out.execute('INSERT INTO rule_frame_ref (ifc_class, n, mean_z, provenance) VALUES (?,?,?,?)', (cls, n, round(mz, 4), 'measured:AVG(center_z):the farm shed reference model'))
     body = json.dumps({'rows': rows, 'frame': [(c, n, round(z, 4)) for c, n, z in fr]}, sort_keys=True)
     sha = hashlib.sha256(body.encode()).hexdigest()[:12]
     meta = {'standard': 'farming-shed', 'version': datetime.date.today().isoformat() + '+' + sha, 'content_sha': sha, 'built_at': datetime.datetime.now().replace(microsecond=0).isoformat(),
             'built_from': 'cited: TNAU poultry house lighting + NFPA 13 light hazard; floor / ceiling / frame measured on a farm shed reference model; meshes: the Terminal sprinkler, the library pendant lamp',
-            'source_db': 'farm_rules.db', 'z_datum_offset': '0', 'mesh_sources': 'Terminal,Duplex', 'fp_note': 'farm sheds are usually exempt from sprinklers (IBC Group U); the FP row is an option',
+            'source_db': 'farm_rules.db', 'z_datum_offset': '0', 'mesh_sources': 'Terminal,Duplex', 'fp_routing': 'bom-tree FP_PIPE_ASSEMBLY (library)', 'fp_note': 'farm sheds are usually exempt from sprinklers (IBC Group U); the FP row is an option',
             'reference_floor_z': str(round(floor, 4)), 'reference_ceiling_z': str(round(ceiling, 4))}
     for k, v in meta.items(): out.execute('INSERT INTO rules_meta (key, value) VALUES (?,?)', (k, v))
     out.commit(); out.close()
     print('§FARM-RULES written %s floor=%.3f ceiling=%.3f storey=%s sha=%s' % (a.out, floor, ceiling, storey, sha))
-    for r in rows: print('  §FARM-RULE %s/%s band=[%s,%s] spacing=%s mesh=%s' % r)
+    for r in rows: print('  §FARM-RULE ' + ' '.join(str(x) for x in r))
     print('  §FARM-FRAME %s' % json.dumps([(c, n, round(z, 3)) for c, n, z in fr]))
 
 if __name__ == '__main__': main()
