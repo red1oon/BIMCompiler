@@ -1356,3 +1356,46 @@ All logs were read in full. bim-ootb PR **#2319** (auto-merge on); #2317 merged.
   `CurrentRecordModified` and the message text from `AD_Message`. Proves the twin's record-wide rule, not a per-column
   one.
 - `§CONF-PERMUTE` — conflicts and folded rows are identical over 20 arrival orders on an observer.
+
+### §12.10 Results 2026-10-23 — CL5 ✅ DONE (witness)
+
+All logs were read in full. bim-ootb PR **#2320** (auto-merge on); #2319 merged.
+
+**`W-CONFLICT` PASS judged=12 fails=0** (`build/comm/logs/witness_comm_cl5_conflict.log`; real kernel + `listTip`,
+real `canUpdate`, roster trust):
+
+| Arm | Scenario | Result |
+|---|---|---|
+| DISJOINT | O1: A sets description=a, B sets grandtotal=200, same base | both apply, no conflict |
+| SAME-FIELD | O2: A 111 vs B 222 from 100 | one conflict, `before=100`, both devices fold 100 |
+| SEQUENTIAL | O3: B wrote 333 after seeing A's 111 | 333, no conflict |
+| STALE-ONLINE | B loaded O1; A then changed *description* | B's `saveCheck` → stale, *"Current record was changed by another user, please ReQuery"* (`AD_Message`); a check against the current version is not stale |
+| RESOLVE | A, having seen both, writes 150 | O2 → 150 on both devices; notice gone |
+| RACE | O4: A resolves 150, B resolves 160, concurrently | conflicted again, row 100 on both |
+| PERMUTE | observer, 20 arrival orders | identical conflicts and folded rows, 20/20 |
+
+- SAME-FIELD notice to A: `{ad_message:'CurrentRecordModified', ad_table_id:259, textmsg:'grandtotal: mine=111 theirs=[222] before=100'}`; B gets
+  its own.
+- **The first run FAILED RACE, and the failure was real.** `before` came out as 222, a value from the earlier, still-open
+  clash, and the fold showed it. The fix defines `before` as the **last agreed** write: walk back through the common
+  ancestors until one writer dominates. Every write of the column after it is held back. Now `before=100` and the row is
+  100 on both devices.
+
+**`W-FOLDER-2CTX` PASS judged=16 fails=0** (two real browsers): A and B change A-1's grandtotal unaware of each other
+(111→120 and 111→130).
+- Both browsers list `[{col:grandtotal, before:111, values:[120,130]}]` and fold A-1 to **111**.
+- Each person gets one `CurrentRecordModified` Notice for AD_Table 259.
+- The browser notice's `message` is null: `ad_seed.db` has no `ad_message` table — named gap for the UI step.
+
+**Regression:** W-ADMIT-FOLD 23/23 · W-STORE-NODE 25/25 · W-UU-NO-COLLIDE 23/23 · W-ORDER-PERMUTE 12/12.
+
+**Not done (named):**
+- The mine/theirs/before **chooser UI** (Team Panel step CL-P).
+- Writing the Notices into `AD_Note` rows — blocked on `Record_ID` for device-created records until the bridge's
+  `IDMAP` (§11.1).
+- Delete-vs-update concurrency (no rule yet; delete currently just hides the row).
+- Concurrent doc-actions (K4: first valid wins via `base`) — K4 isn't witnessed here.
+
+**Next in order:**
+- **CL3b** — GitHub pipe, one batched commit per visit (§11.16; repo creation was approved).
+- Then **CL6** manifest skew, **CL7** multi-pipe heal, **CL8** encryption.
