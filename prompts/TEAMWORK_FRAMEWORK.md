@@ -1553,3 +1553,52 @@ from GitHub, not from the user's eyes (PRIMAL LAW):
   5. Paste the SECRET here. I wire the phone page to note each visit and witness it end-to-end with `doGet`
      (`W-GMAIL-LOG`).
 - Until then the post box is **written, not deployed, not witnessed**.
+
+### §12.14 Results 2026-10-23 — Gmail visit log ✅ DONE (witness, real Gmail + GitHub)
+
+**Install (the user authorised as amazingerp@gmail.com; I did the rest with `clasp`):**
+- First attempts failed with *"User has not enabled the Apps Script API"*, although the user had switched it on. The
+  pasted OAuth redirect showed `authuser=1`: the switch had been set for the browser's *first* Google account. After the
+  user set it at `/u/1/` for amazingerp, `clasp create` worked first try.
+- Script **BIM Team Postbox**, scriptId `18I5ET9T5JoB1bqxSJAJuQLZrJvJuu-ATGUnt0_yQ0Z8DrVh3U0V6v_Iv`
+  (`build/comm/postbox/.clasp.json`).
+- Web-app deployment `AKfycbx-HDroFGTi5q7a53T4gpb-fibPpi8DcT8yptupuE7XK9gVqgqn_SBfi168hNlL38xqzQ`, now @4. The same URL
+  is kept across redeploys.
+- The user ran `setup` once (consent) and gave the secret.
+- **The secret lives only in `~/.config/bim-teams/postbox.json` (mode 600).** A scan found it in no repo file.
+
+**`W-GMAIL-LOG` PASS judged=5 fails=0** (`scripts/witness_comm_gmail_log.js`, log `build/comm/logs/witness_comm_gmail_log.log`):
+
+| Arm | Result |
+|---|---|
+| NOTED | 4 visits (A, B, B, A) → 4 notes, each found in the log **by its own Gmail message id** (4 distinct) |
+| POINTS | B's note links `o/<B>/1-1.<h>.bimpack` on `dev/<B>`, and GitHub answers 200 — a pointer to a real file, not a copy |
+| SECRET | a wrong secret → `{ok:false, error:'secret'}` |
+| NONBLOCK | post box unreachable → the visit still completed (placed=4); the note failed with its reason |
+
+Three real problems were found on the way to PASS, all fixed:
+1. **The witness read Gmail's preview snippet** (cut at ~200 characters), so links never appeared. `doGet` now returns
+   each note's full text, and the witness matches by message id: subjects can repeat when a visit adds nothing, as A's
+   two `seq 3` notes did.
+2. **`doGet` threw *"could not decode string"*** (Google's page was in Thai: `ไม่สามารถถอดรหัสสตริง`, line 54). Gmail's
+   `body.data` comes back without base64 padding, or as bytes. Fixed with `decode_()`.
+3. **Google's POST reply intermittently 404s** (*"Drive: unable to open the file"*), while the note **was** written.
+   Retrying blindly would duplicate it. Now every note carries its own id (`#<16 hex>` in the subject). On a lost reply
+   the device reads the log and confirms by id, re-posting only if the note is truly absent.
+   - **Not yet exercised:** no reply was lost during the passing runs, so the confirm-by-read-back path is written but
+     its own witness (a forced lost reply) is still owed.
+
+**`W-PHONE-PAGE` PASS judged=10 fails=0** (bim-ootb PR **#2328**, auto-merge on; #2323 merged):
+- The phone page has optional post box address + secret fields, kept in the browser only.
+- In the rehearsal (desktop + emulated Pixel 7, real clicks), **10 visits → 10 notes, all read back from the log**, and
+  the earlier 8 arms are still green.
+- The browser's cross-origin POST and GET to Apps Script work with `text/plain`, with no preflight.
+
+**For the user's real phone test (§12.13):** in step 1 the page also asks for the post box address and secret. Paste
+them on both devices, or leave them empty — the pipe works without them. The address is the `exec` URL above; the
+secret is the one given at setup.
+
+**Next:**
+- After the user's phone test, read both branches on GitHub and record the result here.
+- Witness the confirm-by-read-back path with a forced lost reply.
+- CL6 manifest skew, CL7 multi-pipe heal, CL8 encryption.

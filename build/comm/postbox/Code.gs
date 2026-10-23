@@ -37,7 +37,8 @@ function doPost(e) {
   try { b = JSON.parse((e.postData && e.postData.contents) || '{}'); } catch (x) { return out_({ ok: false, error: 'json' }); }
   if (!secretOk_(b.secret)) return out_({ ok: false, error: 'secret' });
   var me = Session.getEffectiveUser().getEmail();
-  var subject = '[BIMTEAM] ' + String(b.space || '').slice(0, 12) + ' ' + String(b.kid || '').slice(0, 16) + ' seq ' + Number(b.seq || 0);
+  var subject = '[BIMTEAM] ' + String(b.space || '').slice(0, 12) + ' ' + String(b.kid || '').slice(0, 16) + ' seq ' + Number(b.seq || 0) +
+                (b.note_id ? ' #' + String(b.note_id).replace(/[^0-9a-f]/g, '').slice(0, 16) : '');   // a note's own id: lets a device confirm it by reading back
   var text = String(b.summary || '').slice(0, 2000) + '\n\nlinks:\n' + (b.links || []).slice(0, 20).join('\n') + '\n\nsigned head:\n' + JSON.stringify(b.head || {}).slice(0, 8000);
   var raw = 'From: ' + me + '\r\nTo: ' + me + '\r\nSubject: ' + subject + '\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n' + text;
   var m = Gmail.Users.Messages.insert({ raw: Utilities.base64EncodeWebSafe(raw, Utilities.Charset.UTF_8), labelIds: [labelId_()] }, 'me');
@@ -49,11 +50,19 @@ function doGet(e) {
   if (!secretOk_(q.secret)) return out_({ ok: false, error: 'secret' });
   var res = Gmail.Users.Messages.list('me', { labelIds: [labelId_()], maxResults: Math.min(Number(q.max || 20), 50) });
   var entries = (res.messages || []).map(function (x) {
-    var m = Gmail.Users.Messages.get('me', x.id, { format: 'metadata', metadataHeaders: ['Subject', 'Date'] }), h = {};
+    var m = Gmail.Users.Messages.get('me', x.id, { format: 'full' }), h = {}, text = '';
     (m.payload.headers || []).forEach(function (y) { h[y.name] = y.value; });
-    return { id: x.id, subject: h.Subject, date: h.Date, snippet: m.snippet };
+    if (m.payload.body && m.payload.body.data) text = decode_(m.payload.body.data);
+    return { id: x.id, subject: h.Subject, date: h.Date, text: text };   // the whole note (the snippet is cut at ~200 chars)
   });
   return out_({ ok: true, entries: entries });
+}
+
+// Gmail's body.data arrives as bytes from the advanced service, or as base64url WITHOUT padding (seen 2026-10-23)
+function decode_(d) {
+  if (typeof d !== 'string') return Utilities.newBlob(d).getDataAsString();
+  while (d.length % 4) d += '=';
+  return Utilities.newBlob(Utilities.base64DecodeWebSafe(d)).getDataAsString();
 }
 
 function fileInbound() {
