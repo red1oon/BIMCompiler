@@ -98,6 +98,10 @@ def main():
                      'library:component_library.db ad_bom_child %d T_CONNECTOR_ASSEMBLY seq %d %s z_rule %s (in %s %s); diameter / length = the product mesh extents (plan min, vertical)' % (cid, seq, prod, zr, nest[0][0], nest[0][1]),
                      'T_CONNECTOR_ASSEMBLY', nest[0][0], nest[0][1], seq, role, prod, gh, dx or 0.0, dy or 0.0, round((dz or 0.0) + float(om.group(1)), 6), rot, round(ext[0], 6), round(ext[1], 6), round(ext[2], 6)))
         rows.append(('FP', 'joint', 'T_CONNECTOR_ASSEMBLY', seq, role, prod, gh, round((dz or 0.0) + float(om.group(1)), 4)))
+    # §D72 (bim-ootb DXF2BIM_FOUNDATION_LANE.md): the clearance between two walked disciplines and which one gives way: the Terminal's MEASURED rule_avoidance rows for the farm's own discs, projected as they are
+    for da, db, mc, yl, zb, nm, pv in q(term, 'SELECT disc_a, disc_b, min_clear_m, yields, z_band, n_measured, provenance FROM rule_avoidance WHERE disc_a IN (%s) AND disc_b IN (%s) ORDER BY disc_a, disc_b' % (','.join('?' * len(CITED)), ','.join('?' * len(CITED))), *(list(CITED) + list(CITED))):
+        out.execute('INSERT INTO rule_avoidance (disc_a, disc_b, min_clear_m, yields, z_band, n_measured, provenance) VALUES (?,?,?,?,?,?,?)', (da, db, mc, yl, zb, nm, 'terminal_rules.db rule_avoidance (' + pv + ')'))
+        rows.append((da, 'avoid', db, mc, yl)); print('  §FARM-RULE avoid %s/%s min_clear=%.3f yields=%s n=%d' % (da, db, mc, yl, nm))
     fr = q(ref, "SELECT m.ifc_class, COUNT(*), AVG(t.center_z) FROM elements_meta m JOIN element_transforms t ON t.guid=m.guid GROUP BY 1 HAVING COUNT(*) >= 5 ORDER BY 1")
     for cls, n, mz in fr: out.execute('INSERT INTO rule_frame_ref (ifc_class, n, mean_z, provenance) VALUES (?,?,?,?)', (cls, n, round(mz, 4), 'measured:AVG(center_z):the farm shed reference model'))
     body = json.dumps({'rows': rows, 'frame': [(c, n, round(z, 4)) for c, n, z in fr]}, sort_keys=True)
