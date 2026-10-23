@@ -1247,3 +1247,57 @@ So the gossip-shaped deps were pure cost: they didn't make anything safer, they 
   after the `ad_access.js` addition.
 - **Twin check (named, not done here):** the `canUpdate` port is checked against the MRole source lines. Running the
   same truth table against a live iDempiere over the REST bridge is CL4b.
+
+### §12.8 Results 2026-10-23 — CL4 ✅ DONE (witness)
+
+All logs were read in full. bim-ootb PR **#2319** (auto-merge on); #2317 merged.
+
+**`W-ADMIT-FOLD` PASS judged=23 fails=0** (`build/comm/logs/witness_comm_cl4_admit.log`)
+- An observer that authored nothing judged 29 ops, using the real `canUpdate` on `ad_full.db` (244 calls, roles
+  0 / 102 / 103 / 50004):
+
+  | Area | Result |
+  |---|---|
+  | genesis | MERGED |
+  | enrol | D1 by admin MERGED · D1 enrols own phone D2 MERGED · D1 enrols X for another person → REFUSED `not-admin-or-same-person` · stranger self-enrol → REFUSED `unknown-signer` |
+  | access (`c_order`) | 103@org11 MERGED · 103@org12 → REFUSED `access:missing=W` · 103@org0 → REFUSED `access:missing=C` · 50004@org11 MERGED · System@org11 MERGED `system` |
+  | revoke | REVOKE D2 after 1 → D2 seq1 MERGED, seq2 REFUSED `revoked` |
+  | role | Q 102→103 from seq 2 → Q seq1@org12 MERGED, Q seq2@org12 REFUSED `access:missing=W` |
+  | fail-closed | unknown table → REFUSED `access:no-table` · stranger's write → PARKED `unknown-device` · D1 editing the record created by D2's revoked op → REFUSED `dep-refused` |
+  | forged op at D1's slot | REFUSED `signature`; no equivocation; D1's real op still placed |
+  | untrusted genesis | `no-trusted-genesis`, placed=0 |
+
+- **Identical verdicts over 20 arrival orders.**
+  - That arm first failed 0/20, and the trace found two things. **A real hole:** if the forged op arrived first it took
+    the slot, and the real op became the stand-by, never judged — a denial of service by arriving first. The fix judges
+    every claimant of a slot by signature, whichever came first.
+  - **A witness bug:** verdict maps were compared as JSON with key order mattering. They are now compared sorted. Both
+    were found and fixed before PASS.
+
+**`W-STORE-NODE` PASS judged=25 fails=0** and **`W-FOLDER-2CTX` PASS judged=13 fails=0** — both now on roster trust.
+- The two-browser run first FAILED 2 checks, and both were real:
+  - **B's edit was lost.** B wrote before the roster reached it, so its own create wasn't placed and its edit read no
+    version. Fix: an author's reads include its own not-yet-placed ops — what its screen shows.
+  - **B's refused op never showed SEEN.** Receipts counted only accepted ops. Fix: SEEN = received; the verdict is
+    reported alongside.
+- Now:
+  - both browsers fold `A-1=111 B-1=222`;
+  - B's org-12 order is REFUSED in both;
+  - **B's own delivery row reads `SEEN · REFUSED · access:missing=W`**, so the author is told, never silently dropped.
+  - The folder holds only `o/` and `h/` objects; keys travel inside ENROLL ops.
+
+**Regression:**
+- `W-UU-NO-COLLIDE` 23/23 · `W-ORDER-PERMUTE` 12/12.
+- `poc_access.js` (W-ACCESS) verdict lines identical before and after the `ad_access.js` addition.
+- bim-ootb `erp/tests/poc_access_gate_live.js` (W-ACCESS-GATE-LIVE) all PASS, 0 page errors.
+- `erp/sw.js` v897→v898; `ad_access.js?v=2`.
+
+**Named, not done (ports kept honest):**
+- `canUpdate` does not port `isRecordAccess` (0 `AD_Record_Access` rows in the seed), summary-org tree expansion, or
+  `AD_User_OrgAccess`. A role with `IsUseUserOrgAccess=Y` is refused fail-closed.
+- **CL4b twin check:** run the same truth table against live iDempiere over the REST bridge.
+
+**Next in §11.12 order:**
+- **CL5** — K2 stale save, matching iDempiere's `CurrentRecordModified` (using `base`), Notice/Request for the loser,
+  and the mine/theirs/before conflict state (§11.15).
+- Then CL3b (GitHub pipe with batched commits), CL6 (manifest skew), CL7 (multi-pipe heal), CL8 (encryption).
