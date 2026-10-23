@@ -1709,3 +1709,61 @@ denominator — `X of N` is reported, never "Sales Order works". There are no `i
 - **API the ERP lane may rely on:** `newDevice()` / `newSpace()` / `open()` / `sync()` / `foldable()` / `conflicts()` /
   `enroll(kid, jwk, personUu, dhJwk?)` keep their names and shapes. An ENROLL without `dhJwk` still works, just without
   a key grant.
+
+---
+
+## §14 Showcase film — storyboard v1 (user, 2026-10-23: *"plan the film storyboard for the showcase"*)
+
+**Working title:** *"No server. Still a team."* About 4 minutes, screen-capture film of the laptop and the phone, with
+narration later via `prompts/FILM_NARRATION.md` ▶ PLAYBOOK.
+
+**Rules for the film:**
+- Every number on screen comes from a `§` log line of that take.
+- **Never show a token, secret, `exec` URL or invite link unblurred.**
+- Say "proof of concept", not "first", unless a prior-art check (§14.2) supports more.
+
+| # | Shot (screen) | Action | Narration idea | Proof overlay | Needs |
+|---|---|---|---|---|---|
+| 0 | Phone in airplane mode | makes an order; it shows "saved, not sent" | "No signal. No server. Still working." | delivery `SAVED` | ✅ now |
+| 1 | Simple diagram: DB server + app server, then the server crossed out | — | "Usually, when the server stops, everyone stops." | — | ✅ |
+| 2 | Laptop + phone side by side; the GitHub repo; the Gmail label | — | "Two devices, a private repo, a mailbox. That's the whole setup." | — | ✅ |
+| 3 | Pairing | Start space → invite → Join → **the same code on both screens** → Approve | "Trust is a code you can read aloud." | `§COMM_TRUST mode=roster` | ✅ |
+| 4 | First transaction | phone New order → Visit → laptop Visit → the order appears | "The server became a post box: drop off, pick up." | `§COMM_SYNC sent=… fetched=…`; GitHub commit appears; Gmail `BIMTEAM` note | ✅ |
+| 5 | Offline and back | phone offline → edit → reconnect → Visit → laptop shows it | "Nothing is lost while you're away." | `SAVED → SENT → SEEN` | ✅ |
+| 6 | The clash | both edit the same total → ⚠ on **both** screens, total held at 150 → one resolves → both agree | "No silent overwrite — the same message iDempiere users already know." | conflict `before=150 values=200/300` | ✅ |
+| 7 | Permissions | a role without org-12 access writes → refused on every device | "The ERP's own access rules, checked by every device." | `REFUSED access:missing=W` | ✅ (role pick in UI = small add) |
+| 8 | Encryption | open the bundle file on GitHub: unreadable; in the app: readable | "The post box can't read your mail." | W-PIPE-OPAQUE | ⏳ CL8 (agent running) |
+| 9 | The real ERP | the same flow in the iDempiere Sales Order window, header + line | "Not a demo screen — the ERP itself." | W-TEAM-SO | ⏳ W1 (agent running) |
+| 10 | Close | witness PASS lines scroll, then the title | "Witnessed, not promised." | witness counts | ✅ |
+
+**Capture:**
+- Laptop: screen recording of the desktop browser.
+- Phone: the phone's own screen recorder (Android: quick settings → Screen record).
+- One take per beat; cut in the edit.
+- Keep the `§` log panel of the page visible, or capture it with `console` logging, to source the overlay numbers.
+
+### §14.1 Novelty — what is and isn't new (checked 2026-10-23)
+
+- **The building blocks are known.**
+  - Local-first apps and CRDTs: Ink & Switch, Automerge, cr-sqlite, SQLSync, LiveStore; our own `docs/LocalFirstPriorArt.md`
+    compares them.
+  - Per-author signed append-only logs over any transport: Secure Scuttlebutt, p2panda, Hypercore.
+  - Peer validation of every entry against shared rules: Holochain's per-agent "source chains" checked by peers.
+  - Git or a shared folder as the transport: Gatty (event stream in a git repo, synced to a git host), outl (per-device
+    op log over an iCloud folder).
+- **The combination looks unusual.** Two web searches found no project that combines all of:
+  - an iDempiere-faithful ERP;
+  - per-device signed chains;
+  - order computed with no sequencer, from the records each op read;
+  - admission at fold time by the ERP's **own** role engine (an `MRole.canUpdate` port);
+  - conflicts shown with iDempiere's own `CurrentRecordModified`;
+  - pipes that only store bytes (GitHub branch per device, Gmail visit log, folder).
+- **That is a short search, not a prior-art study.** Claim *"to our knowledge"*, and run a proper search (deep-research)
+  before any "first" wording, as was done for the Spatial Compilation paper (priority-dated).
+
+### §14.2 Owed before the film
+
+- W1 and CL8 PASS.
+- A slim AD seed for the phone (the 27 MB first load is visible on camera).
+- A role picker on Approve (for beat 7).
+- One clean end-to-end take on the user's real phone, read back from GitHub.
