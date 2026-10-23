@@ -288,7 +288,7 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     await pickQ('c_doctype_id', /in transit/i); await pickQ('ad_org_id', /^HQ/); await pickQ('m_warehouse_id', /HQ Warehouse/); await pickQ('m_warehouseto_id', /Store Central/);
     await ipc(SAVEB); await hold(1800);
     await ipc('#idmp-tabstrip .idmp-adtab[title="TabLevel 1 · M_MovementLine"]'); await hold(1000); await ipc(NEWB); await hold(1000);
-    await pickQ('m_product_id', /Elm Tree/); await page.fill(F('m_locator_id'), String(SRC)); await page.fill(F('m_locatorto_id'), String(TGT)); await page.fill(F('qtyentered'), '10'); await page.locator(F('qtyentered')).first().blur().catch(() => {}); await hold(600);
+    await pickQ('m_product_id', /Elm Tree/); await pickQ('m_locator_id', /Default HQ/); await pickQ('m_locatorto_id', /Default Store/);   // chosen from the Locator lookups (bim-ootb #2307), no ids typed await page.fill(F('qtyentered'), '10'); await page.locator(F('qtyentered')).first().blur().catch(() => {}); await hold(600);
     await ipc(SAVEB); await hold(2000);
     await ipc('#idmp-tabstrip .idmp-adtab[title="TabLevel 0 · M_Movement"]'); await page.waitForSelector('[data-doc-action="CO"]', { timeout: 20000 }); await hold(900);
     const mv = await oneRow('SELECT m_movement_id AS i, docstatus AS s FROM m_movement WHERE m_movement_id<0 ORDER BY m_movement_id LIMIT 1'); fact('move.draft', mv);
