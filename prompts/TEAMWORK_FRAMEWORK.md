@@ -1912,6 +1912,8 @@ old path), and the Modeller (agent task, §15) — it should call the same `Team
 
 **Witness `W-TEAM-DESKTOP`** (`erp/tests/witness_team_desktop.js`, two real contexts, **no phone page opened**, dumb folder pipe): ① A turns team mode on from the pill, panel shows "not paired"; ② A "Start a team" → invite link; ③ B (separate context) opens the invite link on the ERP, turns team mode on, "Join" → shows its code; ④ A "Check join requests" lists exactly B's code → picks a role → Approve; ⑤ B Visit → panel says "paired"; ⑥ A creates an order (window 143), Visit A, Visit B → B sees it. NO-OP guard: before ⑤ B's chip says waiting. 0 page errors. `W-PHONE-PAGE` and `W-TEAM-SO` stay green (the old pairing path is untouched).
 
+**Same idea, other product:** the borrower "news board" for the mock Micro Finance system (blinded tags published as static shards, sealed notes, per-borrower poll periods, offer computed on the phone) is specified in `~/Projects/ThaiGoldPawn/spec/PAWN_FINTECH_SPEC.md` §25 with its film script `film/news/news_en_v1.tsv`. It reuses §11.17 (a board of latest heads) without any team layer.
+
 ---
 
 ## §14 Showcase film — storyboard v1 (user, 2026-10-23: *"plan the film storyboard for the showcase"*)
