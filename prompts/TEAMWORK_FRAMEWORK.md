@@ -1620,3 +1620,92 @@ secret is the one given at setup.
   in the background, and the post box reads back fine (§12.14).
 - **Owed:** the 27 MB download is heavy for a phone. A slim seed with only the role and access tables
   (`ad_role`, `ad_role_orgaccess`, `ad_table_access`, `ad_table`) would be under 1 MB — a follow-up.
+
+---
+
+## §13 Next two builds (user, 2026-10-23: *"proceed with Sales Order wiring and encryption. We are just doing local POC and not open to public.. we may make a film to showcase the working concept."*)
+
+Both are local POC (no public users). Both must be filmable: every step is a visible click with a visible result,
+and every claim also has a `§` line.
+
+### §13.1 W1 — the real ERP Sales Order window in team mode (owner: ERP-wiring lane)
+
+**Rule (AD-LAYER LAW):** the hook is **generic**. It sits on crud_overlay's commit funnel and the sidecar projection, for
+every CRUD op on every AD window. Sales Order (window 143, header + Order Line tab) is the first witnessed
+denominator — `X of N` is reported, never "Sales Order works". There are no `if table==='c_order'` branches.
+
+- **Turning it on.** `erp/idempiere.html?team=1` loads `common/comm/*` and a new adapter `erp/team_sync.js`.
+  - Identity, space, token and post box are **read from the same-origin IndexedDB `comm_phone`** that
+    `common/comm/comm_phone.html` writes. You pair once on the phone page, and the ERP on that browser then acts as that
+    device.
+  - Without `?team=1` nothing changes (no DOM, no extra scripts).
+- **Outgoing.** After each committed local CRUD op, `team_sync` turns the kernel op into a v3 envelope and authors it
+  into the comm store:
+  - `CommEnvelope.wrapKernelOp` gives the target uu: a CREATE's uu is its `op_uuid`; an UPDATE's uu is the row's
+    `<table>_uu` from the live tip.
+  - **CL1b, generic FK rule:** a field `<x>_id` holding a negative integer (a device-local synthetic pk) is rewritten to
+    `{uu: <x>_uu of that row}`, and that uu is added to `refs` (so it is read). The table is `<x>` by iDempiere's
+    TableDir naming. Positive ids are seeded masters, shared by every device, and are left unchanged.
+  - An op that can't be fully translated is **not sent**. It shows as a visible local-only warning — never guessed.
+- **Incoming (a "Visit"):**
+  1. `store.sync(pipe)`.
+  2. **Rebuild the sidecar projection** from `store.foldable()` in order. Each op becomes a kernel op with
+     `idCol:'<table>_uu'`. FK `{uu}` values become the local pk of that row: the CREATE inserted earlier in the same
+     rebuild has pk `-kernelRowId`, so the map is built during the rebuild.
+  3. Persist with the existing append-only sidecar mechanism, then refresh the open window.
+  - The comm log is the truth; the kernel sidecar is a projection of it.
+- **UI, minimal and filmable:**
+  - one **Team** chip in the ERP status area: *device code · team devices · "Visit"*;
+  - conflicts shown as iDempiere's `CurrentRecordModified` text on the record;
+  - delivery counts as on the phone page.
+- **Not in W1 (named):**
+  - DocActions (Complete/Void) and their fan-out groups — W2;
+  - retiring the older `?relay=` path — after W1 parity, with the user's go;
+  - slim AD seed.
+- **Witness `W-TEAM-SO`** (bim-ootb `erp/tests/`) — two real contexts, real `idempiere.html` login, real clicks in window
+  143:
+  - A creates a Sales Order with 1 line → Visit → B Visits → B's grid shows the order. On the Order Line tab: **row
+    count and parent id per row**; switching tabs without Save.
+  - B edits a header field → both Visit → A shows it.
+  - The CL1 defect scenario: both create an order, then edit it, then sync → each order keeps its own edit, on both.
+  - Both edit the same field crossed → both show the conflict and keep the last agreed value.
+  - 0 page errors.
+  - Pipe: the local dumb folder server (no GitHub budget). One optional run against `bim-teams-pipe`.
+  - Regression: the existing ERP witnesses the lane touches stay green; `erp/sw.js` is bumped if precached files change.
+
+### §13.2 CL8 — encryption: the pipe sees only ciphertext (owner: comm-layer lane)
+
+- **Device keys.** `newDevice()` also makes a P-256 **ECDH** key pair (private part non-extractable). ENROLL params carry
+  `dh_jwk`; GENESIS's founder block carries the founder's `dh_jwk`.
+- **Space key.** An AES-GCM-256 key per **epoch**, created by the founder (epoch 1).
+- **KEYGRANT** (identity op): `{kid, epoch, from_kid, wrapped}` — the space key wrapped for one device, using
+  ECDH(granter private, device public) → HKDF-SHA256 → AES-KW (or AES-GCM).
+  - It is issued automatically by whoever enrols the device (admin or same-person device, D4), in the same visit.
+  - A device derives its keys at open time from its own grants and its ECDH private key, so no symmetric key is ever
+    stored.
+- **What is encrypted.**
+  - Business envelopes inside a bundle are stored as `enc:<epoch>:<base64(iv ‖ ciphertext)>`.
+  - The `op_hash` column stays plaintext: read-back, dedup and naming are unchanged.
+  - **Identity ops stay plaintext**, because a new device must read its own KEYGRANT before it has a key. They hold only
+    names, public keys and wrapped keys.
+  - Heads stay plaintext: seq, frontier and timestamps only.
+  - A device without the key keeps sealed ops in `cl_sealed`, then opens and ingests them once its grant arrives.
+- **Revocation → REKEY.** After a REVOKE, an admin's next visit writes a **REKEY** (epoch n+1) with fresh KEYGRANTs for
+  every non-revoked device. New ops use the newest epoch the author holds. A revoked device cannot read anything written
+  after the rekey.
+- **Witness `W-PIPE-OPAQUE`** (bim-compiler, node, over memPipe + folderPipe):
+  - A, B and C converge as before.
+  - **Raw pipe bytes contain none of the business values** (documentno strings, distinctive totals), checked by
+    grepping every object.
+  - An outsider with full pipe access reads the identity ops but **zero** business ops.
+  - A late joiner opens sealed ops after its grant.
+  - After REVOKE C plus REKEY, C cannot open B's new op, while A can.
+  - A tampered ciphertext is refused (GCM tag).
+  - All existing comm witnesses stay green:
+    - W-UU-NO-COLLIDE, W-ORDER-PERMUTE, W-STORE-NODE, W-ADMIT-FOLD, W-CONFLICT;
+    - W-GH-PIPE-2DEV, W-GMAIL-LOG;
+    - and, in bim-ootb, W-FOLDER-2CTX and W-PHONE-PAGE (the phone page passes the new ENROLL `dh_jwk` through
+      pairing).
+- **API the ERP lane may rely on:** `newDevice()` / `newSpace()` / `open()` / `sync()` / `foldable()` / `conflicts()` /
+  `enroll(kid, jwk, personUu, dhJwk?)` keep their names and shapes. An ENROLL without `dhJwk` still works, just without
+  a key grant.
