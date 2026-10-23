@@ -1,0 +1,37 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT open cue=0.30 room=4.40 dur=4.14 -> DETAIL slack=+0.26 words=11
+§NARR_TONE open#0 F YN rose=5.0st endDelta=+3.9st want=rise OK "The server is dead?"
+§NARR_FIT problem cue=5.30 room=10.40 dur=8.77 -> DETAIL slack=+1.63 words=25
+§NARR_TONE problem#0 F WH rose=0st endDelta=-3.1st want=fall OK "Why does an ERP even need a server?"
+§NARR_FIT bench cue=16.30 room=12.40 dur=11.90 -> DETAIL slack=+0.50 words=38
+§NARR_TONE bench#0 F YN rose=8.0st endDelta=+2.7st want=rise OK "Is this a real screen, or a mock-up?"
+§NARR_FIT teamon cue=29.30 room=10.50 dur=8.71 -> DETAIL slack=+1.79 words=27
+§NARR_TONE teamon#1 F WH rose=0st endDelta=-1.7st want=fall OK "Why is that line red?"
+§NARR_FIT found cue=40.70 room=15.70 dur=14.55 -> DETAIL slack=+1.15 words=46
+§NARR_TONE found#1 F WH rose=0st endDelta=-1.2st want=fall OK "Where is the invite link?"
+§NARR_TONE found#3 F YN rose=5.0st endDelta=+3.5st want=rise OK "Is the link a password?"
+§NARR_FIT join cue=57.30 room=11.60 dur=9.08 -> DETAIL slack=+2.52 words=29
+§NARR_TONE join#1 F WH rose=0st endDelta=-7.7st want=fall OK "What does B do?"
+§NARR_FIT approve cue=69.80 room=21.40 dur=19.69 -> DETAIL slack=+1.71 words=54
+§NARR_TONE approve#0 F YN rose=8.0st endDelta=+2.3st want=rise OK "Can anyone just join?"
+§NARR_TONE approve#2 F YN rose=5.0st endDelta=+1.8st want=rise OK "And B?"
+§NARR_TONE approve#4 F YN rose=5.0st endDelta=+2.9st want=rise OK "And the role?"
+§NARR_FIT order cue=92.10 room=17.30 dur=14.98 -> DETAIL slack=+2.32 words=48
+§NARR_TONE order#1 F YN rose=5.0st endDelta=+1.4st want=rise OK "Does B see it already?"
+§NARR_TONE order#3 F YN rose=5.0st endDelta=+1.6st want=rise OK "A visit?"
+§NARR_FIT complete cue=110.30 room=18.20 dur=17.97 -> DETAIL slack=+0.23 words=46
+§NARR_TONE complete#0 F WH rose=0st endDelta=-4.5st want=fall OK "Now what?"
+§NARR_TONE complete#2 F YN rose=5.0st endDelta=+3.6st want=rise OK "Until it visits?"
+§NARR_TONE complete#4 F YN rose=8.0st endDelta=+3.2st want=rise OK "Same status, same numbers?"
+§NARR_FIT tax cue=129.40 room=6.30 dur=4.05 -> DETAIL slack=+2.25 words=12
+§NARR_FIT clash cue=136.60 room=20.10 dur=19.09 -> DETAIL slack=+1.01 words=49
+§NARR_TONE clash#0 F YN rose=5.0st endDelta=+3.0st want=rise OK "Could both press Complete on the same order?"
+§NARR_FIT clash2 cue=157.60 room=10.10 dur=8.54 -> DETAIL slack=+1.56 words=22
+§NARR_TONE clash2#0 F WH rose=0st endDelta=-5.0st want=fall OK "So who wins?"
+§NARR_FIT limits cue=168.60 room=13.20 dur=12.89 -> DETAIL slack=+0.31 words=36
+§NARR_TONE limits#0 F WH rose=0st endDelta=-1.3st want=fall OK "So what is still missing?"
+§NARR_FIT close cue=182.60 room=11.20 dur=11.18 -> DETAIL x1.003 slack=+0.02 words=34
+§NARR_TONE close#0 F YN rose=5.0st endDelta=+3.5st want=rise OK "the server really is dead?"
+§NARR_TONE close#1 M ! rose=0st endDelta=+0.1st want=any OK "Here, yes. Every line on this card is a test that passed, and this film is one space on both windows. A proof of concept. Thanks for watching!"

@@ -51,6 +51,7 @@ function walk(d, rel, out) { if (!fs.existsSync(d)) return out; fs.readdirSync(d
       document.addEventListener('mouseup', function () { if (dot) dot.style.transform = 'scale(1)'; }, true);
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+    try { new MutationObserver(function (ms) { ms.forEach(function (m) { m.addedNodes.forEach(function (n) { if (n.textContent && /verify FAIL/i.test(n.textContent)) console.log('§FILM_TOAST verify-FAIL seen: ' + n.textContent.slice(0, 80)); }); }); }).observe(document, { childList: true, subtree: true }); } catch (e) {}
   };
   var mouse = { A: { x: 640, y: 360 }, B: { x: 640, y: 360 } };
   try {
@@ -228,6 +229,9 @@ function walk(d, rel, out) { if (!fs.existsSync(d)) return out; fs.readdirSync(d
     var names = walk(FOLDER, '', []), spaces = {}; names.forEach(function (n) { var p = n.split('/'); if (p[0] === 's' && /^[0-9a-f]{64}$/.test(p[1])) spaces[p[1]] = (spaces[p[1]] || 0) + 1; });
     console.log('§FILM_PIPE objects=' + names.length + ' spaces=' + JSON.stringify(Object.keys(spaces).map(function (s) { return s.slice(0, 12) + ':' + spaces[s]; })));
     check(Object.keys(spaces).length === 1 && Object.keys(spaces)[0].indexOf(spA.slice(0, 12)) === 0, 'the pipe holds exactly ONE space, the same one both users report', Object.keys(spaces).map(function (s) { return s.slice(0, 12); }).join(','));
+    var allL = L.A.concat(L.B), bad1 = allL.filter(function (t) { return /verifyChain=FAIL|group-torn|§FILM_TOAST verify-FAIL/i.test(t); }), commits = allL.filter(function (t) { return /§CRUD process committed key=c_order/.test(t); }), commitsOk = commits.filter(function (t) { return /verifyChain=ok/.test(t); });
+    console.log('§FILM_CHAIN complete_commits=' + commits.length + ' ok=' + commitsOk.length + ' fail_or_torn_or_toast_lines=' + bad1.length + (bad1.length ? ' first=' + bad1[0].slice(0, 160) : ''));
+    check(commits.length === 3 && commitsOk.length === commits.length && bad1.length === 0, 'chain valid on every Complete commit: no verifyChain=FAIL, no group-torn, no "verify FAIL" toast on either page', 'commits=' + commits.length + ' ok=' + commitsOk.length + ' bad=' + bad1.length);
     check(errors === 0, 'zero page errors on both users', 'errors=' + errors);
     await sleep(1500); tClose.A = Date.now(); tClose.B = Date.now();
   } catch (e) { console.log('🔴 CRASH ' + (e && e.stack || e)); bad++; }
