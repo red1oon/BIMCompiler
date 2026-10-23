@@ -1714,7 +1714,7 @@ denominator — `X of N` is reported, never "Sales Order works". There are no `i
 
 ## §14 Showcase film — storyboard v1 (user, 2026-10-23: *"plan the film storyboard for the showcase"*)
 
-**Working title:** *"No server. Still a team."* About 4 minutes, screen-capture film of the laptop and the phone, with
+**Title (user, 2026-10-23):** *"The Server is Dead Scenario"* — subline *"No DB server. No app server. Just a data relay."* (was "No server. Still a team."). Illustrated storyboard deck: https://claude.ai/artifact/Vt8DdVP7gAW7BsyfdKWgnQ (private until shared). About 4 minutes, screen-capture film of the laptop and the phone, with
 narration later via `prompts/FILM_NARRATION.md` ▶ PLAYBOOK.
 
 **Rules for the film:**
