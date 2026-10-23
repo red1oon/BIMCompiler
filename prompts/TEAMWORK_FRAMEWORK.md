@@ -1301,3 +1301,58 @@ All logs were read in full. bim-ootb PR **#2319** (auto-merge on); #2317 merged.
 - **CL5** — K2 stale save, matching iDempiere's `CurrentRecordModified` (using `base`), Notice/Request for the loser,
   and the mine/theirs/before conflict state (§11.15).
 - Then CL3b (GitHub pipe with batched commits), CL6 (manifest skew), CL7 (multi-pipe heal), CL8 (encryption).
+
+### §12.9 Build spec — CL5: stale saves, crossed saves, conflicts, notices (user: *"proceed"*, 2026-10-23)
+
+**Facts re-read this turn:**
+- `AD_Message` `CurrentRecordModified` = *"Current record was changed by another user, please ReQuery"*, and
+  `SaveErrorDataChanged` = *"Could not save changes - data was changed after query."* Both are in `ad_full.db`; the
+  browser's `ad_seed.db` has **no `ad_message` table** (gap named for the UI step).
+- iDempiere's stale check compares the `Updated` / `Processed` the user loaded with the database, **record-wide, not
+  per column** (`GridTable.java:3482-3510`).
+- `AD_Note` columns: `AD_Message_ID, AD_Table_ID, AD_User_ID, Record_ID, TextMsg, Reference, Description, AD_Note_UU` …
+  `Record_ID` is an integer and there is no `Record_UU`, so a note for a device-created record can't name it by integer
+  until the bridge's `IDMAP` (§11.1) — named, not worked around.
+
+**Mechanism** (`build/comm/comm_store.js` + `comm_envelope.js`):
+
+1. **A record's heads.** For each record, the placed ops form a version tree through `reads[target]`. Its heads are the
+   ops with no placed descendant on that record; the author's own pending ops are on top (§12.8).
+   - `versions()` gives one hash, or a sorted **array** when there are several heads.
+   - `reads[uu]` may now hold that array (V9 extended: a value is `null`, a 64-hex, or a sorted unique array of ≥2
+     64-hex). An edit made while seeing several heads descends from all of them: that is the Git merge commit.
+2. **Online stale save = iDempiere's rule, record-wide.** `saveCheck(uu, loadedVersion)`: if the record's current heads
+   differ from the version the user loaded, the result is `{stale:true, ad_message:'CurrentRecordModified'}` and the
+   save is not written.
+   - Same moment, same message, same record-wide rule as `GridTable.hasChanged`.
+3. **Crossed saves = Git, per column** (§11.15, user-approved).
+   - For record R and column c: the writers of c with **no descendant on R that also writes c** are its candidates.
+   - One candidate = its value applies.
+   - Two or more = **conflicted**: the record keeps the value from before the clash, and the candidates' writes to c are
+     held back.
+   - Different columns from the same base merge cleanly.
+   - `conflicts()` lists `{uu, table, col, before, candidates:[{hash, author, person_uu, value}]}`, the same on every
+     device.
+4. **Resolve.** Any later write to c that read all the candidates (it saw the conflict) becomes the only candidate, so the
+   conflict clears. Two concurrent resolutions that disagree form a new conflict; each round needs a human and stays
+   visible.
+5. **The fold stays the real one.** `foldable()` = placed business ops in order, with held-back column writes removed.
+   That list goes to the unchanged `kernel_ops` + `crud_core.listTip`.
+6. **Notices.** `notices(person_uu)` = one row per conflict in which that person's device is a candidate. It has the AD_Note
+   fields that exist — `ad_message:'CurrentRecordModified'`, `ad_table_id`, `textmsg` (mine / theirs / before) — plus
+   `record_uu`. It is derived on every device and never written as an op (it's a consequence, not an act).
+
+**Witness `W-CONFLICT`** (`scripts/witness_comm_cl5_conflict.js`, node: real kernel + `listTip` + `canUpdate` on
+`ad_full.db`, roster trust) — each arm names its issue:
+- `§CONF-DISJOINT` — A changes `description` and B changes `grandtotal` from the same base → both apply, no conflict.
+  Disproves "any concurrent edit conflicts".
+- `§CONF-SAME-FIELD` — both change `grandtotal` from 100 to 111 / 222 → the folded row shows 100, there's 1 conflict
+  with 2 candidates, and both people get a notice. Proves no silent last-writer-wins.
+- `§CONF-SEQUENTIAL` — B edits after seeing A's edit → B's value, no conflict. Proves causality isn't mistaken for a
+  clash.
+- `§CONF-RESOLVE` — A, having seen both, writes 150 → no conflict, row 150, notices cleared.
+- `§CONF-RACE` — A and B both resolve concurrently, 150 vs 160 → conflicted again with 2 new candidates.
+- `§CONF-STALE-ONLINE` — the user loaded version V; someone changed **another** column → `saveCheck` says stale with
+  `CurrentRecordModified` and the message text from `AD_Message`. Proves the twin's record-wide rule, not a per-column
+  one.
+- `§CONF-PERMUTE` — conflicts and folded rows are identical over 20 arrival orders on an observer.
