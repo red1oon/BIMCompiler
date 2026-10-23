@@ -1478,3 +1478,78 @@ W-ADMIT-FOLD 23/23 · W-CONFLICT 12/12. bim-compiler `build/comm/` and bim-ootb 
   Panel (CL-P).
 - Then CL6 manifest skew, CL7 multi-pipe heal, CL8 encryption.
 - Gmail visit-log (CL3c) waits for the user's postbox address.
+
+### §12.13 The phone test + the Gmail post box (user, 2026-10-23)
+
+> User: *"Proceed. Advice me how to do the phone test. The email i created in 2017 for such auto with iDempiere engine is
+> amazingerp@gmail.com"* … *"BUt i forgot how to setup its auto responder. If u can do it for me, i can authorize"*
+
+**A. The phone page — built and rehearsed. ✅ `W-PHONE-PAGE` PASS judged=8 fails=0** (bim-ootb PR **#2323**).
+- `common/comm/comm_phone.html`. Once merged, it is served by GitHub Pages at
+  **`https://red1oon.github.io/bim-ootb/common/comm/comm_phone.html`**.
+- Pairing uses no long codes:
+  - the phone posts a join request `r/<kid>` (scoped to the space) into its own branch;
+  - both screens show the short device code (e.g. `B79B-6074`), and the founder compares it by eye and presses Approve.
+- The rehearsal ran with real clicks: a desktop context plus an emulated Pixel 7, separate storage, real GitHub.
+  - Pair → the phone's order appears on the laptop → the laptop's edit 150 reaches the phone.
+  - Both edit the same total (200 / 300) → both screens show the conflict and keep 150.
+  - Reloading the phone keeps its code, team and order.
+  - 0 page errors.
+- **Three real defects were found by the rehearsal and fixed before PASS:**
+  1. The page never signalled ready before a space existed (test-harness signal).
+  2. **The Visit button was hidden until approval, while the waiting screen said "press Visit"** — the exact trap the
+     user would have hit.
+  3. **In a browser, every GitHub commit after the first was refused.** The browser cache served GitHub's `max-age=60`
+     branch pointer. Node has no HTTP cache, so W-GH-PIPE-2DEV couldn't see it. Fix: `cache:'no-store'`;
+     W-GH-PIPE-2DEV re-run, 7/7.
+  - Also: a join request left over from another space showed up, so requests now carry their space.
+
+**Phone-test steps for the user** (~10 minutes). These are the only steps that need a person; the result is then read
+from GitHub, not from the user's eyes (PRIMAL LAW):
+1. **Make a token, once** (on the laptop, github.com as red1oon):
+   - Settings → Developer settings → Personal access tokens → **Fine-grained tokens** → Generate.
+   - Expiration **7 days**.
+   - Repository access: **Only select repositories → `bim-teams-pipe`**.
+   - Permissions → Repository → **Contents: Read and write** (Metadata read-only is added automatically).
+   - Copy the `github_pat_…` value.
+   - Send it to the phone the way you send yourself passwords — e.g. a password manager or a note to self, not a group chat.
+2. **Laptop:** open the page → paste the token → **Save token** → **Start a new space** → copy the **invite link** shown
+   under Pairing.
+3. **Phone:** open the invite link (send it to yourself) → paste the token → **Save token** → **Join**. The phone shows a
+   code like `AB12-CD34`.
+4. **Laptop:** **Check join requests** → the same code appears → **Approve**.
+5. **Phone:** **Visit the post office** → it says *enrolled* and the Work section appears.
+6. **Work** (each device presses Visit after each step):
+   - the phone makes a **New order** → Visit; the laptop Visits → the order is there;
+   - the laptop changes the total → Save → Visit; the phone Visits → the new total is there.
+   - Conflict: both change the same total without visiting in between, then Visit on both (laptop, phone, laptop) → both
+     show the ⚠ conflict and keep the old total.
+7. Tell me "done". I'll read both device branches on GitHub (commit count, signed heads, op counts) and write the result
+   here, without asking what you saw.
+- When finished, delete the token. Expiry also does it after 7 days.
+
+**B. The Gmail post box (amazingerp@gmail.com) — script written, install needs the user's authorisation.**
+- Files: `build/comm/postbox/Code.gs` + `appsscript.json`.
+- **Why not Gmail's own auto-reply:** the vacation responder can't attach or link anything, and answers each sender at
+  most once every few days. The "auto responder" is this Apps Script.
+- What it does:
+  - `doPost`: a device notes its visit — signed head + links to its bundle files in the repo. The note is **inserted**
+    into the mailbox under label `BIMTEAM` via `Gmail.Users.Messages.insert`. Google's API reference, fetched this
+    turn: *"Does not send a message"*, *"bypassing most scanning and classification"* — so no spam filter and no
+    100-sends-a-day limit.
+  - `doGet`: reads the log back as JSON, so a witness can check it.
+  - `fileInbound`: every 5 minutes, files mailed-in `[BIMTEAM]` notes (from a phone share or legacy iDempiere SMTP)
+    under the same label.
+  - `setup()`: creates the label, a random secret, and the trigger.
+- **Install, ~5 minutes of the user's clicks; I do the rest:**
+  1. Signed in to Google as **amazingerp@gmail.com**, open `https://script.google.com/home/usersettings` and turn
+     **Google Apps Script API: On**.
+  2. In this terminal: `! npx @google/clasp login`. A Google sign-in opens; choose **amazingerp@gmail.com** and allow.
+     This lets me create and upload the script to that account.
+  3. I run `clasp create` / `clasp push` / `clasp deploy` and give you the script's editor link.
+  4. In the editor: choose **setup** → **Run** → *Review permissions* → amazingerp → *Advanced* → *Go to BIM Team Postbox
+     (unsafe)* → **Allow**. That warning is normal for a personal script Google hasn't reviewed. The log then shows
+     `SECRET=…`.
+  5. Paste the SECRET here. I wire the phone page to note each visit and witness it end-to-end with `doGet`
+     (`W-GMAIL-LOG`).
+- Until then the post box is **written, not deployed, not witnessed**.
