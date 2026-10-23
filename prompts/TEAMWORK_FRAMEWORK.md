@@ -1847,3 +1847,57 @@ narration later via `prompts/FILM_NARRATION.md` ▶ PLAYBOOK.
 - A phone paired before CL8 has no ECDH key: `ensureDh` gives it one on page load, but it only helps if the device is not
   yet enrolled. Already-enrolled phones need re-pairing to read an encrypted space.
 - The epoch key is held extractable in memory (needed to re-grant it); the ECDH private key is not extractable.
+
+### §13.3 W1 results 2026-10-23 — Sales Order in team mode ✅ DONE (witness, two real browsers) — bim-ootb PR #2347
+
+**Built (bim-ootb `erp/team_sync.js` + 3 additive hooks).** Both seams are generic; no window or business table is named.
+- OUT: `crud_overlay._sidePersist` → `TeamSync.onCommit(rows, liveSidecar)`. Each CRUD row becomes a v3 envelope through `wrapKernelOp`.
+  CL1b: a negative `<x>_id` (checked against the CREATE row that minted it: same table, already shared) becomes `{uu}` and a ref.
+  Anything else is **not sent** and shows in the chip as `⚠ n local-only` (`§TEAM_LOCALONLY … reason=…`).
+- IN: Visit = `store.sync` → `store.foldable()` → `__crud.teamRebuild(project)`. Rows this device never shared stay verbatim at their ids; the
+  placed ops are regenerated after them (`user_tag='team'`), FK `{uu}` → local pk through a uu→pk map built in the same pass. Written as new
+  snapshots plus an `undone` tombstone for each vanished id, into the existing append-only `ops` store under the same cross-tab lock.
+  `window` re-keys its current records (`TEAM_VISIT` branch in the `overlay:committed` listener) and re-queries.
+- Loader: `idempiere.html` writes the comm scripts only when the URL has `?team=1`.
+- Comm store: the ERP keeps its own bytes under IDB key `erp_db` (seeded once from the phone page's `db`); identity/space/token from `comm_phone`.
+  After CL8 it calls `CommStore.ensureDh` and writes the same device object back, so the space (encrypted — founder had a `dhPubJwk`) works unchanged.
+
+**Findings that changed the spec text:**
+1. The spec said each op becomes a kernel op with `idCol:'<table>_uu'`. `listTip` honours that, but `tipValues`/`readTip`/the edit form key on the
+   numeric `p.id` (`crud_core.js:654`), so an `idCol` op is invisible to the form overlay. The projection therefore carries the **local pk** in `id`
+   (a created row's `-kernelRowId`), and the uu lives only in the comm log.
+2. `erp/sw.js` `cacheFirst` keyed on the URL without its query, so two `list?prefix=` pipe reads got the same stale answer (and any GitHub GET would
+   be cached forever). Fix: a request with `cache:'no-store'|'reload'` is never answered from a cache (v899).
+3. Document saves also write `ad_sequence`(+`_no`), `ad_recentitem`, `ad_session`. Shared, they would turn every save into a crossed edit.
+   No AD column marks them (`AD_Table.ReplicationType='L'` on all 1003 tables), so `STATION_LOCAL` is **one named list** in `team_sync.js` — the only
+   table list in the adapter. Consequence still open: two devices allocate the same DocumentNo (witness: both orders are `50001`) — needs the
+   station-owned sequence of §11.1.
+4. An UPDATE/DELETE on a **seeded** record (positive pk) can't be admitted: `comm_admit` judges scope from the record's CREATE (`scope-unknown`).
+   It is sent nowhere and shown local-only. Admitting edits to seeded masters needs the scope read from the AD row — open.
+5. A Visit renumbers synthetic pks (`-kernelRowId` follows the rebuilt order). Observed in the witness: the same pk number names different records on
+   A and B. The window re-keys its current records, but a dirty form defers the refresh (`refresh=DEFERRED`).
+
+**Witness `W-TEAM-SO`** (`erp/tests/witness_team_so.js`, run on the CL8 comm layer after rebasing onto #2343/#2344):
+`§W-TEAM-SO PASS judged=19 fails=0 inconclusive=0 pageerrors=0` (log: `/tmp/claude-1000/…/scratchpad/w5.log`, quoted below).
+- `§TEAM-OFF` no chip/box/global/comm script tag and 0 `§TEAM` lines without `?team=1`.
+- `§TEAM-PAIR` phone pages paired by clicks (founder, join, Approve with role picked); the ERP chip shows code · `team devices 2` · Visit (cursor pointer).
+- `§TEAM-SO-SYNC` A creates an order + 1 line → `§TEAM_OUT` header and line (`refs=1`); Visit A, Visit B → B's grid 5→6 rows; B's header form shows
+  A's Description; Order Line tab: **1 row, link `c_order_id=-2` = the header's pk**, projected line `c_order_id=-2` count 1; header → Order Line →
+  header → Order Line without Save keeps 1 row on the same parent.
+- `§TEAM-EDIT` B edits Description, both Visit → A shows `W1-A-one edited-by-B`.
+- `§TEAM-CL1` both create then edit before any Visit → both hold the same three orders, each with its own edit; pk `-28` is "CL1-B edited" on A and
+  "CL1-A edited" on B (the §12.1 precondition is real) and no edit landed wrong.
+- `§TEAM-CONFLICT` crossed Description edits → both devices show ONE conflict naming both values with "Current record was changed by another user,
+  please ReQuery", and keep `CL1-A edited`.
+- `§TEAM-LOCALONLY` a DocAction commit is not sent; `chip.localonly 0 → 1`.
+- `§TEAM-XOFN` **the generic hook covers 240 of 373 AD windows** (≥1 tab on a table with `<t>_uu`, not station-owned; 168 with every tab);
+  **witnessed 1 of 373** (window 143, header + Order Line). Not "all windows work".
+- Pipe: local dumb folder over `CommPipe.httpPipe`; the unmodified phone page pairs through a Playwright stand-in for `api.github.com` that is a thin
+  view of the same folder. No GitHub was touched; the optional `bim-teams-pipe` run was **not** done.
+
+**Regression** (run before and after in the same worktree; verdict lines identical): `poc_access_gate_live` 9/0, `poc_inplace_edit_live` 12/12,
+`poc_parity_docno_live` 10/10, `poc_critic_crud_full_live` 2/10 (red before and after), `poc_inplace_newdel_live` 7/14 (red before and after),
+`witness_gridtab_live` pass=4 fail=1 (timed out at 400 s both times), `test_idempiere_master_detail` crashes on a missing `sql.js` module both times;
+`audit_sw_precache` 0 missing.
+
+**Not in W1 (named):** DocActions (W2), retiring `?relay=`, slim seed; DocumentNo ownership; admitting edits of seeded records; the optional real-GitHub run.
