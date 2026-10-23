@@ -1914,6 +1914,59 @@ old path), and the Modeller (agent task, §15) — it should call the same `Team
 
 **Same idea, other product:** the borrower "news board" for the mock Micro Finance system (blinded tags published as static shards, sealed notes, per-borrower poll periods, offer computed on the phone) is specified in `~/Projects/ThaiGoldPawn/spec/PAWN_FINTECH_SPEC.md` §25 with its film script `film/news/news_en_v1.tsv`. It reuses §11.17 (a board of latest heads) without any team layer.
 
+
+### §13.10 Office-day scale scenario — many staff, robust, NOT real-time (2026-10-24, user)
+
+> User: *"Spec the scenario we described where we have high number and robust ERP usage. Calculate outcome. I am not for realtime checking as ERP is not a production floor machine controller. It's a 9 to 5 workflow with rules and roles. Thus it's just a digital used office space of staff processing parts and conveying along."*
+
+**Design stance (decided by the user, so it is a requirement, not a limit):** an ERP day is a **batch of hand-offs between roles** — Sales raises an order, Warehouse completes it, Accounts invoices it — each step done by a person at a desk. Freshness is measured in **minutes**, not milliseconds. So the transport is a **visit every V minutes** (default 15), never a live socket. A hand-off therefore costs one visit period (A's step is visible to B at B's next visit after A's). This is the §11.17 "post office" model and needs no push.
+
+**Model (every input is a stated assumption the user can change; outputs are computed, nothing is claimed as measured that was not):**
+| Symbol | Meaning | Default | Source |
+|---|---|---|---|
+| N | staff devices in ONE space | sweep 10 · 30 · 100 · 300 · 1000 | scenario |
+| H | working hours | 8 | 9-to-5 |
+| V | visit period (minutes) | 15 (also 5, 30, 60) | scenario (user: not real-time) |
+| d | business documents started per staff per day | 20 | **assumption** (office processing; tune) |
+| s | steps (hand-offs) per document | 3 (create → complete → invoice) | **assumption** |
+| ops/step | shared comm ops per step | **measured** by the simulation from the real layer (§13.7 log: one Complete sends 5 ops — order, reservation, line, tax row, status — of which the reservation write is refused, so 4 are accepted) | `scripts/sim_comm_office_day.js` |
+| bytes/op | wire bytes per op incl. seal + signature | **measured** | same |
+| c | share of steps that touch a document another person edits in the same visit window | 2 % (**assumption**, swept 0–10 %) | scenario |
+
+**Quantities computed** (formulas live in the script so they reproduce):
+- ops/day = N·d·s·(ops/step); visits/day per device = H·60/V; bundles/day = N·H·60/V (a device with nothing new still posts a signed head, so a quiet device costs a head, not a bundle).
+- **per-device download/day** = all other devices' bundles = (N−1)·(ops/day per device)·bytes/op — full replication means every device receives everything in its space: the cost grows with N·work, which is why a space must be a **department or branch**, not the company.
+- **hand-off latency** = V (one visit) per step ⇒ end-to-end document time ≥ s·V.
+- **expected conflicts/day** = N·d·s·c (each a visible `CurrentRecordModified`, never a lost update; D3).
+- **GitHub pipe feasibility** (caps from §11.16): writes per visit ≈ 4 content-generating requests; per-repo 6 pushes/min = 360/h; per-account 500 content-generating/h ≈ 125 pushes/h; reads 1 `matching-refs` + ≈ 2 per changed branch. Feasible iff N·(60/V) ≤ min(360, 125)·(accounts) per hour.
+- **Transport alternatives** (same four-verb pipe, §11.16/§11.19): GitHub single repo · GitHub one repo per space · object storage / static bucket (no per-repo push cap; request-priced) · broker/relay (needs a server).
+
+**Witness/simulation `W-COMM-OFFICE-DAY`** (`scripts/sim_comm_office_day.js`): the REAL comm layer (`build/comm/*`, sql.js, WebCrypto, CL8 encryption on, `canUpdate` via the AD layer) with N simulated devices over `memPipe`, a virtual clock stepping V minutes, a role pipeline (Sales creates order+line → Warehouse Completes → Accounts finalises), documents handed on only AFTER the receiving device has placed the previous op (so latency is real). Judges: ① **convergence** — after a final settle, all N devices hold one op set and one order; ② **no lost work** — every authored business op is placed on every device; ③ **measured ops/step and bytes/op** feed the projection; ④ **hand-off latency** measured in visits equals the model (≥ 1 visit per hand-off, ≤ 2); ⑤ **conflicts** injected at rate c are all surfaced (count equals injected contested columns, none silent). NO-OP/VACUOUS guards: zero ops authored or zero cross-device hand-offs prints INCONCLUSIVE. Then the projection table above for N up to 1000, printed as `§SCALE` lines (computed, labelled "projected").
+
+
+### §13.11 Where we cannot match legacy workflow integrity (2026-10-24, user: *"Think of situations where ours cannot do what legacy ERP does in workflow integrity"*)
+
+Legacy iDempiere has ONE database and one server: a transaction is atomic, a row lock serialises writers, a sequence is gap-free, a workflow engine runs timers, and a user can read only what the server sends. Ours has none of those by default. Each row says what legacy does, what ours does **today** (**M** = measured in a witness/log, **R** = by reading the design, unwitnessed), and the class: **F** = fixable inside the design (an owner/CAS op or a rule) · **A** = needs one arbiter (an always-on hub device or a relay with compare-and-set) · **I** = inherent to serverless, only mitigated.
+
+| # | Situation | Legacy | Ours today | Class · planned rule (witness to write) |
+|---|---|---|---|---|
+| 1 | **Two users take the last unit of stock** | row lock; second gets "insufficient stock" now | both succeed locally; stock write is absolute old/new and the seeded-row write is **refused** (M, §13.7) → the Complete's reservation never arrives, the order shows Completed (partial state) | **A** · K3 owner/CAS for each guarded resource (§11.7); `W-STOCK-LASTUNIT` |
+| 2 | **Document numbers** | gap-free `AD_Sequence`, locked | each device allocates its own: both orders were `50001` (M, §13.3) | **F** · station-owned number ranges (§11.1); `W-DOCNO-RANGE` |
+| 3 | **Two users Complete the same document** | the second is refused at once ("already processed") | both complete locally and may act on it (ship!) before the next visit; reconciled to a visible conflict, document held at its last agreed status (M, `§DA-CROSS`) | **I** (the window is V) · mitigate with the document `Processing` claim op + shorter V for hand-off documents; `W-CLAIM-DOC` |
+| 4 | **Approval workflow across roles** (`AD_WF_Activity`, "Workflow Activities" window) | the approver's inbox is a table every user reads | `ad_wf_*` rows stay local-only (M, §13.7); the approver sees the document go to *In Progress* but not the activity | **F** · share the activity rows (their parent `ad_wf_process` has a polymorphic `record_id` the generic FK rule rejects → give it a `{table,uu}` ref form); `W-WF-APPROVER` |
+| 5 | **Posting to the general ledger** (`Fact_Acct`) | one ledger, one poster, trial balance always agrees | each device posts what it completes; `c_acctschema` period writes are local-only (M); two devices could post the same document, or the books differ per device (R) | **A** · one *poster* role/device per ledger (single-writer, K9 style); `W-LEDGER-ONE-POSTER` |
+| 6 | **Period close / lock** | refused centrally the instant the period closes | an offline or lagging device can author into a closed period; refused only when its op folds (R) | **F** · period-close is an identity-class op: ops dated in a closed period are refused at admission after the close op in fold order; `W-PERIOD-CLOSED` |
+| 7 | **Credit limit / uniqueness (BP tax id, one invoice per order)** | DB constraint or live query across all rows | cross-record checks see only what this device holds; two devices can both pass (R) | **A** for credit; **F** for uniqueness via a claim-by-key op; `W-UNIQUE-KEY` |
+| 8 | **Revoking a user** | takes effect on the next request | takes effect at the next admin visit + fold; ops the user authored offline before then are placed or REFUSED by `last_good_seq` (M, W-PIPE-OPAQUE REVOKE); data the user already downloaded stays with them (**I**) | **I** · mitigated by REKEY; window = V |
+| 9 | **Read isolation** | the server never sends rows a role cannot read | every member of a space holds the space key, so a modified client could decrypt and read **all** ops in the space; the role layer limits the screen, not the bytes (R, CL8) | **F** · per-audience keys (a key epoch per org/role group, or separate spaces per audience); `W-READ-SCOPE` — see the control discussion in the session notes |
+| 10 | **Delete vs concurrent update; FK to a deleted record** | FK constraint / cascade | "no rule yet; delete just hides the row" (§12 note) | **F** · tombstone-wins + dependants held; `W-DELETE-CROSS` |
+| 11 | **Server-side batch processes** (generate invoices, cost run, MRP, period-end) | one run, locked by `AD_PInstance` | two devices can run the same process and both create the output (R) | **A** · process-owner claim (single writer) ; `W-PROC-ONCE` |
+| 12 | **Scheduled / timed workflow** (timeouts, escalation, reminders) | the server scheduler | nothing runs while no browser is open (R) | **A** · designate one device (or a free scheduled function) as the "clock"; `W-TIMER-HUB` |
+| 13 | **Read-your-writes across users** | immediate | after the other user's visit (≤ V; measured 1 visit per hand-off) | **I** · the stance of §13.10: an office day is batch hand-offs |
+| 14 | **Cross-department process** (spaces are per department) | one DB | no cross-space document hand-off exists (R) | **F** · a "letter" op addressed to another space (a signed hand-over), designed not built |
+
+**Reading.** Five items need an **arbiter** (stock, ledger posting, credit, batch processes, timers). The honest minimum is **one always-on role** — a hub device or a free scheduled function — that owns exactly those few resources; everything else (numbering, period close, approvals, uniqueness, delete, read scope, cross-space letters) is fixable inside the design. Items 3, 8 and 13 cannot be made instant without a server; their cost is bounded by the visit period V. None of the 14 is witnessed fixed yet; each names the test that would prove it.
+
 ---
 
 ## §14 Showcase film — storyboard v1 (user, 2026-10-23: *"plan the film storyboard for the showcase"*)
@@ -1945,6 +1998,20 @@ narration later via `prompts/FILM_NARRATION.md` ▶ PLAYBOOK.
 - Phone: the phone's own screen recorder (Android: quick settings → Screen record).
 - One take per beat; cut in the edit.
 - Keep the `§` log panel of the page visible, or capture it with `console` logging, to source the overlay numbers.
+
+
+**Results 2026-10-24** (`node scripts/sim_comm_office_day.js 9 3 15 0.3`, log `build/comm/logs/sim_comm_office_day.log`, read in full; fixed seed): `§W-COMM-OFFICE-DAY PASS judged=6 fails=0`.
+- *Measured (real layer, 9 devices, CL8 on, 32 visits each):* all devices ended with one op set and one order; no authored op lost; every hand-off took exactly **1 visit** (15 min at V=15); the injected double-Completes surfaced **every** contested column (12 of 12), none silent.
+- *Measured costs:* ops per step **3.78**; a bundle = **≈10.1 KB fixed + ≈2.1 KB per op** (least squares over 28-55 real bundles); a signed head ≈ 0.56 KB; requests per visit at N=9: put 1.2, get 11.0, list 2.3 (so gets ≈ N+2).
+- *Measured growth:* a visit with **no news** re-folds the whole log: **70 ms at 275 ops → 535 ms at 1,525 ops** (≈0.34 ms per op, node, best of 3). **This is the first limit the office day hits** — before GitHub's caps: a quiet visit passes **1 s at ≈3,100 ops** (half a working day at N=30, 1.4 days at N=10), 5 s at ≈14,800. Phone speed is not measured ⛔. The cure is an incremental fold / the period-close checkpoint of §11.16 (not built) — **spec'd next, before any large rollout.**
+- *Projected thresholds* (formulas of this section; assumptions d=20, s=3, V=15 unless stated):
+  - GitHub, one account (125 pushes/h): **31 devices** at V=15, 125 at V=60; one repo (6 pushes/min): 90 / 360.
+  - Download per device per day: 10 MB at N=14, 50 MB at N=65, 100 MB at N=128 (full replication inside one space ⇒ a space is a **department/branch**, not the company).
+  - Pipe growth vs the 10 GB advice: N=10 → 5.2 working years; N=30 → 1.7; N=100 → 0.5.
+  - **Web relay** (requests grow with N², everyone fetches everyone's bundle): N=30 ≈ 4.2k req/h (1.2/s); N=100 ≈ 41.9k req/h (11.6/s); N=300 ≈ 366k req/h (102/s). **Visits must be staggered** (a per-device offset inside V): a synchronized burst at N=100 is ≈10.5k requests in a minute. Apps Script postbox: 30 simultaneous executions per user, 6 min per execution, URL Fetch 20,000/day consumer / 100,000 Workspace, trigger runtime 90 min/day / 6 h (quota page fetched 2026-10-24; "may change without notice"); no daily web-app request cap is listed; our per-request time is **not measured ⛔**. Object storage or a bucket has no such concurrency cap. A relay that merges bundles per round would cut the N² reads to N (needs compute — a server).
+  - **Email** (each visit = one email with one attachment ≈ 25-34 KB; Gmail cap 25 MB ⇒ size never the limit): per sender 32 mails/day at V=15 (cap 500/day consumer Gmail); into the postbox N=100 → 3,200 mails/day; at an **assumed** 1 s per mail that is 59 % of the 90 min/day consumer trigger budget (N=300 → 178 %, over). The 1 s is an assumption ⛔ — measure before relying on it. Email adds delivery delay on top of V.
+- *Reading:* for a 9-to-5 office workflow the layer is comfortable up to **one department of ~30 staff per space on GitHub, ~100 on a web relay/bucket with staggered visits**, **provided** the fold is made incremental. Larger = several spaces (one per department/branch) and a transport without GitHub's per-account cap.
+- *Not covered:* a phone's CPU; more than 9 simulated devices (projection only); real network latency; the Apps Script per-request time.
 
 ### §14.1 Novelty — what is and isn't new (checked 2026-10-23)
 
