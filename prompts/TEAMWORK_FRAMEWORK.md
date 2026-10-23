@@ -1897,6 +1897,21 @@ trial on → a new order after the Complete is `local-only reason=trial-finished
 **Still owed by the user:** create the fine-grained token for `red1oon/bim-teams-trial` (Contents read/write, that repo only, with an expiry) and paste it into `common/comm/team_defaults.js` —
 until then the panel says "Trial key not installed". Not built: pairing inside the ERP panel (it links to `comm_phone.html`); an edge function for IP (would be a server — only if you want it).
 
+
+### §13.9 Desktop-only team setup — pairing inside the Team panel (2026-10-24, user: *"Try to do the ERP setup without the phone, just demo the desktop side and it should work for the Modeller thus do it as single Team setup and Modeller example (mock another user login setup). Is that viable?"*)
+
+**Viable — measured constraints, then design.**
+- *Second user on one desktop:* identity (`comm_phone` IndexedDB), the comm store and the ERP's own op-log sidecar (`crud_overlay.js:1904` `SIDE_DBNAME` IndexedDB) are all **per origin and per browser profile**. Two tabs of one profile are ONE user (and would even share the sidecar). So "mock another user" = a **private/incognito window or second browser profile** on the same URL (on a dev machine `localhost` vs `127.0.0.1` are two origins and also work). No code is needed for that — it is how every witness already runs ("laptop" and "phone" are just two contexts).
+- *What was really missing:* pairing lived only on `comm_phone.html`. **Change:** the Team panel itself does it — Start a team · invite link · Join · pending requests with a role picker · Approve — through new `TeamSync` calls ported from `comm_phone.html` (same `CommStore` calls: `newSpace/genesis`, join request `s/<space>/r/<kid>`, `addPerson` + `enroll`). The phone page stays as is (mobile).
+- *One setup for ERP and Modeller:* identity + space + pipe live in the same IndexedDB `comm_phone` on the same origin, so a browser paired once is paired for BOTH apps. The panel/pairing code is host-neutral (it needs only `CommStore`, `CommPipe`, an access function and a kv store); the Modeller adapter (§15, separate agent) reuses it. This section does not touch `modeller/`.
+
+**✅ DONE (witness) 2026-10-24 — bim-ootb PR #2357 (sw v902).** `§W-TEAM-DESKTOP PASS judged=9 fails=0 inconclusive=0 pageerrors=0` (log read in full); regressions `§W-TEAM-PILL PASS 14/0`,
+`§W-TEAM-SO PASS-WITH-INCONCLUSIVE(1) 18/0` (same CL1 precondition as before), `§W-TEAM-DOCACTION PASS 21/0`. Found on the way (all fixed): the folder pipe has `put` only (the join request used `putMany`);
+`var roles` (access cache) shadowed a `roles()` function; the Visit button stayed disabled after pairing mid-session. Not covered: the real-GitHub path of the new in-panel pairing (only the folder pipe was run; `W-PHONE-PAGE` still covers the
+old path), and the Modeller (agent task, §15) — it should call the same `TeamSync` pairing calls; `TeamSync` is currently ERP-hosted (needs `__crud`/`__idmpDb`), so the Modeller either reuses its pairing functions after a small extraction or ships its own host adapter.
+
+**Witness `W-TEAM-DESKTOP`** (`erp/tests/witness_team_desktop.js`, two real contexts, **no phone page opened**, dumb folder pipe): ① A turns team mode on from the pill, panel shows "not paired"; ② A "Start a team" → invite link; ③ B (separate context) opens the invite link on the ERP, turns team mode on, "Join" → shows its code; ④ A "Check join requests" lists exactly B's code → picks a role → Approve; ⑤ B Visit → panel says "paired"; ⑥ A creates an order (window 143), Visit A, Visit B → B sees it. NO-OP guard: before ⑤ B's chip says waiting. 0 page errors. `W-PHONE-PAGE` and `W-TEAM-SO` stay green (the old pairing path is untouched).
+
 ---
 
 ## §14 Showcase film — storyboard v1 (user, 2026-10-23: *"plan the film storyboard for the showcase"*)
