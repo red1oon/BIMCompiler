@@ -1967,6 +1967,51 @@ Legacy iDempiere has ONE database and one server: a transaction is atomic, a row
 
 **Reading.** Five items need an **arbiter** (stock, ledger posting, credit, batch processes, timers). The honest minimum is **one always-on role** — a hub device or a free scheduled function — that owns exactly those few resources; everything else (numbering, period close, approvals, uniqueness, delete, read scope, cross-space letters) is fixable inside the design. Items 3, 8 and 13 cannot be made instant without a server; their cost is bounded by the visit period V. None of the 14 is witnessed fixed yet; each names the test that would prove it.
 
+
+### §13.12 The elegant frame — a minimal post office, five peer primitives, one policy (2026-10-24, user: *"Let's go for an elegant framework where post office stays minimalist. Find workarounds or a standard config controller in the post office for values that can be mitigated among peers."*)
+
+**Stance.** The post office stays a dumb object store. Everything legacy gets from "one server" is rebuilt from **rules every peer folds identically** (so they agree without talking) plus a **small signed policy** that fixes the values peers cannot choose alone. No arbiter machine; no always-on role.
+
+**A. The post office (minimal, maintenance-free) — only four things**
+1. `put / get / list / putMany` of opaque objects (unchanged four-verb contract, §11.2).
+2. **Write gate** from `gate.json`: a per-space write token (rotates with each key epoch, so REVOKE cuts a leaver off), max object size, max puts per device per hour. It answers "who may write junk", never "what is true" (truth = signatures + fold, as today).
+3. A cached copy of `policy.json` (below) so a brand-new device can bootstrap before it has the log.
+4. Optional retention: delete bundles older than the last checkpoint (§C-5).
+It holds no business logic, no user database, no clock, no queue. Any bucket, GitHub repo, or Apps Script can be one.
+
+**B. The standard config controller = `POLICY` (one admin-signed op in the log, mirrored to `policy.json`)**
+A normal identity-class op, so it is ordered by the same fold and **every peer applies it at the same log position** (deterministic, tamper-evident, versioned by epoch). Values it fixes — exactly those a peer cannot decide alone:
+| Value | Why peers cannot choose it | Used by |
+|---|---|---|
+| visit period V and **stagger rule** (offset = hash(kid) mod V) | must be common and spread, or the relay sees synchronized bursts (§13.10) | all |
+| gate parameters (size, puts/hour), write-token epoch | the post office enforces them | A.2 |
+| **pipe directory**: primary + fallback pipes, switch-over epoch, cross-space addresses | peers need one agreed place to look | failover, §14 gap |
+| bundle caps (max ops/bundle), **checkpoint cadence** | bound the log and the visit cost (§13.10 growth limit) | C-5 |
+| **audience map**: table/role group → audience key, who holds which key | read isolation needs the same map everywhere | C-4 |
+| **rules manifest** (hash of the AD + posting rules version) | derived data must come from the same rules (§11.8) | C-3 |
+| lease TTLs, escrow slice defaults, number prefix scheme | common constants for C-1/C-2 | C-1, C-2 |
+| period calendar (`PERIOD_CLOSE` is its own op) | a closed period must close for everyone | gap 6 |
+| trial flags / retention | operations policy | §13.8 |
+Anything NOT in this list is decided by peers with the primitives below. Changing the policy is a rare admin act; a peer that has not yet seen the newer epoch keeps the older one until its next visit (bounded by V).
+
+**C. Five peer primitives (all folded; none needs a server)**
+1. **KEYCLAIM — first-in-fold-order wins** on a key. One op type, many uses: *document number blocks / station prefixes* (gap 2), *uniqueness* (BP tax id, one invoice per order; gap 7), *document claim before Complete* (soft "Processing", gap 3), *timer fired* (`TIMER:<doc>:<rule>` — any peer that opens the app and finds a rule due posts it; duplicates collapse; **no clock hub**, gap 12), *process run* (`RUN:<process>:<period>`, gap 11), *delete tombstone* (gap 10). A loser is told at its next visit through the existing visible-conflict path. With a TTL it becomes a **LEASE** (same op + `until`, takeover only by an op that cites the expired lease — the `G-LEASE-EXPIRY` pattern already in teams/), used for the *ledger poster* role if one is ever wanted.
+2. **ESCROW (bounded counters).** A guarded quantity (stock per product×locator, credit headroom per partner) is **split into slices owned by desks**; a desk decrements only its own slice, so the invariant "never below zero" holds **without coordination**. Running out is a normal workflow step: the desk sends a `TRANSFER_REQUEST` and a peer with spare answers `TRANSFER`. Initial slices come from the policy's defaults. This replaces K3's central owner (gap 1, credit in 7) with something peers do alone.
+3. **DERIVED, never authored.** GL postings (`Fact_Acct`), totals, aging, balances are **pure functions of the folded documents under the pinned rules manifest**, so every peer computes the identical ledger itself and nothing is shared (gap 5). The only shared fact is the document and its status. A witness recomputes the trial balance on two devices and compares.
+4. **AUDIENCE keys.** One key epoch **per audience** (org / department / role group) instead of one per space; an op is sealed to its table's audience; members hold the keys of the audiences they belong to (gap 9). A cross-audience step is a *letter* (below).
+5. **CHECKPOINT.** Any peer may publish a signed snapshot of the folded state at log position P; peers adopt it after checking the hash against their own fold (or after N co-signatures), then fold only what follows. It bounds visit cost (§13.10: a quiet visit costs ≈0.34 ms per op in the log) and lets the post office delete old bundles.
+6. **LETTER** (cross-space). A signed op addressed to another space's directory entry (policy B): the receiving space imports it as a normal intake document (gap 14).
+
+**D. What stays inherent (named, not hidden):** a stale read lasts up to V (gaps 3, 13); a revoked user keeps what they already downloaded (8); the first loser of a KEYCLAIM race learns at the next visit. Everything else of the 14 in §13.11 maps to one of C-1…C-6 or to a normal fix (period close, approval rows).
+
+**E. Build order (each ends with its witness; nothing is built yet).**
+1. `POLICY` op + `gate.json` + stagger (witness `W-POLICY-FOLD`: two devices apply the same policy at the same position; a device with an old epoch is refused by the gate after rotation; a flood past the cap is refused).
+2. `KEYCLAIM` + station prefix (witnesses `W-DOCNO-NOCLASH`, `W-UNIQUE-KEY`, `W-TIMER-ONCE`, `W-CLAIM-DOC`; each with a control where two devices race).
+3. `CHECKPOINT` (witness `W-CHECKPOINT`: visit time flat after adoption; adopted state hash equals a full fold) — removes the first limit of §13.10.
+4. `ESCROW` for stock (witness `W-STOCK-LASTUNIT`: two desks, one unit left → exactly one succeeds, never negative, with a transfer arm).
+5. `DERIVED` check (witness `W-LEDGER-TWOSIDES`) · 6. `AUDIENCE` keys (witness `W-READ-SCOPE`: a device without the audience key reads zero bytes of that audience, with a control that it can with the key).
+Recommendation: build 1 → 3 → 2 first (they remove the measured limits and the duplicate-number defect), then 4.
+
 ---
 
 ## §14 Showcase film — storyboard v1 (user, 2026-10-23: *"plan the film storyboard for the showcase"*)
