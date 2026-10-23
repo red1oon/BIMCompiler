@@ -2264,7 +2264,7 @@ class in `bonsai_oplog.js:354` plus `GEOM_INSERT`):
 | move | `GEOM_MOVE` | `CRUD_UPDATE` on the parent element's uu, `changes: {pos_x|pos_y|pos_z: {old,new}}` for each axis whose delta ≠ 0 |
 | local-only (named, with reason shown in the chip) | every other `GEOM_*` — `GEOM_CUT`, `GEOM_FILLET`, `GEOM_ROTATE`, `GEOM_SCALE`, `GEOM_ARRAY`, `GEOM_GRID_MOVE`, `GEOM_ROOM_MOVE`, `GEOM_SHELL`, … | not sent |
 
-Denominator reported by the witness (AD-LAYER-LAW style, not "Modeller works"): **7 of the 21 `GEOM_*` op types named in `bonsai_kernel_worker.js` are shared; 14 are local-only.**
+Denominator reported by the witness (AD-LAYER-LAW style, not "Modeller works"): **7 of the 22 `GEOM_*` op types named in `bonsai_kernel_worker.js` + `bonsai_kernel.js` are shared; 15 are local-only** (the witness counts them from source and prints the number).
 Rows of an `arcseed-*` group (a building seed both devices already have) and rows already tagged `team` are never authored.
 
 #### §15.3 How a GEOM op is wrapped into a v3 envelope
@@ -2314,7 +2314,7 @@ The comm log is the truth; the model is its projection (identical stance to §13
 - The one-cycle **trial cap** of §13.8 (`TeamTrial`, 60 ops) applies identically when `cfg.trial` is on (the cap works for any op; the "cycle" never completes in the Modeller).
 
 #### §15.8 Named limits of this slice (not hidden)
-1. Ops outside the class table stay on the device (14 of 21 `GEOM_*` types), shown as `⚠ n local-only` with a reason. A cut/fillet/rotate on a shared element is therefore **not** seen by the other person.
+1. Ops outside the class table stay on the device (15 of 22 `GEOM_*` types), shown as `⚠ n local-only` with a reason. A cut/fillet/rotate on a shared element is therefore **not** seen by the other person.
 2. Edits to a **seeded** element (building seed rows) are local-only (no CREATE in the log → `scope-unknown`), same as ERP W1-4.
 3. **Undo/delete of an already-shared op is not shared**; the next Visit restores the shared state (the comm log wins).
 4. A multi-op gesture (grid stretch + riders) is shared op by op; all-or-none is not enforced as it is for ERP doc-actions.
@@ -2335,9 +2335,29 @@ Every arm names the issue it proves or disproves and prints INCONCLUSIVE (never 
 | `§TM-CROSS` | same element, same axis, crossed: each device shows ONE `pos_x` conflict naming both values and **keeps the last agreed centre** (numbers); an axis only one of them moved (pos_y) still applies | NO-OP guard: before the Visit each device's own centre showed its own move |
 | `§TM-RESOLVE` | a later move after seeing both clears the conflict on both and both converge on the same centre | INCONCLUSIVE if there was no conflict to resolve |
 | `§TM-LOCALONLY` | a `GEOM_SCALE`/`GEOM_ROTATE` on a shared element is NOT sent (chip shows it, the other device does not receive it) and the kept local row's `parent` is remapped to the element's NEW row id after a Visit (`§TEAM_REMAP_MISS` count 0) | |
-| `§TM-XOFN` | prints the denominator: shared op types / all `GEOM_*` types named in the worker (7 of 21) | |
+| `§TM-XOFN` | prints the denominator: shared op types / all `GEOM_*` types named in the worker (7 of 22) | |
 | `§TM-NOERR` | 0 page errors on both pages | |
 Regression: `erp/tests/witness_team_so.js` and `witness_team_docaction.js` stay green; `build/comm/*` and `common/comm/*` stay byte-identical (`cmp`).
 
-#### §15.10 Results
-*(appended below when the witness has run)*
+#### §15.10 Results (2026-10-24) — bim-ootb PR #2358 (`feat/modeller-team`)
+Logs read in full (`scratchpad/tm5.log`, `so.log`, `da.log`; also `tm1.log`/`tm2.log` = the red runs). Files: `modeller/team_sync.js` (new), `modeller/modeller.html` (loader), `modeller/sw.js` (precache + the fix below, v155), `modeller/tests/witness_team_modeller.js`.
+`build/comm/*` and `common/comm/*` are byte-identical (`cmp` against bim-compiler: all 7 modules identical); no ERP file was touched.
+- `§W-TEAM-MODELLER PASS judged=33 fails=0 inconclusive=0 pageerrors=0`. Every arm of §15.9 ran: TM-OFF (separate browser, 0 `§TEAM` lines, still commits), TM-PAIR, TM-CREATE (A's move `dx=2,dy=-3` with a negative integer arrives; B's mesh centre equals A's to 0.0 m, centre `[3,-2.5,1.25]`; a polygon with `[-2,-1]` points arrives with the same size `[2,2,3]` and centre `[-1,0,1.5]`; both kernel chains verify; NO-OP guard: B had 0 rows / 0 meshes before its Visit), TM-DIFF (E1 x+1 and E2 y+4 applied on both, 0 conflicts), TM-CROSS (one `pos_x` conflict per device with values `[4,5]` before `3`, the `CurrentRecordModified` text shown, both keep x at the last agreed value; the z axis only B moved still applies on both), TM-RESOLVE (a later move by A clears it; both converge on x = agreed + 1.5), TM-LOCALONLY (rotate not sent, chip 0 → 2 local-only; the kept rotate row's parent follows the element's renumbered row 1 → 2; the rotation still applies on A, never reaches B), TM-XOFN (7 of 22).
+- Red/green evidence: first full run **failed** on a real defect, `modeller/sw.js` answered the comm layer's `list?prefix=` reads from cache (the same bug erp/sw.js got fixed for in §13.3, finding 2), so a Visit parsed a bundle as a head and threw. Fixed with the same three lines; this also protects GitHub API reads in the Modeller. Mutation check: replacing the id remap with the old id makes TM-LOCALONLY fail 3 arms (`fails=3`), then reverted.
+- Regression: `witness_team_so.js` `PASS judged=19 fails=0`, `witness_team_docaction.js` `PASS judged=21 fails=0`, `audit_sw_precache` 0 missing (that audit covers the viewer; the Modeller entry `team_sync.js` was checked to exist).
+- Findings that changed the spec text: (1) the Modeller's own sw (above); (2) a local row that depends on a projected element must be placed AFTER the projection or the fold sees a forward reference (`planProjection` + kept-after list, §15.6 step 3 refined); (3) the 22nd op type (the regex also counts `GEOM_OPENING`).
+- Hard / left out, with the reason: the single-writer (discipline x zone) claim (needs an OWNER op and an owner check in `comm_admit`, i.e. an engine change); Undo/delete of a shared op; op classes beyond create/move; a real GitHub run (not done); real gizmo drag under team mode (the witness drives `Bonsai.oplog.commit`, the call the gizmo release makes; the gizmo path itself, which commits via `commitGesture` for riders, was not run under team mode); a phone-sized Modeller (not tested).
+
+#### §15.11 Film: simple script and takes
+Script: `prompts/film_narration_server_dead_modeller_v1.tsv` (10 beats, 2:35, same columns as the ERP script: beat, start, end, visual, short text, full text; honest framing: proof of concept, test bench vs real work, what is not shared yet). Not recorded, no TTS run.
+**Takes** (one fresh space; follow §14.3: both devices Start over first, laptop founds, second device opens the NEW invite; set fps before trimming; never show a token, the invite link or an `exec` URL unblurred):
+1. **Dry run first, unrecorded**: open the Modeller on both with `?team=1`, draw one block with the real tools, move it with the gizmo, Visit both, and read the `§TEAM_OUT` / `§TEAM_VISIT` lines. The gizmo path has not been run under team mode (§15.10); if a line says `local-only`, fix before filming.
+2. **Take A, pairing (TEST BENCH label)**: second browser window or profile (or a second laptop) on the phone page: Start a space, Join with the code, Approve with a role. Record both screens.
+3. **Take B, the chip**: open `modeller.html?team=1` on both; show `Team · <code> · team devices 2 · Visit` for 3 s each.
+4. **Take C, create**: device 1 draws a block, presses Visit; device 2 shows an empty model (2 s hold, proves it was empty), presses Visit; the block appears. Overlay the `§TEAM_VISIT` line.
+5. **Take D, move**: device 1 drags the block left (a negative direction) and forward; Visit on both; hold on both screens. Overlay the two `centre` numbers read from `Bonsai.group()` (same values to 1e-6).
+6. **Take E, different blocks**: each device moves a different block, then Visit, Visit, Visit; both moves on both screens, chip shows 0 conflicts.
+7. **Take F, the clash**: do not Visit between the two drags; both drag the SAME block along x to different places; Visit on device 1, device 2, device 1. Hold on the warning on both (`pos_x: values 4 / 5, kept 3`), block still at the agreed place.
+8. **Take G, resolve**: device 1 moves the block once more; Visit, Visit; warning gone, both agree.
+9. **Take H, limits**: device 1 rotates the block; the chip shows `⚠ 1 local-only (not shared)` and device 2 does not rotate. Then the plain limits card.
+Order of editing: cards and tags `TEST BENCH` over A and B, `LIVE` over C to H; every number on screen from that take's log.
