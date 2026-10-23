@@ -1059,3 +1059,39 @@ never hidden.
   - the folder holds only `d/ o/ h/` objects.
 - Driven through `page.evaluate` on the POC page's API. This is an engine-in-real-browser test, not a UI test; the user
   path is CL-P.
+
+### §12.5 Results 2026-10-23 — CL3 ✅ DONE (witness)
+
+Both logs were read in full.
+
+**`W-STORE-NODE` PASS judged=24 fails=0** (`build/comm/logs/witness_comm_cl3_store.log`; memPipe and folderPipe):
+- **Converge:** 3 devices, two visit rounds → `placed=6/6/6`, the same op set and one order hash on each pipe.
+- **Receipt:** after its own visit, A's ops are `1:SENT 2:SENT`; after B and C visit, `SEEN[b0c8,f0bc]`. The proof is
+  B's and C's signed heads.
+- **Incremental:** a visit with nothing new makes **3 gets** — one per device head, i.e. the board. That was 6 before
+  this fix: known device keys are no longer re-read, and my key is published once (puts per run 22 → 16).
+- **Equivocation:** a fork at C#2 is recorded on A and B (`equivocations A/B=1/1`), and the original C#2 is no longer
+  placed (`EQUIVOCATED`).
+- **Forge:** unknown key → `REFUSED:unknown-device`; tampered body → `REFUSED:signature`.
+- **Withhold:** with A's bundle hidden, a late joiner gets `placed=1 parked=1` — B's dependent op parks, C's independent
+  op places. After the restore, `placed=3 parked=0`.
+
+**`W-FOLDER-2CTX` PASS judged=10 fails=0** (bim-ootb `common/tests/witness_comm_cl3_folder.js`, PR **#2315**, branch
+`feat/comm-layer`):
+- Setup: two real Playwright contexts with separate storage — before any visit each held only its own 2 ops. Their only
+  channel was one folder behind a dumb file server.
+- Visits A, B, A, B → both `ops=4 placed=4 order=9804ea6fd1f5c01f`.
+- **The real `erp/kernel_ops.js` + `erp/crud_core.js` fold identical rows in both browsers: `A-1=111 B-1=222`**, each
+  with the UU its own browser minted. The kernel log shows updates addressed as `"idCol":"c_order_uu","id":"<uu>"`. This
+  is the CL1 defect scenario, now correct across two real browsers.
+- Receipts: SEEN both ways.
+- Folder contents: 6 objects, exactly `d/×2 h/×2 o/×2` — the pipe held keys, heads and two tiny SQLite bundles, nothing
+  else.
+- The four modules are byte-identical between bim-compiler `build/comm/` and bim-ootb `common/comm/` (checked with `cmp`).
+
+**Learned for CL3b (GitHub pipe):** one visit makes up to 3 puts (key once, bundle, head). Under GitHub's 6 pushes per
+minute per repo, **all puts of one visit must go in ONE commit** (a tree with several files, then one ref update). The
+GH pipe needs a `putMany` that batches; the four-verb contract stays.
+
+**Next: CL4** — identity as ops (GENESIS / PERSON / ENROLL / REVOKE-with-cutoff), replacing `CL3-temporary` trust, and
+admission at fold time.
