@@ -1399,3 +1399,45 @@ real `canUpdate`, roster trust):
 **Next in order:**
 - **CL3b** — GitHub pipe, one batched commit per visit (§11.16; repo creation was approved).
 - Then **CL6** manifest skew, **CL7** multi-pipe heal, **CL8** encryption.
+
+### §12.11 Build spec — CL3b: GitHub repo as a pipe (user: *"Proceed"*, 2026-10-23; repo creation approved in §11.13)
+
+**Repo:** private `red1oon/bim-teams-pipe`, created by this step.
+- A README only, so the repo is not empty (Git Data API calls fail on an empty repo).
+- Actions disabled. No `.gitattributes`, so no LFS — every object is a plain git blob.
+
+**`ghPipe(opts)` in `build/comm/comm_pipe.js`** — the same four verbs, plus `putMany`:
+- `opts = {owner, repo, token, self, minGapMs, fetch?}`.
+- **One branch per device:** `dev/<kid>`. A device may only put names under its own prefix (`o/<kid>/…`, `h/<kid>`), and
+  the pipe refuses anything else. That is the one-writer rule, made structural.
+- **`putMany(entries)` = ONE commit:**
+  - blobs, then one tree on the previous tree, then one commit, then a forward-only ref update (`force:false`);
+  - a refused update (another tab of the same device moved the branch) is re-read and retried once;
+  - the first visit creates the branch.
+- **Reads:**
+  - `list(prefix)` = one `matching-refs/heads/dev/` call (with ETag) plus one recursive tree read per **changed** branch
+    (cached by commit sha);
+  - `get(name)` = one blob read (blobs never change, so cached forever).
+- **Budget, logged every visit:** `§GH_BUDGET reqs=… writes=… notModified=… rateRemaining=…`.
+  - Writes are counted against GitHub's 80/min and 500/hour content limits.
+  - `minGapMs` throttles each device's commits (§11.16: whole team under 6 pushes a minute).
+
+**Store change:** if a pipe has `putMany`, `sync` sends the bundle and the head in **one** `putMany`, then reads the
+bundle back (SENT only after the read-back). Other pipes are unchanged.
+
+**Witness `W-GH-PIPE-2DEV`** (`scripts/witness_comm_cl3b_github.js`, node, **real GitHub**, token from `gh auth token`):
+- Setup: two devices A and B on roster trust (A founds, enrols B with role 102).
+- Visits: A, B, A, B, with B editing between visits.
+- `§GH-CONVERGE` — both stores hold the same ops in the same order through GitHub alone.
+- `§GH-RECEIPT` — A's ops are SEEN by B.
+- `§GH-ONE-COMMIT` — each visit that sent something added exactly one commit to its own branch (the branch commit count
+  is read from GitHub); a visit with nothing to send still writes the head, in exactly one commit.
+- `§GH-OWN-BRANCH` — a put under another device's prefix is refused by the pipe.
+- `§GH-NO-LFS` — the repo has no `.gitattributes`, and every object is a plain blob ≤256 KB.
+- `§GH-BUDGET` — writes per visit ≤ 5; total writes and the rate-limit delta are logged.
+- `§GH-ETAG` — **measured:** whether a 304 reply to an ETag request lowers `X-RateLimit-Remaining`. This settles the
+  §11.16 ⛔ "verify" item with a number. Other API use on the same account can shift the counter, so the delta is
+  reported, not assumed.
+- Cleanup: the witness deletes the device branches it created.
+- **The phone test (real laptop + phone, D4 enrolment by code) needs the user's hands, and comes after a minimal POC UI.**
+  Named here; not claimed by this witness.
