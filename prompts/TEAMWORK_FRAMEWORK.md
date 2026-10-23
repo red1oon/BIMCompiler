@@ -846,3 +846,101 @@ PROPOSALS. Each states what exists today and what needs checking.
 
 **Recommended first use:** items 1 and 4. They turn the bundle and the checkpoint into ordinary SQLite files, which
 every later step reuses.
+
+### §11.19a Amendment — Gmail is a log, the repo holds the files (user, 2026-10-23)
+
+> User: *"Perhaps gmail can have links to the repo of those tiny SQL scripts. Gmail merely act as a log."*
+
+- **Bundles live only in the pipe repo** (§11.16), as the tiny SQLite files of §11.21 item 1.
+- **A visit mail carries no attachment.** The body is the signed head plus links to the bundle files in the repo
+  (`…/o/<kid>/<from>-<to>.<h12>.bimpack`).
+- **Gmail becomes the post office's visit book:** append-only, searchable, readable by legacy through IMAP
+  (`RequestEMailProcessor`).
+- **Truth never depends on it:** a link is only a pointer. The reader fetches the file and checks its hash and signature.
+- **What this removes:**
+  - the attachment-scanning question in §11.19 (no attachments at all);
+  - the Drive store;
+  - the Apps Script `doPost` path. Apps Script stays optional — only to answer a board query from the log.
+- **What's left on Gmail:** the 100-recipients-a-day cap applies only to receipt mails, which become optional.
+- **New check:** links to `github.com` in a plain-text body are a mild spam signal. `W-GMAIL-DELIVER` keeps the 50-mail
+  count, now with links instead of attachments.
+
+---
+
+## §12 Build spec — CL1 and CL2 (user: *"Proceed."*, 2026-10-23)
+
+**Where:**
+- Engine source goes in bim-compiler `build/comm/`, UMD with no DOM, the same pattern as `build/erp/erp_sync_fsm.js`.
+- It is ported byte-identical to bim-ootb `common/comm/` at CL3, when browser contexts arrive.
+- Witnesses go in `scripts/`; logs in `build/comm/logs/`.
+- Nothing is loaded by any live page in CL1/CL2.
+
+**Real code the witnesses run (no stand-ins):**
+- kernel: `build/erp/kernel_ops.js` (byte-identical to bim-ootb `erp/kernel_ops.js`, §1);
+- rebase: `build/erp/erp_sync_fsm.js`;
+- sequencer: `build/erp/erp_sequencer.js`;
+- fold: bim-ootb `erp/crud_core.js` `listTip`.
+
+### §12.1 CL1 — envelope v3 + UU-only references
+
+**Fact found while speccing (re-read this turn):** `listTip` already addresses a row by `<table>_uu` when an op carries
+`idCol` (`crud_core.js:485-486`). A created row's `_uu` is stamped from the CREATE op's `op_uuid` (`crud_core.js:475-477`).
+Its synthetic pk is `-opId` — the **local** row id of the CREATE op (`crud_core.js:441`). `rebase()` deletes and
+re-inserts every row in sequencer order (`erp_sync_fsm.js:195-204`), so every synthetic pk can change on sync while the
+ops that point at them keep the old number. So **UU addressing needs no fold change**: a v3 op translates to kernel
+params `{table, idCol:'<table>_uu', id:<uu>, …}`.
+
+**Module `build/comm/comm_envelope.js`:**
+- `canonical(v)` — JSON with keys sorted at every level; refuses `undefined`, NaN and Infinity.
+- `hashHex(env)` — sha256 over `canonical(env)` (the `sig` field is excluded).
+- `validate(env)` → `{ok, errors[]}`, rules V1–V8:
+  - V1 `v===3`
+  - V2 `space` is 64-hex
+  - V3 `author` is a non-empty kid
+  - V4 `seq` is an integer ≥1
+  - V5 `prev` is null if and only if `seq===1`, otherwise 64-hex
+  - V6 `deps` is sorted, unique, 64-hex
+  - V7 `target.table` is lowercase and `target.uu` is UUID-shaped
+  - V8 **no device-local id anywhere in `body.params`**: any negative integer is refused as `local-pk-ref`, and so is an
+    `id` key for the target.
+- `sign(env, signer)` / `verify(env, sig, pubJwk)` — ECDSA P-256 / SHA-256 over `canonical(env)`, the same curve as
+  `erp_signer.js`.
+- `toKernelParams(env)` — v3 → today's kernel params, addressing the target by `idCol`.
+- `wrapKernelOp(row, uuOf)` — today's kernel row → v3 body. This is D2's one-time import. A CREATE takes
+  `uu = op_uuid`; an UPDATE/DELETE/DOC_ACTION resolves `uu` from the local row's `_uu`. If it can't be resolved, the row
+  is refused, never guessed.
+- **Not in CL1:** foreign-key values that point at *device-created* rows (an order line → its header). V8 refuses them,
+  so they can't slip through; their `{uu}` form is CL1b.
+
+**Witness `W-UU-NO-COLLIDE` (`scripts/witness_comm_cl1_uu.js`)** — each arm names its issue:
+- `§UU-RED` reproduces today's defect. Stations A and B each create one `c_order` and then edit it by its synthetic pk.
+  They sync through the real sequencer and rebase, then the real `listTip` folds the result.
+  - Expected: B's edit lands on **A's** order.
+  - If the defect does not reproduce, the arm prints `INCONCLUSIVE`, not PASS.
+- `§UU-GREEN` runs the same scenario with v3 envelopes → `toKernelParams` → the same real rebase and `listTip`.
+  - Expected: two rows, distinct `_uu`, and each order carries its own edit.
+- `§UU-VALIDATE` checks that V8 refuses a negative-int ref and a missing `target.uu`.
+- `§ENV-HASH` checks that the hash is stable under key-order permutation and that any field change changes it.
+- `§ENV-SIG` checks that verify passes on the real signature and fails on a tampered body and on a wrong key.
+- `§ENV-WRAP` checks that a real kernel CREATE/UPDATE row wraps to v3 with the right `uu`, and that an unresolvable row
+  is refused.
+
+### §12.2 CL2 — order without a sequencer
+
+**Module `build/comm/comm_order.js`:**
+- `linearize(ops)` → `{order[], parked[], equivocations[]}`.
+- Each op is `{hash, author, seq, prev, deps}`. Nothing else is read; `ts` is never read.
+- Kahn's walk: an op is ready when its `prev` and all its `deps` are placed; among ready ops the lowest `hash` goes first.
+- Ops whose `prev` or `deps` are missing go to `parked`.
+- Two ops with the same `(author, seq)` go to `equivocations`, and neither is placed.
+
+**Witness `W-ORDER-PERMUTE` (`scripts/witness_comm_cl2_order.js`):**
+- `§ORDER-PERMUTE`: 10 authors and ~200 ops with gossip-shaped deps; 100 random arrival orders → **one** order hash.
+- `§ORDER-CAUSAL`: every op is placed after its `prev` and all its `deps`, across all permutations.
+- `§ORDER-NO-TS`: the ops' `ts` is a getter that throws, so `linearize` completes only if it never reads the clock.
+- `§ORDER-BACKDATE`: an op with `ts=0` that depends on Y is still placed after Y.
+- `§ORDER-PARK`:
+  - with one op withheld, exactly its causal descendants are parked;
+  - once it is re-added, the order equals the baseline.
+- `§ORDER-EQUIVOCATE`: two ops at the same `(author, seq)` are reported, and neither is placed.
+- `§ORDER-PERF`: `linearize` timing at 10k ops is logged as `§COMM_ORDER ops=… ms=…`.
