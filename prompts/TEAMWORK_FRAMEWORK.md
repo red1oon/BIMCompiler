@@ -1901,3 +1901,28 @@ narration later via `prompts/FILM_NARRATION.md` ▶ PLAYBOOK.
 `audit_sw_precache` 0 missing.
 
 **Not in W1 (named):** DocActions (W2), retiring `?relay=`, slim seed; DocumentNo ownership; admitting edits of seeded records; the optional real-GitHub run.
+
+### §14.3 User notes 2026-10-23 (film first; UI next)
+
+- **Film first** (user: *"Just do the film first"*).
+  - Rough cut v0: `~/Videos/TheServerIsDead_RoughCut_v0_2026-10-23.mp4` (80 s): title card → ch03 card → laptop founds a
+    space → phone (approved earlier) Visit → enrolled, orders arrive → ch04 card → laptop New order → retake card.
+  - **Honest splice:** the two clips were in **different spaces**. The phone had not pressed Start over, so it was still in
+    `59a0b7f4` while the laptop founded `55ca3c3e`. So no cause→effect is implied across them; each segment is captioned
+    with what it really shows.
+  - The laptop's log panel is cropped out: it showed misleading `TAMPERED` lines caused by the space-scope defect below.
+- **Defect found from the clips:** pipe names are not scoped by space (§11.2 said `s/<space>/…`). One device in two spaces
+  clobbers its own head and tries to open other spaces' sealed rows. An agent is fixing it (§13.6). **Retake after that
+  lands.**
+- **UI must be friendlier — next ongoing work** (user: *"I think the UI should be more user friendly (take note for next
+  ongoing work)"*). Candidates seen in the clips:
+  - a guided first-run wizard (token → start or join) instead of numbered panels;
+  - a QR code for the invite instead of a long link;
+  - plain words instead of the `§` log panel (hide it behind "details");
+  - one big status line ("2 to send · last visit 2 min ago · all seen");
+  - phone-first layout and larger touch targets;
+  - a clear warning when the phone is still in an old space;
+  - the Team Panel of §11.17.
+- **My independent re-run of W-TEAM-SO** (agent run: 19/0/0): `PASS-WITH-INCONCLUSIVE(1) judged=18 fails=0`. The
+  `§TEAM-CL1` precondition (the same local pk naming different records on both devices) didn't occur in this run, so that
+  arm honestly reports INCONCLUSIVE; the collision itself is covered by W-UU-NO-COLLIDE.
