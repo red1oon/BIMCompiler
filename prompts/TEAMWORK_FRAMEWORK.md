@@ -70,7 +70,7 @@ ERP Sales Order window, and explained in a narrated essentials film. It is a **p
    phone opens the NEW invite → Join → Takes A–E (pairing, first transaction, offline, clash, refusal as role 103 at
    Store Central). Then verify from GitHub with an observer, not by eye. Then the full film, including the real ERP window
    (W1 has merged: `idempiere.html?team=1`).
-2. **Friendlier UI** (user: *"the UI should be more user friendly"*, §14.3):
+2. **⏸ PARKED 2026-10-24 (user: UI "may not be too pursued")** — Friendlier UI (§14.3, spec §14.5, nothing built):
    - a first-run wizard;
    - a QR code for the invite;
    - a plain status line;
@@ -84,7 +84,8 @@ ERP Sales Order window, and explained in a narrated essentials film. It is a **p
 4. **ERP gaps from W1** (§13.3):
    - DocumentNo collides across devices — needs a station-owned sequence (§11.1);
    - edits to **seeded** records aren't shared (scope needs the CREATE);
-   - DocActions (W2);
+   - ~~DocActions (W2)~~ ✅ DONE 2026-10-24, §13.7 (bim-ootb PR #2352);
+   - **K3: `m_storagereservation` write on a seeded row is REFUSED (`scope-unknown`) and is an absolute old/new — two devices reserving at once lose an update** (§13.7-4);
    - the phone page and ERP share one device identity, so they must not both author.
 5. **Still-owed engine steps:**
    - CL6 manifest/version skew;
@@ -1815,6 +1816,52 @@ denominator — `X of N` is reported, never "Sales Order works". There are no `i
   `enroll(kid, jwk, personUu, dhJwk?)` keep their names and shapes. An ENROLL without `dhJwk` still works, just without
   a key grant.
 
+
+### §13.7 W2 — DocActions (Complete / Void / …) in team mode (2026-10-24, user: *"begin the wiring of it behind the standard document actions"*)
+
+**Measured first** (`erp/tests/explore_team_docaction.js`, real `idempiere.html?team=1`, window 143, Complete via the host DocAction lane
+`__crud.process('c_order', id, 'CO')`; log `scratchpad/explore1.log`). One Complete commits ONE kernel group (gid) of 14 rows:
+- model-layer consequences: `ad_wf_process`/`ad_wf_activity`×3/`ad_wf_eventaudit`×3 CREATE, `c_acctschema` UPDATE (period), `m_storagereservation` UPDATE
+  (qty 305→307), `m_storagereservationlog` CREATE, `c_orderline` UPDATE (qtyreserved, processed), `c_ordertax` CREATE;
+- the status: `c_order` UPDATE (docstatus DR→CO, isapproved, processed, …) **and** the signed `SET_STATUS` row (last).
+What W1 did with them: `c_order`/`c_orderline`/`c_ordertax`/`m_storagereservation` ops were SENT as ordinary K2 writes; the workflow rows and the
+`c_acctschema` write stayed local-only (FK to an unshared parent / seeded target); **`SET_STATUS` was local-only** ("DocActions are W2").
+Consequence on the other device: the grid column says CO but the DocStatus bar (which reads the `SET_STATUS` lane, `crud_core.readTip`) says Draft.
+
+**Decisions (mine, by measurement — the doc-action semantics are already settled in §11.7 K4 + §11.15 D3):**
+1. **Share the status op itself.** `SET_STATUS` becomes an envelope (`intent K4`, target = the document's uu) with params `{action, from, to, oracle}`
+   plus `changes:{docstatus:{old:from,new:to}}`. The `changes` mirror lets the comm layer's existing per-column conflict rule judge it with the
+   `c_order.docstatus` write that rides in the same group — **no change to `build/comm/*`**. The receiving device projects it back to a kernel `SET_STATUS`
+   row (not re-running the model layer: the consequences arrive as the ops that were already shared).
+2. **A group is all-or-none.** Each shared op of a group carries `grp` (the kernel gid). If any op of a group has a column held back by an open conflict
+   on `docstatus`, the **whole group is left out of the projection** on every device: the document keeps its last agreed status AND none of its consequences
+   (reservations, tax rows, line flags) show. Reason (measured expectation, to be witnessed): without this, a crossed Complete/Complete leaves the
+   document in Draft while its lines say processed and its tax rows are doubled.
+3. **Crossed doc-actions are a conflict, not a silent winner** — D3 (Git way) supersedes the older "first valid wins, second REFUSED". Both devices show
+   `CurrentRecordModified`; resolving it is the chooser UI (CL-P, not built).
+4. **Named, not fixed here:**
+   - `m_storagereservation.qty` is sent as absolute old/new on a seeded row: two devices reserving at once lose one update (K3 invariant — needs the owner/CAS rule of §11.7).
+   - workflow audit rows (`ad_wf_*`) stay local-only (their parent `ad_wf_process` has a polymorphic `record_id`, rejected by the generic FK rule).
+   - a DocAction on a **seeded** document stays local-only (W1 limit 4).
+   - DocumentNo collisions (§11.1).
+
+**✅ DONE (witness) 2026-10-24 — bim-ootb PR #2352 (`team_sync.js` only, `build/comm/*` untouched; sw v900).** Logs read in full
+(`scratchpad/da2.log`, `so2.log`): `§W-TEAM-DOCACTION PASS judged=17 fails=0 inconclusive=0 pageerrors=0`; regression `§W-TEAM-SO PASS-WITH-INCONCLUSIVE(1) judged=18 fails=0`
+(the one inconclusive is the CL1 pk-collision precondition, same as before).
+- `§DA-SYNC`: A's Complete sends `SET_STATUS` (was local-only); after Visit A/B both show `readTip`=CO, column CO, 1 tax row, lines processed 1/1, no conflict; B's rebuilt chain `verifyChain=ok`. NO-OP guard: B showed DR before its Visit.
+- `§DA-CROSS`: both Complete the same order before any Visit → 9 open conflicts on each device (docstatus among them); order stays DR (`readTip` null, column DR); `tax=0` and processed lines `0` on both
+  (24 `§TEAM_GROUP_HELD` lines) — all-or-none held. Before the Visit each device showed tax=1 / CO, so the arm was not vacuous.
+- `§DA-REFUSED`: the only refused op of a Complete is `m_storagereservation` (`scope-unknown`) — named limit, pinned by the witness.
+- Not witnessed here: Void/Close/Reverse (only `CO` driven), a Complete of a **seeded** document (stays local-only), a real GitHub run.
+
+**Witness `W-TEAM-DOCACTION`** (`erp/tests/witness_team_docaction.js`, harness copied from `witness_team_so.js`; two real browsers, dumb folder pipe):
+- `§DA-SYNC` A creates order+line, Visit A, Visit B, A completes (host lane), Visit A, Visit B → B: `readTip` = CO **and** grid docstatus = CO **and** its
+  `c_ordertax` count for the order equals A's; `§TEAM_OUT op=SET_STATUS` seen on A (no longer local-only). NO-OP guard: B's `readTip` before A's Visit is not CO.
+- `§DA-CROSS` both complete a second order before any Visit → both devices: one open conflict on `docstatus`, `readTip` = DR, **zero** `c_ordertax` rows for that order on both (all-or-none).
+  VACUOUS guard: the arm prints INCONCLUSIVE if the order had no consequence rows to hold back.
+- `§DA-LOCALONLY` the previous W1 arm (an `applyOp` DocAction with no resolvable target) still ends local-only.
+- Regression: `witness_team_so.js` (its `§TEAM-LOCALONLY` arm used `PR` with `id:null`; stays local-only).
+
 ---
 
 ## §14 Showcase film — storyboard v1 (user, 2026-10-23: *"plan the film storyboard for the showcase"*)
@@ -2109,3 +2156,23 @@ Results and PR: appended below at close.
   unscoped name refused), real Gmail `§W-GMAIL-LOG PASS 5/5` (its bundle-link regex was `o/…`, caught as a red on first run, fixed).
 - bim-ootb PR #2348 (modules byte-identical): W-FOLDER-2CTX `PASS 16/0`, W-PHONE-PAGE `PASS 18/0` (real GitHub + post box), W-TEAM-SO `PASS 19/0 inconclusive=0`
   (PR #2347 was on main; `erp/team_sync.js` untouched, only the witness's fake-GitHub kid parser needed the new layout).
+
+### §14.5 Friendlier UI for the test bench — spec (2026-10-24, user chose this as the next item; origin: §14.3)
+
+> **⏸ PARKED 2026-10-24 (user: *"we could begin the wiring of it behind the standard document actions, and this UI may not be too pursued"*).** No code was written from this section (a first edit was started and discarded). Next work = DocActions wiring (§13.3 W2). Resume this only if the user asks.
+
+**Scope:** `common/comm/comm_phone.html` only (the test bench). No change to `build/comm/*` engine modules, no change to the
+ERP window. Every existing element id and the 18 checks of W-PHONE-PAGE keep working — the page is re-skinned, not re-wired.
+**Not in this pass:** the Team Panel advice engine (§11.17/§11.18 — needs the EODA rules, its own spec + `W-PANEL-ADVICE`).
+
+| # | Change | Rule (what the witness asserts) |
+|---|---|---|
+| U1 | One plain **status line** (`#plain`) above everything: e.g. "In team · 2 to send · last visit 2 min ago · all seen" | text is derived from the same numbers as `#delivery`; before a space it says what to do next. `§UI-STATUS` compares its counts to `#delivery`'s. |
+| U2 | **Wizard header** "Step n of 4 — <name>" over the one visible step | n equals the step whose section is visible: token 1, space 2, pairing 3, work 4 |
+| U3 | **QR code** of the invite link on the founder's pairing step (`#invite-qr`, canvas) using `erp/qrcode.min.js` | decoding is not available in the browser, so the witness regenerates the matrix from the SAME link with the same library and compares module-for-module with the canvas pixels (`§UI-QR`); canvas absent → fail, library absent → the text link still shows |
+| U4 | **`§` log behind "Details"** (`<details id="details">`, closed by default) | log text is not visible until opened; still in the console (PRIMAL LAW §3: never suppressed) |
+| U5 | **Phone-first**: every button/input min height 44 px; layout one column ≥ 320 px, no horizontal scroll | measured `getBoundingClientRect` on Pixel 7 emulation: all visible buttons ≥ 44 px high; `scrollWidth <= clientWidth` |
+| U6 | **Old-space warning** (`#old-space`): the page was opened with `#join=<X>` but this browser is already in space `Y≠X` → banner "This device is in an older space (Y…). The invite is for X…" with a **Start over and join** action | witness: phone in space A opens B's invite → banner shown naming both; same-space link → no banner (NO-OP arm); no hash → no banner |
+
+Witness: extend `witness_comm_phone_page.js` with `§PHONE-UI` arms (U1–U6). Each arm must be able to print INCONCLUSIVE
+(e.g. U6 when no second space exists). Real GitHub as before; branches cleaned up.
