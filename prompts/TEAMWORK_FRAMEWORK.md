@@ -1926,3 +1926,72 @@ narration later via `prompts/FILM_NARRATION.md` ▶ PLAYBOOK.
 - **My independent re-run of W-TEAM-SO** (agent run: 19/0/0): `PASS-WITH-INCONCLUSIVE(1) judged=18 fails=0`. The
   `§TEAM-CL1` precondition (the same local pk naming different records on both devices) didn't occur in this run, so that
   arm honestly reports INCONCLUSIVE; the collision itself is covered by W-UU-NO-COLLIDE.
+
+### §13.6 Space-scoped pipe names (2026-10-23) — defect found from a user screen recording, fixed (witness W-SPACE-SCOPE)
+
+**Defect (verified by reading code, then reproduced).** §11.2 says every pipe object lives under `s/<space>/…`. The code
+(CL3 `comm_store.sync`, the phone page) wrote and listed *unscoped* names: `o/<kid>/<from>-<to>.<h12>.bimpack`, `h/<kid>`,
+`r/<kid>`. A device that is in two spaces on the same pipe (the user's laptop had founded two) therefore
+(a) overwrote its own head `h/<kid>` across spaces, so receipts and frontier were wrong; and
+(b) listed and fetched the other space's bundles, then tried to open their sealed rows with the wrong key/AAD, which GCM refuses —
+logged as `§COMM_SEAL … TAMPERED … refused (GCM)` although nothing was tampered with. Reproduced: the new witness run against the
+pre-fix modules prints those TAMPERED lines and fails `§SCOPE-NAMES` and `§SCOPE-HEADS`.
+
+**Decision.** Every name the store and the phone page write or list is under `s/<space>/`, with `<space>` = the **full 64-hex
+space id** (not the 12-hex prefix). Reason: it is exactly §11.2's layout; a 12-hex prefix is only 48 bits, and a short prefix lets
+someone grind a second space whose prefix collides, which would re-create this very defect on purpose; the cost is a longer path
+(well under any path limit; GitHub tree paths and the Gmail-log blob link just get 52 characters longer). The 12-hex form stays
+what it always was: a display shorthand in logs.
+
+| Name | Written by | Listed by |
+|---|---|---|
+| `s/<space>/o/<kid>/<from>-<to>.<h12>.bimpack` | `comm_store.sync` (bundleNew) | `pipe.list('s/<space>/o/')` — own kid skipped as before |
+| `s/<space>/h/<kid>` | `comm_store.sync` (signed head) | `pipe.list('s/<space>/h/')` |
+| `s/<space>/r/<kid>` | phone page join request | phone page `b-requests`: `pipe.list('s/<space>/r/')` |
+
+**Four-verb contract unchanged** (`put/get/list/putMany`); only the names differ. `ghPipe._kidOfName` now parses
+`s/<64-hex space>/<o|h|r>/<kid>[/…]` and returns the kid; any other shape (unscoped `o/ h/ r/`, a short space id, an unknown
+class, `…/genesis`, a missing kid) returns null and is refused ("not under my prefix"), as is every name whose kid is not the
+device's own. One-writer-per-name is therefore kept and is now also per space.
+
+**Old objects.** Unscoped objects already in `red1oon/bim-teams-pipe` (and any old folder/http pipe) are simply ignored — no
+migration; nothing lists them any more (witness arm `§SCOPE-LEGACY`). Consequence, stated plainly: ops a device already marked SENT (`bundled_to`) under the old names are NOT re-sent under the new
+ones, so a space that already has history on the real pipe must be re-founded (the real-repo data is POC test data; the user
+accepted no migration). New ops and every new space use the scoped names from the first visit.
+
+**GCM-failure log.** With the listing scoped, no path remains that feeds a row of another space into `openSealed`: every bundle
+fetched is, by name, in this space. A row that fails GCM now is therefore genuinely corrupt or a tampered copy planted *inside
+this space's prefix* (e.g. a bundle of another space copied under it) — which is the case `§COMM_SEAL … TAMPERED` exists for, so
+the line is kept as is. The old false-positive source is removed at its root rather than relabelled.
+
+**Witness W-SPACE-SCOPE** (`scripts/witness_comm_space_scope.js`, memPipe + folderPipe + a network-stubbed ghPipe guard): one
+device X founds two encrypted spaces on ONE pipe; M1 is a member of space 1, M2 of space 2; X works more in space 1 than space 2
+so its two heads differ (guards against vacuity). Arms: `§SCOPE-NAMES` (every object `s/<space64>/{o,h}/…`, both spaces
+present), `§SCOPE-CONVERGE` (each space converges on its own ops only — same op set per space, every stored op carries that
+space's id, business op sets disjoint), `§SCOPE-HEADS` (read both heads back; author+visit only in space 2 → head 1 byte-identical,
+head 2 advanced by exactly the new ops; receipt SEEN comes from the space-2 head), `§SCOPE-TAMPER` (zero TAMPERED lines, with the
+positive control that §COMM_SYNC lines were captured), `§SCOPE-LEGACY` (planted unscoped objects ignored), `§SCOPE-GHGUARD`
+(13 names: own scoped o/h/r accepted past the guard; other kid, unscoped, short-space, unknown class, genesis refused). INCONCLUSIVE,
+not PASS, if a space has no objects/ops, the two heads are equal in seq, or no sync line was captured.
+Existing witnesses that asserted names were updated: `witness_comm_cl3_store` (stray-name regex, planted fork bundle, list prefixes),
+`witness_comm_cl3b_github` (cross-prefix put now `s/<space>/h/<B>`; new check that A's own kid under the OLD unscoped name is refused),
+`witness_comm_cl8_opaque` (list prefixes), `witness_comm_gmail_log` (the note's bundle-link regex), and in bim-ootb
+`common/tests/witness_comm_cl3_folder.js` (folder-name check). `common/tests/witness_comm_phone_page.js` needed no edit: it drives
+the page, which now writes/lists `s/<space>/r/<kid>`, and its "requests from other spaces ignored" claim is now structural.
+Results and PR: appended below at close.
+
+### §14.4 Essentials film v2, narrated (2026-10-23)
+
+- `~/Videos/TheServerIsDead_Essentials_v2_narrated_2026-10-23.mp4` — 2:50, English two-voice dialogue (Kokoro: F asks
+  as the puzzled viewer, M explains), framed as a **proof of concept of the underlying idea**.
+- Script: `prompts/film_narration_server_dead_dialogue_v1.tsv`, 14 beats.
+  - Covers: the usual problem → the four ideas → "bizarre? it's how Git works" → setup → **test bench vs. daily work** (user:
+    *"are those screens behind the scene, transparent, or actual work?"*) → real footage labelled TEST BENCH → the clash and
+    the rules as illustrations tagged "Filmed live in the next take" → close.
+- **Fit:** 14/14 DETAIL, 0 tone WRONG.
+- **Measured:** loudness I=-16.8 LUFS; longest quiet gap 6.94575 s (bar ≈7 s).
+- Subtitles are on a dark band, and the card footers are removed (v1 was hard to read on the light cards).
+- Fixed along the way: the phone clip's variable frame rate turned a 22 s cut into 36 s and shifted every later cue. It is
+  now re-timed to exactly 22 s.
+- **Still owed for the full film:** the retake in one fresh space after the space-scope fix (§13.6), the clash and refusal
+  live, and the real ERP window (W1).

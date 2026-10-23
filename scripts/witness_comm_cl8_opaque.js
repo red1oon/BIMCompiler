@@ -145,7 +145,7 @@ async function run(SQL, pipeName, makePipe) {
   verdict((await SL2.placedEnvelopes()).length === totalBiz && Object.keys(await SL2.keyring()).join() === '1', 'a fresh comm.db re-derives the key from the pipe and places everything', 'placed=' + (await SL2.placedEnvelopes()).length);
 
   // ── §OPAQUE-TAMPER (the LAST sealed row of a bundle = A's update, so no other op depends on it and exactly one op is lost) ──
-  var aNames = (await pipe.list('o/' + dev.A.kid + '/')), victim = null, orig = null, vhash = null;
+  var aNames = (await pipe.list('s/' + SPACE + '/o/' + dev.A.kid + '/')), victim = null, orig = null, vhash = null;
   for (var nm of aNames) { var bytes = await pipe.get(nm), bd = new SQL.Database(bytes), rows = bd.exec('SELECT op_hash, envelope FROM ops')[0].values; bd.close();
     var er = rows.filter(function (rr) { return String(rr[1]).indexOf('enc:') === 0; }).pop(); if (er) { victim = nm; orig = bytes; vhash = er[0]; var ct = er[1]; break; } }
   if (!victim) { inconclusive.push(pipeName + ': no sealed row to tamper with'); }
@@ -184,7 +184,7 @@ async function run(SQL, pipeName, makePipe) {
   verdict(Object.keys(ringC).join() === '1' && rC.sealed >= 1 && cPlaced === totalBiz, 'C (revoked) still holds only epoch 1, keeps the old ' + totalBiz + ' ops but B\'s new op stays sealed', 'C placed=' + cPlaced + ' sealed=' + rC.sealed);
   verdict(aPlaced === totalBiz + 1 && lPlaced === totalBiz + 1 && bPlaced === totalBiz + 1, 'A, B and the late joiner all open B\'s post-rekey op', 'A=' + aPlaced + ' L=' + lPlaced + ' B=' + bPlaced);
   // the revoked device's epoch-1 key is REFUSED by GCM on the epoch-2 row (not just "no key under that label")
-  var bnames = await pipe.list('o/' + dev.B.kid + '/'), lastB = await pipe.get(bnames[bnames.length - 1]), lb = new SQL.Database(lastB), row2 = lb.exec('SELECT envelope FROM ops')[0].values.map(function (q) { return String(q[0]); }).filter(function (t) { return t.indexOf('enc:2:') === 0; })[0]; lb.close();
+  var bnames = await pipe.list('s/' + SPACE + '/o/' + dev.B.kid + '/'), lastB = await pipe.get(bnames[bnames.length - 1]), lb = new SQL.Database(lastB), row2 = lb.exec('SELECT envelope FROM ops')[0].values.map(function (q) { return String(q[0]); }).filter(function (t) { return t.indexOf('enc:2:') === 0; })[0]; lb.close();
   var forced = 'not-tried';
   if (row2) { var raw2 = Buffer.from(row2.split(':')[2], 'base64'); try { await globalThis.crypto.subtle.decrypt({ name: 'AES-GCM', iv: raw2.slice(0, 12), additionalData: new TextEncoder().encode('bim-comm-op|' + SPACE + '|2') }, ringC[1][0], raw2.slice(12)); forced = 'OPENED'; } catch (e) { forced = 'refused'; } }
   else inconclusive.push(pipeName + ': B\'s post-rekey bundle has no enc:2 row');

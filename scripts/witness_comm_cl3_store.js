@@ -69,8 +69,8 @@ async function run(SQL, pipeName, makePipe) {
   verdict(biz.every(function (n) { return n === 6; }), 'all 6 business ops placed on every device', 'business=' + biz.join('/') + ' all=' + placed.join('/'));
   verdict(sets[0] === sets[1] && sets[1] === sets[2], 'same op set on every device');
   verdict(hashes[0] === hashes[1] && hashes[1] === hashes[2], 'same order on every device');
-  var names = (pipe._names ? pipe._names() : await pipe.list('')), stray = names.filter(function (n) { return !/^(o|h)\//.test(n); });
-  verdict(!stray.length, 'the pipe holds only o/ h/ objects (keys travel inside ENROLL ops)', 'objects=' + names.length + (stray.length ? ' stray=' + stray.join(',') : ''));
+  var names = (pipe._names ? pipe._names() : await pipe.list('')), stray = names.filter(function (n) { return !/^s\/[0-9a-f]{64}\/(o|h)\//.test(n); });
+  verdict(!stray.length, 'the pipe holds only s/<space>/o|h/ objects (keys travel inside ENROLL ops)', 'objects=' + names.length + (stray.length ? ' stray=' + stray.join(',') : ''));
 
   // ── §STORE-RECEIPT (second half) ──
   var d1 = S[0].delivery().filter(function (x) { return x.seq > idOps; });
@@ -87,7 +87,7 @@ async function run(SQL, pipeName, makePipe) {
   var fork = JSON.parse(JSON.stringify(c2)); fork.body.params.changes = { grandtotal: { old: 100, new: 999 } }; fork = await ENV.sign(fork, devs[2]);
   var fb = new SQL.Database(); fb.run('CREATE TABLE ops (op_hash TEXT PRIMARY KEY, envelope TEXT NOT NULL)');
   fb.run('INSERT INTO ops VALUES (?,?)', [await ENV.hashHex(fork), JSON.stringify(fork)]);
-  await pipe.put('o/' + S[2].kid + '/2-2.fork00000000.bimpack', fb.export());
+  await pipe.put('s/' + SPACE + '/o/' + S[2].kid + '/2-2.fork00000000.bimpack', fb.export());
   await S[0].sync(pipe); await S[1].sync(pipe);
   var eq = []; for (var s5 of S.slice(0, 2)) eq.push((await s5.order()).equivocations.length);
   var c2v = S[0].query('SELECT verdict FROM cl_verdict WHERE op_hash=?', [await ENV.hashHex(c2)])[0];
@@ -117,10 +117,10 @@ async function run(SQL, pipeName, makePipe) {
     // CL8 (§13.2): the pipe is now ciphertext, so the late joiner must be an ENROLLED device with a key grant (an unenrolled reader sees nothing — W-PIPE-OPAQUE proves that)
     var lj = await STORE.newDevice(); lj.person_uu = nodeCrypto.randomUUID();
     await W[0].addPerson({ person_uu: lj.person_uu, name: 'LJ', ad_role_id: 102, comm_admin: false }); await W[0].enroll(lj.kid, lj.pubJwk, lj.person_uu, lj.dhPubJwk); await W[0].sync(P2);
-    var setupBundles = await P2.list('o/' + W[0].kid + '/');
+    var setupBundles = await P2.list('s/' + SPACE + '/o/' + W[0].kid + '/');
     var wu = [nodeCrypto.randomUUID(), nodeCrypto.randomUUID(), nodeCrypto.randomUUID()];
     await edit(W[0], wu[0], 0); await W[0].sync(P2);
-    var hidden = (await P2.list('o/' + W[0].kid + '/')).filter(function (n) { return setupBundles.indexOf(n) < 0; })[0];   // A's edit, not its setup
+    var hidden = (await P2.list('s/' + SPACE + '/o/' + W[0].kid + '/')).filter(function (n) { return setupBundles.indexOf(n) < 0; })[0];   // A's edit, not its setup
     await W[1].sync(P2); await edit(W[1], wu[0], 1); await W[1].sync(P2);      // B edits A's record: B's op READS A's op
     await edit(W[2], wu[2], 0); await W[2].sync(P2);                            // C's own op is independent
     P2._withhold(hidden);

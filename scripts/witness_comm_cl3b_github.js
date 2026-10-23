@@ -78,8 +78,10 @@ async function commitsOn(branch) { var r = await gh('GET', '/commits?sha=' + enc
     console.log('\n§GH-READBACK');
     verdict(PA.stats.get > 0 && PA.stats.bytesGet > 0 && SA.query("SELECT COUNT(*) AS n FROM cl_outbox WHERE state='SENT'")[0].n >= 1, 'SENT was earned by reading the bundle back from GitHub', 'A blob bytes read=' + PA.stats.bytesGet);
     console.log('\n§GH-OWN-BRANCH');
-    var refused = null; try { await PA.putMany([{ name: 'h/' + Bd.kid, bytes: new Uint8Array([1]) }]); } catch (e) { refused = e.message; }
+    var refused = null; try { await PA.putMany([{ name: 's/' + sp.space + '/h/' + Bd.kid, bytes: new Uint8Array([1]) }]); } catch (e) { refused = e.message; }
     verdict(!!refused && /not under my prefix/.test(refused), 'A cannot write under B\'s prefix', refused);
+    var refusedOld = null; try { await PA.putMany([{ name: 'h/' + A.kid, bytes: new Uint8Array([1]) }]); } catch (e) { refusedOld = e.message; }
+    verdict(!!refusedOld && /not under my prefix/.test(refusedOld), 'A\'s own kid under an UNSCOPED name (h/<kid>, the pre-§13.6 layout) is refused too', refusedOld);
     console.log('\n§GH-NO-LFS');
     var ga = await gh('GET', '/contents/.gitattributes'), big = 0, objs = 0;
     for (var br of created) { var t = await gh('GET', '/git/trees/' + encodeURIComponent(br) + '?recursive=1'); ((t.json && t.json.tree) || []).forEach(function (e) { if (e.type === 'blob') { objs++; if (e.size > 262144) big++; } }); }

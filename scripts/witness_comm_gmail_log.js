@@ -48,7 +48,7 @@ async function gh(method, p) { var r = await fetch('https://api.github.com/repos
     verdict(notes.every(function (x) { return x.n.ok; }), 'all 4 visits were noted (ok)', notes.map(function (x) { return x.n.ok; }).join(','));
     verdict(want.every(function (w) { return ids.indexOf(w) >= 0; }) && new Set(want).size === 4, 'every note is in the Gmail log, matched by its own message id (4 distinct)', want.join(' | '));
     console.log('\n§LOG-POINTS');
-    var e = (log.entries || []).filter(function (x) { return x.id === notes[2].n.id; })[0] || {}, m = /blob\/(dev\/[0-9a-f]{16})\/(o\/\S+?\.bimpack)/.exec(e.text || '');
+    var e = (log.entries || []).filter(function (x) { return x.id === notes[2].n.id; })[0] || {}, m = /blob\/(dev\/[0-9a-f]{16})\/(s\/[0-9a-f]{64}\/o\/\S+?\.bimpack)/.exec(e.text || '');
     var exists = m ? await gh('GET', '/contents/' + m[2] + '?ref=' + encodeURIComponent(m[1])) : { status: 0 };
     console.log('   §LOG B\'s 2nd note links ' + (m ? m[1] + ' ' + m[2] : '(no link in snippet)') + ' → GitHub ' + exists.status);
     verdict(!!m && exists.status === 200, 'the note links a bundle file that really exists on B\'s branch');
