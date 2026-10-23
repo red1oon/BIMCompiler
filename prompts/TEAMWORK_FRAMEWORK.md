@@ -766,3 +766,83 @@ account.
 
 **Order of pipes:** GitHub first (CL3b): no script to install, and Git's own forward-only ref check. Gmail second (CL3c):
 adds the email path, phone sharing and legacy. **Both carry identical bundles**, so a device can use either or both.
+
+### §11.20 Lineage: from a message broker to no broker (user, 2026-10-23)
+
+> User: *"I like the novelty of such an idea when i was setting up ActiveMQ for Unicenta POS integration, where i see we
+> can remove heavy costly servers and have just minimal low noise comm."*
+
+There are three steps, and the repo already records the first two:
+1. **Broker as server.** Legacy iDempiere replicates over JMS / ActiveMQ topics: `TopicExportProcessor`, `MultiplePublisher`
+   (`org.adempiere.replication`) and `TopicImportProcessor`, `TopicListener` (`org.adempiere.replication.server`).
+   The user ran the same pattern for Unicenta POS.
+2. **Broker as dumb log.** `DistributedERP §6` keeps "the ActiveMQ job" — accept, **assign a total order**, persist and
+   fan out — but strips the business logic.
+3. **No broker.** D1 (§11.4) removes the one job step 2 kept, total order. What's left is storing bytes, which any pipe
+   can do (§11.2).
+
+Every guarantee a broker gives still holds, but it comes from the data, not the server:
+
+| ActiveMQ gives | Here, from |
+|---|---|
+| durable queue | write-once, content-addressed bundles on ≥1 pipe (STORED, §11.15) |
+| per-producer order | author `seq` + `prev` chain (§11.3) |
+| global order | computed from `deps` + hash (§11.4) — no one assigns it |
+| durable subscriber cursor | `cl_frontier` / `cl_pipe_cursor` |
+| consumer ack | the receiver's signed head frontier (SEEN, §11.15) |
+| exactly-once via idempotent consumer | name = hash; the same op can't be applied twice |
+| dead-letter queue | PARKED / REFUSED with a reason (`cl_verdict`, §11.6) |
+| broker auth | signatures + roster-as-ops, checked by every reader (§11.5–§11.6) |
+| broker cluster for availability | several pipes at once, no coordination (§11.2) |
+
+"Low noise" is also measurable:
+- One visit = one head + at most one bundle (§11.17).
+- Local-only work never travels (K-LOCAL).
+- The GitHub budget rule keeps a whole team under 6 pushes a minute (§11.16).
+
+### §11.21 What SQLite adds to relay and folding (user, 2026-10-23: *"We can look into how SQLite further helps such data relay or folding"*)
+
+PROPOSALS. Each states what exists today and what needs checking.
+
+1. **A bundle is a tiny SQLite file.**
+   - A `.bimpack` = encrypted bytes of a SQLite file with one `ops` table (envelope columns from §11.3).
+   - The receiver decrypts, `ATTACH`es it and runs one `INSERT INTO cl_op SELECT … WHERE op_hash NOT IN cl_op` — no
+     parser, typed columns, and it can be inspected with any SQLite tool.
+   - A content hash over the file bytes is only stable if the file is written canonically (fixed page size, rows in seq
+     order, no free pages; `VACUUM INTO`). ⛔ verify byte-stability across sql.js versions. Otherwise hash the canonical
+     row stream, not the file.
+2. **`comm.db` and the world DB in one transaction.**
+   - Attaching `comm.db` to the business DB lets "admit op → write to the kernel → write verdict → move frontier" commit
+     as one transaction, so a crash can't leave an op half-admitted.
+   - SQLite only makes multi-database transactions atomic outside WAL mode, and the in-browser persistence layer
+     (IndexedDB records, #913) must keep that unit. ⛔ verify on the live persistence path.
+3. **Sync questions become SQL.**
+   - "What am I missing" = frontier vs board heads.
+   - "Which deps are absent" = `deps_json` joined against `cl_op`.
+   - "What touches my records" = `target_uu` join. Panel advice reads these.
+   - EODA rules are already SQL (`AD_AlertRule`, §11.18), so they run on the same views.
+4. **The checkpoint is a SQLite file.**
+   - At period close, `VACUUM INTO` writes the folded world as one file, hashed and signed by the controller (W-PCLOSE
+     already folds and signs the balances).
+   - A new device downloads that one file plus the bundles after it. Bootstrap from a checkpoint is already measured at
+     ~52–59× faster than from genesis.
+5. **Read history without downloading it.**
+   - The viewer already reads SQLite over HTTP range requests (`viewer/lib/httpvfs.js`). The same trick lets a static pipe
+     serve an **archive checkpoint** that the panel or an auditor queries page by page — still no compute on the host.
+   - ⛔ verify that `raw.githubusercontent.com` and the Apps Script / Drive path honour `Range` (OCI does).
+6. **Search the mail.** FTS5 is already shipped (`erp/lib/sql-wasm-fts5.*`, `erp/erp_search.js`). Index op summaries and
+   Notices in `comm.db`, so "what did Ali change on order 101 last week" is one query.
+7. **SQLite's own change-tracking — a known option, not yet available.**
+   - SQLite's *session* extension records row changes as a changeset and applies them with built-in conflict kinds (data,
+     not-found, conflict, constraint). That could speed up projection catch-up between checkpoints.
+   - It is **not** our source of truth: it moves state, and we move ops (doctrine §2.4).
+   - Our shipped builds show no changeset symbols (`erp/sqljs/sql-wasm.wasm`, `erp/lib/sql-wasm-fts5.wasm`, checked this
+     turn), so it would need a custom build. Park it until the fold is measured too slow.
+8. **A determinism rule for folding in SQL.**
+   - A fold done in SQL must give the same bytes on every device. So: no `random()`, no `datetime('now')`, no `ORDER BY`
+     without a unique key, no reliance on `rowid`, and no float money (cents as integers, as the period-close already does).
+   - Witness `W-FOLD-SQL-DET`: the same op set folded on two engines (node + browser sql.js) gives the same
+     `projectionHash`.
+
+**Recommended first use:** items 1 and 4. They turn the bundle and the checkpoint into ordinary SQLite files, which
+every later step reuses.
