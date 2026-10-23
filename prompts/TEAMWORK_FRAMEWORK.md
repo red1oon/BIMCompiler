@@ -2211,3 +2211,118 @@ ERP window. Every existing element id and the 18 checks of W-PHONE-PAGE keep wor
 
 Witness: extend `witness_comm_phone_page.js` with `§PHONE-UI` arms (U1–U6). Each arm must be able to print INCONCLUSIVE
 (e.g. U6 when no second space exists). Real GitHub as before; branches cleaned up.
+
+
+---
+
+### §15 Modeller case — two browsers, one model, the SAME comm layer (2026-10-24, user: *"do the same for the BIM Modeller … prepare a SIMPLE FILM SCRIPT"*)
+
+**Status: SPEC written before any code.** A separate session owns this section; it only appends here (no other section was edited). Code + witness + film
+script results are appended at the end of this section as `§15.10`. Everything below was read from code this session (file:line cited) or measured
+(`scratchpad/probe1.js`, a real headless Modeller: commit `GEOM_EXTRUDE`, then `GEOM_MOVE {dx:2,dy:-3,dz:0}` → mesh bbox centre `[0.5,0.5,1.25]` → `[2.5,-2.5,1.25]`).
+
+#### §15.1 Facts that shape the design (read, not guessed)
+| # | Fact | Source | Consequence |
+|---|---|---|---|
+| F1 | The Modeller's model IS a signed `kernel_ops` table of `GEOM*` rows; geometry is a pure fold over it. | `modeller/bonsai_oplog.js:1-6,300-308` | The projection of the comm log is a kernel_ops table, exactly as ERP's sidecar is. |
+| F2 | Every row carries an edge-minted `op_uuid`; `commitGroup` honours a caller-supplied one. | `modeller/kernel_ops.js:352-353` | A CREATE's record uu = its `op_uuid` (same convention as ERP, `comm_envelope.js:111-112`). No new id needed. |
+| F3 | Rows reference each other by `parameters.parent` = a **local integer row id** (`GEOM_MOVE {parent,dx,dy,dz}`); a position is the **sum of active GEOM_MOVE deltas** (`moveDeltaFor`), a *delta*, not a value. | `bonsai_oplog.js:303,517-527` | Envelopes must carry the uu, never the row id (V8), and a move must be restated as an **absolute offset per axis** so the per-column conflict rule can judge it. |
+| F4 | The one commit funnel is `OpLog._emit()`, which dispatches `bonsai:oplog` after every mutation (and on load). | `bonsai_oplog.js:284` | The adapter listens to the event — **no edit to `bonsai_oplog.js`**. |
+| F5 | `importBytes(u8)` loads a db as the current model: verifies the chain, refolds, persists, emits. | `bonsai_oplog.js:234-252` | The rebuilt projection is installed through it. |
+| F6 | The Modeller signs with a hard-coded demo key; its chain is a local integrity check only. | `bonsai_oplog.js:12,38-41` (= §5 S-6) | Not a problem for sync: §11.3 already makes the kernel chain "a local integrity check", and comm envelopes are signed by the **device** key (ECDSA P-256). S-6 stays true for the Modeller's own chain and is *not* made worse. |
+| F7 | Envelope validation V8 refuses **any negative integer anywhere in `params`** as "a device-local synthetic pk". | `comm_envelope.js:56-60,81-82` | A geometry `dy:-3` (or a profile point `-2`) cannot travel raw. The adapter encodes a negative integer as `{"$n":"-3"}` and decodes it on the other side. **No engine change** (a real mismatch to report, §15.8). |
+| F8 | Admission needs a record scope from the CREATE (`fields.ad_client_id/ad_org_id` or `stdDefaults`) and an `access(role, client, org, table)` adapter; an op with no CREATE in the log is `REFUSED scope-unknown`. | `comm_store.js:112-116,150-157`, `comm_admit.js:12-26` | Every element CREATE carries client 0 / org 0 (iDempiere's System / `*` convention — the Modeller has no client or organisation). Moves of a record this space never saw created are local-only (same limit as ERP W1-4). |
+| F9 | Conflicts are judged **per record (target uu) × column** from `fields` (CREATE) / `changes` (UPDATE); the held-back value stays at the last agreed one; `foldable()` deletes contested columns from the op. | `comm_store.js:208-248` | Position columns `pos_x/pos_y/pos_z` give per-axis conflicts for free. |
+| F10 | Intent is only recorded, never branched on. | `grep intent build/comm/*.js` | Tag `K6` (what the data is) without changing the engine. |
+
+#### §15.2 What a Modeller "op" is for sync
+**Element** = a feature row of a *create-class* op. **Table** = `bim_element` (a pseudo-table name: the comm layer needs a lower-case table name per record; the
+Modeller has no AD dictionary). **State columns** of an element: `geom_op`, `geom` (the op's parameters), `pos_x`, `pos_y`, `pos_z` (net offset from the authored
+placement, metres, rounded to 1e-6), plus optional `output_guid`/`input_guids` and the scope pair `ad_client_id=0`, `ad_org_id=0`.
+
+The ONE named op-class list in the adapter (the Modeller analogue of ERP's `STATION_LOCAL`; reason: there is no dictionary to read it from, and it equals the fold
+class in `bonsai_oplog.js:354` plus `GEOM_INSERT`):
+
+| class | GEOM ops | shared as |
+|---|---|---|
+| create | `GEOM_INSERT`, `GEOM_EXTRUDE`, `GEOM_EXTRUDE_POLY`, `GEOM_SWEEP`, `GEOM_LOFT`, `GEOM_REVOLVE` | `CRUD_CREATE` on `bim_element`, target uu = the row's `op_uuid` |
+| move | `GEOM_MOVE` | `CRUD_UPDATE` on the parent element's uu, `changes: {pos_x|pos_y|pos_z: {old,new}}` for each axis whose delta ≠ 0 |
+| local-only (named, with reason shown in the chip) | every other `GEOM_*` — `GEOM_CUT`, `GEOM_FILLET`, `GEOM_ROTATE`, `GEOM_SCALE`, `GEOM_ARRAY`, `GEOM_GRID_MOVE`, `GEOM_ROOM_MOVE`, `GEOM_SHELL`, … | not sent |
+
+Denominator reported by the witness (AD-LAYER-LAW style, not "Modeller works"): **7 of the 21 `GEOM_*` op types named in `bonsai_kernel_worker.js` are shared; 14 are local-only.**
+Rows of an `arcseed-*` group (a building seed both devices already have) and rows already tagged `team` are never authored.
+
+#### §15.3 How a GEOM op is wrapped into a v3 envelope
+```
+create:  target {table:'bim_element', uu: <row op_uuid>}
+         body   {op_type:'CRUD_CREATE', params:{ fields:{ geom_op, geom:<enc(params)>, pos_x:0, pos_y:0, pos_z:0, ad_client_id:0, ad_org_id:0, [output_guid], [input_guids] } }}
+         refs   []        intent 'K6'        ts = the row's timestamp (display only, never ordering)
+move:    target {table:'bim_element', uu: <the PARENT row's op_uuid>}      (parent must itself be shared; else local-only 'target-not-a-team-record')
+         body   {op_type:'CRUD_UPDATE', params:{ changes:{ pos_x:{old:<enc>,new:<enc>}, … }, [induced] }}
+         refs   []        intent 'K6'
+enc(v):  a negative integer -k → {"$n":"-k"} at any depth; every other value unchanged (floats such as -2.5 are fine, F7).
+```
+`old` is the element's net offset on that axis in the *local* fold just before the move; `new = old + delta`, both rounded to 1e-6. `reads` (set by the engine's `author`)
+makes the move descend from the element's current head, so a move made after a Visit supersedes the moves it saw.
+The wrap is generic over op *class*; there is no branch on a particular op name beyond the one class table above.
+
+#### §15.4 What "two people editing the same model" means
+Same rule as ERP (§11.15/§12.9 D3), applied to the `pos_*` columns:
+- **Different elements** (or different axes of one element): both apply on both devices; 0 conflicts.
+- **Same element, same axis, crossed** (neither had seen the other's move): both devices show ONE conflict per axis naming both values and keep the **last agreed**
+  offset (the CREATE's 0, or the last move both had seen). Message text is the existing `CurrentRecordModified` string.
+- **Resolve** = any later move by someone who has seen both heads (it descends from both, §12.9). A chooser UI is not part of this slice (same as ERP, CL-P).
+- A move made *after* a Visit that fetched the other's move is a plain K2 save over the visible value: no conflict.
+
+#### §15.5 Single-writer claim (discipline × zone, K6): **OUT of this slice** — named as the next step
+Reason: `comm_admit.admit` receives only `(role, client, org, table)` and the roster has no `OWNER` op, so "this device owns zone Z of discipline D" cannot be expressed
+without an engine change, and the brief says not to touch `build/comm/*` unless unavoidable. Cheapest future path, recorded so it is not rediscovered: map
+**discipline → table** (`bim_arc`, `bim_str`, `bim_mep`) and **zone → org**, so the existing `canUpdate(role, client, org, table)` rule already yields "refused at write
+time"; what is missing is a role dictionary for the Modeller (who may touch which discipline/zone) and a way to read an element's discipline/zone off the op.
+Until then the access adapter is **open by design** for any enrolled role: `access()` returns `{allowed:true, reason:'modeller-open (no claims yet)'}` for table `bim_element` only and refuses every other table.
+
+#### §15.6 How the Modeller projection is rebuilt after a Visit
+`Visit` = (1) settle pending scans, (2) `store.sync(pipe)`, (3) `store.foldable()` (placed, admitted, conflict-held ops in the engine's order), (4) rebuild the kernel_ops table, (5) `OpLog.importBytes`.
+Rebuild (a scratch sql.js db, then `importBytes`):
+1. **Kept rows** (verbatim, same order, same `op_uuid`/`gid`/`undone`): rows that are not `user_tag='team'` and whose uu is not in `sent` — i.e. seeds, local-only ops, and anything not yet authored.
+2. **Projected rows** (after the kept ones, one group `team-proj`, `user_tag='team'`): for each folded op in order — CREATE → the original `geom_op` + decoded `geom` with `op_uuid = target.uu`;
+   MOVE → `GEOM_MOVE {parent:<new id of the row with op_uuid = target.uu>, dx,dy,dz}` where each delta = `new − current projected offset` of that axis (so a held-back axis simply produces no move).
+3. **Parent remap**: every kept row's `parent` is mapped old-id → uu → new id; a kept row whose parent vanished logs `§TEAM_REMAP_MISS` (never guessed).
+4. Re-sign with the Modeller's own signer (`commitGroup`), `verifyChain`, refold, persist — all inside `importBytes`.
+The comm log is the truth; the model is its projection (identical stance to §13.1). Row ids change after a Visit (known, same as ERP limit 5); selection by row id may reset.
+
+#### §15.7 Wiring, switch, UI
+- `modeller/team_sync.js` (new, generic adapter) + a loader in `modeller/modeller.html` that writes the comm scripts and the adapter **only when** `?team=1` or `localStorage.teamMode==='1'` (the ERP's switch). Off: no script tag, no DOM, no global, no `§TEAM` line.
+- Identity / space / token come from the same-origin IndexedDB `comm_phone` (pair once on `common/comm/comm_phone.html`). The Modeller keeps its own comm store bytes under `modeller_db`.
+- A fixed bottom-left chip `#team-chip`: `Team · <device code> · team devices n · Visit · my ops … seen … refused …`, `⚠ n local-only`, and a `#team-conflicts` list (same text as the ERP's).
+- `modeller/sw.js`: add `team_sync.js` to `PRECACHE_ASSETS`, bump `CACHE_VERSION`.
+- The one-cycle **trial cap** of §13.8 (`TeamTrial`, 60 ops) applies identically when `cfg.trial` is on (the cap works for any op; the "cycle" never completes in the Modeller).
+
+#### §15.8 Named limits of this slice (not hidden)
+1. Ops outside the class table stay on the device (14 of 21 `GEOM_*` types), shown as `⚠ n local-only` with a reason. A cut/fillet/rotate on a shared element is therefore **not** seen by the other person.
+2. Edits to a **seeded** element (building seed rows) are local-only (no CREATE in the log → `scope-unknown`), same as ERP W1-4.
+3. **Undo/delete of an already-shared op is not shared**; the next Visit restores the shared state (the comm log wins).
+4. A multi-op gesture (grid stretch + riders) is shared op by op; all-or-none is not enforced as it is for ERP doc-actions.
+5. One app per space: ERP devices judge a `bim_element` op `REFUSED no-table` and a Modeller judges an ERP op the same way; verdicts are per device, so a mixed space would diverge. Use a fresh space per app.
+6. The phone page, ERP and Modeller on one browser share ONE device identity and must not author at the same time (equivocation) — same as §RESUME item 5.
+7. F7: the engine's "no negative integer" rule is a **real mismatch for geometry**; worked around in the adapter by encoding, not fixed in `build/comm/`. A proper fix is to scan only `*_id` columns in `validate`/`wrapKernelOp` (engine owner's call).
+8. Positions are quantised to 1e-6 m in the shared state; a Visit renumbers row ids; turning team mode on in a model that already has hand-authored features shares them all (`§TEAM_CATCHUP`).
+9. Not witnessed: a real GitHub pipe (folder pipe only), more than two devices, big models (rebuild is O(rows), re-signing each).
+
+#### §15.9 Witness `W-TEAM-MODELLER` (`modeller/tests/witness_team_modeller.js`; two real Playwright contexts, the real `modeller.html`, dumb folder pipe + the same fake-GitHub stand-in for the unmodified phone page as `witness_team_so.js`)
+Every arm names the issue it proves or disproves and prints INCONCLUSIVE (never PASS) when it judged nothing. Numbers are read from real state: oplog rows, `moveDeltaFor`, mesh bbox centres, `verifyChain`, engine conflict list.
+| Arm | Issue it proves / disproves | Guards |
+|---|---|---|
+| `§TM-OFF` | disproves "the team code touches an ordinary Modeller session": without the switch no chip, no `TeamSyncModeller`/`CommStore` global, no comm script tag, 0 `§TEAM` lines; the page still commits a feature | VACUOUS if the commit produced no row |
+| `§TM-PAIR` | phone pages pair (founder + join + Approve with role); the Modeller chip shows the code, `team devices 2`, a Visit button | |
+| `§TM-CREATE` | "A creates and moves an element; B sees it": A commits an extrude and `GEOM_MOVE dx=2,dy=-3` (negative integer!), Visit A, Visit B. B's rows, `moveDeltaFor`, **mesh bbox centre equals A's** to 1e-6; B's chain verifies; B's projected rows are `user_tag='team'` | NO-OP guard: B had 0 GEOM rows and 0 meshes before its Visit. F7 guard: the move with `dy=-3` was not refused |
+| `§TM-DIFF` | different elements moved by each: both apply, 0 conflicts, both devices' two centres equal the expected numbers | VACUOUS if either centre did not move |
+| `§TM-CROSS` | same element, same axis, crossed: each device shows ONE `pos_x` conflict naming both values and **keeps the last agreed centre** (numbers); an axis only one of them moved (pos_y) still applies | NO-OP guard: before the Visit each device's own centre showed its own move |
+| `§TM-RESOLVE` | a later move after seeing both clears the conflict on both and both converge on the same centre | INCONCLUSIVE if there was no conflict to resolve |
+| `§TM-LOCALONLY` | a `GEOM_SCALE`/`GEOM_ROTATE` on a shared element is NOT sent (chip shows it, the other device does not receive it) and the kept local row's `parent` is remapped to the element's NEW row id after a Visit (`§TEAM_REMAP_MISS` count 0) | |
+| `§TM-XOFN` | prints the denominator: shared op types / all `GEOM_*` types named in the worker (7 of 21) | |
+| `§TM-NOERR` | 0 page errors on both pages | |
+Regression: `erp/tests/witness_team_so.js` and `witness_team_docaction.js` stay green; `build/comm/*` and `common/comm/*` stay byte-identical (`cmp`).
+
+#### §15.10 Results
+*(appended below when the witness has run)*
