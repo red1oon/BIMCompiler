@@ -1441,3 +1441,40 @@ bundle back (SENT only after the read-back). Other pipes are unchanged.
 - Cleanup: the witness deletes the device branches it created.
 - **The phone test (real laptop + phone, D4 enrolment by code) needs the user's hands, and comes after a minimal POC UI.**
   Named here; not claimed by this witness.
+
+### §12.12 Results 2026-10-23 — CL3b ✅ DONE (witness, real GitHub)
+
+Log read in full: `build/comm/logs/witness_comm_cl3b_github.log`. bim-ootb PR **#2321** (auto-merge on); #2320 merged.
+Pipe repo **`red1oon/bim-teams-pipe`**: private, README only, Actions disabled (`actions/permissions enabled=false`).
+
+**`W-GH-PIPE-2DEV` PASS judged=7 fails=0** — two devices on roster trust, 5 visits (A, B, A, B, A), throttle 12 s:
+
+| Arm | Result |
+|---|---|
+| Converge | same 5 ops, same order, through GitHub only |
+| Receipt | A's 4 ops `SEEN` by B, read from B's head on GitHub |
+| One commit | **`dev/A=3` commits for 3 visits, `dev/B=2` for 2** — counted with GitHub's commits API, not locally |
+| Read-back | SENT required 34,637 blob bytes read from GitHub. A local cache that would have made this vacuous was found in review and removed before the run. |
+| Own branch | `ghPipe: h/<B> is not under my prefix (<A>)` |
+| No LFS | `.gitattributes` 404; 4 plain blobs, none over 256 KB |
+| Budget | writes per visit `5,4,4,5,4` (a visit with nothing new still notes itself: head blob + tree + commit + ref = 4); about 9 requests per visit including reads |
+| ETag (measured, settles the §11.16 ⛔) | `plain=200 rem=4956 → conditional=304 rem=4956 → plain=200 rem=4955` — **a 304 did not lower the counter**, a plain GET lowered it by 1 |
+
+- Cleanup: both device branches deleted (204).
+
+**What this means for the cap in §11.16:**
+- About 9 requests per visit means one account's 5,000 an hour covers about 550 visits an hour.
+- Writes of 4–5 per visit against the 500 an hour content limit give about 100–125 visits an hour per account, matching the
+  §11.16 estimate.
+- The repo-wide 6 pushes per minute stays the binding limit for a team.
+- Unchanged ETag reads are free, so idle polling of the board costs nothing.
+
+**Regression:** W-FOLDER-2CTX 16/16 · W-UU-NO-COLLIDE 23/23 · W-ORDER-PERMUTE 12/12 · W-STORE-NODE 25/25 ·
+W-ADMIT-FOLD 23/23 · W-CONFLICT 12/12. bim-compiler `build/comm/` and bim-ootb `common/comm/` are byte-identical.
+
+**Still open:**
+- **The phone test** (your laptop + your phone, enrol by code, D4) needs a minimal POC screen (found/join/enrol code/
+  edit/visit) and a fine-grained GitHub token on the phone, which only the user can create. That's next with the Team
+  Panel (CL-P).
+- Then CL6 manifest skew, CL7 multi-pipe heal, CL8 encryption.
+- Gmail visit-log (CL3c) waits for the user's postbox address.
