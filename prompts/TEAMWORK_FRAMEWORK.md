@@ -1095,3 +1095,62 @@ GH pipe needs a `putMany` that batches; the four-verb contract stays.
 
 **Next: CL4** — identity as ops (GENESIS / PERSON / ENROLL / REVOKE-with-cutoff), replacing `CL3-temporary` trust, and
 admission at fold time.
+
+### §12.6 The waiting-ops question — explored, decided, built (user, 2026-10-23: *"I trust you can advice and explore it's workings."*)
+
+**The question:** when one op is missing, what must wait?
+
+**Measured:** `scripts/explore_comm_waiting_ops.js` (W-WAITING-OPS PASS 9/9, `build/comm/logs/explore_comm_waiting_ops.log`).
+- Fixture: 10 authors, 400 ops, 60 records with a hot spot (20% of records take ~80% of edits), 35% gossip.
+- One op withheld, 50 tries per model, same `linearize`. Only the meaning of "depends on" changes:
+
+| Model: an op depends on … | Ops held back (avg / max) | Records final / provisional (avg of 60) |
+|---|---|---|
+| G — every peer head its author had seen (CL2/CL3 as built) | **50.1%** / 392 | 11.2 / 37.8 |
+| DP — its author's previous op + the record version it read | **21.7%** / 368 | 27.4 / 21.6 |
+| **D — only the record versions it read** | **0.5%** / 27 | **48.0 / 1.0** |
+
+**Two properties hold in every model** — they are what make showing unaffected work safe:
+1. **Placed ops never re-order when the missing op arrives** — 0 unstable over 150 tries. Reason: the placed set is
+   always ancestor-closed, and the lowest-hash-first walk restricted to an ancestor-closed set picks it in the same
+   relative order whether or not the outside ops are present.
+2. **A record untouched by the missing op and its dependents has the same op sequence before and after arrival** —
+   0 mismatches over 4,328 record checks. Its value is final, not a guess.
+
+So the gossip-shaped deps were pure cost: they didn't make anything safer, they just made more things wait.
+
+**Decision (mine, as the user delegated) — built 2026-10-23:**
+- `deps` = the versions in a new `reads` map: every record the op read or writes → the op hash of the version it saw
+  (null = didn't exist yet).
+  - V9 refuses an envelope whose `reads` lacks the target, or whose `deps` differ from the read versions.
+  - `base` = the target's read version (§11.7 K2 uses it).
+- `prev` stays in the envelope as a **chain-integrity link** (gap detection, equivocation, revocation cut-off) but is
+  **not an ordering edge**.
+- Gossip ("who had seen whom") lives only in signed heads (receipts, §11.15), never in ordering.
+- `sync` now reports `gaps` — the exact `(author, seq)` this device knows exists but doesn't hold, learned from signed
+  heads. That's what the Team Panel shows as "waiting on".
+
+**Witnessed after the change:**
+- `W-UU-NO-COLLIDE` 23/23 (+2 V9 arms)
+- `W-ORDER-PERMUTE` 12/12. The withhold arm now picks the op with the most dependents: 11 of 199 park. The
+  previously-chosen op#66 has **0** dependents, so its arm correctly refused to PASS vacuously until the worst case was
+  chosen.
+- `W-STORE-NODE` 25/25. A late joiner with A's bundle hidden: B's edit on A's record parks, C's own record places,
+  `gaps=1` names exactly what's missing; restore → `gaps=0`.
+- `W-FOLDER-2CTX` 10/10 in two real browsers (bim-ootb PR #2317; #2315 merged).
+
+**What this asks of later steps (the real cost of the decision):**
+- **`reads` must be complete.** Leaving out a record an op really depends on would let it fold early.
+  - **CL1b:** every foreign-key `{uu}` ref adds a read.
+  - **K3 resources (stock per product × locator, credit per partner) are records too**, so every op that consumes one
+    reads its version, and invariants serialise exactly where they must.
+  - Doc-action groups read every record they touch.
+  - The comm layer derives `reads` from the op body and the AD dictionary, never from the author's say-so. **CL4
+    admission recomputes the derivable part and refuses a mismatch.**
+- **Marking "provisional" needs the missing op's records:** from parked ops (known) plus a per-author Bloom filter of
+  touched records in the signed head.
+  - Measured: 1 KB, 0 misses.
+  - It over-marks ~18 records under model D because it is cumulative over the whole chain. Tuning for CL-P: one Bloom
+    per window of recent seqs.
+- **The timeline display orders by business `ts`** (shown, never used for order). Fold order follows data, so two
+  unrelated ops may fold in an order that doesn't match the wall clock; that's correct and invisible in results.

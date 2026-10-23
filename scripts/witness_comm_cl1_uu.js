@@ -101,8 +101,9 @@ var SPACE = nodeCrypto.createHash('sha256').update('witness-space').digest('hex'
   var jwkA = await crypto.subtle.exportKey('jwk', kpA.publicKey), jwkB = await crypto.subtle.exportKey('jwk', kpB.publicKey);
   var sA = { kid: 'kid-A', privateKey: kpA.privateKey }, sB = { kid: 'kid-B', privateKey: kpB.privateKey };
   async function envOf(signer, seq, prev, target, op_type, params) {
-    var e = { v: 3, space: SPACE, author: signer.kid, seq: seq, prev: prev, deps: [], manifest: 'm0', policy: 'p0', intent: 'K2',
-              target: target, base: null, ts: 1700000000000 + seq, body: { op_type: op_type, params: params } };
+    var rv = {}; rv[target.uu] = prev;                        // the record's version this op read (its own previous op here)
+    var e = { v: 3, space: SPACE, author: signer.kid, seq: seq, prev: prev, deps: prev ? [prev] : [], reads: rv, manifest: 'm0', policy: 'p0', intent: 'K2',
+              target: target, base: prev, ts: 1700000000000 + seq, body: { op_type: op_type, params: params } };
     var vr = ENV.validate(e); if (!vr.ok) throw new Error('fixture invalid: ' + vr.errors.join('; '));
     return ENV.sign(e, signer);
   }
@@ -133,7 +134,8 @@ var SPACE = nodeCrypto.createHash('sha256').update('witness-space').digest('hex'
 
   // ── §UU-VALIDATE ──
   console.log('\n§UU-VALIDATE — V7/V8 refuse what would collide');
-  var base = { v: 3, space: SPACE, author: 'kid-A', seq: 1, prev: null, deps: [], target: { table: 'c_order', uu: uuA }, body: { op_type: 'CRUD_UPDATE', params: { changes: {} } } };
+  var rd0 = {}; rd0[uuA] = null;
+  var base = { v: 3, space: SPACE, author: 'kid-A', seq: 1, prev: null, deps: [], reads: rd0, target: { table: 'c_order', uu: uuA }, body: { op_type: 'CRUD_UPDATE', params: { changes: {} } } };
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
   var v0 = ENV.validate(base); verdict(v0.ok, 'a well-formed envelope passes', v0.errors.join('; '));
   var x1 = clone(base); x1.body.params.id = -1; var v1 = ENV.validate(x1);
@@ -145,9 +147,14 @@ var SPACE = nodeCrypto.createHash('sha256').update('witness-space').digest('hex'
   var x4 = clone(base); x4.deps = ['b'.repeat(64), 'a'.repeat(64)]; var v4 = ENV.validate(x4);
   verdict(!v4.ok && v4.errors.some(function (s) { return /V6/.test(s); }), 'unsorted deps refused (V6)', v4.errors.join('; '));
 
+  var x5 = clone(base); x5.reads = {}; var v5 = ENV.validate(x5);
+  verdict(!v5.ok && v5.errors.some(function (s) { return /V9 reads lacks target/.test(s); }), 'reads without the target refused (V9)', v5.errors.join('; '));
+  var x6 = clone(base); x6.reads[uuA] = 'd'.repeat(64); var v6 = ENV.validate(x6);
+  verdict(!v6.ok && v6.errors.some(function (s) { return /V9 deps != versions/.test(s); }), 'deps that differ from the read versions refused (V9)', v6.errors.join('; '));
+
   // ── §ENV-HASH ──
   console.log('\n§ENV-HASH — canonical hash');
-  var perm = { body: { params: { changes: {} }, op_type: 'CRUD_UPDATE' }, target: { uu: uuA, table: 'c_order' }, deps: [], prev: null, seq: 1, author: 'kid-A', space: SPACE, v: 3 };
+  var perm = { reads: rd0, body: { params: { changes: {} }, op_type: 'CRUD_UPDATE' }, target: { uu: uuA, table: 'c_order' }, deps: [], prev: null, seq: 1, author: 'kid-A', space: SPACE, v: 3 };
   verdict(await ENV.hashHex(base) === await ENV.hashHex(perm), 'same content, different key order → same hash');
   var ch = clone(base); ch.body.params.changes = { grandtotal: { old: 1, new: 2 } };
   verdict(await ENV.hashHex(base) !== await ENV.hashHex(ch), 'one field changed → different hash');
@@ -167,7 +174,8 @@ var SPACE = nodeCrypto.createHash('sha256').update('witness-space').digest('hex'
   console.log('   §ENV-WRAP create→' + JSON.stringify(wc.target || wc.reason) + '  update→' + JSON.stringify(wu.target || wu.reason));
   verdict(wc.ok && wc.target.uu === String(wrapRows[0].op_uuid).toLowerCase(), 'CREATE wraps with uu = its op_uuid');
   verdict(wu.ok && wu.target.uu === wc.target.uu && !('id' in wu.body.params), 'UPDATE wraps to the same record uu, local id dropped');
-  var wenv = { v: 3, space: SPACE, author: 'kid-A', seq: 2, prev: 'c'.repeat(64), deps: [], target: wu.target, body: wu.body };
+  var wr = {}; wr[wu.target.uu] = 'c'.repeat(64);
+  var wenv = { v: 3, space: SPACE, author: 'kid-A', seq: 2, prev: 'c'.repeat(64), deps: ['c'.repeat(64)], reads: wr, target: wu.target, body: wu.body };
   verdict(ENV.validate(wenv).ok, 'the wrapped UPDATE is a valid v3 envelope', ENV.validate(wenv).errors.join('; '));
   var bad = ENV.wrapKernelOp({ op_type: 'CRUD_UPDATE', op_uuid: uuid(), parameters: { table: 'c_order', id: -99, changes: {} } }, uuOf);
   verdict(!bad.ok && /uu-unresolved/.test(bad.reason), 'an unresolvable local id is refused, never guessed', bad.reason);

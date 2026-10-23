@@ -32,27 +32,28 @@ var SPACE = nodeCrypto.createHash('sha256').update('witness-space').digest('hex'
 function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed);
   t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 function shuffle(a, r) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
-function meta(e, h) { return { hash: h, author: e.author, seq: e.seq, prev: e.prev, deps: e.deps }; }
+function meta(e, h) { return { hash: h, author: e.author, seq: e.seq, prev: null, deps: e.deps }; }   // as comm_store.order passes it
 function orderHash(order) { return nodeCrypto.createHash('sha256').update(order.join(',')).digest('hex').slice(0, 16); }
 
-// build a gossip-shaped history: each step one author writes; it has "seen" a random subset of others' heads
+// build a history over 30 records: each op reads the latest version of its record that its author knows; authors
+// learn each other's knowledge by gossip (35%). deps = the read versions (§12.6: order follows data).
 async function history(nAuthors, nOps, seed, sign) {
-  var r = rng(seed), heads = {}, seqs = {}, seen = {}, out = [], signers = [];
+  var r = rng(seed), heads = {}, seqs = {}, know = {}, out = [], signers = [], recs = [];
+  for (var q = 0; q < 30; q++) recs.push(nodeCrypto.randomUUID());
   for (var a = 0; a < nAuthors; a++) {
-    var kid = 'kid-' + a; seqs[kid] = 0; heads[kid] = null; seen[kid] = {};
+    var kid = 'kid-' + a; seqs[kid] = 0; heads[kid] = null; know[kid] = {};
     signers.push(sign ? { kid: kid, privateKey: (await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign', 'verify'])).privateKey } : { kid: kid });
   }
   for (var i = 0; i < nOps; i++) {
     var s = signers[Math.floor(r() * nAuthors)], kid2 = s.kid;
-    signers.forEach(function (o) { if (o.kid !== kid2 && heads[o.kid] && r() < 0.35) seen[kid2][o.kid] = heads[o.kid]; });   // gossip
-    var deps = Object.keys(seen[kid2]).map(function (k) { return seen[kid2][k]; }).filter(function (h, idx, arr) { return arr.indexOf(h) === idx; }).sort();
-    seen[kid2] = {};                                           // listed once: only heads that changed since my last op
-    var env = { v: 3, space: SPACE, author: kid2, seq: ++seqs[kid2], prev: heads[kid2], deps: deps, manifest: 'm0', policy: 'p0', intent: 'K1',
-                target: { table: 'c_order', uu: nodeCrypto.randomUUID() }, base: null, ts: 1700000000000 + Math.floor(r() * 1e6),
+    signers.forEach(function (o) { if (o.kid !== kid2 && r() < 0.35) for (var rc in know[o.kid]) know[kid2][rc] = know[o.kid][rc]; });   // gossip
+    var uu = recs[Math.floor(r() * recs.length)], ver = know[kid2][uu] || null, reads = {}; reads[uu] = ver;
+    var env = { v: 3, space: SPACE, author: kid2, seq: ++seqs[kid2], prev: heads[kid2], deps: ver ? [ver] : [], reads: reads, manifest: 'm0', policy: 'p0', intent: 'K1',
+                target: { table: 'c_order', uu: uu }, base: ver, ts: 1700000000000 + Math.floor(r() * 1e6),
                 body: { op_type: 'CRUD_UPDATE', params: { changes: { description: { old: null, new: 'n' + i } } } } };
     var vr = ENV.validate(env); if (!vr.ok) throw new Error('fixture invalid: ' + vr.errors.join('; '));
     if (sign) env = await ENV.sign(env, s);
-    var h = await ENV.hashHex(env); heads[kid2] = h; out.push({ env: env, hash: h });
+    var h = await ENV.hashHex(env); heads[kid2] = h; know[kid2][uu] = h; out.push({ env: env, hash: h });
   }
   return out;
 }
@@ -61,8 +62,8 @@ async function history(nAuthors, nOps, seed, sign) {
   console.log('═══ W-ORDER-PERMUTE — CL2 order without a sequencer (TEAMWORK_FRAMEWORK §12.2, D1) ═══\n');
   var H = await history(10, 200, 42, true);
   var ops = H.map(function (x) { return meta(x.env, x.hash); });
-  var withDeps = ops.filter(function (o) { return o.deps.length; }).length;
-  console.log('§CL2_FIXTURE authors=10 ops=' + ops.length + ' ops_with_deps=' + withDeps + ' signed=yes');
+  var withDeps = ops.filter(function (o) { return o.deps.length; }).length;   // ops that read an existing version
+  console.log('§CL2_FIXTURE authors=10 records=30 ops=' + ops.length + ' ops_with_read_deps=' + withDeps + ' signed=yes');
   if (!withDeps) inconclusive.push('fixture has no cross-author deps — PERMUTE would judge nothing causal');
 
   // ── §ORDER-PERMUTE ──
@@ -90,17 +91,22 @@ async function history(nAuthors, nOps, seed, sign) {
   // ── §ORDER-BACKDATE ──
   console.log('\n§ORDER-BACKDATE — ts=0 cannot jump the queue');
   var Y = H[H.length - 1];
-  var z = { v: 3, space: SPACE, author: 'kid-late', seq: 1, prev: null, deps: [Y.hash], manifest: 'm0', policy: 'p0', intent: 'K1',
-            target: { table: 'c_order', uu: nodeCrypto.randomUUID() }, base: null, ts: 0, body: { op_type: 'CRUD_UPDATE', params: { changes: {} } } };
+  var zr = {}; zr[Y.env.target.uu] = Y.hash;
+  var z = { v: 3, space: SPACE, author: 'kid-late', seq: 1, prev: null, deps: [Y.hash], reads: zr, manifest: 'm0', policy: 'p0', intent: 'K1',
+            target: { table: 'c_order', uu: Y.env.target.uu }, base: Y.hash, ts: 0, body: { op_type: 'CRUD_UPDATE', params: { changes: {} } } };
   var zh = await ENV.hashHex(z), withZ = ORD.linearize(ops.concat([meta(z, zh)]));
   verdict(withZ.order.indexOf(zh) > withZ.order.indexOf(Y.hash), 'backdated op lands after the op it depends on',
     'Y@' + withZ.order.indexOf(Y.hash) + ' Z@' + withZ.order.indexOf(zh));
 
   // ── §ORDER-PARK ──
   console.log('\n§ORDER-PARK — withhold one op');
-  var victim = ops[Math.floor(ops.length / 3)];
-  var desc = {}; desc[victim.hash] = 1;                       // its causal descendants, computed independently of linearize
-  var changed = true; while (changed) { changed = false; ops.forEach(function (o) { if (!desc[o.hash] && ((o.prev && desc[o.prev]) || o.deps.some(function (d) { return desc[d]; }))) { desc[o.hash] = 1; changed = true; } }); }
+  function descOf(v) { var d = {}; d[v.hash] = 1, changed = true;
+    var changed = true; while (changed) { changed = false; ops.forEach(function (o) { if (!d[o.hash] && ((o.prev && d[o.prev]) || o.deps.some(function (x) { return d[x]; }))) { d[o.hash] = 1; changed = true; } }); }
+    return d; }
+  var thirdDesc = Object.keys(descOf(ops[Math.floor(ops.length / 3)])).length - 1;
+  var victim = ops[0], desc = descOf(victim);                 // the op with the MOST dependents — the worst case, so the arm judges something
+  ops.forEach(function (o) { var d = descOf(o); if (Object.keys(d).length > Object.keys(desc).length) { victim = o; desc = d; } });
+  console.log('   §COMM_ORDER dependents: op#' + Math.floor(ops.length / 3) + ' has ' + thirdDesc + ' dependents · worst op has ' + (Object.keys(desc).length - 1));
   var expectParked = Object.keys(desc).filter(function (h) { return h !== victim.hash; }).sort();
   var P = ORD.linearize(ops.filter(function (o) { return o.hash !== victim.hash; }));
   console.log('   §COMM_ORDER withheld=' + victim.hash.slice(0, 8) + ' parked=' + P.parked.length + ' expected=' + expectParked.length + ' placed=' + P.order.length);

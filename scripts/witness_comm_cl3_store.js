@@ -97,17 +97,18 @@ async function run(SQL, pipeName, makePipe) {
     var wu = [nodeCrypto.randomUUID(), nodeCrypto.randomUUID(), nodeCrypto.randomUUID()];
     await edit(W[0], wu[0], 0); await W[0].sync(P2);
     var hidden = (await P2.list('o/' + W[0].kid + '/'))[0];
-    await W[1].sync(P2); await edit(W[1], wu[1], 0); await W[1].sync(P2);      // B's op depends on A's
+    await W[1].sync(P2); await edit(W[1], wu[0], 1); await W[1].sync(P2);      // B edits A's record: B's op READS A's op
     await edit(W[2], wu[2], 0); await W[2].sync(P2);                            // C's own op is independent
     P2._withhold(hidden);
     var W3 = STORE.open(new SQL.Database(), { SQL: SQL, space: SPACE, self: await STORE.newDevice(), log: slog });   // a late joiner
     var r1 = await W3.sync(P2);
     console.log('   §STORE-WITHHOLD late joiner with A\'s bundle hidden: placed=' + r1.placed + ' parked=' + r1.parked);
-    verdict(r1.parked === 1 && r1.placed === 1, 'B\'s dependent op parks, C\'s independent op places', 'placed=' + r1.placed + ' parked=' + r1.parked);
+    verdict(r1.parked === 1 && r1.placed === 1, 'B\'s op on A\'s record parks, C\'s op on its own record places', 'placed=' + r1.placed + ' parked=' + r1.parked);
+    verdict(r1.gaps === 1, 'the late joiner knows exactly what it is waiting for (1 gap, from A\'s signed head)', 'gaps=' + r1.gaps);
     P2._restore(hidden);
     var r2b = await W3.sync(P2);
     console.log('   §STORE-WITHHOLD after restore: placed=' + r2b.placed + ' parked=' + r2b.parked);
-    verdict(r2b.placed === 3 && r2b.parked === 0, 'restoring the bundle converges (nothing guessed meanwhile)');
+    verdict(r2b.placed === 3 && r2b.parked === 0 && r2b.gaps === 0, 'restoring the bundle converges, no gaps (nothing guessed meanwhile)');
   }
   console.log('   §COMM_PIPE_STATS ' + pipeName + ' put=' + pipe.stats.put + ' get=' + pipe.stats.get + ' list=' + pipe.stats.list + ' bytesPut=' + pipe.stats.bytesPut);
 }
