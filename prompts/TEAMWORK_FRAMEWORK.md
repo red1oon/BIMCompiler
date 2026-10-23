@@ -2012,6 +2012,38 @@ Anything NOT in this list is decided by peers with the primitives below. Changin
 5. `DERIVED` check (witness `W-LEDGER-TWOSIDES`) · 6. `AUDIENCE` keys (witness `W-READ-SCOPE`: a device without the audience key reads zero bytes of that audience, with a control that it can with the key).
 Recommendation: build 1 → 3 → 2 first (they remove the measured limits and the duplicate-number defect), then 4.
 
+
+### §13.12.F Document numbers the legacy way — BOOKING at the post office (user, 2026-10-24)
+
+> User: *"Perhaps the relay needs to keep at least the AD_Sequence numbering as this is iDempiere legacy functionality that users there mostly already know. Even though we worked out on our own to have prefix by POS or user ID to always differ while all docs go local running sequence numbering. This can be an option. And it is in use always at the same time a Doc needs to check post office when posting a result where it can fetch forward the next ID as booked at the relay. Thus each user is auto assigned a sequence (how's that as an idea?)"*
+
+**Verdict: a good idea, and it costs the post office ONE more verb — not logic.** The verb is `putIfAbsent(name, bytes)` (create the object only if that name does not exist yet; refuse otherwise). Every store we use already has it as its atomic primitive: a Git ref update that is not a fast-forward is refused (a non-forced push is a compare-and-swap); S3/GCS conditional write (`If-None-Match: *`); the folder pipe `O_EXCL`; Apps Script `LockService`. The post office stays a dumb store.
+**How a booking works (the AD_Sequence behaviour users already know):**
+1. A document that needs its number (at Complete/Post, exactly where legacy calls `DB.getDocumentNo`) asks for the next free slot of its AD_Sequence: `seq/<ad_sequence_uu>/<n>` for n = CurrentNext, CurrentNext+IncrementNo, … It tries `putIfAbsent`; the first writer owns that number and the object records the claimant device and the document uu. A loser tries the next n. The result is exactly the legacy outcome: one number, one document, in order of booking.
+2. The document's `DocumentNo` = Prefix + n + Suffix from the AD_Sequence row (same fields, same twin look: Prefix/Suffix/StartNo/IncrementNo/CurrentNext). Peers verify in the fold that the booking object exists and names this document; a document whose number was not booked (or booked for another document) is refused at admission — so the number is a hard fact, not a hope.
+3. `CurrentNext` is derived (highest booked n + increment), not authored.
+**Three modes per AD_Sequence — a chooser, as the user says "this can be an option":**
+| Mode | How | Needs the post office at Complete? | Gap-free? | Use for |
+|---|---|---|---|---|
+| **S — station prefix** | `Prefix = station/user code`, local counter; collisions impossible by construction | no (offline-safe) | per station | POS, field work, drafts |
+| **B — booking** | the `putIfAbsent` flow above, one number at a time | **yes** (like legacy needing its server) | yes (a number is only lost if its document is abandoned after booking; that is legacy behaviour too) | statutory sequences: invoices, payments |
+| **K — block lease** | book a BLOCK (say 50 numbers) once, then allocate offline from it | once per block | no (unused numbers at block end) | high-volume documents where gaps are acceptable |
+The default per document type is a **policy** value (§13.12 B, "number prefix scheme" row), overridable per AD_Sequence; the legacy window still edits the sequence rows. "Each user is auto assigned a sequence" = each Complete is assigned the next booked number automatically; in mode S/K the user (station) additionally owns a fixed prefix/block.
+**Same verb strengthens C-1:** KEYCLAIM can use `putIfAbsent` when the post office is reachable (an immediate, hard winner) and falls back to fold order when offline; the fold stays the backstop, so both agree.
+**Witnesses (when built):** `W-DOCNO-BOOKING` (two devices Complete at once → two different consecutive numbers, same on every device; a forged number is refused at admission; the loser retries within the same Complete) · `W-DOCNO-MODES` (S: no clash with no pipe; K: block exhausted → next block; B: pipe down → the Complete waits with a visible "numbering offline" state, never a duplicate) · `W-PIPE-IFABSENT` (the verb on memPipe, folderPipe, httpPipe and a gated pipe; a second create of the same name is refused).
+
+### §13.12.G People strip — who is on what, from the signed heads (user, 2026-10-24; extends §11.17 and §15, not realtime)
+
+> User: *"…some user avatar panel like a chat panel where users can see each other rankings of last updated, and what they working on so they can avoid. So they need not check online when they see no one else working on theirs. This again, a heads up idea, where users' last tasks are in the 'git' history of that panel."*
+
+**Already specified:** the Team Panel (§11.17) shows last visit and advice per person; presence (`teams/overlay/presence.js`) exists but is one-browser (§5 S-8). **New here, small:** the **signed head** each device already posts at every visit gains a short `focus` field — the records (target uu + short label + since) this person currently has OPEN for editing, at most ~5 — and the panel adds a people strip:
+- **Avatar row, ranked by last activity** (newest signed op or head first); each avatar shows initials/photo, role, "active 4 min ago", and a badge of what they are on ("Wall W12 · 2 min", "Order SO-0044").
+- **Heads-up on the record itself:** opening a record someone else lists in `focus` shows "Aisha is editing this (3 min ago)" before you type — the Modeller shows it on the element, the ERP on the form. If nobody lists it, you proceed without any online check, which is the point: the answer is already in the heads you hold from your last visit.
+- **Per-person history = the log, not new storage:** the avatar opens "last tasks" — that person's latest ops grouped by record (what, when, which window), read from the same fold every device has (the "git history of the panel"). No extra data is written for it.
+- **Not real time:** `focus` is as fresh as the last visit (≤ V). It is advisory, never a lock; the conflict path of §11.15 still decides. A stale `focus` expires by its `since` + a policy TTL (default 30 min), so a closed laptop does not look busy forever.
+- **Privacy/scope:** `focus` is sealed like any head content to the space (audience keys, C-4, narrow it to the audience of the record). A person can switch it off ("don't show what I'm on"); their ranking then shows only "active".
+**Witness (when built):** `W-PEOPLE-STRIP` — three devices: A opens element E (focus set), B visits and shows "A is editing E" on E; A closes it, visits; B's next visit clears it; ranking order equals the newest-op order computed independently from the log; a stale focus past the TTL is not shown; switch-off hides the label; each arm has a control.
+
 ---
 
 ## §14 Showcase film — storyboard v1 (user, 2026-10-23: *"plan the film storyboard for the showcase"*)
