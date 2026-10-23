@@ -944,3 +944,50 @@ params `{table, idCol:'<table>_uu', id:<uu>, …}`.
   - once it is re-added, the order equals the baseline.
 - `§ORDER-EQUIVOCATE`: two ops at the same `(author, seq)` are reported, and neither is placed.
 - `§ORDER-PERF`: `linearize` timing at 10k ops is logged as `§COMM_ORDER ops=… ms=…`.
+
+### §12.3 Results 2026-10-23 — CL1 ✅ DONE (witness), CL2 ✅ DONE (witness)
+
+Both logs were read in full (Log Mandate).
+
+**CL1 — `W-UU-NO-COLLIDE` PASS judged=21 fails=0 red_reproduced=yes**
+- Log: `build/comm/logs/witness_comm_cl1_uu.log`.
+- Sources: `crud_core` = bim-ootb origin/main sha1 `065b41f1ba98`; `kernel_ops` sha1 `6b77f2ee4120`.
+- **The defect is real, reproduced on real code:** `§UU-RED before sync A sees A-1=111 (pk -1) B sees B-1=222 (pk -1)` →
+  `after sync A-1=222 (pk -1) B-1=200 (pk -3)`.
+  - Station B's edit landed on station A's order, and B's own order lost its edit — on both stations.
+  - **This is the live `?relay=` path today** (#913 `syncNow` → `rebase`) for any record created on a device and then
+    edited.
+  - W-N-CONVERGE never saw it because it edits the seeded order 101, whose pk is a stable positive id.
+  - ⚠ Until CL1 is wired into the live write path, relay sync is not safe for device-created records. This finding
+    belongs to the `ERP_MULTIUSER_CONCURRENCY_POC` lane too; it is recorded here and not edited into that file (one
+    session, one prompts file).
+- **Fixed by envelopes addressed by UU, with no fold change:** `§UU-GREEN after sync A-1=111 … B-1=222 … rows=2`. Both
+  stations fold identical rows, and every envelope verifies under its author key.
+- V6, V7 and V8 refuse unsorted deps, a missing uu and device-local refs. Canonical hash and signature checks hold.
+- D2 import works: a real CREATE row wraps to uu = its op_uuid, and a real UPDATE row wraps to the same uu. An
+  unresolvable id is refused (`uu-unresolved table=c_order id=-99`).
+
+**CL2 — `W-ORDER-PERMUTE` PASS judged=12 fails=0**
+- Log: `build/comm/logs/witness_comm_cl2_order.log`.
+- Fixture: 200 signed ops, 10 authors, 197 with cross-author deps.
+- **100 arrival orders → `distinct_orders=1`.** 797 causal edges checked, 0 violations.
+- `linearize` completes with a throwing `ts` getter, so the clock is never read. A `ts=0` op lands after the op it
+  depends on.
+- Equivocation is reported (`author=kid-8 seq=2`) and neither forked op is placed.
+- Perf: `ops=10000 ms=61.0 heapMB=26`.
+- **Measured risk (sharpens §11.14):** withholding ONE op parked **130 of 199** — exactly its causal descendants.
+  Gossip-shaped deps spread fast, so a single missing bundle stalls most of the team's later work.
+  - This makes CL7 (fetch missing from another pipe) and the visible PARKED count on the Team Panel load-bearing, not
+    nice-to-have.
+  - Possible mitigation for the CL3 spec: K0/K1 ops whose own `target` doesn't depend on the missing op could fold
+    provisionally. That needs a target-level dependency, not author-level gossip — ⛔ design question, not decided.
+
+**Files:**
+- `build/comm/comm_envelope.js` (envelope v3)
+- `build/comm/comm_order.js` (linearize)
+- `scripts/witness_comm_cl1_uu.js`
+- `scripts/witness_comm_cl2_order.js`
+- no live page loads them yet
+
+**Next:** CL3 — `comm.db` + an in-memory pipe and a shared-folder pipe, ported to bim-ootb `common/comm/`, with two real
+browser contexts.
