@@ -389,12 +389,9 @@ count them; a sync that judged zero ops prints `INCONCLUSIVE` (PRIMAL LAW §4).
   opened it. 838 of 845 seed tables have `Updated` (counted this turn).
   - **When a pipe is reachable:** on Save, read the record's latest known `base` (fresh `h/` heads). If it moved, show
     iDempiere's own `CurrentRecordModified` and refresh — **same moment, same message as legacy.**
-  - **When two saves cross anyway** (offline, or inside the pipe's delay): both cite the same `base`. The fold keeps the
-    one that sorts first (§11.4) and marks the other `REFUSED stale` — the same outcome iDempiere gives the second saver,
-    only later. The loser gets a **Notice** (iDempiere `AD_Note`, window 193 *Notice* — present in `ad_seed.db`) with
-    their lost values.
-  - ⛔ **Twin question (D3):** iDempiere has no offline mode, so a "saved, then refused after sync" experience has no
-    legacy equivalent. The user must rule how that is shown.
+  - **When two saves cross anyway** (offline, or inside the pipe's delay): handled the Git way — see **§11.15**. Neither
+    save silently wins; both are kept; the record shows iDempiere's `CurrentRecordModified` and the author resolves.
+    *(Superseded 2026-10-23: the earlier "keep the one that sorts first, refuse the other" rule.)*
 - **K3 — invariants (stock, credit, allocation).** Each guarded resource has an owner (a device or role), set by a signed
   `OWNER` op. A non-owner writes `REQUEST`; only the owner's `GRANT` / `DENY` op settles it; until then the requester's
   effect is shown provisional. That is the existing reservation guard (`DistributedERP §4` G-RESERVATION), carried as ops.
@@ -495,12 +492,13 @@ stay identical (I-9, `poc_erase`).
 | CL1 | envelope v3 + UU-only refs, in node | no | `W-UU-NO-COLLIDE` — two stations each create order "1" today → ids collide (reproduce RED first); with v3 → two distinct records |
 | CL2 | deterministic order | no | `W-ORDER-PERMUTE` — N=10 authors, 100 random arrival orders → one identical tip; a backdated `ts` changes nothing |
 | CL3 | `comm.db` + in-memory pipe + shared-folder pipe | no | `W-FOLDER-2CTX` — two real browser contexts converge through a folder only |
+| CL3b | GitHub-repo pipe (§11.16) + enrol-by-own-device (§11.5) | yes (GH API) | `W-GH-PIPE-2DEV` — laptop + phone: enrol by code, edit, converge to one tip; `W-GH-BUDGET` — writes per minute/hour logged and under §11.16 caps |
 | CL4 | identity as ops + admission at fold | no | `W-ADMIT-FOLD` — a no-access role's op REFUSED on every peer; `W-REVOKE-SEQ` — the revoke cut-off holds under any arrival order |
 | CL5 | K2 `base` + Notice; K3/K4 owner + Request | no | `W-STALE-SAVE-TWIN` — same two-user save on iDempiere and on SQLite → same `CurrentRecordModified`; `W-NO-SILENT-LOSS` — N=10 contested, every loser has a Notice/Request |
 | CL6 | manifest parking + translators | no | `W-SKEW-PARK` — an op from a newer app parks, then folds after upgrade, same tip as a fresh device |
 | CL7 | equivocation + withholding detection | no | `W-PIPE-WITHHOLD` — a pipe hiding one bundle is detected and healed from a second pipe |
 | CL8 | encryption | no | `W-PIPE-OPAQUE` — pipe contents reveal no field values |
-| CL9 | **pick the relay site(s)** = add rows to `cl_pipe` | yes | `W-MULTIHOST-SYNC` re-run through the comm layer |
+| CL9 | **add more pipes** (OCI etc.) = add rows to `cl_pipe` | yes | `W-MULTIHOST-SYNC` re-run through the comm layer |
 | then | P6 presence/claims, P7 preview UI, P8 BIM teams, P9 cross-product (§8) | | |
 
 Each step names what it deletes (AD-LAYER LAW §4): CL4 removes relay-side auth from the required path; CL2 removes the
@@ -508,12 +506,15 @@ need for `erp_sequencer.js`; CL1 removes integer ids from ops.
 
 ### §11.13 Decisions needed (⛔, in addition to §7)
 
-- **D1** Ratify "no sequencer": order is computed from the ops (§11.4), which amends `BACKEND_SUBSTRATE_LANE §MH.1`.
-- **D2** Ratify UU-only references in ops (§11.1). This changes the op body shape, so existing logs need a one-time
-  wrap-and-sign import per device.
-- **D3** Twin rule: how a "saved offline, refused after sync" save is shown, since iDempiere has no offline mode (§11.7).
-- **D4** Who can enrol a device: admin only, or also the person's own already-enrolled device (§11.5).
-- (§7's relay-hosting question becomes CL9 configuration, no longer a blocker for CL1–CL8.)
+**Answered by the user 2026-10-23:**
+- **D1 ✅** No sequencer — order is computed from the ops (§11.4). User: *"1,2 ID, UUID, yes"*. Amends
+  `BACKEND_SUBSTRATE_LANE §MH.1` (second sentence → "no relay needs sequencing logic").
+- **D2 ✅** UU-only references in ops (§11.1), one-time wrap-and-sign import of existing logs per device. Same answer.
+- **D3 → proposal §11.15** User: *"Do offer your idea. U know our direction is to have integrity and guarantee of
+  delivery and clarity as Git does it."*
+- **D4 ✅** Admin OR the person's own already-enrolled device may enrol a device. User: *"Yes, can test ie my mobile
+  device or any other as this is just POC."* → the first two-device test is the user's laptop + phone (§11.16, CL3b).
+- **Pipe:** User: *"we can use GH repo if it allows and no breach any limit caps such as LFS"* → §11.16.
 
 ### §11.14 Risks this design adds (named, not hidden)
 
@@ -524,3 +525,99 @@ need for `erp_sequencer.js`; CL1 removes integer ids from ops.
   line (PERF BUDGET).
 - Browser storage for `comm.db` comes out of the same ~2GB limit (`HolyGrail` scale). Archive bundles behind checkpoints.
 - Hash-order grinding on K1 cold fields (§11.4 point 5) — accepted floor, same class as `DistributedERP §9-F`.
+
+### §11.15 Offline saves the Git way (proposal for D3)
+
+The user's bar: **integrity, guaranteed delivery and clarity, as Git does it.** Git never throws away a commit, never
+lets a push silently overwrite someone else, and always tells you where you stand (`git status`). The mapping:
+
+| Git | Here |
+|---|---|
+| commit (local, hashed, permanent) | **Save** = a signed v3 op in `cl_op`, permanent from that second, even offline |
+| `git status`: ahead / behind | status line: **"2 to send · 0 to receive · 1 conflict · 0 waiting"** |
+| push | send bundle to the pipe(s) |
+| push rejected (remote moved) | a crossed save becomes a **conflict**, never a silent refusal |
+| merge of different hunks = automatic | both saves changed **different columns** of the record → both apply, no conflict (`target.cols`) |
+| merge conflict on the same lines | both changed the **same column** from the same `base` → conflict |
+| you resolve, then commit the merge | a `RESOLVE` op that cites both ops → it comes after both, so everyone lands on the same answer |
+| `git fsck` | `W-FSCK`: every author chain, every signature, every `deps` link checked |
+
+**The crossed-save rule (replaces "first by hash wins"):**
+1. Both ops are kept, signed and delivered. Nothing is lost.
+2. For the conflicting columns only, the shared record **keeps the `base` value** and is marked **conflicted**. Other
+   columns from both saves apply normally.
+3. Both authors get iDempiere's own `CurrentRecordModified` message the next time the record is open — the same words a
+   legacy user sees. Each also gets a Notice (window 193) listing *mine / theirs / before*.
+4. Either author (or anyone with write access) resolves by picking per column: mine, theirs, or a new value. That writes
+   one `RESOLVE` op.
+5. If two people resolve at the same moment and disagree, it's just another conflict on the same record. Every round
+   needs a human, and each round is visible.
+
+Why this is better than picking a winner: no arbitrary hash winner, so the hash-grinding residual in §11.4 point 5 no
+longer applies to guarded fields. Every device shows the same thing. And it matches what iDempiere does for a legacy
+user: the second save is not allowed to overwrite silently.
+
+**Twin check:** when a pipe is reachable at save time, the user gets the refusal **at save**, exactly as in iDempiere
+(§11.7 first bullet). The conflicted-after-sync state happens only offline, which iDempiere has no equivalent for, and it
+reuses iDempiere's message and Notice window rather than inventing new screens. The only new element is the
+mine/theirs/before chooser inside the record window. ⛔ This is the one piece the user should confirm under the twin rule.
+
+**Guaranteed delivery — proven by the receiver's signature, not by a server's word:**
+
+| State | Meaning | Proof |
+|---|---|---|
+| SAVED | signed op in my `cl_op` | my signature |
+| SENT | bundle stored on ≥1 pipe | read-back: `get(name)` returns bytes whose hash = the name |
+| STORED | on ≥K pipes (K configurable) | same read-back per pipe |
+| SEEN | a peer has it | **that peer's signed head lists my `seq` in its frontier** — a receipt signed by the receiver |
+| SETTLED | folded on every known peer with verdict MERGED | all known peers' heads cover it, and no conflict is open on its target |
+
+A save shows its state like message ticks. A save stuck below SEEN past a set time raises a visible warning — never a
+silent stall. Witness: `W-DELIVERY-RECEIPT` — kill the pipe mid-send; the state must stop at SAVED and complete after the
+pipe returns, with no duplicate and no loss.
+
+### §11.16 GitHub repo as the first pipe (user, 2026-10-23)
+
+**Verdict: yes for the POC and small teams, within the caps below. It uses no LFS at all.**
+
+**Caps (quoted from GitHub docs, fetched 2026-10-23):**
+- Repository limits (`docs.github.com/…/repository-limits`):
+  - 10 GB on-disk; objects recommended ≤1 MB, refused at 100 MB; push ≤2 GB.
+  - ≤3,000 entries per directory; 5,000 branches.
+  - **6 pushes per minute per repository**; 15 git reads per second per repository.
+  - The page also advises keeping generated files "outside of Git, such as in object storage".
+- REST rate limits (`docs.github.com/…/rate-limits-for-the-rest-api`):
+  - 5,000 requests per hour per authenticated user; 60 per hour unauthenticated.
+  - **80 content-generating requests per minute and 500 per hour**; ≤100 concurrent.
+  - 900 points per minute (GET costs 1, writes cost 5).
+
+**How the pipe fits inside them:**
+- **A dedicated private repo** (not bim-ootb): no Actions, no Pages, no `.gitattributes` LFS rule. Plain git blobs never
+  touch LFS storage or bandwidth.
+  - ⛔ The user creates it, or approves its creation; that's an outward-facing step.
+- **One branch per device**, `dev/<kid12>`: one writer per ref, so devices never collide.
+  - A write = Git Data API blob → tree → commit → fast-forward ref update (no force). That's about 4 write requests per
+    send.
+  - The ref update only moves forward from the device's last known head, so a device's own second tab can't fork its
+    chain. That is Git's own check working for us.
+- **Reads:** one call lists every device's head (`git/matching-refs/heads/dev/`); only changed heads are fetched.
+  - ⛔ verify: whether conditional (ETag/304) reads count against the 5,000/hr limit.
+- **Budget rule, enforced in the comm layer and logged** as `§GH_BUDGET pushes_min=… content_hr=…`:
+  - Saves are batched into one bundle per send.
+  - Per-device minimum gap = max(60 s, active devices × 10 s), so the whole team stays under 6 pushes per minute.
+  - The 500/hour content limit is **per GitHub account**: if every POC device uses the user's own token, they share it.
+    About 100 sends per hour for the whole team.
+- **Size:**
+  - Bundles stay ≤256 KB; directories are sharded by seq range so none passes 3,000 entries.
+  - At each period close, the checkpoint seeds a **fresh repo** and the old one is archived read-only. Deleted files stay
+    in git history, so rotation, not deletion, keeps size bounded.
+- **Tokens:** a fine-grained token, one repo, contents read/write, kept in the device's IndexedDB.
+  - A leaked token can delete or rewrite other branches, but it **cannot forge anything** (signatures +
+    content-addressed names).
+  - Every owner re-pushes its own branch when the remote head is not an ancestor of its local head, so damage self-heals
+    and shows in git history.
+  - ⛔ verify: whether branch protection is available on this account's private repos.
+- **Presence does not go through GitHub.** Six pushes per minute can't carry heartbeats. On the GH pipe, presence is coarse
+  ("Ali last sent 2 min ago", read from heads). Live presence and claims need a fast pipe later (P6).
+- **Ceiling, named honestly:** roughly 10–30 active writers per repo at a 1–5 minute send gap. Past that, either split
+  the space across several repos (pipes are additive and names are content-addressed, so this is free) or add OCI (CL9).
