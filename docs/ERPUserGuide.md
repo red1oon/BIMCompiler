@@ -652,11 +652,13 @@ rows iDempiere writes, checked document by document against a running legacy iDe
 completes. The schedule rows are created, the last row carries the rounding remainder (114.43 + 114.42
 on invoice 109), and an invoice generated from the order inherits the order's schedule.
 
-**Buying the legacy way — *Create Lines From*.** On a Material Receipt (or a vendor invoice) the
-**Create Lines From** button opens an **Info Window**: a searchable list of the open order lines. Tick the
+**Buying the legacy way — *Create lines from*.** On a Material Receipt (or a vendor invoice) the
+**Create lines from** button opens an **Info Window**: a searchable list of the open order lines. Tick the
 lines, edit the quantity or locator in the grid if you wish, press the process button, answer **OK**.
 That is the whole selection engine — one generic window driven by `AD_InfoWindow`, the same one every
 other info window uses. From *New Material Receipt* to lines created is 13 steps on this path.
+
+*Step by step, with pictures: see **Walk-throughs**, A and B, below.*
 
 > *Proven by* **W-CREATEFROM-INFOWIN** (8 of 8: a row picked with its quantity edited 5 → 3 became
 > one receipt line of 3, linked to the order line, header linked to the order) and
@@ -809,6 +811,133 @@ which belong to the asset plugin.
 
 > *Proven by* **W-WS-DIFF-READ / WRITE / DOCACTION / PROCESS / JSON** (14, 18, 25, 15, 21 cases,
 > including a third shipment that legacy and the kernel both book as `Posted=E`).
+
+---
+
+## Walk-throughs — step by step
+
+Four short walk-throughs of the chapters above, in the order a first-timer meets them. Every picture was taken from a real run of exactly these steps on the demo data (tenant **GardenWorld**, role **GardenAdmin**); the numbers in "What you should see" are read from that run. Menu entries are given as they appear in the menu tree on the left — type a few letters in the **Filter menu** box above it to jump to one.
+
+> **Names on your screen may differ a little.** Document numbers (such as 800003) depend on what has been created before you. The demo data's own records — *Seed Farm Inc.*, *Mulch 10#*, *Elm Tree*, *HQ Warehouse*, *Store Central* — are what these steps use.
+
+### A · Buy goods, the standard way: order → receipt
+
+**Menu:** *Requisition-to-Invoice (Purchasing) → Purchase Order*, then *Requisition-to-Invoice (Purchasing) → Material Receipt*.
+
+1. **Open the Purchase Order window** and press **New** (the first icon with a plus, `Alt+N`). On the form choose **Target Document Type** *Purchase Order*, **Business Partner** *Seed Farm Inc.*, **Organization** *HQ*. Press **Save** (`Alt+S`).
+
+   ![A new purchase order: document type, supplier and organization chosen](figs/erp_pur_po_header.png)
+
+2. **Add what you are buying.** Open the **PO Line** tab, press **New**, choose **Product** *Mulch 10#*, type **Quantity** *5*, press **Save**.
+
+   ![The purchase order line: Mulch 10#, quantity 5](figs/erp_pur_po_line.png)
+
+3. **Go back to the Purchase Order tab and press Complete.** The status chip turns to *Completed · CO*. A completed order is a binding promise to the supplier; nothing has arrived yet.
+
+   ![A draft purchase order with the Complete action offered](figs/erp_pur_po_complete_button.png)
+
+4. **Open the Material Receipt window**, press **New**, choose **Business Partner** *Seed Farm Inc.* and **Organization** *HQ*, press **Save**. The form now ends with the **Create lines from** button.
+
+   ![A saved material receipt; at the foot of the form, the Create lines from button](figs/erp_pur_receipt_button.png)
+
+5. **Press Create lines from.** A search window lists everything still waiting to arrive. Choose your order in the **Order** box, press **Refresh**, tick the line, and type the quantity that **actually arrived** in the **Quantity** column — here *3* of the 5 ordered.
+
+   ![The Create lines from Shipment/Receipt window: order chosen, line ticked, quantity 3](figs/erp_pur_infowin.png)
+
+6. **Press the *Create lines from Shipment/Receipt* button at the top of that window.** A small dialog opens with the receipt and the locator already filled from the record; press **Run**, then **OK** on the result.
+
+   ![The process dialog, filled from the receipt](figs/erp_pur_infowin_dialog.png)
+
+7. **Press Complete on the receipt.**
+
+   ![The completed material receipt](figs/erp_pur_receipt_done.png)
+
+**What you should see.** The receipt has **one line of 3**, linked to the order line; the order still shows **2 open**, so a second receipt can take the rest. On-hand of *Mulch 10#* at the head-office locator rises by 3. From opening the window to lines on the receipt took **13 steps** (clicks, list picks and typed fields) in the film's count.
+
+### B · The same, with the shortcut (optional plugin)
+
+The shortcut is the **Friendly operations lens**, a plugin. It adds *Receive* and *Create Bill* to the gear menu of a purchase order; it changes nothing else, and everything in walk-through A still works without it.
+
+1. **Install it from the login page.** Before logging in, press the **Plugins & Releases** link at the bottom of the login box. Under *Available on this page* find **Friendly operations lens** and press **Install and start**; close the window.
+
+   ![The login page with the Plugins & Releases link](figs/erp_pur_login.png)
+   ![The offer: Friendly operations lens, Install and start](figs/erp_pur_plugin_offer.png)
+
+2. **Log in** (tenant *GardenWorld*, user *GardenAdmin*), then make and **Complete** a second purchase order as in steps 1–3 of walk-through A.
+
+   ![The role and organization step before OK](figs/erp_pur_login_role.png)
+
+3. **Open the gear** (the **Process** icon in the toolbar). A completed order that still waits for goods now offers **Receive**; an order that is not completed, or is already received, does not.
+
+   ![The gear on a completed purchase order: Copy Lines, Receive and the Document Action group](figs/erp_pur_gear_po.png)
+
+4. **Choose Receive.** The receipt is created from the order's open lines and completed; press **OK** on the result.
+
+   ![The gear offering Receive](figs/erp_pur_gear_receive.png)
+   ![The result of Receive](figs/erp_pur_receive_result.png)
+
+5. **Open the gear again and choose Create Bill.** The supplier invoice is created from the receipt and completed; press **OK**. Once it is billed the gear stops offering it.
+
+   ![The gear offering Create Bill](figs/erp_pur_gear_bill.png)
+   ![The result of Create Bill](figs/erp_pur_bill_result.png)
+
+**What you should see.** A completed receipt of **all 5 bags** and a completed vendor invoice (13.50 for 5 bags at the demo price). Receiving took **3 clicks** (gear, *Receive*, **OK**) against 13 steps the standard way — and it runs the very same receipt process underneath.
+
+> **To stop using it,** open *Plugins & Releases*, find the lens and press **Stop**; its menu items disappear and the documents it made stay.
+
+### C · Move stock between shops, in transit
+
+**Menu:** *Material Management and Pricing → Inventory Move*, *… → Move Confirmation*, *… → Physical Inventory*.
+
+An in-transit move needs a document type with **In Transit** switched on. The demo data has none, so for this walk-through a copy of *Material Movement* with that flag was added to the demo copy — in your own tenant, set it on the Inventory Move document type in the **Document Type** window.
+
+1. **Open Inventory Move**, press **New**, choose the **Document Type** (the in-transit one), **Organization** *HQ*, **Warehouse** *HQ Warehouse* (from) and **Warehouse To** *Store Central*. Press **Save**.
+
+   ![An in-transit inventory move: HQ Warehouse to Store Central](figs/erp_stock_move_header.png)
+
+2. **Open the Move Line tab**, press **New**, choose **Product** *Elm Tree*, choose the **Locator** (from) and **Locator To** from their drop-down lists, type **Quantity** *10*, press **Save**.
+
+   ![The move line: Elm Tree, 10, locators chosen from the lists](figs/erp_stock_move_line.png)
+
+3. **Back on the header, press Complete.** It does **not** finish: the status is *In Progress* and the system has created a **Move Confirmation** for the receiving shop. Nothing has moved yet — the 15 elm trees at head office are still there, the store has none.
+
+   ![After Complete: In Progress, the confirmation is open](figs/erp_stock_move_inprogress.png)
+
+4. **Open Move Confirmation** (its window offers the single open confirmation). It is *Drafted*, and **Complete** is offered.
+
+   ![The Move Confirmation, drafted, with Complete offered](figs/erp_stock_confirm_header.png)
+
+5. **Open its Line tab** and type what the shop counted: **Confirmed Quantity** *8* (of the **Target Quantity** 10) and **Scrapped Quantity** *1* (one of the eight was damaged). Press **Save** — **Difference** becomes *2*, worked out for you (target minus confirmed).
+
+   ![The confirmation line: target 10, confirmed 8, scrapped 1, difference 2](figs/erp_stock_confirm_line.png)
+
+6. **Back on the confirmation, press Complete.** The confirmation and the move complete together; stock moves, and the system writes two small **inventory documents**: the 2 that never arrived at the sending side, the 1 scrapped at the receiving side. Open **Physical Inventory** and go to the last record to see one.
+
+   ![One of the inventory documents the confirmation created](figs/erp_stock_inventory_doc.png)
+
+**What you should see.** Elm Tree at head office **15 → 5**, at Store Central **0 → 7**; a *difference* document of 2 at head office and a *scrapped* document of 1 at the store; every posting balances. While the confirmation is open, goods are *in transit*: counted on the books, but on neither shelf — and the shipping month must stay open until the confirmation is completed.
+
+### D · Top up stock with the Replenish Report
+
+**Menu:** *Material Management and Pricing → Replenish Report*. Each product has a lowest and a highest stock level (set per warehouse); the report compares them with what is on the shelf.
+
+1. **Open Replenish Report** and choose **Warehouse** *HQ Warehouse*. The **Document Type** box is not shown yet.
+
+   ![The Replenish Report parameters before Create is chosen](figs/erp_repl_params_before.png)
+
+2. **Set Create to Purchase Order.** The **Document Type** box appears, listing only purchase-order types; choose *Purchase Order*.
+
+   ![With Create = Purchase Order the Document Type box appears](figs/erp_repl_params_after.png)
+
+3. **Press Run.** On a long-running session this can take a minute. The result names the documents it created.
+
+   ![The result: three draft purchase orders](figs/erp_repl_result.png)
+
+4. **Open Purchase Order and go to the last record.** The report's orders are **drafts**: nobody has promised a supplier anything until a person reviews and completes them.
+
+   ![One of the drafted purchase orders](figs/erp_repl_draft_po.png)
+
+**What you should see.** With head office down to **5 elm trees** (lowest level 10, highest 20) the report asks for **15**; mulch, well inside its range, is left alone. **Run it twice before completing the drafts and it orders the same goods twice** — drafts do not count as "on order". iDempiere does exactly this, and so does this ERP.
 
 ---
 
@@ -1309,6 +1438,9 @@ instead of producing a different answer.
 | Documents of a closed period | the *back-date days* check under Average costing | named refusal, as for other documents |
 | Product attributes | RMA return copying the shipment's lot rows; attribute tables outside core (come by plugin) | named |
 | Libero | creating a workflow activity from a manufacturing order, resource unavailability, voiding after a product change | named in the plugin's witnesses |
+| Ship/Receipt Confirmation | its **Complete** action: the confirmation window can be opened and filled, but the document-action port (`MInOutConfirm`: process lines, difference documents) is not written, so the window does not offer Complete — unlike Move Confirmation | the next slice, same shape as Move Confirmation |
+| Field editors that are still text boxes | Account (139 displayed fields), Memo (13), Image (10), Assignment (3): each is a lookup or a special editor in iDempiere | named, not yet built |
+| Process parameters | a lookup whose validation rule reads an AD context variable (such as the organization) other than another parameter filters nothing (33 of the 131 rule-bound parameters); the log line says so | named |
 | Web Services | a zero that legacy prints as `0.0` (SQLite numbers carry no per-value scale); asset-creating products (asset plugin) | stated limits |
 
 ---
