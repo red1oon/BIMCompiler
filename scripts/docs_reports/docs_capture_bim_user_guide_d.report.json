@@ -1,0 +1,80 @@
+{
+ "at": "2026-10-23T20:16:41.035Z",
+ "steps": {
+  "loaded": {
+   "building": "Ifc2x3_Duplex_Federated",
+   "elements": 1119
+  },
+  "panelsAtLoad": [
+   "status-bar-wrap@422,853 597x31"
+  ],
+  "shortcutKeys": [
+   "'",
+   "+",
+   "-",
+   ".",
+   "/",
+   "2",
+   "4",
+   "=",
+   "Ctrl+O",
+   "Ctrl+S",
+   "a",
+   "b",
+   "c",
+   "f",
+   "h",
+   "i",
+   "j",
+   "l",
+   "m",
+   "n",
+   "o",
+   "p",
+   "q",
+   "r",
+   "s",
+   "t",
+   "v",
+   "w",
+   "x",
+   "z"
+  ],
+  "claimedKeysRegistered": {
+   "4": true,
+   "9": false,
+   "f": true,
+   "m": true,
+   "c": true,
+   "t": true,
+   "x": true,
+   "p": true,
+   "n": true,
+   "h": true,
+   "b": true,
+   "v": true,
+   "=": true,
+   "/": true,
+   "a": true,
+   "q": true,
+   "w": true,
+   "z": true,
+   "l": true,
+   "r": true,
+   "o": true,
+   "?": false
+  },
+  "infoAfterClick": {
+   "shown": true,
+   "text": "× Class: IfcSlab Name: Basic Roof:Live Roof over Wood Joist Flat Roof:184483 GUID: 3ThA22djr8AQQ9eQMA5s7I Building: Ifc2x3_Duplex_Federated Storey: Unknown Discipline: ARC Material: 0.000,0.498,0.000,1.000"
+  },
+  "xrayCycle": [
+   "X-Ray / Bbox  ·  Off",
+   "X-Ray / Bbox  ·  X-Ray",
+   "X-Ray / Bbox  ·  Bbox",
+   "X-Ray / Bbox  ·  Off"
+  ],
+  "helpText": null
+ },
+ "pageerrors": []
+}

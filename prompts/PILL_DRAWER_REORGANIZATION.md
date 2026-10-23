@@ -419,3 +419,17 @@ on all 6 surfaces, W2/W3/W4 (open/close decree, hover labels, icon-map) live-rev
 browser on `erp.html`/`idempiere.html`/`glassbowl.html`, all unaffected by the new observer. Pre-existing gap,
 NOT introduced by #682: `glassbowl_gravity.html` and `index.html` have no live pill-behavior witness at all —
 this witness's own scope note limits W2-W4 to the 3 surfaces above.
+
+## ▶ 2026-10-24 — AS SHIPPED, measured on the live viewer (Duplex; `prompts/DOCS_GUIDE_REFRESH.md`) — supersedes the FINAL DRAWER MAP above where they differ
+Rail (top → bottom): 4D Window, Help, Settings, Share, Camera / View, Palette, Inspect, Navigate, Open, Save — behind the ⋯ trigger.
+Drawer panels are persistent `.bim-panel`s (`navigate-drawer-panel`, `inspect-drawer-panel`, `camview-drawer-panel`); they close by tapping the
+master pill again — **Escape does not close them** and two can be open at once.
+| Drawer | Rows as shipped |
+|---|---|
+| Navigate | Find / Navigate f · **Role View r** · World History w · Page History z · Home · **Fly Tour l** · **Nav LOD (large bldgs) o** (Walk = mobile only) |
+| Inspect | Measure m · Clash Matrix c · X-Ray / Bbox (Alt+Z, 3-state) · Section Cut x · Time Machine t · 4D / 5D 4 — **6 rows; Fly Tour left it** |
+| Camera / View | Precision (Caps Lock) · Reset Camera a · Auto-Pivot q · **GI Preview (AO) Alt+G** |
+| Palette | 5 sliders (tooltips: Color Studio, Sun intensity, Exposure, Ambient, Hemisphere) · icon row Still Refine Alt+S / Populate Alt+P / Cinema Orbit Alt+C · Night n · Shadow + Ground h (Off → Earth → Grass → Paved) · Background b · Sound FX v |
+| Settings | Pill Icons · Edit Project JSON (**8** files: + Road Standards, Civil Labels) · 5D Rate Pack · Cache Info |
+The 📷 Screenshot action no longer exists (`panels.js:1491`, §DELETIONS) and the old Clear / ☆☾ / ✈ buttons are gone — `docs/BIMUserGuide.md` was
+rewritten to match (2026-10-24).

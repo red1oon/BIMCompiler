@@ -145,3 +145,13 @@ returned to the same largest room, Find-panel-focused `Home` still routed to the
 1→0. No regressions: `witness_find_panel_hidden_onload_2026-07-11.js` all pass;
 `witness_room_box_purple_2026-07-12.js`'s 2 failures confirmed pre-existing on unmodified `origin/main`
 via `git stash` (unrelated color-drift, not introduced here). `eslint viewer/scene.js` clean.
+
+## ⛔ OPEN DEFECT found 2026-10-24 (guide refresh, `prompts/DOCS_GUIDE_REFRESH.md`) — the `_focusedPanel` block swallows keys typed in an input
+This file specs the `_focusedPanel && _focusedPanel.nav` branch of `scene.js`'s keydown handler (the block that runs BEFORE single-char
+shortcuts). Measured on the live viewer: with the Find panel open (`§PANEL_FOCUS id=find` fires at open) a real **Space** typed in `#find-name`
+is `preventDefault`-ed by that block (`§KBD_ROUTE panel=find key=` per space) — typing `a b` leaves `ab`, so `count doors` becomes `countdoors`.
+`scene.js:3550-3558` (dated 2026-05-23) lists arrows, Space, Ctrl+Space, PageUp/Down, Home/End, Shift+arrows, Ctrl+A and **Enter** with **no
+`notInput` guard**, whereas the Tab branch (3541) and the shortcut branch (3595) are guarded. Arrow-left/right, Home/End and Ctrl+A inside the box
+are in the same set. **Fix shape (not done here — viewer code, own worktree):** guard that block with `notInput` for the text-editing keys (keep
+Escape/Tab routing), then a witness that types `count doors` with real keydowns and asserts the box value and a `§NLP_DEC` line.
+Home-reset (this file's feature) is unaffected — it is placed after the block.

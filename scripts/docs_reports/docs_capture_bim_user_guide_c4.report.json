@@ -1,0 +1,73 @@
+{
+ "at": "2026-10-23T23:33:59.500Z",
+ "steps": {
+  "loaded": {
+   "building": "HHS_Office_Federated",
+   "elements": 6880
+  },
+  "roomAxis": "3/5 Room ⇄ Material",
+  "pathBtnFound": true,
+  "pathStart": {
+   "tree": "group: | Storey | Type | Path | From room… | ≈ Level 1 R1 · COMPILED INTERNAL ≈ Level 1 R1 (Level 1) | ≈ Level 1 R10 · COMPILED INTERNAL ≈ Level 1 R10 (Level 1) | ≈ Level 1 R11 · COMPILED INTERNAL_SMALL ≈ Level 1 R11 (Level 1) | ≈ Level 1 R13 · COMPILED INTERNAL ≈ Level 1 R13 (Level 1) | ≈ Level 1 R14 · COMPILED INTERNAL ≈ Level 1 R14 (Level 1) | ≈ Level 1 R15 · COMPILED INTERNAL_SMALL ≈ Level 1 R15 (Level 1) | ≈ Level 1 R16 · COMPILED INTERNAL ≈ Level 1 R16 (Level 1) | ≈ Level 1 R17 · COMPILED INTERNAL ≈ Level 1 R17 (Level 1) | ≈ Level 1 R18 · COMPILED INTERNAL ≈ Level 1 R18 (Level 1) | ≈ Level 1 R19 · COMPILED INTERNAL ≈ Level 1 R19 (Level 1) | ≈ Level 1 R2 · COMPILED INTERNAL ≈ Level 1 R2 (Level 1) | ≈ Level 1 R20 · COMPILED INTERNAL_SMALL ≈ Level 1 R20 (Level 1) | ≈ Level 1 R21 · COMPILED INTERNAL ≈ Level 1 R21 (Level 1) | ≈ Level 1 R22 · COMPILED INTERNAL ≈ Level 1 R22 (Level 1) | ≈ Level 1 R23 · COMPILED INTERNAL ≈ Level 1 R23 (Level 1) | ≈ Level 1 R24 · COMPILED INTERNAL ≈ Level 1 R24 (Level 1) | ≈ Level 1 R25 · COMPILED INTERNAL ≈ Level 1 R25 (Level 1) | ≈ Level 1 R5 · COMPILED INTERNAL ≈ Level 1 R5 (Level 1) | ≈ Level 1 R6 · COMPILED INTERNAL ≈ Level 1 R6 (Level 1) | ≈ Level 1 R7 · COMPILED INTERNAL_SMALL ≈ Level 1 R7 (Level 1) | ≈ Level 1 R8 · COMPILED INTERNAL ≈ Level 1 R8 (Level 1) | ≈ Level 1 R9 · COMPILED INTERNAL_SMALL ≈ Level 1 R9 (Level 1) | ⚠ Level 1 R12 · COMPILED SUSPECT_OPEN ⚠ Level 1 R12 (Level 1) | ⚠ Level 1 R3 · COMPILED SUSPECT_OPEN ⚠ Level 1 R3 (Level 1) | ⚠ Level 1 R4 · COMPILED SUSPECT_OPEN ⚠ Level 1 R4 (Level 1) | ≈ Level 2 R10 · COMPILED INTERN",
+   "results": ""
+  },
+  "pickFrom": {
+   "found": true,
+   "n": 1,
+   "tag": "OPTION",
+   "text": "≈ Level 1 R1 · COMPILED INTERNAL ≈ Level 1 R1 (Level 1)",
+   "viaSelect": {
+    "select": "find-path-from",
+    "options": 76
+   }
+  },
+  "afterFrom": {
+   "tree": "group: | Storey | Type | Path | From room… | ≈ Level 1 R1 · COMPILED INTERNAL ≈ Level 1 R1 (Level 1) | ≈ Level 1 R10 · COMPILED INTERNAL ≈ Level 1 R10 (Level 1) | ≈ Level 1 R11 · COMPILED INTERNAL_SMALL ≈ Level 1 R11 (Level 1) | ≈ Level 1 R13 · COMPILED INTERNAL ≈ Level 1 R13 (Level 1) | ≈ Level 1 R14 · COMPILED INTERNAL ≈ Level 1 R14 (Level 1) | ≈ Level 1 R15 · COMPILED INTERNAL_SMALL ≈ Level 1 R15 (Level 1) | ≈ Level 1 R16 · COMPILED INTERNAL ≈ Level 1 R16 (Level 1) | ≈ Level 1 R17 · COMPILED INTERNAL ≈ Level 1 R17 (Level 1) | ≈ Level 1 R18 · COMPILED INTERNAL ≈ Level 1 R18 (Level 1) | ≈ Level 1 R19 · COMPILED INTERNAL ≈ Level 1 R19 (Level 1) | ≈ Level 1 R2 · COMPILED INTERNAL ≈ Level 1 R2 (Level 1) | ≈ Level 1 R20 · COMPILED INTERNAL_SMALL ≈ Level 1 R20 (Level 1) | ≈ Level 1 R21 · COMPILED INTERNAL ≈ Level 1 R21 (Level 1) | ≈ Level 1 R22 · COMPILED INTERNAL ≈ Level 1 R22 (Level 1) | ≈ Level 1 R23 · COMPILED INTERNAL ≈ Level 1 R23 (Level 1) | ≈ Level 1 R24 · COMPILED INTERNAL ≈ Level 1 R24 (Level 1) | ≈ Level 1 R25 · COMPILED INTERNAL ≈ Level 1 R25 (Level 1) | ≈ Level 1 R5 · COMPILED INTERNAL ≈ Level 1 R5 (Level 1) | ≈ Level 1 R6 · COMPILED INTERNAL ≈ Level 1 R6 (Level 1) | ≈ Level 1 R7 · COMPILED INTERNAL_SMALL ≈ Level 1 R7 (Level 1) | ≈ Level 1 R8 · COMPILED INTERNAL ≈ Level 1 R8 (Level 1) | ≈ Level 1 R9 · COMPILED INTERNAL_SMALL ≈ Level 1 R9 (Level 1) | ⚠ Level 1 R12 · COMPILED SUSPECT_OPEN ⚠ Level 1 R12 (Level 1) | ⚠ Level 1 R3 · COMPILED SUSPECT_OPEN ⚠ Level 1 R3 (Level 1) | ⚠ Level 1 R4 · COMPILED SUSPECT_OPEN ⚠ Level 1 R4 (Level 1) | ≈ Level 2 R10 · COMPILED INTERN",
+   "results": ""
+  },
+  "pickTo": {
+   "found": true,
+   "n": 19,
+   "tag": "OPTION",
+   "text": "≈ Level 3 R2 · COMPILED INTERNAL ≈ Level 3 R2 (Level 3)",
+   "viaSelect": {
+    "select": "find-path-to",
+    "options": 76
+   }
+  },
+  "findPathButton": true,
+  "routeText": [
+   "Find Path",
+   "5 doors · 2 stairs · 75.0m",
+   "1. ≈ Level 1 R1 · COMPILED INTERNAL ≈ Level 1 R1",
+   "()",
+   "└─ through door: Drehflügel 1-flg - Stahlzarge:88.5 x 2.26:88.5 x 2.26:575084",
+   "└─ along Corridor — Level 1",
+   "└─ through door: Türelement 1-flg - Drehflügel - Glas:Türelement 1-flg - Drehflügel - Glas:Türelement 1-flg - Drehflügel - Glas:576692",
+   "2. ⚠ Level 1 R3 · COMPILED SUSPECT_OPEN ⚠ Level 1 R3",
+   "()",
+   "└─ through door: Drehflügel 1-flg - Stahlzarge:88.5 x 2.26:88.5 x 2.26:575087",
+   "└─ along Corridor — Level 1",
+   "└─ via stair: Stair:Massiv - Stufen Naturstein:576926#0 (upper)",
+   "└─ via stair: Stair:Massiv - Stufen Naturstein:576926#1 (upper)",
+   "└─ along Corridor — Level 3",
+   "└─ through door: Türelement 1-flg - Drehflügel - Glas:Türelement 1-flg - Drehflügel - Glas:Türelement 1-flg - Drehflügel - Glas:576814",
+   "3. ⚠ Level 3 R8 · COMPILED SUSPECT_OPEN ⚠ Level 3 R8",
+   "()",
+   "└─ through door: Drehflügel 1-flg - Stahlzarge:88.5 x 2.26:88.5 x 2.26:576047",
+   "4. ≈ Level 3 R2 · COMPILED INTERNAL ≈ Level 3 R2",
+   "()"
+  ],
+  "panelAfterRoute": {
+   "selects": [
+    "find-type:1:All types",
+    "find-storey:1:All Storeys",
+    "find-path-from:76:≈ Level 1 R1 · COMPILED INTERNAL ≈ Level",
+    "find-path-to:76:≈ Level 3 R2 · COMPILED INTERNAL ≈ Level"
+   ],
+   "routeLine": "× Find Ask count doors total cost show structure Hover name (') 3/5 Room ⇄ Material 💉 group: Storey Type Path From room… ≈ Level 1 R1 · COMPILED INTERNAL ≈ Level 1 R1 (Level 1) ≈ Le",
+   "head": "× Find Ask count doors total cost show structure Hover name (') 3/5 Room ⇄ Material 💉 group: Storey Type Path From room… ≈ Level 1 R1 · COMPILED INTERNAL ≈ Level 1 R1 (Level 1) ≈ Level 1 R10 · COMPILED INTERNAL ≈ Level 1 R10 (Level 1) ≈ Level 1 R11 · COMPILED INTERNAL_SMALL ≈ Level 1 R11 (Level 1) ≈ Level 1 R13 · COMPILED INTERNAL ≈ Level 1 R13 (Level 1) ≈ Level 1 R14 · COMPILED INTERNAL ≈ Level "
+  }
+ },
+ "pageerrors": []
+}

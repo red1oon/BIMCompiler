@@ -3836,3 +3836,17 @@ superseded. Setup unchanged: `cd ~/bim-ootb && git worktree list` FIRST, reuse `
 Fable-class execution session: setup, the 36-cell matrix, the five-gate acceptance, and an explicit
 stop condition (if no cell reaches 18.4% with §O3 PASS, that is the answer — do not invent a third
 constant). That file is the one the worker updates; this log stays the lane's spec of record.
+
+## ▶ 2026-10-24 — current Room-lens counts on the published site (guide refresh; `prompts/DOCS_GUIDE_REFRESH.md`, `scripts/docs_capture_bim_user_guide_c1/c2/c3.js`)
+Room axis, Storey grouping → Type grouping. **HHS_Office_Federated:** L1 25 · L2 31 · L3 19 = 75 rooms; INTERNAL 48 · INTERNAL_SMALL 15 · SUSPECT_OPEN 7 · Restrooms 2 · SUSPECT_NO_DOOR 2 · SUSPECT_ELONGATED 1
+(= the same 75) · Stairs 11 · Lift Shaft 3 · Plant Room 1769. **Terminal:** Aras 01 12 · Aras 02 10 · Aras 03 3 · Aras 04 3 · Aras Bumbung 1 · Aras Tanah 23 = 52 rooms; INTERNAL 27 · INTERNAL_SMALL 7 · SUSPECT_OPEN 4 ·
+SUSPECT_NO_DOOR 8 · **Hall / Corridor 6** · Stairs 17 · Lift Shaft 5 · Plant Room 644. The guide's older figures (Terminal 59 → 40 rooms / 73 rects, SUSPECT_OPEN 22; HHS 105 rooms) do not reproduce — rewritten to these.
+SUSPECT_NO_DOOR list on Terminal: Aras 02 R3, Aras 03 R2, Aras 04 R1, R2, Aras Bumbung R1, Aras Tanah R5, R17, R22. Hospital Path numbers (124.69 m, 3 doors, 1 stair) NOT re-measured yet.
+
+## ▶ 2026-10-24 (addendum) — Room → Path as shipped, measured (`scripts/docs_capture_bim_user_guide_c4.js`)
+- Path mode is two `<select>`s (`#find-path-from`, `#find-path-to`, 76 options on HHS) plus a **Find Path** button — choosing both rooms does NOT run it (any witness/guide step must tap Find Path).
+- HHS Office `≈ Level 1 R1 → ≈ Level 3 R2`: **5 doors · 2 stairs · 75.0 m**, stops Level 1 R1 → ⚠ Level 1 R3 → ⚠ Level 3 R8 → Level 3 R2; `§ROOM_PATH hops=7 portals=7 anchors={room:4 doorwp:5 spine:3 stairwp:2} polyPts=14`;
+  `§ROOM_GRAPH nodes=75 doors=133 edges=33 deadend=64 orphan=36 orphanRescued=19 stairs=3 exits=3`; `§PATH_LEGAL_DETOUR_FAIL` count 0.
+- Hospital now: 64,150 element rows, 4 Find axes (no Material), Level 1 lists Hall/Corridor 1–8 + R1–R3, so the §17 reference route (`≈ Level 1 R35 → ≈ Level 4 R8`, 124.69 m, 3 doors, 1 stair) **cannot be re-selected** —
+  the room set was recompiled. Log shows `§ROOM_GRAPH nodes=30 doors=440 edges=7 deadend=148 orphan=285 orphanRescued=272 circ=3 stairs=3 exits=8`; 7 edges over 30 nodes is a very sparse graph — a possible Hospital path-quality
+  regression to examine with a proper before/after (NOT concluded here; graph definitions may differ from the §17 sweep). The three Hospital screenshots in `docs/BIMUserGuide.md` are captioned as history.

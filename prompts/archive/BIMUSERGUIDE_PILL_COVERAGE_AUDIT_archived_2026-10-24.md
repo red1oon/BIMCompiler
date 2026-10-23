@@ -1,3 +1,5 @@
+> **ARCHIVED 2026-10-24 — STALE.** A one-off 2026-07-12 completeness pass; its "ground truth" id table no longer matches the live toolbar (Fly Tour moved Inspect → Navigate, Role View / Nav LOD / GI Preview added, Parts axis retired, JSON hub now 8 files, 📷 screenshot removed). Superseded by the measured, re-runnable crawl in `prompts/DOCS_GUIDE_REFRESH.md` (scripts `scripts/docs_capture_bim_user_guide_*.js`).
+
 <!-- Copyright (c) 2025-2026 Redhuan D. Oon <red1org@gmail.com> · SPDX-License-Identifier: MIT -->
 # BIMUSERGUIDE PILL COVERAGE AUDIT — fill the missing toolbar features (2026-07-12, dispatch to Agent)
 

@@ -1,0 +1,191 @@
+{
+ "at": "2026-10-23T20:11:05.931Z",
+ "steps": {
+  "hub": {
+   "title": "",
+   "cards": [
+    {
+     "b": "SampleHouse",
+     "t": "65 elements · ARC STR"
+    },
+    {
+     "b": "Duplex",
+     "t": "1,169 elements · MEP ARC STR"
+    },
+    {
+     "b": "BimWhale_Tall",
+     "t": "81 elements · ARC"
+    },
+    {
+     "b": "Ifc4_FZKHaus",
+     "t": "98 elements · ARC STR"
+    },
+    {
+     "b": "AC90_Niedriha",
+     "t": "136 elements · ARC STR"
+    },
+    {
+     "b": "BimWhale_Basic",
+     "t": "153 elements · ARC MEP"
+    },
+    {
+     "b": "BimWhale_Large",
+     "t": "174 elements · ARC"
+    },
+    {
+     "b": "HospitalAuckland",
+     "t": "442 elements · ARC STR MEP"
+    },
+    {
+     "b": "SmileyWest",
+     "t": "531 elements · ARC STR"
+    },
+    {
+     "b": "Jesse",
+     "t": "676 elements · ARC STR"
+    },
+    {
+     "b": "Ifc2x3_AC11Institute",
+     "t": "986 elements · ARC STR"
+    },
+    {
+     "b": "BimWhale_Advanced",
+     "t": "2,176 elements · ARC STR MEP"
+    },
+    {
+     "b": "Esplanades",
+     "t": "2,544 elements · ARC STR"
+    },
+    {
+     "b": "HITOS",
+     "t": "2,593 elements · ARC STR MEP"
+    },
+    {
+     "b": "Molio",
+     "t": "2,791 elements · ARC MEP STR"
+    },
+    {
+     "b": "SampleCastle",
+     "t": "3,284 elements · ARC STR MEP"
+    },
+    {
+     "b": "Schependomlaan",
+     "t": "3,284 elements · ARC STR MEP"
+    },
+    {
+     "b": "HospitalGarage",
+     "t": "1,471 elements · STR ARC"
+    },
+    {
+     "b": "HHS_Office_Federated",
+     "t": "7,057 elements · MEP STR ARC"
+    },
+    {
+     "b": "WBDG_Office",
+     "t": "7,180 elements · MEP ARC STR"
+    },
+    {
+     "b": "Ifc4_Revit",
+     "t": "11,505 elements · STR MEP ARC ELEC ACMV FP"
+    },
+    {
+     "b": "Clinic",
+     "t": "16,480 elements · MEP ARC STR"
+    },
+    {
+     "b": "Terminal",
+     "t": "48,428 elements · STR MEP ARC FP ELEC ACMV"
+    },
+    {
+     "b": "Hospital",
+     "t": "63,917 elements · MEP STR ARC ELEC FP"
+    },
+    {
+     "b": "LTU_AHouse",
+     "t": "125,698 elements · PLB HEAT HVAC VENT SAN ARC STR VOID"
+    }
+   ],
+   "sections": [
+    "City buildings",
+    "Landmark buildings"
+   ],
+   "extra": [
+    "➕ Blank Viewer"
+   ],
+   "dropHint": "↓ Drop IFC / 3D files here — or tap to browsemultiple discipline files merge into one building"
+  },
+  "duplexLoaded": {
+   "building": "Ifc2x3_Duplex_Federated",
+   "elements": 1119
+  },
+  "duplexStatus": "DONE — Ifc2x3_Duplex_Federated 1,119 elements (30 instanced groups). 1 building(s) rendered.",
+  "rail": [
+   "save",
+   "open",
+   "navigate",
+   "inspect",
+   "palette",
+   "camview",
+   "share",
+   "settings",
+   "help",
+   "sched4d"
+  ],
+  "navDrawerRows": [
+   "find|Find / Navigate  ·  f",
+   "roleFilter|Role View  ·  All",
+   "worldhist|World History  ·  w",
+   "docHist|Page History  ·  z",
+   "home|Home",
+   "fly|Fly Tour  ·  l",
+   "dlodnav|Nav LOD (large bldgs)  ·  o"
+  ],
+  "findViaDrawerRow": true,
+  "findPanelOpen": {
+   "placeholder": "Search elements...",
+   "focused": "find-name",
+   "chips": [
+    "count doors",
+    "total cost",
+    "show structure"
+   ],
+   "tabs": [
+    "Find",
+    "Ask"
+   ],
+   "outlinerBar": "1/5 Storey ⇄ Discipline💉"
+  },
+  "spaceKeyInFindBox": {
+   "typed": "a b",
+   "value": "ab"
+  },
+  "nlTyped": {
+   "results": "Press Enter ↵",
+   "count": ""
+  },
+  "nlAnswer": {
+   "toast": "14 — count door Details (1) ×"
+  },
+  "chip_total_cost": {
+   "before": "14 — count door Details (1) ×",
+   "after": "$ 262,925 (RM 1,011,250) — total building cost Details (16) ×",
+   "findResults": ""
+  },
+  "chip_show_structure": {
+   "before": "$ 262,925 (RM 1,011,250) — total building cost Details (16) ×",
+   "after": "19 — show structure Show in 3DDetails (19) ×",
+   "findResults": ""
+  },
+  "axisBarHtml": "<button id=\"find-axis-toggle\" data-axis=\"storey\" ><span >1/5</span> <span >Storey</span> <span >⇄ Discipline</span></button><button id=\"find-needle-btn\" title=\"Recompute compiled rooms (replaces the previous compiled set)\" >💉</button>",
+  "axes": [
+   "1/5 Storey ⇄ Discipline",
+   "2/5 Discipline ⇄ Room",
+   "3/5 Room ⇄ Material",
+   "4/5 Material ⇄ Phase",
+   "5/5 Phase ⇄ Storey",
+   "1/5 Storey ⇄ Discipline"
+  ],
+  "findClosedByX": true
+ },
+ "pageerrors": []
+}

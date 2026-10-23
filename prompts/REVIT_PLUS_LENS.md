@@ -137,3 +137,12 @@ The tasks above are the *bounded build*. The wider conversation that produced th
   - `tests/specs/40-find-isolate.spec.js` — 3 passing whitebox tests (Isolate + room-contents isolate).
   - `/tmp/duplex_ref.db` — fresh reference extraction (ephemeral; re-run extract.py if gone).
   - `docs/RevitParity.md` — the umbrella spec (A1 status + corrected A2 inputs note).
+
+## ⛔ DEVIATION found 2026-10-24 (guide refresh, `prompts/DOCS_GUIDE_REFRESH.md`) — W-PHASE-LAZY's user-visible state is wrong on first open
+Spec W-PHASE-LAZY (above) expects `§PHASE_LENS gen=lazy status="timeline in progress"`. Live (HHS, 90 s watched, no network faults): the Phase axis
+shows **"Timeline unavailable (generator not loaded)."** and keeps showing it; the log says `§PHASE_LENS gen=real source=kernel_ops
+status="generator running async (chunk-yield); reopen to load"` then `async-done ok=true`. Cycling to another axis and back (reopen) shows the timeline:
+Architecture Envelope 1334 · MEP Rough-in 2666 · Superstructure 1967 · Architecture 10 · Architecture Closeup 133 · MEP Final 727 · Finishes 43.
+So generation works; only the first-open message is wrong (`nf_trees.js:622-640`, `_buildPhaseTree` renders the same text for every null, including
+"still generating"). **Fix shape (viewer code, own worktree):** distinguish "running async" from "not loaded", show "Timeline generating…", and re-render
+the tree when `async-done` fires instead of requiring a reopen; witness = open Phase once, assert the phase list appears with no second visit.

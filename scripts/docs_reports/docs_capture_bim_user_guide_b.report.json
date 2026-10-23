@@ -1,0 +1,112 @@
+{
+ "at": "2026-10-23T20:45:31.791Z",
+ "steps": {
+  "loaded": {
+   "building": "Ifc2x3_Duplex_Federated",
+   "elements": 1119
+  },
+  "opened_worldhistory": [
+   "whole-hist-card"
+  ],
+  "worldHistoryText": "History — across pages Whole This page ‹ day Oct 241 day › Viewer Opened Ifc2x3_Duplex_Federated· here 04:46",
+  "opened_pagehistory": [
+   "status-bar-wrap"
+  ],
+  "pageHistoryBar": {
+   "display": "flex",
+   "w": 84,
+   "html": "<button id=\"hist-back\" title=\"Older (←)\" >‹</button><div id=\"hist-marks\" ><button title=\"Opened Ifc2x3_Duplex_Federated\" ></button></div><button id=\"hist-fwd\" title=\"Newer (→)\" >›</button>"
+  },
+  "inspectDrawers": [
+   [
+    "measure|Measure  ·  m",
+    "clash|Clash Matrix  ·  c",
+    "xray|X-Ray / Bbox  ·  Off",
+    "section|Section Cut  ·  x",
+    "tm|Time Machine  ·  t",
+    "report|4D / 5D  ·  4"
+   ]
+  ],
+  "inspectPanels": [
+   "inspect-drawer-panel|230x240"
+  ],
+  "afterClose_inspect": [],
+  "camviewDrawers": [
+   [
+    "precision|Precision (Fine)  ·  Caps Lock",
+    "cam-reset|Reset Camera  ·  a",
+    "cam-pivot|Auto-Pivot  ·  q",
+    "gi-preview|GI Preview (AO)  ·  Alt+G"
+   ]
+  ],
+  "camviewPanels": [
+   "camview-drawer-panel|230x176"
+  ],
+  "camviewRowSel": "#drawer-row-precision",
+  "opened_palette": [
+   "sunglass-slider-panel"
+  ],
+  "paletteText": {
+   "id": "sunglass-slider-panel",
+   "text": "× 0 1.40 0.45 0.25 0.40 Night · n Background · b Sound FX · v"
+  },
+  "paletteButtons": [
+   "|Color Studio|",
+   "|Sun intensity|",
+   "|Exposure|",
+   "|Ambient|",
+   "|Hemisphere|",
+   "|Still Refine (Alt+S)|",
+   "|Populate (Alt+P)|",
+   "|Cinema Orbit|",
+   "drawer-row-night|Night|Night  ·  n",
+   "drawer-row-shadow|Shadow + Ground — cycle Off → Earth → Grass → Paved|",
+   "shadow-ground-cloud-btn||",
+   "shadow-ground-box-earth|Earth|",
+   "shadow-ground-box-grass|Grass|",
+   "shadow-ground-box-paved|Paved|",
+   "drawer-row-background|Background|Background  ·  b",
+   "drawer-row-audio|Sound FX|Sound FX  ·  v"
+  ],
+  "settingsPanels": [
+   "settings-panel|300x860"
+  ],
+  "settingsText": {
+   "id": "settings-panel",
+   "text": "× ▶ Pill Icons ≡ Save Building visible ● shortcut CTRL+S ≡ Open Building visible ● shortcut CTRL+O ≡ Navigate ● ≡ Inspect ● ≡ Palette visible ● shortcut P ≡ Camera / View ● ≡ Share visible ● shortcut / ≡ Settings visible ● shortcut = ≡ Help visible ● shortcut F1 ≡ Sound FX visible ● shortcut V ≡ 4D / 5D visible ● shortcut 4 ≡ Fly Tour visible ● shortcut L ≡ Shadow + Ground visible ● shortcut H ≡ Night visible ● shortcut N ≡ Background visible ● shortcut B ≡ Time Machine visible ● shortcut T ≡ Section Cut visible ● shortcut X ≡ X-Ray / Bbox visible ● shortcut ALT+Z ≡ Measure visible ● shortcut M ≡ Walk ● ≡ Find / Navigate visible ● shortcut F ≡ Role View visible ● shortcut R ≡ World History visible ● shortcut W ≡ Page History visible ● shortcut Z ≡ Precision (Fine) visible ● shortcut CAPS L"
+  },
+  "settingsHeaders": [
+   "DIV#|▶Pill Icons≡Save Buildingvisible●shortcu",
+   "DIV#|▶Pill Icons≡Save Buildingvisible●shortcu",
+   "DIV#|▶Pill Icons",
+   "SPAN#|Pill Icons",
+   "DIV#|▶Edit Project JSON",
+   "DIV#|▶Edit Project JSON",
+   "SPAN#|▶Edit Project JSON",
+   "SPAN#|Edit Project JSON",
+   "DIV#|▶5D Rate Pack",
+   "DIV#|▶5D Rate Pack",
+   "SPAN#|▶5D Rate Pack",
+   "SPAN#|5D Rate Pack",
+   "DIV#|▶Cache Info",
+   "DIV#|▶Cache Info",
+   "SPAN#|▶Cache Info",
+   "SPAN#|Cache Info"
+  ],
+  "jsonHeaderFound": true,
+  "jsonHub": "Edit Project JSON Corporate / Branding ✎ Grid Rules ✎ Clash Rules ✎ Road Standards (ATJ sign table) ✎ Civil Labels (road route / stops) ✎ ERP Globe Bubbles ✎ Sound Effects ✎ 4D Schedule (this building) ✎ ▶5D Rate Pack ▶Cache Info Reset Pill Icons",
+  "opened_share": [],
+  "shareBox": {
+   "x": 480,
+   "y": 86.5,
+   "w": 480,
+   "h": 440.5,
+   "text": "Ifc2x3_Duplex_Federated https://red1oon.github.io/bim-ootb/viewer/viewer.html?db=https%3A%2F%2Fobjectstorage.ap-kulai-2.oraclecloud.com%2Fn%2Fax3cp6tzwuy2%2Fb%2Fbim-ootb%2Fo%2Fbuildings%2FDuplex_extracted.db#cam=48.0,64.0,48.0&tgt=0.0,0.0,0.0 Copy Link Cancel",
+   "kids": [
+    "IMG",
+    "DIV"
+   ]
+  }
+ },
+ "pageerrors": []
+}

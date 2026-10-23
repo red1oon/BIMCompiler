@@ -2702,3 +2702,7 @@ out near zero, MOF-2 is dead on AABBs and would need real mesh occupancy.
   route must be byte-identical to `origin/main`. Free fly is a fallback, never a replacement.
 - Time-to-first-motion on KUL070 before vs after, in ms. If suspect 1 or 2 above is the real cause,
   this is the number that proves it fixed.
+
+## ▶ 2026-10-24 — scrub bar as shipped (guide refresh, `prompts/DOCS_GUIDE_REFRESH.md`)
+Live (Duplex, key L): `#tour-scrub-panel` shows "Aerial sweep 1 (1/10)", 0:00 / 1:25, 10 beat ticks and buttons ✕ close · ↺ restart · ◀◀ prev beat ·
+⏸ play/pause · ▶▶ next beat · 0.5x · 1x · 2x. **There is no loop control**; the guide's earlier "pause/resume and loop" was corrected to "restart".

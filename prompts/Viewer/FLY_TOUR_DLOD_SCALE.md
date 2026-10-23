@@ -3126,3 +3126,7 @@ whose smallest AABB extent clears the 0.12 m "thin" threshold, so they take the 
 wired) is the next measurement, not a guess at a new constant. (b) the demoted-wall-occludes
 question above — a decision, not a measurement. (c) a real PERF run. (d) `occlStructEnabled` stays
 default **FALSE**; arming it is the user's call on these numbers.
+
+## ▶ 2026-10-24 — placement check (guide refresh, `prompts/DOCS_GUIDE_REFRESH.md`)
+Live on Duplex the **Nav LOD (large bldgs) · o** row is in the **Navigate** drawer (beside Fly Tour · l) — placement per the `panels.js` comment dated 2026-07-21 ("listed in Navigate drawer"); the Inspect drawer no
+longer lists Fly Tour. `docs/BIMUserGuide.md` now describes both rows under "The rest of the Navigate drawer".

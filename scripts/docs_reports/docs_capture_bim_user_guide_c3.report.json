@@ -1,0 +1,26 @@
+{
+ "at": "2026-10-23T21:19:24.140Z",
+ "steps": {
+  "loaded": {
+   "building": "TerminalMerged",
+   "elements": 48428
+  },
+  "roomAxis": "3/5 Room ⇄ Material",
+  "roomStoreyTree": "group: | Storey | Type | Path | ▸ | Aras 01 | (12) | ▸ | Aras 02 | (10) | ▸ | Aras 03 | (3) | ▸ | Aras 04 | (3) | ▸ | Aras Bumbung | (1) | ▸ | Aras Tanah | (23)",
+  "typeBtnFound": true,
+  "roomTypeTree": "group: | Storey | Type | Path | ▸ | INTERNAL | (27) | ▸ | INTERNAL_SMALL | (7) | ▸ | SUSPECT_OPEN | (4) | ▸ | SUSPECT_NO_DOOR | (8) | ▸ | Hall / Corridor | (6) | ▸ | Stairs | (17) | ▸ | Lift Shaft | (5) | ▸ | Plant Room | (644)",
+  "noDoorToggle": "▸ SUSPECT_NO_DOOR (8)",
+  "noDoorRooms": [
+   "⚠ Aras 02 R3 ()",
+   "⚠ Aras 03 R2 ()",
+   "⚠ Aras 04 R1 ()",
+   "⚠ Aras 04 R2 ()",
+   "⚠ Aras Bumbung R1 ()",
+   "⚠ Aras Tanah R17 ()",
+   "⚠ Aras Tanah R22 ()",
+   "⚠ Aras Tanah R5 ()"
+  ],
+  "arasPick": "⚠ Aras 02 R3 ()"
+ },
+ "pageerrors": []
+}

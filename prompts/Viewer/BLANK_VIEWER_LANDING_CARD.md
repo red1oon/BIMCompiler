@@ -129,3 +129,7 @@ User confirmed the Blank Viewer opens correctly after the PR #1070 cache-bump. N
 card. (Unrelated low-priority thread the user raised in the same session — an idempiere-seed-db status
 message while at the Viewer — is tracked in `PROGRESS.md`, not here; source not located, user says not
 urgent/not disturbing.)
+
+## ▶ 2026-10-24 — guide follow-up
+`docs/BIMUserGuide.md` did not mention the card; it now lists **Blank Viewer** as the fourth way in (hub screenshot re-shot with the card visible,
+`docs/assets/buildings_page.png`). Card confirmed live on the published hub: "➕ Blank Viewer — Open your own .db file".

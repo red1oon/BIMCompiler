@@ -1107,3 +1107,12 @@ same day as the fix). Lane closed. Still open elsewhere (tracked, not blocking):
 large-group filter-cheap optimization (whole-discipline taps still do per-element overlay
 work), and MOBILE_PERF.md §OPEN LEVERS 2's sql.js-residency baseline + lever 6 (HHS small-
 building stall) — those are perf polish, not hangs.
+
+## ▶ 2026-10-24 — LIVE CHECK from the guide refresh (measured on the published site, HHS_Office_Federated; `prompts/DOCS_GUIDE_REFRESH.md`)
+- §RESOLVED 2026-07-15d is **confirmed live**: HHS shows 5 axes (Storey, Discipline, Room, Material, Phase); there is no Parts axis.
+- Room → Type on HHS (what `docs/BIMUserGuide.md` now quotes): INTERNAL 48 · INTERNAL_SMALL 15 · SUSPECT_OPEN 7 · Restrooms 2 ·
+  SUSPECT_NO_DOOR 2 · SUSPECT_ELONGATED 1 · **Stairs 11** · Lift Shaft 3 · Plant Room 1769. Rooms by storey L1 25 / L2 31 / L3 19 = **75**
+  (the guide had said 105; the 6 compiled-room groups sum to the same 75). Old Parts count "Stairway 20" is now Stairs 11 — a different
+  classifier, not a regression to chase.
+- Retired-axis docs: `VIEWER_FIND_PANEL_PARTS_VERIFICATION.md` archived (`archive/…_archived_2026-10-24.md`).
+  `FIND_PANEL_PLANT_ROOM_GATE_FIX.md` stays live (its word-boundary match is still `_keywordTokenMatch`; `build/building_parts_taxonomy.js:43` ports it).
