@@ -1995,3 +1995,12 @@ Results and PR: appended below at close.
   now re-timed to exactly 22 s.
 - **Still owed for the full film:** the retake in one fresh space after the space-scope fix (§13.6), the clash and refusal
   live, and the real ERP window (W1).
+
+**§13.6 results 2026-10-23 — ✅ DONE (witness).** Logs read after every run.
+- `witness_comm_space_scope.js` (new): `§W-SPACE-SCOPE PASS judged=23 fails=0` (memPipe + folderPipe + stubbed ghPipe guard). Same witness against the
+  PRE-fix modules: `§COMM_SEAL … TAMPERED … refused (GCM)` lines and `🔴 every object is s/<space>/{o,h}/…` / `🔴 X has TWO heads` — the defect, reproduced.
+- Regression: cl1_uu `PASS 23/0`, cl2_order `PASS 12/0`, cl3_store `PASS 25/0`, cl4_admit `PASS 23/0`, cl5_conflict `PASS 12/0`, cl8_opaque `PASS 44/0`
+  (its 2 TAMPERED lines are the deliberate `§OPAQUE-TAMPER` arm, bundle names now `s/<space>/o/…`), real GitHub cl3b `PASS 8/0` (new check: own kid under the old
+  unscoped name refused), real Gmail `§W-GMAIL-LOG PASS 5/5` (its bundle-link regex was `o/…`, caught as a red on first run, fixed).
+- bim-ootb PR #2348 (modules byte-identical): W-FOLDER-2CTX `PASS 16/0`, W-PHONE-PAGE `PASS 18/0` (real GitHub + post box), W-TEAM-SO `PASS 19/0 inconclusive=0`
+  (PR #2347 was on main; `erp/team_sync.js` untouched, only the witness's fake-GitHub kid parser needed the new layout).
