@@ -12,6 +12,7 @@
 # rule_frame_ref (per class mean centre z) so the walker reconciles another shed's frame by its own measured method (§TE-ARC-DATUM).
 # The fixture MESHES are real LOD400 meshes: the sprinkler bound in terminal_rules.db (rule_mesh_binding, the Terminal's geometry), the lamp the component library's pendant
 # (`M_Pendant Light - Hemisphere:150W`, the Duplex's geometry; §D64: the Terminal's recessed troffer read as an air-conditioning panel). The walk resolves each from its named source (§D61 / §D64).
+# §D66: the FP joint mini-BOM (the T_CONNECTOR_ASSEMBLY tee + transition + drop at each head) is projected into rule_joint_piece from the library's ad_bom_child rows, their meshes copied in.
 # Usage: python3 build/bake_farm_rules.py --ref <shed extracted .db> --terminal <terminal_rules.db> --library <component_library.db> --source-geo Duplex=<Duplex_geo.db> --out <farm_rules.db>
 import argparse, hashlib, json, os, sqlite3, sys, datetime
 
@@ -72,6 +73,31 @@ def main():
     out.execute('INSERT INTO rule_routing (disc, from_kind, to_kind, pattern, params_json, n_measured, provenance, src_guids) VALUES (?,?,?,?,?,?,?,?)',
                 ('FP', 'IfcFireSuppressionTerminal', 'FP_MAIN', 'bom-tree', json.dumps(params, sort_keys=True), 0, 'library:component_library.db ad_bom FP_PIPE_ASSEMBLY + SPRINKLER_PENDANT_ASSEMBLY (the Java compiler BOM template); main_side / riser = stated conventions', ''))
     rows.append(('FP', 'bom-tree', params['assembly_height_m'], params['main_dia_mm'], params['branch_dia_mm'], ','.join(roles)))
+    # §D66 the joint mini-BOM: the T_CONNECTOR_ASSEMBLY parts (nested in SPRINKLER_PENDANT_ASSEMBLY as T_ASSEMBLY, ABOVE_CHILD_1 = the head) projected into rule_joint_piece, one row per child, every value a library row:
+    # the product (child_name_pattern -> component_definitions, its geometry_hash), the offset (z_rule OFFSET_<m> = the part centre above the parent tack, the head; dx / dy / dz added, SRS §6.12 tack model), rotation_rule,
+    # and the product mesh's own extents. The meshes ship in this db (component_geometries): the walk's named mesh sources (the Terminal / Duplex geo dbs) do not serve them.
+    import struct
+    for c, t in (('assembly_id', 'TEXT'), ('parent_assembly', 'TEXT'), ('anchor', 'TEXT'), ('sequence', 'INTEGER'), ('role', 'TEXT'), ('product', 'TEXT'), ('geometry_hash', 'TEXT'), ('dx_m', 'REAL'), ('dy_m', 'REAL'), ('dz_m', 'REAL'),
+                 ('rotation_rule', 'TEXT'), ('bbox_x_m', 'REAL'), ('bbox_y_m', 'REAL'), ('bbox_z_m', 'REAL')):
+        out.execute('ALTER TABLE rule_joint_piece ADD COLUMN %s %s' % (c, t))
+    out.execute('CREATE TABLE IF NOT EXISTS component_geometries (geometry_hash TEXT PRIMARY KEY, vertices BLOB, faces BLOB, building TEXT)')
+    nest = q(lib, "SELECT bom_id, z_rule FROM ad_bom_child WHERE child_bom_id='T_CONNECTOR_ASSEMBLY' AND is_active=1")
+    kids = q(lib, "SELECT bom_child_id, child_ifc_class, child_name_pattern, role, sequence, z_rule, dx, dy, dz, rotation_rule FROM ad_bom_child WHERE bom_id='T_CONNECTOR_ASSEMBLY' AND is_active=1 ORDER BY sequence")
+    if not (nest and kids): sys.exit('§FARM-RULES REFUSED: the library has no T_CONNECTOR_ASSEMBLY rows (nest=%s children=%d)' % (nest, len(kids)))
+    for cid, cls, prod, role, seq, zr, dx, dy, dz, rot in kids:
+        om = _re.match(r'^OFFSET_(-?[\d.]+)$', zr or '')
+        d = q(lib, "SELECT geometry_hash FROM component_definitions WHERE name=? ORDER BY id", prod)
+        if not (om and len(d) == 1): sys.exit('§FARM-RULES REFUSED: T_CONNECTOR_ASSEMBLY child %s: z_rule %r / product %r (%d definitions) is not one OFFSET_<m> and one mesh' % (cid, zr, prod, len(d)))
+        gh = d[0][0]; g = q(lib, 'SELECT vertices, faces FROM component_geometries WHERE geometry_hash=?', gh)
+        if not g: sys.exit('§FARM-RULES REFUSED: the library has no geometry for %s (%s)' % (prod, gh))
+        v = struct.unpack('<%df' % (len(g[0][0]) // 4), g[0][0]); ext = [max(v[k::3]) - min(v[k::3]) for k in range(3)]
+        out.execute('INSERT INTO component_geometries (geometry_hash, vertices, faces, building) VALUES (?,?,?,?)', (gh, g[0][0], g[0][1], 'component_library.db'))
+        out.execute('INSERT INTO rule_joint_piece (disc, ifc_class, piece_type, diameter_mm, length_mm, n_measured, source_building, provenance, assembly_id, parent_assembly, anchor, sequence, role, product, geometry_hash, '
+                    'dx_m, dy_m, dz_m, rotation_rule, bbox_x_m, bbox_y_m, bbox_z_m) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                    ('FP', cls, role, round(min(ext[0], ext[1]) * 1000, 2), round(ext[2] * 1000, 2), 0, 'component_library.db',
+                     'library:component_library.db ad_bom_child %d T_CONNECTOR_ASSEMBLY seq %d %s z_rule %s (in %s %s); diameter / length = the product mesh extents (plan min, vertical)' % (cid, seq, prod, zr, nest[0][0], nest[0][1]),
+                     'T_CONNECTOR_ASSEMBLY', nest[0][0], nest[0][1], seq, role, prod, gh, dx or 0.0, dy or 0.0, round((dz or 0.0) + float(om.group(1)), 6), rot, round(ext[0], 6), round(ext[1], 6), round(ext[2], 6)))
+        rows.append(('FP', 'joint', 'T_CONNECTOR_ASSEMBLY', seq, role, prod, gh, round((dz or 0.0) + float(om.group(1)), 4)))
     fr = q(ref, "SELECT m.ifc_class, COUNT(*), AVG(t.center_z) FROM elements_meta m JOIN element_transforms t ON t.guid=m.guid GROUP BY 1 HAVING COUNT(*) >= 5 ORDER BY 1")
     for cls, n, mz in fr: out.execute('INSERT INTO rule_frame_ref (ifc_class, n, mean_z, provenance) VALUES (?,?,?,?)', (cls, n, round(mz, 4), 'measured:AVG(center_z):the farm shed reference model'))
     body = json.dumps({'rows': rows, 'frame': [(c, n, round(z, 4)) for c, n, z in fr]}, sort_keys=True)
