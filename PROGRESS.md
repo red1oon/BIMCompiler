@@ -6,6 +6,9 @@ record the agent + its last finding in `prompts/AGENT_QUEUE.md` §MID-FLIGHT →
 past the reset → resume by `SendMessage` to the agent id (never re-dispatch fresh) → tell the user.
 Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 
+## 🤝 Teamwork comm layer (no DB/app server, just a data relay) — POC done 2026-10-23
+Resume: `prompts/TEAMWORK_FRAMEWORK.md` → **▶ RESUME HERE** block at the top (state, accounts, witnesses, open list). Film: `~/Videos/TheServerIsDead_Essentials_v2_narrated_2026-10-23.mp4`.
+
 ## 📋 The live worklist is `prompts/AGENT_QUEUE.md` — not this file
 It carries §LIVE (which agent owns which files), the waves, the ⛔USER decisions, and the standing
 constraints. A session picking up work reads that; PROGRESS.md is state, not queue.
