@@ -178,6 +178,17 @@ if os.environ.get('FILM_SET') == 'why_ms':
     SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
     NOVEL = {}
     CLIPS = {}
+# §LAST PART of the shed films (bim-ootb prompts/FILM_DXF2BIM_WHY_MARKINGS.md §LAST PART SCRIPT, 2026-10-23): FILM_SET=shedlast, three chapters: assembled, saved and reopened, services walked.
+if os.environ.get('FILM_SET') == 'shedlast':
+    CARDS = {
+        1: ('CHAPTER 1', 'ASSEMBLED', 'FROM 2D', 'Nine marked drawings, one click.'),
+        2: ('CHAPTER 2', 'SAVED,', 'REOPENED AS ARC', 'A building database, editable again.'),
+        3: ('CHAPTER 3', 'SERVICES', 'WALKED', 'Lights and sprinklers from the DISC rows.'),
+    }
+    TAG = {1: 'ASSEMBLED FROM 2D', 2: 'SAVED, REOPENED AS ARC', 3: 'SERVICES WALKED'}
+    SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
 os.makedirs(out, exist_ok=True)
 txt = open(log).read()
 chap = {int(m.group(1)): float(m.group(2)) for m in re.finditer(r'§FILM_CHAPTER n=(\d+) key=\S+ t=([\d.]+)', txt)}
