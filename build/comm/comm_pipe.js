@@ -134,7 +134,42 @@
              _api: api, _refs: refs, branchOf: branchOf };
   }
 
-  var API = { memPipe: memPipe, httpPipe: httpPipe, folderPipe: folderPipe, ghPipe: ghPipe };
+  // ── the reference write gate (TEAMWORK_FRAMEWORK §13.12 A.2 — Witness: W-POLICY-FOLD) ──────────────────────────────
+  // What a post office does so that "who may write junk" is answered WITHOUT knowing what is true: a per-space write token (rotated with
+  // each key epoch, so a revoked device's old token stops working), a max object size and a max puts per device per hour. It wraps ANY pipe
+  // (mem/folder/http), the real GitHub pipe is not touched. gateJson = { token, max_object_bytes?, max_puts_per_hour? }; opts.now() = a clock.
+  // A refused write returns false (like httpPipe on a 4xx) and is listed in gate.refusals — reasons: stale-token, bad-name, oversize, rate.
+  // One put/putMany call = one put (a putMany is one commit). Reads are not gated.
+  function gatedPipe(pipe, gateJson, opts) {
+    var now = (opts && opts.now) || Date.now, cfg = JSON.parse(JSON.stringify(gateJson)), hits = {}, refusals = [], accepted = 0;
+    function check(token, entries) {
+      if (token !== cfg.token) return 'stale-token';
+      var kid = null;
+      for (var e of entries) { var k = _kidOfName(e.name); if (!k || (kid && k !== kid)) return 'bad-name'; kid = k; }
+      if (cfg.max_object_bytes != null) for (var e2 of entries) if (e2.bytes.length > cfg.max_object_bytes) return 'oversize';
+      if (cfg.max_puts_per_hour != null) { var t = now(), w = (hits[kid] = (hits[kid] || []).filter(function (x) { return t - x < 3600000; }));
+        if (w.length >= cfg.max_puts_per_hour) return 'rate'; w.push(t); }
+      return null;
+    }
+    function refuse(why, entries, token) { refusals.push({ reason: why, names: entries.map(function (e) { return e.name; }), token: token }); return false; }
+    return {
+      refusals: refusals,
+      get accepted() { return accepted; },
+      rotate: function (newJson) { cfg = JSON.parse(JSON.stringify(newJson)); },              // a new token (and/or new limits); old tokens are stale at once
+      config: function () { return JSON.parse(JSON.stringify(cfg)); },
+      // the pipe a device sees once it holds a token: same four verbs, writes checked
+      writer: function (token) {
+        var v = { id: pipe.id + '+gate', stats: pipe.stats, list: function (p) { return pipe.list(p); }, get: function (n) { return pipe.get(n); },
+          put: async function (name, bytes) { var en = [{ name: name, bytes: bytes }], why = check(token, en); if (why) return refuse(why, en, token); accepted++; return pipe.put(name, bytes); } };
+        if (typeof pipe.putMany === 'function') v.putMany = async function (entries) { var why = check(token, entries); if (why) return refuse(why, entries, token); accepted++; return pipe.putMany(entries); };
+        return v;
+      }
+    };
+  }
+  // the gate parameters a POLICY carries (policy.params.gate) + the current token → the gateJson a post office loads
+  function gateFromPolicy(policyParams, token) { var g = (policyParams && policyParams.gate) || {}; return { token: token, max_object_bytes: g.max_object_bytes, max_puts_per_hour: g.max_puts_per_hour }; }
+
+  var API = { memPipe: memPipe, httpPipe: httpPipe, folderPipe: folderPipe, ghPipe: ghPipe, gatedPipe: gatedPipe, gateFromPolicy: gateFromPolicy };
   global.CommPipe = API;
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
 })(typeof window !== 'undefined' ? window : globalThis);

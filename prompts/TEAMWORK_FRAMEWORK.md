@@ -2012,6 +2012,33 @@ Anything NOT in this list is decided by peers with the primitives below. Changin
 5. `DERIVED` check (witness `W-LEDGER-TWOSIDES`) · 6. `AUDIENCE` keys (witness `W-READ-SCOPE`: a device without the audience key reads zero bytes of that audience, with a control that it can with the key).
 Recommendation: build 1 → 3 → 2 first (they remove the measured limits and the duplicate-number defect), then 4.
 
+### §13.12.1 build spec — POLICY op, reference write gate, stagger (2026-10-24, Witness: `W-POLICY-FOLD`, `scripts/witness_comm_policy.js`)
+
+**Op.** `POLICY`, identity class (plaintext in bundles, like KEYGRANT; it holds configuration only). Target `{table:'comm_policy', uu: policyUU(space)}` (one record; a new POLICY reads the previous one's version).
+`params = { epoch:int>=1, visit_ms?:int>0 (V), stagger?:'kid-hash-mod-V', bundle_max_ops?:int>=1, gate?:{max_object_bytes?, max_puts_per_hour?}, checkpoint?:{every_ops?, cosigs?}, lease_ttl_ms?:int>0, pipes?:{primary?:string, fallback?:[string]} (informational), manifest?:string (informational), number_prefix?:string (informational) }`.
+Unknown keys are kept and ignored (a newer admin may add values an older device does not know; refusing them would make two devices judge the same op differently).
+
+**Fold (comm_roster.js, inside `walk`, same family as REKEY).** Signer must be a comm-admin (`not-admin`); invalid values → `bad-policy:<field>`; `epoch` must exceed the current one: equal → `epoch-exists` (first in fold order wins an epoch), lower → `epoch-stale`.
+A POLICY **replaces** the previous one entirely (the admin re-sends the full set). `roster.policy = {epoch, params, hash, author}`; `store.policy()` adds `pos` = its fold position, which is the same on every device.
+
+**Pure functions.** `staggerOffset(kid, V)` = FNV-1a-32(kid text) mod V (ms, in `[0,V)`); `store.visitOffset()` applies it to the device's own kid once a policy fixes V. `bundle_max_ops` is applied by `bundleNew` (the rest goes at the next visit; no policy = unchanged behaviour).
+
+**Reference gate (comm_pipe.js).** `gatedPipe(pipe, gateJson, {now})` with `gateJson = {token, max_object_bytes?, max_puts_per_hour?}` wraps ANY pipe (the real GitHub pipe is untouched); `gate.writer(token)` gives the pipe a device sees, `gate.rotate(newJson)` rotates the token.
+A refused write returns `false` (like an HTTP 4xx), is listed in `gate.refusals` with reason `stale-token` | `bad-name` | `oversize` | `rate`, and the visit shows it as `PUT-UNVERIFIED` (not sent, retried next visit). One put/putMany call = one put; the hour is a sliding window of `now()`; reads are not gated. `gateFromPolicy(params, token)` builds the gateJson from a policy.
+
+**Witness arms** (each with a control that can fail): POLICY-FOLD (3 devices: same policy hash and same `pos`; control: before the POLICY op none has one) · NONADMIN (a non-admin POLICY is REFUSED `not-admin` on every device and does not take effect; control: the same params from the admin are MERGED) · EPOCH (a higher epoch wins; a lower and an equal one are refused; the effective policy never goes down; two admins racing the same epoch → one winner on every device) · BADVALUE (`bad-policy:visit_ms`) · UNKNOWNKEY (an unknown key is kept, op MERGED) · STAGGER (deterministic, in `[0,V)`, ≤ 2x the mean per bucket over 100 kids; control: an obviously clustered rule — `kid mod 1` — fails the same spread test) · CAP (`bundle_max_ops=3` → 8 ops go out 3+3+2 and all converge; control: no policy sends 8 at once) · GATE (stale token after rotation, oversize object, the cap+1-th put in an hour; each with a control that the same write succeeds when allowed, and an end-to-end arm through `store.sync` showing the refused visit is retried and delivered with the fresh token) · SKEW (an engine from before this change folds a log that contains POLICY without crashing and refuses it; unknown op types do not crash a newer device).
+
+**Results 2026-10-24** (`node scripts/witness_comm_policy.js`, log `build/comm/logs/witness_comm_policy.log`, read in full): **`§W-POLICY-FOLD PASS judged=32 fails=0 inconclusive=0`**.
+- `§POLICY-FOLD epoch=1/1/1/1 hash=402af596ca ×4 pos=4/4/4/4` (control: `policies=none/none/none` before the op). `§POLICY-NONADMIN verdicts=REFUSED:not-admin ×4 effective epoch(C)=1`, control: the same op from a second admin MERGED, epoch 2.
+- `§POLICY-EPOCH lower=REFUSED:epoch-stale equal=REFUSED:epoch-exists effective epoch=2`; higher epoch 5 wins on all four; race on epoch 6: `A:MERGED D:REFUSED` on all four devices, one winner hash.
+- `§STAGGER V=900000 kids=100 buckets=9,13,13,13,9,7,6,10,8,12 max=13 (mean 10, limit 20)`; the clustered control gives `max=100` and fails the same test.
+- `§CAP bundle_max_ops=3 ops=8 sent per visit=3+3+2+0 A placed=8 B placed=8`; control without policy `sent=8`.
+- `§GATE` stale-token / oversize (1001 B refused, 1000 B stored) / rate (puts 4,5 stored, 6,7 refused; another device unaffected; an hour later allowed) each with its control; end to end through `store.sync`: `stale visit: sent=0 readBackFail=1 outbox=PUT-UNVERIFIED delivery=SAVED` then `fresh visit: sent=2 A placed=2`.
+- `§SKEW old engine` (the engine of commit 34b915fb1 loaded from git, isolated): `crashed=false POLICY op held=1 verdict=REFUSED:scope-unknown business placed=1`; a new device given an unknown op type: `REFUSED:scope-unknown`.
+- **The witness can fail:** with the `not-admin` check removed from the fold and the token check removed from the gate it goes red on 10 arms (`fails=10`, verdict `INCONCLUSIVE` because the race collapsed).
+- *Left out, named:* the real GitHub pipe is not gated (a gate on GitHub is a repo/ruleset matter, not code here); the write token is an opaque string handed out by the gate holder — deriving it from the key epoch (so REKEY rotates it automatically) and mirroring `policy.json` into the post office are **not built**; the device does not pre-split a bundle that is over `max_object_bytes` (use `bundle_max_ops`); `pipes`, `manifest`, `number_prefix` are carried and folded but nothing consumes them yet.
+
+
 ---
 
 ## §14 Showcase film — storyboard v1 (user, 2026-10-23: *"plan the film storyboard for the showcase"*)

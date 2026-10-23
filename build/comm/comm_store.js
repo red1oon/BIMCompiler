@@ -294,6 +294,14 @@
       return r;
     }
     async function setRole(p) { return author({ target: { table: 'comm_person', uu: String(p.person_uu).toLowerCase() }, body: { op_type: 'ROLE', params: p } }); }
+    // §13.12.1: the admin's config op. params = { epoch, visit_ms?, bundle_max_ops?, gate?, checkpoint?, lease_ttl_ms?, pipes?, manifest?, number_prefix? }.
+    // A new POLICY reads the previous one (same record), so concurrent policies show up as heads and the fold keeps one epoch.
+    async function setPolicy(params) { return author({ target: { table: 'comm_policy', uu: await ROS.policyUU(space) }, body: { op_type: 'POLICY', params: params } }); }
+    // the policy as folded: { epoch, params, hash, author } | null — and where it sits in the fold order (the same on every device)
+    async function policy() { var L = await cur(), pol = L.roster.policy; if (!pol) return null;
+      var vr = _q(db, 'SELECT fold_pos FROM cl_verdict WHERE op_hash=?', [pol.hash])[0]; return { epoch: pol.epoch, params: pol.params, hash: pol.hash, author: pol.author, pos: vr ? vr.fold_pos : null }; }
+    // my offset inside the visit period V (ms); null until a policy fixes V
+    async function visitOffset() { var pol = (await cur()).roster.policy; return pol && pol.params.visit_ms ? ROS.staggerOffset(self.kid, pol.params.visit_ms) : null; }
     async function revoke(kid, lastGood) { return author({ target: { table: 'comm_device', uu: await ROS.devUU(kid) }, body: { op_type: 'REVOKE', params: { kid: kid, last_good_seq: lastGood } } }); }
 
     async function ingest(env, pipeId) {
@@ -313,7 +321,9 @@
     async function bundleNew() {
       var me = selfRow(), rows = _q(db, "SELECT op_hash, author_seq, op_type, envelope FROM cl_op WHERE author_kid=? AND state='OWN' AND author_seq>? ORDER BY author_seq", [self.kid, me.bundled_to]);
       var R = (await cur()).roster, ring = await keyring(), ep = _newest(ring), take = [], enc = {};
+      var cap = R.policy && R.policy.params.bundle_max_ops ? R.policy.params.bundle_max_ops : Infinity;     // §13.12.1: the rest goes out at the next visit
       for (var r of rows) {
+        if (take.length >= cap) break;
         if (!ROS.IDENTITY[r.op_type]) {
           if (!R.ok || R.encrypted) { if (ep == null) { log('§COMM_SEAL kid=' + self.kid + ' hold seq=' + r.author_seq + ' reason=no-key-yet'); break; }
             enc[r.op_hash] = await _seal(JSON.parse(r.envelope), ring[ep][0], ep, space); }
@@ -461,7 +471,7 @@
     function verdicts() { return _q(db, 'SELECT * FROM cl_verdict'); }
 
     return { kid: self.kid, space: space, db: db, author: author, ingest: ingest, order: order, frontier: frontier, versions: versions, gaps: gaps,
-             genesis: genesis, addPerson: addPerson, enroll: enroll, setRole: setRole, revoke: revoke,
+             genesis: genesis, addPerson: addPerson, enroll: enroll, setRole: setRole, revoke: revoke, setPolicy: setPolicy, policy: policy, visitOffset: visitOffset,
              keyring: keyring, sealed: function () { return _q(db, 'SELECT op_hash, epoch, bundle FROM cl_sealed'); },
              bundleNew: bundleNew, readBundle: readBundle, signedHead: signedHead, sync: sync, delivery: delivery, placedEnvelopes: placedEnvelopes,
              conflicts: conflicts, foldable: foldable, notices: notices, saveCheck: saveCheck,
