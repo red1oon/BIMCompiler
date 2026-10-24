@@ -11,7 +11,33 @@
 
 ---
 
-## ▶ RESUME HERE (written 2026-10-23 at session close — read this block first, then the § it points to)
+## ▶ RESUME HERE — 2026-10-24 session close (read this first; the 2026-10-23 block below it is still valid for what it covers)
+
+**State in one line:** the comm layer (no DB/app server, a dumb post office + signed per-device ops) now has a Team pill + in-panel desktop pairing (no phone), document actions, a Modeller adapter, a people strip, and the "elegant frame" engine steps (POLICY+gate, CHECKPOINT, KEYCLAIM, BOOKING/putIfAbsent, BASE hash + base-row scope). Six films exist. Design for the rest is in §13.12 (A–J).
+
+**Shipped this session (all witnessed; merged unless noted)** — bim-ootb PRs #2352 W2 doc actions · #2355 Team pill/defaults/trial · #2357 in-panel pairing · #2358 Modeller team mode · #2360 chain-verify fix · #2362 people strip + role scope · #2364 policy/checkpoint/keyclaim/booking · #2365 base hash + base-row scope; bim-compiler PRs #247–#254 (specs, films, engine). Spec sections: §13.7 · §13.8 · §13.9 · §13.10 (office-day numbers) · §13.11 (14 gaps vs legacy) · §13.12 A–J · §14.5 (UI, parked) · §14.6 · §15 · §15.12–15.13.
+
+**Films (in ~/Videos, all sent to the user):** `TheServerIsDead_ERP_Desktop_narrated_2026-10-24_v2.mp4` (3:14, good) · `TheServerIsDead_Modeller_part2_narrated_2026-10-24.mp4` (2:23; first cut `…Modeller_narrated…` 2:38) · `MicroFinance_SlipRoundTrip_BehindTheScenes_EN_2026-10-24.mp4` (3:32, admin/dev) · earlier `TheServerIsDead_Essentials_v1/v2_2026-10-23.mp4`. User wants later films to be "part 2 onwards" (skip the part-1 explanation; one recap card reusing the ERP film's image).
+
+**Open, in order (the next session picks the top one)**
+1. **ESCROW + `W-INVARIANTS-CHAOS`** (§13.12.J.1/J.3) — an agent was mid-build at close; read §13.12.J.3 "status" for exactly where it stopped, its branches (`feat/comm-escrow` in bim-compiler and bim-ootb, worktree `/tmp/wt-escrow-ootb`) and whether anything is merged. Do NOT assume it is green. Then: wire the ERP `m_storagereservation` Complete to `ESCROW_USE` (host step).
+2. **Build the numbering in the ERP** (`team_sync.js` calling `store.numberDocument`, AD_Sequence modes S/B/K per §13.12.F) — engine part is done.
+3. **Event versioning** (`W-OP-VERSIONS`, §13.12.J.2 amended: separate schema/rules versions, declarative signed upcasters, parking policy, provisional ledger) — design only.
+4. **Role scope uses 3–5** (tiered cadence, selective fetch by head summary, notification routing; §13.12.H) — only (1)(2) are built.
+5. **Base releases / fast-forward, thin base, serving the base via the POLICY directory, Modeller base wiring** (§13.12.I).
+6. **Audience keys** (read isolation, gap 9); sealing the focus board (people-strip limit L1); `policy.json` mirror in the post office; write token derived from the key epoch; ghPipe CAS for `putIfAbsent`.
+7. **⛔ User-owned:** create the fine-grained token for `red1oon/bim-teams-trial` and paste it into `common/comm/team_defaults.js` (panel says "Trial key not installed" until then). Real-phone measurements (Android background-sync interval; fold speed on a phone) for both the team layer and the news board.
+8. **Micro Finance** (`~/Projects/ThaiGoldPawn`, NOT a git repo; mockup repo has a PUBLIC remote): everything is on the LOCAL branch `news-board` of `mockup/` (head `e5d74b0`, never pushed — deploying is the user's call). Spec §25–§25.14, scripts `film/news/news_en_v1…v3.tsv`, 61 witness groups / 714 PASS in `tools/run_all.sh`. Not built: signed `policy.json`, per-ticket CHECKPOINT, capability re-grant after re-enrolment, outbox persistence across reload.
+
+**Known measured limits (don't rediscover):** a no-news visit re-folds the whole log (≈0.18–0.34 ms/op in node; checkpoint flattens it; publishing a checkpoint is still O(|S|) and a save is still O(log)); GitHub as pipe holds ~31 devices per account at V=15 (125/h pushes), web relay/bucket ~100 with staggered visits (requests grow with N²); email path limited by postbox processing (assumed 1 s/mail ⛔ unmeasured); focus board works on folder/mem/http pipes and now ghPipe name class `f` (one-line change in #2365); the Complete's workflow rows (`ad_wf_*`) are still local-only.
+
+**Lessons from this session (the education to keep):** (1) a green witness can hide a red log line — assert the `verifyChain=ok` line explicitly (found by the film agent: `rebuildSide` persisted tombstones after sealing); (2) film footage is a witness too — the agents' `§FILM_CUE/§FILM_STATE` pinning caught narration running 5 s ahead of the picture; (3) the bad spec example (§13.12.H accounts collapsed on the warehouse device) was found only because the build agent implemented the rule literally — implement-literal-then-compare beats re-reading; (4) an outside LLM opinion is useful for the question it raises, not for its numbers (§13.12.J); (5) an engine file edited by two agents at once is the real collision risk — queue engine steps, parallelise only host/UI work.
+
+**Housekeeping at close:** merged PR worktrees pruned; unmerged escrow worktree kept on purpose. `/tmp/wt-base`, `/tmp/wt-basemain`, `/tmp/wt-d73`, `/tmp/wt-d78`, `/tmp/wt-preD59` belong to other sessions — untouched.
+
+---
+
+## ▶ EARLIER RESUME (written 2026-10-23 at session close — still valid for what it covers: ids, accounts, the Gmail post box, the first witnesses)
 
 **State in one line:** the local comm layer — a team ERP/BIM sync with **no DB server and no app server, just a data
 relay** — is built, encrypted, witnessed, running on a real GitHub repo and a real Gmail post box, wired into the real
