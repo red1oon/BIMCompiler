@@ -3,7 +3,7 @@
 // film lib: static server + dumb folder pipe + fake-GitHub stand-in (copied from modeller/tests/witness_team_modeller.js, not edited there)
 'use strict';
 var path = require('path'), http = require('http'), fs = require('fs'), os = require('os'), crypto = require('crypto');
-var ROOT = '/tmp/wt-film-hhs';
+var ROOT = process.env.FILM_ROOT || '/tmp/wt-team-icon';
 var MIME = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.wasm': 'application/wasm', '.png': 'image/png', '.css': 'text/css' };
 function walk(d, rel, out) { if (!fs.existsSync(d)) return out; fs.readdirSync(d).forEach(function (n) { var p = path.join(d, n), r = rel ? rel + '/' + n : n;
   if (fs.statSync(p).isDirectory()) walk(p, r, out); else out.push(r); }); return out; }

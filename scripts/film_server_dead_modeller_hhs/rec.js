@@ -1,4 +1,4 @@
-// Film recorder: "The Server is Dead - the Modeller, part 3: a real building" (TEAMWORK_FRAMEWORK §15.14).
+// Film recorder: "The Server is Dead - the Modeller, part 3: a real building" (TEAMWORK_FRAMEWORK §15.14, retake §15.15.4: the ONE Team icon + built-in avatars).
 // Two real browser contexts = User A / User B, ONE fresh space; both open the REAL HHS Office ARC model (1077 seeded elements) in the real modeller.html?team=1.
 // Wings: north / west / south of the C-shaped Level-1 footprint (numbers: slab extents in modeller/HHS_ARC.db). A works the north wing; B the west and south wings.
 // Shared = what the team DRAWS (blocks, made by the Modeller's own command) and MOVES (real gizmo drags). The seeded building is the common base: moving one of its walls stays local-only.
@@ -13,6 +13,7 @@ var W = 960, H = 640;
 var cues = [], states = [], T0 = 0, names = {}, extra = {};
 function now() { return (Date.now() - T0) / 1000; }
 function cue(name, x) { var t = now(); cues.push({ name: name, t: +t.toFixed(3) }); console.log('§FILM_CUE ' + name + ' t=' + t.toFixed(2) + (x ? ' ' + x : '')); return t; }
+var BLURCSS = '(function(){document.addEventListener("DOMContentLoaded",function(){var s=document.createElement("style");s.textContent="#tp-link,#tp-inv,#tp-token,input[type=password]{filter:blur(8px)!important}";document.head.appendChild(s)})})()';
 var CURSOR = '(function(){var d;function mk(){if(d||!document.documentElement)return;d=document.createElement("div");d.style.cssText="position:fixed;width:20px;height:20px;border-radius:50%;background:rgba(255,196,60,.8);border:2px solid #fff;pointer-events:none;z-index:2147483647;transform:translate(-50%,-50%);left:-60px;top:-60px;box-shadow:0 0 6px #000";document.documentElement.appendChild(d)}'
   + 'function mv(e){mk();if(!d)return;d.style.left=e.clientX+"px";d.style.top=e.clientY+"px"}'
   + 'window.addEventListener("pointermove",mv,true);window.addEventListener("mousemove",mv,true);window.addEventListener("pointerdown",function(e){mv(e);if(d){d.style.background="rgba(255,70,50,.9)";d.style.width=d.style.height="14px"}},true);'
@@ -21,6 +22,7 @@ var CURSOR = '(function(){var d;function mk(){if(d||!document.documentElement)re
 function wingOf(x, y) { return y >= 31 ? 'north' : (y <= -3.5 ? 'south' : 'west'); }
 var GEO = process.env.HOME + '/.cache/bim-modeller-geo/v3_HHS_geo.db';
 // the five team blocks (x0, y0, w, h in metres; depth = height)
+var AVATAR = { A: 'a02', B: 'a12' };   // what the two people pick in the panel (real clicks on the grid)
 var BLOCKS = [
   { name: 'N1', who: 'A', x: 2, y: 37, w: 4.8, h: 1.4, d: 1.0 }, { name: 'N2', who: 'A', x: 12, y: 38, w: 2, h: 2, d: 1.0 },
   { name: 'W1', who: 'B', x: -10, y: 12, w: 2, h: 4, d: 1.0 }, { name: 'S1', who: 'B', x: 28, y: -9.6, w: 5, h: 1.4, d: 1.0 }, { name: 'S2', who: 'B', x: 40, y: -10, w: 2, h: 2, d: 1.0 }];
@@ -34,7 +36,7 @@ var BLOCKS = [
     await ctx[w].route('https://api.github.com/**', S.fakeGh);
     await ctx[w].route('https://objectstorage.ap-kulai-2.oraclecloud.com/**', function (r) { var u = r.request().url();   // the geometry file of the resident, from the local cache (same bytes the OCI bucket serves)
       if (/HHS_geo\.db/.test(u)) r.fulfill({ status: 200, body: fs.readFileSync(GEO), headers: { 'access-control-allow-origin': '*', 'content-type': 'application/octet-stream' } }); else r.abort(); });
-    await ctx[w].addInitScript(CURSOR); pg[w] = await ctx[w].newPage();
+    await ctx[w].addInitScript(CURSOR); await ctx[w].addInitScript(BLURCSS); pg[w] = await ctx[w].newPage();
     (function (x) { pg[x].on('console', function (m) { var t = m.text(); logs[x].push({ t: now(), s: t }); if (/§TEAM_|§COMM_SYNC|§PEOPLE_VIEW|§ARC-SEED /.test(t)) console.log('   [' + x + '] ' + t.slice(0, 230)); });
       pg[x].on('pageerror', function (e) { errors++; console.log('   [' + x + '] 🔴 PAGEERR ' + e.message); logs[x].push({ t: now(), s: 'PAGEERR ' + e.message }); }); pg[x].on('dialog', function (d) { d.accept().catch(function () {}); }); })(w);
   }
@@ -45,7 +47,7 @@ var BLOCKS = [
 
   // ── helpers ──
   async function glide(w, x, y, steps) { await pg[w].mouse.move(x, y, { steps: steps || 14 }); }
-  async function clickEl(w, sel) { var b = await pg[w].locator(sel).first().boundingBox(); await glide(w, b.x + b.width / 2, b.y + b.height / 2); await sleep(250); await pg[w].mouse.down(); await sleep(90); await pg[w].mouse.up(); }
+  async function clickEl(w, sel) { await pg[w].locator(sel).first().scrollIntoViewIfNeeded().catch(function () {}); var b = await pg[w].locator(sel).first().boundingBox(); await glide(w, b.x + b.width / 2, b.y + b.height / 2); await sleep(250); await pg[w].mouse.down(); await sleep(90); await pg[w].mouse.up(); }
   async function blur(w) { await pg[w].addStyleTag({ content: '#invite,#invite-link,#token,#pb-url,#pb-secret,input[type=password]{filter:blur(9px)!important}' }); }
   async function ready(p) { await p.waitForSelector('body[data-ready="1"]', { timeout: 120000 }); }
   async function press(w, sel) { await clickEl(w, sel); await ready(pg[w]); }
@@ -63,7 +65,7 @@ var BLOCKS = [
   }
   async function conflicts(w) { return pg[w].evaluate(async function () { var cf = await window.TeamSyncModeller.store().conflicts(); return cf.length; }); }
   async function chip(w) { return pg[w].evaluate(function () { var c = document.getElementById('team-chip'); return c ? { conflicts: Number(c.getAttribute('data-conflicts')), localonly: Number(c.getAttribute('data-localonly')) } : null; }); }
-  async function banner(w) { return pg[w].evaluate(function () { var b = document.getElementById('team-headsup'); if (!b) return null; var r = b.getBoundingClientRect(); return { text: b.textContent.replace(/\s+/g, ' ').trim(), rect: [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)] }; }); }
+  async function banner(w) { return pg[w].evaluate(function () { var b = document.getElementById('team-headsup'); if (!b) return null; var r = b.getBoundingClientRect(); var av = b.querySelector('.tp-avatar'); return { text: b.textContent.replace(/\s+/g, ' ').trim(), av: av ? av.getAttribute('data-avatar') : null, rect: [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)] }; }); }
   async function peopleRows(w) { return pg[w].evaluate(function () { var p = document.getElementById('team-people'); if (!p || getComputedStyle(p).display === 'none') return null;
     return Array.prototype.map.call(p.querySelectorAll('.tp-person'), function (r) { return { name: r.querySelector('.tp-name').textContent.trim(), active: (r.querySelector('.tp-active') || {}).textContent, self: r.getAttribute('data-self') === '1', off: r.getAttribute('data-off') === '1', badges: r.querySelectorAll('.tp-badge').length, text: r.textContent.replace(/\s+/g, ' ').trim().slice(0, 140) }; }); }); }
   async function wallPos(w, id) { return pg[w].evaluate(function (i) { var T = window.THREE, m = window.Bonsai.meshFor(i); if (!m) return null; var b = new T.Box3().setFromObject(m), c = b.getCenter(new T.Vector3()), d = window.Bonsai.oplog.moveDeltaFor(i); return { centre: [c.x, c.y, c.z], off: [d.dx, d.dy, d.dz] }; }, id); }
@@ -78,11 +80,12 @@ var BLOCKS = [
     }
     return out;
   }
+  function pstate(beat, who, lines) { var t = now(); states.push({ t: +t.toFixed(2), beat: beat, who: who, lines: lines, el: {}, conf: 0, chipConflicts: 0, chipLocalOnly: 0 }); console.log('§FILM_STATE t=' + t.toFixed(2) + ' beat=' + beat + ' who=' + who + ' ' + JSON.stringify(lines)); }   // readings of the pairing / avatar part (no blocks yet): the lines the film prints under the pane
   var vn = 0;
   async function visit(w) { var k = ++vn, n0 = logs[w].length; cue('V' + k + '_' + w + '_in'); await clickEl(w, '#team-visit'); var l = await waitLog(w, /§TEAM_VISIT /, n0, 90000); cue('V' + k + '_' + w + '_got'); await pg[w].evaluate(function () { return window.TeamSyncModeller.settle(); }); await sleep(700); cue('V' + k + '_' + w + '_out'); return l; }
   async function overview(w) {   // camera only + the film's block markers (one ring per team block that THIS window holds, at its live centre)
     var bl = await blocksOf(w), mk = bl.filter(function (x) { return x.centre; }).map(function (x) { var nm = names[x.uu] || '?', def = BLOCKS.filter(function (b) { return b.name === nm; })[0]; return { x: x.centre[0], y: x.centre[1], z: x.centre[2], name: nm, who: def ? def.who : '?' }; });
-    await pg[w].evaluate(function (mk) { window.__filmMarks = mk; var A = window.A, c = A.camera, t = A.controls.target; c.position.set(20, -6, 80); t.set(20, 14, 0); A.controls.update(); if (A.requestRender) A.requestRender(); }, mk); await sleep(450); }
+    await pg[w].evaluate(function (o) { var mk = o.mk, av = o.av; window.__filmMarks = mk; window.__filmAvatars = av; var A = window.A, c = A.camera, t = A.controls.target; c.position.set(20, -6, 80); t.set(20, 14, 0); A.controls.update(); if (A.requestRender) A.requestRender(); }, { mk: mk, av: AVATAR }); await sleep(450); }
   async function viewOn(w, c) { await pg[w].evaluate(function (c) { var A = window.A; A.camera.position.set(c[0], c[1] - 1.8, c[2] + 8.6); A.controls.target.set(c[0], c[1], c[2]); A.controls.update(); if (A.requestRender) A.requestRender(); }, c); await sleep(450); }
   async function command(w, b) {
     var id = await pg[w].evaluate(async function (a) { var c = await window.Bonsai.oplog.commit({ op_type: 'GEOM_EXTRUDE_POLY', parameters: { profile: { points: [[a.x, a.y], [a.x + a.w, a.y], [a.x + a.w, a.y + a.h], [a.x, a.y + a.h]] }, depth: a.d } }); await window.TeamSyncModeller.settle(); return c && c.id; }, b);
@@ -94,11 +97,11 @@ var BLOCKS = [
   async function project(w, id, off) { return pg[w].evaluate(function (a) { var T = window.THREE, cam = window.A.camera, cv = document.getElementById('c'), r = cv.getBoundingClientRect();
     var m = window.Bonsai.meshFor(a.i), b = new T.Box3().setFromObject(m), c = b.getCenter(new T.Vector3()); var v = new T.Vector3(c.x + a.off[0], c.y + a.off[1], c.z + a.off[2]).project(cam); return [r.left + (v.x + 1) / 2 * r.width, r.top + (1 - v.y) / 2 * r.height]; }, { i: id, off: off }); }
   var gn = 0, drags = [], isoCount = {};
-  async function gizmoDrag(w, id, axis, dist, label) {   // select with the Modeller's own call, Move mode, then a REAL gizmo drag; returns the offset before/after and whether the op was sent
+  async function gizmoDrag(w, id, axis, dist, label, iso) {   // select with the Modeller's own call, Move mode, then a REAL gizmo drag; returns the offset before/after and whether the op was sent
     var g = ++gn, n0 = logs[w].length; cue('G' + g + '_' + w + '_sel_in');
     await selectApi(w, id); await clickEl(w, '#b-move'); await sleep(300);
     var cen = await pg[w].evaluate(function (i) { var T = window.THREE, b = new T.Box3().setFromObject(window.Bonsai.meshFor(i)), c = b.getCenter(new T.Vector3()); return [c.x, c.y, c.z]; }, id);
-    await viewOn(w, cen); await settleCam(w); cue('G' + g + '_' + w + '_sel_done');
+    await viewOn(w, cen); await settleCam(w); if (iso) await isolateWall(w, iso.id, iso.x, iso.y0, iso.y1, iso.z); cue('G' + g + '_' + w + '_sel_done');   // iso: the dragged wall alone, bright, with a dashed line where it started — so the drag READS as a drag
     var A3 = axis === 'x' ? [1, 0, 0] : axis === 'y' ? [0, 1, 0] : [0, 0, 1];   // grab the axis SHAFT where the gizmo really has it (its own mesh, read from the scene), release at shaft + dist
     var hp = await pg[w].evaluate(function (a) { var T = window.THREE, best = null; window.A.scene.updateMatrixWorld(true);
       window.A.scene.traverse(function (o) { if (o.isMesh && o.userData && o.userData.moveAxis === a.axis) { var b = new T.Box3().setFromObject(o), c = b.getCenter(new T.Vector3()), d = Math.hypot(c.x - a.c[0], c.y - a.c[1], c.z - a.c[2]); if (!best || d < best.d) best = { d: d, c: [c.x, c.y, c.z] }; } }); return best; }, { axis: axis, c: cen });
@@ -114,7 +117,7 @@ var BLOCKS = [
     await pg[w].evaluate(function () { return window.TeamSyncModeller.settle(); }); await sleep(500);
     var after = await pg[w].evaluate(function (i) { var d = window.Bonsai.oplog.moveDeltaFor(i); return [d.dx, d.dy, d.dz]; }, id); cue('G' + g + '_' + w + '_out');
     console.log('§FILM_DRAG who=' + w + ' ' + label + ' axis=' + axis + ' asked=' + dist + ' offsetBefore=' + JSON.stringify(r3(before)) + ' offsetAfter=' + JSON.stringify(r3(after)) + ' sent=' + (out ? out.slice(0, 90) : (lo ? 'LOCAL-ONLY ' + lo.slice(0, 120) : 'NOT SENT')));
-    await pg[w].keyboard.press('Escape'); await sleep(250); await deselect(w); await overview(w);
+    await pg[w].keyboard.press('Escape'); await sleep(250); await deselect(w); if (!iso) await overview(w);
     var res = { who: w, label: label, axis: axis, asked: dist, before: before, after: after, sent: !!out, local: !!lo, nLocal: logs[w].slice(n0).filter(function (x) { return /§TEAM_LOCALONLY op=GEOM_MOVE/.test(x.s); }).length }; drags.push(res); return res;
   }
   // film aids on a freshly opened Modeller: section clip (view only), folded outliner, wing labels that follow the camera
@@ -130,9 +133,10 @@ var BLOCKS = [
       (function tick() {
         var rf = window.__filmRef; if (rf) { var cr = document.getElementById('c').getBoundingClientRect(), pp = [rf.p0, rf.p1].map(function (p) { var v = new T.Vector3(p[0], p[1], p[2]).project(A.camera); return [cr.left + (v.x + 1) / 2 * cr.width, cr.top + (1 - v.y) / 2 * cr.height]; }), dx = pp[1][0] - pp[0][0], dy = pp[1][1] - pp[0][1]; ref.style.display = 'block'; ref.style.left = pp[0][0] + 'px'; ref.style.top = pp[0][1] + 'px'; ref.style.height = Math.hypot(dx, dy) + 'px'; ref.style.transform = 'rotate(' + (Math.atan2(-dx, dy) * 180 / Math.PI) + 'deg) '; refl.style.display = 'block'; refl.style.left = (pp[0][0] + 12) + 'px'; refl.style.top = (pp[0][1] - 30) + 'px'; refl.textContent = rf.text; } else { ref.style.display = 'none'; refl.style.display = 'none'; }
         var mk = window.__filmMarks || [], cam0 = A.camera, cv0 = document.getElementById('c'), r0 = cv0.getBoundingClientRect(), far0 = cam0.position.z > 40;
-        while (mels.length < mk.length) { var e = document.createElement('div'); e.style.cssText = 'position:fixed;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;box-sizing:border-box'; var l = document.createElement('div'); l.style.cssText = 'position:absolute;left:50%;top:-18px;transform:translateX(-50%);font:700 15px "Liberation Sans Narrow",sans-serif;text-shadow:0 0 3px #000,0 0 6px #000;white-space:nowrap'; e.appendChild(l); mroot.appendChild(e); mels.push(e); }
+        while (mels.length < mk.length) { var e = document.createElement('div'); e.style.cssText = 'position:fixed;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:50%;box-sizing:border-box;overflow:visible'; var av = document.createElement('div'); av.style.cssText = 'width:40px;height:40px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 3px #fff,0 0 8px 2px #000'; e.appendChild(av); var l = document.createElement('div'); l.style.cssText = 'position:absolute;left:50%;top:-20px;transform:translateX(-50%);font:700 15px "Liberation Sans Narrow",sans-serif;text-shadow:0 0 3px #000,0 0 6px #000;white-space:nowrap;color:#fff'; e.appendChild(l); mroot.appendChild(e); mels.push(e); }
         mels.forEach(function (e, i) { var m = mk[i]; if (!m || !far0) { e.style.display = 'none'; return; } var v = new T.Vector3(m.x, m.y, m.z).project(cam0), col = m.who === 'A' ? '#ffb35c' : '#6cc6ff';
-          e.style.display = 'block'; e.style.left = (r0.left + (v.x + 1) / 2 * r0.width) + 'px'; e.style.top = (r0.top + (1 - v.y) / 2 * r0.height) + 'px'; e.style.border = '3px solid ' + col; e.firstChild.style.color = col; e.firstChild.textContent = m.name; });
+          e.style.display = 'block'; e.style.left = (r0.left + (v.x + 1) / 2 * r0.width) + 'px'; e.style.top = (r0.top + (1 - v.y) / 2 * r0.height) + 'px'; e.lastChild.style.color = col; e.lastChild.textContent = m.name;
+          if (e.getAttribute('data-who') !== m.who) { e.setAttribute('data-who', m.who); var id = (window.__filmAvatars || {})[m.who]; e.firstChild.innerHTML = (id && window.TeamAvatars) ? window.TeamAvatars.svg(id, 40) : ''; e.firstChild.style.boxShadow = '0 0 0 3px ' + col + ',0 0 8px 2px #000'; } });
          var cam = A.camera, cv = document.getElementById('c'), r = cv.getBoundingClientRect(), far = cam.position.z > 40;
         defs.forEach(function (d, i) { var v = new T.Vector3(d[1], d[2], 0.5).project(cam); els[i].style.display = far ? 'block' : 'none'; els[i].style.left = (r.left + (v.x + 1) / 2 * r.width) + 'px'; els[i].style.top = (r.top + (1 - v.y) / 2 * r.height) + 'px'; });
         requestAnimationFrame(tick); })();
@@ -145,34 +149,56 @@ var BLOCKS = [
       window.__filmMarks = []; window.__filmRef = { p0: [a.x, a.y0, a.z], p1: [a.x, a.y1, a.z], text: 'where the wall started' }; if (window.A.requestRender) window.A.requestRender(); return { vis: vis, tot: tot }; }, { id: id, x: x, y0: y0, y1: y1, z: z });
     console.log('§FILM_ISOLATE who=' + w + ' wall=' + id + ' visibleMeshes=' + r.vis + ' of ' + r.tot); isoCount[w] = r; await sleep(500);
   }
-  async function openModeller(w) {
-    await pg[w].goto(base + '/modeller/modeller.html?team=1&pipe=' + encodeURIComponent(S.PIPE), { waitUntil: 'load' });
-    await pg[w].waitForFunction(function () { return window.Bonsai && window.Bonsai.oplog && window.KernelOps && window.Bonsai.group && window.A && window.A.camera; }, null, { timeout: 90000 });
-    await pg[w].waitForSelector('#team-chip[data-team="ready"]', { timeout: 60000 }); await sleep(900);
+  async function loadPlain(w, url) {   // the Modeller as a user opens it: no ?team=1, nothing but the page (and, for B, the invite link)
+    await pg[w].goto(url, { waitUntil: 'load' });
+    await pg[w].waitForFunction(function () { return window.Bonsai && window.Bonsai.oplog && window.KernelOps && window.Bonsai.group && window.A && window.A.camera && window.TeamPanel; }, null, { timeout: 90000 }); await sleep(900);
   }
+  async function iconState(w) { return pg[w].evaluate(function () { var b = document.getElementById('b-teams'); return b ? { st: b.getAttribute('data-team-state'), pressed: b.getAttribute('aria-pressed'), n: document.querySelectorAll('#b-teams').length, toggle: !!document.getElementById('team-people-toggle') } : null; }); }
+  async function openPanelViaIcon(w) {   // enrolled: icon -> popover -> "Team settings" -> panel; not enrolled: icon -> panel
+    await clickEl(w, '#b-teams'); await sleep(500);
+    if (await pg[w].locator('#tp-settings').count()) { await sleep(700); await clickEl(w, '#tp-settings'); }
+    await pg[w].waitForSelector('#team-panel', { timeout: 30000 }); await sleep(500);
+  }
+  async function closePanel(w) { await clickEl(w, '#tp-close'); await sleep(300); }
   async function openHHS(w) {
     cue('OPEN_' + w + '_in'); var n0 = logs[w].length; await clickEl(w, '#b-open'); await sleep(500); await clickEl(w, '#m-open-panel .mo-row[data-key="HHS"]');
     var l = await waitLog(w, /§ARC-SEED building=HHS/, n0, 90000); await sleep(3500); await filmAids(w); await overview(w); await settleCam(w); cue('OPEN_' + w + '_out'); return l;
   }
 
-  // ═══ PAIRING (test bench; not in the film: "same as part two") ═══
-  var phone = base + '/common/comm/comm_phone.html?gap=0';
-  cue('S_pair1_in');
-  await both(function (w) { return pg[w].goto(phone); }); await both(function (w) { return ready(pg[w]); });
-  for (var w of ['A', 'B']) { await pg[w].fill('#token', 'fake-token-local-folder'); await blur(w); }
-  await clickEl('A', '#b-token'); await ready(pg.A); await press('A', '#b-found'); await blur('A');
-  var invite = await pg.A.inputValue('#invite-link');
-  await pg.B.goto(invite.replace(/^https?:\/\/[^/]+/, base).replace('#', '?gap=0#')); await pg.B.reload(); await ready(pg.B);
-  if (await pg.B.locator('#token').isVisible()) { await pg.B.fill('#token', 'fake-token-local-folder'); await blur('B'); await press('B', '#b-token'); } else { await blur('B'); }
-  await press('B', '#b-join'); var code = (await pg.B.textContent('#mycode')).trim(); console.log('§FILM_PAIR B code=' + code);
-  await press('A', '#b-requests'); await sleep(800);
-  var codes = await pg.A.$$eval('#requests .request .code', function (els) { return els.map(function (e) { return e.textContent.trim(); }); }); console.log('§FILM_PAIR A sees requests=' + JSON.stringify(codes));
-  await pg.A.selectOption('#requests .request:has-text("' + code + '") .req-role', '102').catch(function () {});
-  await clickEl('A', '#requests .request:has-text("' + code + '") .b-approve'); await ready(pg.A); await press('B', '#b-visit');
-  var pst = (await pg.B.textContent('#pair-state')).trim(); console.log('§FILM_PAIR B state=' + pst); cue('S_pair1_out');
+  // ═══ THE ONE TEAM ICON (§15.15.1): turn on -> Start a team -> invite -> Join -> Approve -> Visit -> pick avatars ═══
+  var MOD = base + '/modeller/modeller.html?pipe=' + encodeURIComponent(S.PIPE);
+  cue('S_load_in'); await both(function (w) { return loadPlain(w, MOD); }); var st0 = { A: await iconState('A'), B: await iconState('B') }; console.log('§FILM_ICON before ' + JSON.stringify(st0)); await sleep(1200); cue('S_load_out');
+  cue('P_icon_in'); await clickEl('A', '#b-teams'); await pg.A.waitForSelector('#team-panel', { timeout: 30000 }); await sleep(2600);
+  var panelOff = await pg.A.evaluate(function () { return { state: document.getElementById('tp-state').textContent, mode: document.getElementById('tp-mode').textContent, found: !!document.getElementById('tp-found') }; }); console.log('§FILM_PANEL off ' + JSON.stringify(panelOff)); pstate('panel_off', 'A', ['Team icon: off · the panel says: ' + panelOff.state]); cue('P_icon_out');
+  cue('P_on_in'); var navP = pg.A.waitForNavigation({ waitUntil: 'load', timeout: 60000 }); await clickEl('A', '#tp-mode'); await navP;
+  await pg.A.waitForFunction(function () { return window.Bonsai && window.Bonsai.oplog && window.TeamPanel; }, null, { timeout: 90000 }); await pg.A.waitForSelector('#tp-found', { timeout: 60000 }); await sleep(2400);
+  var panelOn = await pg.A.evaluate(function () { return { state: document.getElementById('tp-state').textContent, found: !!document.getElementById('tp-found'), join: !!document.getElementById('tp-join'), grid: document.querySelectorAll('.tp-av-pick').length }; }); console.log('§FILM_PANEL on ' + JSON.stringify(panelOn)); pstate('panel_on', 'A', ['team mode on · panel reopened by itself', 'Start a team / Join · avatar grid: ' + panelOn.grid + ' characters']); cue('P_on_out');
+  cue('P_found_in'); await clickEl('A', '#tp-found'); await pg.A.waitForSelector('#tp-paired', { timeout: 60000 }); await sleep(2600);
+  var inviteLink = await pg.A.inputValue('#tp-link'), stFound = await iconState('A'); console.log('§FILM_PANEL founded icon=' + JSON.stringify(stFound) + ' linkTail=' + inviteLink.slice(-12)); pstate('found', 'A', ['Team icon: ' + stFound.st + ' (aria-pressed ' + stFound.pressed + ')', 'team devices 1 · A is the founder']); cue('P_found_out'); await closePanel('A');
+  cue('P_join_in'); await pg.B.goto(inviteLink, { waitUntil: 'load' });
+  await pg.B.waitForFunction(function () { return window.Bonsai && window.Bonsai.oplog && window.TeamPanel; }, null, { timeout: 90000 }); await pg.B.waitForSelector('#tp-join', { timeout: 60000 }); await sleep(2000);
+  var invPre = await pg.B.inputValue('#tp-inv'); await clickEl('B', '#tp-join');
+  if (process.env.FILM_DEBUG_JOIN) { await sleep(4000); console.log('§FILM_DEBUG B pairsec=' + JSON.stringify(await pg.B.evaluate(function () { var p = document.getElementById('tp-pairsec'); var b = document.getElementById('tp-join'); var r = b && b.getBoundingClientRect(); return { text: p && p.innerText, joinDisabled: b && b.disabled, rect: r && [r.left, r.top, r.width, r.height], inv: document.getElementById('tp-inv').value.length }; })) + ' lastMouse=' + JSON.stringify(await pg.B.evaluate(function () { return null; }))); process.exit(0); }
+  await pg.B.waitForSelector('#tp-code', { timeout: 60000 }); await sleep(2400);
+  var code = (await pg.B.textContent('#tp-code')).trim(), stJoin = await iconState('B'); console.log('§FILM_PAIR B code=' + code + ' icon=' + JSON.stringify(stJoin) + ' invitePrefilled=' + (invPre === inviteLink.split('#join=')[1])); pstate('joined', 'B', ['invite prefilled: ' + (invPre === inviteLink.split('#join=')[1]) + ' · device code ' + code, 'Team icon: ' + stJoin.st + ' (waiting for approval)']); cue('P_join_out'); await closePanel('B');
+  cue('P_approve_in'); await openPanelViaIcon('A'); await clickEl('A', '#tp-req'); await pg.A.waitForSelector('#tp-reqs .tp-request', { timeout: 30000 }); await sleep(2200);
+  var reqCodes = await pg.A.$$eval('#tp-reqs .tp-rcode', function (els) { return els.map(function (e) { return e.textContent.trim(); }); }); console.log('§FILM_PAIR A sees requests=' + JSON.stringify(reqCodes)); pstate('approve', 'A', ['join requests listed: ' + reqCodes.join(', ') + ' (B\'s code ' + code + ')', 'role: Team member (102)']);
+  await clickEl('A', '#tp-reqs .tp-approve'); await pg.A.waitForSelector('#tp-paired', { timeout: 60000 }); await sleep(1800); cue('P_approve_out'); await closePanel('A');
+  var vB = await visit('B'); await sleep(1200); var stBon = await iconState('B'), chipA = await pg.A.evaluate(function () { return document.getElementById('team-label').textContent; }), chipB = await pg.B.evaluate(function () { return document.getElementById('team-label').textContent; });
+  pstate('paired', 'A', [chipA, 'Team icon: on']); pstate('paired', 'B', [chipB, 'Team icon: ' + stBon.st + ' (aria-pressed ' + stBon.pressed + ')']);
+  console.log('§FILM_PAIR after B visit: iconB=' + JSON.stringify(stBon) + ' chipA=' + chipA + ' chipB=' + chipB);
+  // avatars: each person picks one in the panel (real clicks); the choice reaches the other at the next Visit
+  async function pickAvatar(w) { cue('AV_' + w + '_in'); await openPanelViaIcon(w); await sleep(1500); await clickEl(w, '.tp-av-pick[data-avatar="' + AVATAR[w] + '"]'); await sleep(1800); var pr = await pg[w].evaluate(function () { return Array.prototype.map.call(document.querySelectorAll('.tp-av-pick[aria-pressed="true"]'), function (b) { return b.getAttribute('data-avatar'); }); }); console.log('§FILM_AVATAR ' + w + ' picked=' + JSON.stringify(pr)); cue('AV_' + w + '_out'); await closePanel(w); return pr; }
+  var pickedA = await pickAvatar('A'), pickedB = await pickAvatar('B');
+  await visit('A'); await visit('B'); await visit('A');
+  // People popover from the ONE icon, B's window: both people with the avatars they chose
+  cue('S_people_in'); await clickEl('B', '#b-teams'); await pg.B.waitForSelector('#team-people .tp-person', { timeout: 20000 }); await sleep(1500);
+  var pplRows = await pg.B.evaluate(function () { return Array.prototype.map.call(document.querySelectorAll('#team-people .tp-person'), function (r) { return { person: r.getAttribute('data-person'), self: r.getAttribute('data-self') === '1', av: r.querySelector('.tp-avatar').getAttribute('data-avatar'), text: r.textContent.replace(/\s+/g, ' ').trim().slice(0, 120) }; }); });
+  console.log('§FILM_PEOPLE B ' + JSON.stringify(pplRows)); pstate('people', 'B', pplRows.map(function (r) { return (r.self ? 'you (B)' : 'A') + ': avatar ' + r.av + ' · ' + (/active ([^·]*?)(\s|$)/.exec(r.text) ? 'active' : r.text.slice(0, 40)); })); pstate('people', 'A', ['A chose ' + AVATAR.A + ' · B chose ' + AVATAR.B]); await sleep(4200); cue('S_people_out'); await clickEl('B', '#b-teams'); await sleep(400);
+  extra.spaceShort = inviteLink.split('#join=')[1].slice(0, 12);   // the space both windows are in (from the invite A made); printed in the film's note line
+  extra.pairing = { st0: st0, panelOff: panelOff, panelOn: panelOn, stFound: stFound, stJoin: stJoin, invitePrefilled: invPre === inviteLink.split('#join=')[1], code: code, reqCodes: reqCodes, stBon: stBon, chipA: chipA, chipB: chipB, pickedA: pickedA, pickedB: pickedB, pplRows: pplRows };
 
   // ═══ OPEN THE BUILDING (both) ═══
-  cue('S_load_in'); await both(openModeller); cue('S_load_out');
   var seedA = await openHHS('A'), seedB = await openHHS('B');
   console.log('§FILM_SEED A ' + (seedA || 'NO LINE').slice(0, 160)); console.log('§FILM_SEED B ' + (seedB || 'NO LINE').slice(0, 160));
   var rowsOf = async function (w) { return pg[w].evaluate(function () { var r = window.Bonsai.oplog.db.exec("SELECT gid,count(*) FROM kernel_ops GROUP BY gid")[0].values; return r; }); };
@@ -201,18 +227,14 @@ var BLOCKS = [
   cue('S_head2_in'); await visit('A'); await visit('B'); await both(overview); var bnS1 = await banner('B'); console.log('§FILM_HEADSUP B ' + JSON.stringify(bnS1)); await state('head_after_visits', async function (w) { return { bannerRect: (await banner(w) || {}).rect || null }; }); await sleep(3400); cue('S_head2_out');
   cue('S_head3_in'); await deselect('A'); await visit('A'); await visit('B'); await both(overview); var bnGone = await banner('B'); console.log('§FILM_HEADSUP_CLEARED B ' + JSON.stringify(bnGone)); await state('head_cleared'); await sleep(2400); cue('S_head3_out');
 
-  // ═══ PEOPLE: B opens the People list ═══
-  cue('S_people_in'); await clickEl('B', '#team-people-toggle'); await pg.B.waitForSelector('#team-people .tp-person', { timeout: 15000 }); await sleep(900);
-  var pplB = await peopleRows('B'); console.log('§FILM_PEOPLE B ' + JSON.stringify(pplB)); await state('people_open', async function (w) { return { people: w === 'B' ? pplB : null }; }); await sleep(4200); cue('S_people_out');
-
   // ═══ SWITCH-OFF: A ticks "Don't show what I'm on", selects S1 again; B keeps S1 open: no label, A still listed as active ═══
-  cue('S_off_in'); await clickEl('B', '#team-people-toggle'); await sleep(300);
-  await clickEl('A', '#team-people-toggle'); await pg.A.waitForSelector('#tp-hide', { timeout: 15000 }); await sleep(600); await clickEl('A', '#tp-hide'); await sleep(500);
+  cue('S_off_in');
+  await clickEl('A', '#b-teams'); await pg.A.waitForSelector('#tp-hide', { timeout: 15000 }); await sleep(600); await clickEl('A', '#tp-hide'); await sleep(500);
   var hideOn = await pg.A.evaluate(function () { return document.getElementById('tp-hide').checked; }); console.log('§FILM_HIDE A checked=' + hideOn);
-  await clickEl('A', '#team-people-toggle'); await sleep(300); idS1A = (await idOf('A', 'S1')).id; await selectApi('A', idS1A); await overview('A'); await state('off_selected_before_visit'); await sleep(1600); cue('S_off_mid');
+  await clickEl('A', '#b-teams'); await sleep(300); idS1A = (await idOf('A', 'S1')).id; await selectApi('A', idS1A); await overview('A'); await state('off_selected_before_visit'); await sleep(1600); cue('S_off_mid');
   await visit('A'); await visit('B'); await both(overview); var bnOff = await banner('B'); console.log('§FILM_HEADSUP_OFF B ' + JSON.stringify(bnOff));
-  await clickEl('B', '#team-people-toggle'); await pg.B.waitForSelector('#team-people .tp-person', { timeout: 15000 }); await sleep(800); var pplOff = await peopleRows('B');
-  await state('off_after_visits', async function (w) { return { people: w === 'B' ? pplOff : null }; }); await sleep(4000); await clickEl('B', '#team-people-toggle'); await sleep(300); cue('S_off_out');
+  await clickEl('B', '#b-teams'); await pg.B.waitForSelector('#team-people .tp-person', { timeout: 15000 }); await sleep(800); var pplOff = await peopleRows('B');
+  await state('off_after_visits', async function (w) { return { people: w === 'B' ? pplOff : null }; }); await sleep(4000); await clickEl('B', '#b-teams'); await sleep(300); cue('S_off_out');
   await deselect('A'); await deselect('B');
 
   // ═══ THE BUILDING ITSELF: A drags one of the seeded HHS walls (north wing): stays local-only ═══
@@ -223,9 +245,11 @@ var BLOCKS = [
     return best; });
   console.log('§FILM_WALL ' + JSON.stringify(wallId)); extra.wall = wallId;
   var wallBefore = { A: await wallPos('A', wallId.id), B: await wallPos('B', wallId.id) };
-  cue('S_wall_in'); var wdrag = await gizmoDrag('A', wallId.id, 'x', 1, 'wall#' + wallId.id); await state('wall_A_moved', async function (w) { return { wall: await wallPos(w, wallId.id) }; }); await sleep(2600); cue('S_wall_out');
-  cue('S_wall2_in'); await visit('A'); await visit('B'); await both(overview); await state('wall_after_visits', async function (w) { return { wall: await wallPos(w, wallId.id) }; }); await sleep(3200); cue('S_wall2_out');
-  cue('S_wall3_in'); await both(function (w) { return viewOn(w, [wallBefore.B.centre[0], wallBefore.B.centre[1], 1.0]); }); await both(settleCam); await both(function (w) { return isolateWall(w, wallId.id, wallBefore.B.centre[0], wallBefore.B.centre[1] - 2.2, wallBefore.B.centre[1] + 2.2, 0.3); });   // same camera on both: A's wall stands one metre from B's
+  var wcen = wallBefore.B.centre, isoArg = { id: wallId.id, x: wcen[0], y0: wcen[1] - 2.2, y1: wcen[1] + 2.2, z: 0.3 };
+  async function wallView(w) { await viewOn(w, wcen); await settleCam(w); await isolateWall(w, isoArg.id, isoArg.x, isoArg.y0, isoArg.y1, isoArg.z); }   // one camera on both; only the wall visible; dashed line = where it started
+  cue('S_wall_in'); await wallView('B'); var wdrag = await gizmoDrag('A', wallId.id, 'x', 1, 'wall#' + wallId.id, isoArg); await state('wall_A_moved', async function (w) { return { wall: await wallPos(w, wallId.id) }; }); await sleep(2600); cue('S_wall_out');
+  cue('S_wall2_in'); await visit('A'); await visit('B'); await both(wallView); await state('wall_after_visits', async function (w) { return { wall: await wallPos(w, wallId.id) }; }); await sleep(3200); cue('S_wall2_out');
+  cue('S_wall3_in'); await both(settleCam);   // the SAME camera on both windows (a Visit rebuilds the meshes, so the isolation was re-applied just above)
   await state('wall_closeup', async function (w) { return { wall: await wallPos(w, wallId.id) }; }); await sleep(4200); cue('S_wall3_out');
   extra.wallBefore = wallBefore; extra.wdrag = wdrag; extra.drags = drags;
 
@@ -252,8 +276,13 @@ var BLOCKS = [
   chk('B has S1 open, A selected it and visited: B shows "... is editing this element"', hb.banner && /is editing this element/.test(hb.banner), hb.banner);
   chk('before the Visits B shows no label (NO-OP guard)', by('head_both_selected_before_visit', 'B').banner == null, '');
   chk('A deselects and visits; B visits: the label is gone', by('head_cleared', 'B').banner == null, '');
-  var pp = by('people_open', 'B').people;
-  chk('B People list shows two people, each "active"', pp && pp.length === 2 && pp.every(function (p) { return /active/.test(p.text); }), JSON.stringify(pp && pp.map(function (p) { return p.text; })));
+  var PR = extra.pairing, ppl = PR.pplRows, aPerson = ppl.filter(function (r) { return !r.self; })[0], bPerson = ppl.filter(function (r) { return r.self; })[0];
+  chk('ONE Team icon: exactly one #b-teams on both windows, state off before anything, no #team-people-toggle', PR.st0.A && PR.st0.B && PR.st0.A.n === 1 && PR.st0.B.n === 1 && PR.st0.A.st === 'off' && PR.st0.B.st === 'off' && !PR.st0.A.toggle && !PR.st0.B.toggle, JSON.stringify(PR.st0));
+  chk('the icon opens the panel: "Team mode is off" + Turn on; after Turn on the page reloads and the panel REOPENS by itself with Start a team / Join / the avatar grid (24)', /off/.test(PR.panelOff.state) && /Turn on/.test(PR.panelOff.mode) && !PR.panelOff.found && /on/.test(PR.panelOn.state) && PR.panelOn.found && PR.panelOn.join && PR.panelOn.grid === 24, JSON.stringify([PR.panelOff, PR.panelOn]));
+  chk('A started a team: icon ON; B opened the invite: invite PREFILLED, device code shown, icon PENDING', PR.stFound.st === 'on' && PR.stFound.pressed === 'true' && PR.invitePrefilled && /^[0-9A-F]{4}-[0-9A-F]{4}$/.test(PR.code) && PR.stJoin.st === 'pending', JSON.stringify({ stFound: PR.stFound, stJoin: PR.stJoin, code: PR.code }));
+  chk('A listed exactly B\'s code; after Approve and B\'s Visit both chips say team devices 2 and B\'s icon is ON', PR.reqCodes.length === 1 && PR.reqCodes[0] === PR.code && /team devices 2/.test(PR.chipA) && /team devices 2/.test(PR.chipB) && PR.stBon.st === 'on', JSON.stringify({ req: PR.reqCodes, chipA: PR.chipA, chipB: PR.chipB, stB: PR.stBon }));
+  chk('avatars: A picked ' + AVATAR.A + ' and B picked ' + AVATAR.B + ' on the grid (aria-pressed); B\'s People list shows A with ' + AVATAR.A + ' and B itself with ' + AVATAR.B + ', both "active", both drawn as SVG heads', PR.pickedA.join() === AVATAR.A && PR.pickedB.join() === AVATAR.B && ppl.length === 2 && aPerson && bPerson && aPerson.av === AVATAR.A && bPerson.av === AVATAR.B && AVATAR.A !== AVATAR.B && ppl.every(function (r) { return /active/.test(r.text); }), JSON.stringify(ppl));
+  chk('the heads-up label carries A\'s avatar', bnS1 && bnS1.av === AVATAR.A, JSON.stringify(bnS1));
   var po = by('off_after_visits', 'B');
   chk('A switched "Don\'t show what I\'m on" on: B shows no label, A still listed as active', po.banner == null && po.people && po.people.length === 2 && po.people.every(function (p) { return /active/.test(p.text); }) && hideOn, JSON.stringify(po.people && po.people.map(function (p) { return p.text; })));
   var wA = by('wall_A_moved', 'A'), wB = by('wall_after_visits', 'B'), wAf = by('wall_after_visits', 'A');

@@ -6,6 +6,7 @@ REC=$1; W=$2; FINAL=$3; H=$(cd "$(dirname "$0")" && pwd); PY=~/.local/share/film
 cp "$H"/{assemble.py,bgmake.py,cards.py,cuecheck.py,loud2.py,mk.py,overlay_ass.py,plan.py,reftimes.py,sync.py,film_checks.sh,ass_head.txt} "$W"/   # ass_head.txt = THIS film's (Num/Note/Tag/Spd styles), NOT prompts/film_narration_ass_head.txt
 python3 "$H/sync.py" "$REC"
 cd "$W"; [ -f bg.png ] || python3 bgmake.py
+node "$H/card_visibility.js" "${AVJS:-/tmp/wt-team-icon/common/comm/team_avatars.js}" card_visibility.png   # the opening chapter card, drawn with the real avatar set
 python3 cards.py limits card_limits.png limits.json; python3 cards.py close card_close.png close.json; rm -f asm/c_card_*.mp4
 python3 assemble.py "$REC" plan.py asm | head -14
 T=$(python3 -c "import json;print(json.load(open('asm/timeline.json'))['total_frames']/25)")

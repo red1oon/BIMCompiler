@@ -8,7 +8,7 @@ def final(t, kept):   # cue-time -> final film time inside an item's kept ranges
     for k in kept:
         if t < k['t1']: return k['f0']/25
     return None
-SPACE = (C.get('boot', {}).get('A') or [''])[0].split('space=')[-1].split()[0] if C.get('boot', {}).get('A') else '?'
+SPACE = (C.get('extra') or {}).get('spaceShort') or ((C.get('boot', {}).get('A') or [''])[0].split('space=')[-1].split()[0] if C.get('boot', {}).get('A') else '?')
 ev = []
 for it in tl['items']:
     if it['type'] != 'footage': continue
@@ -21,6 +21,7 @@ for it in tl['items']:
         if k.get('sp', 1) != 1: ev.append(f"Dialogue: 2,{ts(k['f0']/25)},{ts((k['f0']+k['n'])/25)},Spd,,0,0,0,,{{\\pos(1790,36)}} playback x{k['sp']:g} ")
 allk = [(it, k) for it in tl['items'] if it['type'] == 'footage' for k in it['kept']]
 def fmt(rec, w):
+    if rec.get('lines'): return list(rec['lines'])
     L = []
     if rec['beat'] == 'opened': L.append('HHS Office: 1077 elements seeded; team blocks: 0')
     byw = {}
