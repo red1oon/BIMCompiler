@@ -6,6 +6,22 @@ not evidence.** Honour this block until the table below is all `✅` or `⛔`.
 Started 2026-10-24 · worktree `/tmp/wt-docs-refresh` · branch `docs/guides-refresh-2026-10-24` off `origin/master 39f998301`
 (the `fable/meshdb-livewire` checkout is 49 commits behind master and its `docs/` has diverged — never refresh from it).
 
+## ▶ RESUME HERE (written at shutdown, 2026-10-24)
+**State.** Branch `docs/guides-refresh-2026-10-24`, **PR #255 open** (not merged, no auto-merge, **no docs deploy done** — deploy only via
+`scripts/safe_gh_deploy.sh`, and only on the user's go-ahead). Worktree was `/tmp/wt-docs-refresh`; if it was pruned: `git worktree list`, then
+`git worktree add /tmp/wt-docs-refresh docs/guides-refresh-2026-10-24`. Everything below is committed and pushed.
+**Done (✅ in the table):** AskFirstSteps · BIMUserGuide · TimeMachine. **CivilWorksGuide: read, NOT refreshed.** Only evidence so far: the clash witness printed
+`GEOTECH=9145 DRAINAGE=200 oracle=30529 … listMatchesOracle=true` (matches the guide's counts and "30,529 box overlaps"); the rest of the three witnesses was killed at shutdown, never run.
+**Next, in order (viewer side first):** CivilWorksGuide → TeamsOverlayGuide → HRBIMAssetGuide → BIMToolsGuide → USER_GUIDE → Modeller (ModellerFirstSteps, ModellerGuide, DXF2BIMGuide) → ERP (ERPUserGuide, ERP_FirstSetup) → text-only (OFFLINE_INSTALL_GUIDE, IFC_ExportGuide).
+**CivilWorksGuide plan (the model is private & huge — use the project's own witnesses, software GL only):** road DBs live in `~/Downloads/JALAN JELAPANG IFC/` (`CivilWorks.db` 448 MB, `CivilWorksPath.db`, …; sources in `IFC/`). From `~/bim-ootb/viewer/tests/` (read-only use of the shared tree):
+`LOG=<f> node witness_clash_geotech_drainage.js` (node only; expect 11 mesh-true of 30,529) · `GPU=sw LOG=<f> node witness_ew_volume_surfaces.js` (expect "≈ 22,048 m³ (48 open edges, ±2.3 m³)") · `LOG=<f> node witness_civil_sections.js` (default swiftshader; the heaviest: Long/Cross buttons in the Section tool, 22 profile sheets, section counts at 900/1000/1100 m).
+Run them one at a time in the background, read each log; do NOT use `GPU=real` (standing rule: no GPU runs beside the user's live browser/bakes). Still to check by source: the civil-only Inspect rows **Road standards (j), Road report (r), Earthworks (u), Roadworks (k)** (`panels.js` ~l.1385) are not in the guide; Model Check button on the 4D/5D page; the SIGNAGE RM 800 / LIGHTING RM 485 rates; `figs/cw_*.png` need the model — flag as earlier-build if not re-shot. Keep the guide's wording "Civil Works" (never the project name).
+**Recipe per guide:** read it → find real element ids in `~/bim-ootb/viewer` (grep) → `scripts/docs_capture_<guide>_<part>.js` on `scripts/docs_capture_lib.js`, run via `scripts/docs_capture_run.sh` (retries a DEGRADED run) → read the log → install images (2× panel crops, hub-size shots downscaled) → edit text from the report → anchor + image check and `mkdocs build -q -d <scratch>` (never deploy) → append dated sections to the OWNER prompts (+ archive what the findings make stale) → commit + push.
+**Harness rules learned:** `GPU=sw` only · real mouse clicks (a `<select>` option can't be clicked — set `.value` + dispatch `change`) · poll with `pollFor`, never fixed sleeps (Find opens after ~12 s cold) · park the pointer before screenshots · closure variables don't cross `page.evaluate` · `__tmGanttDrag` bypasses the UI lock (it checks only the bake lock) · a stall timeout shorter than a big building's load wastes reloads (`opts.stallMs`) · **never `pkill -f`/`pgrep -f` with the script name in the same command line (it kills your own shell) — kill by PID**.
+**Open app defects / observations — recorded in owner prompts, NONE fixed here (viewer code, `~/bim-ootb`, own worktree):** ⛔ Space (and arrows/Enter/Home/End/Ctrl+A) swallowed in the Find box `scene.js:3550-3558` → `Viewer/ROOM_CYCLE_HOME_SHORTCUTS.md` · ⛔ `floor/level/ground …` phrases unreachable, gate `nf_isolate_drill.js:426` → `Viewer/FIND_NL_QUERY.md` · ⛔ Phase axis first-open message `nf_trees.js:622-640` → `REVIT_PLUS_LENS.md` · ⛔ Film-Maker reads "Edited" on open (Buildup default-on) + window-dependent film total → `CINEMA_PATH_EDITOR.md` · Time Machine export-after-import / Diff vs Model / PMXML-MSPDI same file name / first-import lazy-module message → `4D_GANTT_TM_REFACTOR.md` · Hospital room graph now sparse (nodes 30, edges 7) → `Viewer/FindRooms/VIEWER_FIND_PANEL_ROOM_ACCURACY.md`.
+**Decisions only the user can make:** (1) merge PR #255 / enable auto-merge · (2) when to deploy the docs (`safe_gh_deploy.sh`) · (3) open a viewer lane to fix the ⛔ defects.
+**Housekeeping owed:** `PROGRESS.md` is 248 lines (budget 80) — compact separately; the repo-wide `docs/` still has 10 unrefreshed guides.
+
 ## Spec
 1. **Source of truth = the live app.** Each guide step is executed by a script (puppeteer, headless, `GPU=sw` —
    software GL, so it cannot contend for VRAM with the user's own browser). The page may quote only values the
@@ -38,7 +54,7 @@ Started 2026-10-24 · worktree `/tmp/wt-docs-refresh` · branch `docs/guides-ref
 | ERPUserGuide | 14 | — | ☐ |
 | ERP_FirstSetup | 4 | — | ☐ |
 | HRBIMAssetGuide | 17 | — | ☐ |
-| CivilWorksGuide | 7 | — | ☐ |
+| CivilWorksGuide | 7 | witnesses `witness_{clash_geotech_drainage,ew_volume_surfaces,civil_sections}.js` (bim-ootb) | ⏳ read only — see ▶ RESUME HERE |
 | TeamsOverlayGuide | 4 | — | ☐ |
 | TimeMachine | 7 | `scripts/docs_capture_time_machine_{a,b,c,d}.js` | ✅ 2026-10-24 — 3 sections rewritten (author wizard → auto-generated schedule; Schedule Editor → ⇄ P6/MSP box; What-if prerequisite), Gantt/Pull Back/Undo/import/export measured; 3 new figures, 3 obsolete figures deleted; 4 images flagged earlier-build; real-pointer edge-resize/marquee/link and large-building LOD pill not reproduced |
 
