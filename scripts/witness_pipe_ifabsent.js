@@ -9,6 +9,7 @@
  *                and the stored bytes are that winner's. CONTROL: 20 concurrent plain put()s all return true and the last one overwrites — so exclusivity is the verb's doing.
  * Gate: a stale token / an oversize object / the (cap+1)-th put THROW (never "false"), nothing is stored; the same write with the right token succeeds.
  * ghPipe: declares ifAbsent === false and putIfAbsent rejects (unsupported for now, GitHub CAS is a later step).
+ * Name class f (§13.12.G.2 DEP-GHPIPE-F, the focus board): ghPipe and the gate accept s/<space>/f/<own kid>; an unknown class and another device's kid are still refused.
  * VACUOUS guard: the racing arms print INCONCLUSIVE if fewer than 2 creators actually ran concurrently.
  *
  * Run: node scripts/witness_pipe_ifabsent.js 2>&1 | tee build/comm/logs/witness_pipe_ifabsent.log
@@ -95,6 +96,18 @@ async function suite(label, pipe) {
   // ghPipe: declared unsupported
   var gh = PIPE.ghPipe({ owner: 'o', repo: 'r', token: 't', self: 'e'.repeat(16), fetch: function () { throw new Error('no network in this witness'); } }), ghErr = await throws(function () { return gh.putIfAbsent('x', enc('y')); });
   verdict(gh.ifAbsent === false && /unsupported/.test(ghErr || ''), 'ghPipe declares ifAbsent === false and putIfAbsent rejects "unsupported" (GitHub compare-and-swap is a later step)', ghErr && ghErr.slice(0, 50));
+
+  // §13.12.G.2 DEP-GHPIPE-F: the focus board name class `f` (s/<space>/f/<kid>) passes ghPipe's own-prefix check; an unknown class is still refused there.
+  // The fetch stub throws, so a name that PASSES the check fails later with the stub's message; a name that does NOT pass fails with "not under my prefix".
+  var me = 'e'.repeat(16), SPC = 's/' + 'c'.repeat(64) + '/';
+  var fPut = await throws(function () { return gh.putMany([{ name: SPC + 'f/' + me, bytes: enc('focus') }]); }), zPut = await throws(function () { return gh.putMany([{ name: SPC + 'z/' + me, bytes: enc('x') }]); });
+  console.log('   §GHPIPE-F f/ -> ' + (fPut || 'no error').slice(0, 70) + ' | z/ -> ' + (zPut || 'no error').slice(0, 70));
+  verdict(/no network in this witness/.test(fPut || '') && !/not under my prefix/.test(fPut || ''), 'ghPipe accepts a put under s/<space>/f/<kid> (it got past the name check to the network stub)', (fPut || '').slice(0, 60));
+  verdict(/not under my prefix/.test(zPut || ''), 'CONTROL: an unknown class s/<space>/z/<kid> is still refused by the name check', (zPut || '').slice(0, 60));
+  verdict(/not under my prefix/.test(await throws(function () { return gh.putMany([{ name: SPC + 'f/' + 'd'.repeat(16), bytes: enc('x') }]); }) || ''), 'CONTROL: an f/ name under ANOTHER device\'s kid is still refused (own prefix only)');
+  var gate2 = PIPE.gatedPipe(PIPE.memPipe('mem'), { token: 'T', max_object_bytes: 100 }), gw3 = gate2.writer('T');
+  verdict((await gw3.put(SPC + 'f/' + me, enc('focus'))) !== false && gate2.refusals.length === 0, 'the post-office gate accepts the f/ class too (same _kidOfName)', 'accepted=' + gate2.accepted);
+  verdict((await gw3.put(SPC + 'z/' + me, enc('x'))) === false && gate2.refusals.length === 1 && gate2.refusals[0].reason === 'bad-name', 'CONTROL: the gate still refuses an unknown class (bad-name)', JSON.stringify(gate2.refusals.map(function (r) { return r.reason; })));
 
   console.log('\n──────────────────────────────────────────────');
   if (inconclusive.length || judged === 0) console.log('§W-PIPE-IFABSENT INCONCLUSIVE judged=' + judged + ' fails=' + fails + ' — ' + inconclusive.join(' | '));
