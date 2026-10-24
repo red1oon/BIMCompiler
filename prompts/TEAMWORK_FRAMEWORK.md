@@ -2059,6 +2059,99 @@ The default per document type is a **policy** value (§13.12 B, "number prefix s
 **Witnesses (when built):** `W-SCOPE-DERIVE` (S(role) computed from the AD for sales/warehouse/accounts is the same on every device and matches the hand-derived flow) · `W-SCOPE-STRIP` (a warehouse device ranks sales first and collapses accounts; toggle shows all) · `W-SCOPE-TIERS` (in the §13.10 simulation, requests per visit fall from N+2 to ≈ hot + warm/k + 2 and every device still converges to the same op set and order) · `W-SCOPE-READS` (a cold op that a hot op reads is fetched on demand: no op left parked) · `W-SCOPE-INBOX` (the inbox lists exactly the upstream-originated items awaiting this role).
 **Build order:** (1) and (2) are UI/derivation over data every device already has — fold them into the people-strip build; (3) needs the policy value and a scope function in the adapter, no engine change; (4) is the only engine change (head field), after the frame steps land.
 
+### §13.12.G.1 Build spec — people strip + role scope uses (1)(2) (2026-10-24; spec written BEFORE code)
+
+> Coordinator brief: build §13.12.G exactly, witness-first; fold in §13.12.H uses (1) strip filtered by scope and (2) inbox. Uses (3)(4)(5) of H (tiered cadence, selective fetch, routing) are NOT built here — (4) needs an engine change, (3) a cadence policy.
+
+**Constraint:** nothing under `build/comm/` or bim-ootb `common/comm/comm_*.js` is edited. The post office keeps its four verbs; the focus board is just another named object.
+
+#### G.1.1 Transport — the focus board `s/<space>/f/<kid>`
+One small object per device, overwritten at every Visit (`pipe.put`; same one-writer-per-name rule as `h/<kid>`).
+```
+{ v:1, kind:'focus', space, kid, author:<kid>, person:<person_uu>, ts:<ms, time posted>, since:<ms|null, when this device last changed its focus set>,
+  focus:[ {table, uu, label, since} ... ]   // at most 5; [] when nothing is open or off:true
+  off:boolean,                              // "don't show what I'm on": the details are NOT written at all (focus:[]), only "I am here"
+  sig:<hex> }                               // CommEnvelope.sign(obj, device) — the same ECDSA signature as heads and ops
+```
+- **Reader** (`list s/<space>/f/` + `get`): accepts an object only if `kid` equals the name, `author===kid`, `space` matches, the kid is an enrolled device of the roster and the signature verifies against that device's key. Anything else is dropped and logged (`§PEOPLE_FOCUS_REJECT`).
+- **Sealed or not:** the engine's seal helper (`comm_store._seal`) is private (not on the exported API) and may not be edited, so the focus object is **signed but NOT sealed**. NAMED LIMIT L1: whoever operates the pipe can read which records a person has open (table, uu, label). The keyring is exposed (`store.keyring()`), so a follow-up can seal it with its own AAD from `team_focus.js` without touching the engine; not done here (the brief says state the limit).
+- **ghPipe dependency — ⛔ DEP-GHPIPE-F:** `ghPipe._kidOfName` (comm_pipe.js) accepts only name classes `o`, `h`, `r`, so a `put` of `s/<space>/f/<kid>` throws "not under my prefix" on the GitHub pipe. The focus board therefore works on the **folder, mem and http pipes only** until a one-line change adds `'f'` to that class test (not made here: comm_pipe.js is frozen for the engine owner). On ghPipe the Visit still succeeds: the publish is caught, logged once as `§PEOPLE_FOCUS_PUBLISH unsupported pipe=gh:… (ghPipe accepts classes o/h/r only — DEP-GHPIPE-F)`, and the people strip degrades to "active N min ago" (ranking from ops + heads) with no focus badges.
+
+#### G.1.2 Pure module `common/comm/team_people.js` (UMD, no DOM, no storage, no clock of its own)
+Every function takes `now` (ms) or options explicitly, so a witness injects the clock; there are no sleeps.
+- `directoryFrom(roster, roleName)` → `[{person, name, role:<ad_role_id|null>, roleName, kids:[kid…]}]` sorted by person (from `CommRoster.fold` output: `devices`, `persons`, `roleAt`).
+- `rank(ops, heads, focusObjs, now, opts)` → people array, newest activity first.
+  - `ops`: envelopes `{author, ts, …}` (every stored op, identity ops included — a signed op is activity); `heads`: `[{author, ts}]` verified heads; `focusObjs`: verified focus objects.
+  - `opts`: `{directory, ttlMs (default 1 800 000), mode:'all'|'scope', scope (my scope), scopeOf(roleId) → scope|null, selfPerson}`.
+  - Each result: `{person, name, role, roleName, kids, lastActive, lastSource:'op'|'head', focus:[{table,uu,label,since,ageMs}], off, inScope, writes}`; `lastActive` = max ts over the person's kids' ops and heads; ties break on person uu. `focus` = the union over the person's devices of entries with `now - since <= ttlMs` (TTL basis = the entry's own `since`, as §13.12.G says); `off` = any device of the person says `off`, in which case `focus` is `[]`.
+  - Scope mode: the `inScope` people come first (each group by recency); `collapse(list, mode)` → `{shown, others}`; "Everyone" mode shows all in recency order.
+- `historyOf(personUu, ops, n, opts)` → that person's last `n` business ops (identity ops excluded: table `comm_*`), grouped by record `(table, uu)`: `{table, uu, label, count, last}`; label from the CREATE's `documentno` / `name` / `value` field if the CREATE is in `ops`; newest group first. Nothing is stored.
+- `headsUpFor(uu, selfPerson, people, opts)` → `[{person, name, kid?, label, since, ageMs}]`: the OTHER people whose live focus lists `uu` **and who could write that table** (`person.writes` contains it; when no scope is available the filter is skipped).
+- Role scope (§13.12.H uses 1+2): `roleScope(roleId, dict, over)` and `inboxFor(scope, ops, opts)` — G.1.4.
+- Helpers: `initials(name)`, `ageText(ms)` ("just now" | "N min ago" | "N h ago").
+
+#### G.1.3 Host seams (generic; no per-window / per-table code)
+- **ERP:** `idempiere.html` `refreshForm()` (called at the tail of every `renderBody()`, i.e. window / tab / grid-form switch) dispatches `window` event `idmp:record` with `detail {view:'form'|'grid'|'new', table, uu, label, pk}`; `uu` = the row's `<table>_uu`, `label` = tab name + DocumentNo/Name/Value. This is the only edit to the page: one function, no table named. `team_sync.js` listens: a `form` view with a `uu` = focus `[that record]` (keeps `since` while it stays the same record); `grid`/`new` = `[]`. `overlay:committed` with CRUD_* / DOC_ACTION on the focused table drops the focus ("clear on save") and suppresses its re-add for 2 s (the form re-mounts itself after a save); re-opening later sets it again.
+- **Publish at every Visit** (after `sync` and the projection rebuild): `TeamFocus.publish`; **collect** (`list f/`, `h/`) → `TeamPeople.rank` → `#team-headsup` banner on the open form ("<name> is editing this (just now | N min ago)") and the Team panel People section.
+- **Switch-off:** panel checkbox "Don't show what I'm on" → `cfg.hideFocus` in the same IndexedDB `comm_phone` `cfg` (so the Modeller reads the same switch); published as `off:true, focus:[]`.
+- **Modeller:** the existing `dagevu:select` event (fired by `setSelectionIds` on every selection change, modeller.html) + `Bonsai._selSet` (feature row ids → `op_uuid` via the oplog) = focus of every selected element that is a shared team record. The Modeller has no AD dictionary, no Team panel and no per-element overlay hook: the heads-up is a label `#team-headsup` beside the chip ("<name> is editing this element (…)"), the people list is `#team-people` (chip tooltip + a small list). NAMED LIMIT L2: no badge on the 3D mesh / outliner row; no role scope in the Modeller (`scope:null` → always Everyone).
+- Panel mode toggle "Everyone / My role scope" → `cfg.peopleMode` (default `'scope'`).
+
+#### G.1.4 Role scope S(role) — derived from the dictionary the adapter already has
+`roleScope(roleId, dict, over)` → `{role, reads:[table…], writes:[table…], upstreamTables:[…], downstreamTables:[…], upstream:[roleId…], downstream:[roleId…]}`, every list sorted (identical bytes on every device).
+- `dict` (built from the page's `__idmpDb` by `TeamPeople.dictFromDb(db, AdAccess)`; in node over the same `erp/ad_seed.db`): `roleIds()`, `reads(roleId)`, `writes(roleId)`, optional `wf()` → `[{table, roleId}]`.
+  - **reads(role)** = tables of the tabs of every window the role has in `ad_window_access` (`AdAccess.buildRole(...).win`).
+  - **writes(role)** = tables of the NON-read-only tabs of its read-write windows AND where `RoleContext.canUpdate(client, org, table, level)` allows (tried for the role's own client with each read-write org it holds and org 0). So a window does not make a table writable unless the same rule the admission check uses allows it.
+  - `wf()` — AD_WF_Node responsibility. **NAMED LIMIT L3:** the browser seed `erp/ad_seed.db` has NO `ad_wf_node` / `ad_wf_responsible` table (only `ad_wf_nodenext`, 9 rows), so the ERP dict returns none; the function accepts `wf()` rows (adding their tables to the role's `writes` for flow purposes) and the witness covers that path with a fixed input.
+- **Flow edges:** default `[c_order→m_inout, m_inout→c_invoice, c_invoice→c_payment]`; `over.edges` replaces them (the "optional override list").
+- **Definitions (W = writes):** `upstreamTables` = `{a : (a→b) an edge, b ∈ W(me), a ∉ W(me)}`; `downstreamTables` = `{b : (a→b), a ∈ W(me), b ∉ W(me)}`; `upstream` = roles X ≠ me with `W(X) ∩ upstreamTables ≠ ∅`; `downstream` likewise. A person is **in scope** when their role equals mine, or is in my upstream/downstream, or `W(them) ∩ W(me) ≠ ∅` (a full-scope role shares tables with everybody, so it is hot for everyone — §13.12.H "What it does NOT do").
+- `inboxFor(scope, ops, opts)` → items entering my role's queue: placed CREATEs on a table in `scope.upstreamTables`, authored by a person whose role is in `scope.upstream`, not by me, **and not yet handled** (no placed CREATE on a table in `scope.writes` references that record's uu in its fields). Item: `{table, uu, label, author, ts}`, newest first. The role of an author = the person's CURRENT role (NAMED LIMIT L4: not the role at the op's seq).
+- **Spec vs. rule note (reported):** §13.12.H's example "a warehouse device … collapses accounts" does not follow from the stated adjacency rule — accounts is DOWNSTREAM of warehouse (m_inout→c_invoice), so on a warehouse device accounts is in scope. The collapse is witnessed on the SALES device (accounts is neither adjacent nor sharing a table). The rule was implemented as written, not tuned to the example.
+
+#### G.1.5 Witnesses (each names the issue it proves or disproves; INCONCLUSIVE when nothing was judged; each arm has a CONTROL that can fail)
+| id | file | proves |
+|---|---|---|
+| `W-PEOPLE-PURE` | `common/tests/witness_people_pure.js` (node) | rank / TTL / off / history / headsUp / roleScope(fixed dict, wf path, override) / inboxFor (handled item leaves) on FIXED inputs, with a mutant control per function |
+| `W-SCOPE-DERIVE` | `common/tests/witness_scope_derive.js` (node, real `erp/ad_seed.db` + 3 fixture roles) | S(role) for sales / warehouse / accounts is byte-identical on two independent loads, equals an independent raw-SQL derivation and the hand-derived flow; control: a role with no read-write window has empty writes; override list moves the edge |
+| `W-PEOPLE-STRIP` | `erp/tests/witness_people_strip.js` (3 real browsers, real ERP, folder pipe) | G.1.2/G.1.3: (1) A opens E → B's form shows "A is editing"; (2) A closes → A visits → B's next visit clears; (3) ranking order = newest-op/head order recomputed from the raw log + raw head files; (4) TTL via injected clock; (5) switch-off; (6) history = raw cl_op grouped; (7) NO-OP guard (nothing before A publishes) + writers-only control |
+| `W-SCOPE-STRIP` | same file | the sales device lists warehouse in scope and collapses accounts to "+1 others"; "Everyone" shows all; heads-up only from people who could write the table (accounts opens an order → no heads-up) |
+| `W-SCOPE-INBOX` | same file + the pure file | the warehouse inbox lists exactly the sales-authored order; an accounts-authored order is not listed (non-upstream control); a handled item leaves (pure) |
+| `W-PEOPLE-MODELLER` | `modeller/tests/witness_people_modeller.js` (2 real browsers, real Modeller) | A selects shared element E → B's label "A is editing this element"; A deselects → A visits → B visits clears; ranking vs raw log; TTL; switch-off; history |
+Regression, quoted before/after: `witness_team_so`, `witness_team_docaction`, `witness_team_desktop`, `witness_team_pill`, `witness_team_modeller`.
+
+#### §13.12.G.2 Results 2026-10-24 — people strip + role scope uses (1)(2) ✅ DONE (witness) — bim-ootb PR #2362 (branch `feat/people-strip`, ERP sw v904, Modeller sw v156)
+Logs read in full (`scratchpad/after/*.log`, `ps_final.log`, `pm_final.log`, mutant runs `ps_mut_*.log`). Files (bim-ootb): `common/comm/team_people.js` (pure), `team_focus.js` (focus board I/O), `team_people_ui.js` (shared DOM), `erp/team_sync.js` + `erp/team_panel.js` + `erp/idempiere.html` (`idmp:record` seam in `refreshForm()`), `modeller/team_sync.js` + `modeller.html`, `team_defaults.js` (`focusTtlMs`), both `sw.js`. `build/comm/*` and `common/comm/comm_*.js` untouched. Tests: `common/tests/witness_{people_pure,scope_derive,focus_board}.js`, `people_fixture_roles.js`, `erp/tests/witness_people_strip.js`, `modeller/tests/witness_people_modeller.js`.
+
+**Object shapes as settled**
+- Focus object `s/<space>/f/<kid>`: `{v:1, kind:'focus', space, kid, author:<kid>, person:<person_uu>, ts, since:<ms|null>, focus:[{table,uu,label,since}] (<=5), off, sig}`; signed by the device key (`CommEnvelope.sign`), overwritten at every Visit; `off:true` writes `focus:[]` (the bytes carry no label — asserted on the pipe file).
+- `TeamPeople.rank(ops, heads, focusObjs, now, opts)` → `[{person,name,role,roleName,kids,self,lastActive,lastSource:'op'|'head',ageMs,focus:[{table,uu,label,since,ageMs}],off,writes,inScope}]`; options `directory, ttlMs (TeamDefaults.focusTtlMs = 1 800 000), mode:'all'|'scope', scope, scopeOf, selfPerson`; `collapse(list, mode)` → `{shown, others}`; `historyOf(person, ops, n, {directory, labelOf?})`; `headsUpFor(uu, selfPerson, people, {ignoreWriters?})`; `roleScope(roleId, dict, {edges?})` → `{role,reads,writes,upstreamTables,downstreamTables,upstream,downstream}`; `inboxFor(scope, ops, ctx)`; `dictFromDb(db, AdAccess)`.
+- Host settings in the same IndexedDB `comm_phone` `cfg`: `hideFocus` (boolean), `peopleMode` (`'scope'` default | `'all'`).
+
+**Verdicts (verbatim)**
+- `§W-PEOPLE-PURE PASS judged=39 fails=0 inconclusive=0` (+ 5 mutants of `team_people.js` each flip exactly the arm it should: TTL boundary, writers filter, handled-set, heads, off)
+- `§W-SCOPE-DERIVE PASS judged=13 fails=0 inconclusive=0` (17 roles incl. 3 fixture clerks; byte-identical on two loads; writes = independent SQL = hand-listed tables; role 103 loses 252 AccessLevel-2/4/6 tables that role 102 keeps)
+- `§W-FOCUS-BOARD PASS judged=12 fails=0` (tampered object, un-enrolled device, wrong name rejected; cap 5; the REAL unmodified `ghPipe` refuses the `f/` name before any network call)
+- `§W-PEOPLE-STRIP PASS judged=22 fails=0 inconclusive=0` · `§W-SCOPE-STRIP PASS judged=5 fails=0 inconclusive=0` · `§W-SCOPE-INBOX PASS judged=2 fails=0 inconclusive=0` · `§W-PEOPLE-STRIP-ALL PASS judged=29 fails=0 inconclusive=0 pageerrors=0` (three real browsers, real ERP, folder pipe)
+- `§W-PEOPLE-MODELLER PASS judged=22 fails=0 inconclusive=0 pageerrors=0` (two real browsers, real Modeller)
+- Browser-level mutants (`PS_MUTATE=`) each fail exactly one arm: `writers` → "accounts … gives NO heads-up" (`§W-SCOPE-STRIP FAIL … fails=1`), `offleak` → "switch-off … only {off:true}" (bytes 398 → 505), `ttl` → "injected clock 31 min … NOT shown" (`at31min:true`).
+- Regression, before (origin/main c3d6a399) → after: `§W-TEAM-SO PASS judged=19 fails=0` → same · `§W-TEAM-DOCACTION PASS judged=24 fails=0` → same · `§W-TEAM-DESKTOP PASS judged=9 fails=0` → same · `§W-TEAM-PILL PASS judged=14 fails=0` → same · `§W-TEAM-MODELLER PASS judged=33 fails=0` → same. ESLint clean on the new/changed modules; `audit_sw_precache` 0 missing (that audit reads the Viewer sw only; the new ERP/Modeller precache entries were checked to exist on disk).
+
+**Found by the witnesses and fixed**
+1. A created-and-saved record became "open" again the moment the form showed it, so A published focus on a record it had just saved. Rule now: a write on a table suppresses focus on that table for 2 s ("clear on save"), whether it re-mounts the same record or shows the new one.
+2. The Modeller's op `ts` is the kernel row timestamp, a deterministic synthetic value (2023-11 + n s) — "active 25777 h ago". The adapter now authors envelopes with `ts: Date.now()` (§15.3 already said `ts` is display-only, never ordering); the witness asserts a wall-clock ts.
+3. My own witness read the raw log before the edit it then compared against (history count) — fixed; the arm now re-reads.
+
+**Named limits / dependencies (not hidden)**
+- **⛔ DEP-GHPIPE-F — follow-up for the engine owner:** one line in `ghPipe._kidOfName` (`build/comm/comm_pipe.js` and bim-ootb `common/comm/comm_pipe.js`): accept class `'f'` next to `'o'|'h'|'r'`. Until then the focus board works on the folder / mem / http pipes only; on GitHub the Visit still succeeds, the publish is caught and logged once (`§PEOPLE_FOCUS_PUBLISH unsupported …`), and the strip shows "active N min ago" and the panel notes "This pipe does not carry the focus board yet". Witnessed against the real unmodified `ghPipe` (`§FB-GHPIPE`); not witnessed against real GitHub.
+- **L1 signed, not sealed:** the engine's seal helper is private (not on `CommStore`'s API); whoever operates the pipe can read which record uu/label each person has open. `store.keyring()` is exposed, so a follow-up can seal in `team_focus.js` with its own AAD without touching the engine.
+- **L2 Modeller:** no badge on the 3D mesh or outliner row (no overlay hook found); heads-up is the label `#team-headsup` beside the chip, people in `#team-people` (+ chip tooltip). No role scope there (no AD dictionary): the scope toggle and Inbox are absent, a plain note says so.
+- **L3** the browser seed has no `ad_wf_node` / `ad_wf_responsible` (only `ad_wf_nodenext`, 9 rows): the ERP dict supplies no workflow responsibility; `roleScope` accepts it (`dict.wf()`), proven on fixed input only. Flow edges are the default c_order→m_inout→c_invoice→c_payment (override list supported).
+- **L4** an author's role in the inbox / scope = the person's CURRENT role, not the role at the op's seq.
+- **L5** "focus" = the record's form is open (the twin's forms are always editable), not "has typed"; after a save the focus drops until the record is re-opened (2 s heuristic).
+- Role-scope witnesses use three FIXTURE roles (the seed has only Admin 102 / User 103) cloned into the in-memory dictionary; the founder's role is changed by a ROLE op in the witness setup (no UI changes a role).
+- Spec-vs-rule note kept: §13.12.H says a warehouse device collapses accounts; under the stated adjacency rule accounts is downstream of warehouse, so the collapse is witnessed on the sales device and the warehouse device is the control (nobody collapsed).
+- Not witnessed: real GitHub / Gmail, phone-sized layout (sizes are asserted >= 44 px, not rendered on a phone), more than three devices, the Modeller gizmo path.
+- Not built (as instructed): H uses (3) tiered cadence, (4) selective fetch (engine head field), (5) routing.
 
 ### §13.12.I A shared loaded DB with git-like events on top — the BASE (user, 2026-10-24: *"in the event that A works on a loaded DB which the team keeps online, likewise B can also load but the events on top are all git like managed"*)
 
@@ -2080,6 +2173,7 @@ The default per document type is a **policy** value (§13.12 B, "number prefix s
 5. Git-like affordances come free: *branch* (a what-if space that starts from base+checkpoint P and never publishes), *blame* (which op set this field — `fieldLineage` already exists), *revert* (an op that restores), *tag* (a signed checkpoint named "month-end").
 **Witnesses (when built):** `W-BASE-HASH` (B with a different base copy is refused with the plain message; the right copy folds; control) · `W-BASE-EDIT` (A edits a seeded master record; B sees it; a role without write on that org is REFUSED by the base row's scope; the `m_storagereservation` Complete now applies) · `W-BASE-RELEASE` (admin releases v2 at checkpoint P; a device on v1 fast-forwards and converges to the same state as one that started on v2) · `W-BASE-SKEW` (an op stamped with another base hash is not applied).
 **Build order:** after POLICY/CHECKPOINT/KEYCLAIM (current agent): GENESIS `base` field + verify-then-fold → base-row admission scope (unblocks W1 limit 4) → release/fast-forward. The base-row admission rule is the highest-value single change for the ERP today.
+
 
 ---
 
