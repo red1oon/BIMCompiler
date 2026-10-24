@@ -42,6 +42,7 @@
     for (var i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
     return h % V;
   }
+  async function claimUU(space, key) { return _uuid(await _sha('claimrec:' + space + ':' + key)); }       // the record every claim on one key writes
   async function ckptUU(space, stateHash) { return _uuid(await _sha('ckpt:' + space + ':' + stateHash)); }
   var HEX64 = /^[0-9a-f]{64}$/;
   function ckptProblem(p) {
@@ -223,7 +224,7 @@
   }
 
   var API = { IDENTITY: IDENTITY, fold: fold, kidOf: kidOf, devUU: devUU, spaceUU: spaceUU, epochUU: epochUU, policyUU: policyUU, spaceOf: spaceOf, touched: touched, dhOf: dhOf,
-              staggerOffset: staggerOffset, policyProblem: policyProblem, ckptUU: ckptUU, ckptProblem: ckptProblem, stableAgainst: stableAgainst };
+              staggerOffset: staggerOffset, policyProblem: policyProblem, ckptUU: ckptUU, claimUU: claimUU, ckptProblem: ckptProblem, stableAgainst: stableAgainst };
   global.CommRoster = API;
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
 })(typeof window !== 'undefined' ? window : globalThis);
