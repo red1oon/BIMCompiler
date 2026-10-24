@@ -2291,6 +2291,21 @@ Logs read in full (`scratchpad/after/*.log`, `ps_final.log`, `pm_final.log`, mut
 **Build order:** after POLICY/CHECKPOINT/KEYCLAIM (current agent): GENESIS `base` field + verify-then-fold → base-row admission scope (unblocks W1 limit 4) → release/fast-forward. The base-row admission rule is the highest-value single change for the ERP today.
 
 
+
+### §13.12.J Taking the useful part of an outside review (2026-10-24; user: "Take only what's useful")
+An outside LLM review of the framework (event sourcing is legitimate accounting practice; the open question is business invariants under concurrent offline edits) was weighed. **Kept:** (1) the open question is the right one, and it deserves a *test*, not an argument; (2) event-schema evolution is the classic event-sourcing pain and we have no answer yet. **Dropped:** its throughput numbers (single-node append speed; our limit is the per-visit fold and signature checks, §13.10), its claim that we show no invariant resolution (partly stale: §13.11/§13.12), and unverifiable third-party claims. Two items follow.
+
+**J.1 ESCROW + invariants under chaos (`W-INVARIANTS-CHAOS`).**
+- Engine, generic, no table named: three op types in the roster/claims family. `ESCROW_OPEN {resource, slices:{desk: qty}}` (admin; the sum is the conserved total); `ESCROW_USE {resource, desk, qty, doc}`; `ESCROW_TRANSFER {resource, from, to, qty}` (authored by the **sender** desk). A desk's available = its slice − uses + transfers in − transfers out, folded from the ops **that op causally read** (`deps`), so every peer computes the same number at the same point. A USE or TRANSFER above available is **REFUSED `escrow-exceeded`** at admission; a USE by a device that does not own the desk is REFUSED `escrow-not-owner`. A device's desk is its roster person/role mapping (policy `desks`).
+- Invariants the fold guarantees (the chaos witness checks them on every device after settle): per-desk available ≥ 0; sum(slices) conserved (open total = Σ available + Σ used); every USE names a distinct doc or is refused as a duplicate; transfers conserve quantity.
+- **Chaos witness:** the real layer, N devices (default 12, sweep 6/12/24), random offline periods, random order and drop-and-redeliver of bundles, random `USE`/`TRANSFER`/document-number `BOOKING`/`KEYCLAIM` attempts including deliberate over-draws and double claims; then a settle. Judged on each device: the invariants above; **identical op set and order everywhere**; document numbers unique and gap-accounted; each `KEYCLAIM` has one winner; **derived ledger** (a pure `ledgerOf(folded documents, manifest)` computing a trial balance — debits = credits — and a hash of it) **equal on every device** with a control that a deliberately different manifest gives a different hash. Seeded runs are reproducible; the seed is printed. INCONCLUSIVE when no over-draw was attempted or no device went offline. Mutation checks: remove the escrow check → witness red; make conflicts commutative-unsafe → red.
+- **Not in J.1 (named):** wiring the ERP's `m_storagereservation` Complete to ESCROW_USE (host step, after the engine witness is green); the real `Fact_Acct` posting rules (the witness uses a small stated posting function); audience keys.
+
+**J.2 Event versioning (design only, not built).**
+- Every op already carries `manifest` (rules + base, §13.12.I.1). Add a per-op-type **schema version** `v` in the body. The manifest names the **upcaster set**: pure functions `upcast(op_type, v_old → v_cur)` that the fold applies before use, so old ops stay replayable forever.
+- An op with a `v` the device does not know is **PARKED `needs-upgrade`**, not refused and not applied: an older client never mis-reads a newer op, and shows "update the app" plus the count parked. Policy carries `min_v` so an admin can retire a very old shape.
+- Witness (when built): `W-OP-VERSIONS` — ops of v1 and v2 in one log fold to the same state as the all-v2 rewrite; a device that knows only v1 parks v2 ops and converges after it upgrades; control: an op with a bogus v is parked, never applied.
+
 ---
 
 ## §14 Showcase film — storyboard v1 (user, 2026-10-23: *"plan the film storyboard for the showcase"*)
