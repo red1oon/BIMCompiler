@@ -40,7 +40,7 @@ Started 2026-10-24 · worktree `/tmp/wt-docs-refresh` · branch `docs/guides-ref
 | HRBIMAssetGuide | 17 | — | ☐ |
 | CivilWorksGuide | 7 | — | ☐ |
 | TeamsOverlayGuide | 4 | — | ☐ |
-| TimeMachine | 7 | — | ☐ |
+| TimeMachine | 7 | `scripts/docs_capture_time_machine_{a,b,c,d}.js` | ✅ 2026-10-24 — 3 sections rewritten (author wizard → auto-generated schedule; Schedule Editor → ⇄ P6/MSP box; What-if prerequisite), Gantt/Pull Back/Undo/import/export measured; 3 new figures, 3 obsolete figures deleted; 4 images flagged earlier-build; real-pointer edge-resize/marquee/link and large-building LOD pill not reproduced |
 
 Text-only guides (no screenshots, still instruction-checked): OFFLINE_INSTALL_GUIDE, IFC_ExportGuide.
 
@@ -153,3 +153,13 @@ per building from real walk distance and pull-back distance, never a fixed numbe
 Path = two selects + **Find Path** button (guide never said to tap it — added). HHS `≈ Level 1 R1 → ≈ Level 3 R2` = "5 doors · 2 stairs · 75.0m", 4 numbered stops; image `find-room-path-hhs.png`. Hospital's quoted route cannot be selected any more
 (rooms recompiled; Level 1 = Hall/Corridor 1–8 + R1–R3) — three Hospital images captioned as history; Hospital graph now `nodes=30 doors=440 edges=7` (flagged in ROOM_ACCURACY as an item to examine, not concluded).
 Harness lessons: a `<select>` option cannot be clicked — set `.value` + dispatch `change`; scope a pick to its own select when two lists share names; a stall timeout shorter than a large building's load wastes whole reloads (`opts.stallMs`).
+
+### TimeMachine — findings (2026-10-24; SampleHouse; runs clean: 0 resets, 0 pageerrors)
+**BROKEN-AS-WRITTEN (guide described UI that no longer exists; rewritten, owner prompts updated — nothing "fixed" in the app):**
+- ✎ Author 4D Schedule wizard (Generate first draft / Start blank / Schedule now / ±5d / Apply to 4D): `#tm-author` and `#sa-body` absent; removed by #1171 (user ruling 2026-08-05); schedule auto-generates on open, starts today. SampleHouse: 6 one-day FS tasks (Substructure, Architecture Envelope ×2, Architecture Closeup, Finishes, roof "Architecture"), legend "4 critical · 2 with float".
+- Schedule Editor tab (`viewer/schedule_editor.html`, ↗ Editor, Compute CPM, "project 90d · critical 3/3"): page 404 live; retired 2026-08-24 (§TM_P6_FOLD #1509); `#tm-editor` = ⇄ P6/MSP toggle, no new tab.
+- What-if "works out of the box on the built-in Hospital project": no — needs a project for the active building (`_pickProject`, "no fall-through"); SampleHouse → "no folded project yet — push one to ERP first".
+**VERIFIED:** Gantt drawer opens collapsed (📊) and locked (🔒 Locked → 🔓 Editing); locked real drag → 0 tasks moved; unlocked body drag +1 d moves the task and pushes all 5 chained successors +1 d; resize (hook) changes only the finish; Undo single-level; Pull Back text exact; imports XER/PMXML/MSPDI all "6 WBS / 14 activities / 14 links"; tokened import "Pre-bound 51 elements … 8 selector(s) matched nothing"; auto-bind ticked by default; exports PMXML 4,719 B / MSPDI 2,477 B / XER 2,059 B.
+**OBSERVATIONS (not concluded, in `4D_GANTT_TM_REFACTOR.md`):** export-after-import reports the native 6 tasks not the imported 14; Diff vs Model "import one first" after an import; Gantt shows 0 bars after importing an unbound programme; PMXML/MSPDI export share one file name; first upload within ~12 s → "Interop module not loaded".
+**Harness lessons:** `__tmGanttDrag` bypasses the UI lock by design (it checks only the BAKE lock) — never use it to test "locked refuses"; park the pointer before screenshots (hover tooltips leak); a hook closure passed to `page.evaluate` loses its captured variables.
+**Not re-checked:** box-cube LOD pill on a 50k+ building (Hospital), real-pointer edge-resize / marquee / link at a scale where bars are wide enough, What-if with a pushed project, Dashboard values, the Hospital 300-day CPM and 525-element bind claims, the real-P6 52-task sample.

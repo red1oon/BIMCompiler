@@ -1,0 +1,234 @@
+{
+ "at": "2026-10-24T02:44:30.400Z",
+ "steps": {
+  "loaded": {
+   "building": "Ifc4_SampleHouse",
+   "elements": 60
+  },
+  "tasks": [
+   {
+    "id": "TASK_Substructure_Ground_Floor",
+    "storey": "Ground Floor",
+    "phase": "Substructure",
+    "startTs": 1792800000000,
+    "endTs": 1792886400000,
+    "days": 1,
+    "n": 1
+   },
+   {
+    "id": "TASK_Architecture_Envelope_Ground_Floor",
+    "storey": "Ground Floor",
+    "phase": "Architecture Envelope",
+    "startTs": 1792886400000,
+    "endTs": 1792972800000,
+    "days": 1,
+    "n": 24
+   },
+   {
+    "id": null,
+    "storey": "Ground Floor",
+    "phase": "Architecture Envelope",
+    "startTs": 1792892837000,
+    "endTs": 1792892897000,
+    "days": 0,
+    "n": 2
+   },
+   {
+    "id": "TASK_Architecture_Envelope_Roof",
+    "storey": "Roof",
+    "phase": "Architecture Envelope",
+    "startTs": 1792972800000,
+    "endTs": 1793059200000,
+    "days": 1,
+    "n": 12
+   },
+   {
+    "id": "TASK_Architecture_Closeup_Ground_Floor",
+    "storey": "Ground Floor",
+    "phase": "Architecture Closeup",
+    "startTs": 1792972800000,
+    "endTs": 1793059200000,
+    "days": 1,
+    "n": 3
+   },
+   {
+    "id": "TASK_Finishes_Ground_Floor",
+    "storey": "Ground Floor",
+    "phase": "Finishes",
+    "startTs": 1793059200000,
+    "endTs": 1793145600000,
+    "days": 1,
+    "n": 17
+   },
+   {
+    "id": "TASK_Superstructure_Roof",
+    "storey": "Roof",
+    "phase": "Architecture",
+    "startTs": 1792886400000,
+    "endTs": 1792972800000,
+    "days": 1,
+    "n": 1
+   }
+  ],
+  "drawer": {
+   "h": 156,
+   "lock": "🔒 Locked",
+   "cpm": "4 critical·2 with float"
+  },
+  "unlocked": {
+   "text": "🔓 Editing",
+   "title": "Editing: drag to move/resize, drag onto another bar to link, double-click for typed edit. Click to lock."
+  },
+  "move+3": {
+   "committed": true,
+   "shifted": [
+    "Substructure_Ground_Floor 3/3",
+    "Architecture_Envelope_Ground_Floor 3/3",
+    "Architecture_Envelope_Roof 3/3",
+    "Architecture_Closeup_Ground_Floor 3/3",
+    "Finishes_Ground_Floor 3/3",
+    "Superstructure_Roof 3/3"
+   ],
+   "tip": null
+  },
+  "resizeR+2": {
+   "committed": true,
+   "shiftedVsAfterMove": [
+    {
+     "id": "TASK_Substructure_Ground_Floor",
+     "phase": "Substructure",
+     "storey": "Ground Floor",
+     "dStart": 0,
+     "dEnd": 2
+    },
+    {
+     "id": "TASK_Architecture_Envelope_Ground_Floor",
+     "phase": "Architecture Envelope",
+     "storey": "Ground Floor",
+     "dStart": 2,
+     "dEnd": 2
+    },
+    {
+     "id": "TASK_Architecture_Envelope_Roof",
+     "phase": "Architecture Envelope",
+     "storey": "Roof",
+     "dStart": 2,
+     "dEnd": 2
+    },
+    {
+     "id": "TASK_Architecture_Closeup_Ground_Floor",
+     "phase": "Architecture Closeup",
+     "storey": "Ground Floor",
+     "dStart": 2,
+     "dEnd": 2
+    },
+    {
+     "id": "TASK_Finishes_Ground_Floor",
+     "phase": "Finishes",
+     "storey": "Ground Floor",
+     "dStart": 2,
+     "dEnd": 2
+    },
+    {
+     "id": "TASK_Superstructure_Roof",
+     "phase": "Architecture",
+     "storey": "Roof",
+     "dStart": 2,
+     "dEnd": 2
+    }
+   ]
+  },
+  "pullBack": {
+   "result": "nothing",
+   "tip": "Nothing to compress — schedule is already at earliest float",
+   "shiftedVsAfterResize": [],
+   "shiftedVsOriginal": [
+    {
+     "id": "TASK_Substructure_Ground_Floor",
+     "phase": "Substructure",
+     "storey": "Ground Floor",
+     "dStart": 3,
+     "dEnd": 5
+    },
+    {
+     "id": "TASK_Architecture_Envelope_Ground_Floor",
+     "phase": "Architecture Envelope",
+     "storey": "Ground Floor",
+     "dStart": 5,
+     "dEnd": 5
+    },
+    {
+     "id": "TASK_Architecture_Envelope_Roof",
+     "phase": "Architecture Envelope",
+     "storey": "Roof",
+     "dStart": 5,
+     "dEnd": 5
+    },
+    {
+     "id": "TASK_Architecture_Closeup_Ground_Floor",
+     "phase": "Architecture Closeup",
+     "storey": "Ground Floor",
+     "dStart": 5,
+     "dEnd": 5
+    },
+    {
+     "id": "TASK_Finishes_Ground_Floor",
+     "phase": "Finishes",
+     "storey": "Ground Floor",
+     "dStart": 5,
+     "dEnd": 5
+    },
+    {
+     "id": "TASK_Superstructure_Roof",
+     "phase": "Architecture",
+     "storey": "Roof",
+     "dStart": 5,
+     "dEnd": 5
+    }
+   ]
+  },
+  "undoSteps": [
+   {
+    "n": 1,
+    "tasksDifferingFromOriginal": 6,
+    "firstTask": {
+     "dStart": 3,
+     "dEnd": 3
+    },
+    "tip": null
+   },
+   {
+    "n": 2,
+    "tasksDifferingFromOriginal": 6,
+    "firstTask": {
+     "dStart": 3,
+     "dEnd": 3
+    },
+    "tip": null
+   },
+   {
+    "n": 3,
+    "tasksDifferingFromOriginal": 6,
+    "firstTask": {
+     "dStart": 3,
+     "dEnd": 3
+    },
+    "tip": null
+   },
+   {
+    "n": 4,
+    "tasksDifferingFromOriginal": 6,
+    "firstTask": {
+     "dStart": 3,
+     "dEnd": 3
+    },
+    "tip": null
+   }
+  ],
+  "baseline": {
+   "tip": null,
+   "status": "6 placed | Floor:Floor-Grnd-Susp_65Scr-80Ins-100Blk-75PC:286349, Basic Wall:Wall-Partn_12P-70MStd-12P:285792, Floor:Simple floor:295048"
+  }
+ },
+ "pageerrors": []
+}

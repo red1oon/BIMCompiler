@@ -398,8 +398,8 @@ one icon:
   [Viewer Features](#viewer-features). (**Fly Tour** moved to the Navigate drawer.)
 - **Clash Matrix** (key **C**) opens the clash-detection engine (discipline-pair grid, tolerance, Review /
   Resolve / Accept status, HTML + CSV export) — full coverage: **[Clash Detection guide](CLASH_DETECTION.md)**.
-- **Time Machine** (key **T**) opens the 4D construction timeline — author a schedule, play it back,
-  try a What-if slip, share a `?tm=play` link. On a large building (100K+ elements), a box-cube pill
+- **Time Machine** (key **T**) opens the 4D construction timeline — a schedule is generated when you open it, play it back,
+  edit it in the Gantt drawer, try a What-if slip (needs a project pushed to the ERP), import or export Primavera / MS Project, share a `?tm=play` link. On a large building (100K+ elements), a box-cube pill
   in the panel header trims GPU cost by rendering already-built-but-out-of-view elements as lightweight
   wireframe boxes, keeping whatever you're actually looking at full LOD400.
   The schedule it plays is generated element-by-element from the model's own geometry, and it holds a
@@ -413,7 +413,7 @@ one icon:
   <figcaption style="text-align:center; font-style:italic; color:#666; margin-top:6px;"><a href="https://youtu.be/juwOrpqKhFE">Watch on YouTube</a> — Time Machine playback on a large building with the box-cube proxy toggle.</figcaption>
   </figure>
 
-  Full authoring/editing/import walkthrough — including direct Gantt drag/resize/link and the
+  Full editing / import / export walkthrough — including direct Gantt drag/resize/link and the
   **⏪ Pull Back** (reschedule-as-early-as-possible) action — lives on its own page:
   **[Time Machine — the 4D construction timeline](TimeMachine.md)** (not re-documented here — same
   building, same feature, reached from either app), including the

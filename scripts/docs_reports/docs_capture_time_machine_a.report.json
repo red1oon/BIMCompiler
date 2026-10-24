@@ -1,0 +1,94 @@
+{
+ "at": "2026-10-24T02:25:55.638Z",
+ "steps": {
+  "loaded": {
+   "building": "Ifc4_SampleHouse",
+   "elements": 60
+  },
+  "tmPanelButtons": [],
+  "tmStatus": {
+   "label": "10/28/2026 08:00 AM",
+   "status": "61 placed | idle",
+   "big": "DAY 3 │ HR 0"
+  },
+  "authorButtonPresent": {
+   "tmAuthor": false,
+   "sa": false,
+   "ScheduleAuthorUI": "object"
+  },
+  "panelContainer": {
+   "id": "time-machine-panel",
+   "cls": "",
+   "rect": [
+    532,
+    704,
+    376,
+    216
+   ]
+  },
+  "ganttDrawerText": {
+   "h": 20,
+   "text": "📊"
+  },
+  "varBox": {
+   "w": 342,
+   "text": ""
+  },
+  "titles": [
+   "tm-sun|Day/night cycle||vis",
+   "tm-eye|Drone Pilot — cinematic camera||vis",
+   "tm-gantt|Gantt chart|📊|vis",
+   "tm-whatif|What-if: slip a phase, watch the chain re-fold in blue|⎆|vis",
+   "tm-editor|P6 / MS Project interop — import a Primavera .xer/.xml or MS Project XML program onto this model, export MSPDI/PMXML/XER, or grade an imported schedule against the model to see its own quantity + rate estimate|⇄ P6/MSP|vis",
+   "tm-dash|Dashboard|📋|vis",
+   "tm-var|Budget vs Actual variance|⚖|hid",
+   "tm-lod|Draw-cost proxy: box the already-built elements outside camera view (large buildings only). OFF = today's rendering, unchanged.||hid",
+   "tm-close|Close|✕|vis",
+   "tm-undo|Undo the last Gantt drag/resize|↺ Undo edit|vis",
+   "tm-baseline|Snapshot current dates as the baseline for schedule variance|⚑ Set Baseline|vis",
+   "tm-reschedule-asap|Pull every task back to the earliest start its predecessors allow (compression only — never moves a task later)|⏪ Pull Back|vis",
+   "tm-gantt-editlock|Locked: drag/resize/link disabled, timeline still scrubs live. Click to unlock editing.|🔒 Locked|vis"
+  ],
+  "whatIf": {
+   "text": "What-if: no folded project yet — push one to ERP first",
+   "noPanel": true
+  },
+  "ganttState": {
+   "lock": "Locked: drag/resize/link disabled, timeline still scrubs live. Click to unlock editing.",
+   "lockText": "🔒 Locked",
+   "lockMsg": null,
+   "undo": "Undo the last Gantt drag/resize",
+   "baseline": "Snapshot current dates as the baseline for schedule variance",
+   "pull": "Pull every task back to the earliest start its predecessors allow (compression only — never moves a task later)",
+   "cpm": ""
+  },
+  "afterUnlock": {
+   "lock": "Locked: drag/resize/link disabled, timeline still scrubs live. Click to unlock editing.",
+   "lockMsg": ""
+  },
+  "afterPullBack": {
+   "tip": "Nothing to compress — schedule is already at earliest float",
+   "tipShown": "block",
+   "status": "61 placed | idle",
+   "title": "Pull every task back to the earliest start its predecessors allow (compression only — never moves a task later)"
+  },
+  "p6Box": {
+   "vis": {
+    "w": 342,
+    "h": 65,
+    "text": "IMPORT ⇩ P6/MSP file auto-bind EXPORT ⇧ MSP ⇧ PMXML ⇧ XER ⚖ Diff vs Model"
+   },
+   "buttons": [
+    "tm-p6-import|Import a Primavera P6 program (.xer or .xml/PMXML) or MS Project XML (|vis",
+    "tm-p6-file||hid",
+    "tm-p6-autobind|on|vis",
+    "tm-p6-export-msp|Export the current schedule (WBS, dates, dependencies) as MS Project X|vis",
+    "tm-p6-export-pmxml|Export as Primavera P6 PMXML (APIBusinessObjects XML) — the format eve|vis",
+    "tm-p6-export-xer|Export as Primavera XER — the older tab-delimited P6 interchange, for |vis",
+    "tm-p6-diff|4D Schedule Diff — grade an IMPORTED P6/MSP schedule per-phase against|vis"
+   ],
+   "newTab": 2
+  }
+ },
+ "pageerrors": []
+}

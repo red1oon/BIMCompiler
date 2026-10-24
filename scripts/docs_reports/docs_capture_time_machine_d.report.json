@@ -1,0 +1,110 @@
+{
+ "at": "2026-10-24T02:45:42.310Z",
+ "steps": {
+  "fixtures": [
+   "Hospital_GW_MSProject.bound.xml 8306",
+   "Hospital_GW_MSProject.xml 8029",
+   "Hospital_GW_Programme.bound.xer 2799",
+   "Hospital_GW_Programme.bound.xml 10085",
+   "Hospital_GW_Programme.xer 2522",
+   "Hospital_GW_Programme.xml 9808",
+   "Hospital_GW_binding.json 2506"
+  ],
+  "loaded": {
+   "building": "Ifc4_SampleHouse",
+   "elements": 60
+  },
+  "autobindDefault": {
+   "tag": "INPUT",
+   "type": "checkbox",
+   "checked": true
+  },
+  "p6BoxOpen": {
+   "h": 65,
+   "text": "IMPORT ⇩ P6/MSP file auto-bind EXPORT ⇧ MSP ⇧ PMXML ⇧ XER ⚖ Diff vs Model"
+  },
+  "import_Hospital_GW_Programme.xer": {
+   "out": "Imported XER \"Hospital_GW_Programme.xer\" — 6 WBS / 14 activities / 14 links.",
+   "ganttBars": 0,
+   "cpm": "",
+   "logLines": [
+    "§CPM_RUN n=58 nodes=62 edges={E1:53,E2host:0,E2open:7,E3:58,E4:0,member:2} stragglers=1 cycleDrops={E3:2,E4:0,member:1,contractedSccs:0,contractedNodes:0,fsViolInScc:0} crewOverCapScc=0 makespanDays=2.9 ms={contact:1,build:2,solve:1,total:4}",
+    "§CPM_DISPLAY on — one-DAG schedule authored the display timeline midair=0 orphans=4 stragglers=1 (0 midair = nothing appears before what it touches)",
+    "§GANTT_SOURCE captured tasks=20 covered=58 generated=2 total=60 pct=97",
+    "§SCHED_PERSIST url=https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/buildings/SampleHouse_extracted.db key=buildings/SampleHouse_extracted.db size=1200KB"
+   ]
+  },
+  "import_Hospital_GW_Programme.xml": {
+   "out": "Imported PMXML \"Hospital_GW_Programme.xml\" — 6 WBS / 14 activities / 14 links.",
+   "ganttBars": 0,
+   "cpm": "",
+   "logLines": [
+    "§CPM_DISPLAY_REUSE hits=58 misses=0 midair=0 epochShiftDays=0.0 — this consumer replays the SAME timeline its partner authored (one truth, no second recipe)",
+    "§GANTT_SOURCE captured tasks=20 covered=58 generated=2 total=60 pct=97",
+    "§SCHED_PERSIST url=https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/buildings/SampleHouse_extracted.db key=buildings/SampleHouse_extracted.db size=1200KB"
+   ]
+  },
+  "import_Hospital_GW_MSProject.xml": {
+   "out": "Imported MSPDI \"Hospital_GW_MSProject.xml\" — 6 WBS / 14 activities / 14 links.",
+   "ganttBars": 0,
+   "cpm": "",
+   "logLines": [
+    "§CPM_RUN n=58 nodes=62 edges={E1:53,E2host:0,E2open:7,E3:58,E4:0,member:2} stragglers=1 cycleDrops={E3:2,E4:0,member:1,contractedSccs:0,contractedNodes:0,fsViolInScc:0} crewOverCapScc=0 makespanDays=2.9 ms={contact:0,build:2,solve:0,total:2}",
+    "§CPM_DISPLAY on — one-DAG schedule authored the display timeline midair=0 orphans=4 stragglers=1 (0 midair = nothing appears before what it touches)",
+    "§GANTT_SOURCE captured tasks=34 covered=58 generated=2 total=60 pct=97",
+    "§SCHED_PERSIST url=https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/buildings/SampleHouse_extracted.db key=buildings/SampleHouse_extracted.db size=1208KB"
+   ]
+  },
+  "import_Hospital_GW_Programme.bound.xer": {
+   "out": "Imported XER \"Hospital_GW_Programme.bound.xer\" — 6 WBS / 14 activities / 14 links. Pre-bound 51 elements across 6 activities by convention (8 selector(s) matched nothing — review).",
+   "ganttBars": 0,
+   "cpm": "",
+   "logLines": [
+    "§CPM_DISPLAY_REUSE hits=58 misses=0 midair=0 epochShiftDays=0.0 — this consumer replays the SAME timeline its partner authored (one truth, no second recipe)",
+    "§GANTT_SOURCE captured tasks=34 covered=60 generated=0 total=60 pct=100",
+    "§SCHED_PERSIST url=https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/buildings/SampleHouse_extracted.db key=buildings/SampleHouse_extracted.db size=1208KB"
+   ]
+  },
+  "diffVsModel": {
+   "out": "Diff vs Model compares an IMPORTED P6/MSP schedule against our real-quantity estimate — import one first.",
+   "logLines": []
+  },
+  "exports": {
+   "tm-p6-export-pmxml": {
+    "files": [
+     {
+      "f": "SampleHouse_extracted_schedule.xml",
+      "bytes": 4719,
+      "head": "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <APIBusinessObjects xmlns=\"http://xmlns.oracle.com/Primavera/P6/V8.2/API/BusinessObjects\"> <Project"
+     }
+    ],
+    "out": "Exported 6 tasks / 6 links to Primavera PMXML (SampleHouse_extracted_schedule.xml). Some fields (WBS code, EPS-level activity codes, resource assignments, global calendars, baselines) are not carried — P6 itself drops most of these on cross-DB import.",
+    "outChanged": true
+   },
+   "tm-p6-export-msp": {
+    "files": [
+     {
+      "f": "SampleHouse_extracted_schedule.xml",
+      "bytes": 2477,
+      "head": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Project xmlns=\"http://schemas.microsoft.com/project\"><Name>SampleHouse_extracted</Na"
+     }
+    ],
+    "out": "Exported 7 tasks / 6 links to MS Project XML (SampleHouse_extracted_schedule.xml).",
+    "outChanged": true
+   },
+   "tm-p6-export-xer": {
+    "files": [
+     {
+      "f": "SampleHouse_extracted_schedule.xer",
+      "bytes": 2059,
+      "head": "ERMHDR 19.12 2026-10-24 Project admin admin USD SCH_AUTHORED %T PROJECT %F proj_id proj_short_name clndr_id %R 1 SCH_AUTHORED 1 %T CALENDAR"
+     }
+    ],
+    "out": "Exported 6 tasks / 6 links to Primavera XER (SampleHouse_extracted_schedule.xer). Some fields (WBS code, EPS-level activity codes, resource assignments, global calendars, baselines) are not carried — P6 itself drops most of these on cross-DB import.",
+    "outChanged": true
+   }
+  },
+  "exportOut": "Exported 6 tasks / 6 links to Primavera XER (SampleHouse_extracted_schedule.xer). Some fields (WBS code, EPS-level activity codes, resource assignments, global calendars, baselines) are not carried — P6 itself drops most of these on cross-DB import."
+ },
+ "pageerrors": []
+}
