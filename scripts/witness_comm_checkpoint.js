@@ -101,7 +101,7 @@ async function oracleState(W, s, f, prevOr) {                       // → {stat
   var pf = prevOr ? prevOr.frontier : {}, Sall = upTo(all, f), Snew = Sall.filter(function (r) { return r.env.seq > (pf[r.env.author] || 0); });
   var pre = prevOr ? { order: prevOr.order, verdict: prevOr.verdict, scopes: prevOr.scopes, c: prevOr.c } : null;
   var res = await oracleFold(W.space, Snew, upTo(ids, f), pre);
-  var state = { v: 1, space: W.space, frontier: f, prev: prevOr ? prevOr.hash : null, order: res.order, verdict: res.verdict, scopes: res.scopes, claims: {} };
+  var state = { v: 1, space: W.space, frontier: f, prev: prevOr ? prevOr.hash : null, order: res.order, verdict: res.verdict, scopes: res.scopes, claims: {}, used: {} };
   var h = sha(ENV.canonical(state)); return { state: state, hash: h, frontier: f, order: res.order, verdict: res.verdict, scopes: res.scopes };
 }
 async function oracleFull(W, s, f, stateObj, cHash) {                 // the whole log under the barrier of (stateObj, cHash)

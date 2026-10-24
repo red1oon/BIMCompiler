@@ -171,7 +171,7 @@
     }
 
     function claimsPass(order, byHash, bs) {
-      var claims = Object.create(bs ? bs.claims : {}), used = Object.create(bs ? bs.used : {}), losers = [];
+      var claims = Object.create(bs ? bs.claims : {}), used = Object.create(bs ? bs.used : {}), losers = [], cand = {};
       function lose(h, why) { losers.push({ h: h, reason: why }); }
       order.forEach(function (h) {
         var env = byHash[h], t = env.body.op_type;
@@ -184,12 +184,18 @@
           return lose(h, 'key-claimed');
         }
         if (!seqByUU) return;
-        var why = numberingProblem(env, claims, used); if (why) lose(h, why);
+        var why = numberingProblem(env, claims, cand, h); if (why) lose(h, why);
+      });
+      // modes S and K: one (sequence, device, n) belongs to ONE document — the one the device authored FIRST (lowest seq), not the one that happens to sort first;
+      // a number already held inside a checkpoint (bs.used) stays with its holder
+      Object.keys(cand).forEach(function (uk) {
+        var list = cand[uk], holder = bs && bs.used[uk] ? bs.used[uk] : list.slice().sort(function (a, b) { return a.seq - b.seq || (a.doc < b.doc ? -1 : 1); })[0].doc;
+        used[uk] = holder; list.forEach(function (c) { if (c.doc !== holder) lose(c.h, 'docno-duplicate'); });
       });
       return { claims: claims, used: used, losers: losers };
     }
     // §13.12.F.1 — the admission rule for a numbered document, driven only by the sequence config (no table is named here)
-    function numberingProblem(env, claims, used) {
+    function numberingProblem(env, claims, cand, h) {
       var p = env.body.params || {}, ref = p.docno_ref, docno = ADM.docNoOf(env), tbl = env.target.table;
       if (!ref) return docno && seqByTable[tbl] ? 'docno-unnumbered' : null;
       var cfg = seqByUU[ref.seq]; if (!cfg) return 'docno-unknown-seq';
@@ -200,7 +206,7 @@
       if (cfg.mode === 'K') { var j = ADM.blockOf(cfg, ref.n), b = claims[KH['BLOCK:' + ref.seq + ':' + j]];
         if (!b || !b.p || b.p.block !== j || b.a !== env.author || ref.n < b.p.from || ref.n > b.p.to || (ref.n - b.p.from) % (cfg.increment_no || 1) !== 0) return 'docno-outside-block'; }
       var uk = ref.seq + '|' + env.author + '|' + ref.n, doc = String(env.target.uu).toLowerCase();
-      if (used[uk] && used[uk] !== doc) return 'docno-duplicate'; used[uk] = doc; return null;
+      (cand[uk] = cand[uk] || []).push({ h: h, doc: doc, seq: env.seq }); return null;
     }
 
     // ── checkpoints (§13.12.3) ───────────────────────────────────────────────────────────────────────────────────
@@ -769,17 +775,18 @@
       return { mode: 'B', n: n, docno: ADM.formatDocNo(cfg, n, self.kid), ref: { seq: seqUU, n: n }, refs: [await bookingRef(seqUU, n)], tries: tries, booking: op.hash };
     }
     // mode K: book the next free block (a range of numbers) once; allocate from it offline
-    async function bookBlock(pipe, seqUU) {
-      var cfg = seqCfg(seqUU), inc = cfg.increment_no || 1, size = cfg.block_size || 50, j = 0;
+    async function bookBlock(pipe, seqUU, o) {
+      o = o || {}; var cfg = seqCfg(seqUU), inc = cfg.increment_no || 1, size = cfg.block_size || 50, j = 0, tries = 0;
       if (typeof pipe.putIfAbsent !== 'function' || pipe.ifAbsent === false) return { offline: true, error: 'pipe has no putIfAbsent' };
       try {
         var have = (await pipe.list(SP + 'seq/' + seqUU + '/blk')).map(function (x) { return Number(x.split('/blk').pop()); }).filter(function (x) { return Number.isInteger(x); });
         j = have.length ? Math.max.apply(null, have) + 1 : 0;
-        for (var t = 0; t < 200; t++) { if (await pipe.putIfAbsent(SP + 'seq/' + seqUU + '/blk' + j, _json({ seq: seqUU, block: j, device: self.kid }))) break; j++; }
+        if (o.afterList) await o.afterList();
+        for (var t = 0; t < 200; t++) { tries++; if (await pipe.putIfAbsent(SP + 'seq/' + seqUU + '/blk' + j, _json({ seq: seqUU, block: j, device: self.kid }))) break; j++; }
       } catch (e) { return { offline: true, error: String(e && e.message || e) }; }
       var from = (cfg.start_no || 1) + j * size * inc, to = from + (size - 1) * inc;
       var op = await author({ target: { table: 'comm_booking', uu: await ROS.claimUU(space, 'BLOCK:' + seqUU + ':' + j) }, body: { op_type: 'BOOKING', params: { seq: seqUU, block: j, from: from, to: to } }, intent: 'K1' });
-      return { block: j, from: from, to: to, booking: op.hash };
+      return { block: j, from: from, to: to, tries: tries, booking: op.hash };
     }
     // the numbers this device has used / may use, from the fold (own unsent ops are in it too)
     async function usedBy(seqUU) { var L = await cur(), out = {}; if (!L.used) return out; var pre = seqUU + '|' + self.kid + '|';
@@ -797,9 +804,9 @@
       if (cfg.mode === 'B') return bookDocNo(pipe, seqUU, docUU, o);
       if (cfg.mode === 'K') {
         var n = await nextFromBlock(seqUU);
-        if (n == null) { var bb = await bookBlock(pipe, seqUU); if (bb.offline) return bb; n = await nextFromBlock(seqUU); }
+        if (n == null) { var bb = await bookBlock(pipe, seqUU, o); if (bb.offline) return bb; n = await nextFromBlock(seqUU); }
         if (n == null) return { offline: true, error: 'no number left in any block' };
-        return { mode: 'K', n: n, docno: ADM.formatDocNo(cfg, n, self.kid), ref: { seq: seqUU, n: n }, refs: [] };
+        return { mode: 'K', n: n, docno: ADM.formatDocNo(cfg, n, self.kid), ref: { seq: seqUU, n: n }, refs: [await ROS.claimUU(space, 'BLOCK:' + seqUU + ':' + ADM.blockOf(cfg, n))] };
       }
       var u = await usedBy(seqUU), mx = Object.keys(u).map(Number).reduce(function (a, b) { return Math.max(a, b); }, (cfg.start_no || 1) - inc), n2 = mx + inc;
       return { mode: 'S', n: n2, docno: ADM.formatDocNo(cfg, n2, self.kid), ref: { seq: seqUU, n: n2 }, refs: [] };
