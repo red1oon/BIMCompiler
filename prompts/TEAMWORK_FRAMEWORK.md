@@ -2119,28 +2119,7 @@ Every function takes `now` (ms) or options explicitly, so a witness injects the 
 | `W-PEOPLE-MODELLER` | `modeller/tests/witness_people_modeller.js` (2 real browsers, real Modeller) | A selects shared element E → B's label "A is editing this element"; A deselects → A visits → B visits clears; ranking vs raw log; TTL; switch-off; history |
 Regression, quoted before/after: `witness_team_so`, `witness_team_docaction`, `witness_team_desktop`, `witness_team_pill`, `witness_team_modeller`.
 
-### §13.12.I A shared loaded DB with git-like events on top — the BASE (user, 2026-10-24: *"in the event that A works on a loaded DB which the team keeps online, likewise B can also load but the events on top are all git like managed"*)
-
-**This is the intended shape, and it maps to git exactly:** the loaded DB is the **initial commit** (a *base*); every signed op is a **commit on top**; a **checkpoint** (§13.12 C-5) is a **squash / new base**; a device that has the base and the log has the whole repository. What we have, and what is missing:
-| Piece | State today | Gap |
-|---|---|---|
-| Ops fold on top of a loaded DB | ERP: the bundled seed DB + sidecar op-log; Modeller: `bonsai_oplog` over the loaded model DB; comm layer folds the shared ops onto each device's own copy | works |
-| **Base identity** | none — each device just "has a DB"; B could have a different or older copy and nothing says so | **GENESIS gains `base: {name, sha256, bytes, version}`; a device must verify its loaded DB hash equals it before folding, else it refuses with "your copy is not the team's base" (never silently diverges)** |
-| **Where the team keeps the base online** | ad hoc (OCI for building DBs, bundled for the ERP seed) | the **POLICY pipe directory** (§13.12 B) lists base locations (OCI/CDN/bucket URLs, in preference order); the base is **content-addressed** (sha256), immutable, fetched once, cached. Binaries never go through git/LFS (CLAUDE.md DB rule); the post office carries only the small ops. |
-| **Edits to records that live in the base** | not shared: admission judges an op against the scope of the record's CREATE, and a base record has none (W1 limit 4: `scope-unknown`; measured: the `m_storagereservation` refusal, §13.7) | **admission reads the scope from the BASE ROW** (client/org of the row with that `<table>_uu` in the verified base) — the base hash makes that row trustworthy. This single rule unlocks editing every seeded master record, and closes gap 1's reservation refusal |
-| Two people load different versions | undetected | base hash mismatch → refuse; **a base update is a *release***: a new base + the team's checkpoint at position P, signed by an admin (POLICY epoch bump); devices fast-forward: load/verify the new base, fold ops after P |
-| Base too big to ship to a phone | n/a | policy may name a **thin base** (the slice a role needs: AD slim seed `access_seed.sql`-style) with its own hash; ops that touch outside it are fetched on demand — later |
-
-**Rules (decided):**
-1. The base is **read-only**; no one edits it in place. Every change is an op. A fix to the base itself = a new release.
-2. Ops carry the **base hash** in their envelope's `manifest` (§11.8 version skew) so an op from a different base is recognised and parked/refused rather than misapplied.
-3. Loading is **verify-then-fold**: hash, then GENESIS check, then fold. A mismatch is a visible, plain-words state ("Your copy of <name> is v3; the team is on v4 — update"), not a crash.
-4. The base can be **public or private**: access is the hosting's (signed URL, OCI pre-authorised request); the data inside is no more secret than today, and per-audience sealing of ops (C-4) still applies to the ops on top.
-5. Git-like affordances come free: *branch* (a what-if space that starts from base+checkpoint P and never publishes), *blame* (which op set this field — `fieldLineage` already exists), *revert* (an op that restores), *tag* (a signed checkpoint named "month-end").
-**Witnesses (when built):** `W-BASE-HASH` (B with a different base copy is refused with the plain message; the right copy folds; control) · `W-BASE-EDIT` (A edits a seeded master record; B sees it; a role without write on that org is REFUSED by the base row's scope; the `m_storagereservation` Complete now applies) · `W-BASE-RELEASE` (admin releases v2 at checkpoint P; a device on v1 fast-forwards and converges to the same state as one that started on v2) · `W-BASE-SKEW` (an op stamped with another base hash is not applied).
-**Build order:** after POLICY/CHECKPOINT/KEYCLAIM (current agent): GENESIS `base` field + verify-then-fold → base-row admission scope (unblocks W1 limit 4) → release/fast-forward. The base-row admission rule is the highest-value single change for the ERP today.
-
-#### §13.12.G.2 Results 2026-10-24 — people strip + role scope uses (1)(2) ✅ DONE (witness) — bim-ootb PR (branch `feat/people-strip`, ERP sw v904, Modeller sw v156)
+#### §13.12.G.2 Results 2026-10-24 — people strip + role scope uses (1)(2) ✅ DONE (witness) — bim-ootb PR #2362 (branch `feat/people-strip`, ERP sw v904, Modeller sw v156)
 Logs read in full (`scratchpad/after/*.log`, `ps_final.log`, `pm_final.log`, mutant runs `ps_mut_*.log`). Files (bim-ootb): `common/comm/team_people.js` (pure), `team_focus.js` (focus board I/O), `team_people_ui.js` (shared DOM), `erp/team_sync.js` + `erp/team_panel.js` + `erp/idempiere.html` (`idmp:record` seam in `refreshForm()`), `modeller/team_sync.js` + `modeller.html`, `team_defaults.js` (`focusTtlMs`), both `sw.js`. `build/comm/*` and `common/comm/comm_*.js` untouched. Tests: `common/tests/witness_{people_pure,scope_derive,focus_board}.js`, `people_fixture_roles.js`, `erp/tests/witness_people_strip.js`, `modeller/tests/witness_people_modeller.js`.
 
 **Object shapes as settled**
@@ -2173,6 +2152,28 @@ Logs read in full (`scratchpad/after/*.log`, `ps_final.log`, `pm_final.log`, mut
 - Spec-vs-rule note kept: §13.12.H says a warehouse device collapses accounts; under the stated adjacency rule accounts is downstream of warehouse, so the collapse is witnessed on the sales device and the warehouse device is the control (nobody collapsed).
 - Not witnessed: real GitHub / Gmail, phone-sized layout (sizes are asserted >= 44 px, not rendered on a phone), more than three devices, the Modeller gizmo path.
 - Not built (as instructed): H uses (3) tiered cadence, (4) selective fetch (engine head field), (5) routing.
+
+### §13.12.I A shared loaded DB with git-like events on top — the BASE (user, 2026-10-24: *"in the event that A works on a loaded DB which the team keeps online, likewise B can also load but the events on top are all git like managed"*)
+
+**This is the intended shape, and it maps to git exactly:** the loaded DB is the **initial commit** (a *base*); every signed op is a **commit on top**; a **checkpoint** (§13.12 C-5) is a **squash / new base**; a device that has the base and the log has the whole repository. What we have, and what is missing:
+| Piece | State today | Gap |
+|---|---|---|
+| Ops fold on top of a loaded DB | ERP: the bundled seed DB + sidecar op-log; Modeller: `bonsai_oplog` over the loaded model DB; comm layer folds the shared ops onto each device's own copy | works |
+| **Base identity** | none — each device just "has a DB"; B could have a different or older copy and nothing says so | **GENESIS gains `base: {name, sha256, bytes, version}`; a device must verify its loaded DB hash equals it before folding, else it refuses with "your copy is not the team's base" (never silently diverges)** |
+| **Where the team keeps the base online** | ad hoc (OCI for building DBs, bundled for the ERP seed) | the **POLICY pipe directory** (§13.12 B) lists base locations (OCI/CDN/bucket URLs, in preference order); the base is **content-addressed** (sha256), immutable, fetched once, cached. Binaries never go through git/LFS (CLAUDE.md DB rule); the post office carries only the small ops. |
+| **Edits to records that live in the base** | not shared: admission judges an op against the scope of the record's CREATE, and a base record has none (W1 limit 4: `scope-unknown`; measured: the `m_storagereservation` refusal, §13.7) | **admission reads the scope from the BASE ROW** (client/org of the row with that `<table>_uu` in the verified base) — the base hash makes that row trustworthy. This single rule unlocks editing every seeded master record, and closes gap 1's reservation refusal |
+| Two people load different versions | undetected | base hash mismatch → refuse; **a base update is a *release***: a new base + the team's checkpoint at position P, signed by an admin (POLICY epoch bump); devices fast-forward: load/verify the new base, fold ops after P |
+| Base too big to ship to a phone | n/a | policy may name a **thin base** (the slice a role needs: AD slim seed `access_seed.sql`-style) with its own hash; ops that touch outside it are fetched on demand — later |
+
+**Rules (decided):**
+1. The base is **read-only**; no one edits it in place. Every change is an op. A fix to the base itself = a new release.
+2. Ops carry the **base hash** in their envelope's `manifest` (§11.8 version skew) so an op from a different base is recognised and parked/refused rather than misapplied.
+3. Loading is **verify-then-fold**: hash, then GENESIS check, then fold. A mismatch is a visible, plain-words state ("Your copy of <name> is v3; the team is on v4 — update"), not a crash.
+4. The base can be **public or private**: access is the hosting's (signed URL, OCI pre-authorised request); the data inside is no more secret than today, and per-audience sealing of ops (C-4) still applies to the ops on top.
+5. Git-like affordances come free: *branch* (a what-if space that starts from base+checkpoint P and never publishes), *blame* (which op set this field — `fieldLineage` already exists), *revert* (an op that restores), *tag* (a signed checkpoint named "month-end").
+**Witnesses (when built):** `W-BASE-HASH` (B with a different base copy is refused with the plain message; the right copy folds; control) · `W-BASE-EDIT` (A edits a seeded master record; B sees it; a role without write on that org is REFUSED by the base row's scope; the `m_storagereservation` Complete now applies) · `W-BASE-RELEASE` (admin releases v2 at checkpoint P; a device on v1 fast-forwards and converges to the same state as one that started on v2) · `W-BASE-SKEW` (an op stamped with another base hash is not applied).
+**Build order:** after POLICY/CHECKPOINT/KEYCLAIM (current agent): GENESIS `base` field + verify-then-fold → base-row admission scope (unblocks W1 limit 4) → release/fast-forward. The base-row admission rule is the highest-value single change for the ERP today.
+
 
 ---
 
