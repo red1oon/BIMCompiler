@@ -4950,3 +4950,16 @@ From `/tmp/wt-pie-flyout-witness.log` (saved, read before these conclusions — 
 | self-report | verdict machinery prints VACUOUS (either side of the sweep empty), NO-OP (modes render identically), WRONG — never PASS unjudged. This run: `verdict=judged`, NO-OP guard exercised (blits 1 vs 0, colX 1631 → 1509) |
 
 **What the next real bake's log should show:** `§CPE_STATS_TAIL reveal round entered at frame … pie=dropped (§CPE_PIE_FLYOUT_DROP)` — and the Reveal-round cards/roster at full plate width with no pie. Round 1 and the nothing-to-revolve fallback (pie kept — never blank) are unchanged.
+
+## ▶ 2026-10-24 — LIVE PANEL AS SHIPPED, measured (guide refresh; `prompts/DOCS_GUIDE_REFRESH.md`, `scripts/docs_capture_bim_user_guide_e.js`, HHS Office, published site)
+- Panel `#cpe-panel` = "Cinema path — 3 bands" (settle, **exit door ×**, stop; "clear 1 stick"), reach 15, clip mark in / mark out / whole film, tile grid: **Buildup (ON by default)**,
+  **4D/5D** (= id `cpe-room-title`, the old "Room titles"; tooltip "room name card, day counter, cost + ledger rows" — §129.6 6b), Reveal, Clash pairs, Measure, Sun compass, Storey highlight
+  (tooltip: last **5 s**), Load path freeze, Visual (CCTV) in freeze, Audio (RT) in freeze (tooltip "not built yet"), Escape route; plus the **Bounce light (Alt+S look; needs WebGPU)** checkbox (ON).
+  Silent-bake size: this window (interactive) / 1280x720 @15fps / 1920x1080 @24fps / 2560x1440 @24fps. Day # counter default top right. Footer: `#cpe-preview` is `display:none` (aria-hidden), Cancel, Save this path, OK.
+- ⛔ **Default-ON Buildup makes every untouched panel read "Edited".** `_isEdited()` returns true whenever `_state.buildup` is on (its own comment: "a currently-ON checkbox must ALWAYS produce an override"),
+  and Buildup now defaults ON, so on open the note reads "Edited — 41.9s film queued. Not saved to the building.", OK reads "OK — record this" and Save is enabled with nothing changed. The Guardrail-2 text in this file
+  ("untouched OK costs nothing / byte-identical to the un-edited default") no longer holds as shipped. **Two defaults for one flag** (panel `checked:true` here vs `cinema_maxq.js` default false). Fix shape: decide ONE default; if
+  Buildup stays on by default, compare against that baseline in `_isEdited()` instead of the always-true branch. Witness: open the panel, change nothing, assert note text = Unedited and OK label = OK.
+- **Window-dependent total (determinism check):** same building, same walk (28.5 m, 1.81 m/s): total 39.8 s / 597 frames in a 1440×900 window, 41.9 s / 628 frames in 1440×1400. The spec says the total is derived from
+  real walk + pull-back distance; the pull-back evidently depends on the viewport. Not chased — either declare the window as an input of the derivation or make it window-independent.
+- Guide edits made from this: `docs/BIMUserGuide.md` Film-Maker section (control names, tiles, Preview, edited-by-default note); four screenshots that need hand-driven 3D edits are flagged "earlier build" with a caption.

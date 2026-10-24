@@ -17,9 +17,9 @@ the **BUILDINGS & IFC hub** opens:
 
 [**→ Front door (index.html)**](https://red1oon.github.io/bim-ootb/) → choose **Buildings / IFC**
 
-![The BUILDINGS & IFC hub — drop a file in the centre zone, or open a ready-made City / Landmark building](assets/buildings_page.png)
+![The BUILDINGS & IFC hub — drop a file in the centre zone, open your own .db with Blank Viewer, or open a ready-made City / Landmark building](assets/buildings_page.png)
 
-**Three ways in — pick one:**
+**Four ways in — pick one:**
 
 1. **Open a ready-made building.** Tap a card under **City Buildings** or **Landmark Buildings**
    (SampleHouse, Duplex, Clinic, Terminal, Hospital, …). It downloads that building's DB (0.5–177 MB),
@@ -29,13 +29,17 @@ the **BUILDINGS & IFC hub** opens:
 3. **Add to an existing project.** When you drop a file that matches a building already loaded, a
    prompt offers **Merge** (combine disciplines — `Enter`) or **New** (a fresh building — `Escape`);
    two versions of the same building can be opened side-by-side with **Compare Versions**.
+4. **Blank Viewer** (the dashed **➕** card, *Open your own .db file*) — opens the viewer empty so you can
+   open a `.db` you saved earlier.
 
 Once the viewer opens:
 
-1. Watch the progress bar and element flicker as geometry streams in.
-2. **Click any element** → the Info panel shows its IFC class, name, GUID, storey, discipline, material.
-3. **Filter** by storey or discipline (bottom-left panels) to isolate part of the model.
-4. **Alt+Z** for X-Ray, **☆** for white background, **✈** to fly around, **📷** for a screenshot.
+1. Watch the status line at the bottom; it reads `DONE — <building> <n> elements` when streaming is finished.
+2. **Click any element** → the Info panel shows its IFC class, name, GUID, building, storey, discipline, material.
+3. **Filter** by storey or discipline: press **F** to open the Find panel and tap a **Storey** or **Discipline**
+   group to isolate it (see [Find panel](#find-panel-search-voice-query-and-axis-lenses)).
+4. **Alt+Z** cycles X-Ray, **B** flips the background, **L** starts the Fly Tour. The **⋯** button at the
+   bottom-right opens the toolbar rail with everything else ([3D Navigation](#3d-navigation)).
 5. Open another building → the first pauses; tap back to resume.
 
 Full navigation, panels, and the keyboard cheat-sheet are below.
@@ -74,6 +78,10 @@ Then open `http://localhost:8080/index.html`, choose **Buildings / IFC**, and us
 | Hospital | 63,917 | 88 MB |
 | LTU AHouse | 125,698 | 177 MB |
 
+*Element counts are the hub's own (manifest) figures. The viewer's status line counts the element rows it
+loaded — on Duplex the hub says 1,169 and the status line says 1,119 (checked 2026-10-24); the 50-element
+difference is not yet explained.*
+
 ---
 
 ## 3D Navigation
@@ -85,32 +93,38 @@ Then open `http://localhost:8080/index.html`, choose **Buildings / IFC**, and us
 | **Right-click drag** | Pan camera |
 | **Scroll / Pinch** | Zoom |
 | **Click** element | Identify — shows IFC class, name, GUID, storey, material |
-| **Alt+Z** | X-Ray toggle (15% opacity) |
+| **Alt+Z** | Cycle X-Ray → Bounding Boxes → off |
 | **F11** | Fullscreen toggle |
 
-**Toolbar buttons (top-right panel):**
+**The toolbar rail.** Nothing but a status line sits on screen at first. Tap the **⋯** button at the
+bottom-right and a column of round buttons opens down the right edge (measured on Duplex, 2026-10-24):
 
-| Button | Action |
-|--------|--------|
-| **Clear** | Remove all streamed meshes |
-| **X-Ray** | Toggle 15% transparency on all elements |
-| 📷 | Screenshot (saves PNG to Downloads/) |
-| ⛶ | Fullscreen |
-| ☆ / ☾ | Light/dark theme |
-| ✈ | Fly around rendered buildings |
+| Button (top → bottom) | Key | What it opens |
+|---|---|---|
+| **4D Window** (calendar) | — | Tap to generate a programme if the building has none; then shows the construction window of the element you hover or click |
+| **Help** | **F1** | The full, live list of every action and its shortcut |
+| **Settings** | **=** | [Settings](#settings) |
+| **Share** | **/** | [Share](#share) |
+| **Camera / View** | — | A drawer — [Camera / View](#camera-view-drawer) |
+| **Palette** | **P** | [Display options](#display-options-palette-night-shadow-ground-background-sound-fx) |
+| **Inspect** (compass) | — | A drawer — [Inspect](#inspect-drawer-measure-clash-x-ray-section-time-machine-4d5d) |
+| **Navigate** (sailboat) | — | A drawer — Find / Navigate, Role View, World History, Page History, Home, Fly Tour, Nav LOD |
+| **Open Building** | **Ctrl+O** | [Save & Open](#save-open-a-building) |
+| **Save Building** | **Ctrl+S** | [Save & Open](#save-open-a-building) |
 
-**Panels:**
+There is no longer a **Clear** button, a ☆/☾ theme toggle, a 📷 screenshot button or a ✈ button on the rail:
+**B** flips the background and **N** toggles night (both in the Palette), the **Fly Tour** is a row in the
+Navigate drawer (**L**), and a photographic still is **Alt+S** (see
+[Sun, sky and shadow](#sun-sky-and-shadow-while-the-film-records)). A drawer is closed by tapping its rail
+button again (**Esc** does not close it).
 
-| Panel | Position | Shows |
-|-------|----------|-------|
-| **BIM OOTB** | Top-left | Buildings, streaming progress, element flicker |
-| **Tools** | Top-right | Filter, buttons, building list |
-| **Info** | Bottom-right | Clicked element metadata (class, GUID, storey, disc, material) |
-| **Storeys** | Bottom-left | Floor filter — click to isolate one storey |
-| **Disciplines** | Bottom-left | Discipline toggle — show/hide ARC, STR, MEP etc. |
-| **Status** | Bottom-centre | Current streaming state |
+**What else appears on screen:**
 
-All panels collapse with **−/+**.
+| Item | When | Shows |
+|---|---|---|
+| **Status line** | Always, bottom-centre | Current streaming state, then `DONE — <building> <n> elements (<g> instanced groups)` |
+| **Info panel** | After you click an element | IFC class, name, GUID, building, storey, discipline, material |
+| **Find panel** | **F** | Search, Ask, and the storey / discipline / room / material / phase lenses |
 
 ---
 
@@ -122,11 +136,11 @@ All panels collapse with **−/+**.
 - Click any element → IFC class, GUID, storey, discipline, material
 - Fly-tour — plays a routed flight through the building (entrance → highlight room → storey-by-storey);
   drag the scrub bar to seek anywhere in the tour, `◀◀`/`▶▶` to step beat-by-beat, `0.5x`/`1x`/`2x` speed,
-  pause/resume and loop — every position is deterministic (same timestamp always gives the same camera
+  pause/resume and `↺` to restart from the beginning (there is no loop button) — every position is deterministic (same timestamp always gives the same camera
   pose), so scrubbing back and forth never drifts
 
-  ![Fly Tour's scrub bar — beat counter ("Entrance 2/43"), elapsed/total time, tick marks per beat,
-  play/pause/step controls, and speed toggles](img/viewer/fly-tour-scrub-bar.png)
+  ![Fly Tour's scrub bar on Duplex — beat counter ("Aerial sweep 1 (1/10)"), elapsed/total time (0:00 / 1:25),
+  tick marks per beat, restart / step / pause controls, and the 0.5x / 1x / 2x speed toggles](img/viewer/fly-tour-scrub-bar.png)
 - Film-Maker (**Alt+C**) — derives a complete cinematic film of the building from its own room graph,
   then lets you edit the flight by dragging the flight itself, and records it to an mp4 in the browser.
   See [Cinema Film-Maker](#cinema-film-maker-altc-the-bim-ootb-film-maker) below
@@ -137,7 +151,7 @@ All panels collapse with **−/+**.
 - Section cut — horizontal clip plane, slider to cut through floors
 - Storey filter — isolate a single floor
 - Discipline toggle — show/hide ARC, STR, MEP, ELEC, etc.
-- Screenshot — saves current view as PNG
+- Photographic still — **Alt+S** stages the sun/sky/shadow pass and refines the frozen frame (the old 📷 screenshot button is gone from the rail)
 - Deep-link URL — camera + building state encoded in hash, shareable
 - IndexedDB cache — download once, instant on revisit
 - City mode — 786 building bboxes, click to download + stream on demand
@@ -149,7 +163,8 @@ All panels collapse with **−/+**.
 
 The **Find** panel is the Viewer's search/navigate surface: a text or voice query box up top, and a
 single axis toggle underneath that re-groups the whole element tree (by storey, discipline, room,
-material, phase, or the newest axis, building **Parts**).
+material, or phase). A **Find | Ask** switch sits above the box — **Ask** is covered in
+[Viewer Ask — First Steps](AskFirstSteps.md).
 
 **How to open it** (with a building already loaded — see [Quick Start](#quick-start-your-first-building)):
 
@@ -157,14 +172,15 @@ material, phase, or the newest axis, building **Parts**).
    (mobile) — tap the **···** button if the rail isn't already showing. Find the **Navigate** icon
    (a sailboat glyph) among the rail's icons.
    ![The toolbar rail, with the Navigate (sailboat) icon centred between Inspect (compass) above and Open (folder) below](img/viewer/find-panel-navigate-icon.png)
-2. Tap **Navigate**. The **Navigate** drawer opens, listing **Find / Navigate**, **World History**,
-   **Page History**, and **Home** (a fifth row, **Walk**, is mobile-only and won't appear on desktop).
+2. Tap **Navigate**. The **Navigate** drawer opens, listing **Find / Navigate** (**f**), **Role View** (**r**),
+   **World History** (**w**), **Page History** (**z**), **Home**, **Fly Tour** (**l**) and
+   **Nav LOD (large bldgs)** (**o**) (a further row, **Walk**, is mobile-only and won't appear on desktop).
    Tap the **Find / Navigate** row (magnifying-glass icon, shortcut **F**).
    ![The Navigate drawer open, showing the Find / Navigate row at the top with its "f" shortcut](img/viewer/find-panel-navigate-drawer.png)
 3. The **Find panel** opens on the right side of the screen, with the search bar focused and ready to
    type. On desktop you can also press **F** to open it directly, from anywhere in the viewer.
-   ![The Find panel just opened on Duplex — "Search elements…" search bar, three example query chips, and the axis toggle reading "1/6 Storey"](img/viewer/find-panel-open.png)
-4. Tap the **×** in the top corner of the panel, or press **F** again, to close it.
+   ![The Find panel just opened on Duplex — "Search elements…" search bar, three example query chips, and the axis toggle reading "1/5 Storey ⇄ Discipline"](img/viewer/find-panel-open.png)
+4. Tap the **×** in the top corner of the panel, or press **F** again, to close it. (Right after the panel opens the search box has the focus, so **F** types an "f" there — click the 3D view first, then **F** closes it. Checked 2026-10-24.)
 
 **The search / query box.** The input (placeholder *"Search elements…"*) does two different things
 depending on what you type:
@@ -173,8 +189,9 @@ depending on what you type:
   you type — a normal name/class search.
 - **A natural-language query** — anything starting with a recognized verb (`count`, `how many`,
   `number of`, `total`, `cost`, `show`, `list`, `what`, `find`, `search`) is detected as you type.
-  Recognized phrases don't filter the tree live like a plain search does — type the phrase, then press
-  **Enter** to run it. Recognized query shapes include:
+  Recognized phrases don't filter the tree live like a plain search does — the panel shows **Press Enter ↵**;
+  press **Enter** to run it, and the answer appears as a green card over the 3D view with a **Details**
+  button (and **Show in 3D** when the answer is a set of elements). Recognized query shapes include:
   - `count doors` / `how many beams` / `number of windows` — element count by IFC class.
   - `total cost` — an indicative 5D cost breakdown by IFC class, using the active rate pack.
   - `cost of <discipline or class>` — cost narrowed to one discipline (e.g. "cost of electrical") or class.
@@ -184,35 +201,50 @@ depending on what you type:
   - `floor area` — a slab count (same caveat: no measured floor-area dimension in the DB).
   - `show <discipline>` / `list <discipline>` — every element in that discipline, grouped by class.
   - `what disciplines` — every discipline present in the building, with element counts.
-  - `find <term>` / `search <term>` — routes back into this same Find panel as a plain search for `<term>`.
+  - `find <term>` / `search <term>` — answers like `show`: on Duplex `find door` gives *14 — show door* with **Show in 3D** (it no longer just falls back to a plain search).
   - `floor <n> <class>` / `ground floor <class>` — a storey-scoped count (e.g. "floor 2 beams").
   - A more general typed-language decoder is tried first and understands a broader range of phrasing;
     the patterns above are the documented fallback when that decoder doesn't recognize the phrase.
   - Three example chips below the box — **count doors**, **total cost**, **show structure** — run a
-    query immediately when tapped, no typing required.
+    query immediately when tapped, no typing required. On Duplex they answer *14 — count door*,
+    *$ 262,925 (RM 1,011,250) — total building cost* and *19 — show structure* (checked 2026-10-24).
   ![The query box with "count doors" typed — this recognized phrase does not filter the tree below it; pressing Enter runs the query](img/viewer/find-nl-query.png)
+  ![The answer card after Enter — "14 — count door" with a Details button](img/viewer/find-nl-answer.png)
+
+  *Known defect (2026-10-24):* typing a **Space** with the keyboard inside the Find box does nothing — the
+  viewer's panel-key router swallows it, so `count doors` arrives as `countdoors` and falls back to a plain
+  search. Tapping a chip, pasting the phrase, or voice input all work. Recorded in
+  `prompts/DOCS_GUIDE_REFRESH.md`; the fix belongs in the viewer (`viewer/scene.js`, panel-focused key block),
+  not in this guide.
 - **Voice search** — tap the microphone icon to the left of the text box and speak a query using the
   same phrasing as above (e.g. "count doors"). The recognized text fills the box live while you speak
   (shown in italics until finalized), and the finished phrase runs automatically — no need to press Enter.
 
 **The axis toggle.** Below the search bar, one button shows the current axis and how many are
-available (e.g. "1/6 Storey" on a building where all six axes are present) — tap it to cycle to the
-next axis. Two axes are always present; up to four more appear only when the loaded building actually
-has that kind of data (no data, no empty axis):
+available (e.g. "1/5 Storey ⇄ Discipline" on Duplex, where all five axes are present — the small text after
+the arrows names the axis you get next) — tap it to cycle to the next axis. Two axes are always present;
+up to three more appear only when the loaded building actually has that kind of data (no data, no empty axis).
+The order is Storey → Discipline → Room → Material → Phase → back to Storey:
 
 | Axis | Always shown? | What it shows |
 |------|----------------|----------------|
 | **Storey** | Always | Elements grouped by building level/storey. Expand a storey to see the rooms/spaces on it (or, if the building has no room data, its most common IFC classes). Tapping a storey or room isolates it in the 3D view. |
 | **Discipline** | Always | Elements grouped by discipline (ARC/STR/MEP/ELEC, etc). Expand a discipline to see its IFC classes; tap a class to highlight just those elements. |
-| **Room** | Only if the building has volumetric room (IfcSpace) data | A highlight lens: the model is X-rayed and a translucent box is drawn over each room. Has its own **Storey / Type / Path** sub-toggle: group rooms by floor, by the compiler's own confidence tier (see [Room health](#room-health-the-type-sub-toggle-verified-live-on-terminal) below), or route between two rooms the way a person walks. (On a building without volume data, this falls back to a plain isolate-by-room list instead.) |
+| **Room** | Only if the building has volumetric room (IfcSpace) data | A highlight lens: the model is X-rayed and a translucent box is drawn over each room. Has its own **Storey / Type / Path** sub-toggle: group rooms by floor, by the compiler's own confidence tier (see [Room health](#room-health-the-type-sub-toggle) below), or route between two rooms the way a person walks. (On a building without volume data, this falls back to a plain isolate-by-room list instead.) |
 | **Material** | Only if material data is present | Elements grouped by material name, or — via a **Material / Category** sub-toggle — by a derived construction category (Concrete, Metal, Wood, Glass, Drywall/Partition, Masonry, Insulation, Tile, Finish, Membrane, Flooring, Generic, Other). Categories are a keyword-derived heuristic, not an extracted IFC property, and are labelled accordingly in the panel. Highlight lens, same X-ray-and-box behavior as Room. |
-| **Phase** | Only if a construction timeline can be generated for the building | Elements grouped by construction phase/task, generated on the fly (a short "Timeline generating…" message appears first). |
-| **Parts** *(new)* | Only if the building has stairway, lift-shaft, or plant-room elements | Elements grouped into up to three building-part categories: **Stairway** (stair/ramp classes), **Lift Shaft** (elements named for lifts/elevators), **Plant Room** (HVAC-plant elements — vents, ducts, fans, AHUs, dampers, chillers, pumps). Each category is itself data-gated — it only appears if the building actually has a match. Tapping a category, or a single item inside it, isolates it in the 3D view (hides the rest of the model). |
+| **Phase** | Only if a construction timeline can be generated for the building | Elements grouped by construction phase/task, generated on the fly. On HHS Office: Architecture Envelope 1334, MEP Rough-in 2666, Superstructure 1967, Architecture 10, Architecture Closeup 133, MEP Final 727, Finishes 43. *Known defect (2026-10-24):* the first time you open this axis it shows "Timeline unavailable (generator not loaded)." while the timeline is still being generated in the background (the app's own log says `reopen to load`) — cycle to another axis and back and the phases appear. |
 
-  ![The axis toggle cycled to Parts on HHS Office ("6/6 Parts"), a real institutional-scale building showing all three categories at once: Stairway (20), Lift Shaft (3), and Plant Room (1769) — Plant Room only appears on complex-class buildings like this one, never on a residential building like Duplex](img/viewer/find-axis-parts.png)
+*The former **Parts** axis (Stairway / Lift Shaft / Plant Room) was retired on 2026-07-15 — those groups now
+live inside the **Room** axis, under its **Type** sub-toggle (next).* On HHS Office, **Room → Type** lists
+**INTERNAL** 48 · **INTERNAL_SMALL** 15 · **SUSPECT_OPEN** 7 · **Restrooms** 2 · **SUSPECT_NO_DOOR** 2 ·
+**SUSPECT_ELONGATED** 1 · **Stairs** 11 · **Lift Shaft** 3 · **Plant Room** 1769. Plant Room only appears on
+complex-class buildings like this one, never on a residential building like Duplex; each group appears only
+if the building has a match, and tapping a group isolates it in the 3D view.
 
-**Room highlight, verified live on HHS Office.** Level 2 alone compiles 31 real rooms (105 across the
-whole building) — tapping one X-rays the model and draws a clean, correctly-bounded translucent box
+  ![Room → Type on HHS Office — the Storey / Type / Path switch, then the first groups of a list that scrolls: INTERNAL (48), INTERNAL_SMALL (15), SUSPECT_OPEN (7), Restrooms (2), SUSPECT_NO_DOOR (2); below them come SUSPECT_ELONGATED, Stairs, Lift Shaft and Plant Room](img/viewer/find-room-type-hhs.png)
+
+**Room highlight, verified live on HHS Office.** Level 2 alone compiles 31 real rooms (Level 1: 25, Level 3: 19 —
+75 across the whole building, checked 2026-10-24) — tapping one X-rays the model and draws a clean, correctly-bounded translucent box
 over just that room, confirming the room's geometry is well-formed and doesn't overlap its neighbours.
 On a larger building, the biggest rooms on a floor stand in for a "hall"-scale space until a real
 labelled corridor/hall example is captured (HHS's own rooms carry no such label yet — a future guide
@@ -224,56 +256,46 @@ pass).
 live, 2026-07-12) — the highlight is accurate, but you may need to manually orbit/zoom to see a small
 room clearly on a large building. Tracked for a future fix.
 
-> The Parts axis is the newest addition (bim-ootb `d04ddd5`) — see
-> `prompts/VIEWER_FIND_PANEL_PARTS_VERIFICATION.md` for its live verification on Duplex/SampleCastle data.
-> A false-positive/missing-class-gate bug found after that verification (`prompts/FIND_PANEL_PLANT_ROOM_GATE_FIX.md`)
-> is now fixed (bim-ootb PR #740/#742) — Plant Room only shows on `complex`-class buildings (Terminal,
-> Clinic, Hospital, HHS), never on residential ones, and its keyword match is word-boundary-checked to
-> avoid substring false positives like "Backflow Preventer" matching "vent".
+> Plant Room only shows on `complex`-class buildings (Terminal, Clinic, Hospital, HHS), never on residential
+> ones, and its keyword match is word-boundary-checked to avoid substring false positives like "Backflow
+> Preventer" matching "vent" (bim-ootb PR #740/#742; `prompts/FIND_PANEL_PLANT_ROOM_GATE_FIX.md`).
 
-*Not yet confirmed from source, flagged rather than guessed:* the exact on-screen wording of the axis
-toggle's next-axis hint on narrow/mobile screens, and whether the typed-language decoder mentioned above
-recognizes any further phrasing beyond the regex patterns documented — both would need a dedicated read of
-`decoder.js`, which was out of scope for this pass.
+*Not yet confirmed from source, flagged rather than guessed:* whether the typed-language decoder mentioned
+above recognizes any further phrasing beyond the regex patterns documented — that would need a dedicated read
+of `decoder.js`, which was out of scope for this pass.
 
-*Also discovered while capturing these screenshots (reported, not fixed here — this task is docs-only):*
-the natural-language query hint text described above is written into the DOM by `navigate_find.js`
-`_handleInput()`, but the panel's `results-expanded` CSS class (which gives `#find-results` its visible
-height) is only added by the plain-search code path, not the NL-query path — so, live, no visible hint
-actually appears while typing a recognized phrase; the query still runs correctly on **Enter**. The guide
-text above describes the observed (silent) behavior, not an invented visible hint.
-
-#### Room health — the Type sub-toggle (verified live on Terminal)
+#### Room health — the Type sub-toggle
 
 Switch the Room axis's grouping from **Storey** to **Type** and rooms are grouped by the compiler's
 own confidence in them, not by a floor: **INTERNAL** / **INTERNAL_SMALL** (ordinary enclosed rooms,
-split by size) and **SUSPECT_OPEN** / **SUSPECT_NO_DOOR** (rooms the compiler could bound
-geometrically but flags for a human rather than silently accepting). This is the compile-with-honesty
+split by size) and **SUSPECT_OPEN** / **SUSPECT_NO_DOOR** / **SUSPECT_ELONGATED** (rooms the compiler
+could bound geometrically but flags for a human rather than silently accepting). The same list also
+carries the named building parts — **Restrooms**, **Stairs**, **Lift Shaft**, **Plant Room** — listed above. This is the compile-with-honesty
 principle made visible — a low-confidence room is *shown* as low-confidence, never quietly promoted
 to "room" just because it fits inside walls.
 
-**Terminal, the hard case, verified live.** A user-reported screenshot showed a stairwell counted as
-a room — the compiler doesn't know "stairwell" as a concept, only geometry, and a tall vertical shaft
-can look room-shaped from a single floor's footprint alone. The fix (**STAIRWELL-STACK reject**)
-rejects a room candidate whose footprint recurs, stacked, through multiple storeys with a real stair
-inside it — the signature of a shaft, not a room — checked against both compiler mirrors, 6/6 parity.
-Reloading Terminal applies the healed patch over whatever the browser had cached already: **59 rooms →
-40 rooms, 73 rects, no room anywhere near the shaft threshold** — the stairwell is gone from both the
-Room list and the 3D view.
+**Terminal, the hard case.** A user-reported screenshot once showed a stairwell counted as a room — the
+compiler doesn't know "stairwell" as a concept, only geometry, and a tall vertical shaft can look room-shaped
+from a single floor's footprint alone. The fix (**STAIRWELL-STACK reject**) rejects a room candidate whose
+footprint recurs, stacked, through multiple storeys with a real stair inside it — the signature of a shaft,
+not a room. On the live site today Terminal compiles **52 rooms** — Aras 01: 12, Aras 02: 10, Aras 03: 3,
+Aras 04: 3, Aras Bumbung: 1, Aras Tanah: 23 (the figures quoted when this section was written, 59 rooms →
+40 rooms, no longer reproduce; the room set has been recompiled since). Under **Type** they group as
+**INTERNAL** 27 · **INTERNAL_SMALL** 7 · **SUSPECT_OPEN** 4 · **SUSPECT_NO_DOOR** 8 · **Hall / Corridor** 6, and the
+building parts as **Stairs** 17 · **Lift Shaft** 5 · **Plant Room** 644.
 
-![Terminal, Type grouping open: INTERNAL (30), INTERNAL_SMALL (15), SUSPECT_OPEN (22), SUSPECT_NO_DOOR (6) — "Aras 02 R3" selected, an empty doorless pocket beside a stair flight, flagged rather than guessed into being a room](img/viewer/type-suspect-no-door-terminal.png)
+![Terminal, Type grouping open: INTERNAL (27), INTERNAL_SMALL (7), SUSPECT_OPEN (4), SUSPECT_NO_DOOR (8) expanded with "Aras 02 R3" selected — that room drawn as a purple box in the X-rayed model, flagged rather than guessed into being a room](img/viewer/type-suspect-no-door-terminal.png)
 
-That SUSPECT_NO_DOOR pick is the demo frame: an empty pocket next to the stair, no door found
-bounding it, so the compiler says exactly what it knows and stops — it doesn't invent a door to make
-the room look finished.
+That SUSPECT_NO_DOOR pick (*Aras 02 R3*, still on the list) is the demo frame: no door was found bounding it,
+so the compiler says exactly what it knows and stops — it doesn't invent a door to make the room look
+finished. The other seven are Aras 03 R2, Aras 04 R1, Aras 04 R2, Aras Bumbung R1 and Aras Tanah R5, R17 and R22.
 
-*Known gap, named not hidden:* Type is a **health** taxonomy (how sure the compiler is this is a
-room), not a **semantic** one — it doesn't yet know "corridor" from "office." Terminal's concourses
-show no CORRIDOR band today because the only measured corridor template on file is Duplex's 10.4m²
-hallway (n=2 samples), and stretching that onto a terminal concourse would be inventing, not
-compiling. The room-path routing below already produces a building-relative, *measurable* definition
-of a corridor — the elongated, many-doored room every route keeps passing through — scoped as a
-future CIRCULATION_DISPLAY pass, not built yet.
+*What Type is, and is not:* it began as a **health** taxonomy (how sure the compiler is this is a room) and
+now also carries a few named groups beside the health tiers — **Hall / Corridor** (6 rooms on Terminal),
+**Restrooms** (2 on HHS), and the building parts **Stairs**, **Lift Shaft** and **Plant Room**. It still does
+not classify every room by function (there is no "office" or "ward" group), and an earlier version of this
+guide that said Terminal shows no corridor band is out of date. How the Hall / Corridor members are chosen is
+owned by `prompts/ROOM_LENS_VISUAL_HIGHLIGHT_SPEC.md` (`_corridorLabelsFor()`), not documented here.
 
 #### Room-to-room paths & escape routes
 
@@ -282,17 +304,32 @@ person actually walks — out the door, along the corridor or concourse, and up 
 when the two rooms are on different floors. The route draws as a line through the real doors and
 stair flights it uses, and the rooms along the way stay highlighted.
 
+**How to run one:** with **Room → Path** open, choose the start room in the left drop-down and the end room in
+the right one (each list is every compiled room, e.g. `≈ Level 1 R1 · COMPILED INTERNAL`), then tap **Find
+Path** — choosing the two rooms alone does not run it. The panel then shows one summary line and the numbered
+stops with a line per hop. Measured on HHS Office (2026-10-24), `≈ Level 1 R1` → `≈ Level 3 R2`:
+**5 doors · 2 stairs · 75.0 m**, four numbered stops (Level 1 R1 → Level 1 R3 → Level 3 R8 → Level 3 R2), hops
+labelled *through door: …*, *along Corridor — Level 1*, *via stair: …* and *along Corridor — Level 3*.
+
+![Room → Path on HHS Office: the From and To drop-downs (≈ Level 1 R1 → ≈ Level 3 R2), the Find Path button, and the result "5 doors · 2 stairs · 75.0m" above stop 1 with its first hop "through door:"](img/viewer/find-room-path-hhs.png)
+
 *Verified live (2026-07-12):* a real route across Terminal's floors returns several stair-crossing
 legs in sequence, not a single best-guess hop — each leg names the room and the door or stair flight
-it passes through.
+it passes through. *(Not re-run on Terminal on 2026-10-24.)*
 
 ![Aerial X-ray view of Hospital with the Find panel open on the same ≈ Level 1 R35 to ≈ Level 4 R8 route, the yellow line now hugging the real corridors and stair flights on both levels instead of cutting across the open roof between wings, the panel listing three numbered room stops with each hop labelled through door: / via stair: / along Corridor — 3 doors · 1 stair · 124.7m](img/viewer/find-room-path-hospital-topview.png)
 
+*(Screenshot from 2026-07-26 on Hospital's earlier room set — the route it shows can no longer be selected; see the history note below.)*
+
 ![Straight-on facade view of the same Hospital route with the Find panel still open, the yellow line now tracking the real ground-floor corridor and climbing through the stair flight against the building mass instead of floating in front of it, the same three numbered stops and through door: / via stair: / along Corridor hop labels visible in the list — 3 doors · 1 stair · 124.7m](img/viewer/find-room-path-hospital-frontview.png)
+
+*(Screenshot from 2026-07-26 on Hospital's earlier room set — the route it shows can no longer be selected; see the history note below.)*
 
 ![Angled view along the Hospital building's length, same route — the yellow line now runs along the real corridor windows and through the doorways it uses on its way up the stair instead of floating outside the floor plates — 3 doors · 1 stair · 124.7m](img/viewer/find-room-path-hospital-sideview.png)
 
-*Fixed and verified live (2026-07-26):* the drawn-line defect shown in earlier versions of the
+*(Screenshot from 2026-07-26 on Hospital's earlier room set — the route it shows can no longer be selected; see the history note below.)*
+
+*History — measured 2026-07-26 and not reproducible today:* Hospital's room set has since changed (Level 1 now lists R1–R3 plus Hall/Corridor rooms, so `≈ Level 1 R35` and `≈ Level 4 R8` no longer exist, and the three screenshots above show a route that cannot be re-selected). The drawn-line defect shown in earlier versions of the
 screenshots above — a room-to-room path cutting straight through open air or atrium space instead of
 hugging the real walkable floor — is fixed. The same Hospital route (`≈ Level 1 R35 → ≈ Level 4 R8`,
 124.69m, same 3 doors and 1 stair as before) was re-run live after the fix: the 5 legality checks that
@@ -322,15 +359,19 @@ path list — one tap from any room to the nearest building exit.
 *Future feature — mobile:* scan a QR code posted beside a door to fetch that building's lightweight
 architecture model on your phone and see the escape route in Walk mode from exactly where you stand.
 
-### The rest of the Navigate drawer — World History, Page History & Home
+### The rest of the Navigate drawer — Role View, World History, Page History, Home, Fly Tour & Nav LOD
 
 The **Navigate** drawer (sailboat icon — see [Find panel](#find-panel-search-voice-query-and-axis-lenses)
-above for how to open it) has three more rows besides Find / Navigate:
+above for how to open it) has six more rows besides Find / Navigate:
+
+- **Role View** (shortcut **R**) — cycles a profession preset (Plumber, Electrician, ACMV Tech, Structural,
+  Cleaner, then back to All) that filters the 3D scene and the Find tree to that role's disciplines. The row
+  shows the current role (*All* until you tap it). A convenience filter, not access control.
 
 - **World History** (shortcut **W**) — a cross-page timeline: every significant action across *every*
   page — Viewer, ERP, Gravity — in one place. Opens a card with a **Whole / This page** toggle, day-by-day
   navigation (**‹ day** / **day ›**), and one entry per action (what happened, where, and when).
-  ![The World History card open — "Whole" scope, Jul 12 selected, one "Opened Ifc2x3_Duplex_Federated" entry from the Viewer](img/viewer/pill-world-history.png)
+  ![The World History card open — "Whole" scope, today's date selected, one "Opened Ifc2x3_Duplex_Federated" entry from the Viewer](img/viewer/pill-world-history.png)
 - **Page History** (shortcut **Z**) — this page's own compact dot-timeline, a small step-back/step-forward
   bar. It only lights up once you've made edits in this session — a fresh session shows an empty strip
   (the pair of arrows either side of a single dot), as captured here.
@@ -338,22 +379,27 @@ above for how to open it) has three more rows besides Find / Navigate:
 - **Home** — returns to the front-door hub (the same page the [Quick Start](#quick-start-your-first-building)
   walkthrough starts from). Installed as a standalone app (PWA), it opens the live hub online, or falls
   back to the cached hub offline.
+- **Fly Tour** (shortcut **L**) — the routed flight described under [Viewer Features](#viewer-features). It
+  used to sit in the Inspect drawer; it is now a Navigate row.
+- **Nav LOD (large bldgs)** (shortcut **O**) — boxes far / off-screen elements while you fly or orbit and keeps
+  the real mesh only within 50 m and in view. Off by default; on buildings under 50,000 elements it only shows
+  a toast. It switches itself off during the Time Machine, Find isolate and Cinema.
 
-### Inspect drawer — Measure, Clash, X-Ray, Section, Time Machine, 4D/5D, Fly Tour
+### Inspect drawer — Measure, Clash, X-Ray, Section, Time Machine, 4D/5D
 
 > **Road (civil works) model?** The same drawer gives extra road reports — clash between trades, earthworks volume, long / cross sections and a road Model Check. Walkthrough: **[Civil Works — Step by Step](CivilWorksGuide.md)**.
 
-The **Inspect** drawer (compass icon, next to Navigate on the toolbar rail) bundles seven tools behind
+The **Inspect** drawer (compass icon, next to Navigate on the toolbar rail) bundles six tools behind
 one icon:
 
-![The Inspect drawer open — Measure, Clash Matrix, X-Ray / Bbox (currently "Off"), Section Cut, Time Machine, 4D / 5D, and Fly Tour, each with its shortcut key](img/viewer/pill-inspect-drawer.png)
+![The Inspect drawer open — Measure, Clash Matrix, X-Ray / Bbox (currently "Off"), Section Cut, Time Machine and 4D / 5D, each with its shortcut key](img/viewer/pill-inspect-drawer.png)
 
-- **Measure**, **X-Ray / Bbox**, **Section Cut**, and **Fly Tour** are covered above, under
-  [Viewer Features](#viewer-features).
+- **Measure**, **X-Ray / Bbox** and **Section Cut** are covered above, under
+  [Viewer Features](#viewer-features). (**Fly Tour** moved to the Navigate drawer.)
 - **Clash Matrix** (key **C**) opens the clash-detection engine (discipline-pair grid, tolerance, Review /
   Resolve / Accept status, HTML + CSV export) — full coverage: **[Clash Detection guide](CLASH_DETECTION.md)**.
-- **Time Machine** (key **T**) opens the 4D construction timeline — author a schedule, play it back,
-  try a What-if slip, share a `?tm=play` link. On a large building (100K+ elements), a box-cube pill
+- **Time Machine** (key **T**) opens the 4D construction timeline — a schedule is generated when you open it, play it back,
+  edit it in the Gantt drawer, try a What-if slip (needs a project pushed to the ERP), import or export Primavera / MS Project, share a `?tm=play` link. On a large building (100K+ elements), a box-cube pill
   in the panel header trims GPU cost by rendering already-built-but-out-of-view elements as lightweight
   wireframe boxes, keeping whatever you're actually looking at full LOD400.
   The schedule it plays is generated element-by-element from the model's own geometry, and it holds a
@@ -367,7 +413,7 @@ one icon:
   <figcaption style="text-align:center; font-style:italic; color:#666; margin-top:6px;"><a href="https://youtu.be/juwOrpqKhFE">Watch on YouTube</a> — Time Machine playback on a large building with the box-cube proxy toggle.</figcaption>
   </figure>
 
-  Full authoring/editing/import walkthrough — including direct Gantt drag/resize/link and the
+  Full editing / import / export walkthrough — including direct Gantt drag/resize/link and the
   **⏪ Pull Back** (reschedule-as-early-as-possible) action — lives on its own page:
   **[Time Machine — the 4D construction timeline](TimeMachine.md)** (not re-documented here — same
   building, same feature, reached from either app), including the
@@ -379,15 +425,17 @@ one icon:
 
 ### Camera / View drawer
 
-The **Camera / View** drawer (camera icon) bundles three camera-control toggles:
+The **Camera / View** drawer (camera icon) bundles four camera controls:
 
-![The Camera / View drawer open — Precision (Fine), Reset Camera, and Auto-Pivot, each with its shortcut key](img/viewer/pill-camview-drawer.png)
+![The Camera / View drawer open — Precision (Fine), Reset Camera, Auto-Pivot and GI Preview (AO), each with its shortcut key](img/viewer/pill-camview-drawer.png)
 
 - **Precision (Fine)** (Caps Lock) — slows orbit/pan/zoom for fine, deliberate camera moves (e.g. lining
-  up a screenshot or a measurement).
+  up a still or a measurement).
 - **Reset Camera** (key **A**) — snaps the camera back to its default orbit position.
 - **Auto-Pivot** (key **Q**) — toggles automatic pivot-point recentring as you orbit, so the camera keeps
   turning around whatever's in view instead of a fixed point.
+- **GI Preview (AO)** (**Alt+G**) — N8AO ambient-occlusion preview (labelled a research spike in the app).
+  Desktop only; disabled on mobile to save memory.
 
 ### Cinema Film-Maker (Alt+C) — the BIM OOTB Film-Maker
 
@@ -400,10 +448,16 @@ Before recording starts, a **Cinema path** panel opens with the whole film drawn
 through the building. You edit the flight by dragging the flight itself — there is no separate
 storyboard or keyframe list:
 
-![The Cinema path panel the moment Alt+C is pressed, before any editing — the derived flight drawn as a yellow tube diving into the building and running out along the roof, and the panel listing just three bands (settle, one stick, stop) each with its x / z / height / length fields and aim angles, then the Whole path block: reach 15%, clip "whole film", the buildup checkbox, "saved — none yet —", total 53.9 s / 808 frames, and the derived line "walk 36.9m · 1.69 m/s · natural 53.9s · replan 91ms"](img/viewer/filmmaker-path-editor-initial.png)
+![The Cinema path panel the moment Alt+C is pressed on HHS Office, before any editing — three bands (settle, exit door, stop) each with x / z / height / length fields and aim angles, then the Whole path block: reach 15%, clip "whole film" with mark in / mark out, the tile grid (Buildup lit, 4D/5D, Reveal, Clash pairs, Measure, Sun compass, Storey highlight, Load path freeze, Visual (CCTV) in freeze, Audio (RT) in freeze, Escape route), the Bounce light checkbox, Silent-bake size "this window (interactive)", Day # counter "top right", "saved — none yet —", total 41.9 s / 628 frames, the derived line "walk 28.5m · 1.81 m/s · natural 41.9s (+2.2s vs original) · replan 72ms", and the footer "Edited — 41.9s film queued. Not saved to the building." above Cancel / Save this path / OK — record this](img/viewer/filmmaker-path-editor-initial.png)
 
-That is the whole film, derived, before you touch anything — and the footer says so: *"Unedited · OK
-records exactly the film the preview just showed."* Pressing **OK** here is already a complete take.
+*The panel alone, captured in a 1440×1400 window on 2026-10-24. The total is window-dependent: the same building gave 39.8 s / 597 frames in a 1440×900 window (walk 28.5 m both times).*
+
+That is the whole film, derived, before you touch anything. *Changed since this section was written:*
+**Buildup is now ticked by default**, and a ticked Buildup counts as an edit (so a default-on setting is
+never lost), so on the current build the footer already reads *"Edited — 39.8s film queued. Not saved to
+the building."* and the button reads **OK — record this**, even though you have changed nothing (HHS Office,
+2026-10-24). Pressing **OK** here is still a complete take — one that includes the buildup. An earlier build
+said *"Unedited — OK records exactly the film the preview just showed."* until you changed something.
 
 #### The bands — the rows in the panel
 
@@ -429,6 +483,8 @@ To work with them:
    you are currently facing, so orbit to a side view when you need to change height.
 
 ![The same panel after authoring — the yellow flight tube now bent through the model with draggable band handles along it, and the list grown to settle, four added sticks (each labelled with how far along the walk it sits and carrying a × to remove it) and stop, above the same Whole path block and the Preview / Cancel / Save this path / OK row](img/viewer/filmmaker-path-editor.png)
+
+*(Screenshot from an earlier build, not re-shot on 2026-10-24 because it needs hand-driven 3D edits or an older option set: the panel has since gained the tile grid and lost its visible Preview button. The behaviour described in the text is current.)*
 
 #### Walk finger mode — walk into the shot, plant the stick where you stand
 
@@ -456,6 +512,8 @@ in canvas right beside it. One keypress, one stick, position and aim both set:
 
 ![Walk finger mode's result the moment Spacebar was hit — the Cinema path panel now lists a highlighted "stick @ 13%" row with its pinned aim coordinates, the same stick's blue middle dot visible on the yellow flight tube in canvas just left of the panel, the POV frame bottom-left still showing the walker's own view, and the Time Machine's construction timeline still running top-left](img/viewer/filmmaker-walk-stick13.png)
 
+*(Screenshot from an earlier build, not re-shot on 2026-10-24 because it needs hand-driven 3D edits or an older option set: the panel has since gained the tile grid and lost its visible Preview button. The behaviour described in the text is current.)*
+
 Two small behaviours keep this honest: planting re-shapes the flight around the new stick immediately
 (the brief pause is the film re-deriving), and clicking again at the stick you just planted does
 **not** stack a duplicate — the editor reads it as "I'm done here" and returns you to review.
@@ -469,9 +527,12 @@ Two small behaviours keep this honest: planting re-shapes the flight around the 
   ⚠ **Marking uses the point of the film nearest your camera**, so put the camera close to the spot *on
   the yellow tube* where the cut belongs before pressing — marking from a wide exterior view lands on
   whichever part of the flight happens to pass closest to your eye. **whole film** clears the window.
-- **build the model as the camera flies** — the construction reveal. See the 4D note below.
-- **room titles** — a name card appears as the camera enters each room, sourced from the room's own
-  friendly name, never invented.
+- **Buildup** (ticked by default; formerly *build the model as the camera flies*) — the construction reveal.
+  See the 4D note below.
+- **4D/5D** (the switch this guide used to call **room titles**; internally still `roomTitle` / `--label`) — a name
+  card appears as the camera enters each room, sourced from the room's own friendly name, never invented, and
+  the same switch also gates the day counter and the cost and ledger rows (the tile's own tooltip: *room name
+  card, day counter, cost + ledger rows*).
 - **Reveal** — cycles every discipline in the model past the camera in turn. See below.
 - **Clash pairs** — the model's mesh-true clash pairs (not the bounding-box list, part of which is false)
   appear as red/blue pulsing markers from frame 0, so you see where the trouble is before it's built. A
@@ -493,7 +554,8 @@ Two small behaviours keep this honest: planting re-shapes the flight around the 
   and draws the levels as recorded** rather than choosing between them — resolving it would be inventing
   a datum the file does not contain.
 - **Storey highlight** — each storey's facade (its exterior walls only, not the whole floor) glows
-  blue / green / yellow / orange in turn over the last 10 s before the closing orbit, with a
+  blue / green / yellow / orange in turn before the closing orbit (the tile's own tooltip says the last 5 s;
+  this guide used to say 10 s and the duration was not re-measured), with a
   door-count and footprint HUD card for each shown in the same corner panel every other measure
   uses. An exterior wall is already visible from the closing orbit shot on its own, so nothing else
   in the building is touched, dimmed, or made transparent for this.
@@ -501,7 +563,17 @@ Two small behaviours keep this honest: planting re-shapes the flight around the 
   or duplicate names (one Terminal file lists 22 names for six real floors), the highlight can land on
   alias rows and the card then reads `doors 0` — the doors are real, they are attributed to the storey
   names the highlight did not pick.
-- **Silent-bake size** — a resolution/fps preset (720p, 1080p, or 1440p) for a *silent* bake only (see
+- **Sun compass** — a true-north rose on the ground from the IFC's own georeference, the sun's real path for the
+  site and date, and its angle of attack on the building; silent on a model with no site latitude/longitude,
+  never a guessed one (tile tooltip).
+- **Load path freeze** — the camera holds on the structural chain from topout to ground, with a section cut, cost
+  and schedule per member and a stack info panel. Two sub-switches ride on it: **Visual (CCTV) in freeze**
+  (CCTV coverage per room — best ceiling corner, blind m², best and worst room) and **Audio (RT) in freeze**
+  (room reverberation — the tooltip says *not built yet*).
+- **Escape route** — during the closing orbit the worst-case room shines through and an orange dotted line traces
+  its computed route to the exit, the same distance the Egress report's "Longest path to exit" reads.
+- **Bounce light (Alt+S look; needs WebGPU)** — a checkbox under the tiles, ticked by default.
+- **Silent-bake size** — a resolution/fps preset (1280x720 @15fps, 1920x1080 @24fps or 2560x1440 @24fps) for a *silent* bake only (see
   below); an interactive Alt+C recording always uses the size of the window it's pressed in, so this
   select doesn't resize anything here — it's just remembered on the saved path. There is currently no
   time estimate shown next to it; picking 1440p over 720p costs real extra bake minutes with no on-screen
@@ -509,7 +581,11 @@ Two small behaviours keep this honest: planting re-shapes the flight around the 
 
 ![The Cinema path panel with Clash pairs ticked and Silent-bake size set to "this window (interactive)" — the Whole path block showing reach 15%, clip "whole film", build-the-model and room titles and Reveal and Clash pairs all checked, the Silent-bake size dropdown, the Day # counter set to top left, a saved plan selected, and the derived total 281.6s / 4225 frames line below](img/viewer/filmmaker-clash-and-bake-size.png)
 
+*(Screenshot from an earlier build, not re-shot on 2026-10-24 because it needs hand-driven 3D edits or an older option set: the panel has since gained the tile grid and lost its visible Preview button. The behaviour described in the text is current.)*
+
 ![The Cinema path panel with the full option set — seven bands (settle, five exit doors, stop) each with x / z / height / length and aim angles, then Whole path: reach 15%, clip "whole film" with mark in / mark out, and one button per film feature — Buildup (on), 4D/5D, Reveal, Clash pairs, Measure, Sun compass, Storey highlight, Load path freeze and Escape route — above Silent-bake size "this window (interactive)" with its copy-bake-command link, Day # counter "top right", the saved-plan list, and the derived total 97.9 s · 1468 frames to bake](img/viewer/filmmaker-measure-storey-panel.png)
+
+*(Screenshot from an earlier build, not re-shot on 2026-10-24 because it needs hand-driven 3D edits or an older option set: the panel has since gained the tile grid and lost its visible Preview button. The behaviour described in the text is current.)*
 
 - **saved** — plans you stored for this building, with **open** and **delete**. Choosing one and pressing
   **open** replaces the path you are editing; the line under it says how many bands, how many hose pulls,
@@ -522,16 +598,18 @@ speed in m/s, the natural duration, and how far your edit has moved it. Total du
 building from real walk distance and pull-back distance, never a fixed number — a small building's film
 is shorter than a large one's by construction, not by a setting.
 
-- **Preview** flies the current edit so you can watch it before committing to a bake. The panel tells you
-  when what you are looking at is older than your last edit.
+- **Preview** — there is no longer a visible Preview button (it is kept hidden in the panel; the source says it
+  became redundant once the scrub panel got its own play/pause). The flight is previewed with the scrub panel's
+  play / pause.
 - **Save this path** stores the plan — both into the building (so it travels with the file when you save
   it) and as a named entry in the **saved** list above.
-- **Cancel** discards; **OK** records the film exactly as previewed. If you touched nothing, that is
-  byte-identical to the un-edited default — opening the panel to look costs you nothing.
+- **Cancel** discards; **OK** records the film exactly as previewed. With Buildup ticked by default the panel
+  already counts as edited, so **OK — record this** records the film *with* the buildup, not the bare derived
+  flight.
 
 #### The 4D reveal — and what it may honestly be called
 
-With **build the model as the camera flies** ticked, the model assembles as the film runs. What drives
+With **Buildup** ticked (the default), the model assembles as the film runs. What drives
 that order depends on the data in *your* building, and the viewer picks automatically:
 
 | your data | what drives the reveal | what to call it |
@@ -547,7 +625,7 @@ your **mark in / mark out** against what the programme actually shows.
 
 #### Discipline Reveal — walk it twice, once dressed, once bare
 
-Tick **Reveal** (beside **room titles**) and the film grows a second act after the normal walk-out
+Tick **Reveal** (beside **4D/5D**) and the film grows a second act after the normal walk-out
 ends, before the closing orbit:
 
 1. **A brief pull-out** from the spot the walk just ended on — the camera eases back a short distance,
@@ -627,7 +705,7 @@ building DB's `cinema_path` table that travels with the file. The command line r
 default, so a path saved in the viewer bakes from the terminal with no export step. `--plan NAME` picks
 a named plan instead; `--override file.json` takes one directly.
 
-**The saved path carries its settings with it**, not just its shape — the buildup, the room titles, the
+**The saved path carries its settings with it**, not just its shape — the buildup, the room titles (the **4D/5D** tile), the
 Reveal round and the day-counter corner you had ticked are all restored. The run announces what it
 resolved, so there is no guessing whether a setting survived:
 
@@ -696,15 +774,16 @@ than only in theory.
 ### Display options — Palette, Night, Shadow + Ground, Background, Sound FX
 
 The **Palette** pill (key **P**) opens one panel for every visual-appearance control — five lighting
-sliders, plus four more toggles appended below them:
+sliders, a row of three icon buttons, then four more toggles:
 
-![The Display options panel — Ambience/Sun/Exposure/Ambient/Hemisphere sliders, then Night, Shadow + Ground (3 texture swatches), Background, and Sound FX rows](img/viewer/pill-display-options.png)
+![The Display options panel — five sliders, a row of three icon buttons (Still Refine, Populate, Cinema Orbit), then Night, Shadow + Ground (3 texture swatches), Background, and Sound FX rows](img/viewer/pill-display-options.png)
 
 | Control | Shortcut | What it does |
 |---|---|---|
-| Ambience / Sun / Exposure / Ambient / Hemisphere | — | Five sliders — overall scene lighting, sun intensity, camera exposure, ambient fill light, and sky/ground hemisphere light. |
+| Color Studio / Sun intensity / Exposure / Ambient / Hemisphere | — | Five sliders, named by their tooltips: scene colour (*Color Studio* — the first slider, which this guide used to call *Ambience*), sun intensity, camera exposure, ambient fill light, and sky/ground hemisphere light. |
+| **Still Refine** · **Populate** · **Cinema Orbit** | **Alt+S** · **Alt+P** · **Alt+C** | An icon-only row (aperture, footprints, video camera): refine the frozen frame into a still ([Sun, sky and shadow](#sun-sky-and-shadow-while-the-film-records)); add people, trees and props to whatever is in the camera frame (each press tops up the frame, never clears it, per the app's own comments — switching building rebuilds); and the [Film-Maker](#cinema-film-maker-altc-the-bim-ootb-film-maker). |
 | **Night** | **N** | Toggles a night lighting preset. |
-| **Shadow + Ground** | **H** | Cycles **Off → Grass → Earth → Paved** — a real ground-texture swatch under the building, with matching shadows. |
+| **Shadow + Ground** | **H** | Cycles **Off → Earth → Grass → Paved** (as the row's tooltip says) — a real ground-texture swatch under the building, with matching shadows. The three swatches in the panel are Earth, Grass and Paved. |
 | **Background** | **B** | Reverses the background (dark ↔ light/white). |
 | **Sound FX** | **V** | Toggles synthesized UI/Time-Machine/Fly-Tour sound cues — no audio files, off by default. |
 
@@ -712,15 +791,16 @@ sliders, plus four more toggles appended below them:
 
 The **Settings** pill (key **=**) opens a panel with four sections:
 
-![The Settings panel's "Edit Project JSON" section expanded — Corporate/Branding, Grid Rules, Clash Rules, ERP Globe Bubbles, Sound Effects, and 4D Schedule (this building), plus the collapsed 5D Rate Pack and Cache Info sections below](img/viewer/pill-settings-json-hub.png)
+![The Settings panel's "Edit Project JSON" section expanded — Corporate / Branding, Grid Rules, Clash Rules, Road Standards, Civil Labels, ERP Globe Bubbles, Sound Effects and 4D Schedule (this building), plus the collapsed 5D Rate Pack and Cache Info sections below](img/viewer/pill-settings-json-hub.png)
 
 - **Pill Icons** — show/hide/reorder every toolbar action, and see each one's current shortcut key at a
   glance (this is also how a hidden action like a data-gated drawer row becomes visible once its data
   exists). A **Reset Pill Icons** button restores the defaults.
 - **Edit Project JSON** — a power-user hub: open and edit any of the project's config files directly
   in-browser (auto-inferred form fields, not raw text), then **Download** the edited file to commit back
-  to the repo, or **Reset** to discard the override. Six files are registered: **Corporate / Branding**,
-  **Grid Rules**, **Clash Rules**, **ERP Globe Bubbles**, **Sound Effects** (the audio *parameters* file —
+  to the repo, or **Reset** to discard the override. Eight files are registered: **Corporate / Branding**,
+  **Grid Rules**, **Clash Rules**, **Road Standards (ATJ sign table)**, **Civil Labels (road route / stops)**,
+  **ERP Globe Bubbles**, **Sound Effects** (the audio *parameters* file —
   distinct from the Display-options Sound FX on/off toggle above), and a **read-only** view of the
   **4D Schedule** captured for the currently-open building (the same data Time Machine authors).
 - **5D Rate Pack** — pick which cost-rate pack is active (the same rate pack the Find panel's
@@ -794,8 +874,8 @@ and dashboard graphs — off by default, pixel-identical until you turn it on.
 | **Scroll / Pinch** | Zoom |
 | **Click** element | Identify — IFC class, name, GUID, storey, material |
 | **'** (apostrophe) | Toggle **Hover Name** — hovering (no click) shows the friendly name + room of whatever's under the cursor; also a checkbox in the Find panel. Dead key on some international keyboard layouts (US-International, Spanish, Portuguese, French-Canadian) — fails harmlessly there, use the checkbox instead. |
-| **Front / Back / Left / Right** | Elevation views |
-| **Roof** | Roof plan view |
+| **Front / Back / Left / Right** | Elevation views — *not found on the current rail or in the registered shortcut keys (checked 2026-10-24); unverified, kept until someone confirms or removes it* |
+| **Roof** | Roof plan view — *same: not found on the current rail or shortcut list; unverified* |
 | **Alt+Z** | Toggle X-ray mode |
 | **Alt+C** | [Film-Maker](#cinema-film-maker-altc-the-bim-ootb-film-maker) — derive a cinematic film, edit the flight, record |
 | **Alt+S** | [Photographic still](#sun-sky-and-shadow-while-the-film-records) — stages the sun/sky/shadow pass, then refines the frozen frame over 16 sub-pixel samples |

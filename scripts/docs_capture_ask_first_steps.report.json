@@ -1,6 +1,6 @@
 {
  "url": "https://red1oon.github.io/bim-ootb/viewer/viewer.html?db=https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/buildings/Terminal_extracted.db&ghost=1",
- "at": "2026-10-02T01:45:54.223Z",
+ "at": "2026-10-23T18:53:53.760Z",
  "steps": {
   "loaded": {
    "building": "TerminalMerged",
@@ -47,11 +47,11 @@
   "sched": {
    "question": "Find 4D schedule for the whole building",
    "verdict": "OK",
-   "summary": "48428 elements scheduled 2025-07-22 → 2025-11-20 (122 days), 9 trades, labour cost $ 1,721,750 (3,488.8 person-days; time-phased labour, not a BOQ)"
+   "summary": "48428 elements scheduled 2025-08-13 → 2025-12-13 (123 days), 9 trades, labour cost $ 1,721,743 (3,488.8 person-days; time-phased labour, not a BOQ)"
   },
   "saved": {
-   "file": "BIM_OOTB_TerminalMerged_Answers_2026-10-02.xlsx",
-   "bytes": 29931
+   "file": "BIM_OOTB_TerminalMerged_Answers_2026-10-23.xlsx",
+   "bytes": 29937
   }
  }
 }

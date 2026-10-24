@@ -332,10 +332,10 @@ the cent**, every phase `SeqNo` tracing to `sequence_rules.json`. See the **[BIM
 
 ### Authoring, editing, and importing the 4D/5D schedule
 
-The Time Machine's own topic — authoring a schedule (**`✎`**), the box-cube LOD toggle for large
+The Time Machine's own topic — the auto-generated schedule, the box-cube LOD toggle for large
 buildings, What-if slips, direct Gantt editing (drag / resize / link / marquee-group-move /
-**⏪ Pull Back**), the standalone Schedule Editor, and Primavera P6 / MS Project import — is now
-documented on its own page:
+**⏪ Pull Back**), and the in-panel **⇄ P6/MSP** box (Primavera P6 / MS Project import, export and
+Diff vs Model) — is documented on its own page:
 
 **→ [Time Machine — the 4D construction timeline](TimeMachine.md)**
 

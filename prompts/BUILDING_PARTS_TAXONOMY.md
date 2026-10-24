@@ -16,7 +16,7 @@ lane's current scored state) + this file's own "DONE 2026-07-11" sections below 
 Modeller Outliner both landed, verified, merged to bim-ootb `main` locally). This work is CLOSED,
 user's own verdict "good enough" — do not re-open, re-measure, or re-verify without a new, named
 reason. The two live gaps are elsewhere, already spec'd: `prompts/MODELLER_RENDER_MATERIAL_PARITY.md`
-(Modeller glass/material) and `prompts/VIEWER_FIND_PANEL_PARTS_VERIFICATION.md` (Viewer live-shot
+(Modeller glass/material) and `prompts/archive/VIEWER_FIND_PANEL_PARTS_VERIFICATION_archived_2026-10-24.md` (Viewer live-shot
 evidence gap) — go there, don't restart this file's own work.
 ```
 
@@ -164,3 +164,9 @@ same building-parts data — Find panel (Viewer) and Outliner (Modeller) are in 
 - `required_spaces`-style HARD gating for STAIRWAY/LIFT_SHAFT/PLANT_ROOM — these stay advisory
   ticks (`min_count: 0`) until cross-building evidence is stronger; promoting them to a shortfall
   gate is a future call, not made here.
+
+## ▶ 2026-10-24 — "Find panel wiring — DONE 2026-07-11" is superseded
+The Find panel's standalone **Parts axis** this section wired was retired 2026-07-15 (§ROOM_LENS_TAXONOMY, `nf_trees.js:466`;
+`ROOM_LENS_VISUAL_HIGHLIGHT_SPEC.md` §RESOLVED 2026-07-15d). The taxonomy table itself is unchanged and still drives the groups,
+now listed under **Room → Type** (HHS live: Stairs 11, Lift Shaft 3, Plant Room 1769, Restrooms 2 — `DOCS_GUIDE_REFRESH.md`). The Modeller
+Outliner wiring section is not affected by this note.

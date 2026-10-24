@@ -1,0 +1,102 @@
+{
+ "at": "2026-10-23T21:45:33.670Z",
+ "steps": {
+  "loaded": {
+   "building": "Ifc2x3_Duplex_Federated",
+   "elements": 1119
+  },
+  "phrases": [
+   {
+    "q": "floor 1 walls",
+    "hint": "Did you mean: Basic Wall — Exterior - Brick on Block Wall · Level 1 · 1 found Ba",
+    "toast": null,
+    "count": "0 matches"
+   },
+   {
+    "q": "floor 1 doors",
+    "hint": "Did you mean: Floor — 127mm Slab on Grade Slab · Level 1 · 1 found Floor — 127mm",
+    "toast": null,
+    "count": "0 matches"
+   },
+   {
+    "q": "floor 2 walls",
+    "hint": "Did you mean: Basic Wall — Exterior - Brick on Block Wall · Level 1 · 1 found Ba",
+    "toast": null,
+    "count": "0 matches"
+   },
+   {
+    "q": "ground floor doors",
+    "hint": "Did you mean: Floor — 127mm Slab on Grade Slab · Level 1 · 1 found Floor — 127mm",
+    "toast": null,
+    "count": "0 matches"
+   },
+   {
+    "q": "ground floor walls",
+    "hint": "Did you mean: Basic Wall — Exterior - Brick on Block Wall · Level 1 · 1 found Ba",
+    "toast": null,
+    "count": "0 matches"
+   },
+   {
+    "q": "floor area",
+    "hint": "Did you mean: Floor — 127mm Slab on Grade Slab · Level 1 · 1 found Floor — 127mm",
+    "toast": null,
+    "count": "0 matches"
+   },
+   {
+    "q": "total floor area",
+    "hint": "Press Enter ↵",
+    "toast": "1,119 — storeys breakdown Details (5) ×",
+    "count": ""
+   },
+   {
+    "q": "cost of mep",
+    "hint": "Press Enter ↵",
+    "toast": "No results for \"cost of mep\" Available: IfcBeam, IfcCovering, IfcDoor, IfcFlowController, IfcFlowFitting, IfcFlowSegment, IfcFlowTerminal, IfcFooting, IfcFurnishingElement, IfcMember ×",
+    "count": ""
+   },
+   {
+    "q": "cost of structure",
+    "hint": "Press Enter ↵",
+    "toast": "$ 4,460 (RM 17,154) — cost of structure Details (3) ×",
+    "count": ""
+   },
+   {
+    "q": "cost of architecture",
+    "hint": "Press Enter ↵",
+    "toast": "$ 71,847 (RM 276,335) — cost of architecture Details (9) ×",
+    "count": ""
+   },
+   {
+    "q": "show mep",
+    "hint": "Press Enter ↵",
+    "toast": "904 — show mep Show in 3DDetails (500) ×",
+    "count": ""
+   },
+   {
+    "q": "show architecture",
+    "hint": "Press Enter ↵",
+    "toast": "196 — show architecture Show in 3DDetails (196) ×",
+    "count": ""
+   },
+   {
+    "q": "list doors",
+    "hint": "Press Enter ↵",
+    "toast": "14 — show door Show in 3DDetails (14) ×",
+    "count": ""
+   },
+   {
+    "q": "total doors",
+    "hint": "Press Enter ↵",
+    "toast": "14 — show door Show in 3DDetails (14) ×",
+    "count": ""
+   },
+   {
+    "q": "search door",
+    "hint": "Press Enter ↵",
+    "toast": "14 — show door Show in 3DDetails (14) ×",
+    "count": ""
+   }
+  ]
+ },
+ "pageerrors": []
+}

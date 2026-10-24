@@ -1,3 +1,5 @@
+> **ARCHIVED 2026-10-24 — STALE.** The subject of this file, the Find panel's standalone **Parts axis**, was RETIRED on 2026-07-15 (§ROOM_LENS_TAXONOMY; its Stairway / Lift Shaft / Plant Room groups now live under Room → Type — see `prompts/ROOM_LENS_VISUAL_HIGHLIGHT_SPEC.md` §RESOLVED 2026-07-15d). The live site has no Parts axis (measured, `prompts/DOCS_GUIDE_REFRESH.md`). Kept for its panel-open mechanism notes only; nothing here is current behaviour.
+
 <!-- Copyright (c) 2025-2026 Redhuan D. Oon <red1org@gmail.com> · SPDX-License-Identifier: MIT -->
 # VIEWER FIND PANEL — PARTS AXIS LIVE VERIFICATION (2026-07-11, MANAGER-assigned)
 

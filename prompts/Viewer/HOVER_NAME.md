@@ -115,3 +115,8 @@ rAF-coalesced raycast (not a perpetual loop — caught and fixed during witnessi
 - **W-HOVER-COVERAGE:** 18/18 named on both buildings in the samples drawn; room-subtitle hit rate not
   well-sampled (Hospital's `rel_contained_in_space` covers ~13% of `elements_meta`, small N per run).
   Feeds `RESUME_CPE_ROOM_TITLE.md`'s W-TITLE-NAME-SOURCE as planned in this file's own §1.
+
+## ▶ 2026-10-24 — live check from the guide refresh (`prompts/DOCS_GUIDE_REFRESH.md`)
+On the published viewer (Duplex) the apostrophe key flips the Find panel's **Hover name** checkbox (`#find-hover-name-cb` false → true) with focus on the
+3D view — matches the §DONE shortcut. `docs/BIMUserGuide.md` documents it in the cheat-sheet. Not measured: the hover tooltip text itself (needs a
+pointer-move witness; out of the guide refresh's scope).

@@ -4,7 +4,7 @@
 ```
 # ⚠ DO NOT REMOVE
 SCOPE: bim-ootb `viewer/navigate_find.js` only — two small, named, bounded fixes surfaced as a
-byproduct of `prompts/VIEWER_FIND_PANEL_PARTS_VERIFICATION.md` (verification task, correctly did
+byproduct of `prompts/archive/VIEWER_FIND_PANEL_PARTS_VERIFICATION_archived_2026-10-24.md` (verification task, correctly did
 NOT fix these — out of that file's scope). Read this whole file, then execute both. Read the log
 after every run. PUSH PAUSE LIFTED for this repo as of 2026-07-11 (user: "good enough to push all
 so we have no backlog") — commit locally, verify on localhost, THEN push + open a PR (follow this
@@ -49,7 +49,7 @@ smallest one (e.g. a static filename→class map, same buildings this repo alrea
 per WalkerDoctrine) rather than inventing a general classifier.
 
 ## Verify
-Real screenshot + `§`-tagged console log, same standard as `VIEWER_FIND_PANEL_PARTS_VERIFICATION.md`
+Real screenshot + `§`-tagged console log, same standard as `archive/VIEWER_FIND_PANEL_PARTS_VERIFICATION_archived_2026-10-24.md`
 — Duplex (residential) should show NO Plant Room group after the fix; Terminal (complex) should
 still show its real MEP-plant hits, word-boundary-filtered (re-confirm its count doesn't silently
 drop to 0 — a class-gate bug that also breaks the true-positive case is worse than the false-positive
@@ -121,7 +121,7 @@ framing) — `STAIRWAY`/`LIFT_SHAFT` stay ungated (the yaml lists both for both 
 
 **Named, honest limitation (not a functional bug — flagging per this project's own "report a
 genuine blocker, don't loop" discipline, same standard as this file's sibling
-`VIEWER_FIND_PANEL_PARTS_VERIFICATION.md`):** Terminal's live page (28MB DB, ~48k elements) made
+`archive/VIEWER_FIND_PANEL_PARTS_VERIFICATION_archived_2026-10-24.md`):** Terminal's live page (28MB DB, ~48k elements) made
 Playwright's actionability-checked `.click()` and `dispatchEvent('click')` both hang/no-op against
 `#find-axis-toggle` — real mouse-coordinate clicks (`page.mouse.click(x,y)`) DID work and reached
 `mode=parts` with real `§LENS_GROUPS` evidence above, but the run was killed by an outer timeout

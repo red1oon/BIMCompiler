@@ -1,0 +1,111 @@
+{
+ "at": "2026-10-24T02:34:55.906Z",
+ "steps": {
+  "loaded": {
+   "building": "Ifc4_SampleHouse",
+   "elements": 60
+  },
+  "barGeometry": {
+   "rect": [
+    549,
+    780,
+    342,
+    102
+   ],
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "canvasPx": [
+    684,
+    204
+   ],
+   "bars": [
+    {
+     "i": 0,
+     "id": "Substructure_Ground_Floor",
+     "x": 579,
+     "w": 35,
+     "y": 784
+    },
+    {
+     "i": 1,
+     "id": "Architecture_Envelope_Ground_Floor",
+     "x": 614,
+     "w": 35,
+     "y": 791
+    },
+    {
+     "i": 2,
+     "id": null,
+     "x": 617,
+     "w": 1,
+     "y": 798
+    },
+    {
+     "i": 3,
+     "id": "Architecture_Envelope_Roof",
+     "x": 650,
+     "w": 35,
+     "y": 805
+    },
+    {
+     "i": 4,
+     "id": "Architecture_Closeup_Ground_Floor",
+     "x": 650,
+     "w": 35,
+     "y": 812
+    },
+    {
+     "i": 5,
+     "id": "Finishes_Ground_Floor",
+     "x": 685,
+     "w": 35,
+     "y": 819
+    },
+    {
+     "i": 6,
+     "id": "Superstructure_Roof",
+     "x": 614,
+     "w": 35,
+     "y": 826
+    }
+   ]
+  },
+  "lockText0": "🔒 Locked",
+  "A_lockedDrag": {
+   "changed": 0,
+   "lockMsg": "",
+   "tip": "Ground Floor — Substructure (1 el, Day -1–0, IFC 4D)"
+  },
+  "lockText1": "🔓 Editing",
+  "B_moveBody": {
+   "shifted": [
+    "Substructure_Ground_Floor 1/1",
+    "Architecture_Envelope_Ground_Floor 1/1",
+    "Architecture_Envelope_Roof 1/1",
+    "Architecture_Closeup_Ground_Floor 1/1",
+    "Finishes_Ground_Floor 1/1",
+    "Superstructure_Roof 1/1"
+   ],
+   "tip": "Ground Floor — Substructure (1 el, Day -1–0, IFC 4D)"
+  },
+  "C_resizeEdge": {
+   "vsAfterMove": [],
+   "tip": "Ground Floor — Substructure (1 el, Day 0–1, IFC 4D)"
+  },
+  "marqueeGeometry": {
+   "barsRight": 720,
+   "canvasRight": 983,
+   "top": 776,
+   "bottom": 834
+  },
+  "D_selection": {
+   "selected": null
+  },
+  "D_groupMove": {
+   "shifted": []
+  }
+ },
+ "pageerrors": []
+}

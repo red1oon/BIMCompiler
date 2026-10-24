@@ -10,6 +10,7 @@ Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 It carries §LIVE (which agent owns which files), the waves, the ⛔USER decisions, and the standing
 constraints. A session picking up work reads that; PROGRESS.md is state, not queue.
 
+## ▶ DOCS GUIDE REFRESH lane (2026-10-24): AskFirstSteps + BIMUserGuide + TimeMachine refreshed against the live site (headless captures, measured values), PR #255 open on `docs/guides-refresh-2026-10-24`, no deploy. NEXT = CivilWorksGuide then 10 more guides — read `prompts/DOCS_GUIDE_REFRESH.md` ▶ RESUME HERE.
 ## ▶ FRIENDLY-OPS + LIBERO-AD lane (2026-10-16): Mfg films Part II EN/ZH/TH + Part III EN done; lens + AD_ToolBarButton + Pack In of real 2Packs (W-PACKIN 6/6) on bim-ootb `feat/libero-backflush` (pushed, NOT merged) - NEXT = §20 slice B, read `prompts/ERP_FRIENDLY_OPS_LENS.md` §13 RESUME
 ## ▶ DEPTH lane (2026-10-13): cycle 1 DONE + merged (bim-ootb #1988; 10 SQLite-lane gaps repaired, 3 witnesses green, 4 films EN+TH). NEXT = §NEWCLIENT-DEPTH — read `prompts/ERP_DEPTH_FILM.md` ▶ RESUME HERE.
 ## ▶ DEPTH cycle 2 §NEWCLIENT-DEPTH (2026-10-13): NC-1..NC-4, NC-5a, NC-6/7/8, NC-9 (window access + new role) DONE vs LEGACY-MEASURED; PRs #1989-#1995 merged; W-MODEL-ORACLE re-run UNCONFIRMED (timeouts) - see RESUME HERE. Window sweep 204 of 332 OK. NEXT: re-run NC-10/11/12 on the new code, film chapters, MUser/new-role login — read `prompts/ERP_DEPTH_FILM.md` ▶ RESUME HERE.

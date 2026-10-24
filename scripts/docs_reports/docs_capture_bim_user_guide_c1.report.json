@@ -1,0 +1,68 @@
+{
+ "at": "2026-10-23T20:17:55.802Z",
+ "steps": {
+  "loaded": {
+   "building": "HHS_Office_Federated",
+   "elements": 6880
+  },
+  "axes": [
+   "1/5 Storey ⇄ Discipline",
+   "2/5 Discipline ⇄ Room",
+   "3/5 Room ⇄ Material",
+   "4/5 Material ⇄ Phase",
+   "5/5 Phase ⇄ Storey"
+  ],
+  "axisDetail": [
+   {
+    "label": "1/5 Storey ⇄ Discipline",
+    "tree": "▸ | Level 1 | (1505) | ▸ | Level 2 | (1783) | ▸ | Level 3 | (1427) | ▸ | Roof Level | (45) | ▸ | Unknown | (2120)",
+    "results": "",
+    "rows": [
+     "▸ Level 1 (1505)",
+     "▸ Level 2 (1783)",
+     "▸ Level 3 (1427)",
+     "▸ Roof Level (45)",
+     "▸ Unknown (2120)"
+    ]
+   },
+   {
+    "label": "2/5 Discipline ⇄ Room",
+    "tree": "▸ | Mechanical & Electrical | (3399) | ▸ | Architecture | (1774) | ▸ | Structure | (1707)",
+    "results": "",
+    "rows": [
+     "▸ Mechanical & Electrical (3399)",
+     "▸ Architecture (1774)",
+     "▸ Structure (1707)"
+    ]
+   },
+   {
+    "label": "3/5 Room ⇄ Material",
+    "tree": "group: | Storey | Type | Path | ▸ | Level 1 | (25) | ▸ | Level 2 | (31) | ▸ | Level 3 | (19)",
+    "results": "",
+    "rows": [
+     "▸ Level 1 (25)",
+     "▸ Level 2 (31)",
+     "▸ Level 3 (19)"
+    ]
+   },
+   {
+    "label": "4/5 Material ⇄ Phase",
+    "tree": "group: | Material | Category * | ≈ Purple | (1450) | ≈ Cyan | (438) | ≈ White | (269) | ≈ Grey | (231)",
+    "results": "",
+    "rows": [
+     "≈ Purple (1450)",
+     "≈ Cyan (438)",
+     "≈ White (269)",
+     "≈ Grey (231)"
+    ]
+   },
+   {
+    "label": "5/5 Phase ⇄ Storey",
+    "tree": "Timeline unavailable (generator not loaded).",
+    "results": "",
+    "rows": []
+   }
+  ]
+ },
+ "pageerrors": []
+}

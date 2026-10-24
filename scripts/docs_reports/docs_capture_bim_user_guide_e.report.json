@@ -1,0 +1,89 @@
+{
+ "at": "2026-10-23T21:53:51.293Z",
+ "steps": {
+  "loaded": {
+   "building": "HHS_Office_Federated",
+   "elements": 6880
+  },
+  "panel": {
+   "w": 412,
+   "h": 915,
+   "title": "Cinema path — 3 bands · drag this bar to move",
+   "state": "Edited — 41.9s film queued. Not saved to the building."
+  },
+  "bands": [
+   "settle aim 33° / -21° · where the dive lands and the camera looks around",
+   "exit door × aim 46° / -11° · the door it walks out through — drag it back inside to shape the interior leg",
+   "stop aim 63° / 5° · end of the WALK, not the film; its far end stretches the orbit",
+   "clear 1 stick"
+  ],
+  "controls": [
+   "cpe-vf-toggle|turn on the POV viewfinder (|vis",
+   "INPUT|-9.45|vis",
+   "INPUT|-3.96|vis",
+   "INPUT|1.78|vis",
+   "INPUT|3.67|vis",
+   "INPUT|0.00|vis",
+   "BUTTON|×|vis",
+   "INPUT|1.65|vis",
+   "INPUT|3.24|vis",
+   "INPUT|-3.36|vis",
+   "INPUT|3.67|vis",
+   "INPUT|0.00|vis",
+   "INPUT|6.29|vis",
+   "INPUT|12.35|vis",
+   "INPUT|-2.51|vis",
+   "INPUT|3.67|vis",
+   "INPUT|0.00|vis",
+   "cpe-stick-clear|clear 1 stick|vis",
+   "cpe-reach|15|vis",
+   "cpe-mark-in|mark in|vis",
+   "cpe-mark-out|mark out|vis",
+   "cpe-clip-clear|whole film|vis",
+   "cpe-buildup|chk=true|vis",
+   "cpe-room-title|chk=false|vis",
+   "cpe-reveal|chk=false|vis",
+   "cpe-clash|chk=false|vis",
+   "cpe-measure|chk=false|vis",
+   "cpe-sun-compass|chk=false|vis",
+   "cpe-storey-reveal|chk=false|vis",
+   "cpe-load-path|chk=false|vis",
+   "cpe-visual-panel|chk=false|vis",
+   "cpe-audio-panel|chk=false|vis",
+   "cpe-escape-route|chk=false|vis",
+   "cpe-sun-date||HIDDEN",
+   "cpe-sun-date-clear|follow the 4D dates|HIDDEN",
+   "cpe-film-bounce|chk=true|vis",
+   "cpe-bake-res|sel=|vis",
+   "cpe-bake-cmd-copy|Copy|HIDDEN",
+   "cpe-day-counter|sel=tr|vis",
+   "cpe-plans|sel=|vis",
+   "cpe-plan-open|open|vis",
+   "cpe-plan-del|delete|vis",
+   "INPUT|41.9|vis",
+   "cpe-preview|Preview|HIDDEN",
+   "cpe-cancel|Cancel|vis",
+   "cpe-save|Save this path|vis",
+   "cpe-ok|OK — record this|vis"
+  ],
+  "wholePathText": "Whole path reach % of the walk — how far a drag on the pipe carries drag the pipe anywhere between the bands to bend it clip whole film mark in mark out whole film Buildup 4D/5D Reveal Clash pairs Measure Sun compass Storey highlight Load path freeze Visual (CCTV) in freeze Audio (RT) in freeze Escape route Bounce light (Alt+S look; needs WebGPU) Silent-bake size this window (interactive) 1280x720 @15fps 1920x1080 @24fps 2560x1440 @24fps copy bake command (silent bake only — a developer, terminal tool; Alt+C here always renders at this window's size) Day # counter top right top left bottom right bottom left off (needs the buildup — it counts the days it is showing) saved — none yet — open delete \"Save this path\" names and stores a plan here total s · 628 frames to bake walk 28.5m · 1.81 m/s · natural 41.9s (+2.2s vs original) · replan 72ms Edited — 41.9s film queued. Not saved to the bui",
+  "footerButtons": [
+   "cpe-preview|HIDDEN|Preview",
+   "cpe-cancel|visible|Cancel",
+   "cpe-save|visible|Save this path",
+   "cpe-ok|visible|OK — record this"
+  ],
+  "selectOptions": [
+   "cpe-bake-res: this window (interactive) / 1280x720 @15fps / 1920x1080 @24fps / 2560x1440 @24fps [=]",
+   "cpe-day-counter: top right / top left / bottom right / bottom left / off [=tr]",
+   "cpe-plans: — none yet — [=]"
+  ],
+  "afterClash": {
+   "cls": "",
+   "checked": true,
+   "pressed": null,
+   "state": "Edited — 41.9s film queued. Not saved to the building."
+  }
+ },
+ "pageerrors": []
+}

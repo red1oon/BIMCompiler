@@ -146,3 +146,5 @@ viewer_prompts_survey_table.md` and `viewer_prompts_reverse_index.md` — sessio
 not durable. Regenerate via the same method (list both `prompts/` folders, classify Viewer-scope,
 grep each for real `viewer/*.js`/`*.html` filenames, build the reverse index) if this doc is read after
 those paths are gone.
+
+> **2026-10-24 addendum (guide refresh):** `nlp.js` now has an owner — `Viewer/FIND_NL_QUERY.md` (ownership map + two ⛔ defects). The audit above is a snapshot and was otherwise left untouched.

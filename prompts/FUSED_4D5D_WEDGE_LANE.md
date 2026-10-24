@@ -1,5 +1,7 @@
 # FUSED 4D/5D WEDGE LANE — the visual editor whose every drag is a signed fact
 
+> **2026-10-24 — read the dated STATUS at the END of this file first:** the ✎ Author wizard and the ↗ Editor tab described below are retired (see `4D_GANTT_TM_REFACTOR.md` §2026-10-24).
+
 # ⚠ DO NOT REMOVE
 
 ## ▶ LATEST (2026-07-14): §SE-7c FOUND + FIXED + MERGED — the REAL Generate/Apply hang. User corrected
@@ -1063,3 +1065,8 @@ exactly one element's cost A→B, total INVARIANT.
   - `§DRAG-VERDICT css-px=WYSIWYG device-px=DRIFTS → gesture math PROVEN dpr-safe`.
   Scope: proves the gesture→slip-delta math ONLY; the `SCHEDULE_SLIP` op + ripple is consumed by
   bim-ootb `whatif.js` (P1.b, not asserted here). Whitebox §-log only.
+
+## ▶ 2026-10-24 — STATUS: two surfaces this lane built are RETIRED (guide refresh; `prompts/4D_GANTT_TM_REFACTOR.md` §2026-10-24)
+The **✎ Author wizard** (§AUTHOR-1) was removed by #1171 (`490b7a7f`, 2026-08-05) and the **↗ Editor tab** (`viewer/schedule_editor.html`, §SE-*) was folded away by §TM_P6_FOLD (#1509, 2026-08-24; the page 404s live) — `#tm-editor` is now the **⇄ P6/MSP** toggle inside the Time Machine panel.
+Read the §SE-* sections above as HISTORY of surfaces that no longer exist; the signed-op-log / engine verbs they built (`moveTaskCascade`, `resizeTask`, CPM, ForeignSchedule import, ScheduleDiff) are still live and now serve the Gantt drawer and the P6/MSP box.
+`docs/TimeMachine.md` was rewritten to match.

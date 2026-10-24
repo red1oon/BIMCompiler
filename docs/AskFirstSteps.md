@@ -48,7 +48,7 @@ A third card: the best route (*105.6 m walk, 5 doors*) and *10 alternative exits
 
 ### Step 7 — Type `schedule`, click **Find 4D schedule for the whole building**
 
-Wait for it. A fourth card: *48,428 elements, 122 days, 9 trades, labour cost 1,721,750.*
+Wait for it. A fourth card: *48,428 elements, 123 days, 9 trades, labour cost 1,721,743.*
 
 ![The 4D schedule card](img/viewer/ask-first-steps-8-schedule-card.png)
 

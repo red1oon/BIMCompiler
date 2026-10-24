@@ -1,0 +1,37 @@
+{
+ "at": "2026-10-23T20:47:35.266Z",
+ "steps": {
+  "loaded": {
+   "building": "HHS_Office_Federated",
+   "elements": 6880
+  },
+  "roomAxis": "3/5 Room ⇄ Material",
+  "roomSubToggle": [
+   "|Storey|",
+   "|Type|",
+   "|Path|"
+  ],
+  "roomStoreyTree": "group: | Storey | Type | Path | ▸ | Level 1 | (25) | ▸ | Level 2 | (31) | ▸ | Level 3 | (19)",
+  "treeHtml": "<div ><span >group:</span><button >Storey</button><button >Type</button><button >Path</button></div><div class=\"find-tree-row\" data-find-parent=\"Level 1\" ><span title=\"Expand\" >▸</span><span >Level 1</span><span >(25)</span></div><div ><div class=\"find-tree-row\" ><span ></span><span >≈ Level 1 R1</span><span >()</span></div><div class=\"find-tree-row\" ><span ></span><span >≈ Level 1 R10</span><span >()</span></div><div class=\"find-tree-row\" ><span ></span><span >≈ Level 1 R11</span><span >()</span></div><div class=\"find-tree-row\" ><span ></span><span >≈ Level 1 R13</span><span >()</span></div><div class=\"find-tree-row\" ><span ></span><span >≈ Level 1 R14</span><span >()</span></div><div class=\"find-tree-row\" ><span ></span><span >≈ Level 1 R15</span><span >()</span></div><div class=\"find-tree-row\" ><span ></span><span >≈ Level 1 R16</span><span >()</span></div><div class=\"find-tree-row\" >",
+  "level2Toggle": "▸ Level 2 (31)",
+  "level2Expanded": "group: | Storey | Type | Path | ▸ | Level 1 | (25) | ▾ | Level 2 | (31) | ≈ Level 2 R10 | () | ≈ Level 2 R11 | () | ≈ Level 2 R12 | () | ≈ Level 2 R13 | () | ≈ Level 2 R14 | () | ≈ Level 2 R16 | () | ≈ Level 2 R17 | () | ≈ Level 2 R18 | () | ≈ Level 2 R19 | () | ≈ Level 2 R2 | () | ≈ Level 2 R20 | () | ≈ Level 2 R22 | () | ≈ Level 2 R23 | () | ≈ Level 2 R24 | () | ≈ Level 2 R25 | () | ≈ Level 2 R26 | () | ≈ Level 2 R27 | () | ≈ Level 2 R28 | () | ≈ Level 2 R29 | () | ≈ Level 2 R3 | () | ≈ Level 2 R30 | () | ≈ Level 2 R31 | () | ≈ Level 2 R4 | () | ≈ Level 2 R6 | () | ≈ Level 2 R7 | () | ≈ Level 2 R9 | () | ⚠ Level 2 R1 | () | ⚠ Level 2 R15 | () | ⚠ Level 2 R21 | () | ⚠ Level 2 R5 | () | ⚠ Level 2 R8 | () | ▸ | Level 3 | (19)",
+  "level2Leaves": [],
+  "roomRowClick": {
+   "rows": 26,
+   "first": "≈ Level 2 R10 ()"
+  },
+  "highlightStatus": "Downloading ad_seed.db... 100% (26/7MB)",
+  "typeBtnFound": true,
+  "roomTypeTree": "group: | Storey | Type | Path | ▸ | INTERNAL | (48) | ▸ | INTERNAL_SMALL | (15) | ▸ | SUSPECT_OPEN | (7) | ▸ | Restrooms | (2) | ▸ | SUSPECT_NO_DOOR | (2) | ▸ | SUSPECT_ELONGATED | (1) | ▸ | Stairs | (11) | ▸ | Lift Shaft | (3) | ▸ | Plant Room | (1769)",
+  "roomPathTree": "group: | Storey | Type | Path | From room… | ≈ Level 1 R1 · COMPILED INTERNAL ≈ Level 1 R1 (Level 1) | ≈ Level 1 R10 · COMPILED INTERNAL ≈ Level 1 R10 (Level 1) | ≈ Level 1 R11 · COMPILED INTERNAL_SMALL ≈ Level 1 R11 (Level 1) | ≈ Level 1 R13 · COMPILED INTERNAL ≈ Level 1 R13 (Level 1) | ≈ Level 1 R14 · COMPILED INTERNAL ≈ Level 1 R14 (Level 1) | ≈ Level 1 R15 · COMPILED INTERNAL_SMALL ≈ Level 1 R15 (Level 1) | ≈ Level 1 R16 · COMPILED INTERNAL ≈ Level 1 R16 (Level 1) | ≈ Level 1 R17 · COMPILED INTERNAL ≈ Level 1 R17 (Level 1) | ≈ Level 1 R18 · COMPILED INTERNAL ≈ Level 1 R18 (Level 1) | ≈ Level 1 R19 · COMPILED INTERNAL ≈ Level 1 R19 (Level 1) | ≈ Level 1 R2 · COMPILED INTERNAL ≈ Level 1 R2 (Level 1) | ≈ Level 1 R20 · COMPILED INTERNAL_SMALL ≈ Level 1 R20 (Level 1) | ≈ Level 1 R21 · COMPILED INTERNAL ≈ Level 1 R21 (Level 1) | ≈ Level 1 R22 · COMPILED INTERNAL ≈ Level 1 R22 (Level 1) | ≈ Level 1 R23 · COMPILED INTERNAL ≈ Level 1 R23 (Level 1) | ≈ Level 1 R24 · COMPILED INTERNAL ≈ Level 1 R24 (Level 1) | ≈ Level 1 R25 · COMPILED INTERNAL ≈ Level 1 R25 (Level 1) | ≈ Level 1 R5 · COMPILED INTERNAL ≈ Level 1 R5 (Level 1) | ≈ Level 1 R6 · COMPILED INTERNAL ≈ Level 1 R6 (Level 1) | ≈ Level 1 R7 · COMPILED INTERNAL_SMALL ≈ Level 1 R7 (Level 1) | ≈ Level 1 R8 · COMPILED INTERNAL ≈ Level 1 R8 (Level 1) | ≈ Level 1 R9 · COMPILED INTERNAL_SMALL ≈ Level 1 R9 (Level 1) | ⚠ Level 1 R12 · COM",
+  "phaseAxis": "5/5 Phase ⇄ Storey",
+  "phaseTree": {
+   "afterMs": 90352,
+   "tree": "Timeline unavailable (generator not loaded)."
+  },
+  "phaseLeave": "1/5 Storey ⇄ Discipline",
+  "phaseReturn": "5/5 Phase ⇄ Storey",
+  "phaseTreeReopened": "▸ | Architecture Envelope | (1334) | ▸ | MEP Rough-in | (2666) | ▸ | Superstructure | (1967) | ▸ | Architecture | (10) | ▸ | Architecture Closeup | (133) | ▸ | MEP Final | (727) | ▸ | Finishes | (43)"
+ },
+ "pageerrors": []
+}
