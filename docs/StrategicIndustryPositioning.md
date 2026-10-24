@@ -24,6 +24,10 @@ and the line between them is never blurred:
 If you grep the repo, the Tier-1 claims must hold and the Tier-2/3 ones must read as
 runway. That discipline is the point.
 
+*Currency, 2026-10-25: the Tier-1 rows were last re-read against merged work on 2026-09-27. The team-layer
+and replication rows added below postdate that pass and are labelled as such; a dated re-read of Tier 1 is
+owed before the next publish.*
+
 ---
 
 ## The core problem: geometry is not intent
@@ -137,6 +141,13 @@ Real markets, short runway. Stated as targets — not yet shipped.
   against real-world bugs and adding the compliance surface. The signed orderline is already
   a receipt artifact — evolving it into a MyInvois-format submission is the build. *(Not yet
   in code; this is the target.)*
+- **iDempiere branch / offline kit — legacy untouched.** A branch runs the same iDempiere
+  windows and documents offline in the browser, exchanging signed changes through a passive
+  post box, while head office keeps running legacy iDempiere unchanged. The legacy system is the
+  oracle: the parallel run against legacy (`prompts/SQLiteIDEMPIERE.md`) is how it is judged, and a
+  difference it finds is fixed on our side, never accepted. *(Target: the parity run and a
+  one-branch week are not done; kill criterion — parity cannot reach every window/doctype, or the
+  iDempiere community will not run it.)*
 - **Touch-kitchen + self-order tabs + QR payment.** A self-order surface (URL-fetched remote
   ordering, QR payment display, payment-status fold returned by email) sits naturally on the
   same op-log. *(Not yet in code; the POS loop it rides is.)*
@@ -255,6 +266,20 @@ zero-invented, snapshot-verified graph; this is architecture proven on a real mu
 not yet a finished capability. See `prompts/SPATIAL_DEPENDENCY_GRAPH.md`,
 `prompts/Modeller/DISC_Walker/OCCUPANT_PATHFINDER.md`, `prompts/Viewer/FLY_TOUR_CORRIDOR_GRAPH.md`.
 
+
+**Team layer and Replication Scriptor (added 2026-10-25).** *Witnessed (bench, two real browsers, folder pipe):*
+the Modeller and the ERP share signed changes through a passive post box with per-column conflict warnings,
+a People list and a heads-up label ("founder is editing this element") that carry each person's chosen
+built-in avatar, and ONE Team icon in the Modeller that starts, joins and approves a team inside the app
+(bim-ootb PR #2368; `W-TEAM-MODELLER` 33/0, `W-PEOPLE-MODELLER` 22/0, `W-TEAM-ICON-MODELLER` 15/0,
+`W-AVATARS` 13/0, `W-AVATAR-TRAVEL` 9/0). *Specified, prototype only:* the **Replication Scriptor** — a
+compiler that turns the dictionary, roles and topology into signed per-device plans of what each device holds,
+sends and asks for, so that a new flow is a new row and not new code (`TEAMWORK_FRAMEWORK.md` §16; its S1
+prototype passes 22/22 for logic only: one in-memory hub, sample data, not encrypted). **Stated plainly,
+what's still open:** the building itself is not shared (moving a seeded wall stays local), the wings of a
+shared building are agreement and not enforcement, the older Outliner dots still only see the same machine,
+and everything above is a proof of concept (risks 5 and 6).
+
 ---
 
 ## The landscape — nobody else compiles, nobody else connects
@@ -291,6 +316,17 @@ Design exploration. No BOM, no compilation, no verification.
 They parse and display IFC. They do not abstract intent, compile from recipes, or prove
 round-trip fidelity — and **none connect BIM to a transaction ERP over one signed log.**
 
+### A different field — local-first sync and offline POS (where the team layer competes)
+
+*Class and members listed from general knowledge, **not re-verified in this pass**; the sourced
+comparison is `prompts/prior_art_2026-10-25/` (R1–R3). Verify before any public comparison.*
+
+| Class | Examples | What they do | Where we differ |
+|---|---|---|---|
+| Local-first sync engines | Automerge, Yjs, Replicache / Zero, ElectricSQL, PowerSync, Ditto, CouchDB / PouchDB | replicate application data between devices; the developer hand-writes the sync scope (R2) | the scope is compiled from the dictionary (the Replication Scriptor, `TEAMWORK_FRAMEWORK.md` §16); the same deterministic verbs replay identically on every device |
+| Offline POS | Unicenta, Odoo POS offline mode | sell locally, sync to a central database on reconnect | the sale path needs no central database; head office derives stock from declared sales (§16.0a) |
+| Cloud BIM collaboration (CDE) | Trimble Connect, Autodesk Construction Cloud, Bentley iTwin, Procore | central servers, permissions, issues, support | no operated server, works offline, no subscription — but they sell integration, compliance and accountability, which we do not claim to replace |
+
 ### Adjacent layers — interop and governance (not authoring, not competing directly)
 
 | Layer | Example | What it does | What it doesn't |
@@ -313,10 +349,16 @@ of this pipeline's merge gate rather than replace it.
    reproduced to the cent. Requires rare BIM *and* manufacturing-ERP knowledge in one head.
 3. **One generic dashboard for every data model.** AD-field-driven group-by/pivot/timeline —
    not a bespoke report per table.
-4. **Serverless / local-first by construction.** Each browser is its own server; the only
-   shared resource is a stateless signature gatekeeper. Scales to 10,000 POS stations with no
-   central database to overload — the exact failure mode that sank the national e-invoicing
-   rollout.
+4. **Serverless / local-first by construction.** Each browser is its own server and no server we
+   operate holds the truth. Two carriages are measured and their numbers differ: the
+   signature-gatekeeper POS carriage reaches 10,000 stations (`poc_pos_wan_scale`, ~4.6k ops/s) with
+   no central database to overload — the failure mode that sank the national e-invoicing rollout;
+   the passive post-office carriage used by the team layer holds ~31 devices per GitHub account
+   at one visit per 15 s and ~100 on a web relay with staggered visits. A few scarce resources
+   (last unit of stock, ledger posting, credit limit, batch runs) still need one owner-designated
+   always-on hub (`prompts/TEAMWORK_FRAMEWORK.md` §16.14 B1), so "serverless" here means *no shared
+   database server we operate*, not *no always-on role*. **Forged or altered signed ops are detected
+   and refused on every device** (witnessed; tamper-evident, not tamper-proof).
 5. **Domain-agnostic pipeline.** Houses, terminals, bridges, rail (93% BOM compression) — one
    pipeline, a YAML mapping per domain. See `INFRA_DESIGNER_SRS.md`.
 6. **Op-log = git-for-data.** Every state is a deterministic, reversible fold of a signed log
@@ -338,6 +380,17 @@ compilation — or a to-the-cent ERP fold — to a GUI-first tool takes years.
 4. **Credibility currently rests on one person** across communities that don't normally
    talk to each other (BIM, ERP, open-source/local-first) — coherent, but earned per
    conversation, not yet institutional.
+
+5. **The team layer is measured on a bench, not in the field.** The team-size ceiling above is
+   a simulator number; fold speed on a real phone, the email post-box path, and the free-tier limits
+   and terms of every relay in the path (GitHub as a pipe, Gmail as a post box) are unmeasured or
+   unchecked, and no real team has run it for two weeks. Each has a named test with a pass line in
+   `prompts/TEAMWORK_FRAMEWORK.md` §17 (T1 scale ladder, T2 phones, T3 post box, T9 cost ledger, T10 pilot).
+6. **Novelty is "to our knowledge", not "first".** The prior-art checks found no documented production
+   system with real transactions and no always-on database or application server, and no system combining a
+   serverless plan compiler with a signed deferred-query catalog — but the searches were shallow (digests and
+   excerpts, no patent-office search) and an independent clean-clone reproduction has not been done (§17 T8).
+   We say "to our knowledge", never "first", and never "no other open-source project has this" as a fact.
 
 None of these block using or trying the project — they're the risks worth tracking as it
 scales, stated plainly rather than smoothed over.
