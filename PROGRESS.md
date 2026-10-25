@@ -7,6 +7,9 @@ past the reset → resume by `SendMessage` to the agent id (never re-dispatch fr
 Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 
 ## 🤝 Teamwork comm layer (no DB/app server, just a data relay) — POC done 2026-10-23; frame + 3 apps + 6 films 2026-10-24
+**Replication lane (2026-10-25): resume prompt = `prompts/TEAMWORK_FRAMEWORK.md` §21; engine in `build/scriptor/` (S1 PASS 22, treatments PASS 30, 11 mutants killed); the multi-user hold stands until the §16.18b dry run passes; the §19 review is written as §20/§20a.**
+**Replication engine steps 1–4 DONE 2026-10-25 (witnessed, `TEAMWORK_FRAMEWORK.md` §22): virtual tables PASS 25 · registrable treatments PASS 13 · mesh `audience: space` PASS 25 · compile-only dry run vs pinned adapters PASS 13 (open: G9). Step 5 (adapters) waits for the owner's go; hold stands. Owner's ideas register: §23 (parked).**
+**Step 5a (Modeller adapter) DONE in worktree `/tmp/wt-team-plan` (uncommitted; `TEAMWORK_FRAMEWORK.md` §24.1): adapter derives its shared-op list from the compiled plan — full Modeller witness PASS 33 (= baseline), new plan witness PASS 11, drift PASS 5, plan-absent run fails closed. Awaiting owner: commit/push, and the ERP adapter (G9).**
 **Next (2026-10-25): `TEAMWORK_FRAMEWORK.md` §19 — review the Replication Scriptor (§16) and write how it governs the Team Modeller setup; §18 has the ownership rules.** Done 2026-10-25: one Team icon + 24 avatars (bim-ootb #2368 merged), HHS part-3 film v2, §17 sandbox plan (spec), positioning absorbed into `docs/StrategicIndustryPositioning.md` (unpublished). Resume: `prompts/TEAMWORK_FRAMEWORK.md` → **▶ RESUME HERE (2026-10-24)** at the top: state, shipped PRs, films, ordered open list (escrow first), limits, lessons. Micro Finance news board: `~/Projects/ThaiGoldPawn/spec/PAWN_FINTECH_SPEC.md` §25–§25.14 (local branch `news-board`, unpushed).
 
 ## 📋 The live worklist is `prompts/AGENT_QUEUE.md` — not this file

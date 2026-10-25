@@ -1,0 +1,5 @@
+{
+ "pos": "95b1e7e79f30a6903faf162220f02c55bcaf03250a78314882292213976f29a0",
+ "mf": "6465344e7913e0b7633c586e74b409d419ec85758f1e7f98d9b1d0bee779dac9",
+ "note": "normalized sha256 (random ed25519 public keys replaced by PUBKEY) of trace_film_*.json captured BEFORE the step-2 registry refactor, 2026-10-25; TEST BASELINE for W-REG-PRESERVED (TEAMWORK_FRAMEWORK §22.3)"
+}
