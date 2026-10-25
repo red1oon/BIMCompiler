@@ -57,7 +57,7 @@ console.log('§W-SCOPE-MUTANTS (the reader is loaded with one rule broken; each 
  ['case-sensitive lookups', READER.replace(/function lc\(x\) \{[^}]*\}/, 'function lc(x) { return String(x); }')], ['index never refreshed (stale cache)', READER.replace('if (memo.plan === P) return memo.idx;', 'if (memo.idx) return memo.idx;')],
  ['unplanned treated as share', READER.replace("I.flows[lc(table)] ? 'share' : 'unplanned'", "'share'")], ['no plan answers share', READER.replace("!I ? 'unplanned'", "!I ? 'share'")]].forEach(function (m) {
   var red; try { red = arms(m[1], true); } catch (e) { red = ['THROW ' + e.message.slice(0, 40)]; }
-  say(red.length > 0, m[0] + ' -> red arms: ' + (red.length ? Array.from(new Set(red)).join(', ') : 'NONE (survivor = hole)'));
+  say(m[1] !== READER && red.length > 0, m[0] + ' -> red arms: ' + (red.length ? Array.from(new Set(red)).join(', ') : 'NONE (survivor = hole)') + (m[1] === READER ? ' (MUTATION DID NOT APPLY: stale anchor)' : ''));
 });
 console.log('§SCOPE_VERDICT ' + (fails ? 'FAIL' : 'PASS') + ' judged=' + judged + ' fails=' + fails);
 process.exit(fails ? 1 : 0);
