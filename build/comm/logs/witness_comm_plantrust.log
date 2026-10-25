@@ -1,0 +1,32 @@
+═══ W-PLANTRUST-GENESIS — the plan trust list pinned in the space genesis (TEAMWORK_FRAMEWORK §33) ═══
+
+§T1 ID
+   🟢 params.planTrust is the normalised list (kty/crv/x/y only); a space without the option has none — ["kty","crv","x","y"]
+   🟢 the space id PINS the list: same params => same id; another key or none => a different id — e0c6e1a45f / 3503a3e57d / fdd1a1a7f9
+§T2 REJECT
+   🟢 newSpace refuses empty list — newSpace: invalid planTrust (count)
+   🟢 newSpace refuses 4 keys — newSpace: invalid planTrust (count)
+   🟢 newSpace refuses not an array — newSpace: invalid planTrust (count)
+   🟢 newSpace refuses a duplicate — newSpace: invalid planTrust (duplicate)
+   🟢 newSpace refuses missing x — newSpace: invalid planTrust (x/y)
+   🟢 newSpace refuses P-384 — newSpace: invalid planTrust (algorithm)
+   🟢 newSpace refuses RSA — newSpace: invalid planTrust (extra field (private material is never pinned))
+   🟢 newSpace refuses PRIVATE material (d) — newSpace: invalid planTrust (extra field (private material is never pinned))
+   🟢 newSpace refuses an extra kid field — newSpace: invalid planTrust (extra field (private material is never pinned))
+§T3 FOLD
+   🟢 null before the genesis has been seen (a joiner with only the invite) — null
+   🟢 the founder's store returns the pinned list; a space without one returns null — 2
+   🟢 a joiner that has the invite + the genesis returns the same list
+§T4 FORGED
+   🟢 a self-consistent genesis with an INVALID planTrust is refused (roster not ok), never accepted with the list dropped — roster.ok=false reason=no-trusted-genesis
+   🟢 and the forged space exposes no trust list
+§T5 PLAN
+   🟢 a plan signed by either pinned key (primary or backup) verifies ok under the list read from the genesis
+   🟢 a plan signed by a key that is NOT pinned in the genesis is untrusted — untrusted
+§MUTANTS (a copy of build/comm with one rule broken; each must turn at least one arm red)
+   🟢 planTrust left out of the space id -> red arms: T1, T3, T5
+   🟢 private material accepted -> red arms: T2, T4
+   🟢 an invalid list is silently dropped at fold (genesis still trusted) -> red arms: T4
+   🟢 planTrust not returned by the fold -> red arms: T3, T5
+   🟢 the key-count limit removed -> red arms: T2
+§PLANTRUST_VERDICT PASS judged=23 fails=0
