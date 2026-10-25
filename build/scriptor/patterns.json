@@ -1,0 +1,447 @@
+{
+  "v": 1,
+  "note": "Flow Row PATTERN LIBRARY (prompts/TEAMWORK_FRAMEWORK.md §26). Every row is a SAMPLE: referenced rows live in the named flows*.json files and are already witnessed; 'inline' rows are labelled SAMPLE and compile-checked here. A pattern with no witnessed behaviour is not in this file.",
+  "patterns": [
+    {
+      "id": "P1",
+      "name": "A branch sells, head office answers with stock",
+      "want": "My branch records sales and sends them to head office at the end of the day. Head office checks stock and sends a replenishment back.",
+      "rows": [
+        {
+          "ref": "flows.json",
+          "name": "F1 pos-sales-up"
+        },
+        {
+          "ref": "flows.json",
+          "name": "R1 replenish-rule"
+        },
+        {
+          "ref": "flows.json",
+          "name": "F2 replenishment-down"
+        }
+      ],
+      "proves": [
+        {
+          "witness": "scripts/witness_scriptor_treat.js",
+          "tag": "§W-TREAT-STOCKLOOP"
+        },
+        {
+          "witness": "scripts/witness_scriptor_treat.js",
+          "tag": "§W-TREAT-LOCAL"
+        },
+        {
+          "witness": "scripts/witness_scriptor_treat.js",
+          "tag": "§W-TREAT-TICKET"
+        }
+      ],
+      "adjust": [
+        "table and carries: the records that travel and the columns that matter",
+        "group: what makes one record unique, so a resend is recognised",
+        "process: the name of the process head office runs when the sale arrives"
+      ]
+    },
+    {
+      "id": "P2",
+      "name": "A price list pushed to one branch",
+      "want": "Head office publishes a price list; each branch picks it up when it next connects, once a day.",
+      "rows": [
+        {
+          "ref": "flows.json",
+          "name": "S1 price-list-seed"
+        }
+      ],
+      "proves": [
+        {
+          "witness": "scripts/witness_scriptor_treat.js",
+          "tag": "§W-TREAT-PULLGUARD"
+        }
+      ],
+      "adjust": [
+        "role: which devices receive it",
+        "guard: daily = ask at most once a day; once = ask only until you have a value"
+      ]
+    },
+    {
+      "id": "P3",
+      "name": "A public value anyone may fetch",
+      "want": "A value everyone is allowed to read, such as today's gold price or the list of cashiers, fetched once a day.",
+      "rows": [
+        {
+          "ref": "flows.json",
+          "name": "S2 gold-price"
+        },
+        {
+          "ref": "flows.json",
+          "name": "S0 roster"
+        }
+      ],
+      "proves": [
+        {
+          "witness": "scripts/witness_scriptor_treat.js",
+          "tag": "§W-TREAT-MICROFINANCE"
+        },
+        {
+          "witness": "scripts/witness_scriptor_treat.js",
+          "tag": "§W-TREAT-PULLGUARD"
+        }
+      ],
+      "adjust": [
+        "audience public: no role is needed to read it",
+        "guard once: for a value that never changes (the roster)"
+      ]
+    },
+    {
+      "id": "P4",
+      "name": "A code that carries value (loyalty points, store credit)",
+      "want": "The shop issues a signed code worth points; the customer's phone applies it once; head office checks the books at the end.",
+      "rows": [
+        {
+          "ref": "flows.json",
+          "name": "I1 loyalty-code"
+        }
+      ],
+      "proves": [
+        {
+          "witness": "scripts/witness_scriptor_treat.js",
+          "tag": "§W-TREAT-CODE"
+        }
+      ],
+      "adjust": [
+        "authorityRole: who may issue the code",
+        "holderRole: who applies it",
+        "account: what the balance is called"
+      ]
+    },
+    {
+      "id": "P5",
+      "name": "A customer pays, the lender confirms",
+      "want": "A borrower's payment slip goes up to the lender; the lender applies it and sends a confirmation back to that borrower.",
+      "rows": [
+        {
+          "ref": "flows.json",
+          "name": "P1 borrower-payment-up"
+        },
+        {
+          "ref": "flows.json",
+          "name": "R2 payment-rule"
+        },
+        {
+          "ref": "flows.json",
+          "name": "N1 payment-confirmation-down"
+        }
+      ],
+      "proves": [
+        {
+          "witness": "scripts/witness_scriptor_treat.js",
+          "tag": "§W-TREAT-MICROFINANCE"
+        }
+      ],
+      "adjust": [
+        "role: BORROWER here is a label, use your own role",
+        "process: the named process that applies a payment"
+      ]
+    },
+    {
+      "id": "P6",
+      "name": "A team shares the records of a dictionary table",
+      "want": "Everyone on the team can create and change business partners, and everyone ends up with the same list.",
+      "rows": [
+        {
+          "inline": {
+            "name": "T1 bpartner-shared",
+            "treatment": "FACT",
+            "role": 103,
+            "strategy": 100,
+            "dir": "BOTH",
+            "audience": "space",
+            "table": "C_BPartner",
+            "carries": [
+              "Value",
+              "Name",
+              "C_BP_Group_ID",
+              "IsCustomer",
+              "IsVendor",
+              "IsEmployee",
+              "IsOneTime",
+              "IsSalesRep",
+              "IsSummary",
+              "SO_CreditLimit",
+              "SO_CreditUsed",
+              "SendEMail"
+            ],
+            "group": "record",
+            "schedule": "on-change"
+          }
+        }
+      ],
+      "proves": [
+        {
+          "witness": "scripts/witness_scriptor_mesh.js",
+          "tag": "§W-MESH-ADD"
+        },
+        {
+          "witness": "scripts/witness_scriptor_mesh.js",
+          "tag": "§W-MESH-COLLIDE"
+        },
+        {
+          "witness": "scripts/witness_scriptor_mesh.js",
+          "tag": "§W-MESH-FOLD"
+        },
+        {
+          "witness": "scripts/witness_scriptor_mesh.js",
+          "tag": "§W-MESH-LATE"
+        }
+      ],
+      "adjust": [
+        "table and carries: carry every mandatory column or the receiver cannot build the record",
+        "dir BOTH needs audience space; they come as a pair"
+      ]
+    },
+    {
+      "id": "P7",
+      "name": "A team shares records that are not in the dictionary",
+      "want": "My application has its own kind of record (a drawn element) that the dictionary does not know. The team should still share it, and only the kinds I list.",
+      "rows": [
+        {
+          "ref": "flows_modeller.json",
+          "virtual": "bim_element"
+        },
+        {
+          "ref": "flows_modeller.json",
+          "name": "M1 element"
+        }
+      ],
+      "proves": [
+        {
+          "witness": "scripts/witness_scriptor_dryrun.js",
+          "tag": "§W-DRY-MODELLER"
+        },
+        {
+          "witness": "scripts/witness_scriptor_virtual.js",
+          "tag": "§W-VIRT-COMPILE"
+        },
+        {
+          "witness": "scripts/witness_scriptor_virtual.js",
+          "tag": "§W-VIRT-GUARDS"
+        }
+      ],
+      "adjust": [
+        "virtualTable and its columns: describe the record yourself, because there is no dictionary to read",
+        "values: the list of allowed kinds; adding a kind later is adding one value, no code"
+      ]
+    },
+    {
+      "id": "P8",
+      "name": "A table that stays on its own station",
+      "want": "Numbering counters, recent-item lists and session logs belong to one station. Say so, so nobody shares them by mistake.",
+      "rows": [
+        {
+          "ref": "flows_erp.json",
+          "name": "L1 sequence"
+        },
+        {
+          "ref": "flows_erp.json",
+          "name": "L3 recent-item"
+        }
+      ],
+      "proves": [
+        {
+          "witness": "scripts/witness_scriptor_dryrun.js",
+          "tag": "§W-DRY-ERP"
+        },
+        {
+          "witness": "scripts/witness_scriptor_erp_plan.js",
+          "tag": "§W-ERPPLAN-SCOPE"
+        }
+      ],
+      "adjust": [
+        "table: any table that must never leave its station",
+        "a table with no row at all is also local; a LOCAL row just makes the decision visible"
+      ]
+    },
+    {
+      "id": "P9",
+      "name": "Another table, same shape, no code",
+      "want": "I already have a flow for order lines. I want invoice lines to behave the same way.",
+      "rows": [
+        {
+          "ref": "flows_extra.json",
+          "name": "X2 invoiceline-up"
+        }
+      ],
+      "proves": [
+        {
+          "witness": "scripts/witness_scriptor_s1.js",
+          "tag": "§W-FLOW-ZERO-CODE"
+        },
+        {
+          "witness": "scripts/witness_scriptor_treat.js",
+          "tag": "§W-TREAT-ZEROCODE"
+        }
+      ],
+      "adjust": [
+        "copy a row, change name and table; leave carries out to get a PROPOSAL, then trim it",
+        "a proposal is a starting point, never the plan"
+      ]
+    }
+  ],
+  "mistakes": [
+    {
+      "id": "M1",
+      "title": "A column name with a typo",
+      "pattern": "P1",
+      "row": "F1 pos-sales-up",
+      "set": {
+        "carries": [
+          "M_Product_ID",
+          "Qty_Entered",
+          "C_UOM_ID"
+        ]
+      },
+      "say": "unknown column(s): Qty_Entered",
+      "fix": "Use the exact dictionary column name (QtyEntered)."
+    },
+    {
+      "id": "M2",
+      "title": "A table that does not exist",
+      "pattern": "P1",
+      "row": "F1 pos-sales-up",
+      "set": {
+        "table": "C_OrderLine_X"
+      },
+      "say": "no such table: C_OrderLine_X",
+      "fix": "Check the table name in the dictionary."
+    },
+    {
+      "id": "M3",
+      "title": "A required setting left out",
+      "pattern": "P1",
+      "row": "F1 pos-sales-up",
+      "unset": [
+        "group"
+      ],
+      "say": "FACT needs group",
+      "fix": "Say what makes one record unique (the group)."
+    },
+    {
+      "id": "M4",
+      "title": "Both ways, but not as a team",
+      "pattern": "P6",
+      "row": "T1 bpartner-shared",
+      "set": {
+        "audience": "hub"
+      },
+      "say": "FACT dir BOTH needs audience space",
+      "fix": "Both-ways flows are for a team: set audience to space."
+    },
+    {
+      "id": "M5",
+      "title": "A team flow that only goes one way",
+      "pattern": "P6",
+      "row": "T1 bpartner-shared",
+      "set": {
+        "dir": "UP"
+      },
+      "say": "FACT audience space needs dir BOTH",
+      "fix": "A team shares both ways: set dir to BOTH."
+    },
+    {
+      "id": "M6",
+      "title": "A kind of movement that is not registered",
+      "pattern": "P1",
+      "row": "F1 pos-sales-up",
+      "set": {
+        "treatment": "FACTS"
+      },
+      "say": "unknown treatment FACTS",
+      "fix": "Use FACT, SEED, RULE, INSTRUMENT or LOCAL, or register a new treatment."
+    },
+    {
+      "id": "M7",
+      "title": "A made-up kind of column",
+      "pattern": "P7",
+      "virtual": "bim_element",
+      "setColumn": {
+        "name": "pos_x",
+        "cls": "MONEY"
+      },
+      "say": "V1 bim_element: pos_x has unknown class MONEY",
+      "fix": "Use KEY, REF, MEASURE, DATE, FLAG, CODE, TEXT or OTHER."
+    },
+    {
+      "id": "M8",
+      "title": "The same column declared twice",
+      "pattern": "P7",
+      "virtual": "bim_element",
+      "addColumn": {
+        "name": "POS_X",
+        "cls": "MEASURE"
+      },
+      "say": "V3 bim_element: duplicate column POS_X",
+      "fix": "Each column once (names are not case-sensitive)."
+    },
+    {
+      "id": "M9",
+      "title": "Sending a column the system computes",
+      "pattern": "P1",
+      "row": "F2 replenishment-down",
+      "set": {
+        "carries": [
+          "M_Product_ID",
+          "M_Locator_ID",
+          "M_LocatorTo_ID",
+          "QtyEntered",
+          "C_UOM_ID",
+          "MovementQty"
+        ]
+      },
+      "say": "system-computed columns carried: MovementQty",
+      "fix": "Send what a person types; let the receiver compute the rest."
+    },
+    {
+      "id": "M10",
+      "title": "A mandatory column left out",
+      "pattern": "P6",
+      "row": "T1 bpartner-shared",
+      "set": {
+        "carries": [
+          "Name",
+          "C_BP_Group_ID",
+          "IsCustomer",
+          "IsVendor",
+          "IsEmployee",
+          "IsOneTime",
+          "IsSalesRep",
+          "IsSummary",
+          "SO_CreditLimit",
+          "SO_CreditUsed",
+          "SendEMail"
+        ]
+      },
+      "say": "mandatory columns not carried: Value",
+      "fix": "Carry it, or be sure the receiver can supply it."
+    },
+    {
+      "id": "M11",
+      "title": "A rule with nothing to send",
+      "pattern": "P1",
+      "row": "R1 replenish-rule",
+      "unset": [
+        "emits"
+      ],
+      "say": "RULE needs emits",
+      "fix": "Name the flow the rule sends."
+    },
+    {
+      "id": "M12",
+      "title": "A rule that names a flow that does not exist",
+      "pattern": "P1",
+      "row": "R1 replenish-rule",
+      "set": {
+        "emits": "F9 replenishment-typo"
+      },
+      "say": "RULE emits names a row that does not exist: F9 replenishment-typo",
+      "fix": "Use the exact name of the row the rule should send."
+    }
+  ]
+}

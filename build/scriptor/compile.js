@@ -7,8 +7,9 @@ var SCOPE = require('./scope.js'), FLOW = require('./flow.js'), TREAT = require(
 function compile(db, rows, opts) {
   var E = SCOPE.buildEdges(db, opts || {}), V = FLOW.virtualTables(rows, E, opts);
   opts = Object.assign({}, opts, { virtual: V.map });
+  var names = {}; rows.forEach(function (x) { if (x.name) names[x.name] = 1; });
   var plan = rows.filter(function (r) { return r.isactive !== false && !r.virtualTable; }).map(function (r) {
-    var errs = r.treatment ? TREAT.validate(r) : [];                    // a treatment states its own needs (§16.18)
+    var errs = r.treatment ? TREAT.validate(r).concat(TREAT.refs(r, names)) : [];                    // a treatment states its own needs (§16.18)
     var f = r.table ? FLOW.deriveFlow(db, E, r, opts || {}) : { name: r.name, noTable: true };   // rows with no AD table (RULE, public SEED, INSTRUMENT) carry no payload analysis
     f.treatment = r.treatment; f.treatmentErrors = errs; return f;
   });
@@ -19,6 +20,5 @@ if (require.main === module) {                                          // node 
   var Better = require('better-sqlite3'), path = require('path'), fs = require('fs');
   var db = new Better(path.join(__dirname, '..', 'erp', 'ad_full.db'), { readonly: true });
   var r = compile(db, JSON.parse(fs.readFileSync(process.argv[2] || path.join(__dirname, 'flows.json'), 'utf8')));
-  r.plan.forEach(function (f) { console.log(f.name + ' ' + f.dir + ' ' + f.table + ' [' + f.tableType + '] payload=' + f.payloadColumns + '/' + f.tableColumns + (f.proposed ? ' PROPOSED' : '') + ' derivedCarried=' + f.derivedCarried.length + ' baseRequirement=' + f.baseRequirement.join(',')); });
-  console.log('plan sha256 ' + r.hash);
+  require('./report.js').report(r).forEach(function (l) { console.log(l); });
 }

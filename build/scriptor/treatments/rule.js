@@ -4,6 +4,7 @@
 'use strict';
 require('../treat.js').register('RULE', {
   needs: ['on', 'process', 'emits'],
+  refs: ['on', 'emits'],                                                 // both must name a row of the same file (checked at compile time)
   onAccept: function (w, row, acc, fact) {                              // arrival of the row's 'on' flow -> named kernel process -> emitted facts
     if (acc.name !== row.on) return;
     var proc = w.procs[row.process]; if (!proc) throw new Error('no process ' + row.process);

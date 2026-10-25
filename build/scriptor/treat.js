@@ -4,7 +4,7 @@
 // itself under a name (build/scriptor/treatments/*.js, loaded at start-up; loadDir(dir) loads more); a flow row names it. Mirrors iDempiere's
 // service registries (IModelFactory / IProcessFactory) and ModelValidationEngine dispatch.
 // EXTENSION POINTS (the whole contract; every one optional except needs):
-//   needs:[row params] · scope(w,dev)->[relay prefixes the device may touch] · check(row)->[errors] · expand(row)->rows · deviceVisit(w,dev,row,view) · hubVisit(w,row) · onAccept(w,row,acceptedRow,fact) · publish(w,row,value)
+//   needs:[row params] · scope(w,dev)->[relay prefixes the device may touch] · check(row)->[errors] · refs:[params that name other rows] · expand(row)->rows · deviceVisit(w,dev,row,view) · hubVisit(w,row) · onAccept(w,row,acceptedRow,fact) · publish(w,row,value)
 'use strict';
 var fs = require('fs'), path = require('path'), R = {};
 function register(name, comp) {
@@ -21,5 +21,7 @@ function validate(row) {
   return t.needs.filter(function (p) { return row[p] === undefined || row[p] === null || row[p] === ''; }).map(function (p) { return row.treatment + ' needs ' + p; })
     .concat(t.check ? t.check(row) : []);
 }
-module.exports = { T: R, register: register, get: function (n) { return R[n]; }, loadDir: loadDir, expand: expand, validate: validate };
+// refs(row, names) -> [errors]: parameters a component declares in its `refs` must name another row of the same file (a rule's `on` / `emits`)
+function refs(row, names) { var t = R[row.treatment]; return ((t && t.refs) || []).filter(function (p) { return row[p] && !names[row[p]]; }).map(function (p) { return row.treatment + ' ' + p + ' names a row that does not exist: ' + row[p]; }); }
+module.exports = { refs: refs, T: R, register: register, get: function (n) { return R[n]; }, loadDir: loadDir, expand: expand, validate: validate };
 loadDir(path.join(__dirname, 'treatments'));
