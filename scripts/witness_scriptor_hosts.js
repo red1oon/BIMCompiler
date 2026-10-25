@@ -79,7 +79,7 @@ async function genesisArms(src, quiet) {
   function A(n, ok, l, d) { if (!ok) red.push(n); if (!quiet) say(ok, l, d); return ok; }
   if (typeof globalThis.crypto === 'undefined' || !globalThis.crypto.subtle) globalThis.crypto = webcrypto;
   ['CommEnvelope', 'CommOrder', 'CommRoster', 'CommAdmit', 'CommStore', 'CommPipe'].forEach(function (n) { delete globalThis[n]; });
-  var STORE = require(path.join(__dirname, '..', 'build', 'comm', 'comm_store.js')), SQL = await require('sql.js')();
+  var STORE = require(path.join(__dirname, '..', 'build', 'comm', 'comm_store.js')), ROS = require(path.join(__dirname, '..', 'build', 'comm', 'comm_roster.js')), SQL = await require('sql.js')();
   var K1 = await SIGN.keygen(), K2 = await SIGN.keygen(), pub = function (k) { return { kty: k.publicJwk.kty, crv: k.publicJwk.crv, x: k.publicJwk.x, y: k.publicJwk.y }; };
   var F = await STORE.newDevice(), PF = require('crypto').randomUUID();
   async function space(pt) { var sp = await STORE.newSpace('t', F, PF, 'Founder', 102, pt ? { planTrust: pt } : undefined); F.person_uu = PF; var S = STORE.open(new SQL.Database(), { SQL: SQL, space: sp.space, self: F, access: function () { return { allowed: true }; }, log: function () {} }); await S.genesis(sp.params); return { S: S, sp: sp }; }
@@ -104,6 +104,13 @@ async function genesisArms(src, quiet) {
   var r6 = await boot(host, byK1, [pub(K1), pub(K2)], src), o6 = r6.api._spaceOpts(host === 'erp' ? { name: 'b', sha256: 'a'.repeat(64) } : undefined), sp6 = await STORE.newSpace('t', F, PF, 'Founder', 102, o6);
   var r6e = await boot(host, byK1, null, src), o6e = r6e.api._spaceOpts(null);
   A('G6', JSON.stringify(sp6.params.planTrust) === JSON.stringify([pub(K1), pub(K2)]) && o6e === undefined && (host !== 'erp' || !!sp6.params.base), T + 'found() hands the deployment list to newSpace (the genesis params carry both keys' + (host === 'erp' ? ' and the base' : '') + '); with no list there is no option at all', JSON.stringify(Object.keys(o6)) + ' / ' + o6e);
+  // §35: the list in force changes by a POLICY op carrying a K1-signed rotation to [K2]; the RUNNING host re-reads it on its next pinTrust (after a Visit) — no host code for rotation
+  var rot = await space([pub(K1)]), r7 = await boot(host, byK1, null, src); await r7.api._pinTrust(rot.S); var before7 = sigState(r7) === 'ok' && open(r7);
+  var stR = await SIGN.sign({ kind: 'plan-trust', keys: [pub(K2)], prev: await ROS.planTrustHash([pub(K1)]) }, K1.privateJwk, K1.publicJwk), pR = await rot.S.setPolicy({ epoch: 1, planTrust: stR }), vR = (await rot.S.order()).verdict[pR.hash];
+  await r7.api._pinTrust(rot.S);
+  A('G7', before7 && vR && vR.verdict === 'MERGED' && sigState(r7) === 'untrusted' && closed(r7), T + 'open under the genesis [K1]; after a K1-signed POLICY rotates the list to [K2], the SAME running host re-verifies: the K1-signed plan is now untrusted and the scope closes', 'before=' + before7 + ' policy=' + (vR && vR.verdict) + ' sig=' + sigState(r7));
+  var r7b = await boot(host, byK2, null, src); await r7b.api._pinTrust(rot.S);
+  A('G7', sigState(r7b) === 'ok' && open(r7b), T + 'a plan signed by the key the rotation ADDED (K2) verifies ok under the list in force', 'sig=' + sigState(r7b));
   }
   return red;
 }
