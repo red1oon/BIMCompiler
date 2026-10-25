@@ -41,7 +41,7 @@ async function boot(host, planSrc, trust, src, slow) {
   await new Promise(function (r) { setTimeout(r, (slow || 0) + 30); });
   return { logs: logs, order: order, g: g, api: api };
 }
-function sigState(r) { var m = r.logs.map(function (l) { return /§TEAM_PLAN_SIG state=(\w+)/.exec(l); }).filter(Boolean)[0]; return m && m[1]; }
+function sigState(r) { var m = r.logs.map(function (l) { return /§TEAM_PLAN_SIG state=(\w+)/.exec(l); }).filter(Boolean).slice(-1)[0]; return m && m[1]; }   // the LATEST verdict (a pinned genesis list re-verifies)
 function planLine(r) { return r.logs.filter(function (l) { return /^§TEAM_PLAN (hash|missing)/.test(l); })[0]; }
 
 async function arms(src, quiet) {
@@ -72,18 +72,62 @@ async function arms(src, quiet) {
   }
   return red;
 }
+
+// ---- GENESIS-pinned trust (TEAMWORK_FRAMEWORK §33.2): the REAL engine (build/comm) makes the space and the store; the ERP host's own pinTrust / spaceOpts are called
+async function genesisArms(src, quiet) {
+  var red = [], H = quiet ? function () {} : console.log;
+  function A(n, ok, l, d) { if (!ok) red.push(n); if (!quiet) say(ok, l, d); return ok; }
+  if (typeof globalThis.crypto === 'undefined' || !globalThis.crypto.subtle) globalThis.crypto = webcrypto;
+  ['CommEnvelope', 'CommOrder', 'CommRoster', 'CommAdmit', 'CommStore', 'CommPipe'].forEach(function (n) { delete globalThis[n]; });
+  var STORE = require(path.join(__dirname, '..', 'build', 'comm', 'comm_store.js')), SQL = await require('sql.js')();
+  var K1 = await SIGN.keygen(), K2 = await SIGN.keygen(), pub = function (k) { return { kty: k.publicJwk.kty, crv: k.publicJwk.crv, x: k.publicJwk.x, y: k.publicJwk.y }; };
+  var F = await STORE.newDevice(), PF = require('crypto').randomUUID();
+  async function space(pt) { var sp = await STORE.newSpace('t', F, PF, 'Founder', 102, pt ? { planTrust: pt } : undefined); F.person_uu = PF; var S = STORE.open(new SQL.Database(), { SQL: SQL, space: sp.space, self: F, access: function () { return { allowed: true }; }, log: function () {} }); await S.genesis(sp.params); return { S: S, sp: sp }; }
+  var H2 = quiet ? function () {} : console.log;
+  for (var host of ['erp', 'modeller']) {
+  var plan = SIGN.planOf(rd(host + '/team_plan.js')), unsigned = wrap(plan), byK1 = wrap(await SIGN.sign(plan, K1.privateJwk, K1.publicJwk)), byK2 = wrap(await SIGN.sign(plan, K2.privateJwk, K2.publicJwk));
+  var closed = function (r) { return host === 'erp' ? r.api.scopeOf('c_order') === 'unplanned' : Object.keys(r.api.classes()).length === 0; }, open = function (r) { return host === 'erp' ? r.api.scopeOf('c_order') === 'share' : same(r.api.classes(), OLD); };
+  H2('§W-HOSTS-GENESIS ' + host.toUpperCase());
+  var withK1 = await space([pub(K1)]), none = await space(null), T = host + ': ';
+  var r1 = await boot(host, byK1, null, src); await r1.api._pinTrust(withK1.S);
+  A('G1', sigState(r1) === 'ok' && open(r1) && r1.logs.some(function (l) { return /state=ok trust=genesis\(1\)/.test(l); }), T + 'deployment list EMPTY + genesis pinned [K1] + plan signed by K1 => the host adopts the genesis list, state=ok trust=genesis(1), scope open', 'sig=' + sigState(r1) + ' ' + r1.logs.filter(function (l) { return /SIG/.test(l); }).join(' | '));
+  var r2 = await boot(host, byK1, [pub(K2)], src); await r2.api._pinTrust(withK1.S);
+  A('G2', sigState(r2) === 'ok' && open(r2), T + 'deployment [K2] (a different key) + genesis [K1] + plan signed by K1 => ok: the space decides', 'sig=' + sigState(r2));
+  var r2b = await boot(host, byK2, [pub(K2)], src); await r2b.api._pinTrust(withK1.S);
+  A('G2', sigState(r2b) === 'untrusted' && closed(r2b), T + 'deployment [K2] + genesis [K1] + plan signed by K2 => UNTRUSTED and closed: the genesis list REPLACES the deployment list (not merged)', 'sig=' + sigState(r2b));
+  var r3 = await boot(host, unsigned, null, src); await r3.api._pinTrust(withK1.S);
+  A('G3', sigState(r3) === 'invalid' && closed(r3), T + 'genesis [K1] + an UNSIGNED plan => invalid, closed (the host was open until the genesis list was applied)', 'sig=' + sigState(r3));
+  var r4 = await boot(host, byK2, null, src); await r4.api._pinTrust(withK1.S);
+  A('G4', sigState(r4) === 'untrusted' && closed(r4), T + 'genesis [K1] + plan signed by K2 => untrusted, closed', 'sig=' + sigState(r4));
+  var r5 = await boot(host, byK1, [pub(K1)], src); await r5.api._pinTrust(none.S);
+  A('G5', sigState(r5) === 'ok' && open(r5), T + 'a space that pinned NOTHING + deployment [K1] + plan signed by K1 => ok: the deployment list stays the fallback', 'sig=' + sigState(r5));
+  var r6 = await boot(host, byK1, [pub(K1), pub(K2)], src), o6 = r6.api._spaceOpts(host === 'erp' ? { name: 'b', sha256: 'a'.repeat(64) } : undefined), sp6 = await STORE.newSpace('t', F, PF, 'Founder', 102, o6);
+  var r6e = await boot(host, byK1, null, src), o6e = r6e.api._spaceOpts(null);
+  A('G6', JSON.stringify(sp6.params.planTrust) === JSON.stringify([pub(K1), pub(K2)]) && o6e === undefined && (host !== 'erp' || !!sp6.params.base), T + 'found() hands the deployment list to newSpace (the genesis params carry both keys' + (host === 'erp' ? ' and the base' : '') + '); with no list there is no option at all', JSON.stringify(Object.keys(o6)) + ' / ' + o6e);
+  }
+  return red;
+}
 (async function () {
   var READ = { trust: rd('common/comm/team_trust.js'), scope: rd('common/comm/team_scope.js'), adapter: { modeller: rd('modeller/team_sync.js'), erp: rd('erp/team_sync.js') } };
   console.log('§HOSTS_START reader=' + OOTB + ' · real adapters, real plans, compiler signer · no browser');
   await arms(READ, false);
+  await genesisArms(READ, false);
   console.log('§W-HOSTS-MUTANTS (each broken rule must turn at least one arm red)');
   function mut(label, patch) { var s = { trust: READ.trust, scope: READ.scope, adapter: { modeller: READ.adapter.modeller, erp: READ.adapter.erp } }; var ok = patch(s);
-    return arms(s, true).then(function (red) { say(ok !== false && red.length > 0, label + ' -> red arms: ' + (red.length ? Array.from(new Set(red)).join(', ') : 'NONE (survivor = hole)') + (ok === false ? ' (MUTATION DID NOT APPLY)' : '')); }); }
+    return Promise.all([arms(s, true), genesisArms(s, true)]).catch(function (e) { return [['THROW ' + String(e.message).slice(0, 40)], []]; }).then(function (rr) { var red = rr[0].concat(rr[1]); say(ok !== false && red.length > 0, label + ' -> red arms: ' + (red.length ? Array.from(new Set(red)).join(', ') : 'NONE (survivor = hole)') + (ok === false ? ' (MUTATION DID NOT APPLY)' : '')); }); }
   await mut('signature verification skipped (reader says ok)', function (s) { var t = s.scope.replace(/(verify: async function[^\n]*\n)/, "$1      memo.v = { plan: global.TEAM_PLAN, s: 'ok' }; return 'ok';\n"); if (t === s.scope) return false; s.scope = t; });
   await mut('`ready` not gated by the verification (both adapters)', function (s) { var m = s.adapter.modeller.replace("ready = readyBoot.then(function (v) { return planVerified.then(function () { return v; }); })", 'ready = readyBoot'), e = s.adapter.erp.replace("ready = readyBoot.then(function (v) { return planVerified.then(function () { return v; }); })", 'ready = readyBoot'); if (m === s.adapter.modeller || e === s.adapter.erp) return false; s.adapter.modeller = m; s.adapter.erp = e; });
   await mut('the verdict is ignored: the Modeller never recomputes its op list after verify', function (s) { var t = s.adapter.modeller.replace("    CLASS = classFromPlan();\n    var n =", "    var n ="); if (t === s.adapter.modeller) return false; s.adapter.modeller = t; });
   await mut('the shipped trust file overwrites a list the deployment injected', function (s) { s.trust = 'window.TEAM_PLAN_TRUST = [];'; });
   await mut('a literal list reinstated in the Modeller (plan ignored)', function (s) { var t = s.adapter.modeller.replace('function classFromPlan() {', 'function classFromPlan() { return ' + JSON.stringify(OLD) + '; }\n  function classFromPlanOrig() {'); if (t === s.adapter.modeller) return false; s.adapter.modeller = t; });
+  await mut('the genesis list never replaces the deployment list (pinTrust does not adopt it)', function (s) { var t = s.adapter.erp.replace("global.TEAM_PLAN_TRUST = gt; await verifyPlan(", "await verifyPlan("); if (t === s.adapter.erp) return false; s.adapter.erp = t; });
+  await mut('the genesis list is MERGED with the deployment list instead of replacing it', function (s) { var t = s.adapter.erp.replace("global.TEAM_PLAN_TRUST = gt;", "global.TEAM_PLAN_TRUST = (global.TEAM_PLAN_TRUST || []).concat(gt);"); if (t === s.adapter.erp) return false; s.adapter.erp = t; });
+  await mut('the plan is not re-verified after the genesis list is adopted', function (s) { var t = s.adapter.erp.replace(/global\.TEAM_PLAN_TRUST = gt; await verifyPlan\([^\n]*\);/, "global.TEAM_PLAN_TRUST = gt;"); if (t === s.adapter.erp) return false; s.adapter.erp = t; });
+  await mut('found() drops the deployment list (spaceOpts omits planTrust)', function (s) { var t = s.adapter.erp.replace("if (Array.isArray(t) && t.length) o.planTrust = t;", ""); if (t === s.adapter.erp) return false; s.adapter.erp = t; });
+  await mut('MODELLER: the genesis list never replaces the deployment list', function (s) { var t = s.adapter.modeller.replace("global.TEAM_PLAN_TRUST = gt; await verifyPlan(", "await verifyPlan("); if (t === s.adapter.modeller) return false; s.adapter.modeller = t; });
+  await mut('MODELLER: the genesis list is merged with the deployment list', function (s) { var t = s.adapter.modeller.replace("global.TEAM_PLAN_TRUST = gt;", "global.TEAM_PLAN_TRUST = (global.TEAM_PLAN_TRUST || []).concat(gt);"); if (t === s.adapter.modeller) return false; s.adapter.modeller = t; });
+  await mut('MODELLER: not re-verified after adopting the genesis list', function (s) { var t = s.adapter.modeller.replace(/global\.TEAM_PLAN_TRUST = gt; await verifyPlan\([^\n]*\);/, "global.TEAM_PLAN_TRUST = gt;"); if (t === s.adapter.modeller) return false; s.adapter.modeller = t; });
+  await mut('MODELLER: found() drops the deployment list', function (s) { var t = s.adapter.modeller.replace("return Array.isArray(t) && t.length ? { planTrust: t } : undefined;", "return undefined;"); if (t === s.adapter.modeller) return false; s.adapter.modeller = t; });
   console.log('§HOSTS_VERDICT ' + (fails ? 'FAIL' : 'PASS') + ' judged=' + judged + ' fails=' + fails + ' (whitebox: the adapters\' own § lines; the browser WebCrypto verify is not exercised here)');
   process.exit(fails ? 1 : 0);
 })();
