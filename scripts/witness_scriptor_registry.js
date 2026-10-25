@@ -31,6 +31,9 @@ fs.writeFileSync(path.join(TMP, 'probe.js'), "require(" + CORE + ").register('PR
   " onAccept: function (w, row, accepted, fact) { (w.probe = w.probe || []).push(['accept', row.name, accepted.name, fact.key]); },\n" +
   " publish: function (w, row, value) { (w.probe = w.probe || []).push(['publish', row.name, value]); } });\n");
 
+fs.writeFileSync(path.join(TMP, 'tally.js'), "require(" + CORE + ").register('TALLY', { needs: [],\n" +
+  " deviceInit: function (w, dev) { dev.tally = 0; }, deviceReset: function (w, dev) { dev.tally = 0; },\n" +
+  " restoreFact: function (w, dev, f) { dev.tally++; } });\n");
 var BEFORE = coreHash(), LOADED = TREAT.loadDir(TMP);              // the new treatments arrive as files; the core is hashed around the load
 function arms(quiet) {
   var red = [], say = quiet ? function () {} : console.log;
@@ -61,6 +64,14 @@ function arms(quiet) {
   var calls = p.probe || [];
   A('W-REG-POINTS', calls.some(function (c) { return c[0] === 'accept' && c[1] === 'Q1 probe' && c[2] === 'F1 pos-sales-up' && c[3] === 'A/1'; }), 'onAccept reached the component for the accepted fact', JSON.stringify(calls));
   A('W-REG-POINTS', calls.some(function (c) { return c[0] === 'publish' && c[2] === 7; }), 'World.publish found the component by the row\'s treatment name');
+  say('§W-REG-STATE');
+  var K = new S.World(ROWS.concat([{ name: 'K9 tally', treatment: 'TALLY' }]), { GenerateReplenishment: function () { return []; } }, {}); K.addDevice('A', 103);
+  var f1 = K.rowByName('F1 pos-sales-up'); K.sell(K.dev.A, f1, 'A/1', { M_Product_ID: 'P-COLA', QtyEntered: 1 }); K.sell(K.dev.A, f1, 'A/2', { M_Product_ID: 'P-COLA', QtyEntered: 2 }); K.cycle();
+  var mid = K.dev.A.tally; K.restore('A'); var held = K.dev.A.tally; K.wipe('A'); var wiped = K.dev.A.tally; K.restore('A'); var back = K.dev.A.tally;
+  A('W-REG-STATE', mid === 0 && held === 2 && wiped === 0 && back === 2, 'a NEW treatment owns device state: created by deviceInit (0), rebuilt from the shelf by restoreFact (2), reset by a wipe (0), rebuilt again (2)', 'init=' + mid + ' afterRestore=' + held + ' afterWipe=' + wiped + ' afterSecondRestore=' + back);
+  A('W-REG-STATE', coreHash() === BEFORE, 'core files sha256 identical before and after (state added without touching the core)', BEFORE);
+  var core = stripped('sim.js') + stripped('treat.js'), leaks = (core.match(/\.(out|inbox|ledger|pull|applied|balance|seq|priv|pub|rec|acct)\b/g) || []).concat(core.match(/\.applied\$|\.issued\$/g) || []);
+  A('W-REG-STATE', leaks.length === 0, 'the core names no treatment\'s state (property accesses .out .inbox .ledger .pull .applied .balance .seq .priv .pub .rec .acct, .applied/.issued suffix tests)', leaks.length ? 'LEAKS: ' + Array.from(new Set(leaks)).join(' ') + ' (' + leaks.length + ')' : '0 hits');
   return red;
 }
 
@@ -82,6 +93,8 @@ function mutant(label, patch) { var undo = patch(), red; try { red = arms(true);
 mutant('duplicate registration allowed', function () { var o = TREAT.register; TREAT.register = function (n, c) { if (!TREAT.T[n]) TREAT.T[n] = c; return c; }; return function () { TREAT.register = o; delete TREAT.T.SHAPELESS; }; });   // undo also drops what the broken registry let in
 mutant('registry lookup bypassed (built-ins hard-wired)', function () { var o = TREAT.get, hw = {}; ['FACT', 'SEED', 'RULE', 'INSTRUMENT'].forEach(function (n) { hw[n] = o(n); }); TREAT.get = function (n) { return hw[n]; }; return function () { TREAT.get = o; }; });
 mutant('onAccept not dispatched', function () { var o = S.World.prototype.afterAccept; S.World.prototype.afterAccept = function () {}; return function () { S.World.prototype.afterAccept = o; }; });
+mutant('restoreFact fan-out dropped (a treatment cannot fold back)', function () { var t = TREAT.get('TALLY'), o = t.restoreFact; t.restoreFact = function () {}; return function () { t.restoreFact = o; }; });
+mutant('deviceReset dropped (a wipe leaves the treatment\'s state)', function () { var t = TREAT.get('TALLY'), o = t.deviceReset; delete t.deviceReset; return function () { t.deviceReset = o; }; });
 fs.rmSync(TMP, { recursive: true, force: true });
 console.log('§REG_VERDICT ' + (fails ? 'FAIL' : judged === 0 ? 'INCONCLUSIVE' : 'PASS') + ' judged=' + judged + ' fails=' + fails);
 process.exit(fails ? 1 : 0);

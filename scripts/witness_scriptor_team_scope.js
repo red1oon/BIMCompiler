@@ -5,11 +5,11 @@
  * witness_scriptor_team_scope.js — the ONE shared plan reader (bim-ootb common/comm/team_scope.js). Spec: prompts/TEAMWORK_FRAMEWORK.md §25.1.
  * The reader is vm-loaded and asked about the REAL generated plans of both hosts; the expected answers are recomputed INDEPENDENTLY from the rows + the AD (not from the plan file).
  *   §W-SCOPE-ERP (S1,S2) · §W-SCOPE-MODELLER (S3) · §W-SCOPE-EDGE (S4 case, S5 hub-audience ignored, S6 declared-local wins, S7 missing plan, S8 plan swapped at runtime) · §W-SCOPE-MUTANTS
- * Usage: node scripts/witness_scriptor_team_scope.js [bim-ootb dir, default /tmp/wt-erp-plan]
+ * Usage: node scripts/witness_scriptor_team_scope.js [bim-ootb dir; default: origin/main read with git show]
  */
 'use strict';
 var path = require('path'), fs = require('fs'), vm = require('vm'), Better = require('better-sqlite3');
-var SDIR = path.join(__dirname, '..', 'build', 'scriptor'), OOTB = process.argv[2] || '/tmp/wt-erp-plan';
+var SDIR = path.join(__dirname, '..', 'build', 'scriptor'), OOTB = require('./lib_ootb.js').ootbDir(process.argv[2], ['common/comm/team_scope.js','erp/team_plan.js','modeller/team_plan.js']);
 var db = new Better(path.join(__dirname, '..', 'build', 'erp', 'ad_full.db'), { readonly: true });
 var judged = 0, fails = 0;
 function say(ok, label, detail) { judged++; if (!ok) fails++; console.log('   ' + (ok ? '🟢' : '🔴') + ' ' + label + (detail ? ' — ' + detail : '')); return ok; }

@@ -7,11 +7,11 @@
  *   §W-ERPPLAN-SCOPE   behaviour-preserving: tables in plan + declared local == every active AD table; local == the 5 STATION_LOCAL; no table in both; no table missing.
  *   §W-ERPPLAN-SENSE   the emitter can fail: a nonexistent table refuses to emit; a changed LOCAL row changes bytes+hash; deterministic.
  *   §W-ERPPLAN-ADAPTER the adapter no longer carries the STATION_LOCAL literal (grep).
- * Usage: node scripts/witness_scriptor_erp_plan.js [bim-ootb dir, default /tmp/wt-erp-plan]
+ * Usage: node scripts/witness_scriptor_erp_plan.js [bim-ootb dir; default: origin/main read with git show]
  */
 'use strict';
 var path = require('path'), fs = require('fs'), vm = require('vm'), Better = require('better-sqlite3');
-var SDIR = path.join(__dirname, '..', 'build', 'scriptor'), OOTB = process.argv[2] || '/tmp/wt-erp-plan';
+var SDIR = path.join(__dirname, '..', 'build', 'scriptor'), OOTB = require('./lib_ootb.js').ootbDir(process.argv[2], ['erp/team_plan.js','erp/team_sync.js']);
 var EMIT = require(path.join(SDIR, 'emit_erp_plan.js'));
 var db = new Better(path.join(__dirname, '..', 'build', 'erp', 'ad_full.db'), { readonly: true });
 var judged = 0, fails = 0;

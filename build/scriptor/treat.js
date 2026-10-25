@@ -4,7 +4,7 @@
 // itself under a name (build/scriptor/treatments/*.js, loaded at start-up; loadDir(dir) loads more); a flow row names it. Mirrors iDempiere's
 // service registries (IModelFactory / IProcessFactory) and ModelValidationEngine dispatch.
 // EXTENSION POINTS (the whole contract; every one optional except needs):
-//   needs:[row params] · scope(w,dev)->[relay prefixes the device may touch] · check(row)->[errors] · refs:[params that name other rows] · expand(row)->rows · deviceVisit(w,dev,row,view) · hubVisit(w,row) · onAccept(w,row,acceptedRow,fact) · publish(w,row,value)
+//   needs:[row params] · scope(w,dev)->[relay prefixes the device may touch] · check(row)->[errors] · deviceInit(w,dev,opts) · deviceReset(w,dev) · unsent(w,dev)->n · enqueue(w,dev,row,key,fields) · restore(w,dev,view)->{counters} · restoreFact(w,dev,fact) · hubInit(w) · hubReset(w) · hubSummary(w)->{counters} · hubSend(w,row,station,fact) · refs:[params that name other rows] · expand(row)->rows · deviceVisit(w,dev,row,view) · hubVisit(w,row) · onAccept(w,row,acceptedRow,fact) · publish(w,row,value)
 'use strict';
 var fs = require('fs'), path = require('path'), R = {};
 function register(name, comp) {

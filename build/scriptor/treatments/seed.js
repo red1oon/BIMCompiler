@@ -4,6 +4,9 @@
 'use strict';
 require('../treat.js').register('SEED', {
   needs: ['guard', 'audience'],
+  deviceInit: function (w, dev) { dev.pull = {}; },                       // per-flow pull state: last day fetched + the value held
+  deviceReset: function (w, dev) { dev.pull = {}; },
+  hubInit: function (w) { w.hub.ver = 0; },
   scope: function () { return ['seed/', 'pub/']; },                       // addressed and public seeds are readable by every device
   publish: function (w, row, value) { w.relay.put((row.audience === 'public' ? 'pub/' : 'seed/') + row.name + '/latest', { v: value, ver: ++w.hub.ver }); w.log('HUB', 'publish', { flow: row.name, audience: row.audience }); },
   deviceVisit: function (w, dev, row, v) {

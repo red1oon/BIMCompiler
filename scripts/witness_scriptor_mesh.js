@@ -76,7 +76,7 @@ say(bad1.length > 0, 'space with dir UP is red', JSON.stringify(bad1));
 say(bad2.length > 0, 'hub with dir BOTH is red (a star has no both-ways)', JSON.stringify(bad2));
 say(bad3.length > 0, 'an unknown audience is red', JSON.stringify(bad3));
 console.log('§W-MESH-STAR (every existing star arm unchanged — child runs, verdict lines read)');
-[['witness_scriptor_treat.js', /§TREAT_VERDICT PASS judged=30 fails=0/], ['witness_scriptor_registry.js', /§REG_VERDICT PASS judged=13 fails=0/], ['witness_scriptor_virtual.js', /§VIRT_VERDICT PASS judged=25 fails=0/], ['witness_scriptor_s1.js', /§S1_VERDICT PASS judged=22 fails=0/]].forEach(function (t) {
+[['witness_scriptor_treat.js', /§TREAT_VERDICT PASS judged=30 fails=0/], ['witness_scriptor_registry.js', /§REG_VERDICT PASS judged=18 fails=0/], ['witness_scriptor_virtual.js', /§VIRT_VERDICT PASS judged=25 fails=0/], ['witness_scriptor_s1.js', /§S1_VERDICT PASS judged=22 fails=0/]].forEach(function (t) {
   var o = cp.spawnSync(process.execPath, [path.join(__dirname, t[0])], { encoding: 'utf8', cwd: path.join(__dirname, '..') }).stdout || '';
   say(t[1].test(o), t[0] + ' ' + (t[1].test(o) ? 'unchanged' : 'CHANGED'), (o.match(/§\w+_VERDICT[^\n]{0,40}/) || ['no verdict'])[0]);
 });

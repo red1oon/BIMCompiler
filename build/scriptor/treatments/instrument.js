@@ -5,6 +5,15 @@
 var crypto = require('crypto');
 require('../treat.js').register('INSTRUMENT', {                                                         // a macro over two FACT-UP rows + settlement
   needs: ['account', 'authorityRole', 'holderRole'],
+  deviceInit: function (w, dev, o) {                                      // code state: ids applied once, running balance, issue counter; a signer gets an ed25519 keypair
+    dev.applied = {}; dev.balance = 0; dev.seq = 0;
+    if (o && o.signer) { var kp = crypto.generateKeyPairSync('ed25519'); dev.priv = kp.privateKey; dev.pub = kp.publicKey.export({ type: 'spki', format: 'der' }).toString('hex'); } },
+  deviceReset: function (w, dev) { dev.applied = {}; dev.balance = 0; dev.seq = 0; },   // the signing key survives a wipe
+  hubInit: function (w) { w.hub.acct = {}; },
+  hubReset: function (w) { w.hub.acct = {}; },
+  restoreFact: function (w, dev, f) {                                     // fold back from the device's own facts on the shelf
+    if (/\.applied$/.test(f.flow)) { dev.applied[f.key] = 1; dev.balance += f.fields.delta; } if (/\.issued$/.test(f.flow)) dev.seq++; },
+  roster: function (w) { var c = {}; for (var k in w.dev) if (w.dev[k].pub) c[k] = w.dev[k].pub; return { cashiers: c }; },   // the SEED value that lists every signer's public key
   expand: function (row) {
     return [{ name: row.name + '.issued', treatment: 'FACT', dir: 'UP', role: row.authorityRole, group: 'code id', instrument: row.name, part: 'issued', account: row.account },
             { name: row.name + '.applied', treatment: 'FACT', dir: 'UP', role: row.holderRole, group: 'code id', instrument: row.name, part: 'applied', account: row.account }];

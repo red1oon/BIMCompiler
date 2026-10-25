@@ -6,11 +6,11 @@
  *   §W-PLAN-DRIFT   the plan shipped to the Modeller (modeller/team_plan.js in the bim-ootb worktree) is byte-identical to what emit_plan.js produces from flows_modeller.json now.
  *   §W-PLAN-SENSE   the emitter can fail: a changed row changes the bytes and the hash; a broken row (unknown class) refuses to emit; emission is deterministic.
  *   §W-PLAN-ADAPTER the committed adapter contains NO op-type literal list any more (grep), and still names each op type nowhere but the plan.
- * Usage: node scripts/witness_scriptor_modeller_plan.js [bim-ootb dir, default /tmp/wt-team-plan]
+ * Usage: node scripts/witness_scriptor_modeller_plan.js [bim-ootb dir; default: origin/main read with git show]
  */
 'use strict';
 var path = require('path'), fs = require('fs'), Better = require('better-sqlite3');
-var SDIR = path.join(__dirname, '..', 'build', 'scriptor'), OOTB = process.argv[2] || '/tmp/wt-team-plan';
+var SDIR = path.join(__dirname, '..', 'build', 'scriptor'), OOTB = require('./lib_ootb.js').ootbDir(process.argv[2], ['modeller/team_plan.js','modeller/team_sync.js']);
 var EMIT = require(path.join(SDIR, 'emit_plan.js'));
 var db = new Better(path.join(__dirname, '..', 'build', 'erp', 'ad_full.db'), { readonly: true });
 var judged = 0, fails = 0;

@@ -18,8 +18,24 @@ function mesh(w, dev, row, v) {
   Object.keys(w.dev).sort().forEach(function (id) { if (w.dev[id].role !== row.role) return;
     v.list('o/' + id + '/' + row.name + '/').forEach(function (n) { if (!m.seen[n]) ingest(w, dev, row, m, v.get(n), n); }); });
 }
+function fresh(dev) { dev.out = {}; dev.inbox = []; dev.seen = {}; dev.ledger = []; }
 require('../treat.js').register('FACT', {
   needs: ['dir', 'group'],
+  deviceInit: function (w, dev) { fresh(dev); },                          // the device-side state FACT owns: unsent queue, received inbox, seen names, local ledger
+  deviceReset: function (w, dev) { fresh(dev); },
+  unsent: function (w, dev) { return Object.keys(dev.out).reduce(function (n, k) { return n + dev.out[k].length; }, 0); },
+  enqueue: function (w, dev, row, key, fields) {                         // a LOCAL action: queued and ledgered, touches no pipe
+    var f = { flow: row.name, key: key, fields: fields, by: dev.id }; (dev.out[row.name] = dev.out[row.name] || []).push(f); dev.ledger.push(f);
+    w.log(dev.id, 'local-sale', { flow: row.name, key: key, qty: fields.QtyEntered }); },
+  hubInit: function (w) { w.hub.rec = {}; w.hub.seen = {}; w.hub.dups = 0; w.hub.collisions = []; },
+  hubReset: function (w) { w.hub.rec = {}; w.hub.seen = {}; w.hub.dups = 0; w.hub.collisions = []; },
+  hubSummary: function (w) { return { records: Object.keys(w.hub.rec).length }; },
+  hubSend: function (w, row, station, f) { var n = 'd/' + station + '/' + row.name + '/' + f.key + '.' + w.h12(f.fields); w.relay.put(n, f); w.log('HUB', 'send', { flow: row.name, to: station, key: f.key }); },
+  restore: function (w, dev, v) {                                         // fold back: own facts (fanned out to every treatment), own down-facts into the inbox
+    var own = 0, down = 0;
+    v.list('o/' + dev.id + '/').forEach(function (n) { var f = v.get(n); own++; dev.ledger.push(f); w.each('restoreFact', dev, f); });
+    v.list('d/' + dev.id + '/').forEach(function (n) { if (dev.seen[n]) return; dev.seen[n] = 1; dev.inbox.push(v.get(n)); down++; });
+    return { own: own, down: down }; },
   scope: function (w, dev) {                                            // I1: own up/down prefixes; a space flow adds that flow's prefix of every member
     var ok = ['o/' + dev.id + '/', 'd/' + dev.id + '/'];
     if (w.opts.noSpaceScope) return ok;

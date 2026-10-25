@@ -45,7 +45,7 @@ function mk(opts) {
   var w = new S.World(ROWS, PROCS, opts);
   w.addDevice('A', 103, { signer: true }); w.addDevice('B', 103, { signer: true });
   w.addDevice('PH1', 'PHONE'); w.addDevice('PH2', 'PHONE'); w.addDevice('BOR1', 'BORROWER'); w.addDevice('BOR2', 'BORROWER');
-  w.publish('S0 roster', w.rosterValue()); ['PH1', 'PH2'].forEach(function (i) { w.visit(i); }); return w;   // the phones hold the roster before any scan
+  w.publish('S0 roster', I.roster(w)); ['PH1', 'PH2'].forEach(function (i) { w.visit(i); }); return w;   // the phones hold the roster before any scan
 }
 function init(w, stn, prod, qty) { w.hubSend(w.rowByName('F2 replenishment-down'), stn, { flow: 'F2 replenishment-down', key: 'MV/INIT/' + stn, fields: { M_Product_ID: prod, M_Locator_ID: 'WH-HQ', M_LocatorTo_ID: 'LOC-' + stn, QtyEntered: qty, C_UOM_ID: 100 }, by: 'HUB' }); }
 function localStock(dev, prod) {                                         // the branch's own ADVISORY copy: received movements - own sales (FL-2)
