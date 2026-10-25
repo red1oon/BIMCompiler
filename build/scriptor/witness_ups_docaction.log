@@ -1,0 +1,23 @@
+═══ W-UPS-ONE-DOCACTION — E1 COMPILE: one DocAction executor per document (TEAMWORK_FRAMEWORK FL-7, §38.1) ═══
+§U1 CONTROL
+   🟢 P1 + the processor's order with ONE executor (HQ role 102, CO) compiles; no plan error — ok=true planErrors=[]
+   🟢 the compiled plan CARRIES the executor on that row (what E2/E3 will read) — {"executor":102,"actions":["CO"]}
+§U2 DUAL
+   🟢 a second row giving C_Order another executor (the station) -> dual-docaction, the plan does not compile — [{"code":"dual-docaction","table":"c_order","rows":["D1 hq-order","D2 another-executor"]}]
+§U3 STATION
+   🟢 the station's UP declaration given a DocAction by its own role -> station-docaction — [{"code":"station-docaction","row":"F1 pos-sales-up"}]
+§U4 AUTHOR
+   🟢 executor "author" on a UP declaration -> docaction-author-not-mesh — [{"code":"docaction-author-not-mesh","row":"F1 pos-sales-up"}]
+   🟢 executor "author" on a BOTH + space (peer team) row compiles — the device that authored the document is its one executor — []
+§U5 BAD
+   🟢 no executor -> docaction-bad — [{"code":"docaction-bad","row":"D1 hq-order"}]
+   🟢 executor "x" -> docaction-bad — [{"code":"docaction-bad","row":"D1 hq-order"}]
+   🟢 actions [] -> docaction-bad — [{"code":"docaction-bad","row":"D1 hq-order"}]
+   🟢 actions ["ZZ"] -> docaction-bad — [{"code":"docaction-bad","row":"D1 hq-order"}]
+§U6 GENERIC
+   🟢 the same files with the document tables renamed (C_Order -> M_Movement, C_OrderLine -> M_MovementLine, C_Invoice -> M_Inventory) give the same verdicts: the rule knows no table — identical
+§MUTANTS (a copy of build/scriptor with one rule broken; each must turn at least one arm red)
+   🟢 the dual check off -> red arms: U2
+   🟢 the station check off -> red arms: U3
+   🟢 the author/mesh check off -> red arms: U4
+§UPS_VERDICT PASS judged=14 fails=0
