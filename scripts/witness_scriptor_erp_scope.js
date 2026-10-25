@@ -13,6 +13,13 @@ var db = new Better(path.join(__dirname, '..', 'build', 'erp', 'ad_full.db'), { 
 var judged = 0, fails = 0, open = [];
 function say(ok, label, detail) { judged++; if (!ok) fails++; console.log('   ' + (ok ? '🟢' : '🔴') + ' ' + label + (detail ? ' — ' + detail : '')); return ok; }
 var OBS = JSON.parse(fs.readFileSync(path.join(SDIR, 'observed_team_tables.json'), 'utf8'));
+var cp = require('child_process'), OOTBROOT = path.join(require('os').homedir(), 'bim-ootb');
+function modelWrites() {                                                 // tables the shipped model layer names as written (static extraction, git show of origin/main; a lower bound: dynamic table names are not seen)
+  var ls = cp.spawnSync('git', ['-C', OOTBROOT, 'ls-tree', '--name-only', 'origin/main', 'erp/'], { encoding: 'utf8' }).stdout.split('\n').filter(function (f) { return /^erp\/model_[a-z_]+\.js$/.test(f); }), out = {};
+  ls.forEach(function (f) { var src = cp.spawnSync('git', ['-C', OOTBROOT, 'show', 'origin/main:' + f], { encoding: 'utf8', maxBuffer: 1 << 26 }).stdout;
+    (src.match(/table: *'[a-z_0-9]+'|ML\.save\('[a-z_0-9]+'|trx\.(?:save|insert|create)\('[a-z_0-9]+'|INSERT INTO [a-z_0-9]+|UPDATE [a-z_0-9]+ SET/g) || []).forEach(function (m) { out[m.replace(/^.*?['\s]([a-z_0-9]+)'?(?: SET)?$/, '$1').replace(/^.*'/, '')] = f; }); });
+  return { files: ls.length, tables: Object.keys(out) };
+}
 var STATION = ['ad_sequence', 'ad_sequence_no', 'ad_recentitem', 'ad_session', 'ad_changelog'];
 var CORE = ['C_Order', 'C_OrderLine', 'C_Invoice', 'C_InvoiceLine', 'C_Payment', 'C_AllocationHdr', 'C_AllocationLine', 'M_InOut', 'M_InOutLine', 'M_Requisition', 'M_Movement', 'M_MovementLine', 'M_Inventory', 'M_InventoryLine', 'M_Storage', 'M_StorageReservation', 'Fact_Acct', 'M_CostDetail', 'C_BPartner', 'M_Product'];
 
@@ -32,7 +39,8 @@ function run(opts, quiet) {
   var variants = SCOPE.VARIANTS.filter(function (v) { return v.gate === false && !v.audit; }), SC = {};
   variants.forEach(function (v) { var c = SCOPE.closure(E, R, '  O', { follow: opts.weak ? 'PARENT' : v.follow, audit: v.audit, gate: false }); SC[v.follow] = c.set.reduce(function (m, id) { m[name[id]] = 1; return m; }, {}); });
   var reachOnly = {}, via = {};
-  variants.forEach(function (v) { reachOnly[v.follow] = Object.assign({}, SC[v.follow]); via[v.follow] = Object.keys(OBS.out).filter(function (t) { return !SC[v.follow][t]; }); via[v.follow].forEach(function (t) { SC[v.follow][t] = 1; }); });   // + tables the real cycles SHARED that no window reaches (document-action side effects)
+  var MW = opts.noModel ? { files: 0, tables: [] } : modelWrites(), activeSet = {}; active.forEach(function (id) { activeSet[name[id]] = 1; });
+  variants.forEach(function (v) { reachOnly[v.follow] = Object.assign({}, SC[v.follow]); via[v.follow] = Object.keys(OBS.out).concat(MW.tables.filter(function (t) { return activeSet[t]; })).filter(function (t, i, a) { return a.indexOf(t) === i && !SC[v.follow][t]; }); via[v.follow].forEach(function (t) { SC[v.follow][t] = 1; }); });   // + tables the real cycles SHARED that no window reaches (document-action side effects)
   if (opts.removeTable) variants.forEach(function (v) { delete SC[v.follow][opts.removeTable]; });
   var sizes = variants.map(function (v) { return v.follow + '=' + Object.keys(SC[v.follow]).length; }).join(' ');
   H('   ℹ closure sizes (union of ' + Object.keys(rootsByRole).length + ' roles, gate off, audit columns excluded): ' + sizes + ' · active tables ' + active.length);
@@ -46,6 +54,8 @@ function run(opts, quiet) {
     H('   ℹ ' + v.follow + ': reachability ALONE covers ' + (shared.length - miss.length) + ' of the ' + shared.length + ' tables the real cycles shared (' + shared.join(',') + ')' + (miss.length ? ' · NOT reached by any window: ' + miss.join(',') + ' (written by a document action, not by a user in a window)' : ''));
     A('C3', shared.every(function (t) { return SC[v.follow][t]; }), v.follow + ': candidate scope (reachable + observed shared) contains every table the real cycles shared', 'added via observation: ' + (via[v.follow].join(',') || 'none')); });
   if (!quiet) open.push('document-action side effects: the recorded cycles are the sales-order Complete only; the dictionary has ' + dt.n + ' active document types in ' + dt.f + ' base families, so the side-effect tables of the other families are UNKNOWN until a doc-type sweep runs (X of N, AD-LAYER LAW 2)');
+  H('   ℹ model layer (' + MW.files + ' files, static extraction, lower bound): names ' + MW.tables.length + ' tables as written; outside window-reach: ' + MW.tables.filter(function (t) { return activeSet[t] && !reachOnly.ALL[t]; }).join(',') + ' — added to the candidate (derived/working ones are FL-2 candidates for staying local; the owner decides)');
+  A('C3b', MW.files > 5 && MW.tables.length > 10, 'the model-layer extraction judged something (' + MW.files + ' files, ' + MW.tables.length + ' written tables)');
   H('§W-ERPSCOPE-CORE');
   variants.forEach(function (v) { var out = CORE.filter(function (t) { return !SC[v.follow][t.toLowerCase()]; }); H('   ℹ ' + v.follow + ': core trade-cycle sample inside ' + (CORE.length - out.length) + '/' + CORE.length + (out.length ? ' · outside: ' + out.join(',') : '')); });
   H('§W-ERPSCOPE-NARROW');
