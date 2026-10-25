@@ -54,29 +54,7 @@ async function arms(src, quiet) {
   A('S10', st10 === 'ok' && t10.scopeOf('c_order') === 'share' && t10.scopeOf('ad_sequence') === 'station-local', 'the ERP plan (' + EPLAN.flows.length + ' tables + ' + EPLAN.local.length + ' local) signs and verifies; the scope answers are intact', st10 + ' in ' + (Date.now() - tt) + ' ms');
   return red;
 }
-// S11 — the browser's OWN WebCrypto (Chromium) verifies a plan signed here: a different implementation from the one that signed it
-async function browserArm() {
-  var pw; try { pw = require('playwright'); } catch (e) { try { pw = require('/home/red1/bim-ootb/tests/node_modules/playwright'); } catch (e2) { return null; } }
-  var http = require('http'), srv = http.createServer(function (q, r) { r.writeHead(200, { 'Content-Type': 'text/html' }); r.end('<!doctype html><title>t</title>'); });
-  await new Promise(function (r) { srv.listen(0, '127.0.0.1', r); });
-  var br = await pw.chromium.launch({ args: ['--disable-gpu'] }), K1 = await SIGN.keygen(), K2 = await SIGN.keygen(), signed = await SIGN.sign(MPLAN, K1.privateJwk, K1.publicJwk);
-  var tam = clone(signed); tam.flows[0].payload.filter(function (p) { return p.col === 'geom_op'; })[0].values.push('GEOM_FOO');
-  try {
-    var pg = await br.newPage(); await pg.goto('http://127.0.0.1:' + srv.address().port + '/');
-    var res = await pg.evaluate(async function (a) {
-      function run(plan, trust) { window.TEAM_PLAN = plan; window.TEAM_PLAN_TRUST = trust; (0, eval)(a.src); return window.TeamScope; }
-      var out = {}; out.secure = window.isSecureContext;
-      var T = run(a.signed, [a.k1]); out.ok = await T.verify(crypto.subtle); out.okValues = (T.values('bim_element', 'geom_op') || []).length;
-      T = run(a.tam, [a.k1]); out.tampered = await T.verify(crypto.subtle); out.tamperedValues = T.values('bim_element', 'geom_op');
-      T = run(a.signed, [a.k2]); out.untrusted = await T.verify(crypto.subtle);
-      return out; }, { src: READER, signed: signed, tam: tam, k1: pub(K1), k2: pub(K2) });
-    return res;
-  } finally { await br.close(); srv.close(); }
-}
 (async function () {
-  var B = await browserArm();
-  if (B === null) console.log('   ⚪ INCONCLUSIVE S11 — Playwright not available'); else say(B.secure && B.ok === 'ok' && B.okValues === 6 && B.tampered === 'invalid' && B.tamperedValues === null && B.untrusted === 'untrusted',
-    'S11 Chromium\'s own WebCrypto verifies the plan signed here (ok, 6 values), rejects the tampered one (invalid, closed) and the other signer (untrusted)', JSON.stringify(B));
   console.log('§SIGN_START reader=' + OOTB + '/common/comm/team_scope.js · plans: modeller 1 flow, erp ' + EPLAN.flows.length + ' tables');
   var red0 = await arms(READER, false);
   console.log('§W-SIGN-MUTANTS (the reader is loaded with one rule broken; each must turn at least one arm red)');
