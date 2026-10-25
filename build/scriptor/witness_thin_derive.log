@@ -1,9 +1,9 @@
 §FIXTURE_SHIPPED seed=/home/red1/bim-ootb/erp/ad_seed.db patch_stmts_ok=3803 failed=3 sql_functions=57 product_prices=149 FIXTURE_HAS_PRICES
 ═══ W-THIN-DERIVE — can a peer DERIVE a Complete's consequences instead of receiving them? (TEAMWORK_FRAMEWORK §34/§36) ═══
-§THIN_START ootb=/home/red1/bim-ootb@5f484524 model_modules=13/13 N=10 classes=c_order,m_inout,c_invoice,c_payment,c_allocationhdr,m_movement,m_movementconfirm,m_inventory,m_rma,dd_order
+§THIN_START ootb=/home/red1/bim-ootb@42e106e6 model_modules=13/13 N=10 classes=c_order,m_inout,c_invoice,c_payment,c_allocationhdr,m_movement,m_movementconfirm,m_inventory,m_rma,dd_order
 §CLASS c_order line=c_orderline seed_docs=44 tried=1 [100:CO] chosen=100
 §T1 SAME c_order A.ok=true B.ok=true opsA=54 opsB=54 group={"c_ordertax:CREATE":1,"c_order:UPDATE":1,"ad_sequence:UPDATE":4,"m_inout:CREATE":1,"m_inoutline:CREATE":1,"m_inoutlinema:CREATE":1,"m_storageonhand:UPDATE":1,"m_transaction:CREATE":1,"c_orderline:UPDATE":1,"m_costdetail:CREATE":2,"m_costhistory:CREATE":6,"m_cost:UPDATE":6,"m_costqueue:UPDATE":2,"fact_acct:CREATE":18,"c_invoice:CREATE":1,"c_invoiceline:CREATE":1,"c_invoicetax:CREATE":1,"c_payment:CREATE":1,"c_allocationhdr:CREATE":1,"c_allocationline:CREATE":1,"c_bpartner:UPDATE":1,"c_invoice:UPDATE":1} -> MATCH
-§T2 BYTES c_order today=30700 (doc 3132 + complete group 27568) thin=3216 (doc 3132 + intent 84) saving=90%
+§T2 BYTES c_order today=30700 (doc 3132 + complete group 27568) thin=3216 (doc 3132 + intent 84) saving=89.5% (net: 1 - thin/today)
 §T3 CLOCK c_order B on its own clock (2026-10-27 09:30:00) -> differs: c_order.processedon
 §T3 DOCNO c_order B's sequences advanced by one document -> differs: ad_sequence.currentnext, m_inout.documentno, fact_acct.description, c_invoice.documentno, c_payment.documentno, c_allocationhdr.description, c_allocationhdr.documentno
 §T3 RERUN c_order a second CO on A after its group is applied -> ok=false ops=0 msg="DocAction CL not implemented by the c_order class (named, not faked)" IDEMPOTENT
@@ -11,7 +11,7 @@
 §T3 UU c_order generated uu on A=3 B=3 — the host mints these at random: each device would give a derived row a DIFFERENT uu (must be made deterministic before thin derivation ships)
 §CLASS m_inout line=m_inoutline seed_docs=9 tried=1 [100:CO] chosen=100
 §T1 SAME m_inout A.ok=true B.ok=true opsA=26 opsB=26 group={"m_inout:UPDATE":1,"m_inoutlinema:CREATE":1,"m_storageonhand:UPDATE":1,"m_transaction:CREATE":1,"c_orderline:UPDATE":1,"m_inoutline:UPDATE":1,"m_costdetail:CREATE":2,"m_costhistory:CREATE":6,"m_cost:UPDATE":6,"m_costqueue:UPDATE":2,"fact_acct:CREATE":4} -> MATCH
-§T2 BYTES m_inout today=13735 (doc 2347 + complete group 11388) thin=2431 (doc 2347 + intent 84) saving=83%
+§T2 BYTES m_inout today=13735 (doc 2347 + complete group 11388) thin=2431 (doc 2347 + intent 84) saving=82.3% (net: 1 - thin/today)
 §T3 CLOCK m_inout B on its own clock (2026-10-27 09:30:00) -> no column depends on the clock
 §T3 DOCNO m_inout B's sequences advanced by one document -> no column depends on the sequence state
 §T3 RERUN m_inout a second CO on A after its group is applied -> ok=true ops=1 NOT IDEMPOTENT: m_inout:UPDATE {"docaction":"--"}
@@ -19,7 +19,7 @@
 §T3 UU m_inout generated uu on A=1 B=1 — the host mints these at random: each device would give a derived row a DIFFERENT uu (must be made deterministic before thin derivation ships)
 §CLASS c_invoice line=c_invoiceline seed_docs=20 tried=1 [100:CO] chosen=100
 §T1 SAME c_invoice A.ok=true B.ok=true opsA=24 opsB=24 group={"c_invoicetax:CREATE":1,"c_invoice:UPDATE":2,"ad_sequence:UPDATE":2,"c_payment:CREATE":1,"c_allocationhdr:CREATE":1,"c_allocationline:CREATE":1,"c_bpartner:UPDATE":1,"fact_acct:CREATE":14,"c_invoiceline:UPDATE":1} -> MATCH
-§T2 BYTES c_invoice today=14235 (doc 2547 + complete group 11688) thin=2635 (doc 2547 + intent 88) saving=82%
+§T2 BYTES c_invoice today=14235 (doc 2547 + complete group 11688) thin=2635 (doc 2547 + intent 88) saving=81.5% (net: 1 - thin/today)
 §T3 CLOCK c_invoice B on its own clock (2026-10-27 09:30:00) -> no column depends on the clock
 §T3 DOCNO c_invoice B's sequences advanced by one document -> differs: ad_sequence.currentnext, c_payment.documentno, c_allocationhdr.description, c_allocationhdr.documentno, fact_acct.description
 §T3 RERUN c_invoice a second CO on A after its group is applied -> ok=true ops=1 NOT IDEMPOTENT: c_invoice:UPDATE {"docaction":"--"}
@@ -27,7 +27,7 @@
 §T3 UU c_invoice generated uu on A=1 B=1 — the host mints these at random: each device would give a derived row a DIFFERENT uu (must be made deterministic before thin derivation ships)
 §CLASS c_payment line=- seed_docs=2 tried=2 [100:model threw: FailedProcessingDocumen | 101:CO] chosen=101
 §T1 SAME c_payment A.ok=true B.ok=true opsA=6 opsB=6 group={"c_payment:UPDATE":1,"c_bpartner:UPDATE":1,"fact_acct:CREATE":4} -> MATCH
-§T2 BYTES c_payment today=4667 (doc 2009 + complete group 2658) thin=2097 (doc 2009 + intent 88) saving=57%
+§T2 BYTES c_payment today=4667 (doc 2009 + complete group 2658) thin=2097 (doc 2009 + intent 88) saving=55.1% (net: 1 - thin/today)
 §T3 CLOCK c_payment B on its own clock (2026-10-27 09:30:00) -> no column depends on the clock
 §T3 DOCNO c_payment B's sequences advanced by one document -> no column depends on the sequence state
 §T3 RERUN c_payment a second CO on A after its group is applied -> ok=false ops=0 msg="DocAction CL not implemented by the c_payment class (named, not faked)" IDEMPOTENT
@@ -37,7 +37,7 @@
 §T1 SAME c_allocationhdr INCONCLUSIVE: no seed document of this class completes on A (first 2 tried)
 §CLASS m_movement line=m_movementline seed_docs=1 tried=1 [100:CO] chosen=100
 §T1 SAME m_movement A.ok=true B.ok=true opsA=15 opsB=15 group={"m_movement:UPDATE":1,"m_movementlinema:CREATE":1,"m_storageonhand:UPDATE":1,"m_storageonhand:CREATE":1,"m_transaction:CREATE":2,"m_movementline:UPDATE":1,"fact_acct:CREATE":8} -> MATCH
-§T2 BYTES m_movement today=11116 (doc 1517 + complete group 9599) thin=1607 (doc 1517 + intent 90) saving=86%
+§T2 BYTES m_movement today=11116 (doc 1517 + complete group 9599) thin=1607 (doc 1517 + intent 90) saving=85.5% (net: 1 - thin/today)
 §T3 CLOCK m_movement B on its own clock (2026-10-27 09:30:00) -> differs: m_movement.processedon
 §T3 DOCNO m_movement B's sequences advanced by one document -> no column depends on the sequence state
 §T3 RERUN m_movement a second CO on A after its group is applied -> ok=true ops=1 NOT IDEMPOTENT: m_movement:UPDATE {"docaction":"--","docstatus":"CL"}
@@ -46,7 +46,7 @@
 §CLASS m_movementconfirm INCONCLUSIVE: no m_movementconfirm document in the BASE to clone
 §CLASS m_inventory line=m_inventoryline seed_docs=3 tried=1 [100:CO] chosen=100
 §T1 SAME m_inventory A.ok=true B.ok=true opsA=5 opsB=5 group={"m_inventory:UPDATE":1,"m_inventorylinema:CREATE":1,"m_storageonhand:CREATE":1,"m_transaction:CREATE":1,"m_inventoryline:UPDATE":1} -> MATCH
-§T2 BYTES m_inventory today=2947 (doc 1234 + complete group 1713) thin=1326 (doc 1234 + intent 92) saving=58%
+§T2 BYTES m_inventory today=2947 (doc 1234 + complete group 1713) thin=1326 (doc 1234 + intent 92) saving=55.0% (net: 1 - thin/today)
 §T3 CLOCK m_inventory B on its own clock (2026-10-27 09:30:00) -> differs: m_inventory.processedon
 §T3 DOCNO m_inventory B's sequences advanced by one document -> no column depends on the sequence state
 §T3 RERUN m_inventory a second CO on A after its group is applied -> ok=true ops=1 NOT IDEMPOTENT: m_inventory:UPDATE {"docaction":"--","docstatus":"CL"}
@@ -54,7 +54,7 @@
 §T3 UU m_inventory generated uu on A=2 B=2 — the host mints these at random: each device would give a derived row a DIFFERENT uu (must be made deterministic before thin derivation ships)
 §CLASS m_rma line=m_rmaline seed_docs=1 tried=1 [100:CO] chosen=100
 §T1 SAME m_rma A.ok=true B.ok=true opsA=3 opsB=3 group={"m_rmatax:CREATE":1,"m_rma:UPDATE":1,"m_rmaline:UPDATE":1} -> MATCH
-§T2 BYTES m_rma today=1712 (doc 966 + complete group 746) thin=1046 (doc 966 + intent 80) saving=44%
+§T2 BYTES m_rma today=1712 (doc 966 + complete group 746) thin=1046 (doc 966 + intent 80) saving=38.9% (net: 1 - thin/today)
 §T3 CLOCK m_rma B on its own clock (2026-10-27 09:30:00) -> no column depends on the clock
 §T3 DOCNO m_rma B's sequences advanced by one document -> no column depends on the sequence state
 §T3 RERUN m_rma a second CO on A after its group is applied -> ok=true ops=1 NOT IDEMPOTENT: m_rma:UPDATE {"docstatus":"CL","docaction":"--"}

@@ -125,7 +125,7 @@ for (const t of Object.keys(ML.DOCS)) {
   if (p.rB.ok && !d1.length) derivable.push(t); else notDer.push(t + '{' + d1.slice(0, 6).join(',') + (d1.length > 6 ? ',…+' + (d1.length - 6) : '') + '}');
   // T2 BYTES
   const docBytes = JSON.stringify(p.docA).length, grpBytes = JSON.stringify(p.rA.ops).length, intent = JSON.stringify({ table: t, uu: p.docA.header[t + '_uu'], action: 'CO', ts: ENV0.now }).length;
-  console.log('§T2 BYTES ' + t + ' today=' + (docBytes + grpBytes) + ' (doc ' + docBytes + ' + complete group ' + grpBytes + ') thin=' + (docBytes + intent) + ' (doc ' + docBytes + ' + intent ' + intent + ') saving=' + Math.round(100 * grpBytes / (docBytes + grpBytes)) + '%');
+  console.log('§T2 BYTES ' + t + ' today=' + (docBytes + grpBytes) + ' (doc ' + docBytes + ' + complete group ' + grpBytes + ') thin=' + (docBytes + intent) + ' (doc ' + docBytes + ' + intent ' + intent + ') saving=' + (100 * (1 - (docBytes + intent) / (docBytes + grpBytes))).toFixed(1) + '% (net: 1 - thin/today)');
   // T3 preconditions
   const pc = pair(t, chosen, { clock: ENV1 }), dc = diff(p.nA, pc.nB);
   console.log('§T3 CLOCK ' + t + ' B on its own clock (' + ENV1.now + ') -> ' + (dc.length ? 'differs: ' + dc.join(', ') : 'no column depends on the clock'));
