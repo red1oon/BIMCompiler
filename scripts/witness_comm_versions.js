@@ -150,6 +150,30 @@ var update = function (s, u, changes, sv) { return s.author({ target: { table: '
   var iA2 = await S7.A.checkpointInfo();
   check('C7', 'and after the upgrade A no longer holds that checkpoint BAD: it re-verifies it by its own fold and takes it into force', !!iA2.inForce && iA2.candidates.every(function (c) { return c.status !== 'BAD'; }), 'A.inForce=' + !!iA2.inForce + ' candidates=' + iA2.candidates.map(function (c) { return c.status; }).join(','));
 
+  // ───────── C8 POLICY carries signed upcaster sets (§16.35) — engine side: shape, admin-only, monotone ─────────
+  say('\n── C8: POLICY upcasters: validated, admin-only, never dropped ──');
+  var pipe8 = PIPE.memPipe('c8'), n8 = ['A', 'B', 'C'], W8 = await mkSpace(SQL, n8, pipe8), S8 = W8.S;
+  var mkSet = function (op, from, to) { return { kind: 'upcasters', op: op, signer: { kty: 'EC', crv: 'P-256', x: 'x', y: 'y' }, sig: '00', steps: [{ from: from, map: [{ rename: ['a', to || 'b'] }] }] }; };
+  var SA = mkSet('CRUD_CREATE', 1), SB = mkSet('CRUD_UPDATE', 1), pol8 = function (over) { return Object.assign({ epoch: 1, visit_ms: 900000 }, over || {}); };
+  var judged8 = async function (op) { await allSync(S8, n8, pipe8); var out = []; for (var m of n8) out.push(tag(await vd(S8[m], op.hash))); return out; };
+  var bad1 = await S8.A.setPolicy(pol8({ epoch: 1, upcasters: 'x' })), v8a = await judged8(bad1);
+  var bad2 = await S8.A.setPolicy(pol8({ epoch: 1, upcasters: [{ kind: 'upcasters', op: 'X', signer: {}, sig: 's' }] })), v8b = await judged8(bad2);
+  var bad3 = await S8.A.setPolicy(pol8({ epoch: 1, upcasters: Array.from({ length: 17 }, function (_, i) { return mkSet('OP' + i, 1); }) })), v8c = await judged8(bad3);
+  check('C8', 'a string, a set without steps, and 17 sets are each REFUSED bad-policy:upcasters on all three devices', [v8a, v8b, v8c].every(function (v) { return v.every(function (x) { return x === 'REFUSED:bad-policy:upcasters'; }); }), [v8a[0], v8b[0], v8c[0]].join(' | '));
+  var nonAdmin = await S8.B.setPolicy(pol8({ epoch: 1, upcasters: [SA] })), v8d = await judged8(nonAdmin);
+  check('C8', 'a non-admin POLICY carrying a set is REFUSED not-admin everywhere and takes no effect', v8d.every(function (x) { return x === 'REFUSED:not-admin'; }) && (await S8.C.policy()) === null, v8d.join(' '));
+  var p1 = await S8.A.setPolicy(pol8({ epoch: 1, upcasters: [SA] })), v8e = await judged8(p1), pols = []; for (var m8 of n8) pols.push(await S8[m8].policy());
+  check('C8', 'the admin\'s POLICY with one set is MERGED and every device returns the same set', v8e.every(function (x) { return x.indexOf('MERGED') === 0; }) && pols.every(function (x) { return x && ENV.canonical(x.params.upcasters) === ENV.canonical([SA]); }), v8e.join(' '));
+  var dropAll = await S8.A.setPolicy(pol8({ epoch: 2, upcasters: [] })), v8f = await judged8(dropAll);
+  var dropKey = await S8.A.setPolicy(pol8({ epoch: 2 })), v8g = await judged8(dropKey);
+  var edited = JSON.parse(JSON.stringify(SA)); edited.steps[0].map[0].rename = ['a', 'z'];
+  var editOp = await S8.A.setPolicy(pol8({ epoch: 2, upcasters: [edited] })), v8h = await judged8(editOp);
+  check('C8', 'a later epoch that drops every set, omits the key, or edits a set is REFUSED upcasters-dropped on all three', [v8f, v8g, v8h].every(function (v) { return v.every(function (x) { return x === 'REFUSED:upcasters-dropped'; }); }), [v8f[0], v8g[0], v8h[0]].join(' | '));
+  var more = await S8.A.setPolicy(pol8({ epoch: 2, upcasters: [SA, SB] })), v8i = await judged8(more), pol2 = await S8.B.policy();
+  check('C8', 'CONTROL: a later epoch that keeps the set and adds another is MERGED; the policy in force has both', v8i.every(function (x) { return x.indexOf('MERGED') === 0; }) && pol2.epoch === 2 && pol2.params.upcasters.length === 2, v8i.join(' '));
+  var pipe8b = PIPE.memPipe('c8b'), W8b = await mkSpace(SQL, ['A', 'B'], pipe8b), plain = await W8b.S.A.setPolicy(pol8({ epoch: 1 })); await allSync(W8b.S, ['A', 'B'], pipe8b);
+  check('C8', 'CONTROL: a POLICY with no `upcasters` at all is MERGED as before and carries none', tag(await vd(W8b.S.B, plain.hash)).indexOf('MERGED') === 0 && (await W8b.S.B.policy()).params.upcasters === undefined);
+
   // ───────── verdict ─────────
   var red = Object.keys(ARMS).filter(function (k) { return ARMS[k].bad > 0; }), inc = Object.keys(ARMS).filter(function (k) { return ARMS[k].vac > 0; });
   console.log('§CV_ARMS red=' + (red.join(',') || 'none') + ' vacuous=' + (inc.join(',') || 'none') + ' judged=' + JUDGED);
@@ -165,17 +189,19 @@ var update = function (s, u, changes, sv) { return s.author({ target: { table: '
       ['the hook overwrites ANY verdict (un-refuses)', 'comm_store.js', "verdict[o.hash].verdict === 'MERGED') { var vj", "true) { var vj", ['C6']],
       ['a lower min_v is accepted', 'comm_roster.js', 'if (policy && policy.params.min_v && Object.keys(', 'if (false && policy.params.min_v && Object.keys(', ['C5']],
       ['a prefix the app cannot read is condemned BAD for good', 'comm_store.js', "if (r.problem === 'parked-in-S' && r.versioned) {", "if (false) {", ['C7']],
+      ['upcasters are not validated', 'comm_roster.js', 'if (p.upcasters !== undefined) {', 'if (false) {', ['C8']],
+      ['a later epoch may drop a set', 'comm_roster.js', "return no('upcasters-dropped');", 'void 0;', ['C8']],
       ['min_v is not validated', 'comm_roster.js', 'if (p.min_v !== undefined) { if (!p.min_v ||', 'if (false) { if (!p.min_v ||', ['C5']]];
     M.forEach(function (m) {
       var src = rd(m[1]); if (src.split(m[2]).length !== 2) { muts.push({ name: m[0], error: 'anchor not found exactly once in ' + m[1] }); return; }
       var dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cv-mut-')); fs.readdirSync(B).filter(function (f) { return /\.js$/.test(f); }).forEach(function (f) { fs.copyFileSync(path.join(B, f), path.join(dir, f)); });
       fs.writeFileSync(path.join(dir, m[1]), src.replace(m[2], m[3]));
       var k = cp.spawnSync(process.execPath, [__filename], { encoding: 'utf8', timeout: 400000, env: Object.assign({}, process.env, { CV_COMM_DIR: dir, CV_ONLY_ARMS: '1' }) });
-      fs.rmSync(dir, { recursive: true, force: true }); var mm = /§CV_ARMS red=(\S+)/.exec(k.stdout || ''); var r = mm && mm[1] !== 'none' ? mm[1].split(',') : [];
+      fs.rmSync(dir, { recursive: true, force: true }); var mm = /§CV_ARMS red=(\S+)/.exec(k.stdout || ''); var r = mm && mm[1] !== 'none' ? mm[1].split(',') : (mm ? [] : ['CRASH']);   // a mutant that crashes the fold before the verdict line is killed too, loudly
       muts.push({ name: m[0], expect: m[4], red: r });
     });
     console.log('\n§CV_MUTANTS');
-    muts.forEach(function (m) { var ok = !m.error && m.expect.every(function (e) { return m.red.indexOf(e) !== -1; }); if (!ok) FAILS++; console.log('   ' + (ok ? '🟢' : '🔴') + ' ' + m.name + ' -> ' + (m.error || ('red arms: ' + (m.red.join(', ') || 'NONE (survivor)') + ' (expected ' + m.expect.join('/') + ')'))); });
+    muts.forEach(function (m) { var ok = !m.error && (m.red.indexOf('CRASH') !== -1 || m.expect.every(function (e) { return m.red.indexOf(e) !== -1; })); if (!ok) FAILS++; console.log('   ' + (ok ? '🟢' : '🔴') + ' ' + m.name + ' -> ' + (m.error || ('red arms: ' + (m.red.join(', ') || 'NONE (survivor)') + ' (expected ' + m.expect.join('/') + ')'))); });
   }
   var killed = muts.filter(function (m) { return !m.error && m.red.length > 0; }).length;
   var verdict = FAILS > 0 ? 'FAIL' : (VAC > 0 ? 'INCONCLUSIVE' : 'PASS');
