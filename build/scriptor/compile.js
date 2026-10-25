@@ -16,7 +16,7 @@ function compile(db, rows, opts) {
   var planErrors = docactionCheck(rows);
   return { plan: plan, hash: FLOW.hash(plan), E: E, virtualErrors: V.errors, planErrors: planErrors, ok: !planErrors.length };
 }
-// FL-7 (UPS) E1 — ONE DocAction executor per document, never the station that declares it (§38.1). Plan-wide: the rule sees rows, never a table name.
+// FL-8 (UPS) E1 — ONE DocAction executor per document, never the station that declares it (§38.1). Plan-wide: the rule sees rows, never a table name.
 var DOCACTIONS = { CO: 1, PR: 1, AP: 1, RJ: 1, VO: 1, CL: 1, RC: 1, RA: 1, RE: 1, IT: 1, WC: 1, XL: 1, '--': 1 };   // iDempiere DocAction codes (AD_Ref_List 135)
 function docactionCheck(rows) {
   var errs = [], byTable = {};

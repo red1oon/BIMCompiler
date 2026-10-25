@@ -2,7 +2,7 @@
 // Copyright (c) 2025-2026 Redhuan D. Oon <red1org@gmail.com>
 // SPDX-License-Identifier: MIT
 /**
- * ⚠ DO NOT REMOVE — Scope: W-UPS-ONE-DOCACTION, prompts/TEAMWORK_FRAMEWORK.md §38.1 (E1 COMPILE) enforcing FL-7 (§16.0a, the Unicenta POS Strategy:
+ * ⚠ DO NOT REMOVE — Scope: W-UPS-ONE-DOCACTION, prompts/TEAMWORK_FRAMEWORK.md §38.1 (E1 COMPILE) enforcing FL-8 (§16.0a, the Unicenta POS Strategy:
  * ONE DocAction executor per document; the station declares, the processor completes). READ THE LOG after every run — the exit code is not evidence.
  * THE ISSUE it proves/disproves: a plan can today give a document two DocAction executors, or let the declaring station complete what it declares
  * (dual DocAction = ghost shipments/postings, two sources of truth). The real compiler (build/scriptor/compile.js) over the real AD (build/erp/ad_full.db).
@@ -59,7 +59,7 @@ function arms(COMPILE, quiet) {
   A('U6', sig(g) === sig(c), 'the same files with the document tables renamed (C_Order -> M_Movement, C_OrderLine -> M_MovementLine, C_Invoice -> M_Inventory) give the same verdicts: the rule knows no table', sig(g) === sig(c) ? 'identical' : sig(g) + ' vs ' + sig(c));
   return red;
 }
-console.log('═══ W-UPS-ONE-DOCACTION — E1 COMPILE: one DocAction executor per document (TEAMWORK_FRAMEWORK FL-7, §38.1) ═══');
+console.log('═══ W-UPS-ONE-DOCACTION — E1 COMPILE: one DocAction executor per document (TEAMWORK_FRAMEWORK FL-8, §38.1) ═══');
 var red0 = arms(require(path.join(SDIR, 'compile.js')), false);
 console.log('§MUTANTS (a copy of build/scriptor with one rule broken; each must turn at least one arm red)');
 function mut(label, file, from, to) {
