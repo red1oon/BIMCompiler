@@ -25,13 +25,30 @@ var fresh = EMIT.emit(db, LOCALROWS, 'flows_erp.json'), have = fs.readFileSync(s
 say(fresh.text === have, 'the shipped erp/team_plan.js equals a fresh emission byte for byte', have.length + ' bytes; tables=' + fresh.flows + ' local=' + fresh.local + ' hash ' + fresh.hash.slice(0, 12));
 console.log('§W-ERPPLAN-SCOPE');
 var g = {}; vm.runInNewContext(have, { window: g, globalThis: g }); var P = g.TEAM_PLAN;
+var ES = require(path.join(SDIR, 'erp_scope.js')), OBS = JSON.parse(fs.readFileSync(path.join(SDIR, 'observed_team_tables.json'), 'utf8')), lc = function (x) { return String(x).toLowerCase(); };
 var active = db.prepare("SELECT lower(tablename) AS t FROM ad_table WHERE isactive='Y'").all().map(function (x) { return x.t; }).sort();
-var inPlan = P.flows.map(function (f) { return f.table.toLowerCase(); }), loc = P.local.map(function (t) { return t.toLowerCase(); });
-var union = inPlan.concat(loc).sort(), both = inPlan.filter(function (t) { return loc.indexOf(t) >= 0; });
-say(JSON.stringify(union) === JSON.stringify(active) && both.length === 0, 'plan tables + declared local == every active AD table, none in both (' + inPlan.length + ' + ' + loc.length + ' = ' + active.length + ')', 'missing=' + active.filter(function (t) { return union.indexOf(t) < 0; }).length + ' extra=' + union.filter(function (t) { return active.indexOf(t) < 0; }).length);
+var inPlan = P.flows.map(function (f) { return lc(f.table); }), loc = P.local.map(lc), excluded = ES.excludedViews(db, Object.keys(OBS.out)).map(lc), reach = ES.reach(db, 'ALL').names;
+function views(ex, quiet) {                                              // V1-V3 on a candidate exclusion list; returns the red arm names
+  var red = [], A = function (n, ok, l, d) { if (!ok) red.push(n); if (!quiet) say(ok, l, d); };
+  var notView = ex.filter(function (t) { return db.prepare('SELECT isview AS v FROM ad_table WHERE lower(tablename)=?').get(t).v !== 'Y'; });
+  A('V1', ex.length > 0 && notView.length === 0, 'every excluded table is a dictionary VIEW (IsView=Y): ' + (ex.length - notView.length) + ' of ' + ex.length, notView.length ? 'NOT VIEWS: ' + notView.join(',') : '');
+  var tabbed = ex.filter(function (t) { return db.prepare("SELECT COUNT(*) AS c FROM ad_tab tb JOIN ad_table x ON x.ad_table_id=tb.ad_table_id WHERE lower(x.tablename)=? AND tb.isactive='Y'").get(t).c > 0 || reach[t]; });
+  A('V2', tabbed.length === 0, 'none has an active tab and none is reached by any window or reference (closure ALL)', tabbed.length ? 'REACHED: ' + tabbed.join(',') : '0 reached');
+  var tried = Object.keys(OBS.out).concat(Object.keys(OBS.localonly), Object.keys(OBS.stationLocal)), hit = ex.filter(function (t) { return tried.indexOf(t) >= 0; });
+  A('V3', hit.length === 0, 'none is a table the real team cycles shared or attempted (' + tried.length + ' tables)', hit.length ? 'OBSERVED: ' + hit.join(',') : '0 observed');
+  return red;
+}
+views(excluded, false);
+var all3 = inPlan.concat(loc, excluded), dup = all3.filter(function (t, i) { return all3.indexOf(t) !== i; });
+say(JSON.stringify(all3.slice().sort()) === JSON.stringify(active) && dup.length === 0, 'V4 plan tables + declared local + excluded views == every active AD table, pairwise disjoint (' + inPlan.length + ' + ' + loc.length + ' + ' + excluded.length + ' = ' + active.length + ')', 'missing=' + active.filter(function (t) { return all3.indexOf(t) < 0; }).length + ' extra=' + all3.filter(function (t) { return active.indexOf(t) < 0; }).length + ' duplicated=' + dup.length);
+var keptViews = db.prepare("SELECT lower(tablename) AS t FROM ad_table WHERE isactive='Y' AND isview='Y'").all().map(function (x) { return x.t; }).filter(function (t) { return excluded.indexOf(t) < 0; });
+say(keptViews.length > 0 && keptViews.every(function (t) { return inPlan.indexOf(t) >= 0 || loc.indexOf(t) >= 0; }), 'V5 the views a window or reference DOES reach stay in the plan (' + keptViews.length + ' kept)', keptViews.slice(0, 5).join(','));
+say(P.excluded && P.excluded[0] && P.excluded[0].count === excluded.length, 'the plan records what it left out (excluded: view-unreached x' + (P.excluded && P.excluded[0] && P.excluded[0].count) + ')');
 var OLD_LOCAL = ['ad_changelog', 'ad_recentitem', 'ad_sequence', 'ad_sequence_no', 'ad_session'];
 say(JSON.stringify(loc.slice().sort()) === JSON.stringify(OLD_LOCAL), 'declared local == the 5 STATION_LOCAL tables of origin/main erp/team_sync.js:36', loc.slice().sort().join(','));
 say(P.flows.every(function (f) { return f.dir === 'BOTH' && f.audience === 'space'; }), 'every plan flow is FACT BOTH audience space (the mesh)');
+var m1 = views(excluded.concat(['c_order']), true), m2 = views(excluded.concat([keptViews[0]]), true);
+say(m1.indexOf('V1') >= 0, 'mutant: a non-view table added to the exclusion -> V1 red', m1.join(',')); say(m2.indexOf('V2') >= 0, 'mutant: a reached view added to the exclusion -> V2 red', m2.join(','));
 console.log('§W-ERPPLAN-SENSE');
 var bad = clone(LOCALROWS); bad.push({ name: 'L9 ghost', treatment: 'LOCAL', table: 'No_Such_Table' }); var thrown = null; try { EMIT.emit(db, bad, 'x'); } catch (e) { thrown = e.message; }
 say(!!thrown && /no-table/.test(thrown), 'a declared table that does not exist refuses to emit a plan (the emitter can fail)', thrown && thrown.slice(0, 100));

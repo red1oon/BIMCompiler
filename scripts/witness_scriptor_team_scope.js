@@ -29,8 +29,9 @@ function arms(src, quiet) {
   function A(n, ok, l, d) { if (!ok) red.push(n); return say2(ok, l, d); }
   var E = reader(src, EPLAN).TeamScope, M = reader(src, MPLAN).TeamScope;
   if (!quiet) console.log('§W-SCOPE-ERP');
-  var wrong = active.filter(function (t) { return E.scopeOf(t) !== (LOCAL.indexOf(t) >= 0 ? 'station-local' : 'share'); });
-  A('S1', wrong.length === 0, 'scopeOf over every active AD table equals the independent recomputation (N=' + active.length + ': ' + (active.length - LOCAL.length) + ' share, ' + LOCAL.length + ' station-local)', wrong.length ? 'WRONG: ' + wrong.slice(0, 8).join(',') + ' (' + wrong.length + ')' : '0 differ');
+  var EX = require(path.join(SDIR, 'erp_scope.js')).excludedViews(db, Object.keys(JSON.parse(fs.readFileSync(path.join(SDIR, 'observed_team_tables.json'), 'utf8')).out)).map(function (x) { return x.toLowerCase(); });
+  var wrong = active.filter(function (t) { return E.scopeOf(t) !== (LOCAL.indexOf(t) >= 0 ? 'station-local' : EX.indexOf(t) >= 0 ? 'unplanned' : 'share'); });
+  A('S1', wrong.length === 0, 'scopeOf over every active AD table equals the independent recomputation (N=' + active.length + ': ' + (active.length - LOCAL.length - EX.length) + ' share, ' + LOCAL.length + ' station-local, ' + EX.length + ' unreached views unplanned)', wrong.length ? 'WRONG: ' + wrong.slice(0, 8).join(',') + ' (' + wrong.length + ')' : '0 differ');
   A('S2', E.scopeOf('x_not_in_the_plan') === 'unplanned' && E.scopeOf('') === 'unplanned' && JSON.stringify(E.locals().sort()) === JSON.stringify(LOCAL.slice().sort()), 'a name outside the plan is unplanned (never shared by default); locals() lists exactly the declared LOCAL rows', JSON.stringify(E.locals()));
   if (!quiet) console.log('§W-SCOPE-MODELLER');
   var vals = MCOLS.filter(function (c) { return c.name === 'geom_op'; })[0].values;
