@@ -2,7 +2,7 @@
 // Layers on the kernel's op rows (replayOps) and the existing signed `_sv` stamp (build/erp/op_upcaster.js, NOT edited). Nothing here rewrites a stored op: every upcast is done on a COPY, at read time.
 // What it adds to op_upcaster.js: upcasters as SIGNED DATA (fixed vocabulary, no code), parking instead of throwing, `min_v` retirement, dependency parking, a tolerant reader, a provisional ledger hash, chain-gap checks at load.
 // Reading of J.2 (spec §16.30): appV[op] = the shape the app's reducer reads (changes with an app release); a loaded set only supplies the old -> appV steps. v > appV -> PARKED needs-upgrade; a missing rung -> PARKED needs-mapping.
-//   OpVersions.create({trust:{<signerId>: verify(hashHex, sigHex) -> Promise<bool>}}) -> R
+//   OpVersions.create({trust:{<signerId>: verify(hashHex, sigHex) -> Promise<bool>}} | {verifySet: async set -> null|'unsigned'|'untrusted-signer'|'bad-signature'}) -> R
 //     R.setApp(op, v) · R.setPolicy({min_v:{op:n}}) · R.setShape(op, {defaults:{k:v}}) · await R.loadSet(set) -> {ok, reason?}
 //     R.fold(rows) -> {folded, parked:[{id,op_uuid,reason}], refused:[…], parked_count, provisional}      (sync, deterministic; call it again after loading a set / changing appV — there is no timer)
 //     await R.ledgerOf(result) -> sha256 hex over the folded ops only
@@ -71,11 +71,15 @@
     async function loadSet(set) {
       function refuse(reason) { console.log('§OPV_SET_REFUSED ' + reason + ' op=' + (set && set.op)); return { ok: false, reason: reason }; }
       if (!set || set.kind !== 'upcasters' || typeof set.op !== 'string' || !Array.isArray(set.steps) || !set.steps.length) return refuse('bad-set');
-      if (!set.sig) return refuse('unsigned');
-      var verify = trust[set.signer];
-      if (!verify) return refuse('untrusted-signer');
-      var sigOk = await verify(await setHash(set), set.sig);
-      if (!sigOk) return refuse('bad-signature');
+      if (opts && typeof opts.verifySet === 'function') {          // the host decides how a set is signed and who is trusted (§16.32: the Modeller uses the plan's own scheme and key list)
+        var why = await opts.verifySet(set); if (why) return refuse(why);
+      } else {
+        if (!set.sig) return refuse('unsigned');
+        var verify = trust[set.signer];
+        if (!verify) return refuse('untrusted-signer');
+        var sigOk = await verify(await setHash(set), set.sig);
+        if (!sigOk) return refuse('bad-signature');
+      }
       for (var j = 0; j < set.steps.length; j++) {
         var st = set.steps[j];
         if (!st || !isVersion(st.from) || !Array.isArray(st.map) || !st.map.every(validEntry)) return refuse('bad-vocabulary');

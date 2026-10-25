@@ -197,6 +197,16 @@ var IN = (function () { var SRC = null; return { load: function () { delete requ
   check('V14', 'a v1 op\'s fields.grandtotal becomes fields.total and gets the default currency', rn0.ok && f0.total === 100 && f0.grandtotal === undefined && f0.currency === 'MYR' && f0.documentno === 'SO-1', JSON.stringify(f0));
   check('V14', 'a native v2 op is left exactly as written', f1.total === 50 && f1.currency === 'USD');
 
+  // ─────────── V15 a host-supplied verifySet replaces the id-keyed trust map ───────────
+  say('\n── V15: opts.verifySet — the host decides who may sign ──');
+  var seen15 = [], mk15 = function (answer) { var R15 = V.create({ verifySet: async function (set) { seen15.push(set.signer); return answer; } }); R15.setApp('POST', 2); return R15; };
+  var h1 = mk15(null), h2 = mk15('untrusted-signer'), h3 = mk15('bad-signature'), unsignedSet = JSON.parse(JSON.stringify(SET12)); delete unsignedSet.sig;
+  var l1 = await h1.loadSet(unsignedSet), l2 = await h2.loadSet(good), l3 = await h3.loadSet(good);
+  check('V15', 'the host verifier is asked, and a null answer loads the set (the registry does not look at sig itself)', l1.ok === true && seen15.length === 3 && h1.fold(mixed.rows).folded.length === 12, JSON.stringify(l1));
+  check('V15', 'the verifier\'s reasons are returned as they are and the set is NOT loaded', l2.ok === false && l2.reason === 'untrusted-signer' && l3.ok === false && l3.reason === 'bad-signature' && h2.fold(mixed.rows.slice(0, 2)).parked.length === 2);
+  var bad15 = mk15(null), lb = await bad15.loadSet({ kind: 'upcasters', op: 'POST', steps: [{ from: 1, map: [{ eval: 'x' }] }], signer: 'admin' });
+  check('V15', 'a host-approved set must STILL pass the vocabulary and chain checks', lb.ok === false && lb.reason === 'bad-vocabulary', JSON.stringify(lb));
+
   // ─────────── V13 the Anytype staircase: three app versions on one log (the outside failure report, replayed) ───────────
   say('\n── V13: three app versions, one log — the middle version keeps working and says what waits ──');
   // Outside report (Anytype forum, 2026): desktop 0.53.1 stuck "spinning", the intermediate 0.54.2 STILL failed, only 0.54.11 synced. The failure was per DEVICE, with no reason shown.
