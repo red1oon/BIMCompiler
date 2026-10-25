@@ -88,7 +88,7 @@ function rootsFor(db, roleId, opts) {
   if (!role) throw new Error('no such role ' + roleId);
   var wins = db.prepare("SELECT ad_window_id AS w FROM ad_window_access WHERE ad_role_id=?" + (opts.ignoreActive ? '' : " AND isactive='Y'")).all(roleId).map(function (x) { return x.w; });
   var tabs = [], roots = {};
-  var q = db.prepare('SELECT ad_tab_id AS t, ad_table_id AS tbl FROM ad_tab WHERE ad_window_id=?' + (opts.ignoreActive ? '' : " AND isactive='Y'"));
+  var q = db.prepare('SELECT t.ad_tab_id AS t, t.ad_table_id AS tbl FROM ad_tab t JOIN ad_window w ON w.ad_window_id=t.ad_window_id JOIN ad_table x ON x.ad_table_id=t.ad_table_id WHERE t.ad_window_id=?' + (opts.ignoreActive ? '' : " AND t.isactive='Y' AND w.isactive='Y' AND x.isactive='Y'"));   // an inactive window or table is not a root (found by W-ERPSCOPE-ROOTS)
   wins.forEach(function (w) { q.all(w).forEach(function (r) { tabs.push(r.t); roots[r.tbl] = 1; }); });
   return { role: role, windows: wins.length, tabs: tabs.length, roots: Object.keys(roots).map(Number).sort(function (a, b) { return a - b; }) };
 }
