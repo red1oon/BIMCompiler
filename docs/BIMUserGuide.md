@@ -377,6 +377,35 @@ one icon:
 - **4D / 5D** (key **4**) opens the analytics dashboard (`boq_charts.html`) for the loaded building in a
   new tab — full coverage: **[4D/5D Analysis guide](4D5DAnalysis.md)**.
 
+#### Your own 4D / 5D references: rates, durations, sequence
+
+The 4D schedule and the 5D cost are computed from reference files the Viewer ships with. You can pull each one
+out, change it to your own references (your firm's rates, your crew sizes, your durations) and the Viewer then
+uses your copy.
+
+| Reference | File | What it holds |
+|---|---|---|
+| **5D Rate Pack** | `rates/<pack>.json`: 19 national packs (`cidb2024_my`, `bcis2024_uk`, `rsmeans2024_us`, `rawlinsons2024_au` …) plus `custom_template.json`, an empty pack to fill | `meta` (name, region, currency, exchange rate, source), `materials` (a rate and unit per IFC class, e.g. `IfcDuct`: 165 per metre), `labor`, `equipment`, `work_packages`, `smm_sections`, `provisions` |
+| **4D Schedule Template** | `rates/4D_template.json` | `calendar`, `duration_rule`, `capacity_rule`, the 7 `phases` (substructure, superstructure, envelope …, each with its trades and whether it repeats per storey) and their `dependencies` (predecessor, successor, type, lag days) |
+| **4D Sequence & Labour Rules** | `rates/sequence_rules.json` | `SEQUENCE_RULES` (the trade order by IFC class) and `LABOR_RATES` (per trade: rate per day, crew size, crews, productivity per IFC class) |
+
+**Pull a file out.** **Settings → Edit Project JSON**, open the file (the rate pack entry always shows the pack that is
+active now; choose another one under **5D Rate Pack** first), then **⬇ Download**. You can also open the file
+straight from the site, for example `https://red1oon.github.io/bim-ootb/viewer/rates/cidb2024_my.json`.
+
+**Edit it to your own references.** In the same **Edit Project JSON** form, change the values: a rate, a crew size,
+a lag. A list of items inside an item (such as a phase's dependencies) is shown as JSON text: keep it valid JSON;
+if it is not, the last good value is kept and nothing is broken. Your copy is saved in this browser as you type,
+separately for each rate pack, so a change to the Malaysian pack does not touch the UK one.
+
+**Use it.** Reload the Viewer page. The next cost (the Find panel's `total cost`, the **4D / 5D** dashboard) prices
+with your rates, and the next schedule the Time Machine generates uses your template and rules. **Reset** in the
+same form discards your copy and goes back to the shipped file.
+
+**Keep and share it.** **⬇ Download** saves your edited file. Your copy lives in this browser only: there is no
+*load from file* yet, so on another browser or computer the changes are entered again (or the downloaded file is
+added to the project's `viewer/rates/` folder by whoever publishes the Viewer).
+
 ### Camera / View drawer
 
 The **Camera / View** drawer (camera icon) bundles three camera-control toggles:
@@ -719,10 +748,12 @@ The **Settings** pill (key **=**) opens a panel with four sections:
   exists). A **Reset Pill Icons** button restores the defaults.
 - **Edit Project JSON** — a power-user hub: open and edit any of the project's config files directly
   in-browser (auto-inferred form fields, not raw text), then **Download** the edited file to commit back
-  to the repo, or **Reset** to discard the override. Six files are registered: **Corporate / Branding**,
-  **Grid Rules**, **Clash Rules**, **ERP Globe Bubbles**, **Sound Effects** (the audio *parameters* file —
-  distinct from the Display-options Sound FX on/off toggle above), and a **read-only** view of the
-  **4D Schedule** captured for the currently-open building (the same data Time Machine authors).
+  to the repo, or **Reset** to discard the override. Eleven files are registered: **Corporate / Branding**,
+  **Grid Rules**, **Clash Rules**, **Road Standards (ATJ sign table)**, **Civil Labels**, **ERP Globe Bubbles**,
+  **Sound Effects** (the audio *parameters* file — distinct from the Display-options Sound FX on/off toggle above),
+  the three 4D / 5D references (**5D Rate Pack** of the active pack, **4D Schedule Template**, **4D Sequence &
+  Labour Rules**: see *Your own 4D / 5D references* above), and a **read-only** view of the **4D Schedule**
+  captured for the currently-open building (the same data Time Machine authors).
 - **5D Rate Pack** — pick which cost-rate pack is active (the same rate pack the Find panel's
   `total cost` query and the 4D/5D dashboard both price against).
 - **Cache Info** — see how much this building's data is using in IndexedDB, and clear it.
