@@ -1092,6 +1092,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Inspect drawer — Measure, Clash, X-Ray, Section, Time Machine, 4D/5D, Fly Tour">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#your-own-4d-5d-references-rates-durations-sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Your own 4D / 5D references: rates, durations, sequence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -2944,6 +2961,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Inspect drawer — Measure, Clash, X-Ray, Section, Time Machine, 4D/5D, Fly Tour">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#your-own-4d-5d-references-rates-durations-sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Your own 4D / 5D references: rates, durations, sequence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -3671,6 +3705,49 @@ one icon:</p>
   that element's construction moment.
 - <strong>4D / 5D</strong> (key <strong>4</strong>) opens the analytics dashboard (<code>boq_charts.html</code>) for the loaded building in a
   new tab — full coverage: <strong><a href="../4D5DAnalysis/">4D/5D Analysis guide</a></strong>.</p>
+<h4 id="your-own-4d-5d-references-rates-durations-sequence">Your own 4D / 5D references: rates, durations, sequence<a class="headerlink" href="#your-own-4d-5d-references-rates-durations-sequence" title="Permanent link">&para;</a></h4>
+<p>The 4D schedule and the 5D cost are computed from reference files the Viewer ships with. You can pull each one
+out, change it to your own references (your firm's rates, your crew sizes, your durations) and the Viewer then
+uses your copy.</p>
+<table>
+<thead>
+<tr>
+<th>Reference</th>
+<th>File</th>
+<th>What it holds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>5D Rate Pack</strong></td>
+<td><code>rates/&lt;pack&gt;.json</code>: 19 national packs (<code>cidb2024_my</code>, <code>bcis2024_uk</code>, <code>rsmeans2024_us</code>, <code>rawlinsons2024_au</code> …) plus <code>custom_template.json</code>, an empty pack to fill</td>
+<td><code>meta</code> (name, region, currency, exchange rate, source), <code>materials</code> (a rate and unit per IFC class, e.g. <code>IfcDuct</code>: 165 per metre), <code>labor</code>, <code>equipment</code>, <code>work_packages</code>, <code>smm_sections</code>, <code>provisions</code></td>
+</tr>
+<tr>
+<td><strong>4D Schedule Template</strong></td>
+<td><code>rates/4D_template.json</code></td>
+<td><code>calendar</code>, <code>duration_rule</code>, <code>capacity_rule</code>, the 7 <code>phases</code> (substructure, superstructure, envelope …, each with its trades and whether it repeats per storey) and their <code>dependencies</code> (predecessor, successor, type, lag days)</td>
+</tr>
+<tr>
+<td><strong>4D Sequence &amp; Labour Rules</strong></td>
+<td><code>rates/sequence_rules.json</code></td>
+<td><code>SEQUENCE_RULES</code> (the trade order by IFC class) and <code>LABOR_RATES</code> (per trade: rate per day, crew size, crews, productivity per IFC class)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Pull a file out.</strong> <strong>Settings → Edit Project JSON</strong>, open the file (the rate pack entry always shows the pack that is
+active now; choose another one under <strong>5D Rate Pack</strong> first), then <strong>⬇ Download</strong>. You can also open the file
+straight from the site, for example <code>https://red1oon.github.io/bim-ootb/viewer/rates/cidb2024_my.json</code>.</p>
+<p><strong>Edit it to your own references.</strong> In the same <strong>Edit Project JSON</strong> form, change the values: a rate, a crew size,
+a lag. A list of items inside an item (such as a phase's dependencies) is shown as JSON text: keep it valid JSON;
+if it is not, the last good value is kept and nothing is broken. Your copy is saved in this browser as you type,
+separately for each rate pack, so a change to the Malaysian pack does not touch the UK one.</p>
+<p><strong>Use it.</strong> Reload the Viewer page. The next cost (the Find panel's <code>total cost</code>, the <strong>4D / 5D</strong> dashboard) prices
+with your rates, and the next schedule the Time Machine generates uses your template and rules. <strong>Reset</strong> in the
+same form discards your copy and goes back to the shipped file.</p>
+<p><strong>Keep and share it.</strong> <strong>⬇ Download</strong> saves your edited file. Your copy lives in this browser only: there is no
+<em>load from file</em> yet, so on another browser or computer the changes are entered again (or the downloaded file is
+added to the project's <code>viewer/rates/</code> folder by whoever publishes the Viewer).</p>
 <h3 id="camera-view-drawer">Camera / View drawer<a class="headerlink" href="#camera-view-drawer" title="Permanent link">&para;</a></h3>
 <p>The <strong>Camera / View</strong> drawer (camera icon) bundles three camera-control toggles:</p>
 <p><img alt="The Camera / View drawer open — Precision (Fine), Reset Camera, and Auto-Pivot, each with its shortcut key" src="../img/viewer/pill-camview-drawer.png" /></p>
@@ -4054,10 +4131,12 @@ sliders, plus four more toggles appended below them:</p>
   exists). A <strong>Reset Pill Icons</strong> button restores the defaults.</li>
 <li><strong>Edit Project JSON</strong> — a power-user hub: open and edit any of the project's config files directly
   in-browser (auto-inferred form fields, not raw text), then <strong>Download</strong> the edited file to commit back
-  to the repo, or <strong>Reset</strong> to discard the override. Six files are registered: <strong>Corporate / Branding</strong>,
-  <strong>Grid Rules</strong>, <strong>Clash Rules</strong>, <strong>ERP Globe Bubbles</strong>, <strong>Sound Effects</strong> (the audio <em>parameters</em> file —
-  distinct from the Display-options Sound FX on/off toggle above), and a <strong>read-only</strong> view of the
-  <strong>4D Schedule</strong> captured for the currently-open building (the same data Time Machine authors).</li>
+  to the repo, or <strong>Reset</strong> to discard the override. Eleven files are registered: <strong>Corporate / Branding</strong>,
+  <strong>Grid Rules</strong>, <strong>Clash Rules</strong>, <strong>Road Standards (ATJ sign table)</strong>, <strong>Civil Labels</strong>, <strong>ERP Globe Bubbles</strong>,
+  <strong>Sound Effects</strong> (the audio <em>parameters</em> file — distinct from the Display-options Sound FX on/off toggle above),
+  the three 4D / 5D references (<strong>5D Rate Pack</strong> of the active pack, <strong>4D Schedule Template</strong>, <strong>4D Sequence &amp;
+  Labour Rules</strong>: see <em>Your own 4D / 5D references</em> above), and a <strong>read-only</strong> view of the <strong>4D Schedule</strong>
+  captured for the currently-open building (the same data Time Machine authors).</li>
 <li><strong>5D Rate Pack</strong> — pick which cost-rate pack is active (the same rate pack the Find panel's
   <code>total cost</code> query and the 4D/5D dashboard both price against).</li>
 <li><strong>Cache Info</strong> — see how much this building's data is using in IndexedDB, and clear it.</li>
