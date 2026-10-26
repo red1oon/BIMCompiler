@@ -2465,6 +2465,9 @@
 <h1 id="do-not-remove">⚠ DO NOT REMOVE<a class="headerlink" href="#do-not-remove" title="Permanent link">&para;</a></h1>
 <p>Scope: the basic shapes of the Duplex rebuilt from its 2D set (walls with their openings cut, floor slabs, roof, door/window fills from the LOD400 component library), checked back against the source model. Separate from <code>SPEC.md</code> (another agent appends there; merge later). Spec before code. Read the log after every run; exit code is not evidence. Every value traces to a DXF entity; the source DB is the answer key only; a value the drawings do not carry is a GAP, never a default.</p>
 <h1 id="dxf2bim-basic-shapes-walls-floor-slabs-roof-with-openings-and-fills">DXF2BIM basic shapes: walls, floor slabs, roof (with openings and fills)<a class="headerlink" href="#dxf2bim-basic-shapes-walls-floor-slabs-roof-with-openings-and-fills" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Code source (2026-10-26):</strong> the reader modules live in bim-ootb <code>modeller/dxf2bim/</code> (owner decision 2026-10-23, its <code>SOURCE.md</code>). <code>deploy/dev/dxf2*.js</code> / <code>std2d*.js</code> here are COPIES taken from bim-ootb 1058069c3 for this repo's scripts and tests; change bim-ootb, then copy.</p>
+</blockquote>
 <p>Status: SPEC 2026-10-16 (written before code). Goal (user): "make this a prelim of the basic shapes which has to be accurate first as fundamental of most 2Ds.. ie floor slabs, walls, roof", then "with their openings.. mesh mapping from their LOD400 component library". Full circle: drawings exported from a model we hold, rebuilt, checked against that model. Windows/doors as TYPES are out of scope here except where a bound type is needed to place a fill.</p>
 <h2 id="1-inputs-and-answer-key">1. Inputs and answer key<a class="headerlink" href="#1-inputs-and-answer-key" title="Permanent link">&para;</a></h2>
 <ul>

@@ -1154,6 +1154,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="2 · Check the metadata">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2a-see-a-whole-sheet-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2a · See a whole sheet: Sheet
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1195,6 +1212,17 @@
     <span class="md-ellipsis">
       
         3c · Wall tops
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#doors-and-windows-tagged-by-width" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Doors and windows tagged by width
       
     </span>
   </a>
@@ -2816,6 +2844,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="2 · Check the metadata">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2a-see-a-whole-sheet-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2a · See a whole sheet: Sheet
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -2857,6 +2902,17 @@
     <span class="md-ellipsis">
       
         3c · Wall tops
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#doors-and-windows-tagged-by-width" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Doors and windows tagged by width
       
     </span>
   </a>
@@ -3102,6 +3158,9 @@ and openings). Every dimension is a real CAD dimension measured between its two 
 <p><strong>📂 Open → Open 2D drawings (.dxf)…</strong> and select <strong>all</strong> sheets of the set at once (plans, elevations, roof,
 section). The <strong>2D Drawings</strong> panel lists each sheet with its role; the canvas shows each sheet placed in 3D —
 plans at their level, elevations on their face, the section on its cut plane.</p>
+<p>A raw set (no metadata yet) <strong>plays its arrangement</strong> as it opens: each sheet first lies where it was drawn, then
+moves to where its markings and yellow defaults put it, one value at a time, so you can see what each value does.
+<strong>Arrange</strong> in the 2D Drawings panel plays it again; <strong>Esc</strong> stops it.</p>
 <p><img alt="The 2D Drawings panel and the Drawing metadata editor, standard set loaded: verdict Qualifies" src="../img/dxf2bim/import_sheets.jpg" /></p>
 <h3 id="2-check-the-metadata">2 · Check the metadata<a class="headerlink" href="#2-check-the-metadata" title="Permanent link">&para;</a></h3>
 <p>Press <strong>Metadata</strong>. The <strong>Drawing metadata</strong> panel shows, per section:</p>
@@ -3153,6 +3212,22 @@ plans at their level, elevations on their face, the section on its cut plane.</p
 </table>
 <p>Every value shows <strong>where it came from</strong>: <em>from file</em>, <em>from model</em>, or <em>you</em>.</p>
 <p><img alt="Editor with the standard set: units confirmed, layers mapped, verdict Qualifies" src="../img/dxf2bim/editor_std.jpg" /></p>
+<h4 id="2a-see-a-whole-sheet-sheet">2a · See a whole sheet: Sheet<a class="headerlink" href="#2a-see-a-whole-sheet-sheet" title="Permanent link">&para;</a></h4>
+<p>Open a sheet's card in the <strong>Sheets</strong> section and press <strong>Sheet</strong>. The sheet fills the canvas beside the panel,
+<strong>as it was drawn</strong>, with its metadata drawn on top:</p>
+<ul>
+<li>a <strong>grid line</strong> or <strong>level datum</strong> you stated is a dashed line through its own position, labelled <code>@GRIDX=A</code>,
+  <code>@Z=3.1</code> …; a tag sits at its point, an exclude area is drawn as its box;</li>
+<li>values that have no place on the sheet (units, role, name, set) are listed in a <strong>markings box</strong>;</li>
+<li>every <strong>yellow row still open</strong> in the list is a ring at the spot the editor read it from (yellow = stated or
+  read, orange = inferred). Tick the row in the list and its ring turns into a marking, while the view stays open.</li>
+</ul>
+<p>A sheet that already has its own border and title block keeps them. A sheet without one (for example a sheet
+written by the model's own 2D export) gets an <strong>ISO border and title block</strong> at the paper size and scale that hold
+it (1:100 first, then 1:200, 1:500, 1:50, on A4 to A0); what the drawing does not say (date, owner, approver,
+revision) is shown in yellow as <em>not stated</em>, never filled in. <strong>Save SVG</strong> saves the view at paper size, <strong>Print</strong>
+prints it, and <strong>Markings</strong> switches the drawn metadata off for a clean copy. Wheel to zoom, drag to pan, <strong>Esc</strong>
+or ✕ to close; nothing you do in the view changes the drawings or the metadata.</p>
 <h3 id="3-raw-drawings-fill-in-what-is-missing">3 · Raw drawings: fill in what is missing<a class="headerlink" href="#3-raw-drawings-fill-in-what-is-missing" title="Permanent link">&para;</a></h3>
 <p>A drawing without metadata opens with <strong>red</strong> fields and the verdict <strong>Blocked</strong>. The editor lists
 <strong>suggestions</strong> it can prove from the drawing (e.g. a title text "GROUND FLOOR PLAN" → role = plan) — <strong>nothing
@@ -3300,6 +3375,11 @@ had to be typed for the sheets.</p>
 27 on the first floor of the Duplex). Tick <strong>Interior walls run to the slab above</strong> once per plan; the list
 empties. A wall that stops lower than the slab can still be given its own top in the field beside it.</p>
 <p><img alt="Wall tops: one tick per plan clears the interior walls the elevations cannot show" src="../img/dxf2bim/walk_wall_tops.jpg" /></p>
+<h4 id="doors-and-windows-tagged-by-width">Doors and windows tagged by width<a class="headerlink" href="#doors-and-windows-tagged-by-width" title="Permanent link">&para;</a></h4>
+<p>Type each row of the drawing's <strong>Door schedule</strong> and <strong>Window schedule</strong> once, in the <strong>Doors and windows</strong> section
+(mark, width, height). The editor then proposes one yellow row per schedule row, for example
+<code>@TAG=D1 on 6 doors</code>: every untagged door (or window) whose drawn width matches exactly that row's width. One tick
+tags them all. A width that two rows share is not proposed; tag those doors one by one.</p>
 <h4 id="3d-blocking-items-what-they-mean-and-what-to-do">3d · Blocking items: what they mean and what to do<a class="headerlink" href="#3d-blocking-items-what-they-mean-and-what-to-do" title="Permanent link">&para;</a></h4>
 <p>A <strong>blocking</strong> item stops Convert. An <strong>advisory</strong> item does not. The verdict lists them; click one to zoom to it.
 What blocked the plain Duplex after the sheets were complete, and how each was cleared:</p>
@@ -3363,11 +3443,19 @@ originals are never modified. Next time you open the marked copies, everything i
 <p><strong>Convert</strong> is enabled only when the verdict is <strong>Qualifies</strong>. It builds walls, floor slabs, the roof, cuts the
 door and window openings, and places the door and window fills from the component library — as <strong>one undo
 step</strong>.</p>
+<p>Two choices sit above <strong>Convert</strong>. <strong>Evidence colours (drawn / derived / assumed)</strong> shows each body by how it is
+known instead of its material: drawn as is, <strong>derived</strong> (amber: computed from drawing evidence plus a stated
+convention) or <strong>assumed</strong> (red: no drawing evidence for it). <strong>Firm catalogue: Load</strong> takes your office's catalogue
+(made from one of your own IFC models with <code>modeller/tools/catalogue_from_ifc.js</code>): a wall or slab of a thickness
+in the catalogue gets that thickness's most frequent material, a door its type, with the count stated. A file
+that does not fit is refused with the reason, never half-loaded; <strong>Clear</strong> goes back to the reference materials.</p>
 <p><img alt="The converted Duplex: two storeys, openings cut, doors and glazing placed" src="../img/dxf2bim/converted.jpg" /></p>
 <h3 id="6-export-ifc">6 · Export IFC<a class="headerlink" href="#6-export-ifc" title="Permanent link">&para;</a></h3>
 <p><strong>Export → IFC4.</strong> The file has a proper spatial structure (Project → Site → Building → Storeys) and every
 element contained in its storey. On the Duplex standard set: 96 wall pieces, 2 slabs, 1 roof, 14 doors,
 22 windows, 2 storeys.</p>
+<p><strong>Export → Viewer database (.db)</strong> builds the same IFC4 and runs it through the extractor the Viewer uses, then
+downloads <code>&lt;name&gt;_extracted.db</code>. Open that file in the <strong>Viewer</strong> (<strong>Open → local .db</strong>) for 3D, 4D and 5D.</p>
 <hr />
 <h3 id="if-something-goes-wrong">If something goes wrong<a class="headerlink" href="#if-something-goes-wrong" title="Permanent link">&para;</a></h3>
 <table>

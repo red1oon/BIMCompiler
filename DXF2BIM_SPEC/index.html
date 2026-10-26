@@ -2466,6 +2466,9 @@
 <p>Scope: spec for deterministic 2D DXF → 3D BIM in the BIM Modeller. Spec-first: no code or tests until a section below is written and agreed. Read the log after every run. Every output traces to a DXF entity; no guessed or synthetic values.</p>
 <p>Credits: the American Farmhouse test drawing is by Jay Osborne (freefarmhouse.com), CC BY-SA; not included in the repo (see <code>tests/dxf2bim/README.md</code>).</p>
 <h1 id="dxf2bim-deterministic-2d-dxf-3d-bim">DXF2BIM — Deterministic 2D DXF → 3D BIM<a class="headerlink" href="#dxf2bim-deterministic-2d-dxf-3d-bim" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Code source (2026-10-26):</strong> the reader modules live in bim-ootb <code>modeller/dxf2bim/</code> (owner decision 2026-10-23, its <code>SOURCE.md</code>). <code>deploy/dev/dxf2*.js</code> / <code>std2d*.js</code> here are COPIES taken from bim-ootb 1058069c3 for this repo's scripts and tests; change bim-ootb, then copy.</p>
+</blockquote>
 <p>Status: SPEC v0.2 (2026-10-11), reviewed once, decisions §8 agreed by user. Code starts with S1-S3 + T1-T3 (see §10).</p>
 <h2 id="1-goal">1. Goal<a class="headerlink" href="#1-goal" title="Permanent link">&para;</a></h2>
 <p>Same DXF in → same 3D BIM out, every run. Each 3D element records the DXF entity (handle, layer) it came from. Anything the DXF cannot supply is flagged as a gap, never filled by guess.</p>
