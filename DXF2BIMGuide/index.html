@@ -3238,7 +3238,8 @@ becomes metadata until you tick it.</strong></p>
 <p>The rest of this step is written from a first-time walk through the real Modeller (2026-10-22) on the Duplex
 standard set with every marking removed (8 sheets, the plain drawings a CAD program would hand you). The walk
 reached <strong>Qualifies</strong>, and <strong>Convert</strong> built 135 elements with 36 openings cut, the same numbers as the editor's
-own end-to-end check. The counts below are the clicks and typed values of that walk.</p>
+own end-to-end check. (Today the same set converts to 87 elements with 36 openings cut: a drawn wall line is now
+one wall, not one piece per segment.) The counts below are the clicks and typed values of that walk.</p>
 <h4 id="3a-what-yellow-means">3a · What yellow means<a class="headerlink" href="#3a-what-yellow-means" title="Permanent link">&para;</a></h4>
 <p>A <strong>yellow row</strong> is a value the editor read from the drawing (or a default it applied) that is <strong>not yours yet</strong>.
 Each row names its source: <code>PR-UNITS: file says mm</code>, <code>PR-GRID: grid line 190 + label 1</code>, <code>PR-Z: level text B5 +
@@ -3452,8 +3453,8 @@ that does not fit is refused with the reason, never half-loaded; <strong>Clear</
 <p><img alt="The converted Duplex: two storeys, openings cut, doors and glazing placed" src="../img/dxf2bim/converted.jpg" /></p>
 <h3 id="6-export-ifc">6 · Export IFC<a class="headerlink" href="#6-export-ifc" title="Permanent link">&para;</a></h3>
 <p><strong>Export → IFC4.</strong> The file has a proper spatial structure (Project → Site → Building → Storeys) and every
-element contained in its storey. On the Duplex standard set: 96 wall pieces, 2 slabs, 1 roof, 14 doors,
-22 windows, 2 storeys.</p>
+element contained in its storey. On the Duplex standard set (measured 2026-10-26): 44 walls (one wall per drawn
+wall line), 6 slabs, 1 roof, 14 doors, 22 windows, 36 openings, 2 storeys.</p>
 <p><strong>Export → Viewer database (.db)</strong> builds the same IFC4 and runs it through the extractor the Viewer uses, then
 downloads <code>&lt;name&gt;_extracted.db</code>. Open that file in the <strong>Viewer</strong> (<strong>Open → local .db</strong>) for 3D, 4D and 5D.</p>
 <hr />
