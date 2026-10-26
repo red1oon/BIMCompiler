@@ -69,6 +69,21 @@ own checker is not even on `main` — a skeptic cloning the repo cannot run it t
   ifcopenshell, ifctester, node), `commit` (repo HEAD), `input_sha256`, `findings[]` (verbatim, file:line).
 - Missing python deps → that check `INCONCLUSIVE needs=ifcopenshell`, the rest still run.
 
+### 3.1 The report a person reads (owner, 2026-10-27: *"report be illustrative and well cited,
+transparent so users gain facts not hype"*)
+Every run writes `report.json` (the truth) and `report.html` (a pure render of it, self-contained, opens offline).
+- **One card per check:** verdict, one plain sentence of what it means, what was judged (`population`), the
+  evidence (verbatim finding, `file:line` or IFC entity `#id`), and the exact command to re-run just that check.
+- **Every rule cites its source:** the buildingSMART page / IFC schema clause / IDS file for model checks; the
+  quoted sentence + `file:line` for claim checks. A rule with no citation is not shown as a rule — it is a defect (W-AC-7).
+- **Pictures only from measured numbers:** small bars for census metrics (M5-M8, M11-M14 as % of elements),
+  a pass/fail strip per claim. No overall "score", grade, badge or percentage that could hide a FAIL.
+- **"What this did not check" is always printed:** INCONCLUSIVE/UNWITNESSED items with the reason (`needs=`),
+  the known limits from §1 (e.g. Track-B blind to STEP corruption, WHERE rules not run), tool versions and the
+  repo commit. Empty limits on a run that skipped anything = defect.
+- **Wording is generated, not written:** each sentence comes from a fixed template filled with a value from
+  `report.json`. No adjectives that are not a verdict word. The HTML adds no number the JSON does not hold (W-AC-8).
+
 ## 4. Boundaries
 1. Read-only and local. Never uploads, never writes into the checked file or repo, never "fixes".
 2. No LLM call anywhere in `checks/`. The agent is outside, calling in. `checks/` sits outside the
@@ -89,15 +104,25 @@ own checker is not even on `main` — a skeptic cloning the repo cannot run it t
   `verify_claim G1` = `FAIL`, finding names the file:line.
 - **W-AC-5 adapter adds nothing** — every MCP tool result equals the CLI report byte for byte.
 - **W-AC-6 unwitnessed stays visible** — a registry row with no check → `UNWITNESSED`, total PASS count unchanged.
+- **W-AC-7 every rule is cited** — each card's citation is non-empty; URL citations are on an allowlist of
+  primary sources, `file:line` citations still contain the quoted text. Control: strip one citation → FAIL.
+- **W-AC-8 the picture tells no more than the data** — every number in `report.html` appears in `report.json`;
+  "What this did not check" is non-empty whenever any check is not PASS. Control: inject a number into the
+  HTML template → FAIL; drop the limits section on an INCONCLUSIVE run → FAIL.
 
 ## 6. Phases (top to bottom, WORK-TO-ZERO)
 - **P0 land what exists** — PR `test/no-ai-inside-witness` to bim-ootb main (rebase, rerun, read the log);
   find out whether `witness_ifc_export_schema.js` / §EXPORTER_FIX ever landed and record it in §1.
 - **P1** `checks/claims.json` seed rows + `claims list|verify` + W-AC-2/4/6.
 - **P2** `ifc` checks A1-A4 (node harness around the unmodified `metrics_worker.js`; python helpers for A2/A4) + W-AC-1/3.
-- **P3** MCP adapter + W-AC-5 + a README section "Ask your agent to check us".
+- **P2b** `report.html` render (§3.1) + W-AC-7/8.
+- **P3** MCP adapter + W-AC-5; standalone package build of `checks/` (same files, no fork) so an agent can
+  install it without cloning; README + user-guide section "Check us yourself" (§7).
 - **P4** public claims page generated from the registry (each row: quote, check, last verdict, the command).
 
-## 7. Open — the owner's call
-- ⛔ Repo home: `bim-ootb/checks/` (beside the witnesses it calls — proposed) or a separate small repo/npm package?
-- ⛔ Should the user guide mention that agents can call the checker, or keep the guide about the app only?
+## 7. Decided (owner, 2026-10-27: *"I think both. It be available and guide says how."*)
+- **Home = both:** source lives in `bim-ootb/checks/` beside the witnesses it calls; the same files are also
+  published as a standalone package. One source, two ways to get it — the package is a build, never a fork.
+- **The user guide says how:** a "Check us yourself" section — run it from a terminal, or ask your AI agent to
+  (MCP setup lines), what a report looks like, and what it cannot check. The guide's "no AI in this app"
+  sentence stays: the agent is outside the app, calling the checker.
