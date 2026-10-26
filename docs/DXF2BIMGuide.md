@@ -249,7 +249,7 @@ downloads `<name>_extracted.db`. Open that file in the **Viewer** (**Open → lo
 | the panel says *Convert failed: …* (the badge still says *Qualifies*: the drawings are fine, the run was not) | the conversion stopped on an error; *(nothing was built)* or *(undone)* says the model is as it was before the click | **Convert** again; if it fails again, the message and the console line `§DXF-CONVERT failed …` are what to report |
 | *No door here: click a door's arc or leaf* | the click was beside the door's swing box | click on the arc itself |
 | a suggested `@CUT` that disagrees with the section's title | grid bubbles with the section's letter were read as the section line | type the cut from the title |
-| *PR-VIEW not proposed: no title text ending PLAN / ELEVATION / SECTION* | the title has more text after the view word (a scale such as `1:100`) | choose the role from the list |
+| *PR-VIEW not proposed: no title text ending PLAN / ELEVATION / SECTION* | the title, once a scale (`1:100`) and a closing bracket are set aside, does not end with the view word, or the sheet has no title text | choose the role from the list, or retitle the sheet (see *Drawing in BricsCAD* below) |
 | **Save marked copies** asks to allow several downloads | one file per sheet is downloaded | allow it; the copies keep every value you stated |
 
 ## The metadata, for CAD users
@@ -282,6 +282,32 @@ cannot decide (which product, which schedule mark, how tall an interior wall is)
 drawing and its schedule is reported (`GAP:schedule_conflict`), never silently resolved.
 
 ---
+
+## Drawing in BricsCAD so fewer values are guessed
+
+The editor fills every value it can from the drawing, and says how sure it is: **yellow** = read from a text
+the sheet holds, **orange** = inferred from geometry or a convention, **no row at all** = stated. A few drafting
+habits in BricsCAD (or any CAD program) move values from orange to yellow, or remove the row altogether. Each tip
+below names what the editor then does.
+
+| In BricsCAD | What the editor then does |
+|---|---|
+| Set the drawing units: system variable **`INSUNITS`** (1 = inches, 4 = millimetres), the same on every sheet | Units come from the file (yellow). A sheet whose units differ from the others is shown on its own, marked *disagrees* |
+| Write the **title** as one text with the view word: `GROUND FLOOR PLAN`, `NORTH ELEVATION`, `SECTION A-A` (a scale such as `1:100` after it is fine) | The sheet's role is read from the title (yellow), not picked by hand |
+| Put the **level in the plan title**: `LEVEL 2 PLAN (FFL +3.800)`, the value in metres | The plan's level is read (yellow); without it, the default ground level 0 is offered (orange) |
+| Put the **cut in the section title**: `SECTION A-A AT X=2304.25` | The section cut is read (yellow); without it, it is inferred by pairing the section's letter with texts on the plan (orange), and on two test sets that guess was wrong |
+| Write the **roof top** on an elevation or section: `T/ROOF +10.695` or `TOP OF ROOF +10.695` | The roof top is read (yellow) |
+| Draw **level datums** on elevations and sections: a horizontal line on a level layer with its text at that height, such as `LEVEL 1 +0.000` (metres) | Each datum is read (yellow); without them only the ground line is guessed (orange) |
+| Draw **grid lines** as straight LINEs on a grid layer (`A-GRID`, or your own layer once typed as *grid*), each with its label (`A`, `1`, `10`, `AA`) as a plain text at the line's end, in or next to its bubble | Every grid line is read (yellow). On the shed the grid is inferred from the dimension ticks instead (orange: 91 rows) |
+| Give each kind of thing **its own layer, with the same name on every sheet**, ideally the US National CAD Standard names the Modeller itself writes (`A-WALL-FULL`, `A-DOOR`, `A-GLAZ`, `A-GRID`, `A-ANNO-DIMS`, `S-SLAB` …) | Layers are recognised instead of asked, and one answer covers every sheet. The shed's sheets use short names (`Wall`, `Win`, `Col`, `Dim`, `C L`) and put the frame, title block and much else on layer `0`: every layer there has to be stated |
+| Keep **dimensions as real dimensions**: do not explode them or type over their text | The dimension checks compare drawn and written values. On the shed a dimension written `410'-0"` over a drawn 1,560 in is listed as a conflict |
+| Draw in **model space** (the *Model* tab), not on a layout | The editor reads model space only |
+| Save each sheet with **Save As → DXF**, one file per sheet | The shed's sheets (DXF, AutoCAD 2010 format) open as they are |
+
+**Strongest of all: write the values yourself, in BricsCAD.** A marking is plain text on layer **`DXF2BIM-MARK`**,
+one `@KEY=value` per text (see *The metadata, for CAD users* above), for example `@SET=SHED`, `@UNITS=in` or
+`@LEVEL=0`. A value written this way is stated: it opens with no yellow row and needs no tick. The set name is the
+one value no drawing states by itself: on the plain Duplex it is the first thing the editor asks for.
 
 ## A building drawn only in 2D: a farm shed
 
