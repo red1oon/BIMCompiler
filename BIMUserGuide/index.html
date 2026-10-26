@@ -3568,21 +3568,10 @@ On a larger building, the biggest rooms on a floor stand in for a "hall"-scale s
 labelled corridor/hall example is captured (HHS's own rooms carry no such label yet — a future guide
 pass).</p>
 <p><img alt="A single real room on HHS Office Level 2, X-rayed and highlighted as a clean translucent purple box against the surrounding structure — SAMPLE, HHS_Office_Federated data" src="../img/viewer/find-room-highlight-hhs.png" /></p>
-<p><em>Known gap, not glossed over:</em> tapping a room does not currently reframe the camera to it (confirmed
-live, 2026-07-12) — the highlight is accurate, but you may need to manually orbit/zoom to see a small
-room clearly on a large building. Tracked for a future fix.</p>
-<blockquote>
-<p>The Parts axis is the newest addition (bim-ootb <code>d04ddd5</code>) — see
-<code>prompts/VIEWER_FIND_PANEL_PARTS_VERIFICATION.md</code> for its live verification on Duplex/SampleCastle data.
-A false-positive/missing-class-gate bug found after that verification (<code>prompts/FIND_PANEL_PLANT_ROOM_GATE_FIX.md</code>)
-is now fixed (bim-ootb PR #740/#742) — Plant Room only shows on <code>complex</code>-class buildings (Terminal,
-Clinic, Hospital, HHS), never on residential ones, and its keyword match is word-boundary-checked to
-avoid substring false positives like "Backflow Preventer" matching "vent".</p>
-</blockquote>
-<p><em>Not yet confirmed from source, flagged rather than guessed:</em> the exact on-screen wording of the axis
-toggle's next-axis hint on narrow/mobile screens, and whether the typed-language decoder mentioned above
-recognizes any further phrasing beyond the regex patterns documented — both would need a dedicated read of
-<code>decoder.js</code>, which was out of scope for this pass.</p>
+<p><em>Known gap:</em> tapping a room highlights it but does not move the camera to it; on a large building, orbit or
+zoom to see a small room clearly.</p>
+<p><strong>Plant Room</strong> appears only on larger, complex buildings (Terminal, Clinic, Hospital, HHS), never on homes, and
+it matches whole words only (so "Backflow Preventer" is not taken for a vent).</p>
 <p><em>Also discovered while capturing these screenshots (reported, not fixed here — this task is docs-only):</em>
 the natural-language query hint text described above is written into the DOM by <code>navigate_find.js</code>
 <code>_handleInput()</code>, but the panel's <code>results-expanded</code> CSS class (which gives <code>#find-results</code> its visible
@@ -3620,37 +3609,16 @@ future CIRCULATION_DISPLAY pass, not built yet.</p>
 person actually walks — out the door, along the corridor or concourse, and up or down the stairs
 when the two rooms are on different floors. The route draws as a line through the real doors and
 stair flights it uses, and the rooms along the way stay highlighted.</p>
-<p><em>Verified live (2026-07-12):</em> a real route across Terminal's floors returns several stair-crossing
+<p>A route across Terminal's floors returns several stair-crossing
 legs in sequence, not a single best-guess hop — each leg names the room and the door or stair flight
 it passes through.</p>
 <p><img alt="Aerial X-ray view of Hospital with the Find panel open on the same ≈ Level 1 R35 to ≈ Level 4 R8 route, the yellow line now hugging the real corridors and stair flights on both levels instead of cutting across the open roof between wings, the panel listing three numbered room stops with each hop labelled through door: / via stair: / along Corridor — 3 doors · 1 stair · 124.7m" src="../img/viewer/find-room-path-hospital-topview.png" /></p>
 <p><img alt="Straight-on facade view of the same Hospital route with the Find panel still open, the yellow line now tracking the real ground-floor corridor and climbing through the stair flight against the building mass instead of floating in front of it, the same three numbered stops and through door: / via stair: / along Corridor hop labels visible in the list — 3 doors · 1 stair · 124.7m" src="../img/viewer/find-room-path-hospital-frontview.png" /></p>
 <p><img alt="Angled view along the Hospital building's length, same route — the yellow line now runs along the real corridor windows and through the doorways it uses on its way up the stair instead of floating outside the floor plates — 3 doors · 1 stair · 124.7m" src="../img/viewer/find-room-path-hospital-sideview.png" /></p>
-<p><em>Fixed and verified live (2026-07-26):</em> the drawn-line defect shown in earlier versions of the
-screenshots above — a room-to-room path cutting straight through open air or atrium space instead of
-hugging the real walkable floor — is fixed. The same Hospital route (<code>≈ Level 1 R35 → ≈ Level 4 R8</code>,
-124.69m, same 3 doors and 1 stair as before) was re-run live after the fix: the 5 legality checks that
-used to fail no longer need rescuing at all — most of those stretches are simply on real floor now, and
-where a detour is still required (3 of 9 same-storey chords) one is found. <strong>Zero</strong>
-<code>§PATH_LEGAL_DETOUR_FAIL</code> remain, and all 15 same-storey legs measure <strong>0 illegal sample points</strong> (was
-265 across 3 unroutable legs). The extra waypoints in the drawn line (<code>polyPts</code> 15 → 19) are the fix's
-fingerprint, not a longer route — the 124.69m distance and the doors used did not change, deliberately,
-because the fix only changes the drawn line, never which rooms or doors a route uses. Fleet-wide on
-Hospital, a detour-failure sweep over 3023 real room pairs went <strong>63.3% → 0.0%</strong> with zero newly-broken
-pairs, room-pair pathability rose <strong>69.4% → 91.2%</strong>, and unreachable (deg-0) rooms fell <strong>26 → 7</strong>;
-Terminal's off-floor sampling went 352 → 0, Clinic's 49 → 0. Root cause, plainly: (a) the walkable-floor
-raster was consulted <em>instead of</em> the room data rather than <em>together with</em> it, so rooms compiled in the
-browser after the raster was built had no floor under them; (b) doorways and stairs — the only ways
-through a wall or between floors — weren't counted as walkable at all; (c) the raster builder picked
-floor slabs in a fixed height window that missed Hospital's real floor plates by 5cm, dropping an
-8270m² Level 4 plate entirely. Still imperfect, worth saying plainly: on Level 4 two chords needed a
-wider-than-local detour search (<code>§PATH_LEGAL_DETOUR_NONLOCAL</code>), and the line passes one door twice — a
-real ~3m back-step out of room R9 — so the drawn route is on real floor but not always the tidiest
-line. Full technical trail, for anyone who wants it:
-<code>prompts/Viewer/FindRooms/VIEWER_FIND_PANEL_ROOM_ACCURACY.md</code> §17 (supersedes §9–§16), shipped in
-bim-ootb PRs #1006–#1009.</p>
-<p><em>Future feature — fire escape:</em> the same routing will pin a <strong>Fire Escape</strong> entry at the top of the
-path list — one tap from any room to the nearest building exit.</p>
+<p>The drawn route follows the real walkable floor: along corridors, through doorways and up the stairs, never
+through open air or across an atrium. On some floors the line may step back through a door it has just passed,
+so the route is right even where the line is not the tidiest; the distance and the doors it lists are the
+route's own.</p>
 <p><em>Future feature — mobile:</em> scan a QR code posted beside a door to fetch that building's lightweight
 architecture model on your phone and see the escape route in Walk mode from exactly where you stand.</p>
 <h3 id="the-rest-of-the-navigate-drawer-world-history-page-history-home">The rest of the Navigate drawer — World History, Page History &amp; Home<a class="headerlink" href="#the-rest-of-the-navigate-drawer-world-history-page-history-home" title="Permanent link">&para;</a></h3>
@@ -3742,9 +3710,15 @@ straight from the site, for example <code>https://red1oon.github.io/bim-ootb/vie
 a lag. A list of items inside an item (such as a phase's dependencies) is shown as JSON text: keep it valid JSON;
 if it is not, the last good value is kept and nothing is broken. Your copy is saved in this browser as you type,
 separately for each rate pack, so a change to the Malaysian pack does not touch the UK one.</p>
-<p><strong>Use it.</strong> Reload the Viewer page. The next cost (the Find panel's <code>total cost</code>, the <strong>4D / 5D</strong> dashboard) prices
-with your rates, and the next schedule the Time Machine generates uses your template and rules. <strong>Reset</strong> in the
-same form discards your copy and goes back to the shipped file.</p>
+<p><strong>Use it.</strong> Where each copy takes effect:</p>
+<ul>
+<li><strong>5D Rate Pack:</strong> the <strong>4D / 5D</strong> dashboard prices with your rates when it opens. In the Viewer itself (the Find
+  panel's <code>total cost</code>), pick the pack under <strong>Settings → 5D Rate Pack</strong> after you open the page: the Viewer does
+  not load a pack on its own, and until a pack is picked it prices with its built-in rates.</li>
+<li><strong>4D Schedule Template:</strong> the next schedule the Time Machine generates uses it (reload the page after editing).</li>
+<li><strong>4D Sequence &amp; Labour Rules:</strong> used by the <strong>4D / 5D</strong> dashboard and the MEP report when they open.</li>
+</ul>
+<p><strong>Reset</strong> in the same form discards your copy and goes back to the shipped file.</p>
 <p><strong>Keep and share it.</strong> <strong>⬇ Download</strong> saves your edited file. Your copy lives in this browser only: there is no
 <em>load from file</em> yet, so on another browser or computer the changes are entered again (or the downloaded file is
 added to the project's <code>viewer/rates/</code> folder by whoever publishes the Viewer).</p>
@@ -3982,7 +3956,7 @@ tier — and, unlike a still-render tool, it does it <em>while the building asse
 <h4 id="baking-without-the-browser-the-silent-bake-developers">Baking without the browser — the silent bake (developers)<a class="headerlink" href="#baking-without-the-browser-the-silent-bake-developers" title="Permanent link">&para;</a></h4>
 <p>Everything above records the film from the viewer window: press <strong>Alt+C</strong>, edit, press <strong>OK</strong>, and watch
 it bake. There is also a <strong>command-line path that bakes the same film with no window and nobody
-watching</strong>, added 2026-09-01. It is a development tool — it is gated behind an internal flag that a
+watching</strong>. It is a development tool — it is gated behind an internal flag that a
 normal viewer session never sets, and there is no button for it.</p>
 <p>It exists because a film is expensive to check. A bake takes tens of minutes, so a defect in the HUD or
 the pacing used to be found only after sitting through the result. The silent bake lets the same film be
@@ -4062,12 +4036,7 @@ it produces, because the Reveal round's second act is derived rather than author
 </tr>
 </tbody>
 </table>
-<p><strong>A later, separately-measured Hospital run</strong> (2026-09-05/06, same building, <code>--clash</code> on, 1920×1080@24,
-same RTX 4060) came back <strong>4,699 frames</strong> for the same 195.8 s film — a different frame count for the same
-duration than the row above, most likely a later change to the film's own fps/pacing rather than this
-guide's row being wrong; not reconciled here. At that frame count: <strong>5,476 s (~91 min)</strong> wall clock full
-run, <strong>~83 min</strong> on a repeat run the same night — call it <strong>80–90 minutes</strong> at 1080p with clash markers on.
-1280p/1440p have not been measured.</p>
+<p>With clash markers on, the same Hospital film at 1080p takes <strong>80–90 minutes</strong> on that machine. 1280p/1440p have not been measured.</p>
 <p>Hospital carries <strong>9x</strong> the elements for under <strong>2x</strong> the per-frame cost — the frame cost scales far
 better than the model does, and most of the difference in wall clock is simply that its film is longer
 (its walk is 278.8 s to HHS's 61 s, and its Reveal round adds 87.4 s of its own across four
