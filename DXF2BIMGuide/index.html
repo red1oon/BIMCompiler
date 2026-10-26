@@ -3167,9 +3167,12 @@ own end-to-end check. The counts below are the clicks and typed values of that w
 <h4 id="3a-what-yellow-means">3a · What yellow means<a class="headerlink" href="#3a-what-yellow-means" title="Permanent link">&para;</a></h4>
 <p>A <strong>yellow row</strong> is a value the editor read from the drawing (or a default it applied) that is <strong>not yours yet</strong>.
 Each row names its source: <code>PR-UNITS: file says mm</code>, <code>PR-GRID: grid line 190 + label 1</code>, <code>PR-Z: level text B5 +
-level line B3</code>. Tick one row, or press <strong>Accept all</strong>; the value then shows <strong>you</strong>. Ignoring a yellow default
+level line B3</code>. Tick one row, tick a whole group, or press <strong>Accept all</strong>; the value then shows <strong>you</strong>. When the list holds both
+values the file states or a text names (stated / read) and values inferred from geometry or a convention (orange rows), <strong>Accept all</strong> is
+replaced by two buttons, <strong>Accept stated + read</strong> and <strong>Accept inferred</strong>: check the orange rows first (a click on a row shows its evidence on the sheet). Ignoring a yellow default
 is allowed (the default stays applied and is listed); ignoring a yellow <em>suggestion</em> leaves the field empty.</p>
-<p>The list grows as you answer. On the plain Duplex set it came in four rounds:</p>
+<p>The list grows as you answer. On the plain Duplex set it came in four rounds (walk of 2026-10-22; the editor has
+since read more from the titles, so today's rounds are larger: 24 rows in round 1, 66 in round 2):</p>
 <table>
 <thead>
 <tr>
@@ -3206,9 +3209,12 @@ is allowed (the default stays applied and is listed); ignoring a yellow <em>sugg
 </tr>
 </tbody>
 </table>
-<p><strong>Accept all</strong> sits <strong>under</strong> the list. With 49 rows it is about 1,200 pixels below the visible part of the panel:
-scroll the panel to the end of the list to find it (a three-storey office set gave 135 rows in round 2 and the
-button 4,500 pixels down).</p>
+<p>The list opens with its count (round 2 of the plain Duplex: <code>66 yellow in 6 groups</code>) and the accept buttons, <strong>above</strong> the rows. The rows come in one
+group per rule (<em>Grid lines</em>, <em>Level datums</em>, <em>Elevation faces</em> ...), closed: the header gives the rule, its row count and the
+sheets, and one tick accepts exactly that group. A grid group states its measurement in the header (for each of <code>GRIDX</code> /
+<code>GRIDY</code> / <code>GRIDH</code>: the label range and the bay sizes in drawing units), so a badly formed grid shows before you accept it. For
+the set-wide values (units, set name, roof) the header names the one value when every sheet agrees (<code>@UNITS=mm on all 8
+sheets</code>); a sheet that disagrees is shown on its own, open, marked <em>disagrees</em>, and the group tick leaves it.</p>
 <p><strong>Check the section cut before you accept.</strong> On both standard sets walked (Duplex and a three-storey office), the
 suggested <code>@CUT</code> was wrong: it paired two grid bubbles that carry the same letter as the section (<code>A</code>), so it
 proposed <code>Y,-17591.5</code> while the section's own title says <code>SECTION A-A AT X=2304.25</code>. Type the cut from the title
@@ -3374,9 +3380,9 @@ element contained in its storey. On the Duplex standard set: 96 wall pieces, 2 s
 </thead>
 <tbody>
 <tr>
-<td><strong>Convert</strong> gives an empty canvas, the badge still says <em>Qualifies</em></td>
-<td>a model from an earlier conversion is still in this browser's history and the new one could not be committed (the console says <code>§DXF-CONVERT failed GEOM_CUT parent … not found</code>; the panel says nothing yet)</td>
-<td><strong>Clear</strong> (the bin icon at the top of the dock), then <strong>Convert</strong> again</td>
+<td>the panel says <em>Convert failed: …</em> (the badge still says <em>Qualifies</em>: the drawings are fine, the run was not)</td>
+<td>the conversion stopped on an error; <em>(nothing was built)</em> or <em>(undone)</em> says the model is as it was before the click</td>
+<td><strong>Convert</strong> again; if it fails again, the message and the console line <code>§DXF-CONVERT failed …</code> are what to report</td>
 </tr>
 <tr>
 <td><em>No door here: click a door's arc or leaf</em></td>
@@ -3401,6 +3407,10 @@ element contained in its storey. On the Duplex standard set: 96 wall pieces, 2 s
 </tbody>
 </table>
 <h2 id="the-metadata-for-cad-users">The metadata, for CAD users<a class="headerlink" href="#the-metadata-for-cad-users" title="Permanent link">&para;</a></h2>
+<p><strong>The rule: labels set what geometry cannot.</strong> The drawing's geometry gives the 3D outline. Anything the geometry
+cannot decide (which product, which schedule mark, which of two same-size types) is set by a label you state
+(<code>@TAG</code>, <code>@LABEL</code>, <code>@SCHEDULE</code>). The editor never guesses: an undecided element is left untyped and listed as a gap
+with its candidates. A label sets the <em>type</em>; it never changes a measured size.</p>
 <p>Metadata is plain text on the layer <strong><code>DXF2BIM-MARK</code></strong>, one marking per text entity, <code>@KEY=value</code>. You can type
 it in any CAD program, or let the editor write it.</p>
 <table>
@@ -3560,18 +3570,19 @@ in the yellow list. No head-to-head benchmark has been run.</p>
 <h2 id="what-it-does-not-do-yet">What it does not do yet<a class="headerlink" href="#what-it-does-not-do-yet" title="Permanent link">&para;</a></h2>
 <p>Honest limits of the preliminary version:</p>
 <ul>
-<li><strong>Basic shapes only:</strong> walls, slabs, roof, openings, door/window fills, and for structure sets the bodies listed above. No stairs, railings, ramps, piles, ceilings, curtain walls or furniture are built from a 2D set yet (their defaults are in the yellow list, ready for the builders; no drawing used so far carries them).</li>
+<li><strong>Basic shapes only:</strong> walls, curtain walls (a plan's <code>A-WALL-CURT</code> band becomes <code>IfcCurtainWall</code>, priced by area), slabs, roof, openings, door/window fills, and for structure sets the bodies listed above. No stairs, railings, ramps, piles, ceilings or furniture are built from a 2D set yet (their defaults are in the yellow list, ready for the builders; no drawing used so far carries them).</li>
 <li><strong>Structure sets and standard sets are not mixed yet:</strong> a set that types body layers (column, beam...) and also wall/slab/opening layers is refused with that reason.</li>
-<li><strong>Evaporative pads, the shed's false ceiling and its detail sheet</strong> (concrete grades, below-grade column size) are labelled or drawn but not read yet.</li>
-<li><strong>Rectilinear buildings:</strong> skewed and curved walls are reported as gaps; roofs are flat outlines (pitched or
-  curved roofs are not drawn correctly yet).</li>
+<li><strong>Evaporative pads and the shed's false ceiling</strong> are labelled or drawn but not read yet. (The details sheet <em>is</em> read: its stated concrete grades reach the bodies they name, and its footing and column schedules give the below-grade columns.)</li>
+<li><strong>Angled walls:</strong> a 2D set written from a model now cuts the windows of angled walls (Hospital 72, LTU 59 windows
+  had no gap before), and reading such a set back finds a door's host on the angled wall's own outline. <strong>Curved
+  walls</strong> are reported as gaps; roofs are flat outlines (pitched or curved roofs are not drawn correctly yet).</li>
 <li><strong>Columns</strong> are cut and drawn, but not yet as column symbols on the grid.</li>
 <li><strong>Openings above or below the plan cut</strong> (e.g. high bathroom windows) — being changed so every opening of
   the storey is shown from its host wall regardless of height.</li>
 <li><strong>"Any DXF"</strong> is not claimed. Your drawing needs the metadata above; the editor helps you add it, the verdict
   tells you when it is complete.</li>
-<li><strong>The component library</strong> (door/window geometry) is loaded locally during this preliminary stage; on the
-  public site Convert reports the library as unreachable until it is published.</li>
+<li><strong>The component library</strong> (door/window geometry) is published: when no local copy is present, Convert loads it
+  from the project's object storage. A window or door type the library does not hold is a blocking item, never a box.</li>
 </ul>
 <hr />
 <h2 id="for-developers">For developers<a class="headerlink" href="#for-developers" title="Permanent link">&para;</a></h2>
@@ -3582,8 +3593,8 @@ node<span class="w"> </span>tests/dxf2bim/mark_dx_set.js<span class="w"> </span>
 <span class="nv">DXSET</span><span class="o">=</span>std<span class="w"> </span>node<span class="w"> </span>tests/dxf2bim/rosetta_dx_shell.js<span class="w">           </span><span class="c1"># basic shapes, checked against the model</span>
 node<span class="w"> </span>tests/dxf2bim/rosetta_qualify.js<span class="w">                      </span><span class="c1"># the verdict for every test set</span>
 </code></pre></div>
-<p>Specs: <a href="../DXF2BIM_SPEC/">DXF2BIM spec</a> · <a href="../DXF2BIM_BASIC_SHAPES_SPEC/">Basic shapes spec</a> ·
-<a href="../DXF2BIM_USER_GUIDE/">Reader user guide</a>. Modeller lane spec: <code>prompts/DXF2BIM_MODELLER_LANE.md</code> (bim-ootb).
+<p>Specs: <a href="../DXF2BIM_SPEC/">DXF2BIM spec</a> · <a href="../DXF2BIM_BASIC_SHAPES_SPEC/">Basic shapes spec</a>.
+Modeller lane spec: <code>prompts/DXF2BIM_MODELLER_LANE.md</code> (bim-ootb).
 Every check has a deliberately broken control that must fail. Code is MIT licensed.</p>
 <p><em>Test drawing credit: the American Farmhouse drawings used as an independent test are by Jay Osborne
 (freefarmhouse.com), CC BY-SA; they are not included in the repository.</em></p>
