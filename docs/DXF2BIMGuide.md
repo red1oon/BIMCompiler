@@ -116,7 +116,8 @@ Click any verdict item to jump to it:
 The rest of this step is written from a first-time walk through the real Modeller (2026-10-22) on the Duplex
 standard set with every marking removed (8 sheets, the plain drawings a CAD program would hand you). The walk
 reached **Qualifies**, and **Convert** built 135 elements with 36 openings cut, the same numbers as the editor's
-own end-to-end check. The counts below are the clicks and typed values of that walk.
+own end-to-end check. (Today the same set converts to 87 elements with 36 openings cut: a drawn wall line is now
+one wall, not one piece per segment.) The counts below are the clicks and typed values of that walk.
 
 #### 3a · What yellow means
 A **yellow row** is a value the editor read from the drawing (or a default it applied) that is **not yours yet**.
@@ -234,8 +235,8 @@ that does not fit is refused with the reason, never half-loaded; **Clear** goes 
 
 ### 6 · Export IFC
 **Export → IFC4.** The file has a proper spatial structure (Project → Site → Building → Storeys) and every
-element contained in its storey. On the Duplex standard set: 96 wall pieces, 2 slabs, 1 roof, 14 doors,
-22 windows, 2 storeys.
+element contained in its storey. On the Duplex standard set (measured 2026-10-26): 44 walls (one wall per drawn
+wall line), 6 slabs, 1 roof, 14 doors, 22 windows, 36 openings, 2 storeys.
 
 **Export → Viewer database (.db)** builds the same IFC4 and runs it through the extractor the Viewer uses, then
 downloads `<name>_extracted.db`. Open that file in the **Viewer** (**Open → local .db**) for 3D, 4D and 5D.
