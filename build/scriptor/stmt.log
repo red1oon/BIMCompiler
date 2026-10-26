@@ -1,0 +1,26 @@
+§S1 KEYGEN
+   🟢 S1 keygen into a directory outside the repo writes the pair — §PLAN_KEYGEN wrote plan_signing_{private,public}.jwk in /tmp/w-stmt-PNfPGH/k1 (keep the private key OUT of the repo)
+   🟢 S1 keygen into a directory INSIDE the repo is refused and writes nothing (the private key never enters the repo) — exit=1 wrote=false §PLAN_KEYGEN REFUSED /home/red1/bim-compiler/build/scriptor/tmp_keys_697989 is inside a git work tree — keep the private key OUT of the repo
+§S2 STMT + CHECK
+   🟢 S2 stmt executors {c_order:102} prev none → a statement over the empty map; check ok — §STMT_SIGNED kind=executors prev=44136fa355b3 signer.x=lFag1LZQiw -> /tmp/w-stmt-PNfPGH/exe1.json | §STMT_CHECK ok kind=executors signer.x=lFag1LZQiw trusted 
+   🟢 S2 the same statement edited after signing → check REFUSED bad-signature — §STMT_CHECK REFUSED bad-signature
+   🟢 S2 checked against a different trusted key → REFUSED untrusted-signer — §STMT_CHECK REFUSED untrusted-signer
+   🟢 S2 a map the engine would refuse ({"C Order":1}) → the tool refuses to write it (self-check) — §STMT_REFUSED the statement would be refused: shape:map (nothing written)
+§S3 PUBLISH executors
+   🟢 S3 the store exposes publishStatement
+   🟢 S3 the CLI statement published by the admin → MERGED locally, map in force, the other policy params carried forward — {"ok":true,"verdict":"MERGED:policy","reason":null,"hash":"2dc3dd20e60360e55c0f1491e1e0932df6f663b80ac9b2707fa1c803df72c30a"} map={"c_order":102} visit_ms=900000
+   🟢 S3 a second statement with prev = the first map → MERGED, map extended — {"ok":true,"verdict":"MERGED:policy","reason":null,"hash":"e4e8cdd08bdef56a281ddbcb240a370d3004ca34603329fbec39af3c73d31ceb"} map={"c_order":102,"m_movement":102}
+   🟢 S3 one built with prev none AFTER that → {ok:false, executors-stale} on the publishing device itself; map unchanged — {"ok":false,"verdict":"REFUSED:executors-stale","reason":"executors-stale","hash":"1acea319d0569e234e74148deb2fd8f19a92a5edaabefa31d7e071dd5996e578"}
+   🟢 S3 a valid owner-signed statement published by a NON-admin device → not-admin — {"ok":false,"verdict":"REFUSED:not-admin","reason":"not-admin","hash":"a228b9a040ede80dc515603924e727573224501eb854f11e0137fe3040c54b0c"}
+   🟢 S3 an unknown kind → unknown-kind, nothing authored — {"ok":false,"reason":"unknown-kind"} ops 9→9
+   🟢 S3 an unsigned / malformed statement → bad-statement, nothing authored — {"ok":false,"reason":"bad-statement:signer"}
+§S4 PUBLISH plan-trust
+   🟢 S4 stmt plan-trust [K1,K2] prev [K1] → MERGED, the trust list in force has 2 keys, the executor map is carried forward — {"ok":true,"verdict":"MERGED:policy","reason":null,"hash":"3bcc4ea9542f70018dae5d64a0983945136514e65270ba32e74cfbcbe267c0ec"} keys=2 map={"c_order":102,"m_movement":102}
+§S5 SECOND DEVICE
+   🟢 S5 B, after syncing, holds the same map and the same trust list — map={"c_order":102,"m_movement":102} keys=2
+§STMT_ARMS red=none judged=15
+   🟢 mutant check skips the signature -> red=S2 (expected S2)
+   🟢 mutant the tool writes without its self-check -> red=S2 (expected S2)
+   🟢 mutant publishStatement drops the other params -> red=S3 (expected S3)
+   🟢 mutant publishStatement says ok without the fold verdict -> red=S3 (expected S3)
+§STMT_VERDICT PASS judged=15 fails=0 mutants=4/4

@@ -110,7 +110,10 @@ async function genesisArms(src, quiet) {
   await r7.api._pinTrust(rot.S);
   A('G7', before7 && vR && vR.verdict === 'MERGED' && sigState(r7) === 'untrusted' && closed(r7), T + 'open under the genesis [K1]; after a K1-signed POLICY rotates the list to [K2], the SAME running host re-verifies: the K1-signed plan is now untrusted and the scope closes', 'before=' + before7 + ' policy=' + (vR && vR.verdict) + ' sig=' + sigState(r7));
   var r7b = await boot(host, byK2, null, src); await r7b.api._pinTrust(rot.S);
-  A('G7', sigState(r7b) === 'ok' && open(r7b), T + 'a plan signed by the key the rotation ADDED (K2) verifies ok under the list in force', 'sig=' + sigState(r7b));  // §38.5 E2b (ERP only — the Modeller has no DocActions): the host's DocAction overlay reads the SAME in-log executor map the fold enforces (E3)
+  A('G7', sigState(r7b) === 'ok' && open(r7b), T + 'a plan signed by the key the rotation ADDED (K2) verifies ok under the list in force', 'sig=' + sigState(r7b));  // §38.10 (G-8): both hosts publish an owner-signed statement through the engine; before pairing the call answers, never throws (the paired path: browser W-UPS-E2-HOST)
+  var r9 = await boot(host, byK1, null, src), pf = typeof r9.api.publishStatement === 'function', a9 = pf ? await r9.api.publishStatement({ kind: 'executors', map: {} }).catch(function (e) { return { threw: e.message }; }) : null;
+  A('G9', pf && a9 && a9.ok === false && a9.reason === 'not-paired', T + 'the host exposes publishStatement; unpaired it answers {ok:false, not-paired}', pf ? JSON.stringify(a9) : 'ABSENT');
+  // §38.5 E2b (ERP only — the Modeller has no DocActions): the host's DocAction overlay reads the SAME in-log executor map the fold enforces (E3)
   if (host === 'erp') {
     var ex = await space([pub(K1)]), r8 = await boot(host, byK1, null, src), api8 = r8.api, B = await STORE.newDevice(), PB = require('crypto').randomUUID();
     await ex.S.addPerson({ person_uu: PB, name: 'Station', ad_role_id: 103, comm_admin: false }); await ex.S.enroll(B.kid, B.pubJwk, PB, B.dhPubJwk);
