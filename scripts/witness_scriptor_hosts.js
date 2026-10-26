@@ -19,7 +19,7 @@ function rd(f) { return fs.readFileSync(path.join(OOTB, f), 'utf8'); }
 function clone(o) { return JSON.parse(JSON.stringify(o)); }
 var OLD = { GEOM_INSERT: 'create', GEOM_EXTRUDE: 'create', GEOM_EXTRUDE_POLY: 'create', GEOM_SWEEP: 'create', GEOM_LOFT: 'create', GEOM_REVOLVE: 'create', GEOM_MOVE: 'move' };
 function wrap(plan) { return '(function (g) { g.TEAM_PLAN = ' + JSON.stringify(plan) + '; })(typeof window !== \'undefined\' ? window : globalThis);\n'; }
-function same(a, b) { return JSON.stringify(Object.keys(a).sort().map(function (k) { return [k, a[k]]; })) === JSON.stringify(Object.keys(b).sort().map(function (k) { return [k, b[k]]; })); }
+function same(a, b) { if (!a || !b) return false; return JSON.stringify(Object.keys(a).sort().map(function (k) { return [k, a[k]]; })) === JSON.stringify(Object.keys(b).sort().map(function (k) { return [k, b[k]]; })); }
 
 // run one host in a vm: scripts in the loader's order, then let the async verification and the (stubbed) boot settle. -> { logs, order, host }
 async function boot(host, planSrc, trust, src, slow) {
@@ -55,7 +55,7 @@ async function arms(src, quiet) {
     tam.flows.push({ name: 'T9999 x_widget', table: 'X_Widget', dir: 'BOTH', audience: 'space', payload: [] });
     var shared = function (r) { return host === 'modeller' ? r.api.classes() : null; };
     var open = function (r) { return host === 'modeller' ? same(r.api.classes(), OLD) : r.api.scopeOf('c_order') === 'share' && r.api.scopeOf('ad_sequence') === 'station-local'; };
-    var closed = function (r) { return host === 'modeller' ? Object.keys(r.api.classes()).length === 0 : r.api.scopeOf('c_order') === 'unplanned' && r.api.scopeOf('ad_sequence') === 'unplanned'; };
+    var closed = function (r) { return host === 'modeller' ? Object.keys(r.api.classes() || {}).length === 0 : r.api.scopeOf('c_order') === 'unplanned' && r.api.scopeOf('ad_sequence') === 'unplanned'; };
     var none = await boot(host, wrap(plan), null, src), ok = await boot(host, wrap(signed), [pub(K1)], src), bad = await boot(host, wrap(tam), [pub(K1)], src);
     var uns = await boot(host, wrap(plan), [pub(K1)], src), oth = await boot(host, wrap(signed), [pub(K2)], src), miss = await boot(host, null, null, src);
     A('H1', sigState(none) === 'unsigned' && open(none) && /^§TEAM_PLAN hash=/.test(planLine(none) || ''), host + ': no trust list (the shipped default) => state=unsigned, the same scope as before, and the app prints its plan line', 'sig=' + sigState(none) + ' | ' + planLine(none));
@@ -86,7 +86,7 @@ async function genesisArms(src, quiet) {
   var H2 = quiet ? function () {} : console.log;
   for (var host of ['erp', 'modeller']) {
   var plan = SIGN.planOf(rd(host + '/team_plan.js')), unsigned = wrap(plan), byK1 = wrap(await SIGN.sign(plan, K1.privateJwk, K1.publicJwk)), byK2 = wrap(await SIGN.sign(plan, K2.privateJwk, K2.publicJwk));
-  var closed = function (r) { return host === 'erp' ? r.api.scopeOf('c_order') === 'unplanned' : Object.keys(r.api.classes()).length === 0; }, open = function (r) { return host === 'erp' ? r.api.scopeOf('c_order') === 'share' : same(r.api.classes(), OLD); };
+  var closed = function (r) { return host === 'erp' ? r.api.scopeOf('c_order') === 'unplanned' : Object.keys(r.api.classes() || {}).length === 0; }, open = function (r) { return host === 'erp' ? r.api.scopeOf('c_order') === 'share' : same(r.api.classes(), OLD); };
   H2('§W-HOSTS-GENESIS ' + host.toUpperCase());
   var withK1 = await space([pub(K1)]), none = await space(null), T = host + ': ';
   var r1 = await boot(host, byK1, null, src); await r1.api._pinTrust(withK1.S);
@@ -103,7 +103,7 @@ async function genesisArms(src, quiet) {
   A('G5', sigState(r5) === 'ok' && open(r5), T + 'a space that pinned NOTHING + deployment [K1] + plan signed by K1 => ok: the deployment list stays the fallback', 'sig=' + sigState(r5));
   var r6 = await boot(host, byK1, [pub(K1), pub(K2)], src), o6 = r6.api._spaceOpts(host === 'erp' ? { name: 'b', sha256: 'a'.repeat(64) } : undefined), sp6 = await STORE.newSpace('t', F, PF, 'Founder', 102, o6);
   var r6e = await boot(host, byK1, null, src), o6e = r6e.api._spaceOpts(null);
-  A('G6', JSON.stringify(sp6.params.planTrust) === JSON.stringify([pub(K1), pub(K2)]) && o6e === undefined && (host !== 'erp' || !!sp6.params.base), T + 'found() hands the deployment list to newSpace (the genesis params carry both keys' + (host === 'erp' ? ' and the base' : '') + '); with no list there is no option at all', JSON.stringify(Object.keys(o6)) + ' / ' + o6e);
+  A('G6', JSON.stringify(sp6.params.planTrust) === JSON.stringify([pub(K1), pub(K2)]) && o6e === undefined && (host !== 'erp' || !!sp6.params.base), T + 'found() hands the deployment list to newSpace (the genesis params carry both keys' + (host === 'erp' ? ' and the base' : '') + '); with no list there is no option at all', JSON.stringify(Object.keys(o6 || {})) + ' / ' + o6e);
   // §35: the list in force changes by a POLICY op carrying a K1-signed rotation to [K2]; the RUNNING host re-reads it on its next pinTrust (after a Visit) — no host code for rotation
   var rot = await space([pub(K1)]), r7 = await boot(host, byK1, null, src); await r7.api._pinTrust(rot.S); var before7 = sigState(r7) === 'ok' && open(r7);
   var stR = await SIGN.sign({ kind: 'plan-trust', keys: [pub(K2)], prev: await ROS.planTrustHash([pub(K1)]) }, K1.privateJwk, K1.publicJwk), pR = await rot.S.setPolicy({ epoch: 1, planTrust: stR }), vR = (await rot.S.order()).verdict[pR.hash];
@@ -140,7 +140,7 @@ async function genesisArms(src, quiet) {
   await genesisArms(READ, false);
   console.log('§W-HOSTS-MUTANTS (each broken rule must turn at least one arm red)');
   function mut(label, patch) { var s = { trust: READ.trust, scope: READ.scope, adapter: { modeller: READ.adapter.modeller, erp: READ.adapter.erp } }; var ok = patch(s);
-    return Promise.all([arms(s, true), genesisArms(s, true)]).catch(function (e) { return [['THROW ' + String(e.message).slice(0, 40)], []]; }).then(function (rr) { var red = rr[0].concat(rr[1]); say(ok !== false && red.length > 0, label + ' -> red arms: ' + (red.length ? Array.from(new Set(red)).join(', ') : 'NONE (survivor = hole)') + (ok === false ? ' (MUTATION DID NOT APPLY)' : '')); }); }
+    return Promise.all([arms(s, true), genesisArms(s, true)]).catch(function (e) { if (process.env.HOSTS_STACK) console.log('§HOSTS_THROW ' + label + ' ' + (e && e.stack)); return [['THROW ' + String(e.message).slice(0, 40)], []]; }).then(function (rr) { var red = rr[0].concat(rr[1]), crashed = red.some(function (x) { return /^THROW /.test(x); }); say(ok !== false && red.length > 0 && !crashed, label + ' -> red arms: ' + (red.length ? Array.from(new Set(red)).join(', ') : 'NONE (survivor = hole)') + (ok === false ? ' (MUTATION DID NOT APPLY)' : '')); }); }
   await mut('signature verification skipped (reader says ok)', function (s) { var t = s.scope.replace(/(verify: async function[^\n]*\n)/, "$1      memo.v = { plan: global.TEAM_PLAN, s: 'ok' }; return 'ok';\n"); if (t === s.scope) return false; s.scope = t; });
   await mut('`ready` not gated by the verification (both adapters)', function (s) { var m = s.adapter.modeller.replace("ready = readyBoot.then(function (v) { return planVerified.then(function () { return v; }); })", 'ready = readyBoot'), e = s.adapter.erp.replace("ready = readyBoot.then(function (v) { return planVerified.then(function () { return v; }); })", 'ready = readyBoot'); if (m === s.adapter.modeller || e === s.adapter.erp) return false; s.adapter.modeller = m; s.adapter.erp = e; });
   await mut('the verdict is ignored: the Modeller never recomputes its op list after verify', function (s) { var t = s.adapter.modeller.replace("    CLASS = classFromPlan();\n    var n =", "    var n ="); if (t === s.adapter.modeller) return false; s.adapter.modeller = t; });
