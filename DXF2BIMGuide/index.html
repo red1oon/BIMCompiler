@@ -1317,6 +1317,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#drawing-in-bricscad-so-fewer-values-are-guessed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Drawing in BricsCAD so fewer values are guessed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#a-building-drawn-only-in-2d-a-farm-shed" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3007,6 +3018,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#drawing-in-bricscad-so-fewer-values-are-guessed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Drawing in BricsCAD so fewer values are guessed
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#a-building-drawn-only-in-2d-a-farm-shed" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3485,8 +3507,8 @@ downloads <code>&lt;name&gt;_extracted.db</code>. Open that file in the <strong>
 </tr>
 <tr>
 <td><em>PR-VIEW not proposed: no title text ending PLAN / ELEVATION / SECTION</em></td>
-<td>the title has more text after the view word (a scale such as <code>1:100</code>)</td>
-<td>choose the role from the list</td>
+<td>the title, once a scale (<code>1:100</code>) and a closing bracket are set aside, does not end with the view word, or the sheet has no title text</td>
+<td>choose the role from the list, or retitle the sheet (see <em>Drawing in BricsCAD</em> below)</td>
 </tr>
 <tr>
 <td><strong>Save marked copies</strong> asks to allow several downloads</td>
@@ -3577,6 +3599,69 @@ it in any CAD program, or let the editor write it.</p>
 cannot decide (which product, which schedule mark, how tall an interior wall is). A difference between the
 drawing and its schedule is reported (<code>GAP:schedule_conflict</code>), never silently resolved.</p>
 <hr />
+<h2 id="drawing-in-bricscad-so-fewer-values-are-guessed">Drawing in BricsCAD so fewer values are guessed<a class="headerlink" href="#drawing-in-bricscad-so-fewer-values-are-guessed" title="Permanent link">&para;</a></h2>
+<p>The editor fills every value it can from the drawing, and says how sure it is: <strong>yellow</strong> = read from a text
+the sheet holds, <strong>orange</strong> = inferred from geometry or a convention, <strong>no row at all</strong> = stated. A few drafting
+habits in BricsCAD (or any CAD program) move values from orange to yellow, or remove the row altogether. Each tip
+below names what the editor then does.</p>
+<table>
+<thead>
+<tr>
+<th>In BricsCAD</th>
+<th>What the editor then does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Set the drawing units: system variable <strong><code>INSUNITS</code></strong> (1 = inches, 4 = millimetres), the same on every sheet</td>
+<td>Units come from the file (yellow). A sheet whose units differ from the others is shown on its own, marked <em>disagrees</em></td>
+</tr>
+<tr>
+<td>Write the <strong>title</strong> as one text with the view word: <code>GROUND FLOOR PLAN</code>, <code>NORTH ELEVATION</code>, <code>SECTION A-A</code> (a scale such as <code>1:100</code> after it is fine)</td>
+<td>The sheet's role is read from the title (yellow), not picked by hand</td>
+</tr>
+<tr>
+<td>Put the <strong>level in the plan title</strong>: <code>LEVEL 2 PLAN (FFL +3.800)</code>, the value in metres</td>
+<td>The plan's level is read (yellow); without it, the default ground level 0 is offered (orange)</td>
+</tr>
+<tr>
+<td>Put the <strong>cut in the section title</strong>: <code>SECTION A-A AT X=2304.25</code></td>
+<td>The section cut is read (yellow); without it, it is inferred by pairing the section's letter with texts on the plan (orange), and on two test sets that guess was wrong</td>
+</tr>
+<tr>
+<td>Write the <strong>roof top</strong> on an elevation or section: <code>T/ROOF +10.695</code> or <code>TOP OF ROOF +10.695</code></td>
+<td>The roof top is read (yellow)</td>
+</tr>
+<tr>
+<td>Draw <strong>level datums</strong> on elevations and sections: a horizontal line on a level layer with its text at that height, such as <code>LEVEL 1 +0.000</code> (metres)</td>
+<td>Each datum is read (yellow); without them only the ground line is guessed (orange)</td>
+</tr>
+<tr>
+<td>Draw <strong>grid lines</strong> as straight LINEs on a grid layer (<code>A-GRID</code>, or your own layer once typed as <em>grid</em>), each with its label (<code>A</code>, <code>1</code>, <code>10</code>, <code>AA</code>) as a plain text at the line's end, in or next to its bubble</td>
+<td>Every grid line is read (yellow). On the shed the grid is inferred from the dimension ticks instead (orange: 91 rows)</td>
+</tr>
+<tr>
+<td>Give each kind of thing <strong>its own layer, with the same name on every sheet</strong>, ideally the US National CAD Standard names the Modeller itself writes (<code>A-WALL-FULL</code>, <code>A-DOOR</code>, <code>A-GLAZ</code>, <code>A-GRID</code>, <code>A-ANNO-DIMS</code>, <code>S-SLAB</code> …)</td>
+<td>Layers are recognised instead of asked, and one answer covers every sheet. The shed's sheets use short names (<code>Wall</code>, <code>Win</code>, <code>Col</code>, <code>Dim</code>, <code>C L</code>) and put the frame, title block and much else on layer <code>0</code>: every layer there has to be stated</td>
+</tr>
+<tr>
+<td>Keep <strong>dimensions as real dimensions</strong>: do not explode them or type over their text</td>
+<td>The dimension checks compare drawn and written values. On the shed a dimension written <code>410'-0"</code> over a drawn 1,560 in is listed as a conflict</td>
+</tr>
+<tr>
+<td>Draw in <strong>model space</strong> (the <em>Model</em> tab), not on a layout</td>
+<td>The editor reads model space only</td>
+</tr>
+<tr>
+<td>Save each sheet with <strong>Save As → DXF</strong>, one file per sheet</td>
+<td>The shed's sheets (DXF, AutoCAD 2010 format) open as they are</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Strongest of all: write the values yourself, in BricsCAD.</strong> A marking is plain text on layer <strong><code>DXF2BIM-MARK</code></strong>,
+one <code>@KEY=value</code> per text (see <em>The metadata, for CAD users</em> above), for example <code>@SET=SHED</code>, <code>@UNITS=in</code> or
+<code>@LEVEL=0</code>. A value written this way is stated: it opens with no yellow row and needs no tick. The set name is the
+one value no drawing states by itself: on the plain Duplex it is the first thing the editor asks for.</p>
 <h2 id="a-building-drawn-only-in-2d-a-farm-shed">A building drawn only in 2D: a farm shed<a class="headerlink" href="#a-building-drawn-only-in-2d-a-farm-shed" title="Permanent link">&para;</a></h2>
 <p>A common CAD set (here a BricsCAD drawing set saved as DXF) with <strong>no 3D model behind it</strong>: nine sheets, a floor
 plan, four elevations, a beam layout, a foundation plan, a truss section and a details sheet (grades, casting
