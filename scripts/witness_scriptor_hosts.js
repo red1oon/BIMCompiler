@@ -110,7 +110,26 @@ async function genesisArms(src, quiet) {
   await r7.api._pinTrust(rot.S);
   A('G7', before7 && vR && vR.verdict === 'MERGED' && sigState(r7) === 'untrusted' && closed(r7), T + 'open under the genesis [K1]; after a K1-signed POLICY rotates the list to [K2], the SAME running host re-verifies: the K1-signed plan is now untrusted and the scope closes', 'before=' + before7 + ' policy=' + (vR && vR.verdict) + ' sig=' + sigState(r7));
   var r7b = await boot(host, byK2, null, src); await r7b.api._pinTrust(rot.S);
-  A('G7', sigState(r7b) === 'ok' && open(r7b), T + 'a plan signed by the key the rotation ADDED (K2) verifies ok under the list in force', 'sig=' + sigState(r7b));
+  A('G7', sigState(r7b) === 'ok' && open(r7b), T + 'a plan signed by the key the rotation ADDED (K2) verifies ok under the list in force', 'sig=' + sigState(r7b));  // §38.5 E2b (ERP only — the Modeller has no DocActions): the host's DocAction overlay reads the SAME in-log executor map the fold enforces (E3)
+  if (host === 'erp') {
+    var ex = await space([pub(K1)]), r8 = await boot(host, byK1, null, src), api8 = r8.api, B = await STORE.newDevice(), PB = require('crypto').randomUUID();
+    await ex.S.addPerson({ person_uu: PB, name: 'Station', ad_role_id: 103, comm_admin: false }); await ex.S.enroll(B.kid, B.pubJwk, PB, B.dhPubJwk);
+    var ne = typeof api8.notExecutor === 'function' && typeof api8._refreshExecutors === 'function';
+    if (!ne) A('G8', false, T + 'the host exposes notExecutor + _refreshExecutors (the DocAction list asks it)', 'ABSENT');
+    else {
+      await api8._refreshExecutors(ex.S, F.kid);
+      A('G8', api8.notExecutor('C_Order', 100) === false, T + 'no executor map in force => nothing removed (team without the rule = as before)', 'notExecutor=' + api8.notExecutor('C_Order', 100));
+      var s8 = await SIGN.sign({ kind: 'executors', map: { c_order: 102 }, prev: await ROS.executorsHash({}) }, K1.privateJwk, K1.publicJwk), p8 = await ex.S.setPolicy({ epoch: 1, executors: s8 }), v8 = (await ex.S.order()).verdict[p8.hash];
+      await api8._refreshExecutors(ex.S, F.kid); var hq = api8.notExecutor('C_Order', 100), hqOther = api8.notExecutor('M_Movement', 100);
+      await api8._refreshExecutors(ex.S, B.kid); var st = api8.notExecutor('C_Order', 100), stNeg = api8.notExecutor('c_order', -3), stOther = api8.notExecutor('M_Movement', 100);
+      A('G8', v8 && v8.verdict === 'MERGED' && hq === false && st === true && stNeg === true, T + 'owner-signed {c_order: 102} MERGED; the HQ device (role 102) keeps its DocActions, the station (role 103) is offered none on any order (base or team record)', 'policy=' + (v8 && v8.verdict) + ' hq=' + hq + ' station=' + st + '/' + stNeg);
+      A('G8', hqOther === false && stOther === false, T + 'a table with no entry keeps its DocActions on both devices (control)', 'hq=' + hqOther + ' station=' + stOther);
+      var s8b = await SIGN.sign({ kind: 'executors', map: { c_order: 'author' }, prev: await ROS.executorsHash({ c_order: 102 }) }, K1.privateJwk, K1.publicJwk), p8b = await ex.S.setPolicy({ epoch: 2, executors: s8b }), v8b = (await ex.S.order()).verdict[p8b.hash];
+      await api8._refreshExecutors(ex.S, B.kid); var aBase = api8.notExecutor('C_Order', 100), aLocal = api8.notExecutor('C_Order', -7);
+      A('G8', v8b && v8b.verdict === 'MERGED' && aBase === true && aLocal === false, T + "{c_order:'author'}: a base order (no CREATE in the log, refused by E3) offers nothing; an order created on this device and not yet shared keeps its DocActions", 'policy=' + (v8b && v8b.verdict) + ' base=' + aBase + ' local=' + aLocal);
+      A('G8', r8.logs.some(function (l) { return /§TEAM_EXECUTORS map=\{"c_order":102\} myRole=103/.test(l); }), T + 'the host prints the map it applies and the role it judged (§TEAM_EXECUTORS)', (r8.logs.filter(function (l) { return /§TEAM_EXECUTORS/.test(l); }).join(' | ') || 'no line'));
+    }
+  }
   }
   return red;
 }
@@ -135,6 +154,9 @@ async function genesisArms(src, quiet) {
   await mut('MODELLER: the genesis list is merged with the deployment list', function (s) { var t = s.adapter.modeller.replace("global.TEAM_PLAN_TRUST = gt;", "global.TEAM_PLAN_TRUST = (global.TEAM_PLAN_TRUST || []).concat(gt);"); if (t === s.adapter.modeller) return false; s.adapter.modeller = t; });
   await mut('MODELLER: not re-verified after adopting the genesis list', function (s) { var t = s.adapter.modeller.replace(/global\.TEAM_PLAN_TRUST = gt; await verifyPlan\([^\n]*\);/, "global.TEAM_PLAN_TRUST = gt;"); if (t === s.adapter.modeller) return false; s.adapter.modeller = t; });
   await mut('MODELLER: found() drops the deployment list', function (s) { var t = s.adapter.modeller.replace("return Array.isArray(t) && t.length ? { planTrust: t } : undefined;", "return undefined;"); if (t === s.adapter.modeller) return false; s.adapter.modeller = t; });
+  await mut('E2b: the DocAction overlay never removes anything', function (s) { var t = s.adapter.erp.replace("if (!exe.map) return false;", "return false;"); if (t === s.adapter.erp) return false; s.adapter.erp = t; });
+  await mut('E2b: the device role is not compared (every device treated as a non-executor)', function (s) { var t = s.adapter.erp.replace("if (ex !== 'author') return exe.role !== ex;", "if (ex !== 'author') return true;"); if (t === s.adapter.erp) return false; s.adapter.erp = t; });
+  await mut("E2b: 'author' treats this device's own unshared create as someone else's", function (s) { var t = s.adapter.erp.replace("return !(Number(pk) < 0);", "return true;"); if (t === s.adapter.erp) return false; s.adapter.erp = t; });
   console.log('§HOSTS_VERDICT ' + (fails ? 'FAIL' : 'PASS') + ' judged=' + judged + ' fails=' + fails + ' (whitebox: the adapters\' own § lines; the browser WebCrypto verify is not exercised here)');
   process.exit(fails ? 1 : 0);
 })();

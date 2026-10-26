@@ -1,0 +1,13 @@
+═══ W-UPS-E2-HOST — the executor map reaches the Document Action list (TEAMWORK_FRAMEWORK §38.5) ═══
+
+§S1 two devices: A founds (role 102), B joins as role 103 (the station)
+   🟢 X0 precondition: A holds role 102, B was approved as role 103 — A=102 B=103
+   🟢 X0 CONTROL before any map: both see the same order and the same Document Action list — A 1500003 [CO,PR,VO] / B 1500003 [CO,PR,VO]
+§S2 the owner-signed executor map {c_order: 102}, published by the admin device
+   🔴 X1 the POLICY carrying the map is MERGED on both devices — A=MERGED:policy B=MERGED:policy
+   🔴 X2 after its Visit, the station (B) is offered NO Document Action on the order (no reload) — B 1500003 [CO,PR,VO]
+   🟢 X2 the executor (A) keeps the same list — A [CO,PR,VO]
+   🔴 X3 B printed the map it applies and what it removed — no §TEAM_EXECUTORS | no §DOCACTION_ACCESS
+   🟢 X4 0 page errors on both devices — errors=0
+§WX_ARMS red=X1,X2,X3 judged=7
+§WX_VERDICT FAIL judged=7 fails=3 mutants=skipped pageerrors=0
