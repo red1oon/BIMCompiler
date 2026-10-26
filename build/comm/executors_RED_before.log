@@ -1,0 +1,28 @@
+═══ W-UPS-E3 — every device refuses a DocAction from anyone but the document's one executor (TEAMWORK_FRAMEWORK FL-8, §38.3) ═══
+§X1 MAP
+   🔴 the owner-signed map {c_order: HQ 102} published by the admin is MERGED on all 3 devices; every device returns it, executorsEpoch=1 — MERGED:policy MERGED:policy MERGED:policy map=undefined epoch=undefined
+§X2 HQ
+   🟢 HQ (the executor) completes its order: the status op and its consequence are MERGED on every device — MERGED:role 102 undefined MERGED:role 102 undefined MERGED:role 102 undefined | MERGED:role 102 undefined MERGED:role 102 undefined MERGED:role 102 undefined
+§X3 STATION
+   🔴 a STATION completes an order it created: its status op is REFUSED not-executor on EVERY device — MERGED:role 103 undefined MERGED:role 103 undefined MERGED:role 103 undefined
+   🔴 and the consequence in the same DocAction group is REFUSED not-executor-group everywhere (all-or-none) — MERGED:role 103 undefined MERGED:role 103 undefined MERGED:role 103 undefined
+   🔴 no ghost: neither op is in any device's foldable() — ghost=6
+§X4 NO-ENTRY
+   🟢 CONTROL: a table with no entry in the map (m_movement) — the station's status op is MERGED as today — MERGED:role 103 undefined MERGED:role 103 undefined MERGED:role 103 undefined
+§X5 AUTHOR
+   🔴 map {c_order: "author"} (backup key K1 signs, chained): the creator completes -> MERGED; another device completing the SAME order -> not-executor — map MERGED:policy | creator MERGED:role 103 undefined MERGED:role 103 undefined MERGED:role 103 undefined | other MERGED:role 103 undefined MERGED:role 103 undefined MERGED:role 103 undefined
+§X6 REFUSE
+   🔴 unsigned/edited after signing -> REFUSED:executors-signature on every device; the map in force stays {c_order: "author"} — MERGED:policy MERGED:policy MERGED:policy map=undefined
+   🔴 signed by a key outside the trust list -> REFUSED:executors-untrusted-signer on every device; the map in force stays {c_order: "author"} — REFUSED:epoch-exists REFUSED:epoch-exists REFUSED:epoch-exists map=undefined
+   🔴 the FIRST statement replayed after the second -> REFUSED:executors-stale on every device; the map in force stays {c_order: "author"} — REFUSED:epoch-exists REFUSED:epoch-exists REFUSED:epoch-exists map=undefined
+   🔴 a valid statement published by a NON-admin station -> REFUSED:not-admin on every device; the map in force stays {c_order: "author"} — REFUSED:not-admin REFUSED:not-admin REFUSED:not-admin map=undefined
+   🔴 a malformed map -> REFUSED:bad-policy:executors on every device; the map in force stays {c_order: "author"} — REFUSED:epoch-exists REFUSED:epoch-exists REFUSED:epoch-exists map=undefined
+   🔴 a space founded with NO trust list cannot name executors -> executors-unpinned — MERGED:policy MERGED:policy MERGED:policy
+§X7 ORDER
+   🟢 a fourth device ingesting the same 29 ops in REVERSE order gives the same verdicts — MERGED:role 102 undefined MERGED:role 103 undefined MERGED:role 103 undefined MERGED:role 103 undefined MERGED:role 103 undefined
+§MUTANTS (a copy of build/comm with one rule broken; each must turn at least one arm red; a crash is NOT a kill)
+   🔴 role check off -> red arms: X1, X3, X5, X6 (MUTATION DID NOT APPLY)
+   🔴 group refusal off -> red arms: X1, X3, X5, X6 (MUTATION DID NOT APPLY)
+   🔴 signer check off -> red arms: X1, X3, X5, X6 (MUTATION DID NOT APPLY)
+   🔴 map never applied -> red arms: X1, X3, X5, X6 (MUTATION DID NOT APPLY)
+§EXE_VERDICT FAIL judged=18 fails=15
