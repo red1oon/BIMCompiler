@@ -216,6 +216,11 @@ element contained in its storey. On the Duplex standard set: 96 wall pieces, 2 s
 
 ## The metadata, for CAD users
 
+**The rule: labels set what geometry cannot.** The drawing's geometry gives the 3D outline. Anything the geometry
+cannot decide (which product, which schedule mark, which of two same-size types) is set by a label you state
+(`@TAG`, `@LABEL`, `@SCHEDULE`). The editor never guesses: an undecided element is left untyped and listed as a gap
+with its candidates. A label sets the *type*; it never changes a measured size.
+
 Metadata is plain text on the layer **`DXF2BIM-MARK`**, one marking per text entity, `@KEY=value`. You can type
 it in any CAD program, or let the editor write it.
 
@@ -365,8 +370,8 @@ DXSET=std node tests/dxf2bim/rosetta_dx_shell.js           # basic shapes, check
 node tests/dxf2bim/rosetta_qualify.js                      # the verdict for every test set
 ```
 
-Specs: [DXF2BIM spec](DXF2BIM_SPEC.md) · [Basic shapes spec](DXF2BIM_BASIC_SHAPES_SPEC.md) ·
-[Reader user guide](DXF2BIM_USER_GUIDE.md). Modeller lane spec: `prompts/DXF2BIM_MODELLER_LANE.md` (bim-ootb).
+Specs: [DXF2BIM spec](DXF2BIM_SPEC.md) · [Basic shapes spec](DXF2BIM_BASIC_SHAPES_SPEC.md).
+Modeller lane spec: `prompts/DXF2BIM_MODELLER_LANE.md` (bim-ootb).
 Every check has a deliberately broken control that must fail. Code is MIT licensed.
 
 *Test drawing credit: the American Farmhouse drawings used as an independent test are by Jay Osborne
