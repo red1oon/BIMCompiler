@@ -62,6 +62,10 @@ and openings). Every dimension is a real CAD dimension measured between its two 
 section). The **2D Drawings** panel lists each sheet with its role; the canvas shows each sheet placed in 3D —
 plans at their level, elevations on their face, the section on its cut plane.
 
+A raw set (no metadata yet) **plays its arrangement** as it opens: each sheet first lies where it was drawn, then
+moves to where its markings and yellow defaults put it, one value at a time, so you can see what each value does.
+**Arrange** in the 2D Drawings panel plays it again; **Esc** stops it.
+
 ![The 2D Drawings panel and the Drawing metadata editor, standard set loaded: verdict Qualifies](img/dxf2bim/import_sheets.jpg)
 
 ### 2 · Check the metadata
@@ -80,6 +84,23 @@ Press **Metadata**. The **Drawing metadata** panel shows, per section:
 Every value shows **where it came from**: *from file*, *from model*, or *you*.
 
 ![Editor with the standard set: units confirmed, layers mapped, verdict Qualifies](img/dxf2bim/editor_std.jpg)
+
+#### 2a · See a whole sheet: Sheet
+Open a sheet's card in the **Sheets** section and press **Sheet**. The sheet fills the canvas beside the panel,
+**as it was drawn**, with its metadata drawn on top:
+
+- a **grid line** or **level datum** you stated is a dashed line through its own position, labelled `@GRIDX=A`,
+  `@Z=3.1` …; a tag sits at its point, an exclude area is drawn as its box;
+- values that have no place on the sheet (units, role, name, set) are listed in a **markings box**;
+- every **yellow row still open** in the list is a ring at the spot the editor read it from (yellow = stated or
+  read, orange = inferred). Tick the row in the list and its ring turns into a marking, while the view stays open.
+
+A sheet that already has its own border and title block keeps them. A sheet without one (for example a sheet
+written by the model's own 2D export) gets an **ISO border and title block** at the paper size and scale that hold
+it (1:100 first, then 1:200, 1:500, 1:50, on A4 to A0); what the drawing does not say (date, owner, approver,
+revision) is shown in yellow as *not stated*, never filled in. **Save SVG** saves the view at paper size, **Print**
+prints it, and **Markings** switches the drawn metadata off for a clean copy. Wheel to zoom, drag to pan, **Esc**
+or ✕ to close; nothing you do in the view changes the drawings or the metadata.
 
 ### 3 · Raw drawings: fill in what is missing
 A drawing without metadata opens with **red** fields and the verdict **Blocked**. The editor lists
@@ -153,6 +174,12 @@ empties. A wall that stops lower than the slab can still be given its own top in
 
 ![Wall tops: one tick per plan clears the interior walls the elevations cannot show](img/dxf2bim/walk_wall_tops.jpg)
 
+#### Doors and windows tagged by width
+Type each row of the drawing's **Door schedule** and **Window schedule** once, in the **Doors and windows** section
+(mark, width, height). The editor then proposes one yellow row per schedule row, for example
+`@TAG=D1 on 6 doors`: every untagged door (or window) whose drawn width matches exactly that row's width. One tick
+tags them all. A width that two rows share is not proposed; tag those doors one by one.
+
 #### 3d · Blocking items: what they mean and what to do
 A **blocking** item stops Convert. An **advisory** item does not. The verdict lists them; click one to zoom to it.
 What blocked the plain Duplex after the sheets were complete, and how each was cleared:
@@ -196,12 +223,22 @@ originals are never modified. Next time you open the marked copies, everything i
 door and window openings, and places the door and window fills from the component library — as **one undo
 step**.
 
+Two choices sit above **Convert**. **Evidence colours (drawn / derived / assumed)** shows each body by how it is
+known instead of its material: drawn as is, **derived** (amber: computed from drawing evidence plus a stated
+convention) or **assumed** (red: no drawing evidence for it). **Firm catalogue: Load** takes your office's catalogue
+(made from one of your own IFC models with `modeller/tools/catalogue_from_ifc.js`): a wall or slab of a thickness
+in the catalogue gets that thickness's most frequent material, a door its type, with the count stated. A file
+that does not fit is refused with the reason, never half-loaded; **Clear** goes back to the reference materials.
+
 ![The converted Duplex: two storeys, openings cut, doors and glazing placed](img/dxf2bim/converted.jpg)
 
 ### 6 · Export IFC
 **Export → IFC4.** The file has a proper spatial structure (Project → Site → Building → Storeys) and every
 element contained in its storey. On the Duplex standard set: 96 wall pieces, 2 slabs, 1 roof, 14 doors,
 22 windows, 2 storeys.
+
+**Export → Viewer database (.db)** builds the same IFC4 and runs it through the extractor the Viewer uses, then
+downloads `<name>_extracted.db`. Open that file in the **Viewer** (**Open → local .db**) for 3D, 4D and 5D.
 
 ---
 
