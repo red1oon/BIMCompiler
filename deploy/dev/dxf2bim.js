@@ -9,6 +9,9 @@
   else root.Dxf2Bim = factory();
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
+  // §D55 (JKR tuning, 2026-10-23): glazing pieces within this distance (m) are parts of ONE window. Measured: JKR panes 2.4 mm / 50 mm off their frames and posts, nothing at 50-300 mm; Duplex,
+  // Clinic, LTU, the shed: every piece touches (<= 1 mm). A module constant, not CFG, so no set's run_id changes.
+  var WINDOW_PART_GAP = typeof process !== 'undefined' && process.env && process.env.DXF_WINDOW_PART_GAP ? Number(process.env.DXF_WINDOW_PART_GAP) : 0.05;   // env: the witness's falsifier hook
 
   function r6(x) { return Math.round(x * 1e6) / 1e6 + 0; }          // N5; +0 turns -0 into 0
   function canon(v) {                                                // N1 canonical JSON, keys sorted
@@ -29,7 +32,7 @@
     return null;
   }
 
-  var TYPES = { wall: 1, wallline: 1, slab: 1, component: 1, opening: 1, glazing: 1, ignore: 1 };
+  var TYPES = { wall: 1, wallline: 1, slab: 1, component: 1, opening: 1, glazing: 1, ignore: 1, slabedge: 1 };   // §D70.1 slabedge: the plan's A-FLOR-OTLN, read by Dxf2Shell.slabEdges
   function validateMap(map) {
     if (!map || !Array.isArray(map.rules)) throw new Error('layer_map: rules[] missing');
     map.rules.forEach(function (r, i) {
@@ -219,7 +222,7 @@
       if (e.layer === 'DXF2BIM-MARK') { ignored.push({ handle: e.handle, layer: e.layer, entity: e.type }); return; }      // reserved marker layer (§26 E7)
       var rule = matchRule(e.layer, layerMap.rules);                                                      // S3
       if (!rule) { gap('GAP:unmapped_layer', e); return; }
-      if (rule.type === 'ignore') { ignored.push({ handle: e.handle, layer: e.layer, entity: e.type }); return; }
+      if (rule.type === 'ignore' || rule.type === 'slabedge') { ignored.push({ handle: e.handle, layer: e.layer, entity: e.type }); return; }   // §D70.1 slabedge: read by Dxf2Shell.slabEdges, not here
       if (rule.type === 'opening') { openingEnts.push(e); return; }
       if (rule.type === 'glazing') { glazEnts.push(e); return; }
       if (rule.type === 'wallline') { wlEnts.push(e); return; }
@@ -388,20 +391,54 @@
       });
       return best && best.w;
     }
+    // §F7 D20: a door hinge on an ANGLED (F9 polygon) wall is off the wall's bbox centre line by up to length x sin(angle) / 2: with no centre line within host_tol,
+    // the polygon wall whose drawn outline holds the hinge or passes within host_tol of it hosts the door (0 inside; ties as hostFor). Rectangle walls are not concerned.
+    function hostByOutline(pt) {
+      var tol = config.host_tol, best = null;
+      elems.forEach(function (w) {
+        if (w.op !== 'DXF_WALL' || !w.params.polygon || !w.params.outline) return;
+        var P = w.params.outline, inside = false, d = Infinity;
+        for (var i = 0, j = P.length - 1; i < P.length; j = i++) {
+          if ((P[i][1] > pt[1]) !== (P[j][1] > pt[1]) && pt[0] < (P[j][0] - P[i][0]) * (pt[1] - P[i][1]) / (P[j][1] - P[i][1]) + P[i][0]) inside = !inside;
+          d = Math.min(d, dist2seg(pt, P[j], P[i]));
+        }
+        d = inside ? 0 : r6(d);
+        if (d > tol) return;
+        var key = [d, hnum(w.e.handle), w.part];
+        if (!best || key[0] < best.key[0] || (key[0] === best.key[0] && (key[1] < best.key[1] || (key[1] === best.key[1] && key[2] < best.key[2])))) best = { key: key, w: w };
+      });
+      return best && best.w;
+    }
     var oSegs = [], doorPts = [];                            // §12: segments on opening layers + door anchor points
+    // §F7 D17-R: a DOUBLE door = two arcs of one radius whose hinges are two radii apart, each closed end at the midpoint between the hinges: ONE door of the full width (leaves=2),
+    // the second arc absorbed. (Two single doors hinged back to back with their leaves meeting draw the same thing: read as a double door, stated.)
+    var arcs = openingEnts.filter(function (e) { return e.type === 'ARC'; }), pairOf = {}, absorbed = {}, tolP = has(config, ['snap_tol']) ? config.snap_tol : 0.001;
+    var ends = function (e) { return [e.startAngle, e.endAngle].map(function (a) { return [m(e.center.x + e.radius * Math.cos(a)), m(e.center.y + e.radius * Math.sin(a))]; }); };
+    arcs.forEach(function (a, i) { if (pairOf[a.handle] || absorbed[a.handle]) return; arcs.slice(i + 1).some(function (b) {
+      if (pairOf[b.handle] || absorbed[b.handle] || Math.abs(m(a.radius) - m(b.radius)) > tolP) return false;
+      var A = [m(a.center.x), m(a.center.y)], Bc = [m(b.center.x), m(b.center.y)], r = m(a.radius); if (Math.abs(Math.hypot(A[0] - Bc[0], A[1] - Bc[1]) - 2 * r) > tolP) return false;
+      var Mid = [(A[0] + Bc[0]) / 2, (A[1] + Bc[1]) / 2], atM = function (e) { return ends(e).some(function (p) { return Math.hypot(p[0] - Mid[0], p[1] - Mid[1]) <= tolP; }); };
+      if (!atM(a) || !atM(b)) return false;
+      pairOf[a.handle] = b; absorbed[b.handle] = a; return true; }); });
     openingEnts.forEach(function (e) {
+      if (e.type === 'ARC' && absorbed[e.handle]) return;   // D17-R: the second leaf of a double door
       if (e.type === 'ARC') {
         if (!has(config, ['host_tol'])) { gap('GAP:no_dimension', e, { need: 'host_tol' }); return; }
         var doorFromElev = !!(config.opening && config.opening.door && config.opening.door.from_elevation === true);
         if (!doorFromElev && !has(config, ['opening', 'door', 'height'])) { gap('GAP:no_dimension', e, { need: 'opening.door.height' }); return; }
-        if (has(config, ['opening', 'door', 'min_width']) && m(e.radius) < config.opening.door.min_width) { gap('GAP:door_below_min_width', e, { width: m(e.radius) }); return; }
-        var hinge = [m(e.center.x), m(e.center.y)], width = m(e.radius);
-        var host = hostFor(hinge);
+        var pb = pairOf[e.handle], fullW = pb ? 2 * m(e.radius) : m(e.radius);   // D17-R: a double door's width is both leaves
+        if (has(config, ['opening', 'door', 'min_width']) && fullW < config.opening.door.min_width) { gap('GAP:door_below_min_width', e, { width: fullW }); return; }
+        var hinge = [m(e.center.x), m(e.center.y)], width = fullW;
+        var host = hostFor(hinge), hostBasis = null;
+        if (!host) { host = hostByOutline(hinge); if (host) hostBasis = 'outline'; }   // §F7 D20
         if (!host) { gap('GAP:no_host', e, { hinge: hinge }); return; }
         var door = { op: 'DXF_OPENING', e: e, part: 0, hostRef: host, params: {
           kind: 'door', hinge: hinge, width: width, height: doorFromElev ? null : config.opening.door.height, pending_elevation: doorFromElev, height_fallback: (doorFromElev && has(config, ['opening', 'door', 'height'])) ? config.opening.door.height : null,
           swing_start_deg: r6(e.startAngle * 180 / Math.PI), swing_end_deg: r6(e.endAngle * 180 / Math.PI), parts: [] } };
+        if (hostBasis) door.params.host_basis = hostBasis;
+        if (pb) { door.params.leaves = 2; door.params.leaf_width = m(e.radius); door.params.pair_handle = pb.handle; door.params.swing_start_deg = r6(e.startAngle * 180 / Math.PI); }
         elems.push(door);
+        if (pb) ends(pb).concat([[m(pb.center.x), m(pb.center.y)]]).forEach(function (p) { doorPts.push({ door: door, p: p }); });
         doorPts.push({ door: door, p: hinge },
           { door: door, p: [m(e.center.x + e.radius * Math.cos(e.startAngle)), m(e.center.y + e.radius * Math.sin(e.startAngle))] },
           { door: door, p: [m(e.center.x + e.radius * Math.cos(e.endAngle)), m(e.center.y + e.radius * Math.sin(e.endAngle))] });
@@ -467,6 +504,15 @@
       entOrder.forEach(function (h) {
         var segs = byEnt[h], hit = touch[h].slice();
         if (!hit.length) elems.forEach(function (door) { if (door.op === 'DXF_OPENING' && door.params.kind === 'door' && door.params.opening_box && inBox(segs, door.params.opening_box)) hit.push(door); });
+        // D3 swing disc: still unattached -> the door whose hinge is within width + snap_tol of the piece's endpoint centroid (hardware, leaf, frame inside the swing)
+        if (!hit.length) {
+          var dcx = 0, dcy = 0; segs.forEach(function (sg) { dcx += sg.a[0] + sg.b[0]; dcy += sg.a[1] + sg.b[1]; }); dcx /= 2 * segs.length; dcy /= 2 * segs.length;
+          elems.forEach(function (door) { if (door.op === 'DXF_OPENING' && door.params.kind === 'door' && Math.hypot(dcx - door.params.hinge[0], dcy - door.params.hinge[1]) <= door.params.width + (has(config, ['opening', 'casing']) ? config.opening.casing : tolS)) hit.push(door); });
+          if (hit.length > 1) {   // the swing it sits deepest in wins (distance to the hinge as a share of the leaf width); a tie stays ambiguous
+            var rr = hit.map(function (d) { return Math.hypot(dcx - d.params.hinge[0], dcy - d.params.hinge[1]) / d.params.width; }), rmin = Math.min.apply(null, rr), best = hit.filter(function (d, i) { return rr[i] <= rmin + 1e-9; });
+            if (best.length === 1) hit = best;
+          }
+        }
         if (!hit.length) return;
         segs.forEach(function (sg) { sg.used = true; });
         if (hit.length > 1) { gap('GAP:door_part_ambiguous', segs[0].e, { doors: hit.map(function (d) { return d.e.handle; }).sort(function (p, q) { return hnum(p) - hnum(q); }) }); return; }
@@ -485,6 +531,38 @@
       var comps = Object.keys(groups).map(function (k) { return groups[k]; });
       comps.forEach(function (c) { c.sort(function (p, q) { return hnum(p.e.handle) - hnum(q.e.handle) || p.part - q.part; }); });
       comps.sort(function (p, q) { return hnum(p[0].e.handle) - hnum(q[0].e.handle) || p[0].part - q[0].part; });
+      // D12 (c): leaves of 4 segments that share a FULL edge (the leaves of a double door, axis-aligned) are ONE rectangle opening, their union, when the union has exactly their total area; any other component of several entities is split per entity before the rectangle test.
+      comps = comps.reduce(function (acc, c) {
+        var by = {}; c.forEach(function (sg) { (by[sg.e.handle] = by[sg.e.handle] || []).push(sg); });
+        var hs = Object.keys(by).sort(function (p, q) { return hnum(p) - hnum(q); });
+        if (!(c.length > 4 && hs.length > 1 && hs.every(function (h) { return by[h].length === 4; }))) { acc.push(c); return acc; }
+        var bbx = {}; hs.forEach(function (h) { var xs = [], ys = []; by[h].forEach(function (sg) { xs.push(sg.a[0], sg.b[0]); ys.push(sg.a[1], sg.b[1]); }); bbx[h] = [Math.min.apply(null, xs), Math.min.apply(null, ys), Math.max.apply(null, xs), Math.max.apply(null, ys)]; });
+        var gp = {}; hs.forEach(function (h) { gp[h] = h; }); var gf = function (h) { while (gp[h] !== h) h = gp[h]; return h; };
+        for (var i = 0; i < hs.length; i++) for (var j = i + 1; j < hs.length; j++) {
+          var A = bbx[hs[i]], B2 = bbx[hs[j]];
+          var sx = (Math.abs(A[2] - B2[0]) <= tolS || Math.abs(B2[2] - A[0]) <= tolS) && Math.abs(A[1] - B2[1]) <= tolS && Math.abs(A[3] - B2[3]) <= tolS;
+          var sy = (Math.abs(A[3] - B2[1]) <= tolS || Math.abs(B2[3] - A[1]) <= tolS) && Math.abs(A[0] - B2[0]) <= tolS && Math.abs(A[2] - B2[2]) <= tolS;
+          var same = Math.abs(A[0] - B2[0]) <= tolS && Math.abs(A[1] - B2[1]) <= tolS && Math.abs(A[2] - B2[2]) <= tolS && Math.abs(A[3] - B2[3]) <= tolS;
+          if (sx || sy || same) gp[gf(hs[j])] = gf(hs[i]);
+        }
+        var grp = {}; hs.forEach(function (h) { (grp[gf(h)] = grp[gf(h)] || []).push(h); });
+        Object.keys(grp).sort(function (p, q) { return hnum(p) - hnum(q); }).forEach(function (k) {
+          var g = grp[k].sort(function (p, q) { return hnum(p) - hnum(q); });
+          if (g.length > 1) {
+            var U = [Math.min.apply(null, g.map(function (h) { return bbx[h][0]; })), Math.min.apply(null, g.map(function (h) { return bbx[h][1]; })), Math.max.apply(null, g.map(function (h) { return bbx[h][2]; })), Math.max.apply(null, g.map(function (h) { return bbx[h][3]; }))];
+            var seenB = [], area = 0;   // two products drawn on the SAME footprint (e.g. leaf + panel) count once
+            g.forEach(function (h) { var Bh = bbx[h]; if (seenB.some(function (o) { return Math.abs(o[0] - Bh[0]) <= tolS && Math.abs(o[1] - Bh[1]) <= tolS && Math.abs(o[2] - Bh[2]) <= tolS && Math.abs(o[3] - Bh[3]) <= tolS; })) return; seenB.push(Bh); area += (Bh[2] - Bh[0]) * (Bh[3] - Bh[1]); });
+            if (Math.abs((U[2] - U[0]) * (U[3] - U[1]) - area) <= 1e-6) {
+              var orig = []; g.forEach(function (h) { orig = orig.concat(by[h]); });
+              var cs = [[U[0], U[1]], [U[2], U[1]], [U[2], U[3]], [U[0], U[3]]];
+              acc.push(cs.map(function (q, i) { return { e: by[g[0]][0].e, part: i, a: q, b: cs[(i + 1) % 4], used: false, orig: orig, also: i === 0 ? g.slice(1).map(function (h) { return { handle: h, part: 0 }; }) : [] }; }));
+              return;
+            }
+          }
+          g.forEach(function (h) { acc.push(by[h]); });
+        });
+        return acc;
+      }, []);
       comps.forEach(function (c) {
         if (c.length !== 4) return;
         var ends = []; c.forEach(function (sg) { ends.push(sg.a, sg.b); });
@@ -500,19 +578,43 @@
         var centre = [r6(cx / 8), r6(cy / 8)];
         var ang = Math.atan2(dirs[li][1], dirs[li][0]) * 180 / Math.PI; ang = ((ang % 180) + 180) % 180; ang = r6(ang) === 180 ? 0 : r6(ang);
         var first = c[0].e;
-        c.forEach(function (sg) { sg.used = true; });
-        var members = c.map(function (sg) { return { handle: sg.e.handle, part: sg.part }; });
-        if (!has(config, ['host_tol']) || !has(config, ['opening', 'rect', 'sill']) || !has(config, ['opening', 'rect', 'height'])) {
+        c.forEach(function (sg) { sg.used = true; if (sg.orig) sg.orig.forEach(function (o) { o.used = true; }); });
+        var members = c.map(function (sg) { return { handle: sg.e.handle, part: sg.part }; }).concat([].concat.apply([], c.map(function (sg) { return sg.also || []; })));
+        var asDoor = !!(config.opening && config.opening.rect && config.opening.rect.door === true);   // D9: a rectangle on an opening layer is a door footprint (height from its label)
+        if (!has(config, ['host_tol']) || (!asDoor && (!has(config, ['opening', 'rect', 'sill']) || !has(config, ['opening', 'rect', 'height'])))) {
           var seen = {}; c.forEach(function (sg) { if (!seen[sg.e.handle]) { seen[sg.e.handle] = 1; gap('GAP:no_dimension', sg.e, { need: 'host_tol,opening.rect.sill,opening.rect.height', members: members }); } });
           return;
         }
         var host = hostFor(centre);
+        if (!host && asDoor) {   // D9: a door footprint lies in the GAP between two wall pieces; its two long-axis ends touch those pieces: the nearer piece hosts it (tie: lower handle, as hostFor)
+          var ux = dirs[li][0], uy = dirs[li][1], hl = dirs[li][2] / 2, hA = hostFor([r6(centre[0] - ux * hl), r6(centre[1] - uy * hl)]), hB = hostFor([r6(centre[0] + ux * hl), r6(centre[1] + uy * hl)]);
+          host = hA && hB ? (hnum(hA.e.handle) <= hnum(hB.e.handle) ? hA : hB) : (hA || hB);
+        }
         if (!host) { var seen2 = {}; c.forEach(function (sg) { if (!seen2[sg.e.handle]) { seen2[sg.e.handle] = 1; gap('GAP:no_host', sg.e, { centre: centre, members: members }); } }); return; }
         elems.push({ op: 'DXF_OPENING', e: first, part: c[0].part, hostRef: host, params: {
           kind: 'rect', width: r6(dirs[li][2]), depth: r6(dirs[si][2]), centre: centre, angle_deg: ang,
-          sill: config.opening.rect.sill, height: config.opening.rect.height, members: members } });
+          sill: asDoor ? 0 : config.opening.rect.sill, height: asDoor ? null : config.opening.rect.height, category: asDoor ? 'door' : undefined, pending_elevation: asDoor ? true : undefined, members: members } });
         gap('GAP:no_host_cut', first, { host_handle: host.e.handle, host_part: host.part, rect: true });
       });
+      // D12 (b): a rectangle door (D9) takes the unattached entities whose endpoint centroid lies in its footprint grown by the casing; two footprints = ambiguous (listed)
+      if (has(config, ['opening', 'casing'])) {
+        var rdoors = elems.filter(function (x) { return x.op === 'DXF_OPENING' && x.params.kind === 'rect' && x.params.category === 'door'; });
+        if (rdoors.length) {
+          var left0 = {}; oSegs.forEach(function (sg) { if (!sg.used) (left0[sg.e.handle] = left0[sg.e.handle] || []).push(sg); });
+          Object.keys(left0).sort(function (p, q) { return hnum(p) - hnum(q); }).forEach(function (h) {
+            var segs = left0[h], cx = 0, cy = 0; segs.forEach(function (sg) { cx += sg.a[0] + sg.b[0]; cy += sg.a[1] + sg.b[1]; }); cx /= 2 * segs.length; cy /= 2 * segs.length;
+            var over = [], hit = rdoors.filter(function (d) {
+              var q = d.params, a = q.angle_deg * Math.PI / 180, dx = cx - q.centre[0], dy = cy - q.centre[1], u = dx * Math.cos(a) + dy * Math.sin(a), v = -dx * Math.sin(a) + dy * Math.cos(a);
+              var ov = Math.max(Math.abs(u) - q.width / 2, Math.abs(v) - q.depth / 2, 0);   // how far outside the bare footprint (0 = inside it)
+              if (ov > config.opening.casing) return false; over.push(ov); return true; });
+            if (hit.length > 1) { var mn = Math.min.apply(null, over), at = hit.filter(function (d, i) { return over[i] <= mn + 1e-9; }); if (at.length === 1) hit = at; }   // the footprint it lies in (or nearest to) wins; a tie stays ambiguous
+            if (!hit.length) return;
+            segs.forEach(function (sg) { sg.used = true; });
+            if (hit.length > 1) { gap('GAP:door_part_ambiguous', segs[0].e, { doors: hit.map(function (d) { return d.e.handle; }).sort(function (p, q) { return hnum(p) - hnum(q); }) }); return; }
+            hit[0].params.parts = hit[0].params.parts || []; segs.forEach(function (sg) { hit[0].params.parts.push({ handle: sg.e.handle, part: sg.part }); });
+          });
+        }
+      }
       // W4 leftovers: one gap per entity that still has unconsumed segments
       var left = {};
       oSegs.forEach(function (sg) { if (!sg.used) { left[sg.e.handle] = left[sg.e.handle] || { e: sg.e, n: 0 }; left[sg.e.handle].n++; } });
@@ -536,9 +638,10 @@
       });
       var par = items.map(function (_, i) { return i; });
       var find = function (i) { while (par[i] !== i) { par[i] = par[par[i]]; i = par[i]; } return i; };
+      var TP = Math.max(T, WINDOW_PART_GAP);   // §D55 the parts of one window (frames, mullions, panes) may be drawn a few mm to 50 mm apart: one cluster
       for (var i = 0; i < items.length; i++) for (var j = i + 1; j < items.length; j++) {
         var a = items[i].b, b = items[j].b;
-        if (a[0] <= b[2] + T && b[0] <= a[2] + T && a[1] <= b[3] + T && b[1] <= a[3] + T) par[find(i)] = find(j);
+        if (a[0] <= b[2] + TP && b[0] <= a[2] + TP && a[1] <= b[3] + TP && b[1] <= a[3] + TP) par[find(i)] = find(j);
       }
       var groups = {};
       items.forEach(function (it, i) { (groups[find(i)] = groups[find(i)] || []).push(it); });

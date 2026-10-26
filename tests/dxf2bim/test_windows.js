@@ -40,11 +40,11 @@ let seed = 99; const rnd = () => (seed = (seed * 1103515245 + 12345) & 0x7ffffff
 const all = walls.concat(win1, win2); const sig = r => JSON.stringify(wins(r).map(o => [o.params.members, o.params.host_handle, o.params.width, o.params.centre]));
 const base = sig(go(all)); let same = 0; for (let i = 0; i < 20; i++) if (sig(go(all.slice().sort(() => rnd() - 0.5))) === base) same++;
 check('WN5', 'window clustering/host depends on file order (R2)', same === 20, 'identical in ' + same + '/20');
-// WN6 snap_tol boundary: 5 mm apart stays two windows, 0.5 mm apart joins into one
+// WN6 the glazing part gap (bim-ootb §D55: pieces within WINDOW_PART_GAP = 0.05 m are ONE window, measured on JKR): 100 mm apart stays two windows, 5 mm apart joins into one
 const wallBase = [rectP('A1', 'A-WALL-FULL', 0, 200, 3000, 400)];
-const apart = go(wallBase.concat([rectP('E1', 'A-GLAZ', 0, 0, 1000, 200), rectP('E2', 'A-GLAZ', 1005, 0, 2000, 200)]));
-const joined = go(wallBase.concat([rectP('E1', 'A-GLAZ', 0, 0, 1000, 200), rectP('E2', 'A-GLAZ', 1000.5, 0, 2000, 200)]));
-check('WN6', 'snap_tol ignored when clustering glazing', wins(apart).length === 2 && wins(joined).length === 1, '5 mm apart windows=' + wins(apart).length + ' | 0.5 mm apart windows=' + wins(joined).length);
+const apart = go(wallBase.concat([rectP('E1', 'A-GLAZ', 0, 0, 1000, 200), rectP('E2', 'A-GLAZ', 1100, 0, 2000, 200)]));
+const joined = go(wallBase.concat([rectP('E1', 'A-GLAZ', 0, 0, 1000, 200), rectP('E2', 'A-GLAZ', 1005, 0, 2000, 200)]));
+check('WN6', 'the glazing part gap ignored when clustering glazing', wins(apart).length === 2 && wins(joined).length === 1, '100 mm apart windows=' + wins(apart).length + ' | 5 mm apart windows=' + wins(joined).length);
 // WN7 accounting
 const handles = new Set(); const rr = go(walls.concat(win1, win2, far));
 rr.ops.filter(o => o.op_type === 'DXF_OPENING' && o.params.kind === 'window').forEach(o => o.params.members.forEach(m => handles.add(m.handle)));

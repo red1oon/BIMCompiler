@@ -5,6 +5,8 @@ Credits: the American Farmhouse test drawing is by Jay Osborne (freefarmhouse.co
 
 # DXF2BIM — Deterministic 2D DXF → 3D BIM
 
+> **Code source (2026-10-26):** the reader modules live in bim-ootb `modeller/dxf2bim/` (owner decision 2026-10-23, its `SOURCE.md`). `deploy/dev/dxf2*.js` / `std2d*.js` here are COPIES taken from bim-ootb 1058069c3 for this repo's scripts and tests; change bim-ootb, then copy.
+
 Status: SPEC v0.2 (2026-10-11), reviewed once, decisions §8 agreed by user. Code starts with S1-S3 + T1-T3 (see §10).
 
 ## 1. Goal

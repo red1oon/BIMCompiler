@@ -18,7 +18,7 @@
   var MAP_LEVL = { version: 1, rules: [{ match: 'exact', pattern: 'A-ANNO-LEVL', type: 'levelline' }, { match: 'exact', pattern: 'A-ELEV-LEVL', type: 'levelline' }] };
   var MAP_ROOF = { version: 1, rules: [{ match: 'exact', pattern: 'A-ROOF', type: 'roof' }, { match: 'exact', pattern: 'A-GLAZ', type: 'glazing' }] };
   var CFG = { version: 1, units: 'mm', snap_tol: 0.001, elev_tol: 0.003, host_tol: 0.3, align_tol: 0.05, wall_mode: 'footprint',
-    wall: { height_from_elevation: true, min_thickness: 0.05, polygon_footprint: true }, opening: { door: { from_elevation: true, min_width: 0.5 }, window: { from_elevation: true }, gap_min: 0.3, gap_max: 5 } };
+    wall: { height_from_elevation: true, min_thickness: 0.05, polygon_footprint: true }, opening: { door: { from_elevation: true, min_width: 0.5 }, window: { from_elevation: true }, rect: { door: true }, casing: 0.076, gap_min: 0.3, gap_max: 5 } };
   // type binding (rosetta_dx_types chain): SANDBOX sets by id prefix, prefer DUPLEX_NOMINAL; fills: size_tol
   var TYPES = { size_tol: 0.005, prefer: ['DUPLEX_NOMINAL'], sets: [['DUPLEX_', 'DUPLEX_NOMINAL'], ['US_', 'US_BBOX']] };
   var FILL = { size_tol: 0.005 };
@@ -41,13 +41,16 @@
     // elevation, so reading them again would double count). A-FLOR-STRS (stair cut outline) and S-COLS / A-COLS (columns): the reader has no
     // stair or column shape yet, so they are excluded, stated here, not read as walls.
     // lane spec §L1.14: A-WALL-CURT = a curtain-wall band (parts' section union) is a wall of the std plan: it hosts doors and converts to a wall element (glazing material: later). A-ANNO-MATCH: scoped-sheet match lines (display).
-    MAP_PLAN: { version: 1, rules: MAP_PLAN.rules.concat([{ match: 'exact', pattern: 'A-WALL-CURT', type: 'wall' }], ['A-GLAZ-SILL', 'A-ANNO-NOTE', 'A-ANNO-TTLB', 'A-GLAZ-OVHD', 'A-DOOR-OVHD', 'A-FLOR-STRS', 'S-COLS', 'A-COLS', 'A-ANNO-MATCH'].map(ign)) },
+    // §D70.1: A-FLOR-OTLN = the floor (slab) outline the writer drafts; read by Dxf2Shell.slabEdges (dxf2bim.js skips it). Added 2026-10-23: the STD run_id changes once.
+    MAP_PLAN: { version: 1, rules: MAP_PLAN.rules.concat([{ match: 'exact', pattern: 'A-WALL-CURT', type: 'wall' }, { match: 'exact', pattern: 'A-FLOR-OTLN', type: 'slabedge' }], ['A-GLAZ-SILL', 'A-ANNO-NOTE', 'A-ANNO-TTLB', 'A-GLAZ-OVHD', 'A-DOOR-OVHD', 'A-FLOR-STRS', 'A-FLOR-LEVL', 'S-COLS', 'A-COLS', 'A-ANNO-MATCH'].map(ign)) },
     MAP_ELEV: { version: 1, rules: [{ match: 'exact', pattern: 'A-GLAZ', type: 'glazing' }, { match: 'exact', pattern: 'A-WALL', type: 'elevwall' }, { match: 'exact', pattern: 'A-DOOR', type: 'elevdoor' }] },
     MAP_LEVL: MAP_LEVL,
     // lane spec L1.4 F4/F5: the std ROOF plan (DX roof map + the R12 annotation layers ignored) and the SECTION sheet
-    MAP_ROOF: { version: 1, rules: MAP_ROOF.rules.concat(['A-GRID', 'A-ANNO-DIMS', 'A-ANNO-LEVL', 'A-ANNO-TTLB'].map(ign)) },
-    MAP_SECT: { version: 1, rules: [{ match: 'exact', pattern: 'S-SLAB', type: 'sectslab' }, { match: 'exact', pattern: 'A-ROOF', type: 'roof' }, { match: 'exact', pattern: 'A-SECT', type: 'sectwall' }].concat(['A-WALL-PATT', 'A-GRID', 'A-ANNO-DIMS', 'A-ANNO-LEVL', 'A-ANNO-TTLB'].map(ign)) },
+    MAP_ROOF: { version: 1, rules: MAP_ROOF.rules.concat(['A-GRID', 'A-ANNO-DIMS', 'A-ANNO-LEVL', 'A-ANNO-TTLB', 'A-ANNO-NOTE'].map(ign)) },   // §F7: A-ANNO-NOTE = the north arrow's caption / 'NORTH NOT STATED' on the roof sheet (the plan map already ignores it)
+    MAP_SECT: { version: 1, rules: [{ match: 'exact', pattern: 'S-SLAB', type: 'sectslab' }, { match: 'exact', pattern: 'A-ROOF', type: 'roof' }, { match: 'exact', pattern: 'A-SECT', type: 'sectwall' }].concat(['A-WALL-PATT', 'A-WALL-CURT', 'A-GRID', 'A-ANNO-DIMS', 'A-ANNO-LEVL', 'A-ANNO-TTLB'].map(ign)) },   // §F7: A-WALL-CURT = the curtain-wall plates / members the section cut passes through: drawn, read as nothing
     EXCL_ELEV: { version: 1, rules: ['A-GLAZ-SILL', 'A-ROOF', 'A-GRID', 'A-ANNO-DIMS', 'A-ANNO-NOTE', 'A-ANNO-TTLB'].map(ign) },
+    // §D45: plan wall layers whose bodies are curtain walls (NCS A-WALL-CURT): read as walls (they host doors), written as IfcCurtainWall, so 5D prices them by area, not as masonry
+    CURTAIN: ['A-WALL-CURT'],
     QUALIFY: QUALIFY };
   return { MAP_PLAN: MAP_PLAN, MAP_ELEV: MAP_ELEV, MAP_LEVL: MAP_LEVL, MAP_ROOF: MAP_ROOF, CFG: CFG, TYPES: TYPES, FILL: FILL, MARK_ALIGN_TOL: MARK_ALIGN_TOL, setOf: setOf, runId: runId,
     CASING: CASING, QUALIFY: QUALIFY, STD: STD };
