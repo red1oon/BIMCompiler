@@ -50,7 +50,7 @@ function doorSet(o) {
   K.far = w.rect('A-DOOR', 1000, -25, 1076, 0);                       // casing on the far wall face: 200 mm from the hinge
   if (o.both) K.both = w.line('A-DOOR', [1000, 1100], [5000, 1100]);  // touches an arc end of BOTH doors
   if (o.panel) K.panel = w.rect('A-DOOR', 1200, 90, 1800, 110);      // a leaf panel inside the drawn gap, touching no hinge/arc end
-  if (o.beyond) K.beyond = w.rect('A-DOOR', 1902, -25, 1978, 0);      // casing beyond the jamb (s1 = 1900) + 2 x snap_tol
+  if (o.beyond) K.beyond = w.rect('A-DOOR', 1902, -100, 1978, -75);  // beyond the jamb (s1 = 1900) + 2 x snap_tol, and outside the D3/D12 swing disc (bim-ootb: an unattached piece within width + casing = 0.976 m of the hinge IS a door part; centroid here 0.983 m), so only the jamb rule could take it
   if (o.double) { K.d3 = w.arc('A-DOOR', [5900, 200], 500, 90, 180); K.mid = w.rect('A-DOOR', 5150, 90, 5300, 110); }   // a second leaf in door 2's gap: the panel lies in both boxes
   return { w, K };
 }

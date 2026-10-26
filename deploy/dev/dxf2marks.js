@@ -9,8 +9,8 @@
   'use strict';
   var LAYER = 'DXF2BIM-MARK';
   var K = { mm: 0.001, cm: 0.01, m: 1, 'in': 0.0254, ft: 0.3048 };
-  var SINGLE = ['SET', 'VIEW', 'NAME', 'UNITS', 'LEVEL', 'FACE', 'HAXIS', 'REGION', 'ROOF', 'CUT', 'SCOPE', 'FRAME'], MULTI = ['GRIDX', 'GRIDY', 'GRIDH', 'Z', 'EXCLUDE', 'OPENING', 'LABEL', 'SCHEDULE', 'TAG', 'ALLOWANCE', 'WALLTOP', 'LAYER', 'BODYZ', 'SIZE', 'DEFAULT'];
-  var NEED = { PLAN: ['SET', 'VIEW', 'LEVEL', 'UNITS'], ELEV: ['SET', 'VIEW', 'FACE', 'HAXIS', 'UNITS'], ROOF: ['SET', 'VIEW', 'LEVEL', 'UNITS', 'ROOF'], SECTION: ['SET', 'VIEW', 'UNITS', 'HAXIS', 'CUT'] };   // ROOF view: lane spec L2.3 D1; SECTION: L1.4 F5
+  var SINGLE = ['SET', 'VIEW', 'NAME', 'UNITS', 'LEVEL', 'FACE', 'HAXIS', 'REGION', 'ROOF', 'CUT', 'SCOPE', 'FRAME', 'WALLMIN'], MULTI = ['GRIDX', 'GRIDY', 'GRIDH', 'Z', 'EXCLUDE', 'OPENING', 'LABEL', 'SCHEDULE', 'TAG', 'ALLOWANCE', 'WALLTOP', 'LAYER', 'BODYZ', 'SIZE', 'DEFAULT'];
+  var NEED = { DRAWING: ['SET', 'VIEW', 'UNITS'], PLAN: ['SET', 'VIEW', 'LEVEL', 'UNITS'], ELEV: ['SET', 'VIEW', 'FACE', 'HAXIS', 'UNITS'], ROOF: ['SET', 'VIEW', 'LEVEL', 'UNITS', 'ROOF'], SECTION: ['SET', 'VIEW', 'UNITS', 'HAXIS', 'CUT'] };   // ROOF view: lane spec L2.3 D1; SECTION: L1.4 F5
 
   // bim-ootb lane spec L4.2: @LAYER=<name>,<type> - the rule types the reader of each view accepts (+ dims / grid: qualify settings, 'ignore' for the readers)
   var LAYER_TYPES = {
@@ -67,7 +67,12 @@
           if (fp.length !== 3 || fp.some(function (n) { return !isFinite(n); })) { errors.push(err('MARK:malformed', '@FRAME needs <angle deg>,<x mm>,<y mm>: ' + val, { handle: m.handle })); return; }
           val = fp.join(',');
         }
-        if (key === 'VIEW' && val !== 'PLAN' && val !== 'ELEV' && val !== 'ROOF' && val !== 'SECTION') { errors.push(err('MARK:malformed', '@VIEW must be PLAN|ELEV|ROOF|SECTION: ' + val, { handle: m.handle })); return; }
+        if (key === 'WALLMIN') {                                                           // F6 D11: the thinnest wall piece (metres) this plan reads as a wall; below it GAP:wall_below_min_thickness stands
+          var wmn = Number(val);
+          if (val.trim() === '' || !isFinite(wmn) || wmn <= 0 || wmn > 1) { errors.push(err('MARK:malformed', '@WALLMIN needs a thickness in metres (0 < t <= 1): ' + val, { handle: m.handle })); return; }
+          val = String(wmn);
+        }
+        if (key === 'VIEW' && val !== 'PLAN' && val !== 'ELEV' && val !== 'ROOF' && val !== 'SECTION' && val !== 'DRAWING') { errors.push(err('MARK:malformed', '@VIEW must be PLAN|ELEV|ROOF|SECTION|DRAWING: ' + val, { handle: m.handle })); return; }
         if (key === 'CUT') {                                                               // L1.4 F5: <X|Y>,<plan coordinate in the sheet's @UNITS>
           var cp = val.split(','), cv = Number(cp[1]);
           if (cp.length !== 2 || (cp[0] !== 'X' && cp[0] !== 'Y') || cp[1].trim() === '' || !isFinite(cv)) { errors.push(err('MARK:malformed', '@CUT needs X|Y,<coordinate>: ' + val, { handle: m.handle })); return; }
@@ -107,9 +112,9 @@
         if (d.allowance[ac] && (d.allowance[ac].w !== an[0] || d.allowance[ac].h !== an[1])) { errors.push(err('MARK:conflict', '@ALLOWANCE ' + ac + ' has two values', { handle: m.handle })); return; }
         d.allowance[ac] = { w: an[0], h: an[1] };
       } else if (key === 'SCHEDULE') {
-        var sp = val.split(','), sc = sp[1], sn = sp.slice(2).map(Number), sok = (sc === 'wall' && sp.length === 3) || ((sc === 'door' || sc === 'window') && sp.length === 4);
-        if (!sok || sp[0].trim() === '' || sn.some(function (n, i) { return !isFinite(n) || sp[i + 2].trim() === ''; })) { errors.push(err('MARK:malformed', '@SCHEDULE needs text,door|window,w,h or text,wall,t: ' + val, { handle: m.handle })); return; }
-        var sent = sc === 'wall' ? { text: sp[0], class: sc, t: sn[0] } : { text: sp[0], class: sc, w: sn[0], h: sn[1] };
+        var sp = val.split(','), sc = sp[1], sn = sp.slice(2).map(Number), sok = (sc === 'wall' && sp.length === 3) || ((sc === 'door' || sc === 'window') && sp.length === 4) || (sc === 'window' && sp.length === 5);   // §F8 D24: a window's optional 5th value = its sill above the level
+        if (!sok || sp[0].trim() === '' || sn.some(function (n, i) { return !isFinite(n) || sp[i + 2].trim() === ''; })) { errors.push(err('MARK:malformed', '@SCHEDULE needs text,door|window,w,h (window: [,sill]) or text,wall,t: ' + val, { handle: m.handle })); return; }
+        var sent = sc === 'wall' ? { text: sp[0], class: sc, t: sn[0] } : { text: sp[0], class: sc, w: sn[0], h: sn[1] }; if (sp.length === 5) sent.sill = sn[2];
         var sdup = d.schedule.find(function (q) { return q.text === sent.text && q.class === sent.class; });
         if (sdup && JSON.stringify(Object.assign({}, sdup, { by: undefined })) !== JSON.stringify(sent)) { errors.push(err('MARK:conflict', '@SCHEDULE ' + sent.text + ' (' + sc + ') has two sizes', { handle: m.handle })); return; }
         if (!sdup) { sent.by = by; d.schedule.push(sent); }
@@ -284,6 +289,9 @@
       var h = (maxH + 1 + n).toString(16).toUpperCase();
       out.push('0', 'TEXT', '5', h, '8', LAYER, '10', String(m.x || 0), '20', String(m.y || 0), '30', '0', '40', String(opts.height || 1), '1', m.text);
     });
+    // §F8 D32: $HANDSEED must exceed every handle in the file (DXF reference); the new markings take handles above the old maximum, so the seed moves past the last one
+    var last = maxH + marks.length;
+    for (var k = 0; k + 3 < endIdx; k += 2) if (lines[k].trim() === '9' && lines[k + 1].trim() === '$HANDSEED' && lines[k + 2].trim() === '5') { if (parseInt(lines[k + 3].trim(), 16) <= last) lines[k + 3] = (last + 1).toString(16).toUpperCase(); break; }
     return lines.slice(0, endIdx).concat(out, lines.slice(endIdx)).join(eol);
   }
 
