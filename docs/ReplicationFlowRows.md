@@ -445,9 +445,27 @@ Start from pattern P1. In the row "R1 replenish-rule": set `emits` to `"F9 reple
 
 Fix: Use the exact name of the row the rule should send.
 
-## 7. What this guide does not cover yet
+## 7. When the team hears about a save — and who acts on it
+
+*Background for the people who design flows. Nothing here is a setting; it explains why the rows above can be trusted. Spec: `prompts/TEAM_REPLICATION_PLUGIN_STUDY.md` §9–§10.*
+
+**A save is part of a transaction.** One action of a user can write many records. A Complete on a sales order, for example, writes the shipment, its lines, the invoice and the accounting entries together. They form one *transaction*: either all of them are kept (commit) or, if anything fails near the end — a closed period, say — all of them are undone (rollback), as if they never existed.
+
+**Legacy iDempiere announces a save early.** Its "after save" notices (`postCreate`, `postUpdate`) are sent the moment each record is saved, while the transaction is still open (`PO.java:2799-2804`), and they are delivered a little later on another thread. If the transaction is then rolled back, a notice has already gone out about a record that never existed, and a listener reading the database may not find a record it was told about. Legacy also has a separate after-commit hook (`Trx.addTrxEventListener` → `afterCommit`, `Trx.java:452,761`) that careful code can use; the standard notices do not use it.
+
+**The twin announces a save once, after the commit.** In the SQLite twin one user action becomes one *op group*, and the kernel commits the whole group in one step. Observing listeners are told after that step succeeded — exactly once, in a fixed order, and never for a group that was rolled back. The screens and messages are the same as legacy; only this behind-the-scenes moment is defined more strictly.
+
+**Why replication needs exactly that.** Sending a team member's changes to the others is such an observing listener. If it could see a save that was later undone, it would send a ghost document to the whole team — a second source of truth. Told only after the commit, it can only ever send what really happened.
+
+**A received record is saved as a replica, and that is a different event.** When a device takes in a record from another device, it saves it as a *replica* (legacy `po.saveReplica(true)`), and the save raises its own events — *after new replication*, *after change replication*, *before delete replication* — instead of the ordinary *after new* / *after change* / *before delete* (`PO.java:2785-2787, 4300`). A process chain that must run where the declaration ARRIVES — head office turning a station's sale lines into one completed order with Import Orders (pattern P1) — listens to *after new replication*. The station's own save of its sale lines raises only the ordinary *after new*, so the chain never runs at the station: one document, one Complete, at head office only.
+
+**What the team layer may and may not do.** It carries, orders and admits changes, and it stores what it receives as data. It never completes, posts, numbers or authors a document, computes stock, price or tax, or decides access in its own code; those are the core's, and team rules are expressed as data the core already understands (for example Document Action Access rows).
+
+*Status, 2026-10-27:* designed and specified (study §9–§10); the one event bus that delivers these moments, with the replica save, is being built (study §10.5 will record the result). Until it lands, the live team layer observes commits through its own built-in hook, which already runs only after the committed rows are written to the device's store (bim-ootb `erp/crud_overlay.js` `_sidePersist` → `_teamPush`, :1937).
+
+## 8. What this guide does not cover yet
 
 - All rows here are **samples**. Nobody has authored real business flows yet; the business owner decides what really moves.
 - Only the Modeller and the ERP team scope read their plan in the live applications today. The point-of-sale and micro-finance patterns run in the simulator.
-- A compiled plan is **not signed** yet, and every member of a team can still read everything in that team (audience keys are not built).
+- The plans that ship are **not signed** by default. Signing works (`build/scriptor/sign_plan.js`) and a team pins the keys it trusts when it is founded; every member of a team can still read everything in that team (audience keys are not built).
 - The compiler checks names and shapes. It cannot know whether a row is a good business decision.
