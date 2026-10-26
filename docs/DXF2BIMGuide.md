@@ -100,10 +100,13 @@ own end-to-end check. The counts below are the clicks and typed values of that w
 #### 3a · What yellow means
 A **yellow row** is a value the editor read from the drawing (or a default it applied) that is **not yours yet**.
 Each row names its source: `PR-UNITS: file says mm`, `PR-GRID: grid line 190 + label 1`, `PR-Z: level text B5 +
-level line B3`. Tick one row, or press **Accept all**; the value then shows **you**. Ignoring a yellow default
+level line B3`. Tick one row, tick a whole group, or press **Accept all**; the value then shows **you**. When the list holds both
+values the file states or a text names (stated / read) and values inferred from geometry or a convention (orange rows), **Accept all** is
+replaced by two buttons, **Accept stated + read** and **Accept inferred**: check the orange rows first (a click on a row shows its evidence on the sheet). Ignoring a yellow default
 is allowed (the default stays applied and is listed); ignoring a yellow *suggestion* leaves the field empty.
 
-The list grows as you answer. On the plain Duplex set it came in four rounds:
+The list grows as you answer. On the plain Duplex set it came in four rounds (walk of 2026-10-22; the editor has
+since read more from the titles, so today's rounds are larger: 24 rows in round 1, 66 in round 2):
 
 | Round | Appears after | Rows | What they are |
 |---|---|---|---|
@@ -112,9 +115,12 @@ The list grows as you answer. On the plain Duplex set it came in four rounds:
 | 3 | you type the set name once | 7 | the same set name for the other sheets |
 | 4 | you type the plan levels | 5 | the horizontal axis (`@HAXIS`) of each elevation and the section, fitted to the plan grid |
 
-**Accept all** sits **under** the list. With 49 rows it is about 1,200 pixels below the visible part of the panel:
-scroll the panel to the end of the list to find it (a three-storey office set gave 135 rows in round 2 and the
-button 4,500 pixels down).
+The list opens with its count (round 2 of the plain Duplex: `66 yellow in 6 groups`) and the accept buttons, **above** the rows. The rows come in one
+group per rule (*Grid lines*, *Level datums*, *Elevation faces* ...), closed: the header gives the rule, its row count and the
+sheets, and one tick accepts exactly that group. A grid group states its measurement in the header (for each of `GRIDX` /
+`GRIDY` / `GRIDH`: the label range and the bay sizes in drawing units), so a badly formed grid shows before you accept it. For
+the set-wide values (units, set name, roof) the header names the one value when every sheet agrees (`@UNITS=mm on all 8
+sheets`); a sheet that disagrees is shown on its own, open, marked *disagrees*, and the group tick leaves it.
 
 **Check the section cut before you accept.** On both standard sets walked (Duplex and a three-storey office), the
 suggested `@CUT` was wrong: it paired two grid bubbles that carry the same letter as the section (`A`), so it
@@ -202,7 +208,7 @@ element contained in its storey. On the Duplex standard set: 96 wall pieces, 2 s
 ### If something goes wrong
 | What you see | Why | What to do |
 |---|---|---|
-| **Convert** gives an empty canvas, the badge still says *Qualifies* | a model from an earlier conversion is still in this browser's history and the new one could not be committed (the console says `§DXF-CONVERT failed GEOM_CUT parent … not found`; the panel says nothing yet) | **Clear** (the bin icon at the top of the dock), then **Convert** again |
+| the panel says *Convert failed: …* (the badge still says *Qualifies*: the drawings are fine, the run was not) | the conversion stopped on an error; *(nothing was built)* or *(undone)* says the model is as it was before the click | **Convert** again; if it fails again, the message and the console line `§DXF-CONVERT failed …` are what to report |
 | *No door here: click a door's arc or leaf* | the click was beside the door's swing box | click on the arc itself |
 | a suggested `@CUT` that disagrees with the section's title | grid bubbles with the section's letter were read as the section line | type the cut from the title |
 | *PR-VIEW not proposed: no title text ending PLAN / ELEVATION / SECTION* | the title has more text after the view word (a scale such as `1:100`) | choose the role from the list |
@@ -331,18 +337,19 @@ in the yellow list. No head-to-head benchmark has been run.
 
 Honest limits of the preliminary version:
 
-- **Basic shapes only:** walls, slabs, roof, openings, door/window fills, and for structure sets the bodies listed above. No stairs, railings, ramps, piles, ceilings, curtain walls or furniture are built from a 2D set yet (their defaults are in the yellow list, ready for the builders; no drawing used so far carries them).
+- **Basic shapes only:** walls, curtain walls (a plan's `A-WALL-CURT` band becomes `IfcCurtainWall`, priced by area), slabs, roof, openings, door/window fills, and for structure sets the bodies listed above. No stairs, railings, ramps, piles, ceilings or furniture are built from a 2D set yet (their defaults are in the yellow list, ready for the builders; no drawing used so far carries them).
 - **Structure sets and standard sets are not mixed yet:** a set that types body layers (column, beam...) and also wall/slab/opening layers is refused with that reason.
-- **Evaporative pads, the shed's false ceiling and its detail sheet** (concrete grades, below-grade column size) are labelled or drawn but not read yet.
-- **Rectilinear buildings:** skewed and curved walls are reported as gaps; roofs are flat outlines (pitched or
-  curved roofs are not drawn correctly yet).
+- **Evaporative pads and the shed's false ceiling** are labelled or drawn but not read yet. (The details sheet *is* read: its stated concrete grades reach the bodies they name, and its footing and column schedules give the below-grade columns.)
+- **Angled walls:** a 2D set written from a model now cuts the windows of angled walls (Hospital 72, LTU 59 windows
+  had no gap before), and reading such a set back finds a door's host on the angled wall's own outline. **Curved
+  walls** are reported as gaps; roofs are flat outlines (pitched or curved roofs are not drawn correctly yet).
 - **Columns** are cut and drawn, but not yet as column symbols on the grid.
 - **Openings above or below the plan cut** (e.g. high bathroom windows) — being changed so every opening of
   the storey is shown from its host wall regardless of height.
 - **"Any DXF"** is not claimed. Your drawing needs the metadata above; the editor helps you add it, the verdict
   tells you when it is complete.
-- **The component library** (door/window geometry) is loaded locally during this preliminary stage; on the
-  public site Convert reports the library as unreachable until it is published.
+- **The component library** (door/window geometry) is published: when no local copy is present, Convert loads it
+  from the project's object storage. A window or door type the library does not hold is a blocking item, never a box.
 
 ---
 
