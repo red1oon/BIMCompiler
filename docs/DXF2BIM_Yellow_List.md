@@ -30,43 +30,56 @@ A 2D drawing carries only some of what a model needs. Everything it does not sta
 | `beam.width` | IfcBeam | m | **0.3** | guess | section width when no label or band gives it | 0.2, 0.25, 0.3 |
 | `gradebeam.depth` | IfcBeam | m | **0.3** | guess | grade beam depth | 0.3, 0.45 |
 | `gradebeam.width` | IfcBeam | m | **0.3** | guess | grade beam width when no label gives it | 0.2, 0.3 |
-| `column.height` | IfcColumn | m | **3.0** | guess | storey height when no elevation gives it | 2.7, 3.0, 3.6 |
+| `column.height` | IfcColumn | m | **3** | guess | storey height when no elevation gives it | 2.7, 3, 3.6 |
 | `column.size` | IfcColumn | m | **0.3** | guess | square section when a column symbol gives none | 0.2, 0.25, 0.3, 0.4 |
+| `synth.column.belowgrade.size` | IfcColumn | m | **0** | guess | 0 = not stated: no below-grade column is built; state the schedule's below-grade section (e.g. 0.3556 for 14 in) |  |
+| `synth.column.grade_to_base` | IfcColumn | m | **0.6096** | guess | grade to the column base (plinth): 2 ft, the datum read from a column detail |  |
 | `ceiling.thickness` | IfcCovering | m | **0.012** | guess | board thickness when a ceiling is implied | 0.009, 0.012, 0.015 |
 | `floorfinish.thickness` | IfcCovering | m | **0.02** | guess | floor finish thickness when implied | 0.01, 0.02, 0.05 |
 | `net.thickness` | IfcCovering | m | **0.005** | guess | netting sheet thickness; the area is drawn | 0.002, 0.005, 0.01 |
 | `curtainwall.mullion` | IfcCurtainWall | m | **0.05** | guess | typical mullion width | 0.05, 0.06 |
-| `door.height` | IfcDoor | m | **2.1** | guess | typical door set height; plans do not draw it | 2.0, 2.1, 2.4 |
+| `door.height` | IfcDoor | m | **2.1** | guess | typical door set height; plans do not draw it | 2, 2.1, 2.4 |
+| `door.operation_standard` | IfcDoor | text | **SINGLE_SWING_LEFT** | guess | the running standard of a 2D set's doors whose operation the model does not state (F7 D18): the majority side of the building's stated single-swing doors; drawn yellow on A-DOOR-DFLT | SINGLE_SWING_LEFT, SINGLE_SWING_RIGHT |
 | `door.thickness` | IfcDoor | m | **0.04** | guess | typical leaf thickness for a leaf drawn as one line | 0.04, 0.05 |
-| `door.width` | IfcDoor | m | **0.9** | guess | typical single leaf; used only for a door tag with no drawn swing or gap | 0.8, 0.9, 1.0 |
+| `door.width` | IfcDoor | m | **0.9** | guess | typical single leaf; used only for a door tag with no drawn swing or gap | 0.8, 0.9, 1 |
+| `fan.blades` | IfcFan | count | **4** | guess | the drawing's rings give the housing and hub radii, not the blades; a propeller fan is drawn with this many radial paddles | 3, 4, 5, 6 |
 | `fan.depth` | IfcFan | m | **0.3** | guess | housing depth; the diameter is drawn | 0.2, 0.3, 0.4 |
+| `fan.housing_wall` | IfcFan | m | **0.02** | guess | the housing is a tube of the drawn outer radius; its wall is not drawn | 0.01, 0.02, 0.03 |
 | `footing.depth` | IfcFooting | m | **0.4** | guess | pad footing thickness | 0.3, 0.4, 0.6 |
-| `footing.length` | IfcFooting | m | **1.2** | guess | pad footing plan length when no schedule gives it | 1.0, 1.2, 1.5 |
-| `footing.width` | IfcFooting | m | **1.2** | guess | pad footing plan width | 1.0, 1.2, 1.5 |
+| `footing.length` | IfcFooting | m | **1.2** | guess | pad footing plan length when no schedule gives it | 1, 1.2, 1.5 |
+| `footing.width` | IfcFooting | m | **1.2** | guess | pad footing plan width | 1, 1.2, 1.5 |
 | `member.size` | IfcMember | m | **0.04** | guess | square envelope for a member with no label or size | 0.04, 0.05, 0.075 |
+| `profile.angle_heel` | IfcMember | text | **lower** | guess | which way an angle opens is not stated by a section label; the heel corner sits at the low side of the bar's normal (the b x b envelope is kept either way) | lower, upper |
+| `profile.angle_mesh` | IfcMember | text | **label** | guess | a section bar whose label states one equal-leg angle (1.5"x1.5"x1/4" Angle) is built as that L section (t(2b-t) x length) instead of its b x b box; 'box' keeps the drawn prism | label, box |
 | `section.spacing` | IfcMember | text | **column pitch** | guess | a section drawn once repeats at the column pitch from its cut | column pitch, 2 x column pitch |
 | `pile.diameter` | IfcPile | m | **0.3** | guess | typical bored pile diameter | 0.3, 0.45, 0.6 |
-| `pile.length` | IfcPile | m | **12.0** | guess | no pile length is drawn on a layout | 6, 12, 18 |
+| `pile.length` | IfcPile | m | **12** | guess | no pile length is drawn on a layout | 6, 12, 18 |
 | `plate.thickness` | IfcPlate | m | **0.00635** | std | 1/4 in, the thickness the truss section's own label states (a plate with no label takes it) | 0.00476, 0.00635, 0.0095 |
-| `railing.height` | IfcRailing | m | **1.0** | guess | typical guard height | 0.9, 1.0, 1.1 |
-| `railing.post_spacing` | IfcRailing | m | **1.2** | guess | typical post spacing | 1.0, 1.2, 1.5 |
+| `railing.height` | IfcRailing | m | **1** | guess | typical guard height | 0.9, 1, 1.1 |
+| `railing.post_spacing` | IfcRailing | m | **1.2** | guess | typical post spacing | 1, 1.2, 1.5 |
 | `ramp.slope` | IfcRamp | ratio | **0.0833** | guess | 1:12, a typical accessible ramp | 0.0625, 0.0833, 0.1 |
-| `roof.slope_deg` | IfcRoof | deg | **15.0** | guess | typical light roof pitch; used only when no gable or section gives the slope | 10, 15, 17.5, 22.5 |
-| `synth.column.belowgrade.size` | IfcColumn | m | **0** | guess | 0 = not stated: no below-grade column is built; a column schedule that states the section (e.g. 14 x 14 in = 0.3556) sets it, an explicit value overrides the schedule | |
-| `synth.column.grade_to_base` | IfcColumn | m | **0.6096** | guess | grade to the column base (plinth): 2 ft, the datum read from a column detail | |
-| `synth.roof.overhang` | IfcRoof | m | **0.0** | guess | the roof is cut at the gable planes until an overhang is stated | 0, 0.4572, 0.6 |
+| `roof.slope_deg` | IfcRoof | deg | **15** | guess | typical light roof pitch; used only when no gable or section gives the slope | 10, 15, 17.5, 22.5 |
+| `synth.roof.overhang` | IfcRoof | m | **0** | guess | the roof is cut at the gable planes until an overhang is stated | 0, 0.4572, 0.6 |
 | `synth.roof.sheet_thickness` | IfcRoof | m | **0.0254** | guess | display thickness of a roofing sheet (1 in); the cost is by area | 0.0254, 0.05 |
+| `slab.edge_arc_sagitta` | IfcSlab | m | **0.005** | guess | an arc in a slab edge is read as straight facets no further than this from the arc (5 mm: under the reader's thinnest wall and the plank keyway) | 0.002, 0.005, 0.01 |
+| `slab.edge_joint_close` | IfcSlab | m | **0.05** | guess | §D70.1 the plan's slab edge closes gaps and notches narrower than this (plank / modelling joints are not drawn: hollow-core joints are grouted monolithic, the open keyway about 3/4 in, Oldcastle Hollowcore Plank Pocket Guide 2019); 0.05 m = the reader's thinnest wall (CFG wall.min_thickness), measured joints <= 24.9 mm (JKR), the first wall gap 60 mm (HHS) |  |
+| `slab.edge_void_min_area` | IfcSlab | m2 | **0.0645** | guess | §D70.1 a hole in the slab is drawn as an opening when at least a 254 mm (10 in) square: the producer shows openings larger than 10 in square on shop drawings, smaller ones are core-drilled in the field (Oldcastle Hollowcore Plank Pocket Guide 2019); a hole a column or wall drawn on the same plan fills (>= 0.9) is that element, never an opening |  |
+| `slab.level_step_min` | IfcSlab | m | **0.1** | guess | slab tops closer than this are one level (the measured finishes are 25-50 mm); a step of this size or more is drawn as its own piece with its own top and thickness (A-FLOR-OTLN elevation / thickness, A-FLOR-LEVL line); 1 or more = one level per storey | 0.05, 0.1, 0.2, 1 |
+| `slab.outline_when_not_rect` | IfcSlab | text | **walls_bounded** | guess | when the walls do not draw a rectangle, the slab is the area they bound on both axes (best effort, amber; HHS -10% against the model's floor slabs, a rectangle +163%); 'none' leaves the slab out and lists it | walls_bounded, none |
+| `slab.underside_when_stepped` | IfcSlab | text | **longest_cut** | guess | when the section's slab under a level steps (finish on planks, a dropped wet area), the underside is the stack bottom under the longest cut (best effort, amber; JKR with STR: 84.33 under 77% of the cut); 'none' leaves it a conflict | longest_cut, none |
 | `synth.slab.footprint` | IfcSlab | text | **outermost grid lines** | guess | the slab edge is taken at the outermost grid lines of the base plan | outermost grid lines |
 | `synth.slab.thickness` | IfcSlab | m | **0.25** | std | rate pack: 'RC Slab 250mm' (viewer/rates/cidb2024_my.json IfcSlab) | 0.15, 0.2, 0.25 |
 | `stair.going` | IfcStair | m | **0.25** | guess | typical tread depth | 0.25, 0.28, 0.3 |
 | `stair.riser` | IfcStair | m | **0.175** | guess | typical riser height; a stair symbol carries no riser | 0.15, 0.175, 0.19 |
-| `stair.width` | IfcStair | m | **1.0** | guess | typical flight width | 0.9, 1.0, 1.2 |
+| `stair.width` | IfcStair | m | **1** | guess | typical flight width | 0.9, 1, 1.2 |
 | `panel.plane` | IfcWall | text | **end grid line, centred** | guess | an elevation panel is placed on the outermost grid line of its face, centred | end grid line, centred |
-| `wall.base` | IfcWall | m | **0.0** | guess | floor level of the storey |  |
-| `wall.height` | IfcWall | m | **3.0** | guess | typical storey wall height; not stated by a plan | 2.4, 2.7, 3.0, 3.6 |
+| `wall.base` | IfcWall | m | **0** | guess | floor level of the storey |  |
+| `wall.height` | IfcWall | m | **3** | guess | typical storey wall height; not stated by a plan | 2.4, 2.7, 3, 3.6 |
 | `wall.thickness` | IfcWall | m | **0.15** | std | rate pack: 'Blockwork Wall 150mm' (viewer/rates/cidb2024_my.json IfcWall) | 0.1, 0.115, 0.15, 0.2, 0.225 |
-| `window.height` | IfcWindow | m | **1.2** | guess | typical window height | 1.0, 1.2, 1.5 |
-| `window.sill` | IfcWindow | m | **0.9** | guess | typical sill height above the floor | 0.9, 1.0, 1.1 |
+| `wall.top_when_unseen` | IfcWall | text | **slab_above** | guess | a wall no elevation shows runs from its floor to the slab underside above (the section states it); HHS Level 2 / 3 = the model, Level 1 0.3 m above the model's (its walls stop at a ceiling the drawings do not show); 'none' leaves such walls as asks | slab_above, none |
+| `type.size_tie` | IfcWindow | text | **library_first** | guess | a size the library answers with several types (Duplex 819 x 759: SMALL_FIXED, CASEMENT) binds the library's first row (8 of the Duplex IFC's 12 are that type); an explicit binding or label always wins; 'none' leaves such fills as asks | library_first, none |
+| `window.height` | IfcWindow | m | **1.2** | guess | typical window height | 1, 1.2, 1.5 |
+| `window.sill` | IfcWindow | m | **0.9** | guess | typical sill height above the floor | 0.9, 1, 1.1 |
 | `window.width` | IfcWindow | m | **1.2** | guess | typical window width; used when a plan symbol gives no width | 0.9, 1.2, 1.5 |
 
 Rule of resolution, strongest first: the drawing set's `@DEFAULT` marking → a choice made in the editor → the building type's cited override → the registry value above. A typo in a key is an error, never a silent default; a value that is not a non-negative number is refused and the default is used.
