@@ -121,3 +121,28 @@ LiberoMfg (`erp/plugins/libero_*`) or legacy's simple Production (e.g. Patio Fur
 ## §8 Questions added
 - **Q-e (reservations):** a restaurant table reservation — till-only (as Unicenta), or also an ERP record (e.g. a resource assignment)?
 - **Q-f (source):** where is the integration's source (Bitbucket Ghintech `posintegration`, the POS client, SourceForge red1)? P0 reads it.
+
+## §9 OWNER PROPOSAL — `I_POSSales`: one view per sale, one POS import that unravels it (2026-10-28; owner: *"I would recommend a one liner 'SQLView' that joins I_Payment etc to I_Orderline. The POS import on ERP side unravels to correct models. We can rename it as I_POSSales"*)
+**Measured before designing (seed):**
+- **Views are read-only in the twin:** 158 `AD_Table` rows with `IsView='Y'`, 0 SQLite triggers (no INSTEAD OF write path; W-PLAN-ERP E1 says the same). ⇒ the till cannot insert INTO a view, so it still writes the two legacy import tables. `I_POSSales` is the view that presents one sale.
+- **`I_Payment` (74 columns) carries no order link:** there is no `C_Order_ID` and no order document number. It has `DocumentNo`, `InvoiceDocumentNo`, `C_Invoice_ID`, `TenderType`, `CreditCardType`, `PayAmt`, `Orig_TrxID`, `TrxType`. Its card-number columns (`CreditCardNumber`, `CreditCardVV`, `CreditCardExpMM/YY`) stay EMPTY from a till (§5, PCI).
+- **No `I_POSSales` exists** in the seed or the docs: it is a new dictionary object.
+**Design (the owner's proposal, made concrete):**
+- **Deposit (till, unchanged legacy shape):** ticket lines → `I_Order` (`DocumentNo` = the ticket key, §13.5); tenders → `I_Payment` with **`DocumentNo` = the same ticket key**, `TenderType`, `CreditCardType`, `PayAmt`, the terminal's approval code in `Orig_TrxID`.
+- **`I_POSSales` = ONE SQL view:** `I_Order` lines joined to their `I_Payment` tenders on the ticket key, plus per-ticket totals (lines total vs tenders total = a visible mismatch before import). `AD_Table` IsView='Y' with its `AD_Column` rows. It gives the clerk ONE window per sale ("Import POS Sales") instead of two import windows.
+- **"Import POS Sales" process (head office, a clerk role) unravels each ticket, all-or-none, through the LEGACY processes only:**
+  1. Import Orders (206) for that ticket's lines → ONE completed POS order (WR also makes its shipment + invoice);
+  2. the glue step: find that order's invoice and stamp `I_Payment.C_Invoice_ID` on the ticket's tenders (an id link, no business rule);
+  3. Import Payment (343) for those tenders → receipts allocated to that invoice;
+  4. a ticket whose tenders do not match its total, or whose step fails, is left whole (nothing posted) with `I_ErrorMsg` on its rows — legacy's own import-error convention.
+- **Where it lives — the separation:** the view, its window rows and the process row are DATA staged by the **ERP-side POS integration plugin** (`ctx.dict`, removed on stop). That is the twin of the owner's server-side `posintegration` plugin (§6), so no base-hash change and no host code. The till app carries no import logic; the comm plugin only carries the two `I_*` row kinds; Branch Day Close (§2.3) then calls "Import POS Sales" in place of the separate Import Orders + Import Payment steps.
+- **Thin pipe (§34) kept:** two row kinds of identifying facts per ticket travel up. The view and the unravelling happen at head office, which is model-rich.
+**Witness W-POS-SALES (spec):**
+- a 3-line ticket with 2 tenders (cash + card) → the view shows 1 sale, 3 lines, 2 tenders, totals equal;
+- the process makes ONE completed order, ONE invoice, TWO receipts allocated to it, open amount 0;
+- a ticket whose tenders total ≠ lines total is left whole with `I_ErrorMsg`, and 0 documents are made;
+- the process run twice makes nothing new (`I_IsImported`);
+- the card-number columns are empty on every deposited row;
+- the plugin stopped → the view, window and process rows are gone and the base hash is unchanged.
+- Mutants: the invoice link step off (receipts unallocated) · all-or-none off (an order without its payments) · the total check off.
+**Order:** after Import Payment (§41 agent B) — the view and process are a small step on top of the two legacy ports.
