@@ -7,7 +7,8 @@
  * THE ISSUE it proves/disproves: today any enrolled device can Complete a document and its whole consequence group is placed on every device —
  * a second DocAction executor = ghost rows + a second source of truth. Real modules: build/comm/* (CommStore, CommRoster); statements signed by the
  * REAL compiler signer (build/scriptor/sign_plan.js).
- *   §X1 MAP  §X2 HQ  §X3 STATION  §X4 NO-ENTRY  §X5 AUTHOR  §X6 REFUSE  §X7 ORDER  §MUTANTS
+ *   §X1 MAP  §X2 HQ  §X3 STATION  §X4 NO-ENTRY  §X5 AUTHOR RETIRED (study §12.2 2.5)  §X6 REFUSE  §X7 ORDER  §MUTANTS
+ *   2.5: the executor is a ROLE only (as legacy Document Action Access); the per-record 'author' value is retired - such a statement is refused bad-policy:executors.
  * Run: node scripts/witness_comm_executors.js > build/comm/logs/witness_comm_executors.log 2>&1
  */
 'use strict';
@@ -68,12 +69,13 @@ async function arms(C, quiet) {
   H('§X4 NO-ENTRY');
   var oX = await order(T.S, 'm_movement'), cX = await complete(T.S, oX, 'm_movement'), vX = await all(T, cX.st);
   A('X4', vX.every(isM), 'CONTROL: a table with no entry in the map (m_movement) — the station\'s status op is MERGED as today', vX.join(' '));
-  H('§X5 AUTHOR');
-  var s2 = await stmt({ c_order: 'author' }, m1, K[1]), p2 = await T.F.setPolicy(pol(2, { executors: s2 })), v2 = await all(T, p2.hash);
-  var oA = await order(T.S), cA = await complete(T.S, oA), vA = await all(T, cA.st), cB = await complete(T.T, oA), vB = await all(T, cB.st);
-  A('X5', v2.every(isM) && vA.every(isM) && vB.every(function (v) { return v === 'REFUSED:not-executor'; }), 'map {c_order: "author"} (backup key K1 signs, chained): the creator completes -> MERGED; another device completing the SAME order -> not-executor', 'map ' + v2[0] + ' | creator ' + vA.join(' ') + ' | other ' + vB.join(' '));
+  H('§X5 AUTHOR RETIRED');
+  var s2a = await stmt({ c_order: 'author' }, m1, K[1]), p2a = await T.F.setPolicy(pol(2, { executors: s2a })), v2a = await all(T, p2a.hash), R2a = (await T.T.order()).roster;
+  A('X5', v2a.every(function (v) { return v === 'REFUSED:bad-policy:executors'; }) && R2a.executors && R2a.executors.c_order === HQ && R2a.executorsEpoch === 1, 'map {c_order: "author"} (backup key K1 signs, chained) is REFUSED bad-policy:executors on every device; the map in force stays {c_order: HQ}, epoch 1', v2a.join(' ') + ' map=' + JSON.stringify(R2a.executors) + ' epoch=' + R2a.executorsEpoch);
+  var m2 = { c_order: HQ, m_inout: HQ }, s2 = await stmt(m2, m1, K[1]), p2 = await T.F.setPolicy(pol(2, { executors: s2 })), v2 = await all(T, p2.hash), R2 = (await T.T.order()).roster;
+  A('X5', v2.every(isM) && R2.executors && R2.executors.m_inout === HQ && R2.executorsEpoch === 2, 'a role-valued second statement {c_order, m_inout: HQ} (backup key K1, chained) is MERGED everywhere and applies, epoch 2 (the chain the X6 cases refuse against)', v2.join(' ') + ' map=' + JSON.stringify(R2.executors) + ' epoch=' + R2.executorsEpoch);
   H('§X6 REFUSE');
-  var cur = { c_order: 'author' }, good = await stmt({ c_order: HQ }, cur, K[0]);
+  var cur = m2, good = await stmt({ c_order: HQ }, cur, K[0]);
   var edited = JSON.parse(JSON.stringify(good)); edited.map = { c_order: STATION };
   var cases = [['unsigned/edited after signing', T.F, pol(3, { executors: edited }), 'REFUSED:executors-signature'],
     ['signed by a key outside the trust list', T.F, pol(3, { executors: await stmt({ c_order: HQ }, cur, K[2]) }), 'REFUSED:executors-untrusted-signer'],
@@ -81,14 +83,14 @@ async function arms(C, quiet) {
     ['a valid statement published by a NON-admin station', T.S, pol(3, { executors: good }), 'REFUSED:not-admin'],
     ['a malformed map', T.F, pol(3, { executors: { kind: 'executors', map: { c_order: 'x' }, prev: hashOf(cur), signer: K[0].pub, sig: 'ab' } }), 'REFUSED:bad-policy:executors']];
   for (var c of cases) { var pc = await c[1].setPolicy(c[2]), vc = await all(T, pc.hash), mc = (await T.T.order()).roster.executors;
-    A('X6', vc.every(function (v) { return v === c[3]; }) && mc && mc.c_order === 'author', c[0] + ' -> ' + c[3] + ' on every device; the map in force stays {c_order: "author"}', vc.join(' ') + ' map=' + JSON.stringify(mc)); }
+    A('X6', vc.every(function (v) { return v === c[3]; }) && mc && mc.c_order === HQ && mc.m_inout === HQ, c[0] + ' -> ' + c[3] + ' on every device; the map in force stays {c_order, m_inout: HQ}', vc.join(' ') + ' map=' + JSON.stringify(mc)); }
   var U = await team(null), su = await stmt({ c_order: HQ }, {}, K[0]), pu = await U.F.setPolicy(pol(1, { executors: su })), vu = await all(U, pu.hash);
   A('X6', vu.every(function (v) { return v === 'REFUSED:executors-unpinned'; }) && !(await U.T.order()).roster.executors, 'a space founded with NO trust list cannot name executors -> executors-unpinned', vu.join(' '));
   H('§X7 ORDER');
   var envs = T.F.query('SELECT envelope FROM cl_op').map(function (r) { return JSON.parse(r.envelope); }).reverse();
   var Xd = await STORE.newDevice(); Xd.person_uu = uuid(); var X = STORE.open(new SQL.Database(), { SQL: SQL, space: T.space, self: Xd, access: access, log: function () {} });
   for (var e of envs) await X.ingest(e, 'x');
-  var keys = [cF.st, cS.st, cS.cs, cA.st, cB.st], same = true, det = [];
+  var keys = [cF.st, cS.st, cS.cs, cX.st, p2a.hash, p2.hash], same = true, det = [];
   for (var kh of keys) { var a1 = await vd(T.F, kh), a2 = await vd(X, kh); det.push(a2); if (a1 !== a2) same = false; }
   A('X7', envs.length > 15 && same, 'a fourth device ingesting the same ' + envs.length + ' ops in REVERSE order gives the same verdicts', det.join(' '));
   return red;
@@ -108,6 +110,7 @@ async function arms(C, quiet) {
   await mut('role check off', [['comm_store.js', "if (!okExe) verdict[o.hash] = { verdict: 'REFUSED', reason: 'not-executor' };", "void 0;"]]);
   await mut('group refusal off', [['comm_store.js', "verdict[go.hash] = { verdict: 'REFUSED', reason: 'not-executor-group' };", "void 0;"]]);
   await mut('signer check off', [['comm_roster.js', "if (!trust.some(function (k) { return sameKey(k, p.executors.signer); })) return no('executors-untrusted-signer');", ""]]);
+  await mut("'author' accepted again by the map shape", [['comm_roster.js', "!(Number.isInteger(m[t]) && m[t] >= 0)", "!(m[t] === 'author' || (Number.isInteger(m[t]) && m[t] >= 0))"]]);
   await mut('map never applied', [['comm_roster.js', "if (rotE) { exe = rotE;", "if (false) { exe = rotE;"]]);
   console.log('§EXE_VERDICT ' + (fails || red0.length ? 'FAIL' : 'PASS') + ' judged=' + judged + ' fails=' + fails);
   process.exit(fails ? 1 : 0);
