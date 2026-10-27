@@ -366,12 +366,14 @@ a lag. A list of items inside an item (such as a phase's dependencies) is shown 
 if it is not, the last good value is kept and nothing is broken. Your copy is saved in this browser as you type,
 separately for each rate pack, so a change to the Malaysian pack does not touch the UK one.
 
-**Use it.** Where each copy takes effect:
+**Use it.** These references belong to the **Viewer**. After editing, switch to the Viewer tab and reload it.
+The Modeller does not use your copies: it is maintained separately and keeps the shipped files. Where each copy
+takes effect:
 
 - **5D Rate Pack:** the **4D / 5D** dashboard prices with your rates when it opens. In the Viewer itself (the Find
-  panel's `total cost`), pick the pack under **Settings → 5D Rate Pack** after you open the page: the Viewer does
-  not load a pack on its own, and until a pack is picked it prices with its built-in rates.
-- **4D Schedule Template:** the next schedule the Time Machine generates uses it (reload the page after editing).
+  panel's `total cost`), pick the pack under **Settings → 5D Rate Pack** after the page has opened. Until a pack is
+  picked, the Viewer prices with the rates of its display language (English: US rates).
+- **4D Schedule Template:** the next schedule the Time Machine generates uses it.
 - **4D Sequence & Labour Rules:** used by the **4D / 5D** dashboard and the MEP report when they open.
 
 **Reset** in the same form discards your copy and goes back to the shipped file.
