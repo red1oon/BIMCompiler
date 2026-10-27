@@ -17,10 +17,10 @@ async function sign(plan, privateJwk, publicJwk) {
   var sig = await subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, key, Buffer.from(canon(body)));
   return Object.assign(body, { sig: Buffer.from(sig).toString('hex'), signer: { kty: publicJwk.kty, crv: publicJwk.crv, x: publicJwk.x, y: publicJwk.y } });
 }
-function planOf(src) { var g = {}; vm.runInNewContext(src, { window: g, globalThis: g }); return g.TEAM_PLAN; }
+function planOf(src) { var g = {}; vm.runInNewContext(src, { window: g, globalThis: g }); return g.TEAM_PLAN || g.TEAM_PLAN_POS; }       // the office plan, or the POS (star) plan (§38.15)
 async function signFile(planFile, privFile, pubFile, outFile) {                 // keeps the generated file's header line and wrapper, replaces the plan object
   var src = fs.readFileSync(planFile, 'utf8'), signed = await sign(planOf(src), JSON.parse(fs.readFileSync(privFile, 'utf8')), JSON.parse(fs.readFileSync(pubFile, 'utf8')));
-  fs.writeFileSync(outFile, src.replace(/g\.TEAM_PLAN = .*?; \}\)\(/s, 'g.TEAM_PLAN = ' + JSON.stringify(signed) + '; })(').replace(/Unsigned prototype\./, 'SIGNED (ECDSA P-256).'));
+  fs.writeFileSync(outFile, src.replace(/g\.(TEAM_PLAN(?:_POS)?) = .*?; \}\)\(/s, function (m, nm) { return 'g.' + nm + ' = ' + JSON.stringify(signed) + '; })('; }).replace(/Unsigned prototype\./, 'SIGNED (ECDSA P-256).'));
   return signed;
 }
 // ── §38.10 (G-8): owner statements — built, checked and signed offline. The shape rules and the prev hashes are the ENGINE's own (comm_roster.js), never re-implemented here.

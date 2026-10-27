@@ -1,0 +1,9 @@
+[
+  { "name": "F1 pos-sales-up", "treatment": "FACT", "role": 200001, "strategy": 100, "dir": "UP", "table": "C_OrderLine", "carries": ["M_Product_ID", "QtyEntered", "C_UOM_ID"], "group": "POSStation/Date/Order#", "schedule": "end-of-day", "from": "POS station", "to": "HQ" },
+  { "name": "F2 replenishment-down", "treatment": "FACT", "role": 200001, "strategy": 100, "dir": "DOWN", "table": "M_MovementLine", "carries": ["M_Product_ID", "M_Locator_ID", "M_LocatorTo_ID", "QtyEntered", "C_UOM_ID"], "group": "Movement doc key", "schedule": "on-change", "from": "HQ", "to": "POS station" },
+  { "name": "F3 ticket-up", "treatment": "FACT", "role": 200001, "strategy": 100, "dir": "UP", "table": "I_Order", "carries": ["DocumentNo", "DocTypeName", "IsSOTrx", "DateOrdered", "M_Product_ID", "QtyOrdered", "C_UOM_ID", "I_IsImported"], "group": "POSStation/Date/Order#", "schedule": "end-of-day", "from": "POS station", "to": "HQ" },
+  { "name": "B1 borrower-payment-up", "treatment": "FACT", "role": 103, "strategy": 100, "dir": "UP", "table": "C_Payment", "carries": ["C_BPartner_ID", "PayAmt"], "group": "Borrower/Date/Slip#", "schedule": "at-visit", "from": "Borrower", "to": "HQ" },
+  { "name": "B2 invoice-down", "treatment": "FACT", "role": 103, "strategy": 100, "dir": "DOWN", "table": "C_Invoice", "carries": ["C_BPartner_ID", "DocumentNo", "DateInvoiced", "GrandTotal"], "by": ["C_BPartner_ID"], "group": "Invoice", "schedule": "on-change", "from": "HQ", "to": "Borrower (that BP only)" },
+  { "name": "B3 instalment-down", "treatment": "FACT", "role": 103, "strategy": 100, "dir": "DOWN", "table": "C_InvoicePaySchedule", "carries": ["C_Invoice_ID", "DueAmt", "DueDate"], "by": ["C_Invoice_ID", "C_BPartner_ID"], "group": "Invoice", "schedule": "on-change", "from": "HQ", "to": "Borrower (that BP only)" },
+  { "name": "D1 hq-order", "treatment": "LOCAL", "table": "C_Order", "docaction": { "executor": 102, "actions": ["CO"] } }
+]

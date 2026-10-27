@@ -35,6 +35,7 @@ function arms(COMPILE, quiet) {
     var st = clone(P1); st[0].docaction = { executor: STATION, actions: ['CO'] }; st[3].table = 'C_Invoice'; out.station = run(R(st));
     var au = clone(P1); au[0].docaction = { executor: 'author', actions: ['CO'] }; au[3].table = 'C_Invoice'; out.authorUp = run(R(au));
     var mesh = [{ name: 'T1 order-shared', treatment: 'FACT', role: STATION, strategy: 100, dir: 'BOTH', audience: 'space', table: 'C_Order', group: 'C_Order_UU', docaction: { executor: 'author', actions: ['CO', 'VO'] } }]; out.authorMesh = run(R(mesh));
+    var meshRole = clone(mesh); meshRole[0].docaction = { executor: HQ, actions: ['CO', 'VO'] }; out.roleMesh = run(R(meshRole));
     out.bad = [{ executor: undefined, actions: ['CO'] }, { executor: 'x', actions: ['CO'] }, { executor: HQ, actions: [] }, { executor: HQ, actions: ['ZZ'] }]
       .map(function (d) { var b = clone(P1); b[3].docaction = d; if (d.executor === undefined) delete b[3].docaction.executor; return run(R(b)); });
     return out;
@@ -48,9 +49,12 @@ function arms(COMPILE, quiet) {
   A('U2', codes(c.dual).indexOf('dual-docaction') >= 0 && c.dual.ok === false, 'a second row giving C_Order another executor (the station) -> dual-docaction, the plan does not compile', JSON.stringify(c.dual.planErrors));
   H('§U3 STATION');
   A('U3', codes(c.station).indexOf('station-docaction') >= 0 && c.station.ok === false, 'the station\'s UP declaration given a DocAction by its own role -> station-docaction', JSON.stringify(c.station.planErrors));
-  H('§U4 AUTHOR');
-  A('U4', codes(c.authorUp).indexOf('docaction-author-not-mesh') >= 0 && c.authorUp.ok === false, 'executor "author" on a UP declaration -> docaction-author-not-mesh', JSON.stringify(c.authorUp.planErrors));
-  A('U4', !c.authorMesh.planErrors.length && c.authorMesh.ok === true, 'executor "author" on a BOTH + space (peer team) row compiles — the device that authored the document is its one executor', JSON.stringify(c.authorMesh.planErrors));
+  H('§U4 AUTHOR RETIRED (study §12.2 2.5 / TEAMWORK_FRAMEWORK §38.15 B: executors are ROLES; the engine refuses bad-policy:executors, so the compiler must too)');
+  A('U4', codes(c.authorUp).indexOf('docaction-author-retired') >= 0 && c.authorUp.ok === false, 'RETIRED ARM 1 (was: docaction-author-not-mesh): executor "author" on a UP declaration -> docaction-author-retired', JSON.stringify(c.authorUp.planErrors));
+  A('U4', codes(c.authorMesh).indexOf('docaction-author-retired') >= 0 && c.authorMesh.ok === false, 'RETIRED ARM 2 (was: "author" on a BOTH + space row COMPILES): the same row is now refused docaction-author-retired — the office/mesh plan names NO executor (= legacy: whoever\'s login role has Document Action Access may act)', JSON.stringify(c.authorMesh.planErrors));
+  A('U4', !c.roleMesh.planErrors.length && c.roleMesh.ok === true, 'a mesh row with a ROLE executor (HQ ' + HQ + ') compiles: the executor is a role in every topology', JSON.stringify(c.roleMesh.planErrors));
+  var offRows = JSON.parse(fs.readFileSync(path.join(SDIR, 'flows_erp.json'), 'utf8'));
+  A('U4', offRows.length > 0 && !offRows.some(function (r) { return r.docaction !== undefined; }), 'the office plan\'s source rows (flows_erp.json, ' + offRows.length + ' rows) declare NO docaction: the shipped office plan publishes no executor map', 'rows=' + offRows.length);
   H('§U5 BAD');
   ['no executor', 'executor "x"', 'actions []', 'actions ["ZZ"]'].forEach(function (l, i) {
     A('U5', codes(c.bad[i]).indexOf('docaction-bad') >= 0 && c.bad[i].ok === false, l + ' -> docaction-bad', JSON.stringify(c.bad[i].planErrors)); });
@@ -73,6 +77,6 @@ function mut(label, file, from, to) {
 }
 mut('the dual check off', 'compile.js', "if (byTable[t].length > 1)", "if (false)");
 mut('the station check off', 'compile.js', "if (r.dir === 'UP' && d.executor === r.role)", "if (false)");
-mut('the author/mesh check off', 'compile.js', "if (d.executor === 'author' && !(r.dir === 'BOTH' && r.audience === 'space'))", "if (false)");
+mut('the author-retired check off (\'author\' falls to the generic bad row)', 'compile.js', "if (d && d.executor === 'author')", "if (false)");
 console.log('§UPS_VERDICT ' + (fails || red0.length ? 'FAIL' : 'PASS') + ' judged=' + judged + ' fails=' + fails);
 process.exit(fails ? 1 : 0);
