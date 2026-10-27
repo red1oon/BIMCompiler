@@ -75,3 +75,49 @@ LiberoMfg (`erp/plugins/libero_*`) or legacy's simple Production (e.g. Patio Fur
 - **Q-b (stock on the till):** may the till show availability, read-only from head office's last published snapshot (offline it can be stale), or no stock display at all?
 - **Q-c (close cash):** Unicenta's close-cash count: a declaration head office books (cash journal / bank statement import), or till-only?
 - **Q-d (screens):** the till's screens — Unicenta's own layout (parity, the twin habit), or carry our lens design (`POS_SHOWCASE_LANE.md` P1-P5) into the standalone app? Recommendation: Unicenta's layout and flow as the base (twin), our modern touches (album cards, QR tender) only where Unicenta has an equivalent screen.
+
+## §5 Payment tenders: POS domain or ERP concern? (owner, 2026-10-28: *"I wonder if it's a POS domain or ERP concern? How are credit card settlements resolved on ERP end? At POS end we should handle as Unicenta POS interfaces with those various machines including receipt printing."*)
+**Answer: both, split at the device boundary.**
+- **POS domain (the till app, local, offline-capable):** talking to the machines, as Unicenta does: the card terminal (it authorizes the card; the till never sees or stores a card number), the cash drawer, the receipt printer, the customer display. The tender UI (split tender, change due). What the till records is the tender FACT: type, amount, card brand, the terminal's approval code and batch reference. **Never a card number** (PCI: the pan never leaves the terminal).
+- **ERP concern (head office, legacy documents):** recording the money and reconciling it. In the seed dictionary (measured):
+  - `C_Payment` with `TenderType` (ref 214: Cash, Credit Card, Check, Direct Deposit, Direct Debit, Account);
+  - `C_POSPayment` (AD_Table 200016) and `C_POSTenderType` (200017) for several tenders on one POS order;
+  - `C_PaymentProcessor` (398) / `C_BankAccount_Processor` (200030) for ONLINE card processing from the ERP (web or back-office card entry, not a till).
+- **How a card settlement resolves in legacy (the practice, to be confirmed against source in P0):**
+  1. Each card tender becomes a receipt (`C_Payment` TenderType C) into a **card-clearing bank account**, allocated to the invoice.
+  2. Days later the acquirer pays the batch, net of its fee, into the real bank account.
+  3. That arrives as a **bank statement** (Import Bank Statement 221 / Load Bank Statement 247 from the bank's file). Its lines are matched to the receipts (Bank Statement Matcher 256, **ported**: `erp/processes/BankStatementMatcher.js`).
+  4. The fee is the difference, booked on the statement line as a charge (`C_Charge`, e.g. bank fees). Cash tenders go to a cash/till account and are reconciled by the close-cash count (Q-c).
+- **So the till deposits tenders as declarations** (`I_Payment` rows; Import Payment 343, legacy 572 lines, **not ported** — the same pattern as Import Orders). Head office's import creates the receipts; settlement is ordinary bank-statement work by the accounts role. **Shared prerequisite:** the Micro Finance case needs the same Import Payment port (`TEAMWORK_FRAMEWORK.md` §40).
+
+## §6 Unicenta is a dedicated project — the owner's integration (owner, 2026-10-28)
+> *"Unicenta POS also has restaurant option where there is table reservation and BPartner customer which I have imported into it in my integration together with AD_User. … Unicenta POS is a dedicated project with my integration which has setup that pulls branch info from ERP, where each POS pulls that info into its till one time first time, with products, prices, users, and loyalty list of customers. Thus this may take a when before a nice film."*
+
+**Public record found (2026-10-28 search; the wiki pages refuse automated fetching, so their text is NOT yet read — P0 reads the source):**
+- The integration began as the Openbravo POS integration "integrated to iDempiere ERP via APACHE ActiveMQ 5.5.0"; Unicenta is a fork of that project, maintained by Red1 and Eduardo Gil (Ghintech). The wiki lists version 4.6, GPLv2, with live client users in Panama.
+- The POS client and a server-side `posintegration` plugin are hosted by Ghintech on Bitbucket. Setup is a standalone `POS_ACTIVEMQ` app with **POSSync** / **OrderSync** buttons.
+- Wanda POS = Unicenta + ActiveMQ + iDempiere.
+- Pages: [Plugin: Unicenta POS](https://wiki.idempiere.org/en/Plugin:_Unicenta_POS) · [FS Unicenta For Idempiere](https://wiki.idempiere.org/en/FS_Unicenta_For_Idempiere) · [How to activate the POSSync and OrderSync buttons](https://wiki.idempiere.org/en/How_to_activate_the_POSSync_and_OrderSync_buttons) · [Unicenta oPos to iDempiere](https://wiki.idempiere.org/en/Unicenta_oPos_to_iDempiere) · [Plugin: Openbravo POS](https://wiki.idempiere.org/en/Plugin:_Openbravo_POS) · [Plugin: Wanda POS](https://wiki.idempiere.org/en/Plugin:_Wanda_POS) · [red1 on SourceForge](https://sourceforge.net/p/red1).
+- This repo already records the 2012 loop: `docs/internal/POS_ADDON_SPEC.md` §0 and the owner's thin-pipe lesson, `TEAMWORK_FRAMEWORK.md` §34.
+
+**What the integration does, per the owner — the shape to twin:**
+- **Setup pull, first time per till (ERP → POS):** branch info (the till's org, warehouse, price list — `C_POS` 748), products, prices, users (`AD_User`), customers (`C_BPartner`) with the loyalty list, and the restaurant setup.
+- **In team terms these are Reference seeds (type R):** pulled once, then refreshed by an effective-dated pull (treatment table row 6, `TEAMWORK_FRAMEWORK.md` §16.17: *"Price / promo update — Reference seed (type R), pulled; effective-dated"*). This is read-only master data down; the till authors none of it.
+- **Restaurant option:** places/tables and table reservations live in the till; customers come from the ERP. Whether a reservation is also an ERP record is owner Q-e.
+- **Up (POS → ERP):** tickets as `I_Order`, tenders as `I_Payment`, close cash (Q-c).
+
+**P0 adds:** read the integration's source (POS_ACTIVEMQ, posintegration, POSSync/OrderSync). Owner: the wiki blocks automated fetching here; give the source location or an export, and P0 extracts from it, never from memory. **Agreed: this is a dedicated project and its film comes later.**
+
+## §7 Separation of concern and the team replication framework (keep an eye, owner 2026-10-28)
+- **Three kinds of party, one boundary contract** (study §8.2):
+  - the **apps** (till, kitchen, borrower) are Team devices that DECLARE (`I_*` rows) and read reference seeds — they run no DocAction;
+  - the **head-office core** runs the legacy processes (Import Orders / Payment, Replenish Report, bank statements) by role and schedule (study §14);
+  - the **comm plugin** carries and orders, and decides nothing about documents.
+  - The **scriptor** compiles who receives what (the plan); a convenience such as Branch Day Close is a friendly-ops plugin over the same processes.
+- **Thin pipe (§34) — a finding from §13.5 that this spec must fix, not repeat:** in W-POS-CHAIN the till received the processor's whole Complete group (**103 ops**: the order, plus the shipment, the invoice and the postings of a POS Order). That is §34 audit item (1), the fat-pipe habit. Under FL-8 the fix is **role-scoped flows** (G-6, `TEAMWORK_FRAMEWORK.md` §38.12/§38.14: the hosts read a POS star plan, a direction per role): the till receives what the plan declares for it (its ticket's status, the replenishment movement, reference seeds), never the postings. W-TILL-DEPOSIT must count bytes and ops received by the till, and judge them against the plan.
+- **Branch-local flows** (till ⇄ kitchen) are plan rows with audience = the branch, so head office never sees bump events.
+- **Per-role delivery is what makes all three apps scale** (§11: G-6 is a scaling requirement).
+
+## §8 Questions added
+- **Q-e (reservations):** a restaurant table reservation — till-only (as Unicenta), or also an ERP record (e.g. a resource assignment)?
+- **Q-f (source):** where is the integration's source (Bitbucket Ghintech `posintegration`, the POS client, SourceForge red1)? P0 reads it.
