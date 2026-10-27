@@ -14,6 +14,7 @@
  *   §KC-OPAQUE      — claim keys are not readable in the pipe of an encrypted space (control: readable in a plaintext space).
  *   §KC-CHECKPOINT  — a claim won inside a checkpoint's prefix stays won against late claimants on the in-force devices AND on a light client that never folded S;
  *                     the plain fold (control) lets some late claimants win — the barrier is what protects an already-used number. Snapshot claims are keyed by hash.
+ *   §KC-RETIRED     — (study §12.5) a BOOKING envelope is REFUSED bad-claim:op_type everywhere, the numbering API is gone; control: a KEYCLAIM of the same Visit is MERGED.
  *   §KC-SKEW        — an engine from before this change refuses the op without crashing.
  *
  * Run: node scripts/witness_comm_keyclaim.js 2>&1 | tee build/comm/logs/witness_comm_keyclaim.log
@@ -108,6 +109,19 @@ async function scan(pipe, needles) { var names = await pipe.list(''), hits = 0, 
   verdict(verOf(Li, c1.hash).indexOf('MERGED') === 0 && verOf(Li, c2.hash).indexOf('MERGED') === 0, 'CONTROL: claims on other, uncontested keys are MERGED (and are not affected by the 8 contests above)');
   var all8 = pairs.every(function (p) { return Li.verdict[p.hx] && Li.verdict[p.hy]; });
   verdict(all8, 'no contest changed the verdict of another key\'s claim');
+
+  // ════════ RETIRED (TEAM_REPLICATION_PLUGIN_STUDY §12.5, owner Q4: document numbering is core; BOOKING/BLOCK left the comm engine) ════════
+  // ISSUE: a comm engine that still books document numbers decides a core function (AD_Sequence). Proves: a BOOKING envelope is refused bad-claim:op_type on every device, the
+  //   numbering API is gone from the store, and a KEYCLAIM authored in the same Visit is still MERGED (control: the refusal is about the op type, not the device or the Visit).
+  var rSeq = uuid(), rDoc = uuid(), rBk = await W.S.B.author({ target: { table: 'comm_booking', uu: await ROS.claimUU(W.space, 'BOOKING:' + rSeq + ':1') }, body: { op_type: 'BOOKING', params: { seq: rSeq, n: 1, doc: rDoc } }, intent: 'K1' });
+  var rKc = await W.S.B.claim('UNIQUE:retired:control:1');
+  await syncAll(W, names, 3);
+  var rOk = 0, rL = {};
+  for (var rn of names) { var Lr = await W.S[rn].order(); rL[rn] = verOf(Lr, rBk.hash) + '|' + verOf(Lr, rKc.hash); if (verOf(Lr, rBk.hash) === 'REFUSED:bad-claim:op_type' && verOf(Lr, rKc.hash).indexOf('MERGED') === 0) rOk++; }
+  console.log('   §KC-RETIRED verdicts ' + JSON.stringify(rL));
+  verdict(rOk === names.length, 'a BOOKING envelope is REFUSED bad-claim:op_type on every device while a KEYCLAIM of the same Visit is MERGED (numbering is not the comm engine\'s)', rOk + '/' + names.length);
+  var gone = ['numberDocument', 'bookDocNo', 'bookBlock'].filter(function (k) { return typeof W.S.A[k] === 'function'; });
+  verdict(gone.length === 0, 'the store offers no numbering API any more (numberDocument / bookDocNo / bookBlock)', 'still there: ' + JSON.stringify(gone));
 
   // ════════ USES ════════
   // timer-once: A, B, C all find the rule due and claim at once

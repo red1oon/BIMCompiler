@@ -13,6 +13,7 @@
  *          is the first free one. CONTROL: the same call with the pipe up books.
  *
  * Run: node scripts/witness_comm_docno_modes.js 2>&1 | tee build/comm/logs/witness_comm_docno_modes.log
+ * ⚠ RETIRED 2026-10-27 — document numbering left the comm engine (prompts/TEAM_REPLICATION_PLUGIN_STUDY.md §12.5); kept as history, it no longer runs against build/comm.
  */
 'use strict';
 if (typeof globalThis.crypto === 'undefined' || !globalThis.crypto.subtle) globalThis.crypto = require('crypto').webcrypto;

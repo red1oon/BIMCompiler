@@ -14,6 +14,7 @@
  *   §BK-NOCONFIG  — with no sequence config the same ops fold exactly as before (nothing is refused for its DocumentNo). CONTROL for the rule being config-driven.
  *
  * Run: node scripts/witness_comm_docno_booking.js 2>&1 | tee build/comm/logs/witness_comm_docno_booking.log
+ * ⚠ RETIRED 2026-10-27 — document numbering left the comm engine (prompts/TEAM_REPLICATION_PLUGIN_STUDY.md §12.5); kept as history, it no longer runs against build/comm.
  */
 'use strict';
 if (typeof globalThis.crypto === 'undefined' || !globalThis.crypto.subtle) globalThis.crypto = require('crypto').webcrypto;
