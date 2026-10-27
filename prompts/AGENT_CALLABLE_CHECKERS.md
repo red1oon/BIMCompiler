@@ -22,7 +22,7 @@ Searched 2026-10-27 (`grep -i 'MCP|model context|agent callable'` over `bim-comp
 ## 1. What already exists (extracted, bim-ootb `origin/main` @ bbce0dc0 unless stated)
 | checker | what it judges | where | state |
 |---|---|---|---|
-| `witness_no_ai_inside.js` C1-C3 | the guarantee in `docs/USER_GUIDE.md:9-16` (no AI, nothing leaves the browser, deterministic) | branch `origin/test/no-ai-inside-witness` (2 commits, **no PR, NOT on main**) | last verdict `PASS_WITH_DISCLOSED` (`prompts/NO_AI_INSIDE_WITNESS.md §8`) |
+| `witness_no_ai_inside.js` C1-C3 | the guarantee in `docs/USER_GUIDE.md:9-16` (no AI, nothing leaves the browser, deterministic) | was branch-only (no PR) until bim-ootb PR #2408 (2026-10-27) | 2026-10-27 on main: `FAIL C1=FAIL C2=PASS C3=PASS` (`NO_AI_INSIDE_WITNESS.md §8 Update 2026-10-27`) |
 | Dubai Track-B `metrics_worker.js` M1-M15 | IFC richness census (spatial chain, psets, orphans, dup GUIDs, georef) | `readiness/metrics_worker.js` (on main) | browser Worker only; **VACUOUS on STEP corruption** (`IFC_COMPLIANCE_SELFCHECK.md §8.2` K2) |
 | `ifcopenshell.validate` | IFC schema/attribute validity | python, dev env only | used by hand in `IFC_COMPLIANCE_SELFCHECK.md §8.3`; segfaults on truncated files (K2) |
 | `witness_ifc_export_schema.js` X1-X8 | our two exporters emit schema-valid IFC4 | spec `IFC_COMPLIANCE_SELFCHECK.md §EXPORTER_FIX` | **not found on main** — status unverified |
@@ -84,15 +84,43 @@ Every run writes `report.json` (the truth) and `report.html` (a pure render of i
 - **Wording is generated, not written:** each sentence comes from a fixed template filled with a value from
   `report.json`. No adjectives that are not a verdict word. The HTML adds no number the JSON does not hold (W-AC-8).
 
-## 4. Boundaries
-1. Read-only and local. Never uploads, never writes into the checked file or repo, never "fixes".
-2. No LLM call anywhere in `checks/`. The agent is outside, calling in. `checks/` sits outside the
-   no-AI scan boundary (`NO_AI_INSIDE_WITNESS.md §2`: viewer/common/erp/modeller) — that boundary and the
-   user-guide wording stay as they are; the guide gains one sentence only if the owner wants it.
-3. Same input + same commit → byte-identical report, except one `run_at` field. Witnessed (§5 W-AC-3).
-4. File access limited to paths the caller passes; no directory walking outside the repo for claims.
-5. Read-only tools need no identity; `ws_policy.js` rate limits are reused only if a remote transport is
-   ever added (not in scope).
+### 3.2 The check panel (owner, 2026-10-27: *"well designed where users can see how to drop their IFC set,
+giving stats how fast it takes, with yours all in, up till how to get it localised and air gaped inside theirs"*)
+One page, the same `report.html` engine, four parts top to bottom:
+1. **Drop your IFC set** — drop one or many `.ifc` (+ optional `.ids`); each file becomes a row with its own cards.
+   In the browser it runs the same check code the CLI runs (no second implementation); the python-only checks (A2, A4)
+   show `needs=ifcopenshell` there and point to the local kit (part 4).
+2. **How fast** — per file: size, element count, wall time per check, and the machine it ran on (CPU threads, RAM,
+   browser/node version). Only measured values from this run; beside them our own reference runs read from their
+   logs (file, size, time, machine). No estimate, no "up to" figure, no extrapolation to file sizes nobody ran.
+3. **Our claims, all in** — the full claims registry (§2 B) with each row's verdict, so the user sees what we
+   say about ourselves checked in the same place, including FAIL, UNWITNESSED and INCONCLUSIVE rows.
+4. **Take it inside** — how to run it on your own machines, then air-gapped (§3.3), as numbered steps with the
+   exact commands and the checksum to compare at each step.
+
+### 3.3 Local and air-gapped kit
+- One archive: `checks/`, pinned runtime deps (web-ifc wasm, sql.js, ajv; python wheels for ifcopenshell/ifctester),
+  `MANIFEST.sha256` of every file, and the claims registry at the release commit.
+- Steps the panel prints: (1) download on a connected machine, (2) `sha256sum -c MANIFEST.sha256`, (3) carry it in,
+  (4) `node checks/check.js selftest --offline` — runs W-AC-1/3 controls and prints the same verdicts as our run,
+  (5) use. Nothing in steps 3-5 needs a network.
+- `--offline` is not a promise, it is enforced (§4 R2). Claim rows that need our repo history or a live service
+  report `INCONCLUSIVE needs=network` inside the air gap — never a cached PASS presented as a fresh one.
+
+## 4. Rules the machine enforces (owner, 2026-10-27: *"leave instructions where machines do not allow crossing
+or breaking rules"*)
+Each rule is a refusal in code plus a witness that tries to break it. A rule that exists only as prose is not on this list.
+| # | rule | how the code refuses | witness that tries to break it |
+|---|---|---|---|
+| R1 | read-only: never writes into the input or the repo | inputs opened read-only; output only to a fresh `--out` dir; refuses if `--out` is inside the input set or the repo | W-AC-11 points `--out` at the repo / the input → refused, no byte changed (sha before = after) |
+| R2 | nothing leaves the machine | `--offline` (default in the kit) loads a guard that throws on any `http`/`https`/`net`/`dns`/`fetch` use; the browser panel ships with a CSP of `connect-src 'self'` | W-AC-9 runs the selftest inside a no-network sandbox (`unshare -rn`, or a container with `--network none`) → same report; a fixture that tries a request → run stops with `§CHECK_REFUSED network` |
+| R3 | no AI inside the checker | `checks/` joins the no-AI scan (C1) of `witness_no_ai_inside.js` | C1 red control (LLM host injected into a `checks/` fixture) → FAIL |
+| R4 | never fixes, never grades | no write path exists to the input; the render has no score/grade field (schema forbids it) | W-AC-8 + schema: a report carrying `score` fails validation |
+| R5 | no PASS without a population | `witness_kit/contract.js` (population + red control required) | W-AC-1 K3 empty → VACUOUS |
+| R6 | same input → same report | `run_at` is the only free field | W-AC-3 |
+| R7 | only the paths the caller passes | refuses paths outside the given files and the repo root | W-AC-11 `../` path → refused |
+The agent (outside) cannot switch any of these off by argument: there is no `--allow-network`, `--fix` or `--score`
+flag. A change to R1-R7 is a code change in a PR, visible in the claims registry diff.
 
 ## 5. Witnesses for the checker itself (each names the issue it proves; built on `witness_kit/contract.js`)
 - **W-AC-1 corruption is not a pass** — the K1-K4 controls (`IFC_COMPLIANCE_SELFCHECK.md §8.1`): K1 PASS-able,
@@ -109,16 +137,21 @@ Every run writes `report.json` (the truth) and `report.html` (a pure render of i
 - **W-AC-8 the picture tells no more than the data** — every number in `report.html` appears in `report.json`;
   "What this did not check" is non-empty whenever any check is not PASS. Control: inject a number into the
   HTML template → FAIL; drop the limits section on an INCONCLUSIVE run → FAIL.
+- **W-AC-9 offline is real** (R2) — selftest in the no-network sandbox gives the same verdicts; a request attempt is refused.
+- **W-AC-10 speed is measured, not quoted** — every time on the panel traces to a timing field of a run log; a
+  hand-typed time in the template → FAIL.
+- **W-AC-11 the rules hold under attack** (R1, R7) — `--out` into the repo/input, `../` paths, a writable input → all refused, no byte changed.
 
 ## 6. Phases (top to bottom, WORK-TO-ZERO)
-- **P0 land what exists** — PR `test/no-ai-inside-witness` to bim-ootb main (rebase, rerun, read the log);
+- **P0 land what exists** — 🔄 witness PR bim-ootb #2408 (auto-merge on); export-schema status still to find — PR `test/no-ai-inside-witness` to bim-ootb main (rebase, rerun, read the log);
   find out whether `witness_ifc_export_schema.js` / §EXPORTER_FIX ever landed and record it in §1.
 - **P1** `checks/claims.json` seed rows + `claims list|verify` + W-AC-2/4/6.
 - **P2** `ifc` checks A1-A4 (node harness around the unmodified `metrics_worker.js`; python helpers for A2/A4) + W-AC-1/3.
 - **P2b** `report.html` render (§3.1) + W-AC-7/8.
 - **P3** MCP adapter + W-AC-5; standalone package build of `checks/` (same files, no fork) so an agent can
   install it without cloning; README + user-guide section "Check us yourself" (§7).
-- **P4** public claims page generated from the registry (each row: quote, check, last verdict, the command).
+- **P4** the check panel (§3.2) + public claims page from the registry + W-AC-10.
+- **P5** local/air-gapped kit (§3.3), R1-R7 guards + W-AC-9/11.
 
 ## 7. Decided (owner, 2026-10-27: *"I think both. It be available and guide says how."*)
 - **Home = both:** source lives in `bim-ootb/checks/` beside the witnesses it calls; the same files are also
