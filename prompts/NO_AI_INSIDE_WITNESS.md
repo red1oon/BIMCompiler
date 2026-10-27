@@ -162,3 +162,20 @@ and C2 (each request attributed to the page/frame that made it; per-page origin 
 allowlisted: tier `PENDING red1 decision: user-triggered feature` -> `PASS_WITH_DISCLOSED`, never plain PASS. C2 only
 exercises import+viewer boot, so those user-triggered features are not driven at runtime (static tier only).
 Verdicts: C1=PASS_WITH_DISCLOSED, C2=PASS, C3=PASS, overall PASS_WITH_DISCLOSED.
+
+### Update 2026-10-27 — P0 of `AGENT_CALLABLE_CHECKERS.md`: the witness lands on main (bim-ootb PR #2408)
+Found: the witness and the viewer GoatCounter removal (both on `test/no-ai-inside-witness`, 2 commits) were never PR'd —
+bim-ootb `main` kept loading GoatCounter in `viewer/viewer.html:1184-1186` from 2026-10-02 to this PR. Cherry-picked onto
+`origin/main` (branch `test/no-ai-inside-witness-p0`), sw v1658. Run on that branch (log read: scratchpad `noai_p0_run2.log`;
+first run's C3 was INCONCLUSIVE only because `node_modules/sql.js` was absent in the worktree — symlinked, re-run):
+- C1 **FAIL**: files=840, llm_hits=0, unlisted=15, pending_disclosed=5, negctl caught. 602 main commits since 2026-10-02 added:
+  13 reference-text hits (`polygon-clipping.js:20` licence URL; `$schema` json-schema.org x4 in `modeller/schemas/`; source
+  `url` fields in `modeller/element_defaults.json:679,684`, `viewer/rates/road_rules.json:7,13,19`, `viewer/std_values.json:4,992`;
+  `viewer/streaming.js:744` PBR `src`; `viewer/tools/trl_common.js:18` DTD comment) and 1 data path:
+  `common/comm/comm_phone.html:29` `script.google.com` (Teamwork post box). New PENDING: `common/comm/comm_pipe.js:79` api.github.com.
+  Scanner limit, stated: C1 cannot tell a never-fetched citation string from a fetched URL — a REFERENCE tier needs its own
+  red control (a fetched citation must still FAIL). Not allowlisted.
+- C2 **PASS** (requests=304, goatcounter_from_viewer=0, canary_leaks=0, llm_hits=0). C3 **PASS** (rows=474, 60/60, 1 ts cell masked).
+- `§NOAI_VERDICT verdict=FAIL C1=FAIL C2=PASS C3=PASS`.
+⛔ Owner: (1) Teamwork sends (encrypted) data to the user's own GitHub/Google post box — the guide's "data never leaves your
+browser" needs a disclosure line or a scope line; (2) the 6 PENDING user-triggered hosts, open since 2026-10-02.
