@@ -463,7 +463,20 @@ Fix: Use the exact name of the row the rule should send.
 
 *Status, 2026-10-27:* designed and specified (study §9–§10); the one event bus that delivers these moments, with the replica save, is being built (study §10.5 will record the result). Until it lands, the live team layer observes commits through its own built-in hook, which already runs only after the committed rows are written to the device's store (bim-ootb `erp/crud_overlay.js` `_sidePersist` → `_teamPush`, :1937).
 
-## 8. What this guide does not cover yet
+## 8. Principles behind this design — for anyone building something similar
+
+*Distilled 2026-10-27 from the team-layer work (`prompts/TEAMWORK_FRAMEWORK.md` §38, `prompts/TEAM_REPLICATION_PLUGIN_STUDY.md` §8–§10). Each one is a rule this project already enforces, not a wish.*
+
+1. **Twin before you innovate.** Copy the legacy mechanism exactly; a difference found by running both side by side is fixed on the new side. Users see no change, so adopting it costs them nothing.
+2. **Every server rule becomes signed data.** One completer per document, who may use which document action, which keys are trusted, which translation rules apply — each is an owner-signed policy inside the shared log, judged the same way by every device. No referee in the middle.
+3. **Declare where the action happens, derive in one place.** A point of sale only declares its lines; one processor completes once and returns what is needed. Mistakes show up as consequences (under-declaring starves your own replenishment), not as online checks.
+4. **Send the minimum.** Ids, references, quantities and codes. Every device already holds the master data, so meaning never travels.
+5. **Separate by permission, not by promise.** A plugin is given only the hooks its job needs. The team layer may observe saves and store what it receives; it is structurally unable to complete, post or number a document.
+6. **Rows over code.** Flows, listeners and access are dictionary rows, never per-window code; progress is counted as X of N over the whole dictionary, never one hand-picked demo.
+7. **A log line is the proof, not a screenshot.** Every change starts with a test that fails; every deliberately broken copy must make it fail (a crash does not count); a test that judged nothing says INCONCLUSIVE, never PASS.
+8. **Never silently break users.** A change that would invalidate existing teams (for example the shared base fingerprint) needs an upgrade path or an openly stated consequence before it ships.
+
+## 9. What this guide does not cover yet
 
 - All rows here are **samples**. Nobody has authored real business flows yet; the business owner decides what really moves.
 - Only the Modeller and the ERP team scope read their plan in the live applications today. The point-of-sale and micro-finance patterns run in the simulator.
