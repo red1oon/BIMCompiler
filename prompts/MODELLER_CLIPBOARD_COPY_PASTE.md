@@ -158,3 +158,10 @@ copy carries no `bayCopy` / `spanSplit` of its source. Falsifier: the bay's own 
 a cut wall + door gives the new bay the same, cut into the copied wall (FAIL on main: door not copied, no cut) + **B9** a second "add a bay" after the first: every copy = its source's
 CURRENT box + pitch (FAIL on main: the first bay's moved sources are copied at their pre-move place). Page W-CLIPBOARD-KEYS: Ctrl+C / Ctrl+V on a converted Duplex wall with a door:
 +2 elements, +1 cut, one Ctrl+Z restores, Ctrl+Y returns; the pasted door rides a Move of the pasted wall (the published edge works).
+**§REGROUND corrections from the build (2026-10-28, same day; the rule text above stands except where named here):** (1) "MEASURED DEFECT" in item 1 was read in code when written;
+it is now measured by bim-ootb W-DXF-ADD-BAY B9 (a wall of the last typical bay moved 5 cm, then a second bay: each copy = its source's current box + pitch). (2) Grid commands: ONE
+GEOM_GRID_MOVE per SOURCE grid op that touched a copied element, at that op's place (not one for all) — the worker folds ops in order, so a cut before / after a stretch must keep its
+order. (3) C2's tolerance is 2 float32 steps of the largest coordinate, not 1e-9 m: the fold writes `Float32Array` positions (measured 2.38e-7 m). (4) The spec's B8 (a typical bay
+with a cut wall + door) runs as W-BAY-RIDE R6, pure: the shed holds no cut opening (§D89 measured). (5) Found while building B9: a second bay over-stretched the full-length members
+(the factor read the insert's original length; the fold multiplies scales) — fixed in `bay_add.js`. Built + witnessed: bim-ootb `DXF2BIM_FOUNDATION_LANE.md` §D89 step 4.
+**Status: ✅ BUILT 2026-10-28 (W-CLIPBOARD 6/0, W-CLIPBOARD-KEYS 4/0, W-DXF-ADD-BAY 11/0, W-BAY-RIDE 6/0).** §DISPATCH's block above is history.
