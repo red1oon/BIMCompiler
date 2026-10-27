@@ -16,7 +16,7 @@ var STAR = JSON.parse(fs.readFileSync(path.join(SDIR, 'flows.json'), 'utf8'));
 var MROW = { name: 'E1 element', treatment: 'FACT', role: 'DESIGNER', dir: 'BOTH', audience: 'space', group: 'element_id', schedule: 'on-change' };
 var judged = 0, fails = 0, vacuous = 0;
 function say(ok, label, detail) { judged++; if (!ok) fails++; console.log('   ' + (ok ? '🟢' : '🔴') + ' ' + label + (detail ? ' — ' + detail : '')); }
-function mk(opts) { var w = new S.World(STAR.concat([MROW]), { GenerateReplenishment: function () { return []; }, ApplyPayment: function () { return []; } }, opts || {}); w.addDevice('A', 'DESIGNER'); w.addDevice('B', 'DESIGNER'); w.addDevice('O', 103); return w; }
+function mk(opts) { var w = new S.World(STAR.concat([MROW]), { 'Replenish Report': function () { return []; }, ApplyPayment: function () { return []; } }, opts || {}); w.addDevice('A', 'DESIGNER'); w.addDevice('B', 'DESIGNER'); w.addDevice('O', 103); return w; }
 function author(w, id, key, fields) { w.sell(w.dev[id], w.rowByName('E1 element'), key, fields); }
 function fold(w, id) { return TREAT.get('FACT').fold(w, w.dev[id], w.rowByName('E1 element')); }
 function keys(w, id) { var m = w.dev[id].mesh && w.dev[id].mesh['E1 element']; return m ? Object.keys(m.keys).sort() : []; }
