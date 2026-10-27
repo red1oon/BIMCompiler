@@ -3,5 +3,7 @@
   { "name": "L2 sequence-no",  "treatment": "LOCAL", "table": "AD_Sequence_No" },
   { "name": "L3 recent-item",  "treatment": "LOCAL", "table": "AD_RecentItem" },
   { "name": "L4 session",      "treatment": "LOCAL", "table": "AD_Session" },
-  { "name": "L5 change-log",   "treatment": "LOCAL", "table": "AD_ChangeLog" }
+  { "name": "L5 change-log",   "treatment": "LOCAL", "table": "AD_ChangeLog" },
+  { "name": "L6 rule",         "treatment": "LOCAL", "table": "AD_Rule" },
+  { "name": "L7 script-validator", "treatment": "LOCAL", "table": "AD_Table_ScriptValidator" }
 ]

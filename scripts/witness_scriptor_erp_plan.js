@@ -44,8 +44,10 @@ say(JSON.stringify(all3.slice().sort()) === JSON.stringify(active) && dup.length
 var keptViews = db.prepare("SELECT lower(tablename) AS t FROM ad_table WHERE isactive='Y' AND isview='Y'").all().map(function (x) { return x.t; }).filter(function (t) { return excluded.indexOf(t) < 0; });
 say(keptViews.length > 0 && keptViews.every(function (t) { return inPlan.indexOf(t) >= 0 || loc.indexOf(t) >= 0; }), 'V5 the views a window or reference DOES reach stay in the plan (' + keptViews.length + ' kept)', keptViews.slice(0, 5).join(','));
 say(P.excluded && P.excluded[0] && P.excluded[0].count === excluded.length, 'the plan records what it left out (excluded: view-unreached x' + (P.excluded && P.excluded[0] && P.excluded[0].count) + ')');
-var OLD_LOCAL = ['ad_changelog', 'ad_recentitem', 'ad_sequence', 'ad_sequence_no', 'ad_session'];
-say(JSON.stringify(loc.slice().sort()) === JSON.stringify(OLD_LOCAL), 'declared local == the 5 STATION_LOCAL tables of origin/main erp/team_sync.js:36', loc.slice().sort().join(','));
+// + ad_rule, ad_table_scriptvalidator (TEAM_REPLICATION_PLUGIN_STUDY §13.2): a script-validator row is the device's own trigger (the POS chain runs on the processor ONLY); shared, every till would
+//   run the chain on the others' tickets = a second DocAction executor (FL-8)
+var OLD_LOCAL = ['ad_changelog', 'ad_recentitem', 'ad_rule', 'ad_sequence', 'ad_sequence_no', 'ad_session', 'ad_table_scriptvalidator'];
+say(JSON.stringify(loc.slice().sort()) === JSON.stringify(OLD_LOCAL), 'declared local == the 5 STATION_LOCAL tables of origin/main erp/team_sync.js:36 + the 2 rule tables (study §13.2: a trigger row is device-local)', loc.slice().sort().join(','));
 say(P.flows.every(function (f) { return f.dir === 'BOTH' && f.audience === 'space'; }), 'every plan flow is FACT BOTH audience space (the mesh)');
 var m1 = views(excluded.concat(['c_order']), true), m2 = views(excluded.concat([keptViews[0]]), true);
 say(m1.indexOf('V1') >= 0, 'mutant: a non-view table added to the exclusion -> V1 red', m1.join(',')); say(m2.indexOf('V2') >= 0, 'mutant: a reached view added to the exclusion -> V2 red', m2.join(','));
