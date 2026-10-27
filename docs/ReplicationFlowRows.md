@@ -19,17 +19,18 @@ Three parts work together, and you only touch the first:
 | Field | Plain meaning | Example |
 |---|---|---|
 | `name` | A label you choose. Other rows refer to it by this exact text. | `F1 pos-sales-up` |
-| `treatment` | The kind of movement. `FACT` = a record moves. `SEED` = a value is published and fetched. `RULE` = when one flow arrives, run a named process that sends another. `INSTRUMENT` = a signed code that carries value. `LOCAL` = this table never leaves its station. | `FACT` |
-| `role` | The dictionary role (a number) of the devices that send. A label such as `BORROWER` is fine where there is no dictionary role. | `103` |
+| `treatment` | The kind of movement. `FACT` = a record moves. `SEED` = a value is published and fetched. `RULE` = a named process that sends another flow, started by a flow arriving or by a role on a schedule. `INSTRUMENT` = a signed code that carries value. `LOCAL` = this table never leaves its station. | `FACT` |
+| `role` | The dictionary role (a number) of the devices that send. A label such as `BORROWER` is fine where there is no dictionary role. On a `RULE` with no `on`: the role that runs the process. | `103` |
 | `strategy` | Which dictionary replication strategy supplies the table types. 100 is the sample point-of-sale strategy. | `100` |
 | `dir` | `UP` = device to head office. `DOWN` = head office to a device. `BOTH` = every member of a team, both ways (needs `audience` `space`). | `UP` |
 | `audience` | For a `FACT`: `hub` (the default, through head office) or `space` (a team shares it). For a `SEED`: `addressed` (one role) or `public` (anyone). | `space` |
 | `table` | The dictionary table whose records move, or a table you declare yourself (section 4, pattern P7). | `C_OrderLine` |
 | `carries` | The columns that travel. Leave it out and the dictionary **proposes** columns (a starting point, never a plan). `"*"` means all of them. | `["M_Product_ID", "QtyEntered"]` |
 | `group` | What makes one record unique, so that a resend is recognised and a clash is noticed. | `POSStation/Date/Order#` |
-| `schedule` | A label for when the device sends. It is recorded in the plan. | `end-of-day` |
+| `schedule` | A label for when the device sends (or, on a `RULE` with a `role`, when that role runs the process). It is recorded in the plan. | `end-of-day` |
 | `from`, `to` | Free text for people reading the plan. | `POS station`, `HQ` |
-| `on`, `process`, `emits` | For a `RULE`: when flow `on` arrives, run the named `process`, which sends flow `emits`. `on` and `emits` must be names of other rows in the same file. | `GenerateReplenishment` |
+| `on`, `process`, `emits` | For a `RULE`: the named `process` sends flow `emits`. Either flow `on` arriving starts it, or a `role` on a `schedule` does (give `role` and `schedule` and leave `on` out; a person or department runs it, as in the dictionary). `on` and `emits` must be names of other rows in the same file. | `Replenish Report` |
+| `processId` | For a `RULE`: the dictionary process number the `process` name stands for (a whole number, for people reading the plan). | `53267` |
 | `guard` | For a `SEED`: `daily` = ask at most once a day; `once` = ask only until you hold a value. | `daily` |
 | `authorityRole`, `holderRole`, `account` | For an `INSTRUMENT`: who issues the code, who applies it, and what the balance is called. | `103`, `PHONE`, `loyalty id` |
 | `virtualTable`, `columns` | A table you describe yourself because the dictionary does not know it. Each column has `name`, `cls`, and optionally `target`, `mand`, `values`. | see P7 |
@@ -63,7 +64,7 @@ The rows:
 ```json
 [
   {"name":"F1 pos-sales-up","treatment":"FACT","role":103,"strategy":100,"dir":"UP","table":"C_OrderLine","carries":["M_Product_ID","QtyEntered","C_UOM_ID"],"group":"POSStation/Date/Order#","schedule":"end-of-day","from":"POS station","to":"HQ"},
-  {"name":"R1 replenish-rule","treatment":"RULE","on":"F1 pos-sales-up","process":"GenerateReplenishment","emits":"F2 replenishment-down"},
+  {"name":"R1 replenish-rule","treatment":"RULE","role":103,"schedule":"daily","process":"Replenish Report","processId":53267,"emits":"F2 replenishment-down"},
   {"name":"F2 replenishment-down","treatment":"FACT","role":103,"strategy":100,"dir":"DOWN","table":"M_MovementLine","carries":["M_Product_ID","M_Locator_ID","M_LocatorTo_ID","QtyEntered","C_UOM_ID"],"group":"Movement doc key","schedule":"on-change","from":"HQ","to":"POS station"}
 ]
 ```
@@ -85,7 +86,7 @@ Change these when you copy it:
 
 - table and carries: the records that travel and the columns that matter
 - group: what makes one record unique, so a resend is recognised
-- process: the name of the process head office runs when the sale arrives
+- process: the name of the dictionary process the head-office role runs (and its number), and the role and schedule that run it
 
 Proved by: `§W-TREAT-STOCKLOOP` (`scripts/witness_scriptor_treat.js`), `§W-TREAT-LOCAL` (`scripts/witness_scriptor_treat.js`), `§W-TREAT-TICKET` (`scripts/witness_scriptor_treat.js`).
 

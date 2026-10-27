@@ -1,5 +1,7 @@
 {
- "pos": "95b1e7e79f30a6903faf162220f02c55bcaf03250a78314882292213976f29a0",
+ "pos": "d53e7426b8e254251acbd26ceba20e02e511b8a2be782b78b4e63cc83624aa95",
  "mf": "6465344e7913e0b7633c586e74b409d419ec85758f1e7f98d9b1d0bee779dac9",
- "note": "normalized sha256 (random ed25519 public keys replaced by PUBKEY) of trace_film_*.json captured BEFORE the step-2 registry refactor, 2026-10-25; TEST BASELINE for W-REG-PRESERVED (TEAMWORK_FRAMEWORK §22.3)"
+ "note": "normalized sha256 (random ed25519 public keys replaced by PUBKEY) of trace_film_*.json captured BEFORE the step-2 registry refactor, 2026-10-25; TEST BASELINE for W-REG-PRESERVED (TEAMWORK_FRAMEWORK \u00a722.3)",
+ "pos_pre_r1": "95b1e7e79f30a6903faf162220f02c55bcaf03250a78314882292213976f29a0",
+ "note_r1": "2026-10-28 (R1 = Replenish Report 53267 run by a role in the head-office session, study TEAM_REPLICATION_PLUGIN_STUDY \u00a714a): pos re-baselined. Measured diff vs pos_pre_r1: 6 of 155 events, same count and same kinds; the 4 idempotent re-sends of the same movement key in the two rebuild replays now come after the replay's accepts (the role's run follows ingest) instead of between them. mf unchanged."
 }
