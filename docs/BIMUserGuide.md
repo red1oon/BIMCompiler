@@ -353,7 +353,7 @@ uses your copy.
 
 | Reference | File | What it holds |
 |---|---|---|
-| **5D Rate Pack** | `rates/<pack>.json`: 19 national packs (`cidb2024_my`, `bcis2024_uk`, `rsmeans2024_us`, `rawlinsons2024_au` …) plus `custom_template.json`, an empty pack to fill | `meta` (name, region, currency, exchange rate, source), `materials` (a rate and unit per IFC class, e.g. `IfcDuct`: 165 per metre), `labor`, `equipment`, `work_packages`, `smm_sections`, `provisions` |
+| **5D Rate Pack** | `rates/<pack>.json`: 16 national packs (`cidb2024_my`, `bcis2024_uk`, `rsmeans2024_us`, `rawlinsons2024_au` …) plus `custom_template.json`, an empty pack to fill | `meta` (name, region, currency, exchange rate, source), `materials` (a rate and unit per IFC class, e.g. `IfcDuct`: 165 per metre), `labor`, `equipment`, `work_packages`, `smm_sections`, `provisions` |
 | **4D Schedule Template** | `rates/4D_template.json` | `calendar`, `duration_rule`, `capacity_rule`, the 7 `phases` (substructure, superstructure, envelope …, each with its trades and whether it repeats per storey) and their `dependencies` (predecessor, successor, type, lag days) |
 | **4D Sequence & Labour Rules** | `rates/sequence_rules.json` | `SEQUENCE_RULES` (the trade order by IFC class) and `LABOR_RATES` (per trade: rate per day, crew size, crews, productivity per IFC class) |
 
@@ -367,14 +367,16 @@ if it is not, the last good value is kept and nothing is broken. Your copy is sa
 separately for each rate pack, so a change to the Malaysian pack does not touch the UK one.
 
 **Use it.** These references belong to the **Viewer**. After editing, switch to the Viewer tab and reload it.
-The Modeller does not use your copies: it is maintained separately and keeps the shipped files. Where each copy
-takes effect:
+The Modeller uses them only for the cost and labour change it shows on an edited element: that change is priced with
+the same rate pack, and the same copies, as the Viewer. Where each copy takes effect:
 
-- **5D Rate Pack:** the **4D / 5D** dashboard prices with your rates when it opens. In the Viewer itself (the Find
-  panel's `total cost`), pick the pack under **Settings → 5D Rate Pack** after the page has opened. Until a pack is
-  picked, the Viewer prices with the rates of its display language (English: US rates).
+- **5D Rate Pack:** the Viewer (the Find panel's `total cost`, the Time Machine's schedule) and the **4D / 5D**
+  dashboard price with your rates as soon as they open. The pack is the one picked under **Settings → 5D Rate Pack**;
+  with none picked, it is the pack of the display language (English (US): `rsmeans2024_us`, English (Malaysia):
+  `cidb2024_my`), and switching the language switches the pack. The language changes only the words (descriptions,
+  trade names); the prices and the currency always come from the pack.
 - **4D Schedule Template:** the next schedule the Time Machine generates uses it.
-- **4D Sequence & Labour Rules:** used by the **4D / 5D** dashboard and the MEP report when they open.
+- **4D Sequence & Labour Rules:** used by the Viewer, the **4D / 5D** dashboard and the MEP report when they open.
 
 **Reset** in the same form discards your copy and goes back to the shipped file.
 
