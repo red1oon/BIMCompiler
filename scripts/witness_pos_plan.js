@@ -16,6 +16,10 @@
  *     every device folds the same roster, so every device reaches the same verdict. A DOWN op is taken in only when role matches AND the address equals my person_uu; an unresolvable address is refused
  *     (fail closed). The SENDER applies the same test to its own roster: a record whose entity has no bound person is never sent (`no-addressee`) - so a cash-sale invoice never fattens the pipe.
  *     Generic: no table name in code - the reader (common/comm/team_scope.js) and the adapter (erp/team_sync.js) read `by`/`ship`/`hub` from the plan.
+ *  A2 (§41.2, 2026-10-28). PER BRANCH: the replenishment row is addressed `by` M_LocatorTo_ID > M_Warehouse_ID > AD_Org_ID (legacy's ReplenishReport sets the movement's own org to the SOURCE warehouse's, so the
+ *     destination branch is the destination locator's warehouse's org; FK targets are read from the dictionary: AD_Reference_Value -> AD_Ref_Table), and each till is bound to its org's ad_org_uu. Tills and borrowers then share ONE role
+ *     (legacy 50004 'Web Service Execution' = the external depositor, least privilege): role never separates them, the address does. L1 CATCH-UP: when the roster gains a person the hub sends the records it held for that entity
+ *     (derived from its own unsent rows, one batch, once; nothing queued, nothing capped). Profile: author() costs O(log) per op (versions() + a refold), so a batch (authorMany) reads the versions once - P9.
  *  B. THE 'author' EXECUTOR IS RETIRED IN THE COMPILER (witness_ups_docaction U4): executors are roles; the office/mesh plan publishes NO executor map (= legacy: whoever's login role has Document Action Access).
  *
  *   §P0 OFFICE UNCHANGED  §P1 DIRECTION PER ROLE  §P2 CARRIES BINDS OUTBOUND (+ the 103-op group)  §P3 NOT-ADDRESSED INBOUND  §P4 GENESIS PLAN  §P5 EXECUTOR MAP  §P6 BORROWER PER RECORD  §P7 SIGNED POS PLAN  §MUTANTS
@@ -29,7 +33,7 @@ var BC = process.env.PP_BC || path.join(__dirname, '..'), OOTB = process.argv[2]
 if (!OOTB) { console.log('§PP_VERDICT INCONCLUSIVE — no bim-ootb dir given (node scripts/witness_pos_plan.js <dir>)'); process.exit(2); }
 var SIGN = require(path.join(BC, 'build', 'scriptor', 'sign_plan.js')), initSqlJs = require('sql.js'), Better = require('better-sqlite3');
 var OFFICE_BASE = '3e779487';                                                  // the commit this lane was cut from: its team_scope.js / team_plan.js are the P0 reference
-var HQ = 102, TILL = 200001, BORR = 50004, uuid = function () { return nodeCrypto.randomUUID(); };
+var HQ = 102, TILL = 50004, BORR = 50004, uuid = function () { return nodeCrypto.randomUUID(); };
 var judged = 0, fails = 0;
 function say(ok, l, d) { judged++; if (!ok) fails++; console.log('   ' + (ok ? '🟢' : '🔴') + ' ' + l + (d ? ' — ' + d : '')); }
 function rd(f) { return fs.readFileSync(path.join(OOTB, f), 'utf8'); }
@@ -105,7 +109,7 @@ async function arms(src, quiet) {
     try {
     var T = rb.scope; if (T.setKind) T.setKind('pos');
     var rowsP1 = [['c_orderline', TILL, 'up'], ['m_movementline', TILL, 'receive'], ['i_order', TILL, 'up'], ['c_orderline', HQ, 'receive'], ['m_movementline', HQ, 'down'], ['i_order', HQ, 'receive'], ['c_invoice', HQ, 'down'], ['c_invoice', BORR, 'receive'],
-                  ['c_payment', BORR, 'up'], ['c_payment', HQ, 'receive'], ['c_orderline', BORR, 'unplanned'], ['c_invoice', TILL, 'unplanned'], ['c_orderline', null, 'unplanned'], ['c_bpartner', TILL, 'unplanned'], ['ad_sequence', TILL, 'station-local']];
+                  ['c_payment', BORR, 'up'], ['c_payment', HQ, 'receive'], ['c_orderline', 103, 'unplanned'], ['c_invoice', 200001, 'unplanned'], ['c_payment', TILL, 'up'], ['c_invoice', TILL, 'receive'], ['c_orderline', null, 'unplanned'], ['c_bpartner', TILL, 'unplanned'], ['ad_sequence', TILL, 'station-local']];
     if (guard('P1', rowsP1.length, 'no row judged')) rowsP1.forEach(function (x) { var got = T.scopeOf(x[0], x[1]); A('P1', got === x[2], (x[1] === null ? 'no role' : 'role ' + x[1]) + ' · ' + x[0] + ' = ' + x[2], 'got ' + got); });
     var co = [T.scopeOf('c_order', TILL), T.scopeOf('c_order', HQ)], nev = ['share', 'up', 'down'];
     A('P1', co.every(function (s) { return nev.indexOf(s) < 0; }), 'the order header never leaves either device (the processor\'s own order is a LOCAL row of the plan)', co.join('/'));
@@ -128,7 +132,8 @@ async function arms(src, quiet) {
     D.F = null; await dev('F', HQ, PF, Fd); await D.F.S.genesis(sp.params);
     async function enrol(name, role, person, bound) { var d = await dev(name, role, person); var L = await D.F.S.order();
       if (!L.roster.persons[person]) await D.F.S.addPerson({ person_uu: person, name: name, ad_role_id: role, comm_admin: false }); await D.F.S.enroll(d.dev.kid, d.dev.pubJwk, person, d.dev.dhPubJwk); return d; }
-    await enrol('T1', TILL, uuid()); await enrol('T2', TILL, uuid()); await enrol('B1', BORR, bps[0].uu); await enrol('B1b', BORR, bps[0].uu); await enrol('B2', BORR, bps[1].uu); await enrol('Q', BORR, uuid());
+    var orgN = q("SELECT ad_org_uu AS u FROM ad_org WHERE ad_org_id=50002")[0].u, orgS = q("SELECT ad_org_uu AS u FROM ad_org WHERE ad_org_id=50004")[0].u;       // two branches: Store North (warehouse 50003, locator 50002) and Store South (warehouse 50004, locator 50003)
+    await enrol('T1', TILL, orgN); await enrol('T2', TILL, orgS); await enrol('B1', BORR, bps[0].uu); await enrol('B1b', BORR, bps[0].uu); await enrol('B2', BORR, bps[1].uu); await enrol('Q', BORR, uuid());
     var syncAll = async function () { for (var r = 0; r < 3; r++) for (var n of order) await D[n].S.sync(pipe); };
     await syncAll();
     for (var n of order) await D[n].ad.api._attach(D[n].S, D[n].dev);
@@ -153,8 +158,9 @@ async function arms(src, quiet) {
     A('P2', JSON.stringify(fk) === JSON.stringify(['ad_client_id', 'ad_org_id', 'c_uom_id', 'm_product_id', 'qtyentered']), 'a station\'s C_OrderLine create leaves with EXACTLY the declared columns + the partition (description, priceactual, linenetamt, c_order_id stay on the device)', JSON.stringify(fk));
     var hdr = await send(D.T1, 'CRUD_CREATE', 'c_order', { documentno: 'T-1', ad_client_id: 11, ad_org_id: 0 });
     A('P2', !hdr.t.body && (hdr.t.quiet || hdr.t.local), 'the station\'s order header never leaves (its plan row is the processor\'s LOCAL)', JSON.stringify(hdr.t).slice(0, 90));
-    var mv = await send(D.F, 'CRUD_CREATE', 'm_movementline', { m_product_id: 123, qtyentered: 2, c_uom_id: 100, m_locator_id: 1000, m_locatorto_id: 1001, description: 'x', ad_client_id: 11, ad_org_id: 0 });
-    A('P2', mv.t.body && !('description' in mv.t.body.params.fields) && 'm_locatorto_id' in mv.t.body.params.fields, 'the processor\'s replenishment line (DOWN) leaves with its declared columns only', JSON.stringify(Object.keys(mv.t.body && mv.t.body.params.fields || {})));
+    var mv = await send(D.F, 'CRUD_CREATE', 'm_movementline', { m_product_id: 123, qtyentered: 2, c_uom_id: 100, m_locator_id: 101, m_locatorto_id: 50002, description: 'x', ad_client_id: 11, ad_org_id: 0 });
+    var mv2 = await send(D.F, 'CRUD_CREATE', 'm_movementline', { m_product_id: 130, qtyentered: 4, c_uom_id: 100, m_locator_id: 101, m_locatorto_id: 50003, description: 'y', ad_client_id: 11, ad_org_id: 0 });
+    A('P2', mv.t.body && mv2.t.body && !('description' in mv.t.body.params.fields) && 'm_locatorto_id' in mv.t.body.params.fields, 'the processor\'s replenishment line (DOWN) leaves with its declared columns only', JSON.stringify(Object.keys(mv.t.body && mv.t.body.params.fields || {})));
     var upd = await send(D.T1, 'CRUD_UPDATE', 'c_orderline', {}, { extra: { id: 7, changes: { description: { old: 'a', new: 'b' } } } });
     A('P2', !upd.t.body && /no-declared-column-changed|target-not-a-team/.test(upd.t.local || upd.t.reason || ''), 'an UPDATE that touches no declared column sends nothing', JSON.stringify(upd.t).slice(0, 100));
     var grp = ['c_order', 'c_orderline', 'm_inout', 'm_inoutline', 'c_invoice', 'c_invoiceline', 'fact_acct', 'm_transaction', 'm_storageonhand', 'c_payment', 'c_allocationhdr', 'm_cost'], sentN = 0, localN = 0, total = 0;
@@ -171,12 +177,15 @@ async function arms(src, quiet) {
     H('§P3 NOT-ADDRESSED INBOUND (a station never folds another station\'s declaration)');
     try {
     await fanOut.syncAll();
+    var have = function (v, t) { return v.tables.filter(function (x) { return x === t; }).length; };
     var vF = await view(D.F), vT1 = await view(D.T1), vT2 = await view(D.T2), isLine = function (v) { return v.tables.filter(function (t) { return t === 'c_orderline'; }).length; };
     A('P3', isLine(vF) === 1 && isLine(vT1) === 1 && isLine(vT2) === 0, 'the processor projects the declaration (1), the author keeps its own (1), the OTHER station projects 0', 'F=' + isLine(vF) + ' T1=' + isLine(vT1) + ' T2=' + isLine(vT2));
     var placed2 = (await D.T2.S.foldable()).filter(function (p) { return p.env.target.table === 'c_orderline'; }).length;
-    A('P3', placed2 === 1 && vT2.thin && vT2.thin.refused >= 1 && D.T2.ad.logs.some(function (l) { return /§TEAM_THIN plan=pos role=200001 .*refused=[1-9]/.test(l); }), 'the ENGINE did place that op on T2 (the dumb relay delivered it) - it is the adapter that refused it locally, and says so (§TEAM_THIN refused>0)', 'placed=' + placed2 + ' refused=' + (vT2.thin && vT2.thin.refused));
+    A('P3', placed2 === 1 && vT2.thin && vT2.thin.refused >= 1 && D.T2.ad.logs.some(function (l) { return /§TEAM_THIN plan=pos role=50004 .*refused=[1-9]/.test(l); }), 'the ENGINE did place that op on T2 (the dumb relay delivered it) - it is the adapter that refused it locally, and says so (§TEAM_THIN refused>0)', 'placed=' + placed2 + ' refused=' + (vT2.thin && vT2.thin.refused));
     var mvF = isLine({ tables: vF.tables.map(function (t) { return t === 'm_movementline' ? 'c_orderline' : t; }) });
-    A('P3', vT1.tables.indexOf('m_movementline') >= 0 && vT2.tables.indexOf('m_movementline') >= 0, 'a DOWN flow addressed to the station ROLE reaches every station (role-scoped), and the hub keeps what it sent', 'T1=' + vT1.tables.filter(function (t) { return t === 'm_movementline'; }).length + ' T2=' + vT2.tables.filter(function (t) { return t === 'm_movementline'; }).length);
+    var mvOf = function (v) { return v.rows.filter(function (r) { return /m_movementline/.test(r.parameters); }).map(function (r) { return JSON.parse(r.parameters).fields; }); }, mT1 = mvOf(vT1), mT2 = mvOf(vT2);
+    A('P3', mT1.length === 1 && mT2.length === 1 && Number(mT1[0].m_locatorto_id) === 50002 && Number(mT2[0].m_locatorto_id) === 50003, 'PER BRANCH: two tills on ONE role in two orgs - till North (bound to Store North\'s ad_org_uu) holds ONLY the movement into its locator 50002, till South ONLY the one into 50003: 0 of the other\'s (the DOWN row is addressed by M_LocatorTo_ID > M_Warehouse_ID > AD_Org_ID, FK targets read from the dictionary)', 'T1=' + JSON.stringify(mT1.map(function (f) { return f.m_locatorto_id; })) + ' T2=' + JSON.stringify(mT2.map(function (f) { return f.m_locatorto_id; })));
+    A('P3', have(vF, 'm_movementline') === 2, 'the hub keeps what it sent (both movements)', 'F=' + have(vF, 'm_movementline'));
     A('P3', vT2.thin.accepted === vT2.rows.length, 'accounting closes: accepted = projected rows on T2', 'accepted=' + vT2.thin.accepted + ' rows=' + vT2.rows.length);
     } catch (e) { A('P3!THREW', false, 'THREW: ' + String(e && e.message).slice(0, 110)); }
     // ── §P6 borrower per record ──────────────────────────────────────────────────────────────────────────────────
@@ -206,6 +215,7 @@ async function arms(src, quiet) {
     A('P6', idsB2.indexOf('228.85') < 0 && idsB2.indexOf('LN-A') < 0 && idsB2.indexOf('114.43') < 0 && idsB2.indexOf('secret') < 0, 'and none of borrower 1\'s values is in borrower 2\'s projection (228.85 / LN-A / 114.43)', idsB2.slice(0, 120));
     A('P6', V.B1b.rows.length === V.B1.rows.length && have(V.B1b, 'c_invoice') === 1, 'borrower 1\'s SECOND device (enrolled onto the existing person) holds exactly what the first holds', 'B1b=' + V.B1b.rows.length + ' B1=' + V.B1.rows.length);
     A('P6', V.Q.rows.length === 0 && V.Q.thin.refused > 0, 'a device with the borrower ROLE but bound to no entity receives 0 (role alone never addresses a record)', 'Q rows=' + V.Q.rows.length + ' refused=' + V.Q.thin.refused);
+    A('P6', have(V.B1, 'm_movementline') === 0 && have(V.B2, 'm_movementline') === 0 && have(V.Q, 'm_movementline') === 0, 'a borrower (and an unbound device of the borrower role) receives NO replenishment movement', 'B1=' + have(V.B1, 'm_movementline') + ' B2=' + have(V.B2, 'm_movementline'));
     A('P6', V.T1.rows.filter(function (r) { return /c_invoice|c_payment/.test(r.parameters); }).length === 0, 'a till (another role) receives none of the borrower flows', V.T1.tables.join(','));
     A('P6', have(V.F, 'c_payment') === 1 && have(V.F, 'c_invoice') === 2, 'the processor holds the payment (UP) and both loans it made', V.F.tables.join(','));
     A('P6', V.B1.thin.placed > V.B1.thin.accepted && V.B1.thin.bytesRefused > 0, 'the instrument sees the refusals: B1 placed ' + V.B1.thin.placed + ' ops, accepted ' + V.B1.thin.accepted + ', refused ' + V.B1.thin.refused + ' (' + V.B1.thin.bytesRefused + ' bytes never projected)', JSON.stringify(V.B1.thin.byTable));
@@ -244,11 +254,29 @@ async function arms(src, quiet) {
     var NB = src.bulk || Number(process.env.PP_BULK) || 2100, t0 = Date.now(), tm = {}; for (var bi = 0; bi < NB; bi++) { var rb = mkRow('c_invoice', { c_bpartner_id: bps[3].id, documentno: 'BULK-' + bi, grandtotal: bi + 1, ad_client_id: 11, ad_org_id: 0 }); var tb = await hold(adR, rb); if (!tb.local) throw new Error('bulk record was sent early'); }
     tm.hold = Date.now() - t0;
     var B4 = await fanOut.enrol('B4', BORR, bps[3].uu); await D.B4.ad.api._attach(B4.S, B4.dev); await fanOut.syncAll();
-    tm.enrol = Date.now() - t0; var cu4 = await adR.api._release(kr); tm.release = Date.now() - t0; await fanOut.syncAll(); tm.sync = Date.now() - t0; if (!quiet) console.log('   §PP_TIMING ms ' + JSON.stringify(tm)); var vB4 = await view(D.B4), vB3c = await view(D.B3), nBulk = vB4.rows.filter(function (r) { return /BULK-/.test(r.parameters); }).length, oldest = vB4.rows.some(function (r) { return /"BULK-0"/.test(r.parameters); });
+    tm.enrol = Date.now() - t0; var cu4 = await adR.api._release(kr); tm.release = Date.now() - t0; await fanOut.syncAll(); tm.sync = Date.now() - t0; if (!quiet) console.log('   §PP_TIMING ms ' + JSON.stringify(tm)); if (!quiet) adR.logs.filter(function (l) { return /§TEAM_CATCHUP released=/.test(l); }).forEach(function (l) { console.log('   ' + l); }); var vB4 = await view(D.B4), vB3c = await view(D.B3), nBulk = vB4.rows.filter(function (r) { return /BULK-/.test(r.parameters); }).length, oldest = vB4.rows.some(function (r) { return /"BULK-0"/.test(r.parameters); });
     A('P8', cu4.n === NB + 2 && nBulk === NB && oldest && have(vB4, 'c_invoicepayschedule') === 1 && vB3c.rows.length === 2, 'the next customer\'s bind releases ALL ' + (NB + 2) + ' of its records - ' + NB + ' bulk loans (more than the old 2000 cap, the OLDEST included) + the first loan + its instalment - and nothing of B3\'s again (' + ((Date.now() - t0) / 1000).toFixed(1) + ' s)', 'released=' + cu4.n + ' B4 bulk=' + nBulk + ' oldest=' + oldest + ' B3=' + vB3c.rows.length);
     var B3b = await fanOut.enrol('B3b', BORR, bps[2].uu); await D.B3b.ad.api._attach(B3b.S, B3b.dev); await fanOut.syncAll(); var vB3d = await view(D.B3b);
     A('P8', vB3d.rows.length === 2, 'a REPLACED phone (a new device enrolled onto the same person) gets its loan and instalment back', 'B3b=' + vB3d.rows.length);
     } catch (e) { A('P8!THREW', false, 'THREW: ' + String(e && e.message).slice(0, 120)); }
+    // ── §P9 batch authoring (the profile of §P8: author() is O(log size) per op, so N ops were O(N^2)) ─────────────────────
+    H('§P9 BATCH AUTHORING = the same envelopes as one-by-one, in linear time');
+    try {
+    var mk9 = async function () { var F9 = await STORE.newDevice(), P9 = uuid(); F9.person_uu = P9; var sp9 = await STORE.newSpace('b', F9, P9, 'F', HQ, undefined), S9 = STORE.open(new SQL.Database(), { SQL: SQL, space: sp9.space, self: F9, access: allow, log: function () {} }); await S9.genesis(sp9.params); return S9; };
+    var specs9 = function (n) { var o = []; for (var k = 0; k < n; k += 3) { var inv = uuid(), f = { ad_client_id: 11, ad_org_id: 0 };
+      o.push({ target: { table: 'c_invoice', uu: inv }, intent: 'K2', ts: 1000 + k, body: { op_type: 'CRUD_CREATE', params: { fields: Object.assign({ documentno: 'P' }, f) } } });
+      o.push({ target: { table: 'c_invoicepayschedule', uu: uuid() }, refs: [inv], intent: 'K2', ts: 1001 + k, body: { op_type: 'CRUD_CREATE', params: { fields: Object.assign({ c_invoice_id: { uu: inv } }, f) } } });
+      o.push({ target: { table: 'c_invoice', uu: inv }, intent: 'K2', ts: 1002 + k, body: { op_type: 'CRUD_UPDATE', params: { changes: { documentno: { old: 'P', new: 'Q' } } } } }); } return o; };
+    var sm9 = specs9(30), A9 = await mk9(), B9 = await mk9(), ea = [], ha = [], norm = function (e, hs) { var j = JSON.stringify({ deps: e.deps, reads: e.reads, seq: e.seq, base: e.base, target: e.target, body: e.body, manifest: e.manifest, policy: e.policy, intent: e.intent }); hs.forEach(function (h, i) { j = j.split(h).join('#' + i); }); return j; };
+    for (var sp of sm9) { var r9 = await A9.author(sp); ea.push(r9.env); ha.push(r9.hash); }
+    var bm = await B9.authorMany(sm9), eb = bm.done.map(function (x) { return x.env; }), hb = bm.done.map(function (x) { return x.hash; });
+    var same9 = eb.length === ea.length && ea.every(function (e, i) { return norm(e, ha) === norm(eb[i], hb); }), withDeps = ea.filter(function (e) { return (e.deps || []).length; }).length;
+    if (guard('P9', withDeps, 'no op read an earlier version, so equivalence would be vacuous')) A('P9', same9 && !bm.error && withDeps >= 20, 'authorMany(30 ops: create, create-with-ref, update) makes the SAME envelopes as 30 author() calls - same deps, reads, seq, body (hashes compared by position); ' + withDeps + ' of them read an earlier version', 'same=' + same9 + ' deps>0=' + withDeps);
+    var vB9 = await B9.order(), allM = bm.done.every(function (x) { return vB9.verdict[x.hash] && vB9.verdict[x.hash].verdict === 'MERGED'; });
+    A('P9', allM, 'and the batch\'s ops are all MERGED by the fold', bm.done.length + ' ops');
+    var tm9 = async function (n) { var S9 = await mk9(), t = Date.now(); await S9.authorMany(specs9(n)); return Date.now() - t; }, t300 = await tm9(300), t1200 = await tm9(1200), ratio = t1200 / Math.max(t300, 1);
+    A('P9', ratio < 8, 'LINEAR: 1200 ops take ' + t1200 + ' ms vs 300 ops ' + t300 + ' ms = x' + ratio.toFixed(1) + ' (4x the ops; linear ~4, quadratic ~16; the bound is 8)', 'ratio=' + ratio.toFixed(1));
+    } catch (e) { A('P9!THREW', false, 'THREW: ' + String(e && e.message).slice(0, 120)); }
     // ── §P4 genesis plan ─────────────────────────────────────────────────────────────────────────────────────────
     H('§P4 THE GENESIS NAMES THE PLAN (absent = office)');
     try {
@@ -331,13 +359,15 @@ async function arms(src, quiet) {
   await mut('`by` is ignored (a DOWN row is addressed by role alone)', ['P6'], function (s) { var t = rep(s.scope, 'if (!by || !by.length) return { ok: true };', 'if (true) return { ok: true };'); if (!t) return false; s.scope = t; return true; });
   await mut('a role that is neither edge nor hub is treated as the recipient', ['P1', 'P3', 'P6'], function (s) { var t = rep(s.scope, "me === edge ? 'up' : me === hub ? 'receive' : 'unplanned'", "me === edge ? 'up' : 'receive'"); if (!t) return false; s.scope = t; return true; });
   await mut('the reader never switches to the POS plan (setKind ignored)', ['P4', 'P1', 'P3', 'P6'], function (s) { var t = rep(s.scope, "setKind: function (k) { memo.kind = k === 'pos' ? 'pos' : 'office'; return memo.kind; }", "setKind: function (k) { return memo.kind; }"); if (!t) return false; s.scope = t; return true; });
-  await mut('the sender sends a record with no bound addressee', ['P6'], function (s) { var t = rep(s.adapter, "if (!ad || !(await S.order()).roster.persons[ad])", "if (false)"); if (!t) return false; s.adapter = t; return true; });
+  await mut('the sender sends a record with no bound addressee', ['P6'], function (s) { var t = rep(s.adapter, "if (!ad || !(relPersons || (await S.order()).roster.persons)[ad])", "if (false)"); if (!t) return false; s.adapter = t; return true; });
   await mut('the office answer of the reader is changed (share -> unplanned)', ['P0'], function (s) { var t = rep(s.scope, "I.flows[lc(table)] ? 'share' : 'unplanned', h =", "I.flows[lc(table)] ? 'unplanned' : 'unplanned', h ="); if (!t) return false; s.scope = t; return true; });
   await mut('the POS plan is not verified (signature skipped on a kind switch)', ['P7'], function (s) { var t = rep(s.adapter, "await verifyPlan('plan=' + kind);", ''); if (!t) return false; s.adapter = t; return true; });
   await mut('catch-up is off (a held record is never released)', ['P8'], function (s) { var t = rep(s.adapter, "if (!S || scopeCtx.kind !== 'pos') return out;", "return out;"); if (!t) return false; s.adapter = t; return true; });
-  await mut('the derivation ignores the entity (every unsent DOWN row goes to its role on any bind)', ['P8'], function (s) { var t = rep(s.adapter, "if (!ad || !(await S.order()).roster.persons[ad])", "if (false)"); if (!t) return false; s.adapter = t; return true; });
-  await mut('a released record is not marked (sent again on the next evaluation)', ['P8'], function (s) { var t = rep(s.adapter, "sent[r.op_uuid] = a.hash; delete localOnly[r.op_uuid]; out.n++;", "out.n++;"); if (!t) return false; s.adapter = t; return true; });
+  await mut('the derivation ignores the entity (every unsent DOWN row goes to its role on any bind)', ['P8'], function (s) { var t = rep(s.adapter, "if (!ad || !(relPersons || (await S.order()).roster.persons)[ad])", "if (false)"); if (!t) return false; s.adapter = t; return true; });
+  await mut('a released record is not marked (sent again on the next evaluation)', ['P8'], function (s) { var t = rep(s.adapter, "if (a) { sent[r2.op_uuid] = a.hash; delete localOnly[r2.op_uuid]; out.n++;", "if (a) { out.n++;"); if (!t) return false; s.adapter = t; return true; });
   await mut('the oldest records are dropped beyond 2000 (the retired cap, reinstated)', ['P8'], function (s) { var t = rep(s.adapter, "}).sort(function (a, b) { return Number(a.id) - Number(b.id); });\n    if (!cands.length) return out;", "}).sort(function (a, b) { return Number(a.id) - Number(b.id); }).slice(-2000);\n    if (!cands.length) return out;"); if (!t) return false; s.adapter = t; s.bulk = 2100; return true; });
+  await mut('authorMany keeps no heads (a batch op never reads the one before it)', ['P9'], function (s, eng) { var d = eng(), f = path.join(d, 'comm_store.js'), a = fs.readFileSync(f, 'utf8'), t = rep(a, "ver[String(sp.target.uu).toLowerCase()] = a.hash; ", ""); if (!t) return false; fs.writeFileSync(f, t); s.engine = d; return true; });
+  await mut('authorMany re-reads the log per op (the quadratic path)', ['P9'], function (s, eng) { var d = eng(), f = path.join(d, 'comm_store.js'), a = fs.readFileSync(f, 'utf8'), t = rep(a, "var a = await authorOne(sp, ver, rbc);", "var a = await authorOne(sp, await versions(), null);"); if (!t) return false; fs.writeFileSync(f, t); s.engine = d; return true; });
   var killed = results.filter(Boolean).length;
   console.log('§PP_VERDICT ' + (fails ? 'FAIL' : 'PASS') + ' judged=' + judged + ' fails=' + fails + ' mutants_killed=' + killed + '/' + results.length);
   process.exit(fails ? 1 : 0);
