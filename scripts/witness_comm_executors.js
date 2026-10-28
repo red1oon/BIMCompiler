@@ -93,6 +93,20 @@ async function arms(C, quiet) {
   var keys = [cF.st, cS.st, cS.cs, cX.st, p2a.hash, p2.hash], same = true, det = [];
   for (var kh of keys) { var a1 = await vd(T.F, kh), a2 = await vd(X, kh); det.push(a2); if (a1 !== a2) same = false; }
   A('X7', envs.length > 15 && same, 'a fourth device ingesting the same ' + envs.length + ' ops in REVERSE order gives the same verdicts', det.join(' '));
+  H('§X8 POSITION-AWARE MAP (TEAMWORK_FRAMEWORK §41.2 L2: an authorisation is judged by the policy in force WHEN THE ACT WAS DONE, never re-judged by a later policy)');
+  var oA = await order(T.S), cA = await complete(T.S, oA), vA0 = await all(T, cA.st);
+  A('X8', vA0.every(function (v) { return v === 'REFUSED:not-executor'; }), 'under the map {c_order, m_inout: HQ} the station\'s Complete is REFUSED not-executor on every device (the act)', vA0.join(' '));
+  var s8 = await stmt({}, m2, K[0]), p8 = await T.F.setPolicy(pol(3, { executors: s8 })), v8 = await all(T, p8.hash), R8 = (await T.T.order()).roster;
+  A('X8', v8.every(isM) && R8.executors && Object.keys(R8.executors).length === 0 && R8.executorsEpoch === 3, 'the owner retires the map with {} (chained to the map in force): MERGED everywhere, epoch 3, the map in force is empty', v8.join(' ') + ' epoch=' + R8.executorsEpoch);
+  var vA1 = await all(T, cA.st), vA1c = await all(T, cA.cs), vS1 = await all(T, cS.st);
+  A('X8', vA1.every(function (v) { return v === 'REFUSED:not-executor'; }) && vA1c.every(function (v) { return v === 'REFUSED:not-executor-group'; }) && vS1.every(function (v) { return v === 'REFUSED:not-executor'; }), 'AFTER {} the Complete done under the old map STAYS refused (status op and its group consequence), on every device; so does the earlier X3 station Complete', vA1.join(' ') + ' | ' + vA1c.join(' ') + ' | ' + vS1.join(' '));
+  var oB = await order(T.S), cB = await complete(T.S, oB), vB = await all(T, cB.st), vBc = await all(T, cB.cs);
+  A('X8', vB.every(isM) && vBc.every(isM), 'a Complete done AFTER {} (the station authors it once the map is retired) is MERGED on every device: the retirement still takes effect going forward', vB.join(' ') + ' | ' + vBc.join(' '));
+  var envs8 = T.F.query('SELECT envelope FROM cl_op').map(function (r) { return JSON.parse(r.envelope); }).reverse();
+  var Xe = await STORE.newDevice(); Xe.person_uu = uuid(); var X8 = STORE.open(new SQL.Database(), { SQL: SQL, space: T.space, self: Xe, access: access, log: function () {} });
+  for (var e8 of envs8) await X8.ingest(e8, 'x');
+  var fresh = [await vd(X8, cA.st), await vd(X8, cA.cs), await vd(X8, cS.st), await vd(X8, cB.st), await vd(X8, cB.cs)];
+  A('X8', envs8.length > 20 && fresh[0] === 'REFUSED:not-executor' && fresh[1] === 'REFUSED:not-executor-group' && fresh[2] === 'REFUSED:not-executor' && isM(fresh[3]) && isM(fresh[4]), 'a FRESH device folding all ' + envs8.length + ' ops from zero (reverse arrival) reaches the same five verdicts: refused, refused, refused, merged, merged', fresh.join(' '));
   return red;
 }
 (async function () {
@@ -111,6 +125,8 @@ async function arms(C, quiet) {
   await mut('group refusal off', [['comm_store.js', "verdict[go.hash] = { verdict: 'REFUSED', reason: 'not-executor-group' };", "void 0;"]]);
   await mut('signer check off', [['comm_roster.js', "if (!trust.some(function (k) { return sameKey(k, p.executors.signer); })) return no('executors-untrusted-signer');", ""]]);
   await mut("'author' accepted again by the map shape", [['comm_roster.js', "!(Number.isInteger(m[t]) && m[t] >= 0)", "!(m[t] === 'author' || (Number.isInteger(m[t]) && m[t] >= 0))"]]);
+  await mut('final-map read (E3 judges every op by the map in force at the END of the fold)', [['comm_store.js', "roster.exeAt(o.env.author, o.env.seq)", "roster.executors"]]);
+  await mut('the policy carries no frontier (position unknown: every op falls under the newest map)', [['comm_store.js', "params = Object.assign({}, params, { from_seq: await frontier() });", "void 0;"]]);
   await mut('map never applied', [['comm_roster.js', "if (rotE) { exe = rotE;", "if (false) { exe = rotE;"]]);
   console.log('§EXE_VERDICT ' + (fails || red0.length ? 'FAIL' : 'PASS') + ' judged=' + judged + ' fails=' + fails);
   process.exit(fails ? 1 : 0);
