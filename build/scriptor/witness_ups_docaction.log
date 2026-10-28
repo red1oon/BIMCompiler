@@ -1,4 +1,4 @@
-═══ W-UPS-ONE-DOCACTION — E1 COMPILE: one DocAction executor per document (TEAMWORK_FRAMEWORK FL-7, §38.1) ═══
+═══ W-UPS-ONE-DOCACTION — E1 COMPILE: one DocAction executor per document (TEAMWORK_FRAMEWORK FL-8, §38.1) ═══
 §U1 CONTROL
    🟢 P1 + the processor's order with ONE executor (HQ role 102, CO) compiles; no plan error — ok=true planErrors=[]
    🟢 the compiled plan CARRIES the executor on that row (what E2/E3 will read) — {"executor":102,"actions":["CO"]}
@@ -6,9 +6,11 @@
    🟢 a second row giving C_Order another executor (the station) -> dual-docaction, the plan does not compile — [{"code":"dual-docaction","table":"c_order","rows":["D1 hq-order","D2 another-executor"]}]
 §U3 STATION
    🟢 the station's UP declaration given a DocAction by its own role -> station-docaction — [{"code":"station-docaction","row":"F1 pos-sales-up"}]
-§U4 AUTHOR
-   🟢 executor "author" on a UP declaration -> docaction-author-not-mesh — [{"code":"docaction-author-not-mesh","row":"F1 pos-sales-up"}]
-   🟢 executor "author" on a BOTH + space (peer team) row compiles — the device that authored the document is its one executor — []
+§U4 AUTHOR RETIRED (study §12.2 2.5 / TEAMWORK_FRAMEWORK §38.15 B: executors are ROLES; the engine refuses bad-policy:executors, so the compiler must too)
+   🟢 RETIRED ARM 1 (was: docaction-author-not-mesh): executor "author" on a UP declaration -> docaction-author-retired — [{"code":"docaction-author-retired","row":"F1 pos-sales-up"}]
+   🟢 RETIRED ARM 2 (was: "author" on a BOTH + space row COMPILES): the same row is now refused docaction-author-retired — the office/mesh plan names NO executor (= legacy: whoever's login role has Document Action Access may act) — [{"code":"docaction-author-retired","row":"T1 order-shared"}]
+   🟢 a mesh row with a ROLE executor (HQ 102) compiles: the executor is a role in every topology — []
+   🟢 the office plan's source rows (flows_erp.json, 7 rows) declare NO docaction: the shipped office plan publishes no executor map — rows=7
 §U5 BAD
    🟢 no executor -> docaction-bad — [{"code":"docaction-bad","row":"D1 hq-order"}]
    🟢 executor "x" -> docaction-bad — [{"code":"docaction-bad","row":"D1 hq-order"}]
@@ -19,5 +21,6 @@
 §MUTANTS (a copy of build/scriptor with one rule broken; each must turn at least one arm red)
    🟢 the dual check off -> red arms: U2
    🟢 the station check off -> red arms: U3
-   🟢 the author/mesh check off -> red arms: U4
-§UPS_VERDICT PASS judged=14 fails=0
+   🟢 the author-retired check off ('author' falls to the generic bad row) -> red arms: U4
+§UPS_VERDICT PASS judged=16 fails=0
+exit=0

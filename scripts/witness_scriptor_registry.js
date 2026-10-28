@@ -44,7 +44,7 @@ function arms(quiet) {
   A('W-REG-GUARDS', !!shapeless && /needs/.test(shapeless) && !TREAT.get('SHAPELESS'), 'a component with no needs array is refused and not registered', shapeless || 'accepted');
   say('§W-REG-ZEROCODE');
     var row = { name: 'K1 ack', treatment: 'ACK', of: 'F1 pos-sales-up', role: 103 }, rows = ROWS.concat([row]);
-  var w = new S.World(rows, {}, {}); w.addDevice('A', 103);
+  var w = new S.World(rows, { 'Replenish Report': function () { return []; } }, {}); w.addDevice('A', 103);
   var ok = !!TREAT.get('ACK') && TREAT.validate(row).length === 0;
   var f2 = w.rowByName('F2 replenishment-down');
   w.hubSend(f2, 'A', { flow: f2.name, key: 'M-1', fields: { M_Product_ID: 'P-COLA', QtyEntered: 5 }, by: 'HUB' });
@@ -59,13 +59,13 @@ function arms(quiet) {
   var words = ['FACT', 'SEED', 'RULE', 'INSTRUMENT'], src = stripped('treat.js') + stripped('sim.js'), hits = words.filter(function (x) { return new RegExp('\\b' + x + '\\b', 'i').test(src); });
   A('W-REG-NONAMES', hits.length === 0, 'treat.js and sim.js name none of the 4 built-in treatments', hits.length ? 'hits: ' + hits.join(',') : '0 hits');
   say('§W-REG-POINTS');
-  var rows2 = ROWS.concat([{ name: 'Q1 probe', treatment: 'PROBE' }]), p = new S.World(rows2, { GenerateReplenishment: function () { return []; } }, {}); p.addDevice('A', 103);
+  var rows2 = ROWS.concat([{ name: 'Q1 probe', treatment: 'PROBE' }]), p = new S.World(rows2, { 'Replenish Report': function () { return []; } }, {}); p.addDevice('A', 103);
   var f1 = p.rowByName('F1 pos-sales-up'); p.sell(p.dev.A, f1, 'A/1', { M_Product_ID: 'P-COLA', QtyEntered: 1 }); p.cycle(); p.publish('Q1 probe', 7);
   var calls = p.probe || [];
   A('W-REG-POINTS', calls.some(function (c) { return c[0] === 'accept' && c[1] === 'Q1 probe' && c[2] === 'F1 pos-sales-up' && c[3] === 'A/1'; }), 'onAccept reached the component for the accepted fact', JSON.stringify(calls));
   A('W-REG-POINTS', calls.some(function (c) { return c[0] === 'publish' && c[2] === 7; }), 'World.publish found the component by the row\'s treatment name');
   say('§W-REG-STATE');
-  var K = new S.World(ROWS.concat([{ name: 'K9 tally', treatment: 'TALLY' }]), { GenerateReplenishment: function () { return []; } }, {}); K.addDevice('A', 103);
+  var K = new S.World(ROWS.concat([{ name: 'K9 tally', treatment: 'TALLY' }]), { 'Replenish Report': function () { return []; } }, {}); K.addDevice('A', 103);
   var f1 = K.rowByName('F1 pos-sales-up'); K.sell(K.dev.A, f1, 'A/1', { M_Product_ID: 'P-COLA', QtyEntered: 1 }); K.sell(K.dev.A, f1, 'A/2', { M_Product_ID: 'P-COLA', QtyEntered: 2 }); K.cycle();
   var mid = K.dev.A.tally; K.restore('A'); var held = K.dev.A.tally; K.wipe('A'); var wiped = K.dev.A.tally; K.restore('A'); var back = K.dev.A.tally;
   A('W-REG-STATE', mid === 0 && held === 2 && wiped === 0 && back === 2, 'a NEW treatment owns device state: created by deviceInit (0), rebuilt from the shelf by restoreFact (2), reset by a wipe (0), rebuilt again (2)', 'init=' + mid + ' afterRestore=' + held + ' afterWipe=' + wiped + ' afterSecondRestore=' + back);

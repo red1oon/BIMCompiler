@@ -9,20 +9,22 @@
    🟢 no ghost: neither op is in any device's foldable() — ghost=0
 §X4 NO-ENTRY
    🟢 CONTROL: a table with no entry in the map (m_movement) — the station's status op is MERGED as today — MERGED:role 103 undefined MERGED:role 103 undefined MERGED:role 103 undefined
-§X5 AUTHOR
-   🟢 map {c_order: "author"} (backup key K1 signs, chained): the creator completes -> MERGED; another device completing the SAME order -> not-executor — map MERGED:policy | creator MERGED:role 103 undefined MERGED:role 103 undefined MERGED:role 103 undefined | other REFUSED:not-executor REFUSED:not-executor REFUSED:not-executor
+§X5 AUTHOR RETIRED
+   🟢 map {c_order: "author"} (backup key K1 signs, chained) is REFUSED bad-policy:executors on every device; the map in force stays {c_order: HQ}, epoch 1 — REFUSED:bad-policy:executors REFUSED:bad-policy:executors REFUSED:bad-policy:executors map={"c_order":102} epoch=1
+   🟢 a role-valued second statement {c_order, m_inout: HQ} (backup key K1, chained) is MERGED everywhere and applies, epoch 2 (the chain the X6 cases refuse against) — MERGED:policy MERGED:policy MERGED:policy map={"c_order":102,"m_inout":102} epoch=2
 §X6 REFUSE
-   🟢 unsigned/edited after signing -> REFUSED:executors-signature on every device; the map in force stays {c_order: "author"} — REFUSED:executors-signature REFUSED:executors-signature REFUSED:executors-signature map={"c_order":"author"}
-   🟢 signed by a key outside the trust list -> REFUSED:executors-untrusted-signer on every device; the map in force stays {c_order: "author"} — REFUSED:executors-untrusted-signer REFUSED:executors-untrusted-signer REFUSED:executors-untrusted-signer map={"c_order":"author"}
-   🟢 the FIRST statement replayed after the second -> REFUSED:executors-stale on every device; the map in force stays {c_order: "author"} — REFUSED:executors-stale REFUSED:executors-stale REFUSED:executors-stale map={"c_order":"author"}
-   🟢 a valid statement published by a NON-admin station -> REFUSED:not-admin on every device; the map in force stays {c_order: "author"} — REFUSED:not-admin REFUSED:not-admin REFUSED:not-admin map={"c_order":"author"}
-   🟢 a malformed map -> REFUSED:bad-policy:executors on every device; the map in force stays {c_order: "author"} — REFUSED:bad-policy:executors REFUSED:bad-policy:executors REFUSED:bad-policy:executors map={"c_order":"author"}
+   🟢 unsigned/edited after signing -> REFUSED:executors-signature on every device; the map in force stays {c_order, m_inout: HQ} — REFUSED:executors-signature REFUSED:executors-signature REFUSED:executors-signature map={"c_order":102,"m_inout":102}
+   🟢 signed by a key outside the trust list -> REFUSED:executors-untrusted-signer on every device; the map in force stays {c_order, m_inout: HQ} — REFUSED:executors-untrusted-signer REFUSED:executors-untrusted-signer REFUSED:executors-untrusted-signer map={"c_order":102,"m_inout":102}
+   🟢 the FIRST statement replayed after the second -> REFUSED:executors-stale on every device; the map in force stays {c_order, m_inout: HQ} — REFUSED:executors-stale REFUSED:executors-stale REFUSED:executors-stale map={"c_order":102,"m_inout":102}
+   🟢 a valid statement published by a NON-admin station -> REFUSED:not-admin on every device; the map in force stays {c_order, m_inout: HQ} — REFUSED:not-admin REFUSED:not-admin REFUSED:not-admin map={"c_order":102,"m_inout":102}
+   🟢 a malformed map -> REFUSED:bad-policy:executors on every device; the map in force stays {c_order, m_inout: HQ} — REFUSED:bad-policy:executors REFUSED:bad-policy:executors REFUSED:bad-policy:executors map={"c_order":102,"m_inout":102}
    🟢 a space founded with NO trust list cannot name executors -> executors-unpinned — REFUSED:executors-unpinned REFUSED:executors-unpinned REFUSED:executors-unpinned
 §X7 ORDER
-   🟢 a fourth device ingesting the same 29 ops in REVERSE order gives the same verdicts — MERGED:role 102 undefined MERGED:role 103 undefined MERGED:role 103 undefined MERGED:role 103 undefined REFUSED:not-executor
+   🟢 a fourth device ingesting the same 25 ops in REVERSE order gives the same verdicts — MERGED:role 102 undefined REFUSED:not-executor REFUSED:not-executor-group MERGED:role 103 undefined REFUSED:bad-policy:executors MERGED:policy
 §MUTANTS (a copy of build/comm with one rule broken; each must turn at least one arm red; a crash is NOT a kill)
-   🟢 role check off -> red arms: X3, X5
+   🟢 role check off -> red arms: X3
    🟢 group refusal off -> red arms: X3
    🟢 signer check off -> red arms: X6
+   🟢 'author' accepted again by the map shape -> red arms: X5, X6
    🟢 map never applied -> red arms: X1, X3, X5, X6
-§EXE_VERDICT PASS judged=18 fails=0
+§EXE_VERDICT PASS judged=20 fails=0

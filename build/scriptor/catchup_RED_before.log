@@ -1,0 +1,74 @@
+═══ W-POS-PLAN — role-scoped delivery: the hosts read a POS (star) plan (TEAMWORK_FRAMEWORK §38.14, §38.15) ═══  reader=/tmp/wt-catchup engine=/tmp/wt-bc-catchup
+§P0 OFFICE UNCHANGED (the immutable additive rule: the shipped office plan and its reader answers are the base's)
+   🟢 erp/team_plan.js (the office plan) is byte-identical to 3e779487 (so its plan hash is unchanged) — 377a2a5abc14 vs 377a2a5abc14
+   🟢 scopeOf / flow answers are identical for ALL 1004 tables (1-arg, and with any role: an office plan has only space rows) — 1004 tables
+   🟢 summary() and locals() identical; the default kind is "office" — {"hash":"276308d4ef158e564b44d358e79d60369290ebff1de19dd28d94251de7b46142","tables":855,"local":7}
+   🟢 the office plan carries no hub row, no hub and NO executor map: the mesh = legacy (whoever's login role has Document Action Access may act) — flows=855
+   🟢 erp/team_plan_pos.js is exactly what build/scriptor/emit_erp_plan.js pos emits from flows_pos.json + flows_erp.json (generated, never hand-edited) — 3108b58a8397
+   🟢 the emitter REFUSES a POS plan with no executor (no-hub), two executor roles (hub-ambiguous), or a malformed / UP `by` (by-bad) — pos plan errors: no-hub | pos plan errors: hub-ambiguous | hub-is-edge B1 borrower-pay | pos plan errors: by-bad B2 invoice-down | pos plan errors: by-bad F1 pos-sales-up
+§P1 DIRECTION PER ROLE
+   🟢 role 200001 · c_orderline = up — got up
+   🟢 role 200001 · m_movementline = receive — got receive
+   🟢 role 200001 · i_order = up — got up
+   🟢 role 102 · c_orderline = receive — got receive
+   🟢 role 102 · m_movementline = down — got down
+   🟢 role 102 · i_order = receive — got receive
+   🟢 role 102 · c_invoice = down — got down
+   🟢 role 103 · c_invoice = receive — got receive
+   🟢 role 103 · c_payment = up — got up
+   🟢 role 102 · c_payment = receive — got receive
+   🟢 role 103 · c_orderline = unplanned — got unplanned
+   🟢 role 200001 · c_invoice = unplanned — got unplanned
+   🟢 no role · c_orderline = unplanned — got unplanned
+   🟢 role 200001 · c_bpartner = unplanned — got unplanned
+   🟢 role 200001 · ad_sequence = station-local — got station-local
+   🟢 the order header never leaves either device (the processor's own order is a LOCAL row of the plan) — station-local/station-local
+   🟢 hub() is the executor role of the plan's docaction row; by() gives the FK path of a per-record row and null for a role-scoped one — hub=102
+   🟢 the SAME page with kind "office" reads the office plan: c_order / c_orderline are "share" (the topology is the genesis' choice, nothing else) — share
+§P2 CARRIES BINDS OUTBOUND (FL-1) + the processor's Complete group
+   🟢 a station's C_OrderLine create leaves with EXACTLY the declared columns + the partition (description, priceactual, linenetamt, c_order_id stay on the device) — ["ad_client_id","ad_org_id","c_uom_id","m_product_id","qtyentered"]
+   🟢 the station's order header never leaves (its plan row is the processor's LOCAL) — {"quiet":"station-owned c_order"}
+   🟢 the processor's replenishment line (DOWN) leaves with its declared columns only — ["m_product_id","qtyentered","c_uom_id","m_locator_id","m_locatorto_id","ad_client_id","ad_org_id"]
+   🟢 an UPDATE that touches no declared column sends nothing — {"local":"no-declared-column-changed c_orderline","table":"c_orderline"}
+   🟢 the processor's 103-op Complete group (order, shipment, invoice, postings, ...): 0 leave, 103 stay on the device (the plan declares no flow for them from the hub role) — sent=0 local=103
+   🟢 CONTROL: the SAME adapter in a space with no `plan` (office) DOES share those tables (12 of 12 sent) - the thin pipe is the plan's doing, not a broken sender — office sent=12
+§P3 NOT-ADDRESSED INBOUND (a station never folds another station's declaration)
+   🟢 the processor projects the declaration (1), the author keeps its own (1), the OTHER station projects 0 — F=1 T1=1 T2=0
+   🟢 the ENGINE did place that op on T2 (the dumb relay delivered it) - it is the adapter that refused it locally, and says so (§TEAM_THIN refused>0) — placed=1 refused=1
+   🟢 a DOWN flow addressed to the station ROLE reaches every station (role-scoped), and the hub keeps what it sent — T1=1 T2=1
+   🟢 accounting closes: accepted = projected rows on T2 — accepted=1 rows=1
+§P6 BORROWER SCOPE IS PER RECORD (two borrowers, ONE role)
+   🟢 the processor sends the two loans and their instalments (their borrowers are bound in the roster) — sent,sent,sent,sent
+   🟢 a record whose entity has NO bound person (a cash customer) is never sent: no-addressee (it would only fatten the pipe) — no-addressee c_invoice
+   🟢 the loan leaves with its declared columns only (the address column c_bpartner_id is among them; description is not) — ["ad_client_id","ad_org_id","c_bpartner_id","documentno","grandtotal"]
+   🟢 borrower 1's payment (UP) carries only c_bpartner_id and payamt — ["c_bpartner_id","payamt","ad_client_id","ad_org_id"]
+   🟢 borrower 1 holds ITS loan, ITS instalment and its own payment — c_payment,c_invoice,c_invoicepayschedule
+   🟢 borrower 2 (same role) holds ITS loan + instalment only: 0 of borrower 1's invoice / schedule / payment (2 ops in all) — c_invoice,c_invoicepayschedule refused=5
+   🟢 and none of borrower 1's values is in borrower 2's projection (228.85 / LN-A / 114.43) — {"ad_client_id":11,"ad_org_id":0,"c_bpartner_id":117,"documentno":"LN-B","grandtotal":100}|{"ad_client_id":11,"ad_org_id
+   🟢 borrower 1's SECOND device (enrolled onto the existing person) holds exactly what the first holds — B1b=3 B1=3
+   🟢 a device with the borrower ROLE but bound to no entity receives 0 (role alone never addresses a record) — Q rows=0 refused=7
+   🟢 a till (another role) receives none of the borrower flows — c_orderline,m_movementline
+   🟢 the processor holds the payment (UP) and both loans it made — c_orderline,c_invoice,c_invoicepayschedule,c_payment,c_invoice,c_invoicepayschedule,m_movementline
+   🟢 the instrument sees the refusals: B1 placed 7 ops, accepted 3, refused 4 (2996 bytes never projected) — {"c_orderline":1,"c_invoice":1,"c_invoicepayschedule":1,"m_movementline":1}
+§P8 CATCH-UP ON BIND (a customer who enrols later still receives every open item they already hold; bind-first stays the procedure)
+   🔴 §PP_VACUOUS P8 nothing was judged: the hub withheld nothing, so a catch-up could not be judged
+   🔴 ISSUE -> BIND -> the hub sends that entity's 2 records, once, in the order they were made (loan, then instalment) — sent=0 tables=
+   🔴 the late borrower holds its loan and its instalment (and nothing of the other entities')
+   🔴 THREW: Cannot read properties of undefined (reading 'parameters')
+§P4 THE GENESIS NAMES THE PLAN (absent = office)
+   🟢 newSpace without the option writes no `plan`; with it writes office|pos; any other value is refused — absent=true explicit=office pos=pos bogus=newSpace: invalid plan (galaxy)
+   🟢 the roster reads the plan back: absent -> office, "office" -> office, "pos" -> pos — office/office/pos
+   🟢 a genesis carrying an unknown plan value is untrusted (the space does not open) — no-trusted-genesis
+   🟢 the founder's choice (?teamplan=pos) reaches the genesis through spaceOpts; with no choice there is no option at all — {"plan":"pos"}
+   🟢 a device in a space WITHOUT `plan` reads the office plan: c_order is shared exactly as before — {"kind":"office","role":102,"person":"13f1f08c-af66-475c-a213-57f1bbc0b28f"}
+   🟢 a device in a `plan:"pos"` space switches the reader to the POS plan (c_order is no longer "share") — {"kind":"pos","role":102,"person":"13f1f08c-af66-475c-a213-57f1bbc0b28f"}
+§P7 THE POS PLAN IS VERIFIED LIKE THE OFFICE PLAN (same trust list, §33)
+   🟢 signed by the trusted key -> state=ok, the station's C_OrderLine is "up" — ok up
+   🟢 altered after signing / unsigned under a trust list -> invalid, signed by another key -> untrusted: all CLOSED (nothing declared, nothing shared) — invalid/invalid/untrusted
+   🟢 a pos space whose device has NO pos plan file shares nothing and prints "missing — nothing is shared" — unplanned
+§P5 THE PLAN'S OWN docaction ROW IS THE EXECUTOR MAP (G-4 overlay); no executor for the station
+   🟢 the POS plan carries executors = {c_order: 102} derived from its docaction row, and hub = 102 — {"c_order":102}
+   🟢 the plan's map, signed by the owner (stmt executors) and MERGED, leaves the station role (200001) with no active DocAction row on the order doctype (was 14) and the processor (102) with all 14 — policy=MERGED till Y=0 N=14 hq Y=14
+   🟢 an 'author' executor is not accepted anywhere any more (signer or fold) — refused: the statement would be refused: shape:map
+§PP_ARMS red=P8!VACUOUS,P8,P8!THREW judged=62 fails=4
+§PP_VERDICT FAIL judged=62 fails=4 mutants=NOT RUN (the base run is red)

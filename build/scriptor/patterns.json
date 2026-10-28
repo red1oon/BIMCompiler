@@ -37,7 +37,7 @@
       "adjust": [
         "table and carries: the records that travel and the columns that matter",
         "group: what makes one record unique, so a resend is recognised",
-        "process: the name of the process head office runs when the sale arrives"
+        "process: the name of the dictionary process the head-office role runs (and its number), and the role and schedule that run it"
       ]
     },
     {

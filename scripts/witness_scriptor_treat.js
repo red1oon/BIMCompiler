@@ -25,13 +25,19 @@ var I = TREAT.T.INSTRUMENT;
 // ---- host PROCESS stubs (stand-ins for the kernel's standard processes; the engine only wires them) ----
 // I7 replay-safe rules: the emitted key is a pure function of the triggering fact. opts.unsafeKeys is the MUTANT (a time-stamped key).
 var PROCS = {
-  GenerateReplenishment: function (hub, fact, w) {
-    var st = hub.state.stock || (hub.state.stock = {}), stn = fact.by, p = fact.fields.M_Product_ID;
-    st[stn] = st[stn] || {}; if (st[stn][p] === undefined) st[stn][p] = 10;      // the initial stock movement at setup (sample)
-    st[stn][p] -= fact.fields.QtyEntered;
-    if (st[stn][p] >= MIN) return [];
-    var q = MAX - st[stn][p]; st[stn][p] += q;
-    return [{ station: stn, key: 'MV/' + (w.opts.unsafeKeys ? w.now + '/' : '') + fact.key, fields: { M_Product_ID: p, M_Locator_ID: 'WH-HQ', M_LocatorTo_ID: 'LOC-' + stn, QtyEntered: q, C_UOM_ID: 100 } }];
+  // R1 is a ROLE on a SCHEDULE (flows.json: role 103, daily — study §14): the process gets no fact. It reads the hub's own records, the sales that arrived since its last run, in arrival order.
+  // Replay-safe (I7): after a rebuild the hub holds no run state, so the run reads every sale again and derives the same movements with the same keys.
+  'Replenish Report': function (hub, fact, w) {
+    var st = hub.state.stock || (hub.state.stock = {}), out = [], recs = Object.keys(hub.rec).filter(function (k) { return k.indexOf('F1 ') === 0; });
+    recs.slice(hub.state.reportDone || 0).forEach(function (k) {
+      var f = hub.rec[k].f, stn = f.by, p = f.fields.M_Product_ID;
+      st[stn] = st[stn] || {}; if (st[stn][p] === undefined) st[stn][p] = 10;    // the initial stock movement at setup (sample)
+      st[stn][p] -= f.fields.QtyEntered;
+      if (st[stn][p] >= MIN) return;
+      var q = MAX - st[stn][p]; st[stn][p] += q;
+      out.push({ station: stn, key: 'MV/' + (w.opts.unsafeKeys ? w.now + '/' : '') + f.key, fields: { M_Product_ID: p, M_Locator_ID: 'WH-HQ', M_LocatorTo_ID: 'LOC-' + stn, QtyEntered: q, C_UOM_ID: 100 } });
+    });
+    hub.state.reportDone = recs.length; return out;
   },
   ApplyPayment: function (hub, fact, w) {
     var o = hub.state.owing || (hub.state.owing = {}), b = fact.by; if (o[b] === undefined) o[b] = 5000;   // sample opening balance

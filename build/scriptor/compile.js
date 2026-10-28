@@ -22,10 +22,10 @@ function docactionCheck(rows) {
   var errs = [], byTable = {};
   rows.filter(function (r) { return r.isactive !== false && r.docaction !== undefined; }).forEach(function (r) {
     var d = r.docaction;
-    if (!r.table || !d || typeof d !== 'object' || (d.executor !== 'author' && !Number.isInteger(d.executor)) || !Array.isArray(d.actions) || !d.actions.length || d.actions.some(function (a) { return !DOCACTIONS[a]; })) {
+    if (d && d.executor === 'author') { errs.push({ code: 'docaction-author-retired', row: r.name }); return; }       // study §12.2 2.5: the executor is a ROLE (Document Action Access, as legacy); the office/mesh plan names none = legacy
+    if (!r.table || !d || typeof d !== 'object' || !Number.isInteger(d.executor) || !Array.isArray(d.actions) || !d.actions.length || d.actions.some(function (a) { return !DOCACTIONS[a]; })) {
       errs.push({ code: 'docaction-bad', row: r.name }); return; }
     var t = String(r.table).toLowerCase(); (byTable[t] = byTable[t] || []).push(r.name);
-    if (d.executor === 'author' && !(r.dir === 'BOTH' && r.audience === 'space')) errs.push({ code: 'docaction-author-not-mesh', row: r.name });
     if (r.dir === 'UP' && d.executor === r.role) errs.push({ code: 'station-docaction', row: r.name });
   });
   Object.keys(byTable).forEach(function (t) { if (byTable[t].length > 1) errs.push({ code: 'dual-docaction', table: t, rows: byTable[t] }); });

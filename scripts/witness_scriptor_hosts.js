@@ -11,7 +11,7 @@
 'use strict';
 var path = require('path'), fs = require('fs'), vm = require('vm'), webcrypto = require('crypto').webcrypto;
 var SDIR = path.join(__dirname, '..', 'build', 'scriptor'), SIGN = require(path.join(SDIR, 'sign_plan.js'));
-var FILES = ['common/comm/team_trust.js', 'common/comm/team_scope.js', 'modeller/team_plan.js', 'erp/team_plan.js', 'modeller/team_sync.js', 'erp/team_sync.js'];
+var FILES = ['erp/ad_seed.db', 'common/comm/team_trust.js', 'common/comm/team_scope.js', 'modeller/team_plan.js', 'erp/team_plan.js', 'modeller/team_sync.js', 'erp/team_sync.js'];
 var OOTB = require('./lib_ootb.js').ootbDir(process.argv[2], FILES);
 var judged = 0, fails = 0;
 function say(ok, label, detail) { judged++; if (!ok) fails++; console.log('   ' + (ok ? '🟢' : '🔴') + ' ' + label + (detail ? ' — ' + detail : '')); return ok; }
@@ -28,7 +28,7 @@ async function boot(host, planSrc, trust, src, slow) {
   g.console = { log: function (m) { logs.push(String(m)); order.push('log:' + String(m).slice(0, 30)); }, warn: function () {}, error: function () {} };
   g.location = { search: '?team=1', href: 'http://localhost/x?team=1' }; g.localStorage = { getItem: function () { return null; }, setItem: function () {} };
   g.document = { readyState: 'complete', addEventListener: function () {}, getElementById: function () { return null; }, createElement: function () { return { style: {}, setAttribute: function () {}, appendChild: function () {} }; }, body: null };
-  g.setTimeout = function (f) { return setImmediate(f); }; g.clearTimeout = clearTimeout; g.setInterval = function () { return 0; }; g.clearInterval = function () {}; g.indexedDB = {}; g.addEventListener = function () {}; g.removeEventListener = function () {}; g.dispatchEvent = function () {}; g.navigator = { clipboard: {} }; g.URLSearchParams = URLSearchParams; g.URL = URL;
+  g.setTimeout = function (f) { return setImmediate(f); }; g.clearTimeout = clearTimeout; g.setInterval = function () { return 0; }; g.clearInterval = function () {}; g.indexedDB = {}; g.addEventListener = function () {}; g.removeEventListener = function () {}; g.CustomEvent = function (t, o) { this.type = t; this.detail = o && o.detail; }; g.__ev = []; g.dispatchEvent = function (e) { g.__ev.push(e && e.type); }; g.navigator = { clipboard: {} }; g.URLSearchParams = URLSearchParams; g.URL = URL;
   if (trust) g.TEAM_PLAN_TRUST = trust;
   var ctx = vm.createContext(g);
   vm.runInContext((src && src.trust) || rd('common/comm/team_trust.js'), ctx);
@@ -113,24 +113,38 @@ async function genesisArms(src, quiet) {
   A('G7', sigState(r7b) === 'ok' && open(r7b), T + 'a plan signed by the key the rotation ADDED (K2) verifies ok under the list in force', 'sig=' + sigState(r7b));  // §38.10 (G-8): both hosts publish an owner-signed statement through the engine; before pairing the call answers, never throws (the paired path: browser W-UPS-E2-HOST)
   var r9 = await boot(host, byK1, null, src), pf = typeof r9.api.publishStatement === 'function', a9 = pf ? await r9.api.publishStatement({ kind: 'executors', map: {} }).catch(function (e) { return { threw: e.message }; }) : null;
   A('G9', pf && a9 && a9.ok === false && a9.reason === 'not-paired', T + 'the host exposes publishStatement; unpaired it answers {ok:false, not-paired}', pf ? JSON.stringify(a9) : 'ABSENT');
-  // §38.5 E2b (ERP only — the Modeller has no DocActions): the host's DocAction overlay reads the SAME in-log executor map the fold enforces (E3)
+  // §38.5 E2 + study §12.2 2.5 (ERP only - the Modeller has no DocActions): the in-log executor map (the one the fold enforces, E3) is projected onto Document Action Access ROWS of the REAL shipped seed
   if (host === 'erp') {
     var ex = await space([pub(K1)]), r8 = await boot(host, byK1, null, src), api8 = r8.api, B = await STORE.newDevice(), PB = require('crypto').randomUUID();
     await ex.S.addPerson({ person_uu: PB, name: 'Station', ad_role_id: 103, comm_admin: false }); await ex.S.enroll(B.kid, B.pubJwk, PB, B.dhPubJwk);
-    var ne = typeof api8.notExecutor === 'function' && typeof api8._refreshExecutors === 'function';
-    if (!ne) A('G8', false, T + 'the host exposes notExecutor + _refreshExecutors (the DocAction list asks it)', 'ABSENT');
+    var seedPath = path.join(OOTB, 'erp', 'ad_seed.db'), DB = fs.existsSync(seedPath) ? new SQL.Database(fs.readFileSync(seedPath)) : null;
+    if (!DB || typeof api8._refreshExecutors !== 'function') A('G8', false, T + 'the host exposes _refreshExecutors and the shipped erp/ad_seed.db is readable', DB ? 'ABSENT' : 'no seed at ' + seedPath);
     else {
+      r8.g.__idmpDb = DB; r8.g.APP = { roleId: 103, clientId: 11 };
+      var q = function (sql) { var st = DB.prepare(sql), o = []; while (st.step()) o.push(st.getAsObject()); st.free(); return o; };
+      var dtSoo = q("SELECT c_doctypetarget_id AS d FROM c_order WHERE c_doctypetarget_id>0 LIMIT 1")[0].d, dtMov = q("SELECT c_doctype_id AS d FROM c_doctype WHERE docbasetype='MMM' AND ad_client_id=11 LIMIT 1")[0].d;
+      var nRows = function (role, dt, act) { return q("SELECT count(*) AS n FROM ad_document_action_access WHERE ad_role_id=" + role + " AND c_doctype_id=" + dt + " AND isactive='" + act + "'")[0].n; };
+      var snap = function () { return JSON.stringify(q("SELECT ad_role_id, c_doctype_id, ad_ref_list_id, isactive FROM ad_document_action_access ORDER BY 1,2,3")); };
+      var pristineSnap = snap(), allY = nRows(103, dtSoo, 'Y');
       await api8._refreshExecutors(ex.S, F.kid);
-      A('G8', api8.notExecutor('C_Order', 100) === false, T + 'no executor map in force => nothing removed (team without the rule = as before)', 'notExecutor=' + api8.notExecutor('C_Order', 100));
+      A('G8', snap() === pristineSnap && allY > 0 && r8.g.__ev.indexOf('ad:access-changed') < 0, T + 'no executor map in force => no Document Action Access row is touched, no cache-reset event (team without the rule = as before)', 'rows changed=' + (snap() !== pristineSnap) + ' role103/' + dtSoo + ' active=' + allY + ' events=' + r8.g.__ev.length);
       var s8 = await SIGN.sign({ kind: 'executors', map: { c_order: 102 }, prev: await ROS.executorsHash({}) }, K1.privateJwk, K1.publicJwk), p8 = await ex.S.setPolicy({ epoch: 1, executors: s8 }), v8 = (await ex.S.order()).verdict[p8.hash];
-      await api8._refreshExecutors(ex.S, F.kid); var hq = api8.notExecutor('C_Order', 100), hqOther = api8.notExecutor('M_Movement', 100);
-      await api8._refreshExecutors(ex.S, B.kid); var st = api8.notExecutor('C_Order', 100), stNeg = api8.notExecutor('c_order', -3), stOther = api8.notExecutor('M_Movement', 100);
-      A('G8', v8 && v8.verdict === 'MERGED' && hq === false && st === true && stNeg === true, T + 'owner-signed {c_order: 102} MERGED; the HQ device (role 102) keeps its DocActions, the station (role 103) is offered none on any order (base or team record)', 'policy=' + (v8 && v8.verdict) + ' hq=' + hq + ' station=' + st + '/' + stNeg);
-      A('G8', hqOther === false && stOther === false, T + 'a table with no entry keeps its DocActions on both devices (control)', 'hq=' + hqOther + ' station=' + stOther);
-      var s8b = await SIGN.sign({ kind: 'executors', map: { c_order: 'author' }, prev: await ROS.executorsHash({ c_order: 102 }) }, K1.privateJwk, K1.publicJwk), p8b = await ex.S.setPolicy({ epoch: 2, executors: s8b }), v8b = (await ex.S.order()).verdict[p8b.hash];
-      await api8._refreshExecutors(ex.S, B.kid); var aBase = api8.notExecutor('C_Order', 100), aLocal = api8.notExecutor('C_Order', -7);
-      A('G8', v8b && v8b.verdict === 'MERGED' && aBase === true && aLocal === false, T + "{c_order:'author'}: a base order (no CREATE in the log, refused by E3) offers nothing; an order created on this device and not yet shared keeps its DocActions", 'policy=' + (v8b && v8b.verdict) + ' base=' + aBase + ' local=' + aLocal);
-      A('G8', r8.logs.some(function (l) { return /§TEAM_EXECUTORS map=\{"c_order":102\} myRole=103/.test(l); }), T + 'the host prints the map it applies and the role it judged (§TEAM_EXECUTORS)', (r8.logs.filter(function (l) { return /§TEAM_EXECUTORS/.test(l); }).join(' | ') || 'no line'));
+      r8.g.APP.roleId = 102; await api8._refreshExecutors(ex.S, F.kid); var afterHq = snap(), evHq = r8.g.__ev.filter(function (e) { return e === 'ad:access-changed'; }).length;
+      r8.g.APP.roleId = 103; await api8._refreshExecutors(ex.S, B.kid); var afterSt = snap();
+      A('G8', v8 && v8.verdict === 'MERGED' && nRows(103, dtSoo, 'N') === allY && nRows(103, dtSoo, 'Y') === 0 && nRows(200001, dtSoo, 'Y') === 0 && nRows(102, dtSoo, 'Y') === allY && nRows(102, dtSoo, 'N') === 0,
+        T + "owner-signed {c_order: 102} MERGED; every Document Action Access row of the other roles (103, 200001) on the order doctypes is IsActive='N', the executor's (102) untouched", 'policy=' + (v8 && v8.verdict) + ' 103: N=' + nRows(103, dtSoo, 'N') + ' Y=' + nRows(103, dtSoo, 'Y') + ' | 200001 Y=' + nRows(200001, dtSoo, 'Y') + ' | 102 Y=' + nRows(102, dtSoo, 'Y') + ' N=' + nRows(102, dtSoo, 'N'));
+      A('G8', afterHq === afterSt && evHq === 1 && r8.g.__ev.filter(function (e) { return e === 'ad:access-changed'; }).length === 1, T + 'the rows are the MAP\'s, not the device\'s: the HQ device and the station device project the same rows, and the host is told once (ad:access-changed) when they changed, not again when nothing did', 'same=' + (afterHq === afterSt) + ' events=' + r8.g.__ev.filter(function (e) { return e === 'ad:access-changed'; }).length);
+      A('G8', nRows(103, dtMov, 'Y') > 0 && nRows(103, dtMov, 'N') === 0, T + 'a table with no entry in the map (m_movement\'s doctype) keeps its rows (control)', 'role103 MMM doctype ' + dtMov + ' Y=' + nRows(103, dtMov, 'Y') + ' N=' + nRows(103, dtMov, 'N'));
+      A('G8', r8.logs.some(function (l) { return /§TEAM_EXECUTORS map=\{"c_order":102\} myRole=103/.test(l); }) && r8.logs.some(function (l) { return /§TEAM_EXEC_ROWS map=.*set IsActive='N' on \d+ Document Action Access rows/.test(l); }), T + 'the host prints the map it applies, the role it judged (§TEAM_EXECUTORS) and the rows it set (§TEAM_EXEC_ROWS)', (r8.logs.filter(function (l) { return /§TEAM_EXEC/.test(l); }).join(' | ') || 'no line').slice(0, 300));
+      var mm8 = r8.logs.filter(function (l) { return /§TEAM_ROLE_MISMATCH/.test(l); }).length; r8.g.APP = { roleId: 102, clientId: 11 }; await api8._refreshExecutors(ex.S, B.kid); await api8._refreshExecutors(ex.S, B.kid);
+      var mm8b = r8.logs.filter(function (l) { return /§TEAM_ROLE_MISMATCH login=102 team=103/.test(l); }).length;
+      A('G8', mm8 === 0 && mm8b === 1, T + 'login role == team role prints nothing; login 102 on a device whose team role is 103 prints §TEAM_ROLE_MISMATCH once (M4: the rows follow the LOGIN role, E3 refuses at fold)', 'matching=' + mm8 + ' mismatch lines=' + mm8b);
+      var s8a = await SIGN.sign({ kind: 'executors', map: { c_order: 'author' }, prev: await ROS.executorsHash({ c_order: 102 }) }, K1.privateJwk, K1.publicJwk), p8a = await ex.S.setPolicy({ epoch: 2, executors: s8a }), v8a = (await ex.S.order()).verdict[p8a.hash], before8a = snap();
+      await api8._refreshExecutors(ex.S, B.kid);
+      A('G8', v8a && v8a.verdict === 'REFUSED' && v8a.reason === 'bad-policy:executors' && snap() === before8a, T + "{c_order:'author'} is REFUSED bad-policy:executors by the fold ('author' is retired: the executor is a role); the rows in force are unchanged", 'policy=' + (v8a && v8a.verdict + ':' + v8a.reason));
+      var s8c = await SIGN.sign({ kind: 'executors', map: {}, prev: await ROS.executorsHash({ c_order: 102 }) }, K1.privateJwk, K1.publicJwk), p8c = await ex.S.setPolicy({ epoch: 2, executors: s8c }), v8c = (await ex.S.order()).verdict[p8c.hash];
+      await api8._refreshExecutors(ex.S, B.kid);
+      A('G8', v8c && v8c.verdict === 'MERGED' && snap() === pristineSnap && r8.logs.some(function (l) { return /§TEAM_EXEC_ROWS map=none set IsActive='N' on 0 Document Action Access rows, restored \d+/.test(l); }), T + 'the owner retires the map ({}) => every row returns to its previous IsActive (the rule vanishes with the policy): the table is byte-for-byte the shipped one', 'policy=' + (v8c && v8c.verdict) + ' restored=' + (snap() === pristineSnap));
     }
   }
   }
@@ -157,9 +171,11 @@ async function genesisArms(src, quiet) {
   await mut('MODELLER: the genesis list is merged with the deployment list', function (s) { var t = s.adapter.modeller.replace("global.TEAM_PLAN_TRUST = gt;", "global.TEAM_PLAN_TRUST = (global.TEAM_PLAN_TRUST || []).concat(gt);"); if (t === s.adapter.modeller) return false; s.adapter.modeller = t; });
   await mut('MODELLER: not re-verified after adopting the genesis list', function (s) { var t = s.adapter.modeller.replace(/global\.TEAM_PLAN_TRUST = gt; await verifyPlan\([^\n]*\);/, "global.TEAM_PLAN_TRUST = gt;"); if (t === s.adapter.modeller) return false; s.adapter.modeller = t; });
   await mut('MODELLER: found() drops the deployment list', function (s) { var t = s.adapter.modeller.replace("return Array.isArray(t) && t.length ? { planTrust: t } : undefined;", "return undefined;"); if (t === s.adapter.modeller) return false; s.adapter.modeller = t; });
-  await mut('E2b: the DocAction overlay never removes anything', function (s) { var t = s.adapter.erp.replace("if (!exe.map) return false;", "return false;"); if (t === s.adapter.erp) return false; s.adapter.erp = t; });
-  await mut('E2b: the device role is not compared (every device treated as a non-executor)', function (s) { var t = s.adapter.erp.replace("if (ex !== 'author') return exe.role !== ex;", "if (ex !== 'author') return true;"); if (t === s.adapter.erp) return false; s.adapter.erp = t; });
-  await mut("E2b: 'author' treats this device's own unshared create as someone else's", function (s) { var t = s.adapter.erp.replace("return !(Number(pk) < 0);", "return true;"); if (t === s.adapter.erp) return false; s.adapter.erp = t; });
+  await mut('2.5: the Document Action Access rows are never set to N', function (s) { var t = s.adapter.erp.replace("db.run(\"UPDATE ad_document_action_access SET isactive='N' WHERE", "db.run(\"UPDATE ad_document_action_access SET isactive='Y' WHERE"); if (t === s.adapter.erp) return false; s.adapter.erp = t; });
+  await mut('2.5: the executor role is flipped too', function (s) { var t = s.adapter.erp.replace('WHERE ad_role_id<>? AND c_doctype_id', 'WHERE ad_role_id<>(?*0-1) AND c_doctype_id'); if (t === s.adapter.erp) return false; s.adapter.erp = t; });
+  await mut('2.5: the rows are never restored when the map goes', function (s) { var t = s.adapter.erp.replace("'UPDATE ad_document_action_access SET isactive=? WHERE", "'UPDATE ad_document_action_access SET isactive=CASE WHEN ?<>\\'\\' THEN isactive ELSE isactive END WHERE"); if (t === s.adapter.erp) return false; s.adapter.erp = t; });
+  await mut('2.5: the host is never told the access rows changed', function (s) { var t = s.adapter.erp.replace("global.dispatchEvent(new CustomEvent('ad:access-changed'", "void (new CustomEvent('ad:access-changed'"); if (t === s.adapter.erp) return false; s.adapter.erp = t; });
+  await mut('2.5: M4 mismatch never reported', function (s) { var t = s.adapter.erp.replace("login !== Number(nx.role) && !mismatchSeen", "false && !mismatchSeen"); if (t === s.adapter.erp) return false; s.adapter.erp = t; });
   console.log('§HOSTS_VERDICT ' + (fails ? 'FAIL' : 'PASS') + ' judged=' + judged + ' fails=' + fails + ' (whitebox: the adapters\' own § lines; the browser WebCrypto verify is not exercised here)');
   process.exit(fails ? 1 : 0);
 })();
