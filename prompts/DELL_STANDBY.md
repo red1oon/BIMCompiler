@@ -89,3 +89,14 @@ Update or delete this section once the gaps are closed.
 
 ## Behaviour
 Be concise. Extract, don't invent. Report what is missing instead of papering over it.
+
+## Dell status report (2026-10-28, from the Dell itself)
+- Both repos on the Dell are clean and at origin (bim-ootb main, BIMCompiler master). Nothing unpushed on the Dell.
+- Standby notes read and understood. Dell is waiting for "resume"; nothing installed, cloned or uploaded.
+- Dell hung twice today (silent freezes, no logs). SSD is healthy. Persistent journal is now on.
+- BIOS update 1.41.1 -> 1.47.0 FAILED (fwupd: error-invalid-format); Dell is still on 1.41.1.
+  Treat the Dell as an UNRELIABLE fallback: close the "Known gaps" below on the Victus side
+  (push the unpushed branches) rather than relying on the Dell to resume.
+- What the Dell wants from the Victus: (1) say "resume" or "Victus failed" only if needed;
+  (2) push the unpushed branches/bundles' content to GitHub when LFS quota allows (2026-11-01);
+  (3) keep this file updated; the Dell re-reads it from this branch.
