@@ -15,6 +15,18 @@ drawing cannot tell it is listed as a **gap**, never guessed.
 > **yellow** setting: see [the yellow list](DXF2BIM_Yellow_List.md). Read
 > [What it does not do yet](#what-it-does-not-do-yet) before you try your own drawings.
 
+**Videos** (the owner's channel, [youtube.com/@redhuanoon](https://www.youtube.com/@redhuanoon); in the order this guide follows):
+
+1. [BricsCAD 2D to BIM 5D in depth](https://youtu.be/TuTlhO8cCIY) (7:12, 2026-10-28): the whole path on the farm shed: what the drawing does not
+   state, the Sheet view, the markings written into your DXF, Convert, one wall edited in small steps, one more bay and where its cost comes from.
+2. [2D layout assembled automatically in BIM 3D](https://youtu.be/mwZ6fkngaao) (4:10, 2026-10-22): a raw set opening, each sheet moved by its yellow
+   defaults, then what a person states (steps 1 and 3).
+3. [BricsCAD 2D DXF to BIM 5D](https://youtu.be/SnqJ7ERxuk0) (5:17, 2026-10-18): the shed from the converted model to the Viewer, 4D and 5D (shed step 7).
+4. [BIM 3D to DXF 2D](https://youtu.be/buybl3BWTUw) (1:58, 2026-10-21): a model written out as a standard 2D set ([What a standard sheet looks like](#what-a-standard-sheet-looks-like)).
+5. [DXF to BIM 3D to 2D to 3D round trip both ways](https://youtu.be/RaU6A8y6ymw) (4:35, 2026-10-16): the Duplex standard set read back to the model it came from.
+
+Related, outside this guide: [MEP Walker onto new 2D drawing in BIM](https://youtu.be/tkKP__O1sGU) (1:36, 2026-10-23).
+
 ---
 
 ## The idea in one picture
@@ -43,6 +55,8 @@ and openings). Every dimension is a real CAD dimension measured between its two 
 | ![Front elevation with level datums](img/dxf2bim/std_front.jpg) | ![Building section through both storeys and the roof](img/dxf2bim/std_section.jpg) |
 | *Front elevation: walls and openings on that face, level datums and height dimensions.* | *Section: slabs and roof cut through, with their levels — this is where slab thickness comes from.* |
 
+▶ Video: [BIM 3D to DXF 2D](https://youtu.be/buybl3BWTUw) (1:58) · [the round trip both ways](https://youtu.be/RaU6A8y6ymw) (4:35).
+
 **Rules the writer follows** (drafting conventions, stated as choices):
 
 - A floor plan shows **everything the cut plane passes through** — cut at the storey level + 1.2 m.
@@ -64,7 +78,7 @@ plans at their level, elevations on their face, the section on its cut plane.
 
 A raw set (no metadata yet) **plays its arrangement** as it opens: each sheet first lies where it was drawn, then
 moves to where its markings and yellow defaults put it, one value at a time, so you can see what each value does.
-**Arrange** in the 2D Drawings panel plays it again; **Esc** stops it.
+**Arrange** in the 2D Drawings panel plays it again; **Esc** stops it. ▶ Video: [2D layout assembled automatically in BIM 3D](https://youtu.be/mwZ6fkngaao) (4:10).
 
 ![The 2D Drawings panel and the Drawing metadata editor, standard set loaded: verdict Qualifies](img/dxf2bim/import_sheets.jpg)
 
@@ -144,29 +158,34 @@ sheets, and one tick accepts exactly that group. A grid group states its measure
 the set-wide values (units, set name, roof) the header names the one value when every sheet agrees (`@UNITS=mm on all 8
 sheets`); a sheet that disagrees is shown on its own, open, marked *disagrees*, and the group tick leaves it.
 
-**Check the section cut before you accept.** On both standard sets walked (Duplex and a three-storey office), the
-suggested `@CUT` was wrong: it paired two grid bubbles that carry the same letter as the section (`A`), so it
-proposed `Y,-17591.5` while the section's own title says `SECTION A-A AT X=2304.25`. Type the cut from the title
-(`X,2304.25`) after you accept. Every other suggestion of the walk matched the values the model itself writes.
+**The section cut.** When the section's title states where it cuts (`SECTION A-A AT X=2304.25`), the cut is read from
+the title (*Section cut from the title*, a read row) and nothing else is looked at. Only when the title does not
+say it does the editor pair the two section labels on the plan (*Section cut*, an **orange** inferred row): check
+that one on the sheet before you accept it. (Until 2026-10-23 the pairing ran first and was wrong on both standard
+sets walked: it took two grid bubbles with the section's letter. Since then, on the Duplex and the three-storey
+office, the cut, the roles, the plan levels and the roof tops read from the titles equal the model's own, 0 wrong:
+`W-TITLE`, `DXF2BIM_FOUNDATION_LANE.md` §D46.)
 
 ![Round 2 of the yellow list: one row per grid line, datum and face, each with its source](img/dxf2bim/walk_yellow_list.jpg)
 
 #### 3b · The sheet facts and datums: what you state, and how
 | Marking | What it is | Where it comes from in the walk | How you give it |
 |---|---|---|---|
-| Role (`@VIEW`) | plan, elevation, roof plan or section | suggested only when the title **ends** in PLAN / ELEVATION / SECTION; titles with a scale after them (`FRONT ELEVATION  1:100`) are not read | pick from the list on each sheet card (7 of 8 sheets) |
+| Role (`@VIEW`) | plan, elevation, roof plan or section | the title, read without its scale or a trailing note (`FRONT ELEVATION  1:100` → elevation) | accept; pick from the list only when no title says it |
 | `@SET` | the name of the set | nothing in the drawing | type once; the other sheets get it as yellow |
 | `@UNITS` | drawing units | the file header (`$INSUNITS`), shown as yellow | accept |
-| `@LEVEL` | a plan's storey level, metres | the plan title states it (`LEVEL 2 PLAN (FFL +3.100)`) but it is not read | type on each plan and on the roof plan (3 values) |
-| `@ROOF` | the roof top, metres | the section and every elevation draw it as the top level datum (`@Z=6.457`) | type on the roof plan, each elevation and the section (6 times, the same number) |
-| `@Z` | a level datum on an elevation or section: a height in metres at a drawing y | level texts paired with their level lines; else the heavy ground line as z 0 | accept; a second datum is typed as **z** plus **drawing y** (see the shed) |
+| `@LEVEL` | a plan's storey level, metres | the plan title (`LEVEL 2 PLAN (FFL +3.100)` → 3.1) | accept; type it only when no title states it |
+| `@ROOF` | the roof top, metres | a roof-top text on the sheet (`T/ROOF +6.457`, `TOP OF ROOF ...`); two different values on one sheet are not proposed | accept; type it where no text states it |
+| `@Z` | a level datum on an elevation or section: a height in metres at a drawing y | level texts paired with their level lines; else the heavy ground line as z 0 | accept; a second datum: type its height, and **Pick** its line on the sheet (or type its drawing y; see the shed) |
 | `@GRIDX` / `@GRIDY` / `@GRIDH` | which grid label sits on which line | grid lines with their labels, or dimension ticks | accept |
 | `@FACE` | which side of the building an elevation shows | the sheet name or title (FRONT, LEFT, SOUTH...) | accept |
 | `@HAXIS` | which plan axis runs left to right on an elevation | fitted to the plan grid after the plan levels exist | accept (round 4) |
-| `@CUT` | where the section cuts the plan | see the warning above | type from the section title |
+| `@CUT` | where the section cuts the plan | the section title (`AT X=2304.25`); else the section labels on the plan (orange) | accept; check an orange one on the sheet |
 
-On the Duplex this was 7 role picks and 11 typed values (set name 1, levels 3, roof top 6, cut 1). Nothing else
-had to be typed for the sheets.
+On the walk of 2026-10-22 the Duplex needed 7 role picks and 11 typed values (set name 1, levels 3, roof top 6,
+cut 1). Since §D46 (2026-10-23) the roles, the levels, the roof tops and the cut are read from the titles and texts
+(W-TITLE: 8 of 8 roles by **Accept all** alone, 0 wrong), so the set name is the one value left to type for the
+sheets. The whole walk has not been re-counted since.
 
 #### 3c · Wall tops
 After the sheets are complete, **Wall tops** lists the interior walls no elevation shows (17 on the ground floor,
@@ -176,10 +195,14 @@ empties. A wall that stops lower than the slab can still be given its own top in
 ![Wall tops: one tick per plan clears the interior walls the elevations cannot show](img/dxf2bim/walk_wall_tops.jpg)
 
 #### Doors and windows tagged by width
-Type each row of the drawing's **Door schedule** and **Window schedule** once, in the **Doors and windows** section
-(mark, width, height). The editor then proposes one yellow row per schedule row, for example
-`@TAG=D1 on 6 doors`: every untagged door (or window) whose drawn width matches exactly that row's width. One tick
-tags them all. A width that two rows share is not proposed; tag those doors one by one.
+Give each row of the drawing's **Door schedule** and **Window schedule** once, in the **Doors and windows** section
+(mark, width, height; a window row also its sill). When a plan carries a door schedule as text, its rows are
+proposed from that text (*Schedule rows*, a read row) and you only accept them; otherwise type them. The editor
+then proposes one **orange** row per schedule row, for example `@TAG=door,D1 on 6 doors`: every untagged door (or
+window) whose drawn width matches exactly that row's width. One tick tags them all. A width that two rows share is
+not proposed (it is listed with both marks); tag those one by one. Measured: Duplex doors 4 rows, 4 clicks, 14 tags
+(W-TAG-WIDTH); Duplex windows 10 tagged in 3 clicks, 4 left because two 819 mm rows differ only by their sill
+(W-WIN-TAG-WIDTH); on a clinic set whose door types share one leaf width, 234 doors are listed, never guessed.
 
 #### 3d · Blocking items: what they mean and what to do
 A **blocking** item stops Convert. An **advisory** item does not. The verdict lists them; click one to zoom to it.
@@ -194,10 +217,12 @@ What blocked the plain Duplex after the sheets were complete, and how each was c
 | `QF:layer_unmapped` | a layer the set does not read | Layers: choose what it holds, or *ignore* |
 
 **Doors.** The plain drawings carry the door widths (the drawn leaf) but **no door heights**: you bring them from the
-door schedule. In **Doors**, add one schedule row per door type (mark, width, height in mm, then **+**). Then
-**Tag doors**, click a door in the list (the canvas zooms to it), click the door's **arc** on the canvas, pick the
-mark, **Tag**. Click the arc itself: a click beside it, or on the leaf line, answers *No door here*. The Duplex has
-14 doors of 4 widths: 4 schedule rows and 14 tags, about 4 clicks per door.
+door schedule. In **Doors**, add one schedule row per door type (mark, width, height in mm, then **+**), or accept
+the rows read from a schedule text. Then tick the **Tags by width** rows (above): each tags every door of its width.
+For a door left over (a width two rows share, or a width no row has), **Tag doors**: click the door in the list (the
+canvas zooms to it), click the door's **arc** on the canvas, pick the mark, **Tag**. Click the arc itself: a click
+beside it, or on the leaf line, answers *No door here*. The Duplex has 14 doors of 4 widths: 4 schedule rows and 4
+clicks (on the walk of 2026-10-22, before tags by width: 14 tags, about 4 clicks per door).
 
 ![Doors: the schedule row, the picked door (17D, leaf 1250 mm) and its Tag card](img/dxf2bim/walk_door_tag.jpg)
 
@@ -205,15 +230,22 @@ mark, **Tag**. Click the arc itself: a click beside it, or on the leaf line, ans
 there (the plan position and height come from the elevation), choose the product, **Add**. The product list holds
 every window family of the library (37 on the walk) by name, without sizes: choose the one whose name matches the
 drawn width (on the Duplex, the 819 mm family). A wrong family is reported as `GAP:type_size_mismatch` and the tag
-can be removed with its bin icon.
+can be removed with its bin icon. When the library holds several types of one size, the window takes the library's
+first one as an **amber default** (listed as `GAP:type_defaulted`, advisory: it does not block) and you correct it
+per window with a tag; on the Duplex that first type is right for 4 of the 12 stacked windows (`@DEFAULT=type.size_tie,none`
+on a sheet turns the default off).
 
 When the last blocking item is cleared the badge reads **Qualifies** and Convert is enabled.
 
 #### 3e · How long the plain Duplex took
-Clicks and typed values of the walk, from opening to Qualifies: 3 to open, 4 *Accept all*, 7 role picks, 11 typed
-sheet values, 2 wall-top ticks, then 83 actions for the 14 doors (16 for the schedule rows) and 41 for the 12 stacked
-windows. The doors and windows are about four fifths of the work. The machine time between steps was under 2 s
-each (a verdict re-run takes 0.2 to 0.8 s on this set).
+Clicks and typed values of the walk of **2026-10-22**, from opening to Qualifies: 3 to open, 4 *Accept all*, 7 role
+picks, 11 typed sheet values, 2 wall-top ticks, then 83 actions for the 14 doors (16 for the schedule rows) and 41
+for the 12 stacked windows. The doors and windows were about four fifths of the work. The machine time between
+steps was under 2 s each (a verdict re-run takes 0.2 to 0.8 s on this set).
+
+What changed since, step by step (each measured by its own check; the whole walk has not been re-counted): the
+roles, levels, roof tops and cut are read from the titles (7 role picks and 10 of the 11 typed values gone); the
+14 doors are tagged by width in 4 clicks after their 4 schedule rows; 10 windows are tagged by width in 3 clicks.
 
 ### 4 · Save the marked copies
 **Save marked copies** downloads `<name>_marked.dxf` for every sheet, with your metadata written in. The
@@ -311,6 +343,8 @@ one value no drawing states by itself: on the plain Duplex it is the first thing
 
 ## A building drawn only in 2D: a farm shed
 
+▶ Video: [BricsCAD 2D to BIM 5D in depth](https://youtu.be/TuTlhO8cCIY) (7:12): this shed, from the raw sheets to one more bay and its cost.
+
 A common CAD set (here a BricsCAD drawing set saved as DXF) with **no 3D model behind it**: nine sheets, a floor
 plan, four elevations, a beam layout, a foundation plan, a truss section and a details sheet (grades, casting
 ratios, footing and column schedules). There is no answer key, so the check
@@ -326,9 +360,16 @@ building is made of **bodies** read from layers you type, not of walls and slabs
    reopen together** next time. In the walk of 2026-10-22 on the nine raw sheets: the set name typed once, `@LEVEL=0`
    typed on the three plans (floor, beam layout, foundation layout), and on each of the four elevations and the
    section a second level datum: **z** `0.6096` and the **drawing y** of the plinth line (a CAD coordinate such as
-   `-4446.6`, read in the CAD program; the editor has no pick for it yet). That is 10 typed values for the datums.
+   `-4446.6`, read in the CAD program). That is 10 typed values for the datums.
    Each typed y lay 24.0 in (within 0.02 in) above the ground line the editor had already accepted as z 0, so the
    value you type is the plinth height; the y only places it.
+
+   **Pick instead of typing the y:** press **Pick** beside the height field. The sheet opens around its known datum;
+   a dashed line follows the pointer and snaps to a drawn horizontal line, its label giving the y and the drawn
+   distance from the known datum (`24.00 in above @Z=0`: a measurement shown, the height is still yours to type).
+   Click: the y fills the field. Where two drawn lines are too close to tell apart at that zoom, the label says
+   *zoom in* and the click picks nothing: wheel in and click again. **Esc** leaves the field as it was. The pick
+   writes no marking; you type the height and press **Add** as before.
 3. **Type the layers that mean something:** column, footing, beam, wall-panel hatch, fan, net, door swing, truss
    bar, door frame. Nothing else is chosen for you. In **Layers** this is 10 choices; two of them hold only on one
    sheet (the `Dim` layer is a beam on the beam layout only, layer `0` is a column on the South elevation only): use
@@ -364,7 +405,7 @@ building is made of **bodies** read from layers you type, not of walls and slabs
    `Dxf2Bim_Evidence` (Provenance, SourceSheet, SourceHandle, SourceLayer, Kind, SizeBasis; the `Pset_` prefix is reserved for buildingSMART's own sets, so the product's set does not use it) per mesh. The usual
    IFC → database extractor gives a database with the material name, the colour and one provenance row per mesh.
    The **Viewer** opens that database (3D in the material colours, Find, per-element information), and so does the
-   **4D/5D page**.
+   **4D/5D page**. ▶ Video: [BricsCAD 2D DXF to BIM 5D](https://youtu.be/SnqJ7ERxuk0) (5:17).
 
 ![The same database in the Viewer](img/dxf2bim/shed_viewer.jpg)
 
