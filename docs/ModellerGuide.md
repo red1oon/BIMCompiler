@@ -482,6 +482,18 @@ byte-exact. Witnessed end-to-end: `modeller/tests/witness_e2e_gridmove_roof.js`,
 
 ![Delete — the selected feature removed; Undo restores it](img/modeller/delete-gone.png)
 
+### Copy & paste
+*Commits one gesture: a `GEOM_INSERT` per copied element plus every edit it carries.*
+
+1. Select one or more elements and press **`Ctrl+C`**. Nothing is written yet.
+2. Press **`Ctrl+V`**. A blue ghost of the copy follows the pointer and snaps to the grid like **Insert** does. **`Esc`** cancels.
+3. Click where the copy goes. It lands with its centre on the snapped point and is selected, ready to move.
+
+A copy is the element **as it is now**: its later moves, stretches and grid drags come with it, not just the shape it was first inserted with. Copying a wall brings the doors and windows it hosts and the holes they sit in. The pasted door belongs to the pasted wall, so moving the copy drags its door the way the original does. One **`Ctrl+Z`** removes the whole paste. If the copy lands on something, the conformity check reports the overlap in red or orange, as it does after a move.
+
+### Add a bay (repeating-bay buildings)
+A farm or industrial shed is lengthened by whole bays. When the building type in force allows it (*Element defaults ▸ `building.type`*, e.g. **Farming Shed**), the **2D Drawings** panel shows a row **Add a bay (Farming Shed)** with the buttons **at <first grid line>** and **at <last grid line>**. One click copies the typical bay **as it is** (frame, side walls, purlins, sheets, and any opening, door or window it holds) one bay on, moves everything beyond it one bay further (hosted doors ride their walls), stretches the full-length members and sheets by one bay, and adds the new grid line. The panel shows the cost of the change (copies as added, stretched members as changed). It is one step in the history, so **`Ctrl+Z`** undoes it. Fans are not copied: their number is sized for the airflow, not repeated per bay. See [2D Drawings → BIM](DXF2BIMGuide.md) for converting the drawings first.
+
 ### Room Move
 *Commits `GEOM_ROOM_MOVE {spaceGuid,dx,dy,members[]}`.*
 
