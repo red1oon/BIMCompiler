@@ -4,12 +4,12 @@
    🟢 scopeOf / flow answers are identical for ALL 1004 tables (1-arg, and with any role: an office plan has only space rows) — 1004 tables
    🟢 summary() and locals() identical; the default kind is "office" — {"hash":"276308d4ef158e564b44d358e79d60369290ebff1de19dd28d94251de7b46142","tables":855,"local":7}
    🟢 the office plan carries no hub row, no hub and NO executor map: the mesh = legacy (whoever's login role has Document Action Access may act) — flows=855
-   🟢 erp/team_plan_pos.js is exactly what build/scriptor/emit_erp_plan.js pos emits from flows_pos.json + flows_erp.json (generated, never hand-edited) — 005cdddbc9d2
+   🟢 erp/team_plan_pos.js is exactly what build/scriptor/emit_erp_plan.js pos emits from flows_pos.json + flows_erp.json (generated, never hand-edited) — b8e28ad1b24c
    🟢 the emitter REFUSES a POS plan with no executor (no-hub), two executor roles (hub-ambiguous), or a malformed / UP `by` (by-bad) — pos plan errors: no-hub | pos plan errors: hub-ambiguous | pos plan errors: by-bad B2 invoice-down | pos plan errors: by-bad F1 pos-sales-up
 §P1 DIRECTION PER ROLE
-   🟢 role 200001 · c_orderline = up — got up
-   🟢 role 200001 · m_movementline = receive — got receive
-   🟢 role 200001 · i_order = up — got up
+   🟢 role 50004 · c_orderline = up — got up
+   🟢 role 50004 · m_movementline = receive — got receive
+   🟢 role 50004 · i_order = up — got up
    🟢 role 102 · c_orderline = receive — got receive
    🟢 role 102 · m_movementline = down — got down
    🟢 role 102 · i_order = receive — got receive
@@ -17,11 +17,13 @@
    🟢 role 50004 · c_invoice = receive — got receive
    🟢 role 50004 · c_payment = up — got up
    🟢 role 102 · c_payment = receive — got receive
-   🟢 role 50004 · c_orderline = unplanned — got unplanned
+   🟢 role 103 · c_orderline = unplanned — got unplanned
    🟢 role 200001 · c_invoice = unplanned — got unplanned
+   🟢 role 50004 · c_payment = up — got up
+   🟢 role 50004 · c_invoice = receive — got receive
    🟢 no role · c_orderline = unplanned — got unplanned
-   🟢 role 200001 · c_bpartner = unplanned — got unplanned
-   🟢 role 200001 · ad_sequence = station-local — got station-local
+   🟢 role 50004 · c_bpartner = unplanned — got unplanned
+   🟢 role 50004 · ad_sequence = station-local — got station-local
    🟢 the order header never leaves either device (the processor's own order is a LOCAL row of the plan) — station-local/station-local
    🟢 hub() is the executor role of the plan's docaction row; by() gives the FK path of a per-record row and null for a role-scoped one — hub=102
    🟢 the SAME page with kind "office" reads the office plan: c_order / c_orderline are "share" (the topology is the genesis' choice, nothing else) — share
@@ -34,22 +36,24 @@
    🟢 CONTROL: the SAME adapter in a space with no `plan` (office) DOES share those tables (12 of 12 sent) - the thin pipe is the plan's doing, not a broken sender — office sent=12
 §P3 NOT-ADDRESSED INBOUND (a station never folds another station's declaration)
    🟢 the processor projects the declaration (1), the author keeps its own (1), the OTHER station projects 0 — F=1 T1=1 T2=0
-   🟢 the ENGINE did place that op on T2 (the dumb relay delivered it) - it is the adapter that refused it locally, and says so (§TEAM_THIN refused>0) — placed=1 refused=1
-   🟢 a DOWN flow addressed to the station ROLE reaches every station (role-scoped), and the hub keeps what it sent — T1=1 T2=1
+   🟢 the ENGINE did place that op on T2 (the dumb relay delivered it) - it is the adapter that refused it locally, and says so (§TEAM_THIN refused>0) — placed=1 refused=2
+   🟢 PER BRANCH: two tills on ONE role in two orgs - till North (bound to Store North's ad_org_uu) holds ONLY the movement into its locator 50002, till South ONLY the one into 50003: 0 of the other's (the DOWN row is addressed by M_LocatorTo_ID > M_Warehouse_ID > AD_Org_ID, FK targets read from the dictionary) — T1=[50002] T2=[50003]
+   🟢 the hub keeps what it sent (both movements) — F=2
    🟢 accounting closes: accepted = projected rows on T2 — accepted=1 rows=1
 §P6 BORROWER SCOPE IS PER RECORD (two borrowers, ONE role)
    🟢 the processor sends the two loans and their instalments (their borrowers are bound in the roster) — sent,sent,sent,sent
    🟢 a record whose entity has NO bound person (a cash customer) is never sent: no-addressee (it would only fatten the pipe) — no-addressee c_invoice
    🟢 the loan leaves with its declared columns only (the address column c_bpartner_id is among them; description is not) — ["ad_client_id","ad_org_id","c_bpartner_id","documentno","grandtotal"]
    🟢 borrower 1's payment (UP) carries only c_bpartner_id and payamt — ["c_bpartner_id","payamt","ad_client_id","ad_org_id"]
-   🟢 borrower 1 holds ITS loan, ITS instalment and its own payment — c_invoice,c_invoicepayschedule,c_payment
-   🟢 borrower 2 (same role) holds ITS loan + instalment only: 0 of borrower 1's invoice / schedule / payment (2 ops in all) — c_invoice,c_invoicepayschedule refused=5
+   🟢 borrower 1 holds ITS loan, ITS instalment and its own payment — c_payment,c_invoice,c_invoicepayschedule
+   🟢 borrower 2 (same role) holds ITS loan + instalment only: 0 of borrower 1's invoice / schedule / payment (2 ops in all) — c_invoice,c_invoicepayschedule refused=6
    🟢 and none of borrower 1's values is in borrower 2's projection (228.85 / LN-A / 114.43) — {"ad_client_id":11,"ad_org_id":0,"c_bpartner_id":117,"documentno":"LN-B","grandtotal":100}|{"ad_client_id":11,"ad_org_id
    🟢 borrower 1's SECOND device (enrolled onto the existing person) holds exactly what the first holds — B1b=3 B1=3
-   🟢 a device with the borrower ROLE but bound to no entity receives 0 (role alone never addresses a record) — Q rows=0 refused=7
-   🟢 a till (another role) receives none of the borrower flows — m_movementline,c_orderline
-   🟢 the processor holds the payment (UP) and both loans it made — c_invoice,m_movementline,c_invoice,c_invoicepayschedule,c_payment,c_invoicepayschedule,c_orderline
-   🟢 the instrument sees the refusals: B1 placed 7 ops, accepted 3, refused 4 (2996 bytes never projected) — {"c_invoice":1,"m_movementline":1,"c_invoicepayschedule":1,"c_orderline":1}
+   🟢 a device with the borrower ROLE but bound to no entity receives 0 (role alone never addresses a record) — Q rows=0 refused=8
+   🟢 a borrower (and an unbound device of the borrower role) receives NO replenishment movement — B1=0 B2=0
+   🟢 a till (another role) receives none of the borrower flows — c_orderline,m_movementline
+   🟢 the processor holds the payment (UP) and both loans it made — m_movementline,c_invoice,c_payment,c_orderline,c_invoicepayschedule,c_invoice,m_movementline,c_invoicepayschedule
+   🟢 the instrument sees the refusals: B1 placed 8 ops, accepted 3, refused 5 (3736 bytes never projected) — {"m_movementline":2,"c_invoice":1,"c_orderline":1,"c_invoicepayschedule":1}
 §P8 CATCH-UP ON BIND (a customer who enrols later still receives every open item they already hold; bind-first stays the procedure; stateless, uncapped, survives a reload)
    🟢 BEFORE any bind the hub holds 4 records back (no bound person): a release pass sends 0 and stores no queue (only the persisted sent / localOnly the device already has) — held=4 released=0
    🟢 ISSUE -> hub RELOAD -> BIND: the reloaded hub derives the entity's 2 records from its own rows and sends them, once, in the order they were made (loan, then instalment) — released=2 tables=c_invoice>c_invoicepayschedule
@@ -57,34 +61,40 @@
    🟢 with the SAME carries as any DOWN op (declared columns + partition only) — ["ad_client_id","ad_org_id","c_bpartner_id","documentno","grandtotal"]
    🟢 the OTHER entity's records stay unsent (the bind of one customer releases only that customer's items) — sent C=true D=false
    🟢 borrowers 1 and 2 received nothing new from it (3 and 2 ops as before) — B1=3 B2=2
-   🟢 a second, UNRELATED bind (a new person with no held records) sends nothing extra — released=0 hub ops 7->7
-   🟢 re-evaluating (forced) / more syncs / a refold sends nothing twice: the hub authored 0 new ops, the borrower still holds 2 — released=0 hub ops=7 B3 ops=2
-   §PP_TIMING ms {"hold":14304,"enrol":15023,"release":210801,"sync":248509}
-   🟢 the next customer's bind releases ALL 2102 of its records - 2100 bulk loans (more than the old 2000 cap, the OLDEST included) + the first loan + its instalment - and nothing of B3's again (249.9 s) — released=2102 B4 bulk=2100 oldest=true B3=2
+   🟢 a second, UNRELATED bind (a new person with no held records) sends nothing extra — released=0 hub ops 8->8
+   🟢 re-evaluating (forced) / more syncs / a refold sends nothing twice: the hub authored 0 new ops, the borrower still holds 2 — released=0 hub ops=8 B3 ops=2
+   §PP_TIMING ms {"hold":10823,"enrol":11354,"release":12705,"sync":40551}
+   §TEAM_CATCHUP released=2 of 4 candidates (persons now 7) ms total=15 translate=13 author=2
+   §TEAM_CATCHUP released=2102 of 2102 candidates (persons now 9) ms total=1338 translate=72 author=1261
+   🟢 the next customer's bind releases ALL 2102 of its records - 2100 bulk loans (more than the old 2000 cap, the OLDEST included) + the first loan + its instalment - and nothing of B3's again (41.4 s) — released=2102 B4 bulk=2100 oldest=true B3=2
    🟢 a REPLACED phone (a new device enrolled onto the same person) gets its loan and instalment back — B3b=2
+§P9 BATCH AUTHORING = the same envelopes as one-by-one, in linear time
+   🟢 authorMany(30 ops: create, create-with-ref, update) makes the SAME envelopes as 30 author() calls - same deps, reads, seq, body (hashes compared by position); 20 of them read an earlier version — same=true deps>0=20
+   🟢 and the batch's ops are all MERGED by the fold — 30 ops
+   🟢 LINEAR: 1200 ops take 758 ms vs 300 ops 190 ms = x4.0 (4x the ops; linear ~4, quadratic ~16; the bound is 8) — ratio=4.0
 §P4 THE GENESIS NAMES THE PLAN (absent = office)
    🟢 newSpace without the option writes no `plan`; with it writes office|pos; any other value is refused — absent=true explicit=office pos=pos bogus=newSpace: invalid plan (galaxy)
    🟢 the roster reads the plan back: absent -> office, "office" -> office, "pos" -> pos — office/office/pos
    🟢 a genesis carrying an unknown plan value is untrusted (the space does not open) — no-trusted-genesis
    🟢 the founder's choice (?teamplan=pos) reaches the genesis through spaceOpts; with no choice there is no option at all — {"plan":"pos"}
-   🟢 a device in a space WITHOUT `plan` reads the office plan: c_order is shared exactly as before — {"kind":"office","role":102,"person":"e45ff88d-898f-4482-8c35-7c34455a3300"}
-   🟢 a device in a `plan:"pos"` space switches the reader to the POS plan (c_order is no longer "share") — {"kind":"pos","role":102,"person":"e45ff88d-898f-4482-8c35-7c34455a3300"}
+   🟢 a device in a space WITHOUT `plan` reads the office plan: c_order is shared exactly as before — {"kind":"office","role":102,"person":"12f041df-d562-4a93-93a2-394dd8c5ce61"}
+   🟢 a device in a `plan:"pos"` space switches the reader to the POS plan (c_order is no longer "share") — {"kind":"pos","role":102,"person":"12f041df-d562-4a93-93a2-394dd8c5ce61"}
 §P7 THE POS PLAN IS VERIFIED LIKE THE OFFICE PLAN (same trust list, §33)
    🟢 signed by the trusted key -> state=ok, the station's C_OrderLine is "up" — ok up
    🟢 altered after signing / unsigned under a trust list -> invalid, signed by another key -> untrusted: all CLOSED (nothing declared, nothing shared) — invalid/invalid/untrusted
    🟢 a pos space whose device has NO pos plan file shares nothing and prints "missing — nothing is shared" — unplanned
 §P5 THE PLAN'S OWN docaction ROW IS THE EXECUTOR MAP (G-4 overlay); no executor for the station
    🟢 the POS plan carries executors = {c_order: 102} derived from its docaction row, and hub = 102 — {"c_order":102}
-   🟢 the plan's map, signed by the owner (stmt executors) and MERGED, leaves the station role (200001) with no active DocAction row on the order doctype (was 14) and the processor (102) with all 14 — policy=MERGED till Y=0 N=14 hq Y=14
+   🟢 the plan's map, signed by the owner (stmt executors) and MERGED, leaves the station role (50004) with no active DocAction row on the order doctype (was 0) and the processor (102) with all 14 — policy=MERGED till Y=0 N=0 hq Y=14
    🟢 an 'author' executor is not accepted anywhere any more (signer or fold) — refused: the statement would be refused: shape:map
-§PP_ARMS red=none judged=68 fails=0
+§PP_ARMS red=none judged=75 fails=0
 §MUTANTS (a COPY with one rule broken; each must turn >= 1 arm red; a crash is NOT a kill)
    🟢 hub rows are not indexed by the reader -> red arms: P1, P2, P3, P6, P6!THREW, P8, P8!THREW, P7
    🟢 the carries rule is not applied outbound -> red arms: P2, P6
    🟢 the inbound filter is off (everything placed is projected) -> red arms: P3, P6, P8
    🟢 the engine reads an absent plan as POS (default plan = pos) -> red arms: P2, P4
-   🟢 `by` is ignored (a DOWN row is addressed by role alone) -> red arms: P6, P8
-   🟢 a role that is neither edge nor hub is treated as the recipient -> red arms: P1, P6, P8
+   🟢 `by` is ignored (a DOWN row is addressed by role alone) -> red arms: P3, P6, P8
+   🟢 a role that is neither edge nor hub is treated as the recipient -> red arms: P1
    🟢 the reader never switches to the POS plan (setKind ignored) -> red arms: P1, P2, P3, P3!THREW, P6, P6!THREW, P8, P8!THREW, P4, P7
    🟢 the sender sends a record with no bound addressee -> red arms: P2, P6, P8, P8!THREW
    🟢 the office answer of the reader is changed (share -> unplanned) -> red arms: P0, P1, P2, P4
@@ -93,4 +103,6 @@
    🟢 the derivation ignores the entity (every unsent DOWN row goes to its role on any bind) -> red arms: P2, P6, P8, P8!THREW
    🟢 a released record is not marked (sent again on the next evaluation) -> red arms: P8
    🟢 the oldest records are dropped beyond 2000 (the retired cap, reinstated) -> red arms: P8
-§PP_VERDICT PASS judged=82 fails=0 mutants_killed=14/14
+   🟢 authorMany keeps no heads (a batch op never reads the one before it) -> red arms: P9
+   🟢 authorMany re-reads the log per op (the quadratic path) -> red arms: P9
+§PP_VERDICT PASS judged=91 fails=0 mutants_killed=16/16
