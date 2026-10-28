@@ -167,6 +167,22 @@ if os.environ.get('FILM_SET') == 'why':
     SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
     NOVEL = {}
     CLIPS = {}
+# §DXF2BIM BricsCAD-user shed film (bim-ootb prompts/FILM_DXF2BIM_WHY_MARKINGS.md "BRICSCAD FILM — STORYBOARD", owner 2026-10-28 "Proceed.. your advice"): FILM_SET=bricscad2, SEVEN chapters:
+# what the drawing does not say, the Sheet view, what a person states, the shed, one wall in small steps, one more bay, the marked sheet. The prior-art card is drawn by the recorder.
+if os.environ.get('FILM_SET') == 'bricscad2':
+    CARDS = {
+        1: ('CHAPTER 1', 'WHAT YOUR DRAWING', 'DOES NOT SAY', 'Nine BricsCAD sheets, read as they are.'),
+        2: ('CHAPTER 2', 'THE SHEET,', 'AS YOU DREW IT', 'Every open value, ringed where it was read.'),
+        3: ('CHAPTER 3', 'WHAT A PERSON', 'STATES', 'Written into copies of your DXF.'),
+        4: ('CHAPTER 4', 'ONE', 'SHED', 'Convert.'),
+        5: ('CHAPTER 5', 'ONE WALL,', 'SMALL STEPS', 'Typed, undone, redone.'),
+        6: ('CHAPTER 6', 'ONE MORE', 'BAY', 'Copied as it is, and priced.'),
+        7: ('CHAPTER 7', 'THE MARKED', 'SHEET', 'Saved as SVG, ready to print.'),
+    }
+    TAG = {1: 'WHAT YOUR DRAWING DOES NOT SAY', 2: 'THE SHEET, AS YOU DREW IT', 3: 'WHAT A PERSON STATES', 4: 'ONE SHED', 5: 'ONE WALL, SMALL STEPS', 6: 'ONE MORE BAY', 7: 'THE MARKED SHEET'}
+    SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
 # Malay version of the why film (bim-ootb prompts/FILM_DXF2BIM_WHY_MARKINGS.md §MS, 2026-10-23): FILM_SET=why_ms, the same three chapters, app terms kept as users say them.
 if os.environ.get('FILM_SET') == 'why_ms':
     CARDS = {
