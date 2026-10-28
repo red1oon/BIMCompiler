@@ -1401,6 +1401,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#copy-paste" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Copy &amp; paste
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-a-bay-repeating-bay-buildings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Add a bay (repeating-bay buildings)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#room-move" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3402,6 +3424,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#copy-paste" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Copy &amp; paste
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-a-bay-repeating-bay-buildings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Add a bay (repeating-bay buildings)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#room-move" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4055,6 +4099,16 @@ byte-exact. Witnessed end-to-end: <code>modeller/tests/witness_e2e_gridmove_roof
 <li>The feature hides from the model — the signed payload is never rewritten, so the chain stays valid. Delete is now a real node in the history tree, so <strong>Undo</strong> (<code>Ctrl+Z</code>) — not Redo — brings it back exactly; <code>Ctrl+Y</code> right after a delete is a no-op (there's nothing ahead of it to redo), and a further <code>Ctrl+Y</code> after undoing re-applies the delete.</li>
 </ol>
 <p><img alt="Delete — the selected feature removed; Undo restores it" src="../img/modeller/delete-gone.png" /></p>
+<h3 id="copy-paste">Copy &amp; paste<a class="headerlink" href="#copy-paste" title="Permanent link">&para;</a></h3>
+<p><em>Commits one gesture: a <code>GEOM_INSERT</code> per copied element plus every edit it carries.</em></p>
+<ol>
+<li>Select one or more elements and press <strong><code>Ctrl+C</code></strong>. Nothing is written yet.</li>
+<li>Press <strong><code>Ctrl+V</code></strong>. A blue ghost of the copy follows the pointer and snaps to the grid like <strong>Insert</strong> does. <strong><code>Esc</code></strong> cancels.</li>
+<li>Click where the copy goes. It lands with its centre on the snapped point and is selected, ready to move.</li>
+</ol>
+<p>A copy is the element <strong>as it is now</strong>: its later moves, stretches and grid drags come with it, not just the shape it was first inserted with. Copying a wall brings the doors and windows it hosts and the holes they sit in. The pasted door belongs to the pasted wall, so moving the copy drags its door the way the original does. One <strong><code>Ctrl+Z</code></strong> removes the whole paste. If the copy lands on something, the conformity check reports the overlap in red or orange, as it does after a move.</p>
+<h3 id="add-a-bay-repeating-bay-buildings">Add a bay (repeating-bay buildings)<a class="headerlink" href="#add-a-bay-repeating-bay-buildings" title="Permanent link">&para;</a></h3>
+<p>A farm or industrial shed is lengthened by whole bays. When the building type in force allows it (<em>Element defaults ▸ <code>building.type</code></em>, e.g. <strong>Farming Shed</strong>), the <strong>2D Drawings</strong> panel shows a row <strong>Add a bay (Farming Shed)</strong> with the buttons <strong>at <first grid line></strong> and <strong>at <last grid line></strong>. One click copies the typical bay <strong>as it is</strong> (frame, side walls, purlins, sheets, and any opening, door or window it holds) one bay on, moves everything beyond it one bay further (hosted doors ride their walls), stretches the full-length members and sheets by one bay, and adds the new grid line. The panel shows the cost of the change (copies as added, stretched members as changed). It is one step in the history, so <strong><code>Ctrl+Z</code></strong> undoes it. Fans are not copied: their number is sized for the airflow, not repeated per bay. See <a href="../DXF2BIMGuide/">2D Drawings → BIM</a> for converting the drawings first.</p>
 <h3 id="room-move">Room Move<a class="headerlink" href="#room-move" title="Permanent link">&para;</a></h3>
 <p><em>Commits <code>GEOM_ROOM_MOVE {spaceGuid,dx,dy,members[]}</code>.</em></p>
 <p>Moving furniture around a room one piece at a time divorces the room from its contents the moment anything
