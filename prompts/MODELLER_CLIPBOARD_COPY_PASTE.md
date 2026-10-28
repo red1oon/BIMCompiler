@@ -165,3 +165,14 @@ order. (3) C2's tolerance is 2 float32 steps of the largest coordinate, not 1e-9
 with a cut wall + door) runs as W-BAY-RIDE R6, pure: the shed holds no cut opening (§D89 measured). (5) Found while building B9: a second bay over-stretched the full-length members
 (the factor read the insert's original length; the fold multiplies scales) — fixed in `bay_add.js`. Built + witnessed: bim-ootb `DXF2BIM_FOUNDATION_LANE.md` §D89 step 4.
 **Status: ✅ BUILT 2026-10-28 (W-CLIPBOARD 6/0, W-CLIPBOARD-KEYS 4/0, W-DXF-ADD-BAY 11/0, W-BAY-RIDE 6/0).** §DISPATCH's block above is history.
+
+## §PLACE 2026-10-28 — paste lands where the pointer is (owner 2026-10-28: "Ensure fixes before film")
+**Why (measured, W-CLIPBOARD-KEYS 2026-10-28):** the stated §OPEN-1 default (one grid bay on +x, else the selection's x width) pasted the Duplex wall #15 0.417 m beside itself, into
+its cross walls: the gate reported 4 RED. A fixed offset cannot know where free space is. Revit, AutoCAD and SketchUp all paste at a point the user gives: the copy follows the cursor
+and a click places it.
+**Rule.** Ctrl+V (something held) enters PASTE PLACEMENT, a mode like Insert (`inSelectCtx()` false: no pick / hover while placing; cursor `copy`): a translucent ghost of the held
+elements' current world boxes follows the pointer on the horizontal plane at the held set's base z; the anchor is the held set's box centre (x, y); the target is the pointer's hit
+snapped by `Bonsai.grid.snap` (the Insert tool's own snap); a left click commits `paste(shift)` with shift = target − anchor (z 0); Esc cancels and commits nothing. The status line
+says what to do. `Bonsai.clipboard.paste(shift)` with an explicit shift stays (the bay copy, scripts). The fixed-offset default is removed.
+**Witness (W-CLIPBOARD-KEYS, updated):** K1 Ctrl+V then a real pointer move + click on an empty ground point beside the building: the copy lands with its centre at the snapped
+click point (1 mm), the gate clean; K5 Ctrl+V then Esc: 0 ops committed, the mode left; K6 while placing, a click does not select the element under it (selection after = the copies).
