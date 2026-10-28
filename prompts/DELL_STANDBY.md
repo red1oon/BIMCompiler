@@ -42,6 +42,25 @@ Do not clone, install, push, or upload anything unprompted.
 6. Verify: ./scripts/run_RosettaStones.sh classify_{prefix}.yaml and the §-witness scripts.
    Read the logs, not just the exit code.
 
+## OCI BACKUP (uploaded 2026-10-28, md5-verified after download)
+Bucket `bim-ootb-backup`, prefix `victus-backup/2026-10-28/` (MANIFEST.md5 in the same folder):
+- `repo_ignored_files.tar.gz` (222 MB): the git-ignored files of bim-compiler. Extract at the repo root.
+  Holds library/component_library.db, LOD400.db, disc_patterns.db, *_BOM.db, work_building_*.db,
+  deploy/dev/buildings/Duplex_rooms_*.db, build/Duplex_mep_*.db, database/enhanced_federation_GI.db,
+  Stacked_Duplex.db, Hospital_new.db, build/erp/*.db and shards/*.db, docs/internal/guidepics,
+  docs/glassbowl_data.db, the DISC_Walker miniset DB, .claude/settings.local.json and .claude/hooks.
+- `claude_config_memory.tar.gz`: ~/.claude/{CLAUDE.md,settings.json,hooks,skills} plus the project memory dir.
+  Extract with `tar -xzf ... -C ~` (review settings.json for machine-specific paths first).
+- `projects_small.tar.gz`: ~/Projects/Dubai and ~/Projects/red1_plugins. Extract with `-C ~/Projects`.
+- `halal.bundle`: `git clone halal.bundle ~/Projects/halal` (the repo has no remote).
+- `ninja_dirty.diff`: uncommitted changes in ~/Projects/org.idempiere.ninja; apply with `git apply` after cloning it.
+Fetch: `oci os object get --bucket-name bim-ootb-backup --name victus-backup/2026-10-28/<file> --file <file>`,
+then `md5sum -c MANIFEST.md5`.
+NOT backed up (too big or regenerable): ~/Projects/ThaiGoldPawn (1.6 GB), halal working files (1.5 GB),
+BIM_DB (2.5 GB), internal/UNMERGED (1.4 GB), internal/sources, library/archive (incl. 590 MB sandbox_1M),
+output/archive, logs/, venvs, node_modules. The big building DBs already live in the main OCI buckets.
+NOT included on purpose: ~/.oci keys, SSH keys, gh auth. red1 supplies those separately.
+
 ## KNOWN GAPS (snapshot 2026-10-28). Work NOT on GitHub; do not assume it is there
 The Victus had ~33 bim-compiler and ~37 bim-ootb commits on branches with no remote ref
 (some may be squash-merged, some are real). Examples: backup/ninja-xtab2-pre-scrub,
@@ -52,9 +71,8 @@ test/staged-draw-census (bim-ootb).
 Also untracked on the Victus: scripts/film_replication_engine/, scripts/witness_scriptor_scale.js,
 and 16 stashes across the two repos.
 Outside git: ~/Projects/{Dubai, ThaiGoldPawn, halal, BIM_DB, red1_plugins}. halal has 2 commits, no remote.
-Local DBs with no OCI copy (by filename): library/component_library.db, Duplex_rooms_*,
-Duplex_mep_*, LOD400.db, disc_patterns.db, *_BOM.db, database/enhanced_federation_GI.db,
-Hospital_new.db, build/erp/ad_*.db.
+The local DBs that had no OCI copy are now in the OCI BACKUP above.
+Unpushed git branches are still NOT backed up unless red1 says they were pushed.
 If something the docs mention is missing, say so plainly. Do not recreate, invent or guess it.
 Ask red1 whether the Victus is reachable. red1 may have closed some gaps since; ask first.
 Update or delete this section once the gaps are closed.
