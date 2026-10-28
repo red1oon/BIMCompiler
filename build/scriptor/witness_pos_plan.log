@@ -4,8 +4,8 @@
    🟢 scopeOf / flow answers are identical for ALL 1004 tables (1-arg, and with any role: an office plan has only space rows) — 1004 tables
    🟢 summary() and locals() identical; the default kind is "office" — {"hash":"276308d4ef158e564b44d358e79d60369290ebff1de19dd28d94251de7b46142","tables":855,"local":7}
    🟢 the office plan carries no hub row, no hub and NO executor map: the mesh = legacy (whoever's login role has Document Action Access may act) — flows=855
-   🟢 erp/team_plan_pos.js is exactly what build/scriptor/emit_erp_plan.js pos emits from flows_pos.json + flows_erp.json (generated, never hand-edited) — 3108b58a8397
-   🟢 the emitter REFUSES a POS plan with no executor (no-hub), two executor roles (hub-ambiguous), or a malformed / UP `by` (by-bad) — pos plan errors: no-hub | pos plan errors: hub-ambiguous | hub-is-edge B1 borrower-pay | pos plan errors: by-bad B2 invoice-down | pos plan errors: by-bad F1 pos-sales-up
+   🟢 erp/team_plan_pos.js is exactly what build/scriptor/emit_erp_plan.js pos emits from flows_pos.json + flows_erp.json (generated, never hand-edited) — 005cdddbc9d2
+   🟢 the emitter REFUSES a POS plan with no executor (no-hub), two executor roles (hub-ambiguous), or a malformed / UP `by` (by-bad) — pos plan errors: no-hub | pos plan errors: hub-ambiguous | pos plan errors: by-bad B2 invoice-down | pos plan errors: by-bad F1 pos-sales-up
 §P1 DIRECTION PER ROLE
    🟢 role 200001 · c_orderline = up — got up
    🟢 role 200001 · m_movementline = receive — got receive
@@ -14,10 +14,10 @@
    🟢 role 102 · m_movementline = down — got down
    🟢 role 102 · i_order = receive — got receive
    🟢 role 102 · c_invoice = down — got down
-   🟢 role 103 · c_invoice = receive — got receive
-   🟢 role 103 · c_payment = up — got up
+   🟢 role 50004 · c_invoice = receive — got receive
+   🟢 role 50004 · c_payment = up — got up
    🟢 role 102 · c_payment = receive — got receive
-   🟢 role 103 · c_orderline = unplanned — got unplanned
+   🟢 role 50004 · c_orderline = unplanned — got unplanned
    🟢 role 200001 · c_invoice = unplanned — got unplanned
    🟢 no role · c_orderline = unplanned — got unplanned
    🟢 role 200001 · c_bpartner = unplanned — got unplanned
@@ -48,8 +48,8 @@
    🟢 borrower 1's SECOND device (enrolled onto the existing person) holds exactly what the first holds — B1b=3 B1=3
    🟢 a device with the borrower ROLE but bound to no entity receives 0 (role alone never addresses a record) — Q rows=0 refused=7
    🟢 a till (another role) receives none of the borrower flows — m_movementline,c_orderline
-   🟢 the processor holds the payment (UP) and both loans it made — m_movementline,c_invoice,c_invoicepayschedule,c_invoice,c_invoicepayschedule,c_orderline,c_payment
-   🟢 the instrument sees the refusals: B1 placed 7 ops, accepted 3, refused 4 (2996 bytes never projected) — {"m_movementline":1,"c_invoice":1,"c_invoicepayschedule":1,"c_orderline":1}
+   🟢 the processor holds the payment (UP) and both loans it made — c_invoice,m_movementline,c_invoice,c_invoicepayschedule,c_payment,c_invoicepayschedule,c_orderline
+   🟢 the instrument sees the refusals: B1 placed 7 ops, accepted 3, refused 4 (2996 bytes never projected) — {"c_invoice":1,"m_movementline":1,"c_invoicepayschedule":1,"c_orderline":1}
 §P8 CATCH-UP ON BIND (a customer who enrols later still receives every open item they already hold; bind-first stays the procedure; stateless, uncapped, survives a reload)
    🟢 BEFORE any bind the hub holds 4 records back (no bound person): a release pass sends 0 and stores no queue (only the persisted sent / localOnly the device already has) — held=4 released=0
    🟢 ISSUE -> hub RELOAD -> BIND: the reloaded hub derives the entity's 2 records from its own rows and sends them, once, in the order they were made (loan, then instalment) — released=2 tables=c_invoice>c_invoicepayschedule
@@ -59,16 +59,16 @@
    🟢 borrowers 1 and 2 received nothing new from it (3 and 2 ops as before) — B1=3 B2=2
    🟢 a second, UNRELATED bind (a new person with no held records) sends nothing extra — released=0 hub ops 7->7
    🟢 re-evaluating (forced) / more syncs / a refold sends nothing twice: the hub authored 0 new ops, the borrower still holds 2 — released=0 hub ops=7 B3 ops=2
-   §PP_TIMING ms {"hold":12408,"enrol":13012,"release":173265,"sync":204118}
-   🟢 the next customer's bind releases ALL 2102 of its records - 2100 bulk loans (more than the old 2000 cap, the OLDEST included) + the first loan + its instalment - and nothing of B3's again (205.2 s) — released=2102 B4 bulk=2100 oldest=true B3=2
+   §PP_TIMING ms {"hold":14304,"enrol":15023,"release":210801,"sync":248509}
+   🟢 the next customer's bind releases ALL 2102 of its records - 2100 bulk loans (more than the old 2000 cap, the OLDEST included) + the first loan + its instalment - and nothing of B3's again (249.9 s) — released=2102 B4 bulk=2100 oldest=true B3=2
    🟢 a REPLACED phone (a new device enrolled onto the same person) gets its loan and instalment back — B3b=2
 §P4 THE GENESIS NAMES THE PLAN (absent = office)
    🟢 newSpace without the option writes no `plan`; with it writes office|pos; any other value is refused — absent=true explicit=office pos=pos bogus=newSpace: invalid plan (galaxy)
    🟢 the roster reads the plan back: absent -> office, "office" -> office, "pos" -> pos — office/office/pos
    🟢 a genesis carrying an unknown plan value is untrusted (the space does not open) — no-trusted-genesis
    🟢 the founder's choice (?teamplan=pos) reaches the genesis through spaceOpts; with no choice there is no option at all — {"plan":"pos"}
-   🟢 a device in a space WITHOUT `plan` reads the office plan: c_order is shared exactly as before — {"kind":"office","role":102,"person":"f608b4b7-b2c4-4dd0-b2f1-4e5d240e07cf"}
-   🟢 a device in a `plan:"pos"` space switches the reader to the POS plan (c_order is no longer "share") — {"kind":"pos","role":102,"person":"f608b4b7-b2c4-4dd0-b2f1-4e5d240e07cf"}
+   🟢 a device in a space WITHOUT `plan` reads the office plan: c_order is shared exactly as before — {"kind":"office","role":102,"person":"e45ff88d-898f-4482-8c35-7c34455a3300"}
+   🟢 a device in a `plan:"pos"` space switches the reader to the POS plan (c_order is no longer "share") — {"kind":"pos","role":102,"person":"e45ff88d-898f-4482-8c35-7c34455a3300"}
 §P7 THE POS PLAN IS VERIFIED LIKE THE OFFICE PLAN (same trust list, §33)
    🟢 signed by the trusted key -> state=ok, the station's C_OrderLine is "up" — ok up
    🟢 altered after signing / unsigned under a trust list -> invalid, signed by another key -> untrusted: all CLOSED (nothing declared, nothing shared) — invalid/invalid/untrusted
@@ -94,4 +94,3 @@
    🟢 a released record is not marked (sent again on the next evaluation) -> red arms: P8
    🟢 the oldest records are dropped beyond 2000 (the retired cap, reinstated) -> red arms: P8
 §PP_VERDICT PASS judged=82 fails=0 mutants_killed=14/14
-exit=0

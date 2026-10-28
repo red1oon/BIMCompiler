@@ -29,7 +29,7 @@ var BC = process.env.PP_BC || path.join(__dirname, '..'), OOTB = process.argv[2]
 if (!OOTB) { console.log('§PP_VERDICT INCONCLUSIVE — no bim-ootb dir given (node scripts/witness_pos_plan.js <dir>)'); process.exit(2); }
 var SIGN = require(path.join(BC, 'build', 'scriptor', 'sign_plan.js')), initSqlJs = require('sql.js'), Better = require('better-sqlite3');
 var OFFICE_BASE = '3e779487';                                                  // the commit this lane was cut from: its team_scope.js / team_plan.js are the P0 reference
-var HQ = 102, TILL = 200001, BORR = 103, uuid = function () { return nodeCrypto.randomUUID(); };
+var HQ = 102, TILL = 200001, BORR = 50004, uuid = function () { return nodeCrypto.randomUUID(); };
 var judged = 0, fails = 0;
 function say(ok, l, d) { judged++; if (!ok) fails++; console.log('   ' + (ok ? '🟢' : '🔴') + ' ' + l + (d ? ' — ' + d : '')); }
 function rd(f) { return fs.readFileSync(path.join(OOTB, f), 'utf8'); }
