@@ -210,36 +210,42 @@ async function arms(src, quiet) {
     A('P6', have(V.F, 'c_payment') === 1 && have(V.F, 'c_invoice') === 2, 'the processor holds the payment (UP) and both loans it made', V.F.tables.join(','));
     A('P6', V.B1.thin.placed > V.B1.thin.accepted && V.B1.thin.bytesRefused > 0, 'the instrument sees the refusals: B1 placed ' + V.B1.thin.placed + ' ops, accepted ' + V.B1.thin.accepted + ', refused ' + V.B1.thin.refused + ' (' + V.B1.thin.bytesRefused + ' bytes never projected)', JSON.stringify(V.B1.thin.byTable));
     } catch (e) { A('P6!THREW', false, 'THREW: ' + String(e && e.message).slice(0, 110)); }
-    // ── §P8 catch-up on bind (§41.2 L1) ───────────────────────────────────────────────────────────────────────────────
-    H('§P8 CATCH-UP ON BIND (a customer who enrols later still receives every open item they already hold; bind-first stays the procedure)');
+    // ── §P8 catch-up on bind (§41.2 L1) - DERIVED from the hub's own rows, nothing remembered, nothing capped ─────────────
+    H('§P8 CATCH-UP ON BIND (a customer who enrols later still receives every open item they already hold; bind-first stays the procedure; stateless, uncapped, survives a reload)');
     try {
-    var invD = uuid(), schC = uuid(), schD = uuid(), hubOwn = async function () { return (await D.F.S.foldable()).filter(function (p) { return p.env.author === D.F.kid; }); };
-    D.F.kdb.run("INSERT INTO kernel_ops VALUES (9,'CRUD_CREATE',?,?,NULL)", [invC, JSON.stringify({ table: 'c_invoice', fields: { c_bpartner_id: bps[2].id, documentno: 'CASH-1', grandtotal: 9, ad_client_id: 11, ad_org_id: 0 } })]);
-    D.F.kdb.run("INSERT INTO kernel_ops VALUES (10,'CRUD_CREATE',?,?,NULL)", [invD, JSON.stringify({ table: 'c_invoice', fields: { c_bpartner_id: bps[3].id, documentno: 'LATE-D', grandtotal: 70, description: 'secret D', ad_client_id: 11, ad_org_id: 0 } })]);
-    var wD = await send(D.F, 'CRUD_CREATE', 'c_invoice', { c_bpartner_id: bps[3].id, documentno: 'LATE-D', grandtotal: 70, description: 'secret D', ad_client_id: 11, ad_org_id: 0 }, { uu: invD });
-    var wC2 = await send(D.F, 'CRUD_CREATE', 'c_invoicepayschedule', { c_invoice_id: -9, dueamt: 5, duedate: '2026-12-01', ad_client_id: 11, ad_org_id: 0 }, { uu: schC });
-    var wD2 = await send(D.F, 'CRUD_CREATE', 'c_invoicepayschedule', { c_invoice_id: -10, dueamt: 35, duedate: '2026-12-01', ad_client_id: 11, ad_org_id: 0 }, { uu: schD });
-    var W0 = Object.keys(D.F.ad.api._withheld()), own0 = (await hubOwn()).length, seq0 = (await hubOwn()).reduce(function (m, p) { return Math.max(m, p.env.seq); }, 0);
-    if (guard('P8', W0.length, 'the hub withheld nothing, so a catch-up could not be judged')) A('P8', W0.length === 4 && !wD.t.body && !wC2.t.body && !wD2.t.body, 'BEFORE any bind the hub has WITHHELD 4 records (two loans and their instalments: the entities have no bound person)', 'withheld=' + W0.length);
+    var kr = [], kid8 = 100, mkRow = function (table, fields, uu) { var r = { id: ++kid8, op_type: 'CRUD_CREATE', op_uuid: uu || uuid(), parameters: JSON.stringify({ table: table, fields: fields }), user_tag: null, undone: 0, timestamp: new Date().toISOString() }; kr.push(r); return r; };
+    var kdb8 = function () { var by = {}; kr.forEach(function (r) { by[r.id] = r; }); return { exec: function (sql) { var m = /WHERE id=(\d+)/.exec(sql), x = m && by[m[1]]; return x ? [{ values: [[x.op_type, x.op_uuid, x.parameters, x.user_tag]] }] : []; } }; };
+    var hold = async function (ad, row) { var t = await ad.api._translate(row, kdb8()); if (t.local) ad.api._localOnly()[row.op_uuid] = t.local; return t; };    // what onCommit does with a record it cannot send
+    var hubOwn = async function () { return (await D.F.S.foldable()).filter(function (p) { return p.env.author === D.F.kid; }); }, own8 = function (kidOf) { return null; };
+    var rC = mkRow('c_invoice', { c_bpartner_id: bps[2].id, documentno: 'CASH-1', grandtotal: 9, ad_client_id: 11, ad_org_id: 0 }), rC2 = mkRow('c_invoicepayschedule', { c_invoice_id: -rC.id, dueamt: 5, duedate: '2026-12-01', ad_client_id: 11, ad_org_id: 0 });
+    var rD = mkRow('c_invoice', { c_bpartner_id: bps[3].id, documentno: 'LATE-D', grandtotal: 70, description: 'secret D', ad_client_id: 11, ad_org_id: 0 }), rD2 = mkRow('c_invoicepayschedule', { c_invoice_id: -rD.id, dueamt: 35, duedate: '2026-12-01', ad_client_id: 11, ad_org_id: 0 });
+    var held = []; for (var hr of kr) held.push(await hold(D.F.ad, hr));
+    var seq0 = (await hubOwn()).reduce(function (m, p) { return Math.max(m, p.env.seq); }, 0), relNone = await D.F.ad.api._release(kr, true);
+    if (guard('P8', kr.length, 'no record was held')) A('P8', held.every(function (t) { return !t.body && /no-addressee/.test(t.local); }) && relNone.n === 0 && (await hubOwn()).reduce(function (m, p) { return Math.max(m, p.env.seq); }, 0) === seq0, 'BEFORE any bind the hub holds ' + kr.length + ' records back (no bound person): a release pass sends 0 and stores no queue (only the persisted sent / localOnly the device already has)', 'held=' + held.length + ' released=' + relNone.n);
+    // the hub RELOADS between issue and bind: a brand new adapter instance, only the persisted state (sent, localOnly) and the rows come back
+    var st8 = D.F.ad.api._state(), adR = await boot(src, { plans: [fanOut.signedOffice, fanOut.signedPos], trust: [pub1], db: DB }); await adR.api._attach(D.F.S, D.F.dev); adR.api._restore(st8); D.F.ad = adR;
     var B3 = await fanOut.enrol('B3', BORR, bps[2].uu); await D.B3.ad.api._attach(B3.S, B3.dev); await fanOut.syncAll();
-    var cu1 = await D.F.ad.api._catchUp(); await fanOut.syncAll();
-    var ownAfter1 = await hubOwn(), newOps = ownAfter1.filter(function (p) { return p.env.seq > seq0; }).sort(function (a, b) { return a.env.seq - b.env.seq; }), vB3 = await view(D.B3);
-    A('P8', cu1 === 2 && newOps.length === 2 && newOps[0].env.target.table === 'c_invoice' && newOps[1].env.target.table === 'c_invoicepayschedule', 'ISSUE -> BIND -> the hub sends that entity\'s 2 records, once, in the order they were made (loan, then instalment)', 'sent=' + cu1 + ' tables=' + newOps.map(function (p) { return p.env.target.table; }).join('>'));
+    var cu1 = await adR.api._release(kr); await fanOut.syncAll();
+    var newOps = (await hubOwn()).filter(function (p) { return p.env.seq > seq0; }).sort(function (a, b) { return a.env.seq - b.env.seq; }), vB3 = await view(D.B3);
+    A('P8', cu1.n === 2 && newOps.length === 2 && newOps[0].env.target.table === 'c_invoice' && newOps[1].env.target.table === 'c_invoicepayschedule', 'ISSUE -> hub RELOAD -> BIND: the reloaded hub derives the entity\'s 2 records from its own rows and sends them, once, in the order they were made (loan, then instalment)', 'released=' + cu1.n + ' tables=' + newOps.map(function (p) { return p.env.target.table; }).join('>'));
     A('P8', have(vB3, 'c_invoice') === 1 && have(vB3, 'c_invoicepayschedule') === 1 && vB3.rows.length === 2 && !JSON.stringify(vB3.rows).match(/secret|LATE-D/), 'the late borrower holds its loan and its instalment (and nothing of the other entities\')', vB3.tables.join(','));
     var fC = JSON.parse(vB3.rows.filter(function (r) { return /c_invoice"/.test(r.parameters); })[0].parameters).fields;
     A('P8', JSON.stringify(Object.keys(fC).sort()) === JSON.stringify(['ad_client_id', 'ad_org_id', 'c_bpartner_id', 'documentno', 'grandtotal']), 'with the SAME carries as any DOWN op (declared columns + partition only)', JSON.stringify(Object.keys(fC)));
-    var W1 = Object.keys(D.F.ad.api._withheld());
-    A('P8', W1.length === 2 && W1.indexOf(invD) >= 0 && W1.indexOf(schD) >= 0, 'the OTHER entity\'s records stay withheld (the bind of one customer releases only that customer\'s items)', 'withheld=' + W1.length);
+    var sm = adR.api._sentMap();
+    A('P8', !sm[rD.op_uuid] && !sm[rD2.op_uuid] && sm[rC.op_uuid] && sm[rC2.op_uuid], 'the OTHER entity\'s records stay unsent (the bind of one customer releases only that customer\'s items)', 'sent C=' + !!sm[rC.op_uuid] + ' D=' + !!sm[rD.op_uuid]);
     var V1 = {}; for (var nm1 of ['B1', 'B2']) V1[nm1] = await view(D[nm1]);
     A('P8', V1.B1.rows.length === 3 && V1.B2.rows.length === 2, 'borrowers 1 and 2 received nothing new from it (3 and 2 ops as before)', 'B1=' + V1.B1.rows.length + ' B2=' + V1.B2.rows.length);
-    var Zd = await fanOut.enrol('Z', TILL, uuid()); await D.Z.ad.api._attach(Zd.S, Zd.dev); await fanOut.syncAll();
-    var cu2 = await D.F.ad.api._catchUp(); await fanOut.syncAll(); var own2 = (await hubOwn()).length;
-    A('P8', cu2 === 0 && own2 === ownAfter1.length && Object.keys(D.F.ad.api._withheld()).length === 2, 'a second, UNRELATED bind (a new person with no withheld records) sends nothing extra', 'sent=' + cu2 + ' hub ops ' + ownAfter1.length + '->' + own2);
-    var cu3 = await D.F.ad.api._catchUp(); await fanOut.syncAll(); await fanOut.syncAll(); var own3 = (await hubOwn()).length, vB3b = await view(D.B3);
-    A('P8', cu3 === 0 && own3 === own2 && vB3b.rows.length === 2, 're-evaluating again / more syncs / a refold sends nothing twice (the hub authored 0 new ops, the borrower still holds 2)', 'sent=' + cu3 + ' hub ops=' + own3 + ' B3 ops=' + vB3b.rows.length);
+    var own1 = (await hubOwn()).length, Zd = await fanOut.enrol('Z', TILL, uuid()); await D.Z.ad.api._attach(Zd.S, Zd.dev); await fanOut.syncAll();
+    var cu2 = await adR.api._release(kr); await fanOut.syncAll(); var own2 = (await hubOwn()).length;
+    A('P8', cu2.n === 0 && own2 === own1, 'a second, UNRELATED bind (a new person with no held records) sends nothing extra', 'released=' + cu2.n + ' hub ops ' + own1 + '->' + own2);
+    var cu3 = await adR.api._release(kr, true); await fanOut.syncAll(); await fanOut.syncAll(); var own3 = (await hubOwn()).length, vB3b = await view(D.B3);
+    A('P8', cu3.n === 0 && own3 === own2 && vB3b.rows.length === 2, 're-evaluating (forced) / more syncs / a refold sends nothing twice: the hub authored 0 new ops, the borrower still holds 2', 'released=' + cu3.n + ' hub ops=' + own3 + ' B3 ops=' + vB3b.rows.length);
+    // MORE THAN 2000 records for ONE entity (the old queue dropped its oldest at 2000): all arrive
+    var NB = src.bulk || Number(process.env.PP_BULK) || 2100, t0 = Date.now(), tm = {}; for (var bi = 0; bi < NB; bi++) { var rb = mkRow('c_invoice', { c_bpartner_id: bps[3].id, documentno: 'BULK-' + bi, grandtotal: bi + 1, ad_client_id: 11, ad_org_id: 0 }); var tb = await hold(adR, rb); if (!tb.local) throw new Error('bulk record was sent early'); }
+    tm.hold = Date.now() - t0;
     var B4 = await fanOut.enrol('B4', BORR, bps[3].uu); await D.B4.ad.api._attach(B4.S, B4.dev); await fanOut.syncAll();
-    var cu4 = await D.F.ad.api._catchUp(); await fanOut.syncAll(); var vB4 = await view(D.B4), vB3c = await view(D.B3);
-    A('P8', cu4 === 2 && vB4.rows.length === 2 && have(vB4, 'c_invoice') === 1 && vB3c.rows.length === 2 && Object.keys(D.F.ad.api._withheld()).length === 0, 'the next customer\'s bind releases ITS 2 records (and only those); the hub\'s withheld set is now empty', 'sent=' + cu4 + ' B4=' + vB4.rows.length + ' B3=' + vB3c.rows.length);
+    tm.enrol = Date.now() - t0; var cu4 = await adR.api._release(kr); tm.release = Date.now() - t0; await fanOut.syncAll(); tm.sync = Date.now() - t0; if (!quiet) console.log('   §PP_TIMING ms ' + JSON.stringify(tm)); var vB4 = await view(D.B4), vB3c = await view(D.B3), nBulk = vB4.rows.filter(function (r) { return /BULK-/.test(r.parameters); }).length, oldest = vB4.rows.some(function (r) { return /"BULK-0"/.test(r.parameters); });
+    A('P8', cu4.n === NB + 2 && nBulk === NB && oldest && have(vB4, 'c_invoicepayschedule') === 1 && vB3c.rows.length === 2, 'the next customer\'s bind releases ALL ' + (NB + 2) + ' of its records - ' + NB + ' bulk loans (more than the old 2000 cap, the OLDEST included) + the first loan + its instalment - and nothing of B3\'s again (' + ((Date.now() - t0) / 1000).toFixed(1) + ' s)', 'released=' + cu4.n + ' B4 bulk=' + nBulk + ' oldest=' + oldest + ' B3=' + vB3c.rows.length);
     var B3b = await fanOut.enrol('B3b', BORR, bps[2].uu); await D.B3b.ad.api._attach(B3b.S, B3b.dev); await fanOut.syncAll(); var vB3d = await view(D.B3b);
     A('P8', vB3d.rows.length === 2, 'a REPLACED phone (a new device enrolled onto the same person) gets its loan and instalment back', 'B3b=' + vB3d.rows.length);
     } catch (e) { A('P8!THREW', false, 'THREW: ' + String(e && e.message).slice(0, 120)); }
@@ -310,7 +316,7 @@ async function arms(src, quiet) {
   console.log('§MUTANTS (a COPY with one rule broken; each must turn >= 1 arm red; a crash is NOT a kill)');
   var results = [];
   async function mut(label, expect, patch) {
-    var s = { scope: READ.scope, adapter: READ.adapter, engine: null }, tmp = null, ok = patch(s, function () { tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'pp_eng_')); fs.cpSync(path.join(BC, 'build', 'comm'), tmp, { recursive: true }); return tmp; });
+    var s = { scope: READ.scope, adapter: READ.adapter, engine: null, bulk: 60 }, tmp = null, ok = patch(s, function () { tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'pp_eng_')); fs.cpSync(path.join(BC, 'build', 'comm'), tmp, { recursive: true }); return tmp; });
     var red, threw = null; if (ok) { try { red = await arms(s, true); } catch (e) { threw = String(e && e.message).slice(0, 80); red = []; } }
     if (tmp) fs.rmSync(tmp, { recursive: true, force: true });
     var hit = !ok ? false : !threw && red.some(function (x) { return expect.indexOf(x.replace('!VACUOUS', '')) >= 0; });
@@ -328,9 +334,10 @@ async function arms(src, quiet) {
   await mut('the sender sends a record with no bound addressee', ['P6'], function (s) { var t = rep(s.adapter, "if (!ad || !(await S.order()).roster.persons[ad])", "if (false)"); if (!t) return false; s.adapter = t; return true; });
   await mut('the office answer of the reader is changed (share -> unplanned)', ['P0'], function (s) { var t = rep(s.scope, "I.flows[lc(table)] ? 'share' : 'unplanned', h =", "I.flows[lc(table)] ? 'unplanned' : 'unplanned', h ="); if (!t) return false; s.scope = t; return true; });
   await mut('the POS plan is not verified (signature skipped on a kind switch)', ['P7'], function (s) { var t = rep(s.adapter, "await verifyPlan('plan=' + kind);", ''); if (!t) return false; s.adapter = t; return true; });
-  await mut('catch-up is off (a withheld record is never released)', ['P8'], function (s) { var t = rep(s.adapter, "if (!S || scopeCtx.kind !== 'pos' || !Object.keys(withheld).length) return 0;", "return 0;"); if (!t) return false; s.adapter = t; return true; });
-  await mut('catch-up releases EVERY entity\'s records on any bind', ['P8'], function (s) { var t = rep(s.adapter, "return R.persons[withheld[k].addr]; })", "return true; })"); if (!t) return false; s.adapter = t; return true; });
-  await mut('a released record is not forgotten (sent again on the next evaluation)', ['P8'], function (s) { var t = rep(s.adapter, "sent[id] = a.hash; delete withheld[id]; n++;", "sent[id] = a.hash; n++;"); if (!t) return false; s.adapter = t; return true; });
+  await mut('catch-up is off (a held record is never released)', ['P8'], function (s) { var t = rep(s.adapter, "if (!S || scopeCtx.kind !== 'pos') return out;", "return out;"); if (!t) return false; s.adapter = t; return true; });
+  await mut('the derivation ignores the entity (every unsent DOWN row goes to its role on any bind)', ['P8'], function (s) { var t = rep(s.adapter, "if (!ad || !(await S.order()).roster.persons[ad])", "if (false)"); if (!t) return false; s.adapter = t; return true; });
+  await mut('a released record is not marked (sent again on the next evaluation)', ['P8'], function (s) { var t = rep(s.adapter, "sent[r.op_uuid] = a.hash; delete localOnly[r.op_uuid]; out.n++;", "out.n++;"); if (!t) return false; s.adapter = t; return true; });
+  await mut('the oldest records are dropped beyond 2000 (the retired cap, reinstated)', ['P8'], function (s) { var t = rep(s.adapter, "}).sort(function (a, b) { return Number(a.id) - Number(b.id); });\n    if (!cands.length) return out;", "}).sort(function (a, b) { return Number(a.id) - Number(b.id); }).slice(-2000);\n    if (!cands.length) return out;"); if (!t) return false; s.adapter = t; s.bulk = 2100; return true; });
   var killed = results.filter(Boolean).length;
   console.log('§PP_VERDICT ' + (fails ? 'FAIL' : 'PASS') + ' judged=' + judged + ' fails=' + fails + ' mutants_killed=' + killed + '/' + results.length);
   process.exit(fails ? 1 : 0);

@@ -42,32 +42,33 @@
    🟢 a record whose entity has NO bound person (a cash customer) is never sent: no-addressee (it would only fatten the pipe) — no-addressee c_invoice
    🟢 the loan leaves with its declared columns only (the address column c_bpartner_id is among them; description is not) — ["ad_client_id","ad_org_id","c_bpartner_id","documentno","grandtotal"]
    🟢 borrower 1's payment (UP) carries only c_bpartner_id and payamt — ["c_bpartner_id","payamt","ad_client_id","ad_org_id"]
-   🟢 borrower 1 holds ITS loan, ITS instalment and its own payment — c_invoice,c_payment,c_invoicepayschedule
+   🟢 borrower 1 holds ITS loan, ITS instalment and its own payment — c_invoice,c_invoicepayschedule,c_payment
    🟢 borrower 2 (same role) holds ITS loan + instalment only: 0 of borrower 1's invoice / schedule / payment (2 ops in all) — c_invoice,c_invoicepayschedule refused=5
    🟢 and none of borrower 1's values is in borrower 2's projection (228.85 / LN-A / 114.43) — {"ad_client_id":11,"ad_org_id":0,"c_bpartner_id":117,"documentno":"LN-B","grandtotal":100}|{"ad_client_id":11,"ad_org_id
    🟢 borrower 1's SECOND device (enrolled onto the existing person) holds exactly what the first holds — B1b=3 B1=3
    🟢 a device with the borrower ROLE but bound to no entity receives 0 (role alone never addresses a record) — Q rows=0 refused=7
-   🟢 a till (another role) receives none of the borrower flows — c_orderline,m_movementline
-   🟢 the processor holds the payment (UP) and both loans it made — c_invoice,c_orderline,c_payment,c_invoicepayschedule,m_movementline,c_invoice,c_invoicepayschedule
-   🟢 the instrument sees the refusals: B1 placed 7 ops, accepted 3, refused 4 (2996 bytes never projected) — {"c_orderline":1,"m_movementline":1,"c_invoice":1,"c_invoicepayschedule":1}
-§P8 CATCH-UP ON BIND (a customer who enrols later still receives every open item they already hold; bind-first stays the procedure)
-   🟢 BEFORE any bind the hub has WITHHELD 4 records (two loans and their instalments: the entities have no bound person) — withheld=4
-   🟢 ISSUE -> BIND -> the hub sends that entity's 2 records, once, in the order they were made (loan, then instalment) — sent=2 tables=c_invoice>c_invoicepayschedule
+   🟢 a till (another role) receives none of the borrower flows — m_movementline,c_orderline
+   🟢 the processor holds the payment (UP) and both loans it made — m_movementline,c_invoice,c_invoicepayschedule,c_invoice,c_invoicepayschedule,c_orderline,c_payment
+   🟢 the instrument sees the refusals: B1 placed 7 ops, accepted 3, refused 4 (2996 bytes never projected) — {"m_movementline":1,"c_invoice":1,"c_invoicepayschedule":1,"c_orderline":1}
+§P8 CATCH-UP ON BIND (a customer who enrols later still receives every open item they already hold; bind-first stays the procedure; stateless, uncapped, survives a reload)
+   🟢 BEFORE any bind the hub holds 4 records back (no bound person): a release pass sends 0 and stores no queue (only the persisted sent / localOnly the device already has) — held=4 released=0
+   🟢 ISSUE -> hub RELOAD -> BIND: the reloaded hub derives the entity's 2 records from its own rows and sends them, once, in the order they were made (loan, then instalment) — released=2 tables=c_invoice>c_invoicepayschedule
    🟢 the late borrower holds its loan and its instalment (and nothing of the other entities') — c_invoice,c_invoicepayschedule
    🟢 with the SAME carries as any DOWN op (declared columns + partition only) — ["ad_client_id","ad_org_id","c_bpartner_id","documentno","grandtotal"]
-   🟢 the OTHER entity's records stay withheld (the bind of one customer releases only that customer's items) — withheld=2
+   🟢 the OTHER entity's records stay unsent (the bind of one customer releases only that customer's items) — sent C=true D=false
    🟢 borrowers 1 and 2 received nothing new from it (3 and 2 ops as before) — B1=3 B2=2
-   🟢 a second, UNRELATED bind (a new person with no withheld records) sends nothing extra — sent=0 hub ops 7->7
-   🟢 re-evaluating again / more syncs / a refold sends nothing twice (the hub authored 0 new ops, the borrower still holds 2) — sent=0 hub ops=7 B3 ops=2
-   🟢 the next customer's bind releases ITS 2 records (and only those); the hub's withheld set is now empty — sent=2 B4=2 B3=2
+   🟢 a second, UNRELATED bind (a new person with no held records) sends nothing extra — released=0 hub ops 7->7
+   🟢 re-evaluating (forced) / more syncs / a refold sends nothing twice: the hub authored 0 new ops, the borrower still holds 2 — released=0 hub ops=7 B3 ops=2
+   §PP_TIMING ms {"hold":12408,"enrol":13012,"release":173265,"sync":204118}
+   🟢 the next customer's bind releases ALL 2102 of its records - 2100 bulk loans (more than the old 2000 cap, the OLDEST included) + the first loan + its instalment - and nothing of B3's again (205.2 s) — released=2102 B4 bulk=2100 oldest=true B3=2
    🟢 a REPLACED phone (a new device enrolled onto the same person) gets its loan and instalment back — B3b=2
 §P4 THE GENESIS NAMES THE PLAN (absent = office)
    🟢 newSpace without the option writes no `plan`; with it writes office|pos; any other value is refused — absent=true explicit=office pos=pos bogus=newSpace: invalid plan (galaxy)
    🟢 the roster reads the plan back: absent -> office, "office" -> office, "pos" -> pos — office/office/pos
    🟢 a genesis carrying an unknown plan value is untrusted (the space does not open) — no-trusted-genesis
    🟢 the founder's choice (?teamplan=pos) reaches the genesis through spaceOpts; with no choice there is no option at all — {"plan":"pos"}
-   🟢 a device in a space WITHOUT `plan` reads the office plan: c_order is shared exactly as before — {"kind":"office","role":102,"person":"47f34fff-1cf1-4544-b03e-73a882740787"}
-   🟢 a device in a `plan:"pos"` space switches the reader to the POS plan (c_order is no longer "share") — {"kind":"pos","role":102,"person":"47f34fff-1cf1-4544-b03e-73a882740787"}
+   🟢 a device in a space WITHOUT `plan` reads the office plan: c_order is shared exactly as before — {"kind":"office","role":102,"person":"f608b4b7-b2c4-4dd0-b2f1-4e5d240e07cf"}
+   🟢 a device in a `plan:"pos"` space switches the reader to the POS plan (c_order is no longer "share") — {"kind":"pos","role":102,"person":"f608b4b7-b2c4-4dd0-b2f1-4e5d240e07cf"}
 §P7 THE POS PLAN IS VERIFIED LIKE THE OFFICE PLAN (same trust list, §33)
    🟢 signed by the trusted key -> state=ok, the station's C_OrderLine is "up" — ok up
    🟢 altered after signing / unsigned under a trust list -> invalid, signed by another key -> untrusted: all CLOSED (nothing declared, nothing shared) — invalid/invalid/untrusted
@@ -78,18 +79,19 @@
    🟢 an 'author' executor is not accepted anywhere any more (signer or fold) — refused: the statement would be refused: shape:map
 §PP_ARMS red=none judged=68 fails=0
 §MUTANTS (a COPY with one rule broken; each must turn >= 1 arm red; a crash is NOT a kill)
-   🟢 hub rows are not indexed by the reader -> red arms: P1, P2, P3, P6, P6!THREW, P8!VACUOUS, P8, P8!THREW, P7
+   🟢 hub rows are not indexed by the reader -> red arms: P1, P2, P3, P6, P6!THREW, P8, P8!THREW, P7
    🟢 the carries rule is not applied outbound -> red arms: P2, P6
    🟢 the inbound filter is off (everything placed is projected) -> red arms: P3, P6, P8
    🟢 the engine reads an absent plan as POS (default plan = pos) -> red arms: P2, P4
    🟢 `by` is ignored (a DOWN row is addressed by role alone) -> red arms: P6, P8
    🟢 a role that is neither edge nor hub is treated as the recipient -> red arms: P1, P6, P8
-   🟢 the reader never switches to the POS plan (setKind ignored) -> red arms: P1, P2, P3, P3!THREW, P6, P6!THREW, P8!VACUOUS, P8, P4, P7
-   🟢 the sender sends a record with no bound addressee -> red arms: P2, P6, P8!VACUOUS, P8
+   🟢 the reader never switches to the POS plan (setKind ignored) -> red arms: P1, P2, P3, P3!THREW, P6, P6!THREW, P8, P8!THREW, P4, P7
+   🟢 the sender sends a record with no bound addressee -> red arms: P2, P6, P8, P8!THREW
    🟢 the office answer of the reader is changed (share -> unplanned) -> red arms: P0, P1, P2, P4
-   🟢 the POS plan is not verified (signature skipped on a kind switch) -> red arms: P2, P3, P6, P6!THREW, P8!VACUOUS, P8, P8!THREW, P7
-   🟢 catch-up is off (a withheld record is never released) -> red arms: P8, P8!THREW
-   🟢 catch-up releases EVERY entity's records on any bind -> red arms: P8
-   🟢 a released record is not forgotten (sent again on the next evaluation) -> red arms: P8
-§PP_VERDICT PASS judged=81 fails=0 mutants_killed=13/13
+   🟢 the POS plan is not verified (signature skipped on a kind switch) -> red arms: P2, P3, P6, P6!THREW, P8, P8!THREW, P7
+   🟢 catch-up is off (a held record is never released) -> red arms: P8, P8!THREW
+   🟢 the derivation ignores the entity (every unsent DOWN row goes to its role on any bind) -> red arms: P2, P6, P8, P8!THREW
+   🟢 a released record is not marked (sent again on the next evaluation) -> red arms: P8
+   🟢 the oldest records are dropped beyond 2000 (the retired cap, reinstated) -> red arms: P8
+§PP_VERDICT PASS judged=82 fails=0 mutants_killed=14/14
 exit=0
