@@ -34,7 +34,7 @@ var FX = require('./bridge/ad_shipped_fixture.js').loadShipped(OOTB, log), db = 
 var hasFn = typeof AA.RoleContext.prototype.checkActionAccess === 'function';
 log('§E2_START access=' + path.relative(ROOT, ACCESS) + ' checkActionAccess=' + (hasFn ? 'present' : 'ABSENT'));
 // the function under test; ABSENT = what the host does today (offers getValidActions as is)
-function check(rc, client, dt, opts, overlay) { return hasFn ? rc.checkActionAccess(client, dt, opts, overlay) : opts.slice(); }
+function check(rc, client, dt, opts) { return hasFn ? rc.checkActionAccess(client, dt, opts) : opts.slice(); }
 function eq(a, b) { return a.join(',') === b.join(','); }
 
 var CLIENT = 11, ROLES = [102, 103, 200001];
@@ -115,14 +115,13 @@ if (SO && CO_RL) scratch(function () {
   arm('A4b', eq(g2, ['PR', 'VO']), "master role: every SOO/SO doctype's CO row 'N' → CO not offered", 'got [' + g2 + ']');
 });
 
-// ── B overlay: the in-log executor map (FL-8 E3) applied as data, like 'N' rows after every role ──
-log('\n── B executor overlay (§38.5 E2b) ──');
-var ALL = DR;
-var gB1 = check(rc[103], CLIENT, SO.id, DR, ALL), gB2 = check(rc[102], CLIENT, SO.id, DR, null);
-arm('B1a', eq(gB1, []), 'a non-executor device: overlay = every value → nothing offered (E3 would refuse any SET_STATUS)', 'got [' + gB1 + ']');
-arm('B1b', eq(gB2, DR), 'the executor device: no overlay → unchanged', 'got [' + gB2 + ']');
-var gB3 = check(rc[103], CLIENT, SO.id, DR, []);
-arm('B2', eq(gB3, DR), 'empty overlay (no map in force / team off) → identical to A1', 'got [' + gB3 + ']');
+// ── B (RETIRED 2026-10-28, TEAMWORK_FRAMEWORK §41.2 L4a): the overlay ARGUMENT. Arms B1a / B1b / B2 judged checkActionAccess(..., overlay); after study 2.5 the host calls it over the login role only and the
+//    executor map reaches it as 'N' rows (witness_team_executors.js W-UPS-E2-HOST judges that path), so the argument was dead code and is deleted. Its mutant 'overlay-off' (arm B1) is retired with it.
+//    B-GONE keeps the deletion honest: the function takes exactly (clientId, docTypeId, options), and a fourth argument changes nothing.
+log('\n── B-GONE the overlay argument is deleted ──');
+var arity = hasFn ? AA.RoleContext.prototype.checkActionAccess.length : -1;
+var gB = hasFn ? rc[103].checkActionAccess(CLIENT, SO.id, DR, DR) : null;   // a stray 4th argument (the old overlay = every value) must NOT empty the list
+arm('B-GONE', hasFn && arity === 3 && eq(gB, DR), 'checkActionAccess declares 3 parameters and ignores a 4th (the old overlay = every value would have emptied the list)', 'arity=' + arity + ' with-4th=[' + gB + ']');
 
 var verdict = fails ? 'FAIL' : (inconclusive ? 'INCONCLUSIVE' : 'PASS');
 log('\n§E2_ARMS red=' + (red.length ? red.join(',') : 'none') + ' judged=' + judged);
@@ -137,7 +136,7 @@ if (!IS_MUTANT && hasFn && !fails) {
     { id: 'no-row-offered', arm: 'A2', from: 'var valid = {};', to: 'var valid = {}; opt.forEach(function (v) { valid[v] = 1; });' },
     { id: 'included-off', arm: 'A3', from: "var inc = hasTable(db, 'ad_role_included'),", to: 'var inc = false,' },
     { id: 'master-as-tenant', arm: 'A4', from: "master: Number(r.c) === 0 && r.m === 'Y'", to: 'master: false' },
-    { id: 'overlay-off', arm: 'B1', from: 'if (overlay) overlay.forEach(function (v) { delete valid[v]; });', to: '' }
+    { id: 'overlay-back', arm: 'B-GONE', from: 'RoleContext.prototype.checkActionAccess = function (clientId, docTypeId, options) {', to: 'RoleContext.prototype.checkActionAccess = function (clientId, docTypeId, options, overlay) { if (overlay) return [];' }
   ];
   var killed = 0;
   M.forEach(function (m) {
