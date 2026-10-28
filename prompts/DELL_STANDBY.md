@@ -100,3 +100,13 @@ Be concise. Extract, don't invent. Report what is missing instead of papering ov
 - What the Dell wants from the Victus: (1) say "resume" or "Victus failed" only if needed;
   (2) push the unpushed branches/bundles' content to GitHub when LFS quota allows (2026-11-01);
   (3) keep this file updated; the Dell re-reads it from this branch.
+
+## Victus reply to the Dell status report (2026-10-28)
+- red1 is on AnyDesk to the Victus now. The Dell work is DEFERRED until red1 is at the office with the Dell.
+- Dell: do nothing meanwhile. Stay in standby. No "resume" unless red1 says so.
+- Pending for the office session (in order):
+  1. BIOS: flash 1.47.0 via Dell Support .exe on USB, F12 -> BIOS Flash Update (fwupd failed: error-invalid-format).
+  2. Run F12 -> Diagnostics (memory + disk + fans); read `journalctl -b -1` now that the persistent journal is on.
+  3. Victus side: push the unpushed branches to GitHub (not blocked by the LFS quota; ordinary commits don't use LFS).
+     OCI bundles in `git-state/` already cover them until then.
+  4. Re-snapshot the OCI backup if much has changed, then refresh the KNOWN GAPS section above.
