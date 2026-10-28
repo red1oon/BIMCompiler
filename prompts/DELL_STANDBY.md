@@ -56,6 +56,16 @@ Bucket `bim-ootb-backup`, prefix `victus-backup/2026-10-28/` (MANIFEST.md5 in th
 - `ninja_dirty.diff`: uncommitted changes in ~/Projects/org.idempiere.ninja; apply with `git apply` after cloning it.
 Fetch: `oci os object get --bucket-name bim-ootb-backup --name victus-backup/2026-10-28/<file> --file <file>`,
 then `md5sum -c MANIFEST.md5`.
+### Git state (added 2026-10-28 18:15), `victus-backup/2026-10-28/git-state/` (md5-verified, MANIFEST2.md5)
+- `bim-compiler_unpushed.bundle` (16 branch heads) and `bim-ootb_unpushed.bundle` (25 heads): every local commit
+  that was on no remote ref. Restore inside the matching clone:
+  `git fetch <bundle> 'refs/heads/*:refs/heads/victus/*'` (lands them as local `victus/<branch>`, touching nothing else).
+  The bundles are thin: they need the GitHub history already cloned.
+- `*_stash_N.patch`: the stashes (3 bim-compiler, 13 bim-ootb), in `git stash list` order. Apply with `git apply`.
+- `*_untracked.tar.gz`: untracked files (bim-compiler: scripts/film_replication_engine/, witness_scriptor_scale.js, build traces).
+- `bim-compiler_worktree_dirty.diff`, `wt_wt-bd.diff`, `wt_wt-bc-integ.diff`: uncommitted edits in the checkout and the live /tmp worktrees.
+Some bundled branches may already be squash-merged to master/main; compare before reusing.
+
 NOT backed up (too big or regenerable): ~/Projects/ThaiGoldPawn (1.6 GB), halal working files (1.5 GB),
 BIM_DB (2.5 GB), internal/UNMERGED (1.4 GB), internal/sources, library/archive (incl. 590 MB sandbox_1M),
 output/archive, logs/, venvs, node_modules. The big building DBs already live in the main OCI buckets.
@@ -63,7 +73,7 @@ NOT included on purpose: ~/.oci keys, SSH keys, gh auth. red1 supplies those sep
 
 ## KNOWN GAPS (snapshot 2026-10-28). Work NOT on GitHub; do not assume it is there
 The Victus had ~33 bim-compiler and ~37 bim-ootb commits on branches with no remote ref
-(some may be squash-merged, some are real). Examples: backup/ninja-xtab2-pre-scrub,
+(now bundled to OCI; some may be squash-merged, some are real). Examples: backup/ninja-xtab2-pre-scrub,
 resolve/pr91-merge, docs/ninja-excel-report-manual, fix/erp-seed-forms-valrules,
 fix/disc-walker-path-legal-*, feat/erp-parity-p2p1-docs (bim-compiler);
 demo/parts-combined, dxf2bim-l15-complete, feat/occupant-pathfinder,
@@ -72,7 +82,7 @@ Also untracked on the Victus: scripts/film_replication_engine/, scripts/witness_
 and 16 stashes across the two repos.
 Outside git: ~/Projects/{Dubai, ThaiGoldPawn, halal, BIM_DB, red1_plugins}. halal has 2 commits, no remote.
 The local DBs that had no OCI copy are now in the OCI BACKUP above.
-Unpushed git branches are still NOT backed up unless red1 says they were pushed.
+Unpushed branches and stashes are backed up as git bundles/patches (see Git state above), NOT pushed to GitHub.
 If something the docs mention is missing, say so plainly. Do not recreate, invent or guess it.
 Ask red1 whether the Victus is reachable. red1 may have closed some gaps since; ask first.
 Update or delete this section once the gaps are closed.
