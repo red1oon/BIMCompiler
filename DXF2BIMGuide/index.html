@@ -3377,8 +3377,8 @@ office, the cut, the roles, the plan levels and the roof tops read from the titl
 <tr>
 <td><code>@Z</code></td>
 <td>a level datum on an elevation or section: a height in metres at a drawing y</td>
-<td>level texts paired with their level lines; else the heavy ground line as z 0</td>
-<td>accept; a second datum: type its height, and <strong>Pick</strong> its line on the sheet (or type its drawing y; see the shed)</td>
+<td>level texts paired with their level lines; else the heavy ground line as z 0; the second height from the drawing's own vertical dimension (orange: a dimension the CAD measured, not typed over, at dimension scale 1)</td>
+<td>accept; only where no such dimension exists: type the height and <strong>Pick</strong> its line on the sheet (see the shed)</td>
 </tr>
 <tr>
 <td><code>@GRIDX</code> / <code>@GRIDY</code> / <code>@GRIDH</code></td>
@@ -3712,6 +3712,13 @@ building is made of <strong>bodies</strong> read from layers you type, not of wa
    Each typed y lay 24.0 in (within 0.02 in) above the ground line the editor had already accepted as z 0, so the
    value you type is the plinth height; the y only places it.</li>
 </ol>
+<p><strong>Since 2026-10-29 the shed asks for none of these heights.</strong> Its elevations and section carry vertical dimensions
+   that BricsCAD measured itself (not typed over), and the file's dimension scale is 1: that shows each sheet is drawn
+   at full size, so the second height is read from the longest such dimension (<em>Second heights from the drawing's
+   dimensions</em>, an orange row: check it, then <strong>Accept all</strong> takes it). Measured: the 5 read heights build the same
+   445 bodies as the 5 typed ones (worst difference 0.000 mm). A typed-over dimension (this set has <code>8'</code>, <code>16'-0"</code>,
+   <code>410'-0"</code> and <code>8"</code> written over the measurement) is never used. A sheet with no such dimension, or whose dimension
+   scale is not 1 (a reduced-scale sheet), still asks, as below.</p>
 <p><strong>Pick instead of typing the y:</strong> press <strong>Pick</strong> beside the height field. The sheet opens around its known datum;
    a dashed line follows the pointer and snaps to a drawn horizontal line, its label giving the y and the drawn
    distance from the known datum (<code>24.00 in above @Z=0</code>: a measurement shown, the height is still yours to type).
