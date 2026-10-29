@@ -275,6 +275,23 @@ downloads `<name>_extracted.db`. Open that file in the **Viewer** (**Open → lo
 
 ---
 
+### 7 · Load Summary (for your structural engineer)
+**Export ▸ Load Summary…** opens a report in a new tab: *what your drawings tell the structural engineer. Not a design check.*
+
+- **Own weight by part**: every converted part weighed from its drawn size and material, with the unit weight it used and where that comes from
+  (BNBC 2012 Part 6 Ch 2, Tables 2.2.1 / 2.2.2: concrete 22.8 kN/m³ + 0.63 per 1 % reinforcement, brick 18.9, steel 77.0, galvanized roof sheeting 0.096 kN/m² for 0.8 mm).
+  Green = a cited table value, amber = a best-effort default to confirm (the reinforcement percentage and the roof sheet thickness are not drawn).
+- **Load on each footing**: each part goes once to the nearest footing in plan; a ground-floor slab bears on the ground. The pressure on the soil is shown;
+  the soil's capacity is a red field until a soil report gives it.
+- **Shape for wind and earthquake**: length, width, eave and ridge height, roof slope, read from the model.
+- **What only you can state** (red, never guessed): fan, door and netting weights, the size of members the drawing does not size, the site district, the soil capacity.
+- **Inputs**: edit the values and facts on the page and press **Apply** to recompute; **Download inputs** keeps them; to keep a value with the drawings,
+  state it in the Modeller as `@DEFAULT=<key>,<value>`. **Print / Save as PDF** for the engineer.
+
+On the farm shed: 5,352 kN of own weight from 389 parts (546 t), 1,815 kN on the 32 footings, 3,537 kN of ground slab on the ground; the heaviest footing
+carries 246 kN (133 kPa); 123 parts are listed as not weighed (103 members the drawing does not size, 13 fans, 4 doors, 3 nettings).
+It does not compute live load, wind, earthquake or member strength: those need the stated site, soil and an engineer's analysis.
+
 ### If something goes wrong
 | What you see | Why | What to do |
 |---|---|---|

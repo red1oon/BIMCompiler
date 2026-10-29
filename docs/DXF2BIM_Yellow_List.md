@@ -81,6 +81,11 @@ A 2D drawing carries only some of what a model needs. Everything it does not sta
 | `window.height` | IfcWindow | m | **1.2** | guess | typical window height | 1, 1.2, 1.5 |
 | `window.sill` | IfcWindow | m | **0.9** | guess | typical sill height above the floor | 0.9, 1, 1.1 |
 | `window.width` | IfcWindow | m | **1.2** | guess | typical window width; used when a plan symbol gives no width | 0.9, 1.2, 1.5 |
+| `load.rc_steel_percent` | load | % by volume | **1** | guess | main reinforcement not drawn; BNBC 2012 Table 2.2.1 note: "for reinforced concrete, add 0.63 kN/m3 for each 1% by volume of main reinforcement" | 0.5, 1, 1.5, 2, 3 |
+| `load.roof_sheet` | load | kN/m2 | **0.096** | guess | sheet thickness not drawn; BNBC 2012 Part 6 Ch 2 Table 2.2.2 "Steel, galvanized std. corrugated sheeting (incl. lap and fastenings) 0.8 mm thick 0.096" | 0.077, 0.096, 0.12 |
+| `load.unit_weight.brick` | load | kN/m3 | **18.9** | std | BNBC 2012 Part 6 Ch 2 Table 2.2.1: "Brick 18.9" (modeller/reference/BNBC2012_P6C2_dead_load_tables.txt) |  |
+| `load.unit_weight.concrete` | load | kN/m3 | **22.8** | std | BNBC 2012 Part 6 Ch 2 Table 2.2.1: "Concrete - stone aggregate (unreinforced) 22.8" (modeller/reference/BNBC2012_P6C2_dead_load_tables.txt) |  |
+| `load.unit_weight.steel` | load | kN/m3 | **77** | std | BNBC 2012 Part 6 Ch 2 Table 2.2.1: "Steel 77.0" (modeller/reference/BNBC2012_P6C2_dead_load_tables.txt) |  |
 
 Rule of resolution, strongest first: the drawing set's `@DEFAULT` marking → a choice made in the editor → the building type's cited override → the registry value above. A typo in a key is an error, never a silent default; a value that is not a non-negative number is refused and the default is used.
 
