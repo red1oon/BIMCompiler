@@ -176,7 +176,7 @@ office, the cut, the roles, the plan levels and the roof tops read from the titl
 | `@UNITS` | drawing units | the file header (`$INSUNITS`), shown as yellow | accept |
 | `@LEVEL` | a plan's storey level, metres | the plan title (`LEVEL 2 PLAN (FFL +3.100)` → 3.1) | accept; type it only when no title states it |
 | `@ROOF` | the roof top, metres | a roof-top text on the sheet (`T/ROOF +6.457`, `TOP OF ROOF ...`); two different values on one sheet are not proposed | accept; type it where no text states it |
-| `@Z` | a level datum on an elevation or section: a height in metres at a drawing y | level texts paired with their level lines; else the heavy ground line as z 0 | accept; a second datum: type its height, and **Pick** its line on the sheet (or type its drawing y; see the shed) |
+| `@Z` | a level datum on an elevation or section: a height in metres at a drawing y | level texts paired with their level lines; else the heavy ground line as z 0; the second height from the drawing's own vertical dimension (orange: a dimension the CAD measured, not typed over, at dimension scale 1) | accept; only where no such dimension exists: type the height and **Pick** its line on the sheet (see the shed) |
 | `@GRIDX` / `@GRIDY` / `@GRIDH` | which grid label sits on which line | grid lines with their labels, or dimension ticks | accept |
 | `@FACE` | which side of the building an elevation shows | the sheet name or title (FRONT, LEFT, SOUTH...) | accept |
 | `@HAXIS` | which plan axis runs left to right on an elevation | fitted to the plan grid after the plan levels exist | accept (round 4) |
@@ -363,6 +363,14 @@ building is made of **bodies** read from layers you type, not of walls and slabs
    `-4446.6`, read in the CAD program). That is 10 typed values for the datums.
    Each typed y lay 24.0 in (within 0.02 in) above the ground line the editor had already accepted as z 0, so the
    value you type is the plinth height; the y only places it.
+
+   **Since 2026-10-29 the shed asks for none of these heights.** Its elevations and section carry vertical dimensions
+   that BricsCAD measured itself (not typed over), and the file's dimension scale is 1: that shows each sheet is drawn
+   at full size, so the second height is read from the longest such dimension (*Second heights from the drawing's
+   dimensions*, an orange row: check it, then **Accept all** takes it). Measured: the 5 read heights build the same
+   445 bodies as the 5 typed ones (worst difference 0.000 mm). A typed-over dimension (this set has `8'`, `16'-0"`,
+   `410'-0"` and `8"` written over the measurement) is never used. A sheet with no such dimension, or whose dimension
+   scale is not 1 (a reduced-scale sheet), still asks, as below.
 
    **Pick instead of typing the y:** press **Pick** beside the height field. The sheet opens around its known datum;
    a dashed line follows the pointer and snaps to a drawn horizontal line, its label giving the y and the drawn
