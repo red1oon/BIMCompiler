@@ -9,7 +9,7 @@ var path = require('path'), fs = require('fs'), os = require('os'), cp = require
 var initSqlJs = require('sql.js');
 var ROOT = path.join(__dirname, '..'), B = process.env.CV_COMM_DIR || path.join(ROOT, 'build', 'comm');
 var STORE = require(path.join(B, 'comm_store.js')), PIPE = require(path.join(B, 'comm_pipe.js')), ENV = require(path.join(B, 'comm_envelope.js'));
-var OPV = require(path.join(ROOT, 'build', 'erp', 'op_versions.js'));
+var OPV = require(path.join(process.env.CV_OPV_DIR || path.join(ROOT, 'build', 'erp'), 'op_versions.js'));
 var AD = require(path.join(ROOT, 'build', 'erp', 'ad_access.js')), Better = require('better-sqlite3');
 var ADDB = new Better(path.join(ROOT, 'build', 'erp', 'ad_full.db'), { readonly: true }), roles = {};
 function access(roleId, client, org, table) {
@@ -115,9 +115,13 @@ var update = function (s, u, changes, sv) { return s.author({ target: { table: '
   check('C5', 'min_v:{CRUD_CREATE:"x"} is REFUSED bad-policy:min_v; a non-admin POLICY with min_v is REFUSED not-admin; no policy took effect', vBad === 'REFUSED:bad-policy:min_v' && vNon === 'REFUSED:not-admin' && polNow === null, vBad + ' | ' + vNon + ' | policy=' + (polNow && polNow.epoch));
   var pOk = await S.A.setPolicy(pol({ epoch: 1, min_v: { CRUD_CREATE: 2 } })); await allSync(S, names, pipe);
   var after = []; for (var m6 of names) after.push([tag(await vd(S[m6], legacyKeep.hash)), tag(await vd(S[m6], o2.hash)), tag(await vd(S[m6], o1.hash))]);
-  check('C5', 'after the admin POLICY every device REFUSES the v1 create `retired-version` (identical on all three)', after.every(function (x) { return x[0] === 'REFUSED:retired-version' && x[2] === 'REFUSED:retired-version'; }), after.map(function (x) { return x[0]; }).join(' | '));
+  // §46.6 S1+S2 — DELIBERATE CHANGE to this arm (was: every device REFUSES the v1 create `retired-version`; the edit reading it was REFUSED dep-refused). The floor is POSITION-BOUND and below it is a PARK, never a refusal:
+  //   these ops were authored and SEEN by the publisher before the raise, so the raise does not touch them (they keep the verdict they had), on every device.
+  check('C5', 'after the admin POLICY the v1 create the publisher had already SEEN stays MERGED on all three devices (position-bound floor; was REFUSED retired-version)', after.every(function (x) { return x[0].indexOf('MERGED') === 0 && x[2].indexOf('MERGED') === 0; }), after.map(function (x) { return x[0]; }).join(' | '));
   var depR = []; for (var m7 of names) depR.push(tag(await vd(S[m7], legacyUpd.hash)));
-  check('C5', 'the edit authored before the retirement, which READS the retired create, is REFUSED dep-refused on all three', depR.every(function (x) { return x === 'REFUSED:dep-refused'; }), depR.join(' | '));
+  check('C5', 'and so does the edit authored before the raise that READS that create (was REFUSED dep-refused)', depR.every(function (x) { return x.indexOf('MERGED') === 0; }), depR.join(' | '));
+  var allV5 = []; for (var m8 of names) { var L5 = await S[m8].order(); Object.keys(L5.verdict).forEach(function (h) { allV5.push(L5.verdict[h]); }); }
+  check('C5', 'NO op on any device is REFUSED retired-version or dep-refused after the raise (a floor never refuses for age)', allV5.length > 0 && allV5.every(function (v) { return v.reason !== 'retired-version' && v.reason !== 'dep-refused'; }), 'judged=' + allV5.length);
   check('C5', 'the native v2 create still MERGES', after.every(function (x) { return x[1].indexOf('MERGED') === 0; }), after.map(function (x) { return x[1]; }).join(' | '));
   var pLow = await S.A.setPolicy(pol({ epoch: 2, min_v: { CRUD_CREATE: 1 } })); await allSync(S, names, pipe); var vLow0 = tag(await vd(S.C, pLow.hash)); var pHi = await S.A.setPolicy(pol({ epoch: 3, min_v: { CRUD_CREATE: 3 } })); await allSync(S, names, pipe);
   var vLow = tag(await vd(S.B, pLow.hash)), vHi = tag(await vd(S.B, pHi.hash)), polFinal = await S.C.policy();
@@ -174,6 +178,98 @@ var update = function (s, u, changes, sv) { return s.author({ target: { table: '
   var pipe8b = PIPE.memPipe('c8b'), W8b = await mkSpace(SQL, ['A', 'B'], pipe8b), plain = await W8b.S.A.setPolicy(pol8({ epoch: 1 })); await allSync(W8b.S, ['A', 'B'], pipe8b);
   check('C8', 'CONTROL: a POLICY with no `upcasters` at all is MERGED as before and carries none', tag(await vd(W8b.S.B, plain.hash)).indexOf('MERGED') === 0 && (await W8b.S.B.policy()).params.upcasters === undefined);
 
+  // ───────── C9 / C10: Stage 1 of §46.6 (S1 position-bound floor, S2 park never refuse) ─────────
+  // Three devices: A = admin, appV 2 + the signed set (can translate); B = the till, appV 1 (writes shape 1); C = head office WITHOUT the set (cannot translate yet): appV 2 in C9/C10, appV 1 in C11.
+  var ROSTER = require(path.join(B, 'comm_roster.js'));
+  var base9 = function () { return { epoch: 1, visit_ms: 900000, min_v: { CRUD_CREATE: 2 } }; };
+  async function mk3(tag3, cAppV) { var pp = PIPE.memPipe(tag3), nn = ['A', 'B', 'C'], RR = { A: await regLoaded(2), B: await regLoaded(1), C: reg(cAppV || 2) };
+    var WW = await mkSpace(SQL, nn, pp, function (n) { return { versions: RR[n] }; }); return { pipe: pp, names: nn, R: RR, W: WW, S: WW.S }; }
+  say('\n── C9: the floor is judged at the op\'s position; below it an op is PARKED needs-translation, never REFUSED ──');
+  var X9 = await mk3('c9'), S9 = X9.S;
+  var pre9 = await create(S9.B, uuid(), 'PRE9', { grandtotal: 10 });                       // v1, reaches the publisher BEFORE the raise
+  await allSync(S9, X9.names, X9.pipe);
+  var late9 = await create(S9.B, uuid(), 'LATE9', { grandtotal: 20 });                     // v1, authored offline: the publisher has NOT seen it
+  var lateEd9 = await update(S9.B, late9.env.target.uu, { documentno: 'LATE9b' });          // an edit that READS the late create
+  var raise9 = await S9.A.setPolicy(base9());
+  await allSync(S9, X9.names, X9.pipe);
+  var T9 = {}; for (var n9 of X9.names) T9[n9] = [tag(await vd(S9[n9], pre9.hash)), tag(await vd(S9[n9], late9.hash)), tag(await vd(S9[n9], lateEd9.hash))];
+  var rst9 = (await S9.B.order()).roster, kidB = X9.W.dev.B.kid, mvPre = rst9.minVAt ? rst9.minVAt(kidB, pre9.env.seq) : 'no-minVAt', mvLate = rst9.minVAt ? rst9.minVAt(kidB, late9.env.seq) : 'no-minVAt';
+  check('C9', 'roster.minVAt: the raise does NOT cover the op the publisher had seen (seq ' + pre9.env.seq + ') and DOES cover the one it had not (seq ' + late9.env.seq + ')', mvPre && mvPre.CRUD_CREATE === undefined && mvLate && mvLate.CRUD_CREATE === 2, JSON.stringify(mvPre) + ' / ' + JSON.stringify(mvLate));
+  check('C9', 'B (appV 1): the op the publisher had SEEN stays MERGED natively; the late op is PARKED needs-translation (not REFUSED); the edit that reads it is PARKED deps', T9.B[0].indexOf('MERGED') === 0 && T9.B[1] === 'PARKED:needs-translation' && T9.B[2] === 'PARKED:deps', T9.B.join(' | '));
+  check('C9', 'A (appV 2 + the signed set): all three MERGE (the late op folds THROUGH the translation)', T9.A.every(function (x) { return x.indexOf('MERGED') === 0; }), T9.A.join(' | '));
+  check('C9', 'C (appV 2, no set): the seen op is PARKED needs-mapping (above the floor at its position, a rung is missing), the late op PARKED needs-translation, the edit PARKED deps', T9.C[0] === 'PARKED:needs-mapping' && T9.C[1] === 'PARKED:needs-translation' && T9.C[2] === 'PARKED:deps', T9.C.join(' | '));
+  var ref9 = 0; for (var q9 of X9.names) { var L9 = await S9[q9].order(); Object.keys(L9.verdict).forEach(function (h) { if (L9.verdict[h].reason === 'retired-version' || L9.verdict[h].reason === 'dep-refused') ref9++; }); }
+  check('C9', 'NO op on any device is REFUSED retired-version / dep-refused (0 business declarations lost to the floor)', ref9 === 0, 'refused=' + ref9);
+
+  say('\n── C10: a translation set is loaded: the parked late ops fold, every device agrees, nothing was lost ──');
+  var stC0 = await S9.C.versionState();
+  check('C10', 'BEFORE the translation: C is provisional with needs-translation counted (the UI says "N items need an update", not a spinner)', stC0.provisional === true && stC0.parked_by_reason['needs-translation'] === 1, JSON.stringify(stC0));
+  var ld = await X9.R.C.loadSet(SET); refold(S9.C); X9.R.B.setApp('CRUD_CREATE', 2); await X9.R.B.loadSet(SET); refold(S9.B); await allSync(S9, X9.names, X9.pipe);
+  var T10 = {}; for (var n10 of X9.names) T10[n10] = [tag(await vd(S9[n10], pre9.hash)), tag(await vd(S9[n10], late9.hash)), tag(await vd(S9[n10], lateEd9.hash))];
+  check('C10', 'after the set is loaded the late op, the seen op and the edit are MERGED on A, B and C (the parked op FOLDED, none lost)', ld.ok && X9.names.every(function (n) { return T10[n].every(function (x) { return x.indexOf('MERGED') === 0; }); }), X9.names.map(function (n) { return n + ':' + T10[n].join(','); }).join(' | '));
+  var bodies10 = []; for (var n11 of X9.names) bodies10.push(ENV.canonical((await S9[n11].foldable()).map(function (p) { return p.env.body; })));
+  check('C10', 'A, B and C hand the host byte-identical bodies (the translated late op is the same everywhere)', bodies10[0] === bodies10[1] && bodies10[1] === bodies10[2] && bodies10[0].length > 0, 'len=' + bodies10[0].length);
+  var stC1 = await S9.C.versionState();
+  check('C10', 'C is no longer provisional (parked_count 0)', stC1.provisional === false && stC1.parked_count === 0, JSON.stringify(stC1));
+
+  // ───────── C11: S3 checkpoints over parked ops ─────────
+  say('\n── C11: a parked old-version op holds only its own author out of a checkpoint; a co-signer that cannot translate WAITS, never BAD ──');
+  var X11 = await mk3('c11', 1), S11 = X11.S, kid11B = X11.W.dev.B.kid, kid11A = X11.W.dev.A.kid;
+  var pre11 = await create(S11.B, uuid(), 'PRE11', { grandtotal: 1 }); await allSync(S11, X11.names, X11.pipe);
+  var l11a = await create(S11.B, uuid(), 'LATE11A', { grandtotal: 2 }), l11b = await create(S11.B, uuid(), 'LATE11B', { grandtotal: 3 });
+  var y11 = await create(S11.A, uuid(), 'Y11', { grandtotal: 4 });                          // a v1 op by ANOTHER author, authored before the raise (so C reads it natively): it must not wait for B's parked ops
+  await S11.A.setPolicy(base9()); await allSync(S11, X11.names, X11.pipe, 4);
+  var stC = await S11.C.versionState();
+  var ck1 = await S11.C.checkpoint(X11.pipe); await allSync(S11, X11.names, X11.pipe, 4);
+  var fr1 = ck1 && ck1.state_hash ? ((await S11.C.order()).roster.checkpoints[ck1.state_hash] || { params: {} }).params.frontier : null, inf1 = await S11.C.checkpointInfo();
+  if (!ck1 || !ck1.state_hash) vacuous('C11', 'C could not publish a checkpoint while holding parked ops', JSON.stringify(ck1));
+  check('C11', 'C (cannot translate) PUBLISHES a checkpoint although two of B\'s ops are parked: the other authors are not stalled', !!(ck1 && ck1.state_hash) && !!fr1 && fr1[kid11A] >= y11.env.seq, JSON.stringify(ck1).slice(0, 90) + ' frontier=' + JSON.stringify(fr1));
+  check('C11', 'its frontier for B stops BEFORE the first parked op (the hold is per author: B ends at seq ' + pre11.env.seq + ', the first parked op is ' + l11a.env.seq + ')', !!fr1 && fr1[kid11B] === pre11.env.seq, 'B=' + (fr1 && fr1[kid11B]));
+  check('C11', 'checkpointInfo().held names the held author, its first held seq and the reason (what the Rollout screen will read)', Array.isArray(inf1.held) && inf1.held.some(function (h) { return h.author === kid11B && h.seq === l11a.env.seq && h.reason === 'needs-translation'; }), JSON.stringify(inf1.held));
+  var cs = await S11.A.cosign(); await allSync(S11, X11.names, X11.pipe, 4); var infA1 = await S11.A.checkpointInfo(), infC1 = await S11.C.checkpointInfo();
+  check('C11', 'A (can translate) co-signs it; the checkpoint is in force on A and on C', cs.length === 1 && !!infA1.inForce && !!infC1.inForce && infA1.inForce.state_hash === infC1.inForce.state_hash, 'A=' + (infA1.inForce && infA1.inForce.pos) + ' C=' + (infC1.inForce && infC1.inForce.pos));
+  var ck2 = await S11.A.checkpoint(X11.pipe); await allSync(S11, X11.names, X11.pipe, 4);
+  var fr2 = ck2 && ck2.state_hash ? ((await S11.A.order()).roster.checkpoints[ck2.state_hash] || { params: {} }).params.frontier : null, infC2 = await S11.C.checkpointInfo();
+  var st2C = ck2 && ck2.state_hash ? (infC2.candidates.filter(function (c) { return c.state_hash === ck2.state_hash; })[0] || {}).status : null;
+  check('C11', 'A (can translate) then checkpoints PAST the late ops (frontier for B = seq ' + l11b.env.seq + ')', !!fr2 && fr2[kid11B] === l11b.env.seq, JSON.stringify(ck2).slice(0, 90) + ' B=' + (fr2 && fr2[kid11B]));
+  check('C11', 'C cannot translate yet: it WAITS on that checkpoint (WAITING-VERSION), it does not condemn it (BAD is persisted for good), and still runs on the earlier one', st2C === 'WAITING-VERSION' && infC2.candidates.every(function (c) { return c.status !== 'BAD'; }) && !!infC2.inForce, 'status=' + st2C + ' all=' + infC2.candidates.map(function (c) { return c.status; }).join(','));
+  X11.R.C.setApp('CRUD_CREATE', 2); await X11.R.C.loadSet(SET); refold(S11.C); await allSync(S11, X11.names, X11.pipe, 4); await S11.C.cosign(); await allSync(S11, X11.names, X11.pipe, 4);
+  var infC3 = await S11.C.checkpointInfo(), infA3 = await S11.A.checkpointInfo();
+  check('C11', 'once C loads the translation it verifies that checkpoint by its own fold and takes it into force: same state as A, nothing BAD, no author held', !!infC3.inForce && !!infA3.inForce && infC3.inForce.state_hash === ck2.state_hash && infA3.inForce.state_hash === ck2.state_hash && infC3.candidates.every(function (c) { return c.status !== 'BAD'; }) && (infC3.held || []).length === 0, 'C=' + (infC3.inForce && infC3.inForce.state_hash.slice(0, 8)) + ' A=' + (infA3.inForce && infA3.inForce.state_hash.slice(0, 8)) + ' held=' + JSON.stringify(infC3.held));
+
+  say('\n── C11b: a later floor raise may not re-judge an op inside a closed checkpoint prefix ──');
+  var p11 = PIPE.memPipe('c11b'), n11b = ['A', 'B'], R11b = { A: await regLoaded(1), B: await regLoaded(1) };
+  var W11b = await mkSpace(SQL, n11b, p11, function (n) { return { versions: R11b[n] }; }), S11b = W11b.S;
+  var pre11b = await create(S11b.B, uuid(), 'PRE11B', { grandtotal: 1 }); await allSync(S11b, n11b, p11);
+  var ckb = await S11b.A.checkpoint(p11); await allSync(S11b, n11b, p11, 3); await S11b.B.cosign(); await allSync(S11b, n11b, p11, 3);
+  var infB0 = await S11b.A.checkpointInfo(), vPre0 = tag(await vd(S11b.A, pre11b.hash));
+  var polU = await ROSTER.policyUU(W11b.space);
+  await S11b.A.author({ target: { table: 'comm_policy', uu: polU }, body: { op_type: 'POLICY', params: base9() } });       // an UNSTAMPED raise (no from_seq): it covers every op, including the closed prefix
+  await allSync(S11b, n11b, p11, 3);
+  var infB1 = await S11b.A.checkpointInfo(), vPre1 = tag(await vd(S11b.A, pre11b.hash)), vPre1B = tag(await vd(S11b.B, pre11b.hash));
+  check('C11b', 'CONTROL: the checkpoint is in force and the op is MERGED before the raise', !!ckb.state_hash && !!infB0.inForce && vPre0.indexOf('MERGED') === 0, 'inForce=' + !!infB0.inForce + ' ' + vPre0);
+  check('C11b', 'an unstamped raise that WOULD re-judge an op inside the prefix is not trusted: the checkpoint falls out of force and both devices re-fold the op under the floor (PARKED needs-translation), identically', !infB1.inForce && vPre1 === 'PARKED:needs-translation' && vPre1B === vPre1, 'inForce=' + !!infB1.inForce + ' A:' + vPre1 + ' B:' + vPre1B);
+
+  // ───────── C12: S5 tolerant write (F10) ─────────
+  say('\n── C12: an old device cannot drop a field it does not know, and a record it cannot fully read is READ-ONLY on it (D10) ──');
+  var p12 = PIPE.memPipe('c12'), n12 = ['A', 'B'], R12 = { A: await regLoaded(1), B: await regLoaded(2) };                  // A = the OLD device
+  var W12 = await mkSpace(SQL, n12, p12, function (n) { return { versions: R12[n] }; }), S12 = W12.S;
+  var r1 = await create(S12.B, uuid(), 'R1', { total: 5, zz_new: 'keep-me' });                       // a field A's shape has never heard of
+  var r2 = await create(S12.B, uuid(), 'R2', { total: 6 }, 2);                                       // a v2 record: A parks it
+  await allSync(S12, n12, p12);
+  var up1 = await update(S12.A, r1.env.target.uu, { documentno: 'R1-edited' }); await allSync(S12, n12, p12);
+  var f12 = (await S12.B.foldable()).filter(function (x) { return x.env.target.uu === r1.env.target.uu; });
+  check('C12', 'the old device\'s save of a readable record is a DELTA: its op carries only the edited column, so the field it does not know (zz_new) is untouched on every device', Object.keys(up1.env.body.params.changes).join() === 'documentno' && f12.length === 2 && f12[0].env.body.params.fields.zz_new === 'keep-me', 'changes=' + Object.keys(up1.env.body.params.changes).join() + ' ops=' + f12.length);
+  var n12before = W12.dbs.A.exec('SELECT COUNT(*) FROM cl_op')[0].values[0][0], thrown12 = null;
+  try { await update(S12.A, r2.env.target.uu, { documentno: 'R2-edited' }); } catch (e) { thrown12 = e; }
+  var n12after = W12.dbs.A.exec('SELECT COUNT(*) FROM cl_op')[0].values[0][0];
+  check('C12', 'the old device\'s save of a record whose history it has PARKED is refused locally with needs-upgrade (read-only, D10) and writes NO op', !!thrown12 && thrown12.code === 'needs-upgrade' && n12before === n12after, 'thrown=' + (thrown12 && (thrown12.code || thrown12.message)) + ' ops ' + n12before + '->' + n12after);
+  R12.A.setApp('CRUD_CREATE', 2); await R12.A.loadSet(SET); refold(S12.A);
+  var up2 = null, e12 = null; try { up2 = await update(S12.A, r2.env.target.uu, { documentno: 'R2-edited' }); } catch (e) { e12 = e; }
+  check('C12', 'after the old device upgrades, the same save succeeds', !!up2 && !e12, e12 ? e12.message : 'ok');
+  var up0 = null, e0 = null; try { up0 = await update(W1.S.A, uA, { documentno: 'C1-edit' }); } catch (e) { e0 = e; }
+  check('C12', 'CONTROL: a store opened WITHOUT `versions` is unchanged: it saves a record carrying sv:2 as before', !!up0 && !e0, e0 ? e0.message : 'ok');
+
   // ───────── verdict ─────────
   var red = Object.keys(ARMS).filter(function (k) { return ARMS[k].bad > 0; }), inc = Object.keys(ARMS).filter(function (k) { return ARMS[k].vac > 0; });
   console.log('§CV_ARMS red=' + (red.join(',') || 'none') + ' vacuous=' + (inc.join(',') || 'none') + ' judged=' + JUDGED);
@@ -185,25 +281,39 @@ var update = function (s, u, changes, sv) { return s.author({ target: { table: '
     var M = [
       ['verdict hook removed', 'comm_store.js', "if (opts.versions && verdict[o.hash].verdict === 'MERGED') {", "if (false && verdict[o.hash].verdict === 'MERGED') {", ['C2', 'C4', 'C7']],
       ['foldable() does not upcast', 'comm_store.js', 'if (opts.versions) p = { hash: p.hash,', 'if (false) p = { hash: p.hash,', ['C3']],
-      ['min_v not taken from POLICY', 'comm_store.js', 'opts.versions.judge(o.env.body, roster.policy ? roster.policy.params : null)', 'opts.versions.judge(o.env.body, null)', ['C5']],
+      ['min_v not taken from POLICY', 'comm_store.js', 'opts.versions.judge(o.env.body, roster.minVAt ? { min_v: roster.minVAt(o.env.author, o.env.seq) } : (roster.policy ? roster.policy.params : null))', 'opts.versions.judge(o.env.body, null)', ['C9']],       // §46.6: was expected red in C5 (REFUSED retired-version); C5 no longer refuses, the floor now shows in C9
       ['the hook overwrites ANY verdict (un-refuses)', 'comm_store.js', "verdict[o.hash].verdict === 'MERGED') { var vj", "true) { var vj", ['C6']],
       ['a lower min_v is accepted', 'comm_roster.js', 'if (policy && policy.params.min_v && Object.keys(', 'if (false && policy.params.min_v && Object.keys(', ['C5']],
       ['a prefix the app cannot read is condemned BAD for good', 'comm_store.js', "if (r.problem === 'parked-in-S' && r.versioned) {", "if (false) {", ['C7']],
       ['upcasters are not validated', 'comm_roster.js', 'if (p.upcasters !== undefined) {', 'if (false) {', ['C8']],
       ['a later epoch may drop a set', 'comm_roster.js', "return no('upcasters-dropped');", 'void 0;', ['C8']],
-      ['min_v is not validated', 'comm_roster.js', 'if (p.min_v !== undefined) { if (!p.min_v ||', 'if (false) { if (!p.min_v ||', ['C5']]];
+      ['min_v is not validated', 'comm_roster.js', 'if (p.min_v !== undefined) { if (!p.min_v ||', 'if (false) { if (!p.min_v ||', ['C5']],
+      // §46.6 Stage 1 mutants
+      ['the floor is judged by the FINAL policy again (not at the op\'s position)', 'comm_store.js', 'roster.minVAt ? { min_v: roster.minVAt(o.env.author, o.env.seq) } : (', 'false ? { min_v: roster.minVAt(o.env.author, o.env.seq) } : (', ['C9']],
+      ['minVAt ignores the position (every raise covers every op)', 'comm_roster.js', 'if ((e.from[kid] || 0) < seq) Object.keys(e.min_v)', 'if (true) Object.keys(e.min_v)', ['C9']],
+      ['a raise is published without the publisher\'s frontier', 'comm_store.js', '(params.from_seq === undefined || (cp0 &&', '(false && (cp0 &&', ['C9']],
+      ['a below-floor op is REFUSED retired-version again', 'op_versions.js', "(why || v >= (appVs[t] || 1))) return { verdict: 'PARKED', reason: 'needs-translation' };", "(why || v >= (appVs[t] || 1))) return { verdict: 'REFUSED', reason: 'retired-version' };", ['C9', 'C10']],
+      ['a below-floor op never folds through a loaded translation', 'op_versions.js', 'if (below && (why || v >= (appVs[t] || 1)))', 'if (below)', ['C9', 'C10']],
+      ['needs-translation is not a version-wait reason (held, provisional, checkpoint wait, read-only)', 'comm_store.js', "'needs-mapping': 1, 'needs-translation': 1 };", "'needs-mapping': 1 };", ['C11']],
+      ['a parked op counts as decided (it no longer holds its author out of the checkpoint)', 'comm_store.js', "return !!v && (v.verdict === 'MERGED' || v.verdict === 'REFUSED'); };", "return !!v && (v.verdict === 'MERGED' || v.verdict === 'REFUSED' || v.verdict === 'PARKED'); };", ['C11']],
+      ['a floor raise may re-judge an op inside a closed checkpoint prefix', 'comm_roster.js', "!== ENV.canonical(ra.minVAt ? ra.minVAt(fk, Number(fq)) : {})) return 'floor-changed';", "!== ENV.canonical(ra.minVAt ? ra.minVAt(fk, Number(fq)) : {})) void 0;", ['C11b']],
+      ['a record with parked history is writable on the old device', 'comm_store.js', 'if (opts.versions && !ident) { var unr = await unreadable()', 'if (false && !ident) { var unr = await unreadable()', ['C12']]];
     M.forEach(function (m) {
-      var src = rd(m[1]); if (src.split(m[2]).length !== 2) { muts.push({ name: m[0], error: 'anchor not found exactly once in ' + m[1] }); return; }
-      var dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cv-mut-')); fs.readdirSync(B).filter(function (f) { return /\.js$/.test(f); }).forEach(function (f) { fs.copyFileSync(path.join(B, f), path.join(dir, f)); });
-      fs.writeFileSync(path.join(dir, m[1]), src.replace(m[2], m[3]));
-      var k = cp.spawnSync(process.execPath, [__filename], { encoding: 'utf8', timeout: 400000, env: Object.assign({}, process.env, { CV_COMM_DIR: dir, CV_ONLY_ARMS: '1' }) });
-      fs.rmSync(dir, { recursive: true, force: true }); var mm = /§CV_ARMS red=(\S+)/.exec(k.stdout || ''); var r = mm && mm[1] !== 'none' ? mm[1].split(',') : (mm ? [] : ['CRASH']);   // a mutant that crashes the fold before the verdict line is killed too, loudly
+      var isOpv = m[1] === 'op_versions.js', srcDir = isOpv ? (process.env.CV_OPV_DIR || path.join(ROOT, 'build', 'erp')) : B;
+      var src = fs.readFileSync(path.join(srcDir, m[1]), 'utf8'); if (src.split(m[2]).length !== 2) { muts.push({ name: m[0], error: 'anchor not found exactly once in ' + m[1] }); return; }
+      var mutated = src.replace(m[2], function () { return m[3]; }); if (mutated === src) { muts.push({ name: m[0], error: 'mutation did not change the file (not applied)' }); return; }
+      var dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cv-mut-')), env2 = Object.assign({}, process.env, { CV_ONLY_ARMS: '1' });
+      if (isOpv) { var od = fs.mkdtempSync(path.join(os.tmpdir(), 'cv-mutopv-')); fs.writeFileSync(path.join(od, 'op_versions.js'), mutated); env2.CV_OPV_DIR = od; env2.CV_COMM_DIR = B; m.cleanup = od; }
+      else { fs.readdirSync(B).filter(function (f) { return /\.js$/.test(f); }).forEach(function (f) { fs.copyFileSync(path.join(B, f), path.join(dir, f)); }); fs.writeFileSync(path.join(dir, m[1]), mutated); env2.CV_COMM_DIR = dir; }   // a COPY, never a symlink
+      var k = cp.spawnSync(process.execPath, [__filename], { encoding: 'utf8', timeout: 400000, env: env2 });
+      fs.rmSync(dir, { recursive: true, force: true }); if (m.cleanup) fs.rmSync(m.cleanup, { recursive: true, force: true });
+      var mm = /§CV_ARMS red=(\S+)/.exec(k.stdout || ''); var r = mm && mm[1] !== 'none' ? mm[1].split(',') : (mm ? [] : ['CRASH']);   // a mutant that crashes before the verdict line is NOT a kill: it fails the run
       muts.push({ name: m[0], expect: m[4], red: r });
     });
     console.log('\n§CV_MUTANTS');
-    muts.forEach(function (m) { var ok = !m.error && (m.red.indexOf('CRASH') !== -1 || m.expect.every(function (e) { return m.red.indexOf(e) !== -1; })); if (!ok) FAILS++; console.log('   ' + (ok ? '🟢' : '🔴') + ' ' + m.name + ' -> ' + (m.error || ('red arms: ' + (m.red.join(', ') || 'NONE (survivor)') + ' (expected ' + m.expect.join('/') + ')'))); });
+    muts.forEach(function (m) { var ok = !m.error && m.red.indexOf('CRASH') === -1 && m.expect.every(function (e) { return m.red.indexOf(e) !== -1; }); if (!ok) FAILS++; console.log('   ' + (ok ? '🟢' : '🔴') + ' ' + m.name + ' -> ' + (m.error || ('red arms: ' + (m.red.join(', ') || 'NONE (survivor)') + ' (expected ' + m.expect.join('/') + ')'))); });
   }
-  var killed = muts.filter(function (m) { return !m.error && m.red.length > 0; }).length;
+  var killed = muts.filter(function (m) { return !m.error && m.red.length > 0 && m.red.indexOf('CRASH') === -1; }).length;
   var verdict = FAILS > 0 ? 'FAIL' : (VAC > 0 ? 'INCONCLUSIVE' : 'PASS');
   console.log('§CV_VERDICT ' + verdict + ' judged=' + JUDGED + ' fails=' + FAILS + ' vacuous=' + VAC + (muts.length ? ' mutants_killed=' + killed + '/' + muts.length : ' mutants=skipped'));
   process.exit(FAILS ? 1 : 0);
