@@ -28,7 +28,7 @@
  *   shape (the engine carries only the plan's declared columns, the two are not bridged by a projection in Node).
  * Real: common/comm/*.js, erp/team_sync.js, erp/team_plan*.js, erp/ad_seed.db (+patches for the model layer), erp/plugins/pos_integration.mjs, processes/*. Compiler: build/scriptor/sign_plan.js.
  * Run:  node scripts/witness_scale_star.js <bim-ootb dir> engine --n 100 --m 100 [--k 3] [--workers 6] [--budget-min 30] > build/scriptor/witness_scale_star_engine_100.log 2>&1
- *       node scripts/witness_scale_star.js <bim-ootb dir> hq --n 100 --m 100 [--k 3] [--budget-min 30] [--ctx-cache 0|1] > ...hq_100.log
+ *       node scripts/witness_scale_star.js <bim-ootb dir> hq --n 100 --m 100 [--k 3] [--budget-min 30] > ...hq_100.log
  *       node scripts/witness_scale_star.js <bim-ootb dir> fit <logs...>                          (fits + verdict lines from the §STAR-POINT json lines)
  */
 'use strict';
@@ -105,10 +105,18 @@ function borrowerRows(j, bpId) { return [['c_payment', { c_bpartner_id: bpId, pa
   ['i_payment', { documentno: 'STARSLIP' + j, doctypename: 'AR Receipt', iso_code: 'USD', payamt: 10, datetrx: D1, i_isimported: 'N', invoicedocumentno: 'STARLN' + j, isapproved: 'Y', r_pnref: 'PN' + j, r_authcode: 'AU' + j, r_respmsg: 'OK', r_result: '0', ad_client_id: 11, ad_org_id: 0 }]]; }
 
 // author ops THROUGH the adapter's translate (the path onCommit takes) in ONE authorMany batch (one versions() read). -> { n, ms, local }
+var SPECSINK = null;   // agent T (HS2): when set, every authored spec is recorded here, to prove the replies identical before/after a fix (see specDigest)
+var UUID_RE = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/g, ISO_RE = /\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?Z/g;
+function specDigest(sink) { var ids = {}, k = 0, lines = sink.map(function (sp) { return JSON.stringify(sp).replace(ISO_RE, 'TS').replace(UUID_RE, function (u) { return ids[u] === undefined ? (ids[u] = 'u' + (k++)) : ids[u]; }); });
+  return { n: lines.length, sha: nodeCrypto.createHash('sha256').update(lines.join('\n')).digest('hex').slice(0, 16), first: lines[0] && lines[0].slice(0, 160), last: lines[lines.length - 1] && lines[lines.length - 1].slice(0, 160) }; }
+async function inPass(ad, fn) { return ad.api._withRoster ? ad.api._withRoster(fn) : fn(); }   // the product's translate-pass seam if it has one (HS2 fix); main has none
 async function authorRows(ad, S, kdb, rows) {
   var specs = [], local = 0, t0 = now();
+  await inPass(ad, async function () {
   for (var r of rows) { var row = { op_type: 'CRUD_CREATE', op_uuid: uuid(), gid: null, timestamp: new Date().toISOString(), parameters: JSON.stringify({ table: r[0], fields: r[1] }) };
     var t = await ad.api._translate(row, kdb); if (!t.body) { local++; continue; } specs.push({ target: t.target, body: t.body, refs: t.refs, intent: 'K2', ts: row.timestamp }); }
+  });
+  if (SPECSINK) specs.forEach(function (x) { SPECSINK.push(x); });
   var many = await S.authorMany(specs); if (many.error) throw many.error; return { n: specs.length, local: local, ms: now() - t0 }; }
 function newKdb(SQL) { var d = new SQL.Database(); d.run('CREATE TABLE kernel_ops(id INTEGER PRIMARY KEY, op_type TEXT, op_uuid TEXT, parameters TEXT, user_tag TEXT)'); return d; }
 
@@ -214,15 +222,19 @@ async function enginePoint(o) {
     phase = 'hq-replies'; t0 = now(); var bpRow = q(DB, 'SELECT c_bpartner_id AS i FROM c_bpartner WHERE c_bpartner_id>=?', [ID0]).length;
     var replyRows = [], invUu = [];
     for (i = 0; i < n; i++) replyRows.push(['m_movementline', { m_product_id: 123, qtyentered: 2, c_uom_id: 100, m_locator_id: 101, m_locatorto_id: ID0 + i, description: 'x', ad_client_id: 11, ad_org_id: 0 }]);
+    var _ord = FS.order, ORD = { n: 0 }; FS.order = function () { ORD.n++; return _ord.apply(this, arguments); }; SPECSINK = [];   // HS2: count the log refolds the reply pass causes
     var kid8 = 100, tm0 = now(), rr = await authorRows(Fad, FS, Fkdb, replyRows), tmMov = now() - tm0, loans = 0, sched = 0, specs = [], tt0 = now();
+    await inPass(Fad, async function () {
     for (j = 0; j < m; j++) { var ku = uuid(), iid = ++kid8;
       Fkdb.run("INSERT INTO kernel_ops VALUES (?,'CRUD_CREATE',?,?,'team')", [iid, ku, JSON.stringify({ table: 'c_invoice', fields: { c_bpartner_id: ID0 + j, documentno: 'STARLN' + j, grandtotal: 100 } })]);
       var rI = { op_type: 'CRUD_CREATE', op_uuid: ku, gid: null, timestamp: new Date().toISOString(), parameters: JSON.stringify({ table: 'c_invoice', fields: { c_bpartner_id: ID0 + j, documentno: 'STARLN' + j, grandtotal: 100, description: 'secret', ad_client_id: 11, ad_org_id: 0 } }) };
       var tI = await Fad.api._translate(rI, Fkdb); if (tI.body) { specs.push({ target: tI.target, body: tI.body, refs: tI.refs, intent: 'K2', ts: rI.timestamp }); loans++; }
       var rS = { op_type: 'CRUD_CREATE', op_uuid: uuid(), gid: null, timestamp: new Date().toISOString(), parameters: JSON.stringify({ table: 'c_invoicepayschedule', fields: { c_invoice_id: -iid, dueamt: 50, duedate: '2026-11-27', ad_client_id: 11, ad_org_id: 0 } }) };
       var tS = await Fad.api._translate(rS, Fkdb); if (tS.body) { specs.push({ target: tS.target, body: tS.body, refs: tS.refs, intent: 'K2', ts: rS.timestamp }); sched++; } }
-    var tmTr = now() - tt0, ta0 = now(), many = await FS.authorMany(specs); if (many.error) throw many.error; var tmAu = now() - ta0, tp0 = now();
-    var rep9 = await FS.sync(Fp); P.hq_replies = { movements: rr.n, loans: loans, schedules: sched, author_ms: now() - t0, movements_ms: tmMov, loans_translate_ms: tmTr, loans_author_many_ms: tmAu, push_sync_ms: now() - tp0, pushed: rep9.sent }; out('§STAR-HQ-REPLIES ' + JSON.stringify(P.hq_replies));
+    });
+    specs.forEach(function (x) { SPECSINK.push(x); });
+    var tmTr = now() - tt0, ta0 = now(), many = await FS.authorMany(specs); if (many.error) throw many.error; var tmAu = now() - ta0, tp0 = now(); FS.order = _ord;
+    var rep9 = await FS.sync(Fp); P.hq_replies = { order_calls: ORD.n, spec_digest: specDigest(SPECSINK), pass_seam: !!Fad.api._withRoster, movements: rr.n, loans: loans, schedules: sched, author_ms: now() - t0, movements_ms: tmMov, loans_translate_ms: tmTr, loans_author_many_ms: tmAu, push_sync_ms: now() - tp0, pushed: rep9.sent }; out('§STAR-HQ-REPLIES ' + JSON.stringify(P.hq_replies));
     if (rr.n !== n || loans !== m || sched !== m) throw new Inconclusive('hq-replies', 'replies not all addressed: movements ' + rr.n + '/' + n + ' loans ' + loans + '/' + m + ' schedules ' + sched + '/' + m);
     box('hq-replies', 'replies');
     // 6. VISIT #2 of the sampled edges: the steady-state Visit that picks up head office's answer
@@ -252,63 +264,67 @@ async function enginePoint(o) {
 
 // ═════════ the head-office model-layer point (REAL model layer in Node, as witness_pos_sales.js / witness_import_payment.js / witness_acct_processor.js drive it) ═════════
 async function hqPoint(o) {
-  var n = o.n, m = o.m, k = o.k, cached = !!o.ctxCache, P = { kind: 'hq', n: n, m: m, k: k, variant: cached ? 'cached' : 'shipped', status: 'PASS-RUN', rounds: [] }, phase = 'setup';
+  var LC = { calls: 0, ms: 0, hits: 0, wms: 0 }; var n = o.n, m = o.m, k = o.k, FULL = true, P = { kind: 'hq', n: n, m: m, k: k, variant: 'shipped', status: 'PASS-RUN', rounds: [] }, phase = 'setup';
   var ERP = path.join(OOTB, 'erp'), SQLJS_DIR = process.env.SQLJS_DIR || '/home/red1/bim-ootb/tests/node_modules/sql.js'; process.env.SQLJS = SQLJS_DIR; if (!global.window) global.window = {};
-  var realLog = console.log, SEEN = []; console.log = function () { SEEN.push(Array.prototype.join.call(arguments, ' ')); if (SEEN.length > 5000) SEEN.splice(0, 2500); };   // the shipped § lines are captured, then selectively re-printed
+  var realLog = console.log, SEEN = []; console.log = function () { var s0 = Array.prototype.join.call(arguments, ' '); SEEN.push(s0); if (SEEN.length > 5000) SEEN.splice(0, 2500); var mb = /^§LOGINCTX build .* ms=(\d+)/.exec(s0); if (mb) LC.ms += Number(mb[1]); };   // the shipped § lines are captured, then selectively re-printed
   var say = function (s) { realLog(s); };
   try {
     var initSqlJs = require(SQLJS_DIR), SQLM = await initSqlJs({ locateFile: function (f) { return path.join(SQLJS_DIR, 'dist', f); } });
     var db = new SQLM.Database(new Uint8Array(fs.readFileSync(path.join(ERP, 'ad_seed.db')))), pOk = 0, pBad = 0;
     fs.readFileSync(path.join(ERP, 'patches/ad_seed.db.sql'), 'utf8').split(/;\s*\n/).forEach(function (st) { st = st.replace(/^\s*--[^\n]*\n?/gm, '').trim(); if (!st) return; try { db.run(st); pOk++; } catch (e) { pBad++; } });
-    var req = function (f) { return require(path.join(ERP, f)); }; req('ad_rule.js').ensure(db); req('ad_import_tables.js').ensure(db);
+    var req = function (f) { return require(path.join(ERP, f)); }; req('ad_rule.js').ensure(db); req('ad_import_tables.js').ensure(db); try { req('ad_index_overlay.js').ensure(db); } catch (e) { if (e.code !== 'MODULE_NOT_FOUND') throw e; }   // the host boot overlays (the index overlay exists only on the fixed tree)
     var KR = req('ws_kernel.js'), kk = KR.build(db), ML = kk.ML, AP = req('ad_process.js'), PR = req('plugin_registry.js'), INV = req('model_invoice.js'), AC = req('ad_callout.js');
-    var LC = { calls: 0, ms: 0, hits: 0 }, _lc = AC.loginContext, memo = {};
-    AC.loginContext = function (a) { LC.calls++; if (cached) { var key = JSON.stringify(a); if (memo[key]) { LC.hits++; return memo[key]; } var t = now(); memo[key] = _lc.apply(this, arguments); LC.ms += now() - t; return memo[key]; } var t2 = now(); var r = _lc.apply(this, arguments); LC.ms += now() - t2; return r; };
+    // NOT memoised any more (agent T, TEAMWORK_FRAMEWORK §45.7): login-context builds are COUNTED as the AD_Preference reads they issue (one per build, on main and on the fixed tree alike);
+    // their ms come from the product's own `§LOGINCTX build ... ms=` line (fixed tree) or from timing AdCallout.loginContext (main, which has no such line).
+    var _lc = AC.loginContext; AC.loginContext = function () { var t = now(); try { return _lc.apply(this, arguments); } finally { LC.wms += now() - t; } };
+    var _kq = kk.q, PROF = A['profile-sql'] ? { shapes: {} } : null;   // --profile-sql: time every statement the model layer reads, by shape (HS3 diagnosis, TEAMWORK_FRAMEWORK §45.7)
+    kk.q = function (sql, p) { if (/FROM AD_Preference/i.test(sql)) LC.calls++; if (!PROF) return _kq.call(this, sql, p); var t = now(), r = _kq.call(this, sql, p), dt = now() - t, sh = String(sql).replace(/\s+/g, ' ').replace(/'[^']*'/g, "'?'").replace(/\b\d+\b/g, 'N').slice(0, 220), e = PROF.shapes[sh] || (PROF.shapes[sh] = { n: 0, ms: 0, sql: sql, p: p }); e.n++; e.ms += dt; if (e.n === 3 && !e.stack) e.stack = (new Error().stack || '').split('\n').slice(2, 7).map(function (x) { return x.trim().replace(/^at /, '').replace(/\(?\/tmp\/wt-[a-z-]+\/erp\//, '(') }).join(' < '); return r; };
     var S = { clientId: 11, orgId: 11, userId: 100, roleId: 102, warehouseId: 103, actor: 'witness:scale-star' }, ENVX = { clientAccounting: 'Q' };    // tenant choice 'Q' = end-of-day posting (TEAMWORK_FRAMEWORK §41.1 F1): Complete does not post, the Tenant Accounting Processor does
     function one(sql, p) { return kk.q(sql, p || [])[0] || null; }
-    function commit(fn, meta) { var trx = new ML.Trx(kk.q, Object.assign(kk.env(S), ENVX)), r; try { r = fn(trx, ML) || { ok: true }; } catch (ex) { r = { ok: false, error: 'model threw: ' + (ex && ex.message) }; }
+    function commit(fn, meta) { var trx = new ML.Trx(kk.q, Object.assign(kk.env(S), ENVX)), r; try { r = fn(trx, ML) || { ok: true }; } catch (ex) { r = { ok: false, error: 'model threw: ' + (ex && ex.stack) }; }
       var ok = r.ok !== false, ops = ok ? trx.groupOps() : [], ids = []; if (ok && ops.length) ids = kk.commit(S, ops, meta); return Object.assign({}, r, { ok: ok, ops: ops, ids: ids, log: trx.log }); }
     function saveAll(rows) { return function (trx) { for (var i = 0; i < rows.length; i++) { var sv = ML.save(trx, rows[i].t, null, ML.newPO(trx, rows[i].t, rows[i].f)); if (!sv.ok) return { ok: false, error: rows[i].t + ' #' + i + ': ' + sv.error }; } return { ok: true }; }; }
-    function run(pid, params, tag) { var t = now(), lc0 = LC.calls, lm0 = LC.ms, r = commit(function (trx) { var r0 = AP.runInTrx(trx, pid, { params: params || {} }); return { ok: r0.ok, r: r0, error: r0.summary }; }, { ws: tag });
-      return { ok: r.ok && r.r && r.r.ok === true, summary: r.r && r.r.summary, ms: now() - t, ops: r.ops.length, lc_calls: LC.calls - lc0, lc_ms: LC.ms - lm0, log: r.log || [], logs: (r.r && r.r.logs) || [] }; }
+    function run(pid, params, tag) { var t = now(), lc0 = LC.calls, lm0 = LC.ms + LC.wms, r = commit(function (trx) { var r0 = AP.runInTrx(trx, pid, { params: params || {} }); return { ok: r0.ok, r: r0, error: r0.summary }; }, { ws: tag });
+      return { ok: r.ok && r.r && r.r.ok === true, err: r.error, summary: r.r && r.r.summary, ms: now() - t, ops: r.ops.length, lc_calls: LC.calls - lc0, lc_ms: LC.ms + LC.wms - lm0, log: r.log || [], logs: (r.r && r.r.logs) || [] }; }
     // the POS plugin, installed on the registry exactly as the host does (as witness_pos_sales.js)
     var hostDb = { query: function (sql, p) { var st = db.prepare(sql), o2 = []; try { if (p && p.length) st.bind(p); while (st.step()) { var x = st.getAsObject(), r = {}; for (var c in x) r[c.toLowerCase()] = x[c]; o2.push(r); } } finally { st.free(); } return o2; }, run: function (sql, p) { db.run(sql, p || []); } };
     var host = { engineVersion: '1.0.0', db: hostDb, ops: { append: function () { return 1; } }, process: AP, docAction: ML, import: function (u) { return import(url.pathToFileURL(path.resolve(path.join(ERP, 'plugins'), u)).href); } };
     var reg = PR.create(host), mod = await import(url.pathToFileURL(path.join(ERP, 'plugins', 'pos_integration.mjs')).href); await reg.installBundle(mod); var st0 = await reg.startBundle('org.kernel.pos-integration');
     var PID = 9538001, BANK = { C_BankAccount_ID: 100, AD_Client_ID: 11, AD_Org_ID: 11 };
-    say('§STAR-HQ-SETUP variant=' + P.variant + ' seed_patch ok=' + pOk + ' failed=' + pBad + ' plugin=' + st0.state + ' clientAccounting=Q ctx_cache=' + cached + (cached ? ' (NOT AS SHIPPED: AdCallout.loginContext memoised by the harness; every other line of the model layer is the shipped code)' : ' (as shipped)'));
+    say('§STAR-HQ-SETUP variant=' + P.variant + ' seed_patch ok=' + pOk + ' failed=' + pBad + ' plugin=' + st0.state + ' clientAccounting=Q ctx_cache=false (as shipped: the harness no longer memoises anything; login-context builds are counted)');
     var lineRow = function (key, prod, price) { return { t: 'i_order', f: { i_isimported: 'N', issotrx: 'Y', documentno: key, doctypename: 'POS Order', m_product_id: prod, qtyordered: 1, priceactual: price, c_uom_id: 100, dateordered: D1, ad_org_id: 11 } }; };
     var tenderRow = function (key, amt) { return { t: 'i_payment', f: { i_isimported: 'N', documentno: key, doctypename: 'AR Receipt', iso_code: 'USD', payamt: amt, tendertype: 'X', datetrx: D1, ad_org_id: 11 } }; };
-    phase = 'acct-baseline'; var rb0 = run(53187, {}, 'acct_baseline'); P.acct_baseline = { ms: rb0.ms, answer: String((rb0.logs.length ? rb0.logs[rb0.logs.length - 1].msg : '')).slice(0, 160) }; say('§STAR-HQ-ACCT-BASELINE the seed\'s own unposted backlog is posted first and NOT counted in the day: ms=' + Math.round(rb0.ms));
+    phase = 'acct-baseline'; var rb0 = run(53187, {}, 'acct_baseline'); P.acct_baseline = { err: rb0.summary, ms: rb0.ms, answer: String((rb0.logs.length ? rb0.logs[rb0.logs.length - 1].msg : '')).slice(0, 160) }; say('§STAR-HQ-ACCT-BASELINE ok=' + rb0.ok + ' summary=' + String(rb0.summary || rb0.err).slice(0, 300) + ' the seed\'s own unposted backlog is posted first and NOT counted in the day: ms=' + Math.round(rb0.ms));
     var T = n * k, seq = 0, depMs = 0, depN = 0;
     function deposit(cnt) { var t = now(); for (var i = 0; i < cnt; i++) { var key = 'STAR' + (seq % n) + '/2026-10-29/' + Math.floor(seq / n) + '#' + seq; seq++; var d = commit(saveAll([lineRow(key, 123, 65), lineRow(key, 130, 50), tenderRow(key, 115)]), { ws: 'deposit' }); if (!d.ok) throw new Error('deposit: ' + d.error); } depMs += now() - t; depN += cnt; }
     // ── Import POS Sales ──
     phase = 'import-pos-sales'; var sizes = [];
-    if (cached) { var R = Math.min(5, T); for (var r = 0; r < R; r++) sizes.push(Math.floor(T / R) + (r < T % R ? 1 : 0)); } else { sizes = [Math.min(5, T), Math.min(5, T)]; }
+    { var R = Math.min(5, T); for (var r = 0; r < R; r++) sizes.push(Math.floor(T / R) + (r < T % R ? 1 : 0)); }
     var imported = 0, tmax = 0;
     for (var ri = 0; ri < sizes.length; ri++) {
       if (Date.now() > DEADLINE) { P.status = 'PARTIAL'; P.reason = 'time box before round ' + (ri + 1) + '/' + sizes.length + ' of Import POS Sales'; break; }
       deposit(sizes[ri]); var ru = run(PID, BANK, 'import_pos_sales'), mm = /#(\d+)\/(\d+)/.exec(ru.summary || ''), okN = mm ? Number(mm[1]) : 0, refN = mm ? Number(mm[2]) : -1;
+      if (PROF) { var top = Object.keys(PROF.shapes).map(function (k) { return [k, PROF.shapes[k]]; }).sort(function (a, b) { return b[1].ms - a[1].ms; }).slice(0, 6); top.forEach(function (t2) { var plan = ''; try { plan = db.exec('EXPLAIN QUERY PLAN ' + t2[1].sql, t2[1].p || [])[0].values.map(function (v) { return v[3]; }).join(' ; '); } catch (e) { plan = 'plan?' + e.message; } say('§STAR-SQLPROF round=' + (ri + 1) + ' ms=' + Math.round(t2[1].ms) + ' n=' + t2[1].n + ' | ' + t2[0].slice(0, 150) + ' | PLAN ' + plan.slice(0, 260)); if (t2[1].stack) say('§STAR-SQLPROF-STACK ' + t2[0].slice(0, 60) + ' <- ' + t2[1].stack.slice(0, 700)); }); PROF.shapes = {}; }
       var rd2 = { round: ri + 1, deposited: sizes[ri], imported: okN, refused: refN, ms: ru.ms, ms_per_ticket: okN ? ru.ms / okN : null, ms_per_ticket_ex_ctx: okN ? (ru.ms - ru.lc_ms) / okN : null, login_ctx_calls: ru.lc_calls, login_ctx_ms: ru.lc_ms, ops: ru.ops, heap_mb: Math.round(process.memoryUsage().heapUsed / 1e6), orders_total: one("SELECT count(*) AS c FROM c_order WHERE documentno LIKE 'STAR%'").c };
       P.rounds.push(rd2); imported += okN; say('§STAR-HQ-IMPORT ' + JSON.stringify(rd2)); if (okN !== sizes[ri] || refN !== 0) { P.status = 'ERROR'; P.reason = 'Import POS Sales round ' + (ri + 1) + ' answered ' + ru.summary + ' for ' + sizes[ri] + ' tickets'; break; } }
     P.tickets_imported = imported; var mmx = P.rounds.filter(function (x) { return x.ms_per_ticket; }); P.import_ms_per_ticket = mmx.length ? mmx.reduce(function (z, x) { return z + x.ms; }, 0) / imported : null; P.import_ms_per_ticket_ex_ctx = mmx.length ? mmx.reduce(function (z, x) { return z + x.ms - x.login_ctx_ms; }, 0) / imported : null;
     P.import_ms_per_ticket_first = mmx.length ? mmx[0].ms_per_ticket_ex_ctx : null; P.import_ms_per_ticket_late = mmx.length ? mmx[mmx.length - 1].ms_per_ticket_ex_ctx : null;
-    P.login_ctx = { calls: LC.calls, ms: LC.ms, hits: LC.hits, share_of_import: P.rounds.length ? P.rounds.reduce(function (z, x) { return z + x.login_ctx_ms; }, 0) / P.rounds.reduce(function (z, x) { return z + x.ms; }, 0) : null };
+    P.login_ctx = { calls: LC.calls, ms: LC.ms + LC.wms, hits: LC.hits, share_of_import: P.rounds.length ? P.rounds.reduce(function (z, x) { return z + x.login_ctx_ms; }, 0) / P.rounds.reduce(function (z, x) { return z + x.ms; }, 0) : null };
     P.deposit_ms_per_ticket = depN ? depMs / depN : null;
     // oracle: every imported ticket made exactly one completed order, invoice and receipt
     var oc = one("SELECT count(*) AS c FROM c_order WHERE documentno LIKE 'STAR%' AND docstatus='CO'").c, ic = one("SELECT count(*) AS c FROM c_invoice i JOIN c_order o ON o.c_order_id=i.c_order_id WHERE o.documentno LIKE 'STAR%' AND i.docstatus='CO'").c, pc = one("SELECT count(*) AS c FROM c_payment WHERE documentno LIKE 'STAR%' AND docstatus='CO'").c;
     P.oracle = { orders_co: oc, invoices_co: ic, receipts_co: pc, tickets: imported }; say('§STAR-HQ-ORACLE ' + JSON.stringify(P.oracle));
     if (imported > 0 && !(oc === imported && ic === imported && pc === imported)) { P.status = 'ERROR'; P.reason = 'oracle mismatch ' + JSON.stringify(P.oracle); }
     // ── a Complete micro-measure: copy + Complete of an invoice (acct witness completeCopy) ──
-    phase = 'complete'; var cm = [], cnt = Math.min(cached ? 5 : 2, 5);
+    phase = 'complete'; var cm = [], cnt = 5;
     for (var ci = 0; ci < cnt; ci++) { var tc = now(), rc = commit(function (trx) { var s2 = INV.MInvoice_copyFrom(trx, trx.get('c_invoice', 109), '2026-10-02 00:00:00', '2026-10-02 00:00:00', 116, true, false, false, null); var r0 = ML.processIt(trx, 'c_invoice', s2.c_invoice_id, 'CO'); return { ok: r0.ok, error: r0.msg }; }, { ws: 'complete' }); if (!rc.ok) { say('§STAR-HQ-COMPLETE-FAIL ' + rc.error); break; } cm.push(now() - tc); }
     P.complete_invoice_ms = cm.length ? cm.reduce(function (a, b) { return a + b; }, 0) / cm.length : null; say('§STAR-HQ-COMPLETE invoice copy+Complete ms=' + JSON.stringify(cm.map(function (x) { return Math.round(x); })));
     // ── Import Payment (343): a borrower's slip is allocated to its loan invoice ──
-    phase = 'import-payment'; var slipN = cached ? Math.min(m, 1000) : Math.min(m, 5), invs = [];
+    phase = 'import-payment'; var slipN = Math.min(m, 1000), invs = [];
     for (var j = 0; j < slipN; j++) { if (Date.now() > DEADLINE) break; var inv = null; var rc2 = commit(function (trx) { var s3 = INV.MInvoice_copyFrom(trx, trx.get('c_invoice', 109), '2026-10-02 00:00:00', '2026-10-02 00:00:00', 116, true, false, false, null); var r0 = ML.processIt(trx, 'c_invoice', s3.c_invoice_id, 'CO'); return { ok: r0.ok, error: r0.msg }; }, { ws: 'loan' }); if (!rc2.ok) break;
       invs.push(one('SELECT documentno AS d FROM c_invoice WHERE c_invoice_id=(SELECT MAX(c_invoice_id) FROM c_invoice)').d); }
     P.slips_planned = slipN; P.loans_made = invs.length; var sl = 0, paid = 0, payRounds = [];
-    var pChunks = cached ? 4 : 1, per = Math.ceil(invs.length / pChunks);
+    var pChunks = 4, per = Math.ceil(invs.length / pChunks);
     for (var pc2 = 0; pc2 < pChunks; pc2++) { var part = invs.slice(pc2 * per, (pc2 + 1) * per); if (!part.length) break; if (Date.now() > DEADLINE) { P.status = P.status === 'PASS-RUN' ? 'PARTIAL' : P.status; P.reason = (P.reason ? P.reason + '; ' : '') + 'time box in Import Payment'; break; }
       var rows = part.map(function (dn, ix) { return { t: 'i_payment', f: { i_isimported: 'N', documentno: 'STARSLIP' + (sl + ix), doctypename: 'AR Receipt', iso_code: 'USD', payamt: 10, datetrx: D1, invoicedocumentno: dn, ad_org_id: 11 } }; });
       var dd = commit(saveAll(rows), { ws: 'slip-deposit' }); if (!dd.ok) { P.status = 'ERROR'; P.reason = 'slip deposit: ' + dd.error; break; }
@@ -367,7 +383,7 @@ function readPoints(files) { var pts = [];
     pts.push(P); });
   return pts; }
 function fitMain(files) {
-  var pts = readPoints(files), eng = pts.filter(function (p) { return p.kind === 'engine'; }).sort(function (a, b) { return a.n - b.n; }), hq = pts.filter(function (p) { return p.kind === 'hq'; }).sort(function (a, b) { return a.n - b.n; }), hqShip = hq.filter(function (p) { return p.variant === 'shipped'; }); hq = hq.filter(function (p) { return p.variant === 'cached'; });
+  var pts = readPoints(files), eng = pts.filter(function (p) { return p.kind === 'engine'; }).sort(function (a, b) { return a.n - b.n; }), hq = pts.filter(function (p) { return p.kind === 'hq'; }).sort(function (a, b) { return a.n - b.n; }), hqShip = []; hq = hq.filter(function (p) { return p.variant === 'shipped'; });   // agent T: the memoised 'cached' variant is gone; every hq point is now the product as shipped
   out('§STAR-FITHEADER engine_points=' + eng.map(function (p) { return p.n + ':' + p.status; }).join(',') + ' hq_points=' + hq.map(function (p) { return p.n + ':' + p.status; }).join(','));
   var okE = eng.filter(function (p) { return p.status === 'PASS-RUN' || (p.salvaged && p.sample.length); }), xs = okE.map(function (p) { return p.n; });
   function pick(fn) { return okE.map(function (p) { try { return fn(p); } catch (e) { return null; } }); }
@@ -451,7 +467,7 @@ var HQ_BUDGET_NOTE = 'STATED CHOICE of the measurer, not a source value: heap <=
 module.exports = { fitRow: fitRow };
 if (IS_WORKER) { workerMain(); }
 else if (MODE === 'engine') { (async function () { header(); var P = await enginePoint({ n: N, m: M, k: K, workers: W }); P.kind = 'engine'; out('§STAR-POINT ' + JSON.stringify(P)); out('§STAR-DONE engine N=' + N + ' M=' + M + ' status=' + P.status + (P.reason ? ' reason=' + P.reason : '') + ' wall_s=' + (P.wall_ms / 1000).toFixed(0)); process.exit(P.status === 'PASS-RUN' ? 0 : 1); })(); }
-else if (MODE === 'hq') { (async function () { header(); var P = await hqPoint({ n: N, m: M, k: K, ctxCache: A['ctx-cache'] === '1' }); out('§STAR-POINT ' + JSON.stringify(P)); out('§STAR-DONE hq N=' + N + ' M=' + M + ' variant=' + P.variant + ' status=' + P.status + (P.reason ? ' reason=' + P.reason : '') + ' wall_s=' + (P.wall_ms / 1000).toFixed(0)); process.exit(P.status === 'PASS-RUN' ? 0 : 1); })(); }
+else if (MODE === 'hq') { (async function () { header(); var P = await hqPoint({ n: N, m: M, k: K, }); out('§STAR-POINT ' + JSON.stringify(P)); out('§STAR-DONE hq N=' + N + ' M=' + M + ' variant=' + P.variant + ' status=' + P.status + (P.reason ? ' reason=' + P.reason : '') + ' wall_s=' + (P.wall_ms / 1000).toFixed(0)); process.exit(P.status === 'PASS-RUN' ? 0 : 1); })(); }
 else if (MODE === 'tables') { tablesMain(process.argv.slice(4).filter(function (a) { return !/^--/.test(a); })); }
 else if (MODE === 'fit') { fitMain(process.argv.slice(4).filter(function (a) { return !/^--/.test(a); })); }
 else { out('§STAR-VERDICT INCONCLUSIVE — unknown mode ' + MODE); process.exit(2); }
