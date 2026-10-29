@@ -1,0 +1,19 @@
+§STAR-HEADER W-SCALE-STAR mode=hq N=1000 M=1000 K=3 workers=6 box_min=120 ootb=/tmp/wt-ootb-scale commit=193677b1 node=v18.19.1 cpus=20 loadavg=5.56,4.18,2.93 at=2026-10-29T00:24:02.912Z
+§STAR-LIMITS one Node process family simulates all devices (no network latency, no browser); the relay is a folder pipe on local disk; load-generating devices fetch only the founder's roster bundle and are not measured;
+§STAR-LIMITS the measured edges (2 stations: first+last, 2 borrowers: first+last) and head office fetch the WHOLE relay; Node + sql.js timings are not browser timings; teamRebuild (ERP projection) is browser-only, so Visit ms = sync + adapter _project;
+§STAR-LIMITS per-device numbers are per device INSTANCE; head-office model-layer inputs are K4-shaped tickets (engine carries only the plan's declared columns; the two are not bridged by a projection in Node).
+§STAR-HQ-SETUP variant=cached seed_patch ok=3803 failed=3 plugin=ACTIVE clientAccounting=Q ctx_cache=true (NOT AS SHIPPED: AdCallout.loginContext memoised by the harness; every other line of the model layer is the shipped code)
+§STAR-HQ-ACCT-BASELINE the seed's own unposted backlog is posted first and NOT counted in the day: ms=5522
+§STAR-HQ-IMPORT {"round":1,"deposited":600,"imported":600,"refused":0,"ms":393536.3069999814,"ms_per_ticket":655.893844999969,"ms_per_ticket_ex_ctx":655.893844999969,"login_ctx_calls":2401,"login_ctx_ms":0,"ops":16207,"heap_mb":104,"orders_total":600}
+§STAR-HQ-IMPORT {"round":2,"deposited":600,"imported":600,"refused":0,"ms":719355.3029999733,"ms_per_ticket":1198.9255049999556,"ms_per_ticket_ex_ctx":1198.9255049999556,"login_ctx_calls":2401,"login_ctx_ms":0,"ops":16206,"heap_mb":293,"orders_total":1200}
+§STAR-HQ-IMPORT {"round":3,"deposited":600,"imported":600,"refused":0,"ms":1119575.3879999518,"ms_per_ticket":1865.9589799999196,"ms_per_ticket_ex_ctx":1865.9589799999196,"login_ctx_calls":2401,"login_ctx_ms":0,"ops":16206,"heap_mb":382,"orders_total":1800}
+§STAR-HQ-IMPORT {"round":4,"deposited":600,"imported":600,"refused":0,"ms":1942703.9169999957,"ms_per_ticket":3237.8398616666595,"ms_per_ticket_ex_ctx":3237.8398616666595,"login_ctx_calls":2401,"login_ctx_ms":0,"ops":16206,"heap_mb":323,"orders_total":2400}
+§STAR-HQ-IMPORT {"round":5,"deposited":600,"imported":600,"refused":0,"ms":2264421.6609999537,"ms_per_ticket":3774.0361016665897,"ms_per_ticket_ex_ctx":3774.0361016665897,"login_ctx_calls":2401,"login_ctx_ms":0,"ops":16206,"heap_mb":466,"orders_total":3000}
+§STAR-HQ-ORACLE {"orders_co":3000,"invoices_co":3000,"receipts_co":3000,"tickets":3000}
+§STAR-HQ-COMPLETE invoice copy+Complete ms=[89,6,8,6,6]
+§STAR-HQ-PAYMENT {"round":1,"slips":250,"receipts_made":250,"ms":179022.49099999666,"ms_per_slip":716.0899639999866,"login_ctx_calls":1,"login_ctx_ms":0,"summary":""}
+§STAR-HQ-PAYMENT {"round":2,"slips":250,"receipts_made":250,"ms":215335.12599998713,"ms_per_slip":861.3405039999485,"login_ctx_calls":1,"login_ctx_ms":0,"summary":""}
+§STAR-HQ-PAYMENT {"round":3,"slips":250,"receipts_made":250,"ms":238096.5680000186,"ms_per_slip":952.3862720000744,"login_ctx_calls":1,"login_ctx_ms":0,"summary":""}
+§STAR-HQ-PAYMENT {"round":4,"slips":250,"receipts_made":250,"ms":216988.89499998093,"ms_per_slip":867.9555799999237,"login_ctx_calls":1,"login_ctx_ms":0,"summary":""}
+§STAR-HQ-REPLENISH {"ok":true,"summary":"#1 - 10000000","movements_made":1,"login_ctx_calls":1,"login_ctx_ms":0,"t_replenish_rows":9} ms=78
+§STAR-STOPPED hq N=1000 variant=cached: the Tenant Accounting Processor run (it follows the replenish line, which the measurer first saw at 10:30 local) had not answered by 11:56 local; stopped by the measurer to bound the session. Imports (3000/3000 tickets), the 1000 loan invoices and 1000/1000 slips, and the replenish are complete in this log; the accounting run at N=1000 is NOT measured.
