@@ -41,9 +41,9 @@ async function hs1() {
   // C2 (legacy: an AD_Preference row written after login is NOT seen until the next login)
   db.run("UPDATE ad_preference SET value='v2' WHERE ad_preference_id=9899001"); var n0 = seen.length, bb = builds; run(S);
   ck('HS1-C2a', 'a preference changed in the DB AFTER login is not seen by the next process of the same session (legacy: Login.loadPreferences ran at login)', seen.length === n0 + 1 && seen[n0].pref === 'v1', 'sees=' + (seen[n0] && seen[n0].pref) + ' builds=' + (builds - bb));
-  var S2 = Object.assign({}, S, { roleId: 103 }); run(S2);
+  S.roleId = 103; run(S);          // the SAME login session switches role (RolePanel: loadPreferences again): the holder is unchanged, only the identity key moves
   ck('HS1-C2b', 'a new login (role switch) loads the changed preference', seen[seen.length - 1].pref === 'v2' && seen[seen.length - 1].role === '103', 'sees=' + seen[seen.length - 1].pref + ' role=' + seen[seen.length - 1].role);
-  var S3 = Object.assign({}, S, { orgId: 12 }); run(S3);
+  S.orgId = 12; run(S);
   ck('HS1-C3', 'an organization switch rebuilds: the process sees the new #AD_Org_ID', seen[seen.length - 1].org === '12', 'org=' + seen[seen.length - 1].org);
   // C2c: resetSession = a fresh login for the SAME identity (the API a host calls when the user logs in again)
   if (typeof AC.resetSession === 'function') { db.run("UPDATE ad_preference SET value='v3' WHERE ad_preference_id=9899001"); var e4 = kk.env(S); AC.resetSession(e4.session); var nn = seen.length; quiet(function () { return AP.runJava(cq, e4, { AD_Process_ID: 0, className: 'org.star.HS1Probe', title: 'hs1', params: {} }); });
@@ -93,6 +93,8 @@ async function hs3() {
   ck('HS3-C9', 'legacy\'s official dictionary indexes (IDEMPIERE-1132) exist on the physical tables: a lookup by c_payment.c_bpartner_id SEARCHes an index instead of SCANning (RED on main: no index at all)', /SEARCH c_payment USING INDEX c_payment_bpartner/.test(plan) && nIdx >= 70, 'plan=' + plan + ' indexes=' + nIdx);
   var plan2 = (db.exec("EXPLAIN QUERY PLAN SELECT * FROM c_invoice WHERE c_bpartner_id=100 AND ispaid='N'")[0] || { values: [] }).values.map(function (v) { return v[3]; }).join(' ; ');
   ck('HS3-C9b', 'the open-balance lookup (MBPartner.setTotalOpenBalance: c_bpartner_id + IsPaid=N pushed into the SELECT) SEARCHes legacy\'s c_invoice_paid index (IDEMPIERE-5259), not a scan of every invoice', /SEARCH c_invoice USING INDEX c_invoice_paid/.test(plan2), 'plan=' + plan2);
+  var plan3 = (db.exec("EXPLAIN QUERY PLAN SELECT * FROM i_order WHERE i_order_id IN (1,2)")[0] || { values: [] }).values.map(function (v) { return v[3]; }).join(' ; ');
+  ck('HS3-C9c', 'the import tables (created by the boot overlay without a primary key) get an id lookup index, so the scoped ticket read SEARCHes instead of scanning the whole table', /SEARCH i_order USING INDEX/.test(plan3), 'plan=' + plan3);
   // C10: the Team BASE does not move: the seed and the hashed patch texts are byte-identical to main's
   if (BASE) { var same = ['ad_seed.db', 'patches/ad_seed.db.sql', 'patches/mfg.sql'].map(function (f) { var a = path.join(OOTB, 'erp', f), b = path.join(BASE, 'erp', f); return !fs.existsSync(a) && !fs.existsSync(b) ? true : (fs.existsSync(a) && fs.existsSync(b) && crypto.createHash('sha256').update(fs.readFileSync(a)).digest('hex') === crypto.createHash('sha256').update(fs.readFileSync(b)).digest('hex')); });
     ck('HS3-C10', 'the Team BASE inputs (ad_seed.db, patches/ad_seed.db.sql, patches/mfg.sql) are byte-identical to main\'s: the fixes ship as boot overlays, outside the hashed base', same.every(Boolean), 'identical=' + JSON.stringify(same)); }
