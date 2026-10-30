@@ -4414,3 +4414,40 @@ bim-compiler `fable/scale-star` `a431fe316` (merged into the lane branch): `scri
 - **hq N=1000 as shipped:** `witness_scale_star_v2_hq_1000.log` is the valid run (`§STAR-DONE … PASS-RUN`, 5 rounds, ms/ticket 271 → 279 = flat); the `_KILLED_by_my_pkill` log is incomplete and ignored. Was 8,896 ms/ticket as shipped (N=10).
 - **Regression (exit code identical main vs branch for all 26):** exit 0 both: import_order(+mutants), import_payment(+mutants), pos_sales(+mutants), recurring(+mutants), event_bus, tip_readers, gen_tipread, tip_update_read, team_base, team_so, team_docaction, team_plan, team_pill, team_publish, team_versions, team_executors, team_ui_pos, team_desktop.
 - **NOT evidence (same on both trees, judged nothing):** master_save_rules exit 1 (throws); post_invoice_diff exit 2 (crash in pgRows, legacy Postgres unreachable); team_floor INCONCLUSIVE (no `FL_LINES` given); hq_clerk judged 19, `red=none`, then hit the 600 s timeout on BOTH trees (teardown hang, cause not investigated). These four need a rerun with their inputs before they count.
+
+## §48 TERMS — the lexicon and the enforced/open ledger (owner, 2026-10-30: adopt DeepSeek's local-first vocabulary proposal, adjusted; SPEC BEFORE CODE, nothing below is built yet)
+**Why:** the field lacks vocabulary, so readers fall back on "where is the database / is it real-time". Replace it with terms, and back EACH term with a witness plus a deliberately broken control that must fail. **Posture:** results, not process; platform-independent (vanilla JS + SQLite WASM); a green without a failing control is a claim; a limit is an UNENFORCED TERM, never an apology; the harness never shows green for an open term. **Twin rule:** every UI piece below lives in the Team lane / plugin surface only; nothing gates or changes a core AD window or DocAction (no divergence from legacy L&F).
+### §48.1 Lexicon (canonical; usage rules: "server" only as "relay"; "database" only as "ledger"; "sync" only as "Visit"; "async" only adjectivally, never a noun or component name)
+| Term | Definition | Say this back to the skeptic |
+|---|---|---|
+| RELAY | The shared place bundles pass through. Holds no authority, replaceable. | "It carries, it never decides; swap it and the books are unchanged." |
+| LEDGER | Each device's own signed, convergent record of the team's agreed state; not a backup. | "Every device holds the record that counts, signed and agreed by merge, not guarded in one spot." |
+| BUNDLE | The unit carried on a Visit; all-or-nothing, refusable at merge with a named reason. | "It arrives whole or not at all, and a refusal says why." |
+| VISIT | The settlement event: voluntary, episodic, bounded; bundles exchanged, claims judged. | "Nothing leaves until you choose; if it is cut off, nothing is lost." |
+| ACK | The delivery trace in a Visit: sent, seen, refused / accepted, visible on both sides. | "You can see where every claim got to, on both ends." |
+| ASYNC | A property of a Visit (asynchronous), not a mechanism. | "The sender does not wait; the ACK tells you it landed." |
+| STATEMENT | A standing term published by the owner/admin, binding on FUTURE Visits. | "A claim is judged by the rule in force when it was made." |
+**Correction to the source proposal:** it says "a published rule cannot be withdrawn". The code does not do that: `witness_team_executors` X6 shows the owner REPLACING the map by `{}` and the rule vanishing with the policy. The true term is: a statement can be SUPERSEDED by a later signed statement, never retroactively; claims made earlier stay judged by the rule in force then. The witness must assert THAT (an existing control for it was NOT located; see the ledger).
+### §48.2 Ledger of terms (status from logs read 2026-10-30 in `build/scriptor/witness_hq_regression_20261030/`; "located" = a claim line seen, not a re-derivation)
+| Term | Witness located | Broken control located | Status |
+|---|---|---|---|
+| Statement signed | `witness_team_publish` P3/P4 | edited-after-signing set refused `bad-signature`; untrusted signer refused; unsigned refused (`§WP_VERDICT PASS … mutants_killed=4/4`) | ENFORCED (statements); op-level signing control NOT located |
+| Complete by team role | `witness_team_executors` X7 | wrong-role CL refused `not-executor` at fold, order unchanged; `§TEAM_ROLE_MISMATCH` printed | ENFORCED |
+| Non-admin cannot publish | `witness_team_publish` P5 | `REFUSED:not-admin` on both devices | ENFORCED |
+| Version skew handled | `witness_team_versions` M2 | `needs-upgrade` PARKED, same op without `sv` MERGED | ENFORCED (needs-upgrade); retired-version-ignored NOT located |
+| Ledger convergent (stale copy not taken in) | not located | not located | TO LOCATE (grep `witness_team_*`/`poc_*`; else write it) |
+| Rule in force / superseded not retroactive | not located | not located | TO LOCATE (see §48.1 correction) |
+| Visit lossless offline / interrupted | not located | not located | TO LOCATE |
+| Visit one-shot (second sends nothing) | `witness_team_base` A1/B1 `§TEAM_VISIT` shows sent then fetched counts | not located | PARTIAL |
+| Visit bounded | measured in §45.5: download 384 KB / 4.5 MB / 45.8 MB at N = 10 / 100 / 1000 (linear) | none | **OPEN: F1 per-device mailboxes (§45.2)** |
+| ACK trail | chip text shows `seen / refused / waiting on / last visit` (`witness_team_so`) | refused counted on sender's chip NOT located | PARTIAL |
+| Trusted keys: backup replaces lost primary; admin alone cannot change | none | none | **OPEN: versioning Stage 2 (§46.5)** |
+| Sealing | none | none | **OPEN: not built** |
+| Team-wide document numbering | none | none | **OPEN: per-device counters today** |
+### §48.3 Build plan (each step: spec row first, witness RED first, read the log)
+1. **Locate-or-write** the five TO LOCATE / PARTIAL controls (extend `witness_team_*`; no new engine code).
+2. **Harness runner** `scripts/witness_terms.js`: runs the located witnesses, prints term → witness → control → enforced / open / skipped, exits non-zero if a witness fails or a control PASSES, prints `INCONCLUSIVE` when nothing was judged (the four non-evidence runs in §45.9 must show as such). Open terms are listed first and can never be green. Offline, no network, from a clean checkout.
+3. **Test Harness button** (Team panel): clause table with live evidence + JSON export.
+4. **Seatbelt** (Team panel): pre-flight audit from the Visit contract and chip counters. Gating Process is NOT in scope until the owner decides, because it changes DocAction behaviour (twin rule).
+5. **Bill** as a short page GENERATED from the harness JSON: titled "Tested properties and limits", not "guarantees" (MIT disclaims warranty). Not built until 2-4 exist; any claim not extracted from a log (relay privacy, "trial covers one cycle") is left out.
+**Owner-held items:** whether the Seatbelt may gate Process; whether acceptance is recorded (it stores a timestamp and device code).
