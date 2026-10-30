@@ -69,14 +69,14 @@ A 2D drawing carries only some of what a model needs. Everything it does not sta
 | `slab.outline_when_not_rect` | IfcSlab | text | **walls_bounded** | guess | when the walls do not draw a rectangle, the slab is the area they bound on both axes (best effort, amber; HHS -10% against the model's floor slabs, a rectangle +163%); 'none' leaves the slab out and lists it | walls_bounded, none |
 | `slab.underside_when_stepped` | IfcSlab | text | **longest_cut** | guess | when the section's slab under a level steps (finish on planks, a dropped wet area), the underside is the stack bottom under the longest cut (best effort, amber; JKR with STR: 84.33 under 77% of the cut); 'none' leaves it a conflict | longest_cut, none |
 | `synth.slab.footprint` | IfcSlab | text | **outermost grid lines** | guess | the slab edge is taken at the outermost grid lines of the base plan | outermost grid lines |
-| `synth.slab.thickness` | IfcSlab | m | **0.25** | std | rate pack: 'RC Slab 250mm' (viewer/rates/cidb2024_my.json IfcSlab) | 0.15, 0.2, 0.25 |
+| `synth.slab.thickness` | IfcSlab | m | **0.25** | guess | a guess: no sheet states the slab thickness. 250 mm is the slab line every rate pack's class table names ('RC Slab 250mm', the same 250 mm in all 16 country packs), a priced item, not a design value for this building (§D99) | 0.15, 0.2, 0.25 |
 | `stair.going` | IfcStair | m | **0.25** | guess | typical tread depth | 0.25, 0.28, 0.3 |
 | `stair.riser` | IfcStair | m | **0.175** | guess | typical riser height; a stair symbol carries no riser | 0.15, 0.175, 0.19 |
 | `stair.width` | IfcStair | m | **1** | guess | typical flight width | 0.9, 1, 1.2 |
 | `panel.plane` | IfcWall | text | **end grid line, centred** | guess | an elevation panel is placed on the outermost grid line of its face, centred | end grid line, centred |
 | `wall.base` | IfcWall | m | **0** | guess | floor level of the storey |  |
 | `wall.height` | IfcWall | m | **3** | guess | typical storey wall height; not stated by a plan | 2.4, 2.7, 3, 3.6 |
-| `wall.thickness` | IfcWall | m | **0.15** | std | rate pack: 'Blockwork Wall 150mm' (viewer/rates/cidb2024_my.json IfcWall) | 0.1, 0.115, 0.15, 0.2, 0.225 |
+| `wall.thickness` | IfcWall | m | **0.15** | guess | a guess: no sheet states the wall thickness. 150 mm is the wall line every rate pack's class table names (the same 150 mm in all 16 country packs), a priced item, not a design value for this building (§D99) | 0.1, 0.115, 0.15, 0.2, 0.225 |
 | `wall.top_when_unseen` | IfcWall | text | **slab_above** | guess | a wall no elevation shows runs from its floor to the slab underside above (the section states it); HHS Level 2 / 3 = the model, Level 1 0.3 m above the model's (its walls stop at a ceiling the drawings do not show); 'none' leaves such walls as asks | slab_above, none |
 | `type.size_tie` | IfcWindow | text | **library_first** | guess | a size the library answers with several types (Duplex 819 x 759: SMALL_FIXED, CASEMENT) binds the library's first row (8 of the Duplex IFC's 12 are that type); an explicit binding or label always wins; 'none' leaves such fills as asks | library_first, none |
 | `window.height` | IfcWindow | m | **1.2** | guess | typical window height | 1, 1.2, 1.5 |
