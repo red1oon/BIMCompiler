@@ -35,6 +35,9 @@ constraints. A session picking up work reads that; PROGRESS.md is state, not que
 
 ## Modeller lane — 2026-10-02 close: read `prompts/MODELLER_MASTER.md` §RESUME 2026-10-02 (START HERE).
 
+## Current State — 2026-10-30 (ERP Team lane, lead session close) — ⚠ RESUME HERE: `prompts/TEAMWORK_FRAMEWORK.md` ▶ START HERE, then §45.8
+LIVE bim-ootb main sw v936: wave 1 (#2431, imports / POS / Micro Finance / role delivery), Team guide + videos (#2436, #2438), Team panel plan + Bound to (#2440), versioning Stage 1 (#2442). Films: Film 6 EN + TH, Trust TH. **Unfinished:** HS1–HS3 head-office perf fixes + the re-measure (agent stopped on the usage limit; pushed, unverified): `perf/hq-hotspots` / `fable/scale-star-2`, steps in §45.8. Next: versioning Stage 2, F1 mailboxes, the "Versioning and Scalability" film.
+
 ## Current State — 2026-09-08 (session 2, take-over close) — ⚠ RESUME HERE: §36 W1–W6 ✅, W7 bakes gated; PR #1697 MERGED (Measure live), PR for feat/measure-indoor pending
 **Lane:** `prompts/MEP_CLASH_REVEAL_MOVIE.md` — read **§36 (worklist, all rows ✅ but W7)**, then §29.9, §37.4, §26.14, §33.
 bim-ootb: `main` carries PR #1697 (Measure checkbox + datum + slab/linear beats + opening gate, sw v1166, LIVE);
