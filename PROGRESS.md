@@ -36,7 +36,7 @@ constraints. A session picking up work reads that; PROGRESS.md is state, not que
 ## Modeller lane — 2026-10-02 close: read `prompts/MODELLER_MASTER.md` §RESUME 2026-10-02 (START HERE).
 
 ## Current State — 2026-10-31 (ERP Team lane) — ⚠ RESUME HERE: `prompts/TEAMWORK_FRAMEWORK.md` ▶ RESUME HERE — 2026-10-31 (top of file)
-LIVE bim-ootb main sw v937: HS1–HS3 head-office hot spots (#2449; per ticket 8,896 → 153/111/271 ms at N=10/100/1000), Test Harness **Terms** button (#2450), W-DOCNO-TILL witness (#2454). Terms runner `scripts/witness_terms.js` = 9 enforced / 4 open (§48.5). Decided: advisory Seatbelt, no click-through, "Project quality objectives" (§48.9), DocumentNo = OrgValue-UserValue-n auto-on with Team (§48.11b, spec only). **Next:** §48.11b build on the owner's go (twin gaps G1–G4 first) → browser witnesses into the runner → Seatbelt → F1 (owner's go).
+LIVE bim-ootb main sw v938: LOCAL NUMBERING DocumentNo = OrgValue-UserValue-n with Team, fold rule docno-station (#2459, §48.11c: W-DOCNO-TILL 18/0, mutants 4/4); HS1–HS3 (#2449); Terms button (#2450). Terms runner = 10 enforced / 3 open, now judging the real page too (browser judged 5/0, §48.12). ⛔ owner: station users need a Search Key (demo GardenAdmin has none → `HQ--50001` seen live); legacy arm needs the pilot (Postgres down). **Next:** legacy login validator (on the pilot) → Terms button record refresh → Seatbelt → F1 (owner's go).
 
 ## Current State — 2026-09-08 (session 2, take-over close) — ⚠ RESUME HERE: §36 W1–W6 ✅, W7 bakes gated; PR #1697 MERGED (Measure live), PR for feat/measure-indoor pending
 **Lane:** `prompts/MEP_CLASH_REVEAL_MOVIE.md` — read **§36 (worklist, all rows ✅ but W7)**, then §29.9, §37.4, §26.14, §33.

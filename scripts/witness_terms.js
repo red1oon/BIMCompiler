@@ -6,7 +6,10 @@
  * One row per TERM. A row is ENFORCED only when (a) every witness script exits 0 AND prints its own PASS verdict, and (b) every broken control it names is FOUND in the
  * witness log as a line proving the defect was refused. A witness that passes with a control line missing is reported UNCONTROLLED (not enforced). Nothing judged = INCONCLUSIVE.
  * A row with no witness is OPEN and carries its roadmap id; it is never run and never green. Offline: node + the repo's own build/ only, no network.
- * Run:   node scripts/witness_terms.js [--json out.json] [--only term-id,...] [--logs dir]
+ * Run:   node scripts/witness_terms.js [--json out.json] [--only term-id,...] [--logs dir] [--ootb dir] [--browser 0] [--reuse 1]
+ * Two layers (§48.12): ENGINE witnesses (node, this repo) and BROWSER witnesses (bim-ootb erp/tests/witness_team_*, the real erp/idempiere.html in headless Chromium).
+ * A browser witness that cannot run (no tree / no Playwright / --browser 0) is SKIPPED with its reason; the row then says 'engine only' and the verdict line prints
+ * browser=judged N/skipped M, so a skipped layer is never read as a pass. --reuse 1 judges the logs already in --logs without re-running (for mutation checks).
  * Exit:  0 all runnable rows ENFORCED · 1 a witness FAILED or a control is MISSING/PASSED · 2 INCONCLUSIVE (nothing judged). OPEN rows never change the exit code (they are stated, not hidden).
  * JSON schema (shared with the Seatbelt export): { schema:'terms-v1', kind:'harness', at, node, rows:[{id,term,guarantee,status,roadmap,witnesses:[{file,exit,verdict}],controls:[{id,found,evidence}]}] }
  */
@@ -15,6 +18,10 @@ var cp = require('child_process'), fs = require('fs'), path = require('path');
 var ROOT = path.join(__dirname, '..'), argv = process.argv.slice(2), A = {};
 for (var i = 0; i < argv.length; i++) if (/^--/.test(argv[i])) A[argv[i].slice(2)] = argv[++i];
 var LOGS = A.logs || path.join(ROOT, 'build', 'scriptor', 'terms_run'), ONLY = A.only ? A.only.split(',') : null;
+var OOTB = A.ootb || path.join(process.env.HOME || '', 'bim-ootb'), REUSE = A.reuse === '1';
+var TREE_WHY = !fs.existsSync(path.join(OOTB, 'erp', 'idempiere.html')) ? 'no bim-ootb tree at ' + OOTB : null;
+var BROWSER_WHY = A.browser === '0' ? '--browser 0' : TREE_WHY ? TREE_WHY
+  : !(fs.existsSync(path.join(OOTB, 'tests', 'node_modules', 'playwright')) || fs.existsSync(path.join(OOTB, 'node_modules', 'playwright'))) ? 'no Playwright in ' + OOTB : null;
 fs.mkdirSync(LOGS, { recursive: true });
 
 // witness = {f: script, ok: regex of its own PASS verdict line}; control = {id, f: which witness log, re: regex of the line that proves the defect was refused}
@@ -27,52 +34,78 @@ var W = {
   versions:  { f: 'witness_comm_versions.js', ok: /§CV_VERDICT PASS.*mutants_killed=18\/18/ },
   visit:     { f: 'witness_terms_visit.js', ok: /§VISIT_VERDICT PASS/ },
   policy:    { f: 'witness_comm_policy.js', ok: /§POLICY-NONADMIN verdicts=REFUSED:not-admin/ },
-  seal:      { f: 'witness_scriptor_seal.js', ok: /§SEAL_VERDICT PASS/ }
+  seal:      { f: 'witness_scriptor_seal.js', ok: /§SEAL_VERDICT PASS/ },
+  // BROWSER layer (§48.12): bim-ootb erp/tests, the real page in headless Chromium; verdicts carry their own mutant counts
+  tPublish:  { f: 'witness_team_publish.js', layer: 'browser', ok: /§WP_VERDICT PASS.*mutants_killed=4\/4/ },
+  tExecs:    { f: 'witness_team_executors.js', layer: 'browser', ok: /§WX_VERDICT PASS.*mutants_killed=4\/4/ },
+  tVersions: { f: 'witness_team_versions.js', layer: 'browser', ok: /§VM_VERDICT PASS.*mutants_killed=8\/8/ },
+  tBase:     { f: 'witness_team_base.js', layer: 'browser', ok: /§W-BASE-EDIT PASS/ },
+  tSo:       { f: 'witness_team_so.js', layer: 'browser', ok: /§W-TEAM-SO PASS/ },
+  // OOTB layer: node witnesses that live in the bim-ootb tree (no Playwright); skipped only when the tree is missing
+  tDocno:    { f: 'witness_docno_till.js', layer: 'ootb', ok: /§DT_VERDICT PASS/ },
+  tDocnoMut: { f: 'witness_docno_till.js', args: ['--mutants'], log: 'witness_docno_till_mutants.log', layer: 'ootb', ok: /§DT_MUTANTS killed=4\/4/ }
 };
 var TERMS = [
-  { id: 'statement-signed', term: 'LEDGER signed / STATEMENT', guarantee: 'a statement edited after signing, or signed by an outside key, is refused', w: ['plantrust'],
-    c: [{ id: 'edited-after-signing refused', w: 'plantrust', re: /keys edited after signing -> REFUSED:plan-trust-signature/ }, { id: 'outside signer refused', w: 'plantrust', re: /REFUSED:plan-trust-untrusted-signer/ }] },
-  { id: 'trusted-keys', term: 'trusted keys', guarantee: 'the backup key replaces a lost primary; a non-admin or stale statement cannot change the list', w: ['plantrust', 'policy'],
-    c: [{ id: 'backup recovers lost primary', w: 'plantrust', re: /the BACKUP signs \[K1,K3\].*MERGED/ }, { id: 'non-admin refused', w: 'plantrust', re: /NON-admin device B -> REFUSED:not-admin/ }, { id: 'stale replay refused', w: 'plantrust', re: /REFUSED:plan-trust-stale/ }] },
-  { id: 'rule-in-force', term: 'STATEMENT (rule in force)', guarantee: 'a claim stays judged by the rule in force when it was made; a later statement never rewrites it', w: ['execs', 'settrust'],
-    c: [{ id: 'Complete under old map stays refused after {}', w: 'execs', re: /AFTER \{\} the Complete done under the old map STAYS refused/ }, { id: 'set published under the old list still loads after rotation', w: 'settrust', re: /V3 MERGED; a fresh device on \[K2,K3\] loads S0 and S2/ }] },
-  { id: 'complete-all-or-nothing', term: 'BUNDLE (Complete)', guarantee: 'a Complete by the wrong role is refused on every device, the consequences with it', w: ['execs'],
-    c: [{ id: 'status op refused not-executor everywhere', w: 'execs', re: /status op is REFUSED not-executor on EVERY device/ }, { id: 'group consequence refused with it', w: 'execs', re: /REFUSED not-executor-group everywhere \(all-or-none\)/ }] },
-  { id: 'ledger-convergent', term: 'LEDGER convergent', guarantee: 'devices with the same history agree; a stale copy is not taken in', w: ['store', 'conflict'],
-    c: [{ id: 'same order on every device', w: 'store', re: /same order on every device/ }, { id: 'stale save refused (ReQuery)', w: 'conflict', re: /saveCheck stale=true msg="Current record was changed by another user, please ReQuery"\s+fresh=false/ }] },
+  { id: 'statement-signed', term: 'LEDGER signed / STATEMENT', guarantee: 'a statement edited after signing, or signed by an outside key, is refused', w: ['plantrust', 'tPublish'],
+    c: [{ id: 'edited-after-signing refused', w: 'plantrust', re: /keys edited after signing -> REFUSED:plan-trust-signature/ }, { id: 'outside signer refused', w: 'plantrust', re: /REFUSED:plan-trust-untrusted-signer/ }, { id: 'page: unsigned set refused', w: 'tPublish', re: /🟢 P3 an UNSIGNED set is refused by the engine itself/ }, { id: 'page: set edited after signing refused (bad-signature)', w: 'tPublish', re: /🟢 P3 a set edited after signing: .*B REFUSES the set \(bad-signature\)/ }, { id: 'page: outside key refused', w: 'tPublish', re: /🟢 P4 a set signed by a key outside the trust list: refused:untrusted-signer/ }] },
+  { id: 'trusted-keys', term: 'trusted keys', guarantee: 'the backup key replaces a lost primary; a non-admin or stale statement cannot change the list', w: ['plantrust', 'policy', 'tPublish'],
+    c: [{ id: 'backup recovers lost primary', w: 'plantrust', re: /the BACKUP signs \[K1,K3\].*MERGED/ }, { id: 'non-admin refused', w: 'plantrust', re: /NON-admin device B -> REFUSED:not-admin/ }, { id: 'stale replay refused', w: 'plantrust', re: /REFUSED:plan-trust-stale/ }, { id: 'page: non-admin publish refused on both devices', w: 'tPublish', re: /🟢 P5 a non-admin's publishUpcasters has no effect: its POLICY is REFUSED not-admin on both devices/ }] },
+  { id: 'rule-in-force', term: 'STATEMENT (rule in force)', guarantee: 'a claim stays judged by the rule in force when it was made; a later statement never rewrites it', w: ['execs', 'settrust', 'tExecs'],
+    c: [{ id: 'Complete under old map stays refused after {}', w: 'execs', re: /AFTER \{\} the Complete done under the old map STAYS refused/ }, { id: 'set published under the old list still loads after rotation', w: 'settrust', re: /V3 MERGED; a fresh device on \[K2,K3\] loads S0 and S2/ }, { id: 'page: refused SET_STATUS stays refused after {}', w: 'tExecs', re: /🟢 X9 after the map \{\} the SET_STATUS the station was refused on STAYS refused/ }] },
+  { id: 'complete-all-or-nothing', term: 'BUNDLE (Complete)', guarantee: 'a Complete by the wrong role is refused on every device, the consequences with it', w: ['execs', 'tExecs'],
+    c: [{ id: 'status op refused not-executor everywhere', w: 'execs', re: /status op is REFUSED not-executor on EVERY device/ }, { id: 'group consequence refused with it', w: 'execs', re: /REFUSED not-executor-group everywhere \(all-or-none\)/ }, { id: 'page: clicked CL refused at fold, order unchanged', w: 'tExecs', re: /🟢 X7 C's DocAction \(CL\) is REFUSED at fold on A .*the order on A is unchanged/ }] },
+  { id: 'ledger-convergent', term: 'LEDGER convergent', guarantee: 'devices with the same history agree; a stale copy is not taken in', w: ['store', 'conflict', 'tBase'],
+    c: [{ id: 'same order on every device', w: 'store', re: /same order on every device/ }, { id: 'stale save refused (ReQuery)', w: 'conflict', re: /saveCheck stale=true msg="Current record was changed by another user, please ReQuery"\s+fresh=false/ }, { id: 'page: same refusal on A and B', w: 'tBase', re: /🟢 .*REFUSED with an access: reason by the base row's scope — the SAME verdict on A and on B/ }, { id: 'page: base-row-missing refused on both devices', w: 'tBase', re: /🟢 an op on a uu that is in neither the log nor the base is REFUSED base-row-missing — on both devices/ }] },
   { id: 'visit-lossless-offline', term: 'VISIT (offline / interrupted)', guarantee: 'no connection or a lying pipe sends nothing and loses nothing; the later Visit sends everything once', w: ['visit'],
     c: [{ id: 'dead pipe: nothing lost', w: 'visit', re: /a dead pipe: every claim still held locally, none marked sent/ }, { id: 'liar pipe caught by read-back', w: 'visit', re: /the read-back catches the dropped bundle/ }, { id: 'checkers fail on doctored state', w: 'visit', re: /CONTROL V2 liar-checker.*failed as designed/ }] },
   { id: 'visit-once', term: 'VISIT (voluntary, once)', guarantee: 'one Visit sends everything once; a second sends nothing', w: ['visit', 'store'],
     c: [{ id: 'third Visit sends nothing', w: 'visit', re: /a third Visit sends nothing \(once only\)/ }, { id: 'incremental fetch is 0', w: 'store', re: /a visit with nothing new fetches 0 bundles/ }] },
-  { id: 'ack-trail', term: 'ACK', guarantee: 'sent → seen → refused is visible on the sender', w: ['store', 'visit'],
-    c: [{ id: 'sent then SEEN by peers', w: 'store', re: /SEEN by B and C/ }, { id: 'refused shown on the sender with a reason', w: 'visit', re: /the refused claim is on the sender's own trail with a named reason/ }, { id: 'counter fails with the refused claim removed', w: 'visit', re: /CONTROL V3 refused-counter.*failed as designed/ }] },
-  { id: 'version-skew', term: 'BUNDLE (version skew)', guarantee: 'newer waits, older waits for a rule, retired is ignored', w: ['versions'],
-    c: [{ id: '18 mutants killed', w: 'versions', re: /§CV_VERDICT PASS.*mutants_killed=18\/18/ }] },
+  { id: 'ack-trail', term: 'ACK', guarantee: 'sent → seen → refused is visible on the sender', w: ['store', 'visit', 'tSo'],
+    c: [{ id: 'sent then SEEN by peers', w: 'store', re: /SEEN by B and C/ }, { id: 'refused shown on the sender with a reason', w: 'visit', re: /the refused claim is on the sender's own trail with a named reason/ }, { id: 'counter fails with the refused claim removed', w: 'visit', re: /CONTROL V3 refused-counter.*failed as designed/ }, { id: 'page: chip shows seen/refused/waiting/last visit', w: 'tSo', re: /🟢 the ERP chip shows .*seen \d+ · refused \d+ · waiting on \d+ · last visit/ }, { id: 'page: unsent DocAction shows local-only warning', w: 'tSo', re: /🟢 a DocAction is NOT sent and the chip shows a visible local-only warning/ }] },
+  { id: 'version-skew', term: 'BUNDLE (version skew)', guarantee: 'newer waits, older waits for a rule, retired is ignored', w: ['versions', 'tVersions'],
+    c: [{ id: '18 mutants killed', w: 'versions', re: /§CV_VERDICT PASS.*mutants_killed=18\/18/ }, { id: 'page: newer op parked needs-upgrade', w: 'tVersions', re: /🟢 M2 the sv:2 op is PARKED needs-upgrade/ }, { id: 'page: same op without sv merged (control)', w: 'tVersions', re: /🟢 M2 CONTROL: the same op without sv is MERGED/ }, { id: 'page: tampered set refused', w: 'tVersions', re: /🟢 M4 tampered set -> refused:bad-signature/ }] },
+  { id: 'doc-numbering', term: 'LOCAL NUMBERING (LEDGER)', guarantee: 'with Team, two stations (login users with a Search Key) never issue the same document number: OrgValue-UserValue-n each; another station\'s or a typed number is refused at fold', w: ['tDocno', 'tDocnoMut'],
+    note: 'TEAMWORK §48.11b/§48.11c. Limits: an author not bound to an AD_User is not judged at fold (counted); users without a Search Key share Org--n; legacy arm INCONCLUSIVE (pilot login validator not built)',
+    c: [{ id: 'same user on two devices collides (control)', w: 'tDocno', re: /§DT PASS D11 - CONTROL/ }, { id: 'shipped plain sequence collides (control)', w: 'tDocno', re: /§DT PASS D5 - CONTROL/ },
+        { id: "another station's / typed number refused at fold on every device", w: 'tDocno', re: /§DT PASS D14 - / }, { id: 'new format refused until its edit is in the log', w: 'tDocno', re: /§DT PASS D15b - / },
+        { id: 'user preference cannot change the station', w: 'tDocno', re: /§DT PASS D13 - / }, { id: '4 mutants killed', w: 'tDocnoMut', re: /§DT_MUTANTS killed=4\/4/ }] },
   // OPEN: stated, never run, never green. roadmap = where it closes.
   { id: 'visit-bounded', term: 'VISIT (bounded)', open: true, roadmap: 'TEAMWORK §45.2 F1 per-device mailboxes', guarantee: 'Visit #1 download stays bounded as the team grows',
     note: 'measured §45.5: 384 KB / 4.5 MB / 45.8 MB at N=10/100/1000 (linear); triggered from N=10' },
   { id: 'sealing-real', term: 'RELAY (sealing)', open: true, roadmap: 'TEAMWORK §29 (simulator PASS only, real comm layer untouched)', guarantee: 'the relay does not retain readable history',
     note: 'witness_scriptor_seal judges the simulator only; its own log marks the real layer INCONCLUSIVE' },
-  { id: 'doc-numbering', term: 'LEDGER (document numbering)', open: true, roadmap: 'TEAMWORK §48.11b: OrgValue-UserValue-n, auto-on with Team, fold-checked (spec written, awaits go)', guarantee: 'two stations never issue the same document number; each station (login user) runs its own gapless number under OrgValue-UserValue-',
-    note: 'mechanism witnessed: bim-ootb W-DOCNO-TILL 6/0 (Org|Till|Sequence, offline devices share no number; control: shipped plain sequence collides 50000/50000). NOT switched on: changing the shipped sequence moves the Team BASE hash (owner decision). Fold-path uniqueness not verified; legacy arm INCONCLUSIVE' },
   { id: 'key-roles-threshold', term: 'trusted keys (roles + threshold)', open: true, roadmap: 'TEAMWORK §46.5 versioning Stage 2', guarantee: 'key roles, a signing threshold, signed bundles' }
 ];
 
 var logs = {}, results = [], anyFail = false, anyJudged = false;
 function runW(k) {
   if (logs[k]) return logs[k];
-  var w = W[k], lf = path.join(LOGS, w.f.replace(/\.js$/, '.log')), r = cp.spawnSync('node', [path.join(__dirname, w.f)], { cwd: ROOT, encoding: 'utf8', timeout: 600000, maxBuffer: 1 << 28 });
-  var out = (r.stdout || '') + (r.stderr || ''); fs.writeFileSync(lf, out);
+  var w = W[k], br = w.layer === 'browser' || w.layer === 'ootb', lf = path.join(LOGS, w.log || w.f.replace(/\.js$/, '.log')), why = w.layer === 'browser' ? BROWSER_WHY : w.layer === 'ootb' ? TREE_WHY : null;
+  if (why) return logs[k] = { skipped: why, out: '', log: lf, passed: false };
+  if (REUSE) { var o0 = fs.existsSync(lf) ? fs.readFileSync(lf, 'utf8') : '', e0 = (o0.match(/\nexit=(\d+)\s*$/) || [])[1]; return logs[k] = { exit: e0 === undefined ? null : +e0, out: o0, log: lf, reused: true, passed: e0 === '0' && w.ok.test(o0) }; }
+  var r = cp.spawnSync('node', [br ? path.join(OOTB, 'erp', 'tests', w.f) : path.join(__dirname, w.f)].concat(w.args || []), { cwd: br ? OOTB : ROOT, encoding: 'utf8', timeout: 600000, maxBuffer: 1 << 28 });
+  var out = (r.stdout || '') + (r.stderr || '') + '\nexit=' + r.status + '\n'; fs.writeFileSync(lf, out);
+  console.log('   ran ' + (br ? w.layer + ' ' : '') + w.f + (w.args ? ' ' + w.args.join(' ') : '') + ' exit=' + r.status);
   return logs[k] = { exit: r.status, out: out, log: lf, passed: r.status === 0 && w.ok.test(out) };
 }
+var nBr = { judged: 0, skipped: 0 }, brSeen = {};
 TERMS.forEach(function (t) {
   if (ONLY && ONLY.indexOf(t.id) < 0) return;
   var row = { id: t.id, term: t.term, guarantee: t.guarantee, roadmap: t.roadmap || null, witnesses: [], controls: [], status: null, note: t.note || null };
   if (t.open) { row.status = 'OPEN'; results.push(row); return; }
-  t.w.forEach(function (k) { var r = runW(k); anyJudged = true; row.witnesses.push({ file: W[k].f, exit: r.exit, verdict: r.passed ? 'PASS' : 'FAIL', log: path.relative(ROOT, r.log) }); });
-  t.c.forEach(function (c) { var r = runW(c.w), m = r.out.match(c.re); row.controls.push({ id: c.id, found: !!m, evidence: m ? m[0].slice(0, 160) : null }); });
-  var wOk = row.witnesses.every(function (x) { return x.verdict === 'PASS'; }), cOk = row.controls.every(function (x) { return x.found; });
+  t.w.forEach(function (k) {
+    var r = runW(k), br = W[k].layer === 'browser';   // the browser counter is Playwright runs only; the ootb layer shows in the row's layers
+    if (br && !brSeen[k]) { brSeen[k] = 1; nBr[r.skipped ? 'skipped' : 'judged']++; }
+    if (!r.skipped) anyJudged = true;
+    row.witnesses.push({ file: W[k].f, layer: W[k].layer || 'engine', exit: r.exit, verdict: r.skipped ? 'SKIPPED' : r.passed ? 'PASS' : 'FAIL', skipped: r.skipped || null, reused: !!r.reused, log: path.relative(ROOT, r.log) });
+  });
+  t.c.forEach(function (c) { var r = runW(c.w); if (r.skipped) { row.controls.push({ id: c.id, layer: 'browser', found: null, skipped: r.skipped, evidence: null }); return; } var m = r.out.match(c.re); row.controls.push({ id: c.id, layer: W[c.w].layer || 'engine', found: !!m, evidence: m ? m[0].slice(0, 160) : null }); });
+  var judgedW = row.witnesses.filter(function (x) { return x.verdict !== 'SKIPPED'; }), judgedC = row.controls.filter(function (x) { return x.found !== null; });
+  var wOk = judgedW.length > 0 && judgedW.every(function (x) { return x.verdict === 'PASS'; }), cOk = judgedC.every(function (x) { return x.found; });
   row.status = !wOk ? 'WITNESS-FAILED' : (!cOk ? 'UNCONTROLLED' : 'ENFORCED'); if (row.status !== 'ENFORCED') anyFail = true;
+  var hasBr = row.witnesses.some(function (x) { return x.layer === 'browser'; }), brJudged = row.witnesses.some(function (x) { return x.layer === 'browser' && x.verdict !== 'SKIPPED'; });
+  var onlyOotb = row.witnesses.every(function (x) { return x.layer === 'ootb'; });
+  row.layers = onlyOotb ? 'bim-ootb tree (node, real modules)' : !hasBr ? 'engine only (no browser witness located)' : brJudged ? 'engine + browser' : 'engine only (browser SKIPPED)';
   results.push(row);
 });
 
@@ -90,12 +123,13 @@ var order = { 'OPEN': 0, 'WITNESS-FAILED': 1, 'UNCONTROLLED': 2, 'ENFORCED': 3 }
 console.log('§TERMS table (open first; an open term is never green)');
 console.log(['term', 'witness', 'broken control', 'status', 'roadmap'].join(' | '));
 results.forEach(function (r) {
-  var w = r.status === 'OPEN' ? '-' : r.witnesses.map(function (x) { return x.verdict; }).join('+'), c = r.status === 'OPEN' ? '-' : r.controls.filter(function (x) { return x.found; }).length + '/' + r.controls.length + ' refused';
-  console.log([r.term, w, c, r.status, r.roadmap || ''].join(' | '));
-  r.controls.forEach(function (x) { if (!x.found) console.log('   🔴 control NOT FOUND: ' + x.id); });
+  var w = r.status === 'OPEN' ? '-' : r.witnesses.map(function (x) { return x.verdict; }).join('+'), jc = r.controls.filter(function (x) { return x.found !== null; }), c = r.status === 'OPEN' ? '-' : jc.filter(function (x) { return x.found; }).length + '/' + jc.length + ' refused';
+  console.log([r.term, w, c, r.status + (r.layers ? ' [' + r.layers + ']' : ''), r.roadmap || ''].join(' | '));
+  r.controls.forEach(function (x) { if (x.found === false) console.log('   🔴 control NOT FOUND: ' + x.id); });
 });
 var n = { ENFORCED: 0, OPEN: 0, 'WITNESS-FAILED': 0, UNCONTROLLED: 0 }; results.forEach(function (r) { n[r.status]++; });
 var verdict = anyFail ? 'FAIL' : (!anyJudged ? 'INCONCLUSIVE' : 'PASS');
-console.log('§TERMS_VERDICT ' + verdict + ' enforced=' + n.ENFORCED + ' open=' + n.OPEN + ' witness_failed=' + n['WITNESS-FAILED'] + ' uncontrolled=' + n.UNCONTROLLED);
-if (A.json) fs.writeFileSync(A.json, JSON.stringify({ schema: 'terms-v1', kind: 'harness', at: new Date().toISOString(), node: process.version, verdict: verdict, rows: results }, null, 1));
+console.log('§TERMS_BROWSER judged=' + nBr.judged + ' skipped=' + nBr.skipped + (BROWSER_WHY ? ' reason="' + BROWSER_WHY + '"' : '') + (REUSE ? ' reused-logs' : ''));
+console.log('§TERMS_VERDICT ' + verdict + ' enforced=' + n.ENFORCED + ' open=' + n.OPEN + ' witness_failed=' + n['WITNESS-FAILED'] + ' uncontrolled=' + n.UNCONTROLLED + ' browser=judged ' + nBr.judged + '/skipped ' + nBr.skipped);
+if (A.json) fs.writeFileSync(A.json, JSON.stringify({ schema: 'terms-v1', kind: 'harness', at: new Date().toISOString(), node: process.version, verdict: verdict, browser: { judged: nBr.judged, skipped: nBr.skipped, reason: BROWSER_WHY, reused: REUSE }, rows: results }, null, 1));
 process.exit(anyFail ? 1 : (!anyJudged ? 2 : 0));
