@@ -1,0 +1,13 @@
+§DT-NUMBERS device=A T1=HQ-T1-000001 T2=HQ-T2-000001 T1=HQ-T1-000002 T1=HQ-T1-000003 T2=HQ-T2-000002 N1=Store North-N1-000001
+§DT PASS D1 - two tills in one org each run their own series over interleaved saves (prefix Org-Till-) :: T1=[1,2,3] T2=[1,2]
+§DT PASS D2 - each till series is gapless 1..n :: T1=1,2,3 T2=1,2
+§DT PASS D3 - another org's till starts its own series (the org value is part of the key) :: N1=[1] got=Store North-N1-000001
+§DT-OFFLINE device B1(T1)=HQ-T1-000001,HQ-T1-000002,HQ-T1-000003,HQ-T1-000004,HQ-T1-000005 device B2(T2)=HQ-T2-000001,HQ-T2-000002,HQ-T2-000003,HQ-T2-000004,HQ-T2-000005
+§DT PASS D4 - two devices numbering OFFLINE from the same shipped state, each for its own till, share no DocumentNo (the legacy unique (DocumentNo,C_DocType_ID,C_BPartner_ID) cannot fire) :: shared=[]
+§DT-CONTROL plain seq=387 device C1=50000,50001,50002 device C2=50000,50001,50002
+§DT PASS D5 - CONTROL: the same two devices on the shipped plain sequence DO draw the same numbers (the defect D4 removes is real) :: clash=["50000","50001","50002"]
+§DT-NOTILL org=HQ c_pos_id=null DocumentNo=HQ--000001
+§DT PASS D6 - an order with no till gets a number outside every till series (measured: HQ--000001) :: HQ--000001
+§DT-SEQLOG §MODEL-SEQ seq=9300001 level=AD_Sequence_No org=0 key=HQ-T1 next=1 (FOR UPDATE row lock: none in a single-writer op-group) | §MODEL-SEQ seq=9300001 level=AD_Sequence_No org=0 key=HQ-T2 next=1 (FOR UPDATE row lock: none in a single-writer op-group)
+§DT INCONCLUSIVE LEGACY - no oracle file /home/red1/bim-compiler/scripts/bridge/out/docno_till_legacy.json (run the same config on the pilot; until then the twin numbers are not legacy-compared)
+§DT_VERDICT PASS judged=6 fails=0 inconclusive=1 (legacy arm)

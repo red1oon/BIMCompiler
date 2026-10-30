@@ -54,7 +54,7 @@ var TERMS = [
   { id: 'sealing-real', term: 'RELAY (sealing)', open: true, roadmap: 'TEAMWORK §29 (simulator PASS only, real comm layer untouched)', guarantee: 'the relay does not retain readable history',
     note: 'witness_scriptor_seal judges the simulator only; its own log marks the real layer INCONCLUSIVE' },
   { id: 'doc-numbering', term: 'LEDGER (document numbering)', open: true, roadmap: 'TEAMWORK §48.8: per-station org-level sequence + prefix (legacy mechanism, ported) not configured in the shipped data; W-DOCNO-ORG not written', guarantee: 'two stations never give the same document number; each station runs its own gapless number under its own prefix',
-    note: 'legacy unique (DocumentNo, C_DocType_ID, C_BPartner_ID) is enforced on the local save path; on the fold of a received claim: not verified' },
+    note: 'mechanism witnessed: bim-ootb W-DOCNO-TILL 6/0 (Org|Till|Sequence, offline devices share no number; control: shipped plain sequence collides 50000/50000). NOT switched on: changing the shipped sequence moves the Team BASE hash (owner decision). Fold-path uniqueness not verified; legacy arm INCONCLUSIVE' },
   { id: 'key-roles-threshold', term: 'trusted keys (roles + threshold)', open: true, roadmap: 'TEAMWORK §46.5 versioning Stage 2', guarantee: 'key roles, a signing threshold, signed bundles' }
 ];
 
