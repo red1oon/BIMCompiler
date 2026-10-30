@@ -48,6 +48,7 @@ A 2D drawing carries only some of what a model needs. Everything it does not sta
 | `footing.depth` | IfcFooting | m | **0.4** | guess | pad footing thickness | 0.3, 0.4, 0.6 |
 | `footing.length` | IfcFooting | m | **1.2** | guess | pad footing plan length when no schedule gives it | 1, 1.2, 1.5 |
 | `footing.width` | IfcFooting | m | **1.2** | guess | pad footing plan width | 1, 1.2, 1.5 |
+| `member.section` | IfcMember | text | *(empty)* | guess | a member whose label carries no section: empty = the most common section drawn on the same set for the same kind of member (load_summary.js, shown assumed); a label such as 1.5"x1.5"x1/4" Angle = that section; none = leave them unweighed |  |
 | `member.size` | IfcMember | m | **0.04** | guess | square envelope for a member with no label or size | 0.04, 0.05, 0.075 |
 | `profile.angle_heel` | IfcMember | text | **lower** | guess | which way an angle opens is not stated by a section label; the heel corner sits at the low side of the bar's normal (the b x b envelope is kept either way) | lower, upper |
 | `profile.angle_mesh` | IfcMember | text | **label** | guess | a section bar whose label states one equal-leg angle (1.5"x1.5"x1/4" Angle) is built as that L section (t(2b-t) x length) instead of its b x b box; 'box' keeps the drawn prism | label, box |
