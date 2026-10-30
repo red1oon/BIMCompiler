@@ -1,0 +1,34 @@
+§SEAL_START simulator only · sealed=AES-256-GCM per audience · names=HMAC(audience key) (SAMPLE)
+§W-SEAL-BYTES
+   🟢 the sealed flow's shelf bytes contain none of its field values, field names or natural keys (3 facts) — 0 leaks
+   🟢 control: the unsealed flow in the same world shows them all (the test can fail) — 4 of 4 visible
+§W-SEAL-OUTSIDER
+   🟢 an outsider with FULL shelf access and no key opens 0 of 3 sealed facts — opened 0
+   🟢 control: an insider opens 3 of 3 (the test can fail) — opened 3
+   🟢 a holder of ANOTHER audience's key opens 0 of 3 — opened 0
+§W-SEAL-TAMPER
+   🟢 one flipped byte on the shelf => the hub does NOT accept it and counts it tampered — accepted=false tampered=1
+§W-SEAL-E2E
+   🟢 the hub accepted the sealed sale with exactly the fields of the plaintext run — {"M_Product_ID":"P-COLA","QtyEntered":2}
+   🟢 an exact resend creates NO new shelf object (same content, same name) and the hub record is unchanged — idempotent on sealed facts — shelf 3 -> 4 (+1 = the changed K2 only)
+   🟢 a changed resend under the same key is a COLLISION, flagged and never overwritten (the hub keeps QtyEntered 7) — collisions=1
+§W-SEAL-MESH
+   🟢 a sealed team flow: both members reach ONE fold hash and the shelf holds no field name — 808d069813d8 = 808d069813d8; shelf facts=2
+   🟢 an outsider reading the shelf directly (scope ignored) opens 0 of 2 — opened 0
+§W-SEAL-NAMES
+   🟢 the same content gets a different shelf name under another audience's key — 76e30da3438c vs a1e435c53ad0
+   🟢 an attacker who knows the plaintext but not the key cannot find it in the shelf names (0 sealed matches; control unsealed: 1 match) — sealed=0 control=1
+   🟢 with the key the name IS recomputable (a key holder can still address a fact)
+§W-SEAL-STAR (every existing star/mesh arm unchanged — child runs, verdict lines read)
+   🟢 witness_scriptor_treat.js unchanged — §TREAT_VERDICT PASS judged=30 fails=0 (sample data; tr
+   🟢 witness_scriptor_registry.js unchanged — §REG_VERDICT PASS judged=18 fails=0
+   🟢 witness_scriptor_mesh.js unchanged — §MESH_VERDICT PASS judged=25 fails=0 vacuous=0 (sampl
+   🟢 witness_scriptor_virtual.js unchanged — §VIRT_VERDICT PASS judged=25 fails=0 vacuous=1 [FL-6 
+§W-SEAL-MUTANTS (each broken rule must turn at least one arm red)
+   🟢 sealing off (plaintext) -> red arms: L1, L2, L4, L3, L6, L7
+   🟢 one key shared by every audience -> red arms: L4, L7
+   🟢 unauthenticated cipher (tamper accepted) -> red arms: L3
+   🟢 shelf name from the plaintext hash -> red arms: L7
+   🟢 the outsider is handed the key -> red arms: L2
+   🟢 open skips the audience check -> red arms: L2, L4, L6
+§SEAL_VERDICT PASS judged=24 fails=0 — W-SCRIPTOR-LEAK-BYTES: JUDGED in the simulator; the real comm layer is still INCONCLUSIVE (not touched, HOLD)

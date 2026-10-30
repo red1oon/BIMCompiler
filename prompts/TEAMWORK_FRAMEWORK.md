@@ -4435,14 +4435,14 @@ bim-compiler `fable/scale-star` `a431fe316` (merged into the lane branch): `scri
 | Complete by team role | `witness_team_executors` X7 | wrong-role CL refused `not-executor` at fold, order unchanged; `§TEAM_ROLE_MISMATCH` printed | ENFORCED |
 | Non-admin cannot publish | `witness_team_publish` P5 | `REFUSED:not-admin` on both devices | ENFORCED |
 | Version skew handled | `witness_team_versions` M2 | `needs-upgrade` PARKED, same op without `sv` MERGED | ENFORCED (needs-upgrade); retired-version-ignored NOT located |
-| Ledger convergent (stale copy not taken in) | not located | not located | TO LOCATE (grep `witness_team_*`/`poc_*`; else write it) |
-| Rule in force / superseded not retroactive | not located | not located | TO LOCATE (see §48.1 correction) |
+| Ledger convergent (stale copy not taken in) | `scripts/witness_comm_cl5_conflict.js` W-CONFLICT `§CONF saveCheck stale=true msg="Current record was changed by another user, please ReQuery"` (PASS 12/12) | the stale save is refused, `fresh=false` | ENFORCED (stale save); two-device same-history agreement claim NOT separately located |
+| Rule in force / superseded not retroactive | `witness_comm_plantrust` T6 (PASS 45/45), `witness_comm_settrust` V3 (a set published under the old list still loads after rotation) | first statement replayed after the second -> `REFUSED:plan-trust-stale`; epoch-stale POLICY -> `REFUSED:epoch-stale` | ENFORCED for trust list; an order-judged-by-rule-A-after-B control NOT located |
 | Visit lossless offline / interrupted | not located | not located | TO LOCATE |
 | Visit one-shot (second sends nothing) | `witness_team_base` A1/B1 `§TEAM_VISIT` shows sent then fetched counts | not located | PARTIAL |
 | Visit bounded | measured in §45.5: download 384 KB / 4.5 MB / 45.8 MB at N = 10 / 100 / 1000 (linear) | none | **OPEN: F1 per-device mailboxes (§45.2)** |
 | ACK trail | chip text shows `seen / refused / waiting on / last visit` (`witness_team_so`) | refused counted on sender's chip NOT located | PARTIAL |
-| Trusted keys: backup replaces lost primary; admin alone cannot change | none | none | **OPEN: versioning Stage 2 (§46.5)** |
-| Sealing | none | none | **OPEN: not built** |
+| Trusted keys: backup replaces lost primary; non-admin / outside signer cannot change | `witness_comm_plantrust` T6 `the BACKUP signs [K1,K3] (primary dropped, lost-key recovery): MERGED` | outside signer `REFUSED:plan-trust-untrusted-signer`, keys edited after signing `REFUSED:plan-trust-signature`, non-admin `REFUSED:not-admin` | ENFORCED. (Earlier draft of this row said OPEN/Stage 2: WRONG, corrected 2026-10-30. Stage 2 = key ROLES + threshold + bundle signing, still open and is a separate term.) |
+| Sealing | `witness_scriptor_seal` `§SEAL_VERDICT PASS judged=24` in the SIMULATOR only | the same log states the real comm layer is INCONCLUSIVE (not touched) | **OPEN in the real layer** (simulator-judged only) |
 | Team-wide document numbering | none | none | **OPEN: per-device counters today** |
 ### §48.3 Build plan (each step: spec row first, witness RED first, read the log)
 1. **Locate-or-write** the five TO LOCATE / PARTIAL controls (extend `witness_team_*`; no new engine code).
@@ -4451,3 +4451,4 @@ bim-compiler `fable/scale-star` `a431fe316` (merged into the lane branch): `scri
 4. **Seatbelt** (Team panel): pre-flight audit from the Visit contract and chip counters. Gating Process is NOT in scope until the owner decides, because it changes DocAction behaviour (twin rule).
 5. **Bill** as a short page GENERATED from the harness JSON: titled "Tested properties and limits", not "guarantees" (MIT disclaims warranty). Not built until 2-4 exist; any claim not extracted from a log (relay privacy, "trial covers one cycle") is left out.
 **Owner-held items:** whether the Seatbelt may gate Process; whether acceptance is recorded (it stores a timestamp and device code).
+**§48.4 Located 2026-10-30:** engine witnesses run, logs in `build/scriptor/terms_20261030/` (all exit 0): cl5_conflict 12, checkpoint 43, keyclaim 27, policy 32, cl4_admit 23, plantrust 45, settrust 8 (mutants 3/3), base 36, versions 54 (mutants 18/18), executors 27, seal 24. Still TO LOCATE: Visit interrupted/offline-lossless; refused counted on the sender's chip; two-device convergence; order judged by rule A after B. Next: step 1 of §48.3 for those four, then the runner.
