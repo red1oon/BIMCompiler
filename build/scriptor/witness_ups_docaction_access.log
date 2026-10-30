@@ -21,14 +21,16 @@
    🟢 A4a master role, rows of the same DocBaseType/DocSubTypeSO, any client → CO offered — got [CO,PR,VO]
    🟢 A4b master role: every SOO/SO doctype's CO row 'N' → CO not offered — got [PR,VO]
 
-── B-GONE the overlay argument is deleted ──
-   🟢 B-GONE checkActionAccess declares 3 parameters and ignores a 4th (the old overlay = every value would have emptied the list) — arity=3 with-4th=[CO,PR,VO]
+── B executor overlay (§38.5 E2b) ──
+   🟢 B1a a non-executor device: overlay = every value → nothing offered (E3 would refuse any SET_STATUS) — got []
+   🟢 B1b the executor device: no overlay → unchanged — got [CO,PR,VO]
+   🟢 B2 empty overlay (no map in force / team off) → identical to A1 — got [CO,PR,VO]
 
-§E2_ARMS red=none judged=11
-   mutant skip: red=A2a,A2c,A3c,A4b → KILLED by A2
+§E2_ARMS red=none judged=13
+   mutant skip: red=A2a,A2c,A3c,A4b,B1a → KILLED by A2
    mutant N-ignored: red=A3c → KILLED by A3
    mutant no-row-offered: red=A2c → KILLED by A2
    mutant included-off: red=A3a → KILLED by A3
    mutant master-as-tenant: red=A4a,A4b → KILLED by A4
-   mutant overlay-back: red=B-GONE → KILLED by B-GONE
-§E2_VERDICT PASS judged=11 fails=0 mutants=6/6
+   mutant overlay-off: red=B1a → KILLED by B1
+§E2_VERDICT PASS judged=13 fails=0 mutants=6/6
