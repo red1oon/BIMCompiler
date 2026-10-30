@@ -1,0 +1,74 @@
+§IPAY-LOAD erp=/tmp/wt-hq-main/erp mutant=none seedPatch ok=3803 failed=3 adImportTables=loaded ensure:function
+  §IPAY-CHECK case=TABLE key=seed-gap OK rule="the shipped seed + patch has the 74 I_Payment dictionary columns but NO physical i_payment table (the gap B1 closes)"
+  §IPAY-CHECK case=TABLE key=ensure OK rule="ensure(db) creates the two import tables once (2), then nothing (0); physical i_payment columns == the 74 dictionary columns"
+  §IPAY-CHECK case=TABLE key=base-hash OK rule="the team BASE hash (seed + the two hashed patch files) is byte-identical to origin/main: B1 touched no hashed file (a teams-wide base-mismatch otherwise)"
+  §IPAY-CHECK case=TABLE key=wiring OK rule="the port is booted where ImportOrder is: idempiere.html loads processes/ImportPayment.js, sw.js precaches it"
+§IPAY-FIXTURE invoice103=["200002",117,161.12,100,"N","CO"] invoice109=["100000",118,228.85,102,"N",108] schedule109=[114.43,114.42] ARR={"d":119} bp118={"value":"JoeBlock"}
+  §IPAY-CHECK case=P0 key=registered OK rule="AD_Process 343 Import_Payment resolves to a ported class (org.compiere.process.ImportPayment registered by erp/processes/ImportPayment.js)"
+  §IPAY-CHECK case=P0 key=params-x-of-n OK rule="dictionary parameters ["AD_Org_ID","C_BankAccount_ID","DocAction","DeleteOldImported"] all read by the port (X=4 of N=4), port reads ["AD_Org_ID","C_BankAccount_ID","DeleteOldImported","DocAction"]"
+  §IPAY-CHECK case=P0 key=docaction-no-default OK rule="MEASURED: AD_Process_Para 343/DocAction has no DefaultValue, so legacy "not sent" = null = no processing (the twin must not invent a PR/CO default as ImportOrder's 206 has)"
+  §IPAY-CHECK case=P7 key=no-bank OK rule="both runs report an error naming @NotFound@ @C_BankAccount_ID@ - 0 / - 999999; the row is unchanged (N, no error text, no ids filled), no payment"
+  §IPAY-CHECK case=P2 key=null-tender OK rule="fixture proof: the declared slip row carries TenderType NULL / TrxType NULL (before the explicit reset: null / null), so P2.defaults really exercises legacy :369-384"
+  §IPAY-CHECK case=P2 key=declare OK rule="one I_Payment row exists, I_IsImported=N, no C_Payment yet; the invoice (DocNo 200002, BP C&W) is Complete and unpaid"
+  §IPAY-CHECK case=P2 key=run OK rule="the process ran ok (no error)"
+  §IPAY-CHECK case=P2 key=one-payment OK rule="exactly ONE c_payment carries the slip DocumentNo (payment.setDocumentNo(imp.getDocumentNo()), :474)"
+  §IPAY-CHECK case=P2 key=resolved OK rule="BP 117 from the invoice (:289-296), invoice 103 from InvoiceDocumentNo 200002 (:270-277), bank 100 = the process parameter (:171-180), currency 100 from ISO_Code USD (:192-199), doc type = AR Receipt among ARR/APP (:387-393)"
+  §IPAY-CHECK case=P2 key=defaults OK rule="TrxType S and TenderType K defaults (:369-384; payment AND the I_Payment row, which the UPDATE wrote), IsReceipt Y (from the ARR doc type), PayAmt 161.12"
+  §IPAY-CHECK case=P2 key=dates OK rule="DateTrx = the row's DateTrx and DateAcct = imp.getDateTrx() (:498-499) - NOT the row's own DateAcct (2026-10-20 00:00:00)"
+  §IPAY-CHECK case=P2 key=copied OK rule="CheckNo "CH-12 34" -> "1234" and AccountNo "AC 9-9" -> "99" (MPayment.setCheckNo/setAccountNo = MPaymentValidate.checkNumeric: digits only), A_Name, R_PnRef, Description copied (:513-530)"
+  §IPAY-CHECK case=P2 key=complete OK rule="DocAction CO given -> DocStatus CO, Processed Y"
+  §IPAY-CHECK case=P2 key=processIt-once OK rule="DocumentEngine ran ONCE for the payment (:545)"
+  §IPAY-CHECK case=P2 key=allocated OK rule="the receipt is ALLOCATED to invoice 103: one allocation line (payment, invoice, amount 161.12) under a Complete allocation header; payment IsAllocated=Y; invoice IsPaid=Y; the open amount by independent SQL oracle = 0"
+  §IPAY-CHECK case=P2 key=row-imported OK rule="the I_Payment row: I_IsImported=Y, Processed=Y, C_Payment_ID = the payment (:536-539), and the resolved ids written back by the SQL phase (bank 100, currency 100, BP 117, invoice 103, doc type) with I_ErrorMsg blank"
+  §IPAY-CHECK case=P2 key=one-group OK rule="the whole import is ONE op group of the caller's transaction: ONE journal entry holding c_payment + c_allocationhdr + i_payment writes"
+  §IPAY-CHECK case=P2 key=answer-logs OK rule="the process answers "@Errors@" = 0 and "@C_Payment_ID@: @Inserted@" = 1 (:566-568)"
+  §IPAY-CHECK case=P2 key=log OK rule="the shipped § log names the run (§IMPORT_PAYMENT summary with the counts)"
+  §IPAY-CHECK case=P3 key=rerun OK rule="second run: 0 inserted, 0 processIt, payments unchanged, the row stays Y"
+  §IPAY-CHECK case=P3 key=no-legacy-index OK rule="the legacy unique-index list (pg_indexes mirror) holds NO index on c_payment or i_payment (so none can refuse a re-sent slip); the one-row property is I_IsImported"
+  §IPAY-CHECK case=P3 key=resend-second-payment OK rule="the re-declared slip is imported as a second C_Payment (Drafted - no DocAction sent) - twin == legacy; the first payment is unchanged (status, amount, allocation flag, Updated stamp)"
+  §IPAY-EVIDENCE P3 headers-with-key=2 statuses=["CO","DR"] (Import Payment has no duplicate guard of its own; dedup of a re-sent slip is the caller's: I_IsImported on the same row, Team's once-only envelope across devices)
+  §IPAY-CHECK case=P4 key=fixture OK rule="invoice 109 is Complete, unpaid, on term 108 with two pay-schedule rows, nothing allocated yet (open = grandtotal 228.85)"
+  §IPAY-CHECK case=P4 key=slip1 OK rule="slip 1 (EUR 114.43, BP from the invoice) -> ONE Complete payment allocated 114.43 to invoice 109; invoice NOT paid; derived open = 114.42 = the second schedule row"
+  §IPAY-CHECK case=P4 key=slip2 OK rule="slip 2 (BP by BPartnerValue "JoeBlock" :280-287, 114.42) -> Complete, allocated, invoice 109 IsPaid=Y, derived open 0; two payments in all for the invoice"
+  §IPAY-CHECK case=P7 key=bank-lookup OK rule="all three slips become payments on bank account 101 (5678): with routing 123456789, without routing, and with RoutingNo = a SwiftCode (the quirk: statement 1 fails with many rows, statement 2 resolves)"
+  §IPAY-CHECK case=P7 key=quirk-logged OK rule="the failed statement of the quirk is logged §PROC-SQL-ERROR (not silent), exactly like DB.executeUpdate's -1"
+  §IPAY-CHECK case=P7 key=bank-org OK rule="the row had no org before the run; after it the row and the payment carry org 11 (the bank's), bank 200000"
+  §IPAY-CHECK case=P5 key=declared+ran OK rule="the 13 rows were declared and the run completed without a process error (row errors are data, not a failure)"
+  §IPAY-CHECK case=P5 key=E-ORG0 OK rule="row E-ORG0: I_ErrorMsg contains "ERR=Invalid Org, ", I_IsImported=N after the closing reset (:561-565), C_Payment_ID empty, no payment"
+  §IPAY-CHECK case=P5 key=E-ORGSUM OK rule="row E-ORGSUM: I_ErrorMsg contains "ERR=Invalid Org, ", I_IsImported=N after the closing reset (:561-565), C_Payment_ID empty, no payment"
+  §IPAY-CHECK case=P5 key=E-BANK OK rule="row E-BANK: I_ErrorMsg contains "ERR=Invalid Bank Account, ", I_IsImported=N after the closing reset (:561-565), C_Payment_ID empty, no payment"
+  §IPAY-CHECK case=P5 key=E-CUR OK rule="row E-CUR: I_ErrorMsg contains "ERR=No Currency,", I_IsImported=N after the closing reset (:561-565), C_Payment_ID empty, no payment"
+  §IPAY-CHECK case=P5 key=E-BP OK rule="row E-BP: I_ErrorMsg contains "ERR=No BPartner,", I_IsImported=N after the closing reset (:561-565), C_Payment_ID empty, no payment"
+  §IPAY-CHECK case=P5 key=E-BPUNK OK rule="row E-BPUNK: I_ErrorMsg contains "ERR=No BPartner,", I_IsImported=N after the closing reset (:561-565), C_Payment_ID empty, no payment"
+  §IPAY-CHECK case=P5 key=E-DTNAME OK rule="row E-DTNAME: I_ErrorMsg contains "ERR=Invalid DocTypeName, ", I_IsImported=N after the closing reset (:561-565), C_Payment_ID empty, no payment"
+  §IPAY-CHECK case=P5 key=E-DTNONE OK rule="row E-DTNONE: I_ErrorMsg contains "ERR=No DocType, ", I_IsImported=N after the closing reset (:561-565), C_Payment_ID empty, no payment"
+  §IPAY-CHECK case=P5 key=E-ACT OK rule="row E-ACT: I_ErrorMsg contains "ERR=No Activity,", I_IsImported=N after the closing reset (:561-565), C_Payment_ID empty, no payment"
+  §IPAY-CHECK case=P5 key=E-CHG OK rule="row E-CHG: I_ErrorMsg contains "ERR=No Charge,", I_IsImported=N after the closing reset (:561-565), C_Payment_ID empty, no payment"
+  §IPAY-CHECK case=P5 key=E-MISMATCH OK rule="row E-MISMATCH: I_ErrorMsg contains "Err=Invalid Payment<->Invoice, ", I_IsImported=N after the closing reset (:561-565), C_Payment_ID empty, no payment"
+  §IPAY-CHECK case=P5 key=two-msgs OK rule="an unknown DocTypeName gets BOTH legacy messages (:394-407): "ERR=Invalid DocTypeName, " and "ERR=No DocType, ""
+  §IPAY-CHECK case=P5 key=mismatch-3 OK rule="the preset payment (invoice 103, BP 117) against invoice 109 (BP 118) raises Payment<->Invoice, Invoice<->BPartner and Invoice.BPartner<->Payment.BPartner (:309-366) and no Payment<->BPartner (117=117)"
+  §IPAY-CHECK case=P5 key=good-not-blocked OK rule="the good row of the same run is imported: I_IsImported=Y, one Drafted payment (BP C&W, bank 100, USD), processIt never called (DocAction not sent)"
+  §IPAY-CHECK case=P5 key=unknown-invoice-not-an-error OK rule="an InvoiceDocumentNo matching no invoice is NOT an error in legacy (:270-277 sets NULL): with a BPartner the receipt is created WITHOUT invoice"
+  §IPAY-CHECK case=P5 key=counts OK rule=""@Errors@" counts the 11 error rows and "@C_Payment_ID@: @Inserted@" the 2 good ones (:566-568)"
+  §IPAY-CHECK case=P6 key=not-sent OK rule="one Drafted payment, 0 processIt, no §PROC-PARAM DocAction notice"
+  §IPAY-CHECK case=P6 key=not-allocated OK rule="with an invoice on the slip but no DocAction the payment is saved but NOT completed and NOT allocated (no allocation line, IsAllocated=N, Processed=N) - legacy :542 gates processIt (lead finding 1)"
+  §IPAY-CHECK case=P6 key=refused-action OK rule="row 1: I_IsImported=Y + a payment that stays DR; row 2: still N with no payment; the exception is logged (§IMPORT_PAYMENT_EXCEPTION), the process itself ends ok"
+  §IPAY-CHECK case=DEL key=delete-old-imported OK rule="before: 12 imported rows; after: 0 of them remain (a row this very run imported - the held-over Z2 - is the only Y row left: 1); the payments (14) are all still there apart from that new one"
+  §IPAY-CHECK case=P0 key=no-unknown-para OK rule="no run printed §PROC-UNKNOWN-PARA ImportPayment (every parameter sent is one prepare() reads)"
+§IPAY-SHIPPED-LOG process lines=63 kinds={"§PROC-PARAM":2,"§IMPORT_PAYMENT":11,"§PROC-SQL-ERROR":5,"§IMPORT_PAYMENT_WARN":32,"§IMPORT_PAYMENT_NOTE":12,"§IMPORT_PAYMENT_EXCEPTION":1}
+  §PROC-PARAM ImportPayment AD_Org_ID=0 source=not sent (Java would throw NullPointerException); twin takes 0
+  §IMPORT_PAYMENT client=11 org=11 bank=100 docAction=CO payments=1 errors=0
+  §IMPORT_PAYMENT_EXCEPTION Payment Process Failed: #new:13 - Status=DR - Invalid Actions: Process=ZZ, Doc=ZZ
+  §PROC-SQL-ERROR executeUpdate -> -1: more than one row returned by a subquery used as an expression :: ImportPayment Bank Account (With Routing No)
+  §IPAY-EVIDENCE failed-statements (PG would fail them the same way) {"Bank Account (With Routing No) <- more than one row returned by a subquery used as an expressi":1,"Set Activity from Value <- no such table: c_activity":4}
+§IPAY-TABLE verdict=PASS judged=4 failed=0
+§IPAY-P0 verdict=PASS judged=4 failed=0
+§IPAY-P2 verdict=PASS judged=15 failed=0
+§IPAY-P3 verdict=PASS judged=3 failed=0
+§IPAY-P4 verdict=PASS judged=3 failed=0
+§IPAY-P5 verdict=PASS judged=17 failed=0
+§IPAY-P6 verdict=PASS judged=3 failed=0
+§IPAY-P7 verdict=PASS judged=4 failed=0
+§IPAY-DEL verdict=PASS judged=1 failed=0
+§IPAY-RESULT verdict=PASS judged=54 failed=0 failedCases=[]
+exit=0

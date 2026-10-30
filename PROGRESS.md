@@ -35,8 +35,8 @@ constraints. A session picking up work reads that; PROGRESS.md is state, not que
 
 ## Modeller lane — 2026-10-02 close: read `prompts/MODELLER_MASTER.md` §RESUME 2026-10-02 (START HERE).
 
-## Current State — 2026-10-30 (ERP Team lane, lead session close) — ⚠ RESUME HERE: `prompts/TEAMWORK_FRAMEWORK.md` ▶ START HERE, then §45.8
-LIVE bim-ootb main sw v936: wave 1 (#2431, imports / POS / Micro Finance / role delivery), Team guide + videos (#2436, #2438), Team panel plan + Bound to (#2440), versioning Stage 1 (#2442). Films: Film 6 EN + TH, Trust TH. **Unfinished:** HS1–HS3 head-office perf fixes + the re-measure (agent stopped on the usage limit; pushed, unverified): `perf/hq-hotspots` / `fable/scale-star-2`, steps in §45.8. Next: versioning Stage 2, F1 mailboxes, the "Versioning and Scalability" film.
+## Current State — 2026-10-31 (ERP Team lane) — ⚠ RESUME HERE: `prompts/TEAMWORK_FRAMEWORK.md` ▶ RESUME HERE — 2026-10-31 (top of file)
+LIVE bim-ootb main sw v937: HS1–HS3 head-office hot spots (#2449; per ticket 8,896 → 153/111/271 ms at N=10/100/1000), Test Harness **Terms** button (#2450), W-DOCNO-TILL witness (#2454). Terms runner `scripts/witness_terms.js` = 9 enforced / 4 open (§48.5). Decided: advisory Seatbelt, no click-through, "Project quality objectives" (§48.9), DocumentNo = OrgValue-UserValue-n auto-on with Team (§48.11b, spec only). **Next:** §48.11b build on the owner's go (twin gaps G1–G4 first) → browser witnesses into the runner → Seatbelt → F1 (owner's go).
 
 ## Current State — 2026-09-08 (session 2, take-over close) — ⚠ RESUME HERE: §36 W1–W6 ✅, W7 bakes gated; PR #1697 MERGED (Measure live), PR for feat/measure-indoor pending
 **Lane:** `prompts/MEP_CLASH_REVEAL_MOVIE.md` — read **§36 (worklist, all rows ✅ but W7)**, then §29.9, §37.4, §26.14, §33.

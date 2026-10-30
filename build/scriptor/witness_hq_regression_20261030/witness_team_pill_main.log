@@ -1,0 +1,41 @@
+═══ W-TEAM-PILL — the Team pill, panel and system-default setup (TEAMWORK_FRAMEWORK §13.8) ═══
+
+§PILL-OFF
+   🟢 the Team pill is on the bar without team mode and shows the two-heads (Lucide users) icon — {"title":"Team","shapes":{"circle":1,"path":3}}
+   🟢 without team mode the page still loads no comm_*/team_sync script and has no chip — {"ts":"undefined","cs":"undefined","scripts":0,"chip":false}
+   🟢 the shipped system default points at the TRIAL repo (not the real pipe) — {"owner":"red1oon","repo":"bim-teams-trial","keyShipped":false}
+
+§PILL-PANEL
+     §TEAM_PANEL opened {"source":"System default","owner":"red1oon","repo":"bim-teams-trial","keyInstalled":false,"trial":true,"paired":false,"mode":"off","state":"Team mode is off"}
+   §PILL panel={"open":true,"source":"System default","owner":"red1oon","repo":"bim-teams-trial","key":"Trial key not installed — paste your own key, or ask the administrator","trial":"System default is a trial: it covers one full test cycle (an order, its line and Complete). To keep going, use your own repository and key.","state":"Team mode is off","guide":"http://127.0.0.1:42009/erp/team_guide.html","pair":"http://127.0.0.1:42009/common/comm/comm_phone.html"}
+   🟢 the pill opens the panel showing "System default" with the default repo prefilled — System default red1oon/bim-teams-trial
+   🟢 the key line matches the shipped defaults (not installed) — Trial key not installed — paste your own key, or ask the administrator
+   🟢 the panel says the default is a one-cycle trial and team mode is off — System default is a trial: it covers one full test cycle (an order, its line and Complete)
+   🟢 the guide link and the pairing link both resolve — guide=200 pair=200
+
+§PILL-OWN
+     §TEAM_PANEL setup=own repo=acme/acme-team key=saved trial=false
+     §TEAM_PANEL opened {"source":"Your own","owner":"acme","repo":"acme-team","keyInstalled":true,"trial":false,"paired":false,"mode":"off","state":"Team mode is off"}
+   🟢 Save as my own stores owner/repo/key with trial=false — {"owner":"acme","repo":"acme-team","trial":false,"token":"14 chars"}
+   🟢 the panel now says "Your own", no trial limit — {"source":"Your own","trial":"Your own setup: no trial limit.","repo":"acme-team"}
+     §TEAM_PANEL setup=system-default repo=red1oon/bim-teams-trial key=MISSING trial=true
+     §TEAM_PANEL opened {"source":"System default","owner":"red1oon","repo":"bim-teams-trial","keyInstalled":false,"trial":true,"paired":false,"mode":"off","state":"Team mode is off"}
+   🟢 Use system default restores the default repo with trial=true — {"repo":"bim-teams-trial","trial":true}
+
+§PILL-MODE
+     §TEAM_PANEL mode=on (reloading)
+     §TEAM_BOOT new device 4ce92d964f1a0faa (no phone page needed — pair from the Team panel)
+     §TEAM_BOOT not paired — device=true space=false (open the Team pill: Start a team or Join)
+   🟢 Turn on → ?team=1, switch stored, the Team chip appears (state: unpaired) — {"url":"?login=GardenAdmin&window=143&team=1","ls":"1","chip":true,"cs":"object","data":"unpaired"}
+     §TEAM_BOOT not paired — device=true space=false (open the Team pill: Start a team or Join)
+   🟢 a reload without ?team=1 keeps team mode on (the switch persists) — {"url":"?login=GardenAdmin&window=143","chip":true}
+     §TEAM_PANEL opened {"source":"System default","owner":"red1oon","repo":"bim-teams-trial","keyInstalled":false,"trial":true,"paired":false,"mode":"on","state":"Team mode is on — this browser is not paired yet"}
+     §TEAM_PANEL mode=off (reloading)
+   🟢 Turn off → switch cleared, chip gone, no comm scripts (page back to plain) — Turn off team mode {"url":"?login=GardenAdmin&window=143","ls":null,"chip":false,"cs":"undefined","scripts":0}
+
+§PILL-NOERR
+   🟢 zero page errors — errors=0
+
+──────────────────────────────────────────────
+§W-TEAM-PILL PASS judged=14 fails=0 inconclusive=0 pageerrors=0
+exit=0
