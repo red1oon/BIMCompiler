@@ -14,7 +14,7 @@
   global.__witnessTrace = true;
   var fs = require('fs'), path = require('path'), Module = require('module');
   var origWrite = fs.writeFileSync, origMkdir = fs.mkdirSync;
-  var T = { reads: {}, lists: {}, probes: {}, writes: {}, execd: {} };
+  var T = { reads: {}, lists: {}, probes: {}, writes: {}, execd: {}, spawns: {} };
   function abs(p) {
     try { if (typeof p === 'number' || p == null) return null; if (Buffer.isBuffer(p)) p = p.toString(); if (typeof URL !== 'undefined' && p instanceof URL) p = require('url').fileURLToPath(p); return typeof p === 'string' ? path.resolve(p) : null; } catch (e) { return null; }
   }
@@ -50,6 +50,27 @@
     ['writeFile', 'appendFile', 'mkdir', 'rm', 'unlink', 'rmdir', 'truncate'].forEach(function (n) { wrap(fsp, n, writeOf); });
     wrap(fsp, 'copyFile', function (a) { readOf(1)([a[0]]); write2Of(a); }); wrap(fsp, 'rename', function (a) { writeOf(a); write2Of(a); });
   }
+  // native file openers bypass fs: better-sqlite3 opens its database in C++ (2026-11-01: ad_full.db was invisible to the cache and to W-DEV-ENV until this hook)
+  function wrapBetter(exp, filename) {
+    if (typeof exp !== 'function' || exp.__traced) return exp;
+    var W = function (file, opts) {
+      try { var p = abs(file); if (p && file !== ':memory:') (fs.existsSync(p) ? T.reads : T.writes)[p] = 1; } catch (e) { /* never break the witness */ }
+      return new exp(file, opts);
+    };
+    Object.setPrototypeOf(W, exp); W.prototype = exp.prototype; W.__traced = true; return W;
+  }
+  var origLoad = Module._load;
+  Module._load = function (request, parent) {
+    var exp = origLoad.apply(this, arguments), filename = null;
+    try { filename = Module._resolveFilename(request, parent); } catch (e) { return exp; }
+    if (/[\\/]better-sqlite3[\\/]lib[\\/]index\.js$/.test(filename)) return wrapBetter(exp, filename);
+    return exp;
+  };
+  // child programs: a node child is traced (NODE_OPTIONS); any OTHER program reads outside this tracer, so it is recorded and the cache refuses the run
+  var CP = require('child_process');
+  function spawnOf(isShell) { return function (a) { var c = a[0]; if (typeof c !== 'string') return; var cmd = isShell ? (c.trim().split(/\s+/)[0] || '') : c; T.spawns[cmd] = 1; }; }
+  ['spawn', 'spawnSync', 'execFile', 'execFileSync'].forEach(function (n) { wrap(CP, n, spawnOf(false)); });
+  ['exec', 'execSync'].forEach(function (n) { wrap(CP, n, spawnOf(true)); });
   // node-EXECUTED files (the cache refuses a run whose executed code uses import(: Node's ESM loader reads outside this fs)
   ['.js', '.cjs'].forEach(function (ext) { var o = Module._extensions[ext]; if (o) Module._extensions[ext] = function (m, filename) { T.execd[filename] = 1; return o.apply(this, arguments); }; });
   process.on('exit', function () {

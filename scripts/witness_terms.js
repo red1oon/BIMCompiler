@@ -20,6 +20,7 @@ for (var i = 0; i < argv.length; i++) if (/^--/.test(argv[i])) A[argv[i].slice(2
 var LOGS = A.logs || path.join(ROOT, 'build', 'scriptor', 'terms_run'), ONLY = A.only ? A.only.split(',') : null;
 var OOTB = A.ootb || path.join(process.env.HOME || '', 'bim-ootb'), REUSE = A.reuse === '1', FRESH = A.fresh === '1';
 var WC = require('./witness_cache.js'), cacheInfo = {};   // §51.1 C1
+var DE = require('./dev_env.js'), DE_MAN = DE.loadManifest(ROOT), DE_ROOTS = [{ name: 'BIMCompiler', dir: ROOT }, { name: 'bim-ootb', dir: OOTB }], portN = { yes: 0, no: 0, unknown: 0 };   // §50.2 W-DEV-ENV
 var TREE_WHY = !fs.existsSync(path.join(OOTB, 'erp', 'idempiere.html')) ? 'no bim-ootb tree at ' + OOTB : null;
 var BROWSER_WHY = A.browser === '0' ? '--browser 0' : TREE_WHY ? TREE_WHY
   : !(fs.existsSync(path.join(OOTB, 'tests', 'node_modules', 'playwright')) || fs.existsSync(path.join(OOTB, 'node_modules', 'playwright'))) ? 'no Playwright in ' + OOTB : null;
@@ -126,7 +127,7 @@ function runW(k) {
   var out = r.out + '\nexit=' + r.exit + '\n'; fs.writeFileSync(lf, out);
   console.log('   ' + (r.cached ? 'cached ' : 'ran ') + (br ? w.layer + ' ' : '') + w.f + (w.args ? ' ' + w.args.join(' ') : '') + ' exit=' + r.exit + ' inputs=' + r.inputs + ' key=' + r.key.slice(0, 12));
   if (r.skip) console.log('   §CACHE_SKIP ' + w.f + ' reason=' + r.skip);
-  r.status = r.exit; cacheInfo[k] = { cached: r.cached, inputs: r.inputs, key: r.key.slice(0, 12), skip: r.skip };
+  r.status = r.exit; cacheInfo[k] = { cached: r.cached, inputs: r.inputs, key: r.key.slice(0, 12), skip: r.skip, inputList: r.inputList || null };
   return logs[k] = { exit: r.status, out: out, log: lf, passed: r.status === 0 && w.ok.test(out) };
 }
 var nBr = { judged: 0, skipped: 0 }, brSeen = {};
@@ -147,6 +148,17 @@ TERMS.forEach(function (t) {
   var hasBr = row.witnesses.some(function (x) { return x.layer === 'browser'; }), brJudged = row.witnesses.some(function (x) { return x.layer === 'browser' && x.verdict !== 'SKIPPED'; });
   var onlyOotb = row.witnesses.every(function (x) { return x.layer === 'ootb'; });
   row.layers = onlyOotb ? 'bim-ootb tree (node, real modules)' : !hasBr ? 'engine only (no browser witness located)' : brJudged ? 'engine + browser' : 'engine only (browser SKIPPED)';
+  // §50.2: which of this row's evidence would a fresh clone NOT have? (portability is a second verdict; the term status above is what this machine judged)
+  if (row.status !== 'OPEN') {
+    var lists = t.w.filter(function (k) { return !logs[k].skipped; }).map(function (k) { return cacheInfo[k] && cacheInfo[k].inputList; });   // a SKIPPED witness (e.g. --browser 0) is not part of this run
+    if (!lists.length || lists.some(function (x) { return !x; })) { row.portable = null; portN.unknown++; }
+    else {
+      var un = DE.classify([].concat.apply([], lists), DE_ROOTS, DE_MAN);
+      row.untracked = un.map(function (u) { return { repo: u.repo, path: u.path, kind: u.kind, why: u.why, bytes: u.bytes, sha256: u.sha256.slice(0, 12), manifest: u.manifest }; });
+      row.portable = un.every(function (u) { return u.portable; }); portN[row.portable ? 'yes' : 'no']++;
+      un.forEach(function (u) { console.log('§UNTRACKED ' + t.id + ' ' + u.repo + '/' + u.path + ' kind=' + u.kind + ' why=' + u.why + ' bytes=' + u.bytes + ' sha=' + u.sha256.slice(0, 12) + ' manifest=' + u.manifest); });
+    }
+  }
   results.push(row);
 });
 
@@ -171,6 +183,7 @@ results.forEach(function (r) {
 var n = { ENFORCED: 0, OPEN: 0, 'WITNESS-FAILED': 0, UNCONTROLLED: 0 }; results.forEach(function (r) { n[r.status]++; });
 var verdict = anyFail ? 'FAIL' : (!anyJudged ? 'INCONCLUSIVE' : 'PASS');
 console.log('§TERMS_BROWSER judged=' + nBr.judged + ' skipped=' + nBr.skipped + (BROWSER_WHY ? ' reason="' + BROWSER_WHY + '"' : '') + (REUSE ? ' reused-logs' : ''));
+console.log('§TERMS_PORTABLE rows=' + (portN.yes + portN.no + portN.unknown) + ' portable=' + portN.yes + ' not_portable=' + portN.no + ' unknown=' + portN.unknown + ' (a fresh clone + dev_env_fetch has every input of a portable row; §50.2)');
 console.log('§TERMS_VERDICT ' + verdict + ' enforced=' + n.ENFORCED + ' open=' + n.OPEN + ' witness_failed=' + n['WITNESS-FAILED'] + ' uncontrolled=' + n.UNCONTROLLED + ' browser=judged ' + nBr.judged + '/skipped ' + nBr.skipped);
-if (A.json) fs.writeFileSync(A.json, JSON.stringify({ schema: 'terms-v1', kind: 'harness', at: new Date().toISOString(), node: process.version, fresh: FRESH, cachedRows: Object.keys(cacheInfo).filter(function (k) { return cacheInfo[k].cached; }).length, verdict: verdict, browser: { judged: nBr.judged, skipped: nBr.skipped, reason: BROWSER_WHY, reused: REUSE }, rows: results }, null, 1));
+if (A.json) fs.writeFileSync(A.json, JSON.stringify({ schema: 'terms-v1', kind: 'harness', at: new Date().toISOString(), node: process.version, fresh: FRESH, portable: { rows: portN.yes + portN.no + portN.unknown, portable: portN.yes, not_portable: portN.no, unknown: portN.unknown }, cachedRows: Object.keys(cacheInfo).filter(function (k) { return cacheInfo[k].cached; }).length, verdict: verdict, browser: { judged: nBr.judged, skipped: nBr.skipped, reason: BROWSER_WHY, reused: REUSE }, rows: results }, null, 1));
 process.exit(anyFail ? 1 : (!anyJudged ? 2 : 0));
