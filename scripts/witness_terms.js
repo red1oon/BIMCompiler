@@ -65,10 +65,11 @@ var TERMS = [
   { id: 'version-skew', term: 'BUNDLE (version skew)', guarantee: 'newer waits, older waits for a rule, retired is ignored', w: ['versions', 'tVersions'],
     c: [{ id: '18 mutants killed', w: 'versions', re: /§CV_VERDICT PASS.*mutants_killed=18\/18/ }, { id: 'page: newer op parked needs-upgrade', w: 'tVersions', re: /🟢 M2 the sv:2 op is PARKED needs-upgrade/ }, { id: 'page: same op without sv merged (control)', w: 'tVersions', re: /🟢 M2 CONTROL: the same op without sv is MERGED/ }, { id: 'page: tampered set refused', w: 'tVersions', re: /🟢 M4 tampered set -> refused:bad-signature/ }] },
   { id: 'doc-numbering', term: 'LOCAL NUMBERING (LEDGER)', guarantee: 'with Team, two stations (login users with a Search Key) never issue the same document number: OrgValue-UserValue-n each; another station\'s or a typed number is refused at fold', w: ['tDocno', 'tDocnoMut'],
-    note: 'TEAMWORK §48.11b/§48.11c. Limits: an author not bound to an AD_User is not judged at fold (counted); users without a Search Key share Org--n; legacy arm INCONCLUSIVE (pilot login validator not built)',
+    note: 'TEAMWORK §48.11b-§48.11d. Legacy arm: the pilot\'s own WS-login run == the twin replay (D20, scripts/bridge/out/docno_station_legacy.json). Limits: an author not bound to an AD_User is not judged at fold (counted); two users sharing a Search Key share a series',
     c: [{ id: 'same user on two devices collides (control)', w: 'tDocno', re: /§DT PASS D11 - CONTROL/ }, { id: 'shipped plain sequence collides (control)', w: 'tDocno', re: /§DT PASS D5 - CONTROL/ },
         { id: "another station's / typed number refused at fold on every device", w: 'tDocno', re: /§DT PASS D14 - / }, { id: 'new format refused until its edit is in the log', w: 'tDocno', re: /§DT PASS D15b - / },
-        { id: 'user preference cannot change the station', w: 'tDocno', re: /§DT PASS D13 - / }, { id: '4 mutants killed', w: 'tDocnoMut', re: /§DT_MUTANTS killed=4\/4/ }] },
+        { id: 'user preference cannot change the station', w: 'tDocno', re: /§DT PASS D13 - / }, { id: '4 mutants killed', w: 'tDocnoMut', re: /§DT_MUTANTS killed=4\/4/ },
+        { id: 'legacy pilot (real WS logins) numbers the same at every position', w: 'tDocno', re: /§DT PASS D20 - LEGACY/ }, { id: 'demo station never numbers Org--n', w: 'tDocno', re: /§DT PASS D19 - / }] },
   // OPEN: stated, never run, never green. roadmap = where it closes.
   { id: 'visit-bounded', term: 'VISIT (bounded)', open: true, roadmap: 'TEAMWORK §45.2 F1 per-device mailboxes', guarantee: 'Visit #1 download stays bounded as the team grows',
     note: 'measured §45.5: 384 KB / 4.5 MB / 45.8 MB at N=10/100/1000 (linear); triggered from N=10' },

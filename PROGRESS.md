@@ -36,7 +36,7 @@ constraints. A session picking up work reads that; PROGRESS.md is state, not que
 ## Modeller lane — 2026-10-02 close: read `prompts/MODELLER_MASTER.md` §RESUME 2026-10-02 (START HERE).
 
 ## Current State — 2026-10-31 (ERP Team lane) — ⚠ RESUME HERE: `prompts/TEAMWORK_FRAMEWORK.md` ▶ RESUME HERE — 2026-10-31 (top of file)
-LIVE bim-ootb main sw v938: LOCAL NUMBERING DocumentNo = OrgValue-UserValue-n with Team, fold rule docno-station (#2459, §48.11c: W-DOCNO-TILL 18/0, mutants 4/4); HS1–HS3 (#2449); Terms button (#2450). Terms runner = 10 enforced / 3 open, now judging the real page too (browser judged 5/0, §48.12). ⛔ owner: station users need a Search Key (demo GardenAdmin has none → `HQ--50001` seen live); legacy arm needs the pilot (Postgres down). **Next:** legacy login validator (on the pilot) → Terms button record refresh → Seatbelt → F1 (owner's go).
+LIVE bim-ootb main: LOCAL NUMBERING DocumentNo = OrgValue-UserValue-n with Team, fold rule docno-station (#2459, §48.11c); station users get a Search Key by legacy MUser.setValue (#2463, §48.11d; demo now `HQ-gardenad-n`); legacy arm judged: pilot WS logins == twin replay at every position (D20; login rule AD_Rule on the pilot). Terms runner = 10 enforced / 3 open, browser judged 5/0 (§48.12). **Next:** pilot login rule into a migration → D20 into the runner → Terms button record refresh → Seatbelt → F1 (owner's go).
 
 ## Current State — 2026-09-08 (session 2, take-over close) — ⚠ RESUME HERE: §36 W1–W6 ✅, W7 bakes gated; PR #1697 MERGED (Measure live), PR for feat/measure-indoor pending
 **Lane:** `prompts/MEP_CLASH_REVEAL_MOVIE.md` — read **§36 (worklist, all rows ✅ but W7)**, then §29.9, §37.4, §26.14, §33.
