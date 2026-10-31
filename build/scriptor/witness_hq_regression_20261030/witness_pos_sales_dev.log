@@ -1,0 +1,71 @@
+§POSS-LOAD erp=/tmp/wt-hq-perf/erp mutant=none seedPatch ok=3803 failed=3
+  §POSS-CHECK case=PLUG key=bundle-loads OK rule="the bundle module loads with manifest.id org.kernel.pos-integration, activate and deactivate"
+  §POSS-CHECK case=PLUG key=starts OK rule="startBundle answers state ACTIVE"
+  §POSS-CHECK case=PLUG key=view OK rule="sqlite_master has VIEW i_possales (not a table) and AD_Table 9538001 IsView=Y"
+  §POSS-CHECK case=PLUG key=process-row OK rule="AD_Process.classname org.kernel.pos.ImportPOSSales is registered in AdProcess.JAVA; dictionary parameters ["AD_Client_ID","AD_Org_ID","C_BankAccount_ID","DocumentNo"] all read by the port (X=4 of N=4), port reads ["AD_Client_ID","AD_Org_ID","C_BankAccount_ID","DocumentNo"]"
+  §POSS-CHECK case=PLUG key=dict-x-of-n OK rule="AD_Column X of N = 20 of 20 are view columns and the view has no other (20); AD_Field X of N = 20 of 20 resolve to those columns; N>0"
+  §POSS-CHECK case=PLUG key=access OK rule="process access roles [0,102] and window access roles [0,102] are both [0,102]"
+  §POSS-CHECK case=PLUG key=menu OK rule="one window leaf and one process leaf under 163"
+  §POSS-CHECK case=PLUG key=zero-host-code OK rule="host sources checked: 17, mentioning the view/process: [] (sw.js / plugin_overlay.js may list the FILE names only, never the table)"
+  §POSS-CHECK case=PLUG key=wiring OK rule="the host ships the two plugin files (sw.js precache) and installs the bundle STOPPED for the System Administrator to enable (plugin_overlay.js INSTALL_ONLY, like Web Services) - file names only"
+  §POSS-CHECK case=PLUG key=base-hash OK rule="the team BASE hash (seed + the two hashed patch files) is byte-identical to origin/main: the plugin stages everything at runtime, no hashed file touched"
+  §POSS-CHECK case=VIEW key=deposit OK rule="all tickets are declared: 3+2+1+1+0+1+1 = 9 I_Order lines and 2+1+1+1+1+1+1 = 8 tenders, every row I_IsImported=N, no C_Order/C_Payment for any key"
+  §POSS-CHECK case=VIEW key=one-sale OK rule="exactly one i_possales row for K1: Lines=3, Tenders=2, not imported"
+  §POSS-CHECK case=VIEW key=totals OK rule="LinesTotal=378 TendersTotal=378 Difference=0 (378 = 200 + 178)"
+  §POSS-CHECK case=VIEW key=mismatch OK rule="LinesTotal 115, TendersTotal 100, Difference -15"
+  §POSS-CHECK case=VIEW key=orphan OK rule="one row, Lines=0, Tenders=1, Difference = 10"
+  §POSS-CHECK case=VIEW key=card-empty OK rule="8 deposited tender rows (incl. 2 card tenders): CreditCardNumber/VV/ExpMM/ExpYY all NULL on all of them"
+  §POSS-CHECK case=SALE key=ran OK rule="process ok, summary #1/0, §POSS-TICKET key=K1 result=IMPORTED"
+  §POSS-CHECK case=SALE key=one-order OK rule="exactly ONE c_order with the ticket key, DocStatus CO, doc type POS Order (Import Orders ran with DocAction CO, not its Prepare default)"
+  §POSS-CHECK case=SALE key=one-invoice OK rule="exactly ONE c_invoice for that order, DocStatus CO, GrandTotal 378.00"
+  §POSS-CHECK case=SALE key=two-receipts OK rule="exactly TWO c_payment with the ticket key, both DocStatus CO, IsReceipt Y, amounts {200,178}, tender types {X,C}, bank account 100"
+  §POSS-CHECK case=SALE key=allocated OK rule="receipts allocated: [[[1300110,178,"CO"]],[[1300110,200,"CO"]]] open=0 IsPaid=Y"
+  §POSS-CHECK case=SALE key=invoice-link OK rule="both receipts: c_invoice_id = 1300110, c_order_id NULL"
+  §POSS-CHECK case=SALE key=rows OK rule="3 I_Order rows Y with the order id; 2 I_Payment rows Y each pointing at a distinct receipt of the key"
+  §POSS-CHECK case=SALE key=card OK rule="card receipt: CreditCardType V, R_PnRef PNREF-K1-0001, R_AuthCode AUTH-K1-0001, R_Result 0, R_RespMsg APPROVED, Orig_TrxID NULL; cash receipt has no R_* approval; both receipts have CreditCardNumber/VV/ExpMM/ExpYY NULL"
+  §POSS-CHECK case=SALE key=one-group OK rule="journal +1; tables ["i_order","c_order","c_orderline","c_acctschema","c_ordertax","ad_sequence","m_inout","m_inoutline","m_inoutlinema","m_storageonhand","m_transaction","m_costdetail","m_costhistory","m_cost","m_costqueue","fact_acct","c_invoice","c_invoiceline","c_invoicetax","c_bpartner","i_payment","c_payment","c_allocationhdr","c_allocationline"]"
+  §POSS-CHECK case=SALE key=view-after OK rule="one row, I_IsImported=Y, C_Order_ID = the order"
+  §POSS-CHECK case=ISO key=untouched OK rule="rows identical: true; no order/receipt for the other keys: true; counts delta = 1 order, 3 lines, 1 invoice, 2 receipts, 1 shipment"
+  §POSS-CHECK case=BATCH key=declare-resend OK rule="the resend was accepted as a declaration; the view has two K1 rows: one Y (lines 3, tenders 2) and one N (lines 3, tenders 2)"
+  §POSS-CHECK case=BATCH key=ran OK rule="process ok, summary #1/6; K4 IMPORTED; K2/K3/K5/K6/K8/K7 REFUSED"
+  §POSS-CHECK case=BATCH key=good-imported OK rule="order CO, invoice CO GrandTotal 65, one receipt CO 65 allocated, open 0, IsPaid"
+  §POSS-CHECK case=BATCH key=total-mismatch OK rule="0 documents for the key; 2 I_Order rows + 1 I_Payment row all E with an I_ErrorMsg containing 100.00 and 115.00; the TICKET line says REFUSED"
+  §POSS-CHECK case=BATCH key=all-or-none OK rule="the order existed during the ticket (undone_order=#new:4) and is gone after: no c_order/c_invoice/c_payment for the key, rows E, I_ErrorMsg keeps "Invalid DocTypeName""
+  §POSS-CHECK case=BATCH key=overpay OK rule="no order/invoice/receipt for the key; rows E; I_ErrorMsg names 60.00 and 50.00"
+  §POSS-CHECK case=BATCH key=order-refused OK rule="no order/receipt; the I_Order row is E with legacy's "ERR=" text; the tender row is E and says why"
+  §POSS-CHECK case=BATCH key=orphan OK rule="no receipt; the tender row E with a message naming the missing ticket lines"
+  §POSS-CHECK case=BATCH key=resend OK rule="still ONE order and TWO receipts for the key; 3 pending I_Order rows + 2 pending tenders, all E with a message; the order is the same id as before"
+  §POSS-CHECK case=BATCH key=counts OK rule="{"c_order":46,"c_orderline":121,"c_invoice":22,"c_invoiceline":60,"m_inout":11,"c_payment":5,"c_allocationhdr":5}"
+  §POSS-CHECK case=BATCH key=no-posting-residue OK rule="fact_acct rows added by the batch = 16, facts of K4's own documents = 16"
+  §POSS-CHECK case=BATCH key=shipped-log OK rule="§POSS-TICKET lines=7 (7 tickets), inner §IMPORT_ORDER runs=6 (>=1), §IMPORT_PAYMENT runs=2 (>=1)"
+  §POSS-CHECK case=RERUN key=nothing-new OK rule="process ok, summary #0/6, counts of c_order/c_orderline/c_invoice/c_invoiceline/m_inout/c_payment/c_allocationhdr identical, the Y rows of K1 and K4 unchanged (n>0)"
+  §POSS-CHECK case=STOP key=removes-all OK rule="before: view=true bandRows=56 class=true; after Stop: view=false bandRows=0 class=false; running the process id answers "not found"; I_Order/I_Payment rows kept (12/10); base hash == pin"
+  §POSS-CHECK case=STOP key=restart OK rule="a second Start restores view + class + the dictionary rows (56), a second Stop removes them again (0)"
+  §POSS-CHECK case=PLUG key=no-unknown-para OK rule="no run printed §PROC-UNKNOWN-PARA for the new process or the two legacy ones (every parameter sent is one prepare() reads); at least one run happened"
+§POSS-SHIPPED-LOG lines=43 kinds={"§IMPORT_ORDER":12,"§IMPORT_PAYMENT":4,"§POSS-TICKET":14,"§POSS":3,"§IMPORT_PAYMENT_WARN":4,"§IMPORT_ORDER_WARN":2,"§IMPORT_ORDER_EXCEPTION":2,"§IMPORT_ORDER_COLLISION":2}
+  A-K1 §POSS-TICKET key=POS1/2026-10-28/0101 org=11 lines=3 tenders=2 result=IMPORTED order=#new:3 invoice=#new:82 receipts=#new:110,#new:98
+  A-K1 §POSS client=11 bank=100 key=POS1/2026-10-28/0101 tickets=1 imported=1 refused=0 receipts=2
+  B-all §POSS-TICKET key=POS1/2026-10-28/0102 org=11 lines=2 tenders=1 result=REFUSED undone_order=#new:2 reason="ERR=Tenders total 100.00 <> invoice total 115.00"
+  B-all §POSS-TICKET key=POS1/2026-10-28/0103 org=11 lines=1 tenders=1 result=REFUSED undone_order=#new:4 reason="ERR=Import Payment imported 0 of 1 tenders. ERR=Invalid DocTypeName, ERR=No DocType,"
+  B-all §POSS-TICKET key=POS1/2026-10-28/0104 org=11 lines=1 tenders=1 result=IMPORTED order=#new:6 invoice=#new:36 receipts=#new:45
+  B-all §POSS-TICKET key=POS1/2026-10-28/0106 org=11 lines=1 tenders=1 result=REFUSED undone_order=none reason="ERR=Import Orders imported 0 of 1 ticket lines. ERR=Invalid Product,"
+  B-all §POSS-TICKET key=POS1/2026-10-28/0108 org=11 lines=1 tenders=1 result=REFUSED undone_order=#new:60 reason="ERR=Tenders total 60.00 <> invoice total 50.00"
+  B-all §POSS-TICKET key=POS1/2026-10-28/0101 org=11 lines=3 tenders=2 result=REFUSED undone_order=#new:64 reason="ERR=the order is not completed (DocStatus DR). §IMPORT_ORDER_EXCEPTION SaveError c_order: ERROR: duplicate key value violates unique constraint "c_order_documentno" Detail: Key (documentno, c_doctype_id, c_b §IMPORT_ORDER_C
+  B-all §POSS-TICKET key=POS1/2026-10-28/0105 org=11 lines=0 tenders=1 result=REFUSED undone_order=none reason="ERR=no ticket lines: 1 tender row(s) without I_Order lines for this ticket key"
+  B-all §POSS client=11 bank=100 key=* tickets=7 imported=1 refused=6 receipts=1
+  C-rerun §POSS-TICKET key=POS1/2026-10-28/0102 org=11 lines=2 tenders=1 result=REFUSED undone_order=#new:2 reason="ERR=Tenders total 100.00 <> invoice total 115.00"
+  C-rerun §POSS-TICKET key=POS1/2026-10-28/0103 org=11 lines=1 tenders=1 result=REFUSED undone_order=#new:1 reason="ERR=Import Payment imported 0 of 1 tenders. ERR=Invalid DocTypeName, ERR=No DocType,"
+  C-rerun §POSS-TICKET key=POS1/2026-10-28/0106 org=11 lines=1 tenders=1 result=REFUSED undone_order=none reason="ERR=Import Orders imported 0 of 1 ticket lines. ERR=Invalid Product,"
+  C-rerun §POSS-TICKET key=POS1/2026-10-28/0108 org=11 lines=1 tenders=1 result=REFUSED undone_order=#new:1 reason="ERR=Tenders total 60.00 <> invoice total 50.00"
+  C-rerun §POSS-TICKET key=POS1/2026-10-28/0101 org=11 lines=3 tenders=2 result=REFUSED undone_order=#new:3 reason="ERR=the order is not completed (DocStatus DR). §IMPORT_ORDER_EXCEPTION SaveError c_order: ERROR: duplicate key value violates unique constraint "c_order_documentno" Detail: Key (documentno, c_doctype_id, c_b §IMPORT_ORDER_CO
+  C-rerun §POSS-TICKET key=POS1/2026-10-28/0105 org=11 lines=0 tenders=1 result=REFUSED undone_order=none reason="ERR=no ticket lines: 1 tender row(s) without I_Order lines for this ticket key"
+  C-rerun §POSS client=11 bank=100 key=* tickets=6 imported=0 refused=6 receipts=0
+§POSS-PLUG verdict=PASS judged=11 failed=0
+§POSS-VIEW verdict=PASS judged=6 failed=0
+§POSS-SALE verdict=PASS judged=10 failed=0
+§POSS-ISO verdict=PASS judged=1 failed=0
+§POSS-BATCH verdict=PASS judged=12 failed=0
+§POSS-RERUN verdict=PASS judged=1 failed=0
+§POSS-STOP verdict=PASS judged=2 failed=0
+§POSS-RESULT verdict=PASS judged=43 failed=0 failedCases=[]
+exit=0

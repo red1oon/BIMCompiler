@@ -1,0 +1,44 @@
+═══ W-HQ-CLERK — a clerk imports, the stock role replenishes, the station gets the order AND the movement (study §14) ═══  key=POS1/2026-10-28/1974
+
+§S0 two devices: A = head office (founder; clerk then stock role), B = station/till (team role 200001)
+   🟢 H0 B enrolled as the till; I_Order exists on both; ZERO TANR/TACR rule rows on A and on B (nothing is automatic in this witness) — io=1/1 tanr A=0 B=0
+§S1 the station deposits the ticket POS1/2026-10-28/1974 (3 lines) and Visits
+   🟢 H1 the station sealed 3 I_Order rows through the ERP write path and ran no Import Orders — created=[-2,-3,-4]
+§S2 head office Visits — the rows arrive, nothing runs
+   🟢 H2 head office holds the 3 deposited rows (I_IsImported=N), ZERO orders for the key, ZERO §RULE_PROCESS: a person has to start it — rows=[{"imp":"N"},{"imp":"N"},{"imp":"N"}] orders=0 ruleProcess=0
+§S3 menu / access sweep over the dictionary (4 roles x 2 entries) on plain sessions
+   🟢 H3 menu entries match the dictionary for every role: X of N = 8 of 8 (roles 102/103/200001/50004 x [376 Import Order window, 53354 Replenish Report]) — [{"role":102,"win":[true,true],"proc":[true,true]},{"role":103,"win":[false,false],"proc":[true,true]},{"role":200001,"win":[true,true],"proc":[true,true]},{"role":50004,"win":[false,false],"proc":[false,false]}]
+   🟢 H5 role 103 (stock role) has NO Import Order entry and the window deep link does not open it (control: role 102 deep link opens it), yet 103 DOES have Replenish Report (dedicated roles) — {"r103":{"role":103,"win":[false,false],"proc":[true,true],"errs":0,"deepWin":false},"r102deep":true}
+   🟢 H5 role 50004 (neither process in AD_Process_Access) sees neither entry; deep links to 53267 and 206 are DENIED and open no dialog — {"role":50004,"win":[false,false],"proc":[false,false],"errs":0,"deny53267":true,"deny206":true}
+§S4 the clerk (A, role 102) imports from the menu
+   clerk run 1: Import Orders AD_Process 206 · classname org.compiere.process.ImportOrder OK #1/3 Close OK | §IMPORT_ORDER client=11 org=11 docAction=CO orders=1 lines=3 errors=0
+   🟢 H4 Import Orders dialog renders exactly the AD_Process_Para rows (order, mandatory flag, default): X of N = 9 of 9 checks over 4 parameters, extra=0 — []
+   🟢 H6 the clerk opened menu 376 -> the window -> the gear offers "Import Orders" (the AD button) -> the dialog -> OK: the dictionary-resolved process ran and imported 1 of 3 rows-groups — items=["Import Orders"] text=Import Orders AD_Process 206 · classname org.compiere.process.ImportOrder OK #1/3 Close OK
+   🟢 H6 ONE C_Order with DocumentNo = the ticket key, CO, 3 lines (cash BP 112); the 3 I_Order rows read imported; still ZERO §RULE_PROCESS (a person ran it, no rule) — {"ord":[{"id":-12,"uu":"8cb17c8f-30ad-48a1-91c1-298c3e4e60b2","ds":"CO","bp":112,"nl":3}],"io":[{"imp":"Y","oid":-12},{"imp":"Y","oid":-12},{"imp":"Y","oid":-12}],"rule":0}
+   clerk run 2: Import Orders AD_Process 206 · classname org.compiere.process.ImportOrder OK #0/0 Close OK
+   🟢 H7 the clerk runs Import Orders AGAIN: it imports #0/0, still ONE order for the key and no new order of any kind (orders in the tenant 45 -> 45) — Import Orders AD_Process 206 · classname org.compiere.process.ImportOrder OK #0/0 Close OK
+§S5 operator master data for the branch (SAMPLE, §HQ_SETUP), then the SAME device logs in as role 103
+§HQ_SETUP SAMPLE operator master data: warehouse 104 source=103; the model tip then reads M_WarehouseSource_ID=103; M_Replenish type 1 {"123":[10,20],"130":[5,15],"134":[5,10]} ops=[true,-117,-118,-119]
+   🟢 H8 the same head-office device is now the stock role: APP.roleId=103, menu has Replenish Report and NOT Import Order; still no TANR row — role=103 leaves=[false,true]
+§S6 the stock role runs Replenish Report for the branch warehouse (menu 53354)
+   🟢 H4 Replenish Report dialog renders exactly the AD_Process_Para rows (order, mandatory, default): X of N = 12 of 12 checks over 6 parameters; the DisplayLogic one (Document Type) is hidden until Create is chosen — []
+   report result: Replenish Report AD_Process 53267 · classname org.compiere.process.ReplenishReportProduction OK OK Close
+   §RRP prepareTable maxLevelFixed=0 orderMinFixed=14 orderPackFixed=14 currentVendorY=0 currentVendorN=0 tempDeleted=0
+   §RRP fillTable pinstance=0 insert1=3 insertBP=0 productionLinesTouched=0 deletedInactive=0 deletedNoQty=0 kept=3
+   §AD-PROC-LIVE proc=53267 name="Replenish Report" classname=org.compiere.process.ReplenishReportProduction dispatched=Y ok=Y rows=17
+   §PROC-COMMIT proc=53267 ops=17 committed=true gid=dc39d53b-1190-4c90-9c2a-d1492442b20e verifyChain=ok
+   report rows: [{"p":123,"oh":4,"q":16,"src":103,"bp":114},{"p":130,"oh":0,"q":15,"src":103,"bp":114},{"p":134,"oh":0,"q":10,"src":103,"bp":121}] expected: {"123":{"q":16,"oh":4,"src":0},"130":{"q":15,"oh":0,"src":0},"134":{"q":10,"oh":0,"src":0}}
+   🟢 H9 the report (Create blank) lists exactly the 3 branch products with Qty To Order and On Hand equal to the independent expectation, and made no document — {"rows":[{"p":123,"oh":4,"q":16,"src":103,"bp":114},{"p":130,"oh":0,"q":15,"src":103,"bp":114},{"p":134,"oh":0,"q":10,"src":103,"bp":121}],"exp":{"123":{"q":16,"oh":4,"src":0},"130":{"q":15,"oh":0,"src":0},"134":{"q":10,"oh":0,"src":0}},"movements":0}
+§S7 the stock role confirms the create: Create = Inventory Movement + Material Movement
+   confirm result: Replenish Report AD_Process 53267 · classname org.compiere.process.ReplenishReportProduction OK #1 - 10000000 Close | §AD-PROC-LIVE proc=53267 name="Replenish Report" classname=org.compiere.process.ReplenishReportProduction dispatched=Y ok=Y rows=11 | §PROC-COMMIT proc=53267 ops=11 committed=true gid=e1963ae9-3322-463c-af5f-244fc24bc435 verifyChain=ok
+   movement: [{"id":-152,"uu":"08ffd0b5-8f48-42e6-a263-150650131f72","dt":143,"ds":"DR"}] lines: [{"p":123,"q":16,"lf":101,"lt":102},{"p":130,"q":15,"lf":101,"lt":102},{"p":134,"q":10,"lf":101,"lt":102}]
+   🟢 H10 Create=Inventory Movement offers exactly the dictionary's Material Movement doctype(s) (X of N = 1 of 1) and the OK runs without error — {"dts":["143=Material Movement"],"dict":[{"id":143,"name":"Material Movement"}],"conf":"Replenish Report AD_Process 53267 · classname org.compiere.process.ReplenishReportProduction OK #1 - 10000000 Close"}
+   🟢 H10 OK makes ONE M_Movement (doctype 143) with 3 lines, quantity = the report's Qty To Order, from HQ locator 101 to the branch default locator — {"mv":[{"id":-152,"uu":"08ffd0b5-8f48-42e6-a263-150650131f72","dt":143,"ds":"DR"}],"ml":[{"p":123,"q":16,"lf":101,"lt":102},{"p":130,"q":15,"lf":101,"lt":102},{"p":134,"q":10,"lf":101,"lt":102}]}
+§S8 Visit: the station receives the order AND the movement
+   §HQ_B orders=[{"uu":"8cb17c8f-30ad-48a1-91c1-298c3e4e60b2","ds":"CO","nl":3}] movement=[{"id":-59,"uu":"08ffd0b5-8f48-42e6-a263-150650131f72","ds":"DR"}] lines=[{"p":123,"q":16},{"p":130,"q":15},{"p":134,"q":10}]
+   🟢 H11 the station holds THE SAME completed order (same c_order_uu, CO, 3 lines) — [{"uu":"8cb17c8f-30ad-48a1-91c1-298c3e4e60b2","ds":"CO","nl":3}]
+   🟢 H11 the station ran neither Import Orders nor Replenish Report (no process ran on it; it only received) — bProc=0
+   🟢 H11 the station holds THE SAME movement (same m_movement_uu, 3 lines, same quantities) — {"mvB":[{"id":-59,"uu":"08ffd0b5-8f48-42e6-a263-150650131f72","ds":"DR"}],"mlB":[{"p":123,"q":16},{"p":130,"q":15},{"p":134,"q":10}]}
+   🟢 H12 0 page errors on every page of the run (both devices and the plain sessions) — errors=0
+§HQ_ARMS red=none judged=19
+exit=124

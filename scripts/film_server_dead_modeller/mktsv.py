@@ -1,0 +1,51 @@
+import json,sys
+import os
+ASM=os.environ.get('ASM','asm6'); T=json.load(open('rows_time.json')); tl=json.load(open(ASM+'/timeline.json')); it={x['id']:x for x in tl['items']}
+def card(i): return (it[i]['start'],it[i]['end'])
+R=[
+('open',*card('open'),"title card · TEAMWORK_FRAMEWORK §15 · the Modeller",
+ "F: The server is dead? | M: Now for a model.",
+ "F: The server is dead, and now the drawing too? | M: Same idea, now for a model. Two people, one building."),
+('poc',*card('poc'),"how card · what you are watching: real Modeller vs test bench vs how it is driven",
+ "M: Proof of concept. | F: What is real? | M: The Modeller. The rest is a test bench.",
+ "M: A proof of concept again. | F: And what is real? | M: The Modeller is, running in two windows. The pairing page and the little Team chip are a test bench. In daily work you would see only the chip."),
+('pair',*T['pair'],"two windows · pairing page (TEST BENCH) · §FILM_PAIR code · B enrolled",
+ "F: How do they pair? | M: A short code, approved by the founder.",
+ "F: How do two windows become a team? | M: One starts a space, and its invite link stays hidden here. The other joins and shows a short code. The first window lists that same code and approves it. Then the second says enrolled. | F: And the phone? | M: Not needed this time. It is one fresh space for everything you see."),
+('draw',*T['draw'],"LIVE · both Modeller windows empty (§FILM_STATE chip) · A draws block 1 and block 2 (§FILM_STATE A_drew_block2_before_visit, B empty)",
+ "M: A draws two blocks. B sees nothing yet.",
+ "M: Both windows start empty, with the Team chip in the corner. | F: And now? | M: A draws two blocks. Block one sits at x one, y a half. B still sees nothing."),
+('visit1',*T['visit1'],"LIVE · A Visit, B Visit · §FILM_VISIT A/B · §FILM_STATE B_visited_blocks_arrived",
+ "M: A visits. B visits, and both blocks appear.",
+ "M: A visits, and a sealed letter goes in the post box. | F: And B? | M: B visits, and both blocks appear."),
+('move',*T['move'],"LIVE · real gizmo drags: A block 1 x -2, B block 2 x +2 · §FILM_DRAG · §FILM_STATE moves_before_visit",
+ "F: What if both of us move something? | M: A drags block one left by two. B drags block two right by two.",
+ "F: What if both of us move something? | M: A drags block one left by two. B drags block two right by two, before either visits. Each move is its own small letter, and different blocks never clash."),
+('agree',*T['agree'],"LIVE · three Visits · §FILM_STATE moves_after_visits (identical on A and B)",
+ "F: After the visits? | M: Both screens agree.",
+ "F: And after the visits? | M: Both screens agree: block one at x minus one, block two at x five and a half."),
+('clash',*T['clash'],"LIVE · same block: real drags A x +1, B x +2, B y +1 · §FILM_DRAG · §FILM_STATE clash_before_visit",
+ "F: And the same block? | M: Then nobody silently wins.",
+ "F: And the same block? | M: Then nobody silently wins. A drags block one a metre along x. B drags the same block two metres, before either has visited. | F: And then? | M: B also moves it a metre along y, a different direction."),
+('warn',*T['warn'],"LIVE · three Visits · warning on both · §FILM_STATE clash_after_visits (conf values -1 / 0, kept -2)",
+ "M: Both screens show the warning. The block stays put.",
+ "M: Three visits, and now look. Both screens show the warning, naming both values, minus one and zero. | F: And the block? | M: It stays where they last agreed. The y move went through."),
+('resolve',*T['resolve'],"LIVE · real gizmo drag: A x +1 · §FILM_DRAG · §FILM_STATE resolve_A_moved (A clear, B still warned)",
+ "F: How does it end? | M: A moves it again.",
+ "F: How does it end? | M: Someone who has seen both moves it again. A drags it one more metre."),
+('cleared',*T['cleared'],"LIVE · two Visits · warning cleared · §FILM_STATE resolve_after_visits",
+ "M: The warning clears on both.",
+ "M: That counts as the decision. The warning is gone on both screens, and the block sits at x zero."),
+('rotate',*T['rotate'],"LIVE · A rotates block 1 (§TEAM_LOCALONLY, chip 1 local-only), two Visits · §FILM_STATE limits_after_visits (A size 1 x 2, B 2 x 1)",
+ "F: Is everything shared? | M: No. Rotating stays local.",
+ "F: Is everything shared? | M: No. A rotates the block, and the chip counts one local-only change. A's block is now one by two, while B's is still two by one."),
+('limits',*card('limits'),"limits card · §TM-XOFN 7 of 22 · TEAMWORK_FRAMEWORK §15.8",
+ "F: What is shared? | M: Only drawing and moving.",
+ "F: So what is shared? | M: Only drawing and moving: seven of twenty-two operation types. Everything else stays on your device, and who may touch which floor or trade is still to be built."),
+('close',*card('close'),"close card · witness PASS lines (witness_run.log)",
+ "F: No server? | M: A proof of concept, witnessed. Thanks!",
+ "F: So, a shared model with no server? | M: A proof of concept, and every claim in it is backed by a test line. Same post office as the orders. Thanks for watching!"),
+]
+out=[]
+for rid,s,e,src,short,det in R: out.append('\t'.join([rid,'%.1f'%(s+0.3),'%.1f'%e,src,short,det]))
+open(sys.argv[1],'w').write('\n'.join(out)+'\n')

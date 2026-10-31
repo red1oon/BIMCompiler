@@ -6,12 +6,16 @@ record the agent + its last finding in `prompts/AGENT_QUEUE.md` §MID-FLIGHT →
 past the reset → resume by `SendMessage` to the agent id (never re-dispatch fresh) → tell the user.
 Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 
+## 🤝 Teamwork comm layer (no DB/app server, just a data relay) — POC done 2026-10-23; frame + 3 apps + 6 films 2026-10-24
+**State 2026-10-26 (all live on bim-ootb main):** FL-8 G-4 complete — compile refusal (E1), every device refuses a non-executor's DocAction (E3, #2395), DocAction list honours Document Action Access + the executor map (E2, #2396); G-8 offline statement signer + `publishStatement` (#2401); G-7 translation rules judged by the keys at publish time (#2404); Team guide updated (#2404). G-6 decided (UPS plan BESIDE the office plan, chosen at founding), build spec §38.14. Full log + counts: `prompts/TEAMWORK_FRAMEWORK.md` §38.2–§38.14 (history §0–§37).
+**2026-10-28:** Team Phase 2.1-2.4 + 2.6 + G-1..G-3 DONE + LIVE (bim-ootb #2412, #2420, sw v923): observe-only plugin grant, core conflict message, numbering left the comm engine, Team OUT on the bus, received rows fire replica rules, legacy Import Orders port — W-POS-CHAIN 13/0 (a till ticket becomes ONE completed order at head office and returns). **Next session:** agents A–G per `prompts/TEAMWORK_FRAMEWORK.md` §41 (Import Payment, W-HQ-CLERK, role executors, G-6, Micro Finance on GardenWorld §40, I_POSSales); POS = standalone Unicenta-style till + kitchen, spec `prompts/POS_PLUGIN_LOCAL_FIRST.md`.
+
 ## 📋 The live worklist is `prompts/AGENT_QUEUE.md` — not this file
 It carries §LIVE (which agent owns which files), the waves, the ⛔USER decisions, and the standing
 constraints. A session picking up work reads that; PROGRESS.md is state, not queue.
 
 ## ▶ DXF2BIM lane (2026-10-31, session 15 closed): read bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` ▶ RESUME HERE (session 16). Done: Regulatory Report in the Modeller (RR.6), BUILD-NAME placeholder (§D98), honest thickness guesses + stated mix picks the SoR row + defaults ranked by impact on the CLI (§D99), the load_path rule + columns default up to their beams (§D100). Next: the impact button on the page, then the submission-pack film.
-## ▶ FRIENDLY-OPS + LIBERO-AD lane (2026-10-16): Mfg films Part II EN/ZH/TH + Part III EN done; lens + AD_ToolBarButton + Pack In of real 2Packs (W-PACKIN 6/6) on bim-ootb `feat/libero-backflush` (pushed, NOT merged) - NEXT = §20 slice B, read `prompts/ERP_FRIENDLY_OPS_LENS.md` §13 RESUME
+## ▶ FRIENDLY-OPS + LIBERO lane (2026-10-22, session 9 CLOSED): distribution lane closed (Doc_Movement #2254, MMovementConfirm #2252, Replenish Report #2266, MInventory+Doc_Inventory #2274); new ASI lane AS-1..8 merged. RESUME: prompts/ERP_FRIENDLY_OPS_LENS.md §68 + prompts/ERP_PRODUCT_ATTRIBUTE_ASI.md §9.
 ## ▶ DEPTH lane (2026-10-13): cycle 1 DONE + merged (bim-ootb #1988; 10 SQLite-lane gaps repaired, 3 witnesses green, 4 films EN+TH). NEXT = §NEWCLIENT-DEPTH — read `prompts/ERP_DEPTH_FILM.md` ▶ RESUME HERE.
 ## ▶ DEPTH cycle 2 §NEWCLIENT-DEPTH (2026-10-13): NC-1..NC-4, NC-5a, NC-6/7/8, NC-9 (window access + new role) DONE vs LEGACY-MEASURED; PRs #1989-#1995 merged; W-MODEL-ORACLE re-run UNCONFIRMED (timeouts) - see RESUME HERE. Window sweep 204 of 332 OK. NEXT: re-run NC-10/11/12 on the new code, film chapters, MUser/new-role login — read `prompts/ERP_DEPTH_FILM.md` ▶ RESUME HERE.
 ## ▶ DEPTH lane 2026-10-15: dictionary census 65->78, 19/19 views, fact_acct parity, CU guard redesign, Dunning fix, 2 raw films in ~/Videos - NEXT/OPEN list in `prompts/ERP_DEPTH_FILM.md` §RESUME HERE FIRST (fourth wrap).
@@ -30,6 +34,9 @@ constraints. A session picking up work reads that; PROGRESS.md is state, not que
 - ⛔ user call: 4 zero-byte DBs in bim-ootb/buildings (`city_index`, `city_index_v2`, `Duplex_meta`, `SampleCastle_extracted`).
 
 ## Modeller lane — 2026-10-02 close: read `prompts/MODELLER_MASTER.md` §RESUME 2026-10-02 (START HERE).
+
+## Current State — 2026-10-31 (ERP Team lane) — ⚠ RESUME HERE: `prompts/TEAMWORK_FRAMEWORK.md` ▶ RESUME HERE — 2026-10-31 (top of file)
+LIVE bim-ootb main (sw v946): local numbering + station Search Keys (#2459/#2463), Seatbelt (#2466), GOVERNANCE.md + quality-objectives page (#2467), versioning Stages 2-4 (#2473-#2475), F1 per-device mailboxes (#2477: edge Visit #1 384-388 B flat in N). Terms runner = **12 enforced / 1 open** (sealing-real), browser judged 5/0. Film §49 EN v2 `~/Videos/Terms_You_Can_Check_EN_v2.mp4` (Thai dropped for now). Owner decided 2026-10-31: recovery key = owner offline apart; time-anchor button kept + confirm; Plugins-panel installs allowed but marked unsigned; per-mailbox sequence built with sealing. **Next:** time-anchor confirm + unsigned badge (small) → sealing in the real layer (§29) + per-mailbox sequence · real POS fixture to re-run pos_plan/team_floor/pos_chain on F1 · checkpointed roster snapshot (identity floor).
 
 ## Current State — 2026-09-08 (session 2, take-over close) — ⚠ RESUME HERE: §36 W1–W6 ✅, W7 bakes gated; PR #1697 MERGED (Measure live), PR for feat/measure-indoor pending
 **Lane:** `prompts/MEP_CLASH_REVEAL_MOVIE.md` — read **§36 (worklist, all rows ✅ but W7)**, then §29.9, §37.4, §26.14, §33.

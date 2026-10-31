@@ -146,7 +146,7 @@ function project(rows, tbl, newIds, keyCol) {
       seq.forEach(row => { const use = cols.filter(k => Object.prototype.hasOwnProperty.call(row, k.toLowerCase())); try { E.query('INSERT OR REPLACE INTO AD_Sequence (' + use.join(',') + ') VALUES (' + use.map(() => '?').join(',') + ')', use.map(k => row[k.toLowerCase()] === undefined ? null : row[k.toLowerCase()])); n++; } catch (eS) {} });
       L('§CP-PROC-MIRROR-SEQ ' + c.name + ' ad_sequence=' + n); }
     td.snap(tag);
-    ref = await oracle({ op: 'process', process: c.process, recordId: c.recordId || 0, tableId: c.tableId || 0, params: c.params || [], ctx: Object.assign({ date: c.date || TODAY }, c.ctx || {}) });
+    ref = await oracle({ op: 'process', process: c.process, recordId: c.recordId || 0, tableId: c.tableId || 0, params: c.params || [], infoWindow: c.infoWindow || 0, selection: c.selection || [], ctx: Object.assign({ date: c.date || TODAY }, c.ctx || {}) });
     L('§CP-PROC-REF ' + c.name + ' ok=' + ref.ok + ' summary="' + (ref.summary || ref.error || '') + '" logs=' + JSON.stringify((ref.logs || []).slice(0, 5)));
     R = refRows(tag);
     cfg.psql('DROP SCHEMA IF EXISTS snap_' + tag + ' CASCADE;');
@@ -157,7 +157,19 @@ function project(rows, tbl, newIds, keyCol) {
     const procRow = E.query('SELECT classname, name FROM ad_process WHERE ad_process_id=?', [c.process])[0] || {};
     const params = {}; (c.params || []).forEach(p => { params[p.name] = { v: p.value, vTo: p.valueTo, type: p.type }; });
     let ours = { ok: false, summary: 'no port', ops: [], log: [] };
-    if (E.P.JAVA[procRow.classname]) ours = E.P.runJava(E.query, env, { AD_Process_ID: c.process, className: procRow.classname, title: procRow.name, Record_ID: c.recordId || 0, Table_ID: c.tableId || 0, params });
+    // case.infoWindow + case.selection (ERP_FRIENDLY_OPS_LENS.md §43 P4): the picked rows as the info window writes them on OK - T_Selection / T_Selection_InfoWindow of one AD_PInstance_ID (same shape the oracle writes)
+    const PIN = 9999001;
+    if (c.infoWindow) {
+      const itid = (E.query('SELECT ad_table_id AS t FROM ad_infowindow WHERE ad_infowindow_id=?', [c.infoWindow])[0] || {}).t;
+      E.query('DELETE FROM t_selection WHERE ad_pinstance_id=?', [PIN]); E.query('DELETE FROM t_selection_infowindow WHERE ad_pinstance_id=?', [PIN]);
+      (c.selection || []).forEach((row, i) => {
+        const tsId = row.T_Selection_ID != null ? Number(row.T_Selection_ID) : i + 1;   // the row key, as InfoPanel writes it (getSaveKeys); position only for legacy fixtures that name none
+        E.query('INSERT INTO t_selection (ad_pinstance_id, t_selection_id, viewid) VALUES (?,?,?)', [PIN, tsId, String(row.AD_Table_ID != null ? row.AD_Table_ID : itid)]);
+        Object.keys(row).forEach(col => { const v = row[col]; if (v == null || col === 'T_Selection_ID') return; const num = /_ID$/i.test(col) || /^qty$/i.test(col) || typeof v === 'number';
+          E.query('INSERT INTO t_selection_infowindow (ad_pinstance_id, t_selection_id, columnname, value_string, value_number) VALUES (?,?,?,?,?)', [PIN, tsId, col, num ? null : String(v), num ? Number(v) : null]); });
+      });
+    }
+    if (E.P.JAVA[procRow.classname]) ours = E.P.runJava(E.query, env, { AD_PInstance_ID: c.infoWindow ? PIN : 0, AD_InfoWindow_ID: c.infoWindow || 0, AD_Process_ID: c.process, className: procRow.classname, title: procRow.name, Record_ID: c.recordId || 0, Table_ID: c.tableId || 0, params });
     (ours.log || []).filter(l => /§(PROC|CALLOUT|MODEL)-(EXCEPTION|UNPORTED|ERR)/.test(l)).forEach(l => L('  ' + l));
     L('§CP-PROC-OURS ' + c.name + ' class=' + procRow.classname + ' ok=' + ours.ok + ' summary="' + (ours.summary || '') + '" ops=' + (ours.ops || []).length + ' logs=' + JSON.stringify((ours.logs || []).slice(0, 5)));
     const O = oursRows(ours.ops || []);

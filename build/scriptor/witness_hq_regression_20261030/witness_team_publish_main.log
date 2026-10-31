@@ -1,0 +1,25 @@
+═══ W-PUBLISH-ERP — signed upcaster sets published in the POLICY (TEAMWORK_FRAMEWORK §16.35) ═══
+
+§S1 two devices: waiting, a non-admin cannot publish, the admin publishes
+   🟢 P0 precondition: B joined and was approved by A through the Modeller's own pairing — enrolled=true
+   🟢 P1 B (shape 2, no set) parks the older peer's op needs-mapping, it is not folded, and B's chip says it waits for a translation rule — PARKED:needs-mapping | ⚠ 1 change waits for a translation rule from the team admin
+   🟢 P5 a non-admin's publishUpcasters has no effect: its POLICY is REFUSED not-admin on both devices, no policy in force, the op stays parked — REFUSED:not-admin / REFUSED:not-admin policy=null
+   🟢 P2 after A publishes and B visits: the op is MERGED and folded in the v2 shape (legacy_note -> description, _sv 2) — MERGED:role 102 ok {"ad_client_id":11,"ad_org_id":11,"isactive":"Y","name":"Legacy Ltdksj
+   🟢 P2 B's model gained the element (1 -> 2) and the chip cleared by itself — {"versions":"ok","parked":"0","warn":""}
+   🟢 P2 B's policy in force carries the set, the STORED envelope of the op still says legacy_note (byte-level upcast is on a copy), and B logged §TEAM_VERSIONS_ADOPT — {"epoch":1,"n":1}
+   🟢 P6 C, which joined AFTER the publish, adopted the set on its own visits and folds the old op in the v2 shape (the set travelled with the log) — MERGED:role 102 ok enrolled=true
+§S2 bad sets
+   🟢 P3 an UNSIGNED set is refused by the engine itself (bad-policy:upcasters); no policy takes effect — REFUSED:bad-policy:upcasters policy=null
+   🟢 P3 a set edited after signing: the POLICY is merged (the admin may publish it) but B REFUSES the set (bad-signature) and the op stays parked, the chip still says translation rule — MERGED:policy | PARKED:needs-mapping
+   🟢 P4 a set signed by a key outside the trust list: refused:untrusted-signer, the op stays parked; the policy in force keeps BOTH sets (the earlier bad one was never dropped) — {"epoch":2,"n":2} PARKED:needs-mapping
+   🟢 P4 CONTROL: after the good set is published (alongside the bad ones) B folds the op and the chip clears — MERGED:role 102 ok
+   🟢 P7 0 page errors across all 5 devices — errors=0
+§WP_ARMS red=none judged=12
+
+§WP_MUTANTS
+   🟢 the host never adopts published sets -> red arms: P2, P6, P3, P4 (expected P2/P6)
+   🟢 adopt does not refold after loading -> red arms: P2 (expected P2)
+   🟢 adopt verifies nothing (verifySet accepts all) -> red arms: P3, P4 (expected P3/P4)
+   🟢 publish drops the previous sets -> red arms: P4 (expected P4)
+§WP_VERDICT PASS judged=12 fails=0 mutants_killed=4/4 pageerrors=0
+exit=0

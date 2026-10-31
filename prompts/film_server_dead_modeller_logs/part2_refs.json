@@ -1,0 +1,188 @@
+[
+ {
+  "id": "recap",
+  "ref": "card:recap",
+  "ref_t": 0.0,
+  "cue": 0.3
+ },
+ {
+  "id": "pairA",
+  "ref": "cue:S_pair1_in",
+  "ref_t": 8.0,
+  "cue": 8.2
+ },
+ {
+  "id": "pairB",
+  "ref": "cue:S_pair2_in",
+  "ref_t": 13.0,
+  "cue": 13.2
+ },
+ {
+  "id": "pairC",
+  "ref": "cue:S_pair3_in",
+  "ref_t": 17.4,
+  "cue": 17.599999999999998
+ },
+ {
+  "id": "pairD",
+  "ref": "cue:S_pair4_in",
+  "ref_t": 22.96,
+  "cue": 23.16
+ },
+ {
+  "id": "chip",
+  "ref": "cue:S_chip_in",
+  "ref_t": 25.84,
+  "cue": 26.04
+ },
+ {
+  "id": "draw1",
+  "ref": "state:A_drew_block1_before_visit:A",
+  "ref_t": 30.842000000000002,
+  "cue": 30.942000000000004
+ },
+ {
+  "id": "draw2",
+  "ref": "state:A_drew_block2_before_visit:A",
+  "ref_t": 34.132999999999996,
+  "cue": 34.233
+ },
+ {
+  "id": "visitA",
+  "ref": "cue:V1_A_in",
+  "ref_t": 36.8,
+  "cue": 37.0
+ },
+ {
+  "id": "visitB",
+  "ref": "cue:V2_B_in",
+  "ref_t": 38.96,
+  "cue": 39.160000000000004
+ },
+ {
+  "id": "arrived",
+  "ref": "state:B_visited_blocks_arrived:B",
+  "ref_t": 42.33,
+  "cue": 42.43
+ },
+ {
+  "id": "mvA",
+  "ref": "cue:G1_A_down",
+  "ref_t": 47.21,
+  "cue": 46.910000000000004
+ },
+ {
+  "id": "mvB",
+  "ref": "cue:G2_B_down",
+  "ref_t": 52.45,
+  "cue": 51.95
+ },
+ {
+  "id": "own",
+  "ref": "state:moves_before_visit:A",
+  "ref_t": 55.2,
+  "cue": 55.300000000000004
+ },
+ {
+  "id": "vis3",
+  "ref": "cue:V3_A_in",
+  "ref_t": 58.10000000000001,
+  "cue": 58.30000000000001
+ },
+ {
+  "id": "agree",
+  "ref": "state:moves_after_visits:A",
+  "ref_t": 64.2,
+  "cue": 63.800000000000004
+ },
+ {
+  "id": "clA",
+  "ref": "cue:G3_A_down",
+  "ref_t": 68.65,
+  "cue": 67.85000000000001
+ },
+ {
+  "id": "clB",
+  "ref": "cue:G4_B_down",
+  "ref_t": 73.29,
+  "cue": 72.79
+ },
+ {
+  "id": "clY",
+  "ref": "cue:G5_B_down",
+  "ref_t": 76.65,
+  "cue": 76.25
+ },
+ {
+  "id": "clOwn",
+  "ref": "state:clash_before_visit:A",
+  "ref_t": 79.6,
+  "cue": 79.69999999999999
+ },
+ {
+  "id": "clVis",
+  "ref": "cue:V6_A_in",
+  "ref_t": 82.5,
+  "cue": 82.7
+ },
+ {
+  "id": "warn",
+  "ref": "state:clash_after_visits:A",
+  "ref_t": 88.33399999999999,
+  "cue": 88.13399999999999
+ },
+ {
+  "id": "rsA",
+  "ref": "cue:G6_A_down",
+  "ref_t": 95.65,
+  "cue": 95.15
+ },
+ {
+  "id": "rsOwn",
+  "ref": "state:resolve_A_moved:A",
+  "ref_t": 98.48,
+  "cue": 98.58
+ },
+ {
+  "id": "rsVis",
+  "ref": "cue:V9_A_in",
+  "ref_t": 101.08,
+  "cue": 101.28
+ },
+ {
+  "id": "rsDone",
+  "ref": "state:resolve_after_visits:A",
+  "ref_t": 105.16,
+  "cue": 104.66
+ },
+ {
+  "id": "rot",
+  "ref": "cue:S_limits1_in",
+  "ref_t": 107.96,
+  "cue": 107.75999999999999
+ },
+ {
+  "id": "rotChip",
+  "ref": "state:limits_A_rotated:A",
+  "ref_t": 110.07199999999999,
+  "cue": 110.17199999999998
+ },
+ {
+  "id": "rotB",
+  "ref": "state:limits_after_visits:A",
+  "ref_t": 116.32,
+  "cue": 116.41999999999999
+ },
+ {
+  "id": "limits",
+  "ref": "card:limits",
+  "ref_t": 119.12,
+  "cue": 119.42
+ },
+ {
+  "id": "close",
+  "ref": "card:close",
+  "ref_t": 131.12,
+  "cue": 131.42000000000002
+ }
+]

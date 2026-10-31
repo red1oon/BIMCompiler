@@ -1,0 +1,218 @@
+§FILM_ENV root=/tmp/wt-film-erp2 base=http://127.0.0.1:37593 pipe=folder(stand-in for GitHub) viewport=1024x576
+§FILM_CUE loaded who=A t=14.76
+§FILM_CUE loaded who=B t=14.72
+     [A 19.7s] §TEAM_PANEL opened {"source":"System default","owner":"red1oon","repo":"bim-teams-trial","keyInstalled":false,"trial":true,"paired":false,"mode":"off","state":"Team mode is off"}
+§FILM_CUE panel_open who=A t=20.70
+     [A 25.4s] §TEAM_PANEL mode=on (reloading)
+§FILM_CUE mode_click who=A t=25.73
+     [A 25.9s] §TEAM_BOOT new device 2bb8cdb14837af83 (no phone page needed — pair from the Team panel)
+     [A 25.9s] §TEAM_BOOT not paired — device=true space=false (open the Team pill: Start a team or Join)
+§FILM_CUE chip_unpaired who=A t=37.30
+   🟢 A: team mode ON from the pill; chip says not paired — Team · not paired — open the Team pill to start or join a team Visit
+     [A 42.3s] §TEAM_PANEL opened {"source":"System default","owner":"red1oon","repo":"bim-teams-trial","keyInstalled":false,"trial":true,"paired":false,"mode":"on","state":"Team mode is on — this browser is not paired yet"}
+§FILM_CUE panel_unpaired who=A t=43.25
+     [A 46.9s] §TEAM_PAIR founded space 4c66d93d1851
+     [A 47.0s] §COMM_SYNC kid=2bb8cdb14837af83 pipe=http://127.0.0.1:37593/pipe sent=2 fetched=0 received=0 placed=2 parked=0 refused=0 gaps=0 equivocations=0
+     [A 47.0s] §TEAM-REBUILD rows=2 was=2 tombstoned=0 verifyChain=ok
+     [A 47.0s] §TEAM_VISIT sent=2 fetched=0 received=0 placed=2 parked=0 refused=0 gaps=0 | projection kept=2 projected=0 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+§FILM_CUE founded who=A t=47.51
+   🟢 A: Start a team → Paired as founder + invite link — ✓ Paired · team devices 1 · this device 2BB8-CDB1 · founder
+     [B 53.5s] §TEAM_BOOT new device fcfdabaa49e8184a (no phone page needed — pair from the Team panel)
+     [B 53.5s] §TEAM_BOOT not paired — device=true space=false (open the Team pill: Start a team or Join)
+     [B 62.2s] §TEAM_PANEL opened {"source":"System default","owner":"red1oon","repo":"bim-teams-trial","keyInstalled":false,"trial":true,"paired":false,"mode":"on","state":"Team mode is on — this browser is not paired yet"}
+§FILM_CUE invite_opened who=B t=63.73
+§FILM_CUE invite_prefilled who=B t=66.54
+     [B 67.7s] §TEAM_PAIR join request posted, code FCFD-ABAA
+§FILM_CUE joined_code who=B t=68.06
+   🟢 B: Join → shows its device code — FCFD-ABAA
+     [A 74.0s] §TEAM_PANEL opened {"source":"System default","owner":"red1oon","repo":"bim-teams-trial","keyInstalled":false,"trial":true,"paired":true,"mode":"on","state":"Team mode is on — paired"}
+     [A 75.9s] §TEAM_PAIR requests listed: 1 pending=1
+§FILM_CUE requests_listed who=A t=76.27
+   🟢 A: pending request = exactly B's code — FCFD-ABAA vs FCFD-ABAA
+§FILM_CUE role_picked who=A t=80.37
+   🟢 NO-OP guard: before the Approve, B is not enrolled — {"enrolled":false}
+     [A 83.8s] §TEAM_PAIR approved FCFD-ABAA as role 102
+     [A 83.9s] §COMM_SYNC kid=2bb8cdb14837af83 pipe=http://127.0.0.1:37593/pipe sent=3 fetched=0 received=0 placed=5 parked=0 refused=0 gaps=0 equivocations=0
+     [A 83.9s] §TEAM-REBUILD rows=2 was=2 tombstoned=0 verifyChain=ok
+     [A 83.9s] §TEAM_VISIT sent=3 fetched=0 received=0 placed=5 parked=0 refused=0 gaps=0 | projection kept=2 projected=0 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+§FILM_CUE approved who=A t=84.21
+     [B 89.2s] §TEAM_PANEL opened {"source":"System default","owner":"red1oon","repo":"bim-teams-trial","keyInstalled":false,"trial":true,"paired":true,"mode":"on","state":"Team mode is on — paired"}
+     [B 91.2s] §COMM_SYNC kid=fcfdabaa49e8184a pipe=http://127.0.0.1:37593/pipe sent=0 fetched=2 received=5 placed=5 parked=0 refused=0 gaps=0 equivocations=0
+     [B 91.2s] §TEAM-REBUILD rows=2 was=2 tombstoned=0 verifyChain=ok
+     [B 91.2s] §TEAM_VISIT sent=0 fetched=2 received=5 placed=5 parked=0 refused=0 gaps=0 | projection kept=2 projected=0 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+§FILM_CUE b_paired who=B t=91.46
+   🟢 B Paired; both see 2 team devices; role chosen=GardenWorld Admin (102) — ✓ Paired · team devices 2 · this device FCFD-ABAA | A devices=2
+   🟢 ONE space: A and B report the same 64-hex space — 4c66d93d1851 / 4c66d93d1851
+§FILM_CUE grids_ready who=A t=109.22
+   §FILM_PROBE B before-order null
+§FILM_CUE order_new who=A t=109.23
+     [A 119.5s] §TEAM_OUT op=CRUD_CREATE table=c_order uu=6990a88a seq=6 refs=0 hash=4182b3ffce6d
+     [A 119.5s] §TEAM_STATION_LOCAL op=CRUD_UPDATE station-owned ad_sequence (not shared by design)
+     [A 119.7s] §TEAM_STATION_LOCAL op=CRUD_CREATE station-owned ad_recentitem (not shared by design)
+§FILM_CUE order_saved who=A t=120.98
+§FILM_CUE line_start who=A t=120.98
+     [A 128.7s] §TEAM_OUT op=CRUD_CREATE table=c_orderline uu=e537dccb seq=7 refs=1 hash=75336500812e
+     [A 128.7s] §TEAM_OUT op=CRUD_UPDATE table=c_order uu=6990a88a seq=8 refs=0 hash=e3c746e00ba6
+     [A 128.9s] §TEAM_STATION_LOCAL op=CRUD_UPDATE station-owned ad_recentitem (not shared by design)
+§FILM_CUE line_saved who=A t=130.12
+§FILM_CUE visitA1 who=A t=130.12
+     [A 130.9s] §COMM_SYNC kid=2bb8cdb14837af83 pipe=http://127.0.0.1:37593/pipe sent=3 fetched=0 received=0 placed=8 parked=0 refused=0 gaps=0 equivocations=0
+     [A 130.9s] §TEAM-REBUILD rows=11 was=8 tombstoned=0 verifyChain=ok
+     [A 130.9s] §TEAM_VISIT sent=3 fetched=0 received=0 placed=8 parked=0 refused=0 gaps=0 | projection kept=5 projected=3 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+§FILM_CUE visitB1 who=B t=132.40
+     [B 133.2s] §COMM_SYNC kid=fcfdabaa49e8184a pipe=http://127.0.0.1:37593/pipe sent=0 fetched=1 received=3 placed=8 parked=0 refused=0 gaps=0 equivocations=0
+     [B 133.2s] §TEAM-REBUILD rows=5 was=2 tombstoned=0 verifyChain=ok
+     [B 133.2s] §TEAM_VISIT sent=0 fetched=1 received=3 placed=8 parked=0 refused=0 gaps=0 | projection kept=2 projected=3 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+§FILM_CUE b_sees_order who=B t=134.72
+§FILM_CUE b_grid_has_order who=B t=140.19
+   §FILM_PROBE B after-visit {"pk":-3,"tip":null,"col":"DR","tax":0,"lines":1,"linesProcessed":0}
+   🟢 B's grid shows "Film order 1" (1 row) with its 1 line after Visit — rows=1 lines=1 | §TEAM_VISIT sent=0 fetched=1 received=3 placed=8 parked=0 refused=0 gaps=0 | projection kept=2 projected=3 skipped=0 groupHeld=0 rebuild=ok verifyChai
+   §FILM_PROBE A before-complete {"pk":-9,"tip":null,"col":"DR","tax":0,"lines":1,"linesProcessed":0}
+§FILM_CUE a_form_open who=A t=151.01
+§FILM_CUE b_form_open who=B t=152.18
+   🟢 both show the order as Drafted before the Complete — A: Drafted · DRCompletePrepareVoid | B: Drafted · DRCompletePrepareVoid
+§FILM_CUE complete_click who=A t=154.24
+     [A 155.1s] §AD-DOCFSM-LIVE table=259(C_Order) record=-9 clicked=CO from=DR to=CO
+     [A 155.7s] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_process uuid=1ba78429 reason=fk-table-mismatch record_id points at c_order (NOT SENT)
+     [A 155.7s] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=43985db4 reason=fk-target-not-shared ad_wf_process_id=-12 (NOT SENT)
+     [A 155.7s] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=092ee270 reason=fk-target-not-shared ad_wf_process_id=-12 (NOT SENT)
+     [A 155.7s] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=e8f379e6 reason=fk-target-not-shared ad_wf_process_id=-12 (NOT SENT)
+     [A 155.7s] §TEAM_LOCALONLY op=CRUD_UPDATE table=c_acctschema uuid=2289835d reason=target-not-a-team-record (uu-unresolved table=c_acctschema id=101) — the comm layer admits an op only against its record's CREATE scope (NOT SENT)
+     [A 155.7s] §TEAM_OUT op=CRUD_UPDATE table=c_order uu=6990a88a seq=9 refs=0 hash=e8eb9d52314f
+     [A 155.8s] §TEAM_OUT op=CRUD_UPDATE table=m_storagereservation uu=019ee88d seq=10 refs=0 hash=3d94856167a6
+     [A 155.8s] §TEAM_LOCALONLY op=CRUD_CREATE table=m_storagereservationlog uuid=67f34c94 reason=fk-table-mismatch record_id points at c_orderline (NOT SENT)
+     [A 155.8s] §TEAM_OUT op=CRUD_UPDATE table=c_orderline uu=e537dccb seq=11 refs=0 hash=2930a61e8636
+     [A 155.8s] §TEAM_OUT op=CRUD_CREATE table=c_ordertax uu=63f80c52 seq=12 refs=1 hash=df664c1ee653
+     [A 155.8s] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=7158452b reason=fk-target-not-shared ad_wf_process_id=-12 (NOT SENT)
+     [A 155.8s] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=4e5b7f5e reason=fk-target-not-shared ad_wf_process_id=-12 (NOT SENT)
+     [A 155.8s] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=1691c034 reason=fk-target-not-shared ad_wf_process_id=-12 (NOT SENT)
+     [A 155.8s] §TEAM_OUT op=SET_STATUS table=c_order uu=6990a88a seq=13 refs=0 hash=b42901f7b946
+     [A 155.8s] §CRUD process committed key=c_order viaGroup=Y gid=ba0c8b90-3ee5-431e-baf6-a4b391d959b8 ops=14 sealed=14 op_uuid=7e77e65d-3097-4573-ae12-b018d7717d11 to=CO verifyChain=ok
+§FILM_CUE a_completed who=A t=157.31
+   §FILM_PROBE A after-complete {"pk":-9,"tip":"CO","col":"CO","tax":1,"lines":1,"linesProcessed":1}
+   §FILM_PROBE B before-visit-after-complete {"pk":-3,"tip":null,"col":"DR","tax":0,"lines":1,"linesProcessed":0}
+   🟢 NO-OP guard: before B visits, B does not show Completed — B tip=null col=DR
+§FILM_CUE visitA2 who=A t=159.82
+     [A 160.6s] §COMM_SYNC kid=2bb8cdb14837af83 pipe=http://127.0.0.1:37593/pipe sent=5 fetched=0 received=0 placed=12 parked=0 refused=1 gaps=0 equivocations=0
+     [A 160.7s] §TEAM-REBUILD rows=31 was=25 tombstoned=0 verifyChain=ok
+     [A 160.7s] §TEAM_VISIT sent=5 fetched=0 received=0 placed=12 parked=0 refused=1 gaps=0 | projection kept=14 projected=7 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+§FILM_CUE visitB2 who=B t=162.10
+     [B 162.9s] §COMM_SYNC kid=fcfdabaa49e8184a pipe=http://127.0.0.1:37593/pipe sent=0 fetched=1 received=5 placed=12 parked=0 refused=1 gaps=0 equivocations=0
+     [B 162.9s] §TEAM-REBUILD rows=9 was=5 tombstoned=0 verifyChain=ok
+     [B 162.9s] §TEAM_VISIT sent=0 fetched=1 received=5 placed=12 parked=0 refused=1 gaps=0 | projection kept=2 projected=7 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+§FILM_CUE b_shows_status who=B t=172.50
+   §FILM_PROBE B after-visit-2 {"pk":-3,"tip":"CO","col":"CO","tax":1,"lines":1,"linesProcessed":1}
+   🟢 B: status Completed AND the same consequences as A (tax rows 1, lines processed 1/1) — tip=CO col=CO bar=Completed · COCloseVoidRe-Activate
+§FILM_CUE b_tax_tab who=B t=177.95
+§FILM_CUE order2_new who=A t=193.90
+     [A 205.1s] §TEAM_OUT op=CRUD_CREATE table=c_order uu=47ed6c9d seq=14 refs=0 hash=67e2c9b891a3
+     [A 205.1s] §TEAM_STATION_LOCAL op=CRUD_UPDATE station-owned ad_sequence (not shared by design)
+     [A 205.5s] §TEAM_STATION_LOCAL op=CRUD_CREATE station-owned ad_recentitem (not shared by design)
+     [A 214.4s] §TEAM_OUT op=CRUD_CREATE table=c_orderline uu=79ec34dd seq=15 refs=1 hash=0d4369a63c33
+     [A 214.4s] §TEAM_OUT op=CRUD_UPDATE table=c_order uu=47ed6c9d seq=16 refs=0 hash=0c466f941ad7
+     [A 214.6s] §TEAM_STATION_LOCAL op=CRUD_UPDATE station-owned ad_recentitem (not shared by design)
+     [A 216.6s] §COMM_SYNC kid=2bb8cdb14837af83 pipe=http://127.0.0.1:37593/pipe sent=3 fetched=0 received=0 placed=15 parked=0 refused=1 gaps=0 equivocations=0
+     [A 216.7s] §TEAM-REBUILD rows=47 was=37 tombstoned=0 verifyChain=ok
+     [A 216.7s] §TEAM_VISIT sent=3 fetched=0 received=0 placed=15 parked=0 refused=1 gaps=0 | projection kept=17 projected=10 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+     [B 218.9s] §COMM_SYNC kid=fcfdabaa49e8184a pipe=http://127.0.0.1:37593/pipe sent=0 fetched=1 received=3 placed=15 parked=0 refused=1 gaps=0 equivocations=0
+     [B 218.9s] §TEAM-REBUILD rows=12 was=9 tombstoned=0 verifyChain=ok
+     [B 218.9s] §TEAM_VISIT sent=0 fetched=1 received=3 placed=15 parked=0 refused=1 gaps=0 | projection kept=2 projected=10 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+§FILM_CUE order2_on_both who=B t=220.41
+   §FILM_PROBE A order2-before {"pk":-39,"tip":null,"col":"DR","tax":0,"lines":1,"linesProcessed":0}
+   §FILM_PROBE B order2-before {"pk":-4,"tip":null,"col":"DR","tax":0,"lines":1,"linesProcessed":0}
+   🟢 order 2 and its line are on BOTH users before the clash — {"A":1,"B":1}
+§FILM_CUE clash_start who=A t=235.41
+     [A 236.3s] §AD-DOCFSM-LIVE table=259(C_Order) record=-39 clicked=CO from=DR to=CO
+     [A 236.7s] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_process uuid=45b9154a reason=fk-table-mismatch record_id points at c_order (NOT SENT)
+     [A 236.7s] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=548bd778 reason=fk-target-not-shared ad_wf_process_id=-48 (NOT SENT)
+     [A 236.7s] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=efce175d reason=fk-target-not-shared ad_wf_process_id=-48 (NOT SENT)
+     [A 236.7s] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=ea40e79f reason=fk-target-not-shared ad_wf_process_id=-48 (NOT SENT)
+     [A 236.7s] §TEAM_LOCALONLY op=CRUD_UPDATE table=c_acctschema uuid=46dbdf5f reason=target-not-a-team-record (uu-unresolved table=c_acctschema id=101) — the comm layer admits an op only against its record's CREATE scope (NOT SENT)
+     [A 236.7s] §TEAM_OUT op=CRUD_UPDATE table=c_order uu=47ed6c9d seq=17 refs=0 hash=89fec2c1ebcd
+     [A 236.7s] §TEAM_OUT op=CRUD_UPDATE table=m_storagereservation uu=019ee88d seq=18 refs=0 hash=d2b7e13b90f7
+     [A 236.7s] §TEAM_LOCALONLY op=CRUD_CREATE table=m_storagereservationlog uuid=a9a987f7 reason=fk-table-mismatch record_id points at c_orderline (NOT SENT)
+     [A 236.7s] §TEAM_OUT op=CRUD_UPDATE table=c_orderline uu=79ec34dd seq=19 refs=0 hash=8bae6417432a
+     [A 236.7s] §TEAM_OUT op=CRUD_CREATE table=c_ordertax uu=076a280a seq=20 refs=1 hash=da8a82c586a2
+     [A 236.7s] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=88e06b44 reason=fk-target-not-shared ad_wf_process_id=-48 (NOT SENT)
+     [A 236.7s] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=63c09d2a reason=fk-target-not-shared ad_wf_process_id=-48 (NOT SENT)
+     [A 236.7s] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=62f7aa10 reason=fk-target-not-shared ad_wf_process_id=-48 (NOT SENT)
+     [A 236.7s] §TEAM_OUT op=SET_STATUS table=c_order uu=47ed6c9d seq=21 refs=0 hash=de9db4a44485
+     [A 236.7s] §CRUD process committed key=c_order viaGroup=Y gid=5c58680b-e8de-44d3-a1d6-44f1ee659cc4 ops=14 sealed=14 op_uuid=da1305dd-52eb-4830-9a9c-9ef30c574b14 to=CO verifyChain=ok
+§FILM_CUE a_completes_2 who=A t=238.41
+     [B 239.2s] §AD-DOCFSM-LIVE table=259(C_Order) record=-4 clicked=CO from=DR to=CO
+     [B 240.2s] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_process uuid=d2ffda53 reason=fk-table-mismatch record_id points at c_order (NOT SENT)
+     [B 240.2s] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=37f20a04 reason=fk-target-not-shared ad_wf_process_id=-13 (NOT SENT)
+     [B 240.2s] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=df5134d3 reason=fk-target-not-shared ad_wf_process_id=-13 (NOT SENT)
+     [B 240.2s] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=994904d0 reason=fk-target-not-shared ad_wf_process_id=-13 (NOT SENT)
+     [B 240.2s] §TEAM_LOCALONLY op=CRUD_UPDATE table=c_acctschema uuid=ebffef42 reason=target-not-a-team-record (uu-unresolved table=c_acctschema id=101) — the comm layer admits an op only against its record's CREATE scope (NOT SENT)
+     [B 240.2s] §TEAM_OUT op=CRUD_UPDATE table=c_order uu=47ed6c9d seq=1 refs=0 hash=2d58e645ad07
+     [B 240.2s] §TEAM_OUT op=CRUD_UPDATE table=m_storagereservation uu=019ee88d seq=2 refs=0 hash=e5dd366b2e36
+     [B 240.2s] §TEAM_LOCALONLY op=CRUD_CREATE table=m_storagereservationlog uuid=56bf88de reason=fk-table-mismatch record_id points at c_orderline (NOT SENT)
+     [B 240.3s] §TEAM_OUT op=CRUD_UPDATE table=c_orderline uu=79ec34dd seq=3 refs=0 hash=279ea5dafd67
+     [B 240.3s] §TEAM_OUT op=CRUD_CREATE table=c_ordertax uu=870cd964 seq=4 refs=1 hash=768a6401957f
+     [B 240.3s] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=189c63e2 reason=fk-target-not-shared ad_wf_process_id=-13 (NOT SENT)
+     [B 240.3s] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_activity uuid=a10f9828 reason=fk-target-not-shared ad_wf_process_id=-13 (NOT SENT)
+     [B 240.3s] §TEAM_LOCALONLY op=CRUD_CREATE table=ad_wf_eventaudit uuid=46bfc2fb reason=fk-target-not-shared ad_wf_process_id=-13 (NOT SENT)
+     [B 240.3s] §TEAM_OUT op=SET_STATUS table=c_order uu=47ed6c9d seq=5 refs=0 hash=7526cf1b5a81
+     [B 240.3s] §CRUD process committed key=c_order viaGroup=Y gid=4fe442fc-7f85-4652-a9cf-702f28b876c2 ops=14 sealed=14 op_uuid=d6c85541-eba1-4615-843d-0862e64b063c to=CO verifyChain=ok
+§FILM_CUE b_completes_2 who=B t=241.85
+   §FILM_PROBE A order2-both-completed-not-visited {"pk":-39,"tip":"CO","col":"CO","tax":1,"lines":1,"linesProcessed":1}
+   §FILM_PROBE B order2-both-completed-not-visited {"pk":-4,"tip":"CO","col":"CO","tax":1,"lines":1,"linesProcessed":1}
+   🟢 NON-VACUOUS: each user's own Complete produced consequences (tax rows) before any Visit — A tax=1 B tax=1
+§FILM_CUE visit_A_x1 who=A t=244.41
+     [A 245.2s] §COMM_SYNC kid=2bb8cdb14837af83 pipe=http://127.0.0.1:37593/pipe sent=5 fetched=0 received=0 placed=19 parked=0 refused=2 gaps=0 equivocations=0
+     [A 245.3s] §TEAM-REBUILD rows=74 was=61 tombstoned=0 verifyChain=ok
+     [A 245.3s] §TEAM_VISIT sent=5 fetched=0 received=0 placed=19 parked=0 refused=2 gaps=0 | projection kept=26 projected=14 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent
+§FILM_CUE visit_B_x1 who=B t=246.68
+     [B 247.5s] §COMM_SYNC kid=fcfdabaa49e8184a pipe=http://127.0.0.1:37593/pipe sent=5 fetched=1 received=5 placed=23 parked=0 refused=3 gaps=0 equivocations=0
+     [B 247.5s] §TEAM_GROUP_HELD grp=4fe442fc CRUD_UPDATE c_orderline 79ec34dd (docstatus conflict — whole group left out)
+     [B 247.5s] §TEAM_GROUP_HELD grp=4fe442fc CRUD_UPDATE c_order 47ed6c9d (docstatus conflict — whole group left out)
+     [B 247.5s] §TEAM_GROUP_HELD grp=4fe442fc SET_STATUS c_order 47ed6c9d (docstatus conflict — whole group left out)
+     [B 247.5s] §TEAM_GROUP_HELD grp=4fe442fc CRUD_CREATE c_ordertax 870cd964 (docstatus conflict — whole group left out)
+     [B 247.5s] §TEAM_GROUP_HELD grp=5c58680b CRUD_UPDATE c_order 47ed6c9d (docstatus conflict — whole group left out)
+     [B 247.5s] §TEAM_GROUP_HELD grp=5c58680b CRUD_UPDATE c_orderline 79ec34dd (docstatus conflict — whole group left out)
+     [B 247.5s] §TEAM_GROUP_HELD grp=5c58680b CRUD_CREATE c_ordertax 076a280a (docstatus conflict — whole group left out)
+     [B 247.5s] §TEAM_GROUP_HELD grp=5c58680b SET_STATUS c_order 47ed6c9d (docstatus conflict — whole group left out)
+     [B 247.5s] §TEAM-REBUILD rows=35 was=26 tombstoned=0 verifyChain=ok
+     [B 247.5s] §TEAM_VISIT sent=5 fetched=1 received=5 placed=23 parked=0 refused=3 gaps=0 | projection kept=11 projected=10 skipped=0 groupHeld=8 rebuild=ok verifyChain=ok refresh=sent
+§FILM_CUE visit_A_x2 who=A t=249.03
+     [A 249.8s] §COMM_SYNC kid=2bb8cdb14837af83 pipe=http://127.0.0.1:37593/pipe sent=0 fetched=1 received=5 placed=23 parked=0 refused=3 gaps=0 equivocations=0
+     [A 249.9s] §TEAM_GROUP_HELD grp=4fe442fc CRUD_UPDATE c_orderline 79ec34dd (docstatus conflict — whole group left out)
+     [A 249.9s] §TEAM_GROUP_HELD grp=4fe442fc CRUD_UPDATE c_order 47ed6c9d (docstatus conflict — whole group left out)
+     [A 249.9s] §TEAM_GROUP_HELD grp=4fe442fc SET_STATUS c_order 47ed6c9d (docstatus conflict — whole group left out)
+     [A 249.9s] §TEAM_GROUP_HELD grp=4fe442fc CRUD_CREATE c_ordertax 870cd964 (docstatus conflict — whole group left out)
+     [A 249.9s] §TEAM_GROUP_HELD grp=5c58680b CRUD_UPDATE c_order 47ed6c9d (docstatus conflict — whole group left out)
+     [A 249.9s] §TEAM_GROUP_HELD grp=5c58680b CRUD_UPDATE c_orderline 79ec34dd (docstatus conflict — whole group left out)
+     [A 249.9s] §TEAM_GROUP_HELD grp=5c58680b CRUD_CREATE c_ordertax 076a280a (docstatus conflict — whole group left out)
+     [A 249.9s] §TEAM_GROUP_HELD grp=5c58680b SET_STATUS c_order 47ed6c9d (docstatus conflict — whole group left out)
+     [A 250.0s] §TEAM-REBUILD rows=74 was=74 tombstoned=0 verifyChain=ok
+     [A 250.0s] §TEAM_VISIT sent=0 fetched=1 received=5 placed=23 parked=0 refused=3 gaps=0 | projection kept=26 projected=10 skipped=0 groupHeld=8 rebuild=ok verifyChain=ok refresh=sent
+§FILM_CUE visit_B_x2 who=B t=251.31
+     [B 252.1s] §COMM_SYNC kid=fcfdabaa49e8184a pipe=http://127.0.0.1:37593/pipe sent=0 fetched=0 received=0 placed=23 parked=0 refused=3 gaps=0 equivocations=0
+     [B 252.2s] §TEAM_GROUP_HELD grp=4fe442fc CRUD_UPDATE c_orderline 79ec34dd (docstatus conflict — whole group left out)
+     [B 252.2s] §TEAM_GROUP_HELD grp=4fe442fc CRUD_UPDATE c_order 47ed6c9d (docstatus conflict — whole group left out)
+     [B 252.2s] §TEAM_GROUP_HELD grp=4fe442fc SET_STATUS c_order 47ed6c9d (docstatus conflict — whole group left out)
+     [B 252.2s] §TEAM_GROUP_HELD grp=4fe442fc CRUD_CREATE c_ordertax 870cd964 (docstatus conflict — whole group left out)
+     [B 252.2s] §TEAM_GROUP_HELD grp=5c58680b CRUD_UPDATE c_order 47ed6c9d (docstatus conflict — whole group left out)
+     [B 252.2s] §TEAM_GROUP_HELD grp=5c58680b CRUD_UPDATE c_orderline 79ec34dd (docstatus conflict — whole group left out)
+     [B 252.2s] §TEAM_GROUP_HELD grp=5c58680b CRUD_CREATE c_ordertax 076a280a (docstatus conflict — whole group left out)
+     [B 252.2s] §TEAM_GROUP_HELD grp=5c58680b SET_STATUS c_order 47ed6c9d (docstatus conflict — whole group left out)
+     [B 252.2s] §TEAM-REBUILD rows=35 was=35 tombstoned=0 verifyChain=ok
+     [B 252.2s] §TEAM_VISIT sent=0 fetched=0 received=0 placed=23 parked=0 refused=3 gaps=0 | projection kept=11 projected=10 skipped=0 groupHeld=8 rebuild=ok verifyChain=ok refresh=sent
+§FILM_CUE conflict_shown who=A t=288.52
+§FILM_CUE conflict_shown who=B t=288.48
+   §FILM_PROBE A order2-after-clash {"pk":-62,"tip":null,"col":"DR","tax":0,"lines":1,"linesProcessed":0}
+   §FILM_PROBE B order2-after-clash {"pk":-27,"tip":null,"col":"DR","tax":0,"lines":1,"linesProcessed":0}
+   §FILM_CONFLICTS A=["⚠ c_order 50001 (47ed6c9d) · c_doctype_id: values 132 / 132, kept 0 — Current record was changed by another user, please ReQuery","⚠ c_order 50001 (47ed6c9d) · docaction: values \"CL\" / \"CL\", kept null — Current record was changed by another user, please ReQuery","⚠ c_order 50001 (47ed6c9d) · docstatus: values \"CO\" / \"CO\", kept \"DR\" — Current record was changed by another user, please ReQuery","⚠ c_order 50001 (47ed6c9d) · isapproved: values \"Y\" / \"Y\", kept null — Current record was changed by another user, please ReQuery","⚠ c_order 50001 (47ed6c9d) · posted: values \"Y\" / \"Y\", kept null — Current record was changed by another user, please ReQuery","⚠ c_order 50001 (47ed6c9d) · processed: values \"Y\" / \"Y\", kept null — Current record was changed by another user, please ReQuery","⚠ c_order 50001 (47ed6c9d) · processedon: values 1792795417780 / 1792795414798, kept null — Current record was changed by another user, please ReQuery","⚠ c_orderline (79ec34dd) · processed: values \"Y\" / \"Y\", kept \"N\" — Current record was changed by another user, please ReQuery","⚠ c_orderline (79ec34dd) · qtyreserved: values 2 / 2, kept 0 — Current record was changed by another user, please ReQuery"]
+   §FILM_CONFLICTS B=["⚠ c_order 50001 (47ed6c9d) · c_doctype_id: values 132 / 132, kept 0 — Current record was changed by another user, please ReQuery","⚠ c_order 50001 (47ed6c9d) · docaction: values \"CL\" / \"CL\", kept null — Current record was changed by another user, please ReQuery","⚠ c_order 50001 (47ed6c9d) · docstatus: values \"CO\" / \"CO\", kept \"DR\" — Current record was changed by another user, please ReQuery","⚠ c_order 50001 (47ed6c9d) · isapproved: values \"Y\" / \"Y\", kept null — Current record was changed by another user, please ReQuery","⚠ c_order 50001 (47ed6c9d) · posted: values \"Y\" / \"Y\", kept null — Current record was changed by another user, please ReQuery","⚠ c_order 50001 (47ed6c9d) · processed: values \"Y\" / \"Y\", kept null — Current record was changed by another user, please ReQuery","⚠ c_order 50001 (47ed6c9d) · processedon: values 1792795417780 / 1792795414798, kept null — Current record was changed by another user, please ReQuery","⚠ c_orderline (79ec34dd) · processed: values \"Y\" / \"Y\", kept \"N\" — Current record was changed by another user, please ReQuery","⚠ c_orderline (79ec34dd) · qtyreserved: values 2 / 2, kept 0 — Current record was changed by another user, please ReQuery"]
+   🟢 both users show the docstatus conflict "...changed by another user, please ReQuery" — A=9 B=9
+   🟢 the order keeps its last agreed status (not Completed) on both — A tip=null col=DR | B tip=null col=DR | bars: Drafted · DRCompletePrepareVoid / Drafted · DRCompletePrepareVoid
+   🟢 all-or-none: none of the Complete's consequences show on either user (tax rows, processed lines) — A tax=0 proc=0 | B tax=0 proc=0
+   chips: A=Team · 2BB8-CDB1 · team devices 2 Visit my ops 21 · seen 21 · refused 2 · waiting on 0 · last visit 6:43:48 AM ⚠ 18 local-only (not shared) | B=Team · FCFD-ABAA · team devices 2 Visit my ops 5 · seen 5 · refused 1 · waiting on 0 · last visit 6:43:50 AM ⚠ 9 local-only (not shared)
+§FILM_PIPE objects=10 spaces=["4c66d93d1851:10"]
+   🟢 the pipe holds exactly ONE space, the same one both users report — 4c66d93d1851
+§FILM_CHAIN complete_commits=3 ok=3 fail_or_torn_or_toast_lines=0
+   🟢 chain valid on every Complete commit: no verifyChain=FAIL, no group-torn, no "verify FAIL" toast on either page — commits=3 ok=3 bad=0
+   🟢 zero page errors on both users — errors=0
+§FILM_REC videos={"A":"/tmp/claude-1000/-home-red1-bim-compiler/c07655a0-883e-4dcf-a5b0-37ebd2d4a624/scratchpad/take2b/vidA/page@ecd1c29d805cf21927969e45aad97b1c.webm","B":"/tmp/claude-1000/-home-red1-bim-compiler/c07655a0-883e-4dcf-a5b0-37ebd2d4a624/scratchpad/take2b/vidB/page@c834a57d3b396a1a6270cdf595691bb5.webm"} elapsedA=299.09s elapsedB=299.05s cues=42
+§FILM_REC_VERDICT PASS checks=19 bad=0

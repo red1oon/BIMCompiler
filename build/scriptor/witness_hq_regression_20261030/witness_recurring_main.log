@@ -1,0 +1,49 @@
+§RECUR-LOAD erp=/tmp/wt-hq-main/erp mutant=none seedPatch ok=3803 failed=3 adImportTables=loaded ensureRecurring:function
+  §RECUR-CHECK case=TABLE key=seed-gap OK rule="MEASURED gap: the seed has the dictionary columns of C_Recurring_Run (16) and C_RecurringGroup (13) but NO physical table for either, while C_Recurring has one"
+  §RECUR-CHECK case=TABLE key=ensure OK rule="both tables exist after ensure(db); ensureRecurring again = 0; physical columns == dictionary columns"
+  §RECUR-CHECK case=TABLE key=base-hash OK rule="the team BASE hash (seed + the two hashed patch files) is byte-identical to origin/main: no hashed file touched"
+  §RECUR-CHECK case=TABLE key=wiring OK rule="the page loads processes/Recurring.js and processes/RecurringRun.js (Recurring first: RecurringRun uses its executeRun) and sw.js precaches both"
+§RECUR-FIXTURE source invoice109=["100000",118,108,228.85,215.9,116,"Y","2003-11-01 00:00:00"] lines=[[128,10,21.59,215.9]]
+  §RECUR-CHECK case=PORT key=registered OK rule="AD_Process 213 -> org.compiere.process.Recurring and 200074 -> org.idempiere.process.RecurringRun are registered ports (erp/processes/Recurring.js, RecurringRun.js)"
+  §RECUR-CHECK case=PORT key=params-x-of-n OK rule="X of N: process 213 declares 0 parameters (legacy prepare() reads none); process 200074 declares exactly ["C_RecurringGroup_ID","DocAction","Prm_Comment","Cut_Date"] - all read by RecurringRun.prepare() (:63-83: C_RecurringGroup_ID, Cut_Date, DocAction, Prm_*)"
+  §RECUR-CHECK case=TYPES key=defaults OK rule="defaults as the Java constructor sets them"
+  §RECUR-CHECK case=TYPES key=mandatory OK rule="three refusals naming the missing element, no row written"
+  §RECUR-CHECK case=RUN key=ran OK rule="fixture saved, the process ran ok, answers "Created <DocumentNo of the new invoice>""
+  §RECUR-CHECK case=RUN key=one-invoice-one-run OK rule="exactly ONE new invoice and ONE new C_Recurring_Run row; the run points at the new invoice with DateDoc = the OLD DateNextRun (MRecurringRun ctor :43-52), client/org of the recurring"
+  §RECUR-CHECK case=RUN key=copy-header OK rule="the new invoice is a copy of 109: BP 118, location, term 108, currency, price list, sales rep, payment rule, description "Export Order"; IsSOTrx Y; C_DocType_ID 0 and C_DocTypeTarget_ID = the source C_DocType_ID 116 (copyFrom(from.getC_DocType_ID()))"
+  §RECUR-CHECK case=RUN key=dates OK rule="DateInvoiced = DateAcct = the recurring DateNextRun 2026-11-01 (copyFrom(from, dateDoc, dateDoc ...)), NOT the source 2003-11-01"
+  §RECUR-CHECK case=RUN key=draft OK rule="DocStatus DR / DocAction CO, a NEW DocumentNo (not 100000), IsApproved/IsPaid/IsPrinted/Posted/Processed N, no order / payment / cash line / reference invoice link"
+  §RECUR-CHECK case=RUN key=copy-lines OK rule="the lines are copied (same count/product/qty/price as 109's 1 line); header TotalLines = the lines (independent SUM oracle) = 215.90 and GrandTotal = lines + tax (oracle) = 228.85"
+  §RECUR-CHECK case=RUN key=recurring-advanced OK rule="RunsRemaining = RunsMax(3) - COUNT(runs) - 1 = 2 although the stored value was 99 (calculateRuns recomputes from the runs); DateNextRun 2026-11-01 -> 2026-12-01; DateLastRun set"
+  §RECUR-CHECK case=RUN key=log OK rule="the shipped §RECUR line names the run (executeRun type=I created=c_invoice remaining=2 next=2026-12-01)"
+  §RECUR-CHECK case=SEQ key=advance OK rule="after run 2: remaining 1, next 2027-01-01; after run 3: remaining 0, next 2027-02-01; three distinct invoices dated 2026-11-01 / 2026-12-01 / 2027-01-01"
+  §RECUR-CHECK case=SEQ key=no-runs-left OK rule="the 4th run: process FAILS with "No Runs Left", no new invoice, no new run row, the recurring row is unchanged (the transaction rolled back)"
+  §RECUR-CHECK case=SEQ key=stored-remaining-untouched OK rule="fails No Runs Left; stored RunsRemaining still 7; no invoice/run row"
+  §RECUR-CHECK case=FREQ key=calendar OK rule="8 (type, n, date) -> next date cases incl. month-end clamp Jan 31 -> Feb 28 / Feb 29 (2028), +13 months, quarterly, time of day kept, 40 days across a year end"
+  §RECUR-CHECK case=FREQ key=frequency-lt-1 OK rule="next = +1 month, stored Frequency = 1"
+  §RECUR-CHECK case=TYPES key=payment OK rule="one new payment, run row carries C_Payment_ID, state as legacy :158-178"
+  §RECUR-CHECK case=TYPES key=unported OK rule="O, J and G each fail with "not ported - named" and write no run row / invoice"
+  §RECUR-CHECK case=TYPES key=invalid-type OK rule="ok, summary "Invalid ... = Z", nothing written"
+  §RECUR-CHECK case=TYPES key=no-row OK rule="process fails with a NullPointerException message, no run row"
+  §RECUR-CHECK case=RR key=fixture OK rule="source draft invoice saved with tagged descriptions"
+  §RECUR-CHECK case=RR key=selection OK rule="process ok "OK"; exactly A and B ran (2 new invoices, 2 run rows); C, D, E, F, H untouched (no run rows beyond F's one)"
+  §RECUR-CHECK case=RR key=order-by-name OK rule="ORDER BY Name: A's invoice is created before B's (lower id), DateInvoiced = each DateNextRun (2026-11-01 / 2026-11-15)"
+  §RECUR-CHECK case=RR key=docaction-complete OK rule="DocAction CO ran on both: DocStatus CO, Processed Y, and the payment term's pay schedule was created at prepare (2 C_InvoicePaySchedule rows each: 114.43 + 114.42)"
+  §RECUR-CHECK case=RR key=tags OK rule="Description tags replaced on header and lines: "Renewal Oct renewal #<its own DocumentNo>" (@DocumentNo@ from the po, @Prm_Comment@ from the parameter) and "Line Oct renewal a@b" (the @@ escape -> @)"
+  §RECUR-CHECK case=RR key=buffer-logs OK rule="one buffer log per document: record = the Trx handle of the invoice just created (the same temp-id convention as InvoiceGenerate addBufferLog; the host resolves it at commit), tableId 318, msg "Created <DocNo>", date = the DateNextRun used (A 2026-11-01, B 2026-11-15)"
+  §RECUR-CHECK case=RR key=recurring-state OK rule="A and B advanced one month (12-01 / 12-15) with RunsRemaining 2; D (never due) unchanged"
+  §RECUR-CHECK case=RR key=idempotent OK rule="the SAME run again does nothing (A and B are now due 12-01 / 12-15 > Cut_Date): no new invoice, no run row"
+  §RECUR-CHECK case=RR key=defaults OK rule="past one ran and is Complete (default DocAction CO); future one did not (default Cut_Date today); §PROC-PARAM printed for DocAction and Cut_Date"
+  §RECUR-CHECK case=RRFAIL key=rollback OK rule="process fails naming "PO Process Failed"; invoice count and run-row count unchanged; neither recurring advanced"
+  §RECUR-CHECK case=PORT key=no-unknown-para OK rule="no run printed §PROC-UNKNOWN-PARA (every parameter sent is one prepare() reads)"
+§RECUR-SHIPPED-LOG lines by kind {"§PROC-INFO":28,"§RECUR":22,"§PROC-PARAM":2}
+§RECUR-TABLE verdict=PASS judged=4 failed=0
+§RECUR-PORT verdict=PASS judged=3 failed=0
+§RECUR-TYPES verdict=PASS judged=6 failed=0
+§RECUR-RUN verdict=PASS judged=8 failed=0
+§RECUR-SEQ verdict=PASS judged=3 failed=0
+§RECUR-FREQ verdict=PASS judged=2 failed=0
+§RECUR-RR verdict=PASS judged=9 failed=0
+§RECUR-RRFAIL verdict=PASS judged=1 failed=0
+§RECUR-RESULT verdict=PASS judged=36 failed=0 failedCases=[]
+exit=0

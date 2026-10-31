@@ -1,0 +1,58 @@
+═══ W-PLANTRUST-GENESIS — the plan trust list pinned in the space genesis (TEAMWORK_FRAMEWORK §33) ═══
+
+§T1 ID
+   🟢 params.planTrust is the normalised list (kty/crv/x/y only); a space without the option has none — ["kty","crv","x","y"]
+   🟢 the space id PINS the list: same params => same id; another key or none => a different id — ddf6e51505 / 8993ae9363 / cafe046b75
+§T2 REJECT
+   🟢 newSpace refuses empty list — newSpace: invalid planTrust (count)
+   🟢 newSpace refuses 4 keys — newSpace: invalid planTrust (count)
+   🟢 newSpace refuses not an array — newSpace: invalid planTrust (count)
+   🟢 newSpace refuses a duplicate — newSpace: invalid planTrust (duplicate)
+   🟢 newSpace refuses missing x — newSpace: invalid planTrust (x/y)
+   🟢 newSpace refuses P-384 — newSpace: invalid planTrust (algorithm)
+   🟢 newSpace refuses RSA — newSpace: invalid planTrust (extra field (private material is never pinned))
+   🟢 newSpace refuses PRIVATE material (d) — newSpace: invalid planTrust (extra field (private material is never pinned))
+   🟢 newSpace refuses an extra kid field — newSpace: invalid planTrust (extra field (private material is never pinned))
+§T3 FOLD
+   🟢 null before the genesis has been seen (a joiner with only the invite) — null
+   🟢 the founder's store returns the pinned list; a space without one returns null — 2
+   🟢 a joiner that has the invite + the genesis returns the same list
+§T4 FORGED
+   🟢 a self-consistent genesis with an INVALID planTrust is refused (roster not ok), never accepted with the list dropped — roster.ok=false reason=no-trusted-genesis
+   🟢 and the forged space exposes no trust list
+§T5 PLAN
+   🟢 a plan signed by either pinned key (primary or backup) verifies ok under the list read from the genesis
+   🟢 a plan signed by a key that is NOT pinned in the genesis is untrusted — untrusted
+§T6 ROTATE
+   🟢 the PRIMARY signs [K0,K1,K2]: POLICY MERGED on both devices, the founder AND the joiner return the 3-key list, planTrustEpoch=1 — MERGED:policy MERGED:policy list=3/3 epoch=1
+   🟢 the BACKUP signs [K1,K3] (primary dropped, lost-key recovery): MERGED, list in force = [K1,K3] — MERGED:policy MERGED:policy list=2
+   🟢 with the REAL reader under the rotated list: a plan signed by the dropped K0 is untrusted, one signed by the added K3 is ok — K0=untrusted K3=ok
+§T7 REFUSE
+   🟢 a signer outside the list in force (K2) -> REFUSED:plan-trust-untrusted-signer on both devices; the list stays [K1,K3] — REFUSED:plan-trust-untrusted-signer REFUSED:plan-trust-untrusted-signer list=2
+   🟢 the keys edited after signing -> REFUSED:plan-trust-signature on both devices; the list stays [K1,K3] — REFUSED:plan-trust-signature REFUSED:plan-trust-signature list=2
+   🟢 the FIRST statement replayed after the second -> REFUSED:plan-trust-stale on both devices; the list stays [K1,K3] — REFUSED:plan-trust-stale REFUSED:plan-trust-stale list=2
+   🟢 keys carrying private d -> REFUSED:bad-policy:planTrust on both devices; the list stays [K1,K3] — REFUSED:bad-policy:planTrust REFUSED:bad-policy:planTrust list=2
+   🟢 a valid owner-signed statement published by the NON-admin device B -> REFUSED:not-admin on both devices; the list stays [K1,K3] — REFUSED:not-admin REFUSED:not-admin list=2
+   🟢 a valid statement inside an epoch-stale POLICY -> REFUSED:epoch-stale on both devices; the list stays [K1,K3] — REFUSED:epoch-stale REFUSED:epoch-stale list=2
+   🟢 a space founded with NO list cannot gain one by POLICY (an admin device would pin its own key) -> plan-trust-unpinned — REFUSED:plan-trust-unpinned REFUSED:plan-trust-unpinned
+§T8 CARRY
+   🟢 CONTROL after the refusals: the same valid statement in a fresh epoch is MERGED -> [K1,K3,K2] — MERGED:policy MERGED:policy
+   🟢 a POLICY repeating the applied statement (params copied forward) is MERGED; list unchanged, planTrustEpoch stays 3 — MERGED:policy MERGED:policy epoch=3
+   🟢 a POLICY that OMITS planTrust is MERGED and the list is kept (omitting is not dropping) — MERGED:policy MERGED:policy list=3
+§T9 ORDER
+   🟢 a third device ingesting the same 16 ops in REVERSE arrival order returns the same list — C=3 F=3
+§MUTANTS (a copy of build/comm with one rule broken; each must turn at least one arm red)
+   🟢 planTrust left out of the space id -> red arms: T1, T3, T5, T6, T7, T8
+   🟢 private material accepted -> red arms: T2, T4, T7
+   🟢 an invalid list is silently dropped at fold (genesis still trusted) -> red arms: T4
+   🟢 planTrust not returned by the fold -> red arms: T3, T5, T6, T7, T8
+   🟢 §35 signer membership not checked -> red arms: T7, T8
+   🟢 §35 statement signature not checked -> red arms: T7, T8
+   🟢 §35 prev not checked (replay) -> red arms: T7
+   🟢 §35 unpinned space may gain a list -> red arms: T7
+   🟢 §35 statement shape not validated -> red arms: T7
+   🟢 §35 rotation never applied (genesis list returned) -> red arms: T6, T7, T8
+   🟢 §35 omitting planTrust drops the list -> red arms: T8
+   🟢 §35 rotation applied before the POLICY's other checks -> red arms: T6, T7, T8
+   🟢 the key-count limit removed -> red arms: T2
+§PLANTRUST_VERDICT PASS judged=45 fails=0

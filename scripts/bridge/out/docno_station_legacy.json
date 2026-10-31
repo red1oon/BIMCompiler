@@ -1,0 +1,56 @@
+{
+ "tag": "nb9b",
+ "sid": 1000218,
+ "did": 1000057,
+ "format": "@AD_Org_ID.Value/K@-@#AD_User_Value/K@-",
+ "start": 1000,
+ "plan": [
+  "gardenad",
+  "gardenusr",
+  "gardenad",
+  "gardenad",
+  "gardenusr"
+ ],
+ "numbers": [
+  {
+   "user": "gardenad",
+   "order": 1003243,
+   "documentno": "HQ-gardenad-1000",
+   "createdby": 101
+  },
+  {
+   "user": "gardenusr",
+   "order": 1003244,
+   "documentno": "HQ-gardenusr-1000",
+   "createdby": 102
+  },
+  {
+   "user": "gardenad",
+   "order": 1003245,
+   "documentno": "HQ-gardenad-1001",
+   "createdby": 101
+  },
+  {
+   "user": "gardenad",
+   "order": 1003246,
+   "documentno": "HQ-gardenad-1002",
+   "createdby": 101
+  },
+  {
+   "user": "gardenusr",
+   "order": 1003247,
+   "documentno": "HQ-gardenusr-1001",
+   "createdby": 102
+  }
+ ],
+ "keys": [
+  {
+   "key": "HQ-gardenad",
+   "currentnext": 1003
+  },
+  {
+   "key": "HQ-gardenusr",
+   "currentnext": 1002
+  }
+ ]
+}
