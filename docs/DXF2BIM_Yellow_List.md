@@ -32,6 +32,7 @@ A 2D drawing carries only some of what a model needs. Everything it does not sta
 | `gradebeam.width` | IfcBeam | m | **0.3** | guess | grade beam width when no label gives it | 0.2, 0.3 |
 | `column.height` | IfcColumn | m | **3** | guess | storey height when no elevation gives it | 2.7, 3, 3.6 |
 | `column.size` | IfcColumn | m | **0.3** | guess | square section when a column symbol gives none | 0.2, 0.25, 0.3, 0.4 |
+| `column.top_under_beam` | IfcColumn | text | **beam_above** | guess | a column under a beam end carries it up to the beam's underside; an elevation may draw it short where a wall, a net or another sheet hides it (§D100: the shed's lines 36–41 drawn 1.52 m under beams at 3.10 m). 'as_drawn' keeps the drawn top and the gap shows as a load_path finding | beam_above, as_drawn |
 | `synth.column.belowgrade.size` | IfcColumn | m | **0** | guess | 0 = not stated: no below-grade column is built; state the schedule's below-grade section (e.g. 0.3556 for 14 in) |  |
 | `synth.column.grade_to_base` | IfcColumn | m | **0.6096** | guess | grade to the column base (plinth): 2 ft, the datum read from a column detail |  |
 | `ceiling.thickness` | IfcCovering | m | **0.012** | guess | board thickness when a ceiling is implied | 0.009, 0.012, 0.015 |
