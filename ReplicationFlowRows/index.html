@@ -1,0 +1,3439 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Construction is manufacturing. A building IS its Bill of Materials.">
+      
+      
+        <meta name="author" content="Redhuan D. Oon">
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Replication Flow Rows — a guide with ready-made patterns - BIM Intent Compiler</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  <script data-goatcounter="https://red1oon.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#replication-flow-rows-a-guide-with-ready-made-patterns" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="BIM Intent Compiler" class="md-header__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BIM Intent Compiler
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Replication Flow Rows — a guide with ready-made patterns
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source md-header__source--stacked">
+        <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+        <a href="https://github.com/red1oon/BIMCompiler" title="red1oon/BIMCompiler on GitHub" class="md-source" id="bim-compiler-source" target="_blank" rel="noopener">
+          <div class="md-source__icon md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+          </div>
+          <div class="md-source__repository" id="bim-compiler-repository">
+            Compiler
+          </div>
+        </a>
+        <span id="repo-totals" class="md-source-totals" title="Combined stars / forks across both repos"></span>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href=".." class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start Here
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../BIMUserGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  The 3 Apps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../ArchitectureOverview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Go Deeper
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../SpatialCompilationPaper/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Papers & Positioning
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="BIM Intent Compiler" class="md-nav__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    BIM Intent Compiler
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href=".." class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start Here
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start Here
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMToolsGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🧰 BIM Tools — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFFLINE_INSTALL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔒 Fully Offline / Air-Gapped Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WhatsNew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🆕 What's New
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AboutMore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About BIM OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FeatureComparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feature Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrateComparisonPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrate & Compare (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two Apps, One Kernel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernelInfographicLandscape.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One Page InfoGraphics - Landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bench_suite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Comparison (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../age_demo.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Does Your ERP Age? (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANIFESTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The ERP World View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 3 Apps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The 3 Apps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Viewer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AskFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Ask — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modeller — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DAGeVu Modeller — User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIMGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2D Drawings → BIM (DXF2BIM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Yellow_List/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — the yellow list (what you fill in, defaults used)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Prior_Art/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — prior art (what is new, what we learned, cost of using others)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_FORMAT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — format contract (marks, outputs, registry, codes; generated)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_FirstSetup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP — Your First Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HRBIMAssetGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HR / Tenancy / Operate Module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CivilWorksGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Civil Works — Step by Step
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TeamsOverlayGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teams Overlay — Collaboration & Optics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ArchitectureOverview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview (for reviewers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FoldEngineBlackBook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fold Engine Black Book (dev manual)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HolyGrail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Holy Grail (editable rules, live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPConceptRosetta.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-ERP Rosetta Stone (concept + cost)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIM_Modeller_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Modeller OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERP_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP — Every Record Has a Place
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERPIntegration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP × BIM × HR — One Building, One Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DistributedERP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TermsHowToVerify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to verify the terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_AI_ADVISORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Letting an AI work on the ERP, safely
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SQLiteWasmArchitectureActual.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How the Database Works (big picture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ViewerComponentModel.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Component Model (dev architecture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RED_PILL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Pill — Design From Grammar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLASH_DETECTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clash Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JKR_SKATA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Classification & JKR/SKATA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IFC_ExportGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IFC Export Guide (for the BIM author)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TimeMachine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Time Machine (4D Scheduling & Editing)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4D5DAnalysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4D/5D Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMtoProject/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → Project Order (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerKernelFold/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry as a Signed-Log Fold
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Papers & Positioning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Papers & Positioning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialCompilationPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deterministic Spatial Compilation (academic paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_TechnicalNote/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BrowserScaleBenchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser-Scale Benchmark (one tab, local first)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMERPPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Construction Economy / ERP Wave
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnterpriseAuthentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enterprise Authentication (security)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../StrategicIndustryPositioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategic Positioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LocalFirstPriorArt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local-First Prior Art
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LegacyOracleAdapterSpec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy-as-Oracle Adapter (migrate / test an ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnablingTechTimeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enabling-Tech Timeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VibeProgramming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibe Programming — AI + Domain Expertise
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4DGenerator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 4D Generator — Failure Catalogue & AI Findings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAST_MILE_PROBLEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Last Mile — drift tracking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT_CHRONOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Chronology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ShipYard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beyond Buildings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RouteTemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Find & Navigate (wayfinding)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SYSTEMS_INSTALLER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Host (DIY installer)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-a-flow-row-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What a flow row is
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-fields-of-a-row" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The fields of a row
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-i-want-use-this-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. I want… → use this pattern
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. The patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#p1-a-branch-sells-head-office-answers-with-stock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P1 — A branch sells, head office answers with stock
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p2-a-price-list-pushed-to-one-branch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P2 — A price list pushed to one branch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p3-a-public-value-anyone-may-fetch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P3 — A public value anyone may fetch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p4-a-code-that-carries-value-loyalty-points-store-credit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P4 — A code that carries value (loyalty points, store credit)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p5-a-customer-pays-the-lender-confirms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P5 — A customer pays, the lender confirms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p6-a-team-shares-the-records-of-a-dictionary-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P6 — A team shares the records of a dictionary table
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p7-a-team-shares-records-that-are-not-in-the-dictionary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P7 — A team shares records that are not in the dictionary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p8-a-table-that-stays-on-its-own-station" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P8 — A table that stays on its own station
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#p9-another-table-same-shape-no-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P9 — Another table, same shape, no code
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-write-your-own-in-six-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Write your own in six steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-common-mistakes-and-exactly-what-you-will-see" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Common mistakes — and exactly what you will see
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Common mistakes — and exactly what you will see">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#m1-a-column-name-with-a-typo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M1 — A column name with a typo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m2-a-table-that-does-not-exist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M2 — A table that does not exist
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m3-a-required-setting-left-out" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M3 — A required setting left out
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m4-both-ways-but-not-as-a-team" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M4 — Both ways, but not as a team
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m5-a-team-flow-that-only-goes-one-way" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M5 — A team flow that only goes one way
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m6-a-kind-of-movement-that-is-not-registered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M6 — A kind of movement that is not registered
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m7-a-made-up-kind-of-column" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M7 — A made-up kind of column
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m8-the-same-column-declared-twice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M8 — The same column declared twice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m9-sending-a-column-the-system-computes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M9 — Sending a column the system computes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m10-a-mandatory-column-left-out" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M10 — A mandatory column left out
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m11-a-rule-with-nothing-to-send" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M11 — A rule with nothing to send
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m12-a-rule-that-names-a-flow-that-does-not-exist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M12 — A rule that names a flow that does not exist
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-when-the-team-hears-about-a-save-and-who-acts-on-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. When the team hears about a save — and who acts on it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-principles-behind-this-design-for-anyone-building-something-similar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Principles behind this design — for anyone building something similar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-what-this-guide-does-not-cover-yet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. What this guide does not cover yet
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="replication-flow-rows-a-guide-with-ready-made-patterns">Replication Flow Rows — a guide with ready-made patterns<a class="headerlink" href="#replication-flow-rows-a-guide-with-ready-made-patterns" title="Permanent link">&para;</a></h1>
+<p><em>Generated by <code>build/scriptor/gen_patterns_doc.js</code> from <code>build/scriptor/patterns.json</code> and the compiler itself; checked by <code>scripts/witness_scriptor_patterns.js</code>. Every row below is a </em><em>sample</em><em>: copy it, change what the pattern says to change, compile it.</em></p>
+<h2 id="1-what-a-flow-row-is">1. What a flow row is<a class="headerlink" href="#1-what-a-flow-row-is" title="Permanent link">&para;</a></h2>
+<p>A flow row is <strong>one line of data</strong> that says: <em>this kind of record moves, in this direction, between these people, and this is the key that makes one record unique</em>. You do not write code for it. The compiler reads the row, reads the dictionary (the Application Dictionary: tables, columns, references, windows), and works out the rest: which other tables the receiver must already hold, which columns the system computes by itself, and what is missing.</p>
+<p>Three parts work together, and you only touch the first:</p>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>What it is</th>
+<th>Who touches it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>The row</strong></td>
+<td>the declaration, the pages below</td>
+<td>you</td>
+</tr>
+<tr>
+<td><strong>The treatment</strong></td>
+<td>the component that knows how to carry out one <em>kind</em> of row (FACT, SEED, RULE, INSTRUMENT, LOCAL). The row names it; it is found by name in a registry, like a factory.</td>
+<td>an engineer, only to add a new kind</td>
+</tr>
+<tr>
+<td><strong>The plan reader</strong></td>
+<td>what the Modeller or the ERP uses to ask "is this table shared?"</td>
+<td>the application author</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-the-fields-of-a-row">2. The fields of a row<a class="headerlink" href="#2-the-fields-of-a-row" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Plain meaning</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>A label you choose. Other rows refer to it by this exact text.</td>
+<td><code>F1 pos-sales-up</code></td>
+</tr>
+<tr>
+<td><code>treatment</code></td>
+<td>The kind of movement. <code>FACT</code> = a record moves. <code>SEED</code> = a value is published and fetched. <code>RULE</code> = a named process that sends another flow, started by a flow arriving or by a role on a schedule. <code>INSTRUMENT</code> = a signed code that carries value. <code>LOCAL</code> = this table never leaves its station.</td>
+<td><code>FACT</code></td>
+</tr>
+<tr>
+<td><code>role</code></td>
+<td>The dictionary role (a number) of the devices that send. A label such as <code>BORROWER</code> is fine where there is no dictionary role. On a <code>RULE</code> with no <code>on</code>: the role that runs the process.</td>
+<td><code>103</code></td>
+</tr>
+<tr>
+<td><code>strategy</code></td>
+<td>Which dictionary replication strategy supplies the table types. 100 is the sample point-of-sale strategy.</td>
+<td><code>100</code></td>
+</tr>
+<tr>
+<td><code>dir</code></td>
+<td><code>UP</code> = device to head office. <code>DOWN</code> = head office to a device. <code>BOTH</code> = every member of a team, both ways (needs <code>audience</code> <code>space</code>).</td>
+<td><code>UP</code></td>
+</tr>
+<tr>
+<td><code>audience</code></td>
+<td>For a <code>FACT</code>: <code>hub</code> (the default, through head office) or <code>space</code> (a team shares it). For a <code>SEED</code>: <code>addressed</code> (one role) or <code>public</code> (anyone).</td>
+<td><code>space</code></td>
+</tr>
+<tr>
+<td><code>table</code></td>
+<td>The dictionary table whose records move, or a table you declare yourself (section 4, pattern P7).</td>
+<td><code>C_OrderLine</code></td>
+</tr>
+<tr>
+<td><code>carries</code></td>
+<td>The columns that travel. Leave it out and the dictionary <strong>proposes</strong> columns (a starting point, never a plan). <code>"*"</code> means all of them.</td>
+<td><code>["M_Product_ID", "QtyEntered"]</code></td>
+</tr>
+<tr>
+<td><code>group</code></td>
+<td>What makes one record unique, so that a resend is recognised and a clash is noticed.</td>
+<td><code>POSStation/Date/Order#</code></td>
+</tr>
+<tr>
+<td><code>schedule</code></td>
+<td>A label for when the device sends (or, on a <code>RULE</code> with a <code>role</code>, when that role runs the process). It is recorded in the plan.</td>
+<td><code>end-of-day</code></td>
+</tr>
+<tr>
+<td><code>from</code>, <code>to</code></td>
+<td>Free text for people reading the plan.</td>
+<td><code>POS station</code>, <code>HQ</code></td>
+</tr>
+<tr>
+<td><code>on</code>, <code>process</code>, <code>emits</code></td>
+<td>For a <code>RULE</code>: the named <code>process</code> sends flow <code>emits</code>. Either flow <code>on</code> arriving starts it, or a <code>role</code> on a <code>schedule</code> does (give <code>role</code> and <code>schedule</code> and leave <code>on</code> out; a person or department runs it, as in the dictionary). <code>on</code> and <code>emits</code> must be names of other rows in the same file.</td>
+<td><code>Replenish Report</code></td>
+</tr>
+<tr>
+<td><code>processId</code></td>
+<td>For a <code>RULE</code>: the dictionary process number the <code>process</code> name stands for (a whole number, for people reading the plan).</td>
+<td><code>53267</code></td>
+</tr>
+<tr>
+<td><code>guard</code></td>
+<td>For a <code>SEED</code>: <code>daily</code> = ask at most once a day; <code>once</code> = ask only until you hold a value.</td>
+<td><code>daily</code></td>
+</tr>
+<tr>
+<td><code>authorityRole</code>, <code>holderRole</code>, <code>account</code></td>
+<td>For an <code>INSTRUMENT</code>: who issues the code, who applies it, and what the balance is called.</td>
+<td><code>103</code>, <code>PHONE</code>, <code>loyalty id</code></td>
+</tr>
+<tr>
+<td><code>virtualTable</code>, <code>columns</code></td>
+<td>A table you describe yourself because the dictionary does not know it. Each column has <code>name</code>, <code>cls</code>, and optionally <code>target</code>, <code>mand</code>, <code>values</code>.</td>
+<td>see P7</td>
+</tr>
+<tr>
+<td><code>cls</code></td>
+<td>What kind of column: <code>KEY</code> (identity), <code>REF</code> (points to another table, needs <code>target</code>), <code>MEASURE</code> (a number), <code>DATE</code>, <code>FLAG</code> (yes or no), <code>CODE</code> (a short code, may have <code>values</code>), <code>TEXT</code>, <code>OTHER</code>.</td>
+<td><code>MEASURE</code></td>
+</tr>
+<tr>
+<td><code>target</code></td>
+<td>For a <code>REF</code> column: the table it points to.</td>
+<td><code>AD_User</code></td>
+</tr>
+<tr>
+<td><code>mand</code></td>
+<td>The column must be present when the record is created.</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>values</code></td>
+<td>For a <code>CODE</code> column: the list of allowed kinds. Adding a kind later is adding one value, not code.</td>
+<td><code>["GEOM_EXTRUDE", "GEOM_SWEEP"]</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-i-want-use-this-pattern">3. I want… → use this pattern<a class="headerlink" href="#3-i-want-use-this-pattern" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>I want…</th>
+<th>Pattern</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>My branch records sales and sends them to head office at the end of the day. Head office checks stock and sends a replenishment back.</td>
+<td><strong>P1</strong> — A branch sells, head office answers with stock</td>
+</tr>
+<tr>
+<td>Head office publishes a price list; each branch picks it up when it next connects, once a day.</td>
+<td><strong>P2</strong> — A price list pushed to one branch</td>
+</tr>
+<tr>
+<td>A value everyone is allowed to read, such as today's gold price or the list of cashiers, fetched once a day.</td>
+<td><strong>P3</strong> — A public value anyone may fetch</td>
+</tr>
+<tr>
+<td>The shop issues a signed code worth points; the customer's phone applies it once; head office checks the books at the end.</td>
+<td><strong>P4</strong> — A code that carries value (loyalty points, store credit)</td>
+</tr>
+<tr>
+<td>A borrower's payment slip goes up to the lender; the lender applies it and sends a confirmation back to that borrower.</td>
+<td><strong>P5</strong> — A customer pays, the lender confirms</td>
+</tr>
+<tr>
+<td>Everyone on the team can create and change business partners, and everyone ends up with the same list.</td>
+<td><strong>P6</strong> — A team shares the records of a dictionary table</td>
+</tr>
+<tr>
+<td>My application has its own kind of record (a drawn element) that the dictionary does not know. The team should still share it, and only the kinds I list.</td>
+<td><strong>P7</strong> — A team shares records that are not in the dictionary</td>
+</tr>
+<tr>
+<td>Numbering counters, recent-item lists and session logs belong to one station. Say so, so nobody shares them by mistake.</td>
+<td><strong>P8</strong> — A table that stays on its own station</td>
+</tr>
+<tr>
+<td>I already have a flow for order lines. I want invoice lines to behave the same way.</td>
+<td><strong>P9</strong> — Another table, same shape, no code</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-the-patterns">4. The patterns<a class="headerlink" href="#4-the-patterns" title="Permanent link">&para;</a></h2>
+<h3 id="p1-a-branch-sells-head-office-answers-with-stock">P1 — A branch sells, head office answers with stock<a class="headerlink" href="#p1-a-branch-sells-head-office-answers-with-stock" title="Permanent link">&para;</a></h3>
+<p><strong>My branch records sales and sends them to head office at the end of the day. Head office checks stock and sends a replenishment back.</strong></p>
+<p>The rows:</p>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;F1 pos-sales-up&quot;</span><span class="p">,</span><span class="nt">&quot;treatment&quot;</span><span class="p">:</span><span class="s2">&quot;FACT&quot;</span><span class="p">,</span><span class="nt">&quot;role&quot;</span><span class="p">:</span><span class="mi">103</span><span class="p">,</span><span class="nt">&quot;strategy&quot;</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span><span class="nt">&quot;dir&quot;</span><span class="p">:</span><span class="s2">&quot;UP&quot;</span><span class="p">,</span><span class="nt">&quot;table&quot;</span><span class="p">:</span><span class="s2">&quot;C_OrderLine&quot;</span><span class="p">,</span><span class="nt">&quot;carries&quot;</span><span class="p">:[</span><span class="s2">&quot;M_Product_ID&quot;</span><span class="p">,</span><span class="s2">&quot;QtyEntered&quot;</span><span class="p">,</span><span class="s2">&quot;C_UOM_ID&quot;</span><span class="p">],</span><span class="nt">&quot;group&quot;</span><span class="p">:</span><span class="s2">&quot;POSStation/Date/Order#&quot;</span><span class="p">,</span><span class="nt">&quot;schedule&quot;</span><span class="p">:</span><span class="s2">&quot;end-of-day&quot;</span><span class="p">,</span><span class="nt">&quot;from&quot;</span><span class="p">:</span><span class="s2">&quot;POS station&quot;</span><span class="p">,</span><span class="nt">&quot;to&quot;</span><span class="p">:</span><span class="s2">&quot;HQ&quot;</span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;R1 replenish-rule&quot;</span><span class="p">,</span><span class="nt">&quot;treatment&quot;</span><span class="p">:</span><span class="s2">&quot;RULE&quot;</span><span class="p">,</span><span class="nt">&quot;role&quot;</span><span class="p">:</span><span class="mi">103</span><span class="p">,</span><span class="nt">&quot;schedule&quot;</span><span class="p">:</span><span class="s2">&quot;daily&quot;</span><span class="p">,</span><span class="nt">&quot;process&quot;</span><span class="p">:</span><span class="s2">&quot;Replenish Report&quot;</span><span class="p">,</span><span class="nt">&quot;processId&quot;</span><span class="p">:</span><span class="mi">53267</span><span class="p">,</span><span class="nt">&quot;emits&quot;</span><span class="p">:</span><span class="s2">&quot;F2 replenishment-down&quot;</span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;F2 replenishment-down&quot;</span><span class="p">,</span><span class="nt">&quot;treatment&quot;</span><span class="p">:</span><span class="s2">&quot;FACT&quot;</span><span class="p">,</span><span class="nt">&quot;role&quot;</span><span class="p">:</span><span class="mi">103</span><span class="p">,</span><span class="nt">&quot;strategy&quot;</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span><span class="nt">&quot;dir&quot;</span><span class="p">:</span><span class="s2">&quot;DOWN&quot;</span><span class="p">,</span><span class="nt">&quot;table&quot;</span><span class="p">:</span><span class="s2">&quot;M_MovementLine&quot;</span><span class="p">,</span><span class="nt">&quot;carries&quot;</span><span class="p">:[</span><span class="s2">&quot;M_Product_ID&quot;</span><span class="p">,</span><span class="s2">&quot;M_Locator_ID&quot;</span><span class="p">,</span><span class="s2">&quot;M_LocatorTo_ID&quot;</span><span class="p">,</span><span class="s2">&quot;QtyEntered&quot;</span><span class="p">,</span><span class="s2">&quot;C_UOM_ID&quot;</span><span class="p">],</span><span class="nt">&quot;group&quot;</span><span class="p">:</span><span class="s2">&quot;Movement doc key&quot;</span><span class="p">,</span><span class="nt">&quot;schedule&quot;</span><span class="p">:</span><span class="s2">&quot;on-change&quot;</span><span class="p">,</span><span class="nt">&quot;from&quot;</span><span class="p">:</span><span class="s2">&quot;HQ&quot;</span><span class="p">,</span><span class="nt">&quot;to&quot;</span><span class="p">:</span><span class="s2">&quot;POS station&quot;</span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+<p>What the compiler says:</p>
+<div class="highlight"><pre><span></span><code>F1 pos-sales-up  UP C_OrderLine [M] carries 6 of 60 columns
+   ! mandatory columns not carried: C_Order_ID, C_Tax_ID, FreightAmt, LineNetAmt, M_AttributeSetInstance_ID, PriceActual, PriceEntered, PriceLimit, PriceList, Processed, QtyDelivered, QtyInvoiced, QtyLostSales, QtyReserved
+   i the receiver must already hold: C_UOM, M_Product
+R1 replenish-rule  RULE (no table)
+F2 replenishment-down  DOWN M_MovementLine [M] carries 8 of 29 columns
+   ! mandatory columns not carried: M_Movement_ID, Processed
+   i the receiver must already hold: C_UOM, M_Locator, M_Product
+No problems (x). plan 1f7ba5a235d4
+</code></pre></div>
+<p>Change these when you copy it:</p>
+<ul>
+<li>table and carries: the records that travel and the columns that matter</li>
+<li>group: what makes one record unique, so a resend is recognised</li>
+<li>process: the name of the dictionary process the head-office role runs (and its number), and the role and schedule that run it</li>
+</ul>
+<p>Proved by: <code>§W-TREAT-STOCKLOOP</code> (<code>scripts/witness_scriptor_treat.js</code>), <code>§W-TREAT-LOCAL</code> (<code>scripts/witness_scriptor_treat.js</code>), <code>§W-TREAT-TICKET</code> (<code>scripts/witness_scriptor_treat.js</code>).</p>
+<h3 id="p2-a-price-list-pushed-to-one-branch">P2 — A price list pushed to one branch<a class="headerlink" href="#p2-a-price-list-pushed-to-one-branch" title="Permanent link">&para;</a></h3>
+<p><strong>Head office publishes a price list; each branch picks it up when it next connects, once a day.</strong></p>
+<p>The rows:</p>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;S1 price-list-seed&quot;</span><span class="p">,</span><span class="nt">&quot;treatment&quot;</span><span class="p">:</span><span class="s2">&quot;SEED&quot;</span><span class="p">,</span><span class="nt">&quot;role&quot;</span><span class="p">:</span><span class="mi">103</span><span class="p">,</span><span class="nt">&quot;audience&quot;</span><span class="p">:</span><span class="s2">&quot;addressed&quot;</span><span class="p">,</span><span class="nt">&quot;guard&quot;</span><span class="p">:</span><span class="s2">&quot;daily&quot;</span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+<p>What the compiler says:</p>
+<div class="highlight"><pre><span></span><code>S1 price-list-seed  SEED (no table)
+No problems (x). plan f45f3031fb41
+</code></pre></div>
+<p>Change these when you copy it:</p>
+<ul>
+<li>role: which devices receive it</li>
+<li>guard: daily = ask at most once a day; once = ask only until you have a value</li>
+</ul>
+<p>Proved by: <code>§W-TREAT-PULLGUARD</code> (<code>scripts/witness_scriptor_treat.js</code>).</p>
+<h3 id="p3-a-public-value-anyone-may-fetch">P3 — A public value anyone may fetch<a class="headerlink" href="#p3-a-public-value-anyone-may-fetch" title="Permanent link">&para;</a></h3>
+<p><strong>A value everyone is allowed to read, such as today's gold price or the list of cashiers, fetched once a day.</strong></p>
+<p>The rows:</p>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;S2 gold-price&quot;</span><span class="p">,</span><span class="nt">&quot;treatment&quot;</span><span class="p">:</span><span class="s2">&quot;SEED&quot;</span><span class="p">,</span><span class="nt">&quot;audience&quot;</span><span class="p">:</span><span class="s2">&quot;public&quot;</span><span class="p">,</span><span class="nt">&quot;guard&quot;</span><span class="p">:</span><span class="s2">&quot;daily&quot;</span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;S0 roster&quot;</span><span class="p">,</span><span class="nt">&quot;treatment&quot;</span><span class="p">:</span><span class="s2">&quot;SEED&quot;</span><span class="p">,</span><span class="nt">&quot;audience&quot;</span><span class="p">:</span><span class="s2">&quot;public&quot;</span><span class="p">,</span><span class="nt">&quot;guard&quot;</span><span class="p">:</span><span class="s2">&quot;once&quot;</span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+<p>What the compiler says:</p>
+<div class="highlight"><pre><span></span><code>S2 gold-price  SEED (no table)
+S0 roster  SEED (no table)
+No problems (x). plan aa38969a9a4b
+</code></pre></div>
+<p>Change these when you copy it:</p>
+<ul>
+<li>audience public: no role is needed to read it</li>
+<li>guard once: for a value that never changes (the roster)</li>
+</ul>
+<p>Proved by: <code>§W-TREAT-MICROFINANCE</code> (<code>scripts/witness_scriptor_treat.js</code>), <code>§W-TREAT-PULLGUARD</code> (<code>scripts/witness_scriptor_treat.js</code>).</p>
+<h3 id="p4-a-code-that-carries-value-loyalty-points-store-credit">P4 — A code that carries value (loyalty points, store credit)<a class="headerlink" href="#p4-a-code-that-carries-value-loyalty-points-store-credit" title="Permanent link">&para;</a></h3>
+<p><strong>The shop issues a signed code worth points; the customer's phone applies it once; head office checks the books at the end.</strong></p>
+<p>The rows:</p>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;I1 loyalty-code&quot;</span><span class="p">,</span><span class="nt">&quot;treatment&quot;</span><span class="p">:</span><span class="s2">&quot;INSTRUMENT&quot;</span><span class="p">,</span><span class="nt">&quot;authorityRole&quot;</span><span class="p">:</span><span class="mi">103</span><span class="p">,</span><span class="nt">&quot;holderRole&quot;</span><span class="p">:</span><span class="s2">&quot;PHONE&quot;</span><span class="p">,</span><span class="nt">&quot;account&quot;</span><span class="p">:</span><span class="s2">&quot;loyalty id&quot;</span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+<p>What the compiler says:</p>
+<div class="highlight"><pre><span></span><code>I1 loyalty-code  INSTRUMENT (no table)
+No problems (x). plan c38313c2d45a
+</code></pre></div>
+<p>Change these when you copy it:</p>
+<ul>
+<li>authorityRole: who may issue the code</li>
+<li>holderRole: who applies it</li>
+<li>account: what the balance is called</li>
+</ul>
+<p>Proved by: <code>§W-TREAT-CODE</code> (<code>scripts/witness_scriptor_treat.js</code>).</p>
+<h3 id="p5-a-customer-pays-the-lender-confirms">P5 — A customer pays, the lender confirms<a class="headerlink" href="#p5-a-customer-pays-the-lender-confirms" title="Permanent link">&para;</a></h3>
+<p><strong>A borrower's payment slip goes up to the lender; the lender applies it and sends a confirmation back to that borrower.</strong></p>
+<p>The rows:</p>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;P1 borrower-payment-up&quot;</span><span class="p">,</span><span class="nt">&quot;treatment&quot;</span><span class="p">:</span><span class="s2">&quot;FACT&quot;</span><span class="p">,</span><span class="nt">&quot;role&quot;</span><span class="p">:</span><span class="s2">&quot;BORROWER&quot;</span><span class="p">,</span><span class="nt">&quot;strategy&quot;</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span><span class="nt">&quot;dir&quot;</span><span class="p">:</span><span class="s2">&quot;UP&quot;</span><span class="p">,</span><span class="nt">&quot;table&quot;</span><span class="p">:</span><span class="s2">&quot;C_Payment&quot;</span><span class="p">,</span><span class="nt">&quot;carries&quot;</span><span class="p">:[</span><span class="s2">&quot;C_BPartner_ID&quot;</span><span class="p">,</span><span class="s2">&quot;PayAmt&quot;</span><span class="p">],</span><span class="nt">&quot;group&quot;</span><span class="p">:</span><span class="s2">&quot;Borrower/Date/Slip#&quot;</span><span class="p">,</span><span class="nt">&quot;schedule&quot;</span><span class="p">:</span><span class="s2">&quot;at-visit&quot;</span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;R2 payment-rule&quot;</span><span class="p">,</span><span class="nt">&quot;treatment&quot;</span><span class="p">:</span><span class="s2">&quot;RULE&quot;</span><span class="p">,</span><span class="nt">&quot;on&quot;</span><span class="p">:</span><span class="s2">&quot;P1 borrower-payment-up&quot;</span><span class="p">,</span><span class="nt">&quot;process&quot;</span><span class="p">:</span><span class="s2">&quot;ApplyPayment&quot;</span><span class="p">,</span><span class="nt">&quot;emits&quot;</span><span class="p">:</span><span class="s2">&quot;N1 payment-confirmation-down&quot;</span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;N1 payment-confirmation-down&quot;</span><span class="p">,</span><span class="nt">&quot;treatment&quot;</span><span class="p">:</span><span class="s2">&quot;FACT&quot;</span><span class="p">,</span><span class="nt">&quot;role&quot;</span><span class="p">:</span><span class="s2">&quot;BORROWER&quot;</span><span class="p">,</span><span class="nt">&quot;dir&quot;</span><span class="p">:</span><span class="s2">&quot;DOWN&quot;</span><span class="p">,</span><span class="nt">&quot;group&quot;</span><span class="p">:</span><span class="s2">&quot;Borrower/Date/Confirm#&quot;</span><span class="p">,</span><span class="nt">&quot;schedule&quot;</span><span class="p">:</span><span class="s2">&quot;on-change&quot;</span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+<p>What the compiler says:</p>
+<div class="highlight"><pre><span></span><code>P1 borrower-payment-up  UP C_Payment [M] carries 5 of 105 columns
+   ! mandatory columns not carried: C_Currency_ID, C_DocType_ID, DocumentNo, IsAllocated, IsDelayedCapture, IsOnline, IsPrepayment, IsReceipt, IsReconciled, IsSelfService, Processed
+   i the receiver must already hold: C_BPartner
+R2 payment-rule  RULE (no table)
+N1 payment-confirmation-down  FACT (no table)
+No problems (x). plan b0f8e58c044e
+</code></pre></div>
+<p>Change these when you copy it:</p>
+<ul>
+<li>role: BORROWER here is a label, use your own role</li>
+<li>process: the named process that applies a payment</li>
+</ul>
+<p>Proved by: <code>§W-TREAT-MICROFINANCE</code> (<code>scripts/witness_scriptor_treat.js</code>).</p>
+<h3 id="p6-a-team-shares-the-records-of-a-dictionary-table">P6 — A team shares the records of a dictionary table<a class="headerlink" href="#p6-a-team-shares-the-records-of-a-dictionary-table" title="Permanent link">&para;</a></h3>
+<p><strong>Everyone on the team can create and change business partners, and everyone ends up with the same list.</strong></p>
+<p>The rows:</p>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;T1 bpartner-shared&quot;</span><span class="p">,</span><span class="nt">&quot;treatment&quot;</span><span class="p">:</span><span class="s2">&quot;FACT&quot;</span><span class="p">,</span><span class="nt">&quot;role&quot;</span><span class="p">:</span><span class="mi">103</span><span class="p">,</span><span class="nt">&quot;strategy&quot;</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span><span class="nt">&quot;dir&quot;</span><span class="p">:</span><span class="s2">&quot;BOTH&quot;</span><span class="p">,</span><span class="nt">&quot;audience&quot;</span><span class="p">:</span><span class="s2">&quot;space&quot;</span><span class="p">,</span><span class="nt">&quot;table&quot;</span><span class="p">:</span><span class="s2">&quot;C_BPartner&quot;</span><span class="p">,</span><span class="nt">&quot;carries&quot;</span><span class="p">:[</span><span class="s2">&quot;Value&quot;</span><span class="p">,</span><span class="s2">&quot;Name&quot;</span><span class="p">,</span><span class="s2">&quot;C_BP_Group_ID&quot;</span><span class="p">,</span><span class="s2">&quot;IsCustomer&quot;</span><span class="p">,</span><span class="s2">&quot;IsVendor&quot;</span><span class="p">,</span><span class="s2">&quot;IsEmployee&quot;</span><span class="p">,</span><span class="s2">&quot;IsOneTime&quot;</span><span class="p">,</span><span class="s2">&quot;IsSalesRep&quot;</span><span class="p">,</span><span class="s2">&quot;IsSummary&quot;</span><span class="p">,</span><span class="s2">&quot;SO_CreditLimit&quot;</span><span class="p">,</span><span class="s2">&quot;SO_CreditUsed&quot;</span><span class="p">,</span><span class="s2">&quot;SendEMail&quot;</span><span class="p">],</span><span class="nt">&quot;group&quot;</span><span class="p">:</span><span class="s2">&quot;record&quot;</span><span class="p">,</span><span class="nt">&quot;schedule&quot;</span><span class="p">:</span><span class="s2">&quot;on-change&quot;</span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+<p>What the compiler says:</p>
+<div class="highlight"><pre><span></span><code>T1 bpartner-shared  BOTH C_BPartner [M] carries 15 of 74 columns
+   i the receiver must already hold: C_BP_Group
+No problems (x). plan 1539de1fbf43
+</code></pre></div>
+<p>Change these when you copy it:</p>
+<ul>
+<li>table and carries: carry every mandatory column or the receiver cannot build the record</li>
+<li>dir BOTH needs audience space; they come as a pair</li>
+</ul>
+<p>Proved by: <code>§W-MESH-ADD</code> (<code>scripts/witness_scriptor_mesh.js</code>), <code>§W-MESH-COLLIDE</code> (<code>scripts/witness_scriptor_mesh.js</code>), <code>§W-MESH-FOLD</code> (<code>scripts/witness_scriptor_mesh.js</code>), <code>§W-MESH-LATE</code> (<code>scripts/witness_scriptor_mesh.js</code>).</p>
+<h3 id="p7-a-team-shares-records-that-are-not-in-the-dictionary">P7 — A team shares records that are not in the dictionary<a class="headerlink" href="#p7-a-team-shares-records-that-are-not-in-the-dictionary" title="Permanent link">&para;</a></h3>
+<p><strong>My application has its own kind of record (a drawn element) that the dictionary does not know. The team should still share it, and only the kinds I list.</strong></p>
+<p>The rows:</p>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;virtualTable&quot;</span><span class="p">:</span><span class="s2">&quot;bim_element&quot;</span><span class="p">,</span><span class="nt">&quot;columns&quot;</span><span class="p">:[{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;element_id&quot;</span><span class="p">,</span><span class="nt">&quot;cls&quot;</span><span class="p">:</span><span class="s2">&quot;KEY&quot;</span><span class="p">},{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;geom_op&quot;</span><span class="p">,</span><span class="nt">&quot;cls&quot;</span><span class="p">:</span><span class="s2">&quot;CODE&quot;</span><span class="p">,</span><span class="nt">&quot;mand&quot;</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span><span class="nt">&quot;values&quot;</span><span class="p">:[</span><span class="s2">&quot;GEOM_INSERT&quot;</span><span class="p">,</span><span class="s2">&quot;GEOM_EXTRUDE&quot;</span><span class="p">,</span><span class="s2">&quot;GEOM_EXTRUDE_POLY&quot;</span><span class="p">,</span><span class="s2">&quot;GEOM_SWEEP&quot;</span><span class="p">,</span><span class="s2">&quot;GEOM_LOFT&quot;</span><span class="p">,</span><span class="s2">&quot;GEOM_REVOLVE&quot;</span><span class="p">]},{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;geom&quot;</span><span class="p">,</span><span class="nt">&quot;cls&quot;</span><span class="p">:</span><span class="s2">&quot;OTHER&quot;</span><span class="p">,</span><span class="nt">&quot;mand&quot;</span><span class="p">:</span><span class="kc">true</span><span class="p">},{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;pos_x&quot;</span><span class="p">,</span><span class="nt">&quot;cls&quot;</span><span class="p">:</span><span class="s2">&quot;MEASURE&quot;</span><span class="p">},{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;pos_y&quot;</span><span class="p">,</span><span class="nt">&quot;cls&quot;</span><span class="p">:</span><span class="s2">&quot;MEASURE&quot;</span><span class="p">},{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;pos_z&quot;</span><span class="p">,</span><span class="nt">&quot;cls&quot;</span><span class="p">:</span><span class="s2">&quot;MEASURE&quot;</span><span class="p">},{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;ad_client_id&quot;</span><span class="p">,</span><span class="nt">&quot;cls&quot;</span><span class="p">:</span><span class="s2">&quot;REF&quot;</span><span class="p">,</span><span class="nt">&quot;target&quot;</span><span class="p">:</span><span class="s2">&quot;AD_Client&quot;</span><span class="p">},{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;ad_org_id&quot;</span><span class="p">,</span><span class="nt">&quot;cls&quot;</span><span class="p">:</span><span class="s2">&quot;REF&quot;</span><span class="p">,</span><span class="nt">&quot;target&quot;</span><span class="p">:</span><span class="s2">&quot;AD_Org&quot;</span><span class="p">},{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;output_guid&quot;</span><span class="p">,</span><span class="nt">&quot;cls&quot;</span><span class="p">:</span><span class="s2">&quot;OTHER&quot;</span><span class="p">},{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;input_guids&quot;</span><span class="p">,</span><span class="nt">&quot;cls&quot;</span><span class="p">:</span><span class="s2">&quot;OTHER&quot;</span><span class="p">}]},</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;M1 element&quot;</span><span class="p">,</span><span class="nt">&quot;treatment&quot;</span><span class="p">:</span><span class="s2">&quot;FACT&quot;</span><span class="p">,</span><span class="nt">&quot;role&quot;</span><span class="p">:</span><span class="s2">&quot;DESIGNER&quot;</span><span class="p">,</span><span class="nt">&quot;dir&quot;</span><span class="p">:</span><span class="s2">&quot;BOTH&quot;</span><span class="p">,</span><span class="nt">&quot;audience&quot;</span><span class="p">:</span><span class="s2">&quot;space&quot;</span><span class="p">,</span><span class="nt">&quot;table&quot;</span><span class="p">:</span><span class="s2">&quot;bim_element&quot;</span><span class="p">,</span><span class="nt">&quot;carries&quot;</span><span class="p">:[</span><span class="s2">&quot;geom_op&quot;</span><span class="p">,</span><span class="s2">&quot;geom&quot;</span><span class="p">,</span><span class="s2">&quot;pos_x&quot;</span><span class="p">,</span><span class="s2">&quot;pos_y&quot;</span><span class="p">,</span><span class="s2">&quot;pos_z&quot;</span><span class="p">,</span><span class="s2">&quot;output_guid&quot;</span><span class="p">,</span><span class="s2">&quot;input_guids&quot;</span><span class="p">],</span><span class="nt">&quot;group&quot;</span><span class="p">:</span><span class="s2">&quot;element_id&quot;</span><span class="p">,</span><span class="nt">&quot;schedule&quot;</span><span class="p">:</span><span class="s2">&quot;on-change&quot;</span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+<p>What the compiler says:</p>
+<div class="highlight"><pre><span></span><code>M1 element  BOTH bim_element [virtual] carries 10 of 10 columns
+   i not checked for system-computed columns (virtual table: the dictionary has no window to judge by)
+No problems (x). plan 4f0bfecad90b
+</code></pre></div>
+<p>Change these when you copy it:</p>
+<ul>
+<li>virtualTable and its columns: describe the record yourself, because there is no dictionary to read</li>
+<li>values: the list of allowed kinds; adding a kind later is adding one value, no code</li>
+</ul>
+<p>Proved by: <code>§W-DRY-MODELLER</code> (<code>scripts/witness_scriptor_dryrun.js</code>), <code>§W-VIRT-COMPILE</code> (<code>scripts/witness_scriptor_virtual.js</code>), <code>§W-VIRT-GUARDS</code> (<code>scripts/witness_scriptor_virtual.js</code>).</p>
+<h3 id="p8-a-table-that-stays-on-its-own-station">P8 — A table that stays on its own station<a class="headerlink" href="#p8-a-table-that-stays-on-its-own-station" title="Permanent link">&para;</a></h3>
+<p><strong>Numbering counters, recent-item lists and session logs belong to one station. Say so, so nobody shares them by mistake.</strong></p>
+<p>The rows:</p>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;L1 sequence&quot;</span><span class="p">,</span><span class="nt">&quot;treatment&quot;</span><span class="p">:</span><span class="s2">&quot;LOCAL&quot;</span><span class="p">,</span><span class="nt">&quot;table&quot;</span><span class="p">:</span><span class="s2">&quot;AD_Sequence&quot;</span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;L3 recent-item&quot;</span><span class="p">,</span><span class="nt">&quot;treatment&quot;</span><span class="p">:</span><span class="s2">&quot;LOCAL&quot;</span><span class="p">,</span><span class="nt">&quot;table&quot;</span><span class="p">:</span><span class="s2">&quot;AD_RecentItem&quot;</span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+<p>What the compiler says:</p>
+<div class="highlight"><pre><span></span><code>L1 sequence   AD_Sequence [L] carries 11 of 27 columns (PROPOSED by the dictionary, trim it)
+L3 recent-item   AD_RecentItem [unlisted] carries 3 of 16 columns (PROPOSED by the dictionary, trim it)
+No problems (x). plan 90630bd9f19d
+</code></pre></div>
+<p>Change these when you copy it:</p>
+<ul>
+<li>table: any table that must never leave its station</li>
+<li>a table with no row at all is also local; a LOCAL row just makes the decision visible</li>
+</ul>
+<p>Proved by: <code>§W-DRY-ERP</code> (<code>scripts/witness_scriptor_dryrun.js</code>), <code>§W-ERPPLAN-SCOPE</code> (<code>scripts/witness_scriptor_erp_plan.js</code>).</p>
+<h3 id="p9-another-table-same-shape-no-code">P9 — Another table, same shape, no code<a class="headerlink" href="#p9-another-table-same-shape-no-code" title="Permanent link">&para;</a></h3>
+<p><strong>I already have a flow for order lines. I want invoice lines to behave the same way.</strong></p>
+<p>The rows:</p>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;X2 invoiceline-up&quot;</span><span class="p">,</span><span class="nt">&quot;treatment&quot;</span><span class="p">:</span><span class="s2">&quot;FACT&quot;</span><span class="p">,</span><span class="nt">&quot;role&quot;</span><span class="p">:</span><span class="mi">103</span><span class="p">,</span><span class="nt">&quot;strategy&quot;</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span><span class="nt">&quot;dir&quot;</span><span class="p">:</span><span class="s2">&quot;UP&quot;</span><span class="p">,</span><span class="nt">&quot;table&quot;</span><span class="p">:</span><span class="s2">&quot;C_InvoiceLine&quot;</span><span class="p">,</span><span class="nt">&quot;group&quot;</span><span class="p">:</span><span class="s2">&quot;Station/Date/Invoice#&quot;</span><span class="p">,</span><span class="nt">&quot;schedule&quot;</span><span class="p">:</span><span class="s2">&quot;end-of-day&quot;</span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+<p>What the compiler says:</p>
+<div class="highlight"><pre><span></span><code>X2 invoiceline-up  UP C_InvoiceLine [M] carries 45 of 54 columns (PROPOSED by the dictionary, trim it)
+   i the receiver must already hold: AD_Org, A_Asset, A_Asset_Group, C_1099Box, C_Activity, C_BPartner, C_Campaign, C_Charge, C_CostCenter, C_Department, C_ElementValue, C_OrderLine, C_Project, C_ProjectPhase, C_ProjectTask, C_Tax, C_UOM, M_AttributeSetInstance, M_InOutLine, M_Product, M_RMALine
+No problems (x). plan eb37d35036bc
+</code></pre></div>
+<p>Change these when you copy it:</p>
+<ul>
+<li>copy a row, change name and table; leave carries out to get a PROPOSAL, then trim it</li>
+<li>a proposal is a starting point, never the plan</li>
+</ul>
+<p>Proved by: <code>§W-FLOW-ZERO-CODE</code> (<code>scripts/witness_scriptor_s1.js</code>), <code>§W-TREAT-ZEROCODE</code> (<code>scripts/witness_scriptor_treat.js</code>).</p>
+<h2 id="5-write-your-own-in-six-steps">5. Write your own in six steps<a class="headerlink" href="#5-write-your-own-in-six-steps" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Say in one sentence what should move, who sends it and who receives it.</li>
+<li>Find your sentence in the table in section 3 and open that pattern.</li>
+<li>Copy its rows into a new file (a list of rows) and change only what "Change these" says.</li>
+<li>Compile it: <code>node build/scriptor/compile.js yourfile.json</code>.</li>
+<li>Read the report. A line starting <code>x</code> is a mistake and must be fixed. A line starting <code>!</code> is a question to answer, not always an error. A line starting <code>i</code> is a fact (for example, what the receiver must already hold).</li>
+<li>Keep your file: the rows are the source, the plan is generated from them. Never edit a generated plan by hand.</li>
+</ol>
+<p>The count after "carries" includes three identity columns (the record id, the client and the organisation) that always travel.</p>
+<h2 id="6-common-mistakes-and-exactly-what-you-will-see">6. Common mistakes — and exactly what you will see<a class="headerlink" href="#6-common-mistakes-and-exactly-what-you-will-see" title="Permanent link">&para;</a></h2>
+<h4 id="m1-a-column-name-with-a-typo">M1 — A column name with a typo<a class="headerlink" href="#m1-a-column-name-with-a-typo" title="Permanent link">&para;</a></h4>
+<p>Start from pattern P1. In the row "F1 pos-sales-up": set <code>carries</code> to <code>["M_Product_ID","Qty_Entered","C_UOM_ID"]</code>.</p>
+<div class="highlight"><pre><span></span><code>   x unknown column(s): Qty_Entered
+</code></pre></div>
+<p>Fix: Use the exact dictionary column name (QtyEntered).</p>
+<h4 id="m2-a-table-that-does-not-exist">M2 — A table that does not exist<a class="headerlink" href="#m2-a-table-that-does-not-exist" title="Permanent link">&para;</a></h4>
+<p>Start from pattern P1. In the row "F1 pos-sales-up": set <code>table</code> to <code>"C_OrderLine_X"</code>.</p>
+<div class="highlight"><pre><span></span><code>   x no such table: C_OrderLine_X
+</code></pre></div>
+<p>Fix: Check the table name in the dictionary.</p>
+<h4 id="m3-a-required-setting-left-out">M3 — A required setting left out<a class="headerlink" href="#m3-a-required-setting-left-out" title="Permanent link">&para;</a></h4>
+<p>Start from pattern P1. In the row "F1 pos-sales-up": remove <code>group</code>.</p>
+<div class="highlight"><pre><span></span><code>   x FACT needs group
+</code></pre></div>
+<p>Fix: Say what makes one record unique (the group).</p>
+<h4 id="m4-both-ways-but-not-as-a-team">M4 — Both ways, but not as a team<a class="headerlink" href="#m4-both-ways-but-not-as-a-team" title="Permanent link">&para;</a></h4>
+<p>Start from pattern P6. In the row "T1 bpartner-shared": set <code>audience</code> to <code>"hub"</code>.</p>
+<div class="highlight"><pre><span></span><code>   x FACT dir BOTH needs audience space (a star has no both-ways)
+</code></pre></div>
+<p>Fix: Both-ways flows are for a team: set audience to space.</p>
+<h4 id="m5-a-team-flow-that-only-goes-one-way">M5 — A team flow that only goes one way<a class="headerlink" href="#m5-a-team-flow-that-only-goes-one-way" title="Permanent link">&para;</a></h4>
+<p>Start from pattern P6. In the row "T1 bpartner-shared": set <code>dir</code> to <code>"UP"</code>.</p>
+<div class="highlight"><pre><span></span><code>   x FACT audience space needs dir BOTH
+</code></pre></div>
+<p>Fix: A team shares both ways: set dir to BOTH.</p>
+<h4 id="m6-a-kind-of-movement-that-is-not-registered">M6 — A kind of movement that is not registered<a class="headerlink" href="#m6-a-kind-of-movement-that-is-not-registered" title="Permanent link">&para;</a></h4>
+<p>Start from pattern P1. In the row "F1 pos-sales-up": set <code>treatment</code> to <code>"FACTS"</code>.</p>
+<div class="highlight"><pre><span></span><code>   x unknown treatment FACTS
+</code></pre></div>
+<p>Fix: Use FACT, SEED, RULE, INSTRUMENT or LOCAL, or register a new treatment.</p>
+<h4 id="m7-a-made-up-kind-of-column">M7 — A made-up kind of column<a class="headerlink" href="#m7-a-made-up-kind-of-column" title="Permanent link">&para;</a></h4>
+<p>Start from pattern P7. In the declaration of <code>bim_element</code>: change the column <code>pos_x</code> so that <code>cls</code> is <code>MONEY</code>.</p>
+<div class="highlight"><pre><span></span><code>x V1 bim_element: pos_x has unknown class MONEY
+</code></pre></div>
+<p>Fix: Use KEY, REF, MEASURE, DATE, FLAG, CODE, TEXT or OTHER.</p>
+<h4 id="m8-the-same-column-declared-twice">M8 — The same column declared twice<a class="headerlink" href="#m8-the-same-column-declared-twice" title="Permanent link">&para;</a></h4>
+<p>Start from pattern P7. In the declaration of <code>bim_element</code>: add a second column <code>POS_X</code>.</p>
+<div class="highlight"><pre><span></span><code>x V3 bim_element: duplicate column POS_X
+</code></pre></div>
+<p>Fix: Each column once (names are not case-sensitive).</p>
+<h4 id="m9-sending-a-column-the-system-computes">M9 — Sending a column the system computes<a class="headerlink" href="#m9-sending-a-column-the-system-computes" title="Permanent link">&para;</a></h4>
+<p>Start from pattern P1. In the row "F2 replenishment-down": set <code>carries</code> to <code>["M_Product_ID","M_Locator_ID","M_LocatorTo_ID","QtyEntered","C_UOM_ID","MovementQty"]</code>.</p>
+<div class="highlight"><pre><span></span><code>   ! system-computed columns carried: MovementQty
+</code></pre></div>
+<p>Fix: Send what a person types; let the receiver compute the rest.</p>
+<h4 id="m10-a-mandatory-column-left-out">M10 — A mandatory column left out<a class="headerlink" href="#m10-a-mandatory-column-left-out" title="Permanent link">&para;</a></h4>
+<p>Start from pattern P6. In the row "T1 bpartner-shared": set <code>carries</code> to <code>["Name","C_BP_Group_ID","IsCustomer","IsVendor","IsEmployee","IsOneTime","IsSalesRep","IsSummary","SO_CreditLimit","SO_CreditUsed","SendEMail"]</code>.</p>
+<div class="highlight"><pre><span></span><code>   ! mandatory columns not carried: Value
+</code></pre></div>
+<p>Fix: Carry it, or be sure the receiver can supply it.</p>
+<h4 id="m11-a-rule-with-nothing-to-send">M11 — A rule with nothing to send<a class="headerlink" href="#m11-a-rule-with-nothing-to-send" title="Permanent link">&para;</a></h4>
+<p>Start from pattern P1. In the row "R1 replenish-rule": remove <code>emits</code>.</p>
+<div class="highlight"><pre><span></span><code>   x RULE needs emits
+</code></pre></div>
+<p>Fix: Name the flow the rule sends.</p>
+<h4 id="m12-a-rule-that-names-a-flow-that-does-not-exist">M12 — A rule that names a flow that does not exist<a class="headerlink" href="#m12-a-rule-that-names-a-flow-that-does-not-exist" title="Permanent link">&para;</a></h4>
+<p>Start from pattern P1. In the row "R1 replenish-rule": set <code>emits</code> to <code>"F9 replenishment-typo"</code>.</p>
+<div class="highlight"><pre><span></span><code>   x RULE emits names a row that does not exist: F9 replenishment-typo
+</code></pre></div>
+<p>Fix: Use the exact name of the row the rule should send.</p>
+<h2 id="7-when-the-team-hears-about-a-save-and-who-acts-on-it">7. When the team hears about a save — and who acts on it<a class="headerlink" href="#7-when-the-team-hears-about-a-save-and-who-acts-on-it" title="Permanent link">&para;</a></h2>
+<p><em>Background for the people who design flows. Nothing here is a setting; it explains why the rows above can be trusted. Spec: <code>prompts/TEAM_REPLICATION_PLUGIN_STUDY.md</code> §9–§10.</em></p>
+<p><strong>A save is part of a transaction.</strong> One action of a user can write many records. A Complete on a sales order, for example, writes the shipment, its lines, the invoice and the accounting entries together. They form one <em>transaction</em>: either all of them are kept (commit) or, if anything fails near the end — a closed period, say — all of them are undone (rollback), as if they never existed.</p>
+<p><strong>Legacy iDempiere announces a save early.</strong> Its "after save" notices (<code>postCreate</code>, <code>postUpdate</code>) are sent the moment each record is saved, while the transaction is still open (<code>PO.java:2799-2804</code>), and they are delivered a little later on another thread. If the transaction is then rolled back, a notice has already gone out about a record that never existed, and a listener reading the database may not find a record it was told about. Legacy also has a separate after-commit hook (<code>Trx.addTrxEventListener</code> → <code>afterCommit</code>, <code>Trx.java:452,761</code>) that careful code can use; the standard notices do not use it.</p>
+<p><strong>The twin announces a save once, after the commit.</strong> In the SQLite twin one user action becomes one <em>op group</em>, and the kernel commits the whole group in one step. Observing listeners are told after that step succeeded — exactly once, in a fixed order, and never for a group that was rolled back. The screens and messages are the same as legacy; only this behind-the-scenes moment is defined more strictly.</p>
+<p><strong>Why replication needs exactly that.</strong> Sending a team member's changes to the others is such an observing listener. If it could see a save that was later undone, it would send a ghost document to the whole team — a second source of truth. Told only after the commit, it can only ever send what really happened.</p>
+<p><strong>A received record is saved as a replica, and that is a different event.</strong> When a device takes in a record from another device, it saves it as a <em>replica</em> (legacy <code>po.saveReplica(true)</code>), and the save raises its own events — <em>after new replication</em>, <em>after change replication</em>, <em>before delete replication</em> — instead of the ordinary <em>after new</em> / <em>after change</em> / <em>before delete</em> (<code>PO.java:2785-2787, 4300</code>). A process chain that must run where the declaration ARRIVES — head office turning a station's sale lines into one completed order with Import Orders (pattern P1) — listens to <em>after new replication</em>. The station's own save of its sale lines raises only the ordinary <em>after new</em>, so the chain never runs at the station: one document, one Complete, at head office only.</p>
+<p><strong>What the team layer may and may not do.</strong> It carries, orders and admits changes, and it stores what it receives as data. It never completes, posts, numbers or authors a document, computes stock, price or tax, or decides access in its own code; those are the core's, and team rules are expressed as data the core already understands (for example Document Action Access rows).</p>
+<p><em>Status, 2026-10-27:</em> designed and specified (study §9–§10); the one event bus that delivers these moments, with the replica save, is being built (study §10.5 will record the result). Until it lands, the live team layer observes commits through its own built-in hook, which already runs only after the committed rows are written to the device's store (bim-ootb <code>erp/crud_overlay.js</code> <code>_sidePersist</code> → <code>_teamPush</code>, :1937).</p>
+<h2 id="8-principles-behind-this-design-for-anyone-building-something-similar">8. Principles behind this design — for anyone building something similar<a class="headerlink" href="#8-principles-behind-this-design-for-anyone-building-something-similar" title="Permanent link">&para;</a></h2>
+<p><em>Distilled 2026-10-27 from the team-layer work (<code>prompts/TEAMWORK_FRAMEWORK.md</code> §38, <code>prompts/TEAM_REPLICATION_PLUGIN_STUDY.md</code> §8–§10). Each one is a rule this project already enforces, not a wish.</em></p>
+<ol>
+<li><strong>Twin before you innovate.</strong> Copy the legacy mechanism exactly; a difference found by running both side by side is fixed on the new side. Users see no change, so adopting it costs them nothing.</li>
+<li><strong>Every server rule becomes signed data.</strong> One completer per document, who may use which document action, which keys are trusted, which translation rules apply — each is an owner-signed policy inside the shared log, judged the same way by every device. No referee in the middle.</li>
+<li><strong>Declare where the action happens, derive in one place.</strong> A point of sale only declares its lines; one processor completes once and returns what is needed. Mistakes show up as consequences (under-declaring starves your own replenishment), not as online checks.</li>
+<li><strong>Send the minimum.</strong> Ids, references, quantities and codes. Every device already holds the master data, so meaning never travels.</li>
+<li><strong>Separate by permission, not by promise.</strong> A plugin is given only the hooks its job needs. The team layer may observe saves and store what it receives; it is structurally unable to complete, post or number a document.</li>
+<li><strong>Rows over code.</strong> Flows, listeners and access are dictionary rows, never per-window code; progress is counted as X of N over the whole dictionary, never one hand-picked demo.</li>
+<li><strong>A log line is the proof, not a screenshot.</strong> Every change starts with a test that fails; every deliberately broken copy must make it fail (a crash does not count); a test that judged nothing says INCONCLUSIVE, never PASS.</li>
+<li><strong>Never silently break users.</strong> A change that would invalidate existing teams (for example the shared base fingerprint) needs an upgrade path or an openly stated consequence before it ships.</li>
+</ol>
+<h2 id="9-what-this-guide-does-not-cover-yet">9. What this guide does not cover yet<a class="headerlink" href="#9-what-this-guide-does-not-cover-yet" title="Permanent link">&para;</a></h2>
+<ul>
+<li>All rows here are <strong>samples</strong>. Nobody has authored real business flows yet; the business owner decides what really moves.</li>
+<li>Only the Modeller and the ERP team scope read their plan in the live applications today. The point-of-sale and micro-finance patterns run in the simulator.</li>
+<li>The plans that ship are <strong>not signed</strong> by default. Signing works (<code>build/scriptor/sign_plan.js</code>) and a team pins the keys it trusts when it is founded; every member of a team can still read everything in that team (audience keys are not built).</li>
+<li>The compiler checks names and shapes. It cannot know whether a row is a good business decision.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/red1oon/bim-ootb" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/red1oon/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "toc.follow", "content.tabs.link"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../javascripts/fold-footnotes.js"></script>
+      
+        <script src="../javascripts/bim_compiler_source.js"></script>
+      
+    
+  </body>
+</html>

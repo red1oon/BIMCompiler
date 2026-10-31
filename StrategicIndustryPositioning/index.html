@@ -1333,6 +1333,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -1589,6 +1593,62 @@
     
   
     Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TermsHowToVerify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to verify the terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_AI_ADVISORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Letting an AI work on the ERP, safely
   
 
     
@@ -2649,6 +2709,9 @@ and the line between them is never blurred:</p>
 </ul>
 <p>If you grep the repo, the Tier-1 claims must hold and the Tier-2/3 ones must read as
 runway. That discipline is the point.</p>
+<p><em>Currency, 2026-10-25: the Tier-1 rows were last re-read against merged work on 2026-09-27. The team-layer
+and replication rows added below postdate that pass and are labelled as such; a dated re-read of Tier 1 is
+owed before the next publish.</em></p>
 <hr />
 <h2 id="the-core-problem-geometry-is-not-intent">The core problem: geometry is not intent<a class="headerlink" href="#the-core-problem-geometry-is-not-intent" title="Permanent link">&para;</a></h2>
 <p>Most BIM tools store <strong>geometry as the source of truth</strong>. An IFC file carries the
@@ -2803,6 +2866,13 @@ screen per report.</p>
   against real-world bugs and adding the compliance surface. The signed orderline is already
   a receipt artifact — evolving it into a MyInvois-format submission is the build. <em>(Not yet
   in code; this is the target.)</em></li>
+<li><strong>iDempiere branch / offline kit — legacy untouched.</strong> A branch runs the same iDempiere
+  windows and documents offline in the browser, exchanging signed changes through a passive
+  post box, while head office keeps running legacy iDempiere unchanged. The legacy system is the
+  oracle: the parallel run against legacy (<code>prompts/SQLiteIDEMPIERE.md</code>) is how it is judged, and a
+  difference it finds is fixed on our side, never accepted. <em>(Target: the parity run and a
+  one-branch week are not done; kill criterion — parity cannot reach every window/doctype, or the
+  iDempiere community will not run it.)</em></li>
 <li><strong>Touch-kitchen + self-order tabs + QR payment.</strong> A self-order surface (URL-fetched remote
   ordering, QR payment display, payment-status fold returned by email) sits naturally on the
   same op-log. <em>(Not yet in code; the POS loop it rides is.)</em></li>
@@ -2912,6 +2982,18 @@ treats occupant navigation, camera-tour routing, and parametric editing as three
 zero-invented, snapshot-verified graph; this is architecture proven on a real multi-storey building,
 not yet a finished capability. See <code>prompts/SPATIAL_DEPENDENCY_GRAPH.md</code>,
 <code>prompts/Modeller/DISC_Walker/OCCUPANT_PATHFINDER.md</code>, <code>prompts/Viewer/FLY_TOUR_CORRIDOR_GRAPH.md</code>.</p>
+<p><strong>Team layer and Replication Scriptor (added 2026-10-25).</strong> <em>Witnessed (bench, two real browsers, folder pipe):</em>
+the Modeller and the ERP share signed changes through a passive post box with per-column conflict warnings,
+a People list and a heads-up label ("founder is editing this element") that carry each person's chosen
+built-in avatar, and ONE Team icon in the Modeller that starts, joins and approves a team inside the app
+(bim-ootb PR #2368; <code>W-TEAM-MODELLER</code> 33/0, <code>W-PEOPLE-MODELLER</code> 22/0, <code>W-TEAM-ICON-MODELLER</code> 15/0,
+<code>W-AVATARS</code> 13/0, <code>W-AVATAR-TRAVEL</code> 9/0). <em>Specified, prototype only:</em> the <strong>Replication Scriptor</strong> — a
+compiler that turns the dictionary, roles and topology into signed per-device plans of what each device holds,
+sends and asks for, so that a new flow is a new row and not new code (<code>TEAMWORK_FRAMEWORK.md</code> §16; its S1
+prototype passes 22/22 for logic only: one in-memory hub, sample data, not encrypted). <strong>Stated plainly,
+what's still open:</strong> the building itself is not shared (moving a seeded wall stays local), the wings of a
+shared building are agreement and not enforcement, the older Outliner dots still only see the same machine,
+and everything above is a proof of concept (risks 5 and 6).</p>
 <hr />
 <h2 id="the-landscape-nobody-else-compiles-nobody-else-connects">The landscape — nobody else compiles, nobody else connects<a class="headerlink" href="#the-landscape-nobody-else-compiles-nobody-else-connects" title="Permanent link">&para;</a></h2>
 <h3 id="tier-1-incumbents-geometry-authoring">Tier 1 — Incumbents (geometry authoring)<a class="headerlink" href="#tier-1-incumbents-geometry-authoring" title="Permanent link">&para;</a></h3>
@@ -2988,6 +3070,39 @@ from intent, or verify the round-trip.</p>
 </table>
 <p>They parse and display IFC. They do not abstract intent, compile from recipes, or prove
 round-trip fidelity — and <strong>none connect BIM to a transaction ERP over one signed log.</strong></p>
+<h3 id="a-different-field-local-first-sync-and-offline-pos-where-the-team-layer-competes">A different field — local-first sync and offline POS (where the team layer competes)<a class="headerlink" href="#a-different-field-local-first-sync-and-offline-pos-where-the-team-layer-competes" title="Permanent link">&para;</a></h3>
+<p><em>Class and members listed from general knowledge, </em><em>not re-verified in this pass</em><em>; the sourced
+comparison is <code>prompts/prior_art_2026-10-25/</code> (R1–R3). Verify before any public comparison.</em></p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Examples</th>
+<th>What they do</th>
+<th>Where we differ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Local-first sync engines</td>
+<td>Automerge, Yjs, Replicache / Zero, ElectricSQL, PowerSync, Ditto, CouchDB / PouchDB</td>
+<td>replicate application data between devices; the developer hand-writes the sync scope (R2)</td>
+<td>the scope is compiled from the dictionary (the Replication Scriptor, <code>TEAMWORK_FRAMEWORK.md</code> §16); the same deterministic verbs replay identically on every device</td>
+</tr>
+<tr>
+<td>Offline POS</td>
+<td>Unicenta, Odoo POS offline mode</td>
+<td>sell locally, sync to a central database on reconnect</td>
+<td>the sale path needs no central database; head office derives stock from declared sales (§16.0a)</td>
+</tr>
+<tr>
+<td>Cloud BIM collaboration (CDE)</td>
+<td>Trimble Connect, Autodesk Construction Cloud, Bentley iTwin, Procore</td>
+<td>central servers, permissions, issues, support</td>
+<td>no operated server, works offline, no subscription — but they sell integration, compliance and accountability, which we do not claim to replace</td>
+</tr>
+</tbody>
+</table>
 <h3 id="adjacent-layers-interop-and-governance-not-authoring-not-competing-directly">Adjacent layers — interop and governance (not authoring, not competing directly)<a class="headerlink" href="#adjacent-layers-interop-and-governance-not-authoring-not-competing-directly" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3026,10 +3141,16 @@ of this pipeline's merge gate rather than replace it.</p>
    reproduced to the cent. Requires rare BIM <em>and</em> manufacturing-ERP knowledge in one head.</li>
 <li><strong>One generic dashboard for every data model.</strong> AD-field-driven group-by/pivot/timeline —
    not a bespoke report per table.</li>
-<li><strong>Serverless / local-first by construction.</strong> Each browser is its own server; the only
-   shared resource is a stateless signature gatekeeper. Scales to 10,000 POS stations with no
-   central database to overload — the exact failure mode that sank the national e-invoicing
-   rollout.</li>
+<li><strong>Serverless / local-first by construction.</strong> Each browser is its own server and no server we
+   operate holds the truth. Two carriages are measured and their numbers differ: the
+   signature-gatekeeper POS carriage reaches 10,000 stations (<code>poc_pos_wan_scale</code>, ~4.6k ops/s) with
+   no central database to overload — the failure mode that sank the national e-invoicing rollout;
+   the passive post-office carriage used by the team layer holds ~31 devices per GitHub account
+   at one visit per 15 s and ~100 on a web relay with staggered visits. A few scarce resources
+   (last unit of stock, ledger posting, credit limit, batch runs) still need one owner-designated
+   always-on hub (<code>prompts/TEAMWORK_FRAMEWORK.md</code> §16.14 B1), so "serverless" here means <em>no shared
+   database server we operate</em>, not <em>no always-on role</em>. <strong>Forged or altered signed ops are detected
+   and refused on every device</strong> (witnessed; tamper-evident, not tamper-proof).</li>
 <li><strong>Domain-agnostic pipeline.</strong> Houses, terminals, bridges, rail (93% BOM compression) — one
    pipeline, a YAML mapping per domain. See <code>INFRA_DESIGNER_SRS.md</code>.</li>
 <li><strong>Op-log = git-for-data.</strong> Every state is a deterministic, reversible fold of a signed log
@@ -3046,9 +3167,23 @@ compilation — or a to-the-cent ERP fold — to a GUI-first tool takes years.</
    was built and tuned in-house; a genuinely foreign file is still an open test.</li>
 <li><strong>Distribution is currently bespoke, not repeatable.</strong> Real signal so far has cost real
    founder-hours per contact — not yet a growth motion.</li>
-<li><strong>Credibility currently rests on one person</strong> across communities that don't normally
+<li>
+<p><strong>Credibility currently rests on one person</strong> across communities that don't normally
    talk to each other (BIM, ERP, open-source/local-first) — coherent, but earned per
-   conversation, not yet institutional.</li>
+   conversation, not yet institutional.</p>
+</li>
+<li>
+<p><strong>The team layer is measured on a bench, not in the field.</strong> The team-size ceiling above is
+   a simulator number; fold speed on a real phone, the email post-box path, and the free-tier limits
+   and terms of every relay in the path (GitHub as a pipe, Gmail as a post box) are unmeasured or
+   unchecked, and no real team has run it for two weeks. Each has a named test with a pass line in
+   <code>prompts/TEAMWORK_FRAMEWORK.md</code> §17 (T1 scale ladder, T2 phones, T3 post box, T9 cost ledger, T10 pilot).</p>
+</li>
+<li><strong>Novelty is "to our knowledge", not "first".</strong> The prior-art checks found no documented production
+   system with real transactions and no always-on database or application server, and no system combining a
+   serverless plan compiler with a signed deferred-query catalog — but the searches were shallow (digests and
+   excerpts, no patent-office search) and an independent clean-clone reproduction has not been done (§17 T8).
+   We say "to our knowledge", never "first", and never "no other open-source project has this" as a fact.</li>
 </ol>
 <p>None of these block using or trying the project — they're the risks worth tracking as it
 scales, stated plainly rather than smoothed over.</p>

@@ -1335,6 +1335,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -1594,6 +1598,62 @@
     
   
     Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TermsHowToVerify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to verify the terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_AI_ADVISORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Letting an AI work on the ERP, safely
   
 
     
@@ -2058,6 +2118,17 @@
     <span class="md-ellipsis">
       
         Performance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where-the-pages-format-is-kept-and-how-to-edit-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where the page's format is kept, and how to edit it
       
     </span>
   </a>
@@ -3396,6 +3467,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#where-the-pages-format-is-kept-and-how-to-edit-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where the page's format is kept, and how to edit it
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4416,6 +4498,59 @@ to the console and embedded in the downloaded export log for auditability.</p>
 <figcaption style="text-align:center; font-style:italic; color:#666; margin-top:8px;">Mobile mode granted on-the-fly.</figcaption>
 </figure>
 
+<hr />
+<h3 id="where-the-pages-format-is-kept-and-how-to-edit-it">Where the page's format is kept, and how to edit it<a class="headerlink" href="#where-the-pages-format-is-kept-and-how-to-edit-it" title="Permanent link">&para;</a></h3>
+<p>The 4D/5D page, its Excel files and the MEP bill are open source (MIT) and editable at source in the <code>bim-ootb</code> repository (paths below at <code>origin/main</code>, checked 2026-11-01). The 4D/5D pages are live pages and Excel downloads, not one composed HTML file like the Modeller's Regulatory Report.</p>
+<table>
+<thead>
+<tr>
+<th>Output</th>
+<th>How reached</th>
+<th>Format kept at source</th>
+<th>Guard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4D/5D page (live page, <code>boq_charts.html</code>)</td>
+<td>Viewer Inspect drawer "4D / 5D" (key 4): <code>viewer/panels.js:1524</code> calls <code>A.export4D5D</code>, <code>viewer/tools.js:596-611</code> opens <code>boq_charts.html?db=...&amp;bld=...</code> in a new tab. The Modeller's "Edit rates" link opens the Viewer rate editor (<code>modeller/dxf_import_ui.js:796</code>)</td>
+<td>Self-contained in <code>viewer/boq_charts.html</code>: look = inline <code>&lt;style&gt;</code> at lines 10-39; page skeleton and toolbar lines 42-55; panel titles built in <code>renderCharts()</code> from line 1535 (cost by discipline 1570, cost components 1584, task distribution 1608, task count 1625, phase duration 1642, resource workload 1659, S-curve 1673, milestones 1717, Gantt 1753, site resources 1892, variation impact 1934, 5D Bill of Quantities 1979). Titles are translation keys (<code>_TRL.t_*</code>) filled by <code>viewer/locale_loader.js</code></td>
+<td><code>tests/specs/05-charts.spec.js</code>, <code>22-4d-audit.spec.js</code> (Playwright); <code>modeller/tests/witness_dxf_shed_chain.js</code> S5 (the page opens on a DXF-built database with tasks &gt; 0). No witness found that compares the page's section list to a stated one</td>
+</tr>
+<tr>
+<td>4D Schedule Excel</td>
+<td>"4D" button on the page (<code>boq_charts.html:47</code>, <code>save4D()</code>)</td>
+<td><code>viewer/export_4d.js</code>: 3 sheets (lines 27, 43, 69); file blob line 144</td>
+<td><code>tests/specs/06-excel-export.spec.js</code> 6.3</td>
+</tr>
+<tr>
+<td>5D Cost Excel</td>
+<td>"5D" button (<code>boq_charts.html:46</code>, <code>save5D()</code>)</td>
+<td><code>viewer/export_5d.js</code>: sheets Cover, Executive Summary, Material, Labour, Equipment (lines 46-178), 5D-BOQ 200, Work Packages 260, per-discipline BOQ 311, Provenance 340, Variation Order 401, Variance Summary 439; filename line 465</td>
+<td><code>tests/specs/06-excel-export.spec.js</code> 6.4</td>
+</tr>
+<tr>
+<td>MEP Bill of Quantities (HTML)</td>
+<td>"MEP" button on the page (<code>boq_charts.html:2239-2245</code>; road models get <code>model_check_report.html</code> instead)</td>
+<td><code>viewer/mep_report.html</code>: inline <code>&lt;style&gt;</code> line 8, toolbar 48-52, sections R, S, T, U, V, W, Y at lines 69-75, assembled from line 397. "Share Report" (line 89) saves the page as the self-contained file <code>MEP_BOQ_&lt;building&gt;_&lt;date&gt;.html</code>; "CSV" saves <code>MEP_BOQ_&lt;building&gt;_&lt;date&gt;.csv</code></td>
+<td><code>tests/specs/25-mep-report.spec.js</code></td>
+</tr>
+</tbody>
+</table>
+<p>Things to know before editing:</p>
+<ul>
+<li><strong>Several places build 4D/5D content, there is no single composer.</strong> The page, the two Excel exports and the MEP report are four separate pieces of code. They share the numbers (<code>viewer/rates.js</code>, <code>viewer/schedule_author.js</code>, <code>viewer/analysis_sidecar.js</code> keeps the quantity basis consistent with <code>export_5d.js</code>) but not the layout. A wording or colour change must be made in each file. This is a known difference from the Regulatory Report, which has one composer.</li>
+<li>Not part of 4D/5D: <code>modeller/load_summary.html</code> (Export &gt; Load Summary) is the structural load page, not a schedule or cost page; its numbers come from <code>modeller/load_summary.js</code> and it is guarded by <code>modeller/tests/witness_dxf_load_summary.js</code>.</li>
+<li>No file on disk is produced by the 4D/5D page itself except the Excel files and the MEP HTML/CSV; the page is saved by sharing its link (the clipboard button), not as an HTML file.</li>
+</ul>
+<p>What you can edit before the page or the Excel files are generated (Viewer Settings, "Edit Project JSON"; <code>viewer/panels.js:2298-2301</code>):</p>
+<ul>
+<li><strong>5D Rate Pack</strong> (<code>rates/&lt;pack&gt;.json</code>, saved in the browser under <code>json_rates_&lt;pack&gt;</code>, read by <code>viewer/rates.js:756</code>).</li>
+<li><strong>4D Schedule Template</strong> (phases, durations; <code>rates/4D_template.json</code>, saved under <code>json_4d_template</code>, read by <code>viewer/tm_sched_xray.js:907</code>).</li>
+<li><strong>4D Sequence and Labour Rules</strong> (<code>rates/sequence_rules.json</code>, saved under <code>json_sequence_rules</code>, read by <code>viewer/rates.js:912</code>).</li>
+<li>The active rate pack is chosen in the "5D Rate Pack" section (<code>viewer/panels.js:1863</code>), or with <code>?rates=&lt;pack&gt;&amp;edit=rates</code> on the Viewer URL (<code>viewer/panels.js:2423</code>, witness <code>modeller/tests/witness_edit_rates_link.js</code>).</li>
+</ul>
+<p>Witness <code>viewer/tests/witness_json_4d5d.js</code> (W-JSON-4D5D) proves each reference JSON survives the editor unchanged, that the editor saves under the keys the loaders read, and that a saved copy applies to its own pack only.</p>
 <hr />
 <h2 id="the-generated-4d-movie-support-order-is-a-measured-invariant">The Generated 4D Movie — Support Order Is a Measured Invariant<a class="headerlink" href="#the-generated-4d-movie-support-order-is-a-measured-invariant" title="Permanent link">&para;</a></h2>
 <p>The tables above are the <strong>task-level</strong> 4D (the Python <code>nD_engine.py</code> path — phases, durations,

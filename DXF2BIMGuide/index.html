@@ -1301,6 +1301,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#8-regulatory-report-what-you-hand-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8 · Regulatory Report (what you hand in)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#if-something-goes-wrong" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1357,6 +1368,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="The yellow list: what you fill in, and the defaults used">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#which-default-matters-element-defaults-measure-impact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which default matters? Element defaults ▸ Measure impact
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1689,6 +1717,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -1945,6 +1977,62 @@
     
   
     Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TermsHowToVerify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to verify the terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_AI_ADVISORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Letting an AI work on the ERP, safely
   
 
     
@@ -3013,6 +3101,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#8-regulatory-report-what-you-hand-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8 · Regulatory Report (what you hand in)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#if-something-goes-wrong" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3069,6 +3168,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="The yellow list: what you fill in, and the defaults used">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#which-default-matters-element-defaults-measure-impact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which default matters? Element defaults ▸ Measure impact
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3159,7 +3275,14 @@ fills): proven end-to-end on the Duplex, which has a 3D answer key. (2) <strong>
    defaults, then what a person states (steps 1 and 3).</li>
 <li><a href="https://youtu.be/SnqJ7ERxuk0">BricsCAD 2D DXF to BIM 5D</a> (5:17, 2026-10-18): the shed from the converted model to the Viewer, 4D and 5D (shed step 7).</li>
 <li><a href="https://youtu.be/buybl3BWTUw">BIM 3D to DXF 2D</a> (1:58, 2026-10-21): a model written out as a standard 2D set (<a href="#what-a-standard-sheet-looks-like">What a standard sheet looks like</a>).</li>
-<li><a href="https://youtu.be/RaU6A8y6ymw">DXF to BIM 3D to 2D to 3D round trip both ways</a> (4:35, 2026-10-16): the Duplex standard set read back to the model it came from.</li>
+<li>
+<p><a href="https://youtu.be/RaU6A8y6ymw">DXF to BIM 3D to 2D to 3D round trip both ways</a> (4:35, 2026-10-16): the Duplex standard set read back to the model it came from.</p>
+</li>
+<li>
+<p>Can I hand this in? — the submission pack (2026-11-01): the same converted shed, then what you attach to a submission (Load Summary, bill, Regulatory Report).
+   <!-- TODO: add the link once the film is published; no URL yet -->
+</p>
+</li>
 </ol>
 <p>Related, outside this guide: <a href="https://youtu.be/tkKP__O1sGU">MEP Walker onto new 2D drawing in BIM</a> (1:36, 2026-10-23).</p>
 <hr />
@@ -3284,6 +3407,18 @@ it (1:100 first, then 1:200, 1:500, 1:50, on A4 to A0); what the drawing does no
 revision) is shown in yellow as <em>not stated</em>, never filled in. <strong>Save SVG</strong> saves the view at paper size, <strong>Print</strong>
 prints it, and <strong>Markings</strong> switches the drawn metadata off for a clean copy. Wheel to zoom, drag to pan, <strong>Esc</strong>
 or ✕ to close; nothing you do in the view changes the drawings or the metadata.</p>
+<p><strong>What the view draws</strong> (bim-ootb §D101):</p>
+<ul>
+<li><strong>Every dimension, even when the DXF does not link it to its picture.</strong> On the shed's 9 sheets all 147 dimensions are drawn: 111 through their own stored
+  pictures (found by their definition points), and 36 (North and South elevations, which have no stored picture) drawn from their own points with the value in the file's
+  own dimension style. Those 36 values are small next to the sheet's texts; that is the file's style, not a fault. A dimension that cannot be matched is left out and counted, never drawn from a guess.</li>
+<li><strong>CAD codes read as symbols:</strong> <code>%%c</code> shows as Ø, <code>%%d</code> as °, <code>%%p</code> as ±.</li>
+<li><strong>The drafter's geometry, as given, one scale both ways.</strong> The view does not rescale a detail to match its written values. A detail sheet that is drawn <strong>not to scale stays not to scale</strong>
+  and the written values govern: on the shed's details sheet a span written <code>10'-0"</code> is drawn about 1.7 times its scale and the cross-sections <code>12"</code> about 4.2 to 4.5 times (§D102).</li>
+<li><strong>A details / notes sheet shows NOTES.</strong> A sheet that states notes but draws no body shows the chip <strong>NOTES</strong> (not a red <em>NO ROLE</em>) and "general notes read: n" in both panels,
+  and it is not counted as needing input.</li>
+</ul>
+<p><img alt="The shed's details sheet in the Sheet view: every dimension drawn (10'-0&quot; / 16'-8&quot; over the beam long sections), Ø for %%c, the private title-block text blurred for this picture; the 2D panel shows the sheet as NOTES, general notes read: 4" src="../img/dxf2bim/dxf2bim_sub_details_sheet.jpg" /></p>
 <h3 id="3-raw-drawings-fill-in-what-is-missing">3 · Raw drawings: fill in what is missing<a class="headerlink" href="#3-raw-drawings-fill-in-what-is-missing" title="Permanent link">&para;</a></h3>
 <p>A drawing without metadata opens with <strong>red</strong> fields and the verdict <strong>Blocked</strong>. The editor lists
 <strong>suggestions</strong> it can prove from the drawing (e.g. a title text "GROUND FLOOR PLAN" → role = plan) — <strong>nothing
@@ -3375,8 +3510,8 @@ office, the cut, the roles, the plan levels and the roof tops read from the titl
 <tr>
 <td><code>@SET</code></td>
 <td>the name of the set</td>
-<td>nothing in the drawing</td>
-<td>type once; the other sheets get it as yellow</td>
+<td>nothing in the drawing; when no sheet names it, the placeholder <code>BUILD-NAME</code> is offered (orange)</td>
+<td>type once and the other sheets get it as yellow; or accept the placeholder to go on: it stays marked <em>default</em> until you type the real name on any one sheet, which replaces it on every sheet</td>
 </tr>
 <tr>
 <td><code>@UNITS</code></td>
@@ -3431,7 +3566,7 @@ office, the cut, the roles, the plan levels and the roof tops read from the titl
 <p>On the walk of 2026-10-22 the Duplex needed 7 role picks and 11 typed values (set name 1, levels 3, roof top 6,
 cut 1). Since §D46 (2026-10-23) the roles, the levels, the roof tops and the cut are read from the titles and texts
 (W-TITLE: 8 of 8 roles by <strong>Accept all</strong> alone, 0 wrong), so the set name is the one value left to type for the
-sheets. The whole walk has not been re-counted since.</p>
+sheets, and since §D98 (2026-10-31) even that one can be the accepted placeholder <code>BUILD-NAME</code> until you name the set. The whole walk has not been re-counted since.</p>
 <h4 id="3c-wall-tops">3c · Wall tops<a class="headerlink" href="#3c-wall-tops" title="Permanent link">&para;</a></h4>
 <p>After the sheets are complete, <strong>Wall tops</strong> lists the interior walls no elevation shows (17 on the ground floor,
 27 on the first floor of the Duplex). Tick <strong>Interior walls run to the slab above</strong> once per plan; the list
@@ -3547,6 +3682,41 @@ downloads <code>&lt;name&gt;_extracted.db</code>. Open that file in the <strong>
 <p>On the farm shed: 5,352 kN of own weight from 389 parts (546 t), 1,815 kN on the 32 footings, 3,537 kN of ground slab on the ground; the heaviest footing
 carries 246 kN (133 kPa); 123 parts are listed as not weighed (103 members the drawing does not size, 13 fans, 4 doors, 3 nettings).
 It does not compute live load, wind, earthquake or member strength: those need the stated site, soil and an engineer's analysis.</p>
+<p><img alt="Export ▸ Load Summary on the converted shed (2026-11-01): own weight 5,402.1 kN, part by part with each unit weight's source; inputs nothing states are red" src="../img/dxf2bim/dxf2bim_sub_load_summary.jpg" /></p>
+<h3 id="8-regulatory-report-what-you-hand-in">8 · Regulatory Report (what you hand in)<a class="headerlink" href="#8-regulatory-report-what-you-hand-in" title="Permanent link">&para;</a></h3>
+<p><strong>Export ▸ Regulatory Report…</strong> opens a short form of the facts a model cannot give (plot area, setbacks, occupancy, district, soil bearing capacity …,
+ten in all). A box left empty makes the report say <em>not stated</em>; nothing is guessed. Pick the rate pack and press <strong>Build report</strong>.</p>
+<p><img alt="The facts form: soil typed 150 kPa as an example, the other boxes left empty, rate pack PWD Bangladesh SoR 2022" src="../img/dxf2bim/dxf2bim_sub_report_form.jpg" /></p>
+<p>The report has nine sections: identification and scope, areas and heights, egress checks, structural checks, dead load, foundation loads, the bill of quantities,
+model quality, and the assumptions and facts not stated. Each verdict is a plain word (PASS, FINDINGS n, INCONCLUSIVE, NOT STATED), never "compliant";
+it says first that it is <strong>not a compliance certificate</strong>, and its signature blocks are left blank for the people who sign.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><img alt="The report's opening: identification and scope, not a certificate" src="../img/dxf2bim/dxf2bim_sub_report.jpg" /></td>
+<td><img alt="Checks with their codes, and the rules that found nothing of their kind to judge" src="../img/dxf2bim/dxf2bim_sub_checks.jpg" /></td>
+</tr>
+<tr>
+<td><img alt="The bill: every rate names its PWD Schedule of Rates item and page" src="../img/dxf2bim/dxf2bim_sub_bill.jpg" /></td>
+<td><img alt="What it does not claim: the defaults used, best guesses marked to confirm, facts not stated" src="../img/dxf2bim/dxf2bim_sub_assumptions.jpg" /></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Where the report is kept.</strong> It is ONE self-contained HTML file, <code>regulatory_report.html</code> (its styles are inside it): the Modeller downloads it to your browser's
+download folder and opens it in a new tab; the CLI writes it to <code>&lt;out&gt;/regulatory_report.html</code> with <code>--report</code>. Print it to PDF from the browser if a PDF is wanted.</p>
+<p><strong>Is it editable?</strong> At its <strong>source</strong>, yes, and that is where to edit it. The report's format lives in one open-source (MIT) file, <code>modeller/reg_report.js</code> in bim-ootb:
+the facts the form asks for (<code>FACTS</code>, line 17), the nine sections, their titles, order and verdict words (<code>compose()</code>, lines 40–98), the look (the <code>css</code> string,
+line 101) and the page skeleton (line 102). The Modeller's Export and the CLI's <code>--report</code> both use this one file, so a change there (a section renamed, an
+authority's header added, another style) reaches both; the witnesses W-REG-REPORT and W-REG-REPORT-UI check that the page and the CLI still match.
+<strong>Before building</strong>, edit what goes in, not the page: the facts form, the rate pack and its rates (the rate editor), and the defaults (Element defaults ▸ Set);
+build again and the report follows in seconds. Editing the downloaded HTML by hand is possible, but that copy no longer matches the model fingerprint and sources it states.
+The 4D/5D page is different (a live page, its downloads are Excel files): see <a href="../4D5DAnalysis/">4D5D Analysis ▸ Where the page's format is kept, and how to edit it</a>.</p>
 <h3 id="if-something-goes-wrong">If something goes wrong<a class="headerlink" href="#if-something-goes-wrong" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3790,6 +3960,13 @@ building is made of <strong>bodies</strong> read from layers you type, not of wa
    <strong>below grade</strong> (14 x 14 in): each column then continues from its footing to grade at that section, with no
    setting typed (a stated <code>@DEFAULT</code> still wins). Not built, because the drawings give only labels: the false
    ceiling and the slats of the cross-section.</p>
+<p><strong>Type marks checked across the set.</strong> For each mark (<code>B-1</code>, <code>GB-1</code>, <code>C-1</code> ...) the app counts where it is <strong>tagged</strong> on the sheets, where it is <strong>detailed</strong> (a
+   "Long Section of ..." title or a schedule row on the notes sheet) and how many <strong>parts</strong> carry it (bim-ootb §D102). When the set converts and has a notes sheet, two
+   advisories can follow: <code>GAP:mark_not_modelled</code> (tagged, no part) and <code>GAP:mark_no_detail</code> (tagged or modelled, no detail). They never block, and the app never builds or drops a part
+   because of them. On the shed: <code>B-1</code>, <code>B-2</code>, <code>C-1</code>, <code>F-1</code> are modelled and detailed; <strong><code>GB-1</code> is tagged 4 times on the foundation layout and detailed, but no sheet draws it, so it is
+   reported and not built</strong>: four tags do not say which spans the grade beams run, and building them under every wall would be a guess. Draw it on a typed layer and it is built as drawn.</p>
+<p><img alt="The converted shed (2026-11-01, Complete ticked): 512 parts; the 2D panel lists the nine sheets, the details sheet as NOTES" src="../img/dxf2bim/dxf2bim_sub_converted.jpg" /></p>
+<p><img alt="A footing picked in x-ray among its neighbours: its casting ratio 1:1.5:3 and its 12&quot; thickness come from the details sheet (the Modeller has no properties panel yet: the values are in the model and the exports)" src="../img/dxf2bim/dxf2bim_sub_footing.jpg" /></p>
 <p><img alt="The converted shed on the canvas: material colours, 512 bodies" src="../img/dxf2bim/shed_canvas.jpg" /></p>
 <ol>
 <li><strong>Save and open elsewhere.</strong> <em>Export → IFC4</em> writes the typed model with materials, colours and a property set
@@ -3815,6 +3992,21 @@ the wall faces to 0.004 mm. This proves the reading is self-consistent; it is no
 standard or a guess, and its basis, <strong>(C)</strong> the <em>Farming Shed</em> building-type values and their sources,
 <strong>(D)</strong> what <em>Complete the building</em> adds, <strong>(E)</strong> how drawn / derived / assumed evidence is shown, and
 <strong>(F)</strong> the items the shed drawings left open. You may ignore it: the defaults stay applied and every one is listed.</p>
+<h3 id="which-default-matters-element-defaults-measure-impact">Which default matters? Element defaults ▸ Measure impact<a class="headerlink" href="#which-default-matters-element-defaults-measure-impact" title="Permanent link">&para;</a></h3>
+<p>On a structure set the <strong>Element defaults</strong> section lists every default in use (one row per setting, grouped by element). <strong>Measure impact</strong> ranks them by what they move
+(bim-ootb §D99, #2483):</p>
+<ul>
+<li>Nothing runs until you press it. The <strong>first click</strong> loads the tools and shows a <strong>rate-pack picker</strong> (the locale's pack is preselected, for example <em>PWD Bangladesh SoR 2022</em>);
+  the <strong>second click</strong> measures.</li>
+<li>It re-runs the model once per option of each default and lists the defaults by what they change: the <strong>bill</strong>, the <strong>own weight</strong> (kN) and the <strong>body count</strong>. Your model on screen does not change while it measures.</li>
+<li>A default that moves none of the three is gathered in one collapsed line, <em>No effect on the bill, the loads or the body count (n)</em>; click it to open.</li>
+<li>Any later change (a marking, a choice, the pack, <em>Complete</em>) marks the result <em>Measured before your last change</em>; press it again.</li>
+<li>It measures bill, own weight and body count only. It does not re-run the structural checks.</li>
+</ul>
+<p>Measured on the shed (pack PWD Bangladesh SoR 2022, 1.4 s): <strong>6 active, 6 inert</strong>. Slab thickness (0.15 m) −1,298,309 BDT · section spacing −262,675 BDT (126 bodies fewer) ·
+<code>column.top_under_beam</code> (as drawn) −38,717 BDT · building type +19,968 BDT · roof overhang +11,231 BDT · roof sheet thickness 0 BDT (+0.06 kN). The ranking is the shed's; another set ranks differently.</p>
+<p><strong>The PWD rate pack</strong> is named <strong>PWD Bangladesh SoR 2022</strong>: its source is the Finance Division approval of 21 June 2022, valid three years. (The file id <code>pwd2024_bd</code> is unchanged.)</p>
+<p><img alt="Element defaults ▸ Measure impact on the shed with PWD Bangladesh SoR 2022: the six defaults that move the model, ranked, each with its change in BDT, kN and bodies; the six that move nothing in one collapsed line" src="../img/dxf2bim/dxf2bim_measure_impact.jpg" /></p>
 <hr />
 <h2 id="prior-art">Prior art<a class="headerlink" href="#prior-art" title="Permanent link">&para;</a></h2>
 <p>What already exists, what we believe is new, what we learned from others, and what using them would cost:
@@ -3822,6 +4014,7 @@ standard or a guess, and its basis, <strong>(C)</strong> the <em>Farming Shed</e
 parameters and ask a subscription; we state the gaps, keep provenance on every body, and ask nothing but the facts
 in the yellow list. No head-to-head benchmark has been run.</p>
 <hr />
+<p><img alt="The back card of the submission-pack film: what we learned from others, what this adds for architects, engineers and accountants, and how to report a fact that is wrong" src="../img/dxf2bim/dxf2bim_back_card.jpg" /></p>
 <h2 id="what-it-does-not-do-yet">What it does not do yet<a class="headerlink" href="#what-it-does-not-do-yet" title="Permanent link">&para;</a></h2>
 <p>Honest limits of the preliminary version:</p>
 <ul>
@@ -3834,6 +4027,9 @@ in the yellow list. No head-to-head benchmark has been run.</p>
 <li><strong>Columns</strong> are cut and drawn, but not yet as column symbols on the grid.</li>
 <li><strong>Openings above or below the plan cut</strong> (e.g. high bathroom windows) — being changed so every opening of
   the storey is shown from its host wall regardless of height.</li>
+<li><strong>The Regulatory Report is not a certificate.</strong> It states the facts of the model, with blank signature blocks for the people who sign; it is not a code-compliance certificate.</li>
+<li><strong>The details' bar sizes are not used.</strong> Reinforcement is an assumed bill line (a stated percentage of each concrete body), shown as assumed.</li>
+<li><strong>The Load Summary is own weight, not a structural design.</strong> No live load, wind, earthquake or member strength.</li>
 <li><strong>"Any DXF"</strong> is not claimed. Your drawing needs the metadata above; the editor helps you add it, the verdict
   tells you when it is complete.</li>
 <li><strong>The component library</strong> (door/window geometry) is published: when no local copy is present, Convert loads it

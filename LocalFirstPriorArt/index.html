@@ -1333,6 +1333,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -1589,6 +1593,62 @@
     
   
     Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TermsHowToVerify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to verify the terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_AI_ADVISORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Letting an AI work on the ERP, safely
   
 
     
@@ -2352,6 +2412,56 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#update-2026-10-25-enterprise-systems-scheduled-queries-and-replication-planning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update 2026-10-25 — enterprise systems, scheduled queries and replication planning
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Update 2026-10-25 — enterprise systems, scheduled queries and replication planning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-has-anyone-run-real-transactions-with-no-always-on-database-or-application-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Has anyone run real transactions with no always-on database or application server?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-scheduled-queries-answered-by-the-data-holder-replication-planned-from-a-dictionary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Scheduled queries answered by the data holder; replication planned from a dictionary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-engineering-lessons-from-systems-that-move-data-through-a-relay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Engineering lessons from systems that move data through a relay
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2784,6 +2894,56 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#update-2026-10-25-enterprise-systems-scheduled-queries-and-replication-planning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update 2026-10-25 — enterprise systems, scheduled queries and replication planning
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Update 2026-10-25 — enterprise systems, scheduled queries and replication planning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-has-anyone-run-real-transactions-with-no-always-on-database-or-application-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Has anyone run real transactions with no always-on database or application server?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-scheduled-queries-answered-by-the-data-holder-replication-planned-from-a-dictionary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Scheduled queries answered by the data holder; replication planned from a dictionary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-engineering-lessons-from-systems-that-move-data-through-a-relay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Engineering lessons from systems that move data through a relay
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3068,6 +3228,105 @@ R-tree + small footprint) is the right tier; the prior art confirms it.</p>
 <a href="https://github.com/orbitinghail/sqlsync">SQLSync</a> ·
 <a href="https://github.com/vlcn-io/cr-sqlite">cr-sqlite (vlcn.io)</a> ·
 <a href="https://mattweidner.com/2023/09/26/crdt-survey-4.html">CRDT survey (Weidner)</a> · <a href="https://automerge.org/">Automerge</a>.</p>
+<hr />
+<h2 id="update-2026-10-25-enterprise-systems-scheduled-queries-and-replication-planning">Update 2026-10-25 — enterprise systems, scheduled queries and replication planning<a class="headerlink" href="#update-2026-10-25-enterprise-systems-scheduled-queries-and-replication-planning" title="Permanent link">&para;</a></h2>
+<p><em>Added after a second research pass: web searches and page summaries, not a full literature review, and no patent-office search. Everything below is "to our knowledge". Figures come from the cited sources through summaries — check the original before quoting them outside the project. Full reports are kept in the project repository under <code>prompts/prior_art_2026-10-25/</code>.</em></p>
+<h3 id="1-has-anyone-run-real-transactions-with-no-always-on-database-or-application-server">1. Has anyone run real transactions with no always-on database or application server?<a class="headerlink" href="#1-has-anyone-run-real-transactions-with-no-always-on-database-or-application-server" title="Permanent link">&para;</a></h3>
+<p>To our knowledge we found no documented production system for real money or regulated transactions that has neither. Every system we examined has an arbiter somewhere — a server, a quorum, a payment processor or a git host.</p>
+<table>
+<thead>
+<tr>
+<th>System</th>
+<th>Server still running?</th>
+<th>Who decides a clash</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://api.corda.net/en/pdf/corda-technical-whitepaper.pdf">Corda</a></td>
+<td>Yes: each node runs its own database; a notary service</td>
+<td>the notary</td>
+<td>no shared central ledger, but servers everywhere (facts from search excerpts)</td>
+</tr>
+<tr>
+<td><a href="https://hyperledger-fabric.readthedocs.io/en/latest/orderer/ordering_service.html">Hyperledger Fabric</a></td>
+<td>Yes: peers and an ordering service</td>
+<td>the orderers (needs a quorum)</td>
+<td>no live bank settlement found</td>
+</tr>
+<tr>
+<td>Lotus Notes / Domino</td>
+<td>Yes: Domino servers replicate</td>
+<td>first save on one server; across replicas both versions are kept and a person reconciles</td>
+<td>documents, not money</td>
+</tr>
+<tr>
+<td><a href="https://docs.couchdb.org/en/latest/replication/conflicts.html">CouchDB / PouchDB</a></td>
+<td>Yes in every documented deployment (a hub CouchDB)</td>
+<td>a deterministic winner; the merge is the application's job</td>
+<td>health records, not money</td>
+</tr>
+<tr>
+<td><a href="https://bitcoin.org/bitcoin.pdf">Bitcoin</a></td>
+<td>Yes: thousands of always-on nodes</td>
+<td>proof of work</td>
+<td>the heavy alternative; not a licensed-entity model</td>
+</tr>
+<tr>
+<td>Secure Scuttlebutt, Holochain, p2panda, Hypercore</td>
+<td>helper nodes (pubs, rooms, bootstrap)</td>
+<td>nothing at the log layer</td>
+<td>no money use found</td>
+</tr>
+<tr>
+<td>Git with plain-text accounting</td>
+<td>the git host</td>
+<td>the host's fast-forward check</td>
+<td>real books at a non-profit; no regulated use found</td>
+</tr>
+<tr>
+<td><a href="https://developer.squareup.com/docs/mobile-payments-sdk/android/offline-payments">Square, Stripe, Adyen, SumUp offline payments</a></td>
+<td>Yes: the processor, on reconnect</td>
+<td>the issuer; the merchant bears the risk; caps on amount, count and time</td>
+<td>the closest shape to a sale path with no server in it</td>
+</tr>
+<tr>
+<td>Card-chip offline and ATM stand-in</td>
+<td>the issuer or network</td>
+<td>floor limits; stricter stand-in limits</td>
+<td></td>
+</tr>
+<tr>
+<td>India's offline payments framework</td>
+<td>the issuer</td>
+<td>₹200 per payment, ₹2,000 cumulative</td>
+<td>from press reports</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What this means.</strong> The nearest precedent is "work offline within a cap, settle later". What our design adds is that the settling authority is a device the owner runs, reached through a mailbox that only stores bytes. We make no claim to be first.</p>
+<h3 id="2-scheduled-queries-answered-by-the-data-holder-replication-planned-from-a-dictionary">2. Scheduled queries answered by the data holder; replication planned from a dictionary<a class="headerlink" href="#2-scheduled-queries-answered-by-the-data-holder-replication-planned-from-a-dictionary" title="Permanent link">&para;</a></h3>
+<p>The closest work, none of it exact:</p>
+<ul>
+<li><strong><a href="https://people.csail.mit.edu/hari/papers/p92.pdf">CarTel / ICEDB</a> (MIT)</strong> — SQL queries with a <code>RATE</code> clause run on the node that holds the data and are delivered at its next contact. A central portal issues the queries and receives the results; the results are not signed.</li>
+<li><strong><a href="https://courses.cs.duke.edu/spring07/cps296.1/papers/tods05-MaddenFranklinEtAl-tinydb.pdf">TinyDB</a></strong> — the <code>SAMPLE PERIOD</code> clause; results flow to one root.</li>
+<li><strong><a href="https://www.cs.cornell.edu/projects/quicksilver/public_pdfs/astrolabe.pdf">Astrolabe</a> (Cornell)</strong> — signed, expiring SQL aggregation certificates with no central server, but over always-on gossiping agents.</li>
+<li><strong><a href="https://www.cs.ucdavis.edu/~green/papers/sigrec08.pdf">ORCHESTRA</a></strong> — peers with local databases publish and reconcile on their own schedule; it carries edit logs, not query requests.</li>
+<li><strong><a href="https://learn.microsoft.com/en-us/sql/relational-databases/replication/publish/automatically-generate-join-filters-between-merge-articles">SQL Server merge replication</a></strong> — derives join filters from foreign keys; central publisher, unsigned, and its own documentation describes a gap in completeness.</li>
+<li><strong>Sync engines (Zero, ElectricSQL, PowerSync, Couchbase, Ditto)</strong> — the developer writes the sync scope by hand.</li>
+</ul>
+<p>Not found together in any one system: a serverless compiler that turns a dictionary, roles and topology into signed per-device plans, plus a signed catalog of parameterised queries answered by the data holder under its own access check, with an "as of" stamp, over a passive carrier. The search did not cover patent offices, the ACM Digital Library or several named systems (Cimbiosys, SymmetricDS, GraphQL persisted queries); it shows none surfaced, not that none exists.</p>
+<h3 id="3-engineering-lessons-from-systems-that-move-data-through-a-relay">3. Engineering lessons from systems that move data through a relay<a class="headerlink" href="#3-engineering-lessons-from-systems-that-move-data-through-a-relay" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Relays turned out not to be simple.</strong> In a measurement study of Nostr (<a href="https://arxiv.org/abs/2402.05709">Wei and Tyson</a>) each post sat on 34.6 relays on average, 98.2 % of download traffic was redundant, and about 20 % of relays were down more than 40 % of the time. Delta Chat built its own relays because ordinary mail providers filter and throttle.</li>
+<li><strong>Every pure peer-to-peer system added an always-on helper:</strong> Briar its Mailbox, Scuttlebutt its pubs and rooms, Ditto its server, Anytype its sync nodes.</li>
+<li><strong>One identity on two devices forks a log</strong> (Scuttlebutt), so a device should have its own chain.</li>
+<li><strong>History growth is a cost that persists even at small scale.</strong> Scuttlebutt's first sync fell from about 12 hours to 55 minutes only after its storage was reworked.</li>
+<li><strong>Version differences are the top support problem</strong>, and changing a data format with no central authority is still unsolved.</li>
+<li><strong>Channel limits bind first.</strong> GitHub recommends no more than about 6 pushes a minute per repository; a consumer Google Apps Script account may send to only 100 mail recipients a day.</li>
+<li><strong>A database file in a synced folder is not a transport</strong> (SQLite's own documentation and Syncthing's conflict copies both say so).</li>
+</ul>
 
 
 

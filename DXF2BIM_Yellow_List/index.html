@@ -1451,6 +1451,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -1707,6 +1711,62 @@
     
   
     Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TermsHowToVerify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to verify the terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_AI_ADVISORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Letting an AI work on the ERP, safely
   
 
     
@@ -2809,6 +2869,15 @@
 <td>0.2, 0.25, 0.3, 0.4</td>
 </tr>
 <tr>
+<td><code>column.top_under_beam</code></td>
+<td>IfcColumn</td>
+<td>text</td>
+<td><strong>beam_above</strong></td>
+<td>guess</td>
+<td>a column under a beam end carries it up to the beam's underside; an elevation may draw it short where a wall, a net or another sheet hides it (§D100: the shed's lines 36–41 drawn 1.52 m under beams at 3.10 m). 'as_drawn' keeps the drawn top and the gap shows as a load_path finding</td>
+<td>beam_above, as_drawn</td>
+</tr>
+<tr>
 <td><code>synth.column.belowgrade.size</code></td>
 <td>IfcColumn</td>
 <td>m</td>
@@ -2953,6 +3022,15 @@
 <td>1, 1.2, 1.5</td>
 </tr>
 <tr>
+<td><code>member.section</code></td>
+<td>IfcMember</td>
+<td>text</td>
+<td><em>(empty)</em></td>
+<td>guess</td>
+<td>a member whose label carries no section: empty = the most common section drawn on the same set for the same kind of member (load_summary.js, shown assumed); a label such as 1.5"x1.5"x1/4" Angle = that section; none = leave them unweighed</td>
+<td></td>
+</tr>
+<tr>
 <td><code>member.size</code></td>
 <td>IfcMember</td>
 <td>m</td>
@@ -3066,7 +3144,7 @@
 <td>m</td>
 <td><strong>0.0254</strong></td>
 <td>guess</td>
-<td>display thickness of a roofing sheet (1 in); the cost is by area</td>
+<td>display thickness of a roofing sheet (1 in); the cost is by area. The own weight is by area too, read off the sheet's plan box, which this thickness widens by thickness x sin(slope): a small weight change, no cost change</td>
 <td>0.0254, 0.05</td>
 </tr>
 <tr>
@@ -3137,8 +3215,8 @@
 <td>IfcSlab</td>
 <td>m</td>
 <td><strong>0.25</strong></td>
-<td>std</td>
-<td>rate pack: 'RC Slab 250mm' (viewer/rates/cidb2024_my.json IfcSlab)</td>
+<td>guess</td>
+<td>a guess: no sheet states the slab thickness. 250 mm is the slab line every rate pack's class table names ('RC Slab 250mm', the same 250 mm in all 16 country packs), a priced item, not a design value for this building (§D99)</td>
 <td>0.15, 0.2, 0.25</td>
 </tr>
 <tr>
@@ -3200,8 +3278,8 @@
 <td>IfcWall</td>
 <td>m</td>
 <td><strong>0.15</strong></td>
-<td>std</td>
-<td>rate pack: 'Blockwork Wall 150mm' (viewer/rates/cidb2024_my.json IfcWall)</td>
+<td>guess</td>
+<td>a guess: no sheet states the wall thickness. 150 mm is the wall line every rate pack's class table names (the same 150 mm in all 16 country packs), a priced item, not a design value for this building (§D99)</td>
 <td>0.1, 0.115, 0.15, 0.2, 0.225</td>
 </tr>
 <tr>
