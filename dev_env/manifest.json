@@ -1,0 +1,16 @@
+{
+ "schema": "dev-env-v1",
+ "about": "Inputs the witnesses read that git does not carry; scripts/dev_env_fetch.js reinstates them byte-exact (prompts/TEAMWORK_FRAMEWORK.md §50.2).",
+ "entries": [
+  {
+   "repo": "BIMCompiler",
+   "path": "build/erp/ad_full.db",
+   "sha256": "179cd349cedbe5a4146a0f1d67f99d4c61cd03ee4b783d0fd79b4612c3c24fd9",
+   "bytes": 44937216,
+   "url": "https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/dev_env/BIMCompiler/build/erp/ad_full.db",
+   "encoding": "gzip",
+   "produced_by": "node scripts/migrate_pg_to_sqlite.js (iDempiere GardenWorld seed in docker postgres; public seed data, credentials = stock demo values, checked 2026-11-01)",
+   "published": "2026-10-31"
+  }
+ ]
+}
