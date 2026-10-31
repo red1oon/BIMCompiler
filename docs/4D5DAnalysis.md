@@ -247,6 +247,34 @@ Mobile mode granted on-the-fly.
 
 ---
 
+### Where the page's format is kept, and how to edit it
+
+The 4D/5D page, its Excel files and the MEP bill are open source (MIT) and editable at source in the `bim-ootb` repository (paths below at `origin/main`, checked 2026-11-01). The 4D/5D pages are live pages and Excel downloads, not one composed HTML file like the Modeller's Regulatory Report.
+
+| Output | How reached | Format kept at source | Guard |
+|---|---|---|---|
+| 4D/5D page (live page, `boq_charts.html`) | Viewer Inspect drawer "4D / 5D" (key 4): `viewer/panels.js:1524` calls `A.export4D5D`, `viewer/tools.js:596-611` opens `boq_charts.html?db=...&bld=...` in a new tab. The Modeller's "Edit rates" link opens the Viewer rate editor (`modeller/dxf_import_ui.js:796`) | Self-contained in `viewer/boq_charts.html`: look = inline `<style>` at lines 10-39; page skeleton and toolbar lines 42-55; panel titles built in `renderCharts()` from line 1535 (cost by discipline 1570, cost components 1584, task distribution 1608, task count 1625, phase duration 1642, resource workload 1659, S-curve 1673, milestones 1717, Gantt 1753, site resources 1892, variation impact 1934, 5D Bill of Quantities 1979). Titles are translation keys (`_TRL.t_*`) filled by `viewer/locale_loader.js` | `tests/specs/05-charts.spec.js`, `22-4d-audit.spec.js` (Playwright); `modeller/tests/witness_dxf_shed_chain.js` S5 (the page opens on a DXF-built database with tasks > 0). No witness found that compares the page's section list to a stated one |
+| 4D Schedule Excel | "4D" button on the page (`boq_charts.html:47`, `save4D()`) | `viewer/export_4d.js`: 3 sheets (lines 27, 43, 69); file blob line 144 | `tests/specs/06-excel-export.spec.js` 6.3 |
+| 5D Cost Excel | "5D" button (`boq_charts.html:46`, `save5D()`) | `viewer/export_5d.js`: sheets Cover, Executive Summary, Material, Labour, Equipment (lines 46-178), 5D-BOQ 200, Work Packages 260, per-discipline BOQ 311, Provenance 340, Variation Order 401, Variance Summary 439; filename line 465 | `tests/specs/06-excel-export.spec.js` 6.4 |
+| MEP Bill of Quantities (HTML) | "MEP" button on the page (`boq_charts.html:2239-2245`; road models get `model_check_report.html` instead) | `viewer/mep_report.html`: inline `<style>` line 8, toolbar 48-52, sections R, S, T, U, V, W, Y at lines 69-75, assembled from line 397. "Share Report" (line 89) saves the page as the self-contained file `MEP_BOQ_<building>_<date>.html`; "CSV" saves `MEP_BOQ_<building>_<date>.csv` | `tests/specs/25-mep-report.spec.js` |
+
+Things to know before editing:
+
+- **Several places build 4D/5D content, there is no single composer.** The page, the two Excel exports and the MEP report are four separate pieces of code. They share the numbers (`viewer/rates.js`, `viewer/schedule_author.js`, `viewer/analysis_sidecar.js` keeps the quantity basis consistent with `export_5d.js`) but not the layout. A wording or colour change must be made in each file. This is a known difference from the Regulatory Report, which has one composer.
+- Not part of 4D/5D: `modeller/load_summary.html` (Export > Load Summary) is the structural load page, not a schedule or cost page; its numbers come from `modeller/load_summary.js` and it is guarded by `modeller/tests/witness_dxf_load_summary.js`.
+- No file on disk is produced by the 4D/5D page itself except the Excel files and the MEP HTML/CSV; the page is saved by sharing its link (the clipboard button), not as an HTML file.
+
+What you can edit before the page or the Excel files are generated (Viewer Settings, "Edit Project JSON"; `viewer/panels.js:2298-2301`):
+
+- **5D Rate Pack** (`rates/<pack>.json`, saved in the browser under `json_rates_<pack>`, read by `viewer/rates.js:756`).
+- **4D Schedule Template** (phases, durations; `rates/4D_template.json`, saved under `json_4d_template`, read by `viewer/tm_sched_xray.js:907`).
+- **4D Sequence and Labour Rules** (`rates/sequence_rules.json`, saved under `json_sequence_rules`, read by `viewer/rates.js:912`).
+- The active rate pack is chosen in the "5D Rate Pack" section (`viewer/panels.js:1863`), or with `?rates=<pack>&edit=rates` on the Viewer URL (`viewer/panels.js:2423`, witness `modeller/tests/witness_edit_rates_link.js`).
+
+Witness `viewer/tests/witness_json_4d5d.js` (W-JSON-4D5D) proves each reference JSON survives the editor unchanged, that the editor saves under the keys the loaders read, and that a saved copy applies to its own pack only.
+
+---
+
 ## The Generated 4D Movie — Support Order Is a Measured Invariant
 
 The tables above are the **task-level** 4D (the Python `nD_engine.py` path — phases, durations,
