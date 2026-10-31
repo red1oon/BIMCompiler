@@ -18,6 +18,7 @@ table.tb{border-collapse:collapse;width:1728px}table.tb td,table.tb th{font:400 
 .lx{display:grid;grid-template-columns:230px 1fr;gap:6px 26px;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line)}.lx b{font:800 38px/1.1 'Noto Sans';color:var(--cy)}.lx span{font:700 30px/1.25 'Noto Sans'}.lx i{grid-column:2;font:400 22px/1.3 'Noto Sans';color:var(--ink2);font-style:normal}
 .src{position:absolute;left:96px;top:880px;width:1728px;font:400 19px/1.3 'DejaVu Sans Mono',monospace;color:var(--ink2);white-space:nowrap;overflow:hidden}
 .take{position:absolute;left:96px;top:806px;width:1728px;font:400 32px/1.3 'Noto Sans';color:var(--cy)}`;
+const img = n => { const f = path.join(__dirname, 'out', 'cap', n); if (!fs.existsSync(f)) throw new Error('missing capture ' + n); return 'data:image/png;base64,' + fs.readFileSync(f).toString('base64'); };
 module.exports = { CSS, build(X) {
   const V = id => { const f = X[id]; if (!f || f.status !== 'now') throw new Error('fact not resolved: ' + id); return esc(f.value); };
   const Fl = (id, txt) => { V(id); return txt; };
@@ -70,14 +71,20 @@ module.exports = { CSS, build(X) {
     + lg.map((l, i) => `<tr data-s="${i + 1}"><td>${i + 1}</td><td class="mono">${l}</td><td class="mono">${tw[i]}</td><td><span class="chip ${l === tw[i] ? 'ok' : 'ref'}">${l === tw[i] ? 'EQUAL' : 'DIFFERENT'}</span></td></tr>`).join('') + `</table>`
     + Sx(lg.length + 1, `<div class="take" style="top:560px">On the real page the order is numbered <span class="mono">${V('page_order')}</span> · ${V('page_judged')} page checks judged</div>`), 'source: numbering check log, legacy comparison · real-page sales order check log') };
   // ---- 7 buttons
-  C.terms = { n: 3, html: page(hd('THE TERMS BUTTON', 'Same table, from the last recorded run', '') + `<div class="row">`
+  const tile = (k, cls, ttl, big, lab) => Sx(k, `<div class="bx ${cls}" style="width:600px;padding:12px 22px"><h3 style="font-size:28px">${ttl}</h3><div class="big ${cls === 'gd' ? 'gdc' : cls === 'am' ? 'amc' : 'cy'}" style="margin-top:0;font-size:46px">${big}</div><div class="q" style="font-size:24px;margin-top:6px">${lab}</div></div>`);
+  C.terms = { n: 3, html: page(hd('THE TERMS BUTTON · LIVE', 'Same table, from the last recorded run', '') + `<div class="row">`
     + Sx(1, `<div class="bx cy" style="width:560px;height:380px"><h3>Terms</h3><div class="big cy" style="margin-top:18px">${V('rec_rows')}</div><div class="q">terms listed</div></div>`)
     + Sx(2, `<div class="bx gd" style="width:560px;height:380px"><h3>Enforced</h3><div class="big gdc" style="margin-top:18px">${V('rec_enf')}</div><div class="q">each with a failing control</div></div>`)
     + Sx(3, `<div class="bx am" style="width:560px;height:380px"><h3>Open</h3><div class="big amc" style="margin-top:18px">${V('rec_open')}</div><div class="q">named, never green</div></div>`) + `</div>`, 'source: recorded terms run') };
-  C.seatbelt = { n: 3, html: page(hd('THE SEATBELT', 'Before you process a document', 'Advice only: it never blocks', '') + `<div class="row">`
-    + Sx(1, `<div class="bx cy" style="width:560px;height:400px"><h3>Checks</h3><div class="big cy" style="margin-top:18px">${V('sb_rows')}</div><div class="q">things looked at, such as ${V('sb_s3')}</div></div>`)
-    + Sx(2, `<div class="bx am" style="width:560px;height:400px"><h3>${V('sb_word')}</h3><div class="big amc" style="margin-top:18px">${V('sb_advise')}</div><div class="q">${V('sb_s7')}<br>${V('sb_s9')}</div></div>`)
-    + Sx(3, `<div class="bx cy" style="width:560px;height:400px"><h3>Then</h3><div class="q" style="font-size:34px">${V('sb_went_ahead')}</div><div class="sb">nothing was blocked</div></div>`) + `</div>`, 'source: real-page check log, recorded on the Seatbelt build') };
+  C.seatbelt = { n: 4, html: page(hd('THE SEATBELT · LIVE', 'Before you process a document', 'Advice only: it never blocks', '') + `<div class="row">`
+    + Sx(1, `<img src="${img('seatbelt_panel.png')}" style="width:1060px;border:2px solid var(--cy);border-radius:10px">`)
+    + `<div class="col" style="width:600px;gap:12px">` + tile(2, 'cy', 'Checks', V('sb_rows'), `${V('sb_advise')} advised: ${V('sb_s7')}, ${V('sb_s9')}`) + tile(3, 'cy', 'Its own checks', `${V('sbt_judged')}`, `judged · failed: ${V('sbt_fails')} · broken versions caught: ${V('sbt_mut_k')} of ${V('sbt_mut_t')}`)
+    + Sx(4, `<div class="bx am" style="width:600px;padding:12px 22px"><h3 style="font-size:28px">${Fl('sbt_noblock', 'Never blocks')}</h3><div class="q" style="font-size:24px;margin-top:6px">${Fl('sbt_override', 'A document processed under advice is logged')}; ${V('sb_went_ahead')}</div></div>`) + `</div></div>`, 'source: real page capture · Seatbelt check logs') };
+  C.searchkey = { n: 4, html: page(hd('…AND THE DEMO STATION, FIXED', 'Every station user now has a Search Key', 'The key comes from legacy iDempiere’s own rule', '') + `<div class="row">`
+    + Sx(1, `<div class="bx or" style="width:830px;height:330px"><h3>Before</h3><div class="big or mono" style="font-size:52px;margin-top:20px">${V('sk_before_doc')}</div><div class="q">an empty name in the number</div><div class="sb">users without a Search Key: ${V('sk_users_before')}</div></div>`)
+    + Sx(2, `<div class="bx gd" style="width:830px;height:330px"><h3>Now</h3><div class="big gdc mono" style="font-size:52px;margin-top:20px">${V('page_order')}</div><div class="q">the station’s own name</div><div class="sb">users without a Search Key: ${V('sk_users_after')}</div></div>`) + `</div>`
+    + Sx(3, `<div class="bx cy" style="margin-top:22px;width:1728px"><div class="q">Rule: ${V('sk_legacy_rule')} · ${V('sk_gardenad')} matches the legacy pilot · ${V('sk_legacy_users')} users identical on both sides</div></div>`)
+    + Sx(4, `<div class="bx cy" style="margin-top:18px;width:1728px"><div class="q">Office teams may bind a device to its User at approval: ${V('bind_optional')}</div></div>`), 'source: numbering check log · real-page sales order check logs · approval check log') };
   // ---- 8 not promised (NO green anywhere on this card or the next)
   C.notpromised = { n: 4, html: page(hd('WHAT IS NOT PROMISED', 'Open terms, named', '', 'am') + `<div class="row">`
     + Sx(1, `<div class="bx am" style="width:560px;height:480px"><h3>${V('open0_term')}</h3><span class="chip open" style="margin-top:12px">OPEN</span><div class="q">${V('open0_what')}</div><div class="q mono" style="font-size:28px;margin-top:14px">first download<br>${V('n10')} stations: ${V('kb10')} KB<br>${V('n100')} stations: ${V('mb100')} MB<br>${V('n1000')} stations: ${V('mb1000')} MB</div><div class="sb">Fix on the roadmap: ${V('open0_fix')}</div></div>`)

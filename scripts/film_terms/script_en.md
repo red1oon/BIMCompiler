@@ -41,15 +41,20 @@ F: Can that be fixed without a central counter?
 M: Make the number say where it was made. Organisation, then station, then a running count that never leaves the station. Stations working offline shared no number, on any of the {fact:d10_types} document types.
 F: And if a station forges another station's prefix?
 M: Every device refuses it. All {fact:forged_devices} did.
+## b6s | searchkey
+F: What if a station has no name to number with?
+M: That was a real gap, and it is fixed. Before, the demo station's order number had an empty name in the middle. Now it carries the station's own name. {fact:sk_users_before} users had no Search Key. Now {fact:sk_users_after} do not.
+F: Who decides what the key is?
+M: Legacy iDempiere's own rule, and for {fact:sk_legacy_users} users the keys are identical on both sides. Office teams can also bind a device to its user at approval. It is optional, and it lets every device check a station's numbers.
 ## b6b | legacy
 F: Does legacy iDempiere number it the same way?
 M: We ran both side by side. At all {fact:d20_pos} positions the numbers were equal. And on the real page, the order carries its station's name in its number.
 ## b7a | terms
 F: Do I have to take your word for it?
-M: No. The Team panel has a Terms button. It shows this same table, from the last recorded run: {fact:rec_rows} terms, {fact:rec_enf} enforced, {fact:rec_open} open.
+M: No. The Team panel has a Terms button, live now. It shows this same table, from the last recorded run: {fact:rec_rows} terms, {fact:rec_enf} enforced, {fact:rec_open} open.
 ## b7b | seatbelt
 F: And before I process a document?
-M: The Seatbelt looks at {fact:sb_rows} things, like unsent changes, or a record changed by another device. It advised caution on {fact:sb_advise}. It only advises. The document went ahead.
+M: The Seatbelt is live too. This is the real panel. It looks at {fact:sb_rows} things, like unsent changes, or a record changed by another device, and it advised caution on {fact:sb_advise}. It never blocks. A document processed under advice is logged, and goes ahead. Its own checks judged {fact:sbt_judged}, none failed, and caught {fact:sbt_mut_k} of {fact:sbt_mut_t} deliberately broken versions.
 ## b8a | notpromised
 F: So what do you not promise?
 M: {fact:ver_open} terms are open. A Visit is not yet bounded. The first download grows with the team: about {fact:kb10} kilobytes at {fact:n10} stations, and about {fact:mb1000r} megabytes at {fact:n1000}, measured on simulated devices. The fix is on the roadmap.

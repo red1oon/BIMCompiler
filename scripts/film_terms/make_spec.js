@@ -4,7 +4,7 @@ const fs = require('fs'), path = require('path');
 const B = 'build/scriptor/', T = B + 'terms_run/';
 const L = { REC: B + 'witness_terms_record_20261031.log', MUT: B + 'witness_terms_reuse_mutant_20261031.log', VIS: T + 'witness_terms_visit.log', EXE: T + 'witness_comm_executors.log', PTR: T + 'witness_comm_plantrust.log', WTE: T + 'witness_team_executors.log',
   D20: B + 'witness_docno_till_48_11d_D20.log', SO: B + 'uservalue_48_11d/witness_team_so.log', SB: B + 'seatbelt_48_13/witness_team_so.log', JS: B + 'terms_run_record.json', FW: 'prompts/TEAMWORK_FRAMEWORK.md',
-  S10: B + 'witness_scale_star_engine_10.log', S100: B + 'witness_scale_star_engine_100.log', S1000: B + 'witness_scale_star_engine_1000.log' };
+  SBT: B + 'witness_team_seatbelt.log', B11: B + 'docno_48_11b_regress/witness_team_so.log', UI: B + 'seatbelt_48_13/witness_team_ui_pos.log', CAP: 'scripts/film_terms/out/cap_panels.log', S10: B + 'witness_scale_star_engine_10.log', S100: B + 'witness_scale_star_engine_100.log', S1000: B + 'witness_scale_star_engine_1000.log' };
 const F = []; const add = (id, log, regex, group, extra) => F.push(Object.assign({ id, log, regex, group: group || 1 }, extra || {}));
 const esc = s => s.replace(/[.*+?^${}()|[\]\\\/]/g, '\\$&');
 // beat 1 — lexicon (the doc's own table)
@@ -53,5 +53,13 @@ F.push({ id: 'kb10', kind: 'derive', of: 'bytes10', div: 1000, dp: 0 }, { id: 'm
 add('star_limits', L.S1000, '§STAR-LIMITS one Node process family simulates all devices \\(no network latency, no browser\\)', 0, { kind: 'flag' });
 add('gov_mit', L.FW, '(A clone is free under MIT); it inherits the objectives only while its own terms run still passes'); add('gov_while', L.FW, 'A clone is free under MIT; it inherits the objectives (only while its own terms run still passes) with no control weakened');
 add('gov_name', L.FW, '\\*\\*Name:\\*\\* "(Project quality objectives)"');
+
+// ---- v2 additions
+add('sbt_judged', L.SBT, '§SB_VERDICT PASS judged=(\\d+) fails=\\d+'); add('sbt_fails', L.SBT, '§SB_VERDICT PASS judged=\\d+ fails=(\\d+)'); add('sbt_mut_k', L.SBT, '§SB_MUTANTS killed=(\\d+)/\\d+'); add('sbt_mut_t', L.SBT, '§SB_MUTANTS killed=\\d+/(\\d+)');
+add('sbt_rows_ctl', L.SBT, 'PASS B2 - .* :: (\\d+)/\\d+$'); add('sbt_noblock', L.SBT, 'PASS B4 - nothing can block', 0, { kind: 'flag' }); add('sbt_override', L.SBT, 'PASS B5 - a DocAction under ADVISE logs §TEAM_SEATBELT_OVERRIDE', 0, { kind: 'flag' }); add('sbt_unpaired', L.SBT, 'PASS B3 - an unpaired or missing state is (INCONCLUSIVE) with no rows \\(never CLEAR');
+add('sk_before_doc', L.B11, 'c_order (HQ--\\d+) \\('); add('sk_users_before', L.D20, 'PASS D16 .*before=(\\d+) after=\\d+'); add('sk_users_after', L.D20, 'PASS D16 .*before=\\d+ after=(\\d+)'); add('sk_gardenad', L.D20, 'GardenAdmin = (gardenad)');
+add('sk_legacy_users', L.D20, 'PASS D17L .*shared=(\\d+) differ=\\[\\]'); add('sk_legacy_rule', L.D20, "legacy (MUser\\.setValue)'s own result");
+add('bind_optional', L.UI, '"Bound to" offers only Users and is (OPTIONAL)');
+add('cap_sb_text', L.CAP, '^§CAP_PANEL seatbelt (.+)$'); add('cap_terms_text', L.CAP, '^§CAP_PANEL terms (.+)$'); add('cap_sb_rows', L.CAP, '^§CAP_SEATBELT rows=(\\d+)'); add('cap_sb_advise', L.CAP, '^§CAP_SEATBELT rows=\\d+ advise=(\\d+)'); add('cap_pageerrors', L.CAP, '^§CAP_DONE pageerrors=(\\d+)');
 fs.writeFileSync(path.join(__dirname, 'facts.spec.json'), JSON.stringify({ _scope: 'Film "Terms you can check": every fact = log file + regex + group; nothing typed. derive = arithmetic on another fact (div, dp).', facts: F }, null, 1));
 console.log('§SPEC_WRITTEN facts=' + F.length);

@@ -804,6 +804,128 @@
    "log": "prompts/TEAMWORK_FRAMEWORK.md",
    "regex": "\\*\\*Name:\\*\\* \"(Project quality objectives)\"",
    "group": 1
+  },
+  {
+   "id": "sbt_judged",
+   "log": "build/scriptor/witness_team_seatbelt.log",
+   "regex": "§SB_VERDICT PASS judged=(\\d+) fails=\\d+",
+   "group": 1
+  },
+  {
+   "id": "sbt_fails",
+   "log": "build/scriptor/witness_team_seatbelt.log",
+   "regex": "§SB_VERDICT PASS judged=\\d+ fails=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "sbt_mut_k",
+   "log": "build/scriptor/witness_team_seatbelt.log",
+   "regex": "§SB_MUTANTS killed=(\\d+)/\\d+",
+   "group": 1
+  },
+  {
+   "id": "sbt_mut_t",
+   "log": "build/scriptor/witness_team_seatbelt.log",
+   "regex": "§SB_MUTANTS killed=\\d+/(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "sbt_rows_ctl",
+   "log": "build/scriptor/witness_team_seatbelt.log",
+   "regex": "PASS B2 - .* :: (\\d+)/\\d+$",
+   "group": 1
+  },
+  {
+   "id": "sbt_noblock",
+   "log": "build/scriptor/witness_team_seatbelt.log",
+   "regex": "PASS B4 - nothing can block",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "sbt_override",
+   "log": "build/scriptor/witness_team_seatbelt.log",
+   "regex": "PASS B5 - a DocAction under ADVISE logs §TEAM_SEATBELT_OVERRIDE",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "sbt_unpaired",
+   "log": "build/scriptor/witness_team_seatbelt.log",
+   "regex": "PASS B3 - an unpaired or missing state is (INCONCLUSIVE) with no rows \\(never CLEAR",
+   "group": 1
+  },
+  {
+   "id": "sk_before_doc",
+   "log": "build/scriptor/docno_48_11b_regress/witness_team_so.log",
+   "regex": "c_order (HQ--\\d+) \\(",
+   "group": 1
+  },
+  {
+   "id": "sk_users_before",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log",
+   "regex": "PASS D16 .*before=(\\d+) after=\\d+",
+   "group": 1
+  },
+  {
+   "id": "sk_users_after",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log",
+   "regex": "PASS D16 .*before=\\d+ after=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "sk_gardenad",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log",
+   "regex": "GardenAdmin = (gardenad)",
+   "group": 1
+  },
+  {
+   "id": "sk_legacy_users",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log",
+   "regex": "PASS D17L .*shared=(\\d+) differ=\\[\\]",
+   "group": 1
+  },
+  {
+   "id": "sk_legacy_rule",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log",
+   "regex": "legacy (MUser\\.setValue)'s own result",
+   "group": 1
+  },
+  {
+   "id": "bind_optional",
+   "log": "build/scriptor/seatbelt_48_13/witness_team_ui_pos.log",
+   "regex": "\"Bound to\" offers only Users and is (OPTIONAL)",
+   "group": 1
+  },
+  {
+   "id": "cap_sb_text",
+   "log": "scripts/film_terms/out/cap_panels.log",
+   "regex": "^§CAP_PANEL seatbelt (.+)$",
+   "group": 1
+  },
+  {
+   "id": "cap_terms_text",
+   "log": "scripts/film_terms/out/cap_panels.log",
+   "regex": "^§CAP_PANEL terms (.+)$",
+   "group": 1
+  },
+  {
+   "id": "cap_sb_rows",
+   "log": "scripts/film_terms/out/cap_panels.log",
+   "regex": "^§CAP_SEATBELT rows=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "cap_sb_advise",
+   "log": "scripts/film_terms/out/cap_panels.log",
+   "regex": "^§CAP_SEATBELT rows=\\d+ advise=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "cap_pageerrors",
+   "log": "scripts/film_terms/out/cap_panels.log",
+   "regex": "^§CAP_DONE pageerrors=(\\d+)",
+   "group": 1
   }
  ]
 }

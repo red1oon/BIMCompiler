@@ -649,10 +649,110 @@
    "status": "now",
    "value": "Project quality objectives",
    "log": "prompts/TEAMWORK_FRAMEWORK.md"
+  },
+  "sbt_judged": {
+   "status": "now",
+   "value": "7",
+   "log": "build/scriptor/witness_team_seatbelt.log"
+  },
+  "sbt_fails": {
+   "status": "now",
+   "value": "0",
+   "log": "build/scriptor/witness_team_seatbelt.log"
+  },
+  "sbt_mut_k": {
+   "status": "now",
+   "value": "3",
+   "log": "build/scriptor/witness_team_seatbelt.log"
+  },
+  "sbt_mut_t": {
+   "status": "now",
+   "value": "3",
+   "log": "build/scriptor/witness_team_seatbelt.log"
+  },
+  "sbt_rows_ctl": {
+   "status": "now",
+   "value": "9",
+   "log": "build/scriptor/witness_team_seatbelt.log"
+  },
+  "sbt_noblock": {
+   "status": "now",
+   "value": "true",
+   "log": "build/scriptor/witness_team_seatbelt.log"
+  },
+  "sbt_override": {
+   "status": "now",
+   "value": "true",
+   "log": "build/scriptor/witness_team_seatbelt.log"
+  },
+  "sbt_unpaired": {
+   "status": "now",
+   "value": "INCONCLUSIVE",
+   "log": "build/scriptor/witness_team_seatbelt.log"
+  },
+  "sk_before_doc": {
+   "status": "now",
+   "value": "HQ--50001",
+   "log": "build/scriptor/docno_48_11b_regress/witness_team_so.log"
+  },
+  "sk_users_before": {
+   "status": "now",
+   "value": "10",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log"
+  },
+  "sk_users_after": {
+   "status": "now",
+   "value": "0",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log"
+  },
+  "sk_gardenad": {
+   "status": "now",
+   "value": "gardenad",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log"
+  },
+  "sk_legacy_users": {
+   "status": "now",
+   "value": "9",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log"
+  },
+  "sk_legacy_rule": {
+   "status": "now",
+   "value": "MUser.setValue",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log"
+  },
+  "bind_optional": {
+   "status": "now",
+   "value": "OPTIONAL",
+   "log": "build/scriptor/seatbelt_48_13/witness_team_ui_pos.log"
+  },
+  "cap_sb_text": {
+   "status": "now",
+   "value": "Seatbelt — before you Process ADVISE advisory: nothing is blocked S1 shared base OK base none S2 enrolled OK approved in the roster S3 unsent changes OK 0 not sent · last Visit 0 min ago (contract 15 min) S4 refused on my trail OK none refused S5 waiting on OK 0 gaps S6 parked for a version OK none parked S7 changed by another device ADVISE 1 records ReQuery the record before you Process it S8 local-only OK 0 ops not shared S9 local numbering ADVISE device NOT bound to a user · login Search Key gardenad bind this device to its login user at approval, and give each station user its own Search Key (User window) Export JSON",
+   "log": "scripts/film_terms/out/cap_panels.log"
+  },
+  "cap_terms_text": {
+   "status": "now",
+   "value": "Terms — are they enforced? PASS Recorded run of 2026-10-31T00:39:00.612Z (0 d ago) — the browser cannot run the witnesses. Reproduce: node scripts/witness_terms.js --json out.json Term Status Witness Broken control (must fail) Closes with VISIT (bounded) Visit #1 download stays bounded as the team grows OPEN — — TEAMWORK §45.2 F1 per-device mailboxes measured §45.5: 384 KB / 4.5 MB / 45.8 MB at N=10/100/1000 (linear); triggered from N=10 RELAY (sealing) the relay does not retain readable history OPEN — — TEAMWORK §29 (simulator PASS only, real comm layer untouched) witness_scriptor_seal judges the simulator only; its own log marks the real layer INCONCLUSIVE trusted keys (roles + threshold) key roles, a signing threshold, signed bundles OPEN — — TEAMWORK §46.5 versioning Stage 2 LEDGER signed / STATEMENT a statement edited after signing, or signed by an outside key, is refused ENFORCED witness_comm_plantrust.js PASS; witness_team_publish.js PASS ✔ edited-after-signing refused ✔ outside signer refused ✔ page: unsigned set refused ✔ page: set edited after signing refused (bad-signature) ✔ page: outside key refused trusted keys the backup key replaces a lost primary; a non-admin or stale statement cannot change the list ENFORCED witness_comm_plantrust.js PASS; witness_comm_policy.js PASS; witness_team_publish.js PASS ✔ backup recovers lost primary ✔ non-admin refused ✔ stale replay refused ✔ page: non-admin publish refused on both devices STATEMENT (rule in force) a claim stays judged by the rule in force when it was made; a later statement never rewrites it ENFORCED witness_comm_executors.js PASS; witness_comm_settrust.js PASS; witness_team_executors.js PASS ✔ Complete under old map stays refused after {} ✔ set published under the old list still loads after rotation ✔ page: refused SET_STATUS stays refused after {} BUNDLE (Complete) a Complete by the wrong role is refused on every device, the consequences with it ENFORCED witness_comm_executors.js PASS; witness_team_executors.js PASS ✔ status op refused not-executor everywhere ✔ group consequence refused with it ✔ page: clicked CL refused at fold, order unchanged LEDGER convergent devices with the same history agree; a stale copy is not taken in ENFORCED witness_comm_cl3_store.js PASS; witness_comm_cl5_conflict.js PASS; witness_team_base.js PASS ✔ same order on every device ✔ stale save refused (ReQuery) ✔ page: same refusal on A and B ✔ page: base-row-missing refused on both devices VISIT (offline / interrupted) no connection or a lying pipe sends nothing and loses nothing; the later Visit sends everything once ENFORCED witness_terms_visit.js PASS ✔ dead pipe: nothing lost ✔ liar pipe caught by read-back ✔ checkers fail on doctored state VISIT (voluntary, once) one Visit sends everything once; a second sends nothing ENFORCED witness_terms_visit.js PASS; witness_comm_cl3_store.js PASS ✔ third Visit sends nothing ✔ incremental fetch is 0 ACK sent → seen → refused is visible on the sender ENFORCED witness_comm_cl3_store.js PASS; witness_terms_visit.js PASS; witness_team_so.js PASS ✔ sent then SEEN by peers ✔ refused shown on the sender with a reason ✔ counter fails with the refused claim removed ✔ page: chip shows seen/refused/waiting/last visit ✔ page: unsent DocAction shows local-only warning BUNDLE (version skew) newer waits, older waits for a rule, retired is ignored ENFORCED witness_comm_versions.js PASS; witness_team_versions.js PASS ✔ 18 mutants killed ✔ page: newer op parked needs-upgrade ✔ page: same op without sv merged (control) ✔ page: tampered set refused LOCAL NUMBERING (LEDGER) with Team, two stations (login users with a Search Key) never issue the same document number: OrgValue-UserValue-n each; another station's or a typed number is refused at fold ENFORCED witness_docno_till.js PASS; witness_docno_till.js PASS ✔ same user on two devices collides (control) ✔ shipped plain sequence collides (control) ✔ another station's / typed number refused at fold on every device ✔ new format refused until its edit is in the log ✔ user preference cannot change the station ✔ 4 mutants killed ✔ legacy pilot (real WS logins) numbers the same at every position ✔ demo station never numbers Org--n TEAMWORK §48.11b-§48.11d. Legacy arm: the pilot's own WS-login run == the twin replay (D20, scripts/bridge/out/docno_station_legacy.json). Limits: an author not bound to an AD_User is not judged at fold (counted); two users sharing a Search Key share a series Export JSON",
+   "log": "scripts/film_terms/out/cap_panels.log"
+  },
+  "cap_sb_rows": {
+   "status": "now",
+   "value": "9",
+   "log": "scripts/film_terms/out/cap_panels.log"
+  },
+  "cap_sb_advise": {
+   "status": "now",
+   "value": "2",
+   "log": "scripts/film_terms/out/cap_panels.log"
+  },
+  "cap_pageerrors": {
+   "status": "now",
+   "value": "0",
+   "log": "scripts/film_terms/out/cap_panels.log"
   }
  },
  "sources": {
-  "prompts/TEAMWORK_FRAMEWORK.md": "768596ceb6def5959caf13abcbea7e7afb915d8aac4a0529c625a2a68326b62e",
+  "prompts/TEAMWORK_FRAMEWORK.md": "98ef33a3e55a138c7e3f9c98597092e5d00d4fe1478eb6a9ed9f96851264d434",
   "build/scriptor/witness_terms_record_20261031.log": "9495fded45e213d2ac6dfbd149b029b52f1faa1ba7465891cae26368db142cde",
   "build/scriptor/witness_terms_reuse_mutant_20261031.log": "ba81e62b2e690177829a09a3d067ada69f65a804cee33432cc8043e47f78fc33",
   "build/scriptor/terms_run/witness_terms_visit.log": "d578d7c5033ec216ad19e49ced14a9ebf4b86df7b6b63a323c58e40ccfcc8e02",
@@ -665,6 +765,10 @@
   "build/scriptor/seatbelt_48_13/witness_team_so.log": "584b4157de472e52f8566a10e80f6f088425e0008a80f991b56c19cfde047a5a",
   "build/scriptor/witness_scale_star_engine_10.log": "e7c0403456ec1c5aa88dc946af1e15d584d4a9d59e072a9e14bb0450df46ce03",
   "build/scriptor/witness_scale_star_engine_100.log": "7e44e1553baea8c475f0dcc2caa732466dd6ddefdbb80257d502b37630735c52",
-  "build/scriptor/witness_scale_star_engine_1000.log": "6dccbe0889328202f6c61d64b21ed5a18d38b3c473b01f5e4c72383127443503"
+  "build/scriptor/witness_scale_star_engine_1000.log": "6dccbe0889328202f6c61d64b21ed5a18d38b3c473b01f5e4c72383127443503",
+  "build/scriptor/witness_team_seatbelt.log": "86458a72fbdce7c66a1fc658bb7914653b6c305dc559d42821cce6c85fded508",
+  "build/scriptor/docno_48_11b_regress/witness_team_so.log": "0ec8e3befa176460d4a5517a11e2f29640cea28e46a7db3fdb98be4737cf24f8",
+  "build/scriptor/seatbelt_48_13/witness_team_ui_pos.log": "cef11f084162fc765a8554be076a0b7eb9ef087803f93687a727831dbea58194",
+  "scripts/film_terms/out/cap_panels.log": "9f2242c0bfa95a567b875211c6e5a53e83f7c4a431af0bef15485ddb63c3767c"
  }
 }

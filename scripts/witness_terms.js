@@ -72,7 +72,7 @@ var TERMS = [
         { id: 'legacy pilot (real WS logins) numbers the same at every position', w: 'tDocno', re: /§DT PASS D20 - LEGACY/ }, { id: 'demo station never numbers Org--n', w: 'tDocno', re: /§DT PASS D19 - / }] },
   // OPEN: stated, never run, never green. roadmap = where it closes.
   { id: 'visit-bounded', term: 'VISIT (bounded)', open: true, roadmap: 'TEAMWORK §45.2 F1 per-device mailboxes', guarantee: 'Visit #1 download stays bounded as the team grows',
-    note: 'measured §45.5: 384 KB / 4.5 MB / 45.8 MB at N=10/100/1000 (linear); triggered from N=10' },
+    note: 'measured (build/scriptor/witness_scale_star_engine_{10,100,1000}.log, first station Visit #1 bytes_down): 367 KB / 4.5 MB / 45.8 MB at N=10/100/1000 (linear); triggered from N=10' },
   { id: 'sealing-real', term: 'RELAY (sealing)', open: true, roadmap: 'TEAMWORK §29 (simulator PASS only, real comm layer untouched)', guarantee: 'the relay does not retain readable history',
     note: 'witness_scriptor_seal judges the simulator only; its own log marks the real layer INCONCLUSIVE' },
   { id: 'key-roles-threshold', term: 'trusted keys (roles + threshold)', open: true, roadmap: 'TEAMWORK §46.5 versioning Stage 2', guarantee: 'key roles, a signing threshold, signed bundles' }
