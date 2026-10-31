@@ -1,0 +1,48 @@
+§STAR-FITHEADER engine_points=10:PASS-RUN,100:PASS-RUN,1000:INCONCLUSIVE hq_points=10:PASS-RUN,100:PASS-RUN,1000:STOPPED
+§STAR-FITNOTE classes are from the log-log slope of the metric against N (flat < 0.15, linear 0.15..1.15, super-linear > 1.15; per-unit metrics are flat or per-unit-grows); R2 is trivially 1 with 2 points - the points= field says how many there are.
+§STAR-FIT edge.station.accepted_v2 class=flat loglog_slope=0.000 R2_loglog=1.0000 R2_linear=1.0000 points=2 [10:16 100:16]
+§STAR-FIT edge.station.refused_v2 class=linear loglog_slope=1.033 R2_loglog=1.0000 R2_linear=1.0000 points=2 [10:184 100:1984]
+§STAR-FIT edge.station.placed_v2 class=linear loglog_slope=1.000 R2_loglog=1.0000 R2_linear=1.0000 points=2 [10:200 100:2000]
+§STAR-FIT edge.station.db_bytes class=linear loglog_slope=0.921 R2_loglog=1.0000 R2_linear=1.0000 points=2 [10:540672 100:4511744]
+§STAR-FIT edge.borrower.accepted_v2 class=flat loglog_slope=0.000 R2_loglog=1.0000 R2_linear=1.0000 points=2 [10:4 100:4]
+§STAR-FIT edge.borrower.refused_v2 class=linear loglog_slope=1.008 R2_loglog=1.0000 R2_linear=1.0000 points=2 [10:196 100:1996]
+§STAR-FIT edge.station.bytes_down_v1 class=linear loglog_slope=1.038 R2_loglog=0.9997 R2_linear=1.0000 points=3 [10:384071 100:4514145 1000:45816693]
+§STAR-FIT edge.station.bytes_down_v2 class=linear loglog_slope=0.754 R2_loglog=1.0000 R2_linear=1.0000 points=2 [10:103900 100:589793]
+§STAR-FIT edge.station.objs_down_v1 class=linear loglog_slope=1.035 R2_loglog=0.9997 R2_linear=1.0000 points=3 [10:34 100:394 1000:3994]
+§STAR-FIT edge.station.listed_v2 class=linear loglog_slope=0.972 R2_loglog=1.0000 R2_linear=1.0000 points=2 [10:43 100:403]
+§STAR-FIT edge.station.visit_ms_v1 class=linear loglog_slope=1.032 R2_loglog=0.9905 R2_linear=0.9988 points=3 [10:417 100:2999 1000:48313]
+§STAR-FIT edge.station.visit_ms_v2 class=linear loglog_slope=0.880 R2_loglog=1.0000 R2_linear=1.0000 points=2 [10:179 100:1358]
+§STAR-FIT edge.borrower.bytes_down_v2 class=linear loglog_slope=0.905 R2_loglog=1.0000 R2_linear=1.0000 points=2 [10:69127 100:555020]
+§STAR-FIT edge.borrower.db_bytes class=linear loglog_slope=0.922 R2_loglog=1.0000 R2_linear=1.0000 points=2 [10:540672 100:4521984]
+§STAR-FIT relay.objects class=linear loglog_slope=0.963 R2_loglog=1.0000 R2_linear=1.0000 points=2 [10:44 100:404]
+§STAR-FIT relay.bytes class=linear loglog_slope=0.975 R2_loglog=1.0000 R2_linear=1.0000 points=2 [10:674100 100:6365784]
+§STAR-FIT relay.heads_bytes class=linear loglog_slope=0.990 R2_loglog=1.0000 R2_linear=1.0000 points=2 [10:10548 100:103000]
+§STAR-FIT relay.bundles_bytes class=linear loglog_slope=0.975 R2_loglog=1.0000 R2_linear=1.0000 points=2 [10:663552 100:6262784]
+§STAR-FIT hq.fold_ms class=linear loglog_slope=1.071 R2_loglog=0.9993 R2_linear=0.9996 points=3 [10:314 100:3294 1000:43437]
+§STAR-FIT hq.sync_ms class=linear loglog_slope=1.079 R2_loglog=0.9997 R2_linear=0.9997 points=3 [10:247 100:2765 1000:35497]
+§STAR-FIT hq.db_bytes class=linear loglog_slope=0.950 R2_loglog=0.9994 R2_linear=1.0000 points=3 [10:495616 100:4038656 1000:39444480]
+§STAR-FIT hq.replies_ms class=super-linear loglog_slope=1.963 R2_loglog=0.9992 R2_linear=0.9944 points=3 [10:630 100:46553 1000:5313096]
+§STAR-FIT hq.enrol_ms_per_device class=per-unit-grows(total~N^1.69) loglog_slope=0.686 R2_loglog=0.9571 R2_linear=0.9998 points=3 [10:38.588 100:105 1000:908]
+§STAR-FIT hq.import_ms_per_ticket class=per-unit-grows(total~N^1.62) loglog_slope=0.617 R2_loglog=0.9290 R2_linear=0.9995 points=3 [10:125 100:263 1000:2147]
+§STAR-FIT hq.import_ms_per_ticket_marginal class=per-unit-grows(total~N^1.75) loglog_slope=0.751 R2_loglog=0.9679 R2_linear=0.9997 points=3 [10:119 100:389 1000:3774]
+§STAR-FIT hq.payment_ms_per_slip class=per-unit-grows(total~N^1.75) loglog_slope=0.748 R2_loglog=0.9771 R2_linear=1.0000 points=3 [10:27.072 100:96.009 1000:849]
+§STAR-FIT hq.replenish_ms class=flat loglog_slope=0.011 R2_loglog=0.9997 R2_linear=0.8364 points=3 [10:73.985 100:75.906 1000:78]
+§STAR-FIT hq.acct_ms class=super-linear loglog_slope=1.400 R2_loglog=1.0000 R2_linear=1.0000 points=2 [10:9984 100:250794]
+§STAR-FIT hq.acct_ms_per_doc class=per-unit-grows(total~N^1.42) loglog_slope=0.423 R2_loglog=1.0000 R2_linear=1.0000 points=2 [10:52.27 100:138]
+§STAR-FIT hq.heap_mb class=linear loglog_slope=0.871 R2_loglog=1.0000 R2_linear=1.0000 points=2 [10:26 100:193]
+§STAR-FIT hq.model_db_bytes class=flat loglog_slope=0.040 R2_loglog=1.0000 R2_linear=1.0000 points=2 [10:30060544 100:32985088]
+§STAR-ARM E1 PASS — station accepted ops per N, Visit #1: 10=15 100=15 1000=15; Visit #2 (head office answer included): 10=16 100=16 [N=1000 has Visit #1 only: hq-replies: time box 150 min exhausted at replies] (tolerance 0 ops; non-vacuous: refused Visit #1 per N 10=143.5 100=1673.5 1000=16973.5)
+§STAR-ARM E2 MEASURED — delivered bytes per station Visit #1 are linear in N (slope 1.038): 10=384071 100=4514145 1000=45816693 -> F1 trigger FIRED
+§STAR-ARM CONTROL PASS — planted extra op moves the accepted counter by 10:+1 100:+1 (not run at N=1000: time box)
+§STAR-ARM MUT-SCOPE KILLED — scope off: accepted(mutant) vs accepted(real) 10:201>17 100:2001>17 (E1 would FAIL under the mutant)
+§STAR-ARM MUT-COUNTER KILLED — identity placed = accepted + refused holds on every sampled edge (true); with refused ignored it breaks on every one of them (true)
+§STAR-ARM H1 FAIL — Import POS Sales ms per ticket is per-unit-grows(total~N^1.62) in N (slope 0.617): 10=125 100=263 1000=2147
+§STAR-ARM H2 MEASURED — head-office day totals are in the point lines; budget = STATED CHOICE of the measurer, not a source value: heap <= 2000 MB (docs/BrowserScaleBenchmark.md: one tab peaks 3.4-3.8 GB at 22 M vertices), day <= 3600 s
+§STAR-H2 n=10 tickets=30/30 slips=10/10 fold_s=0.3 replies_s=0.6 import_s=3.8 payment_s=0.3 replenish_s_one_branch=0.1 acct_s=10.0 total_s=15.0 heap_mb_max=26 db_bytes_engine=495616 db_bytes_model=30060544 vs budget WITHIN (STATED CHOICE of the measurer, not a source value: heap <= 2000 MB (docs/BrowserScaleBenchmark.md: one tab peaks 3.4-3.8 GB at 22 M vertices), day <= 3600 s)
+§STAR-H2 n=100 tickets=300/300 slips=100/100 fold_s=3.3 replies_s=46.6 import_s=78.9 payment_s=9.6 replenish_s_one_branch=0.1 acct_s=250.8 total_s=389.2 heap_mb_max=193 db_bytes_engine=4038656 db_bytes_model=32985088 vs budget WITHIN (STATED CHOICE of the measurer, not a source value: heap <= 2000 MB (docs/BrowserScaleBenchmark.md: one tab peaks 3.4-3.8 GB at 22 M vertices), day <= 3600 s)
+§STAR-H2 n=1000 INCONCLUSIVE engine=INCONCLUSIVE model_layer=STOPPED
+§STAR-H2-PROJECTION n=10 as-shipped Import POS Sales for 30 tickets = 263 s (shipped ms/ticket measured at N=10 x tickets; a LOWER-BOUND projection, NOT measured: the cached variant shows the per-ticket cost still grows with the day's DB size)
+§STAR-H2-PROJECTION n=100 as-shipped Import POS Sales for 300 tickets = 2630 s (shipped ms/ticket measured at N=10 x tickets; a LOWER-BOUND projection, NOT measured: the cached variant shows the per-ticket cost still grows with the day's DB size)
+§STAR-H2-PROJECTION n=1000 as-shipped Import POS Sales for 3000 tickets = 26302 s (shipped ms/ticket measured at N=10 x tickets; a LOWER-BOUND projection, NOT measured: the cached variant shows the per-ticket cost still grows with the day's DB size)
+§STAR-SHIPPED n=10 status=PASS-RUN tickets=10 import_ms_per_ticket=8767 login_ctx_calls_per_ticket_round1=4.2 login_ctx_share_of_import=98.3% payment_ms_per_slip=422 replenish_ms=2088 acct_ms=4067 PROJECTION_day_import_s_for_30_tickets=263 (a projection from the sample, NOT measured)
+§STAR-VERDICT FAIL arms=E1:PASS E2:MEASURED CONTROL:PASS MUT-SCOPE:KILLED MUT-COUNTER:KILLED H1:FAIL H2:MEASURED engine_points=10:PASS-RUN,100:PASS-RUN,1000:INCONCLUSIVE hq_points=10:PASS-RUN,100:PASS-RUN,1000:STOPPED

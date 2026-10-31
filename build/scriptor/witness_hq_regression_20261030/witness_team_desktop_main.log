@@ -1,0 +1,74 @@
+═══ W-TEAM-DESKTOP — team setup with no phone: Team panel pairing, two users on one desktop (TEAMWORK_FRAMEWORK §13.9) ═══
+
+§DT-ON
+     [A] §TEAM_PANEL opened {"source":"System default","owner":"red1oon","repo":"bim-teams-trial","keyInstalled":false,"trial":true,"paired":false,"mode":"off","state":"Team mode is off"}
+     [A] §TEAM_PANEL mode=on (reloading)
+     [A] §TEAM_VERSIONS appV=CRUD_CREATE:1,CRUD_UPDATE:1,CRUD_DELETE:1,SET_STATUS:1 sets=0/0
+     [A] §TEAM_PLAN hash=276308d4ef15 tables=855 local=7
+     [A] §TEAM_PLAN_SIG state=unsigned
+     [A] §TEAM_BOOT new device 337d0c67ee2ef385 (no phone page needed — pair from the Team panel)
+     [A] §TEAM_BOOT not paired — device=true space=false (open the Team pill: Start a team or Join)
+     [A] §TEAM_PANEL opened {"source":"System default","owner":"red1oon","repo":"bim-teams-trial","keyInstalled":false,"trial":true,"paired":false,"mode":"on","state":"Team mode is on — this browser is not paired yet"}
+   🟢 team mode is switched on from the pill alone; chip and panel say "not paired / not in a team yet" — {"before":{"chip":false,"cs":"undefined"},"chip":"Team · not paired — open the Team pill to start or join a team Visit","panel":"PairingThis browser is not in a team yet.Kind of teamOffice "}
+
+§DT-FOUND
+     [A] §TEAM_PAIR founded space 90c12473fc08 base=ad_seed.db+patches sha=d35e8a75a3be bytes=30383663
+     [A] §TEAM_BASE state=ok name=ad_seed.db+patches want=d35e8a75a3be have=d35e8a75a3be bytes=30383663 (verified: seeded-record edits are shared, judged by the base row)
+     [A] §COMM_SYNC kid=337d0c67ee2ef385 pipe=http://127.0.0.1:37669/pipe sent=2 fetched=0 received=0 placed=2 parked=0 refused=0 gaps=0 equivocations=0
+     [A] §TEAM-REBUILD rows=2 was=2 tombstoned=0 verifyChain=ok
+     [A] §TEAM_VISIT sent=2 fetched=0 received=0 placed=2 parked=0 refused=0 gaps=0 | projection kept=2 projected=0 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=0/0
+     [A] §TEAM_PEOPLE_UI mode=scope shown=1 others=0 inbox=0 hide=false
+   🟢 Start a team → panel shows Paired as founder, with an invite link — ✓ Paired · team devices 1 · this device 337D-0C67 · founder | ...c0ea7f2617194919d6d3d8da
+
+§DT-JOIN
+     [B] §TEAM_VERSIONS appV=CRUD_CREATE:1,CRUD_UPDATE:1,CRUD_DELETE:1,SET_STATUS:1 sets=0/0
+     [B] §TEAM_PLAN hash=276308d4ef15 tables=855 local=7
+     [B] §TEAM_PLAN_SIG state=unsigned
+     [B] §TEAM_BOOT new device 03c34cb767c1104b (no phone page needed — pair from the Team panel)
+     [B] §TEAM_BOOT not paired — device=true space=false (open the Team pill: Start a team or Join)
+     [B] §TEAM_PANEL opened {"source":"System default","owner":"red1oon","repo":"bim-teams-trial","keyInstalled":false,"trial":true,"paired":false,"mode":"on","state":"Team mode is on — this browser is not paired yet"}
+   🟢 B opens the invite link: the Team panel opens by itself with the invite prefilled — 90c12473fc08…
+     [B] §TEAM_PAIR join request posted, code 03C3-4CB7
+   🟢 Join → B shows its device code and "Waiting for approval" — 03C3-4CB7
+
+§DT-APPROVE
+     [A] §TEAM_PANEL opened {"source":"System default","owner":"red1oon","repo":"bim-teams-trial","keyInstalled":false,"trial":true,"paired":true,"mode":"on","state":"Team mode is on — paired"}
+     [A] §TEAM_PEOPLE_UI mode=scope shown=1 others=0 inbox=0 hide=false
+     [A] §TEAM_PEOPLE_UI mode=scope shown=1 others=0 inbox=0 hide=false
+     [A] §TEAM_PAIR requests listed: 1 pending=1
+   🟢 A lists exactly B's code as the pending request — 03C3-4CB7 vs 03C3-4CB7
+   🟢 NO-OP guard: before the approval and B's Visit, B is not enrolled — {"enrolled":false,"devices":0}
+     [A] §TEAM_PAIR approved 03C3-4CB7 as role 102
+     [A] §COMM_SYNC kid=337d0c67ee2ef385 pipe=http://127.0.0.1:37669/pipe sent=3 fetched=0 received=0 placed=5 parked=0 refused=0 gaps=0 equivocations=0
+     [A] §TEAM-REBUILD rows=2 was=2 tombstoned=0 verifyChain=ok
+     [A] §TEAM_VISIT sent=3 fetched=0 received=0 placed=5 parked=0 refused=0 gaps=0 | projection kept=2 projected=0 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=0/0
+     [A] §TEAM_PEOPLE_UI mode=scope shown=2 others=0 inbox=0 hide=false
+     [B] §COMM_SYNC kid=03c34cb767c1104b pipe=http://127.0.0.1:37669/pipe sent=0 fetched=2 received=5 placed=5 parked=0 refused=0 gaps=0 equivocations=0
+     [B] §TEAM_BASE state=ok name=ad_seed.db+patches want=d35e8a75a3be have=d35e8a75a3be bytes=30383663 (verified: seeded-record edits are shared, judged by the base row)
+     [B] §TEAM-REBUILD rows=1 was=1 tombstoned=0 verifyChain=ok
+     [B] §TEAM_VISIT sent=0 fetched=2 received=5 placed=5 parked=0 refused=0 gaps=0 | projection kept=1 projected=0 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=0/0
+     [B] §TEAM_PEOPLE_UI mode=scope shown=2 others=0 inbox=0 hide=false
+   🟢 after Approve and B's Visit, B is Paired and both see 2 team devices — ✓ Paired · team devices 2 · this device 03C3-4CB7 | A devices=2
+
+§DT-ORDER
+     [A] §TEAM_OUT op=CRUD_CREATE table=c_order uu=36b9b56b seq=6 refs=0 hash=53953d512df7
+     [A] §TEAM_STATION_LOCAL op=CRUD_UPDATE station-owned ad_sequence (not shared by design)
+     [A] §TEAM_STATION_LOCAL op=CRUD_CREATE station-owned ad_recentitem (not shared by design)
+     [A] §TEAM_OUT op=CRUD_CREATE table=c_orderline uu=0b8a8982 seq=7 refs=1 hash=193baa2330d6
+     [A] §TEAM_OUT op=CRUD_UPDATE table=c_order uu=36b9b56b seq=8 refs=0 hash=cecab7058881
+     [A] §TEAM_STATION_LOCAL op=CRUD_UPDATE station-owned ad_recentitem (not shared by design)
+     [A] §COMM_SYNC kid=337d0c67ee2ef385 pipe=http://127.0.0.1:37669/pipe sent=3 fetched=0 received=0 placed=8 parked=0 refused=0 gaps=0 equivocations=0
+     [A] §TEAM-REBUILD rows=11 was=8 tombstoned=0 verifyChain=ok
+     [A] §TEAM_VISIT sent=3 fetched=0 received=0 placed=8 parked=0 refused=0 gaps=0 | projection kept=5 projected=3 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=0/0
+     [B] §COMM_SYNC kid=03c34cb767c1104b pipe=http://127.0.0.1:37669/pipe sent=0 fetched=1 received=3 placed=8 parked=0 refused=0 gaps=0 equivocations=0
+     [B] §TEAM-REBUILD rows=4 was=1 tombstoned=0 verifyChain=ok
+     [B] §TEAM_REPLICA_IN received=3 new=2 fired=3 exceptions=0 listenerOps=0
+     [B] §TEAM_VISIT sent=0 fetched=1 received=3 placed=8 parked=0 refused=0 gaps=0 | projection kept=1 projected=3 skipped=0 groupHeld=0 rebuild=ok verifyChain=ok refresh=sent replicaIn=3/3
+   🟢 A's order made after the desktop-only setup reaches B (B holds 1 order "DT-one" in its op-log) — B orders=1 gridRows=6 (A pk -3)
+
+§DT-NOERR
+   🟢 zero page errors on both users — errors=0
+
+──────────────────────────────────────────────
+§W-TEAM-DESKTOP PASS judged=9 fails=0 inconclusive=0 pageerrors=0
+exit=0

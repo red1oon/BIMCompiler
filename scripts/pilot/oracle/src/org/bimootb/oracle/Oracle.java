@@ -19,6 +19,7 @@ import java.util.*;
 import org.adempiere.base.Core;
 import org.adempiere.util.ServerContext;
 import org.compiere.model.*;
+import org.compiere.process.DocAction;
 import org.compiere.process.ProcessInfo;
 import org.compiere.process.ProcessInfoParameter;
 import org.compiere.process.ProcessInfoLog;
@@ -116,6 +117,11 @@ public class Oracle implements Runnable {
 			if ("initialquery".equals(op)) return initialquery(ctx, req);
 			if ("recentitems".equals(op)) return recentitems(ctx, req);
 			if ("tabcust".equals(op)) return tabcust(ctx, req);
+			if ("tabmode".equals(op)) return tabmode(ctx, req);
+			if ("postdoc".equals(op)) return postdoc(ctx, req);
+			if ("creditmemo".equals(op)) return creditmemo(ctx, req);
+			if ("makedoc".equals(op)) return makedoc(ctx, req);
+			if ("validactions".equals(op)) return validactions(ctx, req);
 			if ("userqueries".equals(op)) {   // §UDP-3: FindWindow's saved-query list (MUserQuery.get) + userCanSave per entry
 				JSONArray a = new JSONArray();
 				for (MUserQuery uq : MUserQuery.get(ctx, req.getInt("tab"))) a.put(new JSONObject().put("id", uq.getAD_UserQuery_ID()).put("name", uq.getName()).put("canSave", uq.userCanSave()));
@@ -275,6 +281,264 @@ public class Oracle implements Runnable {
 		if (req.optBoolean("cleanup", true))
 			for (org.adempiere.model.MTabCustomization t : new Query(ctx, org.adempiere.model.MTabCustomization.Table_Name, "AD_User_ID=? AND AD_Tab_ID=?", null).setParameters(user, tab).<org.adempiere.model.MTabCustomization>list()) t.deleteEx(true);
 		return new JSONObject().put("ok", true).put("steps", out);
+	}
+
+	// §OPEN-MODE: the presentation a tab opens in - GridTab.isSingleRow() (:1617-1622: the user's MTabCustomization.IsDisplayedGrid wins, else AD_Tab.IsSingleRow)
+	// for every tab of a window; with "cust":{"tab":T,"mode":"Y|N|null"} the user's row is written through saveData first and removed after.
+	private static JSONObject tabmode(Properties ctx, JSONObject req) throws Exception {
+		int wid = req.getInt("window"), windowNo = 9000 + (int) (System.nanoTime() % 900), user = Env.getAD_User_ID(ctx);
+		JSONObject cu = req.optJSONObject("cust");
+		if (cu != null) {
+			int ct = cu.getInt("tab");
+			for (org.adempiere.model.MTabCustomization t : new Query(ctx, org.adempiere.model.MTabCustomization.Table_Name, "AD_User_ID=? AND AD_Tab_ID=?", null).setParameters(user, ct).<org.adempiere.model.MTabCustomization>list()) t.deleteEx(true);
+			org.adempiere.model.MTabCustomization.saveData(ctx, ct, user, cu.optString("custom", null), cu.isNull("mode") ? null : cu.optString("mode", null), null, false, null);
+		}
+		GridWindow gw = GridWindow.get(ctx, windowNo, wid);
+		if (gw == null) return new JSONObject().put("ok", false).put("error", "no window " + wid);
+		try {
+			JSONArray a = new JSONArray();
+			for (int i = 0; i < gw.getTabCount(); i++) {
+				gw.initTab(i);
+				GridTab t = gw.getTab(i);
+				a.put(new JSONObject().put("id", t.getAD_Tab_ID()).put("singleRow", t.isSingleRow()).put("name", t.getName()));
+			}
+			return new JSONObject().put("ok", true).put("tabs", a);
+		} finally {
+			gw.dispose();
+			Env.clearWinContext(ctx, windowNo);
+			if (cu != null)
+				for (org.adempiere.model.MTabCustomization t : new Query(ctx, org.adempiere.model.MTabCustomization.Table_Name, "AD_User_ID=? AND AD_Tab_ID=?", null).setParameters(user, cu.getInt("tab")).<org.adempiere.model.MTabCustomization>list()) t.deleteEx(true);
+		}
+	}
+
+	// §UDP-7: post existing pilot documents through the REAL DocManager.postDocument inside ONE transaction that is ROLLED BACK (Posted, Fact_Acct and
+	// the document are untouched afterwards). MNote is saved by Doc.post OUTSIDE that trx (null trx), so the op reads the notes it made and deletes them.
+	// req: table (name), ids [..], optional repost (default true). Result per id: error (postDocument's return), posted (column read in the trx), facts, notes[{msg,text}].
+	private static JSONObject postdoc(Properties ctx, JSONObject req) throws Exception {
+		String table = req.getString("table");
+		MTable mt = MTable.get(ctx, table);
+		int tid = mt.getAD_Table_ID();
+		JSONArray out = new JSONArray(), ids = req.getJSONArray("ids");
+		for (int i = 0; i < ids.length(); i++) {
+			int id = ids.getInt(i);
+			String trxName = Trx.createTrxName("PostProbe");
+			Trx trx = Trx.get(trxName, true);
+			JSONObject o = new JSONObject().put("id", id);
+			try {
+				int client = DB.getSQLValue(null, "SELECT AD_Client_ID FROM " + table + " WHERE " + table + "_ID=?", id);
+				org.compiere.model.MAcctSchema[] ass = org.compiere.model.MAcctSchema.getClientAcctSchema(ctx, client);
+				if (req.has("costingMethod")) {   // §UDP-7 costing sweep: every schema of the client posts with this method, inside the rolled-back trx
+					DB.executeUpdateEx("UPDATE C_AcctSchema SET CostingMethod=? WHERE AD_Client_ID=? AND IsActive='Y'", new Object[] { req.getString("costingMethod"), client }, trxName);
+					org.compiere.model.MAcctSchema[] fresh = new org.compiere.model.MAcctSchema[ass.length];
+					for (int a = 0; a < ass.length; a++) fresh[a] = new org.compiere.model.MAcctSchema(ctx, ass[a].getC_AcctSchema_ID(), trxName);
+					ass = fresh;
+				}
+				long t0 = System.currentTimeMillis();
+				String err;
+				try { err = org.compiere.acct.DocManager.postDocument(ass, tid, id, true, req.optBoolean("repost", true), trxName); }
+				catch (Throwable e) { err = "EXC " + e.getClass().getSimpleName() + ": " + String.valueOf(e.getMessage()); }
+				o.put("error", err == null ? JSONObject.NULL : err);
+				o.put("posted", String.valueOf(DB.getSQLValueString(trxName, "SELECT Posted FROM " + table + " WHERE " + table + "_ID=?", id)));
+				o.put("facts", DB.getSQLValue(trxName, "SELECT COUNT(*) FROM Fact_Acct WHERE AD_Table_ID=? AND Record_ID=?", tid, id));
+				if (req.optBoolean("facts", false)) {
+					JSONArray fa = new JSONArray();
+					try (PreparedStatement ps = DB.prepareStatement("SELECT C_AcctSchema_ID, Account_ID, AmtSourceDr, AmtSourceCr, AmtAcctDr, AmtAcctCr, Qty, M_Product_ID, Line_ID, C_Currency_ID FROM Fact_Acct WHERE AD_Table_ID=? AND Record_ID=? ORDER BY C_AcctSchema_ID, Fact_Acct_ID", trxName)) {
+						ps.setInt(1, tid); ps.setInt(2, id);
+						try (ResultSet rs = ps.executeQuery()) { while (rs.next()) fa.put(new JSONObject().put("s", rs.getInt(1)).put("a", rs.getInt(2)).put("sdr", rs.getBigDecimal(3).toPlainString()).put("scr", rs.getBigDecimal(4).toPlainString()).put("dr", rs.getBigDecimal(5).toPlainString()).put("cr", rs.getBigDecimal(6).toPlainString()).put("qty", rs.getBigDecimal(7) == null ? "0" : rs.getBigDecimal(7).toPlainString()).put("p", rs.getInt(8)).put("l", rs.getInt(9))); }
+					}
+					o.put("factRows", fa);
+				}
+				JSONArray notes = new JSONArray();
+				try (PreparedStatement ps = DB.prepareStatement("SELECT n.AD_Note_ID, m.Value, n.TextMsg, n.Reference, n.AD_User_ID, n.AD_Client_ID, n.AD_Org_ID, n.Processed FROM AD_Note n LEFT JOIN AD_Message m ON m.AD_Message_ID=n.AD_Message_ID WHERE n.AD_Table_ID=? AND n.Record_ID=? AND n.Created>=?", null)) {
+					ps.setInt(1, tid); ps.setInt(2, id); ps.setTimestamp(3, new Timestamp(t0 - 1000));
+					try (ResultSet rs = ps.executeQuery()) { while (rs.next()) notes.put(new JSONObject().put("noteId", rs.getInt(1)).put("msg", rs.getString(2)).put("text", rs.getString(3)).put("reference", rs.getString(4)).put("user", rs.getInt(5)).put("client", rs.getInt(6)).put("org", rs.getInt(7)).put("processed", rs.getString(8))); }
+				}
+				for (int k = 0; k < notes.length(); k++) DB.executeUpdateEx("DELETE FROM AD_Note WHERE AD_Note_ID=?", new Object[] { notes.getJSONObject(k).getInt("noteId") }, null);
+				o.put("notes", notes);
+			} finally {
+				trx.rollback();
+				trx.close();
+			}
+			out.put(o);
+		}
+		return new JSONObject().put("ok", true).put("docs", out);
+	}
+
+
+	// §ARCAPC (ERP_FRIENDLY_OPS_LENS.md §51): the REAL InvoiceCreateCreditMemo.credit() body (org.idempiere.process) + processIt(CO) + DocManager.postDocument for each source invoice,
+	//   all inside one rolled-back trx - the pilot holds no ARC/APC fixture, this makes one per shared ARI/API and returns its header, lines and Fact_Acct. Nothing is committed.
+	private static JSONObject creditmemo(Properties ctx, JSONObject req) throws Exception {
+		JSONArray out = new JSONArray(), ids = req.getJSONArray("ids");
+		for (int i = 0; i < ids.length(); i++) {
+			int id = ids.getInt(i);
+			String trxName = Trx.createTrxName("CreditMemoProbe");
+			Trx trx = Trx.get(trxName, true);
+			JSONObject o = new JSONObject().put("id", id);
+			try {
+				MInvoice inv = new MInvoice(ctx, id, trxName);
+				boolean so = inv.isSOTrx();
+				int dt = DB.getSQLValue(trxName, "SELECT MIN(C_DocType_ID) FROM C_DocType WHERE AD_Client_ID=? AND DocBaseType=? AND IsActive='Y'", inv.getAD_Client_ID(), so ? "ARC" : "APC");
+				Timestamp d = req.has("date") ? Timestamp.valueOf(req.getString("date") + " 00:00:00") : inv.getDateInvoiced();
+				MInvoice cm = MInvoice.copyFrom(inv, d, d, dt, so, false, trxName, true);
+				if (cm == null) throw new IllegalStateException("copyFrom null");
+				MInvoiceLine[] oLines = inv.getLines(false), rLines = cm.getLines(true);
+				for (int k = 0; k < rLines.length; k++) {
+					MInvoiceLine r = rLines[k], l = oLines[k];
+					r.setQtyEntered(l.getQtyEntered()); r.setQtyInvoiced(l.getQtyInvoiced()); r.setLineNetAmt(l.getLineNetAmt()); r.setTaxAmt(l.getTaxAmt()); r.setLineTotalAmt(l.getLineTotalAmt());
+					r.setPriceActual(l.getPriceActual()); r.setPriceList(l.getPriceList()); r.setPriceLimit(l.getPriceLimit()); r.setPriceEntered(l.getPriceEntered());
+					r.setC_UOM_ID(l.getC_UOM_ID()); r.setM_AttributeSetInstance_ID(l.getM_AttributeSetInstance_ID()); r.saveEx(trxName);
+				}
+				if (MInvoice.PAYMENTRULE_Cash.equals(cm.getPaymentRule())) cm.setPaymentRule(MInvoice.PAYMENTRULE_OnCredit);
+				cm.setC_Order_ID(inv.getC_Order_ID()); cm.setPOReference(inv.getDocumentNo()); cm.setRelatedInvoice_ID(inv.getC_Invoice_ID()); cm.saveEx(trxName);
+				boolean done = cm.processIt(DocAction.ACTION_Complete); cm.saveEx(trxName);
+				o.put("creditMemoId", cm.getC_Invoice_ID()).put("docType", dt).put("docStatus", cm.getDocStatus()).put("processMsg", cm.getProcessMsg() == null ? JSONObject.NULL : cm.getProcessMsg()).put("completed", done);
+				JSONObject h = new JSONObject();
+				for (String c : new String[] { "C_BPartner_ID", "C_BPartner_Location_ID", "C_Currency_ID", "C_PaymentTerm_ID", "PaymentRule", "M_PriceList_ID", "TotalLines", "GrandTotal", "IsSOTrx", "IsTaxIncluded", "ChargeAmt", "C_Charge_ID", "C_ConversionType_ID", "DateInvoiced", "DateAcct" })
+					h.put(c, toJson(cm.get_Value(c)));
+				o.put("header", h);
+				JSONArray ls = new JSONArray();
+				for (MInvoiceLine r : cm.getLines(true)) ls.put(new JSONObject().put("line", r.getLine()).put("product", r.getM_Product_ID()).put("charge", r.getC_Charge_ID()).put("qty", toJson(r.getQtyInvoiced())).put("net", toJson(r.getLineNetAmt())).put("tax", r.getC_Tax_ID()));
+				o.put("lines", ls);
+				JSONArray psa = new JSONArray();
+				try (PreparedStatement ps = DB.prepareStatement("SELECT DueAmt, DiscountAmt, DueDate, DiscountDate, IsValid FROM C_InvoicePaySchedule WHERE C_Invoice_ID=? ORDER BY DueDate, C_InvoicePaySchedule_ID", trxName)) {
+					ps.setInt(1, cm.getC_Invoice_ID());
+					try (ResultSet rs = ps.executeQuery()) { while (rs.next()) psa.put(new JSONObject().put("due", rs.getBigDecimal(1).toPlainString()).put("disc", rs.getBigDecimal(2).toPlainString()).put("dueDate", String.valueOf(rs.getTimestamp(3)).substring(0, 10)).put("discDate", String.valueOf(rs.getTimestamp(4)).substring(0, 10)).put("valid", rs.getString(5))); }
+				}
+				o.put("paySchedule", psa).put("payScheduleValid", String.valueOf(DB.getSQLValueString(trxName, "SELECT IsPayScheduleValid FROM C_Invoice WHERE C_Invoice_ID=?", cm.getC_Invoice_ID())));
+				if (done) {
+					org.compiere.model.MAcctSchema[] ass = org.compiere.model.MAcctSchema.getClientAcctSchema(ctx, cm.getAD_Client_ID());
+					String err;
+					try { err = org.compiere.acct.DocManager.postDocument(ass, MInvoice.Table_ID, cm.getC_Invoice_ID(), true, true, trxName); }
+					catch (Throwable e) { err = "EXC " + e.getClass().getSimpleName() + ": " + String.valueOf(e.getMessage()); }
+					o.put("error", err == null ? JSONObject.NULL : err);
+					o.put("posted", String.valueOf(DB.getSQLValueString(trxName, "SELECT Posted FROM C_Invoice WHERE C_Invoice_ID=?", cm.getC_Invoice_ID())));
+					JSONArray fa = new JSONArray();
+					try (PreparedStatement ps = DB.prepareStatement("SELECT C_AcctSchema_ID, Account_ID, AmtSourceDr, AmtSourceCr, AmtAcctDr, AmtAcctCr, Qty, M_Product_ID, Line_ID FROM Fact_Acct WHERE AD_Table_ID=? AND Record_ID=?", trxName)) {
+						ps.setInt(1, MInvoice.Table_ID); ps.setInt(2, cm.getC_Invoice_ID());
+						try (ResultSet rs = ps.executeQuery()) { while (rs.next()) fa.put(new JSONObject().put("s", rs.getInt(1)).put("a", rs.getInt(2)).put("sdr", rs.getBigDecimal(3).toPlainString()).put("scr", rs.getBigDecimal(4).toPlainString()).put("dr", rs.getBigDecimal(5).toPlainString()).put("cr", rs.getBigDecimal(6).toPlainString()).put("qty", rs.getBigDecimal(7) == null ? "0" : rs.getBigDecimal(7).toPlainString()).put("p", rs.getInt(8)).put("l", rs.getInt(9))); }
+					}
+					o.put("factRows", fa);
+				}
+			} catch (Throwable e) {
+				o.put("exception", e.getClass().getSimpleName() + ": " + String.valueOf(e.getMessage()));
+			} finally {
+				trx.rollback();
+				trx.close();
+			}
+			out.put(o);
+		}
+		return new JSONObject().put("ok", true).put("docs", out);
+	}
+
+
+	// §MAKEDOC (ERP_FRIENDLY_OPS_LENS.md §54): a fixture document built through the REAL model classes inside one rolled-back trx - header PO + line POs (MTable.getPO, set_ValueOfColumn),
+	//   DocAction (processIt) on the header, then the rows of the asked queries (SQL with ? = the new header id), and a rollback. The twin builds the same document with the same field values.
+	private static JSONObject makedoc(Properties ctx, JSONObject req) throws Exception {
+		String trxName = Trx.createTrxName("MakeDocProbe");
+		Trx trx = Trx.get(trxName, true);
+		JSONObject o = new JSONObject();
+		try {
+			JSONObject h = req.getJSONObject("header");
+			PO hdr = MTable.get(ctx, h.getString("table")).getPO(0, trxName);
+			JSONObject hf = h.getJSONObject("fields");
+			for (String k : hf.keySet()) hdr.set_ValueOfColumn(k, hf.get(k) == JSONObject.NULL ? null : fromPlain(hdr, k, hf.get(k)));
+			hdr.saveEx();
+			int id = hdr.get_ID();
+			o.put("id", id);
+			JSONArray ls = req.optJSONArray("lines");
+			for (int i = 0; ls != null && i < ls.length(); i++) {
+				JSONObject l = ls.getJSONObject(i);
+				PO line = MTable.get(ctx, l.getString("table")).getPO(0, trxName);
+				line.set_ValueOfColumn(l.getString("parentColumn"), id);
+				JSONObject lf = l.getJSONObject("fields");
+				for (String k : lf.keySet()) line.set_ValueOfColumn(k, lf.get(k) == JSONObject.NULL ? null : fromPlain(line, k, lf.get(k)));
+				line.saveEx();
+			}
+			hdr.load(trxName);
+			if (req.has("action")) {
+				org.compiere.process.DocAction da = (org.compiere.process.DocAction) hdr;
+				boolean ok = da.processIt(req.getString("action"));
+				hdr.saveEx();
+				o.put("processed", ok).put("docStatus", da.getDocStatus()).put("processMsg", da.getProcessMsg() == null ? JSONObject.NULL : da.getProcessMsg());
+			}
+			// §MAKEDOC-ACTIONS (LIBERO_DD_SPEC.md §5): `actions` = a list of doc actions applied in turn to the SAME document, each on a freshly loaded PO (a UI / WebService round trip);
+			//   `queriesEach` = the asked rows are returned after EVERY step too (steps[i].rows). A step that throws ends the list and is returned as steps[i].exception.
+			JSONObject qs = req.optJSONObject("queries");
+			if (qs != null && req.optBoolean("queriesBefore")) o.put("rowsBefore", runQueries(qs, id, trxName));   // the state before the first action (the document just built)
+			JSONArray acts = req.optJSONArray("actions"), steps = new JSONArray();
+			for (int i = 0; acts != null && i < acts.length(); i++) {
+				JSONObject st = new JSONObject();
+				st.put("action", acts.optJSONObject(i) != null ? "set" : acts.getString(i));
+				try {
+					PO cur = MTable.get(ctx, h.getString("table")).getPO(id, trxName);
+					JSONObject setObj = acts.optJSONObject(i);
+					if (setObj != null) {   // {"set":{"Col":v,..}} = an edit of the header (a window save), not a doc action
+						st.put("action", "set");
+						JSONObject sf = setObj.getJSONObject("set");
+						for (String k : sf.keySet()) cur.set_ValueOfColumn(k, sf.get(k) == JSONObject.NULL ? null : fromPlain(cur, k, sf.get(k)));
+						cur.saveEx();
+						st.put("processed", true);
+						if (qs != null && req.optBoolean("queriesEach")) st.put("rows", runQueries(qs, id, trxName));
+						steps.put(st);
+						continue;
+					}
+					org.compiere.process.DocAction da = (org.compiere.process.DocAction) cur;
+					if (req.optBoolean("noPost")) cur.set_Attribute(org.compiere.process.DocumentEngine.DOCUMENT_POST_IMMEDIATE_AFTER_COMPLETE, Boolean.FALSE);   // the sanctioned switch (DocumentEngine.processIt: postNow=false) - the twin side is env.noPost
+					boolean ok = da.processIt(acts.getString(i));
+					cur.saveEx();
+					st.put("processed", ok).put("docStatus", da.getDocStatus()).put("processMsg", da.getProcessMsg() == null ? JSONObject.NULL : da.getProcessMsg());
+				} catch (Throwable e) {
+					st.put("exception", e.getClass().getSimpleName() + ": " + String.valueOf(e.getMessage()));
+				}
+				if (qs != null && req.optBoolean("queriesEach")) st.put("rows", runQueries(qs, id, trxName));
+				steps.put(st);
+				if (st.has("exception")) break;
+			}
+			if (acts != null) o.put("steps", steps);
+			JSONObject res = qs == null ? new JSONObject() : runQueries(qs, id, trxName);
+			o.put("rows", res);
+		} catch (Throwable e) {
+			o.put("exception", e.getClass().getSimpleName() + ": " + String.valueOf(e.getMessage()));
+		} finally {
+			trx.rollback();
+			trx.close();
+		}
+		return new JSONObject().put("ok", true).put("doc", o);
+	}
+	// §VALIDACTIONS (LIBERO_DD_SPEC.md §5 D9): DocumentEngine.getValidActions for one table over a list of DocStatus values (period open + back-date allowed), the REAL static method.
+	private static JSONObject validactions(Properties ctx, JSONObject req) throws Exception {
+		int tableId = MTable.getTable_ID(req.getString("table"));
+		JSONObject out = new JSONObject();
+		JSONArray sts = req.getJSONArray("statuses");
+		for (int i = 0; i < sts.length(); i++) {
+			String[] options = new String[20], docAction = new String[1];
+			int n = org.compiere.process.DocumentEngine.getValidActions(sts.getString(i), "N", null, req.optString("isSOTrx", "N"), tableId, docAction, options, true, true, MTable.get(ctx, req.getString("table")).getPO(0, null));
+			JSONArray a = new JSONArray();
+			for (int k = 0; k < n; k++) a.put(options[k]);
+			out.put(sts.getString(i), a);
+		}
+		return new JSONObject().put("ok", true).put("tableId", tableId).put("actions", out);
+	}
+	private static JSONObject runQueries(JSONObject qs, int id, String trxName) throws Exception {
+		JSONObject res = new JSONObject();
+		for (String name : qs.keySet()) {
+			JSONArray rows = new JSONArray();
+			try (PreparedStatement ps = DB.prepareStatement(qs.getString(name), trxName)) {
+				ps.setInt(1, id);
+				try (ResultSet rs = ps.executeQuery()) { ResultSetMetaData md = rs.getMetaData(); while (rs.next()) { JSONObject r = new JSONObject(); for (int c = 1; c <= md.getColumnCount(); c++) r.put(md.getColumnLabel(c).toLowerCase(), toJson(rs.getObject(c))); rows.put(r); } }
+			}
+			res.put(name, rows);
+		}
+		return res;
+	}
+	private static Object fromPlain(PO po, String col, Object v) {
+		int idx = po.get_ColumnIndex(col);
+		Class<?> c = idx >= 0 ? POInfo.getPOInfo(po.getCtx(), po.get_Table_ID()).getColumnClass(idx) : null;
+		if (c == Integer.class) return Integer.valueOf(v.toString());
+		if (c == BigDecimal.class) return new BigDecimal(v.toString());
+		if (c == Timestamp.class) return Timestamp.valueOf(v.toString().length() == 10 ? v + " 00:00:00" : v.toString());
+		if (c == Boolean.class) return "Y".equals(v.toString()) || "true".equals(v.toString());
+		return v.toString();
 	}
 
 	private static JSONObject ctxDump(Properties ctx) {
@@ -444,6 +708,28 @@ public class Oracle implements Runnable {
 			else if (v instanceof Timestamp) para.setP_Date((Timestamp) v);
 			else if (v != null) para.setP_String(v.toString());
 			para.saveEx();
+		}
+		// §CREATEFROM (ERP_FRIENDLY_OPS_LENS.md §43 P4): an Info Window process takes its rows from T_Selection / T_Selection_InfoWindow of this AD_PInstance_ID, exactly as the
+		//   info window writes them on OK (InfoWindow.saveSelectionDetail): req.infoWindow = AD_InfoWindow_ID, req.selection = [{ColumnName: value, ...}] one object per picked row
+		//   (ViewID = the row's AD_Table_ID column when given, else the info window's table; *_ID and Qty values go to Value_Number, others to Value_String).
+		int iwId = req.optInt("infoWindow", 0);
+		if (iwId > 0) {
+			pi.setAD_InfoWindow_ID(iwId);
+			JSONArray sel = req.optJSONArray("selection");
+			int tid = DB.getSQLValue(null, "SELECT AD_Table_ID FROM AD_InfoWindow WHERE AD_InfoWindow_ID=?", iwId);
+			for (int i = 0; sel != null && i < sel.length(); i++) {
+				JSONObject row = sel.getJSONObject(i);
+				int tsId = row.has("T_Selection_ID") ? row.getInt("T_Selection_ID") : (i + 1);   // the row key (InfoPanel.getSaveKeys -> DB.createT_SelectionNewNP)
+				DB.executeUpdateEx("INSERT INTO T_Selection (AD_PInstance_ID, T_Selection_ID, ViewID) VALUES (?,?,?)", new Object[] { inst.getAD_PInstance_ID(), tsId, String.valueOf(row.has("AD_Table_ID") ? row.getInt("AD_Table_ID") : tid) }, null);
+				java.util.Iterator<String> it = row.keys();
+				while (it.hasNext()) {
+					String col = it.next(); Object val = row.get(col);
+					if (val == JSONObject.NULL || "T_Selection_ID".equals(col)) continue;
+					boolean num = col.toUpperCase().endsWith("_ID") || col.equalsIgnoreCase("Qty") || val instanceof Number;
+					DB.executeUpdateEx("INSERT INTO T_Selection_InfoWindow (AD_PInstance_ID, T_Selection_ID, ColumnName, Value_String, Value_Number) VALUES (?,?,?,?,?)",
+						new Object[] { inst.getAD_PInstance_ID(), tsId, col, num ? null : val.toString(), num ? new BigDecimal(val.toString()) : null }, null);
+				}
+			}
 		}
 		pi.setParameter(list.toArray(new ProcessInfoParameter[0]));
 		Trx trx = Trx.get(Trx.createTrxName("oracle"), true);

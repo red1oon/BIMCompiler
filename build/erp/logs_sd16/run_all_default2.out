@@ -1,0 +1,375 @@
+§GENERICITY PASS (9 layer files, no app words)
+§W10_VERDICT PASS fails=0 inconclusive=0
+§M1_VERDICT PASS-with-INCONCLUSIVE fails=0 inconclusive=1
+§M2_VERDICT PASS fails=0 inconclusive=0
+§DD_TABLE c_doctype legacy=51 local=52 cols_compared=41 onlyLegacy=0 onlyLocal=1 changed_cells=0 onlyLocal_ids=0
+§DD_TABLE c_tax legacy=6 local=6 cols_compared=27 onlyLegacy=0 onlyLocal=0 changed_cells=0
+§DD_TABLE m_pricelist legacy=4 local=4 cols_compared=15 onlyLegacy=0 onlyLocal=0 changed_cells=0
+§DD_COLUMNS m_product_category_acct legacy-has-but-sqlite-lacks=[ad_client_id,ad_org_id,isactive,processing,p_invoicepricevariance_acct,p_tradediscountrec_acct,p_tradediscountgrant_acct,costingmethod,costinglevel,p_costadjustment_acct,p_ratevariance_acct,p_landedcostclearing_acct] (needs ALTER via patch+loader, not a data patch)
+§DD_TABLE m_product_category_acct legacy=28 local=28 cols_compared=9 onlyLegacy=0 onlyLocal=0 changed_cells=0
+§DD_COLUMNS m_costelement legacy-has-but-sqlite-lacks=[ad_client_id,ad_org_id,isactive,name,description,iscalculated] (needs ALTER via patch+loader, not a data patch)
+§DD_TABLE m_costelement legacy=9 local=9 cols_compared=3 onlyLegacy=0 onlyLocal=0 changed_cells=0
+§DD_COLUMNS m_cost legacy-has-but-sqlite-lacks=[ad_client_id,ad_org_id,isactive,futurecostprice,description,m_attributesetinstance_id,percent,currentqty,currentcostpricell,futurecostpricell,iscostfrozen] (needs ALTER via patch+loader, not a data patch)
+§DD_TABLE m_cost legacy=362 local=362 cols_compared=7 onlyLegacy=0 onlyLocal=0 changed_cells=46
+§DICT_GAP m_cost#136|101|100|100.cumulatedamt legacy="1386.00" sqlite=720
+§DICT_GAP m_cost#136|101|100|100.cumulatedqty legacy=77 sqlite=40
+§DICT_GAP m_cost#123|101|100|102.currentcostprice legacy=48.6911 sqlite=51.45
+§DICT_GAP m_cost#123|101|100|102.cumulatedamt legacy=1466.25 sqlite=1286.25
+§DICT_GAP m_cost#123|101|100|102.cumulatedqty legacy=30 sqlite=25
+§DICT_GAP m_cost#139|101|100|102.currentcostprice legacy=7.9645 sqlite=7.65
+§DICT_GAP m_cost#139|101|100|102.cumulatedamt legacy=1106.75 sqlite=114.75
+§DICT_GAP m_cost#139|101|100|102.cumulatedqty legacy=139 sqlite=15
+§DICT_GAP m_cost#139|101|100|103.currentcostprice legacy=7.96463583 sqlite=7.65
+§DICT_GAP m_cost#139|101|100|103.cumulatedamt legacy=1106.75 sqlite=114.75
+§DICT_GAP m_cost#139|101|100|103.cumulatedqty legacy=139 sqlite=15
+§DICT_GAP m_cost#123|200000|100|102.currentcostprice legacy=41.3874 sqlite=43.7324
+§DD_COLUMNS m_product legacy-has-but-sqlite-lacks=[ad_client_id,ad_org_id,isactive,description,issummary,c_uom_id,isstocked,ispurchased,issold,volume,weight,value,c_taxcategory_id,upc,sku,shelfwidth,shelfheight,shelfdepth,unitsperpallet,discontinued,discontinuedat,documentnote,help,classification,salesrep_id,c_revenuerecognition_id,isinvoiceprintdetails,ispicklistprintdetails,isverified,processing,s_expensetype_id,s_resource_id,producttype,imageurl,descriptionurl,r_mailtext_id,versionno,guaranteedays,m_attributeset_id,m_attributesetinstance_id,m_freightcategory_id,m_locator_id,guaranteedaysmin,iswebstorefeatured,isselfservice,c_subscriptiontype_id,isdropship,isexcludeautodelivery,group1,group2,unitsperpack,lowlevel,copyfrom,m_parttype_id,iskanban,ismanufactured,isphantom,isownbox,customstariffnumber,isautoproduce] (needs ALTER via patch+loader, not a data patch)
+§DD_TABLE m_product legacy=55 local=55 cols_compared=4 onlyLegacy=0 onlyLocal=0 changed_cells=0
+§DD_COLUMNS c_acctschema legacy-has-but-sqlite-lacks=[ad_client_id,ad_org_id,isactive,name,description,gaap,isaccrual,autoperiodcontrol,c_period_id,period_openhistory,period_openfuture,separator,hasalias,hascombination,istradediscountposted,isdiscountcorrectstax,costinglevel,isadjustcogs,ad_orgonly_id,ispostservices,isexplicitcostadjustment,processing,isallownegativeposting,backdateday,startdate,enddate] (needs ALTER via patch+loader, not a data patch)
+§DD_TABLE c_acctschema legacy=3 local=2 cols_compared=7 onlyLegacy=1 onlyLocal=0 changed_cells=0
+§DICT_GAP c_acctschema#1009800 missing in SQLite
+§DD_COLUMNS c_cashbook_acct legacy-has-but-sqlite-lacks=[ad_client_id,ad_org_id,isactive,cb_differences_acct,cb_expense_acct] (needs ALTER via patch+loader, not a data patch)
+§DD_TABLE c_cashbook_acct legacy=4 local=4 cols_compared=5 onlyLegacy=0 onlyLocal=0 changed_cells=0
+§DD_COLUMNS ad_sysconfig legacy-has-but-sqlite-lacks=[ad_sysconfig_id,ad_org_id,isactive,description,entitytype,configurationlevel] (needs ALTER via patch+loader, not a data patch)
+§DD_TABLE ad_sysconfig legacy=205 local=1 cols_compared=3 onlyLegacy=204 onlyLocal=0 changed_cells=0
+§DICT_GAP ad_sysconfig#PROJECT_ID_PROJECT|0 missing in SQLite
+§DICT_GAP ad_sysconfig#DICTIONARY_ID_USE_CENTRALIZED_ID|0 missing in SQLite
+§DICT_GAP ad_sysconfig#PROJECT_ID_USE_CENTRALIZED_ID|0 missing in SQLite
+§DICT_GAP ad_sysconfig#PROJECT_ID_USER|0 missing in SQLite
+§DICT_GAP ad_sysconfig#PAYMENT_OVERWRITE_DOCUMENTNO_WITH_CHECK_ON_PAYMENT|0 missing in SQLite
+§DD_COLUMNS ad_sysconfig legacy-has-but-sqlite-lacks=[ad_sysconfig_id,ad_client_id,ad_org_id,created,updated,createdby,updatedby,isactive,name,value,description,entitytype,configurationlevel,ad_sysconfig_uu] (needs ALTER via patch+loader, not a data patch)
+§DD_TABLE ad_sysconfig legacy=205 local=0 cols_compared=0 onlyLegacy=205 onlyLocal=0 changed_cells=0
+§DICT_GAP ad_sysconfig#PROJECT_ID_PROJECT|0 missing in SQLite
+§DICT_GAP ad_sysconfig#DICTIONARY_ID_USE_CENTRALIZED_ID|0 missing in SQLite
+§DICT_GAP ad_sysconfig#PROJECT_ID_USE_CENTRALIZED_ID|0 missing in SQLite
+§DICT_GAP ad_sysconfig#PROJECT_ID_USER|0 missing in SQLite
+§DICT_GAP ad_sysconfig#PAYMENT_OVERWRITE_DOCUMENTNO_WITH_CHECK_ON_PAYMENT|0 missing in SQLite
+§DD_TABLE c_elementvalue legacy=379 local=379 cols_compared=25 onlyLegacy=0 onlyLocal=0 changed_cells=0
+§DD_COLUMNS c_bankaccount legacy-has-but-sqlite-lacks=[c_bank_id,c_currency_id,accountno,creditlimit,ad_client_id,isdefault,bankaccounttype,description,iban,bban,paymentexportclass,value,name] (needs ALTER via patch+loader, not a data patch)
+§DD_TABLE c_bankaccount legacy=3 local=3 cols_compared=4 onlyLegacy=0 onlyLocal=0 changed_cells=1
+§DICT_GAP c_bankaccount#100.currentbalance legacy=451.03 sqlite=148
+§DD_TABLE a_asset_group_acct legacy=6 local=6 cols_compared=36 onlyLegacy=0 onlyLocal=0 changed_cells=6
+§DICT_GAP a_asset_group_acct#200002.uselifeyears legacy="5.000000000000" sqlite=0
+§DICT_GAP a_asset_group_acct#200002.uselifemonths legacy=60 sqlite=0
+§DICT_GAP a_asset_group_acct#200005.uselifeyears legacy="5.000000000000" sqlite=0
+§DICT_GAP a_asset_group_acct#200005.uselifemonths legacy=60 sqlite=0
+§DICT_GAP a_asset_group_acct#200005.uselifeyears_f legacy="5.000000000000" sqlite=0
+§DICT_GAP a_asset_group_acct#200005.uselifemonths_f legacy=60 sqlite=0
+§DD_VERDICT PASS fails=0 inconclusive=0
+§LINK_VERDICT PASS fails=0
+§MODEL_VERDICT PASS fails=0
+§D7_VERDICT PASS judged=8 fails=0
+§SCN S1-pos-sale MATCH compared=17 inconclusive=0
+§SCN S2-product-not-on-pricelist MATCH compared=17 inconclusive=0
+§SCN S3-client-keyed-price MATCH compared=17 inconclusive=0
+§SCN S2b-keyed-price-product-not-on-pricelist MATCH compared=17 inconclusive=0
+§SCN S11-pos-sale-costed-product MATCH compared=17 inconclusive=0
+§SCN S4-unknown-product MATCH compared=17 inconclusive=0
+§SCN S6-standard-order MATCH compared=17 inconclusive=0
+§SCN S13a-pos-sale-over-credit-limit MATCH compared=17 inconclusive=0
+§SCN S13b-standard-order-over-credit-limit MATCH compared=17 inconclusive=0
+§SCN T1-pos-sale-taxed-org12-ct MATCH compared=17 inconclusive=0
+§SCN S14a-pos-order-negative-qty MATCH compared=17 inconclusive=0
+§SCN S14b-standard-order-negative-qty MATCH compared=17 inconclusive=0
+§SCN S14c-pos-order-zero-qty MATCH compared=17 inconclusive=0
+§SCN S13c-pos-sale-large-no-credit-limit MATCH compared=17 inconclusive=0
+§SCN S7a-pos-sale-beyond-onhand MATCH compared=17 inconclusive=0
+§SCN S7b-standard-order-beyond-onhand MATCH compared=17 inconclusive=0
+§SCN S8a-pos-sale-past-dated-open-period MATCH compared=17 inconclusive=0
+§SCN S8b-pos-sale-date-without-period MATCH compared=17 inconclusive=0
+§SCN S8c-pos-sale-beyond-open-future MATCH compared=17 inconclusive=0
+§SCN S8d-pos-sale-before-open-history MATCH compared=17 inconclusive=0
+§RECON_SUMMARY scenarios=20 MATCH=20 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN S12-void-pos-sale MATCH compared=18 inconclusive=0
+§SCN S12b-void-taxed-pos-sale MATCH compared=18 inconclusive=0
+§RECON_SUMMARY scenarios=2 MATCH=2 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN MV1-move-inter-org MATCH compared=7 inconclusive=0
+§SCN MV-REJ-unknown-product MATCH compared=7 inconclusive=0
+§RECON_SUMMARY scenarios=2 MATCH=2 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN PAY1-receipt-settles-invoice MATCH compared=9 inconclusive=0
+§SCN PAY-REJ-unknown-invoice MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=2 MATCH=2 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN INV1-ar-invoice-taxed-direct MATCH compared=9 inconclusive=0
+§SCN INV2-ar-invoice-product-not-on-pricelist MATCH compared=9 inconclusive=0
+§SCN INV-REJ-unknown-product MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=3 MATCH=3 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN PI1-physical-inventory-gain MATCH compared=7 inconclusive=0
+§SCN PI2-physical-inventory-loss MATCH compared=7 inconclusive=0
+§SCN PI-REJ-unknown-product MATCH compared=7 inconclusive=0
+§RECON_SUMMARY scenarios=3 MATCH=3 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN O2C1-SO MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN O2C2-SHIP MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN O2C3-INV MATCH compared=12 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN O2C4-PAY MATCH compared=13 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN O2C5-RC-INV MATCH compared=13 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN O2C6-RC-SHIP MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN NEG-o2c-SO MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§SCN NEG-o2c-SHIP MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-o2c-INV key=inv_lines legacy="137:2:300:104" sqlite="137:2:301:104" verdict=SQLITE-GAP
+§GAP scenario=NEG-o2c-INV key=invoice_tax legacy="104:600:0" sqlite="104:602:0" verdict=SQLITE-GAP
+§GAP scenario=NEG-o2c-INV key=grand_total legacy=600 sqlite=602 verdict=SQLITE-GAP
+§GAP scenario=NEG-o2c-INV key=books legacy="518:DR600/CR0|758:DR0/CR600" sqlite="518:DR602/CR0|758:DR0/CR602" verdict=SQLITE-GAP
+§GAP scenario=NEG-o2c-INV key=books_euro legacy="518:DR510/CR0|758:DR0/CR510" sqlite="518:DR512/CR0|758:DR0/CR512" verdict=SQLITE-GAP
+§GAP scenario=NEG-o2c-INV key=bp_delta legacy="600/600" sqlite="602/602" verdict=SQLITE-GAP
+§SCN NEG-o2c-INV SQLITE-GAP compared=12 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§SCN F9-PO MATCH compared=11 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=F9-RCPT key=books legacy="587:DR0/CR1600|742:DR1600/CR0" sqlite="ABSENT:order price list (MOrderLine.isTaxIncluded:697-707)" verdict=SQLITE-GAP
+§GAP scenario=F9-RCPT key=books_euro legacy="587:DR0/CR1360|742:DR1360/CR0" sqlite="ABSENT:order price list (MOrderLine.isTaxIncluded:697-707)" verdict=SQLITE-GAP
+§GAP scenario=F9-RCPT key=cost legacy="101:4.36666667@6/92.5|200000:3.71166667@6/78.625" sqlite="101:2.55@4/76.5|200000:2.1675@4/65.025" verdict=SQLITE-GAP
+§SCN F9-RCPT SQLITE-GAP compared=10 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=F9a-sale-backdated-before-receipt key=cost_qty_delta legacy="{\"141\":-3}" sqlite="{\"141\":-1}" verdict=SQLITE-GAP
+§GAP scenario=F9a-sale-backdated-before-receipt key=books_receipt_after legacy="587:DR0/CR1600|742:DR1600/CR0" sqlite="none" verdict=SQLITE-GAP
+§SCN F9a-sale-backdated-before-receipt SQLITE-GAP compared=19 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=F9b-second-sale-same-backdate key=books_receipt_after legacy="587:DR0/CR1600|742:DR1600/CR0" sqlite="none" verdict=SQLITE-GAP
+§SCN F9b-second-sale-same-backdate SQLITE-GAP compared=19 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=F9c-sale-today-after-backdated key=books_receipt_after legacy="587:DR0/CR1600|742:DR1600/CR0" sqlite="none" verdict=SQLITE-GAP
+§SCN F9c-sale-today-after-backdated SQLITE-GAP compared=19 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=F9d-backdated-sale-beyond-history-qty key=books_receipt_after legacy="587:DR0/CR1600|742:DR1600/CR0" sqlite="none" verdict=SQLITE-GAP
+§SCN F9d-backdated-sale-beyond-history-qty SQLITE-GAP compared=19 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-f9-history-price key=postings_shipment legacy="430:DR255/CR0|742:DR0/CR255" sqlite="430:DR256/CR0|742:DR0/CR256" verdict=SQLITE-GAP
+§GAP scenario=NEG-f9-history-price key=postings_shipment_euro legacy="430:DR217/CR0|742:DR0/CR217" sqlite="430:DR218/CR0|742:DR0/CR218" verdict=SQLITE-GAP
+§GAP scenario=NEG-f9-history-price key=cost_state legacy="101:2.55@1/76.5|200000:2.1675@1/65.025" sqlite="101:2.5599999999999996@1/76.5|200000:2.1774999999999998@1/65.025" verdict=SQLITE-GAP
+§GAP scenario=NEG-f9-history-price key=books_receipt_after legacy="587:DR0/CR1600|742:DR1600/CR0" sqlite="none" verdict=SQLITE-GAP
+§SCN NEG-f9-history-price SQLITE-GAP compared=19 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§SCN P2P1-PO MATCH compared=11 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=P2P2-RCPT key=books legacy="587:DR0/CR1600|742:DR1600/CR0" sqlite="ABSENT:order price list (MOrderLine.isTaxIncluded:697-707)" verdict=SQLITE-GAP
+§GAP scenario=P2P2-RCPT key=books_euro legacy="587:DR0/CR1360|742:DR1360/CR0" sqlite="ABSENT:order price list (MOrderLine.isTaxIncluded:697-707)" verdict=SQLITE-GAP
+§GAP scenario=P2P2-RCPT key=cost legacy="101:7.96526733@112/1122.75|200000:6.77047723@112/954.3375" sqlite="101:7.96463583@110/1106.75|200000:6.76994045@110/940.7375" verdict=SQLITE-GAP
+§SCN P2P2-RCPT SQLITE-GAP compared=10 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=P2P3-INV key=books_matchinv legacy="587:DR1600/CR0|780:DR0/CR1600" sqlite="ABSENT:order price list (MOrderLine.isTaxIncluded:697-707)" verdict=SQLITE-GAP
+§GAP scenario=P2P3-INV key=books_matchinv_euro legacy="587:DR1360/CR0|780:DR0/CR1360" sqlite="ABSENT:order price list (MOrderLine.isTaxIncluded:697-707)" verdict=SQLITE-GAP
+§GAP scenario=P2P3-INV key=cost legacy="101:7.96526733@112/1122.75|200000:6.77047723@112/954.3375" sqlite="101:7.96463583@110/1106.75|200000:6.76994045@110/940.7375" verdict=SQLITE-GAP
+§SCN P2P3-INV SQLITE-GAP compared=16 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=P2P4-PAY key=cost legacy="101:7.96526733@112/1122.75|200000:6.77047723@112/954.3375" sqlite="101:7.96463583@110/1106.75|200000:6.76994045@110/940.7375" verdict=SQLITE-GAP
+§SCN P2P4-PAY SQLITE-GAP compared=13 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-p2p-PO key=cost legacy="101:7.96526733@112/1122.75|200000:6.77047723@112/954.3375" sqlite="101:7.96463583@110/1106.75|200000:6.76994045@110/940.7375" verdict=SQLITE-GAP
+§SCN NEG-p2p-PO SQLITE-GAP compared=11 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-p2p-RCPT key=books legacy="587:DR0/CR1600|742:DR1600/CR0" sqlite="ABSENT:order price list (MOrderLine.isTaxIncluded:697-707)" verdict=SQLITE-GAP
+§GAP scenario=NEG-p2p-RCPT key=books_euro legacy="587:DR0/CR1360|742:DR1360/CR0" sqlite="ABSENT:order price list (MOrderLine.isTaxIncluded:697-707)" verdict=SQLITE-GAP
+§GAP scenario=NEG-p2p-RCPT key=cost legacy="101:7.96587668@114/1138.75|200000:6.77099517@114/967.9375" sqlite="101:7.96463583@110/1106.75|200000:6.76994045@110/940.7375" verdict=SQLITE-GAP
+§SCN NEG-p2p-RCPT SQLITE-GAP compared=10 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-p2p-INV key=inv_lines legacy="139:2:800:104" sqlite="139:2:801:104" verdict=SQLITE-GAP
+§GAP scenario=NEG-p2p-INV key=invoice_tax legacy="104:1600:0" sqlite="104:1602:0" verdict=SQLITE-GAP
+§GAP scenario=NEG-p2p-INV key=grand_total legacy=1600 sqlite=1602 verdict=SQLITE-GAP
+§GAP scenario=NEG-p2p-INV key=books legacy="749:DR0/CR1600|780:DR1600/CR0" sqlite="749:DR0/CR1602|780:DR1602/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-p2p-INV key=books_euro legacy="749:DR0/CR1360|780:DR1360/CR0" sqlite="749:DR0/CR1362|780:DR1362/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-p2p-INV key=books_matchinv legacy="587:DR1600/CR0|780:DR0/CR1600" sqlite="ABSENT:order price list (MOrderLine.isTaxIncluded:697-707)" verdict=SQLITE-GAP
+§GAP scenario=NEG-p2p-INV key=books_matchinv_euro legacy="587:DR1360/CR0|780:DR0/CR1360" sqlite="ABSENT:order price list (MOrderLine.isTaxIncluded:697-707)" verdict=SQLITE-GAP
+§GAP scenario=NEG-p2p-INV key=bp_delta legacy="-1600/0" sqlite="-1602/0" verdict=SQLITE-GAP
+§GAP scenario=NEG-p2p-INV key=cost legacy="101:7.96587668@114/1138.75|200000:6.77099517@114/967.9375" sqlite="101:7.96463583@110/1106.75|200000:6.76994045@110/940.7375" verdict=SQLITE-GAP
+§SCN NEG-p2p-INV SQLITE-GAP compared=16 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§SCN REQ1-purchase-requisition MATCH compared=6 inconclusive=0
+§SCN REQ-REJ-no-requester MATCH compared=6 inconclusive=0
+§RECON_SUMMARY scenarios=2 MATCH=2 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-req-control key=lines legacy="139:3:765:2295" sqlite="139:3:766:2298" verdict=SQLITE-GAP
+§GAP scenario=NEG-req-control key=total_cents legacy=2295 sqlite=2298 verdict=SQLITE-GAP
+§SCN NEG-req-control SQLITE-GAP compared=6 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§SCN CASH1-cash-journal-settles-invoice MATCH compared=10 inconclusive=0
+§SCN CASH1c-cash-journal-composite-control MATCH compared=10 inconclusive=0
+§SCN CASH1b-cash-journal-saved-then-completed MATCH compared=10 inconclusive=0
+§SCN CASH-REJ-invoice-not-completed MATCH compared=10 inconclusive=0
+§RECON_SUMMARY scenarios=4 MATCH=4 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-cash-control key=statement_diff legacy=300 sqlite=301 verdict=SQLITE-GAP
+§GAP scenario=NEG-cash-control key=allocation legacy="CO:300:cash" sqlite="CO:301:cash" verdict=SQLITE-GAP
+§GAP scenario=NEG-cash-control key=ispaid legacy="Y" sqlite="N" verdict=SQLITE-GAP
+§GAP scenario=NEG-cash-control key=books_cash legacy="515:DR300/CR0|516:DR0/CR300" sqlite="515:DR301/CR0|516:DR0/CR301" verdict=SQLITE-GAP
+§GAP scenario=NEG-cash-control key=books_cash_euro legacy="516:DR0/CR255|698:DR255/CR0" sqlite="516:DR0/CR256|698:DR256/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-cash-control key=books_alloc legacy="516:DR300/CR0|518:DR0/CR300" sqlite="516:DR301/CR0|518:DR0/CR301" verdict=SQLITE-GAP
+§GAP scenario=NEG-cash-control key=books_alloc_euro legacy="516:DR255/CR0|518:DR0/CR255" sqlite="516:DR256/CR0|518:DR0/CR256" verdict=SQLITE-GAP
+§GAP scenario=NEG-cash-control key=bp_delta legacy="0/0" sqlite="-1/-1" verdict=SQLITE-GAP
+§SCN NEG-cash-control SQLITE-GAP compared=10 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-cash-mode-control key=books_alloc legacy="518:DR0/CR300|698:DR300/CR0" sqlite="516:DR300/CR0|518:DR0/CR300" verdict=SQLITE-GAP
+§GAP scenario=NEG-cash-mode-control key=books_alloc_euro legacy="518:DR0/CR255|723:DR255/CR0" sqlite="516:DR255/CR0|518:DR0/CR255" verdict=SQLITE-GAP
+§SCN NEG-cash-mode-control SQLITE-GAP compared=10 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§SCN GLJ1-gl-journal-balanced MATCH compared=7 inconclusive=0
+§SCN GLJ-UNBAL-suspense-balanced MATCH compared=7 inconclusive=0
+§SCN GLJ-REJ-doc-controlled-account MATCH compared=7 inconclusive=0
+§RECON_SUMMARY scenarios=3 MATCH=3 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-glj-control key=total_dr legacy=10000 sqlite=10001 verdict=SQLITE-GAP
+§GAP scenario=NEG-glj-control key=lines legacy="474:10000:0|484:0:10000" sqlite="474:10001:0|484:0:10000" verdict=SQLITE-GAP
+§GAP scenario=NEG-glj-control key=postings legacy="474:DR10000/CR0|484:DR0/CR10000" sqlite="474:DR10001/CR0|484:DR0/CR10000|698:DR0/CR1" verdict=SQLITE-GAP
+§SCN NEG-glj-control SQLITE-GAP compared=7 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§SCN BS1-bank-statement-matches-receipt MATCH compared=9 inconclusive=0
+§SCN BS-REJ-payment-already-reconciled MATCH compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=2 MATCH=2 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-bs-control key=statement_diff legacy=777 sqlite=778 verdict=SQLITE-GAP
+§GAP scenario=NEG-bs-control key=ending legacy=46657 sqlite=46658 verdict=SQLITE-GAP
+§GAP scenario=NEG-bs-control key=bank_balance_delta legacy=777 sqlite=778 verdict=SQLITE-GAP
+§GAP scenario=NEG-bs-control key=postings legacy="508:DR777/CR0|509:DR0/CR777" sqlite="508:DR778/CR0|509:DR0/CR778" verdict=SQLITE-GAP
+§GAP scenario=NEG-bs-control key=postings_euro legacy="508:DR660/CR0|509:DR0/CR660" sqlite="508:DR661/CR0|509:DR0/CR661" verdict=SQLITE-GAP
+§SCN NEG-bs-control SQLITE-GAP compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=PJI1-project-issue-stocked-item key=project_balance_delta legacy="7.9659" sqlite="7.9646" verdict=SQLITE-GAP
+§GAP scenario=PJI1-project-issue-stocked-item key=postings legacy="567:DR797/CR0|742:DR0/CR797" sqlite="567:DR796/CR0|742:DR0/CR796" verdict=SQLITE-GAP
+§SCN PJI1-project-issue-stocked-item SQLITE-GAP compared=7 inconclusive=0
+§SCN PJI-REJ-no-product MATCH compared=7 inconclusive=0
+§RECON_SUMMARY scenarios=2 MATCH=1 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-pji-control key=stock_delta legacy="{\"139@101\":-1}" sqlite="{\"139@101\":-2}" verdict=SQLITE-GAP
+§GAP scenario=NEG-pji-control key=cost_qty_delta legacy="{\"139\":-1}" sqlite="{\"139\":-2}" verdict=SQLITE-GAP
+§GAP scenario=NEG-pji-control key=project_balance_delta legacy="7.9659" sqlite="15.9293" verdict=SQLITE-GAP
+§GAP scenario=NEG-pji-control key=postings legacy="567:DR797/CR0|742:DR0/CR797" sqlite="567:DR1593/CR0|742:DR0/CR1593" verdict=SQLITE-GAP
+§GAP scenario=NEG-pji-control key=postings_euro legacy="568:DR677/CR0|742:DR0/CR677" sqlite="568:DR1354/CR0|742:DR0/CR1354" verdict=SQLITE-GAP
+§SCN NEG-pji-control SQLITE-GAP compared=7 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§SCN DDO1-distribution-order-to-transit MATCH compared=6 inconclusive=0
+§SCN DDO-REJ-date-without-period MATCH compared=6 inconclusive=0
+§RECON_SUMMARY scenarios=2 MATCH=2 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-ddo-control key=outcome legacy="REJECTED" sqlite="COMPLETED" verdict=SQLITE-GAP
+§GAP scenario=NEG-ddo-control key=docstatus legacy=undefined sqlite="CO" verdict=SQLITE-GAP
+§GAP scenario=NEG-ddo-control key=lines legacy=undefined sqlite="137:2:2:0" verdict=SQLITE-GAP
+§GAP scenario=NEG-ddo-control key=volume legacy=undefined sqlite=0 verdict=SQLITE-GAP
+§GAP scenario=NEG-ddo-control key=weight legacy=undefined sqlite=0 verdict=SQLITE-GAP
+§GAP scenario=NEG-ddo-control key=stock_delta legacy=undefined sqlite="{}" verdict=SQLITE-GAP
+§SCN NEG-ddo-control SQLITE-GAP compared=6 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-control key=total_cents legacy=6175 sqlite=6176 verdict=SQLITE-GAP
+§GAP scenario=NEG-control key=postings legacy="518:DR6175/CR0|758:DR0/CR6175" sqlite="518:DR6176/CR0|758:DR0/CR6176" verdict=SQLITE-GAP
+§GAP scenario=NEG-control key=grand_total_cents legacy=6175 sqlite=6176 verdict=SQLITE-GAP
+§GAP scenario=NEG-control key=postings_euro legacy="518:DR5249/CR0|758:DR0/CR5249" sqlite="518:DR5250/CR0|758:DR0/CR5250" verdict=SQLITE-GAP
+§SCN NEG-control SQLITE-GAP compared=17 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-void-control key=post_inv_orig legacy="518:DR300/CR0|758:DR0/CR300" sqlite="518:DR301/CR0|758:DR0/CR300" verdict=SQLITE-GAP
+§SCN NEG-void-control SQLITE-GAP compared=18 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-move-control key=lines legacy="137:1:101:102" sqlite="137:2:101:102" verdict=SQLITE-GAP
+§GAP scenario=NEG-move-control key=stock_delta legacy="{\"137@101\":-1,\"137@102\":1}" sqlite="{\"137@101\":-2,\"137@102\":2}" verdict=SQLITE-GAP
+§GAP scenario=NEG-move-control key=postings legacy="600:DR0/CR270|741:DR270/CR0|742:DR270/CR270" sqlite="600:DR0/CR540|741:DR540/CR0|742:DR540/CR540" verdict=SQLITE-GAP
+§GAP scenario=NEG-move-control key=postings_euro legacy="600:DR0/CR230|741:DR230/CR0|742:DR230/CR230" sqlite="600:DR0/CR460|741:DR460/CR0|742:DR460/CR460" verdict=SQLITE-GAP
+§SCN NEG-move-control SQLITE-GAP compared=7 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-pay-control key=invoice_paid legacy="Y" sqlite="N" verdict=SQLITE-GAP
+§GAP scenario=NEG-pay-control key=allocation legacy="CO:300:0:0:inv" sqlite="CO:301:0:0:inv" verdict=SQLITE-GAP
+§GAP scenario=NEG-pay-control key=postings_payment legacy="509:DR300/CR0|511:DR0/CR300" sqlite="509:DR301/CR0|511:DR0/CR301" verdict=SQLITE-GAP
+§GAP scenario=NEG-pay-control key=postings_alloc legacy="511:DR300/CR0|518:DR0/CR300" sqlite="511:DR301/CR0|518:DR0/CR301" verdict=SQLITE-GAP
+§GAP scenario=NEG-pay-control key=postings_payment_euro legacy="509:DR255/CR0|511:DR0/CR255" sqlite="509:DR256/CR0|511:DR0/CR256" verdict=SQLITE-GAP
+§GAP scenario=NEG-pay-control key=postings_alloc_euro legacy="511:DR255/CR0|518:DR0/CR255" sqlite="511:DR256/CR0|518:DR0/CR256" verdict=SQLITE-GAP
+§SCN NEG-pay-control SQLITE-GAP compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-inv-control key=total_cents legacy=600 sqlite=601 verdict=SQLITE-GAP
+§GAP scenario=NEG-inv-control key=invoice_tax legacy="105:600:36" sqlite="105:601:36" verdict=SQLITE-GAP
+§GAP scenario=NEG-inv-control key=grand_total_cents legacy=636 sqlite=637 verdict=SQLITE-GAP
+§GAP scenario=NEG-inv-control key=postings legacy="518:DR636/CR0|596:DR0/CR36|758:DR0/CR600" sqlite="518:DR637/CR0|596:DR0/CR36|758:DR0/CR601" verdict=SQLITE-GAP
+§GAP scenario=NEG-inv-control key=postings_euro legacy="518:DR541/CR0|596:DR0/CR31|758:DR0/CR510" sqlite="518:DR541/CR0|596:DR0/CR31|724:DR0/CR-1|758:DR0/CR511" verdict=SQLITE-GAP
+§SCN NEG-inv-control SQLITE-GAP compared=9 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-pi-control key=lines legacy="137:51:52" sqlite="137:51:53" verdict=SQLITE-GAP
+§GAP scenario=NEG-pi-control key=stock_delta legacy="{\"137@101\":1}" sqlite="{\"137@101\":2}" verdict=SQLITE-GAP
+§GAP scenario=NEG-pi-control key=postings legacy="439:DR0/CR270|742:DR270/CR0" sqlite="439:DR0/CR540|742:DR540/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-pi-control key=postings_euro legacy="439:DR0/CR230|742:DR230/CR0" sqlite="439:DR0/CR460|742:DR460/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-pi-control key=cost_qty_delta legacy="{\"137\":1}" sqlite="{\"137\":2}" verdict=SQLITE-GAP
+§SCN NEG-pi-control SQLITE-GAP compared=7 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§M3_FINDINGS sqlite_gaps=17 (F9-RCPT,F9a-sale-backdated-before-receipt,F9b-second-sale-same-backdate,F9c-sale-today-after-backdated,F9d-backdated-sale-beyond-history-qty,P2P2-RCPT,P2P3-INV,P2P4-PAY,PJI1-project-issue-stocked-item) — these are the parallel-run product, not harness failures
+§M3_VERDICT HARNESS-FAIL fails=1 inconclusive=1 findings=17 inconclusive_keys=0
+§SCN FA1-equipment-60m MATCH compared=33 inconclusive=0
+§SCN FA0-vehicles-zero-c-life MATCH compared=33 inconclusive=0
+§SCN FA-REJ-unknown-group MATCH compared=33 inconclusive=0
+§SCN FA-REJ2-zero-amount MATCH compared=33 inconclusive=0
+§SCN FAD1-disposal-simple MATCH compared=33 inconclusive=0
+§SCN FAD-REJ-already-depreciated MATCH compared=33 inconclusive=0
+§SCN FAR1-revaluation MATCH compared=33 inconclusive=0
+§SCN FAR-REJ-not-depreciated MATCH compared=33 inconclusive=0
+§SCN FAT1-transfer-accounts MATCH compared=33 inconclusive=0
+§SCN FAT-REJ-unchanged MATCH compared=33 inconclusive=0
+§SCN FAT-REJ-changed-meanwhile MATCH compared=33 inconclusive=0
+§SCN FAT-REJ-last-day MATCH compared=33 inconclusive=0
+§SCN FAT-REJ-depreciated MATCH compared=33 inconclusive=0
+§SCN FAT-REJ-unprocessed MATCH compared=33 inconclusive=0
+§SCN FAT-REJ-period MATCH compared=33 inconclusive=0
+§RECON_SUMMARY scenarios=15 MATCH=15 LEGACY-QUIRK=0 SQLITE-GAP=0 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-fa-control key=wk_101 legacy="120000:60/60:60:1:2026-10-31" sqlite="120001:60/60:60:1:2026-10-31" verdict=SQLITE-GAP
+§GAP scenario=NEG-fa-control key=sched_101 legacy="n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000" sqlite="n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120001/120001" verdict=SQLITE-GAP
+§GAP scenario=NEG-fa-control key=books_add_101 legacy="431:DR0/CR120000|563:DR120000/CR0" sqlite="431:DR0/CR120001|563:DR120001/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-fa-control key=entry_101 legacy="CO:n=9:own=1:2000/2000:P" sqlite="CO:n=17:own=1:2000/2000:P" verdict=SQLITE-GAP
+§GAP scenario=NEG-fa-control key=books_dep_101 legacy="501:DR18000/CR0|574:DR0/CR18000" sqlite="501:DR34000/CR0|574:DR0/CR34000" verdict=SQLITE-GAP
+§GAP scenario=NEG-fa-control key=wk_200000 legacy="102000:60/60:60:1:2026-10-31" sqlite="102001:60/60:60:1:2026-10-31" verdict=SQLITE-GAP
+§GAP scenario=NEG-fa-control key=sched_200000 legacy="n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000" sqlite="n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102001/102001" verdict=SQLITE-GAP
+§GAP scenario=NEG-fa-control key=books_add_200000 legacy="431:DR0/CR102000|563:DR102000/CR0" sqlite="431:DR0/CR102001|563:DR102001/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-fa-control key=entry_200000 legacy="CO:n=9:own=1:1700/1700:P" sqlite="CO:n=17:own=1:1700/1700:P" verdict=SQLITE-GAP
+§GAP scenario=NEG-fa-control key=books_dep_200000 legacy="501:DR15300/CR0|574:DR0/CR15300" sqlite="501:DR28900/CR0|574:DR0/CR28900" verdict=SQLITE-GAP
+§SCN NEG-fa-control SQLITE-GAP compared=33 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§FA_NEGATIVE_CONTROL PASS +1¢ on the SQLite addition ⇒ verdict=SQLITE-GAP gaps=wk_101,sched_101,books_add_101,entry_101,books_dep_101,wk_200000,sched_200000,books_add_200000,entry_200000,books_dep_200000
+§GAP scenario=NEG-far-control key=rev_wk_101 legacy="150000:2500:147500" sqlite="150001:2500:147501" verdict=SQLITE-GAP
+§SCN NEG-far-control SQLITE-GAP compared=33 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-fat-control key=wk_101 legacy="120000:60/60:60:1:2026-10-31" sqlite="120001:60/60:60:1:2026-10-31" verdict=SQLITE-GAP
+§GAP scenario=NEG-fat-control key=sched_101 legacy="n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000" sqlite="n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120001/120001" verdict=SQLITE-GAP
+§GAP scenario=NEG-fat-control key=books_add_101 legacy="431:DR0/CR120000|563:DR120000/CR0" sqlite="431:DR0/CR120001|563:DR120001/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-fat-control key=wk_200000 legacy="102000:60/60:60:1:2026-10-31" sqlite="102001:60/60:60:1:2026-10-31" verdict=SQLITE-GAP
+§GAP scenario=NEG-fat-control key=sched_200000 legacy="n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000" sqlite="n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102001/102001" verdict=SQLITE-GAP
+§GAP scenario=NEG-fat-control key=books_add_200000 legacy="431:DR0/CR102000|563:DR102000/CR0" sqlite="431:DR0/CR102001|563:DR102001/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-fat-control key=books_tr_101 legacy="563:DR0/CR120000|564:DR120000/CR0" sqlite="563:DR0/CR120001|564:DR120001/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-fat-control key=books_tr_200000 legacy="563:DR0/CR120000|564:DR120000/CR0" sqlite="563:DR0/CR120001|564:DR120001/CR0" verdict=SQLITE-GAP
+§SCN NEG-fat-control SQLITE-GAP compared=33 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§GAP scenario=NEG-fad-control key=wk_101 legacy="120000:60/60:60:1:2026-10-31" sqlite="120001:60/60:60:1:2026-10-31" verdict=SQLITE-GAP
+§GAP scenario=NEG-fad-control key=sched_101 legacy="n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120000/120000" sqlite="n=60|first=1:2026-10-31:2000/2000|last=60:2031-09-30:2000/2000|sum=120001/120001" verdict=SQLITE-GAP
+§GAP scenario=NEG-fad-control key=books_add_101 legacy="431:DR0/CR120000|563:DR120000/CR0" sqlite="431:DR0/CR120001|563:DR120001/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-fad-control key=wk_200000 legacy="102000:60/60:60:1:2026-10-31" sqlite="102001:60/60:60:1:2026-10-31" verdict=SQLITE-GAP
+§GAP scenario=NEG-fad-control key=sched_200000 legacy="n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102000/102000" sqlite="n=60|first=1:2026-10-31:1700/1700|last=60:2031-09-30:1700/1700|sum=102001/102001" verdict=SQLITE-GAP
+§GAP scenario=NEG-fad-control key=books_add_200000 legacy="431:DR0/CR102000|563:DR102000/CR0" sqlite="431:DR0/CR102001|563:DR102001/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-fad-control key=disp legacy="CO:DI:120000:0:120000" sqlite="CO:DI:120001:0:120001" verdict=SQLITE-GAP
+§GAP scenario=NEG-fad-control key=disp_change_101 legacy="120000:120000:0" sqlite="120001:120001:0" verdict=SQLITE-GAP
+§GAP scenario=NEG-fad-control key=books_dis_101 legacy="563:DR0/CR120000|726:DR120000/CR0" sqlite="563:DR0/CR120001|726:DR120001/CR0" verdict=SQLITE-GAP
+§GAP scenario=NEG-fad-control key=disp_change_200000 legacy="102000:102000:0" sqlite="102001:102001:0" verdict=SQLITE-GAP
+§GAP scenario=NEG-fad-control key=books_dis_200000 legacy="563:DR0/CR102000|726:DR102000/CR0" sqlite="563:DR0/CR102001|726:DR102001/CR0" verdict=SQLITE-GAP
+§SCN NEG-fad-control SQLITE-GAP compared=33 inconclusive=0
+§RECON_SUMMARY scenarios=1 MATCH=0 LEGACY-QUIRK=0 SQLITE-GAP=1 errors=0 inconclusive_keys=0 notCompared=0
+§FA_VERDICT PASS fails=0 inconclusive=0 findings=0
+§LF_TABLE ad_window legacy=458 local=375 cols_compared=19 onlyLegacy=85 onlyLocal=2 changed_cells=3 by_col={"isactive":3}
+§LF_TABLE ad_tab legacy=1167 local=1135 cols_compared=42 onlyLegacy=38 onlyLocal=6 changed_cells=2 by_col={"help":2}
+§LF_TABLE ad_field legacy=21432 local=20988 cols_compared=54 onlyLegacy=521 onlyLocal=77 changed_cells=49 by_col={"help":49}
+§LF_TABLE ad_column legacy=26519 local=26161 cols_compared=57 onlyLegacy=375 onlyLocal=17 changed_cells=41 by_col={"help":41}
+§LF_TABLE ad_menu legacy=826 local=590 cols_compared=19 onlyLegacy=239 onlyLocal=3 changed_cells=0 by_col={}
+§LF_TABLE ad_message MISSING-IN-SQLITE legacy=2099
+§LF_TABLE ad_ref_list legacy=1545 local=1500 cols_compared=11 onlyLegacy=46 onlyLocal=1 changed_cells=0 by_col={}
+§LF_TABLE ad_val_rule legacy=332 local=332 cols_compared=9 onlyLegacy=0 onlyLocal=0 changed_cells=0 by_col={}
+§LF_TABLE ad_process legacy=476 local=476 cols_compared=27 onlyLegacy=0 onlyLocal=0 changed_cells=2 by_col={"help":2}
+§LF_TABLE ad_process_para legacy=1208 local=1208 cols_compared=35 onlyLegacy=0 onlyLocal=0 changed_cells=0 by_col={}
+§LF_TABLES legacy_rows=56062 patches=out/lf_patch_*.sql (NOT applied to any shipped db)
+§LF_WINDOWS pass=350 of N=370 (dictionary-level: tabs + fields + column attributes identical)
+§LF_PATCHED applied=10/10 errors=none pass=370 of N=370
+§LF_FINDINGS windows_equal=350/370 after_patch=370/370 — the product, not a harness failure
+§LF_VERDICT PASS fails=0 inconclusive=0
+§CTX_SUMMARY keys=45 EQ=41 NE=0 AMBIGUOUS=0 UNRESOLVED=0 NO_READ_TYPE=4 unresolved_keys=[customerLoc,customer2Loc,vendorLoc,glcat]
+§CTX_VERDICT PASS 41 keys literal==resolved on GardenWorld; 4 listed as not resolvable by an existing read type
+§CTX_NEG PASS wrong-names->UNRESOLVED=true wrong-client->nothing EQ=true wrong-literal(wh 104 vs resolved 103)->NE=true
+§DDS_FOREIGN c_doctype unscoped lists 1 SQLite row(s) of another client as onlyLocal (ids 0); scoped(11) correctly excludes them -> SAME otherwise
+§DDS_VACUOUS ad_sysconfig_seed scoped legacy=205 local=0 -- this table judged nothing
+§DDS_FOREIGN c_doctype unscoped lists 1 SQLite row(s) of another client as onlyLocal (ids 0); scoped(11) correctly excludes them -> SAME otherwise
+§DDS_SELFTEST PASS 23 tables SAME scoped(11) vs unscoped with rows on both sides, legacy rows judged=13416; vacuous (one side empty, listed not hidden): [ad_sysconfig_seed]
+§DDS_VACUOUS control client=99999 table=c_elementvalue legacy_rows=0 -> reported as vacuous, verdict INCONCLUSIVE (PASS refused)
+§DDS_NEG PASS scoped(11) detects corrupted 135.isautogenerateinout (was Y)=true and deleted doctype 148=true; new changed cells=1
+§DDS_VERDICT PASS
+§TRIAGE DATA_gaps=30 SCHEMA_gaps(tables lacking legacy columns)=9 RULE_queue=[F9-RCPT F9a-sale-backdated-before-receipt F9b-second-sale-same-backdate F9c-sale-today-after-backdated F9d-backdated-sale-beyond-history-qty P2P2-RCPT P2P3-INV P2P4-PAY PJI1-project-issue-stocked-item ] (fix DATA/SCHEMA first via patch+loader; a RULE listed while SCHEMA_gaps>0 may depend on it — see spec §29)
+§COVERAGE models_with_scenarios=18 of dictionary_doc_tables=34 [A_Asset_Addition,A_Asset_Disposed,A_Asset_Reval,A_Asset_Transfer,A_Depreciation_Entry,C_AllocationHdr,C_BankStatement,C_Cash,C_Invoice,C_Order,C_Payment,C_ProjectIssue,DD_Order,GL_Journal,M_InOut,M_Inventory,M_Movement,M_Requisition] all_scenarios_MATCH=12 of 18 · cycles_covered=1 of 2 [O2C:MATCH 6 steps,P2P:GAP 4 steps] · windows_identical=350 of 370 (370 of 370 after the generated dict patches, scratch only) · UNMAPPED scenarios (not counted): F9-PO,F9-RCPT,F9a-sale-backdated-before-receipt,F9b-second-sale-same-backdate,F9c-sale-today-after-backdated,F9d-backdated-sale-beyond-history-qty
+§COVERAGE_NOT_COVERED AD_WF_Node,C_BankTransfer,C_DepositBatch,C_DocTypeCounter,GL_JournalBatch,HR_Process,I_FixedAsset,MP_OT,M_InOutConfirm,M_MovementConfirm,M_Production,M_RMA,PP_Cost_Collector,PP_Order,PP_Order_Node,S_TimeExpense
+full log: /home/red1/.cache/bim_bridge/run_20261012_084134.log

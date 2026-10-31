@@ -8,6 +8,8 @@
 >
 > This page is the complete argument and the adversarial edge cases. The guards described here are benchmarked at fleet scale in **POS WAN-Scale** (`W-POS-WAN-SCALE`).
 
+> **The spine of this thesis — the Replication Scriptor (specified, not yet built).** A relay can carry signed events, but two questions are still answered by hand in every local-first system we found: *which device holds which data*, and *how a device asks for data it does not hold*. The scriptor is a standalone, serverless compiler: it reads the Application Dictionary (tables, references, roles, windows) and the declared needs of each device, and emits **signed per-device plans** (what to send, what to read, and when), a **signed catalog of deferred queries** (a query for data on another device becomes a request with a reply schedule — end of day, periodic — answered by the device that holds the data), and **owner assignments** for the few scarce resources that need one arbiter. Plans are simulated for completeness and leakage before any device sees them. To our knowledge no existing system combines these (prior art: see the 2026-10-25 update in [Local-First Prior Art](LocalFirstPriorArt.md)). Full spec: **`prompts/TEAMWORK_FRAMEWORK.md` §16**.
+
 ## In one minute
 
 "Serverless" usually means *the server is still there — you just can't see it.* You inherit all the complexity of a distributed system and lose the ability to watch it. That is not what this document means.

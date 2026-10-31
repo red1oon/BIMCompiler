@@ -1,0 +1,12 @@
+§S1 KEYGEN
+   🟢 S1 keygen into a directory outside the repo writes the pair — §PLAN_KEYGEN wrote plan_signing_{private,public}.jwk in /tmp/w-stmt-EyWn2W/k1 (keep the private key OUT of the repo)
+   🔴 S1 keygen into a directory INSIDE the repo is refused and writes nothing (the private key never enters the repo) — exit=0 wrote=true §PLAN_KEYGEN wrote plan_signing_{private,public}.jwk in /home/red1/bim-compiler/build/scriptor/tmp_keys_697516 (keep the private key OUT of the repo)
+§S2 STMT + CHECK
+   🔴 S2 stmt executors {c_order:102} prev none → a statement over the empty map; check ok — usage: keygen <dir> | sign <plan.js> <private.jwk> <public.jwk> <out.js> | usage: keygen <dir> | sign <plan.js> <private.jwk> <public.jwk> <out.js> 
+   🔴 S2 the same statement edited after signing → check REFUSED bad-signature — usage: keygen <dir> | sign <plan.js> <private.jwk> <public.jwk> <out.js>
+   🔴 S2 checked against a different trusted key → REFUSED untrusted-signer — usage: keygen <dir> | sign <plan.js> <private.jwk> <public.jwk> <out.js>
+   🔴 S2 a map the engine would refuse ({"C Order":1}) → the tool refuses to write it (self-check) — usage: keygen <dir> | sign <plan.js> <private.jwk> <public.jwk> <out.js>
+§S3 PUBLISH executors
+   🔴 S3 the store exposes publishStatement — ABSENT
+§STMT_ARMS red=S1,S2,S3 judged=7
+§STMT_VERDICT FAIL judged=7 fails=6 mutants=NOT RUN (the base run is red)

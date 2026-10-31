@@ -1,0 +1,19 @@
+[
+ {
+  "name": "cp_invgen_so1000003",
+  "process": 119,
+  "recordId": 0,
+  "tableId": 0,
+  "params": [
+   { "name": "AD_Org_ID", "value": 11 },
+   { "name": "C_Order_ID", "value": 1000003 },
+   { "name": "DocAction", "value": "CO" }
+  ],
+  "tables": ["c_invoice", "c_invoiceline", "c_order", "c_orderline", "fact_acct"],
+  "alignFromSeed": [
+   { "table": "ad_sequence", "where": "istableid='N' and ad_client_id in (0,11)" },
+   { "table": "c_order", "where": "c_order_id=1000003" },
+   { "table": "c_orderline", "where": "c_order_id=1000003" }
+  ]
+ }
+]

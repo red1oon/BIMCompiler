@@ -1,0 +1,27 @@
+witness_import_order main=exit=0 dev=exit=0
+witness_import_order_mutants main=exit=0 dev=exit=0
+witness_import_payment main=exit=0 dev=exit=0
+witness_import_payment_mutants main=exit=0 dev=exit=0
+witness_pos_sales main=exit=0 dev=exit=0
+witness_pos_sales_mutants main=exit=0 dev=exit=0
+witness_recurring main=exit=0 dev=exit=0
+witness_recurring_mutants main=exit=0 dev=exit=0
+witness_event_bus main=exit=0 dev=exit=0
+witness_master_save_rules main=exit=1 dev=exit=1
+witness_tip_readers main=exit=0 dev=exit=0
+witness_gen_tipread main=exit=0 dev=exit=0
+witness_tip_update_read main=exit=0 dev=exit=0
+witness_hq_clerk main=exit=124 dev=exit=124
+witness_post_invoice_diff main=exit=2 dev=exit=2
+witness_team_base main=exit=0 dev=exit=0
+witness_team_so main=exit=0 dev=exit=0
+witness_team_docaction main=exit=0 dev=exit=0
+witness_team_floor main=exit=2 dev=exit=2
+witness_team_plan main=exit=0 dev=exit=0
+witness_team_pill main=exit=0 dev=exit=0
+witness_team_publish main=exit=0 dev=exit=0
+witness_team_versions main=exit=0 dev=exit=0
+witness_team_executors main=exit=0 dev=exit=0
+witness_team_ui_pos main=exit=0 dev=exit=0
+witness_team_desktop main=exit=0 dev=exit=0
+ALLDONE
