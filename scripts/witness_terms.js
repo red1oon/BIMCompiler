@@ -43,8 +43,17 @@ var W = {
   tSo:       { f: 'witness_team_so.js', layer: 'browser', ok: /§W-TEAM-SO PASS/ },
   // OOTB layer: node witnesses that live in the bim-ootb tree (no Playwright); skipped only when the tree is missing
   tDocno:    { f: 'witness_docno_till.js', layer: 'ootb', ok: /§DT_VERDICT PASS/ },
-  tDocnoMut: { f: 'witness_docno_till.js', args: ['--mutants'], log: 'witness_docno_till_mutants.log', layer: 'ootb', ok: /§DT_MUTANTS killed=4\/4/ }
+  tDocnoMut: { f: 'witness_docno_till.js', args: ['--mutants'], log: 'witness_docno_till_mutants.log', layer: 'ootb', ok: /§DT_MUTANTS killed=4\/4/ },
+  // dir = a directory under the bim-ootb tree other than erp/tests; env() = environment the witness needs, built when it runs (never from a guess)
+  f1Mailbox: { f: 'witness_f1_mailbox.js', dir: 'common/tests', layer: 'ootb', ok: /§F1-VERDICT PASS judged=\d+ fails=0 inconclusive=0 product_fails=0/ },
+  tKeys:     { f: 'witness_team_keys.js', layer: 'ootb', ok: /§KW_VERDICT PASS judged=46 mutants=9\/9/, env: kwOldEnv }
 };
+// W-KEYS arm L1 compares against the engine BEFORE Stage 2 (bim-ootb #2473, commit 38499773); without KW_OLD it prints INCONCLUSIVE, never PASS. The pre-Stage-2 common/comm is read with git archive of that commit's parent.
+function kwOldEnv() {
+  var d = path.resolve(LOGS, '_kw_old'), r = cp.spawnSync('sh', ['-c', 'rm -rf "$D" && mkdir -p "$D" && git -C "$O" archive 38499773^ common/comm | tar -x -C "$D" --strip-components=2'], { env: Object.assign({}, process.env, { D: d, O: OOTB }), encoding: 'utf8' });
+  if (r.status !== 0 || !fs.existsSync(path.join(d, 'comm_store.js'))) { console.log('   (KW_OLD not built: ' + String(r.stderr).slice(0, 120) + ')'); return {}; }
+  return { KW_OLD: d };
+}
 var TERMS = [
   { id: 'statement-signed', term: 'LEDGER signed / STATEMENT', guarantee: 'a statement edited after signing, or signed by an outside key, is refused', w: ['plantrust', 'tPublish'],
     c: [{ id: 'edited-after-signing refused', w: 'plantrust', re: /keys edited after signing -> REFUSED:plan-trust-signature/ }, { id: 'outside signer refused', w: 'plantrust', re: /REFUSED:plan-trust-untrusted-signer/ }, { id: 'page: unsigned set refused', w: 'tPublish', re: /🟢 P3 an UNSIGNED set is refused by the engine itself/ }, { id: 'page: set edited after signing refused (bad-signature)', w: 'tPublish', re: /🟢 P3 a set edited after signing: .*B REFUSES the set \(bad-signature\)/ }, { id: 'page: outside key refused', w: 'tPublish', re: /🟢 P4 a set signed by a key outside the trust list: refused:untrusted-signer/ }] },
@@ -71,11 +80,26 @@ var TERMS = [
         { id: 'user preference cannot change the station', w: 'tDocno', re: /§DT PASS D13 - / }, { id: '4 mutants killed', w: 'tDocnoMut', re: /§DT_MUTANTS killed=4\/4/ },
         { id: 'legacy pilot (real WS logins) numbers the same at every position', w: 'tDocno', re: /§DT PASS D20 - LEGACY/ }, { id: 'demo station never numbers Org--n', w: 'tDocno', re: /§DT PASS D19 - / }] },
   // OPEN: stated, never run, never green. roadmap = where it closes.
-  { id: 'visit-bounded', term: 'VISIT (bounded)', open: true, roadmap: 'TEAMWORK §45.2 F1 per-device mailboxes', guarantee: 'Visit #1 download stays bounded as the team grows',
-    note: 'measured (build/scriptor/witness_scale_star_engine_{10,100,1000}.log, first station Visit #1 bytes_down): 367 KB / 4.5 MB / 45.8 MB at N=10/100/1000 (linear); triggered from N=10' },
+  { id: 'visit-bounded', term: 'VISIT (bounded)', guarantee: 'Visit #1 download stays bounded as the team grows: each device lists and downloads only its own mailbox, not every other device\'s bundle', w: ['f1Mailbox'],
+    note: 'TEAMWORK §45.2/§45.8 F1 per-device mailboxes (bim-ootb #2477; witness common/tests/witness_f1_mailbox.js, mutants run by the witness itself). Measured edge Visit #1 download 384 / 386 / 388 B at N=10/100/1000 (W-SCALE-STAR: build/scriptor/f1_mailboxes/scale_star_F1_final_engine_{10,100}.log, scale_star_F1_engine_1000.log; was 367 KB / 4.5 MB / 45.8 MB). Stated limits: the identity/roster floor on a first-ever Visit is not bounded (identity ops reach everyone); withholding of one mailbox bundle shows as a parked op, not a gap; an old app in a new star space silently misses mailbox mail; the GitHub listing is still O(N) calls',
+    c: [{ id: 'fetched objects flat in N (3 -> 12)', w: 'f1Mailbox', re: /PASS §F1-A objects fetched in a fresh Visit are flat in N \(3 -> 12\) - 5 -> 5/ },
+        { id: 'CONTROL pre-F1 engine: the same measure grows with N', w: 'f1Mailbox', re: /PASS §F1-A CONTROL pre-F1: the same measure GROWS with N .* - 8 -> 26 objects/ },
+        { id: 'CONTROL pre-F1: station 1 held foreign DOWN ops (now none)', w: 'f1Mailbox', re: /PASS §F1-E CONTROL pre-F1: station 1 DID download another station's DOWN envelope - foreign DOWN ops held=[1-9]\d*/ },
+        { id: 'station 1 never GETs another mailbox', w: 'f1Mailbox', re: /PASS §F1-E station 1 never GETs another station's mailbox nor the hub inbox - gets=\d+ foreign=0/ },
+        { id: 'CONTROL pre-F1 relay gate refuses the mailbox name', w: 'f1Mailbox', re: /PASS §F1-I CONTROL pre-F1: the same mailbox name is refused by the old gate/ },
+        { id: '7 mutants killed', w: 'f1Mailbox', re: /§F1-MUTANTS killed=7\/7 not_applied_or_crashed=0/ }] },
   { id: 'sealing-real', term: 'RELAY (sealing)', open: true, roadmap: 'TEAMWORK §29 (simulator PASS only, real comm layer untouched)', guarantee: 'the relay does not retain readable history',
     note: 'witness_scriptor_seal judges the simulator only; its own log marks the real layer INCONCLUSIVE' },
-  { id: 'key-roles-threshold', term: 'trusted keys (roles + threshold)', open: true, roadmap: 'TEAMWORK §46.5 versioning Stage 2', guarantee: 'key roles, a signing threshold, signed bundles' }
+  { id: 'key-roles-threshold', term: 'trusted keys (roles + threshold)', guarantee: 'a key may only do what its role allows; a rotation or publication needs the declared number of DISTINCT valid keys; a device clock never expires anything',
+    note: 'TEAMWORK §46.5 versioning Stage 2 (bim-ootb #2473; witness erp/tests/witness_team_keys.js, 9 mutants run by the witness, L1 legacy-fold arm needs KW_OLD = common/comm before #2473, built by the runner with git archive)', w: ['tKeys'],
+    c: [{ id: 'rotate-only key cannot publish', w: 'tKeys', re: /🟢 R2 the rotate-only key CANNOT publish an executors map — REFUSED:executors-role/ },
+        { id: 'publish-only key cannot rotate', w: 'tKeys', re: /🟢 R3 a publish-only key CANNOT rotate the list — REFUSED:plan-trust-role/ },
+        { id: 'one signature under T=2 refused', w: 'tKeys', re: /🟢 T1 T=2: ONE signature on a rotation is REFUSED — REFUSED:plan-trust-threshold/ },
+        { id: 'duplicate signer counted once', w: 'tKeys', re: /🟢 T1 T=2: the SAME key signing twice counts once - REFUSED — REFUSED:plan-trust-threshold/ },
+        { id: 'forged cosignature refused', w: 'tKeys', re: /🟢 T4 a forged cosignature .* — REFUSED:plan-trust-threshold/ },
+        { id: 'far-future device clock expires nothing', w: 'tKeys', re: /🟢 A1 with the device clock at 2040, entries expiring after the anchor are NOT expired .* — \[false,false,false\]/ },
+        { id: 'far-future device clock moves no anchor', w: 'tKeys', re: /🟢 A3 an op authored under a 2040 device clock does not move the anchor/ },
+        { id: 'legacy log folds to identical verdicts (L1 judged, not INCONCLUSIVE)', w: 'tKeys', re: /🟢 L1 a log written by the UNMODIFIED engine .* differing=0/ }] }
 ];
 
 var logs = {}, results = [], anyFail = false, anyJudged = false;
@@ -84,7 +108,7 @@ function runW(k) {
   var w = W[k], br = w.layer === 'browser' || w.layer === 'ootb', lf = path.join(LOGS, w.log || w.f.replace(/\.js$/, '.log')), why = w.layer === 'browser' ? BROWSER_WHY : w.layer === 'ootb' ? TREE_WHY : null;
   if (why) return logs[k] = { skipped: why, out: '', log: lf, passed: false };
   if (REUSE) { var o0 = fs.existsSync(lf) ? fs.readFileSync(lf, 'utf8') : '', e0 = (o0.match(/\nexit=(\d+)\s*$/) || [])[1]; return logs[k] = { exit: e0 === undefined ? null : +e0, out: o0, log: lf, reused: true, passed: e0 === '0' && w.ok.test(o0) }; }
-  var r = cp.spawnSync('node', [br ? path.join(OOTB, 'erp', 'tests', w.f) : path.join(__dirname, w.f)].concat(w.args || []), { cwd: br ? OOTB : ROOT, encoding: 'utf8', timeout: 600000, maxBuffer: 1 << 28 });
+  var r = cp.spawnSync('node', [br ? path.join(OOTB, w.dir || 'erp/tests', w.f) : path.join(__dirname, w.f)].concat(w.args || []), { cwd: br ? OOTB : ROOT, env: Object.assign({}, process.env, w.env ? w.env() : {}), encoding: 'utf8', timeout: 600000, maxBuffer: 1 << 28 });
   var out = (r.stdout || '') + (r.stderr || '') + '\nexit=' + r.status + '\n'; fs.writeFileSync(lf, out);
   console.log('   ran ' + (br ? w.layer + ' ' : '') + w.f + (w.args ? ' ' + w.args.join(' ') : '') + ' exit=' + r.status);
   return logs[k] = { exit: r.status, out: out, log: lf, passed: r.status === 0 && w.ok.test(out) };

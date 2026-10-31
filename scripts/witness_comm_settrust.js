@@ -14,7 +14,7 @@
 if (typeof globalThis.crypto === 'undefined' || !globalThis.crypto.subtle) globalThis.crypto = require('crypto').webcrypto;
 var path = require('path'), fs = require('fs'), os = require('os'), vm = require('vm'), cp = require('child_process'), nodeCrypto = require('crypto'), initSqlJs = require('sql.js');
 var ROOT = path.join(__dirname, '..');
-var GLUE = ['common/comm/team_versions.js', 'common/comm/op_versions.js'];
+var GLUE = ['common/comm/team_versions.js', 'common/comm/op_versions.js', 'common/comm/team_keys.js'];
 var OOTB = require('./lib_ootb.js').ootbDir(process.argv[2], GLUE);
 var COMM = process.env.WITNESS_COMM || path.join(ROOT, 'build', 'comm');
 var IS_MUTANT = !!process.env.WITNESS_COMM;
@@ -29,7 +29,10 @@ async function glue(trust, shipped) {
   var g = { console: { log: function (m) { logs.push(String(m)); } }, crypto: globalThis.crypto, TextEncoder: TextEncoder }, logs = [];
   g.window = g; g.globalThis = g; g.ERP = { OpVersions: require(path.join(OOTB, 'common/comm/op_versions.js')) };
   g.TEAM_PLAN_TRUST = trust; g.TEAM_SHAPE_V = { CRUD_CREATE: 2, CRUD_UPDATE: 2, CRUD_DELETE: 2 }; g.TEAM_UPCASTERS = shipped || [];
-  vm.runInContext(fs.readFileSync(path.join(OOTB, 'common/comm/team_versions.js'), 'utf8'), vm.createContext(g));
+  // Stage 2 (bim-ootb #2473): the set verifier judges through TeamKeys; with none it refuses every set (refused:bad-signature). Same source as team_versions (bim-ootb OOTB dir), run in the SAME vm.
+  g.CommEnvelope = require(path.join(COMM, 'comm_envelope.js'));                                     // team_keys.js reads global.CommEnvelope first (the vm has no require)
+  vm.runInContext(fs.readFileSync(path.join(OOTB, 'common/comm/team_keys.js'), 'utf8'), vm.createContext(g));
+  vm.runInContext(fs.readFileSync(path.join(OOTB, 'common/comm/team_versions.js'), 'utf8'), g);
   await g.TeamVersions.ready; return { TV: g.TeamVersions, g: g, logs: logs };
 }
 function setLines(G, op) { return G.logs.filter(function (l) { return /§TEAM_VERSIONS_SET/.test(l); }); }
@@ -88,8 +91,8 @@ function setLines(G, op) { return G.logs.filter(function (l) { return /§TEAM_VE
   if (red.length) { console.log('§SETTRUST_VERDICT FAIL judged=' + judged + ' fails=' + red.length + ' mutants=NOT RUN (the base run is red)'); process.exit(1); }
   var src = fs.readFileSync(path.join(COMM, 'comm_roster.js'), 'utf8'), killed = 0;
   var M = [['setTrust never recorded', /\/\*G7:RECORD\*\/[^\n]*/, '/*G7:RECORD*/', 'V1'],
-           ['recorded AFTER the POLICY\'s own rotation', 'var trustAt = trust;', 'var trustAt = rot || trust;', 'V3'],
-           ['a later POLICY carrying the same set overwrites its list', "if (setTrust[ck7] === undefined) setTrust[ck7] = trustAt", "setTrust[ck7] = trustAt", 'V2']];
+           ['recorded AFTER the POLICY\'s own rotation', 'var trustAt = trust, trustTAt = trustT;', 'var trustAt = rot || trust, trustTAt = trustT;', 'V3'],
+           ['a later POLICY carrying the same set overwrites its list', "if (setTrust[ck7] === undefined) { setTrust[ck7] = trustAt", "if (true) { setTrust[ck7] = trustAt", 'V2']];
   M.forEach(function (m) {
     var s2 = src.replace(m[1], m[2]); if (s2 === src) { console.log('   🔴 mutant ' + m[0] + ': MUTATION DID NOT APPLY'); return; }
     var d = fs.mkdtempSync(path.join(os.tmpdir(), 'mut-g7-')); fs.readdirSync(COMM).filter(function (x) { return /\.js$/.test(x); }).forEach(function (x) { fs.copyFileSync(path.join(COMM, x), path.join(d, x)); });

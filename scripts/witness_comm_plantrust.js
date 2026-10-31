@@ -15,7 +15,7 @@ var judged = 0, fails = 0;
 function say(ok, label, detail) { judged++; if (!ok) fails++; console.log('   ' + (ok ? '🟢' : '🔴') + ' ' + label + (detail ? ' — ' + detail : '')); return ok; }
 function clone(o) { return JSON.parse(JSON.stringify(o)); }
 function loadComm(dir) {                                  // the modules find each other through globalThis first (_dep), so clear them: each copy must load ITS OWN dependencies
-  ['CommEnvelope', 'CommOrder', 'CommRoster', 'CommAdmit', 'CommStore', 'CommPipe'].forEach(function (n) { delete globalThis[n]; });
+  ['CommEnvelope', 'CommOrder', 'CommRoster', 'CommAdmit', 'CommStore', 'CommPipe', 'TeamKeys'].forEach(function (n) { delete globalThis[n]; });
   return { ENV: require(path.join(dir, 'comm_envelope.js')), ROS: require(path.join(dir, 'comm_roster.js')), STORE: require(path.join(dir, 'comm_store.js')), PIPE: require(path.join(dir, 'comm_pipe.js')) };
 }
 var REAL = path.join(__dirname, '..', 'build', 'comm'), READER = require('./lib_ootb.js').ootbDir(process.env.OOTB_DIR, ['common/comm/team_scope.js']);
@@ -123,13 +123,14 @@ async function arms(C, quiet) {
   await copyWith('an invalid list is silently dropped at fold (genesis still trusted)', [['comm_roster.js', "&& (p.planTrust === undefined || !planTrustProblem(p.planTrust))", ""]]);
   await copyWith('planTrust not returned by the fold', [['comm_roster.js', "planTrust: w.trust, planTrustEpoch: w.trustEpoch,", ""]]);
   // §35 rotation rules, each broken on its own
-  await copyWith('§35 signer membership not checked', [['comm_roster.js', "if (!trust.some(function (k) { return sameKey(k, p.planTrust.signer); })) return no('plan-trust-untrusted-signer');", ""]]);
-  await copyWith('§35 statement signature not checked', [['comm_roster.js', "if (!ptSig[h]) return no('plan-trust-signature');", ""]]);
+  // Stage 2 (bim-ootb #2473): signer membership + signature are now judged by team_keys.js count() (called by the fold through TK.quorumReason), so those two mutants are anchored THERE.
+  await copyWith('§35 signer membership not checked', [['team_keys.js', "var why = idx < 0 ? 'untrusted-signer' : (!can(list[idx], need) ? 'role' : (!e.ok ? 'signature' : null));", "if (idx < 0) idx = 1000 + i; var why = (list[idx] && !can(list[idx], need)) ? 'role' : (!e.ok ? 'signature' : null);"]]);
+  await copyWith('§35 statement signature not checked', [['team_keys.js', "(!can(list[idx], need) ? 'role' : (!e.ok ? 'signature' : null))", "(!can(list[idx], need) ? 'role' : null)"]]);
   await copyWith('§35 prev not checked (replay)', [['comm_roster.js', "if (p.planTrust.prev !== ptHash[ENV.canonical(trust)]) return no('plan-trust-stale');", ""]]);
   await copyWith('§35 unpinned space may gain a list', [['comm_roster.js', "if (!trust) return no('plan-trust-unpinned');", "if (!trust) trust = [];"]]);
   await copyWith('§35 statement shape not validated', [['comm_roster.js', "if (p.planTrust !== undefined && planTrustStmtProblem(p.planTrust)) return 'planTrust';", ""]]);
   await copyWith('§35 rotation never applied (genesis list returned)', [['comm_roster.js', "if (rot) { trust = rot;", "if (false) { trust = rot;"]]);
-  await copyWith('§35 omitting planTrust drops the list', [['comm_roster.js', "          var rot = null;\n", "          var rot = null; if (p.planTrust === undefined) trust = null;\n"]]);
+  await copyWith('§35 omitting planTrust drops the list', [['comm_roster.js', "          var rot = null, newList = null, newT = trustT;\n", "          var rot = null, newList = null, newT = trustT; if (p.planTrust === undefined) trust = null;\n"]]);
   await copyWith('§35 rotation applied before the POLICY\'s other checks', [['comm_roster.js', "var pb = policyProblem(p); if (pb) return no('bad-policy:' + pb);", "if (p.planTrust !== undefined && ptSig[h] && !planTrustStmtProblem(p.planTrust)) trust = planTrustOf(p.planTrust.keys); var pb = policyProblem(p); if (pb) return no('bad-policy:' + pb);"]]);
   await copyWith('the key-count limit removed', [['comm_roster.js', "t.length > 3", "t.length > 99"]]);
   console.log('§PLANTRUST_VERDICT ' + (fails || red0.length ? 'FAIL' : 'PASS') + ' judged=' + judged + ' fails=' + fails);

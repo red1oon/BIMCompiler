@@ -18,7 +18,7 @@ var SIGN = require(path.join(__dirname, '..', 'build', 'scriptor', 'sign_plan.js
 var REAL = path.join(__dirname, '..', 'build', 'comm');
 var judged = 0, fails = 0;
 function say(ok, l, d) { judged++; if (!ok) fails++; console.log('   ' + (ok ? '🟢' : '🔴') + ' ' + l + (d ? ' — ' + d : '')); }
-function loadComm(dir) { ['CommEnvelope', 'CommOrder', 'CommRoster', 'CommAdmit', 'CommStore', 'CommPipe'].forEach(function (n) { delete globalThis[n]; });
+function loadComm(dir) { ['CommEnvelope', 'CommOrder', 'CommRoster', 'CommAdmit', 'CommStore', 'CommPipe', 'TeamKeys'].forEach(function (n) { delete globalThis[n]; });
   return { ENV: require(path.join(dir, 'comm_envelope.js')), STORE: require(path.join(dir, 'comm_store.js')), PIPE: require(path.join(dir, 'comm_pipe.js')) }; }
 var uuid = function () { return nodeCrypto.randomUUID(); }, HQ = 102, STATION = 103;
 
@@ -123,7 +123,7 @@ async function arms(C, quiet) {
   }
   await mut('role check off', [['comm_store.js', "if (!okExe) verdict[o.hash] = { verdict: 'REFUSED', reason: 'not-executor' };", "void 0;"]]);
   await mut('group refusal off', [['comm_store.js', "verdict[go.hash] = { verdict: 'REFUSED', reason: 'not-executor-group' };", "void 0;"]]);
-  await mut('signer check off', [['comm_roster.js', "if (!trust.some(function (k) { return sameKey(k, p.executors.signer); })) return no('executors-untrusted-signer');", ""]]);
+  await mut('signer check off', [['team_keys.js', "var why = idx < 0 ? 'untrusted-signer' : (!can(list[idx], need) ? 'role' : (!e.ok ? 'signature' : null));", "if (idx < 0) idx = 1000 + i; var why = (list[idx] && !can(list[idx], need)) ? 'role' : (!e.ok ? 'signature' : null);"]]   /* Stage 2: membership now lives in team_keys.count() */);
   await mut("'author' accepted again by the map shape", [['comm_roster.js', "!(Number.isInteger(m[t]) && m[t] >= 0)", "!(m[t] === 'author' || (Number.isInteger(m[t]) && m[t] >= 0))"]]);
   await mut('final-map read (E3 judges every op by the map in force at the END of the fold)', [['comm_store.js', "roster.exeAt(o.env.author, o.env.seq)", "roster.executors"]]);
   await mut('the policy carries no frontier (position unknown: every op falls under the newest map)', [['comm_store.js', "params = Object.assign({}, params, { from_seq: await frontier() });", "void 0;"]]);

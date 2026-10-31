@@ -12,10 +12,10 @@ Spec and history: `prompts/TEAMWORK_FRAMEWORK.md` §48 (lexicon, ledger, runner)
 node scripts/witness_terms.js --json /tmp/terms.json
 ```
 
-Read the **last line**. The state on 2026-10-31 (bim-ootb main):
+Read the **last line**. The state on 2026-10-31 (bim-ootb main, after F1 and versioning Stages 2-4):
 
 ```
-§TERMS_VERDICT PASS enforced=10 open=3 witness_failed=0 uncontrolled=0 browser=judged 5/skipped 0
+§TERMS_VERDICT PASS enforced=12 open=1 witness_failed=0 uncontrolled=0 browser=judged 5/skipped 0
 ```
 
 | Exit | Meaning |
@@ -65,5 +65,6 @@ The Team chip has two buttons:
 
 ## 6. What is not promised (yet)
 
-The open rows of the table. On 2026-10-31: a bounded Visit size as the team grows (per-device mailboxes), sealing in the real relay layer
-(tested in the simulator only), and key roles with a signing threshold.
+The open rows of the table. On 2026-10-31 one is left: sealing in the real relay layer (tested in the simulator only). A bounded Visit
+(per-device mailboxes, an edge's first Visit downloads about 385 bytes at 10, 100 and 1,000 devices) and key roles with a signing threshold
+became enforced terms the same day.
