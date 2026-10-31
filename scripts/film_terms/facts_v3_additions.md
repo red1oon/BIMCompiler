@@ -93,3 +93,20 @@ In the table a pipe is written `\|` for markdown; the regex itself contains a li
 4. **`sc10`/`sc100`** (397 / 399 bytes) are the SEALED build's first-download numbers (`read_scope_20261031/scale_10.log`, `scale_100.log`). The live objectives page still prints the earlier F1 figures (384 / 386 / 388 B). Both are true of their builds; the film uses the logs above. The sealed build was not measured at 1000 stations (`lim_n1000`).
 5. **Page quotes are not facts yet.** The three live pages are HTML, not logs. Any sentence the film quotes from a page must be frozen at record time (curl snapshot hashed into `sources`), as the Seatbelt panel was in v2. The quotes the script uses are listed in `script_en_v3.md` under each chapter and were read from the pages on 2026-11-01.
 6. **Stale statement on the live developers page:** it still says "six terms' engine tests open build/erp/ad_full.db ... Making that file reproducible is part of the same check" (written before the file was published to public storage). The film must NOT show that box as current; either the page is updated first or the card says "was".
+
+## Added for the public cut (2026-11-01; resolved with resolve.js on a scratch spec: FACTS_VERDICT PASS total=9 missing=0)
+Source: the real GitHub post box test (bim-ootb #2498), `build/scriptor/gaps_49_1/g4_GREEN.log`.
+| id | value | source log | regex | matched text |
+|---|---|---|---|---|
+| gh_downloaded | 6 | `build/scriptor/gaps_49_1/g4_GREEN.log` | `§RSGH-A Y \(a modified client .*opens \d+ of the (\d+) laned ops of X` g1 | `§RSGH-A Y (a modified client that lists and gets every m/ object through the real GitHub pipe) opens 0 of the ` |
+| gh_opened | 0 | `build/scriptor/gaps_49_1/g4_GREEN.log` | `§RSGH-A Y \(a modified client .*opens (\d+) of the \d+ laned ops of X` g1 | `§RSGH-A Y (a modified client that lists and gets every m/ object through the real GitHub pipe) opens 0 of the ` |
+| gh_ctl_opened | 3 | `build/scriptor/gaps_49_1/g4_GREEN.log` | `§RSGH-A CONTROL: .* opens (\d+) of \d+ over GitHub` g1 | `§RSGH-A CONTROL: with audience sealing off the same Y opens 3 of 3 over GitHub` |
+| gh_gap_mid | 4 | `build/scriptor/gaps_49_1/g4_GREEN.log` | `§RSGH-G the relay withholds X's MIDDLE .* gaps\(\) = exactly its box seq\(s\) \[(\d+)\]` g1 | `§RSGH-G the relay withholds X's MIDDLE m/hub/ bundle -> gaps() = exactly its box seq(s) [4]` |
+| gh_gap_last | 5 | `build/scriptor/gaps_49_1/g4_GREEN.log` | `§RSGH-G the relay withholds X's LAST bundle -> reported from X's signed head 'boxes': \[(\d+)\]` g1 | `§RSGH-G the relay withholds X's LAST bundle -> reported from X's signed head 'boxes': [5]` |
+| gh_judged | 9 | `build/scriptor/gaps_49_1/g4_GREEN.log` | `§RSGH_VERDICT PASS judged=(\d+)` g1 | `§RSGH_VERDICT PASS judged=9` |
+| gh_fails | 0 | `build/scriptor/gaps_49_1/g4_GREEN.log` | `§RSGH_VERDICT PASS judged=\d+ fails=(\d+)` g1 | `§RSGH_VERDICT PASS judged=9 fails=0` |
+| gh_word | PASS | `build/scriptor/gaps_49_1/g4_GREEN.log` | `§RSGH_VERDICT (PASS)` g1 | `§RSGH_VERDICT PASS` |
+| gh_ctl_flag | true | `build/scriptor/gaps_49_1/g4_GREEN.log` | `§RSGH-G CONTROL \(engine without 'box', same middle withholding over GitHub\): gaps\(\) = \[\]` (flag) | `§RSGH-G CONTROL (engine without 'box', same middle withholding over GitHub): gaps() = []` |
+
+**Pending (no persisted PASS log yet; slots in script_en_v3_public.md):** G2 fresh-copy run: `gaps_49_1/g2_stranger.log` currently ends `§DE_VERDICT FAIL ... §TERMS_VERDICT FAIL enforced=12 witness_failed=1` (a first attempt; one test failed in the fresh tree), so NO fresh-copy claim is made. G3 sealed 1,000-till first download: `g3_scale_1000.log` stops at enrolment (600 of 2000 devices), no `bytes_down` line yet.
+**Updated note:** the checkpoint limit (`lim_ckpt`) is fixed by bim-ootb #2498 (G5, `g5_GREEN.log` RS-J: STATE names 0 of 3 laned op ids); the developer cut still lists it and should be revised.
