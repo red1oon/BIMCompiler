@@ -46,6 +46,7 @@ var W = {
   tDocnoMut: { f: 'witness_docno_till.js', args: ['--mutants'], log: 'witness_docno_till_mutants.log', layer: 'ootb', ok: /§DT_MUTANTS killed=4\/4/ },
   // dir = a directory under the bim-ootb tree other than erp/tests; env() = environment the witness needs, built when it runs (never from a guess)
   f1Mailbox: { f: 'witness_f1_mailbox.js', dir: 'common/tests', layer: 'ootb', ok: /§F1-VERDICT PASS judged=\d+ fails=0 inconclusive=0 product_fails=0/ },
+  readScope: { f: 'witness_read_scope.js', dir: 'common/tests', layer: 'ootb', ok: /§RS_SCOPE_VERDICT PASS judged=\d+ fails=0 inconclusive=0 mutants=9\/9/ },
   tKeys:     { f: 'witness_team_keys.js', layer: 'ootb', ok: /§KW_VERDICT PASS judged=46 mutants=9\/9/, env: kwOldEnv }
 };
 // W-KEYS arm L1 compares against the engine BEFORE Stage 2 (bim-ootb #2473, commit 38499773); without KW_OLD it prints INCONCLUSIVE, never PASS. The pre-Stage-2 common/comm is read with git archive of that commit's parent.
@@ -88,8 +89,17 @@ var TERMS = [
         { id: 'station 1 never GETs another mailbox', w: 'f1Mailbox', re: /PASS §F1-E station 1 never GETs another station's mailbox nor the hub inbox - gets=\d+ foreign=0/ },
         { id: 'CONTROL pre-F1 relay gate refuses the mailbox name', w: 'f1Mailbox', re: /PASS §F1-I CONTROL pre-F1: the same mailbox name is refused by the old gate/ },
         { id: '7 mutants killed', w: 'f1Mailbox', re: /§F1-MUTANTS killed=7\/7 not_applied_or_crashed=0/ }] },
-  { id: 'sealing-real', term: 'RELAY (sealing)', open: true, roadmap: 'TEAMWORK §29 (simulator PASS only, real comm layer untouched)', guarantee: 'the relay does not retain readable history',
-    note: 'witness_scriptor_seal judges the simulator only; its own log marks the real layer INCONCLUSIVE' },
+  { id: 'sealing-real', term: 'RELAY (sealing)', guarantee: 'in a mailbox (star) space each station\'s mail is sealed to its pair (that station + head office): another member holding the team key reads none of it, the relay reads none of it, and a withheld mailbox bundle shows as a gap', w: ['readScope', 'f1Mailbox'],
+    note: 'TEAMWORK §45.11 (bim-ootb #2486; witness common/tests/witness_read_scope.js, 9 mutants run by the witness itself; RED first on the F1 engine: FAIL judged=39 fails=13). Stated limits: the relay still sees metadata (author, box, counts, timing, sizes); a checkpoint state is sealed with the team key, so record ids and verdicts of laned ops are visible to every member; an insider holding a pair key can leak it; office spaces and spaces founded before F1 keep the team-wide key (unchanged by design)',
+    c: [{ id: 'a modified member opens 0 of another station\'s mail', w: 'readScope', re: /PASS §RS-A Y \(a modified client that lists and gets every m\/ object\) opens 0 of the 3 laned ops of X - leaked=0/ },
+        { id: 'CONTROL team key only: the same member opens all of it', w: 'readScope', re: /PASS §RS-A CONTROL: with audience sealing off .* opens 3 of 3/ },
+        { id: 'a rogue key for another pair is never sealed to', w: 'readScope', re: /PASS §RS-E Y \(holding its own candidate key for p_X, accepted by the roster\) opens 0 of H's DOWN mail/ },
+        { id: 'revoked device opens 0 after the rekey', w: 'readScope', re: /PASS §RS-F the revoked device opens 0 of it/ },
+        { id: 'withheld middle bundle is a gap', w: 'readScope', re: /PASS §RS-G the relay withholds X's MIDDLE m\/hub\/ bundle -> gaps\(\) = \[\{author X, box hub, seq 2\}\]/ },
+        { id: 'withheld last bundle is a gap (signed head)', w: 'readScope', re: /PASS §RS-G the relay withholds X's LAST bundle -> reported from X's signed head/ },
+        { id: 'CONTROL F1 engine: the same withholding shows no gap', w: 'readScope', re: /PASS §RS-G CONTROL \(the F1 engine, same withholding\): gaps\(\) = \[\]/ },
+        { id: 'no key yet: held, never sent under the team key', w: 'readScope', re: /PASS §RS-H the held op is nowhere on the relay .* objects containing it=0/ },
+        { id: '9 mutants killed', w: 'readScope', re: /§RS_SCOPE_VERDICT PASS judged=\d+ fails=0 inconclusive=0 mutants=9\/9/ }] },
   { id: 'key-roles-threshold', term: 'trusted keys (roles + threshold)', guarantee: 'a key may only do what its role allows; a rotation or publication needs the declared number of DISTINCT valid keys; a device clock never expires anything',
     note: 'TEAMWORK §46.5 versioning Stage 2 (bim-ootb #2473; witness erp/tests/witness_team_keys.js, 9 mutants run by the witness, L1 legacy-fold arm needs KW_OLD = common/comm before #2473, built by the runner with git archive)', w: ['tKeys'],
     c: [{ id: 'rotate-only key cannot publish', w: 'tKeys', re: /🟢 R2 the rotate-only key CANNOT publish an executors map — REFUSED:executors-role/ },
