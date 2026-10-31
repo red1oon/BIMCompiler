@@ -1,0 +1,809 @@
+{
+ "_scope": "Film \"Terms you can check\": every fact = log file + regex + group; nothing typed. derive = arithmetic on another fact (div, dp).",
+ "facts": [
+  {
+   "id": "lex_relay_def",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md",
+   "regex": "^\\| RELAY \\| ([^|]+) \\| \"([^\"]+)\" \\|",
+   "group": 1
+  },
+  {
+   "id": "lex_relay_say",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md",
+   "regex": "^\\| RELAY \\| ([^|]+) \\| \"([^\"]+)\" \\|",
+   "group": 2
+  },
+  {
+   "id": "lex_ledger_def",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md",
+   "regex": "^\\| LEDGER \\| ([^|]+) \\| \"([^\"]+)\" \\|",
+   "group": 1
+  },
+  {
+   "id": "lex_ledger_say",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md",
+   "regex": "^\\| LEDGER \\| ([^|]+) \\| \"([^\"]+)\" \\|",
+   "group": 2
+  },
+  {
+   "id": "lex_bundle_def",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md",
+   "regex": "^\\| BUNDLE \\| ([^|]+) \\| \"([^\"]+)\" \\|",
+   "group": 1
+  },
+  {
+   "id": "lex_bundle_say",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md",
+   "regex": "^\\| BUNDLE \\| ([^|]+) \\| \"([^\"]+)\" \\|",
+   "group": 2
+  },
+  {
+   "id": "lex_visit_def",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md",
+   "regex": "^\\| VISIT \\| ([^|]+) \\| \"([^\"]+)\" \\|",
+   "group": 1
+  },
+  {
+   "id": "lex_visit_say",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md",
+   "regex": "^\\| VISIT \\| ([^|]+) \\| \"([^\"]+)\" \\|",
+   "group": 2
+  },
+  {
+   "id": "lex_ack_def",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md",
+   "regex": "^\\| ACK \\| ([^|]+) \\| \"([^\"]+)\" \\|",
+   "group": 1
+  },
+  {
+   "id": "lex_ack_say",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md",
+   "regex": "^\\| ACK \\| ([^|]+) \\| \"([^\"]+)\" \\|",
+   "group": 2
+  },
+  {
+   "id": "lex_statement_def",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md",
+   "regex": "^\\| STATEMENT \\| ([^|]+) \\| \"([^\"]+)\" \\|",
+   "group": 1
+  },
+  {
+   "id": "lex_statement_say",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md",
+   "regex": "^\\| STATEMENT \\| ([^|]+) \\| \"([^\"]+)\" \\|",
+   "group": 2
+  },
+  {
+   "id": "lex_n",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md",
+   "regex": "^\\| (?:RELAY|LEDGER|BUNDLE|VISIT|ACK|STATEMENT) \\| ",
+   "group": 1,
+   "kind": "count"
+  },
+  {
+   "id": "ver_enforced",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "§TERMS_VERDICT PASS enforced=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "ver_open",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "§TERMS_VERDICT PASS enforced=\\d+ open=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "ver_browser",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "§TERMS_VERDICT PASS .*browser=judged (\\d+)/",
+   "group": 1
+  },
+  {
+   "id": "ver_word",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "§TERMS_VERDICT (PASS)",
+   "group": 1
+  },
+  {
+   "id": "open0_term",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(VISIT \\(bounded\\)) \\| - \\| - \\| OPEN",
+   "group": 1
+  },
+  {
+   "id": "open1_term",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(RELAY \\(sealing\\)) \\| - \\| - \\| OPEN",
+   "group": 1
+  },
+  {
+   "id": "open2_term",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(trusted keys \\(roles \\+ threshold\\)) \\| - \\| - \\| OPEN",
+   "group": 1
+  },
+  {
+   "id": "enf0_term",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(LEDGER signed \\/ STATEMENT) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 1
+  },
+  {
+   "id": "enf0_ok",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(LEDGER signed \\/ STATEMENT) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 2
+  },
+  {
+   "id": "enf0_tot",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(LEDGER signed \\/ STATEMENT) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 3
+  },
+  {
+   "id": "enf1_term",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(trusted keys) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 1
+  },
+  {
+   "id": "enf1_ok",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(trusted keys) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 2
+  },
+  {
+   "id": "enf1_tot",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(trusted keys) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 3
+  },
+  {
+   "id": "enf2_term",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(STATEMENT \\(rule in force\\)) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 1
+  },
+  {
+   "id": "enf2_ok",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(STATEMENT \\(rule in force\\)) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 2
+  },
+  {
+   "id": "enf2_tot",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(STATEMENT \\(rule in force\\)) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 3
+  },
+  {
+   "id": "enf3_term",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(BUNDLE \\(Complete\\)) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 1
+  },
+  {
+   "id": "enf3_ok",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(BUNDLE \\(Complete\\)) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 2
+  },
+  {
+   "id": "enf3_tot",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(BUNDLE \\(Complete\\)) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 3
+  },
+  {
+   "id": "enf4_term",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(LEDGER convergent) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 1
+  },
+  {
+   "id": "enf4_ok",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(LEDGER convergent) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 2
+  },
+  {
+   "id": "enf4_tot",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(LEDGER convergent) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 3
+  },
+  {
+   "id": "enf5_term",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(VISIT \\(offline \\/ interrupted\\)) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 1
+  },
+  {
+   "id": "enf5_ok",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(VISIT \\(offline \\/ interrupted\\)) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 2
+  },
+  {
+   "id": "enf5_tot",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(VISIT \\(offline \\/ interrupted\\)) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 3
+  },
+  {
+   "id": "enf6_term",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(VISIT \\(voluntary, once\\)) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 1
+  },
+  {
+   "id": "enf6_ok",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(VISIT \\(voluntary, once\\)) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 2
+  },
+  {
+   "id": "enf6_tot",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(VISIT \\(voluntary, once\\)) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 3
+  },
+  {
+   "id": "enf7_term",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(ACK) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 1
+  },
+  {
+   "id": "enf7_ok",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(ACK) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 2
+  },
+  {
+   "id": "enf7_tot",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(ACK) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 3
+  },
+  {
+   "id": "enf8_term",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(BUNDLE \\(version skew\\)) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 1
+  },
+  {
+   "id": "enf8_ok",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(BUNDLE \\(version skew\\)) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 2
+  },
+  {
+   "id": "enf8_tot",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(BUNDLE \\(version skew\\)) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 3
+  },
+  {
+   "id": "enf9_term",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(LOCAL NUMBERING \\(LEDGER\\)) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 1
+  },
+  {
+   "id": "enf9_ok",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(LOCAL NUMBERING \\(LEDGER\\)) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 2
+  },
+  {
+   "id": "enf9_tot",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^(LOCAL NUMBERING \\(LEDGER\\)) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 3
+  },
+  {
+   "id": "mut_found",
+   "log": "build/scriptor/witness_terms_reuse_mutant_20261031.log",
+   "regex": "^BUNDLE \\(Complete\\) \\| [A-Z+]+ \\| (\\d+)/\\d+ refused \\| UNCONTROLLED",
+   "group": 1
+  },
+  {
+   "id": "mut_tot",
+   "log": "build/scriptor/witness_terms_reuse_mutant_20261031.log",
+   "regex": "^BUNDLE \\(Complete\\) \\| [A-Z+]+ \\| \\d+/(\\d+) refused \\| UNCONTROLLED",
+   "group": 1
+  },
+  {
+   "id": "mut_missing",
+   "log": "build/scriptor/witness_terms_reuse_mutant_20261031.log",
+   "regex": "control NOT FOUND: (.+)$",
+   "group": 1
+  },
+  {
+   "id": "mut_word",
+   "log": "build/scriptor/witness_terms_reuse_mutant_20261031.log",
+   "regex": "§TERMS_VERDICT (FAIL)",
+   "group": 1
+  },
+  {
+   "id": "mut_uncontrolled",
+   "log": "build/scriptor/witness_terms_reuse_mutant_20261031.log",
+   "regex": "§TERMS_VERDICT FAIL .*uncontrolled=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "mut_exit1",
+   "log": "build/scriptor/witness_terms_reuse_mutant_20261031.log",
+   "regex": "^exit=(1)$",
+   "group": 1
+  },
+  {
+   "id": "vis_unsent",
+   "log": "build/scriptor/terms_run/witness_terms_visit.log",
+   "regex": "a dead pipe: every claim still held locally, none marked sent — unsent=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "vis_sent_later",
+   "log": "build/scriptor/terms_run/witness_terms_visit.log",
+   "regex": "the later Visit sends every held claim — sent=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "vis_third",
+   "log": "build/scriptor/terms_run/witness_terms_visit.log",
+   "regex": "a third Visit sends nothing \\(once only\\) — sent=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "vis_nothing",
+   "log": "build/scriptor/terms_run/witness_terms_visit.log",
+   "regex": "nothing reached the shared place",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "liar_rbf",
+   "log": "build/scriptor/terms_run/witness_terms_visit.log",
+   "regex": "liar pipe: sent=\\d+ readBackFail=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "liar_sent",
+   "log": "build/scriptor/terms_run/witness_terms_visit.log",
+   "regex": "liar pipe: sent=(\\d+) readBackFail=",
+   "group": 1
+  },
+  {
+   "id": "vis_judged",
+   "log": "build/scriptor/terms_run/witness_terms_visit.log",
+   "regex": "§VISIT_VERDICT PASS judged=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "vis_fails",
+   "log": "build/scriptor/terms_run/witness_terms_visit.log",
+   "regex": "§VISIT_VERDICT PASS judged=\\d+ fails=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "ex_devices",
+   "log": "build/scriptor/terms_run/witness_comm_executors.log",
+   "regex": "MERGED on all (\\d+) devices",
+   "group": 1
+  },
+  {
+   "id": "ex_reason",
+   "log": "build/scriptor/terms_run/witness_comm_executors.log",
+   "regex": "its status op is REFUSED (not-executor) on EVERY device",
+   "group": 1
+  },
+  {
+   "id": "ex_reason_group",
+   "log": "build/scriptor/terms_run/witness_comm_executors.log",
+   "regex": "REFUSED (not-executor-group) everywhere",
+   "group": 1
+  },
+  {
+   "id": "ex_ghost",
+   "log": "build/scriptor/terms_run/witness_comm_executors.log",
+   "regex": "ghost=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "ex_judged",
+   "log": "build/scriptor/terms_run/witness_comm_executors.log",
+   "regex": "§EXE_VERDICT PASS judged=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "ex_fails",
+   "log": "build/scriptor/terms_run/witness_comm_executors.log",
+   "regex": "§EXE_VERDICT PASS judged=\\d+ fails=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "pt_sig",
+   "log": "build/scriptor/terms_run/witness_comm_plantrust.log",
+   "regex": "REFUSED:(plan-trust-signature) on both devices",
+   "group": 1
+  },
+  {
+   "id": "pt_backup",
+   "log": "build/scriptor/terms_run/witness_comm_plantrust.log",
+   "regex": "the BACKUP signs \\[K1,K3\\] \\(primary dropped, lost-key recovery\\): MERGED",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "pt_judged",
+   "log": "build/scriptor/terms_run/witness_comm_plantrust.log",
+   "regex": "§PLANTRUST_VERDICT PASS judged=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "pt_fails",
+   "log": "build/scriptor/terms_run/witness_comm_plantrust.log",
+   "regex": "§PLANTRUST_VERDICT PASS judged=\\d+ fails=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "x7_before",
+   "log": "build/scriptor/terms_run/witness_team_executors.log",
+   "regex": "not-executor verdicts (\\d+) -> \\d+",
+   "group": 1
+  },
+  {
+   "id": "x7_after",
+   "log": "build/scriptor/terms_run/witness_team_executors.log",
+   "regex": "not-executor verdicts \\d+ -> (\\d+)",
+   "group": 1
+  },
+  {
+   "id": "wx_judged",
+   "log": "build/scriptor/terms_run/witness_team_executors.log",
+   "regex": "§WX_VERDICT PASS judged=(\\d+) fails=0",
+   "group": 1
+  },
+  {
+   "id": "wx_fails",
+   "log": "build/scriptor/terms_run/witness_team_executors.log",
+   "regex": "§WX_VERDICT PASS judged=\\d+ fails=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "wx_mut",
+   "log": "build/scriptor/terms_run/witness_team_executors.log",
+   "regex": "mutants_killed=(\\d+)/\\d+",
+   "group": 1
+  },
+  {
+   "id": "x7_unchanged",
+   "log": "build/scriptor/terms_run/witness_team_executors.log",
+   "regex": "and the order on A is unchanged",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "x9_stays",
+   "log": "build/scriptor/terms_run/witness_team_executors.log",
+   "regex": "X9 after the map \\{\\} the SET_STATUS the station was refused on STAYS refused",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "clash_a",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log",
+   "regex": "PASS D5 .*clash=\\[\"(\\d+)\",\"(\\d+)\",\"(\\d+)\"\\]",
+   "group": 1
+  },
+  {
+   "id": "clash_b",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log",
+   "regex": "PASS D5 .*clash=\\[\"(\\d+)\",\"(\\d+)\",\"(\\d+)\"\\]",
+   "group": 2
+  },
+  {
+   "id": "clash_c",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log",
+   "regex": "PASS D5 .*clash=\\[\"(\\d+)\",\"(\\d+)\",\"(\\d+)\"\\]",
+   "group": 3
+  },
+  {
+   "id": "d9_order",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log",
+   "regex": "PASS D9 .*:: \\{\"order\":\"([^\"]+)\",\"invoice\":\"([^\"]+)\",\"shipment\":\"([^\"]+)\",\"payment\":\"([^\"]+)\"\\}",
+   "group": 1
+  },
+  {
+   "id": "d9_invoice",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log",
+   "regex": "PASS D9 .*:: \\{\"order\":\"([^\"]+)\",\"invoice\":\"([^\"]+)\",\"shipment\":\"([^\"]+)\",\"payment\":\"([^\"]+)\"\\}",
+   "group": 2
+  },
+  {
+   "id": "d9_shipment",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log",
+   "regex": "PASS D9 .*:: \\{\"order\":\"([^\"]+)\",\"invoice\":\"([^\"]+)\",\"shipment\":\"([^\"]+)\",\"payment\":\"([^\"]+)\"\\}",
+   "group": 3
+  },
+  {
+   "id": "d9_payment",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log",
+   "regex": "PASS D9 .*:: \\{\"order\":\"([^\"]+)\",\"invoice\":\"([^\"]+)\",\"shipment\":\"([^\"]+)\",\"payment\":\"([^\"]+)\"\\}",
+   "group": 4
+  },
+  {
+   "id": "d10_none",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log",
+   "regex": "PASS D10 .*shared=\\[\\]",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "d10_types",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log",
+   "regex": "no shared number on any of the (\\d+) doc types",
+   "group": 1
+  },
+  {
+   "id": "forged_doc",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log",
+   "regex": "§TEAM_DOCNO_REFUSED docno-station documentno=(HQ-joesales-\\d+) expected prefix (HQ-gardenusr-)",
+   "group": 1
+  },
+  {
+   "id": "forged_prefix",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log",
+   "regex": "§TEAM_DOCNO_REFUSED docno-station documentno=HQ-joesales-\\d+ expected prefix (HQ-gardenusr-)",
+   "group": 1
+  },
+  {
+   "id": "forged_devices",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log",
+   "regex": "§DT-FOLD honest=.*?forged=((?:REFUSED:docno-station ?)+)",
+   "group": 1,
+   "kind": "count",
+   "of": "REFUSED:docno-station"
+  },
+  {
+   "id": "d20_pos",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log",
+   "regex": "PASS D20 .*positions=(\\d+) keys=",
+   "group": 1
+  },
+  {
+   "id": "d20_legacy",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log",
+   "regex": "§DT-LEGACY-STATION plan=\\S+ legacy=(\\S+) twin=",
+   "group": 1
+  },
+  {
+   "id": "d20_twin",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log",
+   "regex": "§DT-LEGACY-STATION plan=\\S+ legacy=\\S+ twin=(\\S+) \\|",
+   "group": 1
+  },
+  {
+   "id": "d19_num",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log",
+   "regex": "PASS D19 .*number=(HQ-gardenad-\\d+)",
+   "group": 1
+  },
+  {
+   "id": "dt_inconc",
+   "log": "build/scriptor/witness_docno_till_48_11d_D20.log",
+   "regex": "§DT_VERDICT PASS judged=\\d+ fails=0 inconclusive=(\\d+) \\(legacy arm\\)",
+   "group": 1
+  },
+  {
+   "id": "page_order",
+   "log": "build/scriptor/uservalue_48_11d/witness_team_so.log",
+   "regex": "c_order (HQ-gardenad-\\d+) \\(",
+   "group": 1
+  },
+  {
+   "id": "page_judged",
+   "log": "build/scriptor/uservalue_48_11d/witness_team_so.log",
+   "regex": "§W-TEAM-SO PASS judged=(\\d+) fails=0 inconclusive=0 pageerrors=0",
+   "group": 1
+  },
+  {
+   "id": "rec_rows",
+   "log": "build/scriptor/terms_run_record.json",
+   "regex": "^(\\d+)$",
+   "group": 1,
+   "kind": "cmd",
+   "command": "node -e \"const d=JSON.parse(require('fs').readFileSync('build/scriptor/terms_run_record.json','utf8'));console.log(d.rows.length)\""
+  },
+  {
+   "id": "rec_enf",
+   "log": "build/scriptor/terms_run_record.json",
+   "regex": "^(\\d+)$",
+   "group": 1,
+   "kind": "cmd",
+   "command": "node -e \"const d=JSON.parse(require('fs').readFileSync('build/scriptor/terms_run_record.json','utf8'));console.log(d.rows.filter(r=>r.status==='ENFORCED').length)\""
+  },
+  {
+   "id": "rec_open",
+   "log": "build/scriptor/terms_run_record.json",
+   "regex": "^(\\d+)$",
+   "group": 1,
+   "kind": "cmd",
+   "command": "node -e \"const d=JSON.parse(require('fs').readFileSync('build/scriptor/terms_run_record.json','utf8'));console.log(d.rows.filter(r=>r.status==='OPEN').length)\""
+  },
+  {
+   "id": "sb_rows",
+   "log": "build/scriptor/seatbelt_48_13/witness_team_so.log",
+   "regex": "\\] §TEAM_SEATBELT open verdict=ADVISE advise=\\S+ (.*)$",
+   "group": 1,
+   "kind": "count",
+   "of": "S\\d="
+  },
+  {
+   "id": "sb_advise",
+   "log": "build/scriptor/seatbelt_48_13/witness_team_so.log",
+   "regex": "\\] §TEAM_SEATBELT open verdict=ADVISE advise=\\S+ (.*)$",
+   "group": 1,
+   "kind": "count",
+   "of": "=ADVISE"
+  },
+  {
+   "id": "sb_s7",
+   "log": "build/scriptor/seatbelt_48_13/witness_team_so.log",
+   "regex": "\"id\":\"S7\",\"st\":\"ADVISE\",\"t\":\"S7(changed by another device)ADVISE",
+   "group": 1
+  },
+  {
+   "id": "sb_s3",
+   "log": "build/scriptor/seatbelt_48_13/witness_team_so.log",
+   "regex": "\"id\":\"S3\",\"st\":\"OK\",\"t\":\"S3(unsent changes)",
+   "group": 1
+  },
+  {
+   "id": "sb_s9",
+   "log": "build/scriptor/seatbelt_48_13/witness_team_so.log",
+   "regex": "\"id\":\"S9\",\"st\":\"ADVISE\",\"t\":\"S9(local numbering)ADVISE",
+   "group": 1
+  },
+  {
+   "id": "sb_word",
+   "log": "build/scriptor/seatbelt_48_13/witness_team_so.log",
+   "regex": "\\] §TEAM_SEATBELT open verdict=(ADVISE)",
+   "group": 1
+  },
+  {
+   "id": "sb_went_ahead",
+   "log": "build/scriptor/seatbelt_48_13/witness_team_so.log",
+   "regex": "\\(advisory: (the DocAction went ahead)\\)",
+   "group": 1
+  },
+  {
+   "id": "open0_what",
+   "log": "build/scriptor/terms_run_record.json",
+   "regex": "\"id\": \"visit-bounded\"[\\s\\S]*?\"guarantee\": \"([^\"]+)\"",
+   "group": 1
+  },
+  {
+   "id": "open1_what",
+   "log": "build/scriptor/terms_run_record.json",
+   "regex": "\"id\": \"sealing-real\"[\\s\\S]*?\"guarantee\": \"([^\"]+)\"",
+   "group": 1
+  },
+  {
+   "id": "open2_what",
+   "log": "build/scriptor/terms_run_record.json",
+   "regex": "\"id\": \"key-roles-threshold\"[\\s\\S]*?\"guarantee\": \"([^\"]+)\"",
+   "group": 1
+  },
+  {
+   "id": "open0_fix",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^VISIT \\(bounded\\) \\| - \\| - \\| OPEN \\| TEAMWORK §[\\d.]+ F\\d (per-device mailboxes)",
+   "group": 1
+  },
+  {
+   "id": "open1_state",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "^RELAY \\(sealing\\) .*\\((simulator PASS only, real comm layer untouched)\\)",
+   "group": 1
+  },
+  {
+   "id": "visit_only_engine",
+   "log": "build/scriptor/witness_terms_record_20261031.log",
+   "regex": "ENFORCED \\[engine only \\(no browser witness located\\)\\]",
+   "group": 1,
+   "kind": "count"
+  },
+  {
+   "id": "n10",
+   "log": "build/scriptor/witness_scale_star_engine_10.log",
+   "regex": "§STAR-POINT \\{\"n\":(10),\"m\"",
+   "group": 1
+  },
+  {
+   "id": "bytes10",
+   "log": "build/scriptor/witness_scale_star_engine_10.log",
+   "regex": "§STAR-EDGE-V1 s:0 \\{[^}]*\"bytes_down\":(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "n100",
+   "log": "build/scriptor/witness_scale_star_engine_100.log",
+   "regex": "§STAR-POINT \\{\"n\":(100),\"m\"",
+   "group": 1
+  },
+  {
+   "id": "bytes100",
+   "log": "build/scriptor/witness_scale_star_engine_100.log",
+   "regex": "§STAR-EDGE-V1 s:0 \\{[^}]*\"bytes_down\":(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "n1000",
+   "log": "build/scriptor/witness_scale_star_engine_1000.log",
+   "regex": "§STAR-POINT \\{\"n\":(1000),\"m\"",
+   "group": 1
+  },
+  {
+   "id": "bytes1000",
+   "log": "build/scriptor/witness_scale_star_engine_1000.log",
+   "regex": "§STAR-EDGE-V1 s:0 \\{[^}]*\"bytes_down\":(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "kb10",
+   "kind": "derive",
+   "of": "bytes10",
+   "div": 1000,
+   "dp": 0
+  },
+  {
+   "id": "mb100",
+   "kind": "derive",
+   "of": "bytes100",
+   "div": 1000000,
+   "dp": 1
+  },
+  {
+   "id": "mb1000",
+   "kind": "derive",
+   "of": "bytes1000",
+   "div": 1000000,
+   "dp": 1
+  },
+  {
+   "id": "mb1000r",
+   "kind": "derive",
+   "of": "bytes1000",
+   "div": 1000000,
+   "dp": 0
+  },
+  {
+   "id": "star_limits",
+   "log": "build/scriptor/witness_scale_star_engine_1000.log",
+   "regex": "§STAR-LIMITS one Node process family simulates all devices \\(no network latency, no browser\\)",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "gov_mit",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md",
+   "regex": "(A clone is free under MIT); it inherits the objectives only while its own terms run still passes",
+   "group": 1
+  },
+  {
+   "id": "gov_while",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md",
+   "regex": "A clone is free under MIT; it inherits the objectives (only while its own terms run still passes) with no control weakened",
+   "group": 1
+  },
+  {
+   "id": "gov_name",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md",
+   "regex": "\\*\\*Name:\\*\\* \"(Project quality objectives)\"",
+   "group": 1
+  }
+ ]
+}
