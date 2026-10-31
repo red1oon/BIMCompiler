@@ -172,7 +172,7 @@ office, the cut, the roles, the plan levels and the roof tops read from the titl
 | Marking | What it is | Where it comes from in the walk | How you give it |
 |---|---|---|---|
 | Role (`@VIEW`) | plan, elevation, roof plan or section | the title, read without its scale or a trailing note (`FRONT ELEVATION  1:100` → elevation) | accept; pick from the list only when no title says it |
-| `@SET` | the name of the set | nothing in the drawing | type once; the other sheets get it as yellow |
+| `@SET` | the name of the set | nothing in the drawing; when no sheet names it, the placeholder `BUILD-NAME` is offered (orange) | type once and the other sheets get it as yellow; or accept the placeholder to go on: it stays marked *default* until you type the real name on any one sheet, which replaces it on every sheet |
 | `@UNITS` | drawing units | the file header (`$INSUNITS`), shown as yellow | accept |
 | `@LEVEL` | a plan's storey level, metres | the plan title (`LEVEL 2 PLAN (FFL +3.100)` → 3.1) | accept; type it only when no title states it |
 | `@ROOF` | the roof top, metres | a roof-top text on the sheet (`T/ROOF +6.457`, `TOP OF ROOF ...`); two different values on one sheet are not proposed | accept; type it where no text states it |
@@ -185,7 +185,7 @@ office, the cut, the roles, the plan levels and the roof tops read from the titl
 On the walk of 2026-10-22 the Duplex needed 7 role picks and 11 typed values (set name 1, levels 3, roof top 6,
 cut 1). Since §D46 (2026-10-23) the roles, the levels, the roof tops and the cut are read from the titles and texts
 (W-TITLE: 8 of 8 roles by **Accept all** alone, 0 wrong), so the set name is the one value left to type for the
-sheets. The whole walk has not been re-counted since.
+sheets, and since §D98 (2026-10-31) even that one can be the accepted placeholder `BUILD-NAME` until you name the set. The whole walk has not been re-counted since.
 
 #### 3c · Wall tops
 After the sheets are complete, **Wall tops** lists the interior walls no elevation shows (17 on the ground floor,
