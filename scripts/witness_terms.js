@@ -6,7 +6,7 @@
  * One row per TERM. A row is ENFORCED only when (a) every witness script exits 0 AND prints its own PASS verdict, and (b) every broken control it names is FOUND in the
  * witness log as a line proving the defect was refused. A witness that passes with a control line missing is reported UNCONTROLLED (not enforced). Nothing judged = INCONCLUSIVE.
  * A row with no witness is OPEN and carries its roadmap id; it is never run and never green. Offline: node + the repo's own build/ only, no network.
- * Run:   node scripts/witness_terms.js [--json out.json] [--only term-id,...] [--logs dir] [--ootb dir] [--browser 0] [--reuse 1]
+ * Run:   node scripts/witness_terms.js [--json out.json] [--only term-id,...] [--logs dir] [--ootb dir] [--browser 0] [--reuse 1] [--fresh 1]
  * Two layers (§48.12): ENGINE witnesses (node, this repo) and BROWSER witnesses (bim-ootb erp/tests/witness_team_*, the real erp/idempiere.html in headless Chromium).
  * A browser witness that cannot run (no tree / no Playwright / --browser 0) is SKIPPED with its reason; the row then says 'engine only' and the verdict line prints
  * browser=judged N/skipped M, so a skipped layer is never read as a pass. --reuse 1 judges the logs already in --logs without re-running (for mutation checks).
@@ -18,7 +18,8 @@ var cp = require('child_process'), fs = require('fs'), path = require('path');
 var ROOT = path.join(__dirname, '..'), argv = process.argv.slice(2), A = {};
 for (var i = 0; i < argv.length; i++) if (/^--/.test(argv[i])) A[argv[i].slice(2)] = argv[++i];
 var LOGS = A.logs || path.join(ROOT, 'build', 'scriptor', 'terms_run'), ONLY = A.only ? A.only.split(',') : null;
-var OOTB = A.ootb || path.join(process.env.HOME || '', 'bim-ootb'), REUSE = A.reuse === '1';
+var OOTB = A.ootb || path.join(process.env.HOME || '', 'bim-ootb'), REUSE = A.reuse === '1', FRESH = A.fresh === '1';
+var WC = require('./witness_cache.js'), cacheInfo = {};   // §51.1 C1
 var TREE_WHY = !fs.existsSync(path.join(OOTB, 'erp', 'idempiere.html')) ? 'no bim-ootb tree at ' + OOTB : null;
 var BROWSER_WHY = A.browser === '0' ? '--browser 0' : TREE_WHY ? TREE_WHY
   : !(fs.existsSync(path.join(OOTB, 'tests', 'node_modules', 'playwright')) || fs.existsSync(path.join(OOTB, 'node_modules', 'playwright'))) ? 'no Playwright in ' + OOTB : null;
@@ -118,9 +119,14 @@ function runW(k) {
   var w = W[k], br = w.layer === 'browser' || w.layer === 'ootb', lf = path.join(LOGS, w.log || w.f.replace(/\.js$/, '.log')), why = w.layer === 'browser' ? BROWSER_WHY : w.layer === 'ootb' ? TREE_WHY : null;
   if (why) return logs[k] = { skipped: why, out: '', log: lf, passed: false };
   if (REUSE) { var o0 = fs.existsSync(lf) ? fs.readFileSync(lf, 'utf8') : '', e0 = (o0.match(/\nexit=(\d+)\s*$/) || [])[1]; return logs[k] = { exit: e0 === undefined ? null : +e0, out: o0, log: lf, reused: true, passed: e0 === '0' && w.ok.test(o0) }; }
-  var r = cp.spawnSync('node', [br ? path.join(OOTB, w.dir || 'erp/tests', w.f) : path.join(__dirname, w.f)].concat(w.args || []), { cwd: br ? OOTB : ROOT, env: Object.assign({}, process.env, w.env ? w.env() : {}), encoding: 'utf8', timeout: 600000, maxBuffer: 1 << 28 });
-  var out = (r.stdout || '') + (r.stderr || '') + '\nexit=' + r.status + '\n'; fs.writeFileSync(lf, out);
-  console.log('   ran ' + (br ? w.layer + ' ' : '') + w.f + (w.args ? ' ' + w.args.join(' ') : '') + ' exit=' + r.status);
+  // §51.1 C1: through the content-keyed cache unless --fresh 1 (a hit replays the stored log behind a §CACHED line; nothing runs). keyEnv = the env with this run's log dir normalised out.
+  var wEnv = w.env ? w.env() : {}, keyEnv = {}; Object.keys(wEnv).forEach(function (e) { keyEnv[e] = String(wEnv[e]).split(path.resolve(LOGS)).join('<logs>'); });
+  var r = WC.runSync({ file: br ? path.join(OOTB, w.dir || 'erp/tests', w.f) : path.join(__dirname, w.f), args: w.args || [], cwd: br ? OOTB : ROOT, env: wEnv, keyEnv: keyEnv,
+                       roots: [ROOT, OOTB], exclude: [LOGS], fresh: FRESH, timeout: 600000 });
+  var out = r.out + '\nexit=' + r.exit + '\n'; fs.writeFileSync(lf, out);
+  console.log('   ' + (r.cached ? 'cached ' : 'ran ') + (br ? w.layer + ' ' : '') + w.f + (w.args ? ' ' + w.args.join(' ') : '') + ' exit=' + r.exit + ' inputs=' + r.inputs + ' key=' + r.key.slice(0, 12));
+  if (r.skip) console.log('   §CACHE_SKIP ' + w.f + ' reason=' + r.skip);
+  r.status = r.exit; cacheInfo[k] = { cached: r.cached, inputs: r.inputs, key: r.key.slice(0, 12), skip: r.skip };
   return logs[k] = { exit: r.status, out: out, log: lf, passed: r.status === 0 && w.ok.test(out) };
 }
 var nBr = { judged: 0, skipped: 0 }, brSeen = {};
@@ -132,7 +138,7 @@ TERMS.forEach(function (t) {
     var r = runW(k), br = W[k].layer === 'browser';   // the browser counter is Playwright runs only; the ootb layer shows in the row's layers
     if (br && !brSeen[k]) { brSeen[k] = 1; nBr[r.skipped ? 'skipped' : 'judged']++; }
     if (!r.skipped) anyJudged = true;
-    row.witnesses.push({ file: W[k].f, layer: W[k].layer || 'engine', exit: r.exit, verdict: r.skipped ? 'SKIPPED' : r.passed ? 'PASS' : 'FAIL', skipped: r.skipped || null, reused: !!r.reused, log: path.relative(ROOT, r.log) });
+    row.witnesses.push({ file: W[k].f, layer: W[k].layer || 'engine', exit: r.exit, verdict: r.skipped ? 'SKIPPED' : r.passed ? 'PASS' : 'FAIL', skipped: r.skipped || null, reused: !!r.reused, cached: !!(cacheInfo[k] && cacheInfo[k].cached), inputs: cacheInfo[k] ? cacheInfo[k].inputs : null, key: cacheInfo[k] ? cacheInfo[k].key : null, log: path.relative(ROOT, r.log) });
   });
   t.c.forEach(function (c) { var r = runW(c.w); if (r.skipped) { row.controls.push({ id: c.id, layer: 'browser', found: null, skipped: r.skipped, evidence: null }); return; } var m = r.out.match(c.re); row.controls.push({ id: c.id, layer: W[c.w].layer || 'engine', found: !!m, evidence: m ? m[0].slice(0, 160) : null }); });
   var judgedW = row.witnesses.filter(function (x) { return x.verdict !== 'SKIPPED'; }), judgedC = row.controls.filter(function (x) { return x.found !== null; });
@@ -166,5 +172,5 @@ var n = { ENFORCED: 0, OPEN: 0, 'WITNESS-FAILED': 0, UNCONTROLLED: 0 }; results.
 var verdict = anyFail ? 'FAIL' : (!anyJudged ? 'INCONCLUSIVE' : 'PASS');
 console.log('§TERMS_BROWSER judged=' + nBr.judged + ' skipped=' + nBr.skipped + (BROWSER_WHY ? ' reason="' + BROWSER_WHY + '"' : '') + (REUSE ? ' reused-logs' : ''));
 console.log('§TERMS_VERDICT ' + verdict + ' enforced=' + n.ENFORCED + ' open=' + n.OPEN + ' witness_failed=' + n['WITNESS-FAILED'] + ' uncontrolled=' + n.UNCONTROLLED + ' browser=judged ' + nBr.judged + '/skipped ' + nBr.skipped);
-if (A.json) fs.writeFileSync(A.json, JSON.stringify({ schema: 'terms-v1', kind: 'harness', at: new Date().toISOString(), node: process.version, verdict: verdict, browser: { judged: nBr.judged, skipped: nBr.skipped, reason: BROWSER_WHY, reused: REUSE }, rows: results }, null, 1));
+if (A.json) fs.writeFileSync(A.json, JSON.stringify({ schema: 'terms-v1', kind: 'harness', at: new Date().toISOString(), node: process.version, fresh: FRESH, cachedRows: Object.keys(cacheInfo).filter(function (k) { return cacheInfo[k].cached; }).length, verdict: verdict, browser: { judged: nBr.judged, skipped: nBr.skipped, reason: BROWSER_WHY, reused: REUSE }, rows: results }, null, 1));
 process.exit(anyFail ? 1 : (!anyJudged ? 2 : 0));
