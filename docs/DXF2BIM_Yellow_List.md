@@ -83,6 +83,8 @@ A 2D drawing carries only some of what a model needs. Everything it does not sta
 | `window.height` | IfcWindow | m | **1.2** | guess | typical window height | 1, 1.2, 1.5 |
 | `window.sill` | IfcWindow | m | **0.9** | guess | typical sill height above the floor | 0.9, 1, 1.1 |
 | `window.width` | IfcWindow | m | **1.2** | guess | typical window width; used when a plan symbol gives no width | 0.9, 1.2, 1.5 |
+| `analytical.node_snap` | analytical | m | **0.25** | guess | ends closer than this are one joint in the analytical model (§D103): a beam drawn to a column face and a column top under the beam's axis are one joint; too small leaves joints open (dangling ends), too large merges separate joints | 0.05, 0.1, 0.15, 0.25, 0.4 |
+| `analytical.support` | analytical | text | **FIXED** | guess | a footing is assumed to restrain the column base; the engineer confirms (FIXED = no translation or rotation, PINNED = no translation) | FIXED, PINNED |
 | `load.rc_steel_percent` | load | % by volume | **1** | guess | main reinforcement not drawn; BNBC 2012 Table 2.2.1 note: "for reinforced concrete, add 0.63 kN/m3 for each 1% by volume of main reinforcement" | 0.5, 1, 1.5, 2, 3 |
 | `load.roof_sheet` | load | kN/m2 | **0.096** | guess | sheet thickness not drawn; BNBC 2012 Part 6 Ch 2 Table 2.2.2 "Steel, galvanized std. corrugated sheeting (incl. lap and fastenings) 0.8 mm thick 0.096" | 0.077, 0.096, 0.12 |
 | `load.unit_weight.brick` | load | kN/m3 | **18.9** | std | BNBC 2012 Part 6 Ch 2 Table 2.2.1: "Brick 18.9" (modeller/reference/BNBC2012_P6C2_dead_load_tables.txt) |  |
