@@ -1,6 +1,6 @@
 # DXF2BIM sandbox tests
 
-Spec: `docs/DXF2BIM_SPEC.md` · guide: `docs/DXF2BIM_USER_GUIDE.md`. Modules: `deploy/dev/dxf2*.js` (sandbox, not wired into the Modeller).
+Spec: `docs/DXF2BIM_SPEC.md` · guide: `docs/DXF2BIMGuide.md`. Modules: `deploy/dev/dxf2*.js` (sandbox, not wired into the Modeller).
 
 Run a suite: `node tests/dxf2bim/test_<name>.js` (writes `test_<name>.log`; read it, exit code is not evidence).
 

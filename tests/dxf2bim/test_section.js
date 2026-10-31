@@ -41,7 +41,7 @@ const run = (ents, roofMark) => S.sectionSlabs(ents, MAP, al.map, [0, 3.1], CFG,
     'slabs=' + J(r.slabs) + ' roof=' + J(r.roof) + ' gaps=' + J(r.gaps)); }
 { const r = run(BASE);
   check('SR2', 'a finish floor sitting on the slab (bottom = level) is taken as the slab at that level', J(r.slabs['3.1'].from) === J(['A3']) && J(r.slabs['0'].from) === J(['A1']), 'from ' + J([r.slabs['0'].from, r.slabs['3.1'].from])); }
-{ const r = run(BASE.filter(e => e.handle !== 'A3'));
+{ const r = run(BASE.filter(e => e.handle !== 'A3' && e.handle !== 'A4'));   // A4 (3100..3119) sits ON the level: bim-ootb §F8 D33 takes it as that level's slab, so 'no slab' means neither
   check('SR3', 'a level with no slab whose top is at it gets a value instead of a GAP', !r.slabs['3.1'] && r.gaps.some(g => g.code === 'GAP:section_no_slab' && g.level === 3.1), J(r.gaps)); }
 { const tri = { type: 'LWPOLYLINE', shape: true, layer: 'S-SLAB', handle: 'B1', vertices: [{ x: 0, y: 2795 }, { x: 8000, y: 2795 }, { x: 4000, y: 3100 }] };
   const r = run(BASE.concat([tri]));

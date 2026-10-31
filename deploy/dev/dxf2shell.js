@@ -7,6 +7,7 @@
   else root.Dxf2Shell = factory(root.Dxf2Bim);
 })(typeof self !== 'undefined' ? self : this, function (Dxf2Bim) {
   'use strict';
+  var WINDOW_EMBED = typeof process !== 'undefined' && process.env && process.env.DXF_WINDOW_EMBED ? Number(process.env.DXF_WINDOW_EMBED) : 0.05;   // §D55b (m) how far a window's drawn ends may reach into the jamb pieces (frame posts embedded; JKR 20 mm). A module constant, not CFG (no run_id changes).
   var r6 = Dxf2Bim.r6, EPS = 1e-9;
   function hnum(h) { return parseInt(h, 16); }
   function walls(ops) { return ops.filter(function (o) { return o.op_type === 'DXF_WALL'; }); }
@@ -33,6 +34,10 @@
       var c = [(X[i] + X[i + 1]) / 2, (Y[j] + Y[j + 1]) / 2];
       solid[j].push(inPoly(c, outline) && !holes.some(function (h) { return inPoly(c, h); }));
     } }
+    return prismCells(X, Y, solid, z0, z1);
+  }
+  function prismCells(X, Y, solid, z0, z1) {   // §D51: the mesh of a rectilinear cell set (solid[j][i] over the X / Y grid), split out of prismRect unchanged
+    var nx = X.length - 1, ny = Y.length - 1;
     var V = [], F = [], idx = {};
     function vid(i, j, top) { var k = i + ',' + j + ',' + (top ? 1 : 0); if (!(k in idx)) { idx[k] = V.length; V.push([X[i], Y[j], top ? r6(z1) : r6(z0)]); } return idx[k]; }
     function S(i, j) { return i >= 0 && j >= 0 && i < nx && j < ny && solid[j][i]; }
@@ -51,6 +56,105 @@
     if (!F.length) return null;
     return { vertices: V, faces: F };
   }
+  // §D70.1 a straight-edged prism with holes, any angles: a trapezoid decomposition at every vertex x (each cell's vertical sides split at every point any ring has on that line, each
+  // ring edge split at every strip line), so the top / bottom / sides share every edge exactly twice (the `watertight` rule). Rings open, metres; returns { vertices, faces } or null.
+  function ringSA(r) { var a = 0; for (var i = 0; i < r.length; i++) { var q = r[(i + 1) % r.length]; a += r[i][0] * q[1] - q[0] * r[i][1]; } return a / 2; }
+  function prismPoly(outer, holes, z0, z1) {
+    var clean = function (r, sgn) { var o = []; r.forEach(function (q) { var p = [r6(q[0]), r6(q[1])]; if (!o.length || o[o.length - 1][0] !== p[0] || o[o.length - 1][1] !== p[1]) o.push(p); });
+      if (o.length > 1 && o[0][0] === o[o.length - 1][0] && o[0][1] === o[o.length - 1][1]) o.pop(); if (ringSA(o) * sgn < 0) o.reverse(); return o; };
+    var rings = [clean(outer, 1)].concat((holes || []).map(function (h) { return clean(h, -1); }));
+    if (rings.some(function (r) { return r.length < 3 || Math.abs(ringSA(r)) < EPS; }) || !(z1 > z0)) return null;
+    var E = []; rings.forEach(function (r) { r.forEach(function (a, i) { E.push([a, r[(i + 1) % r.length]]); }); });
+    var X = uniq([].concat.apply([], rings.map(function (r) { return r.map(function (q) { return q[0]; }); })));
+    function yAt(e, x) { var a = e[0], b = e[1]; if (x === a[0]) return a[1]; if (x === b[0]) return b[1]; return r6(a[1] + (x - a[0]) * (b[1] - a[1]) / (b[0] - a[0])); }
+    var Pon = {};   // x -> sorted y of every ring point on that line (vertices and crossings)
+    X.forEach(function (x) { var ys = []; E.forEach(function (e) { var lo = Math.min(e[0][0], e[1][0]), hi = Math.max(e[0][0], e[1][0]); if (x < lo || x > hi) return; if (e[0][0] === e[1][0]) ys.push(e[0][1], e[1][1]); else ys.push(yAt(e, x)); }); Pon[x] = uniq(ys); });
+    var between = function (x, y0, y1) { var lo = Math.min(y0, y1), hi = Math.max(y0, y1), v = Pon[x].filter(function (y) { return y > lo && y < hi; }); return y1 >= y0 ? v : v.reverse(); };
+    var V = [], F = [], idx = {};
+    function vid(x, y, top) { var k = x + ',' + y + ',' + (top ? 1 : 0); if (!(k in idx)) { idx[k] = V.length; V.push([x, y, top ? r6(z1) : r6(z0)]); } return idx[k]; }
+    E.forEach(function (e) {   // sides: the ring's interior on the left (outer CCW, holes CW), outward to the right
+      var a = e[0], b = e[1], pts;
+      if (a[0] === b[0]) pts = [a].concat(between(a[0], a[1], b[1]).map(function (y) { return [a[0], y]; }), [b]);
+      else { var xs = X.filter(function (x) { return x >= Math.min(a[0], b[0]) && x <= Math.max(a[0], b[0]); }); if (b[0] < a[0]) xs.reverse(); pts = xs.map(function (x) { return [x, yAt(e, x)]; }); }
+      for (var i = 0; i + 1 < pts.length; i++) { var p = pts[i], q = pts[i + 1]; F.push([vid(p[0], p[1], 0), vid(q[0], q[1], 0), vid(q[0], q[1], 1)], [vid(p[0], p[1], 0), vid(q[0], q[1], 1), vid(p[0], p[1], 1)]); }
+    });
+    for (var i = 0; i + 1 < X.length; i++) {   // top / bottom: one cell per pair of edges crossing the strip, fanned from its centre
+      var xa = X[i], xb = X[i + 1], xm = (xa + xb) / 2;
+      var act = E.filter(function (e) { return e[0][0] !== e[1][0] && Math.min(e[0][0], e[1][0]) <= xa && Math.max(e[0][0], e[1][0]) >= xb; })
+        .map(function (e) { return { e: e, ym: e[0][1] + (xm - e[0][0]) * (e[1][1] - e[0][1]) / (e[1][0] - e[0][0]) }; }).sort(function (p, q) { return p.ym - q.ym; });
+      for (var k = 0; k + 1 < act.length; k += 2) {
+        var lo = act[k].e, hi = act[k + 1].e, la = yAt(lo, xa), lb = yAt(lo, xb), ha = yAt(hi, xa), hb = yAt(hi, xb), B = [[xa, la], [xb, lb]];
+        between(xb, lb, hb).forEach(function (y) { B.push([xb, y]); }); B.push([xb, hb], [xa, ha]); between(xa, ha, la).forEach(function (y) { B.push([xa, y]); });
+        B = B.filter(function (p, j) { var n = B[(j + 1) % B.length]; return p[0] !== n[0] || p[1] !== n[1]; });
+        if (B.length < 3) continue;
+        var cx = 0, cy = 0; B.forEach(function (p) { cx += p[0]; cy += p[1]; }); cx /= B.length; cy /= B.length;
+        var ct = V.length; V.push([cx, cy, r6(z1)]); var cb = V.length; V.push([cx, cy, r6(z0)]);
+        for (var j = 0; j < B.length; j++) { var p = B[j], q = B[(j + 1) % B.length]; F.push([ct, vid(p[0], p[1], 1), vid(q[0], q[1], 1)], [cb, vid(q[0], q[1], 0), vid(p[0], p[1], 0)]); }
+      }
+    }
+    return F.length ? { vertices: V, faces: F } : null;
+  }
+  // §D70.1 the plan's slab edge (layer type 'slabedge', A-FLOR-OTLN in the STD map): closed straight polylines, nested by containment (inside an odd number of rings = a hole).
+  // Returns { pieces: [{ outer, holes, handles, rectilinear, area }], gaps }; an open polyline or one with a bulge is not read (advisory), never guessed closed or straightened.
+  // §D75 a closed polyline's bulged edges as straight facets: the arc of a segment with bulge b = tan(theta/4) is cut so no chord lies further than `sag` from it (metres). Straight edges stay as they are.
+  function facetBulges(vs, sag) {
+    var out = [], n = vs.length;
+    for (var i = 0; i < n; i++) {
+      var a = vs[i], b = vs[(i + 1) % n]; out.push([r6(a.x), r6(a.y)]);
+      if (!a.bulge) continue;
+      var th = 4 * Math.atan(a.bulge), dx = b.x - a.x, dy = b.y - a.y, c = Math.sqrt(dx * dx + dy * dy); if (c < EPS) continue;
+      var R = c / (2 * Math.sin(Math.abs(th) / 2)), cx = (a.x + b.x) / 2 - (a.bulge > 0 ? 1 : -1) * dy / c * R * Math.cos(th / 2), cy = (a.y + b.y) / 2 + (a.bulge > 0 ? 1 : -1) * dx / c * R * Math.cos(th / 2);
+      var a0 = Math.atan2(a.y - cy, a.x - cx), nseg = Math.max(2, Math.ceil(Math.abs(th) / (2 * Math.acos(Math.max(0, 1 - sag / Math.abs(R))))));
+      for (var k = 1; k < nseg; k++) { var ang = a0 + th * k / nseg; out.push([r6(cx + Math.abs(R) * Math.cos(ang)), r6(cy + Math.abs(R) * Math.sin(ang))]); }
+    }
+    return out;
+  }
+  function slabEdges(entities, layerMap, K, opts) {
+    var rings = [], gaps = [], sagitta = opts && typeof opts.sagitta === 'number' ? opts.sagitta : 0.005;
+    (entities || []).forEach(function (e) {
+      var rule = Dxf2Bim.matchRule(e.layer, layerMap.rules); if (!rule || rule.type !== 'slabedge') return;
+      if (!(e.type === 'LWPOLYLINE' || e.type === 'POLYLINE') || !e.shape) { gaps.push({ code: 'GAP:slab_edge_open', handle: e.handle, reason: 'a slab edge must be a closed polyline: not read' }); return; }
+      var p = facetBulges(e.vertices.map(function (q) { return { x: q.x * K, y: q.y * K, bulge: q.bulge || 0 }; }), sagitta);   // §D75 an arc is read as straight facets within the stated chord sagitta
+      if (p.length < 3 || Math.abs(ringSA(p)) < EPS) return;
+      rings.push({ handle: e.handle, p: p, a: Math.abs(ringSA(p)), top: typeof e.elevation === 'number' ? r6(e.elevation * K) : null, thickness: typeof e.depth === 'number' && e.depth > 0 ? r6(e.depth * K) : null });
+    });
+    rings.sort(function (a, b) { return b.a - a.a || hnum(a.handle) - hnum(b.handle); });
+    var onV = function (q, o) { return o.p.some(function (v) { return v[0] === q[0] && v[1] === q[1]; }); };   // rings may touch at a vertex (the writer's union output), never cross
+    var inside = function (r, o) { var strict = 0; for (var k = 0; k < r.p.length; k++) { if (onV(r.p[k], o)) continue; if (!inPoly(r.p[k], o.p)) return false; strict++; } return strict > 0; };
+    rings.forEach(function (r, i) { r.depth = 0; r.parent = null; for (var j = 0; j < i; j++) if (rings[j].a > r.a && inside(r, rings[j])) { r.depth++; if (!r.parent || rings[j].a < r.parent.a) r.parent = rings[j]; } });
+    var pieces = rings.filter(function (r) { return r.depth % 2 === 0; }).map(function (r) {
+      var hs = rings.filter(function (h) { return h.parent === r && h.depth % 2 === 1; });
+      return { outer: r.p, holes: hs.map(function (h) { return h.p; }), handles: [r.handle].concat(hs.map(function (h) { return h.handle; })), rectilinear: [r.p].concat(hs.map(function (h) { return h.p; })).every(rectilinear), top: r.top, thickness: r.thickness, area: r6(r.a - hs.reduce(function (t, h) { return t + h.a; }, 0)) };
+    });
+    return { pieces: pieces, gaps: gaps };
+  }
+  // §D51 best effort: the cells the walls bound on BOTH axes (row and column inside the first wall run from each side). Pieces as D44's cover (wall rects, bridges <= gap_max, opening boxes).
+  // Interior walls lie inside, exterior walls outside. Returns { X, Y, solid, area, cells } or null; the caller makes the mesh (prismCells) and states it as a default (amber), never a reading.
+  function boundedCells(ops, cfg, extra) {
+    var ws = walls(ops).filter(function (o) { return o.params.rect && !o.params.infill; }).map(function (o) { return o.params.rect; });
+    var rects = ws.concat(((extra && extra.bridges) || []).filter(function (o) { return o.params.rect && !(o.params.length > cfg.opening.gap_max); }).map(function (o) { return o.params.rect; }))
+      .concat(ops.filter(function (o) { return o.op_type === 'DXF_OPENING'; }).map(function (o) { return openingRect(o.params.opening_box); }).filter(Boolean));
+    if (!rects.length) return null;
+    var X = uniq([].concat.apply([], rects.map(function (r) { return [r6(r[0]), r6(r[2])]; }))), Y = uniq([].concat.apply([], rects.map(function (r) { return [r6(r[1]), r6(r[3])]; })));
+    var nx = X.length - 1, ny = Y.length - 1, W = [], ix = function (v) { return X.indexOf(r6(v)); }, iy = function (v) { return Y.indexOf(r6(v)); };
+    for (var j = 0; j < ny; j++) { W.push([]); for (var i = 0; i < nx; i++) W[j].push(false); }
+    rects.forEach(function (r) { for (var i = ix(r[0]); i < ix(r[2]); i++) for (var j = iy(r[1]); j < iy(r[3]); j++) W[j][i] = true; });
+    function span(n, at) { var a = 0; while (a < n && !at(a)) a++; if (a === n) return null; while (a < n && at(a)) a++; var b = n - 1; while (b >= 0 && !at(b)) b--; while (b >= 0 && at(b)) b--; return a <= b ? [a, b] : null; }
+    var row = [], col = [], solid = [], area = 0, cells = 0;
+    for (j = 0; j < ny; j++) row.push(span(nx, function (i) { return W[j][i]; }));
+    for (i = 0; i < nx; i++) col.push(span(ny, function (jj) { return W[jj][i]; }));
+    for (j = 0; j < ny; j++) { solid.push([]); for (i = 0; i < nx; i++) {
+      var on = !!(row[j] && col[i] && i >= row[j][0] && i <= row[j][1] && j >= col[i][0] && j <= col[i][1]); solid[j].push(on);
+      if (on) { area += (X[i + 1] - X[i]) * (Y[j + 1] - Y[j]); cells++; } } }
+    if (!cells) return null;
+    // §D51 perf: keep only the grid lines where the cell pattern changes (LTU: 821 x 547 wall-edge lines -> a few dozen); same cells, same area, a mesh of the outline, not of every wall edge
+    var keepX = [0], keepY = [0];
+    for (i = 1; i < nx; i++) { var sameC = true; for (j = 0; j < ny && sameC; j++) if (solid[j][i] !== solid[j][i - 1]) sameC = false; if (!sameC) keepX.push(i); }
+    for (j = 1; j < ny; j++) { var sameR = true; for (i = 0; i < nx && sameR; i++) if (solid[j][i] !== solid[j - 1][i]) sameR = false; if (!sameR) keepY.push(j); }
+    var X2 = keepX.map(function (k) { return X[k]; }).concat([X[nx]]), Y2 = keepY.map(function (k) { return Y[k]; }).concat([Y[ny]]);
+    var solid2 = keepY.map(function (jj) { return keepX.map(function (ii) { return solid[jj][ii]; }); });
+    return { X: X2, Y: Y2, solid: solid2, area: r6(area), cells: cells, grid: [nx, ny], kept: [keepX.length, keepY.length] };
+  }
 
   // ---- §4.1 S-O inner ring of the exterior walls (rectangular envelope only) ----
   function envelope(ws) {
@@ -58,7 +162,24 @@
     return [Math.min.apply(null, r.map(function (q) { return q[0]; })), Math.min.apply(null, r.map(function (q) { return q[1]; })),
       Math.max.apply(null, r.map(function (q) { return q[2]; })), Math.max.apply(null, r.map(function (q) { return q[3]; }))];
   }
-  function innerRing(ops, cfg) {
+  // §D44: the inner-face rectangle is the slab only when the walls DRAW a rectangle: every envelope face covered >= RECT_MIN_COVER of its length by pieces on the face plane
+  // (wall rects, opening bridges, opening boxes). Measured 2026-10-23: Duplex 1.000 on every face; Clinic min 0.067-0.472, HHS 0.042-0.046 (notched / L plans). The 0.1 margin is for
+  // openings drawn with no bridge. Below it the outline is a fact the drawing does not state: no slab, GAP:slab_outline_not_rectangular (advisory), never an invented polygon.
+  var RECT_MIN_COVER = 0.9;
+  function faceCover(E, rects, tol) {
+    var FACES = { minX: [0, 1], maxX: [2, 1], minY: [1, 0], maxY: [3, 0] }, out = {};
+    Object.keys(FACES).forEach(function (f) {
+      var pi = FACES[f][0], ax = FACES[f][1], lo = ax ? E[1] : E[0], hi = ax ? E[3] : E[2];
+      var iv = rects.filter(function (r) { return Math.abs(r[pi] - E[pi]) <= tol; }).map(function (r) { return ax ? [r[1], r[3]] : [r[0], r[2]]; }).sort(function (a, b) { return a[0] - b[0]; });
+      var L = 0, cur = null;
+      iv.forEach(function (v) { if (!cur || v[0] > cur[1] + tol) { if (cur) L += cur[1] - cur[0]; cur = v.slice(); } else cur[1] = Math.max(cur[1], v[1]); });
+      if (cur) L += cur[1] - cur[0];
+      out[f] = hi > lo ? r6(L / (hi - lo)) : 0;
+    });
+    return out;
+  }
+  function openingRect(b) { return !b || !b.along || !b.band ? null : b.axis === 'x' ? [b.along[0], b.band[0], b.along[1], b.band[1]] : [b.band[0], b.along[0], b.band[1], b.along[1]]; }
+  function innerRing(ops, cfg, extra) {
     var tol = cfg.snap_tol, ws = walls(ops).filter(function (o) { return o.params.rect && !o.params.infill; }), gaps = [];
     if (!ws.length) return { outline: null, gaps: [{ code: 'GAP:slab_no_exterior_wall', face: 'all' }] };
     var E = envelope(ws), lines = {}, members = [];
@@ -80,7 +201,15 @@
     });
     if (gaps.length) return { outline: null, gaps: gaps, envelope: E };
     var x0 = lines.minX, x1 = lines.maxX, y0 = lines.minY, y1 = lines.maxY;
-    return { outline: [[x0, y0], [x1, y0], [x1, y1], [x0, y1]], envelope: E, gaps: [], members: uniq(members.map(hnum)).map(function (n) { return n.toString(16).toUpperCase(); }) };
+    var cov;
+    if (extra) {   // §D44 (the caller passes the bridges; without them the rule is not applied, as before)
+      var pieces = ws.map(function (o) { return o.params.rect; }).concat((extra.bridges || []).filter(function (o) { return o.params.rect && !(o.params.length > cfg.opening.gap_max); }).map(function (o) { return o.params.rect; }))   // a bridge longer than an opening gap is no cover
+        .concat(ops.filter(function (o) { return o.op_type === 'DXF_OPENING'; }).map(function (o) { return openingRect(o.params.opening_box); }).filter(Boolean));
+      var low; cov = faceCover(E, pieces, tol); low = Object.keys(cov).filter(function (f) { return cov[f] < RECT_MIN_COVER; });
+      if (low.length) return { outline: null, envelope: E, cover: cov, gaps: [{ code: 'GAP:slab_outline_not_rectangular', faces: low, cover: cov, min_cover: RECT_MIN_COVER,
+        rect_m2: r6((x1 - x0) * (y1 - y0)), reason: 'the walls do not draw a rectangle (face cover ' + low.map(function (f) { return f + ' ' + cov[f]; }).join(', ') + ' < ' + RECT_MIN_COVER + '): the slab outline is not stated, so no slab is made' }] };
+    }
+    return { outline: [[x0, y0], [x1, y0], [x1, y1], [x0, y1]], envelope: E, gaps: [], cover: extra ? cov : undefined, members: uniq(members.map(hnum)).map(function (n) { return n.toString(16).toUpperCase(); }) };
   }
 
   // ---- §4.2 S-Z top / underside from elevation-derived wall heights ----
@@ -95,7 +224,7 @@
     var sx = opts && opts.section && opts.section.slabs && opts.section.slabs[String(upper.level)];
     if (sx) {                                                                                  // L1.4 F5: the section states top and underside
       if (tops.length) { var T0 = agree(tops, tol); if (!T0.ok || Math.abs(T0.z - sx.top) > tol) gaps.push({ code: 'GAP:slab_top_conflict', values: T0.values, section: sx.top }); }
-      return { top: sx.top, bottom: sx.bottom, thickness: sx.thickness, gaps: gaps, source: 'section', section_from: sx.from };
+      return Object.assign({ top: sx.top, bottom: sx.bottom, thickness: sx.thickness, gaps: gaps, source: 'section', section_from: sx.from }, sx.defaulted ? { defaulted: true, share: sx.share } : {}, sx.stacked ? { stacked: true } : {});   // §D57
     }
     if (!tops.length) return { top: null, bottom: null, thickness: null, gaps: [{ code: 'GAP:slab_no_top' }] };
     var T = agree(tops, tol);
@@ -117,7 +246,23 @@
   // ---- lane spec L1.4 F5: slab top / underside from a marked SECTION sheet ----
   // entities: the section sheet; layerMap types 'sectslab' (S-SLAB) and 'roof' (A-ROOF); map: MK.align(plan, sectionDesc).map;
   // levels: stated plan levels (m); roofMark: the section's @ROOF (optional). Every closed polyline is read as a rectangle in (plan h, z).
-  function sectionSlabs(entities, layerMap, map, levels, cfg, roofMark) {
+  // §D57 the stack under a level (pure): the rects touching the level and every rect connected below them (touching or overlapping the one above in plan and z); per cut span (where a rect touches
+  // the level) the stack's bottom; returns {spans:[{h0,h1,bottom}], byBottom:[{z,len}] longest first} or null
+  function stackAt(slabs, L, tol) {
+    var S0 = slabs.filter(function (s) { return Math.abs(s.top - L) <= tol; }); if (!S0.length) return null;
+    var ov = function (a, b) { return Math.min(a.h[1], b.h[1]) - Math.max(a.h[0], b.h[0]) > tol; }, C = S0.slice(), grew = true;
+    while (grew) { grew = false; slabs.forEach(function (r) { if (C.indexOf(r) >= 0 || r.top > L + tol) return; if (C.some(function (c) { return ov(r, c) && r.top >= c.bottom - tol && r.top <= c.top + tol; })) { C.push(r); grew = true; } }); }
+    var xs = uniq([].concat.apply([], C.map(function (r) { return r.h; }))), spans = [], by = {};
+    for (var i = 0; i + 1 < xs.length; i++) {
+      var a = xs[i], b = xs[i + 1], m = (a + b) / 2; if (b - a <= tol) continue;
+      if (!S0.some(function (r) { return r.h[0] <= m && r.h[1] >= m; })) continue;
+      var bot = Math.min.apply(null, C.filter(function (r) { return r.h[0] <= m && r.h[1] >= m; }).map(function (r) { return r.bottom; }));
+      spans.push({ h0: a, h1: b, bottom: r6(bot) }); by[r6(bot)] = (by[r6(bot)] || 0) + (b - a);
+    }
+    var byBottom = Object.keys(by).map(function (k) { return { z: Number(k), len: r6(by[k]) }; }).sort(function (p, q) { return q.len - p.len || p.z - q.z; });   // longest first; a tie takes the lower bottom
+    return spans.length ? { spans: spans, byBottom: byBottom } : null;
+  }
+  function sectionSlabs(entities, layerMap, map, levels, cfg, roofMark, opts) {
     var tol = typeof cfg.elev_tol === 'number' ? cfg.elev_tol : cfg.snap_tol, gaps = [], slabs = [], roofs = [], swalls = [];
     (entities || []).forEach(function (e) {
       var rule = Dxf2Bim.matchRule(e.layer, layerMap.rules); if (!rule || (rule.type !== 'sectslab' && rule.type !== 'roof' && rule.type !== 'sectwall')) return;   // sectwall: lane spec L2.8
@@ -133,13 +278,32 @@
     slabs.sort(function (a, b) { return hnum(a.handle) - hnum(b.handle); }); roofs.sort(function (a, b) { return hnum(a.handle) - hnum(b.handle); });
     var out = {};
     (levels || []).slice().sort(function (a, b) { return a - b; }).forEach(function (L) {
-      var at = slabs.filter(function (s) { return Math.abs(s.top - L) <= tol; });
+      var at = slabs.filter(function (s) { return Math.abs(s.top - L) <= tol; }), onLevel = false;
+      if (!at.length) { at = slabs.filter(function (s) { return Math.abs(s.bottom - L) <= tol; }); onLevel = at.length > 0; }   // §F8 D33: the storey placed at its slab's underside (HHS): the slab sitting ON the level
       if (!at.length) { gaps.push({ code: 'GAP:section_no_slab', level: L }); return; }
-      var B = agree(at.map(function (s) { return { z: s.bottom }; }), tol);
+      if (onLevel) {
+        var T = agree(at.map(function (s) { return { z: s.top }; }), tol);
+        if (!T.ok) { gaps.push({ code: 'GAP:section_slab_conflict', level: L, values: T.values }); return; }
+        out[String(L)] = { level: L, top: r6(T.z), bottom: r6(L), thickness: r6(T.z - L), source: 'section', on_level: true, from: at.map(function (s) { return s.handle; }) };
+        return;
+      }
+      var B = agree(at.map(function (s) { return { z: s.bottom }; }), tol), how = null;
+      // §D57 the slab under a level is the whole stack (finish on structure): read the stack's bottom when every stack agrees; stepped stacks = a best-effort underside (amber) when the setting allows
+      var K = stackAt(slabs, L, tol), all = K ? K.byBottom.map(function (x) { return x.z; }) : [], lo = all.length ? Math.min.apply(null, all) : null, hi = all.length ? Math.max.apply(null, all) : null;
+      if (K && hi - lo <= tol) { if (!B.ok || Math.abs(lo - B.z) > tol) how = { stacked: true }; B = { ok: true, z: B.ok && Math.abs(lo - B.z) <= tol ? B.z : lo }; }
+      else if (K) {
+        if (opts && opts.stepped === 'longest_cut') {
+          var tot = K.byBottom.reduce(function (n, x) { return n + x.len; }, 0), pick = K.byBottom[0];
+          B = { ok: true, z: pick.z }; how = { stacked: true, defaulted: true, share: r6(pick.len / tot), spread: [lo, hi] };
+          gaps.push({ code: 'GAP:section_underside_defaulted', level: L, bottom: pick.z, share: how.share, values: K.byBottom.map(function (x) { return x.z + ':' + x.len; }), setting: 'slab.underside_when_stepped',
+            reason: 'the slab under ' + L + ' steps (' + K.byBottom.length + ' undersides); took ' + pick.z + ' under ' + Math.round(how.share * 100) + '% of the cut (a default, amber): state @Z / turn it off with slab.underside_when_stepped=none' });
+        }
+        // setting none: today's reading (the rects touching the level), a conflict when they disagree
+      }
       if (!B.ok) { gaps.push({ code: 'GAP:section_slab_conflict', level: L, values: B.values }); return; }
       var bottom = r6(B.z), top = r6(L);
       if (!(top - bottom > tol)) { gaps.push({ code: 'GAP:section_bad_thickness', level: L, top: top, bottom: bottom }); return; }
-      out[String(L)] = { level: L, top: top, bottom: bottom, thickness: r6(top - bottom), source: 'section', from: at.map(function (s) { return s.handle; }) };
+      out[String(L)] = Object.assign({ level: L, top: top, bottom: bottom, thickness: r6(top - bottom), source: 'section', from: at.map(function (s) { return s.handle; }) }, how || {});
     });
     var roof = null;
     if (roofs.length) {
@@ -290,6 +454,25 @@
       if (strip.some(function (w) { var r = w.params.rect; return r[ai] < c - tol && r[ai + 2] > c + tol; })) { note('GAP:opening_inside_piece', o, { c: r6(c) }); return; }
       var A = null, B = null;
       strip.forEach(function (w) { var r = w.params.rect; if (r[ai + 2] <= c + tol && (!A || r[ai + 2] > A.params.rect[ai + 2])) A = w; if (r[ai] >= c - tol && (!B || r[ai] < B.params.rect[ai])) B = w; });
+      if ((!A || !B) && q.kind === 'window') {   // §F8 D24b: a window drawn thinner than its wall (its own frame) sits INSIDE the wall's thickness: bounded by the nearest piece on
+        // each side whose band contains the window band (the two may differ in thickness, e.g. corner pieces); the void / infill takes the band both share. Only when the exact match found no bounded strip
+        var cont = ws.filter(function (w) { var r = w.params.rect; return r[ci] <= cr[0] + tol && r[ci + 2] >= cr[1] - tol; }), a = null, b = null;
+        cont.forEach(function (w) { var r = w.params.rect; if (r[ai + 2] <= c + tol && (!a || r[ai + 2] > a.params.rect[ai + 2])) a = w; if (r[ai] >= c - tol && (!b || r[ai] < b.params.rect[ai])) b = w; });
+        var e0 = q.bbox[ai], e1 = q.bbox[ai + 2];   // the bounding pieces meet the window's own ends (the writer cuts the gap at the window): never a piece further along the wall line
+        if (a && b && Math.abs(a.params.rect[ai + 2] - e0) <= tol && Math.abs(b.params.rect[ai] - e1) <= tol && !cont.some(function (w) { var r = w.params.rect; return r[ai] < c - tol && r[ai + 2] > c + tol; })) {
+          var ra = a.params.rect, rb = b.params.rect; A = a; B = b; cr = [Math.max(ra[ci], rb[ci]), Math.min(ra[ci + 2], rb[ci + 2])]; o.params.in_wall_band = cr.map(r6);
+        }
+      }
+      if ((!A || !B) && q.kind === 'window') {   // §D55b a window drawn wider than its gap: its frame posts embedded in the jambs and / or its pane proud of the wall face (JKR W1: 1.29 m drawn
+        // over a 1.25 m gap, 20 mm into each piece). Bounded by the two pieces of ONE strip whose ends lie inside the window's ends by at most WINDOW_EMBED; the void takes the wall's band.
+        var w0 = q.bbox[ai], w1 = q.bbox[ai + 2], over = ws.filter(function (w) { var r = w.params.rect; return r[ci] < cr[1] - tol && r[ci + 2] > cr[0] + tol; });
+        var ea = over.filter(function (w) { var r = w.params.rect; return r[ai] < w0 - tol && r[ai + 2] > w0 + tol && r[ai + 2] <= w0 + WINDOW_EMBED + tol; });
+        var eb = over.filter(function (w) { var r = w.params.rect; return r[ai + 2] > w1 + tol && r[ai] < w1 - tol && r[ai] >= w1 - WINDOW_EMBED - tol; });
+        if (ea.length === 1 && eb.length === 1) { var pa = ea[0].params.rect, pb = eb[0].params.rect;
+          if (Math.abs(pa[ci] - pb[ci]) <= tol && Math.abs(pa[ci + 2] - pb[ci + 2]) <= tol && !over.some(function (w) { var r = w.params.rect; return w !== ea[0] && w !== eb[0] && r[ai] < pb[ai] - tol && r[ai + 2] > pa[ai + 2] + tol && r[ci] <= pa[ci] + tol && r[ci + 2] >= pa[ci + 2] - tol; })) {
+            A = ea[0]; B = eb[0]; cr = [pa[ci], pa[ci + 2]]; o.params.in_wall_band = cr.map(r6); o.params.embedded = [r6(pa[ai + 2] - w0), r6(w1 - pb[ai])]; c = (pa[ai + 2] + pb[ai]) / 2;
+          } }
+      }
       if (!A || !B) { note('GAP:opening_gap_unbounded', o, { c: r6(c), before: A && A.params.handle, after: B && B.params.handle }); return; }
       var key = A.output_guid + '|' + B.output_guid;
       (groups[key] = groups[key] || { A: A, B: B, ai: ai, ci: ci, cr: cr, s0: A.params.rect[ai + 2], s1: B.params.rect[ai], items: [] }).items.push({ o: o, z0: r6(z0), z1: r6(z1), c: r6(c) });
@@ -298,6 +481,7 @@
     Object.keys(groups).sort().forEach(function (key) {
       var g = groups[key], A = g.A, B = g.B, zbA = level + A.params.base, ztA = zbA + A.params.height, zbB = level + B.params.base, ztB = zbB + B.params.height;
       g.items.forEach(function (it) { used[it.o.output_guid] = 1; });
+      if (g.s1 - g.s0 > cfg.opening.gap_max + tol) { g.items.forEach(function (it) { note('GAP:opening_gap_unbounded', it.o, { c: it.c, gap: r6(g.s1 - g.s0), gap_max: cfg.opening.gap_max, reason: 'the gap between the wall pieces is longer than an opening gap: no wall is bridged over it (D52)' }); }); return; }   // §D52
       if (Math.abs(zbA - zbB) > ztol || Math.abs(ztA - ztB) > ztol) { g.items.forEach(function (it) { note('GAP:gap_height_conflict', it.o, { a: [r6(zbA), r6(ztA)], b: [r6(zbB), r6(ztB)] }); }); return; }
       var zb = r6(Math.min(zbA, zbB)), zt = r6(Math.max(ztA, ztB));
       var bad = g.items.filter(function (it) { return it.z0 < zb - ztol || it.z1 > zt + ztol; });
@@ -458,6 +642,6 @@
     return { storeys: storeys, merged: merged };
   }
 
-  return { prismRect: prismRect, innerRing: innerRing, envelope: envelope, slabZ: slabZ, sectionSlabs: sectionSlabs, roofZ: roofZ, levelLinesZ: levelLinesZ, roofPlan: roofPlan, closedRects: closedRects,
-    applySlabAbove: applySlabAbove, applyWallBases: applyWallBases, mergeStacked: mergeStacked, bridgeOpenings: bridgeOpenings, doorSwing: doorSwing, doorStrip: doorStrip, placeFills: placeFills, familyToRef: familyToRef, pairKey: pairKey };
+  return { prismRect: prismRect, innerRing: innerRing, envelope: envelope, slabZ: slabZ, sectionSlabs: sectionSlabs, stackAt: stackAt, roofZ: roofZ, levelLinesZ: levelLinesZ, roofPlan: roofPlan, closedRects: closedRects,
+    applySlabAbove: applySlabAbove, applyWallBases: applyWallBases, mergeStacked: mergeStacked, bridgeOpenings: bridgeOpenings, faceCover: faceCover, boundedCells: boundedCells, prismCells: prismCells, prismPoly: prismPoly, slabEdges: slabEdges, doorSwing: doorSwing, doorStrip: doorStrip, placeFills: placeFills, familyToRef: familyToRef, pairKey: pairKey };
 });

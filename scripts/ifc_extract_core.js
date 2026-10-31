@@ -385,6 +385,36 @@ async function extractToDb(ctx) {
   } catch(e) {}
   log(`§MATERIALS resolved=${Object.keys(elementMaterialColor).length} elements with IFC material color`);
 
+  // ── §L26 (bim-ootb DXF2BIM lane): the metadata the DXF2BIM product writes per mesh. Gated on the file carrying the evidence set `Dxf2Bim_Evidence` (renamed 2026-10-19 from `Pset_Dxf2Bim`: the `Pset_` prefix is reserved for buildingSMART-defined sets; the old name is still read so existing IFCs extract unchanged), so every other IFC extracts exactly as before.
+  const DXF2BIM_PSETS = ['Dxf2Bim_Evidence', 'Pset_Dxf2Bim'];
+  const dxf2bimRows = [], elementMaterialName = {};   // dxf2bimRows: { expressID, name, value }
+  try {
+    const dIds0 = ifcApi.GetLineIDsWithType(modelID, WebIFC.IFCRELDEFINESBYPROPERTIES);
+    for (let i = 0; i < dIds0.size(); i++) {
+      try {
+        const r = ifcApi.GetLine(modelID, dIds0.get(i));
+        if (!r.RelatingPropertyDefinition || !r.RelatedObjects) continue;
+        const ps = ifcApi.GetLine(modelID, r.RelatingPropertyDefinition.value);
+        if (!ps || !ps.Name || DXF2BIM_PSETS.indexOf(ps.Name.value) < 0) continue;
+        const props = [];
+        for (const ph of ps.HasProperties || []) { const p = ifcApi.GetLine(modelID, ph.value); if (p && p.Name && p.NominalValue) props.push([p.Name.value, String(p.NominalValue.value)]); }
+        for (const oh of r.RelatedObjects) for (const [n, v] of props) dxf2bimRows.push({ expressID: oh.value, name: n, value: v });
+      } catch (e) {}
+    }
+    if (dxf2bimRows.length) {
+      const relMatIds2 = ifcApi.GetLineIDsWithType(modelID, WebIFC.IFCRELASSOCIATESMATERIAL);
+      for (let i = 0; i < relMatIds2.size(); i++) {
+        try {
+          const rel = ifcApi.GetLine(modelID, relMatIds2.get(i));
+          if (!rel.RelatedObjects || !rel.RelatingMaterial) continue;
+          const mat = ifcApi.GetLine(modelID, rel.RelatingMaterial.value), nm = mat && mat.Name ? mat.Name.value : null;
+          if (nm) for (const oh of rel.RelatedObjects) elementMaterialName[oh.value] = nm;
+        } catch (e) {}
+      }
+    }
+  } catch (e) {}
+  log(`§DXF2BIM_PSET rows=${dxf2bimRows.length} materialNames=${Object.keys(elementMaterialName).length}`);
+
   // ── Tessellate geometry (same logic as import_worker.js) ──
   const geometries = []; // { guid, geomHash, vertices: Buffer, indices: Buffer }
   const transforms = []; // { guid, cx, cy, cz, rx, ry, rz, bx, by, bz }
@@ -870,6 +900,7 @@ async function extractToDb(ctx) {
 
   // ── Write SQLite DB ──
   const db = ctx.db;   // better-sqlite3 or a sql.js adapter: exec(sql), prepare(sql).run(...args)
+  db.exec('BEGIN');   // ONE transaction for the whole write phase: every row used to be its own disk commit (a 448-element model took 5-44 s, almost all of it fsync); same rows, same order
 
   db.exec(`CREATE TABLE project_metadata (key TEXT PRIMARY KEY, value TEXT)`);
   db.exec(`CREATE TABLE elements_meta (guid TEXT PRIMARY KEY, ifc_class TEXT, element_name TEXT, storey TEXT, discipline TEXT, material_name TEXT, material_rgba TEXT, building TEXT)`);
@@ -907,7 +938,7 @@ async function extractToDb(ctx) {
   // Insert elements
   const elStmt = db.prepare('INSERT OR IGNORE INTO elements_meta VALUES (?,?,?,?,?,?,?,?)');
   for (const el of elements) {
-    elStmt.run(el.guid, el.ifcClass, el.name, el.storey, el.discipline, null, el.material || null, buildingName);
+    elStmt.run(el.guid, el.ifcClass, el.name, el.storey, el.discipline, elementMaterialName[el.expressID] || null, el.material || null, buildingName);
   }
 
   // Insert spatial structure — §S18: real IfcBuilding + IfcBuildingStorey rows with EXTRACTED
@@ -981,11 +1012,17 @@ async function extractToDb(ctx) {
   db.exec(`CREATE TABLE element_type (guid TEXT PRIMARY KEY, type_name TEXT, source TEXT)`);
   const etStmt = db.prepare('INSERT OR IGNORE INTO element_type VALUES (?,?,?)');
   for (const r of typeRows) etStmt.run(r.guid, r.name, r.source);
+  if (dxf2bimRows.length) {   // §L26: only for files that carry the evidence set (Dxf2Bim_Evidence, or the older Pset_Dxf2Bim) (the table does not exist otherwise: other DBs are unchanged)
+    db.exec(`CREATE TABLE element_dxf2bim (guid TEXT, name TEXT, value TEXT, PRIMARY KEY (guid, name))`);
+    const dxStmt = db.prepare('INSERT OR IGNORE INTO element_dxf2bim VALUES (?,?,?)'), gOf = new Map(elements.map(e => [e.expressID, e.guid]));
+    for (const r of dxf2bimRows) if (gOf.has(r.expressID)) dxStmt.run(gOf.get(r.expressID), r.name, r.value);
+  }
   const psStmt = db.prepare('INSERT OR IGNORE INTO element_pset_common VALUES (?,?,?,?,?)');
   for (const r of psetRows) psStmt.run(r.guid, r.pset, r.name, r.value, r.source);
   log(`§WORLD_BBOX rows=${worldBbox.length}`);
 
 
+  db.exec('COMMIT');
   log(`§SUMMARY elements=${elements.length} geometries=${geometries.length} uniqueHashes=${seenHashes.size} 4D_tasks=${tasks.length}`);
   log(`§S18_SPATIAL_STRUCTURE buildings=${Object.keys(buildingMap).length} storeys=${Object.keys(storeyMap).length} storeysWithElevation=${Object.values(storeyElevation).filter(v => v != null).length} storeysWithRealParent=${Object.keys(storeyParentBuildingGuid).length} relAggregates=${Object.keys(storeyParentBuildingGuid).length}`);
 }

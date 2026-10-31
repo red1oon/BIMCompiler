@@ -20,15 +20,16 @@ const Database = require('better-sqlite3');
 const Core = require('./ifc_extract_core.js');
 
 const args = process.argv.slice(2);
-let ifcPath = null, outPath = null, discOverride = null, alsoPath = null;
+let ifcPath = null, outPath = null, discOverride = null, alsoPath = null, alsoClasses = ['IfcColumn'];
 for (let i = 0; i < args.length; i++) {
   if (args[i] === '--ifc' && args[i+1]) ifcPath = args[++i];
   else if (args[i] === '-o' && args[i+1]) outPath = args[++i];
   else if (args[i] === '--disc' && args[i+1]) discOverride = args[++i];
   else if (args[i] === '--also' && args[i+1]) alsoPath = args[++i];   // §L5.8: a second IFC contributes only its columns (grid evidence)
+  else if (args[i] === '--also-classes' && args[i+1]) alsoClasses = args[++i].split(',').map(s => s.trim()).filter(Boolean);   // §D57 / F17 (bim-ootb DXF2BIM_ARCHITECT_REVIEW): the classes --also merges (default IfcColumn); e.g. IfcColumn,IfcSlab,IfcBeam for a round trip whose ARC file models only floor finishes
 }
 if (!ifcPath || !outPath) {
-  console.error('Usage: node scripts/extractIFC2DB.js --ifc <file.ifc> -o <output.db> [--disc HEAT]');
+  console.error('Usage: node scripts/extractIFC2DB.js --ifc <file.ifc> -o <output.db> [--disc HEAT] [--also <second.ifc> [--also-classes IfcColumn,IfcSlab,IfcBeam]]');
   process.exit(1);
 }
 const VALID_DISCS = ['ARC','STR','MEP','PLB','ACMV','ELEC','FP','VENT','HEAT','SAN','COOL','VOID','AIR','DUCT','HVAC','MECH','FIRE','SPR','GAS','LIFT','CONV','CIV','LAND','EXT','INT','CEIL','ROOF','SITE','DEMO'];
@@ -57,7 +58,7 @@ async function main() {
     await Core.extractToDb({ WebIFC, ifcApi, ifcData: new Uint8Array(fs.readFileSync(alsoPath)), db: edb, Buf: Buffer, discOverride,
       buildingName: path.basename(alsoPath, '.ifc'), sourceName: path.basename(alsoPath), log: () => {}, progress: () => {} });
     const qm = sql => db.prepare(sql).all(), qe = sql => edb.prepare(sql).all();
-    Core.mergeElements(db, qm, qe, ['IfcColumn'], console.log);
+    Core.mergeElements(db, qm, qe, alsoClasses, console.log);
     edb.close();
   }
   db.close();

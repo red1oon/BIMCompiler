@@ -35,6 +35,53 @@ const SET = { version: 1, rules: [{ match: 'exact', pattern: 'A-FURN', type: 'wa
 const wl = MK.withLayers(SET, r1.desc), wg = MK.withLayers(SET, r3c.desc);
 check('LM5', 'a stated layer rule does not override the set\'s rule, or touches another layer', B.matchRule('A-FURN', wl.rules).type === 'ignore' && B.matchRule('A-WALL', wl.rules).type === 'wall' && B.matchRule('X,WALLS', wl.rules).type === 'wall' &&
   MK.withLayers(SET, read(PLAN).desc) === SET && B.matchRule('X', wg.rules).type === 'ignore', J(wl.rules.slice(0, 3)));
+// LM8 (bim-ootb lane L7.10) BODY kinds: valid on ANY view, mapped to 'ignore' for the existing readers, an unknown kind still refused
+const ELEVM = ['@SET=T', '@VIEW=ELEV', '@FACE=minY', '@HAXIS=+X', '@UNITS=mm'].map(t => T(t)).concat([T('@GRIDH=A', 0, 0), T('@GRIDH=B', 8800, 0), T('@Z=0', 0, 0), T('@Z=3', 0, 3000)]);
+const r8a = read(PLAN.concat([T('@LAYER=Col,column'), T('@LAYER=Bm,beam')])), r8b = read(ELEVM.concat([T('@LAYER=Col,column')])), r8c = read(PLAN.concat([T('@LAYER=Col,flux')]));
+const w8 = MK.withLayers({ version: 1, rules: [{ match: 'exact', pattern: 'Col', type: 'wall' }] }, r8a.desc);
+check('LM8', 'a BODY kind is refused on a view, an unknown kind is accepted, or a typed body layer is still read as a wall by the existing readers',
+  !r8a.errors.length && J(r8a.desc.layers.map(q => q.type).sort()) === J(['beam', 'column']) && !r8b.errors.some(e => e.code === 'MARK:layer_type') && r8b.desc.layers.length === 1 && codes(r8c).includes('MARK:layer_type') && B.matchRule('Col', w8.rules).type === 'ignore' && MK.LAYER_TYPES.BODY.length === 11,
+  'PLAN ' + J(codes(r8a)) + ' ELEV ' + J(r8b.desc.layers.map(q => q.type)) + ' unknown kind ' + J(codes(r8c)) + ' Col overrides the set wall rule -> ' + B.matchRule('Col', w8.rules).type);
+// LM9 (bim-ootb lane L7.14) @BODYZ=<kind>,<z0>,<z1>: the z range the user states for a body kind no elevation shows
+const r9a = read(PLAN.concat([T('@BODYZ=footing,-1.4478,-1.143'), T('@BODYZ=gradebeam,-0.3,0')])), r9b = read(PLAN.concat([T('@BODYZ=flux,0,1')])), r9c = read(PLAN.concat([T('@BODYZ=footing,1,0')])), r9d = read(PLAN.concat([T('@BODYZ=footing,0,1'), T('@BODYZ=footing,0,2')]));
+check('LM9', '@BODYZ is accepted for a non-body kind or an inverted range, a conflicting restatement is not a conflict, or a sheet without it gains a field wrongly',
+  !r9a.errors.length && J(r9a.desc.bodyz.map(q => [q.kind, q.z0, q.z1])) === J([['footing', -1.4478, -1.143], ['gradebeam', -0.3, 0]]) && codes(r9b).includes('MARK:malformed') && codes(r9c).includes('MARK:malformed') && codes(r9d).includes('MARK:conflict') && J(read(PLAN).desc.bodyz) === '[]',
+  J(r9a.desc.bodyz) + ' flux ' + J(codes(r9b)) + ' inverted ' + J(codes(r9c)) + ' two ranges ' + J(codes(r9d)));
+// LM10 (bim-ootb lane L10) @SIZE=<body id>,<x|y|w|d>,<metres>: the number the user states for one body side
+const r10a = read(PLAN.concat([T('@SIZE=body-column-0-1B5,x,0.35'), T('@SIZE=body-beam-0-A+B,d,0.45')])), r10b = read(PLAN.concat([T('@SIZE=b1,q,0.3')])), r10c = read(PLAN.concat([T('@SIZE=b1,x,-1')])), r10d = read(PLAN.concat([T('@SIZE=b1,x,0.3'), T('@SIZE=b1,x,0.4')])), r10e = read(PLAN.concat([T('@SIZE=b1,x,0.3'), T('@SIZE=b1,x,0.3')]));
+check('LM10', '@SIZE is accepted with an unknown axis or a non-positive value, a conflicting restatement is not a conflict, an identical one is duplicated, or a sheet without it gains a field wrongly',
+  !r10a.errors.length && J(r10a.desc.sizes.map(q => [q.id, q.axis, q.value])) === J([['body-beam-0-A+B', 'd', 0.45], ['body-column-0-1B5', 'x', 0.35]]) && codes(r10b).includes('MARK:malformed') && codes(r10c).includes('MARK:malformed') && codes(r10d).includes('MARK:conflict') && r10e.desc.sizes.length === 1 && J(read(PLAN).desc.sizes) === '[]',
+  J(r10a.desc.sizes) + ' axis q ' + J(codes(r10b)) + ' negative ' + J(codes(r10c)) + ' two values ' + J(codes(r10d)) + ' restated ' + r10e.desc.sizes.length);
+// LM11 (bim-ootb lane L11) @LAYER=<name>,panel: an elevation HATCH layer typed as wall panels is accepted on an ELEV sheet and on a PLAN sheet, is a body kind, and an unknown kind is still refused
+const ELEVP = ['@SET=T', '@VIEW=ELEV', '@FACE=minX', '@HAXIS=+Y', '@UNITS=mm'].map(t => T(t)).concat([T('@GRIDH=A', 0, 5), T('@GRIDH=B', 8800, 5), T('@Z=0', 5, 0), T('@Z=3', 5, 3000)]);
+const r11a = read(ELEVP.concat([T('@LAYER=Wall,panel')])), r11b = read(PLAN.concat([T('@LAYER=Wall,panel')])), r11c = read(ELEVP.concat([T('@LAYER=Wall,flux')]));
+check('LM11', '@LAYER=<name>,panel is refused on an elevation or plan, is not listed as a BODY kind, or an unknown kind is accepted',
+  !r11a.errors.some(e => e.code === 'MARK:layer_type') && J(r11a.desc.layers.map(q => [q.layer, q.type])) === J([['Wall', 'panel']]) && !r11b.errors.some(e => e.code === 'MARK:layer_type') && MK.LAYER_TYPES.BODY.includes('panel') && codes(r11c).includes('MARK:layer_type'),
+  J(r11a.desc.layers) + ' plan ' + J(codes(r11b)) + ' flux ' + J(codes(r11c)));
+// LM12 (bim-ootb lane L14) @LAYER=<name>,bar on a SECTION sheet (line members); bar is a BODY kind
+const SECP = ['@SET=T', '@VIEW=SECTION', '@HAXIS=+Y', '@CUT=X,5000', '@UNITS=mm'].map(t => T(t)).concat([T('@GRIDH=1', 0, 5), T('@GRIDH=2', 8800, 5), T('@Z=0', 5, 0), T('@Z=3', 5, 3000)]);
+const r12 = read(SECP.concat([T('@LAYER=Fo,bar'), T('@LAYER=Pur,member'), T('@LAYER=Gus,plate')]));
+check('LM12', '@LAYER=<name>,bar is refused on a SECTION sheet, bar is not a BODY kind, or member/plate stop being accepted there',
+  !r12.errors.some(e => e.code === 'MARK:layer_type') && J(r12.desc.layers.map(q => [q.layer, q.type]).sort()) === J([['Fo', 'bar'], ['Gus', 'plate'], ['Pur', 'member']]) && MK.LAYER_TYPES.BODY.includes('bar'),
+  J(r12.desc.layers) + ' errors ' + J(codes(r12)));
+// LM13 (bim-ootb lane L11.3) @LAYER=<name>,fan on an ELEVATION: concentric CIRCLEs read as fans
+const ELEVF = ['@SET=T', '@VIEW=ELEV', '@FACE=minX', '@HAXIS=+Y', '@UNITS=mm'].map(t => T(t)).concat([T('@GRIDH=A', 0, 5), T('@GRIDH=B', 8800, 5), T('@Z=0', 5, 0), T('@Z=3', 5, 3000)]);
+const r13 = read(ELEVF.concat([T('@LAYER=Rod,fan')]));
+check('LM13', '@LAYER=<name>,fan is refused on an elevation or fan is not a BODY kind',
+  !r13.errors.some(e => e.code === 'MARK:layer_type') && J(r13.desc.layers.map(q => [q.layer, q.type])) === J([['Rod', 'fan']]) && MK.LAYER_TYPES.BODY.includes('fan'), J(r13.desc.layers) + ' ' + J(codes(r13)));
+// LM14 (bim-ootb lane L11.4) @LAYER=<name>,net on an ELEVATION: the mesh/zigzag-pattern hatches of the layer read as netting
+const r14 = read(ELEVF.concat([T('@LAYER=Dim,net')]));
+check('LM14', '@LAYER=<name>,net is refused on an elevation or net is not a BODY kind',
+  !r14.errors.some(e => e.code === 'MARK:layer_type') && J(r14.desc.layers.map(q => [q.layer, q.type])) === J([['Dim', 'net']]) && MK.LAYER_TYPES.BODY.includes('net'), J(r14.desc.layers) + ' ' + J(codes(r14)));
+// LM15 (bim-ootb lane L16) @LAYER=<name>,doorswing on a PLAN: the arc swing symbols of the layer read as door leaves
+const r15 = read(PLAN.concat([T('@LAYER=Rod,doorswing')]));
+check('LM15', '@LAYER=<name>,doorswing is refused on a plan or doorswing is not a BODY kind',
+  !r15.errors.some(e => e.code === 'MARK:layer_type') && J(r15.desc.layers.map(q => [q.layer, q.type])) === J([['Rod', 'doorswing']]) && MK.LAYER_TYPES.BODY.includes('doorswing'), J(r15.desc.layers) + ' ' + J(codes(r15)));
+// LM16 (bim-ootb lane L18) @DEFAULT=<dotted.key>,<value>: a setting the user states for an element type the drawings do not carry
+const r16a = read(PLAN.concat([T('@DEFAULT=door.height,2.4'), T('@DEFAULT=synth.slab.thickness,0.2')])), r16b = read(PLAN.concat([T('@DEFAULT=noDot,1')])), r16c = read(PLAN.concat([T('@DEFAULT=door.height,')])), r16d = read(PLAN.concat([T('@DEFAULT=door.height,2.1'), T('@DEFAULT=door.height,2.4')])), r16e = read(PLAN.concat([T('@DEFAULT=door.height,2.1'), T('@DEFAULT=door.height,2.1')]));
+check('LM16', '@DEFAULT is accepted with a key that is not dotted or an empty value, a conflicting restatement is not a conflict, an identical one is duplicated, or a sheet without it gains a field wrongly',
+  !r16a.errors.length && J(r16a.desc.defaults.map(q => [q.key, q.value])) === J([['door.height', '2.4'], ['synth.slab.thickness', '0.2']]) && codes(r16b).includes('MARK:malformed') && codes(r16c).includes('MARK:malformed') && codes(r16d).includes('MARK:conflict') && r16e.desc.defaults.length === 1 && J(read(PLAN).desc.defaults) === '[]',
+  J(r16a.desc.defaults) + ' nodot ' + J(codes(r16b)) + ' empty ' + J(codes(r16c)) + ' two ' + J(codes(r16d)) + ' restated ' + r16e.desc.defaults.length);
 // LM6 the PLAN list is exactly what the plan reader accepts: every listed type runs, a type outside it throws
 const IDN = { DxfParser, hashHex: s => crypto.createHash('sha256').update(s).digest('hex'), library: [] }, CFG = { version: 1, units: 'mm', snap_tol: 0.001, wall: { thickness: 0.2, height: 3, base: 0 } };
 const runs = MK.LAYER_TYPES.PLAN.map(t => { try { B.run(base, { version: 1, rules: [{ match: 'exact', pattern: 'X,WALLS', type: t }] }, CFG, IDN); return null; } catch (e) { return t + ': ' + e.message; } }).filter(Boolean);

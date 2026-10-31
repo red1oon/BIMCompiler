@@ -170,3 +170,78 @@ discussed earlier this session (edit → see schedule/cost consequence) rather t
 - **Why it is safe:** the Δ is ONE pure function (`viewer/edit_delta.js` `deltaForEdit`, spec `TM_4D5D_VARIANCE_LANE.md` §S8)
   called by BOTH surfaces. Same inputs → same numbers; the witness asserts cross-surface equality. There is no second engine.
 - Connect Scene P3 (`W-CONNECT-COMMIT`) is still built (Viewer half), no longer the only route to see the Δ.
+
+## §6 SPEC — 2026-10-27 (owner, "Go with your recommendation"): the Viewer's rates come from the PACK, the language sets words only
+**Witness: W-RATES-PACK** (`bim-ootb viewer/tests/witness_rates_pack.js`, Node, no browser). Code in bim-ootb (`viewer/rates.js`,
+`viewer/locale_loader.js`, `viewer/viewer.html`, `viewer/tm_lifecycle_api.js`, `modeller/edit_delta_ui.js`, `viewer/rates/*.json`).
+Brief: bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` RESUME (session 9) "▶ FIRST".
+
+**§6.1 MEASURED before any edit (bim-ootb main `eb1fcdb5`; scratch scripts, not committed; log read).** Booted both paths per
+locale in Node (`rates.js` + the real `locale_loader.js applyRateOverrides` = today's Viewer; `rates.js` + `loadSequenceRules` +
+`loadRateTemplate(LOCALE_RATE_MAP[loc])` = the pack path) and diffed the effective tables:
+- Productivity (drives 4D durations): **10 of 18 locales equal** (de, en_AU, en_MY, en_US, es, fr, ja, ms, th, zh: the pack already
+  carries the locale's numbers). **8 differ, 15 cells each**: af_ZA, ar_SA, bn_BD, bl_BD, en_GB, id_ID, ko_KR, pt_BR — the locale file
+  has a regional table (e.g. af_ZA HVAC IfcDuct 16) and its pack carries the Malaysian base copy (18). crew_size / max_crews: 0 diffs.
+- **Today's Viewer is wrong in a way the pack fixes:** a locale file prices 40 classes and 7 trades; the pack has 50 / 10 (all 16 packs,
+  identical key sets). The other 10 classes + CARPENTER / FINISHER / ROOFER keep rates.js's CIDB ringgit numbers on every non-MY page
+  (an en_US Viewer prices IfcRoof at 238 = the RM figure, labelled `$`; the US pack says 75). Every locale file also prices IfcFooting
+  per EA (en_US 240 EA), undoing rates.js §FOOTING_M3; every pack prices it per M3.
+- `RATES_DEFAULT` (the misc-element price): only the locale files carry one (en_US 180, en_MY 500, …); no pack has it, so the pack path
+  alone would price a US misc element at 500.
+- en_GB: the locale's 40 material rates, 5 day rates and 6 equipment day rates all differ from `bcis2024_uk` (both are placeholders).
+- `initRateTemplate` runs `loadRateTemplate` and `loadSequenceRules` in parallel; the latter REPLACES each `LABOR_RATES` trade whole,
+  so when it answers second the pack's labour is lost (a second race inside one call; only boq_charts / mep_report call it today).
+- The Modeller's cost Δ (§5, `edit_delta_ui.js`) prices through `fetchLocale` + `applyRateOverrides` = the locale path; it must move
+  with the Viewer or the cross-surface equality of §5 breaks.
+
+**§6.2 RULE.** Numbers + currency = the pack; words = the language. Numbers: `RATES[cls].rate/unit`, `LABOR_RATES[k]` every field but
+`trade`, `EQUIPMENT_RATES[k]` every field but `desc`, `RATES_DEFAULT.rate/unit`, `_TRL.cur/cur2/cur_rate` (from `meta`). Words:
+`RATES[cls].desc`, `LABOR_RATES[k].trade`, `EQUIPMENT_RATES[k].desc`, `RATES_DEFAULT.desc`. Neither writer touches the other's fields,
+so the result does not depend on which loads first (the race of #2411 cannot recur). A word the language lacks shows the pack's word.
+
+**§6.3 WHICH PACK.** `?rates=` > Settings ▸ 5D Rate Pack (`bim_5d_pack`) > `LOCALE_RATE_MAP[locale]` > `cidb2024_my`, where `locale` is
+locale_loader's own `detectLocale()` when the page has it (one detection, not a copy: `?lang=` exact or mapped, saved, browser, en_MY).
+A language switch in place loads the new language's default pack only when neither `?rates=` nor a Settings pick is set.
+
+**§6.4 DATA MOVED (numbers out of the locale files' reach, nothing invented: each value copied from the locale file that maps to the pack).**
+(a) the 8 regional productivity tables into their packs (`asaqs2024_za`, `aramco2024_sa`, `pwd2024_bd` [bn_BD = bl_BD, checked],
+`bcis2024_uk`, `sni2024_id`, `kict2024_kr`, `sinapi2024_br`); (b) each pack gains `rates_default {rate, unit}` from its locale file
+(cidb: en_MY = ms_MY, pwd: bn_BD = bl_BD, checked). The locale files keep their numbers as text (not read for prices any more).
+
+**§6.5 LOAD ORDER.** `initRateTemplate`: sequence rules first, then the pack (then words). Viewer starts it at load; the Time Machine
+awaits it before its first schedule (`tm_lifecycle_api.js`, both `_load4DTemplate` sites). The Modeller's §S8 lazy load calls the same
+`initRateTemplate`. rates.js resolves `rates/…` from its own script URL (the Modeller loads it from `../viewer/`).
+
+**§6.6 CONSEQUENCES (stated, owner-approved by the rule):** a US / UK / … page shows the pack's currency code (`USD`, as boq_charts
+already does) instead of the locale's symbol; en_GB prices change to `bcis2024_uk`'s; every non-MY page stops pricing 10 classes and 3
+trades in ringgit; IfcFooting is per M3 everywhere. 4D durations: unchanged on all 18 locales (§6.4a is what guarantees it).
+
+**§6.7 WITNESS W-RATES-PACK (claims; falsifier = the same script on main).**
+- RP1 every locale, both load orders (language first / pack first): every number = the pack's, every word = the language's (else the pack's). Main: FAIL.
+- RP2 every locale: effective productivity / crew_size / max_crews on the pack path = today's locale path (4D unchanged). Packs before §6.4a: FAIL on 8.
+- RP3 every locale: `RATES_DEFAULT.rate` = the locale file's (now via its pack). Before §6.4b: FAIL on 16.
+- RP4 `initRateTemplate` with `sequence_rules.json` answering AFTER the pack: the pack's labour survives. Main: FAIL.
+- RP5 pack choice: `?lang=ar` (mapped) picks `aramco2024_sa` like locale_loader; `bim_5d_pack` beats the language; `?rates=` beats both.
+- RP6 a language switch in place with no pick loads the new default pack; with a pick keeps it.
+Plus, unchanged: W-JSON-4D5D, W-VIEWER-I18N / W-VIEWER-LANG-INPLACE, W-S8, the 4D cache witnesses on the default locale; after deploy
+W-JSON-4D5D-LIVE L2 WITHOUT a pick (the finding of #2406: a reload priced with built-in rates until the pack was picked).
+
+**§6.8 RESULT 2026-10-27 (built; every line below read from its log).** bim-ootb branch `fix/viewer-rates-from-pack`.
+- **W-RATES-PACK 6 / 0**; on `eb1fcdb5` RP1 / RP4 / RP5 / RP6 FAIL; with the packs before §6.4 RP2 FAIL on exactly the 8 locales of §6.1 and
+  RP3 on 16 locales × 2 orders (`misc 500 want 4500` …).
+- **W-JSON-4D5D-LIVE 6 / 0** on the local tree (headless, software GL): new **L5** a fresh en-US profile with nothing picked starts on
+  `rsmeans2024_us`, IfcWall 48, `USD`; **L2** now passes WITHOUT re-picking (pack at start = the Settings pick, the edited rate applied).
+  Same witness on main: L5 FAIL "the page loaded NO rate pack within 60 s".
+- **W-S8-EDIT-DELTA 10 / 0** locally with new **D9** (the Δ's rate = the pack file's number, pack = the language's); main: D9 FAIL `pack=null`.
+- **W-VIEWER-I18N --only inplace PASS** (18 switches, 2,404 slots, 0 page errors); its page log shows the pack following each switch
+  (`§RATE_LOCALE_MAP locale=en_US template=rsmeans2024_us (language switched)` → `§QTO_RATES_LOADED … cur=USD misc=180/EA words=language`).
+- Unchanged and green: W-JSON-4D5D 5 / 0, W-S8 pure 7 / 0, W-S9 pure 8 / 0, `test_sequence_rules_load`, `poc_find_cost`.
+- **4D:** the Node pipeline (`scripts/cache_4d_run.js`) runs rates.js's built-in tables in a sandbox with no loader; those tables are
+  byte-identical before / after (`§RATES_NODE_TABLES identical=true`), so the cached 4D runs cannot move. The Viewer's effective tables
+  for every locale: RP2 (labour) + the sequence mirror below.
+- **Found on the way, fixed:** the Viewer now loads `sequence_rules.json` (it never did). Measured: 58 rules, the default and 7 name
+  overrides identical to rates.js; LABOR_RATES lacked rates.js's 3 civil trades (`CIVIL_SURVEY/GEOTECH/GABION`, #1853) — the reason
+  `witness_sequence_template_lock.js` was already RED on main (`mirror-matches-executed`, 6 / 1). Copied verbatim: 7 / 0. The JSON's
+  stale note "viewer.html never calls loadSequenceRules" carries a dated correction.
+- Guide (`docs/BIMUserGuide.md`): "pick the pack after opening" removed; the Modeller line corrected (its Δ prices with the same pack
+  and copies); "19 national packs" → 16 (counted: 16 + `custom_template.json`).

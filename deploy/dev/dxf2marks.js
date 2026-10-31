@@ -9,8 +9,8 @@
   'use strict';
   var LAYER = 'DXF2BIM-MARK';
   var K = { mm: 0.001, cm: 0.01, m: 1, 'in': 0.0254, ft: 0.3048 };
-  var SINGLE = ['SET', 'VIEW', 'NAME', 'UNITS', 'LEVEL', 'FACE', 'HAXIS', 'REGION', 'ROOF', 'CUT', 'SCOPE', 'FRAME'], MULTI = ['GRIDX', 'GRIDY', 'GRIDH', 'Z', 'EXCLUDE', 'OPENING', 'LABEL', 'SCHEDULE', 'TAG', 'ALLOWANCE', 'WALLTOP', 'LAYER'];
-  var NEED = { PLAN: ['SET', 'VIEW', 'LEVEL', 'UNITS'], ELEV: ['SET', 'VIEW', 'FACE', 'HAXIS', 'UNITS'], ROOF: ['SET', 'VIEW', 'LEVEL', 'UNITS', 'ROOF'], SECTION: ['SET', 'VIEW', 'UNITS', 'HAXIS', 'CUT'] };   // ROOF view: lane spec L2.3 D1; SECTION: L1.4 F5
+  var SINGLE = ['SET', 'VIEW', 'NAME', 'UNITS', 'LEVEL', 'FACE', 'HAXIS', 'REGION', 'ROOF', 'CUT', 'SCOPE', 'FRAME', 'WALLMIN'], MULTI = ['GRIDX', 'GRIDY', 'GRIDH', 'Z', 'EXCLUDE', 'OPENING', 'LABEL', 'SCHEDULE', 'TAG', 'ALLOWANCE', 'WALLTOP', 'LAYER', 'BODYZ', 'SIZE', 'DEFAULT'];
+  var NEED = { DRAWING: ['SET', 'VIEW', 'UNITS'], PLAN: ['SET', 'VIEW', 'LEVEL', 'UNITS'], ELEV: ['SET', 'VIEW', 'FACE', 'HAXIS', 'UNITS'], ROOF: ['SET', 'VIEW', 'LEVEL', 'UNITS', 'ROOF'], SECTION: ['SET', 'VIEW', 'UNITS', 'HAXIS', 'CUT'] };   // ROOF view: lane spec L2.3 D1; SECTION: L1.4 F5
 
   // bim-ootb lane spec L4.2: @LAYER=<name>,<type> - the rule types the reader of each view accepts (+ dims / grid: qualify settings, 'ignore' for the readers)
   var LAYER_TYPES = {
@@ -18,7 +18,8 @@
     ELEV: ['elevwall', 'elevdoor', 'glazing', 'levelline', 'ignore'],                  // Dxf2Elev.elevWallRects / elevClusters('glazing'|'elevdoor'), Dxf2Shell.levelLinesZ
     ROOF: ['roof', 'glazing', 'ignore'],                                               // Dxf2Shell.roofPlan
     SECTION: ['sectslab', 'sectwall', 'roof', 'ignore'],                               // Dxf2Shell.sectionSlabs (+ L2.8 section walls)
-    ANY: ['dims', 'grid'] };
+    ANY: ['dims', 'grid'],
+    BODY: ['column', 'beam', 'footing', 'gradebeam', 'member', 'plate', 'panel', 'bar', 'fan', 'net', 'doorswing'] };   // bim-ootb lane L7.10 (+ L11 panel = an elevation HATCH layer read as wall panels; + L14 bar = LINE members of a SECTION sheet; + L11.3 fan = concentric CIRCLEs on an elevation; + L11.4 net = the ZIGZAG/mesh-pattern hatches of an elevation layer; + L16 doorswing = ARC swing symbols of a plan layer): the user types a layer with a BODY kind (any view); every existing reader maps it to 'ignore', the bodies module reads it
   function err(code, message, extra) { return Object.assign({ code: code, message: message }, extra || {}); }
 
   // entities: parsed by dxf-parser (TEXT/MTEXT with .text and .startPoint/.position)
@@ -35,7 +36,7 @@
   }
 
   function describe(marks) {
-    var d = { gridsX: {}, gridsY: {}, gridsH: {}, zs: [], excludes: [], openings: [], labels: [], schedule: [], tags: [], allowance: {}, walltop: [], walltop_walls: [], by: {} }, errors = [];
+    var d = { gridsX: {}, gridsY: {}, gridsH: {}, zs: [], excludes: [], openings: [], labels: [], schedule: [], bodyz: [], tags: [], allowance: {}, walltop: [], walltop_walls: [], sizes: [], defaults: [], by: {} }, errors = [];
     marks.forEach(function (m) {
       // lane spec L2.7 (5): @BY=model|user is a SUFFIX in the same TEXT and qualifies only that TEXT's marking; none -> 'file'
       var raw = m.raw, by = 'file', nBy = (raw.match(/@BY=/g) || []).length;
@@ -66,7 +67,12 @@
           if (fp.length !== 3 || fp.some(function (n) { return !isFinite(n); })) { errors.push(err('MARK:malformed', '@FRAME needs <angle deg>,<x mm>,<y mm>: ' + val, { handle: m.handle })); return; }
           val = fp.join(',');
         }
-        if (key === 'VIEW' && val !== 'PLAN' && val !== 'ELEV' && val !== 'ROOF' && val !== 'SECTION') { errors.push(err('MARK:malformed', '@VIEW must be PLAN|ELEV|ROOF|SECTION: ' + val, { handle: m.handle })); return; }
+        if (key === 'WALLMIN') {                                                           // F6 D11: the thinnest wall piece (metres) this plan reads as a wall; below it GAP:wall_below_min_thickness stands
+          var wmn = Number(val);
+          if (val.trim() === '' || !isFinite(wmn) || wmn <= 0 || wmn > 1) { errors.push(err('MARK:malformed', '@WALLMIN needs a thickness in metres (0 < t <= 1): ' + val, { handle: m.handle })); return; }
+          val = String(wmn);
+        }
+        if (key === 'VIEW' && val !== 'PLAN' && val !== 'ELEV' && val !== 'ROOF' && val !== 'SECTION' && val !== 'DRAWING') { errors.push(err('MARK:malformed', '@VIEW must be PLAN|ELEV|ROOF|SECTION|DRAWING: ' + val, { handle: m.handle })); return; }
         if (key === 'CUT') {                                                               // L1.4 F5: <X|Y>,<plan coordinate in the sheet's @UNITS>
           var cp = val.split(','), cv = Number(cp[1]);
           if (cp.length !== 2 || (cp[0] !== 'X' && cp[0] !== 'Y') || cp[1].trim() === '' || !isFinite(cv)) { errors.push(err('MARK:malformed', '@CUT needs X|Y,<coordinate>: ' + val, { handle: m.handle })); return; }
@@ -106,12 +112,30 @@
         if (d.allowance[ac] && (d.allowance[ac].w !== an[0] || d.allowance[ac].h !== an[1])) { errors.push(err('MARK:conflict', '@ALLOWANCE ' + ac + ' has two values', { handle: m.handle })); return; }
         d.allowance[ac] = { w: an[0], h: an[1] };
       } else if (key === 'SCHEDULE') {
-        var sp = val.split(','), sc = sp[1], sn = sp.slice(2).map(Number), sok = (sc === 'wall' && sp.length === 3) || ((sc === 'door' || sc === 'window') && sp.length === 4);
-        if (!sok || sp[0].trim() === '' || sn.some(function (n, i) { return !isFinite(n) || sp[i + 2].trim() === ''; })) { errors.push(err('MARK:malformed', '@SCHEDULE needs text,door|window,w,h or text,wall,t: ' + val, { handle: m.handle })); return; }
-        var sent = sc === 'wall' ? { text: sp[0], class: sc, t: sn[0] } : { text: sp[0], class: sc, w: sn[0], h: sn[1] };
+        var sp = val.split(','), sc = sp[1], sn = sp.slice(2).map(Number), sok = (sc === 'wall' && sp.length === 3) || ((sc === 'door' || sc === 'window') && sp.length === 4) || (sc === 'window' && sp.length === 5);   // §F8 D24: a window's optional 5th value = its sill above the level
+        if (!sok || sp[0].trim() === '' || sn.some(function (n, i) { return !isFinite(n) || sp[i + 2].trim() === ''; })) { errors.push(err('MARK:malformed', '@SCHEDULE needs text,door|window,w,h (window: [,sill]) or text,wall,t: ' + val, { handle: m.handle })); return; }
+        var sent = sc === 'wall' ? { text: sp[0], class: sc, t: sn[0] } : { text: sp[0], class: sc, w: sn[0], h: sn[1] }; if (sp.length === 5) sent.sill = sn[2];
         var sdup = d.schedule.find(function (q) { return q.text === sent.text && q.class === sent.class; });
         if (sdup && JSON.stringify(Object.assign({}, sdup, { by: undefined })) !== JSON.stringify(sent)) { errors.push(err('MARK:conflict', '@SCHEDULE ' + sent.text + ' (' + sc + ') has two sizes', { handle: m.handle })); return; }
         if (!sdup) { sent.by = by; d.schedule.push(sent); }
+      } else if (key === 'BODYZ') {                                                          // bim-ootb lane L7.14: the z range (m) the USER states for a body kind no elevation shows: @BODYZ=<kind>,<z0>,<z1>
+        var bp = val.split(','), bk = (bp[0] || '').trim(), bn = bp.slice(1).map(Number);
+        if (LAYER_TYPES.BODY.indexOf(bk) < 0 || bp.length !== 3 || bp.slice(1).some(function (t, i) { return t.trim() === '' || !isFinite(bn[i]); }) || !(bn[0] < bn[1])) { errors.push(err('MARK:malformed', '@BODYZ needs <' + LAYER_TYPES.BODY.join('|') + '>,<z0 m>,<z1 m> with z0 < z1: ' + val, { handle: m.handle })); return; }
+        var bdup = d.bodyz.find(function (q) { return q.kind === bk; });
+        if (bdup && (bdup.z0 !== bn[0] || bdup.z1 !== bn[1])) { errors.push(err('MARK:conflict', '@BODYZ ' + bk + ' has two ranges', { handle: m.handle })); return; }
+        if (!bdup) d.bodyz.push({ kind: bk, z0: bn[0], z1: bn[1], by: by });
+      } else if (key === 'SIZE') {                                                          // bim-ootb lane L10: the NUMBER the user states for one body side: @SIZE=<body id>,<x|y|w|d>,<metres> (x,y = plan extents of a column/footing/plate; w,d = width,depth of a band kind)
+        var zp = val.split(','), zg = (zp[0] || '').trim(), za = (zp[1] || '').trim(), zv = Number(zp[2]);
+        if (zp.length !== 3 || !zg || ['x', 'y', 'w', 'd'].indexOf(za) < 0 || (zp[2] || '').trim() === '' || !isFinite(zv) || !(zv > 0)) { errors.push(err('MARK:malformed', '@SIZE needs <body id>,<x|y|w|d>,<metres > 0>: ' + val, { handle: m.handle })); return; }
+        var zdup = d.sizes.find(function (q) { return q.id === zg && q.axis === za; });
+        if (zdup && zdup.value !== zv) { errors.push(err('MARK:conflict', '@SIZE ' + zg + ' ' + za + ' has two values', { handle: m.handle })); return; }
+        if (!zdup) d.sizes.push({ id: zg, axis: za, value: zv, by: by });
+      } else if (key === 'DEFAULT') {                                                       // bim-ootb lane L18: a SETTING the user states for an element type the drawings do not carry: @DEFAULT=<key>,<value>
+        var fk = val.indexOf(','), dk = fk > 0 ? val.slice(0, fk).trim() : '', dv = fk > 0 ? val.slice(fk + 1).trim() : '';
+        if (!/^[a-z][a-z0-9_]*(\.[a-z0-9_]+)+$/.test(dk) || dv === '') { errors.push(err('MARK:malformed', '@DEFAULT needs <dotted.key>,<value>: ' + val, { handle: m.handle })); return; }
+        var ddup = d.defaults.find(function (q) { return q.key === dk; });
+        if (ddup && ddup.value !== dv) { errors.push(err('MARK:conflict', '@DEFAULT ' + dk + ' has two values', { handle: m.handle })); return; }
+        if (!ddup) d.defaults.push({ key: dk, value: dv, by: by });
       } else if (key === 'LAYER') {                                                         // L4.2: name = everything before the LAST comma
         var lc = val.lastIndexOf(','), ln = lc > 0 ? val.slice(0, lc).trim() : '', lt = lc > 0 ? val.slice(lc + 1).trim() : '';
         if (!ln || !lt) { errors.push(err('MARK:malformed', '@LAYER needs <layer name>,<type>: ' + val, { handle: m.handle })); return; }
@@ -152,8 +176,8 @@
       d.tags = d.tags.filter(function (q) { if (q.z === undefined) return true; errors.push(err('MARK:malformed', '@TAG z= is not allowed in an ELEV view (z comes from the position): ' + q.text)); return false; });
     }
     if (d.layers && LAYER_TYPES[d.view]) d.layers = d.layers.filter(function (q) {      // checked after the loop: the view may come later in handle order
-      if (LAYER_TYPES[d.view].indexOf(q.type) >= 0 || LAYER_TYPES.ANY.indexOf(q.type) >= 0) return true;
-      errors.push(err('MARK:layer_type', '@LAYER ' + q.layer + ',' + q.type + ': a ' + d.view + ' sheet reads ' + LAYER_TYPES[d.view].concat(LAYER_TYPES.ANY).join('|'), { handle: q.handle, layer: q.layer, type: q.type, view: d.view })); return false;
+      if (LAYER_TYPES[d.view].indexOf(q.type) >= 0 || LAYER_TYPES.ANY.indexOf(q.type) >= 0 || LAYER_TYPES.BODY.indexOf(q.type) >= 0) return true;
+      errors.push(err('MARK:layer_type', '@LAYER ' + q.layer + ',' + q.type + ': a ' + d.view + ' sheet reads ' + LAYER_TYPES[d.view].concat(LAYER_TYPES.ANY, LAYER_TYPES.BODY).join('|'), { handle: q.handle, layer: q.layer, type: q.type, view: d.view })); return false;
     });
     {
       var need = (NEED[d.view] || []).filter(function (k) { return d[k.toLowerCase()] === undefined; });
@@ -177,6 +201,9 @@
     d.openings.sort(function (p, q) { return p.h0 - q.h0 || p.y0 - q.y0 || p.h1 - q.h1 || p.y1 - q.y1 || (p.kind < q.kind ? -1 : p.kind > q.kind ? 1 : 0); });
     d.labels.sort(function (p, q) { return p.x - q.x || p.y - q.y || (p.z === undefined ? -1e9 : p.z) - (q.z === undefined ? -1e9 : q.z) || (p.class < q.class ? -1 : p.class > q.class ? 1 : 0); });
     d.tags.sort(function (p, q) { return p.x - q.x || p.y - q.y || (p.z === undefined ? -1e9 : p.z) - (q.z === undefined ? -1e9 : q.z) || (p.class < q.class ? -1 : p.class > q.class ? 1 : 0); });
+    d.defaults.sort(function (p, q) { return p.key < q.key ? -1 : p.key > q.key ? 1 : 0; });
+    d.sizes.sort(function (p, q) { return p.id < q.id ? -1 : p.id > q.id ? 1 : p.axis < q.axis ? -1 : p.axis > q.axis ? 1 : 0; });
+    d.bodyz.sort(function (p, q) { return p.kind < q.kind ? -1 : p.kind > q.kind ? 1 : 0; });
     d.schedule.sort(function (p, q) { return p.text < q.text ? -1 : p.text > q.text ? 1 : p.class < q.class ? -1 : p.class > q.class ? 1 : 0; });
     d.excludes.sort(function (p, q) { return p[0] - q[0] || p[1] - q[1] || p[2] - q[2] || p[3] - q[3]; });
     d.walltop.sort(function (p, q) { return p.level - q.level; });
@@ -189,7 +216,7 @@
   // (Dxf2Bim.matchRule: first match wins), so a stated rule overrides the configured set's rule for that layer and nothing else.
   function layerMap(desc) {
     if (!desc || !desc.layers || !desc.layers.length) return null;
-    return { version: 1, rules: desc.layers.map(function (q) { return { match: 'exact', pattern: q.layer, type: LAYER_TYPES.ANY.indexOf(q.type) >= 0 ? 'ignore' : q.type }; }) };
+    return { version: 1, rules: desc.layers.map(function (q) { return { match: 'exact', pattern: q.layer, type: LAYER_TYPES.ANY.indexOf(q.type) >= 0 || LAYER_TYPES.BODY.indexOf(q.type) >= 0 ? 'ignore' : q.type }; }) };
   }
   function withLayers(map, desc) {
     var lm = layerMap(desc); if (!lm) return map;
@@ -262,6 +289,9 @@
       var h = (maxH + 1 + n).toString(16).toUpperCase();
       out.push('0', 'TEXT', '5', h, '8', LAYER, '10', String(m.x || 0), '20', String(m.y || 0), '30', '0', '40', String(opts.height || 1), '1', m.text);
     });
+    // §F8 D32: $HANDSEED must exceed every handle in the file (DXF reference); the new markings take handles above the old maximum, so the seed moves past the last one
+    var last = maxH + marks.length;
+    for (var k = 0; k + 3 < endIdx; k += 2) if (lines[k].trim() === '9' && lines[k + 1].trim() === '$HANDSEED' && lines[k + 2].trim() === '5') { if (parseInt(lines[k + 3].trim(), 16) <= last) lines[k + 3] = (last + 1).toString(16).toUpperCase(); break; }
     return lines.slice(0, endIdx).concat(out, lines.slice(endIdx)).join(eol);
   }
 

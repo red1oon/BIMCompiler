@@ -5,6 +5,8 @@ Credits: the American Farmhouse test drawing is by Jay Osborne (freefarmhouse.co
 
 # DXF2BIM — Deterministic 2D DXF → 3D BIM
 
+> **Code source (2026-10-26):** the reader modules live in bim-ootb `modeller/dxf2bim/` (owner decision 2026-10-23, its `SOURCE.md`). `deploy/dev/dxf2*.js` / `std2d*.js` here are COPIES taken from bim-ootb 1058069c3 for this repo's scripts and tests; change bim-ootb, then copy.
+
 Status: SPEC v0.2 (2026-10-11), reviewed once, decisions §8 agreed by user. Code starts with S1-S3 + T1-T3 (see §10).
 
 ## 1. Goal
@@ -590,7 +592,7 @@ E8 (wall labels from the SOURCE model, round trip): 26/26 labels applied, 0 labe
 Whole Duplex type picture (1st-pass numbers in §41 replaced): doors 4/4 correct (drawn-size rows); windows 22/22 (10 by size + preferred set, 12 by label with z); walls 30/30 (10 by size, 20 by label). Everything the geometry could not decide came from stated labels; nothing was guessed. Labels were taken from the source model (round trip): this shows the mechanism and that the pieces land on the right types, not that labels can be discovered from a drawing.
 
 ## 51. User guide (2026-10-12)
-User direction: the user guide must state the rule that labels are what set the measures/types geometry cannot decide. Written as `docs/DXF2BIM_USER_GUIDE.md` (rule in §1, workflow in §4, gap table in §6). Every statement in it is taken from §24-§50; items not built are listed in its §8. Keep it in step with this spec when rules change.
+User direction: the user guide must state the rule that labels are what set the measures/types geometry cannot decide. Written first as `docs/DXF2BIM_USER_GUIDE.md` (retired 2026-10-26: its rule now opens *The metadata, for CAD users* in `docs/DXF2BIMGuide.md`) (rule in §1, workflow in §4, gap table in §6). Every statement in it is taken from §24-§50; items not built are listed in its §8. Keep it in step with this spec when rules change.
 
 ## 52. Tags: canned labels placed on the drawing (spec, 2026-10-12)
 User direction: canned labels and markers placed by users on their drawings help a lot; build the label reader. Until now `@LABEL` needed typed coordinates. A TAG is the same information placed by position: the user puts a text on the drawing at the element (plan) or at the opening (elevation); the reader takes the position from the text's insertion point.

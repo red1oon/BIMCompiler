@@ -106,6 +106,115 @@ if os.environ.get('FILM_SET') == 'highway3':
              'tech': ('NOVEL ART', 'A film derived from the road itself'),             # §ALTC_V2 route = A.civilDriveRoute
              'compliance': ('BIM KILLER', 'Compliance report in place of the MEP bill')}  # §MC_MOCKUP model_check_report.html
     CLIPS = {}
+# §DXF2BIM BricsCAD chapter (prompts/FILM_DXF2BIM_BRICSCAD.md, red1 2026-10-18: "use the Chapter cards which others been using"): FILM_SET=bricscad, FOUR chapters, no badges, no cutaways.
+if os.environ.get('FILM_SET') == 'bricscad':
+    CARDS = {
+        1: ('CHAPTER 1', 'OPEN', 'A COMMON DRAWING', 'Three BricsCAD sheets, no markings.'),
+        2: ('CHAPTER 2', 'MEANING', 'FROM THE DRAWING', 'Suggested, never silent. Yellow until it is yours.'),
+        3: ('CHAPTER 3', 'BODIES', 'AS DRAWN', 'Columns and footings. Nothing guessed.'),
+        4: ('CHAPTER 4', 'AN ORDER', 'FROM THE MODEL', 'IFC, database, cost and the ERP.'),
+    }
+    TAG = {1: 'OPEN', 2: 'MEANING', 3: 'BODIES', 4: 'AN ORDER'}
+    SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
+# §DXF2BIM shed chapter (bim-ootb prompts/DXF2BIM_MODELLER_LANE.md §L26, red1 2026-10-18): FILM_SET=shed, FIVE chapters: the whole shed from a common BricsCAD 2D set to a model, a schedule and a cost.
+if os.environ.get('FILM_SET') == 'shed':
+    CARDS = {
+        1: ('CHAPTER 1', 'OPEN', 'A COMMON DRAWING', 'Eight BricsCAD sheets, nothing marked.'),
+        2: ('CHAPTER 2', 'MEANING', 'FROM THE DRAWING', 'Suggested, never silent. Yellow until it is yours.'),
+        3: ('CHAPTER 3', 'BODIES', 'THE WHOLE SHED', 'As drawn. Estimates listed as defaults.'),
+        4: ('CHAPTER 4', 'THE MODEL', 'IN A DATABASE', 'Materials, colours, and every mesh\'s source.'),
+        5: ('CHAPTER 5', 'THE VIEWER', 'IN 3D, 4D, 5D', 'The same database. Nothing converted twice.'),
+    }
+    TAG = {1: 'OPEN', 2: 'MEANING', 3: 'BODIES', 4: 'THE MODEL', 5: 'THE VIEWER'}
+    SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
+# §DXF2BIM 2D wand film (bim-ootb prompts/FILM_DXF2BIM_WAND.md, 2026-10-21): FILM_SET=wand, FOUR chapters: one wing of the Hospital sample out of the 3D as 2D sheets.
+if os.environ.get('FILM_SET') == 'wand':
+    CARDS = {
+        1: ('CHAPTER 1', 'THE HOSPITAL', 'LOADED', 'The open sample, in the browser.'),
+        2: ('CHAPTER 2', 'THE BOX', 'ON ONE WING', 'A plane, its length, its depth. Nothing is cut.'),
+        3: ('CHAPTER 3', 'JUST', 'THE WING', 'The view at the plane, a plan, the section.'),
+        4: ('CHAPTER 4', 'LIMITS', 'STATED', 'What it does not do yet.'),
+    }
+    TAG = {1: 'THE HOSPITAL', 2: 'THE BOX', 3: 'JUST THE WING', 4: 'LIMITS'}
+    SERIES = 'BIM OOTB  ·  VIEWER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
+# §DXF2BIM Yellow Markings film (bim-ootb prompts/FILM_DXF2BIM_YELLOW_MARKINGS.md, 2026-10-22): FILM_SET=yellow, FIVE chapters: what a marking is, the yellow rule, the datums, the verdict, the round trip.
+if os.environ.get('FILM_SET') == 'yellow':
+    CARDS = {
+        1: ('CHAPTER 1', 'INSIDE', 'THE DRAWING', 'A marking is a short text in the DXF.'),
+        2: ('CHAPTER 2', 'YELLOW', 'UNTIL YOURS', 'Suggested, never silent. Accept, or type over.'),
+        3: ('CHAPTER 3', 'THE', 'DATUMS', 'Role, set, level, roof, face, axis, heights, grid, cut.'),
+        4: ('CHAPTER 4', 'THE', 'VERDICT', 'What is missing is listed, never filled.'),
+        5: ('CHAPTER 5', 'IT', 'TRAVELS', 'Saved inside the drawing; opened again with no choices.'),
+    }
+    TAG = {1: 'INSIDE THE DRAWING', 2: 'YELLOW UNTIL YOURS', 3: 'THE DATUMS', 4: 'THE VERDICT', 5: 'IT TRAVELS'}
+    SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
+# §DXF2BIM Why-markings film (bim-ootb prompts/FILM_DXF2BIM_WHY_MARKINGS.md, 2026-10-22): FILM_SET=why, FIVE chapters (v3, 2026-10-22 owner review): as drawn, defaulted before your eyes, what a person states (set name, heights, layers), the shed, the saved set opens placed.
+if os.environ.get('FILM_SET') == 'why':
+    CARDS = {
+        1: ('CHAPTER 1', 'AS', 'DRAWN', 'Nine drawings, each its own flat world.'),
+        2: ('CHAPTER 2', 'DEFAULTED', 'BEFORE YOUR EYES', 'Each yellow value moves its sheet.'),
+        3: ('CHAPTER 3', 'WHAT A PERSON', 'STATES', 'Set name, heights, layers, then Convert.'),
+    }
+    TAG = {1: 'AS DRAWN', 2: 'DEFAULTED BEFORE YOUR EYES', 3: 'WHAT A PERSON STATES'}   # v4: chapters 4 (the model in a database) and 5 (the viewer) are spliced from the earlier shed film
+    SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
+# §DXF2BIM BricsCAD-user shed film (bim-ootb prompts/FILM_DXF2BIM_WHY_MARKINGS.md "BRICSCAD FILM — STORYBOARD", owner 2026-10-28 "Proceed.. your advice"): FILM_SET=bricscad2, SEVEN chapters:
+# what the drawing does not say, the Sheet view, what a person states, the shed, one wall in small steps, one more bay, the marked sheet. The prior-art card is drawn by the recorder.
+if os.environ.get('FILM_SET') == 'bricscad2':
+    CARDS = {
+        1: ('CHAPTER 1', 'WHAT YOUR DRAWING', 'DOES NOT SAY', 'Nine BricsCAD sheets, read as they are.'),
+        2: ('CHAPTER 2', 'THE SHEET,', 'AS YOU DREW IT', 'Every open value, ringed where it was read.'),
+        3: ('CHAPTER 3', 'WHAT A PERSON', 'STATES', 'Written into copies of your DXF.'),
+        4: ('CHAPTER 4', 'ONE', 'SHED', 'Convert.'),
+        5: ('CHAPTER 5', 'ONE WALL,', 'SMALL STEPS', 'Typed, undone, redone.'),
+        6: ('CHAPTER 6', 'ONE MORE', 'BAY', 'Copied as it is, and priced.'),
+        7: ('CHAPTER 7', 'THE MARKED', 'SHEET', 'Saved as SVG, ready to print.'),
+    }
+    TAG = {1: 'WHAT YOUR DRAWING DOES NOT SAY', 2: 'THE SHEET, AS YOU DREW IT', 3: 'WHAT A PERSON STATES', 4: 'ONE SHED', 5: 'ONE WALL, SMALL STEPS', 6: 'ONE MORE BAY', 7: 'THE MARKED SHEET'}
+    SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
+# Malay version of the why film (bim-ootb prompts/FILM_DXF2BIM_WHY_MARKINGS.md §MS, 2026-10-23): FILM_SET=why_ms, the same three chapters, app terms kept as users say them.
+if os.environ.get('FILM_SET') == 'why_ms':
+    CARDS = {
+        1: ('BAB 1', 'SEPERTI', 'DILUKIS', 'Sembilan lukisan, masing-masing dunia rata tersendiri.'),
+        2: ('BAB 2', 'NILAI LALAI', 'DI DEPAN MATA', 'Setiap nilai kuning menggerakkan helaiannya.'),
+        3: ('BAB 3', 'APA YANG', 'MANUSIA NYATAKAN', 'Nama set, ketinggian, lapisan, kemudian Convert.'),
+    }
+    TAG = {1: 'SEPERTI DILUKIS', 2: 'NILAI LALAI DI DEPAN MATA', 3: 'APA YANG MANUSIA NYATAKAN'}
+    SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
+# §LAST PART of the shed films (bim-ootb prompts/FILM_DXF2BIM_WHY_MARKINGS.md §LAST PART SCRIPT, 2026-10-23): FILM_SET=shedlast, three chapters: assembled, saved and reopened, services walked.
+if os.environ.get('FILM_SET') == 'shedlast':
+    CARDS = {
+        1: ('CHAPTER 1', 'ASSEMBLED', 'FROM 2D', 'Nine marked drawings, one click.'),
+        2: ('CHAPTER 2', 'SAVED,', 'REOPENED AS ARC', 'A building database, editable again.'),
+        3: ('CHAPTER 3', 'SERVICES', 'WALKED', 'Lights and sprinklers from the DISC rows.'),
+    }
+    TAG = {1: 'ASSEMBLED FROM 2D', 2: 'SAVED, REOPENED AS ARC', 3: 'SERVICES WALKED'}
+    SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
+# §LAST PART v2 SHORT (bim-ootb prompts/FILM_DXF2BIM_WHY_MARKINGS.md §LAST PART v2, 2026-10-23): FILM_SET=shedlast2, two chapters: reopened as ARC, services walked.
+if os.environ.get('FILM_SET') == 'shedlast2':
+    CARDS = {
+        1: ('CHAPTER 1', 'REOPENED', 'AS ARC', 'The saved shed, editable again.'),
+        2: ('CHAPTER 2', 'SERVICES', 'WALKED', 'Lights, sprinklers and pipework from the DISC rows.'),
+    }
+    TAG = {1: 'REOPENED AS ARC', 2: 'SERVICES WALKED'}
+    SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
 os.makedirs(out, exist_ok=True)
 txt = open(log).read()
 chap = {int(m.group(1)): float(m.group(2)) for m in re.finditer(r'§FILM_CHAPTER n=(\d+) key=\S+ t=([\d.]+)', txt)}
@@ -113,7 +222,7 @@ end = max(float(m.group(1)) for m in re.finditer(r'§FILM_BEAT id=\S+ t=([\d.]+)
 back = dict(l.split(' ', 1) for l in open(bfile).read().strip().split('\n'))
 back = {int(k[1:]): v.strip() for k, v in back.items()}
 print(f'§CARDS chapters={len(chap)} end={end:.2f} backdrops={len(back)}')
-if len(chap) != 6 or any(n not in back or not os.path.exists(back[n]) for n in chap): sys.exit('§CARDS FAIL missing chapter or backdrop')
+if len(chap) != len(CARDS) or any(n not in back or not os.path.exists(back[n]) for n in chap): sys.exit('§CARDS FAIL missing chapter or backdrop')   # N chapters (every set has len(CARDS) of them; was 6)
 
 # ── 1. video: dimmed still over the footage inside each card window ──
 inputs = ['-i', video]

@@ -79,8 +79,11 @@ else verdict "audit" "WARN" "audit_specs has violations — pre-existing debt, s
 
 # ── (c) ERP — one headless witness ──────────────────────────────────────────────
 section "(c) ERP — $ERP_WITNESS"
+ERP_DATA="${ERP_DATA:-build/erp/glassbowl_data.db}"   # oracle-captured (scripts/extract_fact_acct.sh needs the live iDempiere Postgres): never in git
 if [ ! -f "$ERP_WITNESS" ]; then
   verdict "erp" "SKIP" "$ERP_WITNESS not found"
+elif [ -n "${CI:-}" ] && [ ! -f "$ERP_DATA" ]; then
+  verdict "erp" "SKIP" "$ERP_DATA absent (oracle-captured, not in git): the ERP regime is covered in CI by the no-oracle bundle step (run_bundle.sh --no-oracle); run this witness locally"
 else
   ( bash build/erp/run_witness.sh "$ERP_WITNESS" ) >> "$LOG" 2>&1
   E1=$?
@@ -100,8 +103,11 @@ fi
 # ── (d) RED PILL — G8-GOVERNANCE round-trip (bim-ootb) ──────────────────────────
 section "(d) Red Pill — G8-GOVERNANCE round-trip (§REDPILL-RS)"
 RP="$BIMOOTB/viewer/tests/poc_redpill_rosetta.js"
+RP_FIX="$BIMOOTB/viewer/tests/fixtures/SampleCastle_extracted.db"   # the witness reads this fixture; it is not in a clean checkout (large DB, not in git)
 if [ ! -f "$RP" ]; then
   verdict "redpill" "SKIP" "bim-ootb Red Pill witness not found at $RP (set BIMOOTB=)"
+elif [ ! -f "$RP_FIX" ]; then
+  verdict "redpill" "SKIP" "fixture $RP_FIX absent (not in git): run the Red Pill witness locally or in bim-ootb"
 else
   ( cd "$BIMOOTB" && node viewer/tests/poc_redpill_rosetta.js ) >> "$LOG" 2>&1
   if [ $? -eq 0 ] && grep -q "§W-REDPILL-ROSETTA ALL PASS" "$LOG"; then

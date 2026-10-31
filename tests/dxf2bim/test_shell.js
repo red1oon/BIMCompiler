@@ -117,7 +117,7 @@ const pe = (h, l, pts) => ({ handle: h, layer: l, type: 'LWPOLYLINE', shape: tru
 // ---------- §6 openings bridged in drawn gaps ----------
 const A = W('A', [0, 0, 2, 0.2], { height: 3 }), Bw = W('B', [3, 0, 6, 0.2], { height: 3 });
 const win = (h, sill, ht, x0, x1) => ({ op_type: 'DXF_OPENING', output_guid: 'o' + h + sill, params: { handle: h, kind: 'window', bbox: [x0, 0, x1, 0.2], sill, height: ht, host_wall: 'gA' } });
-const OC = { snap_tol: 0.001, elev_tol: 0.003 }, OO = { level: 0, hashHex };
+const OC = { snap_tol: 0.001, elev_tol: 0.003, opening: { gap_max: 5 } }, OO = { level: 0, hashHex };   // gap_max: bim-ootb §D52 (a bridge is no longer than an opening gap), the shipped dxf2shell_config value
 const vol = ops => ops.reduce((n, o) => n + o.params.length * o.params.thickness * o.params.height, 0);
 { const r = S.bridgeOpenings([A, Bw, win('W1', 0.9, 1.2, 2, 3)], OC, OO);
   check('OP1', 'the wall below the sill / above the head of a window is missing, or the void is filled', r.infill.length === 2 && J(r.infill.map(o => [o.params.base, o.params.height])) === J([[0, 0.9], [2.1, 0.9]]) && near(vol(r.infill), 1 * 0.2 * 1.8, 1e-9),

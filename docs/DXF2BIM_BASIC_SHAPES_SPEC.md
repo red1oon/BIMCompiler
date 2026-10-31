@@ -3,6 +3,8 @@ Scope: the basic shapes of the Duplex rebuilt from its 2D set (walls with their 
 
 # DXF2BIM basic shapes: walls, floor slabs, roof (with openings and fills)
 
+> **Code source (2026-10-26):** the reader modules live in bim-ootb `modeller/dxf2bim/` (owner decision 2026-10-23, its `SOURCE.md`). `deploy/dev/dxf2*.js` / `std2d*.js` here are COPIES taken from bim-ootb 1058069c3 for this repo's scripts and tests; change bim-ootb, then copy.
+
 Status: SPEC 2026-10-16 (written before code). Goal (user): "make this a prelim of the basic shapes which has to be accurate first as fundamental of most 2Ds.. ie floor slabs, walls, roof", then "with their openings.. mesh mapping from their LOD400 component library". Full circle: drawings exported from a model we hold, rebuilt, checked against that model. Windows/doors as TYPES are out of scope here except where a bound type is needed to place a fill.
 
 ## 1. Inputs and answer key

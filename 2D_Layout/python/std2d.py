@@ -305,6 +305,11 @@ def load_model(db_path, log, door_ops_db=None):
     else:
         fnd = fnd_st[0]
     fnd_elev = next((s['elev'] for s in storeys if s['name'] == fnd), None)
+    if fnd is not None and not any(s['has_walls'] and s['elev'] > fnd_elev for s in storeys) and any(s['name'] == fnd and s['has_walls'] for s in storeys):
+        # R2' (lane §L21): the footings share the only walled storey (a single-storey shed): there is no foundation storey below it; that storey is the grid storey
+        log(f"§STOREY_SINGLE footings share the walled storey {fnd!r}: no foundation storey (R2')")
+        fnd = None
+        fnd_elev = None
     above = [s for s in storeys if s['has_walls'] and (fnd_elev is None or s['elev'] > fnd_elev)]
     grid_storey = above[0]['name'] if above else None
     log(f'§STOREY foundation={fnd!r} grid_storey={grid_storey!r} (R2)')
