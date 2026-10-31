@@ -32,6 +32,7 @@ A 2D drawing carries only some of what a model needs. Everything it does not sta
 | `gradebeam.width` | IfcBeam | m | **0.3** | guess | grade beam width when no label gives it | 0.2, 0.3 |
 | `column.height` | IfcColumn | m | **3** | guess | storey height when no elevation gives it | 2.7, 3, 3.6 |
 | `column.size` | IfcColumn | m | **0.3** | guess | square section when a column symbol gives none | 0.2, 0.25, 0.3, 0.4 |
+| `column.top_under_beam` | IfcColumn | text | **beam_above** | guess | a column under a beam end carries it up to the beam's underside; an elevation may draw it short where a wall, a net or another sheet hides it (§D100: the shed's lines 36–41 drawn 1.52 m under beams at 3.10 m). 'as_drawn' keeps the drawn top and the gap shows as a load_path finding | beam_above, as_drawn |
 | `synth.column.belowgrade.size` | IfcColumn | m | **0** | guess | 0 = not stated: no below-grade column is built; state the schedule's below-grade section (e.g. 0.3556 for 14 in) |  |
 | `synth.column.grade_to_base` | IfcColumn | m | **0.6096** | guess | grade to the column base (plinth): 2 ft, the datum read from a column detail |  |
 | `ceiling.thickness` | IfcCovering | m | **0.012** | guess | board thickness when a ceiling is implied | 0.009, 0.012, 0.015 |
@@ -48,6 +49,7 @@ A 2D drawing carries only some of what a model needs. Everything it does not sta
 | `footing.depth` | IfcFooting | m | **0.4** | guess | pad footing thickness | 0.3, 0.4, 0.6 |
 | `footing.length` | IfcFooting | m | **1.2** | guess | pad footing plan length when no schedule gives it | 1, 1.2, 1.5 |
 | `footing.width` | IfcFooting | m | **1.2** | guess | pad footing plan width | 1, 1.2, 1.5 |
+| `member.section` | IfcMember | text | *(empty)* | guess | a member whose label carries no section: empty = the most common section drawn on the same set for the same kind of member (load_summary.js, shown assumed); a label such as 1.5"x1.5"x1/4" Angle = that section; none = leave them unweighed |  |
 | `member.size` | IfcMember | m | **0.04** | guess | square envelope for a member with no label or size | 0.04, 0.05, 0.075 |
 | `profile.angle_heel` | IfcMember | text | **lower** | guess | which way an angle opens is not stated by a section label; the heel corner sits at the low side of the bar's normal (the b x b envelope is kept either way) | lower, upper |
 | `profile.angle_mesh` | IfcMember | text | **label** | guess | a section bar whose label states one equal-leg angle (1.5"x1.5"x1/4" Angle) is built as that L section (t(2b-t) x length) instead of its b x b box; 'box' keeps the drawn prism | label, box |
@@ -60,7 +62,7 @@ A 2D drawing carries only some of what a model needs. Everything it does not sta
 | `ramp.slope` | IfcRamp | ratio | **0.0833** | guess | 1:12, a typical accessible ramp | 0.0625, 0.0833, 0.1 |
 | `roof.slope_deg` | IfcRoof | deg | **15** | guess | typical light roof pitch; used only when no gable or section gives the slope | 10, 15, 17.5, 22.5 |
 | `synth.roof.overhang` | IfcRoof | m | **0** | guess | the roof is cut at the gable planes until an overhang is stated | 0, 0.4572, 0.6 |
-| `synth.roof.sheet_thickness` | IfcRoof | m | **0.0254** | guess | display thickness of a roofing sheet (1 in); the cost is by area | 0.0254, 0.05 |
+| `synth.roof.sheet_thickness` | IfcRoof | m | **0.0254** | guess | display thickness of a roofing sheet (1 in); the cost is by area. The own weight is by area too, read off the sheet's plan box, which this thickness widens by thickness x sin(slope): a small weight change, no cost change | 0.0254, 0.05 |
 | `slab.edge_arc_sagitta` | IfcSlab | m | **0.005** | guess | an arc in a slab edge is read as straight facets no further than this from the arc (5 mm: under the reader's thinnest wall and the plank keyway) | 0.002, 0.005, 0.01 |
 | `slab.edge_joint_close` | IfcSlab | m | **0.05** | guess | §D70.1 the plan's slab edge closes gaps and notches narrower than this (plank / modelling joints are not drawn: hollow-core joints are grouted monolithic, the open keyway about 3/4 in, Oldcastle Hollowcore Plank Pocket Guide 2019); 0.05 m = the reader's thinnest wall (CFG wall.min_thickness), measured joints <= 24.9 mm (JKR), the first wall gap 60 mm (HHS) |  |
 | `slab.edge_void_min_area` | IfcSlab | m2 | **0.0645** | guess | §D70.1 a hole in the slab is drawn as an opening when at least a 254 mm (10 in) square: the producer shows openings larger than 10 in square on shop drawings, smaller ones are core-drilled in the field (Oldcastle Hollowcore Plank Pocket Guide 2019); a hole a column or wall drawn on the same plan fills (>= 0.9) is that element, never an opening |  |
@@ -68,14 +70,14 @@ A 2D drawing carries only some of what a model needs. Everything it does not sta
 | `slab.outline_when_not_rect` | IfcSlab | text | **walls_bounded** | guess | when the walls do not draw a rectangle, the slab is the area they bound on both axes (best effort, amber; HHS -10% against the model's floor slabs, a rectangle +163%); 'none' leaves the slab out and lists it | walls_bounded, none |
 | `slab.underside_when_stepped` | IfcSlab | text | **longest_cut** | guess | when the section's slab under a level steps (finish on planks, a dropped wet area), the underside is the stack bottom under the longest cut (best effort, amber; JKR with STR: 84.33 under 77% of the cut); 'none' leaves it a conflict | longest_cut, none |
 | `synth.slab.footprint` | IfcSlab | text | **outermost grid lines** | guess | the slab edge is taken at the outermost grid lines of the base plan | outermost grid lines |
-| `synth.slab.thickness` | IfcSlab | m | **0.25** | std | rate pack: 'RC Slab 250mm' (viewer/rates/cidb2024_my.json IfcSlab) | 0.15, 0.2, 0.25 |
+| `synth.slab.thickness` | IfcSlab | m | **0.25** | guess | a guess: no sheet states the slab thickness. 250 mm is the slab line every rate pack's class table names ('RC Slab 250mm', the same 250 mm in all 16 country packs), a priced item, not a design value for this building (§D99) | 0.15, 0.2, 0.25 |
 | `stair.going` | IfcStair | m | **0.25** | guess | typical tread depth | 0.25, 0.28, 0.3 |
 | `stair.riser` | IfcStair | m | **0.175** | guess | typical riser height; a stair symbol carries no riser | 0.15, 0.175, 0.19 |
 | `stair.width` | IfcStair | m | **1** | guess | typical flight width | 0.9, 1, 1.2 |
 | `panel.plane` | IfcWall | text | **end grid line, centred** | guess | an elevation panel is placed on the outermost grid line of its face, centred | end grid line, centred |
 | `wall.base` | IfcWall | m | **0** | guess | floor level of the storey |  |
 | `wall.height` | IfcWall | m | **3** | guess | typical storey wall height; not stated by a plan | 2.4, 2.7, 3, 3.6 |
-| `wall.thickness` | IfcWall | m | **0.15** | std | rate pack: 'Blockwork Wall 150mm' (viewer/rates/cidb2024_my.json IfcWall) | 0.1, 0.115, 0.15, 0.2, 0.225 |
+| `wall.thickness` | IfcWall | m | **0.15** | guess | a guess: no sheet states the wall thickness. 150 mm is the wall line every rate pack's class table names (the same 150 mm in all 16 country packs), a priced item, not a design value for this building (§D99) | 0.1, 0.115, 0.15, 0.2, 0.225 |
 | `wall.top_when_unseen` | IfcWall | text | **slab_above** | guess | a wall no elevation shows runs from its floor to the slab underside above (the section states it); HHS Level 2 / 3 = the model, Level 1 0.3 m above the model's (its walls stop at a ceiling the drawings do not show); 'none' leaves such walls as asks | slab_above, none |
 | `type.size_tie` | IfcWindow | text | **library_first** | guess | a size the library answers with several types (Duplex 819 x 759: SMALL_FIXED, CASEMENT) binds the library's first row (8 of the Duplex IFC's 12 are that type); an explicit binding or label always wins; 'none' leaves such fills as asks | library_first, none |
 | `window.height` | IfcWindow | m | **1.2** | guess | typical window height | 1, 1.2, 1.5 |
