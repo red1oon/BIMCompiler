@@ -25,6 +25,9 @@ drawing cannot tell it is listed as a **gap**, never guessed.
 4. [BIM 3D to DXF 2D](https://youtu.be/buybl3BWTUw) (1:58, 2026-10-21): a model written out as a standard 2D set ([What a standard sheet looks like](#what-a-standard-sheet-looks-like)).
 5. [DXF to BIM 3D to 2D to 3D round trip both ways](https://youtu.be/RaU6A8y6ymw) (4:35, 2026-10-16): the Duplex standard set read back to the model it came from.
 
+6. Can I hand this in? — the submission pack (2026-11-01): the same converted shed, then what you attach to a submission (Load Summary, bill, Regulatory Report).
+   <!-- TODO: add the link once the film is published; no URL yet -->
+
 Related, outside this guide: [MEP Walker onto new 2D drawing in BIM](https://youtu.be/tkKP__O1sGU) (1:36, 2026-10-23).
 
 ---
@@ -115,6 +118,19 @@ it (1:100 first, then 1:200, 1:500, 1:50, on A4 to A0); what the drawing does no
 revision) is shown in yellow as *not stated*, never filled in. **Save SVG** saves the view at paper size, **Print**
 prints it, and **Markings** switches the drawn metadata off for a clean copy. Wheel to zoom, drag to pan, **Esc**
 or ✕ to close; nothing you do in the view changes the drawings or the metadata.
+
+**What the view draws** (bim-ootb §D101):
+
+- **Every dimension, even when the DXF does not link it to its picture.** On the shed's 9 sheets all 147 dimensions are drawn: 111 through their own stored
+  pictures (found by their definition points), and 36 (North and South elevations, which have no stored picture) drawn from their own points with the value in the file's
+  own dimension style. Those 36 values are small next to the sheet's texts; that is the file's style, not a fault. A dimension that cannot be matched is left out and counted, never drawn from a guess.
+- **CAD codes read as symbols:** `%%c` shows as Ø, `%%d` as °, `%%p` as ±.
+- **The drafter's geometry, as given, one scale both ways.** The view does not rescale a detail to match its written values. A detail sheet that is drawn **not to scale stays not to scale**
+  and the written values govern: on the shed's details sheet a span written `10'-0"` is drawn about 1.7 times its scale and the cross-sections `12"` about 4.2 to 4.5 times (§D102).
+- **A details / notes sheet shows NOTES.** A sheet that states notes but draws no body shows the chip **NOTES** (not a red *NO ROLE*) and "general notes read: n" in both panels,
+  and it is not counted as needing input.
+
+![The shed's details sheet in the Sheet view: every dimension drawn (10'-0" / 16'-8" over the beam long sections), Ø for %%c, the private title-block text blurred for this picture; the 2D panel shows the sheet as NOTES, general notes read: 4](img/dxf2bim/dxf2bim_sub_details_sheet.jpg)
 
 ### 3 · Raw drawings: fill in what is missing
 A drawing without metadata opens with **red** fields and the verdict **Blocked**. The editor lists
@@ -292,6 +308,34 @@ On the farm shed: 5,352 kN of own weight from 389 parts (546 t), 1,815 kN on the
 carries 246 kN (133 kPa); 123 parts are listed as not weighed (103 members the drawing does not size, 13 fans, 4 doors, 3 nettings).
 It does not compute live load, wind, earthquake or member strength: those need the stated site, soil and an engineer's analysis.
 
+![Export ▸ Load Summary on the converted shed (2026-11-01): own weight 5,402.1 kN, part by part with each unit weight's source; inputs nothing states are red](img/dxf2bim/dxf2bim_sub_load_summary.jpg)
+
+### 8 · Regulatory Report (what you hand in)
+**Export ▸ Regulatory Report…** opens a short form of the facts a model cannot give (plot area, setbacks, occupancy, district, soil bearing capacity …,
+ten in all). A box left empty makes the report say *not stated*; nothing is guessed. Pick the rate pack and press **Build report**.
+
+![The facts form: soil typed 150 kPa as an example, the other boxes left empty, rate pack PWD Bangladesh SoR 2022](img/dxf2bim/dxf2bim_sub_report_form.jpg)
+
+The report has nine sections: identification and scope, areas and heights, egress checks, structural checks, dead load, foundation loads, the bill of quantities,
+model quality, and the assumptions and facts not stated. Each verdict is a plain word (PASS, FINDINGS n, INCONCLUSIVE, NOT STATED), never "compliant";
+it says first that it is **not a compliance certificate**, and its signature blocks are left blank for the people who sign.
+
+| | |
+|---|---|
+| ![The report's opening: identification and scope, not a certificate](img/dxf2bim/dxf2bim_sub_report.jpg) | ![Checks with their codes, and the rules that found nothing of their kind to judge](img/dxf2bim/dxf2bim_sub_checks.jpg) |
+| ![The bill: every rate names its PWD Schedule of Rates item and page](img/dxf2bim/dxf2bim_sub_bill.jpg) | ![What it does not claim: the defaults used, best guesses marked to confirm, facts not stated](img/dxf2bim/dxf2bim_sub_assumptions.jpg) |
+
+**Where the report is kept.** It is ONE self-contained HTML file, `regulatory_report.html` (its styles are inside it): the Modeller downloads it to your browser's
+download folder and opens it in a new tab; the CLI writes it to `<out>/regulatory_report.html` with `--report`. Print it to PDF from the browser if a PDF is wanted.
+
+**Is it editable?** At its **source**, yes, and that is where to edit it. The report's format lives in one open-source (MIT) file, `modeller/reg_report.js` in bim-ootb:
+the facts the form asks for (`FACTS`, line 17), the nine sections, their titles, order and verdict words (`compose()`, lines 40–98), the look (the `css` string,
+line 101) and the page skeleton (line 102). The Modeller's Export and the CLI's `--report` both use this one file, so a change there (a section renamed, an
+authority's header added, another style) reaches both; the witnesses W-REG-REPORT and W-REG-REPORT-UI check that the page and the CLI still match.
+**Before building**, edit what goes in, not the page: the facts form, the rate pack and its rates (the rate editor), and the defaults (Element defaults ▸ Set);
+build again and the report follows in seconds. Editing the downloaded HTML by hand is possible, but that copy no longer matches the model fingerprint and sources it states.
+The 4D/5D page is different (a live page, its downloads are Excel files): see [4D5D Analysis ▸ Where the page's format is kept, and how to edit it](4D5DAnalysis.md).
+
 ### If something goes wrong
 | What you see | Why | What to do |
 |---|---|---|
@@ -424,6 +468,16 @@ building is made of **bodies** read from layers you type, not of walls and slabs
    setting typed (a stated `@DEFAULT` still wins). Not built, because the drawings give only labels: the false
    ceiling and the slats of the cross-section.
 
+   **Type marks checked across the set.** For each mark (`B-1`, `GB-1`, `C-1` ...) the app counts where it is **tagged** on the sheets, where it is **detailed** (a
+   "Long Section of ..." title or a schedule row on the notes sheet) and how many **parts** carry it (bim-ootb §D102). When the set converts and has a notes sheet, two
+   advisories can follow: `GAP:mark_not_modelled` (tagged, no part) and `GAP:mark_no_detail` (tagged or modelled, no detail). They never block, and the app never builds or drops a part
+   because of them. On the shed: `B-1`, `B-2`, `C-1`, `F-1` are modelled and detailed; **`GB-1` is tagged 4 times on the foundation layout and detailed, but no sheet draws it, so it is
+   reported and not built**: four tags do not say which spans the grade beams run, and building them under every wall would be a guess. Draw it on a typed layer and it is built as drawn.
+
+   ![The converted shed (2026-11-01, Complete ticked): 512 parts; the 2D panel lists the nine sheets, the details sheet as NOTES](img/dxf2bim/dxf2bim_sub_converted.jpg)
+
+   ![A footing picked in x-ray among its neighbours: its casting ratio 1:1.5:3 and its 12" thickness come from the details sheet (the Modeller has no properties panel yet: the values are in the model and the exports)](img/dxf2bim/dxf2bim_sub_footing.jpg)
+
 ![The converted shed on the canvas: material colours, 512 bodies](img/dxf2bim/shed_canvas.jpg)
 
 7. **Save and open elsewhere.** *Export → IFC4* writes the typed model with materials, colours and a property set
@@ -457,6 +511,25 @@ standard or a guess, and its basis, **(C)** the *Farming Shed* building-type val
 **(D)** what *Complete the building* adds, **(E)** how drawn / derived / assumed evidence is shown, and
 **(F)** the items the shed drawings left open. You may ignore it: the defaults stay applied and every one is listed.
 
+### Which default matters? Element defaults ▸ Measure impact
+
+On a structure set the **Element defaults** section lists every default in use (one row per setting, grouped by element). **Measure impact** ranks them by what they move
+(bim-ootb §D99, #2483):
+
+- Nothing runs until you press it. The **first click** loads the tools and shows a **rate-pack picker** (the locale's pack is preselected, for example *PWD Bangladesh SoR 2022*);
+  the **second click** measures.
+- It re-runs the model once per option of each default and lists the defaults by what they change: the **bill**, the **own weight** (kN) and the **body count**. Your model on screen does not change while it measures.
+- A default that moves none of the three is gathered in one collapsed line, *No effect on the bill, the loads or the body count (n)*; click it to open.
+- Any later change (a marking, a choice, the pack, *Complete*) marks the result *Measured before your last change*; press it again.
+- It measures bill, own weight and body count only. It does not re-run the structural checks.
+
+Measured on the shed (pack PWD Bangladesh SoR 2022, 1.4 s): **6 active, 6 inert**. Slab thickness (0.15 m) −1,298,309 BDT · section spacing −262,675 BDT (126 bodies fewer) ·
+`column.top_under_beam` (as drawn) −38,717 BDT · building type +19,968 BDT · roof overhang +11,231 BDT · roof sheet thickness 0 BDT (+0.06 kN). The ranking is the shed's; another set ranks differently.
+
+**The PWD rate pack** is named **PWD Bangladesh SoR 2022**: its source is the Finance Division approval of 21 June 2022, valid three years. (The file id `pwd2024_bd` is unchanged.)
+
+![Element defaults ▸ Measure impact on the shed with PWD Bangladesh SoR 2022: the six defaults that move the model, ranked, each with its change in BDT, kN and bodies; the six that move nothing in one collapsed line](img/dxf2bim/dxf2bim_measure_impact.jpg)
+
 ---
 
 ## Prior art
@@ -467,6 +540,8 @@ parameters and ask a subscription; we state the gaps, keep provenance on every b
 in the yellow list. No head-to-head benchmark has been run.
 
 ---
+
+![The back card of the submission-pack film: what we learned from others, what this adds for architects, engineers and accountants, and how to report a fact that is wrong](img/dxf2bim/dxf2bim_back_card.jpg)
 
 ## What it does not do yet
 
@@ -481,6 +556,9 @@ Honest limits of the preliminary version:
 - **Columns** are cut and drawn, but not yet as column symbols on the grid.
 - **Openings above or below the plan cut** (e.g. high bathroom windows) — being changed so every opening of
   the storey is shown from its host wall regardless of height.
+- **The Regulatory Report is not a certificate.** It states the facts of the model, with blank signature blocks for the people who sign; it is not a code-compliance certificate.
+- **The details' bar sizes are not used.** Reinforcement is an assumed bill line (a stated percentage of each concrete body), shown as assumed.
+- **The Load Summary is own weight, not a structural design.** No live load, wind, earthquake or member strength.
 - **"Any DXF"** is not claimed. Your drawing needs the metadata above; the editor helps you add it, the verdict
   tells you when it is complete.
 - **The component library** (door/window geometry) is published: when no local copy is present, Convert loads it
