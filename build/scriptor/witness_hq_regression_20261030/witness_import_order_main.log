@@ -1,0 +1,66 @@
+§IMPORT-LOAD erp=/tmp/wt-hq-main/erp mutant=none seedPatch ok=3803 failed=3 adImportTables=loaded ensure:function
+  §IMPORT-CHECK case=TABLE key=seed-gap OK rule="the shipped seed + patch has the 68 I_Order dictionary columns but NO physical i_order table (the gap B1 closes)"
+  §IMPORT-CHECK case=TABLE key=ensure OK rule="ensure(db) creates i_order once (1), then nothing (0); physical columns == the 68 dictionary columns"
+  §IMPORT-CHECK case=TABLE key=base-hash OK rule="the team BASE hash (seed + the two hashed patch files) is byte-identical to origin/main: B1 touched no hashed file (a teams-wide base-mismatch otherwise)"
+  §IMPORT-CHECK case=TABLE key=wiring OK rule="the overlay is booted where AdRule.ensure is: ws_kernel.js, ws_server.js, idempiere.html (script tag + ensure line), listed in sw.js"
+  §IMPORT-CHECK case=UNIQUE key=shared-fn OK rule="ML.uniqueError is a function; ws_adinterface.js has no "function uniqueError" and no ad_ddl_unique read; the only reader of ad_ddl_unique among erp/*.js is model_layer.js"
+  §IMPORT-CHECK case=UNIQUE key=order-insert OK rule="duplicate c_order insert refused with the PG text naming c_order_documentno and Key (documentno, c_doctype_id, c_bpartner_id)=(80000, 135, 112); the non-duplicate passes"
+  §IMPORT-CHECK case=UNIQUE key=order-update OK rule="duplicate UPDATE refused with the legacy text (Key (documentno, c_doctype_id, c_bpartner_id)=(UQ-A, 0, 112)); description change passes; move to a free DocumentNo passes"
+  §IMPORT-CHECK case=UNIQUE key=other-table OK rule="c_uom: insert of a stored name refused with Key (ad_client_id, name)=(11, litre); a new name passes; renaming Two to One refused"
+  §IMPORT-CHECK case=UNIQUE key=same-trx OK rule="first insert passes, the identical second insert in the same Trx is refused"
+  §IMPORT-CHECK case=UNIQUE key=null-never-collides OK rule="a product row whose nullable unique columns are NULL has no uniqueError although 289 stored rows are NULL there"
+  §IMPORT-CHECK case=UNIQUE key=x-of-n OK rule="copies of stored rows are refused: X of N (N = indexes whose table exists and holds a row with all index columns non-null; skipped: no table 292, no row 27)"
+  §IMPORT-EVIDENCE unique-sweep indexes=449 judged(N)=130 refused(X)=130 skippedNoTable=292 skippedNoRow=27
+  §IMPORT-CHECK case=UNIQUE key=ws-path OK rule="the WebServices path (real ws_server over the seed): create_data of a stored BPartner Value and of a repeated new Value, and update_data of Value into a stored one, are refused with the legacy text (c_bpartner_value); a new Value and a Name-only update pass; one row for the new Value"
+  §IMPORT-CHECK case=P2 key=port-registered OK rule="AD_Process 206 Import_Order resolves to a ported class (org.compiere.process.ImportOrder registered by erp/processes/ImportOrder.js)"
+  §IMPORT-ORACLE (independent SQL on the seed) defaultSOPriceList=101 warehouseOfOrg11=990000 defaultPaymentTerm=105 cashBP=112 POSOrderDocType=135
+  §IMPORT-CHECK case=P2 key=declare OK rule="3 I_Order rows exist with the ticket key, I_IsImported=N, no C_Order yet"
+  §IMPORT-CHECK case=P2 key=run OK rule="the process ran (ok) and answered "#1/3" (1 order, 3 lines inserted - ImportOrder.java:802-805)"
+  §IMPORT-CHECK case=P2 key=one-order OK rule="exactly ONE c_order carries the ticket key"
+  §IMPORT-CHECK case=P2 key=docno OK rule="the order's DocumentNo is the imported key (order.setDocumentNo(imp.getDocumentNo()), :692) - not a minted sequence number"
+  §IMPORT-CHECK case=P2 key=cash-bp OK rule="no BP on the rows -> C_BPartner_ID = AD_ClientInfo.C_BPartnerCashTrx_ID (:322-327), bill-to and ship-to taken from that BP"
+  §IMPORT-CHECK case=P2 key=defaults OK rule="doc type target = POS Order by DocTypeName (:139-144); price list = default SO list; warehouse = MAX(warehouse of the org); payment term = default - each equal to the independent SQL oracle"
+  §IMPORT-CHECK case=P2 key=lines OK rule="3 order lines, line numbers 10/20/30 (:683,:743), products and quantities of the 3 rows in I_Order_ID order"
+  §IMPORT-CHECK case=P2 key=complete OK rule="DocStatus CO and Processed Y (DocAction=CO given as the process parameter)"
+  §IMPORT-CHECK case=P2 key=processIt-once OK rule="DocumentEngine ran ONCE for the order (one processIt call for the 3 lines, :668-676/:773-781)"
+  §IMPORT-CHECK case=P2 key=rows-imported OK rule="the 3 I_Order rows: I_IsImported=Y, Processed=Y, C_Order_ID = the order, C_OrderLine_ID = their own line (:757-767)"
+  §IMPORT-CHECK case=P2 key=one-group OK rule="the whole import is ONE op group of the caller's transaction: ONE journal entry holding c_order + c_orderline + i_order writes"
+  §IMPORT-CHECK case=P2 key=log OK rule="the shipped § log names the run (§IMPORT_ORDER summary with the counts)"
+  §IMPORT-CHECK case=P3 key=re-run-empty OK rule="a plain re-run with no new rows imports nothing ("#0/0"): the rows of P2 are I_IsImported=Y and are not read again (:640)"
+  §IMPORT-CHECK case=P3 key=declared OK rule="the resend's 3 new I_Order rows were accepted as declarations (a station can always declare)"
+  §IMPORT-CHECK case=P3 key=no-second-complete OK rule="still exactly ONE order with the key is Complete (no second Complete); the resend did not produce a Completed order"
+  §IMPORT-CHECK case=P3 key=first-unchanged OK rule="the first order and its 3 lines are unchanged (status, totals, doc type, Updated stamp, line ids/products/quantities/amounts)"
+  §IMPORT-CHECK case=P3 key=collision-logged OK rule="the refusal is logged as a collision naming the legacy index c_order_documentno and the key (§IMPORT_ORDER_COLLISION)"
+  §IMPORT-EVIDENCE P3 headers-with-key=2 statuses=["CO/dt135","DR/dt0"] processIt-calls=1 (a new MOrder is saved with C_DocType_ID=0, MOrder.java:1202; the index refuses it when the DocType is set on prepareIt)
+  §IMPORT-CHECK case=P4 key=first-ok OK rule="the original ticket (2 lines) imported and Completed once"
+  §IMPORT-CHECK case=P4 key=no-second-complete OK rule="the different-content resend produced no second Completed order for the key"
+  §IMPORT-CHECK case=P4 key=never-overwrites OK rule="the stored order keeps its original lines (products 123/130, qty 1/1) and totals - the new content (134/137, 7/9) is nowhere on it"
+  §IMPORT-CHECK case=P4 key=collision-logged OK rule="logged as a collision naming c_order_documentno and the key"
+  §IMPORT-CHECK case=P5 key=two-orders OK rule="KA has ONE order (2 lines) and KB has ONE order (1 line); the run answered "#2/3""
+  §IMPORT-CHECK case=P5 key=docno OK rule="each order's DocumentNo is its station key (no minted numbers, no clash although date+number are equal)"
+  §IMPORT-CHECK case=P5 key=both-complete OK rule="both are Complete, processIt ran once per order (2)"
+  §IMPORT-CHECK case=TRX key=one-group OK rule="ONE journal entry for declare+import; the group holds the i_order CREATE (already carrying I_IsImported=Y, the process's update folded into the transaction's own insert), c_order CREATE and c_orderline CREATE; the order is Complete with 2 lines"
+  §IMPORT-CHECK case=TRX key=links-resolve OK rule="the two I_Order rows created in that same transaction end I_IsImported=Y with C_Order_ID = the order and C_OrderLine_ID = one of its own lines (links to ops created later in the group are resolved at commit)"
+  §IMPORT-CHECK case=DEFAULTS key=docaction-default OK rule="AD_Process_Para default is "PR"; with no DocAction parameter the order ends DocStatus IP and one processIt ran"
+  §IMPORT-CHECK case=DEFAULTS key=no-doctype OK rule="I_ErrorMsg contains "ERR=No DocType, "; no order for the key; the row ends I_IsImported=N (:797-800 resets the error flag so the next run re-reads it)"
+  §IMPORT-CHECK case=DEFAULTS key=given-params OK rule="before: 16 imported rows; after the run with DeleteOldImported=Y: 0; the not-imported rows (1) stay; no default notice for the sent parameters"
+  §IMPORT-CHECK case=UNPORTED key=new-bpartner OK rule="the row carries an I_ErrorMsg naming the unported branch AND legacy's "ERR=No BPartner, "; the log has §PROC-UNPORTED ImportOrder; no order; no c_bpartner added"
+  §IMPORT-CHECK case=UNPORTED key=invalid-product OK rule="I_ErrorMsg contains "ERR=Invalid Product, "; no order"
+§IMPORT-SHIPPED-LOG process lines=55 kinds={"§PROC-PARAM":31,"§IMPORT_ORDER":11,"§IMPORT_ORDER_EXCEPTION":2,"§IMPORT_ORDER_COLLISION":2,"§IMPORT_ORDER_WARN":7,"§PROC-UNPORTED":2}
+  §PROC-PARAM ImportOrder AD_Client_ID=11 source=session client (no default; Java would throw NullPointerException)
+  §IMPORT_ORDER client=11 org=-1 docAction=CO orders=1 lines=3 errors=0
+  §IMPORT_ORDER_COLLISION index=c_order_documentno documentno=POS1/2026-10-27/0001 bpartner=112 (SaveError c_order: ERROR: duplicate key value violates unique constraint "c_order_documentno" Detail: Key (documentno, c_doctype_id, c_bpartner_id)=(POS1/2026-10-27/0001, 135, 112) already exists.)
+  §IMPORT_ORDER_EXCEPTION SaveError c_order: ERROR: duplicate key value violates unique constraint "c_order_documentno" Detail: Key (documentno, c_doctype_id, c_bpartner_id)=(POS1/2026-10-27/0001, 135, 112) already exists.
+  §IMPORT_ORDER_WARN No DocType=1 (log.warning)
+  §PROC-UNPORTED ImportOrder new BPartner from names (ImportOrder.java:524-529) row=1000018 bpartnervalue=UNPORTED-BP-1 name=Unported Partner
+§IMPORT-TABLE verdict=PASS judged=4 failed=0
+§IMPORT-UNIQUE verdict=PASS judged=8 failed=0
+§IMPORT-P2 verdict=PASS judged=13 failed=0
+§IMPORT-P3 verdict=PASS judged=5 failed=0
+§IMPORT-P4 verdict=PASS judged=4 failed=0
+§IMPORT-P5 verdict=PASS judged=3 failed=0
+§IMPORT-TRX verdict=PASS judged=2 failed=0
+§IMPORT-DEFAULTS verdict=PASS judged=3 failed=0
+§IMPORT-UNPORTED verdict=PASS judged=2 failed=0
+§IMPORT-RESULT verdict=PASS judged=44 failed=0 failedCases=[]
+exit=0

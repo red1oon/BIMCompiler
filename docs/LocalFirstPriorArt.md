@@ -215,3 +215,51 @@ R-tree + small footprint) is the right tier; the prior art confirms it.
 [SQLSync](https://github.com/orbitinghail/sqlsync) ·
 [cr-sqlite (vlcn.io)](https://github.com/vlcn-io/cr-sqlite) ·
 [CRDT survey (Weidner)](https://mattweidner.com/2023/09/26/crdt-survey-4.html) · [Automerge](https://automerge.org/).
+
+---
+
+## Update 2026-10-25 — enterprise systems, scheduled queries and replication planning
+
+*Added after a second research pass: web searches and page summaries, not a full literature review, and no patent-office search. Everything below is "to our knowledge". Figures come from the cited sources through summaries — check the original before quoting them outside the project. Full reports are kept in the project repository under `prompts/prior_art_2026-10-25/`.*
+
+### 1. Has anyone run real transactions with no always-on database or application server?
+
+To our knowledge we found no documented production system for real money or regulated transactions that has neither. Every system we examined has an arbiter somewhere — a server, a quorum, a payment processor or a git host.
+
+| System | Server still running? | Who decides a clash | Note |
+|---|---|---|---|
+| [Corda](https://api.corda.net/en/pdf/corda-technical-whitepaper.pdf) | Yes: each node runs its own database; a notary service | the notary | no shared central ledger, but servers everywhere (facts from search excerpts) |
+| [Hyperledger Fabric](https://hyperledger-fabric.readthedocs.io/en/latest/orderer/ordering_service.html) | Yes: peers and an ordering service | the orderers (needs a quorum) | no live bank settlement found |
+| Lotus Notes / Domino | Yes: Domino servers replicate | first save on one server; across replicas both versions are kept and a person reconciles | documents, not money |
+| [CouchDB / PouchDB](https://docs.couchdb.org/en/latest/replication/conflicts.html) | Yes in every documented deployment (a hub CouchDB) | a deterministic winner; the merge is the application's job | health records, not money |
+| [Bitcoin](https://bitcoin.org/bitcoin.pdf) | Yes: thousands of always-on nodes | proof of work | the heavy alternative; not a licensed-entity model |
+| Secure Scuttlebutt, Holochain, p2panda, Hypercore | helper nodes (pubs, rooms, bootstrap) | nothing at the log layer | no money use found |
+| Git with plain-text accounting | the git host | the host's fast-forward check | real books at a non-profit; no regulated use found |
+| [Square, Stripe, Adyen, SumUp offline payments](https://developer.squareup.com/docs/mobile-payments-sdk/android/offline-payments) | Yes: the processor, on reconnect | the issuer; the merchant bears the risk; caps on amount, count and time | the closest shape to a sale path with no server in it |
+| Card-chip offline and ATM stand-in | the issuer or network | floor limits; stricter stand-in limits | |
+| India's offline payments framework | the issuer | ₹200 per payment, ₹2,000 cumulative | from press reports |
+
+**What this means.** The nearest precedent is "work offline within a cap, settle later". What our design adds is that the settling authority is a device the owner runs, reached through a mailbox that only stores bytes. We make no claim to be first.
+
+### 2. Scheduled queries answered by the data holder; replication planned from a dictionary
+
+The closest work, none of it exact:
+
+- **[CarTel / ICEDB](https://people.csail.mit.edu/hari/papers/p92.pdf) (MIT)** — SQL queries with a `RATE` clause run on the node that holds the data and are delivered at its next contact. A central portal issues the queries and receives the results; the results are not signed.
+- **[TinyDB](https://courses.cs.duke.edu/spring07/cps296.1/papers/tods05-MaddenFranklinEtAl-tinydb.pdf)** — the `SAMPLE PERIOD` clause; results flow to one root.
+- **[Astrolabe](https://www.cs.cornell.edu/projects/quicksilver/public_pdfs/astrolabe.pdf) (Cornell)** — signed, expiring SQL aggregation certificates with no central server, but over always-on gossiping agents.
+- **[ORCHESTRA](https://www.cs.ucdavis.edu/~green/papers/sigrec08.pdf)** — peers with local databases publish and reconcile on their own schedule; it carries edit logs, not query requests.
+- **[SQL Server merge replication](https://learn.microsoft.com/en-us/sql/relational-databases/replication/publish/automatically-generate-join-filters-between-merge-articles)** — derives join filters from foreign keys; central publisher, unsigned, and its own documentation describes a gap in completeness.
+- **Sync engines (Zero, ElectricSQL, PowerSync, Couchbase, Ditto)** — the developer writes the sync scope by hand.
+
+Not found together in any one system: a serverless compiler that turns a dictionary, roles and topology into signed per-device plans, plus a signed catalog of parameterised queries answered by the data holder under its own access check, with an "as of" stamp, over a passive carrier. The search did not cover patent offices, the ACM Digital Library or several named systems (Cimbiosys, SymmetricDS, GraphQL persisted queries); it shows none surfaced, not that none exists.
+
+### 3. Engineering lessons from systems that move data through a relay
+
+- **Relays turned out not to be simple.** In a measurement study of Nostr ([Wei and Tyson](https://arxiv.org/abs/2402.05709)) each post sat on 34.6 relays on average, 98.2 % of download traffic was redundant, and about 20 % of relays were down more than 40 % of the time. Delta Chat built its own relays because ordinary mail providers filter and throttle.
+- **Every pure peer-to-peer system added an always-on helper:** Briar its Mailbox, Scuttlebutt its pubs and rooms, Ditto its server, Anytype its sync nodes.
+- **One identity on two devices forks a log** (Scuttlebutt), so a device should have its own chain.
+- **History growth is a cost that persists even at small scale.** Scuttlebutt's first sync fell from about 12 hours to 55 minutes only after its storage was reworked.
+- **Version differences are the top support problem**, and changing a data format with no central authority is still unsolved.
+- **Channel limits bind first.** GitHub recommends no more than about 6 pushes a minute per repository; a consumer Google Apps Script account may send to only 100 mail recipients a day.
+- **A database file in a synced folder is not a transport** (SQLite's own documentation and Syncthing's conflict copies both say so).

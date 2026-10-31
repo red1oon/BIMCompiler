@@ -1,0 +1,13 @@
+[
+  { "virtualTable": "bim_element", "columns": [
+    { "name": "element_id", "cls": "KEY" },
+    { "name": "geom_op",    "cls": "CODE",    "mand": true },
+    { "name": "geom",       "cls": "OTHER" },
+    { "name": "pos_x",      "cls": "MEASURE" },
+    { "name": "pos_y",      "cls": "MEASURE" },
+    { "name": "pos_z",      "cls": "MEASURE" },
+    { "name": "parent_id",  "cls": "REF", "target": "bim_element" },
+    { "name": "author_id",  "cls": "REF", "target": "AD_User" } ] },
+  { "name": "V1 element-create", "treatment": "FACT", "role": 103, "strategy": 100, "dir": "BOTH", "audience": "space", "table": "bim_element", "carries": ["geom_op", "pos_x", "pos_y", "pos_z", "parent_id"], "group": "element_id", "schedule": "on-change" },
+  { "name": "V2 element-propose", "treatment": "FACT", "role": 103, "strategy": 100, "dir": "BOTH", "audience": "space", "table": "bim_element", "group": "element_id", "schedule": "on-change" }
+]

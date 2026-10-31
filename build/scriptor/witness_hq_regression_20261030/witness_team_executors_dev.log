@@ -1,0 +1,34 @@
+═══ W-UPS-E2-HOST — the executor map reaches the Document Action list (TEAMWORK_FRAMEWORK §38.5) ═══
+
+§S1 two devices: A founds (role 102), B joins as role 103 (the station)
+   🟢 X0 precondition: A holds role 102, B was approved as role 103 — A=102 B=103
+   🟢 X0 CONTROL before any map: both see the same order and the same Document Action list — A 108 [CL,VO,RE] / B 108 [CL,VO,RE]
+§S2 the owner-signed executor map {c_order: 102}, published by the admin device
+   §WX_CLI §STMT_SIGNED kind=executors prev=44136fa355b3 signer.x=H8_vnI2lCg -> /tmp/owner-key-2EQfa7/exe.json
+   🟢 X1 the CLI-signed statement published from the admin app (TeamSync.publishStatement) answers ok on the publishing device — {"ok":true,"verdict":"MERGED:policy","reason":null,"hash":"9e87db491a842ac46b1c15551daa5674de9801daa11e62afe37b1b3b2fa26640"}
+   🟢 X1 the POLICY carrying the map is MERGED on both devices — A=MERGED:policy B=MERGED:policy
+   🟢 X2 after its Visit, the station (B) is offered NO Document Action on the order (no reload) — B 108 []
+   🟢 X2 the executor (A) keeps the same list — A [CL,VO,RE]
+   🟢 X3 B printed the map it applies and what its login role was left with — §TEAM_EXECUTORS map={"c_order":102} myRole=103 | §DOCACTION_ACCESS table=C_Order rec=108 role=103 doctype=133 offered=[CL,VO,RE] -> []
+   🟢 X5 the map is DATA: on B every AD_Document_Action_Access row of role 103 on the order's doctype is IsActive='N'; the executor's (102) rows are untouched — doctype=133 B role103 {"Y":0,"N":14} | B-side role102 {"Y":14,"N":0} | A role102 {"Y":14,"N":0} A role103 {"Y":0,"N":14}
+   🟢 X5 the host's _docActionAccess names no team and TeamSync has no notExecutor: the DocAction list is legacy's check over the login role, nothing else — TeamSync.notExecutor=undefined block=819 bytes
+   🟢 X4 0 page errors on both devices — errors=0
+§S3 M4: a device logged in as role 102 but approved as team role 103 (C)
+   🟢 X7 C (login 102, team role 103; its own order 100, so the later removal in X6 cannot touch the order B and A watch) is offered the list its LOGIN role is entitled to (legacy judges the login role); the hidden button is gone — team=103 C [CL,VO,RE] rec 100
+   🟢 X7 C printed the mismatch (evidence: login role vs team role) — §TEAM_ROLE_MISMATCH login=102 team=103 (the DocAction list follows the login role as in legacy; a DocAction the team role may not run is refused at fold: not-executor)
+   🟢 X7 C's DocAction (CL) is REFUSED at fold on A (E3 stays: not-executor), and the order on A is unchanged — clicked CL | not-executor verdicts 0 -> 1 | A status CO -> CO | C status after its Visit CO
+§S4 the owner replaces the map by {} (second signed statement)
+   🟢 X6 the second statement (map {}) is published and MERGED on B — {"ok":true,"verdict":"MERGED:policy","reason":null,"hash":"7c50387c9393ecf4305a81d4bbc6db07c8775c627ad01efbd2f6a46bf26a3c6a"} B=MERGED:policy
+   🟢 X6 the rule vanished with the policy: B's role-103 rows are back to 'Y' and B is offered the control list again — B role103 before {"Y":0,"N":14} after {"Y":14,"N":0} B [CL,VO,RE] control [CL,VO,RE]
+   🟢 X8 the list follows the ROWS and the cache reset alone: role 103's rows set 'N' by hand -> B offered none; set 'Y' -> the control list (no map, no Team rule) — N [] Y [CL,VO,RE]
+   🟢 X9 after the map {} the SET_STATUS the station was refused on STAYS refused (judged by the policy in force when it was done) — ["REFUSED:not-executor"]
+   🟢 X4 0 page errors on all devices (after the mismatch and the removal) — errors=0
+§WX_ARMS red=none judged=18
+
+§WX_MUTANTS
+   🟢 the map is not refreshed after a fold (render skips it) -> red arms: X2, X3, X5, X7, X6 (expected X2)
+   🟢 the rows are never set to N -> red arms: X2, X3, X5, X6 (expected X2/X5)
+   🟢 the executor role is flipped too -> red arms: X2, X5, X7, X9 (expected X2/X5)
+   🟢 the rows are never restored when the map goes -> red arms: X6 (expected X6)
+§WX_VERDICT PASS judged=18 fails=0 mutants_killed=4/4 pageerrors=0
+exit=0

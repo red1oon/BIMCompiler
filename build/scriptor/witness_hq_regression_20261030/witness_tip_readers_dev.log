@@ -1,0 +1,19 @@
+§TIPR-WH created=-2 menuOpened=true options=14 seed103=true new={"v":"-2","t":"TIPR Session Warehouse"} §PROC-PARAM-PICKER col=M_Warehouse_ID table=M_Warehouse rows=13 display=[Name] clause="AD_Client_ID IN (0,11)"
+   🟢 TR1 a warehouse created this session is offered in the Replenish Report M_Warehouse_ID parameter (the seed warehouse 103 is, as control) — new option={"v":"-2","t":"TIPR Session Warehouse"}
+§TIPR-COST ms bare=0.020 tip_0_written=0.300 tip_4_written_unrelated=0.253 tip_4_written_related(m_warehouse)=3.237
+   🟢 TR3 a tip read of a table nobody wrote costs the same with 4 other tables written (shadow limited to the statement's tables) — ms 0 written=0.300 4 written=0.253
+§TIPR-NEST {"before":"TIPR Session Warehouse","inner":"TIPR Session Warehouse","after":"TIPR Session Warehouse"}
+   🟢 TR4 a tip read inside a tip read keeps the outer shadow (before / inner / after all see the session warehouse) — {"before":"TIPR Session Warehouse","inner":"TIPR Session Warehouse","after":"TIPR Session Warehouse"}
+§TIPR-BASE bundleRowsForSessionWarehouse=0 leftoverTempShadows=0
+   🟢 TR5 the session warehouse is in the tip only (bundle rows 0) and no temp shadow is left behind after the reads — bundle=0 shadows=0
+§TIPR-CENSUS call_sites=116 read_the_tip=92 base_sites=24 legacy_tipSql_sites=0 tipSql_defined=false sqlRows_reads_tip=true baseRows_defined=true unexpected_base=[] allow_list_count_mismatch=[]
+   🟢 TR2 ONE tip reader: X of N call sites read the tip = 92 of 116; 24 base sites, all on the allow-list; no second tip reader — unexpected=[] mismatch=[] tipSql_defined=false
+§TIPR-VERDICT PASS judged=5 fails=0 arms={"TR1":0,"TR3":0,"TR4":0,"TR5":0,"TR2":0} pageerrors=0
+§TIPR-MUTANT KILLED "reader ignores the tip (bare bundle)" exit=1 red=[TR1,TR2] wanted=[TR1,TR2]
+§TIPR-MUTANT KILLED "a second tip reader returns" exit=1 red=[TR2] wanted=[TR2]
+§TIPR-MUTANT KILLED "process-parameter lookup reads the bundle" exit=1 red=[TR1,TR2] wanted=[TR1,TR2]
+§TIPR-MUTANT KILLED "a fold base read through the tip (double count)" exit=1 red=[TR2] wanted=[TR2]
+§TIPR-MUTANT KILLED "no statement hint: every written table shadowed per read" exit=1 red=[TR3] wanted=[TR3]
+§TIPR-MUTANT KILLED "nested read re-shadows what the outer holds" exit=1 red=[TR4] wanted=[TR4]
+§TIPR-MUTANTS killed=6 of 6
+exit=0

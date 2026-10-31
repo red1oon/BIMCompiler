@@ -1,0 +1,7 @@
+engine 10 exit=0
+hq 10 exit=0
+engine 100 exit=0
+hq 100 exit=0
+hq 1000 exit=143
+engine 1000 exit=0
+ALLDONE
