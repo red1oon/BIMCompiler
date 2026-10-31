@@ -183,6 +183,22 @@ if os.environ.get('FILM_SET') == 'bricscad2':
     SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
     NOVEL = {}
     CLIPS = {}
+# §DXF2BIM what's-new film (bim-ootb prompts/FILM_DXF2BIM_WHY_MARKINGS.md "WHAT'S NEW FILM — STORYLINE", owner 2026-11-01 "Make the film to focus on what new we done ... May make the film short"): FILM_SET=whatsnew,
+# SEVEN chapters, the storyline's chapter names verbatim; each new thing is shown live, then blown up by the recorder's spotlight. No badges, no cutaways.
+if os.environ.get('FILM_SET') == 'whatsnew':
+    CARDS = {
+        1: ('CHAPTER 1', 'NEW SINCE', 'THE LAST FILM', 'The same converted shed.'),
+        2: ('CHAPTER 2', 'THE SHEET,', 'READ RIGHT', 'Every dimension drawn. Notes marked as notes.'),
+        3: ('CHAPTER 3', 'YOUR NOTES', 'BECOME FACTS', 'A casting ratio, read from the sheet.'),
+        4: ('CHAPTER 4', 'CHECKED', 'ACROSS THE SET', 'A mark tagged and detailed, but not modelled.'),
+        5: ('CHAPTER 5', 'WHICH DEFAULT', 'MATTERS', 'Measure impact.'),
+        6: ('CHAPTER 6', 'A BALLPARK', 'RIGHT AWAY', 'Own weight, before the analysis.'),
+        7: ('CHAPTER 7', 'HAND IN,', 'AND HAND ON', 'The report, and a starting model for STAAD.'),
+    }
+    TAG = {1: 'NEW SINCE THE LAST FILM', 2: 'THE SHEET, READ RIGHT', 3: 'YOUR NOTES BECOME FACTS', 4: 'CHECKED ACROSS THE SET', 5: 'WHICH DEFAULT MATTERS', 6: 'A BALLPARK RIGHT AWAY', 7: 'HAND IN, AND HAND ON'}
+    SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
 # Malay version of the why film (bim-ootb prompts/FILM_DXF2BIM_WHY_MARKINGS.md §MS, 2026-10-23): FILM_SET=why_ms, the same three chapters, app terms kept as users say them.
 if os.environ.get('FILM_SET') == 'why_ms':
     CARDS = {
