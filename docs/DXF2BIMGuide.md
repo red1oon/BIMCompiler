@@ -130,6 +130,8 @@ or ✕ to close; nothing you do in the view changes the drawings or the metadata
 - **A details / notes sheet shows NOTES.** A sheet that states notes but draws no body shows the chip **NOTES** (not a red *NO ROLE*) and "general notes read: n" in both panels,
   and it is not counted as needing input.
 
+![The shed's details sheet in the Sheet view: every dimension drawn (10'-0" / 16'-8" over the beam long sections), Ø for %%c, the private title-block text blurred for this picture; the 2D panel shows the sheet as NOTES, general notes read: 4](img/dxf2bim/dxf2bim_sub_details_sheet.jpg)
+
 ### 3 · Raw drawings: fill in what is missing
 A drawing without metadata opens with **red** fields and the verdict **Blocked**. The editor lists
 **suggestions** it can prove from the drawing (e.g. a title text "GROUND FLOOR PLAN" → role = plan) — **nothing
@@ -306,6 +308,34 @@ On the farm shed: 5,352 kN of own weight from 389 parts (546 t), 1,815 kN on the
 carries 246 kN (133 kPa); 123 parts are listed as not weighed (103 members the drawing does not size, 13 fans, 4 doors, 3 nettings).
 It does not compute live load, wind, earthquake or member strength: those need the stated site, soil and an engineer's analysis.
 
+![Export ▸ Load Summary on the converted shed (2026-11-01): own weight 5,402.1 kN, part by part with each unit weight's source; inputs nothing states are red](img/dxf2bim/dxf2bim_sub_load_summary.jpg)
+
+### 8 · Regulatory Report (what you hand in)
+**Export ▸ Regulatory Report…** opens a short form of the facts a model cannot give (plot area, setbacks, occupancy, district, soil bearing capacity …,
+ten in all). A box left empty makes the report say *not stated*; nothing is guessed. Pick the rate pack and press **Build report**.
+
+![The facts form: soil typed 150 kPa as an example, the other boxes left empty, rate pack PWD Bangladesh SoR 2022](img/dxf2bim/dxf2bim_sub_report_form.jpg)
+
+The report has nine sections: identification and scope, areas and heights, egress checks, structural checks, dead load, foundation loads, the bill of quantities,
+model quality, and the assumptions and facts not stated. Each verdict is a plain word (PASS, FINDINGS n, INCONCLUSIVE, NOT STATED), never "compliant";
+it says first that it is **not a compliance certificate**, and its signature blocks are left blank for the people who sign.
+
+| | |
+|---|---|
+| ![The report's opening: identification and scope, not a certificate](img/dxf2bim/dxf2bim_sub_report.jpg) | ![Checks with their codes, and the rules that found nothing of their kind to judge](img/dxf2bim/dxf2bim_sub_checks.jpg) |
+| ![The bill: every rate names its PWD Schedule of Rates item and page](img/dxf2bim/dxf2bim_sub_bill.jpg) | ![What it does not claim: the defaults used, best guesses marked to confirm, facts not stated](img/dxf2bim/dxf2bim_sub_assumptions.jpg) |
+
+**Where the report is kept.** It is ONE self-contained HTML file, `regulatory_report.html` (its styles are inside it): the Modeller downloads it to your browser's
+download folder and opens it in a new tab; the CLI writes it to `<out>/regulatory_report.html` with `--report`. Print it to PDF from the browser if a PDF is wanted.
+
+**Is it editable?** At its **source**, yes, and that is where to edit it. The report's format lives in one open-source (MIT) file, `modeller/reg_report.js` in bim-ootb:
+the facts the form asks for (`FACTS`, line 17), the nine sections, their titles, order and verdict words (`compose()`, lines 40–98), the look (the `css` string,
+line 101) and the page skeleton (line 102). The Modeller's Export and the CLI's `--report` both use this one file, so a change there (a section renamed, an
+authority's header added, another style) reaches both; the witnesses W-REG-REPORT and W-REG-REPORT-UI check that the page and the CLI still match.
+**Before building**, edit what goes in, not the page: the facts form, the rate pack and its rates (the rate editor), and the defaults (Element defaults ▸ Set);
+build again and the report follows in seconds. Editing the downloaded HTML by hand is possible, but that copy no longer matches the model fingerprint and sources it states.
+The 4D/5D page is different (a live page, its downloads are Excel files): see [4D5D Analysis ▸ Where the page's format is kept, and how to edit it](4D5DAnalysis.md).
+
 ### If something goes wrong
 | What you see | Why | What to do |
 |---|---|---|
@@ -444,6 +474,10 @@ building is made of **bodies** read from layers you type, not of walls and slabs
    because of them. On the shed: `B-1`, `B-2`, `C-1`, `F-1` are modelled and detailed; **`GB-1` is tagged 4 times on the foundation layout and detailed, but no sheet draws it, so it is
    reported and not built**: four tags do not say which spans the grade beams run, and building them under every wall would be a guess. Draw it on a typed layer and it is built as drawn.
 
+   ![The converted shed (2026-11-01, Complete ticked): 512 parts; the 2D panel lists the nine sheets, the details sheet as NOTES](img/dxf2bim/dxf2bim_sub_converted.jpg)
+
+   ![A footing picked in x-ray among its neighbours: its casting ratio 1:1.5:3 and its 12" thickness come from the details sheet (the Modeller has no properties panel yet: the values are in the model and the exports)](img/dxf2bim/dxf2bim_sub_footing.jpg)
+
 ![The converted shed on the canvas: material colours, 512 bodies](img/dxf2bim/shed_canvas.jpg)
 
 7. **Save and open elsewhere.** *Export → IFC4* writes the typed model with materials, colours and a property set
@@ -494,6 +528,8 @@ Measured on the shed (pack PWD Bangladesh SoR 2022, 1.4 s): **6 active, 6 inert*
 
 **The PWD rate pack** is named **PWD Bangladesh SoR 2022**: its source is the Finance Division approval of 21 June 2022, valid three years. (The file id `pwd2024_bd` is unchanged.)
 
+![Element defaults ▸ Measure impact on the shed with PWD Bangladesh SoR 2022: the six defaults that move the model, ranked, each with its change in BDT, kN and bodies; the six that move nothing in one collapsed line](img/dxf2bim/dxf2bim_measure_impact.jpg)
+
 ---
 
 ## Prior art
@@ -504,6 +540,8 @@ parameters and ask a subscription; we state the gaps, keep provenance on every b
 in the yellow list. No head-to-head benchmark has been run.
 
 ---
+
+![The back card of the submission-pack film: what we learned from others, what this adds for architects, engineers and accountants, and how to report a fact that is wrong](img/dxf2bim/dxf2bim_back_card.jpg)
 
 ## What it does not do yet
 
