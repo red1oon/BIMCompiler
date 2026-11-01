@@ -18,6 +18,7 @@ function hashOf(k, p) {
   if (k === 'L') { try { return sha(fs.readdirSync(p).sort().join('\n')); } catch (e) { return 'ABSENT'; } }
   try { var st = fs.statSync(p); return st.isDirectory() ? 'DIR' : sha(fs.readFileSync(p)); } catch (e) { return 'ABSENT'; }
 }
+function gitObj(dir, rev, p) { var r = cp.spawnSync('git', ['-C', dir, 'rev-parse', '--verify', '-q', rev + ':' + p], { encoding: 'utf8' }); return r.status === 0 ? r.stdout.trim() : 'ABSENT'; }   // §51.2
 function relOf(p, roots) { for (var r of roots) if (under(p, r)) return path.basename(r) + '/' + path.relative(r, p); return p; }
 
 function runSync(o) {
@@ -30,7 +31,7 @@ function runSync(o) {
   if (!o.fresh && fs.existsSync(entryF)) {
     try {
       var E = JSON.parse(fs.readFileSync(entryF, 'utf8'));
-      if (E.inputs.length && E.inputs.every(function (x) { return hashOf(x.k, x.p) === x.h; }))
+      if (E.inputs.length && E.inputs.every(function (x) { if (x.k === 'G') return gitObj(x.dir, x.rev, x.path) === x.h; return hashOf(x.k, x.p) === x.h; }))
         return { exit: E.exit, cached: true, key: key, inputs: E.inputs.length, inputList: E.inputs, skip: null,
                  out: '§CACHED ' + rel + ' inputs=' + E.inputs.length + ' key=' + key.slice(0, 12) + ' from=' + E.at + '\n' + E.out };
     } catch (e) { /* an unreadable entry is a miss */ }
@@ -42,14 +43,15 @@ function runSync(o) {
   });
   var r = cp.spawnSync(process.execPath, ['-r', TRACER, file].concat(args), { cwd: o.cwd || path.dirname(file), env: env, encoding: 'utf8', timeout: o.timeout || 600000, maxBuffer: 1 << 28 });
   var out = (r.stdout || '') + (r.stderr || '');
-  var T = { reads: {}, lists: {}, probes: {}, writes: {}, execd: {}, spawns: {} }, nTrace = 0;
-  fs.readdirSync(td).forEach(function (f) { try { var t = JSON.parse(fs.readFileSync(path.join(td, f), 'utf8')); nTrace++; Object.keys(T).forEach(function (k) { Object.assign(T[k], t[k] || {}); }); } catch (e) { /* skip */ } });
+  var T = { reads: {}, lists: {}, probes: {}, writes: {}, execd: {}, spawns: {}, gits: [] }, nTrace = 0;
+  fs.readdirSync(td).forEach(function (f) { try { var t = JSON.parse(fs.readFileSync(path.join(td, f), 'utf8')); nTrace++; Object.keys(T).forEach(function (k) { if (k === 'gits') T.gits = T.gits.concat(t.gits || []); else Object.assign(T[k], t[k] || {}); }); } catch (e) { /* skip */ } });
   fs.rmSync(td, { recursive: true, force: true });
   var keep = function (p) { return roots.some(function (rt) { return under(p, rt); }) && !/[\\/](node_modules|\.git)([\\/]|$)/.test(p) && !excl.some(function (d) { return under(p, d); }); };
   var writes = T.writes, wl = Object.keys(writes), seen = {}, inputs = [];
   var addF = function (p) { if (writes[p]) return; if (!keep(p) || seen['F' + p]) return; seen['F' + p] = 1; inputs.push({ k: 'F', p: p, h: hashOf('F', p) }); };
   Object.keys(T.reads).forEach(addF); Object.keys(T.probes).forEach(addF);
   Object.keys(T.lists).forEach(function (p) { if (!keep(p) || seen['L' + p] || wl.some(function (w) { return under(w, p); })) return; seen['L' + p] = 1; inputs.push({ k: 'L', p: p, h: hashOf('L', p) }); });
+  T.gits.forEach(function (g) { var id = 'G' + g.dir + '|' + g.rev + ':' + g.path; if (seen[id]) return; seen[id] = 1; inputs.push({ k: 'G', dir: g.dir, rev: g.rev, path: g.path, p: g.dir + '|' + g.rev + ':' + g.path, h: gitObj(g.dir, g.rev, g.path) }); });   // §51.2 git reads
   var skip = null;
   var esm = Object.keys(T.execd).filter(function (p) { if (!keep(p)) return false; try { return /\bimport\s*\(/.test(fs.readFileSync(p, 'utf8')); } catch (e) { return false; } });
   if (esm.length) skip = 'esm-import (' + esm.map(function (p) { return relOf(p, roots); }).slice(0, 3).join(', ') + ')';

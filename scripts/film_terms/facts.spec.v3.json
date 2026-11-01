@@ -1,0 +1,229 @@
+{
+ "_scope": "Public cut v3",
+ "facts": [
+  {
+   "id": "n10",
+   "log": "build/scriptor/witness_scale_star_engine_10.log",
+   "regex": "§STAR-POINT \\{\"n\":(10),\"m\"",
+   "group": 1
+  },
+  {
+   "id": "n100",
+   "log": "build/scriptor/witness_scale_star_engine_100.log",
+   "regex": "§STAR-POINT \\{\"n\":(100),\"m\"",
+   "group": 1
+  },
+  {
+   "id": "n1000",
+   "log": "build/scriptor/witness_scale_star_engine_1000.log",
+   "regex": "§STAR-POINT \\{\"n\":(1000),\"m\"",
+   "group": 1
+  },
+  {
+   "id": "star_limits",
+   "log": "build/scriptor/witness_scale_star_engine_1000.log",
+   "regex": "§STAR-LIMITS one Node process family simulates all devices \\(no network latency, no browser\\)",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "bytes10",
+   "log": "build/scriptor/witness_scale_star_engine_10.log",
+   "regex": "§STAR-EDGE-V1 s:0 \\{[^}]*\"bytes_down\":(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "bytes100",
+   "log": "build/scriptor/witness_scale_star_engine_100.log",
+   "regex": "§STAR-EDGE-V1 s:0 \\{[^}]*\"bytes_down\":(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "kb10",
+   "kind": "derive",
+   "of": "bytes10",
+   "div": 1000,
+   "dp": 0
+  },
+  {
+   "id": "mb100",
+   "kind": "derive",
+   "of": "bytes100",
+   "div": 1000000,
+   "dp": 1
+  },
+  {
+   "id": "gov_name",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md",
+   "regex": "\\*\\*Name:\\*\\* \"(Project quality objectives)\"",
+   "group": 1
+  },
+  {
+   "id": "gov_mit",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md",
+   "regex": "(A clone is free under MIT); it inherits the objectives only while its own terms run still passes",
+   "group": 1
+  },
+  {
+   "id": "gov_while",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md",
+   "regex": "A clone is free under MIT; it inherits the objectives (only while its own terms run still passes) with no control weakened",
+   "group": 1
+  },
+  {
+   "id": "v3_enforced",
+   "log": "build/scriptor/terms_postSeal/runner.log",
+   "regex": "§TERMS_VERDICT PASS enforced=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "v3_open",
+   "log": "build/scriptor/terms_postSeal/runner.log",
+   "regex": "§TERMS_VERDICT PASS enforced=\\d+ open=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "v3_word",
+   "log": "build/scriptor/terms_postSeal/runner.log",
+   "regex": "§TERMS_VERDICT (PASS)",
+   "group": 1
+  },
+  {
+   "id": "neg_found",
+   "log": "build/scriptor/terms_postSeal_neg/neg_seal.out",
+   "regex": "^RELAY \\(sealing\\) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| UNCONTROLLED",
+   "group": 1
+  },
+  {
+   "id": "neg_tot",
+   "log": "build/scriptor/terms_postSeal_neg/neg_seal.out",
+   "regex": "^RELAY \\(sealing\\) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| UNCONTROLLED",
+   "group": 2
+  },
+  {
+   "id": "neg_word",
+   "log": "build/scriptor/terms_postSeal_neg/neg_seal.out",
+   "regex": "§TERMS_VERDICT (FAIL)",
+   "group": 1
+  },
+  {
+   "id": "rs_downloaded",
+   "log": "build/scriptor/terms_postSeal/witness_read_scope.log",
+   "regex": "§RS-A Y \\(a modified client .*opens \\d+ of the (\\d+) laned ops of X",
+   "group": 1
+  },
+  {
+   "id": "rs_opened",
+   "log": "build/scriptor/terms_postSeal/witness_read_scope.log",
+   "regex": "§RS-A Y \\(a modified client .*opens (\\d+) of the \\d+ laned ops of X",
+   "group": 1
+  },
+  {
+   "id": "rs_ctl_opened",
+   "log": "build/scriptor/terms_postSeal/witness_read_scope.log",
+   "regex": "§RS-A CONTROL: .* - opened=(\\d+)/\\d+",
+   "group": 1
+  },
+  {
+   "id": "rs_ctl_tot",
+   "log": "build/scriptor/terms_postSeal/witness_read_scope.log",
+   "regex": "§RS-A CONTROL: .* - opened=\\d+/(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "rs_office",
+   "log": "build/scriptor/terms_postSeal/witness_read_scope.log",
+   "regex": "§RS-I office mesh: relay shape equals the F1 engine",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "sc10",
+   "log": "build/scriptor/read_scope_20261031/scale_10.log",
+   "regex": "§STAR-EDGE-V1 s:0 \\{.*?\"bytes_down\":(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "sc100",
+   "log": "build/scriptor/read_scope_20261031/scale_100.log",
+   "regex": "§STAR-EDGE-V1 s:0 \\{.*?\"bytes_down\":(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "gh_gap_mid",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log",
+   "regex": "§RSGH-G the relay withholds X's MIDDLE .* gaps\\(\\) = exactly its box seq\\(s\\) \\[(\\d+)\\]",
+   "group": 1
+  },
+  {
+   "id": "gh_gap_last",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log",
+   "regex": "§RSGH-G the relay withholds X's LAST bundle -> reported from X's signed head `boxes`: \\[(\\d+)\\]",
+   "group": 1
+  },
+  {
+   "id": "gh_word",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log",
+   "regex": "§RSGH_VERDICT (PASS)",
+   "group": 1
+  },
+  {
+   "id": "gh_ctl_flag",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log",
+   "regex": "§RSGH-G CONTROL \\(engine without `box`, same middle withholding over GitHub\\): gaps\\(\\) = \\[\\]",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "env1",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log",
+   "regex": "§RSGH bundles of X under m/hub/ on GitHub=\\d+ box seqs per bundle=\\[\\[(\\d+),(\\d+)\\],\\[(\\d+)\\],\\[(\\d+)\\],\\[(\\d+)\\]\\]",
+   "group": 1
+  },
+  {
+   "id": "env2",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log",
+   "regex": "§RSGH bundles of X under m/hub/ on GitHub=\\d+ box seqs per bundle=\\[\\[(\\d+),(\\d+)\\],\\[(\\d+)\\],\\[(\\d+)\\],\\[(\\d+)\\]\\]",
+   "group": 2
+  },
+  {
+   "id": "env3",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log",
+   "regex": "§RSGH bundles of X under m/hub/ on GitHub=\\d+ box seqs per bundle=\\[\\[(\\d+),(\\d+)\\],\\[(\\d+)\\],\\[(\\d+)\\],\\[(\\d+)\\]\\]",
+   "group": 3
+  },
+  {
+   "id": "env4",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log",
+   "regex": "§RSGH bundles of X under m/hub/ on GitHub=\\d+ box seqs per bundle=\\[\\[(\\d+),(\\d+)\\],\\[(\\d+)\\],\\[(\\d+)\\],\\[(\\d+)\\]\\]",
+   "group": 4
+  },
+  {
+   "id": "env5",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log",
+   "regex": "§RSGH bundles of X under m/hub/ on GitHub=\\d+ box seqs per bundle=\\[\\[(\\d+),(\\d+)\\],\\[(\\d+)\\],\\[(\\d+)\\],\\[(\\d+)\\]\\]",
+   "group": 5
+  },
+  {
+   "id": "refuse_every",
+   "log": "build/scriptor/terms_run/witness_comm_executors.log",
+   "regex": "its status op is REFUSED \\(?not-executor\\)? on EVERY device",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "lim_meta",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md",
+   "regex": "\\*\\*Residuals \\(stated\\):\\*\\* relay metadata visible",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "r3_not_done",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md",
+   "regex": "a fresh-clone run on another machine has not been done",
+   "group": 1,
+   "kind": "flag"
+  }
+ ]
+}
