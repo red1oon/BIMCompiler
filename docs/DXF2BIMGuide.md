@@ -285,8 +285,13 @@ that does not fit is refused with the reason, never half-loaded; **Clear** goes 
 Click a converted part and the **Properties** panel opens beside the tool rail. It shows exactly what that part's IFC will carry: the IFC class, name,
 label, predefined type and material, then the drawing evidence in groups — **Source** (sheet, handle, layer, how it is known), **Size** (each stated size, in
 metres, with its base and top), **Drawing notes** (each note beside the sheet and handle it was read from) and **Schedule** (the schedule row it matched). A value
-with no content is not shown, because the IFC does not write it. A part you drew yourself, or one from an opened IFC, says *no drawing evidence: this part was not
-converted from the 2D set*. With several parts selected it shows the last one picked; **×** closes it until the selection changes. On a small screen with the
+with no content is not shown, because the IFC does not write it. A part you drew yourself says *no drawing evidence: this part was not converted from the 2D set*.
+
+**A part of an opened building** (a resident, a `.db`, or an `.ifc` you open) shows what the building's database states about it: IFC class, name, storey,
+material, type, GlobalId, and each standard property set (`Pset_WallCommon`, `Pset_DoorCommon`, …) with whether the value is set on the element or on its type.
+A raw `.ifc` is read once, on the first click, by the same converter the residents and every export use, so it shows the same rows its `.db` would (the Duplex
+architecture IFC: 289 elements, 219 property rows, about half a second). Only the standard `Pset_*Common` sets are read; a vendor's own sets are not shown yet.
+With several parts selected it shows the last one picked; **×** closes it until the selection changes. On a small screen with the
 metadata editor open there is no room beside it, so it opens on top of the editor.
 
 ### 6 · Export IFC
