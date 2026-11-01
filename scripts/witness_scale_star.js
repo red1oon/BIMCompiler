@@ -203,7 +203,7 @@ async function enginePoint(o) {
   var signedOffice = wrapPlan('TEAM_PLAN', await SIGN.sign(OFF, K1.privateJwk, K1.publicJwk)), signedPos = wrapPlan('TEAM_PLAN_POS', await SIGN.sign(POS, K1.privateJwk, K1.publicJwk));
   var dir = fs.mkdtempSync(path.join(os.tmpdir(), 'star_relay_')), base = E.PIPE.folderPipe(dir, 'star'), allow = function () { return { allowed: true }; };
   var GH = null, net = SME ? Object.assign({}, NETCFG) : null;
-  if (net && net.relay === 'gh-local') { GH = cp.fork(path.join(__dirname, 'sme100_net.js'), ['serve'], { stdio: ['ignore', 'inherit', 'inherit', 'ipc'] }); net.api = 'http://127.0.0.1:' + (await new Promise(function (r) { GH.on('message', function (mm) { if (mm.port) r(mm.port); }); })); }
+  if (net && net.relay === 'gh-local') { GH = cp.fork(path.join(OOTB, 'common', 'tests', 'gh_standin.js'), ['serve'], { stdio: ['ignore', 'inherit', 'inherit', 'ipc'] }); net.api = 'http://127.0.0.1:' + (await new Promise(function (r) { GH.on('message', function (mm) { if (mm.port) r(mm.port); }); })); }
   P.net = net ? { profile: net.profile, relay: net.relay, schedule: net.schedule, token: net.token, retry: net.retry, seed: net.seed, gap_ms: net.gap, burst_ms: net.burst_ms } : null;
   var LF = net ? NET.ledger() : null, FD_IDX = 1000000;
   var Fd = await STORE.newDevice(), PF = uuid(), sp = await STORE.newSpace('star', Fd, PF, 'HQ', HQ, { planTrust: [pub1], plan: 'pos' }); Fd.person_uu = PF;

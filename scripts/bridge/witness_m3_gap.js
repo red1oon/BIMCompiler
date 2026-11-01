@@ -75,7 +75,16 @@ function taxOfFor(f) {
 // §43 F10: product-category accounting per ACTIVE schema, read from the (state-synced) scratch posting db
 const acctSetupOf = pid => {
   const has = c => gb.prepare('SELECT 1 FROM pragma_table_info(?) WHERE name=?').get('c_acctschema', c);
-  const act = gb.prepare('SELECT c_acctschema_id id FROM c_acctschema' + (has('isactive') ? " WHERE isactive='Y'" : '')).all().map(r => r.id);
+  // the client's schemas as LEGACY computes them, not "every active schema": MAcctSchema.getClientAcctSchema (MAcctSchema.java:132-175) = the AD_ClientInfo.C_AcctSchema1
+  //   schema + every ACTIVE schema of the client that has BOTH a C_AcctSchema_GL and a C_AcctSchema_Default row (the twin product ports the same rule: bim-ootb
+  //   erp/model_master.js:70 clientAcctSchemas). Found 2026-11-02 (TEAMWORK §45.15a): the pilot carries two NC4 test schemas (1000001/1000002, no GL row) that
+  //   legacy ignores; the old "WHERE isactive='Y'" made the SQLite side refuse O2C1-SO with no-product-category-acct while legacy completed it.
+  const tbl = t => !!gb.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?").get(t), hasCli = has('ad_client_id');
+  const prim = tbl('ad_clientinfo') ? (gb.prepare('SELECT c_acctschema1_id s FROM ad_clientinfo WHERE ad_client_id=?').get(C.client) || {}).s : null;
+  const act = gb.prepare('SELECT c_acctschema_id id FROM c_acctschema s WHERE 1=1' + (has('isactive') ? " AND isactive='Y'" : '') + (hasCli ? ' AND ad_client_id=' + Number(C.client) : '') +
+    (tbl('c_acctschema_gl') ? ' AND EXISTS (SELECT 1 FROM c_acctschema_gl gl WHERE gl.c_acctschema_id=s.c_acctschema_id)' : '') +
+    (tbl('c_acctschema_default') ? ' AND EXISTS (SELECT 1 FROM c_acctschema_default d WHERE d.c_acctschema_id=s.c_acctschema_id)' : '')).all().map(r => r.id);
+  if (prim != null && act.indexOf(prim) < 0) act.unshift(prim);
   const p = gb.prepare('SELECT m_product_category_id c FROM m_product WHERE m_product_id=?').get(pid);
   if (!p) return [];
   return E.acctSetupGap(p.c, act, gb.prepare('SELECT m_product_category_id, c_acctschema_id FROM m_product_category_acct WHERE m_product_category_id=?').all(p.c));
