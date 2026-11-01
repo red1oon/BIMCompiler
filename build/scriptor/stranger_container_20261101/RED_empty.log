@@ -1,0 +1,6 @@
+§SC_HEADER logdir=build/scriptor/stranger_container_20261101/red_empty host_record=build/scriptor/unwrap_memo_20261101/terms.json
+   INCONCLUSIVE §SC-S1 no terms_runner.log (the runner did not run)
+   INCONCLUSIVE §SC-S2 a record is missing (container=false host=true)
+   INCONCLUSIVE §SC-S3 no container log files to search
+   INCONCLUSIVE §SC-S4 environment lines missing
+§SC_VERDICT INCONCLUSIVE judged=0 fails=0 inconclusive=4 (a container on this machine: same kernel, CPU and network - NOT another machine)

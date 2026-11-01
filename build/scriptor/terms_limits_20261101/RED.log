@@ -1,0 +1,8 @@
+§TL_HEADER W-TERMS-LIMITS src=build/scriptor/unwrap_memo_20261101/terms ootb=/home/red1/bim-ootb runner=/home/red1/bim-compiler/scripts/witness_terms.js
+   INCONCLUSIVE §TL-L1 no witness log in build/scriptor/unwrap_memo_20261101/terms prints a §LIMIT line (0 lines) (nothing was judged)
+   (no §TERMS_LIMITS line)
+   INCONCLUSIVE §TL-L2 no copied log has a §LIMIT line to delete (nothing was judged)
+   FAIL §TL-L3 a term= limit lands on the row it names only (log witness_comm_plantrust.log is shared by statement-signed,trusted-keys) - attached to: none
+   FAIL §TL-L4 a hand-written limit in a note is refused (defect line + verdict FAIL) - defect=false verdict=PASS
+   FAIL §TL-L5 no note in the real runner holds a limit (4 notes) - "TEAMWORK §48.11b-§48.11d. Legacy arm: the pilot\'s…" "TEAMWORK §45.2/§45.8 F1 per-device mailboxes (bim-…" "TEAMWORK §45.11 (bim-ootb #2486, #2498; witness co…"
+§TL_VERDICT FAIL judged=3 fails=3 inconclusive=2
