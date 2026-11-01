@@ -1,0 +1,91 @@
+<!-- ⚠ DO NOT REMOVE — Scope: DRAFT script of the DEVELOPER, under-the-hood cut "How do we know what we said is true?" (2026-11-01). SCRIPT ONLY: not built, recorded or rendered; the owner reviews it first. Rules as in script_en.md: every number is {fact:<id>} (ids in facts_v4_additions.md), spelled out by tsv.js, NO digit and NO typed number word in a spoken line. Developer words are allowed (explained once); real commands and code may be on screen. Guard note: guard.js's public banned list (witness, mutant, node, git, npm...) must be replaced by a DEVELOPER list for this cut (banned: hype words only, plus 'unique', 'revolutionary', 'breakthrough'); every on-screen code excerpt must equal the bytes at the pinned commit (§REPO_EXCERPT lines in build/scriptor/film_v4/repo_facts.log). BUILD SYNTAX (as in the public cut): <<G2: text>> only if env G2=pass; <<G2P: text>> only if G2 is not pass; <<G3: text>> only if G3=1. -->
+# How do we know what we said is true? — developer cut (DRAFT)
+Target about 5:00 to 5:30 (about 900 spoken words including the code chapter of about 70 s). F is a skeptical reviewer, M explains. Developer jargon is fine, explained once: a *witness* is a test script; a *control* is a sentence the witness must print only when it caught the broken case; a *mutant* is a deliberately broken copy of product code the witness must go red on.
+Motto of the code chapter (and the closing card): **"Talk is cheap. Show me the code." — Linus Torvalds.** Verification status in the notes at the end: wording and date confirmed from a secondary source only; the primary page could not be fetched, so ON SCREEN use the name and the wording, NO date.
+
+---
+## d1 | The question (0:00 to 0:40)
+**Screen:** a title card, then a terminal-style panel (monospace). Left: the claim, in the words of the earlier film: "A Complete by the wrong role is refused on every device." Then the witness log lines (verbatim, from `build/scriptor/terms_run/witness_comm_executors.log`): `a STATION completes an order it created: its status op is REFUSED not-executor on EVERY device` and, for contrast, `HQ (the executor) completes its order ... MERGED on every device`. Third line, amber: `CONTROL: a table with no entry in the map ... MERGED as today`. Then the runner row `BUNDLE (Complete) | PASS+PASS | {fact:b1_ok}/{fact:b1_tot} refused | ENFORCED`.
+**Facts:** `b1_station_refused`, `b1_hq_merged`, `b1_ctl_merged`, `b1_ok`, `b1_tot`.
+F: In an earlier film you said a station cannot complete an order only head office may complete. Why should I believe a film?
+M: You should not. You should believe a test that can fail. Here is the claim, here is the witness: the station's attempt is refused on every device, head office's own attempt is merged, and a control case shows that tables without a rule still merge as before. The runner marks the promise enforced only when all {fact:b1_tot} of its controls are found.
+
+## d2 | A test must be able to fail (0:40 to 1:25)
+**Screen:** two panels. Panel A: the one-line rule (the code excerpt appears later; here its result): the runner table with the sealing row `RELAY (sealing) | {fact:neg_found}/{fact:neg_tot} refused | UNCONTROLLED` in red, the line `control NOT FOUND: {fact:neg_missing}`, and `§TERMS_VERDICT {fact:neg_word}`. Panel B: `needle_count={fact:m_needle1}` beside `KILLED` for mutant M1, and `{fact:m_killed}/{fact:m_tot}`; below it a rule card: "a mutant must apply exactly once", "a crash is not a kill".
+**Facts:** `neg_*`, `m_needle1`, `m_killed`, `m_tot`, `m_once_rule`, `m_crash_rule`; earlier mutant run: `b1_mut_found`/`b1_mut_tot`.
+F: Any test can print PASS. What stops yours from always passing?
+M: Mainly this. Each promise carries controls, and the runner needs all of them. We deleted a single control sentence from the sealing row: {fact:neg_found} of {fact:neg_tot} found, the term is UNCONTROLLED, and the whole run exits with failure. Also, a deliberately broken copy of the product code must apply exactly once, and the test must go red for the stated reason. If the needle matches no place, or several places, or the test merely crashes, it does not count as a kill.
+
+## d3 | When our own instruments were wrong (1:25 to 2:50)
+**Screen, four short cards, each from a source log:**
+(a) *Equivalent mutant.* `readFileSync not traced ... needle_count={fact:eq_needle} -> red={fact:eq_red}` from `build/scriptor/film_v4/equivalent_mutant_repro.log` (reproduced today from the old needle). Caption: "it changed nothing: readFileSync goes through the traced openSync".
+(b) *The crash.* PR text, verbatim: "W-TT fixed for a record with no OPEN row" (`build/scriptor/film_v4/pr_2487.json`).
+(c) *The stale limit.* PR text, verbatim: "still said a withheld mailbox bundle shows as a parked op, not a gap" (`pr_2488.json`).
+(d) *The blind spot.* RED log line `... after-change cached={fact:nat_cached} §FXN {fact:nat_marker}` (the old value replayed after the database changed) beside the later `after-change cached={fact:nat_fixed}`; and the first dev-env run: `§TERMS_PORTABLE rows=13 portable={fact:r1_portable}` with `§UNTRACKED` lines: {fact:r1_untracked}.
+**Facts:** `eq_needle`, `eq_red`, `eq_word`, `tt_crash`, `stale_limit`, `nat_cached`, `nat_marker`, `nat_fixed`, `r1_portable`, `r1_untracked`.
+F: You built the checker. Who checks it?
+M: More than once the checker was wrong, and each time another check found it. First, a broken copy of the cache's tracer that removed the tracing of readFileSync. It applied once, and nothing went red, because Node's readFileSync goes through openSync, which was still traced. An equivalent mutant: it proved nothing, so we replaced it with a mutant that changes behaviour. Next, the page test crashed on a record with no open promise, because the last open promise had just closed. Then a limit we published, that a withheld bundle shows only as a parked op, was out of date within the hour; it was corrected the same day.
+F: And the last?
+M: The cache replays a passing result when every file the test read is unchanged. But a database opened by the database library's native code never goes through Node's file calls. Change the database, and the cache still said cached. The check that exposed it was written for something else: the first run of the new detector reported every promise portable and listed nothing untracked, which was the impossible answer.
+
+## d4 | Evidence that lived on one machine (2:50 to 3:30)
+**Screen:** `§UNTRACKED trusted-keys BIMCompiler/{fact:un_db} kind=untracked why={fact:un_why} ...` (six lines; the count `{fact:un_terms}`), then the publish log: `uploaded gz ... fetched back, sha matches` (`{fact:de_back}`), bytes `{fact:de_bytes}` (about {fact:de_mb} MB), sha `{fact:de_sha}`, then `§TERMS_PORTABLE ... portable={fact:pt_before}` becoming `portable={fact:pt_after}` of `{fact:pt_rows}`. A small diagram: traced inputs (what the test read) minus `git ls-files` = what a stranger cannot get.
+**Facts:** `un_terms`, `un_db`, `un_why`, `de_back`, `de_bytes`, `de_mb`, `de_sha`, `pt_before`, `pt_rows`, `pt_after`, `de_judged`, `de_mut`.
+**Omitted (no log):** the same class in the DXF2BIM lane (a never-committed library_building_types.json).
+F: Passing on your laptop proves what?
+M: Only that it passes on your laptop. The cache already records every file each test reads. So the detector subtracts the files git tracks, and what is left is evidence a stranger cannot get. It named a file, a database that is not in the repository, for exactly {fact:un_terms} promises. We checked its content first, published it to object storage by its sha, fetched it back and compared. Promises a clean copy can check went from {fact:pt_before} to {fact:pt_after} of {fact:pt_rows}.
+
+## d5 | The price of honesty (3:30 to 4:00)
+**Screen:** two bar pairs. Before the fix: `{fact:c_run1i} s -> {fact:c_run2i} s`. After: `{fact:g1_run1i} s -> {fact:g1_run2i} s`, `ran={fact:g1_ran} cached={fact:g1_cached} cache_skip={fact:g1_skip}`. Then the refusal lines: `§CACHE_SKIP ... non-node-child (git)`, `(psql)`, `(sh)`. Footer: the cache's own check `judged={fact:g1_judged}`, mutants `{fact:g1_mut}`.
+**Facts:** `c_run1i`, `c_run2i`, `g1_run1i`, `g1_run2i`, `g1_ran`, `g1_cached`, `g1_skip`, `sk_git`, `sk_psql`, `sk_sh`, `g1_judged`, `g1_mut`.
+F: But you also sold me a cache that made it fast.
+M: It did: {fact:c_run1i} seconds down to {fact:c_run2i}. Then we closed the blind spot, and a program the tracer cannot see into, git, psql or a shell, now makes a test uncachable. On the latest full run the second pass took {fact:g1_run2i} seconds against {fact:g1_run1i}: {fact:g1_ran} tests ran again and {fact:g1_cached} were replayed. A refusal costs time, never correctness. That is the price, and we pay it on purpose.
+
+## d6 | Proving the sealing (4:00 to 4:50)
+**Screen:** a four-step ladder. (1) RED on the old engine: `§RS_SCOPE_VERDICT FAIL judged={fact:s_red_judged} fails={fact:s_red_fails}`. (2) GREEN: `PASS judged={fact:s_judged} fails={fact:s_fails}`, mutants `{fact:m_killed}/{fact:m_tot}`. (3) The real GitHub post box: `opens {fact:gh_opened} of the {fact:gh_down} laned ops`, withheld bundle `seq {fact:gh_mid}` and `seq {fact:gh_last}` reported, `§RSGH_VERDICT PASS judged={fact:gh_judged} fails={fact:gh_fails}`. (4) The leak the extended test found: `FAIL §RS-J G5: ... op ids in state={fact:k_red_ids}` then `... op ids in state={fact:k_green_ids}`, control `{fact:k_ctl}`, `PASS judged={fact:k_green_judged}`, mutants `{fact:k_green_mut}`.
+**Facts:** `s_red_*`, `s_*`, `gh_*`, `k_*` (all resolved).
+F: Sealing is where a design review finds holes. How did you test it?
+M: Red first. Against the old engine the sealing test failed {fact:s_red_fails} of its {fact:s_red_judged} checks, then went green on the new engine. Then we pointed the same attack at the real GitHub post box: a modified client downloaded all {fact:gh_down} sealed ops and opened {fact:gh_opened}, and a withheld bundle was reported at its sequence number.
+F: Did the test find anything you had missed?
+M: Yes. We extended it to the checkpoint snapshot. The sealed ops stayed shut, but the snapshot's state listed {fact:k_red_ids} of the {fact:gh_down} sealed op ids. Visible to any member. The test failed, we fixed it, and the same check now finds {fact:k_green_ids}, with a control showing it can find them when sealing is off.
+
+## d7 | What we still cannot prove (4:50 to 5:20)
+**Screen (all amber):** (1) the fresh-clone run: `§DE-R3 ... §TERMS_VERDICT FAIL enforced={fact:g2_en} ... witness_failed={fact:g2_wf}` and the later re-run after a patch `§TERMS_VERDICT PASS enforced={fact:g2b_en} open={fact:g2b_open}` with the words "same machine, empty folder; not another machine; full check not yet recorded as PASS". (2) "the post box still sees who sent how much, and when" (`lim_meta`). (3) a dashed slot: 1,000 sealed tills, "measurement still running".
+**Facts:** `g2_en`, `g2_wf`, `g2b_en`, `g2b_open`, `lim_meta`; `g2_pass` when G2=pass; `sc1000` when G3=1 (not defined yet).
+F: What have you not shown?
+M: <<G2P: A stranger run. We cloned both public repositories into an empty folder and ran the runner. The first attempt failed: {fact:g2_en} enforced and {fact:g2_wf} test failed. After a patch the runner passes {fact:g2b_en} with {fact:g2b_open} open, but that was on this machine, and the full check has not yet been recorded as a pass.>><<G2: The stranger run now passes from a fresh clone of both repositories.>> The post box still sees who sent how much, and when. <<G3: And the sealed build measured with {fact:n1000} tills: {fact:sc1000} bytes.>>
+
+## d8 | Show me the code: where to look (5:20 to 6:30)
+**Motto card (2 s):** "Talk is cheap. Show me the code." — Linus Torvalds.
+**Card 1, repo map, BIMCompiler** (github.com/red1oon/BIMCompiler, branch master, pinned `ca532b065`), one line per file, line counts from `repo_facts.log` at the pin:
+`scripts/witness_terms.js` ({fact:l_terms} lines): the terms runner · `scripts/witness_cache.js` ({fact:l_cache}) + `scripts/witness_trace.js` ({fact:l_trace}): the content-keyed cache and its tracer · `scripts/dev_env.js` ({fact:l_devenv}), `dev_env_fetch.js` ({fact:l_fetch}), `dev_env_publish.js` ({fact:l_publish}), `dev_env/manifest.json`: inputs git does not carry, restored by sha256 · `scripts/witness_witness_cache.js` ({fact:l_wwc}), `scripts/witness_dev_env.js` ({fact:l_wde}): the checkers of the checkers · `prompts/TEAMWORK_FRAMEWORK.md` ({fact:l_spec}): every spec and result with its log path · {fact:n_comm} engine tests `scripts/witness_comm_*.js`.
+**Card 2, repo map, bim-ootb** (github.com/red1oon/bim-ootb, branch main, pinned `6a8023a5`): `common/comm/comm_store.js` ({fact:l_store}): the local-first engine · `comm_roster.js` ({fact:l_roster}): team and key grants · `comm_envelope.js` ({fact:l_env}): signed envelopes · `comm_pipe.js` ({fact:l_pipe}): the post box, folder and GitHub · `team_keys.js` ({fact:l_keys}) · `erp/team_sync.js` ({fact:l_sync}): the ERP host adapter · `common/tests/witness_read_scope.js` ({fact:l_rs}), `witness_read_scope_github.js` ({fact:l_rsgh}), `witness_f1_mailbox.js` ({fact:l_f1}) · {fact:n_team} browser tests `erp/tests/witness_team_*.js` · `erp/team_terms.js` + `team_terms.json` (the Terms button and its recorded run) · `GOVERNANCE.md`.
+**Excerpts shown verbatim, one at a time, file:line at the pinned commit** (each must equal `git show <pin>:<file> | sed -n '<l>p'`; guard check; long lines are shown whole, wrapped):
+1. `scripts/witness_terms.js:147`: `row.status = !wOk ? 'WITNESS-FAILED' : (!cOk ? 'UNCONTROLLED' : 'ENFORCED');`
+2. `scripts/witness_witness_cache.js:150`: `if (n !== 1) { console.log('   FAIL §WC-MUT "' + m[0] + '" needle_count=' + n + ' (must be 1): NOT applied, not a kill'); fails++; continue; }`
+3. `scripts/witness_cache.js:33`: `if (E.inputs.length && E.inputs.every(function (x) { return hashOf(x.k, x.p) === x.h; }))`, then `:59`: `else if (foreign.length) skip = 'non-node-child (' + ...`
+4. `scripts/witness_trace.js:54` and `:66`: `function wrapBetter(exp, filename) {` and `if (/[\\/]better-sqlite3[\\/]lib[\\/]index\.js$/.test(filename)) return wrapBetter(exp, filename);`
+5. `scripts/dev_env.js:45-46`: `if (!tracked[k.rel]) return out.push(mk('untracked'));` and `if (isLfsPointer(k.abs)) return out.push(mk('lfs-pointer'));`; `scripts/dev_env_fetch.js:33`: `if (got !== e.sha256) {`
+6. bim-ootb `common/comm/comm_store.js:61`: the AAD line (`'bim-comm-op|' + space + '|' + epoch + (aud ? '|' + aud : '')`), `:78` the sealed text `'enc:' + epoch + (aud ? '@' + aud : '') + ':'`, `:545` `function gaps() {`, `:585` the `box: {name, seq}` comment, `:999` `§CKPT_STATE_OMITTED`.
+**Pacing:** repo cards 8 s each; six code panels about 8 s each with the narration line below.
+F: Talk is cheap. Show me the code.
+M: Both repositories are public, pinned so what you read is what we tested. In BIMCompiler, start with the terms runner. This single line is the whole rule: a promise is enforced only if its witness passed and every control was found; otherwise it is uncontrolled or failed.
+M: The checkers of the checkers live next to it. A mutant must apply exactly once, or it is not a kill.
+M: The cache replays only if every input still hashes the same, and refuses any run it cannot trace. This is where the native database hook went in.
+M: Anything git does not carry is flagged here, and the fetcher refuses a download whose hash differs.
+F: And the engine itself?
+M: In bim-ootb, the communication engine. The associated data binds each sealed op to its audience, so a sealed op moved to another box fails to open. The sealed text carries its epoch and audience. A gap is reported from a numbered, signed sequence. And a checkpoint in a mailbox space omits the sealed detail.
+
+## d9 | Close (6:30 to 6:50)
+**Screen:** the commands from the developers page (verbatim from https://red1oon.github.io/bim-ootb/erp/team_developers.html, frozen snapshot hashed at record time): `git clone https://github.com/red1oon/BIMCompiler.git`, `git clone https://github.com/red1oon/bim-ootb.git`, `cd BIMCompiler && npm install`, `node scripts/witness_terms.js --ootb ../bim-ootb`, and the options `--browser 0`, `--only id,id`, `--fresh 1`. Under them, the three page addresses and the closing line "Next: someone else checks."
+F: How do I check you?
+M: Clone both repositories, install, and run the runner. Add the fresh flag to ignore the cache. The developers page lists every option and every stated limit. The next check is not ours: it is yours.
+
+---
+## Notes (not narration)
+- **Length:** the dialogue is about 1,000 words (about 5:45 plus reveal time), and the code chapter alone is about 70 s as asked. To land near 5:00 trim d3 (merge items two and three) and d5's last two sentences.
+- **Quote verification (Linus):** WebSearch and the Wikiquote page agree on the wording "Talk is cheap. Show me the code." and the date 2000-08-25, and Wikiquote cites `http://lkml.org/lkml/2000/8/25/132` as the source message. The primary page could NOT be read: `curl` returned an empty body and a web fetch returned an Anubis "Access Denied" page (log: `build/scriptor/film_v4/lkml_2000_08_25_132.html`, zero bytes). So the script uses the wording and his name, with NO date or URL on screen, per the rule. If the owner wants the date, open the link by hand once.
+- **Honesty about g2:** the "fresh clone" in `g2_stranger.log` was an empty temp directory on this machine, not another machine. The script says so.
+- **Count correction:** `scripts/witness_comm_*.js` is 17 at the pin, not 18.
+- **Guard changes needed for this cut:** a developer banned-word list; a `§REPO_EXCERPT` equality check (each on-screen excerpt equals the line in `repo_facts.log`, itself produced by `git show <pin>:<file> | sed -n`); a URL/commit-pin check (both pins exist: `git cat-file -t` prints commit for both, logged); the digit rule must allow file:line numbers and commit hashes as structural tokens, or take them from facts.
+- **On-screen terms such as "RELAY (sealing)"** appear because the runner prints them; they are the product's own words, fine for this audience.
