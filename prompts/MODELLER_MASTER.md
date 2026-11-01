@@ -22,7 +22,7 @@ refine from that grammar. This is the Red Pill / "New from Reference" idea alrea
 `docs/internal/NEW_FROM_REFERENCE.md` §1 (IFC → SQLite → verified reconstruction is the inverse; grammar → refined design is
 the forward path). The Modeller is NOT a creative authoring tool. Users author in Revit/ArchiCAD; the Modeller must do three things well:
 1. **IN — faithful import:** authored LOD400 geometry and relations survive (openings, fills, layers, anchors). A user's OWN
-   IFC must get what the residents get — whether the local-IFC open path writes `rel_fills_host` is UNVERIFIED (measure it).
+   IFC must get what the residents get — ~~whether the local-IFC open path writes `rel_fills_host` is UNVERIFIED~~ MEASURED + BUILT 2026-11-02 (P-X, §RESUME 2026-11-02).
 2. **ASSEMBLE — edits on authored parts:** walkers generating MEP, BOM assembly, grid stretch, slide/insert openings,
    copy/array along a host, the universal handle set (§SLOPE-HANDLES) along measured build lines.
 3. **OUT — hand-off:** IFC export carrying storeys, Psets, materials (§IFC-EXPORT-DEPTH), plus 4D/5D and ERP.
@@ -82,6 +82,43 @@ placeholder rule is not built).
 is ours" ⇒ aligned; move it from ⛔ to the queue after the catalog rebind.
 **Queue impact:** C1+C2 join row 14 (catalog rebind) and move up — they are live no-box violations, ahead of §SLOPE-HANDLES.
 C3 lands with the REPLACE verb.
+
+## ▶ §RESUME 2026-11-02 — START HERE (then §RESUME 2026-10-02 below; its queue and HOLDs still stand)
+**Landed from the DXF2BIM lane (bim-ootb; detail + measured tables in bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` `### P-X SPEC`, `### P-X2 SPEC` and their RESULTs):**
+- **P-X, bim-ootb #2520 (sw v204): IN objective, "a user's OWN IFC must get what the residents get" (§STRATEGY item 1). Was UNVERIFIED; now MEASURED and BUILT.**
+  The Modeller's raw-IFC open (`openIfcFile`) now runs the shared extractor (`modeller/ifc_open_db.js` in `modeller/ifc_open_worker.js`), not the Viewer's import worker.
+  - The residents' rule: drop the IfcSpace + IfcOpeningElement element rows and keep every discipline.
+  - W-IFC-OPEN-ONE: on 6 residents' source IFCs the opened DB = the resident (rows, centres, bboxes, meshes, `rel_fills_host`). The Viewer import's meshes are byte-identical, and 3 falsifiers fail as they should.
+  - The old path's filename rule had seeded `*_ARC.ifc` STR members as ARC: IFC-opened Duplex 215 → **196 = the resident**, SampleHouse 58 → 38.
+  - The open DB now holds `element_pset_common` / `element_type` / `spatial_structure`, so U7's second read of the file is gone.
+  - So §STRATEGY line 25's "`rel_fills_host` UNVERIFIED" is ANSWERED (Duplex 50, HHS 218, Clinic 403, Garage 220, Hospital 665 = the residents'). Queue item (c) "IN-check" is done for the residents' own sources + 2 Revit files. A third-party IFC beyond those is still open, and so is a georeferenced (>10 km) one: the extractor has no rebase.
+- **P-X2, bim-ootb #2522 (sw v206): the extractor writes the IFC's element-level IfcRelAggregates into `rel_aggregates`** (it wrote storey → building only). These are the pairs the residents only had through their patches.
+  - All 7 residents: 0 missing (e.g. HHS 2,096, Hospital 9,454).
+  - On the IFC-opened Duplex, `§NOGEO_COMPOSE composed=3` (IfcRoof + 2 IfcStair); it was `UNRESOLVED count=3`.
+  - The seed count stayed 196: the composed parents are not drawn.
+
+**Two Modeller items moved here from the DXF2BIM lane (they are Modeller core, not 2D → BIM):**
+- **M-1 Walk-all on an IFC-opened building does nothing.** W-E2E-WALK-IFCOPEN G4: SampleHouse/ifc and Duplex/ifc give `§WALKALL walkOk=false … walked=0 refused=0`.
+  - The .db leg (SampleCastle) walks: FP placed 126, 3 honestly refused.
+  - Same 2 FAIL on bim-ootb main BEFORE P-X and after P-X / P-X2 (16 PASS / 2 FAIL each time), so P-X did not cause it.
+  - This breaks §STRATEGY IN + ASSEMBLE ("walkers FILL IN services" on a user's own IFC). Defect; diagnose and fix.
+- **M-2 Composed aggregate parents (IfcRoof, IfcStair, IfcCurtainWall …) are not drawn after P-X2. DECIDED (on red1's recorded direction): correct, keep it.**
+  - A parent has no mesh of its own. Its LOD400 geometry IS its parts (slab, flights, railings, panels), each seeded as itself.
+  - Drawing the parent too would double the geometry or put a union box where no mesh exists, which the no-box rule refuses.
+  - The composed transform serves grouping: Outliner / BOM tree / select-the-whole-stair.
+  - Left to measure, not to decide: for each composed parent, how many of its parts are drawn. Stair `IfcMember` parts are discipline STR and the ARC seed does not draw them; the residents behave the same.
+
+**red1's question for this lane (2026-11-02): "why would DISC Walker do roof and stairs? Is it applicable only during basic ARC without such?"**
+- **The recorded direction already answers the first half:**
+  - red1 2026-09-26: "the tiled roof is PREFAB ARC/STR the user reshapes along its axis like any other element; walkers FILL IN services (MEP)". The roof walk row was removed (#1785); the engine keeps only a §ROOF-PATTERN verdict (present / refuse).
+  - Stair/railing/curtain generators are out of scope (§STRATEGY "Out of scope").
+  - So the Disc Walker should do neither roofs nor stairs. M-2 is the ARC seed and the composer, not the walker.
+- **The lane must confirm from code, with file:line:**
+  - whether any walker path still generates, places or refuses roof or stair geometry (the §ROOF-PATTERN verdict, stair footprints in `storey_*`, `rel_aggregates` reads in `cross_edges.js`);
+  - whether "absent discipline" (WalkerDoctrine) means the walker only ever runs on an ARC-only building with that MEP discipline missing, or also on a building that already carries it.
+- Answer in this file with the citations. Do not re-open "generate the roof" (red1, 2026-09-26).
+
+**Next for this lane, in order:** M-1 (diagnose → spec → fix → W-E2E-WALK-IFCOPEN G4 green, base = main logs) · red1's question answered above with citations · M-2 measurement (parts drawn per composed parent, a `§` line) · then the §RESUME 2026-10-02 queue (§SLIDE-REAL-WALLS Phase B Duplex …).
 
 ## ▶ §RESUME 2026-10-02 — START HERE (session close; then read §RESUME 2026-09-30 below — its rules and queue still stand)
 **Landed and LIVE 2026-09-30 → 10-02 (all witnessed vs LIVE; modeller sw v76, viewer v1458):**
