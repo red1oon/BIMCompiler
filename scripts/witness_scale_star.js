@@ -41,6 +41,21 @@ var argv = process.argv.slice(4), A = {}; for (var ai = 0; ai < argv.length; ai+
 var N = Number(A.n || 10), M = Number(A.m || N), K = Number(A.k || 3), W = Number(A.workers || 6), BUDGET_MS = Number(A['budget-min'] || 30) * 60000;
 var HQ = 102, STN = 50004, uuid = function () { return nodeCrypto.randomUUID(); }, T0 = Date.now(), now = function () { return Number(process.hrtime.bigint() / 1000n) / 1000; };
 var DEADLINE = T0 + BUDGET_MS;
+// §45.14 SME-100 (TEAMWORK_FRAMEWORK.md): the network layer. Every flag defaults to the pre-§45.14 behaviour (no shaping, folder relay, devices one after another) = CONTROL C1.
+var NET = require('./sme100_net.js');
+var NETCFG = { profile: A.net || 'none', relay: A.relay || 'folder', schedule: A.schedule || 'seq', token: A.token || 'shared', retry: A.retry == null ? 3 : Number(A.retry), seed: Number(A.seed || 1), gap: Number(A.gap == null ? 10000 : A.gap), burst_ms: Number(A['burst-s'] || 60) * 1000, api: null };
+var SME = NETCFG.profile !== 'none' || NETCFG.relay !== 'folder' || NETCFG.schedule !== 'seq';
+// one device's link to the relay: the REAL ghPipe over a shaped fetch (relay gh-local), or the folder relay behind the same shaper. idx picks the device's profile (mixed = seeded draw).
+function devPipe(E, net, folderDir, kid, idx, L) {
+  var prof = NET.profileFor(net.profile, idx, net.seed); L.profile = prof;
+  if (net.relay === 'gh-local') return E.PIPE.ghPipe({ api: net.api, owner: 'o', repo: 'r', token: net.token === 'per-device' ? kid : 'team', self: kid, fetch: NET.shapedFetch(prof, net.seed * 100003 + idx + 7, L), minGapMs: net.gap });
+  var base = E.PIPE.folderPipe(folderDir, 'star'); return prof === 'none' ? base : NET.netPipe(base, prof, net.seed * 100003 + idx + 7, L);
+}
+// a Visit = one sync; a dropped connection fails it and the NEXT Visit retries (the product's behaviour: a Visit is re-run, nothing resumes mid-way). retry=0 is MUTANT M1.
+async function visit(S, pipe, L, net) {
+  var tries = 0, t0 = now(), n0 = L ? L.net_ms : 0, r0 = L ? L.reqs : 0;
+  for (;;) { try { var rp = await S.sync(pipe); return { rep: rp, wall_ms: now() - t0, net_ms: L ? L.net_ms - n0 : 0, reqs: L ? L.reqs - r0 : 0, fails: tries, lost: false }; }
+    catch (e) { if (!(e && (e.simulatedLoss || /simulated loss/.test(String(e.message))))) throw e; tries++; if (tries > (net ? net.retry : 0)) return { rep: null, wall_ms: now() - t0, net_ms: L ? L.net_ms - n0 : 0, reqs: L ? L.reqs - r0 : 0, fails: tries, lost: true }; } } }
 function out(s) { console.log(s); }
 function rd(f) { return fs.readFileSync(path.join(OOTB, f), 'utf8'); }
 function wrapPlan(name, plan) { return '(function (g) { g.' + name + ' = ' + JSON.stringify(plan) + '; })(typeof window !== \'undefined\' ? window : globalThis);\n'; }
@@ -129,22 +144,28 @@ async function workerMain() {
       if (m.cmd === 'create') { var res = []; for (var k of m.keys) { var d = await STORE.newDevice(); devs[k] = d; res.push({ key: k, kid: d.kid, pubJwk: d.pubJwk, dhPubJwk: d.dhPubJwk }); } process.send({ id: m.id, res: res }); }
       else if (m.cmd === 'produce') {
         cfg = m; if (!DB) DB = new SQL.Database(fs.readFileSync(path.join(OOTB, 'erp', 'ad_seed.db')));
-        pipeBase = E.PIPE.folderPipe(m.dir, 'star'); var mine = 0, ops = 0, ms = 0, errs = [], bytesPut = 0;
-        for (var p of m.items) {
+        pipeBase = E.PIPE.folderPipe(m.dir, 'star'); var mine = 0, ops = 0, ms = 0, errs = [], bytesPut = 0, net = m.net || null, visits = [];
+        var one = async function (p) {
           try { var t0 = now(), d = devs[p.key], SQLd = SQL, S = STORE.open(new SQL.Database(), { SQL: SQL, space: m.space, self: d, access: function () { return { allowed: true }; }, log: function () {} });
             var founderOnly = function (n) { return n.indexOf('/o/' + m.founderKid + '/') >= 0 || n.indexOf('/h/' + m.founderKid) >= 0 || n.indexOf('/o/' + d.kid + '/') >= 0 || n.indexOf('/h/' + d.kid) >= 0; };
-            var wp = countPipe(pipeBase, founderOnly, d.kid); d.person_uu = p.person;
+            var L = net ? NET.ledger() : null, wp = countPipe(net ? devPipe(E, net, m.dir, d.kid, p.idx, L) : pipeBase, founderOnly, d.kid); d.person_uu = p.person;
             var ad = await boot(src, { plans: [m.signedOffice, m.signedPos], trust: [m.pub1], db: DB });
-            await S.sync(wp);                                               // the roster + the epoch key (the founder's bundle)
+            var v0 = await visit(S, wp, L, net);                            // the roster + the epoch key (the founder's bundle)
+            if (v0.lost) { visits.push({ key: p.key, prof: L && L.profile, lost: 'roster', fails: v0.fails }); return; }
             await ad.api._attach(S, d);
             var kdb = newKdb(SQL), r = await authorRows(ad, S, kdb, p.rows); if (r.local) errs.push('local=' + r.local);
-            var rep = await S.sync(wp);                                     // push the day
+            var v1 = await visit(S, wp, L, net), rep = v1.rep;              // push the day
             ops += r.n; mine++; ms += now() - t0; bytesPut += wp.stats.bytesPut;
-            if (rep.sent !== r.n) errs.push(p.key + ' sent=' + rep.sent + ' authored=' + r.n);
+            if (net) visits.push({ key: p.key, prof: L.profile, authored: r.n, sent: rep ? rep.sent : 0, push_retried: v1.fails > 0, lost: v1.lost ? 'push' : null, fails: v0.fails + v1.fails,
+              roster: { wall_ms: Math.round(v0.wall_ms), net_ms: Math.round(v0.net_ms), reqs: v0.reqs }, push: { wall_ms: Math.round(v1.wall_ms), net_ms: Math.round(v1.net_ms), reqs: v1.reqs } });
+            if (!v1.lost && rep.sent !== r.n && !(net && v1.fails > 0)) errs.push(p.key + ' sent=' + rep.sent + ' authored=' + r.n);   // §45.14: after a retried Visit the earlier attempt may already have sent; A1 judges arrival at head office
             S.db && S.db.close && S.db.close();
           } catch (e) { errs.push(p.key + ' ' + (e && e.message)); }
-        }
-        process.send({ id: m.id, res: { devices: mine, ops: ops, ms: ms, bytesPut: bytesPut, errs: errs.slice(0, 5), nerr: errs.length } });
+        };
+        if (net && net.schedule === 'burst') { var R0 = NET.rng(net.seed * 31 + m.items.length);   // the 5 pm close: every device starts inside the same window
+          await Promise.all(m.items.map(function (p) { var off = NET.rng(net.seed * 977 + p.idx)() * net.burst_ms; return new Promise(function (res) { setTimeout(res, off); }).then(function () { return one(p); }); })); }
+        else for (var p of m.items) await one(p);
+        process.send({ id: m.id, res: { devices: mine, ops: ops, ms: ms, bytesPut: bytesPut, errs: errs.slice(0, 5), nerr: errs.length, visits: visits } });
       } else if (m.cmd === 'exit') process.exit(0);
     } catch (e) { process.send({ id: m.id, err: String(e && e.stack || e) }); }
   });
@@ -161,6 +182,16 @@ async function waitReady(ws) { for (var i = 0; i < 600 && !ws.every(function (w)
 function dirStats(dir) { var o = { objects: 0, bytes: 0, bundles: 0, bundleBytes: 0, heads: 0, headBytes: 0 }; (function walk(d) { fs.readdirSync(d).forEach(function (n) { var p = path.join(d, n), s = fs.statSync(p); if (s.isDirectory()) return walk(p);
     o.objects++; o.bytes += s.size; if (/\/o\//.test(p)) { o.bundles++; o.bundleBytes += s.size; } else if (/\/h\//.test(p)) { o.heads++; o.headBytes += s.size; } }); })(dir); return o; }
 
+// §45.14: per-device Visit times (all generators, not only the 4 samples), split network / everything else, overall and per profile
+function smeVisitSummary(vs) {
+  var ok = vs.filter(function (v) { return !v.lost && v.push; }), q = function (arr) { return { p50: pct(arr, 0.5), p95: pct(arr, 0.95), max: arr.length ? Math.max.apply(null, arr) : null }; };
+  var by = {}; ok.forEach(function (v) { (by[v.prof] = by[v.prof] || []).push(v); });
+  var prof = {}; Object.keys(by).forEach(function (k) { var a = by[k]; prof[k] = { devices: a.length, push_wall_ms: q(a.map(function (v) { return v.push.wall_ms; })), push_net_ms: q(a.map(function (v) { return v.push.net_ms; })), push_reqs: q(a.map(function (v) { return v.push.reqs; })),
+    net_ms_per_req: a.reduce(function (z, v) { return z + v.push.net_ms + v.roster.net_ms; }, 0) / Math.max(1, a.reduce(function (z, v) { return z + v.push.reqs + v.roster.reqs; }, 0)) }; });
+  return { devices: vs.length, completed: ok.length, lost: vs.filter(function (v) { return v.lost; }).map(function (v) { return v.key + ':' + v.lost; }), failed_visits: vs.reduce(function (z, v) { return z + (v.fails || 0); }, 0),
+    authored: ok.reduce(function (z, v) { return z + v.authored; }, 0), sent: ok.reduce(function (z, v) { return z + v.sent; }, 0),
+    push_wall_ms: q(ok.map(function (v) { return v.push.wall_ms; })), push_net_ms: q(ok.map(function (v) { return v.push.net_ms; })), push_reqs: q(ok.map(function (v) { return v.push.reqs; })), roster_reqs: q(ok.map(function (v) { return v.roster.reqs; })), by_profile: prof };
+}
 async function enginePoint(o) {
   o = o || {}; var n = o.n, m = o.m, k = o.k, P = { n: n, m: m, k: k, workers: o.workers, status: 'PASS-RUN', phases: {} }, phase = 'setup';
   var E = loadEngine(), STORE = E.STORE, initSqlJs = require('sql.js'), SQL = await initSqlJs(), SIGN = require(path.join(BC, 'build', 'scriptor', 'sign_plan.js'));
@@ -171,9 +202,13 @@ async function enginePoint(o) {
   var officeFile = rd('erp/team_plan.js'), posFile = rd('erp/team_plan_pos.js'), POS = SIGN.planOf(posFile), OFF = SIGN.planOf(officeFile);
   var signedOffice = wrapPlan('TEAM_PLAN', await SIGN.sign(OFF, K1.privateJwk, K1.publicJwk)), signedPos = wrapPlan('TEAM_PLAN_POS', await SIGN.sign(POS, K1.privateJwk, K1.publicJwk));
   var dir = fs.mkdtempSync(path.join(os.tmpdir(), 'star_relay_')), base = E.PIPE.folderPipe(dir, 'star'), allow = function () { return { allowed: true }; };
+  var GH = null, net = SME ? Object.assign({}, NETCFG) : null;
+  if (net && net.relay === 'gh-local') { GH = cp.fork(path.join(__dirname, 'sme100_net.js'), ['serve'], { stdio: ['ignore', 'inherit', 'inherit', 'ipc'] }); net.api = 'http://127.0.0.1:' + (await new Promise(function (r) { GH.on('message', function (mm) { if (mm.port) r(mm.port); }); })); }
+  P.net = net ? { profile: net.profile, relay: net.relay, schedule: net.schedule, token: net.token, retry: net.retry, seed: net.seed, gap_ms: net.gap, burst_ms: net.burst_ms } : null;
+  var LF = net ? NET.ledger() : null, FD_IDX = 1000000;
   var Fd = await STORE.newDevice(), PF = uuid(), sp = await STORE.newSpace('star', Fd, PF, 'HQ', HQ, { planTrust: [pub1], plan: 'pos' }); Fd.person_uu = PF;
   var FS = STORE.open(new SQL.Database(), { SQL: SQL, space: sp.space, self: Fd, access: allow, log: function () {} }); await FS.genesis(sp.params);
-  var Fp = countPipe(base, null, Fd.kid), Fad = await boot(src, { plans: [signedOffice, signedPos], trust: [pub1], db: DB }); await Fad.api._attach(FS, Fd);
+  var Fp = countPipe(net ? devPipe(E, net, dir, Fd.kid, FD_IDX, LF) : base, null, Fd.kid), Fad = await boot(src, { plans: [signedOffice, signedPos], trust: [pub1], db: DB }); await Fad.api._attach(FS, Fd);
   var Fkdb = newKdb(SQL);
   // ── the sampled (measured) devices live in this process; the other devices are created by the workers ──
   var sample = [{ key: 's:0', role: 'station', idx: 0 }, { key: 's:' + (n - 1), role: 'station', idx: n - 1 }, { key: 'b:0', role: 'borrower', idx: 0 }, { key: 'b:' + (m - 1), role: 'borrower', idx: m - 1 }].filter(function (x, i, a) { return a.findIndex(function (y) { return y.key === x.key; }) === i; });
@@ -194,30 +229,31 @@ async function enginePoint(o) {
       await FS.addPerson({ person_uu: pb.person, name: a.key, ad_role_id: STN, comm_admin: false }); await FS.enroll(pb.kid, pb.pubJwk, pb.person, pb.dhPubJwk);
       if ((ix + 1) % Math.max(1, Math.floor(all.length / 10)) === 0) { curve.push([ix + 1, Math.round(now() - tc)]); tc = now(); out('§STAR-ENROL devices=' + (ix + 1) + '/' + all.length + ' block_ms=' + curve[curve.length - 1][1]); box('enrol', (ix + 1) + '/' + all.length + ' devices'); } }
     P.phases.enrol_ms = now() - t0; P.enrol_block_ms = curve; out('§STAR-PHASE enrol devices=' + all.length + ' identity_ops=' + (3 * all.length) + ' ms=' + P.phases.enrol_ms.toFixed(0) + ' per_device_ms=' + (P.phases.enrol_ms / all.length).toFixed(1));
-    var rep0 = await FS.sync(Fp); out('§STAR-PHASE founder-push sent=' + rep0.sent + ' bytes=' + Fp.stats.bytesPut);
+    var rep0 = (await visit(FS, Fp, LF, net)).rep; out('§STAR-PHASE founder-push sent=' + rep0.sent + ' bytes=' + Fp.stats.bytesPut);
     // 3. the day's inbound: load generators (workers) then the sampled edges
     phase = 'produce'; t0 = now();
-    var items = gen.map(function (g) { var rows = g.role === 'station' ? [].concat.apply([], Array.from({ length: k }, function (_, t) { return ticketRows(g.idx, t, 2); })) : borrowerRows(g.idx, ID0 + g.idx); return { key: g.key, person: g.person, rows: rows }; });
+    var items = gen.map(function (g) { var rows = g.role === 'station' ? [].concat.apply([], Array.from({ length: k }, function (_, t) { return ticketRows(g.idx, t, 2); })) : borrowerRows(g.idx, ID0 + g.idx); return { key: g.key, person: g.person, rows: rows, idx: g.role === 'station' ? g.idx : n + g.idx }; });
     var sl2 = ws.map(function () { return []; }); items.forEach(function (it, ix2) { sl2[ix2 % ws.length].push(it); });
-    var prod = await Promise.all(ws.map(function (w, wi) { return call(w, { cmd: 'produce', dir: dir, space: sp.space, founderKid: Fd.kid, items: sl2[wi], signedOffice: signedOffice, signedPos: signedPos, pub1: pub1 }); }));
-    var pd = prod.reduce(function (z, x) { z.devices += x.devices; z.ops += x.ops; z.nerr += x.nerr; z.errs = z.errs.concat(x.errs); z.ms += x.ms; return z; }, { devices: 0, ops: 0, nerr: 0, errs: [], ms: 0 });
+    var prod = await Promise.all(ws.map(function (w, wi) { return call(w, { cmd: 'produce', dir: dir, space: sp.space, founderKid: Fd.kid, items: sl2[wi], signedOffice: signedOffice, signedPos: signedPos, pub1: pub1, net: net }); }));
+    var pd = prod.reduce(function (z, x) { z.devices += x.devices; z.ops += x.ops; z.nerr += x.nerr; z.errs = z.errs.concat(x.errs); z.ms += x.ms; z.visits = z.visits.concat(x.visits || []); return z; }, { devices: 0, ops: 0, nerr: 0, errs: [], ms: 0, visits: [] });
+    if (net) { P.visits = smeVisitSummary(pd.visits); out('§SME-VISITS ' + JSON.stringify(P.visits)); pd.visits = undefined; }
     P.phases.produce_ms = now() - t0; P.generated = pd; out('§STAR-PHASE produce load_generators=' + pd.devices + '/' + gen.length + ' ops=' + pd.ops + ' errs=' + pd.nerr + (pd.errs.length ? ' ' + JSON.stringify(pd.errs) : '') + ' wall_ms=' + P.phases.produce_ms.toFixed(0) + ' sum_device_ms=' + pd.ms.toFixed(0));
     if (pd.nerr) throw new Inconclusive('produce', 'load generators failed: ' + pd.nerr);
     box('produce', pd.devices + ' generators');
     // 4. the sampled edges: author their day, then VISIT #1 (fetches the whole relay: this is the day's catch-up Visit)
     phase = 'edge-visit-1';
-    for (s of sample) { s.S = STORE.open(new SQL.Database(), { SQL: SQL, space: sp.space, self: s.dev, access: allow, log: function () {} }); s.pipe = countPipe(base, null, s.dev.kid);
+    for (s of sample) { s.S = STORE.open(new SQL.Database(), { SQL: SQL, space: sp.space, self: s.dev, access: allow, log: function () {} }); s.L = net ? NET.ledger() : null; s.base = net ? devPipe(E, net, dir, s.dev.kid, s.role === 'station' ? s.idx : n + s.idx, s.L) : base; s.pipe = countPipe(s.base, null, s.dev.kid);
       s.ad = await boot(src, { plans: [signedOffice, signedPos], trust: [pub1], db: DB }); s.kdb = newKdb(SQL);
-      await s.S.sync(countPipe(base, function (nm) { return nm.indexOf('/o/' + Fd.kid + '/') >= 0 || nm.indexOf('/h/' + Fd.kid) >= 0; }, s.dev.kid));      // the roster + key only (not a measured Visit)
+      await visit(s.S, countPipe(s.base, function (nm) { return nm.indexOf('/o/' + Fd.kid + '/') >= 0 || nm.indexOf('/h/' + Fd.kid) >= 0; }, s.dev.kid), s.L, net);      // the roster + key only (not a measured Visit)
       await s.ad.api._attach(s.S, s.dev);
       var rows = s.role === 'station' ? [].concat.apply([], Array.from({ length: k }, function (_, t) { return ticketRows(s.idx, t, 2); })) : borrowerRows(s.idx, ID0 + s.idx); s.authored = (await authorRows(s.ad, s.S, s.kdb, rows)).n; s.pipe.reset();
-      var tv = now(), rp = await s.S.sync(s.pipe), tsync = now() - tv, pj = await s.ad.api._project([]), tall = now() - tv, last = s.ad.api._project.last || {}, th = last.thin || {};
-      s.v1 = { sync_ms: tsync, visit_ms: tall, bytes_down: s.pipe.stats.bytesGet, objs_down: s.pipe.stats.getObjs, gets: s.pipe.stats.get, lists: s.pipe.stats.list, listed: s.pipe.stats.listed, bytes_up: s.pipe.stats.bytesPut, sent: rp.sent, fetched: rp.fetched, received: rp.received, placed: th.placed, accepted: th.accepted, refused: th.refused, rows: pj.filter(function (r) { return r.user_tag === 'team'; }).length, db_bytes: s.S.db ? s.S.db.export().length : null };
+      var tv = now(), vv1 = await visit(s.S, s.pipe, s.L, net), rp = vv1.rep || {}, tsync = now() - tv, pj = await s.ad.api._project([]), tall = now() - tv, last = s.ad.api._project.last || {}, th = last.thin || {};
+      s.v1 = { sync_ms: tsync, visit_ms: tall, bytes_down: s.pipe.stats.bytesGet, objs_down: s.pipe.stats.getObjs, gets: s.pipe.stats.get, lists: s.pipe.stats.list, listed: s.pipe.stats.listed, bytes_up: s.pipe.stats.bytesPut, sent: rp.sent, fetched: rp.fetched, received: rp.received, placed: th.placed, accepted: th.accepted, refused: th.refused, rows: pj.filter(function (r) { return r.user_tag === 'team'; }).length, db_bytes: s.S.db ? s.S.db.export().length : null, net_ms: vv1.net_ms, reqs: vv1.reqs, fails: vv1.fails, lost: vv1.lost, profile: s.L && s.L.profile };
       out('§STAR-EDGE-V1 ' + s.key + ' ' + JSON.stringify(s.v1)); box('edge-visit-1', s.key); }
     // 5. head office visits: fold ms of the day's inbound, then answers
-    phase = 'hq-visit'; Fp.reset(); var th0 = now(), hrep = await FS.sync(Fp), hsync = now() - th0, hpj = await Fad.api._project([]), hproj = now() - th0 - hsync, hl = Fad.api._project.last || {};
+    phase = 'hq-visit'; Fp.reset(); var th0 = now(), hv0 = await visit(FS, Fp, LF, net), hrep = hv0.rep || {}, hsync = now() - th0, hpj = await Fad.api._project([]), hproj = now() - th0 - hsync, hl = Fad.api._project.last || {};
     var foldable = (await FS.foldable()).length; if (global.gc) global.gc();
-    P.hq_visit = { sync_ms: hsync, project_ms: hproj, fold_ms: hsync + hproj, bytes_down: Fp.stats.bytesGet, objs_down: Fp.stats.getObjs, listed: Fp.stats.listed, fetched: hrep.fetched, received: hrep.received, placed: hrep.placed, foldable: foldable, accepted: (hl.thin || {}).accepted, refused: (hl.thin || {}).refused, db_bytes: FS.db.export().length };
+    P.hq_visit = { sync_ms: hsync, project_ms: hproj, fold_ms: hsync + hproj, bytes_down: Fp.stats.bytesGet, objs_down: Fp.stats.getObjs, listed: Fp.stats.listed, fetched: hrep.fetched, received: hrep.received, placed: hrep.placed, foldable: foldable, accepted: (hl.thin || {}).accepted, refused: (hl.thin || {}).refused, db_bytes: FS.db.export().length, net_ms: hv0.net_ms, reqs: hv0.reqs, fails: hv0.fails, lost: hv0.lost, profile: LF && LF.profile };
     out('§STAR-HQ-VISIT ' + JSON.stringify(P.hq_visit)); box('hq-visit', 'visit');
     phase = 'hq-replies'; t0 = now(); var bpRow = q(DB, 'SELECT c_bpartner_id AS i FROM c_bpartner WHERE c_bpartner_id>=?', [ID0]).length;
     var replyRows = [], invUu = [];
@@ -234,30 +270,31 @@ async function enginePoint(o) {
     });
     specs.forEach(function (x) { SPECSINK.push(x); });
     var tmTr = now() - tt0, ta0 = now(), many = await FS.authorMany(specs); if (many.error) throw many.error; var tmAu = now() - ta0, tp0 = now(); FS.order = _ord;
-    var rep9 = await FS.sync(Fp); P.hq_replies = { order_calls: ORD.n, spec_digest: specDigest(SPECSINK), pass_seam: !!Fad.api._withRoster, movements: rr.n, loans: loans, schedules: sched, author_ms: now() - t0, movements_ms: tmMov, loans_translate_ms: tmTr, loans_author_many_ms: tmAu, push_sync_ms: now() - tp0, pushed: rep9.sent }; out('§STAR-HQ-REPLIES ' + JSON.stringify(P.hq_replies));
+    var rep9 = (await visit(FS, Fp, LF, net)).rep || {}; P.hq_replies = { order_calls: ORD.n, spec_digest: specDigest(SPECSINK), pass_seam: !!Fad.api._withRoster, movements: rr.n, loans: loans, schedules: sched, author_ms: now() - t0, movements_ms: tmMov, loans_translate_ms: tmTr, loans_author_many_ms: tmAu, push_sync_ms: now() - tp0, pushed: rep9.sent }; out('§STAR-HQ-REPLIES ' + JSON.stringify(P.hq_replies));
     if (rr.n !== n || loans !== m || sched !== m) throw new Inconclusive('hq-replies', 'replies not all addressed: movements ' + rr.n + '/' + n + ' loans ' + loans + '/' + m + ' schedules ' + sched + '/' + m);
     box('hq-replies', 'replies');
     // 6. VISIT #2 of the sampled edges: the steady-state Visit that picks up head office's answer
     phase = 'edge-visit-2';
-    for (s of sample) { s.pipe.reset(); var tv2 = now(), rp2 = await s.S.sync(s.pipe), tsync2 = now() - tv2, pj2 = await s.ad.api._project([]), tall2 = now() - tv2, l2 = s.ad.api._project.last || {}, h2 = l2.thin || {};
+    for (s of sample) { s.pipe.reset(); var tv2 = now(), vv2 = await visit(s.S, s.pipe, s.L, net), rp2 = vv2.rep || {}, tsync2 = now() - tv2, pj2 = await s.ad.api._project([]), tall2 = now() - tv2, l2 = s.ad.api._project.last || {}, h2 = l2.thin || {};
       var mine = pj2.filter(function (r) { return r.user_tag === 'team'; });
-      s.v2 = { sync_ms: tsync2, visit_ms: tall2, bytes_down: s.pipe.stats.bytesGet, objs_down: s.pipe.stats.getObjs, gets: s.pipe.stats.get, lists: s.pipe.stats.list, listed: s.pipe.stats.listed, fetched: rp2.fetched, placed: h2.placed, accepted: h2.accepted, refused: h2.refused, rows: mine.length, byTable: h2.byTable, db_bytes: s.S.db.export().length, mov_rows: mine.filter(function (r) { return /m_movementline/.test(r.parameters); }).length, inv_rows: mine.filter(function (r) { return /"c_invoice"/.test(r.parameters); }).length };
+      s.v2 = { sync_ms: tsync2, visit_ms: tall2, bytes_down: s.pipe.stats.bytesGet, objs_down: s.pipe.stats.getObjs, gets: s.pipe.stats.get, lists: s.pipe.stats.list, listed: s.pipe.stats.listed, fetched: rp2.fetched, placed: h2.placed, accepted: h2.accepted, refused: h2.refused, rows: mine.length, byTable: h2.byTable, db_bytes: s.S.db.export().length, mov_rows: mine.filter(function (r) { return /m_movementline/.test(r.parameters); }).length, inv_rows: mine.filter(function (r) { return /"c_invoice"/.test(r.parameters); }).length, net_ms: vv2.net_ms, reqs: vv2.reqs, fails: vv2.fails, lost: vv2.lost, profile: s.L && s.L.profile };
       out('§STAR-EDGE-V2 ' + s.key + ' ' + JSON.stringify(s.v2)); box('edge-visit-2', s.key); }
     // 7. CONTROL: plant ONE extra op at the first station: the counter must move by exactly 1
     phase = 'control'; var s0 = sample[0], pre = s0.v2.accepted, ex = await authorRows(s0.ad, s0.S, s0.kdb, [['c_orderline', { m_product_id: 123, qtyentered: 9, c_uom_id: 100, ad_client_id: 11, ad_org_id: 0 }]]);
-    s0.pipe.reset(); await s0.S.sync(s0.pipe); await s0.ad.api._project([]); var post = ((s0.ad.api._project.last || {}).thin || {}).accepted; P.control = { planted: ex.n, accepted_before: pre, accepted_after: post, moved: post - pre }; out('§STAR-CONTROL ' + JSON.stringify(P.control));
+    s0.pipe.reset(); await visit(s0.S, s0.pipe, s0.L, net); await s0.ad.api._project([]); var post = ((s0.ad.api._project.last || {}).thin || {}).accepted; P.control = { planted: ex.n, accepted_before: pre, accepted_after: post, moved: post - pre }; out('§STAR-CONTROL ' + JSON.stringify(P.control));
     // 8. MUTANT scope-off: the SAME station read through a copy of the scope reader that admits everything
     phase = 'mutant-scope'; var scopeSrc = src.scope, needle = "if (s === 'share' || c.self) return { ok: true };", cnt = scopeSrc.split(needle).length - 1;
     if (cnt !== 1) throw new Error('mutant scope-off did not apply exactly once (found ' + cnt + ')');
     var mut = { scope: scopeSrc.replace(needle, 'return { ok: true };'), adapter: src.adapter }, mad = await boot(mut, { plans: [signedOffice, signedPos], trust: [pub1], db: DB }); await mad.api._attach(s0.S, s0.dev); await mad.api._project([]);
     var mth = (mad.api._project.last || {}).thin || {}; P.mutant_scope = { accepted_mutant: mth.accepted, accepted_real: post, placed: mth.placed }; out('§STAR-MUTANT scope-off ' + JSON.stringify(P.mutant_scope));
     // end of day numbers
-    P.relay = dirStats(dir); P.relay.written_ops_objs = null;
+    P.relay = net && net.relay === 'gh-local' ? { objects: null, bytes: null, note: 'gh-local: see P.gh' } : dirStats(dir); P.relay.written_ops_objs = null;
+    if (GH) { P.gh = await (await fetch(net.api + '/__acct')).json(); out('§SME-GH ' + JSON.stringify(P.gh)); }
     P.sample = sample.map(function (z) { return { key: z.key, role: z.role, authored: z.authored, v1: z.v1, v2: z.v2 }; });
     P.mem = { heap_mb: Math.round(process.memoryUsage().heapUsed / 1e6), rss_mb: Math.round(process.memoryUsage().rss / 1e6) };
     P.wall_ms = Date.now() - T0; out('§STAR-RELAY ' + JSON.stringify(P.relay));
   } catch (e) { if (e instanceof Inconclusive) { P.status = 'INCONCLUSIVE'; P.reason = e.phase + ': ' + e.why; out('§STAR-INCONCLUSIVE phase=' + e.phase + ' ' + e.why); } else { P.status = 'ERROR'; P.reason = phase + ': ' + String(e && e.stack || e).slice(0, 600); out('§STAR-ERROR ' + P.reason); } }
-  finally { ws.forEach(function (w) { try { w.send({ cmd: 'exit' }); } catch (e) {} }); try { fs.rmSync(dir, { recursive: true, force: true }); } catch (e) {} }
+  finally { ws.forEach(function (w) { try { w.send({ cmd: 'exit' }); } catch (e) {} }); try { fs.rmSync(dir, { recursive: true, force: true }); } catch (e) {} if (GH) try { GH.kill(); } catch (e) {} }
   P.wall_ms = Date.now() - T0; return P;
 }
 
@@ -350,6 +387,8 @@ async function hqPoint(o) {
 }
 
 function header() {
+  if (SME) { out('§SME-HEADER §45.14 net=' + JSON.stringify(NETCFG) + ' profiles=' + JSON.stringify(NET.PROFILES) + ' mixed=' + NET.MIXED.join('/') + ' (STATED ASSUMPTIONS, not measured links) gh_limits=' + JSON.stringify(NET.GH_LIMITS));
+    out('§SME-LIMITS one machine simulates the network; the GitHub stand-in counts requests against GitHub\'s published limits but does not reproduce GitHub itself (ref propagation, abuse detection); simulated devices share CPU cores, so wall ms includes CPU queueing - network ms is the shaped part alone.'); }
   out('§STAR-HEADER W-SCALE-STAR mode=' + MODE + ' N=' + N + ' M=' + M + ' K=' + K + ' workers=' + W + ' box_min=' + BUDGET_MS / 60000 + ' ootb=' + OOTB + ' commit=' + (cp.spawnSync('git', ['-C', OOTB, 'rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).stdout || '').trim() + ' node=' + process.version + ' cpus=' + os.cpus().length + ' loadavg=' + os.loadavg().map(function (x) { return x.toFixed(2); }).join(',') + ' at=' + new Date().toISOString());
   out('§STAR-LIMITS one Node process family simulates all devices (no network latency, no browser); the relay is a folder pipe on local disk; load-generating devices fetch only the founder\'s roster bundle and are not measured;');
   out('§STAR-LIMITS the measured edges (2 stations: first+last, 2 borrowers: first+last) and head office fetch the WHOLE relay; Node + sql.js timings are not browser timings; teamRebuild (ERP projection) is browser-only, so Visit ms = sync + adapter _project;');
