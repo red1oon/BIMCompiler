@@ -1,0 +1,20 @@
+§TL_HEADER W-TERMS-LIMITS src=build/scriptor/terms_limits_20261101/terms_combined ootb=/tmp/wt-terms-limits runner=/home/red1/bim-compiler/scripts/witness_terms.js
+   PASS §TL-L1 every row carries exactly the §LIMIT lines its witnesses printed - 9 limits over 3 rows
+   §TERMS_LIMITS statement-signed n=0 from=-
+   §TERMS_LIMITS trusted-keys n=0 from=-
+   §TERMS_LIMITS rule-in-force n=0 from=-
+   §TERMS_LIMITS complete-all-or-nothing n=0 from=-
+   §TERMS_LIMITS ledger-convergent n=0 from=-
+   §TERMS_LIMITS visit-lossless-offline n=0 from=-
+   §TERMS_LIMITS visit-once n=0 from=-
+   §TERMS_LIMITS ack-trail n=0 from=-
+   §TERMS_LIMITS version-skew n=0 from=-
+   §TERMS_LIMITS doc-numbering n=2 from=witness_docno_till.js
+   §TERMS_LIMITS visit-bounded n=3 from=witness_f1_mailbox.js
+   §TERMS_LIMITS sealing-real n=4 from=witness_read_scope.js
+   §TERMS_LIMITS key-roles-threshold n=0 from=-
+   PASS §TL-L2 a §LIMIT deleted from witness_docno_till.log is gone from the record - "an author not bound to an AD_User is not judged at fold (cou…" still on: none
+   PASS §TL-L3 a term= limit lands on the row it names only (log witness_comm_plantrust.log is shared by statement-signed,trusted-keys) - attached to: statement-signed
+   PASS §TL-L4 a hand-written limit in a note is refused (defect line + verdict FAIL) - defect=true verdict=FAIL
+   PASS §TL-L5 no note in the real runner holds a limit (4 notes)
+§TL_VERDICT PASS judged=5 fails=0 inconclusive=0
