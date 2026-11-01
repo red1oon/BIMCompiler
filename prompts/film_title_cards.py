@@ -143,6 +143,21 @@ if os.environ.get('FILM_SET') == 'wand':
     SERIES = 'BIM OOTB  ·  VIEWER  ·  DXF2BIM'
     NOVEL = {}
     CLIPS = {}
+# §DXF2BIM 2D->film E2E (bim-ootb prompts/FILM_DXF2BIM_WHY_MARKINGS.md §2D→FILM E2E, 2026-11-02): FILM_SET=shed2film, SIX chapters: nine sheets as drawn, what they never said,
+# what a person states, the shed, the services walked, the layered Alt+C film. Same anatomy as `yellow`.
+if os.environ.get('FILM_SET') == 'shed2film':
+    CARDS = {
+        1: ('CHAPTER 1', 'NINE SHEETS,', 'AS DRAWN', 'Flat BricsCAD sheets, opened untouched.'),
+        2: ('CHAPTER 2', 'WHAT THEY', 'NEVER SAID', 'Read where it was drawn, written back as markings.'),
+        3: ('CHAPTER 3', 'A PERSON', 'STATES THE REST', 'Only what no drawing can say.'),
+        4: ('CHAPTER 4', 'ONE', 'SHED', 'Every body from the nine sheets.'),
+        5: ('CHAPTER 5', 'SERVICES,', 'WALKED', 'Lights, sprinklers and pipes, placed by rule.'),
+        6: ('CHAPTER 6', 'THE LAYERED', 'FILM', 'Built day by day, every layer on.'),
+    }
+    TAG = {1: 'NINE SHEETS', 2: 'NEVER SAID', 3: 'A PERSON STATES', 4: 'ONE SHED', 5: 'SERVICES WALKED', 6: 'THE LAYERED FILM'}
+    SERIES = 'BIM OOTB  ·  MODELLER TO VIEWER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
 # §DXF2BIM Yellow Markings film (bim-ootb prompts/FILM_DXF2BIM_YELLOW_MARKINGS.md, 2026-10-22): FILM_SET=yellow, FIVE chapters: what a marking is, the yellow rule, the datums, the verdict, the round trip.
 if os.environ.get('FILM_SET') == 'yellow':
     CARDS = {
