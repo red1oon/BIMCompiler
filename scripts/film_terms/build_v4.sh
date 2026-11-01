@@ -14,6 +14,7 @@ gpu() { local p; p=$(nvidia-smi --query-compute-apps=pid,process_name --format=c
 node tsv_v4.js measure out_v4/work > out_v4/tsv_measure.log 2>&1
 [ -s out_v4/cap/developers_snapshot.html ] || curl -sL https://red1oon.github.io/bim-ootb/erp/team_developers.html -o out_v4/cap/developers_snapshot.html
 node guard_v4.js > out_v4/guard_run.log 2>&1
+node layout_probe_v4.js > out_v4/probe.log 2>&1; grep -q "steps_with_problems=0" out_v4/probe.log || { echo "§PROBE_FAIL see out_v4/probe.log"; exit 7; }
 [ -n "$DRY" ] && { echo "§DRY_RUN done: guard log out_v4/guard.log"; exit 0; }
 cp ../../prompts/film_narration_ass_head.txt out_v4/work/fm/ass_head.txt; (cd out_v4/work/fm && rm -f *.wav && FILM_SEC=300 $PY ../../../$FIT ../narration_en.tsv m 1.15 > ../../fit_measure.log 2>&1)
 node beatmin.js out_v4/fit_measure.log out_v4/beatmin.json

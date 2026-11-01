@@ -617,6 +617,138 @@
    "log": "build/scriptor/film_v4/repo_facts.log",
    "regex": "§REPO_COUNT bim-ootb@6a8023a5 erp/tests/witness_team_\\*\\.js (\\d+)",
    "group": 1
+  },
+  {
+   "id": "n100",
+   "log": "build/scriptor/witness_scale_star_engine_100.log",
+   "regex": "§STAR-POINT \\{\"n\":(100),\"m\"",
+   "group": 1
+  },
+  {
+   "id": "n1000",
+   "log": "build/scriptor/witness_scale_star_engine_1000.log",
+   "regex": "§STAR-POINT \\{\"n\":(1000),\"m\"",
+   "group": 1
+  },
+  {
+   "id": "sc100",
+   "log": "build/scriptor/read_scope_20261031/scale_100.log",
+   "regex": "§STAR-EDGE-V1 s:0 \\{.*?\"bytes_down\":(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "pr286",
+   "log": "build/scriptor/film_v4/pr_286.json",
+   "regex": "witness_terms\\.js required exactly (9)/9",
+   "group": 1
+  },
+  {
+   "id": "pr286n",
+   "log": "build/scriptor/film_v4/pr_286.json",
+   "regex": "\"number\":(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "g2u_en",
+   "log": "build/scriptor/gaps_49_1/g2_stranger_update.log",
+   "regex": "^§TERMS_VERDICT PASS enforced=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "g2u_open",
+   "log": "build/scriptor/gaps_49_1/g2_stranger_update.log",
+   "regex": "^§TERMS_VERDICT PASS enforced=\\d+ open=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "g2u_port",
+   "log": "build/scriptor/gaps_49_1/g2_stranger_update.log",
+   "regex": "^§TERMS_PORTABLE rows=\\d+ portable=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "g2u_rows",
+   "log": "build/scriptor/gaps_49_1/g2_stranger_update.log",
+   "regex": "^§TERMS_PORTABLE rows=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "g2u_dev",
+   "log": "build/scriptor/gaps_49_1/g2_stranger_update.log",
+   "regex": "^§DEV_ENV_VERDICT PASS",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "g2u_clean_a",
+   "log": "build/scriptor/gaps_49_1/g2_stranger_update.log",
+   "regex": "§DE-R3U BIMCompiler \\w+ Merge pull request #286 .* local-modified=0",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "g2u_clean_b",
+   "log": "build/scriptor/gaps_49_1/g2_stranger_update.log",
+   "regex": "§DE-R3U bim-ootb \\w+ .* local-modified=0",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "g2u_updated",
+   "log": "build/scriptor/gaps_49_1/g2_stranger_update.log",
+   "regex": "updated from GitHub, not re-cloned",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "gc_run1",
+   "log": "build/scriptor/witness_cache/GREEN_git_full.log",
+   "regex": "§WC-R1 run1 ([\\d.]+) s",
+   "group": 1
+  },
+  {
+   "id": "gc_run2",
+   "log": "build/scriptor/witness_cache/GREEN_git_full.log",
+   "regex": "§WC-R1 run2 ([\\d.]+) s",
+   "group": 1
+  },
+  {
+   "id": "gc_run1i",
+   "kind": "derive",
+   "of": "gc_run1",
+   "div": 1,
+   "dp": 0
+  },
+  {
+   "id": "gc_run2i",
+   "kind": "derive",
+   "of": "gc_run2",
+   "div": 1,
+   "dp": 0
+  },
+  {
+   "id": "gc_ran",
+   "log": "build/scriptor/witness_cache/GREEN_git_full.log",
+   "regex": "§WC-R1 run2 .* ran=(\\d+) cached=\\d+",
+   "group": 1
+  },
+  {
+   "id": "gc_cached",
+   "log": "build/scriptor/witness_cache/GREEN_git_full.log",
+   "regex": "§WC-R1 run2 .* ran=\\d+ cached=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "gc_judged",
+   "log": "build/scriptor/witness_cache/GREEN_git_full.log",
+   "regex": "§WC_VERDICT PASS judged=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "gc_mut",
+   "log": "build/scriptor/witness_cache/GREEN_git_full.log",
+   "regex": "§WC_VERDICT PASS judged=\\d+ fails=\\d+ inconclusive=\\d+ mutants=(\\d+)/",
+   "group": 1
   }
  ]
 }
