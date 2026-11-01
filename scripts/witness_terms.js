@@ -85,7 +85,7 @@ var TERMS = [
   // OPEN: stated, never run, never green. roadmap = where it closes.
   { id: 'visit-bounded', term: 'VISIT (bounded)', guarantee: 'Visit #1 download stays bounded as the team grows: each device lists and downloads only its own mailbox, not every other device\'s bundle', w: ['f1Mailbox'],
     note: 'TEAMWORK §45.2/§45.8 F1 per-device mailboxes (bim-ootb #2477; witness common/tests/witness_f1_mailbox.js, mutants run by the witness itself). Measured edge Visit #1 download 384 / 386 / 388 B at N=10/100/1000 (W-SCALE-STAR: build/scriptor/f1_mailboxes/scale_star_F1_final_engine_{10,100}.log, scale_star_F1_engine_1000.log; was 367 KB / 4.5 MB / 45.8 MB).',
-    c: [{ id: 'fetched objects flat in N (3 -> 12)', w: 'f1Mailbox', re: /PASS §F1-A objects fetched in a fresh Visit are flat in N \(3 -> 12\) - 5 -> 5/ },
+    c: [{ id: 'fetched objects flat in N (3 -> 12)', w: 'f1Mailbox', re: /PASS §F1-A objects fetched in a fresh Visit are flat in N \(3 -> 12\) - ([1-9]\d*) -> \1\b/ },      // flat = the same count at N=3 and N=12 (was pinned to 5; §52.4 self-restore adds the station's own objects to a re-opened Visit)
         { id: 'CONTROL pre-F1 engine: the same measure grows with N', w: 'f1Mailbox', re: /PASS §F1-A CONTROL pre-F1: the same measure GROWS with N .* - 8 -> 26 objects/ },
         { id: 'CONTROL pre-F1: station 1 held foreign DOWN ops (now none)', w: 'f1Mailbox', re: /PASS §F1-E CONTROL pre-F1: station 1 DID download another station's DOWN envelope - foreign DOWN ops held=[1-9]\d*/ },
         { id: 'station 1 never GETs another mailbox', w: 'f1Mailbox', re: /PASS §F1-E station 1 never GETs another station's mailbox nor the hub inbox - gets=\d+ foreign=0/ },
