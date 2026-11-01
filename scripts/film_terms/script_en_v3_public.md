@@ -1,4 +1,4 @@
-<!-- ⚠ DO NOT REMOVE — Scope: DRAFT public (plain-English) cut of "Terms you can check" v3, 2026-11-01. NOT recorded or rendered. Developer cut = script_en_v3.md. Rules: every number is {fact:id} (ids in facts.spec.json, facts_v3_additions.md); no digit and no typed number word in a spoken line (write "a", "each", "another", never "one"/"two"); banned on cards and narration: witness, mutant, server, sync, node, git, npm, ai, terminal, toolchain, plus this cut's own ban: runner, control, cache, manifest, portable, epoch, fold, § . Read the guard and tsv logs after every edit. -->
+<!-- ⚠ DO NOT REMOVE — Scope: DRAFT public (plain-English) cut of "Terms you can check" v3, 2026-11-01. NOT recorded or rendered. Developer cut = script_en_v3.md. Rules: every number is {fact:id} (ids in facts.spec.json, facts_v3_additions.md); no digit and no typed number word in a spoken line (write "a", "each", "another", never "one"/"two"); banned on cards and narration: witness, mutant, server, sync, node, git, npm, ai, terminal, toolchain, plus this cut's own ban: runner, control, cache, manifest, portable, epoch, fold, § . Read the guard and tsv logs after every edit. BUILD SYNTAX (tsv_v3.js): `## N | Title` starts beat N; <<G3: text>> is spoken only if env G3=1; <<G2: text>> only if G2=pass; <<G2P: text>> only if G2 is not pass. -->
 # Terms you can check: the last open promise — PUBLIC CUT (DRAFT)
 Audience: a shop owner, an IT buyer, a curious developer. Target 4:30 to 5:00, about 650 spoken words (F asks as the skeptic, M explains). Each beat is a plain picture with at most one idea figure. Amber for anything limited, green only where a test passed.
 
@@ -13,8 +13,8 @@ M: Because every promise we make has a test that must fail if the promise breaks
 **Picture:** each till holds a ledger book. A post box in the middle. Small sealed envelopes travel till to post box to head office. A label on the post box: "carries, never decides".
 F: If nothing is in the middle, how do the tills share anything?
 M: Through a post box. A till drops in small sealed envelopes of changes. Head office collects them, and any till can fetch what is meant for it. The post box only carries. It never decides anything, so you can swap it and the books stay the same.
-F: And if two tills change the same record?
-M: The rules decide, on every device, the same way. A change that is refused is refused everywhere, and the reason is shown. Nothing is quietly overwritten.
+F: And if a till breaks the rules?
+M: Every device refuses it, and the refusal says why.
 
 ## 3 | Private by design (1:05 to 2:00)
 **Picture:** Till A, Till B, head office. A's envelopes are sealed so only A and head office can open them. A red-outlined Till B with a "tampered app" tag grabs all of A's envelopes, and a counter shows how many it opens: `{fact:rs_opened}`. Beside it, amber "the old way, team-wide key": the same till opens everything.
@@ -34,7 +34,7 @@ M: Each envelope is numbered and signed. Hold an envelope back, and the receiver
 **Picture:** two bars. Old: a very tall bar "kilobytes then megabytes". Now: a thin line "{fact:sc10} bytes at {fact:n10} tills, {fact:sc100} bytes at {fact:n100}". Right-hand slot, dashed outline, marked **PENDING G3**: "`{fact:sc1000}` bytes at 1,000 tills" (shown only if the sealed 1,000-till run completes; otherwise the slot is removed and the line below is cut).
 **Shows:** `build/scriptor/read_scope_20261031/scale_10.log`, `scale_100.log`; `gaps_49_1/g3_scale_1000.log` (pending). Footnote amber: "measured on simulated tills on a single machine".
 F: Does a new till have to download everything the others sent?
-M: No. A new till only fetches its own mail. Its first download stays about the same size, {fact:sc10} bytes with {fact:n10} tills and {fact:sc100} with {fact:n100}. Before this, it grew from kilobytes to megabytes. [PENDING G3, include only if measured: And at a thousand tills it is still {fact:sc1000} bytes.]
+M: No. A new till only fetches its own mail. Its first download stays about the same size, {fact:sc10} bytes with {fact:n10} tills and {fact:sc100} with {fact:n100}. Before this, it grew from kilobytes to megabytes. <<G3: And with {fact:n1000} tills it is still {fact:sc1000} bytes.>>
 
 ## 6 | Promises you can check (3:25 to 4:20)
 **Picture:** a list of thirteen promises. A tick appears next to each only after its test passes. Then a hand removes a safety check from the sealed-mail promise; the tick turns to a red cross and a label reads "the whole run fails". Restore it: the tick returns, counter shows `{fact:v3_enforced}` kept, `{fact:v3_open}` still open.
@@ -48,7 +48,7 @@ M: Yes. The developers page shows how, step by step, and says plainly what is no
 **Picture (single amber card):** "What we do not claim" / "The post box still sees who sent how much, and when." / "Teams started before sealed mail, and office teams, work exactly as before." / [PENDING G2, include only if a fresh-copy run passes: "The checks have been run from a fresh copy on another machine." / otherwise: "Not yet run from a fresh copy on another machine."]
 **Shows:** facts `lim_meta`, `rs_office`, `r3_not_done` (current wording; replace with the G2 result when `gaps_49_1/g2_stranger.log` ends in PASS).
 F: What should I not assume?
-M: The post box still sees who sent how much, and when. Older teams and office teams work exactly as before. [PENDING G2: And the checks have been run from a fresh copy on another machine. / Until then: And nobody has yet run the checks from a fresh copy on another machine.]
+M: The post box still sees who sent how much, and when. Older teams and office teams work exactly as before. <<G2P: And nobody has yet run the checks from a fresh copy on another machine.>><<G2: And the checks have been run from a fresh copy on another machine.>>
 
 ## 8 | Try it (4:40 to 5:00)
 **Picture:** three page addresses on screen (objectives page, developers page, team guide), over the line "Open source, MIT licence. No artificial intelligence inside. Tested properties, not a warranty." (`gov_name`, `gov_mit`, `gov_while`).
