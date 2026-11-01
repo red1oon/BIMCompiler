@@ -123,7 +123,7 @@ function runW(k) {
   // §51.1 C1: through the content-keyed cache unless --fresh 1 (a hit replays the stored log behind a §CACHED line; nothing runs). keyEnv = the env with this run's log dir normalised out.
   var wEnv = w.env ? w.env() : {}, keyEnv = {}; Object.keys(wEnv).forEach(function (e) { keyEnv[e] = String(wEnv[e]).split(path.resolve(LOGS)).join('<logs>'); });
   var r = WC.runSync({ file: br ? path.join(OOTB, w.dir || 'erp/tests', w.f) : path.join(__dirname, w.f), args: w.args || [], cwd: br ? OOTB : ROOT, env: wEnv, keyEnv: keyEnv,
-                       roots: [ROOT, OOTB], exclude: [LOGS], fresh: FRESH, timeout: 600000 });
+                       roots: [ROOT, OOTB], exclude: [LOGS], fresh: FRESH, timeout: Number(process.env.WITNESS_TIMEOUT_MS) || 600000 });
   var out = r.out + '\nexit=' + r.exit + '\n'; fs.writeFileSync(lf, out);
   console.log('   ' + (r.cached ? 'cached ' : 'ran ') + (br ? w.layer + ' ' : '') + w.f + (w.args ? ' ' + w.args.join(' ') : '') + ' exit=' + r.exit + ' inputs=' + r.inputs + ' key=' + r.key.slice(0, 12));
   if (r.skip) console.log('   §CACHE_SKIP ' + w.f + ' reason=' + r.skip);
