@@ -10,7 +10,7 @@
 const path = require('path'), cp = require('child_process');
 const NET = require(path.join(__dirname, '..', 'sme100_net.js'));
 const now = () => Number(process.hrtime.bigint() / 1000n) / 1000;
-let CUR = null; const REC = {}, OUTCOME = {};
+let CUR = null, OVERHEAD = null; const REC = {}, OUTCOME = {};
 const slot = (side, step) => { const k = side + ':' + step; return REC[k] || (REC[k] = { side, step, ms: 0, calls: 0, write_n: 0, write_ms: 0, write_bytes: 0, read_n: 0, read_ms: 0, methods: {} }); };
 // 1. fetch: classify every legacy WS request by its method (the last path segment of the ADInterface JSON endpoint)
 const _fetch = globalThis.fetch;
@@ -38,6 +38,7 @@ process.on('exit', function () {
     if (done) { both++; lw += L.write_n; lms += L.write_ms; loc += S.ms; }
     console.log('§LVL-STEP ' + id + ' legacy=' + okL + ' twin=' + okS + ' legacy_writes=' + L.write_n + ' legacy_write_server_ms=' + L.write_ms.toFixed(1) + ' legacy_reads(compare,not counted)=' + L.read_n + ' twin_local_ms=' + (S.ms == null ? 'n/a' : S.ms.toFixed(1)) + ' methods=' + JSON.stringify(L.methods)); });
   ['lan', 'broadband', '4g', 'poor'].forEach(pf => { const P = NET.PROFILES[pf];
+    if (OVERHEAD != null) console.log('§LVL-PROFILE-NOLOGIN ' + pf + ' (rtt ' + P.rtt + ' ms) legacy per document without the per-call login: >= ' + (both ? ((lms - lw * OVERHEAD + lw * P.rtt) / both).toFixed(0) : 'n/a') + ' ms (' + lw + ' writes, login overhead ' + OVERHEAD.toFixed(1) + ' ms each removed) vs twin ' + (both ? (loc / both).toFixed(0) : 'n/a') + ' ms');
     console.log('§LVL-PROFILE ' + pf + ' (rtt ' + P.rtt + ' ms) over the ' + both + ' completed steps: legacy >= ' + ((lms + lw * P.rtt) / 1000).toFixed(2) + ' s (' + lw + ' writes × ' + P.rtt + ' ms + ' + (lms / 1000).toFixed(2) + ' s server) · twin ' + (loc / 1000).toFixed(2) + ' s local, 0 round trips in the path · per document step: legacy >= ' + (both ? ((lms + lw * P.rtt) / both).toFixed(0) : 'n/a') + ' ms vs twin ' + (both ? (loc / both).toFixed(0) : 'n/a') + ' ms'); });
   try { const jv = cp.execSync("ps -eo pid,rss,args | grep -i '[i]dempiere' | grep -i java | awk '{s+=$2} END {print s}'", { encoding: 'utf8' }).trim(), pg = cp.execSync("docker stats --no-stream --format '{{.Name}} {{.MemUsage}}' 2>/dev/null | grep -i postgres", { encoding: 'utf8' }).trim();
     console.log('§LVL-SERVERS legacy needs 2 server processes: iDempiere java RSS=' + (jv ? Math.round(Number(jv) / 1024) + ' MB' : 'n/a') + ' · postgres container ' + (pg || 'n/a') + ' — twin: 0 server processes (SQLite in the page)'); } catch (e) { console.log('§LVL-SERVERS n/a ' + e.message); }
@@ -45,4 +46,15 @@ process.on('exit', function () {
 });
 if (process.env.LVL_PROBE) { const DPm = require('../doc_poster'), d0 = DPm.derivePostings; DPm.derivePostings = function (db, doc, sch) { const d = d0.apply(this, arguments); if (d && d.absent && d.absent.length) console.log('§LVL-PROBE derivePostings ' + doc.table + ':' + doc.id + ' schema=' + sch + ' absent=' + JSON.stringify(d.absent).slice(0, 300)); return d; }; }
 process.env.M3_ONLY = process.env.M3_ONLY || 'O2C';
-require('./witness_m3_gap.js');
+// §45.15b apple-for-apple: (1) the engine of the SQLite side; (2) legacy's per-call overhead — every WS request carries an ADLoginRequest (ad_client.js:77),
+//   so a do-nothing call (a query that returns 0 rows) is timed and reported; the human legacy UI logs in once per session, not per document.
+(async () => {
+  if (process.env.M3_SQLJS === '1') { const initSqlJs = require(require('os').homedir() + '/bim-ootb/tests/node_modules/sql.js'); global.__SQLJS = await initSqlJs(); console.log('§LVL-ENGINE twin=sql.js (SQLite compiled to WebAssembly, the browser engine)'); }
+  else console.log('§LVL-ENGINE twin=better-sqlite3 (native SQLite)');
+  const AD = require('./ad_client'), cfg = AD.cfgFromEnv(), ms = [];
+  for (let i = 0; i < 12; i++) { const t = now(); await _fetchRaw(cfg); ms.push(now() - t); }
+  const s = ms.slice(2).sort((a, b) => a - b); OVERHEAD = s[Math.floor(s.length / 2)];
+  console.log('§LVL-OVERHEAD legacy do-nothing WS call (login + a 0-row query) median=' + OVERHEAD.toFixed(1) + ' ms over ' + s.length + ' calls (first 2 discarded as warm-up) all=' + JSON.stringify(ms.map(x => +x.toFixed(1))));
+  require('./witness_m3_gap.js');
+})();
+async function _fetchRaw(cfg) { return require('./ad_client').call(cfg, 'query_data', { ModelCRUD: { serviceType: 'QueryCOrder', Filter: 'C_Order_ID=-1' } }); }

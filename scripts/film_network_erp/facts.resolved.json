@@ -30,7 +30,14 @@
   "holdout_n": "100",
   "extrap_n": "1000",
   "catchup_err": "15",
-  "legacy_servers": "2"
+  "legacy_servers": "2",
+  "t_twin": "26",
+  "l_nl_lan": "1020",
+  "l_nl_4g": "1139",
+  "l_nl_poor": "1469",
+  "l_4g_lo": "697",
+  "l_4g_hi": "1194",
+  "l_runs": "3"
  },
  "sources": {
   "users_max": "build/scriptor/sme100_20261102/sme_n100_retry.log :: §STAR-DONE engine N=50 M=50 status=PASS-RUN wall_s=292",
@@ -63,6 +70,13 @@
   "holdout_n": "build/scriptor/sme100_20261102/fit.log :: §HOLDOUT edge.roster_visit_requests_p50 fit on N<=50 → predict 100: power 54.69 (err 14.6%) quad 90.24 (err 41.0%) measured 64 → model=power",
   "extrap_n": "build/scriptor/sme100_20261102/fit.log :: §EXTRAP edge.roster_visit_requests_p50 N=500 163 N=1000 251 requests (model power, band ±15% as measured at 100; wider further out) [power: N=500 163, N=1000 25",
   "catchup_err": "build/scriptor/sme100_20261102/fit.log :: §EXTRAP edge.roster_visit_requests_p50 N=500 163 N=1000 251 requests (model power, band ±15% as measured at 100; wider further out) [power: N=500 163, N=1000 25",
-  "legacy_servers": "build/scriptor/beat10_20261102/time_o2c.log :: §LVL-SERVERS legacy needs 2 server processes: iDempiere java RSS=2583 MB · postgres container postgres 215MiB / 31.03GiB — twin: 0 server processes (SQLite in t"
+  "legacy_servers": "build/scriptor/beat10_20261102/time_o2c.log :: §LVL-SERVERS legacy needs 2 server processes: iDempiere java RSS=2583 MB · postgres container postgres 215MiB / 31.03GiB — twin: 0 server processes (SQLite in t",
+  "t_twin": "build/scriptor/beat10_20261102/lvl_median.log :: §LVL-MEDIAN twin=26 range=18..31 runs=3",
+  "l_nl_lan": "build/scriptor/beat10_20261102/lvl_median.log :: §LVL-MEDIAN nl_lan=1020 range=578..1076 runs=3",
+  "l_nl_4g": "build/scriptor/beat10_20261102/lvl_median.log :: §LVL-MEDIAN nl_4g=1139 range=697..1194 runs=3",
+  "l_nl_poor": "build/scriptor/beat10_20261102/lvl_median.log :: §LVL-MEDIAN nl_poor=1469 range=1027..1524 runs=3",
+  "l_4g_lo": "build/scriptor/beat10_20261102/lvl_median.log :: §LVL-MEDIAN nl_4g=1139 range=697..1194 runs=3",
+  "l_4g_hi": "build/scriptor/beat10_20261102/lvl_median.log :: §LVL-MEDIAN nl_4g=1139 range=697..1194 runs=3",
+  "l_runs": "build/scriptor/beat10_20261102/lvl_median.log :: §LVL-MEDIAN-VERDICT MEASURED runs=3 (twin on sql.js; legacy per document = server ms of its writes minus the per-call login, plus one round trip each)"
  }
 }

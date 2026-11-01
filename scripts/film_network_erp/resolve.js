@@ -41,6 +41,14 @@ fact('holdout_n', fit, /^§HOLDOUT edge\.roster_visit_requests_p50 /, l => m(/pr
 fact('extrap_n', fit, /^§EXTRAP edge\.roster_visit_requests_p50 /, l => m(/N=(\d+) \d+ requests/, l));
 fact('catchup_err', fit, /^§EXTRAP edge\.roster_visit_requests_p50 /, l => m(/band ±(\d+)%/, l));
 fact('legacy_servers', o2c, /^§LVL-SERVERS /, l => m(/legacy needs (\d+) server processes/, l));
+const med = path.join(T, 'lvl_median.log');   // §45.15b apple for apple: medians of the sql.js runs, legacy without its per-call login
+fact('t_twin', med, /^§LVL-MEDIAN twin=/, l => m(/twin=(\d+)/, l));
+fact('l_nl_lan', med, /^§LVL-MEDIAN nl_lan=/, l => m(/nl_lan=(\d+)/, l));
+fact('l_nl_4g', med, /^§LVL-MEDIAN nl_4g=/, l => m(/nl_4g=(\d+)/, l));
+fact('l_nl_poor', med, /^§LVL-MEDIAN nl_poor=/, l => m(/nl_poor=(\d+)/, l));
+fact('l_4g_lo', med, /^§LVL-MEDIAN nl_4g=/, l => m(/range=(\d+)\.\./, l));
+fact('l_4g_hi', med, /^§LVL-MEDIAN nl_4g=/, l => m(/\.\.(\d+)/, l));
+fact('l_runs', med, /^§LVL-MEDIAN-VERDICT MEASURED/, l => m(/runs=(\d+)/, l));
 console.log('§FACTS resolved=' + Object.keys(F).length + ' missing=' + miss.length + (miss.length ? ' ' + JSON.stringify(miss) : ''));
 Object.keys(F).forEach(k => console.log('§FACT ' + k + '=' + F[k] + '  ← ' + SRC[k]));
 // every {{fact}} used in the storyboard must exist

@@ -7,7 +7,7 @@
 'use strict';
 const fs = require('fs'), os = require('os'), path = require('path');
 const { execFileSync } = require('child_process');
-const Database = require('better-sqlite3');
+const Database = process.env.M3_SQLJS === '1' ? require('./sqljs_better.js') : require('better-sqlite3');   // §45.15b: M3_SQLJS=1 = the SQLite side on sql.js (WebAssembly, the browser's engine); default native
 const { cfgFromEnv, query } = require('./ad_client');
 const store = require('./store');
 const { drain } = require('./pusher');
