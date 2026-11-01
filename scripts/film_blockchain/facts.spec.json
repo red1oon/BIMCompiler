@@ -3,49 +3,49 @@
  "facts": [
   {
    "id": "rd_verdict",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log",
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log",
    "regex": "§RD_VERDICT (PASS) judged=\\d+",
    "group": 1
   },
   {
    "id": "rd_judged",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log",
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log",
    "regex": "§RD_VERDICT PASS judged=(\\d+)",
    "group": 1
   },
   {
    "id": "relay_n",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log",
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log",
    "regex": "§RD-R1 .* ops (\\d+)/\\d+",
    "group": 1
   },
   {
    "id": "relay_tot",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log",
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log",
    "regex": "§RD-R1 .* ops \\d+/(\\d+)",
    "group": 1
   },
   {
    "id": "box_n",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log",
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log",
    "regex": "§RD-R2 .* ops (\\d+)/\\d+",
    "group": 1
   },
   {
    "id": "box_tot",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log",
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log",
    "regex": "§RD-R2 .* ops \\d+/(\\d+)",
    "group": 1
   },
   {
    "id": "hub_n",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log",
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log",
    "regex": "§RD-S1 SELF-REBUILD: the hub .* ops (\\d+)/\\d+",
    "group": 1
   },
   {
    "id": "hub_tot",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log",
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log",
    "regex": "§RD-S1 SELF-REBUILD: the hub .* ops \\d+/(\\d+)",
    "group": 1
   },
@@ -57,19 +57,19 @@
   },
   {
    "id": "st_n",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log",
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log",
    "regex": "§RD-S1 SELF-REBUILD: station 1 .* ops (\\d+)/\\d+",
    "group": 1
   },
   {
    "id": "st_tot",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log",
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log",
    "regex": "§RD-S1 SELF-REBUILD: station 1 .* ops \\d+/(\\d+)",
    "group": 1
   },
   {
    "id": "fork_after",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log",
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log",
    "regex": "§RD-S2 .* equivocations=(\\d+)",
    "group": 1
   },
@@ -81,37 +81,37 @@
   },
   {
    "id": "gap_seq",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log",
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log",
    "regex": "§RD-R3 .*\"seq\":(\\d+)",
    "group": 1
   },
   {
    "id": "gap_missing",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log",
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log",
    "regex": "§RD-R3 it lacks exactly .* missing=(\\d+)",
    "group": 1
   },
   {
    "id": "sealed",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log",
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log",
    "regex": "§RD-R5 .* sealed=(\\d+)",
    "group": 1
   },
   {
    "id": "tamper_restored",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log",
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log",
    "regex": "§RD-CTL .* restored=(\\d+)",
    "group": 1
   },
   {
    "id": "unsent_in",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log",
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log",
    "regex": "§LIMIT work authored but never relayed .*: (\\d+) of \\d+ unsent",
    "group": 1
   },
   {
    "id": "unsent_tot",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log",
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log",
    "regex": "§LIMIT work authored but never relayed .*: \\d+ of (\\d+) unsent",
    "group": 1
   },

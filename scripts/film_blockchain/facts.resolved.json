@@ -3,42 +3,42 @@
   "rd_verdict": {
    "status": "now",
    "value": "PASS",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log"
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log"
   },
   "rd_judged": {
    "status": "now",
    "value": "11",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log"
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log"
   },
   "relay_n": {
    "status": "now",
    "value": "43",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log"
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log"
   },
   "relay_tot": {
    "status": "now",
    "value": "43",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log"
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log"
   },
   "box_n": {
    "status": "now",
    "value": "43",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log"
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log"
   },
   "box_tot": {
    "status": "now",
    "value": "43",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log"
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log"
   },
   "hub_n": {
    "status": "now",
    "value": "55",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log"
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log"
   },
   "hub_tot": {
    "status": "now",
    "value": "55",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log"
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log"
   },
   "hub_before": {
    "status": "now",
@@ -48,17 +48,17 @@
   "st_n": {
    "status": "now",
    "value": "37",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log"
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log"
   },
   "st_tot": {
    "status": "now",
    "value": "37",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log"
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log"
   },
   "fork_after": {
    "status": "now",
    "value": "0",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log"
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log"
   },
   "fork_before": {
    "status": "now",
@@ -68,32 +68,32 @@
   "gap_seq": {
    "status": "now",
    "value": "2",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log"
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log"
   },
   "gap_missing": {
    "status": "now",
    "value": "1",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log"
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log"
   },
   "sealed": {
    "status": "now",
    "value": "12",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log"
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log"
   },
   "tamper_restored": {
    "status": "now",
    "value": "0",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log"
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log"
   },
   "unsent_in": {
    "status": "now",
    "value": "0",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log"
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log"
   },
   "unsent_tot": {
    "status": "now",
    "value": "2",
-   "log": "build/scriptor/self_restore_20261101/GREEN.log"
+   "log": "build/scriptor/film_bc_main_20261101/restore_drill_main.log"
   },
   "pc_erp": {
    "status": "now",
@@ -117,7 +117,7 @@
   }
  },
  "sources": {
-  "build/scriptor/self_restore_20261101/GREEN.log": "2d271140e4cb455a78109a6a2c57585f6f6a07c4883d82e5519e7209acb8b403",
+  "build/scriptor/film_bc_main_20261101/restore_drill_main.log": "8aada30b9847e869a07f73365ff92d7834ad98c4d035850070fac52ad45e0aaa",
   "build/scriptor/self_restore_20261101/RED.log": "6f85be81f0f16e35959184e9c2b81ec2caa27a964134f39ceff53236752fefe5",
   "build/scriptor/power_cut_20261101/RED.log": "f54f37720ed480b6ad02506e89bda0678c24416816958313d8b850f8689a498a"
  }
