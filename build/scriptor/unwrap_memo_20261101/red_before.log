@@ -1,0 +1,10 @@
+§UM_HEADER W-UNWRAP-MEMO tree=/tmp/wt-unwrap-memo commit=72ecc8f9 base=72ecc8f9 K=6 rounds=3 node=v18.19.1
+§UM_COUNT tree founding={"calls":259,"distinct":22} preU2={"calls":443,"distinct":22} postU2={"calls":719,"distinct":22} end={"calls":1056,"distinct":42} rekeys=1 ms=11339
+§UM_COUNT base end={"calls":1056,"distinct":42} ms=10241
+   FAIL §UM-U1 one unwrapKey per grant per store over the whole run (8 stores, 143 ops at the hub) - calls=1056 distinct=42 ratio=25.1
+   FAIL §UM-U2 3 traffic rounds add no unwrap beyond new grants - calls_added=276 grants_added=0
+   PASS §UM-U3 memoised keyring == fresh store keyring, before revoke - 8/8 stores, keys compared=8 audience_ring=NOT EXPOSED
+   PASS §UM-U3 memoised keyring == fresh store keyring, after revoke+rekey - 8/8 stores, keys compared=15 audience_ring=NOT EXPOSED
+   PASS §UM-U4 per store ops/laned/sealed == baseline engine 72ecc8f9 - tree=143/84/0 73/14/0 73/14/0 73/14/0 73/14/0 73/14/0 73/14/0 65/6/1 base=143/84/0 73/14/0 73/14/0 73/14/0 73/14/0 73/14/0 73/14/0 65/6/1
+   INCONCLUSIVE §UM-MUT M1 (cache lookup disabled) NOT APPLIED needle_count=0
+§UM_VERDICT FAIL judged=5 fails=2 inconclusive=0 mutants=0/1

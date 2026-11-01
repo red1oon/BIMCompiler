@@ -1,0 +1,68 @@
+§RS-HEADER W-READ-SCOPE tree=/tmp/wt-unwrap-memo base=c02eaa58 node=v18.19.1 at=2026-11-01T04:57:20.347Z
+   PASS §RS-A Y (a modified client that lists and gets every m/ object) opens 0 of the 3 laned ops of X - leaked=0 downloaded_sealed=3
+   PASS §RS-A the attack really happened: Y downloaded all of them (they sit in its cl_sealed, unopened) - cl_sealed=3 foreign=3
+   PASS §RS-A Y does open its OWN pair's mail (reading works) - own DOWN mail=1
+   PASS §RS-A H (hub) opens every laned op ever authored - 5 ops
+   PASS §RS-A X opens its own pair's mail and none of Y's - foreign for X=2
+   PASS §RS-A CONTROL: with audience sealing off (space key, as F1) the same Y opens 3 of 3 (so the isolation above is the sealing, not the fixture) - opened=3/3
+   PASS §RS-B no business value in any of the 9 relay objects (5 needles) - hits=0 {}
+   PASS §RS-B CONTROL: the byte search CAN find a value - a plaintext identity value (a person name) is found - objects containing it=1
+   PASS §RS-C the hub's verdict for every business op equals the F1-engine run of the same script - ops=6
+   PASS §RS-C the hub's per-record order (the order the data dependencies fix) equals the F1 run's - records=5
+   PASS §RS-C every station: each business op it holds has the F1 verdict - ops held=7 differing=0
+   PASS §RS-C nothing is PARKED on any device - parked=0
+   PASS §RS-D CONTROL: the untouched relay yields no tampering and the reader holds laned mail - tampered=0 laned held=1
+   PASS §RS-D one flipped byte: counted tampered and the op is not ingested - tampered=1 laned held 1 -> 0 (bundle rows=1)
+   PASS §RS-D a bundle moved m/p_X -> m/p_Y: Y opens 0 of its 1 ops and keeps them sealed - sealed kept=1
+   PASS §RS-D X's own copy (the real m/p_X path) still folds - held=1/1
+   PASS §RS-D an UP bundle moved m/hub -> m/p_X: refused with §COMM_BOX_MISMATCH, not ingested, by a device that holds the key - mismatch lines=2 ops=2 ingested=0
+   PASS §RS-D AAD unit: the right audience opens; the same ciphertext relabelled to another audience (same key bytes) is refused - right=ok relabelled=tampered
+   PASS §RS-E layer 1: a non-admin station's candidate key granted to the hub is refused by the roster - REFUSED:not-admin-or-same-person
+   PASS §RS-E X opens H's DOWN mail (the legitimate pair works) - ops=1
+   PASS §RS-E Y (holding its own candidate key for p_X, accepted by the roster) opens 0 of H's DOWN mail to X: H never sealed to it - Y received it (fetched=2 unopened=0 refused-by-its-key=1) opened=0
+   PASS §RS-F the DOWN mail after the rekey is sealed under epoch 2 and an audience - epoch-2 audience-sealed ops on the relay=2
+   PASS §RS-F no epoch-2 grant (space or pair) was issued to the revoked device - grants to revoked at epoch 2=0
+   PASS §RS-F X's first device opens all of the post-rekey DOWN mail - 2/2
+   PASS §RS-F the revoked device opens 0 of it (it downloaded the sealed ops, cl_sealed=2) - opened=0
+   PASS §RS-G CONTROL: nothing withheld -> gaps() = [] - []
+   PASS §RS-G the relay withholds X's MIDDLE m/hub/ bundle -> gaps() = [{author X, box hub, seq 2}] - [{"author":"28aefe5e65df3fc5","box":"hub","seq":2}]
+   PASS §RS-G the relay withholds X's LAST bundle -> reported from X's signed head `boxes`: [{box hub, seq 3}] - [{"author":"28aefe5e65df3fc5","box":"hub","seq":3}]
+   PASS §RS-G CONTROL (the F1 engine, same withholding): gaps() = [] - the stated F1 limit, shown - bundles=3 gaps=[]
+   PASS §RS-H no pair key yet: the station HOLDS its laned op (§COMM_SEAL hold ... reason=no-aud-key), sends nothing, puts nothing on the relay - hold lines=1 sent=0 own mailbox objects=0
+   PASS §RS-H the held op is nowhere on the relay (not under the space key, not plaintext) - objects containing it=0
+   PASS §RS-H after the hub's grant the op is sent, and every row is sealed to the pair (enc:1@p_X:...) - sent=1 objects=1 rows=1 prefixes=enc:1@p_
+   PASS §RS-H the hub reads it (the pair key is shared with the hub)
+   PASS §RS-I office mesh: relay shape equals the F1 engine's; no m/ object, no `box`, no head `boxes` - objects=4 m/=0 box fields=0 heads with boxes=0 shapes equal=true
+   PASS §RS-I a pre-F1 POS genesis (no `mailboxes`): relay shape equals the F1 engine's; no m/ object, no `box`, no head `boxes` - objects=4 m/=0 box fields=0 heads with boxes=0 shapes equal=true
+   PASS §RS-I a mailbox space DOES carry them: every laned envelope has a signed `box`, every head has `boxes` - heads=3/3 laned envelopes with box=5/5
+   PASS §RS-J Y (space key only) opens 0 of the 3 laned ops of others that the snapshot carries (20 ops in it) - leaked=0 kept sealed=3
+   PASS §RS-J Y still opens the unaddressed (space-key) op (the snapshot does not lock everything) - note opened=true
+   PASS §RS-J G5: the snapshot STATE (0 state row(s) fetched, 0 readable with the team key) names 0 of the 3 laned op ids and 0 of their record ids - op ids in state=0 record ids in state=0
+   PASS §RS-J G5 CONTROL: without audience sealing the same STATE lists 3 of 3 laned op ids (the check can find them) - op ids in state=3
+   PASS §RS-J CONTROL: without audience sealing the same snapshot opens 3 of 3 for Y - opened=3
+
+════ mutants ════
+   §RS-MUT M1 "laned ops sealed with the space key" needle_count=1
+   PASS §RS-MUT M1 KILLED by arm(s) A  (designed to hit A,J)
+   §RS-MUT M2 "pair key granted to every device" needle_count=1
+   PASS §RS-MUT M2 KILLED by arm(s) A,E  (designed to hit A,E)
+   §RS-MUT M3 "the sealer accepts an ineligible origin" needle_count=1
+   PASS §RS-MUT M3 KILLED by arm(s) E  (designed to hit E)
+   §RS-MUT M4 "AAD without the audience" needle_count=1
+   PASS §RS-MUT M4 KILLED by arm(s) D  (designed to hit D)
+   §RS-MUT M5 "no `box` in the envelope" needle_count=1
+   PASS §RS-MUT M5 KILLED by arm(s) G,I  (designed to hit G,I)
+   §RS-MUT M6 "the signed head without `boxes`" needle_count=1
+   PASS §RS-MUT M6 KILLED by arm(s) G,I  (designed to hit G,I)
+   §RS-MUT M7 "a box mismatch is ingested" needle_count=1
+   PASS §RS-MUT M7 KILLED by arm(s) D  (designed to hit D)
+   §RS-MUT M8 "the revoked device is granted the new epoch's key" needle_count=1
+   PASS §RS-MUT M8 KILLED by arm(s) F  (designed to hit F)
+   §RS-MUT M9 "a laned op with no audience key is sent under the space key" needle_count=1
+   PASS §RS-MUT M9 KILLED by arm(s) H  (designed to hit H)
+   §RS-MUT M10 "G5: the snapshot state is sealed with the team key and carries the laned detail" needle_count=1
+   PASS §RS-MUT M10 KILLED by arm(s) J  (designed to hit J)
+§RS_MUTANTS killed=10/10 not_killed=0
+
+§RS-ARMS {"A":{"pass":6,"fail":0,"inc":0},"B":{"pass":2,"fail":0,"inc":0},"C":{"pass":4,"fail":0,"inc":0},"D":{"pass":6,"fail":0,"inc":0},"E":{"pass":3,"fail":0,"inc":0},"F":{"pass":4,"fail":0,"inc":0},"G":{"pass":4,"fail":0,"inc":0},"H":{"pass":4,"fail":0,"inc":0},"I":{"pass":3,"fail":0,"inc":0},"J":{"pass":5,"fail":0,"inc":0}}
+§RS_SCOPE_VERDICT PASS judged=41 fails=0 inconclusive=0 mutants=10/10
