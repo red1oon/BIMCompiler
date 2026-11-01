@@ -7,7 +7,7 @@
  *   A miss is always safe; a wrong hit is the defect. "Nothing ran" is MEASURED by a side-effect counter outside the tree, never assumed.
  * Arms: H1 unchanged->hit · U1 unrelated file->hit · W1 a file the run writes, rewritten by another run->hit · M1 require'd file · M2 runtime-built path · M3 file served over the witness's own HTTP server · M4 ABSENT probe now present
  *   · M5 new file in a listed dir · M6 file read only by a CHILD node process · M7 args / env changed · F1 a failing run is not cached · V1 zero traced inputs is not cached
- *   · E1 a node-executed import( is not cached · M8 a DB opened by better-sqlite3 (native) changed -> miss · M9 a non-Node child program -> not cached · R1 real: the terms runner twice (--browser 0), 2nd run all CACHED, same per-term verdicts.
+ *   · E1 a node-executed import( is not cached · M8 a DB opened by better-sqlite3 (native) changed -> miss · M9 a non-Node child program -> not cached · G1-G4 git show/archive reads fingerprinted by object id, other git refused (§51.2) · R1 real: the terms runner twice (--browser 0), 2nd run all CACHED, same per-term verdicts.
  * Mutants (tracer/cache source edited in a temp copy; each must apply exactly once and be killed by a red arm, not a crash).
  * Run: node scripts/witness_witness_cache.js [--real 0] 2>&1 | tee build/scriptor/witness_cache/witness_witness_cache.log
  */
@@ -24,6 +24,7 @@ function ck(arm, ok, label, d) {
 }
 
 // ── the fixture tree: a witness that reads its inputs every way §51.1 names ──
+var T_PIN = null;
 function mkTree() {
   var T = fs.mkdtempSync(path.join(os.tmpdir(), 'wc-tree-'));
   var w = function (rel, s) { var p = path.join(T, rel); fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, s); };
@@ -52,6 +53,14 @@ function mkTree() {
   var BS = path.join(ROOT, 'node_modules', 'better-sqlite3');
   w('fx_native.js', "require('fs').appendFileSync(process.env.FX_COUNTER, 'x'); var D = require(" + JSON.stringify(BS) + "); var db = new D(require('path').join(__dirname, 'native.db'), { readonly: true }); console.log('§FXN ' + db.prepare('SELECT v FROM t').get().v);\n");
   (function () { var D = require(BS), db = new D(path.join(T, 'native.db')); db.exec("CREATE TABLE t(v TEXT); INSERT INTO t VALUES ('N1')"); db.close(); })();
+  (function () { var g = function (args) { return cp.spawnSync('git', args, { cwd: path.join(T, 'gr'), encoding: 'utf8' }); };
+    fs.mkdirSync(path.join(T, 'gr', 'pkg'), { recursive: true }); g(['init', '-q']); g(['config', 'user.email', 'w@x']); g(['config', 'user.name', 'w']);
+    fs.writeFileSync(path.join(T, 'gr', 'f.txt'), 'G1'); fs.writeFileSync(path.join(T, 'gr', 'other.txt'), 'O1'); fs.writeFileSync(path.join(T, 'gr', 'pkg', 'a.txt'), 'P1');
+    g(['add', '.']); g(['commit', '-q', '-m', 'one']); T_PIN = g(['rev-parse', 'HEAD']).stdout.trim(); })();
+  w('fx_gpin.js', "var cp = require('child_process'); require('fs').appendFileSync(process.env.FX_COUNTER, 'x'); console.log('§FXG ' + cp.execFileSync('git', ['-C', require('path').join(__dirname, 'gr'), 'show', process.env.PIN + ':f.txt'], { encoding: 'utf8' }));\n");
+  w('fx_ghead.js', "var cp = require('child_process'); require('fs').appendFileSync(process.env.FX_COUNTER, 'x'); console.log('§FXH ' + cp.execFileSync('git', ['show', 'HEAD:f.txt'], { cwd: require('path').join(__dirname, 'gr'), encoding: 'utf8' }));\n");
+  w('fx_garch.js', "var cp = require('child_process'), os = require('os'), fs = require('fs'), path = require('path'); fs.appendFileSync(process.env.FX_COUNTER, 'x'); var d = fs.mkdtempSync(path.join(os.tmpdir(), 'fxa-')); cp.spawnSync('sh', ['-c', 'git -C \"' + path.join(__dirname, 'gr') + '\" archive HEAD pkg | tar -x -C \"' + d + '\"']); console.log('§FXA ' + fs.readFileSync(path.join(d, 'pkg', 'a.txt'), 'utf8'));\n");
+  w('fx_glog.js', "var cp = require('child_process'); require('fs').appendFileSync(process.env.FX_COUNTER, 'x'); console.log('§FXL ' + cp.execFileSync('git', ['log', '--oneline', '-1'], { cwd: require('path').join(__dirname, 'gr'), encoding: 'utf8' }).length);\n");
   w('fx_spawn.js', "require('fs').appendFileSync(process.env.FX_COUNTER, 'x'); console.log('§FXS ' + require('child_process').spawnSync('cat', [require('path').join(__dirname, 'unrelated.txt')], { encoding: 'utf8' }).stdout);\n");
   w('fx_esm.js', "require('fs').appendFileSync(process.env.FX_COUNTER, 'x'); import('./esm_dep.mjs').then(function (m) { console.log('§FXE ' + m.default); });\n");
   return T;
@@ -107,6 +116,18 @@ async function fixtureArms(libDir, quiet) {
     ck('M8', n1.ran === 1 && /§FXN N1/.test(n1.out) && n2.cached && !n3.cached && n3.ran === 1 && /§FXN N2/.test(n3.out), 'a database opened through better-sqlite3 (native code, outside Node fs) is an input: unchanged hits, changed MISSES', 'run1=' + n1.ran + ' hit2=' + n2.cached + ' after-change cached=' + n3.cached + ' ' + (n3.out.match(/§FXN \S+/) || [''])[0]);
     var s1 = await go('fx_spawn.js'), s2 = await go('fx_spawn.js');
     ck('M9', s2.ran === 1 && !s2.cached && /non-node-child/.test(String(s2.skip)), 'a run that starts a non-Node program (whose reads cannot be traced) is NOT cached', 'ran2=' + s2.ran + ' skip=' + s2.skip);
+    var gc = function (args) { return cp.spawnSync('git', args, { cwd: path.join(T, 'gr'), encoding: 'utf8' }); };
+    var gp1 = await go('fx_gpin.js', { env: { PIN: T_PIN }, keyEnv: { PIN: T_PIN } }), gp2 = await go('fx_gpin.js', { env: { PIN: T_PIN }, keyEnv: { PIN: T_PIN } });
+    ck('G1', gp1.ran === 1 && /§FXG G1/.test(gp1.out) && gp2.cached && gp2.ran === 0, 'git show <pinned commit>:file is a fingerprinted input: the 2nd run is CACHED', 'run1=' + gp1.ran + ' skip1=' + gp1.skip + ' cached2=' + gp2.cached);
+    var gh1 = await go('fx_ghead.js'), gh2 = await go('fx_ghead.js');
+    fs.writeFileSync(path.join(T, 'gr', 'other.txt'), 'O2'); gc(['commit', '-qam', 'other']); var gh3 = await go('fx_ghead.js');
+    fs.writeFileSync(path.join(T, 'gr', 'f.txt'), 'G2'); gc(['commit', '-qam', 'f']); var gh4 = await go('fx_ghead.js');
+    ck('G2', gh2.cached && gh3.cached && gh3.ran === 0 && !gh4.cached && gh4.ran === 1 && /§FXH G2/.test(gh4.out), 'git show HEAD:file (a moving ref): a commit to ANOTHER file still hits; a commit changing that file MISSES', 'cached2=' + gh2.cached + ' other-commit cached=' + gh3.cached + ' same-file cached=' + gh4.cached + ' ' + (gh4.out.match(/§FXH \S+/) || [''])[0]);
+    var ga1 = await go('fx_garch.js'), ga2 = await go('fx_garch.js');
+    fs.writeFileSync(path.join(T, 'gr', 'pkg', 'a.txt'), 'P2'); gc(['commit', '-qam', 'pkg']); var ga3 = await go('fx_garch.js');
+    ck('G3', ga1.ran === 1 && /§FXA P1/.test(ga1.out) && ga2.cached && !ga3.cached && /§FXA P2/.test(ga3.out), "sh -c 'git archive <rev> <path> | tar -x' is fingerprinted: unchanged hits, a commit changing the archived path MISSES", 'skip1=' + ga1.skip + ' cached2=' + ga2.cached + ' after-change cached=' + ga3.cached);
+    var gl1 = await go('fx_glog.js'), gl2 = await go('fx_glog.js');
+    ck('G4', gl2.ran === 1 && !gl2.cached && /non-node-child \(git\)/.test(String(gl2.skip)), 'any other git subcommand (git log) is still refused', 'ran2=' + gl2.ran + ' skip=' + gl2.skip);
     var x1 = await go('fx_esm.js'), x2 = await go('fx_esm.js');
     ck('E1', x2.ran === 1 && !x2.cached && /esm-import/.test(String(x2.skip)), 'a node-executed file using import( is NOT cached (its reads bypass the traced fs)', 'ran2=' + x2.ran + ' skip=' + x2.skip);
   } finally { ck = saveCk; }
@@ -139,6 +160,8 @@ async function fixtureArms(libDir, quiet) {
     ['files the run wrote kept as inputs', 'witness_cache.js', 'if (writes[p]) return;', 'if (false) return;', ['W1']],
     ['a failing run cached', 'witness_cache.js', 'if (r.status === 0 && ', 'if (r.status !== null && ', ['F1']],
     ['better-sqlite3 opens not traced', 'witness_trace.js', 'return wrapBetter(exp, filename);', 'return exp;', ['M8']],
+    ['git inputs not re-resolved on a hit', 'witness_cache.js', "if (x.k === 'G') return gitObj(x.dir, x.rev, x.path) === x.h;", "if (x.k === 'G') return true;", ['G2']],
+    ['unrecognised git subcommands allowed', 'witness_trace.js', "if (!gitRead(cwd, argv)) T.spawns[cmd] = 1;", "gitRead(cwd, argv);", ['G4']],
     ['non-node children allowed in the cache', 'witness_cache.js', "else if (foreign.length) skip = 'non-node-child (' + foreign.slice(0, 3).join(', ') + ')';", '', ['M9']]
   ];
   var killed = 0, mutRan = 0;
