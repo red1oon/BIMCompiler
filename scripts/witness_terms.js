@@ -48,7 +48,7 @@ var W = {
   tDocnoMut: { f: 'witness_docno_till.js', args: ['--mutants'], log: 'witness_docno_till_mutants.log', layer: 'ootb', ok: /§DT_MUTANTS killed=4\/4/ },
   // dir = a directory under the bim-ootb tree other than erp/tests; env() = environment the witness needs, built when it runs (never from a guess)
   f1Mailbox: { f: 'witness_f1_mailbox.js', dir: 'common/tests', layer: 'ootb', ok: /§F1-VERDICT PASS judged=\d+ fails=0 inconclusive=0 product_fails=0/ },
-  readScope: { f: 'witness_read_scope.js', dir: 'common/tests', layer: 'ootb', ok: /§RS_SCOPE_VERDICT PASS judged=\d+ fails=0 inconclusive=0 mutants=(\d+)\/\1/ },
+  readScope: { f: 'witness_read_scope.js', dir: 'common/tests', layer: 'ootb', ok: /§RS_SCOPE_VERDICT PASS judged=\d+ fails=0 inconclusive=0 mutants=([1-9]\d*)\/\1/ },
   tKeys:     { f: 'witness_team_keys.js', layer: 'ootb', ok: /§KW_VERDICT PASS judged=46 mutants=9\/9/, env: kwOldEnv }
 };
 // W-KEYS arm L1 compares against the engine BEFORE Stage 2 (bim-ootb #2473, commit 38499773); without KW_OLD it prints INCONCLUSIVE, never PASS. The pre-Stage-2 common/comm is read with git archive of that commit's parent.
@@ -101,7 +101,7 @@ var TERMS = [
         { id: 'withheld last bundle is a gap (signed head)', w: 'readScope', re: /PASS §RS-G the relay withholds X's LAST bundle -> reported from X's signed head/ },
         { id: 'CONTROL F1 engine: the same withholding shows no gap', w: 'readScope', re: /PASS §RS-G CONTROL \(the F1 engine, same withholding\): gaps\(\) = \[\]/ },
         { id: 'no key yet: held, never sent under the team key', w: 'readScope', re: /PASS §RS-H the held op is nowhere on the relay .* objects containing it=0/ },
-        { id: 'all mutants killed', w: 'readScope', re: /§RS_SCOPE_VERDICT PASS judged=\d+ fails=0 inconclusive=0 mutants=(\d+)\/\1/ }] },
+        { id: 'all mutants killed', w: 'readScope', re: /§RS_SCOPE_VERDICT PASS judged=\d+ fails=0 inconclusive=0 mutants=([1-9]\d*)\/\1/ }] },
   { id: 'key-roles-threshold', term: 'trusted keys (roles + threshold)', guarantee: 'a key may only do what its role allows; a rotation or publication needs the declared number of DISTINCT valid keys; a device clock never expires anything',
     note: 'TEAMWORK §46.5 versioning Stage 2 (bim-ootb #2473; witness erp/tests/witness_team_keys.js, 9 mutants run by the witness, L1 legacy-fold arm needs KW_OLD = common/comm before #2473, built by the runner with git archive)', w: ['tKeys'],
     c: [{ id: 'rotate-only key cannot publish', w: 'tKeys', re: /🟢 R2 the rotate-only key CANNOT publish an executors map — REFUSED:executors-role/ },
