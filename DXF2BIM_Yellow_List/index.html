@@ -3328,6 +3328,24 @@
 <td>0.9, 1.2, 1.5</td>
 </tr>
 <tr>
+<td><code>analytical.node_snap</code></td>
+<td>analytical</td>
+<td>m</td>
+<td><strong>0.25</strong></td>
+<td>guess</td>
+<td>ends closer than this are one joint in the analytical model (§D103): a beam drawn to a column face and a column top under the beam's axis are one joint; too small leaves joints open (dangling ends), too large merges separate joints</td>
+<td>0.05, 0.1, 0.15, 0.25, 0.4</td>
+</tr>
+<tr>
+<td><code>analytical.support</code></td>
+<td>analytical</td>
+<td>text</td>
+<td><strong>FIXED</strong></td>
+<td>guess</td>
+<td>a footing is assumed to restrain the column base; the engineer confirms (FIXED = no translation or rotation, PINNED = no translation)</td>
+<td>FIXED, PINNED</td>
+</tr>
+<tr>
 <td><code>load.rc_steel_percent</code></td>
 <td>load</td>
 <td>% by volume</td>

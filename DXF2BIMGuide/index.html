@@ -1276,6 +1276,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="5 · Convert">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#5a-properties-what-a-part-carries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5a · Properties: what a part carries
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1305,6 +1322,17 @@
     <span class="md-ellipsis">
       
         8 · Regulatory Report (what you hand in)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-analytical-model-staad-for-your-structural-engineer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9 · Analytical model (STAAD, for your structural engineer)
       
     </span>
   </a>
@@ -3076,6 +3104,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="5 · Convert">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#5a-properties-what-a-part-carries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5a · Properties: what a part carries
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -3105,6 +3150,17 @@
     <span class="md-ellipsis">
       
         8 · Regulatory Report (what you hand in)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-analytical-model-staad-for-your-structural-engineer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9 · Analytical model (STAAD, for your structural engineer)
       
     </span>
   </a>
@@ -3659,6 +3715,17 @@ convention) or <strong>assumed</strong> (red: no drawing evidence for it). <stro
 in the catalogue gets that thickness's most frequent material, a door its type, with the count stated. A file
 that does not fit is refused with the reason, never half-loaded; <strong>Clear</strong> goes back to the reference materials.</p>
 <p><img alt="The converted Duplex: two storeys, openings cut, doors and glazing placed" src="../img/dxf2bim/converted.jpg" /></p>
+<h4 id="5a-properties-what-a-part-carries">5a · Properties: what a part carries<a class="headerlink" href="#5a-properties-what-a-part-carries" title="Permanent link">&para;</a></h4>
+<p>Click a converted part and the <strong>Properties</strong> panel opens beside the tool rail. It shows exactly what that part's IFC will carry: the IFC class, name,
+label, predefined type and material, then the drawing evidence in groups — <strong>Source</strong> (sheet, handle, layer, how it is known), <strong>Size</strong> (each stated size, in
+metres, with its base and top), <strong>Drawing notes</strong> (each note beside the sheet and handle it was read from) and <strong>Schedule</strong> (the schedule row it matched). A value
+with no content is not shown, because the IFC does not write it. A part you drew yourself says <em>no drawing evidence: this part was not converted from the 2D set</em>.</p>
+<p><strong>A part of an opened building</strong> (a resident, a <code>.db</code>, or an <code>.ifc</code> you open) shows what the building's database states about it: IFC class, name, storey,
+material, type, GlobalId, and each standard property set (<code>Pset_WallCommon</code>, <code>Pset_DoorCommon</code>, …) with whether the value is set on the element or on its type.
+A raw <code>.ifc</code> is read once, on the first click, by the same converter the residents and every export use, so it shows the same rows its <code>.db</code> would (the Duplex
+architecture IFC: 289 elements, 219 property rows, about half a second). Only the standard <code>Pset_*Common</code> sets are read; a vendor's own sets are not shown yet.
+With several parts selected it shows the last one picked; <strong>×</strong> closes it until the selection changes. On a small screen with the
+metadata editor open there is no room beside it, so it opens on top of the editor.</p>
 <h3 id="6-export-ifc">6 · Export IFC<a class="headerlink" href="#6-export-ifc" title="Permanent link">&para;</a></h3>
 <p><strong>Export → IFC4.</strong> The file has a proper spatial structure (Project → Site → Building → Storeys) and every
 element contained in its storey. On the Duplex standard set (measured 2026-10-26): 44 walls (one wall per drawn
@@ -3679,10 +3746,12 @@ downloads <code>&lt;name&gt;_extracted.db</code>. Open that file in the <strong>
 <li><strong>Inputs</strong>: edit the values and facts on the page and press <strong>Apply</strong> to recompute; <strong>Download inputs</strong> keeps them; to keep a value with the drawings,
   state it in the Modeller as <code>@DEFAULT=&lt;key&gt;,&lt;value&gt;</code>. <strong>Print / Save as PDF</strong> for the engineer.</li>
 </ul>
-<p>On the farm shed: 5,352 kN of own weight from 389 parts (546 t), 1,815 kN on the 32 footings, 3,537 kN of ground slab on the ground; the heaviest footing
-carries 246 kN (133 kPa); 123 parts are listed as not weighed (103 members the drawing does not size, 13 fans, 4 doors, 3 nettings).
+<p>On the farm shed (2026-11-01, Complete ticked): 5,275.1 kN of own weight from 480 parts (537.9 t), 1,737.9 kN on the 32 footings, 3,537.2 kN of ground slab on the
+ground; the heaviest footing carries 120.0 kN (64.6 kPa); 32 parts are listed as not weighed (12 members with no section drawn and none to assume, 13 fans, 4 doors,
+3 nettings). Members with no section on their label take the drawing's most common section of the same kind, marked <em>assumed</em> (91 of the shed's 156 bars).
+A beam is sized along its own axis, so a beam drawn at an angle weighs the same as one square to the grid.
 It does not compute live load, wind, earthquake or member strength: those need the stated site, soil and an engineer's analysis.</p>
-<p><img alt="Export ▸ Load Summary on the converted shed (2026-11-01): own weight 5,402.1 kN, part by part with each unit weight's source; inputs nothing states are red" src="../img/dxf2bim/dxf2bim_sub_load_summary.jpg" /></p>
+<p><img alt="Export ▸ Load Summary on the converted shed (2026-11-01): own weight 5,275.1 kN, 1,737.9 kN on the footings, heaviest footing 120.0 kN; part by part with each unit weight's source; inputs nothing states are red" src="../img/dxf2bim/dxf2bim_load_summary_2026-11-01.jpg" /></p>
 <h3 id="8-regulatory-report-what-you-hand-in">8 · Regulatory Report (what you hand in)<a class="headerlink" href="#8-regulatory-report-what-you-hand-in" title="Permanent link">&para;</a></h3>
 <p><strong>Export ▸ Regulatory Report…</strong> opens a short form of the facts a model cannot give (plot area, setbacks, occupancy, district, soil bearing capacity …,
 ten in all). A box left empty makes the report say <em>not stated</em>; nothing is guessed. Pick the rate pack and press <strong>Build report</strong>.</p>
@@ -3717,6 +3786,24 @@ authority's header added, another style) reaches both; the witnesses W-REG-REPOR
 <strong>Before building</strong>, edit what goes in, not the page: the facts form, the rate pack and its rates (the rate editor), and the defaults (Element defaults ▸ Set);
 build again and the report follows in seconds. Editing the downloaded HTML by hand is possible, but that copy no longer matches the model fingerprint and sources it states.
 The 4D/5D page is different (a live page, its downloads are Excel files): see <a href="../4D5DAnalysis/">4D5D Analysis ▸ Where the page's format is kept, and how to edit it</a>.</p>
+<h3 id="9-analytical-model-staad-for-your-structural-engineer">9 · Analytical model (STAAD, for your structural engineer)<a class="headerlink" href="#9-analytical-model-staad-for-your-structural-engineer" title="Permanent link">&para;</a></h3>
+<p><strong>Export ▸ Analytical model (STAAD)…</strong> downloads a <code>.std</code> file the engineer opens in STAAD.Pro as a <strong>starting model, not a design</strong>. It is built from the model's IFC,
+so the same export works on a converted 2D set (it writes the IFC first) and, with nothing converted, on <strong>any <code>.ifc</code> you choose</strong>.</p>
+<ul>
+<li><strong>Members</strong>: each column, beam and steel member on its centre line; a free end that lands on another member's span joins it there. Gusset plates, walls, the roof
+  sheet, fans, doors and netting are listed as left out with the reason; a footing becomes a <strong>support</strong> (FIXED by default; Element defaults <code>analytical.support</code>).</li>
+<li><strong>Joints</strong>: member ends closer than <code>analytical.node_snap</code> (0.25 m by default) are one joint. Ends joined to nothing are listed as <strong>dangling</strong>, with their sheet
+  and handle, never hidden.</li>
+<li><strong>Sections and materials</strong>: concrete rectangles from the drawn sizes; steel angles from the label (or the drawing's most common section, marked assumed).
+  Concrete stiffness is E = 4700 √f'c from the drawing's own strength note (ACI 318-19 §19.2.2.1); with no f'c stated, no stiffness is given and a finding says so.
+  A member whose stated material is neither concrete nor steel gets no stiffness either.</li>
+<li><strong>Load</strong>: one case, self-weight only. No live, wind or seismic load, no member releases: the file header lists every assumption for the engineer.</li>
+</ul>
+<p>On the farm shed: 337 members (96 column pieces, 35 beams, 206 truss-bar pieces), 319 joints, 32 supports, 36 dangling ends, 14 findings; a 19,330-byte <code>.std</code>.
+The file built from the drawings and the file built from the exported IFC alone are <strong>byte-identical</strong>, so nothing the analysis needs is lost on the way through IFC.
+From the command line: <code>node modeller/dxf2bim_cli.js --sheets &lt;sheets&gt; --out &lt;dir&gt; --complete --analytical</code> (also writes <code>analytical.json</code>, an open format), or
+<code>node modeller/dxf2bim_cli.js --ifc-in &lt;file.ifc&gt; --analytical --out &lt;dir&gt;</code> for any IFC. A typical IFC from elsewhere states no section sizes and no f'c, so its
+members take their box sizes and get findings instead of a stiffness (measured on six models, e.g. <code>Ifc4_Revit_STR.ifc</code>: 449 members, 453 joints, 4 supports, 152 dangling ends).</p>
 <h3 id="if-something-goes-wrong">If something goes wrong<a class="headerlink" href="#if-something-goes-wrong" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -3966,7 +4053,7 @@ building is made of <strong>bodies</strong> read from layers you type, not of wa
    because of them. On the shed: <code>B-1</code>, <code>B-2</code>, <code>C-1</code>, <code>F-1</code> are modelled and detailed; <strong><code>GB-1</code> is tagged 4 times on the foundation layout and detailed, but no sheet draws it, so it is
    reported and not built</strong>: four tags do not say which spans the grade beams run, and building them under every wall would be a guess. Draw it on a typed layer and it is built as drawn.</p>
 <p><img alt="The converted shed (2026-11-01, Complete ticked): 512 parts; the 2D panel lists the nine sheets, the details sheet as NOTES" src="../img/dxf2bim/dxf2bim_sub_converted.jpg" /></p>
-<p><img alt="A footing picked in x-ray among its neighbours: its casting ratio 1:1.5:3 and its 12&quot; thickness come from the details sheet (the Modeller has no properties panel yet: the values are in the model and the exports)" src="../img/dxf2bim/dxf2bim_sub_footing.jpg" /></p>
+<p><img alt="A footing picked in x-ray: the Properties panel shows what its IFC carries — the casting ratio 1:1.5:3 from the details sheet (handle 2E2), f'c 24 MPa and fy 500 MPa (handle 2E1), and the footing schedule's row (2026-11-01)" src="../img/dxf2bim/dxf2bim_props_panel.jpg" /></p>
 <p><img alt="The converted shed on the canvas: material colours, 512 bodies" src="../img/dxf2bim/shed_canvas.jpg" /></p>
 <ol>
 <li><strong>Save and open elsewhere.</strong> <em>Export → IFC4</em> writes the typed model with materials, colours and a property set
@@ -4030,6 +4117,7 @@ in the yellow list. No head-to-head benchmark has been run.</p>
 <li><strong>The Regulatory Report is not a certificate.</strong> It states the facts of the model, with blank signature blocks for the people who sign; it is not a code-compliance certificate.</li>
 <li><strong>The details' bar sizes are not used.</strong> Reinforcement is an assumed bill line (a stated percentage of each concrete body), shown as assumed.</li>
 <li><strong>The Load Summary is own weight, not a structural design.</strong> No live load, wind, earthquake or member strength.</li>
+<li><strong>The analytical model is a starting point, not an analysis.</strong> It has not been opened in STAAD.Pro here (no STAAD on the build machine; it is checked by its own reader); releases, member orientation and loads other than self-weight are for the engineer.</li>
 <li><strong>"Any DXF"</strong> is not claimed. Your drawing needs the metadata above; the editor helps you add it, the verdict
   tells you when it is complete.</li>
 <li><strong>The component library</strong> (door/window geometry) is published: when no local copy is present, Convert loads it
