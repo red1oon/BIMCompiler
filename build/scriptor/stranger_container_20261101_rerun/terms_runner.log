@@ -1,0 +1,53 @@
+   ran witness_comm_plantrust.js exit=0 inputs=14 key=444dc2b3e7d1
+§TERMS_LIMITS statement-signed n=0 from=-
+   ran witness_comm_policy.js exit=0 inputs=17 key=0f21cd109d1c
+§TERMS_LIMITS trusted-keys n=0 from=-
+§UNTRACKED trusted-keys BIMCompiler/build/erp/ad_full.db kind=untracked why=gitignored bytes=44937216 sha=179cd349cedb manifest=ok
+   ran witness_comm_executors.js exit=0 inputs=12 key=8f3b687bb21b
+   ran witness_comm_settrust.js exit=0 inputs=16 key=4defcf729d62
+§TERMS_LIMITS rule-in-force n=0 from=-
+§TERMS_LIMITS complete-all-or-nothing n=0 from=-
+   ran witness_comm_cl3_store.js exit=0 inputs=11 key=a96336be7a5d
+   ran witness_comm_cl5_conflict.js exit=0 inputs=13 key=e78f364887a1
+§TERMS_LIMITS ledger-convergent n=0 from=-
+§UNTRACKED ledger-convergent BIMCompiler/build/erp/ad_full.db kind=untracked why=gitignored bytes=44937216 sha=179cd349cedb manifest=ok
+   ran witness_terms_visit.js exit=0 inputs=11 key=e21357857db4
+§TERMS_LIMITS visit-lossless-offline n=0 from=-
+§UNTRACKED visit-lossless-offline BIMCompiler/build/erp/ad_full.db kind=untracked why=gitignored bytes=44937216 sha=179cd349cedb manifest=ok
+§TERMS_LIMITS visit-once n=0 from=-
+§UNTRACKED visit-once BIMCompiler/build/erp/ad_full.db kind=untracked why=gitignored bytes=44937216 sha=179cd349cedb manifest=ok
+§TERMS_LIMITS ack-trail n=0 from=-
+§UNTRACKED ack-trail BIMCompiler/build/erp/ad_full.db kind=untracked why=gitignored bytes=44937216 sha=179cd349cedb manifest=ok
+   ran witness_comm_versions.js exit=0 inputs=16 key=fdb753e1208a
+§TERMS_LIMITS version-skew n=0 from=-
+§UNTRACKED version-skew BIMCompiler/build/erp/ad_full.db kind=untracked why=gitignored bytes=44937216 sha=179cd349cedb manifest=ok
+   ran ootb witness_docno_till.js exit=0 inputs=22 key=6173d0b7bcc9
+   §CACHE_SKIP witness_docno_till.js reason=non-node-child (psql)
+   ran ootb witness_docno_till.js --mutants exit=0 inputs=22 key=377593765688
+   §CACHE_SKIP witness_docno_till.js reason=non-node-child (psql)
+§TERMS_LIMITS doc-numbering n=2 from=witness_docno_till.js
+   ran ootb witness_f1_mailbox.js exit=0 inputs=25 key=faebcd142de1
+§TERMS_LIMITS visit-bounded n=3 from=witness_f1_mailbox.js
+   ran ootb witness_read_scope.js exit=0 inputs=25 key=62d72e3228cc
+§TERMS_LIMITS sealing-real n=4 from=witness_read_scope.js
+   ran ootb witness_team_keys.js exit=0 inputs=27 key=975130eeeffa
+   §CACHE_SKIP witness_team_keys.js reason=esm-import (bim-ootb/erp/plugin_registry.js)
+§TERMS_LIMITS key-roles-threshold n=0 from=-
+§TERMS table (open first; an open term is never green)
+term | witness | broken control | status | roadmap
+LEDGER signed / STATEMENT | PASS+SKIPPED | 2/2 refused | ENFORCED [engine only (browser SKIPPED)] | 
+trusted keys | PASS+PASS+SKIPPED | 3/3 refused | ENFORCED [engine only (browser SKIPPED)] | 
+STATEMENT (rule in force) | PASS+PASS+SKIPPED | 2/2 refused | ENFORCED [engine only (browser SKIPPED)] | 
+BUNDLE (Complete) | PASS+SKIPPED | 2/2 refused | ENFORCED [engine only (browser SKIPPED)] | 
+LEDGER convergent | PASS+PASS+SKIPPED | 2/2 refused | ENFORCED [engine only (browser SKIPPED)] | 
+VISIT (offline / interrupted) | PASS | 3/3 refused | ENFORCED [engine only (no browser witness located)] | 
+VISIT (voluntary, once) | PASS+PASS | 2/2 refused | ENFORCED [engine only (no browser witness located)] | 
+ACK | PASS+PASS+SKIPPED | 3/3 refused | ENFORCED [engine only (browser SKIPPED)] | 
+BUNDLE (version skew) | PASS+SKIPPED | 1/1 refused | ENFORCED [engine only (browser SKIPPED)] | 
+LOCAL NUMBERING (LEDGER) | PASS+PASS | 8/8 refused | ENFORCED [bim-ootb tree (node, real modules)] | 
+VISIT (bounded) | PASS | 6/6 refused | ENFORCED [bim-ootb tree (node, real modules)] | 
+RELAY (sealing) | PASS+PASS | 9/9 refused | ENFORCED [bim-ootb tree (node, real modules)] | 
+trusted keys (roles + threshold) | PASS | 8/8 refused | ENFORCED [bim-ootb tree (node, real modules)] | 
+§TERMS_BROWSER judged=0 skipped=5 reason="--browser 0"
+§TERMS_PORTABLE rows=13 portable=13 not_portable=0 unknown=0 (a fresh clone + dev_env_fetch has every input of a portable row; §50.2)
+§TERMS_VERDICT PASS enforced=13 open=0 witness_failed=0 uncontrolled=0 browser=judged 0/skipped 5

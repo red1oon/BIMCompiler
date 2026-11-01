@@ -43,7 +43,7 @@ else { var A = shape(cj), B = shape(hj), r = cmp(A, B);
 
 // S3
 var files = walk(D, []).filter(function (f) { return ['host.txt', 'compare.log'].indexOf(path.basename(f)) < 0 && !/^RED/.test(path.basename(f)) && f.indexOf(path.sep + 'red_empty' + path.sep) < 0; }), hits = [];
-files.forEach(function (f) { var t = fs.readFileSync(f, 'utf8'); if (t.indexOf('/home/red1') >= 0) hits.push(path.relative(D, f)); });
+files.forEach(function (f) { var t = fs.readFileSync(f, 'utf8').split('\n').filter(function (l) { return !/^§SC_ENV /.test(l); }).join('\n'); if (t.indexOf('/home/red1') >= 0) hits.push(path.relative(D, f)); });      // the script's own '/home/red1 absent' probe line is not a path read
 if (!files.length) vac('S3', 'no container log files to search'); else ok('S3', !hits.length, 'no /home/red1 path in ' + files.length + ' container log files', hits.length ? 'found in ' + hits.slice(0, 5).join(', ') : '');
 
 // S4
