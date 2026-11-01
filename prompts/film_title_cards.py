@@ -183,6 +183,29 @@ if os.environ.get('FILM_SET') == 'bricscad2':
     SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
     NOVEL = {}
     CLIPS = {}
+# §BIM Do-Once-Reuse-Forever film (bim-ootb prompts/FILM_BIM_DO_ONCE_REUSE_FOREVER.md, owner 2026-11-01): FILM_SET=doonce, chapter keys in TIME order (0, 0a, 0c, 0d, 0b, 1-9 = keys 0..13); supersedes the whatsnew cards (#285).
+if os.environ.get('FILM_SET') == 'doonce':
+    CARDS = {
+        0: ('CHAPTER 0', 'THE', 'QUESTION', 'Why flat drawings became a digital twin.'),
+        1: ('CHAPTER 0a', 'BEFORE', 'THE SCREEN', 'A mark made so it can be read again.'),
+        2: ('CHAPTER 0c', 'HOW WE', 'GOT HERE', 'Sixty years, one direction.'),
+        3: ('CHAPTER 0d', 'NOT HISTORY:', 'REUSABILITY', 'Recorded is not reusable.'),
+        4: ('CHAPTER 0b', 'THE', 'PROMISE', 'Entered once, reused forever.'),
+        5: ('CHAPTER 1', 'WRITTEN', 'ONCE', 'One note on a drawing.'),
+        6: ('CHAPTER 2', 'READ,', 'NOT RETYPED', 'The note became a property.'),
+        7: ('CHAPTER 3', 'REUSED', 'FOR COST', 'The note chose the price row.'),
+        8: ('CHAPTER 4', 'REUSED', 'FOR CHECKS', 'Marks, codes and a ballpark weight.'),
+        9: ('CHAPTER 5', 'CARRIED', 'IN THE IFC', 'The open handover.'),
+        10: ('CHAPTER 6', 'REUSED FOR', 'STRUCTURE', 'The same model, through the IFC.'),
+        11: ('CHAPTER 7', 'ANY MODEL,', 'NOT JUST THIS ONE', 'What it states, and what it lacks.'),
+        12: ('CHAPTER 8', 'WHAT IT', 'DOES NOT DO', 'The engineer stays the engineer.'),
+        13: ('CHAPTER 9', 'INFORMATION', 'THAT GROWS', 'Entered once. Reused at every step.'),
+    }
+    TAG = {0: 'THE QUESTION', 1: 'BEFORE THE SCREEN', 2: 'HOW WE GOT HERE', 3: 'NOT HISTORY: REUSABILITY', 4: 'THE PROMISE', 5: 'WRITTEN ONCE', 6: 'READ, NOT RETYPED', 7: 'REUSED FOR COST',
+           8: 'REUSED FOR CHECKS', 9: 'CARRIED IN THE IFC', 10: 'REUSED FOR STRUCTURE', 11: 'ANY MODEL, NOT JUST THIS ONE', 12: 'WHAT IT DOES NOT DO', 13: 'INFORMATION THAT GROWS'}
+    SERIES = 'BIM  ·  THE UNTOLD STORY OF DO ONCE, REUSE FOREVER'
+    NOVEL = {}
+    CLIPS = {}
 # Malay version of the why film (bim-ootb prompts/FILM_DXF2BIM_WHY_MARKINGS.md §MS, 2026-10-23): FILM_SET=why_ms, the same three chapters, app terms kept as users say them.
 if os.environ.get('FILM_SET') == 'why_ms':
     CARDS = {
