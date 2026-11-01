@@ -1,0 +1,622 @@
+{
+ "_scope": "Developer cut v4",
+ "facts": [
+  {
+   "id": "b1_station_refused",
+   "log": "build/scriptor/terms_run/witness_comm_executors.log",
+   "regex": "a STATION completes an order it created: its status op is REFUSED not-executor on EVERY device",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "b1_hq_merged",
+   "log": "build/scriptor/terms_run/witness_comm_executors.log",
+   "regex": "HQ \\(the executor\\) completes its order: the status op and its consequence are MERGED on every device",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "b1_ctl_merged",
+   "log": "build/scriptor/terms_run/witness_comm_executors.log",
+   "regex": "CONTROL: a table with no entry in the map \\(m_movement\\) — the station's status op is MERGED as today",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "b1_ok",
+   "log": "build/scriptor/terms_postSeal/runner.log",
+   "regex": "^BUNDLE \\(Complete\\) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 1
+  },
+  {
+   "id": "b1_tot",
+   "log": "build/scriptor/terms_postSeal/runner.log",
+   "regex": "^BUNDLE \\(Complete\\) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| ENFORCED",
+   "group": 2
+  },
+  {
+   "id": "b1_mut_found",
+   "log": "build/scriptor/witness_terms_reuse_mutant_20261031.log",
+   "regex": "^BUNDLE \\(Complete\\) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| UNCONTROLLED",
+   "group": 1
+  },
+  {
+   "id": "b1_mut_tot",
+   "log": "build/scriptor/witness_terms_reuse_mutant_20261031.log",
+   "regex": "^BUNDLE \\(Complete\\) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| UNCONTROLLED",
+   "group": 2
+  },
+  {
+   "id": "neg_found",
+   "log": "build/scriptor/terms_postSeal_neg/neg_seal.out",
+   "regex": "^RELAY \\(sealing\\) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| UNCONTROLLED",
+   "group": 1
+  },
+  {
+   "id": "neg_tot",
+   "log": "build/scriptor/terms_postSeal_neg/neg_seal.out",
+   "regex": "^RELAY \\(sealing\\) \\| [A-Z+]+ \\| (\\d+)/(\\d+) refused \\| UNCONTROLLED",
+   "group": 2
+  },
+  {
+   "id": "neg_status",
+   "log": "build/scriptor/terms_postSeal_neg/neg_seal.out",
+   "regex": "\\| (UNCONTROLLED) \\[",
+   "group": 1
+  },
+  {
+   "id": "neg_missing",
+   "log": "build/scriptor/terms_postSeal_neg/neg_seal.out",
+   "regex": "control NOT FOUND: (.+)$",
+   "group": 1
+  },
+  {
+   "id": "neg_word",
+   "log": "build/scriptor/terms_postSeal_neg/neg_seal.out",
+   "regex": "§TERMS_VERDICT (FAIL)",
+   "group": 1
+  },
+  {
+   "id": "neg_uncontrolled",
+   "log": "build/scriptor/terms_postSeal_neg/neg_seal.out",
+   "regex": "§TERMS_VERDICT FAIL .*uncontrolled=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "m_needle1",
+   "log": "build/scriptor/terms_postSeal/witness_read_scope.log",
+   "regex": "§RS-MUT M1 \"laned ops sealed with the space key\" needle_count=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "m_killed",
+   "log": "build/scriptor/terms_postSeal/witness_read_scope.log",
+   "regex": "§RS_MUTANTS killed=(\\d+)/",
+   "group": 1
+  },
+  {
+   "id": "m_tot",
+   "log": "build/scriptor/terms_postSeal/witness_read_scope.log",
+   "regex": "§RS_MUTANTS killed=\\d+/(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "m_crash_rule",
+   "log": "scripts/witness_witness_cache.js",
+   "regex": "a crash is not a kill",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "m_once_rule",
+   "log": "scripts/witness_witness_cache.js",
+   "regex": "needle_count=' \\+ n \\+ ' \\(must be 1\\): NOT applied, not a kill",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "eq_needle",
+   "log": "build/scriptor/film_v4/equivalent_mutant_repro.log",
+   "regex": "§WC-MUT \"readFileSync not traced[^\"]*\" needle_count=(\\d+) -> red=none",
+   "group": 1
+  },
+  {
+   "id": "eq_red",
+   "log": "build/scriptor/film_v4/equivalent_mutant_repro.log",
+   "regex": "§WC-MUT \"readFileSync not traced[^\"]*\" needle_count=\\d+ -> red=(none)",
+   "group": 1
+  },
+  {
+   "id": "eq_word",
+   "log": "build/scriptor/film_v4/equivalent_mutant_repro.log",
+   "regex": "§WC-MUT \"readFileSync not traced[^\"]*\" .*(\\(expected M2\\))",
+   "group": 1
+  },
+  {
+   "id": "tt_crash",
+   "log": "build/scriptor/film_v4/pr_2487.json",
+   "regex": "W-TT fixed for a record with no OPEN row",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "stale_limit",
+   "log": "build/scriptor/film_v4/pr_2488.json",
+   "regex": "still said a withheld mailbox bundle shows as a parked op, not a gap",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "nat_cached",
+   "log": "build/scriptor/witness_cache/RED_native.log",
+   "regex": "§WC-M8 .* after-change cached=(true)",
+   "group": 1
+  },
+  {
+   "id": "nat_marker",
+   "log": "build/scriptor/witness_cache/RED_native.log",
+   "regex": "§WC-M8 .* §FXN (N1)",
+   "group": 1
+  },
+  {
+   "id": "nat_fixed",
+   "log": "build/scriptor/witness_cache/GREEN_native.log",
+   "regex": "§WC-M8 .* after-change cached=(false)",
+   "group": 1
+  },
+  {
+   "id": "r1_portable",
+   "log": "build/scriptor/dev_env/runner1.log",
+   "regex": "§TERMS_PORTABLE rows=\\d+ portable=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "r1_untracked",
+   "log": "build/scriptor/film_v4/repo_facts.log",
+   "regex": "§RUNNER1_UNTRACKED_LINES (\\d+)",
+   "group": 1
+  },
+  {
+   "id": "un_terms",
+   "log": "build/scriptor/film_v4/repo_facts.log",
+   "regex": "§RUNNER2_UNTRACKED_MISSING (\\d+)",
+   "group": 1
+  },
+  {
+   "id": "un_db",
+   "log": "build/scriptor/dev_env/runner2.log",
+   "regex": "§UNTRACKED \\S+ BIMCompiler/(build/erp/ad_full\\.db) kind=untracked why=(gitignored)",
+   "group": 1
+  },
+  {
+   "id": "un_why",
+   "log": "build/scriptor/dev_env/runner2.log",
+   "regex": "§UNTRACKED \\S+ BIMCompiler/build/erp/ad_full\\.db kind=untracked why=(gitignored)",
+   "group": 1
+  },
+  {
+   "id": "de_bytes",
+   "log": "build/scriptor/dev_env/publish_ad_full.log",
+   "regex": "bytes=(\\d+) sha=",
+   "group": 1
+  },
+  {
+   "id": "de_mb",
+   "kind": "derive",
+   "of": "de_bytes",
+   "div": 1000000,
+   "dp": 0
+  },
+  {
+   "id": "de_sha",
+   "log": "build/scriptor/dev_env/publish_ad_full.log",
+   "regex": "bytes=\\d+ sha=(\\w+) ->",
+   "group": 1
+  },
+  {
+   "id": "de_back",
+   "log": "build/scriptor/dev_env/publish_ad_full.log",
+   "regex": "fetched back, sha matches",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "pt_before",
+   "log": "build/scriptor/dev_env/runner2.log",
+   "regex": "§TERMS_PORTABLE rows=\\d+ portable=(\\d+) not_portable=\\d+",
+   "group": 1
+  },
+  {
+   "id": "pt_rows",
+   "log": "build/scriptor/dev_env/GREEN_real.log",
+   "regex": "§TERMS_PORTABLE rows=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "pt_after",
+   "log": "build/scriptor/dev_env/GREEN_real.log",
+   "regex": "§TERMS_PORTABLE rows=\\d+ portable=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "de_judged",
+   "log": "build/scriptor/dev_env/GREEN_real.log",
+   "regex": "§DE_VERDICT PASS judged=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "de_mut",
+   "log": "build/scriptor/dev_env/GREEN_real.log",
+   "regex": "§DE_VERDICT PASS judged=\\d+ fails=\\d+ inconclusive=\\d+ mutants=(\\d+)/",
+   "group": 1
+  },
+  {
+   "id": "c_run1",
+   "log": "build/scriptor/witness_cache/GREEN_full.log",
+   "regex": "§WC-R1 run1 ([\\d.]+) s",
+   "group": 1
+  },
+  {
+   "id": "c_run2",
+   "log": "build/scriptor/witness_cache/GREEN_full.log",
+   "regex": "§WC-R1 run2 ([\\d.]+) s",
+   "group": 1
+  },
+  {
+   "id": "c_run1i",
+   "kind": "derive",
+   "of": "c_run1",
+   "div": 1,
+   "dp": 0
+  },
+  {
+   "id": "c_run2i",
+   "kind": "derive",
+   "of": "c_run2",
+   "div": 1,
+   "dp": 0
+  },
+  {
+   "id": "g1_run1",
+   "log": "build/scriptor/gaps_49_1/g1_witness_cache_full.log",
+   "regex": "§WC-R1 run1 ([\\d.]+) s",
+   "group": 1
+  },
+  {
+   "id": "g1_run2",
+   "log": "build/scriptor/gaps_49_1/g1_witness_cache_full.log",
+   "regex": "§WC-R1 run2 ([\\d.]+) s",
+   "group": 1
+  },
+  {
+   "id": "g1_run1i",
+   "kind": "derive",
+   "of": "g1_run1",
+   "div": 1,
+   "dp": 0
+  },
+  {
+   "id": "g1_run2i",
+   "kind": "derive",
+   "of": "g1_run2",
+   "div": 1,
+   "dp": 0
+  },
+  {
+   "id": "g1_ran",
+   "log": "build/scriptor/gaps_49_1/g1_witness_cache_full.log",
+   "regex": "§WC-R1 run2 .* ran=(\\d+) cached=\\d+ cache_skip=\\d+",
+   "group": 1
+  },
+  {
+   "id": "g1_cached",
+   "log": "build/scriptor/gaps_49_1/g1_witness_cache_full.log",
+   "regex": "§WC-R1 run2 .* ran=\\d+ cached=(\\d+) cache_skip=\\d+",
+   "group": 1
+  },
+  {
+   "id": "g1_skip",
+   "log": "build/scriptor/gaps_49_1/g1_witness_cache_full.log",
+   "regex": "§WC-R1 run2 .* cache_skip=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "g1_judged",
+   "log": "build/scriptor/gaps_49_1/g1_witness_cache_full.log",
+   "regex": "§WC_VERDICT PASS judged=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "g1_mut",
+   "log": "build/scriptor/gaps_49_1/g1_witness_cache_full.log",
+   "regex": "§WC_VERDICT PASS judged=\\d+ fails=\\d+ inconclusive=\\d+ mutants=(\\d+)/",
+   "group": 1
+  },
+  {
+   "id": "sk_git",
+   "log": "build/scriptor/dev_env/runner2.log",
+   "regex": "§CACHE_SKIP \\S+ reason=non-node-child \\(git\\)",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "sk_psql",
+   "log": "build/scriptor/dev_env/runner2.log",
+   "regex": "§CACHE_SKIP \\S+ reason=non-node-child \\(psql\\)",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "sk_sh",
+   "log": "build/scriptor/dev_env/runner2.log",
+   "regex": "§CACHE_SKIP \\S+ reason=non-node-child \\(sh\\)",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "s_red_judged",
+   "log": "build/scriptor/read_scope_20261031/RED.log",
+   "regex": "§RS_SCOPE_VERDICT FAIL judged=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "s_red_fails",
+   "log": "build/scriptor/read_scope_20261031/RED.log",
+   "regex": "§RS_SCOPE_VERDICT FAIL judged=\\d+ fails=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "s_judged",
+   "log": "build/scriptor/terms_postSeal/witness_read_scope.log",
+   "regex": "§RS_SCOPE_VERDICT PASS judged=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "s_fails",
+   "log": "build/scriptor/terms_postSeal/witness_read_scope.log",
+   "regex": "§RS_SCOPE_VERDICT PASS judged=\\d+ fails=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "gh_opened",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log",
+   "regex": "§RSGH-A Y \\(a modified client .*opens (\\d+) of the \\d+ laned ops of X",
+   "group": 1
+  },
+  {
+   "id": "gh_down",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log",
+   "regex": "§RSGH-A Y \\(a modified client .*opens \\d+ of the (\\d+) laned ops of X",
+   "group": 1
+  },
+  {
+   "id": "gh_mid",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log",
+   "regex": "§RSGH-G the relay withholds X's MIDDLE .* gaps\\(\\) = exactly its box seq\\(s\\) \\[(\\d+)\\]",
+   "group": 1
+  },
+  {
+   "id": "gh_last",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log",
+   "regex": "§RSGH-G the relay withholds X's LAST bundle -> reported from X's signed head `boxes`: \\[(\\d+)\\]",
+   "group": 1
+  },
+  {
+   "id": "gh_judged",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log",
+   "regex": "§RSGH_VERDICT PASS judged=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "gh_fails",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log",
+   "regex": "§RSGH_VERDICT PASS judged=\\d+ fails=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "k_red_ids",
+   "log": "build/scriptor/gaps_49_1/g5_RED.log",
+   "regex": "§RS-J G5: .* names 0 of the 3 laned op ids and 0 of their record ids - op ids in state=(\\d+) record ids in state=\\d+",
+   "group": 1
+  },
+  {
+   "id": "k_red_word",
+   "log": "build/scriptor/gaps_49_1/g5_RED.log",
+   "regex": "(FAIL) §RS-J G5:",
+   "group": 1
+  },
+  {
+   "id": "k_red_judged",
+   "log": "build/scriptor/gaps_49_1/g5_RED.log",
+   "regex": "§RS_SCOPE_VERDICT FAIL judged=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "k_green_ids",
+   "log": "build/scriptor/gaps_49_1/g5_GREEN.log",
+   "regex": "§RS-J G5: .* - op ids in state=(\\d+) record ids in state=\\d+$",
+   "group": 1
+  },
+  {
+   "id": "k_green_judged",
+   "log": "build/scriptor/gaps_49_1/g5_GREEN.log",
+   "regex": "§RS_SCOPE_VERDICT PASS judged=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "k_green_mut",
+   "log": "build/scriptor/gaps_49_1/g5_GREEN.log",
+   "regex": "§RS_SCOPE_VERDICT PASS judged=\\d+ fails=\\d+ inconclusive=\\d+ mutants=(\\d+)/",
+   "group": 1
+  },
+  {
+   "id": "k_ctl",
+   "log": "build/scriptor/gaps_49_1/g5_GREEN.log",
+   "regex": "§RS-J G5 CONTROL: .* - op ids in state=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "g2_en",
+   "log": "build/scriptor/gaps_49_1/g2_stranger.log",
+   "regex": "§DE-R3 §TERMS_VERDICT FAIL enforced=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "g2_wf",
+   "log": "build/scriptor/gaps_49_1/g2_stranger.log",
+   "regex": "§DE-R3 §TERMS_VERDICT FAIL .* witness_failed=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "g2_clone_s",
+   "log": "build/scriptor/gaps_49_1/g2_stranger.log",
+   "regex": "§DE-R3 \\$ git clone .* -> exit 0 \\((\\d+) s\\)",
+   "group": 1
+  },
+  {
+   "id": "g2_fail_word",
+   "log": "build/scriptor/gaps_49_1/g2_stranger.log",
+   "regex": "(FAIL) §DE-R3 a STRANGER tree",
+   "group": 1
+  },
+  {
+   "id": "g2b_en",
+   "log": "build/scriptor/gaps_49_1/g2_stranger_rerun2_patched.log",
+   "regex": "§TERMS_VERDICT PASS enforced=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "g2b_open",
+   "log": "build/scriptor/gaps_49_1/g2_stranger_rerun2_patched.log",
+   "regex": "§TERMS_VERDICT PASS enforced=\\d+ open=(\\d+)",
+   "group": 1
+  },
+  {
+   "id": "lim_meta",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md",
+   "regex": "\\*\\*Residuals \\(stated\\):\\*\\* relay metadata visible",
+   "group": 1,
+   "kind": "flag"
+  },
+  {
+   "id": "l_terms",
+   "log": "build/scriptor/film_v4/repo_facts.log",
+   "regex": "§REPO_LINES BIMCompiler@ca532b065 scripts/witness_terms\\.js (\\d+)$",
+   "group": 1
+  },
+  {
+   "id": "l_cache",
+   "log": "build/scriptor/film_v4/repo_facts.log",
+   "regex": "§REPO_LINES BIMCompiler@ca532b065 scripts/witness_cache\\.js (\\d+)$",
+   "group": 1
+  },
+  {
+   "id": "l_trace",
+   "log": "build/scriptor/film_v4/repo_facts.log",
+   "regex": "§REPO_LINES BIMCompiler@ca532b065 scripts/witness_trace\\.js (\\d+)$",
+   "group": 1
+  },
+  {
+   "id": "l_devenv",
+   "log": "build/scriptor/film_v4/repo_facts.log",
+   "regex": "§REPO_LINES BIMCompiler@ca532b065 scripts/dev_env\\.js (\\d+)$",
+   "group": 1
+  },
+  {
+   "id": "l_fetch",
+   "log": "build/scriptor/film_v4/repo_facts.log",
+   "regex": "§REPO_LINES BIMCompiler@ca532b065 scripts/dev_env_fetch\\.js (\\d+)$",
+   "group": 1
+  },
+  {
+   "id": "l_publish",
+   "log": "build/scriptor/film_v4/repo_facts.log",
+   "regex": "§REPO_LINES BIMCompiler@ca532b065 scripts/dev_env_publish\\.js (\\d+)$",
+   "group": 1
+  },
+  {
+   "id": "l_wwc",
+   "log": "build/scriptor/film_v4/repo_facts.log",
+   "regex": "§REPO_LINES BIMCompiler@ca532b065 scripts/witness_witness_cache\\.js (\\d+)$",
+   "group": 1
+  },
+  {
+   "id": "l_wde",
+   "log": "build/scriptor/film_v4/repo_facts.log",
+   "regex": "§REPO_LINES BIMCompiler@ca532b065 scripts/witness_dev_env\\.js (\\d+)$",
+   "group": 1
+  },
+  {
+   "id": "l_spec",
+   "log": "build/scriptor/film_v4/repo_facts.log",
+   "regex": "§REPO_LINES BIMCompiler@ca532b065 prompts/TEAMWORK_FRAMEWORK\\.md (\\d+)$",
+   "group": 1
+  },
+  {
+   "id": "l_store",
+   "log": "build/scriptor/film_v4/repo_facts.log",
+   "regex": "§REPO_LINES bim-ootb@6a8023a5 common/comm/comm_store\\.js (\\d+)$",
+   "group": 1
+  },
+  {
+   "id": "l_roster",
+   "log": "build/scriptor/film_v4/repo_facts.log",
+   "regex": "§REPO_LINES bim-ootb@6a8023a5 common/comm/comm_roster\\.js (\\d+)$",
+   "group": 1
+  },
+  {
+   "id": "l_env",
+   "log": "build/scriptor/film_v4/repo_facts.log",
+   "regex": "§REPO_LINES bim-ootb@6a8023a5 common/comm/comm_envelope\\.js (\\d+)$",
+   "group": 1
+  },
+  {
+   "id": "l_pipe",
+   "log": "build/scriptor/film_v4/repo_facts.log",
+   "regex": "§REPO_LINES bim-ootb@6a8023a5 common/comm/comm_pipe\\.js (\\d+)$",
+   "group": 1
+  },
+  {
+   "id": "l_keys",
+   "log": "build/scriptor/film_v4/repo_facts.log",
+   "regex": "§REPO_LINES bim-ootb@6a8023a5 common/comm/team_keys\\.js (\\d+)$",
+   "group": 1
+  },
+  {
+   "id": "l_sync",
+   "log": "build/scriptor/film_v4/repo_facts.log",
+   "regex": "§REPO_LINES bim-ootb@6a8023a5 erp/team_sync\\.js (\\d+)$",
+   "group": 1
+  },
+  {
+   "id": "l_rs",
+   "log": "build/scriptor/film_v4/repo_facts.log",
+   "regex": "§REPO_LINES bim-ootb@6a8023a5 common/tests/witness_read_scope\\.js (\\d+)$",
+   "group": 1
+  },
+  {
+   "id": "l_rsgh",
+   "log": "build/scriptor/film_v4/repo_facts.log",
+   "regex": "§REPO_LINES bim-ootb@6a8023a5 common/tests/witness_read_scope_github\\.js (\\d+)$",
+   "group": 1
+  },
+  {
+   "id": "l_f1",
+   "log": "build/scriptor/film_v4/repo_facts.log",
+   "regex": "§REPO_LINES bim-ootb@6a8023a5 common/tests/witness_f1_mailbox\\.js (\\d+)$",
+   "group": 1
+  },
+  {
+   "id": "n_comm",
+   "log": "build/scriptor/film_v4/repo_facts.log",
+   "regex": "§REPO_COUNT BIMCompiler@ca532b065 scripts/witness_comm_\\*\\.js (\\d+)",
+   "group": 1
+  },
+  {
+   "id": "n_team",
+   "log": "build/scriptor/film_v4/repo_facts.log",
+   "regex": "§REPO_COUNT bim-ootb@6a8023a5 erp/tests/witness_team_\\*\\.js (\\d+)",
+   "group": 1
+  }
+ ]
+}
