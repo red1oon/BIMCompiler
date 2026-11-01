@@ -281,6 +281,14 @@ that does not fit is refused with the reason, never half-loaded; **Clear** goes 
 
 ![The converted Duplex: two storeys, openings cut, doors and glazing placed](img/dxf2bim/converted.jpg)
 
+#### 5a · Properties: what a part carries
+Click a converted part and the **Properties** panel opens beside the tool rail. It shows exactly what that part's IFC will carry: the IFC class, name,
+label, predefined type and material, then the drawing evidence in groups — **Source** (sheet, handle, layer, how it is known), **Size** (each stated size, in
+metres, with its base and top), **Drawing notes** (each note beside the sheet and handle it was read from) and **Schedule** (the schedule row it matched). A value
+with no content is not shown, because the IFC does not write it. A part you drew yourself, or one from an opened IFC, says *no drawing evidence: this part was not
+converted from the 2D set*. With several parts selected it shows the last one picked; **×** closes it until the selection changes. On a small screen with the
+metadata editor open there is no room beside it, so it opens on top of the editor.
+
 ### 6 · Export IFC
 **Export → IFC4.** The file has a proper spatial structure (Project → Site → Building → Storeys) and every
 element contained in its storey. On the Duplex standard set (measured 2026-10-26): 44 walls (one wall per drawn
@@ -304,11 +312,13 @@ downloads `<name>_extracted.db`. Open that file in the **Viewer** (**Open → lo
 - **Inputs**: edit the values and facts on the page and press **Apply** to recompute; **Download inputs** keeps them; to keep a value with the drawings,
   state it in the Modeller as `@DEFAULT=<key>,<value>`. **Print / Save as PDF** for the engineer.
 
-On the farm shed: 5,352 kN of own weight from 389 parts (546 t), 1,815 kN on the 32 footings, 3,537 kN of ground slab on the ground; the heaviest footing
-carries 246 kN (133 kPa); 123 parts are listed as not weighed (103 members the drawing does not size, 13 fans, 4 doors, 3 nettings).
+On the farm shed (2026-11-01, Complete ticked): 5,275.1 kN of own weight from 480 parts (537.9 t), 1,737.9 kN on the 32 footings, 3,537.2 kN of ground slab on the
+ground; the heaviest footing carries 120.0 kN (64.6 kPa); 32 parts are listed as not weighed (12 members with no section drawn and none to assume, 13 fans, 4 doors,
+3 nettings). Members with no section on their label take the drawing's most common section of the same kind, marked *assumed* (91 of the shed's 156 bars).
+A beam is sized along its own axis, so a beam drawn at an angle weighs the same as one square to the grid.
 It does not compute live load, wind, earthquake or member strength: those need the stated site, soil and an engineer's analysis.
 
-![Export ▸ Load Summary on the converted shed (2026-11-01): own weight 5,402.1 kN, part by part with each unit weight's source; inputs nothing states are red](img/dxf2bim/dxf2bim_sub_load_summary.jpg)
+![Export ▸ Load Summary on the converted shed (2026-11-01): own weight 5,275.1 kN, 1,737.9 kN on the footings, heaviest footing 120.0 kN; part by part with each unit weight's source; inputs nothing states are red](img/dxf2bim/dxf2bim_load_summary_2026-11-01.jpg)
 
 ### 8 · Regulatory Report (what you hand in)
 **Export ▸ Regulatory Report…** opens a short form of the facts a model cannot give (plot area, setbacks, occupancy, district, soil bearing capacity …,
@@ -335,6 +345,25 @@ authority's header added, another style) reaches both; the witnesses W-REG-REPOR
 **Before building**, edit what goes in, not the page: the facts form, the rate pack and its rates (the rate editor), and the defaults (Element defaults ▸ Set);
 build again and the report follows in seconds. Editing the downloaded HTML by hand is possible, but that copy no longer matches the model fingerprint and sources it states.
 The 4D/5D page is different (a live page, its downloads are Excel files): see [4D5D Analysis ▸ Where the page's format is kept, and how to edit it](4D5DAnalysis.md).
+
+### 9 · Analytical model (STAAD, for your structural engineer)
+**Export ▸ Analytical model (STAAD)…** downloads a `.std` file the engineer opens in STAAD.Pro as a **starting model, not a design**. It is built from the model's IFC,
+so the same export works on a converted 2D set (it writes the IFC first) and, with nothing converted, on **any `.ifc` you choose**.
+
+- **Members**: each column, beam and steel member on its centre line; a free end that lands on another member's span joins it there. Gusset plates, walls, the roof
+  sheet, fans, doors and netting are listed as left out with the reason; a footing becomes a **support** (FIXED by default; Element defaults `analytical.support`).
+- **Joints**: member ends closer than `analytical.node_snap` (0.25 m by default) are one joint. Ends joined to nothing are listed as **dangling**, with their sheet
+  and handle, never hidden.
+- **Sections and materials**: concrete rectangles from the drawn sizes; steel angles from the label (or the drawing's most common section, marked assumed).
+  Concrete stiffness is E = 4700 √f'c from the drawing's own strength note (ACI 318-19 §19.2.2.1); with no f'c stated, no stiffness is given and a finding says so.
+  A member whose stated material is neither concrete nor steel gets no stiffness either.
+- **Load**: one case, self-weight only. No live, wind or seismic load, no member releases: the file header lists every assumption for the engineer.
+
+On the farm shed: 337 members (96 column pieces, 35 beams, 206 truss-bar pieces), 319 joints, 32 supports, 36 dangling ends, 14 findings; a 19,330-byte `.std`.
+The file built from the drawings and the file built from the exported IFC alone are **byte-identical**, so nothing the analysis needs is lost on the way through IFC.
+From the command line: `node modeller/dxf2bim_cli.js --sheets <sheets> --out <dir> --complete --analytical` (also writes `analytical.json`, an open format), or
+`node modeller/dxf2bim_cli.js --ifc-in <file.ifc> --analytical --out <dir>` for any IFC. A typical IFC from elsewhere states no section sizes and no f'c, so its
+members take their box sizes and get findings instead of a stiffness (measured on six models, e.g. `Ifc4_Revit_STR.ifc`: 449 members, 453 joints, 4 supports, 152 dangling ends).
 
 ### If something goes wrong
 | What you see | Why | What to do |
@@ -476,7 +505,7 @@ building is made of **bodies** read from layers you type, not of walls and slabs
 
    ![The converted shed (2026-11-01, Complete ticked): 512 parts; the 2D panel lists the nine sheets, the details sheet as NOTES](img/dxf2bim/dxf2bim_sub_converted.jpg)
 
-   ![A footing picked in x-ray among its neighbours: its casting ratio 1:1.5:3 and its 12" thickness come from the details sheet (the Modeller has no properties panel yet: the values are in the model and the exports)](img/dxf2bim/dxf2bim_sub_footing.jpg)
+   ![A footing picked in x-ray: the Properties panel shows what its IFC carries — the casting ratio 1:1.5:3 from the details sheet (handle 2E2), f'c 24 MPa and fy 500 MPa (handle 2E1), and the footing schedule's row (2026-11-01)](img/dxf2bim/dxf2bim_props_panel.jpg)
 
 ![The converted shed on the canvas: material colours, 512 bodies](img/dxf2bim/shed_canvas.jpg)
 
@@ -559,6 +588,7 @@ Honest limits of the preliminary version:
 - **The Regulatory Report is not a certificate.** It states the facts of the model, with blank signature blocks for the people who sign; it is not a code-compliance certificate.
 - **The details' bar sizes are not used.** Reinforcement is an assumed bill line (a stated percentage of each concrete body), shown as assumed.
 - **The Load Summary is own weight, not a structural design.** No live load, wind, earthquake or member strength.
+- **The analytical model is a starting point, not an analysis.** It has not been opened in STAAD.Pro here (no STAAD on the build machine; it is checked by its own reader); releases, member orientation and loads other than self-weight are for the engineer.
 - **"Any DXF"** is not claimed. Your drawing needs the metadata above; the editor helps you add it, the verdict
   tells you when it is complete.
 - **The component library** (door/window geometry) is published: when no local copy is present, Convert loads it
