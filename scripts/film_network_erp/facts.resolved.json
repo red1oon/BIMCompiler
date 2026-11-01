@@ -25,7 +25,12 @@
   "legacy_step_ms_poor": "1401",
   "twin_step_ms": "55",
   "legacy_java_mb": "2583",
-  "legacy_pg_mb": 215
+  "legacy_pg_mb": 215,
+  "fit_points": "10, 20, 30, 50, 100",
+  "holdout_n": "100",
+  "extrap_n": "1000",
+  "catchup_err": "15",
+  "legacy_servers": "2"
  },
  "sources": {
   "users_max": "build/scriptor/sme100_20261102/sme_n100_retry.log :: §STAR-DONE engine N=50 M=50 status=PASS-RUN wall_s=292",
@@ -53,6 +58,11 @@
   "legacy_step_ms_poor": "build/scriptor/beat10_20261102/time_o2c.log :: §LVL-PROFILE poor (rtt 300 ms) over the 6 completed steps: legacy >= 8.41 s (9 writes × 300 ms + 5.71 s server) · twin 0.33 s local, 0 round trips in the path ·",
   "twin_step_ms": "build/scriptor/beat10_20261102/time_o2c.log :: §LVL-PROFILE 4g (rtt 80 ms) over the 6 completed steps: legacy >= 6.43 s (9 writes × 80 ms + 5.71 s server) · twin 0.33 s local, 0 round trips in the path · per",
   "legacy_java_mb": "build/scriptor/beat10_20261102/time_o2c.log :: §LVL-SERVERS legacy needs 2 server processes: iDempiere java RSS=2583 MB · postgres container postgres 215MiB / 31.03GiB — twin: 0 server processes (SQLite in t",
-  "legacy_pg_mb": "build/scriptor/beat10_20261102/time_o2c.log :: §LVL-SERVERS legacy needs 2 server processes: iDempiere java RSS=2583 MB · postgres container postgres 215MiB / 31.03GiB — twin: 0 server processes (SQLite in t"
+  "legacy_pg_mb": "build/scriptor/beat10_20261102/time_o2c.log :: §LVL-SERVERS legacy needs 2 server processes: iDempiere java RSS=2583 MB · postgres container postgres 215MiB / 31.03GiB — twin: 0 server processes (SQLite in t",
+  "fit_points": "build/scriptor/sme100_20261102/fit.log :: §FIT-HEADER §45.14 dir=build/scriptor/sme100_20261102 users=10,20,30,50,100 day: visits_per_hour=4 hours=8 burst_s=60 (STATED ASSUMPTIONS) gh_limits={\"per_hour_",
+  "holdout_n": "build/scriptor/sme100_20261102/fit.log :: §HOLDOUT edge.roster_visit_requests_p50 fit on N<=50 → predict 100: power 54.69 (err 14.6%) quad 90.24 (err 41.0%) measured 64 → model=power",
+  "extrap_n": "build/scriptor/sme100_20261102/fit.log :: §EXTRAP edge.roster_visit_requests_p50 N=500 163 N=1000 251 requests (model power, band ±15% as measured at 100; wider further out) [power: N=500 163, N=1000 25",
+  "catchup_err": "build/scriptor/sme100_20261102/fit.log :: §EXTRAP edge.roster_visit_requests_p50 N=500 163 N=1000 251 requests (model power, band ±15% as measured at 100; wider further out) [power: N=500 163, N=1000 25",
+  "legacy_servers": "build/scriptor/beat10_20261102/time_o2c.log :: §LVL-SERVERS legacy needs 2 server processes: iDempiere java RSS=2583 MB · postgres container postgres 215MiB / 31.03GiB — twin: 0 server processes (SQLite in t"
  }
 }

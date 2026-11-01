@@ -36,6 +36,11 @@ fact('legacy_step_ms_poor', o2c, /^§LVL-PROFILE poor /, l => m(/legacy >= (\d+)
 fact('twin_step_ms', o2c, /^§LVL-PROFILE 4g /, l => m(/vs twin (\d+) ms/, l));
 fact('legacy_java_mb', o2c, /^§LVL-SERVERS /, l => m(/java RSS=(\d+) MB/, l));
 fact('legacy_pg_mb', o2c, /^§LVL-SERVERS /, l => Math.round(Number(m(/postgres ([\d.]+)MiB/, l))));
+fact('fit_points', fit, /^§FIT-HEADER /, l => m(/users=([\d,]+)/, l).split(',').join(', '));
+fact('holdout_n', fit, /^§HOLDOUT edge\.roster_visit_requests_p50 /, l => m(/predict (\d+):/, l));
+fact('extrap_n', fit, /^§EXTRAP edge\.roster_visit_requests_p50 /, l => m(/N=(\d+) \d+ requests/, l));
+fact('catchup_err', fit, /^§EXTRAP edge\.roster_visit_requests_p50 /, l => m(/band ±(\d+)%/, l));
+fact('legacy_servers', o2c, /^§LVL-SERVERS /, l => m(/legacy needs (\d+) server processes/, l));
 console.log('§FACTS resolved=' + Object.keys(F).length + ' missing=' + miss.length + (miss.length ? ' ' + JSON.stringify(miss) : ''));
 Object.keys(F).forEach(k => console.log('§FACT ' + k + '=' + F[k] + '  ← ' + SRC[k]));
 // every {{fact}} used in the storyboard must exist
