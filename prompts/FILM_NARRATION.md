@@ -263,8 +263,8 @@ edge-tts, praat-parselmouth); `kokoro/` models; `cache_edge/`. Scratch clips/pla
 **Still open:** confirm "Boston" (IFC site = likely Revit default location); a native Thai listener for question tone.
 
 ## ▶ PLAYBOOK C — the EXPLAINER layout (the CAPEX add-on film, 2026-11-03; red1: "impressive in its screenplay … big picture sense, tempo and flow. Particularly the opening it gives a before/after intro which i grasped easily")
-Reference film: `~/Videos/CAPEX_Dashboard_Addon_narrated_EN_AFTER_2026-11-03_v4.mp4` (143 s, EN). Build log + storyboard: bim-ootb `prompts/CAPEX_DASHBOARD.md` §15. Tools: bim-ootb
-`capex/tools/film_shots.js` (stills of the REAL page, software GL, every value also printed as `§FILM_SHOT`), `capex/tools/film_cards/*.html` (plain cards), TSV `prompts/film_narration_capex_addon_en_v4.tsv`,
+Reference film: `~/Videos/CAPEX_Dashboard_Addon_narrated_EN_AFTER_2026-11-03_v5.mp4` (157 s, EN; v4 = the overlay-card version). Build log + storyboard: bim-ootb `prompts/CAPEX_DASHBOARD.md` §15. Tools: bim-ootb
+`capex/tools/film_shots.js` (stills of the REAL page, software GL, every value also printed as `§FILM_SHOT`), `capex/tools/film_cards/*.html` (plain cards), TSV `prompts/film_narration_capex_addon_en_v5.tsv`,
 chapter cards `FILM_SET=capexaddon prompts/film_title_cards.py`.
 **1. The screenplay shape (keep this order — it is what made it easy to grasp):**
 1. **Before / after in the first 25 s.** Open on the honest "before" (the page with nothing connected — "no data source", no fake zeros) → one plain card of the idea (4 boxes, arrows, one footnote) →
@@ -282,8 +282,15 @@ zero until costs are booked"). No jargon: "tick the phase complete in the projec
 - Composites: dark background #0f172a; labels sky-blue #7dd3fc bold 44-46; headings start ≥ 95 px from the top (the chapter/series tags live in the top 90 px); keep the bottom 230 px EMPTY for
   subtitles — witness it numerically: `convert x.png -crop 1920x230+0+850 -format '%[fx:mean]' info:` must equal the background (0.1046).
 - Reused baked clips: crop out every HUD that carries another number (cost, day counter) — one subject, one set of numbers on screen; insets labelled at the top centre, below the tag strip.
-- Chapter cards (`film_title_cards.py`) overlay 2.6 s at the START of a beat while the voice runs → no pause, no broken flow. Backdrops = photographic frames (a dimmed TEXT still bleeds through the card).
-  End the tags before the closing card (last `§FILM_BEAT` marker = the closing beat's start).
+- **Chapter cards — red1's preference (2026-11-03, settled; supersedes the overlay style for explainer films):** *"remove the chapter header during the film as it obscured the top part of screen"* ·
+  *"during chapter cards, have no background as it is noisy. Give them a sec more and hold off the narrative until it has played. Want clear visual focus."*
+  → each card is its OWN silent segment of **3.6 s** inserted BETWEEN beats (fade 0.4 s), **plain dark background** (#0b0f17, no still, no footage), house typography (kicker coral #FF6B78 34 px,
+  title line 1 off-white #F3EEE8 120 px, line 2 coral, one plain line 40 px — DejaVu Sans), **NO voice over the card** (the next beat's cue starts after it), and **NO persistent chapter / series tags**
+  anywhere in the film. Build: ImageMagick `convert -size 1920x1080 xc:'#0b0f17' -gravity center … -annotate` (CAPEX_DASHBOARD.md §15.3), one segment per card; re-measure every segment's frames
+  and set the TSV cues from the measured starts (3.6 s is not a whole number of frames — cues drift otherwise). A card hold + the beat slack before it must stay ≤ ~7 s of silence: trim the clip
+  before a card (a 6.6 s clip tail + a card gave a 10.5 s pause).
+- **Showing a "from a 2D drawing" claim:** use 3 labelled stills, not a clip that never shows 2D — `1 · a flat 2D sheet` (the floor plan rendered from the DXF), `2 · the 2D sheets assembled in 3D`
+  (the wireframe sheets standing), `3 · converted: the model` — 2.6 s each (red1 2026-11-03: *"the clip does not show any 2D drawing … just still snaps"*).
 - Static holds + 0.5 s fades (ffmpeg `-loop 1 -tune stillimage`): seconds per segment. Do NOT use `zoompan` at 1080p (10+ min per segment). Never `pkill -f <word>` that appears in your own command.
 **4. Timing:** after the first fit, cut each beat to its speech + 1–3 s (slack > 4 s left 7–9 s silences in v1: 147 s → 116 s, then 143 s with chapters/roadmap/closing). Fit goal 12/12 DETAIL, 0 WRONG
 (a WH question that rises → reword it; "Where do I record that?" falls, "Where do I tick that?" rose).
