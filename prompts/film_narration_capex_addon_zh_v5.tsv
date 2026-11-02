@@ -1,0 +1,12 @@
+nodata	3.583	13.583	§FILM_SHOT nodata view="no data source loaded" (W-CAPEX-NODATA-DEFAULTS)	F: 一个空的仪表板？ | M: 很诚实：没有数据，就没有数字。	F: 一个CAPEX仪表板，上面什么都没有？ | M: 还没有接入数据，所以它直接说明。没有假的零，也没有假的绿灯。
+addon	13.583	26.583	§12.2 types: read-only query types + create types on the test server; no plugin, no table added	F: 我要安装什么？ | M: iDempiere里什么都不用装。	F: 那我要在iDempiere里改什么？ | M: 什么都不用改。不装插件，不加新表。它通过标准Web服务读取，保存一份本地副本，仪表板就在这份副本上运行。
+dash	30.167	40.167	§FILM_SHOT legacy_before total_projects=1 · approved_budget USD 4,996,320.87 · schedule On Time 1	F: 现在接上了吗？ | M: 接上了测试服务器。	F: 现在接上了吗？ | M: 接上了一台测试服务器。一个项目，预算将近五百万美元，进度正常。
+formula	40.167	48.167	§FILM_SHOT 03b_tile_budget: ƒ SUM(C_Project.PlannedAmt) per C_Currency_ID	F: 数字从哪里来？ | M: 公式就印在下面。	F: 这个数字从哪里来？ | M: 每个指标下面都印着公式。就是对iDempiere自己的字段做简单求和。
+model	51.750	72.708	§FOLD_DEMO building=HHS_Office_Federated pack=rsmeans2024_us.json cur=USD created phases=6 tasks=10 lines=19 · shed: Shed_2D_to_Film v3 (2D sheets → model)	F: 项目是谁录入的？ | M: 没有人，是算出来的。	F: 那这个项目，是谁录入的？ | M: 没有人。它是算出来的：来自一套二维图纸，比如这个棚子，或者来自建筑模型，比如这栋办公楼。 | F: 所以什么都不用重复录入？ | M: 不用。六个阶段，十个任务，十九行明细，用可修改的示例单价，以美元计价。
+push	76.292	89.292	§SHED_PUSH projectId=1000005 created projects=1 phases=6 tasks=10 lines=19 products=12	F: 能送到iDempiere吗？ | M: 通过Web服务。	F: 这张项目单能送到iDempiere吗？ | M: 通过同样的标准Web服务，就像一个人亲手录入。看，同一个项目，同样的计划金额，两个系统都一样。
+check	89.292	105.292	§SHED_TWIN_VERDICT PASS rows(match=160 diff=0) tiles(match=16); §12.2 seven fixes; last_updated PER_SOURCE	F: 真的一样吗？ | M: 逐个数值核对。	F: 真的完全一样，还是只是差不多？ | M: 我们逐个数值核对。一百六十个，全部相同。过程中发现了七处差异，比如四舍五入、缺少税种，每一处都在我们这边修正了。
+before	105.292	111.292	§FILM_SHOT physical_before_A=0% · physical_before_B=0%	F: 那进度呢？ | M: 现在是零。	F: 那进度呢？ | M: 还没有完成任何阶段。两边都是零。
+after	111.292	124.292	§PHASE_PROGRESS Superstructure IsComplete N→Y both sides (C_ProjectPhase.IsComplete) · §FILM_SHOT physical_after_A=62% · physical_after_B=62% · spent 0%	F: 在哪里记录？ | M: 把阶段标记为完成。百分之六十二，两边一样。	F: 主体结构完成了，在哪里记录？ | M: 在阶段列表里，把主体结构标为完成。按计划价值，进度百分之六十二，两边一样。还没记成本，花费仍是零。
+roadmap	127.875	136.875	roadmap card (not built)	F: 下一步是什么？ | M: 仪表板编辑器。	F: 下一步呢？ | M: 仪表板编辑器：不写代码、不用AI，就能改指标和布局。尚未做出。
+end	136.875	146.875	end card · LICENSE MIT	F: 我可以保留iDempiere吗？ | M: 一次迁移一个模块。	F: 所以我可以保留我的iDempiere？ | M: 可以保留。一次迁移一个模块，每个都经过核对。开源，MIT许可。
+closing	146.875	156.875	closing card (owner text 2026-11-03)	M: 这是一项进行中的工作，由Sysnova赞助。	M: 这是一项进行中的工作，由英国和孟加拉的Sysnova赞助。每一行代码都经过见证、记录并公开发布。

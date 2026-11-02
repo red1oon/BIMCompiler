@@ -238,6 +238,20 @@ if os.environ.get('FILM_SET') == 'shedlast2':
     SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
     NOVEL = {}
     CLIPS = {}
+# CAPEX dashboard add-on film (bim-ootb prompts/CAPEX_DASHBOARD.md §15, red1 2026-11-03: chapter titles in his words, "i leave to you how best to arrange or word them in the already
+#   quite perfect flow"): FILM_SET=capexaddon, FIVE chapters keyed to the flow (open · dashboard · no rekeying · parity · roadmap); no badges, no cutaways.
+if os.environ.get('FILM_SET') == 'capexaddon':
+    CARDS = {
+        1: ('CHAPTER 1', 'A FULL SPATIAL ERP', 'IN THE MAKING', 'Building model, schedule, cost and ERP: one chain.'),
+        2: ('CHAPTER 2', 'PROJECT ORDER', 'INTELLIGENCE', 'A dashboard on SQLite, reusable for any project.'),
+        3: ('CHAPTER 3', 'NO REKEYING', 'OF SITE DATA', 'From a 2D layout, as if a robot manager did it. None does: MIT code.'),
+        4: ('CHAPTER 4', 'FULL PARITY', 'TWIN AND LEGACY', 'Serverless twin = legacy iDempiere, ready for the move to the kernel ERP.'),
+        5: ('CHAPTER 5', 'ROADMAP', 'DASHBOARD EDITOR', 'Change it without coding, and without AI.'),
+    }
+    TAG = {1: 'SPATIAL ERP', 2: 'DASHBOARD', 3: 'NO REKEYING', 4: 'PARITY', 5: 'ROADMAP'}
+    SERIES = 'BIM OOTB  ·  ERP  ·  CAPEX ADD-ON'
+    NOVEL = {}
+    CLIPS = {}
 os.makedirs(out, exist_ok=True)
 txt = open(log).read()
 chap = {int(m.group(1)): float(m.group(2)) for m in re.finditer(r'§FILM_CHAPTER n=(\d+) key=\S+ t=([\d.]+)', txt)}

@@ -4,6 +4,7 @@ SCOPE: plan, then (only after red1 approves the plan) build, a spoken narration 
 numbers, no invented claims. Spec before code; a witness proves the track, not a listen-through.
 **Read the page log after every run** — exit code is not evidence. Honour this block until the lane is DONE.
 **→ Making another narrated/dialogue film (any language)? Jump to `## ▶ PLAYBOOK` below — voices, steps, commands, pitfalls.**
+**→ Making a PRODUCT / EXPLAINER film (an add-on, a feature, a proof)? Read `## ▶ PLAYBOOK C` first — the layout red1 called "impressive in its screenplay … tempo and flow" (2026-11-03).**
 
 ## ▶▶▶ RESUME (2026-10-06 17:45) — latest road film = `~/Videos/CivilWorks_film_v6_narrated_AFTER.mp4` (§11.v6). Next steps live in
 CIVIL_HIGHWAY_JELAPANG.md "▶▶▶ RESUME HERE — NEW SESSION" (55 s gap first, then lens PR, ERP beat clip, chapter breaks).
@@ -260,6 +261,57 @@ New language: add a `CFG` entry in `film_narration_fit_edge.py` (voices via `edg
 **Tools on disk (survive reboot):** `~/.local/share/film_narration/venv` (kokoro-onnx, piper-tts, faster-whisper,
 edge-tts, praat-parselmouth); `kokoro/` models; `cache_edge/`. Scratch clips/plans are lost on reboot — re-run step 3.
 **Still open:** confirm "Boston" (IFC site = likely Revit default location); a native Thai listener for question tone.
+
+## ▶ PLAYBOOK C — the EXPLAINER layout (the CAPEX add-on film, 2026-11-03; red1: "impressive in its screenplay … big picture sense, tempo and flow. Particularly the opening it gives a before/after intro which i grasped easily")
+Reference film: `~/Videos/CAPEX_Dashboard_Addon_narrated_EN_AFTER_2026-11-03_v5.mp4` (157 s, EN; v4 = the overlay-card version). Build log + storyboard: bim-ootb `prompts/CAPEX_DASHBOARD.md` §15. Tools: bim-ootb
+`capex/tools/film_shots.js` (stills of the REAL page, software GL, every value also printed as `§FILM_SHOT`), `capex/tools/film_cards/*.html` (plain cards), TSV `prompts/film_narration_capex_addon_en_v5.tsv`,
+chapter cards `FILM_SET=capexaddon prompts/film_title_cards.py`.
+**1. The screenplay shape (keep this order — it is what made it easy to grasp):**
+1. **Before / after in the first 25 s.** Open on the honest "before" (the page with nothing connected — "no data source", no fake zeros) → one plain card of the idea (4 boxes, arrows, one footnote) →
+   the "after" (the same page, live). The viewer gets the whole point before any detail.
+2. **Show, then prove.** Each claim gets its picture, then its evidence: the tile → its printed formula; the project → the same row in both systems → "160 / 160" card.
+3. **One real event at the end** (a phase ticked complete on both sides → the tile moves the same way in both). A before/after pair of close-ups, side by side, labelled A / B.
+4. **Roadmap = one card, labelled "not built yet".** Then the promise line, then the closing/credits card (sponsor, vision, how it was built).
+**2. Dialogue rules that carried the tempo:** F asks what a newcomer would ask ("An empty dashboard?", "Who typed it in?", "Is it really the same?"), M answers in one or two plain sentences; numbers
+spoken plainly ("just under five million dollars" from 4,996,320.87 — rounded in words, exact on screen). Say the honest limits in the voice (test server; example rates; "not built yet"; "Spent stays at
+zero until costs are booked"). No jargon: "tick the phase complete in the project's phase list", not "set IsComplete".
+**3. Picture rules (each learned on this film — the defect it fixes is named):**
+- Shoot the REAL page headless (software GL, no GPU lock) at device-scale 1.5; close-ups (single tiles) at 3 — legible when enlarged (v2 tiles at 1:31 were too small).
+- Scope the page to ONE subject on both sides (`?project=`) — mixed demo data made two equal systems LOOK different (MYR vs BDT tiles).
+- Crop the system-wide chrome out of side-by-side shots (the sidebar badge counted the whole server, not the subject).
+- Composites: dark background #0f172a; labels sky-blue #7dd3fc bold 44-46; headings start ≥ 95 px from the top (the chapter/series tags live in the top 90 px); keep the bottom 230 px EMPTY for
+  subtitles — witness it numerically: `convert x.png -crop 1920x230+0+850 -format '%[fx:mean]' info:` must equal the background (0.1046).
+- Reused baked clips: crop out every HUD that carries another number (cost, day counter) — one subject, one set of numbers on screen; insets labelled at the top centre, below the tag strip.
+- **Chapter cards — red1's preference (2026-11-03, settled; supersedes the overlay style for explainer films):** *"remove the chapter header during the film as it obscured the top part of screen"* ·
+  *"during chapter cards, have no background as it is noisy. Give them a sec more and hold off the narrative until it has played. Want clear visual focus."*
+  → each card is its OWN silent segment of **3.6 s** inserted BETWEEN beats (fade 0.4 s), **plain dark background** (#0b0f17, no still, no footage), house typography (kicker coral #FF6B78 34 px,
+  title line 1 off-white #F3EEE8 120 px, line 2 coral, one plain line 40 px — DejaVu Sans), **NO voice over the card** (the next beat's cue starts after it), and **NO persistent chapter / series tags**
+  anywhere in the film. Build: ImageMagick `convert -size 1920x1080 xc:'#0b0f17' -gravity center … -annotate` (CAPEX_DASHBOARD.md §15.3), one segment per card; re-measure every segment's frames
+  and set the TSV cues from the measured starts (3.6 s is not a whole number of frames — cues drift otherwise). A card hold + the beat slack before it must stay ≤ ~7 s of silence: trim the clip
+  before a card (a 6.6 s clip tail + a card gave a 10.5 s pause).
+- **Showing a "from a 2D drawing" claim:** use 3 labelled stills, not a clip that never shows 2D — `1 · a flat 2D sheet` (the floor plan rendered from the DXF), `2 · the 2D sheets assembled in 3D`
+  (the wireframe sheets standing), `3 · converted: the model` — 2.6 s each (red1 2026-11-03: *"the clip does not show any 2D drawing … just still snaps"*).
+- Static holds + 0.5 s fades (ffmpeg `-loop 1 -tune stillimage`): seconds per segment. Do NOT use `zoompan` at 1080p (10+ min per segment). Never `pkill -f <word>` that appears in your own command.
+**Mandarin / CJK version (2026-11-03, `~/Videos/CAPEX_Dashboard_Addon_narrated_ZH_AFTER_2026-11-03_v5.mp4`, same cues as the English v5):** translate EVERY on-screen text (chapter cards, plain
+cards, composite headings + A/B labels, inset labels; the product's own UI screenshots stay as they are); fit with `film_narration_fit_edge.py <tsv> <tag> zh` (Chinese runs ~20 % longer: trim the 1–2
+beats that fall to SHORT); **split the captions** with `prompts/film_zh_caption_split.py <tag>.ass` (≤ 20 chars per piece at Chinese punctuation — red1's 2026-11-02 rule) before the mux; **never put
+CJK text through ffmpeg `drawtext` font lookup** (it fell back to a font without CJK glyphs → boxes); draw every CJK label with ImageMagick (`-font Noto-Sans-CJK-SC-Bold`) and overlay the PNG.
+**Malay version (2026-11-03, `~/Videos/CAPEX_Dashboard_Addon_narrated_MS_AFTER_2026-11-03_v5.mp4`):** red1: *"Note the AI is pronounced as A-I"* → the VOICE text says `A-I`, the CAPTION keeps `AI`:
+pass a caption TSV as the fitter's 4th arg (`film_narration_fit_edge.py <tsv> <tag> ms <cap.tsv>`, cap = the same turns with `A-I`→`AI`). Witnessed, not listened: Edge ms-MY Osman "tanpa kod, dan tanpa
+A-I." 3.096 s vs "…tanpa AI." 2.856 s (+0.24 s = two letter names, not the syllable "ai"); in the film the word lasts 0.44 s (faster-whisper word timestamps; feed it raw 16 kHz samples — its own decoder
+failed). Malay ran ~30 % longer: 4 beats fell to SHORT on the first fit → trimmed → 12/12. All on-screen text translated (DejaVu Sans is enough for Latin script).
+**4. Timing:** after the first fit, cut each beat to its speech + 1–3 s (slack > 4 s left 7–9 s silences in v1: 147 s → 116 s, then 143 s with chapters/roadmap/closing). Fit goal 12/12 DETAIL, 0 WRONG
+(a WH question that rises → reword it; "Where do I record that?" falls, "Where do I tick that?" rose).
+**5. Witness (numbers):** frames = the silent picture's; silences ≥ 4 s ≤ ~7 s; ebur128 ≈ −16 LUFS; sample 7-8 frames at the cards / reworked beats as one contact sheet for layout only.
+
+**PLAYBOOK C addendum — a COMPARISON / PROOF film ("Network ERP without an Apps and Database server!", 2026-11-03; EN rc7 + ZH rc2 in `~/Videos/`; pipeline `scripts/film_network_erp/`, spec `prompts/TEAMWORK_FRAMEWORK.md` §45.15–§45.15d).** red1's corrections on this film, each a rule:
+- *"Supposedly, we just patched something, before making the film"* → show the product AS SHIPPED; a bug found and fixed while preparing is NOT a story beat (it reads as staged).
+- *"You did not put in an equivalent apple for apple"* → before any us-vs-them number, list the asymmetries (here: legacy logged in on every call; the twin ran on native SQLite, not the browser's WASM; the twin's background network was left out) and remove each; show medians of repeated runs with the range.
+- *"there is no graph to peg my memory on"* → every comparison gets a chart on screen (dataviz skill; validate the palette on the dark card surface).
+- *"Use more layman lingo"* → no sync/relay/WebAssembly/round trip/curve/ms; seconds, "sending the changes", "delivery service", "no reliable pattern".
+- Close with an overview table vs the alternatives (unmeasured columns labelled "general, not measured here") and the project contacts on the end card; opening/end in the dual-colour title style.
+- Mandarin: captions cut into single lines (≤ 25 chars at 。！？；，) so they stay in the band under the picture; one card builder + a translation table that throws on any untranslated segment.
+**Pipeline (number-guarded):** `FILM_LANG=en|zh CPU_ONLY_OK=1 ./build.sh` = resolve.js (every number from a named § log line) → guard.js (every digit on cards and in the voice is a fact; planted-number controls; zh: no English left) → voice measure → record.js (headless Chrome --disable-gpu, clipping probe incl. chart text) → fit → two-pass loudnorm mux.
 
 ## ▶ PLAYBOOK B — red1's POLYGLOT TRAILER style (settled 2026-10-03; v1 + v3 kept as POC)
 **What it is:** one film that is three things at once — *multilingual demo, setup/feature trailer, advert*
