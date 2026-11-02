@@ -4,6 +4,7 @@ SCOPE: plan, then (only after red1 approves the plan) build, a spoken narration 
 numbers, no invented claims. Spec before code; a witness proves the track, not a listen-through.
 **Read the page log after every run** — exit code is not evidence. Honour this block until the lane is DONE.
 **→ Making another narrated/dialogue film (any language)? Jump to `## ▶ PLAYBOOK` below — voices, steps, commands, pitfalls.**
+**→ Making a PRODUCT / EXPLAINER film (an add-on, a feature, a proof)? Read `## ▶ PLAYBOOK C` first — the layout red1 called "impressive in its screenplay … tempo and flow" (2026-11-03).**
 
 ## ▶▶▶ RESUME (2026-10-06 17:45) — latest road film = `~/Videos/CivilWorks_film_v6_narrated_AFTER.mp4` (§11.v6). Next steps live in
 CIVIL_HIGHWAY_JELAPANG.md "▶▶▶ RESUME HERE — NEW SESSION" (55 s gap first, then lens PR, ERP beat clip, chapter breaks).
@@ -260,6 +261,33 @@ New language: add a `CFG` entry in `film_narration_fit_edge.py` (voices via `edg
 **Tools on disk (survive reboot):** `~/.local/share/film_narration/venv` (kokoro-onnx, piper-tts, faster-whisper,
 edge-tts, praat-parselmouth); `kokoro/` models; `cache_edge/`. Scratch clips/plans are lost on reboot — re-run step 3.
 **Still open:** confirm "Boston" (IFC site = likely Revit default location); a native Thai listener for question tone.
+
+## ▶ PLAYBOOK C — the EXPLAINER layout (the CAPEX add-on film, 2026-11-03; red1: "impressive in its screenplay … big picture sense, tempo and flow. Particularly the opening it gives a before/after intro which i grasped easily")
+Reference film: `~/Videos/CAPEX_Dashboard_Addon_narrated_EN_AFTER_2026-11-03_v4.mp4` (143 s, EN). Build log + storyboard: bim-ootb `prompts/CAPEX_DASHBOARD.md` §15. Tools: bim-ootb
+`capex/tools/film_shots.js` (stills of the REAL page, software GL, every value also printed as `§FILM_SHOT`), `capex/tools/film_cards/*.html` (plain cards), TSV `prompts/film_narration_capex_addon_en_v4.tsv`,
+chapter cards `FILM_SET=capexaddon prompts/film_title_cards.py`.
+**1. The screenplay shape (keep this order — it is what made it easy to grasp):**
+1. **Before / after in the first 25 s.** Open on the honest "before" (the page with nothing connected — "no data source", no fake zeros) → one plain card of the idea (4 boxes, arrows, one footnote) →
+   the "after" (the same page, live). The viewer gets the whole point before any detail.
+2. **Show, then prove.** Each claim gets its picture, then its evidence: the tile → its printed formula; the project → the same row in both systems → "160 / 160" card.
+3. **One real event at the end** (a phase ticked complete on both sides → the tile moves the same way in both). A before/after pair of close-ups, side by side, labelled A / B.
+4. **Roadmap = one card, labelled "not built yet".** Then the promise line, then the closing/credits card (sponsor, vision, how it was built).
+**2. Dialogue rules that carried the tempo:** F asks what a newcomer would ask ("An empty dashboard?", "Who typed it in?", "Is it really the same?"), M answers in one or two plain sentences; numbers
+spoken plainly ("just under five million dollars" from 4,996,320.87 — rounded in words, exact on screen). Say the honest limits in the voice (test server; example rates; "not built yet"; "Spent stays at
+zero until costs are booked"). No jargon: "tick the phase complete in the project's phase list", not "set IsComplete".
+**3. Picture rules (each learned on this film — the defect it fixes is named):**
+- Shoot the REAL page headless (software GL, no GPU lock) at device-scale 1.5; close-ups (single tiles) at 3 — legible when enlarged (v2 tiles at 1:31 were too small).
+- Scope the page to ONE subject on both sides (`?project=`) — mixed demo data made two equal systems LOOK different (MYR vs BDT tiles).
+- Crop the system-wide chrome out of side-by-side shots (the sidebar badge counted the whole server, not the subject).
+- Composites: dark background #0f172a; labels sky-blue #7dd3fc bold 44-46; headings start ≥ 95 px from the top (the chapter/series tags live in the top 90 px); keep the bottom 230 px EMPTY for
+  subtitles — witness it numerically: `convert x.png -crop 1920x230+0+850 -format '%[fx:mean]' info:` must equal the background (0.1046).
+- Reused baked clips: crop out every HUD that carries another number (cost, day counter) — one subject, one set of numbers on screen; insets labelled at the top centre, below the tag strip.
+- Chapter cards (`film_title_cards.py`) overlay 2.6 s at the START of a beat while the voice runs → no pause, no broken flow. Backdrops = photographic frames (a dimmed TEXT still bleeds through the card).
+  End the tags before the closing card (last `§FILM_BEAT` marker = the closing beat's start).
+- Static holds + 0.5 s fades (ffmpeg `-loop 1 -tune stillimage`): seconds per segment. Do NOT use `zoompan` at 1080p (10+ min per segment). Never `pkill -f <word>` that appears in your own command.
+**4. Timing:** after the first fit, cut each beat to its speech + 1–3 s (slack > 4 s left 7–9 s silences in v1: 147 s → 116 s, then 143 s with chapters/roadmap/closing). Fit goal 12/12 DETAIL, 0 WRONG
+(a WH question that rises → reword it; "Where do I record that?" falls, "Where do I tick that?" rose).
+**5. Witness (numbers):** frames = the silent picture's; silences ≥ 4 s ≤ ~7 s; ebur128 ≈ −16 LUFS; sample 7-8 frames at the cards / reworked beats as one contact sheet for layout only.
 
 ## ▶ PLAYBOOK B — red1's POLYGLOT TRAILER style (settled 2026-10-03; v1 + v3 kept as POC)
 **What it is:** one film that is three things at once — *multilingual demo, setup/feature trailer, advert*
