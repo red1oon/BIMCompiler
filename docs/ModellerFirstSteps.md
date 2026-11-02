@@ -249,8 +249,7 @@ Press **Ctrl + Y**. The same 18 fixtures and 22 pipe runs return (history positi
 
 ![After Ctrl+Y: the walk is back](img/modeller/first-steps-mep8-redo-walk.png)
 
-**What is routed today:** plumbing, as above. In **Walk ALL Services** the existing witness (`W-MEP-OPENPATH`, Duplex, run
-2026-09-30) also shows **ACMV** ducts (8 runs) and **FP** sprinklers (4 runs) routed and signed; **ELEC** cable is placed
+**What is routed today:** plumbing, as above. In **Walk ALL Services** the Duplex also shows **ACMV** ducts (8 runs) and **FP** sprinklers (4 runs) routed and signed; **ELEC** cable is placed
 but not routed (0 runs on Duplex). Those were not walked step by step here.
 
 ## Part 4 — Stretch the grid safely

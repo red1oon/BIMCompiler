@@ -21,36 +21,17 @@ straight to that element's construction moment.
 
 ## Author the 4D/5D schedule — build it up from the model *(LIVE)*
 
-The Time Machine is not only for playback — it is where you **author** the construction schedule and
-its cost, building the 4D/5D **up from a bare model**. Every edit is written straight into the
-IFC-native schedule tables the viewer already reads, so the visual gesture and the system-of-record
-are the *same signed rows*.
+The Time Machine is not only for playback — it is where you **shape** the construction schedule and
+its cost. Every edit is written straight into the IFC-native schedule tables the viewer already reads, so the
+visual gesture and the system-of-record are the *same signed rows*.
 
-**Where the button is** — in the viewer:
-
-1. Open a building and the **Time Machine** (the clock pill, or press **`t`**).
-2. On the panel, press **`✎`** (Author 4D Schedule) — the authoring wizard opens.
-
-**What you do:**
-
-1. **Generate first draft** — folds the model's elements into **organized phases** (a WBS): Substructure,
-   Superstructure, MEP, Architecture, Finishes — grouped by the same trade rules the Time Machine plays.
-   Every element is assigned to a phase, contiguous dates are laid out, and the **5D cost folds per phase**.
-2. **Craft it up** — rename a phase, expand it to list its elements (click one to light it in 3D), and
-   **reassign** an element to a different phase from its dropdown. Because the cost folds from the
-   assignments, *moving an element moves its cost between phases* — the WBS you author organizes the 5D.
-3. **Tune the dates** — the **`−5d` / `+5d`** steppers and the **Start** date lay the phases out; on the
-   gantt you can also drag a bar directly (see [Editing the Gantt directly](#editing-the-gantt-directly-on-the-time-machine-panel-live) below).
-4. **Apply to 4D ▶** — re-folds the Time Machine so the gantt and the playback show *your* schedule.
-
-![The Author 4D Schedule wizard (the ✎ button on the Time Machine) on a real SampleHouse — **Generate first draft** folded 60 elements into three organized phases (Superstructure 28 · Architecture 15 · Finishes 17), each with its element count and 5D cost; the footer totals **5D 59,234** in the active rate pack. Rename a phase, reassign an element (it carries its cost with it), or tune the dates — every edit lands in the IFC-native schedule tables.](figs/author4d_wizard.png)
-
-**Start from nothing.** Tick **Start blank (set the dates yourself)** and the wizard organizes the phases
-and assignments but leaves them **undated** — nothing shows on the timeline until you set a **Start** and
-press **`Schedule now ▶`** to originate the dates yourself. The auto-draft is a *suggested start*, never
-the only path: you can accept it and finish fast, or build the schedule up by hand.
-
-![Start blank — the same three phases are organized but **undated** (“unscheduled”); a banner prompts you to set a start and press **Schedule now** to originate the dates. The 5D cost still folds from the assignments (it does not depend on dates). This is the build-it-up-from-a-blank-model path.](figs/author4d_blank.png)
+The schedule is generated from the model's own elements, grouped by trade into phases, with dates laid out and
+the **5D cost folded per phase**. You then edit it directly in the **Gantt drawer** (the **📊** button on the
+Time Machine panel): drag a bar to move it, pull an edge to resize it, link tasks, or press **⏪ Pull Back** — see
+[Editing the Gantt directly](#editing-the-gantt-directly-on-the-time-machine-panel-live) below. If the programme
+already lives in Primavera P6 or MS Project, [import it](#import-a-primavera-ms-project-programme-adopt-an-existing-plan-live-p6).
+Because the cost folds from the element-to-phase assignments, *moving an element between phases moves its
+cost with it*.
 
 The link between an element and its phase is **identity by construction** — it survives renaming the phase
 or the element, where name-matching schedulers would re-bind or break.
@@ -192,56 +173,28 @@ to move, and moves all of it" — no selection needed.
 
 ![The Time Machine mid-construction on a real steel-framed structure, Gantt drawer and dashboard both open at once — left: the **locked** Gantt (padlock icon), per-level rows across phases, critical path in red (3 critical), float in teal (39 with float), **Undo edit / Set Baseline / Pull Back** on the transport row; right: the dashboard reading **Day 33 | Hr 10, $63K / 39% spent**, **Phase Progress** (Substructure 100%, Superstructure 58%, MEP Rough-in 6%, Architecture 67%, MEP Final 0%, Finishes 0%), **Site Resources** (Steel Erector, HVAC Tech, Pipefitter, one Mobile Crane 20 Tonne — 7 workers / 1 machine), and the **S-Curve**, footer *Day 33/313 — 12% complete*; the 3D view shows the steel frame mid-build with green MEP rough-in ducting/piping threaded through it and a **"Now building · 7 items · MEP Rough-in"** callout. **Known residual, shown plainly, not cropped out:** a few diagonal/vertical steel members near the top-right of the frame read as disconnected — floating above the slab/frame below them instead of visibly landing on it. This is the support-relation edge case tracked in `4D_MODEL_INTEGRITY.md` (a handful of elements whose true physical support isn't yet detected by the sequencing pass) — a known, minor, already-named limitation still being tracked, not a rendering bug and not hidden here.](figs/time_machine_steel_playback.png)
 
-## Schedule Editor — the advanced Gantt, on its own surface *(LIVE)*
+## Schedule Editor — now part of the Gantt drawer
 
-The Time Machine's **`✎`** wizard, **`⑂`** what-if, and direct-drag Gantt above are the *intuitive*
-front — quick, visual, one gesture. When you want the **serious planner** — an expandable WBS,
-real dependencies, a critical path, and the same draggable Gantt on a full-page surface — press
-**`↗ Editor`** on the Time Machine (right beside ✎ Author and ⑂ What-if) to open the **Schedule
-Editor** in its own tab, loaded on the same model. *(You can also open it directly at
-`viewer/schedule_editor.html?db=…`.)* It is a separate, focused surface so the front visual stays light;
-both edit the **same IFC-native schedule tables**, so nothing forks.
+The separate **Schedule Editor** tab (`↗ Editor`) has been retired: its WBS, dependency and drag-the-Gantt
+editing is the Gantt drawer described above, which also annotates the **critical path** (red) and **float**
+(teal) automatically. What the old tab alone offered — Primavera / MS Project import and export, and the
+diff against the model — now sits in the Time Machine panel (next section).
 
-![The Schedule Editor on a real SampleHouse — left: the **WBS outline** (Project → Superstructure · Architecture · Finishes, each with its element count and dates); right: the **dependencies** (a finish-to-start chain you author and retype); bottom: the **interactive Gantt**. **Compute CPM** has run — the critical path is red on the rail, in the dependency links, and along the timeline bars, and the header reads *project 90d · critical 3/3*. Drag a bar to reschedule; drag its ▸ handle onto another bar to link.](figs/sched_editor_gantt.png)
+Every edit is a signed op, so a second open surface (a Time Machine on the same model) **re-folds it live**.
 
-What it does, and how it earns each step:
-
-1. **Expandable WBS outline** — the phases you authored render as a collapsible tree, each leaf showing
-   its element count and dates.
-2. **View & edit dependencies** — add a link between two phases, choose its type (**FS / SS / FF / SF**),
-   set a **lag**, or delete it. The graph is written to the IFC-native `task_sequences` table; a link
-   that would create a **cycle** is refused (a schedule cannot loop).
-3. **Compute CPM** — a real **critical-path forward/backward pass** over the dependency graph computes
-   each task's early/late dates, **total & free float**, and which tasks are **critical**. The critical
-   path lights up red across the outline, the links, and the bars; the readout shows the project duration
-   and how many tasks are critical. *(Editing the graph after a run clears the result until you recompute,
-   so a stale critical path is never shown.)*
-4. **Interactive Gantt** — **drag a bar** to reschedule it (snapped to whole days, duration preserved);
-   **drag the ▸ handle** from one bar onto another to **link** them. This is the MS-Project gesture, on
-   your signed schedule.
-
-**Live across tabs.** Every edit is a signed op broadcast on one channel, so a second open surface
-**re-folds it live** — drag a bar in the editor and a Time Machine (or a second editor) open on the same
-model updates immediately, because both are folds of the *same* log. This is the difference from the
-field: open-source 4D (Bonsai) can build a schedule and run CPM but its Gantt is a generated picture you
-edit through side panels; MS Project gives you the interactive Gantt but has no model, no cost, and no
-ERP. The Schedule Editor is a real drag-on-the-chart editor **on one signed op-log that the model, the
-4D playback, the 5D cost, and the ERP all fold from** — so a date you drag here is the same fact the
-enterprise reads.
-
-> **Where it stops — on purpose.** The editor computes from the graph *you* author; it never
-> auto-reschedules or "levels" resources for you. Automatic schedule optimisation is a decades-deep
-> rabbit hole and a place for drift; the line here is deliberate — deterministic compute, your plan.
+> **Where it stops — on purpose.** The tool computes from the graph *you* author; it never
+> auto-reschedules or "levels" resources for you (**⏪ Pull Back** is the one explicit, deliberate
+> compression action). The line is deliberate — deterministic compute, your plan.
 
 ---
 
 ## Import a Primavera / MS Project programme — adopt an existing plan *(LIVE: P6)*
 
 You don't have to author from scratch. If the schedule already lives in **Primavera P6** or **MS
-Project**, bring it in: in the Schedule Editor press **`⤓ Import P6`**, pick the export file, and its
+Project**, bring it in: in the Time Machine panel open the P6 / MS Project section (the button beside **⑂** What-if), press **`P6/MSP file`**, pick the export file, and its
 **WBS, dependencies and dates land straight into the same IFC-native tables** the rest of the 4D/5D
-stack reads. The imported plan immediately gets the expandable WBS, the **FS/SS/FF/SF** dependency
-editor, **Compute CPM**, the drag-Gantt, What-if and the 5D cost fold — nothing special-cased.
+stack reads. The imported plan immediately gets the drag-Gantt with its **FS/SS/FF/SF** dependencies and critical
+path, What-if and the 5D cost fold — nothing special-cased.
 
 **How the two worlds meet.** The 3D model comes from **Autodesk** (Revit/Navisworks → IFC → the BIM
 Viewer). The programme comes from **Primavera / MS Project**. The importer is a thin reader that turns
@@ -263,8 +216,8 @@ feed in:
 **The honest boundary — why import isn't yet 4D.** A P6 or MS Project file carries the *plan* (tasks,
 logic, dates) but **no model geometry** — it has activity codes, not your building's element GUIDs. So a
 freshly imported schedule is a real, editable, CPM-computable programme, but its tasks aren't yet tied to
-anything you can see. You make it **4D** by **binding**: in the **`✎`** wizard you assign each task the
-elements it builds (rename-proof — the link survives a model re-export). Once bound, the 5D cost folds up
+anything you can see. You make it **4D** by **binding**: you assign each task the
+elements it builds (rename-proof — the link survives a model re-export), for example with the auto-bind tokens below. Once bound, the 5D cost folds up
 from the assigned elements and the Time Machine scrubs the model along your imported dates. *This binding
 step is exactly the thing a P6 reporting tool cannot do — it has no model to bind to.*
 
@@ -277,8 +230,8 @@ name:
 ```
 
 For example `Columns @STR:IfcColumn`, `Structural Framing @STR:IfcMember|IfcBeam`, or
-`Internal Finishes @ARC:IfcCovering:Level 3`. On import, tick **“auto-bind by convention”** (next to the
-**⤓ Import P6** button) and the importer parses each token **off** the name (the WBS still shows the clean
+`Internal Finishes @ARC:IfcCovering:Level 3`. On import, leave **auto-bind** ticked (next to the
+**P6/MSP file** button; it is on by default) and the importer parses each token **off** the name (the WBS still shows the clean
 label, e.g. `Columns`), resolves it against your model — *all* elements whose `discipline`/`IfcClass`/`storey`
 match — and pre-binds the task. You get a reviewable first pass instead of clicking every task. It is
 **coarse on purpose**: `@STR:IfcColumn` binds *all* columns to one task; refine to per-level sub-tasks with

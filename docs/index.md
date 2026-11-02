@@ -124,6 +124,10 @@ Built on [iDempiere](https://idempiere.org/) ERP conventions and [SQLite](https:
 | **Get going (everyone starts here)** | [📖 **User Guide**](USER_GUIDE.md) |
 | View a building in the browser | [BIM Viewer Guide](BIMUserGuide.md) |
 | Author geometry | [DAGeVu Modeller Guide](ModellerGuide.md) |
+| Turn 2D drawings (DXF) into a 3D BIM model | [2D Drawings → BIM (DXF2BIM)](DXF2BIMGuide.md) |
+| Get civil-works reports from a road IFC set | [Civil Works — Step by Step](CivilWorksGuide.md) |
+| Collaborate on a surface (who-did-what, chat) | [Teams Overlay](TeamsOverlayGuide.md) |
+| See what shipped recently | [What's New](WhatsNew.md) |
 | Run the browser ERP | [Kernel-ERP User Guide](ERPUserGuide.md) |
 | Understand the ERP world view | [MANIFESTO — read first](MANIFESTO.md) |
 | Compare to other tools | [Feature Comparison](FeatureComparison.md) · [Migrate & Compare (ERP)](MigrateComparisonPaper.md) |

@@ -628,24 +628,24 @@ No server. No WebSocket. Pure `BroadcastChannel` between same-origin tabs.
 
 | File | Role |
 |------|------|
-| `deploy/dev/ghostglass.js` | Glass-to-solid animation engine |
-| `deploy/dev/boq_charts.html` | Audit, GUID resolution, scrubber, Play/Pause |
-| `deploy/dev/main.js` | BroadcastChannel listener, ghostglass delegation |
-| `deploy/dev/rates.js` | SEQUENCE_RULES, LABOR_RATES, PHASE_COLORS (50+ IFC classes) |
-| `deploy/dev/tools.js` | Hover preserves 4D phase colours |
-| `deploy/dev/tests/specs/22-4d-audit.spec.js` | 8 Playwright tests for audit gate |
+| `viewer/ghostglass.js` | Glass-to-solid animation engine |
+| `viewer/boq_charts.html` | Audit, GUID resolution, scrubber, Play/Pause |
+| `viewer/main.js` | BroadcastChannel listener, ghostglass delegation |
+| `viewer/rates.js` | SEQUENCE_RULES, LABOR_RATES, PHASE_COLORS (50+ IFC classes) |
+| `viewer/tools.js` | Hover preserves 4D phase colours |
+| `tests/specs/22-4d-audit.spec.js` | 8 Playwright tests for audit gate |
 
 ---
 
 ## 4D Time Machine — Interactive Construction Playback
 
-The **Time Machine** (`time_machine.js`) brings 4D simulation directly into the 3D viewer.
+The **Time Machine** (`time_machine.js`, `tm_*.js`) brings 4D simulation directly into the 3D viewer.
 No separate app, no schedule file import, no Blender rendering. One button, any IFC model.
 
 ### How It Works
 
 1. User drops any IFC file into the viewer
-2. Presses **⏳** in the toolbar
+2. Opens the **Time Machine** (the clock pill in the Inspect drawer, or key **T**)
 3. `kernel_ops` table is auto-populated with a weighted construction sequence derived from:
    - `SEQUENCE_RULES` — phase assignment per IFC class (Substructure → Superstructure → MEP → Architecture → Finishes)
    - `LABOR_RATES` — productivity per trade (units/day → seconds per element)
@@ -764,28 +764,25 @@ Example:
 
 | File | Role |
 |------|------|
-| `deploy/dev/time_machine.js` | Time machine panel, injection, playback, highlighting |
-| `deploy/dev/kernel_ops.js` | `commitOp()`, undo/redo, replay infrastructure |
-| `deploy/dev/precision_cam.js` | Precision camera (fine move + zoom reset) for detail inspection |
-| `deploy/dev/picking.js` | Logs `ELEMENT_PICK` to kernel_ops |
-| `deploy/dev/panels.js` | Logs `VIEW_FILTER` to kernel_ops |
-| `deploy/dev/section_cut.js` | Logs `SECTION_CUT` to kernel_ops |
-| `deploy/dev/rates.js` | `SEQUENCE_RULES`, `LABOR_RATES` — drives injection weighting |
+| `viewer/time_machine.js` | Time machine panel, injection, playback, highlighting |
+| `viewer/kernel_ops.js` | `commitOp()`, undo/redo, replay infrastructure |
+| `viewer/precision_cam.js` | Precision camera (fine move + zoom reset) for detail inspection |
+| `viewer/picking.js` | Logs `ELEMENT_PICK` to kernel_ops |
+| `viewer/panels.js` | Logs `VIEW_FILTER` to kernel_ops |
+| `viewer/section_cut.js` | Logs `SECTION_CUT` to kernel_ops |
+| `viewer/rates.js` | `SEQUENCE_RULES`, `LABOR_RATES` — drives injection weighting |
 
 ---
 
-## Next Steps
+## Where the roadmap landed
 
-1. **Browser nD engine** — port to JavaScript for BIM OOTB Phase 3.
-   Same JSON templates, same SQL queries, same output tables — runs in browser via sql.js (WASM).
-   User drags custom `5D_rates.json` → browser re-runs 5D → downloads Excel. Zero server.
-   See BIM_Designer_Browser.md §Phase 3 for full feature list.
-2. **Excel export (browser)** — SheetJS generates XLSX client-side from nD output tables.
-   Replaces Java backend Excel generation for review/stakeholder use cases.
-3. **Community templates** — UK BCIS rates, US RSMeans, BREEAM carbon, LEED scoring
-4. **Web template editor** — HTML form that loads/validates/saves JSON templates
-5. **SMM2 work sections** — map IFC classes to CIDB standard work section numbering for client-facing BOQ
-6. **Editable Excel (server)** — Java backend generates .xlsx with formulas (`=qty × unit_rate`) for advanced users
-7. **REST endpoints** — `/api/boq/{building}/excel`, `/api/schedule/{building}/excel` (Phase 4 backend only)
+Items that were once listed here as next steps and have shipped in the browser Viewer:
+
+- **Browser nD engine** — the 4D schedule, 5D cost and the Excel exports run in the browser on the same
+  JSON references (`viewer/rates.js`, `viewer/export_5d.js`, `viewer/export_4d.js`); no server.
+- **Community rate templates** — 16 national 5D rate packs ship (UK BCIS, US RSMeans, Malaysia CIDB, …) under `viewer/rates/`.
+- **Template editor** — Viewer Settings → Edit Project JSON edits the rate pack, 4D template and sequence/labour rules in the browser (see above).
+- **SMM work sections** — carried in the rate packs (`smm_sections`).
+
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

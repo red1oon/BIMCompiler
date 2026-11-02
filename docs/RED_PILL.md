@@ -5,10 +5,10 @@
 > **The Red Pill:** You never start from a blank canvas. You start from a building you trust,
 > extract its grammar, and design by interrupting its replay.
 
-**Status:** Active development (S266–S270+)
-**Entry point:** Tap the Red Pill (capsule icon) in the viewer's icon pill
-**Supersedes:** BIM_Designer_Browser.md (viewer layer — still the foundation)
-**Full spec:** NEW_FROM_REFERENCE.md (1800-line technical spec)
+**Status:** Engine built (S266–S273); the code last changed in June 2026 and is not under active development
+**Entry point:** the Viewer's Red Pill (Doc pill) button is no longer wired in the current Viewer — the engine remains in the repository (`viewer/doc_canvas.js`). The red-pill icon on the BIM Tools page links here.
+**Supersedes:** [BIM_Designer_Browser.md](https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BIM_Designer_Browser.md) (viewer layer — still the foundation)
+**Full spec:** [NEW_FROM_REFERENCE.md](https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/NEW_FROM_REFERENCE.md) (1800-line technical spec)
 
 ---
 
@@ -75,7 +75,7 @@ The original `IFC.db` never changes. The design is an event log applied to the g
 
 ## 4. Code Map — Where Things Live
 
-### Core Files (`deploy/dev/`)
+### Core Files (`viewer/` in bim-ootb)
 
 | File | Lines | Role |
 |---|---|---|
@@ -90,7 +90,7 @@ The original `IFC.db` never changes. The design is an event log applied to the g
 | `measure.js` | ~1200 | **Clash detection + spatial index.** R-tree, proximity checks, clearance rules. |
 | `scene.js` | ~3000 | **Viewer core.** BatchedMesh rendering, DLOD streaming, 4D Time Machine. |
 
-### Test Files (`deploy/dev/tests/`)
+### Test Files (`tests/` in bim-ootb)
 
 | File | Tests | What It Proves |
 |---|---|---|
@@ -152,7 +152,7 @@ This swizzle is applied in `_collectElementData()` (`grid_recompose.js`). The en
 ## 6. The UX Flow — Red Pill Mode
 
 ### Entry
-Tap the Red Pill icon → canvas clears → building envelope appears as ghost wireframe.
+*(As designed; the Viewer button is not wired today — see the note at the top.)* Tap the Red Pill icon → canvas clears → building envelope appears as ghost wireframe.
 
 ### Doc Pill Icons
 
@@ -546,26 +546,23 @@ The JOIN can pull across BOM sets — a slab recipe in a shared component librar
 
 ### Quick Start
 
-1. Open the viewer at the deployed URL (or `deploy/dev/index.html` locally)
-2. Load any building (e.g. SampleHouse, SampleCastle)
-3. Tap the Red Pill icon (capsule, top-right)
-4. Press Next repeatedly → watch elements appear phase by phase
-5. Click a grid line → drag it → watch walls/slabs recompose
+The Doc pill button is no longer wired in the Viewer, so the walkthrough below cannot be started from the
+Viewer UI today; the engine and its tests are still in the repository. Run the tests from a `bim-ootb` checkout:
 
 ### Running Tests
 
 ```bash
 # All grid kinematics tests
-node deploy/dev/tests/test_grid_kinematics.js
+node tests/test_grid_kinematics.js
 
 # Doc canvas tests (includes BUG-1/BUG-4 regression)
-node deploy/dev/tests/test_doc_canvas.js
+node tests/test_doc_canvas.js
 
 # Full recompose integration
-node deploy/dev/tests/test_s268_recompose.js
+node tests/test_s268_recompose.js
 
 # Grid modules (detection, overlay, drag)
-node deploy/dev/tests/test_grid_modules.js
+node tests/test_grid_modules.js
 ```
 
 All tests are whitebox: §-tagged `console.log()` lines prove values, counts, and state. No Playwright needed for value verification — the maths tells you.
@@ -583,10 +580,10 @@ All tests are whitebox: §-tagged `console.log()` lines prove values, counts, an
 
 | Doc | What It Provides |
 |---|---|
-| BOMBasedCompilation.md | The recipe model — BOM hierarchy, tack offsets, verb formulas |
-| TestArchitecture.md | 9 verification gates, traceability matrix |
-| SQLite3D_Schema.md | DB schema — `elements_meta`, `element_transforms` |
+| [BOMBasedCompilation.md](https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md) | The recipe model — BOM hierarchy, tack offsets, verb formulas |
+| [TestArchitecture.md](https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/TestArchitecture.md) | 9 verification gates, traceability matrix |
+| [SQLite3D_Schema.md](https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/SQLite3D_Schema.md) | DB schema — `elements_meta`, `element_transforms` |
 | [CLASH_DETECTION.md](CLASH_DETECTION.md) | Clash rules, R-tree spatial indexing |
-| BIM_Designer_Browser.md | Viewer layer — the foundation Red Pill builds on |
-| SPATIAL_COMPILATION_PAPER.md | Theoretical proof — BOM ↔ protein folding analogy |
-| NEW_FROM_REFERENCE.md | Full 1800-line technical spec (all the details) |
+| [BIM_Designer_Browser.md](https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BIM_Designer_Browser.md) | Viewer layer — the foundation Red Pill builds on |
+| [Spatial Compilation paper](SpatialCompilationPaper.md) | Theoretical proof — BOM ↔ protein folding analogy |
+| [NEW_FROM_REFERENCE.md](https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/NEW_FROM_REFERENCE.md) | Full 1800-line technical spec (all the details) |
