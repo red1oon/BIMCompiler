@@ -11,6 +11,7 @@ Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 **2026-10-28:** Team Phase 2.1-2.4 + 2.6 + G-1..G-3 DONE + LIVE (bim-ootb #2412, #2420, sw v923): observe-only plugin grant, core conflict message, numbering left the comm engine, Team OUT on the bus, received rows fire replica rules, legacy Import Orders port — W-POS-CHAIN 13/0 (a till ticket becomes ONE completed order at head office and returns). **Next session:** agents A–G per `prompts/TEAMWORK_FRAMEWORK.md` §41 (Import Payment, W-HQ-CLERK, role executors, G-6, Micro Finance on GardenWorld §40, I_POSSales); POS = standalone Unicenta-style till + kitchen, spec `prompts/POS_PLUGIN_LOCAL_FIRST.md`.
 
 ## 📋 The live worklist is `prompts/AGENT_QUEUE.md` — not this file
+## ▶ FILM "I vs AI" lane (2026-11-03, closed): 3 finished films in ~/Videos (EN 223 s · Malay v3 316 s · Mandarin 273 s); read `prompts/FILM_VS_AI_SLOP.md` ▶ RESUME HERE (rebuild commands, open items, lessons). Branch `film/vs-ai`; nobody has listened to the films yet.
 It carries §LIVE (which agent owns which files), the waves, the ⛔USER decisions, and the standing
 constraints. A session picking up work reads that; PROGRESS.md is state, not queue.
 

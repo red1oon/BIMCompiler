@@ -1,0 +1,34 @@
+open	8.317	15.500	ledger flash + F/M cards	F: Wah! | M: Betulkah?	F: Wah! AI memang hebat! | M: Tunggu... betulkah semua ini? Boleh tunjukkan angkanya?
+tease	15.650	20.792	card b2	M: Cuma ia tidak.	F: AI memang menarik, bukan? | M: Cuma, sebenarnya ia tidak.
+reveal	20.942	28.750	card b3 (viewer/lib three.module.min.js + sql-wasm.js verified)	M: JavaScript, Three J S, S Q Lite.	M: Semuanya JavaScript, Three J S, dan S Q Lite dalam WebAssembly. | F: Tiada model AI di mana-mana.
+concede	28.900	34.167	card b4a	M: AI lebih cantik. Saya akui.	F: Jadi AI menang dari segi rupa? | M: Dalam lima saat. Ya.
+why	34.317	41.000	card b4b	M: Mungkin, atau sebenar?	F: Jadi, kenapa bersusah? | M: Apa yang mungkin ada, atau apa yang sebenarnya ada?
+autodesk	41.150	49.542	help.autodesk.com Assistant page (fetched 2026-11-02)	M: Autodesk: corak dan kebarangkalian.	M: Laman bantuan Autodesk sendiri: jawapan berdasarkan corak dan kebarangkalian. | F: Kata-kata mereka, bukan saya!
+latent	49.692	57.792	Cumberland 2026-08-03	M: Ruang pendam, ruang fizikal.	F: Dan seorang pengamal? | M: AI generatif hidup dalam ruang pendam. Bangunan hidup dalam ruang fizikal.
+duel0	57.942	64.375	duel_ledger_2026-11-02	M: Saya cuba demo percuma.	M: Jadi saya cuba satu demo percuma. Satu bingkai Hospital, satu arahan.
+duel1	64.525	70.208	duel_ledger_b run1 wait=64.6s 832x544 3.56s	M: Enam puluh empat saat.	F: Dan hasilnya? | M: Enam puluh empat saat. Tiga saat video.
+duel2	70.358	81.583	duel_ledger_b sha equal; 206/3.56=58	M: Boleh diulang, ya. Tetapi lima puluh lapan klip.	F: Fail yang sama dua kali? | M: Ya, dengan seed dikunci. Adil itu adil. Tetapi filem saya ialah lima puluh lapan klip begitu.
+ours	81.733	89.875	Hospital_FULL_HIRES	M: Giliran saya. Dijana sekali.	M: Sekarang giliran saya. Hospital ini, dijana sekali sahaja. | F: Fail yang sama, setiap kali!
+clash	90.025	95.875	§CLASH HUD 270 mesh-true	F: Pertembungan! | M: Dua ratus tujuh puluh.	F: Oh, pertembungan! | M: Dua ratus tujuh puluh, pertindihan mesh sebenar.
+trade	96.025	102.167	§CLASH_HUD by trade and pair	M: Ikut disiplin, ikut pasangan.	M: Mengikut disiplin, dan mengikut pasangan. | F: Dibaca daripada model, bukan diagak.
+glory	102.317	114.708	§RULE_FILM_EXIT_STAT ~217 steps; sun az/alt HUD	F: Kompas? | M: Azimut matahari. Dan jalan terjauh ke pintu keluar.	F: Apa kompas itu? | M: Azimut dan altitud matahari, hari demi hari. | F: Dan keselamatan? | M: Jalan terjauh ke pintu keluar. Kira-kira dua ratus tujuh belas langkah.
+tm	114.858	120.417	4D.mp4 schedule editor	M: Time Machine.	F: Boleh saya ubah pelan? | M: Ini Time Machine. Penyunting jadual.
+whatif	120.567	129.208	4D.mp4 What-if schedule	M: Anjak satu fasa, yang lain mengikut.	M: Satu andaian. Anjak satu fasa, dan setiap fasa selepasnya menyusun semula. | F: Tak perlu tulis arahan lagi!
+twod	129.358	136.042	DXF2BIM shed film v5	M: Kerja besar. Tiada AI dalam kod.	F: Dan daripada lukisan dua D? | M: Kerja besar. Siap tanpa AI dalam kod.
+fiveD	136.192	144.917	shed v5 v03: 5D, rate based estimate ~1.13M	M: Lima D. Kos mengikut disiplin.	M: Lima D: kos mengikut disiplin, daripada kuantiti model. | F: Tender? | M: Bukan. Anggaran berasaskan kadar.
+fourD	145.067	155.833	shed v5 v04: 6 phases, 194 days, default	M: Empat D. Jadual lalai.	M: Empat D: jadual, apabila model tiada jadual. | F: Urutan siapa? | M: Yang lalai. Enam fasa, seratus sembilan puluh empat hari.
+noai	155.983	164.292	shed v5 card: no AI on your drawings	M: Tiada AI pada lukisan anda.	F: Lukisan sama, model sama? | M: Lukisan sama, model sama. Tiada AI pada lukisan anda.
+upg	164.442	175.250	§UPGRADE_REPORT 38898->38603, 110 ms	M: Satu kekunci. Naik taraf. Lulus.	F: Bagaimana pakar menggunakannya semula? | M: Satu kekunci naik taraf ke I F C empat titik tiga. Sepersepuluh saat. Lulus.
+split	175.400	182.390	toast: split into 4 storey files PASS	M: Tekan K. Empat fail tingkat.	F: Dan satu tingkat sahaja? | M: Tekan K. Empat fail tingkat. Lulus.
+pro	182.540	194.182	red1 line	M: Beginilah profesional bekerja.	M: Beginilah cara profesional bekerja. Pantas, boleh diulang, berurutan. | F: Kemahiran yang boleh dibina oleh pembelajaran mereka. | M: Bukan di luar kawalan mereka.
+altc	194.332	203.890	red1 timing: Alt+C opens ~3 s (not from a log)	M: Alt C terbuka dalam tiga saat.	F: Dan filem? | M: Tekan Alt C. Ia terbuka dalam kira-kira tiga saat. Untuk kerja pantas, tekan O K.
+menu	204.040	210.932	Inspect menu 4D/5D	M: Empat D, lima D, pertembungan, keratan.	F: Dan laporan? | M: Empat D, lima D, pertembungan, keratan. Satu menu.
+prep	211.082	226.598	red1 timing; bake 26-49 min / orbit ~10 min	M: Tekan mula. Sehingga sejam. Tiada arahan.	M: Untuk membentuknya, seret laluan dan tanda kotak, dan saya pratonton dahulu. | F: Kemudian? | M: Penjanaan berjalan, sehingga sejam. Saya berjalan pergi. Tiada arahan, tiada API, tiada kredit.
+door	226.748	238.890	duel upload; Nomic 2026	M: Model anda meninggalkan mesin anda.	F: Kenapa risau tentang API? | M: Untuk bertanya kepada AI, model anda meninggalkan mesin anda. Demo saya menghantar satu bingkai Hospital ke hos orang asing.
+mit	239.040	248.973	LICENSE MIT verified	M: M I T. Baca, fork, pecahkan.	M: API yang tidak boleh diperiksa ialah risiko, di mana-mana. Milik saya M I T. Baca, fork, pecahkan.
+shut	249.123	260.432	The Decoder 2026-03-28 Sora app 26 Apr, API 24 Sep	M: AI boleh dimatikan esok.	F: Dan kalau ia dimatikan? | M: AI boleh dimatikan esok. OpenAI mengumumkan Sora ditutup: aplikasi pada April, API pada September.
+local	260.582	263.432	§NOAI_NETWORK PASS 2026-10-02	M: Dan ia mengutamakan tempatan.	M: Dan semuanya mengutamakan tempatan.
+collage	263.582	281.723	collage labels (unverified)	F: Lukisan, E R P, jalan. | M: Satu teras.	F: Lukisan, E R P, jalan, kerja tanah, laporan. | M: Satu teras, dalam satu tab pelayar. | F: Tanpa pemasangan? | M: Tiada. | F: Malah luar talian? | M: Pemapar dibuka dan mengimport dengan setiap permintaan luar disekat. Saya sudah menguji.
+find	281.873	287.182	Find Panel stills	M: Bilik ke bilik, pintu demi pintu.	F: Dan mencari bilik? | M: Cari laluan, bilik ke bilik, pintu demi pintu.
+graph	287.332	305.182	graph card: citations on screen	M: Satu gambar. Setiap petak memetik sumber.	M: Satu gambar. AI menang dari segi rupa, dan memulakan daripada kosong. Saya sebut dahulu. | F: Dan yang lain? | M: Unsur yang boleh dikira, kod yang boleh dibaca, tiada apa meninggalkan mesin anda. | F: Setiap petak memetik sumbernya.
+end	305.332	316.348	closing card	M: Saya tunjukkan apa yang sebenar.	M: AI melukis apa yang mungkin ada pada bangunan. Saya tunjukkan apa yang sebenar. | F: Jalankan semula sendiri. Lejar itu terbuka.
