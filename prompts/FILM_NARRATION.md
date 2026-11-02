@@ -296,6 +296,10 @@ zero until costs are booked"). No jargon: "tick the phase complete in the projec
 cards, composite headings + A/B labels, inset labels; the product's own UI screenshots stay as they are); fit with `film_narration_fit_edge.py <tsv> <tag> zh` (Chinese runs ~20 % longer: trim the 1–2
 beats that fall to SHORT); **split the captions** with `prompts/film_zh_caption_split.py <tag>.ass` (≤ 20 chars per piece at Chinese punctuation — red1's 2026-11-02 rule) before the mux; **never put
 CJK text through ffmpeg `drawtext` font lookup** (it fell back to a font without CJK glyphs → boxes); draw every CJK label with ImageMagick (`-font Noto-Sans-CJK-SC-Bold`) and overlay the PNG.
+**Malay version (2026-11-03, `~/Videos/CAPEX_Dashboard_Addon_narrated_MS_AFTER_2026-11-03_v5.mp4`):** red1: *"Note the AI is pronounced as A-I"* → the VOICE text says `A-I`, the CAPTION keeps `AI`:
+pass a caption TSV as the fitter's 4th arg (`film_narration_fit_edge.py <tsv> <tag> ms <cap.tsv>`, cap = the same turns with `A-I`→`AI`). Witnessed, not listened: Edge ms-MY Osman "tanpa kod, dan tanpa
+A-I." 3.096 s vs "…tanpa AI." 2.856 s (+0.24 s = two letter names, not the syllable "ai"); in the film the word lasts 0.44 s (faster-whisper word timestamps; feed it raw 16 kHz samples — its own decoder
+failed). Malay ran ~30 % longer: 4 beats fell to SHORT on the first fit → trimmed → 12/12. All on-screen text translated (DejaVu Sans is enough for Latin script).
 **4. Timing:** after the first fit, cut each beat to its speech + 1–3 s (slack > 4 s left 7–9 s silences in v1: 147 s → 116 s, then 143 s with chapters/roadmap/closing). Fit goal 12/12 DETAIL, 0 WRONG
 (a WH question that rises → reword it; "Where do I record that?" falls, "Where do I tick that?" rose).
 **5. Witness (numbers):** frames = the silent picture's; silences ≥ 4 s ≤ ~7 s; ebur128 ≈ −16 LUFS; sample 7-8 frames at the cards / reworked beats as one contact sheet for layout only.
