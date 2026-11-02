@@ -179,6 +179,13 @@ C3 lands with the REPLACE verb.
   - **Witness:** W-WALKED-EXPORT PASS X1-X9, X6b, X6c, X11 (+ X10 with `M3B_HEAVY=1`); falsifier X8 (carry off) fails X6 naming ACMV/IfcFan 13->0, ARC/IfcOpeningElement 2->0, STR/IfcFooting 32->0, STR/IfcMember 168->0. **The same witness against main's code FAILs X6, X6b, X6c, X7, X9, X11 (+ X4 there)**, `main_baseline.log`. Regression: runner `PASS=109 ENV=9 FAIL=1 of 119` (LT7 only; same as main's expected), W-VIEWERDB, W-IFC-OPEN-ONE, W-IFC-VALID PASS in it; W-E2E-WALK-ALL 13/0, W-ARC-SOURCE-PARITY 8/0, W-E2E-WALK-IFCOPEN 21/0, W-S9-IFC-KEY 1/0, W-IFC-EXPORT-SEED 7/0, W-ARC-EDITABLE 9/0. (`witness_arc_editable_smoke` exits MODULE_NOT_FOUND in this environment; not in the runner, untouched by this change.)
   - **Not carried, same as the ARC rows today:** per-element colour/material (`material_rgba`), `element_dxf2bim` / `element_type` / `element_pset_common` rows, storey assignment (an op without `storey` is contained in the building). A fidelity item for ARC and non-ARC alike, not opened here.
 
+**RC findings (2026-11-02, from the DXF2BIM lane's release check: 49 Modeller authoring witnesses on bim-ootb main a483a005; bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` `### RC SPEC` + RESULT).** 44 PASS. These 4 FAIL the same way on the pre-session base 7aa68244, so they are pre-existing and owned here. Each was re-run alone and held:
+- **RC-1** W-E2E-SCALEROT S2 DRAG-GHOST: "no ghost" (ScaleGhost not live during the drag).
+- **RC-2** W-CLIPBOARD-KEYS K1 paste-at-pointer: `"no empty ground point in view"`. Decide whether the witness's view setup or the paste rule is wrong; the log does not say which.
+- **RC-3** W-E2E-INSERT I5 VISIBLE: framebuffer unchanged `pix 5392611→5392611`. This is a pixel gate; per the PRIMAL LAW prefer a `§`-value check of the inserted op.
+- **RC-4** W-E2E-EXPORT-DB E1: a stale expectation of 3 export rows (native/ifc/bcf). The menu has 8 (`native, vdb, ifc, load, regrep, analytical, bcf, dxf`); update the witness to the menu's owner, not a hand list.
+- ENV: W-MODELLER-GIT-HISTORY needs `playwright`, which the bim-compiler `node_modules` lacks.
+
 ## ▶ §RESUME 2026-10-02 — START HERE (session close; then read §RESUME 2026-09-30 below — its rules and queue still stand)
 **Landed and LIVE 2026-09-30 → 10-02 (all witnessed vs LIVE; modeller sw v76, viewer v1458):**
 - Core reds to zero (#1792) · slide real walls SampleHouse, 2/7 slideable after the M5 check (#1793, BIMCompiler #154) · one gesture = one undo (#1794)
