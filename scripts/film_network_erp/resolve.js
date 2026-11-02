@@ -28,7 +28,10 @@ fact('untrusted_n', fit, /^§FIT-DONE/, () => rd(fit).split('\n').filter(x => /^
 fact('catchup_1000', fit, /^§EXTRAP edge\.roster_visit_requests_p50 /, l => m(/N=1000 (\d+)/, l));
 fact('cliff_shared', fit, /^§CLIFF shared token, 5 pm burst content/, l => m(/N <= (\d+)/, l));
 fact('cliff_shared_hi', fit, /^§CLIFF shared token, 5 pm burst points/, l => m(/N <= (\d+)/, l));
-fact('cliff_perdev', fit, /^§CLIFF per-device token, own requests/, l => Number(m(/N <= (\d+)/, l)).toLocaleString('en-US'));
+fact('fit_metrics', fit, /^§FIT-DONE /, l => m(/metrics=(\d+)/, l));
+fact('hq_cliff_lo', fit, /^§CLIFF head office own account/, l => m(/N <= (\d+)\.\./, l));
+fact('hq_cliff_hi', fit, /^§CLIFF head office own account/, l => m(/\.\.(\d+) /, l));
+fact('fit_max_n', fit, /^§FIT-HEADER /, l => m(/users=[\d,]*?(\d+) day/, l));
 fact('o2c_match', o2c, /^§LVL-VERDICT /, () => rd(o2c).split('\n').filter(x => /^§SCN O2C\d-\S+ MATCH/.test(x)).length);
 fact('o2c_steps', o2c, /^§LVL-VERDICT /, l => Number(m(/completed_both_sides=\d+\/(\d+)/, l)));
 fact('legacy_step_ms_4g', o2c, /^§LVL-PROFILE 4g /, l => m(/legacy >= (\d+) ms vs twin/, l));
@@ -49,6 +52,14 @@ fact('l_nl_poor', med, /^§LVL-MEDIAN nl_poor=/, l => m(/nl_poor=(\d+)/, l));
 fact('l_4g_lo', med, /^§LVL-MEDIAN nl_4g=/, l => m(/range=(\d+)\.\./, l));
 fact('l_4g_hi', med, /^§LVL-MEDIAN nl_4g=/, l => m(/\.\.(\d+)/, l));
 fact('l_runs', med, /^§LVL-MEDIAN-VERDICT MEASURED/, l => m(/runs=(\d+)/, l));
+// seconds for the viewer (unit rounding only, ms / 1000): the same median lines, said the way a layman reads them
+const sec = (v, d) => (Number(v) / 1000).toFixed(d);
+fact('l_nl_lan_s', med, /^§LVL-MEDIAN nl_lan=/, l => sec(m(/nl_lan=(\d+)/, l), 1));
+fact('l_nl_4g_s', med, /^§LVL-MEDIAN nl_4g=/, l => sec(m(/nl_4g=(\d+)/, l), 1));
+fact('l_nl_poor_s', med, /^§LVL-MEDIAN nl_poor=/, l => sec(m(/nl_poor=(\d+)/, l), 1));
+fact('l_4g_lo_s', med, /^§LVL-MEDIAN nl_4g=/, l => sec(m(/range=(\d+)\.\./, l), 1));
+fact('l_4g_hi_s', med, /^§LVL-MEDIAN nl_4g=/, l => sec(m(/\.\.(\d+)/, l), 1));
+fact('t_twin_s', med, /^§LVL-MEDIAN twin=/, l => sec(m(/twin=(\d+)/, l), 2));
 console.log('§FACTS resolved=' + Object.keys(F).length + ' missing=' + miss.length + (miss.length ? ' ' + JSON.stringify(miss) : ''));
 Object.keys(F).forEach(k => console.log('§FACT ' + k + '=' + F[k] + '  ← ' + SRC[k]));
 // every {{fact}} used in the storyboard must exist

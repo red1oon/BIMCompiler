@@ -99,7 +99,11 @@ if (M1 && M1.best && M2 && M2.best) {
   out('§CLIFF shared token, content requests/hour (' + G.content_per_hour + '): N <= ' + solve(function (N) { return N * VPH * cPerVisit; }, G.content_per_hour));
   out('§CLIFF shared token, 5 pm burst content requests/minute (' + G.content_per_min + ', everyone in ' + BURST_S + ' s): N <= ' + solve(function (N) { return N * cPerVisit * 60 / BURST_S; }, G.content_per_min));
   out('§CLIFF shared token, 5 pm burst points/minute (' + G.points_per_min + '): N <= ' + solve(function (N) { return N * (cPerVisit * 5 + (reqVisit(N) - cPerVisit)) * 60 / BURST_S; }, G.points_per_min));
-  out('§CLIFF per-device token, own requests/hour (' + G.per_hour_token + '): N <= ' + solve(ownHour, G.per_hour_token) + '  [' + VPH + ' visits/h × requests per Visit(N); the list walk grows with N]');
+  out('§CLIFF per-device token, an EDGE device\'s own requests/hour (' + G.per_hour_token + '): N <= ' + solve(ownHour, G.per_hour_token) + '  [' + VPH + ' visits/h × requests per Visit(N); NOT the binding limit — head office (below) crosses first; far outside the measured 10-100]');
+  // head office reads every device on each of its Visits (hq.visit_requests grows ~3 per user): with one account per device, HQ's OWN account is the first to cross
+  //   the hourly request limit. Both fitted models are solved; the range is the answer (fitted only to 100 users).
+  if (M4 && M4.pw) { const hqP = solve(function (N) { return VPH * M4.pw.f(N); }, G.per_hour_token), hqQ = M4.qd ? solve(function (N) { return VPH * M4.qd.f(N); }, G.per_hour_token) : null;
+    out('§CLIFF head office own account, requests/hour (' + G.per_hour_token + ', ' + VPH + ' head-office Visits/h): N <= ' + (hqQ && hqQ !== hqP ? Math.min(Number(hqP), Number(hqQ)) + '..' + Math.max(Number(hqP), Number(hqQ)) : hqP) + ' (power ' + hqP + ', quad ' + hqQ + '; fitted to 100 users, so a range not a number) — with one account per device THIS is the binding limit, not the edge'); }
   out('§CLIFF per-device token, own content requests/hour (' + G.content_per_hour + '): ' + (VPH * cPerVisit <= G.content_per_hour ? 'never (constant ' + (VPH * cPerVisit).toFixed(1) + '/h)' : 'always exceeded'));
   out('§CLIFF concurrent requests (' + G.concurrent + '): NOT MEASURED — the stand-in handles each request synchronously, so it cannot see concurrency (it reads 1 at every N: instrument-blind)');
   out('§NOTE secondary limits are per GitHub ACCOUNT: "per-device token" means one GitHub account per device; several tokens of ONE account share the shared-token cliffs.');

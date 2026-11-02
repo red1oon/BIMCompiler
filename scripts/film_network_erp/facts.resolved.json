@@ -18,7 +18,10 @@
   "catchup_1000": "251",
   "cliff_shared": "10",
   "cliff_shared_hi": "17",
-  "cliff_perdev": "13,482",
+  "fit_metrics": "11",
+  "hq_cliff_lo": "520",
+  "hq_cliff_hi": "585",
+  "fit_max_n": "100",
   "o2c_match": 6,
   "o2c_steps": 6,
   "legacy_step_ms_4g": "1071",
@@ -37,7 +40,13 @@
   "l_nl_poor": "1469",
   "l_4g_lo": "697",
   "l_4g_hi": "1194",
-  "l_runs": "3"
+  "l_runs": "3",
+  "l_nl_lan_s": "1.0",
+  "l_nl_4g_s": "1.1",
+  "l_nl_poor_s": "1.5",
+  "l_4g_lo_s": "0.7",
+  "l_4g_hi_s": "1.2",
+  "t_twin_s": "0.03"
  },
  "sources": {
   "users_max": "build/scriptor/sme100_20261102/sme_n100_retry.log :: §STAR-DONE engine N=50 M=50 status=PASS-RUN wall_s=292",
@@ -58,7 +67,10 @@
   "catchup_1000": "build/scriptor/sme100_20261102/fit.log :: §EXTRAP edge.roster_visit_requests_p50 N=500 163 N=1000 251 requests (model power, band ±15% as measured at 100; wider further out) [power: N=500 163, N=1000 25",
   "cliff_shared": "build/scriptor/sme100_20261102/fit.log :: §CLIFF shared token, 5 pm burst content requests/minute (80, everyone in 60 s): N <= 10",
   "cliff_shared_hi": "build/scriptor/sme100_20261102/fit.log :: §CLIFF shared token, 5 pm burst points/minute (900): N <= 17",
-  "cliff_perdev": "build/scriptor/sme100_20261102/fit.log :: §CLIFF per-device token, own requests/hour (5000): N <= 13482  [4 visits/h × requests per Visit(N); the list walk grows with N]",
+  "fit_metrics": "build/scriptor/sme100_20261102/fit.log :: §FIT-DONE metrics=11 trusted=8",
+  "hq_cliff_lo": "build/scriptor/sme100_20261102/fit.log :: §CLIFF head office own account, requests/hour (5000, 4 head-office Visits/h): N <= 520..585 (power 520, quad 585; fitted to 100 users, so a range not a number) ",
+  "hq_cliff_hi": "build/scriptor/sme100_20261102/fit.log :: §CLIFF head office own account, requests/hour (5000, 4 head-office Visits/h): N <= 520..585 (power 520, quad 585; fitted to 100 users, so a range not a number) ",
+  "fit_max_n": "build/scriptor/sme100_20261102/fit.log :: §FIT-HEADER §45.14 dir=build/scriptor/sme100_20261102 users=10,20,30,50,100 day: visits_per_hour=4 hours=8 burst_s=60 (STATED ASSUMPTIONS) gh_limits={\"per_hour_",
   "o2c_match": "build/scriptor/beat10_20261102/time_o2c.log :: §LVL-VERDICT MEASURED completed_both_sides=6/6",
   "o2c_steps": "build/scriptor/beat10_20261102/time_o2c.log :: §LVL-VERDICT MEASURED completed_both_sides=6/6",
   "legacy_step_ms_4g": "build/scriptor/beat10_20261102/time_o2c.log :: §LVL-PROFILE 4g (rtt 80 ms) over the 6 completed steps: legacy >= 6.43 s (9 writes × 80 ms + 5.71 s server) · twin 0.33 s local, 0 round trips in the path · per",
@@ -77,6 +89,12 @@
   "l_nl_poor": "build/scriptor/beat10_20261102/lvl_median.log :: §LVL-MEDIAN nl_poor=1469 range=1027..1524 runs=3",
   "l_4g_lo": "build/scriptor/beat10_20261102/lvl_median.log :: §LVL-MEDIAN nl_4g=1139 range=697..1194 runs=3",
   "l_4g_hi": "build/scriptor/beat10_20261102/lvl_median.log :: §LVL-MEDIAN nl_4g=1139 range=697..1194 runs=3",
-  "l_runs": "build/scriptor/beat10_20261102/lvl_median.log :: §LVL-MEDIAN-VERDICT MEASURED runs=3 (twin on sql.js; legacy per document = server ms of its writes minus the per-call login, plus one round trip each)"
+  "l_runs": "build/scriptor/beat10_20261102/lvl_median.log :: §LVL-MEDIAN-VERDICT MEASURED runs=3 (twin on sql.js; legacy per document = server ms of its writes minus the per-call login, plus one round trip each)",
+  "l_nl_lan_s": "build/scriptor/beat10_20261102/lvl_median.log :: §LVL-MEDIAN nl_lan=1020 range=578..1076 runs=3",
+  "l_nl_4g_s": "build/scriptor/beat10_20261102/lvl_median.log :: §LVL-MEDIAN nl_4g=1139 range=697..1194 runs=3",
+  "l_nl_poor_s": "build/scriptor/beat10_20261102/lvl_median.log :: §LVL-MEDIAN nl_poor=1469 range=1027..1524 runs=3",
+  "l_4g_lo_s": "build/scriptor/beat10_20261102/lvl_median.log :: §LVL-MEDIAN nl_4g=1139 range=697..1194 runs=3",
+  "l_4g_hi_s": "build/scriptor/beat10_20261102/lvl_median.log :: §LVL-MEDIAN nl_4g=1139 range=697..1194 runs=3",
+  "t_twin_s": "build/scriptor/beat10_20261102/lvl_median.log :: §LVL-MEDIAN twin=26 range=18..31 runs=3"
  }
 }
