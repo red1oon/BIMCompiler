@@ -158,6 +158,20 @@ if os.environ.get('FILM_SET') == 'shed2film':
     SERIES = 'BIM OOTB  ·  MODELLER TO VIEWER  ·  DXF2BIM'
     NOVEL = {}
     CLIPS = {}
+# §DXF2BIM 2D->film E2E v2 (owner 2026-11-02 "the earlier part is too long ... just show opening the sheets, assemble and convert"): FILM_SET=shed2film2, FIVE chapters:
+# nine sheets, assembled on the canvas, one shed, in the Viewer (Alt+C panel), the layered film. Same anatomy as `shed2film`.
+if os.environ.get('FILM_SET') == 'shed2film2':
+    CARDS = {
+        1: ('CHAPTER 1', 'NINE SHEETS,', 'AS DRAWN', 'Flat BricsCAD sheets, opened untouched.'),
+        2: ('CHAPTER 2', 'ASSEMBLED', 'ON THE CANVAS', 'Placed together, one building.'),
+        3: ('CHAPTER 3', 'ONE', 'SHED', 'Convert. Every body from the nine sheets.'),
+        4: ('CHAPTER 4', 'IN THE', 'VIEWER', 'Saved as a database, reopened. Alt+C shows the panel.'),
+        5: ('CHAPTER 5', 'THE LAYERED', 'FILM', 'Built day by day, sun, escape route, every layer on.'),
+    }
+    TAG = {1: 'NINE SHEETS', 2: 'ASSEMBLED ON THE CANVAS', 3: 'ONE SHED', 4: 'IN THE VIEWER', 5: 'THE LAYERED FILM'}
+    SERIES = 'BIM OOTB  ·  MODELLER TO VIEWER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
 # §DXF2BIM Yellow Markings film (bim-ootb prompts/FILM_DXF2BIM_YELLOW_MARKINGS.md, 2026-10-22): FILM_SET=yellow, FIVE chapters: what a marking is, the yellow rule, the datums, the verdict, the round trip.
 if os.environ.get('FILM_SET') == 'yellow':
     CARDS = {
