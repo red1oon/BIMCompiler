@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Trust and the thin pipe - cards (Thai)</title>
+<!-- ⚠ DO NOT REMOVE — THAI copy of ../stage5.html (Noto Sans Thai after every Noto Sans, taller line boxes, no letter-spacing, same palette; the English page is untouched). Scope: CARD page of Film 5 "Trust and the thin pipe" (prompts/TEAMWORK_FRAMEWORK.md §16.35, §35, §36). Every pixel is a pure function of Stage.at(filmSeconds): no timers, no CSS animation.
+     Colour scheme = the Civil Works chapter cards (prompts/film_ch0_card_v7.py, film_earthworks_clip_cards.py, film_health_card.py; measured on ~/Videos/Civil_Works_Road_Report_narrated_AFTER.mp4): palette is recorded in film5/palette.json.
+     Read the recorder's §FILM_* lines after every run. -->
+<style>
+:root{--bg:#080A0E;--panel:#1A1A19;--line:#6B6A63;--ink:#FFFFFF;--ink2:#C3C2B7;--cy:#4FC3F7;--ye:#FFEB3B;--gd:#0CA30C;--am:#FAB219;--or:#FF8C1A;--bl:#3388FF}
+*{box-sizing:border-box;margin:0}
+html,body{width:1920px;height:930px;overflow:hidden;background:var(--bg);color:var(--ink);font-family:'Noto Sans','Noto Sans Thai','DejaVu Sans',sans-serif}
+#app{position:absolute;left:0;top:0;width:1920px;height:930px;overflow:hidden;background:var(--bg)}
+#ov{position:absolute;left:0;top:0;width:1920px;height:930px;overflow:hidden}
+.pg{position:absolute;left:0;top:0;width:1920px;height:930px;background-color:var(--bg);background-image:linear-gradient(rgba(26,26,25,.9) 1px,transparent 1px),linear-gradient(90deg,rgba(26,26,25,.9) 1px,transparent 1px);background-size:80px 80px}
+.tag{position:absolute;left:96px;top:34px;font:700 22px/1 'Noto Sans','Noto Sans Thai';letter-spacing:0;color:var(--ink2);white-space:nowrap}
+.ser{position:absolute;right:96px;top:34px;font:700 22px/1 'Noto Sans','Noto Sans Thai';letter-spacing:0;color:var(--line);white-space:nowrap}
+h2.ct{position:absolute;left:96px;top:78px;min-height:76px;display:flex;align-items:center;font:700 52px/1.3 'Noto Sans','Noto Sans Thai';color:var(--ink);padding-left:28px;border-left:8px solid var(--cy);white-space:nowrap}
+.lead{position:absolute;left:132px;top:172px;width:1692px;font:400 30px/1.5 'Noto Sans','Noto Sans Thai';color:var(--ink2)}
+.body{position:absolute;left:96px;top:262px;width:1728px;height:590px}
+.src{position:absolute;left:96px;top:872px;width:1728px;font:400 19px/1.3 'DejaVu Sans Mono','Noto Sans Thai',monospace;color:var(--ink2)}
+/* chapter / title cards: the Road Report layout (8 px cyan rule at x=96, text from x=132) with the v8 chapter text colours */
+.cardblk{position:absolute;left:96px;top:250px;width:1728px;min-height:330px;padding-left:36px;border-left:8px solid var(--cy)}
+.cardblk .k{font:400 36px/1.2 'Noto Sans','Noto Sans Thai';color:var(--ink2);letter-spacing:0;margin-top:2px}
+.cardblk .t{font:700 84px/1.3 'Noto Sans','Noto Sans Thai';color:var(--ink);margin-top:22px}
+.cardblk .s{font:400 40px/1.55 'Noto Sans','Noto Sans Thai';color:var(--ye);margin-top:34px;width:1560px}
+.cardblk .n{font:400 30px/1.4 'Noto Sans','Noto Sans Thai';color:var(--ink2);margin-top:26px;width:1560px}
+.bx{position:absolute;background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:16px 22px}
+.bx.cy{border-color:var(--cy)}.bx.gd{border-color:var(--gd)}.bx.am{border-color:var(--am)}.bx.or{border-color:var(--or)}.bx.dash{border-style:dashed;background:transparent}
+.bx h3{font:700 33px/1.4 'Noto Sans','Noto Sans Thai';color:var(--ink)}
+.bx .sb{font:400 24px/1.55 'Noto Sans','Noto Sans Thai';color:var(--ink2);margin-top:6px}
+.tx{font:400 27px/1.55 'Noto Sans','Noto Sans Thai';color:var(--ink);margin-top:8px}
+.mono{font:400 20px/1.35 'DejaVu Sans Mono','Noto Sans Thai',monospace;color:var(--ink2)}
+.chip{display:inline-block;font:800 20px/1 'Noto Sans','Noto Sans Thai';letter-spacing:0;padding:7px 12px;border-radius:8px;color:#080A0E;background:var(--cy);white-space:nowrap}
+.chip.gd{background:var(--gd);color:#080A0E}.chip.am{background:var(--am)}.chip.or{background:var(--or)}.chip.cy{background:var(--cy)}
+.chip.wr{white-space:normal;line-height:1.25;max-width:100%}
+.chip.na{background:transparent;color:var(--ink2);border:2px dashed var(--line);padding:5px 10px}
+.arr{position:absolute;font:700 56px/1 'Noto Sans','Noto Sans Thai';color:var(--cy)}
+.big{font:800 110px/1 'Noto Sans','Noto Sans Thai';color:var(--ink)}
+.lab{font:400 26px/1.3 'Noto Sans','Noto Sans Thai';color:var(--ink2)}
+.bar{position:absolute;height:34px;border-radius:5px}
+.bar.or{background:var(--or)}.bar.cy{background:var(--cy)}.bar.gd{background:var(--gd)}
+.hatch{background-image:repeating-linear-gradient(135deg,rgba(107,106,99,.55) 0 6px,transparent 6px 14px)}
+.pos{position:absolute}
+.k0{display:inline-block;font:800 26px/1 'Noto Sans','Noto Sans Thai';padding:10px 16px;border-radius:10px;background:var(--panel);border:2px solid var(--cy);color:var(--ink);margin-right:12px}
+.k0 small{font:400 18px/1 'Noto Sans','Noto Sans Thai';color:var(--ink2);margin-left:8px}
+.k0.gone{border-color:var(--or);color:var(--ink2);text-decoration:line-through}
+.k0.new{border-color:var(--gd)}
+table.tb{border-collapse:collapse;width:100%}
+table.tb td,table.tb th{font:400 24px/1.3 'Noto Sans','Noto Sans Thai';padding:8px 14px;border-bottom:1px solid var(--line);text-align:left;color:var(--ink)}
+table.tb th{font:700 22px/1.3 'Noto Sans','Noto Sans Thai';color:var(--ink2);letter-spacing:0}
+</style></head>
+<body><div id="app"><div id="ov"></div></div>
+<script src="../stage5.js"></script>
+</body></html>

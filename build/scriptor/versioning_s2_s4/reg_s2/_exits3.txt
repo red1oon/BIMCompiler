@@ -1,0 +1,8 @@
+witness_libero_dashboard exit=0
+witness_libero_corehooks exit=0
+witness_libero_bundle exit=0
+witness_libero_orderend exit=0
+witness_libero_cost exit=0
+witness_libero_mto exit=0
+witness_libero_backflush exit=0
+witness_libero_activity exit=0

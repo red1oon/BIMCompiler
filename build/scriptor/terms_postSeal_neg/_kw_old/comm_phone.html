@@ -1,0 +1,208 @@
+<!doctype html>
+<!-- Copyright (c) 2025-2026 Redhuan D. Oon <red1org@gmail.com> · SPDX-License-Identifier: MIT -->
+<!-- comm_phone.html — the laptop + phone POC: one screen, real comm layer, real GitHub pipe, state kept across reloads.
+     Spec: bim-compiler prompts/TEAMWORK_FRAMEWORK.md §12.13 — Witness: common/tests/witness_comm_phone_page.js (W-PHONE-PAGE).
+     Not linked from any app. The GitHub token is typed in and kept in this browser's IndexedDB only — never in a URL. -->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Team POC</title>
+<style>
+  :root { --bg:#fff; --fg:#1d1d1f; --mut:#666; --line:#ddd; --acc:#1f5fd6; --ok:#137a3a; --bad:#b3261e; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#151517; --fg:#ececee; --mut:#9a9aa0; --line:#333; --acc:#7aa7ff; --ok:#5fd38a; --bad:#ff8a80; } }
+  * { box-sizing: border-box; } body { margin:0; padding:16px; background:var(--bg); color:var(--fg); font:15px/1.45 system-ui,sans-serif; max-width:640px; margin:auto; }
+  h1 { font-size:20px; margin:0 0 4px; } h2 { font-size:15px; margin:18px 0 6px; } .mut { color:var(--mut); font-size:13px; }
+  section { border:1px solid var(--line); border-radius:10px; padding:12px; margin:10px 0; } input { width:100%; padding:9px; font:inherit; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--fg); }
+  button { font:inherit; padding:9px 14px; margin:6px 6px 0 0; border-radius:8px; border:1px solid var(--acc); background:var(--acc); color:#fff; } button.sec { background:transparent; color:var(--acc); }
+  .code { font:600 22px/1 ui-monospace,monospace; letter-spacing:2px; } .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:6px 0; border-top:1px solid var(--line); }
+  .row:first-child { border-top:0; } .row input { width:90px; } .ok { color:var(--ok); } .bad { color:var(--bad); } pre { white-space:pre-wrap; font-size:12px; color:var(--mut); max-height:200px; overflow:auto; }
+  .hide { display:none; }
+  select { font:inherit; padding:8px; border-radius:8px; border:1px solid var(--line); background:var(--bg); color:var(--fg); }
+  button { cursor:pointer; } button:disabled { cursor:not-allowed; }   /* user: the pointer should show it is clickable */
+</style></head><body>
+<h1>Team POC</h1>
+<div class="mut" id="status">loading…</div>
+<div class="mut" id="boot">Getting ready — loading the access rules (150 KB)… <span id="boot-pct">0%</span></div>
+
+<section id="s-token"><h2>1 · GitHub token</h2>
+  <div class="mut">Fine-grained token, repository <b>bim-teams-pipe</b> only, Contents read &amp; write. Kept in this browser only.</div>
+  <input id="token" type="password" autocomplete="off" placeholder="github_pat_…">
+  <div class="mut" style="margin-top:8px">Optional — the Gmail visit log (post box web-app address + secret):</div>
+  <input id="pb-url" placeholder="https://script.google.com/macros/s/…/exec" style="margin-top:4px"><input id="pb-secret" type="password" autocomplete="off" placeholder="post box secret" style="margin-top:4px">
+  <button id="b-token">Save</button></section>
+
+<section id="s-space" class="hide"><h2>2 · Team space</h2>
+  <button id="b-found">Start a new space</button>
+  <div style="margin-top:8px"><input id="invite" placeholder="invite (64 characters) — or open the invite link"><button class="sec" id="b-join">Join</button></div></section>
+
+<section id="s-pair" class="hide"><h2>3 · Pairing</h2>
+  <div id="pair-joiner" class="hide">Your device code — read it to the space founder:<div class="code" id="mycode"></div><div class="mut" id="pair-state"></div></div>
+  <div id="pair-founder" class="hide"><div class="mut">Invite link for the other device:</div><input id="invite-link" readonly>
+    <button class="sec" id="b-requests">Check join requests</button><div id="requests"></div></div></section>
+
+<section id="s-work" class="hide"><h2>4 · Work</h2>
+  <div class="row" style="border-top:0"><span>Organisation</span><select id="new-org"></select><button id="b-new">New order</button></div>
+  <div id="refused"></div>
+  <div id="orders"></div><div id="conflicts"></div></section>
+
+<section id="s-log" class="hide"><h2>Post office</h2><button id="b-visit">Visit the post office</button><button class="sec" id="b-reset">Start over</button><div id="delivery" class="mut"></div><pre id="log"></pre></section>
+
+<script src="../../erp/sqljs/sql-wasm.js"></script>
+<script src="../../erp/kernel_ops.js"></script>
+<script src="../../erp/crud_core.js"></script>
+<script src="../../erp/ad_access.js"></script>
+<script src="team_defaults.js"></script><script src="comm_envelope.js"></script><script src="comm_order.js"></script><script src="comm_roster.js"></script>
+<script src="comm_admit.js"></script><script src="comm_pipe.js"></script><script src="comm_store.js"></script><script src="comm_visitlog.js"></script>
+<script>
+(function () {
+  'use strict';
+  var OWNER = 'red1oon', REPO = 'bim-teams-pipe', $ = function (id) { return document.getElementById(id); };
+  var SQL, adDb, dev, cfg = {}, S = null, pipe = null, roles = {};
+  function log(m) { console.log(m); $('log').textContent = (m + '\n' + $('log').textContent).slice(0, 6000); }
+  function show(id, on) { $(id).classList.toggle('hide', !on); }
+
+  // ── this browser's own storage: device key (non-extractable CryptoKey), settings, comm.db bytes ──
+  function idb() { return new Promise(function (res, rej) { var r = indexedDB.open('comm_phone', 1); r.onupgradeneeded = function () { r.result.createObjectStore('kv'); }; r.onsuccess = function () { res(r.result); }; r.onerror = function () { rej(r.error); }; }); }
+  async function kvGet(k) { var d = await idb(); return new Promise(function (res) { var q = d.transaction('kv').objectStore('kv').get(k); q.onsuccess = function () { res(q.result); }; q.onerror = function () { res(undefined); }; }); }
+  async function kvPut(k, v) { var d = await idb(); return new Promise(function (res, rej) { var t = d.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = res; t.onerror = function () { rej(t.error); }; }); }
+  async function persist() { if (S) await kvPut('db', S.db.export()); await kvPut('cfg', cfg); }
+
+  // ── the AD layer's canUpdate over this browser's ad_seed.db (same adapter as comm_poc.html) ──
+  function shim(sdb) { return { prepare: function (sql) { return {
+    get: function () { var st = sdb.prepare(sql); st.bind([].slice.call(arguments)); var r = st.step() ? st.getAsObject() : undefined; st.free(); return r; },
+    all: function () { var st = sdb.prepare(sql); st.bind([].slice.call(arguments)); var o = []; while (st.step()) o.push(st.getAsObject()); st.free(); return o; } }; } }; }
+  function access(roleId, client, org, table) {
+    var t = shim(adDb).prepare('SELECT ad_table_id AS id, accesslevel AS lvl FROM ad_table WHERE lower(tablename)=?').get(String(table).toLowerCase());
+    if (!t) return { allowed: false, reason: 'no-table' };
+    var r = roles[roleId]; if (r === undefined) { try { r = AdAccess.buildRole(shim(adDb), roleId); } catch (e) { r = null; } roles[roleId] = r; }
+    return r ? r.canUpdate(client, org, Number(t.id), t.lvl) : { allowed: false, reason: 'no-role' };
+  }
+  function tableId(n) { var t = shim(adDb).prepare('SELECT ad_table_id AS id FROM ad_table WHERE lower(tablename)=?').get(String(n).toLowerCase()); return t ? Number(t.id) : null; }
+  function roleOptions() { return shim(adDb).prepare("SELECT ad_role_id AS id, name FROM ad_role WHERE ad_client_id IN (0, 11) ORDER BY ad_role_id").all()
+    .map(function (r) { return '<option value="' + r.id + '"' + (r.id === 102 ? ' selected' : '') + '>' + r.name + ' (' + r.id + ')</option>'; }).join(''); }
+  function orgName(id) { var o = shim(adDb).prepare('SELECT name FROM ad_org WHERE ad_org_id=?').get(Number(id)); return o ? o.name : 'org ' + id; }
+  function codeOf(kid) { return kid.slice(0, 4).toUpperCase() + '-' + kid.slice(4, 8).toUpperCase(); }
+
+  async function openStore(bytes) {
+    S = CommStore.open(bytes ? new SQL.Database(bytes) : new SQL.Database(), { SQL: SQL, space: cfg.space, self: dev, access: access, tableId: tableId, log: log });
+    pipe = CommPipe.ghPipe({ owner: cfg.owner || OWNER, repo: cfg.repo || REPO, token: cfg.token, self: dev.kid, minGapMs: Number(new URLSearchParams(location.search).get('gap') || 10000) });
+  }
+
+  // ── fold the placed ops through the REAL kernel + crud_core.listTip (conflicted writes held back) ──
+  function uuidFromHash(h) { return h.slice(0, 8) + '-' + h.slice(8, 12) + '-4' + h.slice(13, 16) + '-8' + h.slice(17, 20) + '-' + h.slice(20, 32); }
+  async function orders() {
+    var meta = new SQL.Database(); meta.run('CREATE TABLE c_order (c_order_id INTEGER, c_order_uu TEXT, documentno TEXT, grandtotal NUMERIC, ad_client_id INTEGER, ad_org_id INTEGER, created TEXT, updated TEXT, createdby INTEGER, updatedby INTEGER, isactive TEXT, processed TEXT, processing TEXT, posted TEXT)');
+    globalThis.__idmpDb = meta;
+    var kdb = new SQL.Database();
+    (await S.foldable()).forEach(function (p) { var e = p.env; KernelOps.commitOp(kdb, e.body.op_type, CommEnvelope.toKernelParams(e), null, null, e.body.op_type === 'CRUD_CREATE' ? e.target.uu : uuidFromHash(p.hash), e.ts); });
+    return CrudCore.listTip(kdb, 'c_order', 'c_order_id', [], null).rows;
+  }
+
+  async function render() {
+    show('s-token', !cfg.token); show('s-space', !!cfg.token && !cfg.space);
+    if (!S) { $('status').textContent = 'device ' + codeOf(dev.kid) + (cfg.token ? ' · token saved' : ''); show('s-pair', false); show('s-work', false); show('s-log', false);
+      document.body.setAttribute('data-ready', '1'); return; }
+    var L = await S.order(), me = L.roster.devices[dev.kid], founder = cfg.founder;
+    show('s-pair', true); show('pair-founder', !!founder); show('pair-joiner', !founder);
+    $('mycode').textContent = codeOf(dev.kid);
+    $('pair-state').innerHTML = me ? '<span class="ok">✓ enrolled — you are in the team</span>' : 'waiting for the founder to approve… then press Visit';
+    $('invite-link').value = location.origin + location.pathname + '#join=' + cfg.space;
+    show('s-work', !!me); show('s-log', true);
+    var rows = me ? await orders() : [], cf = me ? await S.conflicts() : [];
+    $('orders').innerHTML = rows.map(function (r) {
+      return '<div class="row" data-uu="' + r.c_order_uu + '"><b>' + r.documentno + '</b><span class="mut">' + orgName(r.ad_org_id) + '</span> total <span class="tot">' + r.grandtotal + '</span>' +
+             '<input type="number" value="' + r.grandtotal + '"><button class="sec b-save">Save</button></div>'; }).join('') || '<div class="mut">no orders yet</div>';
+    $('conflicts').innerHTML = cf.map(function (c) { return '<div class="bad conflict">⚠ ' + c.col + ' conflict on an order: before ' + c.before + ', values ' +
+      c.candidates.map(function (k) { return k.value; }).join(' / ') + ' — Current record was changed by another user</div>'; }).join('');
+    var dl = S.delivery(), gaps = S.gaps().length;
+    $('refused').innerHTML = dl.filter(function (x) { return x.verdict === 'REFUSED'; }).map(function (x) {
+      var e = S.query('SELECT envelope FROM cl_op WHERE op_hash=?', [x.hash])[0], env = e ? JSON.parse(e.envelope) : null, f = env && env.body.params.fields;
+      return '<div class="bad refused">⛔ ' + (f && f.documentno ? f.documentno + ' (' + orgName(f.ad_org_id) + ')' : 'op ' + x.seq) + ' refused — ' + x.reason + '</div>'; }).join('');
+    $('delivery').innerHTML = 'last visit ' + (cfg.lastVisit ? new Date(cfg.lastVisit).toLocaleTimeString() : 'never') + ' · my ops ' + dl.length +
+      ' · seen by others ' + dl.filter(function (x) { return x.state === 'SEEN'; }).length + ' · refused ' + dl.filter(function (x) { return x.verdict === 'REFUSED'; }).length +
+      ' · waiting on ' + gaps + (pipe ? ' · GitHub writes ' + pipe.stats.writes : '') + (cfg.pbUrl ? ' · visit log ' + (cfg.lastNote ? '✓' : '—') : '');
+    $('status').textContent = 'device ' + codeOf(dev.kid) + ' · space ' + cfg.space.slice(0, 8) + ' · team devices ' + Object.keys(L.roster.devices).length + (founder ? ' · founder' : '');
+    document.querySelectorAll('.b-save').forEach(function (b) { b.onclick = function () { act(async function () {
+      var row = b.closest('.row'), uu = row.getAttribute('data-uu'), from = Number(row.querySelector('.tot').textContent), to = Number(row.querySelector('input').value);
+      if (to === from) { log('§PHONE edit skipped — value unchanged (' + from + ')'); return; }   // no op for a Save that changes nothing
+      await S.author({ target: { table: 'c_order', uu: uu }, intent: 'K2', body: { op_type: 'CRUD_UPDATE', params: { changes: { grandtotal: { old: from, new: to } } } } });
+      log('§PHONE edit ' + uu.slice(0, 8) + ' ' + from + '→' + to); }); }; });
+    document.body.setAttribute('data-ready', '1');
+  }
+  // a press before the page is ready WAITS for it (it used to throw on an undefined device and do nothing — user, 2026-10-23)
+  var bootDone = null, booted = new Promise(function (r) { bootDone = r; });
+  async function act(fn) { document.body.setAttribute('data-ready', '0'); await booted;
+    try { await fn(); await persist(); } catch (e) { log('🔴 ' + (e && e.message || e)); } await render(); }
+  function buttons(on) { document.querySelectorAll('button').forEach(function (b) { b.disabled = !on; b.style.opacity = on ? '' : '0.5'; }); }
+  async function fetchWithProgress(url) {
+    var r = await fetch(url, { cache: 'force-cache' }), total = Number(r.headers.get('content-length')) || 154274;
+    if (!r.body || !r.body.getReader) return new Uint8Array(await r.arrayBuffer());
+    var rd = r.body.getReader(), chunks = [], got = 0;
+    for (;;) { var x = await rd.read(); if (x.done) break; chunks.push(x.value); got += x.value.length; $('boot-pct').textContent = Math.min(100, Math.round(100 * got / total)) + '%'; }
+    var out = new Uint8Array(got), o = 0; chunks.forEach(function (c) { out.set(c, o); o += c.length; }); return out;
+  }
+
+  $('b-token').onclick = function () { act(async function () {
+    cfg.token = $('token').value.trim(); cfg.trial = false;   // a key typed here is the user's own: no trial limit (§13.8)
+     cfg.pbUrl = $('pb-url').value.trim(); cfg.pbSecret = $('pb-secret').value.trim();
+    log('§PHONE token saved (' + cfg.token.length + ' chars)' + (cfg.pbUrl ? ' + visit log' : '')); }); };
+  // every visit: the pipe delivers; then (if configured) a note in the Gmail visit log, confirmed by id — never blocks
+  async function visit() {
+    var rep = await S.sync(pipe); cfg.lastVisit = Date.now();
+    if (cfg.pbUrl && cfg.pbSecret) { var n = await CommVisitLog.noteVisit(S, rep, { url: cfg.pbUrl, secret: cfg.pbSecret, owner: cfg.owner || OWNER, repo: cfg.repo || REPO });
+      cfg.lastNote = n.ok ? n.subject : null; log('§PHONE_NOTE ' + (n.ok ? 'ok ' + n.subject + (n.confirmedBy ? ' (confirmed by ' + n.confirmedBy + ')' : '') : 'failed ' + n.error)); }
+    return rep;
+  }
+  $('b-found').onclick = function () { act(async function () {
+    var sp = await CommStore.newSpace('team-poc', dev, dev.person_uu, 'founder', 102);
+    cfg.space = sp.space; cfg.founder = true; await openStore(); await S.genesis(sp.params);
+    await visit(); log('§PHONE founded space ' + sp.space.slice(0, 12)); }); };
+  $('b-join').onclick = function () { act(async function () {
+    var inv = ($('invite').value || '').trim().toLowerCase(); if (!/^[0-9a-f]{64}$/.test(inv)) throw new Error('an invite is 64 characters 0-9 a-f');
+    cfg.space = inv; cfg.founder = false; await openStore();
+    await pipe.putMany([{ name: 's/' + cfg.space + '/r/' + dev.kid, bytes: new TextEncoder().encode(JSON.stringify({ space: cfg.space, kid: dev.kid, jwk: dev.pubJwk, dh_jwk: dev.dhPubJwk, person_uu: dev.person_uu, name: 'device ' + codeOf(dev.kid) })) }]);
+    log('§PHONE join request posted, code ' + codeOf(dev.kid)); }); };
+  $('b-requests').onclick = function () { act(async function () {
+    var L = await S.order(), names = await pipe.list('s/' + cfg.space + '/r/'), html = '';
+    for (var n of names) { var b = await pipe.get(n); if (!b) continue; var rq = JSON.parse(new TextDecoder().decode(b));
+      if (rq.space !== cfg.space || L.roster.devices[rq.kid] || rq.kid !== await CommStore.kidOf(rq.jwk)) continue;   // only requests for THIS space
+      html += '<div class="row request" data-req=\'' + JSON.stringify(rq).replace(/'/g, '&#39;') + '\'><span class="code">' + codeOf(rq.kid) + '</span><span>as</span><select class="req-role">' + roleOptions() + '</select><button class="b-approve">Approve</button></div>'; }
+    $('requests').innerHTML = html || '<div class="mut">no pending requests</div>';
+    document.querySelectorAll('.b-approve').forEach(function (b) { b.onclick = function () { act(async function () {
+      var rq = JSON.parse(b.closest('.row').getAttribute('data-req')), role = Number(b.closest('.row').querySelector('.req-role').value);
+      // the role picked on Approve (an AD_Role id; canUpdate judges every later write by it)
+      await S.addPerson({ person_uu: rq.person_uu, name: rq.name, ad_role_id: role, comm_admin: false }); await S.enroll(rq.kid, rq.jwk, rq.person_uu, rq.dh_jwk);   // CL8: the dh_jwk makes the enroller grant the space key in this same visit
+      await visit(); log('§PHONE approved ' + codeOf(rq.kid) + ' as role ' + role); }); }; });
+    log('§PHONE requests listed: ' + names.length); }); };
+  $('b-new').onclick = function () { act(async function () {
+    var uu = crypto.randomUUID(), n = 'O-' + codeOf(dev.kid).slice(0, 4) + '-' + (S.query("SELECT COUNT(*) AS n FROM cl_op WHERE op_type='CRUD_CREATE' AND author_kid=?", [dev.kid])[0].n + 1);
+    await S.author({ target: { table: 'c_order', uu: uu }, intent: 'K2', body: { op_type: 'CRUD_CREATE', params: { fields: { documentno: n, grandtotal: 100, ad_client_id: 11, ad_org_id: Number($('new-org').value) } } } });
+    log('§PHONE new order ' + n + ' org ' + $('new-org').value); }); };
+  // Start over: a new space for a clean take — keeps this device's key, the token and the post box; tap twice
+  var resetArmed = 0;
+  $('b-reset').onclick = function () {
+    if (Date.now() - resetArmed > 5000) { resetArmed = Date.now(); $('b-reset').textContent = 'Tap again to start over'; return; }
+    act(async function () { resetArmed = 0; $('b-reset').textContent = 'Start over';
+      ['space', 'founder', 'lastVisit', 'lastNote'].forEach(function (k) { delete cfg[k]; }); S = null; pipe = null; await kvPut('db', null);
+      log('§PHONE started over — same device ' + codeOf(dev.kid) + ', no space'); }); };
+  $('b-visit').onclick = function () { act(async function () { await visit(); }); };
+
+  (async function boot() {
+    buttons(false);
+    SQL = await initSqlJs({ locateFile: function (f) { return '../../erp/sqljs/' + f; } });
+    adDb = new SQL.Database(); adDb.exec(new TextDecoder().decode(await fetchWithProgress('access_seed.sql')));   // 154 KB of the rows canUpdate reads (§SEED-EQ: same verdicts as ad_seed.db)
+    $('new-org').innerHTML = shim(adDb).prepare('SELECT ad_org_id AS id, name FROM ad_org WHERE ad_client_id=11 ORDER BY ad_org_id').all()
+      .map(function (o) { return '<option value="' + o.id + '">' + o.name + ' (' + o.id + ')</option>'; }).join('');
+    dev = await kvGet('device');
+    if (!dev) { dev = await CommStore.newDevice(); dev.person_uu = crypto.randomUUID(); await kvPut('device', dev); }   // CryptoKey stored as-is (non-extractable)
+    else if (!dev.dhPrivateKey) { await CommStore.ensureDh(dev); await kvPut('device', dev); }                          // a device saved before CL8 gets its key-exchange key (useful only if not yet enrolled)
+    cfg = (await kvGet('cfg')) || {};
+    if (!cfg.token && window.TeamDefaults && TeamDefaults.token) { cfg.owner = TeamDefaults.owner; cfg.repo = TeamDefaults.repo; cfg.token = TeamDefaults.token; cfg.trial = true; await kvPut('cfg', cfg);   // §13.8: the system default setup
+      log('§PHONE system-default setup applied repo=' + cfg.owner + '/' + cfg.repo + ' trial=true'); }
+    var m = /#join=([0-9a-f]{64})/.exec(location.hash); if (m) $('invite').value = m[1];
+    if (cfg.space) await openStore(await kvGet('db'));
+    if (cfg.token) $('token').value = cfg.token; if (cfg.pbUrl) $('pb-url').value = cfg.pbUrl; if (cfg.pbSecret) $('pb-secret').value = cfg.pbSecret;
+    log('§PHONE_BOOT device=' + dev.kid + ' space=' + (cfg.space || 'none').slice(0, 12) + ' resumed=' + !!cfg.space);
+    show('boot', false); buttons(true); bootDone(); await render();
+  })().catch(function (e) { log('🔴 boot ' + (e && e.stack || e)); $('boot').textContent = 'Could not get ready: ' + (e && e.message || e) + ' — reload the page.'; });
+})();
+</script>
+</body></html>

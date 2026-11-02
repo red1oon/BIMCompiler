@@ -1,0 +1,415 @@
+{
+ "header": {
+  "format": "film6-trace/1",
+  "status": "DRAFT",
+  "draft_notice": "LAYOUT-ONLY SAMPLE. Not evidence, not measured, never to be published. The recorder must refuse it (film6_guard.js).",
+  "sample_day_label": "sample day",
+  "axis": {
+   "from_min": 480,
+   "to_min": 1980
+  },
+  "initial_online": {
+   "till": true,
+   "phone1": true,
+   "phone2": true,
+   "verifier": true,
+   "clerk": true,
+   "stock": true
+  },
+  "beats": [
+   {
+    "id": "ch1",
+    "title": "Chapter 1 · The till sells, online or not",
+    "src": "DRAFT"
+   },
+   {
+    "id": "ch2",
+    "title": "Chapter 2 · The borrower pays from a phone",
+    "src": "DRAFT"
+   },
+   {
+    "id": "ch3",
+    "title": "Chapter 3 · Head office works when head office works",
+    "src": "DRAFT"
+   },
+   {
+    "id": "ch4",
+    "title": "Chapter 4 · The day comes back to every desk",
+    "src": "DRAFT"
+   }
+  ],
+  "sources": [
+   {
+    "witness": "DRAFT (none)",
+    "log": "none"
+   }
+  ],
+  "schedule": "DRAFT: hours from TEAMWORK_FRAMEWORK §42.1"
+ },
+ "actors": [
+  {
+   "id": "till",
+   "name": "Till",
+   "sub": "Unicenta-style station"
+  },
+  {
+   "id": "phone1",
+   "name": "Borrower phone 1",
+   "sub": "its own loan only"
+  },
+  {
+   "id": "phone2",
+   "name": "Borrower phone 2",
+   "sub": "its own loan only"
+  },
+  {
+   "id": "verifier",
+   "name": "Slip-verify service",
+   "sub": "SlipOK is the sample"
+  },
+  {
+   "id": "clerk",
+   "name": "Head-office clerk",
+   "sub": "role 102"
+  },
+  {
+   "id": "stock",
+   "name": "Stock role",
+   "sub": "role 103"
+  },
+  {
+   "id": "relay",
+   "name": "The relay",
+   "sub": "a dumb post box"
+  }
+ ],
+ "events": [
+  {
+   "seq": 1,
+   "t_min": 540,
+   "beat": "ch1",
+   "actor": "till",
+   "kind": "offline",
+   "wit": "DRAFT"
+  },
+  {
+   "seq": 2,
+   "t_min": 550,
+   "beat": "ch1",
+   "actor": "till",
+   "kind": "local",
+   "wit": "DRAFT",
+   "text": "ticket A written",
+   "queue": 1
+  },
+  {
+   "seq": 3,
+   "t_min": 595,
+   "beat": "ch1",
+   "actor": "till",
+   "kind": "local",
+   "wit": "DRAFT",
+   "text": "ticket B written",
+   "queue": 1
+  },
+  {
+   "seq": 4,
+   "t_min": 700,
+   "beat": "ch1",
+   "actor": "till",
+   "kind": "local",
+   "wit": "DRAFT",
+   "text": "ticket C written",
+   "queue": 1
+  },
+  {
+   "seq": 5,
+   "t_min": 725,
+   "beat": "ch1",
+   "actor": "till",
+   "kind": "online",
+   "wit": "DRAFT"
+  },
+  {
+   "seq": 6,
+   "t_min": 725,
+   "beat": "ch1",
+   "actor": "till",
+   "kind": "send",
+   "wit": "DRAFT",
+   "to": "relay",
+   "label": "I_Order",
+   "key": "ticket A"
+  },
+  {
+   "seq": 7,
+   "t_min": 725,
+   "beat": "ch1",
+   "actor": "till",
+   "kind": "send",
+   "wit": "DRAFT",
+   "to": "relay",
+   "label": "I_Order",
+   "key": "ticket B"
+  },
+  {
+   "seq": 8,
+   "t_min": 726,
+   "beat": "ch1",
+   "actor": "till",
+   "kind": "send",
+   "wit": "DRAFT",
+   "to": "relay",
+   "label": "I_Order",
+   "key": "ticket C"
+  },
+  {
+   "seq": 9,
+   "t_min": 620,
+   "beat": "ch2",
+   "actor": "phone1",
+   "kind": "verify",
+   "wit": "DRAFT",
+   "to": "verifier",
+   "label": "slip 1"
+  },
+  {
+   "seq": 10,
+   "t_min": 620,
+   "beat": "ch2",
+   "actor": "verifier",
+   "kind": "ack",
+   "wit": "DRAFT",
+   "to": "phone1",
+   "status": "approved",
+   "label": "slip 1"
+  },
+  {
+   "seq": 11,
+   "t_min": 621,
+   "beat": "ch2",
+   "actor": "phone1",
+   "kind": "local",
+   "wit": "DRAFT",
+   "text": "payment received",
+   "queue": 1,
+   "slip": "received"
+  },
+  {
+   "seq": 12,
+   "t_min": 840,
+   "beat": "ch2",
+   "actor": "phone2",
+   "kind": "offline",
+   "wit": "DRAFT"
+  },
+  {
+   "seq": 13,
+   "t_min": 845,
+   "beat": "ch2",
+   "actor": "phone2",
+   "kind": "local",
+   "wit": "DRAFT",
+   "text": "slip 2 saved, no ack yet",
+   "queue": 1,
+   "todo": "set"
+  },
+  {
+   "seq": 14,
+   "t_min": 845,
+   "beat": "ch2",
+   "actor": "phone2",
+   "kind": "note",
+   "wit": "DRAFT",
+   "cls": "bad",
+   "text": "The slip service has not acknowledged this slip. When online, the check runs again by itself."
+  },
+  {
+   "seq": 15,
+   "t_min": 1000,
+   "beat": "ch2",
+   "actor": "phone2",
+   "kind": "online",
+   "wit": "DRAFT"
+  },
+  {
+   "seq": 16,
+   "t_min": 1000,
+   "beat": "ch2",
+   "actor": "phone2",
+   "kind": "verify",
+   "wit": "DRAFT",
+   "to": "verifier",
+   "label": "slip 2"
+  },
+  {
+   "seq": 17,
+   "t_min": 1001,
+   "beat": "ch2",
+   "actor": "verifier",
+   "kind": "ack",
+   "wit": "DRAFT",
+   "to": "phone2",
+   "status": "approved",
+   "label": "slip 2"
+  },
+  {
+   "seq": 18,
+   "t_min": 1001,
+   "beat": "ch2",
+   "actor": "phone2",
+   "kind": "local",
+   "wit": "DRAFT",
+   "text": "to-do cleared, row updated",
+   "todo": "clear",
+   "slip": "received"
+  },
+  {
+   "seq": 19,
+   "t_min": 1015,
+   "beat": "ch2",
+   "actor": "phone1",
+   "kind": "send",
+   "wit": "DRAFT",
+   "to": "relay",
+   "label": "I_Payment",
+   "key": "slip 1"
+  },
+  {
+   "seq": 20,
+   "t_min": 1016,
+   "beat": "ch2",
+   "actor": "phone2",
+   "kind": "send",
+   "wit": "DRAFT",
+   "to": "relay",
+   "label": "I_Payment",
+   "key": "slip 2"
+  },
+  {
+   "seq": 21,
+   "t_min": 1050,
+   "beat": "ch3",
+   "actor": "clerk",
+   "kind": "deliver",
+   "wit": "DRAFT",
+   "from": "relay",
+   "label": "I_Order",
+   "key": "tickets"
+  },
+  {
+   "seq": 22,
+   "t_min": 1050,
+   "beat": "ch3",
+   "actor": "clerk",
+   "kind": "run",
+   "wit": "DRAFT",
+   "process": "Import Orders",
+   "text": "order per ticket"
+  },
+  {
+   "seq": 23,
+   "t_min": 1052,
+   "beat": "ch3",
+   "actor": "clerk",
+   "kind": "note",
+   "wit": "DRAFT",
+   "cls": "bad",
+   "text": "A ticket whose tenders do not add up stays whole, with its reason in I_ErrorMsg."
+  },
+  {
+   "seq": 24,
+   "t_min": 1065,
+   "beat": "ch3",
+   "actor": "clerk",
+   "kind": "deliver",
+   "wit": "DRAFT",
+   "from": "relay",
+   "label": "I_Payment",
+   "key": "slips"
+  },
+  {
+   "seq": 25,
+   "t_min": 1065,
+   "beat": "ch3",
+   "actor": "clerk",
+   "kind": "run",
+   "wit": "DRAFT",
+   "process": "Import Payment",
+   "text": "receipts allocated"
+  },
+  {
+   "seq": 26,
+   "t_min": 1920,
+   "beat": "ch3",
+   "actor": "stock",
+   "kind": "run",
+   "wit": "DRAFT",
+   "process": "Replenish Report",
+   "text": "quantities to order"
+  },
+  {
+   "seq": 27,
+   "t_min": 1925,
+   "beat": "ch3",
+   "actor": "stock",
+   "kind": "run",
+   "wit": "DRAFT",
+   "process": "Material Movement",
+   "text": "one movement"
+  },
+  {
+   "seq": 28,
+   "t_min": 1926,
+   "beat": "ch3",
+   "actor": "stock",
+   "kind": "send",
+   "wit": "DRAFT",
+   "to": "relay",
+   "label": "movement",
+   "key": "branch"
+  },
+  {
+   "seq": 29,
+   "t_min": 1935,
+   "beat": "ch4",
+   "actor": "till",
+   "kind": "deliver",
+   "wit": "DRAFT",
+   "from": "relay",
+   "label": "movement",
+   "key": "branch"
+  },
+  {
+   "seq": 30,
+   "t_min": 1935,
+   "beat": "ch4",
+   "actor": "phone1",
+   "kind": "deliver",
+   "wit": "DRAFT",
+   "from": "relay",
+   "label": "balance",
+   "key": "loan 1"
+  },
+  {
+   "seq": 31,
+   "t_min": 1935,
+   "beat": "ch4",
+   "actor": "phone2",
+   "kind": "refuse",
+   "wit": "DRAFT",
+   "text": "not addressed to this phone: refused locally",
+   "cls": "n"
+  },
+  {
+   "seq": 32,
+   "t_min": 1940,
+   "beat": "ch4",
+   "actor": "clerk",
+   "kind": "refuse",
+   "wit": "DRAFT",
+   "text": "Current record was changed by another user, please ReQuery",
+   "cls": "bad"
+  }
+ ]
+}

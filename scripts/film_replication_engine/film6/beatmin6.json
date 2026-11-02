@@ -1,0 +1,18 @@
+{
+ "_note": "seconds of speech per chapter, Kokoro CPU, base speed 1.15; a card beat is held at least this long; baseline script (pending IF branches dropped)",
+ "seconds": {
+  "T": 9.02,
+  "0": 32.68,
+  "0b": 60.32,
+  "1": 38.42,
+  "2": 60.33,
+  "3": 84.27,
+  "4": 57.71,
+  "4c": 53.61,
+  "5": 38.14,
+  "L": 25.62,
+  "W": 27.96,
+  "Z": 2.54
+ },
+ "total": 490.61
+}

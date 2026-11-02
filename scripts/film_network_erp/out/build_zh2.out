@@ -1,0 +1,4 @@
+§LOUDNORM_PASS1 input_i=-23.51 input_tp=-1.64 input_lra=4.30 input_thresh=-34.12 target_offset=1.37
+§MUX rc=0 clips=11 out=/home/red1/Videos/Network_ERP_without_an_Apps_and_Database_server_ZH_rc2.mp4
+§BUILD_DONE /home/red1/Videos/Network_ERP_without_an_Apps_and_Database_server_ZH_rc2.mp4
+exit=0

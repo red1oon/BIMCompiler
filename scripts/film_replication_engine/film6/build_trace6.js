@@ -1,0 +1,28 @@
+// ⚠ DO NOT REMOVE — Scope: builds the REAL trace6.json from the §FILM_EVT lines of the witness logs in logs/evidence (copies of the lead's final suite + the W-MF-SEED re-run on film/mf-evt). The stage replays it; film6_guard.js refuses a DRAFT.
+// Nothing is authored here: each event is one printed line (its `wit` = log file#line); only the sample-day hour comes from schedule6.json (a schedule, labelled on screen). READ THE LOG (logs/trace6_build.log).
+'use strict';
+const fs = require('fs'), path = require('path'), crypto = require('crypto');
+const EV = path.join(__dirname, 'logs', 'evidence'), SCH = JSON.parse(fs.readFileSync(path.join(__dirname, 'schedule6.json'), 'utf8'));
+const SRC = { 'final/film_offline.log': ['O0', 'O1', 'O2', 'O3'], 'mf_seed.log': ['S0', 'S1', 'V1', 'V3', 'V2', 'V4', 'I1', 'R', 'P', 'B1', 'B2'], 'final/pos_sales_live.log': ['P1', 'P2', 'P3'], 'final/hq_pos.log': ['H8', 'H9', 'H10', 'H11'] };
+const BEAT = { O0: 'ch1', O1: 'ch1', O2: 'ch1', O3: 'ch1', S0: 'ch2', S1: 'ch2', V1: 'ch2', V3: 'ch2', V2: 'ch2', V4: 'ch2', P1: 'ch3a', P2: 'ch3a', P3: 'ch3a', I1: 'ch3a', R: 'ch3c', P: 'ch3c', H8: 'ch3b', H9: 'ch3b', H10: 'ch3b', H11: 'ch4', B1: 'ch4', B2: 'ch4' };
+const say = s => console.log(s); let bad = 0;
+function parse(line) { const o = {}; const re = /(\w+)=("(?:[^"\\]|\\.)*"|\S+)/g; let m; const body = line.replace(/^§FILM_EVT\s+/, ''); while ((m = re.exec(body))) { let v = m[2]; if (v[0] === '"') v = JSON.parse(v); else if (/^-?\d+$/.test(v) && m[1] !== 'step') v = Number(v); o[m[1]] = v; } return o; }
+const tm = s => { const m = /^(\+1 )?(\d\d):(\d\d)$/.exec(s); if (!m) throw new Error('bad time ' + s); return (m[1] ? 1440 : 0) + (+m[2]) * 60 + (+m[3]); };
+const events = [], sources = []; const used = {};
+for (const [file, steps] of Object.entries(SRC)) {
+  const fp = path.join(EV, file); const txt = fs.readFileSync(fp, 'utf8'); sources.push({ witness: path.basename(file, '.log'), command: 'see FILM_EVT.md; log copied from ' + (file.startsWith('final/') ? 'the lead\'s final suite (lead/final)' : 'the W-MF-SEED re-run on bim-ootb film/mf-evt 9ca13d01'), log: 'logs/evidence/' + file, sha256: crypto.createHash('sha256').update(txt).digest('hex') });
+  txt.split('\n').forEach((ln, i) => { if (!ln.startsWith('§FILM_EVT ')) return; const o = parse(ln); if (!steps.includes(o.step)) return;
+    used[o.step] = (used[o.step] || 0); const k = used[o.step]++; const arr = SCH[o.step]; if (!arr || !arr[k]) { say(`§TRACE_FAIL no scheduled hour for step ${o.step} event #${k} (${ln.slice(0, 80)})`); bad++; return; }
+    const e = { seq: 0, t_min: tm(arr[k]), beat: BEAT[o.step], actor: o.actor, kind: o.kind, wit: path.basename(file) + '#' + (i + 1) };
+    ['text', 'label', 'key', 'to', 'from', 'queue', 'slip', 'todo', 'status', 'process', 'cls'].forEach(f => { if (o[f] !== undefined) e[f] = o[f]; }); e._order = events.length; events.push(e); });
+}
+Object.keys(SCH).filter(k => k[0] !== '_').forEach(k => { if (used[k] === undefined) { say(`§TRACE_FAIL scheduled step ${k} has no event in the logs`); bad++; } else if (used[k] !== SCH[k].length) { say(`§TRACE_FAIL step ${k}: ${used[k]} events in the logs, ${SCH[k].length} hours scheduled`); bad++; } });
+const order = ['ch1', 'ch2', 'ch3a', 'ch3b', 'ch3c', 'ch4']; events.sort((a, b) => order.indexOf(a.beat) - order.indexOf(b.beat) || a.t_min - b.t_min || a._order - b._order); events.forEach((e, i) => { e.seq = i + 1; delete e._order; });
+events.forEach(e => { if (e.text && (e.kind === 'local' || e.kind === 'run') && e.text.length > 40) { say(`§TRACE_WARN log text > 40 chars (${e.text.length}): "${e.text}"`); } if (e.text && (e.kind === 'note' || e.kind === 'refuse') && e.text.length > 95) { say(`§TRACE_WARN note text > 95 chars (${e.text.length}): "${e.text}"`); } });
+const trace = { header: { format: 'film6-trace/1', status: bad ? 'DRAFT' : 'REAL', sample_day_label: 'sample day', axis: { from_min: 480, to_min: 1980 }, initial_online: { till: true, clerk: true, stock: true, phone1: true, phone2: true, verifier: true },
+  beats: [{ id: 'ch1', title: 'Chapter 1 · The till sells, online or not', src: 'W-FILM-OFFLINE (film_offline.log)' }, { id: 'ch2', title: 'Chapter 2 · The borrower pays from a phone', src: 'W-MF-SEED (mf_seed.log)' }, { id: 'ch3a', title: 'Chapter 3 · Head office works when head office works', src: 'W-POS-SALES-LIVE (P1-P3) · W-MF-SEED (I1)' }, { id: 'ch3b', title: 'Chapter 3 · Head office works when head office works', src: 'W-HQ-CLERK pos (H8-H10)' }, { id: 'ch3c', title: 'Chapter 3 · Head office works when head office works', src: 'W-MF-SEED (R, P)' }, { id: 'ch4', title: 'Chapter 4 · The day comes back to every desk', src: 'W-HQ-CLERK pos (H11) · W-MF-SEED (B1, B2)' }],
+  sources, schedule: 'schedule6.json (sample-day hours; a schedule, not a measurement)' },
+  actors: [['till', 'Till', 'Unicenta-style · I_Order + I_Payment rows'], ['phone1', 'Borrower phone 1', 'its own loan only'], ['phone2', 'Borrower phone 2', 'its own loan only'], ['verifier', 'Slip-verify service', 'SlipOK is the sample; another provider = another row'], ['clerk', 'Head-office clerk', 'role 102'], ['stock', 'Stock role', 'role 103'], ['relay', 'The relay', 'a dumb post box: carries, reads nothing']].map(a => ({ id: a[0], name: a[1], sub: a[2] })), events };
+fs.writeFileSync(path.join(__dirname, 'trace6.json'), JSON.stringify(trace, null, 1));
+const per = {}; events.forEach(e => { per[e.beat] = (per[e.beat] || 0) + 1; });
+say(`§TRACE_BUILT events=${events.length} per_beat=${JSON.stringify(per)} status=${trace.header.status} sources=${sources.length} problems=${bad}`); process.exit(bad ? 1 : 0);

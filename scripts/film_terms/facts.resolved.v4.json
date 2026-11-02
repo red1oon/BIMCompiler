@@ -1,0 +1,642 @@
+{
+ "facts": {
+  "b1_station_refused": {
+   "status": "now",
+   "value": "true",
+   "log": "build/scriptor/terms_run/witness_comm_executors.log"
+  },
+  "b1_hq_merged": {
+   "status": "now",
+   "value": "true",
+   "log": "build/scriptor/terms_run/witness_comm_executors.log"
+  },
+  "b1_ctl_merged": {
+   "status": "now",
+   "value": "true",
+   "log": "build/scriptor/terms_run/witness_comm_executors.log"
+  },
+  "b1_ok": {
+   "status": "now",
+   "value": "3",
+   "log": "build/scriptor/terms_postSeal/runner.log"
+  },
+  "b1_tot": {
+   "status": "now",
+   "value": "3",
+   "log": "build/scriptor/terms_postSeal/runner.log"
+  },
+  "b1_mut_found": {
+   "status": "now",
+   "value": "2",
+   "log": "build/scriptor/witness_terms_reuse_mutant_20261031.log"
+  },
+  "b1_mut_tot": {
+   "status": "now",
+   "value": "3",
+   "log": "build/scriptor/witness_terms_reuse_mutant_20261031.log"
+  },
+  "neg_found": {
+   "status": "now",
+   "value": "8",
+   "log": "build/scriptor/terms_postSeal_neg/neg_seal.out"
+  },
+  "neg_tot": {
+   "status": "now",
+   "value": "9",
+   "log": "build/scriptor/terms_postSeal_neg/neg_seal.out"
+  },
+  "neg_status": {
+   "status": "now",
+   "value": "UNCONTROLLED",
+   "log": "build/scriptor/terms_postSeal_neg/neg_seal.out"
+  },
+  "neg_missing": {
+   "status": "now",
+   "value": "CONTROL team key only: the same member opens all of it",
+   "log": "build/scriptor/terms_postSeal_neg/neg_seal.out"
+  },
+  "neg_word": {
+   "status": "now",
+   "value": "FAIL",
+   "log": "build/scriptor/terms_postSeal_neg/neg_seal.out"
+  },
+  "neg_uncontrolled": {
+   "status": "now",
+   "value": "1",
+   "log": "build/scriptor/terms_postSeal_neg/neg_seal.out"
+  },
+  "m_needle1": {
+   "status": "now",
+   "value": "1",
+   "log": "build/scriptor/terms_postSeal/witness_read_scope.log"
+  },
+  "m_killed": {
+   "status": "now",
+   "value": "9",
+   "log": "build/scriptor/terms_postSeal/witness_read_scope.log"
+  },
+  "m_tot": {
+   "status": "now",
+   "value": "9",
+   "log": "build/scriptor/terms_postSeal/witness_read_scope.log"
+  },
+  "m_crash_rule": {
+   "status": "now",
+   "value": "true",
+   "log": "scripts/witness_witness_cache.js"
+  },
+  "m_once_rule": {
+   "status": "now",
+   "value": "true",
+   "log": "scripts/witness_witness_cache.js"
+  },
+  "eq_needle": {
+   "status": "now",
+   "value": "1",
+   "log": "build/scriptor/film_v4/equivalent_mutant_repro.log"
+  },
+  "eq_red": {
+   "status": "now",
+   "value": "none",
+   "log": "build/scriptor/film_v4/equivalent_mutant_repro.log"
+  },
+  "eq_word": {
+   "status": "now",
+   "value": "(expected M2)",
+   "log": "build/scriptor/film_v4/equivalent_mutant_repro.log"
+  },
+  "tt_crash": {
+   "status": "now",
+   "value": "true",
+   "log": "build/scriptor/film_v4/pr_2487.json"
+  },
+  "stale_limit": {
+   "status": "now",
+   "value": "true",
+   "log": "build/scriptor/film_v4/pr_2488.json"
+  },
+  "nat_cached": {
+   "status": "now",
+   "value": "true",
+   "log": "build/scriptor/witness_cache/RED_native.log"
+  },
+  "nat_marker": {
+   "status": "now",
+   "value": "N1",
+   "log": "build/scriptor/witness_cache/RED_native.log"
+  },
+  "nat_fixed": {
+   "status": "now",
+   "value": "false",
+   "log": "build/scriptor/witness_cache/GREEN_native.log"
+  },
+  "r1_portable": {
+   "status": "now",
+   "value": "13",
+   "log": "build/scriptor/dev_env/runner1.log"
+  },
+  "r1_untracked": {
+   "status": "now",
+   "value": "0",
+   "log": "build/scriptor/film_v4/repo_facts.log"
+  },
+  "un_terms": {
+   "status": "now",
+   "value": "6",
+   "log": "build/scriptor/film_v4/repo_facts.log"
+  },
+  "un_db": {
+   "status": "now",
+   "value": "build/erp/ad_full.db",
+   "log": "build/scriptor/dev_env/runner2.log"
+  },
+  "un_why": {
+   "status": "now",
+   "value": "gitignored",
+   "log": "build/scriptor/dev_env/runner2.log"
+  },
+  "de_bytes": {
+   "status": "now",
+   "value": "44937216",
+   "log": "build/scriptor/dev_env/publish_ad_full.log"
+  },
+  "de_mb": {
+   "status": "now",
+   "value": "45",
+   "log": "derived from de_bytes"
+  },
+  "de_sha": {
+   "status": "now",
+   "value": "179cd349cedb",
+   "log": "build/scriptor/dev_env/publish_ad_full.log"
+  },
+  "de_back": {
+   "status": "now",
+   "value": "true",
+   "log": "build/scriptor/dev_env/publish_ad_full.log"
+  },
+  "pt_before": {
+   "status": "now",
+   "value": "7",
+   "log": "build/scriptor/dev_env/runner2.log"
+  },
+  "pt_rows": {
+   "status": "now",
+   "value": "13",
+   "log": "build/scriptor/dev_env/GREEN_real.log"
+  },
+  "pt_after": {
+   "status": "now",
+   "value": "13",
+   "log": "build/scriptor/dev_env/GREEN_real.log"
+  },
+  "de_judged": {
+   "status": "now",
+   "value": "13",
+   "log": "build/scriptor/dev_env/GREEN_real.log"
+  },
+  "de_mut": {
+   "status": "now",
+   "value": "4",
+   "log": "build/scriptor/dev_env/GREEN_real.log"
+  },
+  "c_run1": {
+   "status": "now",
+   "value": "269.4",
+   "log": "build/scriptor/witness_cache/GREEN_full.log"
+  },
+  "c_run2": {
+   "status": "now",
+   "value": "5.8",
+   "log": "build/scriptor/witness_cache/GREEN_full.log"
+  },
+  "c_run1i": {
+   "status": "now",
+   "value": "269",
+   "log": "derived from c_run1"
+  },
+  "c_run2i": {
+   "status": "now",
+   "value": "6",
+   "log": "derived from c_run2"
+  },
+  "g1_run1": {
+   "status": "now",
+   "value": "656.4",
+   "log": "build/scriptor/gaps_49_1/g1_witness_cache_full.log"
+  },
+  "g1_run2": {
+   "status": "now",
+   "value": "652.8",
+   "log": "build/scriptor/gaps_49_1/g1_witness_cache_full.log"
+  },
+  "g1_run1i": {
+   "status": "now",
+   "value": "656",
+   "log": "derived from g1_run1"
+  },
+  "g1_run2i": {
+   "status": "now",
+   "value": "653",
+   "log": "derived from g1_run2"
+  },
+  "g1_ran": {
+   "status": "now",
+   "value": "9",
+   "log": "build/scriptor/gaps_49_1/g1_witness_cache_full.log"
+  },
+  "g1_cached": {
+   "status": "now",
+   "value": "4",
+   "log": "build/scriptor/gaps_49_1/g1_witness_cache_full.log"
+  },
+  "g1_skip": {
+   "status": "now",
+   "value": "9",
+   "log": "build/scriptor/gaps_49_1/g1_witness_cache_full.log"
+  },
+  "g1_judged": {
+   "status": "now",
+   "value": "25",
+   "log": "build/scriptor/gaps_49_1/g1_witness_cache_full.log"
+  },
+  "g1_mut": {
+   "status": "now",
+   "value": "8",
+   "log": "build/scriptor/gaps_49_1/g1_witness_cache_full.log"
+  },
+  "sk_git": {
+   "status": "now",
+   "value": "true",
+   "log": "build/scriptor/dev_env/runner2.log"
+  },
+  "sk_psql": {
+   "status": "now",
+   "value": "true",
+   "log": "build/scriptor/dev_env/runner2.log"
+  },
+  "sk_sh": {
+   "status": "now",
+   "value": "true",
+   "log": "build/scriptor/dev_env/runner2.log"
+  },
+  "s_red_judged": {
+   "status": "now",
+   "value": "39",
+   "log": "build/scriptor/read_scope_20261031/RED.log"
+  },
+  "s_red_fails": {
+   "status": "now",
+   "value": "13",
+   "log": "build/scriptor/read_scope_20261031/RED.log"
+  },
+  "s_judged": {
+   "status": "now",
+   "value": "39",
+   "log": "build/scriptor/terms_postSeal/witness_read_scope.log"
+  },
+  "s_fails": {
+   "status": "now",
+   "value": "0",
+   "log": "build/scriptor/terms_postSeal/witness_read_scope.log"
+  },
+  "gh_opened": {
+   "status": "now",
+   "value": "0",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log"
+  },
+  "gh_down": {
+   "status": "now",
+   "value": "6",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log"
+  },
+  "gh_mid": {
+   "status": "now",
+   "value": "4",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log"
+  },
+  "gh_last": {
+   "status": "now",
+   "value": "5",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log"
+  },
+  "gh_judged": {
+   "status": "now",
+   "value": "9",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log"
+  },
+  "gh_fails": {
+   "status": "now",
+   "value": "0",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log"
+  },
+  "k_red_ids": {
+   "status": "now",
+   "value": "3",
+   "log": "build/scriptor/gaps_49_1/g5_RED.log"
+  },
+  "k_red_word": {
+   "status": "now",
+   "value": "FAIL",
+   "log": "build/scriptor/gaps_49_1/g5_RED.log"
+  },
+  "k_red_judged": {
+   "status": "now",
+   "value": "5",
+   "log": "build/scriptor/gaps_49_1/g5_RED.log"
+  },
+  "k_green_ids": {
+   "status": "now",
+   "value": "0",
+   "log": "build/scriptor/gaps_49_1/g5_GREEN.log"
+  },
+  "k_green_judged": {
+   "status": "now",
+   "value": "41",
+   "log": "build/scriptor/gaps_49_1/g5_GREEN.log"
+  },
+  "k_green_mut": {
+   "status": "now",
+   "value": "10",
+   "log": "build/scriptor/gaps_49_1/g5_GREEN.log"
+  },
+  "k_ctl": {
+   "status": "now",
+   "value": "3",
+   "log": "build/scriptor/gaps_49_1/g5_GREEN.log"
+  },
+  "g2_en": {
+   "status": "now",
+   "value": "12",
+   "log": "build/scriptor/gaps_49_1/g2_stranger.log"
+  },
+  "g2_wf": {
+   "status": "now",
+   "value": "1",
+   "log": "build/scriptor/gaps_49_1/g2_stranger.log"
+  },
+  "g2_clone_s": {
+   "status": "now",
+   "value": "184",
+   "log": "build/scriptor/gaps_49_1/g2_stranger.log"
+  },
+  "g2_fail_word": {
+   "status": "now",
+   "value": "FAIL",
+   "log": "build/scriptor/gaps_49_1/g2_stranger.log"
+  },
+  "g2b_en": {
+   "status": "now",
+   "value": "13",
+   "log": "build/scriptor/gaps_49_1/g2_stranger_rerun2_patched.log"
+  },
+  "g2b_open": {
+   "status": "now",
+   "value": "0",
+   "log": "build/scriptor/gaps_49_1/g2_stranger_rerun2_patched.log"
+  },
+  "lim_meta": {
+   "status": "now",
+   "value": "true",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md"
+  },
+  "l_terms": {
+   "status": "now",
+   "value": "189",
+   "log": "build/scriptor/film_v4/repo_facts.log"
+  },
+  "l_cache": {
+   "status": "now",
+   "value": "70",
+   "log": "build/scriptor/film_v4/repo_facts.log"
+  },
+  "l_trace": {
+   "status": "now",
+   "value": "79",
+   "log": "build/scriptor/film_v4/repo_facts.log"
+  },
+  "l_devenv": {
+   "status": "now",
+   "value": "51",
+   "log": "build/scriptor/film_v4/repo_facts.log"
+  },
+  "l_fetch": {
+   "status": "now",
+   "value": "54",
+   "log": "build/scriptor/film_v4/repo_facts.log"
+  },
+  "l_publish": {
+   "status": "now",
+   "value": "48",
+   "log": "build/scriptor/film_v4/repo_facts.log"
+  },
+  "l_wwc": {
+   "status": "now",
+   "value": "163",
+   "log": "build/scriptor/film_v4/repo_facts.log"
+  },
+  "l_wde": {
+   "status": "now",
+   "value": "129",
+   "log": "build/scriptor/film_v4/repo_facts.log"
+  },
+  "l_spec": {
+   "status": "now",
+   "value": "659",
+   "log": "build/scriptor/film_v4/repo_facts.log"
+  },
+  "l_store": {
+   "status": "now",
+   "value": "1098",
+   "log": "build/scriptor/film_v4/repo_facts.log"
+  },
+  "l_roster": {
+   "status": "now",
+   "value": "375",
+   "log": "build/scriptor/film_v4/repo_facts.log"
+  },
+  "l_env": {
+   "status": "now",
+   "value": "131",
+   "log": "build/scriptor/film_v4/repo_facts.log"
+  },
+  "l_pipe": {
+   "status": "now",
+   "value": "189",
+   "log": "build/scriptor/film_v4/repo_facts.log"
+  },
+  "l_keys": {
+   "status": "now",
+   "value": "83",
+   "log": "build/scriptor/film_v4/repo_facts.log"
+  },
+  "l_sync": {
+   "status": "now",
+   "value": "866",
+   "log": "build/scriptor/film_v4/repo_facts.log"
+  },
+  "l_rs": {
+   "status": "now",
+   "value": "393",
+   "log": "build/scriptor/film_v4/repo_facts.log"
+  },
+  "l_rsgh": {
+   "status": "now",
+   "value": "166",
+   "log": "build/scriptor/film_v4/repo_facts.log"
+  },
+  "l_f1": {
+   "status": "now",
+   "value": "257",
+   "log": "build/scriptor/film_v4/repo_facts.log"
+  },
+  "n_comm": {
+   "status": "now",
+   "value": "17",
+   "log": "build/scriptor/film_v4/repo_facts.log"
+  },
+  "n_team": {
+   "status": "now",
+   "value": "16",
+   "log": "build/scriptor/film_v4/repo_facts.log"
+  },
+  "n100": {
+   "status": "now",
+   "value": "100",
+   "log": "build/scriptor/witness_scale_star_engine_100.log"
+  },
+  "n1000": {
+   "status": "now",
+   "value": "1000",
+   "log": "build/scriptor/witness_scale_star_engine_1000.log"
+  },
+  "sc100": {
+   "status": "now",
+   "value": "399",
+   "log": "build/scriptor/read_scope_20261031/scale_100.log"
+  },
+  "pr286": {
+   "status": "now",
+   "value": "9",
+   "log": "build/scriptor/film_v4/pr_286.json"
+  },
+  "pr286n": {
+   "status": "now",
+   "value": "286",
+   "log": "build/scriptor/film_v4/pr_286.json"
+  },
+  "g2u_en": {
+   "status": "now",
+   "value": "13",
+   "log": "build/scriptor/gaps_49_1/g2_stranger_update.log"
+  },
+  "g2u_open": {
+   "status": "now",
+   "value": "0",
+   "log": "build/scriptor/gaps_49_1/g2_stranger_update.log"
+  },
+  "g2u_port": {
+   "status": "now",
+   "value": "13",
+   "log": "build/scriptor/gaps_49_1/g2_stranger_update.log"
+  },
+  "g2u_rows": {
+   "status": "now",
+   "value": "13",
+   "log": "build/scriptor/gaps_49_1/g2_stranger_update.log"
+  },
+  "g2u_dev": {
+   "status": "now",
+   "value": "true",
+   "log": "build/scriptor/gaps_49_1/g2_stranger_update.log"
+  },
+  "g2u_clean_a": {
+   "status": "now",
+   "value": "true",
+   "log": "build/scriptor/gaps_49_1/g2_stranger_update.log"
+  },
+  "g2u_clean_b": {
+   "status": "now",
+   "value": "true",
+   "log": "build/scriptor/gaps_49_1/g2_stranger_update.log"
+  },
+  "g2u_updated": {
+   "status": "now",
+   "value": "true",
+   "log": "build/scriptor/gaps_49_1/g2_stranger_update.log"
+  },
+  "gc_run1": {
+   "status": "now",
+   "value": "533.4",
+   "log": "build/scriptor/witness_cache/GREEN_git_full.log"
+  },
+  "gc_run2": {
+   "status": "now",
+   "value": "275.2",
+   "log": "build/scriptor/witness_cache/GREEN_git_full.log"
+  },
+  "gc_run1i": {
+   "status": "now",
+   "value": "533",
+   "log": "derived from gc_run1"
+  },
+  "gc_run2i": {
+   "status": "now",
+   "value": "275",
+   "log": "derived from gc_run2"
+  },
+  "gc_ran": {
+   "status": "now",
+   "value": "3",
+   "log": "build/scriptor/witness_cache/GREEN_git_full.log"
+  },
+  "gc_cached": {
+   "status": "now",
+   "value": "10",
+   "log": "build/scriptor/witness_cache/GREEN_git_full.log"
+  },
+  "gc_judged": {
+   "status": "now",
+   "value": "29",
+   "log": "build/scriptor/witness_cache/GREEN_git_full.log"
+  },
+  "gc_mut": {
+   "status": "now",
+   "value": "10",
+   "log": "build/scriptor/witness_cache/GREEN_git_full.log"
+  }
+ },
+ "sources": {
+  "build/scriptor/terms_run/witness_comm_executors.log": "bcba1ec0384a02a870073606ab9797548ca81a4a05e8da3d32c9bd29df89ec76",
+  "build/scriptor/terms_postSeal/runner.log": "eaee3df63804a682e8e429f8a28c57921984176b6829b65d19fb024395930740",
+  "build/scriptor/witness_terms_reuse_mutant_20261031.log": "ba81e62b2e690177829a09a3d067ada69f65a804cee33432cc8043e47f78fc33",
+  "build/scriptor/terms_postSeal_neg/neg_seal.out": "d00813f1e93ed3d81baac4bc74a475fbb0cbedd111d7d3a611b1571c948a015e",
+  "build/scriptor/terms_postSeal/witness_read_scope.log": "66ce2c7168c80d9660d168039a2180ef41d5bbe32a1646ef1ab1de12f9c7be45",
+  "scripts/witness_witness_cache.js": "9d4a40962e6368f5591ab81f11847f6f68577eeabef405744c7de2b6e64a98cc",
+  "build/scriptor/film_v4/equivalent_mutant_repro.log": "c5151bf667457bd4a5c2b48109078067f658541c13f659c934cd8e4f19bfe348",
+  "build/scriptor/film_v4/pr_2487.json": "3c7e2204037be2a706d77ca8503751983c98041c22e516d55ce9146ee7b5d571",
+  "build/scriptor/film_v4/pr_2488.json": "93367c6e92e21bc669765059e26a13198365e636f52b87664a26d3c2c74ea5d0",
+  "build/scriptor/witness_cache/RED_native.log": "e9eeec8cb563cdf6c2b54f99aa14c61165bc5ea29b44fd336b63ebfd2ead7a16",
+  "build/scriptor/witness_cache/GREEN_native.log": "a5385336b95e528b34c78eff9fde02c9e4193f72625b0063ef263879ac77e642",
+  "build/scriptor/dev_env/runner1.log": "f40b64a59dcd15885b6ba4a5c00973813e95af303081f7613037cf28c4b7f140",
+  "build/scriptor/film_v4/repo_facts.log": "bc3231a119c5b83bd370a4b317dbd52108926e8c9315c2f9bb1417705a96cf91",
+  "build/scriptor/dev_env/runner2.log": "516eb8a0121acab9610119c9ab60e07f588e55bafc244c2185ecbf70fd82f068",
+  "build/scriptor/dev_env/publish_ad_full.log": "e2ec0961025acf782ddf8ea4c611ce44f718e94d090afc7b9c70d7a956de97cd",
+  "build/scriptor/dev_env/GREEN_real.log": "b41402d95a2d08b9385d4e1d686843bfe0671b58d7b4b79ad9dfc8f605804f2f",
+  "build/scriptor/witness_cache/GREEN_full.log": "535e4e84514aba73f8f309a126f34f52bea1e87d8fff4532f6afe6c3ebfa6b77",
+  "build/scriptor/gaps_49_1/g1_witness_cache_full.log": "bfd714088d0ad6fb7b0465a8479f9cbcd6113b6b22e8d9756e7c2e3f169f3758",
+  "build/scriptor/read_scope_20261031/RED.log": "801178fec9644e156453bec9c6fc411e1765caffb4b3921e3747ae8628533166",
+  "build/scriptor/gaps_49_1/g4_GREEN.log": "1316f31744bcbba80f113a28f69de83ddf7c57a8bf22bdf97e4d904e4a3918c5",
+  "build/scriptor/gaps_49_1/g5_RED.log": "285a092e4ea24c795df42b61545cc3e42fcfc5c329228e26e92bc91532e40858",
+  "build/scriptor/gaps_49_1/g5_GREEN.log": "85a89c1352c1522af7c661a1f2df70fb5f6adac8d4a5c9eb9d67b441f11facd5",
+  "build/scriptor/gaps_49_1/g2_stranger.log": "74389b0ce9c8e8d9ba7793296402c9ed6a4b51a2c6d771d976160a68d21aa0c6",
+  "build/scriptor/gaps_49_1/g2_stranger_rerun2_patched.log": "655e795f52e8f5dd1d278870b6d4cb1e6bbce06f355c8dbea7ec90d7a461dc2b",
+  "prompts/TEAMWORK_FRAMEWORK.md": "76616f10baf7d8af5c3880552e22e969be329f9e56ce755f9e9cf35d02272217",
+  "build/scriptor/witness_scale_star_engine_100.log": "7e44e1553baea8c475f0dcc2caa732466dd6ddefdbb80257d502b37630735c52",
+  "build/scriptor/witness_scale_star_engine_1000.log": "6dccbe0889328202f6c61d64b21ed5a18d38b3c473b01f5e4c72383127443503",
+  "build/scriptor/read_scope_20261031/scale_100.log": "618e8d6409eb6c3558d3750bc241fb648876596dbbf955211ccc07c9ff7b6550",
+  "build/scriptor/film_v4/pr_286.json": "12fa0b08b67d52f13a6d1dba8a4c5adf4b9571631cc9a5d96eb52c933811803e",
+  "build/scriptor/gaps_49_1/g2_stranger_update.log": "16759eb3b8e680eaa065be973f1b7d8c0b678171dffce4084e1e3076e28bf84e",
+  "build/scriptor/witness_cache/GREEN_git_full.log": "3dd9cf95c625a40892975a7626f5e24883d172c7b9b0833261197bfd1bca1e80"
+ }
+}
