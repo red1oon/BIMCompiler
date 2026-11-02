@@ -755,10 +755,9 @@ tables **and the stored `c_invoice.grandtotal` that real iDempiere wrote** — w
 pattern underlies every other member of the family, so Aging (`T_Aging`), Inventory Value, Cash Flow, Trial Balance and
 the rest are *structurally* the same fold — a pure aggregation that needs no scratch table. They are **not yet built or
 diffed**; this paper claims the deletion **only for the three financial statements, the document print, and the NinjaExcel template delivery above.** Aging in particular folds over
-*open items* + a due-date-bucketing function (not the GL), so it is a distinct verb on distinct seed data — named here,
-not claimed. This narrows **GAP #8 to its tail**: reporting parity is now *witnessed* for all 3 financial statements,
+*open items* + a due-date-bucketing function (not the GL), so it is a distinct verb on distinct seed data — it has since been built in the shipped ERP (`agingFold`, bim-ootb #1822, 2026-10-03) but is not diffed in this paper's witnesses. This narrows **GAP #8 to its tail**: reporting parity is now *witnessed* for all 3 financial statements,
 the master-detail document print (`foldPrint`, W-PRINTFORMAT), and template xlsx delivery (NinjaExcel, W-NINJA); what stays open is the remaining `T_*` family
-(Aging, Inventory Value, …), the unexercised `PrintDataGroup` functions (group-by/count/avg — implemented, no seed
+(Inventory Value, …; Aging is built but not diffed here), the unexercised `PrintDataGroup` functions (group-by/count/avg — implemented, no seed
 format uses them) and pixel layout (a stated non-goal — DOM is the render).
 
 
@@ -854,7 +853,7 @@ GardenWorld client; OOTB = our ~28K-LOC engine. **EXTRACTION** = data the migrat
 | Payments + reconciliation | `C_Payment`/`C_AllocationHdr` | **3** pay · 1+3 reconcile | ✓ — W-FOLD-PAYMENT/ALLOC | **synthesised, not real** — 3 real pay/reconcile not pulled · EXTRACTION |
 | Manual GL journals | `GL_Journal` | **13** entries | ✓ — W-FOLD-GLJOURNAL (inter-org) | **0 pulled** · EXTRACTION |
 | Financial statements BS/P&L/CF | `PA_Report`→`T_Report` (15-table `T_*` tier) | **3** account.report (BS/P&L code-side v17) | ✓ BS+IS+CF `maxDiff=0c` — W-PA-REPORT (iDempiere-side) | Odoo report defs unmapped · **FOLD** |
-| AR/AP Aging | `Aging`→`T_Aging` | on-the-fly wizard (no stored rows) | not built | distinct fold (open-items+date buckets) · **FOLD** |
+| AR/AP Aging | `Aging`→`T_Aging` | on-the-fly wizard (no stored rows) | ✓ runs in the browser since 2026-10-03 (`agingFold` in `ad_process.js`, ports `Aging.doIt`/`MAging.add`, bim-ootb #1822); `DateAcct=Y` variant not ported | distinct fold (open-items+date buckets) · **FOLD** |
 | Document print / layout | `AD_PrintFormat` (`'P'` grids-in-grids) | **41** QWeb defs | `foldReceipt` (W-PROC); ✓ `foldPrint` `maxDiff=0c` — W-PRINTFORMAT (8/8 invoices, iDempiere-side) | Odoo QWeb defs unmapped · **FOLD** |
 | Workflow / automation | `AD_Workflow` | 64 server actions · 18 cron | ✓ `ad_workflow.js` walk + replay — W-WF-HARDEN (11 real traces diff=0, iDempiere-side) | no Odoo server-action interpreter · **FOLD** |
 | Analytic / cost centres | acct dims / `C_Project` | **19** analytic accts | not built | no analytic fold · **FOLD** |
@@ -943,9 +942,9 @@ aging.saveEx();                                     // final T_Aging row written
 ```
 </div>
 <div markdown="1">
-##### OOTB · `foldAging` — PROPOSED, ~12 LOC (not built)
+##### OOTB · `foldAging` — the original ~12-LOC proposal (since built as `agingFold`, bim-ootb #1822, 2026-10-03)
 ```js
-// PROPOSED · NOT BUILT — the T_Aging FOLD gap. Folds OPEN ITEMS, not the GL. 0 temp rows.
+// ORIGINAL PROPOSAL (now built as agingFold in erp/ad_process.js) — the T_Aging FOLD gap. Folds OPEN ITEMS, not the GL. 0 temp rows.
 function foldAging(openItems, asOf) {
   const out = {};                                   // bpId → {Due0,Due0_7,Due31_60,…} cents
   for (const it of openItems) {                     // host-injected open C_Invoice rows

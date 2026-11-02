@@ -5,19 +5,13 @@
 > **Foundation:** BIM_Designer_Browser.md | SQLite3D_Schema.md | ROADMAP.md | BIM_COBOL.md (CHECK CLASH verbs)
 
 <div class="bim-banner" markdown>
-<b>48,000 elements. 12 discipline-pair rules. One browser tab. Zero server.</b> Clash detection that runs entirely in the browser — SQL queries against a local SQLite database, bounding-box geometry rendered by the GPU, results in milliseconds. No Navisworks. No license. No desktop.
+<b>48,000 elements. 18 discipline-pair rules. One browser tab. Zero server.</b> Clash detection that runs entirely in the browser — SQL queries against a local SQLite database, bounding-box geometry rendered by the GPU, results in milliseconds. No Navisworks. No license. No desktop.
 </div>
 
-**Version:** 1.1 (2026-05-25)
-**Status:** LIVE — storey-scoped progressive queries, discipline matrix, in-viewer review workflow
+**Status:** LIVE — storey-scoped progressive queries, discipline matrix, in-viewer review workflow, BCF 2.1 export
 **Depends on:** `measure.js`, `clash_rules.json`, `rtree-sql.js` (WASM), Three.js
 
-### S278 Changes (2026-05-25)
-- Clash pair colors: red `0xff0000` + blue `0x2266ff` (was red + orange)
-- Multi-select: Shift+Arrow keyboard selects range → solid red spheres at midpoints + fly-to bbox
-- Matrix: query cache per discipline, offset reset on pair change
-- Overlap mesh: `depthTest: false`, shines through geometry
-- Refactor prompt: `prompts/S278_REFACTOR_CLASH_PANELS.md`
+- Clash pair colours: red + blue. Shift+Arrow selects a range of clashes (red spheres at midpoints, camera flies to the group). The overlap mesh shines through surrounding geometry.
 
 
 ---
@@ -159,7 +153,7 @@ This is collaboration via URL — one person finds a clash, shares the link, the
 
 ## 4. Clash Rules — JSON Configuration
 
-Rules are defined in `clash_rules.json` — 12 discipline pairs with per-pair tolerance and ignore lists:
+Rules are defined in `clash_rules.json` — 18 discipline pairs with per-pair tolerance and ignore lists:
 
 ```json
 {
@@ -187,7 +181,7 @@ Rules are defined in `clash_rules.json` — 12 discipline pairs with per-pair to
 }
 ```
 
-Currently 12 rules covering: ARC/STR, MEP/STR, MEP/ARC, ELEC/ARC, ELEC/STR, ELEC/MEP, FP/ARC, FP/STR, FP/MEP, ACMV/ARC, ACMV/STR, ACMV/MEP.
+Currently 18 rules covering: ARC/STR, MEP/STR, MEP/ARC, ELEC/ARC, ELEC/STR, ELEC/MEP, FP/ARC, FP/STR, FP/MEP, ACMV/ARC, ACMV/STR, ACMV/MEP, plus the civil-works pairs DRAINAGE/ROAD, LIGHTING/DRAINAGE, SIGNAGE/DRAINAGE, FURNITURE/LIGHTING, SIGNAGE/LIGHTING and GEOTECH/DRAINAGE.
 
 ---
 
@@ -249,28 +243,9 @@ Expanded-bounds R-tree query: "Find elements within 5cm of this pipe." Already d
 
 Store clash counts per discipline pair per date in `localStorage`. Show delta: "Last check: 45 clashes. Now 32." Progress visible across sessions without any server.
 
-### 8.5 BCF Export
+### 8.5 BCF Export — shipped
 
-Industry-standard clash exchange format ([BIM Collaboration Format](https://www.buildingsmart.org/standards/bsi-standards/bim-collaboration-format-bcf/), buildingSMART). A BCF file is a `.bcfzip` containing XML topics + optional PNG snapshots. One clash = one topic.
-
-**Why this matters:** BCF is the only open standard for exchanging issues between BIM tools. A clash found in BIM OOTB becomes importable in Navisworks, Solibri, BIMcollab, Revit (via plugins), and Trimble Connect. Firms with mixed toolchains can use BIM OOTB for detection and hand off issues to their existing review workflow.
-
-**What BIM OOTB already has that maps to BCF:**
-
-| BCF Field | BIM OOTB Source |
-|---|---|
-| `Topic.Title` | Discipline pair + storey (e.g. "Structure–MEP clash, Level 2") |
-| `Topic.Description` | Overlap distance, element names |
-| `Topic.CreationDate` | `Date.now()` at export |
-| `Topic.Priority` | Severity from `clash_rules.json` (Critical/Major/Minor) |
-| `Topic.Status` | Review status from clash matrix (Review/Resolve/Accept) |
-| `Viewpoint.Camera` | Current orbit camera position + direction + FOV |
-| `Viewpoint.Components` | IFC GUIDs of both clashing elements |
-| `Viewpoint.Snapshot` | Canvas screenshot (already built for snag/share) |
-
-**Implementation:** Pure browser-side. Build XML strings, PNG from canvas, pack into a zip using JSZip (already a pattern in the Excel export). No server. Download triggers from the clash report "Export" button alongside the existing CSV option.
-
-**BCF version:** BCF 2.1 (XML, widest tool support). BCF 3.0 (JSON) is newer but less widely imported.
+The **Issues** panel has an **Export BCF** button. It writes a BCF 2.1 `.bcfzip` with one topic per saved issue (clashes and free-form notes alike), each carrying the status, a priority from the clash severity, the saved camera viewpoint, and the snapshot where one was stored. The file opens in Navisworks, Solibri and BIMcollab. Export only — importing a BCF is not supported. (Source: `viewer/bcf_export.js`, button in `viewer/viewer.html`.)
 
 ### 8.6 Scene Sync from Report
 
@@ -286,10 +261,12 @@ Horizontal bar chart showing clash density per storey — storey-scoped counts a
 
 | File | Role |
 |------|------|
-| `deploy/dev/measure.js` | Clash detection engine — queries, matrix, visualization, report |
-| `deploy/dev/clash_rules.json` | 12 discipline-pair rules with tolerances |
-| `deploy/dev/loader.js` | CDN reference for rtree-sql.js@1.7.0 WASM |
-| `deploy/dev/sw.js` | Service worker cache for WASM + DB files |
+| `viewer/measure.js` | Clash detection engine — queries, matrix, visualization |
+| `viewer/clash_matrix.js`, `viewer/clash_report.js` | Discipline matrix and the HTML report |
+| `viewer/clash_rules.json` | 18 discipline-pair rules with tolerances |
+| `viewer/bcf_export.js` | BCF 2.1 export |
+| `viewer/loader.js` | CDN reference for rtree-sql.js@1.7.0 WASM |
+| `viewer/sw.js` | Service worker cache for WASM + DB files |
 
 ---
 

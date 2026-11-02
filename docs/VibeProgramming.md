@@ -1,6 +1,6 @@
 # Vibe Programming — How This Compiler Was Built
 
-> **Foundation:** [The Drift](LAST_MILE_PROBLEM.md) · [TestArchitecture](TestArchitecture.md) · [MANIFESTO](MANIFESTO.md)
+> **Foundation:** [The Drift](LAST_MILE_PROBLEM.md) · [TestArchitecture](https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/TestArchitecture.md) · [MANIFESTO](MANIFESTO.md)
 > **By the numbers:** [Project Chronology](PROJECT_CHRONOLOGY.md) — dated milestones + commit/fix ledger, Federation → Compiler → Browser.
 > **Deep dive:** [The 4D Generator](4DGenerator.md) — a full technical case study of the 2026-08-27 turnaround referenced in the Capability Snapshot below: the failure catalogue, the AI-agent process fix, and what's still open.
 
@@ -64,7 +64,7 @@ The trend data backs the lament:
 
 **A concrete case:** in March 2026, Amazon suffered two outages within one week, traced in part to AI-assisted code changes — the first cost 120,000 lost orders and 1.6 million website errors, the second 6.3 million lost orders (Business Insider, via CloudBees).
 
-**This project's answer to the lament is not "the sceptics are wrong."** They're right, and the numbers above are worse than when this paper was first written. The disagreement is about the fix. The industry-wide pattern is AI code shipped *without* an independent, deterministic check — trust the vibes, ship, discover the crumbling infrastructure later. This project inverts that: [6 mathematical gates](TestArchitecture.md) that don't care about vibes, where G3 alone can fail a build over one wrong coordinate in 48,428 elements. The backlash is evidence the industry needs more projects built this way, not fewer.
+**This project's answer to the lament is not "the sceptics are wrong."** They're right, and the numbers above are worse than when this paper was first written. The disagreement is about the fix. The industry-wide pattern is AI code shipped *without* an independent, deterministic check — trust the vibes, ship, discover the crumbling infrastructure later. This project inverts that: [6 mathematical gates](https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/TestArchitecture.md) that don't care about vibes, where G3 alone can fail a build over one wrong coordinate in 48,428 elements. The backlash is evidence the industry needs more projects built this way, not fewer.
 
 ---
 
@@ -84,7 +84,7 @@ This is not a non-programmer hoping AI gets it right. This is a **Java-literate 
 
 ### 2. Deterministic verification (no "looks right")
 
-Every compiled building passes through [6 mathematical gates](TestArchitecture.md):
+Every compiled building passes through [6 mathematical gates](https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/TestArchitecture.md):
 
 | Gate | What it proves |
 |------|---------------|
@@ -347,7 +347,7 @@ Because geometry is hash-addressed from the beginning — not as a performance o
 
 ### What vibe programming produced
 
-The schema in [SQLite3D_Schema.md](SQLite3D_Schema.md) was not designed top-down. It emerged from 60+ sessions of constraint-driven iteration:
+The schema in [SQLite3D_Schema.md](https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/SQLite3D_Schema.md) was not designed top-down. It emerged from 60+ sessions of constraint-driven iteration:
 
 | Session | Constraint | Schema consequence |
 |---------|-----------|-------------------|

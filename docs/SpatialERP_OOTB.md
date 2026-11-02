@@ -1068,6 +1068,8 @@ everything. They exist in the URL spec so that Step 2 is just adding
 
 ## 8. Implementation Phases
 
+> **Note (2026-11-03):** the checklists below are the original plan from spring 2026 and are not maintained as a status board. Several items were delivered by a different route — notably Phase 5 multi-user sync, which shipped as the signed op-log team layer (a dumb relay carrying signed events; no cr-sqlite or WebRTC) described in [Distributed ERP](DistributedERP.md), and a POS lens that runs on the same ledger. For current status see [What's New](WhatsNew.md).
+
 ### Phase 1 — The POC: Schema + Swipe + Construction on One Phone
 
 **Goal:** One person, one phone, one `.db`. Proves the five-table schema,
@@ -1726,7 +1728,7 @@ No API. No WebSocket. No message broker. The `.db` file on OCI Object Storage is
 | **Same device** | IndexedDB — both tabs read same cache | Instant | Yes |
 | **QR / link share** | Recipient fetches same `.db` from OCI URL | Seconds | Yes — share.js, WhatsApp/Email/Copy |
 | **Upload after edit** | User uploads modified `.db` back to OCI | Manual | Yes — OCI PUT with `--content-type` |
-| **kernel_ops merge** | Two `.db` files merge by interleaving ops by timestamp + user_tag | Phase 5 | Designed, not built |
+| **kernel_ops merge** | Two `.db` files merge by interleaving ops by timestamp + user_tag | Phase 5 | Built since — signed op-logs from several devices are unioned, verified and replayed in a deterministic order by the team comm layer (`common/comm/comm_order.js`, `comm_store.js`; see [Distributed ERP](DistributedERP.md)) |
 
 **The QR code pattern:** A role-specific share link encodes the `.db` URL + scope + mode. The recipient opens it in a browser — no app download, no account creation. The manager shares `?role=SALE` and the sales team sees the same leads without confidential owner data. Already proven for BIM walkthrough links.
 
@@ -1933,4 +1935,4 @@ For the ERP practitioner evaluating alternatives. Drawn from published documenta
 
 ## 15. Forward Roadmap
 
-For planned features — FTS5 Smart Search, full iDempiere data migration, database sharding, CRDT multi-device sync, benchmark suite, offline OPFS persistence, and domain packs — see **ERP_Roadmap.md**.
+For planned features — FTS5 Smart Search, full iDempiere data migration, database sharding, CRDT multi-device sync, benchmark suite, offline OPFS persistence, and domain packs — see the [ERP Roadmap](https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/ERP_Roadmap.md) (internal working doc; some of these have since shipped, e.g. multi-device sync via the team comm layer).

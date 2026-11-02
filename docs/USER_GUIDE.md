@@ -39,19 +39,19 @@ New here recently? Check **[What's New](WhatsNew.md)** for a running log of ship
 
     **Drop your own IFC** → extracted to SQLite right in the browser; merge disciplines, fly-through, clash matrix, 4D/5D time-machine, ERP Project Order — all on the same file. Desktop and mobile, works offline.
 
-    _Front door → the **Buildings / IFC** icon (above)_ · [Open](https://red1oon.github.io/bim-ootb/#buildings) · [Guide](BIMUserGuide.md)
+    _Front door → the **Buildings / IFC** icon (above)_ · [Open](https://red1oon.github.io/bim-ootb/#buildings) · [Guide](BIMUserGuide.md) · [Civil Works (road models)](CivilWorksGuide.md)
 
 -   <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-5px"><path d="M8 19a4 4 0 0 1-2.24-7.32A3.5 3.5 0 0 1 9 6.03V6a3 3 0 1 1 6 0v.04a3.5 3.5 0 0 1 3.24 5.65A4 4 0 0 1 16 19Z"/><path d="M12 19v3"/></svg> __DAGeVu Modeller__
 
     Author B-rep geometry — insert library parts, sketch, extrude, sweep — where the signed op-log *is* the feature tree. Early/WIP; desktop.
 
-    _Front door → the **BIM Modeller** icon (above)_ · [Open](https://red1oon.github.io/bim-ootb/modeller/modeller.html) · [Guide](ModellerGuide.md)
+    _Front door → the **BIM Modeller** icon (above)_ · [Open](https://red1oon.github.io/bim-ootb/modeller/modeller.html) · [Guide](ModellerGuide.md) · [2D drawings → BIM (DXF2BIM)](DXF2BIMGuide.md)
 
 -   <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-5px"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg> __Kernel-ERP__
 
     Real iDempiere in the browser — POS, financial statements, the full Application Dictionary from SQLite. No Java, no server, no install.
 
-    _Front door → the **ERP** icon (above)_ · [Open](https://red1oon.github.io/bim-ootb/erp/erp.html) · [Guide](ERPUserGuide.md)
+    _Front door → the **ERP** icon (above)_ · [Open](https://red1oon.github.io/bim-ootb/erp/erp.html) · [Guide](ERPUserGuide.md) · [Teams overlay](TeamsOverlayGuide.md)
 
 </div>
 

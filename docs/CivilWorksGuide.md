@@ -180,7 +180,7 @@ It lists every check row with its result and a tag: **valid** (rule and inputs p
 ## What the film shows of the same data (Alt+C)
 
 You do not need the film to get any report above. If you make one (see the
-[BIM Viewer User Guide → Cinema Film-Maker](BIMUserGuide.md#cinema-film-maker-alt-c-the-bim-ootb-film-maker)),
+[BIM Viewer User Guide → Cinema Film-Maker](BIMUserGuide.md#cinema-film-maker-altc-the-bim-ootb-film-maker)),
 a road model adds five info panels along the drive. They read the same values as Parts A–E:
 
 ![Panel 1 — This stretch: pieces per discipline between two chainages](figs/cw_altc_panel_counts.png)

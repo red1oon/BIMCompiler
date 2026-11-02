@@ -332,9 +332,9 @@ the cent**, every phase `SeqNo` tracing to `sequence_rules.json`. See the **[BIM
 
 ### Authoring, editing, and importing the 4D/5D schedule
 
-The Time Machine's own topic — authoring a schedule (**`✎`**), the box-cube LOD toggle for large
+The Time Machine's own topic — the generated schedule, the box-cube LOD toggle for large
 buildings, What-if slips, direct Gantt editing (drag / resize / link / marquee-group-move /
-**⏪ Pull Back**), the standalone Schedule Editor, and Primavera P6 / MS Project import — is now
+**⏪ Pull Back**), and Primavera P6 / MS Project import — is now
 documented on its own page:
 
 **→ [Time Machine — the 4D construction timeline](TimeMachine.md)**
@@ -830,11 +830,10 @@ shows any warnings, and **Emit & Install** stages them into the live tenant — 
 in the menu immediately. Don't know the grammar? **Download starter template** gives you a filled
 two-table shell to learn from and edit.
 
-**Reverse — export an existing window (🔧 proposed).** Point at a window or menu already in the AD
-and export its definition *back* into the same sheet/bundle, edit it in Excel, and re-emit. This is
-the literal **PackOut**, and it's the more common need — most customizations start as "a window like
-Business Partner, plus three fields," not a blank sheet. *Status: designed, not yet built — the
-`extractModel(db, AD_Window_ID) → model` verb (the clean inverse of the sheet parser).*
+**Reverse — export an existing window (✅ live).** In the Ninja pill, pick a window already in the AD
+from the list and press **Export**: its definition is written *back* into the same sheet format, you edit it
+in Excel, and re-emit. This is the literal **PackOut** — most customizations start as "a window like Business
+Partner, plus three fields," not a blank sheet.
 
 ### One bundle = structure + behavior
 
@@ -1079,7 +1078,6 @@ needed if you see an old `CACHE_VERSION` number in the console.
 
 | Gap | Condition | Fix |
 |---|---|---|
-| **Trial Balance shows 0 rows** on default `ad_seed.db` | `fact_acct` table not in seed (Postgres-only source) | Load `?db=preview_demo.db` or run `prompts/MIGRATE_POSTING_CONFIG.md` |
 | **Posting Preview** empty | Same — acct linkage absent in default seed | Same fix |
 | **POS live ring to the cent** | posting-config needed for the live ring | `MIGRATE_POSTING_CONFIG.md` |
 | **T_Aging / T_ReportStatement** folds | 13 `T_*` temp-table folds not yet built | Phase B §H-7..§H-11 (future) |
@@ -1089,12 +1087,11 @@ needed if you see an old `CACHE_VERSION` number in the console.
 
 | Gap | Engine status | UI status |
 |---|---|---|
-| `AD_Callout` derived fields on field-change | ✅ engine ready | Render-wiring parked |
-| `AD_Val_Rule` picklist filter | ✅ engine ready | Render-wiring parked |
+| `AD_Callout` derived fields on field-change | ✅ engine ready | ✅ wired to field changes |
+| `AD_Val_Rule` picklist filter | ✅ engine ready | ✅ reaches the live pickers |
 | `AD_Workflow` node-walk | 🟡 `ad_workflow.js` built, no seed activity oracle | Parked |
 | Column-level / Record-level access | `AD_Column_Access` / `AD_Record_Access` empty in seed | n/a |
 | 454 SvrProcess handlers | 5 registered, 454 named-deferred | Honest absent-handler card shown |
-| `stale fork`: `report_overlay.js` in bim-ootb | 256 vs 908 lines in build/erp — lacks foldStatement/foldPrint | Needs sync + sw bump |
 
 ### Coverage matrix summary (2026-06-12)
 
