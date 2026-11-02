@@ -170,3 +170,35 @@ Kept deliberately minimal — this is a showcase, not a hardening pass.
 - [[project_bim_to_project]] · [[project_sysnova_kazifarms_bim_scoping]]
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*
+
+## §8 PLUGIN RENEWAL — "Installing BIM to iDempiere" (owner 2026-11-03; spec, written before code)
+**Owner, verbatim:** *"Even though the last film claims the Dashboard needs no plugin, the BIM Viewer export to ERP Project Order does need one. It supposedly done months ago. Recall and update it anew.
+It be for another film 'Installing BIM to iDempiere'"* · and the same day: *"at the legacy side, all changes, add-on be following its convention ie as a plugin or migration script if there is no
+processes"* · *"we do things adhoc as POC first, quick and dirty. But once proven or clearer, we evolve to convention"*.
+**This reverses §0/§5/§6's "no plugin" for the INSTALL, not for the push.** The push stays the stock REST web services (`viewer/erp_rest_push.js`, PROVEN on the local pilot: bim-ootb
+`prompts/CAPEX_DASHBOARD.md` §5.4 — HHS 302/302 rows MATCH). What §5 made an administrator do by hand (types + field whitelists, a role, a CORS rule, a dashboard link) is what the plugin ships.
+**Recall — what exists (`iDempiereOOTB/org.idempiere.bimootb`, May 2026, never installed):** `BIMTabPanelFactory` (IADTabPanelFactory, OSGi DS) + `BIMTabPanel` (ADTabpanel + ZK Iframe, URL read from
+`C_Project.Description`, postMessage writes `C_Project.Name`) + `migration/postgresql/202605010001_BIM_Tab.sql` (a "BIM" AD_Tab on window 130, AD_TabType 'BIM'). Spec: `prompts/done/iDempiereOOTB.md`.
+**Measured in the iDempiere 13 source (`~/idempiere-dev-setup/idempiere`):**
+- Plugin data convention = `Bundle-Activator: org.adempiere.plugin.utils.Incremental2PackActivator` + `META-INF/2Pack_<version>.zip`, each applied once and recorded in `AD_Package_Imp`
+  (`Incremental2PackActivator.java:105-135`). The 2Pack is made with iDempiere's own Pack Out from a configured instance.
+- Web contexts = `Web-ContextPath:` in the bundle MANIFEST + `WEB-INF/web.xml` (as `org.idempiere.webservices` → `/ADInterface`, `org.adempiere.ui.zk` → `/webui`).
+- WS types: `AD_Client_ID IN (0,?)` (`AbstractService.java:240`, IDEMPIERE-3394) — System-level types serve every tenant. Access: the login role OR a role it includes (`:72-75`, `AD_Role_Included`);
+  `AD_Role.IsMasterRole` exists (pilot: 0 master roles today).
+- No CORS support anywhere in `org.idempiere.webservices` — hence same-origin below.
+**The renewed plugin `org.idempiere.bimootb` 13.1.0 — four parts:**
+- **P1 setup data as a 2Pack** (`META-INF/2Pack_13.1.0.zip`, Pack Out from the local pilot of what is already PROVEN there): the push's System-level WS types (read + create per table:
+  C_Project, C_ProjectPhase, C_ProjectTask, C_ProjectLine, M_Product, M_Product_Category, C_UOM — today client-11 ad-hoc rows from bim-ootb `capex/tools/ws_capex_{readtypes,writetypes}.sql`) +
+  one System master role "BIM OOTB Push" holding all their access + the BIM AD_Tab (the May migration's row moves into the 2Pack: one install mechanism). The CAPEX dashboard's own rows (PA measure,
+  its read types) are a SEPARATE module and stay out.
+- **P2 the viewer, same origin:** `Web-ContextPath: bimootb` serving the app-only viewer (as the 2026-09-09 SYSNOVA zip: no building bulk; buildings stream as today). The push then calls
+  `/ADInterface` on its own origin — no CORS rule, no proxy. The viewer's push base URL defaults to its own origin when served under `/bimootb`.
+- **P3 the BIM tab, renewed:** iframe → `/bimootb/viewer/viewer.html?db=<C_Project.Description "BIM src db=">&record=<C_Project_ID>` (the link-back §ZOOM_LINKBACK already stores;
+  `config.js` reads `db` + `record` — the `building=` form of §4.2 is the landing page's). No URL typed by hand.
+- **P4 the admin's whole job:** drop the jar in `plugins/` (or Felix console), restart; include "BIM OOTB Push" in the push user's role (one record). Nothing else.
+**Witness W-PLUGIN-INSTALL (on a pilot WITHOUT the ad-hoc types — a fresh copy, never the shared pilot DB):** before/after: bundle ACTIVE (felix `lb`), `AD_Package_Imp` row org.idempiere.bimootb 13.1.0
+"Completed successfully", the WS types present at client 0, the master role + its access rows, the BIM tab on window 130; `GET /bimootb/viewer/viewer.html` 200; then the HHS push from that origin →
+`shed_twin.js` PASS with no cheatsheet step done by hand. Negative: without the role include → the push is refused ("Login role does not have access …"). Uninstall recipe stated.
+**Build order:** (1) Pack Out on the pilot (types re-made at client 0 first, on a COPY) · (2) bundle: POC = `javac` against the pilot's own `plugins/*.jar` + `jar` (quick and dirty, owner's staging);
+convention = the Tycho/Maven build `pom.xml` already in the skeleton · (3) a fresh pilot copy (second DB + server port) · (4) install + W-PLUGIN-INSTALL · (5) film storyboard (bim-compiler
+`prompts/FILM_NARRATION.md` PLAYBOOK) — ⛔ not recorded until the owner OKs the storyboard.
