@@ -1,0 +1,10 @@
+witness_createfrom_infowin rc=0 §CFIW-SUMMARY PASS judged=8 fails=0 inconclusive=0
+witness_createfrom_invoice_iw rc=0 §CFINV-SUMMARY PASS judged=7 fails=0 inconclusive=0
+witness_friendly_rows rc=1 §FOA2_VERDICT RED judged=10 failed=1
+witness_friendly_purchase rc=0 §FOPUR_VERDICT GREEN judged=11 failed=0
+witness_friendly_ops rc=0 §FOPS_VERDICT GREEN judged=6 failed=0 pagelog=/tmp/witness_friendly_ops.page.log
+witness_movement_confirm rc=0 §MVC-SUMMARY verdict=PASS judged=51 pass=51 fail=0 inconclusive=0 noted_as_designed=9 named_gaps=0 posting_pe
+witness_gen_tipread rc=0 §GTR_VERDICT GREEN pass=8 fail=0
+poc_udp2_saved_params_live rc=0 §UDP2L-VERDICT PASS 13/13
+poc_nc1_calendar_ui_live rc=0 §NC1-UI VERDICT PASS 13/13
+witness_procpara_dynamic rc=1 §RPD-SUMMARY FAIL judged=5 fails=1 inconclusive=0
