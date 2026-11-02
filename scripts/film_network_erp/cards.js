@@ -27,7 +27,8 @@ module.exports = { CSS: CSSN, build(F) {
         + bar(y + bh + gap, wt, BL) + `<text x="${x0 + wt + 10}" y="${y + 2 * bh + gap - 5}" font-size="21" fill="#C3C2B7">${V('t_twin_s')} s</text>`; });
     return g + `<line x1="${x0}" y1="44" x2="${x0}" y2="${50 + rows.length * gh - 30}" stroke="#6B6A63" stroke-width="2"/></svg>`; };
   const li = (sign, t) => `<div style="display:flex;gap:12px;margin-top:8px"><b style="width:22px;color:#FFFFFF">${sign}</b><span>${t}</span></div>`;
-  C.title = { n: 1, html: page(Sx(1, `<div class="ttl">Network ERP without an<br>Apps and Database server!</div><div class="sub">the whole program on every device · only the changes travel</div>`)) };
+  const opening = (kick, sub, extra) => `<div style="position:absolute;left:96px;top:220px;width:1728px;border-left:8px solid var(--cy);padding-left:36px"><div style="font:400 36px/1.2 'Noto Sans';color:var(--ink2);letter-spacing:2px">${kick}</div><div style="font:800 104px/1.08 'Noto Sans';margin-top:16px">Network ERP</div><div style="font:800 76px/1.12 'Noto Sans';color:var(--ye)">without an Apps and Database server!</div><div style="font:400 36px/1.3 'Noto Sans';color:var(--ink2);margin-top:28px">${sub}</div>${extra ? `<div style="font:400 30px/1.5 'DejaVu Sans Mono',monospace;color:var(--cy);margin-top:40px">${extra}</div>` : ''}</div>`;
+  C.title = { n: 1, html: page(Sx(1, opening('A SHORT FILM · LOCAL FIRST', 'the whole program on every device · only the changes travel'))) };
   C.usual = { n: 3, html: page(hd('THE USUAL PICTURE', 'Two computers in the middle of every click', '') +
     `<div class="flow">` + Sx(1, `<div class="node">people at their<br>screens</div>`, 'display:flex;align-items:center;gap:26px') +
     Sx(2, `<span class="ar">⇄</span><div class="node" style="border-color:var(--or)">PROGRAM<br>computer</div><span class="ar">⇄</span><div class="node" style="border-color:var(--or)">DATA<br>computer</div>`, 'display:flex;align-items:center;gap:26px') + `</div>` +
@@ -71,6 +72,20 @@ module.exports = { CSS: CSSN, build(F) {
     Sx(2, bx('or', 840, `<h3 style="color:#FFFFFF">Traditional server-based system</h3><div class="lbl" style="font-size:22px;color:#E6E6E6">${li('+', 'one copy: everyone sees a change at once')}${li('+', 'a long track record')}${li('−', 'computers to run, pay for and look after')}${li('−', 'every action waits on the network')}${li('−', 'network down: work stops')}</div>`, `border-color:${OR}`)) +
     Sx(3, bx('cy', 840, `<h3 style="color:#FFFFFF">This system</h3><div class="lbl" style="font-size:22px;color:#E6E6E6">${li('+', 'no central computers: every action finishes on the device')}${li('+', 'keeps working without internet, sends later')}${li('−', 'others see your change only after it is sent')}${li('−', 'the free GitHub delivery service: ' + V('cliff_shared') + '–' + V('cliff_shared_hi') + ' users on one account, about ' + V('hq_cliff_lo') + '–' + V('hq_cliff_hi') + ' with one per person; beyond that, your own')}${li('−', 'a full copy of the data on every device')}${li('−', 'a warning when someone else just changed the same record: not built yet')}</div>`, `border-color:${BL};margin-top:16px`)) +
     `</div></div>`, 'timing logs, test logs') };
-  C.end = { n: 1, html: page(Sx(1, `<div class="ttl">Network ERP without an<br>Apps and Database server!</div><div class="sub">work on the device first · send only the changes · every number tested</div>`)) };
+  // the closing overview (owner 2026-11-02: "a closing card that wraps up a good overview table comparing with others"): measured cells only for the traditional
+  //   (legacy iDempiere, §45.15b) and this one; the cloud column is labelled general, not measured; text only, no invented figures
+  const ov = [['computers you keep running', V('legacy_servers') + ' (program + data)', "none of yours: the vendor's", 'none'],
+    ['wait on every click', 'yes: the trip to your server', 'yes: the trip to the vendor', 'no: done on the device'],
+    ['internet down', 'office works, branches stop', 'work stops', 'keeps working, sends later'],
+    ['others see a change', 'at once', 'at once', 'after it is sent'],
+    ['where the data lives', 'your server', "the vendor's computers", 'on every device'],
+    ['ongoing cost', 'computers and their upkeep', 'a subscription per user', 'a free delivery service, within its limits'],
+    ['tested in this film', 'yes', 'no', 'up to ' + V('fit_max_n') + ' users']];
+  const th = (t, c, sub) => `<th style="text-align:left;padding:10px 14px;border-bottom:3px solid ${c};font:700 26px/1.2 'Noto Sans'">${t}${sub ? `<div style="font:400 19px/1.2 'Noto Sans';color:#C3C2B7;margin-top:4px">${sub}</div>` : ''}</th>`;
+  C.overview = { n: 2, html: page(hd('THE WHOLE PICTURE', 'Three ways to run a shared business system', '') +
+    Sx(1, `<table style="margin-top:18px;width:1728px;border-collapse:collapse;font:400 24px/1.3 'Noto Sans'"><tr><th></th>${th('Traditional server system', OR, 'your own computers')}${th('Cloud system', '#6B6A63', 'rented · general, not measured here')}${th('This system', BL, 'local first')}</tr>` +
+      ov.map((r, i) => `<tr style="background:${i % 2 ? 'transparent' : 'rgba(255,255,255,.03)'}"><td style="padding:9px 14px;color:#C3C2B7;width:330px">${r[0]}</td><td style="padding:9px 14px">${r[1]}</td><td style="padding:9px 14px;color:#C3C2B7">${r[2]}</td><td style="padding:9px 14px">${r[3]}</td></tr>`).join('') + `</table>`) +
+    Sx(2, `<div class="lbl" style="font-size:22px;margin-top:16px">Traditional and this one: measured in this film. Cloud: how such systems generally work.</div>`), 'timing logs, test logs') };
+  C.end = { n: 1, html: page(Sx(1, opening('LOCAL FIRST · EVERY NUMBER TESTED', 'work on the device first · send only the changes', 'github.com/red1oon/bim-ootb<br>github.com/red1oon/BIMCompiler<br>red1org@gmail.com'))) };
   return C;
 } };

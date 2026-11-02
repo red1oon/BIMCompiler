@@ -12,7 +12,16 @@ const cues = {}; let endT = null;
 if (mode === 'build') { fs.readFileSync(a2, 'utf8').split('\n').forEach(l => { const m = /§FILM_CUE beat=(\S+) t=([\d.]+)/.exec(l); if (m) cues[m[1]] = +m[2]; const d = /§FILM_DONE .* dur=([\d.]+)s/.exec(l); if (d) endT = +d[1]; });
   if (endT == null || N.beats.some(b => cues[b.id] === undefined)) throw new Error('film.log lacks a cue or §FILM_DONE'); }
 const ix = N.beats.map(b => b.id), rows = N.beats.filter(b => b.text).map(b => { let s = 0, e = 999; if (mode === 'build') { s = cues[b.id]; const nx = ix[ix.indexOf(b.id) + 1]; e = nx ? cues[nx] : endT; }
-  const t = b.text.replace(/\s+/g, ' ').trim(); return [b.id, s.toFixed(2), e.toFixed(2), 'script_en.md ' + b.id + (b.facts.length ? ' facts ' + b.facts.join(',') : ' (no figures)'), 'M: ' + t, 'M: ' + t].join('\t'); });
+  const t = b.text.replace(/\s+/g, ' ').trim(), turns = N.LANG === 'zh' ? zhChunks(t) : [t], det = turns.map(x => 'M: ' + x).join(' | ');
+  return [b.id, s.toFixed(2), e.toFixed(2), (N.LANG === 'zh' ? 'script_zh.json ' : 'script_en.md ') + b.id + (b.facts.length ? ' facts ' + b.facts.join(',') : ' (no figures)'), det, det].join('\t'); });
+// zh captions (owner 2026-11-02: "break up the captions … so that it does not display too much and obscure graphs"): each caption ONE short line, cut at the
+//   sentence marks, then at commas, at most ZH_MAX characters; each piece is voiced and timed on its own (the fitter voices a turn per ' | ').
+function zhChunks(t) { const MAX = +(process.env.ZH_MAX || 22), out = [];
+  (t.match(/[^。！？；]+[。！？；]?/g) || [t]).map(x => x.trim()).filter(Boolean).forEach(sen => {
+    if (sen.length <= MAX) { out.push(sen); return; }
+    let cur = ''; (sen.match(/[^，、：]+[，、：]?/g) || [sen]).forEach(p => { if (cur && (cur + p).length > MAX) { out.push(cur); cur = p; } else cur += p; }); if (cur) out.push(cur); });
+  const long = out.filter(x => x.length > MAX + 6); if (long.length) console.log('§ZH_CHUNK_LONG ' + long.length + ' piece(s) over ' + (MAX + 6) + ' chars: ' + long.join(' / '));
+  return out; }
 fs.writeFileSync(path.join(work, 'narration_en.tsv'), rows.join('\n') + '\n');
 fs.writeFileSync(path.join(work, 'plan.json'), JSON.stringify({ beats: N.beats.map(b => ({ id: b.id, card: b.card })) }, null, 1));
 console.log('§TSV mode=' + mode + ' narrated=' + rows.length + ' beats=' + N.beats.length + (mode === 'build' ? ' film_s=' + endT : ''));

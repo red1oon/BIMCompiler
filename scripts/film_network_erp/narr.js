@@ -6,10 +6,12 @@ const fs = require('fs'), path = require('path');
 const F = JSON.parse(fs.readFileSync(path.join(__dirname, 'facts.resolved.json'), 'utf8')).facts;
 // the narration column of script_en.md, read from the file (not retyped): beat number -> text between the outer quotes
 function storyboard() { const o = {}; fs.readFileSync(path.join(__dirname, 'script_en.md'), 'utf8').split('\n').forEach(l => { const m = /^\| (\d+) \|.*\| "(.*)" \|\s*$/.exec(l); if (m) o[m[1]] = m[2]; }); return o; }
-const SB = storyboard();
+const LANG = process.env.FILM_LANG || 'en';
+// FILM_LANG=zh: the Simplified Chinese narration (script_zh.json, keyed by storyboard beat number); a missing beat is an error, never English
+const SB = LANG === 'zh' ? (() => { const z = JSON.parse(fs.readFileSync(path.join(__dirname, 'script_zh.json'), 'utf8')); delete z._note; return z; })() : storyboard();
 const BEATS = [['b01', 'title', null, 7], ['b02', 'usual', '2'], ['b03', 'other', '3'], ['b04', 'test', '4'], ['b05', 'lost', '5'], ['b06', 'books', '6'], ['b07', 'feel', '7'],
-  ['b08', 'maths', '8'], ['b09', 'bends', '9'], ['b10', 'versus', '10'], ['b11', 'honest', '11'], ['b12', 'end', null, 2]];   // end card 2 s: the recorder adds a 5 s final hold (rc1 ended on 13.5 s of silence)
+  ['b08', 'maths', '8'], ['b09', 'bends', '9'], ['b10', 'versus', '10'], ['b11', 'honest', '11'], ['b12', 'overview', '12'], ['b13', 'end', null, 2]];   // end card 2 s: the recorder adds a 5 s final hold (rc1 ended on 13.5 s of silence)
 function fill(t) { return t.replace(/\{\{(\w+)\}\}/g, (_, k) => { if (!(k in F)) throw new Error('unresolved fact ' + k); return String(F[k]); }); }
 const beats = BEATS.map(([id, card, sb, hold]) => { const raw = sb ? SB[sb] : null; if (sb && !raw) throw new Error('storyboard beat ' + sb + ' has no narration');
   return { id, card, hold: hold || null, text: raw ? fill(raw) : null, facts: raw ? (raw.match(/\{\{(\w+)\}\}/g) || []).map(x => x.slice(2, -2)) : [] }; });
-module.exports = { beats, F };
+module.exports = { beats, F, LANG };
