@@ -292,6 +292,10 @@ zero until costs are booked"). No jargon: "tick the phase complete in the projec
 - **Showing a "from a 2D drawing" claim:** use 3 labelled stills, not a clip that never shows 2D — `1 · a flat 2D sheet` (the floor plan rendered from the DXF), `2 · the 2D sheets assembled in 3D`
   (the wireframe sheets standing), `3 · converted: the model` — 2.6 s each (red1 2026-11-03: *"the clip does not show any 2D drawing … just still snaps"*).
 - Static holds + 0.5 s fades (ffmpeg `-loop 1 -tune stillimage`): seconds per segment. Do NOT use `zoompan` at 1080p (10+ min per segment). Never `pkill -f <word>` that appears in your own command.
+**Mandarin / CJK version (2026-11-03, `~/Videos/CAPEX_Dashboard_Addon_narrated_ZH_AFTER_2026-11-03_v5.mp4`, same cues as the English v5):** translate EVERY on-screen text (chapter cards, plain
+cards, composite headings + A/B labels, inset labels; the product's own UI screenshots stay as they are); fit with `film_narration_fit_edge.py <tsv> <tag> zh` (Chinese runs ~20 % longer: trim the 1–2
+beats that fall to SHORT); **split the captions** with `prompts/film_zh_caption_split.py <tag>.ass` (≤ 20 chars per piece at Chinese punctuation — red1's 2026-11-02 rule) before the mux; **never put
+CJK text through ffmpeg `drawtext` font lookup** (it fell back to a font without CJK glyphs → boxes); draw every CJK label with ImageMagick (`-font Noto-Sans-CJK-SC-Bold`) and overlay the PNG.
 **4. Timing:** after the first fit, cut each beat to its speech + 1–3 s (slack > 4 s left 7–9 s silences in v1: 147 s → 116 s, then 143 s with chapters/roadmap/closing). Fit goal 12/12 DETAIL, 0 WRONG
 (a WH question that rises → reword it; "Where do I record that?" falls, "Where do I tick that?" rose).
 **5. Witness (numbers):** frames = the silent picture's; silences ≥ 4 s ≤ ~7 s; ebur128 ≈ −16 LUFS; sample 7-8 frames at the cards / reworked beats as one contact sheet for layout only.
