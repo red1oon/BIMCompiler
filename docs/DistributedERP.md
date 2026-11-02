@@ -113,6 +113,26 @@ Here is the full mapping, each line with its proof:
 | Reconcile discrepancies | the **ledger** (double-entry, 1494) — the fact is a fold here too | §8 |
 | Be always-on | **nothing** — work offline; sync at business-time | Truth 2 |
 
+**A server is a bundle of tasks, not a place.** The table above is that bundle taken apart. A classic server is a security guard watching the door around the clock; what the work actually needs is a **motion sensor** — idle until triggered, then one small thing (apply the delivered op, recompute the fold), then idle again. The sensor does not even need to be reliable for the house to keep working: the sale and edit paths never wait on it. Add a lock that checks the key itself (signature, hash chain, owner-gate) and the guard has nothing left to do. The one sensor that stays always-on is the online CAS for a high-value, divisible balance (an owner decision, TEAMWORK_FRAMEWORK §39 R9).
+
+### What a database stands for — and where each job goes
+
+The table above takes the *server* apart. This one takes the *database* apart. A DB server is also a bundle of jobs; the fold (state = a deterministic function of an append-only log) plus the log covers most of them, and one job is deliberately kept.
+
+| DB job | Where it goes | Honest note |
+|---|---|---|
+| **Concurrency control** (arbitrate competing writes) | Append-only ops leave nothing to lock; **owner-gate** (G-SINGLE-WRITER) + the single **CAS** class | The CAS class is the one that stays online (TEAMWORK_FRAMEWORK §39 R9, owner decision) |
+| **Replication** (keep copies in step) | Seed the hash-pinned BASE **once** (FL-1), then ship only the ops after the replica's head hash; replay is idempotent (G-2) | A brand-new replica still needs one snapshot; the whole-DB snapshot path in the viewer does *not* get this saving (§52) |
+| **Durability** (survive a crash or power cut) | The append-only log; tail writer + redundancy ladder (§52 Triple Redundancy) | The job rebuilt most deliberately — W-POWER-CUT proved it was only half true before |
+| **Atomicity** (a change lands whole or not at all) | One op is the unit of change; the fold applies it entirely | — |
+| **Integrity** (schema, constraints, valid data) | Deterministic kernel on every client; schema from the AD dictionary in the BASE; no-double-spend in the owner-gate | — |
+| **Querying and indexing** (find, join, aggregate) | **Kept.** Embedded SQLite is the local query engine over projections folded from the log | This is the job that remains: the *server* around the database goes, not the database |
+| **Access control** | Writes: signatures + owner-gate, enforced on replay. Reads: ciphertext on the relay + per-device plans from the scriptor | Weaker on reads than on writes — it rests on who was given the data |
+| **Audit and history** | Free: the log is the history; the hash chain makes tampering findable (`verifyChain()`) | — |
+| **A single place to ask** | Signed catalog of deferred queries with reply schedules (TEAMWORK_FRAMEWORK) | Feels like the biggest hole: nobody can be asked live |
+
+**The fold is necessary but not sufficient.** It removes the need to arbitrate *state*; determinism, a total order and the owner-gate remove the need to arbitrate *writers*. Without those three, replicas replay to different answers and the server comes back.
+
 **The analogy that grounds it: git.** No central machine owns your code history — every clone holds all of it, can verify it, can rebuild from it. GitHub is a *convenience*, not the truth: lose it and you push to a new host from any clone, having lost nothing. Commits are **hash-chained** (= W-CHAIN) and can be **signed** (= W-SIGN). Git is a serverless-*of-record* distributed system that millions use daily.
 
 **This project does to ERP transactions what git did to source code:** the log is the truth, the host is disposable, history is chained and signable. The one thing git lacks that we add — *invariant enforcement* (no double-spend) — is the owner-gate plus the single CAS operation class. Everything else, git already proves is possible.
