@@ -37,6 +37,14 @@ docs_dir: docs
 exclude_docs: |
   internal/
   archive/
+  ERP_PROJECT_REVIEW.md
+
+# Published but deliberately off the menu: developer specs reached from DXF2BIMGuide's "For developers"
+# line, and the generated Flow Row reference reached from DistributedERP.
+not_in_nav: |
+  DXF2BIM_SPEC.md
+  DXF2BIM_BASIC_SHAPES_SPEC.md
+  ReplicationFlowRows.md
 
 markdown_extensions:
   - tables
@@ -102,6 +110,7 @@ nav:
       - "DXF2BIM — format contract (marks, outputs, registry, codes; generated)": DXF2BIM_FORMAT.md
       - "Kernel-ERP User Guide": ERPUserGuide.md
       - "Kernel-ERP — Your First Setup": ERP_FirstSetup.md
+      - "NinjaExcel Report — User Manual": NinjaExcelReport_UserManual.md
       - "HR / Tenancy / Operate Module": HRBIMAssetGuide.md
       - "Civil Works — Step by Step": CivilWorksGuide.md
       - "Teams Overlay — Collaboration & Optics": TeamsOverlayGuide.md
@@ -119,7 +128,6 @@ nav:
       - "Letting an AI work on the ERP, safely": ERP_AI_ADVISORY.md
       - "How the Database Works (big picture)": SQLiteWasmArchitectureActual.html
       - "Viewer Component Model (dev architecture)": ViewerComponentModel.html
-      - "Red Pill — Design From Grammar": RED_PILL.md
       - "Clash Detection": CLASH_DETECTION.md
       - "Asset Classification & JKR/SKATA": JKR_SKATA.md
       - "IFC Export Guide (for the BIM author)": IFC_ExportGuide.md
@@ -132,16 +140,19 @@ nav:
       - "Deterministic Spatial Compilation (academic paper)": SpatialCompilationPaper.md
       - "DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)": DXF2BIM_TechnicalNote.md
       - "Browser-Scale Benchmark (one tab, local first)": BrowserScaleBenchmark.md
-      - "Construction Economy / ERP Wave": BIMERPPaper.md
       - "Enterprise Authentication (security)": EnterpriseAuthentication.md
       - "Strategic Positioning": StrategicIndustryPositioning.md
       - "Local-First Prior Art": LocalFirstPriorArt.md
       - "Legacy-as-Oracle Adapter (migrate / test an ERP)": LegacyOracleAdapterSpec.md
-      - "Enabling-Tech Timeline": EnablingTechTimeline.md
-      - "Vibe Programming — AI + Domain Expertise": VibeProgramming.md
-      - "The 4D Generator — Failure Catalogue & AI Findings": 4DGenerator.md
-      - "The Last Mile — drift tracking": LAST_MILE_PROBLEM.md
-      - "Project Chronology": PROJECT_CHRONOLOGY.md
       - "Beyond Buildings": ShipYard.md
       - "Find & Navigate (wayfinding)": RouteTemplate.md
-      - "Self-Host (DIY installer)": SYSTEMS_INSTALLER_GUIDE.md
+
+  - History & Legacy:
+      - "Project Chronology": PROJECT_CHRONOLOGY.md
+      - "Vibe Programming — AI + Domain Expertise": VibeProgramming.md
+      - "The 4D Generator — Failure Catalogue & AI Findings": 4DGenerator.md
+      - "Enabling-Tech Timeline": EnablingTechTimeline.md
+      - "Red Pill — Design From Grammar (origin)": RED_PILL.md
+      - "The Last Mile — drift tracking (Java era)": LAST_MILE_PROBLEM.md
+      - "Construction Economy / ERP Wave (Java era)": BIMERPPaper.md
+      - "Self-Host the Java toolchain (legacy installer)": SYSTEMS_INSTALLER_GUIDE.md

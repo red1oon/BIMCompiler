@@ -770,6 +770,7 @@ Tap the **Excel Report** pill (grid icon ▦) on the iDempiere bottom bar. This 
 workbook into a live report over the open tenant — Excel stays the designer (layout, formatting,
 subtotals, charts: zero learning curve, it *is* Excel); the lens is only the **binder** that fills
 the data cells from the database. No Jasper, no print-format authoring, no server.
+The full walk-through for report authors is the **[NinjaExcel Report — User Manual](NinjaExcelReport_UserManual.md)**.
 
 One workbook, three sheets:
 

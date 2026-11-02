@@ -59,6 +59,18 @@ New here recently? Check **[What's New](WhatsNew.md)** for a running log of ship
 > **[Migrate & Compare](MigrateComparisonPaper.md)**: how Kernel-ERP folds a live iDempiere (and Odoo)
 > tenant onto one signed op-log, what stands comparison with a legacy stack, and the honest gaps.
 
+## Working as a team
+
+Several people — or several of your own devices — can work on the same records (orders in the ERP, the building
+in the Modeller) with **no database server and no application server**. Press the **Team** pill (the two heads;
+in the Modeller, the Team icon) and **Turn on team mode**; the first device **Starts a team**, the others **Join**
+and are approved there, and everyone presses **Visit** to send their changes and fetch the others'. A ready-made
+trial place lets you try one full cycle without setting anything up.
+
+[:octicons-arrow-right-24: Team guide](https://red1oon.github.io/bim-ootb/erp/team_guide.html) ·
+[How to verify the terms](TermsHowToVerify.md) ·
+[Teams overlay (ALPHA demonstrator: who-did-what dots, chat, graphs)](TeamsOverlayGuide.md)
+
 ## Also on the front door
 
 <div class="grid cards" markdown>

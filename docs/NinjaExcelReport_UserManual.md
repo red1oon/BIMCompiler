@@ -2,7 +2,7 @@
 
 *For accountants and report authors. No programming needed beyond writing a SELECT.*
 *Two films accompany this manual: film 1 (the Trial Balance) and film 2 (the Sales Register that grows), each in English and Thai, plus one long film joining them.*
-*Every number and claim below was produced by a gate in `scripts/ninja_template/run_all.sh` (gate names in brackets). Anything not built yet is under **Planned**, never stated as fact.*
+*Every number and claim below was produced by a gate in [`scripts/ninja_template/run_all.sh`](https://github.com/red1oon/BIMCompiler/blob/ninja-xtab2/scripts/ninja_template/run_all.sh) (gate names in brackets; the gate runner lives on the `ninja-xtab2` branch, not yet on master). Anything not built yet is under **Planned**, never stated as fact.*
 
 ---
 
@@ -162,7 +162,7 @@ Each line cites the gate that proves it. The first column says what the user get
 
 | Improvement | Evidence |
 |---|---|
-| **No server needed.** The legacy plugin ran inside a running iDempiere/OSGi server; the default gate run needs no server and no Postgres. | `scripts/ninja_template/run_all.sh` header; all gates run on a local SQLite copy of the data. |
+| **No server needed.** The legacy plugin ran inside a running iDempiere/OSGi server; the default gate run needs no server and no Postgres. | [`scripts/ninja_template/run_all.sh`](https://github.com/red1oon/BIMCompiler/blob/ninja-xtab2/scripts/ninja_template/run_all.sh) header (`ninja-xtab2` branch); all gates run on a local SQLite copy of the data. |
 | **No commercial PDF converter.** The PDF is produced by free code (PDFKit, MIT). | `T_pdf_content`, `D_geom_*`. |
 | **Your template is never overwritten.** The legacy plugin rewrote the template file in place (a truncated file was a real customer fault). | `T_manual_claims` → `CLAIM_NO_OVERWRITE`. |
 | **Wrong functions are visible.** An unsupported formula shows `#NAME?`, not a silent 0. | `CLAIM_NAME_ERROR`. |

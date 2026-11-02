@@ -5,6 +5,7 @@
 > **New here?** Two short on-ramps before the full doctrine:
 > - **[Migrate & Compare (ERP)](MigrateComparisonPaper.md)** — the one-page evaluator, with the "where's the server?" map at a glance.
 > - **[Two messages a day](RetailScaleStory.html)** — the same idea told for a shop owner: 10,000 tills, books to the penny, animated.
+> - **[Flow Row patterns](ReplicationFlowRows.md)** — the generated reference of the replication rows the Scriptor compiles (for engineers).
 >
 > This page is the complete argument and the adversarial edge cases. The guards described here are benchmarked at fleet scale in **POS WAN-Scale** (`W-POS-WAN-SCALE`).
 

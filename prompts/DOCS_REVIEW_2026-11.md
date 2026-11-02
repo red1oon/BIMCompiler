@@ -60,15 +60,19 @@ MANIFESTO/StrategicPositioning gate numbers (21 buildings, 116/157); FeatureComp
 ModellerGuide walk/clash tables; ERPUserGuide roadmap table (2026-06-12); BIMtoProject status block;
 AboutMore folder/architecture/size sections (deploy/dev era); NinjaExcel manual cites a missing `run_all.sh`.
 
-## §4 Revamp proposals (awaiting owner go)
-1. **Nav orphans:** add NinjaExcelReport_UserManual under *The 3 Apps* (after its dev-gate lines are reworded); move
+## §4 Revamp proposals (owner 2026-11-03: "You decide" — 1, 2, 4 done; 3, 5, 6 open)
+1. ✅ **DONE 2026-11-03** (as decided: NOT moved — `docs/DXF2BIM_*SPEC.md` and `docs/ERP_PROJECT_REVIEW.md` are cited by
+   path in scripts/prompts/sw comments; DXF2BIM specs + ReplicationFlowRows listed under mkdocs `not_in_nav`, ERP_PROJECT_REVIEW
+   added to `exclude_docs` (internal audit, off the public site, file unchanged); NinjaExcel manual in nav + linked from
+   ERPUserGuide, its gate citation now points at the `ninja-xtab2` branch; ReplicationFlowRows linked from DistributedERP.
+   Build: 0 WARNING, 0 INFO.) **Nav orphans:** add NinjaExcelReport_UserManual under *The 3 Apps* (after its dev-gate lines are reworded); move
    DXF2BIM_SPEC, DXF2BIM_BASIC_SHAPES_SPEC, ERP_PROJECT_REVIEW to `docs/internal/` (internal specs/audit; repoint
    DXF2BIMGuide's developer link); keep ReplicationFlowRows (generated, engineer-facing) off nav, linked from DistributedERP.
-2. **History group:** PROJECT_CHRONOLOGY, VibeProgramming, 4DGenerator, EnablingTechTimeline, LAST_MILE_PROBLEM,
+2. ✅ **DONE 2026-11-03** (nav section *History & Legacy*, 8 pages; titles of the Java-era ones say so). **History group:** PROJECT_CHRONOLOGY, VibeProgramming, 4DGenerator, EnablingTechTimeline, LAST_MILE_PROBLEM,
    BIMERPPaper, SYSTEMS_INSTALLER_GUIDE (legacy Java), RED_PILL (origin story) → a *History & Legacy* nav section.
 3. **Split guide vs evidence:** ModellerGuide, BIMUserGuide (Cinema + silent bake → subpages), ERPUserGuide (roadmap +
    appendix out), 4D5DAnalysis (Python engine → dev docs).
-4. **One Team entry point:** a short *Team mode* section in USER_GUIDE pointing at the live Team guide
+4. ✅ **DONE 2026-11-03** (USER_GUIDE §Working as a team, facts from bim-ootb `erp/team_guide.html` Set up). **One Team entry point:** a short *Team mode* section in USER_GUIDE pointing at the live Team guide
    (bim-ootb `erp/team_guide.html`); TeamsOverlayGuide stays as the ALPHA demonstrator.
 5. **One-pass re-measure** of the dated numbers in §3 "Flagged", ideally from one generated facts file.
 6. **Overlap:** trim SpatialERP_OOTB to concept; SpatialERPIntegration as the single three-surfaces map;
