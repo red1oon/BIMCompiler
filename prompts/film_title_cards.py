@@ -160,6 +160,17 @@ if os.environ.get('FILM_SET') == 'shed2film':
     CLIPS = {}
 # §DXF2BIM 2D->film E2E v2 (owner 2026-11-02 "the earlier part is too long ... just show opening the sheets, assemble and convert"): FILM_SET=shed2film2, FIVE chapters:
 # nine sheets, assembled on the canvas, one shed, in the Viewer (Alt+C panel), the layered film. Same anatomy as `shed2film`.
+# §DXF2BIM 2D->film E2E v3 (owner 2026-11-02 "make the first part more thrifty, narrate that we already can do all this ... straight to the alt-c baking";
+# "give viewers a heads up what this is about - ability to land full multi layer lens"): FILM_SET=shed2film3, TWO chapters.
+if os.environ.get('FILM_SET') == 'shed2film3':
+    CARDS = {
+        1: ('PART 1', 'ALREADY', 'DONE, FAST', 'Nine sheets, assembled, converted, saved, opened.'),
+        2: ('PART 2', 'THE FULL', 'LENS', 'Every layer on one building, in one film.'),
+    }
+    TAG = {1: 'ALREADY DONE, FAST', 2: 'THE FULL LENS'}
+    SERIES = 'BIM OOTB  ·  MODELLER TO VIEWER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
 if os.environ.get('FILM_SET') == 'shed2film2':
     CARDS = {
         1: ('CHAPTER 1', 'NINE SHEETS,', 'AS DRAWN', 'Flat BricsCAD sheets, opened untouched.'),
