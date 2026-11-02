@@ -304,6 +304,15 @@ failed). Malay ran ~30 % longer: 4 beats fell to SHORT on the first fit → trim
 (a WH question that rises → reword it; "Where do I record that?" falls, "Where do I tick that?" rose).
 **5. Witness (numbers):** frames = the silent picture's; silences ≥ 4 s ≤ ~7 s; ebur128 ≈ −16 LUFS; sample 7-8 frames at the cards / reworked beats as one contact sheet for layout only.
 
+**PLAYBOOK C addendum — a COMPARISON / PROOF film ("Network ERP without an Apps and Database server!", 2026-11-03; EN rc7 + ZH rc2 in `~/Videos/`; pipeline `scripts/film_network_erp/`, spec `prompts/TEAMWORK_FRAMEWORK.md` §45.15–§45.15d).** red1's corrections on this film, each a rule:
+- *"Supposedly, we just patched something, before making the film"* → show the product AS SHIPPED; a bug found and fixed while preparing is NOT a story beat (it reads as staged).
+- *"You did not put in an equivalent apple for apple"* → before any us-vs-them number, list the asymmetries (here: legacy logged in on every call; the twin ran on native SQLite, not the browser's WASM; the twin's background network was left out) and remove each; show medians of repeated runs with the range.
+- *"there is no graph to peg my memory on"* → every comparison gets a chart on screen (dataviz skill; validate the palette on the dark card surface).
+- *"Use more layman lingo"* → no sync/relay/WebAssembly/round trip/curve/ms; seconds, "sending the changes", "delivery service", "no reliable pattern".
+- Close with an overview table vs the alternatives (unmeasured columns labelled "general, not measured here") and the project contacts on the end card; opening/end in the dual-colour title style.
+- Mandarin: captions cut into single lines (≤ 25 chars at 。！？；，) so they stay in the band under the picture; one card builder + a translation table that throws on any untranslated segment.
+**Pipeline (number-guarded):** `FILM_LANG=en|zh CPU_ONLY_OK=1 ./build.sh` = resolve.js (every number from a named § log line) → guard.js (every digit on cards and in the voice is a fact; planted-number controls; zh: no English left) → voice measure → record.js (headless Chrome --disable-gpu, clipping probe incl. chart text) → fit → two-pass loudnorm mux.
+
 ## ▶ PLAYBOOK B — red1's POLYGLOT TRAILER style (settled 2026-10-03; v1 + v3 kept as POC)
 **What it is:** one film that is three things at once — *multilingual demo, setup/feature trailer, advert*
 (red1: "a show killing 3 birds at once"). Reference: `~/Downloads/ERP_Polyglot_9languages_v3_…mp4` (v1 kept for contrast).
