@@ -662,10 +662,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#third-party-libraries-all-loaded-via-cdn-not-modified" class="md-nav__link">
+  <a href="#third-party-libraries-not-modified" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Third-Party Libraries (all loaded via CDN, not modified)
+        Third-Party Libraries (not modified)
       
     </span>
   </a>
@@ -2769,10 +2769,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#third-party-libraries-all-loaded-via-cdn-not-modified" class="md-nav__link">
+  <a href="#third-party-libraries-not-modified" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Third-Party Libraries (all loaded via CDN, not modified)
+        Third-Party Libraries (not modified)
       
     </span>
   </a>
@@ -2968,7 +2968,7 @@
 <p><em><a href="../USER_GUIDE/">← Back to the <strong>User Guide</strong></a> · <a href="../">Home</a></em></p>
 <h2 id="about-settings-panel">About (Settings Panel)<a class="headerlink" href="#about-settings-panel" title="Permanent link">&para;</a></h2>
 <p><strong>BIM OOTB — Frictionless BIM. Two DBs. One browser. Zero install.</strong></p>
-<p>Version 0.6 alpha (October 2025 - May 2026)
+<p>Release 1.84.0 (31 October 2026)
 Creator: Redhuan D. Oon <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#114;&#101;&#100;&#49;&#111;&#114;&#103;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#114;&#101;&#100;&#49;&#111;&#114;&#103;&#64;&#103;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a>
 Tickets: github.com/red1oon/bim-ootb/issues
 License: MIT</p>
@@ -2976,16 +2976,16 @@ License: MIT</p>
 <p>Browser-native BIM viewer. Drop an IFC file or pick a building — geometry streams
 from SQLite databases directly to the GPU via Three.js. No server, no plugins,
 no build step. Works on desktop and mobile.</p>
-<p>~50K lines of vanilla JavaScript — no framework, no build step, no npm, no bundler.
+<p>~150K lines of vanilla JavaScript in the Viewer alone (231 modules) — no framework, no build step, no bundler.
 ~4MB total download (cached after first visit). Static files only — zero server-side code.
 Compare typical web BIM viewers at 100K–500K+ lines with Node backends and heavy frameworks.</p>
 <ul>
-<li>~50K lines of JavaScript + HTML</li>
+<li>~150K lines of JavaScript in the Viewer (231 modules), plus the Modeller and Kernel-ERP</li>
 <li>18 languages, locale-aware currency</li>
 <li>30 Playwright test suites</li>
 <li>GitHub Pages (free hosting)</li>
 </ul>
-<h3 id="third-party-libraries-all-loaded-via-cdn-not-modified">Third-Party Libraries (all loaded via CDN, not modified)<a class="headerlink" href="#third-party-libraries-all-loaded-via-cdn-not-modified" title="Permanent link">&para;</a></h3>
+<h3 id="third-party-libraries-not-modified">Third-Party Libraries (not modified)<a class="headerlink" href="#third-party-libraries-not-modified" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -3130,7 +3130,7 @@ into a serverless BIM pipeline.</strong> The original contribution is:</p>
 </ol>
 <h3 id="language-and-currency">Language and Currency<a class="headerlink" href="#language-and-currency" title="Permanent link">&para;</a></h3>
 <p>18 languages with local currency and exchange rates. Click the flag to switch.</p>
-<p><strong>Locale files:</strong> <code>deploy/dev/locales/*.js</code> — one file per country.
+<p><strong>Locale files:</strong> <code>viewer/locales/*.js</code> — one file per country.
 Each file contains all UI translations and currency settings (<code>cur</code>, <code>cur2</code>, <code>cur_rate</code>).</p>
 <p>To customise your own:</p>
 <ol>
@@ -3138,8 +3138,7 @@ Each file contains all UI translations and currency settings (<code>cur</code>, 
 <li>Edit the translations, currency symbol, and exchange rate</li>
 <li>Add your locale to the <code>AVAILABLE_LOCALES</code> array in <code>locale_loader.js</code></li>
 </ol>
-<p>Source: <a href="https://github.com/red1oon/BIMCompiler/tree/master/deploy/dev/locales">deploy/dev/locales/</a>
-Full guide: <a href="https://red1oon.github.io/BIMCompiler/Localization/">Localization Guide</a></p>
+<p>Source: <a href="https://github.com/red1oon/bim-ootb/tree/main/viewer/locales">viewer/locales/</a></p>
 <blockquote>
 <p><strong>Note:</strong> Language and currency/rates are currently bundled per country flag (POC).
 A future version will separate language preference from currency/rate selection —
@@ -3173,11 +3172,10 @@ browser already consumes. Stage 2 adds server-side compilation, not a new viewer
 </ul>
 <hr />
 <h2 id="diy-self-host">DIY Self-Host<a class="headerlink" href="#diy-self-host" title="Permanent link">&para;</a></h2>
-<p>Run BIM OOTB on your own machine. ~49MB download (full repo), ~4MB viewer.
-Libraries loaded from CDN on first use, then cached offline by the Service Worker.</p>
+<p>Run BIM OOTB on your own machine. Libraries are cached offline by the Service Worker.</p>
 <ol>
-<li>Download <code>deploy/dev/</code> from <a href="https://github.com/red1oon/BIMCompiler">GitHub</a></li>
-<li>Run <code>python3 -m http.server 8080</code> in the folder</li>
+<li>Download the repo from <a href="https://github.com/red1oon/bim-ootb">GitHub</a> (the <code>main</code> branch ZIP)</li>
+<li>Run <code>python3 -m http.server 8080</code> in the unzipped folder</li>
 <li>Open <code>http://localhost:8080</code> — drop any IFC file</li>
 </ol>
 <p>Or use the <strong>DIY Downloader</strong> in the About box of the <a href="https://red1oon.github.io/bim-ootb/">live viewer</a> — it generates an install script for your platform (Windows/Mac/Linux) that handles prerequisites automatically.</p>
@@ -3192,7 +3190,7 @@ Libraries loaded from CDN on first use, then cached offline by the Service Worke
 <li>All viewer JS modules (~30 files)</li>
 <li>14 DXF templates (floor plans, elevations, roof)</li>
 <li>Cost rates and exchange rate data (<code>rates.js</code>)</li>
-<li>15 language packs with local currency (<code>locales/</code>)</li>
+<li>18 language packs with local currency (<code>viewer/locales/</code>)</li>
 <li>Service worker for offline caching (<code>sw.js</code>)</li>
 </ul>
 <p>No databases are bundled — buildings load from OCI cloud via the manifest,

@@ -2623,10 +2623,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#next-steps" class="md-nav__link">
+  <a href="#where-the-roadmap-landed" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Next Steps
+        Where the roadmap landed
       
     </span>
   </a>
@@ -3966,10 +3966,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#next-steps" class="md-nav__link">
+  <a href="#where-the-roadmap-landed" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Next Steps
+        Where the roadmap landed
       
     </span>
   </a>
@@ -5080,39 +5080,39 @@ walls are visible through the structure.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>deploy/dev/ghostglass.js</code></td>
+<td><code>viewer/ghostglass.js</code></td>
 <td>Glass-to-solid animation engine</td>
 </tr>
 <tr>
-<td><code>deploy/dev/boq_charts.html</code></td>
+<td><code>viewer/boq_charts.html</code></td>
 <td>Audit, GUID resolution, scrubber, Play/Pause</td>
 </tr>
 <tr>
-<td><code>deploy/dev/main.js</code></td>
+<td><code>viewer/main.js</code></td>
 <td>BroadcastChannel listener, ghostglass delegation</td>
 </tr>
 <tr>
-<td><code>deploy/dev/rates.js</code></td>
+<td><code>viewer/rates.js</code></td>
 <td>SEQUENCE_RULES, LABOR_RATES, PHASE_COLORS (50+ IFC classes)</td>
 </tr>
 <tr>
-<td><code>deploy/dev/tools.js</code></td>
+<td><code>viewer/tools.js</code></td>
 <td>Hover preserves 4D phase colours</td>
 </tr>
 <tr>
-<td><code>deploy/dev/tests/specs/22-4d-audit.spec.js</code></td>
+<td><code>tests/specs/22-4d-audit.spec.js</code></td>
 <td>8 Playwright tests for audit gate</td>
 </tr>
 </tbody>
 </table>
 <hr />
 <h2 id="4d-time-machine-interactive-construction-playback">4D Time Machine — Interactive Construction Playback<a class="headerlink" href="#4d-time-machine-interactive-construction-playback" title="Permanent link">&para;</a></h2>
-<p>The <strong>Time Machine</strong> (<code>time_machine.js</code>) brings 4D simulation directly into the 3D viewer.
+<p>The <strong>Time Machine</strong> (<code>time_machine.js</code>, <code>tm_*.js</code>) brings 4D simulation directly into the 3D viewer.
 No separate app, no schedule file import, no Blender rendering. One button, any IFC model.</p>
 <h3 id="how-it-works_1">How It Works<a class="headerlink" href="#how-it-works_1" title="Permanent link">&para;</a></h3>
 <ol>
 <li>User drops any IFC file into the viewer</li>
-<li>Presses <strong>⏳</strong> in the toolbar</li>
+<li>Opens the <strong>Time Machine</strong> (the clock pill in the Inspect drawer, or key <strong>T</strong>)</li>
 <li><code>kernel_ops</code> table is auto-populated with a weighted construction sequence derived from:</li>
 <li><code>SEQUENCE_RULES</code> — phase assignment per IFC class (Substructure → Superstructure → MEP → Architecture → Finishes)</li>
 <li><code>LABOR_RATES</code> — productivity per trade (units/day → seconds per element)</li>
@@ -5285,50 +5285,45 @@ Cost: one <code>scene.traverse()</code> per frame. GPU load identical to a stati
 </thead>
 <tbody>
 <tr>
-<td><code>deploy/dev/time_machine.js</code></td>
+<td><code>viewer/time_machine.js</code></td>
 <td>Time machine panel, injection, playback, highlighting</td>
 </tr>
 <tr>
-<td><code>deploy/dev/kernel_ops.js</code></td>
+<td><code>viewer/kernel_ops.js</code></td>
 <td><code>commitOp()</code>, undo/redo, replay infrastructure</td>
 </tr>
 <tr>
-<td><code>deploy/dev/precision_cam.js</code></td>
+<td><code>viewer/precision_cam.js</code></td>
 <td>Precision camera (fine move + zoom reset) for detail inspection</td>
 </tr>
 <tr>
-<td><code>deploy/dev/picking.js</code></td>
+<td><code>viewer/picking.js</code></td>
 <td>Logs <code>ELEMENT_PICK</code> to kernel_ops</td>
 </tr>
 <tr>
-<td><code>deploy/dev/panels.js</code></td>
+<td><code>viewer/panels.js</code></td>
 <td>Logs <code>VIEW_FILTER</code> to kernel_ops</td>
 </tr>
 <tr>
-<td><code>deploy/dev/section_cut.js</code></td>
+<td><code>viewer/section_cut.js</code></td>
 <td>Logs <code>SECTION_CUT</code> to kernel_ops</td>
 </tr>
 <tr>
-<td><code>deploy/dev/rates.js</code></td>
+<td><code>viewer/rates.js</code></td>
 <td><code>SEQUENCE_RULES</code>, <code>LABOR_RATES</code> — drives injection weighting</td>
 </tr>
 </tbody>
 </table>
 <hr />
-<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
-<ol>
-<li><strong>Browser nD engine</strong> — port to JavaScript for BIM OOTB Phase 3.
-   Same JSON templates, same SQL queries, same output tables — runs in browser via sql.js (WASM).
-   User drags custom <code>5D_rates.json</code> → browser re-runs 5D → downloads Excel. Zero server.
-   See BIM_Designer_Browser.md §Phase 3 for full feature list.</li>
-<li><strong>Excel export (browser)</strong> — SheetJS generates XLSX client-side from nD output tables.
-   Replaces Java backend Excel generation for review/stakeholder use cases.</li>
-<li><strong>Community templates</strong> — UK BCIS rates, US RSMeans, BREEAM carbon, LEED scoring</li>
-<li><strong>Web template editor</strong> — HTML form that loads/validates/saves JSON templates</li>
-<li><strong>SMM2 work sections</strong> — map IFC classes to CIDB standard work section numbering for client-facing BOQ</li>
-<li><strong>Editable Excel (server)</strong> — Java backend generates .xlsx with formulas (<code>=qty × unit_rate</code>) for advanced users</li>
-<li><strong>REST endpoints</strong> — <code>/api/boq/{building}/excel</code>, <code>/api/schedule/{building}/excel</code> (Phase 4 backend only)</li>
-</ol>
+<h2 id="where-the-roadmap-landed">Where the roadmap landed<a class="headerlink" href="#where-the-roadmap-landed" title="Permanent link">&para;</a></h2>
+<p>Items that were once listed here as next steps and have shipped in the browser Viewer:</p>
+<ul>
+<li><strong>Browser nD engine</strong> — the 4D schedule, 5D cost and the Excel exports run in the browser on the same
+  JSON references (<code>viewer/rates.js</code>, <code>viewer/export_5d.js</code>, <code>viewer/export_4d.js</code>); no server.</li>
+<li><strong>Community rate templates</strong> — 16 national 5D rate packs ship (UK BCIS, US RSMeans, Malaysia CIDB, …) under <code>viewer/rates/</code>.</li>
+<li><strong>Template editor</strong> — Viewer Settings → Edit Project JSON edits the rate pack, 4D template and sequence/labour rules in the browser (see above).</li>
+<li><strong>SMM work sections</strong> — carried in the rate packs (<code>smm_sections</code>).</li>
+</ul>
 <p><em>Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.</em></p>
 
 

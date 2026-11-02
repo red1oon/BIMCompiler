@@ -2790,7 +2790,7 @@ own. Full walkthrough: <strong><a href="../SYSTEMS_INSTALLER_GUIDE/">Self-Host (
 <h2 id="bim-viewer-proven-offline-behaviour">BIM Viewer — proven offline behaviour<a class="headerlink" href="#bim-viewer-proven-offline-behaviour" title="Permanent link">&para;</a></h2>
 <ul>
 <li>The Viewer and the ERP each ship their own service worker (<code>viewer/sw.js</code>, <code>erp/sw.js</code>) with their own
-  version and precache list — 109 assets for the Viewer (all JS modules, entry HTML, the web manifest),
+  version and precache list — 173 assets for the Viewer (all JS modules, entry HTML, the web manifest),
   split into an auto-cached "shell" (THREE.js, sql.js/wasm, ~1.5 MB) and larger libraries fetched on
   first use (web-ifc, xlsx — a few MB each, cached after that).</li>
 <li>Fetch strategy: pages/local scripts are network-first (fall back to cache when offline); libraries,

@@ -3025,6 +3025,9 @@ ADempiere (2006) | iDempiere (2010) | Author, <em>Open Source ERP</em> (2010) | 
 <li><strong>Jurisdiction-scoped validation</strong> — rules per building code (currently MY/UBBL, 30 rules), enforced at placement time via AD_Val_Rule, iDempiere's validation rule pattern</li>
 </ul>
 <p><strong>What's still batch-mode:</strong> The Blender integration currently requires a full recompile after each edit. Real-time incremental update (G-8 on the roadmap) is architecturally prepared — file watchers and scope detectors exist — but the pipeline does not yet support partial-stage entry. This is a significant gap between the current prototype and a production-grade interactive editor.</p>
+<blockquote>
+<p><strong>Status note (2026-11):</strong> the Blender-based BIM Designer described here has since been replaced by the in-browser <a href="../ModellerGuide/">DAGeVu Modeller</a> (author geometry over a signed op-log, no Blender, no server), so the "batch-mode" limitation applies only to the legacy Blender path. The text below is kept as written for the Java/Blender-era prototype.</p>
+</blockquote>
 <h2 id="7-multi-user-back-office-and-erp-reporting">7. Multi-User Back Office and ERP Reporting<a class="headerlink" href="#7-multi-user-back-office-and-erp-reporting" title="Permanent link">&para;</a></h2>
 <p>Construction projects have many stakeholders reading the same data differently. A project manager wants a Gantt chart. A cost consultant wants a 5D breakdown. A sustainability officer wants embodied carbon. A facilities manager wants a maintenance schedule. An auditor wants a change log.</p>
 <p>The Back Office module (BIMBackOffice, ~3,000 LOC Java, separate HTTP server on port 9877) serves all of them from the same compiled data:</p>
@@ -3156,6 +3159,9 @@ ADempiere (2006) | iDempiere (2010) | Author, <em>Open Source ERP</em> (2010) | 
 <li>DX mirror verb is incomplete (7/10 gates)</li>
 </ul>
 <h2 id="10-roadmap-from-proof-to-platform">10. Roadmap: From Proof to Platform<a class="headerlink" href="#10-roadmap-from-proof-to-platform" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>Status note (2026-11):</strong> this roadmap describes the Java/Blender-era plan. Its items are not tracked here any more; current status is in the <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/ACTION_ROADMAP.md">Action Roadmap</a> and <a href="../WhatsNew/">What's New</a>.</p>
+</blockquote>
 <p><strong>Near-term (in progress):</strong>
 - CP-1: TE per-element traceability (closes the 48K-element verification gap)
 - CP-2: DX MIRROR verb completion

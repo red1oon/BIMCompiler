@@ -3663,7 +3663,7 @@
 <h1 id="bim-intent-compiler-systems-installer-guide">BIM Intent Compiler — Systems Installer Guide<a class="headerlink" href="#bim-intent-compiler-systems-installer-guide" title="Permanent link">&para;</a></h1>
 <p><em><a href="../USER_GUIDE/">← Back to the <strong>User Guide</strong></a> · <a href="../">Home</a></em></p>
 <blockquote>
-<p><strong>Foundation:</strong> BBC · DATA_MODEL · BIM_COBOL · <a href="../MANIFESTO/">MANIFESTO</a> · TestArchitecture</p>
+<p><strong>Foundation:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md">BBC</a> · <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/DATA_MODEL.md">DATA_MODEL</a> · <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BIM_COBOL.md">BIM_COBOL</a> · <a href="../MANIFESTO/">MANIFESTO</a> · <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/TestArchitecture.md">TestArchitecture</a></p>
 </blockquote>
 <div class="admonition note">
 <p class="admonition-title">BIM OOTB now runs in the browser — you probably don't need this guide</p>
@@ -3678,7 +3678,7 @@ nD reporting stack. Most users can skip it entirely.</p>
 <p><b>Legacy full-platform setup from source — Java, Maven, SQLite, Blender.</b> Prerequisites, build steps, and verification for developers building the original compiler/back-office toolchain.</p>
 </div>
 <p><strong>Audience:</strong> Developers building the <strong>Java</strong> compiler + back-office from source (the browser app needs none of this).</p>
-<p><strong>For WAN/Docker deployment</strong> of the back-office server, see DEPLOYMENT.md.</p>
+<p><strong>For WAN/Docker deployment</strong> of the back-office server, see <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/DEPLOYMENT.md">DEPLOYMENT.md</a>.</p>
 <hr />
 <h2 id="1-prerequisites">1. Prerequisites<a class="headerlink" href="#1-prerequisites" title="Permanent link">&para;</a></h2>
 <table>
@@ -3760,7 +3760,7 @@ mvn<span class="w"> </span>compile<span class="w"> </span>-q
 <span class="c1"># 2.3 Verify — run the full test gate</span>
 ./scripts/run_tests.sh
 </code></pre></div>
-<p><strong>Expected output:</strong> ~382 PASS, ~94 intentional RED (pre-existing calibration items — see <code>scripts/run_tests.sh</code> header for breakdown).</p>
+<p><strong>Expected output (baseline recorded 2026-03-11 in the script header; the counts have drifted since):</strong> ~382 PASS, ~94 intentional RED (pre-existing calibration items — see <code>scripts/run_tests.sh</code> header for breakdown).</p>
 <p><strong>Module build order</strong> (Maven reactor handles this automatically):</p>
 <div class="highlight"><pre><span></span><code>orm-core          → base ORM, BIMLogger
 ORMSandbox        → DAO smoke tests
@@ -4518,7 +4518,7 @@ sqlite3<span class="w"> </span>./library/ERP.db<span class="w"> </span>&lt;<span
 <hr />
 <p><em>For the project overview paper, see <a href="../BIMERPPaper/">BIMERPPaper.md</a>.</em>
 <em>For the end-user installer specification, see <a href="https://github.com/red1oon/BIMCompiler/blob/master/internal/INSTALLER_SPEC.md">INSTALLER_SPEC.md</a>.</em>
-<em>For the WAN/Docker deployment guide, see DEPLOYMENT.md.</em></p>
+<em>For the WAN/Docker deployment guide, see <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/DEPLOYMENT.md">DEPLOYMENT.md</a>.</em></p>
 <p><em>Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.</em></p>
 
 

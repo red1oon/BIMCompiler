@@ -4656,9 +4656,9 @@ the cent</strong>, every phase <code>SeqNo</code> tracing to <code>sequence_rule
 variation amendment against the same project.</p>
 </blockquote>
 <h3 id="authoring-editing-and-importing-the-4d5d-schedule">Authoring, editing, and importing the 4D/5D schedule<a class="headerlink" href="#authoring-editing-and-importing-the-4d5d-schedule" title="Permanent link">&para;</a></h3>
-<p>The Time Machine's own topic — authoring a schedule (<strong><code>✎</code></strong>), the box-cube LOD toggle for large
+<p>The Time Machine's own topic — the generated schedule, the box-cube LOD toggle for large
 buildings, What-if slips, direct Gantt editing (drag / resize / link / marquee-group-move /
-<strong>⏪ Pull Back</strong>), the standalone Schedule Editor, and Primavera P6 / MS Project import — is now
+<strong>⏪ Pull Back</strong>), and Primavera P6 / MS Project import — is now
 documented on its own page:</p>
 <p><strong>→ <a href="../TimeMachine/">Time Machine — the 4D construction timeline</a></strong></p>
 <hr />
@@ -5222,11 +5222,10 @@ sheet. The lens previews the AD tables it derives (column chips <code>name:refTy
 shows any warnings, and <strong>Emit &amp; Install</strong> stages them into the live tenant — the new window appears
 in the menu immediately. Don't know the grammar? <strong>Download starter template</strong> gives you a filled
 two-table shell to learn from and edit.</p>
-<p><strong>Reverse — export an existing window (🔧 proposed).</strong> Point at a window or menu already in the AD
-and export its definition <em>back</em> into the same sheet/bundle, edit it in Excel, and re-emit. This is
-the literal <strong>PackOut</strong>, and it's the more common need — most customizations start as "a window like
-Business Partner, plus three fields," not a blank sheet. <em>Status: designed, not yet built — the
-<code>extractModel(db, AD_Window_ID) → model</code> verb (the clean inverse of the sheet parser).</em></p>
+<p><strong>Reverse — export an existing window (✅ live).</strong> In the Ninja pill, pick a window already in the AD
+from the list and press <strong>Export</strong>: its definition is written <em>back</em> into the same sheet format, you edit it
+in Excel, and re-emit. This is the literal <strong>PackOut</strong> — most customizations start as "a window like Business
+Partner, plus three fields," not a blank sheet.</p>
 <h3 id="one-bundle-structure-behavior">One bundle = structure + behavior<a class="headerlink" href="#one-bundle-structure-behavior" title="Permanent link">&para;</a></h3>
 <p>The grammar of the sheet only describes <strong>structure</strong> — tables, columns, reference types,
 master/detail. <strong>Behavior</strong> (a field rule) is plain JS you craft inside the bundle's <code>activate()</code>.
@@ -5573,11 +5572,6 @@ needed if you see an old <code>CACHE_VERSION</code> number in the console.</p>
 </thead>
 <tbody>
 <tr>
-<td><strong>Trial Balance shows 0 rows</strong> on default <code>ad_seed.db</code></td>
-<td><code>fact_acct</code> table not in seed (Postgres-only source)</td>
-<td>Load <code>?db=preview_demo.db</code> or run <code>prompts/MIGRATE_POSTING_CONFIG.md</code></td>
-</tr>
-<tr>
 <td><strong>Posting Preview</strong> empty</td>
 <td>Same — acct linkage absent in default seed</td>
 <td>Same fix</td>
@@ -5612,12 +5606,12 @@ needed if you see an old <code>CACHE_VERSION</code> number in the console.</p>
 <tr>
 <td><code>AD_Callout</code> derived fields on field-change</td>
 <td>✅ engine ready</td>
-<td>Render-wiring parked</td>
+<td>✅ wired to field changes</td>
 </tr>
 <tr>
 <td><code>AD_Val_Rule</code> picklist filter</td>
 <td>✅ engine ready</td>
-<td>Render-wiring parked</td>
+<td>✅ reaches the live pickers</td>
 </tr>
 <tr>
 <td><code>AD_Workflow</code> node-walk</td>
@@ -5633,11 +5627,6 @@ needed if you see an old <code>CACHE_VERSION</code> number in the console.</p>
 <td>454 SvrProcess handlers</td>
 <td>5 registered, 454 named-deferred</td>
 <td>Honest absent-handler card shown</td>
-</tr>
-<tr>
-<td><code>stale fork</code>: <code>report_overlay.js</code> in bim-ootb</td>
-<td>256 vs 908 lines in build/erp — lacks foldStatement/foldPrint</td>
-<td>Needs sync + sw bump</td>
 </tr>
 </tbody>
 </table>

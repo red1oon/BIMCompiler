@@ -6688,6 +6688,9 @@ everything. They exist in the URL spec so that Step 2 is just adding
 </table>
 <hr />
 <h2 id="8-implementation-phases">8. Implementation Phases<a class="headerlink" href="#8-implementation-phases" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>Note (2026-11-03):</strong> the checklists below are the original plan from spring 2026 and are not maintained as a status board. Several items were delivered by a different route — notably Phase 5 multi-user sync, which shipped as the signed op-log team layer (a dumb relay carrying signed events; no cr-sqlite or WebRTC) described in <a href="../DistributedERP/">Distributed ERP</a>, and a POS lens that runs on the same ledger. For current status see <a href="../WhatsNew/">What's New</a>.</p>
+</blockquote>
 <h3 id="phase-1-the-poc-schema-swipe-construction-on-one-phone">Phase 1 — The POC: Schema + Swipe + Construction on One Phone<a class="headerlink" href="#phase-1-the-poc-schema-swipe-construction-on-one-phone" title="Permanent link">&para;</a></h3>
 <p><strong>Goal:</strong> One person, one phone, one <code>.db</code>. Proves the five-table schema,
 the swipe UX, the state machine, and the journal — all in one demo.</p>
@@ -7578,7 +7581,7 @@ Tier 3: OCI Object Storage         ← survives device loss, shareable
 <td><strong>kernel_ops merge</strong></td>
 <td>Two <code>.db</code> files merge by interleaving ops by timestamp + user_tag</td>
 <td>Phase 5</td>
-<td>Designed, not built</td>
+<td>Built since — signed op-logs from several devices are unioned, verified and replayed in a deterministic order by the team comm layer (<code>common/comm/comm_order.js</code>, <code>comm_store.js</code>; see <a href="../DistributedERP/">Distributed ERP</a>)</td>
 </tr>
 </tbody>
 </table>
@@ -8075,7 +8078,7 @@ Organizations needing RBAC, SSO, and audit compliance graduate to iDempiere. The
 <p><strong>The honest assessment:</strong> OOTB does not replace iDempiere or Odoo for enterprises needing multi-entity consolidation, statutory reporting, or 500-user RBAC. It replaces them for the <strong>long tail</strong> — the businesses that have never had ERP because ERP costs too much, takes too long, and requires a server they don't have. When those businesses outgrow OOTB, the data model maps 1:1 to iDempiere (§10).</p>
 <hr />
 <h2 id="15-forward-roadmap">15. Forward Roadmap<a class="headerlink" href="#15-forward-roadmap" title="Permanent link">&para;</a></h2>
-<p>For planned features — FTS5 Smart Search, full iDempiere data migration, database sharding, CRDT multi-device sync, benchmark suite, offline OPFS persistence, and domain packs — see <strong>ERP_Roadmap.md</strong>.</p>
+<p>For planned features — FTS5 Smart Search, full iDempiere data migration, database sharding, CRDT multi-device sync, benchmark suite, offline OPFS persistence, and domain packs — see the <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/ERP_Roadmap.md">ERP Roadmap</a> (internal working doc; some of these have since shipped, e.g. multi-device sync via the team comm layer).</p>
 
 
 

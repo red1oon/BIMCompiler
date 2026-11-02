@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="The Teams overlay turns any surface — Modeller, Viewer, or ERP — into a collaborative one. One toggle overlays who-did-what, a chat that is the log, and dashboard graphs, all off one signed op-log.">
+        <meta name="description" content="The Teams overlay turns a surface — Modeller or ERP — into a collaborative one. One toggle overlays who-did-what, a chat that is the log, and dashboard graphs, all off one signed op-log.">
       
       
         <meta name="author" content="Redhuan D. Oon">
@@ -2914,8 +2914,8 @@
 <strong><code>CONTOH — TIDAK RASMI</code> / <code>SAMPLE — NOT OFFICIAL</code></strong> watermark. The names, documents and numbers are
 illustrative demo values — this is a demonstrator, <strong>not</strong> a production collaboration system.</p>
 </blockquote>
-<p><strong>The Teams overlay turns any surface — the <a href="../ModellerGuide/">Modeller</a>, the <a href="../BIMUserGuide/">Viewer</a>, or
-<a href="../ERPUserGuide/">Kernel-ERP</a> — into a collaborative one.</strong> It is <em>not</em> a separate app. One toggle paints
+<p><strong>The Teams overlay turns a surface — the <a href="../ModellerGuide/">Modeller</a> or
+<a href="../ERPUserGuide/">Kernel-ERP</a> — into a collaborative one.</strong> <em>(The pill is wired into those two; the <a href="../BIMUserGuide/">Viewer</a> does not carry it.)</em> It is <em>not</em> a separate app. One toggle paints
 <strong>who-did-what</strong> onto the screens you already have: coloured dots on the very rows and elements you work with,
 a history you can read, a chat that <strong>is</strong> the signed log, and dashboard graphs — the same overlay, the same
 grammar, whether you are authoring a building or posting an invoice.</p>
@@ -2928,8 +2928,8 @@ tasks</strong>. If you want to know <em>how it works</em> (or why every number i
 <h2 id="getting-started-about-2-minutes">Getting started (about 2 minutes)<a class="headerlink" href="#getting-started-about-2-minutes" title="Permanent link">&para;</a></h2>
 <p>The overlay is <strong>off by default</strong> — until you turn it on, the screen is byte-for-byte unchanged.</p>
 <ol>
-<li><strong>Open any surface.</strong> A Kernel-ERP window (e.g. <em>Accounts Receivable</em>), a building in the Viewer, or the
-   Modeller — the overlay works the same on all three.</li>
+<li><strong>Open a surface.</strong> A Kernel-ERP window (e.g. <em>Accounts Receivable</em>) or the Modeller — the overlay works
+   the same on both.</li>
 <li><strong>Find the Teams pill.</strong> Look on the toolbar for the <strong>share glyph</strong> (three linked nodes). It is the <em>host's</em>
    own icon — the overlay borrows the app's icon set, it never imposes its own.</li>
 <li><strong>Toggle it on.</strong> The pill lights with the host's active colour and a side pane — the <strong>Teams Outliner</strong> —
@@ -3011,10 +3011,10 @@ the same signed log — never a hand-entered figure:</p>
 </table>
 <p><img alt="The complete experience on Kernel-ERP — who-dots on the AR rows, the Teams Outliner, and the four dashboard graphs (involvement, flow with a red bottleneck, gate ladder, post-it aging), every series folded from the same signed log and watermarked" src="../img/teams_showcase_on.png" /></p>
 <h3 id="on-a-building-who-dots-on-the-rooms">On a building — who-dots on the rooms<a class="headerlink" href="#on-a-building-who-dots-on-the-rooms" title="Permanent link">&para;</a></h3>
-<p>In the Viewer's <strong>Find</strong> panel, the same overlay lands on the <strong>Storey → Rooms</strong> result rows: the who-dots
-append after each room's state chip, and each <strong>storey header rolls up a <code>+N</code> density</strong> of the people active
-below it. It is the identical engine as the ERP rows — only the anchor changes (a room's guid instead of a
-document id).</p>
+<p>In the Modeller, the same overlay lands on the <strong>Outliner</strong> element rows as who-dots. It is the identical
+engine as the ERP rows — only the anchor changes (an element's guid instead of a document id). A
+<strong>Storey → Rooms</strong> variant (dots after each room's state chip, a <code>+N</code> density per storey header) is shown in
+the picture below as a demonstrator view; the Viewer's Find panel does not carry it.</p>
 <p><img alt="The Find panel's Storey→Rooms rows with Teams who-dots after each state chip, and a storey-level +N density badge on each level header" src="../img/teams_find_placement.png" /></p>
 <h3 id="pin-a-note-post-its">Pin a note — post-its<a class="headerlink" href="#pin-a-note-post-its" title="Permanent link">&para;</a></h3>
 <p>Any dot or row can carry a <strong>post-it</strong>: a signed note pinned to a universal anchor (a document, a field, a
@@ -3025,7 +3025,7 @@ Dashboard's <em>post-it aging</em> doughnut using the <strong>same</strong> colo
 join up."</em> When two branches merge, a <strong>gate</strong> checks them for you, and the gate is the right one for the
 surface:</p>
 <ul>
-<li>On the <strong>Modeller / Viewer building side</strong> — a <strong>spatial gate</strong>: it flags where two branches' elements
+<li>On the <strong>Modeller building side</strong> — a <strong>spatial gate</strong>: it flags where two branches' elements
   <strong>clash</strong> in space.</li>
 <li>On the <strong>schedule side</strong> — a <strong>PERT gate</strong>: it flags <strong>dependency violations</strong> (a task starting before its
   predecessor finishes), <strong>dependency cycles</strong>, and <strong>resource double-bookings</strong> (one crane, two overlapping jobs).</li>
@@ -3035,7 +3035,7 @@ same colour ladder — <strong>red</strong> (a real conflict) beats <strong>oran
 with <strong>stale</strong> when the trunk has moved on since you branched.</p>
 <hr />
 <h2 id="the-same-overlay-on-the-building-too">The same overlay — on the building, too<a class="headerlink" href="#the-same-overlay-on-the-building-too" title="Permanent link">&para;</a></h2>
-<p>Everything above is the ERP view. Open the Modeller or Viewer and the <em>identical</em> overlay renders over the 3D
+<p>Everything above is the ERP view. Open the Modeller and the <em>identical</em> overlay renders over the 3D
 model: the tabbed Outliner (Tree / Chat / Dashboard), identity-coloured dots on elements, and the colour
 ladder — one grammar, two surfaces.</p>
 <p><img alt="The Teams overlay on the BIM side — the tabbed Outliner with a colour-by-ladder element tree, the 3D world tinted by merge-gate verdict (green clean · red clash · orange budget), person dots on elements, and the colour-ladder legend" src="../img/teams_hero.png" /></p>
@@ -3073,7 +3073,7 @@ ladder — one grammar, two surfaces.</p>
 <tr>
 <td><strong>Find placement</strong></td>
 <td><em>Who is active in this room / storey?</em></td>
-<td>Viewer Find panel — dots on rooms, <code>+N</code> per storey</td>
+<td>Demonstrator view — dots on rooms, <code>+N</code> per storey</td>
 </tr>
 <tr>
 <td><strong>Merge gate</strong></td>
@@ -3168,6 +3168,7 @@ chrome) — so the overlay reads as a native part of whichever app you're in, ne
   <strong><a href="../ERPUserGuide/">Kernel-ERP Guide</a></strong> — the three surfaces the overlay rides on.</li>
 </ul>
 <hr />
+<p><em>Looking for multi-device team setup (Start a team, Join, Approve, Releases)? That is the separate ERP </em><em>Team</em><em> mode — see the <a href="https://red1oon.github.io/bim-ootb/erp/team_guide.html">Team guide</a>.</em></p>
 <p><em>Back to the <a href="../USER_GUIDE/">User Guide</a>.</em></p>
 
 

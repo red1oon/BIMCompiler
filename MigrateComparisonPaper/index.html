@@ -914,10 +914,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ootb-foldaging-proposed-12-loc-not-built" class="md-nav__link">
+  <a href="#ootb-foldaging-the-original-12-loc-proposal-since-built-as-agingfold-bim-ootb-1822-2026-10-03" class="md-nav__link">
     <span class="md-ellipsis">
       
-        OOTB · foldAging — PROPOSED, ~12 LOC (not built)
+        OOTB · foldAging — the original ~12-LOC proposal (since built as agingFold, bim-ootb #1822, 2026-10-03)
       
     </span>
   </a>
@@ -3035,10 +3035,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ootb-foldaging-proposed-12-loc-not-built" class="md-nav__link">
+  <a href="#ootb-foldaging-the-original-12-loc-proposal-since-built-as-agingfold-bim-ootb-1822-2026-10-03" class="md-nav__link">
     <span class="md-ellipsis">
       
-        OOTB · foldAging — PROPOSED, ~12 LOC (not built)
+        OOTB · foldAging — the original ~12-LOC proposal (since built as agingFold, bim-ootb #1822, 2026-10-03)
       
     </span>
   </a>
@@ -4022,10 +4022,9 @@ tables <strong>and the stored <code>c_invoice.grandtotal</code> that real iDempi
 pattern underlies every other member of the family, so Aging (<code>T_Aging</code>), Inventory Value, Cash Flow, Trial Balance and
 the rest are <em>structurally</em> the same fold — a pure aggregation that needs no scratch table. They are <strong>not yet built or
 diffed</strong>; this paper claims the deletion <strong>only for the three financial statements, the document print, and the NinjaExcel template delivery above.</strong> Aging in particular folds over
-<em>open items</em> + a due-date-bucketing function (not the GL), so it is a distinct verb on distinct seed data — named here,
-not claimed. This narrows <strong>GAP #8 to its tail</strong>: reporting parity is now <em>witnessed</em> for all 3 financial statements,
+<em>open items</em> + a due-date-bucketing function (not the GL), so it is a distinct verb on distinct seed data — it has since been built in the shipped ERP (<code>agingFold</code>, bim-ootb #1822, 2026-10-03) but is not diffed in this paper's witnesses. This narrows <strong>GAP #8 to its tail</strong>: reporting parity is now <em>witnessed</em> for all 3 financial statements,
 the master-detail document print (<code>foldPrint</code>, W-PRINTFORMAT), and template xlsx delivery (NinjaExcel, W-NINJA); what stays open is the remaining <code>T_*</code> family
-(Aging, Inventory Value, …), the unexercised <code>PrintDataGroup</code> functions (group-by/count/avg — implemented, no seed
+(Inventory Value, …; Aging is built but not diffed here), the unexercised <code>PrintDataGroup</code> functions (group-by/count/avg — implemented, no seed
 format uses them) and pixel layout (a stated non-goal — DOM is the render).</p>
 <h3 id="v-gap">Gap Analysis — serious read<a class="headerlink" href="#v-gap" title="Permanent link">&para;</a></h3>
 <blockquote>
@@ -4197,7 +4196,7 @@ GardenWorld client; OOTB = our ~28K-LOC engine. </em><em>EXTRACTION</em><em> = d
 <td>AR/AP Aging</td>
 <td><code>Aging</code>→<code>T_Aging</code></td>
 <td>on-the-fly wizard (no stored rows)</td>
-<td>not built</td>
+<td>✓ runs in the browser since 2026-10-03 (<code>agingFold</code> in <code>ad_process.js</code>, ports <code>Aging.doIt</code>/<code>MAging.add</code>, bim-ootb #1822); <code>DateAcct=Y</code> variant not ported</td>
 <td>distinct fold (open-items+date buckets) · <strong>FOLD</strong></td>
 </tr>
 <tr>
@@ -4300,8 +4299,8 @@ Witness <strong>W-FOLD-COMPLETE</strong> <code>maxDiff=0c</code>.<sup id="fnref:
 </code></pre></div>
 </div>
 <div>
-<h5 id="ootb-foldaging-proposed-12-loc-not-built">OOTB · <code>foldAging</code> — PROPOSED, ~12 LOC (not built)<a class="headerlink" href="#ootb-foldaging-proposed-12-loc-not-built" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><span class="c1">// PROPOSED · NOT BUILT — the T_Aging FOLD gap. Folds OPEN ITEMS, not the GL. 0 temp rows.</span>
+<h5 id="ootb-foldaging-the-original-12-loc-proposal-since-built-as-agingfold-bim-ootb-1822-2026-10-03">OOTB · <code>foldAging</code> — the original ~12-LOC proposal (since built as <code>agingFold</code>, bim-ootb #1822, 2026-10-03)<a class="headerlink" href="#ootb-foldaging-the-original-12-loc-proposal-since-built-as-agingfold-bim-ootb-1822-2026-10-03" title="Permanent link">&para;</a></h5>
+<div class="highlight"><pre><span></span><code><span class="c1">// ORIGINAL PROPOSAL (now built as agingFold in erp/ad_process.js) — the T_Aging FOLD gap. Folds OPEN ITEMS, not the GL. 0 temp rows.</span>
 <span class="kd">function</span><span class="w"> </span><span class="nx">foldAging</span><span class="p">(</span><span class="nx">openItems</span><span class="p">,</span><span class="w"> </span><span class="nx">asOf</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span><span class="w">                                   </span><span class="c1">// bpId → {Due0,Due0_7,Due31_60,…} cents</span>
 <span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">const</span><span class="w"> </span><span class="nx">it</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="nx">openItems</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">                     </span><span class="c1">// host-injected open C_Invoice rows</span>

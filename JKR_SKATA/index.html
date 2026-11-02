@@ -3169,6 +3169,10 @@ tool proposes and a person decides.</p>
 <p>Concretely, for a BIM Manager holding a model that has to go to JKR. Numbers below are the real ones
 from the hospital model, so you can picture the shape of your own.</p>
 <h3 id="step-1-ask-how-bad-it-is-seconds">Step 1 — Ask how bad it is (seconds)<a class="headerlink" href="#step-1-ask-how-bad-it-is-seconds" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>The two command-line tools used below (<code>build/classification_checker.py</code>, <code>build/measure_classification_tiers.py</code>) live on
+unmerged branches of the BIMCompiler repository, not on <code>master</code>, at the time of writing.</p>
+</blockquote>
 <div class="highlight"><pre><span></span><code>python3<span class="w"> </span>build/classification_checker.py<span class="w"> </span>--db<span class="w"> </span>buildings/YourBuilding.db
 </code></pre></div>
 <p>You get, in the log:</p>
@@ -3252,8 +3256,8 @@ but not built. What exists now is the measurement and the worklist, which is the
 <ul>
 <li><strong>No SKATA verdict.</strong> The shipped SKATA scheme is an explicitly-labelled example, and the checker
   <strong>refuses to emit a verdict</strong> against it. A checker that returns a confident answer for a placeholder
-  format is worse than no checker. The primary JKR specification has been obtained and is being
-  transcribed; until that is complete, no Malaysian compliance claim should be made from this tool.</li>
+  format is worse than no checker. The primary SKATA v2.0 specification has been obtained (it is public on JKR's portal);
+  transcribing its code structure is on hold until a real submission needs it, so no Malaysian compliance claim should be made from this tool.</li>
 <li><strong>PeDATA is not covered at all.</strong></li>
 <li><strong>Element codes only.</strong> The scheme verified against real data (UniFormat) has no space or storey code.
   SKATA expects building, level, space <em>and</em> component codes — a wider surface than is implemented.</li>

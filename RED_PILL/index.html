@@ -1835,10 +1835,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#core-files-deploydev" class="md-nav__link">
+  <a href="#core-files-viewer-in-bim-ootb" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Core Files (deploy/dev/)
+        Core Files (viewer/ in bim-ootb)
       
     </span>
   </a>
@@ -1846,10 +1846,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#test-files-deploydevtests" class="md-nav__link">
+  <a href="#test-files-tests-in-bim-ootb" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Test Files (deploy/dev/tests/)
+        Test Files (tests/ in bim-ootb)
       
     </span>
   </a>
@@ -3129,10 +3129,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#core-files-deploydev" class="md-nav__link">
+  <a href="#core-files-viewer-in-bim-ootb" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Core Files (deploy/dev/)
+        Core Files (viewer/ in bim-ootb)
       
     </span>
   </a>
@@ -3140,10 +3140,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#test-files-deploydevtests" class="md-nav__link">
+  <a href="#test-files-tests-in-bim-ootb" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Test Files (deploy/dev/tests/)
+        Test Files (tests/ in bim-ootb)
       
     </span>
   </a>
@@ -3624,10 +3624,10 @@
 <p><strong>The Red Pill:</strong> You never start from a blank canvas. You start from a building you trust,
 extract its grammar, and design by interrupting its replay.</p>
 </blockquote>
-<p><strong>Status:</strong> Active development (S266–S270+)
-<strong>Entry point:</strong> Tap the Red Pill (capsule icon) in the viewer's icon pill
-<strong>Supersedes:</strong> BIM_Designer_Browser.md (viewer layer — still the foundation)
-<strong>Full spec:</strong> NEW_FROM_REFERENCE.md (1800-line technical spec)</p>
+<p><strong>Status:</strong> Engine built (S266–S273); the code last changed in June 2026 and is not under active development
+<strong>Entry point:</strong> the Viewer's Red Pill (Doc pill) button is no longer wired in the current Viewer — the engine remains in the repository (<code>viewer/doc_canvas.js</code>). The red-pill icon on the BIM Tools page links here.
+<strong>Supersedes:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BIM_Designer_Browser.md">BIM_Designer_Browser.md</a> (viewer layer — still the foundation)
+<strong>Full spec:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/NEW_FROM_REFERENCE.md">NEW_FROM_REFERENCE.md</a> (1800-line technical spec)</p>
 <hr />
 <h2 id="1-the-big-idea">1. The Big Idea<a class="headerlink" href="#1-the-big-idea" title="Permanent link">&para;</a></h2>
 <p>Every BIM modeller starts from a blank canvas or a parametric script. Neither reuses the spatial intelligence already embedded in real buildings.</p>
@@ -3722,7 +3722,7 @@ extract its grammar, and design by interrupting its replay.</p>
 <p><strong>Rule:</strong> The compiler never imports designer code. The designer imports the compiler's APIs. The compiler does not know the designer exists.</p>
 <hr />
 <h2 id="4-code-map-where-things-live">4. Code Map — Where Things Live<a class="headerlink" href="#4-code-map-where-things-live" title="Permanent link">&para;</a></h2>
-<h3 id="core-files-deploydev">Core Files (<code>deploy/dev/</code>)<a class="headerlink" href="#core-files-deploydev" title="Permanent link">&para;</a></h3>
+<h3 id="core-files-viewer-in-bim-ootb">Core Files (<code>viewer/</code> in bim-ootb)<a class="headerlink" href="#core-files-viewer-in-bim-ootb" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -3784,7 +3784,7 @@ extract its grammar, and design by interrupting its replay.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="test-files-deploydevtests">Test Files (<code>deploy/dev/tests/</code>)<a class="headerlink" href="#test-files-deploydevtests" title="Permanent link">&para;</a></h3>
+<h3 id="test-files-tests-in-bim-ootb">Test Files (<code>tests/</code> in bim-ootb)<a class="headerlink" href="#test-files-tests-in-bim-ootb" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -3899,7 +3899,7 @@ bbox_z  →  bboxY (IFC height → Three Y)
 <hr />
 <h2 id="6-the-ux-flow-red-pill-mode">6. The UX Flow — Red Pill Mode<a class="headerlink" href="#6-the-ux-flow-red-pill-mode" title="Permanent link">&para;</a></h2>
 <h3 id="entry">Entry<a class="headerlink" href="#entry" title="Permanent link">&para;</a></h3>
-<p>Tap the Red Pill icon → canvas clears → building envelope appears as ghost wireframe.</p>
+<p><em>(As designed; the Viewer button is not wired today — see the note at the top.)</em> Tap the Red Pill icon → canvas clears → building envelope appears as ghost wireframe.</p>
 <h3 id="doc-pill-icons">Doc Pill Icons<a class="headerlink" href="#doc-pill-icons" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -4754,25 +4754,20 @@ State A: line persists (visible, passive), focus released
 <hr />
 <h2 id="13-for-new-developers">13. For New Developers<a class="headerlink" href="#13-for-new-developers" title="Permanent link">&para;</a></h2>
 <h3 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h3>
-<ol>
-<li>Open the viewer at the deployed URL (or <code>deploy/dev/index.html</code> locally)</li>
-<li>Load any building (e.g. SampleHouse, SampleCastle)</li>
-<li>Tap the Red Pill icon (capsule, top-right)</li>
-<li>Press Next repeatedly → watch elements appear phase by phase</li>
-<li>Click a grid line → drag it → watch walls/slabs recompose</li>
-</ol>
+<p>The Doc pill button is no longer wired in the Viewer, so the walkthrough below cannot be started from the
+Viewer UI today; the engine and its tests are still in the repository. Run the tests from a <code>bim-ootb</code> checkout:</p>
 <h3 id="running-tests">Running Tests<a class="headerlink" href="#running-tests" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="c1"># All grid kinematics tests</span>
-node<span class="w"> </span>deploy/dev/tests/test_grid_kinematics.js
+node<span class="w"> </span>tests/test_grid_kinematics.js
 
 <span class="c1"># Doc canvas tests (includes BUG-1/BUG-4 regression)</span>
-node<span class="w"> </span>deploy/dev/tests/test_doc_canvas.js
+node<span class="w"> </span>tests/test_doc_canvas.js
 
 <span class="c1"># Full recompose integration</span>
-node<span class="w"> </span>deploy/dev/tests/test_s268_recompose.js
+node<span class="w"> </span>tests/test_s268_recompose.js
 
 <span class="c1"># Grid modules (detection, overlay, drag)</span>
-node<span class="w"> </span>deploy/dev/tests/test_grid_modules.js
+node<span class="w"> </span>tests/test_grid_modules.js
 </code></pre></div>
 <p>All tests are whitebox: §-tagged <code>console.log()</code> lines prove values, counts, and state. No Playwright needed for value verification — the maths tells you.</p>
 <h3 id="key-concepts">Key Concepts<a class="headerlink" href="#key-concepts" title="Permanent link">&para;</a></h3>
@@ -4794,15 +4789,15 @@ node<span class="w"> </span>deploy/dev/tests/test_grid_modules.js
 </thead>
 <tbody>
 <tr>
-<td>BOMBasedCompilation.md</td>
+<td><a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md">BOMBasedCompilation.md</a></td>
 <td>The recipe model — BOM hierarchy, tack offsets, verb formulas</td>
 </tr>
 <tr>
-<td>TestArchitecture.md</td>
+<td><a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/TestArchitecture.md">TestArchitecture.md</a></td>
 <td>9 verification gates, traceability matrix</td>
 </tr>
 <tr>
-<td>SQLite3D_Schema.md</td>
+<td><a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/SQLite3D_Schema.md">SQLite3D_Schema.md</a></td>
 <td>DB schema — <code>elements_meta</code>, <code>element_transforms</code></td>
 </tr>
 <tr>
@@ -4810,15 +4805,15 @@ node<span class="w"> </span>deploy/dev/tests/test_grid_modules.js
 <td>Clash rules, R-tree spatial indexing</td>
 </tr>
 <tr>
-<td>BIM_Designer_Browser.md</td>
+<td><a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BIM_Designer_Browser.md">BIM_Designer_Browser.md</a></td>
 <td>Viewer layer — the foundation Red Pill builds on</td>
 </tr>
 <tr>
-<td>SPATIAL_COMPILATION_PAPER.md</td>
+<td><a href="../SpatialCompilationPaper/">Spatial Compilation paper</a></td>
 <td>Theoretical proof — BOM ↔ protein folding analogy</td>
 </tr>
 <tr>
-<td>NEW_FROM_REFERENCE.md</td>
+<td><a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/NEW_FROM_REFERENCE.md">NEW_FROM_REFERENCE.md</a></td>
 <td>Full 1800-line technical spec (all the details)</td>
 </tr>
 </tbody>

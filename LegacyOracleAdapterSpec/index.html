@@ -3128,6 +3128,10 @@ Pilot configuration SQL: <code>scripts/bridge/pilot/</code>. Run: <code>scripts/
 <td>Enforcement</td>
 <td>A quirk without an exemption is refused (control both ways).</td>
 </tr>
+<tr>
+<td>Fresh-client shop day <em>(update 2026-10-12)</em></td>
+<td>A throwaway client was set up on both systems, then a 25-step shop day was run (sales, POS cash sale, void, returns, count, cash journal, bank statement, back-dated sale, trial balance): <strong>25 of 25 steps MATCH</strong>, all four negative controls caught the planted 1-cent error; core corpus 20 of 20 scenarios MATCH (<code>SQLiteIDEMPIERE.md</code> §SHOPDAY-RUN-2, §SD16 RESULT).</td>
+</tr>
 </tbody>
 </table>
 <p><strong>Not proven / limits (read these before relying on it):</strong>
@@ -3136,7 +3140,7 @@ Pilot configuration SQL: <code>scripts/bridge/pilot/</code>. Run: <code>scripts/
 - The oracle was a local copy of the demo dataset, not a production-sized or production-configured system. Volume, concurrency and performance are untested.
 - Following the cardinal rule means copying legacy's behaviour, <strong>including its defects</strong>, unless the owner exempts them.
 - Header-only masters and three-level documents (batch → journal → line) need small additions to the descriptor model; not built.
-- Delivery of the fixes into the shipped application, and running the adapter inside a browser (CORS, packaging), are not done.</p>
+- Running the adapter inside a browser (CORS, packaging) is not done. <em>(Update 2026-10-12: delivery of the fixes into the shipped application is done — the engine fixes were ported and merged to the application's main branch, bim-ootb #1971, #1977, #1979–#1988, with the twin gate passing afterwards.)</em></p>
 <h2 id="12-prior-art">12. Prior art<a class="headerlink" href="#12-prior-art" title="Permanent link">&para;</a></h2>
 <p>No prior-art search has been done for this document. The ingredients are established techniques — differential testing, golden-master / characterization testing, shadow or parallel running, the strangler pattern, anti-corruption layers.
 The claim worth testing is the <strong>combination</strong>: a minimal fixed adapter contract, models added as data, an enforced no-divergence rule with a refusal mechanism, and a measured gap ledger. Do not describe it as novel before a search is made.</p>

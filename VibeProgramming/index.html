@@ -3498,7 +3498,7 @@
 
 <h1 id="vibe-programming-how-this-compiler-was-built">Vibe Programming — How This Compiler Was Built<a class="headerlink" href="#vibe-programming-how-this-compiler-was-built" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Foundation:</strong> <a href="../LAST_MILE_PROBLEM/">The Drift</a> · <a href="TestArchitecture.md">TestArchitecture</a> · <a href="../MANIFESTO/">MANIFESTO</a>
+<p><strong>Foundation:</strong> <a href="../LAST_MILE_PROBLEM/">The Drift</a> · <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/TestArchitecture.md">TestArchitecture</a> · <a href="../MANIFESTO/">MANIFESTO</a>
 <strong>By the numbers:</strong> <a href="../PROJECT_CHRONOLOGY/">Project Chronology</a> — dated milestones + commit/fix ledger, Federation → Compiler → Browser.
 <strong>Deep dive:</strong> <a href="../4DGenerator/">The 4D Generator</a> — a full technical case study of the 2026-08-27 turnaround referenced in the Capability Snapshot below: the failure catalogue, the AI-agent process fix, and what's still open.</p>
 </blockquote>
@@ -3628,7 +3628,7 @@
 </tbody>
 </table>
 <p><strong>A concrete case:</strong> in March 2026, Amazon suffered two outages within one week, traced in part to AI-assisted code changes — the first cost 120,000 lost orders and 1.6 million website errors, the second 6.3 million lost orders (Business Insider, via CloudBees).</p>
-<p><strong>This project's answer to the lament is not "the sceptics are wrong."</strong> They're right, and the numbers above are worse than when this paper was first written. The disagreement is about the fix. The industry-wide pattern is AI code shipped <em>without</em> an independent, deterministic check — trust the vibes, ship, discover the crumbling infrastructure later. This project inverts that: <a href="TestArchitecture.md">6 mathematical gates</a> that don't care about vibes, where G3 alone can fail a build over one wrong coordinate in 48,428 elements. The backlash is evidence the industry needs more projects built this way, not fewer.</p>
+<p><strong>This project's answer to the lament is not "the sceptics are wrong."</strong> They're right, and the numbers above are worse than when this paper was first written. The disagreement is about the fix. The industry-wide pattern is AI code shipped <em>without</em> an independent, deterministic check — trust the vibes, ship, discover the crumbling infrastructure later. This project inverts that: <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/TestArchitecture.md">6 mathematical gates</a> that don't care about vibes, where G3 alone can fail a build over one wrong coordinate in 48,428 elements. The backlash is evidence the industry needs more projects built this way, not fewer.</p>
 <hr />
 <h2 id="why-it-works-here-and-fails-elsewhere">Why It Works Here (And Fails Elsewhere)<a class="headerlink" href="#why-it-works-here-and-fails-elsewhere" title="Permanent link">&para;</a></h2>
 <p>Most vibe-coded projects fail because the human doesn't know what correct looks like. They accept whatever the AI produces because they can't evaluate it. The AI is both the author and the reviewer — a closed loop with no external ground truth.</p>
@@ -3638,7 +3638,7 @@
 <p>He writes <strong>specifications</strong>: what M_BOM means, how C_Order flows, why a wall must sit on a slab. The AI writes the Java. The domain expert evaluates whether the output is correct — not just by reading the compiled building, but by asking the precise Java questions that expose whether the AI's implementation actually honours the spec.</p>
 <p>This is not a non-programmer hoping AI gets it right. This is a <strong>Java-literate ERP architect using AI as a force multiplier for his domain expertise</strong>.</p>
 <h3 id="2-deterministic-verification-no-looks-right">2. Deterministic verification (no "looks right")<a class="headerlink" href="#2-deterministic-verification-no-looks-right" title="Permanent link">&para;</a></h3>
-<p>Every compiled building passes through <a href="TestArchitecture.md">6 mathematical gates</a>:</p>
+<p>Every compiled building passes through <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/TestArchitecture.md">6 mathematical gates</a>:</p>
 <table>
 <thead>
 <tr>
@@ -4053,7 +4053,7 @@ Proven at 126K elements (LTU AHouse).
 (<a href="https://github.com/red1oon/BIMCompiler/commit/9cca45a365d6dfaa650995288f62f1e08fec8926">commit 9cca45a</a>)</p>
 <p>Because geometry is hash-addressed from the beginning — not as a performance optimisation but as a consequence of how the extractor works — instancing in the browser required no schema change. Elements with the same <code>geometry_hash</code> were grouped in one SQL query result. <code>THREE.InstancedMesh</code> consumed them directly. 85% draw call reduction on a 48K-element Terminal building, with no change to the DB.</p>
 <h3 id="what-vibe-programming-produced">What vibe programming produced<a class="headerlink" href="#what-vibe-programming-produced" title="Permanent link">&para;</a></h3>
-<p>The schema in <a href="SQLite3D_Schema.md">SQLite3D_Schema.md</a> was not designed top-down. It emerged from 60+ sessions of constraint-driven iteration:</p>
+<p>The schema in <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/SQLite3D_Schema.md">SQLite3D_Schema.md</a> was not designed top-down. It emerged from 60+ sessions of constraint-driven iteration:</p>
 <table>
 <thead>
 <tr>

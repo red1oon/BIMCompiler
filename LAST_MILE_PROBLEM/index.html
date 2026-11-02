@@ -3210,13 +3210,13 @@
 
 <h1 id="the-drift">The Drift<a class="headerlink" href="#the-drift" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Foundation:</strong> <a href="BOMBasedCompilation.md">BBC</a> · <a href="DATA_MODEL.md">DATA_MODEL</a> · <a href="BIM_COBOL.md">BIM_COBOL</a> · <a href="../MANIFESTO/">MANIFESTO</a> · <a href="TestArchitecture.md">TestArchitecture</a></p>
+<p><strong>Foundation:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md">BBC</a> · <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/DATA_MODEL.md">DATA_MODEL</a> · <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BIM_COBOL.md">BIM_COBOL</a> · <a href="../MANIFESTO/">MANIFESTO</a> · <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/TestArchitecture.md">TestArchitecture</a></p>
 </blockquote>
 <div class="bim-banner">
 <p><b>AI cannot repeat an outcome. Determinism is our religion here.</b></p>
 </div>
 <p><a href="../VibeProgramming/">Vibe Programming</a> under strict architectural supervision built this compiler — but AI cannot see spatial geometry. It doesn't know a wall must sit on a slab, or that two columns can't overlap. Months of frustration revealed a pattern: the code drifts from spec precisely where spatial reasoning is required. This document tracks every known drift point between "it compiles" and "it ships with no AI inside."</p>
-<p>See <a href="EYES_SRS.md">BIMEyes</a> for how we taught the compiler to see. Below is the way we harness in Claude Code AI.</p>
+<p>See <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/EYES_SRS.md">BIMEyes</a> for how we taught the compiler to see. Below is the way we harness in Claude Code AI.</p>
 <hr />
 <h2 id="drift-gate">Drift Gate<a class="headerlink" href="#drift-gate" title="Permanent link">&para;</a></h2>
 <p>Before writing code that implements a spec section, the AI MUST:</p>
@@ -3230,7 +3230,7 @@
 <h2 id="session-checklist-11-drift-points">Session Checklist — 11 Drift Points<a class="headerlink" href="#session-checklist-11-drift-points" title="Permanent link">&para;</a></h2>
 <p>Every session ends by checking these 11 areas where AI-generated code is known to drift from spec. Each cites the spec section it guards.</p>
 <h3 id="1-input-output">1. Input = Output?<a class="headerlink" href="#1-input-output" title="Permanent link">&para;</a></h3>
-<p><strong>Spec:</strong> <a href="BOMBasedCompilation.md">BBC §2.2.1</a> count invariant — SUM(non-PHANTOM qty) = output count.
+<p><strong>Spec:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md">BBC §2.2.1</a> count invariant — SUM(non-PHANTOM qty) = output count.
 <strong>Prerequisite:</strong> §3 (Compiler Only) must PASS first. If output was not compiled — only extracted — this count is a <strong>draft</strong>, not a verdict. (CP-5)</p>
 <p>The compiler must produce exactly the same number of elements as the BOM specifies. Not more (over-production = splitting when it shouldn't), not fewer (lost elements = broken walker).</p>
 <table>
@@ -3270,26 +3270,26 @@
 </tbody>
 </table>
 <h3 id="2-lod400-geometry">2. LOD400 Geometry?<a class="headerlink" href="#2-lod400-geometry" title="Permanent link">&para;</a></h3>
-<p><strong>Spec:</strong> <a href="BOMBasedCompilation.md">BBC §2.2</a> — every leaf product resolves to component library geometry, never a fallback shape.</p>
+<p><strong>Spec:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md">BBC §2.2</a> — every leaf product resolves to component library geometry, never a fallback shape.</p>
 <p>Zero <code>GEO_</code> fallback hashes in output. Every element's mesh traces to a real LOD entry in <code>component_library.db</code>. If the compiler generates a placeholder box instead of real geometry, this check catches it.</p>
 <p><strong>Verdict:</strong> PASS — G5 provenance and C8 geometry diversity both GREEN.</p>
 <h3 id="3-compiler-only">3. Compiler Only?<a class="headerlink" href="#3-compiler-only" title="Permanent link">&para;</a></h3>
-<p><strong>Spec:</strong> <a href="BOMBasedCompilation.md">BBC §2</a> Compilation Model — every element traces to IFC extraction or BOM template. Nothing invented.</p>
+<p><strong>Spec:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md">BBC §2</a> Compilation Model — every element traces to IFC extraction or BOM template. Nothing invented.</p>
 <p>The compiler must never connect to <code>*_extracted.db</code> during compilation. It reads only from <code>{PREFIX}_BOM.db</code> (the dictionary) and writes to <code>output.db</code>. Three tamper rules (T18/T19/T20) enforce zero references to extraction databases in compiler source code.</p>
 <p><strong>MEP_RECIPE cardinal rules</strong> (violation = invention): MEP_RECIPE archetypes are
 abstract patterns — never explode recipe runs into per-instance LEAF rows during
 compilation. Validation Rules determine final expression; the callout only registers
 discipline scope and Qty (= IFC element count). LEAF children come from <code>*_SYSTEM</code>
 BOM only. See: <code>OrderLineProductCallout.java</code> and <code>IFCtoERP.java</code> class Javadoc,
-and <a href="DISC_VALIDATION_DB_SRS.md#62-discipline-as-a-sub-bom">DISC_VALIDATION_DB_SRS §6.2</a>.</p>
+and <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/DISC_VALIDATION_DB_SRS.md#62-discipline-as-a-sub-bom">DISC_VALIDATION_DB_SRS §6.2</a>.</p>
 <p><strong>Verdict:</strong> PASS — 0 violations.</p>
 <h3 id="4-openings-and-furniture">4. Openings and Furniture?<a class="headerlink" href="#4-openings-and-furniture" title="Permanent link">&para;</a></h3>
-<p><strong>Spec:</strong> <a href="BOMBasedCompilation.md">BBC §4</a> tack convention — doors sit in walls, windows sit in walls, furniture sits in rooms.</p>
+<p><strong>Spec:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md">BBC §4</a> tack convention — doors sit in walls, windows sit in walls, furniture sits in rooms.</p>
 <p>Hosted elements (doors, windows) must reference their host wall via <code>host_element_ref</code>. Rotation must match the host face. No overlapping elements within the same product class (P06 proof).</p>
 <p><strong>Verdict:</strong> PASS — rotation witness (W-ROT) proven, P05/P06 zero violations.</p>
 <h3 id="5-spec-fidelity">5. Spec Fidelity?<a class="headerlink" href="#5-spec-fidelity" title="Permanent link">&para;</a></h3>
 <p><strong>Spec:</strong> All sources that dictate output — are they the RIGHT sources?</p>
-<p>The real input is a <a href="ProjectOrderBlueprint.md">Construction Order</a> (<a href="../MANIFESTO/#the-order-configure-to-order">C_Order</a> → <a href="../MANIFESTO/#the-order-configure-to-order">C_OrderLine</a>). The order references products from the BOM dictionary, and the compiler explodes it into placed elements. Everything else is supporting data.</p>
+<p>The real input is a <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/ProjectOrderBlueprint.md">Construction Order</a> (<a href="../MANIFESTO/#the-order-configure-to-order">C_Order</a> → <a href="../MANIFESTO/#the-order-configure-to-order">C_OrderLine</a>). The order references products from the BOM dictionary, and the compiler explodes it into placed elements. Everything else is supporting data.</p>
 <table>
 <thead>
 <tr>
@@ -3302,12 +3302,12 @@ and <a href="DISC_VALIDATION_DB_SRS.md#62-discipline-as-a-sub-bom">DISC_VALIDATI
 <tr>
 <td><strong>C_Order → C_OrderLine</strong></td>
 <td>What to build — the construction order with exceptions</td>
-<td><a href="BIM_Designer_UserGuide.md">BIM Designer</a> (interactive) or YAML (test harness)</td>
+<td><a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BIM_Designer_UserGuide.md">BIM Designer</a> (interactive) or YAML (test harness)</td>
 </tr>
 <tr>
 <td><code>{PREFIX}_BOM.db</code></td>
 <td>Assembly recipes — the BOM dictionary the order references</td>
-<td><a href="DATA_MODEL.md">IFCtoBOM pipeline</a> (once per building type)</td>
+<td><a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/DATA_MODEL.md">IFCtoBOM pipeline</a> (once per building type)</td>
 </tr>
 <tr>
 <td><code>component_library.db</code></td>
@@ -3317,12 +3317,12 @@ and <a href="DISC_VALIDATION_DB_SRS.md#62-discipline-as-a-sub-bom">DISC_VALIDATI
 <tr>
 <td><code>ERP.db</code></td>
 <td>Validation rules — fire protection, MEP spacing, jurisdiction</td>
-<td><a href="DocValidate.md">DocValidate</a> rule packs</td>
+<td><a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/DocValidate.md">DocValidate</a> rule packs</td>
 </tr>
 <tr>
 <td><code>*.bimcobol</code></td>
 <td>Verb recipes: PLACE BOM, ROUTE, WIRE, TRIM</td>
-<td><a href="BIM_COBOL.md">BIM COBOL</a> scripts</td>
+<td><a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BIM_COBOL.md">BIM COBOL</a> scripts</td>
 </tr>
 <tr>
 <td><code>BIMConstants.java</code></td>
@@ -3331,15 +3331,15 @@ and <a href="DISC_VALIDATION_DB_SRS.md#62-discipline-as-a-sub-bom">DISC_VALIDATI
 </tr>
 </tbody>
 </table>
-<p><strong>Note:</strong> <code>classify_*.yaml</code> is how the test harness represents a C_Order — it seeds the order and BOM for Rosetta Stone verification. In production, the <a href="BIM_Designer_UserGuide.md">BIM Designer</a> creates the C_Order interactively via <a href="BOMBasedCompilation.md#34-bom-drop--interactive-modification">BOM Drop</a>.</p>
+<p><strong>Note:</strong> <code>classify_*.yaml</code> is how the test harness represents a C_Order — it seeds the order and BOM for Rosetta Stone verification. In production, the <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BIM_Designer_UserGuide.md">BIM Designer</a> creates the C_Order interactively via <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md#34-bom-drop--interactive-modification">BOM Drop</a>.</p>
 <p>The BOM walker must read products from the compile connection, not from extraction. If any value in the output cannot be traced to one of these sources, that's drift.</p>
 <p><strong>Verdict:</strong> PASS — all sources audited.</p>
 <h3 id="6-output-path">6. Output Path?<a class="headerlink" href="#6-output-path" title="Permanent link">&para;</a></h3>
-<p><strong>Spec:</strong> <a href="BOMBasedCompilation.md">BBC §3.3</a> — single path: C_OrderLine → BOM explosion → placed elements.</p>
+<p><strong>Spec:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md">BBC §3.3</a> — single path: C_OrderLine → BOM explosion → placed elements.</p>
 <p>There must be exactly ONE code path that writes elements to <code>output.db</code>. No side-channel insertions, no bulk copies, no shortcut SQL. Element counts verified for all 35 buildings.</p>
 <p><strong>Verdict:</strong> PASS.</p>
 <h3 id="7-separate-from-input">7. Separate From Input?<a class="headerlink" href="#7-separate-from-input" title="Permanent link">&para;</a></h3>
-<p><strong>Spec:</strong> <a href="BOMBasedCompilation.md">BBC §2</a> — <code>{PREFIX}_BOM.db</code> is a pure dictionary, never written to during compilation.</p>
+<p><strong>Spec:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md">BBC §2</a> — <code>{PREFIX}_BOM.db</code> is a pure dictionary, never written to during compilation.</p>
 <p>The compiler reconstructs element positions from BOM tree traversal — it does NOT copy coordinates from extracted input databases. Evidence:</p>
 <div class="highlight"><pre><span></span><code>1. World origin     m_bom.origin_x/y/z         → SH: (-9.235, -2.746, -0.470)
 2. BOM tree walk    PlacementCollectorVisitor   → accumulate parent + line dx/dy/dz
@@ -3471,20 +3471,20 @@ grep<span class="w"> </span><span class="s2">&quot;GEO.*SUMMARY&quot;</span><spa
 -Dbim.geo.filter<span class="o">=</span>Desk
 </code></pre></div></p>
 <h3 id="8-visual-fidelity">8. Visual Fidelity?<a class="headerlink" href="#8-visual-fidelity" title="Permanent link">&para;</a></h3>
-<p><strong>Spec:</strong> <a href="TestArchitecture.md">TestArchitecture</a> C8 (geometry diversity) + C9 (axis dimensions) + P06 (overlap).</p>
-<p>Three independent proofs triangulate visual correctness: per-instance geometry resolution (C8), axis dimension matching within 1mm (C9), and no same-class element overlaps (P06). <a href="EYES_SRS.md">BIMEyes</a> adds ~14 per-element geometric proofs.</p>
+<p><strong>Spec:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/TestArchitecture.md">TestArchitecture</a> C8 (geometry diversity) + C9 (axis dimensions) + P06 (overlap).</p>
+<p>Three independent proofs triangulate visual correctness: per-instance geometry resolution (C8), axis dimension matching within 1mm (C9), and no same-class element overlaps (P06). <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/EYES_SRS.md">BIMEyes</a> adds ~14 per-element geometric proofs.</p>
 <p><strong>Verdict:</strong> PASS.</p>
 <h3 id="9-orientation">9. Orientation?<a class="headerlink" href="#9-orientation" title="Permanent link">&para;</a></h3>
-<p><strong>Spec:</strong> <a href="BOMBasedCompilation.md">BBC §4</a> — rotation is a property of the BOM line, not invented at compile time.</p>
+<p><strong>Spec:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md">BBC §4</a> — rotation is a property of the BOM line, not invented at compile time.</p>
 <p>Doors and windows must face the correct direction. <code>host_element_ref</code> links each opening to its host wall. Orientation data seeded from extraction (M16/M17 SQL).</p>
 <p><strong>Verdict:</strong> PASS — W-ROT witness proven. Rotation read from <code>m_bom_line.rotation_rule</code> (PlacementCollectorVisitor:183).</p>
 <p><strong>PASS (S100-p91):</strong> ProveStage rewired to BOM tree proofs (BomTreeProver). <code>hasRelationalData()</code> gate removed — ProveStage now runs for every building with compiled elements. Four BOM-term proof checks: P-PARENT (LEAF within parent extent), P-SIBLING (no sibling tack collisions), P-QTY (LEAF qty vs output count), P-TACK (tack position vs element centroid). SH: P-SIBLING 93/93 PASS. P-PARENT/P-QTY/P-TACK produce advisory WARNs (room origins not persisted in c_orderline — gap for future work). ComplianceStage: jurisdiction=MY, 53ms, 8 proof lines.</p>
 <h3 id="10-who-checks-the-tests">10. Who Checks the Tests?<a class="headerlink" href="#10-who-checks-the-tests" title="Permanent link">&para;</a></h3>
-<p><strong>Spec:</strong> <a href="TestArchitecture.md">TestArchitecture</a> §Anti-Drift — no silent re-seal, no weakened assertions.</p>
+<p><strong>Spec:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/TestArchitecture.md">TestArchitecture</a> §Anti-Drift — no silent re-seal, no weakened assertions.</p>
 <p>The tamper seal (SHA256 of 77 critical files) detects if a test was weakened to make it pass. Every seal change requires a full git diff review. T18-T20 tamper rules cross-validate. C8/C9 provide independent arithmetic verification that tests didn't drift.</p>
 <p><strong>Verdict:</strong> PASS — Seal v14 (77 files). Version bumped during S100 script refactoring (4 shell modules added).</p>
 <h3 id="11-factorization">11. Factorization?<a class="headerlink" href="#11-factorization" title="Permanent link">&para;</a></h3>
-<p><strong>Spec:</strong> <a href="BOMBasedCompilation.md">BBC §6</a> verb factorization — N elements → 1 BOM line with qty=N.</p>
+<p><strong>Spec:</strong> <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md">BBC §6</a> verb factorization — N elements → 1 BOM line with qty=N.</p>
 <p>Any code that factorizes BOM lines MUST preserve:
 - <strong>Material uniformity</strong> — mixed materials → reject, fall through to unfactored
 - <strong>Dimension uniformity</strong> — W/D/H within 50mm
@@ -3508,7 +3508,7 @@ grep<span class="w"> </span><span class="s2">&quot;GEO.*SUMMARY&quot;</span><spa
 <td>DX MIRROR</td>
 <td>G2 volume -0.16%, 89 axis swaps (width↔depth in some walls)</td>
 <td>S25</td>
-<td>MIRROR verb is incomplete — tracked in <a href="ACTION_ROADMAP.md">ACTION_ROADMAP</a> CP-2</td>
+<td>MIRROR verb is incomplete — tracked in <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/ACTION_ROADMAP.md">ACTION_ROADMAP</a> CP-2</td>
 </tr>
 <tr>
 <td>TE CLUSTER</td>
@@ -3592,10 +3592,10 @@ whether output was compiled or extracted.
 </tr>
 </tbody>
 </table>
-<p>ROUTE's <code>isUniformRun()</code> guard rejects non-uniform spacing (±20%). Non-uniform groups fall through to CLUSTER or flat writes. See <a href="BIM_COBOL.md">BIM_COBOL</a> §19 for verb taxonomy.</p>
+<p>ROUTE's <code>isUniformRun()</code> guard rejects non-uniform spacing (±20%). Non-uniform groups fall through to CLUSTER or flat writes. See <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BIM_COBOL.md">BIM_COBOL</a> §19 for verb taxonomy.</p>
 <hr />
 <h2 id="geometric-fingerprint-shape-identity">Geometric Fingerprint — Shape Identity<a class="headerlink" href="#geometric-fingerprint-shape-identity" title="Permanent link">&para;</a></h2>
-<p><em>This is one technique within <a href="EYES_SRS.md">BIMEyes</a>, the compiler's full geometric comprehension engine (26 proofs, 3 tiers).</em></p>
+<p><em>This is one technique within <a href="https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/EYES_SRS.md">BIMEyes</a>, the compiler's full geometric comprehension engine (26 proofs, 3 tiers).</em></p>
 <p>Dimensionless ratios that prove geometric equivalence regardless of scale:</p>
 <div class="highlight"><pre><span></span><code>Given AABB dimensions sorted smallest→largest as (S, M, L):
 

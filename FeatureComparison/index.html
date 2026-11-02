@@ -3526,7 +3526,7 @@
 </blockquote>
 <h2 id="what-it-is">What It Is<a class="headerlink" href="#what-it-is" title="Permanent link">&para;</a></h2>
 <p>BIM OOTB is a browser-based IFC viewer that runs entirely on the client. No server. No cloud subscription. No software to install. Open a URL, drop an IFC file, and view a full BIM model with construction scheduling, cost breakdown, and clash detection — all in a single browser tab.</p>
-<p>The viewer handles buildings from 200 to 122,000+ elements with smooth orbit, pick, and section cut — and a <strong>whole-city view that streams a 1,000,000+ element city</strong> (52 buildings, 24 archetypes) in the same single browser tab. After first load, it works offline from local cache. The entire application is under 500KB of code.</p>
+<p>The viewer handles buildings from 200 to 122,000+ elements with smooth orbit, pick, and section cut — and a <strong>whole-city view that streams a 1,000,000+ element city</strong> (52 buildings, 24 archetypes) in the same single browser tab. After first load, it works offline from local cache.</p>
 <p>The viewer is read-only by design. Alongside it now ships an early <strong>browser BIM authoring modeller</strong> — <strong>DAGeVu</strong> — and a "choose your door" landing that wires viewer, modeller, and the ERP engine over one shared signed op-log. These are covered in the <strong>DAGeVu — Browser BIM Authoring Modeller</strong> section below; the bulk of this paper documents the mature read-only viewer.</p>
 <h2 id="how-it-works">How It Works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h2>
 <h3 id="ifc-in-building-out">IFC In, Building Out<a class="headerlink" href="#ifc-in-building-out" title="Permanent link">&para;</a></h3>
@@ -3580,7 +3580,7 @@
 <p>What you see is exactly what is in the IFC file — no proxies, no LOD geometry, no simplification.</p>
 <p><strong>WebGPU status (S276b):</strong> The viewer is WebGPU-ready — <code>navigator.gpu.requestAdapter()</code> detects hardware WebGPU and activates <code>WebGPURenderer</code> automatically. Currently all browsers fall back to WebGL r184 (Intel iGPU = no adapter, mobile = skipped for stability, Chrome Linux PRIME = SwiftShader rejected). WebGL r184 performs better than r160 even without WebGPU — the upgrade delivers improved batching, native frustum culling, and cleaner shader compilation. WebGPU will activate automatically when browser/GPU support matures.</p>
 <h3 id="city-scale-streaming-1000000-elements-s285">City-Scale Streaming — 1,000,000+ elements (S285)<a class="headerlink" href="#city-scale-streaming-1000000-elements-s285" title="Permanent link">&para;</a></h3>
-<p>The same viewer scales from one building to an entire city: <strong>1,035,522 elements across 52 buildings (24 archetypes)</strong> in one browser tab, with no server and the same 500KB of code. Five techniques make a million elements tractable on a desktop browser:</p>
+<p>The same viewer scales from one building to an entire city: <strong>1,035,522 elements across 52 buildings (24 archetypes)</strong> in one browser tab, with no server. Five techniques make a million elements tractable on a desktop browser:</p>
 <ul>
 <li><strong>Facade-first residency.</strong> A city is mostly hidden services — across the city, MEP/plumbing/structure is ~86% of elements; the architectural facade (ARC) is only ~14% (145K elements). The city streams <strong>ARC only</strong> by default, so the whole facade builds and stays resident. Structure and MEP for a building load on demand when you go into it. From the street you never see a building's pipes, so they are never fetched or built.</li>
 <li><strong>Element-count memory budget.</strong> Residency is bounded by <strong>element count (~250K, the measured browser-pressure knee)</strong>, not bytes — the honest limit for geometry the browser can hold. The whole ARC facade (145K) sits comfortably under it and is never evicted while panning the overview.</li>
@@ -4208,7 +4208,7 @@ WebGL → Screen
 </tr>
 <tr>
 <td>BVH</td>
-<td>three-mesh-bvh 0.7.8</td>
+<td>three-mesh-bvh 0.8.0</td>
 <td>Accelerated raycasting for pick</td>
 </tr>
 <tr>

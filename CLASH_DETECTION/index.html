@@ -1818,17 +1818,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#s278-changes-2026-05-25" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        S278 Changes (2026-05-25)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#1-the-problem-with-desktop-clash-detection" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2045,10 +2034,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#85-bcf-export" class="md-nav__link">
+  <a href="#85-bcf-export-shipped" class="md-nav__link">
     <span class="md-ellipsis">
       
-        8.5 BCF Export
+        8.5 BCF Export — shipped
       
     </span>
   </a>
@@ -2867,17 +2856,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#s278-changes-2026-05-25" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        S278 Changes (2026-05-25)
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#1-the-problem-with-desktop-clash-detection" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3094,10 +3072,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#85-bcf-export" class="md-nav__link">
+  <a href="#85-bcf-export-shipped" class="md-nav__link">
     <span class="md-ellipsis">
       
-        8.5 BCF Export
+        8.5 BCF Export — shipped
       
     </span>
   </a>
@@ -3190,18 +3168,12 @@
 <p><strong>Foundation:</strong> BIM_Designer_Browser.md | SQLite3D_Schema.md | ROADMAP.md | BIM_COBOL.md (CHECK CLASH verbs)</p>
 </blockquote>
 <div class="bim-banner">
-<p><b>48,000 elements. 12 discipline-pair rules. One browser tab. Zero server.</b> Clash detection that runs entirely in the browser — SQL queries against a local SQLite database, bounding-box geometry rendered by the GPU, results in milliseconds. No Navisworks. No license. No desktop.</p>
+<p><b>48,000 elements. 18 discipline-pair rules. One browser tab. Zero server.</b> Clash detection that runs entirely in the browser — SQL queries against a local SQLite database, bounding-box geometry rendered by the GPU, results in milliseconds. No Navisworks. No license. No desktop.</p>
 </div>
-<p><strong>Version:</strong> 1.1 (2026-05-25)
-<strong>Status:</strong> LIVE — storey-scoped progressive queries, discipline matrix, in-viewer review workflow
+<p><strong>Status:</strong> LIVE — storey-scoped progressive queries, discipline matrix, in-viewer review workflow, BCF 2.1 export
 <strong>Depends on:</strong> <code>measure.js</code>, <code>clash_rules.json</code>, <code>rtree-sql.js</code> (WASM), Three.js</p>
-<h3 id="s278-changes-2026-05-25">S278 Changes (2026-05-25)<a class="headerlink" href="#s278-changes-2026-05-25" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Clash pair colors: red <code>0xff0000</code> + blue <code>0x2266ff</code> (was red + orange)</li>
-<li>Multi-select: Shift+Arrow keyboard selects range → solid red spheres at midpoints + fly-to bbox</li>
-<li>Matrix: query cache per discipline, offset reset on pair change</li>
-<li>Overlap mesh: <code>depthTest: false</code>, shines through geometry</li>
-<li>Refactor prompt: <code>prompts/S278_REFACTOR_CLASH_PANELS.md</code></li>
+<li>Clash pair colours: red + blue. Shift+Arrow selects a range of clashes (red spheres at midpoints, camera flies to the group). The overlap mesh shines through surrounding geometry.</li>
 </ul>
 <hr />
 <h2 id="1-the-problem-with-desktop-clash-detection">1. The Problem with Desktop Clash Detection<a class="headerlink" href="#1-the-problem-with-desktop-clash-detection" title="Permanent link">&para;</a></h2>
@@ -3371,7 +3343,7 @@
 <p>This is collaboration via URL — one person finds a clash, shares the link, the recipient opens it and sees the exact same view. The URL <em>is</em> the coordination tool.</p>
 <hr />
 <h2 id="4-clash-rules-json-configuration">4. Clash Rules — JSON Configuration<a class="headerlink" href="#4-clash-rules-json-configuration" title="Permanent link">&para;</a></h2>
-<p>Rules are defined in <code>clash_rules.json</code> — 12 discipline pairs with per-pair tolerance and ignore lists:</p>
+<p>Rules are defined in <code>clash_rules.json</code> — 18 discipline pairs with per-pair tolerance and ignore lists:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;clash_rules&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
@@ -3396,7 +3368,7 @@
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>Currently 12 rules covering: ARC/STR, MEP/STR, MEP/ARC, ELEC/ARC, ELEC/STR, ELEC/MEP, FP/ARC, FP/STR, FP/MEP, ACMV/ARC, ACMV/STR, ACMV/MEP.</p>
+<p>Currently 18 rules covering: ARC/STR, MEP/STR, MEP/ARC, ELEC/ARC, ELEC/STR, ELEC/MEP, FP/ARC, FP/STR, FP/MEP, ACMV/ARC, ACMV/STR, ACMV/MEP, plus the civil-works pairs DRAINAGE/ROAD, LIGHTING/DRAINAGE, SIGNAGE/DRAINAGE, FURNITURE/LIGHTING, SIGNAGE/LIGHTING and GEOTECH/DRAINAGE.</p>
 <hr />
 <h2 id="5-html-clash-report">5. HTML Clash Report<a class="headerlink" href="#5-html-clash-report" title="Permanent link">&para;</a></h2>
 <p>Click the clipboard icon on the matrix to generate a full analytics report in a new tab:</p>
@@ -3468,54 +3440,8 @@ Show cluster count on matrix spheres instead of raw totals. Click cluster to exp
 <p>Expanded-bounds R-tree query: "Find elements within 5cm of this pipe." Already defined in <code>clash_rules.json</code> severity levels. Navisworks calls this "near miss" and requires a separate test setup — here it's a parameter change.</p>
 <h3 id="84-trend-tracking">8.4 Trend Tracking<a class="headerlink" href="#84-trend-tracking" title="Permanent link">&para;</a></h3>
 <p>Store clash counts per discipline pair per date in <code>localStorage</code>. Show delta: "Last check: 45 clashes. Now 32." Progress visible across sessions without any server.</p>
-<h3 id="85-bcf-export">8.5 BCF Export<a class="headerlink" href="#85-bcf-export" title="Permanent link">&para;</a></h3>
-<p>Industry-standard clash exchange format (<a href="https://www.buildingsmart.org/standards/bsi-standards/bim-collaboration-format-bcf/">BIM Collaboration Format</a>, buildingSMART). A BCF file is a <code>.bcfzip</code> containing XML topics + optional PNG snapshots. One clash = one topic.</p>
-<p><strong>Why this matters:</strong> BCF is the only open standard for exchanging issues between BIM tools. A clash found in BIM OOTB becomes importable in Navisworks, Solibri, BIMcollab, Revit (via plugins), and Trimble Connect. Firms with mixed toolchains can use BIM OOTB for detection and hand off issues to their existing review workflow.</p>
-<p><strong>What BIM OOTB already has that maps to BCF:</strong></p>
-<table>
-<thead>
-<tr>
-<th>BCF Field</th>
-<th>BIM OOTB Source</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>Topic.Title</code></td>
-<td>Discipline pair + storey (e.g. "Structure–MEP clash, Level 2")</td>
-</tr>
-<tr>
-<td><code>Topic.Description</code></td>
-<td>Overlap distance, element names</td>
-</tr>
-<tr>
-<td><code>Topic.CreationDate</code></td>
-<td><code>Date.now()</code> at export</td>
-</tr>
-<tr>
-<td><code>Topic.Priority</code></td>
-<td>Severity from <code>clash_rules.json</code> (Critical/Major/Minor)</td>
-</tr>
-<tr>
-<td><code>Topic.Status</code></td>
-<td>Review status from clash matrix (Review/Resolve/Accept)</td>
-</tr>
-<tr>
-<td><code>Viewpoint.Camera</code></td>
-<td>Current orbit camera position + direction + FOV</td>
-</tr>
-<tr>
-<td><code>Viewpoint.Components</code></td>
-<td>IFC GUIDs of both clashing elements</td>
-</tr>
-<tr>
-<td><code>Viewpoint.Snapshot</code></td>
-<td>Canvas screenshot (already built for snag/share)</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Implementation:</strong> Pure browser-side. Build XML strings, PNG from canvas, pack into a zip using JSZip (already a pattern in the Excel export). No server. Download triggers from the clash report "Export" button alongside the existing CSV option.</p>
-<p><strong>BCF version:</strong> BCF 2.1 (XML, widest tool support). BCF 3.0 (JSON) is newer but less widely imported.</p>
+<h3 id="85-bcf-export-shipped">8.5 BCF Export — shipped<a class="headerlink" href="#85-bcf-export-shipped" title="Permanent link">&para;</a></h3>
+<p>The <strong>Issues</strong> panel has an <strong>Export BCF</strong> button. It writes a BCF 2.1 <code>.bcfzip</code> with one topic per saved issue (clashes and free-form notes alike), each carrying the status, a priority from the clash severity, the saved camera viewpoint, and the snapshot where one was stored. The file opens in Navisworks, Solibri and BIMcollab. Export only — importing a BCF is not supported. (Source: <code>viewer/bcf_export.js</code>, button in <code>viewer/viewer.html</code>.)</p>
 <h3 id="86-scene-sync-from-report">8.6 Scene Sync from Report<a class="headerlink" href="#86-scene-sync-from-report" title="Permanent link">&para;</a></h3>
 <p>Click a clash row in the HTML report and the 3D viewer (if open) flies to that clash via <code>window.opener.postMessage</code>. Report becomes a live navigation tool, not a dead PDF.</p>
 <h3 id="87-storey-heatmap-bar-chart">8.7 Storey Heatmap Bar Chart<a class="headerlink" href="#87-storey-heatmap-bar-chart" title="Permanent link">&para;</a></h3>
@@ -3531,19 +3457,27 @@ Show cluster count on matrix spheres instead of raw totals. Click cluster to exp
 </thead>
 <tbody>
 <tr>
-<td><code>deploy/dev/measure.js</code></td>
-<td>Clash detection engine — queries, matrix, visualization, report</td>
+<td><code>viewer/measure.js</code></td>
+<td>Clash detection engine — queries, matrix, visualization</td>
 </tr>
 <tr>
-<td><code>deploy/dev/clash_rules.json</code></td>
-<td>12 discipline-pair rules with tolerances</td>
+<td><code>viewer/clash_matrix.js</code>, <code>viewer/clash_report.js</code></td>
+<td>Discipline matrix and the HTML report</td>
 </tr>
 <tr>
-<td><code>deploy/dev/loader.js</code></td>
+<td><code>viewer/clash_rules.json</code></td>
+<td>18 discipline-pair rules with tolerances</td>
+</tr>
+<tr>
+<td><code>viewer/bcf_export.js</code></td>
+<td>BCF 2.1 export</td>
+</tr>
+<tr>
+<td><code>viewer/loader.js</code></td>
 <td>CDN reference for rtree-sql.js@1.7.0 WASM</td>
 </tr>
 <tr>
-<td><code>deploy/dev/sw.js</code></td>
+<td><code>viewer/sw.js</code></td>
 <td>Service worker cache for WASM + DB files</td>
 </tr>
 </tbody>

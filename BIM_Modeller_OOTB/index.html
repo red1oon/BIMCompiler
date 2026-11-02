@@ -3262,6 +3262,14 @@
 <div class="bim-banner">
 <p><b>A modeller is not a program that writes files.</b> It is an interactive log of operations applied to a database. The browser is the ideal runtime for this log.</p>
 </div>
+<blockquote>
+<p><strong>Status, November 2026.</strong> This page is the founding argument. The Modeller it argues for now exists: the
+operation log is the signed op-log, every edit is one signed operation, <strong>Ctrl+Z / Ctrl+Y and the history
+scrubber</strong> replay it, and <strong>Team mode</strong> puts two browsers on one model. Its geometry kernel is <strong>occt-wasm
+(OpenCascade)</strong> with a 2D sketch solver, not the Manifold library proposed below. For what you can do with it today, see the
+<a href="../ModellerGuide/">Modeller guide</a> and the <a href="../ModellerFirstSteps/">10-minute First Steps</a>; for the log itself,
+<a href="../ModellerKernelFold/">Geometry as a Signed-Log Fold</a>.</p>
+</blockquote>
 <hr />
 <h2 id="the-claim">The Claim<a class="headerlink" href="#the-claim" title="Permanent link">&para;</a></h2>
 <p>The browser is not a viewer with modelling features bolted on. It is a better modelling environment than Revit, Bonsai, or ArchiCAD — for a structural reason, not a feature reason.</p>
@@ -3410,7 +3418,7 @@
 </table>
 <p><code>component_geometries</code> becomes a <strong>cache</strong> of evaluated recipes, not the source of truth. When a wall height changes, the recipe is updated, the geometry hash is invalidated, and a Web Worker re-evaluates the BLOB. The scene repaints. No save. No export.</p>
 <p><strong>The profile is an <code>M_Product</code>.</strong> Common cross-sections — rectangular, circular, L-shape, C-shape, hollow box — are stored as <code>M_Product</code> rows with <code>IsBOM=N</code> and a <code>profile_vertices</code> BLOB (a 2D polyline in the product's local plane). This means a profile is not hardcoded geometry. It is a catalog entry: swappable by <code>M_Product_Category</code>, priced via <code>M_PriceList</code>, jurisdictionally constrained by <code>AD_Val_Rule</code>, and replaceable at the order level via <code>C_OrderLine</code> exception. The Extrude primitive becomes: look up the profile product, extrude its vertices by depth, write the resulting mesh to <code>component_geometries</code>. Changing the profile is a product swap — the same Configure-to-Order pattern the ERP layer uses everywhere.</p>
-<p><strong>Boolean operations use Manifold.</strong> <a href="https://github.com/elalish/manifold">Manifold</a> is a C++ geometry library (Apache 2.0, active maintainers, used in Blender 3.x+) with a pre-built WASM target. It handles union, subtraction, and intersection on triangle meshes robustly and fast — without OpenCascade, without CGAL, without the GPL. A Web Worker loads the Manifold WASM module, applies the Boolean to the two input geometry BLOBs, and writes the result as a new <code>component_geometries</code> row. The originals are not deleted — they are marked <code>hidden=1</code> in <code>elements_meta</code>, preserving the operation history for undo.</p>
+<p><strong>Boolean operations (as first proposed: Manifold).</strong> <a href="https://github.com/elalish/manifold">Manifold</a> is a C++ geometry library (Apache 2.0, active maintainers, used in Blender 3.x+) with a pre-built WASM target. It handles union, subtraction, and intersection on triangle meshes robustly and fast — without OpenCascade, without CGAL, without the GPL. <em>(The shipped Modeller chose occt-wasm instead, for real B-rep cuts and fillets.)</em> A Web Worker loads the Manifold WASM module, applies the Boolean to the two input geometry BLOBs, and writes the result as a new <code>component_geometries</code> row. The originals are not deleted — they are marked <code>hidden=1</code> in <code>elements_meta</code>, preserving the operation history for undo.</p>
 <h3 id="constraints-as-sql-queries">Constraints as SQL Queries<a class="headerlink" href="#constraints-as-sql-queries" title="Permanent link">&para;</a></h3>
 <p>The discipline validation rules — sprinkler spacing ≥ 3 000 mm, emergency light within 6 m of exit — are already expressed as SQL predicates in <code>AD_Val_Rule</code>. Modelling constraints are the same thing:</p>
 <div class="highlight"><pre><span></span><code><span class="c1">-- Wall must align to grid</span>
@@ -3650,12 +3658,12 @@ Geometry is a materialized view of the operation log — a cache of evaluated re
 <tr>
 <td><strong>3. Infinite undo/redo</strong></td>
 <td>From <code>kernel_ops</code> log replay, survives page reload</td>
-<td><code>bim_changelog</code> table + <code>kernel_ops</code> ordered by id</td>
+<td><code>bim_changelog</code> table + <code>kernel_ops</code> ordered by id <em>(undo/redo and the history scrubber replay the signed op-log)</em></td>
 </tr>
 <tr>
 <td><strong>4. Collaborative session</strong></td>
 <td>Two browsers, same DB, peer-to-peer delta sync</td>
-<td>IndexedDB + WebRTC DataChannel + CRDT on op log</td>
+<td>IndexedDB + WebRTC DataChannel + CRDT on op log <em>(shipped as Team mode, over the ERP's comm layer — see <a href="../ModellerGuide/#collaborate-on-the-design-team-mode">Modeller guide</a>)</em></td>
 </tr>
 <tr>
 <td><strong>5. Crash recovery</strong></td>

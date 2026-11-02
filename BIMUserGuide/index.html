@@ -1046,10 +1046,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#room-health-the-type-sub-toggle-verified-live-on-terminal" class="md-nav__link">
+  <a href="#room-health-the-type-sub-toggle-shown-on-terminal" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Room health — the Type sub-toggle (verified live on Terminal)
+        Room health — the Type sub-toggle (shown on Terminal)
       
     </span>
   </a>
@@ -2975,10 +2975,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#room-health-the-type-sub-toggle-verified-live-on-terminal" class="md-nav__link">
+  <a href="#room-health-the-type-sub-toggle-shown-on-terminal" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Room health — the Type sub-toggle (verified live on Terminal)
+        Room health — the Type sub-toggle (shown on Terminal)
       
     </span>
   </a>
@@ -3537,8 +3537,9 @@ material, phase, or the newest axis, building <strong>Parts</strong>).</p>
    (mobile) — tap the <strong>···</strong> button if the rail isn't already showing. Find the <strong>Navigate</strong> icon
    (a sailboat glyph) among the rail's icons.
    <img alt="The toolbar rail, with the Navigate (sailboat) icon centred between Inspect (compass) above and Open (folder) below" src="../img/viewer/find-panel-navigate-icon.png" /></li>
-<li>Tap <strong>Navigate</strong>. The <strong>Navigate</strong> drawer opens, listing <strong>Find / Navigate</strong>, <strong>World History</strong>,
-   <strong>Page History</strong>, and <strong>Home</strong> (a fifth row, <strong>Walk</strong>, is mobile-only and won't appear on desktop).
+<li>Tap <strong>Navigate</strong>. The <strong>Navigate</strong> drawer opens, listing <strong>Find / Navigate</strong>, <strong>Role View</strong>, <strong>World History</strong>,
+   <strong>Page History</strong>, <strong>Home</strong>, <strong>Fly Tour</strong> and <strong>Nav LOD</strong> (for large buildings); a further row, <strong>Walk</strong>, is
+   mobile-only and won't appear on desktop.
    Tap the <strong>Find / Navigate</strong> row (magnifying-glass icon, shortcut <strong>F</strong>).
    <img alt="The Navigate drawer open, showing the Find / Navigate row at the top with its &quot;f&quot; shortcut" src="../img/viewer/find-panel-navigate-drawer.png" /></li>
 <li>The <strong>Find panel</strong> opens on the right side of the screen, with the search bar focused and ready to
@@ -3601,7 +3602,7 @@ has that kind of data (no data, no empty axis):</p>
 <tr>
 <td><strong>Room</strong></td>
 <td>Only if the building has volumetric room (IfcSpace) data</td>
-<td>A highlight lens: the model is X-rayed and a translucent box is drawn over each room. Has its own <strong>Storey / Type / Path</strong> sub-toggle: group rooms by floor, by the compiler's own confidence tier (see <a href="#room-health-the-type-sub-toggle-verified-live-on-terminal">Room health</a> below), or route between two rooms the way a person walks. (On a building without volume data, this falls back to a plain isolate-by-room list instead.)</td>
+<td>A highlight lens: the model is X-rayed and a translucent box is drawn over each room. Has its own <strong>Storey / Type / Path</strong> sub-toggle: group rooms by floor, by the compiler's own confidence tier (see <a href="#room-health-the-type-sub-toggle-shown-on-terminal">Room health</a> below), or route between two rooms the way a person walks. (On a building without volume data, this falls back to a plain isolate-by-room list instead.)</td>
 </tr>
 <tr>
 <td><strong>Material</strong></td>
@@ -3621,49 +3622,35 @@ has that kind of data (no data, no empty axis):</p>
 </tbody>
 </table>
 <p><img alt="The axis toggle cycled to Parts on HHS Office (&quot;6/6 Parts&quot;), a real institutional-scale building showing all three categories at once: Stairway (20), Lift Shaft (3), and Plant Room (1769) — Plant Room only appears on complex-class buildings like this one, never on a residential building like Duplex" src="../img/viewer/find-axis-parts.png" /></p>
-<p><strong>Room highlight, verified live on HHS Office.</strong> Level 2 alone compiles 31 real rooms (105 across the
+<p><strong>Room highlight, shown on HHS Office.</strong> Level 2 alone compiles 31 real rooms (105 across the
 whole building) — tapping one X-rays the model and draws a clean, correctly-bounded translucent box
-over just that room, confirming the room's geometry is well-formed and doesn't overlap its neighbours.
-On a larger building, the biggest rooms on a floor stand in for a "hall"-scale space until a real
-labelled corridor/hall example is captured (HHS's own rooms carry no such label yet — a future guide
-pass).</p>
+over just that room, confirming the room's geometry is well-formed and doesn't overlap its neighbours.</p>
 <p><img alt="A single real room on HHS Office Level 2, X-rayed and highlighted as a clean translucent purple box against the surrounding structure — SAMPLE, HHS_Office_Federated data" src="../img/viewer/find-room-highlight-hhs.png" /></p>
 <p><em>Known gap:</em> tapping a room highlights it but does not move the camera to it; on a large building, orbit or
 zoom to see a small room clearly.</p>
 <p><strong>Plant Room</strong> appears only on larger, complex buildings (Terminal, Clinic, Hospital, HHS), never on homes, and
 it matches whole words only (so "Backflow Preventer" is not taken for a vent).</p>
-<p><em>Also discovered while capturing these screenshots (reported, not fixed here — this task is docs-only):</em>
-the natural-language query hint text described above is written into the DOM by <code>navigate_find.js</code>
-<code>_handleInput()</code>, but the panel's <code>results-expanded</code> CSS class (which gives <code>#find-results</code> its visible
-height) is only added by the plain-search code path, not the NL-query path — so, live, no visible hint
-actually appears while typing a recognized phrase; the query still runs correctly on <strong>Enter</strong>. The guide
-text above describes the observed (silent) behavior, not an invented visible hint.</p>
-<h4 id="room-health-the-type-sub-toggle-verified-live-on-terminal">Room health — the Type sub-toggle (verified live on Terminal)<a class="headerlink" href="#room-health-the-type-sub-toggle-verified-live-on-terminal" title="Permanent link">&para;</a></h4>
+<p><em>While you type a recognized query phrase, the panel shows no preview and does not filter the tree; press </em><em>Enter</em><em> to run it.</em></p>
+<h4 id="room-health-the-type-sub-toggle-shown-on-terminal">Room health — the Type sub-toggle (shown on Terminal)<a class="headerlink" href="#room-health-the-type-sub-toggle-shown-on-terminal" title="Permanent link">&para;</a></h4>
 <p>Switch the Room axis's grouping from <strong>Storey</strong> to <strong>Type</strong> and rooms are grouped by the compiler's
 own confidence in them, not by a floor: <strong>INTERNAL</strong> / <strong>INTERNAL_SMALL</strong> (ordinary enclosed rooms,
 split by size) and <strong>SUSPECT_OPEN</strong> / <strong>SUSPECT_NO_DOOR</strong> (rooms the compiler could bound
 geometrically but flags for a human rather than silently accepting). This is the compile-with-honesty
 principle made visible — a low-confidence room is <em>shown</em> as low-confidence, never quietly promoted
 to "room" just because it fits inside walls.</p>
-<p><strong>Terminal, the hard case, verified live.</strong> A user-reported screenshot showed a stairwell counted as
-a room — the compiler doesn't know "stairwell" as a concept, only geometry, and a tall vertical shaft
-can look room-shaped from a single floor's footprint alone. The fix (<strong>STAIRWELL-STACK reject</strong>)
-rejects a room candidate whose footprint recurs, stacked, through multiple storeys with a real stair
-inside it — the signature of a shaft, not a room — checked against both compiler mirrors, 6/6 parity.
-Reloading Terminal applies the healed patch over whatever the browser had cached already: <strong>59 rooms →
-40 rooms, 73 rects, no room anywhere near the shaft threshold</strong> — the stairwell is gone from both the
-Room list and the 3D view.</p>
+<p><strong>Terminal, the hard case.</strong> The compiler knows only geometry, and a tall vertical shaft can look
+room-shaped from a single floor's footprint alone. So a room candidate whose footprint recurs, stacked,
+through multiple storeys with a real stair inside it — the signature of a shaft, not a room — is
+rejected. On Terminal that leaves <strong>40 rooms</strong> (down from 59) and no stairwell in either the Room list or
+the 3D view. A Terminal copy cached in your browser before this change is corrected automatically on reload.</p>
 <p><img alt="Terminal, Type grouping open: INTERNAL (30), INTERNAL_SMALL (15), SUSPECT_OPEN (22), SUSPECT_NO_DOOR (6) — &quot;Aras 02 R3&quot; selected, an empty doorless pocket beside a stair flight, flagged rather than guessed into being a room" src="../img/viewer/type-suspect-no-door-terminal.png" /></p>
 <p>That SUSPECT_NO_DOOR pick is the demo frame: an empty pocket next to the stair, no door found
 bounding it, so the compiler says exactly what it knows and stops — it doesn't invent a door to make
 the room look finished.</p>
 <p><em>Known gap, named not hidden:</em> Type is a <strong>health</strong> taxonomy (how sure the compiler is this is a
 room), not a <strong>semantic</strong> one — it doesn't yet know "corridor" from "office." Terminal's concourses
-show no CORRIDOR band today because the only measured corridor template on file is Duplex's 10.4m²
-hallway (n=2 samples), and stretching that onto a terminal concourse would be inventing, not
-compiling. The room-path routing below already produces a building-relative, <em>measurable</em> definition
-of a corridor — the elongated, many-doored room every route keeps passing through — scoped as a
-future CIRCULATION_DISPLAY pass, not built yet.</p>
+show no CORRIDOR band because the only measured corridor reference on file is Duplex's 10.4 m²
+hallway, and stretching that onto a terminal concourse would be inventing, not compiling.</p>
 <h4 id="room-to-room-paths-escape-routes">Room-to-room paths &amp; escape routes<a class="headerlink" href="#room-to-room-paths-escape-routes" title="Permanent link">&para;</a></h4>
 <p>With the <strong>Room</strong> axis selected, the <strong>Path</strong> sub-mode routes between any two rooms the way a
 person actually walks — out the door, along the corridor or concourse, and up or down the stairs
@@ -3701,12 +3688,14 @@ above for how to open it) has three more rows besides Find / Navigate:</p>
 <blockquote>
 <p><strong>Road (civil works) model?</strong> The same drawer gives extra road reports — clash between trades, earthworks volume, long / cross sections and a road Model Check. Walkthrough: <strong><a href="../CivilWorksGuide/">Civil Works — Step by Step</a></strong>.</p>
 </blockquote>
-<p>The <strong>Inspect</strong> drawer (compass icon, next to Navigate on the toolbar rail) bundles seven tools behind
-one icon:</p>
-<p><img alt="The Inspect drawer open — Measure, Clash Matrix, X-Ray / Bbox (currently &quot;Off&quot;), Section Cut, Time Machine, 4D / 5D, and Fly Tour, each with its shortcut key" src="../img/viewer/pill-inspect-drawer.png" /></p>
+<p>The <strong>Inspect</strong> drawer (compass icon, next to Navigate on the toolbar rail) bundles the analysis tools behind
+one icon: Measure, Clash Matrix, X-Ray / Bbox, Section Cut, Time Machine and 4D / 5D. On a road (civil
+works) model it also lists Road standards, Road report, Earthworks and Roadworks. <strong>Fly Tour</strong> now lives in
+the <strong>Navigate</strong> drawer (key <strong>L</strong>).</p>
+<p><img alt="The Inspect drawer open — Measure, Clash Matrix, X-Ray / Bbox (currently &quot;Off&quot;), Section Cut, Time Machine and 4D / 5D, each with its shortcut key" src="../img/viewer/pill-inspect-drawer.png" /></p>
 <ul>
-<li><strong>Measure</strong>, <strong>X-Ray / Bbox</strong>, <strong>Section Cut</strong>, and <strong>Fly Tour</strong> are covered above, under
-  <a href="#viewer-features">Viewer Features</a>.</li>
+<li><strong>Measure</strong>, <strong>X-Ray / Bbox</strong> and <strong>Section Cut</strong> are covered above, under
+  <a href="#viewer-features">Viewer Features</a>; <strong>Fly Tour</strong> is there too.</li>
 <li><strong>Clash Matrix</strong> (key <strong>C</strong>) opens the clash-detection engine (discipline-pair grid, tolerance, Review /
   Resolve / Accept status, HTML + CSV export) — full coverage: <strong><a href="../CLASH_DETECTION/">Clash Detection guide</a></strong>.</li>
 <li><strong>Time Machine</strong> (key <strong>T</strong>) opens the 4D construction timeline — author a schedule, play it back,
@@ -3787,7 +3776,8 @@ the same rate pack, and the same copies, as the Viewer. Where each copy takes ef
 <em>load from file</em> yet, so on another browser or computer the changes are entered again (or the downloaded file is
 added to the project's <code>viewer/rates/</code> folder by whoever publishes the Viewer).</p>
 <h3 id="camera-view-drawer">Camera / View drawer<a class="headerlink" href="#camera-view-drawer" title="Permanent link">&para;</a></h3>
-<p>The <strong>Camera / View</strong> drawer (camera icon) bundles three camera-control toggles:</p>
+<p>The <strong>Camera / View</strong> drawer (camera icon) bundles three camera-control toggles, plus <strong>GI Preview</strong> (<strong>Alt+G</strong>,
+desktop only — an ambient-occlusion preview):</p>
 <p><img alt="The Camera / View drawer open — Precision (Fine), Reset Camera, and Auto-Pivot, each with its shortcut key" src="../img/viewer/pill-camview-drawer.png" /></p>
 <ul>
 <li><strong>Precision (Fine)</strong> (Caps Lock) — slows orbit/pan/zoom for fine, deliberate camera moves (e.g. lining
@@ -3849,9 +3839,9 @@ where you are standing, aimed exactly where you are looking.</p>
    the stick and keeps you walking, for laying several in one pass. <strong>Esc</strong> leaves without planting.
    Pressing the shoes again continues from the exact spot you left.</li>
 </ol>
-<p>Proof from a real session on the Terminal building: the user walked into the POV, hit Spacebar, and
-<strong>stick @ 13%</strong> appeared — the new row highlighted in the panel and its blue middle dot on the path
-in canvas right beside it. One keypress, one stick, position and aim both set:</p>
+<p>Example on the Terminal building: walk into the POV, hit Spacebar, and <strong>stick @ 13%</strong> appears — the new
+row highlighted in the panel and its blue middle dot on the path in canvas right beside it. One keypress,
+one stick, position and aim both set:</p>
 <p><img alt="Walk finger mode's result the moment Spacebar was hit — the Cinema path panel now lists a highlighted &quot;stick @ 13%&quot; row with its pinned aim coordinates, the same stick's blue middle dot visible on the yellow flight tube in canvas just left of the panel, the POV frame bottom-left still showing the walker's own view, and the Time Machine's construction timeline still running top-left" src="../img/viewer/filmmaker-walk-stick13.png" /></p>
 <p>Two small behaviours keep this honest: planting re-shapes the flight around the new stick immediately
 (the brief pause is the film re-deriving), and clicking again at the stick you just planted does
@@ -4011,7 +4001,7 @@ construction sequence advance together in the same take:</p>
 <p>You can also stage a <strong>single still</strong> rather than a whole film: <strong>Alt+S</strong> applies the same photographic pass
 and then refines the frozen frame over 16 jittered sub-pixel samples for clean edges. <strong>Alt+J</strong> adds an
 optional bounce-light (GI) pass — off by default, and deliberately excluded from film recording because it
-costs far more per frame than a film's frame budget allows.</p>
+costs far more per frame than a film's frame budget allows. <strong>Alt+G</strong> is the lighter ambient-occlusion preview.</p>
 <p><strong>What this is honestly not.</strong> There is no weather: no rain, no snow, no cloud shapes — the sky model is a
 clear-sky one and has no cloud geometry at all. And it does not claim to be indistinguishable from a
 photograph: the geometry is idealised IFC with no real-world wear, materials are assigned by class rather
@@ -4205,8 +4195,9 @@ operate-phase lenses — <strong>Occupancy</strong> (incl. lease status) · <str
 <em>its</em> data exists (else greyed) — no data, no clutter.</p>
 <p>→ <strong>Full walkthrough (with screenshots): <a href="../HRBIMAssetGuide/">HR / Tenancy / Operate Module guide</a>.</strong></p>
 <p><strong>Collaborate on the model — the Teams overlay.</strong> One toolbar toggle overlays <strong>who-did-what</strong> on the building:
-identity-coloured dots on elements and Find-panel rooms, a history/blame tree, a chat that <strong>is</strong> the signed log,
-and dashboard graphs — off by default, pixel-identical until you turn it on.
+identity-coloured dots on elements, a history/blame tree, a chat that <strong>is</strong> the signed log,
+and dashboard graphs — off by default, pixel-identical until you turn it on. It is available in the Modeller and
+Kernel-ERP; the Viewer does not carry the toggle.
 → <strong><a href="../TeamsOverlayGuide/">Teams Overlay guide (with screenshots)</a>.</strong></p>
 <p><strong>Mobile-only (touch-optimised):</strong></p>
 <ul>
@@ -4271,6 +4262,14 @@ and dashboard graphs — off by default, pixel-identical until you turn it on.
 <tr>
 <td><strong>Alt+J</strong></td>
 <td>Bounce-light (GI) pass — optional, off by default, not used while recording a film</td>
+</tr>
+<tr>
+<td><strong>Alt+G</strong></td>
+<td>GI Preview — ambient-occlusion preview (desktop only)</td>
+</tr>
+<tr>
+<td><strong>Alt+P</strong></td>
+<td>Populate — adds staffage (people, trees and cars) to the scene</td>
 </tr>
 <tr>
 <td><strong>Click the flight tube</strong> (in the Film-Maker)</td>
