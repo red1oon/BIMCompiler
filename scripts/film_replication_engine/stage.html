@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Replication engine stage</title>
+<!-- ⚠ DO NOT REMOVE — Scope: self-contained STAGE page that REPLAYS a recorded engine trace at a controllable clock (no network, no timers, no CSS animation: every pixel is a pure function of
+     Stage.at(filmSeconds)). Spec: prompts/TEAMWORK_FRAMEWORK.md §16.19a. The recorder (film_replication_engine.js) feeds it the traces + plan and steps the clock; read its §FILM_* log after every run.
+     Every device card shows a red OFFLINE label whenever the device is local-only (§16.20a); ONLINE is shown only for a fixed window. -->
+<style>
+:root{--bg:#f6efe5;--card:#fffdf8;--line:#e3d8c6;--ink:#14213d;--mut:#52607a;--or:#c2410c;--gr:#15803d;--rd:#dc2626;--bl:#2563eb;--pu:#7c3aed;--am:#b45309;--tl:#0f766e}
+*{box-sizing:border-box;margin:0}
+html,body{width:1920px;height:930px;overflow:hidden;background:var(--bg);color:var(--ink);font-family:'Noto Sans','DejaVu Sans',sans-serif}
+#app{position:absolute;left:0;top:0;width:1920px;height:930px;overflow:hidden}
+.abs{position:absolute}
+#top{left:0;top:0;width:1920px;height:58px;display:flex;align-items:center;padding:0 24px;gap:22px;border-bottom:2px solid var(--line);background:#fffaf0}
+#top .ttl{font:700 30px/1 'Liberation Sans Narrow','Noto Sans',sans-serif;letter-spacing:.5px}
+#top .part{font:600 21px/1 'Noto Sans',sans-serif;color:var(--or)}
+#top .sp{flex:1}
+#top .smp{font:700 17px/1 'Noto Sans';letter-spacing:2px;color:#fff;background:var(--am);padding:7px 14px;border-radius:8px}
+#top .clk{font:700 30px/1 'DejaVu Sans Mono',monospace;color:var(--ink);min-width:330px;text-align:right}
+#top .day{font:700 19px/1 'Noto Sans';background:var(--ink);color:#fff;padding:7px 14px;border-radius:8px}
+.card{position:absolute;background:var(--card);border:3px solid var(--line);border-radius:16px;padding:9px 14px 8px;overflow:hidden}
+.card.on{border-color:var(--gr);box-shadow:0 0 0 4px rgba(21,128,61,.18)}
+.card.dead{background:#e9e4dc;border-color:#9a8f80}
+.card .hd{display:flex;align-items:center;gap:10px;height:34px}
+.card .nm{font:700 24px/1 'Liberation Sans Narrow','Noto Sans',sans-serif}
+.card .sb{font:500 15px/1 'Noto Sans';color:var(--mut)}
+.card .sp{flex:1}
+.badge{font:800 19px/1 'Noto Sans',sans-serif;letter-spacing:1.5px;padding:6px 12px;border-radius:8px;color:#fff}
+.badge.off{background:var(--rd)}
+.badge.onl{background:var(--gr)}
+.tag{font:700 13px/1 'Noto Sans';padding:5px 8px;border-radius:6px;border:2px solid var(--rd);color:var(--rd);background:#fff}
+.card .st{margin-top:5px;font:500 18.5px/1.32 'Noto Sans',sans-serif;height:78px;overflow:hidden}
+.card .st b{font-weight:800}
+.card .st i{font-style:normal;color:var(--mut);font-size:14px}
+.card .lg{margin-top:2px;font:500 14.5px/1.25 'DejaVu Sans Mono',monospace;color:#445;height:56px;overflow:hidden;border-top:1px dashed var(--line);padding-top:3px}
+.card .lg div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .lg div:last-child{color:var(--ink);font-weight:700}
+.card .nt{margin-top:3px;font:600 15.5px/1.22 'Noto Sans',sans-serif;height:54px;overflow:hidden;border-radius:6px;padding:3px 7px}
+.card .nt.ok{background:#dcfce7;color:#14532d}.card .nt.bad{background:#fee2e2;color:#7f1d1d}.card .nt.n{background:#e8eefc;color:#1e3a8a}
+.card .nt small{display:block;font:400 11.5px/1.1 'DejaVu Sans Mono',monospace;opacity:.7;margin-top:1px}
+.ribbon{position:absolute;right:16px;top:128px;transform:rotate(-7deg);text-align:center;font:800 23px/1 'Noto Sans';letter-spacing:2px;color:#991b1b;background:rgba(254,226,226,.95);padding:8px 14px;border:3px solid var(--rd);border-radius:6px;display:none;z-index:5}
+.card.dead .ribbon{display:block}.card.dead .ribbon:empty{display:none}
+#cfg{left:480px;top:66px;width:960px;height:112px;background:#14213d;color:#e9eef7;border-radius:12px;padding:7px 14px;font:500 14.5px/1.32 'DejaVu Sans Mono',monospace}
+#cfg h4{font:700 13px/1 'Noto Sans';letter-spacing:2px;color:#ffb454;margin-bottom:3px}
+#cfg div.r{white-space:nowrap;overflow:hidden}
+#cfg b{color:#ffb454;font-weight:700}
+.shelf .objs{font:500 13.5px/1.2 'DejaVu Sans Mono',monospace;margin-top:1px}
+/* v2 (§16.25): non-device cards (shelf, mailbox, price): list height = card - 99 so the 48 px note box ends INSIDE the card; the device cards are unchanged */
+#c_SHELF,#c_MIRROR,#c_PRICE{padding:5px 14px 4px}
+#c_SHELF .hd,#c_MIRROR .hd,#c_PRICE .hd{height:30px}
+#c_SHELF .st,#c_MIRROR .st,#c_PRICE .st{margin-top:2px}
+#c_SHELF .nt,#c_MIRROR .nt,#c_PRICE .nt{height:48px}
+.shelf .objs div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shelf .objs .new{background:#fff3c4}
+.shelf .big{font:800 42px/1.2 'Noto Sans';color:#7f1d1d;margin-top:4px;text-align:center}
+.pill{position:absolute;z-index:50;border-radius:15px;font:800 16px/30px 'DejaVu Sans Mono',monospace;height:30px;min-width:46px;padding:0 10px;text-align:center;color:#fff;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.pill.up{background:var(--bl)}.pill.dn{background:var(--am)}.pill.sd{background:var(--gr)}.pill.cd{background:var(--pu);border:2px dashed #fff}.pill.gh{background:#64748b;opacity:.85;font-size:13px;height:24px;line-height:24px;min-width:34px}
+#strip{left:0;top:568px;width:1920px;height:36px;background:var(--ink);color:#f6efe5;display:flex;align-items:center;padding:0 24px;gap:20px}
+#strip .t{font:700 21px/1.3 'Noto Sans';flex:1;white-space:nowrap;overflow:hidden}
+#strip .s{font:500 13.5px/1.4 'DejaVu Sans Mono',monospace;color:#ffb454;max-width:620px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#lanes{left:0;top:606px;width:1920px;height:324px;background:#fffaf0;border-top:2px solid var(--line)}
+#ctr{position:absolute;left:0;top:232px;width:1920px;height:92px;display:flex;gap:14px;padding:6px 24px 8px 24px;align-items:stretch}
+.cn{flex:1;background:#fff;border:2px solid var(--line);border-radius:12px;padding:6px 14px}
+.cn .l{font:700 14px/1 'Noto Sans';letter-spacing:1.5px;color:var(--mut)}
+.cn .v{font:800 46px/1.05 'Noto Sans';color:var(--ink)}
+.cn.l1 .v{color:var(--gr)}.cn.l2 .v{color:var(--bl)}.cn.l3 .v{color:var(--ink)}.cn.l4 .v{color:var(--tl)}
+.cn.wide{flex:2.3;background:#f3ead9}.cn.wide .v{font-size:22px;line-height:1.2;font-weight:700}
+.cn.wide .g{font:500 13px/1.3 'DejaVu Sans Mono',monospace;color:var(--mut)}
+#focus{left:24px;top:612px;width:1872px;height:34px;background:var(--or);color:#fff;border-radius:10px;font:800 21px/34px 'Noto Sans';padding:0 18px;display:none;z-index:70}
+#ov{left:0;top:0;width:1920px;height:930px;background:var(--bg);display:none;z-index:100;padding:60px 110px;overflow:hidden}
+#ov .k{font-size:26px;letter-spacing:6px;color:var(--am);font-weight:700;margin-bottom:12px}
+#ov h1{font:700 128px/1.0 'Liberation Sans Narrow','Noto Sans',sans-serif}
+#ov h2{font:700 78px/1.05 'Liberation Sans Narrow','Noto Sans',sans-serif;color:var(--or);margin-top:6px}
+#ov .sub{font-size:42px;margin-top:34px;color:#1f2d4d}#ov .note{font-size:29px;margin-top:22px;color:var(--mut)}
+#ov .t{font:700 66px/1.05 'Liberation Sans Narrow','Noto Sans',sans-serif;margin-bottom:22px}
+#ov li{font-size:29px;line-height:1.28;margin:0 0 9px 34px}
+#ov .mono{font:600 28px/1.4 'DejaVu Sans Mono',monospace;background:var(--ink);color:#9fe3b5;padding:14px 22px;border-radius:12px;margin-top:20px}
+#ov .mono small{display:block;font-size:19px;color:#9db3c2;font-weight:400}
+#ov img{display:block;margin:0 auto;height:930px;width:auto}
+</style></head>
+<body><div id="app">
+<div id="top" class="abs"><span class="ttl">No server in the sale path</span><span class="part" id="part"></span><span class="sp"></span><span class="smp">SAMPLE DATA</span><span class="day" id="day"></span><span class="clk" id="clk"></span></div>
+<div id="cfg" class="abs"></div>
+<div id="cards"></div>
+<div id="fly"></div>
+<div id="strip" class="abs"><span class="t" id="stripT"></span><span class="s" id="stripS"></span></div>
+<div id="lanes" class="abs"><svg id="svg" width="1920" height="232" viewBox="0 0 1920 232" xmlns="http://www.w3.org/2000/svg"></svg><div id="ctr"></div></div>
+<div id="focus" class="abs"></div>
+<div id="ov" class="abs"></div>
+</div>
+<script src="core.js"></script>
+<script src="stage.js"></script>
+</body></html>

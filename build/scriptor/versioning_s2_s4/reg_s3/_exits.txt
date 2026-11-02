@@ -1,0 +1,4 @@
+witness_team_publish exit=0
+witness_team_so exit=0
+witness_team_ui_pos exit=0
+witness_team_versions exit=0

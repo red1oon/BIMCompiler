@@ -1,0 +1,550 @@
+{
+ "dict_i_tables": {
+  "status": "now",
+  "value": "19",
+  "log": null,
+  "witness": "dictionary census (not a witness)"
+ },
+ "dict_import_procs": {
+  "status": "now",
+  "value": "21",
+  "log": null,
+  "witness": "dictionary census (not a witness)"
+ },
+ "poss_decl_lines": {
+  "status": "now",
+  "value": "9",
+  "log": "final/pos_sales.log",
+  "witness": "W-POS-SALES VIEW/deposit"
+ },
+ "poss_decl_tenders": {
+  "status": "now",
+  "value": "8",
+  "log": "final/pos_sales.log",
+  "witness": "W-POS-SALES VIEW/deposit"
+ },
+ "poss_k1_total": {
+  "status": "now",
+  "value": "378",
+  "log": "final/pos_sales.log",
+  "witness": "W-POS-SALES VIEW/totals"
+ },
+ "poss_k1_tender_a": {
+  "status": "now",
+  "value": "200",
+  "log": "final/pos_sales.log",
+  "witness": "W-POS-SALES VIEW/totals"
+ },
+ "poss_k1_tender_b": {
+  "status": "now",
+  "value": "178",
+  "log": "final/pos_sales.log",
+  "witness": "W-POS-SALES VIEW/totals"
+ },
+ "poss_k1_open": {
+  "status": "now",
+  "value": "0",
+  "log": "final/pos_sales.log",
+  "witness": "W-POS-SALES SALE/allocated"
+ },
+ "poss_card_ref_present": {
+  "status": "now",
+  "value": "PNREF-K1-0001",
+  "log": "final/pos_sales.log",
+  "witness": "W-POS-SALES SALE/card"
+ },
+ "poss_mis_lines_total": {
+  "status": "now",
+  "value": "115",
+  "log": "final/pos_sales.log",
+  "witness": "W-POS-SALES VIEW/mismatch"
+ },
+ "poss_mis_tenders_total": {
+  "status": "now",
+  "value": "100",
+  "log": "final/pos_sales.log",
+  "witness": "W-POS-SALES VIEW/mismatch"
+ },
+ "poss_mis_docs": {
+  "status": "now",
+  "value": "0",
+  "log": "final/pos_sales.log",
+  "witness": "W-POS-SALES BATCH/total-mismatch"
+ },
+ "poss_fact_added": {
+  "status": "now",
+  "value": "16",
+  "log": "final/pos_sales.log",
+  "witness": "W-POS-SALES BATCH/no-posting-residue"
+ },
+ "poss_fact_own": {
+  "status": "now",
+  "value": "16",
+  "log": "final/pos_sales.log",
+  "witness": "W-POS-SALES BATCH/no-posting-residue"
+ },
+ "poss_batch_tickets": {
+  "status": "now",
+  "value": "7",
+  "log": "final/pos_sales.log",
+  "witness": "W-POS-SALES BATCH"
+ },
+ "poss_batch_imported": {
+  "status": "now",
+  "value": "1",
+  "log": "final/pos_sales.log",
+  "witness": "W-POS-SALES BATCH"
+ },
+ "poss_batch_refused": {
+  "status": "now",
+  "value": "6",
+  "log": "final/pos_sales.log",
+  "witness": "W-POS-SALES BATCH"
+ },
+ "poss_rerun_new": {
+  "status": "now",
+  "value": "0",
+  "log": "final/pos_sales.log",
+  "witness": "W-POS-SALES RERUN"
+ },
+ "poss_judged": {
+  "status": "now",
+  "value": "43",
+  "log": "final/pos_sales.log",
+  "witness": "W-POS-SALES"
+ },
+ "poss_basehash_flag": {
+  "status": "now",
+  "value": "true",
+  "log": "final/pos_sales.log",
+  "witness": "W-POS-SALES PLUG/base-hash"
+ },
+ "hq_arms_judged": {
+  "status": "now",
+  "value": "19",
+  "log": "final/hq_office.log",
+  "witness": "W-HQ-CLERK"
+ },
+ "hq_menu_x": {
+  "status": "now",
+  "value": "8",
+  "log": "final/hq_office.log",
+  "witness": "W-HQ-CLERK H3"
+ },
+ "hq_menu_n": {
+  "status": "now",
+  "value": "8",
+  "log": "final/hq_office.log",
+  "witness": "W-HQ-CLERK H3"
+ },
+ "hq_order_lines": {
+  "status": "now",
+  "value": "3",
+  "log": "final/hq_office.log",
+  "witness": "W-HQ-CLERK H6"
+ },
+ "hq_rerun_orders_before": {
+  "status": "now",
+  "value": "45",
+  "log": "final/hq_office.log",
+  "witness": "W-HQ-CLERK H7"
+ },
+ "hq_rerun_orders_after": {
+  "status": "now",
+  "value": "45",
+  "log": "final/hq_office.log",
+  "witness": "W-HQ-CLERK H7"
+ },
+ "hq_qty_123": {
+  "status": "now",
+  "value": "16",
+  "log": "final/hq_office.log",
+  "witness": "W-HQ-CLERK H9"
+ },
+ "hq_qty_130": {
+  "status": "now",
+  "value": "15",
+  "log": "final/hq_office.log",
+  "witness": "W-HQ-CLERK H9"
+ },
+ "hq_qty_134": {
+  "status": "now",
+  "value": "10",
+  "log": "final/hq_office.log",
+  "witness": "W-HQ-CLERK H9"
+ },
+ "hq_mv_lines": {
+  "status": "now",
+  "value": "3",
+  "log": "final/hq_office.log",
+  "witness": "W-HQ-CLERK H10"
+ },
+ "hq_station_proc": {
+  "status": "now",
+  "value": "0",
+  "log": "final/hq_office.log",
+  "witness": "W-HQ-CLERK H11"
+ },
+ "ppb_before_ops": {
+  "status": "now",
+  "value": "48",
+  "log": "final/pos_plan.log",
+  "witness": "W-POS-PLAN B0"
+ },
+ "ppb_after_ops": {
+  "status": "now",
+  "value": "1",
+  "log": "final/pos_plan.log",
+  "witness": "W-POS-PLAN B2"
+ },
+ "ppb_before_bytes": {
+  "status": "now",
+  "value": "55476",
+  "log": "final/pos_plan.log",
+  "witness": "W-POS-PLAN B0"
+ },
+ "ppb_after_bytes": {
+  "status": "now",
+  "value": "797",
+  "log": "final/pos_plan.log",
+  "witness": "W-POS-PLAN B2"
+ },
+ "ppb_judged": {
+  "status": "now",
+  "value": "16",
+  "log": "final/pos_plan.log",
+  "witness": "W-POS-PLAN"
+ },
+ "ppb_mut_killed": {
+  "status": "now",
+  "value": "4",
+  "log": "final/pos_plan.log",
+  "witness": "W-POS-PLAN"
+ },
+ "ppb_mut_total": {
+  "status": "now",
+  "value": "4",
+  "log": "final/pos_plan.log",
+  "witness": "W-POS-PLAN"
+ },
+ "ppb_till_movement_lines": {
+  "status": "now",
+  "value": "1",
+  "log": "final/pos_plan.log",
+  "witness": "W-POS-PLAN B2"
+ },
+ "ppb_till_orders": {
+  "status": "now",
+  "value": "0",
+  "log": "final/pos_plan.log",
+  "witness": "W-POS-PLAN B2"
+ },
+ "ppb_b2_in": {
+  "status": "now",
+  "value": "2",
+  "log": "final/pos_plan.log",
+  "witness": "W-POS-PLAN B2"
+ },
+ "ppb_b2_delivered": {
+  "status": "now",
+  "value": "10",
+  "log": "final/pos_plan.log",
+  "witness": "W-POS-PLAN B2"
+ },
+ "ppb_b2_foreign": {
+  "status": "now",
+  "value": "0",
+  "log": "final/pos_plan.log",
+  "witness": "W-POS-PLAN B2"
+ },
+ "ppb_undeclared_kept": {
+  "status": "now",
+  "value": "100",
+  "log": "final/pos_plan.log",
+  "witness": "W-POS-PLAN B2"
+ },
+ "so_conflict_msg": {
+  "status": "now",
+  "value": "Current record was changed by another user, please ReQuery",
+  "log": "final/team_so.log",
+  "witness": "W-TEAM-SO"
+ },
+ "tc_earn": {
+  "status": "now",
+  "value": "100",
+  "log": "lane/scriptor_treat.log",
+  "witness": "W-TREAT-CODE"
+ },
+ "tc_redeem": {
+  "status": "now",
+  "value": "0",
+  "log": "lane/scriptor_treat.log",
+  "witness": "W-TREAT-CODE"
+ },
+ "tc_second": {
+  "status": "now",
+  "value": "0",
+  "log": "lane/scriptor_treat.log",
+  "witness": "W-TREAT-CODE"
+ },
+ "tc_overspend": {
+  "status": "now",
+  "value": "-100",
+  "log": "lane/scriptor_treat.log",
+  "witness": "W-TREAT-CODE"
+ },
+ "wx_judged": {
+  "status": "now",
+  "value": "18",
+  "log": "final/team_executors.log",
+  "witness": "W-UPS-E2-HOST"
+ },
+ "wx_mut_killed": {
+  "status": "now",
+  "value": "4",
+  "log": "final/team_executors.log",
+  "witness": "W-UPS-E2-HOST"
+ },
+ "wx_mut_total": {
+  "status": "now",
+  "value": "4",
+  "log": "final/team_executors.log",
+  "witness": "W-UPS-E2-HOST"
+ },
+ "wx_station_offered_none": {
+  "status": "now",
+  "value": "true",
+  "log": "final/team_executors.log",
+  "witness": "W-UPS-E2-HOST X2"
+ },
+ "bus_judged": {
+  "status": "now",
+  "value": "51",
+  "log": "final/event_bus.log",
+  "witness": "W-BUS"
+ },
+ "grant_judged": {
+  "status": "now",
+  "value": "9",
+  "log": "final/plugin_grant.log",
+  "witness": "W-PLUGIN-GRANT"
+ },
+ "ipay_judged": {
+  "status": "now",
+  "value": "54",
+  "log": "final/import_payment.log",
+  "witness": "W-IMPORT-PAYMENT"
+ },
+ "mf_inv_total": {
+  "status": "now",
+  "value": "212",
+  "log": "final/mf_seed.log",
+  "witness": "W-MF-SEED S1"
+ },
+ "mf_inst_1": {
+  "status": "now",
+  "value": "106",
+  "log": "final/mf_seed.log",
+  "witness": "W-MF-SEED S1"
+ },
+ "mf_slip1_amt": {
+  "status": "now",
+  "value": "106",
+  "log": "final/mf_seed.log",
+  "witness": "W-MF-SEED V1"
+ },
+ "mf_open_after_slip1": {
+  "status": "now",
+  "value": "106",
+  "log": "final/mf_seed.log",
+  "witness": "W-MF-SEED B1"
+ },
+ "mf_open_b2": {
+  "status": "now",
+  "value": "0",
+  "log": "final/mf_seed.log",
+  "witness": "W-MF-SEED B1"
+ },
+ "mfs_judged": {
+  "status": "now",
+  "value": "32",
+  "log": "final/mf_seed.log",
+  "witness": "W-MF-SEED"
+ },
+ "mfs_mut_killed": {
+  "status": "now",
+  "value": "5",
+  "log": "final/mf_seed.log",
+  "witness": "W-MF-SEED"
+ },
+ "mfs_mut_total": {
+  "status": "now",
+  "value": "5",
+  "log": "final/mf_seed.log",
+  "witness": "W-MF-SEED"
+ },
+ "hq_mut_killed": {
+  "status": "now",
+  "value": "5",
+  "log": "final/hq_office.log",
+  "witness": "W-HQ-CLERK"
+ },
+ "hq_mut_total": {
+  "status": "now",
+  "value": "5",
+  "log": "final/hq_office.log",
+  "witness": "W-HQ-CLERK"
+ },
+ "mf_v1_approved": {
+  "status": "now",
+  "value": "true",
+  "log": "final/mf_seed.log",
+  "witness": "W-MF-SEED V1"
+ },
+ "mf_v2_unreached": {
+  "status": "now",
+  "value": "true",
+  "log": "final/mf_seed.log",
+  "witness": "W-MF-SEED V2"
+ },
+ "mf_v3_refused": {
+  "status": "now",
+  "value": "true",
+  "log": "final/mf_seed.log",
+  "witness": "W-MF-SEED V3"
+ },
+ "mf_v4_swap": {
+  "status": "now",
+  "value": "true",
+  "log": "final/mf_seed.log",
+  "witness": "W-MF-SEED V4"
+ },
+ "mf_dup_refused": {
+  "status": "now",
+  "value": "true",
+  "log": "final/mf_seed.log",
+  "witness": "W-MF-SEED D1"
+ },
+ "mf_borrower_balance": {
+  "status": "now",
+  "value": "true",
+  "log": "final/mf_seed.log",
+  "witness": "W-MF-SEED B1"
+ },
+ "rec_renew": {
+  "status": "now",
+  "value": "true",
+  "log": "final/mf_seed.log",
+  "witness": "W-MF-SEED R"
+ },
+ "acct_eod_posted": {
+  "status": "now",
+  "value": "true",
+  "log": "final/mf_seed.log",
+  "witness": "W-MF-SEED P"
+ },
+ "plugin_role": {
+  "status": "now",
+  "value": "true",
+  "log": "final/plugin_role.log",
+  "witness": "W-PLUGIN-ROLE"
+ },
+ "poss_live_page": {
+  "status": "now",
+  "value": "true",
+  "log": "final/pos_sales_live.log",
+  "witness": "W-POS-SALES-LIVE"
+ },
+ "foff_judged": {
+  "status": "now",
+  "value": "10",
+  "log": "final/film_offline.log",
+  "witness": "W-FILM-OFFLINE"
+ },
+ "foff_tickets": {
+  "status": "now",
+  "value": "3",
+  "log": "final/film_offline.log",
+  "witness": "W-FILM-OFFLINE FOFF4"
+ },
+ "hqp_till_ops": {
+  "status": "now",
+  "value": "3",
+  "log": "final/hq_pos.log",
+  "witness": "W-HQ-CLERK pos"
+ },
+ "pp_judged": {
+  "status": "now",
+  "value": "91",
+  "log": "final/bc_pos_plan.log",
+  "witness": "W-POS-PLAN node"
+ },
+ "pp_mut_killed": {
+  "status": "now",
+  "value": "16",
+  "log": "final/bc_pos_plan.log",
+  "witness": "W-POS-PLAN node"
+ },
+ "pp_mut_total": {
+  "status": "now",
+  "value": "16",
+  "log": "final/bc_pos_plan.log",
+  "witness": "W-POS-PLAN node"
+ },
+ "exe_judged": {
+  "status": "now",
+  "value": "27",
+  "log": "lane/comm_executors.log",
+  "witness": "W-UPS-E3"
+ },
+ "tipr_judged": {
+  "status": "now",
+  "value": "5",
+  "log": "final/tip_readers.log",
+  "witness": "W-TIPR"
+ },
+ "tipr_mut_killed": {
+  "status": "now",
+  "value": "6",
+  "log": "final/tip_readers.log",
+  "witness": "W-TIPR"
+ },
+ "pr_added": {
+  "status": "now",
+  "value": "6139",
+  "log": null,
+  "witness": "git"
+ },
+ "pr_deleted": {
+  "status": "now",
+  "value": "267",
+  "log": null,
+  "witness": "git"
+ },
+ "ret_order_total": {
+  "status": "now",
+  "value": "-65",
+  "log": "final/pos_return.log",
+  "witness": "W-POS-RETURN"
+ },
+ "ret_onhand": {
+  "status": "now",
+  "value": "1",
+  "log": "final/pos_return.log",
+  "witness": "W-POS-RETURN"
+ },
+ "ret_judged": {
+  "status": "now",
+  "value": "10",
+  "log": "final/pos_return.log",
+  "witness": "W-POS-RETURN"
+ },
+ "mf_till_tender_up": {
+  "status": "cut",
+  "reason": "no final log shows I_Payment leaving a till through the relay (W-POS-PLAN carries i_order up; the borrowers' slips travel in W-MF-SEED). Limits card: tender rows from the till are written locally but only order lines are shown travelling."
+ },
+ "l1_catchup_hint": {
+  "status": "cut",
+  "reason": "covered by pp_judged (the node witness includes the catch-up arms); no separate line is spoken"
+ }
+}

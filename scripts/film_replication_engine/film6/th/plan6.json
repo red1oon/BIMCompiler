@@ -1,0 +1,434 @@
+{
+ "beats": [
+  {
+   "id": "t_0",
+   "sec": "T",
+   "vis": {
+    "k": "card",
+    "c": "title"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 8
+  },
+  {
+   "id": "s0_0",
+   "sec": "0",
+   "vis": {
+    "k": "card",
+    "c": "ch0"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 14
+  },
+  {
+   "id": "s0_1",
+   "sec": "0",
+   "vis": {
+    "k": "card",
+    "c": "ch0"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 14
+  },
+  {
+   "id": "s0_2",
+   "sec": "0",
+   "vis": {
+    "k": "card",
+    "c": "ch0"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 10
+  },
+  {
+   "id": "s0_earlier",
+   "sec": "0",
+   "vis": {
+    "k": "card",
+    "c": "earlier"
+   },
+   "speaks": false,
+   "silentHold": 4,
+   "words": 0
+  },
+  {
+   "id": "s0b_0",
+   "sec": "0b",
+   "vis": {
+    "k": "card",
+    "c": "ch0b"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 10
+  },
+  {
+   "id": "s0b_1",
+   "sec": "0b",
+   "vis": {
+    "k": "card",
+    "c": "ch0b"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 26
+  },
+  {
+   "id": "s0b_2",
+   "sec": "0b",
+   "vis": {
+    "k": "card",
+    "c": "ch0b"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 7
+  },
+  {
+   "id": "s1_0",
+   "sec": "1",
+   "vis": {
+    "k": "seq",
+    "parts": [
+     {
+      "k": "card",
+      "c": "ch1",
+      "secs": 4
+     },
+     {
+      "k": "stage",
+      "t": "ch1"
+     }
+    ]
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 18
+  },
+  {
+   "id": "s1_1",
+   "sec": "1",
+   "vis": {
+    "k": "stage",
+    "t": "ch1"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 14
+  },
+  {
+   "id": "s2_0",
+   "sec": "2",
+   "vis": {
+    "k": "seq",
+    "parts": [
+     {
+      "k": "card",
+      "c": "ch2",
+      "secs": 4
+     },
+     {
+      "k": "stage",
+      "t": "ch2"
+     }
+    ]
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 13
+  },
+  {
+   "id": "s2_1",
+   "sec": "2",
+   "vis": {
+    "k": "stage",
+    "t": "ch2"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 21
+  },
+  {
+   "id": "s2_2",
+   "sec": "2",
+   "vis": {
+    "k": "stage",
+    "t": "ch2"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 11
+  },
+  {
+   "id": "s2_3",
+   "sec": "2",
+   "vis": {
+    "k": "stage",
+    "t": "ch2"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 6
+  },
+  {
+   "id": "s3_0",
+   "sec": "3",
+   "vis": {
+    "k": "shots",
+    "s": [
+     "home_lens",
+     "import_window_before",
+     "process_dialog"
+    ]
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 22
+  },
+  {
+   "id": "s3_1",
+   "sec": "3",
+   "vis": {
+    "k": "shots",
+    "s": [
+     "import_window_after"
+    ]
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 9
+  },
+  {
+   "id": "s3_2",
+   "sec": "3",
+   "vis": {
+    "k": "seq",
+    "parts": [
+     {
+      "k": "card",
+      "c": "ch3",
+      "secs": 4
+     },
+     {
+      "k": "stage",
+      "t": "ch3a"
+     }
+    ]
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 13
+  },
+  {
+   "id": "s3_3",
+   "sec": "3",
+   "vis": {
+    "k": "stage",
+    "t": "ch3a"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 12
+  },
+  {
+   "id": "s3_4",
+   "sec": "3",
+   "vis": {
+    "k": "stage",
+    "t": "ch3b"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 13
+  },
+  {
+   "id": "s3_5",
+   "sec": "3",
+   "vis": {
+    "k": "stage",
+    "t": "ch3c"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 9
+  },
+  {
+   "id": "s4_0",
+   "sec": "4",
+   "vis": {
+    "k": "seq",
+    "parts": [
+     {
+      "k": "card",
+      "c": "ch4",
+      "secs": 4
+     },
+     {
+      "k": "stage",
+      "t": "ch4"
+     }
+    ]
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 9
+  },
+  {
+   "id": "s4_1",
+   "sec": "4",
+   "vis": {
+    "k": "stage",
+    "t": "ch4"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 9
+  },
+  {
+   "id": "s4_2",
+   "sec": "4",
+   "vis": {
+    "k": "card",
+    "c": "ch4"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 15
+  },
+  {
+   "id": "s4_3",
+   "sec": "4",
+   "vis": {
+    "k": "card",
+    "c": "ch4"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 15
+  },
+  {
+   "id": "s4_4",
+   "sec": "4",
+   "vis": {
+    "k": "card",
+    "c": "ch4"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 7
+  },
+  {
+   "id": "s4_5",
+   "sec": "4",
+   "vis": {
+    "k": "card",
+    "c": "ch4"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 11
+  },
+  {
+   "id": "s4c_0",
+   "sec": "4c",
+   "vis": {
+    "k": "card",
+    "c": "ch4c"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 26
+  },
+  {
+   "id": "s4c_1",
+   "sec": "4c",
+   "vis": {
+    "k": "card",
+    "c": "ch4c"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 10
+  },
+  {
+   "id": "s4c_2",
+   "sec": "4c",
+   "vis": {
+    "k": "card",
+    "c": "ch4c"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 10
+  },
+  {
+   "id": "s5_0",
+   "sec": "5",
+   "vis": {
+    "k": "card",
+    "c": "ch5"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 50
+  },
+  {
+   "id": "s5b_0",
+   "sec": "5b",
+   "vis": {
+    "k": "shots",
+    "s": [
+     "menu_tree",
+     "import_window_after",
+     "process_dialog",
+     "wse_doc_action_access",
+     "recurring_run",
+     "acct_processor",
+     "role_wse",
+     "plugins_user",
+     "home_103"
+    ]
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 25
+  },
+  {
+   "id": "sl_0",
+   "sec": "L",
+   "vis": {
+    "k": "card",
+    "c": "limits"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 16
+  },
+  {
+   "id": "sw_0",
+   "sec": "W",
+   "vis": {
+    "k": "card",
+    "c": "why"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 23
+  },
+  {
+   "id": "sz_0",
+   "sec": "Z",
+   "vis": {
+    "k": "card",
+    "c": "offer"
+   },
+   "speaks": true,
+   "silentHold": null,
+   "words": 3
+  }
+ ]
+}

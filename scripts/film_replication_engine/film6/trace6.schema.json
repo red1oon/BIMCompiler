@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "film6-trace/1 — the trace that stage6 replays",
+  "description": "A recorded business day. Every event is one line the witness printed (`§FILM_EVT actor=… kind=… t=…`, see FILM_EVT.md); nothing is authored by the stage. header.status must be \"REAL\" for the published film; \"DRAFT\" makes stage6 paint a DRAFT watermark and film6_guard.js REFUSE it (exit 4).",
+  "type": "object",
+  "required": ["header", "actors", "events"],
+  "properties": {
+    "header": {
+      "type": "object",
+      "required": ["format", "status", "sample_day_label", "axis", "beats", "sources"],
+      "properties": {
+        "format": { "const": "film6-trace/1" },
+        "status": { "enum": ["REAL", "DRAFT"] },
+        "draft_notice": { "type": "string", "description": "required when status is DRAFT" },
+        "sample_day_label": { "const": "sample day", "description": "the clock is a SCHEDULE for a sample day, labelled on screen; it is not a measurement" },
+        "axis": { "type": "object", "required": ["from_min", "to_min"], "properties": { "from_min": { "type": "number" }, "to_min": { "type": "number", "description": "minutes since 00:00 of the sample day; > 1440 = the next morning" } } },
+        "initial_online": { "type": "object", "description": "actor id -> boolean, state before the first event" },
+        "beats": { "type": "array", "items": { "type": "object", "required": ["id", "title"], "properties": { "id": { "type": "string" }, "title": { "type": "string" }, "src": { "type": "string", "description": "§ / witness the caption is read from" } } } },
+        "sources": { "type": "array", "description": "witness runs this trace was built from: name, command, log path, sha256", "items": { "type": "object", "required": ["witness", "log"], "properties": { "witness": { "type": "string" }, "command": { "type": "string" }, "log": { "type": "string" }, "sha256": { "type": "string" } } } },
+        "schedule": { "type": "string", "description": "file that maps each witness event to its sample-day time (a schedule, labelled as such)" }
+      }
+    },
+    "actors": {
+      "type": "array",
+      "description": "ids fixed by the stage layout: till, phone1, phone2, verifier, clerk, stock, relay",
+      "items": { "type": "object", "required": ["id", "name"], "properties": { "id": { "enum": ["till", "phone1", "phone2", "verifier", "clerk", "stock", "relay"] }, "name": { "type": "string" }, "sub": { "type": "string" } } }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["seq", "t_min", "beat", "actor", "kind", "wit"],
+        "properties": {
+          "seq": { "type": "integer", "description": "strictly increasing" },
+          "t_min": { "type": "number", "description": "sample-day clock, minutes since 00:00 (from the schedule file). Non-decreasing WITHIN a beat; a new beat (chapter) may go back in time: the chapters replay their own part of the same sample day, and the timeline keeps the ticks of the earlier chapters" },
+          "beat": { "type": "string", "description": "a header.beats id" },
+          "actor": { "enum": ["till", "phone1", "phone2", "verifier", "clerk", "stock", "relay"] },
+          "kind": { "enum": ["online", "offline", "local", "send", "deliver", "verify", "ack", "run", "refuse", "note"] },
+          "text": { "type": "string" },
+          "label": { "type": "string", "description": "envelope label (table / flow name)" },
+          "key": { "type": "string" },
+          "to": { "type": "string" },
+          "from": { "type": "string" },
+          "queue": { "type": "integer", "description": "local: delta to the actor's waiting-to-send count" },
+          "status": { "enum": ["approved", "refused", "unreached"], "description": "ack only" },
+          "slip": { "enum": ["received", "refused", "unreached"], "description": "local on a phone: what the phone shows about the slip" },
+          "todo": { "enum": ["set", "clear"], "description": "local on a phone: the ToDo of §40.2" },
+          "process": { "type": "string", "description": "run: the legacy process name" },
+          "cls": { "enum": ["ok", "bad", "n"], "description": "note / refuse colour" },
+          "wit": { "type": "string", "description": "the witness id + the §FILM_EVT line number in its log; \"DRAFT\" only in a DRAFT trace" }
+        }
+      }
+    }
+  }
+}

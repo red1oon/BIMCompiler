@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Keeping the bloat off - stage</title>
+<!-- ⚠ DO NOT REMOVE — Scope: self-contained STAGE page that REPLAYS a recorded engine trace at a controllable clock (no network, no timers, no CSS animation: every pixel is a pure function of
+     Stage.at(filmSeconds)). Spec: prompts/TEAMWORK_FRAMEWORK.md §16.19a. The recorder (film_replication_engine.js) feeds it the traces + plan and steps the clock; read its §FILM_* log after every run.
+     Every device card shows a red OFFLINE label whenever the device is local-only (§16.20a); ONLINE is shown only for a fixed window. -->
+<style>
+:root{--bg:#f6efe5;--card:#fffdf8;--line:#e3d8c6;--ink:#14213d;--mut:#52607a;--or:#c2410c;--gr:#15803d;--rd:#dc2626;--bl:#2563eb;--pu:#7c3aed;--am:#b45309;--tl:#0f766e}
+*{box-sizing:border-box;margin:0}
+html,body{width:1920px;height:930px;overflow:hidden;background:var(--bg);color:var(--ink);font-family:'Noto Sans','DejaVu Sans',sans-serif}
+#app{position:absolute;left:0;top:0;width:1920px;height:930px;overflow:hidden}
+.abs{position:absolute}
+#top{left:0;top:0;width:1920px;height:58px;display:flex;align-items:center;padding:0 24px;gap:22px;border-bottom:2px solid var(--line);background:#fffaf0}
+#top .ttl{font:700 30px/1 'Liberation Sans Narrow','Noto Sans',sans-serif;letter-spacing:.5px}
+#top .part{font:600 21px/1 'Noto Sans',sans-serif;color:var(--or)}
+#top .sp{flex:1}
+#top .smp{font:700 17px/1 'Noto Sans';letter-spacing:2px;color:#fff;background:var(--am);padding:7px 14px;border-radius:8px}
+#top .clk{font:700 30px/1 'DejaVu Sans Mono',monospace;color:var(--ink);min-width:330px;text-align:right}
+#top .day{font:700 19px/1 'Noto Sans';background:var(--ink);color:#fff;padding:7px 14px;border-radius:8px}
+.card{position:absolute;background:var(--card);border:3px solid var(--line);border-radius:16px;padding:9px 14px 8px;overflow:hidden}
+.card.on{border-color:var(--gr);box-shadow:0 0 0 4px rgba(21,128,61,.18)}
+.card.dead{background:#e9e4dc;border-color:#9a8f80}
+.card .hd{display:flex;align-items:center;gap:10px;height:34px}
+.card .nm{font:700 24px/1 'Liberation Sans Narrow','Noto Sans',sans-serif}
+.card .sb{font:500 15px/1 'Noto Sans';color:var(--mut)}
+.card .sp{flex:1}
+.badge{font:800 19px/1 'Noto Sans',sans-serif;letter-spacing:1.5px;padding:6px 12px;border-radius:8px;color:#fff}
+.badge.off{background:var(--rd)}
+.badge.onl{background:var(--gr)}
+.tag{font:700 13px/1 'Noto Sans';padding:5px 8px;border-radius:6px;border:2px solid var(--rd);color:var(--rd);background:#fff}
+.card .st{margin-top:5px;font:500 18.5px/1.32 'Noto Sans',sans-serif;height:78px;overflow:hidden}
+.card .st b{font-weight:800}
+.card .st i{font-style:normal;color:var(--mut);font-size:14px}
+.card .lg{margin-top:2px;font:500 14.5px/1.25 'DejaVu Sans Mono',monospace;color:#445;height:56px;overflow:hidden;border-top:1px dashed var(--line);padding-top:3px}
+.card .lg div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .lg div:last-child{color:var(--ink);font-weight:700}
+.card .nt{margin-top:3px;font:600 15.5px/1.22 'Noto Sans',sans-serif;height:56px;overflow:hidden;border-radius:6px;padding:3px 7px}
+.card .nt.ok{background:#dcfce7;color:#14532d}.card .nt.bad{background:#fee2e2;color:#7f1d1d}.card .nt.n{background:#e8eefc;color:#1e3a8a}
+.card .nt small{display:block;font:400 11.5px/1.1 'DejaVu Sans Mono',monospace;opacity:.7;margin-top:1px}
+.ribbon{position:absolute;right:16px;top:128px;transform:rotate(-7deg);text-align:center;font:800 23px/1 'Noto Sans';letter-spacing:2px;color:#991b1b;background:rgba(254,226,226,.95);padding:8px 14px;border:3px solid var(--rd);border-radius:6px;display:none;z-index:5}
+.card.dead .ribbon{display:block}.card.dead .ribbon:empty{display:none}
+#cfg{left:480px;top:66px;width:960px;height:112px;background:#14213d;color:#e9eef7;border-radius:12px;padding:7px 14px;font:500 14.5px/1.32 'DejaVu Sans Mono',monospace}
+#cfg h4{font:700 13px/1 'Noto Sans';letter-spacing:2px;color:#ffb454;margin-bottom:3px}
+#cfg div.r{white-space:nowrap;overflow:hidden}
+#cfg b{color:#ffb454;font-weight:700}
+.shelf .objs{font:500 14.5px/1.3 'DejaVu Sans Mono',monospace;margin-top:4px}
+.shelf .objs div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shelf .objs .new{background:#fff3c4}
+.shelf .big{font:800 52px/1 'Noto Sans';color:#7f1d1d;margin-top:40px;text-align:center}
+.pill{position:absolute;z-index:50;border-radius:15px;font:800 16px/30px 'DejaVu Sans Mono',monospace;height:30px;min-width:46px;padding:0 10px;text-align:center;color:#fff;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.pill.up{background:var(--bl)}.pill.dn{background:var(--am)}.pill.sd{background:var(--gr)}.pill.cd{background:var(--pu);border:2px dashed #fff}.pill.gh{background:#64748b;opacity:.85;font-size:13px;height:24px;line-height:24px;min-width:34px}
+#strip{left:0;top:568px;width:1920px;height:36px;background:var(--ink);color:#f6efe5;display:flex;align-items:center;padding:0 24px;gap:20px}
+#strip .t{font:700 21px/1.3 'Noto Sans';flex:1;white-space:nowrap;overflow:hidden}
+#strip .s{font:500 13.5px/1.4 'DejaVu Sans Mono',monospace;color:#ffb454;max-width:620px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#lanes{left:0;top:606px;width:1920px;height:324px;background:#fffaf0;border-top:2px solid var(--line)}
+#ctr{position:absolute;left:0;top:232px;width:1920px;height:92px;display:flex;gap:14px;padding:6px 24px 8px 24px;align-items:stretch}
+.cn{flex:1;background:#fff;border:2px solid var(--line);border-radius:12px;padding:6px 14px}
+.cn .l{font:700 14px/1 'Noto Sans';letter-spacing:1.5px;color:var(--mut)}
+.cn .v{font:800 46px/1.05 'Noto Sans';color:var(--ink)}
+.cn.l1 .v{color:var(--gr)}.cn.l2 .v{color:var(--bl)}.cn.l3 .v{color:var(--ink)}.cn.l4 .v{color:var(--tl)}
+.cn.wide{flex:2.3;background:#f3ead9}.cn.wide .v{font-size:22px;line-height:1.2;font-weight:700}
+.cn.wide .g{font:500 13px/1.3 'DejaVu Sans Mono',monospace;color:var(--mut)}
+#focus{left:24px;top:612px;width:1872px;height:34px;background:var(--or);color:#fff;border-radius:10px;font:800 21px/34px 'Noto Sans';padding:0 18px;display:none;z-index:70}
+#ov{left:0;top:0;width:1920px;height:930px;background:var(--bg);display:none;z-index:100;padding:60px 110px;overflow:hidden}
+#ov .k{font-size:26px;letter-spacing:6px;color:var(--am);font-weight:700;margin-bottom:12px}
+#ov h1{font:700 128px/1.0 'Liberation Sans Narrow','Noto Sans',sans-serif}
+#ov h2{font:700 78px/1.05 'Liberation Sans Narrow','Noto Sans',sans-serif;color:var(--or);margin-top:6px}
+#ov .sub{font-size:42px;margin-top:34px;color:#1f2d4d}#ov .note{font-size:29px;margin-top:22px;color:var(--mut)}
+#ov .t{font:700 66px/1.05 'Liberation Sans Narrow','Noto Sans',sans-serif;margin-bottom:22px}
+#ov li{font-size:29px;line-height:1.28;margin:0 0 9px 34px}
+#ov .mono{font:600 28px/1.4 'DejaVu Sans Mono',monospace;background:var(--ink);color:#9fe3b5;padding:14px 22px;border-radius:12px;margin-top:20px}
+#ov .mono small{display:block;font-size:19px;color:#9db3c2;font-weight:400}
+#ov img{display:block;margin:0 auto;height:930px;width:auto}
+
+/* ---------- Film 2 cards ---------- */
+#ov{padding:0;font-family:'Noto Sans','DejaVu Sans',sans-serif}
+.pg{position:absolute;left:0;top:0;width:1920px;height:930px;padding:30px 56px 0 56px;overflow:hidden}
+.pg .kick{font:700 21px/1 'Noto Sans';letter-spacing:4px;color:var(--am);margin-bottom:10px}
+.pg h2.ct{font:700 54px/1.05 'Liberation Sans Narrow','Noto Sans',sans-serif;color:var(--ink);margin-bottom:16px}
+.pg.tl h1{font:700 150px/1.0 'Liberation Sans Narrow','Noto Sans',sans-serif;margin-top:6px}
+.pg.tl h2.h2b{font:700 66px/1.1 'Liberation Sans Narrow','Noto Sans',sans-serif;color:var(--or);margin-top:14px}
+.pg.tl .sub{font-size:34px;line-height:1.35;margin-top:40px;color:#1f2d4d;max-width:1500px}
+.wallg{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;margin-top:6px}
+.tile{background:#fff;border:2px solid var(--line);border-radius:14px;height:176px;padding:10px 8px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.tile .tl{font:600 16px/1.1 'Noto Sans';color:var(--mut);margin-top:6px;text-align:center}
+.tile .lgt{height:84px;max-width:250px}
+.lgt{display:inline-flex;align-items:center;justify-content:center;border-radius:8px;padding:4px 8px;background:#fff;height:46px;min-width:64px}
+.lgt.dk{background:#14213d}
+.lgt img.lg{max-height:100%;max-width:100%;height:auto;width:auto;display:block;object-fit:contain}
+.tile .lgt img.lg{max-height:80px;max-width:230px}
+.blk .lgt img.lg{max-height:36px;max-width:150px}
+.lgt.tx .nmtxt{font:800 28px/1 'Liberation Sans Narrow','Noto Sans';color:var(--ink)}
+.tile .pn{font:800 26px/1 'Liberation Sans Narrow','Noto Sans';margin-left:8px}
+.fine{position:absolute;left:56px;right:56px;bottom:14px;font:500 17px/1.3 'Noto Sans';color:var(--mut)}
+.fine2{margin-top:10px;font:500 15px/1.35 'Noto Sans';color:var(--mut)}
+.cg{display:grid;gap:12px 22px}.cg.c2{grid-template-columns:1fr 1fr}.cg.c1{grid-template-columns:1fr}
+.blk{background:#fffdf8;border:2px solid var(--line);border-radius:12px;padding:8px 14px 9px}
+.blk .who{display:flex;align-items:center;gap:10px;height:42px}
+.blk .pn{font:800 21px/1 'Noto Sans';color:var(--ink)}
+.blk .q{font:500 22.5px/1.28 'Noto Sans';color:#0f172a;margin-top:3px}
+.blk .q::before{content:'\201C';color:var(--or);font-weight:800}.blk .q::after{content:'\201D';color:var(--or);font-weight:800}
+.blk .cite{margin-top:4px;font:500 14.5px/1.25 'DejaVu Sans Mono',monospace;color:#3b4660;background:#eef2fb;border-radius:6px;padding:3px 7px}
+.blk .cite .pub{font-weight:700;color:#14213d}.blk .cite .ac{color:#66708a}
+.blk .cv{margin-top:3px;font:600 15.5px/1.25 'Noto Sans';color:#7a4a00}
+.rd{margin-top:3px;font:500 17px/1.28 'Noto Sans';color:#5b21b6}.rd b{letter-spacing:.5px}
+.card-rd{margin-top:8px;font-size:21px}
+.ans{position:absolute;left:56px;right:56px;bottom:16px;border-radius:12px;padding:10px 18px;font:600 22px/1.3 'Noto Sans'}
+.ans b{display:block;font:800 15px/1.2 'Noto Sans';letter-spacing:3px;margin-bottom:2px}
+.ans.ok{background:#dcfce7;color:#14532d;border:2px solid #86c79b}.ans.no{background:#fee2e2;color:#7f1d1d;border:2px solid #e8a0a0}
+.term{background:#14213d;color:#e9eef7;border-radius:12px;padding:10px 16px;font:500 18px/1.38 'DejaVu Sans Mono',monospace;margin-bottom:12px}
+.term .s{font:500 13.5px/1.3 'DejaVu Sans Mono';color:#9db3c2;margin-bottom:3px}.term .p{color:#ffb454;word-break:break-all;white-space:pre-wrap}.term .o{color:#9fe3b5;word-break:break-word;white-space:pre-wrap}
+.term.sm{font-size:14.5px;line-height:1.3;padding:7px 14px;margin-bottom:8px}.term.sm .s{font-size:12px}
+.term.lg2 .o{font-size:19px;line-height:1.4;margin-top:2px}
+.term.bad .o{color:#fca5a5}.term.open .o{color:#fcd34d}
+.term.code{padding:8px 12px}.term.code .o{font:500 14px/1.3 'DejaVu Sans Mono';white-space:pre;color:#e9eef7}.term.code .o i{font-style:normal;color:#ffb454;display:inline-block;width:3.2ch}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}.cols.two{grid-template-columns:1fr 1fr}.cols.src{grid-template-columns:1.3fr .7fr}.cols.ol{grid-template-columns:1.05fr 1fr}
+.cap{font:500 20px/1.3 'Noto Sans';color:var(--mut)}
+.bigs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.bn{background:#fff;border:2px solid var(--line);border-radius:14px;padding:14px 18px}.bn b{display:block;font:800 76px/1 'Noto Sans';color:var(--ink)}.bn span{font:600 21px/1.2 'Noto Sans';color:var(--mut)}
+.say{margin-top:14px;font:500 27px/1.38 'Noto Sans';color:#1f2d4d;max-width:1780px}.say code,.bul code{font:600 .88em 'DejaVu Sans Mono';background:#e8eefc;padding:1px 6px;border-radius:5px}
+.eq{margin-top:2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chip{font:500 15.5px/1 'DejaVu Sans Mono',monospace;border-radius:6px;padding:5px 8px;border:2px solid transparent;background:#e5e0d6;color:#5a5448;display:inline-block}
+.chip.k1{background:#15803d;color:#fff}.chip.k2{background:#2563eb;color:#fff}.chip.k3{background:#fff;border-color:#b45309;color:#7a4a00}.chip.k0{background:#e5e0d6}
+.leg{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px}.leg .chip{font-family:'Noto Sans';font-weight:600;font-size:16px}
+.mandl{margin-top:14px;display:flex;flex-wrap:wrap;gap:6px}
+.bul{list-style:none;margin:6px 0 0 0;padding:0}.bul li{font:500 31px/1.35 'Noto Sans';margin:0 0 20px 0;padding-left:32px;position:relative;color:#1f2d4d}.bul li::before{content:'\25A0';color:var(--or);position:absolute;left:0;top:2px;font-size:22px}
+.bul.lim li{font-size:27px;margin-bottom:12px}
+.rowflow{display:flex;align-items:center;gap:16px;margin:10px 0}.rowflow .bx{background:#fff;border:2px solid var(--line);border-radius:12px;padding:14px 18px;font:600 24px/1.3 'Noto Sans';flex:1}.rowflow .ar{font:800 44px/1 'Noto Sans';color:var(--or)}
+.term.rowj .o{font-size:16.5px;line-height:1.4;margin-bottom:6px}
+.quad{display:grid;grid-template-columns:1fr 1fr;gap:6px 22px}
+.ledg .lr{display:flex;gap:18px;align-items:center;background:#fff;border:2px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:12px}.ledg .lr b{font:800 52px/1 'Noto Sans';min-width:150px;color:var(--ink)}.ledg .lr span{font:500 21px/1.3 'Noto Sans'}
+.srcg{display:grid;grid-template-columns:1fr 1fr;gap:6px 26px}
+.sr{display:flex;gap:10px;background:#fffdf8;border:2px solid var(--line);border-radius:8px;padding:6px 10px;font:500 15.5px/1.28 'Noto Sans'}.sr .no{font:800 17px/1.2 'DejaVu Sans Mono';color:var(--or);min-width:26px}.sr .u{font:500 13px/1.25 'DejaVu Sans Mono';color:#2563eb;word-break:break-all}
+.pg.src h2{margin-bottom:8px}
+.pg.tight h2.ct{font-size:46px;margin-bottom:10px}
+.cols3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-top:10px}.big3{padding:18px 22px}.big3 .l{font:800 18px/1 'Noto Sans';letter-spacing:3px;color:var(--am);margin-bottom:8px}.big3 b{font-size:96px}.big3 span{display:block;margin-top:10px;font-size:22px}
+</style></head>
+<body><div id="app">
+<div id="top" class="abs"><span class="ttl">Keeping the bloat off</span><span class="part" id="part"></span><span class="sp"></span><span class="smp">SAMPLE DATA</span><span class="day" id="day"></span><span class="clk" id="clk"></span></div>
+<div id="cfg" class="abs"></div>
+<div id="cards"></div>
+<div id="fly"></div>
+<div id="strip" class="abs"><span class="t" id="stripT"></span><span class="s" id="stripS"></span></div>
+<div id="lanes" class="abs"><svg id="svg" width="1920" height="232" viewBox="0 0 1920 232" xmlns="http://www.w3.org/2000/svg"></svg><div id="ctr"></div></div>
+<div id="focus" class="abs"></div>
+<div id="ov" class="abs"></div>
+</div>
+<script src="../core.js"></script>
+<script src="stage2.js"></script>
+</body></html>
