@@ -84,3 +84,90 @@ this session; the rest carry the reviewer's file:line and are unmeasured at runt
 3. A1/A3 delta persist (fix exists in-tree).  4. D1/D2 shared `common/lib`, delete backups/spikes.  5. C1 one tax owner.
 6. C4/C2/C3 retire the old ERP hosts and folds (largest deletion budget).  7. C8 cross-repo parity check in CI.
 Add a `§MEM` heap/bytes line to A1, A2, B3 so the next review reads the cost from a log instead of the code.
+
+## §4 Wave 1 (owner 2026-11-03: "You decide") — status per item
+- ✅ **A1 DONE (witness)** — bim-ootb #2553 (squash-merged, live sw v1672, `scene.js?v=75`; live `scene.js` carries `§PATCH_CHAIN`).
+  W-PATCH-CHAIN-ONE-OPEN PASS on the real Hospital_meta.db: opens/exports 3/3 → 1/1, content identical to the pre-change
+  oracle in 6 scenarios, 4/4 mutants killed; FAILs on the old code. Full spec + result below.
+- ✅ **D2 DONE** — `viewer/effects.js.pacefloor` deleted in the same PR (0 refs before; live URL now 404).
+- ⏸ **C6 NO-OP, not built** — the Modeller commits no READONLY op type (only `SESSION_START` via commitOp; geometry ops via
+  commitGroup; `BUILDING_OPEN` appears only in `modeller_history.js` labels). Porting the Viewer's `READONLY_OPS` gate would
+  change nothing measurable; the drift stays listed under C6 for the `common/` consolidation.
+- ⏸ **A5 not built** — `erp/crud_overlay.js:2188` `legacyDb` is opened only on the ONE-TIME migration of a pre-fix op-log
+  sidecar (small); no witness covers that path. Worth a `close()` when the hydrate path next gets a witness.
+- ℹ **D4 correction** — `erp/erp_key_epochs.js` is NOT dead: it is a ported, witnessed (W-ROSTER-VERIFY) trust module that
+  no page loads yet — a wiring gap, not a delete.
+- 📝 **A4 SPEC written** (below) — not built: one open question (What-if preview isolation) must be read from code first.
+
+### §A4 SPEC — one Project-Order store in the Viewer (written 2026-11-03, not built)
+**Measured (read, bim-ootb origin/main):** five Viewer modules each hold a PRIVATE sql.js copy of the SAME OPFS file
+`bim_analysis/bim_project_orders.db` (seeded from `erp/ad_seed.db`, 27,193,344 B) and each `export()`s the whole DB back:
+`diff.js:375-418` (`_voErpDb`), `find_erp_push.js:77-94` (via `ProjOrderState.openStore`, then its own persist),
+`whatif_panel.js:41-206` (`_db`), `schedule_author_ui.js:60-82`, `proj_order_state.js:42-68` (the declared ONE owner —
+its header says so). `hba_lens.js:345` holds a 6th, read-only copy of the plain seed, never closed.
+Lost updates are ALREADY guarded: every writer checks `ProjOrderState.storeStamp()` (lastModified:size) and reloads or
+refuses on change (§STORE_STAMP, `§PUSH_STORE_RELOAD` / `§PUSH_STORE_STALE`). So the cost is **memory (up to ~5 × 27 MB
+resident) + four copies of the OPFS open/persist code**, not data loss.
+**Change:** `ProjOrderState.shared(SQL, fetchSeed)` — one memoised instance keyed on the store stamp; `persist()` stays the
+one writer. diff / find_erp_push / schedule_author_ui read and write through it and delete their private OPFS helpers
+(~80 lines). hba_lens reads it too (read-only) instead of opening the seed.
+**⛔ Open question before building (owner or code-read):** does What-if mutate its copy as an un-accepted PREVIEW
+(`whatif_panel.js:189-206` persists only on accept)? If yes, a shared instance would leak preview rows into the other
+lenses. Then What-if keeps a private copy opened from the shared bytes ON DEMAND and closes it when the panel closes —
+still removing the resident copy. Read `whatif_panel.js` fully to decide; do not guess.
+**Witness claim (W-ONE-PO-STORE):** with all five lenses exercised in node (fake OPFS), `SQL.Database` constructions on
+the store = 1 (+1 transient for What-if if preview-private), every lens sees another lens's committed write without a
+reload, a stale-stamp write is still refused (negative control), and the §S9-STORE log prints opens/exports.
+
+## §A1 SPEC + RESULT (2026-11-03, branch fix/hygiene-wave1, bim-ootb viewer/scene.js)
+
+### Problem
+`A._applyPendingPatch` (scene.js) = `_applyMainPatch` -> `_applyLightFieldPatch` -> `_applyQtoPatch`. Each step does
+`new SQL.Database(new Uint8Array(buf))` (a full copy), applies, `export()` (another full copy), `close()`.
+Hospital_meta.db (main + lightfield + qto) = 3 opens + 3 exports in series (§PERF BUDGET: never duplicate big buffers).
+
+### Invariant (must not change)
+Patched bytes/content identical to today's chain:
+- same SQL, same order: main `.sql` -> `.lightfield.bin` (only reached if main was 404 or applied OK) -> `.qto.sql`;
+- same skip behaviour: main 404 => `§PATCH_NONE`, still tries lightfield, still tries qto; main throws / sql.js factory
+  missing => unpatched buf, lightfield SKIPPED (today's `return buf`), qto still runs; lightfield bad magic / header
+  mismatch / 404 => no change; qto 404 / failure => db without cost patch;
+- failure isolation: a failing patch must not lose an earlier patch, and must leave NO partial writes of itself;
+- every existing log line keeps its text (`§DB_LOAD_STEP`, `§PATCH_NONE`, `§PATCH_APPLY`, `§PATCH_APPLY_FAIL`,
+  `§LIGHT_FIELD_PATCH*`, `§PATCH_QTO*`). Added: `§PATCH_CHAIN opens=N exports=N patches=K bytesIn=X bytesOut=Y`.
+(No manifest/hash check exists in these three functions; none is added or removed.)
+
+### Change
+1. Phase 1 (no DB): fetch all patch payloads (main text, lightfield ArrayBuffer parsed+validated, qto text) in the same
+   decision order. No patch applicable => return ORIGINAL `buf` untouched, opens=0 (as today).
+2. Phase 2: ONE `new Database(buf)`; for each applicable patch in order main, lightfield, qto:
+   `SAVEPOINT pN; apply; RELEASE pN`; on exception `ROLLBACK TO pN; RELEASE pN` + the same FAIL log, continue per the
+   skip rules above. Per-patch isolation is therefore kept WITHOUT a re-open (today each failure discards its own
+   partial open; the savepoint rollback discards the same writes). Main failing marks lightfield skipped (today's rule).
+3. ONE `export()`, `close()`. Pre-existing helpers `_applyMainPatch/_applyQtoPatch/_applyLightFieldPatch` stay as
+   standalone functions (other callers / the oracle) but `_applyPendingPatch` no longer chains them.
+
+### Witness claim — viewer/tests/witness_patch_chain_single_open.js
+- C1 same input (real Hospital_meta.db + real main + qto patches + synthetic LFP1 sidecar): OLD chain (verbatim copy
+  from origin/main) vs NEW => identical table content (every table SELECT * ORDER BY rowid) [bytes compared and reported].
+- C2 SQL.Database constructions / export() counted: NEW opens=1 exports=1 with >=2 patches; opens=0 with none; OLD=3/3.
+- C3 negative control: broken qto => main + lightfield applied, qto rolled back, logged, content == OLD with same break.
+- C4 mutation controls (reordered / dropped patch) => witness must FAIL.
+- INCONCLUSIVE (exit 2) if no patch was exercised.
+
+### RESULT
+Code: viewer/scene.js A._applyPendingPatch rewritten (single lazy open, SAVEPOINT per patch, one export); the three old
+functions deleted (+87/-57 net -). Witness: viewer/tests/witness_patch_chain_single_open.js (+ fixtures/oracle_patch_chain_pre_A1.js
+= verbatim pre-change chain from a2026c89).
+Input: REAL Hospital_meta.db (22,441,984 B) + real main (5.95 MB, 38,186 stmts) + real qto (223 stmts) + synthetic LFP1 sidecar
+(no light-field .bin ships in git). Equality = every-table content (SELECT * ORDER BY rowid, sha256); raw bytes differ only by
+sqlite page layout (reported per scenario), no-patch path returns the identical input buffer.
+Measured §PATCH_CHAIN: main+lf+qto: old opens/exports 3/3 -> new 1/1 (patches=3, bytesIn=22441984 bytesOut=26071040);
+main+qto 2/2 -> 1/1; no patches 0/0 -> 0/0 (input returned untouched); broken qto 3/2 -> 1/1 (qto rolled back, main+lf kept);
+broken main 2/1 -> 1/1 (lf skipped, qto applied); order-sensitive synthetic 2/2 -> 1/1, value 12 = main then qto.
+Verdict: §A1_VERDICT PASS (6 scenarios content-identical, log lines identical to oracle, 4/4 mutants killed: drop-qto,
+swap-order, drop-lightfield, no-rollback). Run on the OLD scene.js it prints FAIL (cannot find the new code's anchors).
+Other witnesses before/after: witness_georef_patches PASS/PASS (dbs=6/10); witness_storey_datum_frame PASS/PASS (10/14);
+tests/witness_nogeo_compose.js FAIL before (`A._applyMainPatch is not a function`: it slices _applyPendingPatch out of scene.js
+without its helpers) -> PASS after (pass=12 fail=0), a side fix of the self-contained function.
+Logs: scratchpad a1_witness_after.log, a1_witness_before_oldscene.log, witness_*_before/_after.log.
