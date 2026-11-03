@@ -284,6 +284,15 @@ Read-only extraction (`TEAMWORK_FRAMEWORK.md` §41 agent A). Every line cites a 
 3. **P2** — the standalone kitchen screen in the mechanism §14 extracts (W-KDS-BRANCH).
 4. **P5** — Branch Day Close in friendly-ops (W-DAYCLOSE).
 
+**▶ STATUS 2026-11-03 (lead, live-verified on Pages after each merge):**
+- ✅ P0: §14 (3.81) and §14A (5.0 + prior art).
+- ✅ P1: the till, 22/22 (§15–§18; bim-ootb #2580, #2585).
+- ✅ P4: the pill deleted, W-POS-OFF (#2585; BIMCompiler #328).
+- ✅ P2: the kitchen screen (§19–§20; #2586, #2590; BIMCompiler #330).
+- ✅ P3 / §9: built earlier (#2431).
+- ⏸ P5: Branch Day Close, awaiting the owner's go.
+- ⏸ The WH walk standalone app: planned, `WH_POS_PICK_LANE.md` §STANDALONE.
+- Open, not chased: `witness_pos_plan.js` fails the same on main and on the branch (needs a PC_LINES fixture); kitchen relay cost is 38 requests per message.
 **Still open (asked only if P0 does not answer them):** Q-b (stock display on the till), Q-e (reservations till-only or ERP record).
 
 ## §14 P0 EXTRACTION (2026-11-03) — Unicenta oPOS + the pill today
