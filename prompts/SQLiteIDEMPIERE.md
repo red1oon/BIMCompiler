@@ -2372,3 +2372,16 @@ W-POST-BANKSTATEMENT: statement 100 (13 legacy facts) == legacy in schemas 101 a
 (no lines, no legacy facts) == deriveBankStatement, labelled "no legacy oracle"; date rule both SysConfig states; 91 other docs
 byte-identical; baseline 1d36c3af FAIL; 2 mutants. Named refusals: deposit-batch line; StatementDifference≠ΣStmtAmt; suspense.
 **Next: 1c Doc_MatchInv IPV split** (port W-FOLD-MATCHINV), then **1d Doc_AllocationHdr discount / write-off / cash / AP legs**.
+
+**§POSTING-PARITY item 1c ⛔ BLOCKED (2026-11-04) — the gap is DATA, not code.** `model_post`'s Doc_MatchInv ALREADY carries the full
+Java port of `processInvoicePriceVariance` (AveragePO stock-coverage split, P_AverageCostVariance + P_Asset, cost detail —
+Doc_MatchInv.java:433-640). Legacy's 50017 on #100 is Average Cost Variance (c_elementvalue 58800), not IPV. The only difference is
+the qty: Java takes `qtyCost` from `MCost.getCostInfo(…, dateAcct)` = the **cost history as of DateAcct** (MCost.java:1542-1572);
+bim-ootb's `erp/ad_seed.db` carries **no m_costhistory / m_costdetail rows**, so getCostInfo falls back to the current m_cost
+snapshot (19 now vs 7 at the match date) and all IPV goes to asset. **A code fallback that rebuilds the as-of qty from
+m_transaction was built and REJECTED:** with no history, legacy itself returns the current MCost snapshot (MCost.java:1567), so
+that fallback would DIVERGE from legacy on any real tenant without history. **Fix = seed data:** extract the pilot's
+`m_costhistory` (+ `m_costdetail`) rows for the affected products into `erp/patches/ad_seed.db.sql` — the same gap explains
+M_InOut #100 (cost 37.37 vs legacy 30.00). The proof seed `build/erp/glassbowl_data.db` has m_costdetail (86) but no m_costhistory.
+**⛔ The one question: bring the legacy pilot DB up (local postgres / docker `idempiere`) so the cost-history rows can be extracted
+read-only** — not done autonomously (no server starts). Then re-run W-POST-MATCHINV-IPV-style parity on #100 and InOut #100.
