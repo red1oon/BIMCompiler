@@ -1,4 +1,4 @@
-# POS as a plugin, a local-first till (Unicenta reborn), and the head-office day close — SPEC FOR LATER
+# POS as a plugin, a local-first till (Unicenta reborn), and the head-office day close — ACTIVE (owner GO 2026-11-03, §13)
 
 ```
 # ⚠ DO NOT REMOVE — Scope & protocol. Read the log after EVERY run before any conclusion.
@@ -269,3 +269,19 @@ Read-only extraction (`TEAMWORK_FRAMEWORK.md` §41 agent A). Every line cites a 
 - **§9 step 3 "Import Payment makes receipts allocated to that invoice"** is true only with `DocAction=CO` and a bank account; the default saves uncompleted payments (§12.5).
 - **§5 "card-clearing bank account"** is not a legacy construct (§12.5), and **"Bank Statement Matcher ported"** is only the shell: no matcher exists in core or the twin, and Import/Load Bank Statement (221/247) are not ported.
 - **§9 "2012 integration → no base-hash change" / §10.2 "2012 integration = prior art of the same loop"**: fine for master-data-down and orders-up, but not for tenders or housekeeping (§12.3-§12.4).
+
+## §13 OWNER GO — deprecate the pill, build the Unicenta-alike till (2026-11-03)
+> *"Yes, deprecate the POS pill in our twin, and proceed with the Unicenta POS alike, to avoid new learning curve"* · *"use dedicated agent where needed"*
+
+**Decisions this settles:**
+- **Q-d (screens) = Unicenta's own layout and flow.** Reason in the owner's words: no new learning curve for a Unicenta user. The till's screens, their order, button names and the ticket/close-cash flow are extracted from Unicenta oPOS source (P0) and twinned, the same way the ERP twins iDempiere's L&F (TWIN CARDINAL RULE applied to the till). Our lens touches (album cards, QR tender, earcons, `POS_SHOWCASE_LANE.md` P1-P5) survive only where Unicenta has an equivalent screen; anything with no Unicenta counterpart is dropped, not carried.
+- **The in-ERP POS pill is DEPRECATED as of today.** No further work goes into `pos_lens.js` / the pill. It is DELETED (P4, deletion budget §2.1) in the same change that ships the standalone till (P1), so the live site never has a window with no POS at all. W-POS-OFF judges the deletion.
+- **Already built since 2026-10-28 (not redone):** Import Payment 343 (`erp/processes/ImportPayment.js`, W-IMPORT-PAYMENT), `I_POSSales` + "Import POS Sales" in the head-office plugin `org.kernel.pos-integration` (`erp/plugins/pos_integration.mjs`, `pos_import_sales.mjs`, W-POS-SALES) — bim-ootb #2431. So P3 and §9 are done; the till only has to DEPOSIT into them.
+
+**Order of work (each: spec → RED witness → build → witness → read the log):**
+1. **P0 extraction** — dedicated read-only agent. Unicenta oPOS source (public GPL; the owner's 2012 integration has only the ERP side, §12.1): the screens and their flow (sales/ticket, payment, close cash, kitchen), its local tables (ticket, ticketlines, payments, closedcash, shared tickets), how its kitchen display receives orders; plus the twin today: what `pos_core.js` / `pos_lens.js` do (X of N features) and how a station deposits `I_Order`/`I_Payment` today. Appended here as §14 with file:line citations.
+2. **P1 + P4 together** — the standalone till app (own entry page, own local store, offline, pairs as a Team device of its branch Org, deposits `I_Order` + `I_Payment`, writes 0 core-document rows) and, in the same PR, the pill deleted. Witnesses W-TILL-DEPOSIT, W-TILL-OFFLINE, W-POS-OFF, plus a W-TILL-UNICENTA-PARITY (X of N Unicenta screens/flows from §14 present, N taken from the extraction, not hand-picked).
+3. **P2** — the standalone kitchen screen in the mechanism §14 extracts (W-KDS-BRANCH).
+4. **P5** — Branch Day Close in friendly-ops (W-DAYCLOSE).
+
+**Still open (asked only if P0 does not answer them):** Q-b (stock display on the till), Q-e (reservations till-only or ERP record).
