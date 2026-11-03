@@ -296,3 +296,19 @@ install): PASS; baseline efaa13ce FAIL; 5/5 mutants FAIL. CI incl. page tests on
 **Later (one-line change):** delete the mirrors once old tabs/SWs have aged out — W-ONE-LIB-FOLDER L3 then flips to "absent".
 **Not in scope:** the three.js bundles differ per app (Modeller importmap = webgpu build + a second module import — possible
 two THREE copies, D1 note); `erp/sqljs` + bim-compiler `build/erp/sqljs` keep their own copies.
+
+## §6 C1 + three.js — ✅ DONE (witness) — 2026-11-03
+- **C1 one tax owner → bim-ootb #2584 (live erp sw v969).** ONE body `BigDecimal.mtaxCalculate` (erp/bigdecimal.js — the module
+  every host loads; model_trade needs model_layer, which engine/till/pos host cannot load); model_trade / erp_engine /
+  doc_poster are shape adapters; `taxGet` one copy. Oracle = real java.math.BigDecimal on verbatim MTax.java:340-372, 4,608
+  cases (all seed C_Tax + summary variant × incl/excl × precision 0/2/3/12 × 36 amounts): model_trade 0 and doc_poster 0
+  disagreements; erp_engine 108 — all summary-tax-with-parent-Rate-0, where legacy returns 0 (`isZeroTax()` MTax.java:310-313,
+  :343). Twin fixes: engine → 0 there; child taxes filtered IsActive (getChildTaxes :254-259). **No seed number changes.**
+  W-ONE-TAX-OWNER PASS; baseline 0dc101a9 FAIL; 3/3 mutants. Not run: posting-balance / bridge twin checks (need servers).
+- **three.js → bim-ootb #2582 (live modeller sw v215).** Measured: NOT two cores — both wrappers import one three.core.min.js.
+  Waste was the Modeller importmap sending bare `three` to the unused 638 KB WebGPU wrapper (evaluated every load, precached
+  every install). Repointed to three.module.min.js as the Viewer did 2026-07-16; webgpu wrapper → cache-on-use.
+  W-THREE-ONE-BUILD 7/7; baseline fails exactly the 2 targeted claims.
+**Remaining from §3:** C4/C2/C3 retire the old ERP hosts + folds (erp.html/ad_ui.js, glassbowl.html, doc_poster derive*, dead
+erp_engine verbs) — removes user-reachable pages → needs owner go · T5 Modeller kernel_ops third copy + boot assertion ·
+B-items (viewer caches kept past mode exit, permanent intervals) · A5 legacyDb close (needs a witness on the hydrate path).
