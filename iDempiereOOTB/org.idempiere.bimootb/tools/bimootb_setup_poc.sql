@@ -57,3 +57,27 @@ BEGIN
     VALUES (nextidfunc((SELECT ad_sequence_id FROM ad_sequence WHERE name='AD_Ref_List' AND istableid='Y')::int,'N'::varchar),0,0,now(),100,now(),100,'Y','BIM','BIM','BIM OOTB viewer tab (org.idempiere.bimootb BIMTabPanelFactory)',200117,'U',gen_random_uuid());
   END IF;
 END $$;
+
+-- §8.3 FIX (2026-11-03): legacy refuses a FREE Filter param on save (MWebServicePara.beforeSave :114-121, IDEMPIERE-1784) — the 2Pack import failed on it.
+-- (a) the Filter param of every BIMOOTB_ query type becomes Constant '1=1' (a no-op; Constant passes the rule; a NULL constant would NPE in ModelADServiceImpl.validateParameter);
+-- (b) finds go by DataRow key fields (ModelADServiceImpl.queryData: whitelisted INPUT columns become bound `col LIKE ?` / `col=?`), so each query type whitelists its natural key as input.
+DO $$
+DECLARE k record;
+BEGIN
+  UPDATE ws_webservice_para p SET parametertype='C', constantvalue='1=1', updated=now()
+   FROM ws_webservicetype t WHERE t.ws_webservicetype_id=p.ws_webservicetype_id AND t.value LIKE 'BIMOOTB\_Query\_%' AND p.parametername='Filter' AND p.parametertype<>'C';
+  FOR k IN SELECT * FROM (VALUES
+      ('BIMOOTB_Query_C_Project','C_Project','Value'),
+      ('BIMOOTB_Query_C_ProjectPhase','C_ProjectPhase','C_Project_ID'),('BIMOOTB_Query_C_ProjectPhase','C_ProjectPhase','Name'),
+      ('BIMOOTB_Query_C_ProjectTask','C_ProjectTask','C_ProjectPhase_ID'),('BIMOOTB_Query_C_ProjectTask','C_ProjectTask','Name'),
+      ('BIMOOTB_Query_C_ProjectLine','C_ProjectLine','C_ProjectPhase_ID'),('BIMOOTB_Query_C_ProjectLine','C_ProjectLine','M_Product_ID'),('BIMOOTB_Query_C_ProjectLine','C_ProjectLine','C_ProjectTask_ID'),
+      ('BIMOOTB_Query_M_Product','M_Product','Value'),
+      ('BIMOOTB_Query_M_Product_Category','M_Product_Category','Name'),
+      ('BIMOOTB_Query_C_UOM','C_UOM','X12DE355')) AS v(tv,tbl,col)
+  LOOP
+    INSERT INTO ws_webservicefieldinput(ad_client_id,ad_column_id,ad_org_id,created,createdby,isactive,updated,updatedby,ws_webservicefieldinput_id,ws_webservicetype_id,ws_webservicefieldinput_uu)
+    SELECT 0,c.ad_column_id,0,now(),100,'Y',now(),100,nextidfunc((SELECT ad_sequence_id FROM ad_sequence WHERE name='WS_WebServiceFieldInput')::int,'N'::varchar),t.ws_webservicetype_id,gen_random_uuid()
+      FROM ws_webservicetype t JOIN ad_table tb ON tb.tablename=k.tbl JOIN ad_column c ON c.ad_table_id=tb.ad_table_id AND c.columnname=k.col
+     WHERE t.value=k.tv AND NOT EXISTS (SELECT 1 FROM ws_webservicefieldinput f WHERE f.ws_webservicetype_id=t.ws_webservicetype_id AND f.ad_column_id=c.ad_column_id);
+  END LOOP;
+END $$;
