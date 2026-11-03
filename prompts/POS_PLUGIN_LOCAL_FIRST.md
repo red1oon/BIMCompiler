@@ -690,3 +690,6 @@ Delete `erp/pos_lens.js kitchen_lens.js kitchen_core.js img_store.js tests/witne
 - **W-POS-OFF**: ERP page 0 page errors, no request for any deleted file, no `pos`/`kitchen` in the pill registry, `viewer/wh_walk.js` completes a shipment through `POSCore.completeShipmentOps`.
 - **Regression** on `origin/main` vs branch: `witness_till`, `witness_pos_sales`, `witness_import_payment`, `witness_team_ui_pos`, `witness_pos_return` (`witness_pos_sales_live` hangs on main too: noted, not chased).
 - Mutants (copies, each proven applied once, a crash is not a kill): refund sign dropped; held ticket not removed on recall (double deposit); line discount not folded; edit leaves the old rows.
+
+### §17.6 Warehouse Walk note (owner 2026-11-03, via coordinator)
+The WH walk (`viewer/wh_walk.js`, the `whwalk` viewer pill) is also a misplaced pill and becomes a standalone app LATER (`prompts/WH_POS_PICK_LANE.md §STANDALONE`, planned only). This PR does NOT edit `wh_walk.js` or any viewer pill / i18n. `POSCore.completeShipmentOps` is kept exactly so the walk still completes a shipment from its seed source (W-POS-OFF asserts it). By design, deleting the pill's deliver-later door (`pos_lens.js` / `pos_core.js` deliver-later builders) removes the walk's LIVE POS route source; the planned app reads legacy's Drafted shipments instead.
