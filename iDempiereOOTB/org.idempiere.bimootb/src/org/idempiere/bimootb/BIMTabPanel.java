@@ -9,10 +9,12 @@
  * Extends ADTabpanel so all GridTab lifecycle (save, refresh, query)
  * is handled by the superclass against C_Project.
  *
- * The Iframe URL is read from C_Project.Description — the user pastes
- * the OCI viewer URL there. Each project can point to a different viewer.
- * On IFC drop, the viewer sends a postMessage with the IFC filename.
- * The ZK bridge receives it and writes C_Project.Name.
+ * RENEWED 2026-11-03 (bim-compiler prompts/BIM_OOTB_LEGACY_IDEMPIERE_INTEGRATION.md §8 P3): no URL is typed by hand.
+ *   viewer  = SysConfig BIMOOTB_VIEWER_URL (default /bimootb/viewer/viewer.html — the plugin's own web context, same origin as /ADInterface)
+ *   db      = the push's link-back in C_Project.Description ("BIM src db=<url>", find_erp_push.js §ZOOM_LINKBACK), else
+ *             SysConfig BIMOOTB_BUILDINGS_BASE + C_Project.Value + "_extracted.db" (the CAPEX dashboard's BIM-link rule)
+ *   iframe  = viewer?db=<db>&record=<C_Project_ID>&embedded=true   (viewer config.js reads db + record)
+ * On IFC drop, the viewer sends a postMessage with the IFC filename; the ZK bridge writes C_Project.Name (unchanged).
  */
 package org.idempiere.bimootb;
 
@@ -39,8 +41,9 @@ public class BIMTabPanel extends ADTabpanel {
         super.createUI();
 
         String viewerUrl = getViewerUrl();
+        String dbUrl = getBuildingDbUrl();
 
-        if (viewerUrl == null) {
+        if (viewerUrl == null || dbUrl == null) {
             Div instructions = new Div();
             instructions.setStyle(
                 "padding: 40px; text-align: center; font-size: 14px; color: #666;"
@@ -48,9 +51,8 @@ public class BIMTabPanel extends ADTabpanel {
                 + " margin: 20px;");
             instructions.setSclass("bim-instructions");
             org.zkoss.zul.Label label = new org.zkoss.zul.Label(
-                "Paste the BIM OOTB viewer URL into the Description field "
-                + "(e.g. https://objectstorage.../index.html), save, "
-                + "then re-open this tab.");
+                "No BIM model is linked to this project. Push it from the BIM viewer (Find \u203a ERP), "
+                + "or set the System Configurator value BIMOOTB_BUILDINGS_BASE.");
             instructions.appendChild(label);
             this.appendChild(instructions);
             return;
@@ -60,7 +62,8 @@ public class BIMTabPanel extends ADTabpanel {
         String sep = viewerUrl.contains("?") ? "&" : "?";
         int recordId = getGridTab().getRecord_ID();
         String iframeUrl = viewerUrl + sep
-            + "embedded=true&record=" + recordId;
+            + "db=" + java.net.URLEncoder.encode(dbUrl, java.nio.charset.StandardCharsets.UTF_8)
+            + "&record=" + recordId + "&embedded=true";
 
         iframe = new Iframe(iframeUrl);
         ZKUpdateUtil.setWidth(iframe, "100%");
@@ -71,21 +74,29 @@ public class BIMTabPanel extends ADTabpanel {
 
         installMessageBridge();
 
-        log.info("BIM tab created for C_Project_ID=" + recordId
-            + " viewer=" + viewerUrl);
+        log.info("§BIM_TAB C_Project_ID=" + recordId + " viewer=" + viewerUrl + " db=" + dbUrl);
     }
 
-    /**
-     * Read viewer URL from C_Project.Description field.
-     * Returns null if empty or not a valid URL.
-     */
+    /** Viewer page: SysConfig BIMOOTB_VIEWER_URL, default the plugin's own web context. */
     private String getViewerUrl() {
+        String v = org.compiere.model.MSysConfig.getValue("BIMOOTB_VIEWER_URL", "/bimootb/viewer/viewer.html",
+            org.compiere.util.Env.getAD_Client_ID(org.compiere.util.Env.getCtx()));
+        return (v == null || v.trim().isEmpty()) ? null : v.trim();
+    }
+
+    /** Building db: the push's link-back ("BIM src db=<url>" in Description), else BIMOOTB_BUILDINGS_BASE + Value + "_extracted.db"; null when neither. */
+    private String getBuildingDbUrl() {
         Object desc = getGridTab().getValue("Description");
-        if (desc == null) return null;
-        String url = desc.toString().trim();
-        if (url.startsWith("http://") || url.startsWith("https://"))
-            return url;
-        return null;
+        if (desc != null) {
+            String d = desc.toString().trim();
+            if (d.startsWith("BIM src db=")) { String u = d.substring("BIM src db=".length()).trim(); if (!u.isEmpty()) return u; }
+        }
+        String base = org.compiere.model.MSysConfig.getValue("BIMOOTB_BUILDINGS_BASE", null,
+            org.compiere.util.Env.getAD_Client_ID(org.compiere.util.Env.getCtx()));
+        Object value = getGridTab().getValue("Value");
+        if (base == null || base.trim().isEmpty() || value == null) return null;
+        String b = base.trim();
+        return b + (b.endsWith("/") ? "" : "/") + value.toString().trim() + "_extracted.db";
     }
 
     /**

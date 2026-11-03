@@ -202,3 +202,69 @@ processes"* · *"we do things adhoc as POC first, quick and dirty. But once prov
 **Build order:** (1) Pack Out on the pilot (types re-made at client 0 first, on a COPY) · (2) bundle: POC = `javac` against the pilot's own `plugins/*.jar` + `jar` (quick and dirty, owner's staging);
 convention = the Tycho/Maven build `pom.xml` already in the skeleton · (3) a fresh pilot copy (second DB + server port) · (4) install + W-PLUGIN-INSTALL · (5) film storyboard (bim-compiler
 `prompts/FILM_NARRATION.md` PLAYBOOK) — ⛔ not recorded until the owner OKs the storyboard.
+
+### §8.1 RESULT 2026-11-03 — P3 tab renewed; P1 setup rows PROVEN on the local pilot (POC stage); logs read (scratch, not committed)
+- **P3:** `BIMTabPanel.java` renewed (viewer = SysConfig `BIMOOTB_VIEWER_URL`, default `/bimootb/viewer/viewer.html`; db = the push link-back `BIM src db=` in Description, else
+  `BIMOOTB_BUILDINGS_BASE` + Value + `_extracted.db`; iframe `?db=&record=&embedded=true` — the viewer reads all three, `viewer/config.js:28-35`). Compiles: `javac --release 17` against the pilot's
+  `plugins/` jars (org.adempiere.base, org.adempiere.ui.zk dir bundle, zk/zul/zcommon/zweb) = exit 0. The May skeleton compiled too, unchanged.
+- **Found:** AD_TabType (reference 200117) lists only FORM, SORT — the May tab's 'BIM' was never a registered value; `Extensions.java:395-412` routes custom types through IADTabPanelFactory,
+  so the fix is a list entry `BIM` (EntityType U), shipped in the 2Pack. Tab 200500 already exists on the pilot and in `pilot_snap` (the May migration reached their source DB).
+- **P1 POC** `iDempiereOOTB/org.idempiere.bimootb/tools/bimootb_setup_poc.sql` (pilot only, idempotent): 14 System-level types `BIMOOTB_Query_<T>` / `BIMOOTB_Create_<T>` cloned from the
+  push types the CAPEX twin proved (whitelists the same size: C_Project 7 in / 48 out … M_Product 67 / 69), master role "BIM OOTB Push" (client 0, IsMasterRole=Y) with 14 access rows,
+  SysConfig ×2, AD_Ref_List 'BIM'. Pilot before→after: types BIMOOTB_* 0→14, ws access 515→529, master roles 0→1, sysconfig 0→2, AD_TabType list 2→3.
+- **Proof (fixture `tools/bimootb_test_role_poc.sql`: role "BIM Push Test" 1200003 for GardenAdmin, includes 102 only):** bim-ootb `capex/tools/shed_twin.js` with `BRIDGE_SVC=bimootb BRIDGE_ROLE=1200003`
+  on a scratch HHS fold (Value HHS_PLUGIN_POC, fresh UUs) → refused: `Login role does not have access to the service type 'BIMOOTB_Query_C_Project'` (negative, as `AbstractService.java:72-75`).
+  Include "BIM OOTB Push" (1200002) → still refused until a server restart: the verdict is cached per (role, type) in `s_RoleAccessCache` (`:213`, 60 min) keyed to WS_WebServiceTypeAccess,
+  not AD_Role_Included — **the install guide must say "restart or System Admin › Cache Reset after including the role".** After restart: `§SHED_PUSH projectId=1000009 created phases=6 tasks=16
+  lines=45` · `§SHED_TWIN_VERDICT PASS tiles(match=16 diff=0 inconclusive=3) rows(match=302 diff=0)`.
+- **Next:** Pack Out (AD_Process 50004, `org.adempiere.pipo2.PackOutProcess`: an AD_Package_Exp + Data detail lines → `<java.io.tmpdir>/packout<user>/<name>.zip`) of exactly these rows → the plugin's
+  `META-INF/2Pack_13.1.0.zip`; P2 web context; bundle jar; install on a SECOND instance made from `pilot_snap` (CREATE DATABASE … TEMPLATE, own port) — deletes are refused here, so a clean DB is the
+  only honest install test.
+
+### §8.2 RESULT 2026-11-03 — the 2Pack made by iDempiere's own Pack Out; logs read
+- `tools/bimootb_packout_poc.sql` (pilot only): AD_Package_Exp "org.idempiere.bimootb" 13.1.0 (#1000000), five Data lines (role; types `;WS_WebService_Para;WS_WebServiceFieldInput;
+  WS_WebServiceFieldOutput;WS_WebServiceTypeAccess`; SysConfig; the AD_TabType value; the tab) + a System runProcess type for AD_Process 50004.
+- Run via stock `run_process` as SuperUser: role 0 is refused ("role not allowed for this user" — role 0 RoleType `SS`; WS accepts only NULL/`WS`, `AbstractService.java:70`) → the bridge lane's
+  System WS role 1200001. `§PACKOUT ok=true summary="Exported=5 File=/tmp/packout100/org.idempiere.bimootb.zip"` (19,131 bytes).
+- Content == the pilot rows: AD_Role 1 · WS_WebServiceType 14 · WS_WebService_Para 49 (7×4 query + 7×3 create) · FieldInput 124 (7+11+8+5+7+67+19) · FieldOutput 232 (48+31+27+20+18+69+19) ·
+  TypeAccess 14 · AD_SysConfig 2 · AD_Ref_List 1 · AD_Tab 1; the Pack Out helper type is NOT in it (0).
+- Plugin: `META-INF/2Pack_13.1.0.zip` = that file; MANIFEST 13.1.0, `Bundle-Activator: org.adempiere.plugin.utils.Incremental2PackActivator`, `Require-Bundle … org.adempiere.plugin.utils`;
+  `Bundle-ActivationPolicy: lazy` REMOVED (lazy would apply the 2Pack only when a class first loads = the first BIM-tab open, not at install).
+- **Next:** P2 (web context + the viewer files — assembled at build time from bim-ootb, never committed here), the bundle jar, the second instance from `pilot_snap`, W-PLUGIN-INSTALL.
+
+### §8.3 RESULT + FINDING 2026-11-03 — bundle built, installed on a clean instance; legacy REFUSED the 2Pack on a real rule; logs read
+- **P2 + bundle:** `Web-ContextPath: bimootb`, `Jetty-Environment: ee8`, `Eclipse-BundleShape: dir` (as `org.idempiere.webservices`), `WEB-INF/web.xml` (javaee 4.0 header as org.adempiere.ui.zk's).
+  `tools/build_bundle_poc.sh` (javac + copy; the viewer set is a RULE: viewer/ minus tests/ and buildings/, plus every `../erp|common|modeller|capex/` file the viewer code references, minus
+  `erp/idempiere.html`; the service worker's PRECACHE list is NOT the app — it lacks the lazy Find bundle and erp_rest_push.js): `§BIMOOTB_BUNDLE files=523 viewer=501 siblings=22 bytes=80,126,282 classes=3`.
+- **Clean instance:** `~/idempiere-bimplugin` (copy of the pilot server; DB `idempiere_bimplugin` = `CREATE DATABASE … TEMPLATE pilot_snap`; :8098/:8454; its own stop.sh pattern — the copied one
+  matched `[i]dempiere-pilot` and would have stopped the MAIN pilot: fixed before first start). Installed by one `bundles.info` line. Before: BIMOOTB types 0, master role 0, sysconfig 0.
+- **The activator ran the 2Pack at start** (`Incremental2PackActivator.packIn: Installing org.idempiere.bimootb /META-INF/2Pack_13.1.0.zip`) and legacy refused it, all-or-nothing
+  (types still 0; AD_Package_Imp "Import Failed"): `MWebServicePara.saveError: Type Free not allowed for parameter Filter (security issue)` — `MWebServicePara.beforeSave :114-121`, IDEMPIERE-1784.
+- **What it means (bigger than the plugin):** every query type we made by SQL on the pilot (CAPEX `ws_capex_readtypes.sql`, `ws_capex_writetypes.sql` QueryCUOM, `ws_capex_patypes.sql`, the bridge
+  lane's, and the BIMOOTB clones) carries a FREE `Filter` parameter that iDempiere forbids when the type is made the proper way (window or 2Pack). The push's find-or-create
+  (`viewer/erp_rest_push.js findOrCreate` → `<Filter>Value='…'</Filter>`) and the twin tools' reads depend on it. The pilot accepted it only because SQL skipped the model's save rule.
+- **iDempiere's own safe way (source):** `ModelADServiceImpl.queryData :1495-1512` — every DataRow field the query type whitelists as an INPUT field becomes a bound condition (`col LIKE ?` for
+  CHAR columns, `col=?` otherwise); a `Filter` param may only be Constant (`validateParameter :307-338`) and is parsed with `@…@` from the request (`:1515-1516`).
+- **FIX SPEC (next, before any code):** (1) `erp_rest_push.findOrCreate` finds by DataRow key fields (`{column, val}` natural key: Value / Name / parent id / product / task) — no Filter;
+  ⚠ CHAR keys go through `LIKE ?`, so `_` and `%` in a key are wildcards: the client then keeps only rows whose key EQUALS the value (exact post-filter, logged if a LIKE extra was dropped);
+  (2) query types: no Filter param; their key columns whitelisted as INPUT fields; (3) the mock in `tests/poc_erp_rest_push.js` enforces both rules (refuses a Free Filter type, binds DataRow keys)
+  so it can no longer pass what legacy refuses; (4) re-make the pilot types the proper way (POC SQL → then through the model: a 2Pack PackIn on the pilot itself proves the rows pass the model), re-run
+  the CAPEX twins (HHS, SHED) green, re-Pack-Out, re-install on the clean instance → W-PLUGIN-INSTALL; (5) the CAPEX read path (`adapters.loadLegacy`, `shed_twin legacyQuery`) moves to DataRow keys too.
+
+### §8.4 RESULT 2026-11-03 — W-PLUGIN-INSTALL on a clean instance: PASS (push side); logs read
+- **Fix landed first:** bim-ootb #2558 (lookups by DataRow key fields, no Filter; pilot query types' Filter → Constant `1=1`, keys whitelisted) + here `tools/bimootb_setup_poc.sql` the same for the 7
+  BIMOOTB_ query types (pilot: free Filter 7→0, key inputs 0→11). Pilot push through the plugin types (role 1200003): `created +0`, `§SHED_TWIN_VERDICT PASS rows(match=302 diff=0)`.
+- **2Pack re-made by Pack Out:** `Exported=5`; Filter params 7, free 0, all Constant `1=1`; FieldInput 135 (= 124 + 11 keys); the rest unchanged.
+- **Two bundles (layout change):** a web bundle that `Require-Bundle`s org.adempiere.ui.zk failed to start its context (`ClassNotFoundException: org.idempiere.ui.zk.websocket.ServerPushEndPoint` — Jetty's
+  websocket initialiser found ZK's endpoint through the dependency; `metadata-complete="true"` did not help). So, as iDempiere separates them: `org.idempiere.bimootb` = tab classes + 2Pack (requires ZK);
+  `org.idempiere.bimootb.viewer` = static `/bimootb` (requires nothing; `Web-ContextPath`, `Jetty-Environment: ee8`, `Eclipse-BundleShape: dir`). `tools/build_bundle_poc.sh` builds both
+  (`files=522 viewer=500 siblings=22 bytes=79,749,521 classes=3`).
+- **Clean instance** (`idempiere_bimplugin` = TEMPLATE pilot_snap, :8098), install = 2 `bundles.info` lines + restart. `Incremental2PackActivator.packIn: … 2Pack_13.1.0.zip installed`; AD_Package_Imp 13.1.0
+  "Completed successfully" (the earlier "Import Failed" row stays as history). After: BIMOOTB types 14, their inputs 135, access 14, master role 1, SysConfig 2, AD_TabType list 3 (was 0/0/0/0/0/2).
+  `GET /bimootb/viewer/viewer.html` 200 text/html · `erp_rest_push.js` 200 text/javascript · `/bimootb/erp/ad_seed.db` 200 (27,193,344 bytes) · `sql-wasm.wasm` 200 application/wasm.
+- **Push, the admin's one step:** role 102 without the include → `Login role does not have access to the service type 'BIMOOTB_Query_C_Project'`, 0 projects. Include "BIM OOTB Push" (here id 1000009)
+  in 102 + restart → `§SHED_PUSH projectId=1000001 created={"categories":3,"products":19,"projects":1,"phases":6,"tasks":16,"lines":45,"uoms":2}`; legacy == the SQLite fold: PlannedAmt 4996320.807 both,
+  6/16/45 both, the six phase dates identical (2026-11-01 → 2026-12-24 = the 4D programme).
+- **Not judged here:** the twin's tiles/rows step stops at `Service type QueryCProjectPhase not configured` — those read types are the CAPEX DASHBOARD module's (bim-ootb `capex/`), not this plugin's;
+  the clean instance has only the plugin, as intended. A dashboard module 2Pack is that lane's job. Also not done: the BIM tab opened in ZK (needs a browser), the film storyboard.
+- **Install guide facts (for the film):** drop 2 folders in `plugins/` + 2 `bundles.info` lines (or Felix install) → restart → include "BIM OOTB Push" in the pushing user's role → restart or Cache Reset.
