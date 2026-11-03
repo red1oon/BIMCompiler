@@ -875,3 +875,30 @@ constant (+ repoint the v13 test) · F15 resident `?v=N` · then the data-correc
 
 **Next:** scene.js Open-DB import shape (F5 tail) · edit-snapshot dirty marker (F4 tail) · F8 building class · F13 badge · F14 clash
 pair order · F12 precache gap · F7 · F18.
+
+**WAVE 3 ✅ DONE (witness) — 2026-11-03, four PRs, all live (viewer sw v1685, erp sw v968, modeller sw v213):**
+- **F5 tail + F4 tail → bim-ootb #2571.** scene.js Open-DB urls now come from ImportKey (split `import://K/K_{extracted,meta,geo}.db`;
+  old `import://K_<part>.db/v0` entries aliased + re-keyed only when byte-identical). Side fix: the url-basename building label
+  for an Open-DB file with no building column was `v0` for EVERY such file; now its own name. `A.markEdited(key)` merges
+  `{edited}` into `revalidation` (etag/contentLength untouched, no new store, no IDB version bump); erp/kernel_ops +
+  schedule_author mark; evictor skips marked keys (`§CACHE_EVICT_SKIP_EDITED`); a STALE re-download clears it (newer wins).
+  W-SEAM-W3A 20/20, baseline 7586a565 fails 11, 3/3 mutants.
+- **F8 + F18 → bim-ootb #2573.** F8 was TWO questions conflated: the Find-panel PLANT_ROOM gate mirrors
+  `config/building_taxonomy.yaml` and hides PLANT_ROOM on unlisted buildings — RULED in `FIND_PANEL_PLANT_ROOM_GATE_FIX.md`
+  (2026-07-11), left as is; the Modeller's walk-rules pick (`_dwRules`, WalkerDoctrine §1) is now one owner
+  `common/walk_rules.js` (`WalkRules.rulesDb`, rule verbatim; header warns not to "unify" it with the gate). F18: rules-cache
+  clear builds the real key via `disc_walker.dwRulesKey` and logs `§RULES_BUST deleted=true|false`. W-SEAM-W3C 40 claims.
+- **F13 + F14 → bim-ootb #2574.** Landing badge matches each card's exact keys (`DbResolve.readKeys` of `openBuilding()`'s url);
+  `Hospital_3` no longer greens Hospital. Clash status key = one owner `A._clashPair` (sorted); legacy `a|b`/`b|a`/`a~b`
+  statuses migrated without loss (write-verify-then-remove), old `a~b` links resolve. W-SEAM-W3B 15 claims, baseline fails 8.
+- **Needle persist → bim-ootb #2575 (found while closing F4).** `nf_tree_lens.js` §S3 persisted the room-injected building under
+  RAW `A.DB_URL` — rooms re-injected on every load (~7 s on 48k elements) and the wrong url in split mode. New pure
+  `DbResolve.persistTarget(app)` = the ONE save-key rule (url = `_dbPersistUrl || DB_URL`, key = `cacheKey(url)`); needle persist
+  and erp/kernel_ops.js use it. W-NEEDLE-PERSIST-KEY 7/7, baseline 1a11a9ee fails 7.
+- **F12 RESOLVED, no change needed:** `tests/audit_sw_precache.js` = 0 unlisted, 0 known-gap (all 18 triaged 2026-08-21 gaps
+  since precached), 33 out-of-shell = deliberate lanes (HBA demo, dev `connect_` harness, GI POC). `lib/` is outside that audit;
+  of viewer.html's lib scripts only `lib/room_walker.js` is unlisted and it is DELIBERATELY network-first (viewer/sw.js ~1305-1310).
+
+**Remaining open:** F7 (building name = filename stem in some places vs `elements_meta.building` in others → saved per-building
+settings can orphan), F7b / F16 / F17 (harmless literals). Not yet re-checked: `schedule_author.persistDb` still keys from its
+caller's url via its own `_cacheKeyFor` — could adopt `persistTarget` too.
