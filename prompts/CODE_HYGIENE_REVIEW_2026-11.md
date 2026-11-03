@@ -97,7 +97,13 @@ Add a `§MEM` heap/bytes line to A1, A2, B3 so the next review reads the cost fr
   sidecar (small); no witness covers that path. Worth a `close()` when the hydrate path next gets a witness.
 - ℹ **D4 correction** — `erp/erp_key_epochs.js` is NOT dead: it is a ported, witnessed (W-ROSTER-VERIFY) trust module that
   no page loads yet — a wiring gap, not a delete.
-- 📝 **A4 SPEC written** (below) — not built: one open question (What-if preview isolation) must be read from code first.
+- ✅ **A4 DONE (witness)** — bim-ootb #2557 (squash-merged, live sw v1673; live `proj_order_state.js` carries `persistShared`).
+  Open question answered from code: What-if slips stay in JS until Accept (`commitSlip`/`acceptSlip` are its only writes),
+  so it shares the instance; it keeps its private-seed fallback when the store has no C_ProjectPhase. W-ONE-PO-STORE 13/13:
+  store opens 1 across diff + find_erp_push + whatif + schedule_author_ui (was up to 4 × 27 MB), cross-visibility without
+  reopen, external change → reopen + stale write refused, 2 mutants caught, vacuous → INCONCLUSIVE. `refresh()` no longer
+  forces a re-parse (stamp check owns it). Existing: s9_pure 8/0, whatif_authored_sync 9/9, s7_gate 25/0, sw audit 0 unlisted.
+  ~90 lines of private OPFS code deleted. Left as is: hba_lens / tm_gantt_build / tm_lifecycle_api read the plain seed.
 
 ### §A4 SPEC — one Project-Order store in the Viewer (written 2026-11-03, not built)
 **Measured (read, bim-ootb origin/main):** five Viewer modules each hold a PRIVATE sql.js copy of the SAME OPFS file
@@ -171,3 +177,30 @@ Other witnesses before/after: witness_georef_patches PASS/PASS (dbs=6/10); witne
 tests/witness_nogeo_compose.js FAIL before (`A._applyMainPatch is not a function`: it slices _applyPendingPatch out of scene.js
 without its helpers) -> PASS after (pass=12 fail=0), a side fix of the self-contained function.
 Logs: scratchpad a1_witness_after.log, a1_witness_before_oldscene.log, witness_*_before/_after.log.
+# §A4 BUILD SPEC + RESULT (2026-11-03, bim-ootb branch fix/one-po-store)
+## SPEC (written before code)
+Design (decided; source: CODE_HYGIENE_REVIEW_2026-11.md §A4 SPEC):
+1. proj_order_state.js gains `shared(SQL, fetchSeed)` -> Promise<{db,src,stamp}> memoised in the module. disk stamp == memo stamp
+   (and != 'unknown') -> memo. Else openStore, replace memo, log `§PO_SHARED reload was=.. now=..`; replaced instance NOT closed.
+   Every store open logs `§PO_SHARED opens=N`. `persistShared(db, writer)`: disk stamp != memo stamp -> false + `§PUSH_STORE_STALE writer=<w>`
+   (memo dropped); else persist(db), memo.stamp := new disk stamp. `invalidateShared()` drops the memo.
+2. diff.js / find_erp_push.js / schedule_author_ui.js delete private OPFS open/stamp/export code, use shared()/persistShared().
+   Existing § lines keep their text; no-OPFS fallback unchanged (seed fetch).
+3. whatif_panel.js uses shared() but keeps `_hasFoldedProject`: no C_ProjectPhase rows -> own seed copy
+   (`§WHATIF-UI db=private-seed reason=no-folded-project`). Persist via persistShared when on shared db; unchanged stale-refusal on private copy.
+   refresh() -> ProjOrderState.invalidateShared().
+4. hba_lens / tm_gantt_build / tm_lifecycle_api untouched.
+Open question (What-if preview leaking into a shared db) READ FROM CODE: whatif_panel keeps slips in `_slips`; scheduleWhatIf/ripple/readPhases
+are read-only (whatif.js:132-); the only db mutations are commitSlip/acceptSlip, run only inside _accept, followed at once by persist. So a
+shared instance leaks no preview rows; design stands.
+Invariant: at most ONE SQL.Database on bim_project_orders.db per tab per on-disk stamp; lost-update guard (stamp) preserved.
+Witness claim W-ONE-PO-STORE (viewer/tests/witness_one_po_store.js): see RESULT.
+## RESULT
+Commit on fix/one-po-store (see git log). Witness: viewer/tests/witness_one_po_store.js -> 13 claims, PASS (log after_witness_one_po_store.log).
+§PO_SHARED numbers: four consumers (diff load+write, find_erp_push load+write, what-if load+accept, then author sync) -> opens=1, SQL.Database from OPFS bytes=1, private/seed copies=0, OPFS reads=1, reloads-by-stamp after own writes=0. Was: 4 private copies.
+Author Apply -> WhatIfPanel.refresh() (panel open) -> invalidateShared (spec'd) -> one explicit re-read: opens 1 -> 2.
+Stale: persistShared from old stamp refused (file unchanged); external change -> reopen (opens 2); what-if accept refused via shared path; mutants (diff bypass, no stamp guard) both caught.
+What-if rule: no C_ProjectPhase in store -> log db=private-seed reason=no-folded-project, 1 seed copy; with phases -> shared, 0 seed copies.
+Open question resolved from code: what-if preview (_slips) never touches the db; only commitSlip/acceptSlip mutate, inside _accept, then persist.
+Script order (viewer.html): proj_order_state.js:988 < whatif_panel:990 < diff:1003 < schedule_author_ui:1102; find_erp_push is lazy (main.js:231), after all. Consumers also fail soft without ProjOrderState.
+Caveats: (1) refresh() after every author Apply costs one more 27 MB parse. (2) pre-existing: whatif _accept does readPhases(_db=null) after a stale refusal -> unhandled rejection (unchanged). (3) a failed persist leaves the mutation in the shared in-memory db (was: private copy).
