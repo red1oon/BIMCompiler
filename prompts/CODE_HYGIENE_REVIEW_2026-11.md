@@ -322,7 +322,8 @@ B-items (viewer caches kept past mode exit, permanent intervals) · A5 legacyDb 
 - **Phase 2a → bim-ootb #2589 (erp sw v973).** Shipped `erp/erp_engine.js` = the browser subset of bim-compiler
   `scripts/erp_engine.js` (which keeps the full engine): 1,389 → 421 lines, 54 → 14 exports; the 24 kept declarations
   byte-identical. W-ERP-ENGINE-SUBSET PASS; 45 engine witnesses identical before/after.
-- **Phase 2b (retire doc_poster derive*) WITHDRAWN:** measured parity shows real posting (`model_post`) lacks
+- **Phase 2b (retire doc_poster derive*) WITHDRAWN** (and its "twin defect" reading CORRECTED the same day — the recorded proofs pass;
+  the measurement must be reconciled first, see SQLiteIDEMPIERE.md §POSTING-PARITY correction): measured parity shows real posting (`model_post`) lacks
   Doc_AllocationHdr / Doc_BankStatement / Doc_GLJournal and the MatchInv IPV split, and doc_poster is itself a live posting
   path in the twin architecture — recorded as twin work items in `prompts/SQLiteIDEMPIERE.md §POSTING-PARITY 2026-11-03`.
   Retire only after those land.

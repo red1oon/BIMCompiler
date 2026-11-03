@@ -2302,7 +2302,21 @@ per schema/account in cents; legacy = the seed's stored Fact_Acct filtered by cl
 | GL_Journal | 2 | 2 | **no Doc class** | 0 | DP books only 508; legacy also 600 Cr / 741 Dr |
 | M_Inventory | 3 | 0 | MP posts 2 | DP posts 0 | no legacy facts |
 
-**Work items (twin defects, SQLite side):** (1) port Doc_AllocationHdr, Doc_BankStatement, Doc_GLJournal into `model_post`;
+> **⚠ CORRECTION (same day, after the owner asked to check the earlier parity work first):** the "work items" below are
+> NOT established. The lane's recorded proofs for these exact folds ALL PASS when re-run today (2026-11-03, logs read):
+> `scripts/poc_alloc_post.js` W-FOLD-ALLOC (Doc_AllocationHdr incl. VAT tax-correction, falsifier 13c) ·
+> `scripts/poc_matchinv.js` W-FOLD-MATCHINV (NIR/Clearing + avg-cost IPV split, 18/18, falsifier 3000c) ·
+> `scripts/poc_gljournal.js` W-FOLD-GLJOURNAL (direct lines + per-org intercompany balancing, falsifier 10000c) ·
+> `scripts/poc_post_tail.js` W-POST-TAIL (BankStatement, real fact_acct oracle) — see FOLD_MODEL_LOGIC.md, HARDEN_MATRIX.md.
+> The table above measured a DIFFERENT pairing: bim-ootb's shipped `doc_poster.derivePostings` + `model_post` on bim-ootb's
+> `erp/ad_seed.db` (+ patches), whose cost data the harness itself suspected had drifted from the pilot. Until the two are
+> reconciled on the SAME seed and the SAME code path, nothing below is a confirmed twin defect. What IS factual: `model_post`
+> (the browser's real posting) has no Doc class for BankStatement / GLJournal and refuses AllocationHdr on this seed — whether
+> those doc types are meant to post via `doc_poster` in the shipped app, and whether the shipped `derive*` equal the proven
+> POC folds, is the reconciliation question. **Next step = measurement only:** run the proven POC folds and the shipped
+> `derivePostings` on one seed, per document, and diff.
+
+**Candidate work items (UNCONFIRMED — see correction above):** (1) port Doc_AllocationHdr, Doc_BankStatement, Doc_GLJournal into `model_post`;
 (2) Doc_MatchInv IPV split (account 50017); (3) Doc_InOut cost on #100/#108 — sync the seed cost fixture to the pilot first,
 then re-measure; (4) doc_poster's allocation + GL-journal branches differ from legacy on the seed too (both copies —
 bim-compiler `scripts/doc_poster.js` and bim-ootb `erp/doc_poster.js` — carry the same functions, 130 lines of drift).
