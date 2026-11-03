@@ -141,3 +141,40 @@ newVerbs=[].
   projection is untouched by raw kernel ops) — named omission, fold-at-dispatch covers correctness.
 - Cross-device selector = §P-5 relay/sync, out of scope (named in spec).
 - Walk write-back races a concurrently-writing ERP tab (last-writer blob) — §P-5 story, named.
+
+## §STANDALONE — the WH walk leaves the viewer pill bar; PLANNED, not built (owner, 2026-11-03)
+> *"The WH walk also is misplaced as a pill. It should be planned later as a standalone app as the POS to keep the twin clean"*
+
+**Same ruling as the POS** (`prompts/POS_PLUGIN_LOCAL_FIRST.md` §13): a device-side operation is its own app on its own device, joined to the team as a Team device of its Org. It is not a pill inside the twin. The twin keeps only what legacy has.
+
+**Measured today (bim-ootb `origin/main` @ efaa13ce):**
+- The walk is a data-gated viewer pill (`pill_whwalk`, `viewer/i18n/*.json:368`). It lights only on models with locator-GUID bins (`viewer/wh_walk.js:12-14`).
+- Its route sources are POS deliver-later shipments: `seedPosDocs` `wh_walk.js:169-197` (the tenant seed, plus "live sale (op log)").
+- It completes a pick through `POSCore.completeShipmentOps` (`wh_walk.js:105,853-870`).
+
+**Interaction with the POS retirement (P1 slice 2, running 2026-11-03):**
+- The pill's deliver-later door (`pos_lens.js` F12, §14.6) is deleted with the POS pill, so the walk loses its *live* POS source. The seed source stays.
+- `pos_core.js` is trimmed to `completeShipmentOps` so the walk keeps working until this plan is built.
+- uniCenta has no deliver-later (§14/§14A).
+
+**The plan (spec before code; build only on the owner's go):**
+1. **Standalone page** on the till pattern (`erp/till.html` / `borrower.html`: engine in a hidden frame, `?team=1`), plus the 3D building it flies through. The app needs the viewer's model; how a slim page gets it without the full viewer is a P0 measurement.
+2. **Route source = legacy's own open shipments, not POS-specific.**
+   - A deliver-later sale in legacy is a standard order (doctype SO).
+   - Generate Shipments makes the `M_InOut` in Drafted status, and the walk picks it.
+   - So the selector reads any Drafted customer shipment of the device's warehouse. This removes the `c_order`-POS join in `seedPosDocs`.
+3. **What the device deposits vs what head office completes (FL-8, one DocAction executor):**
+   - Legacy's pick step is the Ship/Receipt Confirm (`M_InOutConfirm`, PickQA type).
+   - The walk deposits the confirm quantities. It completes the shipment only if the plan names the warehouse role as that document's executor.
+   - **Q-W1 (owner):** who completes the shipment, the warehouse device (role = executor) or head office?
+4. **Delete from the viewer when it ships:**
+   - the `whwalk` pill entry and its i18n keys (`pill_whwalk`, `pillc_whwalk_1-4` in every `viewer/i18n/*.json`)
+   - the `wh_walk.js` tag and the viewer `sw.js` precache line
+   - **W-WH-OFF:** the viewer page has no `whwalk` pill and requests no deleted file.
+5. **Then `pos_core.js` goes entirely.** Its last caller moves to the app, or to the ported `M_InOutConfirm` path.
+6. **Robot seam** (`WH_ROBOTICS_LANE.md` §R-1…§R-4): `window.WHWalk.robot` moves with the app unchanged.
+
+**Witnesses to write before the build:**
+- W-WH-APP-ROUTE: the app's route equals `WHRoute.route` over the same Drafted shipment.
+- W-WH-APP-CONFIRM: a wrong bin is refused through the one shared gate (W-WH-CONFIRM). A confirm deposits once, offline included.
+- W-WH-OFF (above).
