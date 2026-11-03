@@ -902,3 +902,18 @@ pair order · F12 precache gap · F7 · F18.
 **Remaining open:** F7 (building name = filename stem in some places vs `elements_meta.building` in others → saved per-building
 settings can orphan), F7b / F16 / F17 (harmless literals). Not yet re-checked: `schedule_author.persistDb` still keys from its
 caller's url via its own `_cacheKeyFor` — could adopt `persistTarget` too.
+
+**CLOSE-OUT (2026-11-03):**
+- ✅ **§PERSIST_TARGET tail → bim-ootb #2577 (+ #2579 cache-bust).** `schedule_inject.js` (Apply-to-4D / inject) and
+  `schedule_author_ui.js` passed raw `A.DB_URL` to `ScheduleAuthor.persistDb` — in split mode that slot is never read back
+  (streaming.js §TM_SPLITMODE_PERSIST_KEY), so an applied or authored schedule vanished on reload on split buildings (Hospital).
+  `ScheduleAuthor.persistUrlFor(app)` (on `DbResolve.persistTarget`) is now used by all three callers. W-SCHED-PERSIST-TARGET 7/7,
+  baseline 4c451725 fails 7. Live viewer sw v1687.
+- ✅ **F7 — NOT a live defect (measured, no code).** Stem ≠ `elements_meta.building` for ~28 of 33 real DBs (Duplex →
+  `Ifc2x3_Duplex_Federated`, Terminal → `T0_Terminal`, …) but EVERY per-building persisted family keys on `A.activeBuilding`
+  (= `elements_meta.building`): saved sections, clash statuses, section cuts, scissors bookmarks, cinema paths, occlStruct, TM
+  caches, BOM, tour cache, issues filter, report `?bld=`, ERP `C_Project.Value`. DB-url keys (history tree, cache, persist,
+  pwa_last_db) are FILE identity by design. One building value per real DB today (Clinic no longer multi-valued). Residual
+  risk only from a re-extraction that renames the value (moves all families together). Tables: session result file.
+- F7b / F16 / F17 — harmless (own prefixes / literals), left.
+**Audit status: every PASS 1 finding is now FIXED, GONE, measured not-a-defect, ruled by design, or harmless.**
