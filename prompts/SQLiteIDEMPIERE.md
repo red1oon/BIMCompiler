@@ -2363,3 +2363,12 @@ schemas 101 and 200000, maxDiff 0c, Posted=Y; 89 other seed docs byte-identical 
 caught. Named refusals: PostingType≠A; single-currency source imbalance (suspense not ported). Note: repost delete keys
 table+record+schema without client, exactly as legacy Doc.java:794 — the seed's client-13 copies reusing client-11 record_ids
 are a seed artefact (seed lane). **Next: 1b Doc_BankStatement** (port W-POST-TAIL's derivation).
+
+**§POSTING-PARITY item 1b ✅ DONE (witness) — 2026-11-04, bim-ootb #2595 (live erp sw v978, `model_post.js?v=4`).** Doc_BankStatement
+in `model_post` (same shape as #2593), ported from the proven `deriveBankStatement` (W-POST-TAIL) + Doc_BankStatement.java
+(:70-88, :109, :126-145, :160-285 legs, :184-198 clearing-equal, :291-298 org) + DocLine_Bank.java:49-87 per-line DateAcct under
+SysConfig BANK_STATEMENT_POST_WITH_DATE_FROM_LINE (MBankStatement.java:801); charge acct per MCharge.java:51-68, no default fallback.
+W-POST-BANKSTATEMENT: statement 100 (13 legacy facts) == legacy in schemas 101 and 200000, maxDiff 0c, Posted=Y; statement 101
+(no lines, no legacy facts) == deriveBankStatement, labelled "no legacy oracle"; date rule both SysConfig states; 91 other docs
+byte-identical; baseline 1d36c3af FAIL; 2 mutants. Named refusals: deposit-batch line; StatementDifference≠ΣStmtAmt; suspense.
+**Next: 1c Doc_MatchInv IPV split** (port W-FOLD-MATCHINV), then **1d Doc_AllocationHdr discount / write-off / cash / AP legs**.
