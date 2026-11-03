@@ -350,3 +350,9 @@ Regression: `witness_find_push_4d`, `poc_erp_rest_push`, the HHS + SHED twins (`
   (`GridTable.createSelectSql :376` builds no SELECT without fields). **Next:** give tab 200500 its fields through the dictionary (key C_Project_ID hidden, Value, Name, Description read-only),
   re-Pack-Out, reinstall, re-run B3 — and push the link-back Description (`BIM src db=`) with the plan so the tab opens a building that exists (today legacy Description stays empty → the tab would use
   `BIMOOTB_BUILDINGS_BASE` + Value, a file the bundle does not carry).
+
+## §8.9 ▶ RESUME (2026-11-03, end of session) — this lane = TASK 2 only
+**Owner:** the plugin is ONLY for the BIM Viewer → ERP Project Order; the CAPEX dashboard is TASK 1, built separately on our SQLite WASM framework (bim-ootb `prompts/CAPEX_DASHBOARD.md` ▶ RESUME HERE,
+§5.13). Shared resume, machine state and landmines: that RESUME block. **Next here:** B3 (§8.8 — tab 200500 gets its AD_Field rows; the push carries the link-back Description; re-Pack-Out; reinstall on
+`~/idempiere-bimplugin`; re-run B3 headless), then the film storyboard §8.5 (⛔ owner OK + language set). **Film wording (owner correction):** the plugin IS needed for the push; what needs no change is
+iDempiere's code and tables — never say "nothing to install".
