@@ -6,5 +6,31 @@
   {"name": "B3 instalment-down", "treatment": "FACT", "role": 50004, "strategy": 100, "dir": "DOWN", "table": "C_InvoicePaySchedule", "carries": ["C_Invoice_ID", "DueAmt", "DueDate"], "by": ["C_Invoice_ID", "C_BPartner_ID"], "group": "Invoice", "schedule": "on-change", "from": "HQ", "to": "Borrower (that BP only)"},
   {"name": "B4 slip-up", "treatment": "FACT", "role": 50004, "strategy": 100, "dir": "UP", "table": "I_Payment", "carries": ["InvoiceDocumentNo", "DocTypeName", "ISO_Code", "PayAmt", "DateTrx", "I_IsImported", "IsApproved", "R_PnRef", "R_AuthCode", "R_Result", "R_RespMsg", "DocumentNo", "TenderType", "BPartnerValue", "Description"], "group": "Borrower/Date/Slip#", "schedule": "at-visit", "from": "Borrower", "to": "HQ"},
   {"name": "B5 allocation-down", "treatment": "FACT", "role": 50004, "strategy": 100, "dir": "DOWN", "table": "C_AllocationLine", "carries": ["C_Invoice_ID", "Amount", "DiscountAmt", "WriteOffAmt", "OverUnderAmt"], "by": ["C_Invoice_ID", "C_BPartner_ID"], "group": "Invoice", "schedule": "on-change", "from": "HQ", "to": "Borrower (that BP only)"},
-  {"name": "D1 hq-order", "treatment": "LOCAL", "table": "C_Order", "docaction": {"executor": 102, "actions": ["CO"]}}
+  {"name": "D1 hq-order", "treatment": "LOCAL", "table": "C_Order", "docaction": {"executor": 102, "actions": ["CO"]}},
+  { "virtualTable": "POS_KitchenOrder", "columns": [
+    { "name": "POS_KitchenOrder_ID", "cls": "KEY" },
+    { "name": "AD_Client_ID", "cls": "REF", "target": "AD_Client" },
+    { "name": "AD_Org_ID",    "cls": "REF", "target": "AD_Org" },
+    { "name": "TillKey",   "cls": "TEXT" },
+    { "name": "OrderRef",  "cls": "TEXT" },
+    { "name": "Seq",       "cls": "MEASURE" },
+    { "name": "Line",      "cls": "MEASURE" },
+    { "name": "Qty",       "cls": "MEASURE" },
+    { "name": "Details",   "cls": "TEXT" },
+    { "name": "DisplayId", "cls": "MEASURE" },
+    { "name": "OrderTime", "cls": "DATE" },
+    { "name": "Kind",      "cls": "CODE", "values": ["L", "C"] } ] },
+  { "virtualTable": "POS_KitchenStatus", "columns": [
+    { "name": "POS_KitchenStatus_ID", "cls": "KEY" },
+    { "name": "AD_Client_ID", "cls": "REF", "target": "AD_Client" },
+    { "name": "AD_Org_ID",    "cls": "REF", "target": "AD_Org" },
+    { "name": "TillKey",    "cls": "TEXT" },
+    { "name": "OrderRef",   "cls": "TEXT" },
+    { "name": "Seq",        "cls": "MEASURE" },
+    { "name": "Line",       "cls": "MEASURE" },
+    { "name": "State",      "cls": "CODE", "values": ["D", "V", "W"] },
+    { "name": "StatusSeq",  "cls": "MEASURE" },
+    { "name": "StatusTime", "cls": "DATE" } ] },
+  {"name": "K1 kitchen-order", "treatment": "FACT", "role": 50004, "strategy": 100, "dir": "BOTH", "audience": "branch", "table": "POS_KitchenOrder", "carries": ["TillKey", "OrderRef", "Seq", "Line", "Qty", "Details", "DisplayId", "OrderTime", "Kind"], "group": "TillKey/OrderRef/Seq", "schedule": "on-change", "from": "POS station", "to": "kitchen device of the same branch Org (head office never receives it)"},
+  {"name": "K2 kitchen-status", "treatment": "FACT", "role": 50004, "strategy": 100, "dir": "BOTH", "audience": "branch", "table": "POS_KitchenStatus", "carries": ["TillKey", "OrderRef", "Seq", "Line", "State", "StatusSeq", "StatusTime"], "group": "TillKey/OrderRef/StatusSeq", "schedule": "on-change", "from": "kitchen device", "to": "POS station of the same branch Org (head office never receives it)"}
 ]

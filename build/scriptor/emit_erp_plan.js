@@ -34,7 +34,7 @@ function posPlanErrors(rows, compiled) {
   if (hubList.length > 1) errs.push({ code: 'hub-ambiguous', roles: hubList });
   facts.forEach(function (f) {
     var r = src[f.name] || {}, cols = (f.payload || []).map(function (p) { return p.col.toLowerCase(); });
-    if (f.dir !== 'UP' && f.dir !== 'DOWN') errs.push({ code: 'dir-bad', row: f.name });
+    if (r.audience === 'branch' ? f.dir !== 'BOTH' : (f.dir !== 'UP' && f.dir !== 'DOWN')) errs.push({ code: 'dir-bad', row: f.name });      // a BRANCH row (audience of one branch Org: till + kitchen) is BOTH ways; every hub row is UP or DOWN
     if (!Number.isInteger(r.role)) errs.push({ code: 'role-missing', row: f.name });
     else if (hubList.indexOf(r.role) >= 0) errs.push({ code: 'hub-is-edge', row: f.name });
     if (r.by !== undefined) {
@@ -51,7 +51,7 @@ function emitPos(db, posRows, localRows, srcName) {
   var pe = posPlanErrors(rows, r); if (pe.length) throw new Error('pos plan errors: ' + pe.map(function (e) { return e.code + (e.row ? ' ' + e.row : ''); }).join(' | '));
   var executors = {}, hub = null; r.plan.filter(function (f) { return f.docaction; }).forEach(function (f) { executors[String(f.table).toLowerCase()] = f.docaction.executor; hub = f.docaction.executor; });
   var flows = r.plan.filter(function (f) { return f.treatment === 'FACT'; }).map(function (f) {
-    var x = src[f.name], o = { name: f.name, table: f.table, dir: f.dir, audience: 'hub', role: x.role, group: x.group, payload: f.payload.map(function (p) { return { col: p.col, cls: p.cls }; }) };
+    var x = src[f.name], o = { name: f.name, table: f.table, dir: f.dir, audience: x.audience === 'branch' ? 'branch' : 'hub', role: x.role, group: x.group, payload: f.payload.map(function (p) { return { col: p.col, cls: p.cls }; }) };
     o.ship = f.payload.map(function (p) { return p.col; }).concat((f.implicit || []).filter(function (c) { return /^AD_(Client|Org)_ID$/i.test(c); })).sort();      // what may leave the device: the carries + the partition (FL-1)
     if (x.by) o.by = x.by.slice(); return o; });
   var local = r.plan.filter(function (f) { return f.treatment === 'LOCAL'; }).map(function (f) { return f.table; });
