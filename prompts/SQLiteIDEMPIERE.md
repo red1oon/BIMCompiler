@@ -2316,10 +2316,41 @@ per schema/account in cents; legacy = the seed's stored Fact_Acct filtered by cl
 > POC folds, is the reconciliation question. **Next step = measurement only:** run the proven POC folds and the shipped
 > `derivePostings` on one seed, per document, and diff.
 
-**Candidate work items (UNCONFIRMED — see correction above):** (1) port Doc_AllocationHdr, Doc_BankStatement, Doc_GLJournal into `model_post`;
+**Candidate work items (superseded by §POSTING-PARITY — RECONCILED below):** (1) port Doc_AllocationHdr, Doc_BankStatement, Doc_GLJournal into `model_post`;
 (2) Doc_MatchInv IPV split (account 50017); (3) Doc_InOut cost on #100/#108 — sync the seed cost fixture to the pilot first,
 then re-measure; (4) doc_poster's allocation + GL-journal branches differ from legacy on the seed too (both copies —
 bim-compiler `scripts/doc_poster.js` and bim-ootb `erp/doc_poster.js` — carry the same functions, 130 lines of drift).
 **Then** the Preview can render `model_post` (one implementation) and `doc_poster.derive*` retires — EXCEPT its posting-class
 registry (`docClassFor`/`legacyDocClassOf`/`registerDocClass`, used by model_post + the Libero plugins) and genesis.html's
 `derivePostings` call, which stay or move first. Full tables: hygiene-lane session result `POSTER_RESULT.md` (not committed).
+
+### §POSTING-PARITY — RECONCILED (2026-11-03, measurement only, no code changed)
+Owner: *"Check back with the respective prompts/# on legacy parity before doing so."* Reconciled the recorded proofs (A) with
+the same-day harness (B), on one seed and one code path per question (harness + logs: session scratchpad `recon/`, not committed).
+- **(A) and (B) never judged the same code.** `poc_alloc_post` / `poc_matchinv` / `poc_gljournal` are STANDALONE folds over
+  `post_resolver` on `build/erp/glassbowl_data.db` — they never call `doc_poster` or `model_post`. Only `poc_post_tail` runs
+  `doc_poster` (BankStatement, MatchPO, Requisition). So the PASSes prove the fold LOGIC, not the shipped posting path. Both
+  remain valid for what they test.
+- **Seeds:** `m_cost` identical (362 rows); every proof `fact_acct` row exists in bim-ootb `erp/ad_seed.db`. Differences that
+  matter: bim-ootb has `c_cash` 0 rows (proof 3), `m_costdetail` 0 (proof 86), + 300 client-13 duplicate fact rows reusing
+  client-11 record_ids (a harness must filter by client).
+- **Shipped posting path (Q3):** Complete → `model_layer.js:537-541` → `ML.setPoster(post)` (`model_post.js:842`). `DOC` covers
+  c_order, m_inout, m_matchinv, m_matchpo, m_movement, m_inventory, c_invoice, c_payment, c_allocationhdr. **C_BankStatement and
+  GL_Journal have no Doc class → Posted stays N** (`:784-790`); C_AllocationHdr refuses discount / write-off / cash-line / AP
+  legs as not ported (`:737-739`). `doc_poster.derivePostings` is NOT a posting fallback — only the Posting-Preview
+  (`erp_preview.js:78`) and `genesis.html:165` use it. ⇒ **a live gap in real posting, not only in the preview.**
+
+| B-difference | verdict | evidence |
+|---|---|---|
+| Alloc #100 missing 516 Dr 5035 | SEED-DATA | bim-ootb `c_cash` empty; with the proof's 3 rows copied in, `doc_poster` == legacy in both schemas |
+| Alloc #101 missing 724 Cr 1 | CODE, unproven | rounding correction named "not ported" in doc_poster; the POC itself marks schema 200000 §DEFERRED |
+| GL_Journal books only 508 | CODE | `deriveGLJournal` (ootb doc_poster.js:1377-1396) lacks the per-org intercompany balancing the POC fold proves; same on both seeds |
+| M_MatchInv #100 (742 / IPV 50017) | CODE | doc_poster.js:553 names IPV "not ported"; POC proves the 70/30 on-hand split |
+| M_InOut #100 430 Dr 3737 vs 3000 | SEED-DATA (both seeds) | legacy used the posting-day cost history (30.00); neither seed carries that m_costhistory/m_costdetail row → current m_cost 37.37 |
+
+**No regression of proven work. Twin work (SQLite side), in order:** (1) port the PROVEN folds into `model_post.js` (the real
+posting path): Doc_GLJournal with intercompany balancing (W-FOLD-GLJOURNAL), Doc_BankStatement (W-POST-TAIL's doc_poster
+derivation), Doc_MatchInv IPV split (W-FOLD-MATCHINV), Doc_AllocationHdr discount / write-off / cash legs (W-FOLD-ALLOC) —
+each ported from its proof and re-witnessed against legacy Fact_Acct on the shipped path; (2) seed: add the 3 `c_cash` rows and
+the M_InOut #100 cost-history row to bim-ootb's seed patch; (3) re-run parity with a client filter + per-client schema;
+(4) then the Preview can render `model_post` and `doc_poster.derive*` retires (keep its plugin Doc-class registry).
