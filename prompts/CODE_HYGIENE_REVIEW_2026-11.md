@@ -312,3 +312,17 @@ two THREE copies, D1 note); `erp/sqljs` + bim-compiler `build/erp/sqljs` keep th
 **Remaining from §3:** C4/C2/C3 retire the old ERP hosts + folds (erp.html/ad_ui.js, glassbowl.html, doc_poster derive*, dead
 erp_engine verbs) — removes user-reachable pages → needs owner go · T5 Modeller kernel_ops third copy + boot assertion ·
 B-items (viewer caches kept past mode exit, permanent intervals) · A5 legacyDb close (needs a witness on the hydrate path).
+
+## §7 ERP retirement (owner go 2026-11-03) — phase 1 + 2a ✅ DONE, phase 2b WITHDRAWN (twin work first)
+- **Phase 1 → bim-ootb #2588 (erp sw v972).** `erp/erp.html` is the owner's bubble LAUNCHER ("ALWAYS", ad_ui.js §IDEMPIERE-ROUTE
+  2026-06-10) — kept unchanged. Retired the window/tab engine inside it that could no longer run (`_currentWindow` only ever
+  `null`): ad_ui.js 2,711 → 1,034, ad_charts.js 432 → 151 (AST reachability from every live entry). glassbowl.html +
+  gravity are user-reachable (2 pills, whole_history, ERP guide) → kept, so crud_overlay `completeFanout*` stays (glassbowl
+  loads it without the model layer). 6 tests that drove only the dead engine removed. W-ERP-DEAD-UI PASS; baseline 07bf3f9e FAIL.
+- **Phase 2a → bim-ootb #2589 (erp sw v973).** Shipped `erp/erp_engine.js` = the browser subset of bim-compiler
+  `scripts/erp_engine.js` (which keeps the full engine): 1,389 → 421 lines, 54 → 14 exports; the 24 kept declarations
+  byte-identical. W-ERP-ENGINE-SUBSET PASS; 45 engine witnesses identical before/after.
+- **Phase 2b (retire doc_poster derive*) WITHDRAWN:** measured parity shows real posting (`model_post`) lacks
+  Doc_AllocationHdr / Doc_BankStatement / Doc_GLJournal and the MatchInv IPV split, and doc_poster is itself a live posting
+  path in the twin architecture — recorded as twin work items in `prompts/SQLiteIDEMPIERE.md §POSTING-PARITY 2026-11-03`.
+  Retire only after those land.

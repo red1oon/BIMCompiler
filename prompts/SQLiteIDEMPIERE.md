@@ -2281,3 +2281,31 @@ The CAPEX dashboard (bim-ootb `capex/`) compares ABSOLUTE state (tiles over C_Pr
 4. **Owner direction 2026-11-02 (CAPEX session 77), CORRECTED:** "On SQLite for the legacy to use with the dashboard, yes" · "Of course we like to move things to our framework, thus the dashboard is
    something external to idempiere core thus we propose to as such." = the CAPEX dashboard runs on the SQLite kernel, fed from legacy by a DOWN sync over the stock WebServices (this lane's §4 DOWN path,
    read types only) — bim-ootb `prompts/CAPEX_DASHBOARD.md` §5 R5. **2026-11-03 frame:** the dashboard is to be defined as iDempiere PA rows that BOTH sides execute; owner: "our side is a true twin and idempiere side retains its learning curve" — the twin then judges a shared definition (CAPEX_DASHBOARD.md §4). Item 1 (a persistent harness twin) is NOT what was approved; it stays this lane's open proposal. Hospital #990000 push DROPPED by the owner.
+
+---
+
+## §POSTING-PARITY 2026-11-03 — measured: real posting (model_post) vs doc_poster vs legacy Fact_Acct, on the bundled seed
+Found by the code-hygiene lane (`prompts/CODE_HYGIENE_REVIEW_2026-11.md` C2) while testing whether the Posting-Preview's
+`doc_poster.derivePostings` could be retired onto `model_post`. **It cannot yet — the differences below are twin work for this
+lane** (CARDINAL: fixed on the SQLite side; no accepted divergence). Harness (node, bim-ootb origin/main 3109e811, seed + patches,
+per schema/account in cents; legacy = the seed's stored Fact_Acct filtered by client; only client 11 has an accounting schema):
+
+| Doc type (client 11) | docs | w/ legacy | model_post = legacy | doc_poster = legacy | first difference |
+|---|---|---|---|---|---|
+| C_Invoice | 8 | 8 | 8 | 8 | — |
+| C_Payment | 2 | 2 | 2 | 2 | — |
+| M_Movement | 1 | 1 | 1 | 1 | — |
+| M_InOut | 9 | 8 | 5 | 5 | #100 acct 430 Dr 3737 vs legacy 3000 — both sides; suspected seed m_cost drift vs pilot (fixture sync needed to confirm); #108 MP refuses AverageCostingNegativeQty, DP lists the same as absent, legacy posted 23750 |
+| M_MatchInv | 18 | 18 | 17 | 17 | #100 legacy 742 Cr 7000 + 50017 (IPV) Cr 3000; MP 742 Cr 10000 (no IPV split); DP omits 742, flags IPV "not ported" |
+| C_AllocationHdr | 2 | 2 | **not ported** (MP refuses) | 0 | DP #100 misses 516 Dr 5035; #101 misses 724 Cr 1 |
+| C_BankStatement | 2 | 1 | **no Doc class** | 1 | — |
+| GL_Journal | 2 | 2 | **no Doc class** | 0 | DP books only 508; legacy also 600 Cr / 741 Dr |
+| M_Inventory | 3 | 0 | MP posts 2 | DP posts 0 | no legacy facts |
+
+**Work items (twin defects, SQLite side):** (1) port Doc_AllocationHdr, Doc_BankStatement, Doc_GLJournal into `model_post`;
+(2) Doc_MatchInv IPV split (account 50017); (3) Doc_InOut cost on #100/#108 — sync the seed cost fixture to the pilot first,
+then re-measure; (4) doc_poster's allocation + GL-journal branches differ from legacy on the seed too (both copies —
+bim-compiler `scripts/doc_poster.js` and bim-ootb `erp/doc_poster.js` — carry the same functions, 130 lines of drift).
+**Then** the Preview can render `model_post` (one implementation) and `doc_poster.derive*` retires — EXCEPT its posting-class
+registry (`docClassFor`/`legacyDocClassOf`/`registerDocClass`, used by model_post + the Libero plugins) and genesis.html's
+`derivePostings` call, which stay or move first. Full tables: hygiene-lane session result `POSTER_RESULT.md` (not committed).
