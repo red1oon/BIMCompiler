@@ -220,3 +220,14 @@ convention = the Tycho/Maven build `pom.xml` already in the skeleton · (3) a fr
 - **Next:** Pack Out (AD_Process 50004, `org.adempiere.pipo2.PackOutProcess`: an AD_Package_Exp + Data detail lines → `<java.io.tmpdir>/packout<user>/<name>.zip`) of exactly these rows → the plugin's
   `META-INF/2Pack_13.1.0.zip`; P2 web context; bundle jar; install on a SECOND instance made from `pilot_snap` (CREATE DATABASE … TEMPLATE, own port) — deletes are refused here, so a clean DB is the
   only honest install test.
+
+### §8.2 RESULT 2026-11-03 — the 2Pack made by iDempiere's own Pack Out; logs read
+- `tools/bimootb_packout_poc.sql` (pilot only): AD_Package_Exp "org.idempiere.bimootb" 13.1.0 (#1000000), five Data lines (role; types `;WS_WebService_Para;WS_WebServiceFieldInput;
+  WS_WebServiceFieldOutput;WS_WebServiceTypeAccess`; SysConfig; the AD_TabType value; the tab) + a System runProcess type for AD_Process 50004.
+- Run via stock `run_process` as SuperUser: role 0 is refused ("role not allowed for this user" — role 0 RoleType `SS`; WS accepts only NULL/`WS`, `AbstractService.java:70`) → the bridge lane's
+  System WS role 1200001. `§PACKOUT ok=true summary="Exported=5 File=/tmp/packout100/org.idempiere.bimootb.zip"` (19,131 bytes).
+- Content == the pilot rows: AD_Role 1 · WS_WebServiceType 14 · WS_WebService_Para 49 (7×4 query + 7×3 create) · FieldInput 124 (7+11+8+5+7+67+19) · FieldOutput 232 (48+31+27+20+18+69+19) ·
+  TypeAccess 14 · AD_SysConfig 2 · AD_Ref_List 1 · AD_Tab 1; the Pack Out helper type is NOT in it (0).
+- Plugin: `META-INF/2Pack_13.1.0.zip` = that file; MANIFEST 13.1.0, `Bundle-Activator: org.adempiere.plugin.utils.Incremental2PackActivator`, `Require-Bundle … org.adempiere.plugin.utils`;
+  `Bundle-ActivationPolicy: lazy` REMOVED (lazy would apply the 2Pack only when a class first loads = the first BIM-tab open, not at install).
+- **Next:** P2 (web context + the viewer files — assembled at build time from bim-ootb, never committed here), the bundle jar, the second instance from `pilot_snap`, W-PLUGIN-INSTALL.
