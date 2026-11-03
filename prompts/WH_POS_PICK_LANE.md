@@ -194,3 +194,63 @@ newVerbs=[].
 - W-WH-APP-ROUTE: the app's route equals `WHRoute.route` over the same Drafted shipment.
 - W-WH-APP-CONFIRM: a wrong bin is refused through the one shared gate (W-WH-CONFIRM). A confirm deposits once, offline included.
 - W-WH-OFF (above).
+
+## §STANDALONE.2 — Warehouse Walk MOBILE: the plan for discussion (owner, 2026-11-04: *"Warehouse walk mobile, plan out and discuss here"*). SPEC ONLY, nothing built.
+**Measured (2026-11-04):**
+- **Sample model.** `buildings/warehouse_gardenworld.db` is 60 KB and holds 26 elements: 11 bins (`IfcBuildingElementProxy`), 11 racks (`IfcFurnishingElement`) and 4 slabs. These are box geometry, so a phone carries it easily (the CLAUDE.md phone budget is ~4 M verts).
+- **The walk today.** `viewer/wh_walk.js` (1061 lines) lives inside the full viewer:
+  - the route is computed by the pure `viewer/wh_route.js`;
+  - each scan commits a group (`:803`), and the shipment completes on the device (`completePos` `:856-903`);
+  - the camera scan uses BarcodeDetector, with a typed fallback (`:731-738`).
+- **Legacy pieces in the seed:**
+
+  | Piece | Seed ids | Twin port |
+  |---|---|---|
+  | Generate Shipments | process 118 / 199 | ✅ `InOutGenerate.js` |
+  | Create Confirmation | process 281 | ✅ `InOutCreateConfirm.js` |
+  | `M_InOutConfirm` | table 727 | — |
+  | Ship/Receipt Confirm window | window 330 | — |
+  | Import Confirmations | process 296, window 334, table `I_InOutLineConfirm` 740 | ❌ not ported |
+  | Import Inventory | process 219, table `I_Inventory` 572 | ❌ not ported |
+
+**The plan:**
+1. **One app, three legacy jobs, each a deposit into a legacy import table.** The ERP gains nothing (TWIN rule), and head office runs every document once (FL-8).
+
+   | Job | The base down | The device deposits | Head office runs |
+   |---|---|---|---|
+   | Pick (customer shipment) | Drafted `M_InOut` + its PickQA `M_InOutConfirm` lines | `I_InOutLineConfirm` | Import Confirmations 296 → complete the confirm, then the shipment |
+   | Put-away (material receipt) | the receipt's confirm lines | `I_InOutLineConfirm` | the same |
+   | Cycle count | the count list: locator × product, book qty hidden or shown (Q-M4) | `I_Inventory` | Import Inventory 219 → Physical Inventory complete |
+2. **Base + batch** (owner, 2026-11-03).
+   - A wave goes down once, and the device works the whole wave offline.
+   - One Visit at wave end carries every row. A mid-wave Visit happens only if the picker taps "send now".
+   - Wrong-bin refusal happens on the device; it needs no head office.
+3. **Page shape.** `erp/wh.html` is a Team device of the warehouse Org, on the till pattern (engine frame for the data), plus a SLIM 3D host. The slim host has Three.js and the tiny warehouse db, and does only fly-to-bin, highlight and tap.
+   - The full viewer is not loaded. The 3D route/highlight logic moves out of `wh_walk.js` into a host-agnostic module that the app shares, so there is one implementation.
+   - P0 measures the slim page's heap and first-paint against the full viewer on a phone profile.
+4. **Mobile UX, phone-first, one hand:**
+   - a step strip `i/N · product · qty`, a big Scan button, and a qty stepper for short or over picks (DifferenceQty / ScrappedQty);
+   - long-press to skip with a reason;
+   - a wave list and a "send now" button.
+   - **Scanning:** keep the typed path as first-class. Rugged Android scanners (keyboard-wedge) type into it, so the same gate covers camera, wedge and keyboard. Camera support per browser (iOS Safari vs Android Chrome) is a P0 measurement, not an assumption.
+5. **Deletion when it ships** (§STANDALONE item 4):
+   - the viewer `whwalk` pill, its i18n keys and the `wh_walk.js` tag;
+   - `pos_core.js` entirely (its last caller was `completePos`);
+   - W-WH-OFF proves the removal.
+6. **Ports needed (each verbatim, W-IMPORT-PAYMENT pattern):** Import Confirmations (197 legacy lines) and Import Inventory, plus the two `I_*` tables in `ad_import_tables.js`. Branch Day Close may gain "Import Confirmations → complete" as an optional step.
+
+**Witnesses (to write RED first):**
+- W-WH-APP-ROUTE == `WHRoute.route`.
+- W-WH-SCAN-GATE: wrong bin refused (camera, wedge and typed alike).
+- W-WH-BATCH: relay requests do not grow with the number of scans.
+- W-WH-IMPORT-CONFIRM: the confirm lines are set, the shipment completes at head office, and the device wrote 0 status changes.
+- W-WH-COUNT: `I_Inventory` → Physical Inventory, diff = the counted delta.
+- W-WH-OFF.
+- W-WH-PHONE-COST: heap and verts as a `§` line.
+
+**Open for the owner (Q-M1…Q-M5):**
+- **Q-M1 (screens).** Legacy has no mobile picking screen to twin; the till had uniCenta. Use prior art (Odoo Barcode / ERPNext pick list, as the kitchen used Chromis/Floreant) or our own strip?
+- **Q-M2 (3D on the phone).** Keep fly-to-bin 3D on the phone (cheap at box geometry), or a list-first phone screen with 3D as an optional view?
+- **Q-M3 (who releases a wave).** The head-office clerk (Generate Shipments + Create Confirmation), or a warehouse supervisor role at the warehouse?
+- **Q-M4 (counts).** Blind count (book qty hidden, the usual audit practice) or show the book qty?
+- **Q-M5 (scope of v1).** Pick only, or pick + put-away + count together (same app, same rails)?
