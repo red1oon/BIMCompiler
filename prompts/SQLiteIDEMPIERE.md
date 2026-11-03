@@ -2354,3 +2354,12 @@ derivation), Doc_MatchInv IPV split (W-FOLD-MATCHINV), Doc_AllocationHdr discoun
 each ported from its proof and re-witnessed against legacy Fact_Acct on the shipped path; (2) seed: add the 3 `c_cash` rows and
 the M_InOut #100 cost-history row to bim-ootb's seed patch; (3) re-run parity with a client filter + per-client schema;
 (4) then the Preview can render `model_post` and `doc_poster.derive*` retires (keep its plugin Doc-class registry).
+
+**§POSTING-PARITY item 1a ✅ DONE (witness) — 2026-11-04, bim-ootb #2593 (live erp sw v976, `model_post.js?v=3`).** Doc_GLJournal
+in `model_post`'s DOC registry, ported from W-FOLD-GLJOURNAL + Doc_GLJournal.java (:61-107, :140-177; line org FactLine.java
+:944-990). The 600/741 intercompany legs come from the EXISTING `balanceSegments` + `balance()` `post()` already runs (Doc.java
+:822-870, Fact.java :255-499) — no new balancing code. W-POST-GLJOURNAL: both client-11 journals == stored legacy Fact_Acct in
+schemas 101 and 200000, maxDiff 0c, Posted=Y; 89 other seed docs byte-identical vs baseline; baseline d4d9b79d FAIL; 2 mutants
+caught. Named refusals: PostingType≠A; single-currency source imbalance (suspense not ported). Note: repost delete keys
+table+record+schema without client, exactly as legacy Doc.java:794 — the seed's client-13 copies reusing client-11 record_ids
+are a seed artefact (seed lane). **Next: 1b Doc_BankStatement** (port W-POST-TAIL's derivation).
