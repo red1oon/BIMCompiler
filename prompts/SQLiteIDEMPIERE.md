@@ -2413,3 +2413,16 @@ facts now == legacy (baseline 38/42), none diverged**; newly equal: m_inout #100
 **§POSTING-PARITY status:** 1a ✅ 1b ✅ 1c ✅ 1d ✅ (one named residual: #101 724 AmtSource 0.0 stored vs Java 0.01). **Next:** (2) the
 Posting-Preview renders `model_post` (one implementation) → (3) re-run parity client-filtered → (4) retire `doc_poster.derive*`
 (keep its plugin Doc-class registry; genesis.html's derivePostings call moves first).
+
+**§POSTING-PARITY steps 2+4 ✅ DONE (witness) — 2026-11-04, bim-ootb #2598 (live erp sw v981, `model_post.js?v=6`).** The
+Posting-Preview now runs the REAL poster in the model layer's rolled-back trx (`ModelPost.previewFacts`, `dbs.withTrx` →
+`__crud.withModelTrx`) — it shows exactly what Complete will write, refusals included. Baseline: the old doc_poster preview
+DIFFERED from real posting on 55/168 schema×document judgements (MatchInv 36, InOut 8, Payment 4, GLJournal 2, Inventory 2,
+Allocation 1) — i.e. users were shown entries that would not be written. W-PREVIEW-IS-POSTING 6/6 over 84 client-11 docs × 2
+schemas (preview == real post at 0c; no write leaks; deleted names unreferenced); baseline + 2 mutants FAIL. Retired
+`deriveMatchInv`/`_receiptLineAmt`, `deriveMatchPO`, `deriveGLJournal`, `deriveInventory` (doc_poster +3/−128).
+**Still on doc_poster by design (no model_post Doc class):** A_Asset_*, C_ProjectIssue, M_Requisition, C_Cash, derive-only
+plugin classes, the draft-order projection; and `genesis.html` (loads no model layer). **To retire the rest** (`deriveInvoice`,
+`deriveInOut`, `deriveMovement`, `deriveAllocation`, `deriveBankStatement`): migrate genesis.html, the witnesses that call them
+(sd16_engine_port, f9_cost_history, nc5bcd_gainloss, post_bankstatement B1b, rma_window_path, poc_install_*) and the four bim-compiler
+`--engine-dir` scripts to model_post first. Residual twin item: #101 724 AmtSource (see 1d).
