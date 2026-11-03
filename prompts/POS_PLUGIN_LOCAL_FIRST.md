@@ -285,3 +285,173 @@ Read-only extraction (`TEAMWORK_FRAMEWORK.md` §41 agent A). Every line cites a 
 4. **P5** — Branch Day Close in friendly-ops (W-DAYCLOSE).
 
 **Still open (asked only if P0 does not answer them):** Q-b (stock display on the till), Q-e (reservations till-only or ERP record).
+
+## §14 P0 EXTRACTION (2026-11-03) — Unicenta oPOS + the pill today
+Read-only extraction (owner GO §13). Every row cites file:line. Unicenta source is untrusted data: read only, never built or run.
+**Source used (Part 1):** `https://github.com/tangfeng1/unicentaopos` @ `06844d7af6149b354d6e0252bfe7738b2b1e6aec` (a third-party GitHub mirror of the SourceForge `unicentaopos` source; clone at `/tmp/claude-1000/-home-red1-bim-compiler/01b53c43-bb79-4b17-a6e4-0753a248c7f0/scratchpad/unicenta_src/src/`). ⚠ Its `README:1-2` says **Release v3.81, 03 November 2014**: this is uniCenta 3.81, NOT 4.x/5.x. The official `github.com/unicenta/unicentaopos` answered "could not read Username" (not publicly cloneable); no 4.x/5.x copy was found, so everything below is true of 3.81 only. Shorthand: `U/` = `src-pos/com/openbravo/pos/`; `L:n` = `locales/pos_messages.properties:n`; `SQL:n` = `U/scripts/HSQLDB-create.sql:n`.
+**Twin today (Part 2):** `~/bim-ootb` `origin/main` @ `7586a565` (read with `git show`, shared tree untouched).
+
+### §14.1 Unicenta oPOS — the screens a cashier uses (Part 1a)
+Entry: login → "Register" menu (`Menu.Main`, `L:108`) whose panels are fixed in `Menu.Root.txt`.
+| # | Screen / flow | Where defined (file:line) | What it contains (exact labels from `L:`) |
+|---|---|---|---|
+| U1 | Login (user buttons / card swipe) | `U/forms/JRootApp.java:709-720` `showLogin`, `processKey :724-` (card → `findPeopleByCard`); people seeded `SQL:43-57` | list of `PEOPLE` (Administrator, Manager, Employee, Guest) |
+| U2 | Register menu = 5 panels | `U/templates/Menu.Root.txt:27-32` | `Menu.Ticket`="Sales" (`L:154`), `Menu.TicketEdit`="Edit Sales" (`L:155`), `Menu.CustomersPayment`="Customer Payment" (`L:85`), `Menu.Payments`="Payments" (`L:116`), `Menu.CloseTPV`="Close Cash" (`L:70`). Back office groups follow (`Menu.Root.txt:34-120`: Customers, Stock Management, Sales Management reports, Maintenance, Presence) |
+| U3 | Sales / ticket screen, 6 regions (card layout `cardName="ticket"`) | `U/sales/JPanelTicket.form` — **North** options bar `m_jOptions :33` = `m_jButtons :42` (Go to Customers `:78-83`, Find Customers `:104-109`, Split Sale `:130-135`) + `m_jPanelScripts :158` (Scale `:185`, Moorings `:217`, Send Order `:242-250`, plus the `Ticket.Buttons` extras) + `m_jPanelBag :274` (the ticket-bag bar, U7); **Center** `m_jPanTicket :290` = right-hand column `jPanel5` (Scroll Up `:344`, Scroll Down `:370`, Remove Line `:396`, Product Search `:422`, Edit Line `:448`, Choose Attributes `:474`) + ticket lines + `jPanel4` (ticket id `:530`, totals `m_jPanTotals :552`: Subtotal `label.subtotalcash` `L:474`, Tax `L:480`, Total `L:493`); **East** `m_jContEntries :725` = `JNumberKeys :750`, price/×(`m_jPrice :777`,`m_jPor :812`), Get Barcode `m_jEnter :847`, tax combo `m_jTax :866`, `+` toggle `m_jaddtax :883`; **South** `catcontainer :933` = the catalog | |
+| U4 | Number-pad grammar | `U/sales/JPanelTicket.java:1027-1290` (digits/`.`/`*` state machine `:1027-1113`; `+` add/increase `:1156-1170,1237-1250`; `-` decrease/negative `:1172-1217,1257-1262`; `=` or space → total/pay `:1285-1291`; scale `§` `:1122-1171`) | `qty * price + `, `+`/`-` on the selected line, `=` pays |
+| U5 | Catalog (categories → sub-categories → product tabs) | `U/catalog/JCatalog.java:458-565` (`m_jRootCategories`, `m_jSubCategories`, `m_jProducts` card layout `:273,377`); sizes `U/templates/Ticket.Buttons.xml:70,83-84` (`cat-height 320`, product button 80x80) | category tree via `CATEGORIES.PARENTID` (`SQL:178-186`), product image buttons (`PRODUCTS.IMAGE`) |
+| U6 | Ticket button bar (script buttons) | `U/templates/Ticket.Buttons.xml:35` Total Disc' (`L:206`) enabled; `:45` Print preview; `:48` Drawer (`L:188`) enabled; Refund item `:29`, Service charge `:32`, Line discount `:36`, Set person `:39`, Send order `:42` all commented out (DISABLED by default) | |
+| U7 | Shared tickets ("ticket bag", mode `machine.ticketsbag`=`standard`) | `U/sales/JTicketsBag.java:95-103` (standard → `JTicketsBagShared`, restaurant → `JTicketsBagRestaurantMap`, else simple); `U/sales/shared/JTicketsBagShared.form:34-37,60-63,89-92` | three buttons: New Sale (`sale_new.png`), Cancel Sale (delete, confirm `message.wannadelete` `L:617`), Layaways (list of parked tickets); `saveCurrentTicket/newTicket/setActiveTicket` `JTicketsBagShared.java:106-205` |
+| U8 | Payment dialog | `U/payment/JPaymentSelect.java` (`addTabPayment :193-203`, tab per permission `payment.*`); sale tabs `JPaymentSelectReceipt.java:43-50` = Cash, Cheque, Voucher, Card, Free, Debt, Bank (`L:643-651`); header Total / Remaining (`L:493,443`); **Add Part Payment / Delete Part Payment** `JPaymentSelect.java:743-759` (= split tender); Cancel/OK `:782-810`; Print Receipt toggle `:814-821` | cash tab: tendered keypad + coin/note buttons from resources `coin.*`,`note.*` (`JPaymentCashPos.java:195-232`), change label `:146-147` |
+| U9 | Receipt + change | `U/sales/JPanelTicket.java:1319-1400` `closeTicket` (total preview `Printer.TicketTotal` → payment dialog → `saveTicket` → `Printer.Ticket`/`Ticket2`); `U/templates/Printer.Ticket.xml:26-125` (Receipt/Refund no., Date, **Terminal**, Customer, Table, Served by, lines, Total, per-tender block); change pop-up `U/templates/Ticket.Close.xml:23-60` ("Change: ..."), enabled by `Ticket.Buttons.xml:96` | |
+| U10 | Edit Sales (find a past ticket) | `U/sales/JPanelTicketEdits.java:35,87` → `JTicketsBagTicket`; ticket-number keypad + sales/refund radio `readTicket(-1, ...)` `JTicketsBagTicket.java:522-532`, finder `:333` (`jButton2`), finder dialog `U/panels/JTicketsFinder.form`; buttons Edit (`:338-341` "Edit current Ticket"), Refund (`:356-359` "Receipt Refund"), Print (`:127-130` permission-gated) | |
+| U11 | Refund | `JTicketsBagTicket.java:500-520` `m_jRefundActionPerformed` (`JRefundLines`, new `TicketInfo` of `RECEIPT_REFUND` `U/ticket/TicketInfo.java:53`); refund payment dialog tabs `JPaymentSelectRefund.java:67-70` = Refund(cash), Cheque, Voucher, Card (`L:645-651`) | refund numbers have their own counter (§14.2) |
+| U12 | Customer Payment (pay off debt) | `U/customers/CustomersPayment.java:551-570` (ticket type `RECEIPT_PAYMENT`, payment name `debtpaid`) | |
+| U13 | Payments (cash in / cash out) | `U/panels/PaymentsEditor.java:59-60` reasons "Cash (In)" / "Cash (Out)" (`L:664-665`); insert `U/forms/DataLogicSales.java:1546-1561` (`RECEIPTS`+`PAYMENTS` with `NOTES`) | |
+| U14 | Close Cash (Z) | `U/panels/JPanelCloseMoney.java` (+ `.form`): Print (partial, `Printer.PartialCash`) `:707`; Close Cash with confirm `message.wannaclosecash` (`L:616`) `:709-757`, result "Cash Closed OK" (`L:542`); report `U/templates/Printer.CloseCash.xml` | labels: Sequence `L:461`, Start/End Date `L:44,29`, Transactions `L:45`, Money `L:677`, Sales `L:454`, Net `L:494`, Taxes `L:482`, Total `L:678`, "No Sale - Drawer Openings" `L:374` |
+| U15 | Kitchen: "Send Order" | button `JPanelTicket.form:242-250` (visible only with permission `sales.PrintKitchen`, `JPanelTicket.java:496`) → script `U/templates/script.SendOrder.txt:20-50` → template `U/templates/Printer.TicketKitchen.xml:~29` `<ticket printer = "2">` (second configured printer) | prints "Kitchen Order", receipt no., date, customer, table, only `ISKITCHEN` lines not yet sent (`sendstatus` No→OK) |
+| U16 | Restaurant map (mode `restaurant`) | `U/sales/restaurant/JTicketsBagRestaurantMap.java` (+ `.form`), buttons Reservations (`L:199`), Reload (`L:198`); `moveTicket :291`; tables `FLOORS`/`PLACES` `SQL:443-476` (X,Y,FLOOR,CUSTOMER,WAITER,TICKETID,TABLEMOVED) | table click opens that table's shared ticket |
+| U17 | Reservations (mode `restaurant`) | `U/sales/restaurant/JTicketsBagRestaurantRes.java`; table `RESERVATIONS` `SQL:478-495` | |
+Also present in 3.81 and cashier-reachable: Split Sale `ReceiptSplit.java`, Product line edit `JProductLineEdit.java`, attributes `JProductAttEdit*`, Mooring `JMooringDetails` (marina-specific), Product search `U/panels/JProductFinder`, auto-logoff after sale `JPanelTicket.java:1292-1305`, warranty print `:1397`.
+
+### §14.2 Unicenta local tables (Part 1b) — `SQL:` = `HSQLDB-create.sql` (MySQL/PostgreSQL/Oracle/Derby variants sit beside it)
+| Table | Columns (verbatim) | Line |
+|---|---|---|
+| `TICKETS` | ID(uuid), TICKETTYPE(0 sale,1 refund,2 payment,3 no-sale: `TicketInfo.java:48-63`), TICKETID int, PERSON, CUSTOMER, STATUS; **index on (TICKETTYPE,TICKETID) is NOT unique** | `SQL:371-381` |
+| `TICKETLINES` | TICKET, LINE, PRODUCT, ATTRIBUTESETINSTANCE_ID, UNITS, PRICE (ex-tax: the Z report adds `PRICE*RATE`, `PaymentsModel.java:144,163`), TAXID, ATTRIBUTES blob; PK(TICKET,LINE) | `SQL:399-409` |
+| `RECEIPTS` | ID (= `TICKETS.ID`), **MONEY** (→ `CLOSEDCASH`), DATENEW, ATTRIBUTES, PERSON | `SQL:361-369` |
+| `PAYMENTS` | ID, RECEIPT, PAYMENT (name), TOTAL, TRANSID, RETURNMSG blob, NOTES, TENDERED, CARDNAME. Names written: `cash` `PaymentInfoCash.java:84`, `free` `PaymentInfoFree.java:62`, `magcard` `PaymentInfoMagcard.java:164`, `magcardrefund` `PaymentInfoMagcardRefund.java:69`, `cheque` `JPaymentCheque.java:93`, `bank` `JPaymentBank.java:80`, `paperin` `JPaymentSelect.java:323`, `cashrefund` `:467`/`JPaymentSelectRefund.java:93`, `chequerefund` `:503`, `paperout` `:539`, plus `debt`/`debtpaid`, `cashin`/`cashout` (labels `L:662-675`) | `SQL:420-431` |
+| `TAXLINES` | ID, RECEIPT, TAXID, BASE, AMOUNT (written per ticket at save, `DataLogicSales.java:1192-1203`) | `SQL:434-441` |
+| `CLOSEDCASH` | MONEY(uuid), **HOST**, **HOSTSEQUENCE**, DATESTART, DATEEND, NOSALES; UNIQUE(HOST,HOSTSEQUENCE) | `SQL:349-359` |
+| `SHAREDTICKETS` | ID, NAME, CONTENT blob (the whole serialized ticket), PICKUPID, APPUSER | `SQL:515-522` |
+| counters | `TICKETSNUM`, `TICKETSNUM_REFUND`, `TICKETSNUM_PAYMENT` (identity+sequence each); `PICKUP_NUMBER` | `SQL:383-398,590-594` |
+| `LINEREMOVED`, `DRAWEROPENED` | audit of removed lines (REMOVEDDATE,NAME,TICKETID,PRODUCTID,PRODUCTNAME,UNITS) / drawer openings (OPENDATE,NAME,TICKETID) | `SQL:411-418,597-601` |
+| `PRODUCTS` | ID, REFERENCE, CODE, CODETYPE, NAME, PRICEBUY, PRICESELL, CATEGORY, TAXCAT, ATTRIBUTESET_ID, STOCKCOST, STOCKVOLUME, IMAGE, ISCOM, ISSCALE, **ISKITCHEN**, PRINTKB, SENDSTATUS, ISSERVICE, ATTRIBUTES, DISPLAY, ISVPRICE, ISVERPATRIB, TEXTTIP, WARRANTY, STOCKUNITS; plus `PRODUCTS_CAT(PRODUCT,CATORDER)` (catalog order), `PRODUCTS_COM` | `SQL:258-307` |
+| `CATEGORIES` | ID, NAME, PARENTID, IMAGE, TEXTTIP, CATSHOWNAME | `SQL:178-186` |
+| `TAXCATEGORIES`, `TAXES`, `TAXCUSTCATEGORIES` | TAXES: ID, NAME, CATEGORY, CUSTCATEGORY, PARENTID, RATE, RATECASCADE, RATEORDER | `SQL:191-212,139-144` |
+| `PEOPLE`, `ROLES` | PEOPLE: ID, NAME, APPPASSWORD, CARD, ROLE, VISIBLE, IMAGE; ROLES: ID, NAME, PERMISSIONS blob (XML of allowed panels/`sales.*`/`payment.*`/`button.*` keys, `U/templates/Role.Employee.xml:45-60`) | `SQL:31-57` |
+| `FLOORS`, `PLACES`, `RESERVATIONS` | see U16/U17 | `SQL:443-495` |
+| `CUSTOMERS` | ID, SEARCHKEY, TAXID, NAME, TAXCATEGORY, CARD, MAXDEBT, address/phone fields, CURDATE, CURDEBT | `SQL:146-176` |
+| `STOCKDIARY`, `STOCKCURRENT`, `LOCATIONS` | a sale writes a stock-diary row per product line inside `saveTicket` (`DataLogicSales.java:1129`); refund of a ticket writes `IN_REFUND`/`OUT_SALE` (`:1231`) | `SQL:309-347` |
+| `RESOURCES` | the editable templates (Menu.Root, Printer.*, Ticket.*, script.*, coin/note images) stored IN the DB | `SQL:61-136` |
+**How a ticket is saved** (`DataLogicSales.java:1052-1290`, one transaction): number from the right counter (`:1057-1076`) → `INSERT RECEIPTS` → `TICKETS` → `TICKETLINES` (+ stock diary) → `PAYMENTS` rows → debt update → `TAXLINES`.
+
+### §14.3 Kitchen: how orders reach the kitchen (Part 1c)
+- **In 3.81 there is NO kitchen display.** The only mechanism is a **second receipt printer**: the "Send Order" button runs `script.SendOrder.txt:20-50`, which prints `Printer.TicketKitchen` (`<ticket printer = "2">`, `Printer.TicketKitchen.xml:35`) containing only lines whose product has `ISKITCHEN` and `sendstatus`=No, then marks them `OK`. Printer index 2 = `machine.printer.2` of the local device config (`U/printer/DeviceTicket.java:147,213-218`): a **local machine property**, not a shared table, not a queue, not a network protocol of Unicenta's own.
+- `U/sales/KitchenDisplay.java:1-89` would `INSERT INTO KITCHENDISPLAY (ID, ORDERTIME, PLACE, PICKUPID, PRODUCT, MULTIPLY, ATTRIBUTES)` (`KitchenDisplay.java:69`), but it is only DECLARED (`JPanelTicket.java:181`), never constructed or called, and **no `KITCHENDISPLAY` table exists in any create script** (`grep -ril kitchendisplay` over the whole tree = those two Java files only). It is a stub, not a mechanism.
+- No "bump / ready" return path exists anywhere in the source. (`sendstatus` is a local per-line flag; `Printer.TicketKitchen.xml` is one-way paper.)
+- ⇒ The owner's 2012 ActiveMQ-per-station queue (§1 M8, §12) is the integration's, not Unicenta's. Searched: `KitchenDisplay`, `kitchen` (case-insens.) over `src-pos`, `reports`, `locales`.
+
+### §14.4 Close cash (Part 1d)
+- **Totals computed** (`U/panels/PaymentsModel.java:loadInstance`, all `WHERE RECEIPTS.MONEY = <active money>`): ticket count + units + gross incl. tax `:144`; per-category sales `:163`; payments count+sum `:184`; **per-payment-type sum with NOTES** `:201` (this is the Z tender breakdown, cash in/out included); receipts count + net `:217`; tax amount/base `:232`; per tax-category `:247`; removed lines since `DATESTART` `:266`; product sales `:303`. Host, sequence, start date come from the active `CLOSEDCASH` row (`:131-139`).
+- **Stored:** on Close, `UPDATE CLOSEDCASH SET DATEEND = ?, NOSALES = ? WHERE HOST = ? AND MONEY = ?` (`JPanelCloseMoney.java:719-723`) and a NEW `CLOSEDCASH` row is inserted for the next shift with `HOSTSEQUENCE+1` (`:728-736`); a `DRAWEROPENED` row "Close Cash" is written (`:738-739`); the report is printed from `Printer.CloseCash` (`:745`). **Nothing else is stored**: the totals are re-derived from tickets whenever shown (the Z is a query over `RECEIPTS.MONEY`, not a stored snapshot). `NOSALES` is a count of no-sale drawer openings (`L:374`).
+- Counted-cash declaration (the cashier keying what is in the drawer): **not found** (searched `JPanelCloseMoney.form`/`.java` for any input field; the form has only labels, Print and Close buttons).
+
+### §14.5 Ticket number vs till (Part 1e) — vs the twin's ticket key (§9, §12.7 item 6)
+| Fact | Where |
+|---|---|
+| The visible ticket number is a plain integer from a **database-global** sequence `TICKETSNUM` (sale), `TICKETSNUM_REFUND`, `TICKETSNUM_PAYMENT`; assigned at `saveTicket` only if `getTicketId()==0` | `DataLogicSales.java:1057-1076,1299-1319`; `SQL:383-398` |
+| It carries **no till/host component**; uniqueness is per database. `TICKETS.ID` is a random UUID (`TicketInfo()` ctor), and the (TICKETTYPE,TICKETID) index is non-unique | `TicketInfo.java:98-101`; `SQL:381` |
+| Till identity lives one hop away: `RECEIPTS.MONEY` → `CLOSEDCASH.HOST` (= `machine.hostname`, default OS host name) + `HOSTSEQUENCE` (shift counter per host) | `AppConfig.java:88-90,112-124`; `JRootApp.java:206-222`; `DataLogicSystem.java:222-237` |
+| The receipt prints "Terminal: <hostname>" from a static set at start-up | `TicketInfo.java:88-94`; `Printer.Ticket.xml:49` |
+⇒ Two tills with separate local databases both issue ticket 1, 2, 3...; a refund 1 and a sale 1 coexist (separate counters). **A deposit key must therefore be (till/host id, ticket type, ticket number)**, as §12.7 item 6 already says; Unicenta's own number is only the printable part of it.
+
+### §14.6 The pill today — feature list X of N (Part 2a)
+Pill = two registered pills `pos` and `kitchen`, both `showWhen:"pos-station"` (`erp/pills_idmp.json:51-67`), gated by a `c_pos` row (`erp/idempiere.html:7433-7437`, `erp/idmp_pills.js:127-130,257-259`). Opener `openPosFor` `idempiere.html:6974-6989` → `PosLens.open`. File: `erp/pos_lens.js` (1626 lines), core `erp/pos_core.js` (641).
+| # | Pill feature | file:line | Unicenta equivalent | Verdict |
+|---|---|---|---|---|
+| F1 | Product tile grid from `c_poskey` (flat, album cards with image) | `pos_lens.js:458-466,545-560` | U5 catalog (hierarchical categories, product image buttons) | **carry** the idea, rebuild as U5 (the pill has no category tree) |
+| F2 | Running total in the top bar | `pos_lens.js:509-530,777` | U3 totals panel (Subtotal/Tax/Total) | **carry** |
+| F3 | Cart list (ordered items, count) | `pos_lens.js:761-790` | U3 ticket lines + U4 pad/+/- | **carry** |
+| F4 | Barcode scan: camera (BarcodeDetector) with typed fallback | `pos_lens.js:346-361,985-1100` | U3 "Get Barcode" `m_jEnter :847` (keyboard/wedge entry only) | **carry typed barcode; drop camera** |
+| F5 | Customer/partner select, default walk-in | `pos_lens.js:620-640` | U3 Go to / Find Customers | **carry** (optional customer) |
+| F6 | ONE Pay icon: completes the sale, no tender choice | `pos_lens.js:1482-1525` | U8 seven tender tabs + part payments + change | **drop** (replaced by U8; the pill has no tender at all) |
+| F7 | Complete = ONE signed group: `C_Order` + `M_InOut` + `C_Invoice` all CO on the till, plus BOM backflush `CONSUME` | `pos_lens.js:1488-1495`, `pos_core.js:70-139,219-235` | none (Unicenta deposits to its own tables; the twin's rule is deposit-only) | **drop** (M2/M3) |
+| F8 | Receipt overlay: lines + large total + receipt-URL QR | `pos_lens.js:363-383,933-984` | U9 receipt (`Printer.Ticket.xml`) | **carry** receipt, drop the QR |
+| F9 | "DEMO PAYMENT QR" on the receipt | `pos_lens.js:372-376,969-975` | none (U8 has no QR tender) | **drop** (§13 rule) |
+| F10 | Replenishment panel: suggest, stage, confirm PO / movement | `pos_lens.js:293-346,640-660,864-905`; `pos_core.js:385-470` | none on the till (HQ Replenish Report) | **drop** (M4) |
+| F11 | Register a new product (snap, scan, price) | `pos_lens.js:1133-1420`, `pos_core.js:491-565` | back office `Menu.Products` (`Menu.Root.txt:50`), not a till screen | **drop from the till** |
+| F12 | Deliver-later door (order + shipment born DR; WH walk route) | `pos_lens.js:694-701,1527-1570`; `pos_core.js:274-350` | none | **drop** |
+| F13 | Copy op log button | `pos_lens.js:1575-1590` | none | **drop** |
+| F14 | Hold / recall / edit builders (`buildHoldGroup`, `buildRecallCompleteGroup`, `buildEditGroup`) exist in core but **no UI calls them** (`grep` of `pos_lens.js` finds only buildSaleGroup/buildRegisterGroup/buildDeliverLater*) | `pos_core.js:236-273,565-636` | U7 shared tickets, U10 edit | **not carried (dead); U7/U10 are new builds** |
+| F15 | Line tax lookup (`lensTaxOf`) | `pos_lens.js:408-427` | `TaxesLogic` (`U/sales/TaxesLogic.java`) | **carry** (price the receipt with core tax functions, §2.2) |
+| F16 | Earcons (ring/pay/complete) via `sfx.js`/`sfx.json` | `pos_lens.js:222-231` | none | **drop** |
+| F17 | Image store (device-local images folder) | `erp/img_store.js` (172 lines), `pos_lens.js:556-560,1091-1098` | `PRODUCTS.IMAGE` blob | **carry** (device-local product pictures) |
+| F18 | Mobile layout (`@media ≤640px`), draggable pay panel, ⋯ dock, ?lens=pos deep link, share URL | `pos_lens.js:52-60,665-690,736-760`; `idempiere.html:1190,1494,7145-7148` | none (Unicenta is a fixed touch layout) | **drop** |
+| F19 | Kitchen pill: fold of undelivered deliver-later shipments, Serve = complete the shipment | `erp/kitchen_lens.js` (214), `erp/kitchen_core.js` (88), `idempiere.html:6994-7003` | U15 (a printed kitchen ticket; no screen, no Serve) | **mechanism differs; see §14.9** |
+**Tally, N = 19:** carry (full or partial: F4 and F8 are partial) = F1,F2,F3,F4,F5,F8,F15,F17 = **8**; drop = F6,F7,F9,F10,F11,F12,F13,F16,F18 = **9**; F14 = dead code (no UI calls it) = 1; F19 = mechanism differs from Unicenta = 1. (8+9+1+1 = 19.)
+
+### §14.7 How a station deposits a sale today (Part 2b)
+- **The pill does NOT deposit. It still completes the order on the till:** `pos_lens.js:1488` `POS.buildSaleGroup(...)` → `:1491` `cfg.KO.commitGroup(cfg.opDb, g.ops...)`; the shipped log line says so: `§POS-DOC order=... completeIt ok (C_Order+M_InOut+C_Invoice CO in ONE group)` (`:1507`). `completionOps` = `E.completeOrder` + `explodeBOM`→`CONSUME` + `completeInvoice` (`pos_core.js:114-139`). So §1 M2 and M3 are still true on `origin/main`.
+- `git grep -i "i_order\|i_payment"` over `pos_lens.js`, `pos_core.js`, `kitchen_lens.js`, `kitchen_core.js` = **no match**: no pill code writes `I_Order` or `I_Payment`. There is no tender in the pill, so no `I_Payment` could be formed.
+- `I_Order` rows reach head office only when a till-role user enters them in the ERP's own window (W-POS-CHAIN §C1 creates 3 `I_Order` rows with one `DocumentNo` through `applyOp`, `witness_pos_chain.js:99-101`); the Team plan `pos` then carries flow **F3 ticket-up `I_Order`** and **B4 slip-up `I_Payment`** (`erp/team_plan_pos.js:2`, generated); the pill-shaped flow **F1 pos-sales-up `C_OrderLine`** (the completed-on-the-till path) is still in that plan (same line). Head office: plugin `org.kernel.pos-integration` = view `I_POSSales` + process "Import POS Sales" (`erp/plugins/pos_integration.mjs`, 102 lines; `pos_import_sales.mjs`, 151 lines) running Import Orders (206, DocAction CO) then Import Payment (343, `erp/processes/ImportPayment.js`) per ticket, all-or-none.
+- **Witnesses covering the deposit/import path (all stay when the pill goes):** `witness_pos_chain.js` (163 lines: ticket → ONE completed order → back to the till; rule `twin:process:206?DocAction=CO` `:91`), `witness_pos_plan.js` (205: role-scoped delivery), `witness_pos_sales.js` (421) + `witness_pos_sales_mutants.js` (52), `witness_pos_sales_live.js` (285), `witness_pos_return.js` (183: a return is a -1 `I_Order` line), `witness_import_payment.js` (+`_mutants`), `witness_team_ui_pos.js` (U2: till approved as role 50004, Bound to = a branch Org), `witness_mf_seed.js`/`witness_mf_lens.js` (borrower I_Payment B4).
+- **Gap:** no witness covers a UI that *produces* `I_Order`+`I_Payment` from a ring/tender; that is exactly what P1 must add (W-TILL-DEPOSIT).
+
+### §14.8 Deletion budget for P4 — exact (Part 2c), `origin/main` @ `7586a565`
+| Item | Where (file:line) | Lines |
+|---|---|---|
+| `erp/pos_lens.js` (whole) | — | 1626 |
+| `erp/kitchen_lens.js` (whole, if the Kitchen pill goes with the POS pill — §14.9 Q) | — | 214 |
+| `erp/kitchen_core.js` (whole, same condition) | — | 88 |
+| `erp/img_store.js` (whole; only users are `pos_lens.js` and the page tag: `git grep` of `img_store\|ImgStore`) | — | 172 |
+| `erp/pos_core.js` | delete the complete-on-the-till and replenish code (`:70-139,219-350,385-470,491-636`); **KEEP** `completeShipmentOps` `:350-372` because `viewer/wh_walk.js:105` loads the file and `:853-870` calls `POSCore.completeShipmentOps` (Warehouse Walk) | up to 641 (≈600 deletable) |
+| `erp/idempiere.html` script tags/comments | `:608-610` (comment), `:712` pos_core, `:713-714` img_store, `:715-719` sfx.js, `:720` pos_lens, `:721-725` kitchen, `:726-727` qrcode, `:734-736` qrcode expose | 3+16+3 = 22 |
+| `idempiere.html` code | `openPosFor` `:6972-6989`, `openKitchenFor` `:6991-7003` (32); registry `:7091` (`pos: openPosFor, kitchen: openKitchenFor`); `posShare` `:7145-7148` (4); gate `IdmpPillPosGate` `:7433-7437` (5); deep link `_pendingLens` `:1190` and `:1494` (2) | 44 |
+| `erp/idmp_pills.js` | `:127-130`, `:257-259` (the `pos-station` gate) | 7 |
+| `erp/pills_idmp.json` | pill entries `pos` and `kitchen` `:50-67` | 18 |
+| `erp/sw.js` precache | `:351` pos_core, `:352` img_store, `:353` pos_lens, `:354` kitchen_core, `:355` kitchen_lens, `:356` sfx.json; `CACHE_VERSION` `:13` bump (v967 → next). KEEP `:368` qrcode.min.js (`erp.html:182`, `ad_ui.js:2087` use it) | 6 (+1 bump) |
+| `erp/plugin_release.js:35` built-in `pos_lens` entry; `eslint.globals.json:59` `POSCore` (drop only if pos_core is emptied) | | 2 |
+| Witnesses that go dead | `erp/tests/witness_pos_pillbar.js` (116), `erp/tests/poc_pos_close_leak.js` (90), `erp/tests/fixtures/pos_host.html` (80) | 286 |
+| Witnesses to EDIT | `witness_cross_tab_persist.js:86-98` (drop `pos_lens.js`/`kitchen_lens.js` from the file list, §T6-CALLER); `witness_t7_incremental.js:56-57,283-348` (requires `pos_lens._t7` and `kitchen_core`; its pos/kitchen arms die or move to the new till); `poc_idmp_pills.js:99-102` (comment only); `witness_osgi_console.js:26` uses a LOCAL fixture id `pos_lens`, no change needed | — |
+| Decide, not decided here | `erp/sfx.json` (16) and the speaker pill `pills_idmp.json:106` / `idempiere.html:7157-7167` (earcons only fired from `pos_lens.js`); `viewer/sfx.js` stays (the viewer uses it) | — |
+**Total: 7 whole files (pos_lens, kitchen_lens, kitchen_core, img_store + 3 test/fixture files) and 6 edited files (idempiere.html, idmp_pills.js, pills_idmp.json, sw.js, plugin_release.js, eslint.globals.json) + 3 witnesses edited; ≈ 2,486 lines deleted, plus ≈600 more inside `pos_core.js`.** Mirror files in `bim-compiler` (`build/erp/pos_core.js`, `pos_lens.js`, `kitchen_core.js`, `img_store.js`, `build/erp/sw.js`, and the headless `scripts/poc_pos_*.js`, `poc_kds_live.js`, `poc_kitchen_queue.js`, `poc_img_sync.js`) are the "source of truth" copies named in `sw.js:351-355` comments; they go in the same change (not counted above). W-POS-OFF must also assert `viewer/wh_walk.js` still completes a shipment.
+
+### §14.9 Pairing a non-ERP page as a Team device (Part 2d)
+- **An existing standalone page does exactly this: the Micro Finance borrower page.** `erp/borrower.html` (58 lines) + `erp/borrower.js` (228). It loads only `slipverify/slipverify.js` and `borrower.js` (`borrower.html:56-57`) and embeds the engine as a **hidden iframe of the ERP page** (`borrower.html:55` `<iframe id="b-engine">`; `borrower.js:211-212` `f.src = 'idempiere.html?' + qs` with `team=1` and `login=GardenAdmin` defaulted). It waits for `E.TeamSync && E.__crud && E.__idmpDb` (`:215-216`), then reads/writes through the engine: `E.__crud.modelRun` for reads (`:24-26`), `E.__crud.applyOp` + `overlay:committed` for writes (`:29-38`), `E.TeamSync.pairState()` (`:95`), `E.TeamSync.join(space)` (`:220`, "Join a team (space id)" box `borrower.html:44`), `E.TeamSync.visit()` (`:192`). Phone binding is done by the admin in the Team panel (W-TEAM-UI-POS U2/U3).
+- **Team/comm files a standalone page therefore gets, indirectly, through that iframe:** `idempiere.html:767-770` writes them only when `?team=1` (or `localStorage teamMode=1`): `common/comm/{comm_envelope,comm_order,team_keys,comm_roster,comm_admit,comm_pipe,comm_store,team_people,team_focus,team_avatars,team_people_ui,team_trust,team_scope,op_versions,team_versions,team_updates,team_releases}.js`, `erp/{team_plan,team_plan_pos,team_docno,team_seatbelt,team_sync,team_terms}.js`; `team_defaults/team_trial/team_avatars/team_panel` load always (`:766`). The page itself loads none of them.
+- **Cost:** that iframe is the FULL `idempiere.html` (all `pos_core`/ERP scripts), so the standalone till inherits the whole ERP engine and its precache unless P1 builds a slim host page. `common/comm/comm_phone.html` is the only page that loads the comm layer directly with its own GitHub pipe, but its header says "Not linked from any app" and it is a POC (`comm_phone.html:3-4`).
+- **Offline:** `sw.js:89-92` precaches `borrower.html`, `borrower.js`, `slipverify/*`; a till page would add its own lines there.
+- **Master data down:** the `pos` plan has **no DOWN flow for products, prices or taxes** (`team_plan_pos.js:2` lists only F1,F2,F3 and B1-B5; F2 is `M_MovementLine`, B2/B3/B5 are borrower invoices/allocations). A till that "reads master data down" (§2.2) gets it today only from the seed that ships with the engine frame, not from head office.
+- Role: W-TEAM-UI-POS approves a till as **50004** (`witness_team_ui_pos.js` U2); W-POS-CHAIN used **200001** because `I_Order` is AccessLevel 2 and role 103 is refused (`witness_pos_chain.js:8`). Whether 50004 may write `I_Order`/`I_Payment`: **not checked here**.
+
+### §14.x Contradictions with §1-§13
+1. **§2.1 / §3 P2 (standalone kitchen screen "receives the till's lines and sends back bumped/ready") vs Unicenta 3.81:** there is no kitchen display, no shared table, no queue and no bump in the source (§14.3); the kitchen is a second paper printer. Under §13's own rule ("no Unicenta counterpart = dropped") the KDS app is a drop; building it is a decision beyond "Unicenta-alike" (open question 1).
+2. **§2.1 asks how the KDS "receives orders (shared database, printer queue or network)":** answer = printer index 2, local device config (`DeviceTicket.java:147,213`); the `KitchenDisplay` table insert is dead code.
+3. **§2.2 "reads master data down (read-only plan flows)":** the `pos` plan carries no product/price/tax flow (§14.9).
+4. **§1 M2/M3 "the till completes the sale itself":** confirmed unchanged at `pos_lens.js:1488-1495`; and §2.2 "the deposit path is built and live" is true only for the head-office half; no till UI produces `I_Order`/`I_Payment` (§14.7).
+5. **§2.1 / §13 deletion budget lists only "the pill" and `pos_core.js`'s complete path:** there are TWO pills (`pos` and `kitchen`, `pills_idmp.json:51,60`), and `pos_core.js` cannot be deleted whole because Warehouse Walk loads it (`viewer/wh_walk.js:105,853-870`); `kitchen_core.serveOps` also rides it. `witness_t7_incremental.js` depends on both.
+6. **§13 "album cards, QR tender, earcons survive only where Unicenta has an equivalent":** album cards have one (product image buttons, U5); QR tender and earcons have none (U8 has seven non-QR tabs): both drop.
+7. **§12.7 item 6 (key = DocumentNo + till id):** confirmed and sharpened. Unicenta's number is per-database, three separate counters (sale / refund / payment), so the key also needs the ticket TYPE; a Unicenta-alike "Ticket #" shown to the cashier is not the deposit key (§14.5).
+8. **§13 "Unicenta-alike ... to avoid new learning curve" vs the source version:** the only source obtainable is 3.81 (2014), not the 4.x/5.x the user may use; screen names/layout may differ in newer releases (open question 3).
+9. **§2.2 close-cash "declaration (row shape TBD, owner Q-c)":** Unicenta stores no counted-cash declaration (§14.4); its close is `CLOSEDCASH` DATEEND+NOSALES and a re-derivable query. A `declared vs expected` row would be a twin addition, not a Unicenta copy.
+
+### §14.y Proposed W-TILL-UNICENTA-PARITY denominator
+N is taken from §14.1 (the cashier-facing screens/flows of the Unicenta source, not hand-picked); a sweep counts X of N present in the new till, each judged by what its source row asserts. **N = 17** (15 always-on + 2 mode-gated by `machine.ticketsbag=restaurant`; state the mode when judging):
+| W# | Parity item | Assert (from source) | Row |
+|---|---|---|---|
+| 1 | Login | people list, user buttons | U1 |
+| 2 | Register menu | exactly the 5 panels in `Menu.Root.txt:28-32`, in that order, with `L:` names | U2 |
+| 3 | Sales screen | the 6 regions of `JPanelTicket.form` with the named buttons | U3 |
+| 4 | Number-pad grammar | `qty * price`, `+`, `-`, `=` and barcode-Enter transitions of `JPanelTicket.java:1027-1291` (state-table witness, one case per transition) | U4 |
+| 5 | Catalog | root categories → sub-categories → products from `CATEGORIES.PARENTID`, `PRODUCTS_CAT.CATORDER` | U5 |
+| 6 | Ticket button bar | Total Disc', Print preview, Drawer enabled by default; the commented ones absent | U6 |
+| 7 | Shared tickets | New Sale / Cancel Sale / Layaways | U7 |
+| 8 | Payment dialog | 7 sale tabs + Add/Delete Part Payment + change + print toggle | U8 |
+| 9 | Receipt + change | `Printer.Ticket` field order; change pop-up | U9 |
+| 10 | Edit Sales | find by number / finder; Edit, Refund, Print | U10 |
+| 11 | Refund | refund lines + 4 refund tabs; own counter | U11 |
+| 12 | Customer Payment | debt paid | U12 |
+| 13 | Payments | Cash (In) / Cash (Out) with reason | U13 |
+| 14 | Close Cash | the 8 totals of §14.4, DATEEND + new shift row, partial print | U14 |
+| 15 | Send Order (kitchen ticket) | only `ISKITCHEN`, not-yet-sent lines; sendstatus No→OK | U15 |
+| 16 | Restaurant floor/table map (gated) | Floors/Places, Reload, Reservations | U16 |
+| 17 | Reservations (gated) | | U17 |
+Non-vacuity: X must be computed from the live screen registry against this table; a till that renders only a subset must print `INCONCLUSIVE`/`X of 17`, never PASS. Not in N (back office, not a till screen): Menu.Root Backoffice groups (`Menu.Root.txt:34-120`).
+
+### §14.z Open questions the source could not answer
+1. **Kitchen:** Unicenta 3.81 has no kitchen display or bump. Build the standalone KDS anyway (a twin extension, no Unicenta counterpart) or keep the kitchen as a printed ticket (U15)? §13 and §3 P2 conflict until decided. *(owner)*
+2. **Source version:** is the user's Unicenta 3.81, 4.x or 5.x? Only 3.81 was obtainable; a newer release may add a real kitchen display. *(owner)*
+3. **Tender mapping:** Unicenta's names (`cash, cheque, paperin/out, magcard, free, debt, bank, cashin/out, debtpaid`) vs `I_Payment.TenderType`: not extracted here (needs `ImportPayment.java` mapping); `free`, `paper` and `debt` have no identified iDempiere tender. *(P0 tender-map task)*
+4. **Role 50004 may write `I_Order`/`I_Payment`?** not checked (§14.9).
+5. **Receipt vs imported order tax rounding** (P0 item in §3): not in this task's scope; Unicenta stores net `PRICE` and per-ticket `TAXLINES` (`DataLogicSales.java:1192`), the twin's order total is head office's: still to be witnessed.
