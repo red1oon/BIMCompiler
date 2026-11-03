@@ -63,7 +63,7 @@ public class BIMTabPanel extends ADTabpanel {
         int recordId = getGridTab().getRecord_ID();
         String iframeUrl = viewerUrl + sep
             + "db=" + java.net.URLEncoder.encode(dbUrl, java.nio.charset.StandardCharsets.UTF_8)
-            + "&record=" + recordId + "&embedded=true";
+            + "&record=" + recordId + "&embedded=true" + erpLoginParams();
 
         iframe = new Iframe(iframeUrl);
         ZKUpdateUtil.setWidth(iframe, "100%");
@@ -75,6 +75,24 @@ public class BIMTabPanel extends ADTabpanel {
         installMessageBridge();
 
         log.info("§BIM_TAB C_Project_ID=" + recordId + " viewer=" + viewerUrl + " db=" + dbUrl);
+    }
+
+    /**
+     * The NON-secret login context of this ZK session (user name, tenant, role, org, warehouse — Env.AD_USER_NAME / AD_CLIENT_ID / AD_ROLE_ID / AD_ORG_ID / M_WAREHOUSE_ID,
+     * Env.java:77-125), so the viewer's push (§8.6 P5) asks the user only for the password. The password is never passed: stock web services take user + password on every
+     * call (AbstractService.java:118-121) and a ZK session cannot be reused by the WS servlet.
+     */
+    private String erpLoginParams() {
+        java.util.Properties ctx = org.compiere.util.Env.getCtx();
+        String user = org.compiere.util.Env.getContext(ctx, org.compiere.util.Env.AD_USER_NAME);
+        StringBuilder b = new StringBuilder();
+        if (user != null && !user.isEmpty())
+            b.append("&erpUser=").append(java.net.URLEncoder.encode(user, java.nio.charset.StandardCharsets.UTF_8));
+        b.append("&erpClient=").append(org.compiere.util.Env.getAD_Client_ID(ctx))
+         .append("&erpRole=").append(org.compiere.util.Env.getAD_Role_ID(ctx))
+         .append("&erpOrg=").append(org.compiere.util.Env.getAD_Org_ID(ctx))
+         .append("&erpWarehouse=").append(org.compiere.util.Env.getContextAsInt(ctx, org.compiere.util.Env.M_WAREHOUSE_ID));
+        return b.toString();
     }
 
     /** Viewer page: SysConfig BIMOOTB_VIEWER_URL, default the plugin's own web context. */

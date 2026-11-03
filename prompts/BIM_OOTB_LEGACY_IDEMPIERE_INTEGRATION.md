@@ -296,3 +296,39 @@ findings of §8.3/§8.4 are NOT in the film). Every number from a `§` line of t
 - **P7 — the BIM tab opened for real** (ZK headless, software GL): `§BIM_TAB` line + the iframe URL loading the viewer for that project's DB.
 - ZK screenshots by headless Chrome `--disable-gpu` against the TEST instance only (:8098) — the owner's go for the recording.
 **Open for the owner:** OK this storyboard · build P5 first (it is the film's core beat) · language set (EN first, then the PLAYBOOK set?).
+
+## §8.6 SPEC P5 — the viewer's own Find › ERP push lands in iDempiere (owner 2026-11-03: "Build P5 first") — written before code
+**Measured:** Find › ERP (`viewer/find_erp_push.js _pushToErp`) folds into the viewer's local ERP store only; `viewer/erp_rest_push.js` is not loaded by `viewer.html`; the plan builder (fold rows →
+`{building, name, fields, phases:[{tasks, lines}]}`) exists only inline in `capex/tools/shed_twin.js`. Stock web services take user + password on EVERY call (`ADLoginRequest` = user, pass, lang,
+ClientID, RoleID, OrgID, WarehouseID, stage — no token; `AbstractService.java:118-121` `Login.getClients(user, pass, …)`); a ZK session cannot be reused by the WS servlet.
+**Decision (A — stock):** the viewer asks for the user's own iDempiere password ONCE per tab, keeps it in memory only (never localStorage/IndexedDB/URL/log), and pushes through the plugin's
+`BIMOOTB_*` types exactly as the proven node path. The BIM tab passes the NON-secret login context from the ZK session (`erpUser`, `erpClient`, `erpRole`, `erpOrg`, `erpWarehouse` URL params,
+from `Env.getCtx()`), so inside the tab only the password is asked. (B, not built: hand the plan to the tab's Java side over the existing postMessage bridge and write it with the ZK session — no
+second sign-in, but a second push implementation; kept as an option.)
+**Build (bim-ootb):**
+1. `viewer/erp_push_plan.js` (UMD, browser + node): `planFromDb(db, projectValue)` → `{plan, notes}` — MOVED from `shed_twin.js` (sql.js API only), plus `bimootbServiceTypes()` (the
+   `BIMOOTB_Query_/Create_<Table>` map of `shed_twin`'s `BRIDGE_SVC=bimootb`). `shed_twin.js` calls both; its inline copies go (deletion budget stated in the PR).
+2. Target: `A.LEGACY_ERP = { base }` — `location.origin` when the viewer is served under `/bimootb/`, else a `?erp=<base>` param (http(s)://localhost or https only); none → today's behaviour,
+   logged `§PROJ_PUSH_LEGACY skip=no-target`.
+3. After the local fold succeeds, `_pushToErp` builds the plan from the SAME store (`planFromDb(db, building)`), asks for the password if not in memory (a small viewer dialog; user/client/role/org
+   prefilled from the URL params, editable when absent), then `ErpRestPush.pushProjectOrder({baseUrl, login, serviceTypes: bimootbServiceTypes()}, plan)`. Logs
+   `§PROJ_PUSH_LEGACY base=… project=… projectId=… created=…` / `§PROJ_PUSH_LEGACY_ERR …` (never the password); status text + the existing sfx. A refused login clears the remembered password.
+4. `viewer.html` loads `erp_rest_push.js` + `erp_push_plan.js`; `sw.js` precaches both + version bump.
+**Witness W-VIEWER-PUSH-LEGACY (headless node, the REAL `_pushToErp` as `capex/tests/witness_find_push_4d.js` drives it; the dialog stubbed to return a password; target = the local pilot, role
+"BIM Push Test"):** a NEW project Value → legacy == the local fold (PlannedAmt, phase/task/line counts, the six phase dates); a 2nd push `created +0`; no target → `skip=no-target` and no WS call;
+a wrong password → refused, 0 rows created, the message shown, password forgotten; the password string never appears in any captured log line. Break: `BREAK=1` expects one more line → FAIL.
+Regression: `witness_find_push_4d`, `poc_erp_rest_push`, the HHS + SHED twins (`shed_twin.js` now on the shared builder) PASS +0.
+**Plugin side (bim-compiler, this lane):** `BIMTabPanel` adds the five `erp*` params from `Env.getCtx()`; rebuild + reinstall on the test instance.
+
+### §8.7 RESULT 2026-11-03 — P5 built: the viewer's own push lands in iDempiere; logs read
+- **bim-ootb #2561 (merged):** `viewer/erp_push_plan.js` (`planFromDb`, `bimootbServiceTypes`, `legacyTarget`) — the plan builder MOVED from `capex/tools/shed_twin.js` (−25/+4 there); `A.LEGACY_ERP`
+  (+ `A.LEGACY_ERP_CTX` = the five `erp*` params); `find_erp_push._pushLegacy` after the local fold (password in a closure only, scrubbed from every log string, forgotten on any failure);
+  viewer.html loads both modules; sw v1676. W-VIEWER-PUSH-LEGACY on the pilot `PASS judged=24 fail=0` (BREAK=1 → FAIL); regressions unchanged (W-FP4D 5/5, poc_erp_rest_push PASS, W-FOLD1 11/11,
+  HHS twin 302/302 +0, SHED twin 109/109 +0) — bim-ootb `prompts/CAPEX_DASHBOARD.md §5.10`.
+- **Here:** `BIMTabPanel.erpLoginParams()` passes `erpUser/erpClient/erpRole/erpOrg/erpWarehouse` from `Env.getCtx()` (Env.java:77-125); compiles (javac 17 vs the pilot jars).
+- **Clean instance (plugin only, :8098), both bundles rebuilt from bim-ootb e3ef3a85:** `/bimootb/viewer/viewer.html` 200 and loads `erp_push_plan.js` + `erp_rest_push.js`; served `find_erp_push.js` has
+  `_pushLegacy`. The SAME witness pointed at it (`PILOT_BASE=http://localhost:8098`, role 102 = GardenWorld Admin with "BIM OOTB Push" included; a temp copy with only the role id as env, not
+  committed): `§PROJ_PUSH_LEGACY base=http://localhost:8098 … projectId=1000002 created={…"projects":1,"phases":6,"tasks":16,"lines":45}` → 2nd push `+0` → `skip=no-target` → `skip=no-credentials`
+  → `§W_VPL_VERDICT PASS judged=24 fail=0`.
+- **Still needs a browser (owner's go, headless Chrome `--disable-gpu`, test instance only):** the shipped password dialog (`_askLoginDom`); the viewer opened AT `/bimootb` (same origin, the target rule
+  `served under /bimootb/ → location.origin`); the BIM tab in ZK (P7 / film beat 7). Then the film recording itself (§8.5, owner OK of the storyboard pending).
