@@ -103,9 +103,18 @@ Add a `§MEM` heap/bytes line to A1, A2, B3 so the next review reads the cost fr
   pick has exported + stored the whole building DB since then (42 MB on LTU), and the 2026-06-12 P0 foreign-db guard was off.
   Restored both (+ commitGroup rule); dead copy deleted (−580). W-ONE-KERNEL-OPS 16/16; baseline fails exactly the 9
   restoration claims. W-PERS-5b now judges code not comments (a comment had made it PASS) → INCONCLUSIVE on the decision below.
-  **⛔ OWNER DECISION (A3a-key):** switch kernel_ops' persist key to the canonical cache key + split-mode url? Both fixes
-  were written 2026-08-23 into the unloaded copy and never ran; switching turns on "Viewer edits survive a refresh" for the
-  first time (and a persisted copy can shadow a newer building download). Until decided: raw-url key, as shipped.
+  ✅ **A3a-key RESOLVED → A3b DONE (witness)** — bim-ootb #2562 (live viewer sw v1677, erp sw v965, `erp/kernel_ops.js?v=15`).
+  The question was ALREADY ruled on record (found by the owner-requested prompts check, 2026-11-03), so no new decision
+  was needed: 4D_GANTT_TM_REFACTOR §S70 ("edits vanishing on reload is a GAP, not a design choice"; whole-DB cost measured
+  and accepted, Hospital 252 MB/86 ms), HISTORY_PERSIST_RECALL §LOCKED-2 (the signed log always records), SEAM_IDENTITY_AUDIT
+  (cacheKey wired into 1 of 10 callers — migrate the rest), KERNEL_TIMEBOMB_AUDIT T5 (one write path). My earlier "first
+  time / stale shadow" worry was wrong on both counts: ScheduleAuthor.persistDb already writes this key since 2026-08-23,
+  and cachedFetch §R6a ETag/Content-Length revalidation owns staleness (persist writes the 'dbs' store, never
+  'revalidation'). Also new: the superseded raw-url copy is deleted after a canonical write (`§KRN_PERSIST_RAW_RECLAIM`).
+  W-ONE-KERNEL-OPS 17/17 (baseline 13 fail, mutant 4 fail); witness_gantt_edit_persist 18/0 (W-PERS-5b PASS on code).
+  **Lesson:** before calling something an owner decision, grep prompts/ for the ruling — the record usually has it.
+  Still open from T5: `modeller/kernel_ops.js` is a third copy (C6); T5's boot assertion ("refuse to run if two copies
+  define window.KernelOps") is not built. SEAM_IDENTITY_AUDIT's other unmigrated cacheKey callers not re-checked here.
 - ✅ **A4 DONE (witness)** — bim-ootb #2557 (squash-merged, live sw v1673; live `proj_order_state.js` carries `persistShared`).
   Open question answered from code: What-if slips stay in JS until Accept (`commitSlip`/`acceptSlip` are its only writes),
   so it shares the instance; it keeps its private-seed fallback when the store has no C_ProjectPhase. W-ONE-PO-STORE 13/13:
