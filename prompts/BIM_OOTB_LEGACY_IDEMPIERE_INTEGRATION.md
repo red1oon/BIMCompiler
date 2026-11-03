@@ -332,3 +332,21 @@ Regression: `witness_find_push_4d`, `poc_erp_rest_push`, the HHS + SHED twins (`
   → `§W_VPL_VERDICT PASS judged=24 fail=0`.
 - **Still needs a browser (owner's go, headless Chrome `--disable-gpu`, test instance only):** the shipped password dialog (`_askLoginDom`); the viewer opened AT `/bimootb` (same origin, the target rule
   `served under /bimootb/ → location.origin`); the BIM tab in ZK (P7 / film beat 7). Then the film recording itself (§8.5, owner OK of the storyboard pending).
+
+### §8.8 RESULT 2026-11-03 — the browser checks (owner "Go"; headless Chrome, software GL `--use-gl=swiftshader`, TEST instance :8098 only); logs read
+- **Browser flags:** `--disable-gpu` turns WebGL OFF in this Chrome ("GL_VENDOR = Disabled") and the viewer's renderer fails before boot; the project's film tool flags (`--use-gl=swiftshader
+  --disable-gpu-sandbox`, + `--enable-unsafe-swiftshader`) give software WebGL with no GPU — use those.
+- **Found + fixed — the bundle was missing files:** the page 404'd 21 `../hr_bim_asset/*.js`; the build's sibling rule named four folders → now ANY `../<dir>/` the viewer references (minus `buildings/`
+  and `erp/idempiere.html`): `files=546 viewer=500 siblings=46`, 0 misses. Also a build-script slip: the loop's last `[ -f ] && echo` was false → `set -e` ended the script BEFORE the copy (a bundle of
+  only META-INF/WEB-INF shipped once, 404 at `/bimootb`) — now `if … fi`, and the build line `§BIMOOTB_BUNDLE` must print.
+- **B1 PASS:** at `/bimootb/viewer/viewer.html` `APP.LEGACY_ERP = {"base":"http://localhost:8098","via":"served"}`, ErpPushPlan/ErpRestPush/ProjFold present, `LEGACY_ERP_CTX` from the URL. (The viewer's
+  own boot-time building load does not finish headless — the SAME on a plain static server of the same checkout, so not the bundle; the check loads the building with the page's own sql.js.)
+- **B2 PASS after a real fix:** first run refused by legacy (`null value in column "c_taxcategory_id"`: the viewer's store opened without the ERP's boot overlays) → bim-ootb #2563 (CAPEX §5.11).
+  Then the REAL dialog: prefilled read-only `User=GardenAdmin | Client ID=11 | Role ID=102 | Org ID=11 | Warehouse ID=103`, password typed, `§PROJ_PUSH_LEGACY base=http://localhost:8098 … projectId=1000003`,
+  legacy == local fold (7 phases / 10 tasks / 16 lines, 383827.36788 — the find-or-create also resumed cleanly after the earlier partial failure), dialog removed, password in 0 of 697 log lines.
+- **B3 NOT PASSED — two findings:** (1) opening the Project window threw `org/zkoss/zk/ui/event/EventListener` (NoClassDefFound): the tab bundle required org.adempiere.ui.zk but not ZK itself →
+  now `Require-Bundle … zcommon, zk, zul, zweb` (10.0.1), as iDempiere's own org.idempiere.printformat.editor does; the error is gone. (2) The BIM tab is still not in the window: no element named
+  "BIM" exists; level-0 peers are listed in the breadcrumb popup (`CompositeADTabbox.java:815-835`). The May tab has **0 AD_Field rows**, so even shown it could not read Value/Description
+  (`GridTable.createSelectSql :376` builds no SELECT without fields). **Next:** give tab 200500 its fields through the dictionary (key C_Project_ID hidden, Value, Name, Description read-only),
+  re-Pack-Out, reinstall, re-run B3 — and push the link-back Description (`BIM src db=`) with the plan so the tab opens a building that exists (today legacy Description stays empty → the tab would use
+  `BIMOOTB_BUILDINGS_BASE` + Value, a file the bundle does not carry).
