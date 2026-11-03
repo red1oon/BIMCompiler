@@ -16,7 +16,7 @@
         <link rel="prev" href="../DXF2BIM_FORMAT/">
       
       
-        <link rel="next" href="../ERP_FirstSetup/">
+        <link rel="next" href="../TillUserGuide/">
       
       
         
@@ -898,6 +898,8 @@
       
         
       
+        
+      
     
     
     
@@ -1581,72 +1583,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#pos-screen-layout-the-killer-demo-surface" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        POS screen layout (the killer-demo surface)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#payment-panel-layout-top-bar-total-single-pay" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Payment panel layout (top-bar total + single Pay)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#making-a-sale" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Making a sale
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#register-a-new-product-at-the-till-the-import-pill-p-9" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Register a new product at the till — the Import pill (§P-9)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#hold-recall-p-13" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Hold / recall (§P-13)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#kitchen-display" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Kitchen Display
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#backflush-p-3" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2082,6 +2018,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TillUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    uniCenta-style Till & Kitchen Screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -3868,72 +3832,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#pos-screen-layout-the-killer-demo-surface" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        POS screen layout (the killer-demo surface)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#payment-panel-layout-top-bar-total-single-pay" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Payment panel layout (top-bar total + single Pay)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#making-a-sale" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Making a sale
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#register-a-new-product-at-the-till-the-import-pill-p-9" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Register a new product at the till — the Import pill (§P-9)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#hold-recall-p-13" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Hold / recall (§P-13)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#kitchen-display" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Kitchen Display
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#backflush-p-3" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -5082,104 +4980,12 @@ everything above; see <code>docs/internal/ERP_COVERAGE_MATRIX.md</code> (B-3, W-
 this guide's walkthrough stays the trade cycle.</p>
 <hr />
 <h2 id="7-pos-point-of-sale">7. POS — Point of Sale<a class="headerlink" href="#7-pos-point-of-sale" title="Permanent link">&para;</a></h2>
-<p><strong>Prerequisite:</strong> log in as <strong>GardenUser</strong> (the POS station <code>c_pos_id=1</code> is scoped to that role).
-Tap the <strong>POS</strong> pill in the bottom bar (it appears only when the loaded db has a <code>c_pos</code> station).</p>
-<h3 id="pos-screen-layout-the-killer-demo-surface">POS screen layout (the killer-demo surface)<a class="headerlink" href="#pos-screen-layout-the-killer-demo-surface" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Album cards</strong> — the product grid is a photo album: each card
-  from <code>c_poskey → m_product</code> (the sealed keylayout) shows its photo (full-res from the device images
-  folder → ledger thumbnail → placeholder glyph, honestly tiered) and its master price from the
-  station's pricelist — you ring the master, not a manual price.</li>
-<li><strong>Floating payment panel</strong> — the cart pill summons a floating panel on its own layer;
-  tap the cart pill again to dismiss it. The album keeps
-  scrolling underneath; payment never squeezes the grid.</li>
-<li><strong>Panel lifecycle</strong> — <strong>swipe-down</strong> to dismiss, and it <strong>follows the cart</strong>: when the cart empties
-  — sale completed, or the last line removed — the panel dismisses itself. The cart pill re-summons it
-  anytime. Dismissing is pure UI: it never touches
-  the cart contents or a committed sale (the sale is sealed atomically at Complete, before the panel
-  ever moves).</li>
-</ul>
-<p><img alt="POS — Garden User · Store: product grid left, live cart right, replenishment suggestions below" src="../figs/pos_live.png" /></p>
-<h3 id="payment-panel-layout-top-bar-total-single-pay">Payment panel layout (top-bar total + single Pay)<a class="headerlink" href="#payment-panel-layout-top-bar-total-single-pay" title="Permanent link">&para;</a></h3>
-<p>The panel is a <strong>draggable</strong> float, stripped to the essentials:</p>
-<ul>
-<li><strong>Top bar — the running total.</strong> The top row shows the <strong>live cart total</strong>,
-  updating as you ring items. The <strong>cart icon</strong> stays on the left (tap it to summon/dismiss the panel);
-  the <strong>scan-QR</strong> button sits on the <strong>right</strong> (opens the
-  barcode overlay to add an item).</li>
-<li><strong>One Pay icon.</strong> A single <strong>Pay</strong> icon (right) <strong>completes the sale directly</strong>
-  — there is no pre-completion preview modal (the earlier orange/green rim drawers + receipt-preview
-  modal are retired). The walk-in partner is <strong>defaulted</strong> (the <strong>Standard</strong> business partner, else
-  first active — <code>§POS-PARTNER-DEFAULT</code>), so Pay works out of the box.</li>
-<li><strong>Draggable.</strong> Grab the panel header to reposition it (<code>§POS-FLOAT-DRAG moved=Y</code>); the album keeps
-  scrolling underneath, payment never squeezes the grid.</li>
-<li><strong>⋯ dock</strong> (bottom-right, reveal-up, taps-outside close it) — the secondary actions live here:
-  <strong>home</strong>, <strong>import</strong> (register a product — the <code>(+)</code> glyph), <strong>receipt</strong> (re-open the last receipt,
-  appears after a sale), and <strong>Deliver later</strong> (the WH-walk <code>route</code> glyph; dictionary-gated — present
-  only when the loaded db has an <code>SO</code> doctype — opens the warehouse walk in a new tab).</li>
-</ul>
-<h3 id="making-a-sale">Making a sale<a class="headerlink" href="#making-a-sale" title="Permanent link">&para;</a></h3>
-<ol>
-<li>Tap a product card (or <strong>scan</strong> from the top bar) → it is added to the cart at the sealed price.</li>
-<li>Tap again to increment qty, or edit qty in the line.</li>
-<li>Review the <strong>running total</strong> in the top bar (BigDecimal fold of line amounts, never a posted figure yet).</li>
-<li>Tap <strong>Pay</strong> (<code>#pos-float-tender</code>) → the sale <strong>completes directly</strong> into one signed op-group
-   (<code>§POS-SALE … newVerbs=[] chainOk=Y</code> — the receipt shows <code>signed=Y</code>). No partner prompt — the
-   Standard partner is used unless you pick another.</li>
-<li>The receipt opens in its own overlay (re-openable via the <strong>receipt</strong> entry in the ⋯ dock) and the
-   payment panel dismisses itself — the sale is already closed: one signed op-group, nothing left pending.</li>
-</ol>
-<div class="admonition note">
-<p class="admonition-title">Audio earcons</p>
-<p>Subtle earcons sound on key POS actions — ring an item, Pay, sale-complete (<code>§POS-AUDIO</code>) — via the
-shared synth engine reading <code>sfx.json</code> (data rows, <code>ui_clicks:false</code> so there is no per-button
-spam). They no-op silently if the sound engine is absent.</p>
-</div>
-<div class="admonition tip">
-<p class="admonition-title">Barcode scan distance</p>
-<p>The scan overlay shows the hint <strong>"Hold steady · 10–15 cm from barcode"</strong> on open.
-Barcode scanning works best at 10–15 cm from the label. Some Android phones apply macro focus
-automatically (Chrome-only; Safari degrades silently — typed fallback always works).</p>
-</div>
-<h3 id="register-a-new-product-at-the-till-the-import-pill-p-9">Register a new product at the till — the Import pill (§P-9)<a class="headerlink" href="#register-a-new-product-at-the-till-the-import-pill-p-9" title="Permanent link">&para;</a></h3>
-<p>The <strong>Import</strong> pill opens the snap+scan+price flow: photograph the item (camera, downscaled to a
-≤32KB ledger thumbnail; the full-res photo goes to the device images folder under a
-<code>sha256:</code> content address — <code>§POS-IMGKEY</code>), scan or type its barcode, key the price. <strong>Register</strong>
-commits ONE signed group of 4 CRUD_CREATE ops — M_Product, M_ProductPrice (station pricelist),
-AD_Image, C_POSKey — every default EXTRACTED from the dictionary and the station's own rows.
-The new card appears in the album and rings
-immediately through the unchanged sale path. A duplicate barcode is refused and the existing
-product handed back (propose-merge). Editing name/price/photo later rides the same signed path,
-changed columns only.</p>
-<h3 id="hold-recall-p-13">Hold / recall (§P-13)<a class="headerlink" href="#hold-recall-p-13" title="Permanent link">&para;</a></h3>
-<p><strong>Hold</strong> parks the in-progress cart as a real <code>DR</code> C_Order — the same ledger row the Sales Order
-window and Kanban read, not a private store (<code>§POS-HOLD park order=… listed window=Y kanban=Y</code>).
-<strong>Recall</strong> is a plain query of the held orders; completing a recalled sale completes THE held
-order (never a duplicate — exactly one C_Order exists, witnessed).</p>
-<p>The "Complete" creates ONE signed op-group:</p>
-<div class="highlight"><pre><span></span><code>CREATE_DOCUMENT  C_Order  (the POS sale order)
-CREATE_LINE      C_OrderLine  (one per cart line)
-SET_STATUS       C_Order → CO
-CREATE_DOCUMENT  M_InOut  (shipment, policy-gated)
-CREATE_LINE      M_InOutLine
-SET_STATUS       M_InOut → CO
-CREATE_DOCUMENT  C_Invoice  (invoice, policy-gated)
-SET_STATUS       C_Invoice → CO
-CONSUME          M_Transaction P−  (one per BOM leaf, the backflush)
-</code></pre></div>
-<h3 id="kitchen-display">Kitchen Display<a class="headerlink" href="#kitchen-display" title="Permanent link">&para;</a></h3>
-<p>The <strong>Kitchen</strong> pill (visible at a POS station) shows every order currently waiting to be served —
-the same <em>deliver-later</em> shipments described in <a href="#deliver-later-pick-at-the-warehouse-s-2b">§S-2b</a>,
-but for a kitchen counter rather than a warehouse pick. The queue is a live view of the ledger, not a
-separate list: as soon as a sale is rung with <strong>Deliver later</strong>, the ticket appears here, oldest first.</p>
-<ul>
-<li><strong>Queue order is first-in-first-out</strong> — the ticket that's been waiting longest is always at the top.</li>
-<li>Tap <strong>Serve</strong> on a ticket once the order is ready. This completes the same shipment the Warehouse
-  Walk would otherwise pick — serving from the kitchen and picking from the warehouse are two doors
-  onto the same document, so a ticket can only be served once (a second tap is refused).</li>
-<li>Nothing here is a separate order type — no new sale action exists for "send to kitchen"; any
-  deliver-later sale automatically becomes a kitchen ticket.</li>
-</ul>
+<blockquote>
+<p><strong>The in-ERP POS pill was removed on 2026-11-03.</strong> Selling now happens on the standalone uniCenta-style till and
+kitchen screen; head office imports their sales with <strong>Import POS Sales</strong> and <strong>Branch Day Close</strong>. The full
+walkthrough (cashier, branch manager, head-office clerk) is the
+<strong><a href="../TillUserGuide/">uniCenta-style Till &amp; Kitchen Screen — User Guide</a></strong>.</p>
+</blockquote>
 <h3 id="backflush-p-3">Backflush (§P-3)<a class="headerlink" href="#backflush-p-3" title="Permanent link">&para;</a></h3>
 <p>If any product has a BOM (e.g. Patio Furniture Set), <code>erp_engine.explodeBOM</code> recursively
 expands the recipe and adds a <code>CONSUME P−</code> op for every leaf component. The on-hand fold
@@ -5187,7 +4993,7 @@ expands the recipe and adds a <code>CONSUME P−</code> op for every leaf compon
 <h3 id="replenishment-p-4">Replenishment (§P-4)<a class="headerlink" href="#replenishment-p-4" title="Permanent link">&para;</a></h3>
 <p>Replenishment is a <strong>staged, reviewable action</strong> — nothing reorders automatically after a sale.</p>
 <ol>
-<li>Tap <strong>Generate Replenishment</strong> in the POS panel. The system folds every sale and movement to
+<li>Run the <strong>Replenish Report</strong> (it is also step 2 of <strong>Branch Day Close</strong>, see the <a href="../TillUserGuide/">Till guide</a>). The system folds every sale and movement to
    find current on-hand per product, compares it against each product's stock policy
    (<code>Level_Min</code>/<code>Level_Max</code>), and proposes an editable staging list — nothing is committed yet.</li>
 <li><strong>Review the list.</strong> Adjust the quantity on any row, or deselect a row you don't want ordered
@@ -5199,7 +5005,6 @@ expands the recipe and adds a <code>CONSUME P−</code> op for every leaf compon
    outstanding. Anything already ordered this round is never re-ordered, even if you generate
    again before it arrives.</li>
 </ol>
-<p><em>(Screenshot pending — see <code>docs/figs/pos_live.png</code> for the general POS panel in the meantime.)</em></p>
 <hr />
 <h2 id="8-financial-reporting_1">8. Financial Reporting<a class="headerlink" href="#8-financial-reporting_1" title="Permanent link">&para;</a></h2>
 <p>Tap <strong>⌂ → Performance Analysis → Financial Report</strong> (or use the Statements pill from the Dictionary):</p>

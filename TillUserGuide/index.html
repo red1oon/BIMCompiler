@@ -1,0 +1,4089 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Construction is manufacturing. A building IS its Bill of Materials.">
+      
+      
+        <meta name="author" content="Redhuan D. Oon">
+      
+      
+      
+        <link rel="prev" href="../ERPUserGuide/">
+      
+      
+        <link rel="next" href="../ERP_FirstSetup/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>uniCenta-style Till & Kitchen Screen - BIM Intent Compiler</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  <script data-goatcounter="https://red1oon.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#unicenta-style-till-kitchen-screen-user-guide-sqlite-local-first" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="BIM Intent Compiler" class="md-header__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BIM Intent Compiler
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              uniCenta-style Till & Kitchen Screen
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue-grey" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source md-header__source--stacked">
+        <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+        <a href="https://github.com/red1oon/BIMCompiler" title="red1oon/BIMCompiler on GitHub" class="md-source" id="bim-compiler-source" target="_blank" rel="noopener">
+          <div class="md-source__icon md-icon">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+          </div>
+          <div class="md-source__repository" id="bim-compiler-repository">
+            Compiler
+          </div>
+        </a>
+        <span id="repo-totals" class="md-source-totals" title="Combined stars / forks across both repos"></span>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href=".." class="md-tabs__link">
+          
+  
+  
+    
+  
+  Start Here
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../BIMUserGuide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  The 3 Apps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../ArchitectureOverview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Go Deeper
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../SpatialCompilationPaper/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Papers & Positioning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../PROJECT_CHRONOLOGY/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  History & Legacy
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="BIM Intent Compiler" class="md-nav__button md-logo" aria-label="BIM Intent Compiler" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    BIM Intent Compiler
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/red1oon/bim-ootb" title="red1oon/bim-ootb on GitHub" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    OOTB
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href=".." class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start Here
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Start Here
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../USER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📖 User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMToolsGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🧰 BIM Tools — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OFFLINE_INSTALL_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔒 Fully Offline / Air-Gapped Install
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WhatsNew/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🆕 What's New
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AboutMore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About BIM OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FeatureComparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Feature Comparison
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MigrateComparisonPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migrate & Compare (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two Apps, One Kernel
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TwoAppsOneKernelInfographicLandscape.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    One Page InfoGraphics - Landscape
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bench_suite.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Comparison (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../age_demo.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Does Your ERP Age? (live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MANIFESTO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The ERP World View
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 3 Apps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The 3 Apps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Viewer Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AskFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Ask — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerFirstSteps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modeller — First Steps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DAGeVu Modeller — User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIMGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2D Drawings → BIM (DXF2BIM)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Yellow_List/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — the yellow list (what you fill in, defaults used)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_Prior_Art/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — prior art (what is new, what we learned, cost of using others)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_FORMAT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — format contract (marks, outputs, registry, codes; generated)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPUserGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP User Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    uniCenta-style Till & Kitchen Screen
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    uniCenta-style Till & Kitchen Screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#if-you-know-unicenta-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        If you know uniCenta 5
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started-for-the-cashier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting started (for the cashier)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common tasks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common tasks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ringing-a-sale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ringing a sale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discounts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discounts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#taking-payment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Taking payment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#holding-tickets-and-quick-log-off" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Holding tickets and quick log-off
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reprinting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reprinting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-and-editing-a-past-ticket-refunds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding and editing a past ticket; refunds
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customer-payment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customer Payment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cash-in-cash-out-vouchers-check-in-pick-up-numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cash in / cash out, vouchers, check in, pick-up numbers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restaurant-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restaurant mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-kitchen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The kitchen
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The kitchen">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sending-an-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sending an order
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-kitchen-screen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The kitchen screen
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#elapsed-colours-off-until-the-branch-sets-them" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Elapsed colours: off until the branch sets them
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setting-up-a-till-and-a-kitchen-screen-branch-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting up a till and a kitchen screen (branch manager)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shifts-and-close-cash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shifts and Close Cash
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Shifts and Close Cash">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-never-leaves-the-till" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What never leaves the till
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#head-office" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Head office
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Head office">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#switching-it-on-system-administrator-once" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Switching it on (System Administrator, once)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#import-pos-sales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Import POS Sales
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#branch-day-close" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Branch Day Close
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#under-the-hood" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Under the hood
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_FirstSetup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel-ERP — Your First Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NinjaExcelReport_UserManual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NinjaExcel Report — User Manual
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HRBIMAssetGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HR / Tenancy / Operate Module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CivilWorksGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Civil Works — Step by Step
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TeamsOverlayGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Teams Overlay — Collaboration & Optics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Go Deeper
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Go Deeper
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ArchitectureOverview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture Overview (for reviewers)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FoldEngineBlackBook.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fold Engine Black Book (dev manual)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HolyGrail/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Holy Grail (editable rules, live)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERPConceptRosetta.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-ERP Rosetta Stone (concept + cost)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIM_Modeller_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM Modeller OOTB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERP_OOTB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP — Every Record Has a Place
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialERPIntegration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spatial ERP × BIM × HR — One Building, One Log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DistributedERP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Distributed ERP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TermsHowToVerify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to verify the terms
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ERP_AI_ADVISORY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Letting an AI work on the ERP, safely
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SQLiteWasmArchitectureActual.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How the Database Works (big picture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ViewerComponentModel.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Viewer Component Model (dev architecture)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CLASH_DETECTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clash Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JKR_SKATA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Asset Classification & JKR/SKATA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../IFC_ExportGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IFC Export Guide (for the BIM author)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TimeMachine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Time Machine (4D Scheduling & Editing)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4D5DAnalysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4D/5D Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMtoProject/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BIM → Project Order (ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ModellerKernelFold/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geometry as a Signed-Log Fold
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Papers & Positioning
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Papers & Positioning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SpatialCompilationPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deterministic Spatial Compilation (academic paper)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DXF2BIM_TechnicalNote/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BrowserScaleBenchmark/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser-Scale Benchmark (one tab, local first)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnterpriseAuthentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enterprise Authentication (security)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../StrategicIndustryPositioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Strategic Positioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LocalFirstPriorArt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local-First Prior Art
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LegacyOracleAdapterSpec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy-as-Oracle Adapter (migrate / test an ERP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ShipYard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Beyond Buildings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RouteTemplate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Find & Navigate (wayfinding)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    History & Legacy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    History & Legacy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT_CHRONOLOGY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Chronology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VibeProgramming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vibe Programming — AI + Domain Expertise
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../4DGenerator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The 4D Generator — Failure Catalogue & AI Findings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EnablingTechTimeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enabling-Tech Timeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RED_PILL/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Red Pill — Design From Grammar (origin)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LAST_MILE_PROBLEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The Last Mile — drift tracking (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BIMERPPaper/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Construction Economy / ERP Wave (Java era)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SYSTEMS_INSTALLER_GUIDE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Self-Host the Java toolchain (legacy installer)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#if-you-know-unicenta-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        If you know uniCenta 5
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started-for-the-cashier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting started (for the cashier)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common tasks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common tasks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ringing-a-sale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ringing a sale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discounts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discounts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#taking-payment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Taking payment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#holding-tickets-and-quick-log-off" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Holding tickets and quick log-off
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reprinting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reprinting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-and-editing-a-past-ticket-refunds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Finding and editing a past ticket; refunds
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customer-payment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customer Payment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cash-in-cash-out-vouchers-check-in-pick-up-numbers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cash in / cash out, vouchers, check in, pick-up numbers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restaurant-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restaurant mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-kitchen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The kitchen
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The kitchen">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sending-an-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sending an order
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-kitchen-screen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The kitchen screen
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#elapsed-colours-off-until-the-branch-sets-them" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Elapsed colours: off until the branch sets them
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setting-up-a-till-and-a-kitchen-screen-branch-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting up a till and a kitchen screen (branch manager)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shifts-and-close-cash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shifts and Close Cash
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Shifts and Close Cash">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-never-leaves-the-till" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What never leaves the till
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#head-office" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Head office
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Head office">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#switching-it-on-system-administrator-once" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Switching it on (System Administrator, once)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#import-pos-sales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Import POS Sales
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#branch-day-close" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Branch Day Close
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#under-the-hood" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Under the hood
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="unicenta-style-till-kitchen-screen-user-guide-sqlite-local-first">uniCenta-style Till &amp; Kitchen Screen — User Guide <em>(SQLite, local-first)</em><a class="headerlink" href="#unicenta-style-till-kitchen-screen-user-guide-sqlite-local-first" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>⚠ DEMONSTRATOR — NOT OFFICIAL.</strong> Every screenshot in this guide is taken on the <strong>GardenWorld demo
+tenant</strong> with demo products and demo prices. Treat every figure as a sample (<code>SAMPLE — NOT OFFICIAL</code>),
+not as a certified point-of-sale or accounting system.</p>
+</blockquote>
+<p><strong>What this is.</strong> A cash-register screen that looks and behaves like <strong>uniCenta oPOS 5.0</strong>, so a cashier who knew
+uniCenta needs no new learning, running on the same SQLite twin of iDempiere as the rest of Kernel-ERP. It is a
+<strong>separate page</strong>, not a pill inside the ERP. It runs on the till's own browser, with no server, and it keeps
+working when the connection drops.</p>
+<blockquote>
+<p><strong>The till deposits; it never completes.</strong> Each sale is written on the till as <em>import rows</em> (<code>I_Order</code> lines
+and <code>I_Payment</code> tenders — the same legacy import tables iDempiere has). Head office later turns them into
+orders, invoices and receipts. The till itself writes <strong>no</strong> order, shipment, invoice, payment or posting.</p>
+</blockquote>
+<p>Live pages (the demo site):</p>
+<ul>
+<li>Till: <a href="https://red1oon.github.io/bim-ootb/erp/till.html">https://red1oon.github.io/bim-ootb/erp/till.html</a></li>
+<li>Kitchen screen: <a href="https://red1oon.github.io/bim-ootb/erp/kitchen.html">https://red1oon.github.io/bim-ootb/erp/kitchen.html</a></li>
+</ul>
+<p>Related guides: <a href="../ERPUserGuide/">Kernel-ERP User Guide</a> · <a href="../ERP_FirstSetup/">Kernel-ERP — Your First Setup</a> ·
+<a href="../DistributedERP/">Distributed ERP</a>.</p>
+<p>This is a task-oriented manual. <strong>Cashier:</strong> read <em>If you know uniCenta 5</em>, <em>Ringing a sale</em> and <em>The kitchen</em>.
+<strong>Branch manager:</strong> read <em>Setting up a till and a kitchen screen</em> and <em>Shifts and Close Cash</em>.
+<strong>Head-office clerk:</strong> read <em>Head office</em>. Everyone: <em>Troubleshooting</em> at the end.</p>
+<hr />
+<h2 id="if-you-know-unicenta-5">If you know uniCenta 5<a class="headerlink" href="#if-you-know-unicenta-5" title="Permanent link">&para;</a></h2>
+<p>The 22 things a uniCenta 5.0 cashier does, and where each one is here. Labels are uniCenta's own.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>In uniCenta 5</th>
+<th>Here</th>
+<th>What differs, and why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Login (user button / card)</td>
+<td><strong>Login</strong> screen: one button per active user of the tenant</td>
+<td>You tap a name. There is no card or password step on this till.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Register menu: Sales, Edit Sales, Customer Payment, Payments, Close Cash</td>
+<td>Same five buttons, in that order</td>
+<td>Three more buttons follow them: <strong>Check In/Out</strong>, <strong>Voucher</strong>, <strong>Pickup Reset</strong>.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Sales screen</td>
+<td><strong>Sales</strong> screen, same six regions</td>
+<td><strong>Scale</strong>, <strong>Mooring</strong>, <strong>Split Sale</strong>, <strong>Customer</strong>, <strong>Search product</strong>, <strong>Edit line</strong>, <strong>Choose attributes</strong> and <strong>Check Stock</strong> are shown greyed out ("not in this release", with the reason as a tooltip).</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Number pad</td>
+<td>Same pad and same grammar (<code>3</code> then a product = 3 units, <code>n*</code>, <code>+</code>/<code>-</code> on the selected line, <code>=</code> to pay)</td>
+<td>Re-read against uniCenta 5.0, not 3.81: on a refund ticket <code>+</code>/<code>-</code> add −1, and <code>n -</code> no longer makes the price negative.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Catalog: categories, sub-categories, product tiles</td>
+<td>Same, tiles 107 x 60</td>
+<td>Tiles are the products that have a price on the till's price list, sorted by product key.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Ticket button bar</td>
+<td><strong>Total discount</strong>, <strong>Line discount</strong>, <strong>Print preview</strong>, <strong>Open drawer</strong>, <strong>Virtual Keyboard</strong></td>
+<td>Refund item, Service charge, Line note, Set person are <strong>not</strong> on the bar, as in uniCenta 5.0's default (they are commented out there).</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Shared tickets</td>
+<td><strong>Add New Ticket</strong>, <strong>Tickets awaiting completion</strong>, <strong>Delete</strong>, <strong>Reprint Ticket</strong>, <strong>Quick LogOff</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Payment dialog, 8 tenders</td>
+<td>Tabs <strong>Cash, Cheque, Voucher, Card, Free, Debt, Bank, Slip</strong>; Add / Delete Part Payment; Print Receipt</td>
+<td><strong>Voucher, Free, Debt and Slip are disabled.</strong> Legacy iDempiere has no payment tender type for them, and the till may only send what legacy can import. Cash, Cheque, Card, Bank are live.</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Receipt and change pop-up</td>
+<td><strong>Receipt</strong> screen, <strong>Change</strong> pop-up</td>
+<td>Card: you key the terminal's reference and approval code; the card number is never typed or stored.</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Edit Sales</td>
+<td><strong>Edit Sales</strong></td>
+<td>Edit is allowed only on a sale of the open shift that has not been refunded or sent to head office.</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Refund</td>
+<td><strong>Edit Sales → Refund</strong></td>
+<td>Tabs Refund, Cheque, Voucher (disabled), Card.</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Customer Payment</td>
+<td><strong>Customer Payment</strong></td>
+<td>Tabs Cash, Cheque, Voucher (disabled), Bank, Card, Slip (disabled). The till writes no debt of its own.</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Payments (cash in / out)</td>
+<td><strong>Payments</strong></td>
+<td>Stays on the till (see <em>What never leaves the till</em>).</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Close Cash (Z), Print, reprint a past Z</td>
+<td><strong>Close Cash</strong>, <strong>Print</strong>, <strong>Reprint a past Z</strong></td>
+<td>No counted-cash box — uniCenta 5.0 has none either.</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Send Order (remote printer)</td>
+<td><strong>Send Order</strong> → the kitchen screen</td>
+<td>uniCenta's remote display has no states and nothing comes back. Here the kitchen can mark done / void and the cashier sees it.</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Restaurant map</td>
+<td><code>till.html?mode=restaurant</code> → 24 tables</td>
+<td>—</td>
+</tr>
+<tr>
+<td>17</td>
+<td>Reservations</td>
+<td><strong>Reservations</strong> (restaurant mode)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>18</td>
+<td>Reprint Last Ticket</td>
+<td><strong>Reprint Last Ticket</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Voucher issue / redeem</td>
+<td><strong>Voucher</strong> screen</td>
+<td>A till-local ledger only. The Voucher <em>tender tab</em> stays disabled.</td>
+</tr>
+<tr>
+<td>20</td>
+<td><em>(none in uniCenta)</em></td>
+<td><strong>Kitchen screen</strong></td>
+<td>New: a separate page with waiting / done / void, Recall, changed-line marks and a Ready notice back to the till.</td>
+</tr>
+<tr>
+<td>21</td>
+<td>Check In / Check Out</td>
+<td><strong>Check In/Out</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td>22</td>
+<td>Pick-up number reset</td>
+<td><strong>Pickup Reset</strong></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="getting-started-for-the-cashier">Getting started (for the cashier)<a class="headerlink" href="#getting-started-for-the-cashier" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Open the till page</strong> — <a href="https://red1oon.github.io/bim-ootb/erp/till.html">https://red1oon.github.io/bim-ootb/erp/till.html</a>. The strip at the top shows
+   <em>Till</em>, <em>online/offline</em>, <em>paired / not paired</em>, who is signed in, <em>deposited N</em>, and a <strong>Visit head office</strong> button.</li>
+<li><strong>Tap your name.</strong></li>
+</ol>
+<p><img alt="Login: one button per user, the status strip on top" src="../img/till/till_01_login.png" /></p>
+<ol>
+<li><strong>Pick a panel</strong> on the Register menu: <em>Sales, Edit Sales, Customer Payment, Payments, Close Cash</em>, and below
+   them <em>Check In/Out, Voucher, Pickup Reset</em>.</li>
+</ol>
+<p><img alt="The Register menu" src="../img/till/till_02_menu.png" /></p>
+<ol>
+<li><strong>Tap Sales.</strong> Pick a category, then tap product tiles. The back arrow returns to the parent category.</li>
+</ol>
+<p><img alt="The Sales screen: option buttons on top, ticket and totals, number pad and side buttons on the right, categories and product tiles at the bottom" src="../img/till/till_03_sales.png" /></p>
+<hr />
+<h2 id="common-tasks">Common tasks<a class="headerlink" href="#common-tasks" title="Permanent link">&para;</a></h2>
+<h3 id="ringing-a-sale">Ringing a sale<a class="headerlink" href="#ringing-a-sale" title="Permanent link">&para;</a></h3>
+<ol>
+<li>On <strong>Sales</strong>, tap a product tile: one unit is added. Tap it again and the line's quantity goes up (the same
+   product is merged into its line, as in uniCenta).</li>
+<li>For several units, type the number on the pad first (<code>3</code>), then tap the tile: three units.</li>
+<li>Tap a line to select it. On the pad, <code>+</code> adds one unit, <code>-</code> takes one away (a sale line at zero is removed),
+   and <code>n</code> <code>*</code> then <code>+</code> sets the line to <em>n</em> units. <strong>C</strong> clears the pad. <strong>Delete line</strong> removes the selected line.</li>
+<li>A typed barcode followed by <strong>Enter</strong> (or <strong>Get Barcode</strong>) adds the product with that barcode or product key.
+   An unknown code answers "<em>code</em> - no such product".</li>
+</ol>
+<p><img alt="Elm Tree x3 and a Patio Table on the ticket; the pad shows what is typed" src="../img/till/till_04_lines.png" /></p>
+<ol>
+<li>Totals (Subtotal, Taxes, Total) are worked out with the ERP's own tax functions, so they equal what head office
+   will import.</li>
+</ol>
+<h3 id="discounts">Discounts<a class="headerlink" href="#discounts" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Select the line. Type the percentage on the pad <strong>as digits</strong>: <code>10</code> means 10 %.</li>
+<li><strong>Line discount</strong> inserts a negative "Line Discount 10%" line under the selected line. <strong>Total discount</strong>
+   lowers the price of every line by that percentage.</li>
+</ol>
+<p><img alt="A 10% line discount under the Patio Table" src="../img/till/till_05_discount.png" /></p>
+<ol>
+<li>If the discounted price would fall below the price list's <strong>price limit</strong>, the till refuses it first, because head
+   office would refuse the ticket anyway.</li>
+</ol>
+<p><img alt="The refusal message across the top" src="../img/till/till_06_refused.png" /></p>
+<h3 id="taking-payment">Taking payment<a class="headerlink" href="#taking-payment" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Press <strong>=</strong> on the pad (or the space key). With no lines on the ticket the till just beeps.</li>
+<li>The <strong>Payment</strong> dialog opens with the total and what remains. Voucher, Free, Debt and Slip are greyed.</li>
+</ol>
+<p><img alt="The Payment dialog: eight tabs, four live" src="../img/till/till_07_pay_tabs.png" /></p>
+<ol>
+<li>For a <strong>split tender</strong>: choose a tab, type the amount, tap <strong>Add Part Payment</strong>. For <strong>Card</strong>, key the <em>Terminal ref</em>
+   and <em>Approval code</em> from the card terminal first. Only <strong>Cash</strong> may be more than what remains (the extra is change).
+   <strong>Delete Part Payment</strong> removes the last part.</li>
+</ol>
+<p><img alt="Card 20.00 then Cash 250.00 against 231.75: change 38.25" src="../img/till/till_08_pay_split.png" /></p>
+<ol>
+<li>Tick or untick <strong>Print Receipt</strong>, then <strong>OK</strong>. The sale is saved on the device and the <strong>Receipt</strong> screen opens.</li>
+<li>If the <strong>first</strong> tender was cash and there is change, a <strong>Change</strong> pop-up shows the amount. Tap <strong>OK</strong> to return.</li>
+</ol>
+<p><img alt="The receipt: number, date, terminal, served by, lines, totals, tenders" src="../img/till/till_09_receipt.png" /></p>
+<h3 id="holding-tickets-and-quick-log-off">Holding tickets and quick log-off<a class="headerlink" href="#holding-tickets-and-quick-log-off" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Add New Ticket</strong> keeps the current ticket (if it has lines) and opens an empty one.</li>
+<li><strong>Tickets awaiting completion</strong> lists the held tickets; tap one to recall it (a recalled ticket is removed from the list).</li>
+<li><strong>Quick LogOff</strong> holds the current ticket and returns to Login.</li>
+<li><strong>Delete</strong> asks "Are you sure you want to Delete the current Order?".</li>
+</ul>
+<p><img alt="The held-tickets list" src="../img/till/till_10_held.png" /></p>
+<h3 id="reprinting">Reprinting<a class="headerlink" href="#reprinting" title="Permanent link">&para;</a></h3>
+<p><strong>Reprint Last Ticket</strong> reprints the last ticket of this till. <strong>Reprint Ticket</strong> lists the tickets of this till; tap one.</p>
+<h3 id="finding-and-editing-a-past-ticket-refunds">Finding and editing a past ticket; refunds<a class="headerlink" href="#finding-and-editing-a-past-ticket-refunds" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Register menu → <strong>Edit Sales</strong>. Choose <em>Sales</em> or <em>Refund</em>, type the ticket number and press <strong>Find</strong>, or press
+   <strong>Finder</strong> to list them and tap one.</li>
+<li><strong>Print</strong> reprints it. <strong>Edit</strong> reopens the lines on the Sales screen and saves under the <strong>same ticket number</strong>.</li>
+<li><strong>Refund</strong> opens a list of the original lines: <strong>Add</strong> the lines to refund (or <strong>Add all lines</strong>), then <strong>Refund</strong>.
+   The Sales screen shows a refund ticket; <strong>=</strong> pays it with the Refund / Cheque / Card tabs.</li>
+</ol>
+<p><img alt="Edit Sales with the ticket found" src="../img/till/till_11_editsales.png" /></p>
+<p>The buttons switch on and off by rule, and the line under the ticket says why:</p>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>What the screen says</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Already refunded</td>
+<td><em>This ticket has been refunded</em> (Edit and Refund off)</td>
+</tr>
+<tr>
+<td>The ticket is itself a refund</td>
+<td><em>A refund ticket</em> (Edit and Refund off)</td>
+</tr>
+<tr>
+<td>Sold in a shift that has since been closed</td>
+<td><em>Closed cash: Edit is not available</em></td>
+</tr>
+<tr>
+<td>Already sent to head office</td>
+<td><em>Already sent to head office: use Refund</em></td>
+</tr>
+</tbody>
+</table>
+<h3 id="customer-payment">Customer Payment<a class="headerlink" href="#customer-payment" title="Permanent link">&para;</a></h3>
+<p>Register menu → <strong>Customer Payment</strong> → type a name or key → <strong>Find</strong> → tap the customer. The card shows <strong>Name</strong>,
+<strong>Credit Limit</strong>, <strong>Current Debt</strong>; <strong>Amount</strong> starts at the current debt. <strong>Pay</strong> opens the Payment dialog
+(Cash, Cheque, Bank, Card live). A customer payment is a payment row with no sale lines; head office imports it
+with <strong>Import Payment</strong>, not with Import POS Sales.</p>
+<h3 id="cash-in-cash-out-vouchers-check-in-pick-up-numbers">Cash in / cash out, vouchers, check in, pick-up numbers<a class="headerlink" href="#cash-in-cash-out-vouchers-check-in-pick-up-numbers" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Payments</strong>: choose <em>Cash (In)</em> or <em>Cash (Out)</em>, type the amount and notes, <strong>Save</strong>. Cash out is stored negative and both
+  show in the shift's Close Cash totals.</li>
+</ul>
+<p><img alt="Payments: a 50.00 opening float" src="../img/till/till_12_payments.png" /></p>
+<ul>
+<li><strong>Voucher</strong>: <strong>Issue</strong> a numbered voucher (V000001...) for a customer and amount, or <strong>Redeem</strong> a number
+  ("No such voucher" / "Voucher already used" / "Voucher redeemed ..."). It is a ledger on this till only.</li>
+</ul>
+<p><img alt="The Voucher screen" src="../img/till/till_13_voucher.png" /></p>
+<ul>
+<li><strong>Check In/Out</strong>: <strong>Check In</strong> / <strong>Check Out</strong> for the signed-in user; the line shows "<em>name</em> has Checked In at ...".</li>
+<li><strong>Pickup Reset</strong>: shows the next pick-up number. <strong>Reset</strong> asks "Do you really want to reset the Order Pickup number to 0?".
+  Pick-up numbers are given at the first <strong>Send Order</strong> or sale of a ticket that has no table.</li>
+</ul>
+<h3 id="restaurant-mode">Restaurant mode<a class="headerlink" href="#restaurant-mode" title="Permanent link">&para;</a></h3>
+<p>Open <code>till.html?mode=restaurant</code>. <strong>Sales</strong> now opens a floor map of <strong>Table 1 ... Table 24</strong>. A table with a held
+or open ticket shows "Waiting : <em>time</em>". Tap a table to open or recall its ticket. <strong>Reload</strong>, <strong>Reservations</strong>
+and <strong>Tables</strong> are on the sales screen; a reservation (<em>Select Person, Persons, Booking Time, Notes, Table</em> → <strong>Save</strong>)
+has a <strong>Check-In Now</strong> button that opens that table. The shared-ticket buttons are hidden in this mode.</p>
+<hr />
+<h2 id="the-kitchen">The kitchen<a class="headerlink" href="#the-kitchen" title="Permanent link">&para;</a></h2>
+<h3 id="sending-an-order">Sending an order<a class="headerlink" href="#sending-an-order" title="Permanent link">&para;</a></h3>
+<ol>
+<li>On <strong>Sales</strong>, ring the lines and tap <strong>Send Order</strong>. Every sale line of the ticket goes out as one new
+   <em>generation</em> of the order (discount lines and zero quantities are not kitchen lines).</li>
+<li>The order's name is the <strong>table</strong> if the ticket has one, otherwise the <strong>pick-up number</strong>, given on the first send.</li>
+<li>The till says "Order <em>n</em> sent to the kitchen" and shows a <strong>Kitchen: waiting</strong> chip on the ticket bar.</li>
+<li>Send again after changing the ticket: the new send <strong>replaces</strong> the old one on the kitchen screen. Sending an
+   empty ticket after an earlier send tells the kitchen the order was cancelled.</li>
+<li>When the kitchen marks the order done or void, the till shows "<strong>Kitchen: order <em>n</em> is READY</strong>" or "...is VOID" once,
+   and the chip changes. While an order is waiting, the till checks for news every 10 seconds
+   (<code>?poll=&lt;seconds&gt;</code> on the till URL changes it).</li>
+</ol>
+<p><img alt="After Send Order: the message and the &quot;Kitchen: waiting&quot; chip" src="../img/till/till_17_send_order.png" /></p>
+<p>Send Order only works on a <em>sale</em> ticket ("Send Order is for a sale ticket").</p>
+<h3 id="the-kitchen-screen">The kitchen screen<a class="headerlink" href="#the-kitchen-screen" title="Permanent link">&para;</a></h3>
+<p>Open <a href="https://red1oon.github.io/bim-ootb/erp/kitchen.html">https://red1oon.github.io/bim-ootb/erp/kitchen.html</a> on the kitchen's own device (set it up as in the next
+section). Each waiting order is a card: order name and a running clock (MM:SS) on top, the lines below, <strong>Bump</strong> and <strong>Void</strong> at
+the bottom.</p>
+<p><img alt="Three waiting cards. Order 1 was changed after it was sent: &quot;Modified (send 2)&quot;, 3 x Elm Tree (was 2) in amber, Oak Tree added in green, Plum Tree struck through as removed" src="../img/till/kitchen_01_open.png" /></p>
+<table>
+<thead>
+<tr>
+<th>What you see</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Bump</strong></td>
+<td>The whole order is done; the card leaves the screen and the till is told <em>READY</em>.</td>
+</tr>
+<tr>
+<td><strong>Void</strong></td>
+<td>The whole order is void; the till is told <em>VOID</em>.</td>
+</tr>
+<tr>
+<td>Tap a line</td>
+<td>Crosses that line off (done). Tap again to undo.</td>
+</tr>
+<tr>
+<td><em>Modified (send N)</em></td>
+<td>The till re-sent the order. Lines in <strong>green</strong> are new, <strong>amber</strong> "(was n)" changed quantity, <strong>red struck-through</strong> "(removed)" were taken off.</td>
+</tr>
+<tr>
+<td><em>Cancelled by the till</em></td>
+<td>The till sent an empty ticket after an earlier send.</td>
+</tr>
+<tr>
+<td><strong>Recall</strong></td>
+<td>Brings back the most recently bumped or voided card. Grey when there is none.</td>
+</tr>
+<tr>
+<td><em>N open</em></td>
+<td>How many cards are waiting.</td>
+</tr>
+<tr>
+<td><strong>Station</strong></td>
+<td>Filters by station. The till sends every line to station 1.</td>
+</tr>
+<tr>
+<td><strong>Poll s</strong></td>
+<td>How often the kitchen looks for news (default 10 seconds).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="elapsed-colours-off-until-the-branch-sets-them">Elapsed colours: off until the branch sets them<a class="headerlink" href="#elapsed-colours-off-until-the-branch-sets-them" title="Permanent link">&para;</a></h3>
+<p>The card header colours by waiting time <strong>only when both</strong> <strong>Amber min</strong> and <strong>Red min</strong> are filled in. Blank boxes
+(placeholder "off") mean no colour, and nothing is assumed. With, say, 5 and 8: green until the 5th minute,
+amber from the 6th, red from the 9th (whole minutes over the limit). The two numbers are saved on that kitchen device.</p>
+<p><img alt="Amber 5, red 8: order 2 is red, order 1 amber, order 3 green" src="../img/till/kitchen_02_colours.png" /></p>
+<p><img alt="After Bump on order 2: two open, Recall is now active" src="../img/till/kitchen_03_bumped_recall.png" /></p>
+<p>The kitchen orders and their done / void marks are <strong>branch-local</strong>: they go only to the till and kitchen devices
+of that branch Org. They are not legacy tables and head office does not read them.</p>
+<hr />
+<h2 id="setting-up-a-till-and-a-kitchen-screen-branch-manager">Setting up a till and a kitchen screen (branch manager)<a class="headerlink" href="#setting-up-a-till-and-a-kitchen-screen-branch-manager" title="Permanent link">&para;</a></h2>
+<p>Each till and each kitchen screen is a <strong>Team device</strong> of the branch's Org. You need a head-office (or manager) device that
+starts the team, and a device for each till and kitchen screen.</p>
+<ol>
+<li><strong>Start the team (once, on the head-office device).</strong> Open the ERP page. Press the <strong>Team</strong> pill (two-heads icon,
+   in the ⋯ rail). If it says <em>Turn on team mode</em>, press it; the page reloads. Under <strong>Kind of team</strong> choose
+   <strong>Point-of-sale team</strong>, then press <strong>Start a team</strong>. Copy the <strong>invite link</strong>.</li>
+</ol>
+<p><img alt="The Team panel before a team exists: Kind of team, Start a team, or join one" src="../img/till/ho_01_team_start.png" /></p>
+<ol>
+<li><strong>Join, on the till's own browser.</strong> Open the ERP page there, press the <strong>Team</strong> pill, paste the invite (or open the
+   invite link) and press <strong>Join</strong>. The device shows a <strong>device code</strong> and "Waiting for approval".</li>
+<li><strong>Approve, back on the head-office device.</strong> Team pill → <strong>Check join requests</strong> → match the device code →
+   choose the role <strong>Web Service Execution (50004)</strong> → <strong>Bound to</strong> = the branch Org (for example <em>Store North</em>) →
+   <strong>Approve</strong>. If <em>Bound to</em> is left empty the panel refuses: "Choose what this device is bound to first".</li>
+<li><strong>Visit</strong> on the joining device (Team pill → <strong>Visit</strong>, or <strong>Visit head office</strong> on the till page).</li>
+<li><strong>Open the till</strong> — <code>.../erp/till.html</code> on that device. The strip should say <strong>paired</strong>. The till's station
+   (price list, Org, warehouse) is the tenant's first POS station (<code>c_pos</code>); its name is the Org key and the Team station user, for
+   example <code>Store Central-webserv</code>, and that name is the prefix of every ticket number.</li>
+<li><strong>Kitchen screen:</strong> repeat steps 2-4 on the kitchen's device (same role and the <strong>same</strong> <em>Bound to</em> Org), then open
+   <code>.../erp/kitchen.html</code>. Set <strong>Amber min</strong> / <strong>Red min</strong> if the branch wants colours.</li>
+<li><strong>Test:</strong> ring one sale, press <strong>Send Order</strong>, watch it appear on the kitchen device, press <strong>Bump</strong>, and watch
+   the till say READY.</li>
+</ol>
+<p>Both pages pass the address options <code>login=</code>, <code>pipe=</code>, <code>xcfg=</code>, <code>teamplan=</code> on to their built-in ERP engine, so a till can use another Team
+station user with <code>?login=</code>.</p>
+<h2 id="shifts-and-close-cash">Shifts and Close Cash<a class="headerlink" href="#shifts-and-close-cash" title="Permanent link">&para;</a></h2>
+<p>A <strong>shift</strong> is numbered from 1 on each till and stays open until <strong>Close Cash</strong>.</p>
+<ol>
+<li>Register menu → <strong>Close Cash</strong>. The page shows the Z for the open shift, read from the tickets of this shift:
+   <em>Sequence, Start Date, End Date, Transactions, Units, Sales, Cash/payments, By tender, Net, Taxes,
+   Lines removed, No Sale - Drawer Openings</em>. <strong>Print</strong> refreshes it.</li>
+</ol>
+<p><img alt="The Z of the open shift" src="../img/till/till_14_close.png" /></p>
+<ol>
+<li>Press <strong>Close Cash</strong>, then confirm with <strong>Yes, close the cash</strong>.</li>
+</ol>
+<p><img alt="The confirmation step" src="../img/till/till_15_close_confirm.png" /></p>
+<ol>
+<li>The page says <strong>Cash Closed OK</strong> and a new shift starts. A past Z can be reprinted from the drop-down and
+   <strong>Reprint a past Z</strong>.</li>
+</ol>
+<p><img alt="After closing: next shift, past Z available" src="../img/till/till_16_closed.png" /></p>
+<p><strong>When the shift reaches head office.</strong> Close Cash runs <strong>one Visit</strong>, and that Visit carries the shift's rows (the batch). A manual <strong>Visit
+head office</strong> or a <strong>Send Order</strong> also does a Visit and carries whatever is pending, so rows can arrive earlier. A Visit
+that sends nothing marks nothing as sent. Offline, keep selling; the next Visit sends everything once.</p>
+<h3 id="what-never-leaves-the-till">What never leaves the till<a class="headerlink" href="#what-never-leaves-the-till" title="Permanent link">&para;</a></h3>
+<p>These live only in that till's browser, because legacy has no import shape for them:</p>
+<ul>
+<li><strong>Payments</strong> cash in / out, the <strong>Voucher</strong> ledger, <strong>Check In/Out</strong>, pick-up numbers and their reset;</li>
+<li>restaurant floors, tables and reservations; <strong>held</strong> tickets; the drawer-opening count and the removed-lines audit;</li>
+<li>discount lines as separate lines (they are folded into the product line's price);</li>
+<li>links beyond the "Refund of <em>number</em>" line note; the closed-shift list and past Z records (re-derived on the till from the sale rows).</li>
+</ul>
+<p>Head office therefore never sees a Z declaration. Clearing the browser's site data on a till loses these local items.
+The sales themselves are in the device's engine, and numbering resumes after the highest number already deposited.</p>
+<hr />
+<h2 id="head-office">Head office<a class="headerlink" href="#head-office" title="Permanent link">&para;</a></h2>
+<p>Everything below is <strong>opt-in</strong>. Until the plugins are started, the ERP menu is exactly the legacy menu.</p>
+<h3 id="switching-it-on-system-administrator-once">Switching it on (System Administrator, once)<a class="headerlink" href="#switching-it-on-system-administrator-once" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Sign in with tenant <strong>System</strong> → <strong>SuperUser</strong>.</li>
+<li>Open the ⋯ rail and press the <strong>plug</strong> pill — <strong>Plugin Engine</strong>.</li>
+<li><strong>POS integration</strong> (<code>org.kernel.pos-integration</code>) is listed as <em>INSTALLED</em> but not started. Press <strong>Start</strong>.</li>
+<li>Under <em>Friendly operations</em> press <strong>Install</strong> — this adds <strong>Branch Day Close</strong>.</li>
+</ol>
+<p><img alt="Before: POS integration installed but stopped, Friendly operations on offer" src="../img/till/ho_03_plugin_before.png" /></p>
+<p><img alt="After: both active" src="../img/till/ho_04_plugin_after.png" /></p>
+<p><em>Stop</em> on a bundle removes everything it added. The plugin rows (menus, processes, access) are visible to the System Administrator and
+the <strong>GardenWorld Admin</strong> role, which is the head-office clerk. No other role gets them.</p>
+<h3 id="import-pos-sales">Import POS Sales<a class="headerlink" href="#import-pos-sales" title="Permanent link">&para;</a></h3>
+<p>Menu → <strong>Data Import</strong>:</p>
+<ul>
+<li><strong>Import POS Sale</strong> (a read-only window): one row per till ticket, with <em>Ticket No, Business Partner Key, Date Ordered,
+  Lines, Tenders, Lines Total, Tenders Total, Difference (Tenders - Lines), Imported, Import Error Message, Order</em>.
+  A mismatch shows here before you import. On a price list that excludes tax the Difference is the tax; the exact check is done by the import.</li>
+</ul>
+<p><img alt="The Import POS Sale window" src="../img/till/ho_07_import_pos_sale_window.png" /></p>
+<ul>
+<li><strong>Import POS Sales</strong> (the process): <em>Tenant, Organization, Bank Account (required), Ticket No (one ticket only)</em>.</li>
+</ul>
+<p><img alt="The Import POS Sales dialog" src="../img/till/ho_06_import_pos_sales.png" /></p>
+<p>Each ticket is imported <strong>all or none</strong>: legacy Import Orders makes one completed order and its invoice; the tenders must equal
+the invoice total to the cent; legacy Import Payment makes the completed receipts on that invoice; then the invoice
+must be paid. Any failure rolls the whole ticket back, marks its rows with an error and the reason, and leaves it for
+you to correct and run again. A customer payment (no lines) is refused here ("no ticket lines"); import it with <strong>Import Payment</strong>.</p>
+<h3 id="branch-day-close">Branch Day Close<a class="headerlink" href="#branch-day-close" title="Permanent link">&para;</a></h3>
+<p>Menu → <strong>Data Import → Branch Day Close</strong>. One run closes the business day for one branch (<strong>Organization</strong>) or several
+(<strong>Branch Orgs</strong>, comma-separated Org ids; leave both empty for every Org that has pending till rows).</p>
+<p><img alt="The Branch Day Close dialog" src="../img/till/ho_05_day_close.png" /></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Organization / Branch Orgs</td>
+<td>which branch(es)</td>
+</tr>
+<tr>
+<td>Business Day (required)</td>
+<td>the date of the tickets</td>
+</tr>
+<tr>
+<td>Bank Account (required)</td>
+<td>needed by Import Payment</td>
+</tr>
+<tr>
+<td>Business Partner, Product Category, Is Kanban</td>
+<td>the Replenish Report's own filters</td>
+</tr>
+<tr>
+<td>Create (Inventory Movement / Production / Purchase Order / Requisition), Document Type</td>
+<td>only if you want the replenishment documents made</td>
+</tr>
+</tbody>
+</table>
+<p>It runs, in legacy order and stage by stage over the branches: <strong>1.</strong> Import (Import POS Sales per cleared ticket),
+<strong>2.</strong> Replenish Report for each warehouse of the branch, <strong>3.</strong> the replenish <em>create</em> only if you chose <strong>Create</strong>
+("SKIPPED not requested" otherwise). Each step is reported on its own line. A failing step stops the whole close, is named with its
+branch, and earlier steps stay.</p>
+<p><strong>The audit gate.</strong> Before importing, each till and day is checked on what head office really holds:</p>
+<ul>
+<li><strong>Gaps:</strong> a till numbers its tickets from 1, so a missing number (S2 absent between S1 and S3) means a ticket never arrived.</li>
+<li><strong>Balance:</strong> each ticket's tenders must equal the total the till itself computes (tax included or excluded, following the price list).</li>
+</ul>
+<p>A till/day with a gap or an unbalanced ticket is <strong>withheld whole</strong>: none of its tickets are imported, it is named
+("WITHHELD: gap S2" / "unbalanced ... expected=55.00 tenders=54.99"), and the other tills still close. The gate does
+<strong>not</strong> check a Z, because the till never sends one. Customer payments are named and left for Import Payment. A branch with
+nothing pending for the day is skipped, so running the close twice makes nothing new.</p>
+<p>If <strong>POS integration</strong> is not started, the close falls back to Import Orders + Import Payment. Those cannot be limited to
+single tickets, so the close is <strong>blocked</strong> (nothing imported) whenever a till was withheld or other days or branches
+are pending; start POS integration for per-ticket control.</p>
+<hr />
+<h2 id="under-the-hood">Under the hood<a class="headerlink" href="#under-the-hood" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>A ticket number</strong> is <code>&lt;Org key&gt;-&lt;till user key&gt;-&lt;S|R|P&gt;&lt;n&gt;</code>: S sale, R refund, P customer payment, <em>n</em> counting from 1 per series. It is the
+  <code>DocumentNo</code> of every row of the ticket.</li>
+<li><strong>Rows sent per ticket:</strong> <code>I_Order</code> (one per product line: product, quantity, price actually paid, unit, date, shift tag
+  "POS shift <em>till</em>/<em>seq</em>") and <code>I_Payment</code> (one per tender applied: amount, tender type, date, same shift tag). Over-payment is change and is never deposited.</li>
+<li><strong>Tender map:</strong> Cash → <code>X</code>, Cheque → <code>K</code>, Card → <code>C</code>, Bank → <code>A</code>. Card rows carry the terminal reference and approval code, never the number.</li>
+<li><strong>Refunds:</strong> negative quantity and negative payment under an <code>R</code> key, with "Refund of <em>original number</em>" on the line.</li>
+<li><strong>Prices and taxes</strong> come from the ERP's own price list and tax functions; the till holds no tax formula.</li>
+<li><strong>Kitchen:</strong> two branch-local tables (kitchen order, kitchen status). The till and kitchen look at the branch's shared box with one
+  cheap list request per poll and run a full Visit only when another device wrote.</li>
+<li><strong>Same twin rule as the ERP:</strong> where uniCenta 5.0 and legacy iDempiere disagree on what can be sent, legacy wins, which is why four tenders are disabled.</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>What you see</th>
+<th>Meaning and fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>That discount takes the line under its price limit; head office would refuse the ticket</em> (also "...takes a line under its price limit...")</td>
+<td>The discounted price is below the price list's limit. Use a smaller percentage.</td>
+</tr>
+<tr>
+<td><em>Select a line and type the discount % first</em></td>
+<td>Select a line, type the percentage digits, then press the discount button.</td>
+</tr>
+<tr>
+<td><em>Enter an amount</em></td>
+<td>Type an amount before Add Part Payment / Save / Issue.</td>
+</tr>
+<tr>
+<td><em>Only cash gives change: the amount is more than remaining</em></td>
+<td>Over-tender is allowed on Cash only.</td>
+</tr>
+<tr>
+<td><em>Card: the terminal reference and approval code are needed (the card number is never keyed here)</em></td>
+<td>Key both from the card terminal.</td>
+</tr>
+<tr>
+<td><em>The ticket is already covered</em> / <em>The ticket is not covered yet: Add Part Payment</em></td>
+<td>Remaining must be zero before OK.</td>
+</tr>
+<tr>
+<td><em>This tender is not in this release</em></td>
+<td>Voucher, Free, Debt, Slip are disabled (no legacy tender type).</td>
+</tr>
+<tr>
+<td><em>A free-price or negative line has no legacy import mapping in this release (Import Orders needs a product)</em></td>
+<td>Ring a real product instead of a typed price.</td>
+</tr>
+<tr>
+<td><em>... - no such product</em></td>
+<td>The barcode or key matches no product on the till's price list.</td>
+</tr>
+<tr>
+<td><em>A refund takes lines of the original ticket (Edit Sales, Refund)</em></td>
+<td>On a refund ticket you cannot add products.</td>
+</tr>
+<tr>
+<td><em>Add at least one line to refund</em></td>
+<td>Tap <strong>Add</strong> on at least one line.</td>
+</tr>
+<tr>
+<td><em>The ticket does not exist</em></td>
+<td>Wrong number or series (Sales / Refund).</td>
+</tr>
+<tr>
+<td><em>Could not save the sale on this device: ...</em></td>
+<td>The device engine refused the save. Nothing was sent; retry.</td>
+</tr>
+<tr>
+<td><em>Send Order is for a sale ticket</em> / <em>Nothing to send</em></td>
+<td>Open a sale ticket with lines.</td>
+</tr>
+<tr>
+<td><em>Could not send the order: ...</em></td>
+<td>The kitchen row could not be saved on this device; retry.</td>
+</tr>
+<tr>
+<td>Kitchen shows no cards</td>
+<td>Till and kitchen must be paired to the <strong>same</strong> branch Org; press <strong>Visit</strong>.</td>
+</tr>
+<tr>
+<td>Cards have no colour</td>
+<td>By design until both Amber min and Red min are set.</td>
+</tr>
+<tr>
+<td><em>Visit failed: ...</em></td>
+<td>No connection or no pairing; keep working and press <strong>Visit head office</strong> later.</td>
+</tr>
+<tr>
+<td>Strip says <strong>not paired</strong></td>
+<td>The device has not joined or is not approved yet (see <em>Setting up</em>).</td>
+</tr>
+<tr>
+<td>Team panel: <em>No key: open the Team panel and use the system default, or save your own repository and key</em></td>
+<td>The team's relay key is missing on this browser; use the system default or save your own repository and key.</td>
+</tr>
+<tr>
+<td><em>Choose what this device is bound to first: ...</em></td>
+<td>Pick the branch Org in <strong>Bound to</strong> before Approve.</td>
+</tr>
+<tr>
+<td>Import row error <em>ERR=no tenders: ...</em></td>
+<td>The ticket has lines but no payment rows.</td>
+</tr>
+<tr>
+<td><em>ERR=Tenders total X &lt;&gt; invoice total Y</em></td>
+<td>The tenders do not add up to the invoice; correct the rows and run again.</td>
+</tr>
+<tr>
+<td><em>ERR=Import Orders imported n of m ticket lines</em></td>
+<td>Some lines refused (product, price limit...); the reason follows.</td>
+</tr>
+<tr>
+<td>Day Close: <em>WITHHELD: gap ...</em> / <em>unbalanced ...</em></td>
+<td>A till/day failed the audit gate. Find the missing ticket or fix the tender, then close again.</td>
+</tr>
+<tr>
+<td>Day Close: <em>STOPPED at step "..." (Org ...)</em></td>
+<td>The named step failed; earlier steps stay. Fix the reason and run again.</td>
+</tr>
+<tr>
+<td>Day Close: <em>BLOCKED, nothing imported</em></td>
+<td>POS integration is not started and the gate held a till or other days are pending.</td>
+</tr>
+<tr>
+<td><em>Branch Day Close: nothing pending for ...</em></td>
+<td>No unimported till rows for that day.</td>
+</tr>
+<tr>
+<td>Branch Day Close not in the menu</td>
+<td>Friendly operations is not installed (see <em>Switching it on</em>).</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/red1oon/bim-ootb" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/red1oon/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "toc.follow", "content.tabs.link"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../javascripts/fold-footnotes.js"></script>
+      
+        <script src="../javascripts/bim_compiler_source.js"></script>
+      
+    
+  </body>
+</html>
