@@ -268,3 +268,31 @@ convention = the Tycho/Maven build `pom.xml` already in the skeleton · (3) a fr
 - **Not judged here:** the twin's tiles/rows step stops at `Service type QueryCProjectPhase not configured` — those read types are the CAPEX DASHBOARD module's (bim-ootb `capex/`), not this plugin's;
   the clean instance has only the plugin, as intended. A dashboard module 2Pack is that lane's job. Also not done: the BIM tab opened in ZK (needs a browser), the film storyboard.
 - **Install guide facts (for the film):** drop 2 folders in `plugins/` + 2 `bundles.info` lines (or Felix install) → restart → include "BIM OOTB Push" in the pushing user's role → restart or Cache Reset.
+
+## §8.5 FILM STORYBOARD v1 — "Installing BIM to iDempiere" (owner 2026-11-03: "It be for another film 'Installing BIM to iDempiere'") — ⛔ DO NOT RECORD until the owner OKs this storyboard
+**Layout:** bim-compiler `prompts/FILM_NARRATION.md` ▶ PLAYBOOK C (before/after in the first 25 s; show, then prove; one real event; roadmap card "not built yet"; plain silent chapter cards 3.6 s;
+no persistent tags; bottom 230 px empty; F asks, M answers in plain words). Addendum rule: **the product AS SHIPPED** — nothing fixed while preparing is a story beat (the Free-Filter and two-bundle
+findings of §8.3/§8.4 are NOT in the film). Every number from a `§` line of the RECORDING run, not from this table. Test servers only, said on screen ("test server", GardenWorld demo data).
+| # | beat (~s) | picture | voice (EN draft) | facts from the run |
+|---|---|---|---|---|
+| T | 0-4 | title card (dual colour): "Installing BIM to iDempiere" | — | — |
+| 1 | 4-25 | BEFORE: a stock iDempiere test server, Project window, no BIM anywhere + a plain card of the old checklist (web-service types, field lists, a role, a CORS rule, a link: "five jobs by hand") → AFTER: the same server with the plugin: the viewer opens at `/bimootb` | F: "Can my iDempiere take a building model?" M: "Before: five setup jobs by hand. After: one plugin, the way iDempiere installs its own packs." | the §5 cheatsheet items; `GET /bimootb/viewer/viewer.html 200` |
+| C1 | card | "One plugin · the iDempiere way" | — | — |
+| 2 | 25-45 | plain card: two folders → "BIM tab + setup pack" / "the viewer"; inside the pack: N web-service types, one role, settings | M: "Inside: a setup pack made by iDempiere's own Pack Out, and the viewer itself — served by your iDempiere, so nothing else to host." | 2Pack content counts (§8.4 style) |
+| 3 | 45-70 | the install: 2 folders + 2 lines, restart (terminal card) → the server log line "… installed" → iDempiere's Pack In record "Completed successfully" (ZK) | F: "How long does it take?" M: "Copy two folders, add two lines, restart." | `Incremental2PackActivator … installed`; AD_Package_Imp status |
+| 4 | 70-90 | the ONE admin step: Role window › Included Roles › "BIM OOTB Push" (ZK); then restart / Cache Reset; the refusal message if skipped, shown once | F: "And if I forget that step?" M: "Then the push is politely refused — it says which access is missing." | the refusal text; the include row |
+| C2 | card | "From model to Project Order" | — | — |
+| 5 | 90-120 | the viewer at `/bimootb` (same server): an office building (HHS, 6,839 elements) → its 4D programme → Find › ERP → **the order lands in iDempiere's Project window** (phases, tasks, lines) | M: "The model brings its own programme: about eight weeks [from the run], six phases. One click, and the Project Order is in iDempiere — typed by nobody." | `§SHED_PUSH created …`, the phase dates, PlannedAmt (example rates, editable) |
+| 6 | 120-135 | proof, side by side A/B: the model's numbers vs iDempiere's (amount, counts, six dates) | F: "Is it exactly the same?" M: "Same amount, same 45 lines, same dates — checked, not eyeballed." | fold vs legacy compare lines |
+| 7 | 135-148 | the BIM tab in that Project opens the same model, for that project | M: "And from the project, the BIM tab opens its model." | `§BIM_TAB C_Project_ID=… db=…` (server log) |
+| R | card | Roadmap · not built yet: the standard Maven build; the CAPEX dashboard as its own pack; a link back from the viewer to the iDempiere window | — | — |
+| E | end card | sponsor SYSNOVA UK/Bangladesh · RED1's vision · built with Claude Code + GitHub guardrails · WITNESSed · MIT | — | — |
+**⛔ PREREQUISITES before recording (each a spec + witness, none built):**
+- **P5 — the viewer's own push to iDempiere (beat 5 is NOT possible today):** Find › ERP folds into the viewer's local ERP store only; `viewer/erp_rest_push.js` is not loaded by `viewer.html`, and the
+  plan builder (fold rows → `{phases, tasks, lines, …}`) lives only in the node tool `capex/tools/shed_twin.js`. Needed: (a) the plan builder moved into ONE shared module the viewer and the tool both
+  use; (b) when the viewer runs under `/bimootb` (or a configured iDempiere base URL), Find › ERP folds locally as today THEN pushes that plan to the server it came from with the plugin's
+  `BIMOOTB_*` types, logged `§PROJ_PUSH_LEGACY …`; credentials: the logged-in iDempiere user's own (never a stored password) — ⛔ how the viewer gets them inside the ZK session is the open design
+  question (read iDempiere's session/token options in source before proposing); (c) witness = the same compare as §8.4 from the viewer's code path.
+- **P7 — the BIM tab opened for real** (ZK headless, software GL): `§BIM_TAB` line + the iframe URL loading the viewer for that project's DB.
+- ZK screenshots by headless Chrome `--disable-gpu` against the TEST instance only (:8098) — the owner's go for the recording.
+**Open for the owner:** OK this storyboard · build P5 first (it is the film's core beat) · language set (EN first, then the PLAYBOOK set?).
