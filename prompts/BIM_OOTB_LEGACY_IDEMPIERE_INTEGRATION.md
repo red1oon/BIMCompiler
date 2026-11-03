@@ -231,3 +231,22 @@ convention = the Tycho/Maven build `pom.xml` already in the skeleton · (3) a fr
 - Plugin: `META-INF/2Pack_13.1.0.zip` = that file; MANIFEST 13.1.0, `Bundle-Activator: org.adempiere.plugin.utils.Incremental2PackActivator`, `Require-Bundle … org.adempiere.plugin.utils`;
   `Bundle-ActivationPolicy: lazy` REMOVED (lazy would apply the 2Pack only when a class first loads = the first BIM-tab open, not at install).
 - **Next:** P2 (web context + the viewer files — assembled at build time from bim-ootb, never committed here), the bundle jar, the second instance from `pilot_snap`, W-PLUGIN-INSTALL.
+
+### §8.3 RESULT + FINDING 2026-11-03 — bundle built, installed on a clean instance; legacy REFUSED the 2Pack on a real rule; logs read
+- **P2 + bundle:** `Web-ContextPath: bimootb`, `Jetty-Environment: ee8`, `Eclipse-BundleShape: dir` (as `org.idempiere.webservices`), `WEB-INF/web.xml` (javaee 4.0 header as org.adempiere.ui.zk's).
+  `tools/build_bundle_poc.sh` (javac + copy; the viewer set is a RULE: viewer/ minus tests/ and buildings/, plus every `../erp|common|modeller|capex/` file the viewer code references, minus
+  `erp/idempiere.html`; the service worker's PRECACHE list is NOT the app — it lacks the lazy Find bundle and erp_rest_push.js): `§BIMOOTB_BUNDLE files=523 viewer=501 siblings=22 bytes=80,126,282 classes=3`.
+- **Clean instance:** `~/idempiere-bimplugin` (copy of the pilot server; DB `idempiere_bimplugin` = `CREATE DATABASE … TEMPLATE pilot_snap`; :8098/:8454; its own stop.sh pattern — the copied one
+  matched `[i]dempiere-pilot` and would have stopped the MAIN pilot: fixed before first start). Installed by one `bundles.info` line. Before: BIMOOTB types 0, master role 0, sysconfig 0.
+- **The activator ran the 2Pack at start** (`Incremental2PackActivator.packIn: Installing org.idempiere.bimootb /META-INF/2Pack_13.1.0.zip`) and legacy refused it, all-or-nothing
+  (types still 0; AD_Package_Imp "Import Failed"): `MWebServicePara.saveError: Type Free not allowed for parameter Filter (security issue)` — `MWebServicePara.beforeSave :114-121`, IDEMPIERE-1784.
+- **What it means (bigger than the plugin):** every query type we made by SQL on the pilot (CAPEX `ws_capex_readtypes.sql`, `ws_capex_writetypes.sql` QueryCUOM, `ws_capex_patypes.sql`, the bridge
+  lane's, and the BIMOOTB clones) carries a FREE `Filter` parameter that iDempiere forbids when the type is made the proper way (window or 2Pack). The push's find-or-create
+  (`viewer/erp_rest_push.js findOrCreate` → `<Filter>Value='…'</Filter>`) and the twin tools' reads depend on it. The pilot accepted it only because SQL skipped the model's save rule.
+- **iDempiere's own safe way (source):** `ModelADServiceImpl.queryData :1495-1512` — every DataRow field the query type whitelists as an INPUT field becomes a bound condition (`col LIKE ?` for
+  CHAR columns, `col=?` otherwise); a `Filter` param may only be Constant (`validateParameter :307-338`) and is parsed with `@…@` from the request (`:1515-1516`).
+- **FIX SPEC (next, before any code):** (1) `erp_rest_push.findOrCreate` finds by DataRow key fields (`{column, val}` natural key: Value / Name / parent id / product / task) — no Filter;
+  ⚠ CHAR keys go through `LIKE ?`, so `_` and `%` in a key are wildcards: the client then keeps only rows whose key EQUALS the value (exact post-filter, logged if a LIKE extra was dropped);
+  (2) query types: no Filter param; their key columns whitelisted as INPUT fields; (3) the mock in `tests/poc_erp_rest_push.js` enforces both rules (refuses a Free Filter type, binds DataRow keys)
+  so it can no longer pass what legacy refuses; (4) re-make the pilot types the proper way (POC SQL → then through the model: a 2Pack PackIn on the pilot itself proves the rows pass the model), re-run
+  the CAPEX twins (HHS, SHED) green, re-Pack-Out, re-install on the clean instance → W-PLUGIN-INSTALL; (5) the CAPEX read path (`adapters.loadLegacy`, `shed_twin legacyQuery`) moves to DataRow keys too.
