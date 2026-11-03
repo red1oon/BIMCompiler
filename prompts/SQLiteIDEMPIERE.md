@@ -2400,3 +2400,16 @@ account × side at 0c (incl. #101's 724 Cr 0.01), Posted=Y; 91 other docs byte-i
 **1c UNBLOCKED (2026-11-04):** the pilot IS reachable read-only via `docker exec -i postgres psql -U postgres -d idempiere_pilot`
 (the generator's own path) — 7,806 m_costhistory / 2,706 m_costdetail client-11 rows; extraction filtered to the seed's own
 documents is in progress (no code change).
+
+**§POSTING-PARITY item 1c ✅ DONE (witness) — 2026-11-04, bim-ootb #2597 (live erp sw v980). DATA only, no code change** — confirms
+the 1c diagnosis. From the pilot (read-only, `docker exec -i postgres psql … idempiere_pilot`): 84 `m_costdetail` rows tied to
+the seed's OWN document lines (all created 2026-06-21 = the GardenWorld costing; pilot test traffic excluded — note pilot detail
+ids are ≥ 1000000 even for the original costing, so the tie is by document line, not id) + 172 `m_costhistory` rows referencing
+them; generator TABLES + ROW_WHERE, only these statements spliced; unique index per table (seed DDL has no PK) for idempotency.
+Team BASE hash `37134ec7…`→`38ae6753…`, same 7 pins moved. W-SEED-COST-HISTORY 5/5: **42/42 client-11 documents with stored legacy
+facts now == legacy (baseline 38/42), none diverged**; newly equal: m_inout #100/#101/#108, m_matchinv #100 (742 Cr 70.00 +
+50017 Cr 30.00 in 101; 59.50 + 25.50 in 200000). `witness_acct_processor` rerun check aligned to legacy AcctProcessor
+`Posted IN ('N','d')` (AcctProcessor.java:161, :215 — E-status is not retried).
+**§POSTING-PARITY status:** 1a ✅ 1b ✅ 1c ✅ 1d ✅ (one named residual: #101 724 AmtSource 0.0 stored vs Java 0.01). **Next:** (2) the
+Posting-Preview renders `model_post` (one implementation) → (3) re-run parity client-filtered → (4) retire `doc_poster.derive*`
+(keep its plugin Doc-class registry; genesis.html's derivePostings call moves first).
