@@ -854,3 +854,24 @@ cannot change a key (K2 folds on the filename).
 
 **Next wave (ranked by user cost):** F4 eviction blind spot · F5/F6 one `importUrl()` + one project key · F10 one seed
 constant (+ repoint the v13 test) · F15 resident `?v=N` · then the data-correctness set F8, F7, F13, F14, F12, F18.
+
+**WAVE 2 ✅ DONE (witness) — 2026-11-03, three PRs, all live (viewer sw v1681, erp sw v966, modeller sw v212):**
+- **F10 → bim-ootb #2565.** One owner `erp/seed_key.js` (`window.ERP_SEED_KEY = 'ad_seed_v18'`, value unchanged → no re-download; no drift
+  found). W-ONE-SEED-KEY: 0 literals outside the owner over 2852 files; FAIL on the pre-fix tree (19 literals); mutant caught.
+- **F4 + F15 → bim-ootb #2566.** Measured writer table (spec): `_evictOldest` saw `timestamps` only, so dbs-only blobs were never
+  reclaimed — and it had NO guard, so a timestamped `import://` / Time-Machine / open-building entry could be evicted. Now
+  timestamps ∪ dbs behind default-deny `A._cacheEvictable` (re-downloadable keys only; never `import://`, `::tip`, TM/kanban/walk
+  state, the open building). F15: `_idbPutVersioned` drops superseded `<base>?v=*` residents. W-SEAM-W2-EVICT 9/9; 7/9 fail pre-fix;
+  3/3 mutants. **Open:** an edit snapshot under a plain url key still looks like a clean download (only the OPEN building is
+  protected) — needs a "dirty" marker from the savers; pre-existing, not a regression.
+- **F5 + F6 → bim-ootb #2569.** One owner `common/import_key.js` (project key verbatim, split `_extracted/_meta/_geo.db`, monolith
+  `K/v0`); 18 inline constructions removed. Legacy `K/extracted`+`K/library` (same bytes written twice) re-keyed put→verify→delete,
+  and `§IMPORT_KEY_ALIAS` lets old links/restored tabs still open them. W-ONE-IMPORT-KEY 125 checks; 3/3 mutants. **Partial F6:**
+  materialize keeps its sanitised design key (it goes into a `?db=` link), so a design named with spaces/punctuation is still not
+  reachable under the importers' raw key. **Not touched:** scene.js "Open DB" builds `import://K_extracted.db/v0` (a fourth shape).
+- **Witness lesson:** a before-proof against a MOVING `origin/main` stops discriminating the moment the fix merges (W1 and W2 reported
+  "before did not fail" on the next branch). Both now pin their baseline to the pre-fix commit (a3233475 / 0d7ef429), as
+  W-ONE-KERNEL-OPS already did (38fbb8fb). New witnesses: pin, don't point at a branch.
+
+**Next:** scene.js Open-DB import shape (F5 tail) · edit-snapshot dirty marker (F4 tail) · F8 building class · F13 badge · F14 clash
+pair order · F12 precache gap · F7 · F18.
