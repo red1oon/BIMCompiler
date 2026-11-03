@@ -7,7 +7,7 @@
 // READ THE LOG: node guard.js > out/guard.log
 'use strict';
 const fs = require('fs'), path = require('path'); const say = s => console.log(s); let fail = 0;
-const N = require('./narr.js'), Cards = require('./cards.js');
+const N = require('./narr.js'), Cards = require('./cards_lang.js');
 const doc = fs.readFileSync(path.join(__dirname, '..', '..', 'docs', 'DistributedERP.md'), 'utf8'), tbl = doc.slice(doc.indexOf('### What a database stands for'));
 const JOBS = ['Concurrency control', 'Replication', 'Durability', 'Atomicity', 'Integrity', 'Querying and indexing', 'Access control', 'Audit and history', 'A single place to ask'];
 const miss = JOBS.filter(j => !new RegExp('\\| \\*\\*' + j.replace(/ and /, '.*') , 'i').test(tbl));
@@ -20,7 +20,10 @@ const bc = cardBad(C); say('§GUARD G2 ' + (bc.length ? 'FAIL ' + JSON.stringify
 const nb = N.beats.filter(b => b.text), narrBad = bs => bs.reduce((a, b) => a.concat(b.text ? digits(b.text).map(x => b.id + ':' + x) : []), []), bn = narrBad(N.beats);
 say('§GUARD G3 ' + (!nb.length ? 'INCONCLUSIVE no narrated beats' : bn.length ? 'FAIL ' + JSON.stringify(bn) : 'PASS') + ' narrated_beats=' + nb.length + ' digits_spoken=' + bn.length); if (!nb.length || bn.length) fail++;
 const allCards = Object.keys(C).map(k => textOf(C[k].html)).join(' ').toLowerCase(), spoken = nb.map(b => b.text).join(' ').toLowerCase();
+const ZH = (process.env.FILM_LANG || 'en') === 'zh';
 const TERMS = ['fold', 'append-only', 'deterministic', 'hash', 'owner-gate', 'compare-and-set', 'idempotent', 'signature', 'catalogue'], used = TERMS.filter(t => spoken.includes(t === 'owner-gate' ? 'single permitted writer' : t)), undef = TERMS.filter(t => used.includes(t) && !allCards.includes(t) && !(t === 'catalogue' && allCards.includes('catalogue')));
+if (ZH) { const ALLOW = /\b(SQLite|github|com|red1oon|bim|ootb|BIMCompiler|red1org|gmail|docs|DistributedERP|prompts|TEAMWORK_FRAMEWORK)\b/g, left = []; Object.keys(C).forEach(k => { (textOf(C[k].html).replace(ALLOW, '').match(/[A-Za-z]{3,}/g) || []).forEach(w => left.push(k + ':' + w)); });
+  say('§GUARD G4 ' + (left.length ? 'FAIL untranslated ' + JSON.stringify(left.slice(0, 8)) : 'PASS (zh) no English left on the cards; spoken terms checked in the English cut')); if (left.length) fail++; } else
 say('§GUARD G4 ' + (undef.length ? 'FAIL spoken but not on any card: ' + undef.join(', ') : 'PASS') + ' terms_spoken=' + used.length + '/' + TERMS.length); if (undef.length) fail++;
 const C1 = JSON.parse(JSON.stringify(C)); C1.job1.html = C1.job1.html.replace('</div></div>', '<span>777</span></div></div>');
 if (C1.job1.html === C.job1.html) { say('§GUARD C1 VACUOUS the plant did not apply'); fail++; } const c1 = cardBad(C1);

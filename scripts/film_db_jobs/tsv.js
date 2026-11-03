@@ -13,7 +13,7 @@ if (mode === 'build') { fs.readFileSync(a2, 'utf8').split('\n').forEach(l => { c
   if (endT == null || N.beats.some(b => cues[b.id] === undefined)) throw new Error('film.log lacks a cue or §FILM_DONE'); }
 const ix = N.beats.map(b => b.id), rows = N.beats.filter(b => b.text).map(b => { let s = 0, e = 999; if (mode === 'build') { s = cues[b.id]; const nx = ix[ix.indexOf(b.id) + 1]; e = nx ? cues[nx] : endT; }
   const t = b.text.replace(/\s+/g, ' ').trim(), det = t;
-  return [b.id, s.toFixed(2), e.toFixed(2), 'script_en.md ' + b.id + (b.facts.length ? ' facts ' + b.facts.join(',') : ' (no figures)'), det, det].join('\t'); });
+  return [b.id, s.toFixed(2), e.toFixed(2), (N.LANG === 'zh' ? 'script_zh.json ' : 'script_en.md ') + b.id + (b.facts.length ? ' facts ' + b.facts.join(',') : ' (no figures)'), det, det].join('\t'); });
 fs.writeFileSync(path.join(work, 'narration_en.tsv'), rows.join('\n') + '\n');
 fs.writeFileSync(path.join(work, 'plan.json'), JSON.stringify({ beats: N.beats.map(b => ({ id: b.id, card: b.card })) }, null, 1));
 console.log('§TSV mode=' + mode + ' narrated=' + rows.length + ' beats=' + N.beats.length + (mode === 'build' ? ' film_s=' + endT : ''));

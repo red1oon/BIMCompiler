@@ -3,7 +3,7 @@
 'use strict';
 const { chromium } = require(require('os').homedir() + '/bim-ootb/tests/node_modules/playwright');
 const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
-const Cards = require('./cards.js');
+const Cards = require('./cards_lang.js');
 const OUT = path.resolve(process.argv[2]), FR = path.join(OUT, 'frames'); fs.mkdirSync(FR, { recursive: true });
 const FPS = +(process.env.FPS || 24), LOG = []; const say = s => { LOG.push(s); console.log(s); };
 const g = require('child_process').spawnSync('node', [path.join(__dirname, 'guard.js')], { encoding: 'utf8' });

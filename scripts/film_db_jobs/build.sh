@@ -7,7 +7,7 @@ export FILM_LANG="${FILM_LANG:-en}"; LUP=$(echo $FILM_LANG | tr a-z A-Z)
 OUTMP4="${OUTMP4:-$HOME/Videos/What_a_Server_Stands_For_and_What_a_Database_Stands_For_${LUP}_rc1.mp4}"; OUTTXT="${OUTMP4%.mp4}_narration.txt"
 [ -e "$OUTMP4" ] && { echo "§REFUSED $OUTMP4 exists (never overwritten); set OUTMP4="; exit 5; }
 # voices: en = Kokoro (local CPU, no network). EN only for now (owner 2026-11-03); other languages wait for the owner's approval of this cut (Edge TTS sends script text to Microsoft)
-PY=~/.local/share/film_narration/venv/bin/python; FIT=../film_replication_engine/film6/fit6/fit_kokoro_v3_k.py; FTAG=en; FARG=1.15; MUX=../film_replication_engine/film6/fit6/mux_two_pass.py
+PY=~/.local/share/film_narration/venv/bin/python; FIT=../film_replication_engine/film6/fit6/fit_kokoro_v3_k.py; [ "$FILM_LANG" = zh ] && FIT=../../prompts/film_narration_fit_edge.py; FTAG=en; FARG=1.15; [ "$FILM_LANG" = zh ] && { FTAG=zh; FARG=zh; }; MUX=../film_replication_engine/film6/fit6/mux_two_pass.py
 export CUDA_VISIBLE_DEVICES=""
 # GPU rule (from build_v4.sh): refuse while any process holds the GPU. This build never uses the GPU (Chrome --disable-gpu, CUDA hidden); CPU_ONLY_OK=1 lets it
 #   record beside a user's open browser, and LOGS the GPU state it ran beside (out/gpu_state.log) — an explicit, visible override, never a silent one.
@@ -22,6 +22,6 @@ node ../film_terms/beatmin.js out/fit_measure.log out/beatmin.json > out/beatmin
 gpu; rm -rf out/rec; mkdir -p out/rec; node record.js out/rec out/beatmin.json > out/record.log 2>&1
 node tsv.js build out/work out/rec/film.log > out/tsv_build.log 2>&1
 cp ../../prompts/film_narration_ass_head.txt out/work/fit/ass_head.txt; D=$(ffprobe -v error -show_entries format=duration -of csv=p=0 out/rec/film_silent.mp4)
-(cd out/work/fit && rm -f *.wav && FILM_SEC=$D $PY ../../../$FIT ../narration_en.tsv $FTAG $FARG > ../../fit.log 2>&1 && FILM_SEC=$D python3 ../../../$MUX $FTAG ../../rec/film_silent.mp4 "$OUTMP4" | tee ../../mux.log)
+(cd out/work/fit && rm -f *.wav && FILM_SEC=$D $PY ../../../$FIT ../narration_en.tsv $FTAG $FARG > ../../fit.log 2>&1 && { [ "$FILM_LANG" = zh ] && { cp $FTAG.ass ${FTAG}_full.ass; python3 ../../../../../prompts/film_zh_caption_split.py ${FTAG}_full.ass $FTAG.ass 20 > ../../zh_split.log 2>&1; }; true; } && FILM_SEC=$D python3 ../../../$MUX $FTAG ../../rec/film_silent.mp4 "$OUTMP4" | tee ../../mux.log)
 awk -F'\t' 'BEGIN{print "What a server stands for, and what a database stands for - narration (" ENVIRON["FILM_LANG"] "). No figures by design; see scripts/film_db_jobs/script_en.md.\n"} {printf "[%s %.2fs]\n", $1, $2; gsub(/M: /,"",$6); gsub(/ \| /,"\n",$6); print $6; print ""}' out/work/narration_en.tsv > "$OUTTXT"
 echo "§BUILD_DONE $OUTMP4"
