@@ -290,7 +290,7 @@ Read-only extraction (`TEAMWORK_FRAMEWORK.md` §41 agent A). Every line cites a 
 - ✅ P4: the pill deleted, W-POS-OFF (#2585; BIMCompiler #328).
 - ✅ P2: the kitchen screen (§19–§20; #2586, #2590; BIMCompiler #330).
 - ✅ P3 / §9: built earlier (#2431).
-- ⏸ P5: Branch Day Close, awaiting the owner's go.
+- ✅ P5: Branch Day Close (owner go 2026-11-04; §21–§23; bim-ootb #2594, live sw v977). G/S 28→9 / 6→1. The audit gate checks ticket gaps and the tax-aware balance; there is no Z check, because the till keeps its close on the device.
 - ⏸ The WH walk standalone app: planned, `WH_POS_PICK_LANE.md` §STANDALONE.
 - Open, not chased: `witness_pos_plan.js` fails the same on main and on the branch (needs a PC_LINES fixture); kitchen relay cost is 38 requests per message.
 **Still open (asked only if P0 does not answer them):** Q-b (stock display on the till), Q-e (reservations till-only or ERP record).
