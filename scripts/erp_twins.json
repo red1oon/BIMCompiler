@@ -93,10 +93,6 @@
       "rel": "identical",
       "why": "reconciled 2026-09-03 (§TWIN-CLASSIFIED-2): shipped-only host-adapter lift (init/NAV/setOps) all below the node early-return; copy <- shipped (05e00670); test_help_coach/nextgate PASS, test_tour_idempiere PASS once its moved fixture (docs/internal/HelpO2C.md) was re-pointed. Locked"
     },
-    "img_store": {
-      "rel": "identical",
-      "why": "reconciled 2026-09-02 (§TWIN-CLASSIFIED): digestOf content-address check (#277) was shipped-only; both witnesses already await resolveImage; copy <- shipped; PASS. Locked"
-    },
     "inout_confirm": {
       "rel": "identical",
       "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"
@@ -104,10 +100,6 @@
     "kernel_ops": {
       "rel": "identical",
       "why": "reconciled 2026-09-02 (§TWIN-CLASSIFIED): copy was v9, shipped v13 — every diff line was the older form of T6/T2/T7/F1-F10/S7/S8; copy <- shipped, all 80 judging scripts re-run, 0 regressions (poc_rate_input newly runs+passes). Locked"
-    },
-    "kitchen_core": {
-      "rel": "identical",
-      "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"
     },
     "ninja_bundle": {
       "rel": "identical",
@@ -150,8 +142,8 @@
       "why": "matched what ships when the gate was written 2026-09-02; locked so a later drift fails loudly"
     },
     "pos_core": {
-      "rel": "identical",
-      "why": "matched what ships when the widened scan first saw it 2026-09-02; locked so a later drift fails loudly"
+      "rel": "divergent",
+      "why": "2026-11-03 (POS_PLUGIN_LOCAL_FIRST §17.4): the bim-ootb copy is TRIMMED to completeShipmentOps (Warehouse Walk) after the POS pill was retired; this mirror keeps the FULL verb set because scripts/bridge/* (the SQLite==legacy parallel run) and the poc_pos_* witnesses call buildSaleGroup & co. on it"
     },
     "report_overlay": {
       "rel": "identical",
