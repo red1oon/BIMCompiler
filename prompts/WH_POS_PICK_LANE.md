@@ -163,10 +163,25 @@ newVerbs=[].
    - A deliver-later sale in legacy is a standard order (doctype SO).
    - Generate Shipments makes the `M_InOut` in Drafted status, and the walk picks it.
    - So the selector reads any Drafted customer shipment of the device's warehouse. This removes the `c_order`-POS join in `seedPosDocs`.
-3. **What the device deposits vs what head office completes (FL-8, one DocAction executor):**
-   - Legacy's pick step is the Ship/Receipt Confirm (`M_InOutConfirm`, PickQA type).
-   - The walk deposits the confirm quantities. It completes the shipment only if the plan names the warehouse role as that document's executor.
-   - **Q-W1 (owner):** who completes the shipment, the warehouse device (role = executor) or head office?
+3. **Base + batch, like the POS (owner, 2026-11-03: *"Similar to POS, we batch messages with a base. Also to minimise central server usage on our local first model."*). This answers the earlier Q-W1: head office completes, the device only declares.** Legacy already has every piece:
+   - **The base (down, once per wave).** Head office runs the legacy steps it already owns:
+     - Generate Shipments (`erp/processes/InOutGenerate.js`) makes the shipments in Drafted status.
+     - Create Confirmation (`erp/processes/InOutCreateConfirm.js`, ported verbatim) makes the Pick/QA confirm (`M_InOutConfirm` + its `M_InOutLineConfirm` lines).
+     - The device receives that set as one base: the shipments, the confirm line ids, the products and the locators. It works fully offline against it.
+   - **The batch (up, per Visit, never per scan).**
+     - Each bin scan writes an `I_InOutLineConfirm` row on the device (AD_Table 740, AccessLevel 2): `M_InOutLineConfirm_ID`, `ConfirmedQty`, `DifferenceQty`, `ScrappedQty`, `ConfirmationNo`, `Description`.
+     - These are exactly the columns legacy's import copies (`ImportInOutConfirm.java:166-170`).
+     - A wave's rows travel together at the device's next Visit, which authors the pending rows in one pass (`erp/team_sync.js:259-266`).
+     - The relay sees one Visit per wave, not one message per pick. That is the "minimise central usage" half.
+   - **Head office imports in a batch, the one executor (FL-8).**
+     - Import Confirmations (AD_Process 296, `org.compiere.process.ImportInOutConfirm`, 197 legacy lines) updates the confirm lines by id. A missing id is marked "ID Not Found" (`:156-162`) and every row is re-runnable (`I_IsImported`).
+     - Head office then completes the confirm, and with it the shipment. Legacy completes the shipment only when its confirmations are processed.
+     - These steps can join Branch Day Close (`POS_PLUGIN_LOCAL_FIRST.md` §2.3) as one more legacy step.
+   - **Missing in the twin today (measured):**
+     - the `I_InOutLineConfirm` physical table: `erp/ad_import_tables.js` creates only `i_order` and `i_payment`;
+     - the Import Confirmations port: the seed has process row 296 but no `erp/processes/ImportInOutConfirm.js`.
+     - Both follow the `ImportPayment.js` pattern (DDL via the boot overlay, base hash unchanged).
+   - **Consequence:** the device completes no `M_InOut` and no `M_InOutConfirm`. `POSCore.completeShipmentOps` is not needed by the app, so `pos_core.js` can go entirely once the viewer pill is deleted (item 5).
 4. **Delete from the viewer when it ships:**
    - the `whwalk` pill entry and its i18n keys (`pill_whwalk`, `pillc_whwalk_1-4` in every `viewer/i18n/*.json`)
    - the `wh_walk.js` tag and the viewer `sw.js` precache line
@@ -175,6 +190,7 @@ newVerbs=[].
 6. **Robot seam** (`WH_ROBOTICS_LANE.md` §R-1…§R-4): `window.WHWalk.robot` moves with the app unchanged.
 
 **Witnesses to write before the build:**
+- W-WH-BATCH: a wave of N picks rung offline arrives as ONE Visit with N `I_InOutLineConfirm` rows. Relay requests are counted, and must not grow with the number of scans. Import Confirmations then sets every confirm line, and the device wrote 0 `M_InOut`/`M_InOutConfirm` status changes. Mutants: a Visit per scan (the relay count grows with N); a wrong `M_InOutLineConfirm_ID` (must show "ID Not Found", never a silent skip).
 - W-WH-APP-ROUTE: the app's route equals `WHRoute.route` over the same Drafted shipment.
 - W-WH-APP-CONFIRM: a wrong bin is refused through the one shared gate (W-WH-CONFIRM). A confirm deposits once, offline included.
 - W-WH-OFF (above).
