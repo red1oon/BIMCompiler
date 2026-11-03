@@ -13,7 +13,4 @@ Import-Package: org.osgi.framework;version="1.10.0",
  org.osgi.service.component;version="1.5.0"
 Service-Component: OSGI-INF/*.xml
 Bundle-Activator: org.adempiere.plugin.utils.Incremental2PackActivator
-Web-ContextPath: bimootb
-Jetty-Environment: ee8
-Eclipse-BundleShape: dir
 Automatic-Module-Name: org.idempiere.bimootb
