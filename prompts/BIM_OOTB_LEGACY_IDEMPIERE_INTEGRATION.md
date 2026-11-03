@@ -319,3 +319,16 @@ second sign-in, but a second push implementation; kept as an option.)
 a wrong password → refused, 0 rows created, the message shown, password forgotten; the password string never appears in any captured log line. Break: `BREAK=1` expects one more line → FAIL.
 Regression: `witness_find_push_4d`, `poc_erp_rest_push`, the HHS + SHED twins (`shed_twin.js` now on the shared builder) PASS +0.
 **Plugin side (bim-compiler, this lane):** `BIMTabPanel` adds the five `erp*` params from `Env.getCtx()`; rebuild + reinstall on the test instance.
+
+### §8.7 RESULT 2026-11-03 — P5 built: the viewer's own push lands in iDempiere; logs read
+- **bim-ootb #2561 (merged):** `viewer/erp_push_plan.js` (`planFromDb`, `bimootbServiceTypes`, `legacyTarget`) — the plan builder MOVED from `capex/tools/shed_twin.js` (−25/+4 there); `A.LEGACY_ERP`
+  (+ `A.LEGACY_ERP_CTX` = the five `erp*` params); `find_erp_push._pushLegacy` after the local fold (password in a closure only, scrubbed from every log string, forgotten on any failure);
+  viewer.html loads both modules; sw v1676. W-VIEWER-PUSH-LEGACY on the pilot `PASS judged=24 fail=0` (BREAK=1 → FAIL); regressions unchanged (W-FP4D 5/5, poc_erp_rest_push PASS, W-FOLD1 11/11,
+  HHS twin 302/302 +0, SHED twin 109/109 +0) — bim-ootb `prompts/CAPEX_DASHBOARD.md §5.10`.
+- **Here:** `BIMTabPanel.erpLoginParams()` passes `erpUser/erpClient/erpRole/erpOrg/erpWarehouse` from `Env.getCtx()` (Env.java:77-125); compiles (javac 17 vs the pilot jars).
+- **Clean instance (plugin only, :8098), both bundles rebuilt from bim-ootb e3ef3a85:** `/bimootb/viewer/viewer.html` 200 and loads `erp_push_plan.js` + `erp_rest_push.js`; served `find_erp_push.js` has
+  `_pushLegacy`. The SAME witness pointed at it (`PILOT_BASE=http://localhost:8098`, role 102 = GardenWorld Admin with "BIM OOTB Push" included; a temp copy with only the role id as env, not
+  committed): `§PROJ_PUSH_LEGACY base=http://localhost:8098 … projectId=1000002 created={…"projects":1,"phases":6,"tasks":16,"lines":45}` → 2nd push `+0` → `skip=no-target` → `skip=no-credentials`
+  → `§W_VPL_VERDICT PASS judged=24 fail=0`.
+- **Still needs a browser (owner's go, headless Chrome `--disable-gpu`, test instance only):** the shipped password dialog (`_askLoginDom`); the viewer opened AT `/bimootb` (same origin, the target rule
+  `served under /bimootb/ → location.origin`); the BIM tab in ZK (P7 / film beat 7). Then the film recording itself (§8.5, owner OK of the storyboard pending).
