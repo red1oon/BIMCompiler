@@ -281,3 +281,18 @@ Witness after revision: W-ONE-KERNEL-OPS 16/16 on the target; baseline 38fbb8fb 
 and passes the key-UNCHANGED claims; READONLY-gate mutant fails 4. W-PERS-5b (witness_gantt_edit_persist) now judges code
 with comments stripped (a comment naming the key function had made it PASS; before §A3a it read the unloaded copy) and
 reports INCONCLUSIVE for the open decision: pass=17 fail=0 inconclusive=1 (exit 2; not in CI).
+
+## §5 D1 — one shared lib folder ✅ DONE (witness) — 2026-11-03, bim-ootb #2581 (live viewer sw v1688, modeller sw v214)
+Owner: *"proceed the single folder without breaking backward compatibility."* The byte-identical (sha256) Viewer/Modeller
+libs — web-ifc-api-iife.js + web-ifc.wasm, sql-wasm.js + sql-wasm.wasm, OrbitControls.module.js, planegcs/ (8.4 MB) — now
+have ONE source, `common/lib/`, and every shipped consumer loads from it (70 refs / 28 files: tags, importmap/imports,
+`importScripts` in both IFC workers, every web-ifc `SetWasmPath`/`Init` and sql.js `locateFile` resolved against its own
+worker/module url, both SWs' SHELL_LIBS/DEFERRED_LIBS; deferred libs stay on-demand). **Compatibility:** the old files stay
+at `viewer/lib/` and `modeller/lib/` as byte-identical mirrors (README: do not edit) so open tabs, old service workers and
+external links still resolve — git stores identical blobs once, so zero repo cost. Live check: all 6 `common/lib/` urls 200
+with the expected sizes; old `viewer/lib/web-ifc.wasm`, `modeller/lib/sql-wasm.wasm`, `viewer/lib/sql-wasm.js` still 200.
+W-ONE-LIB-FOLDER (L1 no shipped old-path ref · L2 every common ref resolves · L3 mirror drift guard · L4 deferred off
+install): PASS; baseline efaa13ce FAIL; 5/5 mutants FAIL. CI incl. page tests on macOS/Ubuntu/Windows green.
+**Later (one-line change):** delete the mirrors once old tabs/SWs have aged out — W-ONE-LIB-FOLDER L3 then flips to "absent".
+**Not in scope:** the three.js bundles differ per app (Modeller importmap = webgpu build + a second module import — possible
+two THREE copies, D1 note); `erp/sqljs` + bim-compiler `build/erp/sqljs` keep their own copies.
