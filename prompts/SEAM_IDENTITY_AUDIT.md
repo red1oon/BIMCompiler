@@ -813,3 +813,44 @@ path does NOT hit F1's raw-url-vs-canonical-key drift. F1 itself is untouched an
 **Still open, untouched by this fix:** F1, F3–F18. Pass-1's "fix nothing" directive no longer holds
 blanket — this was a targeted, user-reviewed exception for the two live-reported symptoms; the rest of
 the list is still fix-nothing-until-reviewed.
+
+---
+
+# PASS 2 — STATUS RE-CHECK + WAVE 1 (2026-11-03, bim-ootb origin/main a3233475 → #2564)
+Re-verified F1–F18 against main (read-only, `git show`/`grep`; line numbers in PASS 1 are stale). 5 fixed/gone, 4 partly, 9 open.
+
+| F | status 2026-11-03 | note |
+|---|---|---|
+| F1 #1-2 scene.js | ✅ canonical (2026-07-30) | `_checkCache` keeps a raw fallback |
+| F1 #3 city.js / F3 | ✅ **W1** | reads canonical→raw (`§CITY_DB_SOURCE`) |
+| F1 #4 boq_charts.html | ✅ **W1** | `peekDbCache` + `fetchDbBuffer` via `DbResolve.readCached` |
+| F1 #5 clash_report.html | ✅ **W1** | + F2 open fixed in the same function |
+| F1 #6 viewer/kernel_ops.js | GONE | deleted, bim-ootb #2560 |
+| F1 #7 modeller/kernel_ops.js | vacuous | Modeller never sets `APP.DB_URL` → `_persistToIdb` returns early; it persists via bonsai_oplog / str_walker_outliner |
+| F1 #8 erp/kernel_ops.js | ✅ | canonical key + raw reclaim, #2562 |
+| F1 #9 / F15 str_walker_outliner `?v=N` in key | OPEN | resident DBs orphan old versions (`_idbDropStale` covers only the room-walker key) |
+| F1 #10-11, #13 | OK / CHANGED-OK | disc_walker K4-verbatim; routewalker own `rw_` namespace; dlod_nav uses `app.openCacheDB` |
+| F2 boq_charts | ✅ d2766f51 (#1106) | |
+| F2 clash_report, viewer+modeller routewalker | ✅ **W1** | unversioned open + guarded create (viewer/routewalker.js was a NEW site, not in PASS 1) |
+| F4 inventory (`dbs` vs `timestamps`) | OPEN | edit snapshots/imports never evicted, invisible to the 80-entry cap |
+| F5/F6 import url shapes | OPEN | duplicate import blobs; materialised designs unreachable from importers |
+| F7, F7b | OPEN (F7b harmless) | F7c: report pages now read `?bld=` |
+| F8 building class ×3 | OPEN | `Schependomlaan`, SH/DX/SC residential in `_dwRules` only |
+| F9 | GONE | schedule_editor_ui.js deleted |
+| F10 `ad_seed_v18` ×9 literals | OPEN | comments still say v16; a test reads v13 |
+| F11 kernel_ops copies | CHANGED | 3 → 2 (erp + modeller) |
+| F12 sw precache | OPEN, smaller | ~35 of 245 viewer.html scripts not precached (was 53; approximate) |
+| F13 badge stem match | OPEN | |
+| F14 clash pair `a|b` vs `a~b` | OPEN | |
+| F16, F17 literals | OPEN, harmless | |
+| F18 rules-DB bust | OPEN, latent | log claims an eviction that did not happen |
+
+**WAVE 1 ✅ DONE (witness)** — bim-ootb #2564 (live viewer sw v1679, modeller sw v211; live `db_resolve.js?v=3` has `readCached`,
+0 `open('bim_ootb_cache', 1)` left in either routewalker). New pure helpers `DbResolve.readKeys` / `readCached`
+(canonical → raw, read-only). W-SEAM-W1 38 claims PASS; FAILS on origin/main at all 6 sites; 3/3 mutants caught
+(raw-only, canonical-only, K3-folding). Regression: db_cache_key 20/20, db_404_oci_retry 12/12, one_kernel_ops,
+gantt_edit_persist PASS; sw precache 0 unlisted. `boq_charts.html` has no PROD_BASE source — passes undefined, which
+cannot change a key (K2 folds on the filename).
+
+**Next wave (ranked by user cost):** F4 eviction blind spot · F5/F6 one `importUrl()` + one project key · F10 one seed
+constant (+ repoint the v13 test) · F15 resident `?v=N` · then the data-correctness set F8, F7, F13, F14, F12, F18.
