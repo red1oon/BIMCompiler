@@ -616,112 +616,10 @@ this guide's walkthrough stays the trade cycle.
 
 ## 7. POS — Point of Sale
 
-**Prerequisite:** log in as **GardenUser** (the POS station `c_pos_id=1` is scoped to that role).
-Tap the **POS** pill in the bottom bar (it appears only when the loaded db has a `c_pos` station).
-
-### POS screen layout (the killer-demo surface)
-
-- **Album cards** — the product grid is a photo album: each card
-  from `c_poskey → m_product` (the sealed keylayout) shows its photo (full-res from the device images
-  folder → ledger thumbnail → placeholder glyph, honestly tiered) and its master price from the
-  station's pricelist — you ring the master, not a manual price.
-- **Floating payment panel** — the cart pill summons a floating panel on its own layer;
-  tap the cart pill again to dismiss it. The album keeps
-  scrolling underneath; payment never squeezes the grid.
-- **Panel lifecycle** — **swipe-down** to dismiss, and it **follows the cart**: when the cart empties
-  — sale completed, or the last line removed — the panel dismisses itself. The cart pill re-summons it
-  anytime. Dismissing is pure UI: it never touches
-  the cart contents or a committed sale (the sale is sealed atomically at Complete, before the panel
-  ever moves).
-
-![POS — Garden User · Store: product grid left, live cart right, replenishment suggestions below](figs/pos_live.png)
-
-### Payment panel layout (top-bar total + single Pay)
-
-The panel is a **draggable** float, stripped to the essentials:
-
-- **Top bar — the running total.** The top row shows the **live cart total**,
-  updating as you ring items. The **cart icon** stays on the left (tap it to summon/dismiss the panel);
-  the **scan-QR** button sits on the **right** (opens the
-  barcode overlay to add an item).
-- **One Pay icon.** A single **Pay** icon (right) **completes the sale directly**
-  — there is no pre-completion preview modal (the earlier orange/green rim drawers + receipt-preview
-  modal are retired). The walk-in partner is **defaulted** (the **Standard** business partner, else
-  first active — `§POS-PARTNER-DEFAULT`), so Pay works out of the box.
-- **Draggable.** Grab the panel header to reposition it (`§POS-FLOAT-DRAG moved=Y`); the album keeps
-  scrolling underneath, payment never squeezes the grid.
-- **⋯ dock** (bottom-right, reveal-up, taps-outside close it) — the secondary actions live here:
-  **home**, **import** (register a product — the `(+)` glyph), **receipt** (re-open the last receipt,
-  appears after a sale), and **Deliver later** (the WH-walk `route` glyph; dictionary-gated — present
-  only when the loaded db has an `SO` doctype — opens the warehouse walk in a new tab).
-
-### Making a sale
-
-1. Tap a product card (or **scan** from the top bar) → it is added to the cart at the sealed price.
-2. Tap again to increment qty, or edit qty in the line.
-3. Review the **running total** in the top bar (BigDecimal fold of line amounts, never a posted figure yet).
-4. Tap **Pay** (`#pos-float-tender`) → the sale **completes directly** into one signed op-group
-   (`§POS-SALE … newVerbs=[] chainOk=Y` — the receipt shows `signed=Y`). No partner prompt — the
-   Standard partner is used unless you pick another.
-5. The receipt opens in its own overlay (re-openable via the **receipt** entry in the ⋯ dock) and the
-   payment panel dismisses itself — the sale is already closed: one signed op-group, nothing left pending.
-
-!!! note "Audio earcons"
-    Subtle earcons sound on key POS actions — ring an item, Pay, sale-complete (`§POS-AUDIO`) — via the
-    shared synth engine reading `sfx.json` (data rows, `ui_clicks:false` so there is no per-button
-    spam). They no-op silently if the sound engine is absent.
-
-!!! tip "Barcode scan distance"
-    The scan overlay shows the hint **"Hold steady · 10–15 cm from barcode"** on open.
-    Barcode scanning works best at 10–15 cm from the label. Some Android phones apply macro focus
-    automatically (Chrome-only; Safari degrades silently — typed fallback always works).
-
-### Register a new product at the till — the Import pill (§P-9)
-
-The **Import** pill opens the snap+scan+price flow: photograph the item (camera, downscaled to a
-≤32KB ledger thumbnail; the full-res photo goes to the device images folder under a
-`sha256:` content address — `§POS-IMGKEY`), scan or type its barcode, key the price. **Register**
-commits ONE signed group of 4 CRUD_CREATE ops — M_Product, M_ProductPrice (station pricelist),
-AD_Image, C_POSKey — every default EXTRACTED from the dictionary and the station's own rows.
-The new card appears in the album and rings
-immediately through the unchanged sale path. A duplicate barcode is refused and the existing
-product handed back (propose-merge). Editing name/price/photo later rides the same signed path,
-changed columns only.
-
-### Hold / recall (§P-13)
-
-**Hold** parks the in-progress cart as a real `DR` C_Order — the same ledger row the Sales Order
-window and Kanban read, not a private store (`§POS-HOLD park order=… listed window=Y kanban=Y`).
-**Recall** is a plain query of the held orders; completing a recalled sale completes THE held
-order (never a duplicate — exactly one C_Order exists, witnessed).
-
-The "Complete" creates ONE signed op-group:
-
-```
-CREATE_DOCUMENT  C_Order  (the POS sale order)
-CREATE_LINE      C_OrderLine  (one per cart line)
-SET_STATUS       C_Order → CO
-CREATE_DOCUMENT  M_InOut  (shipment, policy-gated)
-CREATE_LINE      M_InOutLine
-SET_STATUS       M_InOut → CO
-CREATE_DOCUMENT  C_Invoice  (invoice, policy-gated)
-SET_STATUS       C_Invoice → CO
-CONSUME          M_Transaction P−  (one per BOM leaf, the backflush)
-```
-
-### Kitchen Display
-
-The **Kitchen** pill (visible at a POS station) shows every order currently waiting to be served —
-the same *deliver-later* shipments described in [§S-2b](#deliver-later-pick-at-the-warehouse-s-2b),
-but for a kitchen counter rather than a warehouse pick. The queue is a live view of the ledger, not a
-separate list: as soon as a sale is rung with **Deliver later**, the ticket appears here, oldest first.
-
-- **Queue order is first-in-first-out** — the ticket that's been waiting longest is always at the top.
-- Tap **Serve** on a ticket once the order is ready. This completes the same shipment the Warehouse
-  Walk would otherwise pick — serving from the kitchen and picking from the warehouse are two doors
-  onto the same document, so a ticket can only be served once (a second tap is refused).
-- Nothing here is a separate order type — no new sale action exists for "send to kitchen"; any
-  deliver-later sale automatically becomes a kitchen ticket.
+> **The in-ERP POS pill was removed on 2026-11-03.** Selling now happens on the standalone uniCenta-style till and
+> kitchen screen; head office imports their sales with **Import POS Sales** and **Branch Day Close**. The full
+> walkthrough (cashier, branch manager, head-office clerk) is the
+> **[uniCenta-style Till & Kitchen Screen — User Guide](TillUserGuide.md)**.
 
 ### Backflush (§P-3)
 
@@ -733,7 +631,7 @@ expands the recipe and adds a `CONSUME P−` op for every leaf component. The on
 
 Replenishment is a **staged, reviewable action** — nothing reorders automatically after a sale.
 
-1. Tap **Generate Replenishment** in the POS panel. The system folds every sale and movement to
+1. Run the **Replenish Report** (it is also step 2 of **Branch Day Close**, see the [Till guide](TillUserGuide.md)). The system folds every sale and movement to
    find current on-hand per product, compares it against each product's stock policy
    (`Level_Min`/`Level_Max`), and proposes an editable staging list — nothing is committed yet.
 2. **Review the list.** Adjust the quantity on any row, or deselect a row you don't want ordered
@@ -745,7 +643,6 @@ Replenishment is a **staged, reviewable action** — nothing reorders automatica
    outstanding. Anything already ordered this round is never re-ordered, even if you generate
    again before it arrives.
 
-*(Screenshot pending — see `docs/figs/pos_live.png` for the general POS panel in the meantime.)*
 
 ---
 
