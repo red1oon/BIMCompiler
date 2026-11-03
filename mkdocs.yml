@@ -109,6 +109,7 @@ nav:
       - "DXF2BIM — prior art (what is new, what we learned, cost of using others)": DXF2BIM_Prior_Art.md
       - "DXF2BIM — format contract (marks, outputs, registry, codes; generated)": DXF2BIM_FORMAT.md
       - "Kernel-ERP User Guide": ERPUserGuide.md
+      - "uniCenta-style Till & Kitchen Screen": TillUserGuide.md
       - "Kernel-ERP — Your First Setup": ERP_FirstSetup.md
       - "NinjaExcel Report — User Manual": NinjaExcelReport_UserManual.md
       - "HR / Tenancy / Operate Module": HRBIMAssetGuide.md
