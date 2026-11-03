@@ -202,3 +202,21 @@ processes"* · *"we do things adhoc as POC first, quick and dirty. But once prov
 **Build order:** (1) Pack Out on the pilot (types re-made at client 0 first, on a COPY) · (2) bundle: POC = `javac` against the pilot's own `plugins/*.jar` + `jar` (quick and dirty, owner's staging);
 convention = the Tycho/Maven build `pom.xml` already in the skeleton · (3) a fresh pilot copy (second DB + server port) · (4) install + W-PLUGIN-INSTALL · (5) film storyboard (bim-compiler
 `prompts/FILM_NARRATION.md` PLAYBOOK) — ⛔ not recorded until the owner OKs the storyboard.
+
+### §8.1 RESULT 2026-11-03 — P3 tab renewed; P1 setup rows PROVEN on the local pilot (POC stage); logs read (scratch, not committed)
+- **P3:** `BIMTabPanel.java` renewed (viewer = SysConfig `BIMOOTB_VIEWER_URL`, default `/bimootb/viewer/viewer.html`; db = the push link-back `BIM src db=` in Description, else
+  `BIMOOTB_BUILDINGS_BASE` + Value + `_extracted.db`; iframe `?db=&record=&embedded=true` — the viewer reads all three, `viewer/config.js:28-35`). Compiles: `javac --release 17` against the pilot's
+  `plugins/` jars (org.adempiere.base, org.adempiere.ui.zk dir bundle, zk/zul/zcommon/zweb) = exit 0. The May skeleton compiled too, unchanged.
+- **Found:** AD_TabType (reference 200117) lists only FORM, SORT — the May tab's 'BIM' was never a registered value; `Extensions.java:395-412` routes custom types through IADTabPanelFactory,
+  so the fix is a list entry `BIM` (EntityType U), shipped in the 2Pack. Tab 200500 already exists on the pilot and in `pilot_snap` (the May migration reached their source DB).
+- **P1 POC** `iDempiereOOTB/org.idempiere.bimootb/tools/bimootb_setup_poc.sql` (pilot only, idempotent): 14 System-level types `BIMOOTB_Query_<T>` / `BIMOOTB_Create_<T>` cloned from the
+  push types the CAPEX twin proved (whitelists the same size: C_Project 7 in / 48 out … M_Product 67 / 69), master role "BIM OOTB Push" (client 0, IsMasterRole=Y) with 14 access rows,
+  SysConfig ×2, AD_Ref_List 'BIM'. Pilot before→after: types BIMOOTB_* 0→14, ws access 515→529, master roles 0→1, sysconfig 0→2, AD_TabType list 2→3.
+- **Proof (fixture `tools/bimootb_test_role_poc.sql`: role "BIM Push Test" 1200003 for GardenAdmin, includes 102 only):** bim-ootb `capex/tools/shed_twin.js` with `BRIDGE_SVC=bimootb BRIDGE_ROLE=1200003`
+  on a scratch HHS fold (Value HHS_PLUGIN_POC, fresh UUs) → refused: `Login role does not have access to the service type 'BIMOOTB_Query_C_Project'` (negative, as `AbstractService.java:72-75`).
+  Include "BIM OOTB Push" (1200002) → still refused until a server restart: the verdict is cached per (role, type) in `s_RoleAccessCache` (`:213`, 60 min) keyed to WS_WebServiceTypeAccess,
+  not AD_Role_Included — **the install guide must say "restart or System Admin › Cache Reset after including the role".** After restart: `§SHED_PUSH projectId=1000009 created phases=6 tasks=16
+  lines=45` · `§SHED_TWIN_VERDICT PASS tiles(match=16 diff=0 inconclusive=3) rows(match=302 diff=0)`.
+- **Next:** Pack Out (AD_Process 50004, `org.adempiere.pipo2.PackOutProcess`: an AD_Package_Exp + Data detail lines → `<java.io.tmpdir>/packout<user>/<name>.zip`) of exactly these rows → the plugin's
+  `META-INF/2Pack_13.1.0.zip`; P2 web context; bundle jar; install on a SECOND instance made from `pilot_snap` (CREATE DATABASE … TEMPLATE, own port) — deletes are refused here, so a clean DB is the
+  only honest install test.
