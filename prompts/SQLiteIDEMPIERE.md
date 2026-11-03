@@ -2385,3 +2385,18 @@ that fallback would DIVERGE from legacy on any real tenant without history. **Fi
 M_InOut #100 (cost 37.37 vs legacy 30.00). The proof seed `build/erp/glassbowl_data.db` has m_costdetail (86) but no m_costhistory.
 **⛔ The one question: bring the legacy pilot DB up (local postgres / docker `idempiere`) so the cost-history rows can be extracted
 read-only** — not done autonomously (no server starts). Then re-run W-POST-MATCHINV-IPV-style parity on #100 and InOut #100.
+
+**§POSTING-PARITY item 1d ✅ DONE (witness) — 2026-11-04, bim-ootb #2596 (live erp sw v979, `model_post.js?v=5`).** model_post's
+Doc_AllocationHdr now ports the discount / write-off / cash-line / AP legs (Doc_AllocationHdr.java :193-555 incl. CashBankTransfer
+skip, SO :288-379, PO :381-466, getPaymentAcct :728-783, getCashAcct :791-804), VAT tax correction (:469-490, :825-877,
+Doc_AllocationTax :1991-2210), inter-org (:564-620) and balanceAccounting (:1866-1890). FX gain/loss + rounding-correction LINES
+(:892-1535) are guarded: post only where Java adds no line, else a named refusal. DATA: the 3 GardenWorld `c_cash` rows (legacy
+extract, ids 100-102) via the generator (`build_dict_patch.py` c_cash → TABLES, `c_cash_id < 1000000`); Team BASE hash moved on
+purpose `a3eef3f5…`→`37134ec7…`, the 7 pins of #2463/#2476 moved. W-POST-ALLOCATION 5/5: #100 + #101 == legacy per schema ×
+account × side at 0c (incl. #101's 724 Cr 0.01), Posted=Y; 91 other docs byte-identical; patch idempotent; baseline + 2 mutants FAIL.
+**Open twin item (named):** #101's 724 rounding line — legacy's STORED AmtSource is 0.0, while Java's
+`createLine(null, loss, gain, as.getC_Currency_ID(), acctDifference.negate())` (Doc_AllocationHdr.java:1885) sets source = 0.01
+(ours). Accounted amount/side/account equal. Reconcile against the pilot (is the stored row from a code version that zeroes source?).
+**1c UNBLOCKED (2026-11-04):** the pilot IS reachable read-only via `docker exec -i postgres psql -U postgres -d idempiere_pilot`
+(the generator's own path) — 7,806 m_costhistory / 2,706 m_costdetail client-11 rows; extraction filtered to the seed's own
+documents is in progress (no code change).
