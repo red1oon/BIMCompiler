@@ -15,8 +15,8 @@ Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 Docs review live (BIMCompiler #311/#312, `prompts/DOCS_REVIEW_2026-11.md`); code hygiene (`prompts/CODE_HYGIENE_REVIEW_2026-11.md`
 §3-§7: A1/A3/A4/D1/D2/C1/three.js/ERP dead UI + engine subset live); seam audit CLOSED (`prompts/SEAM_IDENTITY_AUDIT.md` PASS 2 +
 waves 1-3 + close-out); legacy posting parity (`prompts/SQLiteIDEMPIERE.md` END: §POSTING-PARITY 1a-1d + steps 2+4 live, bim-ootb
-#2593-#2598 — 42/42 seed docs == legacy, Preview == real posting). **Open, in order:** (1) twin residual — alloc #101 724
-AmtSource legacy 0.0 vs Java 0.01 (pilot readable via `docker exec -i postgres psql -U postgres -d idempiere_pilot`);
+#2593-#2598 — 42/42 seed docs == legacy, Preview == real posting). (1) alloc #101 724 residual CLOSED 2026-11-04 — not a defect
+(legacy stores Cr 0.01, the "0.0" was the Dr column; W-POST-ALLOCATION A5 now judges AmtSource). **Open, in order:**
 (2) retire the remaining doc_poster derive* after migrating genesis.html + 6 witnesses + 4 bim-compiler --engine-dir scripts;
 (3) Modeller kernel_ops copy + boot assertion (KERNEL_TIMEBOMB T5); (4) Viewer memory B-items. Lesson memory:
 `feedback_rerun_recorded_proofs_before_defect_claim`.
