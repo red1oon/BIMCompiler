@@ -879,3 +879,23 @@ Lead review of #2594: lines-vs-tenders must not hold a correct ticket on a tax-e
 | Mutant: balance compares the pre-tax lines total: KILLED on the exclusive arm (copy, applied exactly once) | `§DAYCLOSE-MUTANT name=pretax-balance KILLED` | `arm_tax_ex_pretax-balance.log`, `GREEN_run2.log` |
 | Full witness on the merged tree (origin/main merged, sw.js v977): 13 verdicts, notPass=0, all 4 mutants killed, W-DAYCLOSE diff 0 | `§DAYCLOSE-SUMMARY verdicts=13 notPass=0` | `GREEN_run2.log` |
 | Regression on the merged tree: pos_sales PASS 43, import_payment PASS 54, W-REPLENISH 24/24, friendly_ops GREEN 6, rows GREEN 10, purchase GREEN 11, till 22 of 22 all arms PASS | `§POSS-RESULT`, `§IPAY-RESULT`, `§RRD-SUMMARY`, `§FOPS_VERDICT`, `§FOA2_VERDICT`, `§FOPUR_VERDICT`, `§TILL_PARITY 22 of 22` | `/tmp/dayclose_logs/reg2/*.log` |
+
+## §24 THE OWNER'S END-OF-DAY LOOP vs what is built (2026-11-04; owner: *"Is my Unicenta integration where end of day, export of orderlines goes to a relay for HQ to pickup, import, backflush BOM, to StorageOnHand for that branch Org, then later can replenish generate PO, MR if insufficient, and send movement back to branch org in relay where that retail shop then picks it up? … On legacy / twin side also part of the plugin to handle that relaying and B/O processing … discuss if such ops is still attractive"*)
+Measured on bim-ootb `origin/main` and BIMCompiler `origin/master`, 2026-11-04:
+
+| # | Loop step | Status | Evidence / gap |
+|---|---|---|---|
+| L1 | Till exports the day's lines to the relay | ✅ built | Sent once at Close Cash (§18); plan flows `I_Order` (+ tenders) UP (`build/scriptor/flows_pos.json`); W-TILL-OFFLINE delivery 17/17 |
+| L2 | HQ picks up and imports | ✅ built | Import POS Sales / Branch Day Close (§21–§23, #2594) |
+| L3 | **Backflush BOM** | ❌ **GAP** | The twin's `MOrder.prepareIt` refuses a non-stocked verified BOM: `erp/model_order.js:164` → `'explodeBOM (MOrder.java:1823) not ported — named'` → Invalid. Legacy `MOrder.explodeBOM` (`MOrder.java:1652,1854-`) is not ported, so a BOM item rung at the till makes the ticket fail at import. The old pill did its own `explodeBOM→CONSUME` on the till; that was deleted correctly (FL-8), but the HQ half was never ported. |
+| L4 | StorageOnHand of the branch warehouse | ✅ for plain items | The WR order's shipment draws from the ticket's warehouse; W-DAYCLOSE diff 0 on `m_storageonhand` |
+| L5 | Replenish → PO / requisition / movement | ✅ built | Replenish Report 53267 + its create step inside Day Close |
+| L6 | Movement back to the branch via the relay | ◐ half | Plan flow `M_MovementLine` DOWN to the POS station exists. **No till screen receives or confirms it** (no `m_movement` in `erp/till*.js`). Legacy's own receipt step at the destination is Move Confirmation (window 333; `MMovementConfirm` ported, #2252). |
+| L7 | Master data down (products, prices, taxes, customers, users; the 2012 `Export2Queue`) | ❌ **GAP** | The plan has no product/price/tax/BP/user DOWN flow (§14.9 item 5, still true). The till prices from the seed that ships in the engine frame. |
+| L8 | The legacy-side plugin (a real iDempiere HQ picks up from the relay) | ⏸ spec'd, parked/re-opened | `SQLiteIDEMPIERE.md` §19 C1 parked Mode B; re-opened as allowed at `:1198-1202` ("a plugin there that does the integration, as done before"), scope unconfirmed. Not built. |
+
+**Proposed order to close the loop (each: spec → RED → build → witness; the owner's go):**
+1. L3: port `MOrder.explodeBOM` verbatim (W-BOM-EXPLODE: a BOM item rung at the till imports, and HQ storage of its components drops by the BOM qty).
+2. L7: Reference-seed DOWN flows, an effective-dated pull (§6, §16.17 row 6).
+3. L6: a branch "Receive stock" screen = Move Confirmation deposits (the base + batch rule).
+4. L8: the legacy OSGi plugin. It reads the relay mailbox and writes legacy's OWN `I_Order` / `I_Payment` rows. Legacy's own Import processes then run, with no custom document logic. That is thinner than 2012's direct `MOrder` writes (§12.3).
