@@ -13,7 +13,13 @@ for (const b of N.beats) {
     // a real-pace clip longer than its narration + SLACK is time-lapsed (setpts) so the picture ends with the voice (PLAYBOOK C step 4: speech + 1-3 s); never slowed, padded only up to the narration
     const speed = have > target ? have / target : 1, pad = speed === 1 ? Math.max(0, want - have) : 0; const w0 = want; want = speed > 1 ? target : Math.max(want, have); console.log(`§ASM_SPEED ${b.id} clip=${have.toFixed(2)}s narration_want=${w0.toFixed(2)}s speed=x${speed.toFixed(2)}`);
     execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', clip, '-vf', `setpts=PTS/${speed.toFixed(4)},fps=${FPS},tpad=stop_mode=clone:stop_duration=${pad.toFixed(3)},scale=1920:1080,format=yuv420p`, ...ENC, seg]); }
-  else { const png = path.join(OUT, 'cards', b.card + '.png'), ch = /^ch/.test(b.card), fade = ch ? `,fade=t=in:st=0:d=0.4,fade=t=out:st=${(want - 0.4).toFixed(3)}:d=0.4` : '';
+  else if (b.cards.length > 1) { // stills cross-faded (xfade): the cards share the beat's length by W weights; each clip carries the fade overlap X, the chain is cut to `want` (§34.E EXPAND animation, no zoompan)
+    const X = 0.8, K = b.cards.length, WT = (N.WEIGHTS && N.WEIGHTS[b.id]) || b.cards.map(() => 1), SW = WT.reduce((a, v) => a + v, 0), d = WT.map(v => want * v / SW), args = ['-v', 'error', '-y']; let fc = '', len = d[0] + X;
+    b.cards.forEach((c, i) => args.push('-loop', '1', '-framerate', String(FPS), '-t', (d[i] + X).toFixed(3), '-i', path.join(OUT, 'cards', c + '.png')));
+    b.cards.forEach((c, i) => { fc += `[${i}:v]scale=1920:1080,format=yuv420p,setsar=1[s${i}];`; });
+    let prev = 's0'; for (let i = 1; i < K; i++) { const off = len - X; fc += `[${prev}][s${i}]xfade=transition=fade:duration=${X}:offset=${off.toFixed(3)}[x${i}];`; prev = 'x' + i; len += d[i]; }
+    execFileSync('ffmpeg', [...args, '-filter_complex', fc.replace(/;$/, ''), '-map', '[' + prev + ']', '-t', want.toFixed(3), ...ENC, seg]); console.log(`§ASM_XFADE ${b.id} cards=${b.cards.join(',')} fade=${X}s parts=${d.map(v => v.toFixed(2)).join('/')}s`); }
+  else { const png = path.join(OUT, 'cards', b.cards[0] + '.png'), ch = /^ch/.test(b.card), fade = ch ? `,fade=t=in:st=0:d=0.4,fade=t=out:st=${(want - 0.4).toFixed(3)}:d=0.4` : '';
     execFileSync('ffmpeg', ['-v', 'error', '-y', '-loop', '1', '-framerate', String(FPS), '-i', png, '-t', want.toFixed(3), '-vf', `scale=1920:1080,format=yuv420p${fade}`, ...ENC, '-tune', 'stillimage', seg]); }
   const n = frames(seg), s = t; t += n / FPS; TL.push({ id: b.id, start: +s.toFixed(3), end: +t.toFixed(3), frames: n, want: +want.toFixed(2) }); list.push(`file '${seg}'`);
   console.log(`§ASM_SEG ${b.id} start=${s.toFixed(3)} frames=${n} dur=${(n / FPS).toFixed(3)} want=${want.toFixed(2)}`);
