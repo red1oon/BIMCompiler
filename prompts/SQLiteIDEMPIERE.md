@@ -2426,3 +2426,18 @@ plugin classes, the draft-order projection; and `genesis.html` (loads no model l
 `deriveInOut`, `deriveMovement`, `deriveAllocation`, `deriveBankStatement`): migrate genesis.html, the witnesses that call them
 (sd16_engine_port, f9_cost_history, nc5bcd_gainloss, post_bankstatement B1b, rma_window_path, poc_install_*) and the four bim-compiler
 `--engine-dir` scripts to model_post first. Residual twin item: #101 724 AmtSource (see 1d).
+
+### §POSTING-PARITY residual #101 724 AmtSource — RE-MEASURED 2026-11-04: NOT a defect (misread of the Dr column)
+Pilot (read-only, `docker exec -i postgres psql -U postgres -d idempiere_pilot`), `fact_acct` ad_table_id=735 record_id=101:
+fact_acct_id 1000060, schema 200000, account 724, **AmtSourceDr 0.0 / AmtSourceCr 0.01**, AmtAcctCr 0.01, C_Currency_ID 102
+(the schema currency), no line_id. bim-ootb `erp/ad_seed.db` stores the same row identically (Dr 0.0 / Cr 0.01 / 102). So legacy ==
+Java `createLine(null, loss, gain, as.getC_Currency_ID(), acctDifference.negate())` (Doc_AllocationHdr.java:1885) — the "stored 0.0"
+in 1d was the Dr column. **Why it survived:** W-POST-ALLOCATION A1 compared AmtAcct only, so it was scope-blind to source amounts.
+**Spec — W-POST-ALLOCATION A5 (bim-ootb `erp/tests/witness_post_allocation.js`):** for each client-11 allocation with legacy facts,
+twin `fact_acct` CREATE ops == stored legacy per schema × account × side × C_Currency_ID on AmtSource (integer cents, maxDiff 0);
+`§WALC-A5` prints each key; the 724 key on #101 must read 200000:724:102:CR twin=1 legacy=1. Mutant `MUT=src0` (zero the source
+of the 724 line, accounted amount untouched) must FAIL A5 and leave A1 PASS — proving A5 sees what A1 cannot. No legacy facts → INCONCLUSIVE.
+**✅ DONE (witness) 2026-11-04 — bim-ootb `fix/alloc-source-witness`.** W-POST-ALLOCATION 6/6 PASS incl. A5 (`§WALC-A5 101 200000:724:102:CR
+twin=1 legacy=1`, 2 allocations judged); `MUT=src0` → A5 FAIL (`twin=0 legacy=1`) with A1-100/A1-101 PASS (A5 sees what A1 cannot);
+nocash / nodisc / GA_BASELINE FAIL. No poster change. **§POSTING-PARITY has no twin residual left.** Next: (2) retire the remaining
+`doc_poster.derive*` (genesis.html + 6 witnesses + 4 bim-compiler `--engine-dir` scripts move to model_post first).
