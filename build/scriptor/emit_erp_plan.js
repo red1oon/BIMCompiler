@@ -28,7 +28,7 @@ function emit(db, localRows, srcName) {
 // narrowed to one RECORD's entity by `by` (a FK path ending in the entity column, e.g. ["C_Invoice_ID","C_BPartner_ID"]): only the device bound to that entity (person_uu = its _uu) is addressed.
 function posPlanErrors(rows, compiled) {
   var errs = [], hubs = {}, src = {}; rows.forEach(function (r) { src[r.name] = r; });
-  rows.filter(function (r) { return r.isactive !== false && r.docaction && Number.isInteger(r.docaction.executor); }).forEach(function (r) { hubs[r.docaction.executor] = 1; });
+  rows.filter(function (r) { return r.isactive !== false && r.docaction && Number.isInteger(r.docaction.executor) && r.docaction.scope !== 'branch'; }).forEach(function (r) { hubs[r.docaction.executor] = 1; });   // §28.2: scope:'branch' = the DESTINATION branch role completes this document (legacy: the destination user completes the M_MovementConfirm); it is an executor, not the hub
   var hubList = Object.keys(hubs).map(Number), facts = compiled.plan.filter(function (f) { return f.treatment === 'FACT'; });
   if (facts.length && !hubList.length) errs.push({ code: 'no-hub' });
   if (hubList.length > 1) errs.push({ code: 'hub-ambiguous', roles: hubList });
@@ -49,7 +49,7 @@ function emitPos(db, posRows, localRows, srcName) {
   var bad = r.plan.filter(function (f) { return f.error || (f.treatmentErrors || []).length; });
   if (r.virtualErrors.length || bad.length || r.planErrors.length) throw new Error('compile errors: ' + r.virtualErrors.concat(bad.map(function (f) { return f.name + ' ' + (f.error || f.treatmentErrors.join(',')); }), r.planErrors.map(function (e) { return e.code; })).slice(0, 5).join(' | '));
   var pe = posPlanErrors(rows, r); if (pe.length) throw new Error('pos plan errors: ' + pe.map(function (e) { return e.code + (e.row ? ' ' + e.row : ''); }).join(' | '));
-  var executors = {}, hub = null; r.plan.filter(function (f) { return f.docaction; }).forEach(function (f) { executors[String(f.table).toLowerCase()] = f.docaction.executor; hub = f.docaction.executor; });
+  var executors = {}, hub = null; r.plan.filter(function (f) { return f.docaction; }).forEach(function (f) { executors[String(f.table).toLowerCase()] = f.docaction.executor; if (f.docaction.scope !== 'branch') hub = f.docaction.executor; });
   var flows = r.plan.filter(function (f) { return f.treatment === 'FACT'; }).map(function (f) {
     var x = src[f.name], o = { name: f.name, table: f.table, dir: f.dir, audience: x.audience === 'branch' ? 'branch' : 'hub', role: x.role, group: x.group, payload: f.payload.map(function (p) { return { col: p.col, cls: p.cls }; }) };
     o.ship = f.payload.map(function (p) { return p.col; }).concat((f.implicit || []).filter(function (c) { return /^AD_(Client|Org)_ID$/i.test(c); })).sort();      // what may leave the device: the carries + the partition (FL-1)
