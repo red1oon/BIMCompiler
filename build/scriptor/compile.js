@@ -29,6 +29,15 @@ function docactionCheck(rows) {
     if (r.dir === 'UP' && d.executor === r.role) errs.push({ code: 'station-docaction', row: r.name });
   });
   Object.keys(byTable).forEach(function (t) { if (byTable[t].length > 1) errs.push({ code: 'dual-docaction', table: t, rows: byTable[t] }); });
+  // §28 (lead decision 2026-11-04): ONE table may have a DOWN flow AND an UP flow only when the plan names the UP role as the DocAction EXECUTOR of that table's document type
+  // (the destination branch role completes the Move Confirmation head office created). The UP then carries only that executor's outcome. Any other DOWN+UP pair on one table is two sources of truth.
+  var dirs = {};
+  rows.filter(function (r) { return r.isactive !== false && r.table && (r.dir === 'UP' || r.dir === 'DOWN') && r.treatment === 'FACT'; }).forEach(function (r) { var t = String(r.table).toLowerCase(); (dirs[t] = dirs[t] || { DOWN: [], UP: [] })[r.dir].push(r); });
+  Object.keys(dirs).forEach(function (t) {
+    var d = dirs[t]; if (!d.UP.length || !d.DOWN.length) return;
+    var execs = rows.filter(function (r) { return r.isactive !== false && r.docaction && Number.isInteger(r.docaction.executor) && String(r.table).toLowerCase() === t; }).map(function (r) { return r.docaction.executor; });
+    d.UP.forEach(function (u) { if (execs.indexOf(u.role) < 0) errs.push({ code: 'updown-not-executor', table: t, row: u.name }); });
+  });
   return errs;
 }
 module.exports = { compile: compile, docactionCheck: docactionCheck };

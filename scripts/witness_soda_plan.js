@@ -8,6 +8,7 @@
  *   §E2 DUAL     a second executor on M_Movement / on M_MovementConfirm is REFUSED (dual-docaction)
  *   §E3 STATION  an UP row whose station is its own executor is REFUSED (station-docaction)
  *   §E4 HUB      the branch executor is not a second hub (without scope:'branch' the plan is hub-ambiguous: the flag does work)
+ *   §U UPDOWN   one table with a DOWN and an UP flow only when the UP role is that document type's executor (else updown-not-executor); mutant: check off -> U2 red
  *   §F1 FOLD     the map in force: HQ completes M_Movement MERGED; a station completing M_Movement REFUSED not-executor on every device; the station completes M_MovementConfirm MERGED; HQ completing the confirm REFUSED
  *   §MUTANTS     a copy of build/scriptor with one rule broken (scope flag ignored; dual check off); each must turn >= 1 arm red (a crash is not a kill)
  * Run: NODE_PATH=<node_modules with better-sqlite3 + sql.js> node scripts/witness_soda_plan.js 2>&1 | tee /tmp/soda_logs/witness_soda_plan.log
@@ -36,6 +37,14 @@ function compileArms(dir, quiet) {
   var r4 = emit(EP, d3); A('E3', !r4.ok && /station-docaction/.test(r4.err), 'E3 an UP row whose station is its own executor is refused', r4.err);
   var d4 = clone(SRC); d4.forEach(function (x) { if (x.docaction && x.docaction.scope) delete x.docaction.scope; });
   var r5 = emit(EP, d4); A('E4', !r5.ok && /hub-ambiguous|hub-is-edge/.test(r5.err), "E4 without scope:'branch' the branch executor would be a second hub (the flag is what separates them)", r5.err);
+  // U: a table with a DOWN and an UP flow is allowed only when the UP role is that document type's executor (lead decision 2026-11-04)
+  var up = function (table, carries, extra) { return Object.assign({ name: 'X9 ' + table + ' up', treatment: 'FACT', role: BR, strategy: 100, dir: 'UP', table: table, carries: carries, group: 'g', schedule: 'end-of-day' }, extra || {}); };
+  var u1 = clone(SRC); u1.push(up('M_MovementConfirm', ['DocStatus', 'Processed', 'IsApproved']));
+  var r6 = emit(EP, u1); A('U1', r6.ok, 'U1 M_MovementConfirm DOWN + UP is accepted: the UP role 50004 is its named DocAction executor', r6.ok ? 'ok' : r6.err);
+  var u2 = clone(SRC); u2.push(up('M_Movement', ['DocStatus']));
+  var r7 = emit(EP, u2); A('U2', !r7.ok && /updown-not-executor/.test(r7.err), 'U2 M_Movement DOWN + UP is refused: the UP role 50004 is not its executor (102)', r7.err);
+  var u3 = clone(SRC); u3.push({ name: 'X8 pp down', treatment: 'FACT', role: BR, strategy: 100, dir: 'DOWN', table: 'M_ProductPrice', carries: ['PriceStd'], group: 'g', schedule: 'on-change' }); u3.push(up('M_ProductPrice', ['PriceStd']));
+  var r8 = emit(EP, u3); A('U3', !r8.ok && /updown-not-executor/.test(r8.err), 'U3 a table with no named executor cannot have a DOWN + UP pair', r8.err);
   return red;
 }
 
@@ -82,7 +91,8 @@ async function foldArms(dir, quiet) {
   // MUTANTS: a copy of build/scriptor with one rule broken
   var muts = [
     { name: 'scope-flag-ignored', file: 'emit_erp_plan.js', from: "r.docaction.scope !== 'branch'; }).forEach", to: "true; }).forEach", expect: 'E1' },
-    { name: 'dual-check-off', file: 'compile.js', from: "if (byTable[t].length > 1) errs.push", to: "if (false) errs.push", expect: 'E2' }
+    { name: 'dual-check-off', file: 'compile.js', from: "if (byTable[t].length > 1) errs.push", to: "if (false) errs.push", expect: 'E2' },
+    { name: 'updown-check-off', file: 'compile.js', from: "if (execs.indexOf(u.role) < 0) errs.push", to: "if (false) errs.push", expect: 'U2' }
   ], killed = 0;
   for (var m of muts) {
     var tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'soda-mut-')), dir = path.join(tmp, 'build', 'scriptor'); fs.mkdirSync(dir, { recursive: true }); fs.symlinkSync(path.join(ROOT, 'build', 'erp'), path.join(tmp, 'build', 'erp')); fs.readdirSync(SDIR).filter(function (f) { return /\.(js|json)$/.test(f); }).forEach(function (f) { fs.copyFileSync(path.join(SDIR, f), path.join(dir, f)); }); fs.cpSync(path.join(SDIR, 'treatments'), path.join(dir, 'treatments'), { recursive: true });
