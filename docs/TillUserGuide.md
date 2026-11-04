@@ -58,9 +58,12 @@ The 25 things a uniCenta 5.0 cashier (and manager) does, and where each one is h
 | 20 | *(none in uniCenta)* | **Kitchen screen** | New: a separate page with waiting / done / void, Recall, changed-line marks and a Ready notice back to the till. |
 | 21 | Check In / Check Out | **Check In/Out** | — |
 | 22 | Pick-up number reset | **Pickup Reset** | — |
-| 23 | Configuration: General, Locale, System Options, Ticket Setup, Company | **Configuration** (gear button on the status strip) | Only the 49 settings that apply to a browser till are shown; hardware, Swing and database settings are left out. |
+| 23 | Configuration: General, Locale, System Options, Ticket Setup, Company | **Configuration** (gear button on the status strip) | Only the 50 settings that apply to a browser till (49 of uniCenta's plus *Look and Feel*) are shown; hardware, Swing and database settings are left out. |
 | 24 | Tickets mode: simple / standard / restaurant | **Configuration → General → Tickets** | The choice applies at the next start. |
 | 25 | Floor tabs over the shared table map | Floor tabs on the restaurant map | Open tables are shared by every till of the branch, with a lock; a table is saved when the waiter leaves it. |
+| 26 | Look and Feel (theme) | **Configuration → General → Look and Feel** | uniCenta's *Look and Feel* choice, as two themes: **Classic (2011)**, the default, and **Modern**. Applies when you press **Save**. |
+| 27 | About | **About** in the left menu panel (System) | The company logo and details, then the application name and version. |
+| 28 | Left collapsible menu panel | the panel at the left of the Sales screen | Main, Administration and System sections; the **‹** button hides it. |
 
 ---
 
@@ -80,6 +83,10 @@ The 25 things a uniCenta 5.0 cashier (and manager) does, and where each one is h
 4. **Tap Sales.** Pick a category, then tap product tiles. The back arrow returns to the parent category.
 
    ![The Sales screen with a sample sale: Patio Chair, Hoe 4 ft and 2 x Rose Bush on the ticket, the Tools category open with seven picture tiles](img/till/till_03_sales.png)
+
+   The look is the original 2011 screen: pale grey window, blue-grey buttons, white fields, a light-blue selected line, blue number keys. The **menu panel** at the left has three
+   sections, *Main* (Sales, Edit Sales, Customer Payment, Payments, Close Cash), *Administration* (Check In/Out, Voucher, Pickup Reset) and *System* (Configuration, About). The **‹** button at
+   its top hides the panel (the ticket takes the room) and **›** brings it back; the choice is remembered on this till. On a phone-width screen the panel is not shown.
 
    The screen is laid out as uniCenta's: buttons across the top, the **ticket** in the middle (it takes whatever height is left), and the **catalog** at the bottom at the
    *category panel height* set at the branch admin (320 px by default). Product tiles are 107 x 60 with the picture and the name and price over its bottom edge. The thin
@@ -248,6 +255,8 @@ Press the **gear** button on the status strip. The **Configuration** screen has 
 
 ![The Configuration screen, General tab: Terminal Name, Department, Tickets mode, Startup Logo and Text](img/till/till_18_configuration.png)
 
+- **Look and Feel** (General) chooses the till's colours: **Classic (2011)**, the default, takes the colours of the original 2011 screen, or **Modern**, the till's earlier look.
+  The choice is this till's own and is kept across restarts; the product pictures and the layout do not change with it.
 - **Tickets** (General) is the display mode: **simple**, **standard** (the default, the sales screen above) or **restaurant** (floor map and
   reservations). An address option `?mode=restaurant` still forces restaurant.
 - **Per device** (this till's own settings): Department, Startup Logo and Text, auto log-off after a sale and its timer, the table-plan
@@ -464,6 +473,20 @@ you to correct and run again. A customer payment (no lines) is refused here ("no
 When a till sells a product that has a **Bill of Materials**, head office explodes it when it imports the sale, as legacy iDempiere does: the order gets a comment line and
 the component lines (quantity multiplied), and the **components** leave stock, not the parent. It goes **one level only**: a BOM inside a BOM stays a priced line, as in legacy.
 The component prices at head office must add up to the till's price for the parent, or the ticket is caught by the tender check. A BOM sold from stock (production route) is not covered.
+
+### Company details and logo (head office)
+
+The till shows the company's name, address, tax id, phone and e-mail, and its logo, in three places: the **About** screen, the name beside *Till* on the status strip, and the top of
+every receipt. They are **not typed at the till**: they come from the ordinary legacy records of the till's own branch organisation, and travel in the morning SODA batch like a price.
+
+- **Name:** the organisation's name (*Organization* window). **Address:** the *Location* of **Organization Info**. **Tax id, phone, e-mail, receipt footer:** *Organization Info*.
+- **Logo:** in *Organization Info* choose an **Image** whose **Image URL** is the picture's web address (for the shared bucket: `https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/erp/<your-logo>.png`).
+  Only the web address travels; the picture itself is fetched once and kept on the till's disk like the product pictures, never in the till's database. With no logo set, the screens show the first letter of the company name.
+- Change a detail, save, and it reaches the branch's tills with the next SODA batch. A detail that did not change is not sent again.
+- Header lines typed in *Configuration → Company* replace the company lines at the top of the receipt, as in uniCenta (its header lines are the cashier's own text).
+- The GardenWorld demo tenant has **no logo** set, so its tills show the letter placeholder until one is set.
+
+![The About screen: the company details and the application name and version](img/till/till_20_about.png)
 
 ### Product pictures and prices (head office)
 
