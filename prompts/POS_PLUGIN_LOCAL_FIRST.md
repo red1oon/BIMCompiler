@@ -1092,3 +1092,254 @@ On receipt of a batch the admin re-emits the P/R/T rows on the branch-local flow
    - W-TILL-MEDIA-DEPLOY: a CACHE_VERSION bump keeps the media cache.
    - W-TILL-MEDIA-HEAP: heap with 27 vs 0 pictures differs only by the on-screen decodes; the twin DB size is unchanged.
    - W-ICON-NOT-IDB (§30): no bytes in IndexedDB.
+
+## §29 P0 — uniCenta SETUP, PICTURE CATALOG, RESTAURANT FLOORS (2026-11-04)
+
+> Read-only extraction. `U` = `unicenta5_src/src/main/java/com/unicenta/pos/` (5.0), `UR` = `unicenta5_src/src/main/resources/`, `T` = bim-ootb `origin/main` (read with `git show`), `I` = `~/idempiere-dev-setup/idempiere/org.adempiere.base/src/org/compiere/model/`. Labels are the English text of `UR/pos_messages.properties` (`erp_messages.properties` for the ERP panel). uniCenta is GPL: nothing below copies its images or code.
+
+### §29.1 The Configuration screen (item 1 + 2)
+
+**Shape.** `JPanelConfiguration` is a tab pane: General, Locale, Payment Method, Peripherals, System Options, Ticket Setup, Company, Database Setup (`U/config/JPanelConfiguration.java:233-267`). The panels are mounted at `:62-98`. Save writes every panel into ONE `AppConfig` and calls `config.save()`, then tells the user to restart (`:123-129`). Button "Factory" deletes the file (`:100,270`).
+**Where it lives (item 2).** Every key below is in a per-machine properties file `~/unicentaopos.properties` (`U/forms/AppConfig.java:73-76`, `AppLocal.APP_ID` = `unicentaopos` at `U/forms/AppLocal.java:32`). Defaults are written by `AppConfig.java:296-385`. **So the whole screen is DEVICE-LOCAL in uniCenta.** The only shared things on the catalog side are DB rows (§29.2).
+**`JPanelConfigERP` is NOT on the screen.** Its class exists (`U/config/JPanelConfigERP.java:73-105`, keys `erp.URL erp.id erp.pos erp.org erp.user erp.password`, labels from `erp_messages.properties:26-31`: "Services URL", "Entity code", "Organization code", "POS code", "User", "Password") but `JPanelConfiguration` never constructs it (list at `:62-98` has 8 panels, no ERP) and nothing outside the panel reads an `erp.*` key (grep of `U/` for `"erp\.`: only this file). It is the dead Openbravo hook (`pos_messages.properties:716` "Menu.Maintenance.ERP=Openbravo ERP"). **Not a model for our pairing**; the twin's equivalent is Team pairing (`T:erp/till.js:286-290`, `team=1&login=50001`).
+Closest legacy twins of device settings: iDempiere `C_POS` carries `AutoLogoutDelay`, `IsModifyPrice`, `CashDrawer`, `PrinterName`, `C_POSKeyLayout_ID` (`I/I_C_POS.java:66,245,143`; field list `X_C_POS.java`). Those are branch-shared, not per device.
+
+Legend: `D` = default; `A` = APPLIES to a browser till; `N` = NOT APPLICABLE.
+
+| # | Tab / label (exact) | Key | Choices / D | A/N | Why / twin mapping | Src |
+|---|---|---|---|---|---|---|
+| 1 | General / Terminal Name | `machine.hostname` | text; D = local host name | A | the receipt "Terminal" field; twin derives `tillKey = org-user` (`T:till.js:30`). Device label, default tillKey | `U/config/JPanelConfigGeneral.java:117,155`, `AppConfig.java:317` |
+| 2 | General / Department | `machine.department` | text; no D | A | printed on the ticket header line (`U/sales/JPanelTicket.java:2210`) | `JPanelConfigGeneral.java:118,156` |
+| 3 | General / Skin | `swing.defaultlaf` | list of Swing look-and-feels; D Metal | N | Swing class names. Twin L&F is fixed by the Twin Cardinal Rule | `JPanelConfigGeneral.java:120-128,159`, `AppConfig.java:318` |
+| 4 | General / Screen | `machine.screenmode` | `window`, `fullscreen`; D `fullscreen` | N | a browser tab has no window mode choice | `JPanelConfigGeneral.java:86-87,130`, `AppConfig.java:310` |
+| 5 | General / Tickets | `machine.ticketsbag` | `simple`, `standard`, `restaurant`; D `standard` | A | **this is the `mode`.** Twin has `standard`+`restaurant` only (`T:till.js:14,286`); `simple` MISSING. Tooltip: simple = supermarket, standard = specialist stores, restaurant = table management + reservations (`pos_messages.properties` `tooltip.config.general.tickets`) | `JPanelConfigGeneral.java:89-91,131,164`, `U/sales/JPanelTicketSales.java:98` |
+| 6 | General / Hide Footer Status Bar | `till.hideinfo` | bool; D `true` | N | footer shows DB connection info (tooltip `tooltip.config.general.footer`); twin has no DB | `JPanelConfigGeneral.java:132,165`, `AppConfig.java:304`, `U/forms/JRootApp.java:332` |
+| 7 | General / Startup Logo | `start.logo` | file path | A | login-screen logo; device image | `JPanelConfigGeneral.java:133,166`, `JRootApp.java:518` |
+| 8 | General / Startup Text | `start.text` | text | A | login-screen text | `JPanelConfigGeneral.java:134,167`, `JRootApp.java:527` |
+| 9 | General / URL | `start.html` | URL | N | saved but never read outside the panel (grep `start.html` in `U/`) | `JPanelConfigGeneral.java:136,168` |
+| 10-12 | Locale / Locale | `user.language`, `user.country`, `user.variant` | JVM locale list; D = JVM default | A | browser locale | `U/config/JPanelConfigLocale.java:122-124,159-165`, `AppConfig.java:setLocalProperties` |
+| 13-19 | Locale / Integer, Double, Currency, Percent, Date, Time, Date Time | `format.integer`, `.double`, `.currency`, `.percent`, `.date`, `.time`, `.datetime` | pattern list; D `(Default)` | A | receipt and screen number/date formats | `JPanelConfigLocale.java:139-145,168-174` |
+| 20 | Payment Method / Card Reader | `payment.magcardreader` | `Not defined, EMV, External, Generic, Intelligent, Keyboard, NFC/RFID`; D `Not defined` | N | card hardware; the twin's Card tab is manual (`T:till_registry.js:29` `liveTabs: 4`) | `U/config/JPanelConfigPayment.java:57-63,91,107`, `AppConfig.java:setPaymentProperties` |
+| 21 | Payment Method / Payment Gateway | `payment.gateway` | gateway names (`:117`); D `external` | N | no gateway in the twin | `JPanelConfigPayment.java:92,108` |
+| 22-24 | Payment Method / URL, Device Id, Security Key | `payment.URL`, `payment.device-id`, `payment.security-key` | text | N | gateway credentials | `JPanelConfigPayment.java:93-95,109-111` |
+| 25-30 | Peripherals / Printer 1..6 | `machine.printer`, `.2` ... `.6` | `screen`, `printer(name)`, `epson`, `tmu220`, `star`, `ithaca`, `surepos`, `plain`, `javapos`, `Not defined`; D `screen` / `Not defined` | N | browser print dialog only. "screen" (preview) is the only twin mode | `U/config/JPanelConfigPeripheral.java:430-562,653-795`, `AppConfig.java:360-365` |
+| 31 | Peripherals / Reports Printer | `machine.printername` | installed printers; D `(Default)` | N | same | `JPanelConfigPeripheral.java:629,842`, `AppConfig.java:367` |
+| 32 | Peripherals / Customer Display | `machine.display` | `screen`, `window`, `serial`, `epson`, `ld200`, `javapos`; D `screen` | N | no serial hardware | `JPanelConfigPeripheral.java:588,806`, `AppConfig.java:308` |
+| 33 | Peripherals / Scale | `machine.scale` | `Not defined`, `screen`, `dialog1`, `samsungesp`, `caspers`; D `Not defined` | N | no serial hardware (twin's "Scale" button is the on-screen entry, U3) | `JPanelConfigPeripheral.java:609,827`, `AppConfig.java:309` |
+| 34 | Peripherals / Scanner | `machine.scanner` | `Not defined`, `scanpal2`; D `Not defined` | N | keyboard-wedge scanners already type into the field | `JPanelConfigPeripheral.java:622,836`, `AppConfig.java:312` |
+| 35-36 | Peripherals / iButton + response | `machine.iButton`, `machine.iButtonResponse` | bool D `false`; slider D `5` | N | hardware | `JPanelConfigPeripheral.java:631-632,845-846`, `AppConfig.java:313-314` |
+| 37 | System / Single Instance | `machine.uniqueinstance` | bool; D `true` | N | JVM single-instance guard (`U/forms/JRootKiosk.java:75`) | `U/config/JPanelConfigSystem.java:115,...` |
+| 38 | System / Auto LogOff after Sale? | `till.autoLogoff` | bool | A | after a sale the cashier is logged out | `JPanelConfigSystem.java:118` |
+| 39 | System / After ... seconds, 0 = No LogOff | `till.autotimer` | seconds; D `100` | A | inactivity timer (`JPanelTicket.java:411`); legacy twin `C_POS.AutoLogoutDelay` (`I_C_POS.java:66`) is branch-shared, so mapping is a choice (Q) | `JPanelConfigSystem.java:101-105` |
+| 40 | System / In Restaurant mode - return to table plan? | `till.autoLogoffrestaurant` | bool | A | restaurant mode only | `JPanelConfigSystem.java:119` |
+| 41 | System / Show Customer's detail on table plan | `table.showcustomerdetails` | bool; D `true` | A | restaurant | `JPanelConfigSystem.java:179-183`, `AppConfig.java:298` |
+| 42 | System / (colour) customer | `table.customercolour` | colour; D `#58B000` | A | restaurant | `AppConfig.java:299` |
+| 43 | System / Show User's detail on table plan | `table.showwaiterdetails` | bool; D `true` | A | restaurant | `JPanelConfigSystem.java:190-192`, `AppConfig.java:300` |
+| 44 | System / (colour) waiter | `table.waitercolour` | colour; D `#258FB0` | A | restaurant | `AppConfig.java:301` |
+| 45 | System / Table Name Text colour... | `table.tablecolour` | colour; D `#D62E52` | A | restaurant | `AppConfig.java:302` |
+| 46 | System / Transparent table button | `table.transbtn` | bool | A | restaurant | `JPanelConfigSystem.java:206,242` |
+| 47 | System / Auto Refresh Table Map | `till.autoRefreshTableMap` | bool; D `false` | A | only meaningful if the map is shared (§29.5) | `JPanelConfigSystem.java:108-124` |
+| 48 | System / Auto Refresh (seconds) | `till.autoRefreshTimer` | seconds; D `5` | A | same | `JPanelConfigSystem.java:108-113` |
+| 49 | System / Use 00 keypad button | `till.pricewith00` | bool | A | pad variant (cash/cheque, `U/payment/JPaymentCashPos.java:70`) | `JPanelConfigSystem.java:121` |
+| 50 | System / Set Tax Included on startup | `till.taxincluded` | bool | N | twin takes tax-included from the price list (legacy rule), not a toggle (`T:till.js:46-47` `taxInputs`) | `JPanelConfigSystem.java:120`, `JPanelTicket.java:450` |
+| 51 | System / Move Close Cash buttons | `screen.600800` | bool | N | small-screen Swing layout | `JPanelConfigSystem.java:123` |
+| 52 | System / Input box above keypad | `till.amountattop` | bool; D `true` | A | pad layout | `JPanelConfigSystem.java:122`, `AppConfig.java:303` |
+| 53 | System / Show Payment panel text overlay | `payments.textoverlay` | bool | N | overlay on coin/note picture buttons the twin does not have (`JPaymentCashPos.java:192`) | `JPanelConfigSystem.java:117` |
+| 54 | System / Enable Service Charge | `till.SCOnOff` | bool | A | adds a charge line (`JPanelTicket.java:728`); legacy twin = `C_Charge` (Q) | `JPanelConfigSystem.java:142` |
+| 55 | System / Service Charge Rate | `till.SCRate` | percent; D `0` | A | | `JPanelConfigSystem.java:137-141` |
+| 56 | System / Restaurant mode only? | `till.SCRestaurant` | bool | A | | `JPanelConfigSystem.java:143` |
+| 57 | System / Allow Price updates | `db.prodpriceupdate` | bool | A | legacy twin = `C_POS.IsModifyPrice` (`I_C_POS.java:245`), branch-shared | `JPanelConfigSystem.java:125` |
+| 58 | System / Switch to UPC Barcodes | `machine.barcodetype` | bool; D EAN | N | twin matches `upc`/`value` as typed (`T:till.js:100`) | `JPanelConfigSystem.java:126` |
+| 59 | System / Use Override? | `override.check` | bool; D `false` (`AppConfig.java:380`), screen sets `true` when no PIN | A | manager PIN, used on restaurant ticket delete (`U/sales/restaurant/JTicketsBagRestaurant.java:338`) | `JPanelConfigSystem.java:128-133` |
+| 60 | System / PIN | `override.pin` | text; D `1234` on first screen load | A | | `JPanelConfigSystem.java:134` |
+| 61 | System / Disable Anonymous Stats | `disable.stats` | bool | N | telemetry | `JPanelConfigSystem.java:246` |
+| 62 | Ticket Setup / Receipt number prefix | `till.receiptprefix` | text | N | twin number = deposit key `<till>-S<n>`; it is not a setting (`T:till_ext.js:29`) | `U/config/JPanelTicketSetup.java:109,148`, `U/ticket/TicketInfo.java:537` |
+| 63 | Ticket Setup / Receipt number min' length | `till.receiptsize` | spinner 1-20; D 1 | N | same | `JPanelTicketSetup.java:95-100,149`, `TicketInfo.java:536` |
+| 64 | Ticket Setup / Length of Pickup Number | `till.pickupsize` | spinner 1-20; D 1 | A | pick-up number width (`JPanelTicket.java:1920`); twin pickup exists (U22) | `JPanelTicketSetup.java:102-107,150` |
+| 65 | Ticket Setup / Receipt Print Off | `till.receiptprintoff` | bool | A | initial state of the print toggle (`U/payment/JPaymentSelect.java:161`); twin has `#printtoggle` | `JPanelTicketSetup.java:120,151` |
+| 66 | Ticket Setup / (digital receipt) | `till.digital-receipt` | bool | N | mail/digital send (`JPanelTicket.java:1853`) | `JPanelTicketSetup.java:122,152` |
+| 67-72 | Company / Header | `tkt.header1` ... `tkt.header6` | text; D header1-4 = "uniCenta oPOS" ... | A | receipt header lines | `U/config/JPanelConfigCompany.java:90-95,119-124`, `AppConfig.java:setPrinterProperties` |
+| 73-78 | Company / Footer | `tkt.footer1` ... `tkt.footer6` | text; D footer1-3 | A | receipt footer lines | `JPanelConfigCompany.java:97-102,126-131` |
+| 79 | Company / logo path | `tkt.logopath` | file path | A | receipt logo | `JPanelConfigCompany.java:105,133` |
+| 80-95 | Database Setup | `db.multi`, `db.engine`, `db.driverlib`, `db.driver`, `db.name`, `db.URL`, `db.schema`, `db.options`, `db.user`, `db.password`, `db1.name`, `db1.URL`, `db1.schema`, `db1.options`, `db1.user`, `db1.password` | | N | "database connection: the twin has none" (the twin's store is the engine in the page) | `U/config/JPanelConfigDatabase.java:115-184` |
+| 96-101 | (unmounted) ERP | `erp.URL`, `erp.id`, `erp.pos`, `erp.org`, `erp.user`, `erp.password` | | N | not on the screen; twin = Team pairing | `JPanelConfigERP.java:73-105` |
+
+**Count: 101 keys. APPLIES 49 (rows 1,2,5,7,8 = 5; Locale 10; System 19; Ticket Setup 2; Company 13). NOT APPLICABLE 52.** AppConfig also writes keys with no screen: `payment.testmode`, `payment.commerceid`, `payment.commercepassword`, `paper.receipt.*`, `paper.standard.*`, `screen.receipt.columns` (`AppConfig.java:326-377`) and the hidden `machine.saleslayout` = `Layout1|Layout2|Layout3` (`U/sales/JPanelTicket.java:243-300`); all N.
+
+### §29.2 The catalog with pictures (item 3)
+
+**Storage, shared.** Categories and products are DB rows: `categories(ID, NAME, PARENTID, IMAGE, TEXTTIP, CATSHOWNAME, CATORDER)` and `products.IMAGE` (blob) (`U/forms/DataLogicSales.java:459-494,2411`). Sizes live in the DB resource `Ticket.Buttons` (an XML text in `RESOURCES`, `UR/com/unicenta/pos/scripts/SQLite-create.sql:544`), read through `m_jbtnconfig.getProperty` (`U/sales/JPanelTicketSales.java:70-80`). So the picture grid sizes are **shared** (one DB), not in the properties file. The Configuration screen has NO catalog setting.
+
+| Element | Value | Source |
+|---|---|---|
+| Layout | left/right "category" column = a `JList` of root categories (icon + name), card layout `rootcategories` / `subcategories`; a card panel (`CardLayout`) of product grids, one per category id; sub-category tile click opens that category's card and shows an indicator strip (icon + name) with a back button | `U/catalog/JCatalog.java:97-103,172-184,256-300,333-368` |
+| Root categories shown | only `PARENTID IS NULL AND CATSHOWNAME = TRUE`, ordered `CATORDER, NAME` | `DataLogicSales.java:459-472` |
+| Sub-categories | `PARENTID = ?` ordered `CATORDER, NAME`; the tile shows the name only if `CATSHOWNAME` | `DataLogicSales.java:481-494`, `JCatalog.java:266-277` |
+| Product tiles in a category | constants (`ISCONSTANT`) first, then `products_cat` ordered `O.CATORDER, P.NAME` | `JCatalog.java:279-295`, `DataLogicSales.java:502-596` |
+| Grid | `JCatalogTab` = a scrolling flow panel; vertical scroll bar always, horizontal never; scrollbar width 35 | `U/catalog/JCatalogTab.java:41-47` |
+| Tile (button) | a `JButton` with the picture as icon, text centred below, margin 2/2/2/2, tooltip = `TEXTTIP` | `JCatalogTab.java:62-80` |
+| Image + name overlay | `ThumbNailBuilder.getThumbNailText(img, text)`: the picture scaled to W x H keeping ratio, centred on a transparent canvas, then the label painted over the BOTTOM of the picture (centre, bottom aligned); gradient white alpha 0x40 to 0xd0 prepared (the fill line is commented out at `:129`, so in 5.0 the text is drawn directly on the picture) | `U/util/ThumbNailBuilder.java:101-135,137-202` |
+| Product label | name, or `DISPLAY` if non-empty; plus a second line price (with tax if `taxesincluded`) when `pricevisible` | `JCatalog.java:307-330` |
+| Sizes: root category icon in list | 48 x 48 (fixed) | `JCatalog.java:101` |
+| Sizes: sub-category tile | `width x height` from `Ticket.Buttons` (`img-width`,`img-height`); code default 64 x 54 | `JCatalog.java:102`, `JPanelTicketSales.java:73-75` |
+| Sizes: product tile | same `width x height` | `JCatalog.java:103` |
+| Shipped sizes | `img-width 107`, `img-height 60` (medium); small 64 x 48, large 128 x 96 are commented options | `UR/com/unicenta/pos/templates/Ticket.Buttons.xml:83-93` |
+| Catalog panel height | `cat-height`, code default 245, shipped 320 (others 100, 155, 640) | `Ticket.Buttons.xml:70-80`, `JPanelTicketSales.java:79-80` |
+| Other catalog keys | `pricevisible` (shipped true), `taxesincluded` (true), `taxcategoryid` (`001`) | `Ticket.Buttons.xml:118-120` |
+| Placeholders | category list icon `com/unicenta/images/category.png`; sub-category tile `subcategory.png`; product tile `null.png`. If the file is missing the default is `null` (blank) | `JCatalog.java:101-103`, `ThumbNailBuilder.java:61-69,86-93` |
+| Category editor fields | Name, Category (parent), Image, Text Tip, "Display Name in panel" (`CATSHOWNAME`), Order (`CATORDER`), "In Catalogue?" for products | `U/inventory/CategoriesEditor.java:398-443`, `pos_messages.properties` `label.subcategorytitle`, `label.ccatorder` |
+
+**What the twin has.** Text-only tiles: `<button class="prod" ...>name<br>price</button>`, 107 x 60 (`T:till.js:134`, `T:till.html:17`); category buttons text-only (`T:till.js:132`); categories come from `m_product_category` sorted by name, so no `CATORDER`; no image anywhere (no `ImageURL` hit in `T:erp/till*.js`, `erp/pos_core.js`). The product query does not select `ImageURL` (`T:till.js:39`). SODA product deltas now carry `M_Product.ImageURL` (§28, `POS_PLUGIN_LOCAL_FIRST.md:1052,1071`).
+**Legacy twin.** `M_Product.ImageURL` exists (`I/I_M_Product.java:307`). `M_Product_Category` has NO image column (grep `ImageURL|AD_Image_ID` in `I_M_Product_Category.java`: none). iDempiere's own touch-screen picture grid is `C_POSKey` / `C_POSKeyLayout`: `AD_Image_ID`, `M_Product_ID`, `Text`, `SpanX`, `SpanY`, `SubKeyLayout_ID`, `SeqNo` (`I/I_C_POSKey.java:53,191,290,248,261,274,233`), selected per POS by `C_POS.C_POSKeyLayout_ID` (`I_C_POS.java:143`). That is the legacy shape for "category tile -> sub layout -> product tiles with a picture".
+
+**Lucide replacements (we ship our own, no uniCenta files):** `category.png` -> `folder` (or `layout-grid`); `subcategory.png` -> `folder-open`; `null.png` (product without picture) -> `image-off` (or `package`); back button -> `arrow-left`.
+
+### §29.3 Restaurant floors, places, map, reservations (item 4)
+
+**Data model (uniCenta, shared DB).** `floors(id, name, image)`; `places(id, name, seats, x, y, floor, customer, waiter, ticketid, tablemoved, width, height, guests, occupied)`; `reservations(id, created, datenew, title, chairs, isdone, description)`; `reservation_customers(id, customer)`; `sharedtickets(id, name, content, appuser, pickupid, locked)` (`UR/.../SQLite-create.sql:134-139,219-234,301-316,334-342`). A reservation has NO table column. Seed: floor `0` "Restaurant floor" with a 960x600 image, 24 places "Table 1".."Table 24", seats `1`, 90 x 45, x = 100+150k, y = 50+100r (`SQLite-create.sql:650-683`).
+
+**Back office (Menu > Maintenance).** Menu entries "Floors" (`JPanelFloors`) and "Tables" (`JPanelPlaces`) (`UR/.../templates/Menu.Root.txt:101-102`), in the Administrator and Manager roles (`Role.Administrator.xml:159-160`).
+| Editor | Fields (label -> column) | Source |
+|---|---|---|
+| Floors | "Name" -> `name`; image picker -> `image` | `U/mant/FloorsEditor.java:167`, `:19-65` |
+| Tables (Places) | "Name" -> `name`; "Floor" (combo of floors) -> `floor`; "Seats" -> `seats`; "Position x" (Across) -> `x`; "Position y" (Down) -> `y`; "Button Width" -> `width`; "Button Height" -> `height`; hint text `message.places`: "Top Left is Across 0 and Down 0 ... Position tables easily in any Floor Plan using your mouse with the Layout button" | `U/mant/PlacesEditor.java:242-286,103-109` |
+Placement is by number OR by dragging on the till (below). The button is centred on x,y: `bounds = (x - w/2, y - h/2)` with `w,h = preferred + width/height` (`U/sales/restaurant/Place.java:223-228`).
+
+**Till map (`JTicketsBagRestaurantMap`).**
+| uniCenta element | Behaviour | Source |
+|---|---|---|
+| Floor tabs | >1 floors = scrolling tab pane (tab icon = 32x32 floor thumbnail); 1 floor = titled border; the floor image is the background, buttons absolutely placed | `JTicketsBagRestaurantMap.java:140-182`, `Floor.java:65-72,106-137` |
+| Table button | HTML text: customer name (colour `table.customercolour`) / waiter name (`table.waitercolour`) / "Name / Seats" (`table.tablecolour`); if occupied also "Guests :" count and "Waiting : Nh:Mm" elapsed since `occupied` | `:522-640`, `pos_messages.properties` `button.guest`, `button.occupied` |
+| States | free = blank 22x22 icon; occupied = `edit_group` icon (a person group). NO fill colour; the "colours" are text colours. "Transparent table button" hides the button chrome | `Place.java:41,202-205`, `JTicketsBagRestaurantMap.java:198-202,639-643` |
+| Click free table | creates an empty shared ticket row, sets people, guest count, opens the sales screen | `:722-735` |
+| Click occupied table | reads the shared ticket; if `locked` shows "locked" message, with permission `sales.Override` offers to override; else opens it | `:735-780` |
+| Top bar on the sales screen | Guests (popup number, `tooltip.guests`), Tables (back to plan), Move Table, Delete ticket (asks the override PIN), Kitchen print | `U/sales/restaurant/JTicketsBagRestaurant.java:240-311,318-429` |
+| Move table | button "Move Table" saves the ticket, puts the source in a clipboard; map prompts "Moving table {0}. Select another Table or the original Table"; click on empty table = move | `JTicketsBagRestaurantMap.java:356-373,663-667`, `pos_messages.properties` `label.restaurantmove` |
+| Merge tables | click on an occupied target while a clipboard exists = confirm "This will Merge tables. Are you sure you want to do this?", then source lines are appended to the target, customer kept if target has none, source ticket deleted and its table cleared | `:781-880` |
+| Customer on table | Reservation "Check-In Now" -> map prompts "Receiving Customer {0}. Select an empty table."; only empty tables enabled; customer stored on the place | `:648-661`, `JTicketsBagRestaurantRes.java:625-652` |
+| Waiter on table | `places.waiter` set by DB utils; shown when `table.showwaiterdetails` | `RestaurantDBUtils.java:197-296` |
+| Buttons | Reservations (`date.png`), Reload (`reload.png`), Layout (`movetable.png`, only with permission `sales.Layout`), Save (while in layout mode) | `JTicketsBagRestaurantMap.java:229-236,924-973,1016-1070` |
+| Layout mode | "Layout" toggles to "Disable Layout"; table buttons become draggable, "Save" writes `x,y` for every place (`updatePlaces`) | `:204-221,1027-1070` |
+| Auto refresh | optional Swing timer calls `loadTickets()` + `printState()` every `till.autoRefreshTimer` s; label ON/OFF | `:238-254,258-265` |
+
+**Reservations (`JTicketsBagRestaurantRes`).**
+| Element | Behaviour | Source |
+|---|---|---|
+| Date view | calendar (show/hide) + hour buttons; list shows reservations with `DATENEW >= hour AND < hour + 1h` | `JTicketsBagRestaurantRes.java:60-93,128-140,318-369`, `DataLogicCustomers.java:256-260` |
+| Fields | "Select Person" (customer finder or free text), "Persons" (`CHAIRS`, default 2), "Booking Time" (hour/minute buttons), "Notes" (`DESCRIPTION`) | `JTicketsBagRestaurantRes.java:189-207,442-493` (`pos_messages.properties` `rest.label.*`) |
+| List line | time (blue), name, chairs, notes; a struck line when done | `JCalendarItemRenderer.java:70-110,177-186` |
+| Which table | NONE at booking. The table is chosen at check-in on the map | `SQLite-create.sql:307-316`, `JTicketsBagRestaurantRes.java:640-645` |
+| Check-in | "Check-In Now" sets `ISDONE = true`, saves, opens the map in receive mode | `:625-652` |
+| Navigation | list navigator, counter, saver, dirty marker (new / edit / delete via the browsable editor) | `:118-125` |
+| "Tables" button | back to the map | `:654-658` |
+
+**Comparison with the twin** (`T:erp/till_ext.js:198-266`, `T:erp/till_registry.js:38-39` rows 16/17, `T:erp/till.html:32,86`):
+| # | uniCenta element | Status | Twin fact |
+|---|---|---|---|
+| F1 | Floors maintenance panel | MISSING | floors are `seedFloor()` constants (`till_ext.js:199-205`) |
+| F2 | Floor name | DIFFERENT | seeded "Restaurant floor", not editable |
+| F3 | Floor image | MISSING | plain `#fafafa` box (`till.html:86`) |
+| F4 | Several floors as tabs | MISSING | one floor; places carry `floor:'0'` only |
+| P1 | Tables maintenance panel | MISSING | no editor |
+| P2 | Place name | PRESENT | `Table 1..24` (`till_ext.js:202`) |
+| P3 | Place floor | DIFFERENT | field exists, constant |
+| P4 | Seats | DIFFERENT | stored `seats:1`, never shown or used |
+| P5 | Position x/y | DIFFERENT | `left = x*0.9` from top-left (`:209`) vs centred on x,y (`Place.java:227`) |
+| P6 | Button width/height | DIFFERENT | `w*1.2`, `h*1.3` (`:209`) vs preferred size + width/height |
+| P7 | Drag layout + Save (`sales.Layout`) | MISSING | none |
+| M1 | One button per place | PRESENT | 24, asserted by `count n:24` |
+| M2 | Free/occupied icon | DIFFERENT | pink background `#f5c6c6` when occupied (`:209`), no icon |
+| M3 | "Name / Seats" label | DIFFERENT | name only |
+| M4 | Guests count + Guests popup | MISSING | none |
+| M5 | "Waiting : Nh:Mm" elapsed | DIFFERENT | "Waiting : HH:MM" = clock time of start (`:209`) |
+| M6 | Waiter on table + colour | MISSING | none |
+| M7 | Customer on table + colour | MISSING | customer is set on the ticket only (`:217`), not drawn |
+| M8 | Table-name colour / transparent buttons | MISSING | none |
+| M9 | Reload | PRESENT | `fl-reload` |
+| M10 | Reservations button | PRESENT | `fl-res` |
+| M11 | Tables button (back to plan) | PRESENT | `data-btn="Tables"` (`:244`) |
+| M12 | Auto refresh | MISSING | none |
+| M13 | Move table | MISSING | none |
+| M14 | Merge tables | MISSING | none |
+| M15 | Receive customer on an empty table | DIFFERENT | table fixed at booking; check-in opens it (`:262`) |
+| M16 | Shared ticket lock / override | MISSING | none |
+| M17 | Delete ticket on table, PIN override | MISSING | floorbar has 3 buttons (`till.html:32`) |
+| M18 | Kitchen print | PRESENT | Send Order (U15) |
+| M19 | Restaurant mode swaps the bag for the map | PRESENT | `S.mode === 'restaurant'` (`till_ext.js:233`) |
+| M20 | "moved" flag on place | MISSING | none |
+| R1 | Date view (calendar, hour buttons, hour filter) | MISSING | lists all reservations (`:222`) |
+| R2 | Person from customer finder | DIFFERENT | free text `rs-customer` |
+| R3 | Persons (chairs) | PRESENT | `rs-chairs` |
+| R4 | Booking time hour/minute | DIFFERENT | one `rs-date` field |
+| R5 | Notes | PRESENT | `rs-notes` |
+| R6 | Table at booking | DIFFERENT | twin adds a table pick at booking (`rs-place`); uniCenta has none |
+| R7 | Check-In Now | PRESENT | `data-res-in` |
+| R8 | Done shown as struck line | DIFFERENT | text " · checked in" |
+| R9 | Edit / delete / navigate / dirty | MISSING | save-new only |
+| R10 | Sorted by time then created | MISSING | insertion order |
+| R11 | Tables button back to map | PRESENT | `rs-tables` |
+
+### §29.4 Mode setup (the missing screen)
+
+uniCenta sets the mode in General > Tickets (`machine.ticketsbag`, §29.1 row 5) and it needs a restart (`JPanelConfiguration.java:129`). The twin takes it from the URL only: `?mode=restaurant` (`T:till.js:286`), default `standard` (`:14`). **No setup screen, no stored choice**. The picture catalog has no mode key; it is on whenever products have pictures and the sizes allow.
+
+### §29.5 Shared vs device (item 5)
+
+- **uniCenta: shared.** An open table is a row in `sharedtickets` keyed by the place id (`U/sales/DataLogicReceipts.java:135`); the map reads ALL rows (`getSharedTicketList`, `SELECT ... FROM sharedtickets ORDER BY PICKUPID`, no machine filter, `:101-106`) and marks a table occupied if any row exists (`JTicketsBagRestaurantMap.java:501-517`). One DB serves every till, so every till of the shop sees the same tables; a lock column (`locked`) prevents two tills editing one table (`DataLogicReceipts.java:240-264,365`). Who/guests/customer are in `places` (shared too).
+- **The twin today: per device.** Held tickets, places, reservations all live in `localStorage` key `till.v1:<tillKey>` (`T:till.js:23-24`, "the device-local store (a device fact)", `:21`); `tillKey = orgValue-userValue` (`:30`). The map reads `st().held` (`till_ext.js:206-208`). A second till (another `tillKey`, or another browser) shows an empty map. **So today the map is NOT shared across the tills of a branch.** The owner decision already on file says it must be: decision 11 "Open tables shared by several tills in one branch (Unicenta's shared tickets) and reservations = branch-local state (§7), never head office's" (`POS_PLUGIN_LOCAL_FIRST.md:177`). Reusable channel: the branch-local till-kitchen flow of §19.2 (`:756-760`).
+
+### §29.6 Legacy iDempiere (item 6)
+
+- No table / floor / seating / reservation model in core. Searched: `I/` for `restaurant`, `floor plan`, `MFloor`, `MReserv`, `MTable_*` (no hits); `C_POS*` classes (`X_C_POS`, `X_C_POSKey`, `X_C_POSKeyLayout`, `X_C_POSPayment`, `X_C_POSTenderType`) hold cash-drawer / price list / key layout / tender only (`I_C_POS.java` column list: no table, no floor).
+- **Reservation candidate: `S_Resource` + `S_ResourceAssignment`.** `S_Resource`: Name, Description, IsAvailable, ChargeableQty, M_Warehouse_ID, S_ResourceType_ID (`I/I_S_Resource.java:116,142,82,164,237,189`). `S_ResourceType`: IsDateSlot, IsTimeSlot, IsSingleAssignment, TimeSlotStart, TimeSlotEnd (`I_S_ResourceType.java:162,188,175,352,339`). `S_ResourceAssignment`: S_Resource_ID, AssignDateFrom, AssignDateTo, Name, Description, Qty, IsConfirmed (`I_S_ResourceAssignment.java:195,66,79,147,108,160,134`). A table = an `S_Resource`; a reservation = an assignment on a time slot; "done" ~ `IsConfirmed`; chairs ~ `Qty`. **Gap:** `S_ResourceAssignment` has no customer/BPartner column (grep `AD_User_ID|C_BPartner_ID` in `I_S_ResourceAssignment.java`: none), so the person goes in `Name`. And it needs a table at booking, which uniCenta does not (§29.3 R6). A twin is possible but only after owner Q-e (`POS_PLUGIN_LOCAL_FIRST.md:122`), and only for reservations; floors/x/y have no legacy home.
+- Pictures: `M_Product.ImageURL` (`I_M_Product.java:307`); `C_POSKey.AD_Image_ID` (`I_C_POSKey.java:53`); none on categories (§29.2).
+
+### §29.N proposed build list
+
+| # | What | uniCenta source | Scope |
+|---|---|---|---|
+| 1 | **Till setup screen** (Configuration) with only the 49 applicable keys, grouped General / Locale / System / Ticket Setup / Company; Lucide `settings` entry in the register menu | `JPanelConfiguration.java:233-267` | device-local (`till.v1:<tillKey>` store), except rows marked C_POS below |
+| 2 | **Mode switch** simple / standard / restaurant stored in that screen (replaces URL-only `?mode`) | `machine.ticketsbag`, `JPanelConfigGeneral.java:89-91,164` | device-local |
+| 3 | `simple` mode (no shared-ticket bag) | `JTicketsBag.createTicketsBag` via `JPanelTicketSales.java:98` | device-local |
+| 4 | **Picture catalog**: product tile with picture + name over the bottom, price line, ratio-fit, centred; sub-category tile = category picture/name; back button; `CATORDER` order | `JCatalog.java:256-368`, `ThumbNailBuilder.java:101-202` | sizes + order branch-shared (a catalog setting); picture cache device-local |
+| 5 | Product `ImageURL` in the till's product query and SODA delta apply | §28; `I_M_Product.java:307` | branch-shared (arrives by SODA), cached per device |
+| 6 | Placeholder tiles with Lucide `folder`, `folder-open`, `image-off` | `JCatalog.java:101-103` | n/a (assets) |
+| 7 | Catalog sizes settings `img-width` 107, `img-height` 60, `cat-height` 320, `pricevisible`, `taxesincluded` | `Ticket.Buttons.xml:77-120` | branch-shared |
+| 8 | Floors maintenance (name, image) | `FloorsEditor.java:19-167` | branch-shared |
+| 9 | Tables maintenance (name, floor, seats, x, y, width, height) | `PlacesEditor.java:242-286` | branch-shared |
+| 10 | Floor tabs + floor image background + centred placement | `JTicketsBagRestaurantMap.java:140-182`, `Place.java:223-228` | follows 8/9 |
+| 11 | Table button text: customer / waiter / "Name / Seats" / Guests / "Waiting Nh:Mm"; free vs occupied icon (Lucide `users`) | `:522-643` | branch-shared (state) |
+| 12 | **Shared open tables across tills of a branch** + lock/override | `DataLogicReceipts.java:101-135,240-264,365`; decision 11 | branch-shared |
+| 13 | Move table, Merge tables, Guests popup, delete with override PIN | `JTicketsBagRestaurantMap.java:356-373,781-880`, `JTicketsBagRestaurant.java:318-429` | branch-shared (acts on 12) |
+| 14 | Layout mode (drag, Save) behind a permission | `:204-221,1027-1070` | branch-shared |
+| 15 | Table colours + transparent buttons + auto refresh | System rows 41-48 | device-local (settings) |
+| 16 | Reservations: hour/day view, hour+minute booking, person from customer finder, edit/delete/navigate, sort | `JTicketsBagRestaurantRes.java:60-140,318-369` | branch-local, shared by tills |
+| 17 | Reservation check-in picks the table AT check-in (receive mode), drop table-at-booking | `JTicketsBagRestaurantMap.java:648-661` | branch-shared |
+| 18 | Struck "done" line | `JCalendarItemRenderer.java:177-186` | n/a (render) |
+
+### §29.Q questions the source cannot answer
+
+1. **Mode and settings: device or branch?** uniCenta keeps all 101 keys per machine (`AppConfig.java:73-76`), but legacy twins `AutoLogoutDelay` and `IsModifyPrice` are branch-shared on `C_POS`. For rows 39 and 57 does the twin follow uniCenta (device) or the legacy field (branch)? The Twin Cardinal Rule points to C_POS; confirm.
+2. **Where do category pictures come from?** `M_Product_Category` has no image column. Options: a branch-side list of category pictures delivered like the catalog, or product pictures only (sub-category tile shows text, or the first product's picture). Owner choice.
+3. **Offline pictures.** `ImageURL` is a link. Fetch once and cache in the device store, or require the link to be reachable? (uniCenta stores the picture in the DB.)
+4. **Who edits floors and tables** (rows 8-9, 14): the branch admin app (like EODA) or each till? Legacy has no model, so there is no authority to copy; uniCenta edits in the same app that sells.
+5. **Reservation in the ERP (Q-e, still open).** `S_Resource`/`S_ResourceAssignment` can carry table + slot + chairs + confirmed, but no customer column (§29.6). Till-only like uniCenta, or also an ERP record?
+6. **Service charge** (rows 54-56): twin as a `C_Charge` line? The U6 witness currently asserts "Service charge" ABSENT (`T:till_registry.js:25`), so enabling it changes a registered assertion.
+7. **Locale formats** (rows 10-19): per till as uniCenta, or taken from the branch client's language/currency (what legacy prints)? Differing formats between tills of one branch would break receipt equality.
+8. **Terminal Name** (row 1): free text per device, or keep `tillKey` as the printed terminal (it keys the deposit numbers)?
+9. **Floor background art.** uniCenta ships `paperboard960_600.png` (GPL). We have no picture rights to copy; is a plain CSS paper-style background acceptable, with an optional uploaded image?
+
+### §29.D LEAD DECISIONS on §29.Q (2026-11-04). Each is taken from a standing rule or an owner statement, so none was asked.
+| Q | Decision | Source |
+|---|---|---|
+| 1 settings: device or branch | Where legacy has the field (`C_POS`: AutoLogoutDelay, IsModifyPrice, price list, warehouse), the legacy field wins: branch-shared from `C_POS`. All other keys stay per device, as uniCenta does. | TWIN CARDINAL RULE |
+| 2 category pictures | No invented category art. Show uniCenta's own fallback (placeholder + name), using Lucide `folder`/`folder-open`. A category picture can come later, the same way as product pictures. | uniCenta `JCatalog.java:101-103`; PRIME RULE |
+| 3 offline pictures | Answered by the owner: §31 (device disk cache, never the in-heap DB) | owner 2026-11-04 |
+| 4 who edits floors/tables | The branch POS admin (uniCenta's back office = our branch admin, §26), delivered to the tills on the branch-local flow | §24.2, §26 |
+| 5 reservations in the ERP (Q-e) | Branch-only, as uniCenta does. Not an ERP record. | owner 2026-11-04: *"Have that too with similar reservation"* |
+| 6 service charge | Stays OFF (uniCenta 5.0 default: the button is commented out), so the U6 assertion stands | `Ticket.Buttons.xml` (§14.1 U6) |
+| 7 locale formats | From the branch client's language/currency, so every till of a branch prints identical receipts (legacy prints that way) | TWIN rule; receipt equality |
+| 8 terminal name | Keep `tillKey`: it keys the Org\|Till\|Sequence numbers | TEAMWORK §48.10 |
+| 9 floor background | Plain CSS background plus an optional uploaded image, stored like product pictures (OCI link + disk cache). uniCenta's GPL art is not copied. | licence; §31 |
+
+**Flag for the owner (cost, not a blocker):** uniCenta's shared open tables live in one shop database on the LAN. Here they must ride the branch-local flow, so every table change by one till is relay traffic to the others (the kitchen measured 38 requests per message, §20). The twin today keeps open tables per device in `localStorage`, which contradicts §10.4 item 11. The build makes them branch-shared, measures requests per table action (W-REST-RELAY), and batches where uniCenta allows (save on leaving the table, not per keystroke).
