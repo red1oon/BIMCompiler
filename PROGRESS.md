@@ -12,6 +12,10 @@ Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 
 ## 📋 The live worklist is `prompts/AGENT_QUEUE.md` — not this file
 ## ▶ HYGIENE + POSTING-PARITY session (2026-11-03→04, closed) — RESUME HERE for this lane
+**2026-11-04 close (session 2):** posting parity step 5 CLOSED (above); Find window = legacy placement + layout, `prompts/ERP_IDEMPIERE_UX_PARITY.md`
+§FIND-LF ✅ (bim-ootb #2624, W-FIND-LF 9/9 vs a live-legacy oracle; open there: whole-app iceblue_c theme parity, ⋮ Default/Share, Advanced child-tab rows).
+**Next, in order:** (3) Modeller kernel_ops copy + boot assertion (KERNEL_TIMEBOMB T5); (4) Viewer memory B-items. Pre-existing FAILs seen, not fixed:
+witness_asi_receipt P1b (date-dependent), witness_view_window_first, witness_packout O6, poc_genesis_resident_live (18 vs 24 BPs; ../common not served).
 Docs review live (BIMCompiler #311/#312, `prompts/DOCS_REVIEW_2026-11.md`); code hygiene (`prompts/CODE_HYGIENE_REVIEW_2026-11.md`
 §3-§7: A1/A3/A4/D1/D2/C1/three.js/ERP dead UI + engine subset live); seam audit CLOSED (`prompts/SEAM_IDENTITY_AUDIT.md` PASS 2 +
 waves 1-3 + close-out); legacy posting parity (`prompts/SQLiteIDEMPIERE.md` END: §POSTING-PARITY 1a-1d + steps 2+4 live, bim-ootb
