@@ -5,7 +5,8 @@
 //   §SODAP_DELTA    the "changed since the last run" stamp the SODA watermark relies on (Export2Queue.java:152-165, rows with Updated >= since): the SAME edit (a product's ImageURL) made through legacy's WS and through the twin's model layer;
 //                   the set of rows each side selects with `Updated >= watermark` must be equal (exactly that one product row, no price row, no tax row); then the value is restored on both.
 //   §SODAP_PRICE    the same for a PRICE edit: legacy M_ProductPrice has a composite key, so the stock update_data (RecordID) may not address it: the result is printed, and when legacy cannot be driven the price stamp is NOT-COMPARED (no parity claimed).
-// NOT COMPARED, and why (no parity claimed for these; the twin is judged by invariants in erp/tests/witness_soda.js / witness_movement_confirm.js, NOT against legacy):
+// §28.2 (2026-11-04): the Replenish-created movement, the Move Confirmation, the difference documents and the storage after a confirm are now compared by witness_soda_receipt_parity.js (legacy setup through the WS); the list below is what
+//   this file alone could not drive, kept for history. NOT COMPARED here, and why:
 //   - the Replenish Report create step making an MMM movement: the pilot's M_Replenish rows have no source warehouse and §62 forbids changing legacy config (witness_replenish_diff.js: MMM is NOTED-AS-DESIGNED);
 //   - the Move Confirmation (M_MovementConfirm / line confirm): the pilot has no in-transit MMM doctype (C_DocType.IsInTransit='Y'), no WS type creates a doctype / completes a confirm, and the oracle's makedoc builds one header;
 //   - the difference / scrapped inventory documents and the final storage after a confirm.
