@@ -59,8 +59,8 @@ function arms(COMPILE, quiet) {
   ['no executor', 'executor "x"', 'actions []', 'actions ["ZZ"]'].forEach(function (l, i) {
     A('U5', codes(c.bad[i]).indexOf('docaction-bad') >= 0 && c.bad[i].ok === false, l + ' -> docaction-bad', JSON.stringify(c.bad[i].planErrors)); });
   H('§U6 GENERIC');
-  var g = cases({ C_Order: 'M_Movement', C_OrderLine: 'M_MovementLine', C_Invoice: 'M_Inventory' });
-  A('U6', sig(g) === sig(c), 'the same files with the document tables renamed (C_Order -> M_Movement, C_OrderLine -> M_MovementLine, C_Invoice -> M_Inventory) give the same verdicts: the rule knows no table', sig(g) === sig(c) ? 'identical' : sig(g) + ' vs ' + sig(c));
+  var g = cases({ C_Order: 'M_Movement', C_OrderLine: 'M_InOutLine', C_Invoice: 'M_Inventory' });
+  A('U6', sig(g) === sig(c), 'the same files with the document tables renamed (C_Order -> M_Movement, C_OrderLine -> M_InOutLine, C_Invoice -> M_Inventory) give the same verdicts: the rule knows no table', sig(g) === sig(c) ? 'identical' : sig(g) + ' vs ' + sig(c));
   return red;
 }
 console.log('═══ W-UPS-ONE-DOCACTION — E1 COMPILE: one DocAction executor per document (TEAMWORK_FRAMEWORK FL-8, §38.1) ═══');
