@@ -1562,3 +1562,36 @@ Extraction (lead + source): the look is the floor picture (`FLOORS.IMAGE`, sampl
 - D4 Occupied = Lucide `users` (22x22, for `edit_group.png`) + the configured colours (table name colour `table.tablecolour`, customer line `table.customercolour`, waiter line `table.waitercolour`, uniCenta `JTicketsBagRestaurantMap.java:541-609`); free = no icon (blank 22x22).
 - D5 Demo seed = uniCenta's OWN places (`SQLite-create.sql:652-683`). MEASURED: the source seeds **24** places "Table 1".."Table 24" (not 11), x = 100+150k, y = 50+100r, 90 x 45, floor "Restaurant floor". Same names/x/y/size; seats vary 2/4/6 by table number (source has `1` everywhere, which would draw nothing to look at) - a stated demo difference, the branch admin's own rows override the seed.
 - W-REST-FLOOR (`witness_till_rest_floor.js`): per table, drawn table body box == W x H at (X-W/2, Y-H/2) in 960x600 space (+-1 px, measured through the stage scale); chair count == Seats; round iff W == H; IMAGE mode has no drawn table and the button box matches; occupied shows `users` + colour, free none. Mutants: chairs from a constant (red), round rule inverted (red).
+
+## §34 FILM SPEC — "uniCenta POS, reborn: the SQLite WASM till" (owner, 2026-11-04: *"Prepare for a film when things are ready to showcase this 'SQLite WASM version of Unicenta POS'"*). SPEC ONLY; record after §33 is merged and the guide is republished.
+**Form:** `prompts/FILM_NARRATION.md` ▶ PLAYBOOK C, the explainer the owner praised (CAPEX add-on film):
+- before/after in the first 25 s, then show → prove, one real event at the end, a "not built yet" card, credits;
+- two-voice dialogue (F asks as a newcomer, M answers in one or two plain sentences);
+- chapter cards as their own silent 3.6 s segments on plain dark, no persistent tag;
+- the bottom 230 px kept empty for subtitles.
+
+English first (Kokoro); other languages on the owner's ask, as usual. CPU only, never the GPU lock.
+**Pictures = the REAL pages, headless.** Stills via a `film_shots`-style script, and short clips via the CDP-screencast recorder of §ERP-FILM (24 fps, 1920×1080). Every number spoken or shown is printed as a `§FILM_FACT k=v` from the live in-browser DB or a named witness log (PRIME rule). No mock screens and no typed-in totals.
+
+| # | Chapter / beat | What is on screen | Facts (source) |
+|---|---|---|---|
+| 0 | **Before / after** (≤25 s) | BEFORE card: the 2012 shape. A desktop till with its own DB, the ActiveMQ broker server and the iDempiere server (§1 M8, §12.1). AFTER: the same till in a browser tab, offline, one dumb relay, head office a browser or a legacy iDempiere | — |
+| 1 | **"A till you already know"** | Login → Register menu → sales screen. The "If you know uniCenta 5" row count. The picture catalog collapsing and expanding (§33). A sample sale rung by real clicks (2 × Rose Bush, Hoe, Patio Chair), split cash + card, the receipt | parity X/N (`till_registry.js` print, §32.R); ticket totals (`§TILL_DEPOSIT gross=`) |
+| 2 | **"Kitchen and tables"** | The floor map with tables + chairs drawn from their seats (§33). Open a table → Send Order → the card appears on the kitchen screen → bump → "ready" on the till. A reservation checked in to a table | `§KDS_*` / `§REST_*` lines; relay requests per action (§20, §32.R) |
+| 3 | **"End of day, once"** | Close Cash on three tills → the branch POS admin's EODA screen (per-till ranges + Z) → Send EODA. An overlay counter of relay requests: tills **0** while selling, one send for the branch | `§EODA_RELAY`, statement total == sum of Z (`§EODA_VERDICT W-EODA-AGG`, §26.R) |
+| 4 | **"Head office, next morning"** | Branch Day Close, one click: Import POS Sales → the BOM item explodes into components → Replenish → the movement. A card: clicks and screens before → after. The same books as step-by-step | G/S 28→9, 6→1 (§22); `rowDiff=0` (`§DAYCLOSE-VERDICT`); component storage drop (§25.R) |
+| 5 | **"SODA — only what changed"** | The morning batch arrives: one product's price changes on its tile, the others stay. Receive stock: 3 of 5 received, 1 scrapped → the confirmation rides the next EODA | `§SODA_*` (§28.R); receive arm 20→15 / 4→6 (§28.2.R) |
+| 6 | **"Same books as legacy"** | Side by side: the twin and legacy iDempiere on the Replenish movement, Move Confirmation and storage → MATCH | `run_all` cycle verdicts (§28.2.R) |
+| 7 | **"Not built yet"** card (said in the voice) | The decimals-in-text difference (9.0 vs 9, §28.3 OPEN-1); price-stamp parity not compared (OPEN-2); two tills on one table over the real relay not yet proven (§32.R); in-browser memory with pictures not measured | — |
+| 8 | **Promise + credits** | The promise line. Credits: the owner's 2012 Openbravo/uniCenta → iDempiere integration (with Ghintech) as prior art. uniCenta oPOS (GPL): **layout and flow followed, no code or artwork copied**. Fluent Emoji (MIT) product pictures. Legacy iDempiere as the oracle | — |
+
+**Gate before recording (each a measured fact, not a look):** §33 merged and live, with W-TILL-LAYOUT, W-REST-FLOOR and W-TILL-CATALOG-TOGGLE PASS; the guide republished.
+**Witness of the cut (PLAYBOOK steps 4-5):**
+- frames == source;
+- longest silence ≤ ~7 s;
+- loudness ≈ −16 LUFS;
+- the subtitle zone is empty on every composite (`-crop 1920x230+0+850` mean == background);
+- every spoken number has a `§FILM_FACT`;
+- `§NARR_FIT` all DETAIL, `§NARR_TONE` 0 WRONG.
+
+**Output name:** `~/Videos/UnicentaPOS_SQLiteWASM_narrated_EN_AFTER_<date>_v1.mp4` (never overwrite).
