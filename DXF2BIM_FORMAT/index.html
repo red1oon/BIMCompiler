@@ -900,6 +900,8 @@
       
         
       
+        
+      
     
     
     
@@ -1255,10 +1257,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-settings-registry-modellerelement_defaultsjson-65-rows" class="md-nav__link">
+  <a href="#5-settings-registry-modellerelement_defaultsjson-76-rows" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Settings registry (modeller/element_defaults.json): 65 rows
+        5. Settings registry (modeller/element_defaults.json): 76 rows
       
     </span>
   </a>
@@ -1266,10 +1268,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-code-families-222-codes-found-in-the-source" class="md-nav__link">
+  <a href="#6-code-families-223-codes-found-in-the-source" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Code families (222 codes found in the source)
+        6. Code families (223 codes found in the source)
       
     </span>
   </a>
@@ -1328,6 +1330,34 @@
     
   
     uniCenta-style Till & Kitchen Screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexDashboardGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAPEX Dashboard — for iDempiere users
   
 
     
@@ -2822,10 +2852,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-settings-registry-modellerelement_defaultsjson-65-rows" class="md-nav__link">
+  <a href="#5-settings-registry-modellerelement_defaultsjson-76-rows" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Settings registry (modeller/element_defaults.json): 65 rows
+        5. Settings registry (modeller/element_defaults.json): 76 rows
       
     </span>
   </a>
@@ -2833,10 +2863,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-code-families-222-codes-found-in-the-source" class="md-nav__link">
+  <a href="#6-code-families-223-codes-found-in-the-source" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Code families (222 codes found in the source)
+        6. Code families (223 codes found in the source)
       
     </span>
   </a>
@@ -2989,6 +3019,18 @@
 <td>the thinnest wall piece this plan reads as a wall (default: the set's 50 mm); stated from the model by the exporter</td>
 </tr>
 <tr>
+<td><code>@PLANE</code></td>
+<td>one per sheet</td>
+<td><code>grid label</code></td>
+<td>the grid line this elevation stands on (@FACE still says which way it looks); wins over the wall envelope and panel.plane (§D107)</td>
+</tr>
+<tr>
+<td><code>@SHEETNO</code></td>
+<td>one per sheet</td>
+<td><code>text</code></td>
+<td>this sheet's number, e.g. A-100: lets the set report the sheets it refers to and does not hold (§D107)</td>
+</tr>
+<tr>
 <td><code>@GRIDX</code></td>
 <td>several</td>
 <td><code>letter at a position</code></td>
@@ -3005,6 +3047,12 @@
 <td>several</td>
 <td><code>letter at a position</code></td>
 <td>an elevation grid line (horizontal position)</td>
+</tr>
+<tr>
+<td><code>@GRIDA</code></td>
+<td>several</td>
+<td><code>label,angle deg at a point</code></td>
+<td>a plan grid line in any direction: its label and angle, the mark's own position on the line (§D108)</td>
 </tr>
 <tr>
 <td><code>@Z</code></td>
@@ -3209,7 +3257,7 @@
 <p>Evidence tiers on every body (<code>prov</code>): <strong>drawn</strong> (measured from a drawn entity), <strong>derived</strong> (computed from drawn evidence plus a stated convention), <strong>assumed</strong> (no drawn evidence for its existence or position).
 Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Provenance</code>, <code>SourceSheet</code>, <code>SourceHandle</code>, <code>SourceLayer</code>, <code>Kind</code>, <code>SizeBasis</code>; from a details sheet also <code>Note_&lt;key&gt;</code> + <code>NoteSource_&lt;key&gt;</code> and <code>Sched_&lt;Kind&gt;_&lt;header&gt;</code> + <code>SchedSource_&lt;kind&gt;</code> + <code>SchedBasis_&lt;kind&gt;</code>.</p>
 <p><strong>Layer ledger</strong> (<code>verdict.layer_ledger</code>, <code>dxf2ledger.js</code>): for every layer of every sheet, the entities on it, how it was typed, how many source entities produced a body, and a status: <code>settings</code>, <code>annotation</code>, <code>ignored_by_choice</code>, <code>used</code>, <code>partly_used</code>, <code>evidence</code>, <code>typed_no_output</code>, <code>unread</code>. <code>unread</code> = geometry on a layer nobody typed; <code>typed_no_output</code> = typed with a body kind but nothing was built; <code>partly_used</code> = some of its entities produced a body (the ratio is in <code>used_entities</code> / <code>geometry</code>); <code>evidence</code> = an elevation or section layer that gave heights or profiles. The entity account (<code>§ACCOUNT</code>) only says the DXF parser read every entity; the ledger says what was USED.</p>
-<h2 id="5-settings-registry-modellerelement_defaultsjson-65-rows">5. Settings registry (<code>modeller/element_defaults.json</code>): 65 rows<a class="headerlink" href="#5-settings-registry-modellerelement_defaultsjson-65-rows" title="Permanent link">&para;</a></h2>
+<h2 id="5-settings-registry-modellerelement_defaultsjson-76-rows">5. Settings registry (<code>modeller/element_defaults.json</code>): 76 rows<a class="headerlink" href="#5-settings-registry-modellerelement_defaultsjson-76-rows" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
@@ -3475,8 +3523,8 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <td>IfcWall</td>
 <td>text</td>
 <td>guess</td>
-<td>end grid line, centred</td>
-<td>an elevation panel is placed on the outermost grid line of its face, centred</td>
+<td>grid family end line, centred</td>
+<td>an elevation panel is placed on an end grid line of its face, centred. An elevation whose grid labels share one family (AA, AB or A1 = famil</td>
 </tr>
 <tr>
 <td><code>pile.diameter</code></td>
@@ -3631,6 +3679,94 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <td>typical flight width</td>
 </tr>
 <tr>
+<td><code>suggest.elev_no_grid</code></td>
+<td>suggest</td>
+<td>text</td>
+<td>guess</td>
+<td>centre_on_wing</td>
+<td>an elevation that names its grid line but draws no grid: centred along that line on the span of its wing, tinted and said so; its heights st</td>
+</tr>
+<tr>
+<td><code>suggest.grid_along</code></td>
+<td>suggest</td>
+<td>m</td>
+<td>guess</td>
+<td>0.5</td>
+<td>how far sideways a grid label's text position may sit from its line: CAD anchors a text at its corner, not its bubble's centre (measured 0.2</td>
+</tr>
+<tr>
+<td><code>suggest.grid_label</code></td>
+<td>suggest</td>
+<td>text</td>
+<td>guess</td>
+<td>letters_digits</td>
+<td>the labels read from a grid line's end: A, AA, 12 and also A1, B12 (§D107: 10 of 29 labels of a Revit-exported plan). 'letters_or_digits' =</td>
+</tr>
+<tr>
+<td><code>suggest.grid_layer</code></td>
+<td>suggest</td>
+<td>text</td>
+<td>guess</td>
+<td>name_has_grid</td>
+<td>layers searched for grid lines: any layer whose name holds GRID (a line with no label proposes nothing, so the name alone decides nothing, §</td>
+</tr>
+<tr>
+<td><code>suggest.grid_reach</code></td>
+<td>suggest</td>
+<td>m</td>
+<td>guess</td>
+<td>1.2</td>
+<td>how far beyond a grid line's end its label may sit: a bubble's centre at 1:100 (measured 0.809 to 1.022 m on a Revit-exported plan, §D107).</td>
+</tr>
+<tr>
+<td><code>suggest.grid_rotated</code></td>
+<td>suggest</td>
+<td>text</td>
+<td>guess</td>
+<td>read</td>
+<td>a grid line off the sheet axes with its label at one end is read as a plan grid line in its own direction (@GRIDA, §D108). 'off' = only coun</td>
+</tr>
+<tr>
+<td><code>suggest.grid_ticks</code></td>
+<td>suggest</td>
+<td>text</td>
+<td>guess</td>
+<td>unless_stated</td>
+<td>grid lines guessed from dimension ticks: not on an axis where the sheet states or reads 2 or more grid lines, and not outside its @REGION (§</td>
+</tr>
+<tr>
+<td><code>suggest.level_name</code></td>
+<td>suggest</td>
+<td>text</td>
+<td>guess</td>
+<td>read</td>
+<td>a plan's level is read when its title and an elevation's level name agree: LEVEL 1 PLAN with LEVEL 01 beside EL: +4.800 m (§D108). 'off' = n</td>
+</tr>
+<tr>
+<td><code>suggest.level_text</code></td>
+<td>suggest</td>
+<td>text</td>
+<td>guess</td>
+<td>value_on_line</td>
+<td>a level datum is read from a TEXT or MTEXT such as +4.00 m or EL: +4.800 m when a horizontal line lies at exactly that height, on any layer;</td>
+</tr>
+<tr>
+<td><code>suggest.sheet_refs</code></td>
+<td>suggest</td>
+<td>text</td>
+<td>guess</td>
+<td>report</td>
+<td>sheet numbers the set refers to but does not hold are listed as an advisory; it never blocks (§D107). 'off' = no list</td>
+</tr>
+<tr>
+<td><code>suggest.title_text</code></td>
+<td>suggest</td>
+<td>text</td>
+<td>guess</td>
+<td>text_and_mtext</td>
+<td>a sheet's role is read from TEXT and MTEXT titles; a note (a comma, or SEE / REFER) is not a title, and two spellings of one title are one (</td>
+</tr>
+<tr>
 <td><code>synth.column.belowgrade.size</code></td>
 <td>IfcColumn</td>
 <td>m</td>
@@ -3744,7 +3880,7 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 </tr>
 </tbody>
 </table>
-<h2 id="6-code-families-222-codes-found-in-the-source">6. Code families (222 codes found in the source)<a class="headerlink" href="#6-code-families-222-codes-found-in-the-source" title="Permanent link">&para;</a></h2>
+<h2 id="6-code-families-223-codes-found-in-the-source">6. Code families (223 codes found in the source)<a class="headerlink" href="#6-code-families-223-codes-found-in-the-source" title="Permanent link">&para;</a></h2>
 <p><code>GAP:*</code> = a part the product left out or could not build (advisory, never defaulted); <code>QF:*</code> = a qualification failure (blocks the set); <code>MARK:*</code> = a settings-sheet problem. Each code with the modules that raise it:</p>
 <table>
 <thead>
@@ -4629,6 +4765,10 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <tr>
 <td><code>QF:sheet_no_role</code></td>
 <td>dxf2bim/dxf2qualify.js</td>
+</tr>
+<tr>
+<td><code>QF:sheet_referred_missing</code></td>
+<td>dxf2markrefs.js</td>
 </tr>
 <tr>
 <td><code>QF:units_conflict</code></td>

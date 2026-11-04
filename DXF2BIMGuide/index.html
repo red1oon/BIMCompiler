@@ -900,6 +900,8 @@
       
         
       
+        
+      
     
     
     
@@ -1404,6 +1406,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#a-set-exported-from-revit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A set exported from Revit
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#a-building-drawn-only-in-2d-a-farm-shed" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1622,6 +1635,34 @@
     
   
     uniCenta-style Till & Kitchen Screen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CapexDashboardGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CAPEX Dashboard — for iDempiere users
   
 
     
@@ -3349,6 +3390,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#a-set-exported-from-revit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A set exported from Revit
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#a-building-drawn-only-in-2d-a-farm-shed" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4056,6 +4108,21 @@ it in any CAD program, or let the editor write it.</p>
 <td>interior wall heights</td>
 </tr>
 <tr>
+<td><code>@PLANE</code></td>
+<td><code>@PLANE=A2</code></td>
+<td>the grid line this elevation stands on; <code>@FACE</code> still says which way it looks (optional)</td>
+</tr>
+<tr>
+<td><code>@GRIDA</code></td>
+<td><code>@GRIDA=B1,73.835</code></td>
+<td>a plan grid line in any direction: its label and angle, the marking's position on the line (optional)</td>
+</tr>
+<tr>
+<td><code>@SHEETNO</code></td>
+<td><code>@SHEETNO=A-100</code></td>
+<td>this sheet's number, so the set can list the sheets it refers to and does not hold (optional)</td>
+</tr>
+<tr>
 <td><code>@BY</code> (suffix)</td>
 <td><code>@LEVEL=3.1 @BY=user</code></td>
 <td>who stated it: <code>user</code> or <code>model</code>; no suffix = stated in the file</td>
@@ -4129,6 +4196,45 @@ below names what the editor then does.</p>
 one <code>@KEY=value</code> per text (see <em>The metadata, for CAD users</em> above), for example <code>@SET=SHED</code>, <code>@UNITS=in</code> or
 <code>@LEVEL=0</code>. A value written this way is stated: it opens with no yellow row and needs no tick. The set name is the
 one value no drawing states by itself: on the plain Duplex it is the first thing the editor asks for.</p>
+<h2 id="a-set-exported-from-revit">A set exported from Revit<a class="headerlink" href="#a-set-exported-from-revit" title="Permanent link">&para;</a></h2>
+<p>A Revit sheet set saved as DWG, converted to DXF, one view per file: real dimensions, a layer standard, and its grid and levels written as ordinary text. The editor reads these on its own, as yellow rows you still accept. Measured on one real architect's set (3 plans and 12 wall elevations, one wing rotated off the others, nothing typed): <strong>Arrange</strong> placed all 15 sheets, the plans at the levels their titles name and each elevation on its own grid line. Three elevations that lack enough grid lines of their own are centred on their wing, tinted, and say so. <strong>That is the shape, not a model:</strong> Convert still needs the items below.</p>
+<table>
+<thead>
+<tr>
+<th>The drawing has</th>
+<th>The yellow row</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GROUND FLOOR PLAN</code>, <code>WALL ELEVATION GRID A1</code> as a title, also in a multi-line text</td>
+<td><strong>role</strong> (read). A note such as <code>BEAM, SEE PLAN</code> is not a title</td>
+</tr>
+<tr>
+<td>A grid line with <code>A1</code>, <code>AA</code> or <code>B12</code> in its bubble, on any layer whose name holds <code>GRID</code></td>
+<td><strong>grid line</strong> (read). A rotated one is read in its own direction (<code>@GRIDA</code>)</td>
+</tr>
+<tr>
+<td><code>HALL LEVEL 01</code> beside <code>EL: +4.800 m</code> on an elevation, and a plan titled <code>LEVEL 1 ... PLAN</code></td>
+<td><strong>the plan's level</strong> (read). The most-named value wins; the row states any others</td>
+</tr>
+<tr>
+<td><code>+4.00 m</code> or <code>EL: +4.800 m</code>, and a horizontal line at exactly that height</td>
+<td><strong>level datum</strong> (read): the value and the line must agree</td>
+</tr>
+<tr>
+<td><code>WALL ELEVATION GRID A1</code></td>
+<td><strong>the line it stands on</strong> (<code>@PLANE</code>, read), and its <strong>face</strong> when that line is the end of its family (orange)</td>
+</tr>
+<tr>
+<td><code>A-100</code> in the file name</td>
+<td><strong>sheet number</strong> (<code>@SHEETNO</code>, read). The set then lists the sheets it refers to and does not hold, as a note that never blocks</td>
+</tr>
+</tbody>
+</table>
+<p>Grid labels that share a first letter (<code>AA</code>, <code>AB</code>, <code>A1</code>) form one family. On a set of several wings, an elevation drawn on family A stands on family A's end line, not on the far wing's.</p>
+<p><strong>Every one of these is a setting.</strong> Under <strong>Element defaults ▸ suggest</strong> (and <code>panel.plane</code>), or in <code>element_defaults.json</code>, or as <code>@DEFAULT=&lt;key&gt;,&lt;value&gt;</code> in a drawing, each has the earlier behaviour on offer, for example <code>suggest.grid_ticks</code> = <code>always</code> or <code>suggest.title_text</code> = <code>text_only</code>. See <a href="../DXF2BIM_Yellow_List/">the yellow list</a>.</p>
+<p><strong>Not done yet:</strong> Convert does not build from rotated elevations (they place in Arrange only), walls and structure are not mixed in one set, a curved roof shows as lines, and a sheet holding several views in one file must be split into one file per view first. An architecture plan and a structure wall elevation can differ by more than the 1 mm the axis check allows: on that set, keep each discipline's plan with its own elevations.</p>
 <h2 id="a-building-drawn-only-in-2d-a-farm-shed">A building drawn only in 2D: a farm shed<a class="headerlink" href="#a-building-drawn-only-in-2d-a-farm-shed" title="Permanent link">&para;</a></h2>
 <p>▶ Video: <a href="https://youtu.be/TuTlhO8cCIY">BricsCAD 2D to BIM 5D in depth</a> (7:12): this shed, from the raw sheets to one more bay and its cost.</p>
 <p>A common CAD set (here a BricsCAD drawing set saved as DXF) with <strong>no 3D model behind it</strong>: nine sheets, a floor
