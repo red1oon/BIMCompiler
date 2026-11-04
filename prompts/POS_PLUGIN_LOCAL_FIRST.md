@@ -1816,3 +1816,16 @@ Lead's reading, to be confirmed:
   - The designation is a flag held by THAT till, not by the LAN. A user runs the LAN ops (collect, ad hoc stock check, EODA send) at the main till.
   - The script refuses them on any till without the flag.
   - Open: who sets the flag (head office or the branch).
+
+### §35.4 OWNER — every till runs from LOCALHOST; a BRANCH RELAY on the LAN (2026-11-05)
+> *"Thus there be a branch relay"* · *"but why go back to the Internet for a LAN relay? If the internet is down it defeats its main strength"* · *"no there be no public URL. it be localhost to keep till local first. This is my contention all this while. Is this already known by you?"*
+
+- **D11, localhost.** Each till (main and dumb) runs the app from its own local copy, served at `localhost`. There is NO public URL for the till.
+  - Already documented as the Self-host (DIY) layer: `docs/OFFLINE_INSTALL_GUIDE.md:26-32` (`common/about_diy.js` → unzip → a static server at `localhost:8080`, "no external calls of its own").
+  - **Lead's miss:** the till design reasoned from the GitHub Pages address instead.
+  - Effects: a `localhost` page is a secure context (offline cache and IndexedDB work), and it may call a plain `http://` LAN box without mixed content. So the HTTPS/certificate step proposed before is NOT needed.
+- **D12, branch relay.** A dumb mailbox on the shop LAN speaking the same pipe protocol as the internet relay (`common/comm/comm_pipe.js`: PUT `/f/<name>`, GET, `list?prefix=`).
+  - It carries all intra-branch traffic: the main till's order-line collection (by per-till timestamp), stock queries/answers, kitchen, shared tables.
+  - The internet relay carries ONLY the main till's EODA send and SODA pull.
+  - If the branch relay is down, every till keeps selling (D9); collection catches up by timestamp.
+- **Open:** what box hosts the branch relay (NAS / router storage / small PC / the main till's own machine), and tablets as tills (a tablet cannot easily run a localhost server).
