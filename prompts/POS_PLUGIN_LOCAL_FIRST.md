@@ -1969,3 +1969,17 @@ Header = `TillCompany.headerLines()` (§36.6: typed `tkt.header1..6` win, else t
 - **Mutants** (copies, proven applied exactly once, crash is not a kill): a column misaligned (Qty right-8 -> left), blocks out of order (tenders before totals), a card number leaked.
 - **Regression**: `witness_till.js` (receipt/deposit/reprint arms), `witness_till_company`, `witness_till_theme`, plus the other till witnesses that read `#receipt .rf` (key now from `data-v`).
 - **Guide**: retake `docs/img/till/till_09_receipt.png` (real till, real sale, 2x, tight frame, 0 console errors) and update the receipt text; publish only through `scripts/safe_gh_deploy.sh` from the superset branch.
+
+### §35.5 OWNER — the branch designates its own main till; HQ is agnostic (2026-11-05)
+> *"hang on, i feel this is breaking goog separation. It does not matter what branch does as long it manages itself and a thin pipe remains. If there is fraud it be smelt out and how can they fake it?"*
+
+- **D13.** Which till is "main" is the BRANCH's own business: the branch supervisor sets the flag on that till, locally.
+  - HQ neither sets nor checks it. HQ sees only the thin pipe: one EODA up and one SODA down per branch, each signed by a branch device.
+  - Q-F1 is answered: the branch decides.
+  - The lead's earlier proposal (HQ sets `POS_MAIN_TILL` via AD_SysConfig + HQ admission refusal) is **WITHDRAWN** as a separation-of-concern break.
+- **Why faking does not work** (owner's point, made concrete):
+  - A branch can only falsify its own declaration. Under-declared sales leave HQ's computed `M_StorageOnHand` above the shelf.
+  - Replenishment sends only what was declared sold (D8), so the shelf runs short.
+  - The stocktake (Import Inventory, §37) books the gap as a loss, and cash against the bank deposit shows it.
+  - Every batch is signed by its device, so it is attributable.
+- **Build consequence:** the §38 main-till flag stays a till-local setting, set by the branch supervisor; no HQ authoring. SODA's StorageOnHand reaches whichever till pulls it as main.
