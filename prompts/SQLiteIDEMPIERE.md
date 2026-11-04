@@ -2459,3 +2459,16 @@ its claim must be re-proved on:
 Deletion budget: the five functions + their derivePostings branches + `convertToSchema` if unreferenced (~700 lines of doc_poster.js);
 `witness_preview_is_posting` P3/P4 DELETED/NEEDED lists updated in the same PR. Order: 5c → 5a → 5d → 5e/5f → 5b → 5g → 5h → delete.
 Each step: the moved witness PASSes on model_post with its original asserted values; a mutant of the model_post code it now judges FAILs it.
+**Step 5 — measured blocker (2026-11-04):** 5a moved `witness_rma_window_path` RW-BOOKS onto the fact_acct the real Complete wrote:
+RW-BOOKS-CM == legacy (Dr 758 100.00 / Dr 596 10.00 / Cr 518 110.00, model_post), but **RW-BOOKS-RECEIPT has no facts: model_post refuses
+every customer return receipt** (`§MODEL-POST m_inout posted=N reason="Doc_InOut MMR SO (customer return :452-675) — not ported"`,
+model_post.js:348) — a LIVE twin gap (returns are never posted in the app). On main the old doc_poster comparator also FAILED this
+check (47.50 vs the legacy-measured 140.00). Vendor return (MMS PO :922-1120) is refused the same way.
+**Spec 5a-port — Doc_InOut "Sales - Return" (Doc_InOut.java:451-675) into model_post's m_inout class:** per line, non-reversal: costs =
+getProductCosts(as, org, zeroCostsOK, "M_InOutLine_ID=?") (batch-lot: per MA, summed); zero ⇒ stocked → "No Costs for <name>" (NO
+zero-cost-detail exemption, unlike the shipment :240-250), service → skip. Reversal: costs 0, DR from the original via updateReverseLine;
+not found ⇒ service → drop DR + skip, else "Original Shipment/Receipt not posted yet"; costs = DR acct balance. DR P_Asset (costs), loc from
+locator / to BP location; cost detail = createShipment exactly as the shipment branch (MA split, sign rule, Ref_CostDetail); CR P_Cogs
+(costs), Org = order-line org, Qty = −qty, reversal CR via updateReverseLine(…, dr). Witness: RW-BOOKS-RECEIPT on the real fact_acct
+(value = what Java's cost lookup gives on the seed; if it is not the SD-16 140.00, the cost state is measured and the cause stated);
+W-PREVIEW/W-POST byte-identity on every other doc; mutant = DR/CR accounts swapped in the new branch must FAIL.
