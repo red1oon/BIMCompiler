@@ -1722,3 +1722,53 @@ Measured against RED1's guide (`~/Downloads/openbravoPOSGuide.pdf` p50 "ERP TO P
   - It is NOT part of EODA by default. The branch supervisor may choose to include a count in that night's EODA.
 - Film: the "after" diagram widens the branch to several tills, each fully local-first, plus the main till doing the ad hoc check.
 - **Open (owner):** what exactly is gathered from each till for the check: each till's quantities sold since SODA, a physical shelf count keyed at the main till, or both.
+
+
+## §36 CLASSIC 2011 THEME + COMPANY DETAILS — BUILD SPEC (2026-11-05)
+Owner, 2026-11-05, after film v2 at 0:44 (the original screen): *"can we have the same design and color schema? Also make our POS able to change schema and load own coporate logo and about company details"*. Spec written BEFORE code; witnesses RED first. Logs `/tmp/theme_logs/`. Code: bim-ootb `/tmp/wt-theme` (`feat/till-classic-theme-company`); plan source + docs: bim-compiler `/tmp/wt-bc-theme` (`feat/till-theme-plan`).
+
+### §36.1 The reference and the extracted palette (nothing picked by eye)
+Reference: `~/Downloads/openbravoPOSGuide.pdf` p23 "MAKING A SALES" (the owner's copyleft guide), rendered `pdftoppm -f 23 -l 23 -r 300` (2550x3300; also p18,p20,p24,p25 rendered, same widgets). Extraction script `/tmp/pdfp/palette.py`, log `/tmp/theme_logs/palette_p23.log` (`§PALETTE`: most frequent colour of a flat region; `§PALETTE_PX`: one pixel down a column for gradients; `§PALETTE_DARKEST`: darkest pixel of a text box). Boxes are 300-dpi pixels of that render.
+
+| p23 region | hex | note |
+|---|---|---|
+| window bg / title strip, left menu body, catalog bg | `#EEEEEE` | 3 regions agree (n=11174, 4677, 13560) |
+| ticket row (unselected), totals field, clock/ticket field | `#FFFFFF` | white input/table surface |
+| ticket row selected, category row selected ("Tools") | `#B9CEE7` | both regions agree |
+| button face top / mid / bottom (Print button column) | `#F8FAFC` / `#E1EBF5` / `#C7D8EC` | vertical gradient, 3 pixels |
+| button outline (last row of the Print button) | `#8090A1` | one pixel row; the row beneath is anti-aliasing `#AAB3BD` (ambiguous: border vs shadow; the darker row is taken) |
+| keypad key text (CE, digits) | `#391CAA` | n=220 |
+| label / menu / ticket text | `#343434` | darkest pixel of "Subtotal/Total" and "Sales"; the ticket header text reads `#434343` (thin glyphs, anti-aliased) so `#343434` is used for all |
+| left-menu section header ("Main") top / bottom | `#F1F5F9` / `#C7D8EC` | gradient, 2 pixels |
+| product tile top / mid / bottom | `#E9F0F8` / `#F8FAFC` / `#BBD0E8` | y1407; `#C3D5EA` at y1396 |
+| hairline under the title strip | `#B7C0C9` | 1 pixel |
+AMBIGUOUS, not extracted: the yellow tile placeholder (not copied, owner: use the Lucide placeholder in the tile colour); the orange up/down arrow glyphs and the Swing icons (not colour tokens, not copied).
+
+### §36.2 Layout taken from p23 (and what it maps to)
+Top strip with the product line and the vendor mark (ours: the COMPANY logo + name, §36.5). Left collapsible panel, three sections **Main / Administration / System**, each with a header bar (gradient above) and items, hide arrow `‹` at the panel's right edge (p23: x=480,y=565). Ticket area with the item/price/units/taxes/value grid, Taxes/Subtotal/Total fields, the right number pad (CE, `*`, `-`, `+`, `=`, 1-9), catalog at the bottom (category list left, tiles right), top button bar (Print, Open drawer), clock/ticket field. The till already has every region except the left panel; the panel adds NO new action: Main = the five Menu.Root entries (Sales, Edit Sales, Customer Payment, Payments, Close Cash, Menu.Root.txt:2-6); Administration = the Menu.Root extras that already exist on the till (Check In/Out, Voucher, Pickup Reset); System = Configuration, About. The panel is part of the sales screen only; the stand-alone Register menu screen stays. Collapse changes the ticket column width (witness) and must not change `cat-height` (320) or the tiles (107x60) (§32/§33, W-TILL-LAYOUT).
+
+### §36.3 Themes as data (revives uniCenta "Look and Feel")
+uniCenta `JPanelConfigGeneral.java:78-84,120-125,158-160`: `jcboLAF`, key `swing.defaultlaf` (§29.1 marked it NOT APPLICABLE as a Swing class). Revived as a browser key `ui.theme` ("Look and Feel") on Setup tab General, scope `device` (§29.D.1). `erp/till_theme.js` holds `THEMES = {classic:{...}, modern:{...}}`: each entry is a table of CSS variables (`--bg --pn --ln --fg --acc --btn --btn-ln --key-fg --sel --hdr --tile --tile-ic ...`); `classic` = the §36.1 table ("Classic (2011)", the DEFAULT), `modern` = the present look (variable values = the current hard-coded values, so it renders unchanged). Applied by setting the variables on `<html>` + `data-theme`; the choice lives in the device store (`setup['ui.theme']`) and is applied before first paint from that store. Setup key count 49 -> 50 (this one key, source `swing.defaultlaf`); `witness_till_setup` updated to 50.
+
+### §36.4 Company details from LEGACY's own records (twin rule)
+Legacy columns (source `~/idempiere-dev-setup/idempiere/org.adempiere.base/src/org/compiere/model/`):
+- `I_AD_OrgInfo.java`: `C_Location_ID`:107, `DUNS`:139, `EMail`:170, `Logo_ID`:209, `Phone`:247, `Phone2`:260, `TaxID`:302 (also `Fax`, `ReceiptFooterMsg`); org NAME = `AD_Org.Name`.
+- `C_Location` (address): `Address1`, `Address2`, `City`, `Postal`, `C_Country_ID` -> `C_Country.Name`.
+- `I_AD_ClientInfo.java`: `Logo_ID`:439 (client fallback), `LogoReport_ID`:421, `LogoWeb_ID`:430.
+- `I_AD_Image.java`: `ImageURL`:157 (the logo = an `AD_Image` row; `BinaryData`:100 is NOT used by the till).
+Seed `ad_seed.db` (read 2026-11-05): GardenWorld org HQ(11) `AD_OrgInfo.C_Location_ID=114` -> `2828 SW Corbett Ave / Suite 130 / Portland 97201`; `TaxID='?'` (iDempiere's own empty placeholder, treated as none), `Phone/EMail/ReceiptFooterMsg` empty; **`AD_OrgInfo.Logo_ID` NULL for every org and `AD_ClientInfo.Logo_ID/LogoReport_ID/LogoWeb_ID` NULL: GARDENWORLD HAS NO LOGO.** (`AD_Image` 109 `gwr_header.jpg`, 110 `gwr_footertile.jpg` exist but are referenced by no Logo column, `ImageURL` and `BinaryData` empty — not used, not invented.) Till shows a placeholder INITIAL in the theme colour; no logo is invented. (Legacy postgres could not be queried here: no DB password; the SQLite seed is the legacy export.)
+
+### §36.5 Delivery: a `POS_SodaRef` kind `O` at the plan source
+Plan source `build/scriptor/flows_pos.json` virtualTable `POS_SodaRef`, column `Kind` values `[B,P,R,T]` -> `[B,P,R,T,O]` (no new column: `Name`=org name, `ImageURL`=logo URL, `Detail`=JSON `{address1,address2,city,postal,country,taxid,phone,email,footer}`, `Value`=org search key). `erp/team_plan_pos.js` regenerated by `node build/scriptor/emit_erp_plan.js pos` (generated, never edited; `witness_pos_plan` P0 re-emits and compares). `soda_core.refDelta` emits ONE `O` row when AD_Org/AD_OrgInfo/C_Location/AD_Image(logo) `Updated >= since` (Export2Queue rule, same as P/R/T); unchanged = no row. `tillRows`/`applyRef` carry it; the till's apply stores the company in its device store (`store.company`, tiny strings) — the logo is the URL only; the picture goes through the §31 media cache (`MEDIA_PREFETCH`), its bytes are NEVER in IndexedDB. Setting the logo is a head-office act: the ordinary Org Info edit (AD_OrgInfo.Logo_ID -> an AD_Image whose ImageURL is an OCI URL under common bucket `bim-ootb` prefix `erp/`, `deploy/OCI_UPLOAD.md`), then SODA.
+
+### §36.6 About screen + receipt header
+uniCenta 5.0 source supplied has no About panel (`grep -ri about` -> only a comment in `JPanelTicket.java:3425`); content is therefore taken from what exists: `AppLocal.java:31,33` `APP_NAME`/`APP_VERSION` ("uniCenta oPOS" 5.0 = what the twin ports) and the company block in the order `Printer.Ticket.xml` prints it (`<image>Printer.Ticket.Logo</image>` then `printTicketHeaderLine1..6`; Setup keys `tkt.header1..6`, `tkt.logopath`, `JPanelConfigCompany.java:90-105`). About shows: logo (or initial), org name, address lines, tax id, phone, email, then app name + version + `Twin of uniCenta 5.0 on iDempiere (browser)`. Receipt header: org name, address line, tax id/phone as the first lines before the `Receipt:` lines, BUT a Setup `tkt.headerN` the cashier typed wins for its line (uniCenta's per-till property overrides nothing from a database, so the order is: typed header lines first, else the company lines). Receipt logo line prints the logo URL's presence as `[logo]` (text receipt; the rendered logo is the About/top strip).
+
+### §36.7 Registry parity (`till_registry.js`)
+New rows: `N19` Look and Feel setting (`5.0 JPanelConfigGeneral.java:78-84,158-160`), `N20` About + company (`5.0 AppLocal.java:31,33; Printer.Ticket.xml header; JPanelConfigCompany.java:90-105`), `N21` left menu panel with hide (`2011 guide p23; Menu.Root.txt:2-6`). Witness prints `§TILL_PARITY X of N`.
+
+### §36.8 Witnesses (RED first)
+- **W-TILL-THEME** `erp/tests/witness_till_theme.js`: computed colours of each themed region == the §36.1 hex (body bg, button gradient stops + outline, key text, ticket rows, selected row, selected category, totals field, section header, tile gradient, label colour); switch to `modern` changes them (differs from classic), survives reload; a missing region = RED; zero regions judged = INCONCLUSIVE.
+- **W-TILL-LAYOUT / W-TILL-CATALOG-TOGGLE** PASS under BOTH themes; left-menu collapse changes `#ticketcol` width by the panel width (measured).
+- **W-TILL-COMPANY** `erp/tests/witness_till_company.js` (harness copied from `witness_soda_ui.js`): an Org Info change at HQ -> SODA -> the till's About and receipt header show it; the logo bytes are not in IndexedDB (only the URL); unchanged details never travel (second batch has 0 `O` rows); GardenWorld without a logo -> placeholder initial, `logo=none`.
+- Mutants: copies, proven applied, a crash is not a kill. Regression: `witness_till`, `witness_till_setup`, `witness_till_catalog`, `witness_till_rest*`, `witness_soda*`, `witness_eoda`.
