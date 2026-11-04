@@ -3756,7 +3756,11 @@ shipment, invoice, payment or posting, and it never talks to head office directl
 <ol>
 <li><strong>Tap Sales.</strong> Pick a category, then tap product tiles. The back arrow returns to the parent category.</li>
 </ol>
-<p><img alt="The Sales screen with a sample sale: Patio Chair, Hoe 4 ft and 2 x Rose Bush on the ticket, the Bushes category open with picture tiles" src="../img/till/till_03_sales.png" /></p>
+<p><img alt="The Sales screen with a sample sale: Patio Chair, Hoe 4 ft and 2 x Rose Bush on the ticket, the Tools category open with seven picture tiles" src="../img/till/till_03_sales.png" /></p>
+<p>The screen is laid out as uniCenta's: buttons across the top, the <strong>ticket</strong> in the middle (it takes whatever height is left), and the <strong>catalog</strong> at the bottom at the
+   <em>category panel height</em> set at the branch admin (320 px by default). Product tiles are 107 x 60 with the picture and the name and price over its bottom edge. The thin
+   bar above the tiles shows the open category; press it to <strong>fold the catalog away</strong> (the ticket grows into the space) and press it again to bring the products back.
+   The choice is remembered on this till.</p>
 <p><em>Sample sale on the GardenWorld demo tenant: 1 x Patio Chair 33.75, 1 x Hoe 4 ft 13.50, 2 x Rose Bush 57.00 — Subtotal 104.25, Taxes 0.00, Total 104.25 (the demo tax rate is 0 %).</em>
    The arrow button at the bottom left goes back to the category tiles:</p>
 <p><img alt="The category tiles: Bushes, Chemicals, Documentation, Patio, Standard, Tools, Trees" src="../img/till/till_03b_categories.png" /></p>
@@ -3892,8 +3896,8 @@ never fetched shows the "no image" mark. The till logs <code>§TILL_MEDIA</code>
 <h3 id="restaurant-mode">Restaurant mode<a class="headerlink" href="#restaurant-mode" title="Permanent link">&para;</a></h3>
 <p>Set <strong>Tickets = restaurant</strong> in <em>Configuration</em> (below) and restart, or open <code>till.html?mode=restaurant</code>. <strong>Sales</strong> then opens
 the <strong>floor map</strong>: one tab per floor, one button per table. A table with an open ticket is shaded and shows the waiter, the table
-name and seats, <em>Guests</em> and <em>Waiting</em>. <strong>Reload</strong>, <strong>Reservations</strong> and <strong>Tables</strong> are on the sales screen.</p>
-<p><img alt="The floor map: 24 tables, three of them open (tables 3, 7 and 12)" src="../img/till/till_19_restaurant_map.png" /></p>
+name and seats, <em>Guests</em> and <em>Waiting</em>. The floor is drawn as uniCenta's 960 x 600 plan: each table is drawn from its own record (round when its width equals its height, otherwise a rectangle) with one chair per seat, and an open table shows the people icon. With <em>Transparent table button</em> ticked in <em>Configuration</em>, the floor's own picture is used instead and the tables are invisible buttons over it. <strong>Reload</strong>, <strong>Reservations</strong> and <strong>Tables</strong> are on the sales screen.</p>
+<p><img alt="The floor map: uniCenta's 24 tables drawn with chairs, three of them open (tables 3, 7 and 12)" src="../img/till/till_19_restaurant_map.png" /></p>
 <ul>
 <li><strong>Who sets up floors and tables:</strong> the <strong>branch POS admin</strong> (Floors, Tables and till settings, below), as uniCenta's back office does. Until it sets
   any, the till shows uniCenta's seed floor of Table 1 ... Table 24 (nothing is written for it).</li>
@@ -3901,9 +3905,14 @@ name and seats, <em>Guests</em> and <em>Waiting</em>. <strong>Reload</strong>, <
   <strong>locked</strong> to your till. Another till that taps it is told "Table is in use by <em>till</em>" and cannot open it.</li>
 <li><strong>Saving.</strong> The ticket is saved when you <strong>leave</strong> the table (back to the map, or <strong>Tables</strong>), not on each tap: one save and one
   branch update. Taps inside the table cost nothing.</li>
-<li><strong>Override, move, merge, guests.</strong> The shared-table logic implements a PIN override of another till's lock (the PIN is set at the
-  branch admin), moving a ticket to a free table, merging two tickets, and a guest count; the till has <strong>no button or screen for
-  these yet</strong>, and they are not claimed as something a cashier can do today.</li>
+<li><strong>On a table's sales screen</strong> the controls are uniCenta's: <strong>Tables</strong> (back to the map), <strong>Move</strong>, <strong>Guests</strong> and <strong>Delete</strong>.</li>
+<li><strong>Guests</strong> opens <em>Enter Number of Guests</em>; the button then shows the count, and it is saved with the table when you leave it.</li>
+<li><strong>Move</strong>: the ticket is saved and the map says <em>Moving table N. Select another Table or the original Table</em>. Tap a <strong>free</strong> table and the ticket moves there.
+    Tap an <strong>occupied</strong> table and the till asks <em>Merge Tables: This will Merge tables. Are you sure you want to do this?</em>; <strong>Yes</strong> adds the lines and guests to that
+    table and clears the first, <strong>No</strong> returns to the original table. Tapping the original table cancels the move.</li>
+<li><strong>Delete</strong> (Delete Current Order): when the branch has an <strong>override PIN</strong> (set at the branch admin) the till first asks <em>Enter PIN Number</em>; a wrong PIN says
+    <em>PIN Number Incorrect</em> and deletes nothing. Then <em>Are you sure you want to Delete the current Order?</em>; <strong>Yes</strong> clears the table.</li>
+<li><strong>A table another till is using</strong> can be taken over the same way: tap it, and when the branch has a PIN the till asks <em>Enter PIN Number</em>.</li>
 <li><strong>Reservations.</strong> <strong>Reservations</strong> → <em>Select Person, Persons, Booking Time, Notes</em> → <strong>Save</strong>. The reservation has <strong>no table
   yet</strong>. At check-in, choose the table in the <strong>Table</strong> list (the first entry is "(table at check-in)") and press <strong>Check-In Now</strong>:
   that table opens for the customer. A reservation is <strong>Done</strong> afterwards. Reservations stay in the branch and are not an ERP record.</li>
@@ -4084,8 +4093,10 @@ how many prices, products and taxes arrived ("<em>n</em> batch(es): ...").</p>
 <li><strong>Pass prices to tills</strong> hands the batch rows to the tills, in one Visit. A till applies a row only if it arrived; <strong>only price changes travel, and old prices stay.</strong>
   A changed product row (name, key, barcode, picture address, category, tax category) travels the same way; unchanged rows never do.</li>
 <li><strong>Receive stock</strong> is the branch's <strong>Move Confirmation</strong> of the in-transit stock movement head office sent (replenishment). The button shows "<em>n</em> movement(s) to receive";
-  pressing it receives each in full (confirmed = target). The receipt is kept and goes up inside the <strong>next EODA</strong>, never as a send of its own; head office then
-  completes the movement and any difference documents.</li>
+  pressing it opens the movement's lines, as legacy's Move Confirmation window shows them: <strong>Move Line</strong>, <strong>Product</strong>, <strong>Target Quantity</strong>, <strong>Confirmed Quantity</strong>,
+  <strong>Difference</strong> and <strong>Scrapped Quantity</strong>. Confirmed starts at the target and Scrapped at 0 (a full receipt). For a short receipt type what arrived and what was scrapped;
+  <strong>Difference</strong> is worked out for you (target - confirmed), as legacy does. Example: target 5, confirmed 3, scrapped 1 gives difference 2. Press <strong>Confirm receipt</strong>.
+  The receipt is kept and goes up inside the <strong>next EODA</strong>, never as a send of its own; head office then completes the movement and the difference documents.</li>
 </ul>
 <h3 id="floors-tables-and-till-settings">Floors, tables and till settings<a class="headerlink" href="#floors-tables-and-till-settings" title="Permanent link">&para;</a></h3>
 <p>Under the EODA table, <strong>Floors, tables and till settings</strong> edits (all kept at the branch, never sent to head office): <strong>Add floor</strong> (name, optional background image address),
