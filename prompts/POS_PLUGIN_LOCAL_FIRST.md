@@ -1027,3 +1027,15 @@ PRs: bim-ootb https://github.com/red1oon/bim-ootb/pull/2604 (+797 / -55, 14 file
 | W-DAYCLOSE-EODA: books of the aggregated batch == the old per-till path, row diff 0 (fact_acct 714/714, c_order 53/53, c_invoice 29/29, c_payment 11/11, m_storageonhand 22/22); batch missing a whole till or one ticket WITHHELD with declared vs held | `§EODAC-DIFF rowDiff=0`, `§EODAC-VERDICT case=W-DAYCLOSE-EODA verdict=PASS`, `...MISSING-TILL`, `...MISSING-TICKET` PASS | `GREEN_close.log` |
 | Regression: witness_kds 13/14/6 PASS; witness_pos_sales PASS 43; witness_team_ui_pos 20 judged red=none; witness_branch_day_close 9 verdicts notPass=0 (band now 13+ rows incl. the new `IncludePartial` parameter); witness_till 21 of 22 IDENTICAL on origin/main (refund arm `tax-live` fails there too, pre-existing); `witness_till_delivery` changed by design: the till delivers nothing to HQ (D2/D3 now assert 0 rows at HQ and 0 hub-lane puts), delivery proofs moved to witness_eoda; `scripts/witness_pos_plan.js` 75 judged / 11 fails identical on origin/master | `reg/`, `reg2/`, `pos_plan_witness.log` | `/tmp/eoda_logs/reg*/` |
 **Not built / limits:** a second shift of an already-closed till is unknowable to the admin (named); the HQ gate is exact on tax only as far as the till's own `TillCore.zTotals` over the same tax inputs; SODA down, Receive stock, dashboard, legacy plugin untouched.
+
+## §27 TILL tax-live INTERMITTENCY (2026-11-04)
+
+**Verdict: the PRODUCT raced, not the witness.** `witness_till` step `tax-live` edits Standard tax (`c_tax` 104) to 7.25% via `__crud.applyOp`, waits for `overlay:committed` (which fires only after the IDB append completes, `crud_overlay.js` `_commitCrudSealed` -> `_sidePersist` -> `appendOpsRecords` `tx.oncomplete`, `kernel_ops.js:492`), closes the page, reopens, and reads `c_tax` through `Till.rows` -> `__crud.modelRun` (`till.js:17`). The write is durable; the READ was stale.
+
+**Cause:** `crud_overlay.js` `_modelRunNow` (was line 1922-1924) built the tip shadow with `SIDE ? _tipShadowOn(...) : []`. `SIDE` (the op-log sidecar) is hydrated lazily by `withSidecar`; the till's first read after boot can land before hydration, so the shadow was skipped and the query hit the raw bundle (seed Standard tax 0%). A real till/user reading right after load could get the same stale tax. `got=null` (refund arm) is the same read returning nothing downstream.
+
+**Fix (bim-ootb PR `fix/till-taxlive-race`):** `_modelRunNow` now runs inside `withSidecar(...)` (hydrate first; `cb(null)` -> raw bundle as before when sql.js is absent). Witness prints `§TILL_TAXLIVE arm=... rate=... expect=...` for the first post-reopen read. `erp/sw.js` CACHE_VERSION v985.
+
+**Repeat (`TILL_ARMS=deposit,bar,edit,refund` x10):** origin/main `§TILL_TAXLIVE_REPEAT main pass=4/10` (tax-live FAIL in 6 of 10 runs); branch `§TILL_TAXLIVE_REPEAT br pass=10/10`. Full `witness_till.js` x3 on the branch: 22/22 parity, failed=0.
+
+**570512d5 vs d4d9b79d:** 570512d5 is witness + docs only (no product code); not a real break, the fails there were this same race (probabilistic), d4d9b79d just drew lucky.
