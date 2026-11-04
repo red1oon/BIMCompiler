@@ -1073,3 +1073,22 @@ On receipt of a batch the admin re-emits the P/R/T rows on the branch-local flow
 - **W-SODA-EXECUTOR** one executor per document type in the plan; a station/branch completing `M_Movement` is refused `not-executor`; a dual executor is refused at compile.
 - **PARITY** bridge `run_all.sh` cycle against legacy postgres: compared and NOT-compared lists stated in §28.R. Where the bridge cannot drive a legacy document (no in-transit MMM doctype, no WS type for M_Replenish / M_MovementConfirm in the pilot; §62: legacy config is not changed), no parity is claimed for it.
 - Regression origin/main vs branch: `witness_eoda*.js`, `witness_branch_day_close.js`, `witness_till.js`, `witness_kds*`, `witness_pos_sales.js`, `witness_team_ui_pos.js`, `scripts/witness_pos_plan.js`, `witness_movement_confirm.js`, `witness_replenish_diff.js`.
+
+## §31 OFFLINE PRODUCT PICTURES — on the device's disk, never in the twin's memory (owner, 2026-11-04: *"yes, in OCI, but when offlined it has to be in local device. What i meant is to organise large files to not hog mem. But i reckoned we already managed that"*). SPEC for the picture-tile build (after §28 SODA merges).
+**Rule:** the bytes live in OCI object storage (§30) and, for offline, in the browser's **Cache Storage on disk**. Never in the twin's database: the sql.js DB is held whole in the JS heap (the CLAUDE.md PERF BUDGET: memory is the binding limit), so a blob there costs RAM for as long as the till runs. The DB keeps only `M_Product.ImageURL`. A picture is decoded only while its tile is on screen (`loading="lazy"`, `decoding="async"`, fixed tile size). Off-screen tiles hold no decoded bitmap.
+**Measured — "already managed" is only half true** (bim-ootb `origin/main` `erp/sw.js`):
+- ✅ Every other GET goes through `cacheFirst` (`:478-489`), which stores the response in Cache Storage (disk, not heap).
+- ❌ A cross-origin `<img>` from OCI is a no-cors request, so its response is **opaque (status 0)**. `cacheFirst` stores only `status === 200` (`:483`), so OCI pictures are **never cached → blank offline**.
+- ❌ The one cache is versioned (`CACHE_NAME` from `CACHE_VERSION`), and `activate` deletes every other cache key (`:406-409`). Every deploy (v986 today) would wipe cached pictures.
+- ❌ Nothing prefetches, so a picture is offline only if its tile was viewed online first.
+
+**Build (the picture-tile agent owns `sw.js` for this):**
+1. A separate **unversioned media cache** (e.g. `erp-media-v1`) that `activate` keeps.
+2. Fetch the pictures in CORS mode (the bucket must allow the till's origin, checked in §30), so a real 200 is stored. Never cache an opaque response, because its size is unknowable and quota-padded.
+3. **Prefetch** when a SODA batch brings an `ImageURL` delta: the branch admin and tills fetch only the changed pictures into the media cache. An unchanged picture is never refetched.
+4. **Bounded:** a cap in MB plus eviction of pictures whose product is gone or whose URL changed. Log `§TILL_MEDIA files= bytes= heap_mb=`.
+5. **Witnesses:**
+   - W-TILL-MEDIA-OFFLINE: online once → SODA delta → network off → every tile of the catalog shows its picture.
+   - W-TILL-MEDIA-DEPLOY: a CACHE_VERSION bump keeps the media cache.
+   - W-TILL-MEDIA-HEAP: heap with 27 vs 0 pictures differs only by the on-screen decodes; the twin DB size is unchanged.
+   - W-ICON-NOT-IDB (§30): no bytes in IndexedDB.
