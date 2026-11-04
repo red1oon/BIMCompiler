@@ -1870,3 +1870,18 @@ Harness `erp/tests/witness_branch_relay.js`: the REAL `branch_relay.py` as a chi
 - Regression: `witness_till.js`, `witness_kds*`, `witness_rest*`, `witness_soda*`, `witness_eoda*` (change by design at wiring), `witness_branch_day_close.js`.
 - **Limit (up front):** the harness proves the protocol on ONE machine (loopback). A real multi-PC shop LAN (AP isolation, firewall, a tablet that cannot run a localhost server) is NOT provable here.
 - **Open:** ⛔ Q-F1 who sets the main flag (lead decision above: HQ via SODA); box hosting the relay (NAS / mini PC / the main till's own machine, §35.4).
+
+### §37.4 AMENDMENTS (owner via lead, 2026-11-05; §35.3-§35.4)
+- The count runs at the flagged MAIN TILL; intra-branch traffic is a dumb BRANCH RELAY on the LAN (§38 agent, branch `feat/main-till-branch-relay`), never the internet. §37 builds NO transport.
+- Seam 1: `BranchAdmin.collectTills({ reached: [per-till rows], notReached: [till keys] })` stores what the §38 agent gathered; `gatherTills()` returns it and `countSave` logs `§COUNT_GATHER reached=n notReached=n`. Nothing calls it yet (0/0).
+- Seam 2: `isMainTill()` in `erp/branch_admin.js` is a STUB returning true; the §38 agent replaces it with the real flag read. The count section is hidden when it returns false.
+
+### §37.R RESULT (2026-11-05) - bim-ootb PR #2638 (`feat/branch-blind-stocktake`, +702/-18, sw v997), BIMCompiler PR #366 (`feat/pos-count-flow`, +1/-0); not auto-merged. Logs `/tmp/count_logs/`.
+- **Port:** `erp/processes/ImportInventory.js` (ImportInventory.java :94-129 prepare, :139-344 SQL phase, :353-485 header/line loop, :491-500 closing); `I_Inventory` DDL in `ad_import_tables.js` (`ensureInventory`, called by `ensure`). NAMED refusals: IsUpdateCosting (:524-572), Lot/SerNo ASI (:503-522).
+- **W-IMPORT-INVENTORY** PASS 23/23 (`import_inventory.log`; RED first `import_inventory_RED.log` 18 fail). Cases: table, X-of-N 12 params, line copy QtyBook/QtyCount, UPC, grouping (1 header 2 lines), six legacy error texts with a good row still imported, no-DocAction draft, re-run nothing new, costing refusal.
+- **W-BRANCH-COUNT** `branch_count.log`: BLIND+ADHOC 16/16, RELAY 4/4, CLOSE 12/12 PASS. Relay (measured): save A 0 requests, save B 0 requests; EODA with 9 tickets and no count 25 requests / 1 hub put; EODA carrying the count 25 / 1; EODA with nothing new and no count 25 / 1. HQ book stamped 38 and 48 (stock 47/53 minus 9/5 sold), counts 36/45, storage == counts, difference transactions -2/-3.
+- **Mutants** (copies, applied once, each ends in its own FAIL verdict): book-shown (b1), extra-visit (r1, r4), tick-ignored (6 checks), hq-no-import (4 checks): `branch_count_mut_*.log`.
+- **Regressions PASS:** witness_eoda, witness_eoda_close, witness_branch_day_close, witness_soda, witness_soda_receipt_up, witness_soda_ui, witness_till, witness_import_payment (`reg_*.log`).
+- **Two findings:** (1) my first close-stage `chk` had a swapped argument order and passed vacuously; the log (`book=47`, storage `now 27`) contradicted the PASS, fixed and re-run RED then GREEN. (2) raw `trx.q` does not see the Trx's own pending writes, so the book stamp reads `trx.find('m_storageonhand')`; a `trx.q` read took 47 instead of 38 after the day's sales.
+- **Named twin decision:** legacy Import Inventory does not compute QtyBook; HQ stamps it before the import (the branch is blind).
+- **Not built:** the LAN/relay transport and the real main-till flag (§38); the plan row I1 needs BIMCompiler #366 merged for the source to match the regenerated `erp/team_plan_pos.js`.
