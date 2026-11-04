@@ -2518,6 +2518,14 @@ Re-home W-NC5BCD-GAINLOSS onto the seed through the model layer: per variant in 
 invoice / payment / allocation with the variant's rates and dates, post via the REAL poster, compare per (schema, account, DR, CR) in
 cents to the legacy facts — invoice, payment AND allocation. Mutant: drop the gain/loss line → V1/V2 FAIL; V3 (R1 == R2) books no RGL line.
 Then 5g genesis.html → 5h → delete deriveInvoice/deriveInOut/deriveMovement/deriveAllocation/deriveBankStatement (+ convertToSchema if unreferenced).
+**Step 5b ✅ DONE (witness) 2026-11-04 — bim-ootb #2618 (`model_post.js?v=9`, sw v991).** model_post Doc_AllocationHdr books the realized
+gain/loss line pairs where the (already ported) acctDifference is non-zero — createInvoiceGainLoss :973-1029 (incl. reversed-invoice gain=loss=acct
+and reversed-allocation arms, hasDebitTradeAmt) and createPaymentGainLoss :1113-1134 — in the schema currency on the allocation line, with Java's
+description. Before: refused "not ported — named", Posted=N in the app. W-NC5BCD-GAINLOSS re-homed onto the seed + real poster (invoice → receipt →
+allocation per legacy variant, each committed): **PASS 24/24 == legacy**; NEG V3 books no RGL; `LMV_BREAK=nogainloss` FAIL 4. Descriptions == legacy
+except the allocation-source scale (legacy `273.0`, SQLite REAL `273`). Not judged: the payment-side branch (no legacy variant has a payment diff);
+rounding corrections across several allocations of one invoice stay NAMED. Regression 20 witnesses: not-PASS identical on origin/main;
+`witness_asi_receipt` P1b is now FAIL on main too (date-dependent: its legacy rows carry dates up to "today"). **Next: 5g genesis.html → 5h → delete.**
 
 ## §DD-SCOPE (2026-11-04, lead) — a legacy-correct WS type ignores our Filter; the parity check was scope-blind
 - **Measured.** On the pilot, `QueryMProduct` answers all 82 GardenWorld rows whatever Filter is sent (`M_Product_ID < 1000000` included). Its `Filter` parameter is Constant `1=1`. iDempiere ALLOWS ONLY Constant for a parameter named Filter: `MWebServicePara.beforeSave` refuses Free "for security" (`MWebServicePara.java:114-121`, IDEMPIERE-1784). `ModelADServiceImpl.validateParameter` (`:742`) then replaces the request's Filter with that constant.
