@@ -1396,3 +1396,31 @@ NOT patched. `team_sync.js:173,220` - `hashBase` covers the seed + `patches/ad_s
 - **W-ICON-PARITY** (bridge cycle `scripts/bridge/witness_product_icons.js`, run by `run_all.sh`): after the load on both, `M_Product.ImageURL` of the 27 equal, plus Import Product's counts. Empty population = INCONCLUSIVE.
 - **W-ICON-NOT-IDB** (`erp/tests/witness_icon_not_idb.js`): till boot with the 27 URLs in the DB; walk every IndexedDB store, no value is image-like (svg/png magic, data: URL) and no store grew by the icon bytes; the row holds the URL string only; no request for an icon URL during boot.
 - Regression: `witness_pos_sales.js`, `witness_till.js`, `witness_branch_day_close.js`, `witness_import_order.js`, `witness_import_payment.js`.
+
+## §32 TILL SETUP + PICTURE CATALOG + RESTAURANT — BUILD SPEC (2026-11-04)
+
+> **⚠ DO NOT REMOVE.** Scope: build rows 1-18 of §29.N under §29.D, §31, §24.1, §26. READ THE LOG after every run (`/tmp/rest_logs/`); an exit code is not evidence. Branch `feat/till-setup-catalog-restaurant` (bim-ootb worktree `/tmp/wt-rest`), plan source in `/tmp/wt-bc-rest` (bim-compiler). Owner 2026-11-04: *"a touch screen of product images under their categories"*, *"setup … that choose such display as well as restaurant floor/hall seating. Have that too with similar reservation"*, *"do read my Unicenta POS integration again if in doubt of any first principles"*.
+
+### §32.0 First principles re-read (cited, not remembered)
+Read before this spec: §12 and §24.1 of this file, and the owner's 2012 source `~/Projects/POSIntegration2` (`Export2Queue.java`, `ImportQueue2Order.java`). What they fix for this build: (a) the till only DECLARES retail; HQ owns every document (FL-8), so floors, tables, reservations and open tables are **branch-local** rows that never go to HQ (audience `branch`, like K1/H1); (b) nothing trickles: only the closed ticket reaches EODA, as today; (c) thin pipe, deltas only: a table state is one small row group per visit, never per tap; (d) old prices stay: a picture change is an `ImageURL` delta, nothing is re-sent.
+
+### §32.1 Design (what is built, in order of independence from `till*.js`)
+1. **Media cache** (`erp/sw.js`, §31): cache `erp-media-v1`, prefix NOT `CACHE_PREFIX`, so `activate` keeps it. A GET whose URL host is the picture host and whose request is CORS-mode is answered cache-first from it and stored only when `resp.type==='cors' && status===200`. Opaque responses are never stored. A `message` `{type:'MEDIA_PREFETCH', urls:[..], capMb}` fetches only the URLs not already cached (fetch `{mode:'cors'}`), then evicts to the cap (oldest first, plus any URL not in the supplied live list). `{type:'MEDIA_STATS'}` answers `{files, bytes}`. Log `§TILL_MEDIA files= bytes= heap_mb=`.
+2. **Restaurant core** (`erp/rest_core.js`, pure, no DOM, node-testable): fold of branch rows into floors / places / open tables / reservations; lock and override; save-on-leave; relay counters. Three branch-local virtual rows (plan source `flows_pos.json`, regenerated into `erp/team_plan_pos.js`):
+   - `POS_FloorPlan` (flow R1, BOTH, branch): `Kind` F|P|S (floor / place / setting), `RecId`, `Name`, `FloorId`, `Seats`, `X`, `Y`, `W`, `H`, `Image`, `Value`, `Seq`. Highest `Seq` per `Kind/RecId` wins; written only by the branch POS admin. Settings rows carry catalog sizes (§29.N row 7), the override-PIN hash and the layout permission.
+   - `POS_OpenTable` (flow R2, BOTH, branch): `PlaceId`, `Seq`, `State` O|L|C (open, locked, closed), `LockedBy` (till key), `Guests`, `Waiter`, `Customer`, `Body` (ticket JSON). Fold: highest `Seq` per `PlaceId` wins; two writers at the same `Seq` resolve to the lower `LockedBy` on every device (all fold the same, no server). A lock claim is the row `State=L, Seq+1`. Override with PIN writes `Seq+1, LockedBy=me, Override=Y`.
+   - `POS_Reservation` (flow R3, BOTH, branch): `ResId`, `Seq`, `Customer`, `At` (date-time), `Chairs`, `State` B|I|D|X (booked, checked-in, done, deleted), `PlaceId` (empty until check-in: §29.N row 17).
+3. **Save on leave:** while a waiter works a table the ticket is held in memory; ONE `POS_OpenTable` row group is written when the waiter leaves the table (back to the floor map, move, merge, pay). Counters: `core.relay.saves`, `core.relay.taps`; log `§REST_RELAY action= taps= requests=`.
+4. **Branch admin** (`erp/branch_admin.html/js`): a Floors/Tables tab (name, floor, seats, x, y, w, h, image URL) and the catalog-size and override-PIN settings; writes `POS_FloorPlan`. No table name in the till for this; generic fold only.
+5. **Catalog and setup screen, floor map, reservations UI** (`till.js`, `till_ext.js`, `till_core.js`, `till_registry.js`): AFTER SODA (§28) merges to `origin/main`; first `git merge origin/main`. Until then not touched.
+
+### §32.2 Witnesses (RED first; `/tmp/rest_logs/`; mutants are copies, proven applied once; a crash is not a kill; empty population prints INCONCLUSIVE)
+- **W-TILL-MEDIA-OFFLINE / -DEPLOY / -HEAP** (`erp/tests/witness_till_media.js`, sw.js in a vm with a fake Cache Storage and fetch): opaque never stored; prefetch fetches only the missing URLs; network off, every URL served; a `CACHE_VERSION` bump keeps `erp-media-v1`; eviction to the cap; no bytes in the DB.
+- **W-REST-SHARED** (`erp/tests/witness_rest.js`): two cores on one fake branch relay see the same open table; the lock blocks the second; override needs the right PIN.
+- **W-REST-RELAY**: N taps on a table then leave = exactly 1 save (requests counted at the relay); a mutant saving per tap goes RED. Reported per action: open, tap x N + leave, move, merge, guests, release.
+- **W-REST-RES**: booking, check-in picks the table, done.
+- **W-REST-PLAN** (`scripts/witness_pos_plan.js` in bim-compiler stays green; R1-R3 are in the regenerated plan).
+- W-TILL-SETUP / W-TILL-CATALOG and the parity row count: after the SODA merge.
+
+### §32.3 Constraints
+Memory is the binding limit: pictures live on disk (Cache Storage), tiles decode only on screen, the twin DB holds the URL only. Lucide icons only, no GPL art. Registry rows cite their uniCenta source.
