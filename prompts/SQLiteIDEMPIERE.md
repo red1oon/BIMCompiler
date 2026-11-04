@@ -2472,3 +2472,16 @@ locator / to BP location; cost detail = createShipment exactly as the shipment b
 (costs), Org = order-line org, Qty = −qty, reversal CR via updateReverseLine(…, dr). Witness: RW-BOOKS-RECEIPT on the real fact_acct
 (value = what Java's cost lookup gives on the seed; if it is not the SD-16 140.00, the cost state is measured and the cause stated);
 W-PREVIEW/W-POST byte-identity on every other doc; mutant = DR/CR accounts swapped in the new branch must FAIL.
+**Step 5 progress ✅ (witness) 2026-11-04 — bim-ootb #2601 (sw v982, `model_post.js?v=7`):** **5a-port DONE** — model_post posts customer
+return receipts (Doc_InOut.java:451-675). **5a DONE** — W-RMA-WINDOW-PATH PASS 25/25 (`§RW_VERDICT PASS cases=25`; was INCONCLUSIVE since
+#2215 — the patch's 3 `ALTER TABLE ad_user ADD COLUMN salt…` always fail because the seed already has `Salt`/`PasswordHashAlgorithm`/
+`SaltAlgorithm`; now counted as already-satisfied, any other failure still setup-bad). RW-BOOKS on the real fact_acct: receipt `742 Dr 140 |
+430 Cr 140`, CM `518 Cr 110 | 596 Dr 10 | 758 Dr 100`; `LMV_BREAK=mmrswap` → RW-BOOKS-RECEIPT FAIL. Fixture: 70.00 set in m_cost AND
+m_costhistory (MCost.getCurrentCost :145-162 reads history first — since #2597 a bare m_cost update is invisible to legacy too → 47.50).
+**5c DONE** — W-POST-BANKSTATEMENT B1b = Java expectation (lineless statement → 0 facts), PASS 4/4, flip/notransit/BST_BASELINE FAIL.
+**Pre-existing, NOT caused here (same verdict on origin/main's model_post, logs read):** `witness_asi_batchrev` FAIL 3 (lot costs 337.50/67.50
+vs 100.00/28.00), `witness_post_error` FAIL 2/8 (shipment Posted=Y where E expected), `witness_post_invoice_diff` + `witness_post_matchinv_diff`
+INCONCLUSIVE, `witness_shopday_model_path` INCONCLUSIVE 1; `witness_post_movement_diff` >300 s (not judged). Cause not measured; the first
+two read like the same #2597 cost-history fixture staleness as RW-BOOKS — check that first.
+**Remaining step 5, in order:** 5d poc_install_* → 5e/5f sd16 + f9 synthetic witnesses (+ bim-compiler poc_sd16 --engine-dir) → 5b FX
+gain/loss port → 5g genesis.html (born DB has no ad_table/ad_column) → 5h → delete. Vendor return (MMS PO :922-1120) is still refused.
