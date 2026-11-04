@@ -53,7 +53,8 @@ function emitPos(db, posRows, localRows, srcName) {
   var flows = r.plan.filter(function (f) { return f.treatment === 'FACT'; }).map(function (f) {
     var x = src[f.name], o = { name: f.name, table: f.table, dir: f.dir, audience: x.audience === 'branch' ? 'branch' : 'hub', role: x.role, group: x.group, payload: f.payload.map(function (p) { return { col: p.col, cls: p.cls }; }) };
     o.ship = f.payload.map(function (p) { return p.col; }).concat((f.implicit || []).filter(function (c) { return /^AD_(Client|Org)_ID$/i.test(c); })).sort();      // what may leave the device: the carries + the partition (FL-1)
-    if (x.by) o.by = x.by.slice(); return o; });
+    if (x.by) o.by = x.by.slice();
+    if (x.executorOf) o.executorOf = String(x.executorOf).toLowerCase(); return o; });   // §28.2 P1: the UP row of a line table names the document whose executor it follows
   var local = r.plan.filter(function (f) { return f.treatment === 'LOCAL'; }).map(function (f) { return f.table; });
   var body = { v: 1, kind: 'pos', scope: 'hub-and-spoke', hub: hub, executors: executors, flows: flows, local: local };
   var plan = Object.assign({ hash: crypto.createHash('sha256').update(JSON.stringify(body)).digest('hex') }, body);
