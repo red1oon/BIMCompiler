@@ -20,7 +20,29 @@ async function discover(cfg, spec) {
   const k0 = [].concat(spec.key)[0];
   const below = spec.keyBelow ? ` AND ${k0} < ${spec.keyBelow}` : '';
   // spec §68: a STRING natural key (AD_SysConfig: client, org, name) cannot be lower-bounded by `k0 > 0` ⇒ the spec gives its own keyFilter
-  return (await query(cfg, spec.readType, `${spec.keyFilter || k0 + ' > 0'}${below}${spec.where ? ' AND ' + spec.where : ''}`)).map(lc);
+  const rows = (await query(cfg, spec.readType, `${spec.keyFilter || k0 + ' > 0'}${below}${spec.where ? ' AND ' + spec.where : ''}`)).map(lc);
+  // The legacy WS may REPLACE this Filter: iDempiere allows a Filter parameter only as a Constant (MWebServicePara.beforeSave :114-121,
+  // IDEMPIERE-1784; ModelADServiceImpl.validateParameter :742), so a legacy-correct type answers every row (e.g. QueryMProduct, Filter '1=1').
+  // Apply here the scope this spec can judge (numeric key > 0, keyBelow, an AD_Client_ID equality / IN (0,n)) and SAY so, so a filtered spec never
+  // silently judges rows outside its scope (CLAUDE.md PRIMAL LAW 4: scope-blind). Rows are unchanged when the WS did honour the Filter.
+  const kc = String(k0).toLowerCase(), w = spec.where || '';
+  const cEq = w.match(/AD_Client_ID\s*=\s*(\d+)/i), cIn = w.match(/AD_Client_ID\s+IN\s*\(\s*0\s*,\s*(\d+)\s*\)/i);
+  let dropped = 0; const out = [];
+  for (const r of rows) {
+    const id = Number(r[kc]), numeric = r[kc] != null && !Number.isNaN(id);
+    if (numeric && !spec.keyFilter && !(id > 0)) { dropped++; continue; }
+    if (numeric && spec.keyBelow && !(id < spec.keyBelow)) { dropped++; continue; }
+    if (r.ad_client_id != null && cEq && Number(r.ad_client_id) !== Number(cEq[1])) { dropped++; continue; }
+    if (r.ad_client_id != null && cIn && ![0, Number(cIn[1])].includes(Number(r.ad_client_id))) { dropped++; continue; }
+    out.push(r);
+  }
+  if (dropped) {
+    const rest = w.replace(/AD_Client_ID\s*(=\s*\d+|IN\s*\([^)]*\))/ig, '').replace(/^\s*AND\s*|\s*AND\s*$/ig, '').trim();
+    console.log(`§DD_SCOPE_CLIENT_SIDE ${spec.table} readType=${spec.readType} legacy_rows=${rows.length} out_of_scope=${dropped} kept=${out.length} (the WS did not apply the Filter; key/keyBelow/client scope applied here)` +
+      (rest ? ` UNJUDGED_PREDICATE="${rest}" (cannot be applied client-side: this table's verdict is INCONCLUSIVE until read by DataRow keys)` : ''));
+    if (rest) out.unjudged = rest;
+  }
+  return out;
 }
 
 function compare(legacyRows, db, spec) {
