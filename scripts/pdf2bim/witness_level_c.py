@@ -1,6 +1,6 @@
 #!/usr/bin/env python3 -I
 # Implements prompts/PDF2BIM_VECTOR_PROBE.md §29 — Witnesses W-C1..W-C6. Issue: which of the 16 emission-fixable Level C rows did the emission changes really close, and which merely changed name? Reads the run's own logs and typed sheets. Exit code is not evidence.
-# Usage: witness_level_c.py <outdir>
+# Usage: witness_level_c.py <outdir> [rosetta.json]
 import sys,re,json,os
 O=sys.argv[1]; rd=lambda n:open(os.path.join(O,'logs',n),encoding='utf-8').read()
 L=rd('11_lib_probe.log'); E=rd('06_emit_dxf_p1.log'); S=rd('09b_section_emit.log'); I=rd('12_ifc_check.log')
@@ -50,4 +50,11 @@ wb=re.search(r"IfcWall facesets \d+ (\[.*?\]) (\[.*?\])",I); wall=(json.loads(wb
 BASE=82
 if TOTAL>=BASE: say('W-C6','NO-OP','blocking %d, baseline %d'%(TOTAL,BASE))
 else: say('W-C6','PASS' if wall==([-0.05,-6.25,0.15],[9.95,0.05,3.15]) else 'WRONG','blocking %d (was %d), wall DIRECT bbox %s, elements %s'%(TOTAL,BASE,wall,ELS))
+# W-C7 §30: every remaining row carries an owner ruling (the lane's verdict is untouched)
+RUL=json.load(open(sys.argv[2]))['owner_rulings'] if len(sys.argv)>2 else None
+if RUL is None: say('W-C7','VACUOUS','no dictionary given, rulings not judged')
+elif TOTAL==0: say('W-C7','VACUOUS','no rows left to judge')
+else:
+    by={k:sum(rows(c) for c in v) for k,v in RUL.items() if not k.startswith('_')}; left=TOTAL-sum(by.values())
+    say('W-C7','PASS' if left==0 else 'WRONG','rows %d by ruling %s, unclassified %d (the lane verdict stays blocked: waived here, not in bim-ootb)'%(TOTAL,by,left))
 print('§WC remaining rows',json.dumps(BL)); print('§WC RESULT','fails',fails,'(FINDING = read correctly, row stands as a true fact about the drawing)')

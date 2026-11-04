@@ -5,7 +5,7 @@ set -u
 H="$(cd "$(dirname "$0")/../.." && pwd)"; O="${1:-/tmp/pdf2bim_run}"; PDF="${PDF2BIM_PDF:-}"; for c in "$H/2D_Layout/input/TBKLTN_House.pdf" "$HOME/bim-compiler/2D_Layout/input/TBKLTN_House.pdf"; do [ -z "$PDF" ] && [ -f "$c" ] && PDF="$c"; done; [ -f "$PDF" ] || { echo "TBKLTN_House.pdf not found (it is git-IGNORED: 2D_Layout/input/*.pdf) — put it at 2D_Layout/input/ or set PDF2BIM_PDF=<file>"; exit 2; }; T="$H/scripts/pdf2bim/types"; RJ="$T/low_cost_house_rosetta.json"; S="$H/scripts/pdf2bim"
 mkdir -p "$O/logs" "$O/svg"; cd "$O" || exit 1
 run(){ n="$1"; shift; "$@" > "logs/$n.log" 2>&1; echo "== $n exit=$? ($(wc -l < logs/$n.log) lines)"; }
-for p in 1 4 5 6; do pdftocairo -svg -f $p -l $p "$PDF" "svg/p$p.svg"; done
+for p in 1 2 3 4 5 6 7 8; do pdftocairo -svg -f $p -l $p "$PDF" "svg/p$p.svg"; done
 run 01_extract_p1      python3 -I $S/extract_p1.py "$PDF" 1 "$O/x1"
 run 02_rosetta_verify  python3 -I $S/rosetta_verify.py "$PDF" "$RJ"
 run 03_type_checklist  python3 -I $S/type_checklist.py "$PDF" 1 8 "$T/low_cost_house.json"
@@ -33,5 +33,7 @@ PY
 fi
 ( cd "$HOME/bim-ootb/modeller" && run_in(){ :; }; node "$S/lib_probe.js" "$O/typed" "$O/lib/" "$O/tbkltn_p1.ifc" > "$O/logs/11_lib_probe.log" 2>&1; echo "== 11_lib_probe exit=$? ($(wc -l < $O/logs/11_lib_probe.log) lines)" )
 run 12_ifc_check       python3 "$S/ifc_check.py" "$O/tbkltn_p1.ifc"
-run 13_witness_level_c python3 -I $S/witness_level_c.py "$O"
-echo "--- headline"; grep -h -E "W-P1 |W-P5 wall pairs|W-P12 round|G1 scale|MATCH D|TOTAL by class" logs/0*.log | cut -c1-170; grep -h -E "LIB els|IFC counts|IFC bbox .* IfcWall|IFC validate" logs/11_lib_probe.log logs/12_ifc_check.log | cut -c1-200; grep -h -E "W-C[0-9] |§WC" logs/13_witness_level_c.log | cut -c1-220
+run 13_witness_level_c python3 -I $S/witness_level_c.py "$O" "$RJ"
+run 14_other_sheets    python3 -I $S/other_sheets.py "$O" "$RJ" "$PDF"
+run 15_gap_register    python3 "$S/gap_register.py" "$O" "$RJ"
+echo "--- headline"; grep -h -E "W-P1 |W-P5 wall pairs|W-P12 round|G1 scale|MATCH D|TOTAL by class" logs/0*.log | cut -c1-170; grep -h -E "LIB els|IFC counts|IFC bbox .* IfcWall|IFC validate" logs/11_lib_probe.log logs/12_ifc_check.log | cut -c1-200; grep -h -E "W-C[0-9] |§WC" logs/13_witness_level_c.log | cut -c1-220; grep -h -E "^§(S |GAP-TOTAL)" logs/14_other_sheets.log logs/15_gap_register.log | cut -c1-200

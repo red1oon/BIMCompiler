@@ -304,6 +304,30 @@
     "section_used": "A-A",
     "check": "section_emit.py W-C5: the sheet's only chromatic line lies depth_mm +- 10 below the FFL level line on A-A and on B-B"
   },
+  "owner_rulings": {
+    "_source": "owner 2026-11-04: 'decide for me, but i can accept as this is p-o-c to get to the end of gaps discovery'. For this PoC only; the lane's own verdict stays blocked and bim-ootb is not changed (spec §30)",
+    "ACCEPTED_STAND_IN": ["GAP:fill_size_mismatch", "GAP:type_size_mismatch"],
+    "WAIVED_DRAWING_DIMENSIONS": ["QF:dim_missing", "QF:dim_point_missing", "QF:elev_height_dim_missing"],
+    "STATED_FINDING_GRID_CONVENTION": ["QF:grid_label_series"]
+  },
+  "electrical_p2": {
+    "_source": "p2 SYMBOLS table. Descriptions are drawn glyphs read once by multimodal read; QTY is the text layer. Sizes are the plan symbols' measured pt sizes (the table draws them larger), editable per drawing",
+    "qty_order_in_table": ["electricity_meter", "fuse_board", "ceiling_light", "ceiling_fan", "switches_1_4_2", "power_outlet", "wall_light"],
+    "plan_symbol_pt": { "ceiling_light": {"circle_r": 4.6}, "ceiling_fan": {"circle_r": 3.0}, "switch": {"circle_r": 2.5}, "power_outlet": {"curve_wh": [2.5, 4.9]}, "wall_light": {"curve_wh": [3.5, 7.1]} },
+    "status": "YELLOW: FP / FP1 hexagon tags seen in rooms, meaning not extracted"
+  },
+  "plumbing_p7": {
+    "_source": "p7 legend + labels. Fixture and trap names are the text layer; pipe labels are drawn glyphs read once by multimodal read. The sheet is NTS: topology only, status YELLOW, no numeric check possible on the pipes",
+    "legend_box_pt": [530, 60, 620, 130],
+    "cold_water_diagram_y_max_pt": 260,
+    "pipes_read": ["25 int. polypipe PN 10", "20 Upvc distribution", "20 Upvc pressure relief", "30 Upvc over flow", "30 Upvc scour", "15 Upvc", "100 Upvc RWDP", "50 Upvc vent", "50 Upvc anti syphonage", "50 Upvc waste", "75 Upvc waste", "100 Upvc soil"],
+    "items_read": ["250 galls poly water tank + 150x150 brick plinth + 12 thk marine plywood", "water meter", "bollafix valve", "MH1 manhole", "individual septic tank (Engr's detail)", "soak away (Engr's detail)"]
+  },
+  "schedule_locations_p8": {
+    "_source": "p8 LOCATION row, text layer; other_sheets.py W-S8 confirms each string is on the sheet",
+    "D1": ["RUANG TAMU", "DAPUR"], "D2": ["BILIK UTAMA", "BILIK 2", "BILIK 3"], "D3": ["BILIK MANDI", "TANDAS"],
+    "W1": ["DAPUR"], "W2": ["RUANG TAMU", "BILIK UTAMA", "BILIK 2", "BILIK 3"], "W3": ["TANDAS", "BILIK MANDI"]
+  },
   "library_binding": {
     "_note": "opening tag -> family_id of the LOCAL LOD400 library (BIMCompiler component_library.db, exported by export_library_subset.js --full; Duplex items). exact=false = nearest-size STAND-IN (owner 2026-11-04: 'use from Duplex items'); the library holds no window of the drawing's sizes. Ratios are of default_width x default_height.",
     "D1": {

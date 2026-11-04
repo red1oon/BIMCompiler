@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+# Implements prompts/PDF2BIM_VECTOR_PROBE.md §30 — Witness W-G. Issue: what does the drawing state that the IFC does not hold, and who can close each gap? Every IFC number is measured from the file; run WITHOUT -I (IfcOpenShell is in the user site).
+# Usage: gap_register.py <outdir> <rosetta.json>
+import sys,json,re,os,ifcopenshell
+O,rj=sys.argv[1:3]; R=json.load(open(rj)); f=ifcopenshell.open(os.path.join(O,'tbkltn_p1.ifc')); by=lambda c:f.by_type(c); n=lambda c:len(by(c))
+els=[e for e in by('IfcElement') if not e.is_a('IfcOpeningElement')]
+if not els: print('§GAP-TOTAL VACUOUS: the IFC has no elements'); sys.exit(0)
+ep=os.path.join(O,'other','electrical.json')
+if not os.path.exists(ep): print('§GAP-TOTAL VACUOUS: p2 was not read, see 14_other_sheets.log'); sys.exit(0)
+E=json.load(open(ep))
+roof=by('IfcRoof')[0].Representation.Representations[0].Items[0]; rv=len(roof.Coordinates.CoordList); ro=roof.Coordinates.CoordList; rz=sorted({round(p[2],3) for p in ro})
+fills=sum(1 for e in by('IfcDoor')+by('IfcWindow') if e.FillsVoids); tags=sum(1 for e in by('IfcDoor')+by('IfcWindow') if re.fullmatch(r'[DW]\d',(e.Tag or '')) or re.search(r'\b[DW]\d\b',e.Name or ''))
+G=[]; add=lambda i,drawn,ifc,state,owner:G.append((i,drawn,ifc,state,owner))
+add('roof form','pitched 25 deg, ridge on grid 3, z 4.872 (W-S3)','solid block, %d vertices, z %s'%(rv,rz),'GAP' if rv<=8 else 'CLOSED','importer lane: dxf2bim_import l.519 builds S.prismRect, a box (dxf2synth has a gable, structure chain only)')
+add('eaves','sheets 750 from axis all 4 sides (W-S3)','outline = inner wall ring, no eaves','GAP','importer lane')
+add('porch gable','N-S ridge over ANJUNG (p3)','none','GAP','importer lane')
+add('rooms','10 named rooms with areas and finishes','IfcSpace %d'%n('IfcSpace'),'GAP' if not n('IfcSpace') else 'CLOSED','importer lane: dxf2ifc CLASS_MAP has no IfcSpace (dictionary already holds the rooms)')
+add('porch columns','2 x 200x300 at grid 1','IfcColumn %d'%n('IfcColumn'),'GAP' if not n('IfcColumn') else 'CLOSED','importer lane: A-COLS is excluded on the STD path')
+add('openings as voids','14 doors + windows','IfcOpeningElement %d, filling %d of 14'%(n('IfcOpeningElement'),fills),'GAP' if not fills else 'CLOSED','importer lane: dxf2ifc writes no opening or void relation; holes are wall-piece gaps + infill, geometry correct')
+add('opening marks','D1..D3, W1..W3 on every opening','%d of 14 carry their mark'%tags,'GAP' if tags<14 else 'CLOSED','importer lane, or this lane if @TAG can carry it')
+add('floor step','50 mm lower at the 2 wet rooms (W-S4)','1 flat slab','GAP','this lane + importer lane: one slab per level')
+add('floor datum','tags 100 / 050 FFL from AGL; sections 150','0.15 used, from the section dimension','YELLOW','drawing disagrees: owner or drafter')
+add('structural slab, beams, footing','note G1: to Engr\'s detail','floor build-up only; no beam, no footing','SILENT','drawing is silent: an engineer\'s set')
+add('roof structure, fascia','trusses + fascia on p6, G-notes on p3','IfcMember %d'%n('IfcMember'),'GAP' if not n('IfcMember') else 'CLOSED','this lane (not extracted) + importer lane')
+add('finishes key','floor / wall / ceiling finishes per room','property sets %d, materials %d generic'%(n('IfcPropertySet'),n('IfcMaterial')),'GAP','this lane (dictionary holds them) + importer lane')
+add('electrical','%d lights, %d fans, %d switches, %d outlets, %d wall light positioned (p2)'%tuple(len(E[k]) for k in ('ceiling_light','ceiling_fan','switch','power_outlet','wall_light')),'IfcLightFixture %d, IfcFan %d, IfcSwitchingDevice %d, IfcOutlet %d'%(n('IfcLightFixture'),n('IfcFan'),n('IfcSwitchingDevice'),n('IfcOutlet')),'GAP','importer lane: no MEP plan layer type; dxf2ifc CLASS_MAP has IfcFan only, no light, switch or outlet; plus library meshes')
+add('sanitary + pipes','fixtures and %d pipe runs on an NTS sheet (p7)'%len(R['plumbing_p7']['pipes_read']),'IfcSanitaryTerminal %d, IfcPipeSegment %d'%(n('IfcSanitaryTerminal'),n('IfcPipeSegment')),'GAP','importer lane for fixtures (no sanitary or pipe class in dxf2ifc); pipe routes: drawing is NTS, no geometry exists to extract')
+add('site works','perimeter drain G5, apron, manhole, septic tank, soak away, water tank + plinth, counter G10','none','GAP','this lane (partly measured) + importer lane; drain width still YELLOW; tank + septic to Engr\'s detail')
+add('window and door families','real sizes on p8','stand-ins, accepted by owner','ACCEPTED','library, when real families exist')
+add('dimension strings','under the lane\'s standard','43 rows','WAIVED','owner ruling, PoC only')
+add('grid label convention','letters across, numbers down','10 rows','FINDING','importer lane if G2 should accept it')
+add('IFC schema','n/a','PredefinedType = * on walls, roof, slab','DEFECT','importer lane: dxf2ifc writer')
+for g in G: print('§GAP %s | drawn: %s | ifc: %s | %s | %s'%g)
+import collections
+print('§GAP-TOTAL items',len(G),dict(collections.Counter(g[3] for g in G)),'| IFC elements',len(els))
