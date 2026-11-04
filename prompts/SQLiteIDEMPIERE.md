@@ -2485,3 +2485,25 @@ INCONCLUSIVE, `witness_shopday_model_path` INCONCLUSIVE 1; `witness_post_movemen
 two read like the same #2597 cost-history fixture staleness as RW-BOOKS — check that first.
 **Remaining step 5, in order:** 5d poc_install_* → 5e/5f sd16 + f9 synthetic witnesses (+ bim-compiler poc_sd16 --engine-dir) → 5b FX
 gain/loss port → 5g genesis.html (born DB has no ad_table/ad_column) → 5h → delete. Vendor return (MMS PO :922-1120) is still refused.
+**Step 5 progress (2026-11-04, cont.) ✅ (witness):** bim-ootb #2605 + #2606 —
+- **Bug fixed — draft invoices:** model_post THREW on every draft invoice (`C_DocType_ID 0` → `T.dt(0)` null → "reading docbasetype");
+  c_invoice / m_inout now read the type through `docTypeIdOf` = Doc.getC_DocType_ID (Doc.java:1911-1925, → C_DocTypeTarget_ID). The
+  Posting-Preview of a draft invoice works again (`model_post.js?v=8`, sw v985).
+- **5d ✅** install POCs §D judge `ModelPost.previewFacts`. The retired fold booked client-12 (Odoo) / client-13 invoices into GardenWorld's
+  schema 101 — a CROSS-TENANT booking; both shards carry NO C_AcctSchema for their client, legacy posts nothing (DocumentEngine.java:1445
+  getClientAcctSchema(doc client)) and so does the real poster (`posted=Y facts=0`). Other POC FAILs (P0 bare-boot tenants=7, A dialog persist)
+  identical on main — pre-existing, not judged here.
+- **5e ✅** W-RMA-WINDOW-PATH PASS 30/30: + RW-BOOKS-REVERSAL (original 140.00 sides swapped — the retired fold booked NOTHING "named absent
+  G-SD10"), COSTMOVE (cost 80 → 160.00), NOCOST (Posted E "No Costs for Azalea Bush"), SERVICE (no facts), DRAFTCM (mirrored; NEG ARI; nothing
+  committed). Mutants `LMV_BREAK=mmrswap` FAIL 3, `mmrstocked` FAIL 2, unfixed draft rule FAIL DRAFTCM. W-SD16-ENGINE-PORT drops its 11 fold book checks.
+  BIMCompiler `scripts/poc_sd16.js`: book checks gated on the module having `deriveInOut/deriveInvoice` — PASS plain / --engine-dir / a simulated
+  retired engine (S5 6, S6 8 judged, `§SD16U BOOKS-MOVED` names where they went).
+- **5f ✅** W-SEED-COSTHISTORY +H6 (history +0.01: shipment #100 3000→3001c, movement #100 every Dr leg +4c) +H7 (no history → m_cost 3737c), PASS 7/7;
+  W-F9-COSTHISTORY keeps only its cost-engine cases (PASS 10/10). **Two pre-existing FAILs fixed (same stale-fixture class as RW-BOOKS):**
+  W-POST-ERROR 8/8 (qty-0 pilot state set in m_cost only; MCost.getCostInfo reads history first → qty 50 → posted) and W-ASI-BATCHREV 13/13
+  (fixture kept product 133's ASI-0 seed history; MCostHistory.get :211 takes `ASI=? OR ASI=0` → lots priced 33.75).
+- **Named open gaps (real poster, not ported):** BackDateDay back-date cost RE-PROCESSING (DocManager.java:640-700; the fold only printed a named
+  refusal); vendor return receipt (Doc_InOut MMS PO :922-1120); FX gain/loss lines on allocations (5b).
+- **Pre-existing, noted:** `poc_review2_2026_10_11` / `poc_review_fix_2026_10_11` engine mode cannot load since bim-ootb #2585 deleted
+  `erp/pos_lens.js`; their plain mode (the compiler copy) is unaffected (review_fix PASS 8/8, review2 INCONCLUSIVE 1 as before).
+**Remaining:** 5b (port createPaymentGainLoss :1045-1135, then move W-NC5BCD-GAINLOSS) → 5g genesis.html → 5h → delete.
