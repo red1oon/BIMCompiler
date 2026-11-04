@@ -1610,3 +1610,28 @@ Logs in `/tmp/tillui_logs/` (`final_*.log`, mutants `*_mut_*.log`). All numbers 
 - **Screenshot** (scratch driver, real clicks): Tools category, 7 tiles of 107x60, 7 of 7 pictures loaded, region 1264x320, 0 console errors; ticket 2 Rose Bush, Hoe 4 ft, Patio Chair = 104.25. Restaurant map: Tables 3, 7, 12 open. Tools is the largest category (7 products) so the catalog band is not full: that is the demo data.
 - **Guide** deployed from `deploy/till-guide-superset-3` (pushed) with `safe_gh_deploy.sh`: canaries 200; live `TillUserGuide/` 200 carrying the new text, both images 200 (till_03 identical bytes to the commit). Note: the guard flagged live `glassbowl_data.db` (untracked in master since 2026-09-01); it was preserved as an untracked local copy, as the earlier deploy did.
 - **Open, not claimed:** drag layout screen and floor-image upload are still not built; Product Search stays disabled.
+
+### §34.A PHASE A RESULT (2026-11-04; branch `film/unicenta-till`, pipeline `scripts/film_unicenta_till/`)
+Built against bim-ootb `origin/main` (read-only worktree `/tmp/wt-film-ootb`); CPU only (`--disable-gpu`, CUDA hidden); no GPU lock. The §33 gate had landed (PR #2629) before the first real run, so no beat stayed blocked.
+- **Beats (23 segments, 16 voiced):** b0a/b0b before/after cards; c1 + b1a know, b1b sale, b1c fold; c2 + b2a floor, b2b bump; c3 + b3a tills, b3b admin; c4 + b4a close, b4b count (card); c5 + b5a price, b5b receive; c6 + b6 match (card); b7 not-built-yet (card); b8 credits (card). Dry runs (FAST) reached every recorded beat on current main once five defects of the recorder were fixed (tender tab is `magcard`, plugin menu needs a re-login to enter the role-scoped tree, process form selectors are `data-proc-*`, `AD_Org_ID` = the branch, date input needs `fill`).
+- **Facts:** 40 in `facts.spec.json`; `resolve.js` PASS, each read from a log on disk (`/tmp/eoda_logs/GREEN_eoda.log`, `/tmp/dayclose_logs/arm_one.log` + `GREEN_run.log`, `/tmp/bom_logs/witness_bom_explode.log`, `/tmp/soda_logs/reg2/witness_soda.log`, `/tmp/soda2_logs/receipt_up_final.log` + `run_all_bridge.log`, `/tmp/till_logs/p2_kds.log`, `/tmp/rest_logs/final_witness_till.log` + `final_witness_rest.log`, this file for §28.3). No source log missing. 10 LIVE facts are printed by the recorder (`§TILLFILM_FACT`) and compared by `livecheck.js`.
+- **Guard:** every number word in the voice is declared by a fact of that beat; every digit on a card equals a fact; two planted-number controls are caught (`out/guard.log`).
+
+### §34.B PHASE B RESULT (2026-11-04)
+**Film:** `~/Videos/UnicentaPOS_SQLiteWASM_narrated_EN_AFTER_2026-11-04_v1.mp4`, **287.2 s (4:47)**, 6,893 frames at 24 fps, EN (Kokoro). Branch `film/unicenta-till` (PR opened, auto-merge off). Logs under `scripts/film_unicenta_till/logs/`, cards `cards/`, TSV `narration_en.tsv`.
+| Witness of the cut | Verdict |
+|---|---|
+| frames == silent picture | PASS 6,893 == 6,893 |
+| longest silence >= 4 s | PASS 6.2 s (bar 7 s) |
+| loudness | PASS -16.3 LUFS |
+| subtitle zone (`crop 1920x230+0+850`, 574 frames at 2 fps) | PASS 0 non-empty (flat background, h264 noise only) |
+| every spoken number has a fact | PASS (`guard.js` 2 controls; `livecheck.js` 18 LIVE checks PASS) |
+| `§NARR_FIT` | PASS 16/16 DETAIL |
+| `§NARR_TONE` | PASS 0 WRONG of 18 (first fit had one: "Does head office hear from each of them?" fell, reworded to a wh-question) |
+**Live facts read from the in-browser DB during the recording:** 3 tills, 6 tickets rung (sample sale 2 Rose Bush + Hoe 4 ft + Patio Chair = 4 units, total 104.25, cash + card split), tills' relay requests while selling 0, statement gross == sum of the 3 Z (true), ONE hub-lane put for the EODA send, tap deposits 0 / leave-table deposits 1, 96 chairs drawn on the 24 seeded tables, catalog 320 px -> 28 px (folded) -> 320 px, receive 5 / 3 / 1 (difference 2), source stock 20 -> 15, store 4 -> 6, one `§SODA_APPLY result=CO`, Branch Day Close message "branches=1 tickets imported=6 till/day withheld=0".
+**What was cut or changed, and why (honest limits):**
+- b4a: the clerk's Day Close ran Import Orders + Import Payment (the POS Sales plugin is not installed in the film's head office), then Replenish. The head-office plugin `friendly_ops.mjs` is installed off camera and the clerk logs out and in on camera (the menu is role-scoped at login). The narration claim about the BOM item exploding was removed from the live beat: the film's sale has no BOM item. The BOM drops (6, 24, 1500), the G/S counts (28 -> 9 clicks, 6 -> 1 screens, model-derived, not a recording) and rowDiff 0 are spoken in b4b from the witness logs and said so on the card and in the voice.
+- b5a: the morning batch rows are computed by the shipped `soda_core.refDelta` over head office's own rows and written as one group (as `witness_soda_ui.js` does), not by the HQ SODA process; the admin's `fan()` and the tills' Visit are the real ones.
+- b6 "side by side" is a card of the `run_all` verdicts (legacy iDempiere is not driven during the film); the four MATCH items and the not-compared price stamp come from the log.
+- Real-pace clips are time-lapsed (never slowed) to end with the voice: x9.6 on b3a (three tills selling), x1.5 to x3.9 elsewhere (`out/assemble.log` `§ASM_SPEED`).
+- The relay-count badge on the till/admin pages is an instrument read-out of the recorder's own request counter, labelled so; no page content was edited.
