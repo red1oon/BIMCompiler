@@ -2538,3 +2538,16 @@ rounding corrections across several allocations of one invoice stay NAMED. Regre
   - A predicate that cannot be applied client-side is printed as `UNJUDGED_PREDICATE` (that table is INCONCLUSIVE).
   - Result: DD m_product legacy=55 local=55 onlyLegacy=0 → `§DD_VERDICT PASS` (was FAIL onlyLegacy=27). The DDS / LF / SD00 verdicts are identical to master (logs `/tmp/ddscope_logs/`).
 - **OPEN (bridge lane).** Move the bridge's 109 Free-Filter types to the legacy-correct shape: a Constant Filter, with lookups by DataRow key fields (`WS_WebServiceFieldInput` → `col=?`, as the CAPEX lane did). Then every scope is applied by legacy itself.
+**Step 5 delete ✅ (witness) 2026-11-04 — bim-ootb #2620 (`doc_poster.js?v=5`, sw v992), −406 lines.** Retired deriveInOut / deriveMovement /
+deriveAllocation / deriveBankStatement + their now-unreferenced helpers (deriveSalesReturn, deriveReceipt, derivePayment, _apAllocLine, _orgOfLocator,
+_clientOf, _stockLineAmt, costQtyRefusal, _allocBalanceAccounting) and convertToSchema's allocation arms. W-PREVIEW-IS-POSTING P3/P4 updated, PASS 6/6
+(mutants + BASELINE FAIL); 21 posting witnesses + BIMCompiler poc_sd16 --engine-dir: verdicts unchanged. Genesis's sample invoice (genesis.html:131-171
+replayed in node on the trimmed doc_poster): DR 12110 109.00 / CR 41000 100.00 / CR 21610 9.00, balanced, RESULT=PASS. (`poc_genesis_wizard_live.js`
+times out at genesis.html's waitForFunction on origin/main too — pre-existing, not judged.)
+**Kept on doc_poster:** derivePostings for C_Invoice / C_Order (genesis.html + the draft-order projection), the asset / project-issue / requisition / cash
+classes (no model_post class), costQtyUpdates & co. (engine verbs; no shipped caller), the plugin Doc-class registry.
+**Named follow-ups:** (a) **5g ⛔ owner decision** — genesis.html's born tenant has no ad_table/ad_column (the model layer's dictionary), so moving its
+sample invoice to the real poster means either loading the seed dictionary into genesis or shipping a dictionary subset with it; until then
+deriveInvoice stays. (b) doc_poster.costQtyUpdates still treats a customer-return REVERSAL as "no cost" (G-SD10) while the real poster now books it
+from the original (Doc_InOut :522-537) — no shipped caller, so no user impact; align or retire with the engine verbs. (c) Pre-existing, seen in the
+regression: witness_asi_receipt P1b FAIL (date-dependent legacy rows), poc_preview_demo.js and two poc_* files do not load on origin/main either.
