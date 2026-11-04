@@ -1665,3 +1665,37 @@ Built against bim-ootb `origin/main` (read-only worktree `/tmp/wt-film-ootb`); C
   - The one-time signalling could be a QR code shown on the branch admin and scanned by each till/kitchen device, so it needs no server and works with the internet down.
   - The branch would then behave like uniCenta's one shop DB: kitchen, tables and hand-offs on the LAN. Only EODA up / SODA down would cross the internet relay.
 
+
+## §35 REVIEW — does the twin follow the owner's 2012 design? (owner, 2026-11-05: *"review first, is our new twin learning or following its design as depicted? now, the tills going thru internet relay is going against my concept of EODA"*)
+Measured against RED1's guide (`~/Downloads/openbravoPOSGuide.pdf` p50 "ERP TO POS INTEGRATION MODEL", p16 "INTEGRATION PLAN"), `Export2Queue.java` (§12.2) and the twin's plan source `build/scriptor/flows_pos.json` (BIMCompiler master, 2026-11-05).
+
+| 2012 design | Twin today | Verdict |
+|---|---|---|
+| MQ = holder only, alive when talked to, persistent (p50, p16) | relay = dumb mailbox, persistent | ✅ |
+| Export to Queue: products + pricing, delta "since last run" | SODA (`POS_SodaRef`), deltas, Export2Queue watermark (§28) | ✅ |
+| Export to Queue: QtyOnHand per POS locator, zero-stock products skipped (`Export2Queue.java:346-365`) | not sent (§28: "Not carried") | ❌ missing (Q-b) |
+| Export to Queue: Customers (with TotalOpenBalance) + Users (`:509-673`) | not sent (§28: "Not carried: customers, users") | ❌ missing |
+| POS Synchronization: each POS pulls from MQ (pressed POSSync) | branch admin receives SODA, fans out to tills over the **internet relay** (lane `b_<person>`, `erp/team_sync.js:318`) | ❌ intra-branch internet traffic |
+| Orders Synchronization: each POS pushes (pressed OrderSync = EODA) | till → branch admin at Close Cash over the **internet relay** (`POS_TillHandoff` BOTH branch), then ONE admin send | ◐ one send to HQ ✅; the hand-off on the internet ❌ |
+| Import from Queue (ERP) | Import POS Sales / Branch Day Close | ✅ |
+| (uniCenta) tills, kitchen, tables share ONE shop DB on the LAN | `POS_KitchenOrder`, `POS_KitchenStatus`, `POS_OpenTable`, `POS_Reservation`, `POS_FloorPlan`, `POS_TillRef` = BOTH branch on the **internet relay** all day (§20: 38 requests per kitchen message) | ❌ the worst break: all-day chatter, the opposite of EODA |
+
+**Root cause (lead's own, §26):** the branch-local flows were put on a branch mailbox of the internet relay. They were measured but never judged against the owner's concept. The 2012 design touched the internet only at SODA (pull) and EODA (push).
+
+**Proposed rule — EODA-LAN (needs the owner's go):**
+- The internet relay carries ONLY the branch POS admin's EODA up and SODA down.
+- Every intra-branch flow (till hand-off, price fan-out, kitchen, tables, floors, reservations) rides a **LAN peer link**:
+  - WebRTC data channels between the branch's devices, using host ICE candidates (no STUN/TURN server);
+  - pairing by a one-time QR code (SDP offer/answer) shown on the branch admin and scanned by each till/kitchen device;
+  - no server, and it works with the internet down, like uniCenta's shop DB.
+- A device that cannot reach its peer (e.g. Wi-Fi client isolation) **holds** its rows locally and hands them over when the link returns. It never falls back to the internet relay.
+- Witness plan:
+  - W-EODA-LAN: over a whole branch day, internet relay requests == EODA up + SODA down only. Mutant "kitchen via relay" → red.
+  - W-LAN-PAIR: QR pairing brings a data channel up with the network to the relay blocked.
+  - W-LAN-HOLD: an isolated till loses nothing and doubles nothing.
+- **Limit stated up front:** headless tests can run two browser contexts on ONE machine. A real two-device shop LAN (mDNS host candidates, AP isolation) is NOT provable here; it needs an owner field check or stays "not proven".
+
+**Open for the owner:**
+- Q-L1: go on EODA-LAN.
+- Q-L2: carry QtyOnHand per POS locator in SODA (the 2012 export did; it decides D6/Q-b).
+- Q-L3: carry Customers (+ open balance) and Users in SODA, as 2012 did.
