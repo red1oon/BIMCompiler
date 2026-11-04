@@ -32,8 +32,25 @@ X=lambda x:round((x-x0)*K,1); Y=lambda y:round(-(y-y0)*K,1)
 E=[]   # (layer,type,args)
 # ---- grid
 xmax=gx['E']; ymin=-gy['1']
-for k,v in gx.items(): E.append(('PDF-GRID','LINE',(v,500,v,ymin-500)))
-for k,v in gy.items(): E.append(('PDF-GRID','LINE',(-500,-v,xmax+500,-v)))
+# §29 W-C3: the sheet's own grid bubbles: a stroked circle holding exactly one text-layer word, centred on the dictionary axis of that word (dxf2qualify gridLines reads a label only as TEXT inside a CIRCLE on the grid layer)
+circ=[]
+for sw,pts,s_,cv in P:
+    if cv and len(pts)>=4 and math.dist(pts[0],pts[-1])<.3:
+        xs=[q[0] for q in pts];ys=[q[1] for q in pts];w=max(xs)-min(xs);h=max(ys)-min(ys)
+        if abs(w-h)<.3 and w/2>=9: circ.append(((min(xs)+max(xs))/2,(min(ys)+max(ys))/2,w/2))
+def bubble(label,on_x):
+    want=x0+gx[label]/K if on_x else y0+gy[label]/K; c=[q for q in circ if abs((q[0] if on_x else q[1])-want)<=1.5 and any(w[0]==label and math.hypot(w[1]-q[0],w[2]-q[1])<=q[2] for w in W)]
+    return min(c,key=lambda q:abs((q[0] if on_x else q[1])-want)) if len(c)>=1 else None
+nb=0; BUB={}
+for k in gx:
+    q=bubble(k,True)
+    if q: BUB[k]=(gx[k],Y(q[1]),round(q[2]*K,1)); nb+=1
+for k in gy:
+    q=bubble(k,False)
+    if q: BUB[k]=(X(q[0]),-gy[k],round(q[2]*K,1)); nb+=1
+log('W-C3 grid bubbles read',nb,'of',len(gx)+len(gy),{k:(round(v[0]),round(v[1]),v[2]) for k,v in BUB.items()})
+for k,v in gx.items(): E.append(('PDF-GRID','LINE',(v,BUB[k][1]-BUB[k][2] if k in BUB else 500,v,ymin-500)))
+for k,v in gy.items(): E.append(('PDF-GRID','LINE',(BUB[k][0]+BUB[k][2] if k in BUB else -500,-v,xmax+500,-v)))
 # ---- window chains (100x500 mm modules at 600 mm pitch): needed first, the walls are CUT at them (standard form: an opening is a GAP in the wall)
 modc=[]
 for sw,pts,s_,cv in P:
@@ -52,8 +69,7 @@ for o_ in 'HV':
             else: wchains.append((o_,cur[0][1],cur[0][0]-300/K,cur[-1][0]+300/K)); cur=[a_]
         wchains.append((o_,cur[0][1],cur[0][0]-300/K,cur[-1][0]+300/K))
 log('E00 window chains found for wall cutting',len(wchains))
-for k,v in gx.items(): E.append(('PDF-GRID','TEXT',(v,650,150,k)))
-for k,v in gy.items(): E.append(('PDF-GRID','TEXT',(-800,-v,150,k)))
+for k,(cx_,cy_,r_) in BUB.items(): E+=[('PDF-GRID','CIRCLE',(cx_,cy_,r_)),('PDF-GRID','TEXT',(cx_,cy_,150,k))]
 # ---- walls: (a) sw3 pairs (b) 100 mm cell runs
 H=collections.defaultdict(list);V=collections.defaultdict(list)
 for sw,pts,s,cv in P:
@@ -155,10 +171,10 @@ for sw,pts,s_,cv in P:
         a,b=sorted(((max(xs)-min(xs))*K,(max(ys)-min(ys))*K))
         if abs(a-200)<=40 and abs(b-300)<=40:
             x1,x2,y1,y2=X(min(xs)),X(max(xs)),Y(max(ys)),Y(min(ys)); lay='PDF-COLUMN'; nc+=1
-            E+=[(lay,'LINE',(x1,y1,x2,y1)),(lay,'LINE',(x2,y1,x2,y2)),(lay,'LINE',(x2,y2,x1,y2)),(lay,'LINE',(x1,y2,x1,y1))]
+            E.append((lay,'LWPOLYLINE',((x1,y1),(x2,y1),(x2,y2),(x1,y2)))); log('W-C4 column rect',(x1,y2),(x2,y1),'centre',(round((x1+x2)/2,1),round((y1+y2)/2,1)))
 log('E1 window chain rectangles',nw,'(from 100x500 modules)','column rects (200x300 anywhere in plan, incl. unexplained one)',nc)
 # ---- door arcs
-nd=0; DOORREC=[]
+nd=0; nfix=0; DOORREC=[]
 for sw,pts,smp,cv in P:
     if cv and len(pts)>=2 and math.dist(pts[0],pts[-1])>3:
         xs=[q[0] for q in pts];ys=[q[1] for q in pts];w=max(xs)-min(xs);h=max(ys)-min(ys); r=max(w,h)
@@ -174,6 +190,8 @@ for sw,pts,smp,cv in P:
             # some equal the clear radius. The importer wants leaf width = arc radius = gap. Try the SCHEDULE width first (p8 text layer, exact); keep the measured radius where the drawn gap only fits that.
             rsch=next((float(w) for w in (R['schedule_sizes_mm']['D1'][0],R['schedule_sizes_mm']['D3'][0]) if 40<=w-rm<=120),rm)
             A0=(round(a0/90)*90)%360; A1=(A0+90)%360; hx0,hy0=cm
+            if min(abs(rm-(R['schedule_sizes_mm'][k_][0]-off_)) for k_ in ('D1','D2','D3') for off_ in (0,80))>25:
+                E.append(('PDF-FIXTURE-ARC','ARC',(hx0,hy0,rm,A0,A1))); nfix+=1; log('W-C1 arc r',rm,'at',cm,'is no schedule door width: kept on PDF-FIXTURE-ARC, YELLOW (§19), not a door'); continue
             for rr in ([rsch,rm] if rsch!=rm else [rm]):
                 hx,hy=hx0,hy0; best=None
                 WL=[(i_,e[2]) for i_,e in enumerate(E) if e[0]=='PDF-WALL']
@@ -211,16 +229,15 @@ for sw,pts,smp,cv in P:
                 if not jamb_done:   # hinge side is a perpendicular wall (T junction) <= 150 mm away: a derived pier from that wall face to the hinge, so the gap equals the leaf
                     for i3,w3 in [(i_,e[2]) for i_,e in enumerate(E) if e[0]=='PDF-WALL']:
                         xs3=[q[0] for q in w3]; ys3=[q[1] for q in w3]; a3,b3,c3,d3=min(xs3),min(ys3),max(xs3),max(ys3)
-                        if (not best['horiz']) and (c3-a3)>(d3-b3):      # vertical door, horizontal wall at the hinge side
+                        if (not best['horiz']) and (c3-a3)>(d3-b3) and a3-1<=best['w'][0] and best['w'][2]<=c3+1:      # vertical door, horizontal wall spanning its strip at the hinge side
                             face=(d3 if best['dy']>0 else b3)           # y up: leaf going up -> hinge side is below (wall's top edge d3); leaf going down -> wall above (its bottom edge b3)
                             gap3=(hy-face) if best['dy']>0 else (face-hy)
-                            if a3-1<=hx<=c3+1 or (best['w'][0]-1<=a3<=best['w'][2]+1) or True:
-                                if 0<gap3<=150 and best['w'][0]-60<=(a3+c3)/2<=best['w'][2]+60+2000:
-                                    lo3,hi3=sorted((hy,face)); E.append(('PDF-WALL','LWPOLYLINE',((best['w'][0],lo3),(best['w'][2],lo3),(best['w'][2],hi3),(best['w'][0],hi3)))); log('E2k hinge-side pier (T junction) added',round(gap3,1),'mm between the wall face and the hinge'); jamb_done=True; break
-                        if best['horiz'] and (d3-b3)>(c3-a3):            # horizontal door, vertical wall at the hinge side
-                            face=(a3 if best['dx']<0 else c3) if False else (c3 if best['dx']>0 else a3)
+                            if 0<gap3<=150:
+                                lo3,hi3=sorted((hy,face)); E.append(('PDF-WALL','LWPOLYLINE',((best['w'][0],lo3),(best['w'][2],lo3),(best['w'][2],hi3),(best['w'][0],hi3)))); log('E2k hinge-side pier (T junction) added',round(gap3,1),'mm between the wall face and the hinge'); jamb_done=True; break
+                        if best['horiz'] and (d3-b3)>(c3-a3) and b3-1<=best['w'][1] and best['w'][3]<=d3+1:            # horizontal door, vertical wall spanning its strip at the hinge side
+                            face=(c3 if best['dx']>0 else a3)
                             gap3=(hx-face) if best['dx']>0 else (face-hx)
-                            if 0<gap3<=150 and best['w'][1]-60<=(b3+d3)/2<=best['w'][3]+60+2000:
+                            if 0<gap3<=150:
                                 lo3,hi3=sorted((hx,face)); E.append(('PDF-WALL','LWPOLYLINE',((lo3,best['w'][1]),(hi3,best['w'][1]),(hi3,best['w'][3]),(lo3,best['w'][3])))); log('E2k hinge-side pier (T junction) added',round(gap3,1),'mm between the wall face and the hinge'); jamb_done=True; break
             else: log('E2s door NOT snapped (no wall piece edge within 130 mm beyond its closed-leaf end)',(round(hx,1),round(hy,1)),'r',rr)
             E.append(('PDF-DOOR-SWING','ARC',(round(hx,1),round(hy,1),rr,A0,A1))); nd+=1
@@ -235,7 +252,7 @@ for i_ in range(len(DOORREC)):
         else:
             if abs(a_[0]-b_[0])<=1 and a_[3]==-b_[3] and abs(a_[1]-b_[1])<=400 and (a_[1]-b_[1])*a_[3]>0:
                 lo_,hi_=sorted((a_[1],b_[1])); t_=a_[5]; E.append(('PDF-WALL','LWPOLYLINE',((t_[0],lo_),(t_[2],lo_),(t_[2],hi_),(t_[0],hi_)))); log('E2p pier between two doors sharing a gap (vertical wall), y',round(lo_,1),'..',round(hi_,1),'=',round(hi_-lo_,1),'mm')
-log('E2 door swing arcs emitted',nd)
+log('E2 door swing arcs emitted',nd,'| non-door arcs kept',nfix)
 # ---- tags
 nt=0
 for t,cx,cy in W:
@@ -251,13 +268,14 @@ for lay,ty,a in E:
     if ty=='LINE': o+=['10',a[0],'20',a[1],'30','0','11',a[2],'21',a[3],'31','0']
     elif ty=='ARC': o+=['10',a[0],'20',a[1],'30','0','40',a[2],'50',a[3],'51',a[4]]
     elif ty=='LWPOLYLINE': o+=['90',len(a),'70',1]+sum([['10',q[0],'20',q[1]] for q in a],[])
+    elif ty=='CIRCLE': o+=['10',a[0],'20',a[1],'30','0','40',a[2]]
     else: o+=['10',a[0],'20',a[1],'30','0','40',a[2],'1',a[3]]
 o+=['0','ENDSEC','0','EOF']; open(outf,'w').write('\n'.join(str(x) for x in o)+'\n')
 rd=open(outf).read().split('\n'); back=collections.Counter(); i=0; ent=False
 while i<len(rd)-1:
     g,v=rd[i],rd[i+1]
     if g=='2' and v=='ENTITIES': ent=True
-    if ent and g=='0' and v in('LINE','ARC','TEXT','LWPOLYLINE'): ty=v
+    if ent and g=='0' and v in('LINE','ARC','TEXT','LWPOLYLINE','CIRCLE'): ty=v
     if ent and g=='8': back[(v,ty)]+=1
     i+=2
 want=collections.Counter((l,t) for l,t,a in E)

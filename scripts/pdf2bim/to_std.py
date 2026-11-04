@@ -3,8 +3,8 @@
 # Usage: to_std.py <plan.dxf(marked)> <elevdir> <rosetta.json> <outdir>
 import sys,os,json,glob
 plan,elevdir,rj,out=sys.argv[1:5]; R=json.load(open(rj)); os.makedirs(out,exist_ok=True)
-LAY={'PDF-WALL':'A-WALL-FULL','PDF-WINDOW':'A-GLAZ','PDF-DOOR-SWING':'A-DOOR','PDF-COLUMN':'A-COLS','PDF-GRID':'A-GRID','PDF-TAG':'A-ANNO-NOTE',
-     'ELEV-WALL':'A-WALL','ELEV-GLAZING':'A-GLAZ','ELEV-DOOR':'A-DOOR','ELEV-LEVEL':'A-ANNO-LEVL','ELEV-DIM':'A-ANNO-DIMS'}
+LAY={'PDF-WALL':'A-WALL-FULL','PDF-WINDOW':'A-GLAZ','PDF-DOOR-SWING':'A-DOOR','PDF-COLUMN':'A-COLS','PDF-GRID':'A-GRID','PDF-TAG':'A-ANNO-NOTE','PDF-FIXTURE-ARC':'A-ANNO-NOTE',
+     'ELEV-WALL':'A-WALL','ELEV-GLAZING':'A-GLAZ','ELEV-DOOR':'A-DOOR','ELEV-LEVEL':'A-ANNO-LEVL','ELEV-DIM':'A-ANNO-DIMS','ELEV-GRID':'A-GRID'}
 def conv(src,marks,extra=None):
     d=open(src).read().split('\n'); i=0
     while i<len(d)-1:

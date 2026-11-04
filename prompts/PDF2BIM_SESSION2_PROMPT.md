@@ -1,5 +1,6 @@
 # ⚠ DO NOT REMOVE — PDF2BIM session-2 prompt (paste into a NEW session)
 # Scope: continue the vector-PDF -> DXF -> IFC lane (TB-LKTN page 1). The evidence trail and the ▶ RESUME HERE block live in `prompts/PDF2BIM_VECTOR_PROBE.md` — this file only STARTS a session; it holds no findings.
+# STATUS 2026-11-04: session 2 RAN option B (spec §29). The numbers below are its starting point, now stale; use the RESUME block of the spec for the next session.
 # Read the log after every run (`<outdir>/logs/*.log`); exit code is not evidence. Honour this block until the prompt is DONE. Written 2026-11-04, branch `feat/pdf2bim-vector` @ f2330892c.
 
 ```

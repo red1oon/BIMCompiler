@@ -297,6 +297,13 @@
     "window": "chain of 100x500 mm closed rects at 600 mm pitch along a wall axis; width = modules x 600 (W3 1, W2 2, W1 3)",
     "door": "quarter-circle swing arc, radius = nominal width minus ~80 mm (frame), cubic Bezier endpoints span r x r"
   },
+  "floor_buildup": {
+    "depth_mm": 150,
+    "status": "YELLOW",
+    "meaning": "FFL down to the damp-proof membrane (note G8) as drawn on both sections of p6; the 150 is the drawn dimension. NOT the structural slab: note G1 says ground slabs are to Engr's detail",
+    "section_used": "A-A",
+    "check": "section_emit.py W-C5: the sheet's only chromatic line lies depth_mm +- 10 below the FFL level line on A-A and on B-B"
+  },
   "library_binding": {
     "_note": "opening tag -> family_id of the LOCAL LOD400 library (BIMCompiler component_library.db, exported by export_library_subset.js --full; Duplex items). exact=false = nearest-size STAND-IN (owner 2026-11-04: 'use from Duplex items'); the library holds no window of the drawing's sizes. Ratios are of default_width x default_height.",
     "D1": {

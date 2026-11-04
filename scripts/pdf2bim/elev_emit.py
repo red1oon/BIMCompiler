@@ -1,6 +1,6 @@
 #!/usr/bin/env python3 -I
 # Implements prompts/PDF2BIM_VECTOR_PROBE.md §22/§24 — Witness: W-E1 (levels), W-E2/E3 (openings vs plan), W-E5 (W3 high window rule), W-E6 (dimension entities = drawn values)
-# Usage: elev_emit.py <p4.svg> <p5.svg> <plan.dxf> <rosetta.json> <outdir>
+# Usage: elev_emit.py <p4.svg> <p5.svg> <plan.dxf> <rosetta.json> <outdir> <pdf>
 import re,sys,json,math,collections,os
 svg4,svg5,plandxf,rj,out=sys.argv[1:6]; R=json.load(open(rj)); K=R['sheet']['mm_per_pt_fitted']; log=lambda *a:print('§PDF',*a,flush=True)
 os.makedirs(out,exist_ok=True)
@@ -14,9 +14,21 @@ def load(f):
         while i<len(tk):
             if tk[i] in 'MLC': c=tk[i];i+=1;continue
             n=3 if c=='C' else 1; x,y=map(float,tk[i+2*(n-1):i+2*n]); i+=2*n; pts.append((M[0]*x+M[2]*y+M[4],M[1]*x+M[3]*y+M[5]))
-        P.append(pts)
+        P.append((pts,'C' in re.search(r' d="([^"]*)"',a).group(1)))
     return P
-SH={'p4':load(svg4),'p5':load(svg5)}
+SHC={'p4':load(svg4),'p5':load(svg5)}; SH={k:[p for p,c in v] for k,v in SHC.items()}
+# §29 W-C3: each view's own grid bubbles = stroked circles (r >= 9 pt) holding a text-layer word, above that view's beam line (the plan's labels are now read, so dxf2qualify G2/elev_grid_missing wants them on every face)
+PDF=sys.argv[6]; import subprocess
+def bubbles(sheet,beam):
+    b=subprocess.run(['pdftotext','-f',sheet[1:],'-l',sheet[1:],'-bbox',PDF,'-'],capture_output=True,text=True,check=True).stdout
+    WD=[(w[4],(float(w[0])+float(w[2]))/2,(float(w[1])+float(w[3]))/2) for w in re.findall(r'<word xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">(.*?)</word>',b)]; o={}
+    for pts,cv in SHC[sheet]:
+        if not cv or len(pts)<4 or math.dist(pts[0],pts[-1])>=.3: continue
+        xs=[q[0] for q in pts];ys=[q[1] for q in pts];wd=max(xs)-min(xs);ht=max(ys)-min(ys);cx=(min(xs)+max(xs))/2;cy=(min(ys)+max(ys))/2
+        if abs(wd-ht)<.3 and wd/2>=9 and 60<=beam-cy<=130:
+            for w in WD:
+                if math.hypot(w[1]-cx,w[2]-cy)<=wd/2: o[w[0]]=(cx,cy,wd/2)
+    return o
 GX,GY=R['grid']['x'],R['grid']['y']; WID=GX['E']; DEP=GY['1']
 # ox = pt x of the first grid label as drawn (text layer, measured in exploration), beam = pt y of the BEAM/CEILING line (long H line, measured), all later checked by W-E1
 views={'FRONT':dict(sheet='p4',ox=246.3,beam=426.4,face='minY',haxis='+X',kind='x',width=WID,axis=('H',-GY['2'])),
@@ -124,4 +136,10 @@ for n,v in views.items():
     names=(list('ABCDE'),GX) if v['kind']=='x' else (list('12345'),GY)
     for k,gv in (GX if v['kind']=='x' else GY).items():
         xd=xdraw(v,gv if v['kind']=='x' else -gv); o_+=tx(xd,-600,'@GRIDH=%s @BY=user'%k)
+    BB=bubbles(v['sheet'],v['beam']); res={}   # a label not read stays absent (the qualifier then says so): nothing is synthesised. Position = the dictionary axis, as @GRIDH; REAR is drawn A..E left to right over mirrored content (§22), so its residual is taken against the drawn order
+    for k,gv in (GX if v['kind']=='x' else GY).items():
+        if k not in BB: continue
+        xd=xdraw(v,gv if v['kind']=='x' else -gv); cx,cy,r_=BB[k]; zc=round((v['ffl']-cy)*K,1); rm=round(r_*K,1); drawn=(cx-v['ox'])*K; res[k]=round(drawn-(gv if n=='REAR' else xd),1)
+        o_+=['0','LINE','8','ELEV-GRID','10',str(xd),'20','-150','30','0','11',str(xd),'21',str(zc-rm),'31','0']+['0','CIRCLE','8','ELEV-GRID','10',str(xd),'20',str(zc),'30','0','40',str(rm)]+['0','TEXT','8','ELEV-GRID','10',str(xd),'20',str(zc),'30','0','40','150','1',k]
+    log('W-C3',n,'bubbles read',len(BB),'of',len(GX if v['kind']=='x' else GY),'residual drawn vs dictionary mm',res,'PASS' if res and max(abs(x) for x in res.values())<=30 else 'WRONG')
     o_+=['0','ENDSEC','0','EOF']; fn=os.path.join(out,'elev_%s.dxf'%n.lower()); open(fn,'w').write('\n'.join(o_)+'\n'); log('W-E4 wrote',fn)
