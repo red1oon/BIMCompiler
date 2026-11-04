@@ -2551,3 +2551,28 @@ sample invoice to the real poster means either loading the seed dictionary into 
 deriveInvoice stays. (b) doc_poster.costQtyUpdates still treats a customer-return REVERSAL as "no cost" (G-SD10) while the real poster now books it
 from the original (Doc_InOut :522-537) — no shipped caller, so no user impact; align or retire with the engine verbs. (c) Pre-existing, seen in the
 regression: witness_asi_receipt P1b FAIL (date-dependent legacy rows), poc_preview_demo.js and two poc_* files do not load on origin/main either.
+
+### §POSTING-PARITY 5g — SPEC (owner 2026-11-04: "Ship a dictionary subset")
+genesis.html posts its sample invoice through the REAL poster, so doc_poster.deriveInvoice (+ derivePostings' C_Invoice/C_Order branches if
+nothing else needs them) can retire. **Data:** a GENERATED file `erp/genesis_dict.js` (`window.GENESIS_DICT`), written by a generator from the
+shipped `ad_seed.db` + `patches/ad_seed.db.sql` — never hand-edited: (1) the seed DDL of every table the real poster reads while posting the sample
+invoice, (2) their AD_Table / AD_Column rows (the model layer's dictionary: columnsOf / tableIdOf / newPO), (3) the client-0 SYSTEM rows the poster
+reads (e.g. c_currency, ad_ref_list), measured, not guessed. **The read-set is MEASURED:** post the sample invoice of a born tenant merged into the
+full seed with SQL logging on; every table touched and every client-0 row returned is the subset. **Page:** genesis.html builds a posting db = the
+subset DDL + dictionary + system rows, merges the born tenant (mergeGenesisInto, column-intersect), creates the sample invoice with the seed's
+columns, and shows `ModelPost.previewFacts` on a never-committed Trx (the same seam the Preview uses) — the §W-GENESIS-WIZARD-LIVE to-the-cent
+assertion unchanged (DR 12110 109.00 / CR 41000 100.00 / CR 21610 9.00). **Witness W-GENESIS-REAL-POSTER (node):** the page's own posting code
+path replayed; facts == the to-the-cent expectation AND == the same invoice posted on the FULL seed (subset loses nothing); generator idempotent
+(twice → same bytes); mutant: drop one dictionary table → FAIL. Then delete deriveInvoice & co. and re-run the 21-witness regression.
+**§POSTING-PARITY 5g ✅ DONE (witness) 2026-11-04 — bim-ootb #2622.** genesis.html posts its sample invoice through the REAL poster over the
+GENERATED `erp/genesis_dict.js` (generator `erp/patches/build_genesis_dict.js`: runs the page's own `Genesis.postSampleInvoice` on the full seed with
+every query logged → 47 tables' DDL, the AD_Table/AD_Column rows of the 7 tables the model layer asked about, fact_acct's AD_DDL_Default rows, the
+client-0 C_Currency row; 193 KB; deterministic, `--check`). **Live bug fixed on the way:** genesis.html had been broken in the browser since #2016
+(doc_poster.js needs layered_registry.js, never loaded → `RESULT=FAIL`); now W-GENESIS-WIZARD-LIVE 7/7, `post poster=model_post … toTheCent=true`,
+zero page errors. **W-GENESIS-REAL-POSTER** PASS 4/4 (page path to the cent; == the same invoice on the FULL seed; nothing committed; dictionary in
+sync); G5 INFO, measured: the dictionary rows are NOT load-bearing for this invoice (the model layer's fallbacks agree) — kept so genesis runs the app's
+code path; `MUT=notaxacct` FAIL. doc_poster's invoice fold deleted (−106; **step 5 total −512 lines**); derivePostings keeps only the classes model_post
+has none for + the draft-order projection. Regression 21 witnesses + poc_sd16 --engine-dir unchanged.
+**§POSTING-PARITY step 5 CLOSED.** Named, not fixed: (a) the born tenant has no AD_ClientInfo → its facts carry no C_Period_ID (legacy
+InitialClientSetup creates one); (b) `poc_genesis_resident_live.js` hard-codes 18 GardenWorld partners (seed has 24) and its static server cannot serve
+`../common/`; (c) from step 5: vendor return receipts, BackDateDay reprocessing, costQtyUpdates' G-SD10 rule.
