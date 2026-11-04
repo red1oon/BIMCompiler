@@ -2441,3 +2441,21 @@ of the 724 line, accounted amount untouched) must FAIL A5 and leave A1 PASS — 
 twin=1 legacy=1`, 2 allocations judged); `MUT=src0` → A5 FAIL (`twin=0 legacy=1`) with A1-100/A1-101 PASS (A5 sees what A1 cannot);
 nocash / nodisc / GA_BASELINE FAIL. No poster change. **§POSTING-PARITY has no twin residual left.** Next: (2) retire the remaining
 `doc_poster.derive*` (genesis.html + 6 witnesses + 4 bim-compiler `--engine-dir` scripts move to model_post first).
+
+### §POSTING-PARITY step 5 — SPEC: retire doc_poster deriveInvoice / deriveInOut / deriveMovement / deriveAllocation / deriveBankStatement (2026-11-04)
+Law: AD-LAYER LAW #5 (one implementation per responsibility). These five are a second posting implementation beside `model_post`;
+the Preview already left them (#2598). Measured callers (bim-ootb origin/main 403aa8d6, `grep derive* | derivePostings`), each with what
+its claim must be re-proved on:
+| # | caller | uses | has model layer? | migration |
+|---|---|---|---|---|
+| 5a | `erp/tests/witness_rma_window_path.js` RW-BOOKS | derivePostings M_InOut / C_Invoice on the model-path db | YES (loads model_post) | judge the fact_acct the real Complete wrote (`ModelPost.previewFacts` for unposted) — same asserted amounts |
+| 5b | `erp/tests/witness_nc5bcd_gainloss.js` | derivePostings C_AllocationHdr (FX gain/loss) | check | model_post refuses FX gain/loss lines as "not ported" (:891) → the claim cannot move until Doc_AllocationHdr createPaymentGainLoss :1045-1135 is ported; port it, then move |
+| 5c | `erp/tests/witness_post_bankstatement.js` B1b | deriveBankStatement as a "no legacy oracle" comparator | YES | drop B1b (it compares the twin with the code being retired; it was never a PASS) |
+| 5d | `erp/tests/poc_install_persist.js`, `poc_install_idmp.js` | derivePostings in-browser after install | check | post via the page's model layer (idempiere.html loads it) |
+| 5e | `erp/tests/witness_sd16_engine_port.js` S5/S6, bim-compiler `scripts/poc_sd16.js --engine-dir` | deriveInOut / deriveInvoice on SYNTHETIC hand-built DBs | NO (no AD dictionary) | re-home the claims (return receipt at current cost, ARC mirror, draft-CM mirror, reversal skip, service line ignored) onto the seed via the model layer |
+| 5f | `erp/tests/witness_f9_cost_history.js` | deriveInOut / deriveMovement on synthetic DBs | NO | same as 5e (cost-history-as-of claims; model_post already reads MCost.getCostInfo as of DateAcct, #2597) |
+| 5g | `erp/genesis.html:166` (shipped page) | derivePostings C_Invoice on the born tenant | NO — the born DB has ~30 business tables, no ad_table/ad_column | the born tenant needs the dictionary rows model_layer reads (columnsOf); then the sample invoice is created + completed through the model layer and its fact_acct is what the page shows |
+| 5h | `erp/erp_preview.js:121` headless fallback | derivePostings when `window.ModelPost` absent | — | after 5a-5g: route these five tables to "model layer not loaded" (no data), keep derivePostings only for tables with no model_post class |
+Deletion budget: the five functions + their derivePostings branches + `convertToSchema` if unreferenced (~700 lines of doc_poster.js);
+`witness_preview_is_posting` P3/P4 DELETED/NEEDED lists updated in the same PR. Order: 5c → 5a → 5d → 5e/5f → 5b → 5g → 5h → delete.
+Each step: the moved witness PASSes on model_post with its original asserted values; a mutant of the model_post code it now judges FAILs it.
