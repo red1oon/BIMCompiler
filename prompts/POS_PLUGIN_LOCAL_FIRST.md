@@ -1583,7 +1583,7 @@ English first (Kokoro); other languages on the owner's ask, as usual. CPU only, 
 | 5 | **"SODA — only what changed"** | The morning batch arrives: one product's price changes on its tile, the others stay. Receive stock: 3 of 5 received, 1 scrapped → the confirmation rides the next EODA | `§SODA_*` (§28.R); receive arm 20→15 / 4→6 (§28.2.R) |
 | 6 | **"Same books as legacy"** | Side by side: the twin and legacy iDempiere on the Replenish movement, Move Confirmation and storage → MATCH | `run_all` cycle verdicts (§28.2.R) |
 | 7 | **"Not built yet"** card (said in the voice) | The decimals-in-text difference (9.0 vs 9, §28.3 OPEN-1); price-stamp parity not compared (OPEN-2); two tills on one table over the real relay not yet proven (§32.R); in-browser memory with pictures not measured | — |
-| 8 | **Promise + credits** | The promise line. Credits: the owner's 2012 Openbravo/uniCenta → iDempiere integration (with Ghintech) as prior art. uniCenta oPOS (GPL): **layout and flow followed, no code or artwork copied**. Fluent Emoji (MIT) product pictures. Legacy iDempiere as the oracle | — |
+| 8 | **Promise + credits** | The promise line. Credits: the owner's OWN 2012 Openbravo POS → ADempiere/iDempiere integration over ActiveMQ, the delayed EODA/SODA relay (copyleft RED1, `openbravoPOSGuide.pdf`), as prior art. **Not "with Ghintech"** (owner correction 2026-11-05, §34.C). uniCenta oPOS (GPL): **layout and flow followed, no code or artwork copied**. Fluent Emoji (MIT) product pictures. Legacy iDempiere as the oracle | — |
 
 **Gate before recording (each a measured fact, not a look):** §33 merged and live, with W-TILL-LAYOUT, W-REST-FLOOR and W-TILL-CATALOG-TOGGLE PASS; the guide republished.
 **Witness of the cut (PLAYBOOK steps 4-5):**
@@ -1635,3 +1635,33 @@ Built against bim-ootb `origin/main` (read-only worktree `/tmp/wt-film-ootb`); C
 - b6 "side by side" is a card of the `run_all` verdicts (legacy iDempiere is not driven during the film); the four MATCH items and the not-compared price stamp come from the log.
 - Real-pace clips are time-lapsed (never slowed) to end with the voice: x9.6 on b3a (three tills selling), x1.5 to x3.9 elsewhere (`out/assemble.log` `§ASM_SPEED`).
 - The relay-count badge on the till/admin pages is an instrument read-out of the recorder's own request counter, labelled so; no page content was edited.
+
+### §34.C OWNER REVIEW of film v1 (2026-11-05) → v2 changes
+> *"1. Should have opening CH 1 card then actual original Unicenta POS screen as in my 2012 integration manual Look for the PDF. Also there is a schematic diagram of POS - ActiveMQ - Server. … 2. The interim 'visits' is it within the POS branch LAN from its the tills? 3. The 2012 integration is not with Ghintech which is a friendly later fork that wants to push back the framework to realtime webservices which my activeMQ is the delayed EODA/SODA relay."*
+
+**Correction to §6 (the owner's history, stated by the owner):**
+- The 2012 Openbravo POS ⇄ ADempiere/iDempiere integration is the owner's OWN work: ActiveMQ is the DELAYED EODA/SODA relay.
+- Ghintech (Eduardo Gil) is a friendly LATER fork that pushes the framework back toward real-time web services.
+- §6's "maintained by Red1 and Eduardo Gil (Ghintech)" describes that later fork, not the 2012 integration. Every film or guide credit says "the owner's own 2012 integration" and never "with Ghintech".
+
+**Source found on disk (no download needed):** `~/Downloads/openbravoPOSGuide.pdf`, "Openbravo POS Integration and Development Guide", Redhuan D. Oon (RED1), 2011-09-11, updated Nov 2012, 58 pp, copyleft RED1.
+- **p23 "MAKING A SALES":** the original Openbravo POS sales screen. Tools category tiles (Hoe, Rake-B, Rake-M, Seeder, Tiller, Transpl, Weeder); ticket 2 × Hoe ¤15.00 = ¤30.00 and 3 × Rake-Bamboo ¤9.00 = ¤27.00, total ¤57.00. The same GardenWorld products as our till.
+- **p50 "10,000 FEET VIEW — ERP TO POS INTEGRATION MODEL":** ERP (Warehouse, Locators, OnHandQty, Products, Pricing, Customers) ⇄ MQ (Products, Customers, Orders) ⇄ POS (POS Name, Sales, Orders, OrderLines).
+  - Processes: Export to Queue / Import from Queue (ERP side), POS Synchronization / Orders Synchronization (POS side).
+  - Caption: "The processes carry data between the 3 remotely located stacks and they worked asynchronously."
+- **p16 "INTEGRATION PLAN":** the asynchronous rationale ("the Internet or ERP server can be momentarily down and the POS … can still operate … persistence").
+
+**Film v2 changes:**
+1. **Chapter 1 opens with its card, then the ORIGINAL POS screen** (p23 crop), with a voice line: the same Hoe, Rake and Tools tiles, 2011. Then today's till on the same products.
+2. **The before/after uses the owner's own p50 diagram** (crop, credited "from RED1's 2011 integration guide") instead of a drawn card. The AFTER keeps the same three stacks: ERP (head office) ⇄ relay ⇄ POS. The relay is a dumb mailbox like the MQ, still delayed EODA/SODA, with no broker server to run.
+3. **Credits fixed** (above). Ghintech is not named as part of the 2012 integration.
+
+**Q2 answered from the code: the interim hand-offs do NOT stay on the branch LAN.**
+- Till → branch admin at Close Cash, kitchen orders and bumps, shared open tables and the price fan-out all go through the internet relay, in a branch-only mailbox (`erp/team_sync.js:318`, lane `b_<person>`, `common/comm/comm_pipe.js` PUT/GET/list).
+- Head office never reads that mailbox (§20), but the bytes do leave the shop.
+- No LAN transport exists (no WebRTC / peer-to-peer in `erp/` or `common/comm/`; the `BroadcastChannel` uses are same-device tabs).
+- Measured costs: ~25 requests per EODA hand-off (§26.R), 38 per kitchen message (§20), 1 save + 1 Visit per table visit (§32.R).
+- **A LAN option to discuss (not built):** a browser cannot run a LAN server, but WebRTC data channels connect devices on the same LAN directly (host ICE candidates, no STUN/TURN server).
+  - The one-time signalling could be a QR code shown on the branch admin and scanned by each till/kitchen device, so it needs no server and works with the internet down.
+  - The branch would then behave like uniCenta's one shop DB: kitchen, tables and hand-offs on the LAN. Only EODA up / SODA down would cross the internet relay.
+
