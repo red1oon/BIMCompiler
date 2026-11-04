@@ -1885,3 +1885,19 @@ Harness `erp/tests/witness_branch_relay.js`: the REAL `branch_relay.py` as a chi
 - **Two findings:** (1) my first close-stage `chk` had a swapped argument order and passed vacuously; the log (`book=47`, storage `now 27`) contradicted the PASS, fixed and re-run RED then GREEN. (2) raw `trx.q` does not see the Trx's own pending writes, so the book stamp reads `trx.find('m_storageonhand')`; a `trx.q` read took 47 instead of 38 after the day's sales.
 - **Named twin decision:** legacy Import Inventory does not compute QtyBook; HQ stamps it before the import (the branch is blind).
 - **Not built:** the LAN/relay transport and the real main-till flag (§38); the plan row I1 needs BIMCompiler #366 merged for the source to match the regenerated `erp/team_plan_pos.js`.
+
+### §34.F FILM v3 RESULT (2026-11-05; branch `film/unicenta-till-v3`, BIMCompiler PR #367, pipeline `scripts/film_unicenta_till/`)
+**Film:** `~/Videos/UnicentaPOS_SQLiteWASM_narrated_EN_AFTER_2026-11-05_v3.mp4`, **352.2 s** (8,453 frames, 24 fps), EN (Kokoro, CPU only). v1 and v2 untouched.
+- **Slide 2 AFTER (b0b):** same three stacks; the card and the voice already carried no LAN / multi-till words (nothing to remove, verified in `cards.js` and `script_en.md`).
+- **NEW slide 3 EXPAND (b0c, 32.4 s):** four design stills `exp1..exp4` cross-faded with ffmpeg `xfade` (0.8 s, no zoompan): the AFTER with the right stack outlined, then several tills (A-D) each "localhost, air-gapped, own SQLite DB", then the BRANCH RELAY joining them, then the MAIN TILL (HQ stock figure + order lines) with EODA up / SODA down as the only link to the internet relay, and "branch relay down? every till keeps selling". Shown as built; NO number on these cards or in the voice (no fact exists for the new parts; guard G4 and G2 pass).
+- **Beat 3 handled as STILLS (default), switch `BEAT3=live|stills` in `build.sh`.** The v2 footage shows the old till -> branch-admin hand-off, which contradicts the main-till words, so b3a/b3b are stills `day1`/`day2`/`day3` (each till rings on its own; the main till collects by timestamp; the main till's EODA is the single send). Chapter card 3 reworded. When the main till + branch relay land (§38): re-record `tills` / `admin` segments (`ONLY=b3a,b3b RECORD=1`), then `BEAT3=live`. `livecheck.js` skips the four old beat-3 live facts (`§LIVE_SKIP`) while on stills.
+- **Other beats:** reused the v2 recorded clips (`SKIPREC=1`), retimed from measured segment starts.
+| Witness of the cut | Verdict |
+|---|---|
+| frames == silent picture | PASS 8,453 == 8,453 |
+| longest silence >= 4 s | PASS 6.17 s (bar 7 s) |
+| loudness | PASS -16.3 LUFS |
+| subtitle zone (704 frames at 2 fps) | PASS 0 non-empty |
+| numbers guard (2 planted controls caught) | PASS; live facts PASS checked=14 skipped=4 |
+| `§NARR_FIT` | PASS 18/18 DETAIL |
+| `§NARR_TONE` | PASS 0 WRONG of 21 (first fit: b0c "Then who talks to head office?" rose; reworded "Then who does talk ...", fell) |
