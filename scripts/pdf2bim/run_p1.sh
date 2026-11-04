@@ -16,6 +16,7 @@ run 07_plan_marks      python3 -I $S/add_plan_marks.py "$O/p1_extracted.dxf" "$R
 run 08_elev_emit       python3 -I $S/elev_emit.py svg/p4.svg svg/p5.svg "$O/p1_extracted.dxf" "$RJ" "$O/elev" "$PDF"
 run 09_to_std          python3 -I $S/to_std.py "$O/p1_marked.dxf" "$O/elev" "$RJ" "$O/typed"
 run 09b_section_emit   python3 -I $S/section_emit.py svg/p6.svg svg/p1.svg "$RJ" "$PDF" "$O/typed"
+run 09c_roof_emit      python3 -I $S/roof_emit.py svg/p3.svg svg/p4.svg svg/p6.svg "$RJ" "$PDF" "$O/typed"
 # LOD400 library: local export (git-ignored scripts/library_building_types.json is a default-only data file)
 [ -f "$H/scripts/library_building_types.json" ] || cp "$T/library_building_types.default.json" "$H/scripts/library_building_types.json"
 LIBDB="${PDF2BIM_LIBDB:-}"; for c in "$H/library/component_library.db" "$HOME/bim-compiler/library/component_library.db"; do [ -z "$LIBDB" ] && [ -f "$c" ] && LIBDB="$c"; done
@@ -31,9 +32,10 @@ PY
   echo "== 10a_library_migrate ($(cat logs/10a_library_migrate.log | tr '\n' ' '))"
   run 10_library_export node "$H/scripts/export_library_subset.js" --full --out-dir "$O/lib" --lib "$O/component_library.migrated.db"
 fi
-( cd "$HOME/bim-ootb/modeller" && run_in(){ :; }; node "$S/lib_probe.js" "$O/typed" "$O/lib/" "$O/tbkltn_p1.ifc" > "$O/logs/11_lib_probe.log" 2>&1; echo "== 11_lib_probe exit=$? ($(wc -l < $O/logs/11_lib_probe.log) lines)" )
+( cd "${PDF2BIM_OOTB:-$HOME/bim-ootb}/modeller" && run_in(){ :; }; node "$S/lib_probe.js" "$O/typed" "$O/lib/" "$O/tbkltn_p1.ifc" > "$O/logs/11_lib_probe.log" 2>&1; echo "== 11_lib_probe exit=$? ($(wc -l < $O/logs/11_lib_probe.log) lines)" )
 run 12_ifc_check       python3 "$S/ifc_check.py" "$O/tbkltn_p1.ifc"
 run 13_witness_level_c python3 -I $S/witness_level_c.py "$O" "$RJ"
 run 14_other_sheets    python3 -I $S/other_sheets.py "$O" "$RJ" "$PDF"
 run 15_gap_register    python3 "$S/gap_register.py" "$O" "$RJ"
-echo "--- headline"; grep -h -E "W-P1 |W-P5 wall pairs|W-P12 round|G1 scale|MATCH D|TOTAL by class" logs/0*.log | cut -c1-170; grep -h -E "LIB els|IFC counts|IFC bbox .* IfcWall|IFC validate" logs/11_lib_probe.log logs/12_ifc_check.log | cut -c1-200; grep -h -E "W-C[0-9] |§WC" logs/13_witness_level_c.log | cut -c1-220; grep -h -E "^§(S |GAP-TOTAL)" logs/14_other_sheets.log logs/15_gap_register.log | cut -c1-200
+run 16_witness_roof    python3 "$S/witness_house_roof.py" "$O"
+echo "--- headline"; grep -h -E "W-P1 |W-P5 wall pairs|W-P12 round|G1 scale|MATCH D|TOTAL by class" logs/0*.log | cut -c1-170; grep -h -E "LIB els|IFC counts|IFC bbox .* IfcWall|IFC validate" logs/11_lib_probe.log logs/12_ifc_check.log | cut -c1-200; grep -h -E "W-C[0-9] |§WC" logs/13_witness_level_c.log | cut -c1-220; grep -h -E "^§(S |GAP-TOTAL)" logs/14_other_sheets.log logs/15_gap_register.log | cut -c1-200; grep -h -E "^§R " logs/16_witness_roof.log | cut -c1-200

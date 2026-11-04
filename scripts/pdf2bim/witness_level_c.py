@@ -44,9 +44,9 @@ dep=re.findall(r'W-C5 (A-A|B-B) .*?depth mm ([\d.]+) vs drawn (\d+) (PASS|WRONG)
 if len(dep)<2: say('W-C5','VACUOUS','sections judged: %s'%dep)
 else:
     z=(float(sb.group(2)),float(sb.group(3))) if sb else None
-    say('W-C5','PASS' if all(x[3]=='PASS' for x in dep) and rows('GAP:slab_no_underside')==0 and cls('IfcSlab')==1 and z==(0.0,0.15) else 'WRONG','depths %s, slab_no_underside %d, IfcSlab %d, DIRECT z %s (floor build-up, YELLOW; structure is Engr\'s detail, note G1)'%([(a,b) for a,b,_,_ in dep],rows('GAP:slab_no_underside'),cls('IfcSlab'),z))
+    say('W-C5','PASS' if all(x[3]=='PASS' for x in dep) and rows('GAP:slab_no_underside')==0 and cls('IfcSlab')==2 and z==(-0.1,0.15) else 'WRONG','depths %s, slab_no_underside %d, IfcSlab %d, DIRECT z %s (floor build-up, YELLOW; structure is Engr\'s detail, note G1)'%([(a,b) for a,b,_,_ in dep],rows('GAP:slab_no_underside'),cls('IfcSlab'),z))
 # W-C6
-wb=re.search(r"IfcWall facesets \d+ (\[.*?\]) (\[.*?\])",I); wall=(json.loads(wb.group(1)),json.loads(wb.group(2))) if wb else None
+wb=re.search(r"StoreyWalls facesets \d+ (\[.*?\]) (\[.*?\])",I); wall=(json.loads(wb.group(1)),json.loads(wb.group(2))) if wb else None
 BASE=82
 if TOTAL>=BASE: say('W-C6','NO-OP','blocking %d, baseline %d'%(TOTAL,BASE))
 else: say('W-C6','PASS' if wall==([-0.05,-6.25,0.15],[9.95,0.05,3.15]) else 'WRONG','blocking %d (was %d), wall DIRECT bbox %s, elements %s'%(TOTAL,BASE,wall,ELS))

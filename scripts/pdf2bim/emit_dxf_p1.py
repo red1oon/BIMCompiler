@@ -170,8 +170,9 @@ for sw,pts,s_,cv in P:
         if not IN(xs,ys): continue
         a,b=sorted(((max(xs)-min(xs))*K,(max(ys)-min(ys))*K))
         if abs(a-200)<=40 and abs(b-300)<=40:
-            x1,x2,y1,y2=X(min(xs)),X(max(xs)),Y(max(ys)),Y(min(ys)); lay='PDF-COLUMN'; nc+=1
-            E.append((lay,'LWPOLYLINE',((x1,y1),(x2,y1),(x2,y2),(x1,y2)))); log('W-C4 column rect',(x1,y2),(x2,y1),'centre',(round((x1+x2)/2,1),round((y1+y2)/2,1)))
+            x1,x2,y1,y2=X(min(xs)),X(max(xs)),Y(max(ys)),Y(min(ys)); near_w3=any(w[0]=='W3' and math.hypot(w[1]-(min(xs)+max(xs))/2,w[2]-(min(ys)+max(ys))/2)<=20 for w in W)   # §15: the W3 tag sits 14-15 pt from its column; a rectangle with no tag near is not a column (§32)
+            lay='PDF-COLUMN' if near_w3 else 'PDF-UNCLASSIFIED'; nc+=1
+            E.append((lay,'LWPOLYLINE',((x1,y1),(x2,y1),(x2,y2),(x1,y2)))); log('W-C4 column rect' if near_w3 else 'W-C4 rectangle with no W3 tag, YELLOW, not a column',(x1,y2),(x2,y1),'centre',(round((x1+x2)/2,1),round((y1+y2)/2,1)))
 log('E1 window chain rectangles',nw,'(from 100x500 modules)','column rects (200x300 anywhere in plan, incl. unexplained one)',nc)
 # ---- door arcs
 nd=0; nfix=0; DOORREC=[]

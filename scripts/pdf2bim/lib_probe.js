@@ -1,6 +1,6 @@
 // scratch-style driver (not product code): the importer's standard gate + convert WITH the LOD400 library read from a LOCAL directory (exported by BIMCompiler scripts/export_library_subset.js --full).
 // Usage: node lib_probe.js <dir of typed dxf> <local library dir ending with />   Reads bim-ootb modeller modules read-only.
-const fs=require('fs'),path=require('path'); const D='/home/red1/bim-ootb/modeller/';
+const fs=require('fs'),path=require('path'); const D=(process.env.PDF2BIM_OOTB||'/home/red1/bim-ootb')+'/modeller/';
 const I=require(D+'dxf2bim_import.js'),P=require(D+'dxf2prep.js');
 const dir=process.argv[2], base=process.argv[3];
 const names=fs.readdirSync(dir).filter(f=>f.endsWith('.dxf')).sort();
