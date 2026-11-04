@@ -79,7 +79,12 @@ The 25 things a uniCenta 5.0 cashier (and manager) does, and where each one is h
 
 4. **Tap Sales.** Pick a category, then tap product tiles. The back arrow returns to the parent category.
 
-   ![The Sales screen with a sample sale: Patio Chair, Hoe 4 ft and 2 x Rose Bush on the ticket, the Bushes category open with picture tiles](img/till/till_03_sales.png)
+   ![The Sales screen with a sample sale: Patio Chair, Hoe 4 ft and 2 x Rose Bush on the ticket, the Tools category open with seven picture tiles](img/till/till_03_sales.png)
+
+   The screen is laid out as uniCenta's: buttons across the top, the **ticket** in the middle (it takes whatever height is left), and the **catalog** at the bottom at the
+   *category panel height* set at the branch admin (320 px by default). Product tiles are 107 x 60 with the picture and the name and price over its bottom edge. The thin
+   bar above the tiles shows the open category; press it to **fold the catalog away** (the ticket grows into the space) and press it again to bring the products back.
+   The choice is remembered on this till.
 
    *Sample sale on the GardenWorld demo tenant: 1 x Patio Chair 33.75, 1 x Hoe 4 ft 13.50, 2 x Rose Bush 57.00 — Subtotal 104.25, Taxes 0.00, Total 104.25 (the demo tax rate is 0 %).*
    The arrow button at the bottom left goes back to the category tiles:
@@ -213,9 +218,9 @@ never fetched shows the "no image" mark. The till logs `§TILL_MEDIA` with the f
 
 Set **Tickets = restaurant** in *Configuration* (below) and restart, or open `till.html?mode=restaurant`. **Sales** then opens
 the **floor map**: one tab per floor, one button per table. A table with an open ticket is shaded and shows the waiter, the table
-name and seats, *Guests* and *Waiting*. **Reload**, **Reservations** and **Tables** are on the sales screen.
+name and seats, *Guests* and *Waiting*. The floor is drawn as uniCenta's 960 x 600 plan: each table is drawn from its own record (round when its width equals its height, otherwise a rectangle) with one chair per seat, and an open table shows the people icon. With *Transparent table button* ticked in *Configuration*, the floor's own picture is used instead and the tables are invisible buttons over it. **Reload**, **Reservations** and **Tables** are on the sales screen.
 
-![The floor map: 24 tables, three of them open (tables 3, 7 and 12)](img/till/till_19_restaurant_map.png)
+![The floor map: uniCenta's 24 tables drawn with chairs, three of them open (tables 3, 7 and 12)](img/till/till_19_restaurant_map.png)
 
 - **Who sets up floors and tables:** the **branch POS admin** (Floors, Tables and till settings, below), as uniCenta's back office does. Until it sets
   any, the till shows uniCenta's seed floor of Table 1 ... Table 24 (nothing is written for it).
@@ -223,9 +228,14 @@ name and seats, *Guests* and *Waiting*. **Reload**, **Reservations** and **Table
   **locked** to your till. Another till that taps it is told "Table is in use by *till*" and cannot open it.
 - **Saving.** The ticket is saved when you **leave** the table (back to the map, or **Tables**), not on each tap: one save and one
   branch update. Taps inside the table cost nothing.
-- **Override, move, merge, guests.** The shared-table logic implements a PIN override of another till's lock (the PIN is set at the
-  branch admin), moving a ticket to a free table, merging two tickets, and a guest count; the till has **no button or screen for
-  these yet**, and they are not claimed as something a cashier can do today.
+- **On a table's sales screen** the controls are uniCenta's: **Tables** (back to the map), **Move**, **Guests** and **Delete**.
+  - **Guests** opens *Enter Number of Guests*; the button then shows the count, and it is saved with the table when you leave it.
+  - **Move**: the ticket is saved and the map says *Moving table N. Select another Table or the original Table*. Tap a **free** table and the ticket moves there.
+    Tap an **occupied** table and the till asks *Merge Tables: This will Merge tables. Are you sure you want to do this?*; **Yes** adds the lines and guests to that
+    table and clears the first, **No** returns to the original table. Tapping the original table cancels the move.
+  - **Delete** (Delete Current Order): when the branch has an **override PIN** (set at the branch admin) the till first asks *Enter PIN Number*; a wrong PIN says
+    *PIN Number Incorrect* and deletes nothing. Then *Are you sure you want to Delete the current Order?*; **Yes** clears the table.
+  - **A table another till is using** can be taken over the same way: tap it, and when the branch has a PIN the till asks *Enter PIN Number*.
 - **Reservations.** **Reservations** → *Select Person, Persons, Booking Time, Notes* → **Save**. The reservation has **no table
   yet**. At check-in, choose the table in the **Table** list (the first entry is "(table at check-in)") and press **Check-In Now**:
   that table opens for the customer. A reservation is **Done** afterwards. Reservations stay in the branch and are not an ERP record.
@@ -399,8 +409,10 @@ how many prices, products and taxes arrived ("*n* batch(es): ...").
 - **Pass prices to tills** hands the batch rows to the tills, in one Visit. A till applies a row only if it arrived; **only price changes travel, and old prices stay.**
   A changed product row (name, key, barcode, picture address, category, tax category) travels the same way; unchanged rows never do.
 - **Receive stock** is the branch's **Move Confirmation** of the in-transit stock movement head office sent (replenishment). The button shows "*n* movement(s) to receive";
-  pressing it receives each in full (confirmed = target). The receipt is kept and goes up inside the **next EODA**, never as a send of its own; head office then
-  completes the movement and any difference documents.
+  pressing it opens the movement's lines, as legacy's Move Confirmation window shows them: **Move Line**, **Product**, **Target Quantity**, **Confirmed Quantity**,
+  **Difference** and **Scrapped Quantity**. Confirmed starts at the target and Scrapped at 0 (a full receipt). For a short receipt type what arrived and what was scrapped;
+  **Difference** is worked out for you (target - confirmed), as legacy does. Example: target 5, confirmed 3, scrapped 1 gives difference 2. Press **Confirm receipt**.
+  The receipt is kept and goes up inside the **next EODA**, never as a send of its own; head office then completes the movement and the difference documents.
 
 ### Floors, tables and till settings
 
