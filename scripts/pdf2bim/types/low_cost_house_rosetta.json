@@ -1,0 +1,379 @@
+{
+  "_readme": "ROSETTA DICTIONARY for type LowCostHouse, authored IN HINDSIGHT from TBKLTN_House.pdf (owner 2026-11-03: 'a Rosetta Stone dictionary you can infer in hindsight'). Source = multimodal read of the sheets (accepted by owner); each entry carries a `check` naming the numeric witness that corroborates it, or null.",
+  "sheet": {
+    "scale": "1:100",
+    "paper": "A4 landscape",
+    "mm_per_pt_fitted": 35.87,
+    "fit": "A..E label centres 163.2..439.2 pt = 9900 mm",
+    "title_block": [
+      "PROJEK",
+      "PEMILIK",
+      "ARKITEK",
+      "JENIS BANGUNAN",
+      "TAJUK LUKISAN",
+      "DILUKIS",
+      "UKURAN",
+      "HARIBULAN",
+      "DISEMAK",
+      "NO. LUKISAN",
+      "NO. KEPINGAN",
+      "PINDAAN NO"
+    ],
+    "sheet_no": "WD-1/01",
+    "project_type_text": "RUMAH RAKYAT"
+  },
+  "grid": {
+    "x": {
+      "A": 0,
+      "B": 1300,
+      "C": 3100,
+      "D": 6800,
+      "E": 9900
+    },
+    "y": {
+      "5": 0,
+      "4": 1500,
+      "3": 3100,
+      "2": 6200,
+      "1": 8500
+    },
+    "dim_chain_read": {
+      "x": [
+        1300,
+        3100,
+        3700,
+        3100,
+        9900
+      ],
+      "y": [
+        1500,
+        1600,
+        3100,
+        3100,
+        2300
+      ]
+    },
+    "overall_mm": [
+      9900,
+      8500
+    ],
+    "check": "rosetta_verify.py G1: label centres in text layer vs read dims"
+  },
+  "rooms": [
+    {
+      "name": "TANDAS",
+      "class": "toilet",
+      "ifc_space": "IfcSpace",
+      "x": [
+        "A",
+        "B"
+      ],
+      "y": [
+        "5",
+        "4"
+      ],
+      "ffl_from_agl": "050.00",
+      "floor": "CT",
+      "wall": "CT-PP",
+      "printed_sqm": 1.95
+    },
+    {
+      "name": "BILIK MANDI",
+      "class": "bathroom",
+      "x": [
+        "A",
+        "B"
+      ],
+      "y": [
+        "4",
+        "3"
+      ],
+      "ffl_from_agl": "050.00",
+      "floor": "CT",
+      "wall": "CT-PP",
+      "printed_sqm": null
+    },
+    {
+      "name": "RUANG BASUH",
+      "class": "wash/utility",
+      "x": [
+        "B",
+        "C"
+      ],
+      "y": [
+        "4",
+        "3"
+      ],
+      "ffl_from_agl": "100.00",
+      "floor": "CR",
+      "wall": "PP",
+      "printed_sqm": 2.88
+    },
+    {
+      "name": "DAPUR",
+      "class": "kitchen",
+      "x": [
+        "B",
+        "D"
+      ],
+      "y": [
+        "5",
+        "4"
+      ],
+      "ffl_from_agl": "100.00",
+      "floor": "CR",
+      "wall": "CT-PP",
+      "printed_sqm": 8.25
+    },
+    {
+      "name": "RUANG MAKAN",
+      "class": "dining",
+      "x": [
+        "C",
+        "D"
+      ],
+      "y": [
+        "4",
+        "3"
+      ],
+      "ffl_from_agl": "100.00",
+      "floor": "CR",
+      "wall": "PP",
+      "printed_sqm": 5.92
+    },
+    {
+      "name": "BILIK 3",
+      "class": "bedroom",
+      "x": [
+        "D",
+        "E"
+      ],
+      "y": [
+        "5",
+        "3"
+      ],
+      "ffl_from_agl": "100.00",
+      "floor": "CR",
+      "wall": "PP",
+      "printed_sqm": 9.61
+    },
+    {
+      "name": "BILIK 2",
+      "class": "bedroom",
+      "x": [
+        "D",
+        "E"
+      ],
+      "y": [
+        "3",
+        "2"
+      ],
+      "ffl_from_agl": "100.00",
+      "floor": "CR",
+      "wall": "PP",
+      "printed_sqm": 9.61
+    },
+    {
+      "name": "BILIK UTAMA",
+      "class": "master_bedroom",
+      "x": [
+        "A",
+        "C"
+      ],
+      "y": [
+        "3",
+        "2"
+      ],
+      "ffl_from_agl": "100.00",
+      "floor": "CR",
+      "wall": "PP",
+      "printed_sqm": 9.61
+    },
+    {
+      "name": "RUANG TAMU",
+      "class": "living",
+      "x": [
+        "C",
+        "D"
+      ],
+      "y": [
+        "3",
+        "2"
+      ],
+      "ffl_from_agl": "100.00",
+      "floor": "CR",
+      "wall": "PP",
+      "printed_sqm": 11.47
+    },
+    {
+      "name": "ANJUNG",
+      "class": "porch",
+      "x_mm": 3200,
+      "y": [
+        "2",
+        "1"
+      ],
+      "ffl_from_agl": null,
+      "floor": "CR",
+      "wall": "PP",
+      "printed_sqm": null
+    }
+  ],
+  "room_tag_format": "2x2 box under the room name: [FFL from AGL | floor area sqm] over [floor finish | wall finish]",
+  "room_class_note": "room x/y rectangles are grid-to-grid NOMINAL cells (area = dx*dy); check = rosetta_verify.py R1 vs printed_sqm",
+  "plan_symbols": {
+    "typ_units": {
+      "aluminium kitchen sink": 1,
+      "basin": 1,
+      "water closet (seating)": 1,
+      "shower": 1,
+      "floor trap": 3,
+      "tap": 4,
+      "gully trap": 2
+    },
+    "source": "p1 SYMBOLS table"
+  },
+  "notes_G": {
+    "_meaning": "G1..G10 in a triangle = general-note tags keyed to the table on p3; text layer holds only the tag, the note text is drawn",
+    "G1": "R.C beams, ground slabs & footing to Engr's detail",
+    "G2": "soil pipe discharged to IST per manufacturer's spec, Engr's detail and SPAN approval",
+    "G3": "waste pipe to Engr's detail",
+    "G4": "manhole to Engr's detail",
+    "G5": "230 mm dia half p.c. PERIMETER DRAIN discharged to nearest road-side drain, Engr's detail",
+    "G6": "location of 250 gal HDPE water tank on H.W plinth, Engr's + SPAN approval",
+    "G7": "dotted lines = waterproofing up to 1500 mm ht (baths)",
+    "G8": "dotted lines = damp-proof membrane",
+    "G9": "50 dia uPVC vent pipe with wire ball mesh built up 300 high above roof surface",
+    "G10": "50 mm thk x 600 mm d r.c. working counter top, cement render finish",
+    "anomaly": "p7 tags the water tank with G10 while p3 defines G6 as the tank and G10 as the counter top — drafter inconsistency, kept yellow"
+  },
+  "roof": {
+    "finish": "MR metal roofing on prefabricated trusses incl. fascia board (+ FG GI flashing)",
+    "pitch_deg": 25,
+    "faces_read": 4,
+    "eaves_overhang_mm": 700,
+    "layout": "main gable, ridge along grid 3 (E-W) with two 25 deg faces; porch (ANJUNG) gable with N-S ridge meeting it; plan tags MR, HC, BC, VT read but not decoded",
+    "check": null
+  },
+  "perimeter_drain": {
+    "note": "G5, 230 mm dia half p.c.",
+    "geometry": "nested outer outline around the L-shaped footprint incl. porch, DISCHARGE arrows mid-side (N,S,W,E), manhole MH1 (G4) NW outside",
+    "check": "gap of the nested lines measured but NOT matching 230 mm (candidates 276 / 176 mm) -> YELLOW"
+  },
+  "sheets_read": {
+    "p1": "1. FLOOR PLAN (+ finishes key, symbols table)",
+    "p3": "3. ROOF PLAN (+ G1-G10 note table); title block says '1. REFL. CEILING PLAN' (inconsistent)",
+    "p7": "11. DIAGRAMMATIC COLD WATER LAYOUT + 10. DIAGRAMMATIC SANITARY LAYOUT (NTS)",
+    "p8": "door & window schedule"
+  },
+  "schedule_sizes_mm": {
+    "source": "p8 text layer, exact",
+    "D1": [
+      900,
+      2100
+    ],
+    "D2": [
+      900,
+      2100
+    ],
+    "D3": [
+      750,
+      2100
+    ],
+    "W1": [
+      1800,
+      1000
+    ],
+    "W2": [
+      1200,
+      1000
+    ],
+    "W3": [
+      600,
+      500
+    ]
+  },
+  "opening_drawing_conventions": {
+    "window": "chain of 100x500 mm closed rects at 600 mm pitch along a wall axis; width = modules x 600 (W3 1, W2 2, W1 3)",
+    "door": "quarter-circle swing arc, radius = nominal width minus ~80 mm (frame), cubic Bezier endpoints span r x r"
+  },
+  "library_binding": {
+    "_note": "opening tag -> family_id of the LOCAL LOD400 library (BIMCompiler component_library.db, exported by export_library_subset.js --full; Duplex items). exact=false = nearest-size STAND-IN (owner 2026-11-04: 'use from Duplex items'); the library holds no window of the drawing's sizes. Ratios are of default_width x default_height.",
+    "D1": {
+      "family": "DUPLEX_INTERIOR_864",
+      "lib_size": [
+        864,
+        2032
+      ],
+      "exact": false,
+      "vs": [
+        900,
+        2100
+      ],
+      "note": "INST_FIRE_DOOR_900 (exact size) has no mesh/size pair in its description -> LOD400 hard fail; RES_ENTRY likewise. Nearest size with geometry = Duplex interior door 864x2032 (-4% w, -3% h); an exterior door shown with an interior-door mesh: semantics YELLOW."
+    },
+    "D2": {
+      "family": "DUPLEX_INTERIOR_864",
+      "lib_size": [
+        864,
+        2032
+      ],
+      "exact": false,
+      "vs": [
+        900,
+        2100
+      ],
+      "note": "Duplex interior door M_Single-Flush 864x2032 (bedroom/bathroom): nearest size with geometry (-4% w, -3% h)"
+    },
+    "D3": {
+      "family": "DUPLEX_INTERIOR_762",
+      "lib_size": [
+        762,
+        2032
+      ],
+      "exact": false,
+      "vs": [
+        750,
+        2100
+      ],
+      "note": "Duplex interior door M_Single-Flush 762x2032 (bathroom/utility): nearest size with geometry (+1.6% w, -3% h). BATHROOM_DOOR (exact size) has NO mesh."
+    },
+    "W1": {
+      "family": "UK_WINDOW_1810",
+      "lib_size": [
+        1860,
+        1210
+      ],
+      "exact": false,
+      "vs": [
+        1800,
+        1000
+      ]
+    },
+    "W2": {
+      "family": "DUPLEX_CASEMENT",
+      "lib_size": [
+        819,
+        759
+      ],
+      "exact": false,
+      "vs": [
+        1200,
+        1000
+      ],
+      "note": "stand-in. Rejected before: LARGE_WINDOW (no mesh/size pair in its description -> LOD400 HARD FAIL), DUPLEX_SKYLIGHT (closest size but a horizontal skylight mesh -> the lane's own GAP:lod400_orientation refuses it). DUPLEX_CASEMENT = nearest-size VERTICAL window with geometry."
+    },
+    "W3": {
+      "family": "DUPLEX_CASEMENT",
+      "lib_size": [
+        819,
+        759
+      ],
+      "exact": false,
+      "vs": [
+        600,
+        500
+      ]
+    }
+  }
+}
