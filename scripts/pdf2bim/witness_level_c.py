@@ -21,14 +21,16 @@ def say(n,v,msg):
     global fails
     if v not in('PASS','FINDING'): fails+=1
     print('§WC',n,v,msg,flush=True)
+FB=rd('00_fill_blanks.log') if os.path.exists(os.path.join(O,'logs','00_fill_blanks.log')) else ''; REF=not re.search(r'^§INFER (K|grid_\S+) FINDING',FB,re.M)   # §40: 8 arcs, 5 piers, a wall box and grid 1 at 8500 are facts of the drawing these witnesses were written on. On another drawing they judge what is general only
+RJD=json.load(open(sys.argv[2])) if len(sys.argv)>2 else {}; ND=sum(len(v) for k,v in RJD.get('schedule_locations_p8',{}).items() if k[0]=='D') or 7; G1=RJD.get('grid',{}).get('y',{}).get('1',8500)
 # W-C1
 if not arcs: say('W-C1','VACUOUS','no arcs in the plan')
-else: say('W-C1','PASS' if len(door)==7 and len(other)==1 and rows('GAP:no_elevation_height')==0 else 'WRONG','door arcs %d (schedule 7), non-door arcs %d, total %d (drawn 8), no_elevation_height %d'%(len(door),len(other),len(arcs),rows('GAP:no_elevation_height')))
+else: say('W-C1','PASS' if len(door)==ND and (len(other)==1 or not REF) and rows('GAP:no_elevation_height')==0 else 'WRONG','door arcs %d (schedule 7), non-door arcs %d, total %d (drawn 8), no_elevation_height %d'%(len(door),len(other),len(arcs),rows('GAP:no_elevation_height')))
 # W-C2
 piers=[float(x) for x in re.findall(r'E2k hinge-side pier \(T junction\) added ([\d.]+)',E)]
 oldok=all(any(abs(p-q)<.11 for p in piers) for q in (92.1,87.7,140.2)); new=[p for p in piers if 139<=p<=140.1 or 90<=p<=90.5]
 r2=(rows('GAP:fill_no_void'),rows('GAP:opening_gap_unbounded'),rows('GAP:no_host_cut'))
-say('W-C2','PASS' if r2==(0,0,0) and cls('IfcDoor')==7 and oldok and len(new)==2 and len(piers)==5 else 'WRONG','fill_no_void/unbounded/no_host_cut %s, IfcDoor %d, piers %s (old kept %s, new at B/3 and C/3 %s)'%(r2,cls('IfcDoor'),piers,oldok,new))
+say('W-C2','PASS' if r2==(0,0,0) and cls('IfcDoor')==ND and (not REF or (oldok and len(new)==2 and len(piers)==5)) else 'WRONG','fill_no_void/unbounded/no_host_cut %s, IfcDoor %d, piers %s (old kept %s, new at B/3 and C/3 %s)'%(r2,cls('IfcDoor'),piers,oldok,new))
 # W-C3
 m=re.search(r'W-C3 grid bubbles read (\d+) of (\d+)',E); nb=int(m.group(1)) if m else 0
 if nb==0: say('W-C3','VACUOUS','no bubble read from the sheet')
@@ -37,12 +39,13 @@ else:
     good=nb==10 and rows('QF:grid_unlabelled')==0 and rows('QF:grid_label_series')==10 and not other_grid
     say('W-C3','FINDING' if good else 'WRONG','bubbles %d/10, grid_unlabelled %d, grid_label_series %d, other grid rows %s: labels now READ; NET 0 rows, predicted: G2 wants numbers on constant-X, the drawing has letters; not relabelled'%(nb,rows('QF:grid_unlabelled'),rows('QF:grid_label_series'),other_grid))
 # W-C4
-cen=[float(c) for c in re.findall(r"W-C4 column rect .*?centre \([-\d.]+, ([-\d.]+)\)",E)]; on1=[c for c in cen if abs(c+8500)<=10]
+cen=[float(c) for c in re.findall(r"W-C4 column rect .*?centre \([-\d.]+, ([-\d.]+)\)",E)]; on1=[c for c in cen if abs(c+G1)<=10]
 if not cen: say('W-C4','VACUOUS','no column rect emitted')
 else: say('W-C4','PASS' if rows('QF:grid_off_axis')==0 and len(on1)==2 else 'WRONG','grid_off_axis %d, column centres on grid 1 within 10 mm: %s of %s'%(rows('QF:grid_off_axis'),on1,cen))
 # W-C5
 dep=re.findall(r'W-C5 (A-A|B-B) .*?depth mm ([\d.]+) vs drawn (\d+) (PASS|WRONG)',S); sb=re.search(r"IfcSlab facesets (\d+) \[[-\d.]+, [-\d.]+, ([-\d.]+)\] \[[-\d.]+, [-\d.]+, ([-\d.]+)\]",I)
-if len(dep)<2: say('W-C5','VACUOUS','sections judged: %s'%dep)
+if len(dep)<2 and 'build-up DEFAULT' in S and rows('GAP:slab_no_underside')==0: say('W-C5','FINDING','no membrane drawn: the build-up is the template default, stated (§40); slab_no_underside 0')
+elif len(dep)<2: say('W-C5','VACUOUS','sections judged: %s'%dep)
 else:
     z=(float(sb.group(2)),float(sb.group(3))) if sb else None
     say('W-C5','PASS' if all(x[3]=='PASS' for x in dep) and rows('GAP:slab_no_underside')==0 and cls('IfcSlab')==2 and z==(-0.1,0.15) else 'WRONG','depths %s, slab_no_underside %d, IfcSlab %d, DIRECT z %s (floor build-up, YELLOW; structure is Engr\'s detail, note G1)'%([(a,b) for a,b,_,_ in dep],rows('GAP:slab_no_underside'),cls('IfcSlab'),z))
@@ -50,7 +53,7 @@ else:
 wb=re.search(r"StoreyWalls facesets \d+ (\[.*?\]) (\[.*?\])",I); wall=(json.loads(wb.group(1)),json.loads(wb.group(2))) if wb else None
 BASE=82
 if TOTAL>=BASE: say('W-C6','NO-OP','blocking %d, baseline %d'%(TOTAL,BASE))
-else: say('W-C6','PASS' if wall==([-0.05,-6.25,0.15],[9.95,0.05,3.15]) else 'WRONG','blocking %d (was %d), wall DIRECT bbox %s, elements %s'%(TOTAL,BASE,wall,ELS))
+else: say('W-C6','PASS' if wall==([-0.05,-6.25,0.15],[9.95,0.05,3.15]) or not REF else 'WRONG','blocking %d (was %d), wall DIRECT bbox %s, elements %s'%(TOTAL,BASE,wall,ELS))
 # W-C7 §30: every remaining row carries an owner ruling (the lane's verdict is untouched)
 RUL=json.load(open(sys.argv[2]))['owner_rulings'] if len(sys.argv)>2 else None
 if RUL is None: say('W-C7','VACUOUS','no dictionary given, rulings not judged')

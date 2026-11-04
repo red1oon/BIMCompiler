@@ -118,6 +118,16 @@
       "tol_mm": 15,
       "read_from": "elevations: outer to inner frame vertical",
       "module_mm": 10
+    },
+    "roof_pitch_deg": {
+      "nominal": 25,
+      "tol_mm": 1,
+      "read_from": "side elevations: the long straight lines that are neither level nor plumb"
+    },
+    "floor_buildup": {
+      "nominal": 150,
+      "tol_mm": 10,
+      "read_from": "sections: FFL level line down to the chromatic membrane line, where one is drawn"
     }
   },
   "window_system": {
@@ -185,6 +195,45 @@
       "pen_mm": [
         15,
         40
+      ]
+    },
+    "style_search": {
+      "_spec": "§40: where the sheet's own style is looked for. Read once in fill_blanks.py, written to template.effective.json; every later stage uses what was read.",
+      "wall_pair_mm": [
+        60,
+        300
+      ],
+      "long_line_mm": 1000,
+      "bubble_radius_mm": [
+        200,
+        800
+      ],
+      "arc_mm": [
+        450,
+        1300
+      ],
+      "elevation_beam_mm": [
+        2000,
+        4500
+      ],
+      "elevation_ffl_mm": [
+        50,
+        800
+      ],
+      "wall_on_axis_mm": 120
+    },
+    "column_tags": [
+      "W3",
+      "C1"
+    ],
+    "column_mm": {
+      "short": [
+        160,
+        240
+      ],
+      "long": [
+        160,
+        340
       ]
     }
   },

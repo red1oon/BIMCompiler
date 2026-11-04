@@ -19,10 +19,10 @@ def mesh(w,h,n):
 print("-- CL007: the 'Low cost single storey unit' window families, generated from the p8 schedule by scripts/pdf2bim/gen_window_families.py. DO NOT hand-edit: regenerate.\n-- Spec: prompts/PDF2BIM_VECTOR_PROBE.md §34. Overall size and panels: p8 schedule. Depth: the plan's 100 mm modules. Frame face and pane thickness: template defaults, YELLOW. Blades not modelled.\n-- Data only, append-only, idempotent: INSERT OR IGNORE. Applies to library/component_library.db (never commit the binary: this script is the change).\nBEGIN TRANSACTION;")
 o=0
 for k in (sys.argv[3].split(',') if len(sys.argv)>3 else ('W1','W2','W3')):   # §39: only these tags
-    w,h=SZ[k]; ty=W['types'][k]; fid='LCSSU_%s_%dx%d'%(k,w,h)
-    desc='%s %d×%dmm %s. Generated from the p8 schedule; frame profile is a default.'%(k,w,h,ty['text'])
+    w,h=SZ[k]; ty=W['types'][k]; dt='' if W['depth_mm']==100 else 'd%d'%W['depth_mm']; lab=k+dt; fid='LCSSU_%s_%dx%d%s'%(k,w,h,dt)
+    desc='%s %d×%dmm %s. Generated from the p8 schedule; frame profile is a default.'%(lab,w,h,ty['text'])
     print("INSERT OR IGNORE INTO ad_opening_family (family_id,family_name,opening_type,ifc_class,default_width_mm,default_height_mm,is_fire_rated,description,is_active,depth_mm) VALUES ('%s','Low cost %s %d panel %dx%dmm','WINDOW','IfcWindow',%d,%d,0,'%s',1,%d);"%(fid,k,ty['panels'],w,h,w,h,desc.replace("'","''"),W['depth_mm']))
-    V,I=mesh(w/1000,h/1000,ty['panels']); ref='%s: %d x %d generated'%(k,w,h)
+    V,I=mesh(w/1000,h/1000,ty['panels']); ref='%s: %d x %d generated'%(lab,w,h)
     if len(sys.argv)>3: o=w*100000+h*10   # §39: a run's own family must not collide with a committed row's ordinal: the map's key would make INSERT OR IGNORE drop its mesh rows, silently
     for VV in (V,along_y(V)):
         v,f,hh=blob(VV,I); o+=1

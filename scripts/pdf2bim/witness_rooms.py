@@ -10,7 +10,9 @@ def say(n,v,m):
     if v not in('PASS','FINDING'): fails+=1
     print('§A',n,v,m,flush=True)
 L=open(lg,encoding='utf-8').read(); rows=re.findall(r'^§ROOM (\w+) printed (\S+) cell (\S+) .*?\| (.+?) \|',L,re.M); P=TT.stroked_paths(svg); W=TT.words(pdf,T['sheets']['plan']); B=TT.room_tags(P,T,K,TT.plan_frame(W,R,T)); xa,y5=TT.plan_origin(pdf,R,T); A,stray=TT.assign_tags(B,R,xa,y5,K)
-if not B: say('W-A1','VACUOUS','no tag box found'); print('§A RESULT fails',fails); sys.exit(0)
+if not B:
+    tx=[r for r in re.findall(r'^§ROOM (\w+) printed (\S+) .*?\| (.+?) \| text layer',L,re.M)]
+    say('W-A1','VACUOUS' if not tx else 'PASS','no tag box; %d rooms read from the text layer'%len(tx)); by={s:sum(1 for r in rows if r[0]==s) for s in('READ','FINDING','DEFAULT')}; say('W-A2','VACUOUS' if not rows else ('PASS' if by['READ']==len(rows) else 'FINDING'),'%d rooms, by status %s'%(len(rows),by)); print('§A RESULT fails',fails); sys.exit(0)
 bad=[k for k,v in A.items() if len(v)!=1]; rep=len(re.findall(r'FINDING (cell holds|a tag in no)',L))
 say('W-A1','PASS' if not bad and not stray else ('FINDING' if rep==len(bad)+len(stray) else 'WRONG'),'tags %d, rooms %d, rooms without exactly one tag %s, stray %d, reported %d'%(len(B),len(R['rooms']),bad,len(stray),rep))
 wrong=[r for r in rows if r[0]=='READ' and r[1]!='None' and abs(float(r[1])-float(r[2]))>=.005]; by={s:sum(1 for r in rows if r[0]==s) for s in('READ','FINDING','DEFAULT')}

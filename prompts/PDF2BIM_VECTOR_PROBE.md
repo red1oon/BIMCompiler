@@ -564,3 +564,67 @@ Sample points move with the run too (eaves, porch ridge x, grid 1). VACUOUS if `
 - **A third, in my own generator:** with `--only D3` the ordinals restarted at 1, the map's unique index (type, class, storey, ordinal) made `INSERT OR IGNORE` drop the mesh rows, and the family arrived with no geometry. The importer hard-failed and invented nothing: correct. Ordinals for a run's own family now come from its size; CL007 and CL008 stay byte-identical.
 **RESULT (2026-11-05, final sweep on the committed code, every `§V ... RESULT fails 0`, Z B NOFILL H S T G FR D NOFILLD):** D: `schedule_D3` FINDING and only it; `§FAM D3 LCSSU_D3_800x2100 GENERATED`, the rest LIBRARY; doors [800, 800, 900 x 5] on their floor, 100 deep; W-D4 FINDING on 4 doors (D2 +80, D3 +131); `families_new.sql` holds that family only; 72 elements, qualifies, 61 accepted. Falsifier NOFILLD: doors [750, 750, 900 x 5], nothing generated. H now passes every roof and door witness, REAR's beam re-read 183.7 -> 180.1. W-T4, W-T5a/b, W-T6 PASS.
 **NOT DONE, needs the owner: a user-facing PDF -> DXF step (RESUME item 4, ⛔).** The chain is ~1,500 lines of Python plus poppler. Two shapes, not one: **(A) in the Modeller page, recommended:** PDF opens like a DXF, offline, no install, no server, which fits the air gap; it means porting these rules to JS on pdf.js, one implementation retired. **(B) a command for a drafter:** days less work, keeps Python, needs an install. This changes what gets built, so it is asked, not assumed.
+
+## 40. A SECOND DRAWING, AUTHORED FROM SCRATCH (owner 2026-11-05: *"u have to infer or recreate a sample 2nd low cost PDF just to test"*; spec BEFORE code)
+**Issue:** §35's variants are warps of TB-LKTN, so they share its pens, symbols, fonts and layout. Only another hand tests the reader's rules of thumb.
+**Status of this drawing, stated, always:** a test instrument, written by this lane, not a real drafter's set and never evidence about one. The author knows the reader, so a pass proves less than a real PDF would. **To limit that: the style table below is fixed BEFORE the first run, and the first run's failures are recorded here unfixed, before any change.**
+**`make_second_drawing.py` writes `second_drawing.pdf` from its own table, no input from TB-LKTN. Same TYPE (§33's preset: one storey, main + porch gable, the 10 rooms by grid cell, 3 door + 3 window types, 7 + 7 openings). A different hand:**
+| Feature | TB-LKTN | Second drawing |
+|---|---|---|
+| Paper, scale | A4, 1:100, fitted (35.87 mm/pt) | A3, 1:75, true (26.46 mm/pt) |
+| Grid mm | 1300 1800 3700 3100; 1500 1600 3100 2300 | 1500 1800 3900 3300; 1700 1700 3400 2200 |
+| Walls | 100, pen 0.36 pt, hatch | 150, pen 0.5 pt, no hatch |
+| Bubbles | r 364 mm circle | r 500 mm circle, pen 0.25 |
+| Windows on plan | 100 x 500 modules at 600 pitch | wall-thick frame + 2 glass lines, no modules |
+| Windows on elevations | slats | frame + one mullion |
+| Door swing | clear radius, sizes mixed | leaf radius = schedule width, gap = width |
+| Schedule | 900/900/750 x 2100; 1800/1200/600 x 1000, 500 | 1000/900/750 x 2100; 1500/1200/600 x 1200, 600 |
+| Heights | FFL 150, beam 3000, 25 deg, eaves 750 | FFL 300, beam 2800, 30 deg, eaves 600 |
+| Room tags | hairline 2x2 box, stroked outline digits | no box, text layer: name, then `11.22 m2` |
+| Column tags | W3 (the drafter's slip, §15) | C1, 200 x 200 |
+| Roof plan | sheet ribs, valleys | closed outline, ridge, valleys, no ribs |
+| Sections | chromatic membrane line | no membrane drawn |
+| Kept the same (presumed by §33) | sheet order, view placement per sheet, grid names, tag names D1..W3 | same |
+**Witness: `W-2D`, run by `witness_second.sh`, judging the IFC against the generator's own table, which the chain never reads:** every grid line, door and window size and position, wall thickness, FFL, beam, ridge within 10 mm; every value's status READ, FINDING or DEFAULT stated. **A DEFAULT on a value the sheet does state is a gap, listed, not a pass.** Falsifier: `PDF2BIM_NO_FILL=1` must not give this house.
+**Ruling on what may change:** a failure is fixed by a rule of thumb that is true of the type and still holds on TB-LKTN (hash and sheets unchanged, or explained), or a marking stated in the template JSON (§13: editable for another drafter). Never by a branch keyed to this file, never by widening a tolerance to pass.
+**FIRST RUN, UNFIXED (2026-11-05, recorded before any change):** `§FILL VACUOUS no window module pairs: modules 0 the scale cannot be read`, and with no scale everything downstream fails: `03b_infer_type` crashes finding no bubble row, `04_walls` reads 0 wall pairs, `05_openings` binds 2 of 14, `06_emit` crashes, no sheets, no IFC. It refused, invented nothing, and read none of the house. **So the reader as of §39 does not generalise past this drafter's window symbol: §35's weak-sighted reader is tied to TB-LKTN at its first step.**
+**Errors in the drawing itself, found reading the reader, fixed in the generator, recorded so the first run stays honest:** side views against §33's presumed orientation; grid 1 missing on side views; sections A-A and B-B both headed by numbers; no porch floor line on B-B; the porch's eave not at the main eave and valleys not at 45 deg. None changes the style table.
+
+**RESULT (2026-11-05, `witness_second.sh`, final rules, every run from a clean directory):** judged against the generator's table, which the chain never reads: wall envelope and 150 thickness, FFL 300, beam 2800, roof top within 1 mm, eaves 600, 7 doors and 7 windows each at its place, size, height, wall-deep, all within 10 mm; 10 rooms READ from the text layer; `qualifies`, 53 accepted, no size rows. **One DEFAULT, and it is right: the floor build-up, which this drawing does not draw.** Falsifier `PDF2BIM_NO_FILL=1`: no IFC. TB-LKTN after every change: 7 sheets byte-identical, hash unchanged, all variants `fails 0`.
+**What it took (the rules that were TB-LKTN's, now the sheet's):**
+| Was typed or tied to one hand | Now |
+|---|---|
+| scale only from window modules | the sheet's printed scale when no modules; span rounded to the module |
+| wall pen, thickness, half-width 50, pair gap 2.0-3.6 pt | read: long paired lines centred on a grid axis (off-axis double lines on TB-LKTN gave 0.72 pen, 280 thick until that condition) |
+| bubble and marker radius, door-arc pen | read per sheet |
+| windows = 100 x 500 modules | modules, or one wall-thick frame; a frame's sill and head read from its edges on the elevation |
+| column = 200 x 300 by a W3 tag | size band and tags in the template |
+| pitch 25, eaves from ribs | pitch read from side views; eaves from ribs or the outline |
+| floor to ground spacing within 20 percent; wall top nearest the template | wider search; **a wall corner drawn from the ground up settles the wall's top**; with none, nearest the template as before |
+| section needs a membrane line; slab bottom z 0 | no membrane = build-up DEFAULT; bottom = FFL less the build-up (z 0 only because FFL = 150 = build-up) |
+| printed areas stroked | a typed `n.nn m2` inside the cell is read first |
+| family depth 100 | the wall's; id gains `d150` |
+**Two of my rules broke something, caught only by re-running both drawings:** the wall-top rule first gave TB-LKTN's H variant FFL 120, then the second drawing FFL 200; the wall pen rule first read TB-LKTN as 280 thick. **So a rule is not done until BOTH drawings and every variant have run.**
+**An importer defect found, not fixed here:** non-linear `@Z` marks on a section crash `dxf2shell.js` l.270 (`map.zOf is not a function`) instead of refusing. Handed to §L39.
+**Stated limits:** the author knows the reader; other sheets' witnesses (W-S1, W-S2, W-S7) hold this drafter's symbols and say VACUOUS on the second drawing, judged by nothing; panel counts stay the template's (its W1 says 2 panels, the mesh has 3); room names are still preset, not read; `R['roof']` notes remain the first drawing's prose. **Only a real PDF from another drafter tests a hand I did not write.**
+
+## 41. THE PDF STEP IN THE MODELLER: "from PDF image" (owner 2026-11-05: *"Follow your recommend. So opening panel will have an added '.. from PDF image'"*; spec BEFORE code; importer side `bim-ootb prompts/DXF2BIM_MODELLER_LANE.md` §L39)
+**Issue:** PDF -> DXF is a developer command (Python + poppler). A user holding a low-cost house PDF cannot reach the Modeller's Convert.
+**What the user does:** Pill ▸ Open ▸ **"Open 2D drawings from PDF image (.pdf)…"**, picks the PDF. The sheets appear on the canvas exactly as if the 7 DXF files had been opened, and Convert behaves as it does today. **Paper stays the input: no form, no chooser of type or dimensions** (§33). Offline, no server, no install: it joins the air-gapped set (§L34).
+**The word "image", stated:** the owner's label is used as given. **The reader needs a VECTOR PDF.** A scan has no lines to read and the ruling forbids OCR (§7), so a PDF whose plan page holds no vector lines gets a plain refusal naming that, not a guess. **To raise with the owner, once, in the report: most users will read "image" as "scan".**
+**Design: the same rules, one implementation at a time:**
+- `modeller/pdf2dxf/`: pure modules, UMD, usable from node and the page. One per Python stage, in stage order. Types JSONs copied from `scripts/pdf2bim/types/`.
+- **Two seams, each with its own proof:**
+| Seam | What | Oracle |
+|---|---|---|
+| Rules | sheet model -> the 7 typed DXF texts + logs | **BYTE-IDENTICAL to the Python chain**, fed the same model (dumped from the Python's own reader to JSON), on TB-LKTN and the second drawing, plus Z, B, H, S, T, G, D variants. Same `§` lines where a stage logs one |
+| Reader | PDF -> sheet model, on pdf.js | the model's paths and words against Python's within stated tolerances; end to end `witness_sheets_same` tolerances + the same `geom_hash` geometry within 10 mm, on both drawings |
+- **Library:** the page does not generate families. A drawing whose schedule sizes the published library lacks is refused by the existing `GAP:no_lod400_geometry` (§39); the Python stage stays the way to prepare a publish. **Therefore TB-LKTN's new door families need the owner's publish go before this entry can build it on the live site.** Witnessed against a local export until then, stated in the log.
+- **Python stays as the oracle and the publish tool,** not a second product path: the page's rules are checked against it while both exist. Retiring it is a later decision.
+**Witness claims:**
+- W-PD1 (rules, node): byte-identical on every drawing named above; WRONG on the first differing byte, naming sheet and line; VACUOUS if a sheet is missing on either side.
+- W-PD2 (reader, node): for each page: path count, pen and coordinates within 0.05 pt; words within 1.0 pt centre. Every difference counted and logged, not hidden. **Measured limit to be written here when known: pdf.js and pdftotext split and box words differently.**
+- W-PD3 (page, CPU GL, real click): the new row is present; picking TB-LKTN's PDF yields 7 sheets, the same roles, `qualifies`; Convert builds 14 fills; 0 page errors; **with the network cut after one visit it still works.**
+- W-PD4 (page): a raster-only PDF is refused in words and nothing is built; **a falsifier: a PDF of another type (the Jebel masjid, or the plumbing page alone) must refuse too, not build a bad house.**
+- W-PD5: every `§INFER` READ / FINDING / DEFAULT is visible to the user on the panel, so a YELLOW is not silent.
+**Perf budget (CLAUDE.md):** pdf.js is lazy-loaded with the entry, never on Modeller start. The plan page holds 37,907 paths: log `§PDF2DXF` wall time and heap at the end of the read.

@@ -7,7 +7,7 @@ PG(){ python3 -I -c "import json,sys;print(json.load(open(sys.argv[1]))['sheets'
 mkdir -p "$O/logs" "$O/svg"; cd "$O" || exit 1
 run(){ n="$1"; shift; "$@" > "logs/$n.log" 2>&1; echo "== $n exit=$? ($(wc -l < logs/$n.log) lines)"; }
 for p in 1 2 3 4 5 6 7 8; do pdftocairo -svg -f $p -l $p "$PDF" "svg/p$p.svg"; done
-if [ -z "${PDF2BIM_NO_FILL:-}" ]; then run 00_fill_blanks python3 -I $S/fill_blanks.py svg "$RJ" "$TJ" "$PDF" "$O/rosetta.effective.json"; [ -f "$O/rosetta.effective.json" ] && RJ="$O/rosetta.effective.json"; fi   # §35: the sheets fill the dictionary's K, grid and schedule; the falsifier skips this
+if [ -z "${PDF2BIM_NO_FILL:-}" ]; then run 00_fill_blanks python3 -I $S/fill_blanks.py svg "$RJ" "$TJ" "$PDF" "$O/rosetta.effective.json" "$O/template.effective.json"; [ -f "$O/rosetta.effective.json" ] && RJ="$O/rosetta.effective.json"; if [ -f "$O/template.effective.json" ]; then cp "$(dirname "$TJ")"/low_cost_house*.json "$O/"; TJ="$O/template.effective.json"; fi; fi   # §35: the sheets fill the dictionary's K, grid and schedule; the falsifier skips this
 run 01_extract_p1      python3 -I $S/extract_p1.py "$PDF" $P1 "$O/x1"
 run 02_rosetta_verify  python3 -I $S/rosetta_verify.py "$PDF" "$RJ"
 run 03_type_checklist  python3 -I $S/type_checklist.py "$PDF" $P1 8 "$T/low_cost_house.json"

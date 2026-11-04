@@ -62,8 +62,9 @@ while i<len(rd)-1:
         if ty=='LWPOLYLINE' and lay=='PDF-WALL':
             xs=[float(b) for a,b in g if a=='10']; ys=[float(b) for a,b in g if a=='20']; PW.append((min(xs),min(ys),max(xs),max(ys)))
     i+=2
+WH=I['template']['ruler'].get('wall_half_mm',50)
 def wallruns(o,ac):   # merged wall runs along the axis (footprints that straddle it)
-    iv=sorted((r[0],r[2]) if o=='H' else (r[1],r[3]) for r in PW if ((r[3]-r[1])<=110 and abs((r[1]+r[3])/2-ac)<=60 and o=='H') or ((r[2]-r[0])<=110 and abs((r[0]+r[2])/2-ac)<=60 and o=='V'))
+    iv=sorted((r[0],r[2]) if o=='H' else (r[1],r[3]) for r in PW if ((r[3]-r[1])<=2*WH+10 and abs((r[1]+r[3])/2-ac)<=WH+10 and o=='H') or ((r[2]-r[0])<=2*WH+10 and abs((r[0]+r[2])/2-ac)<=WH+10 and o=='V'))
     r_=[]
     for a,b in iv:
         if r_ and a<=r_[-1][1]+1: r_[-1][1]=max(r_[-1][1],b)
@@ -100,6 +101,12 @@ def w3_measure(v,xc):   # does the sheet show the schedule's W3 frame centred at
                 for cx in (a[0],):
                     if abs((cx-ax)*K-(xc-wd3/2))<=40 or abs((cx-ax)*K-(xc+wd3/2))<=40: best=(round((ffl-max(a[1],b[1]))*K),round((ffl-min(a[1],b[1]))*K))
     return best
+def frame_measure(v,xc,w):   # §40: a window this hand draws as a frame: the vertical edges at its plan width; (sill, head) or None
+    P=SH[v['sheet']]; ax,ffl=v['ox'],v['ffl']; hit=[]
+    for p in P:
+        for a,b in zip(p,p[1:]):
+            if abs(a[0]-b[0])<.15 and abs(a[1]-b[1])*K>=300 and min(a[1],b[1])>=v['beam']-1 and max(a[1],b[1])<=ffl+1 and min(abs((a[0]-ax)*K-(xc-w/2)),abs((a[0]-ax)*K-(xc+w/2)))<=40: hit.append((round((ffl-max(a[1],b[1]))*K),round((ffl-min(a[1],b[1]))*K)))
+    return max(hit,key=lambda h:h[1]-h[0]) if hit else None
 SZ=R['schedule_sizes_mm']
 def lw(layer,pts): return ['0','LWPOLYLINE','8',layer,'90',str(len(pts)),'70','1']+sum([['10',str(x),'20',str(y)] for x,y in pts],[])
 def tx(x,y,t,h=150): return ['0','TEXT','8','DXF2BIM-MARK','10',str(x),'20',str(y),'30','0','40',str(h),'1',t]
@@ -120,6 +127,9 @@ for n,v in views.items():
             xc=xdraw(v,c)
             if not any(abs((x0+x1)/2-xc)<=60 for x0,x1,_,_ in W) and w==SZ['W3'][0]:
                 m=w3_measure(v,xc); log('W-E5',n,'plan W3 at drawn x',round(xc),'vector 500 mm frame edges measured (sill,head):',m); W.append((round(xc-w/2),round(xc+w/2))+w3_z(m,n))
+            elif not any(abs((x0+x1)/2-xc)<=60 for x0,x1,_,_ in W):
+                m=frame_measure(v,xc,w); log('W-E3c',n,'plan window at drawn x',round(xc),'width',w,'frame edges measured (sill,head):',m)
+                if m: W.append((round(xc-w/2),round(xc+w/2),m[0],m[1]))
         runs=wallruns(o,ac)
         for cx,cy,r,a0,a1 in arcs:
             if abs(cy-ac)<=250:

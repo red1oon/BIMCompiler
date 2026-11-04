@@ -38,16 +38,20 @@ for name,bub in sections.items():
         if cv: continue
         chromatic=max(col)-min(col)>20
         for p,q in zip(pts,pts[1:]):
-            if abs(p[1]-q[1])<.1 and abs(p[0]-q[0])>.3 and yb<p[1]<yb+260:
+            if abs(p[1]-q[1])<.1 and abs(p[0]-q[0])>.3 and yb<p[1]<yb+9300/K:
                 if chromatic: ch[round(p[1],1)].append((min(p[0],q[0]),max(p[0],q[0])))
                 else: lv[round(p[1],1)].append((min(p[0],q[0]),max(p[0],q[0])))
-    if not ch: log('W-C5',name,'VACUOUS: no chromatic line'); continue
-    ym=max(ch,key=lambda y:len(ch[y])); levels=sorted(y for y,s_ in lv.items() if len(s_)>=50 and min(a for a,b in s_)<min(xs)-10 and max(b for a,b in s_)>max(xs)+10)   # a level line is a long dash-dot row running PAST the outer grid bubbles (a hatch row in a tiled wall has as many dashes but stays inside the building)
-    above=[y for y in levels if y<ym-.5]
-    if not above: log('W-C5',name,'VACUOUS: no level line above the membrane; rows',levels); continue
-    yf=max(above); d=(ym-yf)*K; ok=abs(d-DEPTH)<=TOL
-    res[name]=dict(ok=ok,d=d,yf=yf,ym=ym,x=(min(a for a,b in ch[ym]),max(b for a,b in ch[ym])),bub=bub)
-    log('W-C5',name,'FFL level line y',yf,'membrane y',ym,'dashes',len(ch[ym]),'x',round(res[name]['x'][0],1),round(res[name]['x'][1],1),'depth mm',round(d,1),'vs drawn',DEPTH,'PASS' if ok else 'WRONG')
+    levels=sorted(y for y,s_ in lv.items() if sum(b-a for a,b in s_)*K>=.5*(max(xs)-min(xs))*K and min(a for a,b in s_)<min(xs)-10 and max(b for a,b in s_)>max(xs)+10)   # a level line runs PAST the outer grid bubbles (a hatch row in a tiled wall stays inside the building)
+    if ch:
+        ym=max(ch,key=lambda y:len(ch[y])); above=[y for y in levels if y<ym-.5]
+        if not above: log('W-C5',name,'VACUOUS: no level line above the membrane; rows',levels); continue
+        yf=max(above); d=(ym-yf)*K; ok=abs(d-DEPTH)<=TOL
+        res[name]=dict(ok=ok,d=d,yf=yf,ym=ym,x=(min(a for a,b in ch[ym]),max(b for a,b in ch[ym])),bub=bub)
+        log('W-C5',name,'FFL level line y',yf,'membrane y',ym,'dashes',len(ch[ym]),'x',round(res[name]['x'][0],1),round(res[name]['x'][1],1),'depth mm',round(d,1),'vs drawn',DEPTH,'PASS' if ok else 'WRONG'); print('§INFER floor_buildup %s value %s measured %.1f nominal %s tol %s | %s membrane'%('READ' if ok else 'FINDING',DEPTH,d,DEPTH,TOL,name),flush=True)
+    else:   # §40: this hand draws no membrane. FFL = the level line that many mm above the next one (the ground); the build-up is the template's, stated
+        cand=[a for a,b in zip(levels,levels[1:]) if abs((b-a)*K-FG)<=15]
+        if not cand: log('W-C5',name,'VACUOUS: no chromatic line and no floor/ground level pair; rows',levels); continue
+        yf=cand[-1]; res[name]=dict(ok=True,d=DEPTH,yf=yf,ym=yf+DEPTH/K,x=(min(xs),max(xs)),bub=bub); print('§INFER floor_buildup DEFAULT value %s measured None nominal %s tol %s | %s: no membrane drawn, YELLOW'%(DEPTH,DEPTH,TOL,name),flush=True); log('W-C5',name,'FFL level line y',yf,'no membrane drawn: build-up DEFAULT',DEPTH)
 if len(res)<2 or not all(v['ok'] for v in res.values()):
     log('W-C5 RESULT no section sheet written: the two sections do not both state the build-up (slab_no_underside stays stated)'); sys.exit(0)
 # the cut: the plan's section marker bubbles (radius below the grid bubbles'), the label on both ends of one horizontal line; anchored as emit_dxf_p1 anchors the plan
@@ -64,6 +68,6 @@ for k,v in A['bub'].items():   # the section's own grid bubbles, read above
     h=gx[k]; o+=['0','LINE','8','A-GRID','10',str(h),'20',str(-DEPTH),'30','0','11',str(h),'21',str(yc-rb),'31','0','0','CIRCLE','8','A-GRID','10',str(h),'20',str(yc),'30','0','40',str(rb),'0','TEXT','8','A-GRID','10',str(h),'20',str(yc),'30','0','40','150','1',k]
 for n,m in enumerate(('@SET=STD','@VIEW=SECTION','@NAME=SECTION A-A','@UNITS=mm','@HAXIS=+X','@CUT=Y,%d'%cut)): o+=tx(-3000,-1000-300*n,m)
 for k,v in gx.items(): o+=tx(v,-600,'@GRIDH=%s'%k)
-for z,y in ((0,-DEPTH),(FG/1000,0),((FG+BH)/1000,BH)): o+=tx(-1500,y,'@Z=%s'%z)
+for z,y in (((FG-DEPTH)/1000 or 0,-DEPTH),(FG/1000,0),((FG+BH)/1000,BH)): o+=tx(-1500,y,'@Z=%s'%z)   # §40: the slab's bottom is FFL less the build-up: z 0 only where those two happen to be equal
 o+=['0','ENDSEC','0','EOF']; f=os.path.join(out,'section_aa.dxf'); open(f,'w').write('\n'.join(o)+'\n')
-log('W-C5 RESULT wrote',f,'S-SLAB top z',FG/1000,'bottom z 0 (floor build-up, YELLOW: dictionary floor_buildup)')
+log('W-C5 RESULT wrote',f,'S-SLAB top z',FG/1000,'bottom z',(FG-DEPTH)/1000,'(floor build-up, YELLOW: dictionary floor_buildup)')

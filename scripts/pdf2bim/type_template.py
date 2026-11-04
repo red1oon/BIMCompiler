@@ -109,3 +109,40 @@ def porch_width(emit_log):
     "the centre distance of the two column rectangles this run read, or None"
     c=[float(m) for m in re.findall(r'W-C4 column rect .*? centre \((-?[\d.]+), -?[\d.]+\)',open(emit_log,encoding='utf-8').read())]
     return abs(c[1]-c[0]) if len(c)==2 else None
+# ---- a drafter's style (§40), read from the plan once
+def closed_rects(P,frame=None):
+    "closed 5-point rectangles: dict(x0,x1,y0,y1,pen)"
+    o=[]
+    for q in P:
+        if len(q['pts'])==5 and math.dist(q['pts'][0],q['pts'][-1])<.05 and (not frame or (frame[0]<=q['x0'] and q['x1']<=frame[1] and frame[2]<=q['y0'] and q['y1']<=frame[3])): o.append(q)
+    return o
+def window_symbols(P,T,K,frame,wall):
+    """the plan's window symbols as chains (orient, axis pt, lo pt, hi pt). Two hands are known: modules at a pitch, chained (TB-LKTN), or one wall-thick frame the opening's width. A rectangle is a window symbol only if its short side is the wall's thickness, within 15 percent."""
+    ms,ml=T['ruler']['window_module_mm']; pitch=T['ruler']['window_module_pitch_mm']; mods=[]; frames=[]; seen=set()
+    for q in closed_rects(P,frame):
+        w,h=(q['x1']-q['x0'])*K,(q['y1']-q['y0'])*K; a,b=sorted((w,h)); o='H' if w>h else 'V'; c=(o,round((q['x0']+q['x1'])/2,1),round((q['y0']+q['y1'])/2,1),round(max(w,h)))
+        if c in seen: continue
+        seen.add(c)
+        if abs(a-ms)<=15 and abs(b-ml)<=25: mods.append(c)
+        elif abs(a-wall)<=.15*wall and 300<=b<=3500: frames.append(c)
+    if mods: frames=[]   # one hand per drawing: where modules are drawn, a wall-thick rectangle is something else
+    out=[]
+    for o_ in 'HV':
+        g={}
+        for oo,x,y,_ in sorted(mods):
+            if oo==o_: g.setdefault(round(y if o_=='H' else x),[]).append((x if o_=='H' else y,y if o_=='H' else x))
+        for v in g.values():
+            v.sort(); cur=[v[0]]
+            for a in v[1:]:
+                if abs((a[0]-cur[-1][0])*K-pitch)<=.1*pitch: cur.append(a)
+                else: out.append((o_,cur[0][1],cur[0][0]-pitch/2/K,cur[-1][0]+pitch/2/K)); cur=[a]
+            out.append((o_,cur[0][1],cur[0][0]-pitch/2/K,cur[-1][0]+pitch/2/K))
+        for oo,x,y,L in sorted(frames):
+            if oo==o_: out.append((o_,y if o_=='H' else x,(x if o_=='H' else y)-L/2/K,(x if o_=='H' else y)+L/2/K))
+    return out,len(mods),len(frames)
+def is_column(q,W,T,K):
+    "a column: a small rectangle with a column tag beside it (the tags are the template's: this type's first drafter wrote W3 there, §15)"
+    R_=T['ruler']; a,b=sorted(((q['x1']-q['x0'])*K,(q['y1']-q['y0'])*K)); c=R_['column_mm']
+    if not (c['short'][0]<=a<=c['short'][1] and c['long'][0]<=b<=c['long'][1]): return None
+    tagged=any(w[0] in R_['column_tags'] and math.hypot(w[1]-(q['x0']+q['x1'])/2,w[2]-(q['y0']+q['y1'])/2)<=720/K for w in W)
+    return True if tagged else (False if 260<=b<=340 else None)   # an untagged small square is furniture, not worth a YELLOW; an untagged 200 x 300 is the §32 case

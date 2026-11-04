@@ -8,7 +8,7 @@ def say(n,v,m):
     if v!='PASS': fails+=1
     print('§T',n,v,m,flush=True)
 rec=collections.defaultdict(list)
-for lg in ('03b_infer_type.log','08_elev_emit.log'):
+for lg in ('03b_infer_type.log','08_elev_emit.log','09b_section_emit.log'):
     p=os.path.join(O,'logs',lg)
     if os.path.exists(p):
         for m in re.finditer(r'^§INFER (\S+) (READ|FINDING|DEFAULT) value (\S+) measured (\S+)',open(p,encoding='utf-8').read(),re.M): rec[m.group(1)].append((m.group(2),m.group(3),m.group(4)))

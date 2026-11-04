@@ -15,7 +15,7 @@ def mesh(w,h):
 print("-- CL008: the 'Low cost single storey unit' door families, generated from the p8 schedule by scripts/pdf2bim/gen_door_families.py. DO NOT hand-edit: regenerate.\n-- Spec: prompts/PDF2BIM_VECTOR_PROBE.md §38. Overall size: p8 schedule, the frame's outside on p4. Frame face: read on p4. Depth: the plan's 100 mm wall. Leaf thickness: template default, YELLOW. Knob, lock, swing and finish not modelled.\n-- Data only, append-only, idempotent: INSERT OR IGNORE. Applies to library/component_library.db (never commit the binary: this script is the change).\nBEGIN TRANSACTION;")
 o=0
 for k in (sys.argv[3].split(',') if len(sys.argv)>3 else ('D1','D2','D3')):   # §39: only these tags
-    w,h=SZ[k]; fid='LCSSU_%s_%dx%d'%(k,w,h); desc='%s %d×%dmm %s. Generated from the p8 schedule; leaf thickness is a default.'%(k,w,h,W['types'][k]['text']); ref='%s: %d x %d generated'%(k,w,h)
+    w,h=SZ[k]; dt='' if W['depth_mm']==100 else 'd%d'%W['depth_mm']; lab=k+dt; fid='LCSSU_%s_%dx%d%s'%(k,w,h,dt); desc='%s %d×%dmm %s. Generated from the p8 schedule; leaf thickness is a default.'%(lab,w,h,W['types'][k]['text']); ref='%s: %d x %d generated'%(lab,w,h)
     print("INSERT OR IGNORE INTO ad_opening_family (family_id,family_name,opening_type,ifc_class,default_width_mm,default_height_mm,is_fire_rated,description,is_active,depth_mm) VALUES ('%s','Low cost %s %dx%dmm','DOOR','IfcDoor',%d,%d,0,'%s',1,%d);"%(fid,k,w,h,w,h,desc.replace("'","''"),W['depth_mm']))
     V,I=mesh(w/1000,h/1000)
     if len(sys.argv)>3: o=w*100000+h*10   # §39: a run's own family must not collide with a committed row's ordinal: the map's key would make INSERT OR IGNORE drop its mesh rows, silently

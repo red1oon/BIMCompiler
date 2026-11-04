@@ -34,19 +34,19 @@ def circles(P,W,labels):
             c=((min(xs)+max(xs))/2,(min(ys)+max(ys))/2); o+=[(w,c,wd/2) for w in W if w[0] in labels and math.hypot(w[1]-c[0],w[2]-c[1])<=wd/2]
     return o
 # ---- elevations: the view's beam, floor and ground lines are the only long lines at the template's two spacings (searched +-20% wide, so a wrong template still finds the sheet's lines and says FINDING)
-S=T['sheets']; views={k:dict(v) for k,v in T['views'].items() if not k.startswith('_')}; PG={}; dB=[]; dG=[]; LS={}
+S=T['sheets']; views={k:dict(v) for k,v in T['views'].items() if not k.startswith('_')}; PG={}; dB=[]; dG=[]; LS={}; SSE=T['ruler']['style_search']
 for sh in sorted({v['sheet'] for v in views.values()}):
     P=PG[sh]=load(sh); W=TT.words(pdf,sh); H=collections.defaultdict(float)
     for p in P:
         for a,b in zip(p['pts'],p['pts'][1:]):
             if abs(a[1]-b[1])<.15 and abs(a[0]-b[0])>0: H[round((a[1]+b[1])/2,1)]+=abs(a[0]-b[0])
     L=sorted(y for y,l in H.items() if l*K>=T['ruler']['long_line_mm']); nb,ng=B['beam_above_ffl']['nominal'],B['ffl_above_ground']['nominal']; cand=[]
-    LS[sh]=L
+    LS[sh]=L; VT=[(min(a[1],b[1]),max(a[1],b[1])) for p in P for a,b in zip(p['pts'],p['pts'][1:]) if abs(a[0]-b[0])<.05 and abs(a[1]-b[1])*K>=1500]
     for y in L:
         for f in L:
             for g in L:
                 d1,d2=(f-y)*K,(g-f)*K
-                if abs(d1-nb)<=.2*nb and abs(d2-ng)<=.2*ng: cand.append((abs(d1-nb)+abs(d2-ng),y,f,g))
+                if SSE['elevation_beam_mm'][0]<=d1<=SSE['elevation_beam_mm'][1] and SSE['elevation_ffl_mm'][0]<=d2<=SSE['elevation_ffl_mm'][1]: cand.append(((0 if any(abs(top-y)<=.3 and abs(bot-g)<=.5 for top,bot in VT) else 1,abs(d1-nb)+abs(d2-ng)),y,f,g))   # §40: a wall corner drawn from the ground up to the wall's top settles it, whatever else runs long (an eave). With none, the triple nearest the template, as ever
     here=[k for k,v in views.items() if v['sheet']==sh]; got=[]
     for c in sorted(cand):
         if all(abs(c[1]-q[1])>abs(c[3]-c[1]) for q in got): got.append(c)
@@ -57,7 +57,7 @@ for sh in sorted({v['sheet'] for v in views.values()}):
     for k in here:
         v=views[k]; c=rows[v['row']]; v['beam'],v['floor_line'],v['ground_line']=c[1],c[2],c[3]; dB.append((c[2]-c[1])*K); dG.append((c[3]-c[2])*K)
         labs=gx if 'X' in v['haxis'] else gy; above=[q for q in B6 if q[0][0] in labs and q[1][1]<c[1]]; row=max(q[1][1] for q in above)   # the label row nearest above this view's beam
-        inrow=[q for q in above if abs(q[1][1]-row)<=q[2]]; first=min(inrow,key=lambda q:q[0][1]); v['ox']=round(first[0][1],1); v['label_row']=round(row,2); v['labels_read']=len(inrow)
+        inrow=[q for q in above if abs(q[1][1]-row)<=q[2]]; first=min(inrow,key=lambda q:q[0][1]); v['ox']=round(first[0][1] if abs(first[0][1]-first[1][0])<=.3 else first[1][0],1); v['label_row']=round(row,2); v['labels_read']=len(inrow)
         log('view',k,'p%s'%sh,v['row'],'beam',v['beam'],'floor',v['floor_line'],'ground',v['ground_line'],'first label',first[0][0],'ox',v['ox'],'labels',len(inrow),'of',len(labs))
 V['beam_above_ffl']=TT.decide('beam_above_ffl',statistics.median(dB),B['beam_above_ffl'],'%d views'%len(dB))
 for k,v in views.items():   # §39: a view took the triple nearest the TEMPLATE's spacing. Once the sheets have said otherwise, each view's beam is its long line at the sheets' spacing: on a taller wall REAR had taken another long line, 131 mm low, and its floor with it
@@ -65,7 +65,12 @@ for k,v in views.items():   # §39: a view took the triple nearest the TEMPLATE'
     if abs(near-want)*K<=B['beam_above_ffl']['tol_mm'] and near!=v['beam']: log('view',k,'beam re-read at the sheets\' spacing',v['beam'],'->',near); v['beam']=near
 V['ffl_above_ground']=TT.decide('ffl_above_ground',statistics.median(dG),B['ffl_above_ground'],'%d views'%len(dG))
 # ---- side elevations: the top of the highest straight line at the roof's pitch
-pitch=R['roof']['pitch_deg']; tops=[]
+PA=[]
+for k,v in views.items():
+    if 'Y' not in v['haxis']: continue
+    PA+=[math.degrees(math.atan2(abs(a[1]-b[1]),abs(a[0]-b[0]))) for a,b in segs(PG[v['sheet']]) if math.hypot(a[0]-b[0],a[1]-b[1])*K>1000 and abs(a[0]-b[0])>2 and abs(a[1]-b[1])>2 and v['label_row']<min(a[1],b[1]) and max(a[1],b[1])<v['ground_line']]
+V['roof_pitch_deg']=TT.decide('roof_pitch_deg',round(statistics.median(PA),1) if PA else None,B['roof_pitch_deg'],'%d sloped lines on the side views'%len(PA),module=1)   # §40: the sheet's pitch, not the dictionary's
+pitch=V['roof_pitch_deg']['value']; tops=[]
 for k,v in views.items():
     if 'Y' not in v['haxis']: continue
     t=[v['beam']-min(a[1],b[1]) for a,b in segs(PG[v['sheet']]) if math.hypot(a[0]-b[0],a[1]-b[1])>20 and abs(a[0]-b[0])>2 and abs(a[1]-b[1])>2 and abs(math.degrees(math.atan2(abs(a[1]-b[1]),abs(a[0]-b[0])))-pitch)<=1 and v['label_row']<min(a[1],b[1]) and max(a[1],b[1])<v['ground_line']]
@@ -79,7 +84,10 @@ if 'A' in B3 and '5' in B3:
         if abs(a[0]-b[0])<.1 and abs(a[1]-b[1])>40: RV[(round(Yr(min(a[1],b[1]))/5)*5,round(Yr(max(a[1],b[1]))/5)*5)]+=1
     nn=[k for k,v in RV.most_common() if k[0]<0 and k[1]<gy['2']]; ss=[k for k,v in RV.most_common() if gy['5']<k[0]<gy['2'] and k[1]>gy['2']]
     if nn and ss: ey=(-nn[0][0]+ss[0][1]-gy['2'])/2; ridge=(nn[0][1]+ss[0][0])/2; log('roof ribs: north end',-nn[0][0],'south end',ss[0][1]-gy['2'],'ridge between',nn[0][1],ss[0][0])
-V['eaves_from_axis']=TT.decide('eaves_from_axis',ey,B['eaves_from_axis'],'p%s ribs'%S['roof'])
+if ey is None and 'A' in B3 and '5' in B3:   # §40: no ribs in this hand: the outline's north edge
+    no=[-Yr(a[1]) for a,b in segs(P3) if abs(a[1]-b[1])<.1 and abs(a[0]-b[0])*K>gx['E']/2 and Yr(a[1])<0]
+    if no: ey=max(v_ for v_ in no if v_<=1500) if any(v_<=1500 for v_ in no) else None; log('roof outline: north edge',ey)
+V['eaves_from_axis']=TT.decide('eaves_from_axis',ey,B['eaves_from_axis'],'p%s ribs or outline'%S['roof'])
 ax=T['preset']['roof']['main_ridge_axis']; log('main ridge presumed on axis',ax,'at',gy[ax],'| ribs put it at',ridge,'FINDING: not on the presumed axis' if ridge is not None and abs(ridge-gy[ax])>25 else '')
 # ---- plan: the wall pen's paired lines
 W1=TT.words(pdf,S['plan']); P1=load(S['plan']); HL=collections.defaultdict(list); VL=collections.defaultdict(list)
@@ -88,7 +96,7 @@ for p in P1:
     for a,b in zip(p['pts'],p['pts'][1:]):
         if abs(a[1]-b[1])<=.25 and abs(a[0]-b[0])>.25: HL[round((a[1]+b[1])/2,1)].append((min(a[0],b[0]),max(a[0],b[0])))
         elif abs(a[0]-b[0])<=.25 and abs(a[1]-b[1])>.25: VL[round((a[0]+b[0])/2,1)].append((min(a[1],b[1]),max(a[1],b[1])))
-nt=B['wall_thickness']['nominal']; gaps=[]
+nt=T['ruler'].get('wall_thick_mm',B['wall_thickness']['nominal']); gaps=[]
 for L_ in (HL,VL):
     ks=sorted(L_)
     for i,a in enumerate(ks):

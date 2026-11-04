@@ -3,7 +3,7 @@
 # §33: every height and offset comes from <inferred.json> (infer_type.py) or from the sheets here; none is typed.
 # Usage: roof_emit.py <p3.svg> <p4.svg> <p6.svg> <rosetta.json> <pdf> <typed dir> <inferred.json>
 import re,sys,json,math,collections,subprocess,os
-s3,s4,s6,rj,pdf,out,ij=sys.argv[1:8]; R=json.load(open(rj)); I=json.load(open(ij)); VAL=lambda k:I['values'][k]['value']; PR=I['template']['preset']['roof']; FR=I['views'][PR['porch_on_face']]; BH,FG,RH,STEP=VAL('beam_above_ffl'),VAL('ffl_above_ground'),VAL('ridge_above_beam'),VAL('porch_step_below_ffl'); PG=lambda s:re.search(r'p(\d+)\.svg',s).group(1); K=R['sheet']['mm_per_pt_fitted']; gx,gy=R['grid']['x'],R['grid']['y']; log=lambda *a:print('§ROOF',*a,flush=True); PITCH=R['roof']['pitch_deg']; tan=math.tan(math.radians(PITCH))
+s3,s4,s6,rj,pdf,out,ij=sys.argv[1:8]; R=json.load(open(rj)); I=json.load(open(ij)); VAL=lambda k:I['values'][k]['value']; PR=I['template']['preset']['roof']; FR=I['views'][PR['porch_on_face']]; BH,FG,RH,STEP=VAL('beam_above_ffl'),VAL('ffl_above_ground'),VAL('ridge_above_beam'),VAL('porch_step_below_ffl'); PG=lambda s:re.search(r'p(\d+)\.svg',s).group(1); K=R['sheet']['mm_per_pt_fitted']; gx,gy=R['grid']['x'],R['grid']['y']; log=lambda *a:print('§ROOF',*a,flush=True); PITCH=I['values']['roof_pitch_deg']['value']; tan=math.tan(math.radians(PITCH))
 BR0,BR1=[v/K for v in I['template']['ruler']['bubble_radius_mm']]
 def load(f):
     o=[]

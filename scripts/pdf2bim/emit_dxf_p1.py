@@ -25,9 +25,12 @@ for m in re.finditer(r'<path ([^>]*?)/>',svg):
     P.append((sw,pts,smp,'C' in dd))
 # ---- grid anchors (text layer) + the wall pen's pair centres give the Y bias
 W=TT.words(pdf,TT.page_of(svgf)); FX0,FX1,FY0,FY1=TT.plan_frame(W,R,T); IN=lambda xs,ys:FX0<=min(xs) and max(xs)<=FX1 and FY0<=min(ys) and max(ys)<=FY1
-BR,_=TT.radii(T,K); gx,gy=R['grid']['x'],R['grid']['y']; x0=TT.top_row(W,gx)['A'][1]; y5=TT.left_col(W,gy)['5'][2]
+WH=T['ruler'].get('wall_half_mm',50); WH=int(WH) if WH==int(WH) else WH; PG0,PG1=[v/K for v in (2*WH*.7,2*WH*1.3)]; BR,_=TT.radii(T,K); gx,gy=R['grid']['x'],R['grid']['y']; x0=TT.top_row(W,gx)['A'][1]; y5=TT.left_col(W,gy)['5'][2]
 hy=sorted({round((p[0][1]+p[1][1])/2,1) for sw,pts,s,cv in P if TT.is_wall_pen(sw,T,K) and len(pts)==2 for p in [pts] if abs(p[0][1]-p[1][1])<.25 and abs(p[0][0]-p[1][0])>30})
-cent=[(a+b)/2 for a,b in zip(hy,hy[1:]) if 2<=b-a<=3.6]; bias=statistics.median(min(c-(y5+gy[k]/K) for k in gy for _ in [0]) if False else min((c-(y5+gy[k]/K) for k in gy),key=abs) for c in cent)
+cent=[(a+b)/2 for a,b in zip(hy,hy[1:]) if PG0<=b-a<=PG1]; bias=statistics.median(min(c-(y5+gy[k]/K) for k in gy for _ in [0]) if False else min((c-(y5+gy[k]/K) for k in gy),key=abs) for c in cent)
+_c0=[((min(q[0] for q in pts)+max(q[0] for q in pts))/2,(max(q[0] for q in pts)-min(q[0] for q in pts))/2,(min(q[1] for q in pts)+max(q[1] for q in pts))/2) for sw,pts,s_,cv in P if cv and len(pts)>=4 and math.dist(pts[0],pts[-1])<.3 and BR[0]<=(max(q[0] for q in pts)-min(q[0] for q in pts))/2<=BR[1]]
+_wa=TT.top_row(W,gx)['A']; _ca=[c for c in _c0 if math.hypot(c[0]-_wa[1],c[2]-_wa[2])<=c[1]]
+if _ca and abs(_ca[0][0]-x0)>.3: log('E0 FINDING label A is not centred in its bubble by',round(_ca[0][0]-x0,2),'pt: the bubble gives the axis (§40)'); x0=_ca[0][0]
 y0=y5+bias; log('E0 anchors x0',round(x0,2),'y5_label',round(y5,2),'Y bias',round(bias,2),'pt -> axis5 y',round(y0,2),'from',len(cent),'sw3 H pair centres')
 X=lambda x:round((x-x0)*K,1); Y=lambda y:round(-(y-y0)*K,1)
 E=[]   # (layer,type,args)
@@ -53,22 +56,7 @@ log('W-C3 grid bubbles read',nb,'of',len(gx)+len(gy),{k:(round(v[0]),round(v[1])
 for k,v in gx.items(): E.append(('PDF-GRID','LINE',(v,BUB[k][1]-BUB[k][2] if k in BUB else 500,v,ymin-500)))
 for k,v in gy.items(): E.append(('PDF-GRID','LINE',(BUB[k][0]+BUB[k][2] if k in BUB else -500,-v,xmax+500,-v)))
 # ---- window chains (100x500 mm modules at 600 mm pitch): needed first, the walls are CUT at them (standard form: an opening is a GAP in the wall)
-modc=[]
-for sw,pts,s_,cv in P:
-    if len(pts)==5 and math.dist(pts[0],pts[-1])<.05:
-        xs=[q[0] for q in pts];ys=[q[1] for q in pts]; a_,b_=sorted(((max(xs)-min(xs))*K,(max(ys)-min(ys))*K))
-        if IN(xs,ys) and abs(a_-100)<=15 and abs(b_-500)<=25: modc.append(('H' if (max(xs)-min(xs))>(max(ys)-min(ys)) else 'V',round((min(xs)+max(xs))/2,1),round((min(ys)+max(ys))/2,1)))
-modc=sorted(set(modc)); wchains=[]   # (orient, axis coordinate pt, lo pt, hi pt)
-for o_ in 'HV':
-    g_=collections.defaultdict(list)
-    for oo,x_,y_ in modc:
-        if oo==o_: g_[round(y_ if o_=='H' else x_)].append((x_ if o_=='H' else y_, y_ if o_=='H' else x_))
-    for kk,v_ in g_.items():
-        v_.sort(); cur=[v_[0]]
-        for a_ in v_[1:]:
-            if abs((a_[0]-cur[-1][0])*K-600)<=60: cur.append(a_)
-            else: wchains.append((o_,cur[0][1],cur[0][0]-300/K,cur[-1][0]+300/K)); cur=[a_]
-        wchains.append((o_,cur[0][1],cur[0][0]-300/K,cur[-1][0]+300/K))
+wchains,_nm,_nf=TT.window_symbols(TT.stroked_paths(svgf),T,K,(FX0,FX1,FY0,FY1),2*WH)   # §40: modules or frames, whichever this hand draws
 log('E00 window chains found for wall cutting',len(wchains))
 for k,(cx_,cy_,r_) in BUB.items(): E+=[('PDF-GRID','CIRCLE',(cx_,cy_,r_)),('PDF-GRID','TEXT',(cx_,cy_,150,k))]
 # ---- walls: (a) sw3 pairs (b) 100 mm cell runs
@@ -89,8 +77,8 @@ for orient,D in (('H',H),('V',V)):
     ks=sorted(D)
     for i,a in enumerate(ks):
         for b in ks[i+1:]:
-            if b-a>3.6: break
-            if b-a<2.0: continue
+            if b-a>PG1: break
+            if b-a<PG0: continue
             for s in merge(D[a]):
                 for t in merge(D[b]):
                     lo,hi=max(s[0],t[0]),min(s[1],t[1])
@@ -144,43 +132,43 @@ for (o,k),iv in sorted(bymerge.items()):
             y=Y(cpt); vax=[x0+v/K for v in gx.values()]
             def endv(pt,sgn):    # a piece END within 2 pt of a vertical axis ends exactly at that axis +- 50 mm (the cells overshoot by ~1 mm; importer snap_tol is 1 mm)
                 for k_,a in zip(gx,vax):
-                    if abs(pt-a)<=2.0: return gx[k_]+(50 if pt>a else -50)
+                    if abs(pt-a)<=max(2.0,1.5*WH/K): return gx[k_]+(WH if pt>a else -WH)
                 return X(pt)
             xl=endv(lo,-1); xh=endv(hi,+1)
-            E.append(('PDF-WALL','LWPOLYLINE',((xl,y-50),(xh,y-50),(xh,y+50),(xl,y+50))))   # standard form: a wall is a closed FOOTPRINT (GAP:wall_not_footprint otherwise)
+            E.append(('PDF-WALL','LWPOLYLINE',((xl,y-WH),(xh,y-WH),(xh,y+WH),(xl,y+WH))))   # standard form: a wall is a closed FOOTPRINT (GAP:wall_not_footprint otherwise)
         else:
             x=X(cpt); hax=[y0+v/K for v in gy.values()]
             def endh(pt):        # vertical piece end near a horizontal axis: axis +- 50 exactly (y up: pt above the axis -> +50)
                 for k_,a in zip(gy,hax):
-                    if abs(pt-a)<=2.0: return -gy[k_]+(50 if pt<a else -50)
+                    if abs(pt-a)<=max(2.0,1.5*WH/K): return -gy[k_]+(WH if pt<a else -WH)
                 return Y(pt)
             yl,yh=endh(lo),endh(hi)
-            E.append(('PDF-WALL','LWPOLYLINE',((x-50,yl),(x-50,yh),(x+50,yh),(x+50,yl))))
+            E.append(('PDF-WALL','LWPOLYLINE',((x-WH,yl),(x-WH,yh),(x+WH,yh),(x+WH,yl))))
         nwall+=1; tot+=(hi-lo)*K
 log('W-P5b wall runs emitted',nwall,'total centreline length m',round(tot/1000,2),'sources',dict(collections.Counter(s for _,_,_,_,s in walls if True) if False else collections.Counter(w[4].split('@')[0] for w in walls)))
 # ---- windows: ONE closed rectangle per chain (chain width x wall thickness), standard form; columns (200x300) as before
 nw=nc=0
 for o_,ac,lo,hi in wchains:
     acs=min((p_ for (oo_,k_),p_ in AX.items() if oo_==o_),key=lambda p_:abs(p_-ac))   # snap the chain to its wall axis: the window must lie exactly in the wall (touches the envelope face)
-    if o_=='H': x1,x2,y1,y2=X(lo),X(hi),Y(acs)+50,Y(acs)-50
-    else: x1,x2,y1,y2=X(acs)-50,X(acs)+50,Y(lo),Y(hi)
+    if o_=='H': x1,x2,y1,y2=X(lo),X(hi),Y(acs)+WH,Y(acs)-WH
+    else: x1,x2,y1,y2=X(acs)-WH,X(acs)+WH,Y(lo),Y(hi)
     lay='PDF-WINDOW'; E+=[(lay,'LINE',(x1,y1,x2,y1)),(lay,'LINE',(x2,y1,x2,y2)),(lay,'LINE',(x2,y2,x1,y2)),(lay,'LINE',(x1,y2,x1,y1))]; nw+=1
 for sw,pts,s_,cv in P:
     if len(pts)==5 and math.dist(pts[0],pts[-1])<.05:
         xs=[q[0] for q in pts];ys=[q[1] for q in pts]
         if not IN(xs,ys): continue
-        a,b=sorted(((max(xs)-min(xs))*K,(max(ys)-min(ys))*K))
-        if abs(a-200)<=40 and abs(b-300)<=40:
-            x1,x2,y1,y2=X(min(xs)),X(max(xs)),Y(max(ys)),Y(min(ys)); near_w3=any(w[0]=='W3' and math.hypot(w[1]-(min(xs)+max(xs))/2,w[2]-(min(ys)+max(ys))/2)<=20 for w in W)   # §15: the W3 tag sits 14-15 pt from its column; a rectangle with no tag near is not a column (§32)
+        nearc=TT.is_column(dict(x0=min(xs),x1=max(xs),y0=min(ys),y1=max(ys)),W,T,K)   # §40: size and tag from the template; a rectangle of that size with no tag near stays YELLOW (§32)
+        if nearc is not None:
+            x1,x2,y1,y2=X(min(xs)),X(max(xs)),Y(max(ys)),Y(min(ys)); near_w3=nearc
             lay='PDF-COLUMN' if near_w3 else 'PDF-UNCLASSIFIED'; nc+=1
             E.append((lay,'LWPOLYLINE',((x1,y1),(x2,y1),(x2,y2),(x1,y2)))); log('W-C4 column rect' if near_w3 else 'W-C4 rectangle with no W3 tag, YELLOW, not a column',(x1,y2),(x2,y1),'centre',(round((x1+x2)/2,1),round((y1+y2)/2,1)))
 log('E1 window chain rectangles',nw,'(from 100x500 modules)','column rects (200x300 anywhere in plan, incl. unexplained one)',nc)
 # ---- door arcs
-nd=0; nfix=0; DOORREC=[]
+nd=0; nfix=0; DOORREC=[]; AS0,AS1=T['ruler']['style_search']['arc_mm']
 for sw,pts,smp,cv in P:
     if cv and len(pts)>=2 and math.dist(pts[0],pts[-1])>3:
         xs=[q[0] for q in pts];ys=[q[1] for q in pts];w=max(xs)-min(xs);h=max(ys)-min(ys); r=max(w,h)
-        if IN(xs,ys) and 15<=r<=30 and abs(w-h)<=.08*r and abs(math.dist(pts[0],pts[-1])-r*math.sqrt(2))<=.08*r:
+        if IN(xs,ys) and AS0<=r*K<=AS1 and abs(w-h)<=.08*r and abs(math.dist(pts[0],pts[-1])-r*math.sqrt(2))<=.08*r:
             cands=[(min(xs),min(ys)),(min(xs),max(ys)),(max(xs),min(ys)),(max(xs),max(ys))]
             c=min(cands,key=lambda q:statistics.pstdev([math.dist(q,s) for s in smp]) if math.dist(q,pts[0])>.8*r and math.dist(q,pts[-1])>.8*r else 9e9)
             cm=(X(c[0]),Y(c[1])); a0=math.degrees(math.atan2(Y(pts[0][1])-cm[1],X(pts[0][0])-cm[0]))%360; a1=math.degrees(math.atan2(Y(pts[-1][1])-cm[1],X(pts[-1][0])-cm[0]))%360

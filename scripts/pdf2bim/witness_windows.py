@@ -40,5 +40,5 @@ else:
         cx,cy=(a[0]+b[0])/2,(a[1]+b[1])/2; h=min(holes,key=lambda q:abs((q[0]+q[2])/2-cx)+abs((q[1]+q[3])/2-cy)); along=0 if (b[0]-a[0])>=(b[1]-a[1]) else 1
         e=max(abs(a[along]-h[along])*1000,abs(b[along]-h[along+2])*1000); worst=max(worst,e); deep=max(deep,(b[1-along]-a[1-along])*1000)
         z=(round(a[2],3),round(b[2],3)); un.append(z)
-    say('W-W2','PASS' if worst<=5 and deep<=100.5 else 'WRONG','worst mismatch to the drawn hole along the wall %.1f mm (tol 5), deepest %.1f mm (wall 100), z ranges %s'%(worst,deep,sorted(set(un))))
+    WT=json.load(open(os.path.join(O,'inferred.json')))['values']['wall_thickness']['value']; say('W-W2','PASS' if worst<=5 and deep<=WT+.5 else 'WRONG','worst mismatch to the drawn hole along the wall %.1f mm (tol 5), deepest %.1f mm (wall %s), z ranges %s'%(worst,deep,WT,sorted(set(un))))
 say('RESULT','PASS' if not fails else 'WRONG','fails %d'%fails)

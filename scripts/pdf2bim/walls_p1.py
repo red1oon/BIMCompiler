@@ -35,8 +35,8 @@ for o in 'HV':
     ks=sorted(k for (oo,k) in lines if oo==o)
     for i,a in enumerate(ks):
         for b in ks[i+1:]:
-            if b-a>3.6: break
-            if b-a<2.0: continue
+            if b-a>1.3*TY['ruler'].get('wall_thick_mm',100)/K: break
+            if b-a<.7*TY['ruler'].get('wall_thick_mm',100)/K: continue
             for s in lines[(o,a)]:
                 for t in lines[(o,b)]:
                     lo,hi=max(s[0],t[0]),min(s[1],t[1])
