@@ -899,3 +899,54 @@ Measured on bim-ootb `origin/main` and BIMCompiler `origin/master`, 2026-11-04:
 2. L7: Reference-seed DOWN flows, an effective-dated pull (§6, §16.17 row 6).
 3. L6: a branch "Receive stock" screen = Move Confirmation deposits (the base + batch rule).
 4. L8: the legacy OSGi plugin. It reads the relay mailbox and writes legacy's OWN `I_Order` / `I_Payment` rows. Legacy's own Import processes then run, with no custom document logic. That is thinner than 2012's direct `MOrder` writes (§12.3).
+
+### §24.1 OWNER DECISIONS — EODA / SODA, no trickle, one branch batch (2026-11-04)
+> *"the trickle visit maybe bad for daily activity schedule for a busy ops and forward planning. A shop should be well stocked and report end of day activity (EODA), so that SODA (start of day's) replenishment occurs. That is what i done for the 2012 integration. My concept is minimalist with good TQM aggregation, not adhoc chaos. We can have an option where status is sent when pressed and HQ picksup for intense periods. HQ then has a dashboard to view performance but top mgmt is all about proactive planning and budgetary, not adhocracy. It also defeats the merit of a peaceful decentralised peer network."* · *"we already setup the Document Numbering to account for it, so … plan how the central POS admin will gather all the Tills movements and batch it as one send to relay."* · *"Backflush timing - indeed the delay is as schedule … Branches need not know anything else but handle retail sales."* · *"the POS only changes its prices when there are such data in the import. If not, old prices stay."*
+
+- **D1. The default cadence is EODA → SODA, and only that.** The trickle Visit is withdrawn (it was proposed in the §24 discussion and never built).
+  - The branch reports its day once.
+  - HQ imports, backflushes and replenishes on its morning schedule.
+  - The replenishment goes down once.
+- **D2. "Send status now" exists, but only as a pressed button,** for intense periods. It is never scheduled or automatic. HQ chooses whether to pick it up.
+- **D3. One batch per branch, assembled by the branch POS admin** (design below). The tills never talk to HQ directly.
+- **D4. HQ performance dashboard: read-only, fed by the EODA batches.** Planning and budget views, no per-ticket live feed.
+- **D5. Prices down are deltas only.** A till changes a price only when the import carries one; otherwise the old price stays. This is the 2012 `Export2Queue` "since last run" delta (§12.2). Unchanged rows never travel.
+- **D6. The branch knows only retail.** No stock or replenishment screens at the till beyond receiving what HQ sends (L6).
+
+### §24.2 PLAN — the branch POS admin and the one-batch EODA (spec before code; nothing built)
+**Prior art:** uniCenta tills of one shop share ONE database, with a ticket counter global to that DB (§14.5). The back office runs on that same DB under a Manager role (§14.1 U2), so the 2012 export was naturally one per branch. Our tills are separate local-first devices, so the branch admin is what makes them one branch again. Org|Till|Sequence numbering (TEAMWORK §48.10) already keeps every ticket key unique across the tills.
+
+1. **The role.** "Branch POS Admin" is a Team device of the branch Org, uniCenta's Manager/back office. It can be a till running in admin mode or its own page.
+2. **During the day:** each till works alone, offline-capable. Nothing travels.
+3. **At each till's Close Cash:** the till hands its closed shift (its `I_Order`/`I_Payment` rows + its Z summary) to the branch admin on a BRANCH-LOCAL flow, as the kitchen does (audience = branch). Nothing goes to HQ from a till.
+4. **The EODA screen at the branch admin** is the branch's own audit (TQM), before anything leaves:
+   - one row per till: closed or open, ticket range, gaps, Z totals by tender;
+   - the branch total.
+   - "Send EODA" is enabled when every till is closed; otherwise it needs an override reason, which is logged.
+5. **One send to HQ:** a single signed batch of all the tills' rows plus ONE branch-day statement:
+   - per till: first/last ticket number, count, totals by tender and tax;
+   - the branch totals.
+   - The statement gives HQ's audit gate the completeness check it lacks today (§22: "no Z check").
+6. **D2, "Send status now":** the same batch, marked PARTIAL, covering the shifts closed so far. HQ's Day Close imports a partial batch only when the clerk chooses it.
+7. **SODA at HQ:** Branch Day Close (import → explodeBOM backflush → Replenish → create), then ONE batch down to the branch admin: the movement(s), price deltas (D5) and other reference deltas.
+8. **At the branch admin:** "Receive stock" is the Move Confirmation deposit (L6), batched like everything else. It passes price deltas to the tills on the branch-local flow. A till applies only what arrived; old prices stay.
+9. **The tills move from "send at Close Cash to HQ"** (today, §18) to "hand to the branch admin". `W-TILL-OFFLINE` and its relay counts are re-measured.
+
+**Relay economy to measure (W-EODA-RELAY):**
+- N tills × 1 hand-off (branch-local) + 1 EODA up + 1 SODA down + 1 price fan-out per till.
+- Only the EODA/SODA sends cross to HQ, and their count must not grow with tickets or tills.
+- An "every ticket" or "every till direct to HQ" mutant must go red.
+
+**Witnesses (RED first):**
+- W-EODA-AGG: 3 tills, one branch. The batch holds every key once, and the statement totals equal the sum of the tills' Z.
+- W-EODA-GATE: an open till blocks Send without an override, and the override is recorded.
+- W-SODA-PRICE: a delta changes only the named prices; untouched prices stay.
+- W-EODA-PARTIAL: a partial batch is not imported unless chosen.
+- W-DAYCLOSE re-run on an aggregated batch: books diff 0 against per-till sends.
+
+**Order (owner to confirm):**
+1. explodeBOM port (L3);
+2. branch POS admin + EODA batch + statement;
+3. SODA down (movement + price deltas) + Receive stock;
+4. the HQ dashboard (read-only);
+5. the legacy iDempiere plugin (L8).
