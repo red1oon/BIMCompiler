@@ -2441,3 +2441,47 @@ of the 724 line, accounted amount untouched) must FAIL A5 and leave A1 PASS — 
 twin=1 legacy=1`, 2 allocations judged); `MUT=src0` → A5 FAIL (`twin=0 legacy=1`) with A1-100/A1-101 PASS (A5 sees what A1 cannot);
 nocash / nodisc / GA_BASELINE FAIL. No poster change. **§POSTING-PARITY has no twin residual left.** Next: (2) retire the remaining
 `doc_poster.derive*` (genesis.html + 6 witnesses + 4 bim-compiler `--engine-dir` scripts move to model_post first).
+
+### §POSTING-PARITY step 5 — SPEC: retire doc_poster deriveInvoice / deriveInOut / deriveMovement / deriveAllocation / deriveBankStatement (2026-11-04)
+Law: AD-LAYER LAW #5 (one implementation per responsibility). These five are a second posting implementation beside `model_post`;
+the Preview already left them (#2598). Measured callers (bim-ootb origin/main 403aa8d6, `grep derive* | derivePostings`), each with what
+its claim must be re-proved on:
+| # | caller | uses | has model layer? | migration |
+|---|---|---|---|---|
+| 5a | `erp/tests/witness_rma_window_path.js` RW-BOOKS | derivePostings M_InOut / C_Invoice on the model-path db | YES (loads model_post) | judge the fact_acct the real Complete wrote (`ModelPost.previewFacts` for unposted) — same asserted amounts |
+| 5b | `erp/tests/witness_nc5bcd_gainloss.js` | derivePostings C_AllocationHdr (FX gain/loss) | check | model_post refuses FX gain/loss lines as "not ported" (:891) → the claim cannot move until Doc_AllocationHdr createPaymentGainLoss :1045-1135 is ported; port it, then move |
+| 5c | `erp/tests/witness_post_bankstatement.js` B1b | deriveBankStatement as a "no legacy oracle" comparator | YES | drop B1b (it compares the twin with the code being retired; it was never a PASS) |
+| 5d | `erp/tests/poc_install_persist.js`, `poc_install_idmp.js` | derivePostings in-browser after install | check | post via the page's model layer (idempiere.html loads it) |
+| 5e | `erp/tests/witness_sd16_engine_port.js` S5/S6, bim-compiler `scripts/poc_sd16.js --engine-dir` | deriveInOut / deriveInvoice on SYNTHETIC hand-built DBs | NO (no AD dictionary) | re-home the claims (return receipt at current cost, ARC mirror, draft-CM mirror, reversal skip, service line ignored) onto the seed via the model layer |
+| 5f | `erp/tests/witness_f9_cost_history.js` | deriveInOut / deriveMovement on synthetic DBs | NO | same as 5e (cost-history-as-of claims; model_post already reads MCost.getCostInfo as of DateAcct, #2597) |
+| 5g | `erp/genesis.html:166` (shipped page) | derivePostings C_Invoice on the born tenant | NO — the born DB has ~30 business tables, no ad_table/ad_column | the born tenant needs the dictionary rows model_layer reads (columnsOf); then the sample invoice is created + completed through the model layer and its fact_acct is what the page shows |
+| 5h | `erp/erp_preview.js:121` headless fallback | derivePostings when `window.ModelPost` absent | — | after 5a-5g: route these five tables to "model layer not loaded" (no data), keep derivePostings only for tables with no model_post class |
+Deletion budget: the five functions + their derivePostings branches + `convertToSchema` if unreferenced (~700 lines of doc_poster.js);
+`witness_preview_is_posting` P3/P4 DELETED/NEEDED lists updated in the same PR. Order: 5c → 5a → 5d → 5e/5f → 5b → 5g → 5h → delete.
+Each step: the moved witness PASSes on model_post with its original asserted values; a mutant of the model_post code it now judges FAILs it.
+**Step 5 — measured blocker (2026-11-04):** 5a moved `witness_rma_window_path` RW-BOOKS onto the fact_acct the real Complete wrote:
+RW-BOOKS-CM == legacy (Dr 758 100.00 / Dr 596 10.00 / Cr 518 110.00, model_post), but **RW-BOOKS-RECEIPT has no facts: model_post refuses
+every customer return receipt** (`§MODEL-POST m_inout posted=N reason="Doc_InOut MMR SO (customer return :452-675) — not ported"`,
+model_post.js:348) — a LIVE twin gap (returns are never posted in the app). On main the old doc_poster comparator also FAILED this
+check (47.50 vs the legacy-measured 140.00). Vendor return (MMS PO :922-1120) is refused the same way.
+**Spec 5a-port — Doc_InOut "Sales - Return" (Doc_InOut.java:451-675) into model_post's m_inout class:** per line, non-reversal: costs =
+getProductCosts(as, org, zeroCostsOK, "M_InOutLine_ID=?") (batch-lot: per MA, summed); zero ⇒ stocked → "No Costs for <name>" (NO
+zero-cost-detail exemption, unlike the shipment :240-250), service → skip. Reversal: costs 0, DR from the original via updateReverseLine;
+not found ⇒ service → drop DR + skip, else "Original Shipment/Receipt not posted yet"; costs = DR acct balance. DR P_Asset (costs), loc from
+locator / to BP location; cost detail = createShipment exactly as the shipment branch (MA split, sign rule, Ref_CostDetail); CR P_Cogs
+(costs), Org = order-line org, Qty = −qty, reversal CR via updateReverseLine(…, dr). Witness: RW-BOOKS-RECEIPT on the real fact_acct
+(value = what Java's cost lookup gives on the seed; if it is not the SD-16 140.00, the cost state is measured and the cause stated);
+W-PREVIEW/W-POST byte-identity on every other doc; mutant = DR/CR accounts swapped in the new branch must FAIL.
+**Step 5 progress ✅ (witness) 2026-11-04 — bim-ootb #2601 (sw v982, `model_post.js?v=7`):** **5a-port DONE** — model_post posts customer
+return receipts (Doc_InOut.java:451-675). **5a DONE** — W-RMA-WINDOW-PATH PASS 25/25 (`§RW_VERDICT PASS cases=25`; was INCONCLUSIVE since
+#2215 — the patch's 3 `ALTER TABLE ad_user ADD COLUMN salt…` always fail because the seed already has `Salt`/`PasswordHashAlgorithm`/
+`SaltAlgorithm`; now counted as already-satisfied, any other failure still setup-bad). RW-BOOKS on the real fact_acct: receipt `742 Dr 140 |
+430 Cr 140`, CM `518 Cr 110 | 596 Dr 10 | 758 Dr 100`; `LMV_BREAK=mmrswap` → RW-BOOKS-RECEIPT FAIL. Fixture: 70.00 set in m_cost AND
+m_costhistory (MCost.getCurrentCost :145-162 reads history first — since #2597 a bare m_cost update is invisible to legacy too → 47.50).
+**5c DONE** — W-POST-BANKSTATEMENT B1b = Java expectation (lineless statement → 0 facts), PASS 4/4, flip/notransit/BST_BASELINE FAIL.
+**Pre-existing, NOT caused here (same verdict on origin/main's model_post, logs read):** `witness_asi_batchrev` FAIL 3 (lot costs 337.50/67.50
+vs 100.00/28.00), `witness_post_error` FAIL 2/8 (shipment Posted=Y where E expected), `witness_post_invoice_diff` + `witness_post_matchinv_diff`
+INCONCLUSIVE, `witness_shopday_model_path` INCONCLUSIVE 1; `witness_post_movement_diff` >300 s (not judged). Cause not measured; the first
+two read like the same #2597 cost-history fixture staleness as RW-BOOKS — check that first.
+**Remaining step 5, in order:** 5d poc_install_* → 5e/5f sd16 + f9 synthetic witnesses (+ bim-compiler poc_sd16 --engine-dir) → 5b FX
+gain/loss port → 5g genesis.html (born DB has no ad_table/ad_column) → 5h → delete. Vendor return (MMS PO :922-1120) is still refused.
