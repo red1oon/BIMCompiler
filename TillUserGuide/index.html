@@ -1613,6 +1613,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#company-details-and-logo-head-office" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Company details and logo (head office)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#product-pictures-and-prices-head-office" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3479,6 +3490,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#company-details-and-logo-head-office" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Company details and logo (head office)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#product-pictures-and-prices-head-office" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3724,7 +3746,7 @@ shipment, invoice, payment or posting, and it never talks to head office directl
 <td>23</td>
 <td>Configuration: General, Locale, System Options, Ticket Setup, Company</td>
 <td><strong>Configuration</strong> (gear button on the status strip)</td>
-<td>Only the 49 settings that apply to a browser till are shown; hardware, Swing and database settings are left out.</td>
+<td>Only the 50 settings that apply to a browser till (49 of uniCenta's plus <em>Look and Feel</em>) are shown; hardware, Swing and database settings are left out.</td>
 </tr>
 <tr>
 <td>24</td>
@@ -3737,6 +3759,24 @@ shipment, invoice, payment or posting, and it never talks to head office directl
 <td>Floor tabs over the shared table map</td>
 <td>Floor tabs on the restaurant map</td>
 <td>Open tables are shared by every till of the branch, with a lock; a table is saved when the waiter leaves it.</td>
+</tr>
+<tr>
+<td>26</td>
+<td>Look and Feel (theme)</td>
+<td><strong>Configuration → General → Look and Feel</strong></td>
+<td>uniCenta's <em>Look and Feel</em> choice, as two themes: <strong>Classic (2011)</strong>, the default, and <strong>Modern</strong>. Applies when you press <strong>Save</strong>.</td>
+</tr>
+<tr>
+<td>27</td>
+<td>About</td>
+<td><strong>About</strong> in the left menu panel (System)</td>
+<td>The company logo and details, then the application name and version.</td>
+</tr>
+<tr>
+<td>28</td>
+<td>Left collapsible menu panel</td>
+<td>the panel at the left of the Sales screen</td>
+<td>Main, Administration and System sections; the <strong>‹</strong> button hides it.</td>
 </tr>
 </tbody>
 </table>
@@ -3757,6 +3797,9 @@ shipment, invoice, payment or posting, and it never talks to head office directl
 <li><strong>Tap Sales.</strong> Pick a category, then tap product tiles. The back arrow returns to the parent category.</li>
 </ol>
 <p><img alt="The Sales screen with a sample sale: Patio Chair, Hoe 4 ft and 2 x Rose Bush on the ticket, the Tools category open with seven picture tiles" src="../img/till/till_03_sales.png" /></p>
+<p>The look is the original 2011 screen: pale grey window, blue-grey buttons, white fields, a light-blue selected line, blue number keys. The <strong>menu panel</strong> at the left has three
+   sections, <em>Main</em> (Sales, Edit Sales, Customer Payment, Payments, Close Cash), <em>Administration</em> (Check In/Out, Voucher, Pickup Reset) and <em>System</em> (Configuration, About). The <strong>‹</strong> button at
+   its top hides the panel (the ticket takes the room) and <strong>›</strong> brings it back; the choice is remembered on this till. On a phone-width screen the panel is not shown.</p>
 <p>The screen is laid out as uniCenta's: buttons across the top, the <strong>ticket</strong> in the middle (it takes whatever height is left), and the <strong>catalog</strong> at the bottom at the
    <em>category panel height</em> set at the branch admin (320 px by default). Product tiles are 107 x 60 with the picture and the name and price over its bottom edge. The thin
    bar above the tiles shows the open category; press it to <strong>fold the catalog away</strong> (the ticket grows into the space) and press it again to bring the products back.
@@ -3923,6 +3966,8 @@ name and seats, <em>Guests</em> and <em>Waiting</em>. The floor is drawn as uniC
 <em>General, Locale, System Options, Ticket Setup, Company</em>. Press <strong>Save</strong>; a changed <strong>Tickets</strong> mode applies at the next start.</p>
 <p><img alt="The Configuration screen, General tab: Terminal Name, Department, Tickets mode, Startup Logo and Text" src="../img/till/till_18_configuration.png" /></p>
 <ul>
+<li><strong>Look and Feel</strong> (General) chooses the till's colours: <strong>Classic (2011)</strong>, the default, takes the colours of the original 2011 screen, or <strong>Modern</strong>, the till's earlier look.
+  The choice is this till's own and is kept across restarts; the product pictures and the layout do not change with it.</li>
 <li><strong>Tickets</strong> (General) is the display mode: <strong>simple</strong>, <strong>standard</strong> (the default, the sales screen above) or <strong>restaurant</strong> (floor map and
   reservations). An address option <code>?mode=restaurant</code> still forces restaurant.</li>
 <li><strong>Per device</strong> (this till's own settings): Department, Startup Logo and Text, auto log-off after a sale and its timer, the table-plan
@@ -4136,6 +4181,18 @@ you to correct and run again. A customer payment (no lines) is refused here ("no
 <p>When a till sells a product that has a <strong>Bill of Materials</strong>, head office explodes it when it imports the sale, as legacy iDempiere does: the order gets a comment line and
 the component lines (quantity multiplied), and the <strong>components</strong> leave stock, not the parent. It goes <strong>one level only</strong>: a BOM inside a BOM stays a priced line, as in legacy.
 The component prices at head office must add up to the till's price for the parent, or the ticket is caught by the tender check. A BOM sold from stock (production route) is not covered.</p>
+<h3 id="company-details-and-logo-head-office">Company details and logo (head office)<a class="headerlink" href="#company-details-and-logo-head-office" title="Permanent link">&para;</a></h3>
+<p>The till shows the company's name, address, tax id, phone and e-mail, and its logo, in three places: the <strong>About</strong> screen, the name beside <em>Till</em> on the status strip, and the top of
+every receipt. They are <strong>not typed at the till</strong>: they come from the ordinary legacy records of the till's own branch organisation, and travel in the morning SODA batch like a price.</p>
+<ul>
+<li><strong>Name:</strong> the organisation's name (<em>Organization</em> window). <strong>Address:</strong> the <em>Location</em> of <strong>Organization Info</strong>. <strong>Tax id, phone, e-mail, receipt footer:</strong> <em>Organization Info</em>.</li>
+<li><strong>Logo:</strong> in <em>Organization Info</em> choose an <strong>Image</strong> whose <strong>Image URL</strong> is the picture's web address (for the shared bucket: <code>https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/erp/&lt;your-logo&gt;.png</code>).
+  Only the web address travels; the picture itself is fetched once and kept on the till's disk like the product pictures, never in the till's database. With no logo set, the screens show the first letter of the company name.</li>
+<li>Change a detail, save, and it reaches the branch's tills with the next SODA batch. A detail that did not change is not sent again.</li>
+<li>Header lines typed in <em>Configuration → Company</em> replace the company lines at the top of the receipt, as in uniCenta (its header lines are the cashier's own text).</li>
+<li>The GardenWorld demo tenant has <strong>no logo</strong> set, so its tills show the letter placeholder until one is set.</li>
+</ul>
+<p><img alt="The About screen: the company details and the application name and version" src="../img/till/till_20_about.png" /></p>
 <h3 id="product-pictures-and-prices-head-office">Product pictures and prices (head office)<a class="headerlink" href="#product-pictures-and-prices-head-office" title="Permanent link">&para;</a></h3>
 <p>Set a product's picture in the ordinary <strong>Product</strong> window (Image URL), and change prices in the price list as usual; the next SODA batch carries them to the branch.
 <strong>Import Product</strong> can create new products with their Image URL, but, as in legacy, it does <strong>not</strong> change the Image URL of an existing product: use the Product edit.</p>
