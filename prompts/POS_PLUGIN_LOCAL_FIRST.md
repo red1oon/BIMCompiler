@@ -1504,7 +1504,7 @@ Legacy SETUP made through legacy's own WS (`scripts/bridge/pilot/ws_soda_setup.s
 **Not built / limits:** the branch records the outcome as plain column updates (not by running DocAction on its replica, which has no stock tables); HQ's Complete of the movement then goes DOWN as its own S3 update. The non-executor in the real-device witness authors directly on its store (a conforming client keeps it local, `not-declared-for-role`). The DIFFDOCS/STORAGE legacy figures are from ONE source-stock row (the clean case).
 
 ### §28.3 LEAD — what §28.2 leaves OPEN (2026-11-04; bim-ootb #2616 + BIMCompiler #351 merged)
-- **⛔ OPEN-1, a twin divergence (not accepted; its own task).** Replenish's movement line text is "Total: 9.0" in legacy and "Total: 9" in the twin.
+- **✅ CLOSED 2026-11-04 as LEGACY-QUIRK, in the owner's words:** *"ah ok, qty movement is fine at significant number"* (BIMCompiler #362: narrow exemption, `§QUIRK_ACCEPTED` / `§QUIRK_SELFCHECK` in `witness_soda_receipt_parity.js`). It was: **OPEN-1, a twin divergence.** Replenish's movement line text is "Total: 9.0" in legacy and "Total: 9" in the twin.
   - Cause: `ReplenishReportProduction.java:621-622` prints a BigDecimal whose SCALE comes from PG `numeric` storage rows (rows Java wrote carry scale 1: `6.0`, `0.0`). SQLite keeps plain numbers, so the scale is lost.
   - This is not new in §28. It is a whole class: the twin does not carry numeric scale through storage and sync. It touches every text built from a stored BigDecimal.
   - Fix (to be specced): carry the scale in the one numeric helper and the column storage, then `git grep` the other generated descriptions.
