@@ -1,7 +1,10 @@
 #!/usr/bin/env python3 -I
 # Implements prompts/PDF2BIM_VECTOR_PROBE.md §22/§24 — Witness: W-E1 (levels), W-E2/E3 (openings vs plan), W-E5 (W3 high window rule), W-E6 (dimension entities = drawn values)
-# Usage: elev_emit.py <p4.svg> <p5.svg> <plan.dxf> <rosetta.json> <outdir> <pdf>
+# §33: views, beam lines and heights come from <inferred.json> (infer_type.py); orientation is the template's, presumed.
+# Usage: elev_emit.py <p4.svg> <p5.svg> <plan.dxf> <rosetta.json> <outdir> <pdf> <inferred.json>
 import re,sys,json,math,collections,os
+sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+import type_template as TT
 svg4,svg5,plandxf,rj,out=sys.argv[1:6]; R=json.load(open(rj)); K=R['sheet']['mm_per_pt_fitted']; log=lambda *a:print('§PDF',*a,flush=True)
 os.makedirs(out,exist_ok=True)
 def load(f):
@@ -16,25 +19,26 @@ def load(f):
             n=3 if c=='C' else 1; x,y=map(float,tk[i+2*(n-1):i+2*n]); i+=2*n; pts.append((M[0]*x+M[2]*y+M[4],M[1]*x+M[3]*y+M[5]))
         P.append((pts,'C' in re.search(r' d="([^"]*)"',a).group(1)))
     return P
-SHC={'p4':load(svg4),'p5':load(svg5)}; SH={k:[p for p,c in v] for k,v in SHC.items()}
+SHC={'p'+TT.page_of(f):load(f) for f in (svg4,svg5)}; SH={k:[p for p,c in v] for k,v in SHC.items()}
 # §29 W-C3: each view's own grid bubbles = stroked circles (r >= 9 pt) holding a text-layer word, above that view's beam line (the plan's labels are now read, so dxf2qualify G2/elev_grid_missing wants them on every face)
 PDF=sys.argv[6]; import subprocess
-def bubbles(sheet,beam):
+def bubbles(sheet,row):
     b=subprocess.run(['pdftotext','-f',sheet[1:],'-l',sheet[1:],'-bbox',PDF,'-'],capture_output=True,text=True,check=True).stdout
     WD=[(w[4],(float(w[0])+float(w[2]))/2,(float(w[1])+float(w[3]))/2) for w in re.findall(r'<word xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">(.*?)</word>',b)]; o={}
     for pts,cv in SHC[sheet]:
         if not cv or len(pts)<4 or math.dist(pts[0],pts[-1])>=.3: continue
         xs=[q[0] for q in pts];ys=[q[1] for q in pts];wd=max(xs)-min(xs);ht=max(ys)-min(ys);cx=(min(xs)+max(xs))/2;cy=(min(ys)+max(ys))/2
-        if abs(wd-ht)<.3 and wd/2>=9 and 60<=beam-cy<=130:
+        if abs(wd-ht)<.3 and wd/2>=9 and abs(cy-row)<=wd/2:
             for w in WD:
                 if math.hypot(w[1]-cx,w[2]-cy)<=wd/2: o[w[0]]=(cx,cy,wd/2)
     return o
 GX,GY=R['grid']['x'],R['grid']['y']; WID=GX['E']; DEP=GY['1']
-# ox = pt x of the first grid label as drawn (text layer, measured in exploration), beam = pt y of the BEAM/CEILING line (long H line, measured), all later checked by W-E1
-views={'FRONT':dict(sheet='p4',ox=246.3,beam=426.4,face='minY',haxis='+X',kind='x',width=WID,axis=('H',-GY['2'])),
-       'REAR': dict(sheet='p4',ox=251.8,beam=168.4,face='maxY',haxis='-X',kind='x',width=WID,axis=('H',0)),
-       'RIGHT':dict(sheet='p5',ox=156.5,beam=160.0,face='maxX',haxis='+Y',kind='y',width=DEP,axis=('V',GX['E'])),
-       'LEFT': dict(sheet='p5',ox=285.6,beam=423.4,face='minX',haxis='-Y',kind='y',width=DEP,axis=('V',0))}
+I=json.load(open(sys.argv[7])); VAL=lambda k:I['values'][k]['value']; BH,FG,RH=VAL('beam_above_ffl'),VAL('ffl_above_ground'),VAL('ridge_above_beam'); BL=I['template']['blanks']
+# ox = pt x of the first grid label as drawn, beam = pt y of the BEAM/CEILING line: read by infer_type.py; which view is which face is the template's, presumed (§33). Checked by W-E1
+views={}
+for n_ in ('FRONT','REAR','RIGHT','LEFT'):
+    v_=I['views'][n_]; x_='X' in v_['haxis']
+    views[n_]=dict(sheet='p%s'%v_['sheet'],ox=v_['ox'],beam=v_['beam'],label_row=v_['label_row'],face=v_['face'],haxis=v_['haxis'],kind='x' if x_ else 'y',width=WID if x_ else DEP,axis=('H',-GY[v_['axis']]) if x_ else ('V',GX[v_['axis']]))
 def Hlines(P):
     H=collections.defaultdict(float)
     for p in P:
@@ -42,8 +46,8 @@ def Hlines(P):
             if abs(a[1]-b[1])<.15 and abs(a[0]-b[0])>0: H[round((a[1]+b[1])/2,1)]+=abs(a[0]-b[0])
     return sorted(y for y,l in H.items() if l>=300)
 for n,v in views.items():
-    P=SH[v['sheet']]; lh=Hlines(P); ffl=v['beam']+3000/K; hit=[y for y in lh if abs(y-ffl)<.3]; gl=[y for y in lh if abs(y-(ffl+150/K))<.3]; v['ffl']=ffl
-    log('W-E1',n,'beam',v['beam'],'FFL expected',round(ffl,2),'found',hit,'ground expected',round(ffl+150/K,2),'found',gl,'PASS' if hit and gl else 'WRONG')
+    P=SH[v['sheet']]; lh=Hlines(P); ffl=v['beam']+BH/K; hit=[y for y in lh if abs(y-ffl)<.3]; gl=[y for y in lh if abs(y-(ffl+FG/K))<.3]; v['ffl']=ffl
+    log('W-E1',n,'beam',v['beam'],'FFL expected',round(ffl,2),'found',hit,'ground expected',round(ffl+FG/K,2),'found',gl,'PASS' if hit and gl else 'WRONG')
 # ---- plan entities from our own DXF
 rd=open(plandxf).read().split('\n'); arcs=[]; PW=[]; PM=[]; i=0; ent=False
 while i<len(rd)-1:
@@ -86,19 +90,22 @@ def slat_windows(v):
         if (c['y1']-c['y0'])*K>=950: Wn.append([c])
         elif Wn: Wn[-1].append(c)
     return [(round((g[0]['x0']-ax)*K),round((g[-1]['x1']-ax)*K),round((ffl-g[0]['y1'])*K),round((ffl-g[0]['y0'])*K)) for g in Wn]
-def w3_measure(v,xc):   # does the sheet show a 600 x 500 mm frame centred at xc (drawn mm) with 500 mm vertical edges? returns (sill, head) or None
+def w3_measure(v,xc):   # does the sheet show the schedule's W3 frame centred at xc (drawn mm) with its vertical edges? returns (sill, head) or None
+    wd3,ht3=R['schedule_sizes_mm']['W3']
     P=SH[v['sheet']]; ax,ffl=v['ox'],v['ffl']; best=None
     for p in P:
         for a,b in zip(p,p[1:]):
-            if abs(a[0]-b[0])<.15 and abs(abs(a[1]-b[1])*K-500)<=30:
+            if abs(a[0]-b[0])<.15 and abs(abs(a[1]-b[1])*K-ht3)<=30:
                 for cx in (a[0],):
-                    if abs((cx-ax)*K-(xc-300))<=40 or abs((cx-ax)*K-(xc+300))<=40: best=(round((ffl-max(a[1],b[1]))*K),round((ffl-min(a[1],b[1]))*K))
+                    if abs((cx-ax)*K-(xc-wd3/2))<=40 or abs((cx-ax)*K-(xc+wd3/2))<=40: best=(round((ffl-max(a[1],b[1]))*K),round((ffl-min(a[1],b[1]))*K))
     return best
 SZ=R['schedule_sizes_mm']
 def lw(layer,pts): return ['0','LWPOLYLINE','8',layer,'90',str(len(pts)),'70','1']+sum([['10',str(x),'20',str(y)] for x,y in pts],[])
 def tx(x,y,t,h=150): return ['0','TEXT','8','DXF2BIM-MARK','10',str(x),'20',str(y),'30','0','40',str(h),'1',t]
 def dim(layer,p1,p2,anchor,rot,text): return ['0','DIMENSION','8',layer,'10',str(anchor[0]),'20',str(anchor[1]),'30','0','13',str(p1[0]),'23',str(p1[1]),'33','0','14',str(p2[0]),'24',str(p2[1]),'34','0','70','0','50',str(rot),'1',str(text)]
-ROOF_TOP=3000+1722
+ROOF_TOP=BH+RH
+def w3_z(m,where):   # §33 fill rule: the high window's sill and head, measured on this view (or None) against the ruler
+    a=TT.decide('high_window_sill',m[0] if m else None,BL['high_window_sill'],where); b=TT.decide('high_window_head',m[1] if m else None,BL['high_window_head'],where); return a['value'],b['value']
 for n,v in views.items():
     o,ac=v['axis']; pw=planwin(v); W=[]; Dr=[]
     if v['kind']=='x' and n in('FRONT','REAR'):
@@ -110,8 +117,8 @@ for n,v in views.items():
             else: W.append((x0,x1,s_,h_)); log('W-E3b',n,'slat window with NO plan chain (kept as measured)',(x0,x1))
         for c,w in pw:       # plan windows not drawn as slats = louvre W3 (600 mm): sill/head measured on the left elevation (§24), checked here
             xc=xdraw(v,c)
-            if not any(abs((x0+x1)/2-xc)<=60 for x0,x1,_,_ in W) and w==600:
-                m=w3_measure(v,xc); log('W-E5',n,'plan W3 at drawn x',round(xc),'vector 500 mm frame edges measured (sill,head):',m); W.append((round(xc-300),round(xc+300),2000,2500))
+            if not any(abs((x0+x1)/2-xc)<=60 for x0,x1,_,_ in W) and w==SZ['W3'][0]:
+                m=w3_measure(v,xc); log('W-E5',n,'plan W3 at drawn x',round(xc),'vector 500 mm frame edges measured (sill,head):',m); W.append((round(xc-w/2),round(xc+w/2))+w3_z(m,n))
         runs=wallruns(o,ac)
         for cx,cy,r,a0,a1 in arcs:
             if abs(cy-ac)<=250:
@@ -121,25 +128,25 @@ for n,v in views.items():
                 if not any(a<=mid<=b for a,b in runs) and not inwin: Dr.append((xdraw(v,mid),r))
     else:   # side elevations: plan windows on the wall axis (louvre W3), sill/head from the measured rule
         for c,w in pw:
-            xc=xdraw(v,c); m=w3_measure(v,xc); log('W-E5',n,'plan window width',w,'at drawn x',round(xc),'vector 500 mm frame edges measured (sill,head):',m); W.append((round(xc-w/2),round(xc+w/2),2000,2500))
+            xc=xdraw(v,c); m=w3_measure(v,xc); log('W-E5',n,'plan window width',w,'at drawn x',round(xc),'vector 500 mm frame edges measured (sill,head):',m); W.append((round(xc-w/2),round(xc+w/2))+w3_z(m,n))
     log('W-E2',n,'windows (x0,x1,sill,head) as drawn',W,'doors (centre,width)',[(round(c),round(w)) for c,w in Dr])
-    width=v['width']; z0,z1,ztop=0,3000,ROOF_TOP
+    width=v['width']; z0,z1,ztop=0,BH,ROOF_TOP
     o_=['0','SECTION','2','ENTITIES']
     o_+=lw('ELEV-WALL',[(0,z0),(width,z0),(width,z1),(0,z1)])        # z0 = floor level: the wall reader needs the elevation wall to START at the plan level (dxf2elev applyWallHeights)
     for x0,x1,s,h in W: o_+=lw('ELEV-GLAZING',[(x0,s),(x1,s),(x1,h),(x0,h)])
     for c,wd in Dr: o_+=lw('ELEV-DOOR',[(c-wd/2,0),(c+wd/2,0),(c+wd/2,SZ['D1'][1]),(c-wd/2,SZ['D1'][1])])
-    for z in (-150,0,3000,ztop): o_+=['0','LINE','8','ELEV-LEVEL','10','-500','20',str(z),'30','0','11',str(width+500),'21',str(z),'31','0']
-    # height DIMENSIONs = the values drawn on the sheets: 3000 (FFL-beam), 150 (ground-FFL); 1722 (beam-roof top, section A-A)
-    for a,b,t in ((-150,0,150),(0,3000,3000),(3000,ztop,1722)): o_+=dim('ELEV-DIM',(-800,a),(-800,b),(-1000,(a+b)/2),90,t)
+    for z in (-FG,0,BH,ztop): o_+=['0','LINE','8','ELEV-LEVEL','10','-500','20',str(z),'30','0','11',str(width+500),'21',str(z),'31','0']
+    # height DIMENSIONs = the values filled from the sheets (FFL-beam, ground-FFL, beam-roof top)
+    for a,b,t in ((-FG,0,FG),(0,BH,BH),(BH,ztop,RH)): o_+=dim('ELEV-DIM',(-800,a),(-800,b),(-1000,(a+b)/2),90,t)
     o_+=tx(-3000,-1000,'@VIEW=ELEV @BY=user')+tx(-3000,-1300,'@FACE=%s @BY=user'%v['face'])+tx(-3000,-1600,'@HAXIS=%s @BY=user'%v['haxis'])+tx(-3000,-1900,'@UNITS=mm @BY=user')
-    o_+=tx(-3000,-2200,'@ROOF=%s @BY=user'%round((ztop-150)/1000+0.0,3) if False else '@ROOF=4.872 @BY=user')+tx(-1500,-150,'@Z=0 @BY=user')+tx(-1500,0,'@Z=0.15 @BY=user')+tx(-1500,3000,'@Z=3.15 @BY=user')+tx(-1500,ztop,'@Z=4.872 @BY=user')
+    zr=(FG+ztop)/1000; o_+=tx(-3000,-2200,'@ROOF=%s @BY=user'%zr)+tx(-1500,-FG,'@Z=0 @BY=user')+tx(-1500,0,'@Z=%s @BY=user'%(FG/1000))+tx(-1500,BH,'@Z=%s @BY=user'%((FG+BH)/1000))+tx(-1500,ztop,'@Z=%s @BY=user'%zr)
     names=(list('ABCDE'),GX) if v['kind']=='x' else (list('12345'),GY)
     for k,gv in (GX if v['kind']=='x' else GY).items():
         xd=xdraw(v,gv if v['kind']=='x' else -gv); o_+=tx(xd,-600,'@GRIDH=%s @BY=user'%k)
-    BB=bubbles(v['sheet'],v['beam']); res={}   # a label not read stays absent (the qualifier then says so): nothing is synthesised. Position = the dictionary axis, as @GRIDH; REAR is drawn A..E left to right over mirrored content (§22), so its residual is taken against the drawn order
+    BB=bubbles(v['sheet'],v['label_row']); res={}   # a label not read stays absent (the qualifier then says so): nothing is synthesised. Position = the dictionary axis, as @GRIDH; REAR is drawn A..E left to right over mirrored content (§22), so its residual is taken against the drawn order
     for k,gv in (GX if v['kind']=='x' else GY).items():
         if k not in BB: continue
         xd=xdraw(v,gv if v['kind']=='x' else -gv); cx,cy,r_=BB[k]; zc=round((v['ffl']-cy)*K,1); rm=round(r_*K,1); drawn=(cx-v['ox'])*K; res[k]=round(drawn-(gv if n=='REAR' else xd),1)
-        o_+=['0','LINE','8','ELEV-GRID','10',str(xd),'20','-150','30','0','11',str(xd),'21',str(zc-rm),'31','0']+['0','CIRCLE','8','ELEV-GRID','10',str(xd),'20',str(zc),'30','0','40',str(rm)]+['0','TEXT','8','ELEV-GRID','10',str(xd),'20',str(zc),'30','0','40','150','1',k]
+        o_+=['0','LINE','8','ELEV-GRID','10',str(xd),'20',str(-FG),'30','0','11',str(xd),'21',str(zc-rm),'31','0']+['0','CIRCLE','8','ELEV-GRID','10',str(xd),'20',str(zc),'30','0','40',str(rm)]+['0','TEXT','8','ELEV-GRID','10',str(xd),'20',str(zc),'30','0','40','150','1',k]
     log('W-C3',n,'bubbles read',len(BB),'of',len(GX if v['kind']=='x' else GY),'residual drawn vs dictionary mm',res,'PASS' if res and max(abs(x) for x in res.values())<=30 else 'WRONG')
     o_+=['0','ENDSEC','0','EOF']; fn=os.path.join(out,'elev_%s.dxf'%n.lower()); open(fn,'w').write('\n'.join(o_)+'\n'); log('W-E4 wrote',fn)

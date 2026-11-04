@@ -1,9 +1,11 @@
 #!/usr/bin/env python3 -I
 # Implements prompts/PDF2BIM_VECTOR_PROBE.md §29 — Witness: W-C5. Reads the floor build-up from the two sections on p6 (FFL level line -> the sheet's only chromatic line, note G8 membrane) and the cut from the plan's section markers,
 # then writes the importer's SECTION sheet (S-SLAB rect: dictionary floor_buildup, status YELLOW). Writes NOTHING if either section disagrees: the row stays stated rather than filled by a guess.
-# Usage: section_emit.py <p6.svg> <p1.svg> <rosetta.json> <pdf> <typed outdir>
+# Usage: section_emit.py <p6.svg> <p1.svg> <rosetta.json> <pdf> <typed outdir> <inferred.json>
 import re,sys,json,math,subprocess,collections,os
-sv6,sv1,rj,pdf,out=sys.argv[1:6]; R=json.load(open(rj)); K=R['sheet']['mm_per_pt_fitted']; log=lambda *a:print('§PDF',*a,flush=True); DEPTH=R['floor_buildup']['depth_mm']; TOL=10
+sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+import type_template as TT
+sv6,sv1,rj,pdf,out,ij=sys.argv[1:7]; R=json.load(open(rj)); I=json.load(open(ij)); FG=I['values']['ffl_above_ground']['value']; BH=I['values']['beam_above_ffl']['value']; K=R['sheet']['mm_per_pt_fitted']; log=lambda *a:print('§PDF',*a,flush=True); DEPTH=R['floor_buildup']['depth_mm']; TOL=10
 def paths(f):
     o=[]
     for m in re.finditer(r'<path ([^>]*?)/>',open(f).read()):
@@ -25,8 +27,8 @@ def circles(P,W,rmin,rmax):
         if abs((max(xs)-min(xs))-(max(ys)-min(ys)))<.3 and rmin<=r<=rmax:
             c=((min(xs)+max(xs))/2,(min(ys)+max(ys))/2); o+=[(w[0],c[0],c[1],r) for w in W if math.hypot(w[1]-c[0],w[2]-c[1])<=r]
     return o
-P6=paths(sv6); W6=words(6); gx=R['grid']['x']; gy=R['grid']['y']; B6=circles(P6,W6,9,11)
-sections={'A-A':{k:(x,y) for k,x,y,r in B6 if k in gx and y<150},'B-B':{k:(x,y) for k,x,y,r in B6 if k in gy and y>250}}
+P6=paths(sv6); W6=words(TT.page_of(sv6)); gx=R['grid']['x']; gy=R['grid']['y']; B6=circles(P6,W6,9,11)
+sections={'A-A':{k:(x,y) for k,x,y,r in B6 if k in gx},'B-B':{k:(x,y) for k,x,y,r in B6 if k in gy}}   # letters head the cut along X, numbers the cut along Y
 # horizontal segments of each section's band, by y: level lines are the long dash-dot rows (many dashes on one y); the membrane is the chromatic row
 res={}
 for name,bub in sections.items():
@@ -49,19 +51,19 @@ for name,bub in sections.items():
 if len(res)<2 or not all(v['ok'] for v in res.values()):
     log('W-C5 RESULT no section sheet written: the two sections do not both state the build-up (slab_no_underside stays stated)'); sys.exit(0)
 # the cut: the plan's section marker bubbles (radius below the grid bubbles'), the label on both ends of one horizontal line; anchored as emit_dxf_p1 anchors the plan
-P1=paths(sv1); W1=words(1); M1=[c for c in circles(P1,W1,7.5,9) if c[0]=='A']
-y5=[w[2] for w in W1 if w[0]=='5' and w[1]<100][0]
+P1=paths(sv1); W1=words(TT.page_of(sv1)); M1=[c for c in circles(P1,W1,7.5,9) if c[0]=='A']
+y5=TT.left_col(W1,gy)['5'][2]
 cb=[q for q in circles(P1,W1,9,11) if q[0]=='5']; y0=cb[0][2] if cb else y5
 if len(M1)!=2 or abs(M1[0][2]-M1[1][2])>.1: log('W-C5 RESULT no section sheet written: section marker A not found on both ends',M1); sys.exit(0)
 cut=round(-(M1[0][2]-y0)*K); A=res['A-A']; xA=A['bub']['A'][0]; hmin,hmax=round((A['x'][0]-xA)*K,1),round((A['x'][1]-xA)*K,1)
 log('W-C5 cut from the plan markers: A at',[(round(m[1],1),round(m[2],1)) for m in M1],'-> Y',cut,'mm | grid residuals mm',{k:round((v[0]-xA)*K-gx[k],1) for k,v in A['bub'].items()},'| slab h',hmin,hmax)
 tx=lambda x,y,t:['0','TEXT','8','DXF2BIM-MARK','10',str(x),'20',str(y),'30','0','40','150','1',t+' @BY=user']
 rect=['0','LWPOLYLINE','8','S-SLAB','90','4','70','1']+sum([['10',str(x),'20',str(y)] for x,y in ((hmin,-DEPTH),(hmax,-DEPTH),(hmax,0),(hmin,0))],[])
-o=['0','SECTION','2','ENTITIES']+rect; yc=round((A['yf']-A['bub']['A'][1])*K,1); rb=round(10.14*K,1)
+o=['0','SECTION','2','ENTITIES']+rect; yc=round((A['yf']-A['bub']['A'][1])*K,1); rb=round(max(r for k,x,y,r in B6 if k in A['bub'])*K,1)
 for k,v in A['bub'].items():   # the section's own grid bubbles, read above
     h=gx[k]; o+=['0','LINE','8','A-GRID','10',str(h),'20',str(-DEPTH),'30','0','11',str(h),'21',str(yc-rb),'31','0','0','CIRCLE','8','A-GRID','10',str(h),'20',str(yc),'30','0','40',str(rb),'0','TEXT','8','A-GRID','10',str(h),'20',str(yc),'30','0','40','150','1',k]
 for n,m in enumerate(('@SET=STD','@VIEW=SECTION','@NAME=SECTION A-A','@UNITS=mm','@HAXIS=+X','@CUT=Y,%d'%cut)): o+=tx(-3000,-1000-300*n,m)
 for k,v in gx.items(): o+=tx(v,-600,'@GRIDH=%s'%k)
-for z,y in ((0,-DEPTH),(0.15,0),(3.15,3000)): o+=tx(-1500,y,'@Z=%s'%z)
+for z,y in ((0,-DEPTH),(FG/1000,0),((FG+BH)/1000,BH)): o+=tx(-1500,y,'@Z=%s'%z)
 o+=['0','ENDSEC','0','EOF']; f=os.path.join(out,'section_aa.dxf'); open(f,'w').write('\n'.join(o)+'\n')
-log('W-C5 RESULT wrote',f,'S-SLAB top z 0.15 bottom z 0 (floor build-up, YELLOW: dictionary floor_buildup)')
+log('W-C5 RESULT wrote',f,'S-SLAB top z',FG/1000,'bottom z 0 (floor build-up, YELLOW: dictionary floor_buildup)')

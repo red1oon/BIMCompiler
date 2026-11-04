@@ -1,8 +1,10 @@
 #!/usr/bin/env python3 -I
 # Implements prompts/PDF2BIM_VECTOR_PROBE.md §19 — Witness: W-P6 (openings from GEOMETRY vs the PDF's own schedule)
-# Usage: openings_p1.py <svg> <rosetta.json> <pdf>
-import re,sys,json,math,collections,subprocess
-svgf,rj,pdf=sys.argv[1:4]; R=json.load(open(rj)); log=lambda *a:print('§PDF',*a,flush=True); K=R['sheet']['mm_per_pt_fitted']
+# Usage: openings_p1.py <svg> <rosetta.json> <pdf> <template.json>
+import re,sys,json,math,collections,subprocess,os
+sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+import type_template as TT
+svgf,rj,pdf,tj=sys.argv[1:5]; T=TT.load(tj); R=json.load(open(rj)); log=lambda *a:print('§PDF',*a,flush=True); K=R['sheet']['mm_per_pt_fitted']
 svg=open(svgf).read(); paths=[]
 for m in re.finditer(r'<path ([^>]*?)/>',svg):
     a=m.group(1)
@@ -15,7 +17,7 @@ for m in re.finditer(r'<path ([^>]*?)/>',svg):
         if tk[i] in 'MLC': c=tk[i];i+=1;continue
         n=3 if c=='C' else 1; x,y=map(float,tk[i+2*(n-1):i+2*n]); i+=2*n; pts.append((M[0]*x+M[2]*y+M[4],M[1]*x+M[3]*y+M[5]))
     paths.append((sw,pts,curve))
-IN=lambda xs,ys:160<=min(xs) and max(xs)<=445 and 170<=min(ys) and max(ys)<=420
+FX0,FX1,FY0,FY1=TT.plan_frame(TT.words(pdf,TT.page_of(svgf)),R,T); IN=lambda xs,ys:FX0<=min(xs) and max(xs)<=FX1 and FY0<=min(ys) and max(ys)<=FY1
 # ---- windows: chains of 100 x 500 mm closed rects at 600 mm pitch (measured §19)
 mods=[]
 for sw,p,cv in paths:
@@ -53,7 +55,7 @@ dk=collections.Counter('D1/D2(900)' if abs(a[0]-900)<=60 else 'D3(750)' if abs(a
 log('W-P6 doors from geometry',dict(dk),'schedule 900-wide D1 2 + D2 3 = 5, 750 D3 2 ->','MATCH' if dk.get('D1/D2(900)')==5 and dk.get('D3(750)')==2 else 'DIFF')
 
 # ---- bind each arc to its nearest D tag; radius vs schedule width
-bb=subprocess.run(['pdftotext','-f','1','-l','1','-bbox',pdf,'-'],capture_output=True,text=True,check=True).stdout
+bb=subprocess.run(['pdftotext','-f',TT.page_of(svgf),'-l',TT.page_of(svgf),'-bbox',pdf,'-'],capture_output=True,text=True,check=True).stdout
 TG=[(w[4],(float(w[0])+float(w[2]))/2,(float(w[1])+float(w[3]))/2) for w in re.findall(r'<word xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">(.*?)</word>',bb) if re.fullmatch(r'D\d',w[4]) and float(w[0])<445]
 SZ=R['schedule_sizes_mm']; offs=collections.defaultdict(list); bound=collections.Counter()
 # parameter-free one-to-one assignment: closest (tag,arc) pairs first; an arc left over is not a schedule door

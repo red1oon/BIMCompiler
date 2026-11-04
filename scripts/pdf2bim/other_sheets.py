@@ -50,7 +50,7 @@ def room_at(x,y,grow=0):
 # ---- W-S2 p2 symbols vs the QTY table
 E=R['electrical_p2']; S=SH.get(2)
 if S:
-    W=S['W']; col=[w for w in W if re.fullmatch(r'[\d/]+',w[0]) and 620<=w[1]<=660]; rows_=collections.defaultdict(list)   # the QTY column: "1/4/2" comes as separate words on one row
+    W=S['W']; qh=[w for w in W if w[0].startswith('QTY')]; col=[w for w in W if qh and re.fullmatch(r'[\d/]+',w[0]) and abs(w[1]-qh[0][1])<=25 and w[2]>qh[0][2]]; rows_=collections.defaultdict(list)   # the QTY column: "1/4/2" comes as separate words on one row
     for w in col: rows_[round(w[2]/3)].append(w)
     qty=[(''.join(x[0] for x in sorted(v,key=lambda q:q[1])),) for k,v in sorted(rows_.items())]
     Q=dict(zip(E['qty_order_in_table'],[w[0] for w in qty])); print('§S QTY column as read',Q)
@@ -93,12 +93,12 @@ if S:
     else: say('W-S3 ridge','PASS' if abs(rc-gy['3'])<=30 else 'WRONG','ridge cap rows %s mm below grid 5, centre %.0f vs grid 3 %d'%(ys,rc,gy['3']))
     ok=all(v is not None and abs(v-750)<=15 for v in sides.values())
     say('W-S3 eaves','FINDING' if ok else 'WRONG','sheets end from the AXIS %s (ribs %s): = 700 printed + the 50 mm from axis to outer wall face; sections print 750. Measures where the sheets end, not the drafter\'s intent'%(sides,nr))
-P6=load(6); Sl=collections.Counter()
+P6=load(6); Sl=collections.Counter(); W6d=[w[2] for w in words(6) if w[0] in gy]; yBB=max(W6d) if W6d else 1e9   # section B-B lies below its row of grid numbers
 for sw,c,pts in P6:
     if c: continue
     for a,b in zip(pts,pts[1:]):
         dx,dy=b[0]-a[0],b[1]-a[1]; L=math.hypot(dx,dy)
-        if a[1]>320 and L>25 and abs(dx)>1 and abs(dy)>5: Sl[round(math.degrees(math.atan2(abs(dy),abs(dx))),1)]+=L
+        if a[1]>yBB and L>25 and abs(dx)>1 and abs(dy)>5: Sl[round(math.degrees(math.atan2(abs(dy),abs(dx))),1)]+=L
 if not Sl: say('W-S3 pitch','VACUOUS','no sloping lines on section B-B')
 else:
     deg,L=Sl.most_common(1)[0]; printed=[w[0] for w in words(3) if '25' in w[0]]

@@ -1,9 +1,9 @@
 # ⚠ DO NOT REMOVE — PDF2BIM resume prompt (paste the block below into a NEW session)
 # Scope: finish the ONE low-cost single-storey house (TB-LKTN) from vector PDF -> DXF -> a coherent model that Converts in the Modeller. Findings live in `prompts/PDF2BIM_VECTOR_PROBE.md` (▶ RESUME HERE) and `bim-ootb prompts/DXF2BIM_MODELLER_LANE.md` (§L32-§L36); this file only STARTS a session.
-# Read the log after every run (`<outdir>/logs/*.log`); exit code is not evidence. Honour this block until the prompt is DONE. Written 2026-11-04, branch `feat/pdf2bim-vector`. Replaces the session-2 prompt.
+# Read the log after every run (`<outdir>/logs/*.log`); exit code is not evidence. Honour this block until the prompt is DONE. Written 2026-11-04, branch `feat/pdf2bim-vector`. Replaces the session-3 prompt.
 
 ```
-Resume the PDF→BIM lane on the low-cost house. Read prompts/PDF2BIM_VECTOR_PROBE.md on branch feat/pdf2bim-vector: ▶ RESUME HERE, then §29 to §32. Then bim-ootb prompts/DXF2BIM_MODELLER_LANE.md §L36. The owner said: consolidate on this one house first.
+Resume the PDF→BIM lane on the low-cost house. Read prompts/PDF2BIM_VECTOR_PROBE.md on branch feat/pdf2bim-vector: ▶ RESUME HERE, then §33, then §29 to §32. Then bim-ootb prompts/DXF2BIM_MODELLER_LANE.md §L36. The owner said: consolidate on this one house first.
 
 WHERE THE FILES ARE
 - Two repos. bim-compiler branch feat/pdf2bim-vector (pushed, no PR, not merged): the PDF -> DXF chain, scripts/pdf2bim/. bim-ootb main: the importer and the Modeller, modeller/.
@@ -15,11 +15,16 @@ REPRODUCE FIRST (verify before building)
 `PDF2BIM_OOTB=<bim-ootb worktree at or after #2631> scripts/pdf2bim/run_p1.sh <outdir>`, then read logs/01..16. Expect:
 - `§LIB els 72` = 50 IfcWall (47 + 3 gable-end) + 2 IfcSlab + 2 IfcColumn + 7 IfcDoor + 7 IfcWindow + 4 IfcRoof
 - `§LIB blocking 76`; `§WC RESULT fails 0`; `§R RESULT fails 0`
-- typed sheets byte-identical between two clean runs; geometry hash of the IFC's triangles a4c986f267f69a56 (measured 2026-11-04, bim-ootb c80b286f). The IFC FILE bytes do differ between runs, cause not checked.
+- `§T RESULT PASS fails 0` in 17_witness_template; every blank READ in 03b_infer_type
+- typed sheets byte-identical between two clean runs; `geom_hash.py` hash 55b53362b2493a6f (18_geom_hash.log, measured 2026-11-04, bim-ootb 9b879d2d). The IFC FILE bytes do differ between runs, cause not checked.
+- `PDF2BIM_OOTB=<tree> scripts/pdf2bim/witness_ruler.sh <that outdir> <work dir>`: `§T RESULT fails 0` (moved drawing, wrong ruler, stripped sheet, swapped orientation).
 - TBKLTN_House.pdf is git-ignored and library/component_library.db is not in git: the script finds both in ~/bim-compiler. It migrates a COPY of the library only.
 - Run ifc_check.py, gap_register.py, witness_house_roof.py WITHOUT `python -I` (IfcOpenShell is in the user site).
 
 RULINGS (do not re-litigate)
+- THE TYPE IS A PREFAB FACTORY (owner 2026-11-04, §33): template types/low_cost_single_storey_unit.json, 'Low cost single storey unit'. Structure preset (one storey, such a roof, room layout, envelope with openings system), orientation presumed, code fills only the blanks (dims, opening positions) from the 2D drawing. Marking recognition is hard without this ruler: accepted. NO chooser or form input: paper stays the input.
+- Fill rule: within tolerance READ (nominal), outside FINDING (the sheet wins), nothing measurable DEFAULT (stated).
+- The owner publicly says "Element types from custom template" and "Meshes are from a standard library". Keep them true: see the last line of §33.
 - No OCR, no raster or learned shape recognition. A building TYPE is an editable JSON prior read once in hindsight; the owner accepts that as a template source.
 - Extract only: never invent geometry. Every value is read from a sheet, or stated YELLOW / default. The plan gives footprints, the elevation gives heights. A disagreement in the drawing is a FINDING, recorded, never adjusted to fit.
 - PoC ruling (owner 2026-11-04, "i can accept as this is p-o-c to get to the end of gaps discovery"): 23 stand-in rows accepted, 43 dimension rows waived, 10 grid-label rows a stated finding. It is recorded in the dictionary only and does NOT reach the Modeller.
@@ -27,15 +32,15 @@ RULINGS (do not re-litigate)
 - Push and merge your own verified PRs (auto-merge), then fetch the live URL to confirm: green CI is not deployed.
 
 STATE IN ONE LINE
-The house has walls, doors, windows, slab, pitched roof with valleys, porch, columns and gable ends, deterministically, but the Modeller refuses to Convert it, and the window stand-ins do not fit their holes.
+The house has walls, doors, windows, slab, pitched roof with valleys, porch, columns and gable ends, deterministically, its heights and offsets read from the sheets against the ruler template, but the Modeller refuses to Convert it, and the window stand-ins do not fit their holes.
 
 OPEN OWNER DECISIONS (asked, not yet answered; do not assume them)
-1. Windows: author meshes to the p8 schedule sizes and types (my recommendation, marked as generated from the schedule), or the owner supplies families.
+1. Windows: author meshes to the p8 schedule sizes and types, entering the standard library by migration so the owner's public line stays true (my recommendation, marked as generated from the schedule), or the owner supplies families. The owner answered "Yes, but..." during session 3 about the template; whether that yes also covers windows was asked, check the answer.
 2. A recorded owner acceptance that the Modeller honours, so Convert runs on this set, with the accepted rows still listed on screen (my recommendation).
 3. Publish the library with CL006 to OCI (outward-facing, shared): until then all 7 house doors report no_lod400_geometry in the Modeller.
 4. Fold arrow on the 2D panel: kept for now (owner's own request, §D39; film scripts click it).
 
-NEXT, needing no decision (the owner's test is "determined by code"): TAKE THE TYPED NUMBERS OUT OF THE CODE. See the RESUME block's list: read them from the sheets, or move them to the type JSON with a numeric witness. First roof_emit.py (EAVE 750, ridge 4872, ox/beam, the porch gable's x, the floor z, @BODYZ), then elev_emit.py views, then the page regions. Same geometry hash after the move = proof nothing changed; a changed hash must be explained.
+NEXT, needing no decision: FILL THE REMAINING BLANKS FROM THE SHEET: grid dimensions, K, then room cells and schedule sizes, from the Rosetta dictionary into template nominals under the §33 rule. Same hash = nothing changed; a changed hash must be explained. Compare entities too: the hash cannot see annotation (§33). Grid dimensions need one known length to fix K: find it, do not invent it. Then the 4 p7 false FINDINGs on the moved drawing if an anchor exists.
 
 THEN, once decided: 3, then 2, then 1, so the house Converts in the Modeller first. Then the rest of the register (`15_gap_register.log`): interior doors floating 38 mm, porch beam, wet-room step, IfcSpace, the opening relation, marks, finishes. A user-facing PDF -> DXF step. Only then a second drawing (⛔ needs a PDF from the owner), then raster.
 
@@ -45,6 +50,8 @@ LANDMINES (each cost time on 2026-11-04)
 - Selectors on PDF sheets pick up neighbours: the notes table beside the plan, title-block lines, hatch rows in tiled walls, ribs split by the ridge cap. Bound them to the building and let a witness catch the rest. Never widen a tolerance to pass.
 - page.setOfflineMode does not reach a service worker: witness_dxf_airgap.js cuts the whole browser with a dead proxy and witnesses the cut.
 - Headless runs use CPU GL (swiftshader) only: the owner may be baking on the GPU.
+- Verdict lines hide things: W-T4 printed PASS over a differing sheet and G1 went WRONG on a moved run with no failure, until each log was read and the witness hardened. Read the logs, and diff them against the reference run.
+- `stroke-width` is not a pen width: multiply by the matrix scale (`type_template.pen`). The same characters as grid labels sit in section markers and tables: choose the whole row (`top_row`, `left_col`), never the topmost word.
 
 AT SESSION END
 Update the RESUME block in PDF2BIM_VECTOR_PROBE.md and this prompt, commit and push, and prune your worktrees if clean and fully pushed.

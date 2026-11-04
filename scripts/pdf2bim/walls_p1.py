@@ -1,13 +1,16 @@
 #!/usr/bin/env python3 -I
 # Implements prompts/PDF2BIM_VECTOR_PROBE.md §18 — Witness: W-P5 (wall pairs on the verified grid), W-P6b (openings = gaps)
-# Usage: walls_p1.py <svg> <rosetta.json> <pdf>
-import re,sys,json,math,collections,subprocess
-svgf,rj,pdf=sys.argv[1:4]; R=json.load(open(rj)); log=lambda *a:print('§PDF',*a,flush=True)
+# Usage: walls_p1.py <svg> <rosetta.json> <pdf> <template.json>
+import re,sys,json,math,collections,subprocess,os
+sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+import type_template as TT
+svgf,rj,pdf,tj=sys.argv[1:5]; WP=TT.load(tj)['ruler']['wall_pen_pt']; R=json.load(open(rj)); log=lambda *a:print('§PDF',*a,flush=True)
 svg=open(svgf).read(); segs=[]
 for m in re.finditer(r'<path ([^>]*?)/>',svg):
     a=m.group(1)
-    if 'stroke="' not in a or float(re.search(r'stroke-width="([\d.]+)"',a).group(1))!=3.0: continue
+    if 'stroke="' not in a: continue
     t=re.search(r'transform="matrix\(([^)]*)\)"',a); M=[float(x) for x in t.group(1).split(',')] if t else [1,0,0,1,0,0]
+    if TT.pen(float(re.search(r'stroke-width="([\d.]+)"',a).group(1)),M)!=WP: continue
     tk=re.findall(r'[MLC]|-?[\d.]+',re.search(r' d="([^"]*)"',a).group(1)); pts=[];i=0;c=None
     while i<len(tk):
         if tk[i] in 'MLC': c=tk[i];i+=1;continue
@@ -42,9 +45,7 @@ pairs.sort()
 th=collections.Counter(round(p[2]*K/10)*10 for p in pairs)
 log('W-P5 wall pairs',len(pairs),'thickness_mm histogram',dict(sorted(th.items())),'total_length_m',round(sum(p[4]-p[3] for p in pairs)*K/1000,2))
 # grid snap using label text positions
-bb=subprocess.run(['pdftotext','-f','1','-l','1','-bbox',pdf,'-'],capture_output=True,text=True,check=True).stdout
-W=[(w[4],(float(w[0])+float(w[2]))/2,(float(w[1])+float(w[3]))/2) for w in re.findall(r'<word xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">(.*?)</word>',bb)]
-gx=R['grid']['x']; gy=R['grid']['y']; x0=[w[1] for w in W if w[0]=='A' and w[2]<100][0]; y0=[w[2] for w in W if w[0]=='5' and w[1]<100][0]
+W=TT.words(pdf,TT.page_of(svgf)); gx=R['grid']['x']; gy=R['grid']['y']; x0=TT.top_row(W,gx)['A'][1]; y0=TT.left_col(W,gy)['5'][2]
 GX={k:x0+v/K for k,v in gx.items()}; GY={k:y0+v/K for k,v in gy.items()}
 rows=[]
 for o,c,g,lo,hi in pairs:

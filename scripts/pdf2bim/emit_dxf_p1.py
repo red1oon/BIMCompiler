@@ -1,15 +1,18 @@
 #!/usr/bin/env python3 -I
 # Implements prompts/PDF2BIM_VECTOR_PROBE.md §20 — Witness: W-P12 (emit + round-trip), W-P5b (cell-run walls on grid)
-# Usage: emit_dxf_p1.py <svg> <rosetta.json> <pdf> <out.dxf>
-import re,sys,json,math,collections,subprocess,statistics
-svgf,rj,pdf,outf=sys.argv[1:5]; R=json.load(open(rj)); K=R['sheet']['mm_per_pt_fitted']; log=lambda *a:print('§PDF',*a,flush=True)
+# Usage: emit_dxf_p1.py <svg> <rosetta.json> <pdf> <out.dxf> <template.json>
+import re,sys,json,math,collections,subprocess,statistics,os
+sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+import type_template as TT
+svgf,rj,pdf,outf,tj=sys.argv[1:6]; T=TT.load(tj); WP=T['ruler']['wall_pen_pt']; R=json.load(open(rj)); K=R['sheet']['mm_per_pt_fitted']; log=lambda *a:print('§PDF',*a,flush=True)
 svg=open(svgf).read(); P=[]
 def bez(p0,c1,c2,p1,t): u=1-t; return tuple(u**3*p0[i]+3*u*u*t*c1[i]+3*u*t*t*c2[i]+t**3*p1[i] for i in (0,1))
 for m in re.finditer(r'<path ([^>]*?)/>',svg):
     a=m.group(1)
     if 'stroke="' not in a: continue
-    sw=float(re.search(r'stroke-width="([\d.]+)"',a).group(1)); dd=re.search(r' d="([^"]*)"',a).group(1)
+    dd=re.search(r' d="([^"]*)"',a).group(1)
     t=re.search(r'transform="matrix\(([^)]*)\)"',a); M=[float(x) for x in t.group(1).split(',')] if t else [1,0,0,1,0,0]
+    sw=TT.pen(float(re.search(r'stroke-width="([\d.]+)"',a).group(1)),M)
     tr=lambda x,y:(M[0]*x+M[2]*y+M[4],M[1]*x+M[3]*y+M[5])
     tk=re.findall(r'[MLC]|-?[\d.]+',dd); pts=[];smp=[];i=0;c=None
     while i<len(tk):
@@ -20,12 +23,10 @@ for m in re.finditer(r'<path ([^>]*?)/>',svg):
         else:
             x,y=float(tk[i]),float(tk[i+1]); i+=2; pts.append(tr(x,y)); smp.append(pts[-1])
     P.append((sw,pts,smp,'C' in dd))
-IN=lambda xs,ys:160<=min(xs) and max(xs)<=445 and 170<=min(ys) and max(ys)<=420
-# ---- grid anchors (text layer) + sw3 pair centres give the Y bias
-bb=subprocess.run(['pdftotext','-f','1','-l','1','-bbox',pdf,'-'],capture_output=True,text=True,check=True).stdout
-W=[(w[4],(float(w[0])+float(w[2]))/2,(float(w[1])+float(w[3]))/2) for w in re.findall(r'<word xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">(.*?)</word>',bb)]
-gx,gy=R['grid']['x'],R['grid']['y']; x0=[w[1] for w in W if w[0]=='A' and w[2]<100][0]; y5=[w[2] for w in W if w[0]=='5' and w[1]<100][0]
-hy=sorted({round((p[0][1]+p[1][1])/2,1) for sw,pts,s,cv in P if sw==3 and len(pts)==2 for p in [pts] if abs(p[0][1]-p[1][1])<.25 and abs(p[0][0]-p[1][0])>30})
+# ---- grid anchors (text layer) + the wall pen's pair centres give the Y bias
+W=TT.words(pdf,TT.page_of(svgf)); FX0,FX1,FY0,FY1=TT.plan_frame(W,R,T); IN=lambda xs,ys:FX0<=min(xs) and max(xs)<=FX1 and FY0<=min(ys) and max(ys)<=FY1
+gx,gy=R['grid']['x'],R['grid']['y']; x0=TT.top_row(W,gx)['A'][1]; y5=TT.left_col(W,gy)['5'][2]
+hy=sorted({round((p[0][1]+p[1][1])/2,1) for sw,pts,s,cv in P if sw==WP and len(pts)==2 for p in [pts] if abs(p[0][1]-p[1][1])<.25 and abs(p[0][0]-p[1][0])>30})
 cent=[(a+b)/2 for a,b in zip(hy,hy[1:]) if 2<=b-a<=3.6]; bias=statistics.median(min(c-(y5+gy[k]/K) for k in gy for _ in [0]) if False else min((c-(y5+gy[k]/K) for k in gy),key=abs) for c in cent)
 y0=y5+bias; log('E0 anchors x0',round(x0,2),'y5_label',round(y5,2),'Y bias',round(bias,2),'pt -> axis5 y',round(y0,2),'from',len(cent),'sw3 H pair centres')
 X=lambda x:round((x-x0)*K,1); Y=lambda y:round(-(y-y0)*K,1)
@@ -73,7 +74,7 @@ for k,(cx_,cy_,r_) in BUB.items(): E+=[('PDF-GRID','CIRCLE',(cx_,cy_,r_)),('PDF-
 # ---- walls: (a) sw3 pairs (b) 100 mm cell runs
 H=collections.defaultdict(list);V=collections.defaultdict(list)
 for sw,pts,s,cv in P:
-    if sw==3 and len(pts)==2:
+    if sw==WP and len(pts)==2:
         p,q=pts
         if abs(p[1]-q[1])<=.25 and abs(p[0]-q[0])>.25: H[round((p[1]+q[1])/2,1)].append((min(p[0],q[0]),max(p[0],q[0])))
         elif abs(p[0]-q[0])<=.25 and abs(p[1]-q[1])>.25: V[round((p[0]+q[0])/2,1)].append((min(p[1],q[1]),max(p[1],q[1])))
@@ -257,7 +258,7 @@ log('E2 door swing arcs emitted',nd,'| non-door arcs kept',nfix)
 # ---- tags
 nt=0
 for t,cx,cy in W:
-    if re.fullmatch(r'[DW]\d',t) and 160<=cx<=445 and 170<=cy<=420: E.append(('PDF-TAG','TEXT',(X(cx),Y(cy),150,t))); nt+=1
+    if re.fullmatch(r'[DW]\d',t) and FX0<=cx<=FX1 and FY0<=cy<=FY1: E.append(('PDF-TAG','TEXT',(X(cx),Y(cy),150,t))); nt+=1
 log('E3 tag texts',nt)
 # ---- DXF writer (ASCII R12 style) + own round-trip reader
 L=sorted({e[0] for e in E})

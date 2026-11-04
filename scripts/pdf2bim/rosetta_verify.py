@@ -1,11 +1,13 @@
 #!/usr/bin/env python3 -I
 # Implements prompts/PDF2BIM_VECTOR_PROBE.md §17 — Witness: W-P4 (G1), W-P7 (R1). Usage: rosetta_verify.py <pdf> <rosetta.json>
-import re,sys,json,subprocess
+import re,sys,json,subprocess,os
+sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+import type_template as TT
 pdf,rj=sys.argv[1:3]; R=json.load(open(rj)); log=lambda *a:print('§PDF',*a,flush=True)
 bb=subprocess.run(['pdftotext','-f','1','-l','1','-bbox',pdf,'-'],capture_output=True,text=True,check=True).stdout
 W=[(w[4],(float(w[0])+float(w[2]))/2,(float(w[1])+float(w[3]))/2) for w in re.findall(r'<word xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">(.*?)</word>',bb)]
 gx,gy=R['grid']['x'],R['grid']['y']
-top=[w for w in W if w[0] in gx and w[2]<100]; lef=[w for w in W if w[0] in gy and w[1]<100]
+top=list(TT.top_row(W,gx).values()); lef=list(TT.left_col(W,gy).values())
 log('G1 labels found x',len(top),'y',len(lef), 'INCONCLUSIVE(vacuous)' if not top or not lef else '')
 def fit(pos,dim,name):
     ks=sorted(pos); u=[pos[k][0] for k in ks]; d=[dim[k] for k in ks]

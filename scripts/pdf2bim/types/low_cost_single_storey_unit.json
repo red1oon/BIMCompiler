@@ -1,0 +1,34 @@
+{
+  "_readme": "Default template (ruler) for the building type. Spec: prompts/PDF2BIM_VECTOR_PROBE.md §33. The structure is PRESET and orientation is PRESUMED; the code only fills the blanks from the sheets. Edit for another drafter's set of the same type.",
+  "type_name": "Low cost single storey unit",
+  "marking_template": "low_cost_house.json",
+  "dictionary": "low_cost_house_rosetta.json",
+  "preset": {
+    "storeys": 1,
+    "roof": { "form": "main gable + porch gable", "main_ridge_axis": "3", "main_ridge_runs_along": "X", "porch_ridge_runs_along": "Y", "porch_on_face": "FRONT" },
+    "room_layout": "dictionary: rooms, by grid cell",
+    "envelope": { "ring": "closed ring of walls on the grid axes", "openings": "doors D1..D3 and windows W1..W3, sizes from the p8 schedule, positions from the plan" }
+  },
+  "sheets": { "plan": 1, "electrical": 2, "roof": 3, "elevations_a": 4, "elevations_b": 5, "sections": 6, "plumbing": 7, "schedule": 8 },
+  "views": {
+    "_presumed": "Orientation is presumed, not inferred (owner 2026-11-04). row = which of the sheet's two views. axis = the grid line of the wall that face shows.",
+    "FRONT": { "sheet": 4, "row": "lower", "face": "minY", "haxis": "+X", "axis": "2" },
+    "REAR":  { "sheet": 4, "row": "upper", "face": "maxY", "haxis": "-X", "axis": "5" },
+    "RIGHT": { "sheet": 5, "row": "upper", "face": "maxX", "haxis": "+Y", "axis": "E" },
+    "LEFT":  { "sheet": 5, "row": "lower", "face": "minX", "haxis": "-Y", "axis": "A" }
+  },
+  "blanks": {
+    "beam_above_ffl":       { "nominal": 3000, "tol_mm": 15, "read_from": "elevations: the long line above the floor line" },
+    "ffl_above_ground":     { "nominal": 150,  "tol_mm": 15, "read_from": "elevations: floor line above the ground line" },
+    "ridge_above_beam":     { "nominal": 1722, "tol_mm": 15, "read_from": "side elevations: top of the highest line at the roof's pitch" },
+    "eaves_from_axis":      { "nominal": 750,  "tol_mm": 15, "read_from": "roof plan: where the sheet ribs end, from the outer axes" },
+    "wall_thickness":       { "nominal": 100,  "tol_mm": 15, "read_from": "plan: gap between paired wall pen lines" },
+    "porch_step_below_ffl": { "nominal": 100,  "tol_mm": 15, "read_from": "front elevation: the line between floor and ground" },
+    "high_window_sill":     { "nominal": 2000, "tol_mm": 15, "read_from": "elevations: the window's frame edges" },
+    "high_window_head":     { "nominal": 2500, "tol_mm": 15, "read_from": "elevations: the window's frame edges" }
+  },
+  "ruler": {
+    "wall_pen_pt": 0.36,
+    "plan_frame_margin_mm": 300
+  }
+}
