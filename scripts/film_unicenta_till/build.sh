@@ -12,7 +12,7 @@ node cards.js render out/cards > out/cards.log 2>&1; grep -q NOT-EMPTY out/cards
 node tsv.js measure out/work > out/tsv_measure.log 2>&1
 cp ../../prompts/film_narration_ass_head.txt out/work/fm/ass_head.txt; (cd out/work/fm && rm -f *.wav && FILM_SEC=400 $PY ../../../$FIT ../narration_en.tsv m 1.15 > ../../fit_measure.log 2>&1)
 node ../film_terms/beatmin.js out/fit_measure.log out/beatmin.json > out/beatmin.log 2>&1
-if [ "$MODE" = B ] || [ -n "$RECORD" ]; then rm -rf out/rec; mkdir -p out/rec; [ -z "$FAST" ] || export FAST; node record.js out/rec out/beatmin.json > out/record.log 2>&1; fi
+if { [ "$MODE" = B ] || [ -n "$RECORD" ]; } && [ -z "$SKIPREC" ]; then rm -rf out/rec; mkdir -p out/rec; [ -z "$FAST" ] || export FAST; node record.js out/rec out/beatmin.json > out/record.log 2>&1; fi
 if [ -n "$PARTIAL" ] || [ "$MODE" = A ]; then export PARTIAL=1; fi
 node assemble.js out out/beatmin.json > out/assemble.log 2>&1 || { echo "§ASSEMBLE_FAIL see out/assemble.log"; exit 4; }
 F=out/film_silent.mp4; [ -e $F ] || F=out/film_partial.mp4
