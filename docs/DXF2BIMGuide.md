@@ -402,6 +402,9 @@ it in any CAD program, or let the editor write it.
 | `@TAG` | `@TAG=door,D3` | the mark of the element under the text |
 | `@SCHEDULE` | `@SCHEDULE=D3,door,900,2100` | a schedule row (size of a mark) |
 | `@WALLTOP` | `@WALLTOP=3.1,slab_above` · `@WALLTOP=handle:99,5.695` | interior wall heights |
+| `@PLANE` | `@PLANE=A2` | the grid line this elevation stands on; `@FACE` still says which way it looks (optional) |
+| `@GRIDA` | `@GRIDA=B1,73.835` | a plan grid line in any direction: its label and angle, the marking's position on the line (optional) |
+| `@SHEETNO` | `@SHEETNO=A-100` | this sheet's number, so the set can list the sheets it refers to and does not hold (optional) |
 | `@BY` (suffix) | `@LEVEL=3.1 @BY=user` | who stated it: `user` or `model`; no suffix = stated in the file |
 
 **One rule governs it all:** geometry is what is drawn and dimensioned; a label states only what geometry
@@ -435,6 +438,25 @@ below names what the editor then does.
 one `@KEY=value` per text (see *The metadata, for CAD users* above), for example `@SET=SHED`, `@UNITS=in` or
 `@LEVEL=0`. A value written this way is stated: it opens with no yellow row and needs no tick. The set name is the
 one value no drawing states by itself: on the plain Duplex it is the first thing the editor asks for.
+
+## A set exported from Revit
+
+A Revit sheet set saved as DWG, converted to DXF, one view per file: real dimensions, a layer standard, and its grid and levels written as ordinary text. The editor reads these on its own, as yellow rows you still accept. Measured on one real architect's set (3 plans and 12 wall elevations, one wing rotated off the others, nothing typed): **Arrange** placed all 15 sheets, the plans at the levels their titles name and each elevation on its own grid line. Three elevations that lack enough grid lines of their own are centred on their wing, tinted, and say so. **That is the shape, not a model:** Convert still needs the items below.
+
+| The drawing has | The yellow row |
+|---|---|
+| `GROUND FLOOR PLAN`, `WALL ELEVATION GRID A1` as a title, also in a multi-line text | **role** (read). A note such as `BEAM, SEE PLAN` is not a title |
+| A grid line with `A1`, `AA` or `B12` in its bubble, on any layer whose name holds `GRID` | **grid line** (read). A rotated one is read in its own direction (`@GRIDA`) |
+| `HALL LEVEL 01` beside `EL: +4.800 m` on an elevation, and a plan titled `LEVEL 1 ... PLAN` | **the plan's level** (read). The most-named value wins; the row states any others |
+| `+4.00 m` or `EL: +4.800 m`, and a horizontal line at exactly that height | **level datum** (read): the value and the line must agree |
+| `WALL ELEVATION GRID A1` | **the line it stands on** (`@PLANE`, read), and its **face** when that line is the end of its family (orange) |
+| `A-100` in the file name | **sheet number** (`@SHEETNO`, read). The set then lists the sheets it refers to and does not hold, as a note that never blocks |
+
+Grid labels that share a first letter (`AA`, `AB`, `A1`) form one family. On a set of several wings, an elevation drawn on family A stands on family A's end line, not on the far wing's.
+
+**Every one of these is a setting.** Under **Element defaults ▸ suggest** (and `panel.plane`), or in `element_defaults.json`, or as `@DEFAULT=<key>,<value>` in a drawing, each has the earlier behaviour on offer, for example `suggest.grid_ticks` = `always` or `suggest.title_text` = `text_only`. See [the yellow list](DXF2BIM_Yellow_List.md).
+
+**Not done yet:** Convert does not build from rotated elevations (they place in Arrange only), walls and structure are not mixed in one set, a curved roof shows as lines, and a sheet holding several views in one file must be split into one file per view first. An architecture plan and a structure wall elevation can differ by more than the 1 mm the axis check allows: on that set, keep each discipline's plan with its own elevations.
 
 ## A building drawn only in 2D: a farm shed
 
