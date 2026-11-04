@@ -15,6 +15,8 @@ run 03b_infer_type     python3 -I $S/infer_type.py svg "$RJ" "$TJ" "$PDF" "$O/in
 run 04_walls_p1        python3 -I $S/walls_p1.py svg/p$P1.svg "$RJ" "$PDF" "$TJ"
 run 05_openings_p1     python3 -I $S/openings_p1.py svg/p$P1.svg "$RJ" "$PDF" "$TJ"
 run 06_emit_dxf_p1     python3 -I $S/emit_dxf_p1.py svg/p$P1.svg "$RJ" "$PDF" "$O/p1_extracted.dxf" "$TJ"
+run 06b_read_rooms     python3 -I $S/read_rooms.py svg/p$P1.svg "$RJ" "$TJ" "$PDF" "$O/logs/06_emit_dxf_p1.log" "$O/rosetta.effective.json"; [ -f "$O/rosetta.effective.json" ] && RJ="$O/rosetta.effective.json"   # §36: rooms and printed areas, read per drawing
+run 06c_witness_rooms  python3 -I $S/witness_rooms.py svg/p$P1.svg "$RJ" "$TJ" "$PDF" "$O/logs/06b_read_rooms.log"
 run 07_plan_marks      python3 -I $S/add_plan_marks.py "$O/p1_extracted.dxf" "$RJ" "$O/p1_marked.dxf"
 run 08_elev_emit       python3 -I $S/elev_emit.py svg/p$P4.svg svg/p$P5.svg "$O/p1_extracted.dxf" "$RJ" "$O/elev" "$PDF" "$O/inferred.json"
 run 09_to_std          python3 -I $S/to_std.py "$O/p1_marked.dxf" "$O/elev" "$RJ" "$O/typed" "$O/inferred.json"
@@ -45,4 +47,4 @@ run 16_witness_roof    python3 "$S/witness_house_roof.py" "$O"
 run 16b_witness_windows python3 "$S/witness_windows.py" "$O" "$RJ"
 run 17_witness_template python3 -I "$S/witness_template.py" "$O" "$TJ"
 run 18_geom_hash       python3 "$S/geom_hash.py" "$O/tbkltn_p1.ifc"
-echo "--- headline"; grep -h -E "W-P1 |W-P5 wall pairs|W-P12 round|G1 scale|MATCH D|TOTAL by class" logs/0*.log | cut -c1-170; grep -h -E "LIB els|IFC counts|IFC bbox .* IfcWall|IFC validate" logs/11_lib_probe.log logs/12_ifc_check.log | cut -c1-200; grep -h -E "W-C[0-9] |§WC" logs/13_witness_level_c.log | cut -c1-220; grep -h -E "^§(S |GAP-TOTAL)" logs/14_other_sheets.log logs/15_gap_register.log | cut -c1-200; grep -h -E "^§R " logs/16_witness_roof.log | cut -c1-200; grep -h -E "^§W " logs/16b_witness_windows.log | cut -c1-200; grep -h -E "^§INFER RESULT" logs/03b_infer_type.log | cut -c1-200; grep -h -E "^§T " logs/17_witness_template.log | cut -c1-200; cat logs/18_geom_hash.log
+echo "--- headline"; grep -h -E "W-P1 |W-P5 wall pairs|W-P12 round|G1 scale|MATCH D|TOTAL by class" logs/0*.log | cut -c1-170; grep -h -E "LIB els|IFC counts|IFC bbox .* IfcWall|IFC validate" logs/11_lib_probe.log logs/12_ifc_check.log | cut -c1-200; grep -h -E "W-C[0-9] |§WC" logs/13_witness_level_c.log | cut -c1-220; grep -h -E "^§(S |GAP-TOTAL)" logs/14_other_sheets.log logs/15_gap_register.log | cut -c1-200; grep -h -E "^§R " logs/16_witness_roof.log | cut -c1-200; grep -h -E "^§W " logs/16b_witness_windows.log | cut -c1-200; grep -h -E "^§A " logs/06c_witness_rooms.log | grep -v "§A   left" | cut -c1-200; grep -h -E "^§INFER RESULT" logs/03b_infer_type.log | cut -c1-200; grep -h -E "^§T " logs/17_witness_template.log | cut -c1-200; cat logs/18_geom_hash.log

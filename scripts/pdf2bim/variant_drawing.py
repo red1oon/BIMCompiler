@@ -1,6 +1,6 @@
 #!/usr/bin/env python3 -I
 # Implements prompts/PDF2BIM_VECTOR_PROBE.md §35 — makes a drawing the chain has never seen, from this PDF's own vector paths and text, warped at one seam and written as a new PDF. A test instrument: its output is never a model input outside a witness. Written text is calibrated in a second pass so each word's box centre lands where it should.
-# Usage: variant_drawing.py <svg dir> <rosetta.json> <inferred.json> <pdf> <out.pdf> Z|B|H
+# Usage: variant_drawing.py <svg dir> <rosetta.json> <inferred.json> <pdf> <out.pdf> Z|B|H|T|G  (T, G: §36 the room tags only: two areas swapped, or all sheared)
 import re,sys,json,os,subprocess
 sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
 import type_template as TT
@@ -30,6 +30,7 @@ def load(p):
 def warp_of(p):
     "page point -> page point, for this mode"
     if mode=='Z': return (lambda x,y:(x,y)),'no warp'
+    if mode in('T','G'): return tags_warp(p)
     W=TT.words(pdf,p)
     if mode=='B':
         if p in (S['plan'],S['electrical'],S['roof']):
@@ -57,6 +58,23 @@ def warp_of(p):
                 return (x,y)
             return f,'elevation bands %s'%[(round(a,1),round(c,1)) for a,c,_ in bands]
         return (lambda x,y:(x,y)),'not this mode'
+def tags_warp(p):
+    "§36: moves only ink strictly inside the tags' top rows, so the boxes and every other line stay"
+    if p!=S['plan']: return (lambda x,y:(x,y)),'not this mode'
+    Pp=TT.stroked_paths(os.path.join(sd,'p%d.svg'%p)); B=TT.room_tags(Pp,T,K); xa,y5=TT.plan_origin(pdf,R,T); A,_=TT.assign_tags(B,R,xa,y5,K); inn=lambda c,x,y:c[0]+.2<x<c[1]-.2 and c[2]+.2<y<c[3]-.2
+    if mode=='T':
+        a,b=A['DAPUR'][0],A['RUANG TAMU'][0]; ca,cb=TT.area_cell(a),TT.area_cell(b); dx,dy=cb[0]-ca[0],cb[2]-ca[2]
+        def f(x,y):
+            if inn(ca,x,y): return (x+dx,y+dy)
+            if inn(cb,x,y): return (x-dx,y-dy)
+            return (x,y)
+        return f,'area ink of DAPUR and RUANG TAMU swapped'
+    rows=[(q['x0'],q['x1'],q['y0'],(q['y0']+q['y1'])/2) for q in B]
+    def f(x,y):
+        for c in rows:
+            if inn(c,x,y): return (x+.5*(y-c[2]),y)
+        return (x,y)
+    return f,'%d tags top rows sheared'%len(rows)
 pages={}; notes={}
 for p in PAGES:
     f,n=warp_of(p); pages[p]=(load(p),[(a,b,c,d_0,t) for a,b,c,d_0,t in bbox_words(pdf,p)],f); notes[p]=n; print('§VAR p%d %s paths %d words %d'%(p,n,len(pages[p][0]),len(pages[p][1])))

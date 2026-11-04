@@ -1,5 +1,5 @@
 #!/usr/bin/env python3 -I
-# Implements prompts/PDF2BIM_VECTOR_PROBE.md §17 — Witness: W-P4 (G1), W-P7 (R1). Usage: rosetta_verify.py <pdf> <rosetta.json>
+# Implements prompts/PDF2BIM_VECTOR_PROBE.md §17 — Witness: W-P4 (G1). R1 moved to read_rooms.py (§36). Usage: rosetta_verify.py <pdf> <rosetta.json>
 import re,sys,json,subprocess,os
 sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
 import type_template as TT
@@ -17,7 +17,3 @@ def fit(pos,dim,name):
 px={w[0]:(w[1],) for w in top}; py={w[0]:(w[2],) for w in lef}
 kx=fit(px,gx,'X'); ky=fit(py,gy,'Y')
 log('G1 scale agreement X vs Y',round(kx,3),round(ky,3),'PASS' if abs(kx-ky)/kx<0.005 else 'WRONG')
-for r in R['rooms']:
-    xs=(gx[r['x'][1]]-gx[r['x'][0]]) if 'x' in r else r['x_mm']; ys=gy[r['y'][1]]-gy[r['y'][0]]
-    a=xs*ys/1e6; p=r['printed_sqm']
-    log('R1',r['name'],'dx',xs,'dy',ys,'area',round(a,2),'printed',p,'MATCH' if p is not None and abs(a-p)<0.005 else ('NO_PRINTED_READ' if p is None else 'MISMATCH'))

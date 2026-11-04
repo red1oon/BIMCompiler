@@ -454,3 +454,82 @@ Rooms' printed areas are not warped: `R1` reports them as WRONG on B, correctly:
 - W-LIB-PUB, run BEFORE the flip (`witness_library_publish.js`): P1 331 of 331 old meshes byte-equal; P2 66 of 68 old families resolve as before, the 2 that moved are the doors CL006 makes bindable; P3 Duplex samples: qualifies, the same 36 fills, 158 elements on live and new; P4 added only 3 families + 6 meshes, lost nothing. W-W3 is covered by P2.
 - **Published:** `dxf2bim/library/latest.json` -> f5a308656e73: 191 objects sha256-checked with gzip, JSON type and CORS; fetched back from the public URL. 7e5df6e10027 stays: rollback is one object. All 7 doors now bind in the Modeller.
 - **Real page (bim-ootb §L37):** the house Converts. The IFC exported from the page has 14 IfcOpeningElement + 14 fills, 49 products (the wall pieces of a line become one body, 13 walls), and the roof and window witnesses pass on it. So the gap register's "openings as voids" is the `lib_probe.js` driver's writer, and the Modeller's own export closes it.
+
+## 36. ROOMS AND PRINTED AREAS READ PER DRAWING (session 4, 2026-11-05; spec BEFORE code; RESUME next-item 1)
+**Issue:** room areas come from the dictionary as literals, so another drawing of the type is compared against THIS drawing's numbers, and `R1` can only say MISMATCH on a drawing that differs. Two rows have no printed value at all.
+**Measured first (probes, session scratchpad, on p1):**
+- p1 holds exactly 10 room tags: closed 5-point hairline rectangles 19.32 x 8.9-9.0 pt (693 x 320 mm), pen 0.12 pt, each with a hairline vertical divider. None on any other sheet.
+- The tag's top row is `FFL | area sqm`, drawn in a 0.72 pt pen as outlined strokes on a 0.12 pt grid, not in the text layer. **Exact shape hashing fails: 108 distinct shapes** across the 10 tags, from quantisation and overprinting (§10's alphabet idea, measured wrong here too).
+- A vector ink distance works: each string placed glyph by glyph, template-to-ink plus ink-to-template, no raster. Tag left out of its own alphabet: **8 of 8 judgeable areas read right**, including `2.08` vs `2.88` under overprint (margin 0.011 pt). `11.47` and `7.36` are NOT judgeable that way: their `4` and `3` occur nowhere else on the sheet. In that state the best wrong candidates scored 0.146 and 0.092 pt, so an absolute limit alone does not prove a read.
+- **FFL is NOT read: `100` vs `000` margins were 0.000-0.013 pt, with one wrong and one tied.** The ring-shaped `0` covers the `1`, and one glyph is diluted over six. FFL stays in the dictionary. No geometry depends on these tags.
+- By the one-time hindsight read (§16's accepted method), the two empty rows are BILIK MANDI 2.08 and ANJUNG 7.36: both equal their cells (1300 x 1600, 3200 x 2300). ANJUNG's FFL tag reads 000.00; not entered, as nothing witnesses it.
+**Ruling applied (§12, §35: match against what is expected, never read freely):** the code never reads a string from nothing. It holds a short list of candidates and asks which one is drawn here. **Candidates for a tag:** the area of every grid rectangle containing the tag on THIS drawing, plus every printed area in the dictionary. The glyph samples are the owner's "preset marking to compare with": generated once from this sheet by `gen_tag_glyphs.py` into `types/low_cost_house_tag_glyphs.json`, editable, in mm so they follow the print scale.
+**Rule (`read_rooms.py`, a stage after the plan is emitted; writes the rooms into `rosetta.effective.json`):**
+| Sheet says | Status | Printed value |
+|---|---|---|
+| best candidate within `read_max_mm`, beating the next by `margin_mm`, and equal to the room's cell | `READ` | that value |
+| same test passes, but the value differs from the cell | `FINDING`: the drawing contradicts itself | that value; any other grid rectangle it fits is logged |
+| no candidate passes (another font, overprint, no tag) | `DEFAULT`: stated YELLOW, "not made out" | null: **never the dictionary's number** |
+- **Room cell:** the layout is preset (§33), so a room's cell is its preset grid names at THIS drawing's grid values. The tag must lie in it. A cell with no tag or two tags is a FINDING. The cell is never overridden by a read area: a fit elsewhere is reported, not obeyed.
+- **ANJUNG's width:** the centre distance of the two A-COLS column rectangles this run read, against the dictionary's 3200 by the §33 fill rule (it has no grid line on one axis).
+- `R1` moves from `rosetta_verify.py` to this stage and now compares two numbers read from this drawing. The dictionary's literals remain expected values only.
+- Thresholds, in `ruler.room_tag`, set from the measurements above and not to be widened to pass: `read_max_mm` 5.0 (true reads 2.4-4.4 mm with the tag left out), `margin_mm` 0.25.
+**Witness claims (`witness_rooms.py`; each can say NO-OP, VACUOUS or WRONG):**
+- W-A1 the 10 tags are found, one in each preset cell. VACUOUS if no tag box is found; WRONG on a count or cell mismatch that was not reported as a FINDING.
+- W-A2 every room has a status and a printed value or a stated null. On this drawing **10 of 10 READ and R1 MATCH**. WRONG if a READ value differs from its cell.
+- W-A3 the alphabet is not circular: each tag is read again with its own samples removed. It must give the same value or say UNJUDGEABLE. WRONG if it reads a different value; NO-OP if nothing was judged. Predicted: 8 judged, 2 unjudgeable. So the 2 single-sample digits are stated as not independently proven.
+- W-A4 the reader can refuse: each tag scored against all other tags' strings. The drawn string must win. WRONG otherwise; the smallest margin is logged.
+**Different-drawing witness (`variant_drawing.py` modes + `witness_variant.py` V5):**
+- Z, H, S: 10 READ. S proves the mm samples follow a 90% print.
+- B (wider end bay; printed glyphs unchanged): **exactly BILIK 3 and BILIK 2 FINDING, printed 9.61 against cell 11.47**; the rest READ. This is the §35 "R1 says WRONG" case, now said properly.
+- **New mode T:** the area ink of DAPUR and RUANG TAMU swapped. Predicted: exactly those two FINDING, printed 11.47 and 8.25, cells unchanged, geometry hash unchanged.
+- **New mode G:** the tags' top-row ink sheared (x + 0.5 h), standing in for another font. Predicted: DEFAULT and null, **zero READ**. A READ here means the reader flatters itself.
+**RESULT (2026-11-05, logs `06b_read_rooms`, `06c_witness_rooms`, `witness_variant.sh`):**
+| Drawing | Rooms | Predicted? |
+|---|---|---|
+| this sheet, Z control, H taller wall, S 90% print | 10 READ | yes |
+| B wider end bay | exactly BILIK 3 and BILIK 2 FINDING, printed 9.61 vs cell 11.47 | yes |
+| T two areas swapped | exactly DAPUR printed 11.47 vs 8.25, RUANG TAMU 8.25 vs 11.47; same geometry hash as Z | yes |
+| G sheared ink, another font's stand-in | 0 READ, 10 DEFAULT, every printed value null; best scores 7.1-8.8 mm against the 5.0 limit; W-A3 NO-OP | yes |
+- W-A1 10 tags, 10 rooms. W-A2 10 READ, including BILIK MANDI and ANJUNG, empty before. W-A3 **8 judged, 8 same, UNJUDGEABLE RUANG TAMU 11.47 and ANJUNG 7.36: exactly as predicted. Those two reads are not independently proven: their `4` and `3` occur once on the sheet.** W-A4 smallest margin 0.37 mm. True scores 1.8-4.7 mm; RUANG MAKAN, under a table's linework, is the closest to the limit at 4.7.
+- Geometry untouched: two clean runs, 7 typed sheets byte-identical to the run before this change, hash dc47d2e37a86fc49. ANJUNG's width reads 3200.3 from the columns: READ 3200.
+- **A false read the first run produced, and the fix:** BILIK MANDI read `2.88`, FINDING, while W-A2 said PASS. Taking samples from the area cells only left the alphabet with no `0`, so `2.08` could not be scored, was dropped, and the next best won. Fixed three ways: samples also from the FFL cells; **any unjudgeable candidate now blocks the read**; W-A2 says PASS only when every room is READ, and V5 demands exact sets.
+**Stated limits, known now:** room NAMES are not read (stroked, preset by cell); FFL is not read; finishes are not read; a different drafter's real font gives DEFAULT everywhere until samples are added to the JSON: a safe failure, not a working read. All samples come from one sheet.
+
+## 37. W-R WITNESSES READ THIS RUN'S VALUES (session 4, 2026-11-05; spec BEFORE code; RESUME next-item 2)
+**Issue:** `witness_house_roof.py` holds this drawing's literal heights and extents, so W-R1/R2/R4/R6/R9 say WRONG on the correct B and H houses and `witness_variant.py` has to look away from them. A witness that is wrong on a right answer judges nothing on another drawing.
+**Sources, all from this run, none from the IFC under judgement:**
+| Witness | Old literal | Now |
+|---|---|---|
+| W-R1 top z | 4.872 | `inferred.json`: FFL + beam + ridge |
+| W-R2 extent | -0.75, 10.65, 0.75, -9.144 | grid + `eaves_from_axis`; the front edge from `§ROOF porch roof footprint` |
+| W-R3 pitch | 25 | `§ROOF roof.dxf ... pitch` |
+| W-R4 eave, porch ridge | 3.060, 4.182 | `§ROOF porch apex`'s eave and apex + FFL (eave reads 3.062) |
+| W-R6, W-R7 | 0.05, 3.15, 0.15 | FFL, FFL - porch step, FFL + beam |
+| W-R8 | 50 / 7 / 7 | walls = the importer's `§LIB els` count; doors and windows = the p8 locations' count |
+| W-R9 | base 3.15 | FFL + beam |
+Sample points move with the run too (eaves, porch ridge x, grid 1). VACUOUS if `inferred.json` or the `§ROOF` lines are absent. Each line prints what it expected.
+**Witness claims:** (a) the reference run: all 9 PASS with the same measured values as the literal version. (b) `witness_variant.py` V4 on B and H now demands EVERY W-R PASS, with no exceptions. (c) **Falsifier:** the same IFC judged against a copy of `inferred.json` with beam 3100 must make W-R1, W-R6 and W-R9 say WRONG: otherwise the witness only agrees with itself. **RESULT (2026-11-05):** (a) reference: 9 PASS, same measurements; eave now judged against 3.062 where the typed value was 3.060. (b) B: all 9 PASS with x to 11.250, walls 50. H: all 9 PASS with top 5.172, columns and gable bases at 3.450, eave 3.377 vs 3.363. (c) F2 PASS: beam + 100 gives W-R1, W-R6, W-R9 WRONG on the same IFC. A regex of mine missed `§LIB els 72 {`, and the witness said VACUOUS, not PASS, on every run; W-T4 reported it too. **Limit, stated:** the values and the IFC share a source sheet, so this proves the chain carried them faithfully, not that the drafter drew them right: G1, W-T and W-E judge the reading.
+
+## 38. HOUSE DOORS FROM THE p8 SCHEDULE; THE FLOAT CLOSED (session 4, 2026-11-05; spec BEFORE code; RESUME next-item 5, taken before 3 and 4 because the owner said consolidate on this house first; importer side `bim-ootb prompts/DXF2BIM_MODELLER_LANE.md` §L38)
+**Issue:** the 7 doors are fire-rated institutional FD1 meshes standing in for a house door (p8: D1 "metal frame, single leaf solid timber", D2/D3 "flush door"), and 5 interior doors float.
+**Measured first (`12` IFC triangles, p4 lines, importer source). §31's account was incomplete and one earlier claim was circular:**
+- Mesh 0.9 / 0.75 x 2.100 is the right size. **It is 150 mm deep in a 100 mm wall**, standing 25 mm proud on each face: not reported before.
+- The float's cause: the importer cuts an interior door's void at schedule height + `CASING` 0.076 = 2.176 (`dxf2elev.js` l.221, §L2.7 "the plan and the schedule do not draw the head frame", a rule measured on Duplex), then centres the mesh in it (`placeFills` l.638): 38 mm under, 38 mm over.
+- **Circular, corrected:** §27b's "2 exterior D1 exact, height 2.1 from the elevation" proves nothing: `elev_emit.py` l.137 draws that rectangle at the SCHEDULE's height, so the importer was reading our own typed number back.
+- **What the sheet really draws (p4, both elevations, measured):** an outer frame x 7399..8299 = 900 wide, z 0..2100; an inner frame line 52 mm in, z 0..2055; a panel to 1905. So here the schedule's 900 x 2100 IS the frame's outside. **This drawing's head frame is inside the schedule's height; adding 76 mm contradicts the sheet.** Frame face 50 mm is read here, not a template default as the windows' is.
+**Plan:**
+1. **`elev_emit.py` reads the door head** from the door's outer verticals (a §33 blank `door_head_above_ffl`, nominal 2100, tol 15, one record per view). The rectangle is drawn at what was read. Falsifier below.
+2. **A new importer mark, `@HEADFRAME=<mm>`, single, on the plan (bim-ootb §L38):** the head frame this set's door schedule leaves out. Absent = today's `CASING`, byte for byte. `to_std.py` writes `@HEADFRAME=0` only when every read door head equals its schedule height within tolerance; otherwise it writes no mark. Paper stays the input.
+3. **Families from p8, migration `CL008_low_cost_door_families.sql`,** generated like CL007, with `LCSSU_D1_900x2100`, `LCSSU_D2_900x2100`, `LCSSU_D3_750x2100`: head + 2 jambs of the frame face read above, leaf between them, closed. Size from the schedule; depth = the plan's 100 mm wall. **Default, YELLOW:** leaf 40 mm (not drawn at a readable scale). Not modelled, stated: knob, lock, the swing (the leaf is shut), D1's timber vs D2's flush finish (the same mesh, by size). `is_fire_rated` 0: the sheet states no rating. `gen_window_families.py` becomes `gen_opening_families.py windows|doors`, and **`windows` must stay byte-identical to the committed CL007**.
+4. **`library_binding` D1..D3** move to the new families. Old FD1 families are untouched.
+**Witness claims (`witness_doors.py`, reads the IFC and the p4 values):**
+- W-D1 7 IfcDoor at their p8 sizes within 1 mm; VACUOUS if none; WRONG if an FD1 size or a 150 mm depth remains.
+- W-D2 **every door stands on its floor: z-min = FFL within 1 mm, and the head at FFL + schedule height.** This is the float. WRONG on 38 mm.
+- W-D3 every door lies inside its wall: depth <= 100.5 mm.
+- W-D4 the door's width against its drawn gap: 5 within 5 mm. **Predicted FINDING, kept: the 2 D2 on grid D are 900 in an 820 gap** (the drawn clear radius, §27b). The drawing's own disagreement: not fitted, not widened.
+- W-D5 elevation door heads were READ from p4: a `§INFER door_head_above_ffl` per view. VACUOUS if none. **Falsifier:** a template stating 2400: FINDING and the sheet's 2100, not 2400.
+- W-D6 (importer) `witness_dxf_headframe.js`: no mark = the same voids as today; `@HEADFRAME=0` = void 2.100, leaf 2.100; malformed = `MARK:malformed`.
+**Predicted effect:** `§LIB` accepted falls from 62 to about 55: all `dh` rows and the exact-width doors leave, the 2 D2 rows stay and remain accepted. Every row number is read from the log, not this estimate.
+**Regression:** W-LIB-PUB P1..P4 on a new export (old meshes byte-equal, old families resolve as before, Duplex samples unchanged). Every Convert-clicking witness (§L36's rule); the not-runnable ones are named.
+**⛔ Publishing the new library is the owner's go (bim-ootb lane: "Republish to OCI only on the owner's go"; the 2026-11-04 go named that version).** Until then the live Modeller does not know these families: the chain's sheets bound to them refuse on the published library, `GAP:no_lod400_geometry`, and say so. Witnessed against a local export only, and that limit is stated in the result.

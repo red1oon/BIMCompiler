@@ -147,6 +147,22 @@
       269,
       323
     ],
-    "wall_pen_mm": 12.91
+    "wall_pen_mm": 12.91,
+    "room_tag": {
+      "_spec": "§36: the room tag's box and pens in mm, so they follow the print scale. read_max_mm and margin_mm are set from measurements, not to be widened to pass.",
+      "box_mm": [
+        693,
+        320
+      ],
+      "box_tol": 0.15,
+      "hair_pen_mm_max": 7,
+      "ink_pen_mm": [
+        15,
+        40
+      ],
+      "read_max_mm": 5.0,
+      "margin_mm": 0.25,
+      "glyphs": "low_cost_house_tag_glyphs.json"
+    }
   }
 }

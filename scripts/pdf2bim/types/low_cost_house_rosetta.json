@@ -91,7 +91,7 @@
       "ffl_from_agl": "050.00",
       "floor": "CT",
       "wall": "CT-PP",
-      "printed_sqm": null
+      "printed_sqm": 2.08
     },
     {
       "name": "RUANG BASUH",
@@ -216,7 +216,7 @@
       "ffl_from_agl": null,
       "floor": "CR",
       "wall": "PP",
-      "printed_sqm": null
+      "printed_sqm": 7.36
     }
   ],
   "room_tag_format": "2x2 box under the room name: [FFL from AGL | floor area sqm] over [floor finish | wall finish]",

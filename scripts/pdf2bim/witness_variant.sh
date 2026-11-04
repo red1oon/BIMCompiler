@@ -10,3 +10,6 @@ var B; chain B PDF2BIM_PDF="$WK/var_B.pdf"; python3 "$S/witness_variant.py" B "$
 chain NOFILL PDF2BIM_PDF="$WK/var_B.pdf" PDF2BIM_NO_FILL=1; python3 "$S/witness_variant.py" NOFILL "$WK/NOFILL"
 var H; chain H PDF2BIM_PDF="$WK/var_H.pdf"; python3 "$S/witness_variant.py" H "$WK/H"
 gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -dDEVICEWIDTHPOINTS=842 -dDEVICEHEIGHTPOINTS=595 -dFIXEDMEDIA -dAutoRotatePages=/None -sOutputFile="$WK/var_S.pdf" -c "<</BeginPage{0.9 0.9 scale}>> setpagedevice" -f "$PDF" > "$WK/gs_S.log" 2>&1; chain S PDF2BIM_PDF="$WK/var_S.pdf"; python3 "$S/witness_variant.py" S "$WK/S"
+var T; chain T PDF2BIM_PDF="$WK/var_T.pdf"; python3 "$S/witness_variant.py" T "$WK/T"
+var G; chain G PDF2BIM_PDF="$WK/var_G.pdf"; python3 "$S/witness_variant.py" G "$WK/G"
+python3 "$S/witness_variant.py" FR "$REF"
