@@ -2551,3 +2551,16 @@ sample invoice to the real poster means either loading the seed dictionary into 
 deriveInvoice stays. (b) doc_poster.costQtyUpdates still treats a customer-return REVERSAL as "no cost" (G-SD10) while the real poster now books it
 from the original (Doc_InOut :522-537) — no shipped caller, so no user impact; align or retire with the engine verbs. (c) Pre-existing, seen in the
 regression: witness_asi_receipt P1b FAIL (date-dependent legacy rows), poc_preview_demo.js and two poc_* files do not load on origin/main either.
+
+### §POSTING-PARITY 5g — SPEC (owner 2026-11-04: "Ship a dictionary subset")
+genesis.html posts its sample invoice through the REAL poster, so doc_poster.deriveInvoice (+ derivePostings' C_Invoice/C_Order branches if
+nothing else needs them) can retire. **Data:** a GENERATED file `erp/genesis_dict.js` (`window.GENESIS_DICT`), written by a generator from the
+shipped `ad_seed.db` + `patches/ad_seed.db.sql` — never hand-edited: (1) the seed DDL of every table the real poster reads while posting the sample
+invoice, (2) their AD_Table / AD_Column rows (the model layer's dictionary: columnsOf / tableIdOf / newPO), (3) the client-0 SYSTEM rows the poster
+reads (e.g. c_currency, ad_ref_list), measured, not guessed. **The read-set is MEASURED:** post the sample invoice of a born tenant merged into the
+full seed with SQL logging on; every table touched and every client-0 row returned is the subset. **Page:** genesis.html builds a posting db = the
+subset DDL + dictionary + system rows, merges the born tenant (mergeGenesisInto, column-intersect), creates the sample invoice with the seed's
+columns, and shows `ModelPost.previewFacts` on a never-committed Trx (the same seam the Preview uses) — the §W-GENESIS-WIZARD-LIVE to-the-cent
+assertion unchanged (DR 12110 109.00 / CR 41000 100.00 / CR 21610 9.00). **Witness W-GENESIS-REAL-POSTER (node):** the page's own posting code
+path replayed; facts == the to-the-cent expectation AND == the same invoice posted on the FULL seed (subset loses nothing); generator idempotent
+(twice → same bytes); mutant: drop one dictionary table → FAIL. Then delete deriveInvoice & co. and re-run the 21-witness regression.
