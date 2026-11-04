@@ -1829,3 +1829,13 @@ Lead's reading, to be confirmed:
   - The internet relay carries ONLY the main till's EODA send and SODA pull.
   - If the branch relay is down, every till keeps selling (D9); collection catches up by timestamp.
 - **Open:** what box hosts the branch relay (NAS / router storage / small PC / the main till's own machine), and tablets as tills (a tablet cannot easily run a localhost server).
+
+### §34.E OWNER — film v3: a THIRD slide expands the "after" (2026-11-05)
+> *"This can be the third slide which expands the 'after' slide. Now that after slide need not talk about LAN and multitills but wait for the third slide that expands (animate that right stack to this expanded to show multi tills and how they are all air gaped and has an internal relay"* · *"we have offline airgaped mode"*
+
+- **Slide 1, BEFORE:** the owner's p50 diagram (ERP ⇄ MQ ⇄ POS).
+- **Slide 2, AFTER:** the same three stacks (HQ ⇄ relay ⇄ till), with NO LAN or multi-till content.
+- **Slide 3, EXPAND (new):** the right stack animates open into a branch.
+  - Several tills, each air-gapped on its own `localhost` (D11, `docs/OFFLINE_INSTALL_GUIDE.md` air-gapped layer), joined by the internal branch relay (D12).
+  - The main till is flagged: it holds HQ's StorageOnHand, collects order lines by timestamp, and alone sends EODA / pulls SODA via the internet relay (§35.3).
+- **Honesty gate:** the main till, branch relay and localhost tills are agreed but NOT built. The current beat 3 shows the old till→branch-admin internet hop. Either cut v3 after they are built (lead's recommendation), or label slide 3 "the design — being built" (owner to choose).
