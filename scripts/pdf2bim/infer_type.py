@@ -46,7 +46,7 @@ for sh in sorted({v['sheet'] for v in views.values()}):
         for f in L:
             for g in L:
                 d1,d2=(f-y)*K,(g-f)*K
-                if SSE['elevation_beam_mm'][0]<=d1<=SSE['elevation_beam_mm'][1] and SSE['elevation_ffl_mm'][0]<=d2<=SSE['elevation_ffl_mm'][1]: cand.append(((0 if any(abs(top-y)<=.3 and abs(bot-g)<=.5 for top,bot in VT) else 1,abs(d1-nb)+abs(d2-ng)),y,f,g))   # §40: a wall corner drawn from the ground up to the wall's top settles it, whatever else runs long (an eave). With none, the triple nearest the template, as ever
+                if SSE['elevation_beam_mm'][0]<=d1<=SSE['elevation_beam_mm'][1] and SSE['elevation_ffl_mm'][0]<=d2<=SSE['elevation_ffl_mm'][1]: cand.append(((0 if any(abs(top-y)<=.3 and abs(bot-g)<=.5 for top,bot in VT) else 1,0 if abs(d1-nb)<=.2*nb and abs(d2-ng)<=.2*ng else 1,abs(d1-nb)+abs(d2-ng)),y,f,g))   # §40: a wall corner drawn from the ground up settles it, whatever else runs long (an eave). With none: inside the template's +-20 percent first, nearest it; the wider search only for what that leaves unread
     here=[k for k,v in views.items() if v['sheet']==sh]; got=[]
     for c in sorted(cand):
         if all(abs(c[1]-q[1])>abs(c[3]-c[1]) for q in got): got.append(c)
