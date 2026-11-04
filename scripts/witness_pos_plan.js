@@ -315,7 +315,7 @@ async function arms(src, quiet) {
   if (POSPLAN) {
     H('§P5 THE PLAN\'S OWN docaction ROW IS THE EXECUTOR MAP (G-4 overlay); no executor for the station');
     try {
-    A('P5', JSON.stringify(POSPLAN.executors) === '{"c_order":102}' && POSPLAN.hub === 102, 'the POS plan carries executors = {c_order: 102} derived from its docaction row, and hub = 102', JSON.stringify(POSPLAN.executors));
+    A('P5', JSON.stringify(POSPLAN.executors) === '{"c_order":102,"m_movement":102,"m_movementconfirm":50004}' && POSPLAN.hub === 102, 'the POS plan carries executors derived from its docaction rows ({c_order: 102, m_movement: 102 (head office completes the Movement), m_movementconfirm: 50004 (the destination branch role completes the Move Confirmation, POS_PLUGIN_LOCAL_FIRST §28.2)}), and hub = 102 (a branch-scoped executor is not a hub)', JSON.stringify(POSPLAN.executors));
     var DB5 = new SQL.Database(fs.readFileSync(path.join(OOTB, 'erp', 'ad_seed.db'))), q5 = function (sql) { var st = DB5.prepare(sql), o = []; while (st.step()) o.push(st.getAsObject()); st.free(); return o; };
     var F5 = await STORE.newDevice(), PF5 = uuid(), sp5 = await STORE.newSpace('x', F5, PF5, 'HQ', HQ, { planTrust: [pub1], plan: 'pos' }); F5.person_uu = PF5;
     var S5 = STORE.open(new SQL.Database(), { SQL: SQL, space: sp5.space, self: F5, access: allow, log: function () {} }); await S5.genesis(sp5.params);
