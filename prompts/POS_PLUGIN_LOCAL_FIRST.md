@@ -1713,3 +1713,12 @@ Measured against RED1's guide (`~/Downloads/openbravoPOSGuide.pdf` p50 "ERP TO P
   - morning SODA per till;
   - restaurant/kitchen across tills under D9;
   - customers/users in SODA (Q-L3).
+
+### §35.2 OWNER DECISION — branch stock check is ad hoc, on the LAN, EODA optional (2026-11-05)
+> *"your 'after' depiction of the same 'before' is thus correct but can add or fattened the branch till to tills saying that we now can have multi tills working completely local first and stock checking can be a all tills check by a branch 'main' till"* · *"That branch wide stock status is of course adhoc and thus we allow within LAN to connect up all tills to count. It is not part of EODA but can be if branch supervisor wishes to"*
+
+- **D10.** The branch-wide stock check is AD HOC, run on demand at the branch's main till.
+  - It may use the shop LAN to connect all tills **for this check only**. It never blocks a till from selling: an unreachable till is reported "not reached" (D9 stands).
+  - It is NOT part of EODA by default. The branch supervisor may choose to include a count in that night's EODA.
+- Film: the "after" diagram widens the branch to several tills, each fully local-first, plus the main till doing the ad hoc check.
+- **Open (owner):** what exactly is gathered from each till for the check: each till's quantities sold since SODA, a physical shelf count keyed at the main till, or both.
