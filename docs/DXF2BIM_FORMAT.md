@@ -32,9 +32,12 @@ Plain text on layer `DXF2BIM-MARK` of an ordinary DXF, one `@KEY=value` per TEXT
 | `@SCOPE` | one per sheet | `KEY \| name,x0,y0,x1,y1` | a storey's annotation sheet, or a wing / zone of a sheet |
 | `@FRAME` | one per sheet | `deg,x,y` | a wing drawn rotated by -deg about (x,y): the importer turns it back |
 | `@WALLMIN` | one per sheet | `metres` | the thinnest wall piece this plan reads as a wall (default: the set's 50 mm); stated from the model by the exporter |
+| `@PLANE` | one per sheet | `grid label` | the grid line this elevation stands on (@FACE still says which way it looks); wins over the wall envelope and panel.plane (§D107) |
+| `@SHEETNO` | one per sheet | `text` | this sheet's number, e.g. A-100: lets the set report the sheets it refers to and does not hold (§D107) |
 | `@GRIDX` | several | `letter at a position` | a plan grid line in X (the mark's own position is the line) |
 | `@GRIDY` | several | `letter at a position` | a plan grid line in Y |
 | `@GRIDH` | several | `letter at a position` | an elevation grid line (horizontal position) |
+| `@GRIDA` | several | `label,angle deg at a point` | a plan grid line in any direction: its label and angle, the mark's own position on the line (§D108) |
 | `@Z` | several | `number (m) at a position` | a height datum: the z of the line the mark sits on |
 | `@EXCLUDE` | several | `x0,y0,x1,y1` | an area the reader skips (counted, never silent) |
 | `@OPENING` | several | `door\|window,h0,y0,h1,y1` | a stated opening rectangle on an elevation |
@@ -88,7 +91,7 @@ Evidence properties on every body (set `Dxf2Bim_Evidence`): `Provenance`, `Sourc
 
 **Layer ledger** (`verdict.layer_ledger`, `dxf2ledger.js`): for every layer of every sheet, the entities on it, how it was typed, how many source entities produced a body, and a status: `settings`, `annotation`, `ignored_by_choice`, `used`, `partly_used`, `evidence`, `typed_no_output`, `unread`. `unread` = geometry on a layer nobody typed; `typed_no_output` = typed with a body kind but nothing was built; `partly_used` = some of its entities produced a body (the ratio is in `used_entities` / `geometry`); `evidence` = an elevation or section layer that gave heights or profiles. The entity account (`§ACCOUNT`) only says the DXF parser read every entity; the ledger says what was USED.
 
-## 5. Settings registry (`modeller/element_defaults.json`): 65 rows
+## 5. Settings registry (`modeller/element_defaults.json`): 76 rows
 
 | Key | Element | Unit | Kind | Default | Basis |
 |---|---|---|---|---|---|
@@ -123,7 +126,7 @@ Evidence properties on every body (set `Dxf2Bim_Evidence`): `Provenance`, `Sourc
 | `member.section` | IfcMember | text | guess |  | a member whose label carries no section: empty = the most common section drawn on the same set for the same kind of member (load_summary.js, |
 | `member.size` | IfcMember | m | guess | 0.04 | square envelope for a member with no label or size |
 | `net.thickness` | IfcCovering | m | guess | 0.005 | netting sheet thickness; the area is drawn |
-| `panel.plane` | IfcWall | text | guess | end grid line, centred | an elevation panel is placed on the outermost grid line of its face, centred |
+| `panel.plane` | IfcWall | text | guess | grid family end line, centred | an elevation panel is placed on an end grid line of its face, centred. An elevation whose grid labels share one family (AA, AB or A1 = famil |
 | `pile.diameter` | IfcPile | m | guess | 0.3 | typical bored pile diameter |
 | `pile.length` | IfcPile | m | guess | 12 | no pile length is drawn on a layout |
 | `plate.thickness` | IfcPlate | m | std | 0.00635 | 1/4 in, the thickness the truss section's own label states (a plate with no label takes it) |
@@ -143,6 +146,17 @@ Evidence properties on every body (set `Dxf2Bim_Evidence`): `Provenance`, `Sourc
 | `stair.going` | IfcStair | m | guess | 0.25 | typical tread depth |
 | `stair.riser` | IfcStair | m | guess | 0.175 | typical riser height; a stair symbol carries no riser |
 | `stair.width` | IfcStair | m | guess | 1 | typical flight width |
+| `suggest.elev_no_grid` | suggest | text | guess | centre_on_wing | an elevation that names its grid line but draws no grid: centred along that line on the span of its wing, tinted and said so; its heights st |
+| `suggest.grid_along` | suggest | m | guess | 0.5 | how far sideways a grid label's text position may sit from its line: CAD anchors a text at its corner, not its bubble's centre (measured 0.2 |
+| `suggest.grid_label` | suggest | text | guess | letters_digits | the labels read from a grid line's end: A, AA, 12 and also A1, B12 (§D107: 10 of 29 labels of a Revit-exported plan). 'letters_or_digits' =  |
+| `suggest.grid_layer` | suggest | text | guess | name_has_grid | layers searched for grid lines: any layer whose name holds GRID (a line with no label proposes nothing, so the name alone decides nothing, § |
+| `suggest.grid_reach` | suggest | m | guess | 1.2 | how far beyond a grid line's end its label may sit: a bubble's centre at 1:100 (measured 0.809 to 1.022 m on a Revit-exported plan, §D107).  |
+| `suggest.grid_rotated` | suggest | text | guess | read | a grid line off the sheet axes with its label at one end is read as a plan grid line in its own direction (@GRIDA, §D108). 'off' = only coun |
+| `suggest.grid_ticks` | suggest | text | guess | unless_stated | grid lines guessed from dimension ticks: not on an axis where the sheet states or reads 2 or more grid lines, and not outside its @REGION (§ |
+| `suggest.level_name` | suggest | text | guess | read | a plan's level is read when its title and an elevation's level name agree: LEVEL 1 PLAN with LEVEL 01 beside EL: +4.800 m (§D108). 'off' = n |
+| `suggest.level_text` | suggest | text | guess | value_on_line | a level datum is read from a TEXT or MTEXT such as +4.00 m or EL: +4.800 m when a horizontal line lies at exactly that height, on any layer; |
+| `suggest.sheet_refs` | suggest | text | guess | report | sheet numbers the set refers to but does not hold are listed as an advisory; it never blocks (§D107). 'off' = no list |
+| `suggest.title_text` | suggest | text | guess | text_and_mtext | a sheet's role is read from TEXT and MTEXT titles; a note (a comma, or SEE / REFER) is not a title, and two spellings of one title are one ( |
 | `synth.column.belowgrade.size` | IfcColumn | m | guess | 0 | 0 = not stated: no below-grade column is built; state the schedule's below-grade section (e.g. 0.3556 for 14 in) |
 | `synth.column.grade_to_base` | IfcColumn | m | guess | 0.6096 | grade to the column base (plinth): 2 ft, the datum read from a column detail |
 | `synth.roof.overhang` | IfcRoof | m | guess | 0 | the roof is cut at the gable planes until an overhang is stated |
@@ -158,7 +172,7 @@ Evidence properties on every body (set `Dxf2Bim_Evidence`): `Provenance`, `Sourc
 | `window.sill` | IfcWindow | m | guess | 0.9 | typical sill height above the floor |
 | `window.width` | IfcWindow | m | guess | 1.2 | typical window width; used when a plan symbol gives no width |
 
-## 6. Code families (222 codes found in the source)
+## 6. Code families (223 codes found in the source)
 
 `GAP:*` = a part the product left out or could not build (advisory, never defaulted); `QF:*` = a qualification failure (blocks the set); `MARK:*` = a settings-sheet problem. Each code with the modules that raise it:
 
@@ -383,6 +397,7 @@ Evidence properties on every body (set `Dxf2Bim_Evidence`): `Provenance`, `Sourc
 | `QF:set_storey_unstated` | dxf2bim/dxf2qualify.js |
 | `QF:setting_missing` | dxf2bim/dxf2qualify.js |
 | `QF:sheet_no_role` | dxf2bim/dxf2qualify.js |
+| `QF:sheet_referred_missing` | dxf2markrefs.js |
 | `QF:units_conflict` | dxf2bim/dxf2qualify.js |
 | `QF:units_unstated` | dxf2bim/dxf2qualify.js |
 | `QF:walltop_unknown_storey` | dxf2bim/dxf2qualify.js |
