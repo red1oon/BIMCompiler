@@ -8,6 +8,24 @@ const CORAL = '#FF6B78', OFF = '#F3EEE8', SKY = '#7dd3fc', MUT = '#C3C2B7', AMB 
 const box = (x, y, w, h, o) => ({ t: 'box', x, y, w, h, fill: (o && o.fill) || BOXF, stroke: (o && o.stroke) || BOXS });
 const tx = (x, y, size, color, txt, o) => ({ t: 'text', x, y, size, color, txt, bold: !(o && o.light), center: o && o.center });
 const arrow = (x1, y, x2, label) => ({ t: 'arrow', x1, y, x2, label });
+// The AFTER diagram redrawn in the owner's own layout (p50 crop coordinates x,y in a 1781x767 panel, scaled by SC and placed at OX,OY), so BEFORE and AFTER read as a pair.
+const PX = 180, PY = 140, SC = 1560 / 1781, GREENBG = '#aedc8a', DKG = '#4f7a28', YEL = '#ffff44', ORG = '#f96a00';
+const gx = x => Math.round(PX + x * SC), gy = y => Math.round(PY + y * SC);
+const prect = (x1, y1, x2, y2, fill) => ({ t: 'rect', x1: gx(x1), y1: gy(y1), x2: gx(x2), y2: gy(y2), fill });
+const parrow = (pts, fill) => ({ t: 'poly', pts: pts.map(([x, y]) => gx(x) + ',' + gy(y)).join(' '), fill });
+const ctx = (cx, y, size, color, txt, bold) => ({ t: 'text', x: 0, y: gy(y), size, color, txt, bold: bold !== false, cx: gx(cx) });
+function afterDiagram() {
+  return [prect(0, 0, 1781, 767, GREENBG), prect(35, 105, 347, 705, DKG), prect(777, 108, 1081, 700, DKG), prect(1466, 100, 1751, 707, DKG),
+    prect(65, 272, 318, 603, YEL), prect(804, 283, 1057, 606, YEL), prect(1491, 278, 1727, 609, YEL),
+    parrow([[352, 152], [728, 152], [728, 125], [775, 220], [728, 315], [728, 290], [352, 290]], ORG), parrow([[1087, 162], [1420, 162], [1420, 135], [1467, 232], [1420, 330], [1420, 303], [1087, 303]], ORG),
+    parrow([[770, 548], [395, 548], [395, 525], [348, 605], [395, 692], [395, 668], [770, 668]], ORG), parrow([[1461, 532], [1135, 532], [1135, 508], [1087, 595], [1135, 685], [1135, 662], [1461, 662]], ORG),
+    ctx(891, 20, 44, '#111111', 'HEAD OFFICE \u21c4 RELAY \u21c4 BROWSER TILL', false), ctx(191, 118, 30, '#ffffff', 'HEAD OFFICE'), ctx(930, 118, 30, '#ffffff', 'RELAY'), ctx(1608, 118, 26, '#ffffff', 'BROWSER TILL'),
+    ctx(191, 305, 24, '#555555', 'MODEL', false), ctx(191, 350, 26, '#555555', 'Products'), ctx(191, 395, 26, '#555555', 'Prices'), ctx(191, 440, 26, '#555555', 'Stock'), ctx(191, 485, 26, '#555555', 'Day Close'),
+    ctx(930, 385, 24, '#555555', 'MODEL', false), ctx(930, 430, 24, '#555555', 'sealed changes'), ctx(930, 475, 26, '#555555', 'a plain folder'),
+    ctx(1608, 330, 24, '#555555', 'MODEL', false), ctx(1608, 375, 24, '#555555', 'own SQLite DB'), ctx(1608, 420, 26, '#555555', 'Sales, Tickets'), ctx(1608, 465, 26, '#555555', 'works offline'),
+    ctx(552, 190, 22, '#ffffff', 'PROCESS', false), ctx(552, 225, 26, '#ffffff', 'SODA, morning batch'), ctx(1270, 190, 22, '#ffffff', 'PROCESS', false), ctx(1270, 225, 24, '#ffffff', 'Till fetches batch'),
+    ctx(560, 565, 22, '#ffffff', 'PROCESS', false), ctx(560, 600, 26, '#ffffff', 'Branch Day Close'), ctx(1290, 555, 22, '#ffffff', 'PROCESS', false), ctx(1290, 590, 24, '#ffffff', 'EODA, day-end send')];
+}
 function spec() {
   const F = {}; const fr = FACTS(); Object.keys(fr).forEach(k => { F[k] = fr[k].value; });
   const chap = (k, l1, l2, pl) => ({ bg: '#0b0f17', ops: [{ t: 'ctext', y: 330, size: 34, color: CORAL, txt: k, spacing: 6 }, { t: 'ctext', y: 400, size: 120, color: OFF, txt: l1, bold: true }, { t: 'ctext', y: 540, size: 120, color: CORAL, txt: l2, bold: true }, { t: 'ctext', y: 700, size: 40, color: MUT, txt: pl }] });
@@ -18,16 +36,11 @@ function spec() {
     ch4: chap('HEAD OFFICE', 'Head office,', 'next morning', 'one click closes the branch day'),
     ch5: chap('SODA', 'Only what', 'changed', 'the morning batch down to the tills'),
     ch6: chap('THE ORACLE', 'Same books', 'as legacy', 'compared with real iDempiere, column by column'),
-    before: { bg: '#0f172a', ops: [tx(120, 110, 46, SKY, 'BEFORE  ·  the 2012 shape'), tx(120, 170, 30, MUT, 'The owner\'s POS integration of ' + F.year2012 + ': three things to install and keep running'),
-      box(120, 300, 480, 300), tx(150, 350, 40, OFF, 'Desktop till'), tx(150, 410, 30, INK, 'own database'), tx(150, 455, 30, INK, 'on the till itself'),
-      arrow(600, 450, 720, 'queue'), box(720, 300, 480, 300), tx(750, 350, 40, OFF, 'Message broker'), tx(750, 410, 30, INK, 'ActiveMQ, a server'), tx(750, 455, 30, INK, 'to run and watch'),
-      arrow(1200, 450, 1320, 'import'), box(1320, 300, 480, 300), tx(1350, 350, 40, OFF, 'Head office'), tx(1350, 410, 30, INK, 'iDempiere server'), tx(1350, 455, 30, INK, 'database server too'),
-      tx(120, 700, 28, MUT, 'Source: prompts/POS_PLUGIN_LOCAL_FIRST.md, the 2012 extraction (the owner\'s integration)')] },
-    after: { bg: '#0f172a', ops: [tx(120, 110, 46, SKY, 'AFTER  ·  the same till, in a browser tab'), tx(120, 170, 30, MUT, 'Offline first. Nothing to install. Head office is a browser, or legacy iDempiere.'),
-      box(120, 300, 480, 300, { stroke: GRN }), tx(150, 350, 40, OFF, 'Browser till'), tx(150, 410, 30, INK, 'own SQLite database'), tx(150, 455, 30, INK, 'works with no network'),
-      arrow(600, 450, 720, 'sealed changes'), box(720, 300, 480, 300, { stroke: GRN }), tx(750, 350, 40, OFF, 'One plain relay'), tx(750, 410, 30, INK, 'a folder in the cloud'), tx(750, 455, 30, INK, 'no server logic'),
-      arrow(1200, 450, 1320, 'fold'), box(1320, 300, 480, 300, { stroke: GRN }), tx(1350, 350, 40, OFF, 'Head office'), tx(1350, 410, 30, INK, 'a browser, or'), tx(1350, 455, 30, INK, 'legacy iDempiere'),
-      tx(120, 700, 28, MUT, 'Same operations, same books, same look and feel as legacy: no accepted divergence')] },
+    orig: { bg: '#0f172a', ops: [tx(120, 36, 44, SKY, F.year2011 + '  ·  Openbravo POS, from RED1\'s integration guide'), tx(120, 92, 26, MUT, 'The original sales screen of the owner\'s guide (copyleft RED1): Tools tiles, a ticket of Hoe and Rake-Bamboo'),
+      { t: 'img', file: 'p23_screen.png', x: 240, y: 135, w: 1440 }] },
+    before: { bg: '#0f172a', ops: [tx(120, 36, 44, SKY, 'BEFORE  ·  the owner\'s integration, ' + F.year2012), tx(120, 92, 26, MUT, 'Diagram: "ERP to POS integration model", from RED1\'s integration guide of ' + F.year2011 + ' (copyleft RED1)'),
+      { t: 'img', file: 'p50_diagram.png', x: 180, y: 140, w: 1560 }] },
+    after: { bg: '#0f172a', ops: [tx(120, 36, 44, GRN, 'AFTER  ·  the same three stacks, nothing to install'), tx(120, 92, 26, MUT, 'Same layout as the owner\'s diagram. Still delayed (end of day up, start of day down); no broker server to run.')].concat(afterDiagram()) },
     gs: { bg: '#0f172a', ops: [tx(120, 110, 46, SKY, 'Branch Day Close  ·  before and after'),
       box(120, 220, 800, 330), tx(160, 270, 36, SKY, 'CLICKS'), tx(160, 360, 110, OFF, F.dc_before_g + '  →  ' + F.dc_after_g), tx(160, 480, 28, MUT, 'step by step, then one click'),
       box(1000, 220, 800, 330), tx(1040, 270, 36, SKY, 'SCREENS'), tx(1040, 360, 110, OFF, F.dc_before_s + '  →  ' + F.dc_after_s), tx(1040, 480, 28, MUT, 'six screens, then one'),
@@ -48,11 +61,12 @@ function spec() {
       tx(120, 540, 31, OFF, '•  Memory with all the pictures loaded: not measured.'),
       tx(120, 700, 26, MUT, 'Sources: §28.3, §32.R')] },
     credits: { bg: '#0f172a', ops: [tx(120, 105, 52, SKY, 'uniCenta POS, reborn'), tx(120, 175, 36, CORAL, 'The same till, now a browser tab: same operations, same books, same look as legacy.'),
-      tx(120, 280, 30, OFF, 'Prior art: the owner\'s ' + F.year2012 + ' Openbravo / uniCenta to iDempiere integration, with Ghintech'),
-      tx(120, 345, 30, OFF, 'uniCenta oPOS (GPL): layout and flow followed. No code or artwork copied.'),
-      tx(120, 410, 30, OFF, 'Product pictures: Fluent Emoji (MIT licence)'),
-      tx(120, 475, 30, OFF, 'Legacy iDempiere is the oracle for every comparison'),
-      tx(120, 600, 30, MUT, 'github.com/red1oon/BIMCompiler   ·   red1org@gmail.com')] }
+      tx(120, 280, 30, OFF, 'Prior art: the owner\'s own ' + F.year2012 + ' Openbravo POS \u2192 ADempiere / iDempiere integration over ActiveMQ,'),
+      tx(120, 325, 30, OFF, 'the delayed EODA / SODA relay (copyleft RED1)'),
+      tx(120, 400, 30, OFF, 'uniCenta oPOS (GPL): layout and flow followed. No code or artwork copied.'),
+      tx(120, 465, 30, OFF, 'Product pictures: Fluent Emoji (MIT licence)'),
+      tx(120, 530, 30, OFF, 'Legacy iDempiere is the oracle for every comparison'),
+      tx(120, 640, 30, MUT, 'github.com/red1oon/BIMCompiler   ·   red1org@gmail.com')] }
   };
   return C;
 }
@@ -64,6 +78,10 @@ function render(outDir) {
       if (o.t === 'box') a.push('-fill', o.fill, '-stroke', o.stroke, '-strokewidth', '3', '-draw', `roundrectangle ${o.x},${o.y} ${o.x + o.w},${o.y + o.h} 22,22`);
       else if (o.t === 'arrow') { a.push('-stroke', SKY, '-strokewidth', '5', '-fill', SKY, '-draw', `line ${o.x1 + 8},${o.y} ${o.x2 - 22},${o.y}`, '-draw', `polygon ${o.x2 - 8},${o.y} ${o.x2 - 30},${o.y - 14} ${o.x2 - 30},${o.y + 14}`);
         a.push('-stroke', 'none', '-fill', MUT, '-font', 'DejaVu-Sans', '-pointsize', '22', '-gravity', 'NorthWest', '-annotate', `+${o.x1 + 6}+${o.y - 52}`, o.label); }
+      else if (o.t === 'rect') a.push('-stroke', 'none', '-fill', o.fill, '-draw', `rectangle ${o.x1},${o.y1} ${o.x2},${o.y2}`);
+      else if (o.t === 'poly') a.push('-stroke', 'none', '-fill', o.fill, '-draw', `polygon ${o.pts}`);
+      else if (o.t === 'img') a.push('(', path.join(__dirname, 'out', 'pdf', o.file), '-filter', 'Lanczos', '-resize', o.w + 'x', ')', '-gravity', 'NorthWest', '-geometry', `+${o.x}+${o.y}`, '-composite');
+      else if (o.t === 'text' && o.cx !== undefined) a.push('-stroke', 'none', '-fill', o.color, '-font', o.bold ? 'DejaVu-Sans-Bold' : 'DejaVu-Sans', '-pointsize', String(o.size), '-gravity', 'North', '-annotate', `${o.cx - 960 >= 0 ? '+' : ''}${o.cx - 960}+${o.y}`, o.txt);
       else if (o.t === 'text') a.push('-stroke', 'none', '-fill', o.color, '-font', o.bold ? 'DejaVu-Sans-Bold' : 'DejaVu-Sans', '-pointsize', String(o.size), '-gravity', 'NorthWest', '-annotate', `+${o.x}+${o.y}`, o.txt);
       else if (o.t === 'ctext') a.push('-stroke', 'none', '-fill', o.color, '-font', o.bold ? 'DejaVu-Sans-Bold' : 'DejaVu-Sans', '-pointsize', String(o.size), '-kerning', String(o.spacing || 0), '-gravity', 'North', '-annotate', `+0+${o.y}`, o.txt);
       n++;
