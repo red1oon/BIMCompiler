@@ -3383,7 +3383,7 @@ real rows read from the test server, the date held at 4 Nov 2026 so it matches t
 <tbody>
 <tr>
 <td>Total Projects (All)</td>
-<td>12, Closed: 0</td>
+<td>13, Closed: 1</td>
 <td>Every <code>C_Project</code>. Closed = <code>Processed = Y</code></td>
 </tr>
 <tr>
@@ -3393,17 +3393,17 @@ real rows read from the test server, the date held at 4 Nov 2026 so it matches t
 </tr>
 <tr>
 <td>Approved Budget</td>
-<td>USD 29,978,524.50, BDT 15,139,265.67</td>
+<td>USD 24,982,203.77, BDT 15,139,265.67</td>
 <td>Sum of <code>PlannedAmt</code></td>
 </tr>
 <tr>
 <td>Actual Cost</td>
-<td>USD 334.62, BDT 0.00</td>
+<td>USD 342.59, BDT 7.97</td>
 <td>Sum of <code>ProjectBalanceAmt</code>, also as % of plan</td>
 </tr>
 <tr>
 <td>Committed Cost</td>
-<td>USD 0.00, BDT 0.00</td>
+<td>USD 1,347,462.62, BDT 1,000.00 (invoiced USD 8.10, BDT 0.00)</td>
 <td>Sum of <code>CommittedAmt</code>, with <code>InvoicedAmt</code> under it</td>
 </tr>
 <tr>
@@ -3413,7 +3413,7 @@ real rows read from the test server, the date held at 4 Nov 2026 so it matches t
 </tr>
 <tr>
 <td>Projects Completed this year</td>
-<td>0</td>
+<td>1</td>
 <td><code>Processed = Y</code> with <code>DateFinish</code> in this year</td>
 </tr>
 </tbody>
@@ -3436,7 +3436,7 @@ real rows read from the test server, the date held at 4 Nov 2026 so it matches t
 <tbody>
 <tr>
 <td>Project Health</td>
-<td>Red 3, No EVM data 6</td>
+<td>Green 1, Amber 1, Red 1, No EVM data 6</td>
 <td><strong>No EVM data</strong>: nothing due yet. <strong>Green</strong>: Done is at least 90% of Due, and of Spent if there is any. <strong>Red</strong>: below 90% on all of them. <strong>Amber</strong>: mixed</td>
 </tr>
 <tr>
@@ -3446,25 +3446,69 @@ real rows read from the test server, the date held at 4 Nov 2026 so it matches t
 </tr>
 <tr>
 <td>Physical vs Spent</td>
-<td>USD 0%, BDT 0% for both</td>
+<td>Physical USD 20%, BDT 0%. Spent 0% (the amounts spent are tiny)</td>
 <td><strong>Physical</strong> = Done as a share of all phases' planned amount. <strong>Spent</strong> = <code>ProjectBalanceAmt</code> as a share of <code>PlannedAmt</code>. Payment-based progress is not in the ERP</td>
 </tr>
 <tr>
 <td>Schedule Performance</td>
-<td>On Time 2, At Risk 3, No schedule data 4, Delayed 0, Average Delay 190 days</td>
+<td>On Time 2, Delayed 1, At Risk 2, No schedule data 4, Average Delay 180 days</td>
 <td><strong>No schedule data</strong>: no phase with both dates. <strong>At Risk</strong>: Done is under 90% of Due. <strong>Delayed</strong>: a phase not Complete is past its End Date. Average Delay is over At Risk and Delayed projects</td>
 </tr>
 <tr>
 <td>Budget Status</td>
-<td>Over 1, Not Started 8, Within 0, Overrun USD 334.62</td>
+<td>Within 1, Over 2, Not Started 6, Overrun USD 334.62, BDT 7.97</td>
 <td><strong>Not Started</strong>: nothing spent. <strong>Over</strong>: Spent is above Planned. Overrun is the excess</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Why the sample looks the way it does.</strong> Nothing has been marked Complete, so the three projects with a phase already due show
-Red: <em>SHED</em>, and two test runs dated January. Two others have dated phases with nothing due yet, so they count as On Time and No
-EVM data. The Over project is <em>Standard</em>: it has material issued to it and no budget. Six of the nine are pushes of the same test
-building. Nothing was added to make the page look fuller, so tiles the test server has not reached stay at 0.</p>
+<p><strong>What is in the sample.</strong> Real documents on a test server, entered through iDempiere's own services, not invented figures. Most of
+the projects are test pushes of one building, so the amounts themselves mean nothing. What each one is there to show:</p>
+<table>
+<thead>
+<tr>
+<th>Project</th>
+<th>What was done in iDempiere</th>
+<th>Where it lands</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HHS_VIEWER_PUSH_..840</td>
+<td>All phases past due. 5 of 6 marked Complete</td>
+<td>Health Green, Schedule Delayed</td>
+</tr>
+<tr>
+<td>HHS_VIEWER_PUSH_..809</td>
+<td>All phases past due. Smallest marked Complete, material issued</td>
+<td>Health Amber, At Risk, Budget Within</td>
+</tr>
+<tr>
+<td>SHED</td>
+<td>One phase past due, not Complete</td>
+<td>Health Red, At Risk</td>
+</tr>
+<tr>
+<td>HHS_PLUGIN_POC</td>
+<td>Marked Commitment, Committed Amount on a line, one sales invoice</td>
+<td>Committed Cost, Invoiced</td>
+</tr>
+<tr>
+<td>CAPEX_BDT_POC</td>
+<td>New project in BDT: Committed Amount, material issued, no budget</td>
+<td>BDT amounts, Budget Over, Overrun</td>
+</tr>
+<tr>
+<td>Standard</td>
+<td>Material issued, no budget</td>
+<td>Budget Over, Overrun</td>
+</tr>
+<tr>
+<td>HHS_VIEWER_PUSH_..730</td>
+<td>Finish Date entered, then Close Project</td>
+<td>Closed, Completed this year. Not Active any more</td>
+</tr>
+</tbody>
+</table>
 <h3 id="the-other-views">The other views<a class="headerlink" href="#the-other-views" title="Permanent link">&para;</a></h3>
 <p><strong>Projects</strong> lists each project: Value, Name, Org, Currency, Planned, Actual, Committed, Standard Phase. The <strong>BIM</strong> button appears only when
 that project's building file is found, and opens it in the BIM viewer.</p>
@@ -3488,7 +3532,7 @@ project, including inactive ones. Set Status to <strong>All</strong> and they ag
 <tbody>
 <tr>
 <td>Approved Budget (USD)</td>
-<td>29,978,524.50</td>
+<td>24,982,203.77</td>
 <td>39,971,166.17</td>
 <td>39,971,166</td>
 </tr>
@@ -3740,39 +3784,61 @@ when projects are added, "of 9" stays 9 until someone changes it.</p>
 <em>Change what a goal counts</em>.</p>
 <hr />
 <h2 id="what-moves-the-numbers">What moves the numbers<a class="headerlink" href="#what-moves-the-numbers" title="Permanent link">&para;</a></h2>
-<p>Both places only read your project records. They fill up when these are filled in:</p>
+<p>Both places only read your project records. These are the iDempiere actions behind each figure, read from iDempiere's own code and
+tried on the test server:</p>
 <table>
 <thead>
 <tr>
-<th>You do this</th>
+<th>Figure</th>
+<th>What moves it</th>
 <th>Where</th>
-<th>What it moves</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Add phases with Start Date and End Date</td>
+<td>Schedule goals</td>
+<td>Phases with Start Date and End Date</td>
 <td><strong>Project</strong> window, <strong>Phase</strong> tab</td>
-<td>Leaves <em>No schedule data</em></td>
 </tr>
 <tr>
-<td>Give phases a Planned Amount</td>
+<td>Due, Done, Health</td>
+<td>Planned Amount on phases. Tick <strong>Complete</strong> when a phase finishes</td>
 <td><strong>Phase</strong> tab</td>
-<td>Health and At Risk can be judged</td>
 </tr>
 <tr>
-<td>Tick <strong>Complete</strong> when a phase finishes</td>
-<td><strong>Phase</strong> tab</td>
-<td>Done rises</td>
-</tr>
-<tr>
+<td>Actual Cost, Budget goals</td>
 <td>Issue material to the project</td>
 <td><strong>Issue to Project</strong></td>
-<td>Spent rises: Actual Cost, Budget goals</td>
+</tr>
+<tr>
+<td>Committed Cost</td>
+<td>Tick <strong>Commitment</strong> on the project, then type <strong>Committed Amount</strong> on its lines</td>
+<td><strong>Project</strong> window, <strong>Project Line</strong> tab</td>
+</tr>
+<tr>
+<td>Invoiced</td>
+<td>Complete a <strong>sales</strong> invoice with the Project field set</td>
+<td><strong>Sales Invoice and Credit/Debit Note</strong></td>
+</tr>
+<tr>
+<td>Closed</td>
+<td>Run <strong>Close Project</strong></td>
+<td><strong>Project</strong> window</td>
+</tr>
+<tr>
+<td>Completed this Year</td>
+<td>Enter <strong>Finish Date</strong>, and close the project</td>
+<td><strong>Project</strong> window</td>
 </tr>
 </tbody>
 </table>
-<p><strong>A measured example.</strong> On the test server, ticking <strong>Complete</strong> on one phase of one project moved five goals. It was then undone.</p>
+<p>Three things that may surprise you:</p>
+<ul>
+<li><strong>A purchase order does not fill Committed Cost.</strong> iDempiere has no code that writes it from a PO, not even Generate PO from Project. It is typed in.</li>
+<li><strong>Close Project does not set the Finish Date.</strong> Without one, the project counts as Closed but not as Completed this Year.</li>
+<li><strong>Actual Cost is in your accounting currency, whatever the project's.</strong> Issue to Project adds the product's cost without converting it. On the test server, a BDT project shows 7.97, which is the USD cost. If you run projects in another currency, read that tile knowing this.</li>
+</ul>
+<p><strong>A measured example.</strong> On the test server, ticking <strong>Complete</strong> on SHED's one overdue phase moved five goals. It was then undone.</p>
 <table>
 <thead>
 <tr>
@@ -3784,13 +3850,13 @@ when projects are added, "of 9" stays 9 until someone changes it.</p>
 <tbody>
 <tr>
 <td>Health Green</td>
-<td>0%</td>
 <td>11%</td>
+<td>22%</td>
 </tr>
 <tr>
 <td>Health Red</td>
-<td>3</td>
-<td>2</td>
+<td>1</td>
+<td>0</td>
 </tr>
 <tr>
 <td>Schedule On Time</td>
@@ -3799,13 +3865,13 @@ when projects are added, "of 9" stays 9 until someone changes it.</p>
 </tr>
 <tr>
 <td>Schedule At Risk</td>
-<td>3</td>
 <td>2</td>
+<td>1</td>
 </tr>
 <tr>
 <td>Schedule Average Delay (days)</td>
-<td>190</td>
-<td>284</td>
+<td>180</td>
+<td>269</td>
 </tr>
 </tbody>
 </table>
@@ -3968,9 +4034,8 @@ address to open on your data.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Not yet seen working on real data.</strong> These have read 0 on the test server, so we have not seen them count anything
-on it: Closed Projects, Completed this Year, Committed Cost, Invoiced, Actual Cost and Overrun in BDT, Health Amber, Schedule Delayed, Budget Within. Health
-Green was seen only during the example above.</p>
+<p><strong>Still 0 on the test server: Invoiced (BDT).</strong> It has no BDT price list or USD-to-BDT rate, so a sales invoice can't reach a BDT
+project. Every other goal has counted real documents.</p>
 <p><strong>Check Approval Pending against your own meaning of "approval".</strong> It counts every suspended workflow activity. On
 the test server all 261 are on <strong>Business Partner</strong>, not on project documents.</p>
 <hr />
@@ -3978,8 +4043,8 @@ the test server all 261 are on <strong>Business Partner</strong>, not on project
 <ul>
 <li>Every tile drawn on the page equals the formula run separately over the sample's rows (19 of 19, at Status Active and All).</li>
 <li>Every CAPEX caption on the test server's real Home tab equals the browser copy's, all 27.</li>
-<li>Home tab values equal iDempiere's own stored goals, recalculated just before comparing. 15 of 27 had a value; the other 12 were 0
-  on both sides, which proves nothing.</li>
+<li>For 26 of the 27 goals, Home tab values equal iDempiere's own goals, recalculated just before comparing. The other, Invoiced (BDT), is 0 on both sides, which proves nothing.</li>
+<li>iDempiere's calculation, the browser copy's and the page's own formulas agree on the same rows.</li>
 <li>A real edit in iDempiere reached the browser copy after the next job and reload, changing exactly one row, and was undone.</li>
 </ul>
 <p>Not checked: a site larger than this test server. If the job stops, the copy just goes quietly out of date.</p>
