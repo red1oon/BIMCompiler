@@ -17,7 +17,8 @@ Docs review live (BIMCompiler #311/#312, `prompts/DOCS_REVIEW_2026-11.md`); code
 waves 1-3 + close-out); legacy posting parity (`prompts/SQLiteIDEMPIERE.md` END: §POSTING-PARITY 1a-1d + steps 2+4 live, bim-ootb
 #2593-#2598 — 42/42 seed docs == legacy, Preview == real posting). (1) alloc #101 724 residual CLOSED 2026-11-04 — not a defect
 (legacy stores Cr 0.01, the "0.0" was the Dr column; W-POST-ALLOCATION A5 now judges AmtSource). **Open, in order:**
-(2) retire the remaining doc_poster derive* after migrating genesis.html + 6 witnesses + 4 bim-compiler --engine-dir scripts;
+(2) retire doc_poster derive* — spec + progress `prompts/SQLiteIDEMPIERE.md` §POSTING-PARITY step 5 (2026-11-04: customer return receipts
+now post #2601; draft invoices preview again #2605; 5a/5c/5d/5e/5f done, post_error + asi_batchrev fixed #2606; next 5b FX gain/loss, then genesis.html);
 (3) Modeller kernel_ops copy + boot assertion (KERNEL_TIMEBOMB T5); (4) Viewer memory B-items. Lesson memory:
 `feedback_rerun_recorded_proofs_before_defect_claim`.
 ## ▶ FILM "I vs AI" lane (2026-11-03, closed): 3 finished films in ~/Videos (EN 223 s · Malay v3 316 s · Mandarin 273 s); read `prompts/FILM_VS_AI_SLOP.md` ▶ RESUME HERE (rebuild commands, open items, lessons). Branch `film/vs-ai`; nobody has listened to the films yet.
