@@ -269,3 +269,23 @@ Read-only extraction (`TEAMWORK_FRAMEWORK.md` §41 agent A). Every line cites a 
 - **§9 step 3 "Import Payment makes receipts allocated to that invoice"** is true only with `DocAction=CO` and a bank account; the default saves uncompleted payments (§12.5).
 - **§5 "card-clearing bank account"** is not a legacy construct (§12.5), and **"Bank Statement Matcher ported"** is only the shell: no matcher exists in core or the twin, and Import/Load Bank Statement (221/247) are not ported.
 - **§9 "2012 integration → no base-hash change" / §10.2 "2012 integration = prior art of the same loop"**: fine for master-data-down and orders-up, but not for tenders or housekeeping (§12.3-§12.4).
+
+### §34.D FILM v2 RESULT (2026-11-05; branch `film/unicenta-till-v2`, pipeline `scripts/film_unicenta_till/`)
+**Film:** `~/Videos/UnicentaPOS_SQLiteWASM_narrated_EN_AFTER_2026-11-05_v2.mp4`, **314.3 s**, 7,543 frames at 24 fps (v1 287.2 s, never overwritten). Built by `MODE=B build.sh` against bim-ootb `origin/main` (read-only worktree `/tmp/wt-film-ootb`); all ten recorded beats were re-recorded (v1's live log was not kept, so the §TILLFILM_FACT checks needed a fresh run); CPU only.
+| Witness of the cut (`out/witness.log`) | Verdict |
+|---|---|
+| frames == silent picture | PASS 7,543 == 7,543 |
+| longest silence >= 4 s | PASS 6.2 s (bar 7 s) |
+| loudness | PASS -16.3 LUFS |
+| subtitle zone (crop 1920x230+0+850, 629 frames at 2 fps) | PASS 0 non-empty |
+| numbers guard (2 planted controls caught) | PASS |
+| live facts (`livecheck.js`) | PASS 18 checked |
+| `§NARR_FIT` | PASS 17/17 DETAIL |
+| `§NARR_TONE` | PASS 0 WRONG of 18 |
+**What changed (owner §34.C):**
+- `pdfcrop.js` (new) cuts the p23 sales screen and the p50 diagram out of `~/Downloads/openbravoPOSGuide.pdf` (boxes from `pdftohtml -xml`, `pdftoppm` at 300 dpi, image box only); the PDF is not committed. It also saves `pdftotext` of p1, p23, p50 under `out/pdf/` as fact sources.
+- Beat 0: the drawn BEFORE card is replaced by the owner's p50 diagram (credited at the top); AFTER is redrawn in the same three-stack layout (head office, relay, browser till; SODA / EODA / Branch Day Close / till fetch as the four processes). The voice names three stacks, the delayed relay and no server to run.
+- Chapter 1: card, then new beat `b1p` (p23 original screen, label "2011 - Openbravo POS, from RED1's integration guide", subtitle zone empty), then today's till. Dialogue: F notices the same Tools tiles, Hoe and Rake; M: that was the owner's Openbravo till of 2011, two hoes and three bamboo rakes on a single ticket, here it is today in a browser tab.
+- Facts added from page text: `year2011` (p1 "September 11, 2011"), `guide_two` and `guide_three` (p23 "Click on 2 ... Hoe", "Click on 3 ... Rake-Bamboo"), `stacks3` (p50 "the 3 remotely located stacks"). `guard.js` learned "twenty eleven". **The total 57.00 is NOT spoken:** it exists only inside the screen image, not in the page text, so no fact could be read from `pdftotext` (the image on the card shows it).
+- Credits (card + voice): "the owner's own 2012 Openbravo POS -> ADempiere / iDempiere integration over ActiveMQ, the delayed EODA / SODA relay (copyleft RED1)". Ghintech is no longer named anywhere in the film.
+- Timing: +27.1 s. b0a 15.0 -> 18.5 s, b0b 13.6 -> 19.3 s, new b1p 14.9 s plus the existing 3.6 s chapter card; recorded beats re-timed by the same measured-start rule (`out/timeline.json`).

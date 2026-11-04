@@ -1,11 +1,12 @@
 #!/bin/bash
 # ⚠ DO NOT REMOVE — build "uniCenta POS, reborn: the SQLite WASM till" (prompts/POS_PLUGIN_LOCAL_FIRST.md §34) end to end, CPU only (CUDA hidden from TTS, Chrome --disable-gpu).
-# resolve (every number from a named § log) -> guard -> cards -> voice measure -> beat lengths -> record -> assemble -> fit (Kokoro EN) -> [mux + witnesses of the cut].  READ every log under out/ after a run; exit codes are not evidence.
+# v2 (2026-11-05, §34.D): pdfcrop first (owner's guide p23 screen + p50 diagram, generated, PDF not committed). resolve (every number from a named § log) -> guard -> cards -> voice measure -> beat lengths -> record -> assemble -> fit (Kokoro EN) -> [mux + witnesses of the cut].  READ every log under out/ after a run; exit codes are not evidence.
 # MODE=A (Phase A): stops after the narration fit on dry-run timings, NO final mux.   MODE=B: record for real and mux to $OUTMP4 (never overwritten).  ROOT = the bim-ootb worktree served to the browser.
 set -e; cd "$(dirname "$0")"; mkdir -p out/work/fm out/work/fit out/rec out/cards; MODE="${MODE:-A}"; export ROOT="${ROOT:-/tmp/wt-film-ootb}" CUDA_VISIBLE_DEVICES=""
 PY=~/.local/share/film_narration/venv/bin/python; FIT=../film_replication_engine/film6/fit6/fit_kokoro_v3_k.py; MUX=../film_replication_engine/film6/fit6/mux_two_pass.py
-OUTMP4="${OUTMP4:-$HOME/Videos/UnicentaPOS_SQLiteWASM_narrated_EN_AFTER_$(date +%F)_v1.mp4}"
+OUTMP4="${OUTMP4:-$HOME/Videos/UnicentaPOS_SQLiteWASM_narrated_EN_AFTER_$(date +%F)_v2.mp4}"
 [ "$MODE" = B ] && [ -e "$OUTMP4" ] && { echo "§REFUSED $OUTMP4 exists (never overwritten); set OUTMP4="; exit 5; }
+node pdfcrop.js out/pdf > out/pdfcrop.log 2>&1 || { echo "§PDFCROP_FAIL see out/pdfcrop.log"; exit 3; }
 node resolve.js > out/resolve.log 2>&1 || { echo "§RESOLVE_FAIL see out/resolve.log"; exit 3; }
 node guard.js > out/guard.log 2>&1 || { echo "§GUARD_FAIL see out/guard.log"; exit 3; }
 node cards.js render out/cards > out/cards.log 2>&1; grep -q NOT-EMPTY out/cards.log && { echo "§CARD_SUBTITLE_ZONE_NOT_EMPTY"; exit 3; }

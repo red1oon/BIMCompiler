@@ -1,5 +1,9 @@
 {
  "_note": "Every number the voice or a card says. src = a log on disk (regex capture group 1 must equal expect) or live:true (the recording prints §TILLFILM_FACT k=v from the in-browser DB; the build compares it with what the voice says). words = the number words the voice may use for it in a beat.",
+ "year2011":   {"src":"scripts/film_unicenta_till/out/pdf/p1_text.txt","re":"September 11, (2011)","expect":"2011","words":["twenty eleven"],"what":"the date on the cover of the owner's Openbravo POS guide (pdftotext page 1), v2 label + voice"},
+ "guide_two":  {"src":"scripts/film_unicenta_till/out/pdf/p23_text.txt","re":"Click on (2) on the number-pad and click on Hoe","expect":"2","words":["two"],"what":"guide p23 text: 2 on the number-pad, then Hoe"},
+ "guide_three":{"src":"scripts/film_unicenta_till/out/pdf/p23_text.txt","re":"Click on (3) on the number-pad and then click on Rake-Bamboo","expect":"3","words":["three"],"what":"guide p23 text: 3 on the number-pad, then Rake-Bamboo"},
+ "stacks3":    {"src":"scripts/film_unicenta_till/out/pdf/p50_text.txt","re":"between the (3) remotely located stacks","expect":"3","words":["three"],"what":"guide p50 caption: the processes carry data between the 3 remotely located stacks"},
  "year2012":   {"src":"/home/red1/bim-compiler/prompts/POS_PLUGIN_LOCAL_FIRST.md","re":"(2012)","expect":"2012","words":["twenty twelve"],"what":"the owner's POS integration year, spec §1 M8 / §12.1"},
  "parity_n":   {"src":"/tmp/rest_logs/final_witness_till.log","re":"§TILL_PARITY (\\d+) of 25","expect":"25","words":["twenty-five"],"what":"uniCenta 5 parity rows passing, §32.R"},
  "parity_of":  {"src":"/tmp/rest_logs/final_witness_till.log","re":"§TILL_PARITY 25 of (25)","expect":"25","words":[],"what":"parity rows total"},
