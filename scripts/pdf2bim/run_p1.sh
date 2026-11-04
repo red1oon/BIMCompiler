@@ -18,7 +18,18 @@ run 09_to_std          python3 -I $S/to_std.py "$O/p1_marked.dxf" "$O/elev" "$RJ
 # LOD400 library: local export (git-ignored scripts/library_building_types.json is a default-only data file)
 [ -f "$H/scripts/library_building_types.json" ] || cp "$T/library_building_types.default.json" "$H/scripts/library_building_types.json"
 LIBDB="${PDF2BIM_LIBDB:-}"; for c in "$H/library/component_library.db" "$HOME/bim-compiler/library/component_library.db"; do [ -z "$LIBDB" ] && [ -f "$c" ] && LIBDB="$c"; done
-[ -f "$O/lib/latest.json" ] || run 10_library_export node "$H/scripts/export_library_subset.js" --full --out-dir "$O/lib" --lib "$LIBDB"
+# the library DB is never modified: a COPY gets the append-only migration(s) this lane depends on (CL006 = size pair on the two exact-size FD1 door families, spec §27), then the export reads the copy
+if [ ! -f "$O/lib/latest.json" ]; then
+  cp "$LIBDB" "$O/component_library.migrated.db"
+  python3 -I - "$O/component_library.migrated.db" "$H/migration/CL006_opening_family_size_pair.sql" > logs/10a_library_migrate.log 2>&1 <<'PY'
+import sqlite3,sys
+c=sqlite3.connect(sys.argv[1]); q="select count(*) from ad_opening_family where description like '%×2100mm%' and family_id like 'INST_FIRE_DOOR_%'"
+b=c.execute(q).fetchone()[0]; c.executescript(open(sys.argv[2],encoding='utf-8').read()); c.commit(); a=c.execute(q).fetchone()[0]
+print('§MIG CL006 families with a size pair before',b,'after',a)
+PY
+  echo "== 10a_library_migrate ($(cat logs/10a_library_migrate.log | tr '\n' ' '))"
+  run 10_library_export node "$H/scripts/export_library_subset.js" --full --out-dir "$O/lib" --lib "$O/component_library.migrated.db"
+fi
 ( cd "$HOME/bim-ootb/modeller" && run_in(){ :; }; node "$S/lib_probe.js" "$O/typed" "$O/lib/" "$O/tbkltn_p1.ifc" > "$O/logs/11_lib_probe.log" 2>&1; echo "== 11_lib_probe exit=$? ($(wc -l < $O/logs/11_lib_probe.log) lines)" )
 run 12_ifc_check       python3 "$S/ifc_check.py" "$O/tbkltn_p1.ifc"
 echo "--- headline"; grep -h -E "W-P1 |W-P5 wall pairs|W-P12 round|G1 scale|MATCH D|TOTAL by class" logs/0*.log | cut -c1-170; grep -h -E "LIB els|IFC counts|IFC bbox .* IfcWall|IFC validate" logs/11_lib_probe.log logs/12_ifc_check.log | cut -c1-200

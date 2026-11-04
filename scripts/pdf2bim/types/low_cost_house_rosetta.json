@@ -300,43 +300,31 @@
   "library_binding": {
     "_note": "opening tag -> family_id of the LOCAL LOD400 library (BIMCompiler component_library.db, exported by export_library_subset.js --full; Duplex items). exact=false = nearest-size STAND-IN (owner 2026-11-04: 'use from Duplex items'); the library holds no window of the drawing's sizes. Ratios are of default_width x default_height.",
     "D1": {
-      "family": "DUPLEX_INTERIOR_864",
+      "family": "INST_FIRE_DOOR_900",
       "lib_size": [
-        864,
-        2032
-      ],
-      "exact": false,
-      "vs": [
         900,
         2100
       ],
-      "note": "INST_FIRE_DOOR_900 (exact size) has no mesh/size pair in its description -> LOD400 hard fail; RES_ENTRY likewise. Nearest size with geometry = Duplex interior door 864x2032 (-4% w, -3% h); an exterior door shown with an interior-door mesh: semantics YELLOW."
+      "exact": true,
+      "note": "exact size WITH mesh (Terminal FD1) once migration CL006 gives the family a size pair (§27); fire-rated institutional door standing in for an unrated house door: semantics YELLOW"
     },
     "D2": {
-      "family": "DUPLEX_INTERIOR_864",
+      "family": "INST_FIRE_DOOR_900",
       "lib_size": [
-        864,
-        2032
-      ],
-      "exact": false,
-      "vs": [
         900,
         2100
       ],
-      "note": "Duplex interior door M_Single-Flush 864x2032 (bedroom/bathroom): nearest size with geometry (-4% w, -3% h)"
+      "exact": true,
+      "note": "exact size WITH mesh (Terminal FD1) once migration CL006 gives the family a size pair (§27); fire-rated institutional door standing in for an unrated house door: semantics YELLOW"
     },
     "D3": {
-      "family": "DUPLEX_INTERIOR_762",
+      "family": "INST_FIRE_DOOR_750",
       "lib_size": [
-        762,
-        2032
-      ],
-      "exact": false,
-      "vs": [
         750,
         2100
       ],
-      "note": "Duplex interior door M_Single-Flush 762x2032 (bathroom/utility): nearest size with geometry (+1.6% w, -3% h). BATHROOM_DOOR (exact size) has NO mesh."
+      "exact": true,
+      "note": "exact size WITH mesh (Terminal FD1) once migration CL006 gives the family a size pair (§27); fire-rated institutional door standing in for an unrated house door: semantics YELLOW"
     },
     "W1": {
       "family": "UK_WINDOW_1810",

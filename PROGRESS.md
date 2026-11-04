@@ -52,4 +52,4 @@ LIVE on bim-ootb main: §52.1 resume-as-it-was (#2519, W-RESUME-AS-IT-WAS 7/0, s
 ## Older states (2026-09-02 … 2026-09-08, incl. ⛔ OPEN + standing constraints of 2026-09-02/03) — moved verbatim to `prompts/archive/PROGRESS_DONE_ARCHIVE_pre_2026-11-03.md` (2026-11-03)
 
 ## 📄 PDF→BIM (vector PDF to IFC, TB-LKTN house) — session 1 2026-11-04
-One command `scripts/pdf2bim/run_p1.sh` reproduces PDF -> 5 STD DXF sheets -> 53-element IFC4 (page 1). Emission + fidelity witnessed; lane acceptance blocked by 89 stated rows (9 reader gaps + 26 library stand-ins + 54 drawing-quality). Read `prompts/PDF2BIM_VECTOR_PROBE.md` ▶ RESUME HERE.
+One command `scripts/pdf2bim/run_p1.sh` reproduces PDF -> 5 STD DXF sheets -> 58-element IFC4 (page 1). Emission + fidelity witnessed; lane acceptance blocked by 82 stated rows (6 reader gaps + 22 library stand-ins + 54 drawing-quality); migration CL006 makes the exact-size FD1 doors bindable. Read `prompts/PDF2BIM_VECTOR_PROBE.md` ▶ RESUME HERE.

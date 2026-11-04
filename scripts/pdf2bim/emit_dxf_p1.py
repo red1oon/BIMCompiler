@@ -169,18 +169,26 @@ for sw,pts,smp,cv in P:
             if abs(((a1-a0)%360)-90)>3: a0,a1=a1,a0
             # standard form (importer snap_tol 1 mm): hinge on a face line of the wall it sits in, and the closed-leaf end meeting a wall piece END. The PDF draws the arc from the leaf's outer edge (hinge a few tens of mm off the
             # wall face) and the frame jambs (~90 mm each side of the leaf) inside the gap, so: hinge -> nearest face of its strip; the piece beyond the leaf end is extended 0-130 mm to the leaf end (the jamb becomes wall)
-            rr=round(r*K,1); A0=(round(a0/90)*90)%360; A1=(A0+90)%360; hx,hy=cm; best=None
-            WL=[(i_,e[2]) for i_,e in enumerate(E) if e[0]=='PDF-WALL']
-            for ang in (A0,A1):
-                dx,dy=round(math.cos(math.radians(ang))),round(math.sin(math.radians(ang))); ex,ey=hx+rr*dx,hy+rr*dy
-                for i_,w in WL:
-                    xs_=[q[0] for q in w]; ys_=[q[1] for q in w]; mnx,mny,mxx,mxy=min(xs_),min(ys_),max(xs_),max(ys_); horiz=(mxx-mnx)>(mxy-mny)
-                    if dy==0 and horiz and mny-70<=hy<=mxy+70:
-                        gapd=((mnx-ex) if dx>0 else (ex-mxx))      # piece edge beyond the leaf end
-                        if -12<=gapd<=130 and (best is None or gapd<best['g']): best=dict(g=gapd,i=i_,w=(mnx,mny,mxx,mxy),dx=dx,dy=dy,ex=ex,ey=ey,face=min((mny,mxy),key=lambda f_:abs(f_-hy)),horiz=True)
-                    if dx==0 and (not horiz) and mnx-70<=hx<=mxx+70:
-                        gapd=((mny-ey) if dy>0 else (ey-mxy))
-                        if -12<=gapd<=130 and (best is None or gapd<best['g']): best=dict(g=gapd,i=i_,w=(mnx,mny,mxx,mxy),dx=dx,dy=dy,ex=ex,ey=ey,face=min((mnx,mxx),key=lambda f_:abs(f_-hx)),horiz=False)
+            rm=round(r*K,1)
+            # the PDF draws the CLEAR-opening radius (schedule width minus a ~80 mm frame, measured D1/D2 80, D3 81, §19) and its wall gaps follow TWO conventions: some gaps equal the schedule width (leaf in a framed opening),
+            # some equal the clear radius. The importer wants leaf width = arc radius = gap. Try the SCHEDULE width first (p8 text layer, exact); keep the measured radius where the drawn gap only fits that.
+            rsch=next((float(w) for w in (R['schedule_sizes_mm']['D1'][0],R['schedule_sizes_mm']['D3'][0]) if 40<=w-rm<=120),rm)
+            A0=(round(a0/90)*90)%360; A1=(A0+90)%360; hx0,hy0=cm
+            for rr in ([rsch,rm] if rsch!=rm else [rm]):
+                hx,hy=hx0,hy0; best=None
+                WL=[(i_,e[2]) for i_,e in enumerate(E) if e[0]=='PDF-WALL']
+                for ang in (A0,A1):
+                    dx,dy=round(math.cos(math.radians(ang))),round(math.sin(math.radians(ang))); ex,ey=hx+rr*dx,hy+rr*dy
+                    for i_,w in WL:
+                        xs_=[q[0] for q in w]; ys_=[q[1] for q in w]; mnx,mny,mxx,mxy=min(xs_),min(ys_),max(xs_),max(ys_); horiz=(mxx-mnx)>(mxy-mny)
+                        if dy==0 and horiz and mny-70<=hy<=mxy+70:
+                            gapd=((mnx-ex) if dx>0 else (ex-mxx))      # piece edge beyond the leaf end
+                            if -12<=gapd<=130 and (best is None or gapd<best['g']): best=dict(g=gapd,i=i_,w=(mnx,mny,mxx,mxy),dx=dx,dy=dy,ex=ex,ey=ey,face=min((mny,mxy),key=lambda f_:abs(f_-hy)),horiz=True)
+                        if dx==0 and (not horiz) and mnx-70<=hx<=mxx+70:
+                            gapd=((mny-ey) if dy>0 else (ey-mxy))
+                            if -12<=gapd<=130 and (best is None or gapd<best['g']): best=dict(g=gapd,i=i_,w=(mnx,mny,mxx,mxy),dx=dx,dy=dy,ex=ex,ey=ey,face=min((mnx,mxx),key=lambda f_:abs(f_-hx)),horiz=False)
+                if best: break
+            if best and rr!=rsch: log('E2r door radius kept as drawn',rr,'(the drawn gap fits only the clear opening; schedule width',rsch,'would overshoot the wall piece)')
             if best:
                 mnx,mny,mxx,mxy=best['w']
                 if best['horiz']:
@@ -188,7 +196,32 @@ for sw,pts,smp,cv in P:
                 else:
                     nh=(best['face'],hy); nmny,nmxy=(best['ey'],mxy) if best['dy']>0 else (mny,best['ey']); newp=((mnx,nmny),(mxx,nmny),(mxx,nmxy),(mnx,nmxy))
                 E[best['i']]=('PDF-WALL','LWPOLYLINE',tuple((round(q[0],1),round(q[1],1)) for q in newp))
+                jamb_done=False
+                for i2,w2 in [(i_,e[2]) for i_,e in enumerate(E) if e[0]=='PDF-WALL' and i_!=best['i']]:
+                    xs2=[q[0] for q in w2]; ys2=[q[1] for q in w2]; a2,b2,c2,d2=min(xs2),min(ys2),max(xs2),max(ys2)
+                    if best['horiz'] and abs((b2+d2)/2-(mny+mxy)/2)<1 and (c2-a2)>(d2-b2):
+                        edge=(c2 if best['dx']>0 else a2); gap_=((hx-edge) if best['dx']>0 else (edge-hx))
+                        if -12<=gap_<=150:
+                            nn=((a2,b2),(hx,b2),(hx,d2),(a2,d2)) if best['dx']>0 else ((hx,b2),(c2,b2),(c2,d2),(hx,d2)); E[i2]=('PDF-WALL','LWPOLYLINE',tuple((round(q[0],1),round(q[1],1)) for q in nn)); log('E2j hinge-side jamb: wall piece extended',round(gap_,1),'mm to the hinge'); jamb_done=True; break
+                    if (not best['horiz']) and abs((a2+c2)/2-(mnx+mxx)/2)<1 and (d2-b2)>(c2-a2):
+                        edge=(d2 if best['dy']>0 else b2); gap_=((hy-edge) if best['dy']>0 else (edge-hy))
+                        if -12<=gap_<=150:
+                            nn=((a2,b2),(c2,b2),(c2,hy),(a2,hy)) if best['dy']>0 else ((a2,hy),(c2,hy),(c2,d2),(a2,d2)); E[i2]=('PDF-WALL','LWPOLYLINE',tuple((round(q[0],1),round(q[1],1)) for q in nn)); log('E2j hinge-side jamb: wall piece extended',round(gap_,1),'mm to the hinge'); jamb_done=True; break
                 log('E2s door hinge',(round(hx,1),round(hy,1)),'->',(round(nh[0],1),round(nh[1],1)),'| wall piece edge extended by',round(best['g'],1),'mm to the closed-leaf end'); hx,hy=nh
+                if not jamb_done:   # hinge side is a perpendicular wall (T junction) <= 150 mm away: a derived pier from that wall face to the hinge, so the gap equals the leaf
+                    for i3,w3 in [(i_,e[2]) for i_,e in enumerate(E) if e[0]=='PDF-WALL']:
+                        xs3=[q[0] for q in w3]; ys3=[q[1] for q in w3]; a3,b3,c3,d3=min(xs3),min(ys3),max(xs3),max(ys3)
+                        if (not best['horiz']) and (c3-a3)>(d3-b3):      # vertical door, horizontal wall at the hinge side
+                            face=(d3 if best['dy']>0 else b3)           # y up: leaf going up -> hinge side is below (wall's top edge d3); leaf going down -> wall above (its bottom edge b3)
+                            gap3=(hy-face) if best['dy']>0 else (face-hy)
+                            if a3-1<=hx<=c3+1 or (best['w'][0]-1<=a3<=best['w'][2]+1) or True:
+                                if 0<gap3<=150 and best['w'][0]-60<=(a3+c3)/2<=best['w'][2]+60+2000:
+                                    lo3,hi3=sorted((hy,face)); E.append(('PDF-WALL','LWPOLYLINE',((best['w'][0],lo3),(best['w'][2],lo3),(best['w'][2],hi3),(best['w'][0],hi3)))); log('E2k hinge-side pier (T junction) added',round(gap3,1),'mm between the wall face and the hinge'); jamb_done=True; break
+                        if best['horiz'] and (d3-b3)>(c3-a3):            # horizontal door, vertical wall at the hinge side
+                            face=(a3 if best['dx']<0 else c3) if False else (c3 if best['dx']>0 else a3)
+                            gap3=(hx-face) if best['dx']>0 else (face-hx)
+                            if 0<gap3<=150 and best['w'][1]-60<=(b3+d3)/2<=best['w'][3]+60+2000:
+                                lo3,hi3=sorted((hx,face)); E.append(('PDF-WALL','LWPOLYLINE',((lo3,best['w'][1]),(hi3,best['w'][1]),(hi3,best['w'][3]),(lo3,best['w'][3])))); log('E2k hinge-side pier (T junction) added',round(gap3,1),'mm between the wall face and the hinge'); jamb_done=True; break
             else: log('E2s door NOT snapped (no wall piece edge within 130 mm beyond its closed-leaf end)',(round(hx,1),round(hy,1)),'r',rr)
             E.append(('PDF-DOOR-SWING','ARC',(round(hx,1),round(hy,1),rr,A0,A1))); nd+=1
             if best: DOORREC.append((hx,hy,best['dx'],best['dy'],best['horiz'],best['w']))
