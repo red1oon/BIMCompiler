@@ -2507,3 +2507,14 @@ gain/loss port → 5g genesis.html (born DB has no ad_table/ad_column) → 5h �
 - **Pre-existing, noted:** `poc_review2_2026_10_11` / `poc_review_fix_2026_10_11` engine mode cannot load since bim-ootb #2585 deleted
   `erp/pos_lens.js`; their plain mode (the compiler copy) is unaffected (review_fix PASS 8/8, review2 INCONCLUSIVE 1 as before).
 **Remaining:** 5b (port createPaymentGainLoss :1045-1135, then move W-NC5BCD-GAINLOSS) → 5g genesis.html → 5h → delete.
+**Step 5b — SPEC + measured state (2026-11-04):** W-NC5BCD-GAINLOSS had crashed in sql.js init in every checkout (npm loader + vendored
+wasm), so it never judged; fixed in bim-ootb #2608. Real state now: 24 judged — **C_AllocationHdr 8/8 == legacy** (V1 gain, V2 loss, V3
+control, V5 USD receipt for a EUR invoice × schemas 101/200000) via doc_poster.deriveAllocation's gain/loss; C_Invoice 8/8; **C_Payment 8
+FAIL** because #2598 deleted doc_poster's C_Payment branch (the crash hid it). The real poster (model_post Doc_AllocationHdr) still REFUSES
+these documents ("foreign-currency allocation realized gain/loss lines (createPaymentGainLoss :1045-1135)" — named, model_post.js ~:891).
+**Spec 5b:** port Doc_AllocationHdr.createInvoiceGainLoss (:892-1030) + createPaymentGainLoss (:1045-1135) into model_post's allocation
+class, following Java line by line and cross-checked against deriveAllocation's proven arithmetic (the fold that already == legacy 8/8).
+Re-home W-NC5BCD-GAINLOSS onto the seed through the model layer: per variant in `scripts/bridge/out/nc5bcd_legacy.json` build the EUR
+invoice / payment / allocation with the variant's rates and dates, post via the REAL poster, compare per (schema, account, DR, CR) in
+cents to the legacy facts — invoice, payment AND allocation. Mutant: drop the gain/loss line → V1/V2 FAIL; V3 (R1 == R2) books no RGL line.
+Then 5g genesis.html → 5h → delete deriveInvoice/deriveInOut/deriveMovement/deriveAllocation/deriveBankStatement (+ convertToSchema if unreferenced).
