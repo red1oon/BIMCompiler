@@ -35,8 +35,9 @@ function docactionCheck(rows) {
   rows.filter(function (r) { return r.isactive !== false && r.table && (r.dir === 'UP' || r.dir === 'DOWN') && r.treatment === 'FACT'; }).forEach(function (r) { var t = String(r.table).toLowerCase(); (dirs[t] = dirs[t] || { DOWN: [], UP: [] })[r.dir].push(r); });
   Object.keys(dirs).forEach(function (t) {
     var d = dirs[t]; if (!d.UP.length || !d.DOWN.length) return;
-    var execs = rows.filter(function (r) { return r.isactive !== false && r.docaction && Number.isInteger(r.docaction.executor) && String(r.table).toLowerCase() === t; }).map(function (r) { return r.docaction.executor; });
-    d.UP.forEach(function (u) { if (execs.indexOf(u.role) < 0) errs.push({ code: 'updown-not-executor', table: t, row: u.name }); });
+    // `executorOf` (§28.2 P1): a LINE table has no DocAction of its own; its UP row names the document table whose executor completes it (M_MovementLineConfirm -> M_MovementConfirm)
+    d.UP.forEach(function (u) { var et = String(u.executorOf || t).toLowerCase(), execs = rows.filter(function (r) { return r.isactive !== false && r.docaction && Number.isInteger(r.docaction.executor) && String(r.table).toLowerCase() === et; }).map(function (r) { return r.docaction.executor; });
+      if (execs.indexOf(u.role) < 0) errs.push({ code: 'updown-not-executor', table: t, row: u.name }); });
   });
   return errs;
 }

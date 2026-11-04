@@ -45,6 +45,15 @@ function compileArms(dir, quiet) {
   var r7 = emit(EP, u2); A('U2', !r7.ok && /updown-not-executor/.test(r7.err), 'U2 M_Movement DOWN + UP is refused: the UP role 50004 is not its executor (102)', r7.err);
   var u3 = clone(SRC); u3.push({ name: 'X8 pp down', treatment: 'FACT', role: BR, strategy: 100, dir: 'DOWN', table: 'M_ProductPrice', carries: ['PriceStd'], group: 'g', schedule: 'on-change' }); u3.push(up('M_ProductPrice', ['PriceStd']));
   var r8 = emit(EP, u3); A('U3', !r8.ok && /updown-not-executor/.test(r8.err), 'U3 a table with no named executor cannot have a DOWN + UP pair', r8.err);
+  // P1/U4 (§28.2): the real source carries the receipt UP as the confirm's OWN rows; the line table follows its document's executor (executorOf)
+  var r9 = emit(EP, clone(SRC)), fl = r9.ok ? JSON.parse(/TEAM_PLAN_POS = (\{.*\}); \}\)/.exec(r9.o.text)[1]).flows : [];
+  var fx = function (t, d) { return fl.filter(function (f) { return f.table === t && f.dir === d; })[0]; };
+  A('P1', r9.ok && !!fx('M_MovementConfirm', 'UP') && !!fx('M_MovementLineConfirm', 'UP') && !!fx('M_MovementConfirm', 'DOWN') && !!fx('M_MovementLineConfirm', 'DOWN') && fx('M_MovementLineConfirm', 'UP').executorOf === 'm_movementconfirm' && !fl.some(function (f) { return /MovementReceipt/i.test(f.table); }),
+    'P1 the real plan has DOWN + UP rows for M_MovementConfirm and M_MovementLineConfirm (the line UP names executorOf m_movementconfirm) and no private POS_MovementReceipt', JSON.stringify(fl.filter(function (f) { return /MovementConfirm|MovementLineConfirm|Receipt/i.test(f.table); }).map(function (f) { return f.table + ':' + f.dir; })));
+  A('P1', r9.ok && !!fx('M_MovementConfirm', 'UP') && fx('M_MovementConfirm', 'UP').ship.map(function (x) { return x.toLowerCase(); }).sort().join() === 'ad_client_id,ad_org_id,docstatus,isapproved,processed',
+    'P1 the confirm UP carries only the executor outcome: DocStatus, IsApproved, Processed (+ the partition)', r9.ok && fx('M_MovementConfirm', 'UP') ? JSON.stringify(fx('M_MovementConfirm', 'UP').ship) : r9.err);
+  var u4 = clone(SRC); u4.forEach(function (x) { if (x.name === 'S7 movement-line-confirm-up') delete x.executorOf; });
+  var r10 = emit(EP, u4); A('U4', !r10.ok && /updown-not-executor/.test(r10.err), 'U4 the line table UP without executorOf is refused: M_MovementLineConfirm has no DocAction of its own', r10.err);
   return red;
 }
 

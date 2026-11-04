@@ -42,13 +42,13 @@ Money is shown **per currency**, never added together.
 
 | Tile | Sample shows | Where it comes from |
 |---|---|---|
-| Total Projects (All) | 12, Closed: 0 | Every `C_Project`. Closed = `Processed = Y` |
+| Total Projects (All) | 13, Closed: 1 | Every `C_Project`. Closed = `Processed = Y` |
 | Active Projects | 9 | `IsActive = Y` and `Processed = N` |
-| Approved Budget | USD 29,978,524.50, BDT 15,139,265.67 | Sum of `PlannedAmt` |
-| Actual Cost | USD 334.62, BDT 0.00 | Sum of `ProjectBalanceAmt`, also as % of plan |
-| Committed Cost | USD 0.00, BDT 0.00 | Sum of `CommittedAmt`, with `InvoicedAmt` under it |
+| Approved Budget | USD 24,982,203.77, BDT 15,139,265.67 | Sum of `PlannedAmt` |
+| Actual Cost | USD 342.59, BDT 7.97 | Sum of `ProjectBalanceAmt`, also as % of plan |
+| Committed Cost | USD 1,347,462.62, BDT 1,000.00 (invoiced USD 8.10, BDT 0.00) | Sum of `CommittedAmt`, with `InvoicedAmt` under it |
 | Forecast Cost at Completion | definition pending | No formula agreed yet |
-| Projects Completed this year | 0 | `Processed = Y` with `DateFinish` in this year |
+| Projects Completed this year | 1 | `Processed = Y` with `DateFinish` in this year |
 
 ### The panels
 
@@ -60,16 +60,24 @@ These work per project, from its **Phase** tab, with three amounts:
 
 | Panel | Sample shows | What it means |
 |---|---|---|
-| Project Health | Red 3, No EVM data 6 | **No EVM data**: nothing due yet. **Green**: Done is at least 90% of Due, and of Spent if there is any. **Red**: below 90% on all of them. **Amber**: mixed |
+| Project Health | Green 1, Amber 1, Red 1, No EVM data 6 | **No EVM data**: nothing due yet. **Green**: Done is at least 90% of Due, and of Spent if there is any. **Red**: below 90% on all of them. **Amber**: mixed |
 | Project Stage | (no phase) 8, First Product Presentation 1 | Count by the project's Standard Phase (`C_Phase_ID`). Your own stages are not mapped onto this yet |
-| Physical vs Spent | USD 0%, BDT 0% for both | **Physical** = Done as a share of all phases' planned amount. **Spent** = `ProjectBalanceAmt` as a share of `PlannedAmt`. Payment-based progress is not in the ERP |
-| Schedule Performance | On Time 2, At Risk 3, No schedule data 4, Delayed 0, Average Delay 190 days | **No schedule data**: no phase with both dates. **At Risk**: Done is under 90% of Due. **Delayed**: a phase not Complete is past its End Date. Average Delay is over At Risk and Delayed projects |
-| Budget Status | Over 1, Not Started 8, Within 0, Overrun USD 334.62 | **Not Started**: nothing spent. **Over**: Spent is above Planned. Overrun is the excess |
+| Physical vs Spent | Physical USD 20%, BDT 0%. Spent 0% (the amounts spent are tiny) | **Physical** = Done as a share of all phases' planned amount. **Spent** = `ProjectBalanceAmt` as a share of `PlannedAmt`. Payment-based progress is not in the ERP |
+| Schedule Performance | On Time 2, Delayed 1, At Risk 2, No schedule data 4, Average Delay 180 days | **No schedule data**: no phase with both dates. **At Risk**: Done is under 90% of Due. **Delayed**: a phase not Complete is past its End Date. Average Delay is over At Risk and Delayed projects |
+| Budget Status | Within 1, Over 2, Not Started 6, Overrun USD 334.62, BDT 7.97 | **Not Started**: nothing spent. **Over**: Spent is above Planned. Overrun is the excess |
 
-**Why the sample looks the way it does.** Nothing has been marked Complete, so the three projects with a phase already due show
-Red: *SHED*, and two test runs dated January. Two others have dated phases with nothing due yet, so they count as On Time and No
-EVM data. The Over project is *Standard*: it has material issued to it and no budget. Six of the nine are pushes of the same test
-building. Nothing was added to make the page look fuller, so tiles the test server has not reached stay at 0.
+**What is in the sample.** Real documents on a test server, entered through iDempiere's own services, not invented figures. Most of
+the projects are test pushes of one building, so the amounts themselves mean nothing. What each one is there to show:
+
+| Project | What was done in iDempiere | Where it lands |
+|---|---|---|
+| HHS_VIEWER_PUSH_..840 | All phases past due. 5 of 6 marked Complete | Health Green, Schedule Delayed |
+| HHS_VIEWER_PUSH_..809 | All phases past due. Smallest marked Complete, material issued | Health Amber, At Risk, Budget Within |
+| SHED | One phase past due, not Complete | Health Red, At Risk |
+| HHS_PLUGIN_POC | Marked Commitment, Committed Amount on a line, one sales invoice | Committed Cost, Invoiced |
+| CAPEX_BDT_POC | New project in BDT: Committed Amount, material issued, no budget | BDT amounts, Budget Over, Overrun |
+| Standard | Material issued, no budget | Budget Over, Overrun |
+| HHS_VIEWER_PUSH_..730 | Finish Date entered, then Close Project | Closed, Completed this year. Not Active any more |
 
 ### The other views
 
@@ -92,7 +100,7 @@ project, including inactive ones. Set Status to **All** and they agree:
 
 | Figure | Page, Status Active | Page, Status All | Home tab goal |
 |---|---|---|---|
-| Approved Budget (USD) | 29,978,524.50 | 39,971,166.17 | 39,971,166 |
+| Approved Budget (USD) | 24,982,203.77 | 39,971,166.17 | 39,971,166 |
 | Approved Budget (BDT) | 15,139,265.67 | 30,286,701.64 | 30,286,702 |
 
 ---
@@ -192,24 +200,34 @@ The 90% is the one rule a client stated. The rest are our working definitions, a
 
 ## What moves the numbers
 
-Both places only read your project records. They fill up when these are filled in:
+Both places only read your project records. These are the iDempiere actions behind each figure, read from iDempiere's own code and
+tried on the test server:
 
-| You do this | Where | What it moves |
+| Figure | What moves it | Where |
 |---|---|---|
-| Add phases with Start Date and End Date | **Project** window, **Phase** tab | Leaves *No schedule data* |
-| Give phases a Planned Amount | **Phase** tab | Health and At Risk can be judged |
-| Tick **Complete** when a phase finishes | **Phase** tab | Done rises |
-| Issue material to the project | **Issue to Project** | Spent rises: Actual Cost, Budget goals |
+| Schedule goals | Phases with Start Date and End Date | **Project** window, **Phase** tab |
+| Due, Done, Health | Planned Amount on phases. Tick **Complete** when a phase finishes | **Phase** tab |
+| Actual Cost, Budget goals | Issue material to the project | **Issue to Project** |
+| Committed Cost | Tick **Commitment** on the project, then type **Committed Amount** on its lines | **Project** window, **Project Line** tab |
+| Invoiced | Complete a **sales** invoice with the Project field set | **Sales Invoice and Credit/Debit Note** |
+| Closed | Run **Close Project** | **Project** window |
+| Completed this Year | Enter **Finish Date**, and close the project | **Project** window |
 
-**A measured example.** On the test server, ticking **Complete** on one phase of one project moved five goals. It was then undone.
+Three things that may surprise you:
+
+- **A purchase order does not fill Committed Cost.** iDempiere has no code that writes it from a PO, not even Generate PO from Project. It is typed in.
+- **Close Project does not set the Finish Date.** Without one, the project counts as Closed but not as Completed this Year.
+- **Actual Cost is in your accounting currency, whatever the project's.** Issue to Project adds the product's cost without converting it. On the test server, a BDT project shows 7.97, which is the USD cost. If you run projects in another currency, read that tile knowing this.
+
+**A measured example.** On the test server, ticking **Complete** on SHED's one overdue phase moved five goals. It was then undone.
 
 | Home tab caption | Before | After |
 |---|---|---|
-| Health Green | 0% | 11% |
-| Health Red | 3 | 2 |
+| Health Green | 11% | 22% |
+| Health Red | 1 | 0 |
 | Schedule On Time | 22% | 33% |
-| Schedule At Risk | 3 | 2 |
-| Schedule Average Delay (days) | 190 | 284 |
+| Schedule At Risk | 2 | 1 |
+| Schedule Average Delay (days) | 180 | 269 |
 
 The average delay went **up** although a project improved: it left the average, and it had one of the shorter delays.
 Read that goal beside the At Risk and Delayed counts, not on its own.
@@ -328,9 +346,8 @@ address to open on your data.
 | Project Stage, Physical vs Spent, project lists on the Home tab | Page only, not goals |
 | Other currencies on the Home tab | No money goal covers them until you add one. The page shows each currency it finds |
 
-**Not yet seen working on real data.** These have read 0 on the test server, so we have not seen them count anything
-on it: Closed Projects, Completed this Year, Committed Cost, Invoiced, Actual Cost and Overrun in BDT, Health Amber, Schedule Delayed, Budget Within. Health
-Green was seen only during the example above.
+**Still 0 on the test server: Invoiced (BDT).** It has no BDT price list or USD-to-BDT rate, so a sales invoice can't reach a BDT
+project. Every other goal has counted real documents.
 
 **Check Approval Pending against your own meaning of "approval".** It counts every suspended workflow activity. On
 the test server all 261 are on **Business Partner**, not on project documents.
@@ -341,8 +358,8 @@ the test server all 261 are on **Business Partner**, not on project documents.
 
 - Every tile drawn on the page equals the formula run separately over the sample's rows (19 of 19, at Status Active and All).
 - Every CAPEX caption on the test server's real Home tab equals the browser copy's, all 27.
-- Home tab values equal iDempiere's own stored goals, recalculated just before comparing. 15 of 27 had a value; the other 12 were 0
-  on both sides, which proves nothing.
+- For 26 of the 27 goals, Home tab values equal iDempiere's own goals, recalculated just before comparing. The other, Invoiced (BDT), is 0 on both sides, which proves nothing.
+- iDempiere's calculation, the browser copy's and the page's own formulas agree on the same rows.
 - A real edit in iDempiere reached the browser copy after the next job and reload, changing exactly one row, and was undone.
 
 Not checked: a site larger than this test server. If the job stops, the copy just goes quietly out of date.
