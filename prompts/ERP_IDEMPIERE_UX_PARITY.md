@@ -1993,3 +1993,39 @@ the viewer read the ERP's committed values (or the overlay write back). Not star
 **Legacy (read):** `org.adempiere.ui.zk/.../adwindow/GridView.java:1031-1072` ON_CLICK: row == current row -> `renderer.editCurrentRow()` + focus the clicked column; else `onSelectedRowChange(index)` -> `GridTab.navigate` (select only, no edit). Current row marked by `GridTabRowRenderer.setCurrentRow` (row indicator icon, :735-750).
 **Fix (generic, `idempiere.html` `_editGridCell`):** recIdx != _recIdx -> `_saveAndNavigate` to that row, stay in grid view, repaint body + toolbar, log `§GRID-SELECT`; recIdx == _recIdx -> the inline editor as before. The current row's `<tr>` carries class `idmp-grid-cur` (no styling invented: legacy's indicator is an icon in a row-indicator column the twin does not have - named for this lane).
 **Witness W-GRID-CLICK (`erp/tests/witness_grid_click_select.js`):** on a grid of >= 2 rows: C1 click an editable cell of row 2 -> no editor opens, Zoom Across reports row 2's key, `§GRID-SELECT row=1`; C2 click the same cell again -> the editor opens on row 2; C3 row 0 untouched. RED on main before the fix, GREEN after. Not changed (named): a click on a read-only cell still opens the form (twin's classic row-click; legacy selects only) - a separate parity question.
+
+## §FIND-LF — the Find window must look and sit like legacy's (spec 2026-11-04, user: "opening of say B Partners gives a chooser panel which is ugly and not as legacy design")
+**Measured on the live legacy (localhost:8088, ZK, `ZK_THEME=iceblue_c`, GardenAdmin, Business Partner — a high-volume tab, so Find opens first;
+probe = computed styles + DOM as numbers, no screenshot; oracle file committed with the witness).** Source: FindWindow.java initPanel :760-860,
+initSimple :535-630, initAdvanced :636-760; AbstractADWindowContent.setupEmbeddedFindwindow :1030-1042 + :975-977 (initial) / :2685-2692 (toolbar); Mask.java :32-33.
+- **Placement:** EMBEDDED in the window (desktop tab "Business Partner"), never a page-wide dark overlay: no title, no border, white, absolute,
+  width 100% of the window area, height 60% (100% when the screen is short), z-index above the window; the toolbar path adds the busy mask over
+  the window only (`#e4e4e4`, opacity .6). Content padding 5px 5px 0, width 99% centred.
+- **Top toolbar row (24px):** label "Saved Query" · editable combo · Save (icon) · more-options ⋮ (Default / Share / Delete) · label "History records" · combo.
+- **Tabs (32px, padding 3px 13px):** "Lookup Record" (AD_Message Find) | "Advanced"; the selected tab is marked by a 2px accent bottom border, white, 12px, no box.
+- **Lookup Record:** a 3-column grid — label right-aligned (30%) · editor (50%, 24px high, 4px radius, 4px 5px padding) · To-editor or empty (20%);
+  selection columns first, the rest under a collapsed group row "...". South: New + Reset at the LEFT, OK + Cancel at the RIGHT; ZK_BUTTON_STYLE=I ⇒
+  icon-only named buttons (tooltip = name), 56×24, padding 4px 20px, radius 4px, 6px apart.
+- **Advanced:** toolbar New + Delete (icons); a list with header And/Or | ( | Tab | Field | Operator | Query Value | To Query Value | ); one starting
+  row; south OK + Cancel at the right.
+- **Status bar (24px) at the bottom:** "Records = N".
+**Twin today (idempiere.html `_openFind`):** a page-wide rgba(0,0,0,.45) overlay with a floating rounded box, an `<h3>` title, plain buttons for tabs,
+label/input rows without the 3-column grid, Saved Query + History at the BOTTOM, OK/Reset/Cancel as text buttons in one group, no status bar, no New.
+**Theme note (named, not in this fix):** the twin's chrome follows the default (breeze) theme — palette + `theme/default/images/*24.png`; the pilot runs
+iceblue_c. This fix takes legacy's STRUCTURE and METRICS and the twin's palette/images (the default theme's own Ok24/Cancel24/Reset24/New24/Save24/
+ShowMore24.png, copied verbatim) so the Find window is not an island; a whole-app iceblue_c parity is a separate item.
+**Witness W-FIND-LF (Playwright, DOM + computed numbers vs the committed oracle; never a screenshot):** on Business Partner (initial open) and on Sales
+Order (toolbar Find): embedded inside the window area (no page-wide mask; toolbar path mask = #e4e4e4/.6 over the window), no title, height ≈ 60% of
+the window area; the top row order; tab texts + selected marker; grid columns 30/50/20 with right-aligned labels and 24px editors; "..." group;
+south buttons New, Reset left and OK, Cancel right, icon-only, 56×24; Advanced headers; status bar "Records = N" with N = the tab's row count.
+W-UDP3-LIVE (behaviour) must stay green. Mutant: the old overlay → FAIL.
+**§FIND-LF ✅ DONE (witness) 2026-11-04 — bim-ootb #2624 (sw v994).** Oracle: `erp/tests/oracle_legacy_find_window.js` → `erp/tests/fixtures/legacy_find_window_bp.json`
+(captured from the live legacy, body class `iceblue_c`). **W-FIND-LF PASS 9/9**: embedded (parent #idmp-main, 0 page-wide masks, no title, top 84 = under the window
+tabs, height/area 0.600 — legacy 490/817); top row order == legacy; tabs `Lookup Record*` | `Advanced` 32px `3px 13px` 2px marker; grid 30.0/50.0/20.0 % right-aligned,
+editors 24px, rows Search Key | Name | Name 2 | Description + "..." == legacy; south New, Reset | OK, Cancel, icon-only, 24px, `4px 20px`, radius 4px, gap 6 == legacy;
+status `Records = 24` (legacy `Records = 20` — the seed and the pilot hold different BP data; the rule is the same); Advanced headers == legacy, 1 row, New + Delete;
+toolbar path below the toolbar over `#e4e4e4`/.6 inside the window. `FIND_LF_BREAK=overlay` FAIL. W-UDP3-LIVE 13/13 (harness follows the legacy structure: Delete in
+the ⋮ popup, Reset on Lookup Record), W-UDP4-LIVE 7/7. **Named, open:** (a) whole-app theme — the twin's chrome is the default theme, the pilot runs iceblue_c
+(accent #0093f9, blue named buttons, font icons); the Find buttons are therefore 66px (22px theme images) vs legacy 56px (font icons); (b) the ⋮ popup carries
+Delete only — Default / Share are the W-UDP3 named gaps; (c) the Advanced "Tab" column lists this tab only (child-tab rows: named gap). Pre-existing on origin/main,
+unchanged: witness_view_window_first FAIL, witness_packout O6 FAIL.
