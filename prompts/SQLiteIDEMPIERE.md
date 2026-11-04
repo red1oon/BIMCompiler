@@ -2526,3 +2526,15 @@ allocation per legacy variant, each committed): **PASS 24/24 == legacy**; NEG V3
 except the allocation-source scale (legacy `273.0`, SQLite REAL `273`). Not judged: the payment-side branch (no legacy variant has a payment diff);
 rounding corrections across several allocations of one invoice stay NAMED. Regression 20 witnesses: not-PASS identical on origin/main;
 `witness_asi_receipt` P1b is now FAIL on main too (date-dependent: its legacy rows carry dates up to "today"). **Next: 5g genesis.html → 5h → delete.**
+
+## §DD-SCOPE (2026-11-04, lead) — a legacy-correct WS type ignores our Filter; the parity check was scope-blind
+- **Measured.** On the pilot, `QueryMProduct` answers all 82 GardenWorld rows whatever Filter is sent (`M_Product_ID < 1000000` included). Its `Filter` parameter is Constant `1=1`. iDempiere ALLOWS ONLY Constant for a parameter named Filter: `MWebServicePara.beforeSave` refuses Free "for security" (`MWebServicePara.java:114-121`, IDEMPIERE-1784). `ModelADServiceImpl.validateParameter` (`:742`) then replaces the request's Filter with that constant.
+  - The CAPEX lane set 12 Query types to Constant on 2026-11-02 (bim-ootb `capex/tools/ws_capex_querykeys.sql`, #2558). That is legacy-correct and must NOT be reverted.
+  - The bridge's other **109 Query types still carry a Free Filter**. They were inserted by SQL past that rule, so the harness depends on a configuration legacy itself forbids.
+- **Effect.** `dict_spec.json` m_product's `keyBelow: 1000000` (pilot-created ids are not seed) never applied. The 27 pilot test rows ≥1000000 (24 "Ifc… (BIM)" CAPEX products + 3 `CP-`, all referenced by 306 CAPEX project lines) turned DD red as a "twin gap".
+  - Owner, 2026-11-04: leave them on the pilot; parity must stop counting them.
+- **Fix (`dict_diff.discover`).** Apply the scope the spec can judge on the rows returned: numeric key > 0, `keyBelow`, an `AD_Client_ID` equality or `IN (0,n)`.
+  - Log `§DD_SCOPE_CLIENT_SIDE <table> legacy_rows= out_of_scope= kept=` whenever the WS did not apply the Filter.
+  - A predicate that cannot be applied client-side is printed as `UNJUDGED_PREDICATE` (that table is INCONCLUSIVE).
+  - Result: DD m_product legacy=55 local=55 onlyLegacy=0 → `§DD_VERDICT PASS` (was FAIL onlyLegacy=27). The DDS / LF / SD00 verdicts are identical to master (logs `/tmp/ddscope_logs/`).
+- **OPEN (bridge lane).** Move the bridge's 109 Free-Filter types to the legacy-correct shape: a Constant Filter, with lookups by DataRow key fields (`WS_WebServiceFieldInput` → `col=?`, as the CAPEX lane did). Then every scope is applied by legacy itself.
