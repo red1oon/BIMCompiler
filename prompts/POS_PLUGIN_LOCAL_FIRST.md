@@ -1699,3 +1699,17 @@ Measured against RED1's guide (`~/Downloads/openbravoPOSGuide.pdf` p50 "ERP TO P
 - Q-L1: go on EODA-LAN.
 - Q-L2: carry QtyOnHand per POS locator in SODA (the 2012 export did; it decides D6/Q-b).
 - Q-L3: carry Customers (+ open balance) and Users in SODA, as 2012 did.
+
+### §35.1 OWNER DECISIONS — multi-till branch, item 1.2: stock is BLIND at the till; no LAN dependency (2026-11-05)
+> *"i would suggest as in my original design actually we cannot know the qty or it is not really referred to. It is blind because the central HQ has exact numbers and that is what mattered. As next day SODA replenishment remembers your stocks and u just receive them. Any cheating will then be reflected when less is claimed sold and thus replenished. Also if tills are to depend on LAN, then it breaks the server or LAN failure going down, makes the whole mart tills down."*
+> Context (owner): *"each branch such as a supermarket branch wont be a small DIY single till shop but probably multi till … we solved one issue ie each till Invoice number with prefix Org/Till/DocNo."*
+
+- **D7, blind stock.** A till never knows, shows or refers to stock quantities. HQ's `M_StorageOnHand` is the only exact figure. The tills of a branch never reconcile with each other; reconciliation happens once, at HQ, when their days are imported. Q-L2 is answered NO: SODA carries no on-hand quantity.
+- **D8, replenishment remembers.** SODA replenishment is computed at HQ from HQ's numbers. The branch just receives it. Under-declared sales show up by themselves, because HQ replenishes only what was claimed sold, so the shelf runs short against the plan. Stocktakes (legacy `I_Inventory` → Import Inventory 219) reveal the difference.
+- **D9, every till stands alone.** No till depends on another device, the LAN or a branch server to keep selling. A LAN or server failure must not take down the tills. This **withdraws the §35 EODA-LAN proposal** (WebRTC between devices) as a dependency.
+- Settled already: ticket keys Org|Till|Sequence keep tills apart (TEAMWORK §48.10).
+- **Still to discuss, one at a time (owner: "pause to discuss each detail"):**
+  - where each till's EODA goes (straight to HQ, as in 2012, vs via a branch admin);
+  - morning SODA per till;
+  - restaurant/kitchen across tills under D9;
+  - customers/users in SODA (Q-L3).
