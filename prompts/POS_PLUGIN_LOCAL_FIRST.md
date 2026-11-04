@@ -1343,3 +1343,56 @@ uniCenta sets the mode in General > Tickets (`machine.ticketsbag`, §29.1 row 5)
 | 9 floor background | Plain CSS background plus an optional uploaded image, stored like product pictures (OCI link + disk cache). uniCenta's GPL art is not copied. | licence; §31 |
 
 **Flag for the owner (cost, not a blocker):** uniCenta's shared open tables live in one shop database on the LAN. Here they must ride the branch-local flow, so every table change by one till is relay traffic to the others (the kitchen measured 38 requests per message, §20). The twin today keeps open tables per device in `localStorage`, which contradicts §10.4 item 11. The build makes them branch-shared, measures requests per table action (W-REST-RELAY), and batches where uniCenta allows (save on leaving the table, not per keystroke).
+
+## §30 PRODUCT PICTURES — Fluent Emoji in object storage, Import Product on both (2026-11-04)
+# ⚠ DO NOT REMOVE — scope: one picture per till product (27), as a URL in `M_Product.ImageURL` on legacy AND the twin; bytes live in OCI object storage, never in a DB or the twin's IndexedDB. READ THE LOG after every run (`/tmp/icon_logs/`); exit code is not evidence. TWIN CARDINAL RULE binds. No `till*.js` edit (picture tiles are §31).
+> Owner 2026-11-04: *"find simple free flaticon pics for each item to put into both legacy DB and twin?"* -> Fluent Emoji (MIT), not Flaticon (free licence needs per-icon credit; terms bar bulk redistribution; our repo is public). *"arrange that the twin put in storage rather than IndexDB"*. Lead 2026-11-04: offline the pictures must be on the device (§31), so the bucket MUST answer CORS for the till's origin (an opaque no-cors image is not cached, `sw.js:483`).
+
+### §30.1 Sources and licence
+Fluent Emoji: `github.com/microsoft/fluentui-emoji` commit `1ffb34c752ecf5d402f04cfb4b392c77f57c54bc`, style Flat (SVG, MIT, `LICENSE` stored beside the files). Lucide (ISC-style, only where no emoji fits): `github.com/lucide-icons/lucide` commit `1980e3d59b0fa1a2aeb566d5902b25ee98204001`, stroke tinted, 128 px. Downloaded into a scratch dir, treated as data, nothing executed. SVG throughout (each file 0.3-6.5 KB; no PNG needed).
+
+### §30.2 Mapping (M_Product.Value of price list version 104 -> picture)
+| Value | Picture | Why |
+|---|---|---|
+| Azalea Bush | Fluent Hibiscus | flowering shrub (no azalea emoji) |
+| Holly Bush | Fluent Herb | green leafy sprig |
+| Rose Bush | Fluent Rose | the plant |
+| Fertilizer#50 | Lucide flask-conical, green | no emoji for fertilizer (Lucide: chemical flask) |
+| Fertilizer#70 | Lucide flask-conical, orange | same icon, other tint so the two differ |
+| Mulch | Fluent Fallen leaf | organic ground cover |
+| Doc ("How To Plant") | Fluent Open book | documentation |
+| PChair | Fluent Chair | patio chair |
+| PatioSet | Fluent Couch and lamp | furniture set |
+| Screen (patio sun screen) | Fluent Umbrella on ground | sun shade |
+| PTable | Lucide table-2, brown | no table emoji |
+| Grass (grass seed container) | Fluent Sheaf of rice | grass-family grain |
+| Mary (consultant) | Fluent Woman office worker | a person doing a service |
+| Planting (service) | Fluent Potted plant | planting |
+| TShirt-GL, TShirt-RL | Fluent T-shirt (both the same emoji; colour variants not drawn) | garment |
+| Travel (cost) | Fluent Automobile | travel |
+| Seeder | Fluent Seedling | seeding |
+| Hoe | Lucide pickaxe, brown | no hoe emoji |
+| Tiller | Lucide tractor, slate | no tiller emoji |
+| Rake-Bamboo | Lucide brush-cleaning, olive | no rake icon exists in either set; sweeping brush is nearest |
+| Rake-Metal | Lucide brush-cleaning, steel | same icon, other tint |
+| Transplanter | Lucide shovel, brown | no emoji |
+| Weeder | Fluent Scissors | cutting tool (nearest) |
+| Elm, Oak | Fluent Deciduous tree (the same emoji for both) | trees |
+| Plum Tree | Fluent Peach | stone fruit, no plum emoji |
+Lucide fills (9 rows): Fertilizer#50, Fertilizer#70, PTable, Hoe, Tiller, Rake-Bamboo, Rake-Metal, Transplanter (8 products; Weeder stays Fluent). Same-picture pairs: TShirt x2, Elm/Oak.
+
+### §30.3 Where the bytes live
+Bucket `bim-ootb-dev`, prefix `erp/product-icons/<slug>.svg` (+ `LICENSE.fluentui-emoji.txt`, `LICENSE.lucide.txt`). Why: `deploy/OCI_UPLOAD.md` names no ERP-asset bucket; `bim-ootb-live` is production (PRIME RULE, never touched), `bim-ootb` is "building databases ONLY". `bim-ootb-dev` is the staging bucket, public `ObjectRead`, and answers `Access-Control-Allow-Origin: *` (measured, GET and OPTIONS, Origin `https://red1oon.github.io` and `http://localhost:8399`). Every put carries `--content-type image/svg+xml` (licences `text/plain`). URL = `https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb-dev/o/erp/product-icons/<slug>.svg`. Moving to a production bucket later is a URL change by the same import path.
+
+### §30.4 FINDING that changes the load path (read from source, ImportProduct.java)
+The task text said Import Product updates an existing product by Value "setting ImageURL". Legacy does NOT: the update branch (`ImportProduct.java:496-527`) SETs Value, Name, Description, DocumentNote, Help, UPC, SKU, C_UOM_ID, M_Product_Category_ID, Classification, ProductType, Volume, Weight, Shelf*, UnitsPerPallet, CustomsTariffNumber, Group1/2, Discontinued*, Updated, UpdatedBy - **ImageURL is not in the list**. `ImageURL` is copied FROM the product INTO an I_Product row whose ImageURL is null (`strFieldsToCopy :88-107`, loop `:228-241`), and it reaches M_Product only on INSERT (`new MProduct(X_I_Product)` -> `setImageURL`, `MProduct.java:329`). So a verbatim port also leaves ImageURL alone on update (CARDINAL RULE: no divergence). Decision (no owner question needed, same on both sides): the port is built verbatim as asked and witnessed as legacy behaves; the pictures are loaded the other legacy way, an ordinary edit of the existing Product (window `M_Product`, field ImageURL) - legacy through the bridge WS `Bridge_updateData_M_Product` (existing type), the twin through the CRUD path at head office (`__crud.applyOp`). Both make the product delta SODA carries (`§28.1(c)`). The ported Import Product is also run on both sides with the same 27 I_Product rows (Value + ImageURL), and the parity judges that its effect is the same (27 imported, 0 errors, ImageURL as before the import).
+
+### §30.5 Shipped demo seed
+NOT patched. `team_sync.js:173,220` - `hashBase` covers the seed + `patches/ad_seed.db.sql` + `patches/mfg.sql`; any change turns every existing paired device `baseBlocked` (`base-mismatch`, ops NOT SENT). The URLs reach tills through the HQ edit + SODA only (the same route a price change takes). A fresh demo seed therefore shows no pictures until the HQ edit is done; the 27-row list ships as `erp/product_icons/product_icons.json` (data, not served).
+
+### §30.6 Witnesses (RED first; logs `/tmp/icon_logs/`; `§` lines)
+- **W-IMPORT-PRODUCT** (`erp/tests/witness_import_product.js`): by-Value match updates the existing product (same M_Product_ID, Updated moves, `I_IsImported=Y`); ImageURL is NOT written by the update (legacy fact); an unknown Value with no Name -> `I_IsImported` stays N with `I_ErrorMsg` containing `Insert Product failed`; a re-run imports nothing new; an unknown Value WITH Name+Category inserts a product WITH its ImageURL (the one path that sets it). Mutants (copies, applied once): update writes ImageURL; unknown Value silently skipped; re-run re-imports.
+- **W-ICON-URLS** (`scripts/witness_icon_urls.js`): 27 of 27 URLs 200 + `image/svg+xml`, total bytes printed; a real CORS fetch with `Origin` -> `Access-Control-Allow-Origin` for `https://red1oon.github.io` and `http://localhost:8399` (§ line each); licences answer 200.
+- **W-ICON-PARITY** (bridge cycle `scripts/bridge/witness_product_icons.js`, run by `run_all.sh`): after the load on both, `M_Product.ImageURL` of the 27 equal, plus Import Product's counts. Empty population = INCONCLUSIVE.
+- **W-ICON-NOT-IDB** (`erp/tests/witness_icon_not_idb.js`): till boot with the 27 URLs in the DB; walk every IndexedDB store, no value is image-like (svg/png magic, data: URL) and no store grew by the icon bytes; the row holds the URL string only; no request for an icon URL during boot.
+- Regression: `witness_pos_sales.js`, `witness_till.js`, `witness_branch_day_close.js`, `witness_import_order.js`, `witness_import_payment.js`.
