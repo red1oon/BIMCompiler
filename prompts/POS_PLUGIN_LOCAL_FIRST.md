@@ -1812,3 +1812,7 @@ Lead's reading, to be confirmed:
 - **EODA** = the main till's one SEND to the internet relay, for HQ to pick up.
 - **Physical shortfall** against the running record = loss or fraud.
 - This revises §35.1: Q-L2 is now "yes, to the main till only". It supersedes the §26 internet-relay hand-off from tills to the branch admin.
+- **Refinement (owner, 2026-11-05):** *"Perhaps the LAN cannot remember, but that particular till does. User goes to that till to execute its LAN ops. Other tills are barred from doing because the script checks whether it is designated with a flag 'main till'"*
+  - The designation is a flag held by THAT till, not by the LAN. A user runs the LAN ops (collect, ad hoc stock check, EODA send) at the main till.
+  - The script refuses them on any till without the flag.
+  - Open: who sets the flag (head office or the branch).
