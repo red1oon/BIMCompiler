@@ -66,7 +66,7 @@ is instant. DB is queryable immediately (4D/5D/clash) before meshing starts.
 
 | Bucket | Purpose | Contains |
 |--------|---------|----------|
-| `bim-ootb` | **COMMON — building databases ONLY** | `buildings/*.db`, `buildings/*.bin`, `manifest.json`, `city_index.db` |
+| `bim-ootb` | **COMMON — building databases + shared ERP media (`erp/` prefix only)** | `buildings/*.db`, `buildings/*.bin`, `manifest.json`, `city_index.db`; `erp/product-icons/*.svg` + licences (POS_PLUGIN_LOCAL_FIRST §30). MIME: `.svg` → `image/svg+xml`, `.png` → `image/png` (always `--content-type`) |
 | `bim-ootb-live` | **PRODUCTION — viewer code ONLY** | `index.html` (landing), `sandbox/*.js` (viewer) |
 | `bim-ootb-dev` | **STAGING — viewer code ONLY** | Same structure as live, safe to break |
 | `bim-ootb-backup` | **SNAPSHOT** — copy of prod taken before each deploy | Copy of `bim-ootb-live` |
