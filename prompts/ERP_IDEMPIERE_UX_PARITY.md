@@ -2019,3 +2019,13 @@ Order (toolbar Find): embedded inside the window area (no page-wide mask; toolba
 the window area; the top row order; tab texts + selected marker; grid columns 30/50/20 with right-aligned labels and 24px editors; "..." group;
 south buttons New, Reset left and OK, Cancel right, icon-only, 56×24; Advanced headers; status bar "Records = N" with N = the tab's row count.
 W-UDP3-LIVE (behaviour) must stay green. Mutant: the old overlay → FAIL.
+**§FIND-LF ✅ DONE (witness) 2026-11-04 — bim-ootb #2624 (sw v994).** Oracle: `erp/tests/oracle_legacy_find_window.js` → `erp/tests/fixtures/legacy_find_window_bp.json`
+(captured from the live legacy, body class `iceblue_c`). **W-FIND-LF PASS 9/9**: embedded (parent #idmp-main, 0 page-wide masks, no title, top 84 = under the window
+tabs, height/area 0.600 — legacy 490/817); top row order == legacy; tabs `Lookup Record*` | `Advanced` 32px `3px 13px` 2px marker; grid 30.0/50.0/20.0 % right-aligned,
+editors 24px, rows Search Key | Name | Name 2 | Description + "..." == legacy; south New, Reset | OK, Cancel, icon-only, 24px, `4px 20px`, radius 4px, gap 6 == legacy;
+status `Records = 24` (legacy `Records = 20` — the seed and the pilot hold different BP data; the rule is the same); Advanced headers == legacy, 1 row, New + Delete;
+toolbar path below the toolbar over `#e4e4e4`/.6 inside the window. `FIND_LF_BREAK=overlay` FAIL. W-UDP3-LIVE 13/13 (harness follows the legacy structure: Delete in
+the ⋮ popup, Reset on Lookup Record), W-UDP4-LIVE 7/7. **Named, open:** (a) whole-app theme — the twin's chrome is the default theme, the pilot runs iceblue_c
+(accent #0093f9, blue named buttons, font icons); the Find buttons are therefore 66px (22px theme images) vs legacy 56px (font icons); (b) the ⋮ popup carries
+Delete only — Default / Share are the W-UDP3 named gaps; (c) the Advanced "Tab" column lists this tab only (child-tab rows: named gap). Pre-existing on origin/main,
+unchanged: witness_view_window_first FAIL, witness_packout O6 FAIL.
