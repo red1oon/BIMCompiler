@@ -45,6 +45,7 @@ def Hlines(P):
         for a,b in zip(p,p[1:]):
             if abs(a[1]-b[1])<.15 and abs(a[0]-b[0])>0: H[round((a[1]+b[1])/2,1)]+=abs(a[0]-b[0])
     return sorted(y for y,l in H.items() if l*K>=I['template']['ruler']['long_line_mm'])
+DHEADS=[]
 for n,v in views.items():
     P=SH[v['sheet']]; lh=Hlines(P); ffl=v['beam']+BH/K; hit=[y for y in lh if abs(y-ffl)<.3]; gl=[y for y in lh if abs(y-(ffl+FG/K))<.3]; v['ffl']=ffl
     log('W-E1',n,'beam',v['beam'],'FFL expected',round(ffl,2),'found',hit,'ground expected',round(ffl+FG/K,2),'found',gl,'PASS' if hit and gl else 'WRONG')
@@ -130,11 +131,26 @@ for n,v in views.items():
         for c,w in pw:
             xc=xdraw(v,c); m=w3_measure(v,xc); log('W-E5',n,'plan window width',w,'at drawn x',round(xc),'vector 500 mm frame edges measured (sill,head):',m); W.append((round(xc-w/2),round(xc+w/2))+w3_z(m,n))
     log('W-E2',n,'windows (x0,x1,sill,head) as drawn',W,'doors (centre,width)',[(round(c),round(w)) for c,w in Dr])
+    DH=[]
+    for c,wd in Dr:   # §38: the door's height and frame are read from this view, not typed from the schedule. Outer frame = a long vertical standing on the floor near either edge (a porch column may hide one)
+        doorv=[]; doorv2=[]
+        for pp in SH[v['sheet']]:
+            for a_,b_ in zip(pp,pp[1:]):
+                if abs(a_[0]-b_[0])>=.05 or abs(a_[1]-b_[1])*K<1500: continue
+                x_=(a_[0]-v['ox'])*K; z0_,z1_=sorted(((v['ffl']-a_[1])*K,(v['ffl']-b_[1])*K))
+                if abs(z0_)<=15 and min(abs(x_-(c-wd/2)),abs(x_-(c+wd/2)))<=100: doorv.append((x_,z1_))
+                elif abs(z0_)<=15 and min(abs(x_-(c-wd/2)),abs(x_-(c+wd/2)))<=200: doorv2.append((x_,z1_))
+        tops=[z for _,z in doorv]; hd_=TT.decide('door_head_above_ffl',max(tops) if tops else None,BL['door_head_above_ffl'],'%s door at %d: outer frame verticals %s'%(n,round(c),[round(z) for z in tops]))
+        ff=None
+        if tops:
+            ox_=max(doorv,key=lambda q:q[1])[0]; cand=[abs(x_-ox_) for x_,z_ in doorv+doorv2 if 20<=abs(x_-ox_)<=100 and z_<max(tops)-20]; ff=min(cand) if cand else None
+        TT.decide('door_frame_face',ff,BL['door_frame_face'],'%s door at %d: outer to inner frame vertical'%(n,round(c)))
+        DH.append(dict(view=n,centre=round(c),value=hd_['value'],status=hd_['status'],measured=hd_['measured'])); DHEADS.append(DH[-1])
     width=v['width']; z0,z1,ztop=0,BH,ROOF_TOP
     o_=['0','SECTION','2','ENTITIES']
     o_+=lw('ELEV-WALL',[(0,z0),(width,z0),(width,z1),(0,z1)])        # z0 = floor level: the wall reader needs the elevation wall to START at the plan level (dxf2elev applyWallHeights)
     for x0,x1,s,h in W: o_+=lw('ELEV-GLAZING',[(x0,s),(x1,s),(x1,h),(x0,h)])
-    for c,wd in Dr: o_+=lw('ELEV-DOOR',[(c-wd/2,0),(c+wd/2,0),(c+wd/2,SZ['D1'][1]),(c-wd/2,SZ['D1'][1])])
+    for (c,wd),dh_ in zip(Dr,DH): o_+=lw('ELEV-DOOR',[(c-wd/2,0),(c+wd/2,0),(c+wd/2,dh_['value']),(c-wd/2,dh_['value'])])
     for z in (-FG,0,BH,ztop): o_+=['0','LINE','8','ELEV-LEVEL','10','-500','20',str(z),'30','0','11',str(width+500),'21',str(z),'31','0']
     # height DIMENSIONs = the values filled from the sheets (FFL-beam, ground-FFL, beam-roof top)
     for a,b,t in ((-FG,0,FG),(0,BH,BH),(BH,ztop,RH)): o_+=dim('ELEV-DIM',(-800,a),(-800,b),(-1000,(a+b)/2),90,t)
@@ -150,3 +166,4 @@ for n,v in views.items():
         o_+=['0','LINE','8','ELEV-GRID','10',str(xd),'20',str(-FG),'30','0','11',str(xd),'21',str(zc-rm),'31','0']+['0','CIRCLE','8','ELEV-GRID','10',str(xd),'20',str(zc),'30','0','40',str(rm)]+['0','TEXT','8','ELEV-GRID','10',str(xd),'20',str(zc),'30','0','40','150','1',k]
     log('W-C3',n,'bubbles read',len(BB),'of',len(GX if v['kind']=='x' else GY),'residual drawn vs dictionary mm',res,'PASS' if res and max(abs(x) for x in res.values())<=30 else 'WRONG')
     o_+=['0','ENDSEC','0','EOF']; fn=os.path.join(out,'elev_%s.dxf'%n.lower()); open(fn,'w').write('\n'.join(o_)+'\n'); log('W-E4 wrote',fn)
+json.dump(DHEADS,open(os.path.join(out,'door_heads.json'),'w'))

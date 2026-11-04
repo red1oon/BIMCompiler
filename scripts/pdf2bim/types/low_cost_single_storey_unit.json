@@ -106,6 +106,18 @@
       "tol_mm": 15,
       "read_from": "elevations: the window's frame edges",
       "module_mm": 50
+    },
+    "door_head_above_ffl": {
+      "nominal": 2100,
+      "tol_mm": 15,
+      "read_from": "elevations: top of the door's outer frame verticals, standing on the floor line",
+      "module_mm": 50
+    },
+    "door_frame_face": {
+      "nominal": 50,
+      "tol_mm": 15,
+      "read_from": "elevations: outer to inner frame vertical",
+      "module_mm": 10
     }
   },
   "window_system": {
@@ -163,6 +175,34 @@
       "read_max_mm": 5.0,
       "margin_mm": 0.25,
       "glyphs": "low_cost_house_tag_glyphs.json"
+    },
+    "door_arc": {
+      "_spec": "§39: what a door's swing arc looks like, measured on this type's plan: leaves 669-900 mm in the 0.72 pt pen; the one fixture arc 559 mm in the 0.12 pt pen. Not tied to the schedule's widths: a schedule that disagrees with the plan must not lose the door.",
+      "radius_mm": [
+        600,
+        1300
+      ],
+      "pen_mm": [
+        15,
+        40
+      ]
+    }
+  },
+  "door_system": {
+    "_status": "§38. Frame face is read on p4 (door_frame_face). Leaf thickness is a template default, YELLOW: not drawn at a readable scale. Knob, lock, swing and finish are not modelled.",
+    "frame_face_mm": 50,
+    "leaf_mm": 40,
+    "depth_mm": 100,
+    "types": {
+      "D1": {
+        "text": "Metal frame, Single leaf solid timber door"
+      },
+      "D2": {
+        "text": "Flush door with gloss paint"
+      },
+      "D3": {
+        "text": "Flush door with gloss paint"
+      }
     }
   }
 }

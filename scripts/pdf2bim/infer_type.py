@@ -34,13 +34,14 @@ def circles(P,W,labels):
             c=((min(xs)+max(xs))/2,(min(ys)+max(ys))/2); o+=[(w,c,wd/2) for w in W if w[0] in labels and math.hypot(w[1]-c[0],w[2]-c[1])<=wd/2]
     return o
 # ---- elevations: the view's beam, floor and ground lines are the only long lines at the template's two spacings (searched +-20% wide, so a wrong template still finds the sheet's lines and says FINDING)
-S=T['sheets']; views={k:dict(v) for k,v in T['views'].items() if not k.startswith('_')}; PG={}; dB=[]; dG=[]
+S=T['sheets']; views={k:dict(v) for k,v in T['views'].items() if not k.startswith('_')}; PG={}; dB=[]; dG=[]; LS={}
 for sh in sorted({v['sheet'] for v in views.values()}):
     P=PG[sh]=load(sh); W=TT.words(pdf,sh); H=collections.defaultdict(float)
     for p in P:
         for a,b in zip(p['pts'],p['pts'][1:]):
             if abs(a[1]-b[1])<.15 and abs(a[0]-b[0])>0: H[round((a[1]+b[1])/2,1)]+=abs(a[0]-b[0])
     L=sorted(y for y,l in H.items() if l*K>=T['ruler']['long_line_mm']); nb,ng=B['beam_above_ffl']['nominal'],B['ffl_above_ground']['nominal']; cand=[]
+    LS[sh]=L
     for y in L:
         for f in L:
             for g in L:
@@ -59,6 +60,9 @@ for sh in sorted({v['sheet'] for v in views.values()}):
         inrow=[q for q in above if abs(q[1][1]-row)<=q[2]]; first=min(inrow,key=lambda q:q[0][1]); v['ox']=round(first[0][1],1); v['label_row']=round(row,2); v['labels_read']=len(inrow)
         log('view',k,'p%s'%sh,v['row'],'beam',v['beam'],'floor',v['floor_line'],'ground',v['ground_line'],'first label',first[0][0],'ox',v['ox'],'labels',len(inrow),'of',len(labs))
 V['beam_above_ffl']=TT.decide('beam_above_ffl',statistics.median(dB),B['beam_above_ffl'],'%d views'%len(dB))
+for k,v in views.items():   # §39: a view took the triple nearest the TEMPLATE's spacing. Once the sheets have said otherwise, each view's beam is its long line at the sheets' spacing: on a taller wall REAR had taken another long line, 131 mm low, and its floor with it
+    want=v['floor_line']-statistics.median(dB)/K; near=min(LS[v['sheet']],key=lambda y:abs(y-want))
+    if abs(near-want)*K<=B['beam_above_ffl']['tol_mm'] and near!=v['beam']: log('view',k,'beam re-read at the sheets\' spacing',v['beam'],'->',near); v['beam']=near
 V['ffl_above_ground']=TT.decide('ffl_above_ground',statistics.median(dG),B['ffl_above_ground'],'%d views'%len(dG))
 # ---- side elevations: the top of the highest straight line at the roof's pitch
 pitch=R['roof']['pitch_deg']; tops=[]

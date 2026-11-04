@@ -19,6 +19,11 @@ else: say('W-T1','PASS','%d blanks, %d records, by status %s'%(len(want),sum(map
 for k in want: print('§T   blank',k,collections.Counter(r[0] for r in rec[k]).most_common(),'measured',[r[2] for r in rec[k]][:4],flush=True)
 g1=[l for l in open(os.path.join(O,'logs','02_rosetta_verify.log'),encoding='utf-8') if l.startswith('§PDF G1 ') and ('PASS' in l or 'WRONG' in l)]
 say('W-T1b','VACUOUS' if not g1 else ('WRONG' if any('WRONG' in l for l in g1) else 'PASS'),'the grid labels fit the dictionary: %d G1 lines, %d WRONG'%(len(g1),sum('WRONG' in l for l in g1)))
+# §39: a stage's own WRONG must reach a verdict. REAR's W-E1 said WRONG on the taller wall from §35 on, in a log nothing judged
+own=[]
+for lg in sorted(os.listdir(os.path.join(O,'logs'))):
+    if re.match(r'(0\d|10|11)',lg): own+=[lg+': '+l[:110] for l in open(os.path.join(O,'logs',lg),encoding='utf-8') if re.search(r' WRONG\b',l)]
+say('W-T1c','WRONG' if own else 'PASS','stages 00-11 say WRONG on %d lines %s'%(len(own),own[:3]))
 # the literals the RESUME block names as typed by hand; comments are not code
 SCAN={'roof_emit.py':['EAVE=750','4872','4865','4722','246.3','426.4','3250.3','6650.8','TW=100','0.05,3.15','words(3)','words(6)','300<a','340<a','cy>250'],
       'elev_emit.py':['246.3','426.4','251.8','168.4','156.5','160.0','285.6','423.4','3000+1722','4.872','3.15','0.15','60<=beam'],

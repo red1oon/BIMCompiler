@@ -13,3 +13,5 @@ gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -dDEVICEWIDTHPOINTS=842 -dDEVICEHEIGHT
 var T; chain T PDF2BIM_PDF="$WK/var_T.pdf"; python3 "$S/witness_variant.py" T "$WK/T"
 var G; chain G PDF2BIM_PDF="$WK/var_G.pdf"; python3 "$S/witness_variant.py" G "$WK/G"
 python3 "$S/witness_variant.py" FR "$REF"
+var D; chain D PDF2BIM_PDF="$WK/var_D.pdf"; python3 "$S/witness_variant.py" D "$WK/D"
+chain NOFILLD PDF2BIM_PDF="$WK/var_D.pdf" PDF2BIM_NO_FILL=1; python3 "$S/witness_variant.py" NOFILLD "$WK/NOFILLD"

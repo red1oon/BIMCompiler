@@ -56,5 +56,7 @@ for k in [q for q in SZ if re.fullmatch(r'[DW]\d',q)]:
     st='READ' if sizes[k]==SZ[k] else 'FINDING'; ns[k]=sizes[k]; print('§INFER schedule_%s %s value'%(k,st),sizes[k],'measured',sizes[k],'nominal',SZ[k],'tol 0 | p%s SIZE row'%S['schedule'],flush=True)
 # ---- the dictionary every later stage reads
 E=copy.deepcopy(R); E['sheet']['mm_per_pt_fitted']=K; E['grid']['x']=ngx; E['grid']['y']=ngy; E['grid']['overall_mm']=[max(ngx.values()),max(ngy.values())]; E['schedule_sizes_mm'].update(ns)
+for k,v in ns.items():   # §39: the family follows the size the sheet states
+    E['library_binding'][k]=dict(E['library_binding'][k],family='LCSSU_%s_%dx%d'%(k,v[0],v[1]),lib_size=v)
 json.dump(E,open(outj,'w',encoding='utf-8'),ensure_ascii=False,indent=1)
 log('RESULT K',K,'x',ngx,'y',ngy,'wrote',outj)

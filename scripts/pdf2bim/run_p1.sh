@@ -26,18 +26,24 @@ run 09c_roof_emit      python3 -I $S/roof_emit.py svg/p$P3.svg svg/p$P4.svg svg/
 [ -f "$H/scripts/library_building_types.json" ] || cp "$T/library_building_types.default.json" "$H/scripts/library_building_types.json"
 LIBDB="${PDF2BIM_LIBDB:-}"; for c in "$H/library/component_library.db" "$HOME/bim-compiler/library/component_library.db"; do [ -z "$LIBDB" ] && [ -f "$c" ] && LIBDB="$c"; done
 # the library DB is never modified: a COPY gets the append-only migration(s) this lane depends on (CL006 = size pair on the two exact-size FD1 door families, spec §27), then the export reads the copy
-if [ ! -f "$O/lib/latest.json" ]; then
+export_lib(){
   cp "$LIBDB" "$O/component_library.migrated.db"
-  python3 -I - "$O/component_library.migrated.db" "$H/migration/CL006_opening_family_size_pair.sql" "$H/migration/CL007_low_cost_window_families.sql" > logs/10a_library_migrate.log 2>&1 <<'PY'
-import sqlite3,sys
+  python3 -I - "$O/component_library.migrated.db" "$H/migration/CL006_opening_family_size_pair.sql" "$H/migration/CL007_low_cost_window_families.sql" "$H/migration/CL008_low_cost_door_families.sql" > logs/10a_library_migrate.log 2>&1 <<'PY'
+import sqlite3,sys,os
 c=sqlite3.connect(sys.argv[1]); q="select count(*) from ad_opening_family where description like '%×2100mm%' and family_id like 'INST_FIRE_DOOR_%'"
 b=c.execute(q).fetchone()[0]; c.executescript(open(sys.argv[2],encoding='utf-8').read()); c.commit(); a=c.execute(q).fetchone()[0]
 w0=c.execute("select count(*) from ad_opening_family where family_id like 'LCSSU_%'").fetchone()[0]; c.executescript(open(sys.argv[3],encoding='utf-8').read()); c.commit(); w1=c.execute("select count(*) from ad_opening_family where family_id like 'LCSSU_%'").fetchone()[0]
-print('§MIG CL006 families with a size pair before',b,'after',a,'| CL007 window families before',w0,'after',w1)
+q8="select count(*) from ad_opening_family where family_id like 'LCSSU_D%'"; d0=c.execute(q8).fetchone()[0]; c.executescript(open(sys.argv[4],encoding='utf-8').read()); c.commit(); d1=c.execute(q8).fetchone()[0]
+x=os.environ.get('EXTRA_SQL')
+if x: c.executescript(open(x,encoding='utf-8').read()); c.commit(); print('§MIG this run\'s generated families applied to the copy:',x)
+print('§MIG CL006 families with a size pair before',b,'after',a,'| CL007 window families before',w0,'after',w1,'| CL008 door families before',d0,'after',d1)
 PY
   echo "== 10a_library_migrate ($(cat logs/10a_library_migrate.log | tr '\n' ' '))"
   run 10_library_export node "$H/scripts/export_library_subset.js" --full --out-dir "$O/lib" --lib "$O/component_library.migrated.db"
-fi
+}
+if [ ! -f "$O/lib/latest.json" ]; then export_lib; fi
+run 10b_families python3 -I $S/family_stage.py "$RJ" "$TJ" "$O/lib" "$O/families_new.sql"   # §39: a size the library lacks gets its family, on this run's copy only
+if [ -s "$O/families_new.sql" ]; then [ -L "$O/lib" ] && rm "$O/lib"; rm -rf "$O/lib"; EXTRA_SQL="$O/families_new.sql" export_lib; fi
 ( cd "${PDF2BIM_OOTB:-$HOME/bim-ootb}/modeller" && run_in(){ :; }; node "$S/lib_probe.js" "$O/typed" "$O/lib/" "$O/tbkltn_p1.ifc" > "$O/logs/11_lib_probe.log" 2>&1; echo "== 11_lib_probe exit=$? ($(wc -l < $O/logs/11_lib_probe.log) lines)" )
 run 12_ifc_check       python3 "$S/ifc_check.py" "$O/tbkltn_p1.ifc"
 run 13_witness_level_c python3 -I $S/witness_level_c.py "$O" "$RJ"
@@ -45,6 +51,7 @@ run 14_other_sheets    python3 -I $S/other_sheets.py "$O" "$RJ" "$PDF"
 run 15_gap_register    python3 "$S/gap_register.py" "$O" "$RJ"
 run 16_witness_roof    python3 "$S/witness_house_roof.py" "$O"
 run 16b_witness_windows python3 "$S/witness_windows.py" "$O" "$RJ"
+run 16c_witness_doors  env PDF2BIM_PDF_USED="$PDF" python3 "$S/witness_doors.py" "$O" "$RJ" "$S"
 run 17_witness_template python3 -I "$S/witness_template.py" "$O" "$TJ"
 run 18_geom_hash       python3 "$S/geom_hash.py" "$O/tbkltn_p1.ifc"
-echo "--- headline"; grep -h -E "W-P1 |W-P5 wall pairs|W-P12 round|G1 scale|MATCH D|TOTAL by class" logs/0*.log | cut -c1-170; grep -h -E "LIB els|IFC counts|IFC bbox .* IfcWall|IFC validate" logs/11_lib_probe.log logs/12_ifc_check.log | cut -c1-200; grep -h -E "W-C[0-9] |§WC" logs/13_witness_level_c.log | cut -c1-220; grep -h -E "^§(S |GAP-TOTAL)" logs/14_other_sheets.log logs/15_gap_register.log | cut -c1-200; grep -h -E "^§R " logs/16_witness_roof.log | cut -c1-200; grep -h -E "^§W " logs/16b_witness_windows.log | cut -c1-200; grep -h -E "^§A " logs/06c_witness_rooms.log | grep -v "§A   left" | cut -c1-200; grep -h -E "^§INFER RESULT" logs/03b_infer_type.log | cut -c1-200; grep -h -E "^§T " logs/17_witness_template.log | cut -c1-200; cat logs/18_geom_hash.log
+echo "--- headline"; grep -h -E "W-P1 |W-P5 wall pairs|W-P12 round|G1 scale|MATCH D|TOTAL by class" logs/0*.log | cut -c1-170; grep -h -E "LIB els|IFC counts|IFC bbox .* IfcWall|IFC validate" logs/11_lib_probe.log logs/12_ifc_check.log | cut -c1-200; grep -h -E "W-C[0-9] |§WC" logs/13_witness_level_c.log | cut -c1-220; grep -h -E "^§(S |GAP-TOTAL)" logs/14_other_sheets.log logs/15_gap_register.log | cut -c1-200; grep -h -E "^§R " logs/16_witness_roof.log | cut -c1-200; grep -h -E "^§W " logs/16b_witness_windows.log | cut -c1-200; grep -h -E "^§D " logs/16c_witness_doors.log | cut -c1-200; grep -h -E "^§A " logs/06c_witness_rooms.log | grep -v "§A   left" | cut -c1-200; grep -h -E "^§INFER RESULT" logs/03b_infer_type.log | cut -c1-200; grep -h -E "^§T " logs/17_witness_template.log | cut -c1-200; cat logs/18_geom_hash.log

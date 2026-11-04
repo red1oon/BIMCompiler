@@ -422,33 +422,33 @@
     ]
   },
   "library_binding": {
-    "_note": "opening tag -> family_id of the LOCAL LOD400 library (BIMCompiler component_library.db, exported by export_library_subset.js --full). Doors: exact-size FD1 meshes (CL006). Windows: generated from the p8 schedule (CL007, §34), replacing the Duplex/UK stand-ins of §25.",
+    "_note": "opening tag -> family_id of the LOCAL LOD400 library (BIMCompiler component_library.db, exported by export_library_subset.js --full). Doors: generated from the p8 schedule (CL008, §38). Windows: generated from the p8 schedule (CL007, §34).",
     "D1": {
-      "family": "INST_FIRE_DOOR_900",
+      "family": "LCSSU_D1_900x2100",
       "lib_size": [
         900,
         2100
       ],
       "exact": true,
-      "note": "exact size WITH mesh (Terminal FD1) once migration CL006 gives the family a size pair (§27); fire-rated institutional door standing in for an unrated house door: semantics YELLOW"
+      "note": "generated from the p8 schedule, migration CL008 (spec §38), replacing the FD1 fire-rated stand-in; leaf thickness a template default, YELLOW"
     },
     "D2": {
-      "family": "INST_FIRE_DOOR_900",
+      "family": "LCSSU_D2_900x2100",
       "lib_size": [
         900,
         2100
       ],
       "exact": true,
-      "note": "exact size WITH mesh (Terminal FD1) once migration CL006 gives the family a size pair (§27); fire-rated institutional door standing in for an unrated house door: semantics YELLOW"
+      "note": "generated from the p8 schedule, migration CL008 (spec §38), replacing the FD1 fire-rated stand-in; leaf thickness a template default, YELLOW"
     },
     "D3": {
-      "family": "INST_FIRE_DOOR_750",
+      "family": "LCSSU_D3_750x2100",
       "lib_size": [
         750,
         2100
       ],
       "exact": true,
-      "note": "exact size WITH mesh (Terminal FD1) once migration CL006 gives the family a size pair (§27); fire-rated institutional door standing in for an unrated house door: semantics YELLOW"
+      "note": "generated from the p8 schedule, migration CL008 (spec §38), replacing the FD1 fire-rated stand-in; leaf thickness a template default, YELLOW"
     },
     "W1": {
       "family": "LCSSU_W1_1800x1000",

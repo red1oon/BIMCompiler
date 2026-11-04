@@ -1,6 +1,6 @@
 #!/usr/bin/env python3 -I
 # Implements prompts/PDF2BIM_VECTOR_PROBE.md §35 — makes a drawing the chain has never seen, from this PDF's own vector paths and text, warped at one seam and written as a new PDF. A test instrument: its output is never a model input outside a witness. Written text is calibrated in a second pass so each word's box centre lands where it should.
-# Usage: variant_drawing.py <svg dir> <rosetta.json> <inferred.json> <pdf> <out.pdf> Z|B|H|T|G  (T, G: §36 the room tags only: two areas swapped, or all sheared)
+# Usage: variant_drawing.py <svg dir> <rosetta.json> <inferred.json> <pdf> <out.pdf> Z|B|H|T|G|D  (T, G: §36 the room tags only: two areas swapped, or all sheared. D: §39 p8's D3 size only)
 import re,sys,json,os,subprocess
 sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
 import type_template as TT
@@ -31,6 +31,7 @@ def warp_of(p):
     "page point -> page point, for this mode"
     if mode=='Z': return (lambda x,y:(x,y)),'no warp'
     if mode in('T','G'): return tags_warp(p)
+    if mode=='D': return (lambda x,y:(x,y)),'p%d no warp'%p
     W=TT.words(pdf,p)
     if mode=='B':
         if p in (S['plan'],S['electrical'],S['roof']):
@@ -77,7 +78,7 @@ def tags_warp(p):
     return f,'%d tags top rows sheared'%len(rows)
 pages={}; notes={}
 for p in PAGES:
-    f,n=warp_of(p); pages[p]=(load(p),[(a,b,c,d_0,t) for a,b,c,d_0,t in bbox_words(pdf,p)],f); notes[p]=n; print('§VAR p%d %s paths %d words %d'%(p,n,len(pages[p][0]),len(pages[p][1])))
+    f,n=warp_of(p); pages[p]=(load(p),[(a,b,c,d_0,('800MM' if mode=='D' and p==S['schedule'] and t=='750MM' else t)) for a,b,c,d_0,t in bbox_words(pdf,p)],f); notes[p]=n; print('§VAR p%d %s paths %d words %d'%(p,n,len(pages[p][0]),len(pages[p][1])))
 info=subprocess.run(['pdfinfo','-f','1','-l','1',pdf],capture_output=True,text=True).stdout; ms=re.search(r'Page\s+1 size:\s+([\d.]+) x ([\d.]+)',info); rot=re.search(r'Page\s+1 rot:\s+(\d+)',info)
 PW,PH=float(ms.group(1)),float(ms.group(2))
 if rot and rot.group(1) in('90','270'): PW,PH=PH,PW

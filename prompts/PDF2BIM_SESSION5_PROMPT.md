@@ -1,9 +1,9 @@
 # ⚠ DO NOT REMOVE — PDF2BIM resume prompt (paste the block below into a NEW session)
-# Scope: finish the ONE low-cost single-storey house (TB-LKTN) from vector PDF -> DXF -> a coherent model that Converts in the Modeller. Findings live in `prompts/PDF2BIM_VECTOR_PROBE.md` (▶ RESUME HERE) and `bim-ootb prompts/DXF2BIM_MODELLER_LANE.md` (§L32-§L36); this file only STARTS a session.
-# Read the log after every run (`<outdir>/logs/*.log`); exit code is not evidence. Honour this block until the prompt is DONE. Written 2026-11-04, branch `feat/pdf2bim-vector`. Replaces the session-3 prompt.
+# Scope: finish the ONE low-cost single-storey house (TB-LKTN) from vector PDF -> DXF -> a coherent model that Converts in the Modeller. Findings live in `prompts/PDF2BIM_VECTOR_PROBE.md` (▶ RESUME HERE) and `bim-ootb prompts/DXF2BIM_MODELLER_LANE.md` (§L32-§L38); this file only STARTS a session.
+# Read the log after every run (`<outdir>/logs/*.log`); exit code is not evidence. Honour this block until the prompt is DONE. Written 2026-11-05, branch `feat/pdf2bim-vector`. Replaces the session-4 prompt.
 
 ```
-Resume the PDF→BIM lane on the low-cost house. Read prompts/PDF2BIM_VECTOR_PROBE.md on branch feat/pdf2bim-vector: ▶ RESUME HERE, then §33, §35, §34, then §29 to §32. Then bim-ootb prompts/DXF2BIM_MODELLER_LANE.md §L36, §L37. The owner said: consolidate on this one house first.
+Resume the PDF→BIM lane on the low-cost house. Read prompts/PDF2BIM_VECTOR_PROBE.md on branch feat/pdf2bim-vector: ▶ RESUME HERE, then §36, §38, §39, then §33, §35, §34, §29 to §32. Then bim-ootb prompts/DXF2BIM_MODELLER_LANE.md §L36, §L37, §L38. The owner said: consolidate on this one house first.
 
 WHERE THE FILES ARE
 - Two repos. bim-compiler branch feat/pdf2bim-vector (pushed, no PR, not merged): the PDF -> DXF chain, scripts/pdf2bim/. bim-ootb main: the importer and the Modeller, modeller/.
@@ -12,13 +12,13 @@ WHERE THE FILES ARE
 - Another session's commit 0f50a6fa8 holds an OLDER copy of the spec on fable/meshdb-livewire: expect an add/add conflict if both merge.
 
 REPRODUCE FIRST (verify before building)
-`PDF2BIM_OOTB=<bim-ootb worktree at or after #2631> scripts/pdf2bim/run_p1.sh <outdir>`, then read logs/01..16. Expect:
+`PDF2BIM_OOTB=<bim-ootb worktree with @HEADFRAME, §L38> scripts/pdf2bim/run_p1.sh <outdir>`, then read logs/01..16. Expect:
 - `§LIB els 72` = 50 IfcWall (47 + 3 gable-end) + 2 IfcSlab + 2 IfcColumn + 7 IfcDoor + 7 IfcWindow + 4 IfcRoof
-- `§LIB blocking 0`, `§LIB accepted 62 ... verdict qualifies`; `§WC RESULT fails 0`; `§R RESULT fails 0`; `§W RESULT PASS`
-- `§T RESULT PASS fails 0` in 17_witness_template; every blank READ in 03b_infer_type
-- typed sheets byte-identical between two clean runs; `geom_hash.py` hash dc47d2e37a86fc49 (18_geom_hash.log, measured 2026-11-04). The IFC FILE bytes do differ between runs, cause not checked.
+- `§LIB blocking 0`, `§LIB accepted 57 ... verdict qualifies`; `§WC RESULT fails 0`; `§R RESULT fails 0`; `§W RESULT PASS`; `§D RESULT fails 0` with W-D4 FINDING on the 2 D2; `§A RESULT fails 0` with 10 READ, W-A3 8 judged + 2 UNJUDGEABLE
+- `§T RESULT PASS fails 0` in 17_witness_template, W-T1c included; every blank READ
+- typed sheets byte-identical between two clean runs; `geom_hash.py` hash 03a3dfef2a0b4342 (18_geom_hash.log, measured 2026-11-05). IFC files differ on one line, the header's timestamp.
 - `PDF2BIM_OOTB=<tree> scripts/pdf2bim/witness_ruler.sh <that outdir> <work dir>`: `§T RESULT fails 0` (moved drawing, wrong ruler, stripped sheet, swapped orientation).
-- `PDF2BIM_OOTB=<tree> scripts/pdf2bim/witness_variant.sh <that outdir> <work dir>`: every `§V ... RESULT fails 0` (control, wider bay, taller wall, 90% print, falsifier).
+- `PDF2BIM_OOTB=<tree> scripts/pdf2bim/witness_variant.sh <that outdir> <work dir>`: every `§V ... RESULT fails 0` (control, wider bay, taller wall, 90% print, swapped tags, other font, new schedule size, 2 falsifiers, the §37 falsifier).
 - TBKLTN_House.pdf is git-ignored and library/component_library.db is not in git: the script finds both in ~/bim-compiler. It migrates a COPY of the library only.
 - Run ifc_check.py, gap_register.py, witness_house_roof.py WITHOUT `python -I` (IfcOpenShell is in the user site).
 
@@ -34,13 +34,22 @@ RULINGS (do not re-litigate)
 - Push and merge your own verified PRs (auto-merge), then fetch the live URL to confirm: green CI is not deployed.
 
 STATE IN ONE LINE
-The house has walls, doors, windows, slab, pitched roof with valleys, porch, columns and gable ends, deterministically, its heights and offsets read from the sheets against the ruler template, and it Converts in the Modeller on the owner's recorded acceptance (62 rows listed on screen), its windows generated from the p8 schedule and fitting their holes. Library f5a308656e73 is live.
+The house has walls, real house doors on their floor, windows, slab, pitched roof, porch, columns and gable ends, deterministically; heights, offsets, door heads, rooms and printed areas read from the sheets against the ruler template; 57 rows accepted, 2 D2 doors kept as the drawing's own disagreement. It Converts on a local copy of library ebcea595bea6. Library f5a308656e73 is what is LIVE, without the door families, so the new sheets refuse there until the owner says publish.
 
-OWNER DECISIONS: all four made 2026-11-04 ("Go with your hunches"), DONE: windows generated into the library by migration CL007; @ACCEPT honoured by the Modeller; library published; fold arrow kept. ⛔ One open question: a real second PDF from another drafter.
+OWNER DECISIONS, ⛔ THREE OPEN, ASK ONCE, THEN WORK ON WHAT IS LEFT:
+(a) Publish library ebcea595bea6? W-LIB-PUB passes, one new version beside the live one, rollback = point latest.json back. Lane rule: "Republish to OCI only on the owner's go". After a go: upload `<sha12>/`, run witness_library_publish.js BEFORE moving latest.json, fetch back, then set witness_dxf_accept_page's defaults to 57 rows, the LCSSU_D families and that sha, and update types/library_next_publish.json.
+(b) Where does the PDF -> DXF step run: the Modeller page (recommended) or a command? See the end of §39.
+(c) A real second low-cost PDF from another drafter.
 
-NEXT, needing no decision: see the RESUME block: room cells and printed areas read per drawing; W-R witnesses reading this run's values; a family generated for a schedule size the library lacks; a user-facing PDF -> DXF step; house door meshes (fire-rated stand-ins, 5 interior doors float 38 mm). Publishing a library again: run witness_library_publish.js BEFORE moving latest.json; rollback = point latest.json back.
+NEXT, needing no decision: see the RESUME block.
 
 LANDMINES (each cost time on 2026-11-04)
+- Never blame the engine first: `create_shape(st,e).geometry.verts` reads freed memory. Two sessions recorded IfcOpenShell as non-deterministic; it was us. A garbage value such as -7.98e27 is a pointer bug until shown otherwise.
+- A log line saying WRONG that no verdict reads is invisible: REAR's W-E1 said WRONG from §35 to §39. W-T1c now fails on any stage's own WRONG (stages 00-11); NOFILL's is expected.
+- `INSERT OR IGNORE` hides a key collision as success: `--only D3` dropped its mesh rows silently. Count what landed.
+- A check that compares against the schedule loses the door when the schedule changes: a door arc is known by its radius and pen. A verdict of `qualifies` does not mean all doors are there: W-D1 counts them.
+- A witness typed for the last publish fails on a better result: state the next one in types/library_next_publish.json BEFORE the run.
+- `pkill -f <name>` run from a shell whose own command line holds that name kills the shell (exit 144).
 - Before merging an importer or Convert change, run EVERY witness that clicks Convert: `grep -ln "dxf-convert\|DxfImportUI.convert" modeller/tests/*.js`, not a chosen few. #2628 broke two witnesses this way. Not runnable here (generated inputs absent): witness_dxf_convert, witness_dxf_meta_editor, witness_e2e_dxf_wing: say so, do not imply they passed.
 - A pass can be false: a dropdown check passed with nothing focused because an even number of toggles restored the end state. Prove the action happened (real focus, counted events).
 - Selectors on PDF sheets pick up neighbours: the notes table beside the plan, title-block lines, hatch rows in tiled walls, ribs split by the ridge cap. Bound them to the building and let a witness catch the rest. Never widen a tolerance to pass.

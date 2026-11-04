@@ -192,8 +192,9 @@ for sw,pts,smp,cv in P:
             # some equal the clear radius. The importer wants leaf width = arc radius = gap. Try the SCHEDULE width first (p8 text layer, exact); keep the measured radius where the drawn gap only fits that.
             rsch=next((float(w) for w in (R['schedule_sizes_mm']['D1'][0],R['schedule_sizes_mm']['D3'][0]) if 40<=w-rm<=120),rm)
             A0=(round(a0/90)*90)%360; A1=(A0+90)%360; hx0,hy0=cm
-            if min(abs(rm-(R['schedule_sizes_mm'][k_][0]-off_)) for k_ in ('D1','D2','D3') for off_ in (0,80))>25:
-                E.append(('PDF-FIXTURE-ARC','ARC',(hx0,hy0,rm,A0,A1))); nfix+=1; log('W-C1 arc r',rm,'at',cm,'is no schedule door width: kept on PDF-FIXTURE-ARC, YELLOW (§19), not a door'); continue
+            DA=T['ruler']['door_arc']
+            if not (DA['radius_mm'][0]<=rm<=DA['radius_mm'][1] and DA['pen_mm'][0]<=sw*K<=DA['pen_mm'][1]):   # §39: by its radius and pen, never by the schedule's widths: a schedule that disagrees with the plan is a finding, not a lost door
+                E.append(('PDF-FIXTURE-ARC','ARC',(hx0,hy0,rm,A0,A1))); nfix+=1; log('W-C1 arc r',rm,'pen mm',round(sw*K,1),'at',cm,'is not a door swing: kept on PDF-FIXTURE-ARC, YELLOW (§19), not a door'); continue
             for rr in ([rsch,rm] if rsch!=rm else [rm]):
                 hx,hy=hx0,hy0; best=None
                 WL=[(i_,e[2]) for i_,e in enumerate(E) if e[0]=='PDF-WALL']

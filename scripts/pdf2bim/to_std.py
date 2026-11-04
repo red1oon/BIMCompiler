@@ -44,12 +44,14 @@ for q in range(0,len(wl),4):
 for ty,d in ents:
     if ty=='ARC' and d.get('8')=='PDF-DOOR-SWING':
         r=float(d['40'])
-        if min(abs(r-(R['schedule_sizes_mm'][k][0]-off)) for k in ('D1','D2','D3') for off in (0,80))>25: print('§PDF S2 arc r',round(r),'is not a schedule door width (900/750, or the clear-opening radius 820/670): not tagged'); continue   # emit_dxf_p1 writes the schedule width as the leaf radius
         hx,hy=float(d['10']),float(d['20']); m=math.radians((float(d['50'])+((float(d['51'])-float(d['50']))%360)/2)); cx,cy=hx+r/2*round(math.sqrt(2)*math.cos(m)),hy+r/2*round(math.sqrt(2)*math.sin(m)); t=nearest(cx,cy,'D'); fam=LB[t[2]]['family']   # tag point = the swing's plan bbox centre
         TG.append(('@TAG=door,%s'%fam,cx,cy)); print('§PDF S2 door arc r',round(r),'at',(round(cx),round(cy)),'nearest tag',t[2],'->',fam,'exact' if LB[t[2]]['exact'] else 'STAND-IN')
 SCH=['@SCHEDULE=%s,door,%d,%d'%(LB[k]['family'],SZ[k][0],SZ[k][1]) for k in ('D1','D2','D3')]   # the PDF's own door schedule (p8 text layer), keyed by the family label the @TAG gives each door
 OR=R['owner_rulings']; OA=OR['_accept']; ACC=['@ACCEPT=%s,%s,%s,%s'%(c,OA['who'],OA['date'],OA['reason']) for k,v in OR.items() if not k.startswith('_') for c in v]   # §34: the owner's ruling (§30), on paper, so the Modeller honours it (bim-ootb §L37)
-open(os.path.join(out,'plan.dxf'),'w').write('\n'.join(conv(plan,['@UNITS=mm','@SET=STD','@LEVEL=%s'%FLOORZ]+SCH+ACC+TG,PD)))
+DHP=os.path.join(elevdir,'door_heads.json'); DH_=json.load(open(DHP)) if os.path.exists(DHP) else []; HF=[]   # §38, bim-ootb §L38: the importer adds a head frame to a schedule height unless the set states otherwise. Stated only when the sheet shows it
+if DH_ and all(d_['status']!='DEFAULT' and abs(d_['measured']-SZ['D1'][1])<=15 for d_ in DH_): HF=['@HEADFRAME=0']
+print('§PDF S3 door heads read',[(d_['view'],d_['measured'],d_['status']) for d_ in DH_],'schedule',SZ['D1'][1],'->',HF or 'no mark: the importer adds its head frame')
+open(os.path.join(out,'plan.dxf'),'w').write('\n'.join(conv(plan,['@UNITS=mm','@SET=STD','@LEVEL=%s'%FLOORZ]+HF+SCH+ACC+TG,PD)))
 for f in sorted(glob.glob(os.path.join(elevdir,'elev_*.dxf'))): open(os.path.join(out,os.path.basename(f)),'w').write('\n'.join(conv(f,['@SET=STD'])))
 # roof sheet: main gable outline only (porch gable not drawn: yellow)
 # the importer's roof outline must EQUAL the top storey's wall envelope (dxf2shell roofPlan: GAP:roof_outline_mismatch otherwise): eaves (700 on the roof plan, 750 on the sections) and the porch gable are beyond this lane's basic roof -> yellow, not drawn

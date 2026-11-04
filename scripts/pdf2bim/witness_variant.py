@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Implements prompts/PDF2BIM_VECTOR_PROBE.md §35 — judges one different-drawing run, from its logs and IFC. Issue: did the code pick out what differs and adjust, without touching the template or the dictionary? Run WITHOUT -I.
-# Usage: witness_variant.py Z|B|H|S|T|G|NOFILL|FR <outdir>   (FR: the §37 falsifier, on the reference outdir)
+# Usage: witness_variant.py Z|B|H|S|T|G|D|NOFILL|NOFILLD|FR <outdir>   (FR: the §37 falsifier, on the reference outdir)
 import sys,os,re,json,ifcopenshell
 import ifcopenshell.util.placement as PL
 M,O=sys.argv[1:3]; fails=0
@@ -29,6 +29,13 @@ def bb(c):
                 if it.is_a()=='IfcTriangulatedFaceSet':
                     for x,y,z in it.Coordinates.CoordList: p.append(tuple(float(T[i][0]*x+T[i][1]*y+T[i][2]*z+T[i][3]) for i in range(3)))
     return ([round(min(q[i] for q in p),3) for i in range(3)],[round(max(q[i] for q in p),3) for i in range(3)]) if p else (None,None)
+def door_bb(e):
+    T=PL.get_local_placement(e.ObjectPlacement); p=[]
+    for r in e.Representation.Representations:
+        for it in r.Items:
+            if it.is_a()=='IfcTriangulatedFaceSet':
+                for x,y,z in it.Coordinates.CoordList: p.append(tuple(float(T[i][0]*x+T[i][1]*y+T[i][2]*z+T[i][3]) for i in range(3)))
+    return [min(q[i] for q in p) for i in range(3)],[max(q[i] for q in p) for i in range(3)]
 W=bb('IfcWall'); Rf=bb('IfcRoof'); n=len([e for e in f.by_type('IfcProduct') if e.Representation]); fl=rd('00_fill_blanks.log')+rd('03b_infer_type.log')+rd('08_elev_emit.log')
 st={m.group(1):(m.group(2),m.group(3)) for m in re.finditer(r'^§INFER (\S+) (READ|FINDING|DEFAULT) value (.+?) measured',fl,re.M)}
 find={k:v[1] for k,v in st.items() if v[0]=='FINDING'}; dflt=[k for k,v in st.items() if v[0]=='DEFAULT']
@@ -43,7 +50,16 @@ def rooms(want):
     got={r[3]:(float(r[1]),float(r[2])) for r in rm if r[0]=='FINDING'}; say('V5 rooms: exactly the expected FINDINGs, the rest READ',got==want and sum(1 for r in rm if r[0]=='READ')==10-len(want),str(got))
 def same_as_control():
     h=lambda d:re.search(r'hash (\S+)',open(os.path.join(d,'logs','18_geom_hash.log')).read()); a,b=h(os.path.join(os.path.dirname(O),'Z')),h(O); say('V6 tags only: the same geometry as the control Z',a and b and a.group(1)==b.group(1),'%s %s'%(a and a.group(1),b and b.group(1)))
-if M in('Z','H','S'): rooms({})
+dl={m.group(1):m.group(2) for m in re.finditer(r'^§D (W-D\d) (\S+)',rd('16c_witness_doors.log'),re.M)}; print('§V',M,'door witnesses',dl,flush=True); fam=re.findall(r'^§FAM (\S+) (\S+) (LIBRARY|GENERATED)',rd('10b_families.log'),re.M); gen=[(a,b_) for a,b_,c in fam if c=='GENERATED']; print('§V',M,'families generated',gen,flush=True)
+if M not in('NOFILL','NOFILLD'): say('V9 the doors fit on this drawing too: size, floor, wall',all(dl.get(k)=='PASS' for k in('W-D1','W-D2','W-D3')),str(dl))
+if M in('Z','H','S','D'): rooms({})
+if M=='D':
+    say('V1 the one changed size is found, and only it',find=={'schedule_D3':'[800, 2100]'},str(find)); say('V2 only its family is generated',gen==[('D3','LCSSU_D3_800x2100')],str(gen))
+    sq=open(os.path.join(O,'families_new.sql'),encoding='utf-8').read() if os.path.exists(os.path.join(O,'families_new.sql')) else ''; fids=sorted(set(re.findall(r"LCSSU_\w+",sq))); say('V3 families_new.sql holds only that family',fids==['LCSSU_D3_800x2100'],str(fids))
+    wd=sorted(round(max(b_[0]-a[0],b_[1]-a[1])*1000) for a,b_ in [door_bb(e) for e in f.by_type('IfcDoor')]); say('V4 the doors in the model are the sheet\'s: 2 at 800, 5 at 900',wd==[800,800,900,900,900,900,900],str(wd))
+    say('V5b the drawing now contradicts itself, and says so: W-D4 FINDING',dl.get('W-D4')=='FINDING','');  say('V6b it qualifies with 72 elements, on the recorded acceptance',ok_v,'')
+if M=='NOFILLD':
+    wd=sorted(round(max(b_[0]-a[0],b_[1]-a[1])*1000) for a,b_ in [door_bb(e) for e in f.by_type('IfcDoor')]); say('F3 without fill_blanks: dictionary sizes, nothing generated',not gen and 800 not in wd and not os.path.getsize(os.path.join(O,'families_new.sql')),'doors %s generated %s'%(wd,gen))
 if M=='B': rooms({'BILIK 3':(9.61,11.47),'BILIK 2':(9.61,11.47)})
 if M=='T':
     rooms({'DAPUR':(11.47,8.25),'RUANG TAMU':(8.25,11.47)}); same_as_control()

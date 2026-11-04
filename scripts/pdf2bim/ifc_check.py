@@ -5,7 +5,7 @@ st=ifcopenshell.geom.settings(); st.set('use-world-coords',True); st.set('disabl
 for cls in ('IfcWall','IfcSlab','IfcColumn','IfcDoor','IfcWindow','IfcRoof'):
     mn=[1e9]*3; mx=[-1e9]*3; ok=0; bad=0
     for e in f.by_type(cls):
-        try: v=ifcopenshell.geom.create_shape(st,e).geometry.verts; ok+=1
+        try: sh=ifcopenshell.geom.create_shape(st,e); g=sh.geometry; v=tuple(g.verts); ok+=1   # keep the shape alive: reading .verts through the temporary reads freed memory (segfault 2-7 of 16 runs, garbage bboxes: §38)
         except Exception as ex: bad+=1; continue
         for i in range(0,len(v),3):
             for a in range(3): mn[a]=min(mn[a],v[i+a]); mx[a]=max(mx[a],v[i+a])
