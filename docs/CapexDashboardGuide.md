@@ -1,0 +1,370 @@
+# CAPEX Dashboard — Guide for iDempiere Users
+
+> **⚠ DEMONSTRATOR — NOT OFFICIAL.** Every screenshot and figure comes from a **local GardenWorld test server**
+> (iDempiere 13) holding test projects, some of them repeat test runs. Treat every number as a sample
+> (`SAMPLE — NOT OFFICIAL`). The health and schedule rules are provisional until a client confirms them.
+
+**What this is.** One set of project and capital-spending figures from your iDempiere, in two places:
+
+- **The dashboard page**: a full executive page in a browser. It reads your iDempiere and writes nothing back.
+- **The Performance panel on your Home tab**: the same figures as ordinary iDempiere Performance Goals, which you change in the
+  stock windows.
+
+> **What it changes on your iDempiere:** no change to iDempiere's code or tables. The dashboard needs only read-only setup data.
+> Sending a Project Order *from a BIM model* into iDempiere is a separate thing: that is one standard plugin.
+
+**Who reads what.** **Project manager:** *The dashboard page*, *The Home tab* and *What moves the numbers*.
+**Administrator:** *Changing it* and *Installing it*. Everyone: *What it does not do yet* and *Troubleshooting*.
+
+---
+
+## The dashboard page
+
+**[Open the page with the sample data](https://red1oon.github.io/bim-ootb/capex/index.html?snapshot=sample/pilot_snapshot.json&source=legacy&today=2026-11-04)**:
+real rows read from the test server, the date held at 4 Nov 2026 so it matches this guide.
+
+![The full dashboard page populated from the test server: seven summary tiles and five panels](img/capex/capex_page_dashboard.png)
+
+### How to read it
+
+1. **Left menu.** *Dashboard* is this view. The others are below. The red badge on *Approval Pending* is that count.
+2. **Data source** (bottom left). **B · Legacy iDempiere** is your server's data. **A · SQLite ERP DB** is the browser copy.
+3. **Filters.** *Org*, *Category* (`ProjectCategory`) and *Status*. Status starts on **Active Projects**. That changes the money
+   tiles, as explained under *Page and Home tab: why a figure can differ*.
+4. **Last Updated.** The newest `C_Project.Updated` in the data, never the clock. An old date means old data.
+5. **The ƒ line** under each tile states its formula in iDempiere columns, so anyone can check it in SQL.
+
+A tile with nothing to judge says **no data**, not 0%. A tile with no agreed formula says **definition pending**, not a guess.
+
+### The summary tiles
+
+Money is shown **per currency**, never added together.
+
+| Tile | Sample shows | Where it comes from |
+|---|---|---|
+| Total Projects (All) | 12, Closed: 0 | Every `C_Project`. Closed = `Processed = Y` |
+| Active Projects | 9 | `IsActive = Y` and `Processed = N` |
+| Approved Budget | USD 29,978,524.50, BDT 15,139,265.67 | Sum of `PlannedAmt` |
+| Actual Cost | USD 334.62, BDT 0.00 | Sum of `ProjectBalanceAmt`, also as % of plan |
+| Committed Cost | USD 0.00, BDT 0.00 | Sum of `CommittedAmt`, with `InvoicedAmt` under it |
+| Forecast Cost at Completion | definition pending | No formula agreed yet |
+| Projects Completed this year | 0 | `Processed = Y` with `DateFinish` in this year |
+
+### The panels
+
+These work per project, from its **Phase** tab, with three amounts:
+
+- **Due** (PV) = planned amount of phases whose End Date has passed.
+- **Done** (EV) = planned amount of phases marked Complete.
+- **Spent** (AC) = the project's `ProjectBalanceAmt`.
+
+| Panel | Sample shows | What it means |
+|---|---|---|
+| Project Health | Red 3, No EVM data 6 | **No EVM data**: nothing due yet. **Green**: Done is at least 90% of Due, and of Spent if there is any. **Red**: below 90% on all of them. **Amber**: mixed |
+| Project Stage | (no phase) 8, First Product Presentation 1 | Count by the project's Standard Phase (`C_Phase_ID`). Your own stages are not mapped onto this yet |
+| Physical vs Spent | USD 0%, BDT 0% for both | **Physical** = Done as a share of all phases' planned amount. **Spent** = `ProjectBalanceAmt` as a share of `PlannedAmt`. Payment-based progress is not in the ERP |
+| Schedule Performance | On Time 2, At Risk 3, No schedule data 4, Delayed 0, Average Delay 190 days | **No schedule data**: no phase with both dates. **At Risk**: Done is under 90% of Due. **Delayed**: a phase not Complete is past its End Date. Average Delay is over At Risk and Delayed projects |
+| Budget Status | Over 1, Not Started 8, Within 0, Overrun USD 334.62 | **Not Started**: nothing spent. **Over**: Spent is above Planned. Overrun is the excess |
+
+**Why the sample looks the way it does.** Nothing has been marked Complete, so the three projects with a phase already due show
+Red: *SHED*, and two test runs dated January. Two others have dated phases with nothing due yet, so they count as On Time and No
+EVM data. The Over project is *Standard*: it has material issued to it and no budget. Six of the nine are pushes of the same test
+building. Nothing was added to make the page look fuller, so tiles the test server has not reached stay at 0.
+
+### The other views
+
+**Projects** lists each project: Value, Name, Org, Currency, Planned, Actual, Committed, Standard Phase. The **BIM** button appears only when
+that project's building file is found, and opens it in the BIM viewer.
+
+![Projects view: one row per active project](img/capex/capex_page_projects.png)
+
+**Budget & Cost** lists Planned, Committed, Invoiced and Actual per project.
+
+![Budget and Cost view](img/capex/capex_page_budget.png)
+
+**Approval Pending** shows the count, 261 in the sample. **Procurement Risks** and **Handover** say *definition pending*: no agreed
+definition or source yet.
+
+### Page and Home tab: why a figure can differ
+
+They use the same columns, but the page starts on Status **Active Projects** while the Home tab's money goals count every
+project, including inactive ones. Set Status to **All** and they agree:
+
+| Figure | Page, Status Active | Page, Status All | Home tab goal |
+|---|---|---|---|
+| Approved Budget (USD) | 29,978,524.50 | 39,971,166.17 | 39,971,166 |
+| Approved Budget (BDT) | 15,139,265.67 | 30,286,701.64 | 30,286,702 |
+
+---
+
+## If you know iDempiere
+
+The Home tab side is made of windows you already have.
+
+| Dashboard piece | iDempiere window | Menu |
+|---|---|---|
+| One figure on the Home tab | **Performance Goal** | Performance Analysis and Accounting › Performance Measurement |
+| What a goal measures | **Performance Measure** | same folder |
+| The SQL behind it | **Performance Measure Calculation** | same folder |
+| The dial's colours | **Performance Color Schema** | same folder |
+| The panel itself | **Dashboard Content** (*Performance*, shown at login) | Organization Rules folder |
+
+Search any of these by name in the box at the top left (Alt+G).
+
+---
+
+## The Home tab
+
+1. Log in as usual. The goals have no Role or User set, so **every user of the tenant** sees them.
+2. On **Home**, find the **Performance** panel, a narrow column at the far right.
+3. Click the panel's **maximize** button (top right of the panel). Your stock goals come first, then the 27 CAPEX goals.
+
+![The Performance panel maximized: stock goals first, then CAPEX goals on gray dials](img/capex/capex_home_top.png)
+
+### Three kinds of dial
+
+| Dial | Caption | Used for | How to read it |
+|---|---|---|---|
+| **Gray** | A number | Goals with no target | Read the number. The needle stays at 0: it means nothing here |
+| **Green → Red** | A percent | Cost against budget, lower is better | Green up to 50%, yellow up to 100%, red beyond |
+| **Red → Green** | A percent | Share of active projects, higher is better | Red up to 50%, yellow up to 100%, green beyond |
+
+![Gray dials for figures with no target, and green-to-red dials for cost against budget](img/capex/capex_home_cost.png)
+
+![Health and schedule goals: the good buckets as a share of active projects, the others as counts](img/capex/capex_home_green.png)
+
+### Why only 9 of the 27 have a target
+
+We followed what GardenWorld's own goals do: a plain plan number on the goal, and the colour schema that fits the direction. A
+target turns the caption into a percent and hides the number, so it is used only where the percent says more.
+
+| Goals | Target | Reads as |
+|---|---|---|
+| Actual Cost, Committed Cost, Invoiced (USD, BDT) | Approved Budget: USD 39,971,166.17, BDT 30,286,701.64 | Share of the budget used |
+| Health Green, Schedule On Time, Budget Within | Active projects: 9 | `On Time: 22%` means 2 of 9 |
+| The other 18 | None | The number itself |
+
+The other 18 are the totals themselves, goals with no plan behind them (Completed this Year, Approval Pending, Average Delay,
+Overruns), and the bad buckets (Amber, Red, No EVM data, Delayed, At Risk, No schedule data, Over, Not started). A bad bucket with
+a target gets worse either way: on the stock schema, "33% of projects are red" would draw **green**.
+
+**These targets are the test server's own figures. Enter your own plan.** A target is a fixed number, as on any stock goal, so
+when projects are added, "of 9" stays 9 until someone changes it.
+
+### The 27 goals
+
+**Projects and money:**
+
+| Goal | How it is worked out | Counts inactive projects? |
+|---|---|---|
+| Total Projects | All projects | Yes |
+| Closed Projects | `Processed = Y` | Yes |
+| Active Projects | `IsActive = Y` and `Processed = N` | No |
+| Approved Budget (USD, BDT) | Sum of `PlannedAmt` | **Yes** |
+| Actual Cost (USD, BDT) | Sum of `ProjectBalanceAmt` | **Yes** |
+| Committed Cost (USD, BDT) | Sum of `CommittedAmt` | **Yes** |
+| Invoiced (USD, BDT) | Sum of `InvoicedAmt` | **Yes** |
+| Projects Completed this Year | `Processed = Y`, `DateFinish` in this year | Yes |
+| Approval Pending | Workflow activities with `WFState = OS` and `Processed = N`, on **any** table | n/a |
+
+**Health, schedule and budget**, active projects only, using Due, Done and Spent from *The panels* above:
+
+| Goal | A project counts here when |
+|---|---|
+| Health No EVM data | Nothing is due yet |
+| Health Green | Something is due, Done ≥ 90% of Due, and Spent is 0 or Done ≥ 90% of Spent |
+| Health Amber | Something is due, Spent is above 0, and only one of those two tests passes |
+| Health Red | Something is due, Done < 90% of Due, and Spent is 0 or Done < 90% of Spent |
+| Schedule No schedule data | No phase has both a Start and End Date |
+| Schedule At Risk | Has dated phases, something is due, and Done < 90% of Due |
+| Schedule Delayed | Has dated phases, not At Risk, and an unfinished phase is past its End Date |
+| Schedule On Time | Has dated phases, and neither At Risk nor Delayed |
+| Schedule Average Delay (days) | Over At Risk and Delayed projects: the average of each one's largest overdue days |
+| Budget Not started | Spent is 0 |
+| Budget Within | Spent is not 0, and is at or below Planned |
+| Budget Over | Spent is above Planned |
+| Budget Actual Overrun (USD, BDT) | Total of Spent minus Planned over the Over projects |
+
+The 90% is the one rule a client stated. The rest are our working definitions, and you can change any of them: see
+*Change what a goal counts*.
+
+---
+
+## What moves the numbers
+
+Both places only read your project records. They fill up when these are filled in:
+
+| You do this | Where | What it moves |
+|---|---|---|
+| Add phases with Start Date and End Date | **Project** window, **Phase** tab | Leaves *No schedule data* |
+| Give phases a Planned Amount | **Phase** tab | Health and At Risk can be judged |
+| Tick **Complete** when a phase finishes | **Phase** tab | Done rises |
+| Issue material to the project | **Issue to Project** | Spent rises: Actual Cost, Budget goals |
+
+**A measured example.** On the test server, ticking **Complete** on one phase of one project moved five goals. It was then undone.
+
+| Home tab caption | Before | After |
+|---|---|---|
+| Health Green | 0% | 11% |
+| Health Red | 3 | 2 |
+| Schedule On Time | 22% | 33% |
+| Schedule At Risk | 3 | 2 |
+| Schedule Average Delay (days) | 190 | 284 |
+
+The average delay went **up** although a project improved: it left the average, and it had one of the shorter delays.
+Read that goal beside the At Risk and Delayed counts, not on its own.
+
+---
+
+## Changing it
+
+You need no developer for any of this. It changes the Home tab goals; the page's formulas stay as they are.
+
+### Set or change a target
+
+1. Open **Performance Goal**. Find the goal with the arrows or search.
+2. Enter **Measure Target** and pick a **Color Schema** that fits the direction. Save.
+
+![The Performance Goal window on CAPEX Actual Cost (USD): Measure Target, Color Schema and Measure Actual](img/capex/capex_win_goal.png)
+
+The amount behind a percent stays visible here, in **Measure Actual**.
+
+!!! note "The first percent can be out of date"
+    Saving a new target recalculates at once, but that first percent is scored against the **previous** target
+    (standard iDempiere behaviour). The new target applies at the next refresh, see *Troubleshooting*.
+
+### Show a goal to fewer people
+
+In **Performance Goal**, set **Role** or **User/Contact**. To hide it, clear **Active**. Your stock goals can be
+hidden the same way if you want only the CAPEX goals on Home.
+
+### Change what a goal counts
+
+1. Open **Performance Measure Calculation** and find the row with the goal's name.
+2. Edit **Sql WHERE** (or **Sql SELECT**). Save.
+
+![The Performance Measure Calculation window: Sql SELECT and Sql WHERE for CAPEX Active Projects](img/capex/capex_win_calc.png)
+
+!!! warning "A broken SQL shows 0, not an error"
+    iDempiere catches a measure's SQL error, logs it and returns 0. After any edit, check the number is what you
+    expect. A sudden 0 may be your SQL.
+
+To see a **narrower** population (one organization, for example), iDempiere offers the **Restriction** tab of Performance Goal. We have not tried it on these goals.
+
+### Change the dial's colours
+
+Open **Performance Color Schema**. Each schema gives a colour up to Mark 1, up to Mark 2, and up to Mark 3.
+
+![The Performance Color Schema window: Green (50) - Yellow (100) - Red](img/capex/capex_win_color.png)
+
+| Schema | Tenant | Editable by a tenant user? |
+|---|---|---|
+| Green (50) - Yellow (100) - Red | System | No |
+| Red (50) - Yellow (100) - Green | System | No |
+| No target (Gray) | Yours | Yes |
+
+To use other marks, add a schema in your tenant, then pick it in the goal's **Color Schema** field.
+
+### Add a goal
+
+Add a row in **Performance Measure Calculation**, a **Performance Measure** that uses it, then a **Performance Goal** on that
+measure. To add a currency, copy an existing pair and change `C_Currency_ID` in Sql WHERE. We have edited targets through these windows and tested that; adding a goal by hand is standard iDempiere, but we have not run it for this dashboard.
+
+---
+
+## Installing it
+
+### The Home tab goals
+
+For an administrator with database access. On the test server these were applied with `psql`, in name order, followed by
+`update_sequences`.
+
+| Script | Adds |
+|---|---|
+| `202611031900_CAPEX-R0.sql` | The first measure: Approved Budget (USD) |
+| `202611032000_CAPEX-G2.sql` | The count and sum measures |
+| `202611032100_CAPEX-G3.sql` | A goal for each of them |
+| `202611032200_CAPEX-G4.sql` | The health, schedule and budget measures, and their goals |
+| `202611041000_CAPEX-G7.sql` | The targets and the gray colour schema |
+
+They are in the bim-ootb repository, under `capex/legacy/migration/iD13/postgresql/`, in iDempiere's own migration format.
+The first statement of each registers it in the migration log. Most carry a `Restore` line at the top that removes what they
+added. Goals calculate themselves the first time a Home tab shows them.
+
+!!! warning "These scripts are written for GardenWorld"
+    They set `AD_Client_ID = 11`, the currencies USD (100) and BDT (322), and this test server's target figures. **For your own
+    tenant they need changing first.** A version that takes your tenant has not been built.
+
+### The page
+
+The page is plain files (`capex/index.html` and what it loads), with no server of its own and nothing to install in iDempiere's
+code. Your iDempiere needs a read-only **web-service read type** for each of the 8 tables it reads, and a user allowed to use them.
+On the test server these are test scripts, not yet migration scripts.
+
+A small job beside your server reads iDempiere and writes the file the page opens:
+
+```
+BRIDGE_BASE=https://your-server BRIDGE_USER=... BRIDGE_PASS=... BRIDGE_CLIENT=... BRIDGE_ROLE=... BRIDGE_ORG=... BRIDGE_WH=... \
+  node capex/tools/legacy_snapshot.js
+```
+
+It writes `capex/legacy_snapshot.json`. The password stays with the job: the file and the browser never hold it, and nothing is
+written to iDempiere. Run it on a schedule. The page shows what the last run saw. Add `?source=legacy` to the page's
+address to open on your data.
+
+!!! warning "The file holds your project figures"
+    Whoever can open the page can read them. Serve it only where you would show them.
+
+---
+
+## What it does not do yet
+
+| Topic | Today |
+|---|---|
+| Forecast Cost at Completion | No agreed formula: says *definition pending* |
+| Procurement Risks, Handover | No agreed definition: says *definition pending* |
+| Project Stage | Shows the Standard Phase. How your stages map onto `C_Phase` is not agreed |
+| Payment-based progress | Not in the ERP |
+| Project Stage, Physical vs Spent, project lists on the Home tab | Page only, not goals |
+| Other currencies on the Home tab | No money goal covers them until you add one. The page shows each currency it finds |
+
+**Not yet seen working on real data.** These have read 0 on the test server, so we have not seen them count anything
+on it: Closed Projects, Completed this Year, Committed Cost, Invoiced, Actual Cost and Overrun in BDT, Health Amber, Schedule Delayed, Budget Within. Health
+Green was seen only during the example above.
+
+**Check Approval Pending against your own meaning of "approval".** It counts every suspended workflow activity. On
+the test server all 261 are on **Business Partner**, not on project documents.
+
+---
+
+## How it was checked
+
+- Every tile drawn on the page equals the formula run separately over the sample's rows (19 of 19, at Status Active and All).
+- Every CAPEX caption on the test server's real Home tab equals the browser copy's, all 27.
+- Home tab values equal iDempiere's own stored goals, recalculated just before comparing. 15 of 27 had a value; the other 12 were 0
+  on both sides, which proves nothing.
+- A real edit in iDempiere reached the browser copy after the next job and reload, changing exactly one row, and was undone.
+
+Not checked: a site larger than this test server. If the job stops, the copy just goes quietly out of date.
+
+---
+
+## Troubleshooting
+
+| You see | Why | What to do |
+|---|---|---|
+| A gray dial at 0% | That goal has no target | Read the number in the caption |
+| A percent, and you want the amount | A target hides the number | Open the goal: **Measure Actual** |
+| A share over 100% | The target is fixed, and projects were added | Update **Measure Target** |
+| A number looks out of date | A goal recalculates only when a Home tab shows it **and** its value is over 30 minutes old. We saw one still showing 318.68 when the real figure was 334.62 | Wait, or set `ZK_DASHBOARD_PERFORMANCE_REFRESH_INTERVAL` (milliseconds, default 1800000) in System Configurator |
+| I changed the SQL and nothing moved | Only saving a goal's target or scope recalculates at once | Wait for the refresh |
+| A goal suddenly reads 0 | The SQL may be broken: errors show as 0 | Check Sql WHERE and the server log |
+| Page and Home tab budgets differ | The page starts on Status Active, the goals count inactive projects too | Set Status to All |
+| Page shows old figures | The job has not run since. Check **Last Updated** | Run the job |
+| The page has no **B · Legacy iDempiere** source | The job's file is not beside the page | Run the job, or check where it wrote |
+| A project is missing from every Home tab money goal | Its currency is not USD or BDT | Add a goal for that currency |
+| The panel is hard to read | It is a narrow column | Use the panel's maximize button |
+
+---
+
+Related guides: [Kernel-ERP User Guide](ERPUserGuide.md) · [Distributed ERP](DistributedERP.md).
