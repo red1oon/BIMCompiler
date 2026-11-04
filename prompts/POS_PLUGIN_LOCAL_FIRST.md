@@ -1799,3 +1799,16 @@ Owner: *"we now can have multi tills working completely local first and stock ch
 - **W-IMPORT-INVENTORY** (`erp/tests/witness_import_inventory.js`, the W-IMPORT-PAYMENT pattern): per legacy case: product by Value, by UPC, unknown product (`ERR=No Product`), unknown locator (`ERR=No Location`), neither count nor internal use, excluding quantities, charge required, one header per warehouse/day, line fields (QtyBook/QtyCount copied), DocAction CO books `count - book` into `m_storageonhand`, a re-run makes nothing new.
 - **W-BRANCH-COUNT** (`erp/tests/witness_branch_count.js`, harness of `witness_eoda.js`): 3 tills sell; the main till counts blind (one short product); (A) ad hoc, not included: relay requests identical to an EODA with no count, HQ has no `i_inventory` rows; (B) included: EODA carries the rows, relay count unchanged; Day Close with ImportInventory=Y: HQ `m_storageonhand` == counted quantities, difference documents == count - book. DOM and branch DB never hold the book quantity. Mutants: book qty shown on the screen; count sent as an extra Visit; HQ completes without Import Inventory; tick ignored (count always included).
 - Regression: `witness_eoda*.js`, `witness_branch_day_close.js`, `witness_soda*.js`, `witness_till.js`, `witness_import_payment.js`.
+
+### §35.3 OWNER DESIGN — the branch's MAIN TILL (2026-11-05, owner's words; still under discussion, not built)
+> *"only a main till holds stock and the other tills are just orderlines, which does not know count, unless it is passed such upon request from the main till"* · *"it keeps its own running record as if it is another till. It acting as main means it pulled the HQ Org StorageOnHand which is always single source of truth. If physically the store has shortfalls it means loss or fraud. The LAN remembers who is main till ie that has the SODA StorageOnHand. The LAN relay looks for such till and runs its script to collect and update orderlines with timestamp to not collect orderlines before again. EODA, it is the SEND to relay for HQ to pickup"*
+
+Lead's reading, to be confirmed:
+- **Main till** = a till that also sells, plus the branch role.
+  - Its SODA brings HQ's `M_StorageOnHand` for the branch Org: HQ is always the single source of truth. Only the main till receives it.
+  - It keeps a running record: that figure minus the order lines collected from every till, its own included.
+- **Ordinary tills** hold only order lines. They know no count unless the main till passes one on request (D7 for ordinary tills).
+- **LAN collection:** the LAN remembers which till is main (the holder of the SODA StorageOnHand). The collector finds it, pulls each till's order lines since that till's last timestamp (never collecting a line twice), and updates the running record.
+- **EODA** = the main till's one SEND to the internet relay, for HQ to pick up.
+- **Physical shortfall** against the running record = loss or fraud.
+- This revises §35.1: Q-L2 is now "yes, to the main till only". It supersedes the §26 internet-relay hand-off from tills to the branch admin.
