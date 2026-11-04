@@ -4,6 +4,7 @@
 # Usage: roof_emit.py <p3.svg> <p4.svg> <p6.svg> <rosetta.json> <pdf> <typed dir> <inferred.json>
 import re,sys,json,math,collections,subprocess,os
 s3,s4,s6,rj,pdf,out,ij=sys.argv[1:8]; R=json.load(open(rj)); I=json.load(open(ij)); VAL=lambda k:I['values'][k]['value']; PR=I['template']['preset']['roof']; FR=I['views'][PR['porch_on_face']]; BH,FG,RH,STEP=VAL('beam_above_ffl'),VAL('ffl_above_ground'),VAL('ridge_above_beam'),VAL('porch_step_below_ffl'); PG=lambda s:re.search(r'p(\d+)\.svg',s).group(1); K=R['sheet']['mm_per_pt_fitted']; gx,gy=R['grid']['x'],R['grid']['y']; log=lambda *a:print('§ROOF',*a,flush=True); PITCH=R['roof']['pitch_deg']; tan=math.tan(math.radians(PITCH))
+BR0,BR1=[v/K for v in I['template']['ruler']['bubble_radius_mm']]
 def load(f):
     o=[]
     for m in re.finditer(r'<path ([^>]*?)/>',open(f).read()):
@@ -21,7 +22,7 @@ def bubbles(P,W,ok):
     for c,pts in P:
         if c and len(pts)>=4 and math.dist(pts[0],pts[-1])<.3:
             xs=[q[0] for q in pts];ys=[q[1] for q in pts];r=(max(xs)-min(xs))/2
-            if 9<=r<=11 and abs((max(xs)-min(xs))-(max(ys)-min(ys)))<.4:
+            if BR0<=r<=BR1 and abs((max(xs)-min(xs))-(max(ys)-min(ys)))<.4:
                 cx,cy=(min(xs)+max(xs))/2,(min(ys)+max(ys))/2
                 for w in W:
                     if w[0] in ok and math.hypot(w[1]-cx,w[2]-cy)<=r and ok(w,cy) if callable(ok) else False: B[w[0]]=(cx,cy)
@@ -35,7 +36,7 @@ P3=load(s3); W3=words(PG(s3)); B3={}
 for c,pts in P3:
     if c and len(pts)>=4 and math.dist(pts[0],pts[-1])<.3:
         xs=[q[0] for q in pts];ys=[q[1] for q in pts];r=(max(xs)-min(xs))/2
-        if 9<=r<=11 and abs((max(xs)-min(xs))-(max(ys)-min(ys)))<.4:
+        if BR0<=r<=BR1 and abs((max(xs)-min(xs))-(max(ys)-min(ys)))<.4:
             cx,cy=(min(xs)+max(xs))/2,(min(ys)+max(ys))/2
             for w in W3:
                 if w[0] in list(gx)+list(gy) and math.hypot(w[1]-cx,w[2]-cy)<=r: B3[w[0]]=(cx,cy)
@@ -75,7 +76,7 @@ xb=[]
 for c,pts in P6:
     if c and len(pts)>=4 and math.dist(pts[0],pts[-1])<.3:
         xs=[q[0] for q in pts];ys=[q[1] for q in pts];r=(max(xs)-min(xs))/2
-        if 9<=r<=11:
+        if BR0<=r<=BR1:
             cx,cy=(min(xs)+max(xs))/2,(min(ys)+max(ys))/2
             for w in W6:
                 if w[0]=='5' and math.hypot(w[1]-cx,w[2]-cy)<=r: xb.append(cx)

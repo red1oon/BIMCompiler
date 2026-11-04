@@ -2,14 +2,19 @@
 import json,math,re,subprocess
 def load(path):
     return json.load(open(path,encoding='utf-8'))
-def decide(name,measured,blank,where=''):
+def decide(name,measured,blank,where='',module=None):
     """§33 fill rule. Within tolerance = READ, the nominal; outside = FINDING, the measured value (the sheet wins); nothing measured = DEFAULT, the nominal, stated."""
     n,tol=blank['nominal'],blank['tol_mm']
     if measured is None: rec=dict(value=n,status='DEFAULT',measured=None)
     elif abs(measured-n)<=tol: rec=dict(value=n,status='READ',measured=round(measured,1))
-    else: rec=dict(value=round(measured),status='FINDING',measured=round(measured,1))
+    else:
+        mod=module or blank.get('module_mm')
+        rec=dict(value=round(measured/mod)*mod if mod else round(measured),status='FINDING',measured=round(measured,1))
     print('§INFER',name,rec['status'],'value',rec['value'],'measured',rec['measured'],'nominal',n,'tol',tol,'|',where,flush=True)
     return rec
+def radii(T,K):
+    "bubble and section-marker radius bands in points at this sheet's scale: the ruler holds them in mm, so they follow a differently fitted print (§35)"
+    b,s=T['ruler']['bubble_radius_mm'],T['ruler']['section_marker_radius_mm']; return (b[0]/K,b[1]/K),(s[0]/K,s[1]/K)
 def page_of(svg):
     return re.search(r'p(\d+)\.svg',svg).group(1)
 def words(pdf,page):
@@ -37,6 +42,9 @@ def plan_frame(W,R,T):
     K=R['sheet']['mm_per_pt_fitted']; gx,gy=R['grid']['x'],R['grid']['y']; m=T['ruler']['plan_frame_margin_mm']/K
     xs=[w[1] for w in top_row(W,gx).values()]; ys=[w[2] for w in left_col(W,gy).values()]
     return min(xs)-m,max(xs)+m,min(ys)-m,max(ys)+m
+def is_wall_pen(p,T,K):
+    "the wall pen, in mm so it follows a differently fitted print (§35)"
+    return abs(p*K-T['ruler']['wall_pen_mm'])<=1.5
 def pen(sw,M):
     "a stroke's real width in page points: a PDF writer may scale its coordinates and stroke width against each other"
     return round(sw*math.hypot(M[0],M[1]),3)

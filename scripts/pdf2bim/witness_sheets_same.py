@@ -2,7 +2,7 @@
 # Implements prompts/PDF2BIM_VECTOR_PROBE.md §33 W-T4 — are two sets of typed sheets the same drawing? Entity by entity, not byte by byte: a PDF rewritten by Ghostscript moves its TEXT boxes against its lines (fonts re-embedded, measured below), so text gets a stated tolerance and everything else is held to rounding.
 # Usage: witness_sheets_same.py <typed A> <typed B>
 import sys,os,glob,collections
-A,B=sys.argv[1:3]; TOL_LINE=.3; TOL_TEXT=30
+A,B=sys.argv[1:3]; TOL_LINE=float(os.environ.get('SAME_TOL_LINE',.3)); TOL_TEXT=30
 def ents(f):
     d=open(f).read().split('\n'); o=[]; i=0; on=False
     while i<len(d)-1:

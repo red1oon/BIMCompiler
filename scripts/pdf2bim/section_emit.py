@@ -27,7 +27,7 @@ def circles(P,W,rmin,rmax):
         if abs((max(xs)-min(xs))-(max(ys)-min(ys)))<.3 and rmin<=r<=rmax:
             c=((min(xs)+max(xs))/2,(min(ys)+max(ys))/2); o+=[(w[0],c[0],c[1],r) for w in W if math.hypot(w[1]-c[0],w[2]-c[1])<=r]
     return o
-P6=paths(sv6); W6=words(TT.page_of(sv6)); gx=R['grid']['x']; gy=R['grid']['y']; B6=circles(P6,W6,9,11)
+P6=paths(sv6); W6=words(TT.page_of(sv6)); gx=R['grid']['x']; gy=R['grid']['y']; BR,MR=TT.radii(I['template'],K); B6=circles(P6,W6,BR[0],BR[1])
 sections={'A-A':{k:(x,y) for k,x,y,r in B6 if k in gx},'B-B':{k:(x,y) for k,x,y,r in B6 if k in gy}}   # letters head the cut along X, numbers the cut along Y
 # horizontal segments of each section's band, by y: level lines are the long dash-dot rows (many dashes on one y); the membrane is the chromatic row
 res={}
@@ -51,9 +51,9 @@ for name,bub in sections.items():
 if len(res)<2 or not all(v['ok'] for v in res.values()):
     log('W-C5 RESULT no section sheet written: the two sections do not both state the build-up (slab_no_underside stays stated)'); sys.exit(0)
 # the cut: the plan's section marker bubbles (radius below the grid bubbles'), the label on both ends of one horizontal line; anchored as emit_dxf_p1 anchors the plan
-P1=paths(sv1); W1=words(TT.page_of(sv1)); M1=[c for c in circles(P1,W1,7.5,9) if c[0]=='A']
+P1=paths(sv1); W1=words(TT.page_of(sv1)); M1=[c for c in circles(P1,W1,MR[0],MR[1]) if c[0]=='A']
 y5=TT.left_col(W1,gy)['5'][2]
-cb=[q for q in circles(P1,W1,9,11) if q[0]=='5']; y0=cb[0][2] if cb else y5
+cb=[q for q in circles(P1,W1,BR[0],BR[1]) if q[0]=='5']; y0=cb[0][2] if cb else y5
 if len(M1)!=2 or abs(M1[0][2]-M1[1][2])>.1: log('W-C5 RESULT no section sheet written: section marker A not found on both ends',M1); sys.exit(0)
 cut=round(-(M1[0][2]-y0)*K); A=res['A-A']; xA=A['bub']['A'][0]; hmin,hmax=round((A['x'][0]-xA)*K,1),round((A['x'][1]-xA)*K,1)
 log('W-C5 cut from the plan markers: A at',[(round(m[1],1),round(m[2],1)) for m in M1],'-> Y',cut,'mm | grid residuals mm',{k:round((v[0]-xA)*K-gx[k],1) for k,v in A['bub'].items()},'| slab h',hmin,hmax)

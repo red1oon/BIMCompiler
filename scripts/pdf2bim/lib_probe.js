@@ -13,6 +13,7 @@ const fetchJson=async u=>{const f=u.startsWith('/')?u:path.join(base,u); try{ret
   const els=R.els||[]; const by={}; els.forEach(e=>{const k=e.storey+'/'+e.class; by[k]=(by[k]||0)+1}); console.log('§LIB els',els.length,JSON.stringify(by));
   console.log('§LIB fillHard',JSON.stringify(R.fillHard||[]).slice(0,400)); console.log('§LIB fillGaps',(R.fillGaps||[]).length,JSON.stringify((R.fillGaps||[]).slice(0,6)).slice(0,700));
   const bl=(R.verdict&&R.verdict.blocking)||[]; const cnt={}; bl.forEach(b=>{const k=b.code+'|'+b.shape+'|'+(b.detail&&b.detail.layer); cnt[k]=(cnt[k]||0)+1}); console.log('§LIB blocking',bl.length,JSON.stringify(cnt));
+  const ac=(R.verdict&&R.verdict.accepted)||[]; const ca={}; ac.forEach(b=>{const k=b.code+'|'+b.shape+'|'+(b.detail&&b.detail.layer); ca[k]=(ca[k]||0)+1}); console.log('§LIB accepted',ac.length,JSON.stringify(ca),'verdict',R.verdict&&R.verdict.verdict,'advisory codes',JSON.stringify([...new Set(((R.verdict&&R.verdict.advisory)||[]).map(x=>x.code))].filter(x=>/accept/.test(x))));
   console.log('§LIB roofZ',JSON.stringify(R.roofZ).slice(0,200),'slabZ',JSON.stringify(R.slabZ).slice(0,300));
 })().catch(e=>console.log('§LIB error',e.stack.split('\n').slice(0,4).join(' | ')));
 (async()=>{ const r=await I.loadOci(read,{base,fetchJson,convertOpts:{set:'STD'}}); const R=r.R;

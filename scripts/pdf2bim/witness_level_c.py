@@ -4,7 +4,8 @@
 import sys,re,json,os
 O=sys.argv[1]; rd=lambda n:open(os.path.join(O,'logs',n),encoding='utf-8').read()
 L=rd('11_lib_probe.log'); E=rd('06_emit_dxf_p1.log'); S=rd('09b_section_emit.log'); I=rd('12_ifc_check.log')
-BL=json.loads(re.search(r'§LIB blocking \d+ (\{.*\})',L).group(1)); TOTAL=int(re.search(r'§LIB blocking (\d+)',L).group(1)); ELS=json.loads(re.search(r'§LIB els \d+ (\{.*\})',L).group(1))
+BL=json.loads(re.search(r'§LIB blocking \d+ (\{.*\})',L).group(1)); TOTAL=int(re.search(r'§LIB blocking (\d+)',L).group(1)); AC=re.search(r'§LIB accepted (\d+) (\{.*?\}) verdict (\S+)',L); ACN=int(AC.group(1)) if AC else 0; [BL.__setitem__(k,BL.get(k,0)+v) for k,v in (json.loads(AC.group(2)) if AC else {}).items()]; STILL=TOTAL; TOTAL+=ACN   # §34: rows the owner accepted still count here; they left the verdict's blocking, not the list
+ELS=json.loads(re.search(r'§LIB els \d+ (\{.*\})',L).group(1))
 rows=lambda code:sum(v for k,v in BL.items() if k.startswith(code+'|')); cls=lambda c:sum(v for k,v in ELS.items() if k.endswith('/'+c))
 d=open(os.path.join(O,'typed','plan.dxf')).read().split('\n'); ents=[]; i=0; on=False
 while i<len(d)-1:
@@ -53,8 +54,9 @@ else: say('W-C6','PASS' if wall==([-0.05,-6.25,0.15],[9.95,0.05,3.15]) else 'WRO
 # W-C7 §30: every remaining row carries an owner ruling (the lane's verdict is untouched)
 RUL=json.load(open(sys.argv[2]))['owner_rulings'] if len(sys.argv)>2 else None
 if RUL is None: say('W-C7','VACUOUS','no dictionary given, rulings not judged')
+elif STILL: say('W-C7','WRONG','%d rows still block the Modeller after the owner\'s ruling'%STILL)
 elif TOTAL==0: say('W-C7','VACUOUS','no rows left to judge')
 else:
     by={k:sum(rows(c) for c in v) for k,v in RUL.items() if not k.startswith('_')}; left=TOTAL-sum(by.values())
-    say('W-C7','PASS' if left==0 else 'WRONG','rows %d by ruling %s, unclassified %d (the lane verdict stays blocked: waived here, not in bim-ootb)'%(TOTAL,by,left))
+    say('W-C7','PASS' if left==0 else 'WRONG','rows %d by ruling %s, unclassified %d, verdict %s, %d accepted on paper'%(TOTAL,by,left,AC.group(3) if AC else None,ACN))
 print('§WC remaining rows',json.dumps(BL)); print('§WC RESULT','fails',fails,'(FINDING = read correctly, row stands as a true fact about the drawing)')

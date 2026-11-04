@@ -28,12 +28,12 @@ def bubbles(sheet,row):
     for pts,cv in SHC[sheet]:
         if not cv or len(pts)<4 or math.dist(pts[0],pts[-1])>=.3: continue
         xs=[q[0] for q in pts];ys=[q[1] for q in pts];wd=max(xs)-min(xs);ht=max(ys)-min(ys);cx=(min(xs)+max(xs))/2;cy=(min(ys)+max(ys))/2
-        if abs(wd-ht)<.3 and wd/2>=9 and abs(cy-row)<=wd/2:
+        if abs(wd-ht)<.3 and BR[0]<=wd/2<=BR[1] and abs(cy-row)<=wd/2:
             for w in WD:
                 if math.hypot(w[1]-cx,w[2]-cy)<=wd/2: o[w[0]]=(cx,cy,wd/2)
     return o
 GX,GY=R['grid']['x'],R['grid']['y']; WID=GX['E']; DEP=GY['1']
-I=json.load(open(sys.argv[7])); VAL=lambda k:I['values'][k]['value']; BH,FG,RH=VAL('beam_above_ffl'),VAL('ffl_above_ground'),VAL('ridge_above_beam'); BL=I['template']['blanks']
+I=json.load(open(sys.argv[7])); VAL=lambda k:I['values'][k]['value']; BH,FG,RH=VAL('beam_above_ffl'),VAL('ffl_above_ground'),VAL('ridge_above_beam'); BL=I['template']['blanks']; BR,_=TT.radii(I['template'],K)
 # ox = pt x of the first grid label as drawn, beam = pt y of the BEAM/CEILING line: read by infer_type.py; which view is which face is the template's, presumed (§33). Checked by W-E1
 views={}
 for n_ in ('FRONT','REAR','RIGHT','LEFT'):
@@ -44,7 +44,7 @@ def Hlines(P):
     for p in P:
         for a,b in zip(p,p[1:]):
             if abs(a[1]-b[1])<.15 and abs(a[0]-b[0])>0: H[round((a[1]+b[1])/2,1)]+=abs(a[0]-b[0])
-    return sorted(y for y,l in H.items() if l>=300)
+    return sorted(y for y,l in H.items() if l*K>=I['template']['ruler']['long_line_mm'])
 for n,v in views.items():
     P=SH[v['sheet']]; lh=Hlines(P); ffl=v['beam']+BH/K; hit=[y for y in lh if abs(y-ffl)<.3]; gl=[y for y in lh if abs(y-(ffl+FG/K))<.3]; v['ffl']=ffl
     log('W-E1',n,'beam',v['beam'],'FFL expected',round(ffl,2),'found',hit,'ground expected',round(ffl+FG/K,2),'found',gl,'PASS' if hit and gl else 'WRONG')

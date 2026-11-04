@@ -7,6 +7,7 @@ PG(){ python3 -I -c "import json,sys;print(json.load(open(sys.argv[1]))['sheets'
 mkdir -p "$O/logs" "$O/svg"; cd "$O" || exit 1
 run(){ n="$1"; shift; "$@" > "logs/$n.log" 2>&1; echo "== $n exit=$? ($(wc -l < logs/$n.log) lines)"; }
 for p in 1 2 3 4 5 6 7 8; do pdftocairo -svg -f $p -l $p "$PDF" "svg/p$p.svg"; done
+if [ -z "${PDF2BIM_NO_FILL:-}" ]; then run 00_fill_blanks python3 -I $S/fill_blanks.py svg "$RJ" "$TJ" "$PDF" "$O/rosetta.effective.json"; [ -f "$O/rosetta.effective.json" ] && RJ="$O/rosetta.effective.json"; fi   # §35: the sheets fill the dictionary's K, grid and schedule; the falsifier skips this
 run 01_extract_p1      python3 -I $S/extract_p1.py "$PDF" $P1 "$O/x1"
 run 02_rosetta_verify  python3 -I $S/rosetta_verify.py "$PDF" "$RJ"
 run 03_type_checklist  python3 -I $S/type_checklist.py "$PDF" $P1 8 "$T/low_cost_house.json"
@@ -25,11 +26,12 @@ LIBDB="${PDF2BIM_LIBDB:-}"; for c in "$H/library/component_library.db" "$HOME/bi
 # the library DB is never modified: a COPY gets the append-only migration(s) this lane depends on (CL006 = size pair on the two exact-size FD1 door families, spec §27), then the export reads the copy
 if [ ! -f "$O/lib/latest.json" ]; then
   cp "$LIBDB" "$O/component_library.migrated.db"
-  python3 -I - "$O/component_library.migrated.db" "$H/migration/CL006_opening_family_size_pair.sql" > logs/10a_library_migrate.log 2>&1 <<'PY'
+  python3 -I - "$O/component_library.migrated.db" "$H/migration/CL006_opening_family_size_pair.sql" "$H/migration/CL007_low_cost_window_families.sql" > logs/10a_library_migrate.log 2>&1 <<'PY'
 import sqlite3,sys
 c=sqlite3.connect(sys.argv[1]); q="select count(*) from ad_opening_family where description like '%×2100mm%' and family_id like 'INST_FIRE_DOOR_%'"
 b=c.execute(q).fetchone()[0]; c.executescript(open(sys.argv[2],encoding='utf-8').read()); c.commit(); a=c.execute(q).fetchone()[0]
-print('§MIG CL006 families with a size pair before',b,'after',a)
+w0=c.execute("select count(*) from ad_opening_family where family_id like 'LCSSU_%'").fetchone()[0]; c.executescript(open(sys.argv[3],encoding='utf-8').read()); c.commit(); w1=c.execute("select count(*) from ad_opening_family where family_id like 'LCSSU_%'").fetchone()[0]
+print('§MIG CL006 families with a size pair before',b,'after',a,'| CL007 window families before',w0,'after',w1)
 PY
   echo "== 10a_library_migrate ($(cat logs/10a_library_migrate.log | tr '\n' ' '))"
   run 10_library_export node "$H/scripts/export_library_subset.js" --full --out-dir "$O/lib" --lib "$O/component_library.migrated.db"
@@ -40,6 +42,7 @@ run 13_witness_level_c python3 -I $S/witness_level_c.py "$O" "$RJ"
 run 14_other_sheets    python3 -I $S/other_sheets.py "$O" "$RJ" "$PDF"
 run 15_gap_register    python3 "$S/gap_register.py" "$O" "$RJ"
 run 16_witness_roof    python3 "$S/witness_house_roof.py" "$O"
+run 16b_witness_windows python3 "$S/witness_windows.py" "$O" "$RJ"
 run 17_witness_template python3 -I "$S/witness_template.py" "$O" "$TJ"
 run 18_geom_hash       python3 "$S/geom_hash.py" "$O/tbkltn_p1.ifc"
-echo "--- headline"; grep -h -E "W-P1 |W-P5 wall pairs|W-P12 round|G1 scale|MATCH D|TOTAL by class" logs/0*.log | cut -c1-170; grep -h -E "LIB els|IFC counts|IFC bbox .* IfcWall|IFC validate" logs/11_lib_probe.log logs/12_ifc_check.log | cut -c1-200; grep -h -E "W-C[0-9] |§WC" logs/13_witness_level_c.log | cut -c1-220; grep -h -E "^§(S |GAP-TOTAL)" logs/14_other_sheets.log logs/15_gap_register.log | cut -c1-200; grep -h -E "^§R " logs/16_witness_roof.log | cut -c1-200; grep -h -E "^§INFER RESULT" logs/03b_infer_type.log | cut -c1-200; grep -h -E "^§T " logs/17_witness_template.log | cut -c1-200; cat logs/18_geom_hash.log
+echo "--- headline"; grep -h -E "W-P1 |W-P5 wall pairs|W-P12 round|G1 scale|MATCH D|TOTAL by class" logs/0*.log | cut -c1-170; grep -h -E "LIB els|IFC counts|IFC bbox .* IfcWall|IFC validate" logs/11_lib_probe.log logs/12_ifc_check.log | cut -c1-200; grep -h -E "W-C[0-9] |§WC" logs/13_witness_level_c.log | cut -c1-220; grep -h -E "^§(S |GAP-TOTAL)" logs/14_other_sheets.log logs/15_gap_register.log | cut -c1-200; grep -h -E "^§R " logs/16_witness_roof.log | cut -c1-200; grep -h -E "^§W " logs/16b_witness_windows.log | cut -c1-200; grep -h -E "^§INFER RESULT" logs/03b_infer_type.log | cut -c1-200; grep -h -E "^§T " logs/17_witness_template.log | cut -c1-200; cat logs/18_geom_hash.log

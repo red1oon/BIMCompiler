@@ -4,13 +4,13 @@
 import re,sys,json,math,collections,subprocess,os
 sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
 import type_template as TT
-svgf,rj,pdf,tj=sys.argv[1:5]; WP=TT.load(tj)['ruler']['wall_pen_pt']; R=json.load(open(rj)); log=lambda *a:print('§PDF',*a,flush=True)
+svgf,rj,pdf,tj=sys.argv[1:5]; TY=TT.load(tj); K_=json.load(open(rj))['sheet']['mm_per_pt_fitted']; R=json.load(open(rj)); log=lambda *a:print('§PDF',*a,flush=True)
 svg=open(svgf).read(); segs=[]
 for m in re.finditer(r'<path ([^>]*?)/>',svg):
     a=m.group(1)
     if 'stroke="' not in a: continue
     t=re.search(r'transform="matrix\(([^)]*)\)"',a); M=[float(x) for x in t.group(1).split(',')] if t else [1,0,0,1,0,0]
-    if TT.pen(float(re.search(r'stroke-width="([\d.]+)"',a).group(1)),M)!=WP: continue
+    if not TT.is_wall_pen(TT.pen(float(re.search(r'stroke-width="([\d.]+)"',a).group(1)),M),TY,K_): continue
     tk=re.findall(r'[MLC]|-?[\d.]+',re.search(r' d="([^"]*)"',a).group(1)); pts=[];i=0;c=None
     while i<len(tk):
         if tk[i] in 'MLC': c=tk[i];i+=1;continue

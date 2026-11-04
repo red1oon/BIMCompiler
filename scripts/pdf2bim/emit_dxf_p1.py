@@ -4,7 +4,7 @@
 import re,sys,json,math,collections,subprocess,statistics,os
 sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
 import type_template as TT
-svgf,rj,pdf,outf,tj=sys.argv[1:6]; T=TT.load(tj); WP=T['ruler']['wall_pen_pt']; R=json.load(open(rj)); K=R['sheet']['mm_per_pt_fitted']; log=lambda *a:print('§PDF',*a,flush=True)
+svgf,rj,pdf,outf,tj=sys.argv[1:6]; T=TT.load(tj); R=json.load(open(rj)); K=R['sheet']['mm_per_pt_fitted']; log=lambda *a:print('§PDF',*a,flush=True)
 svg=open(svgf).read(); P=[]
 def bez(p0,c1,c2,p1,t): u=1-t; return tuple(u**3*p0[i]+3*u*u*t*c1[i]+3*u*t*t*c2[i]+t**3*p1[i] for i in (0,1))
 for m in re.finditer(r'<path ([^>]*?)/>',svg):
@@ -25,8 +25,8 @@ for m in re.finditer(r'<path ([^>]*?)/>',svg):
     P.append((sw,pts,smp,'C' in dd))
 # ---- grid anchors (text layer) + the wall pen's pair centres give the Y bias
 W=TT.words(pdf,TT.page_of(svgf)); FX0,FX1,FY0,FY1=TT.plan_frame(W,R,T); IN=lambda xs,ys:FX0<=min(xs) and max(xs)<=FX1 and FY0<=min(ys) and max(ys)<=FY1
-gx,gy=R['grid']['x'],R['grid']['y']; x0=TT.top_row(W,gx)['A'][1]; y5=TT.left_col(W,gy)['5'][2]
-hy=sorted({round((p[0][1]+p[1][1])/2,1) for sw,pts,s,cv in P if sw==WP and len(pts)==2 for p in [pts] if abs(p[0][1]-p[1][1])<.25 and abs(p[0][0]-p[1][0])>30})
+BR,_=TT.radii(T,K); gx,gy=R['grid']['x'],R['grid']['y']; x0=TT.top_row(W,gx)['A'][1]; y5=TT.left_col(W,gy)['5'][2]
+hy=sorted({round((p[0][1]+p[1][1])/2,1) for sw,pts,s,cv in P if TT.is_wall_pen(sw,T,K) and len(pts)==2 for p in [pts] if abs(p[0][1]-p[1][1])<.25 and abs(p[0][0]-p[1][0])>30})
 cent=[(a+b)/2 for a,b in zip(hy,hy[1:]) if 2<=b-a<=3.6]; bias=statistics.median(min(c-(y5+gy[k]/K) for k in gy for _ in [0]) if False else min((c-(y5+gy[k]/K) for k in gy),key=abs) for c in cent)
 y0=y5+bias; log('E0 anchors x0',round(x0,2),'y5_label',round(y5,2),'Y bias',round(bias,2),'pt -> axis5 y',round(y0,2),'from',len(cent),'sw3 H pair centres')
 X=lambda x:round((x-x0)*K,1); Y=lambda y:round(-(y-y0)*K,1)
@@ -38,7 +38,7 @@ circ=[]
 for sw,pts,s_,cv in P:
     if cv and len(pts)>=4 and math.dist(pts[0],pts[-1])<.3:
         xs=[q[0] for q in pts];ys=[q[1] for q in pts];w=max(xs)-min(xs);h=max(ys)-min(ys)
-        if abs(w-h)<.3 and w/2>=9: circ.append(((min(xs)+max(xs))/2,(min(ys)+max(ys))/2,w/2))
+        if abs(w-h)<.3 and BR[0]<=w/2<=BR[1]: circ.append(((min(xs)+max(xs))/2,(min(ys)+max(ys))/2,w/2))
 def bubble(label,on_x):
     want=x0+gx[label]/K if on_x else y0+gy[label]/K; c=[q for q in circ if abs((q[0] if on_x else q[1])-want)<=1.5 and any(w[0]==label and math.hypot(w[1]-q[0],w[2]-q[1])<=q[2] for w in W)]
     return min(c,key=lambda q:abs((q[0] if on_x else q[1])-want)) if len(c)>=1 else None
@@ -74,7 +74,7 @@ for k,(cx_,cy_,r_) in BUB.items(): E+=[('PDF-GRID','CIRCLE',(cx_,cy_,r_)),('PDF-
 # ---- walls: (a) sw3 pairs (b) 100 mm cell runs
 H=collections.defaultdict(list);V=collections.defaultdict(list)
 for sw,pts,s,cv in P:
-    if sw==WP and len(pts)==2:
+    if TT.is_wall_pen(sw,T,K) and len(pts)==2:
         p,q=pts
         if abs(p[1]-q[1])<=.25 and abs(p[0]-q[0])>.25: H[round((p[1]+q[1])/2,1)].append((min(p[0],q[0]),max(p[0],q[0])))
         elif abs(p[0]-q[0])<=.25 and abs(p[1]-q[1])>.25: V[round((p[0]+q[0])/2,1)].append((min(p[1],q[1]),max(p[1],q[1])))

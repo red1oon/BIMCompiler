@@ -4,7 +4,7 @@
 import re,sys,json,math,collections,os,statistics
 sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
 import type_template as TT
-sd,rj,tj,pdf,outj=sys.argv[1:6]; R=json.load(open(rj)); T=TT.load(tj); K=R['sheet']['mm_per_pt_fitted']; gx,gy=R['grid']['x'],R['grid']['y']; B=T['blanks']; log=lambda *a:print('§INFER',*a,flush=True); V={}
+sd,rj,tj,pdf,outj=sys.argv[1:6]; R=json.load(open(rj)); T=TT.load(tj); K=R['sheet']['mm_per_pt_fitted']; gx,gy=R['grid']['x'],R['grid']['y']; B=T['blanks']; BR,_=TT.radii(T,K); log=lambda *a:print('§INFER',*a,flush=True); V={}
 log('type',T['type_name'],'| orientation presumed, structure preset: only the blanks are read')
 def load(page):
     o=[]
@@ -30,7 +30,7 @@ def circles(P,W,labels):
         pts=p['pts']
         if not p['curve'] or len(pts)<4 or math.dist(pts[0],pts[-1])>=.3: continue
         xs=[q[0] for q in pts];ys=[q[1] for q in pts];wd=max(xs)-min(xs);ht=max(ys)-min(ys)
-        if abs(wd-ht)<.4 and wd/2>=9:
+        if abs(wd-ht)<.4 and BR[0]<=wd/2<=BR[1]:
             c=((min(xs)+max(xs))/2,(min(ys)+max(ys))/2); o+=[(w,c,wd/2) for w in W if w[0] in labels and math.hypot(w[1]-c[0],w[2]-c[1])<=wd/2]
     return o
 # ---- elevations: the view's beam, floor and ground lines are the only long lines at the template's two spacings (searched +-20% wide, so a wrong template still finds the sheet's lines and says FINDING)
@@ -40,7 +40,7 @@ for sh in sorted({v['sheet'] for v in views.values()}):
     for p in P:
         for a,b in zip(p['pts'],p['pts'][1:]):
             if abs(a[1]-b[1])<.15 and abs(a[0]-b[0])>0: H[round((a[1]+b[1])/2,1)]+=abs(a[0]-b[0])
-    L=sorted(y for y,l in H.items() if l>=300); nb,ng=B['beam_above_ffl']['nominal'],B['ffl_above_ground']['nominal']; cand=[]
+    L=sorted(y for y,l in H.items() if l*K>=T['ruler']['long_line_mm']); nb,ng=B['beam_above_ffl']['nominal'],B['ffl_above_ground']['nominal']; cand=[]
     for y in L:
         for f in L:
             for g in L:
@@ -78,9 +78,9 @@ if 'A' in B3 and '5' in B3:
 V['eaves_from_axis']=TT.decide('eaves_from_axis',ey,B['eaves_from_axis'],'p%s ribs'%S['roof'])
 ax=T['preset']['roof']['main_ridge_axis']; log('main ridge presumed on axis',ax,'at',gy[ax],'| ribs put it at',ridge,'FINDING: not on the presumed axis' if ridge is not None and abs(ridge-gy[ax])>25 else '')
 # ---- plan: the wall pen's paired lines
-W1=TT.words(pdf,S['plan']); P1=load(S['plan']); HL=collections.defaultdict(list); VL=collections.defaultdict(list); wp=T['ruler']['wall_pen_pt']
+W1=TT.words(pdf,S['plan']); P1=load(S['plan']); HL=collections.defaultdict(list); VL=collections.defaultdict(list)
 for p in P1:
-    if p['pen'] is None or abs(p['pen']-wp)>.005: continue
+    if p['pen'] is None or not TT.is_wall_pen(p['pen'],T,K): continue
     for a,b in zip(p['pts'],p['pts'][1:]):
         if abs(a[1]-b[1])<=.25 and abs(a[0]-b[0])>.25: HL[round((a[1]+b[1])/2,1)].append((min(a[0],b[0]),max(a[0],b[0])))
         elif abs(a[0]-b[0])<=.25 and abs(a[1]-b[1])>.25: VL[round((a[0]+b[0])/2,1)].append((min(a[1],b[1]),max(a[1],b[1])))
