@@ -42,9 +42,13 @@ A real low-cost PDF from another drafter. Publishing a library again needs its o
 
 Owner decided 2026-11-05: the PDF step runs in the Modeller page, row "from PDF drawing" (§42). A second sample PDF may be authored, just to test (§40). Scans are refused by ruling.
 
-NEXT, needing no decision: see the RESUME block. The Revit question matters most: the owner sees this as saving hours in Revit, and the walls are meshes.
+⏸ STOPPED 2026-11-05 BY THE OWNER (tokens), MID-FILM. **First job next session: cut the film: `prompts/FILM_PDF2BIM.md` §4 ▶ RESUME HERE.** The owner said go (a narrated English film with the caveats on screen). Shots are in `~/Videos/pdf2bim_film_work/`, the script and facts are in §5, every product fix it needed is live. Say that in one line, then do it; don't re-ask.
+
+Then: NEXT, needing no decision: see the RESUME block. The Revit question matters most: the owner sees this as saving hours in Revit, and the walls are meshes.
 
 LANDMINES (each cost time on 2026-11-04 and -05)
+- Puppeteer's request interception stalls the kernel worker's start (2 of 8 runs stuck, 0 of 8 without). It looked like a Convert that did nothing, and two wrong explanations came first. Redirect the fetch inside the page instead, and count before explaining.
+- Don't write a result into a doc in the same command that prints it.
 - Read first, then write: a commit said "all variants fails 0" while its own sweep said H fails 5, because the text was written in the command that printed the result. Corrected in the next commit.
 - A rule is not done until BOTH drawings and every variant have run: four of the second drawing's rules broke TB-LKTN or a variant first.
 - A service worker's fetches escape puppeteer's request interception: a "local library" run was really hitting the live one while logging "served from local". Assert the `sha=` that answered (T0, S0); use setBypassServiceWorker.
