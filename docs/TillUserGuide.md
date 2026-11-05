@@ -44,7 +44,7 @@ The 25 things a uniCenta 5.0 cashier (and manager) does, and where each one is h
 | 6 | Ticket button bar | **Total discount**, **Line discount**, **Print preview**, **Open drawer**, **Virtual Keyboard** | Refund item, Service charge, Line note, Set person are **not** on the bar, as in uniCenta 5.0's default (they are commented out there). |
 | 7 | Shared tickets | **Add New Ticket**, **Tickets awaiting completion**, **Delete**, **Reprint Ticket**, **Quick LogOff** | — |
 | 8 | Payment dialog, 8 tenders | Tabs **Cash, Cheque, Voucher, Card, Free, Debt, Bank, Slip**; Add / Delete Part Payment; Print Receipt | **Voucher, Free, Debt and Slip are disabled.** Legacy iDempiere has no payment tender type for them, and the till may only send what legacy can import. Cash, Cheque, Card, Bank are live. |
-| 9 | Receipt and change pop-up | **Receipt** screen, **Change** pop-up | Card: you key the terminal's reference and approval code; the card number is never typed or stored. |
+| 9 | Receipt and change pop-up | **Receipt** screen (uniCenta's 42-column ticket), **Change** pop-up | Card: you key the terminal's reference and approval code; the card number is never typed or stored. |
 | 10 | Edit Sales | **Edit Sales** | Edit is allowed only on a sale of the open shift that has not been refunded or sent to head office. |
 | 11 | Refund | **Edit Sales → Refund** | Tabs Refund, Cheque, Voucher (disabled), Card. |
 | 12 | Customer Payment | **Customer Payment** | Tabs Cash, Cheque, Voucher (disabled), Bank, Card, Slip (disabled). The till writes no debt of its own. |
@@ -146,7 +146,19 @@ The 25 things a uniCenta 5.0 cashier (and manager) does, and where each one is h
 4. Tick or untick **Print Receipt**, then **OK**. The sale is saved on the device and the **Receipt** screen opens.
 5. If the **first** tender was cash and there is change, a **Change** pop-up shows the amount. Tap **OK** to return.
 
-   ![The receipt: number, date, terminal, served by, lines, totals, tenders](img/till/till_09_receipt.png)
+   ![The receipt: header, number, date, terminal, served by, item grid, subtotal, tax, balance due, tenders, footer, card block](img/till/till_09_receipt.png)
+
+   **The receipt is laid out exactly as uniCenta's standard ticket** (`Printer.Ticket.xml`), on a fixed 42-character grid in a monospace font, black on white in both themes. Top to bottom:
+
+   - **Header:** the logo (when the company has one), then up to six centred lines: the company name, address, tax id, phone, e-mail, or the header lines typed in *Configuration*. With neither, the receipt starts at *Receipt:*.
+   - **Receipt:** (or *Refund:*) the ticket number, **Date:**, **Terminal:**, **Served by:**, and **Customer:** / **Table:** when the ticket has them.
+   - **Item grid:** a heading *Item / Price / Qty / Value*, a dashed line, one row per ticket line (the name is cut at 17 characters, price, *x* quantity and value right-aligned), a dashed line, then *Items count:*.
+   - **Totals:** **Subtotal**, **Tax**, a large bold **Balance Due**, then one row per tax with its base and tax amount. Line values are before tax; the tax is worked out once for the whole ticket, so Subtotal plus Tax always equals Balance Due to the cent.
+   - **Tenders:** cash shows *Tendered* and *Change*; cheque and bank show their amount.
+   - **Footer:** your footer line 1 centred, an `=` rule, then footer lines 2 to 6.
+   - **Card block** (card sales): *CARD SALE*, the amount, the terminal's *Tranx ID* and *Auth Code*, and the card part of the total. **No card number is ever printed.**
+
+   Tap **Print** on the Receipt screen to print it on an 80 mm roll (or save it as a PDF of the same width) through the browser's print dialog. **Reprint Last Ticket** and **Reprint Ticket** open the same receipt, so the same Print button applies.
 
 ### Holding tickets and quick log-off
 
