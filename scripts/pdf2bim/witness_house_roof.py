@@ -39,6 +39,7 @@ boxy=[e for e in RF if len(verts(e))<=8]
 say('W-R1','PASS' if len(RF)==4 and not boxy and abs(max(zs)-TOPZ)<=.001 else 'WRONG','IfcRoof %d, block-shaped %d, top z %.3f (expected %.3f)'%(len(RF),len(boxy),max(zs),TOPZ))
 say('W-R2','PASS' if abs(min(xs)-X0)<=.002 and abs(max(xs)-X1)<=.002 and abs(max(ys)-YN)<=.002 and abs(min(ys)-FRONT)<=.03 else 'WRONG','roof plan x %.3f..%.3f y %.3f..%.3f (expected x %.3f..%.3f y %.3f..%.3f)'%(min(xs),max(xs),min(ys),max(ys),X0,X1,FRONT,YN))
 # the top surface: over a plan point, the highest triangle
+# (the porch ridge is sampled 3 mm beside its line: on the Modeller's own export two planes meet there with a 1 mm gap at the file's precision, and the point falls in neither; 3 mm at the pitch is 1.4 mm of height, inside W-R4's tolerance)
 T=[t for e in RF for t in tris(e)]
 def top(x,y):
     best=None
@@ -51,7 +52,7 @@ def top(x,y):
     return best
 xs_=gx['B']/2000; y1,y2=-gy['3']/3000,-gy['3']/1500; z1,z2=top(xs_,y1),top(xs_,y2); slope=math.degrees(math.atan2(z2-z1,y1-y2)) if z1 and z2 else None
 say('W-R3','PASS' if slope and abs(slope-PITCH)<=.05 else 'WRONG','main north slope measured %s deg between two points of the mesh (sheet %s)'%(round(slope,2) if slope else None,PITCH))
-eave=top(xs_,YN-.001); pr=top(PR_X,-(gy['1']-500)/1000); ok4=eave and pr and abs(eave-EAVE4)<=.03 and abs(pr-PR4)<=.002
+eave=top(xs_,YN-.001); pr=top(PR_X-.003,-(gy['1']-500)/1000); ok4=eave and pr and abs(eave-EAVE4)<=.03 and abs(pr-PR4)<=.002
 say('W-R4','PASS' if ok4 else 'WRONG','main eave z %.3f vs p4 %.3f; porch ridge z %.3f vs p4 %.3f'%(eave or 0,EAVE4,pr or 0,PR4))
 # no wall top pokes through: over every wall's top corners, the roof underside is at or above the wall top
 TH=0.0254; poke=[]; W=f.by_type('IfcWall'); nW=0

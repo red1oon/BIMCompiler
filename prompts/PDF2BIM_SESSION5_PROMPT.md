@@ -1,9 +1,9 @@
 # ⚠ DO NOT REMOVE — PDF2BIM resume prompt (paste the block below into a NEW session)
-# Scope: finish the ONE low-cost single-storey house (TB-LKTN) from vector PDF -> DXF -> a coherent model that Converts in the Modeller. Findings live in `prompts/PDF2BIM_VECTOR_PROBE.md` (▶ RESUME HERE) and `bim-ootb prompts/DXF2BIM_MODELLER_LANE.md` (§L32-§L38); this file only STARTS a session.
+# Scope: finish the ONE low-cost single-storey house (TB-LKTN) from vector PDF -> DXF -> a coherent model that Converts in the Modeller. Findings live in `prompts/PDF2BIM_VECTOR_PROBE.md` (▶ RESUME HERE) and `bim-ootb prompts/DXF2BIM_MODELLER_LANE.md` (§L32-§L39); this file only STARTS a session.
 # Read the log after every run (`<outdir>/logs/*.log`); exit code is not evidence. Honour this block until the prompt is DONE. Written 2026-11-05, branch `feat/pdf2bim-vector`. Replaces the session-4 prompt.
 
 ```
-Resume the PDF→BIM lane on the low-cost house. Read prompts/PDF2BIM_VECTOR_PROBE.md on branch feat/pdf2bim-vector: ▶ RESUME HERE, then §36, §38, §39, then §33, §35, §34, §29 to §32. Then bim-ootb prompts/DXF2BIM_MODELLER_LANE.md §L36, §L37, §L38. The owner said: consolidate on this one house first.
+Resume the PDF→BIM lane on the low-cost house. Read prompts/PDF2BIM_VECTOR_PROBE.md on branch feat/pdf2bim-vector: ▶ RESUME HERE, then §41, §40, §38, §39, §36, then §33, §35, §34, §29 to §32. Then bim-ootb prompts/DXF2BIM_MODELLER_LANE.md §L36 to §L39. The owner said: consolidate on this one house first.
 
 WHERE THE FILES ARE
 - Two repos. bim-compiler branch feat/pdf2bim-vector (pushed, no PR, not merged): the PDF -> DXF chain, scripts/pdf2bim/. bim-ootb main: the importer and the Modeller, modeller/.
@@ -19,6 +19,8 @@ REPRODUCE FIRST (verify before building)
 - typed sheets byte-identical between two clean runs; `geom_hash.py` hash 03a3dfef2a0b4342 (18_geom_hash.log, measured 2026-11-05). IFC files differ on one line, the header's timestamp.
 - `PDF2BIM_OOTB=<tree> scripts/pdf2bim/witness_ruler.sh <that outdir> <work dir>`: `§T RESULT fails 0` (moved drawing, wrong ruler, stripped sheet, swapped orientation).
 - `PDF2BIM_OOTB=<tree> scripts/pdf2bim/witness_variant.sh <that outdir> <work dir>`: every `§V ... RESULT fails 0` (control, wider bay, taller wall, 90% print, swapped tags, other font, new schedule size, 2 falsifiers, the §37 falsifier).
+- `PDF2BIM_OOTB=<tree> scripts/pdf2bim/witness_second.sh <that outdir> <work dir>`: `§2D RESULT fails 0`, one DEFAULT (floor_buildup), and the falsifier writes no IFC.
+- After changing any rule here: rebuild with `make_port_oracle.sh`, then the port must follow, byte for byte: bim-ootb `modeller/tests/witness_pdf2dxf_rules.js`, `witness_pdf2dxf_reader.js`, `witness_pdf2dxf_page.js`.
 - TBKLTN_House.pdf is git-ignored and library/component_library.db is not in git: the script finds both in ~/bim-compiler. It migrates a COPY of the library only.
 - Run ifc_check.py, gap_register.py, witness_house_roof.py WITHOUT `python -I` (IfcOpenShell is in the user site).
 
@@ -34,16 +36,22 @@ RULINGS (do not re-litigate)
 - Push and merge your own verified PRs (auto-merge), then fetch the live URL to confirm: green CI is not deployed.
 
 STATE IN ONE LINE
-The house has walls, real house doors on their floor, windows, slab, pitched roof, porch, columns and gable ends, deterministically; heights, offsets, door heads, rooms and printed areas read from the sheets against the ruler template; 57 rows accepted, 2 D2 doors kept as the drawing's own disagreement. It Converts on a local copy of library ebcea595bea6. Library f5a308656e73 is what is LIVE, without the door families, so the new sheets refuse there until the owner says publish.
+A low-cost house PDF reaches Convert from the Modeller's Open panel ("from PDF image"), offline, by fixed rules: walls, house doors on their floor, windows, slab, pitched roof, porch, columns, gable ends, on TB-LKTN and on a second drawing this lane wrote. Library f5a308656e73 is what is LIVE, without the door families, so on the live site the entry reads TB-LKTN and refuses it, in words, until the owner says publish.
 
-OWNER DECISIONS, ⛔ THREE OPEN, ASK ONCE, THEN WORK ON WHAT IS LEFT:
-(a) Publish library ebcea595bea6? W-LIB-PUB passes, one new version beside the live one, rollback = point latest.json back. Lane rule: "Republish to OCI only on the owner's go". After a go: upload `<sha12>/`, run witness_library_publish.js BEFORE moving latest.json, fetch back, then set witness_dxf_accept_page's defaults to 57 rows, the LCSSU_D families and that sha, and update types/library_next_publish.json.
-(b) Where does the PDF -> DXF step run: the Modeller page (recommended) or a command? See the end of §39.
-(c) A real second low-cost PDF from another drafter.
+OWNER DECISIONS, ⛔ ASK ONCE, THEN WORK ON WHAT IS LEFT:
+(a) Publish library ebcea595bea6? W-LIB-PUB passes, one new version beside the live one, rollback = point latest.json back. Lane rule: "Republish to OCI only on the owner's go". After a go: upload `<sha12>/`, run witness_library_publish.js BEFORE moving latest.json, fetch back, then set witness_dxf_accept_page's defaults to 57 rows, the LCSSU_D families and that sha, and update types/library_next_publish.json. witness_pdf2dxf_page's L turns from "refuses" to "builds" by itself.
+(b) A real low-cost PDF from another drafter.
 
-NEXT, needing no decision: see the RESUME block.
+Owner decided 2026-11-05: the PDF step runs in the Modeller page, row "from PDF image". A second sample PDF may be authored, just to test (§40). The owner is told plainly: "image" will read as "scan" to many users; scans are refused by ruling.
 
-LANDMINES (each cost time on 2026-11-04)
+NEXT, needing no decision: see the RESUME block. The Revit question matters most: the owner sees this as saving hours in Revit, and the walls are meshes.
+
+LANDMINES (each cost time on 2026-11-04 and -05)
+- Read first, then write: a commit said "all variants fails 0" while its own sweep said H fails 5, because the text was written in the command that printed the result. Corrected in the next commit.
+- A rule is not done until BOTH drawings and every variant have run: four of the second drawing's rules broke TB-LKTN or a variant first.
+- A service worker's fetches escape puppeteer's request interception: a "local library" run was really hitting the live one while logging "served from local". Assert the `sha=` that answered (T0, S0); use setBypassServiceWorker.
+- At machine load 40 Convert witnesses time out and pass alone: read the FATAL line before calling it a regression, and re-run it alone.
+- `witness_second` passing proves less than it seems: the author knows the reader, and it found errors in the drawing as well as the reader; keep them apart in the record.
 - Never blame the engine first: `create_shape(st,e).geometry.verts` reads freed memory. Two sessions recorded IfcOpenShell as non-deterministic; it was us. A garbage value such as -7.98e27 is a pointer bug until shown otherwise.
 - A log line saying WRONG that no verdict reads is invisible: REAR's W-E1 said WRONG from §35 to §39. W-T1c now fails on any stage's own WRONG (stages 00-11); NOFILL's is expected.
 - `INSERT OR IGNORE` hides a key collision as success: `--only D3` dropped its mesh rows silently. Count what landed.
