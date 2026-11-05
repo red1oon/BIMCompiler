@@ -35,11 +35,10 @@ RULINGS (do not re-litigate)
 - Push and merge your own verified PRs (auto-merge), then fetch the live URL to confirm: green CI is not deployed.
 
 STATE IN ONE LINE
-A low-cost house PDF reaches Convert from the Modeller's Open panel ("from PDF image"), offline, by fixed rules: walls, house doors on their floor, windows, slab, pitched roof, porch, columns, gable ends, on TB-LKTN and on a second drawing this lane wrote. Library f5a308656e73 is what is LIVE, without the door families, so on the live site the entry reads TB-LKTN and refuses it, in words, until the owner says publish.
+A low-cost house PDF reaches Convert from the Modeller's Open panel ("from PDF image"), offline, by fixed rules, and builds on the live site: walls, house doors on their floor, windows, slab, pitched roof, porch, columns, gable ends. Library ebcea595bea6 is LIVE (owner's go 2026-11-05); rollback = point latest.json back at f5a308656e73. Tested on TB-LKTN and on a second drawing this lane wrote.
 
 OWNER DECISIONS, ⛔ ASK ONCE, THEN WORK ON WHAT IS LEFT:
-(a) Publish library ebcea595bea6? W-LIB-PUB passes, one new version beside the live one, rollback = point latest.json back. Lane rule: "Republish to OCI only on the owner's go". After a go: upload `<sha12>/`, run witness_library_publish.js BEFORE moving latest.json, fetch back, then set witness_dxf_accept_page's defaults to 57 rows, the LCSSU_D families and that sha, and update types/library_next_publish.json. witness_pdf2dxf_page's L turns from "refuses" to "builds" by itself.
-(b) A real low-cost PDF from another drafter.
+A real low-cost PDF from another drafter. Publishing a library again needs its own go: state the change in types/library_next_publish.json BEFORE the run, upload `<sha12>/`, run witness_library_publish.js BEFORE moving latest.json, flip last, fetch back, run the real URL, then move the witness pins.
 
 Owner decided 2026-11-05: the PDF step runs in the Modeller page, row "from PDF image". A second sample PDF may be authored, just to test (§40). The owner is told plainly: "image" will read as "scan" to many users; scans are refused by ruling.
 
