@@ -10,22 +10,38 @@ uniCenta needs no new learning, running on the same SQLite twin of iDempiere as 
 working when the connection drops.
 
 > **The till deposits; it never completes.** Each sale is written on the till as *import rows* (`I_Order` lines
-> and `I_Payment` tenders — the same legacy import tables iDempiere has). At **Close Cash** the till hands its
-> shift to its **branch POS admin**, which sends the whole branch to head office **once**, at end of day (EODA).
-> Head office later turns the rows into orders, invoices and receipts. The till itself writes **no** order,
-> shipment, invoice, payment or posting, and it never talks to head office directly.
+> and `I_Payment` tenders — the same legacy import tables iDempiere has). Each ticket and, at **Close Cash**, the shift
+> go to the **branch relay**, a small box on the shop's own network. The branch's **main till** collects them and sends the whole
+> branch to head office **once**, at end of day (EODA). Head office later turns the rows into orders, invoices and receipts.
+> The till itself writes **no** order, shipment, invoice, payment or posting, and it never talks to head office or the internet.
 
-Live pages (the demo site):
+**Two ways to start:** *Try it now* (below, nothing to install) or *Install at a shop (air-gapped)* (the real set-up, further down).
+
+## Try it now (no install)
+
+Open these in any browser. The first open downloads the shop's data and takes about 15 seconds; the top line of the page counts the seconds
+(*Starting… loading the shop's data*), and says what to do if it stalls or fails.
 
 - Till: <https://red1oon.github.io/bim-ootb/erp/till.html>
 - Kitchen screen: <https://red1oon.github.io/bim-ootb/erp/kitchen.html>
 - Branch POS admin: <https://red1oon.github.io/bim-ootb/erp/branch_admin.html>
+- Head office (the ERP page): <https://red1oon.github.io/bim-ootb/erp/idempiere.html>
+
+**What a trial shows:** the screens of this guide on the GardenWorld demo data: ringing a sale, discounts, tenders, receipts, Configuration, Close Cash,
+and the empty states of the kitchen and the branch admin. Each page says in its top line that it is a trial.
+
+**What a trial cannot show:**
+
+- It is **one browser**. Each address keeps its data in that browser only; another browser or another PC sees nothing of it.
+- The data is the **GardenWorld demo tenant**, with demo products and prices. Nothing you do reaches a real head office.
+- There is **no branch relay**, so there is no main till, no collection of other tills' sales and no end-of-day send. Those need the shop set-up:
+  *Install at a shop (air-gapped)*.
 
 Related guides: [Kernel-ERP User Guide](ERPUserGuide.md) · [Kernel-ERP — Your First Setup](ERP_FirstSetup.md) ·
 [Distributed ERP](DistributedERP.md).
 
 This is a task-oriented manual. **Cashier:** read *If you know uniCenta 5*, *Ringing a sale* and *The kitchen*.
-**Branch manager:** read *Setting up a till and a kitchen screen*, *Configuration*, *Shifts and Close Cash* and *The branch POS admin*.
+**Branch manager:** read *Install at a shop (air-gapped)*, *Configuration*, *Shifts and Close Cash* and *The branch POS admin*.
 **Head-office clerk:** read *Head office*. Everyone: *Troubleshooting* at the end.
 
 ---
@@ -70,10 +86,10 @@ The 25 things a uniCenta 5.0 cashier (and manager) does, and where each one is h
 ## Getting started (for the cashier)
 
 1. **Open the till page** — <https://red1oon.github.io/bim-ootb/erp/till.html>. The strip at the top shows
-   *Till*, *online/offline*, *paired / not paired*, who is signed in, *deposited N*, and a **Visit head office** button.
+   *Till*, *online/offline*, *paired / not paired*, who is signed in, *deposited N*, and a **Visit head office** button (it exchanges only with the branch relay; a till never reaches head office). Under the strip, one status line says what the page is doing: *Starting… loading the shop's data (N s)* while it loads, then what to do next (*Choose your name below to sign in*) and the branch relay it is using. If a page cannot start or fails, that line says what went wrong, what to do, and offers **Retry**.
 2. **Tap your name.**
 
-   ![Login: one button per user, the status strip on top](img/till/till_01_login.png)
+   ![Login: the status line (a trial here, no branch relay), one button per user, the status strip on top](img/till/till_01_login.png)
 
 3. **Pick a panel** on the Register menu: *Sales, Edit Sales, Customer Payment, Payments, Close Cash*, and below
    them *Check In/Out, Voucher, Pickup Reset*.
@@ -300,8 +316,11 @@ Send Order only works on a *sale* ticket ("Send Order is for a sale ticket").
 
 ### The kitchen screen
 
-Open <https://red1oon.github.io/bim-ootb/erp/kitchen.html> on the kitchen's own device (set it up as in the next
-section). Each waiting order is a card: order name and a running clock (MM:SS) on top, the lines below, **Bump** and **Void** at
+Until a till sends an order the screen is not blank: the top line says what it is connected to, and the area says *No orders yet. Orders appear here when a till presses Send Order.*
+
+![The kitchen screen with no orders: the status line and the empty-state instruction](img/till/kitchen_00_empty.png)
+
+Open <https://red1oon.github.io/bim-ootb/erp/kitchen.html> on the kitchen's own device (set up as in *Install at a shop*, step 7 and the note at its end). Each waiting order is a card: order name and a running clock (MM:SS) on top, the lines below, **Bump** and **Void** at
 the bottom.
 
 ![Three waiting cards. Order 1 was changed after it was sent: "Modified (send 2)", 3 x Elm Tree (was 2) in amber, Oak Tree added in green, Plum Tree struck through as removed](img/till/kitchen_01_open.png)
@@ -333,35 +352,142 @@ of that branch Org. They are not legacy tables and head office does not read the
 
 ---
 
-## Setting up a till and a kitchen screen (branch manager)
+## Install at a shop (air-gapped)
 
-Each till and each kitchen screen is a **Team device** of the branch's Org. You need a head-office (or manager) device that
-starts the team, and a device for each till and kitchen screen.
+For the branch manager. At the end every till PC runs its own copy of the app from `localhost`, the tills talk only to a small **branch relay** on the shop's own network,
+and one device, the **main till**, is the only one that ever needs the internet (for the end-of-day send and the morning prices). If the internet or the relay goes down, every till keeps selling.
 
-1. **Start the team (once, on the head-office device).** Open the ERP page. Press the **Team** pill (two-heads icon,
-   in the ⋯ rail). If it says *Turn on team mode*, press it; the page reloads. Under **Kind of team** choose
-   **Point-of-sale team**, then press **Start a team**. Copy the **invite link**.
+```
+ till PC 1 (main) ─┐
+ till PC 2         ├──  branch relay (one box, python3)  ──  only the main till  ──  internet  ──  head office
+ till PC 3         ┘          shop network (LAN)                  (EODA up, SODA down)
+```
+
+Each numbered step below was **executed** on one test machine before it was written (log lines `§GUIDE_STEP n ok`); *What was proven, and what only a real shop can confirm* at the end of this section says exactly how far that goes.
+
+**You need:** python3 on every PC that will run a till, a browser on each, one PC or box on the shop network for the branch relay, and the internet **once** per PC (step 1) plus on the main till.
+
+### 1. Put the app on each till PC, once (the self-host path)
+
+On the PC with internet, either use the app's **Self-host** installer (it saves a small install script for your system) or type the same three commands:
+
+```
+curl -sL -o app.zip https://github.com/red1oon/bim-ootb/archive/refs/heads/main.zip
+unzip -qo app.zip && cd bim-ootb-main
+python3 -m http.server 8080
+```
+
+*What this downloads:* **one zip, about 230 MiB** (the whole app: viewer, ERP, till, kitchen, branch admin, the 27 MB seed database and the bundled libraries; about 530 MB once unpacked) and nothing else.
+After it, the PC needs no internet to run a till. *Executed:* downloaded and unpacked; the till, branch admin, branch relay and seed database were all inside (`§GUIDE_STEP 1`).
+(The Windows installer does the same with `curl` and PowerShell and installs python through `winget` if it is missing.)
+
+### 2. Start the till's own server, every morning
+
+On each till PC, in the folder `bim-ootb-main`: `python3 -m http.server 8080`. The till is then at `http://localhost:8080/erp/till.html`. It has to be `localhost` (not the PC's network name): that is what lets
+the page keep its offline cache and call the relay over plain `http`. *Executed with three servers on `localhost` ports 8081, 8082 and 8083 standing in for three PCs; each answered the till page (`§GUIDE_STEP 2`).*
+
+### 3. Start the branch relay on one box of the shop network
+
+On the box (any PC that stays on; it needs the same unpacked folder, or just the one file `erp/branch_relay.py`):
+
+```
+python3 erp/branch_relay.py --port 8787 --dir ./branch_box
+```
+
+It prints `§RELAY_UP port=8787 box=...` and is then a mailbox on `http://<box address>:8787`: it stores and lists files, nothing else. Everything it holds is in the folder `branch_box`. Use the box's network address
+(for example `http://192.168.1.20:8787`) where this guide says `<relay>`. *Executed on this machine: it printed `§RELAY_UP`, and a file could be written, read back and listed (`§GUIDE_STEP 3`).*
+
+### 4. Start each till on `localhost` and point it at the relay
+
+Open the till with the relay in its address, and **bookmark that address**:
+
+```
+http://localhost:8080/erp/till.html?login=<station user>&pipe=<relay>/pipe&relay=<relay>&team=1&teamplan=pos
+```
+
+There is no relay field on the Configuration screen: the relay is the `pipe=` and `relay=` in the bookmark. `login=` names the till's **station user**; the till's key (the prefix of its ticket numbers) is the branch plus that user,
+so **every till needs its own station user** (the demo tenant has 50001, 102 and 101). When the page is ready its top line says `Branch relay: <relay>`; if the address has no `relay=` it says
+`Not joined to a branch relay` and links here. *Executed: the first till booted at `localhost:8081` and logged `§LAN_BOOT ... relay=http://localhost:8787 ... main=false` (`§GUIDE_STEP 5`).*
+
+### 5. Designate the main till (the branch supervisor, on that till)
+
+Exactly one till of the branch is the **main till**: it collects the other tills' sales from the relay, answers the stock question, and makes the one send to head office. **The branch decides which; head office neither sets nor checks it.**
+
+1. On the till you chose, sign in as a **supervisor** (a user whose role has client-level authority, the twin of uniCenta's Administrator or Manager role).
+2. Press the gear (**Configuration**), tab **System Options**, tick **This is the branch main till**, press **Save**.
+
+![Configuration, System Options tab: This is the branch main till, ticked by the supervisor](img/till/till_21_main_till.png)
+
+A cashier who opens the same screen sees the box greyed, with the note *the branch supervisor sets this*; the setting cannot be changed from their sign-in. It is kept on that PC (its own device store), survives a restart, and stays
+until a supervisor unticks it. On any other till, every main-till operation is refused with *This is not the branch main till: ... is run at the main till.* The same rule as uniCenta: the Configuration screen opens only for roles
+whose permissions list it (`JPrincipalApp.java:458`, `Role.Administrator.xml` and `Role.Manager.xml`). *Executed: the cashier saw it greyed, the supervisor ticked and saved, the till reported itself main, and PC2 refused a collection (`§GUIDE_STEP 6`, `§GUIDE_STEP 8`).*
+
+### 6. Open the branch POS admin on the main till PC
+
+On the **same PC** (the page shares the till's device store, which is how it finds the flag), open:
+
+```
+http://localhost:8080/erp/branch_admin.html?login=<station user>&lan=<relay>&relay=<relay>&team=1&teamplan=pos
+```
+
+(no `pipe=`: the main till's internet side is the Team panel's relay, which head office set up; when you rehearse with your own internet relay stand-in, add `&pipe=<its address>`). It logs `§LAN_ADMIN main=true`. **This is the
+device that does the EODA and the SODA, and the only one of the shop that needs the internet.** *Executed: `§LAN_ADMIN main=true` (`§GUIDE_STEP 7`); the internet side was a second relay on this machine standing in for the real one.*
+
+### 7. Join the devices to the branch team (head office approves)
+
+Every device joins the head-office team once, so its rows are signed and accepted.
+
+1. **Head office:** on the ERP page press the **Team** pill, **Turn on team mode** if offered, **Kind of team: Point-of-sale team**, **Start a team**, copy the invite.
 
    ![The Team panel before a team exists: Kind of team, Start a team, or join one](img/till/ho_01_team_start.png)
 
-2. **Join, on the till's own browser.** Open the ERP page there, press the **Team** pill, paste the invite (or open the
-   invite link) and press **Join**. The device shows a **device code** and "Waiting for approval".
-3. **Approve, back on the head-office device.** Team pill → **Check join requests** → match the device code →
-   choose the role **Web Service Execution (50004)** → **Bound to** = the branch Org (for example *Store North*) →
-   **Approve**. If *Bound to* is left empty the panel refuses: "Choose what this device is bound to first".
-4. **Visit** on the joining device (Team pill → **Visit**, or **Visit head office** on the till page).
-5. **Open the till** — `.../erp/till.html` on that device. The strip should say **paired**. The till's station
-   (price list, Org, warehouse) is the tenant's first POS station (`c_pos`); its name is the Org key and the Team station user, for
-   example `Store Central-webserv`, and that name is the prefix of every ticket number.
-6. **Kitchen screen:** repeat steps 2-4 on the kitchen's device (same role and the **same** *Bound to* Org), then open
-   `.../erp/kitchen.html`. Set **Amber min** / **Red min** if the branch wants colours.
-7. **Branch POS admin:** repeat steps 2-4 once more on the branch manager's device (same role, **same** *Bound to* Org), then open
-   `.../erp/branch_admin.html`. Every till must be paired to the same branch Org: Close Cash hands the shift to this device. See *The branch POS admin*.
-8. **Test:** ring one sale, press **Send Order**, watch it appear on the kitchen device, press **Bump**, and watch
-   the till say READY.
+2. **Each shop PC:** open the ERP page on the PC's own address with the relay in it (`http://localhost:8080/erp/idempiere.html?team=1&pipe=<relay>/pipe`; the main till PC uses `&lan=<relay>` as in step 6), press the **Team** pill, paste the invite, **Join**. The device shows a **device code**. (The till and branch admin pages of the same PC share this identity.)
+3. **Head office:** Team pill, **Check join requests**, match the code, role **Web Service Execution (50004)**, **Bound to** the branch Org, **Approve**.
+4. **Visit** on each device. The strip changes from *not paired* to *paired*.
 
-Both pages pass the address options `login=`, `pipe=`, `xcfg=`, `teamplan=` on to their built-in ERP engine, so a till can use another Team
-station user with `?login=`.
+The tills' requests reach head office through the branch relay and the main till; the main till passes them on, so the ordinary tills never need an internet address. *Executed by calling the same Team functions the panel's buttons call (not by clicking the panel): all three
+devices enrolled while PC2 and PC3 made 0 requests to the internet relay (`§GUIDE_STEP 9`).*
+
+### 8. A normal day
+
+- Each till rings its own sales. Each ticket is written on the till first, then put on the relay; the till never waits for it. At **Close Cash** the shift's Z goes to the relay too.
+- On the main till's branch admin the day's tills appear; **Refresh** collects (it also collects by itself while the page is open). When every till has closed, **Send EODA** makes the branch's one send.
+- In the morning the main till pulls head office's SODA (prices, products, and the branch's stock figure, which only the main till keeps).
+
+*Executed: three tills rang 2 + 2 + 3 tickets and closed; the relay's folder held 7 ticket files and 3 shift files; the main till collected 7 lines; after Send EODA head office held 7 order rows and 7 payment rows
+(`§GUIDE_STEP 10`, `§GUIDE_STEP 11`).*
+
+### 9. When something is down
+
+| What is down | What happens | What to do |
+|---|---|---|
+| **The branch relay** (the box is off, or the network) | Every till keeps selling and keeps its tickets in its own store (log `§LAN_HOLD`). Nothing is lost. The main till cannot collect. | Start the relay again (step 3, same folder). A till sends what it queued at its next sale or Close Cash, or when its page is reopened; the main till then collects it; no ticket is doubled. |
+| **The internet** | Tills are unaffected: they never use it. The main till's send does not reach head office. | Nothing. Once every till has done Close Cash, press **Send EODA** (or **Send status now**) again when the internet is back; head office gets one batch, nothing doubled. |
+| **The main till PC** | Ordinary tills keep selling. Nothing collects. | Start it again. The relay holds every ticket until then. (Moving the main role to another PC part-way through a day has not been tried.) |
+
+*Executed: with the relay stopped PC2 still rang a sale and queued it; after the restart it was sent and the main till held all 8 lines. With the internet relay stopped PC3 still rang a sale, the main till's send did not reach
+head office (still 7 order rows), and after the relay returned and the send was pressed again head office had 9 (`§GUIDE_STEP 12`, `§GUIDE_STEP 13`).*
+
+### 10. What to back up
+
+- **The relay's folder** (`branch_box`): copy the whole folder, any time. It holds every ticket not yet collected and the shared stream.
+- **Each till PC's browser profile.** A till keeps its tickets, its shift and its settings (including the main-till flag) in the browser's own storage for that address. Do not clear site data for `localhost`; back the profile up with the PC.
+- **The `bim-ootb-main` folder** need not be backed up: it is the downloaded app and can be fetched again.
+
+*Executed: the whole `branch_box` folder (36 files) copied identically; the device store of the main till showed its till, relay and flag keys (`§GUIDE_STEP 14`).*
+
+### What was proven, and what only a real shop can confirm
+
+**Proven on one machine** (the steps above, 15 of 15 ok, no page errors): the download and its contents, three `localhost` servers, the real branch relay, tills pointed at it, the supervisor-only main-till setting and the refusals on the other tills, the
+join/approve/visit sequence, a three-till day through the relay to head office, the relay and internet outages above, and the backup copy.
+
+**Not proven here; a real multi-PC shop must confirm:**
+
+- **Access-point or client isolation.** Many shop routers stop Wi-Fi devices from seeing each other. Everything above was loopback on one machine. At the shop, from a second PC open `http://<relay>/pipe/list?prefix=` in the browser: a list (even `[]`) means the relay is reachable; no answer means the network blocks it.
+- **Tablets and phones.** A tablet can open the till page from a PC's server, but a tablet that cannot run `python3 -m http.server` has no `localhost` of its own, so it cannot be a stand-alone till by this method. Use a PC as the till.
+- **The real internet side.** The internet relay here was a second relay on the same machine standing in for the real one, so the main till's use of the live head-office relay (omit `pipe=`) was not exercised.
+- **Firewalls** on the relay box: the port (8787) must be open to the shop network.
+- **The kitchen screen** is joined the same way (`kitchen.html?pipe=<relay>/pipe&relay=<relay>&team=1&teamplan=pos`, same role and Org as step 7); it was not part of this walkthrough.
 
 ## Shifts and Close Cash
 
@@ -382,11 +508,10 @@ A **shift** is numbered from 1 on each till and stays open until **Close Cash**.
 
    ![After closing: next shift, past Z available](img/till/till_16_closed.png)
 
-**Where the shift goes.** Close Cash writes the shift's tickets (their import rows) and one **Z declaration** as a *hand-off* to the
-**branch POS admin**, then makes one Visit on the branch's own channel. **A till never sends anything to head office**: its import rows are held on the
-device. The branch POS admin gathers every till's hand-off and sends the branch's day to head office as **one batch** (see *The branch POS admin*).
-A manual **Visit head office** or a **Send Order** is still a Visit, but it only exchanges with the branch (kitchen, price updates passed on by the admin), never ticket rows with head office.
-Offline, keep selling; the next Visit carries everything once.
+**Where the shift goes.** Each ticket, as it is rung, and at Close Cash the shift's one **Z declaration**, are put on the **branch relay** (the small box on the shop network; see *Install at a shop*).
+**A till never sends anything to head office or the internet.** The branch's **main till** collects every till's lines from the relay and sends the branch's day to head office as **one batch** (see *The branch POS admin*).
+A manual **Visit head office** or a **Send Order** only exchanges with the branch (kitchen, shared tables, price updates passed on), never ticket rows with head office.
+If the relay is down, keep selling: the till holds the tickets and sends them at its next sale or Close Cash, or when its page is reopened.
 
 ### What never leaves the till
 
@@ -404,8 +529,8 @@ The sales themselves are in the device's engine, and numbering resumes after the
 
 ## The branch POS admin
 
-The **branch POS admin** (`erp/branch_admin.html`) is uniCenta's back office for one branch. It is a page of its own on a Team device
-bound to the branch Org (not a till mode). It reads what every till of the branch handed over at Close Cash, shows the end of day, and makes the
+The **branch POS admin** (`erp/branch_admin.html`) is uniCenta's back office for one branch. It is a page of its own, opened **on the main till's PC** (the till the branch supervisor designated, see
+*Install at a shop*, step 5). It reads what every till of the branch put on the branch relay, shows the end of day, and makes the
 branch's **one** send to head office. The rhythm is **EODA** (end of day, branch to head office) then **SODA** (start of day, head office to branch):
 nothing trickles during the day.
 
@@ -557,7 +682,7 @@ are pending; start POS integration for per-ticket control.
 - **Prices and taxes** come from the ERP's own price list and tax functions; the till holds no tax formula.
 - **Kitchen:** two branch-local tables (kitchen order, kitchen status). The till and kitchen look at the branch's shared box with one
   cheap list request per poll and run a full Visit only when another device wrote.
-- **Hand-off and batch:** the till writes `POS_TillHandoff` rows (tickets and the Z) for its branch admin; the admin writes `POS_BranchDayStatement` rows and the real
+- **Hand-off and batch:** the till puts each ticket's rows (`d/`) and the shift's Z (`h/`) on the branch relay; the main till collects them and its branch admin writes `POS_BranchDayStatement` rows and the real
   `I_Order` / `I_Payment` rows to head office. Floors, tables, reservations and picture settings are branch-local rows, never sent up.
 - **Same twin rule as the ERP:** where uniCenta 5.0 and legacy iDempiere disagree on what can be sent, legacy wins, which is why four tenders are disabled.
 
@@ -589,8 +714,13 @@ are pending; start POS integration for per-ticket control.
 | Admin: *No till has closed a shift for ...: nothing to send* | No hand-off for that business day. |
 | Admin: Send EODA greyed | An open till and no override reason typed. |
 | Admin: *Could not hand the shift to the branch admin* (on the till) | The shift hand-off was not saved; nothing was lost, press Close Cash again after fixing. |
-| *Visit failed: ...* | No connection or no pairing; keep working and press **Visit head office** later. |
-| Strip says **not paired** | The device has not joined or is not approved yet (see *Setting up*). |
+| *Visit failed: ...* | The branch relay (or, on the main till, the internet) cannot be reached, or the device is not joined; keep working and press **Visit** later. |
+| Top line: *Starting… loading the shop's data (N s)* for more than a minute, then *Still starting* | The first download of the shop's data is slow, or the device went offline before the first install. Check the connection, press **Retry**. |
+| Top line: *Problem: ...* with a **Retry** button | The page could not start or a step failed; the message says which and what to do. Press **Retry**; if it repeats, reopen the page once while online. |
+| Top line: *Not joined to a branch relay* | The address has no `relay=` (and the device has none stored). Use the bookmark of *Install at a shop*, step 4. On the public address it is the one-browser trial. |
+| *This is not the branch main till: ... is run at the main till.* | The operation belongs to the branch's main till. Do it there, or have the supervisor designate this till (*Install at a shop*, step 5). |
+| Configuration: *This is the branch main till* is greyed | Only a supervisor may change it; sign in as one. |
+| Strip says **not paired** | The device has not joined or is not approved yet (see *Install at a shop*, step 7). |
 | Team panel: *No key: open the Team panel and use the system default, or save your own repository and key* | The team's relay key is missing on this browser; use the system default or save your own repository and key. |
 | *Choose what this device is bound to first: ...* | Pick the branch Org in **Bound to** before Approve. |
 | Import row error *ERR=no tenders: ...* | The ticket has lines but no payment rows. |
