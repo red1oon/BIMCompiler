@@ -3661,7 +3661,7 @@ shipment, invoice, payment or posting, and it never talks to head office directl
 <tr>
 <td>9</td>
 <td>Receipt and change pop-up</td>
-<td><strong>Receipt</strong> screen, <strong>Change</strong> pop-up</td>
+<td><strong>Receipt</strong> screen (uniCenta's 42-column ticket), <strong>Change</strong> pop-up</td>
 <td>Card: you key the terminal's reference and approval code; the card number is never typed or stored.</td>
 </tr>
 <tr>
@@ -3852,7 +3852,18 @@ shipment, invoice, payment or posting, and it never talks to head office directl
 <li>Tick or untick <strong>Print Receipt</strong>, then <strong>OK</strong>. The sale is saved on the device and the <strong>Receipt</strong> screen opens.</li>
 <li>If the <strong>first</strong> tender was cash and there is change, a <strong>Change</strong> pop-up shows the amount. Tap <strong>OK</strong> to return.</li>
 </ol>
-<p><img alt="The receipt: number, date, terminal, served by, lines, totals, tenders" src="../img/till/till_09_receipt.png" /></p>
+<p><img alt="The receipt: header, number, date, terminal, served by, item grid, subtotal, tax, balance due, tenders, footer, card block" src="../img/till/till_09_receipt.png" /></p>
+<p><strong>The receipt is laid out exactly as uniCenta's standard ticket</strong> (<code>Printer.Ticket.xml</code>), on a fixed 42-character grid in a monospace font, black on white in both themes. Top to bottom:</p>
+<ul>
+<li><strong>Header:</strong> the logo (when the company has one), then up to six centred lines: the company name, address, tax id, phone, e-mail, or the header lines typed in <em>Configuration</em>. With neither, the receipt starts at <em>Receipt:</em>.</li>
+<li><strong>Receipt:</strong> (or <em>Refund:</em>) the ticket number, <strong>Date:</strong>, <strong>Terminal:</strong>, <strong>Served by:</strong>, and <strong>Customer:</strong> / <strong>Table:</strong> when the ticket has them.</li>
+<li><strong>Item grid:</strong> a heading <em>Item / Price / Qty / Value</em>, a dashed line, one row per ticket line (the name is cut at 17 characters, price, <em>x</em> quantity and value right-aligned), a dashed line, then <em>Items count:</em>.</li>
+<li><strong>Totals:</strong> <strong>Subtotal</strong>, <strong>Tax</strong>, a large bold <strong>Balance Due</strong>, then one row per tax with its base and tax amount. Line values are before tax; the tax is worked out once for the whole ticket, so Subtotal plus Tax always equals Balance Due to the cent.</li>
+<li><strong>Tenders:</strong> cash shows <em>Tendered</em> and <em>Change</em>; cheque and bank show their amount.</li>
+<li><strong>Footer:</strong> your footer line 1 centred, an <code>=</code> rule, then footer lines 2 to 6.</li>
+<li><strong>Card block</strong> (card sales): <em>CARD SALE</em>, the amount, the terminal's <em>Tranx ID</em> and <em>Auth Code</em>, and the card part of the total. <strong>No card number is ever printed.</strong></li>
+</ul>
+<p>Tap <strong>Print</strong> on the Receipt screen to print it on an 80 mm roll (or save it as a PDF of the same width) through the browser's print dialog. <strong>Reprint Last Ticket</strong> and <strong>Reprint Ticket</strong> open the same receipt, so the same Print button applies.</p>
 <h3 id="holding-tickets-and-quick-log-off">Holding tickets and quick log-off<a class="headerlink" href="#holding-tickets-and-quick-log-off" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Add New Ticket</strong> keeps the current ticket (if it has lines) and opens an empty one.</li>
