@@ -1,0 +1,8 @@
+{
+  "_readme": "What the next library publish may change, stated before it runs (§34, §38). witness_library_publish.js holds the export to exactly this. Update it for each publish.",
+  "spec": "§38 CL008 door families",
+  "added_families": ["LCSSU_D1_900x2100", "LCSSU_D2_900x2100", "LCSSU_D3_750x2100"],
+  "added_map_rows": 6,
+  "families_that_may_resolve_differently": [],
+  "descriptions_that_may_change": []
+}
