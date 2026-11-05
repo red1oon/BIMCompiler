@@ -1,18 +1,17 @@
 # ⚠ DO NOT REMOVE — PDF2BIM resume prompt (paste the block below into a NEW session)
 # Scope: finish the ONE low-cost single-storey house (TB-LKTN) from vector PDF -> DXF -> a coherent model that Converts in the Modeller. Findings live in `prompts/PDF2BIM_VECTOR_PROBE.md` (▶ RESUME HERE) and `bim-ootb prompts/DXF2BIM_MODELLER_LANE.md` (§L32-§L39); this file only STARTS a session.
-# Read the log after every run (`<outdir>/logs/*.log`); exit code is not evidence. Honour this block until the prompt is DONE. Written 2026-11-05, branch `feat/pdf2bim-vector`. Replaces the session-4 prompt.
+# Read the log after every run (`<outdir>/logs/*.log`); exit code is not evidence. Honour this block until the prompt is DONE. Written 2026-11-05. The chain is on `master` (PR #369), the Modeller entry on bim-ootb `main` (PR #2647). Replaces the session-4 prompt.
 
 ```
-Resume the PDF→BIM lane on the low-cost house. Read prompts/PDF2BIM_VECTOR_PROBE.md on branch feat/pdf2bim-vector: ▶ RESUME HERE, then §41, §40, §38, §39, §36, then §33, §35, §34, §29 to §32. Then bim-ootb prompts/DXF2BIM_MODELLER_LANE.md §L36 to §L39. The owner said: consolidate on this one house first.
+Resume the PDF→BIM lane on the low-cost house. Read prompts/PDF2BIM_VECTOR_PROBE.md: ▶ RESUME HERE, then §41, §40, §38, §39, §36, then §33, §35, §34, §29 to §32. Then bim-ootb prompts/DXF2BIM_MODELLER_LANE.md §L36 to §L39. The owner said: consolidate on this one house first.
 
 WHERE THE FILES ARE
-- Two repos. bim-compiler branch feat/pdf2bim-vector (pushed, no PR, not merged): the PDF -> DXF chain, scripts/pdf2bim/. bim-ootb main: the importer and the Modeller, modeller/.
-- Run `git worktree list` in each first. Use /tmp/wt-pdf2bim for this branch (reuse it, else `git worktree add /tmp/wt-pdf2bim feat/pdf2bim-vector`). For bim-ootb, a fresh /tmp/wt-* from origin/main.
+- Two repos. bim-compiler `master`: the PDF -> DXF chain, scripts/pdf2bim/. bim-ootb main: the importer and the Modeller, modeller/.
+- Run `git worktree list` in each first. Work on a fresh branch off `origin/master` in a /tmp/wt-* worktree (feat/pdf2bim-vector was squash-merged and deleted: never revive it). For bim-ootb, a fresh /tmp/wt-* from origin/main.
 - Do NOT edit the shared ~/bim-compiler or ~/bim-ootb checkouts: other sessions use them.
-- Another session's commit 0f50a6fa8 holds an OLDER copy of the spec on fable/meshdb-livewire: expect an add/add conflict if both merge.
 
 REPRODUCE FIRST (verify before building)
-`PDF2BIM_OOTB=<bim-ootb worktree with @HEADFRAME, §L38> scripts/pdf2bim/run_p1.sh <outdir>`, then read logs/01..16. Expect:
+`PDF2BIM_OOTB=<bim-ootb worktree> scripts/pdf2bim/run_p1.sh <outdir>`, then read logs/01..16. Expect:
 - `§LIB els 72` = 50 IfcWall (47 + 3 gable-end) + 2 IfcSlab + 2 IfcColumn + 7 IfcDoor + 7 IfcWindow + 4 IfcRoof
 - `§LIB blocking 0`, `§LIB accepted 57 ... verdict qualifies`; `§WC RESULT fails 0`; `§R RESULT fails 0`; `§W RESULT PASS`; `§D RESULT fails 0` with W-D4 FINDING on the 2 D2; `§A RESULT fails 0` with 10 READ, W-A3 8 judged + 2 UNJUDGEABLE
 - `§T RESULT PASS fails 0` in 17_witness_template, W-T1c included; every blank READ
