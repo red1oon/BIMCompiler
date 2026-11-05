@@ -2,12 +2,15 @@
 //   visible cursor, human pace. SEVEN real devices on one dumb folder pipe (harness copied from bim-ootb erp/tests/witness_eoda.js / witness_kds.js / witness_soda_receipt_up.js): head office A, branch admin D, tills T1-T3, kitchen K, restaurant till TR.
 //   NO mock screens, NO DOM edits for content (the relay-counter badge is an instrument read-out of the recorder's own request count; it is labelled so). Every number the voice says is printed as §TILLFILM_FACT k=v from the live in-browser DB or the recorder's own count.
 //   A beat that cannot be recorded is NAMED (§TILLFILM_BEAT_FAIL / §TILLFILM_BLOCKED) and leaves a hole in the assembly, never a silent skip. READ THE LOG: <outDir>/film.log (beats, facts) and <outDir>/page.log.
+// v4 (§34.G): the §38 topology: the REAL erp/branch_relay.py (python3, a child process) is the tills' ONLY pipe (LAN); the branch admin D is the flagged MAIN till (flag seeded in its device store, as a SODA kind-M row sets it) and alone holds the internet pipe (the folder server below). witness_eoda.js is the model.
+//   ONLY=b3a,b3b records beat 3 alone (head office A, main till D, tills T1-T3; K and TR are not opened). Beats b4a-b5b of this file still follow the pre-§38 hand-off and were NOT re-recorded for v4 (their v2 clips are reused, SKIPREC).
 // Run: ROOT=/tmp/wt-film-ootb node record.js <outDir> [beatmin.json]      env ONLY=b1a,b1b (beats to record; devices still boot), FAST=1 (shorter holds, dry run)
 'use strict';
 const { chromium } = require('/home/red1/bim-ootb/tests/node_modules/playwright');
-const http = require('http'), fs = require('fs'), os = require('os'), vm = require('vm'), path = require('path'), crypto = require('crypto'), { execFileSync } = require('child_process');
+const cp = require('child_process'), http = require('http'), fs = require('fs'), os = require('os'), vm = require('vm'), path = require('path'), crypto = require('crypto'), { execFileSync } = require('child_process');
 const ROOT = process.env.ROOT || '/tmp/wt-film-ootb', OUT = path.resolve(process.argv[2] || 'out/rec'), FR = path.join(OUT, 'frames'); fs.mkdirSync(FR, { recursive: true });
 const MIN = process.argv[3] && fs.existsSync(process.argv[3]) ? JSON.parse(fs.readFileSync(process.argv[3], 'utf8')) : {}, FAST = !!process.env.FAST, ONLY = (process.env.ONLY || '').split(',').filter(Boolean);
+const B3ONLY = ONLY.length > 0 && ONLY.every(x => /^b3/.test(x)), NOREST = ONLY.length > 0 && ONLY.every(x => /^(b1|b3)/.test(x)), LANREQ = [];   // NOREST: K and TR are not opened (v5: ONLY=b1b and ONLY=b3a,b3b re-record the receipt shots on the §39 receipt)
 const LOG = [], PAGELOG = [], say = s => { LOG.push(s); console.log(s); }, sleep = ms => new Promise(r => setTimeout(r, ms)), J = JSON.stringify, subtle = crypto.webcrypto.subtle;
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.wasm': 'application/wasm', '.png': 'image/png', '.css': 'text/css', '.svg': 'image/svg+xml', '.db': 'application/octet-stream' };
 const fact = (k, v) => say('§TILLFILM_FACT ' + k + '=' + String(v).replace(/\s+/g, ' ').slice(0, 300));
@@ -38,9 +41,13 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     const f = path.join(ROOT, p === '/' ? '/erp/idempiere.html' : p); if (f.indexOf(ROOT) !== 0 || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { res.writeHead(404); res.end('nf'); return; }
     res.writeHead(200, { 'Content-Type': MIME[path.extname(f)] || 'application/octet-stream' }); fs.createReadStream(f).pipe(res); });
   await new Promise(r => server.listen(0, '127.0.0.1', r)); const base = 'http://127.0.0.1:' + server.address().port, PIPE = base + '/pipe';
+  const RPORT = 19000 + Math.floor(Math.random() * 900), RBOX = fs.mkdtempSync(path.join(os.tmpdir(), 'tillfilm-box-')), RELAY = 'http://127.0.0.1:' + RPORT, LAN = RELAY + '/pipe', RELAYERR = [];
+  const relayProc = cp.spawn('python3', [path.join(ROOT, 'erp', 'branch_relay.py'), '--port', String(RPORT), '--dir', RBOX, '--bind', '127.0.0.1'], { stdio: ['ignore', 'ignore', 'pipe'] }); relayProc.stderr.on('data', d => RELAYERR.push(String(d)));
+  await new Promise((res, rej) => { const t = setTimeout(() => rej(new Error('branch relay did not start')), 15000); relayProc.stderr.on('data', d => { if (String(d).indexOf('§RELAY_UP') >= 0) { clearTimeout(t); res(); } }); }); say('§TILLFILM_RELAY branch_relay.py up port=' + RPORT + ' (python3, stdlib; the tills\' only pipe)');
   const browser = await chromium.launch({ executablePath: '/usr/bin/google-chrome', args: ['--no-sandbox', '--disable-gpu', '--font-render-hinting=none'] });
   const owner = await mkKey(); cur.plans.office = planJs('TEAM_PLAN', await signObj(loadPlan(path.join(ROOT, 'erp', 'team_plan.js'), 'TEAM_PLAN'), owner)); cur.plans.pos = planJs('TEAM_PLAN_POS', await signObj(loadPlan(path.join(ROOT, 'erp', 'team_plan_pos.js'), 'TEAM_PLAN_POS'), owner));
-  const xcfg = encodeURIComponent(Buffer.from(J({ trust: [owner.pub] })).toString('base64')), qsBase = '&team=1&pipe=' + encodeURIComponent(PIPE) + '&xcfg=' + xcfg + '&teamplan=pos&poll=3600';
+  const xcfg = encodeURIComponent(Buffer.from(J({ trust: [owner.pub] })).toString('base64')), qsNet = '&team=1&pipe=' + encodeURIComponent(PIPE) + '&xcfg=' + xcfg + '&teamplan=pos&poll=3600';
+  const qsBase = '&team=1&pipe=' + encodeURIComponent(LAN) + '&relay=' + encodeURIComponent(RELAY) + '&xcfg=' + xcfg + '&teamplan=pos&poll=3600', qsMain = qsNet + '&lan=' + encodeURIComponent(LAN) + '&relay=' + encodeURIComponent(RELAY);   // tills: the branch relay ONLY; main till D: internet relay + branch relay, routed
   const ICON_HOST = 'objectstorage.ap-kulai-2.oraclecloud.com';
   // ── camera: ONE screencast at a time; frames tagged with the segment they belong to; cuts (pause / segment end) bound every frame's duration
   const EV = []; let CAMDEV = null, SEG = null, T0 = null; const now = () => Date.now() / 1000;
@@ -52,7 +59,8 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     const ctx = await browser.newContext({ viewport: { width: 1440, height: 630 }, deviceScaleFactor: 4 / 3 }), pg = await ctx.newPage(), logs = []; await ctx.addInitScript(CURSOR);
     pg.on('console', m => { const t = m.text(); logs.push(t); PAGELOG.push('[' + name + '] ' + t); }); pg.on('pageerror', e => { PAGELOG.push('[' + name + '] PAGEERR ' + e.message); say('§TILLFILM_PAGEERR ' + name + ' ' + e.message.slice(0, 160)); });
     await ctx.route('**/*', route => { const u = new URL(route.request().url()); if (u.hostname === ICON_HOST) return route.continue(); if (u.hostname !== '127.0.0.1') return route.abort('blockedbyclient');
-      if (u.pathname.indexOf('/pipe/') === 0) REQ.push({ dev: name, m: route.request().method(), p: u.pathname, q: u.searchParams.get('prefix') || '' }); return route.continue(); });
+      const rq = { dev: name, m: route.request().method(), p: u.pathname, q: u.searchParams.get('prefix') || '' }; if (u.port === String(RPORT) && u.pathname.indexOf('/pipe/') === 0) LANREQ.push(rq); else if (u.pathname.indexOf('/pipe/') === 0) REQ.push(rq); return route.continue(); });
+    if (name === 'D') await pg.addInitScript(() => { localStorage.setItem('tilllan.v1:12-MAIN', JSON.stringify({ main: { on: true } })); });
     await pg.addInitScript(() => { const q = new URLSearchParams(location.search).get('xcfg'); if (q) { const c = JSON.parse(atob(q)); window.TEAM_PLAN_TRUST = c.trust; } });
     await pg.goto(base + urlPath, { waitUntil: 'load' }); await pg.waitForFunction(ready, null, { timeout: 280000 });
     const cdp = await ctx.newCDPSession(pg), d = { name, pg, logs, ctx, cdp };
@@ -67,7 +75,8 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     visit: d => { let done = false; return Promise.race([eng(d, async W => { const v = await W.TeamSync.visit(); return v && v.replicaIn; }).then(v => { done = true; return v; }), sleep(120000).then(() => { if (!done) say('§TILLFILM_STEP visit on ' + d.name + ' did not return in 120 s'); return null; })]); },
     rows: (d, sql) => eng(d, (W, q) => new Promise(res => { W.__crud.modelRun({ table: 'c_order', timing: 'PROCESS', fn: trx => { try { res(trx.q(q)); } catch (e) { res({ error: String(e && e.message) }); } return { ok: true }; } }, () => {}); }), sql),
   };
-  const visitAll = async (devs, n) => { for (let r = 0; r < (n || 1); r++) for (const d of devs) await T.visit(d); };
+  const bridge = async () => { await D.pg.evaluate(() => window.BranchAdmin.lanCollect()).catch(() => {}); };   // §38: the main till mirrors the shared stream and collects over the LAN (witness_eoda.js bridge())
+  const visitAll = async (devs, n) => { for (let r = 0; r < (n || 1); r++) { for (const d of devs) { await bridge(); await T.visit(d); } await bridge(); } };
   const mark = () => REQ.length, since = mk => REQ.slice(mk), lane = r => /\/m\/b_/.test(r.p + r.q) ? 'branch' : /\/o\//.test(r.p + r.q) ? 'hub' : 'house';
   // ── human pace
   const hold = ms => sleep(FAST ? Math.min(ms, 250) : ms);
@@ -84,20 +93,20 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
   }
   // ═══ setup (OFF camera): head office A, the branch admin D, tills T1-T3, the kitchen K, the restaurant till TR
   say('§TILLFILM_SETUP ROOT=' + ROOT + ' (CPU only, --disable-gpu); seven devices on one folder pipe');
-  const A = await open('A', '/erp/idempiere.html?login=GardenAdmin&window=281' + qsBase, () => window.TeamSync && window.__idmpDb && window.__crud && window.__idmpDb.exec('SELECT count(*) FROM ad_table')[0].values[0][0] > 0 && document.querySelector('#idmp-tree') && document.querySelector('#idmp-tree').children.length > 0);
+  const A = await open('A', '/erp/idempiere.html?login=GardenAdmin&window=281' + qsNet, () => window.TeamSync && window.__idmpDb && window.__crud && window.__idmpDb.exec('SELECT count(*) FROM ad_table')[0].values[0][0] > 0 && document.querySelector('#idmp-tree') && document.querySelector('#idmp-tree').children.length > 0);
   await A.pg.evaluate(() => window.TeamSync.ready);
-  const D = await open('D', '/erp/branch_admin.html?login=50001' + qsBase, () => window.BranchAdmin && window.BranchAdmin.ready);
+  const D = await open('D', '/erp/branch_admin.html?login=50001' + qsMain, () => window.BranchAdmin && window.BranchAdmin.ready);
   const TL = []; for (const lg of [50001, 102, 101]) TL.push(await open('T' + (TL.length + 1), '/erp/till.html?login=' + lg + qsBase, () => window.Till && window.Till.ready));
-  const K = await open('K', '/erp/kitchen.html?login=50001' + qsBase, () => window.Kitchen && window.Kitchen.ready);
-  const TR = await open('TR', '/erp/till.html?login=50001&mode=restaurant' + qsBase, () => window.Till && window.Till.ready && window.TillRest);
-  const devs = [D].concat(TL, [K, TR]); const space = await T.found(A), org = (await T.rows(A, 'SELECT ad_org_uu AS uu FROM ad_org WHERE ad_org_id=12'))[0];
+  const K = NOREST ? null : await open('K', '/erp/kitchen.html?login=50001' + qsBase, () => window.Kitchen && window.Kitchen.ready);
+  const TR = NOREST ? null : await open('TR', '/erp/till.html?login=50001&mode=restaurant' + qsBase, () => window.Till && window.Till.ready && window.TillRest);
+  const devs = [D].concat(TL, NOREST ? [] : [K, TR]); const space = await T.found(A), org = (await T.rows(A, 'SELECT ad_org_uu AS uu FROM ad_org WHERE ad_org_id=12'))[0];
   for (const d of devs) await T.join(d, space);
   for (let k = 0; k < 10; k++) { for (const d of devs) await T.approve(A, await T.kid(d), 50004, org.uu); await visitAll(devs.concat([A])); const en = []; for (const d of devs) en.push(await T.enrolled(d)); if (en.every(Boolean)) break; await sleep(300); }
   await visitAll(devs.concat([A]), 2); const enr = []; for (const d of devs) enr.push(await T.enrolled(d)); say('§TILLFILM_SETUP enrolled=' + J(enr)); if (!enr.every(Boolean)) throw new Error('devices not enrolled');
   fact('tills', TL.length);
   // the 27 picture URLs through the engine's ordinary product edit (§30.2): model-layer save on EACH till, then the catalog re-read from the DB
   const icons = JSON.parse(fs.readFileSync(path.join(ROOT, 'erp', 'product_icons', 'product_icons.json'), 'utf8')).products; let iconed = 0;
-  for (const d of TL.concat([TR])) { const r = await d.pg.evaluate(async list => { const T = window.Till, E = T.engine(); let n = 0; for (const it of list) { const row = (T.state().prods.filter(p => p.value === it.value)[0]); if (!row) continue;
+  for (const d of TL.concat(NOREST ? [] : [TR])) { const r = await d.pg.evaluate(async list => { const T = window.Till, E = T.engine(); let n = 0; for (const it of list) { const row = (T.state().prods.filter(p => p.value === it.value)[0]); if (!row) continue;
       const full = await new Promise(res => { E.__crud.modelRun({ table: 'c_order', timing: 'PROCESS', fn: trx => { res(trx.q('SELECT * FROM m_product WHERE m_product_id=' + row.pid)[0]); return { ok: true }; } }, () => {}); }); if (!full) continue;
       await new Promise(res => E.__crud.modelRun({ table: 'm_product', timing: 'SAVE', record: full, id: row.pid, changes: { imageurl: it.url } }, r => { if (!r || !r.ops) return res(); E.__crud.applyOpGroup(r.ops, () => { n++; res(); }); })); }
       const im = await T.rows('SELECT m_product_id AS pid, imageurl AS img FROM m_product WHERE imageurl IS NOT NULL'); T.state().prods.forEach(p => { const x = im.filter(y => String(y.pid) === String(p.pid))[0]; if (x) p.img = x.img; }); return n; }, icons).catch(e => 'ERR ' + e.message); iconed = r; }
@@ -112,7 +121,7 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
   async function tile(d, name) { const pid = await reach(d, name); await click(d, '#products .prod[data-pid="' + pid + '"]'); }
   async function keys(d, n) { for (const ch of String(n)) await click(d, '#east .key[data-key="' + ch + '"]'); }
   async function payParts(d, parts) { await click(d, '#east .key[data-key="="]'); await d.pg.waitForSelector('#u8.on'); for (const p of parts) { await click(d, '#tabs [data-tab="' + p.tab + '"]'); if (p.amount != null) await typeIn(d, '#tender-amount', p.amount); if (p.ref) { await d.pg.fill('#card-ref', p.ref); await d.pg.fill('#card-auth', p.auth); await hold(300); } if (p !== parts[parts.length - 1]) await click(d, '#addpart'); }
-    await click(d, '#pay-ok'); await d.pg.waitForSelector('#u9.on', { timeout: 20000 }); await hold(1800); const key = await d.pg.$eval('#receipt .rf[data-f="Receipt"]', e => e.textContent.split('  ')[1]); await click(d, '#rc-ok'); return key; }
+    await click(d, '#pay-ok'); await d.pg.waitForSelector('#u9.on', { timeout: 20000 }); await hold(1800); const key = await d.pg.$eval('#receipt .rf[data-f="Receipt"]', e => e.getAttribute('data-v')); /* v5: standard §39 receipt (42 columns): the raw ticket key is the row's data-v */ await click(d, '#rc-ok'); return key; }
   const tot = d => d.pg.$eval('#t-tot', e => e.textContent);
   const zOf = t => { let ci = -1; t.logs.forEach((l, i) => { if (/^§TILL_CLOSE closed=/.test(l)) ci = i; }); for (let i = ci; i >= 0; i--) { const mm = /^§TILL_Z seq=(\d+) tickets=(\d+) units=\S+ gross=(\S+) net=(\S+) payments=(\d+) bytender=(\{.*?\}) removed=/.exec(t.logs[i]); if (mm) return { tickets: +mm[2], gross: Math.round(+mm[3] * 100), tenders: JSON.parse(mm[6]) }; } return null; };
   const badge = (d, txt) => d.pg.evaluate(t => { let b = document.getElementById('__rc'); if (!b) { b = document.createElement('div'); b.id = '__rc'; b.style.cssText = 'position:fixed;right:10px;top:40px;z-index:2147483000;background:#0b0f17;color:#7dd3fc;border:2px solid #7dd3fc;border-radius:8px;padding:8px 14px;font:700 16px system-ui'; document.body.appendChild(b); } b.textContent = t; }, txt);
@@ -123,7 +132,7 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
   await segment('b1a', async () => { await hold(1500); await login(T1); const par = await T1.pg.evaluate(() => { const R = window.Till.registry; return R && R.ROWS ? R.ROWS.length : null; }); fact('parity_rows', par);
     const pl = T1.logs.filter(l => /^§TILL_PARITY /.test(l)).pop(); fact('parity_line', pl || '(none printed by the page)'); await hold(1500); }, T1);
   // ═══ b1b: the sample sale by real clicks, split tender
-  await segment('b1b', async () => { await keys(T1, 2); await tile(T1, 'Rose Bush'); await tile(T1, 'Hoe 4 ft'); await tile(T1, 'Patio Chair');
+  await segment('b1b', async () => { if (ONLY.length && ONLY.indexOf('b1a') < 0) await login(T1); await keys(T1, 2); await tile(T1, 'Rose Bush'); await tile(T1, 'Hoe 4 ft'); await tile(T1, 'Patio Chair');
     const lines = await T1.pg.evaluate(() => window.Till.state().ticket.lines.map(l => [l.name || l.details, l.qty])); fact('sale_lines', lines.reduce((a, l) => a + Number(l[1]), 0)); fact('sale_lines_detail', J(lines)); const total = await tot(T1); fact('sale_total', total);
     const half = (Number(total) / 2).toFixed(2); const key = await payParts(T1, [{ tab: 'cash', amount: half }, { tab: 'magcard', amount: (Number(total) - Number(half)).toFixed(2), ref: 'TERM-0001', auth: 'A1B2C3' }]); fact('sale_receipt_key', key);
     const dep = T1.logs.filter(l => /^§TILL_DEPOSIT /.test(l)).pop() || ''; fact('deposit_line', dep.slice(0, 200)); }, T1);
@@ -144,19 +153,25 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     await click(TR, '#floorbar [data-btn="Tables"]'); await TR.pg.waitForSelector('#fl-map .place'); await sleep(600); const c2 = await TR.pg.evaluate(() => Object.assign({}, window.TillRest.counts)); fact('leave_deposits', c2.deposits - c1.deposits);
     await click(TR, '#fl-res'); await TR.pg.waitForSelector('#reservations'); await typeIn(TR, '#rs-customer', 'Aminah'); await typeIn(TR, '#rs-chairs', '4'); await TR.pg.fill('#rs-date', '2026-11-05T19:00'); await click(TR, '#rs-save'); await TR.pg.waitForSelector('[data-res-in]');
     const pl = await TR.pg.$$eval('#rs-place option', o => o.map(x => x.value).filter(Boolean)); if (pl.length) await TR.pg.selectOption('#rs-place', pl[1] || pl[0]); await click(TR, '[data-res-in]'); await TR.pg.waitForSelector('#u3.on', { timeout: 15000 }); fact('reservation_checked_in', 'true'); await hold(1500); }, K);
-  // ═══ b3a: three tills sell (relay counter), each Close Cash
+  // ═══ b3a (v4, §38 topology): three tills ring on their own localhost, the branch relay is their ONLY pipe (badge: internet requests counted by the recording), each Close Cash; then the MAIN till (D) collects over the branch relay
   const rung = [0, 0, 0]; let dayReq = 0, tillKeys = [], tillZ = [];
-  await segment('b3a', async () => { const mkDay = mark(); await badge(T1, 'RELAY REQUESTS (counted by the recording) · this till: 0'); await login(T2); await login(T3);
-    for (let i = 0; i < 3; i++) { const d = TL[i], n = i === 0 ? 1 : 2; if (i > 0) await cam.on(d); for (let j = 0; j < n; j++) { await tile(d, 'Rose Bush'); if (j % 2 === 0) await tile(d, 'Hoe 4 ft'); await payParts(d, [{ tab: 'cash', amount: await tot(d) }]); rung[i]++; } await badge(d, 'RELAY REQUESTS (counted by the recording) · this till: ' + rcCount(d.name, mkDay)); }
-    dayReq = since(mkDay).filter(r => /^T\d$/.test(r.dev)).length; fact('relay_day', dayReq); fact('tickets_rung', rung.join('+') + '=' + (rung[0] + rung[1] + rung[2]));
-    for (let i = 0; i < 3; i++) { const d = TL[i]; await cam.on(d); await d.pg.evaluate(() => window.Till.go('close')); await hold(900); await click(d, '#zclose'); await click(d, '#zconfirm'); await d.pg.waitForFunction(() => /Cash Closed OK/.test(document.querySelector('#zdone').textContent), null, { timeout: 30000 }); await hold(1600); await badge(d, 'RELAY REQUESTS (counted by the recording) · this till: ' + rcCount(d.name, mkDay)); tillZ.push(zOf(d)); await hold(900); }
-    for (const d of TL) tillKeys.push(await d.pg.evaluate(() => window.Till.state().cfg.tillKey)); fact('till_keys', tillKeys.join(',')); fact('till_z', J(tillZ)); }, T1);
-  // ═══ b3b: the branch admin's EODA screen, ONE send
-  await segment('b3b', async () => { await visitAll([A, D, A]); await cam.on(D); await typeIn(D, '#a-tills', tillKeys.join(', ')); await D.pg.dispatchEvent('#a-tills', 'change'); await sleep(500); await D.pg.evaluate(() => window.BranchAdmin.refresh()); await hold(2500);
+  const lanCount = (dev, mk) => LANREQ.slice(mk).filter(r => r.dev === dev).length, BADGE = (d, mk) => 'INTERNET REQUESTS (counted by the recording) · this till: ' + rcCount(d.name, mk.net) + '   ·   BRANCH RELAY (LAN): ' + lanCount(d.name, mk.lan);
+  const mk3 = () => ({ net: mark(), lan: LANREQ.length }); let day0 = null;
+  await segment('b3a', async () => { day0 = mk3(); const mkDay = day0; if (B3ONLY) await login(T1); await badge(T1, BADGE(T1, mkDay)); await login(T2); await login(T3);
+    for (let i = 0; i < 3; i++) { const d = TL[i], n = i === 0 ? 1 : 2; if (i > 0) await cam.on(d); for (let j = 0; j < n; j++) { await tile(d, 'Rose Bush'); if (j % 2 === 0) await tile(d, 'Hoe 4 ft'); await payParts(d, [{ tab: 'cash', amount: await tot(d) }]); rung[i]++; } await sleep(600); await badge(d, BADGE(d, mkDay)); await hold(900); }
+    for (let i = 0; i < 3; i++) { const d = TL[i]; await cam.on(d); await d.pg.evaluate(() => window.Till.go('close')); await hold(900); await click(d, '#zclose'); await click(d, '#zconfirm'); await d.pg.waitForFunction(() => /Cash Closed OK/.test(document.querySelector('#zdone').textContent), null, { timeout: 30000 }); await hold(1600); await badge(d, BADGE(d, mkDay)); tillZ.push(zOf(d)); await hold(900); }
+    dayReq = since(mkDay.net).filter(r => /^T\d$/.test(r.dev)).length; fact('relay_day', dayReq); fact('tickets_rung', rung.join('+') + '=' + (rung[0] + rung[1] + rung[2])); fact('b3_tickets', rung[0] + rung[1] + rung[2]); fact('till_lan_requests', LANREQ.slice(mkDay.lan).filter(r => /^T\d$/.test(r.dev)).length);
+    for (const d of TL) tillKeys.push(await d.pg.evaluate(() => window.Till.state().cfg.tillKey)); fact('till_keys', tillKeys.join(',')); fact('till_z', J(tillZ));
+    // the main till collects (its own page: the branch POS admin of the flagged till); the table shows what came over the branch relay
+    await cam.on(D); await hold(900); await bridge(); await typeIn(D, '#a-tills', tillKeys.join(', ')); await D.pg.dispatchEvent('#a-tills', 'change'); await sleep(500); await click(D, '#a-refresh'); await bridge(); await hold(2500);
+    const cl = D.logs.filter(l => /^§LAN_COLLECT newFiles=/.test(l)); const tot3 = cl.length ? /totalLines=(\d+)/.exec(cl[cl.length - 1]) : null; fact('b3_lines', tot3 ? tot3[1] : 'none'); fact('lan_collect_last', cl.slice(-1)[0] || '(none)'); fact('lan_collect_dup', cl.reduce((a, l) => a + Number((/dupLines=(\d+)/.exec(l) || [0, 0])[1]), 0));
+    fact('main_flag', D.logs.filter(l => /^§LAN_ADMIN main=/.test(l)).slice(-1)[0] || '(none)'); await badge(D, 'MAIN TILL · collected over the BRANCH RELAY (LAN) · internet requests by the tills: ' + dayReq); await hold(1500); }, T1);
+  // ═══ b3b: the main till's screen (every till's tickets and Z), ONE send to the internet relay
+  await segment('b3b', async () => { await bridge(); await cam.on(D); await D.pg.evaluate(() => window.BranchAdmin.render()).catch(() => {}); await hold(2500);
     const scr = await D.pg.$$eval('#a-rows tr', tr => tr.map(r => [].map.call(r.cells, c => c.textContent))); fact('admin_rows', J(scr.map(r => [r[0], r[1], r[2], r[3]]))); const gross = await D.pg.$eval('#t-gross', e => e.textContent); fact('statement_gross', gross);
-    const sumZ = tillZ.reduce((a, z) => a + (z ? z.gross : 0), 0); fact('sum_till_z_gross_cents', sumZ); fact('z_equal', String(Math.round(Number(gross) * 100) === sumZ));
-    const mkS = mark(); await badge(D, 'RELAY REQUESTS (counted by the recording) · this send: 0'); await click(D, '#a-send'); const t0 = Date.now(); while (Date.now() - t0 < 60000 && !/sent|Sent|EODA/.test(await D.pg.$eval('#a-sendnote', e => e.textContent).catch(() => ''))) await sleep(300);
-    await sleep(2000); await badge(D, 'RELAY REQUESTS (counted by the recording) · this send: ' + rcCount('D', mkS) + ' (hub-lane puts ' + since(mkS).filter(r => r.dev === 'D' && r.m === 'PUT' && lane(r) === 'hub').length + ')'); fact('eoda_send', since(mkS).filter(r => r.dev === 'D' && r.m === 'PUT' && lane(r) === 'hub').length); fact('send_note', await D.pg.$eval('#a-sendnote', e => e.textContent)); await hold(2500); }, D);
+    const sumZ = tillZ.reduce((a, z) => a + (z ? z.gross : 0), 0); fact('sum_till_z_gross_cents', sumZ); fact('z_equal', String(Math.round(Number(gross) * 100) === sumZ)); await hold(1500);
+    const mkS = mark(); await badge(D, 'INTERNET REQUESTS (counted by the recording) · this send: 0'); await click(D, '#a-send'); const t0 = Date.now(); while (Date.now() - t0 < 90000 && !/sent|Sent|EODA/.test(await D.pg.$eval('#a-sendnote', e => e.textContent).catch(() => ''))) await sleep(300);
+    await sleep(2000); const hubPuts = since(mkS).filter(r => r.dev === 'D' && r.m === 'PUT' && lane(r) === 'hub').length; await badge(D, 'INTERNET REQUESTS (counted by the recording) · this send: ' + rcCount('D', mkS) + ' (hub-lane puts ' + hubPuts + ')'); fact('eoda_send', hubPuts); fact('send_note', await D.pg.$eval('#a-sendnote', e => e.textContent)); await hold(2500); }, D);
   // ═══ b4a: head office, Branch Day Close in the real menu
   await segment('b4a', async () => { await visitAll([A, D, A]); const ni = await T.rows(A, 'SELECT count(*) AS n FROM i_order'); fact('hq_i_order_rows', ni[0] && ni[0].n); const inst = await A.pg.evaluate(async u => { const r = window.PluginEngine._reg().system; await r.installBundle(u); await r.startBundle('org.kernel.friendly-ops'); return true; }, base + '/erp/plugins/friendly_ops.mjs'); fact('friendly_ops_installed', inst); await cam.on(A); await hold(1500);
     // the menu is role-scoped at LOGIN (idempiere.html buildMenu/SES.scopeMenu): log out and in again through the real login screen so the new head-office process is on the role's menu

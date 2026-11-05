@@ -1,0 +1,170 @@
+{
+  "_readme": "Editable marking template for a building TYPE (prompts/PDF2BIM_VECTOR_PROBE.md §12-13). Change patterns/labels to match another drafter's marking format; nothing else in the code is format-specific.",
+  "type": "LowCostHouse",
+  "family": "JKR TB-LKTN (Rumah Rakyat)",
+  "storeys": 1,
+  "sheet_scale": "1:100",
+  "tags": [
+    {
+      "id": "door",
+      "pattern": "D\\d+",
+      "ifc": "IfcDoor",
+      "source": "owner 2026-11-03: marking convention of this type; D# schedule on p8"
+    },
+    {
+      "id": "window",
+      "pattern": "W\\d+",
+      "ifc": "IfcWindow",
+      "source": "owner 2026-11-03: 'W# is probably window'; W# schedule on p8",
+      "variants": [
+        {
+          "id": "column",
+          "ifc": "IfcColumn",
+          "applies_to": [
+            "W3"
+          ],
+          "meaning": "key row W3: 200W x 300L x 3000H Tasblock infill concrete column",
+          "geometry": {
+            "closed_rect_mm": [
+              200,
+              300
+            ],
+            "tol_mm": 40,
+            "max_dist_pt": 20
+          },
+          "source": "key_reading_2026-11-03 (accepted) + geometry corroboration"
+        }
+      ]
+    }
+  ],
+  "vocabulary_unclassified": {
+    "_note": "tokens seen in the text layer whose meaning is NOT yet extracted; matched only to find legend columns, never assigned a class (Prime Rule)",
+    "patterns": [
+      "G\\d+",
+      "SWS",
+      "MR",
+      "FG",
+      "CP",
+      "GB",
+      "CR",
+      "CT",
+      "TB",
+      "FP\\d*"
+    ],
+    "legend_reading_2026-11-03": {
+      "result": "meanings of G#, SWS, MR, FG, CP, GB, CR, CT, TB are NOT in the text layer of any of the 8 pages; none promoted to tags",
+      "text_layer_facts": {
+        "p1_finish_box_headers": [
+          "Floor Finish (from AGL)",
+          "Wall Finish",
+          "Floor Area (Meter 2)"
+        ],
+        "p1_finish_box_codes_seen": [
+          "CR",
+          "CT - PP",
+          "FF",
+          "Sqm"
+        ],
+        "p7_legend_text": [
+          "= water meter",
+          "= tap point",
+          "= stop cock",
+          "= bollafix valve"
+        ],
+        "p7_symbol_labels_on_plan": [
+          "m",
+          "sc",
+          "sh",
+          "tap",
+          "DC"
+        ]
+      },
+      "status": "superseded: see key_reading_2026-11-03 (meanings read from the drawn key, YELLOW)"
+    }
+  },
+  "schedule": {
+    "refs_label": "REFERENCES",
+    "units_label": "UNITS",
+    "units_suffix": "NOS"
+  },
+  "legend": {
+    "min_column_words": 4,
+    "x_tol_pt": 3
+  },
+  "key_reading_2026-11-03": {
+    "_status": "ACCEPTED (owner 2026-11-03: 'to a human and to you as a multimodal AI it should be evident what they mean'). A multimodal read of the drawn key is a valid template source; the drawn-text matcher is for applying the template at scale, not for re-proving what the key says. One doubt stays marked.",
+    "rows": [
+      {
+        "label": "CT",
+        "meaning": "ceramic tiles as per manufacturer's spec & architect approval",
+        "group": "floor finish",
+        "status": "accepted"
+      },
+      {
+        "label": "CR",
+        "meaning": "cement render (smooth)",
+        "group": "floor finish",
+        "status": "accepted"
+      },
+      {
+        "label": "TB",
+        "meaning": "100 mm thk Tasblock wall system, min 6 mm skimming both sides",
+        "symbol": "triangle",
+        "group": "wall finish",
+        "status": "accepted"
+      },
+      {
+        "label": "(filled triangle)",
+        "meaning": "Tasblock single wall system",
+        "symbol": "filled triangle",
+        "group": "wall finish",
+        "note": "thickness digit read as '4mm' — the one doubtful item; owner/reader to confirm",
+        "status": "accepted_except_digit"
+      },
+      {
+        "label": "W3",
+        "meaning": "200 W x 300 L x 3000 H Tasblock infill concrete column",
+        "symbol": "triangle",
+        "group": "wall finish",
+        "CORROBORATED": "geometry: 2 of the 4 plan 'W3' tags sit 14-15 pt from closed 200x300 mm rectangles (195x296 and 199x296 mm) at (256,414),(345,414); the other 2 W3 tags have none within 55 pt",
+        "status": "accepted"
+      },
+      {
+        "label": "W4",
+        "meaning": "1500 mm (h) ceramic wall tiles",
+        "symbol": "triangle",
+        "group": "wall finish",
+        "status": "accepted"
+      },
+      {
+        "label": "CP",
+        "meaning": "100 H x 100 W lightweight copping",
+        "symbol": "hexagon",
+        "group": "wall finish",
+        "status": "accepted"
+      },
+      {
+        "label": "GB",
+        "meaning": "gypsum board w/o cornice + flexi coat & paint",
+        "symbol": "hexagon",
+        "group": "ceiling finish",
+        "status": "accepted"
+      },
+      {
+        "label": "MR",
+        "meaning": "metal roofing on pre-fabricated trusses incl. fascia board",
+        "symbol": "hexagon",
+        "group": "roof finish",
+        "status": "accepted"
+      },
+      {
+        "label": "FG",
+        "meaning": "GI flashing gauge",
+        "symbol": "hexagon",
+        "group": "roof finish",
+        "status": "accepted"
+      }
+    ],
+    "TAG_COLLISION": "W3/W4 mean WINDOW (bare text, schedule p8) AND WALL-TYPE (key triangle). D# and W1,W2 unaffected. Resolve by neighbouring geometry/symbol, not by text alone."
+  }
+}

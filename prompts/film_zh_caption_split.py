@@ -11,7 +11,7 @@ for l in open(src).read().split('\n'):
     if not m: out.append(l); continue
     n_in += 1; pre, a, b, sty, name, mid, txt = m.groups(); a, b = ts2s(a), ts2s(b)
     chunks = []
-    for p in [p for p in re.split(r'(?<=[，。？！；：])', txt) if p]:
+    for p in [p for p in re.split(r'(?<=[，。？！；：、])', txt) if p]:
         if chunks and len(chunks[-1]) + len(p) <= MAX: chunks[-1] += p
         else: chunks.append(p)
     tot, t = sum(len(c) for c in chunks), a

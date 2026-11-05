@@ -160,12 +160,13 @@ for l in open(src):
             ok='OK' if want in('any','report') or d_>0 else 'WRONG'
             print(f'§NARR_TONE {i}#{j} {w} {kind} own={own_s} rose={rose}st endDelta={d_:+.1f}st want={want} {ok} "{c}"',flush=True)
 def ts(x): return f'{int(x//3600)}:{int(x%3600//60):02d}:{x%60:05.2f}'
-hdr=open('ass_head.txt').read() if CAP else open('ass_head.txt').read().replace('DejaVu Sans',CFG['font']); ev=[]
+NATIVE=bool(os.environ.get('CAP_NATIVE'))   # CAP_NATIVE=1: the caption TSV is in the audio's OWN language (acronym captions, unicenta till §34.G): native font + native credit line, not the English-over-native default
+hdr=open('ass_head.txt').read() if (CAP and not NATIVE) else open('ass_head.txt').read().replace('DejaVu Sans',CFG['font']); ev=[]
 for i,a,f,mk in plan:
     cap=CAP.get(i) if CAP else None
     if CAP and (cap is None or len(cap)!=len(mk)):
         print(f'§CAPTION_MISMATCH {i} turns={len(mk)} captions={0 if cap is None else len(cap)} -> native text kept',flush=True); cap=None
     for j,(s,e,w,t) in enumerate(mk): ev.append(f'Dialogue: 0,{ts(s)},{ts(e+0.35)},{w},{i}#{j},0,0,0,,{cap[j] if cap else t}')
-ev.append(f'Dialogue: 0,{ts(FILM-8.0)},{ts(FILM-0.1)},Credit,,0,0,0,,'+('Voices: AI-generated (Microsoft Edge TTS, cloud)  ·  Script directed by red1' if CAP else CFG['credit']))
+ev.append(f'Dialogue: 0,{ts(FILM-8.0)},{ts(FILM-0.1)},Credit,,0,0,0,,'+('Voices: AI-generated (Microsoft Edge TTS, cloud)  ·  Script directed by red1' if (CAP and not NATIVE) else CFG['credit']))
 open(f'{tag}.ass','w').write(hdr+'\n'.join(ev)+'\n')
 open(f'{tag}_plan.tsv','w').write(''.join(f'{i}\t{a:.3f}\t{f}\n' for i,a,f,_ in plan))
