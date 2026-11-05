@@ -4,7 +4,7 @@
 'use strict';
 const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
 const FACTS = () => JSON.parse(fs.readFileSync(path.join(__dirname, 'out', 'facts.resolved.json'), 'utf8'));
-const CORAL = '#FF6B78', OFF = '#F3EEE8', SKY = '#7dd3fc', MUT = '#C3C2B7', AMB = '#fbbf24', GRN = '#4ade80', INK = '#e2e8f0', BOXF = '#1e293b', BOXS = '#7dd3fc';
+const CRL = '#ff9aa5', CORAL = '#FF6B78', OFF = '#F3EEE8', SKY = '#7dd3fc', MUT = '#C3C2B7', AMB = '#fbbf24', GRN = '#4ade80', INK = '#e2e8f0', BOXF = '#1e293b', BOXS = '#7dd3fc';
 const box = (x, y, w, h, o) => ({ t: 'box', x, y, w, h, fill: (o && o.fill) || BOXF, stroke: (o && o.stroke) || BOXS });
 const tx = (x, y, size, color, txt, o) => ({ t: 'text', x, y, size, color, txt, bold: !(o && o.light), center: o && o.center });
 const arrow = (x1, y, x2, label) => ({ t: 'arrow', x1, y, x2, label });
@@ -26,13 +26,43 @@ function afterDiagram() {
     ctx(552, 190, 22, '#ffffff', 'PROCESS', false), ctx(552, 225, 26, '#ffffff', 'SODA, morning batch'), ctx(1270, 190, 22, '#ffffff', 'PROCESS', false), ctx(1270, 225, 24, '#ffffff', 'Till fetches batch'),
     ctx(560, 565, 22, '#ffffff', 'PROCESS', false), ctx(560, 600, 26, '#ffffff', 'Branch Day Close'), ctx(1290, 555, 22, '#ffffff', 'PROCESS', false), ctx(1290, 590, 24, '#ffffff', 'EODA, day-end send')];
 }
+
+// v3 (2026-11-05, POS_PLUGIN_LOCAL_FIRST.md §34.E): the EXPAND slide. The right-hand stack of the AFTER opens into a BRANCH: several tills, each air-gapped on its own localhost, joined by a branch relay;
+// one MAIN TILL holds HQ's stock figure, collects the others' order lines, and alone talks to the internet relay (EODA up, SODA down). DESIGN drawn, no number on any of these cards (nothing is measured yet).
+const pframe = (x1, y1, x2, y2, color, w) => ({ t: 'frame', x1: gx(x1), y1: gy(y1), x2: gx(x2), y2: gy(y2), color, w });
+const harrow = (xa, xb, yc, dir, fill) => { const base = xb - dir * 42, h = 14, hh = 32;
+  return parrow([[xa, yc - h], [base, yc - h], [base, yc - hh], [xb, yc], [base, yc + hh], [base, yc + h], [xa, yc + h]], fill || ORG); };
+const TX = [780, 1025, 1270, 1515], TW = 215, DKR = '#b3122a';
+// o: relay (branch relay bar + connectors), arrows ('on' | 'off'), labels (SODA/EODA words), main (till A is the MAIN TILL), collect (connectors coral = order lines flow to the main till), note (lines in the branch foot)
+function branchDiagram(o) {
+  const ops = [prect(0, 0, 1781, 767, GREENBG), prect(35, 105, 270, 705, DKG), prect(380, 108, 600, 700, DKG), prect(760, 105, 1751, 707, DKG),
+    prect(55, 272, 250, 603, YEL), prect(400, 283, 580, 606, YEL)];
+  if (o.arrows === 'on') { ops.push(harrow(275, 375, 200, 1), harrow(375, 275, 560, -1), harrow(605, 755, 215, 1), harrow(755, 605, 345, -1)); }
+  ops.push(ctx(891, 20, 40, '#111111', 'HEAD OFFICE ⇄ INTERNET RELAY ⇄ BRANCH', false), ctx(152, 118, 24, '#ffffff', 'HEAD OFFICE'), ctx(490, 118, 28, '#ffffff', 'RELAY'), ctx(1255, 118, 30, '#ffffff', 'BRANCH'),
+    ctx(152, 305, 24, '#555555', 'MODEL', false), ctx(152, 350, 26, '#555555', 'Products'), ctx(152, 395, 26, '#555555', 'Prices'), ctx(152, 440, 26, '#555555', 'Stock'), ctx(152, 485, 26, '#555555', 'Day Close'),
+    ctx(490, 330, 24, '#555555', 'INTERNET', false), ctx(490, 380, 20, '#555555', 'sealed changes'), ctx(490, 425, 22, '#555555', 'a plain folder'));
+  if (o.labels) ops.push(ctx(680, 172, 17, '#111111', 'SODA, down'), ctx(680, 374, 17, '#111111', 'EODA, up'));
+  for (let i = 0; i < 4; i++) { const mainTill = o.main && i === 0, x = TX[i], cx = x + TW / 2, y2 = mainTill ? 432 : 360;
+    ops.push(prect(x, 160, x + TW, y2, YEL));
+    if (mainTill) ops.push(pframe(x, 160, x + TW, y2, DKR, 7), ctx(cx, 170, 26, DKR, 'MAIN TILL'));
+    ops.push(ctx(cx, mainTill ? 215 : 180, 28, '#555555', 'TILL ' + 'ABCD'[i]), ctx(cx, mainTill ? 262 : 230, 24, '#555555', 'localhost'), ctx(cx, mainTill ? 300 : 268, 24, '#555555', 'air-gapped'), ctx(cx, mainTill ? 338 : 306, 21, '#555555', 'own SQLite DB', false));
+    if (mainTill) ops.push(ctx(cx, 370, 20, DKR, 'HQ stock figure'), ctx(cx, 398, 20, DKR, '+ order lines'));
+    if (o.relay) ops.push(prect(cx - 6, y2, cx + 6, 470, o.collect && i > 0 ? CRL : (o.collect ? DKR : ORG)));
+  }
+  if (o.relay) ops.push(prect(780, 470, 1730, 545, '#0e7490'), ctx(1255, 485, 30, '#ffffff', 'BRANCH RELAY'), ctx(1255, 520, 20, '#e0f2fe', 'inside the shop', false));
+  (o.note || []).forEach((n, i) => ops.push(ctx(1255, 575 + i * 42, 24, '#ffffff', n, i === 0)));
+  return ops; }
+const NOTE_FRAME = { exp2: ['Each till runs from its own copy, on its own localhost', 'no public address, no server to reach'], exp3: ['A dumb mailbox on the shop\'s own network', 'it carries the shop\'s own traffic, nothing else'],
+  exp4: ['MAIN TILL: HQ\'s stock figure + the others\' order lines', 'Only the main till talks to the internet relay', 'Branch relay down? Every till keeps selling'],
+  day1: ['SELLING: every till rings on its own localhost', 'nothing goes out to the internet while they sell'], day2: ['COLLECTING: the main till collects each till\'s order lines', 'since that till\'s last timestamp, never a line twice', 'running record: HQ stock figure minus the collected lines'],
+  day3: ['END OF DAY: the main till\'s EODA is the single send', 'to the internet relay; head office picks it up from there'] };
 function spec() {
   const F = {}; const fr = FACTS(); Object.keys(fr).forEach(k => { F[k] = fr[k].value; });
   const chap = (k, l1, l2, pl) => ({ bg: '#0b0f17', ops: [{ t: 'ctext', y: 330, size: 34, color: CORAL, txt: k, spacing: 6 }, { t: 'ctext', y: 400, size: 120, color: OFF, txt: l1, bold: true }, { t: 'ctext', y: 540, size: 120, color: CORAL, txt: l2, bold: true }, { t: 'ctext', y: 700, size: 40, color: MUT, txt: pl }] });
   const C = {
     ch1: chap('THE TILL', 'A till you', 'already know', 'uniCenta layout and flow, in a browser tab'),
     ch2: chap('THE RESTAURANT', 'Kitchen', 'and tables', 'floor map, Send Order, the kitchen screen'),
-    ch3: chap('THE BRANCH DAY', 'End of day,', 'once', 'three tills, one branch admin, one send'),
+    ch3: chap('THE BRANCH DAY', 'End of day,', 'once', 'each till rings on its own, the main till collects, a single send'),
     ch4: chap('HEAD OFFICE', 'Head office,', 'next morning', 'one click closes the branch day'),
     ch5: chap('SODA', 'Only what', 'changed', 'the morning batch down to the tills'),
     ch6: chap('THE ORACLE', 'Same books', 'as legacy', 'compared with real iDempiere, column by column'),
@@ -41,6 +71,13 @@ function spec() {
     before: { bg: '#0f172a', ops: [tx(120, 36, 44, SKY, 'BEFORE  ·  the owner\'s integration, ' + F.year2012), tx(120, 92, 26, MUT, 'Diagram: "ERP to POS integration model", from RED1\'s integration guide of ' + F.year2011 + ' (copyleft RED1)'),
       { t: 'img', file: 'p50_diagram.png', x: 180, y: 140, w: 1560 }] },
     after: { bg: '#0f172a', ops: [tx(120, 36, 44, GRN, 'AFTER  ·  the same three stacks, nothing to install'), tx(120, 92, 26, MUT, 'Same layout as the owner\'s diagram. Still delayed (end of day up, start of day down); no broker server to run.')].concat(afterDiagram()) },
+    exp1: { bg: '#0f172a', ops: [tx(120, 36, 44, GRN, 'EXPAND  ·  the right-hand stack opens up into a branch'), tx(120, 92, 26, MUT, 'The AFTER diagram again, same three stacks. Watch the browser till on the right.')].concat(afterDiagram(), [pframe(1456, 90, 1761, 717, CORAL, 8)]) },
+    exp2: { bg: '#0f172a', ops: [tx(120, 36, 44, GRN, 'EXPAND  ·  several tills, each air-gapped on its own localhost'), tx(120, 92, 26, MUT, 'The design of a branch, in the same layout as the owner\'s diagram.')].concat(branchDiagram({ arrows: 'on', note: NOTE_FRAME.exp2 })) },
+    exp3: { bg: '#0f172a', ops: [tx(120, 36, 44, GRN, 'EXPAND  ·  a branch relay joins them, inside the shop'), tx(120, 92, 26, MUT, 'The design of a branch, in the same layout as the owner\'s diagram.')].concat(branchDiagram({ arrows: 'on', relay: true, note: NOTE_FRAME.exp3 })) },
+    exp4: { bg: '#0f172a', ops: [tx(120, 36, 44, GRN, 'EXPAND  ·  one MAIN TILL talks to the internet relay'), tx(120, 92, 26, MUT, 'EODA goes up, SODA comes down: the same delayed relay as before, once per branch.')].concat(branchDiagram({ arrows: 'on', relay: true, labels: true, main: true, note: NOTE_FRAME.exp4 })) },
+    day1: { bg: '#0f172a', ops: [tx(120, 36, 44, SKY, 'END OF DAY  ·  every till rings on its own'), tx(120, 92, 26, MUT, 'Design of the branch day. Nothing leaves the shop while the tills sell.')].concat(branchDiagram({ arrows: 'off', relay: false, note: NOTE_FRAME.day1 })) },
+    day2: { bg: '#0f172a', ops: [tx(120, 36, 44, SKY, 'END OF DAY  ·  the main till collects'), tx(120, 92, 26, MUT, 'Design of the branch day. The collecting runs on the shop\'s own relay only.')].concat(branchDiagram({ arrows: 'off', relay: true, main: true, collect: true, note: NOTE_FRAME.day2 })) },
+    day3: { bg: '#0f172a', ops: [tx(120, 36, 44, SKY, 'END OF DAY  ·  the main till\'s EODA is the one send'), tx(120, 92, 26, MUT, 'Design of the branch day. Head office picks the day up from the internet relay.')].concat(branchDiagram({ arrows: 'on', relay: true, labels: true, main: true, collect: true, note: NOTE_FRAME.day3 })) },
     gs: { bg: '#0f172a', ops: [tx(120, 110, 46, SKY, 'Branch Day Close  ·  before and after'),
       box(120, 220, 800, 330), tx(160, 270, 36, SKY, 'CLICKS'), tx(160, 360, 110, OFF, F.dc_before_g + '  →  ' + F.dc_after_g), tx(160, 480, 28, MUT, 'step by step, then one click'),
       box(1000, 220, 800, 330), tx(1040, 270, 36, SKY, 'SCREENS'), tx(1040, 360, 110, OFF, F.dc_before_s + '  →  ' + F.dc_after_s), tx(1040, 480, 28, MUT, 'six screens, then one'),
@@ -79,6 +116,7 @@ function render(outDir) {
       else if (o.t === 'arrow') { a.push('-stroke', SKY, '-strokewidth', '5', '-fill', SKY, '-draw', `line ${o.x1 + 8},${o.y} ${o.x2 - 22},${o.y}`, '-draw', `polygon ${o.x2 - 8},${o.y} ${o.x2 - 30},${o.y - 14} ${o.x2 - 30},${o.y + 14}`);
         a.push('-stroke', 'none', '-fill', MUT, '-font', 'DejaVu-Sans', '-pointsize', '22', '-gravity', 'NorthWest', '-annotate', `+${o.x1 + 6}+${o.y - 52}`, o.label); }
       else if (o.t === 'rect') a.push('-stroke', 'none', '-fill', o.fill, '-draw', `rectangle ${o.x1},${o.y1} ${o.x2},${o.y2}`);
+      else if (o.t === 'frame') a.push('-stroke', o.color, '-strokewidth', String(o.w || 6), '-fill', 'none', '-draw', `rectangle ${o.x1},${o.y1} ${o.x2},${o.y2}`);
       else if (o.t === 'poly') a.push('-stroke', 'none', '-fill', o.fill, '-draw', `polygon ${o.pts}`);
       else if (o.t === 'img') a.push('(', path.join(__dirname, 'out', 'pdf', o.file), '-filter', 'Lanczos', '-resize', o.w + 'x', ')', '-gravity', 'NorthWest', '-geometry', `+${o.x}+${o.y}`, '-composite');
       else if (o.t === 'text' && o.cx !== undefined) a.push('-stroke', 'none', '-fill', o.color, '-font', o.bold ? 'DejaVu-Sans-Bold' : 'DejaVu-Sans', '-pointsize', String(o.size), '-gravity', 'North', '-annotate', `${o.cx - 960 >= 0 ? '+' : ''}${o.cx - 960}+${o.y}`, o.txt);
