@@ -86,7 +86,7 @@ The 25 things a uniCenta 5.0 cashier (and manager) does, and where each one is h
 ## Getting started (for the cashier)
 
 1. **Open the till page** — <https://red1oon.github.io/bim-ootb/erp/till.html>. The strip at the top shows
-   *Till*, *online/offline*, *paired / not paired*, who is signed in, *deposited N*, and a **Visit head office** button (it exchanges only with the branch relay; a till never reaches head office). Under the strip, one status line says what the page is doing: *Starting… loading the shop's data (N s)* while it loads, then what to do next (*Choose your name below to sign in*) and the branch relay it is using. If a page cannot start or fails, that line says what went wrong, what to do, and offers **Retry**.
+   *Till*, *online/offline*, *paired / not paired*, who is signed in, *deposited N*, and a **Visit head office** button (it exchanges only with the branch relay; a till never reaches head office). Under the strip, one status line says what the page is doing: *Starting… loading the shop's data (N s)* while it loads, then what to do next (*Choose your name below to sign in*) and the branch relay it is using. Once you are signed in, the line shrinks to a small chip at the top of the screen so the sales screen keeps all its room. If a page cannot start or fails, that line says what went wrong, what to do, and offers **Retry**.
 2. **Tap your name.**
 
    ![Login: the status line (a trial here, no branch relay), one button per user, the status strip on top](img/till/till_01_login.png)
