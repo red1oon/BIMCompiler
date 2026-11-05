@@ -10,7 +10,7 @@ const { chromium } = require('/home/red1/bim-ootb/tests/node_modules/playwright'
 const cp = require('child_process'), http = require('http'), fs = require('fs'), os = require('os'), vm = require('vm'), path = require('path'), crypto = require('crypto'), { execFileSync } = require('child_process');
 const ROOT = process.env.ROOT || '/tmp/wt-film-ootb', OUT = path.resolve(process.argv[2] || 'out/rec'), FR = path.join(OUT, 'frames'); fs.mkdirSync(FR, { recursive: true });
 const MIN = process.argv[3] && fs.existsSync(process.argv[3]) ? JSON.parse(fs.readFileSync(process.argv[3], 'utf8')) : {}, FAST = !!process.env.FAST, ONLY = (process.env.ONLY || '').split(',').filter(Boolean);
-const B3ONLY = ONLY.length > 0 && ONLY.every(x => /^b3/.test(x)), LANREQ = [];
+const B3ONLY = ONLY.length > 0 && ONLY.every(x => /^b3/.test(x)), NOREST = ONLY.length > 0 && ONLY.every(x => /^(b1|b3)/.test(x)), LANREQ = [];   // NOREST: K and TR are not opened (v5: ONLY=b1b and ONLY=b3a,b3b re-record the receipt shots on the §39 receipt)
 const LOG = [], PAGELOG = [], say = s => { LOG.push(s); console.log(s); }, sleep = ms => new Promise(r => setTimeout(r, ms)), J = JSON.stringify, subtle = crypto.webcrypto.subtle;
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.wasm': 'application/wasm', '.png': 'image/png', '.css': 'text/css', '.svg': 'image/svg+xml', '.db': 'application/octet-stream' };
 const fact = (k, v) => say('§TILLFILM_FACT ' + k + '=' + String(v).replace(/\s+/g, ' ').slice(0, 300));
@@ -97,16 +97,16 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
   await A.pg.evaluate(() => window.TeamSync.ready);
   const D = await open('D', '/erp/branch_admin.html?login=50001' + qsMain, () => window.BranchAdmin && window.BranchAdmin.ready);
   const TL = []; for (const lg of [50001, 102, 101]) TL.push(await open('T' + (TL.length + 1), '/erp/till.html?login=' + lg + qsBase, () => window.Till && window.Till.ready));
-  const K = B3ONLY ? null : await open('K', '/erp/kitchen.html?login=50001' + qsBase, () => window.Kitchen && window.Kitchen.ready);
-  const TR = B3ONLY ? null : await open('TR', '/erp/till.html?login=50001&mode=restaurant' + qsBase, () => window.Till && window.Till.ready && window.TillRest);
-  const devs = [D].concat(TL, B3ONLY ? [] : [K, TR]); const space = await T.found(A), org = (await T.rows(A, 'SELECT ad_org_uu AS uu FROM ad_org WHERE ad_org_id=12'))[0];
+  const K = NOREST ? null : await open('K', '/erp/kitchen.html?login=50001' + qsBase, () => window.Kitchen && window.Kitchen.ready);
+  const TR = NOREST ? null : await open('TR', '/erp/till.html?login=50001&mode=restaurant' + qsBase, () => window.Till && window.Till.ready && window.TillRest);
+  const devs = [D].concat(TL, NOREST ? [] : [K, TR]); const space = await T.found(A), org = (await T.rows(A, 'SELECT ad_org_uu AS uu FROM ad_org WHERE ad_org_id=12'))[0];
   for (const d of devs) await T.join(d, space);
   for (let k = 0; k < 10; k++) { for (const d of devs) await T.approve(A, await T.kid(d), 50004, org.uu); await visitAll(devs.concat([A])); const en = []; for (const d of devs) en.push(await T.enrolled(d)); if (en.every(Boolean)) break; await sleep(300); }
   await visitAll(devs.concat([A]), 2); const enr = []; for (const d of devs) enr.push(await T.enrolled(d)); say('§TILLFILM_SETUP enrolled=' + J(enr)); if (!enr.every(Boolean)) throw new Error('devices not enrolled');
   fact('tills', TL.length);
   // the 27 picture URLs through the engine's ordinary product edit (§30.2): model-layer save on EACH till, then the catalog re-read from the DB
   const icons = JSON.parse(fs.readFileSync(path.join(ROOT, 'erp', 'product_icons', 'product_icons.json'), 'utf8')).products; let iconed = 0;
-  for (const d of TL.concat(B3ONLY ? [] : [TR])) { const r = await d.pg.evaluate(async list => { const T = window.Till, E = T.engine(); let n = 0; for (const it of list) { const row = (T.state().prods.filter(p => p.value === it.value)[0]); if (!row) continue;
+  for (const d of TL.concat(NOREST ? [] : [TR])) { const r = await d.pg.evaluate(async list => { const T = window.Till, E = T.engine(); let n = 0; for (const it of list) { const row = (T.state().prods.filter(p => p.value === it.value)[0]); if (!row) continue;
       const full = await new Promise(res => { E.__crud.modelRun({ table: 'c_order', timing: 'PROCESS', fn: trx => { res(trx.q('SELECT * FROM m_product WHERE m_product_id=' + row.pid)[0]); return { ok: true }; } }, () => {}); }); if (!full) continue;
       await new Promise(res => E.__crud.modelRun({ table: 'm_product', timing: 'SAVE', record: full, id: row.pid, changes: { imageurl: it.url } }, r => { if (!r || !r.ops) return res(); E.__crud.applyOpGroup(r.ops, () => { n++; res(); }); })); }
       const im = await T.rows('SELECT m_product_id AS pid, imageurl AS img FROM m_product WHERE imageurl IS NOT NULL'); T.state().prods.forEach(p => { const x = im.filter(y => String(y.pid) === String(p.pid))[0]; if (x) p.img = x.img; }); return n; }, icons).catch(e => 'ERR ' + e.message); iconed = r; }
@@ -121,7 +121,7 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
   async function tile(d, name) { const pid = await reach(d, name); await click(d, '#products .prod[data-pid="' + pid + '"]'); }
   async function keys(d, n) { for (const ch of String(n)) await click(d, '#east .key[data-key="' + ch + '"]'); }
   async function payParts(d, parts) { await click(d, '#east .key[data-key="="]'); await d.pg.waitForSelector('#u8.on'); for (const p of parts) { await click(d, '#tabs [data-tab="' + p.tab + '"]'); if (p.amount != null) await typeIn(d, '#tender-amount', p.amount); if (p.ref) { await d.pg.fill('#card-ref', p.ref); await d.pg.fill('#card-auth', p.auth); await hold(300); } if (p !== parts[parts.length - 1]) await click(d, '#addpart'); }
-    await click(d, '#pay-ok'); await d.pg.waitForSelector('#u9.on', { timeout: 20000 }); await hold(1800); const key = await d.pg.$eval('#receipt .rf[data-f="Receipt"]', e => e.textContent.split('  ')[1]); await click(d, '#rc-ok'); return key; }
+    await click(d, '#pay-ok'); await d.pg.waitForSelector('#u9.on', { timeout: 20000 }); await hold(1800); const key = await d.pg.$eval('#receipt .rf[data-f="Receipt"]', e => e.getAttribute('data-v')); /* v5: standard §39 receipt (42 columns): the raw ticket key is the row's data-v */ await click(d, '#rc-ok'); return key; }
   const tot = d => d.pg.$eval('#t-tot', e => e.textContent);
   const zOf = t => { let ci = -1; t.logs.forEach((l, i) => { if (/^§TILL_CLOSE closed=/.test(l)) ci = i; }); for (let i = ci; i >= 0; i--) { const mm = /^§TILL_Z seq=(\d+) tickets=(\d+) units=\S+ gross=(\S+) net=(\S+) payments=(\d+) bytender=(\{.*?\}) removed=/.exec(t.logs[i]); if (mm) return { tickets: +mm[2], gross: Math.round(+mm[3] * 100), tenders: JSON.parse(mm[6]) }; } return null; };
   const badge = (d, txt) => d.pg.evaluate(t => { let b = document.getElementById('__rc'); if (!b) { b = document.createElement('div'); b.id = '__rc'; b.style.cssText = 'position:fixed;right:10px;top:40px;z-index:2147483000;background:#0b0f17;color:#7dd3fc;border:2px solid #7dd3fc;border-radius:8px;padding:8px 14px;font:700 16px system-ui'; document.body.appendChild(b); } b.textContent = t; }, txt);
@@ -132,7 +132,7 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
   await segment('b1a', async () => { await hold(1500); await login(T1); const par = await T1.pg.evaluate(() => { const R = window.Till.registry; return R && R.ROWS ? R.ROWS.length : null; }); fact('parity_rows', par);
     const pl = T1.logs.filter(l => /^§TILL_PARITY /.test(l)).pop(); fact('parity_line', pl || '(none printed by the page)'); await hold(1500); }, T1);
   // ═══ b1b: the sample sale by real clicks, split tender
-  await segment('b1b', async () => { await keys(T1, 2); await tile(T1, 'Rose Bush'); await tile(T1, 'Hoe 4 ft'); await tile(T1, 'Patio Chair');
+  await segment('b1b', async () => { if (ONLY.length && ONLY.indexOf('b1a') < 0) await login(T1); await keys(T1, 2); await tile(T1, 'Rose Bush'); await tile(T1, 'Hoe 4 ft'); await tile(T1, 'Patio Chair');
     const lines = await T1.pg.evaluate(() => window.Till.state().ticket.lines.map(l => [l.name || l.details, l.qty])); fact('sale_lines', lines.reduce((a, l) => a + Number(l[1]), 0)); fact('sale_lines_detail', J(lines)); const total = await tot(T1); fact('sale_total', total);
     const half = (Number(total) / 2).toFixed(2); const key = await payParts(T1, [{ tab: 'cash', amount: half }, { tab: 'magcard', amount: (Number(total) - Number(half)).toFixed(2), ref: 'TERM-0001', auth: 'A1B2C3' }]); fact('sale_receipt_key', key);
     const dep = T1.logs.filter(l => /^§TILL_DEPOSIT /.test(l)).pop() || ''; fact('deposit_line', dep.slice(0, 200)); }, T1);

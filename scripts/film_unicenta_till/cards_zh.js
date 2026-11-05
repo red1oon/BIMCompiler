@@ -2,7 +2,7 @@
 // cards.js THROWS (§CARD_UNTRANSLATED) on any key missing here. "Unicenta POS", "uniCenta", "SQLite WASM", "Red1", product names on the product's own screen and the acronyms ERP / POS / SODA / EODA / ActiveMQ stay as written.
 'use strict';
 module.exports = {
-  'THE SQLITE WASM TILL': 'SQLite WASM 收银台', 'Unicenta POS integration': 'Unicenta POS 集成', 'REBORN': '重生', "Red1's 2013 work is now in local first SQLite WASM version": 'Red1 的 2013 年作品，如今是本地优先的 SQLite WASM 版本',
+  'THE SQLITE WASM TILL': 'SQLite WASM 收银台', 'Unicenta POS integration': 'Unicenta POS 集成', 'REBORN': '重生', "Red1's 2011 work is now in local first SQLite WASM version": 'Red1 的 2011 年作品，如今是本地优先的 SQLite WASM 版本',
   'THE TILL': '收银台', 'A till you': '一台你', 'already know': '早已熟悉的收银台', 'uniCenta layout and flow, in a browser tab': 'uniCenta 的界面和流程，现在在一个浏览器标签页里',
   'THE RESTAURANT': '餐厅', 'Kitchen': '厨房', 'and tables': '和餐桌', 'floor map, Send Order, the kitchen screen': '楼面图、下单、厨房屏幕',
   'THE BRANCH DAY': '分店的一天', 'End of day,': '日终，', 'once': '只发一次', 'each till rings on its own, the main till collects, a single send': '各台自己收银，主收银台汇集，只发送一次',
@@ -10,7 +10,7 @@ module.exports = {
   'SODA': 'SODA', 'Only what': '只发送', 'changed': '有变化的', 'the morning batch down to the tills': '早间批次下发到各收银台',
   'THE ORACLE': '对照标准', 'Same books': '账目一致，', 'as legacy': '与原版相同', 'compared with real iDempiere, column by column': '与真正的 iDempiere 逐列对照',
   "2011  ·  Openbravo POS, from RED1's integration guide": "2011  ·  Openbravo POS，出自 RED1 的集成指南", "The original sales screen of the owner's guide (copyleft RED1): Tools tiles, a ticket of Hoe and Rake-Bamboo": '所有者指南里的原版销售界面（copyleft RED1）：Tools 图块，一张含 Hoe 和 Rake-Bamboo 的小票',
-  "BEFORE  ·  the owner's integration, 2012": '之前  ·  所有者的集成方案，2012', 'Diagram: "ERP to POS integration model", from RED1\'s integration guide of 2011 (copyleft RED1)': '示意图 "ERP to POS integration model"，出自 RED1 二零一一年的集成指南（copyleft RED1）',
+  "BEFORE  ·  the owner's integration, 2011": '之前  ·  所有者的集成方案，2011', 'Diagram: "ERP to POS integration model", from RED1\'s integration guide of 2011 (copyleft RED1)': '示意图 "ERP to POS integration model"，出自 RED1 二零一一年的集成指南（copyleft RED1）',
   'AFTER  ·  the same three stacks, nothing to install': '之后  ·  同样的三个部分，无需安装', "Same layout as the owner's diagram. Still delayed (end of day up, start of day down); no broker server to run.": '布局与所有者的示意图相同。仍然是延迟交换（日终上传，日初下载），无需运行消息服务器。',
   'HEAD OFFICE ⇄ RELAY ⇄ BROWSER TILL': '总部 ⇄ 中继 ⇄ 浏览器收银台', 'RELAY': '中继', 'BROWSER TILL': '浏览器收银台', 'MODEL': '数据模型', 'Products': '商品', 'Prices': '价格', 'Stock': '库存', 'Day Close': '日结',
   'sealed changes': '加密封存的变更', 'a plain folder': '一个普通文件夹', 'own SQLite DB': '自己的 SQLite 库', 'Sales, Tickets': '销售、小票', 'works offline': '离线可用',
@@ -40,7 +40,7 @@ module.exports = {
   '•  Decimals in text: legacy writes 9.0, the twin writes 9. A difference, not accepted (OPEN-1).': '•  文本里的小数：原版写 9.0，孪生版写 9。这是差异，不被接受（OPEN-1）。', '•  Price-change stamp: not compared with legacy (OPEN-2).': '•  价格变更时间戳：尚未与原版对照（OPEN-2）。',
   '•  A pair of tills on one table over a real relay: not proven.': '•  两台收银台通过真实中继共用一张餐桌：尚未证明。', '•  Memory with all the pictures loaded: not measured.': '•  加载全部图片后的内存占用：尚未测量。', 'Sources: §28.3, §32.R': '来源：§28.3, §32.R',
   'uniCenta POS, reborn': 'uniCenta POS，重生', 'The same till, now a browser tab: same operations, same books, same look as legacy.': '同一台收银台，现在是一个浏览器标签页：操作相同，账目相同，外观与原版相同。',
-  "Prior art: the owner's own 2012 Openbravo POS → ADempiere / iDempiere integration over ActiveMQ,": '在先成果：所有者自己 2012 年的方案，Openbravo POS → ADempiere / iDempiere，经 ActiveMQ 集成，', 'the delayed EODA / SODA relay (copyleft RED1)': '即延迟的 EODA / SODA 中继（copyleft RED1）',
+  "Prior art: the owner's own 2011 Openbravo POS → ADempiere / iDempiere integration over ActiveMQ,": '在先成果：所有者自己 2011 年的方案，Openbravo POS → ADempiere / iDempiere，经 ActiveMQ 集成，', 'the delayed EODA / SODA relay (copyleft RED1)': '即延迟的 EODA / SODA 中继（copyleft RED1）',
   'uniCenta oPOS (GPL): layout and flow followed. No code or artwork copied.': 'uniCenta oPOS（GPL）：沿用其界面布局和流程。没有复制任何代码或美术资源。', 'Product pictures: Fluent Emoji (MIT licence)': '商品图片：Fluent Emoji（MIT 许可证）', 'Legacy iDempiere is the oracle for every comparison': '每一次对照都以原版 iDempiere 为准',
   'github.com/red1oon/BIMCompiler   ·   red1org@gmail.com': 'github.com/red1oon/BIMCompiler   ·   red1org@gmail.com'
 };
