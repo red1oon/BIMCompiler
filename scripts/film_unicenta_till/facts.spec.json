@@ -4,7 +4,6 @@
  "guide_two": {"src":"scripts/film_unicenta_till/out/pdf/p23_text.txt","re":"Click on (2) on the number-pad and click on Hoe","expect":"2","words":["two"],"what":"guide p23 text: 2 on the number-pad, then Hoe","zh":["两"],"ms":["dua"]},
  "guide_three": {"src":"scripts/film_unicenta_till/out/pdf/p23_text.txt","re":"Click on (3) on the number-pad and then click on Rake-Bamboo","expect":"3","words":["three"],"what":"guide p23 text: 3 on the number-pad, then Rake-Bamboo","zh":["三"],"ms":["tiga"]},
  "stacks3": {"src":"scripts/film_unicenta_till/out/pdf/p50_text.txt","re":"between the (3) remotely located stacks","expect":"3","words":["three"],"what":"guide p50 caption: the processes carry data between the 3 remotely located stacks","zh":["三"],"ms":["tiga"]},
- "year2012": {"src":"/home/red1/bim-compiler/prompts/POS_PLUGIN_LOCAL_FIRST.md","re":"(2012)","expect":"2012","words":["twenty twelve"],"what":"the owner's POS integration year, spec §1 M8 / §12.1","zh":["二零一二"],"ms":["dua ribu dua belas"]},
  "parity_n": {"src":"/tmp/rest_logs/final_witness_till.log","re":"§TILL_PARITY (\\d+) of 25","expect":"25","words":["twenty-five"],"what":"uniCenta 5 parity rows passing, §32.R","zh":["二十五"],"ms":["dua puluh lima"]},
  "parity_of": {"src":"/tmp/rest_logs/final_witness_till.log","re":"§TILL_PARITY 25 of (25)","expect":"25","words":[],"what":"parity rows total","zh":[],"ms":[]},
  "relay_order": {"src":"/tmp/till_logs/p2_kds.log","re":"lines=8 \\| Send Order: .* = (\\d+) per delivered order","expect":"38","words":["thirty-eight"],"what":"relay requests per delivered Send Order, §20","zh":["三十八"],"ms":["tiga puluh lapan"]},
@@ -45,6 +44,5 @@
  "relay_day": {"live":true,"words":["zero"],"what":"till requests counted by the recorder while the tills sell","zh":["零"],"ms":["sifar"]},
  "eoda_send": {"live":true,"words":["one"],"what":"EODA sends counted by the recorder: hub-lane puts of the main till's one send","zh":["一"],"ms":["satu"]},
  "b3_tickets": {"live":true,"words":["five"],"zh":["五"],"what":"tickets the three tills ring in the beat-3 recording (printed by the recording, the sum of what each till rang)","ms":["lima"]},
- "b3_lines": {"live":true,"words":["eight"],"zh":["八"],"what":"order lines the MAIN till collected over the branch relay (D page log §LAN_COLLECT totalLines)","ms":["lapan"]},
- "owner_2013": {"literal":"2013","quote":"owner, 2026-11-05: \"Red1's 2013 work is now in local first SQLite WASM version\" (the opening card's sub line, kept as the owner gave it)","words":[],"zh":[],"what":"the year in the owner's opening sub line","ms":[]}
+ "b3_lines": {"live":true,"words":["eight"],"zh":["八"],"what":"order lines the MAIN till collected over the branch relay (D page log §LAN_COLLECT totalLines)","ms":["lapan"]}
 }
