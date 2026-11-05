@@ -2,18 +2,23 @@
 // Every digit on a card is a fact of out/facts.resolved.json (interpolated here, never typed) - guard.js scans the SPEC for strays. Chapter cards = plain #0b0f17, silent, no tags. Plain cards #0f172a, content above y=850 (bottom 230 px stay empty for subtitles).
 // Usage: node cards.js render <outDir>   (writes <outDir>/<name>.png)   |   require('./cards.js').spec() for the guard.   READ THE LOG: out/cards.log
 'use strict';
-const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
-const FACTS = () => JSON.parse(fs.readFileSync(path.join(__dirname, 'out', 'facts.resolved.json'), 'utf8'));
+const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process'), { LANG, SHARED, OUT } = require('./lang.js');
+const FACTS = () => JSON.parse(fs.readFileSync(path.join(SHARED, 'facts.resolved.json'), 'utf8'));
+// v4 (§34.G): FILM_LANG=zh renders every text through the translation table cards_zh.js (a missing entry THROWS: no card ever ships half-translated); CJK is drawn by ImageMagick with Noto Sans CJK SC (never ffmpeg drawtext).
+const ZH = LANG !== 'en' ? require('./cards_' + LANG + '.js') : null, L = s => { if (!ZH) return s; if (!Object.prototype.hasOwnProperty.call(ZH, s)) throw new Error('§CARD_UNTRANSLATED ' + JSON.stringify(s)); return ZH[s]; };
+// CJK glyph boxes are taller than DejaVu's: in zh the diagram labels shrink 10 % and the few tight title/sub pairs drop a little (numbers only; §CARD_FIT measures the widths)
+const ZDY = { 'said plainly, so nobody finds it later': 16, 'The same till, now a browser tab: same operations, same books, same look as legacy.': 12, 'inside the shop': 10, '28  →  9': -30, '6  →  1': -30, 'step by step, then one click': 12, 'six screens, then one': 12, 'The parallel run compares the twin with real iDempiere, column by column': 10 }, zdy = t => (LANG === 'zh' && ZDY[t]) || 0;
+const FONT = (bold) => LANG === 'zh' ? (bold ? 'Noto-Sans-CJK-SC-Bold' : 'Noto-Sans-CJK-SC') : (bold ? 'DejaVu-Sans-Bold' : 'DejaVu-Sans');
 const CRL = '#ff9aa5', CORAL = '#FF6B78', OFF = '#F3EEE8', SKY = '#7dd3fc', MUT = '#C3C2B7', AMB = '#fbbf24', GRN = '#4ade80', INK = '#e2e8f0', BOXF = '#1e293b', BOXS = '#7dd3fc';
 const box = (x, y, w, h, o) => ({ t: 'box', x, y, w, h, fill: (o && o.fill) || BOXF, stroke: (o && o.stroke) || BOXS });
-const tx = (x, y, size, color, txt, o) => ({ t: 'text', x, y, size, color, txt, bold: !(o && o.light), center: o && o.center });
+const tx = (x, y, size, color, txt, o) => ({ t: 'text', x, y: y + zdy(txt) + (LANG === 'zh' && y === 92 && size === 26 ? 12 : 0), size, color, txt: L(txt), bold: !(o && o.light), center: o && o.center });
 const arrow = (x1, y, x2, label) => ({ t: 'arrow', x1, y, x2, label });
 // The AFTER diagram redrawn in the owner's own layout (p50 crop coordinates x,y in a 1781x767 panel, scaled by SC and placed at OX,OY), so BEFORE and AFTER read as a pair.
 const PX = 180, PY = 140, SC = 1560 / 1781, GREENBG = '#aedc8a', DKG = '#4f7a28', YEL = '#ffff44', ORG = '#f96a00';
 const gx = x => Math.round(PX + x * SC), gy = y => Math.round(PY + y * SC);
 const prect = (x1, y1, x2, y2, fill) => ({ t: 'rect', x1: gx(x1), y1: gy(y1), x2: gx(x2), y2: gy(y2), fill });
 const parrow = (pts, fill) => ({ t: 'poly', pts: pts.map(([x, y]) => gx(x) + ',' + gy(y)).join(' '), fill });
-const ctx = (cx, y, size, color, txt, bold) => ({ t: 'text', x: 0, y: gy(y), size, color, txt, bold: bold !== false, cx: gx(cx) });
+const ctx = (cx, y, size, color, txt, bold, mw) => ({ t: 'text', x: 0, y: gy(y) + zdy(txt), size: LANG === 'zh' ? Math.round(size * 0.9) : size, color, txt: L(txt), bold: bold !== false, cx: gx(cx), mw });
 function afterDiagram() {
   return [prect(0, 0, 1781, 767, GREENBG), prect(35, 105, 347, 705, DKG), prect(777, 108, 1081, 700, DKG), prect(1466, 100, 1751, 707, DKG),
     prect(65, 272, 318, 603, YEL), prect(804, 283, 1057, 606, YEL), prect(1491, 278, 1727, 609, YEL),
@@ -44,9 +49,9 @@ function branchDiagram(o) {
   if (o.labels) ops.push(ctx(680, 172, 17, '#111111', 'SODA, down'), ctx(680, 374, 17, '#111111', 'EODA, up'));
   for (let i = 0; i < 4; i++) { const mainTill = o.main && i === 0, x = TX[i], cx = x + TW / 2, y2 = mainTill ? 432 : 360;
     ops.push(prect(x, 160, x + TW, y2, YEL));
-    if (mainTill) ops.push(pframe(x, 160, x + TW, y2, DKR, 7), ctx(cx, 170, 26, DKR, 'MAIN TILL'));
-    ops.push(ctx(cx, mainTill ? 215 : 180, 28, '#555555', 'TILL ' + 'ABCD'[i]), ctx(cx, mainTill ? 262 : 230, 24, '#555555', 'localhost'), ctx(cx, mainTill ? 300 : 268, 24, '#555555', 'air-gapped'), ctx(cx, mainTill ? 338 : 306, 21, '#555555', 'own SQLite DB', false));
-    if (mainTill) ops.push(ctx(cx, 370, 20, DKR, 'HQ stock figure'), ctx(cx, 398, 20, DKR, '+ order lines'));
+    if (mainTill) ops.push(pframe(x, 160, x + TW, y2, DKR, 7), ctx(cx, 170, 26, DKR, 'MAIN TILL', true, TW - 14));
+    ops.push(ctx(cx, mainTill ? 215 : 180, 28, '#555555', 'TILL ' + 'ABCD'[i], true, TW - 14), ctx(cx, mainTill ? 262 : 230, 24, '#555555', 'localhost', true, TW - 14), ctx(cx, mainTill ? 300 : 268, 24, '#555555', 'air-gapped', true, TW - 14), ctx(cx, mainTill ? 338 : 306, 21, '#555555', 'own SQLite DB', false, TW - 14));
+    if (mainTill) ops.push(ctx(cx, 370, 20, DKR, 'HQ stock figure', true, TW - 14), ctx(cx, 398, 20, DKR, '+ order lines', true, TW - 14));
     if (o.relay) ops.push(prect(cx - 6, y2, cx + 6, 470, o.collect && i > 0 ? CRL : (o.collect ? DKR : ORG)));
   }
   if (o.relay) ops.push(prect(780, 470, 1730, 545, '#0e7490'), ctx(1255, 485, 30, '#ffffff', 'BRANCH RELAY'), ctx(1255, 520, 20, '#e0f2fe', 'inside the shop', false));
@@ -58,8 +63,10 @@ const NOTE_FRAME = { exp2: ['Each till runs from its own copy, on its own localh
   day3: ['END OF DAY: the main till\'s EODA is the single send', 'to the internet relay; head office picks it up from there'] };
 function spec() {
   const F = {}; const fr = FACTS(); Object.keys(fr).forEach(k => { F[k] = fr[k].value; });
-  const chap = (k, l1, l2, pl) => ({ bg: '#0b0f17', ops: [{ t: 'ctext', y: 330, size: 34, color: CORAL, txt: k, spacing: 6 }, { t: 'ctext', y: 400, size: 120, color: OFF, txt: l1, bold: true }, { t: 'ctext', y: 540, size: 120, color: CORAL, txt: l2, bold: true }, { t: 'ctext', y: 700, size: 40, color: MUT, txt: pl }] });
+  const chap = (k, l1, l2, pl, sz) => ({ bg: '#0b0f17', ops: [{ t: 'ctext', y: 330, size: 34, color: CORAL, txt: L(k), spacing: 6 }, { t: 'ctext', y: 400, size: sz || 120, color: OFF, txt: L(l1), bold: true }, { t: 'ctext', y: 540, size: sz || 120, color: CORAL, txt: L(l2), bold: true }, { t: 'ctext', y: 700, size: 40, color: MUT, txt: L(pl) }] });
   const C = {
+    // v4 (§34.G, owner 2026-11-05): the OPENING card, two-tone house typography: kicker coral, line 1 off-white, line 2 coral, the owner's sub line kept as he wrote it. Silent, 3.6 s, plain #0b0f17.
+    ch0: chap('THE SQLITE WASM TILL', 'Unicenta POS integration', 'REBORN', 'Red1\'s ' + F.owner_2013 + ' work is now in local first SQLite WASM version', 100),
     ch1: chap('THE TILL', 'A till you', 'already know', 'uniCenta layout and flow, in a browser tab'),
     ch2: chap('THE RESTAURANT', 'Kitchen', 'and tables', 'floor map, Send Order, the kitchen screen'),
     ch3: chap('THE BRANCH DAY', 'End of day,', 'once', 'each till rings on its own, the main till collects, a single send'),
@@ -107,27 +114,31 @@ function spec() {
   };
   return C;
 }
+// width of a text op as ImageMagick will draw it (the same font and size); the card is refused when a text leaves the page or its box (§CARD_FIT)
+const widthOf = (o) => +execFileSync('convert', ['-font', FONT(o.bold), '-pointsize', String(o.size), '-kerning', String(o.spacing || 0), 'label:' + o.txt, '-format', '%w', 'info:']).toString();
 function render(outDir) {
   fs.mkdirSync(outDir, { recursive: true }); const C = spec();
   for (const [name, c] of Object.entries(C)) {
-    const a = ['-size', '1920x1080', 'xc:' + c.bg, '-font', 'DejaVu-Sans']; let n = 0;
+    const a = ['-size', '1920x1080', 'xc:' + c.bg, '-font', FONT(false)]; let n = 0, over = [];
     for (const o of c.ops) {
+      if (o.t === 'text' || o.t === 'ctext') { const w = widthOf(o); const lo = o.cx !== undefined ? o.cx - w / 2 : o.t === 'ctext' ? 960 - w / 2 : o.x, hi = lo + w, lim = o.mw && w > o.mw; if (lo < 40 || hi > 1880 || lim) over.push(JSON.stringify(o.txt) + ' w=' + Math.round(w) + (lim ? ' > box ' + o.mw : ' spans ' + Math.round(lo) + '..' + Math.round(hi))); }
       if (o.t === 'box') a.push('-fill', o.fill, '-stroke', o.stroke, '-strokewidth', '3', '-draw', `roundrectangle ${o.x},${o.y} ${o.x + o.w},${o.y + o.h} 22,22`);
       else if (o.t === 'arrow') { a.push('-stroke', SKY, '-strokewidth', '5', '-fill', SKY, '-draw', `line ${o.x1 + 8},${o.y} ${o.x2 - 22},${o.y}`, '-draw', `polygon ${o.x2 - 8},${o.y} ${o.x2 - 30},${o.y - 14} ${o.x2 - 30},${o.y + 14}`);
-        a.push('-stroke', 'none', '-fill', MUT, '-font', 'DejaVu-Sans', '-pointsize', '22', '-gravity', 'NorthWest', '-annotate', `+${o.x1 + 6}+${o.y - 52}`, o.label); }
+        a.push('-stroke', 'none', '-fill', MUT, '-font', FONT(false), '-pointsize', '22', '-gravity', 'NorthWest', '-annotate', `+${o.x1 + 6}+${o.y - 52}`, o.label); }
       else if (o.t === 'rect') a.push('-stroke', 'none', '-fill', o.fill, '-draw', `rectangle ${o.x1},${o.y1} ${o.x2},${o.y2}`);
       else if (o.t === 'frame') a.push('-stroke', o.color, '-strokewidth', String(o.w || 6), '-fill', 'none', '-draw', `rectangle ${o.x1},${o.y1} ${o.x2},${o.y2}`);
       else if (o.t === 'poly') a.push('-stroke', 'none', '-fill', o.fill, '-draw', `polygon ${o.pts}`);
-      else if (o.t === 'img') a.push('(', path.join(__dirname, 'out', 'pdf', o.file), '-filter', 'Lanczos', '-resize', o.w + 'x', ')', '-gravity', 'NorthWest', '-geometry', `+${o.x}+${o.y}`, '-composite');
-      else if (o.t === 'text' && o.cx !== undefined) a.push('-stroke', 'none', '-fill', o.color, '-font', o.bold ? 'DejaVu-Sans-Bold' : 'DejaVu-Sans', '-pointsize', String(o.size), '-gravity', 'North', '-annotate', `${o.cx - 960 >= 0 ? '+' : ''}${o.cx - 960}+${o.y}`, o.txt);
-      else if (o.t === 'text') a.push('-stroke', 'none', '-fill', o.color, '-font', o.bold ? 'DejaVu-Sans-Bold' : 'DejaVu-Sans', '-pointsize', String(o.size), '-gravity', 'NorthWest', '-annotate', `+${o.x}+${o.y}`, o.txt);
-      else if (o.t === 'ctext') a.push('-stroke', 'none', '-fill', o.color, '-font', o.bold ? 'DejaVu-Sans-Bold' : 'DejaVu-Sans', '-pointsize', String(o.size), '-kerning', String(o.spacing || 0), '-gravity', 'North', '-annotate', `+0+${o.y}`, o.txt);
+      else if (o.t === 'img') a.push('(', path.join(SHARED, 'pdf', o.file), '-filter', 'Lanczos', '-resize', o.w + 'x', ')', '-gravity', 'NorthWest', '-geometry', `+${o.x}+${o.y}`, '-composite');
+      else if (o.t === 'text' && o.cx !== undefined) a.push('-stroke', 'none', '-fill', o.color, '-font', FONT(o.bold), '-pointsize', String(o.size), '-gravity', 'North', '-annotate', `${o.cx - 960 >= 0 ? '+' : ''}${o.cx - 960}+${o.y}`, o.txt);
+      else if (o.t === 'text') a.push('-stroke', 'none', '-fill', o.color, '-font', FONT(o.bold), '-pointsize', String(o.size), '-gravity', 'NorthWest', '-annotate', `+${o.x}+${o.y}`, o.txt);
+      else if (o.t === 'ctext') a.push('-stroke', 'none', '-fill', o.color, '-font', FONT(o.bold), '-pointsize', String(o.size), '-kerning', String(o.spacing || 0), '-gravity', 'North', '-annotate', `+0+${o.y}`, o.txt);
       n++;
     }
     const f = path.join(outDir, name + '.png'); a.push(f); execFileSync('convert', a);
     const sub = execFileSync('convert', [f, '-crop', '1920x230+0+850', '+repage', '-format', '%[fx:mean]', 'info:']).toString(), bg = execFileSync('convert', ['-size', '1x1', 'xc:' + c.bg, '-format', '%[fx:mean]', 'info:']).toString();
+    console.log(`§CARD_FIT ${name} ${over.length ? 'OVERFLOW ' + over.join(' ; ') : 'ok'}`);
     console.log(`§CARD ${name} ops=${n} subtitle_zone_mean=${(+sub).toFixed(5)} bg_mean=${(+bg).toFixed(5)} ${Math.abs(sub - bg) < 1e-4 ? 'EMPTY' : 'NOT-EMPTY'}`);
   }
 }
-if (require.main === module && process.argv[2] === 'render') render(path.resolve(process.argv[3] || 'out/cards'));
+if (require.main === module && process.argv[2] === 'render') render(path.resolve(process.argv[3] || path.join(OUT, 'cards')));
 module.exports = { spec, render };

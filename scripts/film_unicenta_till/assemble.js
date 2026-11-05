@@ -2,13 +2,13 @@
 // (3.6 s is not a whole number of frames: cues drift otherwise). A beat is held to at least its narration length (beatmin.json); a missing clip is a hole named in the log, never a silent skip. READ THE LOG: out/assemble.log.
 // Usage: node assemble.js <outDir(out)> <beatmin.json>   -> out/film_silent.mp4 (or out/film_partial.mp4 when clips are missing), out/timeline.json
 'use strict';
-const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process'), N = require('./narr.js');
+const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process'), N = require('./narr.js'), { SHARED } = require('./lang.js');
 const OUT = path.resolve(process.argv[2] || 'out'), MIN = JSON.parse(fs.readFileSync(process.argv[3], 'utf8')), FPS = 24, SLACK = +(process.env.SLACK || 2.0), W = path.join(OUT, 'asm'); fs.mkdirSync(W, { recursive: true });
 const frames = f => +execFileSync('ffprobe', ['-v', 'error', '-count_frames', '-select_streams', 'v:0', '-show_entries', 'stream=nb_read_frames', '-of', 'csv=p=0', f]).toString().trim();
 const ENC = ['-c:v', 'libx264', '-crf', '17', '-preset', 'medium', '-pix_fmt', 'yuv420p', '-r', String(FPS)], list = [], TL = []; let t = 0, holes = [];
 for (const b of N.beats) {
   const seg = path.join(W, b.id + '.mp4'); let want = Math.max(b.hold || 0, MIN[b.id] || 0, 0.3);
-  if (b.rec) { const clip = path.join(OUT, 'rec', 'seg_' + b.rec + '.mp4'); if (!fs.existsSync(clip)) { holes.push(b.id + '(' + b.rec + ')'); console.log('§ASM_HOLE ' + b.id + ' no clip ' + clip + (b.blocked ? ' (gate: ' + b.blocked + ')' : '')); continue; }
+  if (b.rec) { const clip = path.join(SHARED, 'rec', 'seg_' + b.rec + '.mp4');   // the recorded clips (the product's own UI) are shared by every language if (!fs.existsSync(clip)) { holes.push(b.id + '(' + b.rec + ')'); console.log('§ASM_HOLE ' + b.id + ' no clip ' + clip + (b.blocked ? ' (gate: ' + b.blocked + ')' : '')); continue; }
     const have = +execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', clip]).toString().trim(); const nxt = N.beats[N.beats.indexOf(b) + 1], target = want + ((nxt && /^ch/.test(nxt.card)) ? 1.0 : SLACK);
     // a real-pace clip longer than its narration + SLACK is time-lapsed (setpts) so the picture ends with the voice (PLAYBOOK C step 4: speech + 1-3 s); never slowed, padded only up to the narration
     const speed = have > target ? have / target : 1, pad = speed === 1 ? Math.max(0, want - have) : 0; const w0 = want; want = speed > 1 ? target : Math.max(want, have); console.log(`§ASM_SPEED ${b.id} clip=${have.toFixed(2)}s narration_want=${w0.toFixed(2)}s speed=x${speed.toFixed(2)}`);

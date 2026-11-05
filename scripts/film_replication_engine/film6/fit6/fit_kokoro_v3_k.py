@@ -5,13 +5,14 @@
 # a turn is voiced in chunks split after each '?'; a question chunk with no wh-word (yes/no or elliptical, e.g.
 # "Does that matter?", "And that box?") gets a Praat PSOLA rise on its last 0.6 s (formants + duration kept) because
 # Kokoro ends every question falling (measured -2..-7 st). wh-questions keep their natural fall.
+# v4 (unicenta till §34.G): OPTIONAL 4th arg = caption tsv (id TAB "F: .. | M: ..", the written text with ERP / AI kept); the TSV text column is then the VOICE (acronyms spelled as letters) and the subtitles show the caption, turn for turn (same mechanism as prompts/film_narration_fit_edge.py).
 # Witness: §NARR_TONE per chunk = end pitch vs body pitch in semitones (autocorrelation F0, self-tested: §F0_SELFTEST).
 import sys,re,numpy as np,soundfile as sf,parselmouth
 from parselmouth.praat import call
 from kokoro_onnx import Kokoro
 K='/home/red1/.local/share/film_narration/kokoro/'
 k=Kokoro(K+'kokoro-v1.0.onnx',K+'voices-v1.0.bin')
-src,tag,base=sys.argv[1],sys.argv[2],float(sys.argv[3]); VOX={'F':'af_heart','M':'am_michael'}
+src,tag,base=sys.argv[1],sys.argv[2],float(sys.argv[3]); CAP={l.split('\t')[0]:[x.strip()[2:].strip() for x in l.rstrip('\n').split('\t')[1].split(' | ')] for l in open(sys.argv[4])} if len(sys.argv)>4 else None; VOX={'F':'af_heart','M':'am_michael'}
 FILM=float(__import__('os').environ.get('FILM_SEC','206.79')); PAD=float(__import__('os').environ.get('FIT_PAD','0.3')); SR=24000; SPK={'F':1.03,'M':0.97}; RISE_ST=5.0; RISE_SPAN=0.6; CHUNK_GAP=0.12
 WH=re.compile(r'\b(what|why|how|where|who|whom|which|when)\b',re.I)
 def gap(prev):
@@ -107,7 +108,9 @@ for l in open(src):
 def ts(x): return f'{int(x//3600)}:{int(x%3600//60):02d}:{x%60:05.2f}'
 hdr=open('ass_head.txt').read(); ev=[]
 for i,a,f,mk in plan:
-    for s,e,w,t in mk: ev.append(f'Dialogue: 0,{ts(s)},{ts(e+0.35)},{w},{i}#{j},0,0,0,,{t}')
+    cap=CAP.get(i) if CAP else None
+    if CAP and (cap is None or len(cap)!=len(mk)): print(f'§CAPTION_MISMATCH {i} turns={len(mk)} captions={0 if cap is None else len(cap)} -> voice text kept',flush=True); cap=None
+    for j,(s,e,w,t) in enumerate(mk): ev.append(f'Dialogue: 0,{ts(s)},{ts(e+0.35)},{w},{i}#{j},0,0,0,,{cap[j] if cap else t}')
 ev.append(f'Dialogue: 0,{ts(FILM-8.0)},{ts(FILM-0.1)},Credit,,0,0,0,,Voices: AI-generated (Kokoro, local)  ·  Script directed by red1')
 open(f'{tag}.ass','w').write(hdr+'\n'.join(ev)+'\n')
 open(f'{tag}_plan.tsv','w').write(''.join(f'{i}\t{a:.3f}\t{f}\n' for i,a,f,_ in plan))
