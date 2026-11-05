@@ -6,6 +6,7 @@ const spec = JSON.parse(fs.readFileSync(path.join(__dirname, 'facts.spec.json'),
 const REPO = path.join(__dirname, '..', '..'), out = {}; let fail = 0, missing = [];
 for (const [k, f] of Object.entries(spec).sort((a, b) => (a[1].minus ? 1 : 0) - (b[1].minus ? 1 : 0))) {
   if (f.live) { out[k] = { live: true, what: f.what }; console.log('§FACT ' + k + ' LIVE (printed by record.js)'); continue; }
+  if (f.literal) { out[k] = { value: f.literal, raw: f.literal, src: f.quote, what: f.what }; console.log('§FACT ' + k + ' OK value=' + f.literal + ' src=OWNER-QUOTE ' + f.quote.slice(0, 80)); continue; }
   const p = f.src.startsWith('/') ? f.src.replace(/^\/tmp\/soda2_logs\/run_all_bridge\.log$/, fs.existsSync('/tmp/soda2_logs/run_all_bridge.log') ? '/tmp/soda2_logs/run_all_bridge.log' : process.env.HOME + '/.cache/bim_bridge/run_20261104_151811.log') : path.join(REPO, f.src);
   if (!fs.existsSync(p)) { missing.push(k + ' <- ' + f.src); fail++; console.log('§FACT ' + k + ' FAIL log missing ' + f.src); continue; }
   const m = new RegExp(f.re).exec(fs.readFileSync(p, 'utf8'));
