@@ -35,12 +35,12 @@ RULINGS (do not re-litigate)
 - Push and merge your own verified PRs (auto-merge), then fetch the live URL to confirm: green CI is not deployed.
 
 STATE IN ONE LINE
-A low-cost house PDF reaches Convert from the Modeller's Open panel ("from PDF image"), offline, by fixed rules, and builds on the live site: walls, house doors on their floor, windows, slab, pitched roof, porch, columns, gable ends. Library ebcea595bea6 is LIVE (owner's go 2026-11-05); rollback = point latest.json back at f5a308656e73. Tested on TB-LKTN and on a second drawing this lane wrote.
+A low-cost house PDF reaches Convert from the Modeller's Open panel ("from PDF drawing"), offline, by fixed rules, and builds on the live site: walls, house doors on their floor, windows, slab, pitched roof, porch, columns, gable ends. Library ebcea595bea6 is LIVE (owner's go 2026-11-05); rollback = point latest.json back at f5a308656e73. Tested on TB-LKTN and on a second drawing this lane wrote.
 
 OWNER DECISIONS, ⛔ ASK ONCE, THEN WORK ON WHAT IS LEFT:
 A real low-cost PDF from another drafter. Publishing a library again needs its own go: state the change in types/library_next_publish.json BEFORE the run, upload `<sha12>/`, run witness_library_publish.js BEFORE moving latest.json, flip last, fetch back, run the real URL, then move the witness pins.
 
-Owner decided 2026-11-05: the PDF step runs in the Modeller page, row "from PDF image". A second sample PDF may be authored, just to test (§40). The owner is told plainly: "image" will read as "scan" to many users; scans are refused by ruling.
+Owner decided 2026-11-05: the PDF step runs in the Modeller page, row "from PDF drawing" (§42). A second sample PDF may be authored, just to test (§40). Scans are refused by ruling.
 
 NEXT, needing no decision: see the RESUME block. The Revit question matters most: the owner sees this as saving hours in Revit, and the walls are meshes.
 
