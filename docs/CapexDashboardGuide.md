@@ -4,17 +4,79 @@
 > (iDempiere 13) holding test projects, some of them repeat test runs. Treat every number as a sample
 > (`SAMPLE — NOT OFFICIAL`). The health and schedule rules are provisional until a client confirms them.
 
-**What this is.** One set of project and capital-spending figures from your iDempiere, in two places:
+**What this is.** One set of project and capital-spending figures from your iDempiere, in three places:
 
 - **The dashboard page**: a full executive page in a browser. It reads your iDempiere and writes nothing back.
-- **The Performance panel on your Home tab**: the same figures as ordinary iDempiere Performance Goals, which you change in the
+- **The Performance panel on your iDempiere Home tab**: the same figures as ordinary Performance Goals, which you change in the
   stock windows.
+- **The Performance panel on the twin's Home tab**: the same goals in Kernel-ERP, the SQLite twin of iDempiere that runs in a browser.
 
 > **What it changes on your iDempiere:** no change to iDempiere's code or tables. The dashboard needs only read-only setup data.
 > Sending a Project Order *from a BIM model* into iDempiere is a separate thing: that is one standard plugin.
 
 **Who reads what.** **Project manager:** *The dashboard page*, *The Home tab* and *What moves the numbers*.
-**Administrator:** *Changing it* and *Installing it*. Everyone: *What it does not do yet* and *Troubleshooting*.
+**Administrator:** *Changing it* and *Installing it*. Everyone: *Three places*, *What it does not do yet* and *Troubleshooting*.
+
+---
+
+## Three places, one set of figures
+
+These are different screens over the same kind of rows. They are not one HTML page shown three times.
+
+| | Dashboard page | iDempiere Home tab | Twin Home tab |
+|---|---|---|---|
+| **What you see** | Seven tiles, five panels, project lists | Performance dials, one per goal | The same dials as iDempiere, on purpose |
+| **What defines the figures** | Formulas in code (`capex/tiles.js`) | `PA_Goal` and `PA_Measure` rows | The same rows |
+| **What calculates them** | The page, in the browser | iDempiere | The twin's goal engine, running the same SQL |
+| **Where its data comes from** | A file written by a small job | Your iDempiere | A copy of your iDempiere's rows, in the browser |
+| **Change a formula without code** | No | Yes, in the stock windows | Yes, in the same stock windows |
+| **Change the look without code** | No | No | No |
+
+### Rich or editable: today you choose
+
+A goal is one number on a dial, so the Home tabs cannot draw a stage pipeline, a Physical vs Spent panel or a project list. The page can,
+because it is not limited to what a goal expresses. But the page is the part you cannot change without a developer: its layout is in
+`index.html` and `dash.css`, and its formulas are in `tiles.js`. **There is no editor for the page.** On it you can only change the filters
+and the data source, and its tiles do not click through to records: the one link out is the **BIM** button.
+
+The windows under *Changing it* edit a goal's numbers and SQL. They do not change how anything looks. Where a figure appears on both,
+the checks under *How it was checked* keep the two formulas in agreement.
+
+### What the twin does and does not add
+
+The twin does not show more figures than iDempiere. It is built to show the same ones in the same way, and a difference is a defect to fix.
+What differs is where it runs:
+
+| The twin adds | The twin lacks |
+|---|---|
+| Runs in a browser, with no server of its own | The page's panels: Stage, Physical vs Spent and the lists are not on its Home either |
+| The password stays with the job: the copy and the browser never hold it | Six of its ten Home gadgets say *Not ported yet*, including Calendar, Views and Running Jobs |
+| A Project Order folded from a BIM model can reach its Home before anything is pushed. A copy from iDempiere, while active, hides it until it is pushed | Edits made in its windows stay in the twin: they do not reach your iDempiere |
+| You can change a goal there without touching your server | Nothing tells a user the copy is old. If the job stops, the figures just stop moving |
+| Each saved edit is kept in a signed log | Tested on a test server only, with a handful of projects |
+
+**Inside its 30-minute refresh, one difference remains.** The twin stores a recalculated goal on each device, so one user's Home does not
+refresh another's stored value. On iDempiere it does, because there is one database.
+
+![The twin's Performance panel: the stock goals, then the CAPEX goals, the same rows as iDempiere's](img/capex/capex_twin_home.png)
+
+### How close the page is to the design it follows
+
+The page follows an executive dashboard a client prototyped. We have seen one screenshot of it, not its code or its formulas, so its tiles are matched by name.
+
+**The same:** the title, the left menu's six items, the Org, Category and Status filters, Last Updated, the seven tiles and the five panels.
+
+| | That design | This page | Why |
+|---|---|---|---|
+| Forecast Cost at Completion | A figure | *definition pending* | No formula has been stated |
+| Committed Cost | Split into verified and contract | Committed, with invoiced under it | No column for that split has been stated |
+| Project Stage | The client's own five stages | The Standard Phase names | How those stages map to `C_Phase` is not agreed |
+| Money | One currency, in large units | Each currency separately, in full | Never added together |
+| Explaining a tile | An information mark | The formula printed on the tile | So anyone can check it in SQL |
+| Tiles | Icons and progress bars | Plain text | Not built |
+| Data | Described as live | The last run of the job | See *Installing it* |
+
+The figures themselves come from different data, so they will not match.
 
 ---
 
@@ -28,7 +90,7 @@ real rows read from the test server, the date held at 4 Nov 2026 so it matches t
 ### How to read it
 
 1. **Left menu.** *Dashboard* is this view. The others are below. The red badge on *Approval Pending* is that count.
-2. **Data source** (bottom left). **B · Legacy iDempiere** is your server's data. **A · SQLite ERP DB** is the browser copy.
+2. **Data source** (bottom left). **B · Legacy iDempiere** is your server's data, from the job's file. **A · SQLite ERP DB** is the stock sample database shipped with the page: not your data, and not the twin's copy in your browser.
 3. **Filters.** *Org*, *Category* (`ProjectCategory`) and *Status*. Status starts on **Active Projects**. That changes the money
    tiles, as explained under *Page and Home tab: why a figure can differ*.
 4. **Last Updated.** The newest `C_Project.Updated` in the data, never the clock. An old date means old data.
@@ -310,14 +372,31 @@ The first statement of each registers it in the migration log. Most carry a `Res
 added. Goals calculate themselves the first time a Home tab shows them.
 
 !!! warning "These scripts are written for GardenWorld"
-    They set `AD_Client_ID = 11`, the currencies USD (100) and BDT (322), and this test server's target figures. **For your own
-    tenant they need changing first.** A version that takes your tenant has not been built.
+    They set `AD_Client_ID = 11`, the currencies USD (100) and BDT (322), and this test server's target figures. **Do not run them
+    on your own tenant.** Render your own from them instead, as below.
+
+### For your own tenant
+
+`capex/tools/site_migration.js` writes your tenant's two scripts from the shipped ones. It never connects to your server.
+
+1. `node capex/tools/site_migration.js --preflight <AD_Client_ID>` prints a read-only SQL. Run it with `psql -qtA` and save the line it prints as `preflight.json`.
+   It reports your roles, the currencies your projects hold and your next free ids.
+2. `node capex/tools/site_migration.js preflight.json --role <AD_Role_ID> --out <folder>`. Add `--targets <file>` to state your plan,
+   for example `{"budget":{"USD":1000},"activeProjects":3}`.
+3. Apply the two scripts with `psql` in name order, run `update_sequences()`, and restart the server.
+
+A goal with no target stated goes on the gray schema, so another company's numbers can never reach you. It refuses, and says why, if no role
+is given, if your projects hold no currency yet, or if these types or goals are already there.
+
+Tested on a second tenant of a test server, through to that tenant's real Home tab. It has not been run on a real site.
 
 ### The page
 
 The page is plain files (`capex/index.html` and what it loads), with no server of its own and nothing to install in iDempiere's
 code. Your iDempiere needs a read-only **web-service read type** for each of the 8 tables it reads, and a user allowed to use them.
-On the test server these are test scripts, not yet migration scripts.
+These come in one migration script, `202611042300_CAPEX-WS-READ.sql`, under `capex/legacy/ws/migration/iD13/postgresql/`, for GardenWorld.
+For your own tenant, *For your own tenant* above writes it. Restart the server afterwards. The write types in `capex/legacy/ws_testserver/`
+are for a test server only: do not install them on yours.
 
 A small job beside your server reads iDempiere and writes the file the page opens:
 
@@ -332,6 +411,18 @@ address to open on your data.
 
 !!! warning "The file holds your project figures"
     Whoever can open the page can read them. Serve it only where you would show them.
+
+### The twin
+
+Install the bundle `capex/plugin/capex_dashboard.mjs` in **Plugins & Releases**: it brings the same goal rows as the scripts above. To bring your
+rows in, run the same job with this exact file name beside the app:
+
+```
+node capex/tools/legacy_snapshot.js capex/site_copy.json
+```
+
+That name makes the job keep every column. The twin copies the file in at each start. It does not write to iDempiere, and the bundle is built
+for GardenWorld: a tenant other than that needs its tenant in the twin first, which has not been built.
 
 ---
 
@@ -357,10 +448,12 @@ the test server all 261 are on **Business Partner**, not on project documents.
 ## How it was checked
 
 - Every tile drawn on the page equals the formula run separately over the sample's rows (19 of 19, at Status Active and All).
-- Every CAPEX caption on the test server's real Home tab equals the browser copy's, all 27.
+- Every CAPEX caption on the test server's real Home tab equals the twin's, all 27.
 - For 26 of the 27 goals, Home tab values equal iDempiere's own goals, recalculated just before comparing. The other, Invoiced (BDT), is 0 on both sides, which proves nothing.
-- iDempiere's calculation, the browser copy's and the page's own formulas agree on the same rows.
-- A real edit in iDempiere reached the browser copy after the next job and reload, changing exactly one row, and was undone.
+- iDempiere's calculation, the twin's and the page's own formulas agree on the same rows.
+- A goal's stored value behaves the same on iDempiere and the twin: the caption holds inside the refresh interval, and moves after it, in three steps compared exactly.
+- The read types, built from their script alone on a clean server, each answered a real call. A write through a read type is refused.
+- A real edit in iDempiere reached the twin after the next job and reload, changing exactly one row, and was undone.
 
 Not checked: a site larger than this test server. If the job stops, the copy just goes quietly out of date.
 
