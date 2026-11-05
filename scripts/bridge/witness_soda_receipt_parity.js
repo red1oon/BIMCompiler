@@ -33,7 +33,17 @@ const f = (o) => ({ field: Object.entries(o).filter(([, v]) => v !== undefined &
   const SYNC = [['m_product_category', 'ad_client_id IN (0,11)'], ['m_product', 'ad_client_id IN (0,11)'], ['m_replenish', 'ad_client_id=11'], ['m_product_po', 'ad_client_id=11'], ['m_storageonhand', 'ad_client_id=11'], ['m_storagereservation', 'ad_client_id=11'],
     ['m_productionline', 'ad_client_id=11'], ['m_locatortype', 'ad_client_id IN (0,11)'], ['m_locator', 'ad_client_id=11'], ['m_warehouse', 'ad_client_id=11'], ['c_doctype', 'ad_client_id IN (0,11)'], ['c_bpartner', 'ad_client_id=11'], ['c_bpartner_location', 'ad_client_id=11'],
     ['ad_user', 'ad_client_id=11 AND c_bpartner_id IS NOT NULL'], ['ad_sequence', "istableid='N' AND ad_client_id IN (0,11)"]];
-  const cmpAll = (Ls, Ts, skip) => { const r = { diffs: [], n: 0, missing: [] }; Ls.forEach((l, i) => { const c = C.cmpRow(lc(l), lc(Ts[i] || {}), { skip }); r.n += c.n; c.diffs.forEach((d) => r.diffs.push('#' + (i + 1) + ' ' + d)); c.missing.forEach((m) => r.missing.push(m)); }); return r; };
+  // LEGACY-QUIRK exemptions (TWIN CARDINAL RULE: only in the owner's own words + date; a diff without one stays a DIFF). Each is as narrow as its evidence.
+  const QUIRKS = [{
+    key: 'm_movementline.description "Total: <qty>" decimal scale',
+    evidence: 'ReplenishReportProduction.java:619-620 line.setDescription("Total: " + replenish.getQtyToOrder()) prints a BigDecimal whose scale comes from PG numeric storage rows (6.0 / 0.0 -> "9.0"); SQLite keeps the plain number ("9"). Text only: MovementQty and every formatted quantity field are equal.',
+    exemption: 'owner 2026-11-04: "ah ok, qty movement is fine at significant number"',
+    accepts: (d) => { const m = /^description legacy=Total: (-?[\d.]+) twin=Total: (-?[\d.]+)$/.exec(d); return !!m && Number(m[1]) === Number(m[2]); } }];
+  const cmpAll = (Ls, Ts, skip) => { const r = { diffs: [], n: 0, missing: [], quirks: 0 }; Ls.forEach((l, i) => { const c = C.cmpRow(lc(l), lc(Ts[i] || {}), { skip }); r.n += c.n;
+    c.diffs.forEach((d) => { const q = QUIRKS.find((x) => x.accepts(d)); if (q) { r.quirks++; console.log(`§QUIRK_ACCEPTED #${i + 1} ${q.key} :: ${d} :: exemption=${q.exemption} :: evidence=${q.evidence}`); return; } r.diffs.push('#' + (i + 1) + ' ' + d); });
+    c.missing.forEach((m) => r.missing.push(m)); }); return r; };
+  { const t1 = QUIRKS[0].accepts('description legacy=Total: 9.0 twin=Total: 9'), t2 = QUIRKS[0].accepts('description legacy=Total: 9.0 twin=Total: 8'), t3 = QUIRKS[0].accepts('description legacy=Moved twin=moved');
+    console.log(`§QUIRK_SELFCHECK same-number-other-scale=${t1} different-number=${t2} other-text=${t3} ${t1 && !t2 && !t3 ? 'OK' : 'FAIL'}`); if (!(t1 && !t2 && !t3)) process.exitCode = 1; }
   const syncAll = (why) => console.log(`§SODAR_SYNC ${why} ` + SYNC.map(([t, w]) => t + '=' + sync(t, w)).join(' '));
 
   // ───────── legacy SETUP through legacy's own WS (an administrator's act; idempotent) ─────────

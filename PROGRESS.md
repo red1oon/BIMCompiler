@@ -12,14 +12,16 @@ Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 
 ## 📋 The live worklist is `prompts/AGENT_QUEUE.md` — not this file
 ## ▶ HYGIENE + POSTING-PARITY session (2026-11-03→04, closed) — RESUME HERE for this lane
+**2026-11-04 close (session 2):** posting parity step 5 CLOSED (above); Find window = legacy placement + layout, `prompts/ERP_IDEMPIERE_UX_PARITY.md`
+§FIND-LF ✅ (bim-ootb #2624, W-FIND-LF 9/9 vs a live-legacy oracle; open there: whole-app iceblue_c theme parity, ⋮ Default/Share, Advanced child-tab rows).
+**Next, in order:** (3) Modeller kernel_ops copy + boot assertion (KERNEL_TIMEBOMB T5); (4) Viewer memory B-items. Pre-existing FAILs seen, not fixed:
+witness_asi_receipt P1b (date-dependent), witness_view_window_first, witness_packout O6, poc_genesis_resident_live (18 vs 24 BPs; ../common not served).
 Docs review live (BIMCompiler #311/#312, `prompts/DOCS_REVIEW_2026-11.md`); code hygiene (`prompts/CODE_HYGIENE_REVIEW_2026-11.md`
 §3-§7: A1/A3/A4/D1/D2/C1/three.js/ERP dead UI + engine subset live); seam audit CLOSED (`prompts/SEAM_IDENTITY_AUDIT.md` PASS 2 +
 waves 1-3 + close-out); legacy posting parity (`prompts/SQLiteIDEMPIERE.md` END: §POSTING-PARITY 1a-1d + steps 2+4 live, bim-ootb
 #2593-#2598 — 42/42 seed docs == legacy, Preview == real posting). (1) alloc #101 724 residual CLOSED 2026-11-04 — not a defect
 (legacy stores Cr 0.01, the "0.0" was the Dr column; W-POST-ALLOCATION A5 now judges AmtSource). **Open, in order:**
-(2) retire doc_poster derive* — spec + progress `prompts/SQLiteIDEMPIERE.md` §POSTING-PARITY step 5 (2026-11-04: customer return receipts
-now post #2601; draft invoices preview again #2605; 5a/5c/5d/5e/5f done, post_error + asi_batchrev fixed #2606; next 5b FX gain/loss, then genesis.html);
-(3) Modeller kernel_ops copy + boot assertion (KERNEL_TIMEBOMB T5); (4) Viewer memory B-items. Lesson memory:
+(2) retire doc_poster derive* ✅ CLOSED 2026-11-04 (`prompts/SQLiteIDEMPIERE.md` §POSTING-PARITY step 5 + 5g: −512 lines; customer returns, draft invoices, FX gain/loss and genesis.html now on the real poster; bim-ootb #2601-#2622); (3) Modeller kernel_ops copy + boot assertion (KERNEL_TIMEBOMB T5); (4) Viewer memory B-items. Lesson memory:
 `feedback_rerun_recorded_proofs_before_defect_claim`.
 ## ▶ FILM "I vs AI" lane (2026-11-03, closed): 3 finished films in ~/Videos (EN 223 s · Malay v3 316 s · Mandarin 273 s); read `prompts/FILM_VS_AI_SLOP.md` ▶ RESUME HERE (rebuild commands, open items, lessons). Branch `film/vs-ai`; nobody has listened to the films yet.
 It carries §LIVE (which agent owns which files), the waves, the ⛔USER decisions, and the standing
@@ -51,3 +53,6 @@ constraints. A session picking up work reads that; PROGRESS.md is state, not que
 LIVE on bim-ootb main: §52.1 resume-as-it-was (#2519, W-RESUME-AS-IT-WAS 7/0, sw v960) · §45.14a per-request retry in ghPipe (#2521, 100 users 96/96 on lossy links, erp sw v961, modeller sw v205) · §S-SCHEMASET twin posting uses legacy's schema set (#2523, O2C 6/6 MATCH). MEASURED: §45.14 SME-100 (10→100 users over shaped links, fitted, cliffs: one shared GitHub account 10–17 users, one per person ≈ 520–585 — head office is the limit) · §45.15b apple-for-apple vs legacy (median of 3, twin on SQLite WASM: ≥ 1.1 s vs 0.03 s per document on mobile data). FILM recorded: `~/Videos/Network_ERP_without_an_Apps_and_Database_server_EN_rc7.mp4` + `…_ZH_rc2.mp4` (scripts/film_network_erp/, guard PASS). NEXT: see TEAMWORK ▶ RESUME HERE.
 
 ## Older states (2026-09-02 … 2026-09-08, incl. ⛔ OPEN + standing constraints of 2026-09-02/03) — moved verbatim to `prompts/archive/PROGRESS_DONE_ARCHIVE_pre_2026-11-03.md` (2026-11-03)
+
+## 📄 PDF→BIM (vector PDF to IFC, TB-LKTN house) — session 1 2026-11-04
+One command `scripts/pdf2bim/run_p1.sh` reproduces PDF -> 5 STD DXF sheets -> 58-element IFC4 (page 1). Emission + fidelity witnessed; lane acceptance blocked by 82 stated rows (6 reader gaps + 22 library stand-ins + 54 drawing-quality); migration CL006 makes the exact-size FD1 doors bindable. Read `prompts/PDF2BIM_VECTOR_PROBE.md` ▶ RESUME HERE.
