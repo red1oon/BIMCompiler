@@ -2,7 +2,7 @@
 // "Unicenta POS", "uniCenta", "SQLite WASM", "Red1", product names on the product's own screen and the acronyms ERP / POS / SODA / EODA / ActiveMQ stay as written.
 'use strict';
 module.exports = {
-  'THE SQLITE WASM TILL': 'TILL SQLITE WASM', 'Unicenta POS integration': 'Integrasi Unicenta POS', 'REBORN': 'LAHIR SEMULA', "Red1's 2013 work is now in local first SQLite WASM version": 'Hasil kerja Red1 pada 2013 kini dalam versi SQLite WASM local first',
+  'THE SQLITE WASM TILL': 'TILL SQLITE WASM', 'Unicenta POS integration': 'Integrasi Unicenta POS', 'REBORN': 'LAHIR SEMULA', "Red1's 2011 work is now in local first SQLite WASM version": 'Hasil kerja Red1 pada 2011 kini dalam versi SQLite WASM local first',
   'THE TILL': 'TILL', 'A till you': 'Till yang anda', 'already know': 'sudah kenal', 'uniCenta layout and flow, in a browser tab': 'Reka letak dan aliran uniCenta, dalam satu tab pelayar',
   'THE RESTAURANT': 'RESTORAN', 'Kitchen': 'Dapur', 'and tables': 'dan meja', 'floor map, Send Order, the kitchen screen': 'peta lantai, Send Order, skrin dapur',
   'THE BRANCH DAY': 'HARI CAWANGAN', 'End of day,': 'Akhir hari,', 'once': 'sekali sahaja', 'each till rings on its own, the main till collects, a single send': 'setiap till menjual sendiri, till utama mengumpul, satu penghantaran',
@@ -10,7 +10,7 @@ module.exports = {
   'SODA': 'SODA', 'Only what': 'Hanya yang', 'changed': 'berubah', 'the morning batch down to the tills': 'kelompok pagi turun ke till',
   'THE ORACLE': 'RUJUKAN', 'Same books': 'Buku akaun sama', 'as legacy': 'seperti legasi', 'compared with real iDempiere, column by column': 'dibandingkan dengan iDempiere sebenar, lajur demi lajur',
   "2011  ·  Openbravo POS, from RED1's integration guide": "2011  ·  Openbravo POS, daripada panduan integrasi RED1", "The original sales screen of the owner's guide (copyleft RED1): Tools tiles, a ticket of Hoe and Rake-Bamboo": 'Skrin jualan asal panduan pemilik (copyleft RED1): jubin Tools, satu tiket Hoe dan Rake-Bamboo',
-  "BEFORE  ·  the owner's integration, 2012": 'SEBELUM  ·  integrasi pemilik, 2012', 'Diagram: "ERP to POS integration model", from RED1\'s integration guide of 2011 (copyleft RED1)': 'Rajah "ERP to POS integration model", daripada panduan integrasi RED1 2011 (copyleft RED1)',
+  "BEFORE  ·  the owner's integration, 2011": 'SEBELUM  ·  integrasi pemilik, 2011', 'Diagram: "ERP to POS integration model", from RED1\'s integration guide of 2011 (copyleft RED1)': 'Rajah "ERP to POS integration model", daripada panduan integrasi RED1 2011 (copyleft RED1)',
   'AFTER  ·  the same three stacks, nothing to install': 'SELEPAS  ·  tiga bahagian yang sama, tiada pemasangan', "Same layout as the owner's diagram. Still delayed (end of day up, start of day down); no broker server to run.": 'Reka letak sama seperti rajah pemilik. Masih tertangguh (akhir hari naik, awal hari turun); tiada pelayan broker.',
   'HEAD OFFICE ⇄ RELAY ⇄ BROWSER TILL': 'PEJABAT PUSAT ⇄ RELAY ⇄ TILL PELAYAR', 'RELAY': 'RELAY', 'BROWSER TILL': 'TILL PELAYAR', 'MODEL': 'MODEL', 'Products': 'Produk', 'Prices': 'Harga', 'Stock': 'Stok', 'Day Close': 'Tutup Hari',
   'sealed changes': 'perubahan termeterai', 'a plain folder': 'sebuah folder biasa', 'own SQLite DB': 'DB SQLite sendiri', 'Sales, Tickets': 'Jualan, Tiket', 'works offline': 'berfungsi luar talian',
@@ -40,7 +40,7 @@ module.exports = {
   '•  Decimals in text: legacy writes 9.0, the twin writes 9. A difference, not accepted (OPEN-1).': '•  Perpuluhan dalam teks: legasi tulis 9.0, kembar tulis 9. Satu perbezaan, tidak diterima (OPEN-1).', '•  Price-change stamp: not compared with legacy (OPEN-2).': '•  Cap perubahan harga: tidak dibandingkan dengan legasi (OPEN-2).',
   '•  A pair of tills on one table over a real relay: not proven.': '•  Sepasang till berkongsi satu meja melalui relay sebenar: belum dibuktikan.', '•  Memory with all the pictures loaded: not measured.': '•  Memori dengan semua gambar dimuatkan: belum diukur.', 'Sources: §28.3, §32.R': 'Sumber: §28.3, §32.R',
   'uniCenta POS, reborn': 'uniCenta POS, lahir semula', 'The same till, now a browser tab: same operations, same books, same look as legacy.': 'Till yang sama, kini tab pelayar: operasi, buku dan rupa sama seperti legasi.',
-  "Prior art: the owner's own 2012 Openbravo POS → ADempiere / iDempiere integration over ActiveMQ,": 'Karya terdahulu: integrasi pemilik 2012, Openbravo POS → ADempiere / iDempiere melalui ActiveMQ,', 'the delayed EODA / SODA relay (copyleft RED1)': 'relay EODA / SODA yang tertangguh (copyleft RED1)',
+  "Prior art: the owner's own 2011 Openbravo POS → ADempiere / iDempiere integration over ActiveMQ,": 'Karya terdahulu: integrasi pemilik 2011, Openbravo POS → ADempiere / iDempiere melalui ActiveMQ,', 'the delayed EODA / SODA relay (copyleft RED1)': 'relay EODA / SODA yang tertangguh (copyleft RED1)',
   'uniCenta oPOS (GPL): layout and flow followed. No code or artwork copied.': 'uniCenta oPOS (GPL): reka letak dan aliran diikuti. Tiada kod atau karya seni disalin.', 'Product pictures: Fluent Emoji (MIT licence)': 'Gambar produk: Fluent Emoji (lesen MIT)', 'Legacy iDempiere is the oracle for every comparison': 'iDempiere legasi ialah rujukan bagi setiap perbandingan',
   'github.com/red1oon/BIMCompiler   ·   red1org@gmail.com': 'github.com/red1oon/BIMCompiler   ·   red1org@gmail.com'
 };

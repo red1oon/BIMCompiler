@@ -10,7 +10,7 @@ TAGN=narration_$LANG_
 fitter() { # fitter <tag> : run in a work dir holding narration_<lang>.tsv + narration_<lang>_cap.tsv. EN = Kokoro (CPU, local); zh/ms = Edge TTS (Microsoft cloud, the PLAYBOOK's accepted path)
   if [ "$LANG_" = en ]; then $PY $FITK $TAGN.tsv $1 1.15 ${TAGN}_cap.tsv; else CAP_NATIVE=1 $PY $EDGE $TAGN.tsv $1 $LANG_ ${TAGN}_cap.tsv; fi; }
 case "$LANG_" in en) LN=en;; zh) LN=zh;; ms) LN=ms;; esac
-OUTMP4="${OUTMP4:-$HOME/Videos/UnicentaPOS_SQLiteWASM_narrated_$(echo $LANG_ | tr a-z A-Z)_AFTER_$(date +%F)_v$([ $LANG_ = en ] && echo 4 || echo 1).mp4}"
+OUTMP4="${OUTMP4:-$HOME/Videos/UnicentaPOS_SQLiteWASM_narrated_$(echo $LANG_ | tr a-z A-Z)_AFTER_$(date +%F)_v$([ $LANG_ = en ] && echo 5 || echo 2).mp4}"
 [ "$MODE" = B ] && [ -e "$OUTMP4" ] && { echo "§REFUSED $OUTMP4 exists (never overwritten); set OUTMP4="; exit 5; }
 [ -s out/pdf/p50_diagram.png ] || node pdfcrop.js out/pdf > out/pdfcrop.log 2>&1 || { echo "§PDFCROP_FAIL see out/pdfcrop.log"; exit 3; }
 node resolve.js > out/resolve.log 2>&1 || { echo "§RESOLVE_FAIL see out/resolve.log"; exit 3; }

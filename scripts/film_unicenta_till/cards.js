@@ -66,7 +66,7 @@ function spec() {
   const chap = (k, l1, l2, pl, sz) => ({ bg: '#0b0f17', ops: [{ t: 'ctext', y: 330, size: 34, color: CORAL, txt: L(k), spacing: 6 }, { t: 'ctext', y: 400, size: sz || 120, color: OFF, txt: L(l1), bold: true }, { t: 'ctext', y: 540, size: sz || 120, color: CORAL, txt: L(l2), bold: true }, { t: 'ctext', y: 700, size: 40, color: MUT, txt: L(pl) }] });
   const C = {
     // v4 (§34.G, owner 2026-11-05): the OPENING card, two-tone house typography: kicker coral, line 1 off-white, line 2 coral, the owner's sub line kept as he wrote it. Silent, 3.6 s, plain #0b0f17.
-    ch0: chap('THE SQLITE WASM TILL', 'Unicenta POS integration', 'REBORN', 'Red1\'s ' + F.owner_2013 + ' work is now in local first SQLite WASM version', 100),
+    ch0: chap('THE SQLITE WASM TILL', 'Unicenta POS integration', 'REBORN', 'Red1\'s ' + F.year2011 + ' work is now in local first SQLite WASM version', 100),
     ch1: chap('THE TILL', 'A till you', 'already know', 'uniCenta layout and flow, in a browser tab'),
     ch2: chap('THE RESTAURANT', 'Kitchen', 'and tables', 'floor map, Send Order, the kitchen screen'),
     ch3: chap('THE BRANCH DAY', 'End of day,', 'once', 'each till rings on its own, the main till collects, a single send'),
@@ -75,7 +75,7 @@ function spec() {
     ch6: chap('THE ORACLE', 'Same books', 'as legacy', 'compared with real iDempiere, column by column'),
     orig: { bg: '#0f172a', ops: [tx(120, 36, 44, SKY, F.year2011 + '  ·  Openbravo POS, from RED1\'s integration guide'), tx(120, 92, 26, MUT, 'The original sales screen of the owner\'s guide (copyleft RED1): Tools tiles, a ticket of Hoe and Rake-Bamboo'),
       { t: 'img', file: 'p23_screen.png', x: 240, y: 135, w: 1440 }] },
-    before: { bg: '#0f172a', ops: [tx(120, 36, 44, SKY, 'BEFORE  ·  the owner\'s integration, ' + F.year2012), tx(120, 92, 26, MUT, 'Diagram: "ERP to POS integration model", from RED1\'s integration guide of ' + F.year2011 + ' (copyleft RED1)'),
+    before: { bg: '#0f172a', ops: [tx(120, 36, 44, SKY, 'BEFORE  ·  the owner\'s integration, ' + F.year2011), tx(120, 92, 26, MUT, 'Diagram: "ERP to POS integration model", from RED1\'s integration guide of ' + F.year2011 + ' (copyleft RED1)'),
       { t: 'img', file: 'p50_diagram.png', x: 180, y: 140, w: 1560 }] },
     after: { bg: '#0f172a', ops: [tx(120, 36, 44, GRN, 'AFTER  ·  the same three stacks, nothing to install'), tx(120, 92, 26, MUT, 'Same layout as the owner\'s diagram. Still delayed (end of day up, start of day down); no broker server to run.')].concat(afterDiagram()) },
     exp1: { bg: '#0f172a', ops: [tx(120, 36, 44, GRN, 'EXPAND  ·  the right-hand stack opens up into a branch'), tx(120, 92, 26, MUT, 'The AFTER diagram again, same three stacks. Watch the browser till on the right.')].concat(afterDiagram(), [pframe(1456, 90, 1761, 717, CORAL, 8)]) },
@@ -105,7 +105,7 @@ function spec() {
       tx(120, 540, 31, OFF, '•  Memory with all the pictures loaded: not measured.'),
       tx(120, 700, 26, MUT, 'Sources: §28.3, §32.R')] },
     credits: { bg: '#0f172a', ops: [tx(120, 105, 52, SKY, 'uniCenta POS, reborn'), tx(120, 175, 36, CORAL, 'The same till, now a browser tab: same operations, same books, same look as legacy.'),
-      tx(120, 280, 30, OFF, 'Prior art: the owner\'s own ' + F.year2012 + ' Openbravo POS \u2192 ADempiere / iDempiere integration over ActiveMQ,'),
+      tx(120, 280, 30, OFF, 'Prior art: the owner\'s own ' + F.year2011 + ' Openbravo POS \u2192 ADempiere / iDempiere integration over ActiveMQ,'),
       tx(120, 325, 30, OFF, 'the delayed EODA / SODA relay (copyleft RED1)'),
       tx(120, 400, 30, OFF, 'uniCenta oPOS (GPL): layout and flow followed. No code or artwork copied.'),
       tx(120, 465, 30, OFF, 'Product pictures: Fluent Emoji (MIT licence)'),
