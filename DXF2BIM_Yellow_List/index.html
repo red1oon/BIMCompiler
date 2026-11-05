@@ -2997,6 +2997,33 @@
 <td>0.3, 0.45, 0.6</td>
 </tr>
 <tr>
+<td><code>beam.edge_tol</code></td>
+<td>IfcBeam</td>
+<td>m</td>
+<td><strong>0.006</strong></td>
+<td>guess</td>
+<td>two parallel lines count as a beam's edges when their spacing is within this of the label's width, and pieces on one line within this are one run (§D109)</td>
+<td>0.006, 0.003</td>
+</tr>
+<tr>
+<td><code>beam.label_reach</code></td>
+<td>IfcBeam</td>
+<td>m</td>
+<td><strong>2.5</strong></td>
+<td>guess</td>
+<td>how far from a beam's size label its two edge lines may run (§D109: one label was measured 2.3 m from its member). 0 = beams are not read from labels</td>
+<td>2.5, 0</td>
+</tr>
+<tr>
+<td><code>beam.span_split</code></td>
+<td>IfcBeam</td>
+<td>text</td>
+<td><strong>label_midpoint</strong></td>
+<td>guess</td>
+<td>labels of different marks along one pair of edge lines split it at the midpoint between them: the drawing does not state where one mark ends (§D109: 3 marks on one 42.565 m pair). 'one_body' = the first label takes the whole run</td>
+<td>label_midpoint, one_body</td>
+</tr>
+<tr>
 <td><code>beam.width</code></td>
 <td>IfcBeam</td>
 <td>m</td>
@@ -3024,6 +3051,33 @@
 <td>0.2, 0.3</td>
 </tr>
 <tr>
+<td><code>steel.label_reach</code></td>
+<td>IfcBeam</td>
+<td>m</td>
+<td><strong>1.5</strong></td>
+<td>guess</td>
+<td>how far from a steel section label its member's line may run (§D109). 0 = steel is not read from labels</td>
+<td>1.5, 0</td>
+</tr>
+<tr>
+<td><code>steel.section_table</code></td>
+<td>IfcBeam</td>
+<td>text</td>
+<td><strong>standard</strong></td>
+<td>guess</td>
+<td>a UB label names a designation, not its web and flange. BS EN 10365 values taken from public references, not from the drawing and not checked against the standard itself (§D109). 'off' = a gap</td>
+<td>standard, off</td>
+</tr>
+<tr>
+<td><code>bodies.touching_parts</code></td>
+<td>IfcColumn</td>
+<td>text</td>
+<td><strong>one_body</strong></td>
+<td>guess</td>
+<td>rectangles of one direction that touch along a side are the parts of one body: the 2 flanges and the web of a built-up steel section drawn as 3 loops (§D109). 'separate' = one body per loop</td>
+<td>one_body, separate</td>
+</tr>
+<tr>
 <td><code>column.height</code></td>
 <td>IfcColumn</td>
 <td>m</td>
@@ -3049,6 +3103,24 @@
 <td>guess</td>
 <td>a column under a beam end carries it up to the beam's underside; an elevation may draw it short where a wall, a net or another sheet hides it (§D100: the shed's lines 36–41 drawn 1.52 m under beams at 3.10 m). 'as_drawn' keeps the drawn top and the gap shows as a load_path finding</td>
 <td>beam_above, as_drawn</td>
+</tr>
+<tr>
+<td><code>column.z_from_plans</code></td>
+<td>IfcColumn</td>
+<td>text</td>
+<td><strong>plan_levels</strong></td>
+<td>guess</td>
+<td>a column with no elevation height and no @BODYZ runs from the lowest plan that draws it to the next plan level above the highest plan that draws it (§D109). 'off' = a gap, left out</td>
+<td>plan_levels, off</td>
+</tr>
+<tr>
+<td><code>loops.skew_tol</code></td>
+<td>IfcColumn</td>
+<td>m</td>
+<td><strong>0.001</strong></td>
+<td>guess</td>
+<td>a closed loop of lines counts as square, in any direction, when its corners lie within this of a true rectangle in the frame of its own longest side (§D109: a CAD export is 0.05 to 0.1 mm off square, the snap tolerance is 0.01 mm). 0 = sheet-axis rectangles only</td>
+<td>0.001, 0</td>
 </tr>
 <tr>
 <td><code>synth.column.belowgrade.size</code></td>
@@ -3123,6 +3195,15 @@
 <td>SINGLE_SWING_LEFT, SINGLE_SWING_RIGHT</td>
 </tr>
 <tr>
+<td><code>door.tag_reach</code></td>
+<td>IfcDoor</td>
+<td>m</td>
+<td><strong>3</strong></td>
+<td>guess</td>
+<td>how far from a door's tag its swing arc may be, the leaf then taking the schedule row's width and height (§D109: measured up to 2.6 m). 0 = doors are not read from tags</td>
+<td>3, 0</td>
+</tr>
+<tr>
 <td><code>door.thickness</code></td>
 <td>IfcDoor</td>
 <td>m</td>
@@ -3193,6 +3274,15 @@
 <td>guess</td>
 <td>pad footing plan width</td>
 <td>1, 1.2, 1.5</td>
+</tr>
+<tr>
+<td><code>footing.z_from_plan</code></td>
+<td>IfcFooting</td>
+<td>text</td>
+<td><strong>plan_level</strong></td>
+<td>guess</td>
+<td>a footing-layer loop with no elevation height: top = the plan's level. One F mark inside = a pad, its thickness footing.depth; else a raft, thick by the labels inside it (<n>mm TH, RAFT <n>mm) or the raft around it (§D109). 'off' = a gap, left out</td>
+<td>plan_level, off</td>
 </tr>
 <tr>
 <td><code>member.section</code></td>
@@ -3294,6 +3384,15 @@
 <td>0.0625, 0.0833, 0.1</td>
 </tr>
 <tr>
+<td><code>roof.from_spots</code></td>
+<td>IfcRoof</td>
+<td>text</td>
+<td><strong>read</strong></td>
+<td>guess</td>
+<td>a surface through the plan's TOS spot levels, inside what the spots reach; deck thickness and height over the steel from the sheet's own deck note (§D109). Not the roof's outline: nothing states its edge. 'off' = none</td>
+<td>read, off</td>
+</tr>
+<tr>
 <td><code>roof.slope_deg</code></td>
 <td>IfcRoof</td>
 <td>deg</td>
@@ -3346,6 +3445,15 @@
 <td>guess</td>
 <td>§D70.1 a hole in the slab is drawn as an opening when at least a 254 mm (10 in) square: the producer shows openings larger than 10 in square on shop drawings, smaller ones are core-drilled in the field (Oldcastle Hollowcore Plank Pocket Guide 2019); a hole a column or wall drawn on the same plan fills (&gt;= 0.9) is that element, never an opening</td>
 <td></td>
+</tr>
+<tr>
+<td><code>slab.ground_on_raft</code></td>
+<td>IfcSlab</td>
+<td>text</td>
+<td><strong>read</strong></td>
+<td>guess</td>
+<td>a raft holding an S.O.G-<n>mm label of a plan carries a ground slab on its own outline, n thick (§D109: the drawing states the thickness, not the slab's edge). 'off' = no such slab</td>
+<td>read, off</td>
 </tr>
 <tr>
 <td><code>slab.level_step_min</code></td>
@@ -3420,6 +3528,15 @@
 <td>0.9, 1, 1.2</td>
 </tr>
 <tr>
+<td><code>stair.flights</code></td>
+<td>IfcStairFlight</td>
+<td>text</td>
+<td><strong>read</strong></td>
+<td>guess</td>
+<td>3 or more parallel lines of one length, evenly spaced, are a flight's nosings; rise = (0.63 - tread) / 2, the drawing states no riser; a flight narrower than 0.6 m is no flight (§D109). 'off' = no flights</td>
+<td>read, off</td>
+</tr>
+<tr>
 <td><code>panel.plane</code></td>
 <td>IfcWall</td>
 <td>text</td>
@@ -3427,6 +3544,15 @@
 <td>guess</td>
 <td>an elevation panel is placed on an end grid line of its face, centred. An elevation whose grid labels share one family (AA, AB or A1 = family A; a label of one character or digits only has none) uses that family's end line, so a set of several wings keeps each elevation on its own wing (§D107); set back to the plan's outermost line with 'end grid line, centred'. @PLANE=<grid label> on the sheet wins over both</td>
 <td>grid family end line, centred, end grid line, centred</td>
+</tr>
+<tr>
+<td><code>wall.band_gap</code></td>
+<td>IfcWall</td>
+<td>m</td>
+<td><strong>0.35</strong></td>
+<td>guess</td>
+<td>parallel wall lines closer than this are one wall, solid from outer line to outer line: with no wall type schedule a leaf cannot be told from a cavity (§D109: spacing peaks at 50 to 300 mm). 0 = walls are not read from their lines</td>
+<td>0.35, 0</td>
 </tr>
 <tr>
 <td><code>wall.base</code></td>
@@ -3447,6 +3573,24 @@
 <td>2.4, 2.7, 3, 3.6</td>
 </tr>
 <tr>
+<td><code>wall.min_thick</code></td>
+<td>IfcWall</td>
+<td>m</td>
+<td><strong>0.05</strong></td>
+<td>guess</td>
+<td>a band of wall lines thinner than this is a finish line, not a wall (§D109: 28 pieces measured 10-20 mm). 0 = read them as walls</td>
+<td>0.05, 0</td>
+</tr>
+<tr>
+<td><code>wall.tag_reach</code></td>
+<td>IfcWall</td>
+<td>m</td>
+<td><strong>1.5</strong></td>
+<td>guess</td>
+<td>how far a wall tag may lie from the wall it names, on a plan layer typed walltag: the nearest wall of that plan's level takes the tag as its type name. The binding is by distance, not checked; a name, not a build-up, without the wall type schedule (§D110). 0 = no tag is read</td>
+<td>1.5, 0</td>
+</tr>
+<tr>
 <td><code>wall.thickness</code></td>
 <td>IfcWall</td>
 <td>m</td>
@@ -3454,6 +3598,15 @@
 <td>guess</td>
 <td>a guess: no sheet states the wall thickness. 150 mm is the wall line every rate pack's class table names (the same 150 mm in all 16 country packs), a priced item, not a design value for this building (§D99)</td>
 <td>0.1, 0.115, 0.15, 0.2, 0.225</td>
+</tr>
+<tr>
+<td><code>wall.top_from_elevation</code></td>
+<td>IfcWall</td>
+<td>text</td>
+<td><strong>read</strong></td>
+<td>guess</td>
+<td>a wall on the grid line an elevation stands on takes its top and base from that elevation's wall lines over its own span; other walls of that wing no higher than the wing's top (§D110). 'next_plan_level' = every wall stops at the next plan level</td>
+<td>read, next_plan_level</td>
 </tr>
 <tr>
 <td><code>wall.top_when_unseen</code></td>
@@ -3499,6 +3652,33 @@
 <td>guess</td>
 <td>typical window width; used when a plan symbol gives no width</td>
 <td>0.9, 1.2, 1.5</td>
+</tr>
+<tr>
+<td><code>gate.unplaced_sheet</code></td>
+<td>Set</td>
+<td>text</td>
+<td><strong>refuse</strong></td>
+<td>guess</td>
+<td>a sheet the reader cannot place refuses the whole set, so nothing is converted past a sheet you meant to be read. 'set_aside' = the rest converts, each such sheet a counted gap with the reader's reason (§D110)</td>
+<td>refuse, set_aside</td>
+</tr>
+<tr>
+<td><code>guide.gap_sheets</code></td>
+<td>Set</td>
+<td>text</td>
+<td><strong>read</strong></td>
+<td>guess</td>
+<td>which sheet of the set's own register might close each gap, by the words of its title; it says a sheet might help, never that it will (§D110). 'off' = no guide</td>
+<td>read, off</td>
+</tr>
+<tr>
+<td><code>suggest.title_layout</code></td>
+<td>Set</td>
+<td>text</td>
+<td><strong>read</strong></td>
+<td>guess</td>
+<td>a title ending LAYOUT names a plan, as a title ending PLAN does (§D110). 'off' = no view is read from it, and the sheet refuses the set</td>
+<td>read, off</td>
 </tr>
 <tr>
 <td><code>analytical.node_snap</code></td>
@@ -3625,6 +3805,15 @@
 <td>guess</td>
 <td>grid lines guessed from dimension ticks: not on an axis where the sheet states or reads 2 or more grid lines, and not outside its @REGION (§D107: a stated plan was given wall tags as grids and an elevation landed 72 m away). 'always' = the earlier behaviour</td>
 <td>unless_stated, always, off</td>
+</tr>
+<tr>
+<td><code>suggest.level_footing</code></td>
+<td>suggest</td>
+<td>text</td>
+<td><strong>read</strong></td>
+<td>guess</td>
+<td>a plan no title or level name places takes its level from one distinct T/FOOTING value on the sheet: T/FOOTING: -1.250 m (§D109). 'off' = no such row</td>
+<td>read, off</td>
 </tr>
 <tr>
 <td><code>suggest.level_name</code></td>

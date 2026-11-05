@@ -1257,10 +1257,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-settings-registry-modellerelement_defaultsjson-76-rows" class="md-nav__link">
+  <a href="#5-settings-registry-modellerelement_defaultsjson-97-rows" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Settings registry (modeller/element_defaults.json): 76 rows
+        5. Settings registry (modeller/element_defaults.json): 97 rows
       
     </span>
   </a>
@@ -1268,10 +1268,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-code-families-223-codes-found-in-the-source" class="md-nav__link">
+  <a href="#6-code-families-244-codes-found-in-the-source" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Code families (223 codes found in the source)
+        6. Code families (244 codes found in the source)
       
     </span>
   </a>
@@ -2852,10 +2852,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-settings-registry-modellerelement_defaultsjson-76-rows" class="md-nav__link">
+  <a href="#5-settings-registry-modellerelement_defaultsjson-97-rows" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Settings registry (modeller/element_defaults.json): 76 rows
+        5. Settings registry (modeller/element_defaults.json): 97 rows
       
     </span>
   </a>
@@ -2863,10 +2863,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-code-families-223-codes-found-in-the-source" class="md-nav__link">
+  <a href="#6-code-families-244-codes-found-in-the-source" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Code families (223 codes found in the source)
+        6. Code families (244 codes found in the source)
       
     </span>
   </a>
@@ -2993,6 +2993,18 @@
 <td>one per sheet</td>
 <td><code>number (m)</code></td>
 <td>the roof top height of a roof sheet (no drawing states it)</td>
+</tr>
+<tr>
+<td><code>@PITCH</code></td>
+<td>one per sheet</td>
+<td><code>&lt;number&gt;</code></td>
+<td>a pitched roof the sheet states</td>
+</tr>
+<tr>
+<td><code>@HEADFRAME</code></td>
+<td>one per sheet</td>
+<td><code>&lt;number&gt;</code></td>
+<td>a door head frame the set states, zero or more</td>
 </tr>
 <tr>
 <td><code>@CUT</code></td>
@@ -3126,9 +3138,15 @@
 <td><code>key,value</code></td>
 <td>a stated value for a registry setting (beats the editor's choice and the registry)</td>
 </tr>
+<tr>
+<td><code>@ACCEPT</code></td>
+<td>several</td>
+<td><code>&lt;code&gt;,&lt;who&gt;,&lt;YYYY-MM-DD&gt;,&lt;reason&gt;</code></td>
+<td>a person's recorded acceptance of a verdict row: the gate honours it and the row stays on screen</td>
+</tr>
 </tbody>
 </table>
-<p><strong>Layer types per view</strong> (<code>@LAYER=&lt;layer&gt;,&lt;type&gt;</code>): <strong>PLAN</strong>: <code>wall</code>, <code>wallline</code>, <code>slab</code>, <code>component</code>, <code>opening</code>, <code>glazing</code>, <code>ignore</code>; <strong>ELEV</strong>: <code>elevwall</code>, <code>elevdoor</code>, <code>glazing</code>, <code>levelline</code>, <code>ignore</code>; <strong>ROOF</strong>: <code>roof</code>, <code>glazing</code>, <code>ignore</code>; <strong>SECTION</strong>: <code>sectslab</code>, <code>sectwall</code>, <code>roof</code>, <code>ignore</code>; <strong>ANY</strong>: <code>dims</code>, <code>grid</code>; <strong>BODY</strong>: <code>column</code>, <code>beam</code>, <code>footing</code>, <code>gradebeam</code>, <code>member</code>, <code>plate</code>, <code>panel</code>, <code>bar</code>, <code>fan</code>, <code>net</code>, <code>doorswing</code>.</p>
+<p><strong>Layer types per view</strong> (<code>@LAYER=&lt;layer&gt;,&lt;type&gt;</code>): <strong>PLAN</strong>: <code>wall</code>, <code>wallline</code>, <code>slab</code>, <code>component</code>, <code>opening</code>, <code>glazing</code>, <code>ignore</code>; <strong>ELEV</strong>: <code>elevwall</code>, <code>elevdoor</code>, <code>glazing</code>, <code>levelline</code>, <code>ignore</code>; <strong>ROOF</strong>: <code>roof</code>, <code>glazing</code>, <code>ignore</code>; <strong>SECTION</strong>: <code>sectslab</code>, <code>sectwall</code>, <code>roof</code>, <code>ignore</code>; <strong>ANY</strong>: <code>dims</code>, <code>grid</code>; <strong>BODY</strong>: <code>column</code>, <code>beam</code>, <code>footing</code>, <code>gradebeam</code>, <code>member</code>, <code>plate</code>, <code>panel</code>, <code>bar</code>, <code>fan</code>, <code>net</code>, <code>doorswing</code>, <code>beamlabel</code>, <code>wallband</code>, <code>doortag</code>, <code>curtainband</code>, <code>stairlines</code>, <code>walltag</code>.</p>
 <p><strong>Units</strong>: <code>mm</code> = 0.001 m, <code>cm</code> = 0.01 m, <code>m</code> = 1 m, <code>in</code> = 0.0254 m, <code>ft</code> = 0.3048 m.</p>
 <h2 id="3-body-kinds-and-their-ifc-class">3. Body kinds and their IFC class<a class="headerlink" href="#3-body-kinds-and-their-ifc-class" title="Permanent link">&para;</a></h2>
 <table>
@@ -3151,6 +3169,11 @@
 <td>BEAM</td>
 </tr>
 <tr>
+<td><code>beamlabel</code></td>
+<td>IfcBeam</td>
+<td>BEAM</td>
+</tr>
+<tr>
 <td><code>chord</code></td>
 <td>IfcMember</td>
 <td>CHORD</td>
@@ -3161,12 +3184,22 @@
 <td>COLUMN</td>
 </tr>
 <tr>
+<td><code>curtainband</code></td>
+<td>IfcCurtainWall</td>
+<td>NOTDEFINED</td>
+</tr>
+<tr>
 <td><code>door</code></td>
 <td>IfcDoor</td>
 <td>DOOR</td>
 </tr>
 <tr>
 <td><code>doorswing</code></td>
+<td>IfcDoor</td>
+<td>DOOR</td>
+</tr>
+<tr>
+<td><code>doortag</code></td>
 <td>IfcDoor</td>
 <td>DOOR</td>
 </tr>
@@ -3231,12 +3264,27 @@
 <td>BASESLAB</td>
 </tr>
 <tr>
+<td><code>stairlines</code></td>
+<td>IfcStairFlight</td>
+<td>STRAIGHT</td>
+</tr>
+<tr>
 <td><code>supportwall</code></td>
 <td>IfcWall</td>
 <td>STANDARD</td>
 </tr>
 <tr>
 <td><code>wall</code></td>
+<td>IfcWall</td>
+<td>STANDARD</td>
+</tr>
+<tr>
+<td><code>wallband</code></td>
+<td>IfcWall</td>
+<td>STANDARD</td>
+</tr>
+<tr>
+<td><code>walltag</code></td>
 <td>IfcWall</td>
 <td>STANDARD</td>
 </tr>
@@ -3257,7 +3305,7 @@
 <p>Evidence tiers on every body (<code>prov</code>): <strong>drawn</strong> (measured from a drawn entity), <strong>derived</strong> (computed from drawn evidence plus a stated convention), <strong>assumed</strong> (no drawn evidence for its existence or position).
 Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Provenance</code>, <code>SourceSheet</code>, <code>SourceHandle</code>, <code>SourceLayer</code>, <code>Kind</code>, <code>SizeBasis</code>; from a details sheet also <code>Note_&lt;key&gt;</code> + <code>NoteSource_&lt;key&gt;</code> and <code>Sched_&lt;Kind&gt;_&lt;header&gt;</code> + <code>SchedSource_&lt;kind&gt;</code> + <code>SchedBasis_&lt;kind&gt;</code>.</p>
 <p><strong>Layer ledger</strong> (<code>verdict.layer_ledger</code>, <code>dxf2ledger.js</code>): for every layer of every sheet, the entities on it, how it was typed, how many source entities produced a body, and a status: <code>settings</code>, <code>annotation</code>, <code>ignored_by_choice</code>, <code>used</code>, <code>partly_used</code>, <code>evidence</code>, <code>typed_no_output</code>, <code>unread</code>. <code>unread</code> = geometry on a layer nobody typed; <code>typed_no_output</code> = typed with a body kind but nothing was built; <code>partly_used</code> = some of its entities produced a body (the ratio is in <code>used_entities</code> / <code>geometry</code>); <code>evidence</code> = an elevation or section layer that gave heights or profiles. The entity account (<code>§ACCOUNT</code>) only says the DXF parser read every entity; the ledger says what was USED.</p>
-<h2 id="5-settings-registry-modellerelement_defaultsjson-76-rows">5. Settings registry (<code>modeller/element_defaults.json</code>): 76 rows<a class="headerlink" href="#5-settings-registry-modellerelement_defaultsjson-76-rows" title="Permanent link">&para;</a></h2>
+<h2 id="5-settings-registry-modellerelement_defaultsjson-97-rows">5. Settings registry (<code>modeller/element_defaults.json</code>): 97 rows<a class="headerlink" href="#5-settings-registry-modellerelement_defaultsjson-97-rows" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
@@ -3295,12 +3343,44 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <td>section depth when no label or band gives it</td>
 </tr>
 <tr>
+<td><code>beam.edge_tol</code></td>
+<td>IfcBeam</td>
+<td>m</td>
+<td>guess</td>
+<td>0.006</td>
+<td>two parallel lines count as a beam's edges when their spacing is within this of the label's width, and pieces on one line within this are on</td>
+</tr>
+<tr>
+<td><code>beam.label_reach</code></td>
+<td>IfcBeam</td>
+<td>m</td>
+<td>guess</td>
+<td>2.5</td>
+<td>how far from a beam's size label its two edge lines may run (§D109: one label was measured 2.3 m from its member). 0 = beams are not read fr</td>
+</tr>
+<tr>
+<td><code>beam.span_split</code></td>
+<td>IfcBeam</td>
+<td>text</td>
+<td>guess</td>
+<td>label_midpoint</td>
+<td>labels of different marks along one pair of edge lines split it at the midpoint between them: the drawing does not state where one mark ends</td>
+</tr>
+<tr>
 <td><code>beam.width</code></td>
 <td>IfcBeam</td>
 <td>m</td>
 <td>guess</td>
 <td>0.3</td>
 <td>section width when no label or band gives it</td>
+</tr>
+<tr>
+<td><code>bodies.touching_parts</code></td>
+<td>IfcColumn</td>
+<td>text</td>
+<td>guess</td>
+<td>one_body</td>
+<td>rectangles of one direction that touch along a side are the parts of one body: the 2 flanges and the web of a built-up steel section drawn a</td>
 </tr>
 <tr>
 <td><code>building.type</code></td>
@@ -3343,6 +3423,14 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <td>a column under a beam end carries it up to the beam's underside; an elevation may draw it short where a wall, a net or another sheet hides i</td>
 </tr>
 <tr>
+<td><code>column.z_from_plans</code></td>
+<td>IfcColumn</td>
+<td>text</td>
+<td>guess</td>
+<td>plan_levels</td>
+<td>a column with no elevation height and no @BODYZ runs from the lowest plan that draws it to the next plan level above the highest plan that d</td>
+</tr>
+<tr>
 <td><code>curtainwall.mullion</code></td>
 <td>IfcCurtainWall</td>
 <td>m</td>
@@ -3365,6 +3453,14 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <td>guess</td>
 <td>SINGLE_SWING_LEFT</td>
 <td>the running standard of a 2D set's doors whose operation the model does not state (F7 D18): the majority side of the building's stated singl</td>
+</tr>
+<tr>
+<td><code>door.tag_reach</code></td>
+<td>IfcDoor</td>
+<td>m</td>
+<td>guess</td>
+<td>3</td>
+<td>how far from a door's tag its swing arc may be, the leaf then taking the schedule row's width and height (§D109: measured up to 2.6 m). 0 =</td>
 </tr>
 <tr>
 <td><code>door.thickness</code></td>
@@ -3439,6 +3535,22 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <td>pad footing plan width</td>
 </tr>
 <tr>
+<td><code>footing.z_from_plan</code></td>
+<td>IfcFooting</td>
+<td>text</td>
+<td>guess</td>
+<td>plan_level</td>
+<td>a footing-layer loop with no elevation height: top = the plan's level. One F mark inside = a pad, its thickness footing.depth; else a raft,</td>
+</tr>
+<tr>
+<td><code>gate.unplaced_sheet</code></td>
+<td>Set</td>
+<td>text</td>
+<td>guess</td>
+<td>refuse</td>
+<td>a sheet the reader cannot place refuses the whole set, so nothing is converted past a sheet you meant to be read. 'set_aside' = the rest con</td>
+</tr>
+<tr>
 <td><code>gradebeam.depth</code></td>
 <td>IfcBeam</td>
 <td>m</td>
@@ -3453,6 +3565,14 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <td>guess</td>
 <td>0.3</td>
 <td>grade beam width when no label gives it</td>
+</tr>
+<tr>
+<td><code>guide.gap_sheets</code></td>
+<td>Set</td>
+<td>text</td>
+<td>guess</td>
+<td>read</td>
+<td>which sheet of the set's own register might close each gap, by the words of its title; it says a sheet might help, never that it will (§D110</td>
 </tr>
 <tr>
 <td><code>load.rc_steel_percent</code></td>
@@ -3493,6 +3613,14 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <td>std</td>
 <td>77</td>
 <td>BNBC 2012 Part 6 Ch 2 Table 2.2.1: "Steel 77.0" (modeller/reference/BNBC2012_P6C2_dead_load_tables.txt)</td>
+</tr>
+<tr>
+<td><code>loops.skew_tol</code></td>
+<td>IfcColumn</td>
+<td>m</td>
+<td>guess</td>
+<td>0.001</td>
+<td>a closed loop of lines counts as square, in any direction, when its corners lie within this of a true rectangle in the frame of its own long</td>
 </tr>
 <tr>
 <td><code>member.section</code></td>
@@ -3591,6 +3719,14 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <td>1:12, a typical accessible ramp</td>
 </tr>
 <tr>
+<td><code>roof.from_spots</code></td>
+<td>IfcRoof</td>
+<td>text</td>
+<td>guess</td>
+<td>read</td>
+<td>a surface through the plan's TOS spot levels, inside what the spots reach; deck thickness and height over the steel from the sheet's own dec</td>
+</tr>
+<tr>
 <td><code>roof.slope_deg</code></td>
 <td>IfcRoof</td>
 <td>deg</td>
@@ -3631,6 +3767,14 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <td>§D70.1 a hole in the slab is drawn as an opening when at least a 254 mm (10 in) square: the producer shows openings larger than 10 in square</td>
 </tr>
 <tr>
+<td><code>slab.ground_on_raft</code></td>
+<td>IfcSlab</td>
+<td>text</td>
+<td>guess</td>
+<td>read</td>
+<td>a raft holding an S.O.G-<n>mm label of a plan carries a ground slab on its own outline, n thick (§D109: the drawing states the thickness, no</td>
+</tr>
+<tr>
 <td><code>slab.level_step_min</code></td>
 <td>IfcSlab</td>
 <td>m</td>
@@ -3655,6 +3799,14 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <td>when the section's slab under a level steps (finish on planks, a dropped wet area), the underside is the stack bottom under the longest cut</td>
 </tr>
 <tr>
+<td><code>stair.flights</code></td>
+<td>IfcStairFlight</td>
+<td>text</td>
+<td>guess</td>
+<td>read</td>
+<td>3 or more parallel lines of one length, evenly spaced, are a flight's nosings; rise = (0.63 - tread) / 2, the drawing states no riser; a fli</td>
+</tr>
+<tr>
 <td><code>stair.going</code></td>
 <td>IfcStair</td>
 <td>m</td>
@@ -3677,6 +3829,22 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <td>guess</td>
 <td>1</td>
 <td>typical flight width</td>
+</tr>
+<tr>
+<td><code>steel.label_reach</code></td>
+<td>IfcBeam</td>
+<td>m</td>
+<td>guess</td>
+<td>1.5</td>
+<td>how far from a steel section label its member's line may run (§D109). 0 = steel is not read from labels</td>
+</tr>
+<tr>
+<td><code>steel.section_table</code></td>
+<td>IfcBeam</td>
+<td>text</td>
+<td>guess</td>
+<td>standard</td>
+<td>a UB label names a designation, not its web and flange. BS EN 10365 values taken from public references, not from the drawing and not checke</td>
 </tr>
 <tr>
 <td><code>suggest.elev_no_grid</code></td>
@@ -3735,6 +3903,14 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <td>grid lines guessed from dimension ticks: not on an axis where the sheet states or reads 2 or more grid lines, and not outside its @REGION (§</td>
 </tr>
 <tr>
+<td><code>suggest.level_footing</code></td>
+<td>suggest</td>
+<td>text</td>
+<td>guess</td>
+<td>read</td>
+<td>a plan no title or level name places takes its level from one distinct T/FOOTING value on the sheet: T/FOOTING: -1.250 m (§D109). 'off' = no</td>
+</tr>
+<tr>
 <td><code>suggest.level_name</code></td>
 <td>suggest</td>
 <td>text</td>
@@ -3757,6 +3933,14 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <td>guess</td>
 <td>report</td>
 <td>sheet numbers the set refers to but does not hold are listed as an advisory; it never blocks (§D107). 'off' = no list</td>
+</tr>
+<tr>
+<td><code>suggest.title_layout</code></td>
+<td>Set</td>
+<td>text</td>
+<td>guess</td>
+<td>read</td>
+<td>a title ending LAYOUT names a plan, as a title ending PLAN does (§D110). 'off' = no view is read from it, and the sheet refuses the set</td>
 </tr>
 <tr>
 <td><code>suggest.title_text</code></td>
@@ -3823,6 +4007,14 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <td>a size the library answers with several types (Duplex 819 x 759: SMALL_FIXED, CASEMENT) binds the library's first row (8 of the Duplex IFC's</td>
 </tr>
 <tr>
+<td><code>wall.band_gap</code></td>
+<td>IfcWall</td>
+<td>m</td>
+<td>guess</td>
+<td>0.35</td>
+<td>parallel wall lines closer than this are one wall, solid from outer line to outer line: with no wall type schedule a leaf cannot be told fro</td>
+</tr>
+<tr>
 <td><code>wall.base</code></td>
 <td>IfcWall</td>
 <td>m</td>
@@ -3839,12 +4031,36 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <td>typical storey wall height; not stated by a plan</td>
 </tr>
 <tr>
+<td><code>wall.min_thick</code></td>
+<td>IfcWall</td>
+<td>m</td>
+<td>guess</td>
+<td>0.05</td>
+<td>a band of wall lines thinner than this is a finish line, not a wall (§D109: 28 pieces measured 10-20 mm). 0 = read them as walls</td>
+</tr>
+<tr>
+<td><code>wall.tag_reach</code></td>
+<td>IfcWall</td>
+<td>m</td>
+<td>guess</td>
+<td>1.5</td>
+<td>how far a wall tag may lie from the wall it names, on a plan layer typed walltag: the nearest wall of that plan's level takes the tag as its</td>
+</tr>
+<tr>
 <td><code>wall.thickness</code></td>
 <td>IfcWall</td>
 <td>m</td>
 <td>guess</td>
 <td>0.15</td>
 <td>a guess: no sheet states the wall thickness. 150 mm is the wall line every rate pack's class table names (the same 150 mm in all 16 country</td>
+</tr>
+<tr>
+<td><code>wall.top_from_elevation</code></td>
+<td>IfcWall</td>
+<td>text</td>
+<td>guess</td>
+<td>read</td>
+<td>a wall on the grid line an elevation stands on takes its top and base from that elevation's wall lines over its own span; other walls of tha</td>
 </tr>
 <tr>
 <td><code>wall.top_when_unseen</code></td>
@@ -3880,7 +4096,7 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 </tr>
 </tbody>
 </table>
-<h2 id="6-code-families-223-codes-found-in-the-source">6. Code families (223 codes found in the source)<a class="headerlink" href="#6-code-families-223-codes-found-in-the-source" title="Permanent link">&para;</a></h2>
+<h2 id="6-code-families-244-codes-found-in-the-source">6. Code families (244 codes found in the source)<a class="headerlink" href="#6-code-families-244-codes-found-in-the-source" title="Permanent link">&para;</a></h2>
 <p><code>GAP:*</code> = a part the product left out or could not build (advisory, never defaulted); <code>QF:*</code> = a qualification failure (blocks the set); <code>MARK:*</code> = a settings-sheet problem. Each code with the modules that raise it:</p>
 <table>
 <thead>
@@ -3903,6 +4119,10 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <td>dxf2section.js</td>
 </tr>
 <tr>
+<td><code>GAP:beam_label_no_edges</code></td>
+<td>dxf2beams.js</td>
+</tr>
+<tr>
 <td><code>GAP:body_ambiguous_z</code></td>
 <td>dxf2bodies.js</td>
 </tr>
@@ -3913,6 +4133,10 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <tr>
 <td><code>GAP:body_elevation_not_aligned</code></td>
 <td>dxf2bodies.js, dxf2structure.js</td>
+</tr>
+<tr>
+<td><code>GAP:body_elevation_plane_only</code></td>
+<td>dxf2bodies.js</td>
 </tr>
 <tr>
 <td><code>GAP:body_no_elevation</code></td>
@@ -3979,6 +4203,14 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <td>dxf2bim/std2d.js</td>
 </tr>
 <tr>
+<td><code>GAP:door_tag_no_row</code></td>
+<td>dxf2doortags.js</td>
+</tr>
+<tr>
+<td><code>GAP:door_tag_no_swing</code></td>
+<td>dxf2doortags.js</td>
+</tr>
+<tr>
 <td><code>GAP:duplicate_footprint</code></td>
 <td>dxf2bim/dxf2bim.js</td>
 </tr>
@@ -4004,11 +4236,15 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 </tr>
 <tr>
 <td><code>GAP:fill_size_mismatch</code></td>
-<td>dxf2bim/dxf2shell.js</td>
+<td>dxf2bim/dxf2qualify.js, dxf2bim/dxf2shell.js</td>
 </tr>
 <tr>
 <td><code>GAP:fill_unbound</code></td>
 <td>dxf2bim/dxf2shell.js</td>
+</tr>
+<tr>
+<td><code>GAP:footing_no_thickness</code></td>
+<td>dxf2bodies.js</td>
 </tr>
 <tr>
 <td><code>GAP:foundation_storey</code></td>
@@ -4251,11 +4487,23 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <td>dxf2panels.js, dxf2section.js</td>
 </tr>
 <tr>
+<td><code>GAP:roof_bad_pitch</code></td>
+<td>dxf2bim/dxf2shell.js</td>
+</tr>
+<tr>
 <td><code>GAP:roof_bad_thickness</code></td>
 <td>dxf2bim/dxf2shell.js</td>
 </tr>
 <tr>
 <td><code>GAP:roof_bottom_conflict</code></td>
+<td>dxf2bim/dxf2shell.js</td>
+</tr>
+<tr>
+<td><code>GAP:roof_gable_no_ridge</code></td>
+<td>dxf2bim/dxf2shell.js</td>
+</tr>
+<tr>
+<td><code>GAP:roof_gable_wall_outside</code></td>
 <td>dxf2bim/dxf2shell.js</td>
 </tr>
 <tr>
@@ -4269,6 +4517,10 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <tr>
 <td><code>GAP:roof_no_bottom</code></td>
 <td>dxf2bim/dxf2shell.js</td>
+</tr>
+<tr>
+<td><code>GAP:roof_no_deck_note</code></td>
+<td>dxf2roofspots.js</td>
 </tr>
 <tr>
 <td><code>GAP:roof_no_envelope</code></td>
@@ -4285,6 +4537,18 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <tr>
 <td><code>GAP:roof_outline_mismatch</code></td>
 <td>dxf2bim/dxf2shell.js</td>
+</tr>
+<tr>
+<td><code>GAP:roof_ridge_no_gable</code></td>
+<td>dxf2bim/dxf2shell.js</td>
+</tr>
+<tr>
+<td><code>GAP:roof_sheet_defaulted</code></td>
+<td>dxf2bim_import.js</td>
+</tr>
+<tr>
+<td><code>GAP:roof_too_few_spots</code></td>
+<td>dxf2roofspots.js</td>
 </tr>
 <tr>
 <td><code>GAP:roof_top</code></td>
@@ -4363,6 +4627,10 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <td>dxf2bim/dxf2shell.js</td>
 </tr>
 <tr>
+<td><code>GAP:sheet_set_aside</code></td>
+<td>dxf2gapguide.js, dxf2structure.js</td>
+</tr>
+<tr>
 <td><code>GAP:slab_bad_thickness</code></td>
 <td>dxf2bim/dxf2shell.js</td>
 </tr>
@@ -4381,6 +4649,10 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <tr>
 <td><code>GAP:slab_no_exterior_wall</code></td>
 <td>dxf2bim/dxf2shell.js</td>
+</tr>
+<tr>
+<td><code>GAP:slab_no_outline</code></td>
+<td>dxf2slabs.js</td>
 </tr>
 <tr>
 <td><code>GAP:slab_no_top</code></td>
@@ -4405,6 +4677,18 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <tr>
 <td><code>GAP:slab_underside_conflict</code></td>
 <td>dxf2bim/dxf2shell.js</td>
+</tr>
+<tr>
+<td><code>GAP:stair_no_top</code></td>
+<td>dxf2stairs.js</td>
+</tr>
+<tr>
+<td><code>GAP:steel_label_no_line</code></td>
+<td>dxf2steel.js</td>
+</tr>
+<tr>
+<td><code>GAP:steel_section_unknown</code></td>
+<td>dxf2steel.js</td>
 </tr>
 <tr>
 <td><code>GAP:storey_name_duplicate</code></td>
@@ -4464,7 +4748,7 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 </tr>
 <tr>
 <td><code>GAP:type_size_mismatch</code></td>
-<td>dxf2bim/dxf2types.js</td>
+<td>dxf2bim/dxf2qualify.js, dxf2bim/dxf2types.js</td>
 </tr>
 <tr>
 <td><code>GAP:type_unbound</code></td>
@@ -4499,6 +4783,10 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <td>dxf2bim/dxf2bim.js</td>
 </tr>
 <tr>
+<td><code>GAP:wall_curved</code></td>
+<td>dxf2walls.js</td>
+</tr>
+<tr>
 <td><code>GAP:wall_footprint_not_rect</code></td>
 <td>dxf2bim/dxf2bim.js</td>
 </tr>
@@ -4513,6 +4801,10 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <tr>
 <td><code>GAP:wall_mode_mismatch</code></td>
 <td>dxf2bim/dxf2bim.js</td>
+</tr>
+<tr>
+<td><code>GAP:wall_no_top</code></td>
+<td>dxf2walls.js</td>
 </tr>
 <tr>
 <td><code>GAP:wall_not_footprint</code></td>
@@ -4548,7 +4840,7 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 </tr>
 <tr>
 <td><code>MARK:align_fail</code></td>
-<td>dxf2bim/dxf2marks.js</td>
+<td>dxf2bim/dxf2marks.js, dxf2bodies.js</td>
 </tr>
 <tr>
 <td><code>MARK:axis_cut</code></td>
@@ -4593,6 +4885,14 @@ Evidence properties on every body (set <code>Dxf2Bim_Evidence</code>): <code>Pro
 <tr>
 <td><code>MARK:view_ambiguous</code></td>
 <td>dxf2bim/dxf2marks.js</td>
+</tr>
+<tr>
+<td><code>QF:accept_refused</code></td>
+<td>dxf2bim/dxf2qualify.js</td>
+</tr>
+<tr>
+<td><code>QF:accept_unused</code></td>
+<td>dxf2bim/dxf2qualify.js</td>
 </tr>
 <tr>
 <td><code>QF:check_skipped</code></td>
