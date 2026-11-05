@@ -293,6 +293,24 @@ Read-only extraction (`TEAMWORK_FRAMEWORK.md` §41 agent A). Every line cites a 
 - ✅ P5: Branch Day Close (owner go 2026-11-04; §21–§23; bim-ootb #2594, live sw v977). G/S 28→9 / 6→1. The audit gate checks ticket gaps and the tax-aware balance; there is no Z check, because the till keeps its close on the device.
 - ⏸ The WH walk standalone app: planned, `WH_POS_PICK_LANE.md` §STANDALONE.
 - Open, not chased: `witness_pos_plan.js` fails the same on main and on the branch (needs a PC_LINES fixture); kitchen relay cost is 38 requests per message.
+**▶ STATUS 2026-11-05 (lead, live-verified on Pages, sw v1005) — READ THIS FIRST NEXT SESSION:**
+- ✅ Built and live: till (uniCenta 5.0, parity 28/28), kitchen, BOM explode (§25), branch blind stocktake (§37), SODA + Receive stock (§28–§28.2), Classic 2011 theme + company/About (§36), standard 42-column receipt (§39), main till + branch relay + localhost tills (§38), D13 flag at the branch + boot/empty/error status lines (§40), install + quick-trial guide sections (https://red1oon.github.io/BIMCompiler/TillUserGuide/).
+- ✅ Films: EN v5, ZH v2, MS v2 (`~/Videos/UnicentaPOS_SQLiteWASM_narrated_*_AFTER_2026-11-05_v*.mp4`; §34.H).
+- **Owner decisions binding (§35.1–§35.5):** D7 blind stock · D8 replenishment remembers · D9 every till stands alone · D10 ad hoc stock check, EODA-optional · main till holds HQ StorageOnHand, collects by timestamp · D11 localhost, no public URL, air-gapped · D12 branch relay on the LAN · D13 the branch sets its own main till, HQ agnostic. EODA→SODA only, no trickle (§24.1).
+- **Lead drifts this lane — do not repeat:**
+  - deciding where tills consolidate without asking (§35);
+  - reasoning from the public URL instead of the documented localhost DIY path (§35.4);
+  - proposing an HQ-set flag (withdrawn, §35.5).
+- **OPEN:**
+  - (1) the kitchen page still says "join it from the Team panel of the ERP page" (old internet pairing; it should point to the branch relay);
+  - (2) bound the main till's internet Visits per day (890 relay requests over the §38 harness run, ~25 per Visit);
+  - (3) a real multi-PC shop LAN is unproven (AP isolation, tablets without a localhost server, the main till on the real internet relay);
+  - (4) the price-stamp parity is not compared (§28.3 OPEN-2);
+  - (5) the bridge has 109 Free-Filter WS types that legacy forbids (`SQLiteIDEMPIERE.md` §DD-SCOPE);
+  - (6) WH walk standalone app is planned only (`WH_POS_PICK_LANE.md` §STANDALONE / .2, Q-M1…Q-M5);
+  - (7) the film pipeline's committed `narration_en.tsv` is a stale generated copy (still "twenty twelve"); the source `script_*.md` is correct (2011);
+  - (8) the kitchen link: LAN vs relay was asked and never answered (now on the branch relay per D12).
+
 **Still open (asked only if P0 does not answer them):** Q-b (stock display on the till), Q-e (reservations till-only or ERP record).
 
 ## §14 P0 EXTRACTION (2026-11-03) — Unicenta oPOS + the pill today
