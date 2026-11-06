@@ -84,7 +84,7 @@ is ours" ⇒ aligned; move it from ⛔ to the queue after the catalog rebind.
 C3 lands with the REPLACE verb.
 
 ## ▶ §RESUME 2026-11-02 — START HERE (then §RESUME 2026-10-02 below; its queue and HOLDs still stand)
-**New 2026-11-07: §EDIT-REPORT (row 41), spec at the end of this file, nothing built. Next step is its step 0, and it needs red1's go like the rest of this queue.**
+**New 2026-11-07: §EDIT-REPORT (row 41), spec and step 0 RESULT at the end of this file. Feature not built. Next is slice 1, on red1's go, after the abuts question in that RESULT.**
 **Landed from the DXF2BIM lane (bim-ootb; detail + measured tables in bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` `### P-X SPEC`, `### P-X2 SPEC` and their RESULTs):**
 - **P-X, bim-ootb #2520 (sw v204): IN objective, "a user's OWN IFC must get what the residents get" (§STRATEGY item 1). Was UNVERIFIED; now MEASURED and BUILT.**
   The Modeller's raw-IFC open (`openIfcFile`) now runs the shared extractor (`modeller/ifc_open_db.js` in `modeller/ifc_open_worker.js`), not the Viewer's import worker.
@@ -1228,7 +1228,7 @@ Format, one row per item, ranked most-blocking first:
 | 38 | O15 | **§GRID-SPAN-GATE — a grid drag must not stretch a structural bay past its span limit** (red1 2026-10-02: "columns have to bear load as industry stds. We cannot drag long leaving columns stretched out"; "those coloring is brilliant"; "display ie 'limit for this column. Add one more?' when user hovers over the red"). EXISTS, unwired: `str_walker.js:192-215` `SW_SPAN_RULES` (Eurocode-cited preliminary rules — STEEL max 18 m, depth≈L/20, δ≤L/360; RC max 12 m, depth≈L/12, δ≤L/250) + `swCheckGirder` → GREEN/ORANGE/RED, used today only by the STR walker tab (`str_walker_bridge.js:331`). `bonsai_gridmove.js`/`sdg_gate.js` have NO span check. BUILD: (1) during a gridline drag, colour every bay the drag widens/narrows with `swCheckGirder` live (no new thresholds — the table is the only source; material from the building's measured beam/column class, else ⛔ refuse to colour rather than guess); (2) ORANGE hover = the required preliminary depth (span/ratio); (3) RED hover = "Limit for this column span (<max> m, <material>). Add one more?" → one click inserts a column line at the bay midpoint, columns COPIED from the building's own existing column type/section (never invented); cancel keeps the drag refused at the limit; (4) every message carries "preliminary — the structural engineer confirms". Applies only where the grid comes from columns (column-framed); wall-bearing bays use no beam rule. | `str_walker.js` §REGULATORY HANDLER; `GRID_KINEMATICS_SANDBOX_PROOF.md` | witness: drag a Garage (real IfcColumn 140 / IfcBeam 195 in its ARC) gridline across the RC/steel limit → `§GRID-SPAN` lines show GREEN→ORANGE→RED at the exact table spans; hover text carries the limit; "Add one more" adds N columns == lines crossed, each a copy of the measured type, bay spans halve, colour returns GREEN; undo = one step (§ONE-GESTURE-ONE-UNDO); RED-first: today's main colours nothing | ✅ **DONE 2026-10-02** — bim-ootb #1803 (sw v73) + witness #1806; W-GRID-SPAN-GATE **20/0 vs LIVE**; see §GRID-SPAN-GATE RESULT |
 | 39 | O8 | **§THREADS — category/element threads on the history dotline + scoped undo along a glowing thread** (red1 2026-10-02). One log, many views: chips `+ Walls (4)` expand a per-type strip; tap → blue glow + "Undo: Walls only" → Ctrl+Z/Y travel that thread only; scoped undo APPENDS a revert (never erases); dependents cascade or are refused by name. Shared with Viewer/ERP via `common/history_bar.js` `categorize(entry)`. | `HISTORY_PARALLEL_TIMELINE.md` §THREADS (the spec) + §THREADS-STEP1 + §THREADS-STEP2-HOLD | 3 steps there, each RED-first | **step 1 ✅ / step 2 ⏸ HOLD (red1: ponder a better shape)** — step 1 = read-only category scrubber, LIVE (bim-ootb #1807 + follow-up), W-HISTORY-THREADS vs LIVE; step 2 on `wip/history-threads-scoped-undo`, no PR |
 | 40 | O3 | **§SCRIPTED-EDITS — HOLD until §THREADS steps 1-2 + §ADHOC-WF-BATCH exist** (red1 2026-10-02 brainstorm, sobered and agreed: "Keep scope in check, align well, or hold off"). Script = Find selector + existing Modeller action + target values ("Level 2 windows → 1.2 m wide"), run as a PENDING branch (preview → accept/discard), every step through the same gates as a manual edit (span gate, LOD400-or-refuse, conformity), optional budget gate on the §S8 cost Δ. Later, only if the library grows: constraint SEARCH over existing designs ("fits A×B, 2 rooms, 3 windows, 1 door, <10k") → pick → mould. OUT OF SCOPE: generative layout (inventing a plan from constraints) — conflicts with §STRATEGY "no original object making". | this row | — | ⏸ HOLD — do not build before its prerequisites |
-| 41 | O15 | **§EDIT-REPORT — after an edit, say what changed, what was checked, red ink before → after, and what was NOT checked** (red1 2026-11-07: "another wow feature"). Slice 1 = one grid move. Reports only. SPEC at the end of this file; nothing built. |
+| 41 | O15 | **§EDIT-REPORT — after an edit, say what changed, what was checked, red ink before → after, and what was NOT checked** (red1 2026-11-07: "another wow feature"). Slice 1 = one grid move. Reports only. SPEC + step 0 RESULT at the end of this file; feature not built. |
 
 ### STALE-CLAIMS — verified SHIPPED on origin/main; do NOT re-open (grep-verified 2026-07-30)
 - **O12 zoom-to-selection**: SHIPPED — `§ZOOM-SEL` (#711), `modeller.html:1057`, `witness_e2e_zoom_to_selection.js` exists. The triage's "small, well-specified" read was stale.
@@ -1502,4 +1502,28 @@ Log heap and element count at the end of the composer (§PERF BUDGET); no new ge
 
 **Queue after slice 1, each needing its own go:** bay add (`bay_add.js`) → other gestures → session total at Save → structural_sanity on a live edit.
 
-**STATUS:** spec only. Next: step 0.
+### §EDIT-REPORT STEP 0 RESULT 2026-11-07 (bim-ootb #2671, `modeller/tests/witness_edit_report_coverage.js`)
+`§EDIT_COVERAGE_SUMMARY defects=28 none=15 by_design=2 verdict=DISPROVED`. `pass=11 fail=0 ran=30`. Falsifier `EDIT_COV_BREAK=1`: `fail=4`, exit 1. Pure node, real data: `SdgGate` on the Duplex's 203 seeded solids and recovered edges (50 fills, 696 abuts), `GridSpanGate` on the Garage's own 17×29 lattice, 228 girders, RC, mixed, depth 0.535 m. Table: `modeller/edit_report_coverage.json`.
+| Defect | Java gates (`NEURO_SYMBOLIC_ORDER_CONTRACT.md` §3.1) | Live edit checks |
+|---|---|---|
+| Same-class overlap, door in slab, pipe in structure, pipe through wall | P06 / NONE / listed but passes / NONE | **RED, all four** |
+| Duplicate position | P05 + P06 | RED |
+| Column 50 m up, beam 200 m away | NONE | NONE |
+| 3100 m wall clear of the building | P02 | **NONE** |
+| 800 m wall clear of the building | NONE | NONE; RED only if it hits something |
+| 0.2 mm thick | P03 | **NONE** |
+| Unknown class | NONE | NONE: the gate receives boxes only |
+| Duplicate guid | schema | NONE (read): boxes are keyed by fid |
+**Only the live checks found:**
+- **⚠ A wall driven 0.300 m into a wall it abuts: NONE** (real pair 15/3). `related` pairs are never a clash, and a grid stretch is exactly the edit that does this. `pairsOver` as specified inherits it. **Open, owner's call: fix the gate, or only report it. Not changed.**
+- NaN coordinates and zero-size boxes: NONE, no throw.
+- An element changed but left off the `moved` list: NONE. The judged set is `res.commands` + `res.riders`.
+- A floating 30 m IfcBeam row: NONE on spans. Only girders the column walk derives are judged (228 before and after).
+- A line dragged past its neighbour: ORANGE, only from the longer bay; no crossing rule. Two lines on top of each other, span 0: NONE.
+- One material per building: on this mixed one, a steel girder at 15 m reads RED, inside its own 18 m limit.
+- Delta-only (E3) and the 20 mm tolerance (E1) are by design, not blind spots. E3 is why `pairsOver` is needed.
+**NOT-checked line today:** duplicate ids · elements changed outside the edit's own list · floating or unsupported elements · grid lines placed on top of each other · invalid coordinates · real beams: only girders walked from columns are span-checked · unknown element types · walls driven into a wall they already touch · wrong units or absurd sizes, unless they hit something · zero-size elements · load capacity · beam and column rules (Regulatory Report only).
+**Amendments to the spec above:** (1) the last two items have no row, because no live check looks at them; they are a constant in the witness, pinned, not generated from a verdict. (2) Twelve items is too long for a small panel: the panel shows a count that opens the list; the JSON and `§EDIT_REPORT` always carry all of them.
+**Not measured:** real meshes in a browser (this is node over folded boxes, the same arithmetic the page calls); Duplex and Garage only.
+
+**STATUS:** step 0 done. Next: slice 1 (`pairsOver`, span tally, `edit_report.js`, W-EDIT-REPORT). Needs red1's go, and the abuts question above answered.
