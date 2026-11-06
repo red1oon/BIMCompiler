@@ -185,7 +185,10 @@ public class PlacementValidatorImpl implements PlacementValidator {
                     if (!thresholds.isEmpty() || !stringParams.isEmpty()) {
                         CachedRule rule = new CachedRule(ruleId, name, stdRef,
                                 thresholds, stringParams, dependsOn);
-                        result.computeIfAbsent(category, k -> new ArrayList<>()).add(rule);
+                        // A rule may name several categories, e.g. BATHROOM,KITCHEN,LAUNDRY,CORRIDOR
+                        for (String key : category.split(",")) {
+                            result.computeIfAbsent(key.trim(), k -> new ArrayList<>()).add(rule);
+                        }
                     }
                 }
             }
@@ -511,7 +514,7 @@ public class PlacementValidatorImpl implements PlacementValidator {
 
     @Override
     public int getRuleCount() {
-        int compliance = rulesByCategory.values().stream().mapToInt(List::size).sum();
+        int compliance = (int) rulesByCategory.values().stream().flatMap(List::stream).distinct().count();
         int mined = minedRulesByClass.values().stream().mapToInt(List::size).sum();
         return compliance + mined;
     }
@@ -791,10 +794,6 @@ public class PlacementValidatorImpl implements PlacementValidator {
      * Get all cached rules as flat list (for testing/inspection).
      */
     public List<CachedRule> getAllRulesFlat() {
-        List<CachedRule> all = new ArrayList<>();
-        for (var entry : rulesByCategory.entrySet()) {
-            all.addAll(entry.getValue());
-        }
-        return all;
+        return rulesByCategory.values().stream().flatMap(List::stream).distinct().toList();
     }
 }
