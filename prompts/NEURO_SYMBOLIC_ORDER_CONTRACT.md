@@ -113,6 +113,7 @@ Spec for changes to shipped code. These correct bugs that exist with or without 
 - **Works:** choosing from what exists. Give it the base BOM, its `locator_ref`s and the catalog with sizes; allow only Replace, Remove, Add, Compress; ask for `c_orderline` rows; tell it to say so when nothing listed fits.
 - **Does not:** free coordinates (this is where unit and floating errors arrive, the gates' weakest spots), or anything asking for structural safety or loads (§5).
 - **"Better than without" is unmeasured.** To measure it, run the same prompts through a real proposer and count defects raw, after the gates, and with a repair loop feeding `§ORDER_REJECT` back. That needs a real proposer and a gate that stops output. Filtering cannot make a proposal good: a valid but poor design passes, and so does anything in the NONE rows of §3.1.
+- **What it offers a proposer (2026-11-07):** state intent in a few lines; get back a computed building plus proof of what changed. Speed is unmeasured, so do not pitch "faster". The proof record is `MODELLER_MASTER.md` §EDIT-REPORT, built first for people. A report that omits what was not checked invites a proposer to hide errors in the blind spots.
 
 ## 5. Explicit non-goals
 Structural capacity checks, code compliance, "certification", any claim of engineering safety. Those need a licensed
