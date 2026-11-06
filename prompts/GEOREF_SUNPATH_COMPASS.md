@@ -813,3 +813,6 @@ extraction-to-render agreement, internal cross-consistency) has real coverage vi
 `§SUN_COMPASS_WITNESS` but was not run down item-by-item against T8's own checklist — worth a pass
 before calling the feature fully closed. Neither PR is merged. §12's Hospital site-coordinate
 conflict is the one open item that is not a coding task — it needs red1's decision.
+
+## 2026-11-06 — a browser import of two federated IFCs lost site lat/long and true north (NOTED, NOT FIXED)
+On a private Revit-exported set the python extractor (`extractIFCtoDB.py`) wrote `site_latlong_source=ifc_site` and `true_north_source=ifc_truenorth`; the browser import of the same model plus a second IFC wrote `unknown` / `default_zero`, while `georef_offset_*` survived. Result: `§SUN_COMPASS INCONCLUSIVE`. `import_worker.js` (IfcSite loop, `_cpaToDegrees`) and `import_db_builder.js:51-58` read correct. True north was lost too, so the whole `meta.georef` object is missing: suspect the federation step, UNVERIFIED (that import's console was not captured). Next: capture the console, test `_cpaToDegrees` on a real `GetLine(IFCSITE)`, check federation keeps `meta.georef`.

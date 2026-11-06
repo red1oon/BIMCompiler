@@ -772,3 +772,6 @@ polyline sawtooths ±1.7 m six times after the stair (~11.8 m of phantom climb i
 walk), and **P4** `rule_checklist.js` divides the penalty-weighted COST by the stride for its
 "Longest path to exit" headline (~143 steps) while this film draws ~329 for the same room — the bake
 already prints `§ESCAPE_ROUTE_COST_IS_NOT_A_DISTANCE` about it. Nothing is fixed.
+
+## 2026-11-06 — escape-route beat drew nothing on a fresh import: no `storey_walkable_raster` (NOTED, NOT FIXED)
+`§ESCAPE_ROUTE_BUILD FAIL reason=metadata-absent`. This is `§SAVE_CARRIES_BUT_NEVER_BUILDS_THE_RASTER` (viewer/scene.js): neither the browser import nor the python extractor builds it; only `scripts/build_storey_walkable_raster.js` does. Measured on a 6-storey private set: 1.6 s, 96 KB. Open question for the owner: an import post-step for any DB with rooms, instead of a per-DB patch (LTU took 166.8 s, which is why save-time was rejected).
