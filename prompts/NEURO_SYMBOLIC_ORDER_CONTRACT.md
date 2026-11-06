@@ -57,7 +57,7 @@ G1–G3 compare to a reference DB (`RosettaStoneGateTest.java:39-45`), so they h
 **Other findings from the same run:**
 1. **`PROPOSED` is not a gate.** `proposal_status` has writers only (`OrderMutationService.java:223`, W004); no main code reads it, the walker filters on `IsActive` alone, and it defaults to `ACCEPTED`.
 2. **`AD_Clash_Rule` has 6 rows and no reader.** The only main-code mention is the comment `CompilationPipeline.java:1553`, which says 0 rows.
-3. **Live bug, not fixed here: the validator's category filter is dead.** `library/validation.db` (from `V002_validation_seed.sql:34`) stores `bom_category`; the loader reads `m_product_category_id` (`PlacementValidatorImpl.java:173`), so every MY rule applies to every room. A legal 2000×3000 kitchen is BLOCKed by `UBBL_BEDROOM_MIN_AREA` (`V1_legal_kitchen`). DV017 renames `ad_val_rule_param.param_name` in ERP.db, not this table's `name` column. `PlacementValidatorImplTest` fails 6 of 19 on this DB: 4 from this bug, 2 (`w_dv_mined_wire_*`) expect mined rules from ERP.db, absent here.
+3. **Fixed 2026-11-07 (§6.1): the validator's category filter was dead.** `library/validation.db` (from `V002_validation_seed.sql:34`) stored `bom_category`; the loader reads `m_product_category_id` (`PlacementValidatorImpl.java:173`), so every rule applied to every room and a legal 2000×3000 kitchen was BLOCKed by `UBBL_BEDROOM_MIN_AREA`. DV017 renamed `ad_val_rule_param.param_name` in ERP.db, not this table's `name` column. `V1_legal_kitchen` now passes.
 
 ### 3.2 Order shape: reuse, no new JSON
 - **WHAT:** `c_order` + `c_orderline` (`BuildingWriter.java:352`): `family_ref`, `M_Product_ID`, `host_type`, `Parent_OrderLine_ID`, `Line`, `Qty`, `Discipline`, `locator_ref`, `is_reference_class`. The four mutations (Replace, Compress, Remove, Add) already express a variant (`docs/internal/ProjectOrderBlueprint.md` §1.1).
@@ -73,13 +73,14 @@ Fields come from `ValidationVerdict`; `AD_Validation_Result` (V001) already stor
 ### 3.4 Snap (`§ORDER_SNAP_WITNESS`): `verdict=DISPROVED`
 | Case | Result |
 |---|---|
-| S1 bedroom 2800 wide, grid 500 | **Hidden.** Raw order BLOCKs on `UBBL_BEDROOM_MIN_DIM`; snap rounds to 3000 first (`DesignerAPIImpl.java:903-917`), then validates (`:951`). Result: `success=true`, only a `GRID_SNAP` entry, no rule |
+| S1 bedroom 2800 wide, grid 500 | **Fixed (§6.2): no longer hidden.** Snap still rounds to 3000 and returns `success=true`, but now adds a `pre_snap` entry naming `UBBL_BEDROOM_MIN_DIM` and logs `§SNAP_ROUNDED_PAST_RULE` |
 | S2 10002 mm vs 1 mm tolerance, grid 1000 | Accepted, moved 2 mm. Logged, but snap has no tolerance input, so it cannot reject |
 | S3 verb form, (10.002,…) spacing 1000 | Pass, moved **998 mm** (rounds up). Logged, not rejected |
 | S4 10.0004 m, spacing 1 | **Silent.** 0.4 mm lost in the mm conversion; verb says "no change" |
 | S5 a BLOCK that survives snapping | `success=true`, element returned, rule appears only as an adjustment (`DesignerAPIImpl.java:960-972`) |
 | S6 already on grid | NO-OP reported |
 | S7 validator off | VACUOUS: `success=true` with nothing judged |
+| S8 click-to-fix (control for §6.2) | Lands on 3000, no `pre_snap` entry |
 
 ## 4. Witness claims (written first; each names the issue it proves)
 - **W-ORDER-REJECT-COVERAGE** — proves/disproves: "every defect class in §3.1 is rejected by a named gate". Output is the
@@ -100,12 +101,25 @@ A missing or empty fixture prints `INCONCLUSIVE` and aborts; it never passes.
 - **Pinned:** both witnesses assert the recorded table, so a future gate fix turns the test red and forces §3 to be updated.
   A green run therefore means "the table is still accurate", NOT "orders are safe".
 
+## 6. Fixes approved by the owner 2026-11-07 ("Go")
+Spec for changes to shipped code. These correct bugs that exist with or without a proposer. They do not add a reject gate.
+1. **Category filter.** `migration/V016` renames the rule param to what the loader reads. The loader also splits comma lists, because `AU_CEILING_SERVICE` names four categories and an exact-match key would never fire. A rule listed under several categories still counts once. Witness: `V1_legal_kitchen` goes NONE; `w_pv_1`, `w_pv_3`, `kitchen_pass`, `w_infra_snap_4` go green.
+2. **Snap hides a violation (S1).** When grid rounding changed the size and the snapped size passes, `snap()` validates the submitted size too. If that BLOCKs, it adds an adjustment with `field="pre_snap"`, `from`=submitted, `to`=required, and logs `§SNAP_ROUNDED_PAST_RULE`. The bbox and `success` do not change, so nothing is stopped. The Blender panel shows it as information without a Fix button, since the snapped size is already legal. Witness: S1 goes OK; new control S8 proves click-to-fix still lands on the required size with no `pre_snap` entry.
+3. **Seal repair.** `scripts/pre-commit` gains the NO-LFS guard line the installed hook already has. `verify_test_seal.sh` finds the hook through `git rev-parse --git-path`, so it works in worktrees, and reads the manifest from its new path, `docs/archive/TestArchitecture.md`. Audit before re-sealing: at `7d941768b`, the last seal, the recorded hash reproduces; since then 2 of 76 sealed files changed: `scripts/pre-commit` (`6e54c133a`, Gate 1 lets a commit remove a `library/` binary) and `run_RosettaStones.sh` (`2d330e381`, one mesh-restore step). Neither weakens a gate. Re-sealed as v20, super-hash `dbedb86a…`.
+   ⚠ **G4-TAMPER is red and was not fixed:** 73 violations, none in a file changed here (`T19` alone hits lines naming `IfcFlowTerminal`, `T14` is `catch … ignored`). Its procedure asks for green before re-sealing; this re-seal went ahead on the audit above, on the owner's go. G4 is not part of pre-commit.
+4. **Test comparison, `BonsaiBIMDesigner` suite, before → after:** 78 → 73 failures, 59 → 59 errors. Now passing: `w_pv_1`, `w_pv_3`, `kitchen_pass`, `w_infra_snap_4`, `DemoHouseTest.w_dh_4`. The remaining failures need local DBs absent from a worktree (`library/ERP.db` is a 16-byte stub). The one "new" line, `InfraVocabularyTest.deriveFacilityTypeViaApi`, is the same test failing on another empty `*_BOM.db`: it iterates a `Map.of`, whose order changes per run.
+
+## 7. Proposer prompts (advice, nothing built, no proposer has been run)
+- **Works:** choosing from what exists. Give it the base BOM, its `locator_ref`s and the catalog with sizes; allow only Replace, Remove, Add, Compress; ask for `c_orderline` rows; tell it to say so when nothing listed fits.
+- **Does not:** free coordinates (this is where unit and floating errors arrive, the gates' weakest spots), or anything asking for structural safety or loads (§5).
+- **"Better than without" is unmeasured.** To measure it, run the same prompts through a real proposer and count defects raw, after the gates, and with a repair loop feeding `§ORDER_REJECT` back. That needs a real proposer and a gate that stops output. Filtering cannot make a proposal good: a valid but poor design passes, and so does anything in the NONE rows of §3.1.
+
 ## 5. Explicit non-goals
 Structural capacity checks, code compliance, "certification", any claim of engineering safety. Those need a licensed
 engineer and a real analysis engine; out of this lane until the user says otherwise.
 
 ## STATUS
-2026-11-06 spec drafted. 2026-11-07 §3 extracted; both §4 witnesses built and run. Nothing in shipped code changed.
-Run: `mvn -o -pl BonsaiBIMDesigner -am test -Dtest=OrderContractWitnessTest -Dpipeline.tests.skip=false -Dsurefire.failIfNoSpecifiedTests=false`; read the `§ORDER_*` lines.
-⛔ BLOCKED, owner decisions: (a) build a reject gate at all, and at which seam; (b) fix the dead category filter (§3.1 finding 3). Neither was started.
-⛔ (c) **The witness test is not committed.** It is untracked in the primary checkout at the §4.1 path. Pre-commit Gate 3 blocks any staged `*Test.java` because the tamper seal is already broken on master, for two reasons unrelated to this test: `.git/hooks/pre-commit` carries the NO-LFS guard line that `scripts/pre-commit` lacks (so the script's suggested `cp` fix would delete the guard), and the sealed files' super-hash no longer matches (expected `8e08c46f…`, actual `8c66c625…`). Not bypassed and not re-sealed.
+2026-11-06 spec drafted. 2026-11-07 §3 extracted, both §4 witnesses built and committed, §6 fixes shipped.
+Run: `mvn -o -pl BonsaiBIMDesigner -am test -Dtest=OrderContractWitnessTest -Dpipeline.tests.skip=false -Dsurefire.failIfNoSpecifiedTests=false`; read the `§ORDER_*` lines. Fixtures are local: use `-Dbim.fixture.root=<primary checkout>` in a worktree. `V1_legal_kitchen=FAILS` means that `library/validation.db` lacks `migration/V016`, which no script applies automatically.
+⏸ **Reject gate PARKED by owner 2026-11-07 until a real proposer exists.** When un-parked: apply only to external orders, at `PlacementRequest`, checking before any snap; then run the §7 measurement.
+Still open, by design: every row in §3.1 marked NONE, snap cases S2–S5.

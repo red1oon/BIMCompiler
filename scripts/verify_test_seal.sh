@@ -15,18 +15,18 @@
 # RE-SEAL AFTER INTENTIONAL CHANGES:
 #   1. Run tests + G4-TAMPER first (mvn test), verify GREEN
 #   2. bash scripts/verify_test_seal.sh --detail  (see which files changed)
-#   3. Update per-file hashes in docs/TestArchitecture.md
+#   3. Update per-file hashes in docs/archive/TestArchitecture.md
 #   4. Copy "Actual:" hash from output → update EXPECTED below + TestArchitecture.md
 #   5. bash scripts/verify_test_seal.sh  (should now say INTACT)
 #   6. git commit -m "[SEAL] Re-seal after <reason>"
 #
-# Sealed: 2026-03-29 (v14: 77 files — 63 test + 13 production + pre-commit hook)
-# Manifest: docs/TestArchitecture.md
+# Sealed: 2026-11-07 (v20: 76 files — hook carries the NO-LFS guard; audit in prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md §6.3)
+# Manifest: docs/archive/TestArchitecture.md
 
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 
-EXPECTED="8e08c46f05cfc8a0b7503215aeb30aa60b6b07c856c07fc7358c59ad99325d12"
+EXPECTED="dbedb86a71ca9082965279310ec18d5e0474db3b60dfb6a9a1d83c544b46e10f"
 
 FILES=(
   DAGCompiler/src/test/java/com/bim/compiler/contract/ArchitectureTest.java
@@ -120,20 +120,22 @@ if [ "$MISSING" -gt 0 ]; then
   exit 1
 fi
 
-# Check that .git/hooks/pre-commit matches the tracked copy
-if [ -f .git/hooks/pre-commit ] && [ -f scripts/pre-commit ]; then
-  HOOK_HASH=$(sha256sum .git/hooks/pre-commit | awk '{print $1}')
+# Check that the installed hook matches the tracked copy.
+# --git-path, not .git/hooks: in a worktree .git is a file, and every commit there read "missing".
+HOOK_PATH=$(git rev-parse --git-path hooks/pre-commit)
+if [ -f "$HOOK_PATH" ] && [ -f scripts/pre-commit ]; then
+  HOOK_HASH=$(sha256sum "$HOOK_PATH" | awk '{print $1}')
   TRACKED_HASH=$(sha256sum scripts/pre-commit | awk '{print $1}')
   if [ "$HOOK_HASH" != "$TRACKED_HASH" ]; then
-    echo "SEAL BROKEN — .git/hooks/pre-commit diverged from scripts/pre-commit"
+    echo "SEAL BROKEN — $HOOK_PATH diverged from scripts/pre-commit"
     echo "  Hook:    $HOOK_HASH"
     echo "  Tracked: $TRACKED_HASH"
-    echo "  Fix: cp scripts/pre-commit .git/hooks/pre-commit"
+    echo "  Fix: cp scripts/pre-commit $HOOK_PATH"
     exit 1
   fi
-elif [ ! -f .git/hooks/pre-commit ]; then
-  echo "SEAL BROKEN — .git/hooks/pre-commit is missing"
-  echo "  Fix: cp scripts/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit"
+elif [ ! -f "$HOOK_PATH" ]; then
+  echo "SEAL BROKEN — $HOOK_PATH is missing"
+  echo "  Fix: cp scripts/pre-commit $HOOK_PATH && chmod +x $HOOK_PATH"
   exit 1
 fi
 
@@ -160,7 +162,7 @@ if [ "${1:-}" = "--detail" ]; then
     SHORT=$(echo "$FHASH" | cut -c1-8)
     BASENAME=$(basename "$f")
     # Check if this short hash appears in the manifest
-    if ! grep -q "$SHORT" docs/TestArchitecture.md 2>/dev/null; then
+    if ! grep -q "$SHORT" docs/archive/TestArchitecture.md 2>/dev/null; then
       echo "  CHANGED: $BASENAME ($SHORT)"
     fi
   done
