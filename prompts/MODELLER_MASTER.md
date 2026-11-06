@@ -84,6 +84,7 @@ is ours" ⇒ aligned; move it from ⛔ to the queue after the catalog rebind.
 C3 lands with the REPLACE verb.
 
 ## ▶ §RESUME 2026-11-02 — START HERE (then §RESUME 2026-10-02 below; its queue and HOLDs still stand)
+**New 2026-11-07: §EDIT-REPORT (row 41), spec at the end of this file, nothing built. Next step is its step 0, and it needs red1's go like the rest of this queue.**
 **Landed from the DXF2BIM lane (bim-ootb; detail + measured tables in bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` `### P-X SPEC`, `### P-X2 SPEC` and their RESULTs):**
 - **P-X, bim-ootb #2520 (sw v204): IN objective, "a user's OWN IFC must get what the residents get" (§STRATEGY item 1). Was UNVERIFIED; now MEASURED and BUILT.**
   The Modeller's raw-IFC open (`openIfcFile`) now runs the shared extractor (`modeller/ifc_open_db.js` in `modeller/ifc_open_worker.js`), not the Viewer's import worker.
@@ -1227,6 +1228,7 @@ Format, one row per item, ranked most-blocking first:
 | 38 | O15 | **§GRID-SPAN-GATE — a grid drag must not stretch a structural bay past its span limit** (red1 2026-10-02: "columns have to bear load as industry stds. We cannot drag long leaving columns stretched out"; "those coloring is brilliant"; "display ie 'limit for this column. Add one more?' when user hovers over the red"). EXISTS, unwired: `str_walker.js:192-215` `SW_SPAN_RULES` (Eurocode-cited preliminary rules — STEEL max 18 m, depth≈L/20, δ≤L/360; RC max 12 m, depth≈L/12, δ≤L/250) + `swCheckGirder` → GREEN/ORANGE/RED, used today only by the STR walker tab (`str_walker_bridge.js:331`). `bonsai_gridmove.js`/`sdg_gate.js` have NO span check. BUILD: (1) during a gridline drag, colour every bay the drag widens/narrows with `swCheckGirder` live (no new thresholds — the table is the only source; material from the building's measured beam/column class, else ⛔ refuse to colour rather than guess); (2) ORANGE hover = the required preliminary depth (span/ratio); (3) RED hover = "Limit for this column span (<max> m, <material>). Add one more?" → one click inserts a column line at the bay midpoint, columns COPIED from the building's own existing column type/section (never invented); cancel keeps the drag refused at the limit; (4) every message carries "preliminary — the structural engineer confirms". Applies only where the grid comes from columns (column-framed); wall-bearing bays use no beam rule. | `str_walker.js` §REGULATORY HANDLER; `GRID_KINEMATICS_SANDBOX_PROOF.md` | witness: drag a Garage (real IfcColumn 140 / IfcBeam 195 in its ARC) gridline across the RC/steel limit → `§GRID-SPAN` lines show GREEN→ORANGE→RED at the exact table spans; hover text carries the limit; "Add one more" adds N columns == lines crossed, each a copy of the measured type, bay spans halve, colour returns GREEN; undo = one step (§ONE-GESTURE-ONE-UNDO); RED-first: today's main colours nothing | ✅ **DONE 2026-10-02** — bim-ootb #1803 (sw v73) + witness #1806; W-GRID-SPAN-GATE **20/0 vs LIVE**; see §GRID-SPAN-GATE RESULT |
 | 39 | O8 | **§THREADS — category/element threads on the history dotline + scoped undo along a glowing thread** (red1 2026-10-02). One log, many views: chips `+ Walls (4)` expand a per-type strip; tap → blue glow + "Undo: Walls only" → Ctrl+Z/Y travel that thread only; scoped undo APPENDS a revert (never erases); dependents cascade or are refused by name. Shared with Viewer/ERP via `common/history_bar.js` `categorize(entry)`. | `HISTORY_PARALLEL_TIMELINE.md` §THREADS (the spec) + §THREADS-STEP1 + §THREADS-STEP2-HOLD | 3 steps there, each RED-first | **step 1 ✅ / step 2 ⏸ HOLD (red1: ponder a better shape)** — step 1 = read-only category scrubber, LIVE (bim-ootb #1807 + follow-up), W-HISTORY-THREADS vs LIVE; step 2 on `wip/history-threads-scoped-undo`, no PR |
 | 40 | O3 | **§SCRIPTED-EDITS — HOLD until §THREADS steps 1-2 + §ADHOC-WF-BATCH exist** (red1 2026-10-02 brainstorm, sobered and agreed: "Keep scope in check, align well, or hold off"). Script = Find selector + existing Modeller action + target values ("Level 2 windows → 1.2 m wide"), run as a PENDING branch (preview → accept/discard), every step through the same gates as a manual edit (span gate, LOD400-or-refuse, conformity), optional budget gate on the §S8 cost Δ. Later, only if the library grows: constraint SEARCH over existing designs ("fits A×B, 2 rooms, 3 windows, 1 door, <10k") → pick → mould. OUT OF SCOPE: generative layout (inventing a plan from constraints) — conflicts with §STRATEGY "no original object making". | this row | — | ⏸ HOLD — do not build before its prerequisites |
+| 41 | O15 | **§EDIT-REPORT — after an edit, say what changed, what was checked, red ink before → after, and what was NOT checked** (red1 2026-11-07: "another wow feature"). Slice 1 = one grid move. Reports only. SPEC at the end of this file; nothing built. |
 
 ### STALE-CLAIMS — verified SHIPPED on origin/main; do NOT re-open (grep-verified 2026-07-30)
 - **O12 zoom-to-selection**: SHIPPED — `§ZOOM-SEL` (#711), `modeller.html:1057`, `witness_e2e_zoom_to_selection.js` exists. The triage's "small, well-specified" read was stale.
@@ -1436,3 +1438,68 @@ RED-first: on main the gate does not exist → G1 (grid column-derived) and ever
 Found by the dev-toolkit triage, `bim-ootb prompts/DEV_TOOLKIT_NO_AI.md` §7 (2026-10-06). Read from bim-ootb `origin/main` @ fb183ddf. Not fixed — this lane decides.
 - `navigator.storage.persist()` is called in `erp/erp_persist.js` and `viewer/scene.js`; no call in `modeller/`.
   Without it the browser may evict Modeller's local data (Safari ~7-day rule, `erp/DistributedERP.md:323`).
+
+## ▶ §EDIT-REPORT — SPEC 2026-11-07 (row 41). Written before any code. Nothing built.
+red1 2026-11-07: *"giving underlying proofs, report on what is been changed, checked, and how much red ink (clash, safety, structural) comparison. This by itself can be a new feature in our Modeller during authoring of grid or bay"* · *"it be another wow feature."*
+
+**The feature.** After an edit, the Modeller says what changed, what was checked, how the red ink moved before → after, and what was NOT checked. It reports only: the edit stands, the user decides (same spine as §GATE-1). A person dragging a grid is the first user; an outside proposer later reads the same record (`NEURO_SYMBOLIC_ORDER_CONTRACT.md` §7), with no AI in the runtime.
+
+**Slice 1: one grid move, nothing wider.** Column-derived grid on HospitalGarage, the §GRID-SPAN-GATE witness building.
+
+**Read 2026-11-07 at bim-ootb `cddb6188`; most is already there:**
+| Needed | Owner | State |
+|---|---|---|
+| What changed | `commitGridMove` (`modeller.html:2312`): delta, `res.commands`, `res.riders`, `res.verify` | Exists, only reaches `setStat` |
+| One undo step | §ONE-GESTURE-ONE-UNDO | Exists |
+| New clash, door-out, door-crush, clearance, abuts | `SdgGate.evaluate` via `_runGate`, already called on a grid commit (`:2325`) with a before-snapshot (`:2317`); result in `__lastGateDetail` | Exists, but **DELTA-only: it never counts what was already there** |
+| Span signal | `GridSpanGate.fold` + `check` | Exists, but `preview` covers only the bays touching the dragged line |
+| Refusal states | `Bonsai.gridspan.refused`, `§GRID-SPAN … skip` | Exists |
+| Report-composer pattern, verdict words | `reg_report.js` (composer takes numbers from owners; PASS / FINDINGS / INCONCLUSIVE) | Pattern to copy |
+| Beam and column rules | `viewer/structural_sanity.js` takes a `dbQuery` | **Not usable on a live edit:** a grid move is an op-log fold and I found no path that writes the moved boxes back to the tables it reads. Reaches users through the Regulatory Report |
+
+**To build (nothing else):**
+1. **`modeller/edit_report.js`: a PURE composer**, node-testable, dual export, no DOM. Takes the owners' numbers, returns one JSON object. No threshold of its own.
+2. **`SdgGate.pairsOver(boxes, moved, rel, opts)`: the one new count.** Moved elements vs every other, `penetration > clashTol`, skipping `related` pairs, using the SAME `penetration`, `CLASH_TOL` and `rel` as `evaluate`. Run on the before and after boxes. Without this there is no "before" number.
+3. **Span tally:** every piece through `GridSpanGate.fold` + `check`, at the fold before and after the op, counted by signal. Whole building, because `check` is arithmetic. Same material and measured depth both sides.
+4. **Wire at `commitGridMove`, on commit only, never per drag frame.** Emit `§EDIT_REPORT <json>`, set `window.__lastEditReport`, show a small panel beside the existing status. The panel only prints the JSON's values.
+
+**Shape** (numbers invented, to show the layout only):
+```
+Grid y8 moved +0.60 m · 1 change, can undo
+Changed: 12 recomposed, 3 riders · verify ok
+                                     Before  After
+Box overlap > 20 mm, moved elements     4      7    +3
+Beam spans over limit, whole building   9     10    +1   Preliminary — the structural engineer confirms.
+Beam spans needing depth check         21     20    −1
+New door-out / door-crush               —      0
+New clearance < 0.5 m                   —      2
+NOT checked: …one line, from step 0…
+```
+
+**Rules that keep it honest:**
+- **Like with like:** each row states its population and it must be the same on both sides, or the row prints INCONCLUSIVE with no delta.
+- **State the scope:** the overlap row covers moved elements only, and whole-scene is not claimed. It is a box overlap, so never label it "Clashes": it can disagree with the Viewer's Clash panel (`clash_rules.json` tolerances, mesh narrow phase).
+- **A refusal is shown, never a zero:** material unknown, wall-bearing or authored grid → that row says "not judged" and why.
+- **Baseline red is shown:** Garage already holds RED spans (§GRID-SPAN-GATE RESULT item 3, artefact girders), which is why Before is not zero.
+- **Words:** "structural checks", never "safety", "compliant" or "certified". An all-clear table is never summarised as "safe" or "OK".
+- **NOT checked is mandatory:** no NOT-checked line, no report.
+
+**Step 0, before any UI: W-EDIT-REPORT-COVERAGE.** `NEURO_SYMBOLIC_ORDER_CONTRACT.md` §3.1 measured the JAVA gates, not these. Inject the same defect classes (overlaps by class pair, floating column and beam, unit errors, unknown class, duplicate) into `SdgGate` and the span check. Print which fire. The NOT-checked line is generated from this table, never hand-written, and the witness pins it.
+
+**Witness W-EDIT-REPORT** (`modeller/tests/witness_edit_report.js`, real Open, real mouse, on the `witness_grid_span_gate.js` pattern). RED first: on main the report does not exist. Each proves a named issue:
+| Claim | Proves or disproves |
+|---|---|
+| Span row's Before/After equal an independent recount of the fold, and every reported bay's signal equals `check` | The table can be wrong |
+| Overlap row's rise never exceeds what `§GATE red=` flagged new, plus any worsened pair it counts | Report and gate disagree |
+| Ctrl+Z → a fresh recount equals Before; Ctrl+Y → equals After | Report does not follow undo |
+| Same drag twice from a fresh Open → byte-identical JSON | Not deterministic |
+| Drag under 0.05 m → no report, logged NO-OP | NO-OP reads as a pass |
+| Material refused → "not judged", no number | VACUOUS reads as zero |
+| Falsifier `EDIT_REPORT_BREAK=1` (the after-tally reuses the before boxes) must turn the witness RED | Witness cannot fail |
+Log heap and element count at the end of the composer (§PERF BUDGET); no new geometry, no second copy of buffers.
+
+**Not in slice 1:** reject gate (parked, `NEURO_SYMBOLIC_ORDER_CONTRACT.md` STATUS) · bay add, wall stretch, move · session total against the §SAVE-BASELINE · whole-scene overlaps (cost must be measured on Terminal first) · beam/column rules on a live edit · saving reports in the op-log · any new rule or threshold.
+
+**Queue after slice 1, each needing its own go:** bay add (`bay_add.js`) → other gestures → session total at Save → structural_sanity on a live edit.
+
+**STATUS:** spec only. Next: step 0.
