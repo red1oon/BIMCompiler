@@ -45,7 +45,7 @@ New here recently? Check **[What's New](WhatsNew.md)** for a running log of ship
 
     Author B-rep geometry — insert library parts, sketch, extrude, sweep — where the signed op-log *is* the feature tree. Early/WIP; desktop.
 
-    _Front door → the **BIM Modeller** icon (above)_ · [Open](https://red1oon.github.io/bim-ootb/modeller/modeller.html) · [Guide](ModellerGuide.md) · [2D drawings → BIM (DXF2BIM)](DXF2BIMGuide.md)
+    _Front door → the **BIM Modeller** icon (above)_ · [Open](https://red1oon.github.io/bim-ootb/modeller/modeller.html) · [Guide](ModellerGuide.md) · [AI Proposer Guide](ProposerGuide.md) · [2D drawings → BIM (DXF2BIM)](DXF2BIMGuide.md)
 
 -   <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-5px"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg> __Kernel-ERP__
 
