@@ -324,6 +324,106 @@ Passed the report but lines crossed: 0. Passed the report but goal missed: 0. So
 
 **Next, needing the owner's go, same briefs and rules:** a block-shift edit, judged as one; only grids derived from the building; stop at a judged-fine result; the report names the limit and the bay. Then decide the reject gate on those numbers.
 
+## 13. Second proposer test — SPEC 2026-11-07 (owner: "continue", read as yes to the question in RESUME; the reject gate stays parked)
+**Issue:** §12's number cannot be trusted. A rigid shift was judged line by line, 9 runs used a grid that was not the building's, 2 runs lost a right answer, and the report never said what the limit was. This spec removes those four, keeps everything else, and measures again.
+
+### 13.1 One edit for a block shift
+**Issue:** moving gy9 to gy14 one line at a time stretches each wall between neighbours, and the engine refuses mid-way (§12 probe). A rigid shift never stretches those walls, so those refusals are artefacts.
+**The edit:** `edit_cli --shift <line> --move <metres>`: that line and every later line on its axis move together. Only the bay before the line changes width.
+**Read first (bim-ootb):** `bay_add.js` `plan` moves everything beyond a hinge, carries hosted fillings through `SdgCascade.ridersFor`, stretches what crosses, and commits one gesture. The shift is `BayAdd.shift` in the same file, sharing those helpers, so `plan` loses its inline copies. No second mover, no new op type.
+**Ops, one gesture, one undo:**
+1. One `GEOM_GRID_MOVE {gridId, delta, commands: [], induced: 'block-shift'}` per line. `Grid.foldFromOplog` and `GridSpanGate.fold` already read these; the fold ignores empty commands (`bonsai_kernel_worker.js:555`, `bonsai_kernel.js:349`).
+2. `GEOM_MOVE` for each element at or beyond the line; riders for their hosted fillings.
+3. `GEOM_SCALE` for each element crossing the line.
+**Classifying, from the mesh vertices projected on the lattice axis (`lo`, `hi`), against line position `X` and band `b`:**
+| Test | Result |
+|---|---|
+| Has a fills edge to a host | rides its host, never classified itself |
+| `lo >= X - b` | moves rigidly |
+| `hi <= X - b` | stays |
+| otherwise, a class the grid governs (`_STRUCTURAL_CLASSES`) and aligned | stretches by the move |
+| otherwise | stays, and is **named in the report** as crossing and not following |
+`b` = max(`ON_LINE` 0.3 m, the largest half-width of a column centred on the line + `EDGE_TOL`): the engine's own band (`grid_kinematics.js:111`). **No new threshold:** aligned = the local axis nearest the lattice axis is within `|theta| + YAW_TOL` of it. A 3-axis placement is not aligned.
+**Direction:** along the lattice axis, not the world axis (Garage's lattice is at −2°). `GEOM_SCALE` anchors at the local minimum, so a member whose local axis points against the lattice axis also gets the move, as `plan` does for `dir < 0`.
+**Refusals, an answer and not a crash:** a filling hosted by an element that would stretch (same reason as `plan`); a stretch that would shrink a member to nothing; unknown line.
+**Reach:** a hook and the CLI only. No button, because this exists to measure a proposer. It does not call `gridmove.commit`, so the walker's STR tab is not re-walked; the span rows read the op log and are unaffected.
+**Known limits, stated now:** a member aligned to the world on a rotated lattice stretches on the world axis, off by `d·sin|theta|` sideways (2° and 1.5 m: 52 mm). A stretch reads scale from `GEOM_SCALE` ops only, so a member already scaled by an earlier single-line move in the same call gets an inexact factor.
+
+### 13.2 Only grids derived from the building
+**Measured 2026-11-07, real Open of each resident:**
+| Resident | Label in the app | Measured | Own lines |
+|---|---|---|---|
+| HospitalGarage | column-framed | 140 columns, RC, 17×29, theta −2° | column-derived |
+| Hospital | column-framed | 349 columns, **material unreadable, so spans refuse**; 69×55 lines, most gaps under 2 m | column-derived |
+| SampleCastle, Clinic, HHS | column-framed | **0 IfcColumn rows in the `_ARC.db`**, walks as wall-bearing | none laid |
+| Terminal | column-framed (oracle) | 0 IfcColumn rows in `Terminal_ARC.db`, not opened | not read |
+| SampleHouse | wall-bearing | `swDeriveSemiGrid`: x 1.62, 6.265; y −1.246, 0.899, 4.554 | wall-derived |
+| Duplex | wall-bearing | `swDeriveSemiGrid`: 9×6 | wall-derived |
+**Decision:** Hospital cannot judge a span, and the Garage is already in the test. So SampleHouse stays, on `swDeriveSemiGrid`'s lines. The labels above are stale and are reported here, not changed here.
+**The edit:** `edit_cli --own-grid` lays `swbSemiGridSpec()` on a wall-bearing building. The app's Move Grid is unchanged: a person still gets the default grid there, and W-EDIT-CLI's default-grid comparison must stay byte-identical. `--lines` states `grid_source`. The runner refuses a brief whose source is `app-default`, and the prompt says where the lines came from.
+**Briefs:** the old gx2 does not exist, so S1 becomes gx0–gx1 at 5 m (now 4.645). S2 and S3 keep their text; S3 goes 2.145 → 3.5. **S2's trap is gone:** it was the wall-through-wall move on the default grid, and gx1 is now a different line.
+
+### 13.3 Stop at a judged-fine result
+CLEAN and PARTLY_JUDGED end the run. "Not kept" is then said only after a bad result. Nothing else about the loop changes.
+
+### 13.4 The report names the limit and the bay
+**Issue:** no G4 run declined, because the row says the count rose and not what the limit is.
+`GridSpanGate.tally` adds `limit` and the bays it already computes. The span-over-limit row gains `limit`, `material` and `over_limit_changed`: each bay that is over the limit after the edit and whose span changed, `{bay, before, after}`, newly over first, then longest, at most 8, with the total. The panel prints them. No new threshold, and the proposer prompt still does not state the limit.
+
+### 13.5 Witnesses, written first
+**W-BLOCK-SHIFT** (`modeller/tests/witness_block_shift.js`, real Garage):
+| Claim | Proves or disproves |
+|---|---|
+| Hand rows: moves, stays, crosses, rider, not-governed crossing, refusals | The classifier is wrong |
+| `gy9` +1.51: gy8–gy9 = 7.00; every other bay on the axis unchanged; all lines beyond moved by exactly that | A block shift is not rigid |
+| Every moved element keeps its size and travels the same vector; every stayed element is unchanged; a stretched member keeps its low end and its high end travels with the block | Elements do not follow the lines |
+| Span rows equal an independent recount from the fold; the overlap row judged more than 100 moved elements | The report is vacuous or wrong |
+| The same goal line by line refuses, gy9 to gy14; the shift does not | **The §12 flaw is real, and this edit removes it** |
+| One Ctrl+Z restores every box and line; Ctrl+Y returns After; the chain verifies | It is not one gesture |
+| Narrowing past a stayed element reports RED | The shift hides a real conflict |
+| Falsifier `SHIFT_BREAK=1` (the elements travel a different distance) fails it | The witness cannot fail |
+**W-EDIT-CLI adds:** a shift through the CLI = the page, byte for byte; twice = identical; `--own-grid` reports the derived lines and refuses on a column-framed building's absence of a semi-grid; default-grid bytes unchanged.
+**W-EDIT-REPORT adds:** `gx6` +1.817 on the Garage names `gx5-gx6`, 11.18 → 13.00, limit 12, RC, equal to a recount; a move that puts nothing new over names no new bay; a refused span has no limit and no bay; the panel prints the same.
+**Regression:** W-BAY-RIDE, W-DXF-ADD-BAY (`plan` was refactored), W-EDIT-REPORT, W-EDIT-CLI, W-EDIT-REPORT-COVERAGE.
+
+### 13.6 Found while building, before any model call
+Probing the new edit through the CLI turned up two more problems. Neither was in the spec above.
+**1. A live bug, fixed: any move reshaped a 3-axis element.** `bonsai_library.js` rebuilt the placement with yaw only after a `GEOM_MOVE`, so `place()` fell to its yaw branch. Measured: Garage wall 22, moved +1 m in y, also rose 10.03 m and turned; SampleHouse furniture rose 0.614 m. It hits the plain Move tool, not only a shift: 24 of 864 elements on the Garage, 3 of 38 on SampleHouse. The fix keeps the 3-axis placement; a rotate keeps its old path. W-BLOCK-SHIFT A1, A2. §12's code had this bug. Whether its runs hit it is not measured: a grid move uses `GEOM_MOVE` only for hosted riders.
+**2. On a rotated building, world boxes make the overlap numbers meaningless.** A 0.2 m beam 120 m long at −2° has a 4.38 m wide world box. The Garage's overlap row read about 1,900 before any edit, and a rigid +1.51 m widening read 7 to 10 new clashes (lattice travel 7, world travel 10), every one from long members growing a few centimetres sideways in their boxes. A stretched member also really does end `|d|·sin|theta|` off the lattice, the known limit in §13.1, which is 5 to 10 cm against a 20 mm tolerance. Either way the test would have scored every Garage shift RED, the same unfairness §12 is being fixed for.
+**The instrument:** `edit_cli --lattice-boxes` judges on boxes in the lattice frame, with tolerance 20 mm + `|d|·sin|theta|`, stated in the row label ("Box overlap over 73 mm"). Computed, no new constant. No effect at theta 0. **The live app and its Save gate are untouched, and stay on world boxes.** It applies to single-line moves and shifts alike, so the two are judged by one instrument.
+**What it costs:** a penetration shallower than that tolerance (72 mm at 1.51 m, 125 mm at 3 m) goes unreported on these runs. W-BLOCK-SHIFT F2, N1: the widening goes clean and a real narrowing stays RED (44 clashes).
+**Owner's question, not acted on:** the live Save gate on a rotated building still uses world boxes, so it can block on phantom overlaps. Whether to move it to lattice boxes is a separate decision, because it changes what blocks a Save.
+**Measured on this instrument, one edit each, no model:**
+| Edit | Result |
+|---|---|
+| G1 shift gy9 +1.51 | clean; 508 moved, 8 stretched, 14 crossing left behind |
+| G1 gy9 +1.51, single line | RED: 2 clash, 1 driven into a wall |
+| G2 shift gy11 −1.49 | RED: 44 clash, 1 driven into a wall |
+| G3 shift gx8 +1.5 | clean |
+| G4 shift gx6 +1.817 | RED: spans 91 → 92, names `gx5-gx6`, limit 12 |
+| G5 shift gy12 +0.6 | REFUSED: 3 fillings on an element that would stretch |
+| G5 gy12 +0.6, single line | REFUSED: §DAGEVU |
+| G6 shift gy5 +2 | clean |
+| G7 shift gy20 +3 | clean |
+| S1 gx1 +0.355 (own grid), single line | clean, 5 recomposed |
+| S1 shift gx1 +0.355 | REFUSED: 5 fillings on an element that would stretch |
+| S3 gy1 +1.355, single line | REFUSED: §DAGEVU |
+| S3 shift gy1 +1.355 | REFUSED: 2 fillings on an element that would stretch |
+So G1, G3, G6 and G7 have a right answer by shift, and a proposer that finds it scores it. **This table tells the reader what is available, not what a model will do.**
+
+### 13.7 PRE-REGISTERED, fixed before any model call
+At bim-ootb branch `feat/proposer-test-v2`, commit **`4a1e82f5e4955bd6dae0f10a22535f654c5d7b02`**: `modeller/tests/proposer_test/briefs.json`, `run.js`.
+**Same as §12:** `claude-sonnet-5-5`, isolated; not told the limit, the walls or the openings; 10 briefs × 3 = 30; Arm A the first proposal and forecast, Arm B the same run with the report fed back, up to 2 revisions; the classes; the rule for a right outcome; every number listed in §12 is reported.
+**Different, all five named:**
+1. The proposer may use `shift`, and is told what it does.
+2. S1–S3 are on SampleHouse's wall-derived lines, and the prompt says so. S1 is now gx0–gx1. S2 no longer carries its known trap.
+3. CLEAN or PARTLY_JUDGED ends a run.
+4. The report names the limit and the changed over-limit bays.
+5. Overlaps are judged on lattice boxes with the stated tolerance (§13.6).
+**Also reported:** how many first and final proposals used a shift.
+**What I expect, written down so it can be wrong:** A's right outcome rises well above 3 of 30, because a shift is now easy to choose and four briefs have a clean one. The gain from the report (A to B) may then shrink. G4 is the check on change 4: at least one G4 run should now decline. If none does, naming the limit did not help.
+**What this can and cannot show:** as §12. Counts, n=30 on 10 briefs, one model, briefs I wrote, half of them traps. **§12's numbers are not directly comparable:** the edit set, the grid, the stop rule, the report and the boxes all changed. Do not quote "3 → X" as an improvement over the first test.
+
 ## STATUS
 2026-11-06 spec drafted. 2026-11-07: §3 extracted, §4 witnesses committed, §6 fixes shipped, live checks measured (§3.5), gate fix and report shipped (§8), DeepSeek's review checked (§10), CLI shipped (§11), first proposer test run (§12).
 ⏸ **Reject gate PARKED by owner 2026-11-07.** A proposer has now run, and 14 of 30 finals stayed bad, so the case for a stop is open; §12 recommends fixing the test first. When un-parked: apply only to external orders, at `PlacementRequest`, checking before any snap; then run the §7 measurement. A gate must not apply to extracted buildings: the compile path stays log-only until its rules are proven against them (`CompilationPipeline.java:1536`).
