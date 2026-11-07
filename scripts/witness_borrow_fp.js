@@ -34,6 +34,8 @@ var initSqlJs = require('sql.js');
 
 var ROOT = path.join(__dirname, '..');
 var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
+// A walk's devices are placed + provisional since §11 (bim-ootb prompts/DISC_WALK_BAND_NO_HOST.md): band rows are provisional and out of `placed`. These claims count every device.
+function allOf(w) { return (w.placed || 0) + (w.provisional || 0); }
 var DW = require(DWT.walker);
 var DX_RULES = DWT.rules('duplex_rules.db');
 var TE_RULES = DWT.rules('terminal_rules.db');
@@ -65,7 +67,7 @@ function loadDb(SQL, f) { return new SQL.Database(new Uint8Array(fs.readFileSync
   var fp = DW.dwWalk('FP', sc, 'SampleCastle');
   var roster = DW.disciplines();
   log('§BF B1 dwWalk FP (FP borrowed from terminal): placed=' + fp.placed + ' refused=' + fp.refused + ' roster=' + JSON.stringify(roster));
-  assert('B1 BORROW-WALKS', !fp.refused && fp.placed > 0 && roster.indexOf('FP') >= 0,
+  assert('B1 BORROW-WALKS', !fp.refused && allOf(fp) > 0 && roster.indexOf('FP') >= 0,
     'FP now walks on residential SC: placed=' + fp.placed + ', FP in roster — borrowed without switching class');
 
   // ── B2 SOURCE-ISOLATION: FP classes are Terminal's; ELEC still resolves from duplex ──
@@ -91,9 +93,9 @@ function loadDb(SQL, f) { return new SQL.Database(new Uint8Array(fs.readFileSync
   log('§BF B3 sprinklers=' + sprinklers.length + ' bound=' + boundSpr.length + ' on-covering(BOTTOM)=' + onCovering +
     ' prim=sprinkler? ' + primOk + ' hostBind.byClass=' + JSON.stringify(fp.hostBind && fp.hostBind.byClass));
   assert('B3 HOST-BOUND-SPRINKLER',
-    boundSpr.length > 0 && onCovering === boundSpr.length && primOk && fp.placed === fpRaw.placed,
+    boundSpr.length > 0 && onCovering === boundSpr.length && primOk && allOf(fp) === fpRaw.placed,
     boundSpr.length + ' sprinklers host-bound to REAL ceilings (BOTTOM), prim=sprinkler (LOD400 seam), count preserved (' +
-    fp.placed + ' == raw ' + fpRaw.placed + ')');
+    allOf(fp) + ' == raw ' + fpRaw.placed + ')');
 
   // ── B4 NON-INVENT-SIZE+COUNT ──
   var teBbox = rows(te, "SELECT bbox_dx,bbox_dy,bbox_dz FROM rule_placement WHERE disc='FP' AND ifc_class='IfcFireSuppressionTerminal' LIMIT 1")[0];

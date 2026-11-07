@@ -58,6 +58,8 @@ var initSqlJs = require('sql.js');
 
 var ROOT = path.join(__dirname, '..');
 var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
+// A walk's devices are placed + provisional since §11 (bim-ootb prompts/DISC_WALK_BAND_NO_HOST.md): band rows are provisional and out of `placed`. These claims count every device.
+function allOf(w) { return (w.placed || 0) + (w.provisional || 0); }
 var RULES = DWT.rules('terminal_rules.db');
 var BDB = path.join(ROOT, 'deploy/buildings/Terminal_extracted.db');
 var LOG = path.join(ROOT, 'logs', 'witness_terminal_nospaces_' +
@@ -122,9 +124,9 @@ var GRADED = ['IfcLightFixture', 'IfcElectricAppliance'];      // ELEC — the p
   dw.dwOpen(tampered);
   var wT = dw.dwWalk('ELEC', arc, 'Terminal', { schedule: true });
   dw.dwOpen(rules);
-  assert('T2 QTY-BOUND', qtyOk && wT.placed < w.placed * 0.5,
+  assert('T2 QTY-BOUND', qtyOk && allOf(wT) < allOf(w) * 0.5,
     qtyDetail.join('; ') + ' — all in band [0.5,2.0]; falsifier n_measured×0.2 → placed ' +
-    w.placed + '→' + wT.placed + ' (the bound measures the mined data, not vacuously true)');
+    allOf(w) + '→' + allOf(wT) + ' (the bound measures the mined data, not vacuously true)');
   tampered.close();
 
   log(''); log('─── T3 CONTAINMENT + Z-SANITY ───');
@@ -144,8 +146,8 @@ var GRADED = ['IfcLightFixture', 'IfcElectricAppliance'];      // ELEC — the p
   log(''); log('─── T4 HOST-CONFORM ───');
   var m = w.measured || {};
   var hostTagged = (w.placements || []).filter(function (p) { return p.host; }).length;
-  assert('T4 HOST-CONFORM', m.hostBound + m.floats === w.placed && hostTagged === m.hostBound && m.hostBound > 0,
-    'hostBound=' + m.hostBound + ' + floats=' + m.floats + ' === placed=' + w.placed +
+  assert('T4 HOST-CONFORM', m.hostBound + m.floats === allOf(w) && hostTagged === m.hostBound && m.hostBound > 0,
+    'hostBound=' + m.hostBound + ' + floats=' + m.floats + ' === placed + provisional=' + allOf(w) +
     ' (count preserved); ' + hostTagged + ' placements carry a REAL host guid; floats stay envelope-bound at measured z, logged honest');
 
   log(''); log('─── T5 LOD400 ───');
@@ -217,8 +219,8 @@ var GRADED = ['IfcLightFixture', 'IfcElectricAppliance'];      // ELEC — the p
   // T6b (bim-ootb prompts/DISC_WALK_DRAWN_MAINS.md §9.2): a user walk places no band pipe, and accounts for each one. RED control is the raw walk above, which holds them.
   var wpU = dw.dwWalk('PLB', arc, 'Terminal', { schedule: true }), uPipes = (wpU.placements || []).filter(function (p) { return /^placed:/.test(p.prov || '') && /Pipe|FlowSegment|FlowFitting/.test(p.ifc_class || ''); }).length;
   var rawPipes = (wp.placements || []).filter(function (p) { return /Pipe|FlowSegment|FlowFitting/.test(p.ifc_class || ''); }).length, uNoMain = (wpU.refusedNoHost || {}).noMain || 0;
-  assert('T6b PLB-NO-MAIN', uPipes === 0 && rawPipes > 0 && uNoMain === rawPipes && wpU.placed + uNoMain === wp.placed,
-    'user walk band pipes=' + uPipes + ', no-main=' + uNoMain + ' == raw pipes ' + rawPipes + '; placed ' + wpU.placed + ' + ' + uNoMain + ' == raw ' + wp.placed);
+  assert('T6b PLB-NO-MAIN', uPipes === 0 && rawPipes > 0 && uNoMain === rawPipes && allOf(wpU) + uNoMain === wp.placed,
+    'user walk band pipes=' + uPipes + ', no-main=' + uNoMain + ' == raw pipes ' + rawPipes + '; placed + provisional ' + allOf(wpU) + ' + ' + uNoMain + ' == raw ' + wp.placed);
 
   log(''); log('─── T8 SHIPPED-SUBSTRATE (§TE-ARC-DATUM-FIX — the Modeller\'s REAL Terminal_ARC.db) ───');
   // The stripped-copy walks above run in the extraction's site frame; the SHIPPED substrate
@@ -238,7 +240,7 @@ var GRADED = ['IfcLightFixture', 'IfcElectricAppliance'];      // ELEC — the p
     ['ELEC', 'PLB'].forEach(function (d) {
       var wd = dw.dwWalk(d, shipped, 'Terminal', d === 'PLB' ? { schedule: true, noHostBind: true } : { schedule: true });   // PLB: the band generator, as T6
       sOk = sOk && !wd.refused && wd.mode === 'measured-band';
-      sPlaced += wd.placed || 0;
+      sPlaced += allOf(wd);
       var bc = {}; (wd.placements || []).forEach(function (p) { bc[p.ifc_class] = (bc[p.ifc_class] || 0) + 1; });
       rows(rules, "SELECT ifc_class, SUM(n_measured) nm FROM rule_placement WHERE disc='" + d + "' GROUP BY ifc_class")
         .forEach(function (r) {
@@ -265,7 +267,7 @@ var GRADED = ['IfcLightFixture', 'IfcElectricAppliance'];      // ELEC — the p
     tampered8.exec('DROP TABLE rule_frame_ref');
     dw.dwOpen(tampered8);
     var falsPlaced = 0;
-    ['ELEC', 'PLB'].forEach(function (d) { falsPlaced += dw.dwWalk(d, shipped, 'Terminal', d === 'PLB' ? { schedule: true, noHostBind: true } : { schedule: true }).placed || 0; });
+    ['ELEC', 'PLB'].forEach(function (d) { falsPlaced += allOf(dw.dwWalk(d, shipped, 'Terminal', d === 'PLB' ? { schedule: true, noHostBind: true } : { schedule: true })); });
     dw.dwOpen(rules);
     tampered8.close();
     assert('T8 SHIPPED-SUBSTRATE', sOk && sOut === 0 && szBad === 0 && sNoHash === 0 && sBadHash === 0 && falsPlaced < sPlaced * 0.6,

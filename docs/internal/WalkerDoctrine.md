@@ -68,6 +68,9 @@ pair-set (3, not Terminal's 10). Each placement carries a `prim` semantic-kind t
 - **LANDED** (real→real, e.g. routed endpoints on real elements): land EXACTLY (1e-6, guid-matched). May be trusted.
 - **GENERATED** (fills an ABSENT discipline): position is PLAUSIBLE, never landed → the ONE confirmable property is COUNT →
   make COUNT exact; NEVER print rmse/cover as fidelity. SIZE is measurable (per-class median bbox, §PRIM) — size only.
+  **A band (borrowed-density) device is provisional, bound or not:** it stays in the model and in exports, labelled, and is left
+  out of placed counts and quantities, because its density is borrowed from another building and its position is not known.
+  Owner's OK 2026-11-08; spec and measurements: bim-ootb `prompts/DISC_WALK_BAND_NO_HOST.md` §11, W-BAND-NO-HOST P1-P6.
 - **Host-bind** binds a fixture to its MEASURED host **only when one exists**, never fabricated. An area host (ceiling, slab, roof)
   holds a device by footprint and height, and the device keeps its X and Y; a window keeps its reach and centre, a wall its face.
   **With no host:** a ceiling row places the device labelled `unhosted`, counted apart from bound, because ceilings are often simply

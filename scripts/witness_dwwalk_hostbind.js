@@ -33,6 +33,8 @@ var initSqlJs = require('sql.js');
 
 var ROOT = path.join(__dirname, '..');
 var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
+// A walk's devices are placed + provisional since §11 (bim-ootb prompts/DISC_WALK_BAND_NO_HOST.md): band rows are provisional and out of `placed`. These claims count every device.
+function allOf(w) { return (w.placed || 0) + (w.provisional || 0); }
 var DW = require(DWT.walker);
 var DISC_PATTERNS = path.join(ROOT, 'library/ERP.db'); // disc_patterns.db (physically library/ERP.db until rename slice)
 var RULES = DWT.rules('duplex_rules.db');
@@ -111,8 +113,8 @@ function distToWalls(p, walls, bdb) {
   // ── W3 COUNT-ACCOUNTED ──
   var defA = def.refusedNoHost;
   assert('W3 COUNT-ACCOUNTED',
-    def.placed + defA.refused === raw.placed && defA.bound + defA.unhosted + defA.notJudged + defA.refused === defA.input && defA.input > 0,
-    'every device accounted for: placed ' + def.placed + ' + refused ' + defA.refused + ' == raw ' + raw.placed + ' (bound ' + defA.bound +
+    allOf(def) + defA.refused === raw.placed && defA.bound + defA.unhosted + defA.notJudged + defA.refused === defA.input && defA.input > 0,
+    'every device accounted for: placed + provisional ' + allOf(def) + ' + refused ' + defA.refused + ' == raw ' + raw.placed + ' (bound ' + defA.bound +
     ' + unhosted ' + defA.unhosted + ' + not judged ' + defA.notJudged + ' + refused ' + defA.refused + ' == input ' + defA.input + ')');
 
   // ── W4 NO-SHIM-NOOP: PLB has no matching shim → not judged, same as {noHostBind}, apart from pieces with no main ──
@@ -120,8 +122,8 @@ function distToWalls(p, walls, bdb) {
   var plbRaw = DW.dwWalk('PLB', sh, 'SampleHouse', { noHostBind: true });
   log('§DWHB PLB no-shim: default placed=' + plbDef.placed + ' raw placed=' + plbRaw.placed + ' hostBind=' + plbDef.hostBind);
   assert('W4 NO-SHIM-NOOP',
-    plbDef.placed + plbDef.refusedNoHost.noMain === plbRaw.placed && plbDef.refusedNoHost.notJudged === plbDef.placed && !plbDef.hostBind,
-    'a discipline with no matching shim is not judged: PLB placed=' + plbDef.placed + ' (not judged ' + plbDef.refusedNoHost.notJudged + ') + no-main ' + plbDef.refusedNoHost.noMain + ' == ' + plbRaw.placed + ', hostBind=null');
+    allOf(plbDef) + plbDef.refusedNoHost.noMain === plbRaw.placed && plbDef.refusedNoHost.notJudged === allOf(plbDef) && !plbDef.hostBind,
+    'a discipline with no matching shim is not judged: PLB placed + provisional=' + allOf(plbDef) + ' (not judged ' + plbDef.refusedNoHost.notJudged + ') + no-main ' + plbDef.refusedNoHost.noMain + ' == ' + plbRaw.placed + ', hostBind=null');
 
   // ── W5 PROJECTION-SOURCE: opts.hostBind=true (NO caller shims) → dwWalk reads the projected rule_shim table ──
   var nShimRows = rows(rdb, "SELECT COUNT(*) c FROM rule_shim")[0].c;
