@@ -1203,6 +1203,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-stop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The stop
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#the-two-edits" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3010,6 +3021,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-stop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The stop
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#the-two-edits" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3125,7 +3147,7 @@
 
 <h1 id="ai-proposer-guide">AI Proposer Guide<a class="headerlink" href="#ai-proposer-guide" title="Permanent link">&para;</a></h1>
 <p><strong>Propose a change to a real building. Get back what it changed, what was checked, and what was not.</strong></p>
-<p>Your AI stays outside and proposes. A deterministic compiler, with no AI in it, works out the result and reports it. You need one file and a browser engine: no account, no server, nothing uploaded.</p>
+<p>Your AI stays outside and proposes. A deterministic compiler, with no AI in it, works out the result and reports it. <strong>An edit that adds new red is stopped:</strong> it is undone and comes back with its report and the reason. You need one file and a browser engine: no account, no server, nothing uploaded.</p>
 <div class="admonition warning">
 <p class="admonition-title">What a good report does not mean</p>
 <p>The report checks a short list of things, listed in <a href="#what-is-not-checked">What is not checked</a>. A report with no red <strong>never means safe, compliant or good</strong>. Nothing here checks load capacity, and a structural engineer has the last word.</p>
@@ -3165,7 +3187,12 @@ npm<span class="w"> </span>install<span class="w"> </span>puppeteer@24
 <h3 id="second-try-move-only-that-line">Second try: move only that line<a class="headerlink" href="#second-try-move-only-that-line" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code>node<span class="w"> </span>edit_cli.js<span class="w"> </span>--building<span class="w"> </span>Hospital<span class="w"> </span>--grid<span class="w"> </span>gx38<span class="w"> </span>--move<span class="w"> </span><span class="m">0</span>.793
 </code></pre></div>
-<p>This one is reported, with exit code 0. <strong>Exit code 0 only means a report came back. It does not mean the edit is fine.</strong> Read the rows:</p>
+<p>This one is <strong>stopped</strong>, with exit code 3. The edit was made, judged and then undone, and the answer carries the full report:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;refused&quot;</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span><span class="nt">&quot;stopped_by_gate&quot;</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span><span class="nt">&quot;grid&quot;</span><span class="p">:</span><span class="s2">&quot;gx38&quot;</span><span class="p">,</span><span class="nt">&quot;move&quot;</span><span class="p">:</span><span class="mf">0.793</span><span class="p">,</span>
+<span class="w"> </span><span class="nt">&quot;reason&quot;</span><span class="p">:</span><span class="s2">&quot;stopped: Driven into a wall it touches: 1&quot;</span><span class="p">,</span>
+<span class="w"> </span><span class="nt">&quot;report&quot;</span><span class="p">:{</span><span class="nt">&quot;change&quot;</span><span class="p">:{</span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="s2">&quot;grid-move&quot;</span><span class="p">,</span><span class="nt">&quot;grid&quot;</span><span class="p">:</span><span class="s2">&quot;gx38&quot;</span><span class="p">,</span><span class="nt">&quot;recomposed&quot;</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;...&quot;</span><span class="p">:</span><span class="s2">&quot;...&quot;</span><span class="p">},</span><span class="w"> </span><span class="nt">&quot;rows&quot;</span><span class="p">:[</span><span class="s2">&quot;...&quot;</span><span class="p">]}}</span>
+</code></pre></div>
+<p>The report inside says:</p>
 <table>
 <thead>
 <tr>
@@ -3200,7 +3227,7 @@ npm<span class="w"> </span>install<span class="w"> </span>puppeteer@24
 </tr>
 </tbody>
 </table>
-<p>One wall was driven into another, so this is red.</p>
+<p>One wall was driven into another, so it was stopped.</p>
 <h3 id="what-your-ai-should-do-now">What your AI should do now<a class="headerlink" href="#what-your-ai-should-do-now" title="Permanent link">&para;</a></h3>
 <p>Neither edit works as asked. The honest answer to the requester is: <em>"I could not do this cleanly. A door blocks the shift, and moving the line alone drives a wall into another. Here are the two reports."</em> Declining is a right answer. Keeping the edit and adding a note is not: see <a href="#what-we-measured">What we measured</a>.</p>
 <h2 id="what-each-result-looks-like">What each result looks like<a class="headerlink" href="#what-each-result-looks-like" title="Permanent link">&para;</a></h2>
@@ -3226,8 +3253,8 @@ npm<span class="w"> </span>install<span class="w"> </span>puppeteer@24
 </tr>
 <tr>
 <td><code>node edit_cli.js --building Hospital --shift gx39 --move 1</code></td>
-<td><strong>18 new overlaps</strong>, and 34 left behind</td>
-<td>Red</td>
+<td><strong>Stopped:</strong> 18 new overlaps, and 34 left behind</td>
+<td>Red, undone</td>
 </tr>
 <tr>
 <td><code>node edit_cli.js --building Hospital --shift gx38 --move 0.793</code></td>
@@ -3236,12 +3263,19 @@ npm<span class="w"> </span>install<span class="w"> </span>puppeteer@24
 </tr>
 <tr>
 <td><code>node edit_cli.js --building HospitalGarage --lattice-boxes --shift gx6 --move 1.817</code></td>
-<td><strong>Beam spans over limit 91 → 92.</strong> Limit 12 m, RC. <code>gx5-gx6</code> goes 11.176 → 12.993 m</td>
-<td>Red. This is the Garage, where the material can be read</td>
+<td><strong>Stopped:</strong> beam spans over limit 91 → 92. Limit 12 m, RC. <code>gx5-gx6</code> goes 11.176 → 12.993 m: "bay gx5-gx6 newly over the limit: 12.993 m"</td>
+<td>Red, undone. This is the Garage, where the material can be read</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Expect red and refusals on the Hospital.</strong> It is a dense building. On a scan of its lines, a shift was refused on 116 of 122, and the other 6 each left something behind. All 16 single-line moves tried at +0.5 m came back red. That makes it a good test: an AI that reports success every time is not reading the report.</p>
+<p><strong>Expect stops and refusals on the Hospital.</strong> It is a dense building. On a scan of its lines, a shift was refused on 116 of 122, and the other 6 each left something behind. All 16 single-line moves tried at +0.5 m came back red. That makes it a good test: an AI that reports success every time is not reading the report.</p>
+<h2 id="the-stop">The stop<a class="headerlink" href="#the-stop" title="Permanent link">&para;</a></h2>
+<p>An edit is <strong>stopped</strong> when its report shows new red: a red row with a count above 0, more beam spans over the limit, or a bay newly over it. The edit is undone, a recount checks that the building is back to how it was, and the answer is <code>{"refused":true,"stopped_by_gate":true,"reason":…,"report":…}</code> with exit code 3. Later edits in the same call start from the restored building.</p>
+<p><strong>Not stopped:</strong> orange rows, elements a shift left behind, and anything <strong>not judged</strong>. A not-judged check is listed in the answer's <code>gate</code> field, for example <code>"not_judged":["span_red","span_orange"]</code> on the Hospital. It is not a pass.</p>
+<p><code>--report-only</code> turns the stop off, so every edit stands and is reported:</p>
+<div class="highlight"><pre><span></span><code>node<span class="w"> </span>edit_cli.js<span class="w"> </span>--building<span class="w"> </span>Hospital<span class="w"> </span>--report-only<span class="w"> </span>--grid<span class="w"> </span>gx38<span class="w"> </span>--move<span class="w"> </span><span class="m">0</span>.793
+</code></pre></div>
+<p><strong>The stop runs on your machine and your AI can turn it off.</strong> It protects a proposer from its own mistakes. It is not a security boundary. A person editing in the Modeller is never stopped this way: they see the same report and decide.</p>
 <h2 id="the-two-edits">The two edits<a class="headerlink" href="#the-two-edits" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -3283,7 +3317,7 @@ npm<span class="w"> </span>install<span class="w"> </span>puppeteer@24
 </code></pre></div>
 <p><strong>Read it in this order:</strong></p>
 <ol>
-<li><strong><code>refused: true</code></strong> (exit code 3): nothing was applied. Read <code>reason</code>.</li>
+<li><strong><code>refused: true</code></strong> (exit code 3): nothing was kept. Read <code>reason</code>. With <code>stopped_by_gate: true</code> the edit added red and was undone, and the full report is in <code>report</code>.</li>
 <li><strong><code>newRows</code> with <code>level: "red"</code> and <code>count</code> above 0:</strong> the edit made something worse. Also red: <code>span_red</code> with <code>delta</code> above 0.</li>
 <li><strong><code>change.left.count</code> above 0</strong>, on a shift: elements crossed the line and did not follow. <strong>Treat it as not clean.</strong></li>
 <li><strong><code>state: "NOT_JUDGED"</code>:</strong> that check did not run, and <code>note</code> says why. <strong>A not-judged row is not a pass and not a zero.</strong> On the Hospital the span rows are always not judged.</li>
@@ -3305,7 +3339,7 @@ npm<span class="w"> </span>install<span class="w"> </span>puppeteer@24
 </tr>
 <tr>
 <td>3</td>
-<td>An edit was refused. Read <code>reason</code></td>
+<td>An edit was refused or stopped. Read <code>reason</code></td>
 </tr>
 <tr>
 <td>2</td>
@@ -3341,14 +3375,14 @@ An edit is {&quot;grid&quot;:&quot;&lt;line id&gt;&quot;,&quot;move&quot;:&lt;me
 &quot;grid&quot; moves that one line; the bays on both sides change.
 &quot;shift&quot; moves that line and every later line on its axis together; only the bay just before it changes width.
 After each proposal you receive the compiler&#39;s report.
-Treat it as bad if it was refused, if any red row has a count above 0, if a span-over-limit delta is above 0, or if change.left.count is above 0.
+Treat it as bad if it was refused or stopped, if any red row has a count above 0, if a span-over-limit delta is above 0, or if change.left.count is above 0.
 You may revise up to 2 times. If the request cannot be met without a bad result, decline and say why. Do not keep a bad edit and add a note.
 A row marked NOT_JUDGED was not checked. Say so. Never call a result safe, compliant or OK.
 Always tell the requester what the report did not check.
 </code></pre></div>
 <p><strong>This exact prompt has not been measured.</strong> The rule against keeping a bad edit, and the rule that a left-behind shift is bad, were added because of the results below. The test's own prompt did not state them, so we do not know yet how much they change what an AI does.</p>
 <h2 id="what-we-measured">What we measured<a class="headerlink" href="#what-we-measured" title="Permanent link">&para;</a></h2>
-<p>We ran one AI model (<code>claude-sonnet-5-5</code>) through 10 requests, 3 times each, isolated, without telling it the limits. The rules were written down and published before each run.</p>
+<p>We ran one AI model (<code>claude-sonnet-5-5</code>) through 10 requests, 3 times each, isolated, without telling it the limits. The rules were written down and published before each run. <strong>These runs came before the stop:</strong> red edits then came back as reports, not stops.</p>
 <table>
 <thead>
 <tr>
