@@ -504,3 +504,6 @@ synthetic rows (`guid NOT LIKE 'RM\_%'`, `name NOT LIKE '%≈%'`) with its own c
 improvement on the Viewer side (however well-benchmarked) does not change this epistemic boundary, by
 design — worth a session not assuming the two have converged just because the Viewer-side walker got
 measurably better.
+
+## §7 — Real-IFC FP + ACMV walk, first run on a private Revit-exported set (2026-11-07, result only; details in the git-excluded private notes: `ls prompts/*_POC.md`)
+Scratch-copy run of `dwWalk` with `terminal_rules.db` on a 6,461-element ARC+STR set with almost no services: FP placed 2,272 (565 host-bound to the set's 32 IfcCovering, 1,598 refused, count preserved); ACMV placed 3,649 with **0 chains** (`§WALK-PATTERN ... routewalker.js pattern engine not loaded`; duct pieces `no-endpoints`). So: **terminals walk, routing does not, in a node harness without `routewalker.js`.** Next, owner-ordered: build the HVAC foundation first (load the routing engine in node, give duct pieces ports, score against drawn HVAC, decide the ceiling-host rule for ceiling-poor IFC). IFC write-back path exists (`bonsai_ifc.js` §M3-WALKED-CLASS) but was **not run** on this set. Helper: `scripts/film_deterministic_bim/fp_walk.js` (`DISC=FP|ACMV`).

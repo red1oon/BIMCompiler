@@ -10,7 +10,7 @@ var SRC=process.argv[2], OUT=process.argv[3], RULES=process.argv[4]||'terminal_r
   var q=function(s){var r=db.exec(s);return r.length?r[0].values:[]};
   console.log('§FPW before: elements='+q("select count(*) from elements_meta")[0][0]+' FireSuppressionTerminal='+q("select count(*) from elements_meta where ifc_class='IfcFireSuppressionTerminal'")[0][0]+' coverings='+q("select count(*) from elements_meta where ifc_class='IfcCovering'")[0][0]+' rooms='+q("select count(*) from spatial_structure where type='IfcSpace'")[0][0]);
   DW.dwOpen(rules); console.log('§FPW rules='+RULES+' roster='+JSON.stringify(DW.disciplines()));
-  var r=DW.dwWalk('FP',db,'Film');
+  var r=DW.dwWalk(process.env.DISC||'FP',db,'Film');
   console.log('§FPW walk placed='+r.placed+' refused='+r.refused+' reason='+(r.reason||'-')+' keys='+Object.keys(r).join(','));
   console.log('§FPW after: FireSuppressionTerminal='+q("select count(*) from elements_meta where ifc_class='IfcFireSuppressionTerminal'")[0][0]+' IfcAlarm='+q("select count(*) from elements_meta where ifc_class='IfcAlarm'")[0][0]+' elements='+q("select count(*) from elements_meta")[0][0]);
   var P=r.placements||[]; console.log('§FPW placement0='+JSON.stringify(P[0]||{}).slice(0,400));
