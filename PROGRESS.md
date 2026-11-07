@@ -12,7 +12,7 @@ Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 
 ## 📋 The live worklist is `prompts/AGENT_QUEUE.md` — not this file
 ## ▶ NEURO-SYMBOLIC ORDER + RED INK REPORT lane (2026-11-07, closed) — RESUME: `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` ▶ RESUME HERE
-**Live:** the Modeller's red ink report for one grid move (bim-ootb #2674), now naming the limit and the bay (#2685, sw v238); the wall-into-wall gate fix (#2673); the 3-axis move fix (#2685); `edit_cli` with a block shift (#2678, #2685). **Second proposer test run** (§13): right outcome 15 of 30 alone, 24 of 30 with the report, but all 12 clean Garage shifts left the building's floors behind and 2 briefs depend on a wider tolerance; 6 finals stayed RED. **Waiting on the owner:** what comes next (§13 RESULT, Decision). The reject gate stays parked.
+**Live:** the Modeller's red ink report for one grid move (bim-ootb #2674), naming the limit and the bay (#2685); the wall-into-wall gate fix (#2673); the 3-axis move fix (#2685). **Public:** [AI Proposer Guide](https://red1oon.github.io/BIMCompiler/ProposerGuide/), one file against the live site, the Hospital as test case, W-PROPOSER-GUIDE 14/0. **Third proposer test** (§14): right outcome 15 of 30 alone, 24 of 30 with the report; a shift now takes the floors along; 6 finals stay RED, 3 knowingly over the span limit. Small test, read §14 RESULT. **Waiting on the owner:** the reject gate, still parked.
 
 ## ▶ HYGIENE + POSTING-PARITY session (2026-11-03→04, closed) — RESUME HERE for this lane
 **2026-11-04 close (session 2):** posting parity step 5 CLOSED (above); Find window = legacy placement + layout, `prompts/ERP_IDEMPIERE_UX_PARITY.md`
