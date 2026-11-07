@@ -460,6 +460,54 @@ Passed the report but lines crossed: 0. Passed the report but goal missed: 0. Ba
 
 **Decision for the owner.** Recommended: keep the gate parked, because a gate on today's CLEAN would pass a shift that leaves the floors behind. Next, either make those floors follow or make a shift that leaves elements behind score as not clean, then run once more. If a stop is wanted sooner, the narrowest honest one is refusing a *new* over-limit span on an external call: that row has an independent recount, and it is the only thing that would have changed G4. It would not touch G2.
 
+## 14. Third proposer test and the public guide — SPEC 2026-11-07 (owner: "proceed"; "prepare also a user guide for external AI proposer to use it - at our present github.io URL with landed Hospital as test case")
+The reject gate stays parked.
+
+### 14.1 Everything crossing the line follows, by one rule
+**Issue:** §13 limit 1. A shift moved the columns and left the floors behind, and scored CLEAN. Stretching a 60 m floor uniformly would be wrong too: its far part must travel rigidly, and only the widened bay may stretch. A uniform stretch also causes §13.1's sideways error, and it is why §13.6 needed a wider tolerance.
+**The rule:** a shift has one plane, `at = X - b` on the lattice axis. **Every vertex at or beyond it travels the block's vector; every vertex before it stays.** An element wholly beyond moves; wholly before stays; crossing, only the bay stretches. No proportional scale, no anchor, no local axis, so no sideways error, on any yaw or 3-axis placement.
+**How:** a new action on the existing `GEOM_GRID_MOVE` commands, `{featureId, action: 'HINGE', n, at, dx, dy}`, folded in `foldInsert` with TRANSLATE and SCALE, in op order. `BayAdd.shift` drops `GEOM_SCALE` for crossing elements. Wholly-beyond elements stay plain `GEOM_MOVE` with their riders. One exception: an element that already carries a HINGE gets `at: null`, because a later `GEOM_MOVE` would fold before the earlier hinge and test the wrong coordinates.
+**What follows when crossing:** the classes the grid governs (`_STRUCTURAL_CLASSES`), `bay_repeat`'s stretch classes (`IfcMember`, `IfcCovering`), and `IfcBuildingElementProxy`, because that is what this building's floors are, by its own element names. Everything else crossing (furniture, a door with no host, plates) stays and is named.
+**Fillings on a crossing host:** wholly beyond rides by `GEOM_MOVE`; wholly before stays; **straddling the plane is refused**, since a door has a fixed shape.
+**Refused:** a crossing element carrying a `GEOM_CUT` or other parent-mutating op: the worker folds those as solids, and has no HINGE. 1 host on SampleHouse, 0 on the Garage.
+**Tolerance:** a shift is judged at the plain 20 mm on lattice boxes. `--lattice-boxes` keeps its wider tolerance only for a single-line move, which really does travel on the world axis.
+**Limit, stated now:** copy-paste of an element carrying a HINGE keeps the plane, so the copy would hinge in the wrong place. A shift has no button, so no person can reach this.
+**Scoring, one new class:** LEFT_BEHIND: nothing red, but a shift left crossing elements behind. Not a right outcome, and it counts as bad. The report goes back as usual. CLEAN can no longer hide it.
+
+### 14.2 The CLI needs one file and a browser, and can drive the live site
+**Issue:** an outside proposer cannot use `edit_cli`: it requires the test harness, which loads puppeteer from a path on this machine.
+`edit_cli.js` stops using the harness: its own small puppeteer launch and static server, same settle logic, same output. `--url <modeller.html>` drives that page. With no `--url` it serves its own repo when it stands in one, and otherwise uses `https://red1oon.github.io/bim-ootb/modeller/modeller.html`. Puppeteer resolves normally, then through `NODE_PATH`.
+**W-EDIT-CLI must stay byte-identical:** C1a, C1b and C8a pin it against the page.
+
+### 14.3 The guide
+**Issue:** nobody outside can tell how to propose an edit, what comes back, or what the report does not check.
+`docs/ProposerGuide.md`, in the site's nav, published only through `scripts/safe_gh_deploy.sh`. Shape: getting started, common tasks, under the hood, troubleshooting. **Test case: the Hospital**, on the live URL. Every command in it is run against the live site and every number is what came back.
+**W-PROPOSER-GUIDE** (`modeller/tests/witness_proposer_guide.js`): the guide's commands, as published, against the live URL. Each named number must match. **Proves or disproves:** the guide's commands do not work for an outsider, or its numbers are stale. INCONCLUSIVE if the site cannot be reached, never a pass.
+**The guide must say:** the report checks little and a pass never means safe (§5); the NOT-checked list; spans are "not judged" on the Hospital because its material cannot be read, and why that is an answer and not a zero; nothing is saved; it is a measuring tool with limits, not an endpoint with uptime; do not send private models.
+
+### 14.4 Witnesses
+**W-BLOCK-SHIFT revised:** E3 checks a crossing element vertex by vertex, before the plane unchanged, beyond it moved by exactly the vector, with no tolerance. New: floors follow on the Garage (`left` = 0 on G1); a straddling door is refused; F2 clean at the plain 20 mm. **P-tests** rewritten for the hinge.
+**W-EDIT-CLI adds:** `--url` against a served copy = the local answer, byte for byte. **Stub adds:** LEFT_BEHIND scores bad and is not right.
+**Regression:** as §13.5, plus W-E2E-CUT-MOVE, because `cut_move.js` reads these commands.
+
+### 14.5 Measured before any model call, and PRE-REGISTERED
+Fixed at bim-ootb branch `feat/proposer-test-v3`, commit **`d28e886b2933041b328126d15cdca70ab1bd31b1`**: `modeller/tests/proposer_test/briefs.json`, `run.js`. **Same as §13.7**, with two changes: the shift follows §14.1, and LEFT_BEHIND is a class. Every number listed there is reported again.
+**What the shift does now, one edit each, no model:**
+| Edit | Result |
+|---|---|
+| G1 shift gy9 +1.51 | clean; 508 moved, 22 crossing followed, 0 left; overlap 1565 → 1565 |
+| G2 shift gy11 −1.49 | RED: 2 clash, 2 driven into a wall. **It read 44 under the uniform stretch: most were false** |
+| G3 shift gx8 +1.5 | clean |
+| G4 shift gx6 +1.817 | RED: spans 91 → 92, `gx5-gx6`, limit 12 |
+| G5 shift gy12 +0.6 | **clean, no longer refused**: its openings ride. A decline and this edit both count as right |
+| G6 shift gy5 +2 | clean |
+| G7 shift gy20 +3 | clean |
+| S1 shift gx1 +0.355 | LEFT_BEHIND: 2 elements |
+| S3 shift gy1 +1.355 | REFUSED: a crossing wall carries a cut |
+**So §13's limits 1 and 2 are gone by construction:** all four clean Garage shifts now take their floors along, at the plain 20 mm. Limits 3 to 5 of §13 still stand.
+**What I expect, written down so it can be wrong:** first proposals barely change, because the prompt barely changed, so A stays near 15 and B near 24. If so, the numbers stay the same and **mean more**. G5 may move, since a shift works there now and only 3 of the first test's proposals tried one. G4 still does not decline, unless the wording helps.
+**Not comparable, again:** the rule behind every shift changed. Read this test on its own.
+
 ## STATUS
 2026-11-06 spec drafted. 2026-11-07: §3 extracted, §4 witnesses committed, §6 fixes shipped, live checks measured (§3.5), gate fix and report shipped (§8), DeepSeek's review checked (§10), CLI shipped (§11), first proposer test run (§12), its flaws fixed and second test run (§13).
 ⏸ **Reject gate PARKED by owner 2026-11-07.** Two proposer tests have run. 6 of 30 finals stayed RED after the report, so the case for a stop is real; but today's CLEAN is too generous to gate on (§13 RESULT, limit 1). When un-parked: apply only to external orders, at `PlacementRequest`, checking before any snap; then run the §7 measurement. A gate must not apply to extracted buildings: the compile path stays log-only until its rules are proven against them (`CompilationPipeline.java:1536`).
