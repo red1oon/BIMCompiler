@@ -11,6 +11,9 @@ Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 **2026-10-28:** Team Phase 2.1-2.4 + 2.6 + G-1..G-3 DONE + LIVE (bim-ootb #2412, #2420, sw v923): observe-only plugin grant, core conflict message, numbering left the comm engine, Team OUT on the bus, received rows fire replica rules, legacy Import Orders port — W-POS-CHAIN 13/0 (a till ticket becomes ONE completed order at head office and returns). **Next session:** agents A–G per `prompts/TEAMWORK_FRAMEWORK.md` §41 (Import Payment, W-HQ-CLERK, role executors, G-6, Micro Finance on GardenWorld §40, I_POSSales); POS = standalone Unicenta-style till + kitchen, spec `prompts/POS_PLUGIN_LOCAL_FIRST.md`.
 
 ## 📋 The live worklist is `prompts/AGENT_QUEUE.md` — not this file
+## ▶ NEURO-SYMBOLIC ORDER + RED INK REPORT session (2026-11-07, closed) — RESUME: `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` ▶ RESUME HERE
+**Live:** the Modeller's red ink report for one grid move (bim-ootb #2674, sw v233), the gate fix for a wall driven into a wall it touches (#2673), `edit_cli` (#2678). **First proposer test run** (#2679): right outcome 3 → 10 of 30 with the report fed back, 14 of 30 still bad, two flaws limit the size. **Waiting on the owner:** fix the test and re-run before deciding the reject gate, which stays parked. Space contract not run: no compile-path geometry changed. Java suite: 78 → 73 failures, the rest need local DBs; witness count +4 (`OrderContractWitnessTest`, W-EDIT-REPORT-COVERAGE, W-EDIT-REPORT, W-EDIT-CLI) + W-PROPOSER-FIRST.
+
 ## ▶ HYGIENE + POSTING-PARITY session (2026-11-03→04, closed) — RESUME HERE for this lane
 **2026-11-04 close (session 2):** posting parity step 5 CLOSED (above); Find window = legacy placement + layout, `prompts/ERP_IDEMPIERE_UX_PARITY.md`
 §FIND-LF ✅ (bim-ootb #2624, W-FIND-LF 9/9 vs a live-legacy oracle; open there: whole-app iceblue_c theme parity, ⋮ Default/Share, Advanced child-tab rows).

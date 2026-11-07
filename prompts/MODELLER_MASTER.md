@@ -84,7 +84,7 @@ is ours" ⇒ aligned; move it from ⛔ to the queue after the catalog rebind.
 C3 lands with the REPLACE verb.
 
 ## ▶ §RESUME 2026-11-02 — START HERE (then §RESUME 2026-10-02 below; its queue and HOLDs still stand)
-**New 2026-11-07: §EDIT-REPORT (row 41) slice 1 LIVE, one grid move (bim-ootb #2674, sw v233). Spec and RESULTS at the end of this file. Later slices need red1's go.**
+**New 2026-11-07: §EDIT-REPORT (row 41) slice 1 LIVE, one grid move (bim-ootb #2674, sw v233). Spec and RESULTS at the end of this file. Later slices need red1's go.** **The proposer-test lane built on it resumes from `NEURO_SYMBOLIC_ORDER_CONTRACT.md` ▶ RESUME HERE.**
 **Landed from the DXF2BIM lane (bim-ootb; detail + measured tables in bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` `### P-X SPEC`, `### P-X2 SPEC` and their RESULTs):**
 - **P-X, bim-ootb #2520 (sw v204): IN objective, "a user's OWN IFC must get what the residents get" (§STRATEGY item 1). Was UNVERIFIED; now MEASURED and BUILT.**
   The Modeller's raw-IFC open (`openIfcFile`) now runs the shared extractor (`modeller/ifc_open_db.js` in `modeller/ifc_open_worker.js`), not the Viewer's import worker.
