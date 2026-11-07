@@ -5,44 +5,35 @@ Scope: SPEC + WITNESSES + the proposer test. No reject gate may be built from th
 
 Origin: a pasted Gemini chat (JEPA "architect" + BIMCompiler "inspector"). Review verdict: the pattern is sound, the details were invented. This file keeps only the part that survives, and refuses the rest.
 
-## ▶ RESUME HERE (session close 2026-11-07; for the next working session, an outside reader can skip to START HERE)
-**Read in this order:** this block → §12 RESULT and its flaws → `prompts/MODELLER_MASTER.md` §EDIT-REPORT, at the end of that file.
+## ▶ RESUME HERE (session close 2026-11-07, second test; for the next working session, an outside reader can skip to START HERE)
+**Read in this order:** this block → §13 RESULT and its limits → §13.6 → §12 only for history.
 
-**Waiting on the owner, one decision:** fix the proposer test and run it again before deciding the reject gate? Recommended: yes. Asked, not yet answered. **Do not start without their go**, and do not un-park the gate.
+**Waiting on the owner, one decision:** what the two proposer tests point to next (§13 RESULT, "Decision"). Recommended: keep the reject gate parked, make a shift that leaves elements behind stop reading as clean, and run once more. **Do not start without their go, and do not un-park the gate.**
 
-**If yes, same briefs and scoring, 4 changes. Pre-register again in §12 and push before any model call:**
-1. **Judge a block shift as one edit.** This is the main flaw, and the largest change. Read `modeller/bay_add.js` first: "Add a bay" already moves everything beyond a hinge through the spine's cascade (`DXF2BIM_FOUNDATION_LANE.md` §D89 step 3). Reuse it; do not write a second mover. Spec first. Then `edit_cli` gains the edit and the proposer prompt names it.
-2. **Use only grids derived from the building.** SampleHouse's lines are the app's default grid (`bonsai_grid.js:28`). S1–S3 need a building whose grid is its own. Check first which column-framed residents exist; if a wall-bearing building is kept, it must use `swDeriveSemiGrid`'s lines, and the proposer must not be told a default grid is the building's.
-3. **Stop at a judged-fine result.** PARTLY_JUDGED must end the run, and "not kept" must be said only after a bad result (2 S3 runs lost a right answer to this).
-4. **The report names the limit and the bay.** No G4 run declined, because the row says only that the count rose. The limit and the span already exist in `GridSpanGate`; add no threshold. W-EDIT-REPORT must pin it.
+**How the test runs:** `NODE_PATH=~/bim-ootb/node_modules node modeller/tests/proposer_test/run.js --stub`, which must pass first, then `--reps 3 --out <file>`. Last run: 51 attempts, $0.41. **Re-check the instrument before quoting numbers:** in this session that found a live bug and a meaningless overlap count before a single model call.
 
-**How the test runs:** `NODE_PATH=~/bim-ootb/node_modules node modeller/tests/proposer_test/run.js --stub`, which must pass first, then `--reps 3 --out <file>`. It calls `claude -p --model claude-sonnet-5-5 --tools "" --setting-sources "" --strict-mcp-config` from an empty directory. Last run: 83 attempts, $1.42. **Report the numbers whatever they show, and re-check the instrument before quoting them:** this session's two worst flaws came out only by probing after the run.
-
-**Shipped this session, all merged and pushed:**
+**Shipped this session:**
 | What | Where |
 |---|---|
-| This contract, §3 extracted, Java coverage and snap witnesses | BIMCompiler #383, #384 |
-| Category filter fix (`V016`), snap `pre_snap` fix, seal v20 | BIMCompiler #384 |
-| `MODELLER_MASTER.md` §EDIT-REPORT spec and results | BIMCompiler #385, #386, #388, #389 |
-| Live-check coverage witness and table | bim-ootb #2671 |
-| Gate fix: a wall driven into a wall it touches is RED | bim-ootb #2673 |
-| Red ink report, one grid move (sw v233) | bim-ootb #2674 |
-| `edit_cli`, W-EDIT-CLI | bim-ootb #2678 |
-| First proposer test: rules, runner, raw results | bim-ootb #2679; BIMCompiler #391, #392 |
+| Spec, pre-registration, result | BIMCompiler #394 and this file, §13 |
+| Block shift, limit and bay in the report, own grids, lattice boxes, 3-axis move fix (sw v238), W-BLOCK-SHIFT, second test's raw results | bim-ootb #2685 |
 
 **Known and open. Do not re-derive; do not claim otherwise:**
-- **Not run:** the report panel on a phone-sized screen; the "Add one more" gesture end to end through the report.
-- **Observed, not investigated:** a real +1.2 m mouse drag of gy8 after an undo recomposed 0 elements, while a scripted +1.5 m on a fresh Open recomposed 1. Question for the grid-move lane.
-- **Inferred, not reproduced:** the one 112 s CLI run that returned "not judged". The settle wait addresses the suspected cause.
-- **Still failing, unrelated to this work:** G4-TAMPER, 73 old violations (§6.3); `witness_clipboard_keys` K1, same on clean main; two `playwright` smokes, which cannot load the module.
-- **Not started:** report for bay add and other gestures, a session total at Save, beam and column rules on a live edit (each needs a go); the report in any user guide; a film of it, which the owner called "another wow feature".
-- **The CLI is a developer tool:** grid moves only, needs the test harness and puppeteer, 6.6 to 12.9 s per call, nearly all of it opening the building.
+- **A shift can read CLEAN and leave the floors behind** (§13 RESULT, limit 1). This is the first thing to fix.
+- **Owner's question:** the live Save gate on a rotated building still uses world boxes, so it can block on phantom overlaps (§13.6).
+- **Stale labels, not changed:** the Open list calls SampleCastle, Clinic, HHS and Terminal column-framed; their `_ARC.db` files hold 0 IfcColumn rows (§13.2).
+- **Not run:** the report panel on a phone-sized screen; "Add one more" end to end through the report.
+- **Observed, not investigated:** a real +1.2 m mouse drag of gy8 after an undo recomposed 0 elements, a scripted +1.5 m on a fresh Open recomposed 1.
+- **Inferred, not reproduced:** the one 112 s CLI run that returned "not judged".
+- **Still failing, unrelated:** G4-TAMPER, 73 old violations (§6.3); `witness_clipboard_keys` K1; two `playwright` smokes.
+- **Not started:** report for bay add and other gestures, a session total at Save, beam and column rules on a live edit (each needs a go); a shift in the Modeller's UI; the report in a user guide; a film of it.
+- **The CLI is a developer tool:** grid moves and shifts only, needs the test harness and puppeteer, 6.3 to 36.3 s per call this run.
 
 **Landmines:**
-- **The primary checkout is on `fable/meshdb-livewire`, another lane's branch.** Do not commit there; work in a `/tmp/wt-*` worktree off `origin/master`. It holds an untracked copy of this file, and it is stale unless refreshed: delete it before merging master into that branch, or git refuses the merge.
+- **The primary checkout is on `fable/meshdb-livewire`, another lane's branch.** Do not commit there; work in a `/tmp/wt-*` worktree off `origin/master`. It holds an untracked copy of this file: delete it before merging master into that branch, or git refuses the merge.
 - **Shed witnesses:** the 2026-11-06 cleanup moved their input to `~/.cleanup_holding_2026-11-06/videos/dxf2bim_film_work`. Set `SHED_MARKED_DIR`, `SHED_MARKED` and `SHED_RAW_DIR` to `…/why/cli/marked` and `…/why/raw`, or they print MISSING. **Deleting that folder removes the only copy found. Raise it with the owner before anyone clears it.**
 - **`library/validation.db` is gitignored.** `V016` was applied by hand here, and no script applies V-series migrations. Without it `V1_legal_kitchen` fails.
-- **Test fixtures:** never symlink a primary checkout's `library/` into a worktree for a full suite run. It wrote to `library/work_sh.db` this session.
+- **Test fixtures:** never symlink a primary checkout's `library/` into a worktree for a full suite run. It wrote to `library/work_sh.db`.
 - **Public repos:** before every commit and PR body, grep the diff for the private client names (`feedback_private_project_no_names_in_public.md`).
 - **Sealed files:** a change to one needs a `[SEAL]` commit that explains why.
 
@@ -57,18 +48,18 @@ Origin: a pasted Gemini chat (JEPA "architect" + BIMCompiler "inspector"). Revie
 | Modeller's live edit checks, 28 injected defects | 14 fire nothing, 2 of those by design. Every overlap class is caught; floating elements, wrong units clear of the building and invalid coordinates are not (§3.5) |
 | Does snapping hide a bad value? | Fixed for one case; four others remain (§3.4) |
 | Is a proof report available? | **Yes, live, for one grid move** in the Modeller: what changed, red ink before → after, what was NOT checked (§8). A CLI call returns the same bytes (§11) |
-| Did it help a real proposer? | First test: alone, only 3 of 30 first proposals avoided RED or refusal, and its own forecast could not tell good from bad. See the flaws in §12 before quoting any number |
+| Did it help a real proposer? | Second test (§13): right outcome 15 of 30 alone, 24 of 30 with the report. **Read its limits first:** the 12 clean Garage shifts left the building's floors behind, and 2 of the 4 Garage briefs depend on a wider tolerance. Six runs finished RED, 3 of them knowingly over the span limit |
 | What did an outside review say? | DeepSeek: "appealing in direction but immature in execution". Claims checked in §10 |
 
 **What has NOT been measured:**
-- **One first proposer test has run (§12), with flaws:** right outcome 3 → 10 of 30 with the report fed back, and 14 of 30 still ended bad. The direction supports the idea; the size of the gain is not established.
-- Speed against working without us has not been measured. The call itself takes 6.6 to 12.9 s (§11).
+- **Two proposer tests have run, with limits (§12, §13).** The direction supports the idea; the size of the gain is not established, and the two tests are not comparable.
+- Speed against working without us has not been measured. The call itself took 6.3 to 36.3 s in §13.
 - Nothing here checks structural capacity, and a pass never means safe (§5).
 
 **Questions still open, where a second opinion is useful:**
 1. Is a closed vocabulary (choose from the catalog, §7) too narrow? It is safer, but it gives up much of what makes AI useful.
 2. Is `PlacementRequest` the right place for a reject gate, if one is ever built (STATUS)?
-3. Is the §12 test a fair measure of "better than without"? What should its next run change?
+3. Is the §13 test a fair measure of "better than without"? What should its next run change?
 
 **Vocabulary.** *Witness:* a test that names the issue it proves and can report its own failure. *Gate:* a check on a model. *Order:* the existing `c_order` + `c_orderline` tables. *Red ink:* findings from the checks. `§TAG` lines are machine-readable log lines. Code cited as `bim-ootb` lives in [red1oon/bim-ootb](https://github.com/red1oon/bim-ootb); the rest in [red1oon/BIMCompiler](https://github.com/red1oon/BIMCompiler).
 
@@ -424,7 +415,52 @@ At bim-ootb branch `feat/proposer-test-v2`, commit **`4a1e82f5e4955bd6dae0f10a22
 **What I expect, written down so it can be wrong:** A's right outcome rises well above 3 of 30, because a shift is now easy to choose and four briefs have a clean one. The gain from the report (A to B) may then shrink. G4 is the check on change 4: at least one G4 run should now decline. If none does, naming the limit did not help.
 **What this can and cannot show:** as §12. Counts, n=30 on 10 briefs, one model, briefs I wrote, half of them traps. **§12's numbers are not directly comparable:** the edit set, the grid, the stop rule, the report and the boxes all changed. Do not quote "3 → X" as an improvement over the first test.
 
+### §13 RESULT 2026-11-07 (bim-ootb #2685, raw: `modeller/tests/proposer_test/results_v2_2026-11-07.json`)
+30 runs, 51 attempts, `claude-sonnet-5-5`, $0.41, run at the pre-registered commit. **Pre-registered numbers, unchanged:**
+| | A: alone, first proposal | B: with the report, final |
+|---|---|---|
+| CLEAN | 15 | 21 |
+| PARTLY_JUDGED | 0 | 0 |
+| RED | 6 | 6 |
+| REFUSED | 9 | 0 |
+| DECLINED | 0 | 3 |
+| Goal met (arithmetic) | 30 | 27 |
+| **Right outcome** | **15** | **24** |
+| Used a shift | 24 | 15 |
+Passed the report but lines crossed: 0. Passed the report but goal missed: 0. Bad first proposals: 15, of which 2 were forecast as fine.
+**By brief, the same in all 3 repeats unless noted:**
+| Brief | First | Final | Right |
+|---|---|---|---|
+| G1, G3, G6, G7 | shift, CLEAN | same | A and B |
+| S2 | single move, CLEAN | same | A and B |
+| S1, S3 | shift, REFUSED (fillings on a wall that would stretch) | single move, CLEAN | B |
+| G5 | single move, REFUSED | DECLINED | B |
+| G2 | shift, RED | single or two-line move, RED | neither |
+| G4 | shift, RED | the same shift, RED | neither |
+
+**What I expected, against what happened (§13.7):**
+- A rises well above 3: **yes**, 15. Not separable from the other four changes.
+- The gain from the report may shrink: **no**, +9 against §12's +7, on a different test.
+- At least one G4 run declines: **no**, 0 of 3. The expectation was wrong, and the reason is the useful part. Every G4 revision named the 12 m limit and `gx5-gx6` (6 of 6, and 0 of the 3 first proposals; none of §12's G4 runs named the limit), then kept the edit: "the request fixes the width at 13 m, so I can't avoid this", and left it to the engineer. Naming the limit changed what it knew and said, not what it did.
+
+**What it shows:**
+1. **A shift was the missing word.** Asked to widen one bay, the model chose it on 24 of 30 first proposals. On G7 it chose it to avoid the line crossing, and said so.
+2. **The report turned 9 runs right.** On S1 and S3 a refusal's reason led it to a move that worked; on G5 it read the refusal and declined, with the reason. These are real, and all three are refusals, not red ink.
+3. **A report does not stop a proposer that has decided.** 6 of 30 finals are RED after being shown the result. On G2 it tried three different edits, never declined, and ended RED. On G4 it knowingly kept an over-limit span, with an honest note.
+4. **The forecast still does not separate good from bad:** problems forecast on 13 of 15 bad first proposals and on 11 of 15 good ones.
+
+**Limits. They come before any headline:**
+1. **⚠ CLEAN does not count what a shift leaves behind.** On G1, 14 crossing elements did not follow. **12 of them are `IfcBuildingElementProxy` rows that the building's own names call its floors and ramps:** 11 about 60 × 33 m, 3.5 to 4 m deep, 27 m beyond the line, and one 83 × 33 m (matched to `elements_meta.element_name` by size). G3 left 25, G6 14, G7 7. So the columns and beams moved, the floors did not, and the row says CLEAN. The report names them, and one model revision noticed, but the scoring fixed in §12 does not read that field. **All 12 clean Garage results, G1, G3, G6 and G7, carry this.** Without them: A 3, B 12, of which 6 on S1 and S3.
+2. **Two briefs depend on the wider tolerance.** On lattice boxes at a plain 20 mm, G3 reads 7 new clashes and G7 74, so both would be RED, and right outcome would be A 9, B 18. §13.6 attributes those to stretched members, from pairs read on G3 and G7, not from all of them.
+3. **The 30 runs are not 30 decisions.** Only 16 different brief-and-edit pairs appeared in 51 attempts, and the repeats nearly match. This model at this prompt is close to deterministic, so read it as about 10 decisions.
+4. **ORANGE does not count**, as registered. S1 and S2 each open 6 gaps at touching elements and score CLEAN.
+5. **As registered:** I wrote the briefs, half are traps, one model, CLEAN is not a good design. §12's numbers are not comparable, because five things changed.
+
+**Verdict.** The report helps most when it reports a refusal with its reason, and a shift removes a real obstacle. **The size of the gain is still not established:** limit 1 alone takes the first number from 15 to 3. There is now direct evidence that a report does not stop a proposer that has decided, and also that the current "clean" is too generous to gate on.
+
+**Decision for the owner.** Recommended: keep the gate parked, because a gate on today's CLEAN would pass a shift that leaves the floors behind. Next, either make those floors follow or make a shift that leaves elements behind score as not clean, then run once more. If a stop is wanted sooner, the narrowest honest one is refusing a *new* over-limit span on an external call: that row has an independent recount, and it is the only thing that would have changed G4. It would not touch G2.
+
 ## STATUS
-2026-11-06 spec drafted. 2026-11-07: §3 extracted, §4 witnesses committed, §6 fixes shipped, live checks measured (§3.5), gate fix and report shipped (§8), DeepSeek's review checked (§10), CLI shipped (§11), first proposer test run (§12).
-⏸ **Reject gate PARKED by owner 2026-11-07.** A proposer has now run, and 14 of 30 finals stayed bad, so the case for a stop is open; §12 recommends fixing the test first. When un-parked: apply only to external orders, at `PlacementRequest`, checking before any snap; then run the §7 measurement. A gate must not apply to extracted buildings: the compile path stays log-only until its rules are proven against them (`CompilationPipeline.java:1536`).
+2026-11-06 spec drafted. 2026-11-07: §3 extracted, §4 witnesses committed, §6 fixes shipped, live checks measured (§3.5), gate fix and report shipped (§8), DeepSeek's review checked (§10), CLI shipped (§11), first proposer test run (§12), its flaws fixed and second test run (§13).
+⏸ **Reject gate PARKED by owner 2026-11-07.** Two proposer tests have run. 6 of 30 finals stayed RED after the report, so the case for a stop is real; but today's CLEAN is too generous to gate on (§13 RESULT, limit 1). When un-parked: apply only to external orders, at `PlacementRequest`, checking before any snap; then run the §7 measurement. A gate must not apply to extracted buildings: the compile path stays log-only until its rules are proven against them (`CompilationPipeline.java:1536`).
 Still open, by design: every row marked NONE in §3.1 and §3.5, snap cases S2–S5. G4-TAMPER still reports 73 older violations (§6.3).
