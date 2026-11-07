@@ -38,9 +38,10 @@ var initSqlJs = require('sql.js');
 var execSync = require('child_process').execSync;
 
 var ROOT = path.join(__dirname, '..');
-var DW = require(path.join(ROOT, 'build/disc_walker.js'));
-var DUPLEX_RULES = path.join(ROOT, 'build/duplex_rules.db');
-var TERMINAL_RULES = path.join(ROOT, 'build/terminal_rules.db');
+var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
+var DW = require(DWT.walker);
+var DUPLEX_RULES = DWT.rules('duplex_rules.db');
+var TERMINAL_RULES = DWT.rules('terminal_rules.db');
 var DUPLEX_LIVE = path.join(os.homedir(), 'bim-ootb/modeller/Duplex_extracted.db'); // read-only: the ACTUAL 65/267 evidence DB
 var LOG = path.join(ROOT, 'logs', 'witness_true_midpoint_' +
   new Date().toISOString().replace(/[:.]/g, '').slice(0, 15) + '.log');
@@ -309,7 +310,7 @@ initSqlJs().then(function (SQL) {
     while (i < src.length && depth > 0) { if (src[i] === '{') depth++; else if (src[i] === '}') depth--; i++; }
     return /_trueMidpoint|_occElements/.test(src.slice(start, i)) ? 'CORRECTED' : 'RAW_CENTER';
   }
-  var _dwSrc = fs.readFileSync(path.join(ROOT, 'build/disc_walker.js'), 'utf8');
+  var _dwSrc = fs.readFileSync(DWT.walker, 'utf8');
   var LIVE_DW = path.join(os.homedir(), 'bim-ootb/modeller/disc_walker.js');
   var liveState = fs.existsSync(LIVE_DW) ? _fnState(fs.readFileSync(LIVE_DW, 'utf8'), 'hostBind') : 'NOT_FOUND';
 

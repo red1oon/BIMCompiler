@@ -25,7 +25,8 @@ var fs = require('fs');
 var path = require('path');
 var initSqlJs = require('sql.js');
 var ROOT = path.join(__dirname, '..');
-var DW = require(path.join(ROOT, 'build/disc_walker.js'));
+var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
+var DW = require(DWT.walker);
 var LOG = path.join(ROOT, 'logs', 'witness_seed_default_' +
   new Date().toISOString().replace(/[:.]/g, '').slice(0, 15) + '.log');
 

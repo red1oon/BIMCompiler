@@ -39,8 +39,9 @@ var path = require('path');
 var initSqlJs = require('sql.js');
 
 var ROOT = path.join(__dirname, '..');
-var DW = require(path.join(ROOT, 'build/disc_walker.js'));
-var DX_RULES = path.join(ROOT, 'build/duplex_rules.db');
+var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
+var DW = require(DWT.walker);
+var DX_RULES = DWT.rules('duplex_rules.db');
 var DXMEP = path.join(ROOT, 'build/Duplex_mep_extracted.db');
 var PATTERNS = path.join(ROOT, 'library/disc_patterns.db');
 var LOG = path.join(ROOT, 'logs', 'witness_assemble_' +
@@ -58,6 +59,7 @@ function med(a) { a = a.filter(function (v) { return v != null; }).slice().sort(
   log('═══ W-ASSEMBLE — ROUTE→ASSEMBLE bridge: instantiate catalog parts at routed nodes (oracle=Duplex-MEP) ═══');
   var SQL = await initSqlJs();
   var rdb = loadDb(SQL, DX_RULES), dx = loadDb(SQL, DXMEP), pat = loadDb(SQL, PATTERNS);
+  if (!rows(pat, "SELECT name FROM sqlite_master WHERE type='table' AND name='_import_joint_piece_types'").length) { console.log('§W-ASSEMBLE INCONCLUSIVE ' + PATTERNS + ' has no _import_joint_piece_types table, nothing judged: the catalog it grades against is not in this checkout (MODELLER_MASTER §WITNESS-REPOINT)'); process.exit(0); }
   DW.dwOpen(rdb);
 
   // catalog = the joint-piece percepts mined off Duplex (keyed by ifc_class)

@@ -33,7 +33,8 @@ var path = require('path');
 var initSqlJs = require('sql.js');
 
 var ROOT = path.join(__dirname, '..');
-var DW = require(path.join(ROOT, 'build/disc_walker.js'));
+var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
+var DW = require(DWT.walker);
 var LOG = path.join(ROOT, 'logs', 'witness_route_face_surface_' +
   new Date().toISOString().replace(/[:.]/g, '').slice(0, 15) + '.log');
 
@@ -129,7 +130,7 @@ var TOL = 0.15;
 
 function walkScore(SQL, c) {
   var bdb = loadDb(SQL, path.join(ROOT, c.db));
-  DW.dwOpen(loadDb(SQL, path.join(ROOT, c.rules)));
+  DW.dwOpen(loadDb(SQL, DWT.rules(c.rules)));
   var rc = DW.routeChains(c.disc, bdb, { toFace: true });
   var fromIsRun = /Segment/.test(c.run) ? (c.run === c.from) : false;
   // map walked segs of THIS rule → (node,run) guids
@@ -155,15 +156,15 @@ function walkScore(SQL, c) {
   var SQL = await initSqlJs();
   var CASES = {
     acmvTE: { disc: 'ACMV', from: 'IfcDuctSegment', to: 'IfcDuctFitting', run: 'IfcDuctSegment', node: 'IfcDuctFitting',
-      db: 'deploy/buildings/Terminal_extracted.db', rules: 'build/terminal_rules.db' },
+      db: 'deploy/buildings/Terminal_extracted.db', rules: 'terminal_rules.db' },
     plbTE: { disc: 'PLB', from: 'IfcPipeFitting', to: 'IfcPipeSegment', run: 'IfcPipeSegment', node: 'IfcPipeFitting',
-      db: 'deploy/buildings/Terminal_extracted.db', rules: 'build/terminal_rules.db' },
+      db: 'deploy/buildings/Terminal_extracted.db', rules: 'terminal_rules.db' },
     plbDX: { disc: 'PLB', from: 'IfcFlowFitting', to: 'IfcFlowSegment', run: 'IfcFlowSegment', node: 'IfcFlowFitting',
-      db: 'build/Duplex_mep_extracted.db', rules: 'build/duplex_rules.db' },
+      db: 'build/Duplex_mep_extracted.db', rules: 'duplex_rules.db' },
     // HELD-OUT: duplex_rules mined from Duplex, routed onto LTU_AHouse (never mined). Its run class IfcFlowSegment is
     // BULKY (~0.52×0.56m) while the node IfcFlowFitting is thin → the same centre-to-line bias + same correction.
     ltuHO: { disc: 'PLB', from: 'IfcFlowFitting', to: 'IfcFlowSegment', run: 'IfcFlowSegment', node: 'IfcFlowFitting',
-      db: 'deploy/buildings/LTU_AHouse_extracted.db', rules: 'build/duplex_rules.db', skipRank: true }
+      db: 'deploy/buildings/LTU_AHouse_extracted.db', rules: 'duplex_rules.db', skipRank: true }
   };
   var acmv = walkScore(SQL, CASES.acmvTE), plbTE = walkScore(SQL, CASES.plbTE), plbDX = walkScore(SQL, CASES.plbDX);
   var ltu = walkScore(SQL, CASES.ltuHO);

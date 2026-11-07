@@ -11,4 +11,4 @@ if (!fs.existsSync(walker)) { console.log('§DW_TREE INCONCLUSIVE no shipped wal
 const commit = git('rev-parse --short HEAD'), behind = git('rev-list --count HEAD..origin/main');
 console.log('§DW_TREE tree=' + tree + ' commit=' + commit + ' behindOriginMain=' + behind);
 if (+behind > 0 && !process.env.DW_ALLOW_STALE) { console.log('§DW_TREE INCONCLUSIVE the tree is ' + behind + ' commits behind origin/main, nothing judged (git -C ' + tree + ' merge --ff-only origin/main)'); process.exit(0); }
-module.exports = { tree, walker, rules: name => path.join(tree, 'modeller', name) };
+module.exports = { tree, walker, seedTrunk: path.join(tree, 'modeller', 'seed_trunk.js'), rules: name => path.join(tree, 'modeller', name) };

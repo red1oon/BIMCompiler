@@ -35,9 +35,11 @@ var os = require('os');
 var initSqlJs = require('sql.js');
 
 var ROOT = path.join(__dirname, '..');
-var DW = require(path.join(ROOT, 'build/disc_walker.js'));
-var TERMINAL_RULES = path.join(ROOT, 'build/terminal_rules.db');
-var DUPLEX_RULES = path.join(ROOT, 'build/duplex_rules.db');
+var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
+var DW = require(DWT.walker);
+if (typeof DW._hostAxis !== 'function') { console.log('§W-HOSTBIND-ROTATION INCONCLUSIVE the shipped walker has no _hostAxis, nothing judged: this witness tests a function that is not in the walker (listed for the owner, MODELLER_MASTER §WITNESS-REPOINT)'); process.exit(0); }
+var TERMINAL_RULES = DWT.rules('terminal_rules.db');
+var DUPLEX_RULES = DWT.rules('duplex_rules.db');
 var TERMINAL_BDB = path.join(ROOT, 'deploy/buildings/Terminal_extracted.db');           // in-repo, already rotated
 var DUPLEX_BDB_LIVE = path.join(os.homedir(), 'bim-ootb/modeller/Duplex_extracted.db'); // read-only live reference
 var LOG = path.join(ROOT, 'logs', 'witness_hostbind_rotation_' +

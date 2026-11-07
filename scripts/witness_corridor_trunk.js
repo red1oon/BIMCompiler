@@ -26,7 +26,8 @@ var fs = require('fs');
 var path = require('path');
 var initSqlJs = require('sql.js');
 var ROOT = path.join(__dirname, '..');
-var DW = require(path.join(ROOT, 'build/disc_walker.js'));
+var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
+var DW = require(DWT.walker);
 var LOG = path.join(ROOT, 'logs', 'witness_corridor_trunk_' +
   new Date().toISOString().replace(/[:.]/g, '').slice(0, 15) + '.log');
 
@@ -55,7 +56,7 @@ Heap.prototype.size = function () { return this.a.length; };
   log('═══ W-CORRIDOR-TRUNK — seed→trunk routed through REAL open space (around walls, through doors) ═══');
   var SQL = await initSqlJs();
   var SH = loadDb(SQL, path.join(ROOT, 'deploy/buildings/SampleHouse_extracted.db'));
-  DW.dwOpen(loadDb(SQL, path.join(ROOT, 'build/duplex_rules.db')));
+  DW.dwOpen(loadDb(SQL, DWT.rules('duplex_rules.db')));
 
   // — fixtures (host-bound) + the human/default seed —
   var walk = DW.dwWalk('ELEC', SH);

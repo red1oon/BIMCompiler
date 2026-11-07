@@ -32,7 +32,8 @@ var puppeteer = require('puppeteer');
 var execSync = require('child_process').execSync;
 
 var ROOT = path.join(__dirname, '..');
-var DW = require(path.join(ROOT, 'build/disc_walker.js'));
+var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
+var DW = require(DWT.walker);
 var ARC_DB = '/tmp/wt-embed-8-arc/modeller/Terminal_ARC.db';
 var MESH_DB = '/tmp/wt-embed-8-arc/modeller/mesh.db';
 var THREE_LIB = path.join(process.env.HOME, 'bim-ootb/modeller/lib/three.core.min.js');

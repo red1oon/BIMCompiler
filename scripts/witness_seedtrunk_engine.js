@@ -19,8 +19,9 @@ var fs = require('fs');
 var path = require('path');
 var initSqlJs = require('sql.js');
 var ROOT = path.join(__dirname, '..');
-var DW = require(path.join(ROOT, 'build/disc_walker.js'));
-var ST = require(path.join(ROOT, 'build/seed_trunk.js'));
+var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
+var DW = require(DWT.walker);
+var ST = require(DWT.seedTrunk);
 var LOG = path.join(ROOT, 'logs', 'witness_seedtrunk_engine_' +
   new Date().toISOString().replace(/[:.]/g, '').slice(0, 15) + '.log');
 
@@ -39,7 +40,7 @@ function loadDb(SQL, f) { return new SQL.Database(new Uint8Array(fs.readFileSync
   log('═══ W-SEEDTRUNK-ENGINE — build/seed_trunk.js reproduces the W-RISER-TRUNK spike (no regression) ═══');
   var SQL = await initSqlJs();
   var DX = loadDb(SQL, path.join(ROOT, 'deploy/buildings/Duplex_extracted.db'));
-  DW.dwOpen(loadDb(SQL, path.join(ROOT, 'build/duplex_rules.db')));
+  DW.dwOpen(loadDb(SQL, DWT.rules('duplex_rules.db')));
 
   var fixtures = DW.dwWalk('ELEC', DX).placements;
   // ground seed = most external Level-1 door (same choice as the spike)

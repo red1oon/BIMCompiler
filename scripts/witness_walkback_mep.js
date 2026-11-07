@@ -53,10 +53,11 @@ var path = require('path');
 var initSqlJs = require('sql.js');
 
 var ROOT = path.join(__dirname, '..');
+var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
 // WALKBACK_DW (optional env): absolute path to an ALTERNATE disc_walker.js build — lets this witness score a
 // historical engine (e.g. the pre-§BUG-A-TRUE-MIDPOINT build) against the SAME oracle for a before/after
 // attribution run. Default (unset) is byte-identical to before: the repo's own build/disc_walker.js.
-var DW = require(process.env.WALKBACK_DW || path.join(ROOT, 'build/disc_walker.js'));
+var DW = require(process.env.WALKBACK_DW || DWT.walker);
 if (process.env.WALKBACK_DW) console.log('§MEP-WB ENGINE-OVERRIDE ' + process.env.WALKBACK_DW);
 var LOG = path.join(ROOT, 'logs', 'witness_walkback_mep_' +
   new Date().toISOString().replace(/[:.]/g, '').slice(0, 15) + '.log');
@@ -213,8 +214,8 @@ function walkSubstrate(SQL, sub) {
   var TE = path.join(ROOT, 'deploy/buildings/Terminal_extracted.db');
   var DX = path.join(ROOT, 'build/Duplex_mep_extracted.db');
   var SH = path.join(ROOT, 'deploy/buildings/SampleHouse_extracted.db');
-  var TE_RULES = path.join(ROOT, 'build/terminal_rules.db');
-  var DX_RULES = path.join(ROOT, 'build/duplex_rules.db');
+  var TE_RULES = DWT.rules('terminal_rules.db');
+  var DX_RULES = DWT.rules('duplex_rules.db');
 
   // ── M0 SUBSTRATE-UNBLOCKS — real MEP endpoint classes at 100% geometry on the two substrates; 0 on ARC-only.
   log('');

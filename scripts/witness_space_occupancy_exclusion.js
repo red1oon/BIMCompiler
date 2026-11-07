@@ -29,8 +29,10 @@ var path = require('path');
 var initSqlJs = require('sql.js');
 
 var ROOT = path.join(__dirname, '..');
-var CLINIC_DB = process.argv[2] || '/tmp/claude-1000/-home-red1-bim-compiler/7c2f298a-c248-4f11-b32e-23091dc98c1e/scratchpad/Clinic_test_storeyfix.db';
-var BASELINE_DW = '/tmp/claude-1000/-home-red1-bim-compiler/7c2f298a-c248-4f11-b32e-23091dc98c1e/scratchpad/disc_walker_baseline.js';
+var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
+var CLINIC_DB = process.argv[2] || path.join(process.env.HOME, 'bim-ootb/buildings/Clinic_extracted.db');
+var BASELINE_DW = process.env.OCC_BASELINE_DW || '/tmp/claude-1000/-home-red1-bim-compiler/7c2f298a-c248-4f11-b32e-23091dc98c1e/scratchpad/disc_walker_baseline.js';
+if (!fs.existsSync(BASELINE_DW)) { console.log('§W-SPACE-OCC-EXCLUDE INCONCLUSIVE the pre-fix walker it compares against is gone (' + BASELINE_DW + '), nothing judged. Set OCC_BASELINE_DW to a walker from before the fix (MODELLER_MASTER §WITNESS-REPOINT)'); process.exit(0); }
 var LOG = path.join(ROOT, 'logs', 'witness_space_occupancy_exclusion_' +
   new Date().toISOString().replace(/[:.]/g, '').slice(0, 15) + '.log');
 
@@ -51,8 +53,8 @@ initSqlJs().then(function (SQL) {
   log('═══ W-SPACE-OCC-EXCLUDE — blind spot 1 (IfcSpace excluded from occupancy() obstruction mask) ═══');
   log('Clinic re-extraction: ' + CLINIC_DB);
 
-  var DW_fixed = require(path.join(ROOT, 'build/disc_walker.js'));
-  delete require.cache[require.resolve(path.join(ROOT, 'build/disc_walker.js'))];
+  var DW_fixed = require(DWT.walker);
+  delete require.cache[require.resolve(DWT.walker)];
   var DW_base = require(BASELINE_DW);
 
   var bdbF = loadDb(SQL, CLINIC_DB);

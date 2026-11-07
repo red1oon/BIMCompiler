@@ -39,7 +39,8 @@ var initSqlJs = require('sql.js');
 var execSync = require('child_process').execSync;
 
 var ROOT = path.join(__dirname, '..');
-var DW = require(path.join(ROOT, 'build/disc_walker.js'));
+var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
+var DW = require(DWT.walker);
 var LOG = path.join(ROOT, 'logs', 'witness_occ_true_midpoint_' +
   new Date().toISOString().replace(/[:.]/g, '').slice(0, 15) + '.log');
 
@@ -108,7 +109,7 @@ initSqlJs().then(function (SQL) {
     return Object.keys(occ);
   }
   var dupPath = path.join(ROOT, 'deploy/buildings/Duplex_extracted.db');
-  var dup = loadDb(SQL, dupPath), rdb = loadDb(SQL, path.join(ROOT, 'build/duplex_rules.db'));
+  var dup = loadDb(SQL, dupPath), rdb = loadDb(SQL, DWT.rules('duplex_rules.db'));
   DW.dwOpen(rdb);
   var sub = DW.substrate(dup);
   var st0 = sub[0];

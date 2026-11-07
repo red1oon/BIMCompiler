@@ -25,7 +25,8 @@ var fs = require('fs');
 var path = require('path');
 var initSqlJs = require('sql.js');
 var ROOT = path.join(__dirname, '..');
-var DW = require(path.join(ROOT, 'build/disc_walker.js'));
+var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
+var DW = require(DWT.walker);
 var LOG = path.join(ROOT, 'logs', 'witness_riser_trunk_' +
   new Date().toISOString().replace(/[:.]/g, '').slice(0, 15) + '.log');
 
@@ -96,7 +97,7 @@ function backbone(grid, src, nodeCells) {
   log('═══ W-RISER-TRUNK — 3D: per-storey corridor trunks joined by MULTIPLE real-stair risers, one ground seed ═══');
   var SQL = await initSqlJs();
   var DX = loadDb(SQL, path.join(ROOT, 'deploy/buildings/Duplex_extracted.db'));
-  DW.dwOpen(loadDb(SQL, path.join(ROOT, 'build/duplex_rules.db')));
+  DW.dwOpen(loadDb(SQL, DWT.rules('duplex_rules.db')));
   var walk = DW.dwWalk('ELEC', DX);
   var GZ = 1.50, UZ = 4.60, CELL = 0.25;
   var bb = rows(DX, "SELECT MIN(center_x) x0, MAX(center_x) x1, MIN(center_y) y0, MAX(center_y) y1 FROM element_transforms")[0];

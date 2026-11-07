@@ -45,7 +45,8 @@ var path = require('path');
 var initSqlJs = require('sql.js');
 
 var ROOT = path.join(__dirname, '..');
-var DW = require(path.join(ROOT, 'build/disc_walker.js'));
+var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
+var DW = require(DWT.walker);
 var LOG = path.join(ROOT, 'logs', 'witness_dx_walkback_rsgt_' +
   new Date().toISOString().replace(/[:.]/g, '').slice(0, 15) + '.log');
 
@@ -62,7 +63,7 @@ function loadDb(SQL, f) { return new SQL.Database(new Uint8Array(fs.readFileSync
   var dx = loadDb(SQL, path.join(ROOT, 'deploy/buildings/Duplex_extracted.db'));
   var mm = loadDb(SQL, path.join(ROOT, 'build/Duplex_mep_meta.db'));
   var lib = loadDb(SQL, path.join(ROOT, 'library/component_library.db'));
-  DW.dwOpen(loadDb(SQL, path.join(ROOT, 'build/duplex_rules.db')));
+  DW.dwOpen(loadDb(SQL, DWT.rules('duplex_rules.db')));
 
   // ── real MEP ground truth (witness-side ONLY — the walker never sees these rows) ──
   var subdisc = {};
@@ -266,7 +267,7 @@ function loadDb(SQL, f) { return new SQL.Database(new Uint8Array(fs.readFileSync
       if ((name || '').toUpperCase().indexOf(famPats[i].v.replace(/%/g, '').toUpperCase()) >= 0) return famPats[i].c;
     return null;
   }
-  var rulesDb = loadDb(SQL, path.join(ROOT, 'build/duplex_rules.db'));
+  var rulesDb = loadDb(SQL, DWT.rules('duplex_rules.db'));
   var devFam = {};
   rows(rulesDb, 'SELECT DISTINCT device_id d, element_name e FROM rule_space_schedule').forEach(function (r) {
     devFam[r.d] = famOf(r.e) || (canonSet[r.d] ? r.d : null);

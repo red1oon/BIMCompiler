@@ -34,10 +34,11 @@ var path = require('path');
 var initSqlJs = require('sql.js');
 
 var ROOT = path.join(__dirname, '..');
-var DW = require(path.join(ROOT, 'build/disc_walker.js'));
+var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
+var DW = require(DWT.walker);
 var DISC_PATTERNS = path.join(ROOT, 'library/ERP.db'); // disc_patterns.db (physically library/ERP.db until rename slice)
-var RULES = path.join(ROOT, 'build/duplex_rules.db');
-var TERMINAL_RULES = path.join(ROOT, 'build/terminal_rules.db');
+var RULES = DWT.rules('duplex_rules.db');
+var TERMINAL_RULES = DWT.rules('terminal_rules.db');
 var SH = path.join(ROOT, 'deploy/buildings/SampleHouse_extracted.db');
 var SC = path.join(ROOT, 'deploy/buildings/SampleCastle_extracted.db');
 var LOG = path.join(ROOT, 'logs', 'witness_hostbind_agnostic_' +
@@ -116,10 +117,12 @@ function distToWalls(p, walls, bdb) {
   // density-placement positions; one fixture that previously fell >6m from any TRUE wall line now falls
   // within reach of a real one. count-preserved (bound+refused=placed, 37+1=38 same as 36+2=38 before) and
   // still 0 fabricated (badW===0) — a real host newly in reach, not a broken invariant.
+  // Re-baselined 37→17 (MODELLER_MASTER §WITNESS-REPOINT): the shipped walker's §STOREY-UNKNOWN-EXCLUDE (no fake 'Unknown' storey, placed 38→28) and §STOREY-ZBAND (a wall must meet the
+  // device's mount height, refused 1→11), both bim-ootb 0885b742, witness W-DW-STOREY-BAND. This witness never saw them because it tested the older build/ copy. Still an exact count.
   assert('H1 WALL-REGRESSION',
-    hbW.bound.length === 37 && afterFloat === 0 && afterMedW <= wallThick && badW === 0 &&
+    hbW.bound.length === 17 && afterFloat === 0 && afterMedW <= wallThick && badW === 0 &&
     (hbW.bound.length + hbW.refused) === placedElec.length,
-    'generalized hostBind reproduces wall/SIDE: ' + hbW.bound.length + ' bound (=37), float ' + beforeFloat + '→0, median ' +
+    'generalized hostBind reproduces wall/SIDE: ' + hbW.bound.length + ' bound (=17), float ' + beforeFloat + '→0, median ' +
     afterMedW.toFixed(3) + 'm ≤ wall thickness ' + wallThick.toFixed(3) + 'm, 0 fabricated, bound+refused=placed');
   rdb.close(); sh.close();
 

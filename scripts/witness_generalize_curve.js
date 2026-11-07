@@ -38,8 +38,9 @@ var path = require('path');
 var initSqlJs = require('sql.js');
 
 var ROOT = path.join(__dirname, '..');
-var DW = require(path.join(ROOT, 'build/disc_walker.js'));
-var DX_RULES = path.join(ROOT, 'build/duplex_rules.db');
+var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
+var DW = require(DWT.walker);
+var DX_RULES = DWT.rules('duplex_rules.db');
 var DX_MEP = path.join(ROOT, 'build/Duplex_mep_extracted.db');
 var SH = path.join(ROOT, 'deploy/buildings/SampleHouse_extracted.db');
 var BLD = function (n) { return path.join(ROOT, 'deploy/buildings/' + n + '_extracted.db'); };
