@@ -571,6 +571,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#each-app-is-its-own-address" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Each app is its own address
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#working-as-a-team" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2816,6 +2827,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#each-app-is-its-own-address" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Each app is its own address
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#working-as-a-team" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2906,6 +2928,52 @@ the landing shows the compact <code>⋯</code> launcher; <strong>refresh</strong
 <strong><a href="../MigrateComparisonPaper/">Migrate &amp; Compare</a></strong>: how Kernel-ERP folds a live iDempiere (and Odoo)
 tenant onto one signed op-log, what stands comparison with a legacy stack, and the honest gaps.</p>
 </blockquote>
+<h2 id="each-app-is-its-own-address">Each app is its own address<a class="headerlink" href="#each-app-is-its-own-address" title="Permanent link">&para;</a></h2>
+<p>Every app is a separate page with its own address. Opening one loads only that app, not the others, so a
+small job stays small. The till, for example, never loads the 3D viewer.</p>
+<table>
+<thead>
+<tr>
+<th>App</th>
+<th>Address</th>
+<th>Downloaded on a first visit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Front door</td>
+<td><a href="https://red1oon.github.io/bim-ootb/">red1oon.github.io/bim-ootb</a></td>
+<td>about 0.1 MB</td>
+</tr>
+<tr>
+<td>BIM Viewer</td>
+<td><a href="https://red1oon.github.io/bim-ootb/viewer/viewer.html">…/viewer/viewer.html</a></td>
+<td>about 3 MB, plus the building you open</td>
+</tr>
+<tr>
+<td>DAGeVu Modeller</td>
+<td><a href="https://red1oon.github.io/bim-ootb/modeller/modeller.html">…/modeller/modeller.html</a></td>
+<td>about 1.3 MB</td>
+</tr>
+<tr>
+<td>ERP start page (bubbles)</td>
+<td><a href="https://red1oon.github.io/bim-ootb/erp/erp.html">…/erp/erp.html</a></td>
+<td>about 0.1 MB</td>
+</tr>
+<tr>
+<td>ERP forms (the iDempiere look)</td>
+<td><a href="https://red1oon.github.io/bim-ootb/erp/idempiere.html">…/erp/idempiere.html</a></td>
+<td>about 1.4 MB, plus about 7 MB for the ERP's database</td>
+</tr>
+<tr>
+<td>Till · Kitchen screen</td>
+<td><a href="https://red1oon.github.io/bim-ootb/erp/till.html">…/erp/till.html</a> · <a href="https://red1oon.github.io/bim-ootb/erp/kitchen.html">…/erp/kitchen.html</a></td>
+<td>about 0.1 MB · under 0.1 MB</td>
+</tr>
+</tbody>
+</table>
+<p>The ERP forms page saves its database in your browser after the first visit, so later visits don't
+download it again. <em>Sizes counted 2026-11-08 from the published files (compressed, as sent over the network).</em></p>
 <h2 id="working-as-a-team">Working as a team<a class="headerlink" href="#working-as-a-team" title="Permanent link">&para;</a></h2>
 <p>Several people — or several of your own devices — can work on the same records (orders in the ERP, the building
 in the Modeller) with <strong>no database server and no application server</strong>. Press the <strong>Team</strong> pill (the two heads;
