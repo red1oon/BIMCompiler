@@ -68,8 +68,12 @@ pair-set (3, not Terminal's 10). Each placement carries a `prim` semantic-kind t
 - **LANDED** (real→real, e.g. routed endpoints on real elements): land EXACTLY (1e-6, guid-matched). May be trusted.
 - **GENERATED** (fills an ABSENT discipline): position is PLAUSIBLE, never landed → the ONE confirmable property is COUNT →
   make COUNT exact; NEVER print rmse/cover as fidelity. SIZE is measurable (per-class median bbox, §PRIM) — size only.
-- **Host-bind** snaps a floating fixture onto its MEASURED host **only when one exists in reach, else REFUSE (stays floating,
-  counted)** — never fabricated onto a host. Count is always preserved (bound ∪ refused = input).
+- **Host-bind** binds a fixture to its MEASURED host **only when one exists**, never fabricated. An area host (ceiling, slab, roof)
+  holds a device by footprint and height, and the device keeps its X and Y; a window keeps its reach and centre, a wall its face.
+  **With no host:** a ceiling row places the device labelled `unhosted`, counted apart from bound, because ceilings are often simply
+  not modelled; any other host rule **REFUSES** it (not placed, counted); a class with no host rule is not judged. Every device is
+  accounted for (input = bound + unhosted + not judged + refused). Owner's OK 2026-11-07; spec and measurements: bim-ootb
+  `prompts/DISC_WALK_BAND_NO_HOST.md` §10, W-BAND-NO-HOST.
 - **No fabricated networks.** If the IFC has no ports/connectors, do not synthesise a duct/pipe network (SC vent-extraction
   was REFUTED at source and dropped for exactly this reason — prompt §ADDENDUM).
 
