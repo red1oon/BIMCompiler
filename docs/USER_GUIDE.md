@@ -59,6 +59,23 @@ New here recently? Check **[What's New](WhatsNew.md)** for a running log of ship
 > **[Migrate & Compare](MigrateComparisonPaper.md)**: how Kernel-ERP folds a live iDempiere (and Odoo)
 > tenant onto one signed op-log, what stands comparison with a legacy stack, and the honest gaps.
 
+## Each app is its own address
+
+Every app is a separate page with its own address. Opening one loads only that app, not the others, so a
+small job stays small. The till, for example, never loads the 3D viewer.
+
+| App | Address | Downloaded on a first visit |
+|---|---|---|
+| Front door | [red1oon.github.io/bim-ootb](https://red1oon.github.io/bim-ootb/) | about 0.1 MB |
+| BIM Viewer | […/viewer/viewer.html](https://red1oon.github.io/bim-ootb/viewer/viewer.html) | about 3 MB, plus the building you open |
+| DAGeVu Modeller | […/modeller/modeller.html](https://red1oon.github.io/bim-ootb/modeller/modeller.html) | about 1.3 MB |
+| ERP start page (bubbles) | […/erp/erp.html](https://red1oon.github.io/bim-ootb/erp/erp.html) | about 0.1 MB |
+| ERP forms (the iDempiere look) | […/erp/idempiere.html](https://red1oon.github.io/bim-ootb/erp/idempiere.html) | about 1.4 MB, plus about 7 MB for the ERP's database |
+| Till · Kitchen screen | […/erp/till.html](https://red1oon.github.io/bim-ootb/erp/till.html) · […/erp/kitchen.html](https://red1oon.github.io/bim-ootb/erp/kitchen.html) | about 0.1 MB · under 0.1 MB |
+
+The ERP forms page saves its database in your browser after the first visit, so later visits don't
+download it again. *Sizes counted 2026-11-08 from the published files (compressed, as sent over the network).*
+
 ## Working as a team
 
 Several people — or several of your own devices — can work on the same records (orders in the ERP, the building

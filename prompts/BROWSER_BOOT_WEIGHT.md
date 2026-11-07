@@ -50,5 +50,26 @@ Real Open of a resident in each page, no user action. Print `§BOOT_WEIGHT page=
 - Work in a `/tmp/wt-*` worktree; the shared checkout is hook-blocked.
 - Viewer witness fleet: check `prompts/WITNESS_INTERFACE_FRAMEWORK.md` §CRISIS before trusting a green run.
 
+## Census 2026-11-08b — what each URL downloads at open, ERP pages added (static, bim-ootb `origin/main` @ `4a070856`)
+Method: every `<script src>` and stylesheet in the page (HTML comments stripped), read with `git show`, plus the page itself; "network" = each file gzip -6, which is roughly what Pages sends. Nothing run in a browser, so this is what is **loaded**, not what is **called**.
+| Page | Files | Code as stored | Network (gzip) | Data fetched at open |
+|---|---|---|---|---|
+| `erp/idempiere.html` | 204 | 4.49 MB | 1.37 MB | **`ad_seed.db` 25.9 MB (6.8 MB gzip)**, `sqljs/sql-wasm.wasm` 0.6 MB |
+| `viewer/viewer.html` | 250 | 9.54 MB | 3.21 MB | the building's DB (not counted) |
+| `modeller/modeller.html` | 60 | 8.11 MB | 1.25 MB | — (5.9 MB of the code is `web-ifc-api-iife.js`) |
+| `erp/glassbowl.html` | 20 | 1.08 MB | 0.31 MB | |
+| `erp/genesis.html` | 14 | 0.74 MB | 0.20 MB | |
+| `erp/erp.html` | 13 | 0.30 MB | 0.10 MB | |
+| `erp/till.html` | 19 | 0.26 MB | 0.09 MB | |
+| `index.html` | 13 | 0.24 MB | 0.08 MB | |
+| `erp/kitchen.html` | 5 | 0.03 MB | 0.01 MB | |
+Lens pages (`kanban_lens`, `pivot_lens`, `chat_lens`, `borrower`, `branch_admin`) are 2–9 scripts, under 0.15 MB each.
+
+**Findings:**
+1. **The small ERP pages are already split well:** each URL loads only its own scripts. Owner, 2026-11-08: still OK, leave it.
+2. **`erp/idempiere.html`: the weight is data, not code.** Every open reads the whole `ad_seed.db` into sql.js memory (`erp/idempiere.html:1139`; first visit from the network, later visits from IndexedDB `erp_cache`, still opened whole). Its code is 203 tags with no `defer`/`async`: `erp/` 112 files 3,002 KB, `erp/processes/` 52 files 458 KB, `erp/callouts/` 28 files 358 KB. Processes and callouts run only when a user starts that process or edits that field, so they are the first-use group if this is ever picked up. `plugin_registry.js` already loads on first use, so copy it.
+3. **Modeller `web-ifc-api-iife.js` (candidate 1), read from code, not proved by a run:** every main-page caller uses it inside an action: export (`modeller/bonsai_ifc.js:76` `_init`), regulatory report (`reg_report_ui.js:108`), DXF export, viewer-DB export. Opening an IFC file does not need the page tag (`modeller.html:254`), because `ifc_open_worker.js:7` loads its own copy with `importScripts`. Already in `modeller/sw.js:31` precache. Caller that would break: `modeller/tests/witness_ifc_export_seed.js:48` reads `window.WebIFC` straight after Open (Rule 5).
+
 ## STATUS
 2026-11-08: file written, census above. Nothing moved beyond `bay_add.js`. W-BOOT-WEIGHT not written.
+2026-11-08b: ERP pages counted (§Census 2026-11-08b). Owner: findings recorded, work left as it is for now. Nothing moved.
