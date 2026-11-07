@@ -57,7 +57,8 @@ var path = require('path');
 var initSqlJs = require('sql.js');
 
 var ROOT = path.join(__dirname, '..');
-var RULES = path.join(ROOT, 'build/terminal_rules.db');
+var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
+var RULES = DWT.rules('terminal_rules.db');
 var BDB = path.join(ROOT, 'deploy/buildings/Terminal_extracted.db');
 var LOG = path.join(ROOT, 'logs', 'witness_terminal_nospaces_' +
   new Date().toISOString().replace(/[:.]/g, '').slice(0, 15) + '.log');
@@ -75,7 +76,7 @@ var GRADED = ['IfcLightFixture', 'IfcElectricAppliance'];      // ELEC — the p
   log('═══ W-TERM-NOSPACES — measured-band no-spaces walk vs the real Terminal (blindfolded) ═══');
   var SQL = await initSqlJs();
   global.window = global.window || {};
-  var DW = require(path.join(ROOT, 'build/disc_walker.js'));
+  var DW = require(DWT.walker);
   var dw = global.window.DW || DW;
 
   var full = loadDb(SQL, BDB);                                 // ground truth — witness-only
@@ -164,7 +165,8 @@ var GRADED = ['IfcLightFixture', 'IfcElectricAppliance'];      // ELEC — the p
     ' not a REAL hash of their own class); classes with no real mesh: ' + refusedN + ' (REFUSED only, never a fallback shape)');
 
   log(''); log('─── T6 PLB QTY-BOUND (last ungraded walkable disc) ───');
-  var wp = dw.dwWalk('PLB', arc, 'Terminal', { schedule: true });
+  // The band GENERATOR is what this grades: {noHostBind} is the raw walk. A user walk drops the pieces with no main; T6b proves that.
+  var wp = dw.dwWalk('PLB', arc, 'Terminal', { schedule: true, noHostBind: true });
   var pByCls = {};
   (wp.placements || []).forEach(function (p) { pByCls[p.ifc_class] = (pByCls[p.ifc_class] || 0) + 1; });
   var nmRows = rows(rules, "SELECT ifc_class, SUM(n_measured) nm FROM rule_placement WHERE disc='PLB' GROUP BY ifc_class");
@@ -182,7 +184,7 @@ var GRADED = ['IfcLightFixture', 'IfcElectricAppliance'];      // ELEC — the p
   var tamperedP = loadDb(SQL, RULES);
   tamperedP.exec("UPDATE rule_placement SET n_measured = CAST(n_measured*0.2 AS INTEGER) WHERE disc='PLB'");
   dw.dwOpen(tamperedP);
-  var wpT = dw.dwWalk('PLB', arc, 'Terminal', { schedule: true });
+  var wpT = dw.dwWalk('PLB', arc, 'Terminal', { schedule: true, noHostBind: true });
   dw.dwOpen(rules);
   tamperedP.close();
   assert('T6 PLB-QTY', plbOk && wpT.placed < wp.placed * 0.5,
@@ -212,6 +214,12 @@ var GRADED = ['IfcLightFixture', 'IfcElectricAppliance'];      // ELEC — the p
     ' outside their own measured z-band, ' + pNoHash + ' missing a hash, ' + pBadHash +
     ' not a REAL hash of their own class; no-real-mesh classes: ' + pRefusedN + ' (REFUSED only)');
 
+  // T6b (bim-ootb prompts/DISC_WALK_DRAWN_MAINS.md §9.2): a user walk places no band pipe, and accounts for each one. RED control is the raw walk above, which holds them.
+  var wpU = dw.dwWalk('PLB', arc, 'Terminal', { schedule: true }), uPipes = (wpU.placements || []).filter(function (p) { return /^placed:/.test(p.prov || '') && /Pipe|FlowSegment|FlowFitting/.test(p.ifc_class || ''); }).length;
+  var rawPipes = (wp.placements || []).filter(function (p) { return /Pipe|FlowSegment|FlowFitting/.test(p.ifc_class || ''); }).length, uNoMain = (wpU.refusedNoHost || {}).noMain || 0;
+  assert('T6b PLB-NO-MAIN', uPipes === 0 && rawPipes > 0 && uNoMain === rawPipes && wpU.placed + uNoMain === wp.placed,
+    'user walk band pipes=' + uPipes + ', no-main=' + uNoMain + ' == raw pipes ' + rawPipes + '; placed ' + wpU.placed + ' + ' + uNoMain + ' == raw ' + wp.placed);
+
   log(''); log('─── T8 SHIPPED-SUBSTRATE (§TE-ARC-DATUM-FIX — the Modeller\'s REAL Terminal_ARC.db) ───');
   // The stripped-copy walks above run in the extraction's site frame; the SHIPPED substrate
   // (~/bim-ootb/modeller/Terminal_ARC.db) is in the raw-IFC building frame, −14.66 m below it.
@@ -228,7 +236,7 @@ var GRADED = ['IfcLightFixture', 'IfcElectricAppliance'];      // ELEC — the p
     var sPlaced = 0, sDetail = [], sOk = true, sOut = 0, szBad = 0, sNoHash = 0, sBadHash = 0;
     var sHash = {};
     ['ELEC', 'PLB'].forEach(function (d) {
-      var wd = dw.dwWalk(d, shipped, 'Terminal', { schedule: true });
+      var wd = dw.dwWalk(d, shipped, 'Terminal', d === 'PLB' ? { schedule: true, noHostBind: true } : { schedule: true });   // PLB: the band generator, as T6
       sOk = sOk && !wd.refused && wd.mode === 'measured-band';
       sPlaced += wd.placed || 0;
       var bc = {}; (wd.placements || []).forEach(function (p) { bc[p.ifc_class] = (bc[p.ifc_class] || 0) + 1; });
@@ -257,7 +265,7 @@ var GRADED = ['IfcLightFixture', 'IfcElectricAppliance'];      // ELEC — the p
     tampered8.exec('DROP TABLE rule_frame_ref');
     dw.dwOpen(tampered8);
     var falsPlaced = 0;
-    ['ELEC', 'PLB'].forEach(function (d) { falsPlaced += dw.dwWalk(d, shipped, 'Terminal', { schedule: true }).placed || 0; });
+    ['ELEC', 'PLB'].forEach(function (d) { falsPlaced += dw.dwWalk(d, shipped, 'Terminal', d === 'PLB' ? { schedule: true, noHostBind: true } : { schedule: true }).placed || 0; });
     dw.dwOpen(rules);
     tampered8.close();
     assert('T8 SHIPPED-SUBSTRATE', sOk && sOut === 0 && szBad === 0 && sNoHash === 0 && sBadHash === 0 && falsPlaced < sPlaced * 0.6,

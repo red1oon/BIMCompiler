@@ -25,9 +25,10 @@ var path = require('path');
 var initSqlJs = require('sql.js');
 
 var ROOT = path.join(__dirname, '..');
-var DW = require(path.join(ROOT, 'build/disc_walker.js'));
+var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
+var DW = require(DWT.walker);
 var ERP = path.join(ROOT, 'library/disc_patterns.db');   // de-ERP: canonical pattern-store name (ERP.db is a back-compat symlink)
-var RULES = path.join(ROOT, 'build/duplex_rules.db');
+var RULES = DWT.rules('duplex_rules.db');
 var SH = path.join(ROOT, 'deploy/buildings/SampleHouse_extracted.db');
 var LOG = path.join(ROOT, 'logs', 'witness_elec_hostbind_' +
   new Date().toISOString().replace(/[:.]/g, '').slice(0, 15) + '.log');

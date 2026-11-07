@@ -33,9 +33,10 @@ var path = require('path');
 var initSqlJs = require('sql.js');
 
 var ROOT = path.join(__dirname, '..');
-var DW = require(path.join(ROOT, 'build/disc_walker.js'));
-var DX_RULES = path.join(ROOT, 'build/duplex_rules.db');
-var TE_RULES = path.join(ROOT, 'build/terminal_rules.db');
+var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
+var DW = require(DWT.walker);
+var DX_RULES = DWT.rules('duplex_rules.db');
+var TE_RULES = DWT.rules('terminal_rules.db');
 var SC = path.join(ROOT, 'deploy/buildings/SampleCastle_extracted.db');
 var LOG = path.join(ROOT, 'logs', 'witness_borrow_fp_' +
   new Date().toISOString().replace(/[:.]/g, '').slice(0, 15) + '.log');

@@ -38,8 +38,9 @@ var path = require('path');
 var initSqlJs = require('sql.js');
 
 var ROOT = path.join(__dirname, '..');
-var CLINIC_DB = process.argv[2] || '/tmp/claude-1000/-home-red1-bim-compiler/7c2f298a-c248-4f11-b32e-23091dc98c1e/scratchpad/Clinic_test_storeyfix.db';
-var TERMINAL_RULES = path.join(ROOT, 'build/terminal_rules.db');
+var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
+var CLINIC_DB = process.argv[2] || path.join(process.env.HOME, 'bim-ootb/buildings/Clinic_extracted.db');
+var TERMINAL_RULES = DWT.rules('terminal_rules.db');
 var CENTRAL_WAITING_GUID = '0ztdC3L1HAzhbhMHypqbH5';
 var LOG = path.join(ROOT, 'logs', 'witness_space_scoped_walk_' +
   new Date().toISOString().replace(/[:.]/g, '').slice(0, 15) + '.log');
@@ -59,7 +60,7 @@ function rows(db, sql) {
 
 initSqlJs().then(function (SQL) {
   log('═══ W-SPACE-SCOPED-WALK — piece 2 (occupancy()/place() scoped to CENTRAL WAITING) ═══');
-  var DW = require(path.join(ROOT, 'build/disc_walker.js'));
+  var DW = require(DWT.walker);
 
   var rulesDb = loadDb(SQL, TERMINAL_RULES);
   DW.dwOpen(rulesDb);

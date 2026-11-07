@@ -44,8 +44,9 @@ var initSqlJs = require('sql.js');
 var execSync = require('child_process').execSync;
 
 var ROOT = path.join(__dirname, '..');
-var DW = require(path.join(ROOT, 'build/disc_walker.js'));
-var TERMINAL_RULES = path.join(ROOT, 'build/terminal_rules.db');
+var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
+var DW = require(DWT.walker);
+var TERMINAL_RULES = DWT.rules('terminal_rules.db');
 var TERMINAL_META = path.join(os.homedir(), 'bim-ootb/modeller/Terminal_meta.db');
 var TERMINAL_GEO = path.join(os.homedir(), 'bim-ootb/modeller/Terminal_geo.db');
 var LOG = path.join(ROOT, 'logs', 'witness_terminal_geosplit_' +

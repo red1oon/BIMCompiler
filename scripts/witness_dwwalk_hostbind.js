@@ -19,9 +19,10 @@
  *                       hostBind=null, most placements floating (the pre-host-bind defect, via the escape hatch).
  *   W2 DEFAULT-HOSTBIND — dwWalk('ELEC', SH) with NO opts now anti-floats by default: float↓, every bound point on a
  *                       real wall within reach, result.hostBind populated.
- *   W3 COUNT-PRESERVED— the default host-bound walk returns the SAME number of placements as the raw walk (bound ∪
- *                       refused), so anti-float moves fixtures onto hosts without adding/dropping any.
- *   W4 NO-SHIM-NOOP   — dwWalk for a discipline with NO matching shim (PLB) is a no-op under default-on (floats).
+ *   W3 COUNT-ACCOUNTED — every raw device is accounted for: placed + refused = raw, and bound + unhosted + not judged + refused = input
+ *                       (WalkerDoctrine §4). A wall row with no host is refused, not left floating.
+ *   W4 NO-SHIM-NOOP   — dwWalk for a discipline with NO matching shim (PLB) is not judged: same devices as the raw walk, except band duct or
+ *                       pipe pieces with no main, which are refused as no-main (bim-ootb prompts/DISC_WALK_DRAWN_MAINS.md §9.2).
  *   W5 PROJECTION-SRC — dwWalk('ELEC', SH, {hostBind:true}) reads the `rule_shim` table projected into the *_rules.db
  *                       (the §SHIM first-class flow) and binds identically to the default walk.
  */
@@ -31,9 +32,10 @@ var path = require('path');
 var initSqlJs = require('sql.js');
 
 var ROOT = path.join(__dirname, '..');
-var DW = require(path.join(ROOT, 'build/disc_walker.js'));
+var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
+var DW = require(DWT.walker);
 var DISC_PATTERNS = path.join(ROOT, 'library/ERP.db'); // disc_patterns.db (physically library/ERP.db until rename slice)
-var RULES = path.join(ROOT, 'build/duplex_rules.db');
+var RULES = DWT.rules('duplex_rules.db');
 var SH = path.join(ROOT, 'deploy/buildings/SampleHouse_extracted.db');
 var LOG = path.join(ROOT, 'logs', 'witness_dwwalk_hostbind_' +
   new Date().toISOString().replace(/[:.]/g, '').slice(0, 15) + '.log');
@@ -106,19 +108,20 @@ function distToWalls(p, walls, bdb) {
     'the LIVE walk host-binds by default: ' + def.hostBind.bound + ' bound to real walls (0 bad), float ' + rawFloat + '→' + defFloat +
     ', host=' + def.hostBind.host);
 
-  // ── W3 COUNT-PRESERVED ──
-  assert('W3 COUNT-PRESERVED',
-    def.placed === raw.placed && (def.hostBind.bound + def.hostBind.refused) === raw.placed,
-    'default host-bound walk keeps the count: ' + def.placed + ' == raw ' + raw.placed + ' (bound ' + def.hostBind.bound +
-    ' + refused ' + def.hostBind.refused + '); anti-float moves fixtures onto hosts, adds/drops none');
+  // ── W3 COUNT-ACCOUNTED ──
+  var defA = def.refusedNoHost;
+  assert('W3 COUNT-ACCOUNTED',
+    def.placed + defA.refused === raw.placed && defA.bound + defA.unhosted + defA.notJudged + defA.refused === defA.input && defA.input > 0,
+    'every device accounted for: placed ' + def.placed + ' + refused ' + defA.refused + ' == raw ' + raw.placed + ' (bound ' + defA.bound +
+    ' + unhosted ' + defA.unhosted + ' + not judged ' + defA.notJudged + ' + refused ' + defA.refused + ' == input ' + defA.input + ')');
 
-  // ── W4 NO-SHIM-NOOP: PLB has no matching shim → default walk is a no-op (floats, same as {noHostBind}) ──
+  // ── W4 NO-SHIM-NOOP: PLB has no matching shim → not judged, same as {noHostBind}, apart from pieces with no main ──
   var plbDef = DW.dwWalk('PLB', sh, 'SampleHouse');
   var plbRaw = DW.dwWalk('PLB', sh, 'SampleHouse', { noHostBind: true });
   log('§DWHB PLB no-shim: default placed=' + plbDef.placed + ' raw placed=' + plbRaw.placed + ' hostBind=' + plbDef.hostBind);
   assert('W4 NO-SHIM-NOOP',
-    plbDef.placed === plbRaw.placed && !plbDef.hostBind,
-    'a discipline with no matching shim is untouched by default-on: PLB placed=' + plbDef.placed + ' == ' + plbRaw.placed + ', hostBind=null');
+    plbDef.placed + plbDef.refusedNoHost.noMain === plbRaw.placed && plbDef.refusedNoHost.notJudged === plbDef.placed && !plbDef.hostBind,
+    'a discipline with no matching shim is not judged: PLB placed=' + plbDef.placed + ' (not judged ' + plbDef.refusedNoHost.notJudged + ') + no-main ' + plbDef.refusedNoHost.noMain + ' == ' + plbRaw.placed + ', hostBind=null');
 
   // ── W5 PROJECTION-SOURCE: opts.hostBind=true (NO caller shims) → dwWalk reads the projected rule_shim table ──
   var nShimRows = rows(rdb, "SELECT COUNT(*) c FROM rule_shim")[0].c;
