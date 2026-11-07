@@ -83,7 +83,33 @@ is ours" ⇒ aligned; move it from ⛔ to the queue after the catalog rebind.
 **Queue impact:** C1+C2 join row 14 (catalog rebind) and move up — they are live no-box violations, ahead of §SLOPE-HANDLES.
 C3 lands with the REPLACE verb.
 
-## ▶ §RESUME 2026-11-08 — START HERE (session close; then §RESUME 2026-11-07c below for today's record)
+## ▶ §RESUME 2026-11-08b — START HERE (session close; then §RESUME 2026-11-08 below)
+**Landed today, live, fetched back (bim-ootb):**
+- #2698: P7, Viewer totals leave provisional devices out.
+- #2700, #2701, #2704: the drawn-mains reader `modeller/drawn_mains.js`.
+  - Plan-level duct centrelines, fitted to ONE held grid. Grid tags are read inside linked-model blocks. US NCS layer rows. Guarded mirror correction. Tie-break: more tags, then the sheet's storey.
+  - W-DRAWN-MAINS 53/0.
+  - **Real set (design lane):** 4 private duct sheets fit at 0 mm; 343.07 m against an independent 343.1 m. Mirror correction confirmed (AC100 107 → 2 unjoined).
+- #2702 grid carrier `ifc_grid_axis`, both IFC open routes, W-IFC-GRID 29/0. Check on GitHub that it merged; it was in CI at close.
+- Spec for all of it: bim-ootb `prompts/DISC_WALK_DRAWN_MAINS.md` §4.2a, §4.3, amendments 1-3 and the RESULTs.
+**Owner's rulings today:**
+- Viewer totals: "Leave them out".
+- Grid: "Yes, keep the grid".
+- **Queue: carrier → export gaps (storeys + routed runs reach the IFC) → height (§7.1) → fit real sheets.**
+**Next, in order:**
+1. Design lane compares `ifc_grid_axis` on both routes against its private read (222 axes / 24 grids). Wait for its numbers.
+2. **Export gaps** (owner's queue item 2). Spec first. Measured in G2 (§RESUME 2026-11-07): the walked export held 0 `IfcBuildingStorey` (everything contained directly in the building), none of the routed runs (0 swept solids, 0 ports), and 2,323 of 6,461 elements on the merged import. Owner of the writer: `modeller/bonsai_ifc.js`.
+3. Height §7.1, then fit real sheets through the carrier, then the owner's §7 Q2 (how a user supplies sheets).
+**For the owner, open:**
+- The design lane proposes exporting a run as an IfcDuctSegment with an Axis representation only (no Body), labelled provisional height. Ask when the height step comes up.
+- Still not changed: the 4D schedule, egress FP presence, rule_report sufficiency and the offline QTO still count provisional devices.
+- Origin-grid band finding not ruled; the design lane advises against spending on it.
+**Notes:**
+- Heap climbs 75 → 394 MB across 4 sheets in one process (reader, not traced).
+- bim-ootb ESLint no-undef gate: every new browser global goes in `eslint.globals.json`, or fast-checks fails.
+- Worktrees: `/tmp/wt-grid` until #2702 merges, then prune it.
+
+## ▶ §RESUME 2026-11-08 — (superseded as entry point by 2026-11-08b above)
 **Landed since 2026-11-07c, all live and fetched back:** #2691 trunk on real wall boxes · #2692 trunk is a proposal (N10) · #2695 §11 band rows provisional (modeller sw v242; IFC set `BIMOOTB_Walk`; Viewer DB keeps it in `element_pset_common`) · doctrine §4 band line (owner's OK) · all 29 bim-compiler + 10 build/ walker witnesses on the shipped walker; nothing executable reads `build/disc_walker.js`.
 **Next, in order:**
 1. **✅ DONE (W-PROV-TOTALS 15/15), bim-ootb #2698 (`50fbbc28`, viewer sw v1699), live and fetched back (`provisional_totals.js` byte-identical).** One owner `viewer/provisional_totals.js`; 74 swaps in 17 files; resident DBs run the same `COUNT(*)`; all-provisional class stays at (0); rows listed and labelled `· provisional`. Spec + RESULT: bim-ootb `prompts/DISC_WALK_BAND_NO_HOST.md` "§11 P7". **For the owner, not changed:** 4D schedule still schedules provisional devices; `egress_sanity.js` counts provisional sprinklers as FP present; `rule_report.js` sufficiency probes; offline `mep_qto_populate.js`. **Design lane finding, not ruled (2026-11-08):** band cells snap to a grid anchored at world 0,0 (`disc_walker.js:851-852,876`), so open vs import frames give 47 of 706 matching band spots; provisional only, fix waits for the owner. Original item text: **§11 P7, Viewer totals leave provisional out** (owner: *"Leave them out"*; spec `prompts/DISC_WALK_BAND_NO_HOST.md` §11 Viewer paragraph). A provisional device in a Viewer DB = a row in `element_pset_common` with `pset='BIMOOTB_Walk' AND name='Provisional' AND value='TRUE'`. **One shared exclusion, not a patch per panel** (AD-layer spirit): one function in the Viewer returning that predicate, applied at every count site. Count sites found by `grep -nE "GROUP BY (m\.)?ifc_class" viewer/*.js` (2026-11-08): `diff.js:359`, `cpe_resource_panel.js:667`, `cost_panel.js:86`, `decoder.js:244`, `rule_report.js:345`, `fx_cinema_path_plan.js:189` (per room), `nf_panel_search.js:272,287`, `nlp.js:112-144`; also check `clash_report.js`, `print_sheet.js`, `light_zones.js`, `nf_isolate_drill.js`, `fx_still_refine.js` for counts. The Find panel's room injection and auto-inject are NOT touched (owner's boundary); only totals change. Witness P7: same DB's totals with and without provisional rows, red control a switch that counts them; a DB with no walk set must give byte-identical totals. **Design lane confirmed (2026-11-08):** `nf_panel_search.js:272,287` (`_populateTypes`, the Type dropdown's "(n)" and "n matches") IS a total, inside the ruling. (a) A type whose rows are all provisional stays in the dropdown with count 0, so its devices can still be found; no provisional count in the label (owner chose "leave them out", not "count them labelled"). (b) The list a chosen type opens and any "n results" line are count sites too: same shared exclusion, so label and result count agree; the devices themselves stay listed and labelled.
