@@ -8,13 +8,13 @@ Origin: a pasted Gemini chat (JEPA "architect" + BIMCompiler "inspector"). Revie
 ## ▶ RESUME HERE (session close 2026-11-07, third test and public guide; for the next working session, an outside reader can skip to START HERE)
 **Read in this order:** this block → §14 RESULT → §14.1 → §13 RESULT only for its limits 3 to 5.
 
-**Waiting on the owner, one decision:** the reject gate (§14 RESULT, Decision). Asked, not yet answered. **Do not un-park it without their go.**
+**Decided 2026-11-08 (owner: "go with your take"):** the stop is built for outside calls only (§15.1), and the edit report loads on first use (§15.2). **Nothing is waiting on the owner.** Next work, each needing its own go: a free rehearsal of the stop with `--handoff`; the Java `PlacementRequest` gate once an outside order really arrives there; the Modeller's boot weight (`prompts/BROWSER_BOOT_WEIGHT.md`).
 
 **⛔ No paid model calls (owner, 2026-11-08):** `run.js` refuses without `--model-calls`, and no session passes it. Rehearse with `--handoff` (§14.6). The §12 to §14 runs used the owner's claude.ai plan login; their `$` figures are Claude Code estimates, not charges.
 
 **How the test runs:** `NODE_PATH=~/bim-compiler/node_modules node modeller/tests/proposer_test/run.js --stub`, which must pass first, then `--handoff <dir> --answered-by "<who>"` (§14.6). The last model run (§14, before the directive): 54 attempts. **Re-check the instrument before quoting numbers:** across §13 and §14 that found a live bug, a meaningless overlap count, floors left behind, and a broken install path, all before they reached a result.
 
-**Public guide:** https://red1oon.github.io/BIMCompiler/ProposerGuide/ , source `docs/ProposerGuide.md`. **Change a number there and W-PROPOSER-GUIDE must change with it** (bim-ootb `modeller/tests/witness_proposer_guide.js`; it runs the published commands on the live site and checks the published page). Publish only through `scripts/safe_gh_deploy.sh`; from a worktree, copy `docs/glassbowl_data.db` in first or the guard aborts (`DOCS_DEPLOY_POLICY.md`).
+**Public guide:** https://red1oon.github.io/BIMCompiler/ProposerGuide/ , source `docs/ProposerGuide.md`, last republished 2026-11-08 for the stop. **Change a number there and W-PROPOSER-GUIDE must change with it** (bim-ootb `modeller/tests/witness_proposer_guide.js`; it runs the published commands on the live site and checks the published page). Publish only through `scripts/safe_gh_deploy.sh`; from a worktree, copy `docs/glassbowl_data.db` in first or the guard aborts (`DOCS_DEPLOY_POLICY.md`).
 
 **Shipped:**
 | What | Where |
@@ -563,7 +563,36 @@ Passed the report but lines crossed: 0. Passed but goal missed: 0. Bad first pro
 **How to rehearse here at no cost:** `node modeller/tests/proposer_test/run.js --handoff <dir> --answered-by "this session" --briefs G4 --reps 1 --out <file>`, then answer each `q_*.txt` with an `a_*.json` in the reply shape. The result is a rehearsal, never a measurement.
 
 
+## 15. The stop on outside calls, and the report loaded on first use — SPEC 2026-11-08 (owner: "go with your take on those two questions")
+### 15.1 The stop
+**Issue:** a report alone does not stop a proposer that has decided: in §14, G4 kept an over-limit span in all 3 runs, knowing the limit (§14 RESULT).
+**Where:** `edit_cli`, the one call an outside proposer makes. **Not** the Modeller's own edits by a person, which still report and offer Revert, with Save blocking on RED as before. **Not** the Java compile path, which stays report-only (`CompilationPipeline.java:1536`), and so never on extracted buildings. **Not** `PlacementRequest`: no outside order arrives there yet, so a gate there would judge nothing. That stays as STATUS describes, for when one does.
+**The rule, read from the report, no new threshold:** stop an edit if any red new row counts above 0 (`clash`, `abuts-clash`, `door-out`, `door-crush`, or a red kind the composer has not heard of), or the span-over-limit row is JUDGED with `delta` above 0, or it names a bay `newly_over`. A NOT_JUDGED row does not stop an edit, and the answer lists it as not judged, never as passed. Orange and a shift's left-behind elements are reported and do not stop.
+**What a stop does:** the edit is undone (one Ctrl+Z, as it was one gesture). Then a recount must equal the report's Before on every JUDGED row, or the call fails loudly. The answer is `{refused: true, stopped_by_gate: true, reason, report}` with exit 3, so the proposer reads the same report as before plus the reason. Later edits in the same call start from the restored state.
+**Owner of the rule:** `EditReport.gateVerdict(report)` in `edit_report.js`, pure, next to the composer whose rows it reads.
+**`--report-only`** turns the stop off, for diagnosis and for comparing with the page byte for byte. A proposer can pass it too: this is a tool on the caller's own machine, not an enforcement boundary. The guide says so.
+**Witness, W-EDIT-CLI adds:** C13 a red edit is stopped: exit 3, `stopped_by_gate`, the report inside equal to the page's, and the model back to Before by recount. C14 the next edit in the same call starts from the restored state. C15 an edit with no red passes the stop unchanged. C16 a NOT_JUDGED row is listed as not judged. **Pure:** W0j `gateVerdict` over hand-built reports, every trigger and every non-trigger.
+**The guide** changes where the default changed: red results now come back stopped, exit 3. W-PROPOSER-GUIDE pins the new answers, and the page is republished through `scripts/safe_gh_deploy.sh`.
+**Scoring for rehearsals:** STOPPED, bad, not a right outcome. No measurement can be run under the no-cost directive (§14.6).
+
+### 15.2 The report loads on the first committed grid move
+`edit_report.js` and `edit_report_panel.js`, 13.6 KB, leave the page's script tags. `_erEmit` loads them on its first call, as the block shift loads `bay_add.js`. The 46 lines of glue in `modeller.html` stay: they use the page's own functions. `BROWSER_BOOT_WEIGHT.md` candidate 5 is closed by this.
+**Witness:** W-EDIT-REPORT Z1, absent at open; Z2, present after the first grid move, with the report and panel as before. The rest of W-EDIT-REPORT unchanged.
+
+### §15 RESULT 2026-11-08 (bim-ootb #2699, sw v244)
+**The stop:** `EditReport.gateVerdict` plus `edit_cli`. W-EDIT-CLI 24/0:
+- C13: SampleHouse `gx1` +1 m is stopped, exit 3, "stopped: New or deeper box overlap: 1; Driven into a wall it touches: 2", with the page's own report inside, byte for byte.
+- C14: the next edit in the same call equals that edit made alone, so the stop really restored Before.
+- C15: a no-red edit passes byte for byte.
+- C16: not-judged checks are listed as not judged.
+W-EDIT-REPORT 53/0, with W0j covering every trigger and non-trigger; its falsifier fails. Proposer stub green, with STOPPED (S1b, S3g). Unchanged and green: W-BLOCK-SHIFT 46/0, W-GRID-SPAN-GATE 20/0, W-SDG-GATE 18/0, W-E2E-GRIDSTRETCH-MULTI 21/0, coverage 11/0.
+**The report on first use:** W-EDIT-REPORT Z1, not in the page at open; Z2, loaded by the first committed grid move. The page loses 2 script tags, 13.6 KB.
+**Found while building:** C8 compared a CLI shift with the page and failed once the stop was on: on the Garage's ordinary world boxes that shift reads red, so the CLI now stops it. The comparison uses `--report-only`, as C1 does. On `--lattice-boxes` the same shift is clean (§14.1).
+**The guide, republished:** three of its examples now come back stopped (gx38 single move, gx39 shift, the Garage's gx6 shift), and it explains the stop, `--report-only`, and that the stop is not a security boundary. Guard PASS, canaries 200. **W-PROPOSER-GUIDE 16/0** against the live site and the republished page, including G8 (`--report-only` lets the edit stand).
+**Not measured, and not measurable under §14.6:** whether a proposer does better with the stop. A free `--handoff` rehearsal is possible; it would not be a measurement.
+**Not changed:** a person's own edits in the Modeller (report, Revert, Save blocks on RED, as before); the Java compile path, report-only; `PlacementRequest`, no gate, since no outside order arrives there yet.
+
 ## STATUS
-2026-11-06 spec drafted. 2026-11-07: §3 extracted, §4 witnesses committed, §6 fixes shipped, live checks measured (§3.5), gate fix and report shipped (§8), DeepSeek's review checked (§10), CLI shipped (§11), first proposer test run (§12), its flaws fixed and second test run (§13), the floors made to follow and third test run, public guide published (§14).
-⏸ **Reject gate PARKED by owner 2026-11-07.** Three proposer tests have run. 6 of 30 finals stay RED after the report, and CLEAN no longer hides what a shift leaves behind, so the decision is ready for the owner (§14 RESULT). When un-parked: apply only to external orders, at `PlacementRequest`, checking before any snap; then run the §7 measurement. A gate must not apply to extracted buildings: the compile path stays log-only until its rules are proven against them (`CompilationPipeline.java:1536`).
+2026-11-06 spec drafted. 2026-11-07: §3 extracted, §4 witnesses committed, §6 fixes shipped, live checks measured (§3.5), gate fix and report shipped (§8), DeepSeek's review checked (§10), CLI shipped (§11), first proposer test run (§12), its flaws fixed and second test run (§13), the floors made to follow and third test run, public guide published (§14). 2026-11-08: no paid model calls, hand-off mode (§14.6); the stop on outside calls and the report on first use (§15).
+✅ **A stop on outside calls, built 2026-11-08 on the owner's go (§15).** The rest of the gate stays as follows. When un-parked: apply only to external orders, at `PlacementRequest`, checking before any snap; then run the §7 measurement. A gate must not apply to extracted buildings: the compile path stays log-only until its rules are proven against them (`CompilationPipeline.java:1536`).
 Still open, by design: every row marked NONE in §3.1 and §3.5, snap cases S2–S5. G4-TAMPER still reports 73 older violations (§6.3).
