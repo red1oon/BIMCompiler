@@ -7,7 +7,7 @@ Origin: a pasted Gemini chat (JEPA "architect" + BIMCompiler "inspector"). Revie
 
 ## ▶ RESUME HERE (2026-11-08)
 **State:** everything specified here is shipped and witnessed. **Nothing is waiting on the owner.** Next work, each needing its own go:
-1. A free hand-off rehearsal of the stop (§14.6). It is a rehearsal, never a measurement.
+1. ✅ Done 2026-11-08: a free hand-off rehearsal of the stop (§15.1). A wider one is possible on the same terms.
 2. The Java `PlacementRequest` gate, once an outside order really arrives there (STATUS).
 3. Browser boot weight, its own file: `prompts/BROWSER_BOOT_WEIGHT.md`.
 4. Not started, each its own go: the report for bay add and other gestures, a session total at Save, beam and column rules on a live edit, a shift in the Modeller's UI, a film of the report.
@@ -312,6 +312,14 @@ How the runs were made: `run.js` spawned `claude -p` through the machine's login
 - C15: a clean edit passes byte for byte.
 - C16: not-judged checks are listed.
 W-EDIT-REPORT W0j covers every trigger and non-trigger. **Not measured:** whether a proposer does better with the stop (§14.6).
+**Hand-off rehearsal, 2026-11-08** (G1, G2, G4, one repeat; answered by this session, which knows every answer, so **not a measurement**; `$0`, 4 CLI calls, no model). It checks the loop and the stop, not a proposer:
+| Brief | Attempts | What came back |
+|---|---|---|
+| G1 | shift gy9 +1.51 | CLEAN, run ends |
+| G2 | shift gy11 −1.49; then gy10 +1.49; then decline | **STOPPED** "New or deeper box overlap: 2; Driven into a wall it touches: 2"; **STOPPED** "…overlap: 2; Driven into a wall it touches: 1"; DECLINED with both reasons |
+| G4 | shift gx6 +1.817; then decline | **STOPPED** "Beam spans over limit: 91 -> 92 (limit 12 m, RC); bay gx5-gx6 newly over the limit: 12.993 m"; DECLINED, naming an extra column line as the way to a 13 m bay |
+**What it shows:** each stop undid the edit and passed the reason and the full report back through the revision prompt, so the next proposal started from the restored building. The results file stamps itself `"mode":"handoff rehearsal","measurement":false`. **What it cannot show:** whether an isolated model, given the same stop, declines G4 instead of retrying. In §14 the model kept that edit three times; under the stop, keeping it is no longer possible, but whether the model then declines or keeps trying is unmeasured.
+
 ### 15.2 The report loads on the first committed grid move
 `edit_report.js` and `edit_report_panel.js`, 13.6 KB, left the page's script tags; the 46 lines of glue in `modeller.html` stay. W-EDIT-REPORT Z1 (absent at open) and Z2 (loaded by the first grid move).
 
