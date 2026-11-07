@@ -23,8 +23,9 @@
  * Run: NODE_PATH=~/bim-ootb/tests/node_modules node build/witness_disc_walk_duplex_generalize.js
  */
 const path = require('path'), fs = require('fs');
+const DWT = require(path.join(__dirname, '..', 'scripts', 'dw_tree.js'));   // the shipped walker and its rules, never this folder's older copy (MODELLER_MASTER §WITNESS-REPOINT)
 const ROOT = path.resolve(__dirname, '..');
-const DW = require(path.join(__dirname, 'disc_walker.js'));
+const DW = require(DWT.walker);
 
 function loadSqlJs() {
   const cands = [
@@ -36,8 +37,8 @@ function loadSqlJs() {
   throw new Error('sql.js not found (set NODE_PATH=~/bim-ootb/tests/node_modules)');
 }
 
-const DX_RULES = path.join(ROOT, 'build/duplex_rules.db');
-const TERM_RULES = path.join(ROOT, 'build/terminal_rules.db');
+const DX_RULES = DWT.rules('duplex_rules.db');
+const TERM_RULES = DWT.rules('terminal_rules.db');
 const HOME = process.env.HOME || '';
 const CANDS = {
   SampleHouse: [

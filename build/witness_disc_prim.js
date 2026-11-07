@@ -19,8 +19,9 @@
  *                   centered at p.x/y/z): the 8 world corners are p ± extent/2, exact.
  */
 const path = require('path'), fs = require('fs');
+const DWT = require(path.join(__dirname, '..', 'scripts', 'dw_tree.js'));   // the shipped walker and its rules, never this folder's older copy (MODELLER_MASTER §WITNESS-REPOINT)
 const ROOT = path.resolve(__dirname, '..');
-const DW = require(path.join(__dirname, 'disc_walker.js'));
+const DW = require(DWT.walker);
 
 function loadSqlJs() {
   const cands = [path.join(ROOT, 'node_modules/sql.js'),
@@ -31,9 +32,9 @@ function loadSqlJs() {
 const MODELLER = path.join(process.env.HOME || '', 'bim-ootb/modeller');
 // (rules db, meta db, walk-target building, a disc to walk for P3/P4)
 const CASES = [
-  { rules: path.join(ROOT, 'build/terminal_rules.db'), meta: path.join(MODELLER, 'Terminal_meta.db'),
+  { rules: DWT.rules('terminal_rules.db'), meta: path.join(MODELLER, 'Terminal_meta.db'),
     target: path.join(MODELLER, 'SampleCastle_extracted.db'), disc: 'PLB' },
-  { rules: path.join(ROOT, 'build/duplex_rules.db'), meta: path.join(ROOT, 'build/Duplex_mep_meta.db'),
+  { rules: DWT.rules('duplex_rules.db'), meta: path.join(ROOT, 'build/Duplex_mep_meta.db'),
     target: path.join(MODELLER, 'SampleCastle_extracted.db'), disc: 'PLB' },
 ].filter(c => fs.existsSync(c.rules) && fs.existsSync(c.meta) && fs.existsSync(c.target));
 

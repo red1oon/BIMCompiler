@@ -18,8 +18,9 @@
  * Run: NODE_PATH=~/bim-ootb/tests/node_modules node build/witness_disc_route_nnchain.js
  */
 const path = require('path'), fs = require('fs');
+const DWT = require(path.join(__dirname, '..', 'scripts', 'dw_tree.js'));   // the shipped walker and its rules, never this folder's older copy (MODELLER_MASTER §WITNESS-REPOINT)
 const ROOT = path.resolve(__dirname, '..');
-const DW = require(path.join(__dirname, 'disc_walker.js'));
+const DW = require(DWT.walker);
 
 function loadSqlJs() {
   const cands = [
@@ -31,7 +32,7 @@ function loadSqlJs() {
   throw new Error('sql.js not found (set NODE_PATH=~/bim-ootb/tests/node_modules)');
 }
 
-const RULES_DB = path.join(ROOT, 'build/terminal_rules.db');
+const RULES_DB = DWT.rules('terminal_rules.db');
 const MODELLER = path.join(process.env.HOME || '', 'bim-ootb/modeller');
 const TERMINAL = path.join(MODELLER, 'Terminal_meta.db');
 const SAMPLEHOUSE = path.join(MODELLER, 'SampleHouse_extracted.db');

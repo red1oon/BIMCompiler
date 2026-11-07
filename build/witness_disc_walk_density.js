@@ -23,8 +23,9 @@
  *   D-REGRESS   — network classes (Fitting/Segment, spacing=0) are NOT density-placed (they route).
  */
 const path = require('path'), fs = require('fs');
+const DWT = require(path.join(__dirname, '..', 'scripts', 'dw_tree.js'));   // the shipped walker and its rules, never this folder's older copy (MODELLER_MASTER §WITNESS-REPOINT)
 const ROOT = path.resolve(__dirname, '..');
-const DW = require(path.join(__dirname, 'disc_walker.js'));
+const DW = require(DWT.walker);
 
 function loadSqlJs() {
   const cands = [path.join(ROOT, 'node_modules/sql.js'),
@@ -32,7 +33,7 @@ function loadSqlJs() {
   for (const c of cands) { try { return require(c); } catch (e) { /* next */ } }
   throw new Error('sql.js not found');
 }
-const RULES_DB = path.join(ROOT, 'build/duplex_rules.db');   // the residential standard (carries src_storey_area)
+const RULES_DB = DWT.rules('duplex_rules.db');   // the residential standard (carries src_storey_area)
 const MODELLER = path.join(process.env.HOME || '', 'bim-ootb/modeller');
 const RES = [
   { key: 'SampleHouse',  db: path.join(MODELLER, 'SampleHouse_extracted.db') },
