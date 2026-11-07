@@ -386,6 +386,44 @@ CLEAN and PARTLY_JUDGED end the run. "Not kept" is then said only after a bad re
 **W-EDIT-REPORT adds:** `gx6` +1.817 on the Garage names `gx5-gx6`, 11.18 → 13.00, limit 12, RC, equal to a recount; a move that puts nothing new over names no new bay; a refused span has no limit and no bay; the panel prints the same.
 **Regression:** W-BAY-RIDE, W-DXF-ADD-BAY (`plan` was refactored), W-EDIT-REPORT, W-EDIT-CLI, W-EDIT-REPORT-COVERAGE.
 
+### 13.6 Found while building, before any model call
+Probing the new edit through the CLI turned up two more problems. Neither was in the spec above.
+**1. A live bug, fixed: any move reshaped a 3-axis element.** `bonsai_library.js` rebuilt the placement with yaw only after a `GEOM_MOVE`, so `place()` fell to its yaw branch. Measured: Garage wall 22, moved +1 m in y, also rose 10.03 m and turned; SampleHouse furniture rose 0.614 m. It hits the plain Move tool, not only a shift: 24 of 864 elements on the Garage, 3 of 38 on SampleHouse. The fix keeps the 3-axis placement; a rotate keeps its old path. W-BLOCK-SHIFT A1, A2. §12's code had this bug. Whether its runs hit it is not measured: a grid move uses `GEOM_MOVE` only for hosted riders.
+**2. On a rotated building, world boxes make the overlap numbers meaningless.** A 0.2 m beam 120 m long at −2° has a 4.38 m wide world box. The Garage's overlap row read about 1,900 before any edit, and a rigid +1.51 m widening read 7 to 10 new clashes (lattice travel 7, world travel 10), every one from long members growing a few centimetres sideways in their boxes. A stretched member also really does end `|d|·sin|theta|` off the lattice, the known limit in §13.1, which is 5 to 10 cm against a 20 mm tolerance. Either way the test would have scored every Garage shift RED, the same unfairness §12 is being fixed for.
+**The instrument:** `edit_cli --lattice-boxes` judges on boxes in the lattice frame, with tolerance 20 mm + `|d|·sin|theta|`, stated in the row label ("Box overlap over 73 mm"). Computed, no new constant. No effect at theta 0. **The live app and its Save gate are untouched, and stay on world boxes.** It applies to single-line moves and shifts alike, so the two are judged by one instrument.
+**What it costs:** a penetration shallower than that tolerance (72 mm at 1.51 m, 125 mm at 3 m) goes unreported on these runs. W-BLOCK-SHIFT F2, N1: the widening goes clean and a real narrowing stays RED (44 clashes).
+**Owner's question, not acted on:** the live Save gate on a rotated building still uses world boxes, so it can block on phantom overlaps. Whether to move it to lattice boxes is a separate decision, because it changes what blocks a Save.
+**Measured on this instrument, one edit each, no model:**
+| Edit | Result |
+|---|---|
+| G1 shift gy9 +1.51 | clean; 508 moved, 8 stretched, 14 crossing left behind |
+| G1 gy9 +1.51, single line | RED: 2 clash, 1 driven into a wall |
+| G2 shift gy11 −1.49 | RED: 44 clash, 1 driven into a wall |
+| G3 shift gx8 +1.5 | clean |
+| G4 shift gx6 +1.817 | RED: spans 91 → 92, names `gx5-gx6`, limit 12 |
+| G5 shift gy12 +0.6 | REFUSED: 3 fillings on an element that would stretch |
+| G5 gy12 +0.6, single line | REFUSED: §DAGEVU |
+| G6 shift gy5 +2 | clean |
+| G7 shift gy20 +3 | clean |
+| S1 gx1 +0.355 (own grid), single line | clean, 5 recomposed |
+| S1 shift gx1 +0.355 | REFUSED: 5 fillings on an element that would stretch |
+| S3 gy1 +1.355, single line | REFUSED: §DAGEVU |
+| S3 shift gy1 +1.355 | REFUSED: 2 fillings on an element that would stretch |
+So G1, G3, G6 and G7 have a right answer by shift, and a proposer that finds it scores it. **This table tells the reader what is available, not what a model will do.**
+
+### 13.7 PRE-REGISTERED, fixed before any model call
+At bim-ootb branch `feat/proposer-test-v2`, commit **`4a1e82f5e4955bd6dae0f10a22535f654c5d7b02`**: `modeller/tests/proposer_test/briefs.json`, `run.js`.
+**Same as §12:** `claude-sonnet-5-5`, isolated; not told the limit, the walls or the openings; 10 briefs × 3 = 30; Arm A the first proposal and forecast, Arm B the same run with the report fed back, up to 2 revisions; the classes; the rule for a right outcome; every number listed in §12 is reported.
+**Different, all five named:**
+1. The proposer may use `shift`, and is told what it does.
+2. S1–S3 are on SampleHouse's wall-derived lines, and the prompt says so. S1 is now gx0–gx1. S2 no longer carries its known trap.
+3. CLEAN or PARTLY_JUDGED ends a run.
+4. The report names the limit and the changed over-limit bays.
+5. Overlaps are judged on lattice boxes with the stated tolerance (§13.6).
+**Also reported:** how many first and final proposals used a shift.
+**What I expect, written down so it can be wrong:** A's right outcome rises well above 3 of 30, because a shift is now easy to choose and four briefs have a clean one. The gain from the report (A to B) may then shrink. G4 is the check on change 4: at least one G4 run should now decline. If none does, naming the limit did not help.
+**What this can and cannot show:** as §12. Counts, n=30 on 10 briefs, one model, briefs I wrote, half of them traps. **§12's numbers are not directly comparable:** the edit set, the grid, the stop rule, the report and the boxes all changed. Do not quote "3 → X" as an improvement over the first test.
+
 ## STATUS
 2026-11-06 spec drafted. 2026-11-07: §3 extracted, §4 witnesses committed, §6 fixes shipped, live checks measured (§3.5), gate fix and report shipped (§8), DeepSeek's review checked (§10), CLI shipped (§11), first proposer test run (§12).
 ⏸ **Reject gate PARKED by owner 2026-11-07.** A proposer has now run, and 14 of 30 finals stayed bad, so the case for a stop is open; §12 recommends fixing the test first. When un-parked: apply only to external orders, at `PlacementRequest`, checking before any snap; then run the §7 measurement. A gate must not apply to extracted buildings: the compile path stays log-only until its rules are proven against them (`CompilationPipeline.java:1536`).
