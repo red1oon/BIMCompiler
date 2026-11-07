@@ -42,7 +42,7 @@ Real Open of a resident in each page, no user action. Print `§BOOT_WEIGHT page=
 2. **Modeller walkers** (`disc_walker.js`, `routewalker.js`, `viewer/lib/room_walker.js`): needed only when a walk runs?
 3. **Viewer film and cinema** (`cinema_path_editor.js`, `maxq_start.js`, `fx_cinema_path_plan.js`, `sourced_light.js`): needed only when a film or bake starts?
 4. **Viewer `schedule_author.js` and `chart.umd.min.js`:** needed only when 4D or a chart opens?
-5. **The edit report** (`edit_report.js` + `edit_report_panel.js` + about 46 lines of glue, about 24 KB): runs after every grid move a person makes, so it could load on the first committed grid move. **Owner's call:** it is an existing user feature (NEURO_SYMBOLIC_ORDER_CONTRACT §14.6).
+5. ~~The edit report~~: owner chose first use, 2026-11-08. The two files (13.6 KB) load on the first committed grid move; the 46 lines of glue stay inline (NEURO_SYMBOLIC_ORDER_CONTRACT §15.2).
 
 ## Landmines
 - `bim-ootb` Pages serves tracked files from `main`: what is committed is what users load (`AGENT_QUEUE.md` §PAGES-SERVES-THE-BRANCH).

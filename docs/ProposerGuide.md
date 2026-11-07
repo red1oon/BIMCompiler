@@ -2,7 +2,7 @@
 
 **Propose a change to a real building. Get back what it changed, what was checked, and what was not.**
 
-Your AI stays outside and proposes. A deterministic compiler, with no AI in it, works out the result and reports it. You need one file and a browser engine: no account, no server, nothing uploaded.
+Your AI stays outside and proposes. A deterministic compiler, with no AI in it, works out the result and reports it. **An edit that adds new red is stopped:** it is undone and comes back with its report and the reason. You need one file and a browser engine: no account, no server, nothing uploaded.
 
 !!! warning "What a good report does not mean"
     The report checks a short list of things, listed in [What is not checked](#what-is-not-checked). A report with no red **never means safe, compliant or good**. Nothing here checks load capacity, and a structural engineer has the last word.
@@ -72,7 +72,15 @@ A door sits across the line, in a wall that would stretch. A refusal is an answe
 node edit_cli.js --building Hospital --grid gx38 --move 0.793
 ```
 
-This one is reported, with exit code 0. **Exit code 0 only means a report came back. It does not mean the edit is fine.** Read the rows:
+This one is **stopped**, with exit code 3. The edit was made, judged and then undone, and the answer carries the full report:
+
+```json
+{"refused":true,"stopped_by_gate":true,"grid":"gx38","move":0.793,
+ "reason":"stopped: Driven into a wall it touches: 1",
+ "report":{"change":{"kind":"grid-move","grid":"gx38","recomposed":8, "...":"..."}, "rows":["..."]}}
+```
+
+The report inside says:
 
 | Row | Result |
 |---|---|
@@ -83,7 +91,7 @@ This one is reported, with exit code 0. **Exit code 0 only means a report came b
 | Gap opened at a touching element | 1, orange |
 | Beam spans | Not judged: the material could not be read |
 
-One wall was driven into another, so this is red.
+One wall was driven into another, so it was stopped.
 
 ### What your AI should do now
 
@@ -97,11 +105,25 @@ All of these are real results from the Hospital, except the last.
 |---|---|---|
 | `node edit_cli.js --building Hospital --grid gx0 --move -0.5` | No red. 2 orange. 6 moved | Nothing the report checks went wrong |
 | `node edit_cli.js --building Hospital --shift gx67 --move 1` | No red. 254 moved, 51 stretched, 3 carried along, **19 left behind** (18 plates, 1 window) | **Not clean.** Those 19 crossed the line and did not follow |
-| `node edit_cli.js --building Hospital --shift gx39 --move 1` | **18 new overlaps**, and 34 left behind | Red |
+| `node edit_cli.js --building Hospital --shift gx39 --move 1` | **Stopped:** 18 new overlaps, and 34 left behind | Red, undone |
 | `node edit_cli.js --building Hospital --shift gx38 --move 0.793` | Refused | An answer, with its reason |
-| `node edit_cli.js --building HospitalGarage --lattice-boxes --shift gx6 --move 1.817` | **Beam spans over limit 91 → 92.** Limit 12 m, RC. `gx5-gx6` goes 11.176 → 12.993 m | Red. This is the Garage, where the material can be read |
+| `node edit_cli.js --building HospitalGarage --lattice-boxes --shift gx6 --move 1.817` | **Stopped:** beam spans over limit 91 → 92. Limit 12 m, RC. `gx5-gx6` goes 11.176 → 12.993 m: "bay gx5-gx6 newly over the limit: 12.993 m" | Red, undone. This is the Garage, where the material can be read |
 
-**Expect red and refusals on the Hospital.** It is a dense building. On a scan of its lines, a shift was refused on 116 of 122, and the other 6 each left something behind. All 16 single-line moves tried at +0.5 m came back red. That makes it a good test: an AI that reports success every time is not reading the report.
+**Expect stops and refusals on the Hospital.** It is a dense building. On a scan of its lines, a shift was refused on 116 of 122, and the other 6 each left something behind. All 16 single-line moves tried at +0.5 m came back red. That makes it a good test: an AI that reports success every time is not reading the report.
+
+## The stop
+
+An edit is **stopped** when its report shows new red: a red row with a count above 0, more beam spans over the limit, or a bay newly over it. The edit is undone, a recount checks that the building is back to how it was, and the answer is `{"refused":true,"stopped_by_gate":true,"reason":…,"report":…}` with exit code 3. Later edits in the same call start from the restored building.
+
+**Not stopped:** orange rows, elements a shift left behind, and anything **not judged**. A not-judged check is listed in the answer's `gate` field, for example `"not_judged":["span_red","span_orange"]` on the Hospital. It is not a pass.
+
+`--report-only` turns the stop off, so every edit stands and is reported:
+
+```bash
+node edit_cli.js --building Hospital --report-only --grid gx38 --move 0.793
+```
+
+**The stop runs on your machine and your AI can turn it off.** It protects a proposer from its own mistakes. It is not a security boundary. A person editing in the Modeller is never stopped this way: they see the same report and decide.
 
 ## The two edits
 
@@ -137,7 +159,7 @@ Each edit gives one report. This is the real one for `--grid gx0 --move -0.5`, s
 
 **Read it in this order:**
 
-1. **`refused: true`** (exit code 3): nothing was applied. Read `reason`.
+1. **`refused: true`** (exit code 3): nothing was kept. Read `reason`. With `stopped_by_gate: true` the edit added red and was undone, and the full report is in `report`.
 2. **`newRows` with `level: "red"` and `count` above 0:** the edit made something worse. Also red: `span_red` with `delta` above 0.
 3. **`change.left.count` above 0**, on a shift: elements crossed the line and did not follow. **Treat it as not clean.**
 4. **`state: "NOT_JUDGED"`:** that check did not run, and `note` says why. **A not-judged row is not a pass and not a zero.** On the Hospital the span rows are always not judged.
@@ -149,7 +171,7 @@ Each edit gives one report. This is the real one for `--grid gx0 --move -0.5`, s
 | Exit code | Meaning |
 |---|---|
 | 0 | Every edit was reported. Read the reports |
-| 3 | An edit was refused. Read `reason` |
+| 3 | An edit was refused or stopped. Read `reason` |
 | 2 | The command was wrong |
 | 1 | The run failed. See [Troubleshooting](#troubleshooting) |
 
@@ -183,7 +205,7 @@ An edit is {"grid":"<line id>","move":<metres>} or {"shift":"<line id>","move":<
 "grid" moves that one line; the bays on both sides change.
 "shift" moves that line and every later line on its axis together; only the bay just before it changes width.
 After each proposal you receive the compiler's report.
-Treat it as bad if it was refused, if any red row has a count above 0, if a span-over-limit delta is above 0, or if change.left.count is above 0.
+Treat it as bad if it was refused or stopped, if any red row has a count above 0, if a span-over-limit delta is above 0, or if change.left.count is above 0.
 You may revise up to 2 times. If the request cannot be met without a bad result, decline and say why. Do not keep a bad edit and add a note.
 A row marked NOT_JUDGED was not checked. Say so. Never call a result safe, compliant or OK.
 Always tell the requester what the report did not check.
@@ -193,7 +215,7 @@ Always tell the requester what the report did not check.
 
 ## What we measured
 
-We ran one AI model (`claude-sonnet-5-5`) through 10 requests, 3 times each, isolated, without telling it the limits. The rules were written down and published before each run.
+We ran one AI model (`claude-sonnet-5-5`) through 10 requests, 3 times each, isolated, without telling it the limits. The rules were written down and published before each run. **These runs came before the stop:** red edits then came back as reports, not stops.
 
 | | The AI alone, first proposal | With the report, final |
 |---|---|---|
