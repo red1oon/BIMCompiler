@@ -36,7 +36,7 @@ function log(s) { _lines.push(s); console.log(s); }
 var pass = 0, fail = 0;
 function assert(claim, cond, detail) {
   if (cond) { pass++; log('  ✅ ' + claim + ' — ' + detail); }
-  else { fail++; log('  ❌ ' + claim + ' — ' + detail); }
+  else { fail++; log('  ❌ ' + claim + ' — CLAIM NOT MET: ' + detail); }
 }
 function rows(db, sql) { var r = db.exec(sql); if (!r.length) return [];
   return r[0].values.map(function (v) { var o = {}; r[0].columns.forEach(function (c, i) { o[c] = v[i]; }); return o; }); }
@@ -67,10 +67,12 @@ Heap.prototype.size = function () { return this.a.length; };
 
   // — nav grid: block real wall/column bboxes, carve real door passages —
   var CELL = 0.2, PAD = CELL / 2, DOOR_R = 0.6;
-  var walls = rows(SH, "SELECT m.guid g, t.center_x x, t.center_y y, t.bbox_x bx, t.bbox_y by_ FROM elements_meta m " +
-    "JOIN element_transforms t ON m.guid=t.guid WHERE m.ifc_class LIKE '%Wall%' OR m.ifc_class LIKE '%Column%'");
-  var doors = rows(SH, "SELECT t.center_x x, t.center_y y FROM elements_meta m JOIN element_transforms t ON m.guid=t.guid " +
-    "WHERE m.ifc_class LIKE '%IfcDoor%'");
+  // The grid reads walls and doors through the walker's real box, as the shipped router does (§TRUNK-BOX, bim-ootb prompts/DISC_WALK_BAND_NO_HOST.md §10.4). On row centres a wall sits off its mesh, leaving a gap, and CT3 could not fail.
+  var COLS = "m.guid g, t.center_x x, t.center_y y, t.center_z z, t.bbox_x bx, t.bbox_y by_, t.bbox_z bz, t.rotation_x rx, t.rotation_y ry, t.rotation_z rot";
+  var toReal = function (r) { var b = DW.realBox(SH, r); return { g: r.g, x: b.x, y: b.y, bx: b.ex, by_: b.ey }; };
+  var rowWalls = rows(SH, "SELECT " + COLS + " FROM elements_meta m JOIN element_transforms t ON m.guid=t.guid WHERE m.ifc_class LIKE '%Wall%' OR m.ifc_class LIKE '%Column%'");
+  var rowDoors = rows(SH, "SELECT " + COLS + " FROM elements_meta m JOIN element_transforms t ON m.guid=t.guid WHERE m.ifc_class LIKE '%IfcDoor%'");
+  var walls = rowWalls.map(toReal), doors = rowDoors.map(toReal);
   var bb = rows(SH, "SELECT MIN(center_x) x0, MAX(center_x) x1, MIN(center_y) y0, MAX(center_y) y1 FROM element_transforms")[0];
   var x0 = bb.x0 - 1, y0 = bb.y0 - 1, nx = Math.ceil((bb.x1 - bb.x0 + 2) / CELL), ny = Math.ceil((bb.y1 - bb.y0 + 2) / CELL);
   function cx(ix) { return x0 + (ix + 0.5) * CELL; } function cy(iy) { return y0 + (iy + 0.5) * CELL; }
@@ -183,6 +185,12 @@ Heap.prototype.size = function () { return this.a.length; };
   assert('CT3 DOORS-ARE-PASSAGES', reachNoDoors < reachable.length,
     'without carving doors, only ' + reachNoDoors + '/' + (N - 1) + ' fixtures reach the seed (vs ' + reachable.length +
     ' WITH doors) — the route genuinely transits real doorways, it is not slipping through walls');
+  // RED CONTROL: the same falsifier on row centres, the bug it could not see. Its value is printed; the claim is that the real box is what makes the test able to fail.
+  var realW = walls, realD = doors; walls = rowWalls; doors = rowDoors;
+  var Grow = buildGrid(false), dijR = dijkstra(snap(seed.x, seed.y, Grow.blocked), Grow.blocked), reachRow = 0;
+  for (var j3 = 1; j3 < N; j3++) { var cr = snap(nodes[j3].x, nodes[j3].y, Grow.blocked); if (cr >= 0 && isFinite(dijR.dist[cr])) reachRow++; }
+  walls = realW; doors = realD;
+  assert('CT3 RED', reachRow > reachNoDoors, 'row-centre walls, no doors: ' + reachRow + '/' + (N - 1) + ' reach (real boxes: ' + reachNoDoors + '), so row centres leave a gap the doors do not explain');
 
   log(''); log('─── CT4 COST (the honest price of going around) ───');
   var ratio = strLen > 0 ? corLen / strLen : 0;

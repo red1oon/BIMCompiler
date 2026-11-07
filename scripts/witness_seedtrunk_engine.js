@@ -8,7 +8,7 @@
  *
  * CLAIMS:
  *   E0 RETURNS-NETWORK — planTrunk returns per-storey trunks (with render polylines), risers, served/refused, totalLen.
- *   E1 MATCHES-SPIKE   — served on both storeys matches the spike (L1 30, L2 25 via multi-riser); 8 refused.
+ *   E1 MATCHES-BASELINE — served on both storeys: L1 30, L2 26 via multi-riser; 7 refused (the spike's 25 and 8 predate the true-midpoint port, see the claim).
  *   E2 NO-WALL-CROSS   — every storey trunk crosses 0 solid walls (the corridor property survives the promotion).
  *   E3 RISERS-REAL     — every returned riser carries a real IfcStair guid; verticals span ground→top z.
  *   E4 RENDER-READY    — each trunk edge is a polyline of [x,y,z] points on the storey plane (the modeller can draw it).
@@ -22,6 +22,7 @@ var ROOT = path.join(__dirname, '..');
 var DWT = require('./dw_tree.js');   // the shipped walker and its rules, never the older build/ copy (MODELLER_MASTER §WITNESS-REPOINT)
 var DW = require(DWT.walker);
 var ST = require(DWT.seedTrunk);
+global.DiscWalker = DW;   // what the page's script tag does: planTrunk reads walls through DiscWalker.realBox (§TRUNK-BOX). Without it the router falls back to row boxes and logs boxFromRow
 var LOG = path.join(ROOT, 'logs', 'witness_seedtrunk_engine_' +
   new Date().toISOString().replace(/[:.]/g, '').slice(0, 15) + '.log');
 
@@ -30,7 +31,7 @@ function log(s) { _lines.push(s); console.log(s); }
 var pass = 0, fail = 0;
 function assert(claim, cond, detail) {
   if (cond) { pass++; log('  ✅ ' + claim + ' — ' + detail); }
-  else { fail++; log('  ❌ ' + claim + ' — ' + detail); }
+  else { fail++; log('  ❌ ' + claim + ' — CLAIM NOT MET: ' + detail); }
 }
 function rows(db, sql) { var r = db.exec(sql); if (!r.length) return [];
   return r[0].values.map(function (v) { var o = {}; r[0].columns.forEach(function (c, i) { o[c] = v[i]; }); return o; }); }
@@ -67,10 +68,11 @@ function loadDb(SQL, f) { return new SQL.Database(new Uint8Array(fs.readFileSync
     'planTrunk returned ' + net.storeys.length + ' storey trunks, ' + net.risers.length + ' risers, served=' + net.served +
     ', totalLen=' + net.totalLen.toFixed(1) + 'm');
 
-  log(''); log('─── E1 MATCHES-SPIKE ───');
-  assert('E1 MATCHES-SPIKE', L1.served === 30 && L2.served === 25 && net.refused === 8,
-    'engine module served L1=' + L1.served + ' (spike 30), L2=' + L2.served + ' (spike 25, multi-riser), refused=' +
-    net.refused + ' (spike 8) — the promotion reproduces the witnessed spike exactly');
+  log(''); log('─── E1 MATCHES-BASELINE ───');
+  // Re-baselined from the 2026-06 spike (L2 25, refused 8) to L2 26, refused 7: bim-ootb 8d161fa4 (2026-07-09, the true-midpoint port) moved the fixtures. Found by binary search over the walker's
+  // history (MODELLER_MASTER §WITNESS-REPOINT), which assumes the value held after that commit; the commits sampled after it all read 26 and 7. Same on true wall boxes (§TRUNK-BOX). Still an exact count.
+  assert('E1 MATCHES-BASELINE', L1.served === 30 && L2.served === 26 && net.refused === 7,
+    'engine module served L1=' + L1.served + ' (30), L2=' + L2.served + ' (26, multi-riser), refused=' + net.refused + ' (7)');
 
   log(''); log('─── E2 NO-WALL-CROSS ───');
   assert('E2 NO-WALL-CROSS', L1.cross === 0 && L2.cross === 0,

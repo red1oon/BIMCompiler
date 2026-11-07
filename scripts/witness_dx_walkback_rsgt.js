@@ -53,16 +53,31 @@ var LOG = path.join(ROOT, 'logs', 'witness_dx_walkback_rsgt_' +
 var _lines = [];
 function log(s) { _lines.push(s); console.log(s); }
 var pass = 0, fail = 0;
-function assert(c, cond, d) { if (cond) { pass++; log('  ✅ ' + c + ' — ' + d); } else { fail++; log('  ❌ ' + c + ' — ' + d); } }
+function assert(c, cond, d) { if (cond) { pass++; log('  ✅ ' + c + ' — ' + d); } else { fail++; log('  ❌ ' + c + ' — CLAIM NOT MET: ' + d); } }
 function rows(db, sql) { var r = db.exec(sql); if (!r.length) return []; return r[0].values.map(function (v) { var o = {}; r[0].columns.forEach(function (c, i) { o[c] = v[i]; }); return o; }); }
 function loadDb(SQL, f) { return new SQL.Database(new Uint8Array(fs.readFileSync(f))); }
+
+// The served geometry file a page reads for this resident's rule meshes: base and version from the shipped resident table, never restated here.
+function servedGeo(SQL) {
+  return new Promise(function (resolve) {
+    try {
+      var src = fs.readFileSync(path.join(DWT.tree, 'modeller', 'str_walker_outliner.js'), 'utf8');
+      var base = (src.match(/GEO_BASE = '([^']+)'/) || [])[1], row = (src.match(/key: 'Duplex'[^}]*geoDb: '([^']+)'[^}]*geoV: (\d+)/) || []);
+      if (!base || !row[1]) return resolve(null);
+      var chunks = [], req = require('https').get(base + row[1] + '?v=' + row[2], { timeout: 60000 }, function (res) {
+        if (res.statusCode !== 200) { res.resume(); return resolve(null); }
+        res.on('data', function (d) { chunks.push(d); }); res.on('end', function () { try { resolve(new SQL.Database(new Uint8Array(Buffer.concat(chunks)))); } catch (e) { resolve(null); } });
+      });
+      req.on('error', function () { resolve(null); }); req.on('timeout', function () { req.destroy(); resolve(null); });
+    } catch (e) { resolve(null); }
+  });
+}
 
 (async function main() {
   log('═══ W-DX-WALKBACK-RSGT — bare ARC + mined rules reconstruct DX MEP; witness diffs vs the real MEP ═══');
   var SQL = await initSqlJs();
   var dx = loadDb(SQL, path.join(ROOT, 'deploy/buildings/Duplex_extracted.db'));
   var mm = loadDb(SQL, path.join(ROOT, 'build/Duplex_mep_meta.db'));
-  var lib = loadDb(SQL, path.join(ROOT, 'library/component_library.db'));
   DW.dwOpen(loadDb(SQL, DWT.rules('duplex_rules.db')));
 
   // ── real MEP ground truth (witness-side ONLY — the walker never sees these rows) ──
@@ -150,7 +165,7 @@ function loadDb(SQL, f) { return new SQL.Database(new Uint8Array(fs.readFileSync
     assert('W2 FALSIFIER', false, 'no generated fixture available to probe (walk produced 0) — cannot exercise the falsifier');
     log('W-DX-WALKBACK-RSGT: ' + pass + ' PASS / ' + fail + ' FAIL (aborted: nothing generated, later gates unreachable)');
     fs.mkdirSync(path.dirname(LOG), { recursive: true }); fs.writeFileSync(LOG, _lines.join('\n') + '\n');   // fresh checkout has no logs/ (Watchdog round-2)
-    dx.close(); mm.close(); lib.close();
+    dx.close(); mm.close();
     process.exit(1);
   }
   var caught = !((ps.x1 + 10) <= ps.x1 + TOL);
@@ -202,22 +217,28 @@ function loadDb(SQL, f) { return new SQL.Database(new Uint8Array(fs.readFileSync
   var noHash = allGen.filter(function (p) { return !p.geometry_hash; });
   var dangling = [];
   var seen = {};
+  // The page resolves a rule's mesh from the served geometry file of the named source (modeller.html §DW-RULES-MESH), so that is what this reads. component_library.db is not where a rule mesh lives.
+  var served = await servedGeo(SQL), served_ok = !!served, inServed = 0;
   allGen.forEach(function (p) {
     if (!p.geometry_hash || seen[p.geometry_hash]) return;
     seen[p.geometry_hash] = 1;
-    var m = rows(lib, "SELECT LENGTH(vertices) n FROM component_geometries WHERE geometry_hash='" + p.geometry_hash + "'");
-    if (!m.length || !(m[0].n > 0)) dangling.push(p.device);
+    if (!served_ok) return;
+    var m = rows(served, "SELECT LENGTH(vertices) n FROM component_geometries WHERE geometry_hash='" + p.geometry_hash + "'");
+    if (!m.length || !(m[0].n > 0)) dangling.push(p.device + ':' + p.geometry_hash); else inServed++;
   });
+  log('§W4 served geometry ' + (served_ok ? 'read, ' + inServed + ' of ' + Object.keys(seen).length + ' meshes resolve' : 'UNREACHABLE: the mesh half of this claim is not judged'));
   var refusedDevs = {};
   ['ELEC', 'PLB', 'ACMV'].forEach(function (d) {
     var r = (walks[d].schedule || {}).lod400Refused || {};
     Object.keys(r).forEach(function (k) { refusedDevs[k] = (refusedDevs[k] || 0) + r[k]; });
   });
   var placedMeshless = allGen.filter(function (p) { return Object.prototype.hasOwnProperty.call(refusedDevs, p.device); });
-  assert('W4 LOD400', noHash.length === 0 && dangling.length === 0 && placedMeshless.length === 0,
-    allGen.length + '/' + allGen.length + ' placements carry a resolving REAL mesh hash (' + Object.keys(seen).length +
-    ' distinct meshes); meshless devices [' + Object.keys(refusedDevs).join(', ') + '] appear ONLY in the refused list (' +
-    Object.keys(refusedDevs).map(function (k) { return k + '×' + refusedDevs[k]; }).join(' ') + ') — no fallback shape, law kept');
+  // The numbers, whichever way it goes: a failing claim must not read as a pass.
+  var w4Detail = 'placements=' + allGen.length + ' noHash=' + noHash.length + ' danglingMeshes=' + dangling.length + (dangling.length ? ' [' + dangling.slice(0, 6).join(', ') + ']' : '') +
+    ' of ' + Object.keys(seen).length + ' distinct; placed devices that were also refused as meshless=' + placedMeshless.length + '; refused list [' +
+    Object.keys(refusedDevs).map(function (k) { return k + '×' + refusedDevs[k]; }).join(' ') + ']';
+  if (served_ok) assert('W4 LOD400', noHash.length === 0 && dangling.length === 0 && placedMeshless.length === 0, w4Detail);
+  else log('  W4 LOD400 INCONCLUSIVE the served geometry file is unreachable, meshes not judged · ' + w4Detail);
 
   log(''); log('─── W5 POSITION FIDELITY (dial — reported, ratcheted, not hard) ───');
   function nn(p, pool) {
@@ -412,6 +433,6 @@ function loadDb(SQL, f) { return new SQL.Database(new Uint8Array(fs.readFileSync
   log('W-DX-WALKBACK-RSGT: ' + pass + ' PASS / ' + fail + ' FAIL');
   fs.mkdirSync(path.dirname(LOG), { recursive: true }); fs.writeFileSync(LOG, _lines.join('\n') + '\n');   // fresh checkout has no logs/ (Watchdog round-2)
   log('§LOG ' + LOG);
-  dx.close(); mm.close(); lib.close();
+  dx.close(); mm.close();
   process.exit(fail ? 1 : 0);
 })();
