@@ -14,7 +14,7 @@ Origin: a pasted Gemini chat (JEPA "architect" + BIMCompiler "inspector"). Revie
 
 **How the test runs:** `NODE_PATH=~/bim-compiler/node_modules node modeller/tests/proposer_test/run.js --stub`, which must pass first, then `--handoff <dir> --answered-by "<who>"` (§14.6). The last model run (§14, before the directive): 54 attempts. **Re-check the instrument before quoting numbers:** across §13 and §14 that found a live bug, a meaningless overlap count, floors left behind, and a broken install path, all before they reached a result.
 
-**Public guide:** https://red1oon.github.io/BIMCompiler/ProposerGuide/ , source `docs/ProposerGuide.md`. **Change a number there and W-PROPOSER-GUIDE must change with it** (bim-ootb `modeller/tests/witness_proposer_guide.js`; it runs the published commands on the live site and checks the published page). Publish only through `scripts/safe_gh_deploy.sh`; from a worktree, copy `docs/glassbowl_data.db` in first or the guard aborts (`DOCS_DEPLOY_POLICY.md`).
+**Public guide:** https://red1oon.github.io/BIMCompiler/ProposerGuide/ , source `docs/ProposerGuide.md`, last republished 2026-11-08 for the stop. **Change a number there and W-PROPOSER-GUIDE must change with it** (bim-ootb `modeller/tests/witness_proposer_guide.js`; it runs the published commands on the live site and checks the published page). Publish only through `scripts/safe_gh_deploy.sh`; from a worktree, copy `docs/glassbowl_data.db` in first or the guard aborts (`DOCS_DEPLOY_POLICY.md`).
 
 **Shipped:**
 | What | Where |
@@ -588,7 +588,7 @@ Passed the report but lines crossed: 0. Passed but goal missed: 0. Bad first pro
 W-EDIT-REPORT 53/0, with W0j covering every trigger and non-trigger; its falsifier fails. Proposer stub green, with STOPPED (S1b, S3g). Unchanged and green: W-BLOCK-SHIFT 46/0, W-GRID-SPAN-GATE 20/0, W-SDG-GATE 18/0, W-E2E-GRIDSTRETCH-MULTI 21/0, coverage 11/0.
 **The report on first use:** W-EDIT-REPORT Z1, not in the page at open; Z2, loaded by the first committed grid move. The page loses 2 script tags, 13.6 KB.
 **Found while building:** C8 compared a CLI shift with the page and failed once the stop was on: on the Garage's ordinary world boxes that shift reads red, so the CLI now stops it. The comparison uses `--report-only`, as C1 does. On `--lattice-boxes` the same shift is clean (§14.1).
-**The guide, republished:** three of its examples now come back stopped (gx38 single move, gx39 shift, the Garage's gx6 shift), and it explains the stop, `--report-only`, and that the stop is not a security boundary. W-PROPOSER-GUIDE: see below.
+**The guide, republished:** three of its examples now come back stopped (gx38 single move, gx39 shift, the Garage's gx6 shift), and it explains the stop, `--report-only`, and that the stop is not a security boundary. Guard PASS, canaries 200. **W-PROPOSER-GUIDE 16/0** against the live site and the republished page, including G8 (`--report-only` lets the edit stand).
 **Not measured, and not measurable under §14.6:** whether a proposer does better with the stop. A free `--handoff` rehearsal is possible; it would not be a measurement.
 **Not changed:** a person's own edits in the Modeller (report, Revert, Save blocks on RED, as before); the Java compile path, report-only; `PlacementRequest`, no gate, since no outside order arrives there yet.
 
