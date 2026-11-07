@@ -1,9 +1,50 @@
 # ⚠ DO NOT REMOVE
-Scope: SPEC + WITNESSES. No reject gate may be built from this file without the owner's go. Read the log after every run of anything derived from it. Honour until this file is marked DONE.
+Scope: SPEC + WITNESSES + the proposer test. No reject gate may be built from this file without the owner's go. Read the log after every run of anything derived from it. Honour until this file is marked DONE.
 
 # Neuro-symbolic ORDER contract — an external proposer submits, the compiler judges
 
 Origin: a pasted Gemini chat (JEPA "architect" + BIMCompiler "inspector"). Review verdict: the pattern is sound, the details were invented. This file keeps only the part that survives, and refuses the rest.
+
+## ▶ RESUME HERE (session close 2026-11-07; for the next working session, an outside reader can skip to START HERE)
+**Read in this order:** this block → §12 RESULT and its flaws → `prompts/MODELLER_MASTER.md` §EDIT-REPORT, at the end of that file.
+
+**Waiting on the owner, one decision:** fix the proposer test and run it again before deciding the reject gate? Recommended: yes. Asked, not yet answered. **Do not start without their go**, and do not un-park the gate.
+
+**If yes, same briefs and scoring, 4 changes. Pre-register again in §12 and push before any model call:**
+1. **Judge a block shift as one edit.** This is the main flaw, and the largest change. Read `modeller/bay_add.js` first: "Add a bay" already moves everything beyond a hinge through the spine's cascade (`DXF2BIM_FOUNDATION_LANE.md` §D89 step 3). Reuse it; do not write a second mover. Spec first. Then `edit_cli` gains the edit and the proposer prompt names it.
+2. **Use only grids derived from the building.** SampleHouse's lines are the app's default grid (`bonsai_grid.js:28`). S1–S3 need a building whose grid is its own. Check first which column-framed residents exist; if a wall-bearing building is kept, it must use `swDeriveSemiGrid`'s lines, and the proposer must not be told a default grid is the building's.
+3. **Stop at a judged-fine result.** PARTLY_JUDGED must end the run, and "not kept" must be said only after a bad result (2 S3 runs lost a right answer to this).
+4. **The report names the limit and the bay.** No G4 run declined, because the row says only that the count rose. The limit and the span already exist in `GridSpanGate`; add no threshold. W-EDIT-REPORT must pin it.
+
+**How the test runs:** `NODE_PATH=~/bim-ootb/node_modules node modeller/tests/proposer_test/run.js --stub`, which must pass first, then `--reps 3 --out <file>`. It calls `claude -p --model claude-sonnet-5-5 --tools "" --setting-sources "" --strict-mcp-config` from an empty directory. Last run: 83 attempts, $1.42. **Report the numbers whatever they show, and re-check the instrument before quoting them:** this session's two worst flaws came out only by probing after the run.
+
+**Shipped this session, all merged and pushed:**
+| What | Where |
+|---|---|
+| This contract, §3 extracted, Java coverage and snap witnesses | BIMCompiler #383, #384 |
+| Category filter fix (`V016`), snap `pre_snap` fix, seal v20 | BIMCompiler #384 |
+| `MODELLER_MASTER.md` §EDIT-REPORT spec and results | BIMCompiler #385, #386, #388, #389 |
+| Live-check coverage witness and table | bim-ootb #2671 |
+| Gate fix: a wall driven into a wall it touches is RED | bim-ootb #2673 |
+| Red ink report, one grid move (sw v233) | bim-ootb #2674 |
+| `edit_cli`, W-EDIT-CLI | bim-ootb #2678 |
+| First proposer test: rules, runner, raw results | bim-ootb #2679; BIMCompiler #391, #392 |
+
+**Known and open. Do not re-derive; do not claim otherwise:**
+- **Not run:** the report panel on a phone-sized screen; the "Add one more" gesture end to end through the report.
+- **Observed, not investigated:** a real +1.2 m mouse drag of gy8 after an undo recomposed 0 elements, while a scripted +1.5 m on a fresh Open recomposed 1. Question for the grid-move lane.
+- **Inferred, not reproduced:** the one 112 s CLI run that returned "not judged". The settle wait addresses the suspected cause.
+- **Still failing, unrelated to this work:** G4-TAMPER, 73 old violations (§6.3); `witness_clipboard_keys` K1, same on clean main; two `playwright` smokes, which cannot load the module.
+- **Not started:** report for bay add and other gestures, a session total at Save, beam and column rules on a live edit (each needs a go); the report in any user guide; a film of it, which the owner called "another wow feature".
+- **The CLI is a developer tool:** grid moves only, needs the test harness and puppeteer, 6.6 to 12.9 s per call, nearly all of it opening the building.
+
+**Landmines:**
+- **The primary checkout is on `fable/meshdb-livewire`, another lane's branch.** Do not commit there; work in a `/tmp/wt-*` worktree off `origin/master`. It holds an untracked copy of this file, and it is stale unless refreshed: delete it before merging master into that branch, or git refuses the merge.
+- **Shed witnesses:** the 2026-11-06 cleanup moved their input to `~/.cleanup_holding_2026-11-06/videos/dxf2bim_film_work`. Set `SHED_MARKED_DIR`, `SHED_MARKED` and `SHED_RAW_DIR` to `…/why/cli/marked` and `…/why/raw`, or they print MISSING. **Deleting that folder removes the only copy found. Raise it with the owner before anyone clears it.**
+- **`library/validation.db` is gitignored.** `V016` was applied by hand here, and no script applies V-series migrations. Without it `V1_legal_kitchen` fails.
+- **Test fixtures:** never symlink a primary checkout's `library/` into a worktree for a full suite run. It wrote to `library/work_sh.db` this session.
+- **Public repos:** before every commit and PR body, grep the diff for the private client names (`feedback_private_project_no_names_in_public.md`).
+- **Sealed files:** a change to one needs a `[SEAL]` commit that explains why.
 
 ## ▶ START HERE (state at 2026-11-07, for a reader new to this project)
 **The idea.** An AI, a scan or a person proposes a change to a building. A deterministic compiler, with no AI inside it, computes the result and reports what it can prove. The AI stays outside and its output is treated as untrusted.
