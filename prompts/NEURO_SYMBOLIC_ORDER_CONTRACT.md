@@ -16,17 +16,18 @@ Origin: a pasted Gemini chat (JEPA "architect" + BIMCompiler "inspector"). Revie
 | Modeller's live edit checks, 28 injected defects | 14 fire nothing, 2 of those by design. Every overlap class is caught; floating elements, wrong units clear of the building and invalid coordinates are not (§3.5) |
 | Does snapping hide a bad value? | Fixed for one case; four others remain (§3.4) |
 | Is a proof report available? | **Yes, live, for one grid move** in the Modeller: what changed, red ink before → after, what was NOT checked (§8). A CLI call returns the same bytes (§11) |
+| Did it help a real proposer? | First test: alone, only 3 of 30 first proposals avoided RED or refusal, and its own forecast could not tell good from bad. See the flaws in §12 before quoting any number |
 | What did an outside review say? | DeepSeek: "appealing in direction but immature in execution". Claims checked in §10 |
 
 **What has NOT been measured:**
-- **No proposer has ever been run through this.** "Better results than AI alone" is a hypothesis, not a finding (§7).
+- **One first proposer test has run (§12), with flaws:** right outcome 3 → 10 of 30 with the report fed back, and 14 of 30 still ended bad. The direction supports the idea; the size of the gain is not established.
 - Speed against working without us has not been measured. The call itself takes 6.6 to 12.9 s (§11).
 - Nothing here checks structural capacity, and a pass never means safe (§5).
 
 **Questions still open, where a second opinion is useful:**
 1. Is a closed vocabulary (choose from the catalog, §7) too narrow? It is safer, but it gives up much of what makes AI useful.
 2. Is `PlacementRequest` the right place for a reject gate, if one is ever built (STATUS)?
-3. Is the §7 measurement a fair test of "better than without"?
+3. Is the §12 test a fair measure of "better than without"? What should its next run change?
 
 **Vocabulary.** *Witness:* a test that names the issue it proves and can report its own failure. *Gate:* a check on a model. *Order:* the existing `c_order` + `c_orderline` tables. *Red ink:* findings from the checks. `§TAG` lines are machine-readable log lines. Code cited as `bim-ootb` lives in [red1oon/bim-ootb](https://github.com/red1oon/bim-ootb); the rest in [red1oon/BIMCompiler](https://github.com/red1oon/BIMCompiler).
 
@@ -161,7 +162,7 @@ Spec for changes to shipped code. These correct bugs that exist with or without 
 ## 7. Proposer prompts (advice, nothing built, no proposer has been run)
 - **Works:** choosing from what exists. Give it the base BOM, its `locator_ref`s and the catalog with sizes; allow only Replace, Remove, Add, Compress; ask for `c_orderline` rows; tell it to say so when nothing listed fits.
 - **Does not:** free coordinates (this is where unit and floating errors arrive, the gates' weakest spots), or anything asking for structural safety or loads (§5).
-- **"Better than without" is unmeasured.** To measure it, run the same prompts through a real proposer and count defects raw, after the gates, and with a repair loop feeding `§ORDER_REJECT` back. That needs a real proposer and a gate that stops output. Filtering cannot make a proposal good: a valid but poor design passes, and so does anything in the NONE rows of §3.1.
+- **"Better than without": first measured in §12, with flaws.** The method: run the same prompts through a real proposer and count defects raw, after the gates, and with a repair loop feeding `§ORDER_REJECT` back. That needs a real proposer and a gate that stops output. Filtering cannot make a proposal good: a valid but poor design passes, and so does anything in the NONE rows of §3.1.
 - **What it offers a proposer (2026-11-07):** state intent in a few lines; get back a computed building plus proof of what changed. Speed is unmeasured, so do not pitch "faster". The proof record is `MODELLER_MASTER.md` §EDIT-REPORT, built first for people. A report that omits what was not checked invites a proposer to hide errors in the blind spots.
 
 ## 8. The proof report (bim-ootb #2674, live, one grid move)
@@ -251,7 +252,38 @@ Clearance and gap ORANGE do not count as RED. **Checked here, independently of t
 **Reported whatever they show:** classes for A and B · bad first proposals, and how many the proposer forecast as fine · goal met A and B · right outcome A and B · passed the report but crossed lines · passed the report but missed the goal.
 **What this can and cannot show:** counts, no significance claim, n=30 on 10 briefs, one model, grid moves only. CLEAN means only "nothing the report checks went wrong", not a good design. The report's own blind spots stay blind except the two checked here. A revision may stop being what was asked for, which is why goal met is reported beside the classes.
 
+### §12 RESULT 2026-11-07 (bim-ootb #2679, raw: `modeller/tests/proposer_test/results_2026-11-07.json`)
+30 runs, 83 attempts, `claude-sonnet-5-5`, $1.42. **Pre-registered numbers, unchanged:**
+| | A: alone, first proposal | B: with the report, final |
+|---|---|---|
+| CLEAN | 0 | 3 |
+| PARTLY_JUDGED | 3 | 4 |
+| RED | 13 | 10 |
+| REFUSED | 14 | 4 |
+| DECLINED | 0 | 9 |
+| Goal met (arithmetic) | 30 | 21 |
+| **Right outcome** | **3** | **10** |
+Passed the report but lines crossed: 0. Passed the report but goal missed: 0. So those two blind spots were not exercised; this is no evidence either way.
+
+**What it shows:**
+1. **The arithmetic was never the problem.** Every first proposal met its goal; only 3 of 30 first proposals avoided RED or refusal, and none was fully CLEAN.
+2. **Against what I expected: the model did not falsely self-certify.** It forecast problems on 28 of 30, so only 2 of 27 bad proposals were forecast as fine. But it also forecast problems on all 3 that came out fine, so the forecast does not tell good from bad. It hedges in general terms: none of the 3 G4 runs named the 12 m limit.
+3. **The report moved outcomes:** right outcome 3 → 10. The 7 gained are 3 CLEAN edits on G1 (all three found `gy8` −1.51), 1 edit on S3, and 3 correct declines on G5. On the Garage alone, 0 → 6 of 21.
+4. **The cost:** goal met fell 30 → 21, all 9 from declines. The 6 on G7 and S2 look reasonable, but the rule counts only G4 and G5 as declines that are right, so they do not score.
+5. **A report alone does not stop a proposer: 14 of 30 finals are still RED or REFUSED** (G2, G3, G4, G6, two of S3), after being shown the result. No G4 run declined: the report says the over-limit count rose but not what the limit is.
+6. **A point to the AI:** on G7 it forecast the line crossing, for which the report has no rule.
+
+**Flaws, found after the run. They limit the numbers above; nothing was re-scored:**
+- **⚠ Multi-line shifts are judged one line at a time.** 14 of 30 first proposals moved several lines, usually a whole block, and 13 scored bad. A probe confirms mid-shift refusals: gy9 to gy14 each +1.51 m, in order, gives refusals at gy11, gy12, gy13. A rigid block shift may be fine, and neither the CLI nor the Modeller can express it. **So A's REFUSED count, and possibly its RED count, overstate bad proposals, and "3 → 10" may overstate the gain.** Single-line first proposals, 16: 11 RED, 3 REFUSED, 2 PARTLY_JUDGED.
+- **⚠ SampleHouse's 9 runs used the app's default grid** (`bonsai_grid.js:28`, 0/4/8/12), not lines derived from the building. The proposer was told they were the building's. Trust the Garage's 21 runs over these.
+- **The revision prompt pushes change.** It says "not kept" even after a PARTLY_JUDGED, so 2 S3 runs reached a right outcome and then lost it (right on any attempt, post hoc: 12).
+- **Limits as registered:** I wrote the briefs, half are traps, one model, n=30 on 10 briefs. CLEAN is not a good design.
+
+**Verdict.** The direction supports the deterministic layer: the model alone could not tell which edits were bad, and the report let it find some real fixes. **The size of the gain is not established.** "Better results" is now evidence-backed for this narrow case, not proven. And it is evidence that a report is not enough without a stop.
+
+**Next, needing the owner's go, same briefs and rules:** a block-shift edit, judged as one; only grids derived from the building; stop at a judged-fine result; the report names the limit and the bay. Then decide the reject gate on those numbers.
+
 ## STATUS
-2026-11-06 spec drafted. 2026-11-07: §3 extracted, §4 witnesses committed, §6 fixes shipped, live checks measured (§3.5), gate fix and report shipped (§8), DeepSeek's review checked (§10), CLI shipped (§11).
-⏸ **Reject gate PARKED by owner 2026-11-07 until a real proposer exists.** When un-parked: apply only to external orders, at `PlacementRequest`, checking before any snap; then run the §7 measurement. A gate must not apply to extracted buildings: the compile path stays log-only until its rules are proven against them (`CompilationPipeline.java:1536`).
+2026-11-06 spec drafted. 2026-11-07: §3 extracted, §4 witnesses committed, §6 fixes shipped, live checks measured (§3.5), gate fix and report shipped (§8), DeepSeek's review checked (§10), CLI shipped (§11), first proposer test run (§12).
+⏸ **Reject gate PARKED by owner 2026-11-07.** A proposer has now run, and 14 of 30 finals stayed bad, so the case for a stop is open; §12 recommends fixing the test first. When un-parked: apply only to external orders, at `PlacementRequest`, checking before any snap; then run the §7 measurement. A gate must not apply to extracted buildings: the compile path stays log-only until its rules are proven against them (`CompilationPipeline.java:1536`).
 Still open, by design: every row marked NONE in §3.1 and §3.5, snap cases S2–S5. G4-TAMPER still reports 73 older violations (§6.3).
