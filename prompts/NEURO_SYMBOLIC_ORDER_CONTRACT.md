@@ -11,15 +11,16 @@ Origin: a pasted Gemini chat (JEPA "architect" + BIMCompiler "inspector"). Revie
 **What has been measured** (every number comes from a witness you can re-run, §9):
 | Question | Answer today |
 |---|---|
-| Can the compile path stop a bad order? | **No.** Every gate reports; none stops the output (§3) |
+| Can anything stop a bad edit? | **Compile path: no**, every gate only reports (§3). **Modeller: yes, in three places**: Save blocks on RED, the engine refuses an opening that would leave its wall, and releasing a RED span commits nothing (§3.5) |
 | Compile-path gates, 17 injected defects | 8 fire nothing (§3.1) |
 | Modeller's live edit checks, 28 injected defects | 14 fire nothing, 2 of those by design. Every overlap class is caught; floating elements, wrong units clear of the building and invalid coordinates are not (§3.5) |
 | Does snapping hide a bad value? | Fixed for one case; four others remain (§3.4) |
-| Is a proof report available? | **Yes, live, for one grid move** in the Modeller: what changed, red ink before → after, what was NOT checked (§8) |
+| Is a proof report available? | **Yes, live, for one grid move** in the Modeller: what changed, red ink before → after, what was NOT checked (§8). A CLI call returns the same bytes (§11) |
+| What did an outside review say? | DeepSeek: "appealing in direction but immature in execution". Claims checked in §10 |
 
 **What has NOT been measured:**
 - **No proposer has ever been run through this.** "Better results than AI alone" is a hypothesis, not a finding (§7).
-- Speed has not been measured.
+- Speed against working without us has not been measured. The call itself takes 6.6 to 12.9 s (§11).
 - Nothing here checks structural capacity, and a pass never means safe (§5).
 
 **Questions still open, where a second opinion is useful:**
@@ -122,6 +123,8 @@ A different code path, so it was measured separately: `SdgGate` on the real Dupl
 | NaN coordinates, zero-size box | Not tested | NONE, no throw |
 Also: a line dragged past its neighbour has no rule of its own, and the span check uses one material per building, so on a mixed building a steel girder within its own limit can read RED.
 
+**What actually stops an edit in the Modeller today:** (1) Save blocks while RED remains (`modeller.html` `runSave`, W-SAVE-COMPLETEIT); (2) the engine refuses a grid move that would push a held opening out of its wall, and nothing is committed (`bonsai_gridmove.js` `commit`, `§DAGEVU refused`); (3) releasing a drag on a RED span commits nothing and opens the "Add one more?" prompt (W-GRID-SPAN-GATE). An ordinary RED on a committed edit does not undo it: the user is offered Revert. None of these cover the NONE rows above.
+
 **Fixed 2026-11-07 (bim-ootb #2673):** a grid stretch could push a wall through its neighbour with no warning, because touching pairs were always expected contact. Measured on SampleHouse, `gx1` +1 m: wall 23's end moves x=6.12 → 7.12, through wall 22 (6.12..6.41). Now RED `abuts-clash`. RED blocks Save.
 
 ## 4. Witness claims (written first; each names the issue it proves)
@@ -180,7 +183,7 @@ NOT checked: 11 items
 **How we see the AI (owner's framing and this lane's view, not a measurement).**
 - The compiler is not narrow AI: it applies rules and never guesses, and "No AI inside" means no AI in the runtime. A proposer is narrow only when the order format restricts it. They are designer and checker, not rivals.
 - What the compiler offers a proposer is closer to a calculator than a speed-up: state intent in a few lines, get a computed form and proof of what changed. AI remains the more versatile side, and it can read a brief or a messy drawing where rules cannot.
-- Owner's idea, not built: this as the backend of a script engine a fast CLI can call. A saved macro needs no AI; AI is needed once, to turn a new request into a script. First test: whether the Modeller's fold runs outside the browser. `MODELLER_MASTER.md` row 40 (scripted edits) stays on HOLD.
+- Owner's idea, first step built (§11): this as the backend of a script engine a CLI can call. A saved macro needs no AI; AI is needed once, to turn a new request into a script. The fold itself still runs in a headless page, not in plain Node. `MODELLER_MASTER.md` row 40 (scripted edits) stays on HOLD.
 
 ## 9. Re-run the evidence
 Fixtures are local files, not in git: without them a witness prints `INCONCLUSIVE`, never a pass.
@@ -189,8 +192,47 @@ Fixtures are local files, not in git: without them a witness prints `INCONCLUSIV
 | Java gates and snap | `mvn -o -pl BonsaiBIMDesigner -am test -Dtest=OrderContractWitnessTest -Dpipeline.tests.skip=false -Dsurefire.failIfNoSpecifiedTests=false`, reading the `§ORDER_*` lines. In a worktree add `-Dbim.fixture.root=<primary checkout>`. `V1_legal_kitchen=FAILS` means that `library/validation.db` lacks `migration/V016`, which no script applies automatically |
 | Live checks (bim-ootb) | `NODE_PATH=<node_modules with ajv> node modeller/tests/witness_edit_report_coverage.js` |
 | Report (bim-ootb) | `NODE_PATH=<node_modules> node modeller/tests/witness_edit_report.js`; falsifier `EDIT_REPORT_BREAK=1` must fail |
+| CLI (bim-ootb) | `NODE_PATH=<node_modules> node modeller/tests/witness_edit_cli.js`. One call: `node modeller/tools/edit_cli.js --building HospitalGarage --grid gy8 --move 1.5` |
+
+## 10. External review: DeepSeek, 2026-11-07
+The owner shared this file with DeepSeek. Its verdict: "appealing in direction but immature in execution"; today "a well-documented boundary declaration rather than a usable AI governance layer". Checked against the code:
+| DeepSeek said | Check | Verdict |
+|---|---|---|
+| The compile pipeline cannot reject an order; the gate is parked | §3 | **Correct** for the compile path. This file's START HERE implied it for everything; corrected above: the Modeller has three real stops |
+| Doors in slabs and pipes through walls are what AI gets wrong and the model cannot know | §3.1 vs §3.5 | **Half right:** both fire nothing in the Java gates and are RED in the Modeller. A floating column is NONE in both |
+| The 8 of 17 blind spots are "precisely" where free-form AI placement will fail | No proposer has run | **A hypothesis.** It may be right; it is not measured |
+| A catalog-only proposer keeps risk manageable | §7 | Agrees with §7, equally unmeasured |
+| Speed is unmeasured | §5, §7 | **Correct** for any claim about AI. §11 now measures the call itself |
+| The contract is "a concrete implementation of JEPA's philosophy" if the loop closes | §2: no JEPA here; a JEPA yields latent vectors, and vector → order is the unsolved model | **An analogy, not a fact.** JEPA learns a world model; this encodes rules. Both refuse to let a generator self-certify, and that is as far as it goes. Do not cite it as alignment |
+| "AI provides imagination, the engineering world provides the verdict" | Today the verdict covers only §3.5's RED rows | A fair goal, **not yet true** |
+**What it changes:** nothing about the parked gate. It does sharpen the order of work: run a proposer through a real call before arguing further, which needs the call to exist (§11).
+
+## 11. A call a proposer can make — SPEC 2026-11-07 (owner: "for you to proceed")
+**Issue:** no proposer can be measured, because no call exists that takes an edit and returns the proof. The owner's CLI idea (§8) and the §7 measurement both need one.
+**Design:** a thin CLI, bim-ootb `modeller/tools/edit_cli.js`, that drives the REAL Modeller page headless through the real commit path and prints `§EDIT_REPORT`'s JSON on stdout. **Not** a Node re-implementation of the fold: that would be a second engine beside the page, and two engines disagree. One implementation per responsibility.
+- `node modeller/tools/edit_cli.js --building <resident> --grid <id> --move <metres> [--grid … --move …]`
+- stdout: JSON only, `{ok, building, edits:[report|refusal], ms}`. Logs go to stderr. Nothing is saved: each run starts from a fresh Open.
+- A refusal is an answer, not a crash: an unknown grid line or an engine refusal gives `{refused:true, reason}` and exit 3. Usage error: exit 2.
+- It stops nothing and adds no rule. It is not a reject gate. No AI inside it.
+**Witness W-EDIT-CLI** (`modeller/tests/witness_edit_cli.js`):
+| Claim | Proves or disproves |
+|---|---|
+| Same edit through the CLI = the in-page report, byte for byte | The CLI is a second, different answer |
+| Same CLI call twice = byte-identical `edits` | Not repeatable |
+| A different move gives a different report | The comparison above cannot fail |
+| stdout parses as JSON, whole | A caller cannot read it |
+| Unknown line, and an engine refusal: `refused`, the reason, exit 3 | A refusal reads as success, or crashes |
+| Time per run is printed, per building | "Fast" is claimed without a number |
+**Not in this step:** running a proposer, bay add, other gestures, a pure-Node engine.
+
+### §11 RESULT 2026-11-07 (bim-ootb #2678)
+`§WITNESS_EDIT_CLI pass=10 fail=0`. Through the CLI = the page, byte for byte: SampleHouse `gx1` +1 m (1,804 bytes) and Garage `gy8` +1.5 m (1,877). Same call twice: identical. Four calls at once: same bytes. A different move: a different report, so the comparison can fail. Unknown line and engine refusal: `refused`, the reason, exit 3.
+**Time per call:** SampleHouse 6.6 s, Garage 12.9 s; four at once 8.5 s and 16.9 s, on a machine at load 10-14. Almost all of it is opening the building: the report itself cost 7.6 ms. Several edits in one call open once. So it is usable, not yet "fast", and a long-lived session would be the way to make it so.
+**Found while building:** the first build returned "not judged" in one 112 s run, and the same call gave 20 → 20 at 9 s and 49 s, so the answer depended on load. The CLI now waits for the seed to arm the Save baseline. **The cause is inferred, not reproduced:** the load test did not reach that slowness.
+**Limits:** grid moves only; needs the dev harness and puppeteer, so it is a developer tool for now; a report describes a session that is then discarded.
+**Next, needing the owner's go:** the first real proposer. A model gets a building's grid lines and a brief, returns CLI calls, and defects are counted raw and after the report. This uses tokens, and "better than without" stays unmeasured until it runs.
 
 ## STATUS
-2026-11-06 spec drafted. 2026-11-07: §3 extracted, §4 witnesses committed, §6 fixes shipped, live checks measured (§3.5), gate fix and report shipped (§8).
+2026-11-06 spec drafted. 2026-11-07: §3 extracted, §4 witnesses committed, §6 fixes shipped, live checks measured (§3.5), gate fix and report shipped (§8), DeepSeek's review checked (§10), CLI shipped (§11).
 ⏸ **Reject gate PARKED by owner 2026-11-07 until a real proposer exists.** When un-parked: apply only to external orders, at `PlacementRequest`, checking before any snap; then run the §7 measurement. A gate must not apply to extracted buildings: the compile path stays log-only until its rules are proven against them (`CompilationPipeline.java:1536`).
 Still open, by design: every row marked NONE in §3.1 and §3.5, snap cases S2–S5. G4-TAMPER still reports 73 older violations (§6.3).
