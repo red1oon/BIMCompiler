@@ -232,6 +232,25 @@ The owner shared this file with DeepSeek. Its verdict: "appealing in direction b
 **Limits:** grid moves only; needs the dev harness and puppeteer, so it is a developer tool for now; a report describes a session that is then discarded.
 **Next, needing the owner's go:** the first real proposer. A model gets a building's grid lines and a brief, returns CLI calls, and defects are counted raw and after the report. This uses tokens, and "better than without" stays unmeasured until it runs.
 
+## 12. First proposer test — PRE-REGISTERED 2026-11-07 (owner: "Go, run the first proposer test")
+Fixed before any model call, at bim-ootb commit `1fa3901fa2765795c03ca4482b1d9e8168a3983d`: `modeller/tests/proposer_test/briefs.json` and `run.js`.
+**Issue:** "better than the AI alone" has never been measured.
+**Proposer:** `claude-sonnet-5-5`, isolated: no tools, no files, no project instructions. It sees the system, the material, the grid lines and one request. It is **not** told the span limit, the walls or the openings.
+**Runs:** 10 briefs × 3 repeats = 30. **Arm A, the proposer alone:** its first proposal and its own forecast of problems. **Arm B, the same run continued:** the report goes back, up to 2 revisions, and it may decline. So B is paired with A, and any gain in B comes from the feedback.
+**Briefs:** 5 traps chosen with outcomes partly known: over the span limit, an engine refusal, a neighbour constraint, a line past its neighbour, a known wall-through-wall. Plus 1 unit trap and 4 ordinary. I wrote them, so they are not a sample of real requests.
+**Each attempt is scored from a fresh Open:**
+| Class | Meaning |
+|---|---|
+| CLEAN | not refused, spans over limit did not rise, no new clash, `abuts-clash`, door-out or door-crush, overlap row judged |
+| PARTLY_JUDGED | as CLEAN, but no scene element moved, so only spans were judged |
+| RED | span over limit rose, or any of those new reds |
+| REFUSED | the engine or CLI refused an edit |
+| DECLINED | the proposer said no |
+| INVALID / FAILED | no usable JSON / the call failed |
+Clearance and gap ORANGE do not count as RED. **Checked here, independently of the report:** goal met (arithmetic on the grid lines) and lines crossed. **Right outcome:** goal met, CLEAN or PARTLY_JUDGED, nothing crossed; or DECLINED on the 2 briefs marked impossible (G4, G5).
+**Reported whatever they show:** classes for A and B · bad first proposals, and how many the proposer forecast as fine · goal met A and B · right outcome A and B · passed the report but crossed lines · passed the report but missed the goal.
+**What this can and cannot show:** counts, no significance claim, n=30 on 10 briefs, one model, grid moves only. CLEAN means only "nothing the report checks went wrong", not a good design. The report's own blind spots stay blind except the two checked here. A revision may stop being what was asked for, which is why goal met is reported beside the classes.
+
 ## STATUS
 2026-11-06 spec drafted. 2026-11-07: §3 extracted, §4 witnesses committed, §6 fixes shipped, live checks measured (§3.5), gate fix and report shipped (§8), DeepSeek's review checked (§10), CLI shipped (§11).
 ⏸ **Reject gate PARKED by owner 2026-11-07 until a real proposer exists.** When un-parked: apply only to external orders, at `PlacementRequest`, checking before any snap; then run the §7 measurement. A gate must not apply to extracted buildings: the compile path stays log-only until its rules are proven against them (`CompilationPipeline.java:1536`).
