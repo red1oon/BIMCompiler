@@ -1,17 +1,39 @@
 # ⚠ DO NOT REMOVE
-Scope: SPEC + WITNESSES (2026-11-07: §3 is extracted, §4 witnesses exist). No gate may be built from this file without the
-owner's go. Read the log after every run of anything derived from it. Honour until this file is marked DONE.
+Scope: SPEC + WITNESSES. No reject gate may be built from this file without the owner's go. Read the log after every run of anything derived from it. Honour until this file is marked DONE.
 
 # Neuro-symbolic ORDER contract — an external proposer submits, the compiler judges
 
-Origin: a pasted Gemini chat (JEPA "architect" + BIMCompiler "inspector"). Review verdict: the pattern is sound, the
-details were invented. This file keeps only the part that survives, and refuses the rest.
+Origin: a pasted Gemini chat (JEPA "architect" + BIMCompiler "inspector"). Review verdict: the pattern is sound, the details were invented. This file keeps only the part that survives, and refuses the rest.
+
+## ▶ START HERE (state at 2026-11-07, for a reader new to this project)
+**The idea.** An AI, a scan or a person proposes a change to a building. A deterministic compiler, with no AI inside it, computes the result and reports what it can prove. The AI stays outside and its output is treated as untrusted.
+
+**What has been measured** (every number comes from a witness you can re-run, §9):
+| Question | Answer today |
+|---|---|
+| Can the compile path stop a bad order? | **No.** Every gate reports; none stops the output (§3) |
+| Compile-path gates, 17 injected defects | 8 fire nothing (§3.1) |
+| Modeller's live edit checks, 28 injected defects | 14 fire nothing, 2 of those by design. Every overlap class is caught; floating elements, wrong units clear of the building and invalid coordinates are not (§3.5) |
+| Does snapping hide a bad value? | Fixed for one case; four others remain (§3.4) |
+| Is a proof report available? | **Yes, live, for one grid move** in the Modeller: what changed, red ink before → after, what was NOT checked (§8) |
+
+**What has NOT been measured:**
+- **No proposer has ever been run through this.** "Better results than AI alone" is a hypothesis, not a finding (§7).
+- Speed has not been measured.
+- Nothing here checks structural capacity, and a pass never means safe (§5).
+
+**Questions still open, where a second opinion is useful:**
+1. Is a closed vocabulary (choose from the catalog, §7) too narrow? It is safer, but it gives up much of what makes AI useful.
+2. Is `PlacementRequest` the right place for a reject gate, if one is ever built (STATUS)?
+3. Is the §7 measurement a fair test of "better than without"?
+
+**Vocabulary.** *Witness:* a test that names the issue it proves and can report its own failure. *Gate:* a check on a model. *Order:* the existing `c_order` + `c_orderline` tables. *Red ink:* findings from the checks. `§TAG` lines are machine-readable log lines. Code cited as `bim-ootb` lives in [red1oon/bim-ootb](https://github.com/red1oon/bim-ootb); the rest in [red1oon/BIMCompiler](https://github.com/red1oon/BIMCompiler).
 
 ## 1. Position (consistent with "No AI inside")
 - The proposer (JEPA, LLM, scan-to-BIM, a human) is OUTSIDE the compiler. Its output is an **untrusted ORDER**, same
   class as an IFC import or a C_Order. It is never authored data and never a ground truth.
 - PRIME RULE holds: every value in the compiled result traces to (a) the order as submitted, or (b) a DB/verb result.
-  Nothing is "snapped" silently — any rounding is a logged, reversible transform with its delta recorded (`§ORDER_SNAP`).
+  Nothing is "snapped" silently — any rounding is a logged, reversible transform with its delta recorded. That is the requirement; it is not fully met (§3.4), and no code emits a `§ORDER_SNAP` line yet.
 
 ## 2. What the Gemini text claimed vs what the repo says (verified 2026-11-06)
 | Gemini claim | Repo fact | Source |
@@ -23,6 +45,8 @@ details were invented. This file keeps only the part that survives, and refuses 
 | SQLite in browser = "tamper-proof" | G4 (tamper) covers the compiled digest, not a user-editable local file | `TestArchitecture.md` L6 |
 
 ## 3. EXTRACTED 2026-11-07 (from running the code, not memory; log lines below come from `OrderContractWitnessTest`)
+§3.1–3.4 are the Java compile path. §3.5 is the Modeller, a separate browser code path.
+
 **Headline: nothing in the compile path can reject an order today.** Every gate reports; none stops the output.
 `BuildingWriter.java:1110` "diagnostic — does not block emission" · `CompilationPipeline.java:1536` forces validation to LOG ·
 `:1796-1802` prints `[FAIL]` and carries on · `VerbStage.java:117` logs a warning. So FAILS below means "a gate says no", not "the order was stopped".
@@ -42,7 +66,7 @@ G1–G3 compare to a reference DB (`RosettaStoneGateTest.java:39-45`), so they h
 | Unit: mm as m, 800 m wall | **NONE** | under the limit, so P02 passes. `DataIntegrityTest` D-2 (>100 m) checks the catalog, not orders |
 | Unit: m written as km (0.2 mm thick) | FAILS | P03 |
 | Unit: metres in a mm field (BEDROOM) | FAILS | validator area rule, only for a category with a rule |
-| Unit: mm×1000 in a mm field | **NONE** | validator has minimums only (`actual < required`, `PlacementValidatorImpl.java:349`) |
+| Unit: mm×1000 in a mm field | **NONE** | validator has minimums only (`actual < required`, `PlacementValidatorImpl.java:352`) |
 | Unknown IFC class in the output | **NONE** | no gate checks the class |
 | Unknown category at the validator | **NONE** | PASS |
 | Unknown product, `placeItem` | FAILS | "Product not found" |
@@ -77,10 +101,28 @@ Fields come from `ValidationVerdict`; `AD_Validation_Result` (V001) already stor
 | S2 10002 mm vs 1 mm tolerance, grid 1000 | Accepted, moved 2 mm. Logged, but snap has no tolerance input, so it cannot reject |
 | S3 verb form, (10.002,…) spacing 1000 | Pass, moved **998 mm** (rounds up). Logged, not rejected |
 | S4 10.0004 m, spacing 1 | **Silent.** 0.4 mm lost in the mm conversion; verb says "no change" |
-| S5 a BLOCK that survives snapping | `success=true`, element returned, rule appears only as an adjustment (`DesignerAPIImpl.java:960-972`) |
+| S5 a BLOCK that survives snapping | `success=true`, element returned, rule appears only as an adjustment (`DesignerAPIImpl.java:962-989`) |
 | S6 already on grid | NO-OP reported |
 | S7 validator off | VACUOUS: `success=true` with nothing judged |
 | S8 click-to-fix (control for §6.2) | Lands on 3000, no `pre_snap` entry |
+
+### 3.5 The Modeller's live edit checks (`§EDIT_COVERAGE`, bim-ootb `modeller/tests/witness_edit_report_coverage.js`)
+A different code path, so it was measured separately: `SdgGate` on the real Duplex (203 solids), `GridSpanGate` on the real Garage lattice (228 girders). `defects=28 none=14 by_design=2`. Generated table: bim-ootb `modeller/edit_report_coverage.json`.
+| Defect | Java gates (§3.1) | Live edit checks |
+|---|---|---|
+| Same-class overlap, door in slab, pipe in structure, pipe through wall | One fails; the rest fire nothing or pass | **RED, all four** |
+| Wall driven into a wall it already touches | Not tested | **RED since the fix below.** Fired nothing before it |
+| Duplicate position | FAILS | RED |
+| Column 50 m up, beam 200 m away | NONE | NONE |
+| 3100 m wall clear of the building | FAILS | **NONE** |
+| 800 m wall clear of the building | NONE | NONE; RED only if it hits something |
+| 0.2 mm thick | FAILS | **NONE** |
+| Unknown class | NONE | NONE: the gate receives boxes only |
+| Duplicate guid | FAILS | NONE (read): boxes are keyed by feature id |
+| NaN coordinates, zero-size box | Not tested | NONE, no throw |
+Also: a line dragged past its neighbour has no rule of its own, and the span check uses one material per building, so on a mixed building a steel girder within its own limit can read RED.
+
+**Fixed 2026-11-07 (bim-ootb #2673):** a grid stretch could push a wall through its neighbour with no warning, because touching pairs were always expected contact. Measured on SampleHouse, `gx1` +1 m: wall 23's end moves x=6.12 → 7.12, through wall 22 (6.12..6.41). Now RED `abuts-clash`. RED blocks Save.
 
 ## 4. Witness claims (written first; each names the issue it proves)
 - **W-ORDER-REJECT-COVERAGE** — proves/disproves: "every defect class in §3.1 is rejected by a named gate". Output is the
@@ -101,6 +143,10 @@ A missing or empty fixture prints `INCONCLUSIVE` and aborts; it never passes.
 - **Pinned:** both witnesses assert the recorded table, so a future gate fix turns the test red and forces §3 to be updated.
   A green run therefore means "the table is still accurate", NOT "orders are safe".
 
+## 5. Explicit non-goals
+Structural capacity checks, code compliance, "certification", any claim of engineering safety. Those need a licensed
+engineer and a real analysis engine; out of this lane until the user says otherwise.
+
 ## 6. Fixes approved by the owner 2026-11-07 ("Go")
 Spec for changes to shipped code. These correct bugs that exist with or without a proposer. They do not add a reject gate.
 1. **Category filter.** `migration/V016` renames the rule param to what the loader reads. The loader also splits comma lists, because `AU_CEILING_SERVICE` names four categories and an exact-match key would never fire. A rule listed under several categories still counts once. Witness: `V1_legal_kitchen` goes NONE; `w_pv_1`, `w_pv_3`, `kitchen_pass`, `w_infra_snap_4` go green.
@@ -115,12 +161,36 @@ Spec for changes to shipped code. These correct bugs that exist with or without 
 - **"Better than without" is unmeasured.** To measure it, run the same prompts through a real proposer and count defects raw, after the gates, and with a repair loop feeding `§ORDER_REJECT` back. That needs a real proposer and a gate that stops output. Filtering cannot make a proposal good: a valid but poor design passes, and so does anything in the NONE rows of §3.1.
 - **What it offers a proposer (2026-11-07):** state intent in a few lines; get back a computed building plus proof of what changed. Speed is unmeasured, so do not pitch "faster". The proof record is `MODELLER_MASTER.md` §EDIT-REPORT, built first for people. A report that omits what was not checked invites a proposer to hide errors in the blind spots.
 
-## 5. Explicit non-goals
-Structural capacity checks, code compliance, "certification", any claim of engineering safety. Those need a licensed
-engineer and a real analysis engine; out of this lane until the user says otherwise.
+## 8. The proof report (bim-ootb #2674, live, one grid move)
+After a grid move the Modeller shows a panel and logs one `§EDIT_REPORT <json>` line. It reports only; the edit stands. Spec and full results: `prompts/MODELLER_MASTER.md` §EDIT-REPORT.
+Measured, real Garage, grid `gy8` +1.5 m:
+```
+                                       Before  After
+Box overlap over 20 mm (1 moved)          2      4    +2
+Beam spans over limit (228 girders)      91     91     0
+Beam spans needing a depth check         14     19    +5
+New: 2 overlaps · 1 driven into a touching wall
+Preliminary — the structural engineer confirms.
+NOT checked: 11 items
+```
+- **Proven by** `modeller/tests/witness_edit_report.js`: rows match independent recounts, undo and redo return to Before and After, two fresh Opens give byte-identical JSON, and a deliberately broken report fails it.
+- **Honest rows:** a refused or empty check prints "not judged" and no number. Different populations print "inconclusive" and no delta. No NOT-checked list, no report.
+- **Why NOT-checked is mandatory:** a proposer told to minimise red ink will find the blind spots. Zero red may only mean the errors moved to where nothing looks.
+
+**How we see the AI (owner's framing and this lane's view, not a measurement).**
+- The compiler is not narrow AI: it applies rules and never guesses, and "No AI inside" means no AI in the runtime. A proposer is narrow only when the order format restricts it. They are designer and checker, not rivals.
+- What the compiler offers a proposer is closer to a calculator than a speed-up: state intent in a few lines, get a computed form and proof of what changed. AI remains the more versatile side, and it can read a brief or a messy drawing where rules cannot.
+- Owner's idea, not built: this as the backend of a script engine a fast CLI can call. A saved macro needs no AI; AI is needed once, to turn a new request into a script. First test: whether the Modeller's fold runs outside the browser. `MODELLER_MASTER.md` row 40 (scripted edits) stays on HOLD.
+
+## 9. Re-run the evidence
+Fixtures are local files, not in git: without them a witness prints `INCONCLUSIVE`, never a pass.
+| Witness | Command |
+|---|---|
+| Java gates and snap | `mvn -o -pl BonsaiBIMDesigner -am test -Dtest=OrderContractWitnessTest -Dpipeline.tests.skip=false -Dsurefire.failIfNoSpecifiedTests=false`, reading the `§ORDER_*` lines. In a worktree add `-Dbim.fixture.root=<primary checkout>`. `V1_legal_kitchen=FAILS` means that `library/validation.db` lacks `migration/V016`, which no script applies automatically |
+| Live checks (bim-ootb) | `NODE_PATH=<node_modules with ajv> node modeller/tests/witness_edit_report_coverage.js` |
+| Report (bim-ootb) | `NODE_PATH=<node_modules> node modeller/tests/witness_edit_report.js`; falsifier `EDIT_REPORT_BREAK=1` must fail |
 
 ## STATUS
-2026-11-06 spec drafted. 2026-11-07 §3 extracted, both §4 witnesses built and committed, §6 fixes shipped.
-Run: `mvn -o -pl BonsaiBIMDesigner -am test -Dtest=OrderContractWitnessTest -Dpipeline.tests.skip=false -Dsurefire.failIfNoSpecifiedTests=false`; read the `§ORDER_*` lines. Fixtures are local: use `-Dbim.fixture.root=<primary checkout>` in a worktree. `V1_legal_kitchen=FAILS` means that `library/validation.db` lacks `migration/V016`, which no script applies automatically.
-⏸ **Reject gate PARKED by owner 2026-11-07 until a real proposer exists.** When un-parked: apply only to external orders, at `PlacementRequest`, checking before any snap; then run the §7 measurement.
-Still open, by design: every row in §3.1 marked NONE, snap cases S2–S5.
+2026-11-06 spec drafted. 2026-11-07: §3 extracted, §4 witnesses committed, §6 fixes shipped, live checks measured (§3.5), gate fix and report shipped (§8).
+⏸ **Reject gate PARKED by owner 2026-11-07 until a real proposer exists.** When un-parked: apply only to external orders, at `PlacementRequest`, checking before any snap; then run the §7 measurement. A gate must not apply to extracted buildings: the compile path stays log-only until its rules are proven against them (`CompilationPipeline.java:1536`).
+Still open, by design: every row marked NONE in §3.1 and §3.5, snap cases S2–S5. G4-TAMPER still reports 73 older violations (§6.3).
