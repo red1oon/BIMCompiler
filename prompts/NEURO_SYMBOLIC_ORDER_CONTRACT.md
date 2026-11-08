@@ -10,7 +10,8 @@ Origin: a pasted Gemini chat (JEPA "architect" + BIMCompiler "inspector"). Revie
 1. ✅ Done 2026-11-08: a free hand-off rehearsal of the stop (§15.1). A wider one is possible on the same terms.
 2. The Java `PlacementRequest` gate, once an outside order really arrives there (STATUS).
 3. Browser boot weight, its own file: `prompts/BROWSER_BOOT_WEIGHT.md`.
-4. Not started, each its own go: the report for bay add and other gestures, a session total at Save, beam and column rules on a live edit, a shift in the Modeller's UI, a film of the report.
+4. Not started, each its own go: the report for bay add and other gestures, a session total at Save, beam and column rules on a live edit, a shift in the Modeller's UI.
+5. **The film "Think Global, Act Local": planned, nothing recorded (§16).** Owner's choices settled, English first (§16.6). Before any cut: the 7 mm cause, the 4D/5D repeat witness, the source re-fetch.
 
 **⛔ No paid model calls (owner, 2026-11-08):** *"prepare best effort product without incurring any API call costs unless it is a 3rd party free one or in a sandbox here where you mock or mimick such a AI proposal."* `run.js` refuses without `--model-calls`, and no session passes that flag (`feedback_no_paid_model_calls.md`). The three model runs (§12 to §14) were made before this directive, through the owner's claude.ai plan login. Their `$` figures are Claude Code estimates, not charges.
 
@@ -323,7 +324,102 @@ W-EDIT-REPORT W0j covers every trigger and non-trigger. **Not measured:** whethe
 ### 15.2 The report loads on the first committed grid move
 `edit_report.js` and `edit_report_panel.js`, 13.6 KB, left the page's script tags; the 46 lines of glue in `modeller.html` stay. W-EDIT-REPORT Z1 (absent at open) and Z2 (loaded by the first grid move).
 
+## 16. FILM "Think Global, Act Local" (plan, 2026-11-08; spec only, nothing recorded)
+**Owner's ask, verbatim:** *"plan a film to demonstrate it. Title, "Think Gloval, Act Local', AI creates much slop if there is no symbolic ground truth to refer to. Thus our BIM-OOTB opens up a layer for any AI to propose upon it and it can analyse how far is the result from 00mm accuracy"* (title spelled "Global" on screen).
+**Gates:** no capture, voice or cut without the owner's go. **No model call to make footage** (§14.6): every AI line on screen is quoted verbatim from a recorded results file, with its date and model name; a hand-off rehearsal line is labelled "rehearsal, answered by us, not a model's result".
+**Opener (owner, 2026-11-08):** pose the problem first: *"Say u ask this question and u get a beautiful render, but is it accurate?"* (beat 0b).
+**Layout:** `prompts/FILM_NARRATION.md` ▶ PLAYBOOK C (explainer: before/after in the first 25 s, show then prove, one real event, roadmap card "not built yet") + its COMPARISON/PROOF addendum (layman words, a chart for every comparison, honest limits in the voice). **Pipeline:** copy `scripts/film_network_erp/` (resolve → guard → record → fit → mux), so every digit on a card or in the voice resolves to a named row in this file or a `§` line. English first (Kokoro, local); other languages on the owner's say.
+
+### 16.1 The thesis, in what this lane can prove
+- **Think global = the AI.** Imagination, any proposal, outside the compiler, untrusted (§1). Its arithmetic can be right and still break a rule it was never told.
+- **The closing line (owner, 2026-11-08):** *"Let your AI do the beautiful rendering, but let its data be grounded."* Beats 0b to 0d pose the problem; everything after is the grounding; 10b says it.
+- **Act local = the compiler,** on the caller's own machine, no AI inside: it judges one edit against the building it was given, reports, and stops new red (§11, §15.1).
+- **The slop beat, from our own measured run, not stock images** (`FILM_VS_AI_SLOP.md` already made the AI-image film; do not remake it). G4, `results_v3_2026-11-07.json`, rep 0, attempt 0, `claude-sonnet-5-5`: *"Bay gx5 to gx6 is currently 161.234 − 150.051 = 11.183 m. To reach 13 m it must widen by 1.817 m."* It even forecast *"Girders … will stretch by 1.817 m, which may overstress them"*, and the result was RED. In §14 it named the 12 m limit in all 6 revisions and kept the 13 m bay. Its forecast did not separate good from bad (problems forecast on 14 of 15 bad first proposals, 10 of 15 good). The point: **without the symbolic ground truth, a fluent answer and a right answer look the same.**
+- **"How far from 0 mm": what the film may say.** There is **no single "distance from 0 mm" number** in the product; the film must not show one. It shows each measure as its own row:
+
+| On screen | Measured as | Source |
+|---|---|---|
+| The edit lands exactly | a shift's crossing vertices: 68,336 checked, 0 off, no tolerance | §14.1, W-BLOCK-SHIFT |
+| Undo lands exactly | after a stop, a recount equals Before; the next edit equals that edit made alone | §15.1 C13, C14 |
+| Same question, same answer | two fresh Opens give byte-identical report JSON | §8, W-EDIT-REPORT |
+| How far over a rule | bay gx5-gx6 12.993 m against the 12 m RC limit | §15.1 rehearsal, G4 |
+| New overlaps | count before → after, at a stated 20 mm tolerance | §13.6, §14.1 |
+| What was NOT checked | the report's own list | §8 |
+
+- **The 7 mm, half settled (2026-11-08, from `docs/ProposerGuide.md` "What each result looks like"):** the guide shows `gx5-gx6` going **11.176 → 12.993 m**, so the move itself landed exactly (12.993 − 11.176 = 1.817, the AI's own number, 0 mm off). The 7 mm sits in the **before**: the AI read 11.183 m from `--lines` (161.234 − 150.051); the span gate reads 11.176 m. ⛔ **Extract before any cut, do not explain by guess:** why the two "before" values differ (the −2° lattice frame, a column band, or something else) from `GridSpanGate.tally` and `--lines`; add a `§` line if none says it. Until then the film says only "the move landed exactly; the bay is 12.993 m against a 12 m limit".
+
+### 16.1a How others pair AI with a check (searched 2026-11-08; re-fetch each source before voicing it, as `FILM_VS_AI_SLOP.md` requires)
+| Who | What the AI proposes | What checks it | Is "how far off" reported? | Source |
+|---|---|---|---|---|
+| Free AI video, on our Hospital frame | a fly-through clip (pixels) | nothing | no: a picture has no parts list | our ledger, `FILM_VS_AI_SLOP.md` §DUEL_LEDGER |
+| Veras-class rendering | an image over the model | the person looking | no: output is an image, not geometry | dancumberlandlabs.com/blog/revit-construction (A3 there) |
+| Autodesk Assistant | answers and changes | the person: *"It cannot guarantee accuracy." "Review automated changes."* | not stated | help.autodesk.com …GUID-9017743B… (A1 there, fetched 2026-11-02) |
+| Autodesk, as trade press reads it | probabilistic geometry | a deterministic parametric engine that "heals, constrains, brings into tolerance" | not published in that source | develop3d.com/cad/autodesks-ai-blueprint-for-cad (A2 there; interpretation, not Autodesk's words) |
+| TestFit | no outside AI: its own rules generate | the rules themselves (unit mix, zoning, setbacks) | not published | testfit.io/news/aecbytes-ai-in-aec-updates-2022 (vendor page: "does not rely on" trained ML) |
+| Snaptrude AI agents | site envelope, department packing | agents apply zoning and adjacency rules | not published | help.snaptrude.com/en/articles/14004374-ai-agents-in-snaptrude (vendor docs) |
+| Madireddy et al. 2025 | Python checking scripts written by GPT, Claude, Gemini, Llama, run in Revit | "semi-automated"; who checks the scripts is not stated in the abstract | not stated | arXiv:2506.20551 |
+| Claude + Blender connector (launched 2026-04-28, built by the Blender team, MCP) | Python commands in Blender (`bpy`); with the Bonsai add-on, an IFC model, including Bonsai's own work and cost schedules | the person | **repeat not measured here**: whether two sessions write the same script and get the same schedule is unmeasured, so the film asks the question and does not answer it for them | secondary so far: aiproductivity.ai/news/anthropic-claude-creative-work-mcp-connectors, mindstudio.ai/blog/what-is-claude-mcp-connectors-blender-adobe; **fetch Anthropic's own announcement before voicing** |
+| AlphaGeometry (maths, not buildings) | an extra construction line | a symbolic deduction engine proves or fails | yes: a proof or no proof; 25 of 30 olympiad problems (re-fetch the Nature abstract before saying it) | Trinh et al., Nature 625, 476–482 (2024) |
+| **This lane** | one edit from **any** outside AI | a compiler with no AI inside, **on the user's own machine**, stops new red | **yes, per row:** before → after, the limit, the bay, the NOT-checked list | §8, §11, §15.1 |
+**What the table may claim:** AlphaGeometry is the closest pattern (a model proposes, a symbolic engine decides); in AEC, the sources found either make the person the checker or do not publish how the check reports. **What it may not:** that nobody else measures the gap (absence in our search is not absence), or anything about accuracy for a vendor row. Seen, not used: an MDPI *Buildings* 15(19) 3465 bridge-checking paper (the page returned 403; its precision figure is unverified).
+
+### 16.2 Storyboard (about 150 s; cues set from the first fit, PLAYBOOK C §4)
+| # | Picture | Dialogue (F asks as a newcomer, M answers in one or two plain sentences) | Source |
+|---|---|---|---|
+| 0 | Title card: kicker "AI proposes · the compiler judges"; line 1 "Think Global," line 2 (coral) "Act Local"; plain line "an open layer any AI can propose on" | none, silent 3.6 s | — |
+| 0b PROBLEM | Owner's opener (2026-11-08): *"Say u ask this question and u get a beautiful render, but is it accurate?"* A typed question to an AI ("a slow cinematic fly-through of this hospital building") → the **free Wan 2.2 clip of our own Hospital** already recorded (`build/film_vs_ai/duel_clips/wan22_run1.mp4`, 62–65 s wait, 832×544, `FILM_VS_AI_SLOP.md` §DUEL_LEDGER rows 3-4) → hold on its frame, then the question as text | F: "Say you ask this, and you get a beautiful render. But is it accurate?" M: "Nobody can say. A picture has no list of parts to check against." | §DUEL_LEDGER finding 4: no element-aware measure exists for AI frames, so **the film says "cannot be measured", never "wrong"** |
+| 0c REPEAT? | Owner's second question (2026-11-08): *"even though Claude takes your IFC to Blender, but can the 4D/5D schedules with overlays be repeated?"* A text card (names only, no logos): "Claude → Blender connector → Bonsai opens the IFC". Then our own existing Hospital film clip with the 4D day counter and the cost overlay; then a card "same run twice: 0 lines differ" | F: "But Claude can take my IFC into Blender now." M: "It can. Bonsai even has schedules. Ask it twice: is it the same schedule, the same cost, the same overlays?" | §16.1a Claude + Blender row; our side only after W-FILM-NEURO-4D5D-REPEAT (§16.4) |
+| 0d CLASH GUESS | Owner (2026-11-08): *"and there maybe guesswork on a certain clash pair without mesh overlap fine tune?"* The existing Hospital film's clash beat: box pairs 1,478 → real mesh overlap 271; card "79 of every 100 box clashes were not real" | F: "And clashes? The boxes touch, so it's a clash?" M: "Boxes said 1,478. The real shapes overlap in 271. The rest is guesswork." | `§CLASH_NARROWPHASE broad=1478 meshTrue=271 falsePositiveRate=79.0%` (Hospital 0049 bake, `prompts/film_narration_hospital_0049_dialogue_v3.tsv` row `clash`; `FILM_NARRATION.md` L1323) |
+| 1 BEFORE | The model's G4 words as a quote card: the arithmetic, the forecast, "decline: false" | F: "It did the maths. So it's right?" M: "The maths is right. It doesn't know this building's rule." | §16.1 slop beat |
+| 2 IDEA | One plain card (icons per §16.2a): **stick figure** (the outside user) → **globe, "$"** (their AI, called over the internet) → one edit → **laptop, "$0"** (the compiler on their own machine, no AI inside) → the report back to the AI | F: "So who pays for what?" M: "The AI call costs money. The check runs on your own computer, free." | §1, §10, §15.1 rehearsal "$0" |
+| 3 AFTER | The same edit through `edit_cli` on HospitalGarage: **STOPPED** "bay gx5-gx6 newly over the limit: 12.993 m (limit 12 m, RC)"; the building restored | F: "Stopped? By whom?" M: "By the building's own rule. Undone, recounted, back to where it was." | §15.1 |
+| ch | Chapter card "Think global" | — | — |
+| 4 | Globe icon with the run's cost tag "about $0.45, estimate" over a chart: right outcome first proposal vs with the report, 15 → 24 of 30 (the value the call is expected to add) | F: "So the report helps?" M: "In our small test, yes. Our briefs, one model, about ten real decisions. Not proven yet." | §12, §14 |
+| ch | Chapter card "Act local" | — | — |
+| 5 | Terminal: one downloaded file, `edit_cli --lines` against the live Hospital; the JSON | M: "One file. The live site. Your own computer. About a minute a call." | §11, §14.2, §14.3 |
+| 6 | Shift close-up: one plane; everything beyond it moves, everything before it stays; card "68,336 points checked · 0 off" | F: "Zero? Not roughly?" M: "Every point moved exactly, or stayed exactly." | §14.1 |
+| 7 | The report panel: red before → after, the limit, the bay, the NOT-checked list | F: "And what didn't it check?" M reads the list | §8 |
+| ch | Chapter card "How far from the rule" | — | — |
+| 8 | G2: stopped twice (overlaps, driven into a wall), then declined; label "rehearsal, answered by us" | M: "Each stop says why, so the next try starts from a clean building." | §15.1 table |
+| 8b OTHERS | The comparison card (§16.1a), short labels; unmeasured cells say "not published in the source" | F: "Isn't everyone doing this?" M: "Some pair AI with a checker. The difference here: any AI, a check on your own computer, and a report that says how far off." | §16.1a, each row's citation |
+| 9 | Honest-limits card: **the edit report's overlap row counts boxes, not meshes** (§8; on a rotated building, lattice-frame boxes, §13.6), so it can over-count the way 0d shows; no structural capacity; floating members and wrong units clear of the building are not caught; in the compile path 8 of 17 planted defects fire nothing; **a pass never means safe** | M says it plainly | §3.1, §3.5, §5 |
+| 10 | Roadmap card, "not built yet": the mesh check behind the edit report's overlap row; a gate on the compile path when outside orders arrive; a real measured run with the stop; the report for adding a bay | — | RESUME, §15.1 |
+| 10b PROMISE | Plain card, two lines in the title style: "Let your AI do the beautiful rendering," / (coral) "but let its data be grounded." | M says it once, nothing after it | owner, 2026-11-08: *"thus let your AI do the beautiful rendering but let its data be grounded"* |
+| 11 HOW TO USE | Stick figure at a laptop; the guide URL large on screen: **https://red1oon.github.io/BIMCompiler/ProposerGuide/**; the four steps as on-screen text, copied from the guide's "Getting started", never retyped from memory: (1) `npm install puppeteer@24` (2) `curl -O https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js` (3) `node edit_cli.js --building Hospital --lines` (4) give your AI the guide's "Instructions to give your AI", run the edit it proposes, send it the report | F: "Can I try it with my own AI?" M: "Yes. Three commands, then paste the guide's instructions into your AI." | `docs/ProposerGuide.md` Getting started, Instructions to give your AI |
+| 12 | End card (contacts, "No AI inside") | — | — |
+
+### 16.2a Icons (owner, 2026-11-08: *"u may use a human stick figure to signify an outside user"* · *"shwo globe flaticon to indicate AI API calls with $$ costs and value added results expected"*)
+| Icon | Means | Tag beside it, and its source |
+|---|---|---|
+| Stick figure | the outside user: whoever brings their own AI | none |
+| Globe | an AI API call: over the internet, paid | **cost:** the recorded runs' `cost_usd` (`results_2026-11-07` $1.42, `results_v2` $0.41, `results_v3` $0.45, 30 proposals each with revisions); on screen "estimate", because they are Claude Code estimates under a claude.ai login, not charges (§14.6). **Value expected:** right outcome 15 → 24 of 30 (§14), with the small-test caveat in the voice |
+| Laptop | the compiler on the user's own machine, no AI inside | "$0": the rehearsal made 4 CLI calls and no model call (§15.1) |
+- **Licence:** a Flaticon icon needs attribution in the credits under its free licence; check the icon's own page before use and record the URL and author here. Default, to avoid the dependency: draw the stick figure, globe and laptop as plain SVG in the house colours (each is a few lines).
+- **No new spend for the film:** the globe shows recorded figures only; no model is called to make a beat (§14.6).
+
+### 16.3 Pictures: where each comes from
+- **Report panel, Modeller:** the real page, headless, software GL, no GPU lock, device scale 1.5 (PLAYBOOK C §3), every value also printed as a `§` line beside the still (pattern: bim-ootb `capex/tools/film_shots.js`).
+- **Terminal:** the real stdout of a fresh `edit_cli` run, rendered, never retyped; its log kept beside the film.
+- **Chart (beat 4):** dataviz skill, from `results_v3_2026-11-07.json` `summary`.
+- **Quote cards (beats 1, 8):** verbatim from the results file, with run date, model and "mode" on the card.
+
+### 16.4 Witnesses (each names its issue; written before any cut)
+- **W-FILM-NEURO-FACTS:** the copied `guard.js`; every digit on a card or in the voice maps to a row in this file; a planted number must fail it. Issue: a number in the film that the repo cannot back.
+- **W-FILM-NEURO-LIVE:** the values on the report stills equal a fresh `edit_cli` JSON for the same edit; INCONCLUSIVE if any row is "not judged". Issue: the film showing a report the product no longer gives.
+- **W-FILM-NEURO-QUOTE:** every quote card is a byte-exact substring of its results file. Issue: a paraphrased AI turned into a strawman.
+- **W-FILM-NEURO-4D5D-REPEAT:** run the shipped 4D pipeline (`cache_4d_run.js` path, cache cleared) twice on the Hospital and compare the schedule (task, element, day), the 5D total and each overlay's `§` values (day counter, cost) byte for byte; INCONCLUSIVE if either run is empty. Issue: the film claiming "same every time" for 4D/5D with overlays. **What exists today is narrower:** the Duplex, Hospital and Terminal 4D run logs were byte-identical across two runs, 0 differing lines (`4D_MODEL_INTEGRITY.md` L2035, a before/after run around a change that did not touch them), and the edit report is byte-identical over two fresh Opens (§8). Neither covers 5D or the overlays, so beat 0c waits for this witness.
+- PLAYBOOK step 5: frame count, silences ≤ about 7 s, about −16 LUFS, subtitle band empty.
+
+### 16.5 Not in this film
+Any claim that Blender or Bonsai cannot do 4D/5D (Bonsai has schedules; the question is repeatability only), Anthropic or Blender logos, structural safety, certification, JEPA, any "AI is bad" claim beyond our own measured run, any speed claim against working without us (not measured, ▶ START HERE).
+
+### 16.6 Decided by the owner (2026-11-08: *"Agree with u, English only first"*)
+1. **"0 mm" wording:** "the edit lands exactly; the report says how far it is from each rule". Never "0 mm accurate" as a whole-result claim.
+2. **Building:** HospitalGarage for beats 3 and 8 (spans judged, RC); the Hospital for beat 5; both names on screen.
+3. **Languages:** English only first (Kokoro, local). Others only on a later ask.
+**Still before any cut:** the 7 mm cause (§16.1), W-FILM-NEURO-4D5D-REPEAT for beat 0c (§16.4), and a re-fetch of every §16.1a source. Capture still waits for the owner's go.
+
 ## STATUS
-2026-11-06 spec. 2026-11-07: extracted (§3), fixes (§6), report (§8), CLI (§11), three proposer tests (§12), shift and hinge (§13, §14), public guide (§14.3). 2026-11-08: no paid model calls (§14.6), the stop on outside calls and the report on first use (§15), consolidated.
+2026-11-06 spec. 2026-11-07: extracted (§3), fixes (§6), report (§8), CLI (§11), three proposer tests (§12), shift and hinge (§13, §14), public guide (§14.3). 2026-11-08: no paid model calls (§14.6), the stop on outside calls and the report on first use (§15), consolidated; film plan "Think Global, Act Local" (§16).
 **The gate, where it stands:** outside calls are stopped on new red (§15.1). The Java compile path stays log-only until its rules are proven against extracted buildings (`CompilationPipeline.java:1536`). When outside orders arrive at `PlacementRequest`, a gate there applies only to them, checks before any snap, and then the §7 measurement runs, at no cost (§14.6).
 **Open by design:** every row marked NONE in §3.1 and §3.5; snap cases S2–S5. G4-TAMPER reports 73 older violations (§6.3).
