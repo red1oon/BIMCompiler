@@ -101,6 +101,18 @@ C3 lands with the REPLACE verb.
 - Private ARC: the same, plus 1,284 of 4,147 matched elements moved > 1 cm (median 7 mm).
 - Hypothesis: float32 precision at map coordinates, since the open route keeps raw map coords. Being tested on Duplex shifted 465 km.
 - Fix order: (0) frame/position (ONE FRAME on the open route, if the precision test confirms); then the walk on a fresh open + height for the film; then export (1) GlobalId + storeys, (2) all bodies + discipline + colour + mesh dedup via the existing geometry_hash sharing, (3) spaces/psets/fills/voids/types/grid, (4) site lat/long/true north + name, (5) MEP systems + ports.
+**§FP-EQUIPMENT SPEC (2026-11-08; data measured by the design lane on the private FF100 sheet; owner's FP ruling "Drawn equipment + ask"). Not built. Move it into bim-ootb `prompts/DISC_WALK_DRAWN_MAINS.md` as §10 when building.**
+- **Reader:** the drawn-mains reader (`modeller/drawn_mains.js`) gains an `equipment` role: point items, no runs. It reuses the same sheet fit (one held grid), the nested-block expansion, missing-block logging and the mirror guard.
+- **Rows (US NCS, fine to commit):**
+  - equipment = top-level INSERTs on `M-EQPM` and `P-SANR-FIXT`;
+  - KIND from block-name words, not the layer (extinguishers are split across both layers): `FIRE CABINET` → cabinet; `EXTINGUISHER` → extinguisher (foam 9 L and 4 kg dry powder families); `Fire_Blanket` / `FB` → blanket;
+  - grid = `S-GRID` LINE + `S-GRID-IDEN` MTEXT (the existing patterns cover it);
+  - the layer-0 linked-model INSERT is background: ignore it for equipment.
+- **Duplicates:** the sheet stacks copies at one spot, 16 inserts for 11 distinct items. Collapse identical kind + block name + position within 10 mm and log `stacked=`. Distinct on that sheet: cabinets 3, blankets 4, foam extinguishers 2, powder extinguishers 2.
+- **IFC class (design lane's advice; the owner may overrule):** IfcFireSuppressionTerminal, PredefinedType USERDEFINED, ObjectType from the word (FIRECABINET / FIREEXTINGUISHER / FIREBLANKET); HOSEREEL only when the sheet says hose reel (these cabinets say "EMPTY"). Discipline FP. One data row per word. Not IfcFurnishingElement.
+- **Provenance:** `drawn` position, sheet + fit numbers. **Height: none stated. Ask the design lane / owner before giving one** (no wall-mounted height rule is held).
+- **Witness:** the stack of 3 at one spot gives 1 item (red control: no collapse gives 3). The mirror guard logs fired=no on this sheet (a real negative). The kind comes from the word even when the layer differs.
+- **Film:** FP = these items at their drawn spots; the film states "no sprinklers drawn; asked".
 **Owner's rulings today:**
 - Viewer totals: "Leave them out".
 - Grid: "Yes, keep the grid".
