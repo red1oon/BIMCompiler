@@ -1,0 +1,13 @@
+§W_REPEAT part=4D.els n=63182 A=09e322516f2a0a33 B=09e322516f2a0a33 SAME
+§W_REPEAT part=4D.tasks n=36 A=78dc66cffb1df9b6 B=78dc66cffb1df9b6 SAME
+§W_REPEAT part=4D.sched n=63182 A=14c369fb32b32206 B=14c369fb32b32206 SAME
+§W_REPEAT part=4D.play n=63182 A=a293de8ef757f052 B=a293de8ef757f052 SAME
+§W_REPEAT part=4D.playStats n=13 A=c8846cbbeba6c2de B=c8846cbbeba6c2de SAME
+§W_REPEAT part=4D.storeys n=63 A=e502b73c182c77f1 B=e502b73c182c77f1 SAME
+§W_REPEAT part=log lines=61/61 differing=0 clock_only=3 (elapsed-time fields masked) SAME
+§W_REPEAT_HR_COST A total=1763131 personDays=10437.2 trades=8 | B total=1763131 personDays=10437.2 trades=8 (formula copy, tm_gantt_build.js:451-506)
+§W_REPEAT part=5D.hr_cost n=8 A={"total":1763131,"personDays":10437.2,"trades":8} B={"total":1763131,"personDays":10437.2,"trades":8} SAME
+§W_REPEAT_OVERLAY days=341 final day=341 placed=63182 cost=1763131 hours=83497.6
+§W_REPEAT part=overlay.day_placed_cost n=341 A=548b2aeee55eff91 B=548b2aeee55eff91 SAME
+§W_REPEAT_SERIES_OUT evidence/overlay_series.json (re-run 2026-11-08 to restore this log; series byte-identical to the committed file)
+§W_FILM_NEURO_4D5D_REPEAT verdict=PASS differ=0 inconclusive=0 bld=Hospital db=Hospital_meta.db codeKey=1adc56735190/1adc56735190

@@ -1,0 +1,6 @@
+§DUEL 03:31:45 t0 start space=preSalesAIAutomation/imagetovideo img_sha=abddc668dc1b prompt='slow cinematic fly-through of this hospital building'
+§DUEL 03:31:49 run1 submit (same prompt, same image, randomize_seed=False seed=42)
+§DUEL 03:32:54 run1 RESULT wait=64.6s sha=73386c7dd591 seed=42
+§DUEL 03:32:54 run2 submit (same prompt, same image, randomize_seed=False seed=42)
+§DUEL 03:33:56 run2 RESULT wait=61.8s sha=73386c7dd591 seed=42
+done

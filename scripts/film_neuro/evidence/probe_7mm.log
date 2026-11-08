@@ -1,0 +1,2 @@
+edit_cli: http://localhost:39253/modeller/modeller.html
+§NEURO_FILM_7MM building=HospitalGarage theta_deg=-2.0000 lattice_bay=11.1760 lines_bay=11.1828 lattice_over_cos=11.1828 diff_mm=6.81 lattice_plus_1817=12.9930 raw={"theta_deg":-2.0000000310429438,"lattice_gx5":145.9870017506682,"lattice_gx6":157.1630017170117,"lines_gx5":150.0508196629844,"lines_gx6":161.2336318966026,"n_x":17}

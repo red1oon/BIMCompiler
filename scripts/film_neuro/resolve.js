@@ -83,7 +83,30 @@ const GD = fs.readFileSync(path.join(__dirname, '..', '..', 'docs', 'ProposerGui
 facts.cmd_install = m1(GD, /^(npm install puppeteer@\d+)$/m)[1]; facts.cmd_get = m1(GD, /^(curl -O \S+edit_cli\.js)$/m)[1]; facts.cmd_lines = m1(GD, /^(node edit_cli\.js --building Hospital --lines)$/m)[1];
 sources.cmd_install = sources.cmd_get = sources.cmd_lines = 'docs/ProposerGuide.md :: Getting started';
 
-const sb = fs.readFileSync(path.join(__dirname, 'script_en.md'), 'utf8'), used = Array.from(new Set((sb.split('\n').filter(l => /^\| \d+ \|/.test(l)).join('\n').match(/\{\{(\w+)\}\}/g) || []).map(x => x.slice(2, -2))));
+// rc4 (§18): the connector's menu, and ONE real session of an AI using it. The calls come from the connector's own log (BIM_MCP_LOG), copied to
+// evidence/session_calls.jsonl; the user's request and the AI's reply are the session's own words, saved verbatim to session_request.txt / session_answer.txt.
+const TL = rd('tools_list.jsonl').trim().split('\n').map(l => JSON.parse(l)), MENU = TL.filter(x => x.result && x.result.tools)[0].result.tools;
+put('menu_n', 'tools_list.jsonl', 'tools/list length', () => MENU.length);
+MENU.forEach((t, i) => { put('menu' + i + '_name', 'tools_list.jsonl', 'tools[' + i + '].name', () => t.name); put('menu' + i + '_desc', 'tools_list.jsonl', 'tools[' + i + '].description', () => t.description);
+  put('menu' + i + '_inputs', 'tools_list.jsonl', 'tools[' + i + '].inputSchema.properties keys', () => Object.keys(t.inputSchema.properties).join(', ')); });
+const SC = (() => { try { return rd('session_calls.jsonl').trim().split('\n').map(l => JSON.parse(l)).filter(x => x.tool); } catch (e) { return []; } })();
+const scL = SC.filter(x => x.tool === 'bim_lines' && !x.isError)[0], scS = SC.filter(x => x.tool === 'bim_try_shift' && !x.isError).slice(-1)[0];
+put('s_request', 'session_request.txt', 'the user\'s message, verbatim', () => rd('session_request.txt').trim());
+put('s_answer', 'session_answer.txt', 'the AI\'s reply, verbatim; over 320 characters, its opening sentences up to 320, then …', () => { const t = rd('session_answer.txt').trim().replace(/\s+/g, ' '); if (t.length <= 320) return t; let o = ''; for (const x of t.match(/[^.!?]+[.!?]+(\s|$)/g) || [t]) { if ((o + x).length > 320) break; o += x; } return (o || t.slice(0, 320)).trim() + ' …'; });
+put('s_target', 'session_request.txt', 'the metres asked for', () => m1(rd('session_request.txt'), /(\d+(?:\.\d+)?) ?m\b/)[1]);
+put('s_building', 'session_calls.jsonl', 'bim_lines arguments.building', () => scL.arguments.building);
+put('s_gx5', 'session_calls.jsonl', 'bim_lines result: gx5 pos', () => JSON.parse(scL.result).model.lines.filter(l => l.id === 'gx5')[0].pos);
+put('s_gx6', 'session_calls.jsonl', 'bim_lines result: gx6 pos', () => JSON.parse(scL.result).model.lines.filter(l => l.id === 'gx6')[0].pos);
+put('s_line', 'session_calls.jsonl', 'bim_try_shift arguments.line', () => scS.arguments.line);
+put('s_move', 'session_calls.jsonl', 'bim_try_shift arguments.move', () => scS.arguments.move);
+put('s_reason', 'session_calls.jsonl', 'bim_try_shift result edits[0].reason', () => JSON.parse(scS.result).edits[0].reason.replace(/^stopped: /, ''));
+put('s_bay_after', 'session_calls.jsonl', 'bim_try_shift result: span_red over_limit_changed gx5-gx6 after', () => JSON.parse(scS.result).edits[0].report.rows.filter(r => r.id === 'span_red')[0].over_limit_changed.filter(o => o.bay === 'gx5-gx6')[0].after);
+put('s_calls', 'session_calls.jsonl', 'number of bim calls in the session', () => SC.length);
+put('s_cli', 'session_calls.jsonl', 'the same shift as a command', () => 'node edit_cli.js --building ' + scS.arguments.building + ' --shift ' + scS.arguments.line + ' --move ' + scS.arguments.move);
+facts.cmd_mcp = m1(GD, /`(claude mcp add bim -- node "\$PWD\/bim_mcp\.js")`/)[1]; facts.cmd_get_mcp = m1(GD, /^(curl -O \S+bim_mcp\.js)$/m)[1];
+sources.cmd_mcp = sources.cmd_get_mcp = 'docs/ProposerGuide.md :: Connect your AI';
+
+const sb = fs.readFileSync(path.join(__dirname, 'script_en.md'), 'utf8'), used = Array.from(new Set((sb.split('\n').filter(l => /^\| [\d.]+ \|/.test(l)).join('\n').match(/\{\{(\w+)\}\}/g) || []).map(x => x.slice(2, -2))));
 const unres = used.filter(k => !(k in facts));
 fs.writeFileSync(path.join(__dirname, 'facts.resolved.json'), JSON.stringify({ note: 'resolve.js output; every value read from the file named in sources', facts, sources }, null, 1));
 Object.keys(facts).forEach(k => console.log('§FACT ' + k + '=' + JSON.stringify(facts[k]) + '  <- ' + sources[k]));
