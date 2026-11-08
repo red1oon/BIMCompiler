@@ -28,7 +28,7 @@ function ok(c, m, d) { if (!c) fails++; L('  ' + (c ? '✓' : '✗ FAIL:') + ' '
 function rpc(s, m, a) {
   return new Promise(function (res, rej) {
     var b = JSON.stringify({ jsonrpc: '2.0', method: 'call', params: { service: s, method: m, args: a } });
-    var r = http.request({ host: 'localhost', port: 8069, path: '/jsonrpc', method: 'POST',
+    var r = http.request({ host: 'localhost', port: Number(process.env.ODOO_PORT || 8069), path: '/jsonrpc', method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(b) } }, function (x) {
       var d = ''; x.on('data', function (c) { d += c; }); x.on('end', function () {
         try { var j = JSON.parse(d); j.error ? rej(new Error(JSON.stringify(j.error.data && j.error.data.message || j.error))) : res(j.result); } catch (e) { rej(e); } }); });
@@ -108,8 +108,10 @@ function rpc(s, m, a) {
 
   db.close();
   var pass = fails === 0;
-  L('\n' + (pass ? '🟢 POC-P4-MASTERS PASS' : '🔴 POC-P4-MASTERS FAIL (' + fails + ')') +
+  // §A-MOCK A1: no live Odoo and no replay fixture → the non-invent check was not judged → INCONCLUSIVE, never PASS
+  var verdict = !pass ? '🔴 POC-P4-MASTERS FAIL (' + fails + ')' : liveOK ? '🟢 POC-P4-MASTERS PASS' : '⚪ POC-P4-MASTERS INCONCLUSIVE (no Odoo on :' + (process.env.ODOO_PORT || 8069) + ', live counts not judged)';
+  L('\n' + verdict +
     ' — shard full master data: bpartners=' + bpc + '/' + (liveOK ? livePartners : '?') + ' COA=' + evc + '/' + (liveOK ? liveCOA : '?') + ' taxes=' + txc + '/2');
   try { fs.writeFileSync(path.join(__dirname, '..', 'build', 'erp', 'poc_p4_masters.log'), log.join('\n')); } catch (e) {}
-  process.exit(pass ? 0 : 1);
+  process.exit(!pass ? 1 : liveOK ? 0 : 3);
 })().catch(function (e) { L('§P4-MASTERS ERROR ' + e.message); process.exit(2); });

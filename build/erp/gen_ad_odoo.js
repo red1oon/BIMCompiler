@@ -31,7 +31,7 @@ var MIG_BY = '10';                                                // the System 
 function rpc(s, m, a) {
   return new Promise(function (res, rej) {
     var b = JSON.stringify({ jsonrpc: '2.0', method: 'call', params: { service: s, method: m, args: a } });
-    var r = http.request({ host: 'localhost', port: 8069, path: '/jsonrpc', method: 'POST',
+    var r = http.request({ host: 'localhost', port: Number(process.env.ODOO_PORT || 8069), path: '/jsonrpc', method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(b) } }, function (x) {
       var d = ''; x.on('data', function (c) { d += c; }); x.on('end', function () {
         try { var j = JSON.parse(d); j.error ? rej(new Error(JSON.stringify(j.error.data && j.error.data.message || j.error))) : res(j.result); } catch (e) { rej(e); } }); });

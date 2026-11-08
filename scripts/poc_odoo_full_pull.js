@@ -29,7 +29,7 @@ function cents(x) { return Math.round(Number(x || 0) * 100); }
 function rpc(s, m, a) {
   return new Promise(function (res, rej) {
     var b = JSON.stringify({ jsonrpc: '2.0', method: 'call', params: { service: s, method: m, args: a } });
-    var r = http.request({ host: 'localhost', port: 8069, path: '/jsonrpc', method: 'POST',
+    var r = http.request({ host: 'localhost', port: Number(process.env.ODOO_PORT || 8069), path: '/jsonrpc', method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(b) } }, function (x) {
       var d = ''; x.on('data', function (c) { d += c; }); x.on('end', function () { try { var j = JSON.parse(d); j.error ? rej(new Error('rpc')) : res(j.result); } catch (e) { rej(e); } }); });
     r.on('error', rej); r.write(b); r.end();
@@ -113,8 +113,10 @@ function ok(c, m) { if (!c) { fails++; L('  ✗ FAIL: ' + m); } else { L('  ✓ 
   if (maxDiff >= 0) ok(maxDiff === 0, 'S00023 derived journal == live Odoo AML to the cent (oracle-equivalent)');
 
   db.close();
-  L('\n' + (fails === 0 ? '🟢 POC-ODOO-FULL-PULL PASS' : '🔴 POC-ODOO-FULL-PULL FAIL (' + fails + ')')
+  // §A-MOCK A1: §EXTRACT or the S00023 oracle-diff not judged → INCONCLUSIVE, never PASS
+  var judged = liveOK && maxDiff >= 0;
+  L('\n' + (fails !== 0 ? '🔴 POC-ODOO-FULL-PULL FAIL (' + fails + ')' : judged ? '🟢 POC-ODOO-FULL-PULL PASS' : '⚪ POC-ODOO-FULL-PULL INCONCLUSIVE (no Odoo on :' + (process.env.ODOO_PORT || 8069) + ', live extract/oracle not judged)')
     + ' — full pull: all order lines extracted (== live), ' + completeN + '/' + orders.length + ' orders fold complete (was 1).');
   try { fs.writeFileSync(path.join(__dirname, '..', 'build', 'erp', 'poc_odoo_full_pull.log'), log.join('\n')); } catch (e) {}
-  process.exit(fails === 0 ? 0 : 1);
+  process.exit(fails !== 0 ? 1 : judged ? 0 : 3);
 })().catch(function (e) { console.error('§FULL-PULL ERROR', e.message, e.stack); process.exit(2); });

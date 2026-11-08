@@ -35,7 +35,7 @@ var RECORDED_ORACLE = { '121000': { dr: 500250, cr: 0 }, '400000': { dr: 0, cr: 
 function rpc(s, m, a) {
   return new Promise(function (res, rej) {
     var b = JSON.stringify({ jsonrpc: '2.0', method: 'call', params: { service: s, method: m, args: a } });
-    var r = http.request({ host: 'localhost', port: 8069, path: '/jsonrpc', method: 'POST',
+    var r = http.request({ host: 'localhost', port: Number(process.env.ODOO_PORT || 8069), path: '/jsonrpc', method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(b) }, timeout: 4000 }, function (x) {
       var d = ''; x.on('data', function (c) { d += c; }); x.on('end', function () { try { var j = JSON.parse(d); j.error ? rej(new Error('rpc')) : res(j.result); } catch (e) { rej(e); } }); });
     r.on('error', rej); r.on('timeout', function () { r.destroy(new Error('timeout')); }); r.write(b); r.end();

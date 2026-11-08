@@ -223,8 +223,9 @@ Closed history is OPTIONAL (the fold already proves it: `MIGRATION_CAMPAIGN_RESU
 
 ### WORK LIST (WORK-TO-ZERO, top to bottom)
 **A — Test truth first (stale tests)**
-- ⬜ A1 The 4 migrate pocs above: live source unreachable ⇒ `INCONCLUSIVE` + non-zero exit, never PASS.
-- ⬜ A2 `docker start odoo-db odoo`; re-run the live migrate witnesses; record GREEN/RED here.
+- ✅ A1 DONE (witness) 2026-11-08 — `poc_p4_masters` / `poc_odoo_full_pull` now print ⚪ INCONCLUSIVE exit 3 with no Odoo (`§NO-ODOO … exit=3 inconclusive=Y`). The two postcfg pocs fall back to a RECORDED oracle, so they still judge — left as is.
+- ✅ A2 DONE (witness) 2026-11-08 — live run, logs `build/erp/logs_migrate_2026-11-08/*.live.log`: full_pull 🟢, postcfg 🟢, postcfg_odoo 🟢, **p4_masters 🔴 `35==48` products = SOURCE DRIFT, not an extractor defect**: 13 sale products created 2026-10-14 by the `mrp` install (`product_product.create_date`; `ir_module_module mrp write_date 2026-10-14`). The June shard predates them. Closes when B1 (agent v2) replaces the dev-built shard; until then this RED is attributed, not hidden.
+- ✅ A-MOCK DONE (witness) 2026-11-08 — `scripts/odoo_mock/odoo_rpc_mock.js` + fixture `build/erp/odoo_fixture/odoodemo_2026-11-08.json` (11 answers, sha256 039562a2f2db3b3c) + `ODOO_PORT` on the 4 pocs and `gen_ad_odoo.js`. W-ODOO-MOCK-FIDELITY 🟢 (`scripts/poc_odoo_mock_fidelity.js`, log `build/erp/logs_migrate_2026-11-08/fidelity_run1.out`): replay == live on all 4 (MISS=0), no-Odoo ⇒ INCONCLUSIVE, falsifier `res.partner.search_count 38→39` changes the p4 result. **Replay: `node scripts/odoo_mock/odoo_rpc_mock.js replay build/erp/odoo_fixture/odoodemo_2026-11-08.json & ODOO_PORT=8070 node scripts/poc_X.js`.** B1's agent v2 must be recorded the same way (re-record = start Odoo, `record` mode, run).
 - ⬜ A3 Full ERP sweep, ONCE, persisted: bim-ootb `erp/tests` = 232 `witness_*.js` + 153 `poc_*.js` vs fresh
   origin/main, headless software rendering (no GPU), ≤3 in parallel. Ledger: GREEN / RED-product / RED-stale-instrument /
   INCONCLUSIVE. Stale instrument → fix the witness. Product defect → fix the SQLite side (CARDINAL RULE).
@@ -291,3 +292,17 @@ uncheck an optional one ⇒ the stated effect appears in the imported rows; Odoo
 **5. New port needed (found while specifying):** the twin has the CSV Import toolbar ICON only
 (`erp/ad_toolbar.js:20`), not the engine. Port `GridTabCSVImporter` (generic, every window, AD-LAYER LAW) → work item B2a,
 before ImportProduct.
+
+### §A-MOCK spec (2026-11-08, owner: *"We may run the normal Odoo server, but such free domain info can be obtained and mocked here"*)
+**Issue it fixes (measured today):** the migrate witnesses talk to a LIVE Odoo that (a) is often stopped → they used to
+print PASS with the non-invent check skipped, and (b) DRIFTS → `poc_p4_masters` went RED `35==48` products because the
+`mrp` install on 2026-10-14 added 13 sale products (`product_product.create_date`), not because the extractor lost any.
+**Design:** run the real Odoo ONCE, record every JSON-RPC answer, replay it from a file.
+- `scripts/odoo_mock/odoo_rpc_mock.js record|replay [fixture]` — an HTTP server on `:8070`. **record** forwards each
+  `/jsonrpc` POST to the real Odoo `:8069` and stores `{key: result}` (key = sha256 of `params` with the password masked);
+  **replay** answers from the fixture only. An unrecorded call returns a JSON-RPC ERROR + `§ODOO-MOCK MISS` — never a made-up answer.
+- Fixture `build/erp/odoo_fixture/odoodemo_<date>.json` + its sha256 in the header; every answer is a real recorded row.
+- Callers take `ODOO_PORT` (default 8069) — the 4 migrate pocs + `gen_ad_odoo.js` + the agent (already env-driven).
+- Verdicts: real Odoo or fixture reachable → judged; neither → `INCONCLUSIVE`, exit 3 (A1).
+**Witness W-ODOO-MOCK-FIDELITY** (`scripts/poc_odoo_mock_fidelity.js`): each poc run live and on replay gives the same
+`§`/✓/✗ lines; replay has 0 MISS; falsifier = one recorded count edited in a temp copy ⇒ that poc's verdict changes.
