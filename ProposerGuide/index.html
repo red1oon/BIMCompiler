@@ -1131,6 +1131,28 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#new-to-this-why-an-ai-needs-a-checker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New to this? Why an AI needs a checker
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connect-your-ai" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connect your AI
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#getting-started" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2949,6 +2971,28 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#new-to-this-why-an-ai-needs-a-checker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New to this? Why an AI needs a checker
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connect-your-ai" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connect your AI
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#getting-started" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3146,12 +3190,101 @@
 
 
 <h1 id="ai-proposer-guide">AI Proposer Guide<a class="headerlink" href="#ai-proposer-guide" title="Permanent link">&para;</a></h1>
-<p><strong>Propose a change to a real building. Get back what it changed, what was checked, and what was not.</strong></p>
-<p>Your AI stays outside and proposes. A deterministic compiler, with no AI in it, works out the result and reports it. <strong>An edit that adds new red is stopped:</strong> it is undone and comes back with its report and the reason. You need one file and a browser engine: no account, no server, nothing uploaded.</p>
+<p><strong>Let your AI operate a real BIM app, with exact numbers. The app makes each change, checks it, and tells your AI what changed, what was checked, and what was not.</strong></p>
+<p>Our BIM app, the Modeller, offers its actions as a short menu, each one described in plain words. Connect your AI to it, and the AI reads the menu, picks an action, fills in exact numbers, and gets the app's own verdict back. The app has no AI in it. <strong>A change that adds new red is stopped:</strong> it is undone and comes back with its report and the reason. Everything runs on your computer: no account, no server, nothing uploaded. Prefer to script it yourself? The same actions are a <a href="#getting-started">command-line tool</a>.</p>
 <div class="admonition warning">
 <p class="admonition-title">What a good report does not mean</p>
 <p>The report checks a short list of things, listed in <a href="#what-is-not-checked">What is not checked</a>. A report with no red <strong>never means safe, compliant or good</strong>. Nothing here checks load capacity, and a structural engineer has the last word.</p>
 </div>
+<h2 id="new-to-this-why-an-ai-needs-a-checker">New to this? Why an AI needs a checker<a class="headerlink" href="#new-to-this-why-an-ai-needs-a-checker" title="Permanent link">&para;</a></h2>
+<p><strong>Two kinds of computer answer.</strong></p>
+<ul>
+<li><strong>Probabilistic: an AI model.</strong> It writes the most likely answer, word by word, from patterns it learned. The answer is often useful and sometimes wrong, and it sounds just as sure either way. Ask twice and you may get a different answer. Autodesk says the same of its own assistant: <em>"AI-generated responses are based on patterns and probabilities."</em> (<a href="https://help.autodesk.com/cloudhelp/2027/ENU/WSPro-Help/files/GUID-9017743B-6B2E-41D1-BF66-EF3FEFEFCAB2.htm">Autodesk Assistant help</a>)</li>
+<li><strong>Deterministic: this app.</strong> It follows fixed rules on the real model. The same building and the same change give the same answer every time, and it shows its working. Think of a calculator: 11.176 + 1.824 is always 13.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>An AI model</th>
+<th>This app</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>How it answers</td>
+<td>the most likely answer</td>
+<td>by fixed rules, on the real building</td>
+</tr>
+<tr>
+<td>Same question twice</td>
+<td>may differ</td>
+<td>the same, byte for byte</td>
+</tr>
+<tr>
+<td>Shows its working</td>
+<td>it explains, but cannot prove</td>
+<td>before and after, the limit, the bay</td>
+</tr>
+<tr>
+<td>Good at</td>
+<td>ideas, plain-language requests</td>
+<td>exact changes and checks</td>
+</tr>
+<tr>
+<td>Weak at</td>
+<td>knowing when it is wrong</td>
+<td>coming up with ideas</td>
+</tr>
+</tbody>
+</table>
+<p><strong>So each does its own part.</strong> Your AI turns a plain request into an exact change and explains the answer. The app makes the change and judges it. Your AI never touches the model: it only asks, and the app does the work.</p>
+<p><strong>A real example.</strong> Asked for a 13 m bay between lines gx5 and gx6 on the HospitalGarage:</p>
+<ol>
+<li>The AI reads the grid: gx5 is at 145.987 m and gx6 at 157.163 m, so the bay is 11.176 m.</li>
+<li>It asks the app to shift gx6, and every line after it, by 1.824 m.</li>
+<li>The app makes the change and checks it: <strong>Stopped.</strong> <em>"Beam spans over limit: 91 -&gt; 92 (limit 12 m, RC); bay gx5-gx6 newly over the limit: 13 m."</em> The change is undone.</li>
+<li>The AI tells the user that a concrete beam there may span at most 12 m, and that 13 m needs another column line.</li>
+</ol>
+<p>The AI's sums were right. What it did not know is this building's 12 m span limit; the app knows it, because it comes from the building itself. In our earlier test, an AI that only got a written report named that limit and still kept the 13 m bay (<a href="#what-we-measured">What we measured</a>). That is why the app, not the AI, has the last word.</p>
+<h2 id="connect-your-ai">Connect your AI<a class="headerlink" href="#connect-your-ai" title="Permanent link">&para;</a></h2>
+<p>This makes the app's actions a menu your AI can use by itself. It works with any AI app that supports MCP, the open standard that Claude, among others, uses to connect to tools.</p>
+<p><strong>1. Make a folder, install the browser engine, and download the two files.</strong></p>
+<div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>proposer<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>proposer
+npm<span class="w"> </span>init<span class="w"> </span>-y
+npm<span class="w"> </span>install<span class="w"> </span>puppeteer@24
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
+</code></pre></div>
+<p><strong>2. Add it to your AI app.</strong></p>
+<ul>
+<li><strong>Claude Code:</strong> <code>claude mcp add bim -- node "$PWD/bim_mcp.js"</code>, then start a new session.</li>
+<li><strong>Claude Desktop</strong>, and most other MCP apps: add this to the app's MCP settings, with the full path to the file, then restart the app.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="w"> </span><span class="nt">&quot;mcpServers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;bim&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;node&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;/full/path/to/proposer/bim_mcp.js&quot;</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<p><strong>3. Ask in plain words</strong>, for example: <em>"In the HospitalGarage, make the bay between gx5 and gx6 13 m wide."</em></p>
+<p><strong>What your AI gets.</strong> When your AI app starts the connector, the connector hands it this menu, and the standing rules from <a href="#instructions-to-give-your-ai">Instructions to give your AI</a>, so you paste nothing:</p>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bim_lines(building)</code></td>
+<td>reads the grid: every line's id and position in metres, the structural system, the material, the rotation. Changes nothing.</td>
+</tr>
+<tr>
+<td><code>bim_try_shift(building, line, move)</code></td>
+<td>shifts a line, and every later line on its axis, by <code>move</code> metres. The app makes the change, checks it, and returns its report; a change that adds new problems is undone, with the reason. Nothing is saved.</td>
+</tr>
+</tbody>
+</table>
+<p>Each action runs the same <a href="#getting-started">command-line tool</a> underneath and returns its answer unchanged. A call takes about 10 to 40 seconds, because each one opens a fresh copy of the building.</p>
+<p><strong>What has and has not been tested.</strong> A scripted client, with no AI, played the 13 m example through the connector alone: it read the grid, computed the shift, and got the stop above, and each action's answer matched the command-line tool's, byte for byte. A real AI using the connector has not been measured yet. Two actions only, so far: moving one line is still command-line only.</p>
 <h2 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
 <p>You need Node 18 or newer. These steps were run on Node 18.19.</p>
 <p><strong>1. Make an empty folder and install the browser engine.</strong></p>
@@ -3371,7 +3504,7 @@ npm<span class="w"> </span>install<span class="w"> </span>puppeteer@24
 <p>Overlaps are also <strong>bounding boxes</strong>, not exact shapes, and they cover only the elements that moved, so a count can disagree with a full clash check.</p>
 <p><strong>An AI told to reduce red ink will find these gaps.</strong> Zero red can just mean the errors moved to where nothing looks.</p>
 <h2 id="instructions-to-give-your-ai">Instructions to give your AI<a class="headerlink" href="#instructions-to-give-your-ai" title="Permanent link">&para;</a></h2>
-<p>Paste this as the system prompt, then add the lines from <code>--lines</code> and the request. A tool-using AI can run the commands itself.</p>
+<p><strong>With the <a href="#connect-your-ai">connector</a>, your AI gets these automatically.</strong> Without it, paste this as the system prompt, then add the lines from <code>--lines</code> and the request. A tool-using AI can run the commands itself.</p>
 <div class="highlight"><pre><span></span><code>You propose edits to a building model. You are given its grid lines and a request.
 An edit is {&quot;grid&quot;:&quot;&lt;line id&gt;&quot;,&quot;move&quot;:&lt;metres&gt;} or {&quot;shift&quot;:&quot;&lt;line id&gt;&quot;,&quot;move&quot;:&lt;metres&gt;}.
 &quot;grid&quot; moves that one line; the bays on both sides change.
