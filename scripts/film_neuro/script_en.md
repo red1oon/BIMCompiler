@@ -1,5 +1,5 @@
 <!-- ⚠ DO NOT REMOVE — Scope: storyboard + narration for the film "Think Global, Act Local" (bim-compiler prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md §16). Every number is a {{fact}} resolved by resolve.js from evidence/ into facts.resolved.json; guard.js refuses the build otherwise. Turns are "F: … ‖ M: …" (two voices, PLAYBOOK). English only (owner, 2026-11-08). READ out/*.log after every run. -->
-# "Think Global, Act Local" — storyboard (English, rc4: the AI uses the app through the connector, §18)
+# "Think Global, Act Local" — storyboard (English, rc4: the AI uses the app through the connector, §18; the session is a scripted stand-in)
 
 | # | Card | On screen | Narration |
 |---|---|---|---|
@@ -9,8 +9,8 @@
 | 4 | clash | boxes {{clash_broad}} → real overlap {{clash_true}} | "F: And clashes? If the boxes touch, is it a clash? ‖ M: In our Hospital, the boxes flagged {{clash_broad}}. The real shapes overlap in {{clash_true}}. The rest is guesswork." |
 | 5 | idea | stick figure → globe (your AI, $) → the app's menu → laptop (the app, $0) → report back | "F: So is this one big AI service? ‖ M: No. You bring your own AI, and connect it to our app. The AI call costs money. The app runs on your own computer, free, with no AI inside. ‖ M: The app hands your AI a menu: each action, what it does, and what it needs." |
 | 5.5 | menu | the real menu the connector hands the AI | "F: What does the AI actually see? ‖ M: This. Two actions, each in plain words, with its inputs in metres. That menu is the whole manual, so nobody has to learn the app first." |
-| 6 | session | one real session: the request, the AI's two calls, the app's answers, the AI's reply | "F: And when I ask it something? ‖ M: Here is one real session. Asked for a 13 metre bay, the AI reads the grid, works out the shift, and asks the app to make it." |
-| 7 | stopped | the app's answer: STOPPED, the report panel | "F: And then? ‖ M: The building's own rule said no. That span would be {{s_bay_after}} metres, against a limit of {{g4_limit}}. The app undid it, and the AI told the user why." |
+| 6 | session | a scripted demo: the request, the two calls, the app's answers, the rule the AI is given | "F: And when I ask it something? ‖ M: Here is a scripted demo. A test script stands in for the AI, but every answer comes from the app. Asked for a {{s_target}} metre bay, it reads the grid, works out the shift, and asks the app to make it." |
+| 7 | stopped | the app's answer: STOPPED, the report panel | "F: And then? ‖ M: The building's own rule said no. That span would be {{s_bay_after}} metres, against a limit of {{g4_limit}}. The app undid it, and the connector's own rules tell the AI to decline and say why." |
 | 8 | ch_global | chapter: Think global | — |
 | 9 | chart | right outcome, first try {{a_right}} → with the report {{b_right}}, of {{n_runs}} | "F: Does giving the AI the reason help? ‖ M: In our test, right answers went from {{a_right}} to {{b_right}}, out of {{n_runs}}. A small test, our own requests, one model. It shows a direction, not a proof." |
 | 10 | ch_local | chapter: Act local | — |
