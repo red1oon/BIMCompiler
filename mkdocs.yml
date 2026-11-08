@@ -141,6 +141,7 @@ nav:
 
   - Papers & Positioning:
       - "Deterministic Spatial Compilation (academic paper)": SpatialCompilationPaper.md
+      - "Defensive Disclosure: an Outside AI Proposes, the App Decides": AIProposerDefensiveDisclosure.md
       - "DXF2BIM — Deterministic 2D ⇄ BIM Round Trip (technical note)": DXF2BIM_TechnicalNote.md
       - "Browser-Scale Benchmark (one tab, local first)": BrowserScaleBenchmark.md
       - "Enterprise Authentication (security)": EnterpriseAuthentication.md
