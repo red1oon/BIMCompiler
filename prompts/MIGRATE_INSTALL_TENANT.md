@@ -576,7 +576,7 @@ C_BPartner sheet reports `missing=C_BP_Group_ID`; duplicate one Address1 ⇒ the
   It caught 3 real defects on the first run (all fixed): a non-AD header `odoo_lot` (Ninja would stop: "No such column"), the witness's own
   dictionary read (sqlite returned `ad_ref_table`'s lower-case names → parent lookup unresolvable), and M_Product_PO 31 rows vs 30 sellers =
   one template-level seller on a 2-variant product (now judged per distinct seller, expansion reported `9×2`, pairs unique).
-- **Fresh unzip** of `odoo_agent.zip` (SheetJS added by the build script), no npm install → 17 sheets (`logs_migrate_2026-11-09/zip_fresh_unzip_export.log`).
+- **Fresh unzip** of `odoo_agent.zip` (SheetJS added by the build script), no npm install → 17 sheets (`logs_migrate_2026-11-09/zip_fresh_unzip_export.out`). CI W-AGENT-ZIP-SYNC required the zip == its folder → `xlsx.mini.min.js` is vendored INTO `erp/odoo_agent/` (re-copied by the build script, like erp_kernel.js), not staged.
 - Retired (deletion budget): `scripts/poc_odoo_export.js` + its CSV fixture `odoodemo_export_2026-11-08.json` (W-ODOO-EXPORT → superseded by W-SHEET-CONTRACT).
 - **Named, not hidden (for the summary screen / later items):** 16 stock lines carry an Odoo lot (in provenance, no ASI step yet); 1 negative
   quant (E-COM11 −7); 2 multi-installment payment terms (term only, installments in provenance); CoA flat (0 `account.group`); C_UOM rows will
