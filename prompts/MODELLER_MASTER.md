@@ -84,6 +84,15 @@ is ours" ⇒ aligned; move it from ⛔ to the queue after the catalog rebind.
 C3 lands with the REPLACE verb.
 
 ## ▶ §RESUME 2026-11-08b — START HERE (session close; then §RESUME 2026-11-08 below)
+**LATEST (end of session):**
+- **ONE FRAME (A), bim-ootb #2710 (`fbe06d64`), merged and live.** W-ONE-FRAME 28/0. Public far Duplex round trip: drift 0.497 m → 0.0000 m. The import's lat/long reader was broken and is fixed: the private ARC now records lat/long/true north on both routes.
+- **Design lane on the private ARC:** the grid is EXACT on both routes. The film DB coincides with a fresh open on both routes: residual 0.0000 m over 2,093 GUIDs.
+- **BUT the routes give different offsets:** open y 2766473 vs import 2766484 (11 m). Cause under trace: each route passes its own element list to `GF.range()`, a midpoint of extents. Fix in progress on branch `fix/one-frame-same-input`, worktree `/tmp/wt-frame2`: both routes pass the SAME set (W-ONE-FRAME F1b, with a red control). If no worker report exists, re-dispatch from the branch.
+- The design lane's alternative, an offset from the file's STATED placement, changes the rule's meaning: it needs the owner's word.
+- **Film camera-path RULE:** `p_new = p_film + film_offset - route_offset`. The film DB is a federated ARC+STR open with its own offset. Never copy coordinates raw. Assert a GUID-matched residual (a bbox test is too weak).
+- **Private round trip after (A):** the export is 750 MB (was 598). The re-open failed (web-ifc out-of-bounds), so B is INCONCLUSIVE. The walk placed 2,823 (was 2,831): the origin-anchored band grid (owner: leave it). Mesh dedup in the export fixes should bring the size back under the limit.
+- **Next (design lane's order):** the film path first: fresh open on the open route, Walk ALL, height §7.1, then §FP-EQUIPMENT below. After that, export (B) and the export fixes (1)-(5).
+
 **Landed today, live, fetched back (bim-ootb):**
 - #2698: P7, Viewer totals leave provisional devices out.
 - #2700, #2701, #2704: the drawn-mains reader `modeller/drawn_mains.js`.
