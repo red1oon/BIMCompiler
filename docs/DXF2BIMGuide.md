@@ -25,6 +25,9 @@ drawing cannot tell it is listed as a **gap**, never guessed.
 4. [BIM 3D to DXF 2D](https://youtu.be/buybl3BWTUw) (1:58, 2026-10-21): a model written out as a standard 2D set ([What a standard sheet looks like](#what-a-standard-sheet-looks-like)).
 5. [DXF to BIM 3D to 2D to 3D round trip both ways](https://youtu.be/RaU6A8y6ymw) (4:35, 2026-10-16): the Duplex standard set read back to the model it came from.
 
+6. Can I hand this in? — the submission pack (2026-11-01): the same converted shed, then what you attach to a submission (Load Summary, bill, Regulatory Report).
+   <!-- TODO: add the link once the film is published; no URL yet -->
+
 Related, outside this guide: [MEP Walker onto new 2D drawing in BIM](https://youtu.be/tkKP__O1sGU) (1:36, 2026-10-23).
 
 ---
@@ -116,6 +119,19 @@ revision) is shown in yellow as *not stated*, never filled in. **Save SVG** save
 prints it, and **Markings** switches the drawn metadata off for a clean copy. Wheel to zoom, drag to pan, **Esc**
 or ✕ to close; nothing you do in the view changes the drawings or the metadata.
 
+**What the view draws** (bim-ootb §D101):
+
+- **Every dimension, even when the DXF does not link it to its picture.** On the shed's 9 sheets all 147 dimensions are drawn: 111 through their own stored
+  pictures (found by their definition points), and 36 (North and South elevations, which have no stored picture) drawn from their own points with the value in the file's
+  own dimension style. Those 36 values are small next to the sheet's texts; that is the file's style, not a fault. A dimension that cannot be matched is left out and counted, never drawn from a guess.
+- **CAD codes read as symbols:** `%%c` shows as Ø, `%%d` as °, `%%p` as ±.
+- **The drafter's geometry, as given, one scale both ways.** The view does not rescale a detail to match its written values. A detail sheet that is drawn **not to scale stays not to scale**
+  and the written values govern: on the shed's details sheet a span written `10'-0"` is drawn about 1.7 times its scale and the cross-sections `12"` about 4.2 to 4.5 times (§D102).
+- **A details / notes sheet shows NOTES.** A sheet that states notes but draws no body shows the chip **NOTES** (not a red *NO ROLE*) and "general notes read: n" in both panels,
+  and it is not counted as needing input.
+
+![The shed's details sheet in the Sheet view: every dimension drawn (10'-0" / 16'-8" over the beam long sections), Ø for %%c, the private title-block text blurred for this picture; the 2D panel shows the sheet as NOTES, general notes read: 4](img/dxf2bim/dxf2bim_sub_details_sheet.jpg)
+
 ### 3 · Raw drawings: fill in what is missing
 A drawing without metadata opens with **red** fields and the verdict **Blocked**. The editor lists
 **suggestions** it can prove from the drawing (e.g. a title text "GROUND FLOOR PLAN" → role = plan) — **nothing
@@ -172,7 +188,7 @@ office, the cut, the roles, the plan levels and the roof tops read from the titl
 | Marking | What it is | Where it comes from in the walk | How you give it |
 |---|---|---|---|
 | Role (`@VIEW`) | plan, elevation, roof plan or section | the title, read without its scale or a trailing note (`FRONT ELEVATION  1:100` → elevation) | accept; pick from the list only when no title says it |
-| `@SET` | the name of the set | nothing in the drawing | type once; the other sheets get it as yellow |
+| `@SET` | the name of the set | nothing in the drawing; when no sheet names it, the placeholder `BUILD-NAME` is offered (orange) | type once and the other sheets get it as yellow; or accept the placeholder to go on: it stays marked *default* until you type the real name on any one sheet, which replaces it on every sheet |
 | `@UNITS` | drawing units | the file header (`$INSUNITS`), shown as yellow | accept |
 | `@LEVEL` | a plan's storey level, metres | the plan title (`LEVEL 2 PLAN (FFL +3.100)` → 3.1) | accept; type it only when no title states it |
 | `@ROOF` | the roof top, metres | a roof-top text on the sheet (`T/ROOF +6.457`, `TOP OF ROOF ...`); two different values on one sheet are not proposed | accept; type it where no text states it |
@@ -185,7 +201,7 @@ office, the cut, the roles, the plan levels and the roof tops read from the titl
 On the walk of 2026-10-22 the Duplex needed 7 role picks and 11 typed values (set name 1, levels 3, roof top 6,
 cut 1). Since §D46 (2026-10-23) the roles, the levels, the roof tops and the cut are read from the titles and texts
 (W-TITLE: 8 of 8 roles by **Accept all** alone, 0 wrong), so the set name is the one value left to type for the
-sheets. The whole walk has not been re-counted since.
+sheets, and since §D98 (2026-10-31) even that one can be the accepted placeholder `BUILD-NAME` until you name the set. The whole walk has not been re-counted since.
 
 #### 3c · Wall tops
 After the sheets are complete, **Wall tops** lists the interior walls no elevation shows (17 on the ground floor,
@@ -265,6 +281,19 @@ that does not fit is refused with the reason, never half-loaded; **Clear** goes 
 
 ![The converted Duplex: two storeys, openings cut, doors and glazing placed](img/dxf2bim/converted.jpg)
 
+#### 5a · Properties: what a part carries
+Click a converted part and the **Properties** panel opens beside the tool rail. It shows exactly what that part's IFC will carry: the IFC class, name,
+label, predefined type and material, then the drawing evidence in groups — **Source** (sheet, handle, layer, how it is known), **Size** (each stated size, in
+metres, with its base and top), **Drawing notes** (each note beside the sheet and handle it was read from) and **Schedule** (the schedule row it matched). A value
+with no content is not shown, because the IFC does not write it. A part you drew yourself says *no drawing evidence: this part was not converted from the 2D set*.
+
+**A part of an opened building** (a resident, a `.db`, or an `.ifc` you open) shows what the building's database states about it: IFC class, name, storey,
+material, type, GlobalId, and each standard property set (`Pset_WallCommon`, `Pset_DoorCommon`, …) with whether the value is set on the element or on its type.
+A raw `.ifc` is read once, on the first click, by the same converter the residents and every export use, so it shows the same rows its `.db` would (the Duplex
+architecture IFC: 289 elements, 219 property rows, about half a second). Only the standard `Pset_*Common` sets are read; a vendor's own sets are not shown yet.
+With several parts selected it shows the last one picked; **×** closes it until the selection changes. On a small screen with the
+metadata editor open there is no room beside it, so it opens on top of the editor.
+
 ### 6 · Export IFC
 **Export → IFC4.** The file has a proper spatial structure (Project → Site → Building → Storeys) and every
 element contained in its storey. On the Duplex standard set (measured 2026-10-26): 44 walls (one wall per drawn
@@ -288,9 +317,58 @@ downloads `<name>_extracted.db`. Open that file in the **Viewer** (**Open → lo
 - **Inputs**: edit the values and facts on the page and press **Apply** to recompute; **Download inputs** keeps them; to keep a value with the drawings,
   state it in the Modeller as `@DEFAULT=<key>,<value>`. **Print / Save as PDF** for the engineer.
 
-On the farm shed: 5,352 kN of own weight from 389 parts (546 t), 1,815 kN on the 32 footings, 3,537 kN of ground slab on the ground; the heaviest footing
-carries 246 kN (133 kPa); 123 parts are listed as not weighed (103 members the drawing does not size, 13 fans, 4 doors, 3 nettings).
+On the farm shed (2026-11-01, Complete ticked): 5,275.1 kN of own weight from 480 parts (537.9 t), 1,737.9 kN on the 32 footings, 3,537.2 kN of ground slab on the
+ground; the heaviest footing carries 120.0 kN (64.6 kPa); 32 parts are listed as not weighed (12 members with no section drawn and none to assume, 13 fans, 4 doors,
+3 nettings). Members with no section on their label take the drawing's most common section of the same kind, marked *assumed* (91 of the shed's 156 bars).
+A beam is sized along its own axis, so a beam drawn at an angle weighs the same as one square to the grid.
 It does not compute live load, wind, earthquake or member strength: those need the stated site, soil and an engineer's analysis.
+
+![Export ▸ Load Summary on the converted shed (2026-11-01): own weight 5,275.1 kN, 1,737.9 kN on the footings, heaviest footing 120.0 kN; part by part with each unit weight's source; inputs nothing states are red](img/dxf2bim/dxf2bim_load_summary_2026-11-01.jpg)
+
+### 8 · Regulatory Report (what you hand in)
+**Export ▸ Regulatory Report…** opens a short form of the facts a model cannot give (plot area, setbacks, occupancy, district, soil bearing capacity …,
+ten in all). A box left empty makes the report say *not stated*; nothing is guessed. Pick the rate pack and press **Build report**.
+
+![The facts form: soil typed 150 kPa as an example, the other boxes left empty, rate pack PWD Bangladesh SoR 2022](img/dxf2bim/dxf2bim_sub_report_form.jpg)
+
+The report has nine sections: identification and scope, areas and heights, egress checks, structural checks, dead load, foundation loads, the bill of quantities,
+model quality, and the assumptions and facts not stated. Each verdict is a plain word (PASS, FINDINGS n, INCONCLUSIVE, NOT STATED), never "compliant";
+it says first that it is **not a compliance certificate**, and its signature blocks are left blank for the people who sign.
+
+| | |
+|---|---|
+| ![The report's opening: identification and scope, not a certificate](img/dxf2bim/dxf2bim_sub_report.jpg) | ![Checks with their codes, and the rules that found nothing of their kind to judge](img/dxf2bim/dxf2bim_sub_checks.jpg) |
+| ![The bill: every rate names its PWD Schedule of Rates item and page](img/dxf2bim/dxf2bim_sub_bill.jpg) | ![What it does not claim: the defaults used, best guesses marked to confirm, facts not stated](img/dxf2bim/dxf2bim_sub_assumptions.jpg) |
+
+**Where the report is kept.** It is ONE self-contained HTML file, `regulatory_report.html` (its styles are inside it): the Modeller downloads it to your browser's
+download folder and opens it in a new tab; the CLI writes it to `<out>/regulatory_report.html` with `--report`. Print it to PDF from the browser if a PDF is wanted.
+
+**Is it editable?** At its **source**, yes, and that is where to edit it. The report's format lives in one open-source (MIT) file, `modeller/reg_report.js` in bim-ootb:
+the facts the form asks for (`FACTS`, line 17), the nine sections, their titles, order and verdict words (`compose()`, lines 40–98), the look (the `css` string,
+line 101) and the page skeleton (line 102). The Modeller's Export and the CLI's `--report` both use this one file, so a change there (a section renamed, an
+authority's header added, another style) reaches both; the witnesses W-REG-REPORT and W-REG-REPORT-UI check that the page and the CLI still match.
+**Before building**, edit what goes in, not the page: the facts form, the rate pack and its rates (the rate editor), and the defaults (Element defaults ▸ Set);
+build again and the report follows in seconds. Editing the downloaded HTML by hand is possible, but that copy no longer matches the model fingerprint and sources it states.
+The 4D/5D page is different (a live page, its downloads are Excel files): see [4D5D Analysis ▸ Where the page's format is kept, and how to edit it](4D5DAnalysis.md).
+
+### 9 · Analytical model (STAAD, for your structural engineer)
+**Export ▸ Analytical model (STAAD)…** downloads a `.std` file the engineer opens in STAAD.Pro as a **starting model, not a design**. It is built from the model's IFC,
+so the same export works on a converted 2D set (it writes the IFC first) and, with nothing converted, on **any `.ifc` you choose**.
+
+- **Members**: each column, beam and steel member on its centre line; a free end that lands on another member's span joins it there. Gusset plates, walls, the roof
+  sheet, fans, doors and netting are listed as left out with the reason; a footing becomes a **support** (FIXED by default; Element defaults `analytical.support`).
+- **Joints**: member ends closer than `analytical.node_snap` (0.25 m by default) are one joint. Ends joined to nothing are listed as **dangling**, with their sheet
+  and handle, never hidden.
+- **Sections and materials**: concrete rectangles from the drawn sizes; steel angles from the label (or the drawing's most common section, marked assumed).
+  Concrete stiffness is E = 4700 √f'c from the drawing's own strength note (ACI 318-19 §19.2.2.1); with no f'c stated, no stiffness is given and a finding says so.
+  A member whose stated material is neither concrete nor steel gets no stiffness either.
+- **Load**: one case, self-weight only. No live, wind or seismic load, no member releases: the file header lists every assumption for the engineer.
+
+On the farm shed: 337 members (96 column pieces, 35 beams, 206 truss-bar pieces), 319 joints, 32 supports, 36 dangling ends, 14 findings; a 19,330-byte `.std`.
+The file built from the drawings and the file built from the exported IFC alone are **byte-identical**, so nothing the analysis needs is lost on the way through IFC.
+From the command line: `node modeller/dxf2bim_cli.js --sheets <sheets> --out <dir> --complete --analytical` (also writes `analytical.json`, an open format), or
+`node modeller/dxf2bim_cli.js --ifc-in <file.ifc> --analytical --out <dir>` for any IFC. A typical IFC from elsewhere states no section sizes and no f'c, so its
+members take their box sizes and get findings instead of a stiffness (measured on six models, e.g. `Ifc4_Revit_STR.ifc`: 449 members, 453 joints, 4 supports, 152 dangling ends).
 
 ### If something goes wrong
 | What you see | Why | What to do |
@@ -324,6 +402,9 @@ it in any CAD program, or let the editor write it.
 | `@TAG` | `@TAG=door,D3` | the mark of the element under the text |
 | `@SCHEDULE` | `@SCHEDULE=D3,door,900,2100` | a schedule row (size of a mark) |
 | `@WALLTOP` | `@WALLTOP=3.1,slab_above` · `@WALLTOP=handle:99,5.695` | interior wall heights |
+| `@PLANE` | `@PLANE=A2` | the grid line this elevation stands on; `@FACE` still says which way it looks (optional) |
+| `@GRIDA` | `@GRIDA=B1,73.835` | a plan grid line in any direction: its label and angle, the marking's position on the line (optional) |
+| `@SHEETNO` | `@SHEETNO=A-100` | this sheet's number, so the set can list the sheets it refers to and does not hold (optional) |
 | `@BY` (suffix) | `@LEVEL=3.1 @BY=user` | who stated it: `user` or `model`; no suffix = stated in the file |
 
 **One rule governs it all:** geometry is what is drawn and dimensioned; a label states only what geometry
@@ -357,6 +438,25 @@ below names what the editor then does.
 one `@KEY=value` per text (see *The metadata, for CAD users* above), for example `@SET=SHED`, `@UNITS=in` or
 `@LEVEL=0`. A value written this way is stated: it opens with no yellow row and needs no tick. The set name is the
 one value no drawing states by itself: on the plain Duplex it is the first thing the editor asks for.
+
+## A set exported from Revit
+
+A Revit sheet set saved as DWG, converted to DXF, one view per file: real dimensions, a layer standard, and its grid and levels written as ordinary text. The editor reads these on its own, as yellow rows you still accept. Measured on one real architect's set (3 plans and 12 wall elevations, one wing rotated off the others, nothing typed): **Arrange** placed all 15 sheets, the plans at the levels their titles name and each elevation on its own grid line. Three elevations that lack enough grid lines of their own are centred on their wing, tinted, and say so. **That is the shape, not a model:** Convert still needs the items below.
+
+| The drawing has | The yellow row |
+|---|---|
+| `GROUND FLOOR PLAN`, `WALL ELEVATION GRID A1` as a title, also in a multi-line text | **role** (read). A note such as `BEAM, SEE PLAN` is not a title |
+| A grid line with `A1`, `AA` or `B12` in its bubble, on any layer whose name holds `GRID` | **grid line** (read). A rotated one is read in its own direction (`@GRIDA`) |
+| `HALL LEVEL 01` beside `EL: +4.800 m` on an elevation, and a plan titled `LEVEL 1 ... PLAN` | **the plan's level** (read). The most-named value wins; the row states any others |
+| `+4.00 m` or `EL: +4.800 m`, and a horizontal line at exactly that height | **level datum** (read): the value and the line must agree |
+| `WALL ELEVATION GRID A1` | **the line it stands on** (`@PLANE`, read), and its **face** when that line is the end of its family (orange) |
+| `A-100` in the file name | **sheet number** (`@SHEETNO`, read). The set then lists the sheets it refers to and does not hold, as a note that never blocks |
+
+Grid labels that share a first letter (`AA`, `AB`, `A1`) form one family. On a set of several wings, an elevation drawn on family A stands on family A's end line, not on the far wing's.
+
+**Every one of these is a setting.** Under **Element defaults ▸ suggest** (and `panel.plane`), or in `element_defaults.json`, or as `@DEFAULT=<key>,<value>` in a drawing, each has the earlier behaviour on offer, for example `suggest.grid_ticks` = `always` or `suggest.title_text` = `text_only`. See [the yellow list](DXF2BIM_Yellow_List.md).
+
+**Not done yet:** Convert does not build from rotated elevations (they place in Arrange only), walls and structure are not mixed in one set, a curved roof shows as lines, and a sheet holding several views in one file must be split into one file per view first. An architecture plan and a structure wall elevation can differ by more than the 1 mm the axis check allows: on that set, keep each discipline's plan with its own elevations.
 
 ## A building drawn only in 2D: a farm shed
 
@@ -424,6 +524,16 @@ building is made of **bodies** read from layers you type, not of walls and slabs
    setting typed (a stated `@DEFAULT` still wins). Not built, because the drawings give only labels: the false
    ceiling and the slats of the cross-section.
 
+   **Type marks checked across the set.** For each mark (`B-1`, `GB-1`, `C-1` ...) the app counts where it is **tagged** on the sheets, where it is **detailed** (a
+   "Long Section of ..." title or a schedule row on the notes sheet) and how many **parts** carry it (bim-ootb §D102). When the set converts and has a notes sheet, two
+   advisories can follow: `GAP:mark_not_modelled` (tagged, no part) and `GAP:mark_no_detail` (tagged or modelled, no detail). They never block, and the app never builds or drops a part
+   because of them. On the shed: `B-1`, `B-2`, `C-1`, `F-1` are modelled and detailed; **`GB-1` is tagged 4 times on the foundation layout and detailed, but no sheet draws it, so it is
+   reported and not built**: four tags do not say which spans the grade beams run, and building them under every wall would be a guess. Draw it on a typed layer and it is built as drawn.
+
+   ![The converted shed (2026-11-01, Complete ticked): 512 parts; the 2D panel lists the nine sheets, the details sheet as NOTES](img/dxf2bim/dxf2bim_sub_converted.jpg)
+
+   ![A footing picked in x-ray: the Properties panel shows what its IFC carries — the casting ratio 1:1.5:3 from the details sheet (handle 2E2), f'c 24 MPa and fy 500 MPa (handle 2E1), and the footing schedule's row (2026-11-01)](img/dxf2bim/dxf2bim_props_panel.jpg)
+
 ![The converted shed on the canvas: material colours, 512 bodies](img/dxf2bim/shed_canvas.jpg)
 
 7. **Save and open elsewhere.** *Export → IFC4* writes the typed model with materials, colours and a property set
@@ -457,6 +567,25 @@ standard or a guess, and its basis, **(C)** the *Farming Shed* building-type val
 **(D)** what *Complete the building* adds, **(E)** how drawn / derived / assumed evidence is shown, and
 **(F)** the items the shed drawings left open. You may ignore it: the defaults stay applied and every one is listed.
 
+### Which default matters? Element defaults ▸ Measure impact
+
+On a structure set the **Element defaults** section lists every default in use (one row per setting, grouped by element). **Measure impact** ranks them by what they move
+(bim-ootb §D99, #2483):
+
+- Nothing runs until you press it. The **first click** loads the tools and shows a **rate-pack picker** (the locale's pack is preselected, for example *PWD Bangladesh SoR 2022*);
+  the **second click** measures.
+- It re-runs the model once per option of each default and lists the defaults by what they change: the **bill**, the **own weight** (kN) and the **body count**. Your model on screen does not change while it measures.
+- A default that moves none of the three is gathered in one collapsed line, *No effect on the bill, the loads or the body count (n)*; click it to open.
+- Any later change (a marking, a choice, the pack, *Complete*) marks the result *Measured before your last change*; press it again.
+- It measures bill, own weight and body count only. It does not re-run the structural checks.
+
+Measured on the shed (pack PWD Bangladesh SoR 2022, 1.4 s): **6 active, 6 inert**. Slab thickness (0.15 m) −1,298,309 BDT · section spacing −262,675 BDT (126 bodies fewer) ·
+`column.top_under_beam` (as drawn) −38,717 BDT · building type +19,968 BDT · roof overhang +11,231 BDT · roof sheet thickness 0 BDT (+0.06 kN). The ranking is the shed's; another set ranks differently.
+
+**The PWD rate pack** is named **PWD Bangladesh SoR 2022**: its source is the Finance Division approval of 21 June 2022, valid three years. (The file id `pwd2024_bd` is unchanged.)
+
+![Element defaults ▸ Measure impact on the shed with PWD Bangladesh SoR 2022: the six defaults that move the model, ranked, each with its change in BDT, kN and bodies; the six that move nothing in one collapsed line](img/dxf2bim/dxf2bim_measure_impact.jpg)
+
 ---
 
 ## Prior art
@@ -467,6 +596,8 @@ parameters and ask a subscription; we state the gaps, keep provenance on every b
 in the yellow list. No head-to-head benchmark has been run.
 
 ---
+
+![The back card of the submission-pack film: what we learned from others, what this adds for architects, engineers and accountants, and how to report a fact that is wrong](img/dxf2bim/dxf2bim_back_card.jpg)
 
 ## What it does not do yet
 
@@ -481,6 +612,10 @@ Honest limits of the preliminary version:
 - **Columns** are cut and drawn, but not yet as column symbols on the grid.
 - **Openings above or below the plan cut** (e.g. high bathroom windows) — being changed so every opening of
   the storey is shown from its host wall regardless of height.
+- **The Regulatory Report is not a certificate.** It states the facts of the model, with blank signature blocks for the people who sign; it is not a code-compliance certificate.
+- **The details' bar sizes are not used.** Reinforcement is an assumed bill line (a stated percentage of each concrete body), shown as assumed.
+- **The Load Summary is own weight, not a structural design.** No live load, wind, earthquake or member strength.
+- **The analytical model is a starting point, not an analysis.** It has not been opened in STAAD.Pro here (no STAAD on the build machine; it is checked by its own reader); releases, member orientation and loads other than self-weight are for the engineer.
 - **"Any DXF"** is not claimed. Your drawing needs the metadata above; the editor helps you add it, the verdict
   tells you when it is complete.
 - **The component library** (door/window geometry) is published: when no local copy is present, Convert loads it

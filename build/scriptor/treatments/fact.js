@@ -59,10 +59,11 @@ require('../treat.js').register('FACT', {
   check: function (row) {                                               // the declaration is checked at compile time (§16.18b)
     var e = [];
     if (['UP', 'DOWN', 'BOTH'].indexOf(row.dir) === -1) e.push('FACT dir must be UP, DOWN or BOTH');
-    if (row.audience !== undefined && row.audience !== 'hub' && row.audience !== 'space') e.push('FACT audience must be hub or space');
+    if (row.audience !== undefined && row.audience !== 'hub' && row.audience !== 'space' && row.audience !== 'branch') e.push('FACT audience must be hub, space or branch');
+    if (row.audience === 'branch' && row.dir !== 'BOTH') e.push('FACT audience branch needs dir BOTH (the devices of one branch Org both author and read it)');
     if (row.seal !== undefined && (typeof row.seal !== 'string' || !row.seal)) e.push('FACT seal must be an audience name');
     if (row.audience === 'space' && row.dir !== 'BOTH') e.push('FACT audience space needs dir BOTH');
-    if (row.dir === 'BOTH' && row.audience !== 'space') e.push('FACT dir BOTH needs audience space (a star has no both-ways)');
+    if (row.dir === 'BOTH' && row.audience !== 'space' && row.audience !== 'branch') e.push('FACT dir BOTH needs audience space (a star has no both-ways)');
     return e;
   },
   openFact: function (w, who, row, raw) { return openFact(w, who, raw); },   // read one shelf value as 'who' (a device or 'HUB'): { fact } or { err }

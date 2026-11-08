@@ -28,12 +28,18 @@ Plain text on layer `DXF2BIM-MARK` of an ordinary DXF, one `@KEY=value` per TEXT
 | `@HAXIS` | one per sheet | `+X\|-X\|+Y\|-Y` | the elevation's horizontal axis in plan |
 | `@REGION` | one per sheet | `x0,y0,x1,y1` | the part of a sheet that is one storey / wing |
 | `@ROOF` | one per sheet | `number (m)` | the roof top height of a roof sheet (no drawing states it) |
+| `@PITCH` | one per sheet | `<number>` | a pitched roof the sheet states |
+| `@HEADFRAME` | one per sheet | `<number>` | a door head frame the set states, zero or more |
 | `@CUT` | one per sheet | `X\|Y,<plan coordinate>` | where a section sheet cuts the plan |
 | `@SCOPE` | one per sheet | `KEY \| name,x0,y0,x1,y1` | a storey's annotation sheet, or a wing / zone of a sheet |
 | `@FRAME` | one per sheet | `deg,x,y` | a wing drawn rotated by -deg about (x,y): the importer turns it back |
+| `@WALLMIN` | one per sheet | `metres` | the thinnest wall piece this plan reads as a wall (default: the set's 50 mm); stated from the model by the exporter |
+| `@PLANE` | one per sheet | `grid label` | the grid line this elevation stands on (@FACE still says which way it looks); wins over the wall envelope and panel.plane (§D107) |
+| `@SHEETNO` | one per sheet | `text` | this sheet's number, e.g. A-100: lets the set report the sheets it refers to and does not hold (§D107) |
 | `@GRIDX` | several | `letter at a position` | a plan grid line in X (the mark's own position is the line) |
 | `@GRIDY` | several | `letter at a position` | a plan grid line in Y |
 | `@GRIDH` | several | `letter at a position` | an elevation grid line (horizontal position) |
+| `@GRIDA` | several | `label,angle deg at a point` | a plan grid line in any direction: its label and angle, the mark's own position on the line (§D108) |
 | `@Z` | several | `number (m) at a position` | a height datum: the z of the line the mark sits on |
 | `@EXCLUDE` | several | `x0,y0,x1,y1` | an area the reader skips (counted, never silent) |
 | `@OPENING` | several | `door\|window,h0,y0,h1,y1` | a stated opening rectangle on an elevation |
@@ -46,8 +52,9 @@ Plain text on layer `DXF2BIM-MARK` of an ordinary DXF, one `@KEY=value` per TEXT
 | `@BODYZ` | several | `kind,z0,z1` | the height range of a body kind that no elevation draws |
 | `@SIZE` | several | `body id,x\|y\|w\|d,metres` | a stated size of one side of one body |
 | `@DEFAULT` | several | `key,value` | a stated value for a registry setting (beats the editor's choice and the registry) |
+| `@ACCEPT` | several | `<code>,<who>,<YYYY-MM-DD>,<reason>` | a person's recorded acceptance of a verdict row: the gate honours it and the row stays on screen |
 
-**Layer types per view** (`@LAYER=<layer>,<type>`): **PLAN**: `wall`, `wallline`, `slab`, `component`, `opening`, `glazing`, `ignore`; **ELEV**: `elevwall`, `elevdoor`, `glazing`, `levelline`, `ignore`; **ROOF**: `roof`, `glazing`, `ignore`; **SECTION**: `sectslab`, `sectwall`, `roof`, `ignore`; **ANY**: `dims`, `grid`; **BODY**: `column`, `beam`, `footing`, `gradebeam`, `member`, `plate`, `panel`, `bar`, `fan`, `net`, `doorswing`.
+**Layer types per view** (`@LAYER=<layer>,<type>`): **PLAN**: `wall`, `wallline`, `slab`, `component`, `opening`, `glazing`, `ignore`; **ELEV**: `elevwall`, `elevdoor`, `glazing`, `levelline`, `ignore`; **ROOF**: `roof`, `glazing`, `ignore`; **SECTION**: `sectslab`, `sectwall`, `roof`, `ignore`; **ANY**: `dims`, `grid`; **BODY**: `column`, `beam`, `footing`, `gradebeam`, `member`, `plate`, `panel`, `bar`, `fan`, `net`, `doorswing`, `beamlabel`, `wallband`, `doortag`, `curtainband`, `stairlines`, `walltag`.
 
 **Units**: `mm` = 0.001 m, `cm` = 0.01 m, `m` = 1 m, `in` = 0.0254 m, `ft` = 0.3048 m.
 
@@ -57,10 +64,13 @@ Plain text on layer `DXF2BIM-MARK` of an ordinary DXF, one `@KEY=value` per TEXT
 |---|---|---|
 | `bar` | IfcMember | BRACE |
 | `beam` | IfcBeam | BEAM |
+| `beamlabel` | IfcBeam | BEAM |
 | `chord` | IfcMember | CHORD |
 | `column` | IfcColumn | COLUMN |
+| `curtainband` | IfcCurtainWall | NOTDEFINED |
 | `door` | IfcDoor | DOOR |
 | `doorswing` | IfcDoor | DOOR |
+| `doortag` | IfcDoor | DOOR |
 | `fan` | IfcFan | PROPELLORAXIAL |
 | `footing` | IfcFooting | PAD_FOOTING |
 | `gradebeam` | IfcBeam | BEAM |
@@ -73,8 +83,11 @@ Plain text on layer `DXF2BIM-MARK` of an ordinary DXF, one `@KEY=value` per TEXT
 | `purlin` | IfcMember | PURLIN |
 | `roof` | IfcRoof | GABLE_ROOF |
 | `slab` | IfcSlab | BASESLAB |
+| `stairlines` | IfcStairFlight | STRAIGHT |
 | `supportwall` | IfcWall | STANDARD |
 | `wall` | IfcWall | STANDARD |
+| `wallband` | IfcWall | STANDARD |
+| `walltag` | IfcWall | STANDARD |
 | `web` | IfcMember | BRACE |
 | `window` | IfcWindow | WINDOW |
 
@@ -87,55 +100,109 @@ Evidence properties on every body (set `Dxf2Bim_Evidence`): `Provenance`, `Sourc
 
 **Layer ledger** (`verdict.layer_ledger`, `dxf2ledger.js`): for every layer of every sheet, the entities on it, how it was typed, how many source entities produced a body, and a status: `settings`, `annotation`, `ignored_by_choice`, `used`, `partly_used`, `evidence`, `typed_no_output`, `unread`. `unread` = geometry on a layer nobody typed; `typed_no_output` = typed with a body kind but nothing was built; `partly_used` = some of its entities produced a body (the ratio is in `used_entities` / `geometry`); `evidence` = an elevation or section layer that gave heights or profiles. The entity account (`§ACCOUNT`) only says the DXF parser read every entity; the ledger says what was USED.
 
-## 5. Settings registry (`modeller/element_defaults.json`): 43 rows
+## 5. Settings registry (`modeller/element_defaults.json`): 97 rows
 
 | Key | Element | Unit | Kind | Default | Basis |
 |---|---|---|---|---|---|
+| `analytical.node_snap` | analytical | m | guess | 0.25 | ends closer than this are one joint in the analytical model (§D103): a beam drawn to a column face and a column top under the beam's axis ar |
+| `analytical.support` | analytical | text | guess | FIXED | a footing is assumed to restrain the column base; the engineer confirms (FIXED = no translation or rotation, PINNED = no translation) |
 | `beam.depth` | IfcBeam | m | guess | 0.45 | section depth when no label or band gives it |
+| `beam.edge_tol` | IfcBeam | m | guess | 0.006 | two parallel lines count as a beam's edges when their spacing is within this of the label's width, and pieces on one line within this are on |
+| `beam.label_reach` | IfcBeam | m | guess | 2.5 | how far from a beam's size label its two edge lines may run (§D109: one label was measured 2.3 m from its member). 0 = beams are not read fr |
+| `beam.span_split` | IfcBeam | text | guess | label_midpoint | labels of different marks along one pair of edge lines split it at the midpoint between them: the drawing does not state where one mark ends |
 | `beam.width` | IfcBeam | m | guess | 0.3 | section width when no label or band gives it |
+| `bodies.touching_parts` | IfcColumn | text | guess | one_body | rectangles of one direction that touch along a side are the parts of one body: the 2 flanges and the web of a built-up steel section drawn a |
 | `building.type` | Building | text | guess | General | the kind of building; it selects the type-specific defaults and organises the reference component library. A person states it (@DEFAULT=buil |
 | `ceiling.thickness` | IfcCovering | m | guess | 0.012 | board thickness when a ceiling is implied |
 | `column.height` | IfcColumn | m | guess | 3 | storey height when no elevation gives it |
 | `column.size` | IfcColumn | m | guess | 0.3 | square section when a column symbol gives none |
+| `column.top_under_beam` | IfcColumn | text | guess | beam_above | a column under a beam end carries it up to the beam's underside; an elevation may draw it short where a wall, a net or another sheet hides i |
+| `column.z_from_plans` | IfcColumn | text | guess | plan_levels | a column with no elevation height and no @BODYZ runs from the lowest plan that draws it to the next plan level above the highest plan that d |
 | `curtainwall.mullion` | IfcCurtainWall | m | guess | 0.05 | typical mullion width |
 | `door.height` | IfcDoor | m | guess | 2.1 | typical door set height; plans do not draw it |
+| `door.operation_standard` | IfcDoor | text | guess | SINGLE_SWING_LEFT | the running standard of a 2D set's doors whose operation the model does not state (F7 D18): the majority side of the building's stated singl |
+| `door.tag_reach` | IfcDoor | m | guess | 3 | how far from a door's tag its swing arc may be, the leaf then taking the schedule row's width and height (§D109: measured up to 2.6 m). 0 =  |
 | `door.thickness` | IfcDoor | m | guess | 0.04 | typical leaf thickness for a leaf drawn as one line |
 | `door.width` | IfcDoor | m | guess | 0.9 | typical single leaf; used only for a door tag with no drawn swing or gap |
+| `fan.blades` | IfcFan | count | guess | 4 | the drawing's rings give the housing and hub radii, not the blades; a propeller fan is drawn with this many radial paddles |
 | `fan.depth` | IfcFan | m | guess | 0.3 | housing depth; the diameter is drawn |
+| `fan.housing_wall` | IfcFan | m | guess | 0.02 | the housing is a tube of the drawn outer radius; its wall is not drawn |
 | `floorfinish.thickness` | IfcCovering | m | guess | 0.02 | floor finish thickness when implied |
 | `footing.depth` | IfcFooting | m | guess | 0.4 | pad footing thickness |
 | `footing.length` | IfcFooting | m | guess | 1.2 | pad footing plan length when no schedule gives it |
 | `footing.width` | IfcFooting | m | guess | 1.2 | pad footing plan width |
+| `footing.z_from_plan` | IfcFooting | text | guess | plan_level | a footing-layer loop with no elevation height: top = the plan's level. One F mark inside = a pad, its thickness footing.depth; else a raft,  |
+| `gate.unplaced_sheet` | Set | text | guess | refuse | a sheet the reader cannot place refuses the whole set, so nothing is converted past a sheet you meant to be read. 'set_aside' = the rest con |
 | `gradebeam.depth` | IfcBeam | m | guess | 0.3 | grade beam depth |
 | `gradebeam.width` | IfcBeam | m | guess | 0.3 | grade beam width when no label gives it |
+| `guide.gap_sheets` | Set | text | guess | read | which sheet of the set's own register might close each gap, by the words of its title; it says a sheet might help, never that it will (§D110 |
+| `load.rc_steel_percent` | load | % by volume | guess | 1 | main reinforcement not drawn; BNBC 2012 Table 2.2.1 note: "for reinforced concrete, add 0.63 kN/m3 for each 1% by volume of main reinforceme |
+| `load.roof_sheet` | load | kN/m2 | guess | 0.096 | sheet thickness not drawn; BNBC 2012 Part 6 Ch 2 Table 2.2.2 "Steel, galvanized std. corrugated sheeting (incl. lap and fastenings) 0.8 mm t |
+| `load.unit_weight.brick` | load | kN/m3 | std | 18.9 | BNBC 2012 Part 6 Ch 2 Table 2.2.1: "Brick 18.9" (modeller/reference/BNBC2012_P6C2_dead_load_tables.txt) |
+| `load.unit_weight.concrete` | load | kN/m3 | std | 22.8 | BNBC 2012 Part 6 Ch 2 Table 2.2.1: "Concrete - stone aggregate (unreinforced) 22.8" (modeller/reference/BNBC2012_P6C2_dead_load_tables.txt) |
+| `load.unit_weight.steel` | load | kN/m3 | std | 77 | BNBC 2012 Part 6 Ch 2 Table 2.2.1: "Steel 77.0" (modeller/reference/BNBC2012_P6C2_dead_load_tables.txt) |
+| `loops.skew_tol` | IfcColumn | m | guess | 0.001 | a closed loop of lines counts as square, in any direction, when its corners lie within this of a true rectangle in the frame of its own long |
+| `member.section` | IfcMember | text | guess |  | a member whose label carries no section: empty = the most common section drawn on the same set for the same kind of member (load_summary.js, |
 | `member.size` | IfcMember | m | guess | 0.04 | square envelope for a member with no label or size |
 | `net.thickness` | IfcCovering | m | guess | 0.005 | netting sheet thickness; the area is drawn |
-| `panel.plane` | IfcWall | text | guess | end grid line, centred | an elevation panel is placed on the outermost grid line of its face, centred |
+| `panel.plane` | IfcWall | text | guess | grid family end line, centred | an elevation panel is placed on an end grid line of its face, centred. An elevation whose grid labels share one family (AA, AB or A1 = famil |
 | `pile.diameter` | IfcPile | m | guess | 0.3 | typical bored pile diameter |
 | `pile.length` | IfcPile | m | guess | 12 | no pile length is drawn on a layout |
 | `plate.thickness` | IfcPlate | m | std | 0.00635 | 1/4 in, the thickness the truss section's own label states (a plate with no label takes it) |
+| `profile.angle_heel` | IfcMember | text | guess | lower | which way an angle opens is not stated by a section label; the heel corner sits at the low side of the bar's normal (the b x b envelope is k |
+| `profile.angle_mesh` | IfcMember | text | guess | label | a section bar whose label states one equal-leg angle (1.5"x1.5"x1/4" Angle) is built as that L section (t(2b-t) x length) instead of its b x |
 | `railing.height` | IfcRailing | m | guess | 1 | typical guard height |
 | `railing.post_spacing` | IfcRailing | m | guess | 1.2 | typical post spacing |
 | `ramp.slope` | IfcRamp | ratio | guess | 0.0833 | 1:12, a typical accessible ramp |
+| `roof.from_spots` | IfcRoof | text | guess | read | a surface through the plan's TOS spot levels, inside what the spots reach; deck thickness and height over the steel from the sheet's own dec |
 | `roof.slope_deg` | IfcRoof | deg | guess | 15 | typical light roof pitch; used only when no gable or section gives the slope |
 | `section.spacing` | IfcMember | text | guess | column pitch | a section drawn once repeats at the column pitch from its cut |
+| `slab.edge_arc_sagitta` | IfcSlab | m | guess | 0.005 | an arc in a slab edge is read as straight facets no further than this from the arc (5 mm: under the reader's thinnest wall and the plank key |
+| `slab.edge_joint_close` | IfcSlab | m | guess | 0.05 | §D70.1 the plan's slab edge closes gaps and notches narrower than this (plank / modelling joints are not drawn: hollow-core joints are grout |
+| `slab.edge_void_min_area` | IfcSlab | m2 | guess | 0.0645 | §D70.1 a hole in the slab is drawn as an opening when at least a 254 mm (10 in) square: the producer shows openings larger than 10 in square |
+| `slab.ground_on_raft` | IfcSlab | text | guess | read | a raft holding an S.O.G-<n>mm label of a plan carries a ground slab on its own outline, n thick (§D109: the drawing states the thickness, no |
+| `slab.level_step_min` | IfcSlab | m | guess | 0.1 | slab tops closer than this are one level (the measured finishes are 25-50 mm); a step of this size or more is drawn as its own piece with it |
+| `slab.outline_when_not_rect` | IfcSlab | text | guess | walls_bounded | when the walls do not draw a rectangle, the slab is the area they bound on both axes (best effort, amber; HHS -10% against the model's floor |
+| `slab.underside_when_stepped` | IfcSlab | text | guess | longest_cut | when the section's slab under a level steps (finish on planks, a dropped wet area), the underside is the stack bottom under the longest cut  |
+| `stair.flights` | IfcStairFlight | text | guess | read | 3 or more parallel lines of one length, evenly spaced, are a flight's nosings; rise = (0.63 - tread) / 2, the drawing states no riser; a fli |
 | `stair.going` | IfcStair | m | guess | 0.25 | typical tread depth |
 | `stair.riser` | IfcStair | m | guess | 0.175 | typical riser height; a stair symbol carries no riser |
 | `stair.width` | IfcStair | m | guess | 1 | typical flight width |
+| `steel.label_reach` | IfcBeam | m | guess | 1.5 | how far from a steel section label its member's line may run (§D109). 0 = steel is not read from labels |
+| `steel.section_table` | IfcBeam | text | guess | standard | a UB label names a designation, not its web and flange. BS EN 10365 values taken from public references, not from the drawing and not checke |
+| `suggest.elev_no_grid` | suggest | text | guess | centre_on_wing | an elevation that names its grid line but draws no grid: centred along that line on the span of its wing, tinted and said so; its heights st |
+| `suggest.grid_along` | suggest | m | guess | 0.5 | how far sideways a grid label's text position may sit from its line: CAD anchors a text at its corner, not its bubble's centre (measured 0.2 |
+| `suggest.grid_label` | suggest | text | guess | letters_digits | the labels read from a grid line's end: A, AA, 12 and also A1, B12 (§D107: 10 of 29 labels of a Revit-exported plan). 'letters_or_digits' =  |
+| `suggest.grid_layer` | suggest | text | guess | name_has_grid | layers searched for grid lines: any layer whose name holds GRID (a line with no label proposes nothing, so the name alone decides nothing, § |
+| `suggest.grid_reach` | suggest | m | guess | 1.2 | how far beyond a grid line's end its label may sit: a bubble's centre at 1:100 (measured 0.809 to 1.022 m on a Revit-exported plan, §D107).  |
+| `suggest.grid_rotated` | suggest | text | guess | read | a grid line off the sheet axes with its label at one end is read as a plan grid line in its own direction (@GRIDA, §D108). 'off' = only coun |
+| `suggest.grid_ticks` | suggest | text | guess | unless_stated | grid lines guessed from dimension ticks: not on an axis where the sheet states or reads 2 or more grid lines, and not outside its @REGION (§ |
+| `suggest.level_footing` | suggest | text | guess | read | a plan no title or level name places takes its level from one distinct T/FOOTING value on the sheet: T/FOOTING: -1.250 m (§D109). 'off' = no |
+| `suggest.level_name` | suggest | text | guess | read | a plan's level is read when its title and an elevation's level name agree: LEVEL 1 PLAN with LEVEL 01 beside EL: +4.800 m (§D108). 'off' = n |
+| `suggest.level_text` | suggest | text | guess | value_on_line | a level datum is read from a TEXT or MTEXT such as +4.00 m or EL: +4.800 m when a horizontal line lies at exactly that height, on any layer; |
+| `suggest.sheet_refs` | suggest | text | guess | report | sheet numbers the set refers to but does not hold are listed as an advisory; it never blocks (§D107). 'off' = no list |
+| `suggest.title_layout` | Set | text | guess | read | a title ending LAYOUT names a plan, as a title ending PLAN does (§D110). 'off' = no view is read from it, and the sheet refuses the set |
+| `suggest.title_text` | suggest | text | guess | text_and_mtext | a sheet's role is read from TEXT and MTEXT titles; a note (a comma, or SEE / REFER) is not a title, and two spellings of one title are one ( |
 | `synth.column.belowgrade.size` | IfcColumn | m | guess | 0 | 0 = not stated: no below-grade column is built; state the schedule's below-grade section (e.g. 0.3556 for 14 in) |
 | `synth.column.grade_to_base` | IfcColumn | m | guess | 0.6096 | grade to the column base (plinth): 2 ft, the datum read from a column detail |
 | `synth.roof.overhang` | IfcRoof | m | guess | 0 | the roof is cut at the gable planes until an overhang is stated |
-| `synth.roof.sheet_thickness` | IfcRoof | m | guess | 0.0254 | display thickness of a roofing sheet (1 in); the cost is by area |
+| `synth.roof.sheet_thickness` | IfcRoof | m | guess | 0.0254 | display thickness of a roofing sheet (1 in); the cost is by area. The own weight is by area too, read off the sheet's plan box, which this t |
 | `synth.slab.footprint` | IfcSlab | text | guess | outermost grid lines | the slab edge is taken at the outermost grid lines of the base plan |
-| `synth.slab.thickness` | IfcSlab | m | std | 0.25 | rate pack: 'RC Slab 250mm' (viewer/rates/cidb2024_my.json IfcSlab) |
+| `synth.slab.thickness` | IfcSlab | m | guess | 0.25 | a guess: no sheet states the slab thickness. 250 mm is the slab line every rate pack's class table names ('RC Slab 250mm', the same 250 mm i |
+| `type.size_tie` | IfcWindow | text | guess | library_first | a size the library answers with several types (Duplex 819 x 759: SMALL_FIXED, CASEMENT) binds the library's first row (8 of the Duplex IFC's |
+| `wall.band_gap` | IfcWall | m | guess | 0.35 | parallel wall lines closer than this are one wall, solid from outer line to outer line: with no wall type schedule a leaf cannot be told fro |
 | `wall.base` | IfcWall | m | guess | 0 | floor level of the storey |
 | `wall.height` | IfcWall | m | guess | 3 | typical storey wall height; not stated by a plan |
-| `wall.thickness` | IfcWall | m | std | 0.15 | rate pack: 'Blockwork Wall 150mm' (viewer/rates/cidb2024_my.json IfcWall) |
+| `wall.min_thick` | IfcWall | m | guess | 0.05 | a band of wall lines thinner than this is a finish line, not a wall (§D109: 28 pieces measured 10-20 mm). 0 = read them as walls |
+| `wall.tag_reach` | IfcWall | m | guess | 1.5 | how far a wall tag may lie from the wall it names, on a plan layer typed walltag: the nearest wall of that plan's level takes the tag as its |
+| `wall.thickness` | IfcWall | m | guess | 0.15 | a guess: no sheet states the wall thickness. 150 mm is the wall line every rate pack's class table names (the same 150 mm in all 16 country  |
+| `wall.top_from_elevation` | IfcWall | text | guess | read | a wall on the grid line an elevation stands on takes its top and base from that elevation's wall lines over its own span; other walls of tha |
+| `wall.top_when_unseen` | IfcWall | text | guess | slab_above | a wall no elevation shows runs from its floor to the slab underside above (the section states it); HHS Level 2 / 3 = the model, Level 1 0.3  |
 | `window.height` | IfcWindow | m | guess | 1.2 | typical window height |
 | `window.sill` | IfcWindow | m | guess | 0.9 | typical sill height above the floor |
 | `window.width` | IfcWindow | m | guess | 1.2 | typical window width; used when a plan symbol gives no width |
 
-## 6. Code families (209 codes found in the source)
+## 6. Code families (244 codes found in the source)
 
 `GAP:*` = a part the product left out or could not build (advisory, never defaulted); `QF:*` = a qualification failure (blocks the set); `MARK:*` = a settings-sheet problem. Each code with the modules that raise it:
 
@@ -144,9 +211,11 @@ Evidence properties on every body (set `Dxf2Bim_Evidence`): `Provenance`, `Sourc
 | `GAP:bad_outline` | dxf2bim/dxf2mesh.js |
 | `GAP:bar_label_ambiguous` | dxf2section.js |
 | `GAP:bar_no_size` | dxf2section.js |
+| `GAP:beam_label_no_edges` | dxf2beams.js |
 | `GAP:body_ambiguous_z` | dxf2bodies.js |
 | `GAP:body_degenerate` | dxf2bodies.js |
 | `GAP:body_elevation_not_aligned` | dxf2bodies.js, dxf2structure.js |
+| `GAP:body_elevation_plane_only` | dxf2bodies.js |
 | `GAP:body_no_elevation` | dxf2bodies.js, dxf_meta_editor.js |
 | `GAP:body_no_plan` | dxf2bodies.js |
 | `GAP:body_plan_not_aligned` | dxf2bodies.js |
@@ -163,12 +232,17 @@ Evidence properties on every body (set `Dxf2Bim_Evidence`): `Provenance`, `Sourc
 | `GAP:door_no_strip` | dxf2bim/dxf2shell.js |
 | `GAP:door_part_ambiguous` | dxf2bim/dxf2bim.js |
 | `GAP:door_swing` | dxf2bim/std2d.js |
+| `GAP:door_tag_no_row` | dxf2doortags.js |
+| `GAP:door_tag_no_swing` | dxf2doortags.js |
 | `GAP:duplicate_footprint` | dxf2bim/dxf2bim.js |
 | `GAP:elevation_height_conflict` | dxf2bim/dxf2elev.js |
+| `GAP:excluded_by_user` | dxf2bim_import.js |
 | `GAP:fan_degenerate` | dxf2panels.js |
+| `GAP:fan_detail_defaulted` | dxf2panels.js |
 | `GAP:fill_no_void` | dxf2bim/dxf2shell.js |
-| `GAP:fill_size_mismatch` | dxf2bim/dxf2shell.js |
+| `GAP:fill_size_mismatch` | dxf2bim/dxf2qualify.js, dxf2bim/dxf2shell.js |
 | `GAP:fill_unbound` | dxf2bim/dxf2shell.js |
+| `GAP:footing_no_thickness` | dxf2bodies.js |
 | `GAP:foundation_storey` | dxf2bim/std2d.js |
 | `GAP:gap_height_conflict` | dxf2bim/dxf2shell.js |
 | `GAP:hatch_edge_unsupported` | dxf2hatch.js |
@@ -188,6 +262,8 @@ Evidence properties on every body (set `Dxf2Bim_Evidence`): `Provenance`, `Sourc
 | `GAP:lod400_mesh_missing` | dxf2bim_import.js |
 | `GAP:lod400_not_in_subset` | dxf2bim_import.js |
 | `GAP:lod400_orientation` | dxf2bim/dxf2shell.js |
+| `GAP:mark_no_detail` | dxf2markrefs.js |
+| `GAP:mark_not_modelled` | dxf2markrefs.js |
 | `GAP:net_degenerate` | dxf2panels.js |
 | `GAP:no_colour` | dxf2structure.js |
 | `GAP:no_dimension` | dxf2bim/dxf2bim.js, dxf2bim/dxf2types.js |
@@ -226,14 +302,23 @@ Evidence properties on every body (set `Dxf2Bim_Evidence`): `Provenance`, `Sourc
 | `GAP:pipeline_not_run` | dxf2bim_import.js |
 | `GAP:plate_degenerate` | dxf2section.js |
 | `GAP:plate_no_thickness` | dxf2section.js |
+| `GAP:profile_not_bound` | dxf2panels.js, dxf2section.js |
+| `GAP:roof_bad_pitch` | dxf2bim/dxf2shell.js |
 | `GAP:roof_bad_thickness` | dxf2bim/dxf2shell.js |
 | `GAP:roof_bottom_conflict` | dxf2bim/dxf2shell.js |
+| `GAP:roof_gable_no_ridge` | dxf2bim/dxf2shell.js |
+| `GAP:roof_gable_wall_outside` | dxf2bim/dxf2shell.js |
 | `GAP:roof_hole_not_rect` | dxf2bim/dxf2shell.js |
 | `GAP:roof_hole_outside` | dxf2bim/dxf2shell.js |
 | `GAP:roof_no_bottom` | dxf2bim/dxf2shell.js |
+| `GAP:roof_no_deck_note` | dxf2roofspots.js |
+| `GAP:roof_no_envelope` | dxf2bim/std2d.js |
 | `GAP:roof_no_outline` | dxf2bim/dxf2shell.js |
 | `GAP:roof_no_top` | dxf2bim/dxf2shell.js |
 | `GAP:roof_outline_mismatch` | dxf2bim/dxf2shell.js |
+| `GAP:roof_ridge_no_gable` | dxf2bim/dxf2shell.js |
+| `GAP:roof_sheet_defaulted` | dxf2bim_import.js |
+| `GAP:roof_too_few_spots` | dxf2roofspots.js |
 | `GAP:roof_top` | dxf2bim/std2d.js |
 | `GAP:roof_top_conflict` | dxf2bim/dxf2shell.js |
 | `GAP:roof_top_not_drawn` | dxf2bim/dxf2shell.js |
@@ -252,13 +337,23 @@ Evidence properties on every body (set `Dxf2Bim_Evidence`): `Provenance`, `Sourc
 | `GAP:section_roof_conflict` | dxf2bim/dxf2shell.js |
 | `GAP:section_roof_top_conflict` | dxf2bim/dxf2shell.js |
 | `GAP:section_slab_conflict` | dxf2bim/dxf2shell.js |
+| `GAP:section_underside_defaulted` | dxf2bim/dxf2shell.js |
+| `GAP:sheet_set_aside` | dxf2gapguide.js, dxf2structure.js |
 | `GAP:slab_bad_thickness` | dxf2bim/dxf2shell.js |
+| `GAP:slab_edge_degenerate` | dxf2bim_import.js |
+| `GAP:slab_edge_open` | dxf2bim/dxf2shell.js |
 | `GAP:slab_inner_face_conflict` | dxf2bim/dxf2shell.js |
 | `GAP:slab_no_exterior_wall` | dxf2bim/dxf2shell.js |
+| `GAP:slab_no_outline` | dxf2slabs.js |
 | `GAP:slab_no_top` | dxf2bim/dxf2shell.js |
 | `GAP:slab_no_underside` | dxf2bim/dxf2shell.js |
+| `GAP:slab_outline_estimated` | dxf2bim_import.js |
+| `GAP:slab_outline_not_rectangular` | dxf2bim/dxf2shell.js, dxf2bim_import.js |
 | `GAP:slab_top_conflict` | dxf2bim/dxf2shell.js |
 | `GAP:slab_underside_conflict` | dxf2bim/dxf2shell.js |
+| `GAP:stair_no_top` | dxf2stairs.js |
+| `GAP:steel_label_no_line` | dxf2steel.js |
+| `GAP:steel_section_unknown` | dxf2steel.js |
 | `GAP:storey_name_duplicate` | dxf2bim/std2d.js |
 | `GAP:storey_no_walls` | dxf2bim/std2d.js |
 | `GAP:synth_column_belowgrade_not_square` | dxf2notes.js |
@@ -271,8 +366,9 @@ Evidence properties on every body (set `Dxf2Bim_Evidence`): `Provenance`, `Sourc
 | `GAP:synth_roof_one_end` | dxf2synth.js |
 | `GAP:synth_slab_no_columns` | dxf2synth.js |
 | `GAP:type_binding_conflict` | dxf2bim/dxf2types.js |
+| `GAP:type_defaulted` | dxf2bim/dxf2types.js |
 | `GAP:type_request_incomplete` | dxf2bim/dxf2types.js |
-| `GAP:type_size_mismatch` | dxf2bim/dxf2types.js |
+| `GAP:type_size_mismatch` | dxf2bim/dxf2qualify.js, dxf2bim/dxf2types.js |
 | `GAP:type_unbound` | dxf2bim/dxf2types.js |
 | `GAP:type_unknown` | dxf2bim/dxf2types.js |
 | `GAP:unclosed` | dxf2bim/dxf2bim.js |
@@ -281,29 +377,34 @@ Evidence properties on every body (set `Dxf2Bim_Evidence`): `Provenance`, `Sourc
 | `GAP:unsupported_entity` | dxf2bim/dxf2bim.js |
 | `GAP:wall_base_from_plan_level` | dxf2bim/dxf2shell.js |
 | `GAP:wall_below_min_thickness` | dxf2bim/dxf2bim.js |
+| `GAP:wall_curved` | dxf2walls.js |
 | `GAP:wall_footprint_not_rect` | dxf2bim/dxf2bim.js |
 | `GAP:wall_line_diagonal` | dxf2bim/dxf2bim.js |
 | `GAP:wall_line_unpaired` | dxf2bim/dxf2bim.js |
 | `GAP:wall_mode_mismatch` | dxf2bim/dxf2bim.js |
+| `GAP:wall_no_top` | dxf2walls.js |
 | `GAP:wall_not_footprint` | dxf2bim/dxf2bim.js |
 | `GAP:wall_not_orthogonal` | dxf2bim/std2d.js |
 | `GAP:wall_orientation_ambiguous` | dxf2bim/dxf2bim.js |
 | `GAP:wall_pair_ambiguous` | dxf2bim/dxf2bim.js |
+| `GAP:wall_top_defaulted` | dxf2bim_import.js |
 | `GAP:window_no_host` | dxf2bim/std2d.js |
 | `GAP:wing_no_walls` | dxf2bim/std2d.js |
 | `GAP:zero_length` | dxf2bim/dxf2bim.js |
-| `MARK:align_fail` | dxf2bim/dxf2marks.js |
+| `MARK:align_fail` | dxf2bim/dxf2marks.js, dxf2bodies.js |
 | `MARK:axis_cut` | dxf2bim/dxf2marks.js |
 | `MARK:axis_face` | dxf2bim/dxf2marks.js |
 | `MARK:by_invalid` | dxf2bim/dxf2marks.js |
 | `MARK:conflict` | dxf2bim/dxf2marks.js |
 | `MARK:layer_type` | dxf2bim/dxf2marks.js |
-| `MARK:level_scale_fail` | dxf2bim/dxf2marks.js |
+| `MARK:level_scale_fail` | dxf2bim/dxf2marks.js, dxf_import_ui.js |
 | `MARK:malformed` | dxf2bim/dxf2marks.js |
 | `MARK:missing` | dxf2bim/dxf2marks.js, dxf2bim/dxf2qualify.js, dxf2bim_import.js, dxf_meta_editor.js |
 | `MARK:set_mismatch` | dxf2bim/dxf2marks.js |
 | `MARK:unknown_key` | dxf2bim/dxf2marks.js |
 | `MARK:view_ambiguous` | dxf2bim/dxf2marks.js |
+| `QF:accept_refused` | dxf2bim/dxf2qualify.js |
+| `QF:accept_unused` | dxf2bim/dxf2qualify.js |
 | `QF:check_skipped` | dxf2bim/dxf2qualify.js |
 | `QF:convention_applied` | dxf2bim/dxf2qualify.js, dxf_meta_editor.js |
 | `QF:dim_missing` | dxf2bim/dxf2qualify.js |
@@ -347,6 +448,7 @@ Evidence properties on every body (set `Dxf2Bim_Evidence`): `Provenance`, `Sourc
 | `QF:set_storey_unstated` | dxf2bim/dxf2qualify.js |
 | `QF:setting_missing` | dxf2bim/dxf2qualify.js |
 | `QF:sheet_no_role` | dxf2bim/dxf2qualify.js |
+| `QF:sheet_referred_missing` | dxf2markrefs.js |
 | `QF:units_conflict` | dxf2bim/dxf2qualify.js |
 | `QF:units_unstated` | dxf2bim/dxf2qualify.js |
 | `QF:walltop_unknown_storey` | dxf2bim/dxf2qualify.js |

@@ -1,0 +1,49 @@
+§STAR-HEADER W-SCALE-STAR mode=engine N=1000 M=1000 K=3 workers=6 box_min=180 ootb=/tmp/ab-unwrap/memo commit= node=v18.19.1 cpus=20 loadavg=3.96,4.15,5.18 at=2026-11-01T05:47:42.667Z
+§STAR-LIMITS one Node process family simulates all devices (no network latency, no browser); the relay is a folder pipe on local disk; load-generating devices fetch only the founder's roster bundle and are not measured;
+§STAR-LIMITS the measured edges (2 stations: first+last, 2 borrowers: first+last) and head office fetch the WHOLE relay; Node + sql.js timings are not browser timings; teamRebuild (ERP projection) is browser-only, so Visit ms = sync + adapter _project;
+§STAR-LIMITS per-device numbers are per device INSTANCE; head-office model-layer inputs are K4-shaped tickets (engine carries only the plan's declared columns; the two are not bridged by a projection in Node).
+§STAR-PHASE create-devices devices=2000 ms=313
+§STAR-ENROL devices=200/2000 block_ms=49772
+§STAR-ENROL devices=400/2000 block_ms=173943
+§STAR-ENROL devices=600/2000 block_ms=519434
+§STAR-ENROL devices=800/2000 block_ms=685329
+§STAR-ENROL devices=1000/2000 block_ms=1005826
+§STAR-ENROL devices=1200/2000 block_ms=978369
+§STAR-ENROL devices=1400/2000 block_ms=1412283
+§STAR-ENROL devices=1600/2000 block_ms=2656447
+§STAR-ENROL devices=1800/2000 block_ms=2883710
+§STAR-ENROL devices=2000/2000 block_ms=3032010
+§STAR-INCONCLUSIVE phase=enrol time box 180 min exhausted at 2000/2000 devices
+§STAR-POINT {"n":1000,"m":1000,"k":3,"workers":6,"status":"INCONCLUSIVE","phases":{"create_ms":313.0519999265671},"reason":"enrol: time box 180 min exhausted at 2000/2000 devices","wall_ms":13398546,"kind":"engine"}
+§STAR-DONE engine N=1000 M=1000 status=INCONCLUSIVE reason=enrol: time box 180 min exhausted at 2000/2000 devices wall_s=13399
+§OPCOUNT pid=2970924 {"unwrapKey":2002,"wrapKey":6002,"deriveKey":8004,"deriveBits":8004,"verify":30011,"sign":10005,"encrypt":0,"decrypt":0} rssMB=563
+§OPCOUNT pid=2971005 {"unwrapKey":0,"wrapKey":0,"deriveKey":0,"deriveBits":0,"verify":0,"sign":0,"encrypt":0,"decrypt":0} rssMB=65
+§OPCOUNT pid=2971006 {"unwrapKey":0,"wrapKey":0,"deriveKey":0,"deriveBits":0,"verify":0,"sign":0,"encrypt":0,"decrypt":0} rssMB=65
+§OPCOUNT pid=2971018 {"unwrapKey":0,"wrapKey":0,"deriveKey":0,"deriveBits":0,"verify":0,"sign":0,"encrypt":0,"decrypt":0} rssMB=68
+§OPCOUNT pid=2971008 {"unwrapKey":0,"wrapKey":0,"deriveKey":0,"deriveBits":0,"verify":0,"sign":0,"encrypt":0,"decrypt":0} rssMB=66
+§OPCOUNT pid=2971012 {"unwrapKey":0,"wrapKey":0,"deriveKey":0,"deriveBits":0,"verify":0,"sign":0,"encrypt":0,"decrypt":0} rssMB=67
+§OPCOUNT pid=2971007 {"unwrapKey":0,"wrapKey":0,"deriveKey":0,"deriveBits":0,"verify":0,"sign":0,"encrypt":0,"decrypt":0} rssMB=67
+Command exited with non-zero status 1
+	Command being timed: "timeout 14400 node scripts/witness_scale_star.js /tmp/ab-unwrap/memo engine --n 1000 --m 1000 --k 3 --workers 6 --budget-min 180"
+	User time (seconds): 14542.77
+	System time (seconds): 353.12
+	Percent of CPU this job got: 111%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 3:43:18
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 747280
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 82589556
+	Voluntary context switches: 49217291
+	Involuntary context switches: 1269113
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 88
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 1

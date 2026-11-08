@@ -1,0 +1,8 @@
+{
+  "_readme": "What the next library publish may change, stated before it runs (\u00a734, \u00a738). witness_library_publish.js holds the export to exactly this. Update it for each publish.",
+  "spec": "none pending: ebcea595bea6 published 2026-11-05",
+  "added_families": [],
+  "added_map_rows": 0,
+  "families_that_may_resolve_differently": [],
+  "descriptions_that_may_change": []
+}

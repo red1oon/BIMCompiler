@@ -1,0 +1,722 @@
+{
+ "header": {
+  "format": "film6-trace/1",
+  "status": "REAL",
+  "sample_day_label": "sample day",
+  "axis": {
+   "from_min": 480,
+   "to_min": 1980
+  },
+  "initial_online": {
+   "till": true,
+   "clerk": true,
+   "stock": true,
+   "phone1": true,
+   "phone2": true,
+   "verifier": true
+  },
+  "beats": [
+   {
+    "id": "ch1",
+    "title": "Chapter 1 · The till sells, online or not",
+    "src": "W-FILM-OFFLINE (film_offline.log)"
+   },
+   {
+    "id": "ch2",
+    "title": "Chapter 2 · The borrower pays from a phone",
+    "src": "W-MF-SEED (mf_seed.log)"
+   },
+   {
+    "id": "ch3a",
+    "title": "Chapter 3 · Head office works when head office works",
+    "src": "W-POS-SALES-LIVE (P1-P3) · W-MF-SEED (I1)"
+   },
+   {
+    "id": "ch3b",
+    "title": "Chapter 3 · Head office works when head office works",
+    "src": "W-HQ-CLERK pos (H8-H10)"
+   },
+   {
+    "id": "ch3c",
+    "title": "Chapter 3 · Head office works when head office works",
+    "src": "W-MF-SEED (R, P)"
+   },
+   {
+    "id": "ch4",
+    "title": "Chapter 4 · The day comes back to every desk",
+    "src": "W-HQ-CLERK pos (H11) · W-MF-SEED (B1, B2)"
+   }
+  ],
+  "sources": [
+   {
+    "witness": "film_offline",
+    "command": "see FILM_EVT.md; log copied from the lead's final suite (lead/final)",
+    "log": "logs/evidence/final/film_offline.log",
+    "sha256": "324ba05850036fbaf14b12d190c9a709c05c1bad11893cf022f415c7884fd526"
+   },
+   {
+    "witness": "mf_seed",
+    "command": "see FILM_EVT.md; log copied from the W-MF-SEED re-run on bim-ootb film/mf-evt 9ca13d01",
+    "log": "logs/evidence/mf_seed.log",
+    "sha256": "ea2521d9581bc47547111834155a66dd13582d6493ffdbc8625a5f30810ba3fe"
+   },
+   {
+    "witness": "pos_sales_live",
+    "command": "see FILM_EVT.md; log copied from the lead's final suite (lead/final)",
+    "log": "logs/evidence/final/pos_sales_live.log",
+    "sha256": "1785b633a93105b20e13ca35f90bf6040d33990288b68b72f747270d2a9b2ab5"
+   },
+   {
+    "witness": "hq_pos",
+    "command": "see FILM_EVT.md; log copied from the lead's final suite (lead/final)",
+    "log": "logs/evidence/final/hq_pos.log",
+    "sha256": "36087068d65e6d39b73b39749fb6359e08b8005711b28268bf2d5998cd2842d1"
+   }
+  ],
+  "schedule": "schedule6.json (sample-day hours; a schedule, not a measurement)"
+ },
+ "actors": [
+  {
+   "id": "till",
+   "name": "Till",
+   "sub": "Unicenta-style · I_Order + I_Payment rows"
+  },
+  {
+   "id": "phone1",
+   "name": "Borrower phone 1",
+   "sub": "its own loan only"
+  },
+  {
+   "id": "phone2",
+   "name": "Borrower phone 2",
+   "sub": "its own loan only"
+  },
+  {
+   "id": "verifier",
+   "name": "Slip-verify service",
+   "sub": "SlipOK is the sample; another provider = another row"
+  },
+  {
+   "id": "clerk",
+   "name": "Head-office clerk",
+   "sub": "role 102"
+  },
+  {
+   "id": "stock",
+   "name": "Stock role",
+   "sub": "role 103"
+  },
+  {
+   "id": "relay",
+   "name": "The relay",
+   "sub": "a dumb post box: carries, reads nothing"
+  }
+ ],
+ "events": [
+  {
+   "seq": 1,
+   "t_min": 525,
+   "beat": "ch1",
+   "actor": "till",
+   "kind": "online",
+   "wit": "film_offline.log#4"
+  },
+  {
+   "seq": 2,
+   "t_min": 525,
+   "beat": "ch1",
+   "actor": "clerk",
+   "kind": "online",
+   "wit": "film_offline.log#5"
+  },
+  {
+   "seq": 3,
+   "t_min": 540,
+   "beat": "ch1",
+   "actor": "till",
+   "kind": "offline",
+   "wit": "film_offline.log#8"
+  },
+  {
+   "seq": 4,
+   "t_min": 550,
+   "beat": "ch1",
+   "actor": "till",
+   "kind": "local",
+   "wit": "film_offline.log#12",
+   "text": "ticket line written",
+   "queue": 1
+  },
+  {
+   "seq": 5,
+   "t_min": 595,
+   "beat": "ch1",
+   "actor": "till",
+   "kind": "local",
+   "wit": "film_offline.log#13",
+   "text": "ticket line written",
+   "queue": 1
+  },
+  {
+   "seq": 6,
+   "t_min": 700,
+   "beat": "ch1",
+   "actor": "till",
+   "kind": "local",
+   "wit": "film_offline.log#14",
+   "text": "ticket line written",
+   "queue": 1
+  },
+  {
+   "seq": 7,
+   "t_min": 725,
+   "beat": "ch1",
+   "actor": "till",
+   "kind": "online",
+   "wit": "film_offline.log#20"
+  },
+  {
+   "seq": 8,
+   "t_min": 725,
+   "beat": "ch1",
+   "actor": "till",
+   "kind": "send",
+   "wit": "film_offline.log#24",
+   "label": "I_Order"
+  },
+  {
+   "seq": 9,
+   "t_min": 725,
+   "beat": "ch1",
+   "actor": "till",
+   "kind": "send",
+   "wit": "film_offline.log#25",
+   "label": "I_Order"
+  },
+  {
+   "seq": 10,
+   "t_min": 725,
+   "beat": "ch1",
+   "actor": "till",
+   "kind": "send",
+   "wit": "film_offline.log#26",
+   "label": "I_Order"
+  },
+  {
+   "seq": 11,
+   "t_min": 726,
+   "beat": "ch1",
+   "actor": "clerk",
+   "kind": "deliver",
+   "wit": "film_offline.log#27",
+   "label": "I_Order",
+   "from": "relay"
+  },
+  {
+   "seq": 12,
+   "t_min": 726,
+   "beat": "ch1",
+   "actor": "clerk",
+   "kind": "deliver",
+   "wit": "film_offline.log#28",
+   "label": "I_Order",
+   "from": "relay"
+  },
+  {
+   "seq": 13,
+   "t_min": 726,
+   "beat": "ch1",
+   "actor": "clerk",
+   "kind": "deliver",
+   "wit": "film_offline.log#29",
+   "label": "I_Order",
+   "from": "relay"
+  },
+  {
+   "seq": 14,
+   "t_min": 726,
+   "beat": "ch1",
+   "actor": "clerk",
+   "kind": "note",
+   "wit": "film_offline.log#30",
+   "text": "rows arrived, nothing runs",
+   "cls": "n"
+  },
+  {
+   "seq": 15,
+   "t_min": 525,
+   "beat": "ch2",
+   "actor": "clerk",
+   "kind": "online",
+   "wit": "mf_seed.log#8"
+  },
+  {
+   "seq": 16,
+   "t_min": 525,
+   "beat": "ch2",
+   "actor": "phone1",
+   "kind": "online",
+   "wit": "mf_seed.log#9"
+  },
+  {
+   "seq": 17,
+   "t_min": 525,
+   "beat": "ch2",
+   "actor": "phone2",
+   "kind": "online",
+   "wit": "mf_seed.log#10"
+  },
+  {
+   "seq": 18,
+   "t_min": 525,
+   "beat": "ch2",
+   "actor": "verifier",
+   "kind": "online",
+   "wit": "mf_seed.log#11"
+  },
+  {
+   "seq": 19,
+   "t_min": 535,
+   "beat": "ch2",
+   "actor": "clerk",
+   "kind": "run",
+   "wit": "mf_seed.log#22",
+   "text": "payment schedule validated",
+   "process": "Validate"
+  },
+  {
+   "seq": 20,
+   "t_min": 535,
+   "beat": "ch2",
+   "actor": "clerk",
+   "kind": "send",
+   "wit": "mf_seed.log#23",
+   "label": "loan"
+  },
+  {
+   "seq": 21,
+   "t_min": 535,
+   "beat": "ch2",
+   "actor": "clerk",
+   "kind": "send",
+   "wit": "mf_seed.log#24",
+   "label": "loan"
+  },
+  {
+   "seq": 22,
+   "t_min": 536,
+   "beat": "ch2",
+   "actor": "phone1",
+   "kind": "deliver",
+   "wit": "mf_seed.log#25",
+   "label": "loan",
+   "from": "relay"
+  },
+  {
+   "seq": 23,
+   "t_min": 536,
+   "beat": "ch2",
+   "actor": "phone2",
+   "kind": "deliver",
+   "wit": "mf_seed.log#26",
+   "label": "loan",
+   "from": "relay"
+  },
+  {
+   "seq": 24,
+   "t_min": 620,
+   "beat": "ch2",
+   "actor": "phone1",
+   "kind": "verify",
+   "wit": "mf_seed.log#31",
+   "label": "slip",
+   "to": "verifier"
+  },
+  {
+   "seq": 25,
+   "t_min": 620,
+   "beat": "ch2",
+   "actor": "verifier",
+   "kind": "ack",
+   "wit": "mf_seed.log#32",
+   "label": "slip",
+   "to": "phone1",
+   "status": "approved"
+  },
+  {
+   "seq": 26,
+   "t_min": 621,
+   "beat": "ch2",
+   "actor": "phone1",
+   "kind": "local",
+   "wit": "mf_seed.log#33",
+   "text": "payment received",
+   "queue": 1,
+   "slip": "received"
+  },
+  {
+   "seq": 27,
+   "t_min": 640,
+   "beat": "ch2",
+   "actor": "phone2",
+   "kind": "verify",
+   "wit": "mf_seed.log#39",
+   "label": "slip",
+   "to": "verifier"
+  },
+  {
+   "seq": 28,
+   "t_min": 640,
+   "beat": "ch2",
+   "actor": "verifier",
+   "kind": "ack",
+   "wit": "mf_seed.log#40",
+   "label": "slip",
+   "to": "phone2",
+   "status": "refused"
+  },
+  {
+   "seq": 29,
+   "t_min": 641,
+   "beat": "ch2",
+   "actor": "phone2",
+   "kind": "local",
+   "wit": "mf_seed.log#41",
+   "text": "refused, nothing paid",
+   "slip": "refused"
+  },
+  {
+   "seq": 30,
+   "t_min": 641,
+   "beat": "ch2",
+   "actor": "phone2",
+   "kind": "note",
+   "wit": "mf_seed.log#42",
+   "text": "The amount sent is not equal to the amount on the slip",
+   "cls": "bad"
+  },
+  {
+   "seq": 31,
+   "t_min": 840,
+   "beat": "ch2",
+   "actor": "phone2",
+   "kind": "offline",
+   "wit": "mf_seed.log#48"
+  },
+  {
+   "seq": 32,
+   "t_min": 845,
+   "beat": "ch2",
+   "actor": "phone2",
+   "kind": "local",
+   "wit": "mf_seed.log#49",
+   "text": "no acknowledgement yet",
+   "queue": 1,
+   "todo": "set"
+  },
+  {
+   "seq": 33,
+   "t_min": 845,
+   "beat": "ch2",
+   "actor": "phone2",
+   "kind": "note",
+   "wit": "mf_seed.log#50",
+   "text": "SlipOK has not acknowledged this slip",
+   "cls": "bad"
+  },
+  {
+   "seq": 34,
+   "t_min": 1000,
+   "beat": "ch2",
+   "actor": "phone2",
+   "kind": "online",
+   "wit": "mf_seed.log#51"
+  },
+  {
+   "seq": 35,
+   "t_min": 1000,
+   "beat": "ch2",
+   "actor": "phone2",
+   "kind": "verify",
+   "wit": "mf_seed.log#52",
+   "label": "slip",
+   "to": "verifier"
+  },
+  {
+   "seq": 36,
+   "t_min": 1001,
+   "beat": "ch2",
+   "actor": "verifier",
+   "kind": "ack",
+   "wit": "mf_seed.log#53",
+   "label": "slip",
+   "to": "phone2",
+   "status": "approved"
+  },
+  {
+   "seq": 37,
+   "t_min": 1001,
+   "beat": "ch2",
+   "actor": "phone2",
+   "kind": "local",
+   "wit": "mf_seed.log#54",
+   "text": "row updated before send",
+   "slip": "received",
+   "todo": "clear"
+  },
+  {
+   "seq": 38,
+   "t_min": 1005,
+   "beat": "ch2",
+   "actor": "verifier",
+   "kind": "note",
+   "wit": "mf_seed.log#61",
+   "text": "second provider row, no code change",
+   "cls": "n"
+  },
+  {
+   "seq": 39,
+   "t_min": 1015,
+   "beat": "ch3a",
+   "actor": "phone1",
+   "kind": "send",
+   "wit": "mf_seed.log#78",
+   "label": "I_Payment"
+  },
+  {
+   "seq": 40,
+   "t_min": 1016,
+   "beat": "ch3a",
+   "actor": "phone2",
+   "kind": "send",
+   "wit": "mf_seed.log#79",
+   "label": "I_Payment"
+  },
+  {
+   "seq": 41,
+   "t_min": 1016,
+   "beat": "ch3a",
+   "actor": "phone2",
+   "kind": "send",
+   "wit": "mf_seed.log#80",
+   "label": "I_Payment"
+  },
+  {
+   "seq": 42,
+   "t_min": 1050,
+   "beat": "ch3a",
+   "actor": "clerk",
+   "kind": "note",
+   "wit": "pos_sales_live.log#20",
+   "text": "sales window: tickets side by side",
+   "cls": "n"
+  },
+  {
+   "seq": 43,
+   "t_min": 1050,
+   "beat": "ch3a",
+   "actor": "clerk",
+   "kind": "run",
+   "wit": "pos_sales_live.log#37",
+   "text": "ticket imported",
+   "process": "Import POS Sales"
+  },
+  {
+   "seq": 44,
+   "t_min": 1051,
+   "beat": "ch3a",
+   "actor": "clerk",
+   "kind": "note",
+   "wit": "pos_sales_live.log#38",
+   "text": "one order, one invoice, two receipts",
+   "cls": "ok"
+  },
+  {
+   "seq": 45,
+   "t_min": 1055,
+   "beat": "ch3a",
+   "actor": "clerk",
+   "kind": "refuse",
+   "wit": "pos_sales_live.log#44",
+   "text": "totals differ: ticket left whole, with reason",
+   "cls": "bad"
+  },
+  {
+   "seq": 46,
+   "t_min": 1060,
+   "beat": "ch3a",
+   "actor": "clerk",
+   "kind": "run",
+   "wit": "pos_sales_live.log#46",
+   "text": "second run: nothing new",
+   "process": "Import POS Sales"
+  },
+  {
+   "seq": 47,
+   "t_min": 1065,
+   "beat": "ch3a",
+   "actor": "clerk",
+   "kind": "deliver",
+   "wit": "mf_seed.log#81",
+   "label": "I_Payment",
+   "from": "relay"
+  },
+  {
+   "seq": 48,
+   "t_min": 1065,
+   "beat": "ch3a",
+   "actor": "clerk",
+   "kind": "deliver",
+   "wit": "mf_seed.log#82",
+   "label": "I_Payment",
+   "from": "relay"
+  },
+  {
+   "seq": 49,
+   "t_min": 1065,
+   "beat": "ch3a",
+   "actor": "clerk",
+   "kind": "deliver",
+   "wit": "mf_seed.log#83",
+   "label": "I_Payment",
+   "from": "relay"
+  },
+  {
+   "seq": 50,
+   "t_min": 1066,
+   "beat": "ch3a",
+   "actor": "clerk",
+   "kind": "run",
+   "wit": "mf_seed.log#84",
+   "text": "a receipt per slip, allocated",
+   "process": "Import Payment"
+  },
+  {
+   "seq": 51,
+   "t_min": 1920,
+   "beat": "ch3b",
+   "actor": "stock",
+   "kind": "online",
+   "wit": "hq_pos.log#37"
+  },
+  {
+   "seq": 52,
+   "t_min": 1925,
+   "beat": "ch3b",
+   "actor": "stock",
+   "kind": "run",
+   "wit": "hq_pos.log#47",
+   "text": "quantities, no document",
+   "process": "Replenish Report"
+  },
+  {
+   "seq": 53,
+   "t_min": 1930,
+   "beat": "ch3b",
+   "actor": "stock",
+   "kind": "run",
+   "wit": "hq_pos.log#53",
+   "text": "one movement",
+   "process": "Material Movement"
+  },
+  {
+   "seq": 54,
+   "t_min": 1930,
+   "beat": "ch3b",
+   "actor": "stock",
+   "kind": "send",
+   "wit": "hq_pos.log#54",
+   "label": "movement"
+  },
+  {
+   "seq": 55,
+   "t_min": 1070,
+   "beat": "ch3c",
+   "actor": "clerk",
+   "kind": "run",
+   "wit": "mf_seed.log#94",
+   "text": "renewal invoice raised",
+   "process": "Recurring Run"
+  },
+  {
+   "seq": 56,
+   "t_min": 1080,
+   "beat": "ch3c",
+   "actor": "clerk",
+   "kind": "run",
+   "wit": "mf_seed.log#97",
+   "text": "receipts posted at close",
+   "process": "Tenant Accounting Processor"
+  },
+  {
+   "seq": 57,
+   "t_min": 1940,
+   "beat": "ch4",
+   "actor": "till",
+   "kind": "deliver",
+   "wit": "hq_pos.log#61",
+   "label": "m_movementline",
+   "from": "relay"
+  },
+  {
+   "seq": 58,
+   "t_min": 1940,
+   "beat": "ch4",
+   "actor": "till",
+   "kind": "deliver",
+   "wit": "hq_pos.log#62",
+   "label": "m_movementline",
+   "from": "relay"
+  },
+  {
+   "seq": 59,
+   "t_min": 1940,
+   "beat": "ch4",
+   "actor": "till",
+   "kind": "deliver",
+   "wit": "hq_pos.log#63",
+   "label": "m_movementline",
+   "from": "relay"
+  },
+  {
+   "seq": 60,
+   "t_min": 1941,
+   "beat": "ch4",
+   "actor": "till",
+   "kind": "note",
+   "wit": "hq_pos.log#64",
+   "text": "only the movement came back",
+   "cls": "ok"
+  },
+  {
+   "seq": 61,
+   "t_min": 1945,
+   "beat": "ch4",
+   "actor": "phone1",
+   "kind": "deliver",
+   "wit": "mf_seed.log#89",
+   "label": "balance",
+   "from": "relay"
+  },
+  {
+   "seq": 62,
+   "t_min": 1945,
+   "beat": "ch4",
+   "actor": "phone2",
+   "kind": "deliver",
+   "wit": "mf_seed.log#90",
+   "label": "balance",
+   "from": "relay"
+  },
+  {
+   "seq": 63,
+   "t_min": 1946,
+   "beat": "ch4",
+   "actor": "phone2",
+   "kind": "refuse",
+   "wit": "mf_seed.log#91",
+   "text": "not addressed to this phone: refused here",
+   "cls": "n"
+  }
+ ]
+}

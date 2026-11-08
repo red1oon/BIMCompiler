@@ -2259,3 +2259,320 @@ Fixed in BOTH twins (`scripts/` and bim-ootb `erp/`), witness-first (`scripts/po
 **Port (each = one registry hook calling the existing verb):** new `erp/model_rma.js` — `registerModel('m_rma', {initialDefaults, beforeSave? })`, `registerModel('m_rmaline', {initialDefaults, beforeSave -> E.rmaLineSave, afterSave/afterDelete -> MRMALine.updateHeaderAmt})`, `registerDocAction('m_rma', MRMA)` (prepareIt/completeIt -> E.completeRMA; M_RMATax rows + Amt); `model_order.js` MInOut.beforeSave (RMA doc type) + completeIt RMA branch -> E.rmaReceiptEffects; `model_invoice.js` MInvoice.completeIt QtyInvoiced; `patches/ad_seed.db.sql` m_rmatax. Not ported (named): RMA void/close/reverse (G-SD10), product-only RMA line pricing (MProductPricing), customer-return/ARC in-Trx books (model_post).
 **Assertions (witness_rma_window_path.js, expected values = legacy SD-16 measurements):** RW-LINE (Amt 50, LineNetAmt 100, product, tax, Line 10), RW-REFUSE-QTY/DUP/CUMULATIVE + neg controls, RW-CO (Amt 110.00, M_RMATax 100/10, no books/stock), RW-NOLINES, RW-RECEIPT (C+, doc type 149, stock +2, QtyDelivered 2), RW-OVERRECEIPT (accepted, 3), RW-CM (110.00, QtyInvoiced 2), RW-BOOKS-* (doc_poster), RW-DENOM (window/tab sweep from the dictionary: grid rows + parent id per tab without Save). INCONCLUSIVE when a case cannot be driven.
 **§RMA-WINDOW-PORT review record (2026-10-12, automated-agent review of bim-ootb #1985, not human; verified against MRMA/MRMALine/MInOut/MInvoice source):** (1) NOT substantiated as a defect: MRMALine.beforeSave :365-377 re-sets Amt = getUnitAmt() on every save of a shipment-line row, and MInOut.completeIt :2006 / MInvoice.completeIt :2171-2185 call `rmaLine.save()` (full beforeSave) -- the port matches legacy; only the parent-DocAction=VO skip (:353,:372) was missing (added); witness RW-AMT-EDIT pins the legacy behaviour. (2) fixed: MRMA voidIt :681-754 / closeIt :494-507 / approve/reject ported, reverseCorrect/reverseAccrual/reActivate return false like MRMA (RW-VOID, RW-VOID-REFUSED, RW-CLOSE); closes the RMA-document part of G-SD10 (source-based, not pilot-measured). (3) fixed: Java condition `c_orderline_id` (not `!ol`) and the real error text surfaced; direct update NOT adopted because legacy calls save(). (4) fixed: no throw, `T.msg` + IN; null guards not needed (D(null)=0). (5) fixed: BigDecimal minor-unit conversion; `rmaCheckQty` made exact in BOTH twins (`erp/erp_engine.js`, `scripts/erp_engine.js`): float 0.1+0.2>0.3 refused a legal return (RW-DEC-CUM fail-first). (6) fixed: FillMandatory M_RMA_ID short-circuit. (7) fixed: MRMA.getLines/setProcessed/updateHeaderTax cover ALL lines (no IsActive filter). (8) not substantiated: m_rmatax is keyed exactly like c_ordertax/c_invoicetax (composite PK, `_uu` identity); two taxes + double prepare witnessed (RW-MULTITAX). (9) fixed: setup failures print `§RW-SETUP-BAD` + INCONCLUSIVE. (10) fixed: RW-REVERSE-RECEIPT/CM, RW-AMT-EDIT, RW-MULTITAX, RW-DEC-*, RW-VOID/CLOSE added. Logs `build/erp/logs_rma_window/fix2_*.log`.
+
+## §S-SCHEMASET — the client's accounting schemas, as legacy computes them (2026-11-02, found by TEAMWORK §45.15a beat-10 measurement)
+**Issue (measured, `build/scriptor/beat10_20261102/`):** the O2C cycle that MATCHED through 2026-10-12 now diverges: SQLite refused O2C1-SO (`no-product-category-acct`) and, once that was fixed, refused the shipment's posting (`AverageCostingNegativeQty … Schema=1000001`) while legacy completed and posted both. Cause: the pilot now carries two NC4 test schemas (1000001/1000002, active, NO `C_AcctSchema_GL` row). Legacy never sees them: `MAcctSchema.getClientAcctSchema` (`MAcctSchema.java:132-175`) = `AD_ClientInfo.C_AcctSchema1` + every ACTIVE schema with BOTH a `C_AcctSchema_GL` and a `C_AcctSchema_Default` row. The twin model layer already ports this (`bim-ootb erp/model_master.js:70 clientAcctSchemas`), but two other places used "every active schema": (1) the m3 harness host `acctSetupOf` (`scripts/bridge/witness_m3_gap.js:76`) and (2) the posting engine `_activeSchemas` (`bim-ootb erp/doc_poster.js:566`, mirrored in `scripts/doc_poster.js`).
+**Fix (SQLite side, per the CARDINAL RULE):** both apply the GL + Default existence rule (table-guarded like the rest of doc_poster). `_activeSchemas` callers pass no client, so the client filter and the primary-first order are NOT changed here (unchanged behaviour on every shipped DB: schemas 101 and 200000 carry both rows in `ad_seed.db` and `build/erp/glassbowl_data.db`). **Witness:** the parallel run's O2C cycle (`time_o2c.js` / `witness_m3_gap.js M3_ONLY=O2C`) back to 6/6 MATCH; regression `run_all.sh` triage unchanged; bim-ootb doc_poster witnesses unchanged.
+**§S-SCHEMASET RESULT (2026-11-02, `build/scriptor/beat10_20261102/`):** O2C 6/6 MATCH (was 1 refused + 5 knock-on gaps). Full `run_all.sh` (`~/.cache/bim_bridge/run_20261102_043856.log`) vs the last run of 2026-10-12: CTX, FA and M3 verdicts changed — so each was re-run A/B (A = this fix reverted, bim-ootb main; B = this fix; logs `ab/`): **M3 A 3 fails / 290 findings → B 1 fail / 17 findings** (the same schema rule also broke F9a/F9b backdated sales) · **FA identical on A and B** (gap diff empty; both sides refuse with the same reason "There are unprocessed records to date", only the wording differs — legacy wraps it in `AssetArrayException`: pilot depreciation residue since 2026-10-12, OPEN, not this fix) · **CTX identical on A and B** (`schema.primary:101!=101` — a type-compare defect in the ctx resolver, OPEN, not this fix) · remaining M3 gap `S3-client-keyed-price` present on both (OPEN). Posting witnesses in bim-ootb identical on main and the fix (F9 22/0, SD16P, SR2, MTRACE 7/0, LBACK 22/0, LMTO 12/0).
+**§S-SCHEMASET LIVE:** bim-ootb main `8984af69` (#2523), 2026-11-02.
+
+## §CAPEX-TWIN — what the CAPEX dashboard twin found in this lane's harness (2026-11-02, session bim-compiler-77; history = bim-ootb `prompts/archive/CAPEX_DASHBOARD_history_2026-11-02_to_11-03.md §11`; live lane = bim-ootb `prompts/CAPEX_DASHBOARD.md`)
+The CAPEX dashboard (bim-ootb `capex/`) compares ABSOLUTE state (tiles over C_Project/Phase/Line, AD_WF_Activity) of a SQLite ERP DB with the legacy pilot. Its run said `§DASH_TWIN_VERDICT FAIL match=4 diff=15`. Measured causes:
+1. **The harness keeps no SQLite state.** Every scenario copies `build/erp/glassbowl_data.db` to tmp, compares deltas and deletes the copy (`witness_m3_gap.js:20,1137-1174`); `glassbowl_data.db` has no `c_project`. The pilot keeps every
+   run (e.g. `Standard#100.ProjectBalanceAmt=318.6805` = 46 PJI1 issues 2026-10-10..11-02). So no "post-run SQLite DB" exists and the two DBs drift apart by construction. **Proposal for this lane (not done, the lane's call):**
+   a persistent SQLite twin DB that every run's LOCAL side also writes to, reset together with the pilot from one baseline (`pilot/snapshot.sh restore` + the matching seed) — then an absolute-state twin
+   (the dashboard, any report) is judgeable after every `run_all.sh`. Until then absolute-state twins can only be judged on scenarios that write the same rows on both sides from an aligned start.
+2. **RULE + DATA gap found and FIXED on the SQLite side (CARDINAL RULE):** legacy starts every document-value workflow after a save (`PO.saveFinish` :2806-2817 → `DocWorkflowManager.process`) and
+   suspends it at a user node — GardenWorld `AD_Workflow 131 "Business Partner Approval"` (C_BPartner, `@Created@=@Updated@`, node 244 W) leaves one OS activity per new BP (261 on the pilot: 251 from BPs
+   created+deleted 2026-10-17..22 by user 101, activities kept). SQLite had neither the workflow rows (`build_model_patch.py` shipped DocAction workflows only) nor the trigger nor the suspend
+   (`runWorkflow` aborted on node action W). Fixed in bim-ootb `erp/model_layer.js` (`docValue`, W/X/I suspend) + a boot overlay `erp/ad_docvalue_overlay.js` / `ad_docvalue_wf.js` (2 rows extracted from the reference DB; NOT in the hashed seed patch, so the Team base hash is unchanged), witness `erp/tests/witness_docvalue_wf.js` (bim-ootb PR #2539)
+   (W-DOCVALUE-WF, RED 6/7 → GREEN, break switch FAILs). Shop-day steps that create BPs (SD-01..) now produce the same pending approvals on both sides.
+3. **Named, not fixed:** the DocAction workflow path writes `ad_wf_process.ad_wf_responsible_id = NULL` when the workflow has none; legacy resolves the Invoker (pilot: C_Order wf 116 process → responsible 101 / user 101).
+4. **Owner direction 2026-11-02 (CAPEX session 77), CORRECTED:** "On SQLite for the legacy to use with the dashboard, yes" · "Of course we like to move things to our framework, thus the dashboard is
+   something external to idempiere core thus we propose to as such." = the CAPEX dashboard runs on the SQLite kernel, fed from legacy by a DOWN sync over the stock WebServices (this lane's §4 DOWN path,
+   read types only) — bim-ootb `prompts/CAPEX_DASHBOARD.md` §5 R5. **2026-11-03 frame:** the dashboard is to be defined as iDempiere PA rows that BOTH sides execute; owner: "our side is a true twin and idempiere side retains its learning curve" — the twin then judges a shared definition (CAPEX_DASHBOARD.md §4). Item 1 (a persistent harness twin) is NOT what was approved; it stays this lane's open proposal. Hospital #990000 push DROPPED by the owner.
+
+---
+
+## §POSTING-PARITY 2026-11-03 — measured: real posting (model_post) vs doc_poster vs legacy Fact_Acct, on the bundled seed
+Found by the code-hygiene lane (`prompts/CODE_HYGIENE_REVIEW_2026-11.md` C2) while testing whether the Posting-Preview's
+`doc_poster.derivePostings` could be retired onto `model_post`. **It cannot yet — the differences below are twin work for this
+lane** (CARDINAL: fixed on the SQLite side; no accepted divergence). Harness (node, bim-ootb origin/main 3109e811, seed + patches,
+per schema/account in cents; legacy = the seed's stored Fact_Acct filtered by client; only client 11 has an accounting schema):
+
+| Doc type (client 11) | docs | w/ legacy | model_post = legacy | doc_poster = legacy | first difference |
+|---|---|---|---|---|---|
+| C_Invoice | 8 | 8 | 8 | 8 | — |
+| C_Payment | 2 | 2 | 2 | 2 | — |
+| M_Movement | 1 | 1 | 1 | 1 | — |
+| M_InOut | 9 | 8 | 5 | 5 | #100 acct 430 Dr 3737 vs legacy 3000 — both sides; suspected seed m_cost drift vs pilot (fixture sync needed to confirm); #108 MP refuses AverageCostingNegativeQty, DP lists the same as absent, legacy posted 23750 |
+| M_MatchInv | 18 | 18 | 17 | 17 | #100 legacy 742 Cr 7000 + 50017 (IPV) Cr 3000; MP 742 Cr 10000 (no IPV split); DP omits 742, flags IPV "not ported" |
+| C_AllocationHdr | 2 | 2 | **not ported** (MP refuses) | 0 | DP #100 misses 516 Dr 5035; #101 misses 724 Cr 1 |
+| C_BankStatement | 2 | 1 | **no Doc class** | 1 | — |
+| GL_Journal | 2 | 2 | **no Doc class** | 0 | DP books only 508; legacy also 600 Cr / 741 Dr |
+| M_Inventory | 3 | 0 | MP posts 2 | DP posts 0 | no legacy facts |
+
+> **⚠ CORRECTION (same day, after the owner asked to check the earlier parity work first):** the "work items" below are
+> NOT established. The lane's recorded proofs for these exact folds ALL PASS when re-run today (2026-11-03, logs read):
+> `scripts/poc_alloc_post.js` W-FOLD-ALLOC (Doc_AllocationHdr incl. VAT tax-correction, falsifier 13c) ·
+> `scripts/poc_matchinv.js` W-FOLD-MATCHINV (NIR/Clearing + avg-cost IPV split, 18/18, falsifier 3000c) ·
+> `scripts/poc_gljournal.js` W-FOLD-GLJOURNAL (direct lines + per-org intercompany balancing, falsifier 10000c) ·
+> `scripts/poc_post_tail.js` W-POST-TAIL (BankStatement, real fact_acct oracle) — see FOLD_MODEL_LOGIC.md, HARDEN_MATRIX.md.
+> The table above measured a DIFFERENT pairing: bim-ootb's shipped `doc_poster.derivePostings` + `model_post` on bim-ootb's
+> `erp/ad_seed.db` (+ patches), whose cost data the harness itself suspected had drifted from the pilot. Until the two are
+> reconciled on the SAME seed and the SAME code path, nothing below is a confirmed twin defect. What IS factual: `model_post`
+> (the browser's real posting) has no Doc class for BankStatement / GLJournal and refuses AllocationHdr on this seed — whether
+> those doc types are meant to post via `doc_poster` in the shipped app, and whether the shipped `derive*` equal the proven
+> POC folds, is the reconciliation question. **Next step = measurement only:** run the proven POC folds and the shipped
+> `derivePostings` on one seed, per document, and diff.
+
+**Candidate work items (superseded by §POSTING-PARITY — RECONCILED below):** (1) port Doc_AllocationHdr, Doc_BankStatement, Doc_GLJournal into `model_post`;
+(2) Doc_MatchInv IPV split (account 50017); (3) Doc_InOut cost on #100/#108 — sync the seed cost fixture to the pilot first,
+then re-measure; (4) doc_poster's allocation + GL-journal branches differ from legacy on the seed too (both copies —
+bim-compiler `scripts/doc_poster.js` and bim-ootb `erp/doc_poster.js` — carry the same functions, 130 lines of drift).
+**Then** the Preview can render `model_post` (one implementation) and `doc_poster.derive*` retires — EXCEPT its posting-class
+registry (`docClassFor`/`legacyDocClassOf`/`registerDocClass`, used by model_post + the Libero plugins) and genesis.html's
+`derivePostings` call, which stay or move first. Full tables: hygiene-lane session result `POSTER_RESULT.md` (not committed).
+
+### §POSTING-PARITY — RECONCILED (2026-11-03, measurement only, no code changed)
+Owner: *"Check back with the respective prompts/# on legacy parity before doing so."* Reconciled the recorded proofs (A) with
+the same-day harness (B), on one seed and one code path per question (harness + logs: session scratchpad `recon/`, not committed).
+- **(A) and (B) never judged the same code.** `poc_alloc_post` / `poc_matchinv` / `poc_gljournal` are STANDALONE folds over
+  `post_resolver` on `build/erp/glassbowl_data.db` — they never call `doc_poster` or `model_post`. Only `poc_post_tail` runs
+  `doc_poster` (BankStatement, MatchPO, Requisition). So the PASSes prove the fold LOGIC, not the shipped posting path. Both
+  remain valid for what they test.
+- **Seeds:** `m_cost` identical (362 rows); every proof `fact_acct` row exists in bim-ootb `erp/ad_seed.db`. Differences that
+  matter: bim-ootb has `c_cash` 0 rows (proof 3), `m_costdetail` 0 (proof 86), + 300 client-13 duplicate fact rows reusing
+  client-11 record_ids (a harness must filter by client).
+- **Shipped posting path (Q3):** Complete → `model_layer.js:537-541` → `ML.setPoster(post)` (`model_post.js:842`). `DOC` covers
+  c_order, m_inout, m_matchinv, m_matchpo, m_movement, m_inventory, c_invoice, c_payment, c_allocationhdr. **C_BankStatement and
+  GL_Journal have no Doc class → Posted stays N** (`:784-790`); C_AllocationHdr refuses discount / write-off / cash-line / AP
+  legs as not ported (`:737-739`). `doc_poster.derivePostings` is NOT a posting fallback — only the Posting-Preview
+  (`erp_preview.js:78`) and `genesis.html:165` use it. ⇒ **a live gap in real posting, not only in the preview.**
+
+| B-difference | verdict | evidence |
+|---|---|---|
+| Alloc #100 missing 516 Dr 5035 | SEED-DATA | bim-ootb `c_cash` empty; with the proof's 3 rows copied in, `doc_poster` == legacy in both schemas |
+| Alloc #101 missing 724 Cr 1 | CODE, unproven | rounding correction named "not ported" in doc_poster; the POC itself marks schema 200000 §DEFERRED |
+| GL_Journal books only 508 | CODE | `deriveGLJournal` (ootb doc_poster.js:1377-1396) lacks the per-org intercompany balancing the POC fold proves; same on both seeds |
+| M_MatchInv #100 (742 / IPV 50017) | CODE | doc_poster.js:553 names IPV "not ported"; POC proves the 70/30 on-hand split |
+| M_InOut #100 430 Dr 3737 vs 3000 | SEED-DATA (both seeds) | legacy used the posting-day cost history (30.00); neither seed carries that m_costhistory/m_costdetail row → current m_cost 37.37 |
+
+**No regression of proven work. Twin work (SQLite side), in order:** (1) port the PROVEN folds into `model_post.js` (the real
+posting path): Doc_GLJournal with intercompany balancing (W-FOLD-GLJOURNAL), Doc_BankStatement (W-POST-TAIL's doc_poster
+derivation), Doc_MatchInv IPV split (W-FOLD-MATCHINV), Doc_AllocationHdr discount / write-off / cash legs (W-FOLD-ALLOC) —
+each ported from its proof and re-witnessed against legacy Fact_Acct on the shipped path; (2) seed: add the 3 `c_cash` rows and
+the M_InOut #100 cost-history row to bim-ootb's seed patch; (3) re-run parity with a client filter + per-client schema;
+(4) then the Preview can render `model_post` and `doc_poster.derive*` retires (keep its plugin Doc-class registry).
+
+**§POSTING-PARITY item 1a ✅ DONE (witness) — 2026-11-04, bim-ootb #2593 (live erp sw v976, `model_post.js?v=3`).** Doc_GLJournal
+in `model_post`'s DOC registry, ported from W-FOLD-GLJOURNAL + Doc_GLJournal.java (:61-107, :140-177; line org FactLine.java
+:944-990). The 600/741 intercompany legs come from the EXISTING `balanceSegments` + `balance()` `post()` already runs (Doc.java
+:822-870, Fact.java :255-499) — no new balancing code. W-POST-GLJOURNAL: both client-11 journals == stored legacy Fact_Acct in
+schemas 101 and 200000, maxDiff 0c, Posted=Y; 89 other seed docs byte-identical vs baseline; baseline d4d9b79d FAIL; 2 mutants
+caught. Named refusals: PostingType≠A; single-currency source imbalance (suspense not ported). Note: repost delete keys
+table+record+schema without client, exactly as legacy Doc.java:794 — the seed's client-13 copies reusing client-11 record_ids
+are a seed artefact (seed lane). **Next: 1b Doc_BankStatement** (port W-POST-TAIL's derivation).
+
+**§POSTING-PARITY item 1b ✅ DONE (witness) — 2026-11-04, bim-ootb #2595 (live erp sw v978, `model_post.js?v=4`).** Doc_BankStatement
+in `model_post` (same shape as #2593), ported from the proven `deriveBankStatement` (W-POST-TAIL) + Doc_BankStatement.java
+(:70-88, :109, :126-145, :160-285 legs, :184-198 clearing-equal, :291-298 org) + DocLine_Bank.java:49-87 per-line DateAcct under
+SysConfig BANK_STATEMENT_POST_WITH_DATE_FROM_LINE (MBankStatement.java:801); charge acct per MCharge.java:51-68, no default fallback.
+W-POST-BANKSTATEMENT: statement 100 (13 legacy facts) == legacy in schemas 101 and 200000, maxDiff 0c, Posted=Y; statement 101
+(no lines, no legacy facts) == deriveBankStatement, labelled "no legacy oracle"; date rule both SysConfig states; 91 other docs
+byte-identical; baseline 1d36c3af FAIL; 2 mutants. Named refusals: deposit-batch line; StatementDifference≠ΣStmtAmt; suspense.
+**Next: 1c Doc_MatchInv IPV split** (port W-FOLD-MATCHINV), then **1d Doc_AllocationHdr discount / write-off / cash / AP legs**.
+
+**§POSTING-PARITY item 1c ⛔ BLOCKED (2026-11-04) — the gap is DATA, not code.** `model_post`'s Doc_MatchInv ALREADY carries the full
+Java port of `processInvoicePriceVariance` (AveragePO stock-coverage split, P_AverageCostVariance + P_Asset, cost detail —
+Doc_MatchInv.java:433-640). Legacy's 50017 on #100 is Average Cost Variance (c_elementvalue 58800), not IPV. The only difference is
+the qty: Java takes `qtyCost` from `MCost.getCostInfo(…, dateAcct)` = the **cost history as of DateAcct** (MCost.java:1542-1572);
+bim-ootb's `erp/ad_seed.db` carries **no m_costhistory / m_costdetail rows**, so getCostInfo falls back to the current m_cost
+snapshot (19 now vs 7 at the match date) and all IPV goes to asset. **A code fallback that rebuilds the as-of qty from
+m_transaction was built and REJECTED:** with no history, legacy itself returns the current MCost snapshot (MCost.java:1567), so
+that fallback would DIVERGE from legacy on any real tenant without history. **Fix = seed data:** extract the pilot's
+`m_costhistory` (+ `m_costdetail`) rows for the affected products into `erp/patches/ad_seed.db.sql` — the same gap explains
+M_InOut #100 (cost 37.37 vs legacy 30.00). The proof seed `build/erp/glassbowl_data.db` has m_costdetail (86) but no m_costhistory.
+**⛔ The one question: bring the legacy pilot DB up (local postgres / docker `idempiere`) so the cost-history rows can be extracted
+read-only** — not done autonomously (no server starts). Then re-run W-POST-MATCHINV-IPV-style parity on #100 and InOut #100.
+
+**§POSTING-PARITY item 1d ✅ DONE (witness) — 2026-11-04, bim-ootb #2596 (live erp sw v979, `model_post.js?v=5`).** model_post's
+Doc_AllocationHdr now ports the discount / write-off / cash-line / AP legs (Doc_AllocationHdr.java :193-555 incl. CashBankTransfer
+skip, SO :288-379, PO :381-466, getPaymentAcct :728-783, getCashAcct :791-804), VAT tax correction (:469-490, :825-877,
+Doc_AllocationTax :1991-2210), inter-org (:564-620) and balanceAccounting (:1866-1890). FX gain/loss + rounding-correction LINES
+(:892-1535) are guarded: post only where Java adds no line, else a named refusal. DATA: the 3 GardenWorld `c_cash` rows (legacy
+extract, ids 100-102) via the generator (`build_dict_patch.py` c_cash → TABLES, `c_cash_id < 1000000`); Team BASE hash moved on
+purpose `a3eef3f5…`→`37134ec7…`, the 7 pins of #2463/#2476 moved. W-POST-ALLOCATION 5/5: #100 + #101 == legacy per schema ×
+account × side at 0c (incl. #101's 724 Cr 0.01), Posted=Y; 91 other docs byte-identical; patch idempotent; baseline + 2 mutants FAIL.
+**Open twin item (named):** #101's 724 rounding line — legacy's STORED AmtSource is 0.0, while Java's
+`createLine(null, loss, gain, as.getC_Currency_ID(), acctDifference.negate())` (Doc_AllocationHdr.java:1885) sets source = 0.01
+(ours). Accounted amount/side/account equal. Reconcile against the pilot (is the stored row from a code version that zeroes source?).
+**1c UNBLOCKED (2026-11-04):** the pilot IS reachable read-only via `docker exec -i postgres psql -U postgres -d idempiere_pilot`
+(the generator's own path) — 7,806 m_costhistory / 2,706 m_costdetail client-11 rows; extraction filtered to the seed's own
+documents is in progress (no code change).
+
+**§POSTING-PARITY item 1c ✅ DONE (witness) — 2026-11-04, bim-ootb #2597 (live erp sw v980). DATA only, no code change** — confirms
+the 1c diagnosis. From the pilot (read-only, `docker exec -i postgres psql … idempiere_pilot`): 84 `m_costdetail` rows tied to
+the seed's OWN document lines (all created 2026-06-21 = the GardenWorld costing; pilot test traffic excluded — note pilot detail
+ids are ≥ 1000000 even for the original costing, so the tie is by document line, not id) + 172 `m_costhistory` rows referencing
+them; generator TABLES + ROW_WHERE, only these statements spliced; unique index per table (seed DDL has no PK) for idempotency.
+Team BASE hash `37134ec7…`→`38ae6753…`, same 7 pins moved. W-SEED-COST-HISTORY 5/5: **42/42 client-11 documents with stored legacy
+facts now == legacy (baseline 38/42), none diverged**; newly equal: m_inout #100/#101/#108, m_matchinv #100 (742 Cr 70.00 +
+50017 Cr 30.00 in 101; 59.50 + 25.50 in 200000). `witness_acct_processor` rerun check aligned to legacy AcctProcessor
+`Posted IN ('N','d')` (AcctProcessor.java:161, :215 — E-status is not retried).
+**§POSTING-PARITY status:** 1a ✅ 1b ✅ 1c ✅ 1d ✅ (one named residual: #101 724 AmtSource 0.0 stored vs Java 0.01). **Next:** (2) the
+Posting-Preview renders `model_post` (one implementation) → (3) re-run parity client-filtered → (4) retire `doc_poster.derive*`
+(keep its plugin Doc-class registry; genesis.html's derivePostings call moves first).
+
+**§POSTING-PARITY steps 2+4 ✅ DONE (witness) — 2026-11-04, bim-ootb #2598 (live erp sw v981, `model_post.js?v=6`).** The
+Posting-Preview now runs the REAL poster in the model layer's rolled-back trx (`ModelPost.previewFacts`, `dbs.withTrx` →
+`__crud.withModelTrx`) — it shows exactly what Complete will write, refusals included. Baseline: the old doc_poster preview
+DIFFERED from real posting on 55/168 schema×document judgements (MatchInv 36, InOut 8, Payment 4, GLJournal 2, Inventory 2,
+Allocation 1) — i.e. users were shown entries that would not be written. W-PREVIEW-IS-POSTING 6/6 over 84 client-11 docs × 2
+schemas (preview == real post at 0c; no write leaks; deleted names unreferenced); baseline + 2 mutants FAIL. Retired
+`deriveMatchInv`/`_receiptLineAmt`, `deriveMatchPO`, `deriveGLJournal`, `deriveInventory` (doc_poster +3/−128).
+**Still on doc_poster by design (no model_post Doc class):** A_Asset_*, C_ProjectIssue, M_Requisition, C_Cash, derive-only
+plugin classes, the draft-order projection; and `genesis.html` (loads no model layer). **To retire the rest** (`deriveInvoice`,
+`deriveInOut`, `deriveMovement`, `deriveAllocation`, `deriveBankStatement`): migrate genesis.html, the witnesses that call them
+(sd16_engine_port, f9_cost_history, nc5bcd_gainloss, post_bankstatement B1b, rma_window_path, poc_install_*) and the four bim-compiler
+`--engine-dir` scripts to model_post first. Residual twin item: #101 724 AmtSource (see 1d).
+
+### §POSTING-PARITY residual #101 724 AmtSource — RE-MEASURED 2026-11-04: NOT a defect (misread of the Dr column)
+Pilot (read-only, `docker exec -i postgres psql -U postgres -d idempiere_pilot`), `fact_acct` ad_table_id=735 record_id=101:
+fact_acct_id 1000060, schema 200000, account 724, **AmtSourceDr 0.0 / AmtSourceCr 0.01**, AmtAcctCr 0.01, C_Currency_ID 102
+(the schema currency), no line_id. bim-ootb `erp/ad_seed.db` stores the same row identically (Dr 0.0 / Cr 0.01 / 102). So legacy ==
+Java `createLine(null, loss, gain, as.getC_Currency_ID(), acctDifference.negate())` (Doc_AllocationHdr.java:1885) — the "stored 0.0"
+in 1d was the Dr column. **Why it survived:** W-POST-ALLOCATION A1 compared AmtAcct only, so it was scope-blind to source amounts.
+**Spec — W-POST-ALLOCATION A5 (bim-ootb `erp/tests/witness_post_allocation.js`):** for each client-11 allocation with legacy facts,
+twin `fact_acct` CREATE ops == stored legacy per schema × account × side × C_Currency_ID on AmtSource (integer cents, maxDiff 0);
+`§WALC-A5` prints each key; the 724 key on #101 must read 200000:724:102:CR twin=1 legacy=1. Mutant `MUT=src0` (zero the source
+of the 724 line, accounted amount untouched) must FAIL A5 and leave A1 PASS — proving A5 sees what A1 cannot. No legacy facts → INCONCLUSIVE.
+**✅ DONE (witness) 2026-11-04 — bim-ootb `fix/alloc-source-witness`.** W-POST-ALLOCATION 6/6 PASS incl. A5 (`§WALC-A5 101 200000:724:102:CR
+twin=1 legacy=1`, 2 allocations judged); `MUT=src0` → A5 FAIL (`twin=0 legacy=1`) with A1-100/A1-101 PASS (A5 sees what A1 cannot);
+nocash / nodisc / GA_BASELINE FAIL. No poster change. **§POSTING-PARITY has no twin residual left.** Next: (2) retire the remaining
+`doc_poster.derive*` (genesis.html + 6 witnesses + 4 bim-compiler `--engine-dir` scripts move to model_post first).
+
+### §POSTING-PARITY step 5 — SPEC: retire doc_poster deriveInvoice / deriveInOut / deriveMovement / deriveAllocation / deriveBankStatement (2026-11-04)
+Law: AD-LAYER LAW #5 (one implementation per responsibility). These five are a second posting implementation beside `model_post`;
+the Preview already left them (#2598). Measured callers (bim-ootb origin/main 403aa8d6, `grep derive* | derivePostings`), each with what
+its claim must be re-proved on:
+| # | caller | uses | has model layer? | migration |
+|---|---|---|---|---|
+| 5a | `erp/tests/witness_rma_window_path.js` RW-BOOKS | derivePostings M_InOut / C_Invoice on the model-path db | YES (loads model_post) | judge the fact_acct the real Complete wrote (`ModelPost.previewFacts` for unposted) — same asserted amounts |
+| 5b | `erp/tests/witness_nc5bcd_gainloss.js` | derivePostings C_AllocationHdr (FX gain/loss) | check | model_post refuses FX gain/loss lines as "not ported" (:891) → the claim cannot move until Doc_AllocationHdr createPaymentGainLoss :1045-1135 is ported; port it, then move |
+| 5c | `erp/tests/witness_post_bankstatement.js` B1b | deriveBankStatement as a "no legacy oracle" comparator | YES | drop B1b (it compares the twin with the code being retired; it was never a PASS) |
+| 5d | `erp/tests/poc_install_persist.js`, `poc_install_idmp.js` | derivePostings in-browser after install | check | post via the page's model layer (idempiere.html loads it) |
+| 5e | `erp/tests/witness_sd16_engine_port.js` S5/S6, bim-compiler `scripts/poc_sd16.js --engine-dir` | deriveInOut / deriveInvoice on SYNTHETIC hand-built DBs | NO (no AD dictionary) | re-home the claims (return receipt at current cost, ARC mirror, draft-CM mirror, reversal skip, service line ignored) onto the seed via the model layer |
+| 5f | `erp/tests/witness_f9_cost_history.js` | deriveInOut / deriveMovement on synthetic DBs | NO | same as 5e (cost-history-as-of claims; model_post already reads MCost.getCostInfo as of DateAcct, #2597) |
+| 5g | `erp/genesis.html:166` (shipped page) | derivePostings C_Invoice on the born tenant | NO — the born DB has ~30 business tables, no ad_table/ad_column | the born tenant needs the dictionary rows model_layer reads (columnsOf); then the sample invoice is created + completed through the model layer and its fact_acct is what the page shows |
+| 5h | `erp/erp_preview.js:121` headless fallback | derivePostings when `window.ModelPost` absent | — | after 5a-5g: route these five tables to "model layer not loaded" (no data), keep derivePostings only for tables with no model_post class |
+Deletion budget: the five functions + their derivePostings branches + `convertToSchema` if unreferenced (~700 lines of doc_poster.js);
+`witness_preview_is_posting` P3/P4 DELETED/NEEDED lists updated in the same PR. Order: 5c → 5a → 5d → 5e/5f → 5b → 5g → 5h → delete.
+Each step: the moved witness PASSes on model_post with its original asserted values; a mutant of the model_post code it now judges FAILs it.
+**Step 5 — measured blocker (2026-11-04):** 5a moved `witness_rma_window_path` RW-BOOKS onto the fact_acct the real Complete wrote:
+RW-BOOKS-CM == legacy (Dr 758 100.00 / Dr 596 10.00 / Cr 518 110.00, model_post), but **RW-BOOKS-RECEIPT has no facts: model_post refuses
+every customer return receipt** (`§MODEL-POST m_inout posted=N reason="Doc_InOut MMR SO (customer return :452-675) — not ported"`,
+model_post.js:348) — a LIVE twin gap (returns are never posted in the app). On main the old doc_poster comparator also FAILED this
+check (47.50 vs the legacy-measured 140.00). Vendor return (MMS PO :922-1120) is refused the same way.
+**Spec 5a-port — Doc_InOut "Sales - Return" (Doc_InOut.java:451-675) into model_post's m_inout class:** per line, non-reversal: costs =
+getProductCosts(as, org, zeroCostsOK, "M_InOutLine_ID=?") (batch-lot: per MA, summed); zero ⇒ stocked → "No Costs for <name>" (NO
+zero-cost-detail exemption, unlike the shipment :240-250), service → skip. Reversal: costs 0, DR from the original via updateReverseLine;
+not found ⇒ service → drop DR + skip, else "Original Shipment/Receipt not posted yet"; costs = DR acct balance. DR P_Asset (costs), loc from
+locator / to BP location; cost detail = createShipment exactly as the shipment branch (MA split, sign rule, Ref_CostDetail); CR P_Cogs
+(costs), Org = order-line org, Qty = −qty, reversal CR via updateReverseLine(…, dr). Witness: RW-BOOKS-RECEIPT on the real fact_acct
+(value = what Java's cost lookup gives on the seed; if it is not the SD-16 140.00, the cost state is measured and the cause stated);
+W-PREVIEW/W-POST byte-identity on every other doc; mutant = DR/CR accounts swapped in the new branch must FAIL.
+**Step 5 progress ✅ (witness) 2026-11-04 — bim-ootb #2601 (sw v982, `model_post.js?v=7`):** **5a-port DONE** — model_post posts customer
+return receipts (Doc_InOut.java:451-675). **5a DONE** — W-RMA-WINDOW-PATH PASS 25/25 (`§RW_VERDICT PASS cases=25`; was INCONCLUSIVE since
+#2215 — the patch's 3 `ALTER TABLE ad_user ADD COLUMN salt…` always fail because the seed already has `Salt`/`PasswordHashAlgorithm`/
+`SaltAlgorithm`; now counted as already-satisfied, any other failure still setup-bad). RW-BOOKS on the real fact_acct: receipt `742 Dr 140 |
+430 Cr 140`, CM `518 Cr 110 | 596 Dr 10 | 758 Dr 100`; `LMV_BREAK=mmrswap` → RW-BOOKS-RECEIPT FAIL. Fixture: 70.00 set in m_cost AND
+m_costhistory (MCost.getCurrentCost :145-162 reads history first — since #2597 a bare m_cost update is invisible to legacy too → 47.50).
+**5c DONE** — W-POST-BANKSTATEMENT B1b = Java expectation (lineless statement → 0 facts), PASS 4/4, flip/notransit/BST_BASELINE FAIL.
+**Pre-existing, NOT caused here (same verdict on origin/main's model_post, logs read):** `witness_asi_batchrev` FAIL 3 (lot costs 337.50/67.50
+vs 100.00/28.00), `witness_post_error` FAIL 2/8 (shipment Posted=Y where E expected), `witness_post_invoice_diff` + `witness_post_matchinv_diff`
+INCONCLUSIVE, `witness_shopday_model_path` INCONCLUSIVE 1; `witness_post_movement_diff` >300 s (not judged). Cause not measured; the first
+two read like the same #2597 cost-history fixture staleness as RW-BOOKS — check that first.
+**Remaining step 5, in order:** 5d poc_install_* → 5e/5f sd16 + f9 synthetic witnesses (+ bim-compiler poc_sd16 --engine-dir) → 5b FX
+gain/loss port → 5g genesis.html (born DB has no ad_table/ad_column) → 5h → delete. Vendor return (MMS PO :922-1120) is still refused.
+**Step 5 progress (2026-11-04, cont.) ✅ (witness):** bim-ootb #2605 + #2606 —
+- **Bug fixed — draft invoices:** model_post THREW on every draft invoice (`C_DocType_ID 0` → `T.dt(0)` null → "reading docbasetype");
+  c_invoice / m_inout now read the type through `docTypeIdOf` = Doc.getC_DocType_ID (Doc.java:1911-1925, → C_DocTypeTarget_ID). The
+  Posting-Preview of a draft invoice works again (`model_post.js?v=8`, sw v985).
+- **5d ✅** install POCs §D judge `ModelPost.previewFacts`. The retired fold booked client-12 (Odoo) / client-13 invoices into GardenWorld's
+  schema 101 — a CROSS-TENANT booking; both shards carry NO C_AcctSchema for their client, legacy posts nothing (DocumentEngine.java:1445
+  getClientAcctSchema(doc client)) and so does the real poster (`posted=Y facts=0`). Other POC FAILs (P0 bare-boot tenants=7, A dialog persist)
+  identical on main — pre-existing, not judged here.
+- **5e ✅** W-RMA-WINDOW-PATH PASS 30/30: + RW-BOOKS-REVERSAL (original 140.00 sides swapped — the retired fold booked NOTHING "named absent
+  G-SD10"), COSTMOVE (cost 80 → 160.00), NOCOST (Posted E "No Costs for Azalea Bush"), SERVICE (no facts), DRAFTCM (mirrored; NEG ARI; nothing
+  committed). Mutants `LMV_BREAK=mmrswap` FAIL 3, `mmrstocked` FAIL 2, unfixed draft rule FAIL DRAFTCM. W-SD16-ENGINE-PORT drops its 11 fold book checks.
+  BIMCompiler `scripts/poc_sd16.js`: book checks gated on the module having `deriveInOut/deriveInvoice` — PASS plain / --engine-dir / a simulated
+  retired engine (S5 6, S6 8 judged, `§SD16U BOOKS-MOVED` names where they went).
+- **5f ✅** W-SEED-COSTHISTORY +H6 (history +0.01: shipment #100 3000→3001c, movement #100 every Dr leg +4c) +H7 (no history → m_cost 3737c), PASS 7/7;
+  W-F9-COSTHISTORY keeps only its cost-engine cases (PASS 10/10). **Two pre-existing FAILs fixed (same stale-fixture class as RW-BOOKS):**
+  W-POST-ERROR 8/8 (qty-0 pilot state set in m_cost only; MCost.getCostInfo reads history first → qty 50 → posted) and W-ASI-BATCHREV 13/13
+  (fixture kept product 133's ASI-0 seed history; MCostHistory.get :211 takes `ASI=? OR ASI=0` → lots priced 33.75).
+- **Named open gaps (real poster, not ported):** BackDateDay back-date cost RE-PROCESSING (DocManager.java:640-700; the fold only printed a named
+  refusal); vendor return receipt (Doc_InOut MMS PO :922-1120); FX gain/loss lines on allocations (5b).
+- **Pre-existing, noted:** `poc_review2_2026_10_11` / `poc_review_fix_2026_10_11` engine mode cannot load since bim-ootb #2585 deleted
+  `erp/pos_lens.js`; their plain mode (the compiler copy) is unaffected (review_fix PASS 8/8, review2 INCONCLUSIVE 1 as before).
+**Remaining:** 5b (port createPaymentGainLoss :1045-1135, then move W-NC5BCD-GAINLOSS) → 5g genesis.html → 5h → delete.
+**Step 5b — SPEC + measured state (2026-11-04):** W-NC5BCD-GAINLOSS had crashed in sql.js init in every checkout (npm loader + vendored
+wasm), so it never judged; fixed in bim-ootb #2608. Real state now: 24 judged — **C_AllocationHdr 8/8 == legacy** (V1 gain, V2 loss, V3
+control, V5 USD receipt for a EUR invoice × schemas 101/200000) via doc_poster.deriveAllocation's gain/loss; C_Invoice 8/8; **C_Payment 8
+FAIL** because #2598 deleted doc_poster's C_Payment branch (the crash hid it). The real poster (model_post Doc_AllocationHdr) still REFUSES
+these documents ("foreign-currency allocation realized gain/loss lines (createPaymentGainLoss :1045-1135)" — named, model_post.js ~:891).
+**Spec 5b:** port Doc_AllocationHdr.createInvoiceGainLoss (:892-1030) + createPaymentGainLoss (:1045-1135) into model_post's allocation
+class, following Java line by line and cross-checked against deriveAllocation's proven arithmetic (the fold that already == legacy 8/8).
+Re-home W-NC5BCD-GAINLOSS onto the seed through the model layer: per variant in `scripts/bridge/out/nc5bcd_legacy.json` build the EUR
+invoice / payment / allocation with the variant's rates and dates, post via the REAL poster, compare per (schema, account, DR, CR) in
+cents to the legacy facts — invoice, payment AND allocation. Mutant: drop the gain/loss line → V1/V2 FAIL; V3 (R1 == R2) books no RGL line.
+Then 5g genesis.html → 5h → delete deriveInvoice/deriveInOut/deriveMovement/deriveAllocation/deriveBankStatement (+ convertToSchema if unreferenced).
+**Step 5b ✅ DONE (witness) 2026-11-04 — bim-ootb #2618 (`model_post.js?v=9`, sw v991).** model_post Doc_AllocationHdr books the realized
+gain/loss line pairs where the (already ported) acctDifference is non-zero — createInvoiceGainLoss :973-1029 (incl. reversed-invoice gain=loss=acct
+and reversed-allocation arms, hasDebitTradeAmt) and createPaymentGainLoss :1113-1134 — in the schema currency on the allocation line, with Java's
+description. Before: refused "not ported — named", Posted=N in the app. W-NC5BCD-GAINLOSS re-homed onto the seed + real poster (invoice → receipt →
+allocation per legacy variant, each committed): **PASS 24/24 == legacy**; NEG V3 books no RGL; `LMV_BREAK=nogainloss` FAIL 4. Descriptions == legacy
+except the allocation-source scale (legacy `273.0`, SQLite REAL `273`). Not judged: the payment-side branch (no legacy variant has a payment diff);
+rounding corrections across several allocations of one invoice stay NAMED. Regression 20 witnesses: not-PASS identical on origin/main;
+`witness_asi_receipt` P1b is now FAIL on main too (date-dependent: its legacy rows carry dates up to "today"). **Next: 5g genesis.html → 5h → delete.**
+
+## §DD-SCOPE (2026-11-04, lead) — a legacy-correct WS type ignores our Filter; the parity check was scope-blind
+- **Measured.** On the pilot, `QueryMProduct` answers all 82 GardenWorld rows whatever Filter is sent (`M_Product_ID < 1000000` included). Its `Filter` parameter is Constant `1=1`. iDempiere ALLOWS ONLY Constant for a parameter named Filter: `MWebServicePara.beforeSave` refuses Free "for security" (`MWebServicePara.java:114-121`, IDEMPIERE-1784). `ModelADServiceImpl.validateParameter` (`:742`) then replaces the request's Filter with that constant.
+  - The CAPEX lane set 12 Query types to Constant on 2026-11-02 (bim-ootb `capex/tools/ws_capex_querykeys.sql`, #2558). That is legacy-correct and must NOT be reverted.
+  - The bridge's other **109 Query types still carry a Free Filter**. They were inserted by SQL past that rule, so the harness depends on a configuration legacy itself forbids.
+- **Effect.** `dict_spec.json` m_product's `keyBelow: 1000000` (pilot-created ids are not seed) never applied. The 27 pilot test rows ≥1000000 (24 "Ifc… (BIM)" CAPEX products + 3 `CP-`, all referenced by 306 CAPEX project lines) turned DD red as a "twin gap".
+  - Owner, 2026-11-04: leave them on the pilot; parity must stop counting them.
+- **Fix (`dict_diff.discover`).** Apply the scope the spec can judge on the rows returned: numeric key > 0, `keyBelow`, an `AD_Client_ID` equality or `IN (0,n)`.
+  - Log `§DD_SCOPE_CLIENT_SIDE <table> legacy_rows= out_of_scope= kept=` whenever the WS did not apply the Filter.
+  - A predicate that cannot be applied client-side is printed as `UNJUDGED_PREDICATE` (that table is INCONCLUSIVE).
+  - Result: DD m_product legacy=55 local=55 onlyLegacy=0 → `§DD_VERDICT PASS` (was FAIL onlyLegacy=27). The DDS / LF / SD00 verdicts are identical to master (logs `/tmp/ddscope_logs/`).
+- **OPEN (bridge lane).** Move the bridge's 109 Free-Filter types to the legacy-correct shape: a Constant Filter, with lookups by DataRow key fields (`WS_WebServiceFieldInput` → `col=?`, as the CAPEX lane did). Then every scope is applied by legacy itself.
+**Step 5 delete ✅ (witness) 2026-11-04 — bim-ootb #2620 (`doc_poster.js?v=5`, sw v992), −406 lines.** Retired deriveInOut / deriveMovement /
+deriveAllocation / deriveBankStatement + their now-unreferenced helpers (deriveSalesReturn, deriveReceipt, derivePayment, _apAllocLine, _orgOfLocator,
+_clientOf, _stockLineAmt, costQtyRefusal, _allocBalanceAccounting) and convertToSchema's allocation arms. W-PREVIEW-IS-POSTING P3/P4 updated, PASS 6/6
+(mutants + BASELINE FAIL); 21 posting witnesses + BIMCompiler poc_sd16 --engine-dir: verdicts unchanged. Genesis's sample invoice (genesis.html:131-171
+replayed in node on the trimmed doc_poster): DR 12110 109.00 / CR 41000 100.00 / CR 21610 9.00, balanced, RESULT=PASS. (`poc_genesis_wizard_live.js`
+times out at genesis.html's waitForFunction on origin/main too — pre-existing, not judged.)
+**Kept on doc_poster:** derivePostings for C_Invoice / C_Order (genesis.html + the draft-order projection), the asset / project-issue / requisition / cash
+classes (no model_post class), costQtyUpdates & co. (engine verbs; no shipped caller), the plugin Doc-class registry.
+**Named follow-ups:** (a) **5g ⛔ owner decision** — genesis.html's born tenant has no ad_table/ad_column (the model layer's dictionary), so moving its
+sample invoice to the real poster means either loading the seed dictionary into genesis or shipping a dictionary subset with it; until then
+deriveInvoice stays. (b) doc_poster.costQtyUpdates still treats a customer-return REVERSAL as "no cost" (G-SD10) while the real poster now books it
+from the original (Doc_InOut :522-537) — no shipped caller, so no user impact; align or retire with the engine verbs. (c) Pre-existing, seen in the
+regression: witness_asi_receipt P1b FAIL (date-dependent legacy rows), poc_preview_demo.js and two poc_* files do not load on origin/main either.
+
+### §POSTING-PARITY 5g — SPEC (owner 2026-11-04: "Ship a dictionary subset")
+genesis.html posts its sample invoice through the REAL poster, so doc_poster.deriveInvoice (+ derivePostings' C_Invoice/C_Order branches if
+nothing else needs them) can retire. **Data:** a GENERATED file `erp/genesis_dict.js` (`window.GENESIS_DICT`), written by a generator from the
+shipped `ad_seed.db` + `patches/ad_seed.db.sql` — never hand-edited: (1) the seed DDL of every table the real poster reads while posting the sample
+invoice, (2) their AD_Table / AD_Column rows (the model layer's dictionary: columnsOf / tableIdOf / newPO), (3) the client-0 SYSTEM rows the poster
+reads (e.g. c_currency, ad_ref_list), measured, not guessed. **The read-set is MEASURED:** post the sample invoice of a born tenant merged into the
+full seed with SQL logging on; every table touched and every client-0 row returned is the subset. **Page:** genesis.html builds a posting db = the
+subset DDL + dictionary + system rows, merges the born tenant (mergeGenesisInto, column-intersect), creates the sample invoice with the seed's
+columns, and shows `ModelPost.previewFacts` on a never-committed Trx (the same seam the Preview uses) — the §W-GENESIS-WIZARD-LIVE to-the-cent
+assertion unchanged (DR 12110 109.00 / CR 41000 100.00 / CR 21610 9.00). **Witness W-GENESIS-REAL-POSTER (node):** the page's own posting code
+path replayed; facts == the to-the-cent expectation AND == the same invoice posted on the FULL seed (subset loses nothing); generator idempotent
+(twice → same bytes); mutant: drop one dictionary table → FAIL. Then delete deriveInvoice & co. and re-run the 21-witness regression.
+**§POSTING-PARITY 5g ✅ DONE (witness) 2026-11-04 — bim-ootb #2622.** genesis.html posts its sample invoice through the REAL poster over the
+GENERATED `erp/genesis_dict.js` (generator `erp/patches/build_genesis_dict.js`: runs the page's own `Genesis.postSampleInvoice` on the full seed with
+every query logged → 47 tables' DDL, the AD_Table/AD_Column rows of the 7 tables the model layer asked about, fact_acct's AD_DDL_Default rows, the
+client-0 C_Currency row; 193 KB; deterministic, `--check`). **Live bug fixed on the way:** genesis.html had been broken in the browser since #2016
+(doc_poster.js needs layered_registry.js, never loaded → `RESULT=FAIL`); now W-GENESIS-WIZARD-LIVE 7/7, `post poster=model_post … toTheCent=true`,
+zero page errors. **W-GENESIS-REAL-POSTER** PASS 4/4 (page path to the cent; == the same invoice on the FULL seed; nothing committed; dictionary in
+sync); G5 INFO, measured: the dictionary rows are NOT load-bearing for this invoice (the model layer's fallbacks agree) — kept so genesis runs the app's
+code path; `MUT=notaxacct` FAIL. doc_poster's invoice fold deleted (−106; **step 5 total −512 lines**); derivePostings keeps only the classes model_post
+has none for + the draft-order projection. Regression 21 witnesses + poc_sd16 --engine-dir unchanged.
+**§POSTING-PARITY step 5 CLOSED.** Named, not fixed: (a) the born tenant has no AD_ClientInfo → its facts carry no C_Period_ID (legacy
+InitialClientSetup creates one); (b) `poc_genesis_resident_live.js` hard-codes 18 GardenWorld partners (seed has 24) and its static server cannot serve
+`../common/`; (c) from step 5: vendor return receipts, BackDateDay reprocessing, costQtyUpdates' G-SD10 rule.

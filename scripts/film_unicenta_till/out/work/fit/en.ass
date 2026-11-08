@@ -1,0 +1,51 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: F,DejaVu Sans,46,&H00B4F0FF,&H00FFFFFF,&H90000000,&H00000000,0,0,0,0,100,100,0,0,1,2.6,0,2,260,260,48,1
+Style: M,DejaVu Sans,46,&H00FFE6B4,&H00FFFFFF,&H90000000,&H00000000,0,0,0,0,100,100,0,0,1,2.6,0,2,260,260,48,1
+Style: Credit,DejaVu Sans,30,&H00DDDDDD,&H00FFFFFF,&H90000000,&H00000000,0,1,0,0,100,100,0,0,1,2,0,8,200,200,36,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:03.50,F,b0a#1,0,0,0,,Before we start: what did the owner build back in twenty twelve?
+Dialogue: 0,0:00:03.55,0:00:13.91,M,b0a#1,0,0,0,,A desktop till with its own database, a message broker in the middle, and an iDempiere server at head office. Each piece installed, and each piece kept running.
+Dialogue: 0,0:00:15.04,0:00:16.47,F,b0b#1,0,0,0,,And what is different now?
+Dialogue: 0,0:00:16.52,0:00:27.48,M,b0b#1,0,0,0,,The same till runs in a browser tab, and keeps working offline. It talks through a single plain relay, and head office is just a browser, or the original iDempiere.
+Dialogue: 0,0:00:32.21,0:00:34.10,F,b1a#1,0,0,0,,Is this really like uniCenta?
+Dialogue: 0,0:00:34.15,0:00:45.44,M,b1a#1,0,0,0,,A cashier signs in, picks Sales from the Register menu, and sees the sales screen they know. Twenty-five of twenty-five everyday uniCenta tasks pass the parity check.
+Dialogue: 0,0:00:46.58,0:00:47.92,F,b1b#1,0,0,0,,And ringing up a sale?
+Dialogue: 0,0:00:47.97,0:00:54.95,M,b1b#1,0,0,0,,Two rose bushes, a hoe and a patio chair, all by real clicks. Cash and card together, then the receipt.
+Dialogue: 0,0:00:58.08,0:01:00.97,F,b1c#1,0,0,0,,The picture catalog takes a lot of room, doesn't it?
+Dialogue: 0,0:01:01.02,0:01:05.34,M,b1c#1,0,0,0,,So it folds away with a single tap, and opens again when you need it.
+Dialogue: 0,0:01:10.08,0:01:11.50,F,b2a#1,0,0,0,,What about a restaurant?
+Dialogue: 0,0:01:11.55,0:01:20.41,M,b2a#1,0,0,0,,The floor map draws each table with its chairs. Open a table, add the order, press Send Order, and a card appears on the kitchen screen.
+Dialogue: 0,0:01:23.58,0:01:25.38,F,b2b#1,0,0,0,,How much traffic does that cost?
+Dialogue: 0,0:01:25.43,0:01:35.26,M,b2b#1,0,0,0,,Opening a table is a single write, and tapping items writes nothing. A delivered order takes thirty-eight relay requests, whether it has one line or eight.
+Dialogue: 0,0:01:35.13,0:01:36.56,F,b2b#1,0,0,0,,And when the cook is done?
+Dialogue: 0,0:01:36.61,0:01:42.44,M,b2b#1,0,0,0,,The cook bumps the card, the till shows it is ready, and a booked table is checked in the same way.
+Dialogue: 0,0:01:48.17,0:01:51.57,F,b3a#1,0,0,0,,Three tills, three closings. What does head office hear from them?
+Dialogue: 0,0:01:51.62,0:01:58.88,M,b3a#1,0,0,0,,Nothing while they sell: the tills send zero requests. At Close Cash each till hands its shift to the branch admin.
+Dialogue: 0,0:02:02.04,0:02:03.95,F,b3b#1,0,0,0,,So who does talk to head office?
+Dialogue: 0,0:02:04.00,0:02:14.08,M,b3b#1,0,0,0,,Only the admin, and only once. Its screen shows each till's ticket range and Z report, and the branch total equals the sum of the three Z reports.
+Dialogue: 0,0:02:19.83,0:02:21.74,F,b4a#1,0,0,0,,And at head office, the next morning?
+Dialogue: 0,0:02:21.79,0:02:29.68,M,b4a#1,0,0,0,,A single click on Branch Day Close. It imports the day's sales and runs the replenishment, in the same order the clerk would.
+Dialogue: 0,0:02:32.83,0:02:34.90,F,b4b#1,0,0,0,,How many steps did that used to take?
+Dialogue: 0,0:02:34.95,0:02:43.47,M,b4b#1,0,0,0,,Twenty-eight clicks across six screens. Now nine clicks on one screen. That count is read off the menu path, not from a recording.
+Dialogue: 0,0:02:43.34,0:02:44.44,F,b4b#1,0,0,0,,Same books?
+Dialogue: 0,0:02:44.49,0:02:57.26,M,b4b#1,0,0,0,,Row for row. In the checked test the difference from doing it step by step is zero, and a bill-of-materials item sold at the till takes its parts out of stock: six, twenty-four and fifteen hundred.
+Dialogue: 0,0:03:02.00,0:03:04.12,F,b5a#1,0,0,0,,How does a price change reach the tills?
+Dialogue: 0,0:03:04.17,0:03:12.72,M,b5a#1,0,0,0,,In the morning batch, and only what changed. One price edited at head office sends one row. The twenty-six others stay as they were.
+Dialogue: 0,0:03:15.88,0:03:17.27,F,b5b#1,0,0,0,,And receiving stock?
+Dialogue: 0,0:03:17.32,0:03:29.29,M,b5b#1,0,0,0,,Five were sent, three arrived, one was scrapped. The confirmation rides along with the next end-of-day send. Head office stock goes from twenty to fifteen, and the store from four to six.
+Dialogue: 0,0:03:35.04,0:03:37.64,F,b6#1,0,0,0,,Is any of this checked against real iDempiere?
+Dialogue: 0,0:03:37.69,0:03:54.16,M,b6#1,0,0,0,,Yes, we run both and compare. The replenishment movement, the move confirmation, the difference documents and the storage all match, four of four. That includes forty-two header columns and twenty-one line columns on the movement. The price stamp is not compared.
+Dialogue: 0,0:03:55.29,0:03:56.75,F,b7#1,0,0,0,,What is not built yet?
+Dialogue: 0,0:03:56.80,0:04:19.47,M,b7#1,0,0,0,,Four things. Legacy writes nine point zero in a text where we write nine, a difference we have not accepted and will fix on our side. The price-change timestamp could not be compared, because legacy's web service cannot edit that table. A pair of tills sharing a table over a real relay is not proven yet. And memory with all the pictures loaded is not measured.
+Dialogue: 0,0:04:20.62,0:04:22.11,F,b8#1,0,0,0,,Who is this built on?
+Dialogue: 0,0:04:22.16,0:04:45.77,M,b8#1,0,0,0,,The owner's own twenty twelve integration of Openbravo and uniCenta with iDempiere, done with Ghintech, is the prior art. The uniCenta layout and flow are followed, and no code or artwork is copied. Product pictures are Fluent Emoji, under the M.I.T. licence. The promise: the same operations, the same books, the same look as legacy, with nothing to install.
+Dialogue: 0,0:04:39.21,0:04:47.11,Credit,,0,0,0,,Voices: AI-generated (Kokoro, local)  ·  Script directed by red1

@@ -28,13 +28,13 @@ function emit(db, localRows, srcName) {
 // narrowed to one RECORD's entity by `by` (a FK path ending in the entity column, e.g. ["C_Invoice_ID","C_BPartner_ID"]): only the device bound to that entity (person_uu = its _uu) is addressed.
 function posPlanErrors(rows, compiled) {
   var errs = [], hubs = {}, src = {}; rows.forEach(function (r) { src[r.name] = r; });
-  rows.filter(function (r) { return r.isactive !== false && r.docaction && Number.isInteger(r.docaction.executor); }).forEach(function (r) { hubs[r.docaction.executor] = 1; });
+  rows.filter(function (r) { return r.isactive !== false && r.docaction && Number.isInteger(r.docaction.executor) && r.docaction.scope !== 'branch'; }).forEach(function (r) { hubs[r.docaction.executor] = 1; });   // §28.2: scope:'branch' = the DESTINATION branch role completes this document (legacy: the destination user completes the M_MovementConfirm); it is an executor, not the hub
   var hubList = Object.keys(hubs).map(Number), facts = compiled.plan.filter(function (f) { return f.treatment === 'FACT'; });
   if (facts.length && !hubList.length) errs.push({ code: 'no-hub' });
   if (hubList.length > 1) errs.push({ code: 'hub-ambiguous', roles: hubList });
   facts.forEach(function (f) {
     var r = src[f.name] || {}, cols = (f.payload || []).map(function (p) { return p.col.toLowerCase(); });
-    if (f.dir !== 'UP' && f.dir !== 'DOWN') errs.push({ code: 'dir-bad', row: f.name });
+    if (r.audience === 'branch' ? f.dir !== 'BOTH' : (f.dir !== 'UP' && f.dir !== 'DOWN')) errs.push({ code: 'dir-bad', row: f.name });      // a BRANCH row (audience of one branch Org: till + kitchen) is BOTH ways; every hub row is UP or DOWN
     if (!Number.isInteger(r.role)) errs.push({ code: 'role-missing', row: f.name });
     else if (hubList.indexOf(r.role) >= 0) errs.push({ code: 'hub-is-edge', row: f.name });
     if (r.by !== undefined) {
@@ -49,11 +49,12 @@ function emitPos(db, posRows, localRows, srcName) {
   var bad = r.plan.filter(function (f) { return f.error || (f.treatmentErrors || []).length; });
   if (r.virtualErrors.length || bad.length || r.planErrors.length) throw new Error('compile errors: ' + r.virtualErrors.concat(bad.map(function (f) { return f.name + ' ' + (f.error || f.treatmentErrors.join(',')); }), r.planErrors.map(function (e) { return e.code; })).slice(0, 5).join(' | '));
   var pe = posPlanErrors(rows, r); if (pe.length) throw new Error('pos plan errors: ' + pe.map(function (e) { return e.code + (e.row ? ' ' + e.row : ''); }).join(' | '));
-  var executors = {}, hub = null; r.plan.filter(function (f) { return f.docaction; }).forEach(function (f) { executors[String(f.table).toLowerCase()] = f.docaction.executor; hub = f.docaction.executor; });
+  var executors = {}, hub = null; r.plan.filter(function (f) { return f.docaction; }).forEach(function (f) { executors[String(f.table).toLowerCase()] = f.docaction.executor; if (f.docaction.scope !== 'branch') hub = f.docaction.executor; });
   var flows = r.plan.filter(function (f) { return f.treatment === 'FACT'; }).map(function (f) {
-    var x = src[f.name], o = { name: f.name, table: f.table, dir: f.dir, audience: 'hub', role: x.role, group: x.group, payload: f.payload.map(function (p) { return { col: p.col, cls: p.cls }; }) };
+    var x = src[f.name], o = { name: f.name, table: f.table, dir: f.dir, audience: x.audience === 'branch' ? 'branch' : 'hub', role: x.role, group: x.group, payload: f.payload.map(function (p) { return { col: p.col, cls: p.cls }; }) };
     o.ship = f.payload.map(function (p) { return p.col; }).concat((f.implicit || []).filter(function (c) { return /^AD_(Client|Org)_ID$/i.test(c); })).sort();      // what may leave the device: the carries + the partition (FL-1)
-    if (x.by) o.by = x.by.slice(); return o; });
+    if (x.by) o.by = x.by.slice();
+    if (x.executorOf) o.executorOf = String(x.executorOf).toLowerCase(); return o; });   // §28.2 P1: the UP row of a line table names the document whose executor it follows
   var local = r.plan.filter(function (f) { return f.treatment === 'LOCAL'; }).map(function (f) { return f.table; });
   var body = { v: 1, kind: 'pos', scope: 'hub-and-spoke', hub: hub, executors: executors, flows: flows, local: local };
   var plan = Object.assign({ hash: crypto.createHash('sha256').update(JSON.stringify(body)).digest('hex') }, body);

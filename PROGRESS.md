@@ -11,10 +11,28 @@ Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 **2026-10-28:** Team Phase 2.1-2.4 + 2.6 + G-1..G-3 DONE + LIVE (bim-ootb #2412, #2420, sw v923): observe-only plugin grant, core conflict message, numbering left the comm engine, Team OUT on the bus, received rows fire replica rules, legacy Import Orders port — W-POS-CHAIN 13/0 (a till ticket becomes ONE completed order at head office and returns). **Next session:** agents A–G per `prompts/TEAMWORK_FRAMEWORK.md` §41 (Import Payment, W-HQ-CLERK, role executors, G-6, Micro Finance on GardenWorld §40, I_POSSales); POS = standalone Unicenta-style till + kitchen, spec `prompts/POS_PLUGIN_LOCAL_FIRST.md`.
 
 ## 📋 The live worklist is `prompts/AGENT_QUEUE.md` — not this file
+## ▶ NEURO-SYMBOLIC lane (2026-11-09) — RESUME: `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` ▶ RESUME HERE, then **§19.0**
+**2026-11-08/09:** film "Think Global, Act Local" EN rc4 (`~/Videos/Think_Global_Act_Local_EN_rc4.mp4`, labelled scripted demo) · AI connector `bim_mcp.js` live (bim-ootb #2713, #2717; W-BIM-MCP 6/0) · `--lines` building frame (#2712) · guide: "Connect your AI" + "New to this?" (live, W-PROPOSER-GUIDE 16/0). **Next (§19.0):** a DSL to operate the Viewer by CLI first, then the Modeller: inventory the Viewer's actions (`_shortcuts`, 29 keys), one `verbs.json`, harmless verbs first.
+**Live:** the Modeller's red ink report (bim-ootb #2674), naming the limit and the bay (#2685), loaded on first use (#2699); the 3-axis move fix (#2685). **Outside calls:** `edit_cli` stops an edit that adds red, with the report and the reason (#2699, §15). **Public:** [AI Proposer Guide](https://red1oon.github.io/BIMCompiler/ProposerGuide/), the Hospital as test case. **No paid model calls** (owner, 2026-11-08): the runner refuses without a flag and rehearses by hand-off (§14.6). Last measured run (§14, before the stop): right outcome 15 of 30 alone, 24 of 30 with the report. **Done 2026-11-08:** a free hand-off rehearsal of the stop (§15.1, not a measurement); the contract consolidated, 598 to about 330 lines. **Nothing waiting on the owner.** Next, each needing a go: the Java `PlacementRequest` gate when outside orders arrive; `prompts/BROWSER_BOOT_WEIGHT.md`.
+
+## ▶ HYGIENE + POSTING-PARITY session (2026-11-03→04, closed) — RESUME HERE for this lane
+**2026-11-04 close (session 2):** posting parity step 5 CLOSED (above); Find window = legacy placement + layout, `prompts/ERP_IDEMPIERE_UX_PARITY.md`
+§FIND-LF ✅ (bim-ootb #2624, W-FIND-LF 9/9 vs a live-legacy oracle; open there: whole-app iceblue_c theme parity, ⋮ Default/Share, Advanced child-tab rows).
+**Next, in order:** (3) Modeller kernel_ops copy + boot assertion (KERNEL_TIMEBOMB T5); (4) Viewer memory B-items. Pre-existing FAILs seen, not fixed:
+witness_asi_receipt P1b (date-dependent), witness_view_window_first, witness_packout O6, poc_genesis_resident_live (18 vs 24 BPs; ../common not served).
+Docs review live (BIMCompiler #311/#312, `prompts/DOCS_REVIEW_2026-11.md`); code hygiene (`prompts/CODE_HYGIENE_REVIEW_2026-11.md`
+§3-§7: A1/A3/A4/D1/D2/C1/three.js/ERP dead UI + engine subset live); seam audit CLOSED (`prompts/SEAM_IDENTITY_AUDIT.md` PASS 2 +
+waves 1-3 + close-out); legacy posting parity (`prompts/SQLiteIDEMPIERE.md` END: §POSTING-PARITY 1a-1d + steps 2+4 live, bim-ootb
+#2593-#2598 — 42/42 seed docs == legacy, Preview == real posting). (1) alloc #101 724 residual CLOSED 2026-11-04 — not a defect
+(legacy stores Cr 0.01, the "0.0" was the Dr column; W-POST-ALLOCATION A5 now judges AmtSource). **Open, in order:**
+(2) retire doc_poster derive* ✅ CLOSED 2026-11-04 (`prompts/SQLiteIDEMPIERE.md` §POSTING-PARITY step 5 + 5g: −512 lines; customer returns, draft invoices, FX gain/loss and genesis.html now on the real poster; bim-ootb #2601-#2622); (3) Modeller kernel_ops copy + boot assertion (KERNEL_TIMEBOMB T5); (4) Viewer memory B-items. Lesson memory:
+`feedback_rerun_recorded_proofs_before_defect_claim`.
+## ▶ FILM "I vs AI" lane (2026-11-03, closed): 3 finished films in ~/Videos (EN 223 s · Malay v3 316 s · Mandarin 273 s); read `prompts/FILM_VS_AI_SLOP.md` ▶ RESUME HERE (rebuild commands, open items, lessons). Branch `film/vs-ai`; nobody has listened to the films yet.
 It carries §LIVE (which agent owns which files), the waves, the ⛔USER decisions, and the standing
 constraints. A session picking up work reads that; PROGRESS.md is state, not queue.
 
-## ▶ DXF2BIM lane (2026-10-30, session 12 closed): read bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` ▶ RESUME HERE (session 13). Done: BricsCAD film v2, datum Pick (§D94), heights read from dimensions (§D96), compliance checks name their code + coverage (T13), **Load Summary** report (§D97). Next: 5D rates by material from PWD SoR 2022 (ss.pwd.gov.bd), building type in exports (T13.5), UBBL/BNBC packs.
+## ▶ CAPEX lane — TWO TASKS (2026-11-03 end of session): read bim-ootb `prompts/CAPEX_DASHBOARD.md` ▶ RESUME HERE. TASK 1 the dashboard, rebuilt ground-up on our SQLite WASM framework (PA rows → SQLite PA engine → renderer → generic editor, §5.13; next G1 `erp/pa_engine.js`). TASK 2 the iDempiere plugin `org.idempiere.bimootb` = BIM → Project Order only (`prompts/BIM_OOTB_LEGACY_IDEMPIERE_INTEGRATION.md` §8–§8.9; clean-instance install + viewer push PASS; next B3 the BIM tab in ZK). Sysnova PM: their dashboard is still a prototype → we proceed with ours.
+## ▶ DXF2BIM lane (2026-11-03, session 18 closed): read bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` ▶ RESUME HERE (session 19). Done: P-X one converter (#2520: a raw IFC opened in the Modeller = the shared extractor → the residents' DB, W-IFC-OPEN-ONE), P-X2 element-level rel_aggregates (#2522), U8 W-VIEWERDB refreshed + in the runner (#2525), release check 49 authoring witnesses 44/4 pre-existing/1 ENV (#2536). Modeller items handed to MODELLER_MASTER (M-1..M-4, RC-1..4). Runner 109/9/1 of 119 (LT7). NEXT: owner picks among the open proposals (P-W1, P-K, P-V, P-E, P-L …), then the carried list (LT7 first).
 ## ▶ FRIENDLY-OPS + LIBERO lane (2026-10-22, session 9 CLOSED): distribution lane closed (Doc_Movement #2254, MMovementConfirm #2252, Replenish Report #2266, MInventory+Doc_Inventory #2274); new ASI lane AS-1..8 merged. RESUME: prompts/ERP_FRIENDLY_OPS_LENS.md §68 + prompts/ERP_PRODUCT_ATTRIBUTE_ASI.md §9.
 ## ▶ DEPTH lane (2026-10-13): cycle 1 DONE + merged (bim-ootb #1988; 10 SQLite-lane gaps repaired, 3 witnesses green, 4 films EN+TH). NEXT = §NEWCLIENT-DEPTH — read `prompts/ERP_DEPTH_FILM.md` ▶ RESUME HERE.
 ## ▶ DEPTH cycle 2 §NEWCLIENT-DEPTH (2026-10-13): NC-1..NC-4, NC-5a, NC-6/7/8, NC-9 (window access + new role) DONE vs LEGACY-MEASURED; PRs #1989-#1995 merged; W-MODEL-ORACLE re-run UNCONFIRMED (timeouts) - see RESUME HERE. Window sweep 204 of 332 OK. NEXT: re-run NC-10/11/12 on the new code, film chapters, MUser/new-role login — read `prompts/ERP_DEPTH_FILM.md` ▶ RESUME HERE.
@@ -33,224 +51,12 @@ constraints. A session picking up work reads that; PROGRESS.md is state, not que
 - **Dubai paper** (outside repo): `~/Projects/Dubai/OpenBIM_Paper.docx` = IEEE format, conformed to abstract v4; log in `~/Projects/Dubai/PROMPT.md`.
 - ⛔ user call: 4 zero-byte DBs in bim-ootb/buildings (`city_index`, `city_index_v2`, `Duplex_meta`, `SampleCastle_extracted`).
 
-## Modeller lane — 2026-10-02 close: read `prompts/MODELLER_MASTER.md` §RESUME 2026-10-02 (START HERE).
+## Modeller lane — 2026-11-03: read `prompts/MODELLER_MASTER.md` §RESUME 2026-11-02 (START HERE). Done 2026-11-02: M-1 Walk ALL on an IFC open (bim-ootb #2526), M-3 walked shed reaches the Viewer with every class (#2527, #2531), M-4 Walk ALL skips present disciplines (#2535), red1's roof/stairs question answered, M-2 measured. NEXT: RC-1..RC-4 (pre-existing reds), export carries no colour/psets/storey for carried rows, then the §RESUME 2026-10-02 queue.
 
-## Current State — 2026-10-31 (ERP Team lane) — ⚠ RESUME HERE: `prompts/TEAMWORK_FRAMEWORK.md` ▶ RESUME HERE — 2026-10-31 (top of file)
-LIVE bim-ootb main (sw v946): local numbering + station Search Keys (#2459/#2463), Seatbelt (#2466), GOVERNANCE.md + quality-objectives page (#2467), versioning Stages 2-4 (#2473-#2475), F1 per-device mailboxes (#2477: edge Visit #1 384-388 B flat in N). Terms runner = **12 enforced / 1 open** (sealing-real), browser judged 5/0. Film §49 EN v2 `~/Videos/Terms_You_Can_Check_EN_v2.mp4` (Thai dropped for now). Owner decided 2026-10-31: recovery key = owner offline apart; time-anchor button kept + confirm; Plugins-panel installs allowed but marked unsigned; per-mailbox sequence built with sealing. **Next:** time-anchor confirm + unsigned badge (small) → sealing in the real layer (§29) + per-mailbox sequence · real POS fixture to re-run pos_plan/team_floor/pos_chain on F1 · checkpointed roster snapshot (identity floor).
+## Current State — 2026-11-03 (ERP Team lane) — ⚠ RESUME HERE: `prompts/TEAMWORK_FRAMEWORK.md` ▶ RESUME HERE (2026-11-03 close)
+LIVE on bim-ootb main: §52.1 resume-as-it-was (#2519, W-RESUME-AS-IT-WAS 7/0, sw v960) · §45.14a per-request retry in ghPipe (#2521, 100 users 96/96 on lossy links, erp sw v961, modeller sw v205) · §S-SCHEMASET twin posting uses legacy's schema set (#2523, O2C 6/6 MATCH). MEASURED: §45.14 SME-100 (10→100 users over shaped links, fitted, cliffs: one shared GitHub account 10–17 users, one per person ≈ 520–585 — head office is the limit) · §45.15b apple-for-apple vs legacy (median of 3, twin on SQLite WASM: ≥ 1.1 s vs 0.03 s per document on mobile data). FILM recorded: `~/Videos/Network_ERP_without_an_Apps_and_Database_server_EN_rc7.mp4` + `…_ZH_rc2.mp4` (scripts/film_network_erp/, guard PASS). NEXT: see TEAMWORK ▶ RESUME HERE.
 
-## Current State — 2026-09-08 (session 2, take-over close) — ⚠ RESUME HERE: §36 W1–W6 ✅, W7 bakes gated; PR #1697 MERGED (Measure live), PR for feat/measure-indoor pending
-**Lane:** `prompts/MEP_CLASH_REVEAL_MOVIE.md` — read **§36 (worklist, all rows ✅ but W7)**, then §29.9, §37.4, §26.14, §33.
-bim-ootb: `main` carries PR #1697 (Measure checkbox + datum + slab/linear beats + opening gate, sw v1166, LIVE);
-branch `feat/measure-indoor` (= squashed main + W5 + W6, sw v1168) pushed, PR to open/merge next. Spec branch `fable/meshdb-livewire`.
+## Older states (2026-09-02 … 2026-09-08, incl. ⛔ OPEN + standing constraints of 2026-09-02/03) — moved verbatim to `prompts/archive/PROGRESS_DONE_ARCHIVE_pre_2026-11-03.md` (2026-11-03)
 
-**DONE this session (each with its §-witness, logs `/tmp/wt-storey-reveal/out/`):** W1 datum decide-once + §20.8 entry latch + drop
-ledger + cue span lock (`witness_datum_stability.js` 8/8 ×2) · W2 envelope = one connected structural component, measured, no
-code · W3 gate rebuilds the datum after Home · W4 §27 linear beat (`witness_linear_beat.js` 12/12 ×2; §14 across layers) · W5 §29
-indoor beats — hall bounded at doors, stair going, door type, clear height (`witness_indoor_beats.js` 11/11 ×2) + **the datum's Z
-anchor fix (Hospital storey rules were 9.2 m low)** · W6 storey cards carry walkable m² + the datum's second life over the finished
-building (`witness_storey_walkable_card.js` 6/6 ×2, `--life2` 8/8 ×2).
-
-**⛔ NEXT — read `prompts/MEP_CLASH_REVEAL_MOVIE.md` §38 FIRST (user's two observations on the full film: plate-tint flicker + missing area info box at 9 s; the fly-out canvas unmeasured — wing spans, roof-edge-to-sill).** Then: (1) PR #1699 MERGED (W5+W6 live, sw v1168) — nothing to merge. (2) W7 remaining bakes, user's go only: Hospital full 720p ✅ done (§37.5, film in Downloads); HHS full with `--buildup --reveal --label`; Hospital 1080p. (3) User rulings pending: Hospital
-opening datum now ends at 10.75 s (roof line) — keep or add "one storey below the roof"; HHS path skims the floor at 0.04 m and
-has a 7 s dive (path injection, §27g). (4) The 90–148 s pull-back is Measure-silent on Hospital, stated in §37.4.
-
-**Witness count:** +5 files this session (slab, linear, indoor, datum stability, storey walkable card); gate witness 0 FAIL.
-
-## Current State — 2026-09-06 (session 3, final close) — ⚠ RESUME HERE: full bake confirmed, §PENDING.5 open, parallel session active
-
-**Full 195.8s film bake CONFIRMED** (`Hospital_FULL_allsystems_2026-09-06.mp4`, ~/Downloads, 231 MB):
-4,699/4,699 frames, 93.8 min wall clock, `fileOk=true` — every feature below shipped together in one real
-run. Two shorter verification bakes (fresh profile, 20-30s and 82-92s clips) ran first and matched
-prediction exactly: pre-topout elevation 50.0°→47.5° (original linear, unchanged), post-topout elevation
-34.5°→32.0° (also original linear — revert holds throughout), `plScale` 0.8629→1.0000, `poolSum`
-260.08→400.0 (genuinely double the old fixed-0.5 baseline, same fixture count). `docs/BIMUserGuide.md`
-updated: documented the (pre-existing, previously undocumented) Clash pairs checkbox + Silent-bake size
-selector, added `--clash` to the CLI table, added today's real full-bake timing.
-
-**New, untouched — `§PENDING.5` in `prompts/MEP_CLASH_REVEAL_MOVIE.md`:** user watched the full film,
-reports the HUD rotation left out Measure and Clash stats. Clash card exists in code and should have
-fired (`--clash` was on, 270 pairs built) — next session checks `§CPE_BIG_STATS` in this bake's own log
-to settle built-vs-shown before touching anything. No "Measure" HUD card exists at all — ask the user what
-they mean before building one.
-
-**A parallel Sonnet session is independently working `§PENDING` items 1-4** in `/tmp/wt-clash-pending`
-(items 2/3/4: clash-list depth display, cross-caller pair cache, tolerance-editor gear icon — coded,
-read-verified real by this session, not yet PR'd) and `/tmp/wt-storey-reveal` (`§STOREY_HIGHLIGHT_REVEAL`,
-status unknown to this session). Item 1 (bake-time estimates for 720p/1440p) was blocked on GPU
-availability while this session's full bake ran — GPU is free now. **Next session: check that session's
-current status first**, both worktrees are real and not this session's to touch.
-
-## Current State — 2026-09-06 (session 3, close) — ⚠ RESUME HERE: sun REVERTED (#1691), #1690 MERGED, clash lane CLOSED
-
-bim-ootb `main` = `5daec9e0`, sw **v1155**. Today's chain, all merged: `#1686` label 3-row + clash card ·
-`#1688` mesh-true overlap depth · `#1689` overlap-box marker + flat filter · `#1691` **revert** of the sun
-snap (`#1685`, wrong starting spec — the linear 55°→6° crawl was always right) · `#1690` post-topout
-fixtures 0.5 → 1.0 (the indoor-liveliness candidate, user: "use your own judgment" → pushed through).
-Witnesses on the merged tree: sun-linear 4/4, PL-topout 8/8. Worktrees pruned, nothing unpushed.
-- **Clash-film lane CLOSED** — further clash work (mesh-shape refinement, §TOUCH_BY_THICKNESS ⛔USER)
-  goes to a separate session; do not re-open it from sun/indoor work.
-- **Next bake** (user's call, fresh `--profile`): 82–92 s on `main` ≥ `5daec9e0` shows everything together.
-- Pre-existing, untouched: `tools.js` `(A._nightPLScale || 1)` cannot express a 0 scale; narrowphase
-  witness S7b/I1/I3 red on main.
-
-## Current State — 2026-09-06 (session 3, latest) — mid-session (superseded above)
-
-**User correction (relayed to and scolded at the other session):** the sun-arc "topout snap" (#1685) was a
-wrong starting spec — the linear 55°→6° crawl was always correct. **Reverted by hand** on bim-ootb
-`revert/sun-arc-topout-snap` (PR opened with auto-merge; witness `witness_sun_arc_linear.js` 4/4: 34.47° at
-u=0.419, one-argument call site). `TOPOUT_SNAP_EASE_U` + `_revealU` kept (the Reveal round and #1690 use
-them). Spec §SUN_ARC_TOPOUT_SNAP carries a ⛔ REVERTED line — history, not live.
-**Clash-film lane (#1686/#1688/#1689) is CLOSED — do not re-open or re-verify it from the sun/indoor task;**
-hand any further clash work (mesh-shape refinement, §TOUCH_BY_THICKNESS) to a separate session.
-**Indoor liveliness = the real ask.** #1690 (§PL_TOPOUT_UNPIN, fixtures 0.5 → 1.0 post-topout, witnessed 8/8)
-is the built candidate and does not depend on the sun code; being synced onto the reverted main and pushed
-through as the cheapest path. The `tools.js` `(A._nightPLScale || 1)` finding is NOT relevant to liveliness
-(it only affects a 0 scale) — left alone.
-
-## Current State — 2026-09-06 (session 3, later) — earlier: 4 PRs merged, #1690 opened
-
-**User relayed a Sonnet review with advice on the three open items; taken as the go for 1 and 3, 2 built
-as a separate non-auto-merged PR** (its "dim the fill" advice named no sourced value; the sourced lever
-is `plScale` 0.5 → 1.0). Detail: `prompts/MEP_CLASH_REVEAL_MOVIE.md` "The three follow-ons — MEASURED".
-- **`#1689` MERGED** (sw v1153) — `§CLASH_MARKER_OVERLAP_BOX`: each marker is the oriented box of the
-  real overlap solid, red/blue halves; markers W11 270/270 matched. `§CLASH_FILM_FLAT_FILTER` (Option 3):
-  the film drops flat overlaps, 271 → 270, card says "1 flat touch dropped". Verdicts untouched.
-- **`#1690` OPEN, NOT auto-merged — ⛔USER take/leave** (sw v1154) — `§PL_TOPOUT_UNPIN`: past topout the
-  bake's fixtures ease 0.5 → 1.0 (nav Night Mode's tuned value) over the sun's own window; pre-topout
-  byte-identical. Witness 8/8 on real staging (poolSum 200 → 400). If taken: merge, then a fresh-profile
-  82–92 s clip on `main` shows all four of today's features together.
-- Pre-existing finding: `tools.js` `(A._nightPLScale || 1)` cannot express a 0 scale (poolSum 400 at 0).
-
-## Current State — 2026-09-06 (session 3) — earlier today (#1685 verified, #1686 + #1688 merged, ⛔USER §TOUCH_BY_THICKNESS)
-
-**Done this session, all witnessed, detail in `prompts/MEP_CLASH_REVEAL_MOVIE.md` (three new dated sections at the end):**
-- **`§SUN_ARC_TOPOUT_SNAP` VERIFIED** on a fresh Chrome profile (`--profile /tmp/silent-bake-fresh-<epoch>`) —
-  elevation 14.5° at u=0.419, 6.0° from u=0.441, held to the clip end; last night's "still 34.5" was the
-  stale-SW trap exactly as suspected. `#1685` was already merged. Clip `~/Downloads/cll/Hospital_topout_snap_verify_clip82-92s_2026-09-06.mp4`.
-- **`#1686` MERGED** — `§P2.4` label 3rd row `[tol mm / clash mm]` + `§CLASH_HUD_CARD` "271 mesh-true clashes
-  flagged · 1,478 bbox candidates · 81.7% false". Labels witness 15 → 19 claims (P9a/P9b/H0/H1). sw v1151.
-- **`#1688` MERGED (`273e1c59`, both checks green)** — `§MESH_OVERLAP_DEPTH`: the exact box of the overlap solid on every
-  mesh-true pair (`depthMeshM`, `overlapMaxM`, `overlapA/B`, `overlapCenter`, `overlapExact`, `overlapFlat`);
-  the label now reads the mesh figure — the shown pair is `[50mm / 50mm]`, the OBB proxy said 344 mm. Hospital:
-  SAT overstated by a median 2.78×, ≥3× on 3,185 of 6,749 pairs, worst 600×. Verdicts UNCHANGED. New I6 green
-  on both buildings, red on main. sw v1152.
-
-**⛔USER `§TOUCH_BY_THICKNESS`** (spec, end of the MEASURED section): make a flat overlap (< 1 mm thick) a
-touch instead of a clash? Fixes S7b (RED on main today) and drops 752 Terminal / 37 Hospital / 1 film pairs —
-but the witness oracle cannot judge multi-shell IFC meshes (3 formulations tried, each disagreed on ~200
-pairs where the geometry shows real overlap). Options 1/2/3 listed there. Built, measured, reverted to
-annotation-only pending the call.
-
-**Pre-existing RED on main, now recorded (not from this session's code):** narrowphase witness S7b
-(face-to-face cubes → CLASH), I3 n=223 Terminal / 326 Hospital, I1 n=2 Terminal — one hole: a coplanar-edge
-contact yields edge-length intersection segments, so "segment > 1 mm" ≠ interpenetration.
-
-**Still open from before:** PL "real play" post-topout is a design lever (`§BAKE_FILL_PIN` pins ambient/hemi/
-PL regardless of sun elevation; at 6° the sun 4.4 + hemi 0.617 still dwarf a 200-fixture pool ≈ 1.0 each) — ⛔USER,
-not more measurement. The real-overlap MARKER shape (oriented box from `overlapCenter`+`overlapA`) is a
-`clash_film.js`-only change now that the data exists — waits for a go since it changes the film's look.
-
-**Trap, still live:** `cli_silent_bake.js` reuses `/tmp/silent-bake-profile-<port>` across runs and its
-`sw=` env line is read off the file on disk, not the active service worker — pass a fresh `--profile` on any
-verification bake.
-
-## Previous 2026-09-06 sessions — ARCHIVED into `prompts/MEP_CLASH_REVEAL_MOVIE.md` "Step 4 — CLOSED 2026-09-06"
-GPU driver fixed (Secure Boot MOK); 5 PRs merged (`#1676/#1678/#1679/#1684/#1683`), revert tag
-`pre-clash-pl-merge-2026-09-06` on `04e3dee2`; `#1681/#1682` merged earlier; eslint.globals.json fix.
-
-## Current State — 2026-09-04 (later)
-
-### ERP lane — `§C2.3` DRAINED TO ZERO: all five ranked items closed, 4 PRs merged, sw v792
-bim-ootb **#1669 · #1672 · #1673 · #1675**, every one CI-green. Three new witnesses, each RED on plain
-`origin/main` first: `W-CALLOUT-CAMPAIGN` **29/0** (was 9 PASS / 20 FAIL) · `W-ADFORM-TRXMATERIAL`
-**19/0** (was INCONCLUSIVE) · `W-AGENT-ZIP-SYNC` **11/0** (was 1 FAIL).
-- **E-1, the callout campaign** #1669 — live dispatch on the nine O2C/P2P tables **3 → 51 of 78
-  bindings**. The 3 is not a typo: **nothing had ever called `AdCallout.installDefaultHandlers()`**, so
-  six engine line callouts had never fired in a browser and `§IC.3`'s "28 = 36%" counted a paper
-  registry. Nine new atoms incl. all five `CalloutPayment.*`, with `invoiceopen`/`invoicediscount`/
-  `paymenttermdiscount` ported from the PL/pgSQL. → `AGENT_QUEUE.md` §CALLOUT-CAMPAIGN
-- **Form #2 of 49** #1672 — AD_Form 103 `VTrxMaterial`, read face of the `M_Transaction` ledger.
-  → §ADFORM-TRXMATERIAL
-- **Four stale live witnesses** #1673 — all GREEN, **none a product defect**; three named the wrong
-  thing. Surfaced a CLASS: **12 more default to a `/tmp/wt-*` worktree that is GONE**. → §STALE-WITNESSES §SW.2
-- **The last two tracked binaries** #1675 — `preview_demo.db` built from its own `.dump`; both
-  `*_agent.zip` built by `deploy-pages.yml`. Found a live defect: **`odoo_agent.zip` shipped without
-  `odoo_agent/extract_model.js`**. → §PREVIEW-DEMO-FROM-SQL · §AGENT-ZIPS-BUILT
-- **`§AZ.3` answered** #1677 — `idempiere_agent.zip` nests. Not cosmetic: `about_diy.js:199` had always
-  printed `cd idempiere_agent && …` while the zip put the files at the ROOT, so the command the app
-  prints could not run. New claim `E1` checks the offer's `cd <name>` against the zip's top level.
-- 🔴 **`§PAGES-SERVES-THE-BRANCH`** #1680 — **READ IT FIRST NEXT SESSION.** Pages here is
-  `build_type: legacy`, source `{branch: main, path: /}`: it serves the **tracked files on `main`**, and
-  the artifact `deploy-pages.yml` uploads is **published by nothing**. Untracking the zips in #1675
-  404'd both live downloads; `erp/version.json` has been 404 since it was introduced; the minify step
-  (claimed **−36.9% gz**) has never reached a user. Zips re-tracked, `W-AGENT-ZIP-SYNC` **15/0** with a
-  new `A0a` (*the zip is PRESENT*). **Verified by `curl`, not inferred:** both `200`, both extract to
-  their own folder, `diff -r` clean. **Standing rule: a deploy is not verified by a green workflow —
-  fetch the URL.**
-**⛔ Next** (nothing on `§C2.3` remains): the 12-witness stale-root class (`§SW.2`) · the 27 callout
-bindings still undispatched (`§CC.7`; four are `navigate*` atoms that should leave the denominator,
-not be ported) · 47 of 49 forms with no renderer · **⛔USER `§PZ.3`: switch Pages to
-`build_type: workflow`?** (it would make version.json + minification live for the first time, and make
-the site stop updating whenever the workflow fails). Full restart brief: `AGENT_QUEUE.md` §RESTART.
-
-## Previous State — 2026-09-04 (earlier) — ARCHIVED to its spec section
-
-### ERP lane — `§CLOSE.4`'s five open items closed, bim-ootb #1661-#1666, sw v789.
-Six witnesses (`W-KIND2-READBACK` · `W-DICT-LAZY` 10/10 · `W-INOUT-CALLOUT-ATOMS` 9/9 ·
-`W-ADFORM-VMATCH` 16/16 · `§DIGEST` 46 rows), five defects nobody asked for, three stale hygiene
-premises. Full detail: `prompts/AGENT_QUEUE.md` §ERP-SESSION-CLOSE-2. **Its ⛔ list (§C2.3) is
-DRAINED — see the block above.** Two of its numbers did not survive re-measurement: the
-"37-binding gap" was 50, and the "36% dispatch" was really 4% live.
-
-## Previous State — 2026-09-03
-
-### ERP lane, 2026-09-02/03 — 5 PRs, sw v777 (superseded above; full detail `prompts/AGENT_QUEUE.md` §ERP-SESSION-CLOSE)
-The five document windows render their own AD tab (c_order 8→56 fields, c_payment 4→78, DisplayLogic
-0→28/61, val-rule-filtered FK pickers); three shipped defects found by the new instruments; `W-ERP-TWIN`,
-`W-MULTIHOST-SYNC` and `W-RELAY-AUTH` became standing gates. Its ⛔ list is settled: `W-SCALE-FORECAST`'s
-0.8× batch was fixed at #1638 (3.53× median) and `W-AD-DISPLAYLOGIC-LIVE` was a stale witness, not a
-product failure. **S-2 (no relay deployed) is still the real barrier to multi-writer, not S-1.**
-
-### 4D / viewer lane — 23 PRs merged 2026-09-02/03, release v1.58.0 — DONE, detail in the spec docs
-`§TM_REVEAL_TILED` #1605 (dead air 44-71% → **0.0%**) · `§CACHE_PLAYED_LAYER` #1607 · DAY-0
-`PASS=5 FAIL=8` → **`PASS=8 FAIL=5`** #1551/#1615/#1625 (all 8 attributed; the "regression" premise
-retired) · `§SUN_FILL_RATIO` #1622 (1.0453 → **0.2388**) · `§MEP_COLOR_SURVIVES_PHOTOREAL` #1621
-(40,634 colourless MEP → 0) · `§DUCT_SILHOUETTE` #1631 (21.3 → **3.4 mm**) · `§CPE_AIM_DEPTH` RETIRED
-#1619 (90.657° → **0.000°**) · B-2 support consolidation #1627-#1630 (**keep the AND**) · 5D constants
-→ JSON #1616 · nine vacuous `§` tags guarded #1608.
-→ `prompts/4D_GANTT_TM_REFACTOR.md` · `4D_MODEL_INTEGRITY.md` · `PHOTOREAL_STILL_RENDER.md` ·
-`CINEMA_DISCIPLINE_REVEAL.md` · `CINEMA_PATH_EDITOR.md`
-⚠ **Clinic landing:** local/live `SYSNOVA/index.html` still diverge 105 lines both ways — do NOT
-upload wholesale.
-
-## ⛔ OPEN
-- **Interior lighting / liveliness** — running. **"Lively" is variance, not brightness** (user: *"it
-  should be lively, so far it has never been though lighting has been bright"*). Measured on two real
-  bakes bracketing #1622: CV **0.344 → 0.430**, spread 42.9 → 59.1 — but the **bright register
-  drained** (brightest fifth 140.7 → 79.2). Lead: *the still's near-field boost never fires.*
-- **§Z.3 Clinic ground-slab appears late, then persists on scrub-back** — untouched; two named hypotheses in `LTU_TERMINAL_CLINIC_RENDER_CORRUPTION.md` §Z.
-- **A-28 §CPE_REVEAL_ARCH_HOLD overshoot (TOP of the queue, user-set 2026-09-03)** — #1633 shipped, user
-  sees the ARCH strip at the LAST stick of round 2, not the first. **Suspect 1 (two reveal clocks) is
-  DISPROVEN by code read:** `beats.flyback` IS `tF` (`effects.js:8656`/`:7624`) and both callers pass the
-  same film fraction (`cinema_maxq.js:1511`, `cinema_path_editor.js:2532`). Next: `_flyBackPose` direction,
-  then whether `cpeRevealApplyVisual`'s write survives the per-frame staging rebuild. Detail in `AGENT_QUEUE.md` A-28.
-- **§FILM_UNSUPPORTED** — not started; take the short `--frames` re-scope, not a full bake.
-- **§LIGHT_SHAFT (D-5)** — specced, queued behind the lighting lane (shares `effects.js`).
-- ⛔USER decisions (12 open) in `AGENT_QUEUE.md`: calibration lever (Hospital 318→940 d), LFS 8.53 GB pay-vs-rewrite, sub-element slab splitting, Terminal's 673 `Ceiling Level NN` elements.
-
-## Standing constraints added 2026-09-02/03
-- **Bakes are a proven, expensive facility, NOT a measurement tool.** Never launch a film to settle a number — ask first. Keep every `§` line on the bake path intact.
-- **4D generation is building-independent.** No per-building constants or name-branching. Audited clean:
-  every building name in the scheduling files sits in a comment; the only non-comment hits are the IFC
-  classes `IfcFlowTerminal`/`IfcAirTerminal`/`IfcFireSuppressionTerminal`.
-- **DBs stay on OCI, GH Pages serves the app.** Settled: GitHub hard-rejects any file >100 MB; every major DB exceeds it.
-- **A witness's own harness is a suspect before the product is.** Four red live witnesses this session
-  (`§STALE-WITNESSES`): every one was the instrument, and three printed an error naming a DOM node or a
-  business gate while the PAGE was logging the real cause. Read the page log, not the harness verdict.
-- **Beware checks that cannot fail.** Five now: `eslint | tail` returning tail's exit code, a witness
-  reading its own comment block, a 0-byte log from a buffered `page.evaluate`, a `(none above = clean)`
-  line printed unconditionally — and A-28's 6/6-green witness that never judged a caller.
-
-## Older session log
-Archived to `prompts/archive/PROGRESS_sessions_archived_2026-09-01.md` (2026-08-29 → 2026-08-14); the
-2026-09-01/02 entries are superseded above. Per-lane detail lives in each lane's own `prompts/*.md`.
+## 📄 PDF→BIM (vector PDF to IFC, TB-LKTN house) — session 1 2026-11-04
+One command `scripts/pdf2bim/run_p1.sh` reproduces PDF -> 5 STD DXF sheets -> 58-element IFC4 (page 1). Emission + fidelity witnessed; lane acceptance blocked by 82 stated rows (6 reader gaps + 22 library stand-ins + 54 drawing-quality); migration CL006 makes the exact-size FD1 doors bindable. Read `prompts/PDF2BIM_VECTOR_PROBE.md` ▶ RESUME HERE.

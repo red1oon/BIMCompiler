@@ -1,0 +1,54 @@
+§F1-HEADER W-F1-MAILBOX tree=/tmp/wt-self-restore base=c23e28cf node=v18.19.1 at=2026-11-01T08:43:47.862Z
+   F1 present in the engine under test: setMailbox=function
+
+════ engine under test ════
+   §F1-A-POINT N=3 F1: objs=7 bytes=75158 (o=49152 m=24576 h=1430)   pre-F1: objs=8 bytes=75430 (o=73728 h=1702)
+   §F1-A-POINT N=6 F1: objs=7 bytes=91734 (o=65536 m=24576 h=1622)   pre-F1: objs=14 bytes=138649 (o=135168 h=3481)
+   §F1-A-POINT N=12 F1: objs=7 bytes=128982 (o=102400 m=24576 h=2006)   pre-F1: objs=26 bytes=262125 (o=253952 h=8173)
+   PASS §F1-A objects fetched in a fresh Visit are flat in N (3 -> 12) - 7 -> 7
+   PASS §F1-A mailbox + head bytes flat in N - 26006 -> 26582
+   PASS §F1-A CONTROL pre-F1: the same measure GROWS with N (so the flat arm is not vacuous) - 8 -> 26 objects, 75430 -> 262125 bytes
+   PASS §F1-A F1 downloads fewer bytes than pre-F1 at N=12 - 128982 < 262125
+   §F1-A-SLOPE roster/shared (o/) bytes N=3 49152 -> N=12 102400 (identity ops reach everyone: the stated floor)
+   PASS §F1-E every op under m/p_X/ is addressed to X - objects=12 ops=12 foreign=0
+   PASS §F1-E station 1 never GETs another station's mailbox nor the hub inbox - gets=7 foreign=0 hub=0 own_restored=1
+   PASS §F1-E CONTROL pre-F1: station 1 DID download another station's DOWN envelope - foreign DOWN ops held=11
+   PASS §F1-E station 1 holds exactly its own DOWN op and no other - own=1 foreign=0
+   PASS §F1-D no identity op under m/ - mailbox ops=36 identity=0
+   PASS §F1-D every station folds the hub's roster, persons and policy - 12/12 (policy present=true)
+   PASS §F1-D a re-installed station learns its own role from the shared stream alone - role=200
+   PASS §F1-B the hub's verdict for every op equals the pre-F1 verdict - ops=76 differing=0
+   PASS §F1-B every station: each op it holds has the flag-off verdict, and its order is a subsequence of the hub's - ops held across 12 stations=516 differing=0
+   PASS §F1-B no op is PARKED on any station (nothing the station needs is missing) - parked=0
+   PASS §F1-G each DOWN op is SEEN by its addressee (despite the seq holes) - 12/12
+   PASS §F1-G each station's UP ops are SEEN by the hub - 24/24
+   PASS §F1-C office mesh: relay shape (object names + the ops in each) equal to the pre-F1 engine, no m/ object - objects=5 m/=0 names equal=true ops-per-object equal=true
+   PASS §F1-F a pre-F1 POS genesis (no `mailboxes`): relay shape (object names + the ops in each) equal to the pre-F1 engine, no m/ object - objects=5 m/=0 names equal=true ops-per-object equal=true
+
+   -- relay name rule --
+   PASS §F1-I the write gate accepts s/<space>/m/<box>/o/<author>/<bundle> - {"ok":true}
+   PASS §F1-I a mailbox name with no author segment is still refused (bad-name) - {"ok":false,"why":"bad-name"}
+   PASS §F1-I CONTROL pre-F1: the same mailbox name is refused by the old gate (so the pipe change is what makes it writable) - {"ok":false,"why":"bad-name"}
+
+════ mutants ════
+   §F1-MUT M1 "read() returns every box (the edge lists the others' mail)" needle_count=1
+   PASS §F1-MUT M1 KILLED by arm(s) A,E  (designed to hit A,E)
+   §F1-MUT M7 "wantHead always true (heads are not bounded)" needle_count=1
+   PASS §F1-MUT M7 KILLED by arm(s) A,E  (designed to hit A)
+   §F1-MUT M2 "every business op is put on the hub lane (DOWN envelopes mis-boxed)" needle_count=1
+   PASS §F1-MUT M2 KILLED by arm(s) E,E  (designed to hit A,B,E)
+   §F1-MUT M3 "an identity op is given a lane" needle_count=1
+   PASS §F1-MUT M3 KILLED by arm(s) D  (designed to hit D)
+   §F1-MUT M5 "the genesis gate forced on (a pre-F1 space sprouts m/)" needle_count=1
+   PASS §F1-MUT M5 KILLED by arm(s) C,F  (designed to hit C,F)
+   §F1-MUT M8 "the relay name rule forgets the mailbox path (gate refuses m/…)" needle_count=1
+   PASS §F1-MUT M8 KILLED by arm(s) I  (designed to hit I)
+   §F1-MUT M6 "the signed head keeps the contiguous prefix (the holes block SEEN)" needle_count=1
+   PASS §F1-MUT M6 KILLED by arm(s) G  (designed to hit G)
+§F1-MUTANTS killed=7/7 not_applied_or_crashed=0
+
+§F1-ARMS {"A":{"pass":4,"fail":0},"E":{"pass":4,"fail":0},"D":{"pass":3,"fail":0},"B":{"pass":3,"fail":0},"G":{"pass":2,"fail":0},"C":{"pass":1,"fail":0},"F":{"pass":1,"fail":0},"I":{"pass":3,"fail":0},"H":{"pass":7,"fail":0}}
+§LIMIT term=visit-bounded the identity/roster floor on a first-ever Visit is not bounded (identity ops reach everyone)
+§LIMIT term=visit-bounded an old app in a new star space silently misses mailbox mail
+§LIMIT term=visit-bounded the GitHub listing is still O(N) calls
+§F1-VERDICT PASS judged=21 fails=0 inconclusive=0 product_fails=0

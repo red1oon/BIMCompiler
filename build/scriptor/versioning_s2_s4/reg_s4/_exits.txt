@@ -1,0 +1,16 @@
+witness_team_publish exit=0
+witness_team_releases exit=0
+witness_team_so exit=0
+witness_team_executors exit=0
+witness_team_base exit=0
+witness_team_terms exit=0
+witness_team_seatbelt exit=0
+witness_team_plan exit=0
+witness_docno_till exit=0
+witness_team_pill exit=0
+witness_team_keys exit=1
+witness_team_updates exit=0
+witness_team_desktop exit=0
+witness_team_versions exit=0
+witness_team_ui_pos exit=0
+DONE

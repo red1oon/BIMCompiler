@@ -117,10 +117,10 @@ Changes persist until page reload. To make permanent changes, add
 
 | Parameter | Default | Where | Effect |
 |-----------|---------|-------|--------|
-| `CELL_SIZE` | 2m | navigate.js line ~640 | Grid resolution. Smaller = finer but slower |
-| `MAX_BFS` | 80 cells | navigate.js §SECTION B | Max search radius for edge discovery |
-| `STEP` | 4m | navigate.js §SECTION C | Walk-step distance per tap |
-| `EYE_HEIGHT` | 1.6m | navigate.js §SECTION D | Camera height during walk |
+| `CELL_SIZE` | 2m | navigate_grid.js | Grid resolution. Smaller = finer but slower |
+| `MAX_BFS` | 80 cells | navigate_grid.js | Max search radius for edge discovery |
+| `STEP` | 4m | navigate_grid.js / navigate_path.js | Walk-step distance per tap |
+| `EYE_HEIGHT` | 1.6m | navigate_engine.js | Camera height during walk |
 
 ## Console Debug Logs
 
@@ -138,12 +138,14 @@ Open DevTools → Console. Filter by `§NAV` or `§GRID` or `§ROUTE`:
 
 ## Code Structure (for developers)
 
-`navigate.js` (~1,850 lines) is a single `setupNavigate(APP)` closure.
-Four sections, top to bottom:
+Navigation is `setupNavigate(APP)` in `navigate.js`, a small orchestrator over five sub-modules
+(`navigate_find.js`, `navigate_grid.js`, `navigate_path.js`, `navigate_engine.js`, `navigate_controls.js`),
+each exposing its functions on `APP`. The Find panel UI itself now lives in `nf_panel_search.js`.
+The sections below keep their original lettering:
 
 ```
-navigate.js
-├── SECTION A: FIND PANEL UI        (lines ~10–630)
+navigate_find.js / nf_panel_search.js
+├── SECTION A: FIND PANEL UI
 │   CSS injection, DOM creation, search/filter/select logic
 │   Key functions:
 │     openFindPanel(term)       — reset state, populate dropdowns, run search
@@ -153,7 +155,8 @@ navigate.js
 │     populateDropdowns()       — type/storey selects from DB
 │     findMainEntrance()        — pick exterior door (furthest from centre)
 │
-├── SECTION B: OCCUPANCY GRID + A*  (lines ~640–880)
+navigate_grid.js
+├── SECTION B: OCCUPANCY GRID + A*
 │   Grid-based pathfinding (no meshes needed, DB only)
 │   Key functions:
 │     buildGrid(storey)         — 2m cells from wall/column positions
@@ -161,7 +164,8 @@ navigate.js
 │     toCell(grid, x, y)        — IFC coords → grid cell
 │     fromCell(grid, c, r)      — grid cell → IFC coords
 │
-├── SECTION C: ROUTE TEMPLATE + PATH (lines ~880–1370)
+navigate_grid.js + navigate_path.js
+├── SECTION C: ROUTE TEMPLATE + PATH
 │   Graph skeleton + multi-storey path builder
 │   Key functions:
 │     buildRouteTemplate(storey) — extract door/junction/endpoint graph
@@ -171,7 +175,8 @@ navigate.js
 │     buildSingleStoreyPath(s, e, storey) — template → grid → line fallback
 │     labelNodes(nodes, storey)  — tag nodes with IfcSpace/IfcRoom names
 │
-├── SECTION D: TURN-BY-TURN ENGINE  (lines ~1370–1850)
+navigate_engine.js
+├── SECTION D: TURN-BY-TURN ENGINE
 │   Camera control, HUD, direction cues, voice
 │   Key functions:
 │     startNavigation(target)   — pick entrance, build path, snap camera
@@ -182,7 +187,8 @@ navigate.js
 │     getDirectionCue()         — bearing delta → left/right/straight/stairs
 │     speak(text)               — SpeechSynthesis if voice mode
 │
-└── PRE-PROCESS HOOK               (end of file)
+navigate_controls.js
+└── PRE-PROCESS HOOK + keyboard
       MutationObserver on #s-active → preProcessRouteTemplates()
 ```
 
@@ -190,7 +196,7 @@ navigate.js
 
 ```
 nlp.js ──"Find X"──→ APP.openFindPanel(term) ──→ navigate.js
-                      (proxy in main.js lazy-loads navigate.js on first call)
+                      (proxy in main.js lazy-loads the navigate modules on first call)
 
 walk.js ──────────→ APP.cacheStoreyLevels()    used by buildPath for floor Z
                      APP.findNearestDoorPosition() used by walk mode (not nav)
@@ -199,7 +205,7 @@ walk.js ──────────→ APP.cacheStoreyLevels()    used by bui
 scene.js ─────────→ APP.ifc2three(x,y,z)       IFC → Three.js coord transform
                      APP.modelOffset             origin shift
 
-main.js ──────────→ APP.loadNavigate()          lazy-load navigate.js (78KB)
+main.js ──────────→ APP.loadNavigate()          lazy-load the navigate modules
                      _navProxy                   openFindPanel before load
                      animate() loop              calls walkOrientTick each frame
 ```
@@ -237,8 +243,8 @@ which layer produced the path and why earlier layers failed.
 ### Modifying the UI
 
 The find panel is built with `document.createElement` in Section A (no framework).
-CSS is injected at the top of `setupNavigate()`. To restyle: edit the CSS string
-at lines ~10–82. Panel DOM IDs: `#find-panel`, `#find-name`, `#find-type`,
+CSS is injected at the top of `setupNavigate()`. To restyle: edit the injected CSS in
+the Find panel module. Panel DOM IDs: `#find-panel`, `#find-name`, `#find-type`,
 `#find-storey`, `#find-results`, `#find-navigate-btn`, `#find-count`.
 
 HUD elements: `#nav-hud`, `#nav-direction-cue`, `#nav-bottom-bar`.
@@ -247,10 +253,9 @@ HUD elements: `#nav-hud`, `#nav-direction-cue`, `#nav-bottom-bar`.
 
 | File | What |
 |------|------|
-| `deploy/dev/navigate.js` | Find panel + grid + A* + turn-by-turn engine |
-| `deploy/dev/walk.js` | Walk mode, door finder, storey levels |
-| `deploy/dev/nlp.js` | "Find X" intercept, voice flag |
-| Algorithm spec | `prompts/S233_find_and_navigate.md` §B |
-| Tests | `deploy/dev/tests/specs/17-find-navigate.spec.js` (26 tests) |
+| `viewer/navigate.js` + `navigate_find.js`, `navigate_grid.js`, `navigate_path.js`, `navigate_engine.js`, `navigate_controls.js` | Orchestrator, grid + A*, route templates, path builder, turn-by-turn engine, keyboard |
+| `viewer/nf_panel_search.js` | Find panel UI |
+| `viewer/walk.js` | Walk mode, door finder, storey levels |
+| `viewer/nlp.js` | "Find X" intercept, voice flag |
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

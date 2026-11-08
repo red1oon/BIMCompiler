@@ -143,6 +143,46 @@ if os.environ.get('FILM_SET') == 'wand':
     SERIES = 'BIM OOTB  ·  VIEWER  ·  DXF2BIM'
     NOVEL = {}
     CLIPS = {}
+# §DXF2BIM 2D->film E2E (bim-ootb prompts/FILM_DXF2BIM_WHY_MARKINGS.md §2D→FILM E2E, 2026-11-02): FILM_SET=shed2film, SIX chapters: nine sheets as drawn, what they never said,
+# what a person states, the shed, the services walked, the layered Alt+C film. Same anatomy as `yellow`.
+if os.environ.get('FILM_SET') == 'shed2film':
+    CARDS = {
+        1: ('CHAPTER 1', 'NINE SHEETS,', 'AS DRAWN', 'Flat BricsCAD sheets, opened untouched.'),
+        2: ('CHAPTER 2', 'WHAT THEY', 'NEVER SAID', 'Read where it was drawn, written back as markings.'),
+        3: ('CHAPTER 3', 'A PERSON', 'STATES THE REST', 'Only what no drawing can say.'),
+        4: ('CHAPTER 4', 'ONE', 'SHED', 'Every body from the nine sheets.'),
+        5: ('CHAPTER 5', 'SERVICES,', 'WALKED', 'Lights, sprinklers and pipes, placed by rule.'),
+        6: ('CHAPTER 6', 'THE LAYERED', 'FILM', 'Built day by day, every layer on.'),
+    }
+    TAG = {1: 'NINE SHEETS', 2: 'NEVER SAID', 3: 'A PERSON STATES', 4: 'ONE SHED', 5: 'SERVICES WALKED', 6: 'THE LAYERED FILM'}
+    SERIES = 'BIM OOTB  ·  MODELLER TO VIEWER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
+# §DXF2BIM 2D->film E2E v2 (owner 2026-11-02 "the earlier part is too long ... just show opening the sheets, assemble and convert"): FILM_SET=shed2film2, FIVE chapters:
+# nine sheets, assembled on the canvas, one shed, in the Viewer (Alt+C panel), the layered film. Same anatomy as `shed2film`.
+# §DXF2BIM 2D->film E2E v3 (owner 2026-11-02 "make the first part more thrifty, narrate that we already can do all this ... straight to the alt-c baking";
+# "give viewers a heads up what this is about - ability to land full multi layer lens"): FILM_SET=shed2film3, TWO chapters.
+if os.environ.get('FILM_SET') == 'shed2film3':
+    CARDS = {
+        1: ('PART 1', 'ALREADY', 'DONE, FAST', 'Nine sheets, assembled, converted, saved, opened.'),
+        2: ('PART 2', 'THE FULL', 'LENS', 'Every layer on one building, in one film.'),
+    }
+    TAG = {1: 'ALREADY DONE, FAST', 2: 'THE FULL LENS'}
+    SERIES = 'BIM OOTB  ·  MODELLER TO VIEWER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
+if os.environ.get('FILM_SET') == 'shed2film2':
+    CARDS = {
+        1: ('CHAPTER 1', 'NINE SHEETS,', 'AS DRAWN', 'Flat BricsCAD sheets, opened untouched.'),
+        2: ('CHAPTER 2', 'ASSEMBLED', 'ON THE CANVAS', 'Placed together, one building.'),
+        3: ('CHAPTER 3', 'ONE', 'SHED', 'Convert. Every body from the nine sheets.'),
+        4: ('CHAPTER 4', 'IN THE', 'VIEWER', 'Saved as a database, reopened. Alt+C shows the panel.'),
+        5: ('CHAPTER 5', 'THE LAYERED', 'FILM', 'Built day by day, sun, escape route, every layer on.'),
+    }
+    TAG = {1: 'NINE SHEETS', 2: 'ASSEMBLED ON THE CANVAS', 3: 'ONE SHED', 4: 'IN THE VIEWER', 5: 'THE LAYERED FILM'}
+    SERIES = 'BIM OOTB  ·  MODELLER TO VIEWER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
 # §DXF2BIM Yellow Markings film (bim-ootb prompts/FILM_DXF2BIM_YELLOW_MARKINGS.md, 2026-10-22): FILM_SET=yellow, FIVE chapters: what a marking is, the yellow rule, the datums, the verdict, the round trip.
 if os.environ.get('FILM_SET') == 'yellow':
     CARDS = {
@@ -197,6 +237,27 @@ if os.environ.get('FILM_SET') == 'submission':
     }
     TAG = {1: 'WHERE WE LEFT THE SHED', 2: 'WHAT YOUR DRAWING ALREADY SAID', 3: 'WHAT IT WEIGHS', 4: 'WHAT YOU HAND IN', 5: 'THE CHECKS, WITH THEIR CODES', 6: 'WHAT IT COSTS', 7: 'WHAT IT DOES NOT CLAIM'}
     SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
+# §BIM Do-Once-Reuse-Forever film (bim-ootb prompts/FILM_BIM_DO_ONCE_REUSE_FOREVER.md, owner 2026-11-01): FILM_SET=doonce, chapter keys in TIME order (0, 0a, 0c, 0d, 0b, 1-9 = keys 0..13); supersedes the whatsnew cards (#285).
+if os.environ.get('FILM_SET') == 'doonce':
+    CARDS = {
+        0: ('CHAPTER 0', 'THE', 'QUESTION', 'Why flat drawings became a digital twin.'),
+        1: ('CHAPTER 0a', 'BEFORE', 'THE SCREEN', 'A mark made so it can be read again.'),
+        2: ('CHAPTER 0c', 'HOW WE', 'GOT HERE', 'Sixty years, one direction.'),
+        3: ('CHAPTER 0d', 'NOT HISTORY:', 'REUSABILITY', 'Recorded is not reusable.'),
+        4: ('CHAPTER 0b', 'THE', 'PROMISE', 'Entered once, reused forever.'),
+        5: ('CHAPTER 1', 'WRITTEN', 'ONCE', 'One note on a drawing.'),
+        6: ('CHAPTER 2', 'READ,', 'NOT RETYPED', 'The note became a property.'),
+        7: ('CHAPTER 3', 'REUSED', 'FOR COST', 'The note chose the price row.'),
+        8: ('CHAPTER 4', 'REUSED', 'FOR CHECKS', 'Marks, codes and a ballpark weight.'),
+        9: ('CHAPTER 5', 'CARRIED', 'IN THE IFC', 'The open handover.'),
+        10: ('CHAPTER 6', 'REUSED FOR', 'STRUCTURE', 'The same model, through the IFC.'),
+        11: ('CHAPTER 7', 'ANY MODEL,', 'NOT JUST THIS ONE', 'What it states, and what it lacks.'),
+        12: ('CHAPTER 8', 'WHAT IT', 'DOES NOT DO', 'The engineer stays the engineer.'),
+        13: ('CHAPTER 9', 'INFORMATION', 'THAT GROWS', 'Entered once. Reused at every step.'),
+    }
+    TAG = {0: 'THE QUESTION', 1: 'BEFORE THE SCREEN', 2: 'HOW WE GOT HERE', 3: 'NOT HISTORY: REUSABILITY', 4: 'THE PROMISE', 5: 'WRITTEN ONCE', 6: 'READ, NOT RETYPED', 7: 'REUSED FOR COST',
+           8: 'REUSED FOR CHECKS', 9: 'CARRIED IN THE IFC', 10: 'REUSED FOR STRUCTURE', 11: 'ANY MODEL, NOT JUST THIS ONE', 12: 'WHAT IT DOES NOT DO', 13: 'INFORMATION THAT GROWS'}
+    SERIES = 'BIM  ·  THE UNTOLD STORY OF DO ONCE, REUSE FOREVER'
     NOVEL = {}
     CLIPS = {}
 # Malay version of the why film (bim-ootb prompts/FILM_DXF2BIM_WHY_MARKINGS.md §MS, 2026-10-23): FILM_SET=why_ms, the same three chapters, app terms kept as users say them.
@@ -229,6 +290,20 @@ if os.environ.get('FILM_SET') == 'shedlast2':
     }
     TAG = {1: 'REOPENED AS ARC', 2: 'SERVICES WALKED'}
     SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
+    NOVEL = {}
+    CLIPS = {}
+# CAPEX dashboard add-on film (bim-ootb prompts/CAPEX_DASHBOARD.md §15, red1 2026-11-03: chapter titles in his words, "i leave to you how best to arrange or word them in the already
+#   quite perfect flow"): FILM_SET=capexaddon, FIVE chapters keyed to the flow (open · dashboard · no rekeying · parity · roadmap); no badges, no cutaways.
+if os.environ.get('FILM_SET') == 'capexaddon':
+    CARDS = {
+        1: ('CHAPTER 1', 'A FULL SPATIAL ERP', 'IN THE MAKING', 'Building model, schedule, cost and ERP: one chain.'),
+        2: ('CHAPTER 2', 'PROJECT ORDER', 'INTELLIGENCE', 'A dashboard on SQLite, reusable for any project.'),
+        3: ('CHAPTER 3', 'NO REKEYING', 'OF SITE DATA', 'From a 2D layout, as if a robot manager did it. None does: MIT code.'),
+        4: ('CHAPTER 4', 'FULL PARITY', 'TWIN AND LEGACY', 'Serverless twin = legacy iDempiere, ready for the move to the kernel ERP.'),
+        5: ('CHAPTER 5', 'ROADMAP', 'DASHBOARD EDITOR', 'Change it without coding, and without AI.'),
+    }
+    TAG = {1: 'SPATIAL ERP', 2: 'DASHBOARD', 3: 'NO REKEYING', 4: 'PARITY', 5: 'ROADMAP'}
+    SERIES = 'BIM OOTB  ·  ERP  ·  CAPEX ADD-ON'
     NOVEL = {}
     CLIPS = {}
 os.makedirs(out, exist_ok=True)

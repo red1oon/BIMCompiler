@@ -1,0 +1,19 @@
+#!/usr/bin/env python3 -I
+# Implements prompts/PDF2BIM_VECTOR_PROBE.md §17 — Witness: W-P4 (G1). R1 moved to read_rooms.py (§36). Usage: rosetta_verify.py <pdf> <rosetta.json>
+import re,sys,json,subprocess,os
+sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+import type_template as TT
+pdf,rj=sys.argv[1:3]; R=json.load(open(rj)); log=lambda *a:print('§PDF',*a,flush=True)
+bb=subprocess.run(['pdftotext','-f','1','-l','1','-bbox',pdf,'-'],capture_output=True,text=True,check=True).stdout
+W=[(w[4],(float(w[0])+float(w[2]))/2,(float(w[1])+float(w[3]))/2) for w in re.findall(r'<word xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">(.*?)</word>',bb)]
+gx,gy=R['grid']['x'],R['grid']['y']
+top=list(TT.top_row(W,gx).values()); lef=list(TT.left_col(W,gy).values())
+log('G1 labels found x',len(top),'y',len(lef), 'INCONCLUSIVE(vacuous)' if not top or not lef else '')
+def fit(pos,dim,name):
+    ks=sorted(pos); u=[pos[k][0] for k in ks]; d=[dim[k] for k in ks]
+    kmm=(d[-1]-d[0])/(u[-1]-u[0]); res=[round(u[i]+(d[i]-d[0])/kmm-pos[ks[i]][0] if False else (d[i]-d[0])/kmm-(u[i]-u[0]),2) for i in range(len(ks))]
+    log('G1',name,'mm/pt',round(kmm,3),'residual_pt',dict(zip(ks,res)),'MAXabs',max(abs(r) for r in res),'PASS' if max(abs(r) for r in res)<=0.6 else 'WRONG')
+    return kmm
+px={w[0]:(w[1],) for w in top}; py={w[0]:(w[2],) for w in lef}
+kx=fit(px,gx,'X'); ky=fit(py,gy,'Y')
+log('G1 scale agreement X vs Y',round(kx,3),round(ky,3),'PASS' if abs(kx-ky)/kx<0.005 else 'WRONG')

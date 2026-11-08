@@ -157,8 +157,9 @@ material, phase, or the newest axis, building **Parts**).
    (mobile) — tap the **···** button if the rail isn't already showing. Find the **Navigate** icon
    (a sailboat glyph) among the rail's icons.
    ![The toolbar rail, with the Navigate (sailboat) icon centred between Inspect (compass) above and Open (folder) below](img/viewer/find-panel-navigate-icon.png)
-2. Tap **Navigate**. The **Navigate** drawer opens, listing **Find / Navigate**, **World History**,
-   **Page History**, and **Home** (a fifth row, **Walk**, is mobile-only and won't appear on desktop).
+2. Tap **Navigate**. The **Navigate** drawer opens, listing **Find / Navigate**, **Role View**, **World History**,
+   **Page History**, **Home**, **Fly Tour** and **Nav LOD** (for large buildings); a further row, **Walk**, is
+   mobile-only and won't appear on desktop.
    Tap the **Find / Navigate** row (magnifying-glass icon, shortcut **F**).
    ![The Navigate drawer open, showing the Find / Navigate row at the top with its "f" shortcut](img/viewer/find-panel-navigate-drawer.png)
 3. The **Find panel** opens on the right side of the screen, with the search bar focused and ready to
@@ -204,19 +205,16 @@ has that kind of data (no data, no empty axis):
 |------|----------------|----------------|
 | **Storey** | Always | Elements grouped by building level/storey. Expand a storey to see the rooms/spaces on it (or, if the building has no room data, its most common IFC classes). Tapping a storey or room isolates it in the 3D view. |
 | **Discipline** | Always | Elements grouped by discipline (ARC/STR/MEP/ELEC, etc). Expand a discipline to see its IFC classes; tap a class to highlight just those elements. |
-| **Room** | Only if the building has volumetric room (IfcSpace) data | A highlight lens: the model is X-rayed and a translucent box is drawn over each room. Has its own **Storey / Type / Path** sub-toggle: group rooms by floor, by the compiler's own confidence tier (see [Room health](#room-health-the-type-sub-toggle-verified-live-on-terminal) below), or route between two rooms the way a person walks. (On a building without volume data, this falls back to a plain isolate-by-room list instead.) |
+| **Room** | Only if the building has volumetric room (IfcSpace) data | A highlight lens: the model is X-rayed and a translucent box is drawn over each room. Has its own **Storey / Type / Path** sub-toggle: group rooms by floor, by the compiler's own confidence tier (see [Room health](#room-health-the-type-sub-toggle-shown-on-terminal) below), or route between two rooms the way a person walks. (On a building without volume data, this falls back to a plain isolate-by-room list instead.) |
 | **Material** | Only if material data is present | Elements grouped by material name, or — via a **Material / Category** sub-toggle — by a derived construction category (Concrete, Metal, Wood, Glass, Drywall/Partition, Masonry, Insulation, Tile, Finish, Membrane, Flooring, Generic, Other). Categories are a keyword-derived heuristic, not an extracted IFC property, and are labelled accordingly in the panel. Highlight lens, same X-ray-and-box behavior as Room. |
 | **Phase** | Only if a construction timeline can be generated for the building | Elements grouped by construction phase/task, generated on the fly (a short "Timeline generating…" message appears first). |
 | **Parts** *(new)* | Only if the building has stairway, lift-shaft, or plant-room elements | Elements grouped into up to three building-part categories: **Stairway** (stair/ramp classes), **Lift Shaft** (elements named for lifts/elevators), **Plant Room** (HVAC-plant elements — vents, ducts, fans, AHUs, dampers, chillers, pumps). Each category is itself data-gated — it only appears if the building actually has a match. Tapping a category, or a single item inside it, isolates it in the 3D view (hides the rest of the model). |
 
   ![The axis toggle cycled to Parts on HHS Office ("6/6 Parts"), a real institutional-scale building showing all three categories at once: Stairway (20), Lift Shaft (3), and Plant Room (1769) — Plant Room only appears on complex-class buildings like this one, never on a residential building like Duplex](img/viewer/find-axis-parts.png)
 
-**Room highlight, verified live on HHS Office.** Level 2 alone compiles 31 real rooms (105 across the
+**Room highlight, shown on HHS Office.** Level 2 alone compiles 31 real rooms (105 across the
 whole building) — tapping one X-rays the model and draws a clean, correctly-bounded translucent box
 over just that room, confirming the room's geometry is well-formed and doesn't overlap its neighbours.
-On a larger building, the biggest rooms on a floor stand in for a "hall"-scale space until a real
-labelled corridor/hall example is captured (HHS's own rooms carry no such label yet — a future guide
-pass).
 
 ![A single real room on HHS Office Level 2, X-rayed and highlighted as a clean translucent purple box against the surrounding structure — SAMPLE, HHS_Office_Federated data](img/viewer/find-room-highlight-hhs.png)
 
@@ -226,14 +224,9 @@ zoom to see a small room clearly.
 **Plant Room** appears only on larger, complex buildings (Terminal, Clinic, Hospital, HHS), never on homes, and
 it matches whole words only (so "Backflow Preventer" is not taken for a vent).
 
-*Also discovered while capturing these screenshots (reported, not fixed here — this task is docs-only):*
-the natural-language query hint text described above is written into the DOM by `navigate_find.js`
-`_handleInput()`, but the panel's `results-expanded` CSS class (which gives `#find-results` its visible
-height) is only added by the plain-search code path, not the NL-query path — so, live, no visible hint
-actually appears while typing a recognized phrase; the query still runs correctly on **Enter**. The guide
-text above describes the observed (silent) behavior, not an invented visible hint.
+*While you type a recognized query phrase, the panel shows no preview and does not filter the tree; press **Enter** to run it.*
 
-#### Room health — the Type sub-toggle (verified live on Terminal)
+#### Room health — the Type sub-toggle (shown on Terminal)
 
 Switch the Room axis's grouping from **Storey** to **Type** and rooms are grouped by the compiler's
 own confidence in them, not by a floor: **INTERNAL** / **INTERNAL_SMALL** (ordinary enclosed rooms,
@@ -242,14 +235,11 @@ geometrically but flags for a human rather than silently accepting). This is the
 principle made visible — a low-confidence room is *shown* as low-confidence, never quietly promoted
 to "room" just because it fits inside walls.
 
-**Terminal, the hard case, verified live.** A user-reported screenshot showed a stairwell counted as
-a room — the compiler doesn't know "stairwell" as a concept, only geometry, and a tall vertical shaft
-can look room-shaped from a single floor's footprint alone. The fix (**STAIRWELL-STACK reject**)
-rejects a room candidate whose footprint recurs, stacked, through multiple storeys with a real stair
-inside it — the signature of a shaft, not a room — checked against both compiler mirrors, 6/6 parity.
-Reloading Terminal applies the healed patch over whatever the browser had cached already: **59 rooms →
-40 rooms, 73 rects, no room anywhere near the shaft threshold** — the stairwell is gone from both the
-Room list and the 3D view.
+**Terminal, the hard case.** The compiler knows only geometry, and a tall vertical shaft can look
+room-shaped from a single floor's footprint alone. So a room candidate whose footprint recurs, stacked,
+through multiple storeys with a real stair inside it — the signature of a shaft, not a room — is
+rejected. On Terminal that leaves **40 rooms** (down from 59) and no stairwell in either the Room list or
+the 3D view. A Terminal copy cached in your browser before this change is corrected automatically on reload.
 
 ![Terminal, Type grouping open: INTERNAL (30), INTERNAL_SMALL (15), SUSPECT_OPEN (22), SUSPECT_NO_DOOR (6) — "Aras 02 R3" selected, an empty doorless pocket beside a stair flight, flagged rather than guessed into being a room](img/viewer/type-suspect-no-door-terminal.png)
 
@@ -259,11 +249,8 @@ the room look finished.
 
 *Known gap, named not hidden:* Type is a **health** taxonomy (how sure the compiler is this is a
 room), not a **semantic** one — it doesn't yet know "corridor" from "office." Terminal's concourses
-show no CORRIDOR band today because the only measured corridor template on file is Duplex's 10.4m²
-hallway (n=2 samples), and stretching that onto a terminal concourse would be inventing, not
-compiling. The room-path routing below already produces a building-relative, *measurable* definition
-of a corridor — the elongated, many-doored room every route keeps passing through — scoped as a
-future CIRCULATION_DISPLAY pass, not built yet.
+show no CORRIDOR band because the only measured corridor reference on file is Duplex's 10.4 m²
+hallway, and stretching that onto a terminal concourse would be inventing, not compiling.
 
 #### Room-to-room paths & escape routes
 
@@ -311,13 +298,15 @@ above for how to open it) has three more rows besides Find / Navigate:
 
 > **Road (civil works) model?** The same drawer gives extra road reports — clash between trades, earthworks volume, long / cross sections and a road Model Check. Walkthrough: **[Civil Works — Step by Step](CivilWorksGuide.md)**.
 
-The **Inspect** drawer (compass icon, next to Navigate on the toolbar rail) bundles seven tools behind
-one icon:
+The **Inspect** drawer (compass icon, next to Navigate on the toolbar rail) bundles the analysis tools behind
+one icon: Measure, Clash Matrix, X-Ray / Bbox, Section Cut, Time Machine and 4D / 5D. On a road (civil
+works) model it also lists Road standards, Road report, Earthworks and Roadworks. **Fly Tour** now lives in
+the **Navigate** drawer (key **L**).
 
-![The Inspect drawer open — Measure, Clash Matrix, X-Ray / Bbox (currently "Off"), Section Cut, Time Machine, 4D / 5D, and Fly Tour, each with its shortcut key](img/viewer/pill-inspect-drawer.png)
+![The Inspect drawer open — Measure, Clash Matrix, X-Ray / Bbox (currently "Off"), Section Cut, Time Machine and 4D / 5D, each with its shortcut key](img/viewer/pill-inspect-drawer.png)
 
-- **Measure**, **X-Ray / Bbox**, **Section Cut**, and **Fly Tour** are covered above, under
-  [Viewer Features](#viewer-features).
+- **Measure**, **X-Ray / Bbox** and **Section Cut** are covered above, under
+  [Viewer Features](#viewer-features); **Fly Tour** is there too.
 - **Clash Matrix** (key **C**) opens the clash-detection engine (discipline-pair grid, tolerance, Review /
   Resolve / Accept status, HTML + CSV export) — full coverage: **[Clash Detection guide](CLASH_DETECTION.md)**.
 - **Time Machine** (key **T**) opens the 4D construction timeline — author a schedule, play it back,
@@ -386,7 +375,8 @@ added to the project's `viewer/rates/` folder by whoever publishes the Viewer).
 
 ### Camera / View drawer
 
-The **Camera / View** drawer (camera icon) bundles three camera-control toggles:
+The **Camera / View** drawer (camera icon) bundles three camera-control toggles, plus **GI Preview** (**Alt+G**,
+desktop only — an ambient-occlusion preview):
 
 ![The Camera / View drawer open — Precision (Fine), Reset Camera, and Auto-Pivot, each with its shortcut key](img/viewer/pill-camview-drawer.png)
 
@@ -457,9 +447,9 @@ where you are standing, aimed exactly where you are looking.
    the stick and keeps you walking, for laying several in one pass. **Esc** leaves without planting.
    Pressing the shoes again continues from the exact spot you left.
 
-Proof from a real session on the Terminal building: the user walked into the POV, hit Spacebar, and
-**stick @ 13%** appeared — the new row highlighted in the panel and its blue middle dot on the path
-in canvas right beside it. One keypress, one stick, position and aim both set:
+Example on the Terminal building: walk into the POV, hit Spacebar, and **stick @ 13%** appears — the new
+row highlighted in the panel and its blue middle dot on the path in canvas right beside it. One keypress,
+one stick, position and aim both set:
 
 ![Walk finger mode's result the moment Spacebar was hit — the Cinema path panel now lists a highlighted "stick @ 13%" row with its pinned aim coordinates, the same stick's blue middle dot visible on the yellow flight tube in canvas just left of the panel, the POV frame bottom-left still showing the walker's own view, and the Time Machine's construction timeline still running top-left](img/viewer/filmmaker-walk-stick13.png)
 
@@ -594,7 +584,7 @@ construction sequence advance together in the same take:
 You can also stage a **single still** rather than a whole film: **Alt+S** applies the same photographic pass
 and then refines the frozen frame over 16 jittered sub-pixel samples for clean edges. **Alt+J** adds an
 optional bounce-light (GI) pass — off by default, and deliberately excluded from film recording because it
-costs far more per frame than a film's frame budget allows.
+costs far more per frame than a film's frame budget allows. **Alt+G** is the lighter ambient-occlusion preview.
 
 **What this is honestly not.** There is no weather: no rain, no snow, no cloud shapes — the sky model is a
 clear-sky one and has no cloud geometry at all. And it does not claim to be indistinguishable from a
@@ -773,8 +763,9 @@ operate-phase lenses — **Occupancy** (incl. lease status) · **Presence** · *
 → **Full walkthrough (with screenshots): [HR / Tenancy / Operate Module guide](HRBIMAssetGuide.md).**
 
 **Collaborate on the model — the Teams overlay.** One toolbar toggle overlays **who-did-what** on the building:
-identity-coloured dots on elements and Find-panel rooms, a history/blame tree, a chat that **is** the signed log,
-and dashboard graphs — off by default, pixel-identical until you turn it on.
+identity-coloured dots on elements, a history/blame tree, a chat that **is** the signed log,
+and dashboard graphs — off by default, pixel-identical until you turn it on. It is available in the Modeller and
+Kernel-ERP; the Viewer does not carry the toggle.
 → **[Teams Overlay guide (with screenshots)](TeamsOverlayGuide.md).**
 
 **Mobile-only (touch-optimised):**
@@ -804,6 +795,8 @@ and dashboard graphs — off by default, pixel-identical until you turn it on.
 | **Alt+C** | [Film-Maker](#cinema-film-maker-altc-the-bim-ootb-film-maker) — derive a cinematic film, edit the flight, record |
 | **Alt+S** | [Photographic still](#sun-sky-and-shadow-while-the-film-records) — stages the sun/sky/shadow pass, then refines the frozen frame over 16 sub-pixel samples |
 | **Alt+J** | Bounce-light (GI) pass — optional, off by default, not used while recording a film |
+| **Alt+G** | GI Preview — ambient-occlusion preview (desktop only) |
+| **Alt+P** | Populate — adds staffage (people, trees and cars) to the scene |
 | **Click the flight tube** (in the Film-Maker) | Add a stick — a new band you can drag |
 | **Ctrl+Z / Ctrl+Shift+Z** (in the Film-Maker) | Undo / redo a path edit |
 | **F11** | Toggle fullscreen |

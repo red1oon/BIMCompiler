@@ -782,7 +782,7 @@ that compiles a 35-building residential library can compile a hull block
 library, a tunnel ring library, or an industrial plant module library.
 The spatial relationships are different data, not different code.
 
-See TheRosettaStoneStrategy.md §Cross-Domain for the full comparison table.
+See [TheRosettaStoneStrategy.md](https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/TheRosettaStoneStrategy.md) §Cross-Domain for the full comparison table.
 
 ---
 

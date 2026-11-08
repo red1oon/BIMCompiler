@@ -20,6 +20,7 @@ for (var i = 0; i < argv.length; i++) if (/^--/.test(argv[i])) A[argv[i].slice(2
 var LOGS = A.logs || path.join(ROOT, 'build', 'scriptor', 'terms_run'), ONLY = A.only ? A.only.split(',') : null;
 var OOTB = A.ootb || path.join(process.env.HOME || '', 'bim-ootb'), REUSE = A.reuse === '1', FRESH = A.fresh === '1';
 var WC = require('./witness_cache.js'), cacheInfo = {};   // §51.1 C1
+var DE = require('./dev_env.js'), DE_MAN = DE.loadManifest(ROOT), DE_ROOTS = [{ name: 'BIMCompiler', dir: ROOT }, { name: 'bim-ootb', dir: OOTB }], portN = { yes: 0, no: 0, unknown: 0 };   // §50.2 W-DEV-ENV
 var TREE_WHY = !fs.existsSync(path.join(OOTB, 'erp', 'idempiere.html')) ? 'no bim-ootb tree at ' + OOTB : null;
 var BROWSER_WHY = A.browser === '0' ? '--browser 0' : TREE_WHY ? TREE_WHY
   : !(fs.existsSync(path.join(OOTB, 'tests', 'node_modules', 'playwright')) || fs.existsSync(path.join(OOTB, 'node_modules', 'playwright'))) ? 'no Playwright in ' + OOTB : null;
@@ -47,7 +48,7 @@ var W = {
   tDocnoMut: { f: 'witness_docno_till.js', args: ['--mutants'], log: 'witness_docno_till_mutants.log', layer: 'ootb', ok: /§DT_MUTANTS killed=4\/4/ },
   // dir = a directory under the bim-ootb tree other than erp/tests; env() = environment the witness needs, built when it runs (never from a guess)
   f1Mailbox: { f: 'witness_f1_mailbox.js', dir: 'common/tests', layer: 'ootb', ok: /§F1-VERDICT PASS judged=\d+ fails=0 inconclusive=0 product_fails=0/ },
-  readScope: { f: 'witness_read_scope.js', dir: 'common/tests', layer: 'ootb', ok: /§RS_SCOPE_VERDICT PASS judged=\d+ fails=0 inconclusive=0 mutants=9\/9/ },
+  readScope: { f: 'witness_read_scope.js', dir: 'common/tests', layer: 'ootb', ok: /§RS_SCOPE_VERDICT PASS judged=\d+ fails=0 inconclusive=0 mutants=([1-9]\d*)\/\1/ },
   tKeys:     { f: 'witness_team_keys.js', layer: 'ootb', ok: /§KW_VERDICT PASS judged=46 mutants=9\/9/, env: kwOldEnv }
 };
 // W-KEYS arm L1 compares against the engine BEFORE Stage 2 (bim-ootb #2473, commit 38499773); without KW_OLD it prints INCONCLUSIVE, never PASS. The pre-Stage-2 common/comm is read with git archive of that commit's parent.
@@ -76,22 +77,22 @@ var TERMS = [
   { id: 'version-skew', term: 'BUNDLE (version skew)', guarantee: 'newer waits, older waits for a rule, retired is ignored', w: ['versions', 'tVersions'],
     c: [{ id: '18 mutants killed', w: 'versions', re: /§CV_VERDICT PASS.*mutants_killed=18\/18/ }, { id: 'page: newer op parked needs-upgrade', w: 'tVersions', re: /🟢 M2 the sv:2 op is PARKED needs-upgrade/ }, { id: 'page: same op without sv merged (control)', w: 'tVersions', re: /🟢 M2 CONTROL: the same op without sv is MERGED/ }, { id: 'page: tampered set refused', w: 'tVersions', re: /🟢 M4 tampered set -> refused:bad-signature/ }] },
   { id: 'doc-numbering', term: 'LOCAL NUMBERING (LEDGER)', guarantee: 'with Team, two stations (login users with a Search Key) never issue the same document number: OrgValue-UserValue-n each; another station\'s or a typed number is refused at fold', w: ['tDocno', 'tDocnoMut'],
-    note: 'TEAMWORK §48.11b-§48.11d. Legacy arm: the pilot\'s own WS-login run == the twin replay (D20, scripts/bridge/out/docno_station_legacy.json). Limits: an author not bound to an AD_User is not judged at fold (counted); two users sharing a Search Key share a series',
+    note: 'TEAMWORK §48.11b-§48.11d. Legacy arm: the pilot\'s own WS-login run == the twin replay (D20, scripts/bridge/out/docno_station_legacy.json).',
     c: [{ id: 'same user on two devices collides (control)', w: 'tDocno', re: /§DT PASS D11 - CONTROL/ }, { id: 'shipped plain sequence collides (control)', w: 'tDocno', re: /§DT PASS D5 - CONTROL/ },
         { id: "another station's / typed number refused at fold on every device", w: 'tDocno', re: /§DT PASS D14 - / }, { id: 'new format refused until its edit is in the log', w: 'tDocno', re: /§DT PASS D15b - / },
         { id: 'user preference cannot change the station', w: 'tDocno', re: /§DT PASS D13 - / }, { id: '4 mutants killed', w: 'tDocnoMut', re: /§DT_MUTANTS killed=4\/4/ },
         { id: 'legacy pilot (real WS logins) numbers the same at every position', w: 'tDocno', re: /§DT PASS D20 - LEGACY/ }, { id: 'demo station never numbers Org--n', w: 'tDocno', re: /§DT PASS D19 - / }] },
   // OPEN: stated, never run, never green. roadmap = where it closes.
   { id: 'visit-bounded', term: 'VISIT (bounded)', guarantee: 'Visit #1 download stays bounded as the team grows: each device lists and downloads only its own mailbox, not every other device\'s bundle', w: ['f1Mailbox'],
-    note: 'TEAMWORK §45.2/§45.8 F1 per-device mailboxes (bim-ootb #2477; witness common/tests/witness_f1_mailbox.js, mutants run by the witness itself). Measured edge Visit #1 download 384 / 386 / 388 B at N=10/100/1000 (W-SCALE-STAR: build/scriptor/f1_mailboxes/scale_star_F1_final_engine_{10,100}.log, scale_star_F1_engine_1000.log; was 367 KB / 4.5 MB / 45.8 MB). Stated limits: the identity/roster floor on a first-ever Visit is not bounded (identity ops reach everyone); withholding of one mailbox bundle now shows as a gap (per-mailbox sequence, §45.11 / bim-ootb #2486; was a parked op); an old app in a new star space silently misses mailbox mail; the GitHub listing is still O(N) calls',
-    c: [{ id: 'fetched objects flat in N (3 -> 12)', w: 'f1Mailbox', re: /PASS §F1-A objects fetched in a fresh Visit are flat in N \(3 -> 12\) - 5 -> 5/ },
+    note: 'TEAMWORK §45.2/§45.8 F1 per-device mailboxes (bim-ootb #2477; witness common/tests/witness_f1_mailbox.js, mutants run by the witness itself). Measured edge Visit #1 download 384 / 386 / 388 B at N=10/100/1000 (W-SCALE-STAR: build/scriptor/f1_mailboxes/scale_star_F1_final_engine_{10,100}.log, scale_star_F1_engine_1000.log; was 367 KB / 4.5 MB / 45.8 MB).',
+    c: [{ id: 'fetched objects flat in N (3 -> 12)', w: 'f1Mailbox', re: /PASS §F1-A objects fetched in a fresh Visit are flat in N \(3 -> 12\) - ([1-9]\d*) -> \1\b/ },      // flat = the same count at N=3 and N=12 (was pinned to 5; §52.4 self-restore adds the station's own objects to a re-opened Visit)
         { id: 'CONTROL pre-F1 engine: the same measure grows with N', w: 'f1Mailbox', re: /PASS §F1-A CONTROL pre-F1: the same measure GROWS with N .* - 8 -> 26 objects/ },
         { id: 'CONTROL pre-F1: station 1 held foreign DOWN ops (now none)', w: 'f1Mailbox', re: /PASS §F1-E CONTROL pre-F1: station 1 DID download another station's DOWN envelope - foreign DOWN ops held=[1-9]\d*/ },
         { id: 'station 1 never GETs another mailbox', w: 'f1Mailbox', re: /PASS §F1-E station 1 never GETs another station's mailbox nor the hub inbox - gets=\d+ foreign=0/ },
         { id: 'CONTROL pre-F1 relay gate refuses the mailbox name', w: 'f1Mailbox', re: /PASS §F1-I CONTROL pre-F1: the same mailbox name is refused by the old gate/ },
         { id: '7 mutants killed', w: 'f1Mailbox', re: /§F1-MUTANTS killed=7\/7 not_applied_or_crashed=0/ }] },
   { id: 'sealing-real', term: 'RELAY (sealing)', guarantee: 'in a mailbox (star) space each station\'s mail is sealed to its pair (that station + head office): another member holding the team key reads none of it, the relay reads none of it, and a withheld mailbox bundle shows as a gap', w: ['readScope', 'f1Mailbox'],
-    note: 'TEAMWORK §45.11 (bim-ootb #2486; witness common/tests/witness_read_scope.js, 9 mutants run by the witness itself; RED first on the F1 engine: FAIL judged=39 fails=13). Stated limits: the relay still sees metadata (author, box, counts, timing, sizes); a checkpoint state is sealed with the team key, so record ids and verdicts of laned ops are visible to every member; an insider holding a pair key can leak it; office spaces and spaces founded before F1 keep the team-wide key (unchanged by design)',
+    note: 'TEAMWORK §45.11 (bim-ootb #2486, #2498; witness common/tests/witness_read_scope.js, 10 mutants run by the witness itself; RED first on the F1 engine: FAIL judged=39 fails=13).',
     c: [{ id: 'a modified member opens 0 of another station\'s mail', w: 'readScope', re: /PASS §RS-A Y \(a modified client that lists and gets every m\/ object\) opens 0 of the 3 laned ops of X - leaked=0/ },
         { id: 'CONTROL team key only: the same member opens all of it', w: 'readScope', re: /PASS §RS-A CONTROL: with audience sealing off .* opens 3 of 3/ },
         { id: 'a rogue key for another pair is never sealed to', w: 'readScope', re: /PASS §RS-E Y \(holding its own candidate key for p_X, accepted by the roster\) opens 0 of H's DOWN mail/ },
@@ -100,7 +101,7 @@ var TERMS = [
         { id: 'withheld last bundle is a gap (signed head)', w: 'readScope', re: /PASS §RS-G the relay withholds X's LAST bundle -> reported from X's signed head/ },
         { id: 'CONTROL F1 engine: the same withholding shows no gap', w: 'readScope', re: /PASS §RS-G CONTROL \(the F1 engine, same withholding\): gaps\(\) = \[\]/ },
         { id: 'no key yet: held, never sent under the team key', w: 'readScope', re: /PASS §RS-H the held op is nowhere on the relay .* objects containing it=0/ },
-        { id: '9 mutants killed', w: 'readScope', re: /§RS_SCOPE_VERDICT PASS judged=\d+ fails=0 inconclusive=0 mutants=9\/9/ }] },
+        { id: 'all mutants killed', w: 'readScope', re: /§RS_SCOPE_VERDICT PASS judged=\d+ fails=0 inconclusive=0 mutants=([1-9]\d*)\/\1/ }] },
   { id: 'key-roles-threshold', term: 'trusted keys (roles + threshold)', guarantee: 'a key may only do what its role allows; a rotation or publication needs the declared number of DISTINCT valid keys; a device clock never expires anything',
     note: 'TEAMWORK §46.5 versioning Stage 2 (bim-ootb #2473; witness erp/tests/witness_team_keys.js, 9 mutants run by the witness, L1 legacy-fold arm needs KW_OLD = common/comm before #2473, built by the runner with git archive)', w: ['tKeys'],
     c: [{ id: 'rotate-only key cannot publish', w: 'tKeys', re: /🟢 R2 the rotate-only key CANNOT publish an executors map — REFUSED:executors-role/ },
@@ -120,13 +121,13 @@ function runW(k) {
   if (why) return logs[k] = { skipped: why, out: '', log: lf, passed: false };
   if (REUSE) { var o0 = fs.existsSync(lf) ? fs.readFileSync(lf, 'utf8') : '', e0 = (o0.match(/\nexit=(\d+)\s*$/) || [])[1]; return logs[k] = { exit: e0 === undefined ? null : +e0, out: o0, log: lf, reused: true, passed: e0 === '0' && w.ok.test(o0) }; }
   // §51.1 C1: through the content-keyed cache unless --fresh 1 (a hit replays the stored log behind a §CACHED line; nothing runs). keyEnv = the env with this run's log dir normalised out.
-  var wEnv = w.env ? w.env() : {}, keyEnv = {}; Object.keys(wEnv).forEach(function (e) { keyEnv[e] = String(wEnv[e]).split(path.resolve(LOGS)).join('<logs>'); });
+  var wEnv = w.env ? w.env() : {}, keyEnv = {}; if (br && !wEnv.BIM_COMPILER_ROOT) wEnv.BIM_COMPILER_ROOT = ROOT;      // §50.3: bim-ootb witnesses find this repo here, never under $HOME Object.keys(wEnv).forEach(function (e) { keyEnv[e] = String(wEnv[e]).split(path.resolve(LOGS)).join('<logs>'); });
   var r = WC.runSync({ file: br ? path.join(OOTB, w.dir || 'erp/tests', w.f) : path.join(__dirname, w.f), args: w.args || [], cwd: br ? OOTB : ROOT, env: wEnv, keyEnv: keyEnv,
-                       roots: [ROOT, OOTB], exclude: [LOGS], fresh: FRESH, timeout: 600000 });
+                       roots: [ROOT, OOTB], exclude: [LOGS], fresh: FRESH, timeout: Number(process.env.WITNESS_TIMEOUT_MS) || 600000 });
   var out = r.out + '\nexit=' + r.exit + '\n'; fs.writeFileSync(lf, out);
   console.log('   ' + (r.cached ? 'cached ' : 'ran ') + (br ? w.layer + ' ' : '') + w.f + (w.args ? ' ' + w.args.join(' ') : '') + ' exit=' + r.exit + ' inputs=' + r.inputs + ' key=' + r.key.slice(0, 12));
   if (r.skip) console.log('   §CACHE_SKIP ' + w.f + ' reason=' + r.skip);
-  r.status = r.exit; cacheInfo[k] = { cached: r.cached, inputs: r.inputs, key: r.key.slice(0, 12), skip: r.skip };
+  r.status = r.exit; cacheInfo[k] = { cached: r.cached, inputs: r.inputs, key: r.key.slice(0, 12), skip: r.skip, inputList: r.inputList || null };
   return logs[k] = { exit: r.status, out: out, log: lf, passed: r.status === 0 && w.ok.test(out) };
 }
 var nBr = { judged: 0, skipped: 0 }, brSeen = {};
@@ -144,9 +145,26 @@ TERMS.forEach(function (t) {
   var judgedW = row.witnesses.filter(function (x) { return x.verdict !== 'SKIPPED'; }), judgedC = row.controls.filter(function (x) { return x.found !== null; });
   var wOk = judgedW.length > 0 && judgedW.every(function (x) { return x.verdict === 'PASS'; }), cOk = judgedC.every(function (x) { return x.found; });
   row.status = !wOk ? 'WITNESS-FAILED' : (!cOk ? 'UNCONTROLLED' : 'ENFORCED'); if (row.status !== 'ENFORCED') anyFail = true;
+  // §51.3 C4: limits come from the witnesses (`§LIMIT <text>` / `§LIMIT term=<row> <text>`), never from a hand-written note
+  var limSeen = {}, limFrom = {}; row.limits = [];
+  t.w.forEach(function (k) { var r = logs[k]; if (!r || r.skipped) return; String(r.out).split('\n').forEach(function (l) { var x = /^\s*§LIMIT (?:term=(\S+) )?(.+?)\s*$/.exec(l);
+    if (!x || (x[1] && x[1] !== t.id) || limSeen[x[2]]) return; limSeen[x[2]] = 1; limFrom[W[k].f] = 1; row.limits.push({ text: x[2], from: W[k].f }); }); });
+  console.log('§TERMS_LIMITS ' + t.id + ' n=' + row.limits.length + ' from=' + (Object.keys(limFrom).join(',') || '-'));
+  if (t.note && /limit/i.test(t.note)) { console.log('§TERMS_DEFECT hand-limit row=' + t.id + ' (a limit is stated by its witness as a §LIMIT line, not in the runner note; §51.3)'); anyFail = true; }
   var hasBr = row.witnesses.some(function (x) { return x.layer === 'browser'; }), brJudged = row.witnesses.some(function (x) { return x.layer === 'browser' && x.verdict !== 'SKIPPED'; });
   var onlyOotb = row.witnesses.every(function (x) { return x.layer === 'ootb'; });
   row.layers = onlyOotb ? 'bim-ootb tree (node, real modules)' : !hasBr ? 'engine only (no browser witness located)' : brJudged ? 'engine + browser' : 'engine only (browser SKIPPED)';
+  // §50.2: which of this row's evidence would a fresh clone NOT have? (portability is a second verdict; the term status above is what this machine judged)
+  if (row.status !== 'OPEN') {
+    var lists = t.w.filter(function (k) { return !logs[k].skipped; }).map(function (k) { return cacheInfo[k] && cacheInfo[k].inputList; });   // a SKIPPED witness (e.g. --browser 0) is not part of this run
+    if (!lists.length || lists.some(function (x) { return !x; })) { row.portable = null; portN.unknown++; }
+    else {
+      var un = DE.classify([].concat.apply([], lists), DE_ROOTS, DE_MAN);
+      row.untracked = un.map(function (u) { return { repo: u.repo, path: u.path, kind: u.kind, why: u.why, bytes: u.bytes, sha256: u.sha256.slice(0, 12), manifest: u.manifest }; });
+      row.portable = un.every(function (u) { return u.portable; }); portN[row.portable ? 'yes' : 'no']++;
+      un.forEach(function (u) { console.log('§UNTRACKED ' + t.id + ' ' + u.repo + '/' + u.path + ' kind=' + u.kind + ' why=' + u.why + ' bytes=' + u.bytes + ' sha=' + u.sha256.slice(0, 12) + ' manifest=' + u.manifest); });
+    }
+  }
   results.push(row);
 });
 
@@ -171,6 +189,7 @@ results.forEach(function (r) {
 var n = { ENFORCED: 0, OPEN: 0, 'WITNESS-FAILED': 0, UNCONTROLLED: 0 }; results.forEach(function (r) { n[r.status]++; });
 var verdict = anyFail ? 'FAIL' : (!anyJudged ? 'INCONCLUSIVE' : 'PASS');
 console.log('§TERMS_BROWSER judged=' + nBr.judged + ' skipped=' + nBr.skipped + (BROWSER_WHY ? ' reason="' + BROWSER_WHY + '"' : '') + (REUSE ? ' reused-logs' : ''));
+console.log('§TERMS_PORTABLE rows=' + (portN.yes + portN.no + portN.unknown) + ' portable=' + portN.yes + ' not_portable=' + portN.no + ' unknown=' + portN.unknown + ' (a fresh clone + dev_env_fetch has every input of a portable row; §50.2)');
 console.log('§TERMS_VERDICT ' + verdict + ' enforced=' + n.ENFORCED + ' open=' + n.OPEN + ' witness_failed=' + n['WITNESS-FAILED'] + ' uncontrolled=' + n.UNCONTROLLED + ' browser=judged ' + nBr.judged + '/skipped ' + nBr.skipped);
-if (A.json) fs.writeFileSync(A.json, JSON.stringify({ schema: 'terms-v1', kind: 'harness', at: new Date().toISOString(), node: process.version, fresh: FRESH, cachedRows: Object.keys(cacheInfo).filter(function (k) { return cacheInfo[k].cached; }).length, verdict: verdict, browser: { judged: nBr.judged, skipped: nBr.skipped, reason: BROWSER_WHY, reused: REUSE }, rows: results }, null, 1));
+if (A.json) fs.writeFileSync(A.json, JSON.stringify({ schema: 'terms-v1', kind: 'harness', at: new Date().toISOString(), node: process.version, fresh: FRESH, portable: { rows: portN.yes + portN.no + portN.unknown, portable: portN.yes, not_portable: portN.no, unknown: portN.unknown }, cachedRows: Object.keys(cacheInfo).filter(function (k) { return cacheInfo[k].cached; }).length, verdict: verdict, browser: { judged: nBr.judged, skipped: nBr.skipped, reason: BROWSER_WHY, reused: REUSE }, rows: results }, null, 1));
 process.exit(anyFail ? 1 : (!anyJudged ? 2 : 0));

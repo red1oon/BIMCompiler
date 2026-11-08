@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: BIM OOTB viewer (static web context /bimootb)
+Bundle-SymbolicName: org.idempiere.bimootb.viewer
+Bundle-Version: 13.1.0.qualifier
+Bundle-Vendor: iDempiere Community
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version>=17))"
+Web-ContextPath: bimootb
+Jetty-Environment: ee8
+Eclipse-BundleShape: dir
+Automatic-Module-Name: org.idempiere.bimootb.viewer

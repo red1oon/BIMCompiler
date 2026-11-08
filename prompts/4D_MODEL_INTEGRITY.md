@@ -2932,3 +2932,10 @@ vacuous PASS — PRIMAL LAW 4); (3) `cache_4d_run.js` per building: schedule out
   (3) PR with lines +/−; then update the §I ownership-table rows "does S support T?" / "which ONE thing supports T?" → owner cpm_schedule.js.
 - ⚠ Do NOT run the full suite (258 files, ~8 h measured) — the targeted 24 are the gate. ⚠ Some node witnesses spawn
   cli_silent_bake (a real bake): grep for it and exclude — one slipped through this session (crashed on load, no frames).
+
+## §CAPEX-R1 (2026-11-03, cross-ref from bim-ootb `prompts/CAPEX_DASHBOARD.md §5.1/§5.2`) — the Project Order fold no longer re-derives duration or the task grid
+`viewer/proj_fold.js` (listed above as a duplicate task-grid builder `:148` and phase classifier `:150`) now takes the owner's programme: `opts.schedule = {start, tasks:[{id, phase, storey, sDays, eDays, guids}], phaseSeq}`
+= `materializeZones(...).tasks` (node: `cache_4d_run.js read()` via `capex/tools/fold_inputs.js`). Its own duration loop (Σ ceil(count/productivity), 20/day default, serial phases) is DELETED; phases, dates
+(start + min sDays / max eDays), one C_ProjectTask per 4D task and each line's phase come from the owner. Without a programme: classify() phases, NO dates, note `NO_4D_SCHEDULE` (the classify
+duplicate remains on that path only). Witness `capex/tests/witness_fold_one_schedule.js` (HHS: was → 2028-05-24, now 2026-11-01 → 2026-12-24 = the 4D day 0-53). No 4D code changed.
+Measured on the way, NOT a 4D defect: Duplex 4D schedules 1,119 of 1,190 sized elements; the other 71 are IfcOpeningElement 50 + IfcSpace 21 (not built work).

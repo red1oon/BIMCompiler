@@ -10,7 +10,11 @@ from parselmouth.praat import call
 from kokoro_onnx import Kokoro
 K='/home/red1/.local/share/film_narration/kokoro/'
 k=Kokoro(K+'kokoro-v1.0.onnx',K+'voices-v1.0.bin')
-src,tag,base=sys.argv[1],sys.argv[2],float(sys.argv[3]); VOX={'F':'af_heart','M':'am_michael'}
+import os
+# Voice switch (owner 2026-11-01, film/vox-switch): env FILM_VOX_F / FILM_VOX_M pick the Kokoro voices (defaults unchanged: af_heart / am_michael),
+# FILM_VOX_SPEED (default 1.0) multiplies the base speed; a b* voice (bf_*/bm_*) is Kokoro's British English, voiced with lang='en-gb'.
+src,tag,base=sys.argv[1],sys.argv[2],float(sys.argv[3])*float(os.environ.get('FILM_VOX_SPEED','1.0')); VOX={'F':os.environ.get('FILM_VOX_F','af_heart'),'M':os.environ.get('FILM_VOX_M','am_michael')}
+print(f'§VOX F={VOX["F"]} M={VOX["M"]} speed_mult={os.environ.get("FILM_VOX_SPEED","1.0")} base={base:.3f}',flush=True)
 FILM=float(__import__('os').environ.get('FILM_SEC','206.79')); PAD=float(__import__('os').environ.get('FIT_PAD','0.3')); SR=24000; SPK={'F':1.03,'M':0.97}; RISE_ST=5.0; RISE_SPAN=0.6; CHUNK_GAP=0.12
 WH=re.compile(r'\b(what|why|how|where|who|whom|which|when)\b',re.I)
 def gap(prev):
@@ -60,7 +64,7 @@ def chunks(txt):   # each question sentence voiced alone; runs of other sentence
 def voice(txt,who,sp):
     parts=[];info=[]
     for c in chunks(txt):
-        a,_=k.create(c,voice=VOX[who],speed=sp*SPK[who],lang='en-us'); a=trim(a)
+        a,_=k.create(c,voice=VOX[who],speed=sp*SPK[who],lang='en-gb' if VOX[who].startswith('b') else 'en-us'); a=trim(a)
         kind='WH' if c.endswith('?') and WH.search(c) else 'YN' if c.endswith('?') else '!' if c.endswith('!') else '.'
         rose=0
         if kind=='YN':   # raise until the end measurably rises (+1 st), 3 st steps, cap 11 st

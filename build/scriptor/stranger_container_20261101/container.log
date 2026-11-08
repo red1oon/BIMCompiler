@@ -1,0 +1,10 @@
+§SC_ENV os=Debian GNU/Linux 12 (bookworm) node=v22.23.4 user=node home=/home/node pwd=/home/node
+§SC_ENV /home/red1 absent
+§SC_STEP clone exit=0 s=334
+§SC_HEADS BIMCompiler=be3d2e7d4 bim-ootb=6e0abbeb
+§SC_STEP npm_install exit=0 s=176
+§SC_STEP dev_env_fetch exit=0 s=6
+§SC_STEP terms_runner exit=1 s=142
+§TERMS_PORTABLE rows=13 portable=13 not_portable=0 unknown=0 (a fresh clone + dev_env_fetch has every input of a portable row; §50.2)
+§TERMS_VERDICT FAIL enforced=9 open=0 witness_failed=4 uncontrolled=0 browser=judged 0/skipped 5
+§SC_DOCKER exit=0

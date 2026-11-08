@@ -1,0 +1,2 @@
+printf '%s\n' witness_team_base witness_team_executors witness_team_ui_pos witness_team_plan witness_team_terms witness_team_seatbelt witness_docno_till witness_plugin_semver witness_plugin_lifecycle witness_plugin_grant witness_plugin_role witness_event_bus witness_osgi_console witness_pos_sales witness_modelval_bridge witness_script_validator witness_mf_lens witness_mfg_trace | xargs -P 4 -n 1 bash /home/red1/bim-compiler/build/scriptor/versioning_s2_s4/reg_s2/par.sh
+echo DONE >> /home/red1/bim-compiler/build/scriptor/versioning_s2_s4/reg_s2/_exits2.txt

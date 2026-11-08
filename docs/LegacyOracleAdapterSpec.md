@@ -139,6 +139,7 @@ Pilot configuration SQL: `scripts/bridge/pilot/`. Run: `scripts/bridge/run_all.s
 | Re-run safety | Crash after the server committed ⇒ document parked, **0 resends, 0 duplicates**; unreachable server ⇒ queued, capped, nothing lost; bad password ⇒ one attempt. |
 | Look and feel, dictionary level | 350 of 370 windows identical to legacy before patches, 370 of 370 with the generated patches (scratch copy). |
 | Enforcement | A quirk without an exemption is refused (control both ways). |
+| Fresh-client shop day *(update 2026-10-12)* | A throwaway client was set up on both systems, then a 25-step shop day was run (sales, POS cash sale, void, returns, count, cash journal, bank statement, back-dated sale, trial balance): **25 of 25 steps MATCH**, all four negative controls caught the planted 1-cent error; core corpus 20 of 20 scenarios MATCH (`SQLiteIDEMPIERE.md` §SHOPDAY-RUN-2, §SD16 RESULT). |
 
 **Not proven / limits (read these before relying on it):**
 - The scenario corpus is small (about 20 scenarios; the pilot has 34 document tables plus masters and reports). Coverage is only as wide as the scenarios — **unknown unknowns stay unknown**.
@@ -146,7 +147,7 @@ Pilot configuration SQL: `scripts/bridge/pilot/`. Run: `scripts/bridge/run_all.s
 - The oracle was a local copy of the demo dataset, not a production-sized or production-configured system. Volume, concurrency and performance are untested.
 - Following the cardinal rule means copying legacy's behaviour, **including its defects**, unless the owner exempts them.
 - Header-only masters and three-level documents (batch → journal → line) need small additions to the descriptor model; not built.
-- Delivery of the fixes into the shipped application, and running the adapter inside a browser (CORS, packaging), are not done.
+- Running the adapter inside a browser (CORS, packaging) is not done. *(Update 2026-10-12: delivery of the fixes into the shipped application is done — the engine fixes were ported and merged to the application's main branch, bim-ootb #1971, #1977, #1979–#1988, with the twin gate passing afterwards.)*
 
 ## 12. Prior art
 

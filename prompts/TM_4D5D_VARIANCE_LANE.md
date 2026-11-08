@@ -1014,3 +1014,9 @@ W-S7-INJECT-HONEST · W-S7-INJECT ✅24/24 · W-S7-INJECT-GUARD ✅17/17 · W-S7
 W-S7-INJECT-PERSIST ✅21/21 · W-S7-INJECT-COST ✅parts1+2 | S7 legs 2-4 ✅ W-S7-TASK-GRAIN 12/12 ·
 W-S7-GRAIN 10/10 · W-S7-GATE 22/22 · W-S7-HOVER-BUDGET 9/9 · W-S7-CANVAS-PICK 14/14 ✅#1735
 PHASE 2 (the wedge): W0=S5 W-PC-EARN (keystone) | W1 W-EAC | W2 W-CLAIM-CERT | W3 W-COCKPIT-LOOP
+
+## §CAPEX-R1 cross-ref (2026-11-03, bim-ootb `prompts/CAPEX_DASHBOARD.md §5.1/§5.2`) — fold line grain changes WHEN a 4D programme is passed
+`foldProjectOrder` with `opts.schedule` (the 4D owner's tasks) writes one C_ProjectTask per 4D task and one C_ProjectLine per (product × 4D task) — no longer one line per IFC class; phase dates are the
+4D windows (overlapping). WITHOUT a programme (every browser caller today: `find_erp_push.js`, `proj_order_state.js`) the old grain holds and phases carry NO dates (`NO_4D_SCHEDULE`) — the old serial
+duration loop is gone. Checked: `proj_claim.js:106` looks lines up by phase (unchanged), `proj_order_state.rowsAmount` sums per class across lines (grain-independent). When the browser is wired to pass
+the Time Machine's programme (CAPEX R1-f), re-run this lane's VO/claim witnesses against product × task lines.

@@ -119,7 +119,7 @@
     function eligForGrant(aud, kid, R) { return holdsOf(aud, kid, R); }
     function eligForSeal(aud, origin, R) { return holdsOf(aud, origin, R); }
     function audFor(lane, kid, R) {                       // the audience of a laned op: DOWN p_X -> p_X; UP (hub) by a station of person X -> p_X; UP/hub by a hub device -> hub
-      if (lane.indexOf('p_') === 0) return lane;
+      if (lane.indexOf('p_') === 0 || lane.indexOf('b_') === 0) return lane;      // 'b_<person>' (P2, POS_PLUGIN_LOCAL_FIRST §19.3): a BRANCH box is sealed to the branch's own devices; the hub is not eligible (host holds())
       if (lane === 'hub') { if (holdsOf('hub', kid, R)) return 'hub'; var d = R.devices[kid]; return d ? 'p_' + d.person : null; }
       return null;
     }
@@ -410,17 +410,21 @@
     async function cur() { return last || order(); }
 
     // my epoch keys, derived from the KEYGRANTs addressed to me that the roster accepted: {epoch: [CryptoKey]} (§13.2).
-    // Memoised on the fold result, so any new op (a new grant, a revoke) re-derives; nothing is persisted.
-    var ringFor = null, ringVal = {}, audVal = {};
+    // The RING is rebuilt from the current fold's grants whenever the fold result changes (a new grant, a revoke), so a grant
+    // the roster no longer accepts drops out. The CRYPTO is memoised per grant (§45.12): one ECDH+HKDF+unwrap per grant per
+    // store, keyed on everything the unwrap depends on; a grant that does not open is remembered too. Memory only, nothing persisted.
+    var ringFor = null, ringVal = {}, audVal = {}, _openCache = new Map(), _NOKEY = {};
     async function keyring() {
       var L = await cur(); if (ringFor === L) return ringVal;
       var ring = {}, ar = {}, R = L.roster;
       if (self.dhPrivateKey && R.ok) for (var g of R.grants) {
         if (g.kid !== self.kid) continue;
         var from = R.devices[g.from_kid]; if (!from || !from.dh) continue;
-        try { var k = await _unwrap(g.wrapped, self.dhPrivateKey, from.dh, space, g.epoch, g.from_kid, self.kid, g.aud);
-          if (g.aud) ((ar[g.aud] = ar[g.aud] || {})[g.epoch] = ar[g.aud][g.epoch] || []).push({ key: k, origin: g.origin });       // §45.11: {aud: {epoch: [{key, origin}]}}
-          else (ring[g.epoch] = ring[g.epoch] || []).push(k); } catch (e) { /* a grant that does not open is not a key */ }
+        var ck = g.wrapped + '|' + g.from_kid + '|' + g.epoch + '|' + (g.aud || '') + '|' + from.dh.x + ',' + from.dh.y, k = _openCache.get(ck);
+        if (k === undefined) { try { k = await _unwrap(g.wrapped, self.dhPrivateKey, from.dh, space, g.epoch, g.from_kid, self.kid, g.aud); } catch (e) { k = _NOKEY; } _openCache.set(ck, k); }
+        if (k === _NOKEY) continue;                                                             // a grant that does not open is not a key
+        if (g.aud) ((ar[g.aud] = ar[g.aud] || {})[g.epoch] = ar[g.aud][g.epoch] || []).push({ key: k, origin: g.origin });       // §45.11: {aud: {epoch: [{key, origin}]}}
+        else (ring[g.epoch] = ring[g.epoch] || []).push(k);
       }
       ringFor = L; ringVal = ring; audVal = ar; return ring;
     }
@@ -561,10 +565,15 @@
         var rr = _q(db, 'SELECT envelope FROM cl_op WHERE op_hash=?', [h])[0]; if (!rr) continue;
         for (var tu of await ROS.touched(JSON.parse(rr.envelope))) out[String(tu).toLowerCase()] = 1; }
       unrFor = L; unrVal = out; return out; }
-    async function author(spec) { return authorOne(spec, await versions(), null); }
+    // §52.4 SELF-RESTORE: a store rebuilt EMPTY for a device whose signed head is on the relay must fetch its own history before it authors anything,
+    // or its new ops would reuse its old sequence numbers (= equivocation). Set by sync(); authoring is refused while the restore is incomplete.
+    var restorePending = false;
+    function _refuseIfRestoring() { if (restorePending) { var er = new Error('restore-pending: this device is restoring its own history from the relay; it can author again once restore completes'); er.code = 'restore-pending'; throw er; } }
+    async function author(spec) { _refuseIfRestoring(); return authorOne(spec, await versions(), null); }
     // §41.2 L1 (profiled: author() costs O(log size) per op - versions() walks the whole log, cur() refolds it - so N ops cost O(N^2)): a BATCH of business ops reads the versions and the base ONCE and keeps its own
     // heads current (an op's head replaces what it read). The envelopes are the ones author() would have made one by one. -> { done: [{env, hash}], error }
     async function authorMany(specs) {
+      _refuseIfRestoring();
       var ver = await versions(), rbc = {}, done = [];
       try { for (var sp of specs) { if (ROS.IDENTITY[sp.body.op_type]) throw new Error('authorMany: business ops only'); var a = await authorOne(sp, ver, rbc); ver[String(sp.target.uu).toLowerCase()] = a.hash; done.push(a); } }
       catch (e) { return { done: done, error: e }; }
@@ -612,11 +621,13 @@
     // a missing one is created here and granted to the eligible devices; every audience key I hold (eligible origin) that an eligible device lacks is granted. A station never creates keys.
     async function audKeys(rep) {
       var L = await cur(), R = L.roster;
-      if (!audOn(R) || !self.dhPrivateKey || !R.devices[self.kid] || R.revokes[self.kid] != null || !holdsOf('hub', self.kid, R)) return 0;
+      if (!audOn(R) || !self.dhPrivateKey || !R.devices[self.kid] || R.revokes[self.kid] != null) return 0;
+      var isHubSelf = holdsOf('hub', self.kid, R), myBranch = R.devices[self.kid].person ? 'b_' + R.devices[self.kid].person : null;
+      if (!isHubSelf && !(myBranch && holdsOf(myBranch, self.kid, R))) return 0;       // a station never creates the hub / p_ keys; it may create the key of its OWN branch audience (b_<person>) when the host says it holds it
       var ring = await keyring(), ep = _newest(ring); if (ep == null) return 0;
       var ar = await audKeyring(), me = R.devices[self.kid], role = R.roleAt(self.kid, selfRow().next_seq), n = 0;
       var active = Object.keys(R.devices).sort().filter(function (k) { return R.revokes[k] == null && R.devices[k].dh; });
-      var auds = {}; auds.hub = 1; active.forEach(function (k) { if (!holdsOf('hub', k, R)) auds['p_' + R.devices[k].person] = 1; });
+      var auds = {}; if (isHubSelf) { auds.hub = 1; active.forEach(function (k) { if (!holdsOf('hub', k, R)) auds['p_' + R.devices[k].person] = 1; }); } else auds[myBranch] = 1;     // the hub keeps hub + p_ keys; a station only its own branch key
       var have = {}; R.grants.forEach(function (g) { if (g.aud && holdsOf(g.aud, g.origin, R)) have[g.kid + '#' + g.aud + '#' + g.epoch] = 1; });
       rowsOf("SELECT op_hash, envelope FROM cl_op WHERE author_kid=? AND op_type='KEYGRANT'", [self.kid]).forEach(function (o) { var q = o.env.body.params; if (q.aud) have[q.kid + '#' + q.aud + '#' + q.epoch] = 1; });      // mine, accepted or not: never re-issue
       function mayGrant(k) { return role.comm_admin || R.devices[k].person === me.person; }
@@ -628,8 +639,8 @@
         var has = ((ar[aud] || {})[ep] || []).some(function (e) { return holdsOf(aud, e.origin, R); });
         if (!has) { var key = await _newSpaceKey(); if (!holdsOf(aud, self.kid, R)) continue; await give(aud, ep, key, self.kid); log('§COMM_KEY kid=' + self.kid + ' aud-create aud=' + aud + ' epoch=' + ep); } }
       ar = await audKeyring();
-      for (var a2 of Object.keys(ar).sort()) for (var e2 of Object.keys(ar[a2]).map(Number).sort())          // 2. repair: a key I hold (eligible origin) that an eligible device lacks
-        for (var ent of ar[a2][e2]) if (holdsOf(a2, ent.origin, R)) await give(a2, e2, ent.key, ent.origin);
+      for (var a2 of Object.keys(ar).sort()) { if (!isHubSelf && a2 !== myBranch) continue; for (var e2 of Object.keys(ar[a2]).map(Number).sort())          // 2. repair: a key I hold (eligible origin) that an eligible device lacks
+        for (var ent of ar[a2][e2]) if (holdsOf(a2, ent.origin, R)) await give(a2, e2, ent.key, ent.origin); }
       return n;
     }
     async function genesis(params) {
@@ -849,9 +860,16 @@
 
     async function sync(pipe) {
       var rep = { sent: 0, fetched: 0, received: 0, contenders: 0, rejected: 0, readBackFail: 0, sealed: 0, opened: 0, tampered: 0, granted: 0 };
+      // §52.4: an empty store (no own op, next_seq 1) whose device has a SIGNED head on the relay is a rebuilt device -> fetch its own objects too, this visit
+      var restoring = false, rHead = null;
+      if (!_q(db, 'SELECT 1 FROM cl_op WHERE author_kid=? LIMIT 1', [self.kid]).length && (selfRow() || {}).next_seq === 1 && self.pubJwk) {
+        var hb0 = await pipe.get(SP + 'h/' + self.kid);
+        if (hb0) { try { var hd0 = _unjson(hb0); if (hd0 && hd0.author === self.kid && hd0.space === space && hd0.seq > 0 && (await ENV.verify(hd0, self.pubJwk))) { restoring = true; rHead = hd0; } } catch (e) { /* not my head: a new device */ } }
+        if (restoring) log('§COMM_RESTORE kid=' + self.kid + ' start head_seq=' + rHead.seq);
+      }
       // 1. collect: plaintext ops are ingested; sealed ones wait in cl_sealed until a key opens them
       for (var on of await pipe.list(SP + 'o/')) {
-        if (on.indexOf(SP + 'o/' + self.kid + '/') === 0) continue;
+        if (!restoring && on.indexOf(SP + 'o/' + self.kid + '/') === 0) continue;
         if (_q(db, 'SELECT 1 FROM cl_fetched WHERE name=? AND pipe_id=?', [on, pipe.id]).length) continue;
         var ob = await pipe.get(on); if (!ob) continue;                 // withheld/absent: try again next visit
         await takeBundle(on, ob, pipe, rep);
@@ -865,11 +883,23 @@
             if (_q(db, 'SELECT 1 FROM cl_fetched WHERE name=? AND pipe_id=?', [mn, pipe.id]).length) continue;
             var mb2 = await pipe.get(mn); if (!mb2) continue;
             await takeBundle(mn, mb2, pipe, rep); } } }
+      if (restoring) for (var rn of await pipe.list(SP + 'm/')) {                 // §52.4: my own mailbox bundles, in whichever box they went (a station's UP mail is in m/hub/)
+        if (rn.split('/')[5] !== self.kid || _q(db, 'SELECT 1 FROM cl_fetched WHERE name=? AND pipe_id=?', [rn, pipe.id]).length) continue;
+        var rb2 = await pipe.get(rn); if (rb2) await takeBundle(rn, rb2, pipe, rep); }
       await openSnapMeta();                                    // before the sealed ops open: a light client must know the state before it sees the ops it would otherwise fold
       await openSealed(rep);
       await fetchSnapshots(pipe, rep);
       await openSealed(rep);
       await openSnapMeta();
+      if (restoring) {                                                              // §52.4: what I fetched of my own is mine again; numbering continues after the highest seq I ever signed
+        db.run("UPDATE cl_op SET state='OWN' WHERE author_kid=?", [self.kid]);
+        var rmx = _q(db, 'SELECT author_seq AS s, op_hash AS h FROM cl_op WHERE author_kid=? ORDER BY author_seq DESC LIMIT 1', [self.kid])[0], rn0 = _q(db, 'SELECT COUNT(*) AS n FROM cl_op WHERE author_kid=?', [self.kid])[0].n;
+        var rtop = Math.max(rHead.seq, rmx ? rmx.s : 0);
+        db.run('UPDATE cl_self SET next_seq=?, head_hash=?, bundled_to=? WHERE kid=?', [rtop + 1, (rmx && rmx.s === rtop) ? rmx.h : rHead.hash, rtop, self.kid]);
+        _q(db, 'SELECT box AS b, MAX(bseq) AS m FROM cl_box WHERE author_kid=? GROUP BY box', [self.kid]).forEach(function (r) { db.run('INSERT OR REPLACE INTO cl_boxseq VALUES (?,?)', [r.b, r.m]); });
+        restorePending = rn0 < rHead.seq; last = null;
+        log('§COMM_RESTORE kid=' + self.kid + ' own_ops=' + rn0 + ' head_seq=' + rHead.seq + ' next_seq=' + (rtop + 1) + ' pending=' + restorePending);
+      } else if (restorePending && _q(db, 'SELECT COUNT(*) AS n FROM cl_op WHERE author_kid=?', [self.kid])[0].n >= (selfRow().next_seq - 1)) { restorePending = false; log('§COMM_RESTORE kid=' + self.kid + ' complete'); }
       await autoKeys(rep);
       // 2. send my news
       var nb = await bundleNew();
@@ -993,7 +1023,11 @@
         pk.run('INSERT INTO ops VALUES (?,?)', [q.op_hash, txt]); }
       var bodyOnly = Object.assign({}, body); delete bodyOnly.hash;
       var stText = sealedSpace ? await _seal(bodyOnly, ring[ep][0], ep, space) : JSON.stringify(bodyOnly);        // the state is sealed like any business op: it holds record uuids, scopes, claim keys (hashed)
-      pk.run('INSERT INTO meta VALUES (?,?)', ['state', stText]); pk.run('INSERT INTO meta VALUES (?,?)', ['state_hash', sh]); pk.run('INSERT INTO meta VALUES (?,?)', ['frontier', JSON.stringify(f)]);
+      // G5 (§49.1): in a mailbox space the state lists laned op ids + verdicts + record ids, and the space key is every member's: so it is NOT published at all (state_hash + frontier stay, they are hashes).
+      // Cost: a light client cannot adopt the state without folding (no snapshot meta -> it folds S itself); full-log devices and the hub are unaffected.
+      if (!aOnC) pk.run('INSERT INTO meta VALUES (?,?)', ['state', stText]);
+      else log('§CKPT_STATE_OMITTED kid=' + self.kid + ' state=' + sh.slice(0, 12) + ' reason=mailbox-space-laned-detail');
+      pk.run('INSERT INTO meta VALUES (?,?)', ['state_hash', sh]); pk.run('INSERT INTO meta VALUES (?,?)', ['frontier', JSON.stringify(f)]);
       var bytes = pk.export(); pk.close();
       var name = SP + 'o/' + self.kid + '/ck.' + body.order.length + '.' + sh.slice(0, 12) + '.bimsnap';
       if ((await pipe.put(name, bytes)) === false) return { skipped: 'put-refused' };
@@ -1027,7 +1061,7 @@
     return { kid: self.kid, space: space, db: db, author: author, authorMany: authorMany, ingest: ingest, order: order, frontier: frontier, versions: versions, gaps: gaps,
              genesis: genesis, baseInfo: baseInfo, planTrust: planTrust, planTrustInfo: planTrustInfo, anchor: anchor, publishAnchor: publishAnchor, addPerson: addPerson, enroll: enroll, setRole: setRole, revoke: revoke, setPolicy: setPolicy, publishStatement: publishStatement, policy: policy, visitOffset: visitOffset, versionState: versionState, refold: refold,
              checkpoint: checkpoint, cosign: cosign, claim: claim, claimOf: claimOf, claims: claims, claimNotices: claimNotices, checkpointInfo: checkpointInfo, checkpointDue: checkpointDue,
-             keyring: keyring, sealed: function () { return _q(db, 'SELECT op_hash, epoch, bundle FROM cl_sealed'); },
+             keyring: keyring, audKeyring: audKeyring, sealed: function () { return _q(db, 'SELECT op_hash, epoch, bundle FROM cl_sealed'); },
              bundleNew: bundleNew, readBundle: readBundle, signedHead: signedHead, sync: sync, setMailbox: setMailbox, delivery: delivery, placedEnvelopes: placedEnvelopes,
              conflicts: conflicts, foldable: foldable, notices: notices, saveCheck: saveCheck,
              verdicts: verdicts, query: function (sql, args) { return _q(db, sql, args); } };

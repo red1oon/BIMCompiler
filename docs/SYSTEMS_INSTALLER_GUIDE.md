@@ -2,7 +2,7 @@
 
 *[← Back to the **User Guide**](USER_GUIDE.md) · [Home](index.md)*
 
-> **Foundation:** BBC · DATA_MODEL · BIM_COBOL · [MANIFESTO](MANIFESTO.md) · TestArchitecture
+> **Foundation:** [BBC](https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BOMBasedCompilation.md) · [DATA_MODEL](https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/DATA_MODEL.md) · [BIM_COBOL](https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/BIM_COBOL.md) · [MANIFESTO](MANIFESTO.md) · [TestArchitecture](https://github.com/red1oon/BIMCompiler/blob/master/docs/archive/TestArchitecture.md)
 
 !!! note "BIM OOTB now runs in the browser — you probably don't need this guide"
     The product is **browser-based**: open the [front door](https://red1oon.github.io/bim-ootb/), or
@@ -19,7 +19,7 @@
 
 **Audience:** Developers building the **Java** compiler + back-office from source (the browser app needs none of this).
 
-**For WAN/Docker deployment** of the back-office server, see DEPLOYMENT.md.
+**For WAN/Docker deployment** of the back-office server, see [DEPLOYMENT.md](https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/DEPLOYMENT.md).
 
 ---
 
@@ -55,7 +55,7 @@ mvn compile -q
 ./scripts/run_tests.sh
 ```
 
-**Expected output:** ~382 PASS, ~94 intentional RED (pre-existing calibration items — see `scripts/run_tests.sh` header for breakdown).
+**Expected output (baseline recorded 2026-03-11 in the script header; the counts have drifted since):** ~382 PASS, ~94 intentional RED (pre-existing calibration items — see `scripts/run_tests.sh` header for breakdown).
 
 **Module build order** (Maven reactor handles this automatically):
 
@@ -692,6 +692,6 @@ sqlite3 ./library/ERP.db < migration/DV008_infra_rail_rules.sql
 
 *For the project overview paper, see [BIMERPPaper.md](BIMERPPaper.md).*
 *For the end-user installer specification, see [INSTALLER_SPEC.md](https://github.com/red1oon/BIMCompiler/blob/master/internal/INSTALLER_SPEC.md).*
-*For the WAN/Docker deployment guide, see DEPLOYMENT.md.*
+*For the WAN/Docker deployment guide, see [DEPLOYMENT.md](https://github.com/red1oon/BIMCompiler/blob/master/docs/internal/DEPLOYMENT.md).*
 
 *Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.*

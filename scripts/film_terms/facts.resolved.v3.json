@@ -1,0 +1,197 @@
+{
+ "facts": {
+  "n10": {
+   "status": "now",
+   "value": "10",
+   "log": "build/scriptor/witness_scale_star_engine_10.log"
+  },
+  "n100": {
+   "status": "now",
+   "value": "100",
+   "log": "build/scriptor/witness_scale_star_engine_100.log"
+  },
+  "n1000": {
+   "status": "now",
+   "value": "1000",
+   "log": "build/scriptor/witness_scale_star_engine_1000.log"
+  },
+  "star_limits": {
+   "status": "now",
+   "value": "true",
+   "log": "build/scriptor/witness_scale_star_engine_1000.log"
+  },
+  "bytes10": {
+   "status": "now",
+   "value": "367312",
+   "log": "build/scriptor/witness_scale_star_engine_10.log"
+  },
+  "bytes100": {
+   "status": "now",
+   "value": "4495450",
+   "log": "build/scriptor/witness_scale_star_engine_100.log"
+  },
+  "kb10": {
+   "status": "now",
+   "value": "367",
+   "log": "derived from bytes10"
+  },
+  "mb100": {
+   "status": "now",
+   "value": "4.5",
+   "log": "derived from bytes100"
+  },
+  "gov_name": {
+   "status": "now",
+   "value": "Project quality objectives",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md"
+  },
+  "gov_mit": {
+   "status": "now",
+   "value": "A clone is free under MIT",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md"
+  },
+  "gov_while": {
+   "status": "now",
+   "value": "only while its own terms run still passes",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md"
+  },
+  "v3_enforced": {
+   "status": "now",
+   "value": "13",
+   "log": "build/scriptor/terms_postSeal/runner.log"
+  },
+  "v3_open": {
+   "status": "now",
+   "value": "0",
+   "log": "build/scriptor/terms_postSeal/runner.log"
+  },
+  "v3_word": {
+   "status": "now",
+   "value": "PASS",
+   "log": "build/scriptor/terms_postSeal/runner.log"
+  },
+  "neg_found": {
+   "status": "now",
+   "value": "8",
+   "log": "build/scriptor/terms_postSeal_neg/neg_seal.out"
+  },
+  "neg_tot": {
+   "status": "now",
+   "value": "9",
+   "log": "build/scriptor/terms_postSeal_neg/neg_seal.out"
+  },
+  "neg_word": {
+   "status": "now",
+   "value": "FAIL",
+   "log": "build/scriptor/terms_postSeal_neg/neg_seal.out"
+  },
+  "rs_downloaded": {
+   "status": "now",
+   "value": "3",
+   "log": "build/scriptor/terms_postSeal/witness_read_scope.log"
+  },
+  "rs_opened": {
+   "status": "now",
+   "value": "0",
+   "log": "build/scriptor/terms_postSeal/witness_read_scope.log"
+  },
+  "rs_ctl_opened": {
+   "status": "now",
+   "value": "3",
+   "log": "build/scriptor/terms_postSeal/witness_read_scope.log"
+  },
+  "rs_ctl_tot": {
+   "status": "now",
+   "value": "3",
+   "log": "build/scriptor/terms_postSeal/witness_read_scope.log"
+  },
+  "rs_office": {
+   "status": "now",
+   "value": "true",
+   "log": "build/scriptor/terms_postSeal/witness_read_scope.log"
+  },
+  "sc10": {
+   "status": "now",
+   "value": "397",
+   "log": "build/scriptor/read_scope_20261031/scale_10.log"
+  },
+  "sc100": {
+   "status": "now",
+   "value": "399",
+   "log": "build/scriptor/read_scope_20261031/scale_100.log"
+  },
+  "gh_gap_mid": {
+   "status": "now",
+   "value": "4",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log"
+  },
+  "gh_gap_last": {
+   "status": "now",
+   "value": "5",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log"
+  },
+  "gh_word": {
+   "status": "now",
+   "value": "PASS",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log"
+  },
+  "gh_ctl_flag": {
+   "status": "now",
+   "value": "true",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log"
+  },
+  "env1": {
+   "status": "now",
+   "value": "1",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log"
+  },
+  "env2": {
+   "status": "now",
+   "value": "2",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log"
+  },
+  "env3": {
+   "status": "now",
+   "value": "3",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log"
+  },
+  "env4": {
+   "status": "now",
+   "value": "4",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log"
+  },
+  "env5": {
+   "status": "now",
+   "value": "5",
+   "log": "build/scriptor/gaps_49_1/g4_GREEN.log"
+  },
+  "refuse_every": {
+   "status": "now",
+   "value": "true",
+   "log": "build/scriptor/terms_run/witness_comm_executors.log"
+  },
+  "lim_meta": {
+   "status": "now",
+   "value": "true",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md"
+  },
+  "r3_not_done": {
+   "status": "now",
+   "value": "true",
+   "log": "prompts/TEAMWORK_FRAMEWORK.md"
+  }
+ },
+ "sources": {
+  "build/scriptor/witness_scale_star_engine_10.log": "e7c0403456ec1c5aa88dc946af1e15d584d4a9d59e072a9e14bb0450df46ce03",
+  "build/scriptor/witness_scale_star_engine_100.log": "7e44e1553baea8c475f0dcc2caa732466dd6ddefdbb80257d502b37630735c52",
+  "build/scriptor/witness_scale_star_engine_1000.log": "6dccbe0889328202f6c61d64b21ed5a18d38b3c473b01f5e4c72383127443503",
+  "prompts/TEAMWORK_FRAMEWORK.md": "61ce42afd22ef71883b3fc654eb1310e04021fda519229c5ba414e648bf2d2a3",
+  "build/scriptor/terms_postSeal/runner.log": "eaee3df63804a682e8e429f8a28c57921984176b6829b65d19fb024395930740",
+  "build/scriptor/terms_postSeal_neg/neg_seal.out": "d00813f1e93ed3d81baac4bc74a475fbb0cbedd111d7d3a611b1571c948a015e",
+  "build/scriptor/terms_postSeal/witness_read_scope.log": "66ce2c7168c80d9660d168039a2180ef41d5bbe32a1646ef1ab1de12f9c7be45",
+  "build/scriptor/read_scope_20261031/scale_10.log": "92eade29c78dc4f4b8498712f3145ab9c7d31cfa009be941f6c18d5ddce8c4ec",
+  "build/scriptor/read_scope_20261031/scale_100.log": "618e8d6409eb6c3558d3750bc241fb648876596dbbf955211ccc07c9ff7b6550",
+  "build/scriptor/gaps_49_1/g4_GREEN.log": "1316f31744bcbba80f113a28f69de83ddf7c57a8bf22bdf97e4d904e4a3918c5",
+  "build/scriptor/terms_run/witness_comm_executors.log": "bcba1ec0384a02a870073606ab9797548ca81a4a05e8da3d32c9bd29df89ec76"
+ }
+}

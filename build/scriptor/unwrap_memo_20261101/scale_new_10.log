@@ -1,0 +1,63 @@
+§STAR-HEADER W-SCALE-STAR mode=engine N=10 M=10 K=3 workers=6 box_min=30 ootb=/tmp/wt-unwrap-memo commit=72ecc8f9 node=v18.19.1 cpus=20 loadavg=8.54,6.56,3.64 at=2026-11-01T04:58:35.124Z
+§STAR-LIMITS one Node process family simulates all devices (no network latency, no browser); the relay is a folder pipe on local disk; load-generating devices fetch only the founder's roster bundle and are not measured;
+§STAR-LIMITS the measured edges (2 stations: first+last, 2 borrowers: first+last) and head office fetch the WHOLE relay; Node + sql.js timings are not browser timings; teamRebuild (ERP projection) is browser-only, so Visit ms = sync + adapter _project;
+§STAR-LIMITS per-device numbers are per device INSTANCE; head-office model-layer inputs are K4-shaped tickets (engine carries only the plan's declared columns; the two are not bridged by a projection in Node).
+§STAR-PHASE create-devices devices=20 ms=30
+§STAR-ENROL devices=2/20 block_ms=196
+§STAR-ENROL devices=4/20 block_ms=185
+§STAR-ENROL devices=6/20 block_ms=172
+§STAR-ENROL devices=8/20 block_ms=239
+§STAR-ENROL devices=10/20 block_ms=231
+§STAR-ENROL devices=12/20 block_ms=248
+§STAR-ENROL devices=14/20 block_ms=320
+§STAR-ENROL devices=16/20 block_ms=277
+§STAR-ENROL devices=18/20 block_ms=338
+§STAR-ENROL devices=20/20 block_ms=355
+§STAR-PHASE enrol devices=20 identity_ops=60 ms=2564 per_device_ms=128.2
+§STAR-PHASE founder-push sent=103 bytes=229773
+§STAR-PHASE produce load_generators=16/16 ops=136 errs=0 wall_ms=2206 sum_device_ms=11577
+§STAR-EDGE-V1 s:0 {"sync_ms":96.69600009918213,"visit_ms":200.97699999809265,"bytes_down":397,"objs_down":1,"gets":3,"lists":3,"listed":19,"bytes_up":33194,"sent":15,"fetched":0,"received":0,"placed":15,"accepted":15,"refused":0,"rows":15,"db_bytes":397312}
+§STAR-EDGE-V1 s:9 {"sync_ms":84.18400001525879,"visit_ms":194.5199999809265,"bytes_down":397,"objs_down":1,"gets":3,"lists":3,"listed":20,"bytes_up":33194,"sent":15,"fetched":0,"received":0,"placed":15,"accepted":15,"refused":0,"rows":15,"db_bytes":397312}
+§STAR-EDGE-V1 b:0 {"sync_ms":53.78600001335144,"visit_ms":122.47100007534027,"bytes_down":397,"objs_down":1,"gets":3,"lists":3,"listed":21,"bytes_up":12711,"sent":2,"fetched":0,"received":0,"placed":2,"accepted":2,"refused":0,"rows":2,"db_bytes":372736}
+§STAR-EDGE-V1 b:9 {"sync_ms":68.21999990940094,"visit_ms":164.76399993896484,"bytes_down":397,"objs_down":1,"gets":3,"lists":3,"listed":22,"bytes_up":12711,"sent":2,"fetched":0,"received":0,"placed":2,"accepted":2,"refused":0,"rows":2,"db_bytes":372736}
+§STAR-HQ-VISIT {"sync_ms":675.261999964714,"project_ms":202.1010000705719,"fold_ms":877.363000035286,"bytes_down":459050,"objs_down":40,"listed":42,"fetched":20,"received":170,"placed":273,"foldable":170,"accepted":170,"refused":0,"db_bytes":675840}
+§STAR-HQ-REPLIES {"order_calls":2,"spec_digest":{"n":30,"sha":"d946a36f4f8455c0","first":"{\"target\":{\"table\":\"m_movementline\",\"uu\":\"u0\"},\"body\":{\"op_type\":\"CRUD_CREATE\",\"params\":{\"fields\":{\"m_product_id\":123,\"qtyentered\":2,\"c_uom_id\":100,\"m_locator_i","last":"{\"target\":{\"table\":\"c_invoicepayschedule\",\"uu\":\"u29\"},\"body\":{\"op_type\":\"CRUD_CREATE\",\"params\":{\"fields\":{\"c_invoice_id\":{\"uu\":\"u28\"},\"dueamt\":50,\"duedate\":\"202"},"pass_seam":true,"movements":10,"loans":10,"schedules":10,"author_ms":542.5099999904633,"movements_ms":133.04100000858307,"loans_translate_ms":137.72000002861023,"loans_author_many_ms":34.12900006771088,"push_sync_ms":237.22000002861023,"pushed":30}
+§STAR-EDGE-V2 s:0 {"sync_ms":76.8400000333786,"visit_ms":247.54100000858307,"bytes_down":13974,"objs_down":2,"gets":3,"lists":3,"listed":23,"fetched":1,"placed":16,"accepted":16,"refused":0,"rows":16,"byTable":{},"db_bytes":397312,"mov_rows":1,"inv_rows":0}
+§STAR-EDGE-V2 s:9 {"sync_ms":71.04700005054474,"visit_ms":213.6600000858307,"bytes_down":13974,"objs_down":2,"gets":3,"lists":3,"listed":23,"fetched":1,"placed":16,"accepted":16,"refused":0,"rows":16,"byTable":{},"db_bytes":397312,"mov_rows":1,"inv_rows":0}
+§STAR-EDGE-V2 b:0 {"sync_ms":70.90100002288818,"visit_ms":170.03700006008148,"bytes_down":13974,"objs_down":2,"gets":3,"lists":3,"listed":23,"fetched":1,"placed":4,"accepted":4,"refused":0,"rows":4,"byTable":{},"db_bytes":376832,"mov_rows":0,"inv_rows":1}
+§STAR-EDGE-V2 b:9 {"sync_ms":59.30299997329712,"visit_ms":150.4409999847412,"bytes_down":13974,"objs_down":2,"gets":3,"lists":3,"listed":23,"fetched":1,"placed":4,"accepted":4,"refused":0,"rows":4,"byTable":{},"db_bytes":376832,"mov_rows":0,"inv_rows":1}
+§STAR-CONTROL {"planted":1,"accepted_before":16,"accepted_after":17,"moved":1}
+§STAR-MUTANT scope-off {"accepted_mutant":17,"accepted_real":17,"placed":17}
+§STAR-RELAY {"objects":63,"bytes":948160,"bundles":42,"bundleBytes":937984,"heads":21,"headBytes":10176,"written_ops_objs":null}
+§OPCOUNT pid=2934189 {"unwrapKey":6,"wrapKey":0,"deriveKey":6,"deriveBits":6,"verify":183,"sign":38,"encrypt":32,"decrypt":0} rssMB=128
+§OPCOUNT pid=2934193 {"unwrapKey":4,"wrapKey":0,"deriveKey":4,"deriveBits":4,"verify":152,"sign":21,"encrypt":17,"decrypt":0} rssMB=124
+§OPCOUNT pid=2934192 {"unwrapKey":6,"wrapKey":0,"deriveKey":6,"deriveBits":6,"verify":170,"sign":25,"encrypt":19,"decrypt":0} rssMB=130
+§OPCOUNT pid=2934191 {"unwrapKey":6,"wrapKey":0,"deriveKey":6,"deriveBits":6,"verify":170,"sign":25,"encrypt":19,"decrypt":0} rssMB=129
+§OPCOUNT pid=2934190 {"unwrapKey":6,"wrapKey":0,"deriveKey":6,"deriveBits":6,"verify":183,"sign":38,"encrypt":32,"decrypt":0} rssMB=130
+§OPCOUNT pid=2934201 {"unwrapKey":4,"wrapKey":0,"deriveKey":4,"deriveBits":4,"verify":152,"sign":21,"encrypt":17,"decrypt":0} rssMB=127
+§STAR-POINT {"n":10,"m":10,"k":3,"workers":6,"status":"PASS-RUN","phases":{"create_ms":29.840999960899353,"enrol_ms":2563.926999926567,"produce_ms":2205.751999974251},"enrol_block_ms":[[2,196],[4,185],[6,172],[8,239],[10,231],[12,248],[14,320],[16,277],[18,338],[20,355]],"generated":{"devices":16,"ops":136,"nerr":0,"errs":[],"ms":11576.686000108719},"hq_visit":{"sync_ms":675.261999964714,"project_ms":202.1010000705719,"fold_ms":877.363000035286,"bytes_down":459050,"objs_down":40,"listed":42,"fetched":20,"received":170,"placed":273,"foldable":170,"accepted":170,"refused":0,"db_bytes":675840},"hq_replies":{"order_calls":2,"spec_digest":{"n":30,"sha":"d946a36f4f8455c0","first":"{\"target\":{\"table\":\"m_movementline\",\"uu\":\"u0\"},\"body\":{\"op_type\":\"CRUD_CREATE\",\"params\":{\"fields\":{\"m_product_id\":123,\"qtyentered\":2,\"c_uom_id\":100,\"m_locator_i","last":"{\"target\":{\"table\":\"c_invoicepayschedule\",\"uu\":\"u29\"},\"body\":{\"op_type\":\"CRUD_CREATE\",\"params\":{\"fields\":{\"c_invoice_id\":{\"uu\":\"u28\"},\"dueamt\":50,\"duedate\":\"202"},"pass_seam":true,"movements":10,"loans":10,"schedules":10,"author_ms":542.5099999904633,"movements_ms":133.04100000858307,"loans_translate_ms":137.72000002861023,"loans_author_many_ms":34.12900006771088,"push_sync_ms":237.22000002861023,"pushed":30},"control":{"planted":1,"accepted_before":16,"accepted_after":17,"moved":1},"mutant_scope":{"accepted_mutant":17,"accepted_real":17,"placed":17},"relay":{"objects":63,"bytes":948160,"bundles":42,"bundleBytes":937984,"heads":21,"headBytes":10176,"written_ops_objs":null},"sample":[{"key":"s:0","role":"station","authored":15,"v1":{"sync_ms":96.69600009918213,"visit_ms":200.97699999809265,"bytes_down":397,"objs_down":1,"gets":3,"lists":3,"listed":19,"bytes_up":33194,"sent":15,"fetched":0,"received":0,"placed":15,"accepted":15,"refused":0,"rows":15,"db_bytes":397312},"v2":{"sync_ms":76.8400000333786,"visit_ms":247.54100000858307,"bytes_down":13974,"objs_down":2,"gets":3,"lists":3,"listed":23,"fetched":1,"placed":16,"accepted":16,"refused":0,"rows":16,"byTable":{},"db_bytes":397312,"mov_rows":1,"inv_rows":0}},{"key":"s:9","role":"station","authored":15,"v1":{"sync_ms":84.18400001525879,"visit_ms":194.5199999809265,"bytes_down":397,"objs_down":1,"gets":3,"lists":3,"listed":20,"bytes_up":33194,"sent":15,"fetched":0,"received":0,"placed":15,"accepted":15,"refused":0,"rows":15,"db_bytes":397312},"v2":{"sync_ms":71.04700005054474,"visit_ms":213.6600000858307,"bytes_down":13974,"objs_down":2,"gets":3,"lists":3,"listed":23,"fetched":1,"placed":16,"accepted":16,"refused":0,"rows":16,"byTable":{},"db_bytes":397312,"mov_rows":1,"inv_rows":0}},{"key":"b:0","role":"borrower","authored":2,"v1":{"sync_ms":53.78600001335144,"visit_ms":122.47100007534027,"bytes_down":397,"objs_down":1,"gets":3,"lists":3,"listed":21,"bytes_up":12711,"sent":2,"fetched":0,"received":0,"placed":2,"accepted":2,"refused":0,"rows":2,"db_bytes":372736},"v2":{"sync_ms":70.90100002288818,"visit_ms":170.03700006008148,"bytes_down":13974,"objs_down":2,"gets":3,"lists":3,"listed":23,"fetched":1,"placed":4,"accepted":4,"refused":0,"rows":4,"byTable":{},"db_bytes":376832,"mov_rows":0,"inv_rows":1}},{"key":"b:9","role":"borrower","authored":2,"v1":{"sync_ms":68.21999990940094,"visit_ms":164.76399993896484,"bytes_down":397,"objs_down":1,"gets":3,"lists":3,"listed":22,"bytes_up":12711,"sent":2,"fetched":0,"received":0,"placed":2,"accepted":2,"refused":0,"rows":2,"db_bytes":372736},"v2":{"sync_ms":59.30299997329712,"visit_ms":150.4409999847412,"bytes_down":13974,"objs_down":2,"gets":3,"lists":3,"listed":23,"fetched":1,"placed":4,"accepted":4,"refused":0,"rows":4,"byTable":{},"db_bytes":376832,"mov_rows":0,"inv_rows":1}}],"mem":{"heap_mb":34,"rss_mb":189},"wall_ms":10076,"kind":"engine"}
+§STAR-DONE engine N=10 M=10 status=PASS-RUN wall_s=10
+§OPCOUNT pid=2934173 {"unwrapKey":30,"wrapKey":62,"deriveKey":92,"deriveBits":92,"verify":769,"sign":186,"encrypt":65,"decrypt":176} rssMB=189
+	Command being timed: "node scripts/witness_scale_star.js /tmp/wt-unwrap-memo engine --n 10 --m 10 --k 3 --workers 6 --budget-min 30"
+	User time (seconds): 9.96
+	System time (seconds): 0.55
+	Percent of CPU this job got: 102%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:10.29
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 184776
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 64401
+	Voluntary context switches: 20396
+	Involuntary context switches: 873
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 1280
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

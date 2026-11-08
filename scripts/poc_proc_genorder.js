@@ -20,11 +20,11 @@
 'use strict';
 var path = require('path');
 var Database = require('better-sqlite3');
-var ERP = path.join(__dirname, '..', 'build', 'erp');
+var ERP = process.env.GENPO_ERP_DIR || path.join(__dirname, '..', 'build', 'erp');   // GENPO_ERP_DIR = bim-ootb erp/ (the live kernel)
 var P  = require(path.join(ERP, 'ad_process.js'));
 var E  = require(path.join(ERP, 'erp_engine.js'));      // the buildDoc archetype (KIND-2 target)
 var BD = require(path.join(ERP, 'bigdecimal.js'));      // money/qty math (memory: never raw JS Number)
-var DB_PATH = path.join(ERP, 'ad_full.db');
+var DB_PATH = process.env.GENPO_DB || path.join(__dirname, '..', 'build', 'erp', 'ad_full.db');
 
 var fails = 0;
 function verdict(ok, label, detail) { if (!ok) fails++; console.log((ok ? '🟢' : '🔴') + ' ' + label + (detail ? '  — ' + detail : '')); }
@@ -161,6 +161,33 @@ var diverged = bentLine && BD.of(bentLine.qtyordered).compareTo(BD.of(probe.qtyo
 console.log('§GENPO-FALSIFIER bent product=' + probe.m_product_id + ' PlannedQty ' + probe.plannedqty + '→' + bentQty +
             ' folded Qty=' + (bentLine ? bentLine.qtyordered : '(none)') + ' oracle Qty=' + probe.qtyord);
 verdict(diverged, 'perturbing PlannedQty breaks the Qty diff (the fold reads the real qty — the metric is load-bearing)', '');
+
+// ════════════════════════════════════════════════════════════════════════════════════════════════════════
+// 5 · §GENPO-SERVICE — §PROJ-CAT (ERP_IDEMPIERE_UX_PARITY.md). ProjectGenOrder.doIt:80-84 refuses a Service
+//     Charge project (ProjectCategory 'S') with "Service Charge Projects are on the TODO List"; legacy throws
+//     inside the transaction so nothing is kept. Kernel must refuse, same message, 0 orders, 0 lines.
+//     RED CONTROL: the identical bound project with category 'N' must build the order (else the refusal
+//     could be a gate that refuses everything).
+// ════════════════════════════════════════════════════════════════════════════════════════════════════════
+console.log('\n— §GENPO-SERVICE (category S refused, category N builds — same project) —');
+function projCat(cat) {
+  return { fetchProject: function () { return boundProject({ projectcategory: cat }); }, fetchProjectLines: foldCtx().fetchProjectLines };
+}
+function countOps(r) {
+  var o = (r.result && r.result.ops) || [];
+  return { orders: o.filter(function (x) { return x.op_type === 'CREATE_DOCUMENT'; }).length,
+           lines:  o.filter(function (x) { return x.op_type === 'CREATE_LINE'; }).length };
+}
+var rS = P.dispatch(db, { AD_Process_ID: 164, Record_ID: 101, params: {} }, projCat('S'));
+var cS = countOps(rS);
+console.log('§GENPO-SERVICE cat=S dispatched=' + rS.dispatched + ' ok=' + rS.ok + ' reason=' + rS.reason + ' msg="' + rS.message + '" orders=' + cS.orders + ' lines=' + cS.lines);
+verdict(rS.dispatched === true && rS.ok === false && rS.message === 'Service Charge Projects are on the TODO List' && cS.orders === 0 && cS.lines === 0,
+        'category S → refused with legacy message, 0 orders, 0 lines written', 'ok=' + rS.ok + ' orders=' + cS.orders + ' lines=' + cS.lines);
+var rN = P.dispatch(db, { AD_Process_ID: 164, Record_ID: 101, params: {} }, projCat('N'));
+var cN = countOps(rN);
+console.log('§GENPO-SERVICE cat=N dispatched=' + rN.dispatched + ' ok=' + rN.ok + ' orders=' + cN.orders + ' lines=' + cN.lines + ' (oracle lines=' + oracle.length + ')');
+verdict(rN.ok === true && cN.orders === 1 && cN.lines === oracle.length && oracle.length > 0,
+        'RED CONTROL: same project, category N → order built (1 order, all lines)', 'orders=' + cN.orders + ' lines=' + cN.lines);
 
 db.close();
 console.log('\n' + (fails ? '🔴 ' + fails + ' check(s) FAILED — W-PROC-GENPO NOT proven' : '═══ ALL PASS — ProjectGenOrder folds a project → Sales Order op-group, oracle-equivalent — W-PROC-GENPO ═══'));
