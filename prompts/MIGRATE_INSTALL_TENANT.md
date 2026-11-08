@@ -373,7 +373,10 @@ scratch `erp_sweep.sh` (load guard: waits while loadavg ≥ 14 — the machine i
 | NEEDS INPUT (not standalone) | pos_chain, pos_plan, team_floor (PC_LINES/FL_LINES fixture never committed — POS_PLUGIN_LOCAL_FIRST.md:295,759), team_keys (KW_OLD) | known to their lanes; not suite members as written |
 | NOT A WITNESS | acct_processor_mutants (a data module, `module.exports = [...]`) | exits 0 silently — rename or exclude from the glob |
 | ENV | udp2_engine, udp3_find_engine, udp1_pinstance (`better-sqlite3`, lives in bim-compiler/node_modules) | in the re-run with that NODE_PATH |
-| OPEN — in the re-run / next session | packgen (plugin install now SysAdmin-only, witness session has no role), packout O6, view_window_first (window 255 "Record 1 of 198" but 0 grid rows), mf_seed, team_executors (10), movementconfirm_ui, erp_i18n, shopday_model_path, udp4/udp_order (known parallel flakes), the 7 timeouts | re-run results → this table |
+| RE-RUN 2026-11-08 (2 parallel, 1500 s, `…/rerun/results.tsv`) — **were only slow or env** | inventory_diff 125/125, team_releases 37 + 15/15 mutants, team_ui_pos 20/0, team_versions 29/0 (first-pass timeouts) · udp1_pinstance 52/52, udp2_engine, udp3_find_engine (better-sqlite3 on NODE_PATH) · views_parity 20/21 (was 12/21 under 3-parallel load) | GREEN, no change needed |
+| HANG AT EXIT (every step green, never exits in 1500 s) | hq_clerk (H1..H12 🟢), pos_sales_live (POSL1..8 🟢) | an open handle keeps node alive — instrument, next session |
+| DEAD UI — witness of a panel no user can open | `erp/tests/poc_erp_picker.js` clicks `#pill-migrate` (retired #339); `erp_picker.js` `_renderOdoo` is reachable only via `openMigrateFor`/`erp_pills._picker`, which nothing calls | the live door is `common/about_diy.js`; retire the poc or repoint it (B4 decides where the load-back lives) |
+| OPEN — next session | packgen (plugin install now SysAdmin-only, witness session has no role), packout O6, view_window_first (window 255 "Record 1 of 198" but 0 grid rows), mf_seed (B2), team_executors (10 of 18), movementconfirm_ui, erp_i18n, views_parity (1 of 21), udp_order 160/162 + udp4 61/62 (still red solo), post_invoice_diff / post_matchinv_diff / shopday_model_path INCONCLUSIVE | same result solo → not load flakes; each needs its own read |
 
 ### §PANEL-LINK (2026-11-08, owner: *"Is the Odoo migration linked to the early days migration panel or it overwritten that?"*)
 **Measured on bim-ootb origin/main:** NOT overwritten, NOT yet linked. The early panel is the About/DIY "Bring your data in"
@@ -403,3 +406,19 @@ defaults to demo order `S00023`, which a real Odoo does not have. Env-prefix syn
 non-demo with no `--so` picks the latest invoiced order (== the RPC answer), wrong password → exit 1 with Odoo's refusal, no
 `odoo_*` change to the export bytes. Panel: `poc_erp_picker.js` reads `§MIGRATE-OWN-DB` — typing a db changes the command,
 no `<input type=password>` exists.
+
+### §OWN-DB RESULT (2026-11-08) — bim-ootb #2723 (auto-merge), W-ODOO-OWNDB 🟢
+`erp/odoo_agent/cli.js`: `--host --port --db --login --so|latest --cutover` (any shell), env still works, flag wins, no flags = demo.
+Password: never a flag (refused), never the browser; asked in the terminal for a non-demo target, or `ODOO_PASSWORD`.
+`agent.js` on your Odoo / `--so latest` → your newest order with a posted customer invoice. `export.js` is atomic
+(`odoo_export.partial/` → renamed on success); a login without read rights → plain refusal naming the record type, exit 1,
+nothing left. Witness `scripts/poc_odoo_owndb.js` (log `build/erp/logs_migrate_2026-11-08/poc_odoo_owndb.out`): demo
+unchanged · demo user by flag + prompt logs in · `--so latest` S00030 == oracle of 4 · wrong password exit 1 · `--password`
+refused · env password no prompt · `--port` routes all 30 calls · no-rights login refused, nothing written · demo export
+byte-identical fdbde73d75c0d07b.
+**Panel finding (changes §PANEL-LINK):** the staged Odoo box (`erp_picker.js _renderOdoo`) is DEAD UI since #339 — the live
+door is the About/DIY modal, whose own doctrine (`about_diy.js:14-16`) is "hand the download, point at the README, never
+re-author commands". So the fields were NOT added (reverted before the PR); the README + DIY note carry the flags.
+**⛔ owner question for B4:** the summary-before-OK screen needs a page that LOADS `odoo_export/`. The About/DIY modal is
+download-only by design. Put the load-back + summary (a) in the About/DIY modal (changes its doctrine), or (b) as an ERP
+window/form inside the tenant (the File Loader way: legacy loads import files from a form, VFileImport)?
