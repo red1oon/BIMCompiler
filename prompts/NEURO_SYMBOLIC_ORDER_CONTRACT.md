@@ -10,7 +10,7 @@ Origin: a pasted Gemini chat (JEPA "architect" + BIMCompiler "inspector"). Revie
 **Witnessed:** resolve 73 facts, 0 missing; guard PASS (80 numbers on cards, 15 spoken; plants caught; stills sha256 pinned); W-FILM-NEURO-LIVE SAME (panel = the connector's answer, 2,349 bytes); recorder layout 79/79, 0 console errors; fit 17/17 DETAIL, tone 0 WRONG; captions 20 clamped, 0 overlaps; frames 5,847 = the silent picture; longest silence 7.5 s (end card); −16.5 LUFS. Logs: `scripts/film_neuro/logs_rc4/`.
 **Optional rc5, a real AI session instead of the script:** owner runs `claude mcp add bim -e NODE_PATH=/home/red1/bim-compiler/node_modules -e BIM_MCP_LOG=$HOME/.local/share/bim_proposer/calls.jsonl -- node $HOME/.local/share/bim_proposer/bim_mcp.js`, starts a new session, and asks *In the HospitalGarage, make the bay between gx5 and gx6 13 m wide.* as the first message; then copy the call log to `evidence/session_calls.jsonl`, point `s_request`/`s_answer` at the session's own words, relabel the card "one real session, not a measurement". No API key: a Claude Code session runs on the owner's plan login.
 
-**▶ NEXT SESSION: §19.0 step 1 DONE 2026-11-09 (§19.1: N = 64 Viewer actions, 96 entry points, X = 0; bim-ootb #2735).** Next: step 2, the Viewer driver, then step 3, the first harmless Viewer verbs, each raising X in `internal/VIEWER_ACTIONS.md`. Earlier note: **start at §19.0** (owner: a comprehensive DSL to operate the Viewer first, then the Modeller, by CLI; inventory the Viewer's actions, then harmless verbs, one verb list, the guide explains each).
+**▶ NEW 2026-11-09: §21 the actor layer (any agent → one door → the engine; ERP verbs from the dictionary; email as the spine) is SPEC only and waits on the owner's Q1.** **▶ NEXT SESSION: §19.0 step 1 DONE 2026-11-09 (§19.1: N = 64 Viewer actions, 96 entry points, X = 0; bim-ootb #2735).** Next: step 2, the Viewer driver, then step 3, the first harmless Viewer verbs, each raising X in `internal/VIEWER_ACTIONS.md`. Earlier note: **start at §19.0** (owner: a comprehensive DSL to operate the Viewer first, then the Modeller, by CLI; inventory the Viewer's actions, then harmless verbs, one verb list, the guide explains each).
 **▶ INCOMING 2026-11-09 (owner, via the Modeller lane): verbs 6-7, film path, in §19's verb table and its "Verbs 6-7" paragraph.** The film for the drawn-services walk waits on verb 6.
 
 ## ▶ STATE (2026-11-08)
@@ -588,6 +588,58 @@ Read from the rc4 narration (`~/Videos/Think_Global_Act_Local_EN_rc4_narration.t
 - **B. A measured run of an AI with the connector, at no cost to the project.** Needs a protocol written before any run: briefs fixed in advance, the scorer the proposer test already has (`run.js --stub` scoring), a baseline without the report or the stop, and the owner's own plan login as the only model access (§14.6). Open question 3 is this item.
 - **C. Floating elements:** the owner decides whether a floating-member check joins the live edit report (it would be the first rule beyond overlaps and spans), or stays named in the NOT-checked list.
 - Defensive publication of methods M1-M4: [`docs/AIProposerDefensiveDisclosure.md`](../docs/AIProposerDefensiveDisclosure.md), published 2026-11-09. The prior-art report behind it is `reports/BIM AI verb prior art.md` in the primary checkout (untracked).
+
+## 21. SPEC (2026-11-09): the actor layer: one door into the engine for every agent, and the ERP verbs behind it
+**Owner's words (2026-11-09):** *"we want to extend this CLI verbage to the Kernel ERP too, where one of my early days pristine idea is to use the other killer app, email to be the spine of an ERP. And ERP less ERP or Email driven ERP, where communication between actors via email is sufficient events and ERP panel should not be called up other than reports and those too get attached to email. Now the list goes on beyond just human and AI scripting. Mobile devices events can also trigger doc actions and processes. Spec'd this out if no other doc owns this. That means we can have a actor layer to abstract for any agent ie AI, Human, Email, Mobile, Device.."*
+**Status: SPEC only. No code without the owner's go.** Spec-first; every claim cites a file; the twin rule applies on the ERP side (CLAUDE.md, `prompts/SQLiteIDEMPIERE.md`).
+
+### 21.0 Who already owns what (checked 2026-11-09; this section does not re-spec any of it)
+| Piece | Owner | What it already says |
+|---|---|---|
+| The engine's one write path and its context | `docs/internal/ENGINE_CONTRACT.md` §1-§2 | Five calls; `dispatch(intent, ctx)` is the only mutation path and returns `{ok, op_uuid, before, after}` or `{rejected, why}`; `verbs(ctx)` lists the legal actions for a doc-state, role-filtered; `ctx = {actor, pubKey, roleId, allowOrgs}`; writes are gated engine-side. |
+| The ERP as a conversation (email, WhatsApp, Telegram) | `docs/internal/SocialPlatformLens.md` §2, §5, §6 | The system sends digests, approvals and exceptions; a reply is a signed party-act; a reply is a *claim* until bound (known address + per-action token + signature); replies map to canned actions; free text becomes a flagged question, never a guessed order; WhatsApp automation limits. |
+| The op-log as a message stream | `prompts/MOBILE_CHAT_LENS.md` | op = message, document = thread, DocAction = reply, `user_tag` = sender, via the seam's `dispatch`; "NO fork of a verb, NO new verb". |
+| Transport between devices | `prompts/TEAMWORK_FRAMEWORK.md`, `docs/internal/GuaranteedChannels.md` | Signed ops over the GitHub pipe (bim-ootb `common/comm/comm_pipe.js`) and the Gmail post box (`prompts/archive/TEAMWORK_FRAMEWORK_history_s0-s44.md` §11.19; a Google Apps Script web app, `common/comm/comm_phone.html:28`, that carries signed bundles device to device); local-first, per-device keys. |
+| The verb list and its contract | this file §19 | Three layers (syntax · verb contract · implementations), one `verbs.json`, X of N from the app's own tables. |
+| What N is on the ERP side | CLAUDE.md AD-LAYER LAW | Generic AD engine; claims are "X of N AD windows/processes/doctypes", N from `ad_seed.db`. |
+**Not owned anywhere:** one abstraction by which *any* agent (an AI, a person in a UI, an email reply, a phone event, a device) reaches the same engine, and the ERP's verb list exposed to it. The email post box today carries machine bundles. Nothing turns a person's email into a DocAction yet.
+
+### 21.1 The model: an actor acts through a channel; both reach the engine through one door
+Proposed, **one question for the owner (21.6 Q1)**. The owner's list mixes *who* acts with *how* it arrives. Email and Mobile are ways in, and behind them stands a person, an AI or a device. Kept apart:
+- **Actor (who):** a person, an AI agent, a device (scanner, sensor, till), or a scheduled process. Identity = `ctx.actor` + `pubKey` + `roleId` (ENGINE_CONTRACT §2), unchanged.
+- **Channel (how):** UI click · CLI / script line · MCP tool call · email · mobile tap or chat reply · device event. A channel carries evidence of who sent it (a signature, a known address plus a token, a device key).
+- **The door:** every channel adapter does exactly three things, and nothing else:
+  1. **parse:** the inbound event becomes `(actorRef, intent, evidence)`, where `intent` is a verb from the generated list (21.2). Text that does not parse to a listed verb is not an intent. It goes back as a question, as SocialPlatformLens §5 rules.
+  2. **bind:** `actorRef + evidence` becomes `ctx`, or the event stays a *claim*. The binding strength follows the stakes (SocialPlatformLens §6). An unbound claim never reaches `dispatch`.
+  3. **reply:** the engine's own answer (`{ok…}` or `{rejected, why}`, the report) goes back on the same channel. For email that is the reply mail, with any report attached (the owner's "reports attached to email").
+- **What a channel adapter may not do:** decide, repair, compute business values, or hold a second copy of a rule. The engine decides; `dispatch` is the judge, as the app's own checks are in M1 of the defensive disclosure. One implementation per responsibility.
+- **The BIM side is the same shape:** the MCP connector (`bim_mcp.js`) and `edit_cli.js` are two channels into the Modeller's engine (§11, §18). So "the actor layer" is one contract for both apps, not an ERP feature.
+
+### 21.2 The ERP verb list, generated from the dictionary (AD-LAYER LAW)
+- **Verbs are not hand-written.** DocActions come from each document type's own action list (the DocAction reference list and `C_DocType`, as the engine's `verbs(ctx)` returns them per doc-state). Processes come from `AD_Process`. Reads come from the window/tab dictionary. The generator follows the §19.1 pattern: an inventory from `ad_seed.db` gives **N**, and the verb list exposes X of it.
+- **A verb's contract** = name, plain description, inputs with units or reference types, the doc-states it is legal in, its harm class (read / writes / posts / sends), and which channels may carry it. Example: a Complete that posts to the books may need a signed tap, not a one-word email reply (SocialPlatformLens §6).
+- **One list, all channels:** `tools/list` for an AI, the email command vocabulary, the mobile cards' buttons and the script runner's keywords are generated from the same list (§19 design point 2).
+
+### 21.3 Email as the spine (the owner's "ERP-less ERP")
+- **In:** an email to the ERP's address, or a reply to a mail it sent. Its subject or token names the document. The body or a button-link picks a listed verb (`Approve`, `Complete`, `Reject`). The adapter parses, binds (known address + per-action token; signature where the stakes need it), and dispatches.
+- **Out:** every engine answer is a mail: the result, the reason for a rejection, the next legal verbs as reply options, and reports as attachments (the report output the AD defines; never a new report engine).
+- **No panel needed** for the flow itself. The ERP window remains for reports and for setup. The SocialPlatformLens persona already lives this way; this section makes it the default door.
+- **Transport is not re-specced:** inbound and outbound mail ride the existing post box or a mailbox the owner chooses (Teamwork history §11.19). Legacy iDempiere already sends mail (GuaranteedChannels: "email comm (iDempiere API, tested)"). Under the twin rule, what an emailed Complete *does* must equal legacy's Complete (21.5 A5).
+
+### 21.4 Mobile and device events
+A phone tap, a barcode scan, a GPS check-in, a sensor reading or a till ring becomes an intent through its own adapter. It carries the device key as evidence (Teamwork per-device keys), and the same `dispatch` judges it. A device may only fire verbs whose channel list names it. A sensor can post a reading; it cannot Complete an invoice.
+
+### 21.5 Witnesses (written before any code; each names its issue)
+- **A1 (a channel changes the result):** the same intent through CLI, MCP, email and a mobile event gives byte-identical ops and results, apart from the channel and evidence fields. Falsifier: one adapter alters an input; A1 must fail.
+- **A2 (a channel can get round a gate):** a verb the role may not use, or an owner-gated record, is rejected the same way on every channel, and the `why` comes back on that channel.
+- **A3 (a spoofed mail becomes an act):** an unknown address, a wrong or reused token, or a missing signature where one is required leaves a claim and creates no op. RED: the same mail properly bound creates exactly one op.
+- **A4 (N is hand-made):** the ERP verb inventory is generated from `ad_seed.db`; an independent count of DocActions and processes equals it; X of N is printed per channel.
+- **A5 (the twin breaks):** an emailed Complete of a Sales Order gives the same documents and the same books as legacy iDempiere's Complete (the parallel run, `scripts/bridge/run_all.sh`).
+- **A6 (a duplicate mail double-acts):** the same intent arriving twice, by mail and by mobile, dedupes by op UUID (SocialPlatformLens §5), so one op.
+
+### 21.6 Open, for the owner (one at a time)
+- **Q1:** keep **actor** (who) and **channel** (how) apart as in 21.1, so that email and mobile are channels with a person or an AI behind them? Or treat each of the owner's five as an actor kind?
+- Later, after Q1: the first slice. Proposed: the ERP read verbs plus one DocAction (Complete a Sales Order) over CLI/MCP and email, X of N measured. Nothing sent outside the sandbox mailbox without the owner's word.
 
 ## STATUS
 2026-11-06 spec. 2026-11-07: extracted (§3), fixes (§6), report (§8), CLI (§11), three proposer tests (§12), shift and hinge (§13, §14), public guide (§14.3). 2026-11-08: no paid model calls (§14.6), the stop on outside calls and the report on first use (§15), consolidated; film "Think Global, Act Local": plan (§16), the three pre-cut checks, English rc3 built (§16.7).
