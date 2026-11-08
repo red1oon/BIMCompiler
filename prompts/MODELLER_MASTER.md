@@ -83,7 +83,19 @@ is ours" ⇒ aligned; move it from ⛔ to the queue after the catalog rebind.
 **Queue impact:** C1+C2 join row 14 (catalog rebind) and move up — they are live no-box violations, ahead of §SLOPE-HANDLES.
 C3 lands with the REPLACE verb.
 
-## ▶ §RESUME 2026-11-09 — START HERE (session close; then §RESUME 2026-11-08b below)
+## ▶ §RESUME 2026-11-09b — START HERE (steps 1-3 of §RESUME 2026-11-09 done; then read that block for steps 4-5)
+**Run on bim-ootb main `8541065f`, private set, local headless (software GL, no GPU). Every number is read from the saved run logs in the private walk folder (`41`→`42_page_run_chunked`, `45_carry_film_v3`).**
+1. ✅ **Page run, chunked copy:** walk ACMV + FP done, 3,507 ops, 554 drawn lines + 11 drawn markers. `§VIEWERDB §DRAWN-TABLES lines=554 markers=11 byBasis={void-middle:393, exposed-under-structure:102, on-roof-surface:59} offsetRows=4`. Export 7,531 elements, 192,434,176 bytes, written = expected (8 MB chunks; the old one-string copy timed out). Heap after build 3,004 MB.
+2. ✅ **Viewer open:** `§DRAWN-OVERLAY lines=554 markers=11 byBasis={…, owner-stated:11} sceneObjects=23`; `§DRAWN-ONLY hidden={IfcFlowTerminal:45, IfcAirTerminal:392, IfcAlarm:77} hiddenTotal=514 shown=7017 overlay=565 elements=7531`. 0 page errors.
+3. ✅ **Carry into a COPY (`walked_film.db`), private script `carry_film.py`:** camera path 4 rows + scene camera 1 row moved by `film_offset − route_offset` = 1 m in y; read back exact (maxDelta 0.0). **Frame proof, chained** (`§CARRY-FRAME-CHAIN`): film → walk input, same GUIDs, n=6,458, max 0.0000 m; walk input → walked export, world bbox, n=5,377, max 0.0000 m. Material names + rgba: 5,105 by GUID, 1,319 by class + world bbox within 1 mm (unique on both sides, 0 ambiguous), 31 film elements unmatched (left unnamed, counted). All 5 elements with corrected names (3 distinct corrections) arrive.
+**Found on the way (the Viewer-DB export goes through an IFC, so it carries the export gaps of §RESUME 2026-11-08b):**
+- **ARC GlobalIds are regenerated** (1,350 film elements have no GUID match; only the M3B-carried rows keep theirs). Export gap (1). A GUID-only film carry misses them; the bbox key above covers it for this film.
+- **`material_name` is NULL on every exported element, and rgba is a generic class colour** (walls 0.92/0.90/0.85), not the authored IFC colour. Export gap (2). The carry restores the film DB's names + rgba.
+- **IfcWallStandardCase is written as IfcWall** (298 → 301).
+- **Instrument trap:** `element_transforms.center_*` is defined differently after the export. 968 shared elements read > 1 cm off on centre (up to 2 m) while their world bboxes are identical (max 0.0). Prove position on `element_world_bbox`, never on `center_*`.
+**Next:** step 4 is **blocked on NEURO verb 6** (`film_path_visibility`): spec only (bim-compiler #425), no code on bim-ootb main yet. Then step 5 (`nvidia-smi`, design lane brings the owner the bake request, `cli_silent_bake.js --drawn-services` on `walked_film.db`). The bake is the first real test of `start()` keeping the overlay objects (DRAWN_SERVICES_FILM §6).
+
+## ▶ §RESUME 2026-11-09 — (steps 1-3 done in 2026-11-09b above; steps 4-5 still stand)
 **Goal (owner):** HVAC + FP walked successfully on the private ARC, then a film. The owner said *"go till that"*; the bake still goes through the design lane (`bim-compiler-8c`), with an `nvidia-smi` check first.
 **Landed today (bim-ootb), each verified at its merged head:**
 - **Drawn walk:**
