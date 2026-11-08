@@ -84,6 +84,14 @@ is ours" ⇒ aligned; move it from ⛔ to the queue after the catalog rebind.
 C3 lands with the REPLACE verb.
 
 ## ▶ §RESUME 2026-11-08b — START HERE (session close; then §RESUME 2026-11-08 below)
+**▶ NEXT SESSION, owner's choice 2026-11-08 ("Build pieces, then film"). Goal: a film of HVAC + FP walked successfully on the private ARC.** In order, each spec-first with a witness:
+1. **Wire the drawn-mains reader into the walk.** ACMV on a building with held duct sheets: `§WALK-MAINS drawn=<m>`, runs from `drawn_route` rows, fit through the route's own `ifc_grid_axis`.
+   - How a user supplies sheets is still the owner's §7 Q2. For the film, the sheets can be passed by the harness.
+2. **Height §7.1:** the middle of the ceiling void, labelled provisional; no ceiling or no structure above means no z. Then ask the owner (through the design lane) about the Axis-only IfcDuctSegment export.
+3. **§FP-EQUIPMENT** (spec below): FF100 cabinets, extinguishers and blankets at their drawn spots. NO sprinklers, so the walk's band FP heads stay out of the film by the owner's ruling.
+4. **Walk** a fresh open of the private ARC IFC on the open route. Carry the corrected film DB's camera path by `p_new = p_film + film_offset - route_offset` (now 1 m in y on both routes), plus the corrected material names. Assert by GUID residual.
+5. **Bake only on the owner's word**, through the design lane. Check `nvidia-smi` first, and never beside a live owner bake. Use the playbook in `prompts/FILM_NARRATION.md`; the film states its limits ("no sprinklers drawn; asked"; "duct heights provisional").
+
 **LATEST (end of session):**
 - **Offset fix, bim-ootb #2711, merged (owner: "same input now").** Both routes pass the same rows to the pin: `GeorefFrame.pinInput`, the import's set; W-ONE-FRAME F1d. **✅ Confirmed on the private ARC (design lane, main 545f8a5e):** both routes give the IDENTICAL offset (= the import's earlier one); grid exact, 222/222 at 0.00 mm; the film DB coincides with both fresh opens to 0.0000 m over 2,093 GUIDs. The film-path shift is now the same on both routes (1 m in y, from the federated film DB); the carry rule still applies. **ONE FRAME (A) is DONE on the private set; the film path is clear on the frame side.** The stated-placement rule is out.
 - **Privacy:** the private site's coordinates had leaked into public files. Scrubbed by #2718 (owner: "Scrub files only"; NO history rewrite, NO force-push). Far fixtures use the generic point (500000, 3000000). Never write a private number into a public file (memory `feedback_private_project_no_names_in_public`).
