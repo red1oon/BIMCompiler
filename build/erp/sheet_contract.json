@@ -1,0 +1,1203 @@
+{
+ "measured": "2026-11-08",
+ "sources": {
+  "ad_seed": "ad_seed.db sha 174f25746f49815d",
+  "pg": "idempiere_pilot 202611042304_CAPEX-WS-PROGRESS.sql",
+  "po": "PO.java sha 79b4ec5ee92054f1 setStandardDefaults:1973",
+  "MUOM": "MUOM.java sha ca57b32ed1f24dbd",
+  "MPaymentTerm": "MPaymentTerm.java sha 2af1c0d328d85149",
+  "MProductCategory": "MProductCategory.java sha 55528cb9f0505cc3",
+  "MElementValue": "MElementValue.java sha fe0862b304440f5e",
+  "MBPartner": "MBPartner.java sha 868562173995468d",
+  "MLocation": "MLocation.java sha 8b842766820f26b5",
+  "MBPartnerLocation": "MBPartnerLocation.java sha c495d4065848094f",
+  "MUser": "MUser.java sha a890c7297778bfa8",
+  "MProduct": "MProduct.java sha a9377e7ae32dce65",
+  "MProductPO": "MProductPO.java sha c2be3299fafcdd74",
+  "MPriceList": "MPriceList.java sha 4062cf90a1e7eb7a",
+  "MPriceListVersion": "MPriceListVersion.java sha eb320887e2ade474",
+  "MProductPrice": "MProductPrice.java sha f4ace3e5cf3f7766",
+  "MWarehouse": "MWarehouse.java sha c7586f4f968c1ec3",
+  "MLocator": "MLocator.java sha 6d89e49869870bd3",
+  "MInventory": "MInventory.java sha 489a3430643bcc50",
+  "MInventoryLine": "MInventoryLine.java sha 662475a50d7b1856"
+ },
+ "poStandard": {
+  "suffix": [
+   "tedBy"
+  ],
+  "exact": [
+   "Created",
+   "Updated",
+   "IsActive",
+   "AD_Client_ID",
+   "AD_Org_ID",
+   "Processed",
+   "Processing",
+   "Posted"
+  ]
+ },
+ "poSaveNew": {
+  "DocumentNo": 3564,
+  "Value": 3594
+ },
+ "tables": {
+  "C_UOM": {
+   "model": "MUOM",
+   "initialDefaultsAt": 207,
+   "parentLink": [],
+   "required": [
+    {
+     "column": "CostingPrecision",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 11,
+     "default": "model:MUOM.java:212"
+    },
+    {
+     "column": "IsDefault",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MUOM.java:210"
+    },
+    {
+     "column": "Name",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 10,
+     "default": "none"
+    },
+    {
+     "column": "StdPrecision",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 11,
+     "default": "model:MUOM.java:211"
+    },
+    {
+     "column": "X12DE355",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 10,
+     "default": "none"
+    }
+   ]
+  },
+  "C_PaymentTerm": {
+   "model": "MPaymentTerm",
+   "initialDefaultsAt": 77,
+   "parentLink": [],
+   "required": [
+    {
+     "column": "AfterDelivery",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MPaymentTerm.java:78"
+    },
+    {
+     "column": "Discount",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 22,
+     "default": "model:MPaymentTerm.java:80"
+    },
+    {
+     "column": "Discount2",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 22,
+     "default": "model:MPaymentTerm.java:81"
+    },
+    {
+     "column": "DiscountDays",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 11,
+     "default": "model:MPaymentTerm.java:82"
+    },
+    {
+     "column": "DiscountDays2",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 11,
+     "default": "model:MPaymentTerm.java:83"
+    },
+    {
+     "column": "GraceDays",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 11,
+     "default": "model:MPaymentTerm.java:84"
+    },
+    {
+     "column": "IsDueFixed",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MPaymentTerm.java:85"
+    },
+    {
+     "column": "IsValid",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MPaymentTerm.java:86"
+    },
+    {
+     "column": "Name",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 10,
+     "default": "none"
+    },
+    {
+     "column": "NetDays",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 11,
+     "default": "model:MPaymentTerm.java:79"
+    },
+    {
+     "column": "PaymentTermUsage",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 17,
+     "default": "db-default:'B'::bpchar"
+    },
+    {
+     "column": "Value",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 10,
+     "default": "po-savenew:PO.java:3594"
+    }
+   ]
+  },
+  "M_Product_Category": {
+   "model": "MProductCategory",
+   "initialDefaultsAt": 166,
+   "parentLink": [],
+   "required": [
+    {
+     "column": "IsDefault",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MProductCategory.java:169"
+    },
+    {
+     "column": "IsSelfService",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MProductCategory.java:170"
+    },
+    {
+     "column": "MMPolicy",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 17,
+     "default": "model:MProductCategory.java:167"
+    },
+    {
+     "column": "Name",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 10,
+     "default": "none"
+    },
+    {
+     "column": "PlannedMargin",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 22,
+     "default": "model:MProductCategory.java:168"
+    },
+    {
+     "column": "Value",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 10,
+     "default": "po-savenew:PO.java:3594"
+    }
+   ]
+  },
+  "C_ElementValue": {
+   "model": "MElementValue",
+   "initialDefaultsAt": 73,
+   "parentLink": [
+    "C_Element_ID"
+   ],
+   "required": [
+    {
+     "column": "AccountSign",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 17,
+     "default": "model:MElementValue.java:75"
+    },
+    {
+     "column": "AccountType",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 17,
+     "default": "model:MElementValue.java:76"
+    },
+    {
+     "column": "C_Element_ID",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 19,
+     "default": "none"
+    },
+    {
+     "column": "IsDetailBPartner",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "db-default:'N'::bpchar"
+    },
+    {
+     "column": "IsDetailProduct",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "db-default:'N'::bpchar"
+    },
+    {
+     "column": "IsSummary",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MElementValue.java:74"
+    },
+    {
+     "column": "Name",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 10,
+     "default": "none"
+    },
+    {
+     "column": "PostActual",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MElementValue.java:81"
+    },
+    {
+     "column": "PostBudget",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MElementValue.java:82"
+    },
+    {
+     "column": "PostEncumbrance",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MElementValue.java:83"
+    },
+    {
+     "column": "PostStatistical",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MElementValue.java:84"
+    },
+    {
+     "column": "Value",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 10,
+     "default": "po-savenew:PO.java:3594"
+    }
+   ]
+  },
+  "C_BPartner": {
+   "model": "MBPartner",
+   "initialDefaultsAt": 278,
+   "parentLink": [],
+   "required": [
+    {
+     "column": "C_BP_Group_ID",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 19,
+     "default": "none"
+    },
+    {
+     "column": "Is1099Vendor",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "db-default:'N'::bpchar"
+    },
+    {
+     "column": "IsCustomer",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MBPartner.java:280"
+    },
+    {
+     "column": "IsEmployee",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MBPartner.java:287"
+    },
+    {
+     "column": "IsOneTime",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MBPartner.java:284"
+    },
+    {
+     "column": "IsPOTaxExempt",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MBPartner.java:290"
+    },
+    {
+     "column": "IsProspect",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MBPartner.java:281"
+    },
+    {
+     "column": "IsSalesRep",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MBPartner.java:288"
+    },
+    {
+     "column": "IsSummary",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MBPartner.java:286"
+    },
+    {
+     "column": "IsVendor",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MBPartner.java:285"
+    },
+    {
+     "column": "Name",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 10,
+     "default": "none"
+    },
+    {
+     "column": "SO_CreditLimit",
+     "adMandatory": true,
+     "pgNotNull": false,
+     "ref": 12,
+     "default": "model:MBPartner.java:293"
+    },
+    {
+     "column": "SO_CreditUsed",
+     "adMandatory": true,
+     "pgNotNull": false,
+     "ref": 12,
+     "default": "model:MBPartner.java:294"
+    },
+    {
+     "column": "SendEMail",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MBPartner.java:283"
+    },
+    {
+     "column": "Value",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 10,
+     "default": "po-savenew:PO.java:3594"
+    }
+   ]
+  },
+  "C_Location": {
+   "model": "MLocation",
+   "initialDefaultsAt": 196,
+   "parentLink": [],
+   "required": [
+    {
+     "column": "C_Country_ID",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 19,
+     "default": "none"
+    }
+   ]
+  },
+  "C_BPartner_Location": {
+   "model": "MBPartnerLocation",
+   "initialDefaultsAt": 92,
+   "parentLink": [
+    "C_BPartner_ID"
+   ],
+   "required": [
+    {
+     "column": "C_BPartner_ID",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 30,
+     "default": "none"
+    },
+    {
+     "column": "C_Location_ID",
+     "adMandatory": true,
+     "pgNotNull": false,
+     "ref": 21,
+     "default": "none"
+    },
+    {
+     "column": "IsBillTo",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MBPartnerLocation.java:98"
+    },
+    {
+     "column": "IsPayFrom",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MBPartnerLocation.java:97"
+    },
+    {
+     "column": "IsPreserveCustomName",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "db-default:'N'::bpchar"
+    },
+    {
+     "column": "IsRemitTo",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MBPartnerLocation.java:96"
+    },
+    {
+     "column": "IsShipTo",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MBPartnerLocation.java:95"
+    },
+    {
+     "column": "Name",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 10,
+     "default": "model:MBPartnerLocation.java:93"
+    }
+   ]
+  },
+  "AD_User": {
+   "model": "MUser",
+   "initialDefaultsAt": 372,
+   "parentLink": [],
+   "required": [
+    {
+     "column": "FailedLoginCount",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 11,
+     "default": "db-default:(0)::numeric"
+    },
+    {
+     "column": "IsAddMailTextAutomatically",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "db-default:'N'::bpchar"
+    },
+    {
+     "column": "IsBillTo",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "db-default:'N'::bpchar"
+    },
+    {
+     "column": "IsExpired",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "db-default:'N'::bpchar"
+    },
+    {
+     "column": "IsFullBPAccess",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MUser.java:373"
+    },
+    {
+     "column": "IsInPayroll",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "db-default:'N'::bpchar"
+    },
+    {
+     "column": "IsLocked",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "db-default:'N'::bpchar"
+    },
+    {
+     "column": "IsNoExpire",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "db-default:'N'::bpchar"
+    },
+    {
+     "column": "IsNoPasswordReset",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "db-default:'N'::bpchar"
+    },
+    {
+     "column": "IsSalesLead",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "db-default:'N'::bpchar"
+    },
+    {
+     "column": "IsShipTo",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "db-default:'N'::bpchar"
+    },
+    {
+     "column": "IsSupportUser",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "db-default:'N'::bpchar"
+    },
+    {
+     "column": "IsVendorLead",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "db-default:'N'::bpchar"
+    },
+    {
+     "column": "Name",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 10,
+     "default": "none"
+    },
+    {
+     "column": "NotificationType",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 17,
+     "default": "model:MUser.java:374"
+    }
+   ]
+  },
+  "M_Product": {
+   "model": "MProduct",
+   "initialDefaultsAt": 256,
+   "parentLink": [],
+   "required": [
+    {
+     "column": "C_TaxCategory_ID",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 19,
+     "default": "none"
+    },
+    {
+     "column": "C_UOM_ID",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 19,
+     "default": "none"
+    },
+    {
+     "column": "IsAutoProduce",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "db-default:'N'::bpchar"
+    },
+    {
+     "column": "IsBOM",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MProduct.java:258"
+    },
+    {
+     "column": "IsDropShip",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "db-default:'N'::bpchar"
+    },
+    {
+     "column": "IsExcludeAutoDelivery",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MProduct.java:268"
+    },
+    {
+     "column": "IsInvoicePrintDetails",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MProduct.java:259"
+    },
+    {
+     "column": "IsKanban",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "db-default:'N'::bpchar"
+    },
+    {
+     "column": "IsManufactured",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "db-default:'N'::bpchar"
+    },
+    {
+     "column": "IsOwnBox",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "db-default:'N'::bpchar"
+    },
+    {
+     "column": "IsPhantom",
+     "adMandatory": true,
+     "pgNotNull": false,
+     "ref": 20,
+     "default": "db-default:'N'::bpchar"
+    },
+    {
+     "column": "IsPickListPrintDetails",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MProduct.java:260"
+    },
+    {
+     "column": "IsPurchased",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MProduct.java:261"
+    },
+    {
+     "column": "IsSelfService",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MProduct.java:267"
+    },
+    {
+     "column": "IsSold",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MProduct.java:262"
+    },
+    {
+     "column": "IsStocked",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MProduct.java:263"
+    },
+    {
+     "column": "IsSummary",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MProduct.java:264"
+    },
+    {
+     "column": "IsVerified",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MProduct.java:265"
+    },
+    {
+     "column": "IsWebStoreFeatured",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MProduct.java:266"
+    },
+    {
+     "column": "LowLevel",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 11,
+     "default": "model:MProduct.java:270"
+    },
+    {
+     "column": "M_AttributeSetInstance_ID",
+     "adMandatory": true,
+     "pgNotNull": false,
+     "ref": 35,
+     "default": "db-default:0"
+    },
+    {
+     "column": "M_Product_Category_ID",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 19,
+     "default": "none"
+    },
+    {
+     "column": "Name",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 10,
+     "default": "none"
+    },
+    {
+     "column": "ProductType",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 17,
+     "default": "model:MProduct.java:257"
+    },
+    {
+     "column": "UnitsPerPack",
+     "adMandatory": false,
+     "pgNotNull": true,
+     "ref": 11,
+     "default": "db-default:1"
+    },
+    {
+     "column": "Value",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 10,
+     "default": "po-savenew:PO.java:3594"
+    }
+   ]
+  },
+  "M_Product_PO": {
+   "model": "MProductPO",
+   "initialDefaultsAt": 89,
+   "parentLink": [
+    "M_Product_ID",
+    "C_BPartner_ID"
+   ],
+   "required": [
+    {
+     "column": "C_BPartner_ID",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 30,
+     "default": "none"
+    },
+    {
+     "column": "IsCurrentVendor",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MProductPO.java:90"
+    },
+    {
+     "column": "M_Product_ID",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 30,
+     "default": "none"
+    },
+    {
+     "column": "VendorProductNo",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 10,
+     "default": "none"
+    }
+   ]
+  },
+  "M_PriceList": {
+   "model": "MPriceList",
+   "initialDefaultsAt": 243,
+   "parentLink": [],
+   "required": [
+    {
+     "column": "C_Currency_ID",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 19,
+     "default": "none"
+    },
+    {
+     "column": "EnforcePriceLimit",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MPriceList.java:244"
+    },
+    {
+     "column": "IsDefault",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MPriceList.java:245"
+    },
+    {
+     "column": "IsSOPriceList",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MPriceList.java:246"
+    },
+    {
+     "column": "IsTaxIncluded",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MPriceList.java:247"
+    },
+    {
+     "column": "Name",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 10,
+     "default": "none"
+    },
+    {
+     "column": "PricePrecision",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 11,
+     "default": "model:MPriceList.java:248"
+    }
+   ]
+  },
+  "M_PriceList_Version": {
+   "model": "MPriceListVersion",
+   "initialDefaultsAt": null,
+   "parentLink": [
+    "M_PriceList_ID"
+   ],
+   "required": [
+    {
+     "column": "M_DiscountSchema_ID",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 18,
+     "default": "none"
+    },
+    {
+     "column": "M_PriceList_ID",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 19,
+     "default": "none"
+    },
+    {
+     "column": "Name",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 10,
+     "default": "none"
+    },
+    {
+     "column": "ValidFrom",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 15,
+     "default": "none"
+    }
+   ]
+  },
+  "M_ProductPrice": {
+   "model": "MProductPrice",
+   "initialDefaultsAt": null,
+   "parentLink": [
+    "M_Product_ID",
+    "M_PriceList_Version_ID"
+   ],
+   "required": [
+    {
+     "column": "M_PriceList_Version_ID",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 19,
+     "default": "none"
+    },
+    {
+     "column": "M_Product_ID",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 30,
+     "default": "none"
+    },
+    {
+     "column": "PriceLimit",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 37,
+     "default": "db-default:0"
+    },
+    {
+     "column": "PriceList",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 37,
+     "default": "db-default:0"
+    },
+    {
+     "column": "PriceStd",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 37,
+     "default": "db-default:0"
+    }
+   ]
+  },
+  "M_Warehouse": {
+   "model": "MWarehouse",
+   "initialDefaultsAt": 158,
+   "parentLink": [],
+   "required": [
+    {
+     "column": "C_Location_ID",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 21,
+     "default": "none"
+    },
+    {
+     "column": "IsDisableInventoryPopup",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "db-default:'N'::bpchar"
+    },
+    {
+     "column": "IsDisallowNegativeInv",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "db-default:'N'::bpchar"
+    },
+    {
+     "column": "Name",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 10,
+     "default": "none"
+    },
+    {
+     "column": "Separator",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 10,
+     "default": "model:MWarehouse.java:159"
+    },
+    {
+     "column": "Value",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 10,
+     "default": "po-savenew:PO.java:3594"
+    }
+   ]
+  },
+  "M_Locator": {
+   "model": "MLocator",
+   "initialDefaultsAt": 277,
+   "parentLink": [
+    "M_Warehouse_ID"
+   ],
+   "required": [
+    {
+     "column": "IsDefault",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MLocator.java:278"
+    },
+    {
+     "column": "M_Warehouse_ID",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 19,
+     "default": "none"
+    },
+    {
+     "column": "PriorityNo",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 11,
+     "default": "model:MLocator.java:279"
+    },
+    {
+     "column": "Value",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 10,
+     "default": "po-savenew:PO.java:3594"
+    },
+    {
+     "column": "X",
+     "adMandatory": true,
+     "pgNotNull": false,
+     "ref": 10,
+     "default": "none"
+    },
+    {
+     "column": "Y",
+     "adMandatory": true,
+     "pgNotNull": false,
+     "ref": 10,
+     "default": "none"
+    },
+    {
+     "column": "Z",
+     "adMandatory": true,
+     "pgNotNull": false,
+     "ref": 10,
+     "default": "none"
+    }
+   ]
+  },
+  "M_Inventory": {
+   "model": "MInventory",
+   "initialDefaultsAt": 116,
+   "parentLink": [],
+   "required": [
+    {
+     "column": "C_DocType_ID",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 19,
+     "default": "none"
+    },
+    {
+     "column": "DocAction",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 28,
+     "default": "model:MInventory.java:118"
+    },
+    {
+     "column": "DocStatus",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 17,
+     "default": "model:MInventory.java:119"
+    },
+    {
+     "column": "DocumentNo",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 10,
+     "default": "po-savenew:PO.java:3564"
+    },
+    {
+     "column": "IsApproved",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 20,
+     "default": "model:MInventory.java:120"
+    },
+    {
+     "column": "MovementDate",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 15,
+     "default": "model:MInventory.java:121"
+    }
+   ]
+  },
+  "M_InventoryLine": {
+   "model": "MInventoryLine",
+   "initialDefaultsAt": 103,
+   "parentLink": [
+    "M_Inventory_ID"
+   ],
+   "required": [
+    {
+     "column": "InventoryType",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 17,
+     "default": "model:MInventoryLine.java:106"
+    },
+    {
+     "column": "M_AttributeSetInstance_ID",
+     "adMandatory": true,
+     "pgNotNull": false,
+     "ref": 35,
+     "default": "model:MInventoryLine.java:105"
+    },
+    {
+     "column": "M_Inventory_ID",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 30,
+     "default": "none"
+    },
+    {
+     "column": "M_Product_ID",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 30,
+     "default": "none"
+    },
+    {
+     "column": "QtyBook",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 29,
+     "default": "model:MInventoryLine.java:107"
+    },
+    {
+     "column": "QtyCount",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 29,
+     "default": "model:MInventoryLine.java:108"
+    },
+    {
+     "column": "QtyCsv",
+     "adMandatory": true,
+     "pgNotNull": true,
+     "ref": 29,
+     "default": "db-default:0"
+    }
+   ]
+  }
+ }
+}

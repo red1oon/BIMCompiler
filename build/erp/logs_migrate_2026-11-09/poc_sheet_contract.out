@@ -1,0 +1,51 @@
+§SHEETC-W dictionary refTables=236
+══ W-SHEET-CONTRACT — export workbook complete against the measured contract (/tmp/wt-odoo-v3/erp/odoo_agent/export.js) ══
+§SHEETC-W contract measured=2026-11-08 tables=17 sources: ad_seed.db sha 174f25746f49815d · idempiere_pilot 202611042304_CAPEX-WS-PROGRESS.sql
+§RECORD §ODOO-MOCK DONE mode=record hit=0 miss=0 recorded=30 answers=30
+§SHEETC-W mode=live export exit=0
+  ✓ the workbook has one sheet per contract table, in order (01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17)
+§SHEETC-W sheet=01C_UOM rows=28 supplied=2 defaulted=2 patched=1 missing=[]
+§SHEETC-W sheet=02C_PaymentTerm rows=11 supplied=3 defaulted=9 patched=0 missing=[]
+§SHEETC-W sheet=03M_Product_Category rows=9 supplied=2 defaulted=4 patched=0 missing=[]
+§SHEETC-W sheet=04C_ElementValue rows=47 supplied=5 defaulted=6 patched=1 missing=[]
+§SHEETC-W sheet=05C_BPartner rows=7 supplied=4 defaulted=10 patched=1 missing=[]
+§SHEETC-W sheet=06C_Location rows=9 supplied=1 defaulted=0 patched=0 missing=[]
+§SHEETC-W sheet=07C_BPartner_Location rows=7 supplied=3 defaulted=5 patched=0 missing=[]
+§SHEETC-W sheet=08AD_User rows=23 supplied=1 defaulted=14 patched=0 missing=[]
+§SHEETC-W sheet=09M_Product rows=48 supplied=5 defaulted=20 patched=1 missing=[]
+§SHEETC-W sheet=10M_Product_PO rows=31 supplied=2 defaulted=1 patched=1 missing=[]
+§SHEETC-W sheet=11M_PriceList rows=1 supplied=2 defaulted=4 patched=1 missing=[]
+§SHEETC-W sheet=12M_PriceList_Version rows=1 supplied=2 defaulted=0 patched=2 missing=[]
+§SHEETC-W sheet=13M_ProductPrice rows=48 supplied=4 defaulted=1 patched=0 missing=[]
+§SHEETC-W sheet=14M_Warehouse rows=2 supplied=3 defaulted=3 patched=0 missing=[]
+§SHEETC-W sheet=15M_Locator rows=9 supplied=5 defaulted=2 patched=0 missing=[]
+§SHEETC-W sheet=16M_Inventory rows=2 supplied=1 defaulted=3 patched=2 missing=[]
+§SHEETC-W sheet=17M_InventoryLine rows=36 supplied=3 defaulted=4 patched=0 missing=[]
+§SHEETC-W patch C_UOM.X12DE355 rows=28 rule=no Odoo field: the ERP "Migrate from Odoo" form maps each Odoo UoM to an iDempiere UoM (§B4-SPEC step 2)
+§SHEETC-W patch C_ElementValue.C_Element_ID rows=47 rule=ImportAccount.java:130-143 — the account element of the tenant (legacy: the element the user names)
+§SHEETC-W patch C_BPartner.C_BP_Group_ID rows=7 rule=ImportBPartner.java:129-132 — the client's default business partner group
+§SHEETC-W patch M_Product.C_TaxCategory_ID rows=48 rule=ImportProduct.java:415 — the client's default tax category
+§SHEETC-W patch M_Product_PO.VendorProductNo rows=31 rule=ImportProduct.java:393-394 — VendorProductNo=Value when the vendor gave none
+§SHEETC-W patch M_PriceList.Name rows=1 rule=Odoo keeps the sale price on the product (list_price), not in a named list: one list named after that field
+§SHEETC-W patch M_PriceList_Version.Name rows=1 rule=the cutover date — what the AD default @#Date@ gives a new version in the window
+§SHEETC-W patch M_PriceList_Version.M_DiscountSchema_ID rows=1 rule=ImportPriceList.java:97-98 — the first price-list schema of the client
+§SHEETC-W patch M_Inventory.C_DocType_ID rows=2 rule=ImportInventory.java:207-208 — the Material Physical Inventory document type
+§SHEETC-W patch M_Inventory.DocumentNo rows=2 rule=the lines find their header by DocumentNo (Ninja MigrateExcelData Line rule); legacy would number it from the sequence
+  ✓ every required column of every sheet is supplied, defaulted by legacy PO.save, or patched — missing 0
+  ✓ every header is an AD column of its table, every `>` names a column of the looked-up table — bad 0
+  ✓ no required column with no legacy default is left blank in a row — 0
+  ✓ every in-workbook lookup finds exactly one row of an earlier sheet — bad 0
+  ✓ every detail sheet carries its AD parent-link column — 0
+  ✓ every patch names its rule and a row count within its sheet (10 patches) — 0
+§SHEETC-W M_Product_PO rows=31 distinct supplierinfo=30 template-sellers expanded to variants=1 (9×2) pairsUnique=Y
+  ✓ sheet rows == live Odoo search_count for all 11 slices (partners = C_BPartner 7 + AD_User 23 + held 8) — off 0
+§REPLAY §ODOO-MOCK DONE mode=replay hit=30 miss=0 recorded=0 answers=30
+  ✓ replay from the recording gives the same sheets (f05b764a902b3a04)
+  ✓ two live runs give the same sheets (deterministic)
+§FALSIFIER-1 drop the C_BP_Group_ID patch → missing 1: 05C_BPartner: C_BP_Group_ID
+  ✓ falsifier 1: dropping the default-group patch is reported as C_BPartner missing C_BP_Group_ID
+§FALSIFIER-2 duplicate Address1 "1839 Arbor Way" → bad lookups 2: 07C_BPartner_Location r2 C_Location_ID>Address1="1839 Arbor Way" → 2 row(s) of 06C_Location | 07C_BPartner_Location r3 C_Location_ID>Address1="77 Santa Barbara Rd" → 0 row(s) of 06C_Location
+  ✓ falsifier 2: a duplicated Address1 makes the location lookup ambiguous (2 rows), not silently first-match
+§FIXTURE build/erp/odoo_fixture/odoodemo_export_v3_2026-11-09.json answers=30
+
+🟢 W-SHEET-CONTRACT PASS (live)

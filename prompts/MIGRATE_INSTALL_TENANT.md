@@ -519,4 +519,67 @@ every patch is listed with its count, every detail row's parent key resolves to 
   migration in the plugin (as the CAPEX lane did).
 - **Proof stays the owner's:** the ERP spine — migrated rows open coherently from the main menu windows (master + detail tabs,
   lookups resolved). The legacy run is a cross-check, not the gate.
-**Order:** W-SHEET-CONTRACT + exporter v3 (workbook) → Ninja loader port in the twin (plugin) → legacy cross-check → B4 form → guide → film.
+**Order:** ✅ W-SHEET-CONTRACT + exporter v3 (workbook) DONE 2026-11-09 (§EXPORTER-V3 RESULT) → **NEXT** Ninja loader port in the twin (plugin) → legacy cross-check → B4 form → guide → film.
+
+### §EXPORTER-V3-SPEC — one workbook + the measured contract (2026-11-09, spec before code; resumes §SHEET-CONTRACT)
+**Correction to §SHEET-CONTRACT rule 2 (read in source, not assumed):** legacy `PO.save` does NOT apply `AD_Column.DefaultValue`
+(that is `GridField`, the UI only). A column a sheet leaves empty is filled, in this order, by: (a) `PO.setStandardDefaults`
+(`PO.java:1973-2002`: key, Created/Updated(By), IsActive, AD_Client/Org, Processed, Processing, Posted); (b) the model class's
+`setInitialDefaults()` (e.g. `MPaymentTerm.java:77-87`, `MUOM.java:207-213` — commented lines do not count); (c) the database column
+DEFAULT, because `PO.buildInsertSQL` skips NULL values "allows Database defaults" (`PO.java:3735-3738`). Anything else left empty =
+NOT NULL violation on legacy, or a red mandatory field in the window. The twin's SQLite DDL has NO defaults and no NOT NULL
+(measured, `ad_seed.db` `C_BPartner`, `M_Locator`), so the twin loader (next item) must apply (a)+(b)+(c) itself — from the same
+measured contract file, never a hand table.
+**Required set per target table** = `AD_Column.IsMandatory='Y'` (ad_seed.db) ∪ pg `NOT NULL` (pilot `idempiere_pilot`, iDempiere 13),
+minus the PO-standard columns and `<Table>_UU` (PO sets the UUID on save).
+**Measurer** `scripts/sheet_contract_measure.js` → `build/erp/sheet_contract.json`: per table, each required column with its default
+source (`po-standard` | `model:<Class>.java:<line>` | `db-default:<expr>` | `none`), plus the sha of every source read. Log
+`build/erp/logs_migrate_2026-11-09/sheet_contract_measure.log`. Re-measured, not edited by hand.
+**Patch rules are the legacy Import processes' own rules**, written as Ninja alt-lookups so the TENANT resolves them at load (the
+exporter never knows the tenant's ids):
+| Column | Sheet cell | Legacy rule copied |
+|---|---|---|
+| `C_BPartner.C_BP_Group_ID` | `C_BP_Group_ID>IsDefault` = `Y` | `ImportBPartner.java:129-132` (default group of the client) |
+| `M_Product.C_TaxCategory_ID` | `C_TaxCategory_ID>IsDefault` = `Y` | `ImportProduct.java:415` |
+| `M_PriceList_Version.M_DiscountSchema_ID` | `M_DiscountSchema_ID>DiscountType` = `P` | `ImportPriceList.java:97-98` (MIN id, DiscountType P) |
+| `C_ElementValue.C_Element_ID` | `C_Element_ID>ElementType` = `A` | `ImportAccount.java:130-143` (the element the user names; the account element of the tenant) |
+| `M_Inventory.C_DocType_ID` | `C_DocType_ID>DocBaseType` = `MMI` | `ImportInventory.java:207-208` |
+| `C_UOM.X12DE355` | blank, filled by the B4 form's UoM mapping step | none in Odoo (§B1) |
+Supplied, not patched: `C_Location.C_Country_ID>CountryCode` (Odoo country code), `M_PriceList.C_Currency_ID>ISO_Code` (company currency).
+**Workbook** `odoo_export/odoo_migration.xlsx` (SheetJS 0.18.5, the twin's own vendored `erp/xlsx.mini.min.js`, bundled in the agent
+zip — the agent stays npm-free), sheets in load order, sheet name = `NN` + TableName (Ninja's 2-char order prefix, `Processed=Y`),
+row 1 = AD ColumnNames, lookups `Col>AltCol`. Order: C_UOM, C_PaymentTerm, M_Product_Category, C_ElementValue, C_BPartner, C_Location,
+C_BPartner_Location, AD_User, M_Product, M_Product_PO, M_PriceList, M_PriceList_Version, M_ProductPrice, M_Warehouse, M_Locator,
+M_Inventory, M_InventoryLine. Lookups use a UNIQUE key of an earlier sheet: Value where the target has one (categories by Value —
+Odoo has two categories named "Saleable"); C_Location rows are referenced by `C_Location_ID>Address1` only when Address1 is unique
+in the sheet (measured: 12 addresses, 0 duplicates) — else the witness fails it. Own-company / internal-user partners stay OUT of the
+workbook and are listed in `manifest.json` `held[]` (decide in the summary screen, §B1). `manifest.json` gains `patches[]`
+`{table, column, cell, rule, rows}`; `provenance.json` maps every sheet row → its Odoo record. CSV files are retired (superseded by
+§NINJA-DECISION).
+**Witness W-SHEET-CONTRACT** (`scripts/poc_sheet_contract.js`, live Odoo or the recorded fixture): for every sheet, every required
+column of its table is supplied / defaulted (per the contract file) / patched-with-a-manifest-entry → `missing=0`; every lookup
+header names a real AD column; every `>` lookup value resolves to exactly ONE row of an earlier sheet (or is a patch); detail sheets
+carry their AD tab-link parent column; sheet rows == live `search_count` (non-invent); replay == live byte-for-byte on the sheets.
+Verdict INCONCLUSIVE when no Odoo and no fixture, or when a sheet is empty. Falsifiers: drop the `C_BP_Group_ID` patch ⇒ the
+C_BPartner sheet reports `missing=C_BP_Group_ID`; duplicate one Address1 ⇒ the lookup is reported ambiguous.
+
+### §EXPORTER-V3 RESULT (2026-11-09) — bim-ootb #2732 (auto-merge), W-SHEET-CONTRACT 🟢 live + replay
+- **Contract measured** `scripts/sheet_contract_measure.js` → `build/erp/sheet_contract.json`, log `logs_migrate_2026-11-09/sheet_contract_measure.log`:
+  17/17 tables; default sources read from source = PO.setStandardDefaults (`PO.java:1973`), PO.saveNew DocumentNo/Value from the sequence
+  (`PO.java:3564/3594`), the model's `setInitialDefaults()` (line per column), pg DEFAULT (pilot); **36 columns must be supplied** (were 44 before
+  the saveNew rule was read — Value/DocumentNo are filled by legacy itself).
+- **Exporter v3** writes `odoo_migration.xlsx` (17 sheets) + manifest (`patches[]` 10, `held[]` 8 internal partners) + provenance; CSVs retired.
+- **W-SHEET-CONTRACT** `scripts/poc_sheet_contract.js`, logs `logs_migrate_2026-11-09/poc_sheet_contract.{log,out}` (live) and `poc_sheet_contract_replay.out`,
+  fixture `build/erp/odoo_fixture/odoodemo_export_v3_2026-11-09.json` (30 answers; `SHEETC_MODE=replay` forces it): missing=0 on 17 sheets · 0 non-AD
+  headers · 0 blank required · 0 ambiguous/unresolved lookups · parent links present · rows == live counts (partners 7 + contacts 23 + held 8 = 38) ·
+  replay == live · deterministic · falsifier 1 (drop the group patch ⇒ `05C_BPartner: C_BP_Group_ID`) · falsifier 2 (dup Address1 ⇒ `→ 2 row(s)`).
+  It caught 3 real defects on the first run (all fixed): a non-AD header `odoo_lot` (Ninja would stop: "No such column"), the witness's own
+  dictionary read (sqlite returned `ad_ref_table`'s lower-case names → parent lookup unresolvable), and M_Product_PO 31 rows vs 30 sellers =
+  one template-level seller on a 2-variant product (now judged per distinct seller, expansion reported `9×2`, pairs unique).
+- **Fresh unzip** of `odoo_agent.zip` (SheetJS added by the build script), no npm install → 17 sheets (`logs_migrate_2026-11-09/zip_fresh_unzip_export.log`).
+- Retired (deletion budget): `scripts/poc_odoo_export.js` + its CSV fixture `odoodemo_export_2026-11-08.json` (W-ODOO-EXPORT → superseded by W-SHEET-CONTRACT).
+- **Named, not hidden (for the summary screen / later items):** 16 stock lines carry an Odoo lot (in provenance, no ASI step yet); 1 negative
+  quant (E-COM11 −7); 2 multi-installment payment terms (term only, installments in provenance); CoA flat (0 `account.group`); C_UOM rows will
+  duplicate system UoMs unless the B4 mapping step maps them — the mapping step must REWRITE the C_UOM sheet + the `C_UOM_ID` cells, not just fill X12DE355.
+- **For the next item (Ninja loader port in the twin):** the twin's SQLite has no DB defaults → the loader applies `sheet_contract.json`'s default
+  sources (po-standard / po-savenew / model / db-default) itself; resolve `Col>Alt` with parameterised SQL and REFUSE an ambiguous match (falsifier 2's rule).
