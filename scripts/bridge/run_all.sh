@@ -5,7 +5,7 @@ cd "$(dirname "$0")" || exit 1
 d="$HOME/.cache/bim_bridge"; mkdir -p "$d"; log="$d/run_$(date +%Y%m%d_%H%M%S).log"
 {
   ./check_genericity.sh
-  for w in witness_changelog_tail witness_m1_outbox witness_m2_replay witness_dict_diff witness_link_facade witness_model_movement witness_d7_second_call witness_m3_gap witness_fa_gap witness_lf_parity witness_client_ctx witness_dict_scope witness_soda_parity witness_soda_receipt_parity; do echo "=== $w"; node "$w.js"; done
+  for w in witness_changelog_tail witness_m1_outbox witness_m2_replay witness_dict_diff witness_link_facade witness_model_movement witness_d7_second_call witness_m3_gap witness_fa_gap witness_lf_parity witness_client_ctx witness_dict_scope witness_soda_parity witness_soda_receipt_parity witness_attachment_parity; do echo "=== $w"; node "$w.js"; done
   # §30 PRODUCT PICTURES: Import Product + ImageURL parity (needs a bim-ootb worktree with erp/processes/ImportProduct.js + erp/product_icons/product_icons.json, and pilot/ws_icons_import.sql applied)
   if [ -n "$BRIDGE_OOTB" ]; then echo "=== witness_product_icons"; node witness_product_icons.js; else echo "§PRODUCT_ICONS_VERDICT W-ICON-PARITY NOT-RUN (set BRIDGE_OOTB)"; fi
   # opt-in (needs the pilot + D6 config rows + a restart): one shop day on a fresh throwaway client, spec §SHOPDAY-RUN-1. Default run is unchanged.
