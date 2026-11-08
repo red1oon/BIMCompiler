@@ -97,8 +97,8 @@ C3 lands with the REPLACE verb.
 - Grid: "Yes, keep the grid".
 - **Queue: carrier → export gaps (storeys + routed runs reach the IFC) → height (§7.1) → fit real sheets.**
 **Next, in order:**
-1. Design lane compares `ifc_grid_axis` on both routes against its private read (222 axes / 24 grids). Wait for its numbers.
-2. **Export gaps** (owner's queue item 2). Spec first. Measured in G2 (§RESUME 2026-11-07): the walked export held 0 `IfcBuildingStorey` (everything contained directly in the building), none of the routed runs (0 swept solids, 0 ports), and 2,323 of 6,461 elements on the merged import. Owner of the writer: `modeller/bonsai_ifc.js`.
+1. ✅ Grid carrier on the private ARC, both routes EXACT (design lane): open route 222/222 axes, 24/24 grids, tags and storeys equal, ends 0.00 mm in the map frame; import route the same at 0.00 mm after its own element-frame offset. So the reader can take each route's grid directly. STR not run.
+2. **Export gaps** (owner's queue item 2): spec draft written, `§EXPORT-ROUNDTRIP` below; measure first. Also the owner's ONE-FRAME ruling (keep map coords on both routes), not specced, owned by the Viewer import lane. Measured in G2 (§RESUME 2026-11-07): the walked export held 0 `IfcBuildingStorey` (everything contained directly in the building), none of the routed runs (0 swept solids, 0 ports), and 2,323 of 6,461 elements on the merged import. Owner of the writer: `modeller/bonsai_ifc.js`.
 3. Height §7.1, then fit real sheets through the carrier, then the owner's §7 Q2 (how a user supplies sheets).
 **For the owner, open:**
 - The design lane proposes exporting a run as an IfcDuctSegment with an Axis representation only (no Body), labelled provisional height. Ask when the height step comes up.
@@ -1455,6 +1455,20 @@ scratchpads (missing) → not run.
 
 
 Related: IFC4.3 target classes and the alignment-first rule — docs/BrowserScaleBenchmark.md (§IFC43).
+## §EXPORT-ROUNDTRIP — SPEC DRAFT 2026-11-08 (owner's queue item 2: "export gaps"). Measure first, then finish the spec, then code
+**Issue (measured in G2, §RESUME 2026-11-07, on the private set):** a walked export held 0 `IfcBuildingStorey` (everything sat directly in the building) and none of the 3,170 routed runs (0 swept solids, 0 ports). Only 2,323 of the DB's 6,461 elements came through the seed. So what the Modeller assembles does not reach the hand-off. Writer owner: `modeller/bonsai_ifc.js`; export entry `viewer_db_export.js` / the Export menu.
+**Design points (design lane, 2026-11-08; not measured by it):**
+1. **Round trip with a denominator.** Export, re-open with the SAME route, then compare by class, by storey and by position in that route's frame, as X of N. Red control: an element deliberately dropped must turn the check red.
+2. **What the IFC must carry back, beyond elements:**
+   - storeys with their elevations (`storey_elevation`, so elements are contained in their storey, not in the building);
+   - the stated grid (`ifc_grid_axis`, #2702);
+   - the file's rooms (`ifc_spaces`);
+   - the `BIMOOTB_Walk` set: provisional devices stay in the file, labelled. Only totals leave them out.
+3. **Frame:** export writes the frame it read: the file's stated site placement / map conversion, not a map offset baked into every placement. This must agree with the owner's ONE-FRAME ruling below.
+4. **Routed runs:** export only what the walker placed with a real basis. The drawn-route record is plan only, so it reaches the IFC only after the height step (§7.1), and then as the Axis-only duct the owner has yet to rule on.
+**Owner ruling that touches this (2026-11-08, relayed by the design lane): ONE FRAME, "Yes, keep map coords".** Both IFC routes give one file one frame, the file's stated map coordinates. So the Viewer import keeps the site placement, which also restores the dropped site latitude/longitude and true north. Not specced. It changes the import route; its owner (Viewer import lane) specs it before code, and W-IFC-GRID must stay green.
+**First step for the next session:** re-measure G2's gaps on main (`8d1ede96` or later) with a round-trip witness, as X of N per class, per storey and per carried table, on a public resident (Duplex) and then the private set. Write the measured table here, then the rule and the build.
+
 ## §IFC-EXPORT-DEPTH — SPEC, 2026-09-26. Priority 3 (builds on §IFC-EXPORT-SEED below).
 Today the export carries shapes + classes only (status reads `walls=0` for an opened building, `modeller.html:~3042`).
 A user hands the IFC to the next tool, so depth decides whether our output is usable. Add, each from data we already hold:
