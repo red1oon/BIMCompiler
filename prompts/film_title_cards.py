@@ -223,6 +223,20 @@ if os.environ.get('FILM_SET') == 'bricscad2':
     SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
     NOVEL = {}
     CLIPS = {}
+# §DXF2BIM submission-pack film (bim-ootb prompts/FILM_DXF2BIM_WHY_MARKINGS.md "SUBMISSION-PACK FILM — STORYLINE", owner 2026-10-31 "Ok on fresh storyline that naturally flows from the last one"): FILM_SET=submission,
+# SEVEN chapters, the storyline's chapter cards verbatim: from the converted shed of the BricsCAD film to the facts a user hands in. No badges, no cutaways.
+if os.environ.get('FILM_SET') == 'submission':
+    CARDS = {
+        1: ('CHAPTER 1', 'WHERE WE LEFT', 'THE SHED', 'The converted BricsCAD shed.'),
+        2: ('CHAPTER 2', 'WHAT YOUR DRAWING', 'ALREADY SAID', 'Its own notes, read.'),
+        3: ('CHAPTER 3', 'WHAT IT', 'WEIGHS', 'The Load Summary.'),
+        4: ('CHAPTER 4', 'WHAT YOU', 'HAND IN', 'The Regulatory Report.'),
+        5: ('CHAPTER 5', 'THE CHECKS,', 'WITH THEIR CODES', 'Each result names its code.'),
+        6: ('CHAPTER 6', 'WHAT IT COSTS, AND WHERE', 'EACH PRICE COMES FROM', 'Every rate names its source.'),
+        7: ('CHAPTER 7', 'WHAT IT', 'DOES NOT CLAIM', 'Guesses and missing facts, listed.'),
+    }
+    TAG = {1: 'WHERE WE LEFT THE SHED', 2: 'WHAT YOUR DRAWING ALREADY SAID', 3: 'WHAT IT WEIGHS', 4: 'WHAT YOU HAND IN', 5: 'THE CHECKS, WITH THEIR CODES', 6: 'WHAT IT COSTS', 7: 'WHAT IT DOES NOT CLAIM'}
+    SERIES = 'BIM OOTB  ·  MODELLER  ·  DXF2BIM'
 # §BIM Do-Once-Reuse-Forever film (bim-ootb prompts/FILM_BIM_DO_ONCE_REUSE_FOREVER.md, owner 2026-11-01): FILM_SET=doonce, chapter keys in TIME order (0, 0a, 0c, 0d, 0b, 1-9 = keys 0..13); supersedes the whatsnew cards (#285).
 if os.environ.get('FILM_SET') == 'doonce':
     CARDS = {
