@@ -2100,3 +2100,18 @@ Phase 1 shipped: bim-ootb #2707 (`59d9a323`), BIMCompiler #412 (`12baa0fa`); W-A
 ## §BIMDOC-5 — open details RULED (owner 2026-11-08, all five as advised)
 (a) **Revision = a new `BIM_Document` row**; completing it sets the row it replaces to Superseded, linked as legacy links a reversal (`Reversal_ID` pattern). (b) **Progress credits at Issued for construction.** (c) **Phase completion stays manual:** the computed count proposes, the user ticks `C_ProjectPhase.IsComplete` and runs its Generate Order. (d) **Names:** table `BIM_Document`, window "BIM Document", document type "BIM Document" with subtypes per task combination. (e) **Large files:** the browser's private file store (OPFS) as the twin of legacy's file-system storage provider: bytes in the store, the attachment row keeps name, size and hash; this is §ATT phase 2.
 **Ready to build** by an ERP session: the AD dictionary rows (table, columns, window, tabs, reference lists, DocType, DocAction family) through the core plugin route, then §ATT phase 2, then "Open in Modeller / Viewer". Witness first, X of N where N comes from the dictionary; the film follows the build (§BIMDOC-4 last paragraph).
+
+## §BIMDOC-FILM — the BIM Document film, planned before the build (2026-11-09; owner: "plan a film for it how it happens")
+**Rule for the film:** it shows only what the shipped app does on a PUBLIC fixture building (Duplex or SampleHouse, never a private set), every number on screen read from the kernel's own `§` lines at bake time, never typed; a beat whose log line is absent is cut, not faked. No client names, sheet codes or coordinates from any private set.
+**Beats, each with the evidence that must exist before it is filmed:**
+1. **A project from its type.** A Service project type copies its standard stages into the project (phases + tasks). Evidence: the kernel's copy-phases log with phase and task counts.
+2. **The sheet register.** Each deliverable becomes a BIM Document row under a task: number, revision, title, discipline, file kind. Evidence: row count per task.
+3. **The drawing attached.** The DXF/IFC goes on the row through the Attachment dialog. Evidence: `§ATT add` with name, size, sha256.
+4. **Open in the app.** "Open in Modeller / Viewer" opens the attached file in the app its file kind names. Evidence: the action's log + the app's open log for the same sha256.
+5. **Issued.** DocAction moves it Draft → Issued for review → Issued for construction. Evidence: the WfMC transition lines (`legalTransition`).
+6. **Revised.** A new revision is a new row; completing it supersedes the old one. Evidence: the supersede link and both statuses.
+7. **Hours.** Time and expense lines booked on the task. Evidence: the lines and their total.
+8. **Progress, computed.** The phase shows issued over all deliverables and earned hours; nothing typed. Evidence: the computed count line.
+9. **Billed.** The user ticks the phase complete, runs its Generate Order, and the invoice follows. Evidence: the order and invoice document lines, with amounts.
+10. **The measure moves.** The deliverable count moves one link along the sheet chain. Evidence: the chain count before and after.
+**Witness for the film itself:** a run log in which all ten evidence lines appear in order, run on the fixture; the bake reads that log for every caption. **Depends on:** §BIMDOC-5 build (table, window, DocType, DocAction family), §ATT phase 2 for large model files (a Duplex DXF fits the 16 MB cap, so phase 1 suffices for the film), and the "Open in Modeller / Viewer" action.
