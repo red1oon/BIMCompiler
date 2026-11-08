@@ -85,6 +85,8 @@ C3 lands with the REPLACE verb.
 
 ## ▶ §RESUME 2026-11-08b — START HERE (session close; then §RESUME 2026-11-08 below)
 **LATEST (end of session):**
+- **Offset fix, bim-ootb #2711, merged (owner: "same input now").** Both routes pass the same rows to the pin: `GeorefFrame.pinInput`, the import's set; W-ONE-FRAME F1d. The design lane is re-measuring the private ARC. The stated-placement rule is out.
+- **Privacy:** the private site's coordinates had leaked into public files. Scrubbed by #2718 (owner: "Scrub files only"; NO history rewrite, NO force-push). Far fixtures use the generic point (500000, 3000000). Never write a private number into a public file (memory `feedback_private_project_no_names_in_public`).
 - **ONE FRAME (A), bim-ootb #2710 (`fbe06d64`), merged and live.** W-ONE-FRAME 28/0. Public far Duplex round trip: drift 0.497 m → 0.0000 m. The import's lat/long reader was broken and is fixed: the private ARC now records lat/long/true north on both routes.
 - **Design lane on the private ARC:** the grid is EXACT on both routes. The film DB coincides with a fresh open on both routes: residual 0.0000 m over 2,093 GUIDs.
 - **BUT the routes give different offsets:** 11 m apart in y. Cause under trace: each route passes its own element list to `GF.range()`, a midpoint of extents. Fix in progress on branch `fix/one-frame-same-input`, worktree `/tmp/wt-frame2`: both routes pass the SAME set (W-ONE-FRAME F1b, with a red control). If no worker report exists, re-dispatch from the branch.
