@@ -170,11 +170,13 @@ All of these are real results from the Hospital, except the last.
 |---|---|---|
 | `node edit_cli.js --building Hospital --grid gx0 --move -0.5` | No red. 2 orange. 6 moved | Nothing the report checks went wrong |
 | `node edit_cli.js --building Hospital --shift gx67 --move 1` | No red. 254 moved, 51 stretched, 3 carried along, **19 left behind** (18 plates, 1 window) | **Not clean.** Those 19 crossed the line and did not follow |
-| `node edit_cli.js --building Hospital --shift gx39 --move 1` | **Stopped:** 18 new overlaps, and 34 left behind | Red, undone |
+| `node edit_cli.js --building Hospital --shift gx39 --move 1` | **Stopped:** 8 new clashes (18 box overlaps: 8 real shapes crossing, 10 box only), and 34 left behind | Red, undone |
 | `node edit_cli.js --building Hospital --shift gx38 --move 0.793` | Refused | An answer, with its reason |
 | `node edit_cli.js --building HospitalGarage --lattice-boxes --shift gx6 --move 1.817` | **Stopped:** beam spans over limit 91 → 92. Limit 12 m, RC. `gx5-gx6` goes 11.176 → 12.993 m: "bay gx5-gx6 newly over the limit: 12.993 m" | Red, undone. This is the Garage, where the material can be read |
 
 **Expect stops and refusals on the Hospital.** It is a dense building. On a scan of its lines, a shift was refused on 116 of 122, and the other 6 each left something behind. All 16 single-line moves tried at +0.5 m came back red. That makes it a good test: an AI that reports success every time is not reading the report.
+
+**How the overlap row is judged.** A box overlap only says where to look. Each new or deeper box pair is then checked against the real shapes, and gets one word: **clash** (the shapes cross by more than 20 mm), **touching** (they only touch, not a clash), **box only, shapes clear** (the boxes overlap, the shapes do not), or **not judged** (with the reason). Only a clash or a not-judged pair stops an edit; a not-judged pair keeps the box verdict, so the shape check can remove a false stop but never hide a real one. If the shape check cannot load, the box count decides and the report says so. This is the usual meaning of a hard clash in coordination tools: real geometry crossing beyond a tolerance. It runs offline too.
 
 ## The stop
 
@@ -216,7 +218,8 @@ Each edit gives one report. This is the real one for `--grid gx0 --move -0.5`, s
   {"id":"span_red","label":"Beam spans over limit","scope":"whole building","state":"NOT_JUDGED","before":null,"after":null,
    "note":"the material could not be read from the building, and is not guessed"}],
  "newRows":[
-  {"id":"clash","label":"New or deeper box overlap","level":"red","state":"JUDGED","count":0},
+  {"id":"clash","label":"New or deeper box overlap","level":"red","state":"JUDGED","count":0,
+   "shape_note":"no box overlap to judge, so the shape check was not run"},
   {"id":"clearance","label":"New clearance under the limit","level":"orange","state":"JUDGED","count":2}],
  "newPairs":[],
  "notChecked":["duplicate ids","...","load capacity"]}
