@@ -419,6 +419,25 @@ byte-identical fdbde73d75c0d07b.
 **Panel finding (changes §PANEL-LINK):** the staged Odoo box (`erp_picker.js _renderOdoo`) is DEAD UI since #339 — the live
 door is the About/DIY modal, whose own doctrine (`about_diy.js:14-16`) is "hand the download, point at the README, never
 re-author commands". So the fields were NOT added (reverted before the PR); the README + DIY note carry the flags.
-**⛔ owner question for B4:** the summary-before-OK screen needs a page that LOADS `odoo_export/`. The About/DIY modal is
+**✅ ANSWERED 2026-11-08 — owner: "agree B" (inside the ERP, the File Loader way). Was ⛔ owner question for B4:** the summary-before-OK screen needs a page that LOADS `odoo_export/`. The About/DIY modal is
 download-only by design. Put the load-back + summary (a) in the About/DIY modal (changes its doctrine), or (b) as an ERP
 window/form inside the tenant (the File Loader way: legacy loads import files from a form, VFileImport)?
+
+### §B4-SPEC — the "Odoo Migration" form inside the ERP (2026-11-08, owner chose B)
+**Shape, following legacy:** legacy loads import files from a FORM (`AD_Form 101 org.compiere.apps.form.VFileImport`, ported as
+FS-16) and then runs the Import processes. Odoo migration is NOT core (AD-LAYER LAW §6), so it arrives as a **plugin bundle**
+(the Ninja/plugin path, `ERP_FRIENDLY_OPS_LENS.md §20-27`): a 2Pack carrying (1) the `AD_ImpFormat` rows for the `I_*` files,
+(2) the `AD_ImportTemplate` rows for the window-CSV files (B2a), (3) one `AD_Form` + menu entry "Migrate from Odoo".
+Zero host code: the form is generic plugin UI that drives the EXISTING engines (window CSV Import, File Loader, Import processes).
+**The form, in order:**
+1. Pick the `odoo_export/` files (multi-file input; the browser reads them locally, nothing is uploaded) → validates
+   `manifest.json` (files listed == files given, row counts == file rows) and `provenance.json`.
+2. **UoM mapping step:** each Odoo UoM → an iDempiere UoM (suggested only on an exact name match; the user confirms the rest).
+3. **Summary report (before OK)** per §B0-SPEC §4: one row per master — Odoo count · will import · will reject (+ legacy reason) ·
+   depends on · needed by; checkboxes with the mandatory-FK locks; cutover totals. Numbers = the same import code run on a
+   throwaway copy (§B0 4).
+4. **OK** → runs, in load order, window CSV Import (UoM, payment terms, categories, warehouses, locators) then File Loader +
+   ImportAccount / ImportBPartner / ImportProduct / ImportPriceList / ImportInventory (+ B3 later); one signed op group per step.
+5. **Result** = the summary again with the real counts beside the predicted ones (they must be equal — W-MIGRATE-SUMMARY).
+**Panel link:** the About/DIY Odoo note gets one more sentence: "then, in the ERP, open *Migrate from Odoo*" (it stays download-only).
+**Order of work:** B2a (window CSV Import) → B2 (Import processes) → this form → B5 proof → guide → film.
