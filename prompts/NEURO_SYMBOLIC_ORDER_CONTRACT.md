@@ -11,7 +11,7 @@ Origin: a pasted Gemini chat (JEPA "architect" + BIMCompiler "inspector"). Revie
 2. The Java `PlacementRequest` gate, once an outside order really arrives there (STATUS).
 3. Browser boot weight, its own file: `prompts/BROWSER_BOOT_WEIGHT.md`.
 4. Not started, each its own go: the report for bay add and other gestures, a session total at Save, beam and column rules on a live edit, a shift in the Modeller's UI.
-5. **The film "Think Global, Act Local": planned, nothing recorded (§16).** Three questions for the owner in §16.6; one fact to extract before any cut (§16.1, the 7 mm).
+5. **The film "Think Global, Act Local": planned, nothing recorded (§16).** Owner's choices settled, English first (§16.6). Before any cut: the 7 mm cause, the 4D/5D repeat witness, the source re-fetch.
 
 **⛔ No paid model calls (owner, 2026-11-08):** *"prepare best effort product without incurring any API call costs unless it is a 3rd party free one or in a sandbox here where you mock or mimick such a AI proposal."* `run.js` refuses without `--model-calls`, and no session passes that flag (`feedback_no_paid_model_calls.md`). The three model runs (§12 to §14) were made before this directive, through the owner's claude.ai plan login. Their `$` figures are Claude Code estimates, not charges.
 
@@ -413,10 +413,11 @@ W-EDIT-REPORT W0j covers every trigger and non-trigger. **Not measured:** whethe
 ### 16.5 Not in this film
 Any claim that Blender or Bonsai cannot do 4D/5D (Bonsai has schedules; the question is repeatability only), Anthropic or Blender logos, structural safety, certification, JEPA, any "AI is bad" claim beyond our own measured run, any speed claim against working without us (not measured, ▶ START HERE).
 
-### 16.6 Open, for the owner
-1. **"0 mm" wording.** Default: "the edit lands exactly; the report says how far it is from each rule", never "0 mm accurate" as a whole-result claim.
-2. **Building.** The stop beats are on HospitalGarage (spans judged, RC); the guide's test case is the Hospital, whose spans are not judged (§13.2). Default: Garage for beats 3 and 8, Hospital for beat 5, both names on screen.
-3. **Languages** after English.
+### 16.6 Decided by the owner (2026-11-08: *"Agree with u, English only first"*)
+1. **"0 mm" wording:** "the edit lands exactly; the report says how far it is from each rule". Never "0 mm accurate" as a whole-result claim.
+2. **Building:** HospitalGarage for beats 3 and 8 (spans judged, RC); the Hospital for beat 5; both names on screen.
+3. **Languages:** English only first (Kokoro, local). Others only on a later ask.
+**Still before any cut:** the 7 mm cause (§16.1), W-FILM-NEURO-4D5D-REPEAT for beat 0c (§16.4), and a re-fetch of every §16.1a source. Capture still waits for the owner's go.
 
 ## STATUS
 2026-11-06 spec. 2026-11-07: extracted (§3), fixes (§6), report (§8), CLI (§11), three proposer tests (§12), shift and hinge (§13, §14), public guide (§14.3). 2026-11-08: no paid model calls (§14.6), the stop on outside calls and the report on first use (§15), consolidated; film plan "Think Global, Act Local" (§16).
