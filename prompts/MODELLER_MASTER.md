@@ -87,7 +87,7 @@ C3 lands with the REPLACE verb.
 **LATEST (end of session):**
 - **ONE FRAME (A), bim-ootb #2710 (`fbe06d64`), merged and live.** W-ONE-FRAME 28/0. Public far Duplex round trip: drift 0.497 m → 0.0000 m. The import's lat/long reader was broken and is fixed: the private ARC now records lat/long/true north on both routes.
 - **Design lane on the private ARC:** the grid is EXACT on both routes. The film DB coincides with a fresh open on both routes: residual 0.0000 m over 2,093 GUIDs.
-- **BUT the routes give different offsets:** open y 2766473 vs import 2766484 (11 m). Cause under trace: each route passes its own element list to `GF.range()`, a midpoint of extents. Fix in progress on branch `fix/one-frame-same-input`, worktree `/tmp/wt-frame2`: both routes pass the SAME set (W-ONE-FRAME F1b, with a red control). If no worker report exists, re-dispatch from the branch.
+- **BUT the routes give different offsets:** 11 m apart in y. Cause under trace: each route passes its own element list to `GF.range()`, a midpoint of extents. Fix in progress on branch `fix/one-frame-same-input`, worktree `/tmp/wt-frame2`: both routes pass the SAME set (W-ONE-FRAME F1b, with a red control). If no worker report exists, re-dispatch from the branch.
 - The design lane's alternative, an offset from the file's STATED placement, changes the rule's meaning: it needs the owner's word.
 - **Film camera-path RULE:** `p_new = p_film + film_offset - route_offset`. The film DB is a federated ARC+STR open with its own offset. Never copy coordinates raw. Assert a GUID-matched residual (a bbox test is too weak).
 - **Private round trip after (A):** the export is 750 MB (was 598). The re-open failed (web-ifc out-of-bounds), so B is INCONCLUSIVE. The walk placed 2,823 (was 2,831): the origin-anchored band grid (owner: leave it). Mesh dedup in the export fixes should bring the size back under the limit.
@@ -108,7 +108,7 @@ C3 lands with the REPLACE verb.
 **Export round trip (W-EXPORT-ROUNDTRIP, #2705/#2706):**
 - Public Duplex and SampleHouse: positions exact. Storeys, GlobalIds, spaces, fills/voids, psets, types, site and MEP systems are all lost.
 - Private ARC: the same, plus 1,284 of 4,147 matched elements moved > 1 cm (median 7 mm).
-- Hypothesis: float32 precision at map coordinates, since the open route keeps raw map coords. Being tested on Duplex shifted 465 km.
+- Hypothesis: float32 precision at map coordinates, since the open route keeps raw map coords. Being tested on Duplex shifted to a far map-scale point.
 - Fix order: (0) frame/position (ONE FRAME on the open route, if the precision test confirms); then the walk on a fresh open + height for the film; then export (1) GlobalId + storeys, (2) all bodies + discipline + colour + mesh dedup via the existing geometry_hash sharing, (3) spaces/psets/fills/voids/types/grid, (4) site lat/long/true north + name, (5) MEP systems + ports.
 **§FP-EQUIPMENT SPEC (2026-11-08; data measured by the design lane on the private FF100 sheet; owner's FP ruling "Drawn equipment + ask"). Not built. Move it into bim-ootb `prompts/DISC_WALK_DRAWN_MAINS.md` as §10 when building.**
 - **Reader:** the drawn-mains reader (`modeller/drawn_mains.js`) gains an `equipment` role: point items, no runs. It reuses the same sheet fit (one held grid), the nested-block expansion, missing-block logging and the mirror guard.
