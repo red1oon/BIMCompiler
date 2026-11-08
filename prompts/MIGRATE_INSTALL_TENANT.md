@@ -333,3 +333,25 @@ variant attributes → name suffix vs ASI; the Value when Odoo `ref`/`default_co
 **Witness W-ODOO-EXPORT** (recorded via the mock, §A-MOCK): rows per file == the Odoo count for that slice; every
 Value unique; every reference (category, UoM, parent BP) found in an earlier file; falsifier = drop a category ⇒ the
 products that need it are named.
+
+### §B2a-SPEC — port the window CSV Import, generic (2026-11-08, read from iDempiere source before code)
+**Legacy mechanism (file:line):** toolbar CSV Import is ENABLED only if `isNewEnabled() && gridTab.hasTemplate()`
+(`AbstractADWindowContent.java:2284`, `GridTab.java:2255`) → `CSVImportAction` → `GridTabCSVImporter.fileImport(gridTab,
+childs, stream, charset, importMode)` (`GridTabCSVImporter.java:132-306`). A template is an `AD_ImportTemplate` row per
+tab: `CSVHeader` / `AliasCSVHeader`, allowed modes per role via `AD_ImportTemplateAccess` (`MImportTemplate.getTemplates
+:165`, `isAllowed:201`); the file's first line MUST equal CSVHeader or the alias, else `WrongCSVHeader` (`validateFile:239-270`).
+Header syntax (`getColumnName:873-905`, `mapCSVHeader:354`): `Col` plain · `Col[KeyCol]` = look up the referenced record
+by that column (`resolveForeign:1645`, region-by-country `:1717`) · `Col/K` = key column for update/merge. Modes insert /
+update / merge (`:850-862`). Per row: `preprocessRow:960` → `validateSpecialFields:1056` → `proccessRow:1152` (fills the
+GridTab, so the tab's own defaults/callouts apply, then saves) → `processDocAction:832` when the tab is a document; detail
+tabs via `mapCSVDetail:410`. Output = the input file plus a per-row result column.
+**Twin port:** ONE generic module over the twin's existing GridTab save path (no table names in code, AD-LAYER LAW);
+toolbar enablement read from `AD_ImportTemplate`. **Seed gap:** `ad_importtemplate` + `ad_importtemplateaccess` do not
+exist in `ad_seed.db` → add the tables by a patch SQL + the self-heal loader (DB rule), never a binary. The pilot has 0
+template rows, so the "Odoo Migration" 2Pack carries the templates for: UoM, Payment Term, Product Category, Warehouse + Locator.
+**Oracle:** the same CSV through the pilot's own ZK window CSV Import (headless, `localhost:8088`), then compare the
+created rows column by column. **Witness W-CSV-IMPORT:** denominator = every tab with a template in the pack; created
+rows == legacy's; a header that differs from CSVHeader is refused with legacy's message; an unknown `[Key]` value fails
+that row only, with legacy's text.
+**B1 follow-up found here:** the export's headers must EQUAL the template CSVHeader, so the `odoo_*` provenance
+columns move to a sidecar `provenance.json` (row → Odoo model + id); the summary screen reads it.
