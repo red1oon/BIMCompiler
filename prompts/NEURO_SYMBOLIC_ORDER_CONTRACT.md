@@ -471,6 +471,8 @@ Any claim that Blender or Bonsai cannot do 4D/5D (Bonsai has schedules; the ques
 4. **GPU verbs last, and only on the owner's go:** Alt+S stills, Alt+C bake (`cli_silent_bake.js` flags become the `BAKE` verb's inputs), never beside the owner's live tab.
 5. Then the Modeller verbs below, on the same verb list.
 
+**Same ask, earlier spec:** `prompts/AGENT_CALLABLE_CHECKERS.md` (owner 2026-10-27, *"Let AI LLMs agents call our checkers"*; merged #264 on 2026-11-09). Its model checks on a user's IFC (family A) and its claims registry (family B) are verbs for this list too; read it before adding a second registry. Its P0, the no-AI-inside witness, is bim-ootb #2408 (also removes the Viewer's GoatCounter per the owner's 2026-10-02 ruling); the Modeller page the connector opens has no tracker (checked 2026-11-09).
+
 **What exists (read these, do not re-derive):**
 | Piece | Where | State |
 |---|---|---|

@@ -8,6 +8,8 @@ empty population prints `VACUOUS`/`INCONCLUSIVE`, never `PASS`. Honour this bloc
 
 This file is written BEFORE any code. Nothing below is built yet.
 
+**▶ Continued, 2026-11-09:** the first built part of this ask is the MCP connector `bim_mcp.js` (bim-ootb #2713, #2717; W-BIM-MCP 6/0), specified in `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` §18; the verb list that grows it is §19. One lane: new agent-callable verbs go in §19's `verbs.json`, not a second registry here. This file keeps its own two families (A: a user's IFC, B: our published claims, the claims registry) and its P0, the no-AI-inside witness on main (bim-ootb #2408, conflicting as of 2026-11-09).
+
 ## 0. Origin (user's words, 2026-10-27)
 > *"Let AI LLMs agents call our checkers. Check if written this down, if not spec it. Also not just users
 > IFCs but also check our codebase itself as claimed."*
