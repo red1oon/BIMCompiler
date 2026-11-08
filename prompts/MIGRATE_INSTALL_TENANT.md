@@ -192,3 +192,64 @@ Treat this file's earlier "PLAN/BLOCKED" framing as historical, not current.
 4. Not urgent, but worth a look while in this area: `TRILOGY_STALE_CODE_AUDIT.md` flags `erp/idempiere_agent.zip`
    as a tracked BINARY duplicating the tracked SOURCE dir `erp/idempiere_agent/` (same pattern as `odoo_agent.zip`)
    — a DB/binary-distribution-policy flag already on record there, not new, just adjacent to this area.
+
+## §2026-11-08 PLAN — "a proper migration tool the user runs, that localises the ERP to their machine" (owner directive)
+> Owner, 2026-11-08: *"most Odoo users want at least to salvage all master data and use whatever proper Kernel ERP
+> convention to continue business … like it to be a proper one that users runs and then localise the ERP to their
+> machine. A user guide will be to show how, and a film too in the end."* · *"there are stale ERP testing, all will
+> be your session to manage."*
+
+### Measured state today (read, not assumed)
+- **What a user can run** — `bim-ootb/erp/odoo_agent.zip` → `agent.js` pulls ONE sale order (`S00023`) and its chain
+  (`erp/odoo_agent/agent.js:51-61`). No master data. `extract_model.js` pulls the dictionary slice for renderer #2, not data.
+- **What the developer runs** — `build/erp/gen_ad_odoo.js` (dev only, needs `build/erp/ad_full.db`) writes `12-odoo.db`
+  rows DIRECTLY: 38 partners, 47 accounts, 2 taxes, 35 products, 27 orders / 56 lines (`build/erp/poc_p4_masters.log`,
+  `poc_odoo_full_pull.log`, 2026-10-12). It skips iDempiere's own import checks, and no user can run it on their Odoo.
+- **The proper legacy route already exists in iDempiere:** 19 `I_*` import tables + `Import*.java` processes
+  (`I_ElementValue`, `I_BPartner`, `I_Product`, `I_PriceList`, `I_Inventory`, `I_GLJournal`, `I_Invoice`, `I_Order`,
+  `I_Payment`, `I_BankStatement` …). The twin has the Import File Loader + **ImportBPartner only** (FS-16,
+  `erp/ad_process.js:734-822`, `ERP_FIRST_SETUP_GUIDE.md §FS2n`).
+- **Gap inventory** — 36 areas, `build/erp/odoo_survey.json` (2026-06-10; partly closed since by the dev generator).
+- **Witness honesty defect (PRIMAL LAW #4):** `scripts/poc_p4_masters.js`, `poc_odoo_full_pull.js`,
+  `poc_migrate_postcfg.js`, `poc_migrate_postcfg_odoo.js` print 🟢 PASS while the live Odoo is DOWN and the
+  non-invent check was SKIPPED. That must print INCONCLUSIVE.
+- Odoo docker pair `odoo` / `odoo-db` stopped since ~2026-10-18; the iDempiere `postgres` is up.
+
+### The route (recommended, awaiting owner GO on B0)
+**Odoo → iDempiere import files → the twin's own Import processes**, at a CUTOVER DATE: masters + opening balances +
+open documents. This is how iDempiere consultants move a company in, so it is the twin's convention (CARDINAL RULE),
+and the user ends with a normal tenant on their own machine (browser IndexedDB), not a pre-baked demo shard.
+Closed history is OPTIONAL (the fold already proves it: `MIGRATION_CAMPAIGN_RESUME.md`).
+
+### WORK LIST (WORK-TO-ZERO, top to bottom)
+**A — Test truth first (stale tests)**
+- ⬜ A1 The 4 migrate pocs above: live source unreachable ⇒ `INCONCLUSIVE` + non-zero exit, never PASS.
+- ⬜ A2 `docker start odoo-db odoo`; re-run the live migrate witnesses; record GREEN/RED here.
+- ⬜ A3 Full ERP sweep, ONCE, persisted: bim-ootb `erp/tests` = 232 `witness_*.js` + 153 `poc_*.js` vs fresh
+  origin/main, headless software rendering (no GPU), ≤3 in parallel. Ledger: GREEN / RED-product / RED-stale-instrument /
+  INCONCLUSIVE. Stale instrument → fix the witness. Product defect → fix the SQLite side (CARDINAL RULE).
+**B — Core gaps: the migration tool**
+- ⬜ B0 Spec section for the route above (file formats, cutover rules, load order, witnesses). Owner GO needed.
+- ⬜ B1 Agent v2 (user runs it natively, zip, `npm install && node agent.js`): writes `odoo_export/` = one CSV per
+  `I_*` table in iDempiere's loader format + `manifest.json` (live `search_count` per Odoo model = the non-invent proof).
+  Masters: CoA, partners + contacts + addresses, product categories, products, UoM, price lists, taxes, payment terms,
+  warehouses/locators, currency.
+- ⬜ B2 Port the missing Import processes verbatim (cite Java file:line), one per PR, ImportBPartner as the pattern:
+  ImportAccount → ImportProduct → ImportPriceList → ImportInventory → ImportGLJournal → ImportInvoice → ImportOrder →
+  ImportPayment → ImportBankStatement. Each judged vs legacy iDempiere running the SAME file (parallel run,
+  `scripts/bridge/run_all.sh`).
+- ⬜ B3 Opening balances: on-hand (`stock.quant` → `I_Inventory`), trial balance at cutover (→ `I_GLJournal`), open
+  AR/AP (unpaid invoices → `I_Invoice`), open SO/PO (→ `I_Order`).
+- ⬜ B4 "Localise": in the browser ERP, one guided flow — create the tenant with the Odoo CoA (Initial Tenant Setup),
+  run the loaders in order, persist to IndexedDB. State the offline line honestly (§2026-07-22 AUDIT item 1).
+- ⬜ B5 Proof witness: every imported count == manifest count; trial balance at cutover == Odoo's to the cent;
+  stock on hand == Odoo's per product/location; falsifier (drop one file ⇒ RED).
+- ⬜ B6 Named NOT-migrated list in the guide: closed history (optional), analytic, QWeb print layouts, server actions,
+  non-core Odoo apps (MRP, HR, POS … arrive as plugins, AD-LAYER LAW §6).
+**C — UI gaps for Odoo users** (owner lane: `ERP_FRIENDLY_OPS_LENS.md`; opt-in plugin, books unchanged)
+- Done there: FO-A1 inline lines, FO-A2 next step, FO-A4 receive payment, FO-B related counts, FO-M1/M4/M5.
+- ⬜ C1 Measure then build, in this order (what a migrant hits on day one): FO-E bank reconciliation, FO-D saved
+  filters / group-by, FO-C quick-create in a field, FO-H pivot/graph, FO-F activity log, FO-G defaults.
+**D — Guide + film** (only after B5 is green)
+- ⬜ D1 `docs/ERPUserGuide.md` §2 "Move from Odoo": claims only what a `§` line proves.
+- ⬜ D2 Film per `prompts/FILM_NARRATION.md` PLAYBOOK.
