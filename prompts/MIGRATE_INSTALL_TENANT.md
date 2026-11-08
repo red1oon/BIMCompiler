@@ -645,3 +645,80 @@ nothing was judged. Window-level proof (open each migrated row from the main men
   stamps, C_ElementValue Post* ×311, payment term, category …; `§NM-GENESIS-GAPS` in run5) — a twin divergence from MSetup, which saves through the models.
   ⬜ L1 window-level proof in the browser (open each migrated row from the main menu: grid rows + parent per tab) — with B4. ⬜ L2 legacy cross-check
   (§NINJA-LEGACY-INSTALL). ⬜ lots → ASI, vendor price breaks, C_PaySchedule (named in manifest notes).
+
+### §G1-SPEC — a born tenant's rows are what MSetup's PO saves write (2026-11-09, owner: "Proceed to fix newly created tenants")
+**Measured defect:** `genesis.js` composes CREATE ops and the resident install merges them as raw `INSERT OR IGNORE` (`mergeGenesisInto`, called by
+`idempiere.html installGenesis` :1058-1060). Legacy `MSetup` saves every row through `PO.save`. W-NINJA-MIGRATE run5 counted **116** AD-mandatory column gaps
+on a born tenant's own rows in just 13 tables (Created/Updated/CreatedBy/UpdatedBy everywhere; C_ElementValue Post* ×311; flags of C_BPartner, M_Product,
+AD_User, M_Locator X/Y/Z …).
+**Legacy oracle (measured, pilot `idempiere_pilot`):** tenant 1000000 "ShopDay…" created by Initial Client Setup 2026-10-12 — every row of ad_org, ad_role,
+c_acctschema, c_elementvalue, c_bp_group, m_product_category, m_warehouse, m_locator, c_doctype, ad_user has Created set and CreatedBy=100 (SuperUser, the
+user running the process).
+**Fix (generic, no table list):** `mergeGenesisInto(groups, db, opts)` fills, for each CREATE row, the columns the row does not carry, in PO order:
+(1) `PO.setStandardDefaults` (PO.java:1973-2001): Created/Updated = `opts.now`, CreatedBy/UpdatedBy = `opts.user`, IsActive=Y, Processed/Processing/Posted = N
+where the table has the column; (2) the model's `setInitialDefaults` = `opts.initialDefaults(table)` (the host passes `ModelLayer.MODEL[t].initialDefaults` — the
+same registry the save path uses, one source); (3) the physical column DEFAULT = `ad_ddl_default` (pg defaults, already in the seed patch). The row's own values
+always win. `opts` missing = today's behaviour (named, for the scratch fold of `genesis.html`, which has no dictionary). What is still empty after (1)-(3) is a value
+MSetup sets explicitly → the genesis row gets it, cited to `MSetup.java:line`. The op-log hash chain is unchanged (the ops carry what genesis composed; the install
+stamps them like `ws_kernel.commit` stamps a group — same design).
+**Witness W-GENESIS-COMPLETE** (`erp/tests/witness_genesis_complete.js`): born via the production path (birthTenant → rebandGenesis → mergeGenesisInto with the
+host's opts) → for EVERY table genesis writes (denominator from the ops), every AD-mandatory column is non-empty on every row of the tenant: gaps=0; CreatedBy=100
+and Created set on every row (= the pilot oracle); for each flag column filled by (2)/(3), the twin's value is one the pilot tenant's rows carry for that column
+(oracle values, recorded once into a fixture so CI needs no postgres); falsifier: the same merge WITHOUT opts reports gaps>0; INCONCLUSIVE if no table judged.
+
+### §G1 RESULT (2026-11-09) — W-GENESIS-COMPLETE 🟢 10/10 — bim-ootb branch fix/genesis-complete-rows
+- **Root cause (generic):** the twin's model registry carried `setInitialDefaults` for only the classes a lane had hand-copied. **Fix:** `scripts/gen_initial_defaults.js`
+  EXTRACTS them from the iDempiere 13 source (`setInitialDefaults()` body, else the ctor `if (<Key>_ID == 0)` block; constants from X_/I_/PO/DocAction) →
+  generated `erp/model_initial_defaults.js` (**182 tables, 896 columns, 32 clock columns**; 7 runtime-computed values left out, logged); `ModelLayer.newPO` applies it UNDER
+  a hand entry (`setGeneratedDefaults`, `initialDefaultsOf`). Hand vs Java (`logs_migrate_2026-11-09/initdef_hand_vs_java.log`): 238 agree, **1 disagrees**
+  (`C_Payment.IsOverUnderPayment` hand N vs MPayment.java:147 Y — the window path's AD default gives N; hand kept, named for the parity lane), 35 hand-only (Libero dd_order etc.).
+- **Install fill:** `Genesis.mergeGenesisInto(groups, db, {now, user, initialDefaults})` = PO.setStandardDefaults + model defaults + `ad_ddl_default` + PO.insert_Accounting
+  (accounting rows copy the schema default's Account columns); `idempiere.html installGenesis` passes the session user (100 at boot = the pilot oracle). Op-log untouched.
+- **MSetup values genesis lacked (each cited in genesis.js):** OrgInfo DUNS/TaxID '?'; Value=Name='Standard' + IsDefault for BP / product category / warehouse / locator (+X/Y/Z 0);
+  discount-schema ValidFrom; GL category Values from the sequence (1000000…); element IsNaturalAccount; combinations IsFullyQualified; AcctSchema_GL Yes-No = Y; NEW group
+  **G7**: 8 trees (AD_Ref_List 120 via `Genesis.treeTypesFrom`, seed default) + root nodes, the schema's cost type, **AD_ClientInfo** (was absent — 19 twin readers), element → EV tree.
+- **Witness** `erp/tests/witness_genesis_complete.js` + oracle fixture `erp/tests/fixtures/genesis_oracle_pilot_1000000.json` (pilot tenant 1000000, made by Initial Client
+  Setup 2026-10-12; `GC_RECORD=1` re-records): GAPS 0 over 42 tables (the one empty, OrgInfo.ReceiptFooterMsg, is empty in legacy too) · STAMP CreatedBy=100 · ORACLE 114 flag
+  columns all within legacy's values · TREES types = legacy's 8, roots, element tree, ClientInfo 22/22 columns + tree links · FALS raw merge = 322 gaps, op-log untouched.
+  Logs `logs_migrate_2026-11-09/witness_genesis_complete.run{1..7}.log` (run7 PASS).
+- **NEW ITEMS (not in this pass, named):** ⬜ G2 per-record tree nodes (legacy: OO/BP/PR/EV node per record via PO.insert_Tree; pilot EV 55 + root), C_AcctSchema_Element rows
+  (legacy OO/AC mandatory, PR/BP), the material cost element (MAcctSchema.checkCosting); ⬜ G3 the client's DocumentNo_<Table> sequences (MSequence.checkClientSequences) so a
+  born tenant numbers Values/DocumentNos like legacy; ⬜ G4 remaining MSetup names (product 'Standard Product' vs legacy 'Standard', schema name).
+
+### §B4-IMPL-SPEC — "Migrate from Odoo" on the ONE generic form engine (2026-11-09, owner: "proceed with the B4 Migrate from Odoo form")
+**Read first:** the twin has ONE generic AD_Form engine — `erp/ad_form_generic.js` (a bundle registers `{params, columns, rows(trx, params), run(trx, params, rows)}`
+for an AD_Form classname) drawn by ONE host renderer (`idempiere.html renderGenericForm`); `rows()` runs in a READ Trx that is discarded, `run()` in ONE transaction
+(`ModelLayer.run` timing PROCESS) committed as one signed group. So the §B0-4 "summary from the same import code on a throwaway copy" = the Ninja loader run inside
+`rows()`'s Trx and dropped; OK = the same run inside `run()`, kept.
+**Generic renderer extensions (AD-LAYER LAW: capabilities every form gets, no form-specific code):** (G-a) a `file` parameter (legacy FileName/FilePath editors):
+`<input type=file multiple accept>`, read into `[{name, data}]` — `.xlsx` parsed with the vendored SheetJS (lazy `loadScript`), `.json` parsed, else bytes; (G-b) an editable
+column of `type:'string'` is a text cell (today every editable cell is a number); (G-c) a row with `locked:true` draws its checkbox disabled (+ `lockedBy` text);
+(G-d) `rows(trx, params, current)` — Refresh hands the grid as it stands (selections + edited cells), so answers survive a recompute.
+**The plugin** `erp/plugins/odoo_migrate.mjs` (bundle `org.kernel.odoo.migrate`, band 9541001-9541999): AD_Form 9541001 classname `org.kernel.odoo.MigrateFromOdoo`,
+menu leaf "Migrate from Odoo" (action X) under Data Import 163, AD_Form_Access for roles 0/102; hot chunk `odoo_migrate_form.mjs` registers the descriptor and drives
+the Ninja loader (AD_Process 9540001 through `AdProcess.runInTrx`, the workbook handed over by `putFile`) — it needs `org.idempiere.ninja.migrate` started, and says so if not.
+**The screen, top to bottom:** param *Files* (`odoo_migration.xlsx` + `manifest.json` from the export folder). Grid = one row per Odoo UNIT the products use (column
+*ERP unit*, editable text; suggested only on an exact name match) then one row per SHEET (columns: Odoo rows · in file · will import · refused + first reason · needs ·
+needed by · in this tenant now). A sheet is LOCKED (cannot be unchecked) while a selected sheet has a MANDATORY lookup into it (AD_Column.IsMandatory of the header's
+column); an OPTIONAL lookup into an unchecked sheet is dropped from the child sheet (the stated effect). Refresh = re-run the dry run with the answers. *Process* = OK.
+Refusals before anything runs: manifest files ≠ files given; a sheet's row count ≠ manifest's; a used unit without an answer; a selected sheet needing an unchecked one.
+**Witness W-ODOO-FORM** (`erp/tests/witness_odoo_form.js`, node, the descriptor through `AdFormGeneric.read/execute` exactly as the renderer calls it; born tenant):
+FORM row + menu + access X of N · units listed (3 used, 25 not shown) · no answers ⇒ summary predicts 0 imported and names X12DE355 · answers ⇒ predicted per sheet ==
+sheet rows, refused 0 · uncheck a mandatory parent ⇒ locked + run refused · uncheck a leaf (M_Product_PO) ⇒ allowed, run imports without it · **W-MIGRATE-SUMMARY: tenant
+gain per sheet after OK == the summary's prediction** · rerun ⇒ refused, unchanged · falsifier: a manifest count edited ⇒ refused before any run · INCONCLUSIVE when
+nothing judged. Renderer extensions G-a..G-d: a live browser check (wiring only, Playwright) after the node witness is green.
+
+### §B4 RESULT (2026-11-09) — "Migrate from Odoo" form: W-ODOO-FORM 🟢 16/16 + W-ODOO-FORM-LIVE 🟢 12/12 — bim-ootb #2743 (auto-merge)
+- **Built:** `erp/plugins/odoo_migrate.mjs` (AD_Form 9541001 `org.kernel.odoo.MigrateFromOdoo`, menu leaf 9541001 under Data Import, form access 0/102) + `odoo_migrate_form.mjs`
+  (descriptor: `plan` / `load` / `DESC`); generic renderer G-a file param, G-b text cells, G-c locked rows, G-d `rows(trx, params, current)` (idempiere.html renderGenericForm,
+  ad_form_generic.js header); sw.js precache + INSTALL_ONLY. Witnesses `erp/tests/witness_odoo_form.js` (node, born tenant) + `witness_odoo_form_live.js` (headless Chromium).
+- **Measured:** no files ⇒ two "pick" rows; a manifest count edited ⇒ refused before any dry run; 3 used units listed (none suggested), 25 unused not shown; unanswered ⇒ 0 predicted;
+  answered ⇒ 17 sheets predicted = rows, refused 0, tenant untouched by the summary; M_Product_Category locked (needed by M_Product); unticking it does not stick; unticking
+  M_Product_PO allowed ⇒ predicted 0; **Process gain == prediction on all 17 tables** (W-MIGRATE-SUMMARY); rerun refused, unchanged. LIVE: System Administrator starts both
+  bundles via Plugins & Releases (restored after reload — a direct registry start does NOT persist; the instrument was corrected to the admin path); tenant born on the page via
+  `idmpInstallGenesis`; its admin opens the leaf; files read (§AD-FORM-GENERIC file); 3 text cells + 13 locked rows; Refresh keeps the typed units, summary ok=true; Process ⇒
+  339 ops, one group, verifyChain=ok; the TIP grew 7 BP / 48 products / 26 stock lines / 47 accounts (counting the raw bundle db showed 0 — the instrument was wrong, not the
+  product: committed work lives in the op-log tip; read through `__crud.modelRun`). Logs `logs_migrate_2026-11-09/witness_odoo_form{,_live}.run*.log`.
+- **Named limits:** a tenant with several DiscountType P schemas (GardenWorld: 2) gets the price-list version refused as ambiguous (legacy ImportPriceList takes MIN id) — next:
+  the summary offers the choice like units, or the exporter names the schema; units can only be MAPPED to existing ERP units (no new-unit code yet); a born tenant's admin
+  role gets the form only if the plugin was started BEFORE the tenant was born (grantFullAccess copies what exists) — plugin access for later tenants is a plugin-lane item.
