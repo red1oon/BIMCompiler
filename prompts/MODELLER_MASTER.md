@@ -98,7 +98,7 @@ C3 lands with the REPLACE verb.
 - **Queue: carrier → export gaps (storeys + routed runs reach the IFC) → height (§7.1) → fit real sheets.**
 **Next, in order:**
 1. ✅ Grid carrier on the private ARC, both routes EXACT (design lane): open route 222/222 axes, 24/24 grids, tags and storeys equal, ends 0.00 mm in the map frame; import route the same at 0.00 mm after its own element-frame offset. So the reader can take each route's grid directly. STR not run.
-2. **Export gaps** (owner's queue item 2): spec draft written, `§EXPORT-ROUNDTRIP` below; measure first. Also the owner's ONE-FRAME ruling (keep map coords on both routes), not specced, owned by the Viewer import lane. Measured in G2 (§RESUME 2026-11-07): the walked export held 0 `IfcBuildingStorey` (everything contained directly in the building), none of the routed runs (0 swept solids, 0 ports), and 2,323 of 6,461 elements on the merged import. Owner of the writer: `modeller/bonsai_ifc.js`.
+2. **Export gaps** (owner's queue item 2): spec draft written, `§EXPORT-ROUNDTRIP` below; measure first. Also the owner's ONE-FRAME ruling, corrected: "Local + recorded offset" on both routes. The change is the Modeller OPEN route (this lane) plus site lat/long on both. Spec before code; see §EXPORT-ROUNDTRIP. Measured in G2 (§RESUME 2026-11-07): the walked export held 0 `IfcBuildingStorey` (everything contained directly in the building), none of the routed runs (0 swept solids, 0 ports), and 2,323 of 6,461 elements on the merged import. Owner of the writer: `modeller/bonsai_ifc.js`.
 3. Height §7.1, then fit real sheets through the carrier, then the owner's §7 Q2 (how a user supplies sheets).
 **For the owner, open:**
 - The design lane proposes exporting a run as an IfcDuctSegment with an Axis representation only (no Body), labelled provisional height. Ask when the height step comes up.
@@ -1466,7 +1466,13 @@ Related: IFC4.3 target classes and the alignment-first rule — docs/BrowserScal
    - the `BIMOOTB_Walk` set: provisional devices stay in the file, labelled. Only totals leave them out.
 3. **Frame:** export writes the frame it read: the file's stated site placement / map conversion, not a map offset baked into every placement. This must agree with the owner's ONE-FRAME ruling below.
 4. **Routed runs:** export only what the walker placed with a real basis. The drawn-route record is plan only, so it reaches the IFC only after the height step (§7.1), and then as the Axis-only duct the owner has yet to rule on.
-**Owner ruling that touches this (2026-11-08, relayed by the design lane): ONE FRAME, "Yes, keep map coords".** Both IFC routes give one file one frame, the file's stated map coordinates. So the Viewer import keeps the site placement, which also restores the dropped site latitude/longitude and true north. Not specced. It changes the import route; its owner (Viewer import lane) specs it before code, and W-IFC-GRID must stay green.
+**Owner ruling that touches this (2026-11-08, relayed by the design lane, CORRECTED the same day): ONE FRAME = "Local + recorded offset".**
+- Both IFC routes follow the Viewer import's existing rule: shift a far-away model to a local origin and record the shift in `project_metadata` (`georef_offset_x/y/z`, import_worker.js 700-755). The map position stays exact and recoverable.
+- Also restore the dropped site latitude/longitude: on the import today, `site_latitude` is empty and `site_latlong_source=unknown`.
+- **So the change is the Modeller OPEN route** (`ifc_open_db.js` / `ifc_extract_core.js`, this lane): it keeps the map offset today. The import route needs only the lat/long part.
+- Spec before code. W-IFC-GRID must stay green: the axes move with the elements.
+- Export (point 3 above) writes the recorded offset back as the file's site placement.
+- (An earlier relay, "keep map coords", was a misdescription and is withdrawn.)
 **First step for the next session:** re-measure G2's gaps on main (`8d1ede96` or later) with a round-trip witness, as X of N per class, per storey and per carried table, on a public resident (Duplex) and then the private set. Write the measured table here, then the rule and the build.
 
 ## §IFC-EXPORT-DEPTH — SPEC, 2026-09-26. Priority 3 (builds on §IFC-EXPORT-SEED below).
