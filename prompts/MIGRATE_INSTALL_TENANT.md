@@ -226,7 +226,8 @@ Closed history is OPTIONAL (the fold already proves it: `MIGRATION_CAMPAIGN_RESU
 - ✅ A1 DONE (witness) 2026-11-08 — `poc_p4_masters` / `poc_odoo_full_pull` now print ⚪ INCONCLUSIVE exit 3 with no Odoo (`§NO-ODOO … exit=3 inconclusive=Y`). The two postcfg pocs fall back to a RECORDED oracle, so they still judge — left as is.
 - ✅ A2 DONE (witness) 2026-11-08 — live run, logs `build/erp/logs_migrate_2026-11-08/*.live.log`: full_pull 🟢, postcfg 🟢, postcfg_odoo 🟢, **p4_masters 🔴 `35==48` products = SOURCE DRIFT, not an extractor defect**: 13 sale products created 2026-10-14 by the `mrp` install (`product_product.create_date`; `ir_module_module mrp write_date 2026-10-14`). The June shard predates them. Closes when B1 (agent v2) replaces the dev-built shard; until then this RED is attributed, not hidden.
 - ✅ A-MOCK DONE (witness) 2026-11-08 — `scripts/odoo_mock/odoo_rpc_mock.js` + fixture `build/erp/odoo_fixture/odoodemo_2026-11-08.json` (11 answers, sha256 039562a2f2db3b3c) + `ODOO_PORT` on the 4 pocs and `gen_ad_odoo.js`. W-ODOO-MOCK-FIDELITY 🟢 (`scripts/poc_odoo_mock_fidelity.js`, log `build/erp/logs_migrate_2026-11-08/fidelity_run1.out`): replay == live on all 4 (MISS=0), no-Odoo ⇒ INCONCLUSIVE, falsifier `res.partner.search_count 38→39` changes the p4 result. **Replay: `node scripts/odoo_mock/odoo_rpc_mock.js replay build/erp/odoo_fixture/odoodemo_2026-11-08.json & ODOO_PORT=8070 node scripts/poc_X.js`.** B1's agent v2 must be recorded the same way (re-record = start Odoo, `record` mode, run).
-- ⬜ A3 Full ERP sweep, ONCE, persisted: bim-ootb `erp/tests` = 232 `witness_*.js` + 153 `poc_*.js` vs fresh
+- 🟡 A3 SWEEP RUN 2026-11-08 — see §A3-LEDGER below (first pass 188/232 GREEN; 16 instruments fixed in 6 PRs; pilot drift found; re-run of 29 in progress).
+- (original A3 text) Full ERP sweep, ONCE, persisted: bim-ootb `erp/tests` = 232 `witness_*.js` + 153 `poc_*.js` vs fresh
   origin/main, headless software rendering (no GPU), ≤3 in parallel. Ledger: GREEN / RED-product / RED-stale-instrument /
   INCONCLUSIVE. Stale instrument → fix the witness. Product defect → fix the SQLite side (CARDINAL RULE).
 **B — Core gaps: the migration tool**
@@ -355,3 +356,21 @@ rows == legacy's; a header that differs from CSVHeader is refused with legacy's 
 that row only, with legacy's text.
 **B1 follow-up found here:** the export's headers must EQUAL the template CSVHeader, so the `odoo_*` provenance
 columns move to a sidecar `provenance.json` (row → Odoo model + id); the summary screen reads it.
+
+### §A3-LEDGER — ERP witness sweep 2026-11-08 (bim-ootb origin/main 59d9a323, `/tmp/wt-erp-sweep`, nice 19 / ionice idle / 3 parallel / 420 s)
+Results: `build/erp/erp_sweep_2026-11-08/witness/results.tsv` + `logs/`; re-run (2 parallel, 1500 s): `…/rerun/`. Runner = the
+scratch `erp_sweep.sh` (load guard: waits while loadavg ≥ 14 — the machine is shared with other sessions + the owner's Firefox).
+**First pass: 232 run → 188 exit 0, 29 exit 1, 7 timeout, 5 exit 2, 3 exit 3.** Classified:
+| Class | Witnesses | Outcome |
+|---|---|---|
+| STALE INSTRUMENT — sql.js JS 1.14.1 (node_modules) + shipped wasm (another build) → `TypeError: y is not a function` | changelog_rule, dashboard_dict/docstatus/performance/select, dict_census, goal_engine, quicksetup, setup_lens, window_lens | ✅ bim-ootb #2714 merged; all PASS, dict_census judges again = RED BY DESIGN (gap census 85/198, was 78) |
+| STALE INSTRUMENT — deleted file | local_time (`pos_lens.js`, deleted #2585) | ✅ #2714, PASS 3/3 |
+| STALE INSTRUMENT — host refactors | master_save_rules (`_modelAfterSaveGo`/`_modelDeleteGo`/`_sideTables`, `withSidecar`, `_modelSession`), erp_engine_subset (`taxLookup` caller → till_core.js) | ✅ #2720 merged; 21/21 PASS, engine_subset PASS |
+| WRONG EXPECTATION | gridtab_live Asset Group (expected insert_Accounting; legacy MAssetGroup.afterSave copies the default group's rows = 0) | ✅ #2719 merged; 128 windows GAP=0. Named non-core gap: twin has no MAssetGroup.afterSave port |
+| GUARD FALSE POSITIVE | core_untouched CU4 (overlay module named in a COMMENT in plugins/mf_lens.mjs:5) | #2721 auto-merge; PASS, falsifier (real import) still fails |
+| STALE ORACLE — clock | fn_parity sql-converter 8 cases (SYSDATE recorded 2026-10-15) | #2722 auto-merge (stale clock cases reported, not judged) + oracle re-recorded today (read-only): 48/48 PASS |
+| **PILOT DRIFT** (legacy baseline moved; twin unchanged) | ws_diff_read (2 `WS Write One B` BPs, created 2026-10-21), movement_diff (product 124 @101: pilot 0 + a 2026-11-04 layer of 6, seed/pilot_snap 15) — likely also views_parity, post_*_diff, inventory_diff (re-run pending) | ⛔ owner decision: `pilot_snap` = the clean baseline (qty 15, 0 WS BPs, last inout 2026-10-13). Restoring `idempiere_pilot` from it is destructive on a SHARED db the ERP session + the running iDempiere server use |
+| NEEDS INPUT (not standalone) | pos_chain, pos_plan, team_floor (PC_LINES/FL_LINES fixture never committed — POS_PLUGIN_LOCAL_FIRST.md:295,759), team_keys (KW_OLD) | known to their lanes; not suite members as written |
+| NOT A WITNESS | acct_processor_mutants (a data module, `module.exports = [...]`) | exits 0 silently — rename or exclude from the glob |
+| ENV | udp2_engine, udp3_find_engine, udp1_pinstance (`better-sqlite3`, lives in bim-compiler/node_modules) | in the re-run with that NODE_PATH |
+| OPEN — in the re-run / next session | packgen (plugin install now SysAdmin-only, witness session has no role), packout O6, view_window_first (window 255 "Record 1 of 198" but 0 grid rows), mf_seed, team_executors (10), movementconfirm_ui, erp_i18n, shopday_model_path, udp4/udp_order (known parallel flakes), the 7 timeouts | re-run results → this table |
