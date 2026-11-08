@@ -470,3 +470,53 @@ Drafted, not completed; old POI API (`HSSFCell.CELL_TYPE_*`) — the plugin is n
 **Consequence for the plan (owner decision):** porting MigrateExcelData (≈250 lines, one generic loader, a plugin) could
 REPLACE B2a (`GridTabCSVImporter`, 1,856 lines) + most of B2 for MASTER data; the `I_*` Import processes would stay only where
 legacy business logic matters (Import Inventory / GL Journal complete their documents) — or a DocAction step is added.
+
+### §NINJA-DECISION (2026-11-09, owner) — the Ninja multi-sheet route is ADOPTED for all data migration
+> *"Yes you got the Java class right. I do remember the apostrophe issue and thought i have solved it there. I am not sure why it
+> has those 5 limits … This need no legacy as to prove it works is already in the Kernel ERP spine of AD data relationship and
+> coherently appear when accessed thru the main menu … smaller abstract solution to all data migration. My concern is 3rd party
+> such as Odoo, may miss certain mandatory table properties and intra table relationship ie _ID and <table>line for master detail
+> control. Those should be there. If not u need to patch so."* · *"But if u can install the Ninja OSGi plugin (some upgrade version
+> may be needed) at the legacy side it be good"*
+**Code answers (read 2026-11-09):** apostrophe — SOLVED for the INSERT (values go through `po.set_ValueOfColumn` → `po.save`,
+parameterised); STILL OPEN in the lookups (`WHERE Name='…'`, `WHERE DocumentNo='…'`, alt lookups) and UPDATE mode (only `"` is
+stripped). The "5" — no comment / guide / technical note explains it: it is the array size `new String[5]` of `lookupAlt`/
+`columnAlt`, and `cellcnt` is NOT reset per sheet → 5 `>` lookups per WORKBOOK; a 6th throws. Both fixed in the port.
+**This supersedes** §B1's I_*/CSV-template file set and §B2a (GridTabCSVImporter) for master data; B2 Import processes stay only
+where a document must be COMPLETED (opening stock / opening GL) — or the loader gains a DocAction step (owner to see the measure).
+
+### §SHEET-CONTRACT — every exported sheet is complete against the AD dictionary (owner's concern, spec 2026-11-09)
+Measured from `ad_seed.db` (origin/main): the mandatory columns of the 17 target tables. The exporter writes ONE workbook, sheets in
+load order, sheet = TableName, header = AD ColumnName, and for each target table each mandatory column is ONE of:
+1. **supplied** from an Odoo field (the mapping, §B1);
+2. **defaulted by the dictionary** (`AD_Column.DefaultValue`, e.g. `M_Product.ProductType=I`, `M_Locator.PriorityNo=50`) or by the
+   model class's constructor — the PO save applies these, the sheet leaves them out;
+3. **PATCHED** — Odoo has no such property: the exporter fills it by a NAMED rule, written in `manifest.json` `patches[]` with the
+   row count, and shown on the summary screen. Found by the measure (no Odoo field, no default): `C_BPartner.C_BP_Group_ID` (the
+   tenant's default group), `C_ElementValue.C_Element_ID` (the tenant's account element), `M_Product.C_TaxCategory_ID` (default tax
+   category), `C_Location.C_Country_ID` (from the Odoo country code), `M_Warehouse.C_Location_ID` (the Odoo warehouse's partner
+   address), `M_Inventory.C_DocType_ID` (Material Physical Inventory), `M_PriceList.C_Currency_ID` (company currency),
+   `M_PriceList_Version.M_DiscountSchema_ID` (the tenant's default schema), `C_UOM.X12DE355` (the UoM mapping step).
+**Master–detail (the `_ID` / `<table>Line` control):** every detail sheet carries its parent's key column, taken from the AD tab
+link (the child tab's link column to the parent tab), not guessed from names: `M_InventoryLine.M_Inventory_ID` (by DocumentNo —
+also Ninja's own Line rule), `C_BPartner_Location.C_BPartner_ID`, `AD_User.C_BPartner_ID`, `M_Locator.M_Warehouse_ID`,
+`M_ProductPrice.M_PriceList_Version_ID`, `M_Product_PO.M_Product_ID`. A parent row must come in an EARLIER sheet.
+**Witness W-SHEET-CONTRACT:** for every sheet, every mandatory column of its table is supplied / defaulted / patched (0 missing),
+every patch is listed with its count, every detail row's parent key resolves to a row of an earlier sheet; falsifier: drop the
+`C_BP_Group_ID` patch ⇒ the C_BPartner sheet is reported incomplete.
+
+### §NINJA-LEGACY-INSTALL plan (2026-11-09, owner asked; measured feasibility)
+- Pilot = iDempiere **13** (`org.adempiere.base_13.0.0`), POI **5.2.2** as bundles; the old `org.red1.ninja` is 6.1-era. The NEWER
+  `~/Projects/org.idempiere.ninja` already targets JavaSE-17 + imports POI packages → it is the upgrade vehicle: MigrateExcelData
+  moves in as `org.idempiere.ninja.process.MigrateExcelData`.
+- **Upgrade needed, measured:** compiling MigrateExcelData unchanged against the pilot's jars = 6 errors, ALL the POI 4+ cell-type
+  enum (`HSSFCell.CELL_TYPE_FORMULA/NUMERIC/STRING` → `CellType.*`); every iDempiere API it uses compiles as is. With that fix:
+  0 errors (scratch build, owner's repo untouched). Plus the owner-approved fixes: parameterised lookups (apostrophe), unlimited
+  per-sheet alt lookups, `.xlsx` (WorkbookFactory), master-detail from the AD tab link (Ninja's Line/DocumentNo rule kept).
+- **Run without touching the live server:** `RUN_Ninja.sh` = `./idempiere -application org.idempiere.ninja.NinjaApplication` — a
+  separate headless JVM. Legacy run = a COPY of the pilot server folder pointed at a throwaway db copy (never `idempiere_pilot`,
+  which other lanes use; the OSGi console on localhost:12612 is NOT needed). Registration of the process = an additive SQL
+  migration in the plugin (as the CAPEX lane did).
+- **Proof stays the owner's:** the ERP spine — migrated rows open coherently from the main menu windows (master + detail tabs,
+  lookups resolved). The legacy run is a cross-check, not the gate.
+**Order:** W-SHEET-CONTRACT + exporter v3 (workbook) → Ninja loader port in the twin (plugin) → legacy cross-check → B4 form → guide → film.
