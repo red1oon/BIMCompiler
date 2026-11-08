@@ -5,7 +5,7 @@
 // (witness_sd00.js `§SD00_CROSS`). Extraction reads the pilot DB with psql SELECT (admin lane: a System WS session is client-filtered).
 'use strict';
 const cp = require('child_process');
-const DENY = /^(ad_session|ws_|ad_changelog|ad_pinstance|ad_userpreference|c_acctprocessorlog|r_requestprocessorlog|ad_issue|ad_note|ad_attachment|ad_system)/i;
+const DENY = /^(ad_session|ws_|ad_changelog|ad_pinstance|ad_userpreference|c_acctprocessorlog|r_requestprocessorlog|ad_issue|ad_note|ad_attachmentnote|ad_system)/i;
 const IDCOL = /(_id|_uu)$/i, AUDIT = /^(created|updated|createdby|updatedby)$/i, SECRET = /^(password|salt|ldapuser)$/i;
 
 function pg(sql) {
