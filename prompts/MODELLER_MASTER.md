@@ -92,6 +92,15 @@ C3 lands with the REPLACE verb.
   - **Real set (design lane):** 4 private duct sheets fit at 0 mm; 343.07 m against an independent 343.1 m. Mirror correction confirmed (AC100 107 → 2 unjoined).
 - #2702 grid carrier `ifc_grid_axis`, both IFC open routes, W-IFC-GRID 29/0. MERGED as `8d1ede96`. Live (Viewer sw v1700, Modeller sw v245).
 - Spec for all of it: bim-ootb `prompts/DISC_WALK_DRAWN_MAINS.md` §4.2a, §4.3, amendments 1-3 and the RESULTs.
+**Owner's goal (relayed 2026-11-08): HVAC + FP walking succeed on the private ARC, then a film of it. Rulings:**
+- FP "walked" = "Drawn equipment + ask". Place the fire equipment FF100 draws (cabinets, extinguishers, blankets) at its drawn spots. No sprinklers until the reviewer answers or sends FP drawings, and the film says so. The package holds no sprinkler or FP pipe sheets.
+- Film input = "Fresh open + corrected path". Walk on a fresh open of the private ARC IFC (rooms present), then carry the corrected film DB's camera path and material names into it for the bake. Bake only on the owner's word, through the design lane.
+- The film is baked from the walked DB, not the exported IFC, so the export fixes (1)-(5) must not block the walk or the film.
+**Export round trip (W-EXPORT-ROUNDTRIP, #2705/#2706):**
+- Public Duplex and SampleHouse: positions exact. Storeys, GlobalIds, spaces, fills/voids, psets, types, site and MEP systems are all lost.
+- Private ARC: the same, plus 1,284 of 4,147 matched elements moved > 1 cm (median 7 mm).
+- Hypothesis: float32 precision at map coordinates, since the open route keeps raw map coords. Being tested on Duplex shifted 465 km.
+- Fix order: (0) frame/position (ONE FRAME on the open route, if the precision test confirms); then the walk on a fresh open + height for the film; then export (1) GlobalId + storeys, (2) all bodies + discipline + colour + mesh dedup via the existing geometry_hash sharing, (3) spaces/psets/fills/voids/types/grid, (4) site lat/long/true north + name, (5) MEP systems + ports.
 **Owner's rulings today:**
 - Viewer totals: "Leave them out".
 - Grid: "Yes, keep the grid".
