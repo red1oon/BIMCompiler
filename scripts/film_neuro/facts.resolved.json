@@ -52,7 +52,17 @@
   "guide_url": "red1oon.github.io/BIMCompiler/ProposerGuide",
   "cmd_install": "npm install puppeteer@24",
   "cmd_get": "curl -O https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js",
-  "cmd_lines": "node edit_cli.js --building Hospital --lines"
+  "cmd_lines": "node edit_cli.js --building Hospital --lines",
+  "menu_n": 2,
+  "menu0_name": "bim_lines",
+  "menu0_desc": "Read a building's grid: every grid line's id (gx0, gx1, … along x; gy0, gy1, … along y) and its position in metres in the building's own frame, plus the structural system, the material, the number of girders and the building's rotation in degrees. Opens a fresh copy of the building; takes about 10 to 40 seconds. Changes nothing.",
+  "menu0_inputs": "building",
+  "menu1_name": "bim_try_shift",
+  "menu1_desc": "Shift one grid line, and every later line on the same axis, by a distance in metres (positive = towards higher positions). Only the bay just before that line changes width; the rest of the building travels with it. The app makes the change, checks it (overlaps, beam spans against their limit, doors and windows against their walls) and returns its report: what changed, each check before and after, and what was not checked. If the change adds new problems the app undoes it and returns stopped_by_gate with the reason. Opens a fresh copy each time; nothing is saved.",
+  "menu1_inputs": "building, line, move",
+  "s_calls": 0,
+  "cmd_mcp": "claude mcp add bim -- node \"$PWD/bim_mcp.js\"",
+  "cmd_get_mcp": "curl -O https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js"
  },
  "sources": {
   "wan_wait1": "scripts/film_neuro/evidence/duel_ledger_b_2026-11-02.log :: run1 RESULT wait=",
@@ -106,6 +116,16 @@
   "guide_url": "scripts/film_neuro/evidence/web_sources_2026-11-08.md :: (the guide link, from docs/ProposerGuide.md)",
   "cmd_lines": "docs/ProposerGuide.md :: Getting started",
   "cmd_get": "docs/ProposerGuide.md :: Getting started",
-  "cmd_install": "docs/ProposerGuide.md :: Getting started"
+  "cmd_install": "docs/ProposerGuide.md :: Getting started",
+  "menu_n": "scripts/film_neuro/evidence/tools_list.jsonl :: tools/list length",
+  "menu0_name": "scripts/film_neuro/evidence/tools_list.jsonl :: tools[0].name",
+  "menu0_desc": "scripts/film_neuro/evidence/tools_list.jsonl :: tools[0].description",
+  "menu0_inputs": "scripts/film_neuro/evidence/tools_list.jsonl :: tools[0].inputSchema.properties keys",
+  "menu1_name": "scripts/film_neuro/evidence/tools_list.jsonl :: tools[1].name",
+  "menu1_desc": "scripts/film_neuro/evidence/tools_list.jsonl :: tools[1].description",
+  "menu1_inputs": "scripts/film_neuro/evidence/tools_list.jsonl :: tools[1].inputSchema.properties keys",
+  "s_calls": "scripts/film_neuro/evidence/session_calls.jsonl :: number of bim calls in the session",
+  "cmd_get_mcp": "docs/ProposerGuide.md :: Connect your AI",
+  "cmd_mcp": "docs/ProposerGuide.md :: Connect your AI"
  }
 }

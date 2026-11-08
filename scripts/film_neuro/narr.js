@@ -5,9 +5,9 @@
 const fs = require('fs'), path = require('path');
 const F = JSON.parse(fs.readFileSync(path.join(__dirname, 'facts.resolved.json'), 'utf8')).facts;
 const HOLD = { title: 4.4, ch_global: 3.6, ch_local: 3.6, ch_rule: 3.6, end: 1 };
-const rows = fs.readFileSync(path.join(__dirname, 'script_en.md'), 'utf8').split('\n').map(l => /^\| (\d+) \| (\w+) \| .* \| (?:"(.*)"|—) \|\s*$/.exec(l)).filter(Boolean);
+const rows = fs.readFileSync(path.join(__dirname, 'script_en.md'), 'utf8').split('\n').map(l => /^\| ([\d.]+) \| (\w+) \| .* \| (?:"(.*)"|—) \|\s*$/.exec(l)).filter(Boolean);
 function fill(t) { return t.replace(/\{\{(\w+)\}\}/g, (_, k) => { if (!(k in F)) throw new Error('unresolved fact ' + k); return String(F[k]); }); }
-const beats = rows.map(m => { const id = 'b' + m[1].padStart(2, '0'), raw = m[3] || null;
+const beats = rows.map((m, ix) => { const id = 'b' + String(ix + 1).padStart(2, '0'), raw = m[3] || null;   // ids by position (rc4 inserted beat 5.5)
   if (!raw && !(m[2] in HOLD)) throw new Error('beat ' + id + ' (' + m[2] + ') has no narration and no hold');
   return { id, card: m[2], hold: raw ? null : HOLD[m[2]], text: raw ? fill(raw).replace(/\s*‖\s*/g, ' | ') : null, facts: raw ? (raw.match(/\{\{(\w+)\}\}/g) || []).map(x => x.slice(2, -2)) : [] }; });
 if (beats.length < 2) throw new Error('storyboard table not read');

@@ -20,6 +20,7 @@ const CSSN = CSS + `.plain{position:absolute;inset:0;background:#0b0f17;display:
 const ICON = {
   person: (c = OFF) => `<svg width="120" height="150" viewBox="0 0 120 150"><circle cx="60" cy="28" r="20" fill="none" stroke="${c}" stroke-width="7"/><path d="M60 50 V100 M60 64 L28 86 M60 64 L92 86 M60 100 L34 142 M60 100 L86 142" stroke="${c}" stroke-width="7" stroke-linecap="round" fill="none"/></svg>`,
   globe: (c = '#4FC3F7') => `<svg width="150" height="150" viewBox="0 0 150 150"><circle cx="75" cy="75" r="62" fill="none" stroke="${c}" stroke-width="7"/><ellipse cx="75" cy="75" rx="27" ry="62" fill="none" stroke="${c}" stroke-width="5"/><path d="M13 75 H137 M24 44 H126 M24 106 H126" stroke="${c}" stroke-width="5" fill="none"/></svg>`,
+  menu: (c = '#FAB219') => `<svg width="130" height="150" viewBox="0 0 130 150"><rect x="14" y="10" width="102" height="130" rx="10" fill="none" stroke="${c}" stroke-width="7"/><path d="M34 44 H96 M34 72 H96 M34 100 H80" stroke="${c}" stroke-width="7" stroke-linecap="round"/></svg>`,
   laptop: (c = '#0CA30C') => `<svg width="170" height="130" viewBox="0 0 170 130"><rect x="28" y="12" width="114" height="78" rx="8" fill="none" stroke="${c}" stroke-width="7"/><path d="M8 104 H162 L150 120 H20 Z" fill="none" stroke="${c}" stroke-width="7" stroke-linejoin="round"/></svg>`
 };
 module.exports = { CSS: CSSN, build(F) {
@@ -57,21 +58,32 @@ module.exports = { CSS: CSSN, build(F) {
     Sx(3, bx('am', 900, `<div class="q">${V('clash_fp')}% of the box clashes were not real. The rest of a box-only answer is guesswork.</div>`, 'margin-top:20px')) + `</div></div>`,
     'the Hospital bake log, §CLASH_NARROWPHASE') };
   const tag = (t, c) => `<div style="font:700 26px/1.3 'Noto Sans';color:${c || '#C3C2B7'};text-align:center;margin-top:8px">${t}</div>`;
-  C.idea = { n: 4, html: page(hd('THE IDEA', 'Think global, act local', '') + `<div class="flow" style="margin-top:50px;gap:30px;align-items:flex-start">` +
-    Sx(1, `<div style="width:200px;text-align:center">${ICON.person()}${tag('you')}</div>`) + Sx(1, `<span class="ar" style="margin-top:60px;display:block">→</span>`) +
-    Sx(2, `<div style="width:330px;text-align:center">${ICON.globe()}${tag('your own AI', '#4FC3F7')}${tag('over the internet · $ per call')}${tag('ideas, fast', '#C3C2B7')}</div>`) + Sx(2, `<span class="ar" style="margin-top:60px;display:block">→ one edit →</span>`) +
-    Sx(3, `<div style="width:380px;text-align:center">${ICON.laptop()}${tag('the check', '#0CA30C')}${tag('on your own computer · $' + V('check_cost'))}${tag('no AI inside · exact')}</div>`) + `</div>` +
-    Sx(4, bx('cy', 1728, `<div class="q">The report goes back to the AI: what changed, the limit, the bay, and what was not checked.</div>`, 'margin-top:40px')),
-    'the AI is outside, its answer is untrusted; the check is a deterministic compiler') };
+  C.idea = { n: 4, html: page(hd('THE IDEA', 'Think global, act local', '') + `<div class="flow" style="margin-top:40px;gap:22px;align-items:flex-start">` +
+    Sx(1, `<div style="width:180px;text-align:center">${ICON.person()}${tag('you')}</div><span class="ar" style="margin-top:60px;display:block">→</span>`, 'display:flex;gap:22px') +
+    Sx(2, `<div style="width:300px;text-align:center">${ICON.globe()}${tag('your own AI', '#4FC3F7')}${tag('over the internet · $ per call')}</div><span class="ar" style="margin-top:60px;display:block">→</span>`, 'display:flex;gap:22px') +
+    Sx(3, `<div style="width:300px;text-align:center">${ICON.menu()}${tag('the app’s menu', '#FAB219')}${tag('each action, in plain words')}</div><span class="ar" style="margin-top:60px;display:block">→</span>`, 'display:flex;gap:22px') +
+    Sx(4, `<div style="width:340px;text-align:center">${ICON.laptop()}${tag('the app', '#0CA30C')}${tag('on your own computer · $' + V('check_cost'))}${tag('makes the change · checks it')}</div>`) + `</div>` +
+    Sx(4, bx('cy', 1728, `<div class="q">The app’s answer goes back to your AI: what changed, the limit, the bay, and what was not checked.</div>`, 'margin-top:34px')),
+    'the AI is outside, its answer is untrusted; the app is deterministic, no AI inside') };
+  C.menu = { n: 2, html: page(hd('THE MENU', 'What your AI is handed', 'sent by our connector when your AI app starts it · verbatim') +
+    Sx(1, bx('am', 1728, `<div class="mono" style="color:#FAB219">${V('menu0_name')}(${V('menu0_inputs')})</div><div class="sb" style="font-size:24px">${V('menu0_desc')}</div>`, 'margin-top:14px')) +
+    Sx(2, bx('am', 1728, `<div class="mono" style="color:#FAB219">${V('menu1_name')}(${V('menu1_inputs')})</div><div class="sb" style="font-size:24px">${V('menu1_desc')}</div>`, 'margin-top:16px')),
+    'bim_mcp.js, tools/list, from the live site') };
+  const call = (nm, args, res, st) => `<div class="term" style="width:1728px;margin-top:12px"><span class="p">${esc(nm)}</span>(${esc(args)})\n  ${st ? '<span class="st">' + esc(st) + '</span> ' : ''}${esc(res)}</div>`;
+  C.session = { n: 4, html: page(hd('ONE REAL SESSION', 'The AI uses the app', 'one session, not a measurement · the calls are from the connector’s own log') +
+    Sx(1, bx('cy', 1728, `<div class="lbl">the user</div><div class="q">“${V('s_request')}”</div>`, 'margin-top:6px')) +
+    Sx(2, call('bim_lines', 'building: "' + F.s_building + '"', 'gx5 ' + F.s_gx5 + ' · gx6 ' + F.s_gx6 + ' …')) +
+    Sx(3, call('bim_try_shift', 'building: "' + F.s_building + '", line: "' + F.s_line + '", move: ' + F.s_move, F.s_reason, 'STOPPED')) +
+    Sx(4, bx('gd', 1728, `<div class="lbl">the AI, to the user</div><div class="q" style="font-size:26px">“${V('s_answer')}”</div>`, 'margin-top:12px')), '') };
   C.words = { n: 3, html: page(hd('THE AI’S OWN WORDS', 'A real proposal', V('model') + ' · run of ' + V('run_date') + ' · quoted, not edited') +
     Sx(1, `<div class="quote" style="margin-top:30px">“${V('ai_quote')}”</div>`) + Sx(2, `<div class="quote" style="margin-top:26px">“${V('ai_forecast')}”</div>`) +
     Sx(3, bx('or', 1728, `<div class="q">Its answer: go ahead (decline: ${V('ai_decline')}). The sums are right. It was never told the building’s span limit.</div>`, 'margin-top:36px')),
     'the proposer test, results file of that run') };
   C.stopped = { n: 3, html: page(hd('THE CHECK', 'The same edit, judged by the building', '') + `<div style="display:flex;gap:40px;margin-top:6px;align-items:flex-start">` +
-    `<div style="width:1150px">` + Sx(1, `<div class="term"><span class="p">$</span> ${V('g4_cmd')}\n<span class="st">STOPPED</span> ${V('g4_reason')}</div>`) +
+    `<div style="width:1150px">` + Sx(1, `<div class="term"><span class="p">bim_try_shift</span>(line: "${V('s_line')}", move: ${V('s_move')})\n<span class="st">STOPPED</span> ${V('s_reason')}</div>`) +
     Sx(3, bx('gd', 1150, `<div class="q">Undone. The building is back where it was, and the reason goes back to the AI.</div>`, 'margin-top:26px')) + `</div>` +
     Sx(2, `<img src="${img('panel_only.png')}" style="height:660px;border-radius:10px;border:2px solid var(--line)">`) + `</div>`,
-    'edit_cli run today; the panel is the Modeller’s own report for the same edit, byte-identical') };
+    'the app’s answer in that session; the panel is the Modeller’s own report for the same change') };
   C.ch_global = { n: 1, html: plain('CHAPTER ONE', 'Think global', '', 'the AI proposes') };
   C.chart = { n: 2, html: page(hd('DOES THE REASON HELP?', 'Right outcomes, out of ' + V('n_runs'), '') + `<div style="display:flex;gap:50px;margin-top:30px;align-items:center">` +
     Sx(1, `<svg width="1100" height="300" font-family="Noto Sans, DejaVu Sans"><text x="0" y="62" font-size="30" fill="#FFFFFF">first try</text><path d="M330 30 h${(700 * F.a_right / F.n_runs - 4).toFixed(1)} a4 4 0 0 1 4 4 v44 a4 4 0 0 1 -4 4 h-${(700 * F.a_right / F.n_runs - 4).toFixed(1)} z" fill="${OR}"/><text x="${340 + 700 * F.a_right / F.n_runs}" y="66" font-size="34" fill="#FFFFFF">${V('a_right')}</text>
@@ -81,11 +93,11 @@ module.exports = { CSS: CSSN, build(F) {
     Sx(2, bx('am', 1728, `<div class="q">A small test: our own requests, one model, ${V('n_runs')} runs. A direction, not a proof.</div>`, 'margin-top:30px')),
     'the proposer test, results file; cost = Claude Code estimate, not a charge') };
   C.ch_local = { n: 1, html: plain('CHAPTER TWO', 'Act local', '', 'the check runs on your own computer') };
-  C.terminal = { n: 3, html: page(hd('ON YOUR OWN MACHINE', 'One file, a fresh copy of the building', '') +
-    Sx(1, `<div class="term" style="width:1728px"><span class="p">$</span> ${V('cmd_lines')}\n  grid from: ${V('lines_src')} · ${V('lines_n')} grid lines · ${V('lines_first')} …</div>`) +
-    Sx(2, `<div class="term" style="width:1728px;margin-top:22px"><span class="p">$</span> ${V('g4_cmd')}\n  <span class="st">stopped</span> · ${V('g4_secs')} s</div>`) +
-    Sx(3, bx('cy', 1728, `<div class="q">Nothing is saved. Every call opens the building fresh, so the same question gets the same answer.</div>`, 'margin-top:26px')),
-    'edit_cli, run today') };
+  C.terminal = { n: 3, html: page(hd('ON YOUR OWN MACHINE', 'Your AI app starts the connector', '') +
+    Sx(1, `<div class="term" style="width:1728px"><span class="p">$</span> ${V('cmd_mcp')}\n  your AI app now has the menu; every call opens a fresh copy of the building</div>`) +
+    Sx(2, `<div class="term" style="width:1728px;margin-top:22px"><span class="p">$</span> ${V('s_cli')}\n  the same action, with no AI: script it yourself</div>`) +
+    Sx(3, bx('cy', 1728, `<div class="q">Nothing is saved, and nothing is uploaded. The same question gets the same answer.</div>`, 'margin-top:26px')),
+    'the guide’s Connect your AI; edit_cli, the command line underneath') };
   const shiftSvg = () => { let s = `<svg width="900" height="380" font-family="Noto Sans, DejaVu Sans"><line x1="430" y1="20" x2="430" y2="340" stroke="#FAB219" stroke-width="5" stroke-dasharray="12 8"/><text x="440" y="368" font-size="24" fill="#FAB219">the line</text>`;
     for (let i = 0; i < 6; i++) { const y = 50 + i * 52; s += `<circle cx="${120 + (i % 3) * 90}" cy="${y}" r="11" fill="#C3C2B7"/><circle cx="${520 + (i % 3) * 80}" cy="${y}" r="11" fill="${BL}" opacity=".35"/><line x1="${532 + (i % 3) * 80}" y1="${y}" x2="${612 + (i % 3) * 80}" y2="${y}" stroke="${BL}" stroke-width="4"/><circle cx="${620 + (i % 3) * 80}" cy="${y}" r="11" fill="${BL}"/>`; }
     return s + `<text x="80" y="368" font-size="24" fill="#C3C2B7">before it: stays</text><text x="600" y="368" font-size="24" fill="#C3C2B7">beyond it: moves exactly</text></svg>`; };
@@ -111,7 +123,7 @@ module.exports = { CSS: CSSN, build(F) {
     ['LLM code checking (research)', 'checking scripts for Revit', '“semi-automated”', 'not stated'],
     ['Claude + the Blender connector', 'Python commands in Blender', 'you', 'a repeat: not measured here'],
     ['AlphaGeometry (maths)', 'a construction line', 'a proof engine', 'proof or no proof · ' + V('ag_solved') + ' of ' + V('ag_of') + ' problems'],
-    ['This film', 'one edit, from any AI', 'a check on your own computer, no AI inside', 'yes: before → after, the limit, what was not checked']];
+    ['This app', 'one change, from any AI, through a described menu', 'the app itself, on your own computer, no AI inside', 'yes: before → after, the limit, what was not checked']];
   C.others = { n: rows.length, html: page(hd('HOW OTHERS DO IT', 'AI with a check', '') + `<table class="ot"><tr><th style="width:420px">who</th><th>what the AI proposes</th><th>what checks it</th><th>how far off, reported?</th></tr>` +
     rows.map((r, i) => `<tr data-s="${i + 1}" class="${i === rows.length - 1 ? 'us' : ''}">${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('') + `</table>`,
     'sources: the film’s web-source file, each page fetched this week; vendor rows are vendor pages') };
@@ -121,13 +133,13 @@ module.exports = { CSS: CSSN, build(F) {
     Sx(3, bx('am', 1728, `<div class="q">In the separate compile path, ${V('cp_none')} of ${V('cp_total')} planted mistakes went unnoticed.</div>`, 'margin-top:18px')) +
     Sx(4, bx('am', 1728, `<div class="q">Grid moves and shifts only, on the app’s own buildings.</div>`, 'margin-top:18px')), 'the contract file, its own coverage tests') };
   C.roadmap = { n: 1, html: page(hd('NOT BUILT YET', 'Next', '') + Sx(1, `<div style="margin-top:30px"><span class="chip open">NOT BUILT YET</span></div>` +
-    bx('cy', 1728, `<div class="q">the real-shape check behind every report</div><div class="q">a gate on the compile path, for outside orders</div><div class="q">a measured run of an AI with the stop</div>`, 'margin-top:26px')), '') };
+    bx('cy', 1728, `<div class="q">more actions in the menu: move one line, add a bay, draft a film path</div><div class="q">the real-shape check behind every report</div><div class="q">a measured run of an AI with the connector</div>`, 'margin-top:26px')), '') };
   C.promise = { n: 1, html: plain('THINK GLOBAL, ACT LOCAL', 'Let your AI do the beautiful rendering,', 'but let its data be grounded.', '').replace(/class="l1"/, 'class="l1" style="font-size:64px"').replace(/class="l2"/, 'class="l2" style="font-size:64px"') };
-  C.howto = { n: 4, html: page(hd('TRY IT WITH YOUR OWN AI', V('guide_url'), 'the AI Proposer Guide') +
-    Sx(1, `<div class="term" style="width:1728px;margin-top:20px"><span class="p">$</span> ${V('cmd_install')}</div>`) +
-    Sx(2, `<div class="term" style="width:1728px;margin-top:16px"><span class="p">$</span> ${V('cmd_get')}</div>`) +
-    Sx(3, `<div class="term" style="width:1728px;margin-top:16px"><span class="p">$</span> ${V('cmd_lines')}</div>`) +
-    Sx(4, bx('gd', 1728, `<div class="q">Then paste the guide’s “Instructions to give your AI”, and send it each report.</div>`, 'margin-top:24px')), 'the guide’s own Getting started') };
+  C.howto = { n: 4, html: page(hd('TRY IT WITH YOUR OWN AI', V('guide_url'), 'the AI Proposer Guide · Connect your AI') +
+    Sx(1, `<div class="term" style="width:1728px;margin-top:16px"><span class="p">$</span> ${V('cmd_install')}</div>`) +
+    Sx(2, `<div class="term" style="width:1728px;margin-top:12px"><span class="p">$</span> ${V('cmd_get')}\n<span class="p">$</span> ${V('cmd_get_mcp')}</div>`) +
+    Sx(3, `<div class="term" style="width:1728px;margin-top:12px"><span class="p">$</span> ${V('cmd_mcp')}</div>`) +
+    Sx(4, bx('gd', 1728, `<div class="q">Then ask your AI in plain words. Other AI apps: the guide has the settings line.</div>`, 'margin-top:20px')), 'the guide’s own steps') };
   C.end = { n: 1, html: plain('NO AI INSIDE', 'Think Global,', 'Act Local', V('guide_url')) };
   return C;
 } };

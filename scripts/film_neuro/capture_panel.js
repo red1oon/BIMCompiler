@@ -1,4 +1,4 @@
-const path = require('path'); let building = 'HospitalGarage', url = null, latticeBoxes = true; const SHIFT_LINE = 'gx6', SHIFT_MOVE = 1.817;
+const path = require('path'); let building = 'HospitalGarage', url = null, latticeBoxes = true; const SHIFT_LINE = process.env.PANEL_LINE || 'gx6', SHIFT_MOVE = +(process.env.PANEL_MOVE || 1.817);   // rc4: the session's own shift
 const out = process.stdout.write.bind(process.stdout);
 const http = require('http'), fs = require('fs');
 const LIVE = 'https://red1oon.github.io/bim-ootb/modeller/modeller.html', ROOT = '/home/red1/bim-ootb', HERE = path.join(ROOT, 'modeller', 'modeller.html');
