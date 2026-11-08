@@ -10,6 +10,8 @@ Origin: a pasted Gemini chat (JEPA "architect" + BIMCompiler "inspector"). Revie
 **Witnessed:** resolve 73 facts, 0 missing; guard PASS (80 numbers on cards, 15 spoken; plants caught; stills sha256 pinned); W-FILM-NEURO-LIVE SAME (panel = the connector's answer, 2,349 bytes); recorder layout 79/79, 0 console errors; fit 17/17 DETAIL, tone 0 WRONG; captions 20 clamped, 0 overlaps; frames 5,847 = the silent picture; longest silence 7.5 s (end card); −16.5 LUFS. Logs: `scripts/film_neuro/logs_rc4/`.
 **Optional rc5, a real AI session instead of the script:** owner runs `claude mcp add bim -e NODE_PATH=/home/red1/bim-compiler/node_modules -e BIM_MCP_LOG=$HOME/.local/share/bim_proposer/calls.jsonl -- node $HOME/.local/share/bim_proposer/bim_mcp.js`, starts a new session, and asks *In the HospitalGarage, make the bay between gx5 and gx6 13 m wide.* as the first message; then copy the call log to `evidence/session_calls.jsonl`, point `s_request`/`s_answer` at the session's own words, relabel the card "one real session, not a measurement". No API key: a Claude Code session runs on the owner's plan login.
 
+**▶ NEXT SESSION: start at §19** (more verbs for the CLI and the connector, one verb list, the guide explains each; harmless verbs first).
+
 ## ▶ STATE (2026-11-08)
 **State:** everything specified here is shipped and witnessed. **Nothing is waiting on the owner.** Next work, each needing its own go:
 1. ✅ Done 2026-11-08: a free hand-off rehearsal of the stop (§15.1). A wider one is possible on the same terms.
@@ -459,6 +461,42 @@ Any claim that Blender or Bonsai cannot do 4D/5D (Bonsai has schedules; the ques
 **Call log, 2026-11-08, bim-ootb #2717:** `BIM_MCP_LOG=<file>` appends each `tools/call` (the AI's arguments verbatim) and the answer returned. W-BIM-MCP M5 checks it; 6/0, falsifier 4/2. This is where the film's session calls come from (reading the chat log was refused by the harness as a sensitive source).
 **Film rc4 prepared** (`scripts/film_neuro/`): new beats *menu* (the connector's real `tools/list`, `evidence/tools_list.jsonl`) and *session* (one real session); *idea*, *stopped*, *terminal*, *others*, *roadmap*, *howto* reworked around the connector; `resolve.js` resolves all but the 11 session facts, so the build refuses until the session exists. Steps: ▶ RESUME HERE.
 **Then the film (§16):** one real session of an AI using the connector on the G4 request, recorded from its transcript, shown as such ("one real session, not a measurement"); the beats that show typing are reworked around it.
+
+## 19. NEXT SESSION: more verbs, one verb list, the guide explains each (owner, 2026-11-08: *"update prompts/# for new session to do more verbs for the CLI to work on and guide to explain"*)
+**The idea, in the owner's words:** *"each verb described its function, the AI reads it and uses it. Otherwise the human has to learn it."* · *"the CLI can do something what is done in browser … because u feeding exact measures."* · proceed with *"the simple harmless scripts first"*. A verb = one app action a person does with the mouse, offered with exact inputs, judged by the same checks.
+**What exists (read these, do not re-derive):**
+| Piece | Where | State |
+|---|---|---|
+| Edit CLI: grid move, shift, `--lines`, the stop | bim-ootb `modeller/tools/edit_cli.js` | live; W-EDIT-CLI 27/0 (§11, §15.1, §17) |
+| Connector: `bim_lines`, `bim_try_shift`, call log | bim-ootb `modeller/tools/bim_mcp.js` | live; W-BIM-MCP 6/0 (§18) |
+| Alt+C bake CLI, ~30 flags, path from the DB `cinema_path` table or `--override file.json` | bim-ootb `cli_silent_bake.js` (spec bim-compiler `prompts/CINEMA_PATH_EDITOR.md` §CLI_SILENT_BAKE) | live, dev-only, GPU |
+| The compiler's own DSL: `.bimcobol` scripts, one verb per line, `--` comments, 78 verbs | bim-compiler `BIM_COBOL/src/main/java/com/bim/cobol/ScriptRunner.java`, `VerbRegistry.java`, `verb/` | live (Java compile path) |
+| Declarative building files | bim-compiler `examples/*.bim` (20) | live |
+| App actions behind the next verbs | `modeller.html` `window.__gridShift` (L2414), `window.__gridStretch` (L2442); **"Add one more"** column line that splits an over-limit span: `gsgBuildAdd` (~L2156, `spanSplit`, W-GRID-SPAN-GATE); **add a bay**: `bay_add.js` §D89 (`Bonsai.commitBay`, W-DXF-ADD-BAY, spec bim-ootb `prompts/DXF2BIM_FOUNDATION_LANE.md` §D89/§D90) | live in the UI |
+
+**Design, settled with the owner 2026-11-08 (§18 discussion):**
+1. **Three layers, kept apart.** Syntax (BIM COBOL's one verb per line, unchanged) · the verb contract (name, plain description, inputs with units, which side runs it, what it returns; no logic) · the implementations (untouched: Java verbs, the page's own functions, MaxQ). A verb only calls an existing function.
+2. **One verb list, one source:** a `verbs.json` beside `bim_mcp.js`. `tools/list`, the script runner and the guide's verb table are all generated from it, so they cannot disagree. A new verb appears in all three at once.
+3. **Backward compatibility, witnessed:** `edit_cli.js` and `cli_silent_bake.js` keep every flag and their exact output (W-EDIT-CLI already pins bytes); `.bimcobol` and `.bim` files run unchanged; verbs are added, never renamed or removed.
+4. **Two registry risks, from the code, fix before adding Java-side verbs:** `VerbRegistry.register()` silently replaces a duplicate name (`verbs.put`, L33) → refuse it; dispatch picks the longest keyword first (L14-15), so a new `CHECK CLASH PAIRS` would steal existing `CHECK CLASH PAIRS …` lines → a new keyword may not extend an existing one, checked at start.
+5. **State:** connector calls stay fresh-per-call (repeatable per call). A script with `OPEN` keeps one building across lines; each line's result records the steps that led to it (repeatable per script).
+
+**Verbs, in order (harmless first; each its own spec line in this section before code):**
+| # | Verb | Does | Calls | Harm |
+|---|---|---|---|---|
+| 1 | `bim_buildings` | lists the buildings that can be opened | the Open panel's own list (`#m-open-panel .mo-row`, as `edit_cli` reads it) | none |
+| 2 | `bim_try_move(building, line, move)` | moves ONE grid line; report; stop | `edit_cli --grid` (`__gridStretch`) | none: fresh copy, undone if red |
+| 3 | `bim_try_add_column_line(building, bay)` | the "Add one more" action: splits an over-limit span with a column line; report | `gsgBuildAdd` + its commit path | none: fresh copy, nothing saved |
+| 4 | `bim_try_add_bay(building, …)` | the §D89 add-a-bay action on a repeating-bay building; report | `BayAdd` plan + `Bonsai.commitBay` | none: same |
+| 5 | script runner: `.bimcobol`-style lines over verbs 1-4 (`OPEN`, `LINES`, `TRY SHIFT gx6 BY 1.824`, …) | one script, one command | the connector's verb list | none |
+| later | `BAKE …`, a film-path DSL over `cinema_path` / `--override` | Alt+C from a script | `cli_silent_bake.js` | GPU: only on the owner's go, never beside a live tab |
+Verb 3 is the one the G4 answer points to ("add a column line"): a demo can then show the AI turning a stop into a working change.
+
+**Witnesses, per verb (copy the W-BIM-MCP pattern, `modeller/tests/witness_bim_mcp.js`):** the verb's answer = the app's own path for the same action, byte for byte but `ms`; a stopped or refused change leaves the building as Before (recount); a scripted client plays one real request end to end; an unknown verb or a missing input is an error; a falsifier breaks the verb and must fail. Plus one new check: **the guide's verb table = `tools/list`**, name for name (extend W-PROPOSER-GUIDE), so the guide can never describe a verb the connector does not have.
+
+**The guide (`docs/ProposerGuide.md`), as each verb lands:** add its row to "What your AI gets" (generated from `verbs.json`); one worked example per new verb with its real report numbers (W-PROPOSER-GUIDE checks every number); keep "Connect your AI" first and the command line second; keep the NOT-checked list and "a pass never means safe". Publish only through `scripts/safe_gh_deploy.sh` (copy `docs/glassbowl_data.db` into the worktree first).
+**Then the film:** an rc5 only when verb 3 exists, so the demo can end with a working change instead of a stop; same pipeline (`scripts/film_neuro/`), same labels.
+**Rules that still hold:** no paid model calls (§14.6); every claim a `§` line; `*.log` evidence needs `git add -f`; work in `/tmp/wt-*` worktrees (bim-ootb's shared tree is hook-blocked).
 
 ## STATUS
 2026-11-06 spec. 2026-11-07: extracted (§3), fixes (§6), report (§8), CLI (§11), three proposer tests (§12), shift and hinge (§13, §14), public guide (§14.3). 2026-11-08: no paid model calls (§14.6), the stop on outside calls and the report on first use (§15), consolidated; film "Think Global, Act Local": plan (§16), the three pre-cut checks, English rc3 built (§16.7).
