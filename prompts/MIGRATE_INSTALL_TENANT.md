@@ -231,7 +231,8 @@ Closed history is OPTIONAL (the fold already proves it: `MIGRATION_CAMPAIGN_RESU
   INCONCLUSIVE. Stale instrument → fix the witness. Product defect → fix the SQLite side (CARDINAL RULE).
 **B — Core gaps: the migration tool**
 - ✅ B0 Route AGREED by owner 2026-11-08; spec = §B0-SPEC below (adds: summary report before OK, uncheck what nothing depends on, iDempiere normalisation).
-- ⬜ B1 Agent v2 (user runs it natively, zip, `npm install && node agent.js`): writes `odoo_export/` = one CSV per
+- 🟡 B1 MASTERS PART DONE (witness) 2026-11-08 — bim-ootb #2709 `erp/odoo_agent/export.js` (auto-merge set; verify it landed). W-ODOO-EXPORT 🟢 (`scripts/poc_odoo_export.js`, log `build/erp/logs_migrate_2026-11-08/poc_odoo_export.out`, fixture `build/erp/odoo_fixture/odoodemo_export_2026-11-08.json` 30 answers): 11 files, 38/38 partners (12 + 26 contacts), 48/48 products (+31 vendor rows), 0 dangling refs, replay byte-identical sha 892fddb2b43010d7, falsifier names 71 rows. Still to add: opening GL / open invoices / open orders (B3). UoM code mapping = summary screen (X12DE355 has no Odoo source).
+- (original B1 text) Agent v2 (user runs it natively, zip, `npm install && node agent.js`): writes `odoo_export/` = one CSV per
   `I_*` table in iDempiere's loader format + `manifest.json` (live `search_count` per Odoo model = the non-invent proof).
   Masters: CoA, partners + contacts + addresses, product categories, products, UoM, price lists, taxes, payment terms,
   warehouses/locators, currency.
