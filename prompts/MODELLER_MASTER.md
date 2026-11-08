@@ -83,7 +83,37 @@ is ours" ⇒ aligned; move it from ⛔ to the queue after the catalog rebind.
 **Queue impact:** C1+C2 join row 14 (catalog rebind) and move up — they are live no-box violations, ahead of §SLOPE-HANDLES.
 C3 lands with the REPLACE verb.
 
-## ▶ §RESUME 2026-11-08b — START HERE (session close; then §RESUME 2026-11-08 below)
+## ▶ §RESUME 2026-11-09 — START HERE (session close; then §RESUME 2026-11-08b below)
+**Goal (owner):** HVAC + FP walked successfully on the private ARC, then a film. The owner said *"go till that"*; the bake still goes through the design lane (`bim-compiler-8c`), with an `nvidia-smi` check first.
+**Landed today (bim-ootb), each verified at its merged head:**
+- **Drawn walk:**
+  - #2725 drawn walk (mains_to_db, `--federate`, ACMV runs at void-middle height, drawn terminals replace borrowed);
+  - #2726 FP equipment in the walk;
+  - #2727 owner rulings: exposed under structure, `fp_sprinklered=unknown` means heads off, 1.2 m wall mount, outline floor test, storey match by elevation, federated storeys in metres, drawn-only view;
+  - #2728 floor first;
+  - #2729 point positions from block geometry, not the INSERT point;
+  - #2730 + #2731 on the roof surface (highest roof layer on the deck).
+- **Film path:** #2733 drawn services reach the film: `drawn_walk_line` / `drawn_walk_marker` export, the `viewer/cpe_drawn_services.js` film beat, the drawn-only view, `cli_silent_bake.js --drawn-services`.
+- Specs: bim-ootb `prompts/DISC_WALK_DRAWN_INTEGRATION.md` §1-§11a, `prompts/DRAWN_SERVICES_FILM.md`.
+- bim-compiler #425: NEURO prompt verbs 6-7 (`film_path_visibility`, `film_path_propose`). **The owner has started the NEURO session for them.**
+**Private set, measured (design lane checked each step against its independent reads):**
+- ACMV: drawn 555 pieces / 343.066 m, placed 554 (void 393, exposed 102, on roof 59), 1 plan only with a stated reason.
+- Terminals: 205 of 221 placed.
+- FP: 11 of 11 at 1.2 m; sprinkler heads off (1,926).
+- Export tables: lines 554, markers 11, offset rows 4.
+**Next, in order:**
+1. **Re-run the page run** with the chunked export copy: the old single-string copy hit the protocol timeout on a large DB. The script and the paths are in the private walk folder (the design lane has the location), and the script takes `BIMOOTB_TREE`.
+2. Open the exported Viewer DB in the Viewer: `drawnServicesEnable(true)`, then read `§DRAWN-OVERLAY` / `§DRAWN-ONLY`.
+3. Carry the corrected film DB's `cinema_path` by `p_new = p_film + film_offset - route_offset` (GUID-checked) and the corrected material names into it.
+4. When the NEURO session lands verb 6, run it on that DB, then send the design lane the per-band counts. A band that sees nothing goes to the owner.
+5. `nvidia-smi`, then the design lane brings the owner the bake request and captions (numbers from § lines), then `cli_silent_bake.js --drawn-services`.
+**Lessons:**
+- 3 squash orphans this session; a follow-up commit goes on a fresh branch (memory `feedback_followup_fresh_branch_not_open_pr`).
+- Privacy covers coordinates, sheet codes and the project folder name.
+- bim-compiler master has no auto-merge; merge your own verified PR directly.
+- Workers: Sonnet, one report each; verify every claimed witness yourself.
+
+## ▶ §RESUME 2026-11-08b — (superseded as entry point by 2026-11-09 above)
 **▶ NEXT SESSION, owner's choice 2026-11-08 ("Build pieces, then film"). Goal: a film of HVAC + FP walked successfully on the private ARC.** In order, each spec-first with a witness:
 1. **Wire the drawn-mains reader into the walk.** ACMV on a building with held duct sheets: `§WALK-MAINS drawn=<m>`, runs from `drawn_route` rows, fit through the route's own `ifc_grid_axis`.
    - How a user supplies sheets is still the owner's §7 Q2. For the film, the sheets can be passed by the harness.
