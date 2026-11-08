@@ -3007,10 +3007,9 @@
 
 <h1 id="moving-from-odoo-to-the-kernel-erp-how-it-works-and-what-is-proven">Moving from Odoo to the Kernel ERP — how it works and what is proven<a class="headerlink" href="#moving-from-odoo-to-the-kernel-erp-how-it-works-and-what-is-proven" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status: working draft, 2026-11-09.</strong> The export and the loader are built and tested. The in-ERP screen that a user clicks through
-("Migrate from Odoo": pick the file, map the units, see a summary, press OK) is <strong>not built yet</strong> — today the load is proven by a
-headless test, not by a user. Every number below was measured on the <strong>Odoo 17 demo database</strong> and a <strong>local iDempiere 13 pilot</strong>,
-not on a customer system. Limits are listed in §7. Full working record: <code>prompts/MIGRATE_INSTALL_TENANT.md</code>.</p>
+<p><strong>Status: working draft, 2026-11-09 (updated).</strong> The export, the loader and the in-ERP screen <strong>"Migrate from Odoo"</strong> are built and tested —
+the screen by a browser test that clicks through it on the real page, not yet by a user. Every number below was measured on the <strong>Odoo 17 demo
+database</strong> and a <strong>local iDempiere 13 pilot</strong>, not on a customer system. Limits are listed in §7. Full working record: <code>prompts/MIGRATE_INSTALL_TENANT.md</code>.</p>
 </blockquote>
 <h2 id="1-the-idea-in-one-paragraph">1. The idea in one paragraph<a class="headerlink" href="#1-the-idea-in-one-paragraph" title="Permanent link">&para;</a></h2>
 <p>Most Odoo users who move want to keep their <strong>master data</strong> — customers, suppliers, contacts, products, prices, chart of accounts,
@@ -3034,14 +3033,14 @@ not have, the gap is filled by the ERP's own rule and listed by name.</p>
 <td>Download <code>odoo_agent.zip</code>, unzip, run <code>node export.js</code> (no install step; it asks for the Odoo password). It reads Odoo (never writes) and writes <strong>one workbook</strong>, <code>odoo_migration.xlsx</code>, plus <code>manifest.json</code> (how many rows Odoo has of each kind) and <code>provenance.json</code> (each row → its Odoo record).</td>
 </tr>
 <tr>
-<td><strong>2. Map the units</strong></td>
-<td>the user</td>
-<td>Odoo's units of measure have no ERP code. The user says which ERP unit each one is ("Units" → "Each"); units no product uses can be left out.</td>
+<td><strong>2. Open "Migrate from Odoo"</strong></td>
+<td>the user, in the ERP (menu <em>Data Import</em>)</td>
+<td>Pick <code>odoo_migration.xlsx</code> and <code>manifest.json</code>. Type which ERP unit each Odoo unit is ("Units" → "Each"); units no product uses are left out. Press <em>Refresh</em>: a <strong>summary</strong> shows, for every sheet, how many rows will import and why any would be refused — <strong>before anything is written</strong>. Untick what you do not want; a sheet another ticked sheet needs stays ticked.</td>
 </tr>
 <tr>
-<td><strong>3. Load</strong></td>
+<td><strong>3. Process</strong></td>
 <td>the ERP</td>
-<td>The process <strong>Migrate Excel Data</strong> loads the workbook into the tenant. Every row is saved exactly like a record typed into its window, so the ERP's defaults, checks and accounting rows apply. <strong>All or nothing</strong>: one bad row and nothing is kept; every refusal is listed.</td>
+<td>The same loader (the process <strong>Migrate Excel Data</strong>) loads the workbook into the tenant. Every row is saved exactly like a record typed into its window, so the ERP's defaults, checks and accounting rows apply. <strong>All or nothing</strong>: one bad row and nothing is kept; every refusal is listed.</td>
 </tr>
 </tbody>
 </table>
@@ -3080,9 +3079,14 @@ is listed in <code>manifest.json</code> → <code>patches</code>, with its rule 
 <td>PASS 31/31 — the raw export (units not mapped) is refused whole; after mapping, all 17 tables gain exactly the sheet's rows (339 records); every lookup lands on the tenant's own rows; every parent–child link is set; no mandatory field empty; a second run adds nothing.</td>
 </tr>
 <tr>
+<td><strong>W-ODOO-FORM</strong> (+ <strong>LIVE</strong>)</td>
+<td>The screen: the summary before OK is the loader's own dry run; what Process writes equals the summary; locks and unticking behave; a rerun is refused. The live test clicks through the real page.</td>
+<td>PASS 16/16 and 12/12 — on the page: plugins started by the System Administrator, a tenant created on the page, its admin opens the menu entry, picks the files, types the units, <em>Refresh</em> predicts, <em>Process</em> commits one signed change set, and the tenant grows by exactly the prediction.</td>
+</tr>
+<tr>
 <td><strong>W-GENESIS-COMPLETE</strong></td>
 <td>A tenant created in the ERP holds the same rows legacy iDempiere's Initial Client Setup writes. Compared with a real tenant made by that process on the pilot.</td>
-<td>PASS 10/10 — no mandatory field empty in 42 tables; trees, client info and accounting defaults as legacy has them. <em>(Being merged; see §6.)</em></td>
+<td>PASS 10/10 — no mandatory field empty in 42 tables; trees, client info and accounting defaults as legacy has them.</td>
 </tr>
 </tbody>
 </table>
@@ -3098,10 +3102,11 @@ is listed in <code>manifest.json</code> → <code>patches</code>, with its rule 
 </ul>
 <h2 id="6-what-is-not-done-yet">6. What is not done yet<a class="headerlink" href="#6-what-is-not-done-yet" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>The in-ERP screen</strong> (§2 steps 2–3 as clicks, with a summary before OK and the option to leave out masters nothing depends on). Next.</li>
-<li>Opening each migrated record from the main menu, checked by a test in the browser — comes with the screen.</li>
+<li>A tenant with <strong>several price-list discount schemas</strong> (the GardenWorld demo has two) gets the price-list version refused as ambiguous: legacy picks the lowest id; the screen
+  will offer the choice, like units. A newly created tenant has one and is not affected.</li>
+<li>Units can only be <strong>mapped</strong> to existing ERP units today, not created with a new code.</li>
 <li>A cross-check on legacy iDempiere running the same workbook through the owner's Ninja plugin.</li>
-<li>The new-tenant fix (W-GENESIS-COMPLETE) is passing and being merged after a full regression run.</li>
+<li>The user guide chapter and a short film.</li>
 </ul>
 <h2 id="7-limits-what-this-does-not-move">7. Limits — what this does not move<a class="headerlink" href="#7-limits-what-this-does-not-move" title="Permanent link">&para;</a></h2>
 <ul>
