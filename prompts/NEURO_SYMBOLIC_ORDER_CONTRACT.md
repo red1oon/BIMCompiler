@@ -10,7 +10,8 @@ Origin: a pasted Gemini chat (JEPA "architect" + BIMCompiler "inspector"). Revie
 1. ✅ Done 2026-11-08: a free hand-off rehearsal of the stop (§15.1). A wider one is possible on the same terms.
 2. The Java `PlacementRequest` gate, once an outside order really arrives there (STATUS).
 3. Browser boot weight, its own file: `prompts/BROWSER_BOOT_WEIGHT.md`.
-4. Not started, each its own go: the report for bay add and other gestures, a session total at Save, beam and column rules on a live edit, a shift in the Modeller's UI, a film of the report.
+4. Not started, each its own go: the report for bay add and other gestures, a session total at Save, beam and column rules on a live edit, a shift in the Modeller's UI.
+5. **The film "Think Global, Act Local": planned, nothing recorded (§16).** Three questions for the owner in §16.6; one fact to extract before any cut (§16.1, the 7 mm).
 
 **⛔ No paid model calls (owner, 2026-11-08):** *"prepare best effort product without incurring any API call costs unless it is a 3rd party free one or in a sandbox here where you mock or mimick such a AI proposal."* `run.js` refuses without `--model-calls`, and no session passes that flag (`feedback_no_paid_model_calls.md`). The three model runs (§12 to §14) were made before this directive, through the owner's claude.ai plan login. Their `$` figures are Claude Code estimates, not charges.
 
@@ -323,7 +324,69 @@ W-EDIT-REPORT W0j covers every trigger and non-trigger. **Not measured:** whethe
 ### 15.2 The report loads on the first committed grid move
 `edit_report.js` and `edit_report_panel.js`, 13.6 KB, left the page's script tags; the 46 lines of glue in `modeller.html` stay. W-EDIT-REPORT Z1 (absent at open) and Z2 (loaded by the first grid move).
 
+## 16. FILM "Think Global, Act Local" (plan, 2026-11-08; spec only, nothing recorded)
+**Owner's ask, verbatim:** *"plan a film to demonstrate it. Title, "Think Gloval, Act Local', AI creates much slop if there is no symbolic ground truth to refer to. Thus our BIM-OOTB opens up a layer for any AI to propose upon it and it can analyse how far is the result from 00mm accuracy"* (title spelled "Global" on screen).
+**Gates:** no capture, voice or cut without the owner's go. **No model call to make footage** (§14.6): every AI line on screen is quoted verbatim from a recorded results file, with its date and model name; a hand-off rehearsal line is labelled "rehearsal, answered by us, not a model's result".
+**Layout:** `prompts/FILM_NARRATION.md` ▶ PLAYBOOK C (explainer: before/after in the first 25 s, show then prove, one real event, roadmap card "not built yet") + its COMPARISON/PROOF addendum (layman words, a chart for every comparison, honest limits in the voice). **Pipeline:** copy `scripts/film_network_erp/` (resolve → guard → record → fit → mux), so every digit on a card or in the voice resolves to a named row in this file or a `§` line. English first (Kokoro, local); other languages on the owner's say.
+
+### 16.1 The thesis, in what this lane can prove
+- **Think global = the AI.** Imagination, any proposal, outside the compiler, untrusted (§1). Its arithmetic can be right and still break a rule it was never told.
+- **Act local = the compiler,** on the caller's own machine, no AI inside: it judges one edit against the building it was given, reports, and stops new red (§11, §15.1).
+- **The slop beat, from our own measured run, not stock images** (`FILM_VS_AI_SLOP.md` already made the AI-image film; do not remake it). G4, `results_v3_2026-11-07.json`, rep 0, attempt 0, `claude-sonnet-5-5`: *"Bay gx5 to gx6 is currently 161.234 − 150.051 = 11.183 m. To reach 13 m it must widen by 1.817 m."* It even forecast *"Girders … will stretch by 1.817 m, which may overstress them"*, and the result was RED. In §14 it named the 12 m limit in all 6 revisions and kept the 13 m bay. Its forecast did not separate good from bad (problems forecast on 14 of 15 bad first proposals, 10 of 15 good). The point: **without the symbolic ground truth, a fluent answer and a right answer look the same.**
+- **"How far from 0 mm": what the film may say.** There is **no single "distance from 0 mm" number** in the product; the film must not show one. It shows each measure as its own row:
+
+| On screen | Measured as | Source |
+|---|---|---|
+| The edit lands exactly | a shift's crossing vertices: 68,336 checked, 0 off, no tolerance | §14.1, W-BLOCK-SHIFT |
+| Undo lands exactly | after a stop, a recount equals Before; the next edit equals that edit made alone | §15.1 C13, C14 |
+| Same question, same answer | two fresh Opens give byte-identical report JSON | §8, W-EDIT-REPORT |
+| How far over a rule | bay gx5-gx6 12.993 m against the 12 m RC limit | §15.1 rehearsal, G4 |
+| New overlaps | count before → after, at a stated 20 mm tolerance | §13.6, §14.1 |
+| What was NOT checked | the report's own list | §8 |
+
+- ⛔ **Extract before any cut, do not explain by guess:** the AI aimed the bay at 13.000 m (11.183 + 1.817); the stop reported 12.993 m. That 7 mm is the film's best "how far from 0 mm" beat, and it is unexplained here. Find which value the span gate measures (the girder, a lattice-frame bay on the −2° Garage, or a column band) from `GridSpanGate.tally`, and add a `§` line if none says it. Until then the film shows only 12.993 m vs 12 m.
+
+### 16.2 Storyboard (about 150 s; cues set from the first fit, PLAYBOOK C §4)
+| # | Picture | Dialogue (F asks as a newcomer, M answers in one or two plain sentences) | Source |
+|---|---|---|---|
+| 0 | Title card: kicker "AI proposes · the compiler judges"; line 1 "Think Global," line 2 (coral) "Act Local"; plain line "an open layer any AI can propose on" | none, silent 3.6 s | — |
+| 1 BEFORE | The model's G4 words as a quote card: the arithmetic, the forecast, "decline: false" | F: "It did the maths. So it's right?" M: "The maths is right. It doesn't know this building's rule." | §16.1 slop beat |
+| 2 IDEA | One plain card, 4 boxes: Any AI (outside) → one edit → the compiler on your machine, no AI inside → the report back to the AI | M: "The AI imagines. The building gives the verdict." | §1, §10 |
+| 3 AFTER | The same edit through `edit_cli` on HospitalGarage: **STOPPED** "bay gx5-gx6 newly over the limit: 12.993 m (limit 12 m, RC)"; the building restored | F: "Stopped? By whom?" M: "By the building's own rule. Undone, recounted, back to where it was." | §15.1 |
+| ch | Chapter card "Think global" | — | — |
+| 4 | Chart: right outcome first proposal vs with the report, 15 → 24 of 30 | F: "So the report helps?" M: "In our small test, yes. Our briefs, one model, about ten real decisions. Not proven yet." | §12, §14 |
+| ch | Chapter card "Act local" | — | — |
+| 5 | Terminal: one downloaded file, `edit_cli --lines` against the live Hospital; the JSON | M: "One file. The live site. Your own computer. About a minute a call." | §11, §14.2, §14.3 |
+| 6 | Shift close-up: one plane; everything beyond it moves, everything before it stays; card "68,336 points checked · 0 off" | F: "Zero? Not roughly?" M: "Every point moved exactly, or stayed exactly." | §14.1 |
+| 7 | The report panel: red before → after, the limit, the bay, the NOT-checked list | F: "And what didn't it check?" M reads the list | §8 |
+| ch | Chapter card "How far from the rule" | — | — |
+| 8 | G2: stopped twice (overlaps, driven into a wall), then declined; label "rehearsal, answered by us" | M: "Each stop says why, so the next try starts from a clean building." | §15.1 table |
+| 9 | Honest-limits card: no structural capacity; floating members and wrong units clear of the building are not caught; in the compile path 8 of 17 planted defects fire nothing; **a pass never means safe** | M says it plainly | §3.1, §3.5, §5 |
+| 10 | Roadmap card, "not built yet": a gate on the compile path when outside orders arrive; a real measured run with the stop; the report for adding a bay | — | RESUME, §15.1 |
+| 11 | Invite: AI Proposer Guide URL, "bring your own AI" | F: "Can I try mine?" M: "Yes. The guide has the whole prompt." | §14.3 |
+| 12 | End card (contacts, "No AI inside") | — | — |
+
+### 16.3 Pictures: where each comes from
+- **Report panel, Modeller:** the real page, headless, software GL, no GPU lock, device scale 1.5 (PLAYBOOK C §3), every value also printed as a `§` line beside the still (pattern: bim-ootb `capex/tools/film_shots.js`).
+- **Terminal:** the real stdout of a fresh `edit_cli` run, rendered, never retyped; its log kept beside the film.
+- **Chart (beat 4):** dataviz skill, from `results_v3_2026-11-07.json` `summary`.
+- **Quote cards (beats 1, 8):** verbatim from the results file, with run date, model and "mode" on the card.
+
+### 16.4 Witnesses (each names its issue; written before any cut)
+- **W-FILM-NEURO-FACTS:** the copied `guard.js`; every digit on a card or in the voice maps to a row in this file; a planted number must fail it. Issue: a number in the film that the repo cannot back.
+- **W-FILM-NEURO-LIVE:** the values on the report stills equal a fresh `edit_cli` JSON for the same edit; INCONCLUSIVE if any row is "not judged". Issue: the film showing a report the product no longer gives.
+- **W-FILM-NEURO-QUOTE:** every quote card is a byte-exact substring of its results file. Issue: a paraphrased AI turned into a strawman.
+- PLAYBOOK step 5: frame count, silences ≤ about 7 s, about −16 LUFS, subtitle band empty.
+
+### 16.5 Not in this film
+Structural safety, certification, JEPA, any "AI is bad" claim beyond our own measured run, any speed claim against working without us (not measured, ▶ START HERE).
+
+### 16.6 Open, for the owner
+1. **"0 mm" wording.** Default: "the edit lands exactly; the report says how far it is from each rule", never "0 mm accurate" as a whole-result claim.
+2. **Building.** The stop beats are on HospitalGarage (spans judged, RC); the guide's test case is the Hospital, whose spans are not judged (§13.2). Default: Garage for beats 3 and 8, Hospital for beat 5, both names on screen.
+3. **Languages** after English.
+
 ## STATUS
-2026-11-06 spec. 2026-11-07: extracted (§3), fixes (§6), report (§8), CLI (§11), three proposer tests (§12), shift and hinge (§13, §14), public guide (§14.3). 2026-11-08: no paid model calls (§14.6), the stop on outside calls and the report on first use (§15), consolidated.
+2026-11-06 spec. 2026-11-07: extracted (§3), fixes (§6), report (§8), CLI (§11), three proposer tests (§12), shift and hinge (§13, §14), public guide (§14.3). 2026-11-08: no paid model calls (§14.6), the stop on outside calls and the report on first use (§15), consolidated; film plan "Think Global, Act Local" (§16).
 **The gate, where it stands:** outside calls are stopped on new red (§15.1). The Java compile path stays log-only until its rules are proven against extracted buildings (`CompilationPipeline.java:1536`). When outside orders arrive at `PlacementRequest`, a gate there applies only to them, checks before any snap, and then the §7 measurement runs, at no cost (§14.6).
 **Open by design:** every row marked NONE in §3.1 and §3.5; snap cases S2–S5. G4-TAMPER reports 73 older violations (§6.3).
