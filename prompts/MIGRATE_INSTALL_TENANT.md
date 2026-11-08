@@ -306,3 +306,29 @@ print PASS with the non-invent check skipped, and (b) DRIFTS → `poc_p4_masters
 - Verdicts: real Odoo or fixture reachable → judged; neither → `INCONCLUSIVE`, exit 3 (A1).
 **Witness W-ODOO-MOCK-FIDELITY** (`scripts/poc_odoo_mock_fidelity.js`): each poc run live and on replay gives the same
 `§`/✓/✗ lines; replay has 0 MISS; falsifier = one recorded count edited in a temp copy ⇒ that poc's verdict changes.
+
+### §B1-SPEC — agent v2: the export the user runs (2026-11-08; facts `build/erp/logs_migrate_2026-11-08/odoo_fields_b1.log`, legacy formats read from the iDempiere `ad_impformat*` tables)
+**Output** `odoo_export/` (cwd), one CSV per target, header row = the iDempiere column names, comma, `"…"` quoting
+(what `ImpFormat.parseFlexFormat` reads) + `manifest.json` = `{odoo_version, db, cutover, files:[{file, target, rows}],
+source_counts:{model: search_count}}`. The import formats ship as a 2Pack ("Odoo Migration" `AD_ImpFormat` + rows)
+loaded by the twin's Pack In (`ERP_FRIENDLY_OPS_LENS.md §20.A`), so the File Loader can read the files with no hand setup.
+Legacy ships only minimal examples (`Example BPartner` 9 cols, `Example Product` 6, `Accounting - Accounts` 9) — ours are wider, but every column is a real `I_*` column.
+**Files, in load order** (live odoodemo counts 2026-11-08):
+| # | file → target | Odoo source (verified field names) | rows |
+|---|---|---|---|
+| 1 | `uom.csv` → C_UOM (window CSV import, B2a) | `uom.uom` name, category, factor | 28 |
+| 2 | `payment_terms.csv` → C_PaymentTerm (B2a) | `account.payment.term` name, lines | 11 |
+| 3 | `product_categories.csv` → M_Product_Category (B2a) | `product.category` name + `parent_id` (3 levels deep) | 9 |
+| 4 | `accounts.csv` → I_ElementValue | `account.account` code→Value, name, `account_type`→AccountType/Sign, `reconcile`; ParentValue blank (`account.group`=0 here → flat) | 47 |
+| 5 | `bpartners.csv` → I_BPartner | `res.partner` with no parent: ref/id→Value, name, vat→TaxID, customer_rank/supplier_rank→IsCustomer/IsVendor, street/street2/city/zip/state/country code→Address1/2, City, Postal, RegionName, CountryCode; GroupValue blank → legacy default group | 12 BP (9 companies + 3 single people) |
+| 5b | (same file) contacts | `res.partner` with `parent_id`: one row per contact, Value of the parent, ContactName/EMail/Phone | 26 |
+| 6 | `products.csv` → I_Product | `product.product` default_code→Value, name, categ→ProductCategory_Value, uom→X12DE355, detailed_type→ProductType (consu/product→I, service→S), barcode→UPC, weight, volume, list_price→PriceList, standard_price→PricePO | 48 |
+| 7 | `onhand.csv` → I_Inventory | `stock.quant` in internal locations: product→Value, location→LocatorValue, quantity→QtyCount, MovementDate = cutover | 36 |
+| 8 | `opening_gl.csv` → I_GLJournal | trial balance per account at cutover (`account.move.line` posted, date ≤ cutover) → one balanced journal | (B3) |
+| 9 | `open_invoices.csv`, `open_orders.csv` → I_Invoice, I_Order | unpaid posted invoices; confirmed orders not fully delivered/invoiced | (B3) |
+**Open details to settle against the legacy oracle (not decided here):** the user's own company partner and the internal
+users' partners (Odoo keeps them in `res.partner`) — legacy keeps them as Organization / AD_User, not customers;
+variant attributes → name suffix vs ASI; the Value when Odoo `ref`/`default_code` is blank (Odoo id is the only real key).
+**Witness W-ODOO-EXPORT** (recorded via the mock, §A-MOCK): rows per file == the Odoo count for that slice; every
+Value unique; every reference (category, UoM, parent BP) found in an earlier file; falsifier = drop a category ⇒ the
+products that need it are named.
