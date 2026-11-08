@@ -722,3 +722,38 @@ nothing judged. Renderer extensions G-a..G-d: a live browser check (wiring only,
 - **Named limits:** a tenant with several DiscountType P schemas (GardenWorld: 2) gets the price-list version refused as ambiguous (legacy ImportPriceList takes MIN id) — next:
   the summary offers the choice like units, or the exporter names the schema; units can only be MAPPED to existing ERP units (no new-unit code yet); a born tenant's admin
   role gets the form only if the plugin was started BEFORE the tenant was born (grantFullAccess copies what exists) — plugin access for later tenants is a plugin-lane item.
+
+### §LAG-SPEC — the same actions timed in Odoo and in the Kernel ERP (2026-11-09, owner: the film is about "the lag and $ … the freedom the long tail lost on TCO"; agreed: measure lag first)
+**Question:** for the same everyday action, how long does a user wait in Odoo 17 vs the Kernel ERP, on the same machine — and what happens to that wait when the server
+is in the cloud? Not "is Odoo bad": a measured pair, both run here, no number from elsewhere.
+**Setup:** one machine; Odoo 17 community `odoodemo` in its docker (default config, one worker) at localhost:8069, logged in admin; the Kernel ERP served from the bim-ootb
+`main` checkout, logged in GardenAdmin (GardenWorld). Headless Chromium, no GPU, one tab per app, warm (after login and one untimed run of each action). Same customer kind
+(a company partner) in both.
+**Actions (user-visible start → user-visible end):** A1 SAVE AN EDIT — change the customer's free-text field, press Save; ends when the app shows it saved (Odoo: `web_save`
+answered and the form not dirty; Kernel: `§CRUD-PERSIST … verifyChain=ok` then the form redrawn `§CRUD-COMMIT-LIVE`). A2 NEXT RECORD — the form's next-record arrow; ends
+when the next record is on screen (pager/status changed and the name field shows the new record). Timed IN the page (`performance.now()` at the click and at the end
+signal), N=15 per action per app, report median and p90, and the number of network requests the action made.
+**Two network conditions:** (L) localhost as is; (C) a cloud round trip emulated with Chrome's network conditions, latency 100 ms per request (a modest regional SaaS RTT;
+stated, not measured from any vendor). The Kernel ERP is expected to make 0 requests per action, so (C) should not move it — the run shows whether that is true.
+**Honest limits, printed with the result:** localhost favours Odoo (no real network); one demo database, small data; Odoo default config, not tuned; the Kernel's write is
+durable when the signed log reaches a replica, not at the keystroke (the priced trade, DistributedERP.md §11) — the film must say so; no iDempiere number (not measured here).
+**Tool:** `scripts/lag_odoo_vs_kernel.js` → `build/erp/lag_2026-11-09/lag.json` + `lag.log` (`§LAG` lines). Verdict line per action; INCONCLUSIVE if an app could not be
+driven (never a number from a failed run).
+**§LAG state (2026-11-09, PARKED by the owner's call: "release an early film first, then update often with the other killer points"):** Kernel side probed — Save on Business
+Partner 114 makes **0 network requests**; stop signal = `§CRUD-PERSIST … verifyChain=ok` then `§CRUD-COMMIT-LIVE refold … view=form` (probe in the session scratchpad). Odoo side:
+login works; Contacts opens as KANBAN in Odoo 17 (the probe waited for list rows → timeout) — next: open via the kanban card / the list view switcher, then time A1/A2.
+This measurement becomes the film's first UPDATE.
+
+### §FILM rc4 (2026-11-09) — "How to escape from your Odoo", early release — `~/Videos/How_to_escape_from_your_Odoo_EN_rc4.mp4` (171.6 s, EN)
+- **Pipeline** `scripts/film_odoo_migration/`: `record.js` (headless Chromium, no GPU — the W-ODOO-FORM-LIVE flow on a new company "Escape Co" + Odoo's Customers screen + the
+  offline save; every number a `§FILMREC FACT` → `out/rec/facts.json`) → `cards.sh` (PLAYBOOK C cards/composites, numbers read from the facts; refuses if the offline beat is not
+  proven; `§CARDS_BAND_OK` caption band empty on all 14 narrated cards) → `build.py` (Kokoro F af_heart / M am_michael, local CPU; captions burnt; then +1.3 dB + limiter).
+  Measured: −16.2 LUFS, peak −0.9 dBFS, 20 turns, longest silence 5.2 s. Narration text beside the mp4 (`…_narration.txt`).
+- **Facts voiced (this run):** 7 customers · 48 products · 47 accounts · 26 stock lines (the form's own "Migrated from Odoo" line) · 394 records in one signed change set,
+  verifyChain ok (was 339 before G1 — the generated model defaults add the accounting/child rows legacy's saves add) · offline save: navigator offline, `§CRUD-PERSIST … verifyChain=ok`,
+  **0 network requests**. Team beat = the team guide's own Start-a-team screenshot (owner: "good enough"), pointing to the team film youtu.be/-LQwoPuQ1QU. Closing card = the NEURO
+  §21.1 one-door diagram, "Specified, not built yet".
+- **Found by making the film (all fixed, each its own PR):** bim-ootb **#2748** — the BIM Document plugin (#2746) and Migrate from Odoo shared id band 9541001 (menu leaf opened
+  the wrong window; W-ODOO-FORM-LIVE red on main) → own band 9542001 + guard **W-PLUGIN-ID-BANDS**; **#2749** — the Find window's "Records = N" counted the bundle only (1 over a grid of
+  8) → counted through the tip reader. Also seen, NOT ours: org.kernel.bim-document fails to start (`UNIQUE constraint failed: ad_window_access`) — for that plugin's lane.
+- **Next updates of the film (owner: "release early, update often"):** the lag measurement next to Odoo (§LAG), books to the cent (B3/B5), a real user's run, other languages.
