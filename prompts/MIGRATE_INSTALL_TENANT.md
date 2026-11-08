@@ -441,3 +441,32 @@ Zero host code: the form is generic plugin UI that drives the EXISTING engines (
 5. **Result** = the summary again with the real counts beside the predicted ones (they must be equal — W-MIGRATE-SUMMARY).
 **Panel link:** the About/DIY Odoo note gets one more sentence: "then, in the ERP, open *Migrate from Odoo*" (it stays download-only).
 **Order of work:** B2a (window CSV Import) → B2 (Import processes) → this form → B5 proof → guide → film.
+
+### §NINJA-MIGRATE study (2026-11-08, owner: *"investigate from my Ninja legacy has data migration which is multi sheet and follows an abstract AD model so that it can apply to any data model"*)
+**Source:** `~/Projects/red1_plugins/org.red1.ninja/src/org/ninja/process/MigrateExcelData.java` (SvrProcess, the owner's own
+iDempiere plugin; registered in `PLUGIN.txt`). The newer `~/Projects/org.idempiere.ninja` `NinjaProcessor.processDataSheet` (:1315)
+is a thinner variant (raw SQL INSERT, headers by column *display name*, no lookups, no PO) — the rich one is MigrateExcelData.
+**What it does (read from the code):**
+- **One workbook, one sheet per TABLE:** sheet name = `AD_Table.TableName` (case-insensitive); a sheet naming no table is skipped.
+  Param `Processed=Y` strips a 2-char prefix from the sheet name, so sheets can be ordered (`01C_BPartner`, `02…`).
+- **Row 1 = AD column names**; each must be an `AD_Column` of that table, else the run stops ("No such column").
+- **`_ID` columns are given as human values, resolved through the dictionary:** the referenced table = column name minus `_ID`,
+  else via the column's `AD_Reference_Value_ID` → `AD_Ref_Table.AD_Key` (so `M_Product_Category_Parent_ID` resolves to
+  `M_Product_Category`); match on **Name**, System client first, then the tenant. Header `Col>AltCol` matches on another column
+  (`C_Location_ID>Address1`), one nested level (`C_BPartner_Location_ID>C_BPartner_ID`). A `…Line` table finds its parent by
+  `DocumentNo`. A lookup table without a Name column takes an integer as-is.
+- **Every row is saved through the table's own model class** (`MTable.getPO(0)` → `set_ValueOfColumn` → `po.save`), so the
+  model's defaults, beforeSave/afterSave and validators run (e.g. BP → acct rows, tree node). Values converted by AD reference
+  (dates 15/16, numbers 12/22/29/37). Client/User/Org from the login. One process run = one transaction (all or nothing).
+- `IsActive=Y` = UPDATE mode keyed on the first TWO columns (+ an optional `WhereClause`).
+**Why it fits the migration (AD-LAYER LAW, "any data model"):** no per-table code at all — the dictionary decides columns,
+lookups and types, and the model class decides behaviour. The normalisation the owner asked for is just more sheets
+(`M_Product_Category` before `M_Product`, `C_BPartner` → `C_Location` → `C_BPartner_Location` → `AD_User`), and the §B0
+summary/uncheck maps one-to-one onto sheets (a sheet's FKs = its dependencies).
+**Limits seen in the code (to fix or state, not hide):** SQL by string concatenation in lookups (`WHERE Name='…'` — an apostrophe
+breaks it); Name is not unique (Odoo has two categories named "Saleable" → needs `>Value`); at most 5 alternate lookups per sheet
+(`String[5]`); update mode keys on columns 1+2 only; no DocAction, so documents (opening stock, opening journal) are saved
+Drafted, not completed; old POI API (`HSSFCell.CELL_TYPE_*`) — the plugin is not installed on the pilot, so no live oracle yet.
+**Consequence for the plan (owner decision):** porting MigrateExcelData (≈250 lines, one generic loader, a plugin) could
+REPLACE B2a (`GridTabCSVImporter`, 1,856 lines) + most of B2 for MASTER data; the `I_*` Import processes would stay only where
+legacy business logic matters (Import Inventory / GL Journal complete their documents) — or a DocAction step is added.
