@@ -37,6 +37,7 @@ constraints. A session picking up work reads that; PROGRESS.md is state, not que
 - **Dubai paper** (outside repo): `~/Projects/Dubai/OpenBIM_Paper.docx` = IEEE format, conformed to abstract v4; log in `~/Projects/Dubai/PROMPT.md`.
 - ⛔ user call: 4 zero-byte DBs in bim-ootb/buildings (`city_index`, `city_index_v2`, `Duplex_meta`, `SampleCastle_extracted`).
 
+## Modeller lane — 2026-11-08: read `prompts/MODELLER_MASTER.md` §RESUME 2026-11-08b (START HERE). Live: bim-ootb #2698 (P7 Viewer totals leave provisional out), #2700/#2701/#2704 (drawn-mains reader, real set 0 mm / 343.07 m), #2702 (grid carrier, real set EXACT). Next: §EXPORT-ROUNDTRIP (measure first).
 ## Modeller lane — 2026-11-07: read `prompts/MODELLER_MASTER.md` §RESUME 2026-11-07b (START HERE: four owner questions first). Live: bim-ootb #2676, #2677. Held, not merged: `feat/walk-band-no-host`.
 ## Modeller lane — 2026-11-03 (history): `prompts/MODELLER_MASTER.md` §RESUME 2026-11-02. Done 2026-11-02: M-1 Walk ALL on an IFC open (bim-ootb #2526), M-3 walked shed reaches the Viewer with every class (#2527, #2531), M-4 Walk ALL skips present disciplines (#2535), red1's roof/stairs question answered, M-2 measured. NEXT: RC-1..RC-4 (pre-existing reds), export carries no colour/psets/storey for carried rows, then the §RESUME 2026-10-02 queue.
 
