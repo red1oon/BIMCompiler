@@ -114,6 +114,7 @@ nav:
       - "CAPEX Dashboard — for iDempiere users": CapexDashboardGuide.md
       - "Kernel-ERP — Your First Setup": ERP_FirstSetup.md
       - "Moving from Odoo — how it works, what is proven": OdooMigration.md
+      - "Move from Odoo — user guide (step by step)": OdooMigrationGuide.md
       - "NinjaExcel Report — User Manual": NinjaExcelReport_UserManual.md
       - "HR / Tenancy / Operate Module": HRBIMAssetGuide.md
       - "Civil Works — Step by Step": CivilWorksGuide.md
