@@ -40,10 +40,13 @@ You will see 124 grid lines, `gx0` to `gx68` and `gy0` to `gy54`, with their pos
 ```json
 {"ok":true,"building":"Hospital","edits":[],"ms":38414,
  "model":{"grid_source":"column-derived","system":"column-framed","material":null,"mixed":false,"girders":84,
-          "lines":[{"id":"gx0","axis":"x","pos":-11.655}, "..."]}}
+          "rotation_deg":0,"frame":"world",
+          "lines":[{"id":"gx0","axis":"x","pos":-11.655,"world":-11.655}, "..."]}}
 ```
 
 `grid_source` says where the lines came from. Here they were measured from the building's own columns.
+
+`pos` is each line's position across the building's own grid, the frame a `--move` uses, so a bay is simply the difference of two positions. On a rotated building `rotation_deg` says by how much (the HospitalGarage: −2) and `frame` is `"building"`. `world` is where the line meets the world axis, as the Modeller draws it; on a rotated building it reads every bay slightly long (about 0.06 % at 2°), so do not compute bays from it. On a rotated building the two numbers also differ by a fixed offset, because the building's grid turns about its columns' centre; only differences between positions matter.
 
 **4. Propose an edit.** Now try the worked example below.
 
