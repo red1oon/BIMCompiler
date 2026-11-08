@@ -229,11 +229,12 @@ Closed history is OPTIONAL (the fold already proves it: `MIGRATION_CAMPAIGN_RESU
   origin/main, headless software rendering (no GPU), ≤3 in parallel. Ledger: GREEN / RED-product / RED-stale-instrument /
   INCONCLUSIVE. Stale instrument → fix the witness. Product defect → fix the SQLite side (CARDINAL RULE).
 **B — Core gaps: the migration tool**
-- ⬜ B0 Spec section for the route above (file formats, cutover rules, load order, witnesses). Owner GO needed.
+- ✅ B0 Route AGREED by owner 2026-11-08; spec = §B0-SPEC below (adds: summary report before OK, uncheck what nothing depends on, iDempiere normalisation).
 - ⬜ B1 Agent v2 (user runs it natively, zip, `npm install && node agent.js`): writes `odoo_export/` = one CSV per
   `I_*` table in iDempiere's loader format + `manifest.json` (live `search_count` per Odoo model = the non-invent proof).
   Masters: CoA, partners + contacts + addresses, product categories, products, UoM, price lists, taxes, payment terms,
   warehouses/locators, currency.
+- ⬜ B2a Port `GridTabCSVImporter` (window CSV import, generic) — carries categories, groups, UoM, tax, payment terms, warehouses.
 - ⬜ B2 Port the missing Import processes verbatim (cite Java file:line), one per PR, ImportBPartner as the pattern:
   ImportAccount → ImportProduct → ImportPriceList → ImportInventory → ImportGLJournal → ImportInvoice → ImportOrder →
   ImportPayment → ImportBankStatement. Each judged vs legacy iDempiere running the SAME file (parallel run,
@@ -253,3 +254,40 @@ Closed history is OPTIONAL (the fold already proves it: `MIGRATION_CAMPAIGN_RESU
 **D — Guide + film** (only after B5 is green)
 - ⬜ D1 `docs/ERPUserGuide.md` §2 "Move from Odoo": claims only what a `§` line proves.
 - ⬜ D2 Film per `prompts/FILM_NARRATION.md` PLAYBOOK.
+
+### §B0-SPEC (2026-11-08, owner: *"agreed, and it should show a pre-migrate summary report first before the OK button. There can be selection where the user may uncheck any master data that is not dependent upon. Some data model i assume will follow the normalisation as iDempiere ie Category or Parent extraction."*)
+**1. Normalisation = iDempiere's, checked in its source (not assumed):**
+| Odoo source | iDempiere target | Legacy rule it must satisfy (file:line) |
+|---|---|---|
+| `product.category` (has `parent_id`) | `M_Product_Category` + parent | must EXIST before products: `ImportProduct.java:224-226` looks up by Value, `:294-297` rejects `ERR=Invalid ProdCategory`. No `I_` table → loaded first by the window CSV import (`org.adempiere.impexp.GridTabCSVImporter`) |
+| (none in Odoo) | `C_BP_Group` | `ImportBPartner.java:130-132` blank GroupValue → the tenant's DEFAULT group (legacy behaviour, not invented); `:144-147` rejects an unknown group |
+| `res.partner` company row | `C_BPartner` (`I_BPartner`) | — |
+| `res.partner` child (`parent_id` set) | `AD_User` contact under its parent BP | one `I_BPartner` row per contact, same BP Value |
+| address fields on `res.partner` | `C_Location` + `C_BPartner_Location` | same row's Address1/City/Country |
+| `product.product` (variant) | `M_Product` (`I_Product`) | template attributes → name/ASI; UoM must exist (`C_UOM_ID` lookup) |
+| `account.account` (+ `account.group` if the localisation has rows) | `C_ElementValue` tree (`I_ElementValue`) | parent extracted IN the import: `ImportAccount.java:350-360` ParentValue → ParentElementValue_ID. Groups become summary accounts only if real `account.group` rows exist; else flat |
+| `uom.uom`, `account.tax`, `account.payment.term`, `stock.warehouse`/`stock.location` | `C_UOM`, `C_Tax`(+`C_TaxCategory`), `C_PaymentTerm`, `M_Warehouse`/`M_Locator` | no `I_` table → window CSV import, before the masters that point at them |
+
+**2. Load order** = the dependency order of the targets, read from the AD dictionary (FK columns of each target
+table), never a hand list (AD-LAYER LAW §1): reference data → categories/groups/CoA → partners/products →
+price lists → opening stock / opening GL / open invoices + orders.
+
+**3. Selection (uncheck).** Each master is a row with a checkbox. Dependencies come from `AD_Column.IsMandatory` on
+the FK in the target table:
+- **mandatory FK** (e.g. product → category): the parent CANNOT be unchecked while a checked item needs it; its box is
+  locked and says which items need it.
+- **optional FK** (e.g. partner → payment term): may be unchecked; the summary states the effect ("38 partners get no
+  payment term, legacy default applies").
+Unchecking the item that depends (products) frees its parents again.
+
+**4. Summary report before OK.** One row per master: Odoo count (from the agent's `manifest.json`) · will import ·
+will be rejected + legacy reason text (`I_ErrorMsg`) · depends on · needed by; plus cutover totals (trial balance,
+stock value, open AR/AP). The numbers come from running the SAME ported import code on a throwaway copy that is
+discarded (where legacy has `IsValidateOnly`, ImportBPartner/ImportGLJournal, that is the legacy path itself). OK runs
+the real import. This screen is a friendly-ops addition (writes nothing, books unchanged — `ERP_FRIENDLY_OPS_LENS.md §8`).
+**Witness W-MIGRATE-SUMMARY:** summary counts == counts after OK, per master; uncheck a mandatory parent ⇒ refused;
+uncheck an optional one ⇒ the stated effect appears in the imported rows; Odoo down / empty manifest ⇒ INCONCLUSIVE.
+
+**5. New port needed (found while specifying):** the twin has the CSV Import toolbar ICON only
+(`erp/ad_toolbar.js:20`), not the engine. Port `GridTabCSVImporter` (generic, every window, AD-LAYER LAW) → work item B2a,
+before ImportProduct.
