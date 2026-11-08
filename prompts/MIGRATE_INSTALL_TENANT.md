@@ -757,3 +757,16 @@ This measurement becomes the film's first UPDATE.
   the wrong window; W-ODOO-FORM-LIVE red on main) → own band 9542001 + guard **W-PLUGIN-ID-BANDS**; **#2749** — the Find window's "Records = N" counted the bundle only (1 over a grid of
   8) → counted through the tip reader. Also seen, NOT ours: org.kernel.bim-document fails to start (`UNIQUE constraint failed: ad_window_access`) — for that plugin's lane.
 - **Next updates of the film (owner: "release early, update often"):** the lag measurement next to Odoo (§LAG), books to the cent (B3/B5), a real user's run, other languages.
+
+### ▶ RESUME HERE (2026-11-09, end of session) — the film's language versions + what is open
+**Done:** EN `~/Videos/How_to_escape_from_your_Odoo_EN_rc5.mp4` (171.6 s, −16.2 LUFS; end card = the guide URL) · **ZH** `~/Videos/How_to_escape_from_your_Odoo_ZH_rc1.mp4`
+(175.6 s, −16.3 LUFS, peak −0.8, 51 caption lines, diagram 26/26 labels translated; frames checked). User guide LIVE: https://red1oon.github.io/BIMCompiler/OdooMigrationGuide/
+(BIMCompiler #449); method page https://red1oon.github.io/BIMCompiler/OdooMigration/ .
+**Next session, in order:**
+1. Send ZH to the owner's phone (remote control = SendUserFile card — the tool was NOT available in this session; owner asked for it).
+2. **TH:** `cd scripts/film_odoo_migration && CUDA_VISIBLE_DEVICES="" ~/.local/share/film_narration/venv/bin/python build_lang.py th` (Loma font: Noto Sans Thai has no Latin;
+   check frames as for ZH: title, trap, team, end diagram). 3. **MS:** same with `ms` (voice says E-R-P / A-I, captions keep ERP / AI — `voice_sub` in lang_text.py).
+4. The film's first UPDATE = the lag measurement (§LAG-SPEC; Odoo side: customers are `base.action_partner_form`, kanban). 5. bim-ootb #2748 (Odoo form id band + W-PLUGIN-ID-BANDS)
+   — confirm merged. 6. Report to the BIM Document plugin's lane: org.kernel.bim-document fails to start (`UNIQUE constraint failed: ad_window_access`).
+**Pipeline facts:** `record.js` (needs a tree with the plugins on main; menu leaf 9542001) → `cards.sh` (EN) / `build_lang.py <lang>` (cards + voice + captions + loudness, all from
+`out/rec/facts.json`) — `out/` is git-ignored, re-run record.js if it is gone (Odoo up: `docker start odoo-db odoo`). Edge voices = cloud (text sent to Microsoft; cached).
