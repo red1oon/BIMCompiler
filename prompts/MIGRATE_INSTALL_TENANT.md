@@ -384,3 +384,22 @@ box (`common/about_diy.js:204`, Odoo row) + the staged Odoo box in `erp/erp_pick
 step ② gains `node export.js`, step ③ accepts the `odoo_export/` files → the §B0 summary report (with the uncheck list) → OK
 runs the imports. The one-order fold stays as the books-to-the-cent check. `docs/migrate_status_panel.html` (the docs status
 map) is updated when B4 ships, not before (it may only claim what a § line proves).
+
+### §OWN-DB-SPEC (2026-11-08, owner: *"older lets a demo Odoo migration, thus user has option to point to own DB?"* → "proceed")
+**Measured:** `agent.js:21-23` + `export.js` read `ODOO_HOST/PORT/DB/LOGIN/PASSWORD` (default `odoodemo` @ localhost:8069,
+admin/admin); the panel says only "override creds via env (see the bundle README)" (`erp_picker.js:324`); `agent.js`
+defaults to demo order `S00023`, which a real Odoo does not have. Env-prefix syntax is POSIX-only (fails in Windows cmd).
+**Build:**
+1. Bundle `cli.js` (shared by agent.js + export.js): flags `--host --port --db --login --so --cutover` (any shell), env still honoured,
+   flag wins. **Password never in the browser and never on the command line:** if `ODOO_PASSWORD` is unset and the target is not the
+   demo (db≠odoodemo or login≠admin), the agent asks for it in the terminal (hidden on a TTY, one stdin line otherwise).
+2. `agent.js` on a non-demo DB with no `--so`: picks the most recent sale order that has a posted customer invoice
+   (`date_order desc, id desc`), prints which one (`§ODOO-AGENT so=… picked=latest-invoiced`); none → says so and exits 1.
+3. Panel step ② (`erp_picker.js` `_renderOdoo`): four fields — host, port, database, login — pre-filled with the demo; the command
+   below rebuilds as you type: demo = `node agent.js && node export.js`; own = the same with `--host … --db … --login …`. No password
+   field. `§MIGRATE-OWN-DB fields=4 demo=Y|N password_field=N cmd=<…>`.
+**Witnesses:** W-ODOO-OWNDB (bim-compiler `scripts/poc_odoo_owndb.js`, via the §A-MOCK replay): flags reach the RPC
+(the login call carries the db/login given), password read from stdin when not in env, demo path still needs no prompt,
+non-demo with no `--so` picks the latest invoiced order (== the RPC answer), wrong password → exit 1 with Odoo's refusal, no
+`odoo_*` change to the export bytes. Panel: `poc_erp_picker.js` reads `§MIGRATE-OWN-DB` — typing a db changes the command,
+no `<input type=password>` exists.
