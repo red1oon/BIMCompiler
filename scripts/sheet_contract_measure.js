@@ -65,6 +65,13 @@ var pgOut = cp.execFileSync('docker', ['exec', 'postgres', 'psql', '-U', 'postgr
   "select table_name, column_name, is_nullable, coalesce(column_default,'') from information_schema.columns where table_schema='adempiere' and table_name in (" +
   TABLES.map(function (t) { return "'" + t.toLowerCase() + "'"; }).join(',') + ')'], { encoding: 'utf8' });
 pgOut.trim().split('\n').forEach(function (l) { var p = l.split('|'); (pgCols[p[0]] = pgCols[p[0]] || {})[p[1]] = { notNull: p[2] === 'NO', def: p[3] }; });
+// unique indexes (legacy refuses a duplicate at the INSERT): pg_indexes of the pilot, columns in index order
+var uniq = {};
+cp.execFileSync('docker', ['exec', 'postgres', 'psql', '-U', 'postgres', '-d', PGDB, '-At', '-F', '|', '-c',
+  "select t.relname, i.relname, string_agg(a.attname, ',' order by array_position(ix.indkey::int[], a.attnum::int)) from pg_index ix join pg_class t on t.oid=ix.indrelid join pg_class i on i.oid=ix.indexrelid " +
+  "join pg_namespace n on n.oid=t.relnamespace join pg_attribute a on a.attrelid=t.oid and a.attnum = any(ix.indkey) where n.nspname='adempiere' and ix.indisunique and not ix.indisprimary and t.relname in (" +
+  TABLES.map(function (t) { return "'" + t.toLowerCase() + "'"; }).join(',') + ') group by 1,2'], { encoding: 'utf8' }).trim().split('\n').filter(Boolean)
+  .forEach(function (l) { var p = l.split('|'); if (/_uu_idx$|_uu$/.test(p[1])) return; (uniq[p[0]] = uniq[p[0]] || []).push({ index: p[1], columns: p[2].split(',') }); });
 var pgVersion = cp.execFileSync('docker', ['exec', 'postgres', 'psql', '-U', 'postgres', '-d', PGDB, '-At', '-c',
   "select coalesce((select max(name) from adempiere.ad_migrationscript),'') "], { encoding: 'utf8' }).trim();
 L('§SHEETC pg db=' + PGDB + ' tables=' + Object.keys(pgCols).length + '/' + TABLES.length + ' lastMigrationScript=' + pgVersion);
@@ -90,10 +97,10 @@ TABLES.forEach(function (t) {
     req.push({ column: c.ColumnName, adMandatory: c.IsMandatory === 'Y', pgNotNull: !!p.notNull, ref: c.AD_Reference_ID, default: src });
   });
   req.sort(function (a, b) { return a.column < b.column ? -1 : 1; });
-  contract.tables[t] = { model: cls, initialDefaultsAt: init.line, parentLink: parents, required: req };
+  contract.tables[t] = { model: cls, initialDefaultsAt: init.line, parentLink: parents, required: req, unique: uniq[t.toLowerCase()] || [] };
   var none = req.filter(function (r) { return r.default === 'none'; }).map(function (r) { return r.column; });
   L('§SHEETC table=' + t + ' model=' + cls + (init.line ? ':' + init.line : '') + ' required=' + req.length + ' defaulted=' + (req.length - none.length) +
-    ' mustSupply=' + none.length + ' [' + none.join(',') + '] parentLink=[' + parents.join(',') + ']');
+    ' mustSupply=' + none.length + ' [' + none.join(',') + '] parentLink=[' + parents.join(',') + '] unique=' + (uniq[t.toLowerCase()] || []).map(function (u) { return u.index + '(' + u.columns.join(',') + ')'; }).join(' '));
 });
 L('§SHEETC tables=' + TABLES.length + ' mustSupplyTotal=' + totalNone + (Object.keys(pgCols).length === TABLES.length ? '' : ' ⚠ pg tables missing'));
 fs.writeFileSync(OUT, JSON.stringify(contract, null, 1));

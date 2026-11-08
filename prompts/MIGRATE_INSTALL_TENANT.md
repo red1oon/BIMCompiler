@@ -519,7 +519,7 @@ every patch is listed with its count, every detail row's parent key resolves to 
   migration in the plugin (as the CAPEX lane did).
 - **Proof stays the owner's:** the ERP spine — migrated rows open coherently from the main menu windows (master + detail tabs,
   lookups resolved). The legacy run is a cross-check, not the gate.
-**Order:** ✅ W-SHEET-CONTRACT + exporter v3 (workbook) DONE 2026-11-09 (§EXPORTER-V3 RESULT) → **NEXT** Ninja loader port in the twin (plugin) → legacy cross-check → B4 form → guide → film.
+**Order:** ✅ W-SHEET-CONTRACT + exporter v3 (workbook) DONE 2026-11-09 (§EXPORTER-V3 RESULT) → ✅ Ninja loader port in the twin (plugin) DONE 2026-11-09 (§NINJA-LOADER RESULT, bim-ootb #2734) → **NEXT** G1 genesis through PO.save → B4 form → legacy cross-check → guide → film.
 
 ### §EXPORTER-V3-SPEC — one workbook + the measured contract (2026-11-09, spec before code; resumes §SHEET-CONTRACT)
 **Correction to §SHEET-CONTRACT rule 2 (read in source, not assumed):** legacy `PO.save` does NOT apply `AD_Column.DefaultValue`
@@ -583,3 +583,65 @@ C_BPartner sheet reports `missing=C_BP_Group_ID`; duplicate one Address1 ⇒ the
   duplicate system UoMs unless the B4 mapping step maps them — the mapping step must REWRITE the C_UOM sheet + the `C_UOM_ID` cells, not just fill X12DE355.
 - **For the next item (Ninja loader port in the twin):** the twin's SQLite has no DB defaults → the loader applies `sheet_contract.json`'s default
   sources (po-standard / po-savenew / model / db-default) itself; resolve `Col>Alt` with parameterised SQL and REFUSE an ambiguous match (falsifier 2's rule).
+
+### §NINJA-LOADER-SPEC — MigrateExcelData in the twin, as a plugin (2026-11-09, spec before code)
+**Read first (twin, bim-ootb `f73e8c3b`):** the twin already has the whole PO save path (`erp/model_layer.js`: newPO = PO.setStandardDefaults +
+`MODEL[t].initialDefaults` (`model_master.js` MASTER registry), Trx.insert stamps `ad_ddl_default` (1,703 pg defaults, `patches/ad_seed.db.sql`),
+saveNew DocumentNo/Value from the sequence, beforeSave → validators → afterSave, unique indexes from `ad_ddl_unique`). It has NO NOT NULL. A plugin
+brings a process the POS way (`plugins/pos_integration.mjs` dictionary rows + hot chunk `defineProcess`, witness `tests/witness_pos_sales.js`).
+A tenant is born by the ported Initial Client Setup (`genesis.js` birthTenant + mergeGenesisInto).
+**Files:** `erp/plugins/ninja_migrate.mjs` (bundle `org.idempiere.ninja.migrate`, id band 9540001-9540999: AD_Process 9540001 "Migrate Excel Data"
+class `org.idempiere.ninja.process.MigrateExcelData`, its 4 AD_Process_Para = exactly what prepare() reads — File_Directory, Processed, IsActive,
+WhereClause; a menu leaf under Data Import (163); access for roles 0 and 102) + hot chunk `erp/plugins/ninja_migrate_process.mjs` (the class, and
+`mapUom(book, answers)` for the B4 form). Host code: 0 lines (the INSTALL_ONLY list + sw.js precache are file names only).
+**Kept from the Java (read, `org.red1.ninja/.../MigrateExcelData.java`):** sheet = AD_Table.TableName, case-insensitive; `Processed=Y` strips the
+2-char order prefix; a sheet naming no table is skipped and logged; a header that is not an AD_Column of the table STOPS the run with the legacy text
+"No such column. Check your Excel sheet+column:<Table>-<Column>"; one PO per row (`MTable.getPO(0)` = `ML.newRecord`) → set each cell → save;
+value by AD reference (15/16 date, `' 00:00:00'` appended under 12 chars; 12/22/29/37 BigDecimal); `_ID` lookup: table = column minus `_ID`, else
+the column's AD_Reference_Value_ID → AD_Ref_Table.AD_Key's table; `<Table>Line` finds its parent by DocumentNo; `Col>Alt` = match on Alt;
+`X_ID>Y_ID` = one nested level; a lookup table with no Name column takes the integer as is; `IsActive=Y` = UPDATE mode keyed on the first two
+columns (+ WhereClause); the answer "No worksheets : N" + "(<Table> = n records) " per sheet.
+**Fixed (owner-approved 2026-11-09 or named here), each one a §-line:** F1 every lookup/update value is a bound parameter (apostrophe); F2 alt lookups
+are per header, unlimited (legacy `String[5]` + a counter never reset per sheet); F3 a lookup is scoped to the login tenant first, then System (0) —
+legacy alt lookups have NO client filter and would take another tenant's default group; F4 a lookup matching more than one row in the same tier is an
+ERROR (legacy takes the first); F5 the lookup column's reference is read from THIS table's AD_Column (legacy: the first column of that name in any
+table); F6 a blank cell sets nothing, so the PO default stands (legacy: `new BigDecimal("")` throws, a blank name lookup throws); F7 all-or-nothing:
+any row error → nothing is committed and the answer lists every error (sheet, row, column, reason) — legacy postgres aborts the transaction at the
+first failed statement, so a partial import is not legacy either; F8 a saved row with an empty AD-mandatory column is an error (legacy: the pg NOT
+NULL at the INSERT; measured equal on the 17 tables — the only pg-only NOT NULL, `M_Product.UnitsPerPack`, has DB default 1); F9 the file is the
+workbook the host hands in (the twin cannot open a server path) — the SheetJS workbook object, read cell by cell (no library inside the process).
+**`mapUom(book, answers)`** (for B4, tested now): `answers[odooName] = {to: '<ERP UoM Name>'}` → that C_UOM row leaves the sheet and every
+`C_UOM_ID` cell naming it is rewritten; `{x12de355: 'XXXX'}` → kept as a new UoM with that code; no answer and no product uses it → the row is
+dropped (unchecked, §B0 3); no answer but used → mapUom refuses (the user must answer).
+**Witness W-NINJA-MIGRATE** (`erp/tests/witness_ninja_migrate.js`; fixture = the W-SHEET-CONTRACT export, `erp/tests/fixtures/odoo_export_2026-11-09/`):
+PLUG (loads, ACTIVE, class registered, paras 4 of 4) · TENANT (born by genesis) · RAW (the workbook as exported is REFUSED for C_UOM.X12DE355, 0 rows
+committed, every error named) · RUN (with the witness standing in for the user on the UoM screen — Units→Each, Days→Day, Hours→Hour, 25 unused
+unchecked; printed as the user's answers): committed; per sheet the tenant has exactly the sheet's rows; every lookup column points at a row of the
+right table in the tenant or System; each patch resolved to the tenant's OWN default row (BP group IsDefault, tax category IsDefault, account element,
+MMI doc type, discount schema); master-detail parents set (BP location/contact → BP, locator → warehouse, inventory line → its inventory); every
+required column of every inserted row non-empty (a gap = a twin default missing → fixed on the twin side, CARDINAL RULE) · RERUN (a second run adds
+0 rows) · FALSIFIERS (an apostrophe name loads; an ambiguous Name lookup is refused; a bad header stops with the legacy text) · INCONCLUSIVE when
+nothing was judged. Window-level proof (open each migrated row from the main menu, grid rows + parent per tab) follows with the B4 form in the browser.
+
+### §NINJA-LOADER RESULT (2026-11-09) — W-NINJA-MIGRATE 🟢 31/31, W-SHEET-CONTRACT 🟢 (now 15 unique indexes) — bim-ootb #2734 (auto-merge); regression 34 related witnesses = origin/main
+- **Built:** `erp/plugins/ninja_migrate.mjs` (AD_Process 9540001 + 4 paras + menu + access, band 9540001-9540999) + `ninja_migrate_process.mjs`
+  (`org.idempiere.ninja.process.MigrateExcelData`, F1–F11, `putFile` shelf, `mapUom`, `sheetRows`, `bookToWorkbook`); wiring = sw.js precache (v1009) +
+  INSTALL_ONLY (file names). Witness `erp/tests/witness_ninja_migrate.js`, fixture `erp/tests/fixtures/odoo_export_2026-11-09/`, logs
+  `build/erp/logs_migrate_2026-11-09/witness_ninja_migrate.run{1..5}.log` (run5 = PASS).
+- **Measured on a born tenant (client 17, genesis):** RAW export refused whole (28 errors, all `C_UOM … x12de355 empty`, 0 rows kept) · RUN (witness answers the
+  UoM screen Units→Each, Days→Day, Hours→Hour, 25 unused dropped) = 339 ops, every one of the 17 tables gained EXACTLY its sheet rows · SPINE 13/13: own default BP
+  group, own default tax category, own account element, PI doc type, category parents = their path, 6 master-detail links all resolved, 0 empty mandatory on migrated
+  rows · RERUN refused whole (unique Name/Value), tenant unchanged · FALS: apostrophe loads; ambiguous Name lookup refused; bad header stops with the legacy text; a
+  partner without Name refused (F8); a partner without a group column takes the default group (legacy MBPartner.getBPGroup).
+- **Twin-side defects the run found and FIXED (CARDINAL RULE, cited):** genesis Standard BP group not IsDefault/no Value (MSetup.java:1172-1176); model initial
+  defaults missing for M_Product_Category, C_PaymentTerm, M_Warehouse, C_UOM, M_Locator, C_ElementValue, C_BPartner_Location, AD_User, M_Product_PO, M_PriceList
+  (each `setInitialDefaults` line cited in `model_master.js`); MBPartnerLocation hooks treated a same-transaction C_Location (`#new:n`) as missing and read the location
+  outside the transaction (`ad_modelval.js`, now through `ctx.trx`).
+- **Export defects the run found and FIXED (export.js):** MMI matched 3 doc types → `C_DocType_ID>DocSubTypeInv=PI`; Odoo price breaks broke `m_product_po_vendorprodno`
+  → one row per product+vendor (lowest min qty, breaks in provenance); Odoo posx/y/z all 0 broke `m_location_where` → Z = Odoo location id (named patch, 7 rows); lot
+  quants broke `m_inventoryline_productlocattr` → summed per locator+product (36 quants → 26 lines, ids + lots in provenance). W-SHEET-CONTRACT was SCOPE-BLIND to all
+  three (it never read the unique indexes) — the measurer now reads them from the pilot (15 over 17 tables) and the witness checks them (falsifier 3 bites).
+- **NEW WORK ITEMS (WORK-TO-ZERO):** ⬜ G1 genesis rows are folded raw (not through PO.save): 116 AD-mandatory column gaps on a born tenant's OWN rows (Created/Updated
+  stamps, C_ElementValue Post* ×311, payment term, category …; `§NM-GENESIS-GAPS` in run5) — a twin divergence from MSetup, which saves through the models.
+  ⬜ L1 window-level proof in the browser (open each migrated row from the main menu: grid rows + parent per tab) — with B4. ⬜ L2 legacy cross-check
+  (§NINJA-LEGACY-INSTALL). ⬜ lots → ASI, vendor price breaks, C_PaySchedule (named in manifest notes).

@@ -82,6 +82,15 @@
      "ref": 10,
      "default": "none"
     }
+   ],
+   "unique": [
+    {
+     "index": "c_uom_name",
+     "columns": [
+      "ad_client_id",
+      "name"
+     ]
+    }
    ]
   },
   "C_PaymentTerm": {
@@ -173,6 +182,15 @@
      "ref": 10,
      "default": "po-savenew:PO.java:3594"
     }
+   ],
+   "unique": [
+    {
+     "index": "c_paymentterm_name",
+     "columns": [
+      "ad_client_id",
+      "name"
+     ]
+    }
    ]
   },
   "M_Product_Category": {
@@ -221,6 +239,15 @@
      "pgNotNull": true,
      "ref": 10,
      "default": "po-savenew:PO.java:3594"
+    }
+   ],
+   "unique": [
+    {
+     "index": "m_product_category_value",
+     "columns": [
+      "ad_client_id",
+      "value"
+     ]
     }
    ]
   },
@@ -314,6 +341,15 @@
      "pgNotNull": true,
      "ref": 10,
      "default": "po-savenew:PO.java:3594"
+    }
+   ],
+   "unique": [
+    {
+     "index": "c_elementvalue_value",
+     "columns": [
+      "c_element_id",
+      "value"
+     ]
     }
    ]
   },
@@ -427,6 +463,15 @@
      "ref": 10,
      "default": "po-savenew:PO.java:3594"
     }
+   ],
+   "unique": [
+    {
+     "index": "c_bpartner_value",
+     "columns": [
+      "ad_client_id",
+      "value"
+     ]
+    }
    ]
   },
   "C_Location": {
@@ -441,7 +486,8 @@
      "ref": 19,
      "default": "none"
     }
-   ]
+   ],
+   "unique": []
   },
   "C_BPartner_Location": {
    "model": "MBPartnerLocation",
@@ -506,7 +552,8 @@
      "ref": 10,
      "default": "model:MBPartnerLocation.java:93"
     }
-   ]
+   ],
+   "unique": []
   },
   "AD_User": {
    "model": "MUser",
@@ -618,7 +665,8 @@
      "ref": 17,
      "default": "model:MUser.java:374"
     }
-   ]
+   ],
+   "unique": []
   },
   "M_Product": {
    "model": "MProduct",
@@ -807,6 +855,27 @@
      "ref": 10,
      "default": "po-savenew:PO.java:3594"
     }
+   ],
+   "unique": [
+    {
+     "index": "m_product_expensetype",
+     "columns": [
+      "s_expensetype_id"
+     ]
+    },
+    {
+     "index": "m_product_resource",
+     "columns": [
+      "s_resource_id"
+     ]
+    },
+    {
+     "index": "m_product_value",
+     "columns": [
+      "ad_client_id",
+      "value"
+     ]
+    }
    ]
   },
   "M_Product_PO": {
@@ -844,6 +913,15 @@
      "pgNotNull": true,
      "ref": 10,
      "default": "none"
+    }
+   ],
+   "unique": [
+    {
+     "index": "m_product_po_vendorprodno",
+     "columns": [
+      "c_bpartner_id",
+      "vendorproductno"
+     ]
     }
    ]
   },
@@ -901,6 +979,15 @@
      "ref": 11,
      "default": "model:MPriceList.java:248"
     }
+   ],
+   "unique": [
+    {
+     "index": "m_pricelist_name",
+     "columns": [
+      "ad_client_id",
+      "name"
+     ]
+    }
    ]
   },
   "M_PriceList_Version": {
@@ -937,6 +1024,15 @@
      "pgNotNull": true,
      "ref": 15,
      "default": "none"
+    }
+   ],
+   "unique": [
+    {
+     "index": "m_pricelist_version_validfrom",
+     "columns": [
+      "m_pricelist_id",
+      "validfrom"
+     ]
     }
    ]
   },
@@ -982,6 +1078,15 @@
      "pgNotNull": true,
      "ref": 37,
      "default": "db-default:0"
+    }
+   ],
+   "unique": [
+    {
+     "index": "m_productprice_unique_idx",
+     "columns": [
+      "m_pricelist_version_id",
+      "m_product_id"
+     ]
     }
    ]
   },
@@ -1031,6 +1136,15 @@
      "pgNotNull": true,
      "ref": 10,
      "default": "po-savenew:PO.java:3594"
+    }
+   ],
+   "unique": [
+    {
+     "index": "m_warehouse_name",
+     "columns": [
+      "ad_client_id",
+      "name"
+     ]
     }
    ]
   },
@@ -1090,6 +1204,17 @@
      "ref": 10,
      "default": "none"
     }
+   ],
+   "unique": [
+    {
+     "index": "m_location_where",
+     "columns": [
+      "m_warehouse_id",
+      "x",
+      "y",
+      "z"
+     ]
+    }
    ]
   },
   "M_Inventory": {
@@ -1139,7 +1264,8 @@
      "ref": 15,
      "default": "model:MInventory.java:121"
     }
-   ]
+   ],
+   "unique": []
   },
   "M_InventoryLine": {
    "model": "MInventoryLine",
@@ -1196,6 +1322,17 @@
      "pgNotNull": true,
      "ref": 29,
      "default": "db-default:0"
+    }
+   ],
+   "unique": [
+    {
+     "index": "m_inventoryline_productlocattr",
+     "columns": [
+      "m_inventory_id",
+      "m_locator_id",
+      "m_product_id",
+      "m_attributesetinstance_id"
+     ]
     }
    ]
   }

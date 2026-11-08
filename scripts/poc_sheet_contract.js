@@ -52,7 +52,7 @@ function lookupTable(table, col) {
 
 // ── THE JUDGE: workbook (sheets as arrays) + manifest → findings. Pure; the falsifiers call it on tampered copies. ──
 function judge(book, manifest) {
-  var f = { missing: [], badHeader: [], badLookup: [], blankRequired: [], badPatch: [], noParent: [], perSheet: [] };
+  var f = { missing: [], badHeader: [], badLookup: [], blankRequired: [], badPatch: [], noParent: [], dupKey: [], perSheet: [] };
   var patchOf = {}; (manifest.patches || []).forEach(function (p) { patchOf[p.table + '.' + p.column] = p; });
   book.forEach(function (s, si) {
     var table = s.name.replace(/^\d\d/, ''), hdr = s.rows[0] || [], data = s.rows.slice(1), contract = CONTRACT.tables[table];
@@ -87,6 +87,14 @@ function judge(book, manifest) {
       var n = {}; src.rows.slice(1).forEach(function (r) { var v = r[ki]; if (v !== '' && v !== undefined) n[v] = (n[v] || 0) + 1; });
       data.forEach(function (row, ri) { var v = row[hi]; if ((v === '' || v === undefined) && /Parent/.test(c)) return;
         if (n[v] !== 1) f.badLookup.push(s.name + ' r' + (ri + 2) + ' ' + h + '="' + v + '" → ' + (n[v] || 0) + ' row(s) of ' + src.name); });
+    });
+    // legacy unique indexes: a key whose columns the sheet gives must not repeat (columns the sheet leaves out take ONE default / the tenant value, i.e. constant per sheet)
+    (contract.unique || []).forEach(function (u) {
+      var at = u.columns.map(function (c) { return cols.map(function (x) { return x.toLowerCase(); }).indexOf(c); });
+      if (at.every(function (i) { return i < 0; })) return;
+      var seen = {}; data.forEach(function (row, ri) { var k = at.map(function (i) { return i < 0 ? '·' : row[i]; }).join('|');
+        if (at.some(function (i) { return i >= 0 && (row[i] === '' || row[i] === undefined); })) return;   // NULL never collides in a pg unique index
+        if (seen[k]) f.dupKey.push(s.name + ' r' + (ri + 2) + ' repeats r' + seen[k] + ' on ' + u.index + '(' + u.columns.join(',') + ')'); else seen[k] = ri + 2; });
     });
     f.perSheet.push({ sheet: s.name, rows: data.length, supplied: sup, defaulted: def, patched: pat, missing: miss });
   });
@@ -133,6 +141,8 @@ function bookHash(book) { return crypto.createHash('sha256').update(JSON.stringi
   ok(f.badHeader.length === 0, 'every header is an AD column of its table, every `>` names a column of the looked-up table — bad ' + show(f.badHeader));
   ok(f.blankRequired.length === 0, 'no required column with no legacy default is left blank in a row — ' + show(f.blankRequired));
   ok(f.badLookup.length === 0, 'every in-workbook lookup finds exactly one row of an earlier sheet — bad ' + show(f.badLookup));
+  var nU = Object.keys(CONTRACT.tables).reduce(function (n, t) { return n + (CONTRACT.tables[t].unique || []).length; }, 0);
+  ok(nU > 0 && f.dupKey.length === 0, 'no sheet repeats a key of a legacy unique index (' + nU + ' indexes over the 17 tables) — ' + show(f.dupKey));
   ok(f.noParent.length === 0, 'every detail sheet carries its AD parent-link column — ' + show(f.noParent));
   ok(f.badPatch.length === 0 && (manifest.patches || []).length > 0, 'every patch names its rule and a row count within its sheet (' + (manifest.patches || []).length + ' patches) — ' + show(f.badPatch));
 
@@ -141,21 +151,27 @@ function bookHash(book) { return crypto.createHash('sha256').update(JSON.stringi
   function cnt(k) { return sc[k]; }
   var pairs = [['C_UOM', 'uom.uom []'], ['C_PaymentTerm', 'account.payment.term []'], ['M_Product_Category', 'product.category []'], ['C_ElementValue', 'account.account []'],
     ['M_Product', 'product.product []'], ['M_Product_PO', 'product.supplierinfo []'], ['M_ProductPrice', 'product.product []'], ['M_Warehouse', 'stock.warehouse []'],
-    ['M_Locator', 'stock.location [["usage","=","internal"]]'], ['M_InventoryLine', 'stock.quant [["location_id.usage","=","internal"]]']];
+    ['M_Locator', 'stock.location [["usage","=","internal"]]']];
   var off = pairs.filter(function (p) { return rows[p[0]] !== cnt(p[1]); }).map(function (p) { return p[0] + ' ' + rows[p[0]] + '≠' + cnt(p[1]); });
   var prov = JSON.parse(fs.readFileSync(path.join(main.dir, 'provenance.json'), 'utf8'));
   var poSheet = book.filter(function (x) { return /M_Product_PO$/.test(x.name); })[0].name, poIds = {}, poPairs = {};
-  prov[poSheet].forEach(function (o) { poIds[o.id] = (poIds[o.id] || 0) + 1; poPairs[o.id + '/' + o.product] = 1; });
+  // a row carries every Odoo seller it stands for (ids: price breaks of one vendor fold into one row, legacy has one M_Product_PO per vendor); a template seller appears once per variant
+  var poSh = book.filter(function (x) { return /M_Product_PO$/.test(x.name); })[0], piC = poSh.rows[0].indexOf('M_Product_ID>Value'), bpC = poSh.rows[0].indexOf('C_BPartner_ID>Value');
+  prov[poSheet].forEach(function (o, i) { (o.ids || [o.id]).forEach(function (id) { poIds[id] = (poIds[id] || 0) + 1; }); var r = poSh.rows[i + 1]; poPairs[r[piC] + '/' + r[bpC]] = 1; });
   rows.M_Product_PO = Object.keys(poIds).length;   // judged on distinct Odoo seller rows; the variant expansion is reported below
+  var ilSheet = book.filter(function (x) { return /M_InventoryLine$/.test(x.name); })[0].name, qIds = {}, qDup = 0;
+  prov[ilSheet].forEach(function (o) { (o.ids || [o.id]).forEach(function (id) { if (qIds[id]) qDup++; qIds[id] = 1; }); });
+  L('§SHEETC-W M_InventoryLine rows=' + prov[ilSheet].length + ' carry ' + Object.keys(qIds).length + ' Odoo quants (dup ' + qDup + ')');
+  if (Object.keys(qIds).length !== cnt('stock.quant [["location_id.usage","=","internal"]]') || qDup) off.push('M_InventoryLine quants ' + Object.keys(qIds).length + '≠' + cnt('stock.quant [["location_id.usage","=","internal"]]'));
   off = off.filter(function (x) { return !/^M_Product_PO /.test(x); });
   if (rows.M_Product_PO !== cnt('product.supplierinfo []')) off.push('M_Product_PO distinct sellers ' + rows.M_Product_PO + '≠' + cnt('product.supplierinfo []'));
   var expanded = Object.keys(poIds).filter(function (k) { return poIds[k] > 1; });
   L('§SHEETC-W M_Product_PO rows=' + prov[poSheet].length + ' distinct supplierinfo=' + Object.keys(poIds).length + ' template-sellers expanded to variants=' + expanded.length +
-    ' (' + expanded.map(function (k) { return k + '×' + poIds[k]; }).join(',') + ') pairsUnique=' + (Object.keys(poPairs).length === prov[poSheet].length ? 'Y' : 'N'));
-  if (Object.keys(poPairs).length !== prov[poSheet].length) off.push('M_Product_PO has a repeated (seller, variant) pair');
+    ' (' + expanded.map(function (k) { return k + '×' + poIds[k]; }).join(',') + ') product/vendor pairs unique=' + (Object.keys(poPairs).length === prov[poSheet].length ? 'Y' : 'N'));
+  if (Object.keys(poPairs).length !== prov[poSheet].length) off.push('M_Product_PO has a repeated (product, vendor) pair');
   var partnersPlaced = rows.C_BPartner + rows.AD_User + (manifest.held || []).length;
   if (partnersPlaced !== cnt('res.partner []')) off.push('partners ' + partnersPlaced + '≠' + cnt('res.partner []'));
-  ok(off.length === 0, 'sheet rows == live Odoo search_count for all ' + (pairs.length + 1) + ' slices (partners = C_BPartner ' + rows.C_BPartner + ' + AD_User ' + rows.AD_User + ' + held ' + (manifest.held || []).length + ') — off ' + show(off));
+  ok(off.length === 0, 'sheet rows == live Odoo search_count for all ' + (pairs.length + 3) + ' slices (partners = C_BPartner ' + rows.C_BPartner + ' + AD_User ' + rows.AD_User + ' + held ' + (manifest.held || []).length + ') — off ' + show(off));
 
   if (mode === 'live') {
     var rp = mock('replay', FIX), r2 = runExport(8070, path.join(T, 'rep')), repOut = await stop(rp);
@@ -179,6 +195,12 @@ function bookHash(book) { return crypto.createHash('sha256').update(JSON.stringi
   L('§FALSIFIER-2 duplicate Address1 "' + used + '" → bad lookups ' + show(f2.badLookup));
   ok(f2.badLookup.some(function (m) { return m.indexOf(used) >= 0 && /→ 2 row/.test(m); }), 'falsifier 2: a duplicated Address1 makes the location lookup ambiguous (2 rows), not silently first-match');
 
+  var bu = JSON.parse(JSON.stringify(book)), lo = bu.filter(function (s) { return /M_Locator$/.test(s.name); })[0], H3 = lo.rows[0];
+  var wi = H3.indexOf('M_Warehouse_ID>Value'), a3 = 1, b3 = lo.rows.findIndex(function (r, i) { return i > 1 && r[wi] === lo.rows[1][wi]; });
+  ['X', 'Y', 'Z'].forEach(function (c) { lo.rows[b3][H3.indexOf(c)] = lo.rows[a3][H3.indexOf(c)]; });
+  var f3 = judge(bu, manifest);
+  L('§FALSIFIER-3 give locator r' + (b3 + 1) + ' the X/Y/Z of r' + (a3 + 1) + ' (same warehouse ' + lo.rows[1][wi] + ') → dup keys ' + show(f3.dupKey));
+  ok(b3 > 1 && f3.dupKey.some(function (m) { return /m_location_where/.test(m); }), 'falsifier 3: two locators of one warehouse at the same X/Y/Z are reported against m_location_where');
   L('§FIXTURE ' + path.relative(ROOT, FIX) + (fs.existsSync(FIX) ? ' answers=' + JSON.parse(fs.readFileSync(FIX, 'utf8')).meta.answers : ' (none)'));
   if (judged < 8) finish(3, '⚪ W-SHEET-CONTRACT INCONCLUSIVE — only ' + judged + ' checks ran');
   finish(fails ? 1 : 0, fails ? '🔴 W-SHEET-CONTRACT FAIL (' + fails + ')' : '🟢 W-SHEET-CONTRACT PASS (' + mode + ')');
