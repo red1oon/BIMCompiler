@@ -102,7 +102,20 @@ C3 lands with the REPLACE verb.
    - The bake has no per-frame overlay count. Add a `§DRAWN-OVERLAY` frame line (visible objects per frame) so the next bake can be judged from its log.
    - Captions filled from § lines (343 m of duct, 205 terminals; 11 FP items at 1.2 m), not burned yet. Design lane asked: fix + re-bake, re-bake `--no-buildup`, or owner ruling first.
 
-**Next:** the design lane's choice above; then re-bake and captions (`nvidia-smi`, design lane brings the owner the bake request, `cli_silent_bake.js --drawn-services` on `walked_film.db`). The bake is the first real test of `start()` keeping the overlay objects (DRAWN_SERVICES_FILM §6).
+6. ✅ **Fixed + re-baked** (owner: "Exempt drawn services", "Fix, then re-bake"). bim-ootb **#2742** (merged `1f693f14`), spec + RESULT in bim-ootb `prompts/DRAWN_SERVICES_FILM.md` §7-§8:
+   - The overlay registers as the film layer `drawn.services`; the ending-orbit cease keeps that NAMED subject layer, and the net is unchanged for everything else.
+   - `tm_render.js` ANDs the build-up with the active isolate (the `§REVEAL_DOOR_LEAK` split).
+   - New per-frame `§DRAWN-OVERLAY-FRAME` line.
+   - W-DRAWN-FILM-FRAME 6/0: P0 on main 47/125/191/237 of 299 → 0, plus red controls. W-CEASE 35 → 39/0. Regressions unchanged.
+   - **Re-bake on `1f693f14`:** `visible=23/23` and `hiddenGuidVisible=0/514` on all 2,080 frames; cease `subject=23`; MATCH; 0 page errors. Captions burned (343 m, 205 terminals, 11 items at 1.2 m), windows from the verb-6 bands. Burn checked by bottom-band PSNR: 13-20 dB inside the windows, 49-53 dB outside. Captioned cut kept private; the first cut kept as "before". Sent to the design lane, which checks before the owner sees it.
+7. ✅ **§BIMDOC-OPEN app side** (owner: "Shared file store, Modeller session"). bim-ootb **#2747** (merged `6c694c43`):
+   - `common/file_store.js`: OPFS `bim_files/<sha256>`, dedup by hash, re-hash on get, sweep by the set of hashes still referenced, persist and same-origin logged.
+   - `?open=store:<sha256>&name=` hands the file to each app's existing open route: Viewer IFC; Modeller IFC, DB and DXF.
+   - W-FILESTORE 16/0, with red controls for altered and absent entries.
+   - Headless `persist()` returns `granted=false`, which is logged.
+   - Spec: bim-ootb `prompts/BIMDOC_OPEN_FILE_STORE.md`. The ERP side (put/sweep from attachments) is built separately.
+
+**Next:** the design lane's verdict on the captioned cut; the ERP side of §BIMDOC-OPEN is someone else's build (`nvidia-smi`, design lane brings the owner the bake request, `cli_silent_bake.js --drawn-services` on `walked_film.db`). The bake is the first real test of `start()` keeping the overlay objects (DRAWN_SERVICES_FILM §6).
 
 ## ▶ §RESUME 2026-11-09 — (steps 1-3 done in 2026-11-09b above; steps 4-5 still stand)
 **Goal (owner):** HVAC + FP walked successfully on the private ARC, then a film. The owner said *"go till that"*; the bake still goes through the design lane (`bim-compiler-8c`), with an `nvidia-smi` check first.
