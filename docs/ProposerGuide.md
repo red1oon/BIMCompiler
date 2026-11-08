@@ -1,11 +1,73 @@
 # AI Proposer Guide
 
-**Propose a change to a real building. Get back what it changed, what was checked, and what was not.**
+**Let your AI operate a real BIM app, with exact numbers. The app makes each change, checks it, and tells your AI what changed, what was checked, and what was not.**
 
-Your AI stays outside and proposes. A deterministic compiler, with no AI in it, works out the result and reports it. **An edit that adds new red is stopped:** it is undone and comes back with its report and the reason. You need one file and a browser engine: no account, no server, nothing uploaded.
+Our BIM app, the Modeller, offers its actions as a short menu, each one described in plain words. Connect your AI to it, and the AI reads the menu, picks an action, fills in exact numbers, and gets the app's own verdict back. The app has no AI in it. **A change that adds new red is stopped:** it is undone and comes back with its report and the reason. Everything runs on your computer: no account, no server, nothing uploaded. Prefer to script it yourself? The same actions are a [command-line tool](#getting-started).
 
 !!! warning "What a good report does not mean"
     The report checks a short list of things, listed in [What is not checked](#what-is-not-checked). A report with no red **never means safe, compliant or good**. Nothing here checks load capacity, and a structural engineer has the last word.
+
+## New to this? Why an AI needs a checker
+
+**Two kinds of computer answer.**
+
+- **Probabilistic: an AI model.** It writes the most likely answer, word by word, from patterns it learned. The answer is often useful and sometimes wrong, and it sounds just as sure either way. Ask twice and you may get a different answer. Autodesk says the same of its own assistant: *"AI-generated responses are based on patterns and probabilities."* ([Autodesk Assistant help](https://help.autodesk.com/cloudhelp/2027/ENU/WSPro-Help/files/GUID-9017743B-6B2E-41D1-BF66-EF3FEFEFCAB2.htm))
+- **Deterministic: this app.** It follows fixed rules on the real model. The same building and the same change give the same answer every time, and it shows its working. Think of a calculator: 11.176 + 1.824 is always 13.
+
+| | An AI model | This app |
+|---|---|---|
+| How it answers | the most likely answer | by fixed rules, on the real building |
+| Same question twice | may differ | the same, byte for byte |
+| Shows its working | it explains, but cannot prove | before and after, the limit, the bay |
+| Good at | ideas, plain-language requests | exact changes and checks |
+| Weak at | knowing when it is wrong | coming up with ideas |
+
+**So each does its own part.** Your AI turns a plain request into an exact change and explains the answer. The app makes the change and judges it. Your AI never touches the model: it only asks, and the app does the work.
+
+**A real example.** Asked for a 13 m bay between lines gx5 and gx6 on the HospitalGarage:
+
+1. The AI reads the grid: gx5 is at 145.987 m and gx6 at 157.163 m, so the bay is 11.176 m.
+2. It asks the app to shift gx6, and every line after it, by 1.824 m.
+3. The app makes the change and checks it: **Stopped.** *"Beam spans over limit: 91 -> 92 (limit 12 m, RC); bay gx5-gx6 newly over the limit: 13 m."* The change is undone.
+4. The AI tells the user that a concrete beam there may span at most 12 m, and that 13 m needs another column line.
+
+The AI's sums were right. What it did not know is this building's 12 m span limit; the app knows it, because it comes from the building itself. In our earlier test, an AI that only got a written report named that limit and still kept the 13 m bay ([What we measured](#what-we-measured)). That is why the app, not the AI, has the last word.
+
+## Connect your AI
+
+This makes the app's actions a menu your AI can use by itself. It works with any AI app that supports MCP, the open standard that Claude, among others, uses to connect to tools.
+
+**1. Make a folder, install the browser engine, and download the two files.**
+
+```bash
+mkdir proposer && cd proposer
+npm init -y
+npm install puppeteer@24
+curl -O https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
+curl -O https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
+```
+
+**2. Add it to your AI app.**
+
+- **Claude Code:** `claude mcp add bim -- node "$PWD/bim_mcp.js"`, then start a new session.
+- **Claude Desktop**, and most other MCP apps: add this to the app's MCP settings, with the full path to the file, then restart the app.
+
+```json
+{ "mcpServers": { "bim": { "command": "node", "args": ["/full/path/to/proposer/bim_mcp.js"] } } }
+```
+
+**3. Ask in plain words**, for example: *"In the HospitalGarage, make the bay between gx5 and gx6 13 m wide."*
+
+**What your AI gets.** When your AI app starts the connector, the connector hands it this menu, and the standing rules from [Instructions to give your AI](#instructions-to-give-your-ai), so you paste nothing:
+
+| Action | What it does |
+|---|---|
+| `bim_lines(building)` | reads the grid: every line's id and position in metres, the structural system, the material, the rotation. Changes nothing. |
+| `bim_try_shift(building, line, move)` | shifts a line, and every later line on its axis, by `move` metres. The app makes the change, checks it, and returns its report; a change that adds new problems is undone, with the reason. Nothing is saved. |
+
+Each action runs the same [command-line tool](#getting-started) underneath and returns its answer unchanged. A call takes about 10 to 40 seconds, because each one opens a fresh copy of the building.
+
+**What has and has not been tested.** A scripted client, with no AI, played the 13 m example through the connector alone: it read the grid, computed the shift, and got the stop above, and each action's answer matched the command-line tool's, byte for byte. A real AI using the connector has not been measured yet. Two actions only, so far: moving one line is still command-line only.
 
 ## Getting started
 
@@ -200,7 +262,7 @@ Overlaps are also **bounding boxes**, not exact shapes, and they cover only the 
 
 ## Instructions to give your AI
 
-Paste this as the system prompt, then add the lines from `--lines` and the request. A tool-using AI can run the commands itself.
+**With the [connector](#connect-your-ai), your AI gets these automatically.** Without it, paste this as the system prompt, then add the lines from `--lines` and the request. A tool-using AI can run the commands itself.
 
 ```text
 You propose edits to a building model. You are given its grid lines and a request.
