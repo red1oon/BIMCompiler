@@ -35,8 +35,13 @@ function stop(p) { return new Promise(function (r) { p.on('exit', function () { 
   L('§LIVE exit=' + live.code); live.out.split('\n').filter(function (l) { return /§ODOO-EXPORT (file|source)|✓|✗|🟢|🔴/.test(l); }).forEach(function (l) { L('   ' + l.trim()); });
   ok(live.code === 0, 'export self-check passes against the real Odoo (rows == live counts, refs resolve, keys unique)');
   var m = JSON.parse(fs.readFileSync(path.join(T, 'live/odoo_export/manifest.json'), 'utf8'));
-  ok(m.files.length === 11 && m.files.every(function (f) { return f.rows > 0; }), 'manifest lists 11 non-empty files (not vacuous): ' + m.files.map(function (f) { return f.file.split('_')[0] + '=' + f.rows; }).join(' '));
+  ok(m.files.length === 11 && fs.existsSync(path.join(T, 'live/odoo_export/provenance.json')) && m.files.every(function (f) { return f.rows > 0; }), 'manifest lists 11 non-empty files + provenance.json (not vacuous): ' + m.files.map(function (f) { return f.file.split('_')[0] + '=' + f.rows; }).join(' '));
 
+  var hdrBad = fs.readdirSync(path.join(T, 'live/odoo_export')).filter(function (f) { return /\.csv$/.test(f) && /(^|,)odoo_/.test(fs.readFileSync(path.join(T, 'live/odoo_export', f), 'utf8').split('\n')[0]); });
+  var prov = JSON.parse(fs.readFileSync(path.join(T, 'live/odoo_export/provenance.json'), 'utf8'));
+  var provOk = m.files.every(function (f) { return prov[f.file] && prov[f.file].length === f.rows && prov[f.file].every(function (o) { return o.id || o.uom; }); });
+  ok(hdrBad.length === 0, 'no CSV header carries a non-iDempiere (odoo_*) column — legacy validateFile needs the exact template header (' + hdrBad.join(',') + ')');
+  ok(provOk, 'provenance.json maps every row of every file back to its Odoo record');
   if (fs.existsSync(FIX)) fs.unlinkSync(FIX);
   var rec = mock('record', FIX); runExport(8070, path.join(T, 'rec')); L((await stop(rec)).trim().split('\n').pop());
   var rep = mock('replay', FIX); var r2 = runExport(8070, path.join(T, 'rep')); var repOut = await stop(rep);
