@@ -90,7 +90,7 @@ C3 lands with the REPLACE verb.
   - Plan-level duct centrelines, fitted to ONE held grid. Grid tags are read inside linked-model blocks. US NCS layer rows. Guarded mirror correction. Tie-break: more tags, then the sheet's storey.
   - W-DRAWN-MAINS 53/0.
   - **Real set (design lane):** 4 private duct sheets fit at 0 mm; 343.07 m against an independent 343.1 m. Mirror correction confirmed (AC100 107 → 2 unjoined).
-- #2702 grid carrier `ifc_grid_axis`, both IFC open routes, W-IFC-GRID 29/0. Check on GitHub that it merged; it was in CI at close.
+- #2702 grid carrier `ifc_grid_axis`, both IFC open routes, W-IFC-GRID 29/0. MERGED as `8d1ede96`. Live (Viewer sw v1700, Modeller sw v245).
 - Spec for all of it: bim-ootb `prompts/DISC_WALK_DRAWN_MAINS.md` §4.2a, §4.3, amendments 1-3 and the RESULTs.
 **Owner's rulings today:**
 - Viewer totals: "Leave them out".
@@ -107,7 +107,8 @@ C3 lands with the REPLACE verb.
 **Notes:**
 - Heap climbs 75 → 394 MB across 4 sheets in one process (reader, not traced).
 - bim-ootb ESLint no-undef gate: every new browser global goes in `eslint.globals.json`, or fast-checks fails.
-- Worktrees: `/tmp/wt-grid` until #2702 merges, then prune it.
+- **Pages now serves MINIFIED files.** Seen from the `8d1ede96` build: a fetch-back is no longer byte-identical to git. Verify by content markers (a `§` tag, a table name), not `cmp`.
+- Worktrees used today are all pruned.
 
 ## ▶ §RESUME 2026-11-08 — (superseded as entry point by 2026-11-08b above)
 **Landed since 2026-11-07c, all live and fetched back:** #2691 trunk on real wall boxes · #2692 trunk is a proposal (N10) · #2695 §11 band rows provisional (modeller sw v242; IFC set `BIMOOTB_Walk`; Viewer DB keeps it in `element_pset_common`) · doctrine §4 band line (owner's OK) · all 29 bim-compiler + 10 build/ walker witnesses on the shipped walker; nothing executable reads `build/disc_walker.js`.
