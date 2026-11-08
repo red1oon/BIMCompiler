@@ -2069,3 +2069,13 @@ unchanged: witness_view_window_first FAIL, witness_packout O6 FAIL.
 
 ## §BIMDOC-3 — the BIM document's states (RULED, owner 2026-11-08: the firm's issue states)
 States are what a firm prints in a title block, not ISO 19650 container states and not a bare DocStatus: **Draft → Issued for review → Issued for construction → Superseded** (by a newer revision of the same deliverable). They ride on the common DocStatus/DocAction framework (kernel `erp/erp_kernel.js` `legalTransition`, the WfMC transition list), so no second state engine. Open details, owner decides one at a time when the table is specced: whether a revision is a new record that supersedes the old (the legacy-like way) or a field on one record; and which transition credits the project task's progress (proposal: Issued for construction).
+
+## §ATT-NEXT — for the next ERP session (owner rulings 2026-11-08)
+Phase 1 shipped: bim-ootb #2707 (`59d9a323`), BIMCompiler #412 (`12baa0fa`); W-ATTACH 9 of 9 arms, 295 of 825 role-102 tabs draw an enabled button on a saved record (437 had no row, 91 could not be opened by the witness: untraced), cap 16 MB of BinaryData (measured: 64 MB commits at ~954 MB heap, 128 MB fails).
+1. **RULED, owner: *"yes, let the ERP session make the legacy attachment"*.** When the pilot postgres is up, create one attachment on the legacy side (WebServices or UI), then run `witness_attachment_parity.js` live: entry names, sizes, sha256 against a kernel attachment on the same record. Decode the kernel op-log's base64 `binarydata` before comparing (the seed row is a BLOB).
+2. **Twin gap:** deleting a record does not delete its attachment; legacy `PO.afterDelete` does. Port it generically.
+3. **Existing defect:** on the Session Audit window the row arrives after the last toolbar draw, so Attachment and Zoom Across stay disabled until Refresh.
+4. **The 91 tabs the witness could not open:** trace before counting them as passes or fails.
+5. **Pre-existing red on main (not caused by §ATT):** `poc_print_toolbar_live`, `poc_inplace_newdel_live` (8/14; page error "plugin_registry.js needs common/comm/semver_strict.js loaded first"), `poc_open_mode_live` (5/6, Business Partner opens as grid).
+6. **Stale kernel copy (owner: left for an ERP session):** some `scripts/poc_*` witnesses read bim-compiler `build/erp/`, which differs from shipped bim-ootb `erp/ad_process.js` by 368 diff lines. Count every witness that reads `build/erp/`, repoint each at the shipped `erp/` (the `GENPO_ERP_DIR` override in `poc_proc_genorder.js` is the pattern), re-run, report what turns red.
+7. Phase 2 (large files via a storage provider) waits for the owner.
