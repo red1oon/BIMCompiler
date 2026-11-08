@@ -83,6 +83,39 @@ is ours" ⇒ aligned; move it from ⛔ to the queue after the catalog rebind.
 **Queue impact:** C1+C2 join row 14 (catalog rebind) and move up — they are live no-box violations, ahead of §SLOPE-HANDLES.
 C3 lands with the REPLACE verb.
 
+## §WALK-REPORT-CARD SPEC (2026-11-09, owner) — proof of work from the Modeller canvas; no Viewer bake
+> Owner: *"Can the FP sprinklers be walked into too? … just close up snap shots of the placed elements … begin with … a topology map of all the placed devices … Animation is not crucial … Important is proof of work. A report card giving engineers as much useful info as they be the judge."* · *"Showing the 4D5D HTML is one good shot to include."* · *"can we get good canvas view in Modeller during the walk?"* · *"we can then do away with baking."* · *"show how the Modeller icons features work where and how to bring about such."*
+**Inputs:** a COPY of the walk input with `fp_sprinklered=yes`, set by the documented tool (`mains_to_db.js --sprinklered=yes`). Sprinkler heads are the walker's band placement: rule-placed, `Provisional=TRUE`, NOT drawn (the set holds no sprinkler sheet). They are labelled that way on every card. Source DB never written.
+**Run (one page, real GPU, `flock gpu.lock`, `nvidia-smi` first, 1920×1080, the bake's `real` flags):**
+1. **How-to shots, the real UI:** the Open icon (`#b-open`) and its panel, the local-file row, the Walk entry for each discipline, the drawn-only view. Each shot names the icon's id and tooltip, read from the DOM, not typed.
+2. **Walk** ACMV then FP through `window.discWalk` (the same call the Walk menu makes). The walk's § lines are kept verbatim.
+3. **Topology map:**
+   - (a) Modeller canvas overviews: an iso view of the whole building, then one top view per storey, all placed devices visible.
+   - (b) A plan map per storey drawn from the committed op rows themselves (positions, kind, provenance colour): an SVG, so every dot is an op row.
+   - (c) The previous film's overview frames, as the opening.
+4. **Close-ups:** the camera is set with `window.A` (`camera`/`controls`, Z-up) to a fixed oblique offset from the element's own placement point. No animation; the frame is grabbed after two rendered frames.
+   - Every drawn FP item and every drawn terminal.
+   - Sprinkler heads, band ducts and drawn duct pieces: a deterministic sample per storey (sorted by op id, every k-th, k stated). The full list is in the CSV.
+5. **Export** the Viewer DB (the same call as before), then open `viewer/boq_charts.html` (4D/5D Analytics) on it and shoot the page.
+**Card per element (data from the op row and its `_dw` record, never re-derived):** op id, discipline, kind, IFC class / object type, storey, x/y/z (local frame), the height basis and its label, provenance, provisional, host state, sheet piece. Derived and labelled as such: height above the storey's stated elevation; for sprinklers, the distance to the nearest other head (engineers judge spacing; no pass/fail threshold is invented).
+**Report:** one local HTML file plus a CSV of every placed element plus the PNGs, kept in the private walk folder. Never published, never committed. Sections: how-to, topology, per-discipline counts by provenance and basis, close-ups, 4D/5D, the § lines, limits.
+**Witness lines:** `§CARD-SHOT kind= op= file=` per image; `§CARD-SAMPLE disc= kind= total= shot= k=`; `§CARD-CSV rows=` = the committed placements counted from the op log (so a missing row shows); `§CARD-UI icon=<id> title=<tooltip>`. A shot whose element is outside the camera frustum is logged `OUTSIDE` and is not presented as proof.
+
+**§WALK-REPORT-CARD RESULT (2026-11-09).** Built and kept private: the report folder plus a zip in the private walk folder; scripts `report_run.js`, `report_build.py`, `page_shots.js`; logs 61-68 read.
+- **Walk:** bim-ootb main `6c694c43`, the real RTX 4060 (`§CARD-GPU`), started by clicking the real Outliner rows (`§CARD-WALK row-click:done` ×2). 3,164 op rows, `§CARD-CSV rows=3164` = the op log.
+- **Sprinklers on:** `§FP-SPRINKLERED value=yes`; FP committed 2,000 (band 1,772, shims 185, schedule 43) plus 11 drawn items.
+- **Shots:** 9 how-to UI shots (element id + tooltip read from the DOM), X-ray via `#b-xray`, 8 storey-band canvas plan cuts framed on the op points, 361 section-cut close-ups (0 OUTSIDE), 15 SVG plan maps from the op rows, the 4D/5D and MEP report pages.
+- **FINDING 1 (for the owner):** every band row (ACMV 392, FP 1,772, shims 185) carries the borrowed reference building's storey NAMES and HEIGHTS, not this building's. Box test against this building's slab/roof world boxes:
+  - FP band: 939 more than 3 m above the highest top at their plan point, 205 uncovered by 0.5-3 m, 365 outside every box, 263 within the stack.
+  - ACMV band: 308 floating, 75 outside.
+  - The drawn rows sit within the stack: ducts 553/554, terminals 204/205.
+  - So band-placed sprinklers are not credible on this set. That is a walker defect: the band's storey ladder is not this building's.
+- **FINDING 2:** the sprinklers-on Viewer-DB export aborts in web-ifc `CloseModel` (heap 4,384 MB vs 3,004 MB without). The 4D/5D shot therefore uses the film run's walked DB, labelled so.
+- **Instrument notes:**
+  - Close-ups need X-ray plus a section window; a plain oblique shot is blocked by the roof (first capture).
+  - "Fit" frames far outliers, so frame on the op points instead.
+  - `boq_charts.html` / `mep_report.html` need `bld=` = `elements_meta.building`, or they show "No data".
+
 ## ▶ §RESUME 2026-11-09b — START HERE (steps 1-3 of §RESUME 2026-11-09 done; then read that block for steps 4-5)
 **Run on bim-ootb main `8541065f`, private set, local headless (software GL, no GPU). Every number is read from the saved run logs in the private walk folder (`41`→`42_page_run_chunked`, `45_carry_film_v3`).**
 1. ✅ **Page run, chunked copy:** walk ACMV + FP done, 3,507 ops, 554 drawn lines + 11 drawn markers. `§VIEWERDB §DRAWN-TABLES lines=554 markers=11 byBasis={void-middle:393, exposed-under-structure:102, on-roof-surface:59} offsetRows=4`. Export 7,531 elements, 192,434,176 bytes, written = expected (8 MB chunks; the old one-string copy timed out). Heap after build 3,004 MB.
