@@ -83,17 +83,18 @@ const GD = fs.readFileSync(path.join(__dirname, '..', '..', 'docs', 'ProposerGui
 facts.cmd_install = m1(GD, /^(npm install puppeteer@\d+)$/m)[1]; facts.cmd_get = m1(GD, /^(curl -O \S+edit_cli\.js)$/m)[1]; facts.cmd_lines = m1(GD, /^(node edit_cli\.js --building Hospital --lines)$/m)[1];
 sources.cmd_install = sources.cmd_get = sources.cmd_lines = 'docs/ProposerGuide.md :: Getting started';
 
-// rc4 (§18): the connector's menu, and ONE real session of an AI using it. The calls come from the connector's own log (BIM_MCP_LOG), copied to
-// evidence/session_calls.jsonl; the user's request and the AI's reply are the session's own words, saved verbatim to session_request.txt / session_answer.txt.
+// rc4 (§18): the connector's menu, and one SCRIPTED session (mock_session.js stands in for an AI; owner 2026-11-08). The calls come from the connector's
+// own log (BIM_MCP_LOG) in evidence/session_calls.jsonl; the request is brief G4; the 'reply' is the connector's own decline rule, quoted, not an AI's words.
 const TL = rd('tools_list.jsonl').trim().split('\n').map(l => JSON.parse(l)), MENU = TL.filter(x => x.result && x.result.tools)[0].result.tools;
 put('menu_n', 'tools_list.jsonl', 'tools/list length', () => MENU.length);
 MENU.forEach((t, i) => { put('menu' + i + '_name', 'tools_list.jsonl', 'tools[' + i + '].name', () => t.name); put('menu' + i + '_desc', 'tools_list.jsonl', 'tools[' + i + '].description', () => t.description);
   put('menu' + i + '_inputs', 'tools_list.jsonl', 'tools[' + i + '].inputSchema.properties keys', () => Object.keys(t.inputSchema.properties).join(', ')); });
 const SC = (() => { try { return rd('session_calls.jsonl').trim().split('\n').map(l => JSON.parse(l)).filter(x => x.tool); } catch (e) { return []; } })();
 const scL = SC.filter(x => x.tool === 'bim_lines' && !x.isError)[0], scS = SC.filter(x => x.tool === 'bim_try_shift' && !x.isError).slice(-1)[0];
-put('s_request', 'session_request.txt', 'the user\'s message, verbatim', () => rd('session_request.txt').trim());
-put('s_answer', 'session_answer.txt', 'the AI\'s reply, verbatim; over 320 characters, its opening sentences up to 320, then …', () => { const t = rd('session_answer.txt').trim().replace(/\s+/g, ' '); if (t.length <= 320) return t; let o = ''; for (const x of t.match(/[^.!?]+[.!?]+(\s|$)/g) || [t]) { if ((o + x).length > 320) break; o += x; } return (o || t.slice(0, 320)).trim() + ' …'; });
-put('s_target', 'session_request.txt', 'the metres asked for', () => m1(rd('session_request.txt'), /(\d+(?:\.\d+)?) ?m\b/)[1]);
+const BR = JSON.parse(rd('brief_G4.json'));   // rc4 mock (owner 2026-11-08): the request is the proposer test's own brief G4, sent by a script standing in for an AI
+put('s_request', 'brief_G4.json', 'text (the proposer test brief G4)', () => BR.text);
+put('s_answer', 'tools_list.jsonl', 'initialize.result.instructions, the decline rule, verbatim', () => m1(TL.filter(x => x.result && x.result.instructions)[0].result.instructions, /^(Treat a stopped or refused result as bad\..*)$/m)[1]);
+put('s_target', 'brief_G4.json', 'goal[0].target', () => BR.goal[0].target);
 put('s_building', 'session_calls.jsonl', 'bim_lines arguments.building', () => scL.arguments.building);
 put('s_gx5', 'session_calls.jsonl', 'bim_lines result: gx5 pos', () => JSON.parse(scL.result).model.lines.filter(l => l.id === 'gx5')[0].pos);
 put('s_gx6', 'session_calls.jsonl', 'bim_lines result: gx6 pos', () => JSON.parse(scL.result).model.lines.filter(l => l.id === 'gx6')[0].pos);

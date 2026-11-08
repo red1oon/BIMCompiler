@@ -1,0 +1,36 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT b02 cue=4.42 room=9.82 dur=8.63 -> DETAIL slack=+1.19 words=31
+§NARR_TONE b02#0 F YN rose=5.0st endDelta=+4.2st want=rise OK "But is it accurate?"
+§NARR_FIT b03 cue=14.54 room=20.12 dur=18.89 -> DETAIL slack=+1.23 words=46
+§NARR_TONE b03#1 M YN rose=5.0st endDelta=+2.3st want=rise OK "Same schedule?"
+§NARR_TONE b03#1 M YN rose=5.0st endDelta=+3.0st want=rise OK "Same cost?"
+§NARR_FIT b04 cue=34.96 room=13.41 dur=12.24 -> DETAIL slack=+1.17 words=27
+§NARR_TONE b04#0 F YN rose=5.0st endDelta=+2.7st want=rise OK "And clashes?"
+§NARR_TONE b04#0 F YN rose=5.0st endDelta=+2.0st want=rise OK "If the boxes touch, is it a clash?"
+§NARR_FIT b05 cue=48.67 room=17.11 dur=15.90 -> DETAIL slack=+1.21 words=52
+§NARR_TONE b05#0 F YN rose=5.0st endDelta=+1.7st want=rise OK "So is this one big AI service?"
+§NARR_FIT b06 cue=66.08 room=11.66 dur=10.47 -> DETAIL slack=+1.19 words=32
+§NARR_TONE b06#0 F WH rose=0st endDelta=-1.2st want=fall OK "What does the AI actually see?"
+§NARR_FIT b07 cue=78.04 room=14.58 dur=13.38 -> DETAIL slack=+1.20 words=47
+§NARR_TONE b07#0 F WH rose=0st endDelta=-4.5st want=fall OK "And when I ask it something?"
+§NARR_FIT b08 cue=92.92 room=13.20 dur=11.99 -> DETAIL slack=+1.21 words=36
+§NARR_TONE b08#0 F YN rose=5.0st endDelta=+1.9st want=rise OK "And then?"
+§NARR_FIT b10 cue=110.00 room=12.70 dur=11.48 -> DETAIL slack=+1.22 words=35
+§NARR_TONE b10#0 F YN rose=8.0st endDelta=+3.0st want=rise OK "Does giving the AI the reason help?"
+§NARR_FIT b12 cue=126.58 room=14.87 dur=13.63 -> DETAIL slack=+1.24 words=44
+§NARR_TONE b12#0 F WH rose=0st endDelta=-7.0st want=fall OK "Where does it all run?"
+§NARR_FIT b13 cue=141.75 room=15.03 dur=13.87 -> DETAIL slack=+1.16 words=34
+§NARR_TONE b13#0 F WH rose=0st endDelta=-2.8st want=fall OK "And how close is close?"
+§NARR_FIT b14 cue=157.08 room=9.95 dur=8.72 -> DETAIL slack=+1.22 words=23
+§NARR_TONE b14#0 F WH rose=0st endDelta=-3.7st want=fall OK "And what doesn't it check?"
+§NARR_FIT b16 cue=170.92 room=10.49 dur=9.28 -> DETAIL slack=+1.21 words=31
+§NARR_TONE b16#0 F YN rose=5.0st endDelta=+2.7st want=rise OK "Does it only check spans?"
+§NARR_FIT b17 cue=181.71 room=16.62 dur=15.43 -> DETAIL slack=+1.19 words=46
+§NARR_TONE b17#0 F YN rose=5.0st endDelta=+3.8st want=rise OK "Isn't everyone doing this?"
+§NARR_FIT b18 cue=198.63 room=13.07 dur=11.87 -> DETAIL slack=+1.20 words=31
+§NARR_FIT b19 cue=212.00 room=8.87 dur=7.67 -> DETAIL slack=+1.20 words=23
+§NARR_FIT b20 cue=221.17 room=5.57 dur=4.38 -> DETAIL slack=+1.19 words=14
+§NARR_FIT b21 cue=227.04 room=10.29 dur=9.09 -> DETAIL slack=+1.20 words=29
+§NARR_TONE b21#0 F YN rose=11.0st endDelta=+0.9st want=rise OK "Can I try it with my own AI?"

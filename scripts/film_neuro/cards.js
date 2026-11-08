@@ -70,11 +70,11 @@ module.exports = { CSS: CSSN, build(F) {
     Sx(2, bx('am', 1728, `<div class="mono" style="color:#FAB219">${V('menu1_name')}(${V('menu1_inputs')})</div><div class="sb" style="font-size:24px">${V('menu1_desc')}</div>`, 'margin-top:16px')),
     'bim_mcp.js, tools/list, from the live site') };
   const call = (nm, args, res, st) => `<div class="term" style="width:1728px;margin-top:12px"><span class="p">${esc(nm)}</span>(${esc(args)})\n  ${st ? '<span class="st">' + esc(st) + '</span> ' : ''}${esc(res)}</div>`;
-  C.session = { n: 4, html: page(hd('ONE REAL SESSION', 'The AI uses the app', 'one session, not a measurement · the calls are from the connector’s own log') +
-    Sx(1, bx('cy', 1728, `<div class="lbl">the user</div><div class="q">“${V('s_request')}”</div>`, 'margin-top:6px')) +
+  C.session = { n: 4, html: page(hd('A SCRIPTED DEMO', 'An AI’s part, played by a test script', 'every answer below is the app’s own · the calls are from the connector’s log') +
+    Sx(1, bx('cy', 1728, `<div class="lbl">the request (${V('s_building')})</div><div class="q">“${V('s_request')}”</div>`, 'margin-top:6px')) +
     Sx(2, call('bim_lines', 'building: "' + F.s_building + '"', 'gx5 ' + F.s_gx5 + ' · gx6 ' + F.s_gx6 + ' …')) +
     Sx(3, call('bim_try_shift', 'building: "' + F.s_building + '", line: "' + F.s_line + '", move: ' + F.s_move, F.s_reason, 'STOPPED')) +
-    Sx(4, bx('gd', 1728, `<div class="lbl">the AI, to the user</div><div class="q" style="font-size:26px">“${V('s_answer')}”</div>`, 'margin-top:12px')), '') };
+    Sx(4, bx('gd', 1728, `<div class="lbl">what the connector’s rules tell an AI to do next</div><div class="q" style="font-size:26px">“${V('s_answer')}”</div>`, 'margin-top:12px')), '') };
   C.words = { n: 3, html: page(hd('THE AI’S OWN WORDS', 'A real proposal', V('model') + ' · run of ' + V('run_date') + ' · quoted, not edited') +
     Sx(1, `<div class="quote" style="margin-top:30px">“${V('ai_quote')}”</div>`) + Sx(2, `<div class="quote" style="margin-top:26px">“${V('ai_forecast')}”</div>`) +
     Sx(3, bx('or', 1728, `<div class="q">Its answer: go ahead (decline: ${V('ai_decline')}). The sums are right. It was never told the building’s span limit.</div>`, 'margin-top:36px')),
@@ -83,7 +83,7 @@ module.exports = { CSS: CSSN, build(F) {
     `<div style="width:1150px">` + Sx(1, `<div class="term"><span class="p">bim_try_shift</span>(line: "${V('s_line')}", move: ${V('s_move')})\n<span class="st">STOPPED</span> ${V('s_reason')}</div>`) +
     Sx(3, bx('gd', 1150, `<div class="q">Undone. The building is back where it was, and the reason goes back to the AI.</div>`, 'margin-top:26px')) + `</div>` +
     Sx(2, `<img src="${img('panel_only.png')}" style="height:660px;border-radius:10px;border:2px solid var(--line)">`) + `</div>`,
-    'the app’s answer in that session; the panel is the Modeller’s own report for the same change') };
+    'the app’s answer in the scripted demo; the panel is the Modeller’s own report for the same change') };
   C.ch_global = { n: 1, html: plain('CHAPTER ONE', 'Think global', '', 'the AI proposes') };
   C.chart = { n: 2, html: page(hd('DOES THE REASON HELP?', 'Right outcomes, out of ' + V('n_runs'), '') + `<div style="display:flex;gap:50px;margin-top:30px;align-items:center">` +
     Sx(1, `<svg width="1100" height="300" font-family="Noto Sans, DejaVu Sans"><text x="0" y="62" font-size="30" fill="#FFFFFF">first try</text><path d="M330 30 h${(700 * F.a_right / F.n_runs - 4).toFixed(1)} a4 4 0 0 1 4 4 v44 a4 4 0 0 1 -4 4 h-${(700 * F.a_right / F.n_runs - 4).toFixed(1)} z" fill="${OR}"/><text x="${340 + 700 * F.a_right / F.n_runs}" y="66" font-size="34" fill="#FFFFFF">${V('a_right')}</text>
