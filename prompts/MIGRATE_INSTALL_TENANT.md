@@ -1400,3 +1400,27 @@ then Odoo masters onto the engine (decision 1), then the iDempiere falsifier (de
 - **Next:** Odoo masters onto the engine (decision 1: the agent ships raw rows for the 17 sheets too, `odoo-17.json` grows the 17 entities, equality to the frozen `export.js`
   mapping on the recorded fixture + DIFF + mutants; then `partner_keys` is deleted and the open items look the partner up in the template's own C_BPartner sheet) → the iDempiere
   falsifier (decision 2).
+
+### §ODOO-ENGINE-SPEC — the Odoo masters onto the ONE engine (2026-11-10c; owner decision 1 of the RESUME block; written before any code)
+**Today (measured):** `erp/odoo_agent/export.js` (≈420 lines) does two jobs in one loop — READS Odoo (XML-RPC, `fields_get` check, `search_count` per slice) and MAPS to the 17 sheets
+(keys, held partners, addresses, vendor prices, locators, stock). Since E3c it also writes `odoo_export.json` with the raw open-balance sets + the bridge `partner_keys`.
+**Target:** the agent ships RAW rows for the masters too; the browser maps them with `templates/odoo-17.json`; the mapping half leaves the shipped agent only after equality is proven.
+**Three steps, each with its witness (W-MIGRATE-ENGINE cases `ODOO-*`):**
+1. **O1 raw door + frozen oracle (mechanical; a Sonnet agent).** (a) `export.js` adds the master sets to `odoo_export.json`, raw as Odoo returned them (the E3c `flat()` rule:
+   many2one → `<f>` id + `<f>__name`, `false` → null), one set per `slice()`/read it already does, each with its `search_count` and `fields_read`: `uom.uom`,
+   `account.payment.term`, `account.payment.term.line`, `product.category`, `account.account` (already there), `account.group` (count only), `res.partner` (archived too),
+   `res.users` (partner_id), `res.company` (all: partner_id; the chosen one: name, currency, country), `res.country`, `res.country.state`, `stock.warehouse`, `product.product`
+   (archived too, + `product_tmpl_id`), `product.supplierinfo`, `stock.location`, `stock.quant`. Manifest scalars the mapping needs: db, cutover, currency, company id / name /
+   country code, other companies, odoo_version, the command line for the other companies. The workbook, manifest.json, provenance.json stay byte-identical (a re-run on the live
+   demo must reproduce the recorded fixture's three files). (b) the mapping half is MOVED verbatim into a pure function `erp/tests/fixtures/odoo_convert_reference.mjs`
+   `convert(exp) → { book, manifest, provenance }` that reads ONLY `exp.sets` / `exp.manifest` (no RPC, no fs, no clock) — the ORACLE, never edited to pass. **Witness `ODOO-REF`:**
+   `convert(recorded odoo_export.json)` == the recorded `odoo_migration.xlsx` cell for cell (17 sheets), `manifest.json` (all keys but `tool`) and `provenance.json`, on BOTH recorded
+   exports (the demo and the messy one — the messy fixture must be re-recorded with the new agent from its own Odoo database if that database still exists; if not, named
+   INCONCLUSIVE, never faked); falsifier: one mapping rule changed in a copy → the equality fails.
+2. **O2 the template (lead session — the template language is the design centre).** `odoo-17.json` grows the 17 entities; new constructs only as the oracle forces, each closed,
+   named, validated at load. **Witness `ODOO-GUIDE`** engine == oracle on both recorded exports (book, manifest, provenance) · **`ODOO-DIFF`** N seeded exports generated from the
+   recorded rows (fields blanked, codes repeated, parents broken, archived flags flipped, quants split by lot, price breaks) with per-branch coverage · **`ODOO-MUTANT`**.
+   Then the open-items entities look the partner up in the template's own `C_BPartner` sheet and the bridge set `partner_keys` is deleted from the agent and the template.
+3. **O3 the cut (deletion budget).** The form builds the book from `odoo_export.json` alone (the workbook file becomes optional; an old download — workbook + manifest — still loads);
+   `export.js` loses its mapping half (lines −/+ stated) and writes `odoo_export.json` (+ the workbook only behind a flag, or not at all — decided by what W-ODOO-FORM /
+   W-NINJA-MIGRATE / W-ODOO-MESSY need; they move to the engine path in the same PR); `odoo_agent.zip` rebuilt; W-OPEN-BALANCES re-run unchanged (31).
