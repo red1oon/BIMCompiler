@@ -1553,6 +1553,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#find-a-walked-type-and-see-one-device-up-close" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Find a walked type, and see one device up close
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rules-read-and-edit-what-the-walker-uses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rules — read and edit what the walker uses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#what-a-walk-gives-you-now-pipes-one-step-undo-and-pipes-that-follow" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3923,6 +3945,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#find-a-walked-type-and-see-one-device-up-close" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Find a walked type, and see one device up close
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rules-read-and-edit-what-the-walker-uses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rules — read and edit what the walker uses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#what-a-walk-gives-you-now-pipes-one-step-undo-and-pipes-that-follow" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4584,7 +4628,7 @@ that is <strong>absent</strong> — Structure, Electrical, Fire-Protection, Plum
 it: it places that trade's elements at the <strong>measured cadence</strong> of a real coordinated building, chains the
 runs it can, gates the clashes, and <strong>honestly refuses</strong> when the building has nothing to hang the trade
 on. Nothing is invented — every placement uses a spacing/clearance rule <em>mined from a real IFC model</em>.</p>
-<p><img alt="Walk · ELEC, X-ray reveal — 270 electrical fixtures placed across 6 storeys in SampleCastle; structure goes near-transparent glass and every fixture glows in its discipline colour through the shell" src="../img/modeller/walk-fixtures.png" /></p>
+<p><img alt="Walk ALL on the Duplex, X-ray: 202 service elements glow through 196 near-transparent building elements. The Outliner rows read ACMV 19 placed, ELEC 102, PLB 18, FP 0 placed · 38 provisional" src="../img/modeller/duplex-walk-all-xray.png" /></p>
 <p>A normal (non-X-ray) view of this same walk is honestly near-empty: a real electrical outlet or light
 lives inside a room, not poking through an exterior wall, so from outside the sealed shell it's naturally
 occluded — same as it would be in a real building. Tap <strong>X-ray</strong> (or press <code>X</code>) to see the walk actually
@@ -4600,9 +4644,9 @@ walked fixtures resolve to their own real extracted device mesh — a genuine ce
 all, not a box:</p>
 <p><img alt="Close-up of a Duplex-walked ceiling fan — a real rule-mined LOD400 device mesh (motor housing, blades, mount stem), not a box stand-in" src="../img/modeller/duplex-fixture-lod400-closeup.png" /></p>
 <p>SampleCastle walks the <em>same</em> residential rule-set (it's a different building — see the table below). A
-walk now places a fixture only when it can seat a real extracted mesh for it (LOD400); where a fixture
-class has no mesh match, the walk <strong>refuses</strong> that placement and says so — it never stands a box in for
-the real shape.</p>
+walk places a fixture only when it can seat a real extracted mesh for it (LOD400). Where a fixture class has
+no mesh match, the walk <strong>refuses</strong> that placement and says so; it never stands a box in for the real shape.
+Today that is why SampleHouse and SampleCastle get no electrical or plumbing devices (table below).</p>
 <p><strong>One engine, two standards.</strong> A single walker drives every discipline; the discipline is just a data
 filter. It carries two measured rule-sets and auto-selects by building class:</p>
 <table>
@@ -4634,108 +4678,119 @@ driving the walk. The tables below are the <strong>evidence</strong> that the wa
 figure traces to a witnessed <code>§</code>-log (no estimates).</p>
 <p><img alt="SampleCastle opened as its bare ARC twin — the largest of the residential-class buildings the tables below cover, 7 storeys / 3,621 features in the Outliner's BOM tree, real per-element geometry (dormers, window frames, skylights), before any walk" src="../img/modeller/samplecastle-arc-open.png" /></p>
 <h3 id="what-a-walk-actually-places">What a walk actually places<a class="headerlink" href="#what-a-walk-actually-places" title="Permanent link">&para;</a></h3>
-<p>Status-line results per discipline on the three residential buildings
-(<code>build/logs/witness_disc_walk_generalize.log</code>). <em>Placed</em> = elements seated; <em>chains</em> = runs linked
-end-to-end; the note is what the walk reported when a trade had nothing to route:</p>
+<p><strong>Walk ALL</strong> on the three residential buildings, measured on a real Open → Walk ALL (Modeller sw v267,
+2026-11-09; the walk's own <code>§DISC-WALK</code> lines). <em>Placed</em> = devices seated with a real mesh; <em>provisional</em> =
+see below; <em>refused</em> = what the walk declined and why:</p>
 <table>
 <thead>
 <tr>
-<th>Building (storeys)</th>
+<th>Building</th>
 <th>Discipline</th>
 <th style="text-align: right;">Placed</th>
-<th style="text-align: right;">Chains</th>
-<th>Honesty note</th>
+<th style="text-align: right;">Provisional</th>
+<th>What the walk reported</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>SampleHouse</strong> (3)</td>
+<td><strong>SampleHouse</strong></td>
+<td>HVAC (ACMV)</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td>refused: 4 duct or pipe pieces with no main</td>
+</tr>
+<tr>
+<td></td>
+<td>Electrical</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td>refused: no real mesh for any of 17 placements</td>
+</tr>
+<tr>
+<td></td>
+<td>Plumbing</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td>refused: no real mesh for any of 7</td>
+</tr>
+<tr>
+<td></td>
 <td>Fire-Protection</td>
-<td style="text-align: right;">55</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td>refused: no real mesh for any of 17</td>
+</tr>
+<tr>
+<td><strong>Duplex</strong></td>
+<td>HVAC (ACMV)</td>
+<td style="text-align: right;">19</td>
 <td style="text-align: right;">0</td>
 <td>—</td>
 </tr>
 <tr>
 <td></td>
 <td>Electrical</td>
-<td style="text-align: right;">159</td>
+<td style="text-align: right;">102</td>
 <td style="text-align: right;">0</td>
-<td>—</td>
-</tr>
-<tr>
-<td></td>
-<td>Structure</td>
-<td style="text-align: right;">30</td>
-<td style="text-align: right;">1</td>
-<td>members linked, no measured gap</td>
+<td>15 gated, 27 clashes flagged</td>
 </tr>
 <tr>
 <td></td>
 <td>Plumbing</td>
-<td style="text-align: right;">6</td>
+<td style="text-align: right;">18</td>
 <td style="text-align: right;">0</td>
-<td>~no pipes in a small house → honest</td>
+<td>8 gated, 2 clashes flagged</td>
 </tr>
 <tr>
-<td><strong>Duplex</strong> (5)</td>
+<td></td>
 <td>Fire-Protection</td>
-<td style="text-align: right;">303</td>
 <td style="text-align: right;">0</td>
-<td>—</td>
+<td style="text-align: right;">38</td>
+<td>sprinklers at borrowed spacing</td>
+</tr>
+<tr>
+<td><strong>SampleCastle</strong></td>
+<td>HVAC (ACMV)</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td>refused: 12 duct or pipe pieces with no main</td>
 </tr>
 <tr>
 <td></td>
 <td>Electrical</td>
-<td style="text-align: right;">771</td>
 <td style="text-align: right;">0</td>
-<td>—</td>
-</tr>
-<tr>
-<td></td>
-<td>Structure</td>
-<td style="text-align: right;">162</td>
-<td style="text-align: right;">1</td>
-<td>members linked</td>
+<td style="text-align: right;">0</td>
+<td>refused: no real mesh for any of 269</td>
 </tr>
 <tr>
 <td></td>
 <td>Plumbing</td>
-<td style="text-align: right;">10</td>
 <td style="text-align: right;">0</td>
-<td>sparse → honest</td>
+<td style="text-align: right;">0</td>
+<td>refused: no real mesh for any of 72</td>
 </tr>
 <tr>
-<td><strong>SampleCastle</strong> (7)</td>
+<td></td>
 <td>Fire-Protection</td>
-<td style="text-align: right;">2 665</td>
 <td style="text-align: right;">0</td>
-<td>—</td>
-</tr>
-<tr>
-<td></td>
-<td>Electrical</td>
-<td style="text-align: right;">8 123</td>
-<td style="text-align: right;">0</td>
-<td>—</td>
-</tr>
-<tr>
-<td></td>
-<td>Structure</td>
-<td style="text-align: right;">1 836</td>
-<td style="text-align: right;">1</td>
-<td>members linked</td>
-</tr>
-<tr>
-<td></td>
-<td>Plumbing</td>
-<td style="text-align: right;">14</td>
-<td style="text-align: right;">0</td>
-<td>sparse → honest</td>
+<td style="text-align: right;">126</td>
+<td>sprinklers at borrowed spacing</td>
 </tr>
 </tbody>
 </table>
-<p>Counts scale with footprint because the <strong>cadence is constant</strong> — the same measured spacing tiles a bigger
-floor. Walking an <em>unknown</em> discipline returns <strong>REFUSE — no measured rule</strong> rather than guessing.</p>
+<p>The status line says the same: <em>Walk ALL — 4/4 disciplines · 139 placed · 38 provisional</em> on the Duplex.
+Structure is not part of Walk ALL; it keeps its own row. Walking an <em>unknown</em> discipline returns
+<strong>REFUSE — no measured rule</strong> rather than guessing.</p>
+<p><strong>Provisional devices.</strong> Some devices are placed at a spacing <em>borrowed</em> from another building, because this
+building's own rules have none for that trade (the residential rules hold no sprinkler rule, so FP borrows
+the Terminal's). Their positions follow that borrowed spacing, so their count is not a claim about this
+building. They are drawn, flagged <em>provisional</em> in the Outliner row and the status line, and <strong>left out of
+the placed totals</strong>.</p>
+<blockquote>
+<p>The tables in the next three sections quote logs written before the real-mesh-only rule above (the clash
+and Duplex re-growth logs are dated 2026-06-28). They have not been re-run since; read them as that walker's
+results, not today's counts.</p>
+</blockquote>
 <h3 id="why-the-right-standard-matters-clash-collapse">Why the right standard matters — clash collapse<a class="headerlink" href="#why-the-right-standard-matters-clash-collapse" title="Permanent link">&para;</a></h3>
 <p>The walk gates clashes between the fixtures it placed. Using the <strong>right</strong> standard for the building class
 collapses the phantom clashes a mismatched (too-wide) standard would raise — same layout, only the
@@ -4876,12 +4931,41 @@ missing (e.g. <em>4 services not extracted · x-ray reveal</em>).</p>
 it: on a large building they are tens of thousands of elements (Terminal's roof alone is 10,584 plates), so
 they keep their own rows and you walk them only when you want them. It works through exactly the same production path a single click uses —
 same rules, same gating, same honest refusal when a trade has nothing to hang on. The difference is the
-presentation: X-ray brackets the whole run so you can watch it land, and each discipline's placements
-flash amber and settle into their own trade colour just before they're committed, so you can see <em>which</em>
-trade just filled in rather than watching one undifferentiated wave.</p>
+presentation: X-ray brackets the whole run so you can watch it land. Each discipline <strong>builds up</strong> after
+its walk is committed: its devices come on one by one over a few seconds, so you see <em>which</em> trade just
+filled in rather than one undifferentiated wave. On a big building the commit can take a few seconds; the
+build-up waits for it and then plays in full.</p>
 <p>X-ray is restored afterwards even if a discipline refuses part-way. On a very large building the
 per-element flash is dropped in favour of one batched hold-and-settle — the geometry committed is
 identical either way, only the reveal animation is coarser.</p>
+<h3 id="find-a-walked-type-and-see-one-device-up-close">Find a walked type, and see one device up close<a class="headerlink" href="#find-a-walked-type-and-see-one-device-up-close" title="Permanent link">&para;</a></h3>
+<p>After a walk, the Outliner's <strong>Walked Fixtures</strong> category scrolls into view. Each type row shows its count,
+e.g. <em>FlowTerminal (102)</em>.</p>
+<ul>
+<li><strong>Click a type row</strong>: every device of that type is selected (tinted) and the camera frames the whole set.
+  <code>Escape</code> clears it. A device you have hidden with its eye is left out.</li>
+<li><strong>Click one device</strong>: the camera frames it at a size you can see, from the side it <strong>faces</strong>: from below
+  for a ceiling device, from in front for a wall device. The close-up stays inside the space the device
+  faces.</li>
+</ul>
+<p><img alt="Walked Fixtures, X-ray: the Electrical type row FlowTerminal (102) clicked on the Duplex; all 102 devices are selected and in frame" src="../img/modeller/walked-fixtures-typeset.png" /></p>
+<h3 id="rules-read-and-edit-what-the-walker-uses">Rules — read and edit what the walker uses<a class="headerlink" href="#rules-read-and-edit-what-the-walker-uses" title="Permanent link">&para;</a></h3>
+<p>The walker's rules are tables mined from real buildings: room schedules, placement bands, clearances,
+routing. Tap <strong>Rules</strong> (the <code>{ }</code> button) to see them as JSON, one section per table.</p>
+<p><img alt="The Rules editor on the Duplex: duplex_rules.db, 12 tables, 364 rows; the header says the rules are shared by every residential building (SampleHouse, Duplex, SampleCastle)" src="../img/modeller/rules-editor.png" /></p>
+<ol>
+<li>Change a value (for example a device's height in a room schedule).</li>
+<li><strong>Save</strong>, then walk that discipline again: the walk uses your value.</li>
+<li><strong>Download edits (JSON)</strong> saves your changes (each cell, plus the same change as SQL) to send back.</li>
+<li><strong>Reset to shipped</strong> removes your changes.</li>
+</ol>
+<p>Your edits are kept in this browser and applied every time the rules load. <strong>The rules belong to a building
+type, not to one building</strong>: the header names every building that uses them, and one edited cell changes
+all of them. The downloaded file carries <code>checkedOn: []</code>. Before an edit is contributed, a fleet check
+(<code>modeller/tests/rules_edit_fleet_check.js</code>) walks every building that reads that rules file with and without
+the edit, lists what moved, and fills <code>checkedOn</code>. That includes buildings of the other type: complex
+buildings read their room schedules from the residential rules, and residential buildings borrow sprinkler
+rules from the Terminal's.</p>
 <h3 id="what-a-walk-gives-you-now-pipes-one-step-undo-and-pipes-that-follow">What a walk gives you now — pipes, one-step undo, and pipes that follow<a class="headerlink" href="#what-a-walk-gives-you-now-pipes-one-step-undo-and-pipes-that-follow" title="Permanent link">&para;</a></h3>
 <p><strong>Plumbing is routed, not just placed.</strong> Walking <strong>PLB</strong> on a bare building now also draws the pipe runs
 between the fixtures: cold water and waste. It works through the same path as any walk; measured on a real Open → Walk:</p>
