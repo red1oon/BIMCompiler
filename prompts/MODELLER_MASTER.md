@@ -105,6 +105,16 @@ C3 lands with the REPLACE verb.
 **⚠ Review the new rules JSON against the other building models (owner, 2026-11-09: "Since the JSON is newly constructed, should we put a note that it be reviewed against the other building models?"):**
 - The JSON VIEW is new, the values are not (it shows the shipped tables). Proven only on Duplex (`duplex_rules.db`, W-E2E-RULES-EDIT) and the private set (`terminal_rules.db`, the film still). Not yet opened on `farm_rules.db` or any other resident. Review = open it on every resident, and check that open-and-close with no edit leaves every walk byte-identical.
 - An EDIT is per building TYPE, not per building: one cell changes every building of that class. Before an edit is trusted or contributed: re-walk the other buildings of that class (the fleet table, W-BAND-NO-HOST §7 method) and state what moved. Proposed: the editor's header says "these rules are shared by every <class> building"; the downloaded edit file carries `checkedOn: [buildings]`, empty until a fleet check fills it.
+**▶ NEXT SESSION, FIRST (owner 2026-11-09: "yes", build them):** spec first in bim-ootb `prompts/MODELLER_RULES_EDITOR.md`, witness RED on main first, one PR:
+- (a) the editor header says "these rules are shared by every <class> building" (class from `WalkRules.buildingClass`);
+- (b) the downloaded edit file carries `checkedOn: [buildings]`, empty until a fleet check fills it;
+- (c) the sweep: open the editor on EVERY resident (each of `duplex_rules.db`, `terminal_rules.db`, `farm_rules.db`), close with no edit, and every walk stays byte-identical; an edit's fleet check re-walks the other buildings of that class and lists what moved.
+**▶ THEN the Modeller user guide, if needed (owner: "put a note to update the modeller user guide if needed")** — `docs/ModellerGuide.md` §"Generate — walkers fill the ARC" (~L594) predates this session. Check each against the shipped UI, update only what changed, real screenshots (one look for layout, numbers from § lines), publish docs only via `scripts/safe_gh_deploy.sh`:
+- NEW: the **Rules** button (read/edit the walker's rules as JSON, Save → walk again, Download edits, Reset; shared by building type, per (a)).
+- NEW: Walked Fixtures → click a TYPE row selects and frames the whole set; click one device → close-up from the side it faces (below a ceiling, in front of a wall).
+- NEW: the build-up: a walk's devices come on after its commit, one by one.
+- CHECK: provisional devices (borrowed spacing, flagged, left out of totals) — the guide does not say so yet.
+- CHECK, possibly stale: the "honest measured-box fallback" close-up (~L625) vs the LOD400-or-refuse rule; the LOD-200 box insert text (~L213, §VISION-REVIEW C2, still open); the per-building tables built from old logs (re-run before re-quoting).
 **Buildable next, in order:**
 1. Re-measure the private wall-alarm residual on main (predicted: the 13 above-slab alarms now `noTarget`).
 2. Toolbar crowding: at 1,440 px every Modeller toolbar button is 14 px wide (41 px at 1,920). Measured, untraced.
