@@ -1424,3 +1424,23 @@ then Odoo masters onto the engine (decision 1), then the iDempiere falsifier (de
 3. **O3 the cut (deletion budget).** The form builds the book from `odoo_export.json` alone (the workbook file becomes optional; an old download — workbook + manifest — still loads);
    `export.js` loses its mapping half (lines −/+ stated) and writes `odoo_export.json` (+ the workbook only behind a flag, or not at all — decided by what W-ODOO-FORM /
    W-NINJA-MIGRATE / W-ODOO-MESSY need; they move to the engine path in the same PR); `odoo_agent.zip` rebuilt; W-OPEN-BALANCES re-run unchanged (31).
+
+### §PLUGIN-ROLE-ACCESS-SPEC — a started plugin's forms / processes reach every tenant's roles the legacy way (2026-11-10d; owner, after starting the migrate plugins on the live page: *"ok works.. proceed with the fixing of last reported issues"*)
+**Issue (measured):** the four migrate bundles (`ninja_migrate`, `odoo_migrate`, `bc_migrate`, `sap_migrate`) each carry a HAND list `ROLES = [[0, 0], [102, 11]]` for their
+`AD_Form_Access` / `AD_Process_Access` rows — System Administrator and GardenWorld Admin only. A tenant the user created himself has no row, so its admin never sees "Migrate from …"
+— the very tenant a migration is for. A per-plugin role list is the AD-LAYER LAW defect (a hand list for behaviour the dictionary engine owns).
+**Legacy mechanism (read):** a pack-in that brought a Form / Process / Window / Workflow / InfoWindow sets `element.requireRoleAccessUpdate` (FormElementHandler.java:75,
+ProcessElementHandler.java:89, WindowElementHandler.java:98 …) and at its end `PackInHandler.updateRoleAccess` (PackInHandler.java:522-536) runs `MRole.updateAccessRecords(false)`
+for every ACTIVE role with `IsManual='N'` (of the login client; all clients when it is System). The record's own afterSave gives the LOGIN role access (MForm.afterSave :131-137).
+The twin already has the ONE port of `updateAccessRecords` (`model_master.js` :338-363, also behind Role Access Update, AD_Process 295 … `processes/RoleAccessUpdate.js`).
+**Fix (generic layer, `erp/plugin_registry.js` stageDictionary — zero per-plugin code):** after a bundle's `manifest.dictionary` rows are staged, if any of them is an
+`ad_form` / `ad_process` / `ad_window` / `ad_workflow` / `ad_infowindow` row, run the ported `updateAccessRecords` for every active non-manual role and stage — through the same
+refcounted `dict.insert`, so Stop removes them — exactly the access rows it produces FOR THE BUNDLE'S OWN records (rows it would add for other records are not the bundle's to
+stage: counted in the log, not written). Log `§PLUGIN-ROLE-ACCESS bundle=… roles=N rows=+n other=m`. **Deletion budget:** the `[102, 11]` hand rows leave the four bundles; the
+role-0 row stays as MForm.afterSave's "login role" row (System Administrator starts the plugin; the level rule alone would not give a System-level role a Client+Org form).
+**Witness `W-PLUGIN-ROLE-ACCESS` (`erp/tests/witness_plugin_role_access.js`, §PRA lines; denominator from the dictionary, not a hand route):** X of N — for each of the 4 bundles ×
+every active non-manual role whose UserLevel admits the record's AccessLevel (the oracle rule written out in the witness from MRole.java, independent of the port): an access row
+exists after Start; a MANUAL role and a role whose level does not admit it have none; a tenant born BEFORE the start has its admin row; a tenant born AFTER the start has it too
+(or the gap is named with its cause); Stop removes every row the start added (counts back to the start); a second Start adds no duplicate; falsifier: the pass disabled → the born
+tenant's admin has no row. Regressions: W-ODOO-FORM / W-BC-MIGRATE / W-SAP-MIGRATE / W-NINJA-MIGRATE (their "access rows for roles 0 and 102" checks restated as "role 0 and 102 have
+access", since the count now follows the roles), W-OPEN-BALANCES, browser W-ODOO-FORM-LIVE.
