@@ -770,3 +770,14 @@ This measurement becomes the film's first UPDATE.
    — confirm merged. 6. Report to the BIM Document plugin's lane: org.kernel.bim-document fails to start (`UNIQUE constraint failed: ad_window_access`).
 **Pipeline facts:** `record.js` (needs a tree with the plugins on main; menu leaf 9542001) → `cards.sh` (EN) / `build_lang.py <lang>` (cards + voice + captions + loudness, all from
 `out/rec/facts.json`) — `out/` is git-ignored, re-run record.js if it is gone (Odoo up: `docker start odoo-db odoo`). Edge voices = cloud (text sent to Microsoft; cached).
+
+### §FILM-LANG RESULT (2026-11-09b) — ZH sent, TH + MS built and sent (SendUserFile cards)
+- **TH** `~/Videos/How_to_escape_from_your_Odoo_TH_rc1.mp4` — `§BUILD_DONE … duration=151.8s integrated=-16.2 LUFS peak=-1.3 dBFS turns=20 caption_pieces=61` (`out/build_th_run.txt`);
+  diagram 26/26 labels, font Loma; frames read (title, trap, proof, end diagram): Thai renders, no missing glyphs. Small: the end diagram's engine box text runs a few px past its right border.
+- **MS** `~/Videos/How_to_escape_from_your_Odoo_MS_rc1.mp4` — `§BUILD_DONE … duration=201.8s integrated=-16.0 LUFS peak=-1.4 dBFS turns=20 caption_pieces=20` (`out/build_ms_run.txt`);
+  frames read (trap, export, BP grid, proof): captions wrap to ≤3 lines inside the frame.
+- **Defect found + fixed in `build_lang.py`:** Edge voice th-TH-PremwadeeNeural answers "No audio was received" INTERMITTENTLY (same text refused 3/3, then accepted a minute later; Niwat never
+  refused). Old code tried 3 times then crashed on the missing mp3. Now: 8 tries with backoff (`§EDGE retry n`), then speak the line phrase by phrase at its spaces with a 0.18 s pause
+  (`§EDGE_SPLIT`), refuse (`§EDGE_FAIL`) if it has no space. Final TH run: 1 retry, no split.
+- ZH was sent to the owner's phone this session (RESUME item 1 closed). bim-ootb #2748 MERGED 2026-11-08T23:26Z (item 5 closed).
+- **Still open, in order:** §LAG (the film's first update) · report the bim-document plugin start failure to its lane (item 6).

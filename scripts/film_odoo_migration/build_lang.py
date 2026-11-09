@@ -93,11 +93,23 @@ CACHE = os.path.expanduser('~/.local/share/film_narration/cache_edge'); SR = 240
 def tts(txt, voice):
     h = hashlib.sha1(('%s|%s|+0%%' % (txt, voice)).encode()).hexdigest(); w = os.path.join(CACHE, h + '.wav')
     if not os.path.exists(w):
-        mp = w[:-4] + '.mp3'
-        for _ in range(3):
-            try: asyncio.run(asyncio.wait_for(edge_tts.Communicate(txt, voice, rate='+0%').save(mp), 40)); break
-            except Exception as e: say('§EDGE retry ' + str(e)[:80])
-        subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', mp, '-ar', str(SR), '-ac', '1', w], check=True); os.remove(mp); say('§EDGE_CALL voice=%s chars=%d -> %s' % (voice, len(txt), h[:10]))
+        mp = w[:-4] + '.mp3'; ok = False
+        for k in range(8):   # Premwadee answers "No audio" intermittently (same text ok one call, refused the next) — retry with backoff
+            try: asyncio.run(asyncio.wait_for(edge_tts.Communicate(txt, voice, rate='+0%').save(mp), 40)); ok = True; break
+            except Exception as e: say('§EDGE retry %d %s' % (k + 1, str(e)[:60])); __import__('time').sleep(1.5 * (k + 1))
+        if ok:
+            subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', mp, '-ar', str(SR), '-ac', '1', w], check=True); os.remove(mp); say('§EDGE_CALL voice=%s chars=%d -> %s' % (voice, len(txt), h[:10]))
+        else:
+            # measured 2026-11-09: th-TH-PremwadeeNeural returns "No audio" for one whole line 3/3 times (and intermittently for short ones), yet voices each of its space-separated
+            # phrases (Niwat voices the whole line). Same voice, same words: say the phrases one by one with a short pause where the text has its space.
+            if os.path.exists(mp): os.remove(mp)
+            parts = txt.split(' ')
+            if len(parts) < 2: raise RuntimeError('§EDGE_FAIL voice=%s no audio for an unsplittable line: %r' % (voice, txt))
+            gap = np.zeros(int(0.18 * SR), dtype=np.float32); out = []
+            for i, ph in enumerate(parts):
+                out.append(tts(ph, voice))
+                if i < len(parts) - 1: out.append(gap)
+            sf.write(w, np.concatenate(out), SR); say('§EDGE_SPLIT voice=%s phrases=%d (whole line gave no audio) -> %s' % (voice, len(parts), h[:10]))
     a, _ = sf.read(w, dtype='float32'); idx = np.where(np.abs(a) > 0.004)[0]
     return a[max(0, idx[0] - 240): idx[-1] + 480] if len(idx) else a
 def voiced(t):
