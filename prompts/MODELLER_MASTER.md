@@ -83,530 +83,102 @@ is ours" ⇒ aligned; move it from ⛔ to the queue after the catalog rebind.
 **Queue impact:** C1+C2 join row 14 (catalog rebind) and move up — they are live no-box violations, ahead of §SLOPE-HANDLES.
 C3 lands with the REPLACE verb.
 
-## ▶ §RESUME 2026-11-02 — START HERE (then §RESUME 2026-10-02 below; its queue and HOLDs still stand)
-**New 2026-11-07: §EDIT-REPORT (row 41) slice 1 LIVE, one grid move (bim-ootb #2674, sw v233). Spec and RESULTS at the end of this file. Later slices need red1's go.** **The proposer-test lane built on it resumes from `NEURO_SYMBOLIC_ORDER_CONTRACT.md` ▶ RESUME HERE.**
-**Landed from the DXF2BIM lane (bim-ootb; detail + measured tables in bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` `### P-X SPEC`, `### P-X2 SPEC` and their RESULTs):**
-- **P-X, bim-ootb #2520 (sw v204): IN objective, "a user's OWN IFC must get what the residents get" (§STRATEGY item 1). Was UNVERIFIED; now MEASURED and BUILT.**
-  The Modeller's raw-IFC open (`openIfcFile`) now runs the shared extractor (`modeller/ifc_open_db.js` in `modeller/ifc_open_worker.js`), not the Viewer's import worker.
-  - The residents' rule: drop the IfcSpace + IfcOpeningElement element rows and keep every discipline.
-  - W-IFC-OPEN-ONE: on 6 residents' source IFCs the opened DB = the resident (rows, centres, bboxes, meshes, `rel_fills_host`). The Viewer import's meshes are byte-identical, and 3 falsifiers fail as they should.
-  - The old path's filename rule had seeded `*_ARC.ifc` STR members as ARC: IFC-opened Duplex 215 → **196 = the resident**, SampleHouse 58 → 38.
-  - The open DB now holds `element_pset_common` / `element_type` / `spatial_structure`, so U7's second read of the file is gone.
-  - So §STRATEGY line 25's "`rel_fills_host` UNVERIFIED" is ANSWERED (Duplex 50, HHS 218, Clinic 403, Garage 220, Hospital 665 = the residents'). Queue item (c) "IN-check" is done for the residents' own sources + 2 Revit files. A third-party IFC beyond those is still open, and so is a georeferenced (>10 km) one: the extractor has no rebase.
-- **P-X2, bim-ootb #2522 (sw v206): the extractor writes the IFC's element-level IfcRelAggregates into `rel_aggregates`** (it wrote storey → building only). These are the pairs the residents only had through their patches.
-  - All 7 residents: 0 missing (e.g. HHS 2,096, Hospital 9,454).
-  - On the IFC-opened Duplex, `§NOGEO_COMPOSE composed=3` (IfcRoof + 2 IfcStair); it was `UNRESOLVED count=3`.
-  - The seed count stayed 196: the composed parents are not drawn.
+## ▶ §RESUME 2026-11-09c — START HERE (the one entry point; older resume blocks are archived, see the note below the specs)
+**State at close, 2026-11-10 (bim-ootb main `d6054ce0`, modeller sw v268).** Every item below was merged, then verified at its merged head.
+**Landed this session (bim-ootb):**
+- #2753 a Walked Fixtures type row selects + frames its whole set; the category scrolls into view after a walk; class rows show counts (W-E2E-TYPESET-ZOOM 9/0).
+- #2754 W-UX-DISC waits for its log line (8/0; its 3 reds were a timing artifact).
+- #2756 + #2758 a walked leaf is framed at a visible size from the side it FACES: the walker writes `face` where it decides facing (schedule `rot`, shim BOTTOM/TOP/SIDE); close-ups stay inside the space the device faces (W-E2E-SINGLE-FRAME 9/0).
+- #2759 §12a borrowed band re-anchor targets must contain an IfcSlab (owner "Contains a slab"; W-BAND-REANCHOR 12/0). Private set: 3 reference levels now `notFloor`.
+- #2760 + #2762 the walk build-up runs on rendered time and is held until the walk's commit is done (W-E2E-REVEAL-CLOCK 5/0).
+- #2763 + #2764 walker rules readable/editable as JSON: toolbar "Rules" → the project's ONE JSON editor, now `common/settings_editor.js`; edits are cells re-applied on every open, Reset, Download (W-E2E-RULES-EDIT 7/0). Spec bim-ootb `prompts/MODELLER_RULES_EDITOR.md`.
+**Films:** `~/Videos/HVAC_FP_Walker_In_Action_narrated_EN_2026-11-09.mp4` (narrated EN, `FILM_NARRATION.md` §WALKER-FILM); silent take `~/Videos/Modeller_Walk_HVAC_FP_BeforeAfter_2026-11-09.mp4`. Recorder `scripts/film_modeller_walk.js` (spec §FILM-WALK-BEFORE-AFTER below). Private inputs (neutral-name copy, takes, narration parts) in the private walk folder `film_ba/`; never commit them.
+**New 2026-11-07: §EDIT-REPORT (row 41) slice 1 LIVE, one grid move (bim-ootb #2674, sw v233). Spec and RESULTS at the end of this file. Later slices need red1's go.** **The proposer-test lane built on it resumes from `NEURO_SYMBOLIC_ORDER_CONTRACT.md` ▶ RESUME HERE.** *(carried from `master`, 2026-11-07, merged into this file 2026-11-10)*
+**🤝 Design-lane inputs (handshake with the design / BIM Document lane, agreed 2026-11-10; this lane writes and keeps this block, the design lane adds one line here, or messages this lane, whenever it hands over a spec; specs stay in their own topic files; no project or client names):**
+- **§12 Project inputs pre-processor**, bim-ootb `prompts/DISC_WALK_DRAWN_INTEGRATION.md` §12 (spec, design lane 2026-11-10; build = this lane). **Order of trust:** model → issued document → owner-stated row → named code default → borrowed/generated (always provisional); a lower step never overrides a higher; two sources disagreeing = `§INPUTS-CONFLICT`, neither applied.
+- **One queue, in this order** (all under that order of trust):
+  a. SampleHouse rooms from its own IFC (`IfcSpace` ×4, already in `SampleHouse_extracted.db`) → a generated section of its self-heal patch. A `WalkerDoctrine.md` §14 defect ("rooms are auto-infused into every ARC": extract `IfcSpace` when present). First. Detail: §NO-MESH-RESIDENTIAL below.
+  b. The mesh miner (`build/project_rule_mesh_binding.py`) binds WITHIN the discipline the extraction records. A discipline with no real mesh for a class gets a gap row under (e), never a mesh from another discipline (`WalkerDoctrine.md` §11).
+  c. §12b `element_pset_native` in the shared extractor (standard non-`Common` sets + the authoring tool's own sets; `native_unit_map` / `native_prop_map` are data rows; an untyped value with no unit row → `value_si` NULL, `unit unknown`). Census: Revit electrical data only on Duplex, HHS Office and WBDG Office (8 of 122 source IFCs), so the circuit/load first consumer is witnessed on Duplex MEP.
+  d. §12a register gate: CO = placed, IP = provisional and out of totals, DR/RE = refused, no status = provisional. **Not blocked:** the tool path takes `--register=<json>`, so build and witness it now with a JSON fixture; only the later in-browser UI needs the BIM Document rows + the sha256 file-store route. The register EXPORT (ERP rows → JSON) is the ERP lane's job, not this lane's; the design lane says who takes it. The register's discipline codes (ARC, STR, MEP, ELE, FPR, CIV) map to walk disciplines through ONE data row set, never code.
+  e. §12c gap report `input_gap` / `§INPUTS-GAP`, reasons: `no rooms in model`, `no real mesh for class` (from a, b), `unit unknown` (§12b), `conflict` (§12a/b), plus §12c's own `not in model` / `no issued sheet`.
+- **Seams to keep (do not break from this lane):** (1) BIM Document "Open" → the Modeller's open route + `common/file_store.js` (bim-ootb #2747; §BIMDOC-OPEN in the archive); §12a's later UI fetches register bytes through the same route. (2) The object layer, BIMCompiler `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` §0.5 + §0.8 (deferred): "Modeller edits through the object engine" would change how every Modeller edit is written. Read it before changing the edit write path. Its dictionary patch is on the Viewer's `buildings/Duplex_extracted.db` (#2772/#2778), the same DB the mesh miner reads (rows added only; no conflict measured).
+- **⛔ Q9 (owner decides), SampleCastle has no rooms, a band row was measured from a MIX of devices:** design-lane advice now *proportional allocation*: the row's own source meshes are allocated in proportion to the measured mix (deterministic largest-remainder, stable order), so placed counts per mesh equal the row's mix. Each placement stays provisional (step 5), carries `meshFrom=<source guid>` and `mix=<k of N>`, is never shown or counted as an identified device, and stays out of totals. (Plain "in turn" was withdrawn: it gives each distinct mesh equal counts, which falsifies the measured mix.) If the owner wants no per-device claim at all: the doctrine fallback is the §11 bbox wireframe labelled with the mix.
+**4D answer (owner asked):** `4D_MODEL_INTEGRITY.md` §SHIM-FACING. The shim face does not fix "midair" (that is schedule ORDER: the elected support is scheduled later); it can feed a §C ruling.
+**⛔ Owner decisions open (ask one at a time):**
+1. §C: "a hung element's work follows its carrier's task" (262 of 3,065 midair on Terminal).
+2. Other language versions of the walker film.
+3. Band density (borrowed counts give no location); extend `unhosted` to non-ceiling hosts?
+4. Provisional devices still counted by the 4D schedule, `egress_sanity.js`, `rule_report.js`, offline `mep_qto_populate.js`.
+5. Export a drawn run as an Axis-only IfcDuctSegment (no Body)?
+6. Remove `build/disc_walker.js` (nothing reads it); gate ELEC like the others (it still reaches `planTrunk`).
+7. A user-facing way to supply sheets on an opened building (mains spec §7 Q2).
+**⚠ Review the new rules JSON against the other building models (owner, 2026-11-09: "Since the JSON is newly constructed, should we put a note that it be reviewed against the other building models?"):**
+- The JSON VIEW is new, the values are not (it shows the shipped tables). Proven only on Duplex (`duplex_rules.db`, W-E2E-RULES-EDIT) and the private set (`terminal_rules.db`, the film still). Not yet opened on `farm_rules.db` or any other resident. Review = open it on every resident, and check that open-and-close with no edit leaves every walk byte-identical.
+- An EDIT is per building TYPE, not per building: one cell changes every building of that class. Before an edit is trusted or contributed: re-walk the other buildings of that class (the fleet table, W-BAND-NO-HOST §7 method) and state what moved. Proposed: the editor's header says "these rules are shared by every <class> building"; the downloaded edit file carries `checkedOn: [buildings]`, empty until a fleet check fills it.
+**✅ DONE 2026-11-10 ⛔8 answered (owner: "Go with your take") — an edit applies wherever its file is read (room-schedule source, FP borrow), header names those readers: bim-ootb #2779 merged `d6054ce0`, sw v268 (W-RULES-CLASS 9/0 + readers 4/0; RED on main held 0.85 / 172). Measured: no public resident serves a room from the schedule source (spaces=0 on HHS, Clinic, Terminal).**
+**✅ DONE 2026-11-09 (a)(b)(c) — bim-ootb #2776 merged `a751e458`, modeller sw v267** (spec + RESULT: bim-ootb `prompts/MODELLER_RULES_EDITOR.md` §CLASS-SHARED). Header names the loaded file's class (`WalkRules.classOf`; a bug where farm said "terminal" was found and fixed); download carries `checkedOn: []`; W-RULES-CLASS no-edit sweep green on 6 of 8 residents (SampleHouse VACUOUS: page refuses all, no LOD400 mesh; HospitalGarage INCONCLUSIVE: headless tab died before the editor opened, twice); `modeller/tests/rules_edit_fleet_check.js` walks every READER of a file (own / schedule source / FP borrow) and fills `checkedOn`; W-RULES-FLEET 4/0 (one cell on Duplex moves exactly its 6 devices, nothing on the other 7 readers).
+- **New measured facts:** Walk ALL skips services already present (a Walk-ALL re-walk judges nothing). A re-walk of the same services moves a few devices for 2-3 rounds before it settles (Duplex: 2/5/2, then 1/1/1, then stable), with no rule changed: a user who walks again sees devices move. Not traced.
+- ~~**⛔ Owner question 8:**~~ ANSWERED 2026-11-10, built #2779. Was: a live edit reaches only buildings whose OWN rules are that file; terminal buildings read `duplex_rules.db` room schedules (and residential ones borrow `terminal_rules.db` FP) WITHOUT the edit. Should a live edit also apply there? Today: no; the fleet check reports both.
+**✅ DONE 2026-11-09 the Modeller user guide** — BIMCompiler #490 merged `e68c872d`, published via `safe_gh_deploy.sh` (guard PASS, canaries 200, live page + 3 new images fetched back 200). Added: Rules editor (with type-shared header, `checkedOn`, fleet check), Walked Fixtures type set + device close-up, build-up after commit, provisional devices. Re-measured the walk table on sw v267 from `§DISC-WALK` lines: Duplex ACMV 19 / ELEC 102 / PLB 18 / FP 0 + 38 provisional; **SampleHouse and SampleCastle now refuse ELEC and PLB (no real mesh)**, so the old hero caption (270 SampleCastle ELEC) was false and is replaced with a Duplex frame. The three older tables (2026-06-28 logs) are marked dated, not re-run. Left as is, true to code: the LOD-200 insert line (~L214), because the insert still starts as a box (`bonsai_library.js:457`); §VISION-REVIEW C1 stays a CODE item.
+- **New question this raises (for the owner, with ⛔ 8):** the residential walk now places no ELEC/PLB on 2 of its 3 buildings, because the catalog has no real mesh for their classes. Is a catalog rebind (row 14) the next priority, ahead of the buildable list below?
+**🔎 §NO-MESH-RESIDENTIAL — DIAGNOSIS 2026-11-10 (owner: "Go with your take on both" → mesh gap first).** Why SampleHouse/SampleCastle get no ELEC/PLB:
+- The gate's own lines (`§DW-LOD400-REFUSE`, probe on main `a751e458`): every placement reaches it with **no mesh hash** (SampleHouse ELEC `FlowTerminal(no hash)×14 …`, SampleCastle ELEC 269, PLB 72). Duplex: same devices carry a hash, `lod400=102`.
+- Cause: Duplex walks from ROOM SCHEDULES (its `spatial_structure`, 26 rooms); a schedule row carries its device's own mesh (`disc_walker.js` ~L702). SampleHouse/SampleCastle have no rooms, so they walk MEASURED BANDS, whose mesh comes from `rule_mesh_binding` (~L859), and **`duplex_rules.db` has no `rule_mesh_binding` table** (`terminal_rules.db` has 13 rows).
+- The miner exists (`build/project_rule_mesh_binding.py`, generic) and was never run for the residential rules. Run on a scratch copy against `bim-ootb/buildings/Duplex_extracted.db` (904 MEP): 10 bindings, plus `z_datum_offset=0.016` and `rule_frame_ref`. **Not shippable:** it binds by class and ignores discipline, which the extraction records (ELEC 81 / PLB 14 terminals, all fittings, segments and valves `MEP`). So PLB fixtures would get an electrical receptacle mesh and ELEC controllers a 50 mm ball valve. Several bindings are 1-of-N ties (segments 1/427).
+- Per band row, the row's own `src_guids` are a MIX (Level 1 ELEC: receptacle, refrigerator, sconce); most rows' mode is a 1/5 tie.
+- Rooms in the source IFCs: **SampleHouse 4 `IfcSpace`** (Living room, Bedroom, Entrance hall, +1; `internal/sources/Ifc4_SampleHouse.ifc`, also `bim-ootb/IFC/SampleHouse_ARC.ifc`), dropped by the extraction. **SampleCastle 0.**
+**Take (buildable):** (1) SampleHouse: recover its 4 rooms verbatim into its self-heal patch (precedent: `patches/Terminal_ARC.db.sql` restores 79 `spatial_structure` rows), so it walks from schedules with each device's own real mesh. (2) Fix the miner to bind within the discipline the extraction records; a class with no instance of that discipline gets no row (refuse).
+**▶ NEXT, buildable (take (1), SampleHouse rooms), measured 2026-11-10:** the 4 rooms are already extracted verbatim in `bim-ootb/modeller/SampleHouse_extracted.db` `spatial_structure` (Living room c=(−3.08,1.58,1.25) s=9.31×5.66×2.5; Bedroom; Entrance hall; Roof c.z=3.0); `SampleHouse_ARC.db` has no `spatial_structure` table. Room extents [−7.73,6.12]×[−1.25,4.41] line up with the ARC walls (x 6.24, y 4.55, y −1.22). Raw element centres differ between the two DBs (the extracted DB stores placement origins), so the witness must prove the frame, not assume it. Patch convention: `patches/SampleHouse_ARC.db.sql` is GENERATED ("regenerate, do not hand-edit", `scripts/gen_rel_fills_host_patch.py` + an aggregates section): add the rooms as a generated section (generator reads the extracted DB, `CREATE TABLE IF NOT EXISTS` + `INSERT OR IGNORE`), not a hand edit. Witness, RED on main: SampleHouse ELEC/PLB walk from schedules (`prov sched:space-schedule:*` > 0), every device inside its room box, `§DW-PRIM-LOD lod400` > 0, Duplex unchanged. Watch: space typing of "Living room / Bedroom / Entrance hall / Roof" against the residential schedule types (`typedNoSchedule` count in the log).
+**⛔ Owner question 9 (SampleCastle, no rooms in its IFC):** moved into the 🤝 Design-lane inputs block above (with the design lane's proportional-allocation advice; the earlier "(b) in turn" advice is withdrawn).
 
-**Two Modeller items moved here from the DXF2BIM lane (they are Modeller core, not 2D → BIM):**
-- **M-1 Walk-all on an IFC-opened building does nothing.** W-E2E-WALK-IFCOPEN G4: SampleHouse/ifc and Duplex/ifc give `§WALKALL walkOk=false … walked=0 refused=0`.
-  - The .db leg (SampleCastle) walks: FP placed 126, 3 honestly refused.
-  - Same 2 FAIL on bim-ootb main BEFORE P-X and after P-X / P-X2 (16 PASS / 2 FAIL each time), so P-X did not cause it.
-  - This breaks §STRATEGY IN + ASSEMBLE ("walkers FILL IN services" on a user's own IFC). Defect; diagnose and fix.
-- **M-2 Composed aggregate parents (IfcRoof, IfcStair, IfcCurtainWall …) are not drawn after P-X2. DECIDED (on red1's recorded direction): correct, keep it.**
-  - A parent has no mesh of its own. Its LOD400 geometry IS its parts (slab, flights, railings, panels), each seeded as itself.
-  - Drawing the parent too would double the geometry or put a union box where no mesh exists, which the no-box rule refuses.
-  - The composed transform serves grouping: Outliner / BOM tree / select-the-whole-stair.
-  - Left to measure, not to decide: for each composed parent, how many of its parts are drawn. Stair `IfcMember` parts are discipline STR and the ARC seed does not draw them; the residents behave the same.
+**Buildable next, in order:**
+1. Re-measure the private wall-alarm residual on main (predicted: the 13 above-slab alarms now `noTarget`).
+2. Toolbar crowding: at 1,440 px every Modeller toolbar button is 14 px wide (41 px at 1,920). Measured, untraced.
+3. Export gaps, spec §EXPORT-ROUNDTRIP below: GUIDs regenerated, `material_name` NULL, IfcWallStandardCase written as IfcWall, 0 storeys, no routed runs.
+4. Reds on main, untraced: W-E2E-ZOOMSEL K5/K7, W-SCHED-SOURCE 35/1, W-BAND-NO-HOST P3, `tests/test_json_to_schema.js` (missing `viewer/initbubble.json`), W-MEP-OPENPATH M5/M7, W-DISC-DENSITY D3.
+**On HOLD (red1):** §THREADS step 2 scoped undo (branch `wip/history-threads-scoped-undo`), §DOC-THREADS / §ADHOC-WF-BATCH, row 40 scripted edits.
+**Method that worked this session:** spec section first; witness run RED on main first (several "fixes" were caught as vacuous only because of it); privacy grep on every diff and PR body; one look at a still for layout only, numbers from § lines; GPU takes under `flock gpu.lock` after `nvidia-smi`.
 
-**red1's question for this lane (2026-11-02): "why would DISC Walker do roof and stairs? Is it applicable only during basic ARC without such?"**
-- **The recorded direction already answers the first half:**
-  - red1 2026-09-26: "the tiled roof is PREFAB ARC/STR the user reshapes along its axis like any other element; walkers FILL IN services (MEP)". The roof walk row was removed (#1785); the engine keeps only a §ROOF-PATTERN verdict (present / refuse).
-  - Stair/railing/curtain generators are out of scope (§STRATEGY "Out of scope").
-  - So the Disc Walker should do neither roofs nor stairs. M-2 is the ARC seed and the composer, not the walker.
-- **The lane must confirm from code, with file:line:**
-  - whether any walker path still generates, places or refuses roof or stair geometry (the §ROOF-PATTERN verdict, stair footprints in `storey_*`, `rel_aggregates` reads in `cross_edges.js`);
-  - whether "absent discipline" (WalkerDoctrine) means the walker only ever runs on an ARC-only building with that MEP discipline missing, or also on a building that already carries it.
-- Answer in this file with the citations. Do not re-open "generate the roof" (red1, 2026-09-26).
+## §FILM-WALK-BEFORE-AFTER SPEC (2026-11-09, owner) — the walk film shows what a walker does
+> Owner, 2026-11-09: *"It should show before and after a walker lays devices. User will be clueless how this walker works. When it says x-ray, there is no lip synch to the canvas. When a walker is clicked, the visual effect is not shown to appreciate the before changing to after. Just some glimpse is good enough. At the moment it is quite sketchy."*
+**Issue, measured in the recorders (code read):**
+- `scripts/film_modeller_trailer.js` cuts (`jump`) from the walk click until `§DISC-WALK-COMMIT`. The build-up reveal (§D64, `_dwRevealTick`, modeller.html ~4709) draws the devices in during that window (measured on Duplex: 18/102 shown at 1.7 s, 102/102 at 9 s). So the cut removes the before→after moment.
+- The X-ray beat is stamped (`§FILM_BEAT`) BEFORE the cursor glides to the icon, so its narration starts ~1 s before the canvas changes.
+- The 2026-11-09 films were stills cuts (canvas grabs), not a take.
+**Rule (one recorder, generic, no building name in it):** `scripts/film_modeller_walk.js <db|resident> <discs> <outDir>`, CDP screencast like the trailer, the same cursor overlay, clicks through the real UI.
+1. **Open:** Open icon → local row (or resident row) → cut over the load (`§FILM_JUMP`).
+2. **Per discipline, five beats, in this order:**
+   - **BEFORE** (≥ 2.5 s, uncut): X-ray ON, camera on the building overview. Line `§FILM_BEFORE disc= walked=0` read from `window.__dwWalks[disc]` (absent = 0).
+   - **CLICK:** the cursor glides to the Outliner row for that discipline and clicks; the ripple shows.
+   - **COMPUTE:** the cut starts at the click and ends at the FIRST frame of the reveal (`window.__dwRevealMeta[disc]` set, or `window.__dwReveal[disc].i > 0`). Never at the commit line.
+   - **REVEAL** (uncut, real time, until `§DW-REVEAL disc= done`): once a second `§FILM_REVEAL_FRAME disc= i= n=` from `window.__dwReveal[disc]`. The log must show i rising over ≥ 3 samples, or the beat says `§FILM_REVEAL VACUOUS`.
+   - **AFTER** (≥ 2.5 s, uncut): `§FILM_AFTER disc= placed= provisional=` copied from the walk's own `§DISC-WALK <disc> placed=` line.
+   - **GLIMPSE:** click that discipline's largest type row in Walked Fixtures (W-E2E-TYPESET-ZOOM: set highlight + frame), hold 2 s, Escape, back to the overview.
+3. **Sync rule ("lip sync"):** a beat whose words name a state change is stamped when that state's `§` line lands AND two frames have rendered, not before the click: `§FILM_SYNC beat= line= renderLag=` (line → visible; a beat BEFORE its line is the defect; corrected 2026-11-09 from "dt < 0.5 s", which flagged the page's own draw time of 0.55 s on 2,223 glass meshes as out of sync although the words start on the visible change). X-ray: `§MODELLER xray on`. Walk: the reveal's first frame. Type glimpse: `§INSTSET-SELECT`.
+4. **Visibility (law of 2026-11-09):** at BEFORE/AFTER and in the glimpse, `§FILM_VIS disc= inFrame=<instances whose centre projects inside NDC> of=<n> medianPx=<projected size>`. A beat with inFrame=0 is not presented as showing devices.
+5. **Privacy (owner ruling, this session): the private take uses a neutral-name COPY.** Storey names → `Level <k>` by elevation order, building/project/file name → `Building A`, logged mapping, kept private. Room names stay (they drive the walk's space typing); this limit is stated to the owner. The walk on the copy must give the same `§DISC-WALK` placed/provisional counts as on the source (`§FILM_COPY-PARITY`).
+6. **Not in this film:** a Viewer bake, synthetic markers, a section tool (owner: none).
+**Witness:** the take's own log. Every beat present in order; every `§FILM_SYNC` dt in [0, 0.5); every REVEAL with rising i; every AFTER count = its `§DISC-WALK` line; `§FILM_PAGEERR n=0`. Rehearsal first on public Duplex (software GL), then the private copy on the real GPU on the owner's go.
 
-**M-1 ✅ DONE (witness) 2026-11-02, bim-ootb branch `fix/modeller-walk-ifcopen` (sw v207). Walk ALL on an IFC-opened building.**
-- **SPEC.** Rule: a walk's LOD400 gate waits for a geometry buffer only when one can arrive. A resident fetches a `_geo.db` (`_forkEditable` sets `__dwGeoBuf`); a disk-opened `.db` has none and says so with `__dwGeoNone = true` (`_forkLocal`, str_walker_outliner.js:256, §D61); an IFC open has none either (its meshes are in the opened DB, P-X) but set neither flag. Witness claim: no discipline waits on a geo buffer an IFC open does not have; Walk ALL completes with every discipline walked or honestly refused (never a box).
-- **CAUSE (proved from the logs, not assumed).** `_dwLod400Only` (modeller.html:4296) loops `while (!__dwGeoBuf && !__dwGeoNone && < 60 s)`. On the IFC path both are unset, so EVERY discipline waits the full cap. Before-log, Duplex/ifc: `§DW-LOD400-REFUSE disc=ACMV … geoBuf=false waited=60087ms`, ELEC `waited=60071ms`, then PLB, FP: 4 x 60 s, while the witness waits 60 s for `__dwAllDone`. The walk itself was fine (it completed in the standalone probe, refusals identical). That is why the witness read `walked=0 refused=0 walkOk=false`. Same on main before P-X and after P-X2 (16/2 each time): P-X did not cause it.
-- **FIX.** `openIfcFile` (str_walker_outliner.js, before `_seedPending`): `__dwGeoBuf = null; __dwGeoNone = true` + `§M1-IFC-GEONONE`. And `_forkEditable` now clears `__dwGeoNone = false`, so a resident opened later in the same tab (which DOES fetch a geo db) does not inherit the flag from an earlier IFC/disk open and skip its wait.
-- **WITNESS.** W-E2E-WALK-IFCOPEN, main -> branch: G4 SampleHouse/ifc `walked=0 refused=0` -> `walked=0 refused=4`; G4 Duplex/ifc `0/0` -> `walked=1 (FP 38) refused=3`; Walk ALL on Duplex/ifc 4 x 60 s -> 2.3 s; G5 Duplex/ifc oplog 196 -> 238 (+38 placed +4 runs/fittings); SampleCastle/db unchanged (FP 126, 3 refused). 16 PASS / 2 FAIL -> **21 PASS / 0 FAIL** (new G7 NO-GEO-WAIT: waits 0-1 ms on all, fails on the pre-fix code; G8 below). Honest refusals remain: duplex/farm ACMV, ELEC, PLB placements have no `rule_mesh_binding` hash, so they refuse under §WALK-LOD400-ONLY (identical to SampleCastle).
+## §REVEAL-FRAME-CLOCK — the build-up must be SEEN even when the walk's commit blocks the page (2026-11-09, found by the first GPU take)
+**Issue (measured, take 1 on the private copy, log `walk_film.page.log`):** `_dwRevealTick` (`modeller.html` ~4742) advances on WALL-CLOCK time: `k = (now − start) / dur`, dur 7,000 ms. The commit runs in that window (`§DISC-WALK-COMMIT` 207 ops + `§DISC-WALK-COMMIT-DRAWN` 554 line ops), so the page renders no frame for seconds and the reveal reaches `done` before anything is drawn. The recorder's first sample came 5.6 s after the reveal began and already read i = n = 95 (`§FILM_REVEAL … rising=0 VACUOUS`, ACMV and FP). On the residents (small commits) the build-up plays; on a real building it does not. That is the owner's *"When a walker is clicked, the visual effect is not shown."*
+**Rule:** the build-up runs on RENDERED time. Each tick advances by the frame gap; a stall (a gap over 4x the page's own median of its last 8 frame gaps, and over 0.5 s) counts as one 250 ms step, so a blocked stretch costs at most a quarter second and a slow-but-drawing page keeps the stated speed, and the full duration plays once frames resume. The same clock drives the assembly-part reveal. `§DW-REVEAL … done n= ms=<rendered> wallMs=<wall> ticks=<n>`.
+**Amendment, measured by take 2 (#2760 merged):** the clock no longer skips (ACMV rendered 7,511 ms, 0 stalls), but the commit runs in ~1.3 s chunks, so the page drew only 6 frames in the build-up's 8 s: a steady slow rate no gap rule can tell from a slow GPU. Cause-based rule added: the build-up is armed HELD and its clock does not advance until the walk's own commits finish (`_commitDiscWalk` + `_commitDrawnMains`), then it plays; released on every exit path; `§DW-REVEAL-RELEASE disc= heldMs=`. Claim C4: the release line comes after `§DISC-WALK-COMMIT`, and no front was drawn before it.
+**Witness W-E2E-REVEAL-CLOCK:** Duplex ELEC walk; as soon as the reveal starts, block the page's main thread for 3 s; then sample `__dwReveal.ELEC.i`. C1: at least 3 distinct rising values after the block (RED on main: done at the first sample). C2: the done line's rendered ms is within 10% of the reveal's dur. C3: an unblocked walk ends with the same placements and `count = dwSub.length` (nothing left half-drawn).
 
-**Q ✅ DONE 2026-11-02. "Why would DISC Walker do roof and stairs? Only on a basic ARC without such?"**
-- **Roof.** The walker never generates one. The only roof path is `_tessellatingWalk` (disc_walker.js:625-668, called from `placeMeasured` :723-729): a row whose mined unit tiles its source area (fill >= TESS_FILL, `roof`/IfcPlate on terminal_rules only; duplex_rules and farm_rules have no such row) walks per element on the building's OWN array, and ends in `§ROOF-PATTERN-PRESENT` (:659-664: "already present, nothing to generate, 0 placed"), `§ROOF-PATTERN-REFUSE` (:656) or `-NOPLATES` (:643). It returns zero placements every time. The Outliner has no roof row (modeller.html:5847, #1785) and Walk ALL skips `STR` and `roof` (:4833, §WALKALL-MEP-ONLY). So it agrees with red1 2026-09-26. Residue: `discWalk('roof')` is still callable (the engine keeps the verdict), and the `roof` key is still in the roster on terminal_rules residents.
-- **Stairs.** No stair geometry is generated, placed or refused. IfcStair is only READ as a position: `defaultSeed(bdb,{classes:['IfcStair']})` as SP's STACK riser proxy (disc_walker.js:1695, honest refusal when absent), and IfcDoor/+IfcStair as the default trunk seed (:2620-2630). IfcRoof is read as a clash envelope (:2024). `rel_aggregates` is read at cross_edges.js:358 (`readAggregates`) as 'aggregates' edges only; the composing of geometry-less parents is the open path, `composeGhostsFromAggregates` (str_walker_outliner.js:869+), not the walker.
-- **"Absent only?" No, only the BUTTON is.** `disciplines()` (disc_walker.js:2653) lists every discipline the rules cover, whatever the building has. The Outliner shows a walk row only for roster disciplines not already drawn as real tree nodes (modeller.html:5836 `absent = ds.filter(!present)`; :5837 no absent -> no row). But the Walk ALL handler (:4826-4833) walks the whole roster minus STR/roof with NO present-filter, and `discWalk(disc)` runs on a present one (the witness's G2 calls it for STR). So where the code DISAGREES with "fills in the missing": Walk ALL on a building that already carries ELEC/PLB walks them again. Not changed here: needs a call (see below).
-- ~~⛔ BLOCKED: should Walk ALL skip a discipline the building already carries?~~ **DECIDED 2026-11-02 (red1: "decide for me as u know my direction"): YES, skip it.**
-  - Direction: walkers FILL IN services (red1 2026-09-26). WalkerDoctrine walks an ABSENT discipline. The per-discipline row already shows only disciplines not drawn (`modeller.html` ~5836).
-  - Walk ALL must use that SAME present-filter: one owner of "which disciplines are absent", no second list. A discipline the building already carries is authored, and re-walking it would add invented MEP on top of authored MEP.
-  - **M-4 ✅ DONE (witness) 2026-11-02, bim-ootb #2535 (sw v210), spec = "M-4 SPEC" below.** (was: not built yet)
-  - original ask:
-    - spec it; Walk ALL calls the row's present-filter;
-    - witness on a building that carries a discipline: it is listed as present and skipped with a `§` line, 0 placed;
-    - falsifier: the filter off → it walks.
+## §REANCHOR-NONFLOOR — FINDING 2026-11-09 (traces the walk report's floating wall alarms; generic, measured on the private set, numbers only)
+**Cause, read from the walk's own `§BAND-REANCHOR` line (private log 71) + code `disc_walker.js` `_reanchorCtx` (~L720-750):** the target ladder is EVERY declared storey elevation, grouped by tol (half the source's smallest floor-to-floor, here 2.0 m). The private set declares 7 groups, and 3 of them are reference levels, not floors: top of wall/parapet (~13.8-14.2 m), a level at 36.5 m, the top of a tall element (40 m). The source's 6 floors map by order, so source floors 4, 5 and the roof land on those three. Wall-hosted band alarms then bind to the tall walls that do exist there: the 13 "more than 3 m above the highest slab" in the report.
+**Measured per target group (private set):** contained IfcSlab/IfcRoof by IFC storey: ground 63, ~4-4.8 m 20, ~9-9.3 m 23, ~13.8 m **56 IfcRoof, 0 IfcSlab**, 36.5 m **0**, 40 m **98 IfcRoof, 0 IfcSlab**. Slab/roof tops within 0.5 m of the group: 43 / 17 / 14 / **0 / 0 / 0**. Within the 2.0 m tol: 66 / 34 / 22 / 88 / 0 / 0. So the answer depends on the test chosen.
+**Candidate rules (owner's call; §12 is the owner's "Re-anchor + host"):**
+- (a) A target level counts only if it CONTAINS an IfcSlab (IFC containment, no number). Here: ground, ~4 m, ~9 m. Source floors above the third have no target and are refused (counted `noTarget`).
+- (b) A level counts if a slab/roof top lies within a margin. Needs a stated margin: at 0.5 m it gives (a)'s answer, at the 2.0 m tol it keeps the parapet level.
+- (c) As today (every declared level).
+Advice: (a). It is data-only (IFC containment), refuses rather than floats, and leaves public residents unchanged (they state no storey elevations, so §12 is off for them). Not built.
 
-**M-4 ✅ DONE (witness) 2026-11-02, bim-ootb #2535 (sw v210).** W-E2E-WALK-ALL main 16 PASS / 2 FAIL -> branch **18 PASS / 0 FAIL** (new §C/§D; the file's §B now opens in a fresh browser context because the op-log persists per origin and a prior walk is, correctly, now "carried").
-- W-a Clinic (elements_meta `ARC/MEP/PLB/STR`; roster ACMV,ELEC,FP,PLB): main walked PLB again (`PLB 2835` ops on top of the 3 authored) -> FAIL; branch `§WALKALL-PRESENT roster=[ACMV,ELEC,FP,PLB] skipped=[PLB(building)] walking=[ACMV,ELEC,FP]`, PLB ops 0, ACMV 1016 / ELEC 406 / FP 1145 still walked (placedTotal 2056 vs 2646 on main).
-- W-b Duplex (carries none): 1st Walk ALL identical old -> new: walked ACMV,ELEC,PLB,FP, placedTotal 177, 210 `_dw` ops; §A A1-A10 and §B B1-B3 unchanged (proxy toast once).
-- W-c 2nd Walk ALL: main re-walked all 4 (`_dw` ops 210 -> 423); branch `skipped=[ACMV(walked 27),ELEC(walked 102),PLB(walked 39),FP(walked 42)] walking=[]`, ops 210 -> 210.
-- W-f falsifier (`_dwPresence` forced "nothing carried"): PLB walked again, 2835 ops -> W-a's property false, as it must be.
-- Regression (branch): witness_e2e_walk_ifcopen 21/0 (= main), witness_e2e_walk 8/0, witness_walk_lod400_only 7/0, witness_farm_rules fail=0 judged=5, witness_first_steps_mep rc0, walk_after_seed rc0, str_rewalk_commit rc0. witness_modeller_disc_walk: 6/2 (B3/B4, a 250 ms wait on the STR click) once, 8/0 on rerun; the SAME file on main also gave 6/2 once under load average 23 (a concurrent batch), 8/0 otherwise = timing flake, not caused by M-4. Runner `§ALLWITNESS PASS=109 ENV=9 FAIL=1 of 119` = expected (only the LT7 `-witness_dxf_libtypes:ENV` line). Logs: session scratchpad `m4/`.
+> Archived 2026-11-09: the superseded resume/session blocks 2026-11-10 → 2026-09-26 (and 2026-09-21, 2026-09-15) now live verbatim in `prompts/archive/MODELLER_MASTER_resume_history_2026-09_to_11.md`; what still stands is carried in §RESUME 2026-11-09c above.
 
-**M-4 SPEC (2026-11-02, Modeller lane; witness W-E2E-WALK-ALL §C/§D = bim-ootb `modeller/tests/witness_e2e_walk_all_disciplines.js`).** Decided above (red1); this is the build.
-- **CAUSE (file:line, bim-ootb main before the fix).** The Outliner rows decide "absent" inline in `_registerDiscRoster` (`modeller.html` ~5836: a disc is present iff a `n.disc` node exists in the BOM tree, i.e. `elements_meta.discipline` of the opened DB). `window.discWalkAll` (`modeller.html` ~4826-4833) took `DiscWalker.disciplines()` (`disc_walker.js:2653`, every discipline the rules cover) minus `['STR','roof']` and nothing else. So a building that carries PLB (Clinic_ARC.db: `ARC 1984 / MEP 99 / PLB 3 / STR 534`) had PLB walked again on top of the authored PLB; a second Walk ALL re-walked everything the first placed (the rows had the same hole: a walked disc stays listed, by design, to re-walk by hand).
-- **"Already carries" in code = BOTH:** (1) `building`: a disc node in the BOM tree built from the opened DB (same test as the rows); (2) `walked`: a committed, un-undone GEOM op in the op-log with `parameters._dw.disc == D` (`Bonsai.oplog._geomOps()`, `bonsai_oplog.js:300`). Not `__dwWalks` (in-memory, set before commit, survives nothing).
-- **RULE (one owner).** `window._dwPresence(ds, roots)` (new, `modeller.html`, above `discWalkAll`) returns `{building, walked, absent, fill}`: `absent` = roster minus `building` (the rows' list, unchanged behaviour: a walked disc keeps its re-walk row and its "N placed"), `fill` = `absent` minus `walked`. The rows now call it (inline test deleted); Walk ALL walks `fill` and logs `§WALKALL-PRESENT roster=[..] skipped=[D(building)|D(walked n)] walking=[..]`; `__dwAllResult.skipped` carries the list. No second list.
-- **Witness claim.** W-a Clinic: carried disc listed skipped with the `§` line, 0 ops of it, absent ones still walked/refused. W-b Duplex (carries none): counts unchanged versus main (walked/refused/placedTotal printed old -> new). W-c 2nd Walk ALL in one session skips what the 1st walked, 0 new `_dw` ops. W-f falsifier: `_dwPresence` forced to "nothing carried" -> the carried disc IS walked again (W-a would fail). INCONCLUSIVE when nothing carried / nothing walked.
-
-**M-2 ✅ DONE (witness; measure only, nothing changed).** `§AGG-PARTS-DRAWN` is logged by `buildSeedOps` (arc_editable.js `_aggregatePartsDrawn`, one summary + one line per composed parent). Duplex IFC-opened (Duplex_ARC): `composedParents=3 parts=11 drawn=7 undrawn=4 undrawnBy={"IfcMember/STR/discipline-not-ARC":4}`: IfcRoof 1/1 drawn; each of 2 IfcStair 3/5 drawn, the 2 undrawn per stair are IfcMember, discipline STR. Duplex resident: identical (`composedParents=3 parts=11 drawn=7 undrawn=4`, same class/discipline). W-E2E-WALK-IFCOPEN G8 asserts parents>0 and drawn+undrawn=parts (INCONCLUSIVE if 0 parts). As recorded, the parents themselves are not drawn; the 4 stair members are the ARC seed's `discipline='ARC'` filter, same on residents.
-
-**Next for this lane, in order (updated 2026-11-03 at the close; M-1, Q, M-2, M-3, M-3(b) and M-4 are all ✅ above):** (1) RC-1..RC-4 (the pre-existing reds the DXF2BIM release check found, listed above; each FAILs on the pre-session base too) · (2) the carried rows' gaps M-3(b) left (no per-element colour/material, `element_type` / `element_pset_common` / `element_dxf2bim`, storey) · (3) the Hospital export peak (~3.6 GB heap) not split into carry on/off · (4) then the §RESUME 2026-10-02 queue (§SLIDE-REAL-WALLS Phase B Duplex …) and its Open-panel question for red1.
-
-**M-3 SPEC (2026-11-02, Modeller lane; witness W-WALKED-EXPORT = bim-ootb `modeller/tests/witness_walked_export.js`).** Done-claim (red1 via owner): *"a walked shed reaches the Viewer with every class intact, and with ELEC 69 / FP 30 under their own classes and disciplines."*
-- **Re-measured on bim-ootb main (8984af69 driver, rerun on origin/main):** Convert shed -> Export Viewer DB = 513 rows; reopen that .db (op-log 309); Walk ALL (ELEC 69 + FP 30 placed, op-log 565); export = 507: IfcMember 168->0, IfcFooting 32->0, IfcFan 13->0, IfcOpeningElement 2->0, IfcBeam 35->46, +198 `IfcBuildingElementProxy`/ARC "Element NNN".
-- **Cause (a), walked fixtures typed Proxy:** `modeller/modeller.html` `_commitDiscWalk` (~L4987-5040) commits a walked fixture as GEOM_INSERT with `params._dw = {disc, storey, prov, ifc, host}` and NO `params.ifc_class`; `modeller/bonsai_ifc.js:230` read only `P.ifc_class`, so every walked fixture fell to `IfcBuildingElementProxy` (name `Element <id>`, line ~246) and the extractor's own class->discipline rule (`dxf2bim/ifc_extract_core.js` `DISC_MAP`: IfcProxy -> ARC, IfcLightFixture -> ELEC, IfcFireSuppressionTerminal -> FP) filed it under ARC. The class was never dropped: the op carries it as `_dw.ifc`.
-- **Rule (a):** the IFC writer reads the class the op already carries (`P.ifc_class || P._dw.ifc`); a class web-ifc can create is written as itself (no second class table); only an uncreatable class is a Proxy. Discipline stays the extractor's one rule. Fixes walked fixtures for EVERY building, not only the shed.
-- **Cause (b), reopen drops authored non-ARC bodies:** `_openBuffer` -> `_seedArcEditable` (`str_walker_outliner.js` ~L710) -> `arc_editable.js` `buildSeedOps` selects `m.discipline='ARC'` only (~L229), then `_seedStrWalk` overlays the WALKED STR skeleton (that is IfcBeam 35->46, a regenerated approximation, not the authored 35). So authored STR members/footings and ACMV fans never re-enter the op-log and the next export has no source for them. IfcOpeningElement is removed by design (the residents' rule: voids are GEOM_CUT, not rows).
-- **Measured against the residents (same driver, Duplex Open -> Export Viewer DB):** 196 elements, ARC only (Wall 57, Window 24, Door 14, Furnishing 61, Slab 21, Covering 13, Railing 4, StairFlight 2). So the shed's reopen behaves exactly like a resident: VISION-LOCK "ARC = the edited substrate". §STRATEGY IN ("authored parts survive") says the opposite for non-ARC. Both are red1's words; carrying non-ARC bodies through reopen also decides how they meet the STR-skeleton walk (double girders) and whether an export of a resident grows 10x with its MEP. Not built.
-- **Witness claim (W-WALKED-EXPORT):** X1 ELEC/IfcLightFixture rows == ELEC placements; X2 FP/IfcFireSuppressionTerminal rows == FP placements; X3 no Proxy rows added by the walk; X4 the Viewer opens the export ("DONE ... N elements"), 0 page errors; X5 falsifier: the same export with `_dw` hidden returns the Proxy rows; INCONCLUSIVE if the walk placed nothing. Baseline run against main's writer (`M3_MAIN_IFC=`) must FAIL X1-X3.
-
-- **M-3 RESULT (bim-ootb #2527, sw v208):** (a) ✅ DONE (witness): `bonsai_ifc.js` class = `ifc_class || _dw.ifc || library.get(hash).ifc_class`; any class web-ifc can create is written as itself. W-WALKED-EXPORT PASS X1-X5: shed after reopen + Walk ALL exports ELEC/IfcLightFixture 69, FP/IfcFireSuppressionTerminal 30 (= the walk's placed counts), the walk's pipework as PLB/IfcPipeSegment 30 + PLB/IfcPipeFitting 60 + MEP/IfcFlowFitting 9 (extractor DISC_MAP by class, not the walker's FP), IfcBuildingElementProxy 198 -> 0; Viewer "DONE — 507 elements", 0 page errors. Baseline (main writer, `M3_MAIN_IFC=`) FAILs X1-X3; falsifier X5 PASS. Runner PASS=108 ENV=9 FAIL=1 (LT7) of 118.
-- **M-3(b) ~~⛔ BLOCKED: reopen carries non-ARC authored bodies or stays ARC-only?~~ DECIDED 2026-11-02 (red1's own done-claim: *"a walked shed reaches the Viewer with every class intact"*; §STRATEGY IN "authored parts survive"; VISION-LOCK "ARC = the edited substrate" governs what is EDITED, not what is discarded): an opened building's authored non-ARC bodies (STR members, footings, beams, columns, ACMV fans, any discipline) survive Open -> (edits / Walk) -> Export > Viewer database.** Shed PRE -> POST (before this fix) lost: Member 168, Footing 32, Fan 13, OpeningElement 2.
-
-**M-3(b) SPEC (2026-11-02, Modeller lane; witness W-WALKED-EXPORT X6-X11; bim-ootb branch `fix/modeller-authored-survive`).**
-- **Cause, file:line (bim-ootb main 08f46e3d).** (1) `arc_editable.js buildSeedOps` selects `m.discipline='ARC'` only (~L229), so a reopen never puts non-ARC rows in the op-log. (2) `str_walker_outliner.js _seedStrWalk` (~L779) overlays the WALKED skeleton (`swbRenderOps`, provenance `derived:grid` / `derived:str-walk`): a regenerated approximation, IfcBeam 35 -> 46. (3) `viewer_db_export.js` builds the IFC from the op-log only (`bonsai_ifc.js build`), so the next export has no source for what was not seeded. Measured at the shed: Member 168->0, Footing 32->0, Fan 13->0, OpeningElement 2->0 (no GEOM_CUT: the shed's DB carries no slide tables), Beam 35->46.
-- **What the skeleton is for (measured, `swbRenderOps` str_walker_bridge.js:244).** Its columns are `_state.base.walked` (grid points derived FROM the building's own IfcColumn rows), its girders the bay spans between them: a column-framed building with authored STR gets a regenerated copy of what it already has (shed: 96 columns + 11 extra girders on top of the authored 96 + 35). It never exists without authored columns (wall-bearing: 0 columns -> nothing to render). So the rule is skip-when-authored: the export skips a skeleton op of class C when the opened building's authored bodies of class C are carried (`bonsai_ifc.js` `skipDerivedClasses`, `§M3B-BUILD derivedSkeletonSkipped=142` = 96 + 46). The skeleton stays in the SCENE (editing/walk substrate unchanged).
-- **Mechanism chosen: PASS-THROUGH, folded transiently at export (no scene mesh, no op-log row).** `viewer_db_export.js carryRest()` reads the opened DB (`window.__dwBuf` + `__dwGeoBuf`) with the SAME seed code the ARC seed uses, complemented: `ArcEditable.buildSeedOps(db, geo, {rest:true})` (`where = NOT (arc where)`: one owner of "which rows are ARC", the same real-mesh resolve / refuse rules, nothing seeded as a box). Their meshes are registered for the duration of the export only, each body is folded by the renderer's OWN `Library.foldInsert` (world positions, the lesson of §XEDGE-GEOWIRE: no re-derived transform), written by `Bonsai.ifc.build({carried})` under its ORIGINAL GlobalId, then released (`hasRealGeometry`/`releaseRealGeometry`). GlobalIds the writer's counter would reuse are moved to n+2^30*j (`bonsai_ifc.js guid`), so ids stay unique and carried ones keep their identity. Not an op-log change: nothing is signed, undo/redo/save of the ARC model are untouched.
-- **IfcOpeningElement: via the rel rows.** A Modeller-exported .db keeps its openings as IfcOpeningElement + `rel_fills_host` + `element_world_bbox`; the reopen has no cut for them. `carryRest()` rebuilds a GEOM_CUT-shaped record from those rows (void = the row's world bbox, parent = the host's fid via `__arcFidByGuid`, filling = the filling's fid) and `build()` writes it through the SAME GEOM_CUT branch (IfcOpeningElement + IfcRelVoidsElement + IfcRelFillsElement). An opening a resident already turned into a GEOM_CUT (slide seed) is skipped, never doubled. A resident whose openings were dropped by the P-X rule has no opening row: unchanged.
-- **Compared with RE-SEED (the rejected option; measured, WALKED-EXPORT `M3B_HEAVY=1`).** Re-seed commits the non-ARC bodies as GEOM_INSERT rows: one scene mesh + one op-log row each, resident for the whole session, paid at Open by every user whether or not they ever export. Pass-through costs 0 scene meshes / 0 op-log rows and a transient fold at export (largest single mesh at a time). Numbers: see the RESULT line (shed, Duplex, Hospital_ARC 7,471 STR rows). Re-seed would also have needed a second answer for "are they editable" (the gizmo would grab them) which the decision says they need not be.
-- **Witness claim (W-WALKED-EXPORT, extended; the `§BLOCKED M-3(b)` info line becomes judged checks).** X6 every PRE discipline/class is still at its PRE count after reopen + Walk ALL + export (12 classes, 513 rows) · X6b GlobalIds unique, each carried body keeps its PRE GlobalId, `rel_fills_host` back (2 -> 2) · X6c carried bodies keep their place (world bbox PRE = POST, 1 cm) · X7 no doubling (IfcBeam 35 not 46, IfcColumn 96 not 192) · X8 falsifier: the same session with the carry OFF fails X6 naming the lost classes · X9 resident leg (Duplex Open -> Export, node truth from the resident DB) · X11 the same on the P-X IFC open (Duplex-IFC, truth by page SQL on `__dwBuf`) · X10 (`M3B_HEAVY=1`) Hospital_ARC: carried rows = DB truth, op-log/scene unchanged by Open. INCONCLUSIVE when the shed set / the walk / the truth is empty. FAIL on main is shown by running this witness against main's code (RESULT line).
-- **M-3(b) ✅ DONE (witness) 2026-11-02 (bim-ootb #2531 merged 1047400e, sw v209; logs `/tmp/claude-1000/-home-red1-bim-compiler/eb052dc9-d990-46dc-8047-ba9d4cf63cae/scratchpad/m3b/`: `run10_final.log`, `main_baseline.log`, `runner_branch.log`).**
-  - **Shed, reopen + Walk ALL + export, per class (main -> now):** IfcMember 0 -> 168 · IfcFooting 0 -> 32 · IfcFan 0 -> 13 · IfcOpeningElement 0 -> 2 (via the rel rows: `rel_fills_host` 0 -> 2) · IfcBeam 46 -> 35 (authored, skeleton girders not exported) · IfcColumn 96 -> 96 (not 192) · plus the walk's ELEC/IfcLightFixture 69, FP/IfcFireSuppressionTerminal 30, PLB/IfcPipeSegment 30, PLB/IfcPipeFitting 60, MEP/IfcFlowFitting 9. Rows 507 -> 711 (= PRE 513 + 198 walked); the Viewer opens it ("DONE — 709 elements" = 711 less the 2 opening rows, the Viewer's own rule), 0 page errors. All 346 carried GlobalIds kept, world bbox PRE = POST to 3e-8 m.
-  - **Resident leg (Open -> Export, ARC unchanged):** Duplex 196 -> 215 (+ STR IfcBeam 8, IfcFooting 7, IfcMember 4 = the resident DB's own non-ARC bodies, node truth `Duplex_ARC.db`); the P-X IFC open of Duplex (Duplex-IFC row) 196 -> 215, the same 19. Hospital_ARC (heaviest): 7,471 STR bodies carried (IfcMember 7,122, IfcColumn 349 = DB truth), exported rows 7,013 -> 14,484 (old derived as 14,484 - 7,471), skeleton columns skipped 349. Open adds 0 scene meshes / 0 op-log rows (scene 7,362 = op-log 7,362).
-  - **Measured comparison, pass-through vs re-seed.** Pass-through (`§M3B-CARRY`): shed 344 bodies, 73 distinct meshes, 14,388 mesh verts, +0 scene meshes, +0 op-log rows, 10-14 ms, heap 130 -> 130 MB; Hospital 7,471 bodies, 1,132 distinct meshes, 130,467 verts (largest single mesh 1,718), 412 ms, heap 621 -> 774 MB while registered, released after the build (`released 1132`). Re-seed (`§M3B-COMPARE`, M3B_RESEED_TRIAL=1, shed): +344 op-log rows (565 -> 909), scene meshes 542 -> 885 (+63%), +2.2 s at Open, resident for the session; on Hospital it would add 7,471 instance meshes / 602,779 instance verts (~0.10 GB at the 0.17 GB/Mvert budget) on top of 7,362 meshes; the Hospital re-seed commit itself did not finish in 20 minutes of wall-clock in the headless software renderer (run6_heavy.log, aborted by me), so no completed Hospital re-seed time exists. The whole Hospital export peaks at heap 3,619 MB (791 MB IFC); not split carry-on vs carry-off, so the carry's own share of that peak is the 153 MB above, not a measured total. Chosen: pass-through (meets 1-2, costs nothing at Open, which every user pays; re-seed also makes bodies gizmo-grabbable, which the decision says is not needed).
-  - **Witness:** W-WALKED-EXPORT PASS X1-X9, X6b, X6c, X11 (+ X10 with `M3B_HEAVY=1`); falsifier X8 (carry off) fails X6 naming ACMV/IfcFan 13->0, ARC/IfcOpeningElement 2->0, STR/IfcFooting 32->0, STR/IfcMember 168->0. **The same witness against main's code FAILs X6, X6b, X6c, X7, X9, X11 (+ X4 there)**, `main_baseline.log`. Regression: runner `PASS=109 ENV=9 FAIL=1 of 119` (LT7 only; same as main's expected), W-VIEWERDB, W-IFC-OPEN-ONE, W-IFC-VALID PASS in it; W-E2E-WALK-ALL 13/0, W-ARC-SOURCE-PARITY 8/0, W-E2E-WALK-IFCOPEN 21/0, W-S9-IFC-KEY 1/0, W-IFC-EXPORT-SEED 7/0, W-ARC-EDITABLE 9/0. (`witness_arc_editable_smoke` exits MODULE_NOT_FOUND in this environment; not in the runner, untouched by this change.)
-  - **Not carried, same as the ARC rows today:** per-element colour/material (`material_rgba`), `element_dxf2bim` / `element_type` / `element_pset_common` rows, storey assignment (an op without `storey` is contained in the building). A fidelity item for ARC and non-ARC alike, not opened here.
-
-**RC findings (2026-11-02, from the DXF2BIM lane's release check: 49 Modeller authoring witnesses on bim-ootb main a483a005; bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` `### RC SPEC` + RESULT).** 44 PASS. These 4 FAIL the same way on the pre-session base 7aa68244, so they are pre-existing and owned here. Each was re-run alone and held:
-- **RC-1** W-E2E-SCALEROT S2 DRAG-GHOST: "no ghost" (ScaleGhost not live during the drag).
-- **RC-2** W-CLIPBOARD-KEYS K1 paste-at-pointer: `"no empty ground point in view"`. Decide whether the witness's view setup or the paste rule is wrong; the log does not say which.
-- **RC-3** W-E2E-INSERT I5 VISIBLE: framebuffer unchanged `pix 5392611→5392611`. This is a pixel gate; per the PRIMAL LAW prefer a `§`-value check of the inserted op.
-- **RC-4** W-E2E-EXPORT-DB E1: a stale expectation of 3 export rows (native/ifc/bcf). The menu has 8 (`native, vdb, ifc, load, regrep, analytical, bcf, dxf`); update the witness to the menu's owner, not a hand list.
-- ENV: W-MODELLER-GIT-HISTORY needs `playwright`, which the bim-compiler `node_modules` lacks.
-
-## ▶ §RESUME 2026-10-02 — START HERE (session close; then read §RESUME 2026-09-30 below — its rules and queue still stand)
-**Landed and LIVE 2026-09-30 → 10-02 (all witnessed vs LIVE; modeller sw v76, viewer v1458):**
-- Core reds to zero (#1792) · slide real walls SampleHouse, 2/7 slideable after the M5 check (#1793, BIMCompiler #154) · one gesture = one undo (#1794)
-- §S8 edit→cost Δ in Modeller + Viewer, one pricing basis (#1796, #1801) · §S9 Project Order / VO from the Modeller, any-IFC key (#1797, #1798)
-- §GEOM-KEEP-RG walk-erased-building fix (#1801) · §GRID-SPAN-GATE live span colours + "Add one more?" (#1803, #1806)
-- §THREADS step 1, read-only category scrubber "Viewing: <Cat>" (#1807, #1812, #1815)
-- Guide: First Steps Parts 1–5 + ModellerGuide sections, published via safe_gh_deploy.
-**Decided by red1 (recorded where noted):** D4c = option (b) per discipline (this file) · CORE BEFORE LOOKS (§RESUME 2026-09-30) ·
-S9 flow PO / variant / VO + Q1–Q5 answers (`TM_4D5D_VARIANCE_LANE.md` §S8/§S9-ANSWERS) · row 38 span gate · row 39 threads:
-step 1 only · row 40 scripted edits ⏸ HOLD, generative layout out of scope.
-**On HOLD (red1: "allow time to ponder a better shape"):** §THREADS step 2 scoped undo — branch `wip/history-threads-scoped-undo`
-@034999b7, pushed, unmerged. It breaks W-MODELLER-GIT-HISTORY G5/G6, cause not found (`HISTORY_PARALLEL_TIMELINE.md`
-§THREADS-STEP2-HOLD) · §DOC-THREADS / §ADHOC-WF-BATCH (`AGENT_QUEUE.md`) · row 40.
-**Open findings, not built:** rows 35 (fixture drag handle), 37 (pipes unclickable under x-ray; x-ray stays on after a walk undo),
-the multi-select Delete N-undo, §GRID-SPAN-GATE RESULT items (walker artefact girders, crossing-neighbour rule, girder boxes not
-split), the First Steps witness re-run vs LIVE after #1812/#1815 (only run on localhost).
-**Next queue item:** §SLIDE-REAL-WALLS Phase B **Duplex** (36 slideable, passes M5), then SampleCastle (5) — see §SESSION 2026-09-30b.
-Also open: the Open-panel menu (red1 2026-10-02): the "FROM IFC" rows duplicate SH/DX and weren't asked for, and the
-"wall-bearing / column-framed" tags confuse. Pending red1's call: hide the IFC rows behind a test flag (4 witnesses click them) and
-drop or tooltip the tags, plus an "Open a building — the list explained" dictionary section in the ModellerGuide.
-
-## ▶ §RESUME 2026-09-30 — START HERE (supersedes §RESUME 2026-09-27 as entry point; read that block second).
-## A corrected "Close the Modeller Gap" session prompt. Every status below was checked on 2026-09-30 against bim-ootb
-## `origin/main` @ `3f962fb7` and this file on bim-compiler `origin/master` @ `659524c4e`.
-
-**Why this block exists:** red1 pasted an outside draft prompt ("Close the Modeller Gap", written by DeepSeek). Its rules
-were right, but its work list was the **2026-07-30 status column** of §OPEN LIST. That column is superseded by §SWEEP
-2026-09-15 and §STRATEGY-ASSEMBLE-HANDOFF 2026-09-27. Launch sessions from THIS block, not from that draft.
-
-**What that draft had WRONG (all verified closed or changed — do NOT redo):**
-- Row 34 anchor save: ✅ bim-ootb #1787 MERGED 2026-09-27 (W-E2E-ANCHOR-SAVE-ROUNDTRIP 6/6). IFC half: #1747.
-- Rows 19, 23, 24, 28, 32: ✅ closed in §SWEEP (#73, #1704, #1738). Row 23's D3 wording is dead; what is left open is the
-  `ELEC over-count 1754 vs real 833 = 2.11×` finding. **→ 2026-09-30: that 2.11× was the legacy walk; the production walk measures
-  0.91–1.05× (§SESSION 2026-09-30). Stale.**
-- Row 12 `rel_fills_host`: ✅ #1749. Row 36 empty IFC export: ✅ #1747 (the export is still THIN — see §IFC-EXPORT-DEPTH).
-- Row 29 (grid ⊗ BOM): NOT blocked any more. §VISION-REVIEW says it fits the strategy → it joins the queue after the catalog rebind.
-- Row 14: its Dining_Chair example no longer reproduces (upright, 1.227 m). §STRATEGY answers the row: rebind the mesh from the
-  restored BOM libraries, or refuse the insert. Never a box.
-- Per-layer slab colours: optional in the LOD400 file. PBR / BCF import (row 25): deferred by design. Neither is Tier-1 work.
-
-**THE QUEUE — in this order (§STRATEGY queue + §VISION-REVIEW move-up). Nothing outside it without red1's word:**
-1. **§SLIDE-REAL-WALLS Phase B** (spec + Phase M result: `RESUME_MODELLER_LOD400_REAL_GEOMETRY.md` §SLIDE-REAL-WALLS).
-   Order SampleHouse 7 → Duplex 36 → SampleCastle 5.
-   **→ SampleHouse ✅ DONE 2026-09-30b (W-E2E-SLIDE-REAL 9/0 LIVE, #1793): 2 slideable after M5 (5 refused, brep bodies carry
-   their openings). Duplex 36 (M5-clean) and SampleCastle 5 = next sessions.** Witness W-SLIDE-REAL-WALL, RED on today's main (refusal).
-   Check first whether a Phase B branch already exists (§STRATEGY said "in progress" on 2026-09-27; on 2026-09-30 no
-   branch and no main commit found by grep).
-1b. ✅ DONE 2026-10-02 **§GRID-SPAN-GATE (row 38, red1 2026-10-02)** — wire the EXISTING span check into the grid drag, then "split the bay". Spec in row 38.
-2. **§IFC-EXPORT-DEPTH** — storeys, materials, Psets, void relations. Round-trip witness on Duplex.
-3. **IN-check** — open a third-party IFC locally and measure that its openings, fills and storeys survive (does the local
-   open path write `rel_fills_host`?). Measure only; the gap found becomes its own row.
-4. **Insert-with-opening** — on the Phase B substrate.
-5. **Row 14 catalog rebind + C1 + C2** (no-box violations, live): retire LOD200 (`#b-lod`, `foldInsert` `boxArrays`);
-   rewrite `ModellerGuide.md:216`. A product with no real mesh → insert REFUSED.
-6. **§SLOPE-HANDLES** — generalise the shipped gizmo handles (R1). Do not build a second handle system.
-7. **REPLACE verb + C3** (gate scale to plain-extrusion hosts only). Declared placeholders (`placeholder:true`).
-8. **Row 29** grid ⊗ BOM (`CONSTRUCTION_GRID_BOM_DUAL_MODEL.md`).
-
-**⚖ CORE BEFORE LOOKS (red1 2026-09-30: *"I rather focus on the core Modeller operationality rather than aesthetic unless
-the building blocks are confidently well WITNESSED and tested"*).** Work on how the Modeller LOOKS is PARKED: row 13 (N8AO /
-§ROW13-RESCOPE), row 11's on-screen colour, per-layer slab colours, row 25 PBR, lighting/shadow tuning. It unparks only
-when the core witness net is green on bim-ootb main with no known-red entries. Today it is not: W-E2E-INSTHIDE H1-rig ·
-dw_rot_units · git_history · terminal_walk · render_fidelity · W-DISC-DENSITY D3/D4 (list in §RESUME 2026-09-27; net state in
-`WITNESS_INTERFACE_FRAMEWORK.md` §MODELLER-NET-AUDIT). Each known red counts as core work: fix it, or re-point the witness
-RED-first with the reason written down. Never delete it to get green.
-**→ 2026-09-30 (§SESSION 2026-09-30 below): all six worked — git_history ✅ 8/0 · INSTHIDE ✅ 17/0 · dw_rot_units ✅ · terminal_walk ✅ 11/0 ·
-render_fidelity ✅ (was a stale claim) · DISC-DENSITY D3/D4/D4b ✅ with D4c answered 2026-09-30 (option b, per discipline once its router is proven — build slice queued).
-Three of them hid product bugs (twin-hide dead, walk facing dropped, band envelope on raw origins) — all fixed on that PR.**
-**Still open, and worth doing BETWEEN queue items only when they are cheap:** row 6 (Terminal 0 MEP — accept or fix) ·
-row 10 (Terminal open speed on the LIVE URL; local was 20,592 ms headless — do not diff that against the old 14 s) ·
-row 11 material DATA only (names/RGB into the IFC export — queue item 2; on-screen colour is aesthetic, parked) · row 22 (revert-a-RED, rtree prune) ·
-the §XEDGE residual 11 · ~~the ELEC 2.11× over-count~~ (stale 2026-09-30 — legacy-walk number; production 0.91–1.05×).
-**Do not start:** anything cosmetic (see CORE BEFORE LOOKS) · row 7 (heavy, red1's word first) · rows 25, 26, 30 (deferred) · the SampleCastle sporenkap refusal
-(honest, stays RED) · re-opening rows 1 and 4, the ARC-only filter, or the renderer LOD audit.
-**⛔ red1's calls — ask ONCE each, then move on:** row 15 (220 MB `component_library.db`: GH or OCI?) · row 21 · row 27 · row 31.
-
-**Rules for the session (from the draft, plus what it left out):**
-- The §PRIME LESSON order for any "looks wrong" report: curl every live asset (size + magic header) → read what the code
-  substitutes when an asset is missing → check SW version + precache → only then explain.
-- Spec paragraph first, naming the falsifier. If none can be named → ⛔ with the one question.
-- RED-first: show the witness fail on unmodified main. Then prove the fix FIRES (grep a real `§` line), then prove it on
-  the LIVE URL for anything user-visible (real bytes, not a 200).
-- Bump `modeller/sw.js` `CACHE_VERSION` on every served change — read it from the file (it was **v64** @ `3f962fb7`).
-- DB changes: SQL patch + self-heal loader, never a binary. One commit per fix. Never soften a gate.
-- Worktrees: run `git worktree list` first and reuse one if it exists; new ones go in `/tmp/wt-*`; never edit `~/bim-ootb`.
-  At close, prune only worktrees that have 0 commits ahead, are clean, and have no live process in them. The 13 listed in §RESUME 2026-09-15 hold real work — leave them.
-- Sub-agents run on Sonnet. Findings go in THIS file (a dated section), not `MEMORY.md`. Push before you end —
-  0 commits ahead of origin.
-- Mark every item in its own row: `✅ DONE (witness)` or `⛔ BLOCKED: <one question>`. Rows closed elsewhere must be
-  closed in the table too.
-
-**Report at session end — this format only:**
-```
-§ SESSION <date>
-Worktree: <path> · branch: <name> · sw: v<NNN>
-Done:     ✅ <item> — <one line> · witness: <name> (<n/n>) · PR/commit: <ref>
-Blocked:  ⛔ <item> — <the one question>
-Stale-claims found: <file:line> claimed open, verified shipped at <sha>
-Next session starts at: <queue item>
-```
-"Is it done?" is binary: yes only if every queue item is ✅. Otherwise no, and name the blocker.
-
-## ▶ §SESSION 2026-09-30 — Part A of red1's "make the CORE witness net trustworthy" prompt: the six known reds, to zero.
-## Measured on bim-ootb `origin/main` @ `8311ba5f` (baseline logs first), fixed on branch `fix/modeller-core-net`
-## (worktree `/tmp/wt-mnet-core`), bim-ootb PR **#1792 — MERGED 2026-09-30 10:04 UTC as `5c5b01b4`**. Every number below is read from a saved run log.
-**Method (the prompt's, kept):** re-run each red on unmodified main → root-cause from code + `§` lines → fix the code
-RED→GREEN, or re-point the witness RED-first with the reason in its header. Nothing deleted, nothing loosened. **Three of
-the six were hiding PRODUCT bugs behind an INCONCLUSIVE or empty-population witness** — the §CRISIS shape again.
-
-| item | on main 8311ba5f | cause (file) | what shipped | now |
-|---|---|---|---|---|
-| **git_history** | 7/1 — G6 `active=[1,2] want=[1,4]` | `modeller_history.js` `_restore`: a commit node replays through the LIFO boundary (`O.undo()/O.redo()`); a direct switch between two non-trunk tips leaves {B,C} freshly undone beside D, so the lowest-id-undone pick was B | **§MHIST-SWITCH-TARGETED** — when the boundary's own pick is not one of the node's `ids`, replay them through the existing `setUndone` (§MHIST-ROWS); the linear path is untouched (gridundo U6 still 8/0). `§MHIST_TARGETED` logs the divergence | ✅ **8/0** |
-| **W-E2E-INSTHIDE H1-rig** | 2/1 INCONCLUSIVE — no pose found, so H1–H9 had not run since 2026-09-26 | rig: the ARC walls/slabs occluded every twin. **PRODUCT (found once the rig ran):** `modeller.html` `_dwTwinFids` matched `placement.z` exactly, but since §LIVEWIRE a hash placement commits its SEAT there and the centre in `_dw.cz` → 0 twins → the eye hid only the instance = **zero visible change on every LOD400 walk fixture** (§I5b-TWIN's own measurement: instance-only = 0/12 pixels) | **§I5b-TWIN-CZ** (match the centre). Rig: §IH-ISOLATE (ARC hidden for the walk leg, re-applied after every eye click — `_applyHidden` resets all visible), §IH-FRONT (frontmost object by raycast replaces the 24-px readPixels hashes: two reads with no scene change differed = PIXEL-AS-PROOF), controls H1-pre / H3-ctl / H5-pre, the camera re-posed after every real click (the select fly moved it). `FALSIFY=1` → H1/H2/H3 RED | ✅ **17/0** |
-| **dw_rot_units** | 1/5 — `recs=0`: SampleHouse ELEC refuses under §WALK-LOD400-ONLY (28 hashless legacy placements), the witness judged nothing | **PRODUCT:** `disc_walker.js` `placeSchedule` wrote each wall-anchored device's facing (`_schedFacing`/`_snapToWall`) to `rot`; the renderer (`makeRotationZ(p.yaw)`) and the commit (`placement.rot = p.yaw·180/π`) read `yaw` → **all 102 Duplex ELEC fixtures were drawn and signed at 0°** | **§SCHED-YAW** — emit `yaw` = the facing in the mesh's own frame: the thin horizontal axis (read off the vertex buffer — receptacle `031416…` is 0.0587 m deep on local X, `23c614…`/`4730c9…` on local Y) is the depth and turns onto the wall normal. Witness re-pointed to the Duplex ELEC production walk: 58 wall-anchored; R2 preview / R3 signed rot **39/58 → 58/58**; R4 measures the folded WORLD footprint against the wall run | ✅ **6/0** (R4 52/52 flat along the wall; RED with main's `disc_walker.js`: 3/3 — R2/R3 39/58, R4 33/52) |
-| **terminal_walk** | 5/5 — FP/ELEC `placed=0` on SampleHouse | the witness asserted a HOUSE loads `terminal_rules.db` (contradicts the Walker Doctrine) and that FP/ELEC place >0 there — under LOD400-only both refuse (FP 17 + ELEC 28 hashless legacy placements, `§DW-LOD400-REFUSE`) | re-pointed to the building class the rules were mined for: Terminal resident (FP **974** / ELEC **744** LOD400 fixture instances == placed, routed tubes counted apart, gate flags == red instances) + one house claim (duplex_rules.db loaded at WALK time, FP → honest refuse, 0 instances, no box). `FALSIFY=1` blanks `resolveHashes` → T4/T5/T6/T7 RED (run, 5/5 red as designed) | ✅ **11/0** |
-| **render_fidelity** | GREEN — SH 646 / DX 186 / SC 74 / HHS 311 tris/element, verdict REAL ×4; `BREAK=1` trips ×4 (now `tris=2 hardFail=N`: §GEO-SERVED-DEGRADED draws nothing) | **STALE CLAIM** — nothing to fix | — | ✅ stale |
-| **W-DISC-DENSITY D3/D4** | 5/3 — D3 `ELEC 33/35 FP 368/703` (graded **35 of 878** ELEC: measured-band placements carry a Terminal `storey_scope`, not a substrate storey — scope-blind), D4 vacuous, D4b ACMV −28% (the whole-disc oracle counted duct runs) | re-baselined on the LOD400 production walk: D3 grades each banded placement against ITS band's ARC envelope + the engine's logged `§NOSPACES-TOPUP`; D4/D4b per CLASS. **That exposed PRODUCT:** `placeMeasured` built its band bbox + cells from RAW `element_transforms.center` (§BUG-A: the placement-line origin) → top-up grid points up to **9.9 m outside the real building** (OFFBOX PLB 47 / ELEC 142 / FP 79 / ACMV 93) | **§BAND-MIDPOINT** — envelope + cells on `_trueMidpoint` (cached per guid); the COUNT keeps the miner's raw-bbox parity. D3 OFFBOX **0** ×4; fixture classes 0.89–1.84×; ACMV/FP terminals **0 / 7 / −1 %** | ✅ D3 · D4 · D4b · **⛔ D4c** (below) |
-| **ELEC 2.11× over-count** | — | **STALE:** 2.11× was the LEGACY walk the witness no longer drives (§NET-AUDIT WRONG-PATH, 2026-09-27). Production measured-band walk: ELEC **878/833 = 1.05×** at 8311ba5f, **761/833 = 0.91×** after §BAND-MIDPOINT; per class LightFixture 0.89×, ElectricAppliance 1.84× (35/19) | FINDING line re-worded; the per-class verdict is D4 | ✅ stale |
-
-**⛔ BLOCKED — the one question (D4c):** `placeMeasured` places RUN classes as banded fixtures because `rule_placement` carries their
-mined rows: PLB/IfcPipeSegment **748 vs 3,821 real (0.20×)**, ACMV/IfcDuctSegment 268/568 (0.47×), IfcDuctFitting 464/713 (0.65×).
-Keep them as the Stage-1 fill, or exclude Segment/Fitting classes from the fixture walk and leave runs to the router (§MEP-ROUTE-DISC)?
-W-DW-DENSITY-TE stays **8/1** (D4c RED, honestly labelled) until answered.
-**✅ ANSWERED 2026-09-30 (red1): option (b), PER DISCIPLINE, gated on proof.** Placing fixtures (stage 1) and routing
-runs (stage 2) are the two stages of ONE walk, like normal MEP practice: terminals first, then distribution. Runs come from the
-router only. The rule is: exclude `*Segment`/`*Fitting` run classes from `placeMeasured` for a discipline ONLY once
-its router is witnessed drawing that discipline's runs on the real Open → Walk path (router runs vs real count per class,
-before/after). PLB qualifies now (the guide's W-MEP-OPENPATH table: Duplex 18 runs, Terminal 2,915). ACMV/ELEC/FP keep the
-stage-1 pieces until their routers are proven. The code has had patterns since §MEP-ROUTE-DISC 2026-09-26, but the live
-guide still says "placed but not yet routed". Measure which is true first. red1 also asked: the re-route after a fixture or
-gridline move (MEP stays visible, `W-MEP-REROUTE`) is fine "if it is not costly". Its cost at Terminal scale is UNMEASURED;
-measure it in the same slice.
-**Regression on the touched paths (history restore · `_dwTwinFids` · `placeSchedule` yaw · `placeMeasured` midpoints), all on the
-branch, serial:** gridundo 8/0 · delete 8/0 · undo_resurrect 5/0 · mep_reroute 9/0 · oleye 5/0 · instpick **8/0** (two earlier runs
-7/1 on P4 ROW-FRAMES with Δtarget 30.4 m then 3.6 m — the 1.5 s wait vs the 1.1 s fly; 8/0 on unmodified main too → timing flake,
-not this branch) · walk 8/0 · dw_oplog 6/0 · dedup_render 4/0 · walk_lod400_only 7/0 · livewire 12/12 · storey_band SC=PASS
-DUPLEX=PASS (placed=102 outliers=0) · walk_all 13/0.
-**Served change:** `modeller.html` · `disc_walker.js` · `modeller_history.js` → `sw.js` CACHE_VERSION **v64 → v65**. Live proof (real bytes,
-`https://red1oon.github.io/bim-ootb/modeller/`, fetched after the merge): `sw.js` `CACHE_VERSION = 'v65'`, `modeller.html` carries
-`§I5b-TWIN-CZ`, `disc_walker.js` carries `§SCHED-YAW` ×4.
-**Stale claims found:** this file :122-123 and :169-170 listed `render_fidelity` as red — GREEN at 8311ba5f; :97 / :129 / row 23 "ELEC
-2.11× over-count" — a legacy-walk number, not the production walk's.
-**Part B (§SLIDE-REAL-WALLS Phase B):** STARTED, not finished — handed to a Sonnet session: **§HANDOFF-SLIDE-SH 2026-09-30** below.
-
-## ▶ §SESSION 2026-09-30b — §SLIDE-REAL-WALLS Phase B on SampleHouse (from §HANDOFF-SLIDE-SH) + one gesture = one undo.
-## Opus session on red1's word (2026-09-30). bim-ootb worktree `/tmp/wt-slide`, branches below; bim-compiler `fix/slide-sh-uncut-check`.
-## Every number is read from a saved run log (scratchpad `slide/`), not from memory.
-
-**SPEC §ONE-GESTURE-ONE-UNDO (written before the fix).** A *gesture* = everything ONE user action commits: one Move-gizmo
-release / arrow nudge / rotate / scale / item-drag drop / Accept click — the primary op for every selected target PLUS every
-induced rider (hosted-by door/window rides, fills-opening rides, GEOM_CUT_MOVE voids). The group boundary lives in ONE place:
-`bonsai_oplog.js commitGesture()` — one signed `gesture-grp-N` gid that `O.undo()/O.redo()` already treat as one LIFO step (§P8)
-and `modeller_history.js` records as ONE node. Rule: a gesture that lands >1 row commits through it; a 1-row gesture keeps
-`commit()` byte-unchanged. **Falsifier:** real Open Duplex → real click on a wall that hosts fillings (asked of
-`SdgCascade.ridersFor`) → Move tool → real X-arrow drag → ONE Ctrl+Z must return active length to pre-gesture and every
-centre (wall + riders) to pre ≤1e-6 m; ONE Ctrl+Y re-applies all rows; Save after the undo not blocked.
-
-**SPEC §CUT-THROUGH.** A GEOM_CUT void face flush (|Δ|<0.1 mm) with the parent's bounding face is pushed 1 cm outward before the
-OCCT boolean. The region removed INSIDE the parent is unchanged; it removes the float32-vs-float64 coplanar skin.
-**Falsifier:** W-E2E-SLIDE-REAL E3 — a thickness-axis ray through each opening centre must pass the host mesh.
-
-**SPEC M5 §UNCUT-IS-SOLID (generator).** The "uncut" host body must be SOLID at every IfcOpeningElement of its host: a line through
-each opening box centre along the host's thickness axis crosses the uncut body ≥2 times; one miss refuses the whole host, named.
-**Falsifier:** W-SLIDE-REAL-WALL W7 on the pre-M5 patch → cuts=[0,0,0,2,2,0,0] (RED, `SLIDE_PATCH=<old patch>`).
-
-| item | result | witness (log) | PR |
-|---|---|---|---|
-| Frame trap (handoff step 1) | Witness re-pointed to the SERVED pair (`SampleHouse_ARC.db` + served `SampleHouse_geo.db`, fetched from the app's own registry). **Correction to the handoff:** `element_transforms.center` in `*_ARC.db` is the vertex CENTROID, not the AABB midpoint (Wy4: served world y∈[-1.3914,-1.1014] vs center±bbox/2 = [-1.3627,-1.0727]) → W2 checks position vs the served baked fold and extent vs `bbox_*`, never center±bbox/2. Also: sql.js MEMFS owns the passed buffer → each Database now gets its own copy. | W-SLIDE-REAL-WALL | #1793 |
-| **M5 — 5 of the 7 "slideable" SampleHouse openings were NOT slideable** | Browser E5 caught it: after sliding a window on host 23 the open span was `[-1.53,1.22]` = old ∪ new. Cause: hosts `3cUkl32yn9qRSPvBJVyWy4` / `…Ww5` are **IfcFacetedBrep** bodies exported WITH their openings in the faces — disabling IfcRelVoidsElement subtraction leaves them holed (0 triangles over any opening centre). Phase M's "tris uncut ≠ cut" could not see it. Generator M5 now refuses such hosts (line through each opening centre must cross the uncut body ≥2×): **SampleHouse 7 → 2 slideable** (host `…WXt`, IfcBooleanClippingResult, 2 doors). Duplex probe with M5: **36/38 still slideable**, 0 M5 refusals (2 tessellation-failed, as Phase M). | W-SLIDE-REAL-WALL **9/0** (pre-M5 patch `SLIDE_PATCH=…` → **1/8**, W7 cuts=[0,0,0,2,2,0,0]) | #1793 + bim-compiler this PR |
-| §CUT-THROUGH (worker) | Flush void faces pushed 1 cm out: the IFC opening is exactly wall-deep and doors start at the wall base → a 0.3 µm float32 skin closed every hole. `§CUT-THROUGH cut=… flushFaces=3` in the page log. | W-E2E-SLIDE-REAL E3 (without the fix: **0/2 open**) | #1793 |
-| Browser proof (handoff step 3) | Real Open: `§SLIDE-SEED uncutHosts=1/1 openings=2 cuts=2`, host promoted, 0 `§LAYER-SOLID-SEED-REFUSE`, world AABB Δ=0; real `#b-itemdrag` drag of door fid 11: `GEOM_MOVE dy=0.455` + `GEOM_CUT_MOVE cutId=39 dy=0.455`, one `gesture-grp-39`; open span `[-0.53,0.27]` → `[-0.07,0.73]`, old centre solid / new open; one Ctrl+Z → len 42→40, door Δ=2.1e-9, spans back; the 5 brep-host fillings still refuse. | W-E2E-SLIDE-REAL **9/0 local, 9/0 LIVE** (v66) | #1793 |
-| Re-point (handoff step 4) | `witness_opening_slide.js` S0 → sketched plain-extrude host: S1–S7 now JUDGE (was 7 INCONCLUSIVE every run) **11/0**. `witness_e2e_opening_slide.js` O0 → REAL-SPLIT (5 refuse / 2 form) **8/0**; its `exitItemDrag` guard never fired (module-scoped) — now clicks the button. | W-DAGEVU-SLIDE, W-E2E-OPENING-SLIDE | #1793 |
-| **One gesture = one undo** | RED on LIVE main v65: Duplex wall #112 + riders 73/42: 196→199, one Ctrl+Z → 198, residual **0.417 m** (G2/G4). Fix: `modeller.html _commitUserGesture` — move/rotate/scale gestures with >1 row go through `commitGesture` (item-drag already did). App log: `§ONE-GESTURE gid=gesture-grp-197 rows=3` · `§GESTURE-UNDO … rows=3 active=196` · `§GESTURE-REDO … rows=3`. Save after undo: `§SAVE_SNAPSHOT`, no block. | W-E2E-GESTURE-UNDO **6/0 local + LIVE** (v67); W-FIRST-STEPS **9/0/0 LIVE** | #1794 |
-
-**Regression (serial, on the combined branch):** gridundo 8/0 · delete 8/0 · move 7/0 · rotate 7/0 · scale 7/0 · dm_rotscale 12/0 ·
-cut 6/0 · cut_move(e2e) 12/0 · cut_move.mjs 26/0 · arc_editable 9/0 · gesture_undo(node) 9/0 · sdg_cascade 7/0 · undo_resurrect 5/0; CI e2e green on both PRs.
-**Live bytes:** `sw.js` v67; `bonsai_kernel_worker.js` carries `§CUT-THROUGH`; the patch carries 3 `slide_*` inserts; `modeller.html` carries `_commitUserGesture` ×4.
-**Stale claims:** `RESUME_MODELLER_LOD400_REAL_GEOMETRY.md` §SLIDE-REAL-WALLS Phase M table "SampleHouse slideable 7" → **2** (M5); this file §HANDOFF-SLIDE-SH "3 hosts / 7 openings / canCut ×3" → 1 / 2 / 1.
-**Not done / found, left for its own row:** multi-select Delete still commits one row per id (N undo steps); autoroute/fixture placement commit per op — not user single-gesture edits in this sense, not changed.
-**Next session:** Duplex (36 slideable, M5-clean) → SampleCastle (5). Regenerate with `gen_slide_host_patch.py` (M5 included), append to `Duplex_ARC.db.sql`, extend W-SLIDE-REAL-WALL / W-E2E-SLIDE-REAL per building.
-
-**⇒ §HANDOFF-SLIDE-SH below is DONE for SampleHouse (✅ §SESSION 2026-09-30b above, bim-ootb #1793/#1794). Kept for history; its host/opening counts are superseded by M5 (1 host / 2 openings).**
-
-## ▶ §HANDOFF-SLIDE-SH 2026-09-30 — §SLIDE-REAL-WALLS Phase B, SampleHouse only. Started by Fable 2026-09-30, handed to a
-## Sonnet session on red1's word (save Fable tokens). Everything below is measured; nothing here has run in a browser yet.
-**Where the work is:** bim-ootb branch `feat/slide-real-walls-sh` @ `e8acba00` (ONE "WIP:" commit, pushed, **NO PR**, worktree
-`/tmp/wt-slide` — REUSE it). It branched from main `d5977e4e`, i.e. BEFORE #1792 landed → `git merge origin/main` first; `sw.js`
-will conflict → keep the higher CACHE_VERSION, then bump to **v66** for this change. bim-compiler: the generator is on master
-(this PR).
-**Built so far (file → what it does):**
-- bim-compiler `scripts/gen_slide_host_patch.py` — per `IfcRelFillsElement` re-measures the Phase M rules (box opening,
-  through-wall, bake == opening subtraction, frame proof) and emits `slide_hosts` (the host's UNCUT body — verts float32 /
-  faces int32 — in the SERVED mesh frame: world − `element_transforms.center`, rotated by −`rotation_z`; hash sha256[:16]) +
-  `slide_openings` (the opening's own solid as a WORLD box c1/c2 = the GEOM_CUT `void`). Run:
-  `python3 scripts/gen_slide_host_patch.py --ifc reference/residential/Ifc4_SampleHouse.ifc --bldg SampleHouse --arc-db <modeller/SampleHouse_ARC.db> --geo-db <served SampleHouse_geo.db: curl GEO_BASE/SampleHouse_geo.db?v=3> --out <patch> --append`
-  → `§SLIDE-PATCH-SUMMARY fills=7 slideable=7 hosts=3 openings=7` (uncut 121/144/12 tris vs baked 106/106/44; frame Δ ≤ 1 mm).
-- bim-ootb `modeller/patches/SampleHouse_ARC.db.sql` — the generated section appended (13.6 KB, `X'hex'` blobs, 47 statements).
-  The existing loader (`str_walker_outliner.js _applyPendingPatch`) applies it to the ARC db on every open — NOT yet seen in a browser.
-- bim-ootb `modeller/arc_editable.js` §SLIDE-SEED — `_slideTables(db)` reads both tables (uncut blob recentred by
-  `RealGeometry.recenter`, the fold's §ARC-ANCHOR contract); `buildSeedOps` folds a slide host with `realGeomHash` = the uncut
-  hash + `params.slideHost = true`, asset flagged `uncut: true`; `seedArc` then commits ONE `GEOM_CUT {parent: host fid,
-  void: {c1, c2}, slide: {opening, filling, fillingFid}, provenance: 'ifc:opening-box'}` per opening as its own idempotent group
-  `arcseed-cuts-<name>` (after the hosts, parent from the bridge; `outputGuid` = the opening guid), logs
-  `§SLIDE-SEED building=SampleHouse uncutHosts=3/3 openings=7 cuts=7`, returns `slideCutIds / slideCutOps / slide`.
-- bim-ootb `modeller/bonsai_library.js` — `registerRealGeometry` keeps `uncut`; new `isUncutBody(hash)`.
-- bim-ootb `modeller/bonsai_kernel.js` `_insertCutLayerSeed` — an uncut real body with no layer index seeds as ONE range
-  (buildTriFace + sewAndSolidify, the "single-range seed" the Phase M verdict named) → `Bonsai.canCut(host)` **true ×3** (node).
-- bim-ootb `modeller/bonsai_itemdrag.js` — `beginSlideSession` accepts `ctx.uncutHostOf(host)` beside `plainBoxOf`; the production
-  ctx passes `uncutHostOf` (= `Library.isUncutBody` on the op's `realGeomHash`). The §CUT-MOVE rider machinery is unchanged.
-- bim-ootb `modeller/tests/witness_slide_real_wall.js` — **W-SLIDE-REAL-WALL** (pure node: `SampleHouse_extracted.db` + the patch):
-  W0 control (main's substrate refuses 7/7 — RED-first built in) · W1 patch applies · W2 seed-uncut · W3 cuts · W4 sessions · W5 ops · W6 replay.
-**Verified vs not:** VERIFIED (node, `scratchpad/slide/w_slide1.log`): W0 ✓ (refused 7/7 without the tables), W1 ✓ (3 hosts, 7 openings),
-W6 ✓ (second seedArc adds 0 rows, 46→46); seed log `uncutHosts=3/3 cuts=7`; `canCut=[true,true,true]`; for the 2 fillings that reached
-W4/W5 a slide session FORMED carrying exactly its own cut (`§ITEMDRAG §SLIDE host=1 axis=x t∈[-9.577,2.808] … §CUT-MOVE cuts=#41(F=1)`)
-and `resolveDrop` produced `GEOM_MOVE {dx:0.2}` + ONE `GEOM_CUT_MOVE {cutId:41, parent:host, dx:0.2}` rider — the mechanism works
-end to end in node. NOT verified: W2/W3/W4/W5 as written (3/4 RED for the frame trap below), anything in a browser (loader → seed →
-worker fold with the void subtracted → the re-cut host vs the baked mesh → a real drag moving the hole → Ctrl+Z), the live site.
-**Exact next step:** (1) fix the witness's frame TRAP: `modeller/SampleHouse_extracted.db` `base_geometries` blobs are in the
-create_shape/placement local frame, while the SERVED `SampleHouse_geo.db` (what production AND the generator use) is world −
-center — the two differ by **4.5087 / 7.9520 / 5.4646 m** on the 3 hosts (exactly the numbers the generator's first run refused
-with). So the node control's baked fold cannot be the W2 reference: compare the uncut fold's WORLD AABB against
-`element_transforms` center ± bbox/2 (DB truth), and compute W3's inside/through and `wallFills` from the UNCUT host boxes (then all
-7 fillings reach W4/W5, not 2). (2) `cd /tmp/wt-slide && node modeller/tests/witness_slide_real_wall.js` → expect 7/0.
-(3) Browser witness on the e2e harness (`t.open('SampleHouse')`): assert `§SLIDE-SEED … cuts=7` on the real Open; the 3 host fids
-are in `Bonsai._computeSeeds(ops).promoted` and no `§LAYER-SOLID-SEED-REFUSE`; the rendered host is the worker solid (tris ≠ the
-uncut buffer, world AABB == `element_transforms`); a REAL item-tool drag of a door commits `GEOM_MOVE` + `GEOM_CUT_MOVE`; after the
-fold a point at the OLD hole centre is inside solid and at the NEW one is open (raycast, numbers); Ctrl+Z restores. (4) Re-point
-`witness_opening_slide.js` S0 — once the patch is live its "every real host refuses" claim is RED by design; it becomes the
-sketched-host (plain-extrude) witness. (5) `sw.js` v66, PR, merge, live bytes.
-**Traps hit:** ifcopenshell `use-world-coords=False` is NOT the shipped local frame (the shipped one is world − center, R(−rz),
-from the DB row — verify with the generator's frame check, never assume) · the IFC is in mm (placement matrix) while
-`create_shape` geometry comes back in m · the patch goes to the ARC db only (the geo db is untouched; the uncut blobs live in the
-ARC db tables — by design) · GEOM_CUT rows carry `outputGuid` = the opening guid (the ARC bridge is built from the host ops only,
-unaffected) · `git merge origin/main` will conflict on `sw.js`.
-**Witness state:** W-SLIDE-REAL-WALL written (node); RED on main's substrate proven by its own W0 control (7/7 refuse); 3/4 on the
-WIP for the frame reason above; no e2e witness yet.
-
-## ▶ §RESUME 2026-09-27 — (superseded as entry point by 2026-09-30 above; read it second)
-- **Merged/merging:** bim-ootb #1786 (root JS tidy, MERGED) · #1787 (row 34 anchor save, MERGED) · **#1788** (net-audit
-  batches 1-3 + pattern rows 1/3/6/8 + room-inject + LOD400-or-refuse everywhere: walks, re-open fold, assemblies,
-  geometry-less seed; auto-merge on — verify it landed). Detail + numbers: `RESUME_MODELLER_LOD400_REAL_GEOMETRY.md`
-  §FOLD-NO-BOX-DONE; witness-net state: `WITNESS_INTERFACE_FRAMEWORK.md` §MODELLER-NET-AUDIT.
-- **⛔ red1 decisions pending:** (1) slide an opening along a REAL wall? (today refused: every real host has the opening
-  baked in; #1710's slide was never user-reachable) · (2) catalog inserts with no mesh / at LOD200 still fold boxes
-  (527/794 products) — refuse them (removes LOD200 + those products) or rebind meshes first (row 14 / §CATALOG-REBIND,
-  also needs `library/DX_BOM.db` + `SH_BOM.db` restored — 0 bytes locally).
-- **Known red, pre-existing on main:** W-E2E-INSTHIDE H1-rig (no fixture pose); node dw_rot_units · git_history ·
-  terminal_walk · render_fidelity; W-DISC-DENSITY D3/D4 need re-baselining on the LOD400 walk (§WALK-LOD400-ONLY note).
-  **→ all worked 2026-09-30, see §SESSION 2026-09-30 (render_fidelity was already green — a stale claim).**
-- Worktrees: `/tmp/wt-mnet-audit` (PR #1788 branch) and `/tmp/wt-mnet-base` (detached main, comparison) — prune both
-  once #1788 is merged; `/tmp/wt-bc-netaudit` = this docs branch.
-
-**▶ 2026-09-27 BACKLOG (red1 direction): §SLOPE-HANDLES — drag an axis / apex / edge of a sloped element along its natural build
-lines, as the industry does (Revit sub-element + slope-arrow editing, ArchiCAD pet-palette offset-edge / move-node, SketchUp
-push-pull). Measured state on bim-ootb main: NO face/edge/vertex handles exist (0 hits for push-pull/faceDrag/edgeDrag/vertexDrag);
-grid drag is orthogonal-plan only and §ROTATION-GUARD refuses tilted elements; `dagevu_engine.js:23` AngleEdge ⛔ PAUSED "no
-measured roof-slope data"; row 30 (roof height scale, wrong axis, dead). Industry default to honour: a stretch KEEPS THE PITCH
-(ridge rises); apex-proportional is an explicit scale, never the default. Data path (non-invent): the slope plane is measurable
-from the source mesh's own face normals / the IFC's extrusion direction — measure first (Phase M), like §SLIDE-REAL-WALLS.
-Sequence: after §SLIDE-REAL-WALLS and insert-with-opening (same host/cut substrate).
-**DESIGN (red1 2026-09-27: "a universal handler set that is abstract to accommodate any natural handling"):** ONE handle
-abstraction, not a tool per element type. Every element EXPOSES handles derived from its own extracted geometry; each handle =
-`{ kind: point|edge|face|axis, anchor (where it sits), dofs: the natural build lines it may move along (wall long axis,
-slope-plane down-direction, ridge line, extrusion direction, grid line), invariants it must keep (pitch, thickness, face
-offset), constrain(candidate) → { delta } | refusal }` — exactly the shape `HostFillEdge.constrain()` already has (1-DOF along
-the host, delta-honest bounds, never a clamp). Cascades stay DAGeVu edges (anchor/ride). Existing drags become instances:
-grid-line drag = axis handle on a grid line; opening slide = edge handle on the host long axis; roof stretch = edge handle on the
-eave keeping pitch; apex drag = point handle on the ridge (explicit pitch change). Handles are only offered where their build
-line is MEASURED from the source (no measured slope ⇒ no slope handle — refused, never guessed).**
-
-## ▶ §RESUME 2026-09-26b — (superseded as entry point by 2026-09-27 above; read it second). Then §RESUME 2026-09-26 below, then §STRATEGY 2026-09-24.
-## Every number was measured on the combined branch bim-ootb `feat/modeller-next-0926`. Specs: `prompts/Modeller/NEXT_0926/`.
-
-**▶ "resume Modeller session" (red1's trigger phrase) — do exactly this, in order:**
-1. Read this block, then the §RESUME 2026-09-26 block and §STRATEGY 2026-09-24 below (method rules + traps).
-2. State of the world at the 2026-09-26 reboot: **everything is merged** — bim-ootb main `b0826a5a` (#1769, sw v50),
-   BIMCompiler master (#125 + this note). No Modeller work lives in any `/tmp/wt-*` worktree; nothing is unpushed.
-3. ⏸ 2026-09-26c: red1 said HOLD on headless runs (Alt+S testing on :8624); still not re-run. First task: run the five witnesses NOT yet re-run on merged main (held so red1's Alt+S on :8624 stayed light) in a
-   fresh worktree off origin/main, with `NODE_PATH=~/bim-ootb/tests/node_modules:~/bim-compiler/node_modules` and the
-   gitignored `Terminal_arcstr_proof.db` + `Terminal_plates_proof.db` copied from `~/bim-ootb/modeller/`:
-   `witness_e2e_walk_all_disciplines.js` · `witness_e2e_walk.js` (5/3 on the pre-#1769 base) · `witness_e2e_save.js` ·
-   `witness_route_pattern_bridge.js` (6/4 red since #846 — expected, it is NEXT 1 below) · `witness_e2e_walkall_terminal_scale.js`.
-   Compare each red against origin/main `1069c70c` before calling it a regression. **Ask the photoreal session / red1
-   before a heavy headless run if red1 is testing Alt+S** (headless Chrome slows the look port).
-4. Then work the NEXT list below in order. Data calls: decide them yourself (simplest sourced option, checked against
-   the `*_silent.db` references) — red1 wants "simple and workable … visually and generally correct".
-5. Merge convention: one combined branch, one PR at session end (bim-ootb auto-merges on green checks); update this block.
-
-**§WITNESS RE-RUN 2026-09-26c (merged main `b0826a5a`, logs in session scratchpad/wit/):** W-E2E-WALK-ALL 13/0 (63 s) ·
-W-E2E-WALK 8/0 (9 s) · W-SAVE-COMPLETEIT 11/0 (11 s) · W-TERMINAL-WALKALL-PERF 6/0 (100 s; Walk-ALL 73.6 s, PLB 2,915/2,915 +
-FP 623/623 + ACMV 807/807 signed, 1 group each) · W-ROUTE-PATTERN-BRIDGE 6/4 (P3-P6, the known NEXT #1 retarget).
-**🔴 NEW FINDING (scope-blind green):** the Modeller's catalog has been EMPTY since #550 (2026-06-27, modeller/ split).
-`modeller/bonsai_library.js:34` fetches `modeller/dagevu_catalog.json`; the file stayed at `viewer/dagevu_catalog.json`
-(live: modeller URL 404, viewer URL 200 / 274,212 B). Log: `§LIBRARY catalog loaded products=0`. Effect measured on Terminal:
-every bend fitting fails to fold — 726× `GEOM_INSERT unknown component FITTING_ELBOW_GENERIC` + 468× `…TEE_GENERIC`
-(= 2 × the 597 in `§BEND disc=PLB joints=597`). So §PRODUCTIVITY's "597 fittings" are signed rows that never render, and
-W-TERMINAL-WALKALL-PERF T6 NO-ERROR does not see it. Any catalog insert (picker, assemblies) is likewise unresolvable.
-**→ FIXED, bim-ootb PR #1770 (`fix/modeller-catalog-path` @ 22c123fa, auto-merge on; spec SPEC_CATALOG_PATH.md):** catalog +
-geometries fetched from `../viewer/`; sw v51; a 2nd latent bug it exposed — `_dwUpgradeFitMeshes`'s scrubTo wiped the dwRoot tube
-layer (Duplex tubes 33 → 0) — now redraws like every other re-fold. New T7 FOLD-CLEAN: base 1,194 unknown / 0 products → 0 / 837.
-9-witness sweep base = fix (only T7 moved); Duplex fittings real mesh 3/3 (was 0/3). Cost: W-WALK-GESTURE 7 → 47 s, W-MEP-REROUTE 16 → 46 s.
-
-**⚖ DECISION (red1 2026-09-26): the tiled roof is PREFAB ARC/STR the user reshapes along its axis like any other element; walkers
-FILL IN services (MEP).** → no roof walk row in the Outliner (bim-ootb PR #1785, §ROOF-PREFAB); the engine keeps the §ROOF-PATTERN
-verdict so no fabricated plates can return. Do not re-open "generate the roof" without red1.
-**Assessment 2026-09-26 (asked by red1) — next priorities (specs written: WITNESS_INTERFACE_FRAMEWORK.md §MODELLER-NET-AUDIT · MODELLER_BOM_CATALOG_SPEC.md §CATALOG-REBIND · this file §IFC-EXPORT-DEPTH):** (1) audit the witness net for scope-blind / vacuous / wrong-path checks
-(every defect found this session hid behind a green witness: empty catalog 3 months, roof row never worked); (2) data quality:
-restore `library/DX_BOM.db` + `SH_BOM.db`, rebind catalog meshes (row 14); (3) IFC export depth (Psets, storeys, materials).
-
-**▶ 2026-09-26e (resumed) — rows 8 + 22 closed, row 14 parked.** Row 8 → **bim-ootb PR #1782**: roof walk returns a VERDICT
-(present / refuse), never the band fill; the Outliner roof row had NEVER walked for a user (discWalk upper-cased 'roof' → 'ROOF',
-§DISC-CASE fix); W-ROW8-ROOF-PATTERN 1/6/1 → 7/0, W-E2E-ROOF-PATTERN 2/1 → 3/0, 10 regression witnesses base = fix. Row 22 part 2 →
-UBBL clauses read from the gazette (UBBL_RULES_GATE.md §SOURCED, hash-pinned); only room size is checkable on today's data, and the
-shipped demo applied bedroom minimums to every room → **PR #1781** (§UBBL-TIERS: real violations = any-room floor 43(b)/43/44 proviso;
-"would fail if habitable" = 42(1)/42(2)/44(1)(a); Duplex 8 false violations → 0, 10 "check"). By-laws 181 (exit ≥ 700 mm) and 168(5)
-(door swing) need escape-route / swing data we do not extract. **Row 14 PARKED:** catalog meshes are bound by a name/footprint
-heuristic (many are the wrong part — e.g. two different roofs share one flat-roof mesh), and `library/DX_BOM.db` + `SH_BOM.db` are
-0-byte locally, so the catalog cannot be regenerated safely; needs those libraries restored + a mesh re-binding pass (Fable-sized).
-Not the Viewer's concern: only the Modeller reads `viewer/dagevu_catalog.json`.
-
-**NEXT #1-#5 DONE; #6 handed over.** One combined bim-ootb branch (row 7 + #2/#3 + #4 + #5).
-| item | result (base → fix) | spec |
-|---|---|---|
-| Row 7 grid | red1 picked **0.1039 (true centres)**, then **"on the beams"** (median line fit). The bridge reads true mesh centres via `CrossEdges.readBoxes` (#1744's reader, not re-derived) and re-inits after the geo fetch (§STRWALK-GEO — without it the fix never fires on split residents). Terminal: facade gridlines on the beam lines (0 mm, were 107/161 mm off), 131/158 columns exact (was 92), grid 18×10 and membership unchanged, skeleton column z fixed (63 off, max 3.944 m). Headline RMS 0.0939 → **0.1323**: it now measures only by-design facade eccentricity; **no estimator lowers it without minting fake lines** (measured). Wall-bearing semi-grid unchanged (mean). | SPEC_ROW7.md |
-| #2 re-route signed | 1 m Duplex move: 0 new signed rows → keep 16 / new 5 / retire 6, bend fittings re-derived (3 kept / 2 new / 2 retired); one Ctrl+Z / Ctrl+Y, no new rows. `bonsai_oplog.undo/redo` skip rows a re-route owns (`_treeOwned`). W-MEP-REROUTE 5/3 → 9/0 | SPEC_MEP_SIGN.md |
-| #3 sign all | `DW_CHAIN_COMMIT_CAP` 60 → Infinity. The old "1.6-2 s per sweep" was the per-sweep-commit era. Terminal PLB 60 → 2,915 signed, walk 16.5 → 24.0 s. **Hospital 60 → 19,331, PLB walk 69.6 → 123.2 s, +19k solids — kept (every step signed), red1 may re-cap big buildings.** | SPEC_MEP_SIGN.md |
-| #4 ACMV/ELEC/FP | `_RW_PATTERN_DISC` covers all four; 10 sourced rows added to `mep_rw.db` ad_mep_pattern (FP_TERMINAL_01 ×4, ACMV_TERMINAL_01 ×3 from SJTII_Terminal; ELEC_DUPLEX_01 ×3 from Ifc2x3_Duplex); products FP_Drop_Pipe 21.3 mm · Terminal_Rect_Duct_150x150 · Duplex_EMT_Conduit_29. Combined: Terminal runs signed **4,345/4,345** (PLB 2,915 + FP + ACMV). Engine-measured zeros kept as EXPECTED 0 gates (SampleCastle FP/ACMV, ELEC on Duplex/Terminal). | SPEC_MEP_ROUTE_DISC.md |
-| #5 NNCHAIN | N4/N6 retargeted to the routePattern bridge's identity (rule/kinds/product/path) and id-targeted setUndone. 6/2 → 8/0. Test-only. | SPEC_NNCHAIN.md |
-| #6 viewer routewalker | **Handed over to the Viewer lane, not taken**: `viewer/routewalker.js` has the same vertical-post clash box at 3 sites that §RW-RUNBOX (L2) fixed in `modeller/routewalker.js`. | — |
-
-**§PRODUCTIVITY now (one Walk ALL Services, combined branch):** Duplex 221 generated (185 fixtures + 33 runs signed + 3 fittings) / 29 flagged · SampleCastle 525 / 9 · Terminal 9,284 (4,342 + 4,345 signed + 597) / 60.
-
-**Combined-branch witnesses:** W-ROW7-TRUE-CENTRE 6/0 · W-ROW7-GRID-BASELINE 5/0 (pinned to the mean fit it recorded) · W-E2E-ROW7-GEO-REINIT 6/0 · W-MEP-REROUTE 9/0 · W-WALK-GESTURE 4/0 · W-ROUTER-NNCHAIN 8/0 · W-MEP-OPENPATH 33/0 (M5-M7 per discipline, M8 all-signed). STR/grid: STR-REWALK-COMMIT 9/0 · GRIDMOVE-REAL 8/0 · STR-INTO-ARC 11/0 · STRWALK-SMOKE 9/0 (row 7 branch).
-
-**DATA CALLS — DECIDED (red1 2026-09-26: "keep things simple and workable and not worry about the finer points as long
-bigger issues are resolved ie visually and generally correct. The silent DBs are references u can work with").** All five
-stay at the shipped default: FP starts at the seed door (as CW) · ACMV one product 150×150 (the mode in Terminal 53/420 AND in
-the Hospital_silent reference, 437 of 4,816 IfcDuctSegment) · ACMV mains + drops, no plant step · ELEC mains only · Hospital
-signs every run. Rule going forward: take the simplest sourced option, check it against the `*_silent.db` references
-(Hospital_silent, HHS_Office_Federated_silent), ask red1 only when something is visibly or generally wrong.
-
-**NEXT, ranked:** 1. ✅ DONE 2026-09-26c — bim-ootb PR #1771 (test-only): W-ROUTE-PATTERN-BRIDGE 6/4 → 10/0 ×2 (engine seam now uses the production `{schedule:true, geoDb}` opts; P6 = coverage honesty on unmapped STR; waits for the ARC seed). Found on the way → **FIXED, PR #1779 (§WALK-AFTER-SEED)**: the Walk row is usable 4.4 s (Duplex) / 24.0 s (Terminal) before the ARC seed commits; a Walk in that window signed its rows before the seed's and lost its layer. Walks now await `window.__arcSeedReady`; W-WALK-AFTER-SEED base 1/3 → 4/0; W-E2E-WALK's early op-log read fixed (8/0 ×2) · 2. ✖ RETIRED 2026-09-26c (red1: the Java backend is deprecated — OOTB is a JS PWA with no Java; memory java-bridge SUPERSEDED 2026-08-06). The 10 rows live in bim-ootb `modeller/mep_rw.db`, which is the source of truth; nothing to carry into `IFCtoERP.java` · 3. HospitalGarage grid (140 columns off-lattice: 15×102, colRMS 1.20 m — the 1D axis clustering doesn't describe it; its own row) — ✅ DONE 2026-09-26c (Fable agent) — bim-ootb PR #1774: ONE lattice rotated −2.000° (= the IfcSite placement, 0 IfcGrid in the IFC); `swDetectRotation` (all-pairs mod-90 mode + support gate) → 15×103 / 1.193 m / 6 exact → **17×29 / 0.0607 m / 132 of 140 exact**; Terminal unchanged; Hospital refused by the support gate (wings at −5°/+10°). Open: the authoring grid still drags world-axis lines (fine at 2°; a rotated authoring grid is its own row). Spec SPEC_ROW7_HGARAGE.md · 4. ✅ DONE 2026-09-26c — bim-ootb PR #1772: a plain Ctrl+Y resurrected the lowest-id undone row (an undone walk's row, or a deleted row) instead of the edit. Rows a history node leaves undone now sit in `oplog._treeUndone`, skipped by redo(). W-UNDO-RESURRECT base 3/2 → 5/0; 7-witness sweep base = fix (spec SPEC_UNDO_RESURRECT.md) · 5. then the older rows from §RESUME 2026-09-26. **Row 9 ✅ 2026-09-26c — bim-ootb PR #1773:** edit-time ORANGE toast gets an Accept
-button → one signed gesture (Save's own heal ops, shared `_healOps`), one hop, re-checked; W-ORANGE-ACCEPT base 1/1 → 5/0, Save/gate
-witnesses base = fix. Accept follows Save's heal rule (moves the UNMOVED partner) — in the witness it moved a wall 0.5 m and raised 2
-new RED, reported not applied; red1 may want the heal to move the pulled element instead (not changed). **Stale witness found:**
-W-SAVE-BLOCKED-HEAL-INDUCED 0/2 on main — its fixture needs "unrelated" neighbours, none exist since §XEDGE-3AXIS (every Duplex element
-has edges) → **fixed PR #1778** (fixture found by simulating the real gate; 7/0). **Row 22:** part 1 ✅ PR #1775 (RED toast → one-click Revert = one Ctrl+Z, only while the edit is still latest; W-RED-REVERT base 1/1 → 4/0) ·
-part 3 ✅ PR #1776 (§GATE-SCALE: the gate's `seen` map threw RangeError past ~300 moved on Terminal; spatial grid → identical results,
-100 moved 3,119 → 10 ms, 1,000 moved 40 ms; W-GATE-SCALE base 4/1 → 5/0) · part 2 ⛔ BLOCKED: *which gazetted UBBL clause + value for corridor width and door swing?* UBBL_RULES_GATE.md §1b verified only By-Laws 39/42; its corridor/stair/dead-end figures have conflicting sources and no door-swing clause is cited — building a named check on them would invent the number. **Row 11 ✅ PR #1777** (§COLOR-PARITY: the element's authored `material_rgba`
-r,g,b, the Viewer's rule; palette only for NULL — W-COLOR-PARITY base 3/1 (all 196 Duplex + 1,077 HHS on the palette) → 4/0, fallback
-leg INCONCLUSIVE: no NULL rgba in either). Stale/red witnesses seen, not touched: W-E2E-CUT C6 (pixel, red on main). **Row 8** — Fable agent measured it; parent review changed the outcome (spec SPEC_ROW8_ROOF_PERELEMENT.md §REVIEW). Today's roof walk is a
-BULK FILL (Terminal 10,584 of 33,324 plates at the flat band-mid z, RMS 2.627 m) and FABRICATES arrays elsewhere (Clinic 331 on glazing,
-Hospital 47,526). But Terminal's 33,324 real plates are `discipline='ARC'` — the seed already puts them on screen, so a "per-element walk"
-would only re-place them (RMS 0 by identity, 33k duplicate rows). Fix: a tessellating row (fill ≥ 0.5, derived) measures the array and
-reports `§ROOF-PATTERN-PRESENT … nothing to generate` (0 placed) or REFUSES — never the fill. W-ROW8-ROOF-PATTERN (node) base 1/6/1 →
-7/0. Branch feat/row8-roof-perelement (/tmp/wt-row8-roof), committed locally, NOT pushed — its browser regression runs wait on the GPU
-(paused 2026-09-26 for the photoreal lane's Alt+S runs). Also **W-E2E-CUT C6 → PR #1780** (it compared pixels after a re-select click
-that hit another element; now the cut element's own mesh fingerprint: changed by the cut, restored exactly by the undo). **Rows 13/25** stay deferred by design (§OPEN LIST).
-**Row 14 ⛔ BLOCKED — re-sourced 2026-09-26c, the row's premise is wrong.** Measured over `viewer/dagevu_catalog.json` × `dagevu_geometries.json`
-(794 products with a real mesh; `§ROW14-CATALOG`): 201 mesh extents == declared w/d/h (Z-up) · 52 same numbers, axes permuted · 14
-placeholder dims (d=h=1) · 527 no match. The permuted ones are mostly the METADATA's order, not the mesh (SLAB_SH_SIMPLE whd 0.165/13.97/5.77,
-mesh 13.97×5.77×0.17 Z-up — correct slab); Dining_Chair h=0.45 but its mesh is 1.227 m tall and ROLE__CHAIR_A (same mesh) says h=1.227.
-So "bake an axis permutation into the vertices, witness tallest-axis==h" would bake BAD METADATA into good meshes. The measured fix is the
-other way: for mesh-bearing products take w/d/h FROM the mesh extents (non-invent; changes LOD-200 proxy box sizes). The catalog files are the
-Viewer's (`viewer/`), so it is cross-lane. *Question for red1: OK to derive the shared catalog's w/d/h from the real mesh extents (Modeller +
-Viewer proxy sizes change), instead of the row's vertex bake?*
-
-**NEW TRAPS:**
-- **sql.js: two `new SQL.Database(sameBuffer)` share storage** — a DROP on one showed in the other (measured). Always pass a fresh `new Uint8Array(fs.readFileSync(...))` per db in node witnesses.
-- **Signing everything makes walks commit later.** W-WALK-GESTURE went 1/3 once under load, snapshotting before the walk's history node existed. Wait on `__dwRowsByDisc[disc].walk` + `ModellerHistory.pending()`, not `__dwWalks`.
-- **A Terminal-scale commit blocks the page > 180 s** — puppeteer `protocolTimeout` 900 s in W-MEP-OPENPATH, or a finished walk reads as walked=false.
-
-## ▶ §RESUME 2026-09-26 — (superseded as entry point by 2026-09-26b above). Then read §STRATEGY 2026-09-24 (the thesis + lanes) and §RESUME 2026-09-21
-## (method rules + traps). Written at session close; every number was measured on merged main.
-
-**WHERE IT STANDS.** The generate-then-edit loop runs end to end on the real Open path. A bare ARC building → "Walk ALL
-Services" places fixtures, routes plumbing, and SIGNS it at measured Duplex pipe sizes. One Ctrl+Z undoes the whole walk.
-Moving a fixture re-routes its pipes. Merged + live: bim-ootb **#1762** (§STRATEGY L0-L7 + §XEDGE-3AXIS) and **#1768**
-(§GATE-STOREY-FLOOR + §PRODUCTIVITY + cut-layers witness aim); BIMCompiler **#121 #122 #123**; docs site deployed.
-
-**MEASURED §PRODUCTIVITY** (one Walk ALL Services, generated / flagged for review): Duplex 206/29 · SampleCastle 514/9 ·
-Hospital 39,979/22 · Terminal 7,854/60 · HHS/Clinic/HospitalGarage/SampleHouse 0 flagged. This proves "little left to fix",
-NOT "X times faster" (there is no hand-modelling baseline).
-
-**CLOSED THIS STRETCH (don't re-open):** next-list #1 residual 11 (the rx/ry guard, 11 → 0) · #4 datums 802→657→643 =
-CORRECTIONS (138 → 0 not-real planes on the live render) · row 6 re-framed + routed · L6 PLB stays unattached (red1) ·
-Cut on a layered wall PROVEN (W-E2E-CUT-LAYERS 10/0; the old L3 red was the witness's aim, not the pick).
-
-**NEXT, ranked (my recommendation; red1 had not picked one at close):**
-1. **Row 7 — grid residual** (the "drag and the building follows" handle). ⚠ DECISION OUTSTANDING: chase **0.1039 m**
-   (true mesh centres, the honest number) or 0.0939 m (what ships, flattered by the anchor defect in
-   `str_walker_bridge.js:22/38/50`). Recommended: 0.1039. Confirm with red1, then run it as ONE Fable session (tough).
-2. Re-routed runs are unsigned and bend fittings are not re-derived after a move (§MEP-REROUTE scope note).
-3. Terminal signs 60 of 2,915 runs (DW_CHAIN_COMMIT_CAP, occt-bounded).
-4. Route ACMV / ELEC / FP. They are placed but not routed; the pattern bridge covers CW/SP only.
-5. Retarget W-ROUTER-NNCHAIN N4/N6 (it expects guid-carrying nn runs).
-6. `viewer/routewalker.js`: same vertical-post clash box at 3 sites. VIEWER scope, not the Modeller's; hand it over, don't take it.
-Then the older rows: 9 (apply ORANGE suggestions) · 22 (one-click revert, UBBL checks, rtree at scale) · 11 (real colours) ·
-8 (roof per-element) · 13/25 (SSAO/outline, PBR, BCF import) · 14 (re-source its example first).
-Blocked on red1: 15 (220 MB component_library.db: GH or OCI?) · 27 · 29 · 21/26/31 (never requested).
-
-**DISPATCH (red1):** Opus by default; Fable agents for genuinely tough items (red1, 2026-09-25). A Fable agent WILL hit the
-usage limit mid-run: resume it with its own context after the reset, never restart it.
-
-**NEW TRAPS / METHOD (each cost a wrong answer first):**
-- **An all-zero count is a claim, not a result.** "0 flagged" on 8 residents was the gate sinking fixtures underground.
-  Cross-check any all-green number against the app's own per-step log before reporting it.
-- **A same-line `// comment` can swallow object keys.** A scripted edit silently dropped 4 DiscWalker API exports and
-  `node --check` passed. After any scripted edit to an object literal, grep the diff for mid-line `//` and check exports with
-  `node -e "require(...)"`.
-- **Snapshot after the ASYNC re-fold, not at the row flip.** With signed GEOM_SWEEP rows, undo/redo finish later. Wait on
-  `ModellerHistory.pending()` + two macrotasks (W-WALK-GESTURE).
-- **Witnesses that read the op-log length early race the seed** (read 0) under load. W-E2E-WALK and W-E2E-WALK-IFCOPEN do
-  this. A base red with "oplog 0→N" is that race, not a regression.
-- **A walk also commits routed-network rows** (sweeps + bend fittings). Any "op-log grew by placed count" assertion must count
-  them from the op-log.
-- **Do not "improve" routewalker pairing to next-nearest.** Measured: Duplex 18 fixtures → 110 runs, reaching 50 m targets.
-
-## ▶ §STRATEGY 2026-09-24 — read SECOND (after §RESUME 2026-09-26). How the Modeller closes the gap: GENERATE, then EDIT MINIMALLY.
-## The §RESUME 2026-09-21 block below is still current for its method rules and traps, so read it second.
+## ▶ §STRATEGY 2026-09-24 — How the Modeller closes the gap: GENERATE, then EDIT MINIMALLY. (The resume blocks it once pointed to are archived: `prompts/archive/MODELLER_MASTER_resume_history_2026-09_to_11.md`.)
 ## Every number here was measured on bim-ootb origin/main b8f844fb on the REAL user open path.
 
 **THE THESIS (user, 2026-09-24):** *"start with blank ARC and walk route, edit minimally, making this more
@@ -774,158 +346,6 @@ The probe scripts were session scratch, not committed. That is why L0 exists.
   mep_rw.db" (it has 0; the 2,372 come from the building db); RESUME_TERMINAL_RULE_MINING's "124 rows / 47 avoidance"
   (now 37 / 10) and its Terminal-rules-on-houses model (contradicted by WalkerDoctrine, and the doctrine wins);
   SPEC_MESH_FIT_GRAFT / SPEC_SEAM_HEALING code lives only on unmerged feature branches.
-
-## ▶ §RESUME 2026-09-21 — read THIRD (after §RESUME 2026-09-26 and §STRATEGY 2026-09-24 above). Supersedes the 2026-09-15 block below, which is kept for its
-## history but is NO LONGER the entry point. Written at session close; every number below was measured.
-
-**WHAT THIS SESSION DID.** The 2026-09-15 block ordered a re-verify sweep of the 34-row §OPEN LIST. That
-sweep ran, and then four of the rows it surfaced were actually fixed. Merged: bim-ootb **#1738 #1744
-#1747 #1749 #1750 #1753**; bim-compiler **#105-#118**.
-
-| row | was | now |
-|---|---|---|
-| 36 | IFC export emitted an **empty file** for every resident (592 bytes, 0 products) | ✅ #1747 — Duplex 196→196, SampleCastle 3,225→3,225, round-tripped through re-import |
-| 12 | `rel_fills_host` on 3 of 8 residents → **#1706's anchor/ride engine inert on 5** | ✅ #1749/#1750 — 943 new rideable edges; ride now works on **7 of 8** |
-| 35 | the LIVE guide contradicted shipped behaviour for a week | ✅ site consolidated onto master (#106) + published; verified live |
-| 28 | "293 tilted elements render with IDENTITY" | ✅ does NOT reproduce — 230 genuinely rotated, **0 dropped** (#1738) |
-| 24 | `smoke_arc_only.js` silently ran 1 of 2 buildings | ✅ root cause `e2e_harness.js:349` `process.exit()` (#1738) |
-| 19 · 23 · 32 | verified-open | ✅ closed / re-pointed — see §SWEEP |
-| 7 | "0.104 m residual, needs a heavy session" | **re-measured** (#1753) — baseline not stale, the shipped path under-reports it. See the row. |
-
-**THE ONE PATTERN WORTH INHERITING: `element_transforms.center_xyz` is the IFC placement ANCHOR, not the
-volumetric centre.** Any consumer treating `[center ± bbox/2]` as a world box is displaced — measured
-median 78 mm, up to 425 mm. **Three consumers found:**
-1. `cross_edges.js` — **FIXED** (#1744). 843 of 9,817 abuts edges were wrong; now 11.
-2. `str_walker_bridge.js:22/38/50` — row 7's grid. Re-measured, **not** fixed (see row 7).
-3. `scripts/compile_rooms.py` — Viewer room injection. **Recorded, unmeasured.** Its exposure is NOT
-   uniform: `door_dims` reads extents only and is safe (934/934 correct); the position readers are not.
-   `SPATIAL_DEPENDENCY_GRAPH.md` §ANCHOR-SUBSTRATE-SIBLINGS. **Measure before touching.**
-
-**WHAT TO CHASE NEXT, ranked.** Detail in §SWEEP FOLLOW-THROUGH and the rows themselves.
-1. ✅ **DONE 2026-09-24 on branch `fix/xedge-3axis` (§STRATEGY, non-MEP gaps): the rx/ry guard, 11 of 11.** **The residual 11** (#1744's honest RED). Two suspects, never measured apart: `_readBoxes`' `rx/ry`
-   guard — whose stated premise is the same false claim corrected in #1738, so it fires on real data and
-   the 3-axis path it distrusts is now itself witnessed, making it probably liftable — and the 1,301 of
-   3,225 elements with no resolvable blob. **Measure which, before changing either.**
-2. **Row 7's heavy session** — now has what it lacked: it must decide WHETHER it chases 0.0939 m (what
-   ships) or 0.1039 m (the honest number). Starting without that decision is how it stalls again.
-3. **Row 6** — Terminal serves 0 MEP on the real open path.
-4. ✅ **CLOSED 2026-09-25 — CORRECTIONS, 0 box-caused artifacts** (802 → 657 → 643). Method: independent
-   re-derivation of the datum definition (cross_edges.js deriveDatumsAnchored: ≥3 faces within 50 mm, greedy window),
-   instrument-checked (reproduces 802/657/643 exactly from the shipped boxes; live mesh boxes == current boxes within
-   1.2 µm on 3,225/3,225), then each datum tested on the LIVE render (≥3 supports within 50 mm of its plane):
-   OLD 802 → **138 not real**; #1744's 657 → 5 not real (all its tilted-guard boxes); current **643 → 0 not real**, 2 unclear
-   (held only by aggregate ghost rows, no mesh), 3 real alignments not emitted because the greedy window cuts them (a
-   property of the definition, identical in the Python oracle — a spec note for red1, not a defect). #1744 also lost 6
-   real planes and made 1 spurious one through the rx/ry guard; #1762 restored/removed all 7. 76 count changes are
-   re-clusterings (plane kept, merged with a neighbour ≤ 97 mm). Row 7 stays un-linked. Evidence: session scratch
-   probe_datums.js + analyze_run2-4.log (two runs, identical). The original line read: Datums 802 → 657 (SampleCastle, from #1744). Still unverified as a *correction* rather than a new
-   artifact. ⚠ It does NOT bear on row 7 — I claimed it did and that is retracted (#118).
-5. Rows 8 · 9 · 11 · 13 · 14 · 22 · 25. **Row 14's cited example does not reproduce** — re-source it or
-   its witness is green on arrival.
-6. Blocked on the user, nothing built: 15 · 21 · 26 · 27 · 29 · 31.
-
-**METHOD RULES THIS SESSION PAID FOR. Each one cost a wrong answer first.**
-- **Diff against a BASELINE before claiming — or clearing — a regression.** Running 11 witnesses on the
-  fix AND on unmodified `origin/main`, side by side, is what caught `witness_e2e_save` breaking (green →
-  3/2) *and* proved four other failures were pre-existing. Without the baseline both conclusions were
-  unavailable.
-- **Never re-derive a transform you can read.** `cross_edges.js` re-implemented "world = centre + R·vert"
-  and called it "the same final numbers, fewer steps". It was wrong for 798 of 934 elements. #1747's IFC
-  export instead reads the renderer's own baked world vertices, so parity is structural.
-- **Wait on a CONDITION, not a duration.** My own witness lied twice: a fixed sleep, then "name matches
-  and the bridge stopped changing" — which the PREVIOUS building's untouched bridge satisfies, because
-  `__dwName` flips at open START while `__arcFidByGuid` is rebuilt later. Null the globals, wait for
-  repopulation (#1750). **Any witness opening more than one resident needs this.**
-- **The instrument check comes FIRST, and it is not a formality.** Two probes measured the wrong quantity
-  and looked conclusive: comparing a rendered AABB to `element_transforms.bbox_*` proves nothing, because
-  `extractIFCtoDB.py:181` defines those columns AS the world AABB. Both W-ARC-3AXIS and
-  W-ROW7-GRID-BASELINE now open with a control that voids the run if the decode is wrong.
-- **Prove a fix FIRES on merged main, not that it shipped.** A sibling session had two commits stranded
-  by auto-merge in one night. Every fix here was re-run against `origin/main` after merging.
-- **Docs publish ONLY via `scripts/safe_gh_deploy.sh`.** CLAUDE.md bans bare `mkdocs gh-deploy`; I
-  reached for it twice before reading that, and was blocked both times — correctly. The guard caught a
-  real deletion (`glassbowl_data.db`) that I had also found by hand.
-
-**TRAPS — state of the world, so nobody re-discovers these.**
-- **CI `system-is-real` has NEVER been green — 198 of its last 200 runs failed, back to 2026-07-05.**
-  A red X on a bim-compiler PR is **no signal**; check whether the failure is new before believing it.
-  87% of it is unpassable by construction. Fully diagnosed in `LFS_QUOTA_AUDIT.md` (#107).
-- ~~**`playwright` is NOT installed**~~ ⚠ WRONG, corrected 2026-09-24: it is at `~/bim-ootb/tests/node_modules` (1.59.1); set `NODE_PATH` for bare requires (§STRATEGY). Original: `witness_str_into_arc`, `witness_green_report`,
-  `witness_modeller_xedge_lens`, `witness_arc_editable_smoke`, `sdg_gate/cascade_smoke` crash on
-  `Cannot find module 'playwright'`. Pre-existing, unrelated to any change here. `puppeteer` IS available
-  (resolved from `~/bim-compiler/node_modules`), which is how every witness here ran headless.
-- **Gitignored local fixtures.** `modeller/Terminal_arcstr_proof.db` (.gitignore:49) and
-  `docs/glassbowl_data.db` exist on the primary checkout's DISK but not in git, so a fresh `/tmp/wt-*`
-  has a 0-byte placeholder. That is why W-ROW7-GRID-BASELINE prints INCONCLUSIVE rather than passing over
-  an empty population, and why a docs deploy from a fresh worktree aborts. Not a bug — know it.
-  `glassbowl_data.db` now also has a durable OCI copy (`§GLASSBOWL-OCI`).
-- **Terminal declares ZERO void/fill relations in its source IFC.** Its ride gap is a SOURCE DATA gap,
-  asserted in W-RFH-RESIDENTS F4. **Do not "fix" it by fabricating edges.**
-
-**HYGIENE.** This session created and pruned **21** worktrees; **0** of mine remain. 33 `/tmp/wt-*`
-survive from other sessions — not mine to prune, and several hold unpushed work (see the 2026-09-15
-block's table). `.claude/worktrees/agent-*` are harness-managed; never remove those by hand.
-
-## ▶ §RESUME 2026-09-15 — ⚠ SUPERSEDED by §RESUME 2026-09-21 above. Kept for its history (the worktree
-## table is still the current one); it is NOT the entry point. Written by the session that did NOT touch
-## the Modeller, so you inherit facts, not a handover story.
-
-**WHAT THE LAST SESSION DID, AND WHY IT MATTERS TO YOU: nothing in `modeller/`.** It ran the Viewer 4D/5D
-lane (`TM_4D5D_VARIANCE_LANE.md` §S7 — the construction window on an element). Merged to bim-ootb `main`:
-#1731 #1732 #1733 #1735 #1736 #1737; to bim-compiler `master`: #101 #102. Touched `viewer/*` and
-`tests/audit_sw_precache.js` only. **No `modeller/` file was edited, so nothing below is stale because of
-it** — but two of its by-products are yours to know:
-- `viewer/sw.js` is at **`CACHE_VERSION` v1177**. Bump from there, never from a remembered number.
-- `tests/audit_sw_precache.js` was hardened (#1737): it now strips comments before pairing quotes, so an
-  apostrophe or a `]` in a `PRECACHE_ASSETS` comment no longer silently drops every later entry. Before
-  that fix it reported files unchanged for months as "unlisted" and said nothing about the real cause. If
-  you add a modeller asset to a precache list, that gate is trustworthy again.
-
-**VERIFIED NOW, not carried forward from prose (2026-09-15):**
-- `modeller/tests/` holds **216 witnesses**. Last `modeller/*` work landed **2026-09-11**: the §DAGEVU
-  relationship-edge engine and the cut-move arc (`#171x` series — GEOM_CUT_MOVE, GEOM_CUT_RESIZE, cut
-  frame under a 90°-multiple GEOM_ROTATE, §DAGEVU-SLIDE).
-- **Nothing is in flight.** Both modeller worktrees (`/tmp/wt-dagevu-engine` `feat/dagevu-slide`,
-  `/tmp/wt-dagevu-resume-doc` `docs/resume-dagevu-engine`) are `ahead=0 dirty=0` — fully pushed, clean,
-  prunable. No one is mid-edit.
-
-**⚠ THE §OPEN LIST BELOW WAS HARVESTED 2026-07-30 AND IS ~6 WEEKS STALE.** Its 34 rows predate the entire
-DAGeVu engine arc. **That sweep has now been DONE — see §SWEEP 2026-09-15 immediately below this block.**
-All 34 rows were re-marked against `origin/main` @ `3e8c6be2`; 8 moved, 2 new rows were found, and 4
-witnesses were actually run. **Read §SWEEP's verdict column, not the 2026-07-30 status column** — where
-they disagree, §SWEEP is the measurement and the old column is prose. Do not trust row ordering as
-priority. Row 34's "NEXT SESSION START HERE" is spent: it is answered in §SWEEP (and it split in two).
-
-**Row 34 ("anchor export/save leak") — ANSWERED 2026-09-15, both code paths read. Full verdict in
-§SWEEP.** Short form: the IFC path cannot leak an anchor because it never handles `GEOM_INSERT` at all —
-but that also means it exports NONE of the ARC seed (now row 36, the bigger finding). The Save / Native
-`.db` path DOES carry the anchors, because `exportDb` is a raw byte dump of the whole signed op-log with
-zero filtering; whether that is a leak or correct behaviour is a call, and it is unwitnessed either way.
-`saveModelDb` named in the row does not exist — the real path is `runSave() → Bonsai.exportDb()`.
-
-**HYGIENE — swept 2026-09-15, partly done, and the remainder is NOT yours to prune.** The sweep ran over
-all 22 outstanding `/tmp/wt-*` worktrees: **14 pruned** (the 5 this session created, plus 9 verified
-`ahead=0 dirty=0` — including both dagevu ones). **13 remain, and every one of them holds real work:**
-
-| state | worktrees | why it stays |
-|---|---|---|
-| unpushed commits (`no-remote` branch) | `wt-bake-perf` · `wt-batch-class-paint` · `wt-idb-cache-timeout` · `wt-krn-persist-race` · `wt-rule-findings-film` · `wt-storey-cut` · `wt-storey-reveal-list` | the branch was never pushed — pruning DESTROYS the commits |
-| merged but dirty | `wt-bake-schedguard` (3) · `wt-buildup-placed` (27) · `wt-scrapbook` (1) | uncommitted changes on top of a merged branch |
-| ahead and dirty | `wt-88-ab` (56 ahead, 4 dirty) · `wt-v87` (2 ahead, 17 dirty) · `wt-storey-reveal` (73 dirty) | someone's live in-progress work |
-
-**Do not prune any of the 13 without the owner's word.** `wt-storey-cut` alone carries 359 dirty files.
-If you add worktrees, prune YOUR OWN at close (`ahead=0` AND `dirty=0`), and leave these alone.
-
-**METHOD RULES THIS LANE EARNED THE HARD WAY LAST SESSION — they apply here unchanged:**
-- **A number that decides scope gets measured before it decides anything.** Three times in one session a
-  plausible figure stood in for a measurement: a timing taken from the wrong function, a code comment's
-  cap turned into a prediction, and a cross-file diff read as code drift. All three were wrong, all three
-  were caught only because something forced a re-check.
-- **A diff that decides scope must hold every variable but one.** The third of those varied two — the file
-  AND the code version — then blamed the code. In THIS lane that trap is live: `*_extracted.db` and
-  `*_silent.db` are different files with different completeness (Hospital: 64,150 transforms vs 63,917).
-  Never diff across two building DBs and attribute the difference to code.
-- **Prove a fix FIRES, not just that it shipped** — grep a real log line, never "code changed".
 
 ## ▶ §SWEEP 2026-09-15 — the re-verify sweep §RESUME ordered, DONE. All 34 rows re-marked against
 ## bim-ootb `origin/main` @ `3e8c6be2` by grep/sqlite, plus 4 witnesses actually RUN. **Rows 24 and 28 were
@@ -1320,6 +740,26 @@ scratchpads (missing) → not run.
 
 
 Related: IFC4.3 target classes and the alignment-first rule — docs/BrowserScaleBenchmark.md (§IFC43).
+## §EXPORT-ROUNDTRIP — SPEC DRAFT 2026-11-08 (owner's queue item 2: "export gaps"). Measure first, then finish the spec, then code
+**Issue (measured in G2, §RESUME 2026-11-07, on the private set):** a walked export held 0 `IfcBuildingStorey` (everything sat directly in the building) and none of the 3,170 routed runs (0 swept solids, 0 ports). Only 2,323 of the DB's 6,461 elements came through the seed. So what the Modeller assembles does not reach the hand-off. Writer owner: `modeller/bonsai_ifc.js`; export entry `viewer_db_export.js` / the Export menu.
+**Design points (design lane, 2026-11-08; not measured by it):**
+1. **Round trip with a denominator.** Export, re-open with the SAME route, then compare by class, by storey and by position in that route's frame, as X of N. Red control: an element deliberately dropped must turn the check red.
+2. **What the IFC must carry back, beyond elements:**
+   - storeys with their elevations (`storey_elevation`, so elements are contained in their storey, not in the building);
+   - the stated grid (`ifc_grid_axis`, #2702);
+   - the file's rooms (`ifc_spaces`);
+   - the `BIMOOTB_Walk` set: provisional devices stay in the file, labelled. Only totals leave them out.
+3. **Frame:** export writes the frame it read: the file's stated site placement / map conversion, not a map offset baked into every placement. This must agree with the owner's ONE-FRAME ruling below.
+4. **Routed runs:** export only what the walker placed with a real basis. The drawn-route record is plan only, so it reaches the IFC only after the height step (§7.1), and then as the Axis-only duct the owner has yet to rule on.
+**Owner ruling that touches this (2026-11-08, relayed by the design lane, CORRECTED the same day): ONE FRAME = "Local + recorded offset".**
+- Both IFC routes follow the Viewer import's existing rule: shift a far-away model to a local origin and record the shift in `project_metadata` (`georef_offset_x/y/z`, import_worker.js 700-755). The map position stays exact and recoverable.
+- Also restore the dropped site latitude/longitude: on the import today, `site_latitude` is empty and `site_latlong_source=unknown`.
+- **So the change is the Modeller OPEN route** (`ifc_open_db.js` / `ifc_extract_core.js`, this lane): it keeps the map offset today. The import route needs only the lat/long part.
+- Spec before code. W-IFC-GRID must stay green: the axes move with the elements.
+- Export (point 3 above) writes the recorded offset back as the file's site placement.
+- (An earlier relay, "keep map coords", was a misdescription and is withdrawn.)
+**First step for the next session:** re-measure G2's gaps on main (`8d1ede96` or later) with a round-trip witness, as X of N per class, per storey and per carried table, on a public resident (Duplex) and then the private set. Write the measured table here, then the rule and the build.
+
 ## §IFC-EXPORT-DEPTH — SPEC, 2026-09-26. Priority 3 (builds on §IFC-EXPORT-SEED below).
 Today the export carries shapes + classes only (status reads `walls=0` for an opened building, `modeller.html:~3042`).
 A user hands the IFC to the next tool, so depth decides whether our output is usable. Add, each from data we already hold:
@@ -1550,3 +990,4 @@ W-SDG-GATE 18/0, A9–A9g new. Coverage E2 → RED, `none=14`, and it left the N
 **2026-11-07, bim-ootb #2685 (`NEURO_SYMBOLIC_ORDER_CONTRACT.md` §13):** the span row now names the limit, the material and the over-limit bays whose span changed, W-EDIT-REPORT R12. Fixed in the same PR: any `GEOM_MOVE` of a 3-axis placed element also turned it and changed its height, W-BLOCK-SHIFT A1, A2. ⚠ The live Save gate on a rotated building still uses world boxes, so a long member's box is metres wide; that question is the owner's (§13.6).
 
 **STATUS:** slice 1 shipped. Queue, each needing its own go: bay add → other gestures → session total at Save → structural_sanity on a live edit. A CLI call returning this JSON is red1's idea (2026-11-07), and needs the fold shown to run outside the browser first; §SCRIPTED-EDITS (row 40) stays on HOLD unless red1 lifts it.
+
