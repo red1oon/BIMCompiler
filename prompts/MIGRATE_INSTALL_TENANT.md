@@ -875,3 +875,21 @@ renamed/cut counts. **No customer value leaves in the report** — witness-check
 (field count, lengths of the mapped fields re-read from the .al); every sheet identified by C1; 0 unknown headers in the fixture, a renamed header ⇒ named unknown
 (falsifier); converted workbook passes the loader with gain == prediction on a born tenant; the alpha report holds no fixture value (falsifier: a report built without masking
 contains one); no live BC ⇒ the connection itself is INCONCLUSIVE, stated.
+
+### §BC RESULT (2026-11-09) — bim-ootb #2765 (auto-merge), W-BC-MIGRATE 🟢 17/0 (CONN ⚪ INCONCLUSIVE by construction), W-BC-MIGRATE-LIVE 🟢 11/0
+- **Extracted, not typed:** `erp/tools/gen_bc_model.js` → `erp/plugins/bc_model.mjs` (15 tables incl. 79 Company Information, 988 fields; the witness re-reads every field's
+  id/name/length from the checkout: 0 differ). `erp/tools/gen_bc_contoso_fixture.js` → `erp/tests/fixtures/bc_package_contoso/rows.json`: 978 demo-helper calls resolved from
+  the helpers' OWN `Validate(…)` lines (an overload that hands over to a sibling is followed; one parameter may fill several fields — Base/Sales/Purch. UoM), Labels, `exit(…)`,
+  `AddAccountForLocalization` (name → no., last write wins: 301), setup `InitValue` (country GB), a port of `ContosoUtilities.AdjustDate` (demo installed 2026-11-09), item
+  journal lines as posted ledger entries. Fixture rules named in the file: a record Microsoft defines twice (Common + Sales module) is merged; setup-dependent values stay empty
+  (e.g. bins' location → the 78 bins are REFUSED as "location not in the package", the correct behaviour).
+- **Loaded:** all 575 rows of Microsoft's demo company into a born tenant — 12 partners (5 vendor numbers renamed `(Vendor)`), 64 items, 284 accounts (276 typed by Account
+  Category), 17 addresses (Adatum: own + 2 ship-to), 39 stock lines (Σ 12,100 = Σ ledger ≤ cutover), 736 ops one signed group; the same on the real page.
+- **Found by the run, fixed:** (1) BC allows an item without Item Category, iDempiere refuses → legacy ImportProduct.java:213-221 default category (10 demo items);
+  (2) **generic form renderer G-f** — Refresh repainted every parameter's default over what the user typed (the cut-over date was lost; the Odoo form never showed it, its only
+  parameter is a file) → defaults fill only untouched parameters; (3) unit suggestion by international code (BC `EA` → ERP Each) in the Odoo plan, Odoo unaffected.
+- **Alpha report:** `§BC-ALPHA` lines (tables, rows, headers matched/unknown, sheets, refusals, renamed, patches); the witness checks none of 916 package text values appears
+  (token match; schema words excluded) + the mask falsifier. Guide for testers: docs/BusinessCentralMigrationGuide.md (BIMCompiler, BC page names read from ConfigPackageCard.Page.al).
+- **Slip, recovered:** ran `git stash` in the worktree (shared stash — memory rule); popped stash@{0} (verified ours) at once, other sessions' stashes untouched.
+- **Next for this lane:** a real tester's package (closes CONN) · BC cloud API door (OAuth app registration) · SQL Server door (on-prem) · price list lines / discounts ·
+  variants and lots · balances and open documents (B3 for both sources).
