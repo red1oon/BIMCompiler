@@ -44,6 +44,8 @@ is listed in `manifest.json` → `patches`, with its rule and row count (11 on t
 | **W-SHEET-CONTRACT** | Every sheet is complete against the ERP dictionary: every mandatory column is given, defaulted by the ERP, or filled by a named rule; every lookup finds **exactly one** row; no sheet repeats a key the ERP keeps unique; row counts equal Odoo's own counts. | PASS — 17 sheets, 0 missing, 0 ambiguous, 15 unique keys checked. Three deliberately broken workbooks are each caught. |
 | **W-NINJA-MIGRATE** | The workbook loads into a **freshly created tenant** through the ERP's model layer. | PASS 31/31 — the raw export (units not mapped) is refused whole; after mapping, all 17 tables gain exactly the sheet's rows (339 records); every lookup lands on the tenant's own rows; every parent–child link is set; no mandatory field empty; a second run adds nothing. |
 | **W-ODOO-FORM** (+ **LIVE**) | The screen: the summary before OK is the loader's own dry run; what Process writes equals the summary; locks and unticking behave; a rerun is refused. The live test clicks through the real page. | PASS 16/16 and 12/12 — on the page: plugins started by the System Administrator, a tenant created on the page, its admin opens the menu entry, picks the files, types the units, *Refresh* predicts, *Process* commits one signed change set, and the tenant grows by exactly the prediction. |
+| **W-ODOO-MESSY** | Real-world Odoo data, not the demo company: a copy of the demo with eight states Odoo itself accepts — a customer with a country and no street, two customers on one street, a contact of an archived company, a repeated product code, an archived product with stock, a second company, a delivery address on the parent's street, a repeated customer reference — exported and loaded into a new tenant. | PASS 10/10 (export) + 14/14 (load). The exporter before this fix crashed on the same data. Every record arrives linked; archived ones arrive inactive; repeated codes are renamed and listed. Also proven: https (Odoo.sh / Online), one company per export, a missing Odoo field stops the run before it reads. |
+| **W-ROLE-ACCESS-UPDATE** | A company created *before* the plugins were started gets their screens after the legacy **Role Access Update** process. | PASS 9/9 — before: no access; after: the form and the process; a second run adds nothing; reset rebuilds from the dictionary. |
 | **W-GENESIS-COMPLETE** | A tenant created in the ERP holds the same rows legacy iDempiere's Initial Client Setup writes. Compared with a real tenant made by that process on the pilot. | PASS 10/10 — no mandatory field empty in 42 tables; trees, client info and accounting defaults as legacy has them. |
 
 Each test also runs at least one deliberate break and shows it is caught, so a pass means the test *can* fail.
@@ -57,6 +59,13 @@ Loading real data surfaced real defects. Each one was fixed on the new-ERP side,
 - **ERP-side gaps:** record defaults that iDempiere's model classes set were missing for ten tables; a newly created tenant had no
   default partner group, no trees and no client info. The defaults are now **extracted from the iDempiere source by a generator**
   (182 tables) rather than copied by hand, so the same gap cannot quietly return.
+
+- **Real data the demo hides** (found by W-ODOO-MESSY, all fixed in the export): an address was matched by its street, so a
+  customer with no street — common, since Odoo pre-fills the country — stopped the export; so did two customers on one street.
+  Addresses now carry iDempiere's own migration key (`C_Location_UU`). A contact of an archived company crashed it; archived
+  records now come along inactive. Odoo allows repeated codes and long location paths; iDempiere does not, so they are renamed
+  (`-<odoo id>`, `~<odoo id>`) and listed. Without a company filter, Odoo returned **both** demo companies' data and the export
+  merged two companies into one; it now moves one company per run and names the others.
 
 ## 6. What is not done yet
 
@@ -74,5 +83,5 @@ Loading real data surfaced real defects. Each one was fixed on the new-ERP side,
   kept in `provenance.json` and named in the manifest notes, not loaded.
 - Analytic accounts, print layouts, server actions, and Odoo apps outside trade and accounting (manufacturing, HR, POS …) —
   these arrive as plugins, like any other module.
-- One Odoo version measured (17, demo data). Other versions and real customer data will show their own gaps; the tests are built
-  to name them.
+- One Odoo version measured (17). Another version stops before reading, naming the field it lacks — supporting 16 and 18 is the
+  next step, not a guess. Real customer data will show its own gaps; the tests are built to name them.
