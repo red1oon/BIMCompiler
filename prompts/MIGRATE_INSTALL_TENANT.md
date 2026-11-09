@@ -893,3 +893,13 @@ contains one); no live BC ⇒ the connection itself is INCONCLUSIVE, stated.
 - **Slip, recovered:** ran `git stash` in the worktree (shared stash — memory rule); popped stash@{0} (verified ours) at once, other sessions' stashes untouched.
 - **Next for this lane:** a real tester's package (closes CONN) · BC cloud API door (OAuth app registration) · SQL Server door (on-prem) · price list lines / discounts ·
   variants and lots · balances and open documents (B3 for both sources).
+
+### §FILM-BC rc1 (2026-11-09) — "How to escape from your Business Central" — `~/Videos/How_to_escape_from_your_Business_Central_EN_rc1.mp4` (238.8 s, EN, −16.3 LUFS, peak −0.5)
+- Owner: *"Do a film, stating the licensing bit too, narrating as the previous Odoo run. Add whatever of importance."* Pipeline `scripts/film_bc_migration/` (storyboard `script_en.md`):
+  `record.js` (headless, no GPU: runs W-BC-MIGRATE itself → model/alpha facts; then the live BC form flow on a born tenant; every number a `§FILMREC FACT` → `out/rec/facts.json`) →
+  `cards.py` (refuses unless offline / model==source / PCS→Each / witness PASS / no leak are proven; caption band witness 15/15) → `build.py` (Kokoro F/M local CPU, captions burnt,
+  "E. A." voiced / "EA" captioned) → +1 dB + limiter.
+- Beats added beyond the Odoo film: the MIT licence (allows reading/copying/porting with the notice; NOT the platform, NOT the name — read from the repo's LICENSE + README),
+  "read, not guessed" (a real Customer.Table.al excerpt, 15 tables · 988 fields · 0 differ), Microsoft's own demo company (575 rows from the demo source), BC's export layout,
+  "found by running it" (item without category; Refresh lost a typed date), the masked alpha report (916 values, 0 appear), next steps (tester file, cloud API, SQL Server, balances).
+- Facts voiced (this recording): 12 partners · 64 items · 284 accounts · 39 stock lines · 736 records one signed change set · verifyChain ok · offline save 0 requests.
