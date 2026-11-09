@@ -988,10 +988,21 @@ prediction); ALPHA (no fixture value, mask falsifier); WIRING; **CONN = INCONCLU
 - **INCONCLUSIVE, said so:** addresses, contacts, vendors/leads, payment terms, units by InternationalSymbol, item groups, price list + currency, bins, opening stock,
   AccountType R/E — SAP's guide prints no record for them. A tester's `sap_export.json` (or their §SAP lines) judges them.
 
+### §FILM-SAP rc1 (2026-11-10) — "How to escape from your SAP Business One" — `~/Videos/How_to_escape_from_your_SAP_Business_One_EN_rc1.mp4` (197.8 s, EN, −16.3 LUFS, peak −0.8)
+- Owner: *"Ready for film?"* (after #2774 merged + live: sap_agent.zip on Pages, content == source). Pipeline `scripts/film_sap_migration/` (storyboard `script_en.md`), copied from the BC lane:
+  `record.js` (headless, no GPU: runs W-SAP-MIGRATE → verdict/INCONCLUSIVE/alpha facts; runs the agent against the mock → its own §SAP-AGENT lines; then the live form flow on a born
+  tenant; `§FILMREC FACT` → `out/rec/facts.json`) → `cards.py` (refuses unless read_only / warehouse refusal shown / witness PASS / verifyChain / offline / no leak are proven;
+  caption band 15/15) → `build.py` (Kokoro F/M local CPU) → gain +1.2 dB + limiter (`out/build.log §FINISH`).
+- Beats beyond the BC film: "is the model open?" (BC = MIT source; B1 = none found; SAP DB = the engine, never B1's tables — sources on the card), "your own server publishes it"
+  (the agent's own lines, 21 calls read only), the guide-example fixture shown as tiny on purpose, the refused warehouse on the summary, "found by running" (item without a unit
+  stopped the whole load; converter refusals invisible on the summary, BC's too), "10 rules had no record to test against".
+- Facts voiced (this recording): 1 customer · 3 items · 1 account · 12 records one signed change set · verifyChain ok · offline save 0 requests · 10 INCONCLUSIVE rules.
+- Not done: other languages (owner asked for ZH/TH/MS on the earlier films — `build_lang.py` copies over when asked); the end card points at the agent download (no SAP guide page yet).
+
 ### ▶ RESUME HERE (2026-11-09c) — SAP alpha out; what is next
 **Live after #2774 merges** (check it landed; auto-merge on). Owner's frame: *"earnest effort POC … community can improve it. Release early update often."*
 **Next for SAP, in order:** a tester's run (closes CONN + the 10 INCONCLUSIVE rules) · `--sql` door: read `OACT` (account class) through SQLQueries (owner's DB-engine
 point; needs the drawer-number meaning from a source, not memory; an SQLQuery is a saved object = a write, so opt-in) · stock at a date · several price lists · user guide page
-`docs/SAPBusinessOneMigrationGuide.md` (BIMCompiler, safe_gh_deploy) · film (copy `scripts/film_bc_migration/`).
+`docs/SAPBusinessOneMigrationGuide.md` (BIMCompiler, safe_gh_deploy) · film language versions (EN rc1 done, §FILM-SAP).
 **Still open from earlier:** §LAG · Odoo 16/18 field names · B3 balances/open documents (all sources) · twin PO.set length cut (generic) · bim-document plugin start failure
 (UNIQUE ad_window_access — seen again on the live page this session) → its lane.
