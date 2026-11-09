@@ -1,4 +1,5 @@
 # ⚠ DO NOT REMOVE — Scope & Protocol
+> **Lane (2026-11-09):** this file is one part of the ONE-DOOR framework (Actor | Channel | One door | Engine). Home and lane map: `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` §0. Column owned here: transport under the email and device channels.
 - **Scope:** ONE multi-user teamwork framework for BIM-OOTB (Modeller/Viewer) and the Kernel ERP.
   This file is the SPEC + ROADMAP. **No code is written from it until the user says go on a phase.**
 - **Source of truth:** every claim below cites a file:line, a doc §, or a witness. Things that are proposals, not repo

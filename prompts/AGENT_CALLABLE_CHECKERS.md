@@ -1,4 +1,5 @@
 # ⚠ DO NOT REMOVE — AGENT_CALLABLE_CHECKERS (spec-first, 2026-10-27)
+> **Lane (2026-11-09):** this file is one part of the ONE-DOOR framework (Actor | Channel | One door | Engine). Home and lane map: `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` §0. Column owned here: ENGINE (checks on a user's IFC, claims registry; its MCP adapter joins the one verb list, §0.1).
 
 **SCOPE.** One local, read-only checker that an AI agent (Claude Code, Codex, any MCP client) or a person can
 call to get a verdict on (A) **a user's IFC** and (B) **our own published claims about this codebase**.
