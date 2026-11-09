@@ -123,7 +123,14 @@ C3 lands with the REPLACE verb.
   - Private FP band heads 1,880 (939 floating) → 96, all inside.
   - Public ARC residents unchanged (they state no storey elevations; the limit is stated in band spec §12).
   - Spec + RESULT: bim-ootb `prompts/DISC_WALK_BAND_NO_HOST.md` §12.
-- **Next:** re-walk + re-shoot the private report on merged main, export included (with far fewer heads it may now fit).
+- ✅ **Re-walk on merged main (`16b3c205`), log 71:**
+  - `§DW-RULES-PATCH rows=7 ok`; FP `reanchorNoHost=1812`; FP 209 placements, ACMV 207.
+  - **The sprinklers-on Viewer export now completes**: 7,228 elements, 208,728,064 bytes = expected.
+  - The MEP report BOQ gains its FP section (`§MEP_BOQ sections=4`).
+  - Report "after" (log 74): 0 borrowed storey names; 96 ceiling-hosted heads, all within the slab stack.
+  - **Residual for engineers:** 70 wall-hosted band devices (alarms), of which 13 are more than 3 m above the highest slab/roof top, 19 uncovered and 2 outside. Not traced; likely tall walls.
+  - "After" film cut (106.2 s); report + zip kept private.
+  - Instrument note: `boq_charts.html` needs `bld=` = `elements_meta.building`.
 
 ## ▶ §RESUME 2026-11-09b — START HERE (steps 1-3 of §RESUME 2026-11-09 done; then read that block for steps 4-5)
 **Run on bim-ootb main `8541065f`, private set, local headless (software GL, no GPU). Every number is read from the saved run logs in the private walk folder (`41`→`42_page_run_chunked`, `45_carry_film_v3`).**
