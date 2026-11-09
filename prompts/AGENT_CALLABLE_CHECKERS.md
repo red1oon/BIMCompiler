@@ -1,4 +1,5 @@
 # ⚠ DO NOT REMOVE — AGENT_CALLABLE_CHECKERS (spec-first, 2026-10-27)
+> **Lane (2026-11-09):** this file is one part of the ONE-DOOR framework (Actor | Channel | One door | Engine). Home and lane map: `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` §0. Column owned here: ENGINE (checks on a user's IFC, claims registry; its MCP adapter joins the one verb list, §0.1).
 
 **SCOPE.** One local, read-only checker that an AI agent (Claude Code, Codex, any MCP client) or a person can
 call to get a verdict on (A) **a user's IFC** and (B) **our own published claims about this codebase**.
@@ -161,3 +162,6 @@ flag. A change to R1-R7 is a code change in a PR, visible in the claims registry
 - **The user guide says how:** a "Check us yourself" section — run it from a terminal, or ask your AI agent to
   (MCP setup lines), what a report looks like, and what it cannot check. The guide's "no AI in this app"
   sentence stays: the agent is outside the app, calling the checker.
+
+## 8. Cross-reference: the feedback verbs (2026-11-09, design lane)
+`prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` §23 turns the project's ad-hoc model probes into dictionary verbs, and its §23.1 rule 3 adopts THIS spec's §3 report shape (verdict, population, redControl, commit, input_sha256, findings), so a checker and a feedback verb answer in one format and live in one verb list (`verbs.json`, §19 design 2), not two registries. The §23.3 inventory found existing bases for family A: `census_ifc` (A3: bim-compiler `prompts/dubai_validity_layer/run_validity.js`, the real Track-B worker, plus `scripts/ifc_recon.py`), `ids_check` (A4: bim-ootb `modeller/tests/ids_check.py`), and the model-side checks `check_extracted_db`, `compare_to_reference`, `verify_served_patch`. Nothing in bim-compiler covers A2 (schema validation); A2 and A4 live in bim-ootb. Build A1-A4 as verbs on that list rather than as a separate `checks/` registry, unless the owner rules otherwise.
