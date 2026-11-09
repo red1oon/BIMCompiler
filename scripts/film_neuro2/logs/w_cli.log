@@ -1,0 +1,28 @@
+§W-CLI PASS C0 (issue: a demo that never ran reads as a pass) evidence present for 8/8
+§W-CLI PASS C1a (issue: the verb answers something other than the Viewer's own line) exit=0 total=1122 equals the Viewer's own §ASK_ANSWER total=1122
+§W-CLI PASS C1b (issue: the groups do not add up to the total) groups {"MEP":904,"ARC":199,"STR":19} sum=1122 total=1122
+§W-CLI PASS C1c (issue: the verb's count is not the file's count (independent GROUP BY on the downloaded DB)) recount {"ARC":199,"MEP":904,"STR":19} dbsha=a89753815d9509b4 (demo's a89753815d9509b4)
+§W-CLI PASS C1d (issue: the live number is silently replaced by the spec's) LIVE pinned 1122 = MEP 904 + ARC 199 + STR 19 (spec §22.2 says 1,193 on the owner's local Duplex copy; see §22.8 SPECDIFF)
+§W-CLI PASS C2a (issue: the sum is wrong again (the old 200-cap and double count gave 447 for 393)) box 487 = clash 356 + cleared 131 + unjudged 0 (sum 487) tolerance 0.025 m
+§W-CLI PASS C2b (issue: the live numbers drift unnoticed) LIVE pinned 487 / 356 / 131 / 0 at 25 mm (spec §22.2: 393 / 291 / 102 on the owner's local copy)
+§W-CLI PASS C3a (issue: the edit report still says boxes only) exit=3 reason="stopped: New or deeper overlap (shapes checked): 5 (5 clash, 0 not judged (box verdict kept), 20 cleared (0 touching, 20 box only); 25 box pairs)"
+§W-CLI PASS C3b (issue: the verdict row disagrees with its own sentence) newRow clash count=5 box_count=25
+§W-CLI PASS C4a (issue: the path check is blind (forward band must see the rows)) forward: band 0 lines 2/2 markers 1/1 verdict=SEES
+§W-CLI PASS C4b (issue: the path check counts what the camera cannot see (reversed band must go blind)) reversed: band 0 samples=31 lines 0/2 markers 0/1 verdict=SEES
+§W-CLI PASS C5 (issue: the menu is not the 4 verbs the film says) tools=bim_lines,bim_try_shift,viewer_clashes,viewer_counts client="scripted client, no AI"
+§W-CLI PASS C6a (issue: the Viewer denominator moved or X is not 1) §VIEWER_ACTIONS N_entry=96 N_actions=64 X=1 verbs=2 shortcuts=30 direct=20 pills=46 phantom=0 conflicts=5 listeners=17 unaccounted=0 direct_missing=0
+§W-CLI PASS C6b (issue: the ERP denominator moved or X is not 0) §ERP_VERBS N=1153 N_doc=702 (tables=54 actions=13) N_proc=451 (inactive=25) impl=102 (doc=65 proc=37) not_impl=1051 X=0 handler_no_dict=1 dynamic=4 unresolved=0
+§W-CLI PASS C6c (issue: the sha the inventories ran at is not the pinned one) pinned bim-ootb main 16b3c205
+§W-CLI PASS C7-d1_counts (issue: the run needed or created a file outside the beat's download list) downloaded 379, files in the folder after the run 379
+§W-CLI PASS C7-d2_clashes (issue: the run needed or created a file outside the beat's download list) downloaded 379, files in the folder after the run 379
+§W-CLI PASS C7-d3_shift (issue: the run needed or created a file outside the beat's download list) downloaded 1, files in the folder after the run 1
+§W-CLI PASS C7-d4_path_fwd (issue: the run needed or created a file outside the beat's download list) downloaded 379, files in the folder after the run 379
+§W-CLI PASS C7-d4_path_rev (issue: the run needed or created a file outside the beat's download list) downloaded 379, files in the folder after the run 379
+§W-CLI PASS C7-d5_menu (issue: the run needed or created a file outside the beat's download list) downloaded 2 + 1 scripted client, files in the folder after the run 3
+§W-CLI PASS C7-neg (issue: a missing DB is silently found elsewhere on this machine (~/bim-ootb fallback)) exit=1 stderr="§VIEWER_VERB FAIL unknown building "Duplex": no Duplex_extracted.db in /tmp/wcli_neg_4wcYW3/buildings, /tmp/wcli_neg_4wcYW3/bim-ootb/buildin"
+§W-CLI PASS C8-d1_counts (issue: the saved command differs from the command shown) "node viewer/tools/viewer_verbs.js counts --building Duplex"
+§W-CLI PASS C8-d2_clashes (issue: the saved command differs from the command shown) "node viewer/tools/viewer_verbs.js clashes --building Duplex --a ARC --b MEP"
+§W-CLI PASS C8-d3_shift (issue: the saved command differs from the command shown) "node edit_cli.js --building HospitalGarage --shift gy10 --move 1.49"
+§W-CLI PASS C8-d4_path_fwd (issue: the saved command differs from the command shown) "node viewer/tools/film_path_vis.js --db buildings/Duplex_extracted.db --json"
+§W-CLI PASS C8-d5_menu (issue: the saved command differs from the command shown) "node mcp_menu_client.js node bim_mcp.js"
+§W-CLI verdict=PASS pass=27 fail=0 vacuous=0

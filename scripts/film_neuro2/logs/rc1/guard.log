@@ -1,0 +1,8 @@
+§GUARD G1 PASS §FACTS resolved=66 missing=0 | §FACTS-USED storyboard=30 unresolved=0
+§GUARD G2 PASS cards=15 numbers_on_cards=74
+§GUARD G3 PASS narrated_beats=13 numbers_spoken=30
+§GUARD G5 PASS stills unchanged since capture
+§GUARD C1 PASS caught recap:777
+§GUARD C2 PASS caught b02:14
+§GUARD FRESH PASS sources=17
+§GUARD_VERDICT PASS allowed_numbers=35
