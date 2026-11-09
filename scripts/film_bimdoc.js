@@ -54,13 +54,21 @@ const CARD_CSS = '#__fc{display:none}html,body{margin:0;width:1920px;height:1080
   '.w{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}.k{color:#FF6B78;font-size:34px;letter-spacing:2px;margin-bottom:26px}' +
   '.t{font-size:96px;font-weight:700;text-align:center;line-height:1.15}.t b{color:#FF6B78}.p{font-size:40px;color:#c9c4bd;margin-top:34px;text-align:center}' +
   '.row{display:flex;align-items:center;gap:0;margin-top:30px}.bx{width:330px;height:210px;border:4px solid #7dd3fc;border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:46px;font-weight:700;color:#7dd3fc}' +
-  '.bx small{font-size:28px;font-weight:400;color:#c9c4bd;margin-top:10px}.ar{width:100px;text-align:center;font-size:72px;color:#FF6B78}.fn{position:absolute;bottom:260px;width:100%;text-align:center;font-size:30px;color:#8b95a5}';
+  '.bx small{font-size:28px;font-weight:400;color:#c9c4bd;margin-top:10px}.ar{width:100px;text-align:center;font-size:72px;color:#FF6B78}.fn{position:absolute;bottom:260px;width:100%;text-align:center;font-size:30px;color:#8b95a5}' +
+  '.pp{font-size:42px;color:#e6e1da;max-width:1500px;text-align:center;line-height:1.45;margin-top:30px}.pp b{color:#7dd3fc;font-weight:700}' +
+  '.src{position:absolute;bottom:70px;left:120px;right:120px;text-align:center;font-size:24px;color:#8b95a5;line-height:1.5}';
 const CARD_IDEA = '<style>' + CARD_CSS + '</style><div class="w"><div class="k">THE CHAIN, END TO END</div><div class="row">' +
   '<div class="bx">Sheet<small>the drawing file</small></div><div class="ar">&rarr;</div><div class="bx">BIM Document<small>a row in the register</small></div><div class="ar">&rarr;</div>' +
   '<div class="bx">Project task<small>hours and progress</small></div><div class="ar">&rarr;</div><div class="bx">Invoice<small>amounts</small></div></div>' +
   '</div>';
-const CARD_END = '<style>' + CARD_CSS + '</style><div class="w"><div class="k">FROM A DRAWING TO AN INVOICE</div><div class="t">The <b>BIM Document</b></div>' +
-  '<div class="p">Test server, public example data (a synthetic Duplex sheet set).</div></div>';
+// v3 (owner 2026-11-09): the opening chapter card and the closing card. Every claim here is sourced in FILM_NARRATION.md §BIMDOC-FILM-V3 (prior art + what is built).
+const CARD_CH = '<style>' + CARD_CSS + '</style><div class="w"><div class="k">CHAPTER</div><div class="t">BIM Integration to <b>ERP</b></div>' +
+  '<div class="pp">In an earlier film, any set of BIM model elements was pushed to the ERP as a <b>Project Order</b>.<br>Now the project\'s back-office documentation is wired in too,<br>as a new BIM data record set: the <b>BIM Document</b>.</div></div>';
+const CARD_END = '<style>' + CARD_CSS + '</style><div class="w"><div class="k">ALREADY IN THE SAME KERNEL</div><div class="t">One kernel. <b>One signed log.</b></div>' +
+  '<div class="pp">The 4D schedule in our BIM already reads the <b>Project Order</b> back: planned against committed cost, phase by phase, as you scrub time.<br>' +
+  'To our knowledge, the first to run BIM and ERP together in <b>one browser kernel</b>: every write applied locally and signed on one op-log, with no app or database server.</div>' +
+  '<div class="src">Closest prior art: RIB iTWO 4.0 / MTWO (BIM 5D + ERP on cloud servers) · MI ERP BIM for Odoo 19 (IFC elements as ERP records, on an Odoo server) · INTELSYS.build (SAP S/4HANA + Autodesk).<br>' +
+  'This film: a test server with public example data (a synthetic Duplex sheet set). The 4D variance is shown on the Hospital showcase project.</div></div>';
 
 (async () => {
   await new Promise(r => server.listen(0, r));
@@ -537,17 +545,17 @@ const CARD_END = '<style>' + CARD_CSS + '</style><div class="w"><div class="k">F
     execFileSync('ffmpeg', ['-v', 'error', '-y', '-loop', '1', '-framerate', '24', '-t', secs.toFixed(4), '-i', png, '-vf', `scale=1920:1080:flags=lanczos,fade=t=in:st=0:d=0.4,fade=t=out:st=${(secs - 0.4).toFixed(3)}:d=0.4,format=yuv420p`, '-c:v', 'libx264', '-crf', '17', '-r', '24', '-tune', 'stillimage', '-frames:v', String(Math.round(secs * 24)), mp]);
     segLen[name] = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', mp]).toString().trim()); say('§ERP_FILM_SEG ' + name + ' dur=' + segLen[name].toFixed(3)); return mp;
   }
-  const cardSecs = Math.max(MIN.card || 8, 4), endSecs = Math.max(MIN.end || 6, 4);
+  const cardSecs = Math.max(MIN.card || 8, 4), endSecs = Math.max(MIN.end || 6, 4), chSecs = Math.max(MIN.ch || 8, 4);
   const order = [];
-  if (segLen.before) order.push('before'); order.push(await card('card', CARD_IDEA, cardSecs)); if (segLen.after) order.push('after'); if (segLen.main) order.push('main'); order.push(await card('end', CARD_END, endSecs));
+  order.push(await card('ch', CARD_CH, chSecs)); if (segLen.before) order.push('before'); order.push(await card('card', CARD_IDEA, cardSecs)); if (segLen.after) order.push('after'); if (segLen.main) order.push('main'); order.push(await card('end', CARD_END, endSecs));
   const files = order.map(o => (o.endsWith('.mp4') ? o : path.join(OUT, 'seg_' + o + '.mp4')));
   const joinList = path.join(OUT, 'join.txt'); fs.writeFileSync(joinList, files.map(f => `file '${f}'`).join('\n') + '\n');
   const silent = path.join(OUT, 'bimdoc_silent.mp4');
   execFileSync('ffmpeg', ['-v', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', joinList, '-c', 'copy', silent]);
   // the beats' cues on the FINAL film clock (the narration cues)
-  const off0 = {}; let acc = 0; for (const o of ['before', 'card', 'after', 'main', 'end']) { if (!segLen[o]) continue; off0[o] = acc; acc += segLen[o]; }
+  const off0 = {}; let acc = 0; for (const o of ['ch', 'before', 'card', 'after', 'main', 'end']) { if (!segLen[o]) continue; off0[o] = acc; acc += segLen[o]; }
   for (const b of BEATS) say('§ERP_FILM_CUE id=' + b.id + ' t=' + (off0[b.seg] + b.t).toFixed(3));
-  say('§ERP_FILM_CUE id=card t=' + (off0.card ?? 0).toFixed(3)); say('§ERP_FILM_CUE id=end t=' + (off0.end ?? 0).toFixed(3));
+  say('§ERP_FILM_CUE id=ch t=' + (off0.ch ?? 0).toFixed(3)); say('§ERP_FILM_CUE id=card t=' + (off0.card ?? 0).toFixed(3)); say('§ERP_FILM_CUE id=end t=' + (off0.end ?? 0).toFixed(3));
   const fr = Number(execFileSync('ffprobe', ['-v', 'error', '-count_frames', '-select_streams', 'v:0', '-show_entries', 'stream=nb_read_frames', '-of', 'csv=p=0', silent]).toString().trim());
   const dur = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', silent]).toString().trim());
   say('§ERP_FILM_DONE frames=' + fr + ' dur=' + dur.toFixed(3) + ' out=' + silent);
