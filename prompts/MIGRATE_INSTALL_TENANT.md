@@ -1158,13 +1158,20 @@ logs (Watchdog Protocol) before marking ✅:
   (Lead session, not an agent: it is the design centre and the owner will adjust the template shape.)
 - after A–D: BC + Odoo templates (equality witnesses, deletion budget), the open-items sheets + clearing accounts (E3c, Odoo first), then E4 sql connector, E5 DIY screen.
 
-### ▶ RESUME HERE (2026-11-10b) — START HERE: lanes A–D DONE + all merged; next = Odoo onto the engine (one owner question) → E3c open items
+### ▶ RESUME HERE (2026-11-10b) — START HERE: lanes A–D DONE + all merged; next = E3c open items → Odoo onto the engine → iDempiere falsifier (no questions pending)
 **On bim-ootb main @e2b6c92f, sw v1029:** #2784 engine + SAP template · #2787 E1 opening stock CO (Odoo/BC) · #2788 ImportInvoice 207 · #2789 ImportGLJournal 220 + GL Journal DocAction ·
 #2790 BC template. Details + § lines: §ENGINE-D-SPEC and the A/B/C/D-BC blocks right after it (end of file). Witness to re-run first: `node erp/tests/witness_migrate_engine.js`
 (`§MIGE verdict=PASS judged=30`).
-**⛔ owner questions (2):** (1) **Odoo door:** SAP's agent writes RAW rows and the browser runs the template; Odoo's agent (export.js, 376 lines) maps inside the agent and ships a
-finished workbook. Moving Odoo onto the engine = either the agent ships raw rows (same as SAP; the agent zip shrinks, the template is editable in the browser) or the agent bundles the
-engine + template (export stays one file). Recommend: raw rows, like SAP. (2) §6: iDempiere raw `psql COPY` fast path vs the identity template.
+**✅ DECIDED 2026-11-10 (owner: "answer those questions … so that Fable review right away without asking me" — the lead's recommendations, adopted):**
+(1) **Odoo door = the agent ships RAW rows, the browser runs `templates/odoo-17.json`** (the SAP pattern). The agent keeps exactly its door duties: XML-RPC read only, version check,
+`search_count` manifest per model, the `fields_get` model it read (= `describe()`), the recorded-replay fixture. Mapping leaves `export.js`. Acceptance = W-MIGRATE-ENGINE ODOO-*:
+engine on the agent's raw rows == today's `export.js` workbook + manifest + provenance on the recorded fixture (`build/erp/logs_migrate_*`, the odoodemo replay), + a generated DIFF +
+coverage + mutants, exactly as SAP/BC; `export.js`'s mapping half frozen as `tests/fixtures/odoo_convert_reference.*` (oracle), deleted from the shipped agent only after equality.
+The old finished-workbook path keeps working until then (a user's already-downloaded agent must still load), and `odoo_agent.zip` is rebuilt by `erp/tools/build_odoo_agent_zip.sh`.
+(2) **iDempiere = keep the raw `psql COPY` fast path as the production path; add the identity template as its FALSIFIER witness**, not a second loader: iDempiere → engine on an
+identity template → compare with the raw copy table by table (rows, PKs after re-band, column values) on the pilot tenant. Retiring the fast path is a LATER, measured call (time
+and memory per 10k rows on both), not done here. Reason: the copy is already the identity and proven by counts; the witness adds the column-level proof without slowing the user.
+Order: E3c first (below), then Odoo (1), then the iDempiere falsifier (2).
 **Then, in order:** E3c open-items sheets (GL journal = TB with clearing accounts, open AR/AP on Opening Charges with DocTypeName, payments) on the merged 207/220 ports, Odoo first ·
 the open items named under A/B/C (stock VALUE: no source carries a cost → port ImportInventory :546-564; commitEx seam; ws_kernel model_journal; §IINV tag collision; seed c_activity
 and 2026 GL periods) · E4 sql connector · E5 DIY screen.
@@ -1172,7 +1179,7 @@ and 2026 GL periods) · E4 sql connector · E5 DIY screen.
 **▶ LEAD BRIEF for the next session (owner 2026-11-10: resume on Fable 5.2 as the lead — "can tackle this complexity"; dispatched agents stay Sonnet unless the owner declares a
 free window, memory rule).** Read in this order, nothing else first: (1) this RESUME block · (2) §ENGINE-SPEC §0–§7 · (3) §ENGINE-D-SPEC + the A/B/C/D-BC result blocks after it ·
 (4) `erp/migrate/engine.mjs` header + `templates/sap-b1-10.json` (the template language by example) · (5) §B3-SCOUT (the cut-over method). Then:
-- **Turn 1: ask the owner the 2 ⛔ questions above** (one message, recommendation first). Do not build Odoo before (1) is answered; E3c below does not depend on either — start it while waiting.
+- **Turn 1: no owner questions are pending** (both decided above). Re-run the engine witness, write §E3C-SPEC, build E3c; then Odoo (1), then the iDempiere falsifier (2).
 - **E3c spec (write it here FIRST, dated `### §E3C-SPEC`), then build:** new target sheets beside the 17 masters — Opening journal (`I_GLJournal`, TB at the cut-over, document-controlled
   accounts → AR/AP/Inventory/Bank CLEARING), Open AR / Open AP (`I_Invoice`, one line, charge Opening Charge AR/AP, unpaid amount only, own DocumentNo + date, **DocTypeName carried**
   — seed has no default ARI/API type), Open payments (`I_Payment`). Loaded in the form's stage 2 (`after(trx)`, the hook #2787 added) through ImportGLJournal 220 → batch Complete,
