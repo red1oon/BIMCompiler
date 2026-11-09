@@ -832,7 +832,7 @@ Falsifier: the origin/main exporter on the same fixture = the FAIL/crash above. 
   `build/erp/odoo_fixture/odoo_messy_2026-11-09.json`); bim-ootb `erp/tests/witness_odoo_messy.js` (load half, fixture `erp/tests/fixtures/odoo_export_messy_2026-11-09/`,
   byte-identical workbook), `witness_role_access_update.js`. Regression: W-ODOO-FORM (+picklist) · W-ODOO-FORM-LIVE 13/0 · W-NINJA-MIGRATE · W-GENESIS-COMPLETE · W-PLUGIN-ID-BANDS ·
   W-AGENT-ZIP-SYNC · nc9 role UI live · quicksetup live · 14 more node witnesses green. Reds identical on origin/main: dict_census, packgen, nc6_setuprules, udp2_engine.
-- **Scratch Odoo:** `scripts/odoo_mock/make_odoo_messy.sh` rebuilds db `odoo_messy` (pg_dump of odoodemo + `odoo_messy_states.js`). It stays on the Odoo server; it does not touch odoodemo.
+- **Scratch Odoo:** `scripts/odoo_mock/make_odoo_messy.sh` rebuilds db `odoo_messy` (pg_dump of odoodemo + `odoo_messy_states.js`); it never touches odoodemo. DROP it after a live run (`docker exec odoo-db dropdb -U odoo odoo_messy`): with 2 databases Odoo's /web/login redirects (303) to the database chooser, which breaks `film_odoo_migration/record.js` and `odoo_observe/*_flow.js`. Dropped 2026-11-09; the replay fixture needs no Odoo.
 - **Named, not done:** Odoo 16 / 18 field names (the export refuses them cleanly today) · `agent.js` (the one-order check) is http only · units can only be MAPPED, not created ·
   the twin's `PO.set` does not cut over-long text like legacy PO.set_Value (the export guarantees it for migrated rows; a generic twin fix is its own item) · scale (10k+ rows) unmeasured.
 
