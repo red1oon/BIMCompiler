@@ -908,8 +908,6 @@
       
         
       
-        
-      
     
     
     
@@ -2152,6 +2150,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../MigrationGuide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Migration User Guide (Odoo · Business Central · SAP Business One)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../OdooMigration/" class="md-nav__link">
         
   
@@ -2160,62 +2186,6 @@
     
   
     Moving from Odoo — how it works, what is proven
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../OdooMigrationGuide/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Move from Odoo — user guide (step by step)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../BusinessCentralMigrationGuide/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Move from Business Central — alpha tester guide
   
 
     
@@ -4615,6 +4585,10 @@ windows, and persisted. You're dropped at the login switcher — the new tenant 
 if a window is absent for your role, that is correct, not a bug.</p>
 <hr />
 <h2 id="2-bring-your-data-in-the-diy-box-help-run-it-yourself">2. Bring your data in — the DIY box (Help → <em>Run it yourself</em>)<a class="headerlink" href="#2-bring-your-data-in-the-diy-box-help-run-it-yourself" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>Moving your company in?</strong> The step-by-step guide for every source (Odoo · Business Central · SAP Business One) is the
+<strong><a href="../MigrationGuide/">Migration User Guide</a></strong>. This section is the overview.</p>
+</blockquote>
 <p>Migration is <strong>delegate-to-install</strong>: the browser never connects to your database. The <strong>Help pill</strong>
 opens one <strong>About / Run it yourself (DIY)</strong> box. On the DIY tab you <strong>pick your source ERP → download
 its self-contained agent zip → run the commands its README gives you, in your own terminal → load the
@@ -4640,8 +4614,8 @@ row (nothing is faked). The README is the single "what to run" — you copy-past
 <td><strong>Client 13</strong> — real PG-agent extraction, PKs re-banded</td>
 </tr>
 <tr>
-<td><strong>SAP</strong></td>
-<td>on the roadmap (greyed "under construction")</td>
+<td><strong>SAP Business One</strong></td>
+<td><strong>alpha</strong>: <code>sap_agent.zip</code> → <code>cd sap_agent &amp;&amp; node agent.js --url https://&lt;server&gt;:50000 --company &lt;db&gt; --user &lt;user&gt;</code> → writes <code>sap_export.json</code> (read only; <a href="../MigrationGuide/#sap-business-one-alpha">guide</a>)</td>
 <td><strong>Client 14 "SAP Flights"</strong> — PoC: the documented <strong>SFLIGHT</strong> flight-booking reference model (carriers → Business Partners, connections → Products)</td>
 </tr>
 <tr>
@@ -4650,8 +4624,8 @@ row (nothing is faked). The README is the single "what to run" — you copy-past
 <td><strong>Client 15 "Oracle Scott"</strong> — PoC: the canonical <strong>EMP/DEPT (SCOTT)</strong> schema (departments → BP Groups, employees → Business Partners)</td>
 </tr>
 <tr>
-<td><strong>MS Dynamics</strong></td>
-<td>on the roadmap</td>
+<td><strong>MS Dynamics 365 Business Central</strong></td>
+<td><strong>alpha</strong>: no agent — Business Central's own Excel export (a configuration package) → <strong>Migrate from Business Central (alpha)</strong> (<a href="../MigrationGuide/#business-central-alpha">guide</a>)</td>
 <td><strong>Client 16 "Dynamics Cronus"</strong> — PoC: the Business Central <strong>CRONUS</strong> demo company (items → Products, customers → Business Partners)</td>
 </tr>
 </tbody>
