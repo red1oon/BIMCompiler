@@ -1,0 +1,3 @@
+§BIM_MCP ready tools=bim_lines,bim_try_shift,viewer_counts,viewer_clashes
+§BIM_MCP initialize client={"name":"scripted-client-no-ai","version":"1"} version=2025-06-18
+§BIM_MCP stdin closed

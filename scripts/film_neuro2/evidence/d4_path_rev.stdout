@@ -1,0 +1,92 @@
+{
+ "verdict": "SEES",
+ "src": "db:cinema_path",
+ "dur": 41.539,
+ "bands": 2,
+ "nLines": 2,
+ "nMarkers": 1,
+ "fov": 60,
+ "near": 0.1,
+ "far": 10000,
+ "per": [
+  {
+   "band": "0",
+   "samples": 31,
+   "still": 0,
+   "lines": 0,
+   "markers": 0,
+   "movingLines": 0,
+   "movingMarkers": 0,
+   "lineIdx": [],
+   "markerIdx": [],
+   "byBasis": {},
+   "bySystem": {}
+  },
+  {
+   "band": "1",
+   "samples": 22,
+   "still": 0,
+   "lines": 0,
+   "markers": 0,
+   "movingLines": 0,
+   "movingMarkers": 0,
+   "lineIdx": [],
+   "markerIdx": [],
+   "byBasis": {},
+   "bySystem": {}
+  },
+  {
+   "band": "off-path",
+   "samples": 427,
+   "still": 0,
+   "lines": 2,
+   "markers": 1,
+   "movingLines": 2,
+   "movingMarkers": 1,
+   "lineIdx": [
+    0,
+    1
+   ],
+   "markerIdx": [
+    0
+   ],
+   "byBasis": {
+    "void-middle": 2,
+    "owner-stated": 1
+   },
+   "bySystem": {
+    "SA": 1,
+    "RA": 1
+   }
+  }
+ ],
+ "totalLines": 2,
+ "totalMarkers": 1,
+ "anchorMinDistM": [
+  0.019,
+  0.007
+ ],
+ "derivedAnchorMinDistM": [
+  3.903,
+  1.404
+ ],
+ "poses": [],
+ "samplesUsed": 480,
+ "bandLines": 0,
+ "bandMarkers": 0,
+ "thin": [],
+ "pageErrors": [],
+ "log": [
+  "§FILM-PATH-VIS env db=Duplex_extracted.db gl=swiftshader viewport=1280x720 samples=240 minBandSamples=20 path=db:cinema_path",
+  "§FILM-PATH-VIS resample from=240 to=480 reason=band 1 had 11 < 20",
+  "§FILM-PATH-VIS plan src=db:cinema_path bands=2 durSec=41.539 fov=60 near=0.1 far=10000 drawnLines=2 drawnMarkers=1",
+  "§FILM-PATH-VIS band=0 samples=31 stillSamples=0 linesInView=0/2 markersInView=0/1 whileMoving=0+0 byBasis={} bySystem={} byStorey=n/a",
+  "§FILM-PATH-VIS band=1 samples=22 stillSamples=0 linesInView=0/2 markersInView=0/1 whileMoving=0+0 byBasis={} bySystem={} byStorey=n/a",
+  "§FILM-PATH-VIS band=off-path samples=427 stillSamples=0 linesInView=2/2 markersInView=1/1 whileMoving=2+1 byBasis={\"void-middle\":2,\"owner-stated\":1} bySystem={\"SA\":1,\"RA\":1} byStorey=n/a",
+  "§FILM-PATH-VIS anchors bandAnchorMinDistM=[0.019,0.007] derivedPlanAnchorMinDistM=[3.903,1.404] (the bake's own posecheck measure)",
+  "§FILM-PATH-VIS bands linesInView=0/2 markersInView=0/1 (union over bands, off-path excluded)",
+  "§FILM-PATH-VIS total linesInView=2/2 markersInView=1/1 (distinct, any sample)",
+  "§FILM-PATH-VIS verdict=SEES samplesUsed=480",
+  "§FILM-PATH-VIS not-checked: the bake-only §57.5 gaze blend (±1.5 frames); the findings-beat _cease3D hide; on-screen pixel size; storey (not stated in the drawn tables). Occlusion does not apply: the overlay is drawn depthTest:false."
+ ]
+}

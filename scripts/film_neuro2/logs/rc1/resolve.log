@@ -1,0 +1,68 @@
+§FACT g4_bay="12.993"  <- scripts/film_neuro2/evidence/p1_g4.json :: reason: newly over the limit: <m>
+§FACT g4_bay_r="13"  <- scripts/film_neuro2/evidence/p1_g4.json :: reason: newly over the limit, rounded to whole metres (for speech)
+§FACT g4_limit="12"  <- scripts/film_neuro2/evidence/p1_g4.json :: reason: (limit <m> m
+§FACT g4_reason="Beam spans over limit: 91 -> 92 (limit 12 m, RC); bay gx5-gx6 newly over the limit: 12.993 m"  <- scripts/film_neuro2/evidence/p1_g4.json :: edits[0].reason
+§FACT menu_n=4  <- scripts/film_neuro2/evidence/d5_menu.stdout :: toolCount
+§FACT menu_client="scripted client, no AI"  <- scripts/film_neuro2/evidence/d5_menu.stdout :: client
+§FACT menu0_name="bim_lines"  <- scripts/film_neuro2/evidence/d5_menu.stdout :: tools[0].name
+§FACT menu0_inputs="building"  <- scripts/film_neuro2/evidence/d5_menu.stdout :: tools[0].inputs keys
+§FACT menu0_desc="Read a building's grid: every grid line's id (gx0, gx1, … along x; gy0, gy1, … along y) and its position in metres in the building's own frame, plus the structural system, the material, the number of  <- scripts/film_neuro2/evidence/d5_menu.stdout :: tools[0].description, first sentence
+§FACT menu1_name="bim_try_shift"  <- scripts/film_neuro2/evidence/d5_menu.stdout :: tools[1].name
+§FACT menu1_inputs="building, line, move"  <- scripts/film_neuro2/evidence/d5_menu.stdout :: tools[1].inputs keys
+§FACT menu1_desc="Shift one grid line, and every later line on the same axis, by a distance in metres (positive = towards higher positions)."  <- scripts/film_neuro2/evidence/d5_menu.stdout :: tools[1].description, first sentence
+§FACT menu2_name="viewer_counts"  <- scripts/film_neuro2/evidence/d5_menu.stdout :: tools[2].name
+§FACT menu2_inputs="building, by"  <- scripts/film_neuro2/evidence/d5_menu.stdout :: tools[2].inputs keys
+§FACT menu2_desc="Open a building in the Viewer and count its elements, the same answer the Viewer's Find panel gives for \"Find element count by discipline\" (or by storey)."  <- scripts/film_neuro2/evidence/d5_menu.stdout :: tools[2].description, first sentence
+§FACT menu3_name="viewer_clashes"  <- scripts/film_neuro2/evidence/d5_menu.stdout :: tools[3].name
+§FACT menu3_inputs="building, discA, discB"  <- scripts/film_neuro2/evidence/d5_menu.stdout :: tools[3].inputs keys
+§FACT menu3_desc="Open a building in the Viewer and list the clashes between two disciplines, the same answer the Viewer's Find panel gives for \"Find clashes between A and B\": how many element boxes overlap at the r  <- scripts/film_neuro2/evidence/d5_menu.stdout :: tools[3].description, first sentence
+§FACT c_total="1,122"  <- scripts/film_neuro2/evidence/d1_counts.stdout :: value.total
+§FACT c_mep=904  <- scripts/film_neuro2/evidence/d1_counts.stdout :: value.groups.MEP
+§FACT c_arc=199  <- scripts/film_neuro2/evidence/d1_counts.stdout :: value.groups.ARC
+§FACT c_str=19  <- scripts/film_neuro2/evidence/d1_counts.stdout :: value.groups.STR
+§FACT c_summary="1122 elements: MEP 904, ARC 199, STR 19"  <- scripts/film_neuro2/evidence/d1_counts.stdout :: summary
+§FACT c_line="§ASK_ANSWER id=counts verdict=OK value={\"total\":1122,\"by\":\"discipline\",\"groups\":{\"MEP\":904,\"ARC\":199,\"STR\":19}}"  <- scripts/film_neuro2/evidence/d1_counts.stdout :: viewerLine (the Viewer's own §ASK_ANSWER)
+§FACT d1_cmd="node viewer/tools/viewer_verbs.js counts --building Duplex"  <- scripts/film_neuro2/evidence/d1_counts.cmd :: the exact command line
+§FACT d1_nfiles=379  <- scripts/film_neuro2/evidence/d1_counts.files :: lines (files downloaded into the empty folder)
+§FACT tree_n=378  <- scripts/film_neuro2/evidence/d1_counts.files :: lines minus the one model file (the Viewer's page files and tools)
+§FACT k_box=487  <- scripts/film_neuro2/evidence/d2_clashes.stdout :: value.bboxOverlaps
+§FACT k_clash=356  <- scripts/film_neuro2/evidence/d2_clashes.stdout :: value.meshClashes
+§FACT k_cleared=131  <- scripts/film_neuro2/evidence/d2_clashes.stdout :: value.cleared
+§FACT k_unj=0  <- scripts/film_neuro2/evidence/d2_clashes.stdout :: value.unknown
+§FACT k_tol=25  <- scripts/film_neuro2/evidence/d2_clashes.stdout :: value.toleranceM x 1000, mm
+§FACT k_summary="356 mesh-level clashes (487 box overlaps: 131 cleared by the shape tests, 0 unjudged) at 25 mm"  <- scripts/film_neuro2/evidence/d2_clashes.stdout :: summary
+§FACT d2_cmd="node viewer/tools/viewer_verbs.js clashes --building Duplex --a ARC --b MEP"  <- scripts/film_neuro2/evidence/d2_clashes.cmd :: the exact command line
+§FACT e_reason="New or deeper overlap (shapes checked): 5 (5 clash, 0 not judged (box verdict kept), 20 cleared (0 touching, 20 box only); 25 box pairs)"  <- scripts/film_neuro2/evidence/d3_shift.stdout :: edits[0].reason
+§FACT e_clash=5  <- scripts/film_neuro2/evidence/d3_shift.stdout :: newRows clash count
+§FACT e_pairs=25  <- scripts/film_neuro2/evidence/d3_shift.stdout :: newRows clash box_count
+§FACT e_cleared="20"  <- scripts/film_neuro2/evidence/d3_shift.stdout :: reason: N cleared
+§FACT e_boxonly="20"  <- scripts/film_neuro2/evidence/d3_shift.stdout :: reason: N box only
+§FACT d3_cmd="node edit_cli.js --building HospitalGarage --shift gy10 --move 1.49"  <- scripts/film_neuro2/evidence/d3_shift.cmd :: the exact command line
+§FACT bug_box="200"  <- prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md :: Duplex ARC/MEP gave `bboxOverlaps=… meshClashes=… cleared=-…`
+§FACT bug_clash="229"  <- prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md :: Duplex ARC/MEP gave `bboxOverlaps=… meshClashes=… cleared=-…`
+§FACT bug_neg="29"  <- prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md :: Duplex ARC/MEP gave `bboxOverlaps=… meshClashes=… cleared=-…`
+§FACT fix_box=393  <- scripts/film_neuro2/evidence/x1_control_local_duplex_clashes.json :: value.bboxOverlaps (same test copy, after the fix)
+§FACT fix_clash=291  <- scripts/film_neuro2/evidence/x1_control_local_duplex_clashes.json :: value.meshClashes
+§FACT fix_cleared=102  <- scripts/film_neuro2/evidence/x1_control_local_duplex_clashes.json :: value.cleared
+§FACT p_lines_f=2  <- scripts/film_neuro2/evidence/d4_path_fwd.stdout :: per[band 0].lines
+§FACT p_markers_f=1  <- scripts/film_neuro2/evidence/d4_path_fwd.stdout :: per[band 0].markers
+§FACT p_lines_t="2"  <- scripts/film_neuro2/evidence/d4_path_fwd.stdout :: §FILM-PATH-VIS total linesInView=a/<b>
+§FACT p_markers_t="1"  <- scripts/film_neuro2/evidence/d4_path_fwd.stdout :: §FILM-PATH-VIS total markersInView=a/<b>
+§FACT p_gl="swiftshader"  <- scripts/film_neuro2/evidence/d4_path_fwd.stdout :: §FILM-PATH-VIS env gl=
+§FACT p_lines_r=0  <- scripts/film_neuro2/evidence/d4_path_rev.stdout :: per[band 0].lines
+§FACT p_markers_r=0  <- scripts/film_neuro2/evidence/d4_path_rev.stdout :: per[band 0].markers
+§FACT d4_cmd="node viewer/tools/film_path_vis.js --db buildings/Duplex_extracted.db --json"  <- scripts/film_neuro2/evidence/d4_path_fwd.cmd :: the exact command line
+§FACT va_n="64"  <- scripts/film_neuro2/evidence/d6_viewer_actions.stdout :: §VIEWER_ACTIONS N_actions=
+§FACT va_x="1"  <- scripts/film_neuro2/evidence/d6_viewer_actions.stdout :: §VIEWER_ACTIONS X=
+§FACT va_entry="96"  <- scripts/film_neuro2/evidence/d6_viewer_actions.stdout :: §VIEWER_ACTIONS N_entry=
+§FACT ev_n="1,153"  <- scripts/film_neuro2/evidence/d6_erp_verbs.stdout :: §ERP_VERBS N=
+§FACT ev_x="0"  <- scripts/film_neuro2/evidence/d6_erp_verbs.stdout :: §ERP_VERBS X=
+§FACT ev_impl="102"  <- scripts/film_neuro2/evidence/d6_erp_verbs.stdout :: §ERP_VERBS impl=
+§FACT rungs_n=9  <- prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md :: §22.6 table: rows D0..
+§FACT rung_state0="done, witnessed"  <- prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md :: §22.6 D0 state
+§FACT guide_url="red1oon.github.io/BIMCompiler/ProposerGuide"  <- docs/ProposerGuide.md :: the guide link (docs site)
+§FACT cmd_mcp="claude mcp add bim -- node \"$PWD/bim_mcp.js\""  <- docs/ProposerGuide.md :: Getting started / Connect your AI
+§FACT cmd_get_mcp="curl -O https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js"  <- docs/ProposerGuide.md :: Getting started / Connect your AI
+§FACT cmd_install="npm install puppeteer@24"  <- docs/ProposerGuide.md :: Getting started / Connect your AI
+§FACTS resolved=66 missing=0
+§FACTS-USED storyboard=30 unresolved=0
