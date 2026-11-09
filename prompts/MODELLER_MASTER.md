@@ -84,7 +84,7 @@ is ours" ⇒ aligned; move it from ⛔ to the queue after the catalog rebind.
 C3 lands with the REPLACE verb.
 
 ## ▶ §RESUME 2026-11-09c — START HERE (the one entry point; older resume blocks are archived, see the note below the specs)
-**State at close, 2026-11-09 (bim-ootb main `2ae402f7`, modeller sw v266).** Every item below was merged, then verified at its merged head.
+**State at close, 2026-11-09 (bim-ootb main `a751e458`, modeller sw v267; was `2ae402f7`/v266 before #2776).** Every item below was merged, then verified at its merged head.
 **Landed this session (bim-ootb):**
 - #2753 a Walked Fixtures type row selects + frames its whole set; the category scrolls into view after a walk; class rows show counts (W-E2E-TYPESET-ZOOM 9/0).
 - #2754 W-UX-DISC waits for its log line (8/0; its 3 reds were a timing artifact).
@@ -105,10 +105,9 @@ C3 lands with the REPLACE verb.
 **⚠ Review the new rules JSON against the other building models (owner, 2026-11-09: "Since the JSON is newly constructed, should we put a note that it be reviewed against the other building models?"):**
 - The JSON VIEW is new, the values are not (it shows the shipped tables). Proven only on Duplex (`duplex_rules.db`, W-E2E-RULES-EDIT) and the private set (`terminal_rules.db`, the film still). Not yet opened on `farm_rules.db` or any other resident. Review = open it on every resident, and check that open-and-close with no edit leaves every walk byte-identical.
 - An EDIT is per building TYPE, not per building: one cell changes every building of that class. Before an edit is trusted or contributed: re-walk the other buildings of that class (the fleet table, W-BAND-NO-HOST §7 method) and state what moved. Proposed: the editor's header says "these rules are shared by every <class> building"; the downloaded edit file carries `checkedOn: [buildings]`, empty until a fleet check fills it.
-**▶ NEXT SESSION, FIRST (owner 2026-11-09: "yes", build them):** spec first in bim-ootb `prompts/MODELLER_RULES_EDITOR.md`, witness RED on main first, one PR:
-- (a) the editor header says "these rules are shared by every <class> building" (class from `WalkRules.buildingClass`);
-- (b) the downloaded edit file carries `checkedOn: [buildings]`, empty until a fleet check fills it;
-- (c) the sweep: open the editor on EVERY resident (each of `duplex_rules.db`, `terminal_rules.db`, `farm_rules.db`), close with no edit, and every walk stays byte-identical; an edit's fleet check re-walks the other buildings of that class and lists what moved.
+**✅ DONE 2026-11-09 (a)(b)(c) — bim-ootb #2776 merged `a751e458`, modeller sw v267** (spec + RESULT: bim-ootb `prompts/MODELLER_RULES_EDITOR.md` §CLASS-SHARED). Header names the loaded file's class (`WalkRules.classOf`; a bug where farm said "terminal" was found and fixed); download carries `checkedOn: []`; W-RULES-CLASS no-edit sweep green on 6 of 8 residents (SampleHouse VACUOUS: page refuses all, no LOD400 mesh; HospitalGarage INCONCLUSIVE: headless tab died before the editor opened, twice); `modeller/tests/rules_edit_fleet_check.js` walks every READER of a file (own / schedule source / FP borrow) and fills `checkedOn`; W-RULES-FLEET 4/0 (one cell on Duplex moves exactly its 6 devices, nothing on the other 7 readers).
+- **New measured facts:** Walk ALL skips services already present (a Walk-ALL re-walk judges nothing). A re-walk of the same services moves a few devices for 2-3 rounds before it settles (Duplex: 2/5/2, then 1/1/1, then stable), with no rule changed: a user who walks again sees devices move. Not traced.
+- **⛔ Owner question 8 (new):** a live edit reaches only buildings whose OWN rules are that file; terminal buildings read `duplex_rules.db` room schedules (and residential ones borrow `terminal_rules.db` FP) WITHOUT the edit. Should a live edit also apply there? Today: no; the fleet check reports both.
 **▶ THEN the Modeller user guide, if needed (owner: "put a note to update the modeller user guide if needed")** — `docs/ModellerGuide.md` §"Generate — walkers fill the ARC" (~L594) predates this session. Check each against the shipped UI, update only what changed, real screenshots (one look for layout, numbers from § lines), publish docs only via `scripts/safe_gh_deploy.sh`:
 - NEW: the **Rules** button (read/edit the walker's rules as JSON, Save → walk again, Download edits, Reset; shared by building type, per (a)).
 - NEW: Walked Fixtures → click a TYPE row selects and frames the whole set; click one device → close-up from the side it faces (below a ceiling, in front of a wall).
