@@ -1,5 +1,8 @@
 # id, cue offset after the beat starts, fact sources (keys of §ERP_FILM_FACT), SHORT, DETAIL
 ROWS = [
+ ("ch", 0.6, "(chapter card: no number)",
+  "F: What came before this? | M: The Project Order, pushed from the BIM.",
+  "F: What came before this? | M: In an earlier film, we pushed a set of BIM model elements to the ERP, as a Project Order. | F: And now? | M: Now the project's back-office documents join it, as a new BIM record set: the BIM Document."),
  ("before", 0.6, "before.ownStages, before.registerRows",
   "F: A project, and an empty tab? | M: The drawings are untracked files.",
   "F: Two stages, and nothing in the BIM Document tab? | M: Right. Its drawings are untracked files."),
@@ -51,7 +54,7 @@ ROWS = [
  ("b10", 0.6, "b10.issued.before, b10.issued.after, b10.delta",
   "F: Does the count follow? | M: Two to three.",
   "F: Does the sheet count follow? | M: Issue one more sheet, and the issued count moves one link, from two to three."),
- ("end", 0.5, "(end card: no number)",
-  "F: Is this a real project? | M: No. Test data.",
-  "F: Is this a real project? | M: No. A test server, with a synthetic Duplex sheet set."),
+ ("end", 0.6, "(end card: no number)",
+  "F: And the schedule? | M: The 4D schedule reads the Project Order back.",
+  "F: And the schedule? | M: The 4D schedule already reads the Project Order back: planned against committed cost, phase by phase. | F: Has anyone done this before? | M: BIM with ERP, yes, on servers. In a single browser kernel, on a single signed log, we know of nobody. | F: Is this a real project? | M: No. Test data.")
 ]

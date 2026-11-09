@@ -16,13 +16,13 @@ print(f'§FILMW facts={len(F)} cuts={[l for l in L if l.startswith("§ERP_FILM_C
 # 1 frame count
 def frames(f): return int(ff('ffprobe','-v','error','-count_frames','-select_streams','v:0','-show_entries','stream=nb_read_frames','-of','csv=p=0',f).stdout.strip())
 dm = re.search(r'§ERP_FILM_DONE frames=(\d+)', '\n'.join(L)); done = int(dm.group(1))
-segs = [f'{run}/seg_{s}.mp4' for s in ['before','card','after','main','end']]
+segs = [f'{run}/seg_{s}.mp4' for s in ['ch','before','card','after','main','end']]
 parts = sum(frames(s) for s in segs if os.path.exists(s)); fs, fn = frames(silent), frames(narr)
 v('frames concat', fs == done == parts, f'silent={fs} recorder-DONE={done} sum-of-parts={parts}')
 v('frames narrated=silent', fn == fs, f'narrated={fn} silent={fs}')
 # 2 beats in order (film clock)
 cue = {m.group(1): float(m.group(2)) for l in L for m in [re.match(r'§ERP_FILM_CUE id=(\S+) t=([\d.]+)', l)] if m}
-order = ['before','card','after'] + [f'b{i}' for i in range(1,11)] + ['end']
+order = ['ch','before','card','after'] + [f'b{i}' for i in range(1,11)] + ['end']
 seq = [cue.get(k) for k in order]; ok = all(x is not None for x in seq) and all(a < b for a, b in zip(seq, seq[1:]))
 v('beats in order', ok, ' '.join(f'{k}@{c:.1f}' for k, c in zip(order, seq) if c is not None))
 # 6 evidence lines in order in the page log
