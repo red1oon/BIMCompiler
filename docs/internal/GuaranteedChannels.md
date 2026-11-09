@@ -1,5 +1,5 @@
 # Guaranteed Channels — the pipes the ops ride and the rails payments ride
-> **Lane (2026-11-09):** this file is one part of the ONE-DOOR framework (Actor | Channel | One door | Engine). Home and lane map: `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` §0. Column owned here: transport under the channels.
+> **Lane (2026-11-09):** this file is one part of the ONE-DOOR framework (Actor | Channel | One door | Engine). Home and lane map: `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` §0. Column owned here: ACTOR delivery transport.
 
 *The wiring under the lenses. The lens docs ([POSLens](POSLens.md), [WMSLens](WMSLens.md),
 [SocialPlatformLens](SocialPlatformLens.md), [CreditLedgerLens](CreditLedgerLens.md)) are the *interfaces*; this is

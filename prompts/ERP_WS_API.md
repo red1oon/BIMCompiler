@@ -1,5 +1,5 @@
 # ⚠ DO NOT REMOVE — scope: offer the Kernel ERP through the SAME web-service API as legacy iDempiere (ADInterface), so existing integrations - AI ones included - work by changing the base URL; plus the published "prompt advisory" for users. READ THE LOG after every run. Spec first: nothing below is built yet.
-> **Lane (2026-11-09):** this file is one part of the ONE-DOOR framework (Actor | Channel | One door | Engine). Home and lane map: `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` §0. Column owned here: CHANNEL (legacy-compatible WS API; its operations map onto the ERP verb list, §0.1).
+> **Lane (2026-11-09):** this file is one part of the ONE-DOOR framework (Actor | Channel | One door | Engine). Home and lane map: `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` §0. Column owned here: ACTOR adapter (an outside system on the legacy-compatible WS API; its operations map onto the ERP vocabulary, §0.1).
 Started 2026-10-17 on the owner's word ("offer ours with such WS API as legacy has it ... we publish a doc for users that can easily take that and becomes a 'prompt advisory'" - "Agree").
 
 ## 1. Rules this lives under

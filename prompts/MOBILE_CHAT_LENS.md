@@ -1,5 +1,5 @@
 # ⚠ DO NOT REMOVE — Scope guard
-> **Lane (2026-11-09):** this file is one part of the ONE-DOOR framework (Actor | Channel | One door | Engine). Home and lane map: `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` §0. Column owned here: CHANNEL (mobile chat).
+> **Lane (2026-11-09):** this file is one part of the ONE-DOOR framework (Actor | Channel | One door | Engine). Home and lane map: `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` §0. Column owned here: ACTOR adapter (mobile chat).
 # Scope: a NEW LENS over the SAME op-log engine — the ERP rendered as a chat surface
 #        (WhatsApp/Telegram-shaped), MOBILE-FIRST. The op-log IS the message stream: kernel_ops
 #        (op_uuid, timestamp, op_type, parameters, output_guid, user_tag) == (id, time, verb,

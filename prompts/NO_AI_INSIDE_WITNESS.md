@@ -1,4 +1,5 @@
 # ⚠ DO NOT REMOVE
+> **Lane (2026-11-09):** this file is one part of the ONE-DOOR framework (Actor | Channel | One door | Engine). Home and lane map: `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` §0. Column owned here: positioning + the privacy caveat for email and mobile actors.
 **Scope:** this file is the SPEC for `witness_no_ai_inside.js` (bim-ootb `viewer/tests/`), the witness that
 PROVES (or disproves) the user-guide guarantee quoted below. **READ THE LOG AFTER EVERY RUN** — exit code
 is not evidence; `INCONCLUSIVE`/`VACUOUS`/`NO-OP` only appear in the log. Honour this block until the
