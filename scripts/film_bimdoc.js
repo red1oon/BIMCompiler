@@ -50,25 +50,9 @@ const CURSOR = `(() => { const go = () => { if (document.getElementById('__fc'))
     setTimeout(() => r.remove(), 600); }, true); };
   if (document.documentElement) go(); else addEventListener('DOMContentLoaded', go); })();`;
 
-const CARD_CSS = '#__fc{display:none}html,body{margin:0;width:1920px;height:1080px;background:#0b0f17;color:#F3EEE8;font-family:"DejaVu Sans",sans-serif}' +
-  '.w{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}.k{color:#FF6B78;font-size:34px;letter-spacing:2px;margin-bottom:26px}' +
-  '.t{font-size:96px;font-weight:700;text-align:center;line-height:1.15}.t b{color:#FF6B78}.p{font-size:40px;color:#c9c4bd;margin-top:34px;text-align:center}' +
-  '.row{display:flex;align-items:center;gap:0;margin-top:30px}.bx{width:330px;height:210px;border:4px solid #7dd3fc;border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:46px;font-weight:700;color:#7dd3fc}' +
-  '.bx small{font-size:28px;font-weight:400;color:#c9c4bd;margin-top:10px}.ar{width:100px;text-align:center;font-size:72px;color:#FF6B78}.fn{position:absolute;bottom:260px;width:100%;text-align:center;font-size:30px;color:#8b95a5}' +
-  '.pp{font-size:42px;color:#e6e1da;max-width:1500px;text-align:center;line-height:1.45;margin-top:30px}.pp b{color:#7dd3fc;font-weight:700}' +
-  '.src{position:absolute;bottom:70px;left:120px;right:120px;text-align:center;font-size:24px;color:#8b95a5;line-height:1.5}';
-const CARD_IDEA = '<style>' + CARD_CSS + '</style><div class="w"><div class="k">THE CHAIN, END TO END</div><div class="row">' +
-  '<div class="bx">Sheet<small>the drawing file</small></div><div class="ar">&rarr;</div><div class="bx">BIM Document<small>a row in the register</small></div><div class="ar">&rarr;</div>' +
-  '<div class="bx">Project task<small>hours and progress</small></div><div class="ar">&rarr;</div><div class="bx">Invoice<small>amounts</small></div></div>' +
-  '</div>';
-// v3 (owner 2026-11-09): the opening chapter card and the closing card. Every claim here is sourced in FILM_NARRATION.md §BIMDOC-FILM-V3 (prior art + what is built).
-const CARD_CH = '<style>' + CARD_CSS + '</style><div class="w"><div class="k">CHAPTER</div><div class="t">BIM Integration to <b>ERP</b></div>' +
-  '<div class="pp">In an earlier film, any set of BIM model elements was pushed to the ERP as a <b>Project Order</b>.<br>Now the project\'s back-office documentation is wired in too,<br>as a new BIM data record set: the <b>BIM Document</b>.</div></div>';
-const CARD_END = '<style>' + CARD_CSS + '</style><div class="w"><div class="k">ALREADY IN THE SAME KERNEL</div><div class="t">One kernel. <b>One signed log.</b></div>' +
-  '<div class="pp">The 4D schedule in our BIM already reads the <b>Project Order</b> back: planned against committed cost, phase by phase, as you scrub time.<br>' +
-  'To our knowledge, the first to run BIM and ERP together in <b>one browser kernel</b>: every write applied locally and signed on one op-log, with no app or database server.</div>' +
-  '<div class="src">Closest prior art: RIB iTWO 4.0 / MTWO (BIM 5D + ERP on cloud servers) · MI ERP BIM for Odoo 19 (IFC elements as ERP records, on an Odoo server) · INTELSYS.build (SAP S/4HANA + Autodesk).<br>' +
-  'This film: a test server with public example data (a synthetic Duplex sheet set). The 4D variance is shown on the Hospital showcase project.</div></div>';
+// the three cards (chapter, chain, closing) come from the ONE card builder, scripts/film_bimdoc_cards.js (English here; Chinese/Malay via scripts/film_bimdoc_lang.js)
+const { build: buildCards } = require('./film_bimdoc_cards.js'); const CARDS = buildCards('en');
+const CARD_IDEA = CARDS.card, CARD_CH = CARDS.ch, CARD_END = CARDS.end;
 
 (async () => {
   await new Promise(r => server.listen(0, r));

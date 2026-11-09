@@ -34,7 +34,41 @@ for n, r in enumerate(EV, 1):
 v('10 evidence lines in order', all(i >= 0 for i in got), 'line#' + ','.join(map(str, got)))
 # 3 spoken numbers vs facts
 W = {'zero':0,'one':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,'nine':9,'ten':10,'eleven':11,'twelve':12,'thirteen':13,'fourteen':14,'fifteen':15,'sixteen':16,'seventeen':17,'eighteen':18,'nineteen':19,'twenty':20,'thirty':30,'forty':40,'fifty':50,'sixty':60,'seventy':70,'eighty':80,'ninety':90}
+LANG = os.environ.get('FILM_LANG', 'en')
+CN = {'零':0,'〇':0,'一':1,'二':2,'两':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9}
+MS = {'kosong':0,'satu':1,'dua':2,'tiga':3,'empat':4,'lima':5,'enam':6,'tujuh':7,'lapan':8,'sembilan':9,'sepuluh':10,'sebelas':11,'seratus':100}
+def nums_zh(t):   # Chinese numerals (and Arabic digits) -> numbers; the spelled fingerprint head and 4D/5D are judged elsewhere
+    t = re.sub(r'c[、，,\s]*(?:[零〇一二三四五六七八九0-9][、，,\s]*){5}', ' FPRINT ', t); t = re.sub(r'\b\d+D\b', ' ', t)
+    out = [float(x) for x in re.findall(r'\d+(?:\.\d+)?', t)]
+    for run in re.findall(r'[零〇一二三四五六七八九两十百千]+', t):
+        val = 0; cur = 0
+        for ch in run:
+            if ch in CN: cur = CN[ch]
+            elif ch == '十': val += (cur or 1) * 10; cur = 0
+            elif ch == '百': val += cur * 100; cur = 0
+            elif ch == '千': val += cur * 1000; cur = 0
+        out.append(val + cur)
+    return out
+def nums_ms(t):   # Malay number words: X puluh Y, X belas, X ratus Y
+    t = re.sub(r'bermula c, (?:\w+, ){4}\w+', 'FPRINT', t.lower().replace('-', ' ')); t = re.sub(r'\b\d+d\b', ' ', t)
+    toks = re.findall(r"[a-z]+|[,.;:?!|]", t); out = []; i = 0
+    while i < len(toks):
+        if toks[i] in MS or toks[i] in ('puluh', 'belas', 'ratus'):
+            val = 0; cur = 0; j = i
+            while j < len(toks) and (toks[j] in MS or toks[j] in ('puluh', 'belas', 'ratus')):
+                w = toks[j]
+                if w == 'puluh': val += cur * 10; cur = 0
+                elif w == 'belas': val += cur + 10; cur = 0
+                elif w == 'ratus': val += cur * 100; cur = 0
+                elif w in ('sepuluh', 'sebelas', 'seratus'): val += MS[w]
+                else: cur = MS[w]
+                j += 1
+            out.append(val + cur); i = j
+        else: i += 1
+    return out
 def nums(t):
+    if LANG == 'zh': return nums_zh(t)
+    if LANG == 'ms': return nums_ms(t)
     t = re.sub(r'begin(?:s|ning) c, (?:\w+, ){4}\w+', 'FPRINT', t.lower().replace('-', ' '))   # the spelled hex head is judged separately
     out = []; toks = re.findall(r"[a-z']+|[,.;:?!|]", t); i = 0
     while i < len(toks):
