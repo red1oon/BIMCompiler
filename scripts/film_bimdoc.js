@@ -109,11 +109,12 @@ const CARD_END = '<style>' + CARD_CSS + '</style><div class="w"><div class="k">F
   const hold = (ms) => (FF ? Promise.resolve() : sleep(ms * HK));
 
   // beats: the beat's start is logged in-segment; the previous beat is held until its dialogue has room (the film is cut to the narration)
-  let prev = null; const BEATS = [];
+  let prev = null, lensMax = 0; const BEATS = [];
   const beat = async (id, seg, note) => {
     if (FF && id === START_AT) { FF = false; await recOn(seg); }
     if (prev && prev.seg === seg && MIN[prev.id]) { const wait = MIN[prev.id] - (segNow(seg) - prev.t); if (wait > 0) { say('§ERP_FILM_HOLD after=' + prev.id + ' extra=' + wait.toFixed(2)); await sleep(wait * 1000); } }
     prev = { id, seg, t: segNow(seg) }; BEATS.push(prev); say('§ERP_FILM_BEAT id=' + id + ' seg=' + seg + ' t=' + prev.t.toFixed(2) + ' ' + (note || ''));
+    if (!FF) { const nl = await page.evaluate(() => document.querySelectorAll('[data-lens-action]').length).catch(() => 0); lensMax = Math.max(lensMax, nl); if (nl) say('§ERP_FILM_LENS beat=' + id + ' lensButtons=' + nl); }
   };
   const endBeat = async () => { if (prev && MIN[prev.id]) { const wait = MIN[prev.id] - (segNow(prev.seg) - prev.t); if (wait > 0) { say('§ERP_FILM_HOLD after=' + prev.id + ' extra=' + wait.toFixed(2)); await sleep(wait * 1000); } } };
   const cut = (id, why) => say('§ERP_FILM_CUT ' + id + ' ' + why);
@@ -203,9 +204,28 @@ const CARD_END = '<style>' + CARD_CSS + '</style><div class="w"><div class="k">F
     await hclick(tabSel('Task')); await hold(600); await pickRow(TK[taskName].id);
     if (tab) { await hclick(tabSel(tab)); await hold(900); }
   }
-  async function lensClick(id) { const n0 = mark(); await hclick('[data-lens-action="' + id + '"]'); await hold(1200); return n0; }
-  const progressPanel = () => page.evaluate(() => [...document.querySelectorAll('#bimdoc-progress [data-bimdoc-line]')].map(e => e.textContent));
-  const closePanel = async () => { await hclick('#bimdoc-progress button').catch(() => {}); await hold(500); };
+  // v2 (ERP_IDEMPIERE_UX_PARITY.md §BIMDOC-ADPASS): progress and hours are COMPUTED COLUMNS of the Task/Phase grids; each grid load logs §AD-VIRTUAL tab= table= col= rows= values=[key:value,...]
+  const virtLine = (n0, table, col) => lastLine(n0, new RegExp('^§AD-VIRTUAL tab=\\d+ table=' + table + ' col=' + col + ' rows='));
+  const virtOf = (line, key) => { const m = / values=\[(.*)\]$/.exec(line || ''); if (!m) return null; const hit = m[1].split(',').map(kv => [kv.slice(0, kv.lastIndexOf(':')), kv.slice(kv.lastIndexOf(':') + 1)]).find(x => x[0] === String(key)); return hit ? hit[1] : null; };
+  // bring a grid column on screen (glide to its header: the grid scrolls it in) and record that it is inside the viewport (numbers, not a look)
+  async function showCol(col, tag) {
+    const sel = '#idmp-content table thead th[data-ad-col="' + col + '"]';
+    if (!(await page.$(sel))) { fact(tag + '.col.' + col, 'ABSENT'); return false; }
+    await glide(sel); await hold(900);
+    const r = await page.locator(sel).first().boundingBox(), vw = 1440, vh = 810, inside = !!(r && r.x >= 0 && r.x + r.width <= vw && r.y >= 0 && r.y + r.height <= vh);
+    fact(tag + '.col.' + col, inside ? 'VISIBLE x=' + Math.round(r.x) + ' w=' + Math.round(r.width) : 'OUTSIDE ' + JSON.stringify(r)); return inside;
+  }
+  async function toGrid() { if (!(await page.$('#idmp-content table thead th[data-ad-col]'))) { await hclick('#idmp-toolbar button[data-tb="toggle"]'); await hold(900); } }
+  // the record's gear (ProcessButtonPopup): open it, click one process by its Button column; returns the popup the process opens, if any
+  async function gearRun(comp, popupMs) {
+    await hclick('#idmp-toolbar [data-tb="process"]'); await page.waitForSelector('#idmp-proc-ov [data-tbb="' + comp + '"]', { timeout: 10000 }); await hold(900);
+    await glide('#idmp-proc-ov [data-tbb="' + comp + '"]'); clicks++;
+    const c = await page.evaluate(() => { const e = document.getElementById('__fc'); return e ? [parseFloat(e.style.left), parseFloat(e.style.top)] : null; }), b = await page.locator('#idmp-proc-ov [data-tbb="' + comp + '"]').first().boundingBox();
+    if (c && b && Math.abs(c[0] - (b.x + b.width / 2)) < 2 && Math.abs(c[1] - (b.y + b.height / 2)) < 2) cursorOk++;
+    const [popup] = await Promise.all([page.waitForEvent('popup', { timeout: popupMs || 30000 }).catch(() => null), (async () => { await page.mouse.down(); await hold(70); await page.mouse.up(); })()]);
+    return popup;
+  }
+  const closeProcDlg = async () => { for (let i = 0; i < 40 && !(await page.$('#idmp-procdlg .idmp-procresult')); i++) await sleep(250); const m = await page.evaluate(() => { const r = document.querySelector('#idmp-procdlg .idmp-procresult .msg'); return r ? r.textContent : null; }); if (await page.$('[data-procdlg-ok]')) await hclick('[data-procdlg-ok]'); return m; };
   const ct = (n) => (n == null ? 'null' : String(n));
 
   try {
@@ -285,14 +305,19 @@ const CARD_END = '<style>' + CARD_CSS + '</style><div class="w"><div class="k">F
     if (!r101 || String(r101.t) !== String(TK.Plans.id) || String(r101.ph) !== String(TK.Plans.ph) || String(r101.p) !== String(PRJ)) throw new Error('A-101 not saved from the sub-tab with its parents: ' + JSON.stringify(r101));
     fact('b2.A-101.row', JSON.stringify(r101)); fact('b2.A-101.parentsInherited', 'project+phase+task from the sub-tab parents');
     await off(async () => { await boot('&window=' + PROJ_WIN); await selectRow(PRJ); await tabClickQ('Phase'); await selectRow(PH.Concept); await tabClickQ('Task'); await selectRow(TK.Plans.id); await tabClickQ('BIM Document'); });
-    await beat('b2r', 'main', 'the register: three rows on the task');
-    await hold(900); await ensureForm(); await hold(1500);
-    const sn2 = await snap(); fact('b2.registerRows.Plans', sn2.rows.length);
-    for (let k = 0; k < 2; k++) { await hclick(NEXT); await hold(1300); }
-    const m2 = await lensClick('bimdoc:progress'); const regLine = lastLine(m2, /^§BIMDOC-REGISTER /);
-    fact('b2.line', regLine); fact('b2.rows', kv(regLine, 'rows')); fact('b2.deliverables', kv(regLine, 'deliverables')); fact('b2.panel', JSON.stringify(await progressPanel()));
-    await hold(2000); await closePanel();
-    if (!regLine) cut('b2', 'no §BIMDOC-REGISTER line');
+    await beat('b2r', 'main', 'the register: three rows on the task, in its grid');
+    await hold(900); await toGrid(); await hold(1800);
+    const sn2 = await snap(); fact('b2.registerRows.Plans', sn2.rows.length); fact('b2.rows', sn2.rows.length);
+    const g2 = await page.evaluate(() => ({ th: [...document.querySelectorAll('#idmp-content table thead th[data-ad-col]')].map(e => e.getAttribute('data-ad-col')), rows: [...document.querySelectorAll('#idmp-content table tbody tr[data-ad-record]')].map(tr => [...tr.querySelectorAll('td')].map(td => td.textContent.trim()).filter(Boolean).length) }));
+    fact('b2.grid.columns', g2.th.join('|')); fact('b2.grid.filledCells', g2.rows.join('|'));
+    await hold(1500);
+    // the task itself counts its deliverables: the Task grid's computed column
+    const m2 = mark(); await hclick(tabSel('Task')); await hold(900); await toGrid();
+    await showCol('BIM_Deliverables', 'b2'); await hold(1500);
+    const regLine = virtLine(m2, 'C_ProjectTask', 'BIM_Deliverables');
+    fact('b2.line', regLine); fact('b2.deliverables', virtOf(regLine, TK.Plans.id));
+    if (!regLine) cut('b2', 'no §AD-VIRTUAL BIM_Deliverables line');
+    await hclick(tabSel('BIM Document')); await hold(900); await toGrid();   // back to the register: beat 3 attaches to a BIM Document, not to the task
     if (STOP_AFTER === 'b2') { await endBeat(); await recOff(); throw STOP; }
 
     // ════════ beat 3 — the drawing attached (the generic Attachment dialog): name, size, fingerprint ════════
@@ -305,6 +330,8 @@ const CARD_END = '<style>' + CARD_CSS + '</style><div class="w"><div class="k">F
     const [fc] = await Promise.all([page.waitForEvent('filechooser', { timeout: 10000 }), (async () => { await page.mouse.down(); await hold(70); await page.mouse.up(); })()]);
     await fc.setFiles([{ name: 'duplex_ground_floor.dxf', mimeType: 'application/dxf', buffer: DXF }]); await hold(2800);
     await hclick('[data-att="ok"]'); await page.waitForSelector('[data-att="dialog"]', { state: 'detached', timeout: 15000 }); await hold(1500);
+    const attOpen = since(n3, /^§ATT open table=/)[0] || ''; fact('b3.attachedTo', attOpen);
+    if (kv(attOpen, 'table') !== String(T_ID)) throw new Error('beat 3 attached to table ' + kv(attOpen, 'table') + ', not BIM_Document ' + T_ID);
     const hashLine = since(n3, /^§ATT hash name=duplex_ground_floor/)[0] || '';
     fact('b3.line', hashLine); fact('b3.name', kv(hashLine, 'name')); fact('b3.sha256', kv(hashLine, 'sha256')); fact('b3.sha256.node', sha(DXF)); fact('b3.bytes.node', DXF.length);
     fact('b3.saved', since(n3, /^§ATT save op=create entries=1/)[0] || 'NONE');
@@ -315,8 +342,8 @@ const CARD_END = '<style>' + CARD_CSS + '</style><div class="w"><div class="k">F
     // ════════ beat 4 — opened in the Modeller: the same fingerprint in the app's own log ════════
     await beat('b4', 'main', 'opened in the Modeller; the same fingerprint in the app log');
     const n4 = mark(), a4 = APPLOG.length;
-    await glide('[data-lens-action="bimdoc:open"]'); await hold(500);
-    const [popup] = await Promise.all([page.waitForEvent('popup', { timeout: 30000 }).catch(() => null), (async () => { await page.mouse.down(); await hold(70); await page.mouse.up(); })()]);
+    const popup = await gearRun('OpenInApp', 30000);
+    const tbb = lastLine(n4, /^§AD-TBB click comp=OpenInApp /); fact('b4.gear.line', tbb); fact('b4.via', kv(tbb, 'via')); fact('b4.process', kv(tbb, 'process'));
     let appOpen = null;
     if (popup) {
       await popup.waitForLoadState('domcontentloaded').catch(() => {});
@@ -326,6 +353,7 @@ const CARD_END = '<style>' + CARD_CSS + '</style><div class="w"><div class="k">F
       await hold(6000);                                  // the Modeller, with the drawing opened
       await switchTo(mainSess); await popup.close().catch(() => {});
     }
+    fact('b4.processResult', await closeProcDlg());
     const openLine = lastLine(n4, /^§BIMDOC-OPEN id=/);
     fact('b4.line', openLine); fact('b4.url', kv(openLine, 'url')); fact('b4.sha256.action', kv(openLine, 'sha256')); fact('b4.app', kv(openLine, 'app')); fact('b4.appLine', appOpen || 'NONE');
     fact('b4.sha12.app', appOpen ? (/sha=([0-9a-f]+)/.exec(appOpen) || [])[1] : 'NONE');
@@ -387,21 +415,26 @@ const CARD_END = '<style>' + CARD_CSS + '</style><div class="w"><div class="k">F
     const hq = await rd("SELECT qty FROM s_timeexpenseline WHERE c_projecttask_id=" + TK.Plans.id + " AND isactive<>'N'");
     fact('b7.lines.read', hq.length); fact('b7.total.read', hq.reduce((a, x) => a + Number(x.qty || 0), 0));
     await hold(1500);
-    // the same numbers on the task, through the progress action (§BIMDOC-HOURS)
-    await off(async () => { await toTask('Concept', 'Plans'); });
-    const m7 = await lensClick('bimdoc:progress');
-    const hrsLine = lastLine(m7, /^§BIMDOC-HOURS /);
-    fact('b7.line', hrsLine); fact('b7.lines', kv(hrsLine, 'lines')); fact('b7.qty', kv(hrsLine, 'qty')); fact('b7.total', kv(hrsLine, 'total'));
-    if (!hrsLine || !/lines=[1-9]/.test(hrsLine)) cut('b7', 'no §BIMDOC-HOURS with lines');
+    fact('b7.lines', hq.length); fact('b7.qty', JSON.stringify(hq.map(x => Number(x.qty)).sort((x, y) => x - y)));
+    // the same hours on the task: its grid's computed column "BIM Hours Booked"
+    const mark0 = mark();
+    await off(async () => { await boot('&window=' + PROJ_WIN); await selectRow(PRJ); await tabClickQ('Phase'); await selectRow(PH.Concept); await tabClickQ('Task'); await ensureGridQ(); });
+    const m7 = mark0;
+    await showCol('BIM_HoursBooked', 'b7'); await hold(1800);
+    const hrsLine = virtLine(m7, 'C_ProjectTask', 'BIM_HoursBooked');
+    fact('b7.line', hrsLine); fact('b7.total', virtOf(hrsLine, TK.Plans.id));
+    if (!hrsLine || !(Number(virtOf(hrsLine, TK.Plans.id)) > 0)) cut('b7', 'no §AD-VIRTUAL BIM_HoursBooked with hours');
 
-    // ════════ beat 8 — progress, computed (same click): task, then phase ════════
-    await beat('b8', 'main', 'progress computed: issued over all, earned hours');
-    const progT = lastLine(m7, /^§BIMDOC-PROGRESS task=/), progP = lastLine(m7, /^§BIMDOC-PROGRESS phase=/);
-    fact('b8.line.task', progT); fact('b8.line.phase', progP);
-    for (const [lvl, ln] of [['task', progT], ['phase', progP]]) for (const k of ['issued', 'total', 'pct', 'budget', 'earned']) fact('b8.' + lvl + '.' + k, kv(ln, k));
-    fact('b8.panel', JSON.stringify(await progressPanel())); fact('b8.stored.progress.columns', (await dq("SELECT count(*) FROM AD_Column c JOIN AD_Table t ON t.AD_Table_ID=c.AD_Table_ID WHERE lower(c.ColumnName) LIKE '%progress%' AND t.TableName IN ('BIM_Document','C_ProjectTask','C_ProjectPhase')"))[0][0]);
-    await hold(3500); await closePanel();
-    if (!progT) cut('b8', 'no §BIMDOC-PROGRESS task line');
+    // ════════ beat 8 — progress, computed: the same Task grid, then the Phase grid ════════
+    await beat('b8', 'main', 'progress computed: issued over all, earned hours (grid columns)');
+    await showCol('BIM_Issued', 'b8'); await hold(900); await showCol('BIM_EarnedHours', 'b8'); await hold(1500);
+    const tI = virtLine(m7, 'C_ProjectTask', 'BIM_Issued'), tN = virtLine(m7, 'C_ProjectTask', 'BIM_Deliverables'), tE = virtLine(m7, 'C_ProjectTask', 'BIM_EarnedHours');
+    fact('b8.line.task', tI); fact('b8.task.issued', virtOf(tI, TK.Plans.id)); fact('b8.task.total', virtOf(tN, TK.Plans.id)); fact('b8.task.earned', virtOf(tE, TK.Plans.id));
+    const m8 = mark(); await hclick(tabSel('Phase')); await hold(900); await toGrid(); await showCol('BIM_Issued', 'b8p'); await hold(900); await showCol('BIM_EarnedHours', 'b8p'); await hold(1800);
+    const pI = virtLine(m8, 'C_ProjectPhase', 'BIM_Issued'), pN = virtLine(m8, 'C_ProjectPhase', 'BIM_Deliverables'), pE = virtLine(m8, 'C_ProjectPhase', 'BIM_EarnedHours');
+    fact('b8.line.phase', pI); fact('b8.phase.issued', virtOf(pI, PH.Concept)); fact('b8.phase.total', virtOf(pN, PH.Concept)); fact('b8.phase.earned', virtOf(pE, PH.Concept));
+    fact('b8.stored.progress.columns', (await dq("SELECT count(*) FROM AD_Column c JOIN AD_Table t ON t.AD_Table_ID=c.AD_Table_ID WHERE c.ColumnName LIKE 'BIM\\_%' ESCAPE '\\' AND COALESCE(c.ColumnSQL,'')='' AND t.TableName IN ('C_ProjectTask','C_ProjectPhase')"))[0][0]);
+    if (!tI || !pI) cut('b8', 'no §AD-VIRTUAL BIM_Issued line for the task or the phase');
     if (STOP_AFTER === 'b8') { await endBeat(); await recOff(); throw STOP; }
 
     // ════════ (c) beat 9 — the one real event: the phase ticked complete -> its Generate Order -> the invoice, with amounts ════════
@@ -468,13 +501,16 @@ const CARD_END = '<style>' + CARD_CSS + '</style><div class="w"><div class="k">F
     await off(async () => { await boot('&window=' + PROJ_WIN); await selectRow(PRJ); });
     await off(async () => { await tabClickQ('Phase'); await selectRow(PH.Concept); await tabClickQ('Task'); await selectRow(TK.Plans.id); await tabClickQ('BIM Document'); await ensureGridQ(); });
     await recOn('after'); await beat('after', 'after', 'the same project: register and computed progress');
-    await hold(900); await ensureForm(); await hold(1500); await hclick(NEXT); await hold(1500);
+    await hold(900); await toGrid(); await hold(2200);
     const snA = await snap(); fact('after.registerRows.Plans', snA.rows.length);
-    const mA = await lensClick('bimdoc:progress'); const pA = lastLine(mA, /^§BIMDOC-PROGRESS phase=/), pT = lastLine(mA, /^§BIMDOC-PROGRESS task=/);
-    fact('after.line.phase', pA); fact('after.line.task', pT);
-    for (const [lvl, ln] of [['task', pT], ['phase', pA]]) for (const k of ['issued', 'total', 'pct', 'budget', 'earned']) fact('after.' + lvl + '.' + k, kv(ln, k));
-    fact('after.panel', JSON.stringify(await progressPanel()));
-    await hold(3500); await closePanel(); await endBeat(); await recOff();
+    const mA = mark(); await hclick(tabSel('Task')); await hold(900); await toGrid(); await showCol('BIM_Issued', 'after'); await hold(1500);
+    const aTI = virtLine(mA, 'C_ProjectTask', 'BIM_Issued'), aTN = virtLine(mA, 'C_ProjectTask', 'BIM_Deliverables');
+    fact('after.line.task', aTI); fact('after.task.issued', virtOf(aTI, TK.Plans.id)); fact('after.task.total', virtOf(aTN, TK.Plans.id));
+    const mP = mark(); await hclick(tabSel('Phase')); await hold(900); await toGrid(); await showCol('BIM_Issued', 'afterp'); await hold(1500);
+    const aPI = virtLine(mP, 'C_ProjectPhase', 'BIM_Issued'), aPN = virtLine(mP, 'C_ProjectPhase', 'BIM_Deliverables');
+    fact('after.line.phase', aPI); fact('after.phase.issued', virtOf(aPI, PH.Concept)); fact('after.phase.total', virtOf(aPN, PH.Concept));
+    await hold(2500); await endBeat(); await recOff();
+    fact('lens.buttons.max', lensMax);
     say('§ERP_FILM_CURSOR clicks=' + clicks + ' cursorOnTarget=' + cursorOk + (clicks === cursorOk ? ' OK' : ' WRONG'));
   } catch (e) { if (e === STOP) say('§ERP_FILM_STOP after ' + STOP_AFTER); else say('§ERP_FILM_ERROR ' + String(e.stack || e.message).split('\n').slice(0, 4).join(' | ')); }
 
