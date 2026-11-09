@@ -917,6 +917,7 @@ A phone tap, a barcode scan, a GPS check-in, a sensor reading or a till ring bec
 | 10 ONE DOOR | The actor-layer diagram (`build/neuro_diagram/actor_layer_one_door.png`; source committed with the Odoo film at `scripts/film_odoo_migration/cards/src/`); label **"Specified, not built yet"** | F: "And people? Email?" M: "Same menu, same judge. A reply that says 'Approve' is a person's act. That part is designed, not built." | §21.1, §21.3 |
 | 11 PRIOR ART | One card: "published 9 November 2026 as a defensive disclosure, free for anyone" | M: "We published it, so nobody can lock it up." | `docs/AIProposerDefensiveDisclosure.md` |
 | 12 LIMITS | Honest-limits card: no strength or loads; the ERP verbs not offered yet; the benefit not measured yet (§20.3 protocol waits on a run); a pass never means safe | M says it plainly | §5, §20.3, §21.7 |
+| 12b THE DICTIONARY TO COME | One card, the phases of §22.6 as a ladder, today's rung lit ("Viewer 1 of 64 · ERP 0 of 1,153"); label **"planned, in this order; not built"** | F: "What comes next?" M: "More verbs, one list, the same judge. Each one proven before it is offered." | §22.6 |
 | 13 PROMISE | Title-style card with the closing line (§22.1) | M says it once | owner to approve |
 | ch | Chapter card "How the command line works" (owner, 2026-11-09: *"will the new film show how the CLI works ?"*) | — | — |
 | 14a SETUP | Terminal, empty folder: `npm install puppeteer@24`, then `curl -O` of `edit_cli.js` from the live site; `ls` shows one file | F: "What do I install?" M: "One library and one file. Nothing else." | the guide's "Getting started" |
@@ -935,6 +936,21 @@ A phone tap, a barcode scan, a GPS check-in, a sensor reading or a till ring bec
 ### 22.5 Waits on, and not in this film
 - **Waits on:** the Modeller real-shape build (§20.2, in progress 2026-11-09) if beat 6 is to show the edit report's new verdict words; otherwise beat 6 uses the Viewer verb alone. A real AI session (rc5 command, ▶ RESUME HERE) would replace the scripted labels; the film does not wait for it.
 - **Not in it:** any claim that the ERP verbs or email work today; any measured speed or "better than without" claim (§20.3 not run); private sets; logos; GPU verbs.
+
+### 22.6 Roadmap: the verb dictionary to come (owner, 2026-11-09: *"lay out a roadmap of its dictionary capability to come"*)
+**The dictionary** = the one list of verbs every actor sees: the AI's `tools/list`, the script runner's keywords and the guide's verb table, all generated from one `verbs.json` (§19 design 2). **Every rung is already specified somewhere below; nothing here is new scope.** Each needs its own spec line and the owner's go before code, a witness that the verb equals the app's own path plus a falsifier, and no paid model calls. Order = harmless first, GPU last (§19.0).
+| Rung | What the dictionary gains | Measure (X of N) | State 2026-11-09 | Spec |
+|---|---|---|---|---|
+| D0 | 4 connector verbs (`bim_lines`, `bim_try_shift`, `viewer_counts`, `viewer_clashes`) + 2 command-line tools (`edit_cli`, `film_path_vis`) | Viewer 1 of 64 actions; ERP 0 of 1,153 | **done, witnessed** | §18, §19.3, §19.4 |
+| D1 | **One dictionary file:** `verbs.json` generates `tools/list`, the script keywords and the guide table; the guide table must equal `tools/list` name for name; the two registry risks fixed first (`VerbRegistry.register()` silently replaces a duplicate, `VerbRegistry.java:33`; longest-keyword dispatch lets a new keyword steal old lines, L14-15) | all verbs listed in all three places | not started | §19 design 1-4 |
+| D2 | **Modeller edit verbs:** `bim_buildings`, `bim_try_move` (one line), `bim_try_add_column_line` (splits an over-limit span, the fix the G4 stop points to), `bim_try_add_bay` | each on a fresh copy, undone if red, nothing saved | not started | §19 verbs 1-4 |
+| D3 | **Viewer read-only verbs:** the Find bar's typed query, the 4D schedule at a day, cost to date at a day, what is at an element or a room, camera focus on an element | X of 64 Viewer actions | 1 of 64 | §19.0 item 3 |
+| D4 | **Scripts:** a `.bimcobol`-style runner over the verbs (`OPEN`, `LINES`, `TRY SHIFT gx6 BY 1.824`), and verb 7 `film_path_propose` (proposes camera bands, never writes) | one script = one repeatable run | not started | §19 verbs 5, 7 |
+| D5 | **Checker verbs:** checks on a user's own IFC (parse, schema, census, IDS) and the claims registry (every public claim and the test behind it) | per check: PASS, FAIL, VACUOUS or UNWITNESSED | spec; P0 in review (bim-ootb #2408) | `prompts/AGENT_CALLABLE_CHECKERS.md` §2, §6 |
+| D6 | **ERP verbs from the dictionary:** the read verbs plus one DocAction (Complete a Sales Order) over the CLI and the AI menu; the result must equal legacy iDempiere's own Complete | X of 1,153 ERP actions, per channel | inventory done, 0 offered | §21.2, §21.6, §21.7, witness A5 |
+| D7 | **More channels for the same verbs:** email reply, phone tap, device event, each through the one door (parse, bind, reply); a spoofed mail stays a claim | the same X of N on every channel (A1) | spec only | §21.1, §21.3, §21.4, §21.5 |
+| D8 | **GPU verbs, last and only on the owner's go:** Alt+S stills, Alt+C bake (the `cli_silent_bake.js` flags become a verb's inputs), a film-path script over `cinema_path` | never beside the owner's live tab | not started | §19.0 item 4, §19 "later" row |
+**What the film may say about it:** the rungs, their order, and today's two counts. Not dates, not "coming soon", and not any rung as working before its witness passes.
 
 ## STATUS
 2026-11-06 spec. 2026-11-07: extracted (§3), fixes (§6), report (§8), CLI (§11), three proposer tests (§12), shift and hinge (§13, §14), public guide (§14.3). 2026-11-08: no paid model calls (§14.6), the stop on outside calls and the report on first use (§15), consolidated; film "Think Global, Act Local": plan (§16), the three pre-cut checks, English rc3 built (§16.7).
