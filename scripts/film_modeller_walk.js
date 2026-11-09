@@ -87,7 +87,9 @@ const SCENE_N = (disc) => { const g = window.Bonsai.group(); const root = g && g
   const cutStart = (why) => { cutting = true; cutAt = Date.now() / 1000; say('§FILM_CUT start t=' + now().toFixed(2) + ' ' + why); };
   const cutEnd = (why) => { if (!cutting) return; const d = Date.now() / 1000 - cutAt; cutTotal += d; cutting = false; say('§FILM_CUT end removed=' + d.toFixed(2) + 's total=' + cutTotal.toFixed(2) + ' ' + (why || '')); };
   const beat = (id, note) => say('§FILM_BEAT id=' + id + ' t=' + now().toFixed(2) + ' ' + (note || ''));
-  const sync = (id, hit, note) => { const dt = Date.now() / 1000 - hit.t; beat(id, note); say('§FILM_SYNC beat=' + id + ' line="' + hit.line.slice(0, 80) + '" dt=' + dt.toFixed(3) + (dt >= 0 && dt < 0.5 ? '' : ' OUT-OF-SYNC')); };
+  // the beat is stamped once the state's § line has landed AND two frames have rendered: the words start on the VISIBLE change.
+  // renderLag = line → visible (the page's own draw time); a beat before its line would be the out-of-sync defect.
+  const sync = (id, hit, note) => { const dt = Date.now() / 1000 - hit.t; beat(id, note); say('§FILM_SYNC beat=' + id + ' line="' + hit.line.slice(0, 80) + '" renderLag=' + dt.toFixed(3) + (dt >= 0 ? ' (beat on the visible change)' : ' OUT-OF-SYNC (beat before its state)')); };
   let clicks = 0;
   async function glide(sel) { const loc = page.locator(sel).first(); await loc.scrollIntoViewIfNeeded().catch(() => {}); const b = await loc.boundingBox(); if (!b) throw new Error('no box for ' + sel);
     await page.mouse.move(b.x + Math.min(b.width / 2, 60), b.y + b.height / 2, { steps: 22 }); await hold(160); }
@@ -134,7 +136,8 @@ const SCENE_N = (disc) => { const g = window.Bonsai.group(); const root = g && g
       for (let i = 0; i < 36000 && !started; i++) {
         started = await page.evaluate((a) => { const d = a[0]; const m = window.__dwRevealMeta && window.__dwRevealMeta[d]; const r = window.__dwReveal && window.__dwReveal[d];
           const n = (function () { const g = window.Bonsai.group(); const root = g && g.children.find(o => o.userData && o.userData.dwRoot); if (!root) return 0; let k = 0; root.children.forEach(o => { if (o.userData && (o.userData.dwDisc === d || o.userData.dwDrawn === d)) k += o.isInstancedMesh ? o.count : 1; }); return k; })();
-          if (m || (r && !r.done && r.i > 0)) return 'reveal'; if (n !== a[1]) return 'scene'; if (window.__dwLastDoneDisc === d) return 'done'; return null; }, [disc, sn0]);
+          // §REVEAL-FRAME-CLOCK (bim-ootb #2762): the build-up is armed HELD while the walk commits — keep cutting until it is released
+          if ((m && !m.hold) || (r && !r.done && r.i > 0)) return 'reveal'; if (!m && n !== a[1]) return 'scene'; if (window.__dwLastDoneDisc === d && !m) return 'done'; return null; }, [disc, sn0]);
         if (!started) await hold(100);
       }
       cutEnd(disc + ' change starts: ' + started);
@@ -203,6 +206,13 @@ const SCENE_N = (disc) => { const g = window.Bonsai.group(); const root = g && g
   const lines = []; frames.forEach((f, i) => { const d = (i + 1 < frames.length ? frames[i + 1].ts : endTs) - f.ts; lines.push(`file '${f.fn}'`, `duration ${Math.max(d, 0.001).toFixed(4)}`); });
   if (frames.length) lines.push(`file '${frames[frames.length - 1].fn}'`);
   fs.writeFileSync(path.join(OUT, 'frames.txt'), lines.join('\n') + '\n');
+  // the build-up as the FILM shows it: distinct screencast images inside each reveal window (page-side sampling queues behind a busy
+  // page, take 4: 2 samples while the screencast held 19 distinct frames). VACUOUS under 3.
+  { const crypto = require('crypto'), bt = {}; LOG.forEach(l => { const m = /^§FILM_BEAT id=(\S+) t=([\d.]+)/.exec(l); if (m) bt[m[1]] = +m[2]; });
+    const t0 = frames.length ? frames[0].ts : 0;
+    DISCS.forEach(d => { const a = bt[d + '_reveal'], b = bt[d + '_after']; if (a == null || b == null) return;
+      const win = frames.filter(f => f.ts - t0 >= a && f.ts - t0 < b), hs = new Set(win.map(f => crypto.createHash('md5').update(fs.readFileSync(f.fn)).digest('hex')));
+      say('§FILM_REVEAL_FRAMES disc=' + d + ' window=' + a.toFixed(2) + '..' + b.toFixed(2) + 's frames=' + win.length + ' distinctImages=' + hs.size + (hs.size >= 3 ? '' : ' VACUOUS')); }); }
   const mp4 = path.join(OUT, 'walk_film.mp4');
   try { execFileSync('ffmpeg', ['-v', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', path.join(OUT, 'frames.txt'), '-vf', 'fps=24,scale=1920:1080:flags=lanczos,format=yuv420p', '-c:v', 'libx264', '-crf', '18', '-preset', 'medium', mp4]);
     say('§FILM_DONE frames=' + frames.length + ' dur=' + (endTs - (T0 || endTs)).toFixed(2) + ' out=' + mp4); } catch (e) { say('§FILM_ERROR ffmpeg ' + String(e.message).split('\n')[0]); }
