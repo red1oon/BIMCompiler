@@ -236,6 +236,27 @@ The dictionary is what lets a script **know** an object instead of guessing it.
 5. **First objects:** Building, Storey, Space, Element, Grid line, linked to `BIM_Document`; schedules after.
 6. **Units:** an extension column on AD_Column for BIM tables states each physical column's unit; the ERP's own columns are untouched.
 
+#### 0.5.11 PROBE RESULT 2026-11-09 (read-only, measured; sql.js 1.14.1, public `Duplex_extracted.db`; script in the session scratchpad, not committed): what the object engine can do today, and the corrections it forces
+| Question | Answer | Evidence (bim-ootb `erp/` unless noted) |
+|---|---|---|
+| A text-key table as an object | **load, save, update: yes.** Create, attach, window key: gaps | registering `elements_meta` with `guid` as IsKey: `Trx.keyCols=["guid"]`, `trx.get` returns the row, a save emits `CRUD_UPDATE {id:<guid>, idCol:"guid"}` (`model_layer.js:48-59, 98, 185, 201`; `crud_core.js:495-499`). **Create overwrites the key** with `#new:1`, then a negative number at commit (`model_layer.js:153-158`, `crud_overlay.js:2870, 2985`, `crud_core.js:~486`). **Attach** needs a key named `_ID`/`_UU` (`ad_attachment.js:18`, `idempiere.html:1894-1898`); `Record_UU` writes already exist (`ad_attachment.js:124, 164, 200-202`) |
+| Legacy's rule for UU-key tables | the key must be named `<Table>_UU` | `MTable.isUUIDKeyTable` (`MTable.java:542-546`), `PO.getUUIDColumnName` (`PO.java:5885`); creates skip the numeric id (`PO.java:4327, 4507`); `MAttachment.get` by `Record_UU` (`MAttachment.java:98-111`); change log by `record_uu` (`MChangeLog.java:173-198`) |
+| A second SQLite file beside the ERP's | **stock sql.js cannot ATTACH a file** (`SQL.FS` not exported); a second `Database` costs about **6× the file** (9.6 MB → +58 MB external); `ATTACH ':memory:'` + copy works (69 ms, +28 MB) | one-database assumptions: `_adQ` (`idempiere.html:5910`), `_sqlRows`/`_tipDb` (`:5395`), the op-log (`crud_overlay.js:2865`, `kernel_ops.js:599`), `keyColsOf` cached by table name only (`model_layer.js:45`). But **`Trx` takes an injected `query(sql, params)`** (`model_layer.js:80-81`): it is not tied to one database |
+| Registration cost | dictionary rows: **+0.3 MB** for 2 tables, 18 columns. Opening the model file: +58 MB | measured |
+| One object over two tables | no write path for it (legacy has none either); nearest: `IsView` + ColumnSQL (read-only), or a keyed child tab (`ad_gridtab.js:76`) | `element_transforms` has **1,119 rows for 1,122 elements**: the transform is **0..1**, not 1:1 |
+| `IsHighVolume` | **yes**, honoured | `idempiere.html:2699-2709`, `ad_gridtab.js:216-220`, `§UDP4-INITIAL` |
+| A unit on a column | **none**: AD_Column has ValueMin, ValueMax, FormatPattern, VFormat; legacy models a unit as a `C_UOM_ID` column on the record | seed: no `*uom*`/`*unit*` column on AD_Column or AD_Element |
+| Host code for a new table | one `BUILTINS` line (`plugin_overlay.js:191`) and the `sw.js` precache entry for a plugin; everything else is manifest data staged by `plugin_registry` (`:216-250`) | a model-carried dictionary needs a loader (host code, once, generic) |
+
+**Corrections to §0.5, in force from now:**
+1. **The key is named `<table>_uu`**, as legacy requires: the compiler adds a generated column, e.g. `elements_meta_uu GENERATED ALWAYS AS (guid) VIRTUAL` (sql.js accepts it, measured); `guid` is not renamed. This replaces "the guid is the UU key" (§0.5.10 item 2) and makes attach and the change log work through legacy's own `Record_UU` route.
+2. **The create path must keep a UU key**, as `PO.java`'s `isUUIDKeyTable` branches do: one generic change in `Trx.insert` and the two synthetic-key sites. Not needed for the POC verbs (read, trial, update); needed before any BIM create verb.
+3. **The transform is 0..1:** Element's transform is a level-1 single-row child tab keyed by the `_uu` link (the generic master-detail engine, no new code), allowed to be missing. Replaces "one object over two tables" (§0.5.10 item 3).
+4. **Where the object engine runs (sharpens §0.5.10 item 1):** the Modeller and Viewer **already hold the model open** as a sql.js database. With the dictionary inside the model, the object engine (`Trx` with an injected `query`) runs **over the app's own handle**: data and dictionary in one file, no second load, no copy into the ERP. The ERP database is needed only for links such as `BIM_Document`. This is the strongest reason for item 1, and it removes the 6× cost of a second database.
+5. **Two dictionaries must not shadow each other:** dictionary rows carried by a model are identified by their UU (`ad_table_uu`, `ad_column_uu`), not by numeric ids from the ERP's bands; the engine's caches (`keyColsOf`, `_adQ`) key on (database, table), not on table name alone.
+6. **Units (§0.5.10 item 6) stand as decided, with their cost stated:** nothing reads a column unit today, so it is new engine work; until verbs are generated from the dictionary, units come from `verbs.json` (§0.4 detail 1), which needs no dictionary unit.
+7. **W-OBJ-REG** measures the dictionary rows separately from opening the model file; only the first is claimed free.
+
 ### 0.6 The remaining framework details, DRAFTED on the owner's delegation (*"Go along with your advice and insight"*, 2026-11-09); owner reviews
 **Detail 4, the actor table** (§0.3 rules 4-5: a From address is never proof; no fallback to an administrator; the harm class comes from the vocabulary):
 | Actor | Delivery adapter | Proof it can give | May use, unconfirmed | May use, with its proof |
