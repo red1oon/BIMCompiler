@@ -103,13 +103,17 @@ C3 lands with the REPLACE verb.
 Cards: the house chapter cards (FILM_NARRATION 2026-11-03). Numbers only from `§` lines.
 
 **Prep before the take, ranked. Each is spec-first with its witness; items 1-4 are bim-ootb product work, not film hacks:**
-1. **Walked-fixture fly-to.** `dw_instances_outliner.js` has no frame/select on a leaf (measured: no `frame` call), so the real UI cannot zoom to a walked device.
-   - Add: leaf click → frame the op's placement point (reuse `_frameTo`), plus select highlight.
-   - Witness: after the click, the element's projected px ≥ threshold and ray-first-hit = the element.
-2. **Size-aware framing.** `_frameTo` floors the distance at `max(diag, 2) × 1.8` = 3.6 m (`modeller.html:1506`), so a 6 cm head is ~10 px.
-   - Derive the distance from the element's size and the camera FOV.
-   - For ceiling-hosted devices, approach from below the host (data: `hostState=bound`, host = covering/slab).
-   - Witness as item 1; regression: the existing Outliner fly-to witnesses.
+1. **Type-set select + zoom in the Outliner (owner, 2026-11-09: *"The elements created in the Outliner panel on left should be able to be seen to be populated and type set can be selected where the canvas should zoom to."*).** Checked against the original spec, `prompts/MODELLER_ZOOM_TO_SELECTION.md`:
+   - **Built:** `zoomToSelection()` (`modeller.html:1220`, frustum-fit `_fitDistForBox`, FLY-YIELD), fired by `setSelectionIds` on every selection; witness `modeller/tests/witness_e2e_zoom_to_selection.js`.
+   - **Built:** the Walked Fixtures category populates after a walk: disc → type (class) → leaf, with count and provisional label (`dw_instances_outliner.js`).
+   - **Built:** a walked LEAF click → `Bonsai.frameInstanceRow` (`modeller.html:1393`) selects it (`pickInstance`) and flies to it (`bonsai_outliner.js:755`).
+   - **GAP 1, the type set:** a walked class row (id `dwc|disc|cls`) selects and zooms NOTHING. `selectGroup` skips `dwp|` leaves by design ("an unresolvable leaf… is SKIPPED, never guessed", `bonsai_outliner.js:336`), and `zoomToSelection` reads `selBox()` from feature meshes only. Walked instances are not in that selection model.
+     - Spec next, as an addendum to MODELLER_ZOOM_TO_SELECTION.md: a type-row click selects all its instances (instance highlight, the `pickInstance` family) and frames their UNION box with the same `_fitDistForBox` / `_lerpCam` (one owner of framing, no second zoom).
+     - Witness: every instance of the set is highlighted (count = the row's count), and the union box's projection fills the frame by the frustum-fit rule. Red control: main does nothing.
+   - **GAP 2, "seen to be populated":** confirm the Walked Fixtures rows appear and their counts update as the walk commits, and that the category is open and scrolled into view after a walk. Measure first: whether it is collapsed/off-screen after a walk is UNMEASURED. Then fix if needed.
+2. **Size-aware, host-aware single framing.** `frameInstanceRow` calls `_frameTo(point, 1.5)`, which floors at `max(1.5, 2) × 1.8` = 3.6 m (`modeller.html:1506`), oblique from ABOVE. A 0.06 m head is then ~10 px and hidden by its own ceiling (measured in the report run).
+   - Distance from the element's size and the 55° FOV (the `_fitDistForBox` rule, which already exists); for a ceiling-hosted device (`hostState=bound`, host a covering/slab), approach from BELOW the host.
+   - Witness: projected px ≥ threshold and ray-first-hit = the element. Regression: the existing fly-to/zoom witnesses.
 3. **A real section/cut control in the Modeller UI.** None exists (0 hits for clipping/section in `modeller/`); the report used a page-level `renderer.clippingPlanes`. For "proper steps", a visible tool is needed. This is the owner's call: build it, or rely on X-ray + from-below framing only (zero new UI).
 4. **Visible cursor in the take.** Headless screencast draws no pointer, so clicks are invisible. Add a recorder-side cursor overlay at each `__e2e` click point, stated as an overlay. Recorder work, not product.
 5. **On-screen privacy.** The Outliner and status show the file name and storey names of the private set. **Owner question: who sees this film?** If outside the owner's team, take a film COPY of the DB with neutral storey/file names (logged mapping; data unchanged otherwise) or mask the Outliner text. Decide before recording.
@@ -117,7 +121,7 @@ Cards: the house chapter cards (FILM_NARRATION 2026-11-03). Numbers only from `�
 7. **Wait budget.** Open + ACMV + FP walk on this set takes minutes. The recorder `jump()`s over each wait and logs it (`§FILM_JUMP`), so the film never pretends real time.
 
 **Not needed:** the Viewer bake (owner: "we can then do away with baking"); synthetic markers in the take (keep them for the report only).
-**First step next session:** answer item 5 (and item 3's build-or-not) with the owner; then build 1 → 2 (one PR each, witness first); then extend the recorder (4, 7); then one rehearsal take with every beat gated; then the take.
+**First step next session:** answer item 5 (and item 3's build-or-not) with the owner; then build 1 (spec addendum first) → 2 (one PR each, witness first); then extend the recorder (4, 7); then one rehearsal take with every beat gated; then the take.
 
 ## §WALK-REPORT-CARD SPEC (2026-11-09, owner) — proof of work from the Modeller canvas; no Viewer bake
 > Owner: *"Can the FP sprinklers be walked into too? … just close up snap shots of the placed elements … begin with … a topology map of all the placed devices … Animation is not crucial … Important is proof of work. A report card giving engineers as much useful info as they be the judge."* · *"Showing the 4D5D HTML is one good shot to include."* · *"can we get good canvas view in Modeller during the walk?"* · *"we can then do away with baking."* · *"show how the Modeller icons features work where and how to bring about such."*
