@@ -49,7 +49,7 @@ delete process.env.ODOO_PASSWORD;
   var B = run('agent.js', ['--login', 'demo'], 'demo\n', {}, d('b'));
   var picked = (B.out.match(/so=(\S+) picked=latest-invoiced/) || [])[1];
   L('§B ' + line(B.out, /§ODOO-AGENT target[^\n]*/) + ' | picked=' + picked + ' | exit=' + B.code);
-  ok(B.code === 0 && /login=demo demo=N password=prompt/.test(B.out) && /Odoo password for demo @ odoodemo/.test(B.out), 'own login by FLAG: the agent asked for the password in the terminal and logged in');
+  ok(B.code === 0 && /login=demo demo=N password=prompt/.test(B.out) && /Odoo password \(or API key[^)]*\) for demo @ odoodemo/.test(B.out), 'own login by FLAG: the agent asked for the password in the terminal and logged in');
   ok(picked && picked === EXPECT, 'no --so on a non-demo target → picks the latest invoiced order of THAT Odoo (' + picked + ' == oracle ' + EXPECT + ')');
 
   // the pick judged on a REAL choice: as admin (sees every invoiced order), --so latest must pick the newest of them
@@ -69,7 +69,7 @@ delete process.env.ODOO_PASSWORD;
   ok(D.code !== 0 && /--password is not accepted/.test(D.out), '--password on the command line is refused (it would sit in the shell history)');
 
   var E = run('agent.js', ['--login', 'demo', '--so', 'S00023'], '', { ODOO_PASSWORD: 'demo' }, d('e'));
-  ok(E.code === 0 && /password=env/.test(E.out) && !/Odoo password for/.test(E.out), 'ODOO_PASSWORD in the environment → no prompt (unattended runs still work)');
+  ok(E.code === 0 && /password=env/.test(E.out) && !/Odoo password/.test(E.out), 'ODOO_PASSWORD in the environment → no prompt (unattended runs still work)');
 
   // flags reach the RPC: --port routes through the recording proxy, and the login it saw is the one given
   var FIX = path.join(T, 'owndb_fix.json'), m = cp.spawn('node', [MOCK, 'record', FIX], { stdio: ['ignore', 'pipe', 'pipe'] }); cp.spawnSync('sleep', ['0.8']);
@@ -86,8 +86,9 @@ delete process.env.ODOO_PASSWORD;
 
   var G = run('export.js', ['--cutover', '2026-11-08'], '', {}, d('g'));
   var hg = hashDir(path.join(T, 'g', 'odoo_export'));
-  L('§G demo export sha=' + hg + ' (W-ODOO-EXPORT #2715: fdbde73d75c0d07b)');
-  ok(G.code === 0 && hg === 'fdbde73d75c0d07b', 'demo export files byte-identical to the W-ODOO-EXPORT run before this change');
+  // §HARDEN-SPEC (2026-11-09) changed the export ON PURPOSE (login's company only, C_Location_UU, archived = inactive, cut keys): was fdbde73d75c0d07b (#2715)
+  L('§G demo export sha=' + hg + ' (after §HARDEN-SPEC: bf33a79179e2b052)');
+  ok(G.code === 0 && hg === 'bf33a79179e2b052', 'demo export files byte-identical to the §HARDEN-SPEC export judged by W-SHEET-CONTRACT');
 
   L('\n' + (fails ? '🔴 W-ODOO-OWNDB FAIL (' + fails + ')' : '🟢 W-ODOO-OWNDB PASS'));
   fs.writeFileSync(path.join(ROOT, 'build/erp/logs_migrate_2026-11-08/poc_odoo_owndb.log'), log.join('\n'));

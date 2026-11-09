@@ -815,3 +815,23 @@ Base (unmodified copy) = 🟢 PASS, 17 sheets. **So the first real user almost c
 present with blank street; M2 two locations; M3 contact under an inactive BP; M4/M8 renamed rows listed in patches and every pointer uses the final Value; M5 stock line on an
 inactive product; M6 refusal lists 2 companies, `--company 1` passes; then the workbook through the Odoo form on a born tenant: gain == prediction on every sheet, refused 0.
 Falsifier: the origin/main exporter on the same fixture = the FAIL/crash above. INCONCLUSIVE when neither Odoo nor the fixture answers.
+
+### §HARDEN RESULT (2026-11-09) — bim-ootb #2755 (auto-merge), W-ODOO-MESSY 🟢 10/0 + 14/0, W-ROLE-ACCESS-UPDATE 🟢 9/0
+- **Export (H1-H6, `erp/odoo_agent/export.js` + `cli.js`):** all 8 states pass; **falsifier** = the 16b3c205 exporter on the same recording crashes (`reading 'ref'`).
+  Also found by the run, not in the table above: (a) odoodemo ITSELF has 2 companies (SF + Chicago) and the old export merged Chicago's warehouse, 7 locations and 2 quants
+  into the one tenant — now one company per run (login's own default), the others named with their command; (b) odoodemo has 2 location paths of 46 chars (ERP M_Locator.Value
+  = 40; legacy PO.set_Value would cut both to the same 40 and break the stock lines) — cut once with `~<odoo id>`; (c) a contact is placed under Odoo's `commercial_partner_id`
+  (an address under a person under a company). The demo export changed ON PURPOSE: W-ODOO-OWNDB hash fdbde73d → bf33a791, W-SHEET-CONTRACT fixture re-recorded (49 answers),
+  its count keys read the "(archived too)" tag and falsifier 2 now duplicates a C_Location_UU.
+- **Instrument fixed:** `poc_sheet_contract.js` judged "Odoo up" by `/web/login` = 200; with a 2nd database Odoo answers 303 (database chooser) and the witness silently fell back to
+  replay. Now it asks the JSON-RPC `common.version`.
+- **ERP:** G-e pick list (generic renderer), the Odoo form offers the tenant's units; **Role Access Update** (AD_Process 295) ported (`processes/RoleAccessUpdate.js`), the access
+  logic is ONE function `ModelMaster.updateAccessRecords(trx, role, reset)` shared with a new role's afterSave (reset bug found by the witness: deletes are pending in the Trx, the
+  re-insert must not read them as present). Menu path verified in the twin: System Admin → General Rules → Security → Role Access Update.
+- **Witnesses:** bim-compiler `scripts/poc_odoo_messy.js` (export half: old vs new, `--company`, https over a TLS proxy, version falsifier; live + replay of
+  `build/erp/odoo_fixture/odoo_messy_2026-11-09.json`); bim-ootb `erp/tests/witness_odoo_messy.js` (load half, fixture `erp/tests/fixtures/odoo_export_messy_2026-11-09/`,
+  byte-identical workbook), `witness_role_access_update.js`. Regression: W-ODOO-FORM (+picklist) · W-ODOO-FORM-LIVE 13/0 · W-NINJA-MIGRATE · W-GENESIS-COMPLETE · W-PLUGIN-ID-BANDS ·
+  W-AGENT-ZIP-SYNC · nc9 role UI live · quicksetup live · 14 more node witnesses green. Reds identical on origin/main: dict_census, packgen, nc6_setuprules, udp2_engine.
+- **Scratch Odoo:** `scripts/odoo_mock/make_odoo_messy.sh` rebuilds db `odoo_messy` (pg_dump of odoodemo + `odoo_messy_states.js`). It stays on the Odoo server; it does not touch odoodemo.
+- **Named, not done:** Odoo 16 / 18 field names (the export refuses them cleanly today) · `agent.js` (the one-order check) is http only · units can only be MAPPED, not created ·
+  the twin's `PO.set` does not cut over-long text like legacy PO.set_Value (the export guarantees it for migrated rows; a generic twin fix is its own item) · scale (10k+ rows) unmeasured.

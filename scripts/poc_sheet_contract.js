@@ -32,7 +32,8 @@ function runExport(port, dir) {
 }
 function mock(mode, fix) { var p = cp.spawn('node', [MOCK, mode, fix], { stdio: ['ignore', 'pipe', 'pipe'] }); p.buf = ''; p.stdout.on('data', function (c) { p.buf += c; }); sleep(0.8); return p; }
 function stop(p) { return new Promise(function (r) { p.on('exit', function () { r(p.buf); }); p.kill('SIGTERM'); }); }
-function odooUp() { var r = cp.spawnSync('curl', ['-s', '-o', '/dev/null', '-w', '%{http_code}', '--max-time', '5', 'http://localhost:8069/web/login'], { encoding: 'utf8' }); return r.stdout === '200'; }
+// Odoo is up = its JSON-RPC answers (the login page redirects to the database chooser when the server holds several databases → 303, not "down")
+function odooUp() { var r = cp.spawnSync('curl', ['-s', '--max-time', '5', '-H', 'Content-Type: application/json', '-d', '{"jsonrpc":"2.0","method":"call","params":{"service":"common","method":"version","args":[]}}', 'http://localhost:8069/jsonrpc'], { encoding: 'utf8' }); return /server_version/.test(r.stdout || ''); }
 
 // ── the dictionary, read once: columns per table, and how an _ID column names its table (Ninja's own rule:
 //    column minus _ID, else AD_Reference_Value_ID → AD_Ref_Table.AD_Key → that key's table) ──
@@ -148,7 +149,7 @@ function bookHash(book) { return crypto.createHash('sha256').update(JSON.stringi
 
   // non-invent: rows == the live Odoo counts (manifest.source_counts were read from search_count by the agent)
   var sc = manifest.source_counts, rows = {}; book.forEach(function (s) { rows[s.name.replace(/^\d\d/, '')] = s.rows.length - 1; });
-  function cnt(k) { return sc[k]; }
+  function cnt(k) { return sc[k] !== undefined ? sc[k] : sc[k + ' (archived too)']; }   // §HARDEN-SPEC H2: partners/products/locations are read with archived ones (tagged key)
   var pairs = [['C_UOM', 'uom.uom []'], ['C_PaymentTerm', 'account.payment.term []'], ['M_Product_Category', 'product.category []'], ['C_ElementValue', 'account.account []'],
     ['M_Product', 'product.product []'], ['M_Product_PO', 'product.supplierinfo []'], ['M_ProductPrice', 'product.product []'], ['M_Warehouse', 'stock.warehouse []'],
     ['M_Locator', 'stock.location [["usage","=","internal"]]']];
@@ -188,12 +189,13 @@ function bookHash(book) { return crypto.createHash('sha256').update(JSON.stringi
   var f1 = judge(bp, mf);
   L('§FALSIFIER-1 drop the C_BP_Group_ID patch → missing ' + show(f1.missing));
   ok(f1.missing.some(function (m) { return /C_BPartner: .*C_BP_Group_ID/.test(m); }), 'falsifier 1: dropping the default-group patch is reported as C_BPartner missing C_BP_Group_ID');
-  var bl = JSON.parse(JSON.stringify(book)), sl = bl.filter(function (s) { return /C_Location$/.test(s.name); })[0], ai = sl.rows[0].indexOf('Address1');
+  // §HARDEN-SPEC H1: an address is found by its C_Location_UU (iDempiere's migration key), not by its street — the falsifier duplicates that key
+  var bl = JSON.parse(JSON.stringify(book)), sl = bl.filter(function (s) { return /C_Location$/.test(s.name); })[0], ai = sl.rows[0].indexOf('C_Location_UU');
   var used = bl.filter(function (s) { return /C_BPartner_Location$/.test(s.name); })[0].rows[1][1];
   var other = sl.rows.slice(1).filter(function (r) { return r[ai] !== used; })[0]; other[ai] = used;
   var f2 = judge(bl, manifest);
-  L('§FALSIFIER-2 duplicate Address1 "' + used + '" → bad lookups ' + show(f2.badLookup));
-  ok(f2.badLookup.some(function (m) { return m.indexOf(used) >= 0 && /→ 2 row/.test(m); }), 'falsifier 2: a duplicated Address1 makes the location lookup ambiguous (2 rows), not silently first-match');
+  L('§FALSIFIER-2 duplicate C_Location_UU "' + used + '" → bad lookups ' + show(f2.badLookup));
+  ok(f2.badLookup.some(function (m) { return m.indexOf(used) >= 0 && /→ 2 row/.test(m); }), 'falsifier 2: a duplicated C_Location_UU makes the location lookup ambiguous (2 rows), not silently first-match');
 
   var bu = JSON.parse(JSON.stringify(book)), lo = bu.filter(function (s) { return /M_Locator$/.test(s.name); })[0], H3 = lo.rows[0];
   var wi = H3.indexOf('M_Warehouse_ID>Value'), a3 = 1, b3 = lo.rows.findIndex(function (r, i) { return i > 1 && r[wi] === lo.rows[1][wi]; });
