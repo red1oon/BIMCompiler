@@ -1133,6 +1133,36 @@ the wiki method), and lists them in the summary. Unmatched material (received-no
 - **E5 the DIY screen:** pick a template, fill its variables (form fields generated from `variables`), run, read the summary — the same plan/load screen as today.
 **Not in scope:** closed history (optional, read-only, never posted), non-core modules (they arrive as plugins), writing to any source system.
 
+**6. The common thread of the four exercises (owner: *"that are of common thread in the 3 exercises we done (4th if we consider iDempiere itself)"*) — measured, it is what the engine abstracts:**
+| | Odoo 17 | Business Central | SAP Business One | iDempiere (itself) |
+|---|---|---|---|---|
+| where the MODEL is read | the live server (`fields_get`, export.js version check) | Microsoft's published `.al` source, pinned (MIT) | the user's server `$metadata` | its own dictionary (AD_Table / AD_Column) |
+| the door the user already has | agent, XML-RPC | the user's own RapidStart Excel export | agent, Service Layer (OData) | agent, `psql COPY` (`erp/idempiere_agent/migrate_agent.js`) |
+| connector kind | `odoo-xmlrpc` | `excel` | `odata` | `sql` |
+| mapping today | hand code (export.js) | hand code (bc_migrate_convert) | hand code (sap_migrate_convert) | **identity** — same tables, PKs re-banded |
+| target today | 17-sheet workbook → Ninja loader | same | same | **raw copy** into `ad_masters.db` (bypasses the workbook and the loader) |
+| proof today | live `search_count` manifest + recorded replay | model == source (0 differ) + Microsoft's demo | `$count` == rows, read only, guide fixture | counts per table |
+The thread, in six words each: **(1) the model is READ, never typed** (`describe()`); **(2) the user's OWN door**, read only; **(3) ONE target** (the iDempiere import
+contract); **(4) the SAME named legacy rules**; **(5) counts prove nothing was dropped or made up** (+ the masked alpha report); **(6) all or nothing, summary == result**.
+**iDempiere is the engine's best falsifier:** its template is the IDENTITY (every target column = the same source column), so iDempiere → engine → twin tenant must equal the
+source tenant, table by table — a round trip any mapping error breaks. ⛔ Owner decision (E2): keep iDempiere's raw `psql COPY` fast path as is, or move it onto the identity
+template through the same loader (one implementation, but slower) — both are stated; not decided here.
+
+**7. Next session = parallel lanes (owner: *"once spec we resume in new session where u may launch agents to speed up"*).** Agents = Sonnet (memory rule), each in its OWN
+`/tmp/wt-*` worktree off fresh `origin/main` (check `git worktree list` first; no `git stash`), each lane = spec § above + its witness, PR with auto-merge, lead session verifies
+logs (Watchdog Protocol) before marking ✅:
+- **Lane A — E1** opening stock via `I_Inventory` + ImportInventory DocAction CO, all three sources (small, ship first; it fixes a shipped claim).
+- **Lane B — E3a** port ImportGLJournal (220) verbatim + `I_GLJournal` + W-IMPORT-GLJOURNAL (independent of everything else).
+- **Lane C — E3b** port ImportInvoice (207) verbatim + `I_Invoice` + W-IMPORT-INVOICE (independent).
+- **Lane D — E2** engine core: template schema + validator + evaluator + rules registry + excel/csv connector; acceptance = SAP B1 template == sap_migrate_convert output.
+  (Lead session, not an agent: it is the design centre and the owner will adjust the template shape.)
+- after A–D: BC + Odoo templates (equality witnesses, deletion budget), the open-items sheets + clearing accounts (E3c, Odoo first), then E4 sql connector, E5 DIY screen.
+
+### ▶ RESUME HERE (2026-11-10) — START HERE: §ENGINE-SPEC is written; next session launches the lanes (§ENGINE-SPEC §7)
+Live: SAP B1 alpha (bim-ootb #2774) · one Migration User Guide (BIMCompiler #492, #494, deployed) · films SAP EN + ZH rc1 · §B3-SCOUT (the cut-over / open-items method, sourced) ·
+**§ENGINE-SPEC** (connector · JSON template · target · loader+verifier; the common thread §6; lanes §7). **First:** read §ENGINE-SPEC §0 (the measured DRAFTED-stock defect) and §6's
+one open owner decision (iDempiere raw fast path vs identity template). Then launch lanes A, B, C as Sonnet agents in parallel; the lead session takes lane D.
+
 ### ▶ RESUME HERE (2026-11-09c) — SAP alpha out; what is next
 **Live after #2774 merges** (check it landed; auto-merge on). Owner's frame: *"earnest effort POC … community can improve it. Release early update often."*
 **Next for SAP, in order:** a tester's run (closes CONN + the 10 INCONCLUSIVE rules) · `--sql` door: read `OACT` (account class) through SQLQueries (owner's DB-engine
