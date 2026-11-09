@@ -1172,7 +1172,7 @@ The old finished-workbook path keeps working until then (a user's already-downlo
 identity template → compare with the raw copy table by table (rows, PKs after re-band, column values) on the pilot tenant. Retiring the fast path is a LATER, measured call (time
 and memory per 10k rows on both), not done here. Reason: the copy is already the identity and proven by counts; the witness adds the column-level proof without slowing the user.
 Order: E3c first (below), then Odoo (1), then the iDempiere falsifier (2).
-**▶ 2026-11-10c: E3c is BUILT — §E3C-SPEC + §E3C BUILD STATUS at the end of the file (bim-ootb #2791 + #2792 merged, #2793 auto-merge: check it landed). `§MIGE verdict=PASS judged=51`, `§OB-VERDICT PASS judged=31`. NEXT = Odoo masters onto the engine, then the iDempiere falsifier; bank + payments = E3d.**
+**▶ 2026-11-10c: E3c is BUILT — §E3C-SPEC + §E3C BUILD STATUS at the end of the file (bim-ootb #2791 + #2792 + #2793 all MERGED, main @bf7cfe6d, sw v1032). `§MIGE verdict=PASS judged=51`, `§OB-VERDICT PASS judged=31`. NEXT = Odoo masters onto the engine, then the iDempiere falsifier; bank + payments = E3d.**
 **Then, in order:** E3c open-items sheets (GL journal = TB with clearing accounts, open AR/AP on Opening Charges with DocTypeName, payments) on the merged 207/220 ports, Odoo first ·
 the open items named under A/B/C (stock VALUE: no source carries a cost → port ImportInventory :546-564; commitEx seam; ws_kernel model_journal; §IINV tag collision; seed c_activity
 and 2026 GL periods) · E4 sql connector · E5 DIY screen.
