@@ -102,6 +102,9 @@ C3 lands with the REPLACE verb.
 5. Export a drawn run as an Axis-only IfcDuctSegment (no Body)?
 6. Remove `build/disc_walker.js` (nothing reads it); gate ELEC like the others (it still reaches `planTrunk`).
 7. A user-facing way to supply sheets on an opened building (mains spec §7 Q2).
+**⚠ Review the new rules JSON against the other building models (owner, 2026-11-09: "Since the JSON is newly constructed, should we put a note that it be reviewed against the other building models?"):**
+- The JSON VIEW is new, the values are not (it shows the shipped tables). Proven only on Duplex (`duplex_rules.db`, W-E2E-RULES-EDIT) and the private set (`terminal_rules.db`, the film still). Not yet opened on `farm_rules.db` or any other resident. Review = open it on every resident, and check that open-and-close with no edit leaves every walk byte-identical.
+- An EDIT is per building TYPE, not per building: one cell changes every building of that class. Before an edit is trusted or contributed: re-walk the other buildings of that class (the fleet table, W-BAND-NO-HOST §7 method) and state what moved. Proposed: the editor's header says "these rules are shared by every <class> building"; the downloaded edit file carries `checkedOn: [buildings]`, empty until a fleet check fills it.
 **Buildable next, in order:**
 1. Re-measure the private wall-alarm residual on main (predicted: the 13 above-slab alarms now `noTarget`).
 2. Toolbar crowding: at 1,440 px every Modeller toolbar button is 14 px wide (41 px at 1,920). Measured, untraced.
