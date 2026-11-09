@@ -1,4 +1,5 @@
 # ⚠ DO NOT REMOVE — Scope & Protocol
+> **Lane (2026-11-09):** this file is one part of the ONE-DOOR framework (Actor | Channel | One door | Engine). Home and lane map: `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` §0. Column owned here: transport under the email and device channels.
 - **Scope:** a STUDY (no code) of how the Team / Replication feature becomes a **plugin of the Kernel ERP** instead of built-in host code. It is the focus of the NEXT session (owner, 2026-10-26: *"make a study how Team Replication feature can be a plugin for Kernel ERP (focus of new session after wrapping this session up)"*).
 - **Source of truth:** every claim cites a file:line in bim-ootb `origin/main` @ 159d6506 (2026-10-26), the legacy source under `~/idempiere-dev-setup/idempiere/`, or a § of `prompts/TEAMWORK_FRAMEWORK.md` / `prompts/PLUGIN_SYSTEM_LANE.md`. Proposals are marked **PROPOSAL**.
 - **Read the log after every run.** Spec before code; RED first; a mutant must prove it applied and a crash is not a kill (the lane's habits, `TEAMWORK_FRAMEWORK.md` RESUME block).

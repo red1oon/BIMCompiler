@@ -1,4 +1,5 @@
 # The Social Platform Lens — the ERP comes to you, in the app you already live in
+> **Lane (2026-11-09):** this file is one part of the ONE-DOOR framework (Actor | Channel | One door | Engine). Home and lane map: `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` §0. Column owned here: ACTOR binding and the email/chat CHANNEL.
 
 *For the owner who runs the business **on the move** — checks a phone, never a desktop, lives in WhatsApp and email.
 The interface is not an app they open; it is the **conversation the system already has with them.** A mobile-shaped
