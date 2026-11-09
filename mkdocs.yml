@@ -42,6 +42,8 @@ exclude_docs: |
 # Published but deliberately off the menu: developer specs reached from DXF2BIMGuide's "For developers"
 # line, and the generated Flow Row reference reached from DistributedERP.
 not_in_nav: |
+  OdooMigrationGuide.md
+  BusinessCentralMigrationGuide.md
   DXF2BIM_SPEC.md
   DXF2BIM_BASIC_SHAPES_SPEC.md
   ReplicationFlowRows.md
@@ -113,9 +115,8 @@ nav:
       - "uniCenta-style Till & Kitchen Screen": TillUserGuide.md
       - "CAPEX Dashboard — for iDempiere users": CapexDashboardGuide.md
       - "Kernel-ERP — Your First Setup": ERP_FirstSetup.md
+      - "Migration User Guide (Odoo · Business Central · SAP Business One)": MigrationGuide.md
       - "Moving from Odoo — how it works, what is proven": OdooMigration.md
-      - "Move from Odoo — user guide (step by step)": OdooMigrationGuide.md
-      - "Move from Business Central — alpha tester guide": BusinessCentralMigrationGuide.md
       - "NinjaExcel Report — User Manual": NinjaExcelReport_UserManual.md
       - "HR / Tenancy / Operate Module": HRBIMAssetGuide.md
       - "Civil Works — Step by Step": CivilWorksGuide.md
