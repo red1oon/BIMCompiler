@@ -841,3 +841,37 @@ bim-ootb #2755 MERGED (CI fast-checks + e2e green), Pages serves sw v1019, the d
 `processes/RoleAccessUpdate.js` 200. Guide + method page LIVE (BIMCompiler #458, `safe_gh_deploy.sh` guard PASS, canaries 200; text fetched back).
 **Next, in order:** Odoo 16 / 18 field names (needs those Odoo images to measure, not guess) · B3 opening balances / open invoices / open orders · units: create a new ERP
 unit from the form · twin `PO.set` cut over-long text like legacy (generic, needs a sweep) · scale run (10k+ rows) · §LAG · bim-document plugin start failure → its lane.
+
+### §BC-SPEC — "Migrate from Business Central", alpha stub from the published data model (2026-11-09, owner: *"infer 3rd party ERP data model … rather than need a live service … at least a stub ready for alpha testers feedback from WITNESS logging"* → *"Agree. Proceed."*)
+**Why BC (measured):** Microsoft publishes the whole application source, MIT, at github.com/microsoft/BCApps (checked: LICENSE = MIT, `src/Layers/W1/BaseApp` = 1,546
+`.Table.al` files, e.g. `table 18 Customer` / `Name: Text[100]`). Microsoft claims 50,000+ BC online customers (Nov 2025) / 55,000+ (2026). **No live BC here** — everything
+below is read from that source, pinned to commit 616174f6; the first real file will come from an alpha tester.
+**Door 1 = BC's own Excel export (RapidStart configuration package)** — no credentials, no Node, the user's own BC screen (Configuration Packages → Export to Excel).
+Format read from `ConfigExcelExchange.Codeunit.al` (BaseApp/System/RapidStart): one sheet per table, name = caption (first sheet) or `<table id> <caption>` cut to 31
+(:816-824); row 1 = A package code · B table caption · C **table id** (:662-684); row 3 = field captions (field name when the caption is blank, :592, GetTableColumnName); data
+from row 4 (:450). Values (`ConfigXMLExchange.FormatFieldValue` :1900-1938, Excel mode): XML format (Format(v,0,9): ISO dates, `.` decimals, true/false); Option/Enum =
+the option CAPTION in the user's language; a date in the package's language if the package sets one. ⇒ a sheet is identified by C1 (language-free); a header is matched to
+the field by caption OR name from the model; an unmatched header is logged (`§BC-HEADER unknown`), never guessed.
+**The model** `erp/plugins/bc_model.json` = `erp/tools/gen_bc_model.js` over the checkout: 14 tables (3 Payment Terms, 9 Country/Region, 14 Location, 15 G/L Account,
+18 Customer, 23 Vendor, 27 Item, 32 Item Ledger Entry, 98 General Ledger Setup, 99 Item Vendor, 204 Unit of Measure, 222 Ship-to Address, 5722 Item Category, 7354 Bin):
+id, name, caption, type, length, NotBlank, TableRelation, FieldClass, enum values — all from the .al files, 0 unresolved enums (§BC-MODEL log).
+**The converter** `erp/plugins/bc_migrate_convert.mjs` (pure, browser + node): BC package → the SAME 17-sheet Ninja workbook + manifest the Odoo export writes, so the
+form engine, the summary, the Ninja loader and W-SHEET-CONTRACT's rules apply unchanged (one implementation per responsibility). Mapping (each a named rule in code):
+Unit of Measure→C_UOM (Code; units answered on the form, as Odoo) · Payment Terms→C_PaymentTerm (NetDays only from a plain `<nD>` formula, else named) · Item
+Category→M_Product_Category (+Parent Category) · G/L Account→C_ElementValue (Account Category→A/L/O/R/E, Account Type ≠ Posting→IsSummary, flat) ·
+Customer+Vendor→C_BPartner (same No. in both = renamed `-V`/`-C`? no: `<No.>-<table id>` named) + their address→C_Location (UU = UUIDv5 `bc/<table>/<key>`) +
+C_BPartner_Location; Ship-to Address→more locations; the card's Contact/E-Mail/Phone→AD_User · Item→M_Product (Type Service→S, else I; Blocked→inactive) ·
+Item Vendor (or the card's Vendor No.)→M_Product_PO (PricePO = Last Direct Cost, named) · Unit Price→one sale price list in General Ledger Setup's LCY Code · Location→
+M_Warehouse (+its address) · Bin→M_Locator, else one locator per location · Item Ledger Entry→opening stock = Σ Quantity per item+location with Posting Date ≤ cutover.
+Lengths: BC length vs ERP length (H3 rules: a key cut keeps `~<n>`, other text cut as PO.set_Value). A table the mapping needs and the package lacks ⇒ that sheet is
+empty and the summary says which BC table to add; GL Setup missing ⇒ refused (the currency is not guessed).
+**The screen:** bundle `org.kernel.bc.migrate` (own id band, W-PLUGIN-ID-BANDS), AD_Form "Migrate from Business Central" under Data Import; its descriptor = the converter
++ the Odoo form's own `plan`/`load` (imported, not copied). Labelled ALPHA on the screen.
+**Alpha report (the WITNESS logging the owner asked for):** every run prints `§BC-ALPHA` lines and the result shows a report the tester can paste back: BC package tables
+found (id, caption, rows), headers matched/unknown per table (captions only), rows mapped per sheet, refusals with their reason TEXT but every quoted value masked (`"…"`),
+renamed/cut counts. **No customer value leaves in the report** — witness-checked.
+**Witness W-BC-MIGRATE** (`erp/tests/witness_bc_migrate.js`): fixture = a package built in BC's own layout from Microsoft's Contoso demo data codeunits
+(`src/Apps/W1/ContosoCoffeeDemoDataset`, values resolved from their Labels/exits, each row cited) — `erp/tests/fixtures/bc_package_contoso/`; checks: model == source
+(field count, lengths of the mapped fields re-read from the .al); every sheet identified by C1; 0 unknown headers in the fixture, a renamed header ⇒ named unknown
+(falsifier); converted workbook passes the loader with gain == prediction on a born tenant; the alpha report holds no fixture value (falsifier: a report built without masking
+contains one); no live BC ⇒ the connection itself is INCONCLUSIVE, stated.
