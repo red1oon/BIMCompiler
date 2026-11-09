@@ -3087,20 +3087,31 @@ with Odoo 17's demo company. How it works and what is proven: <a href="../OdooMi
 </blockquote>
 <h2 id="before-you-start">Before you start<a class="headerlink" href="#before-you-start" title="Permanent link">&para;</a></h2>
 <ul>
-<li>The machine that runs your Odoo, with <strong>Node.js</strong> on it (no other install).</li>
-<li>An Odoo login that can read accounting and stock — an administrator. The export only <strong>reads</strong>; it never changes Odoo.</li>
+<li>Any computer with <strong>Node.js 16 or newer</strong> that can reach your Odoo — the Odoo machine itself, or your own laptop for Odoo.sh / Odoo Online
+  (no other install).</li>
+<li>An Odoo login that can read accounting and stock — an administrator. The export only <strong>reads</strong>; it never changes Odoo. If your Odoo asks
+  for a 2-step code when you log in, make an <strong>API key</strong> (your Odoo profile → Account Security → New API Key) and use it as the password.</li>
 <li>The Kernel ERP open in your browser, and the System Administrator login.</li>
 </ul>
 <h2 id="step-1-export-next-to-your-odoo">Step 1 — Export, next to your Odoo<a class="headerlink" href="#step-1-export-next-to-your-odoo" title="Permanent link">&para;</a></h2>
 <ol>
-<li>Download <code>odoo_agent.zip</code> from the ERP (About → DIY, the Odoo agent) and unzip it on the Odoo machine.</li>
+<li>Download <code>odoo_agent.zip</code> from the ERP (About → DIY, the Odoo agent) and unzip it.</li>
 <li>Run:
    <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>odoo_agent
 node<span class="w"> </span>export.js<span class="w"> </span>--host<span class="w"> </span>localhost<span class="w"> </span>--port<span class="w"> </span><span class="m">8069</span><span class="w"> </span>--db<span class="w"> </span>yourdb<span class="w"> </span>--login<span class="w"> </span>admin<span class="w"> </span>--cutover<span class="w"> </span><span class="m">2026</span>-12-31
 </code></pre></div>
-   It asks for the password (it is never a flag). <code>--cutover</code> is the date your opening stock is counted at (default: today).</li>
+   For <strong>Odoo.sh / Odoo Online</strong> (or any Odoo on https): <code>node export.js --url https://mycompany.odoo.com --db mycompany --login me@mycompany.com</code>.
+   It asks for the password or API key (it is never a flag). <code>--cutover</code> is the date your opening stock is counted at (default: today).</li>
+<li><strong>Several companies in one Odoo?</strong> The export moves the company your login opens on, and ends by printing the command for each other
+     company (<code>--company 2</code> …). Each one becomes its own ERP company.</li>
+<li><strong>Your Odoo version</strong> is checked first: the export is written for Odoo 17; on another version it stops, names the field it misses and writes nothing.</li>
 <li>When it ends with <strong>PASS</strong> you have a folder <code>odoo_export/</code> with three files: <code>odoo_migration.xlsx</code> (one sheet per ERP table), <code>manifest.json</code> (how many rows
    Odoo has of each — the proof nothing was dropped) and <code>provenance.json</code> (each row → its Odoo record). If it ends with FAIL, nothing is written and it says why.</li>
+<li>What the export settles for you, and lists in <code>manifest.json</code> so you can check it:</li>
+<li><strong>Archived</strong> customers, products and locations come along <strong>inactive</strong> — kept for history, not offered on new documents.</li>
+<li><strong>Repeated codes</strong> (two products with one internal reference, two customers with one reference): the older keeps it, the other
+     becomes <code>CODE-&lt;odoo id&gt;</code> (<code>renamed</code>). A code longer than the ERP field is shortened and keeps <code>~&lt;odoo id&gt;</code>.</li>
+<li>An address with <strong>no country</strong> gets your Odoo company's country (<code>patches</code>).</li>
 </ol>
 <p><img alt="Odoo's own Customers screen, before the move" src="../img/odoo_migration/odoo_contacts.jpg" /></p>
 <h2 id="step-2-your-own-company-in-the-erp">Step 2 — Your own company in the ERP<a class="headerlink" href="#step-2-your-own-company-in-the-erp" title="Permanent link">&para;</a></h2>
@@ -3113,12 +3124,14 @@ node<span class="w"> </span>export.js<span class="w"> </span>--host<span class="
 <h2 id="step-3-start-the-two-plugins-once">Step 3 — Start the two plugins (once)<a class="headerlink" href="#step-3-start-the-two-plugins-once" title="Permanent link">&para;</a></h2>
 <p>As <strong>System</strong>: open <strong>Plugins &amp; Releases</strong> and press <strong>Start</strong> on <strong>Ninja data migration (Migrate Excel Data)</strong> and on <strong>Migrate from Odoo</strong>. Do this before you create
 the company in Step 2 if you can — the new company's administrator then gets the menu entry automatically.</p>
+<p><strong>Created the company first?</strong> Still as System, run <strong>Role Access Update</strong> (menu: System Admin → General Rules → Security → Role Access Update) with <em>Reset Access</em> = <strong>No</strong> —
+the same process iDempiere uses after installing a plugin. Every role then gets the new screens its level allows.</p>
 <h2 id="step-4-migrate-from-odoo">Step 4 — Migrate from Odoo<a class="headerlink" href="#step-4-migrate-from-odoo" title="Permanent link">&para;</a></h2>
 <ol>
 <li>Log in as your new company's administrator → menu <strong>Data Import → Migrate from Odoo</strong>.</li>
 <li><strong>Export files:</strong> pick <code>odoo_migration.xlsx</code> and <code>manifest.json</code> from the <code>odoo_export/</code> folder. Nothing is uploaded — the browser reads them on your machine.</li>
-<li><strong>Units:</strong> Odoo's units of measure have no ERP code. Type which ERP unit each one is (for example Units → <code>Each</code>, Days → <code>Day</code>, Hours → <code>Hour</code>). Units no product
-   uses are left out.</li>
+<li><strong>Units:</strong> Odoo's units of measure have no ERP code. Pick which ERP unit each one is from the list in its cell (for example Units → <code>Each</code>, Days → <code>Day</code>,
+   Hours → <code>Hour</code>). Units no product uses are left out.</li>
 </ol>
 <p><img alt="The files picked, the units asked" src="../img/odoo_migration/form_units.jpg" /></p>
 <ol>
@@ -3142,6 +3155,12 @@ made 0 network requests.</p>
 others pick them up at their next <strong>Visit</strong>. See the <a href="https://red1oon.github.io/bim-ootb/erp/team_guide.html">team guide</a> and the team film (youtu.be/-LQwoPuQ1QU).</p>
 <p><img alt="The Team panel: Start a team" src="../img/odoo_migration/team_panel.png" /></p>
 <h2 id="if-something-is-refused">If something is refused<a class="headerlink" href="#if-something-is-refused" title="Permanent link">&para;</a></h2>
+<p><strong>In the export (Step 1):</strong>
+- <strong>"FAIL auth"</strong> — Odoo did not accept the login: check the login, the password (an API key if your Odoo uses a 2-step code) and <code>--db</code>.
+- <strong>"FAIL access: the Odoo user cannot read …"</strong> — use a login that can read accounting and stock (an administrator).
+- <strong>"FAIL version: Odoo … has no …"</strong> — your Odoo version uses other field names; this version is not supported yet.
+- <strong>"FAIL company: no company with id …"</strong> — it lists the companies; run again with one of their ids.</p>
+<p><strong>In the ERP (Step 4):</strong></p>
 <ul>
 <li><strong>"Answer the unit(s)"</strong> — a unit a product uses has no ERP unit typed yet (Step 4.3).</li>
 <li><strong>"The manifest is for … / Sheet … has N rows; the manifest says M"</strong> — the files do not belong together. Pick both files from the same <code>odoo_export/</code> folder.</li>

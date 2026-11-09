@@ -3114,6 +3114,16 @@ is listed in <code>manifest.json</code> → <code>patches</code>, with its rule 
 <td>PASS 16/16 and 12/12 — on the page: plugins started by the System Administrator, a tenant created on the page, its admin opens the menu entry, picks the files, types the units, <em>Refresh</em> predicts, <em>Process</em> commits one signed change set, and the tenant grows by exactly the prediction.</td>
 </tr>
 <tr>
+<td><strong>W-ODOO-MESSY</strong></td>
+<td>Real-world Odoo data, not the demo company: a copy of the demo with eight states Odoo itself accepts — a customer with a country and no street, two customers on one street, a contact of an archived company, a repeated product code, an archived product with stock, a second company, a delivery address on the parent's street, a repeated customer reference — exported and loaded into a new tenant.</td>
+<td>PASS 10/10 (export) + 14/14 (load). The exporter before this fix crashed on the same data. Every record arrives linked; archived ones arrive inactive; repeated codes are renamed and listed. Also proven: https (Odoo.sh / Online), one company per export, a missing Odoo field stops the run before it reads.</td>
+</tr>
+<tr>
+<td><strong>W-ROLE-ACCESS-UPDATE</strong></td>
+<td>A company created <em>before</em> the plugins were started gets their screens after the legacy <strong>Role Access Update</strong> process.</td>
+<td>PASS 9/9 — before: no access; after: the form and the process; a second run adds nothing; reset rebuilds from the dictionary.</td>
+</tr>
+<tr>
 <td><strong>W-GENESIS-COMPLETE</strong></td>
 <td>A tenant created in the ERP holds the same rows legacy iDempiere's Initial Client Setup writes. Compared with a real tenant made by that process on the pilot.</td>
 <td>PASS 10/10 — no mandatory field empty in 42 tables; trees, client info and accounting defaults as legacy has them.</td>
@@ -3126,9 +3136,19 @@ is listed in <code>manifest.json</code> → <code>patches</code>, with its rule 
 <ul>
 <li><strong>Odoo shapes the ERP refuses:</strong> quantity price breaks per vendor, locations all at the same X/Y/Z, stock split by lot.
   The export now folds them the way iDempiere keeps them, and lists what was folded.</li>
-<li><strong>ERP-side gaps:</strong> record defaults that iDempiere's model classes set were missing for ten tables; a newly created tenant had no
+<li>
+<p><strong>ERP-side gaps:</strong> record defaults that iDempiere's model classes set were missing for ten tables; a newly created tenant had no
   default partner group, no trees and no client info. The defaults are now <strong>extracted from the iDempiere source by a generator</strong>
-  (182 tables) rather than copied by hand, so the same gap cannot quietly return.</li>
+  (182 tables) rather than copied by hand, so the same gap cannot quietly return.</p>
+</li>
+<li>
+<p><strong>Real data the demo hides</strong> (found by W-ODOO-MESSY, all fixed in the export): an address was matched by its street, so a
+  customer with no street — common, since Odoo pre-fills the country — stopped the export; so did two customers on one street.
+  Addresses now carry iDempiere's own migration key (<code>C_Location_UU</code>). A contact of an archived company crashed it; archived
+  records now come along inactive. Odoo allows repeated codes and long location paths; iDempiere does not, so they are renamed
+  (<code>-&lt;odoo id&gt;</code>, <code>~&lt;odoo id&gt;</code>) and listed. Without a company filter, Odoo returned <strong>both</strong> demo companies' data and the export
+  merged two companies into one; it now moves one company per run and names the others.</p>
+</li>
 </ul>
 <h2 id="6-what-is-not-done-yet">6. What is not done yet<a class="headerlink" href="#6-what-is-not-done-yet" title="Permanent link">&para;</a></h2>
 <ul>
@@ -3146,8 +3166,8 @@ is listed in <code>manifest.json</code> → <code>patches</code>, with its rule 
   kept in <code>provenance.json</code> and named in the manifest notes, not loaded.</li>
 <li>Analytic accounts, print layouts, server actions, and Odoo apps outside trade and accounting (manufacturing, HR, POS …) —
   these arrive as plugins, like any other module.</li>
-<li>One Odoo version measured (17, demo data). Other versions and real customer data will show their own gaps; the tests are built
-  to name them.</li>
+<li>One Odoo version measured (17). Another version stops before reading, naming the field it lacks — supporting 16 and 18 is the
+  next step, not a guess. Real customer data will show its own gaps; the tests are built to name them.</li>
 </ul>
 
 
