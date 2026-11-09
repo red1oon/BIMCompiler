@@ -83,6 +83,42 @@ is ours" ⇒ aligned; move it from ⛔ to the queue after the catalog rebind.
 **Queue impact:** C1+C2 join row 14 (catalog rebind) and move up — they are live no-box violations, ahead of §SLOPE-HANDLES.
 C3 lands with the REPLACE verb.
 
+## ▶ §RESUME 2026-11-10 — START HERE: a REAL-UI Modeller film of the HVAC + FP walk (owner, 2026-11-09)
+> Owner: *"perhaps we need to prep more so that it is a good film, with proper steps in Modeller and the elements coming on where we zoom into it maintaining canvas in frame for realism and proof it works."*
+**Where things stand (all measured, logs in the private walk folder 61–78; read §WALK-REPORT-CARD below for detail):**
+- **Walker fix merged, bim-ootb #2752 (`16b3c205`).** Borrowed band rows are re-anchored to the building's own floors and placed only on a host.
+  - Private set: 96 sprinkler heads, all on LEVEL 1 ceilings; 70 wall alarms; 11 drawn FP items; ACMV 554 drawn runs + 205 drawn terminals.
+  - The sprinklers-on Viewer export completes (7,228 elements).
+- **The last film was a stills cut** (`WalkReport_Insight_AFTER_2026-11-09.mp4`, 120 s): canvas grabs, report markers, page-level clipping. It proves the data, not "it works in the Modeller". Report + zip: `report_2026-11-09_after/`.
+- **Visibility law (learned the hard way):** a shot claimed to show an element must log its projected size in px and a ray-first-hit = that element. A crosshair at a point proves nothing. A sprinkler head is 0.03 × 0.03 × 0.06 m: at the 55° FOV it needs ≤ 0.9 m for ~70 px, and a pendant head is seen from BELOW its ceiling.
+
+**Target film (one continuous real-UI take, the whole Modeller window in frame, cuts only over waits).** Recorder = `scripts/film_modeller_trailer.js` (CDP screencast, `jump()` cuts, `settle`, beat gates on `§` lines), extended. Clicks aim through `modeller/tests/e2e_harness.js` `window.__e2e`. Beats, each gated on its own `§` line:
+1. Open icon → local row → the building appears (cut over the load).
+2. Outliner → ACMV row → the walk's build-up draws the drawn runs + terminals one by one on the canvas (§D64 reveal, 2–7 s). This is "elements coming on" and already exists.
+3. FP row → heads, alarms, drawn items come on.
+4. X-ray icon.
+5. Zoom-ins from the Outliner (Walked Fixtures leaf → fly-to): a drawn terminal, a drawn FP item, a sprinkler head from below, a duct run. Every zoom witnessed by px + ray.
+6. Top / plan view.
+7. Export → Viewer → the 4D/5D page (real buttons).
+Cards: the house chapter cards (FILM_NARRATION 2026-11-03). Numbers only from `§` lines.
+
+**Prep before the take, ranked. Each is spec-first with its witness; items 1-4 are bim-ootb product work, not film hacks:**
+1. **Walked-fixture fly-to.** `dw_instances_outliner.js` has no frame/select on a leaf (measured: no `frame` call), so the real UI cannot zoom to a walked device.
+   - Add: leaf click → frame the op's placement point (reuse `_frameTo`), plus select highlight.
+   - Witness: after the click, the element's projected px ≥ threshold and ray-first-hit = the element.
+2. **Size-aware framing.** `_frameTo` floors the distance at `max(diag, 2) × 1.8` = 3.6 m (`modeller.html:1506`), so a 6 cm head is ~10 px.
+   - Derive the distance from the element's size and the camera FOV.
+   - For ceiling-hosted devices, approach from below the host (data: `hostState=bound`, host = covering/slab).
+   - Witness as item 1; regression: the existing Outliner fly-to witnesses.
+3. **A real section/cut control in the Modeller UI.** None exists (0 hits for clipping/section in `modeller/`); the report used a page-level `renderer.clippingPlanes`. For "proper steps", a visible tool is needed. This is the owner's call: build it, or rely on X-ray + from-below framing only (zero new UI).
+4. **Visible cursor in the take.** Headless screencast draws no pointer, so clicks are invisible. Add a recorder-side cursor overlay at each `__e2e` click point, stated as an overlay. Recorder work, not product.
+5. **On-screen privacy.** The Outliner and status show the file name and storey names of the private set. **Owner question: who sees this film?** If outside the owner's team, take a film COPY of the DB with neutral storey/file names (logged mapping; data unchanged otherwise) or mask the Outliner text. Decide before recording.
+6. **Wall-alarm residual.** 13 of 70 wall-hosted alarms are > 3 m above the highest slab/roof top at their spot, and 2 are outside every box (coarse box test; untraced; probably tall walls). Trace before the take, or caption it as open.
+7. **Wait budget.** Open + ACMV + FP walk on this set takes minutes. The recorder `jump()`s over each wait and logs it (`§FILM_JUMP`), so the film never pretends real time.
+
+**Not needed:** the Viewer bake (owner: "we can then do away with baking"); synthetic markers in the take (keep them for the report only).
+**First step next session:** answer item 5 (and item 3's build-or-not) with the owner; then build 1 → 2 (one PR each, witness first); then extend the recorder (4, 7); then one rehearsal take with every beat gated; then the take.
+
 ## §WALK-REPORT-CARD SPEC (2026-11-09, owner) — proof of work from the Modeller canvas; no Viewer bake
 > Owner: *"Can the FP sprinklers be walked into too? … just close up snap shots of the placed elements … begin with … a topology map of all the placed devices … Animation is not crucial … Important is proof of work. A report card giving engineers as much useful info as they be the judge."* · *"Showing the 4D5D HTML is one good shot to include."* · *"can we get good canvas view in Modeller during the walk?"* · *"we can then do away with baking."* · *"show how the Modeller icons features work where and how to bring about such."*
 **Inputs:** a COPY of the walk input with `fp_sprinklered=yes`, set by the documented tool (`mains_to_db.js --sprinklered=yes`). Sprinkler heads are the walker's band placement: rule-placed, `Provisional=TRUE`, NOT drawn (the set holds no sprinkler sheet). They are labelled that way on every card. Source DB never written.
@@ -138,7 +174,7 @@ C3 lands with the REPLACE verb.
   - Film re-cut (120.2 s). A frame check on the final mp4 finds head pixels in the 3 close-up segments and markers in 2.
   - **Rule kept: a shot claimed to show an element must log that element's projected size and an unobstructed ray. A crosshair at a point proves nothing about what is visible there.**
 
-## ▶ §RESUME 2026-11-09b — START HERE (steps 1-3 of §RESUME 2026-11-09 done; then read that block for steps 4-5)
+## ▶ §RESUME 2026-11-09b — (superseded as entry point by §RESUME 2026-11-10 above)
 **Run on bim-ootb main `8541065f`, private set, local headless (software GL, no GPU). Every number is read from the saved run logs in the private walk folder (`41`→`42_page_run_chunked`, `45_carry_film_v3`).**
 1. ✅ **Page run, chunked copy:** walk ACMV + FP done, 3,507 ops, 554 drawn lines + 11 drawn markers. `§VIEWERDB §DRAWN-TABLES lines=554 markers=11 byBasis={void-middle:393, exposed-under-structure:102, on-roof-surface:59} offsetRows=4`. Export 7,531 elements, 192,434,176 bytes, written = expected (8 MB chunks; the old one-string copy timed out). Heap after build 3,004 MB.
 2. ✅ **Viewer open:** `§DRAWN-OVERLAY lines=554 markers=11 byBasis={…, owner-stated:11} sceneObjects=23`; `§DRAWN-ONLY hidden={IfcFlowTerminal:45, IfcAirTerminal:392, IfcAlarm:77} hiddenTotal=514 shown=7017 overlay=565 elements=7531`. 0 page errors.
