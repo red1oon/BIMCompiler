@@ -1172,7 +1172,7 @@ The old finished-workbook path keeps working until then (a user's already-downlo
 identity template → compare with the raw copy table by table (rows, PKs after re-band, column values) on the pilot tenant. Retiring the fast path is a LATER, measured call (time
 and memory per 10k rows on both), not done here. Reason: the copy is already the identity and proven by counts; the witness adds the column-level proof without slowing the user.
 Order: E3c first (below), then Odoo (1), then the iDempiere falsifier (2).
-**▶ 2026-11-10c: §E3C-SPEC is WRITTEN (end of file) — measured facts, the five pieces, what is deliberately not built (bank, payments → E3d), witnesses. Build status is recorded under it.**
+**▶ 2026-11-10c: E3c is BUILT — §E3C-SPEC + §E3C BUILD STATUS at the end of the file (bim-ootb #2791 + #2792 merged, #2793 auto-merge: check it landed). `§MIGE verdict=PASS judged=51`, `§OB-VERDICT PASS judged=31`. NEXT = Odoo masters onto the engine, then the iDempiere falsifier; bank + payments = E3d.**
 **Then, in order:** E3c open-items sheets (GL journal = TB with clearing accounts, open AR/AP on Opening Charges with DocTypeName, payments) on the merged 207/220 ports, Odoo first ·
 the open items named under A/B/C (stock VALUE: no source carries a cost → port ImportInventory :546-564; commitEx seam; ws_kernel model_journal; §IINV tag collision; seed c_activity
 and 2026 GL periods) · E4 sql connector · E5 DIY screen.
@@ -1366,3 +1366,37 @@ from a BC export. Line budget so far: converters −273, engine+connectors+loade
 - `W-GENESIS-*` (step 0): a born tenant has one `C_PeriodControl` per period × distinct DocBaseType, status `N` (MPeriod.java:849-871); Period Status 167 then opens them.
 **4. Order of work:** step 0 period controls (twin gap, own PR) · (a) agent + recorded fixture · (b)+(c) engine + template + W-MIGRATE-ENGINE · (d)+(e) loader + verifier + W-ODOO-FORM ·
 then Odoo masters onto the engine (decision 1), then the iDempiere falsifier (decision 2).
+
+**§E3C BUILD STATUS (2026-11-10c, lead session; every line below read from its log):**
+- **Step 0 ✅ MERGED — bim-ootb #2791** (Sonnet agent, Watchdog-read): a born tenant gets its `C_PeriodControl` rows. **Correction to §E3C-SPEC 0:** legacy does NOT make them in
+  MPeriod.afterSave at setup (the periods are saved before the doc types exist, MSetup.java:473-486 vs :710+); they come from the LAST step of createAccounting, process
+  DocumentTypeVerify (MSetup.java:853-858 → DocumentTypeVerify.java:130-197). `/tmp/count_logs/period_control.1.log`: `§PC-TENANT … periods=12 distinctDocBaseTypes=27 controls=324` ·
+  `§PC-PROC167 ok=true "Updated #27"` · `§PC-VERDICT PASS real=PASS mutant=FAIL` (BEFORE `controls=0`).
+- **Second genesis gap, found by the first stage-2 run ✅ MERGED — bim-ootb #2792:** a born tenant had **0 `C_AcctSchema_Element`** rows → ImportGLJournal.java:398-408 answered
+  "Invalid Account" for every row. Ported MSetup.java:556-660 (OO with Org_ID, AC with C_Element_ID + the DEFAULT_ACCT account, PR, BP = the legacy pilot tenant's 4 rows, read from
+  `idempiere_pilot`). `§SE-VERDICT PASS real=PASS mutant=FAIL`; genesis oracle fixture re-recorded by the witness's own recorder (additions only); `§GC-VERDICT PASS judged=10`.
+- **E3c (a)–(e) ✅ BUILT (witness) — bim-ootb PR #2793 (auto-merge armed), branch `feat/migrate-e3c-open-items`, sw v1032.** `erp/odoo_agent/export.js` +45 (raw door →
+  `odoo_export.json`; zip rebuilt) · `migrate/engine.mjs` +14 (optional open sheets; `find` / `round` / `abs` / `sumSet`) · `migrate/templates/odoo-17.json` (75, open balances only) ·
+  `plugins/odoo_migrate_convert.mjs` (22) · `plugins/open_balances.mjs` (150, every source form) · `plugins/odoo_migrate_form.mjs` +30.
+  - `/tmp/count_logs/e3c_migrate_engine.log`: `§MIGE-ODOO-OPEN recorded: tb_rows=9 journal_lines=9 AR=4005.00 AP=-13410.15 BANK=12444.87 open_lines=21 documents=19 refused=2` ·
+    `§MIGE-ODOO-GEN cases=300 differing_cases=0 cover=8/8` · `§MIGE-ODOO-OPEN-MUTANT verdict=PASS judged=10` · **`§MIGE verdict=PASS judged=51 failed=0`** (was 30; SAP/BC unchanged).
+  - `/tmp/count_logs/e3c_open_balances.log` (W-OPEN-BALANCES, new; a separate witness, not a W-ODOO-FORM case — that one stays pinned to the 11-09 fixture): shipped
+    `§MIG-TB accounts=9 differing=0 sum=0.00 PASS` · `§MIG-CLEAR AR … balance=0.00 PASS` · `§MIG-CLEAR AP … 0.00 PASS` · `§MIG-CLEAR BANK … balance=12444.87 state=OPEN` ·
+    `§MIG-OPEN documents=19/19 partners=5 differing=0 AR=4005.00 AP=-13410.15 PASS` · `§MIG-VERIFY verdict=PASS judged=5`; witness oracle from the raw rows:
+    `§OB-BOOKS accounts=11 plain=6 differing=0 control=["12110","21100"] AR_control=4005.00 AP_control=-13410.15 … sum=0.00` · falsifier `AR clearing AR-CLEAR is 2002.50, expected 0.00`
+    · **`§OB-VERDICT PASS judged=31 failed=0`** (10 cases: PERIOD, SUMMARY, RUN, PREREQ, TB, CLEAR, OPEN, RERUN, FALSIFY, PERIOD-OPEN).
+  - Regressions PASS: OF 18 · NM 31 · BCM 18 · SAPM 24 · IINV 56 · IGLJ 45 · IINV(inventory) 23 · GC 10 · browser `§OFL-VERDICT PASS judged=13` · agent zip sync.
+- **Learned (legacy facts the form now states to the user):** (1) legacy dates the journal BATCH today (MJournalBatch.beforeSave :948-961) and Complete tests that period — a login
+  later than the cut-over needs TODAY's period open for GLJ as well as the cut-over's, and a calendar year that has today (`PeriodNotFound` otherwise); the form refuses first, naming
+  both. (2) ImportGLJournal's "WARN=Period Closed" reads C_PeriodControl directly and ignores Automatic Period Control — a warning only, the rows import. (3) the receivable / payable
+  balance lands on the tenant's OWN control accounts (12110 / 21100, from the BP group), not on the source's account numbers — the TB claim is per class there.
+- **Changed against §E3C-SPEC (stated):** no `CUTOVER` / `INV_CLEARING` variable — the cut-over is the date the agent read the balances at (`@manifest.cutover`), inventory has no
+  class in Odoo's account types; the converter reports what it could not bring in as `manifest.left { AR, AP }` and the verifier expects exactly that on the clearing accounts.
+- **Open, named (not accepted divergences):** (a) `model_layer.js` trailing-UPDATE of a row created in the same group drops `idCol` for a table without a single key column
+  (C_Charge_Acct → "no such column c_charge_acct_id") when the value points at a LATER op — worked around by creating the valid combination first; fix generically. (b)
+  `witness_odoo_messy.js` fails 2 checks on main since #2787 (it never runs stage 2: M_Inventory gain 0) — update it to call `executeAfter`. (c) E3d: bank (C_Bank / C_BankAccount
+  masters, ImportBankStatement 221, the opening statement → Bank Clearing to zero) + unallocated payments (ImportPayment 343). (d) stock value (ImportInventory :546-564). (e) foreign
+  currency open items; due dates without a payment term. (f) SAP / BC templates carry no open balances yet (the loader and verifier are source-neutral and ready).
+- **Next:** Odoo masters onto the engine (decision 1: the agent ships raw rows for the 17 sheets too, `odoo-17.json` grows the 17 entities, equality to the frozen `export.js`
+  mapping on the recorded fixture + DIFF + mutants; then `partner_keys` is deleted and the open items look the partner up in the template's own C_BPartner sheet) → the iDempiere
+  falsifier (decision 2).
