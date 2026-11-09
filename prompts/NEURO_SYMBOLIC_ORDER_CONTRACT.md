@@ -86,6 +86,32 @@ Primary pages were read where they loaded; rows marked *unverified* came from se
 
 **Missing column?** The review's strongest point: **identity** deserves its own published rule, because every email failure it found was an identity failure. In this framework it lives in the ACTOR column (the adapter proves; the door binds), now stated as rule 4 above rather than as a fifth column.
 
+### 0.4 The framework's design, one detail at a time (owner, 2026-11-09: *"Hold off film for now. Let's get the framework well designed"*)
+**Film Part II is ON HOLD** at rc1 (§22.8): no rc2 until the framework design below settles. Its three open items (the public Duplex differs from the local copy; the Viewer CLI needs the whole page tree; the one-door card shows the pre-remap columns) wait with it.
+Order of the details: (1) one vocabulary entry · (2) naming and granularity · (3) the line grammar · (4) the actor table (proof of sender, what an unconfirmed claim may do) · (5) the door's record (request id, duplicates, log) · (6) the reply envelope · (7) the engine binding per app (which function, undo) · (8) the framework's own witnesses.
+
+**Detail 1, DECIDED 2026-11-09 (owner: *"yes, go on to detail 2"*):** every verb is one entry in `verbs.json` with: `verb` (app-qualified name), `app`, `title`, `description` (plain words), `inputs` (each: `name`, `type`, `unit` where physical, `required`, `example`), `harm`, `actors` (who may use it), `calls` (the app's existing function or CLI path, never new logic), `returns` (the answer's schema), `witness` (the test that proves the verb = the app's own path). **Harm classes:** `read` · `trial` (a change made on a throwaway copy, judged, never saved: every Modeller verb today) · `writes` · `posts` · `sends`. **The harm class comes from the vocabulary, never from the actor; an unconfirmed claim may use `read` verbs only** (§0.3 rules 4, 5). Example, from `bim_mcp.js`'s real definition: `modeller.try_shift`, inputs `building` (building), `line` (grid_line, e.g. gx6), `move` (number, m, e.g. 1.824), harm `trial`, actors ai and human, calls `edit_cli --building {building} --shift {line} --move {move}`, returns `EDIT_REPORT v1`, witness W-EDIT-CLI C13-C16, W-BIM-MCP M2b.
+
+**Detail 2, DECIDED 2026-11-09 (owner: *"yes go for useful common commands. This is POC viability stage."*):**
+- **One verb per user action, its variants as inputs** (e.g. `viewer.counts` with `by` = discipline or storey).
+- **ERP: one verb per document action, taking the document** (`erp.complete(document)`, `erp.void`, `erp.close`, `erp.reverse`, …), not one per table and action. This is legacy's own design (one Document Action button whose legal actions depend on the document's state; `set_docaction` in its web service takes the action as an input), so the twin rule points to it. **Legality comes from the engine:** the read verb `erp.actions(document)` returns the legal actions for that document's state (`verbs(ctx)`, ENGINE_CONTRACT §2). Processes: `erp.run_process(process, …)` with its inputs generated from the dictionary (`AD_Process_Para`) and listed by the read verb `erp.describe(process)`.
+- **Names:** app-qualified (`modeller.`, `viewer.`, `erp.`), named as what a person does, never "set field" (§0.3 rule 9).
+- **X of N** stays counted on the app's own units (Viewer actions; ERP table-and-action pairs plus processes), never on verb names: `erp.complete` counts only for the tables where it is implemented and witnessed against legacy.
+- **POC scope: a small set of useful, common commands**, not the full N. The POC set (each already exists as an app path, or is §21.6's first slice):
+
+| Verb | Harm | Exists as | State |
+|---|---|---|---|
+| `modeller.buildings` | read | the Open panel's list (`edit_cli` reads it) | to add |
+| `modeller.lines` | read | `edit_cli --lines` (`bim_lines`) | built |
+| `modeller.try_shift` | trial | `edit_cli --shift` (`bim_try_shift`) | built |
+| `modeller.try_move` | trial | `edit_cli --grid` (one line) | to add |
+| `viewer.counts` | read | `viewer_verbs.js counts` | built |
+| `viewer.clashes` | read | `viewer_verbs.js clashes` | built |
+| `viewer.film_path` | read | `film_path_vis.js` | built (CLI only) |
+| `erp.find` | read | the window's Find (a document by number or name) | to add |
+| `erp.actions` | read | `verbs(ctx)` | to add |
+| `erp.complete` | posts | `dispatch` of DocAction CO, first on Sales Order, = legacy's Complete (§21.5 A5) | to add |
+
 ## ▶ RESUME HERE (2026-11-08, late): film rc4 BUILT, a labelled scripted demo
 **Deliverable for the owner's posts:** `~/Videos/Think_Global_Act_Local_EN_rc4.mp4` (243.6 s) + `…_rc4_narration.txt`. It shows the AI using the app through the connector (§18): the menu the AI is handed (the connector's real `tools/list`), then **a scripted demo**: `scripts/film_neuro/mock_session.js` stands in for the AI (owner 2026-11-08: *"Can u just do a mocked up movie"*; earlier: mock an AI proposal in a sandbox, no model calls), sends brief G4 through the live connector to the real app, and every answer on screen is the app's own, from the connector's call log (`evidence/session_calls.jsonl`). The card says "A scripted demo: an AI's part, played by a test script", and the last box quotes the connector's own decline rule, not invented AI words.
 **Witnessed:** resolve 73 facts, 0 missing; guard PASS (80 numbers on cards, 15 spoken; plants caught; stills sha256 pinned); W-FILM-NEURO-LIVE SAME (panel = the connector's answer, 2,349 bytes); recorder layout 79/79, 0 console errors; fit 17/17 DETAIL, tone 0 WRONG; captions 20 clamped, 0 overlaps; frames 5,847 = the silent picture; longest silence 7.5 s (end card); −16.5 LUFS. Logs: `scripts/film_neuro/logs_rc4/`.
