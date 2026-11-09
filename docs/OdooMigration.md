@@ -2,7 +2,7 @@
 
 > **Status: working draft, 2026-11-09 (updated).** The export, the loader and the in-ERP screen **"Migrate from Odoo"** are built and tested —
 > the screen by a browser test that clicks through it on the real page, not yet by a user. Every number below was measured on the **Odoo 17 demo
-> database** and a **local iDempiere 13 pilot**, not on a customer system. Limits are listed in §7. Full working record: `prompts/MIGRATE_INSTALL_TENANT.md`. **Step-by-step: [Move from Odoo — user guide](OdooMigrationGuide.md).**
+> database** and a **local iDempiere 13 pilot**, not on a customer system. Limits are listed in §7. Full working record: `prompts/MIGRATE_INSTALL_TENANT.md`. **Step-by-step: [Migration User Guide → Odoo](MigrationGuide.md#odoo).**
 
 ## 1. The idea in one paragraph
 

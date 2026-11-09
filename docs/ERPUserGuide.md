@@ -139,6 +139,9 @@ if a window is absent for your role, that is correct, not a bug.
 
 ## 2. Bring your data in — the DIY box (Help → *Run it yourself*)
 
+> **Moving your company in?** The step-by-step guide for every source (Odoo · Business Central · SAP Business One) is the
+> **[Migration User Guide](MigrationGuide.md)**. This section is the overview.
+
 Migration is **delegate-to-install**: the browser never connects to your database. The **Help pill**
 opens one **About / Run it yourself (DIY)** box. On the DIY tab you **pick your source ERP → download
 its self-contained agent zip → run the commands its README gives you, in your own terminal → load the
@@ -149,9 +152,9 @@ row (nothing is faked). The README is the single "what to run" — you copy-past
 |---|---|---|
 | **Odoo** | `odoo_agent.zip` → `cd odoo_agent && npm install && node agent.js` → writes `odoo_chain.json` (the browser re-folds + verifies it) | **Client 12** — the full migrated Odoo catalog (**38 partners · 35 products · 27 sale orders**, `12-odoo.db`), books diffed to the cent |
 | **iDempiere** | `idempiere_agent.zip` → `cd idempiere_agent && npm install && node migrate_agent.js --masters` → writes `ad_masters.db` | **Client 13** — real PG-agent extraction, PKs re-banded |
-| **SAP** | on the roadmap (greyed "under construction") | **Client 14 "SAP Flights"** — PoC: the documented **SFLIGHT** flight-booking reference model (carriers → Business Partners, connections → Products) |
+| **SAP Business One** | **alpha**: `sap_agent.zip` → `cd sap_agent && node agent.js --url https://<server>:50000 --company <db> --user <user>` → writes `sap_export.json` (read only; [guide](MigrationGuide.md#sap-business-one-alpha)) | **Client 14 "SAP Flights"** — PoC: the documented **SFLIGHT** flight-booking reference model (carriers → Business Partners, connections → Products) |
 | **Oracle** | on the roadmap | **Client 15 "Oracle Scott"** — PoC: the canonical **EMP/DEPT (SCOTT)** schema (departments → BP Groups, employees → Business Partners) |
-| **MS Dynamics** | on the roadmap | **Client 16 "Dynamics Cronus"** — PoC: the Business Central **CRONUS** demo company (items → Products, customers → Business Partners) |
+| **MS Dynamics 365 Business Central** | **alpha**: no agent — Business Central's own Excel export (a configuration package) → **Migrate from Business Central (alpha)** ([guide](MigrationGuide.md#business-central-alpha)) | **Client 16 "Dynamics Cronus"** — PoC: the Business Central **CRONUS** demo company (items → Products, customers → Business Partners) |
 
 **Point an agent at your own server with environment variables** (defaults shown — every value is real):
 
