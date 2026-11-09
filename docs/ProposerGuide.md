@@ -37,7 +37,7 @@ The AI's sums were right. What it did not know is this building's 12 m span limi
 
 This makes the app's actions a menu your AI can use by itself. It works with any AI app that supports MCP, the open standard that Claude, among others, uses to connect to tools.
 
-**1. Make a folder, install the browser engine, and download the two files.**
+**1. Make a folder, install the browser engine, and download the four files.**
 
 ```bash
 mkdir proposer && cd proposer
@@ -45,7 +45,11 @@ npm init -y
 npm install puppeteer@24
 curl -O https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
 curl -O https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
+curl -O https://red1oon.github.io/bim-ootb/common/door/door.js
+curl -O https://red1oon.github.io/bim-ootb/common/door/verbs.json
 ```
+
+Keep all four in the same folder: the connector hands every call to `door.js`, which reads the verb list from `verbs.json` and runs `edit_cli.js`. If one is missing, the connector says which and prints its `curl` line.
 
 **2. Add it to your AI app.**
 
