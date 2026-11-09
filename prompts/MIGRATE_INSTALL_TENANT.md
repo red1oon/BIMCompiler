@@ -1034,6 +1034,105 @@ the Opening Charges; open payments; the physical inventory already exists) — l
 source TB at the cut-over; every clearing account == 0; AR/AP open items == the source's open list; stock value == the source's valuation. Odoo first (measurable here:
 `account.move.line` balances at the date, `amount_residual` of open invoices). History stays optional/read-only.
 
+### §ENGINE-SPEC — ONE migration engine for any ERP, driven by a JSON template the user adjusts (2026-11-10, owner: *"Spec an abstract engine that can migrate basically
+any ERP system. Abstract out some JSON template that users can adjust some variable setting ie DB, field XX or adjust.."*; B3 = *"Proceed as you recommended"* folded in)
+**Status: SPEC, awaiting the owner's read before any code** (design talk one detail at a time — the template shape is his to adjust).
+
+**0. Measured before writing (2026-11-10):**
+- Three sources today = three hand-written converters with the SAME target: Odoo (`erp/odoo_agent/export.js`, agent, XML-RPC), Business Central (`plugins/bc_migrate_convert.mjs`,
+  RapidStart Excel, model from the published `.al`), SAP B1 (`erp/sap_agent/agent.js` + `plugins/sap_migrate_convert.mjs`, Service Layer OData). Already shared: the 17-sheet
+  Ninja workbook (`HEADERS`/`ORDER`), `finishBook` (lengths), `mask`/alpha report, the Odoo form's plan/load, `withSourceRows`. What differs per source is ONLY: how rows are
+  read, which source field feeds which target column, the value maps (CardType cCustomer→IsCustomer), and a handful of named rules.
+- **DEFECT found (shipped):** the Ninja loader saves rows through the model but never runs a DocAction — like the owner's Java (`MigrateExcelData.java`, no processIt). So the
+  "opening stock" every source loads stays a **Drafted** physical inventory: BC demo run probe = `m_inventory docstatus=DR`, `m_storageonhand=0`, `m_transaction=0`, `fact_acct=0`.
+  Guides/films say "opening stock" — the document is there, the stock and its books are not. Legacy's own route completes it: `ImportInventory.java` DocAction parameter
+  (:122, processIt :383/:461) + a Cost Adjustment document when the row carries a cost (:546-564). The twin HAS that port (`erp/processes/ImportInventory.js`, AD_Process 219,
+  W-IMPORT-INVENTORY: "DocAction CO completes; storage moves"; "NODA → header stays Drafted").
+- Legacy import processes in the seed: 194 BPartner · 196 Product · 197 Account · 206 Order · **207 Invoice** · 219 Inventory · **220 GLJournal** · 221 BankStatement · 343 Payment.
+  Ported in the twin: 194 (ad_process.js), 196, 206, 219, 343 (`erp/processes/`). **Not ported: 207 ImportInvoice (815 lines), 220 ImportGLJournal (847), 197, 221.**
+- The cut-over method (§B3-SCOUT, wiki *Establish Opening Balances*) needs exactly: a GL journal (220), open invoices on Opening Charges (207), payments (343), a physical
+  inventory + cost adjustment (219) — all legacy import processes, each with its own DocAction.
+
+**1. The engine = four parts, one implementation each.**
+```
+ SOURCE ──connector──▶ rows + the source's own model ──template (JSON)──▶ TARGET sheets ──loader──▶ tenant ──verifier──▶ §MIG lines + alpha report
+```
+- **Connector** (how rows are read — the only code that knows a vendor's protocol). Kinds: `odoo-xmlrpc` · `odata` (SAP Service Layer, BC cloud API, any OData) · `excel` (BC
+  RapidStart, a user's own sheets, the owner's raw→Master→core layout) · `csv` · `sql` (postgres / mssql / hana / mysql, READ ONLY — the owner's "DB engine" door: the
+  catalog gives tables, columns, types, lengths). Every connector does the same 3 things: `describe()` = the source's own model (fields_get / `$metadata` / information_schema /
+  sheet headers / a pinned published model like `bc_model.mjs`), `count(entity)`, `rows(entity, fields, filter)` paged. Runs in the user's agent (node) or in the browser (excel/csv).
+- **Template** (JSON, the user's to adjust — §2). Says WHAT to read and HOW it maps. No code in it.
+- **Target** = the iDempiere import contract, unchanged for every source: the 17 master sheets (`HEADERS`) + the **open-items sheets** (§3).
+- **Loader + verifier** = the twin's existing pieces: the Ninja loader for masters; the PORTED legacy import processes, run with **DocAction = CO**, for documents; then the
+  checks of §4. The engine never INSERTs a document behind the model (the 2017 Ninja route's limit, §B3-SCOUT).
+
+**2. The template (one file per source system/version; ships with the engine, the user copies and edits it).**
+```json
+{ "template": "sap-b1-10", "version": 1, "source": "SAP Business One 10 (Service Layer)",
+  "connector": { "kind": "odata", "url": "${URL}", "login": { "CompanyDB": "${COMPANY}", "UserName": "${USER}", "Password": "${PASSWORD}" }, "pageSize": 100 },
+  "variables": { "URL": "https://myserver:50000/b1s/v1", "COMPANY": "SBODEMOUS", "USER": "manager", "CUTOVER": "2026-12-31", "PRICE_LIST": "1",
+                 "AR_CLEARING": "AR-CLEAR", "AP_CLEARING": "AP-CLEAR", "INV_CLEARING": "INV-CLEAR" },
+  "valueMaps": { "bpRole": { "cCustomer": "C", "cSupplier": "V", "cLid": "@refuse:a lead, not a customer or vendor" },
+                 "yes":    { "tYES": "Y", "tNO": "N" } },
+  "entities": {
+    "C_BPartner": { "from": "BusinessPartners", "key": "CardCode",
+      "fields": { "Value": "$CardCode", "Name": { "first": ["$CardName", "$CardCode"] }, "TaxID": "$FederalTaxID",
+                  "IsCustomer": { "eq": [{ "map": ["bpRole", "$CardType"] }, "C"] }, "IsVendor": { "eq": [{ "map": ["bpRole", "$CardType"] }, "V"] },
+                  "IsActive": { "not": { "map": ["yes", "$Frozen"] } } },
+      "rules": ["bp-default-group"] },
+    "C_Location": { "from": "BusinessPartners.BPAddresses", "key": ["^CardCode", "AddressType", "AddressName"], "fields": { "Address1": "$Street", "City": "$City" } }
+  },
+  "openItems": { "trialBalance": { "from": "sql:OACT", "account": "$AcctCode", "balance": "$CurrTotal", "documentControlled": { "AR": "${AR_CLEARING}", "AP": "${AP_CLEARING}" } },
+                 "arInvoices": { "from": "Invoices", "filter": "DocumentStatus eq 'bost_Open'", "partner": "$CardCode", "documentNo": "$DocNum",
+                                 "date": "$DocDate", "openAmount": { "sub": ["$DocTotal", "$PaidToDate"] } } }
+}
+```
+- **Variables** (`${NAME}`): connection (server, database, user — the PASSWORD is never stored: asked at run time, or an environment variable), cut-over date, clearing
+  account values, which price list … The DIY screen fills them; the file keeps the rest.
+- **Field expressions** — a closed, side-effect-free set, evaluated by ONE evaluator (no `eval`, no JS in a template; a template is data, it can be shared/reviewed/signed):
+  `"$Field"` · `"^Field"` (the parent row's field) · literal · `first[]` (first non-empty) · `map[mapName, expr]` · `eq` / `not` / `and` / `or` · `concat[]` · `sub` / `add` / `mul` ·
+  `date[expr, format]` · `lookup[entity, key]` (a row the template already produced) · `sum[entity, expr, groupBy]` (stock per item+warehouse). An unknown operator = the template
+  is refused at load, naming it. `@refuse:<reason>` as a value = that row is refused with that reason (shown on the summary, as `withSourceRows` does).
+- **Rules** = NAMED, implemented once in the engine, each citing the legacy line it copies (no rule invented in a template): `bp-default-group` (ImportBPartner.java:129-132),
+  `product-default-category` (ImportProduct.java:213-221), `product-default-uom` (:304-311), `product-default-taxcategory` (:415), `vendor-product-no` (:393-394),
+  `location-uu` (UUIDv5 of the source key), `key-cut` (`~<n>`), `po-set-cut` (PO.java:1079-1082), `locator-z` (m_location_where), `country-from-company`.
+- **Field check:** before reading, every `$Field` a template uses is checked against `describe()` — a field the source lacks is NAMED (`§MIG-FIELD missing`) and its column
+  stays empty (SAP's §SAP-FIELD, generalised). A template for the wrong version is caught here, not by a wrong load.
+- **One template per source+version**, in `erp/migrate/templates/`: `odoo-17.json`, `bc-w1.json`, `sap-b1-10.json` first (the three converters re-expressed), then any ERP whose
+  connector exists: e.g. a `sql` template for a home-grown system = the tables and columns typed by the user, nothing else.
+
+**3. Open items = the cut-over method (§B3-SCOUT) as target sheets, loaded by the LEGACY import processes with DocAction CO.**
+| sheet | legacy table → process | holds | DocAction |
+|---|---|---|---|
+| Opening journal | `I_GLJournal` → ImportGLJournal (220, **to port**) | the trial balance at the cut-over; document-controlled accounts (AR, AP, inventory, bank in transit) go to the CLEARING accounts | CO |
+| Open AR invoices | `I_Invoice` → ImportInvoice (207, **to port**) | one line per invoice, charge *Opening Charge AR*, only the UNPAID amount, its own number/date (aging stays true), no tax | CO |
+| Open AP invoices | `I_Invoice` → ImportInvoice | the same with *Opening Charge AP*; supplier credit notes = negative open items | CO |
+| Open payments | `I_Payment` → ImportPayment (343, ported) | unallocated receipts / prepayments; not-yet-cleared payments on the Opening Charge | CO |
+| Opening stock | `I_Inventory` → ImportInventory (219, ported) | product + locator + QtyCount + CurrentCostPrice (the cost adjustment first, never zero) | CO |
+The engine creates (if absent) the four clearing accounts and the two Opening Charges from the template's variables, the way an implementer would by hand (prerequisites of
+the wiki method), and lists them in the summary. Unmatched material (received-not-invoiced) is NAMED as not yet handled, not silently skipped.
+
+**4. The verifier (built in; the same for every source; prints `§MIG-*` lines; PRIMAL LAW #4: INCONCLUSIVE when nothing was judged).**
+- `COUNT` source `count()` == rows read == rows in the sheets + refused (non-invent, today's manifest).
+- `TB` the tenant's trial balance at the cut-over (Fact_Acct) == the source trial balance, account by account (through the template's account map).
+- `CLEAR` every clearing account's balance == 0 after all open items are completed. A non-zero clearing account names the difference — the method's own proof.
+- `OPEN` the tenant's open AR / AP (C_Invoice not paid) == the source's open list, per partner and in total.
+- `STOCK` on-hand per product+warehouse == the source quantities; stock value == the source valuation.
+- `ALPHA` the report a tester sends back: counts, field names, refusals — every value masked (today's).
+
+**5. Order of work (each step ends with a witness; nothing ships witness-less).**
+- **E1 fix the shipped defect first:** opening stock through `I_Inventory` + ImportInventory DocAction CO (all three sources); witness: storage on hand == the sheet, Fact_Acct
+  rows present, the films'/guides' "opening stock" claim becomes true (re-check the BC demo: m_storageonhand > 0).
+- **E2 engine core:** template schema + validator (refuses unknown operators/fields), evaluator, rules registry, the excel/csv connector; **acceptance = the SAP B1 template
+  re-produces `sap_migrate_convert.mjs`'s workbook cell for cell** on the guide fixture; then BC (`bc-w1.json` == today's BC workbook on the Contoso fixture, 575 rows), then
+  Odoo (`odoo-17.json` == export.js on the recorded fixture). Deletion budget: each converter's mapping code is REMOVED once its template matches (lines −/+ stated).
+- **E3 open items:** port ImportGLJournal (220) and ImportInvoice (207) verbatim (twin rule), the open-items sheets, the clearing accounts + Opening Charges; Odoo first
+  (measurable here: `account.move.line` balances at the date, `amount_residual`), witnesses TB / CLEAR / OPEN / STOCK.
+- **E4 the sql connector** (the owner's DB-engine door): read-only catalog + rows; first use = SAP B1's account class from `OACT` (the gap §SAP-MEASURE names) — needs a
+  published source for the class numbers, else it stays a template VARIABLE the user fills.
+- **E5 the DIY screen:** pick a template, fill its variables (form fields generated from `variables`), run, read the summary — the same plan/load screen as today.
+**Not in scope:** closed history (optional, read-only, never posted), non-core modules (they arrive as plugins), writing to any source system.
+
 ### ▶ RESUME HERE (2026-11-09c) — SAP alpha out; what is next
 **Live after #2774 merges** (check it landed; auto-merge on). Owner's frame: *"earnest effort POC … community can improve it. Release early update often."*
 **Next for SAP, in order:** a tester's run (closes CONN + the 10 INCONCLUSIVE rules) · `--sql` door: read `OACT` (account class) through SQLQueries (owner's DB-engine
