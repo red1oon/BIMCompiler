@@ -999,10 +999,21 @@ prediction); ALPHA (no fixture value, mask falsifier); WIRING; **CONN = INCONCLU
 - Facts voiced (this recording): 1 customer · 3 items · 1 account · 12 records one signed change set · verifyChain ok · offline save 0 requests · 10 INCONCLUSIVE rules.
 - Not done: other languages (owner asked for ZH/TH/MS on the earlier films — `build_lang.py` copies over when asked); the end card points at the agent download (no SAP guide page yet).
 
+### §GUIDE-CONSOLIDATED + §FILM-SAP ZH (2026-11-10) — owner: *"Do we have a dedicated Migration User Guide? If there is, consolidate it into its own and link from the main. Do the Mandarin version"*
+- **Measured first:** two separate step-by-step guides existed (OdooMigrationGuide, BusinessCentralMigrationGuide) + the explainer OdooMigration.md; the ERP User Guide §2 still said SAP /
+  Dynamics "on the roadmap". **Now:** `docs/MigrationGuide.md` = ONE Migration User Guide: choose-your-source table (Odoo tested · BC alpha · SAP B1 alpha · iDempiere) → the shared
+  three steps written once (company + plugins + Role Access Update, the form/summary/Process/check, offline + team, ERP-side refusals) → one section per source (SAP B1 new:
+  agent, flags, read only, what it settles, limits, alpha report; 3 screenshots of the SAP run in docs/img/sap_migration). The two old pages are POINTER pages (films' end cards
+  link to them; the guard refuses deletions). ERP User Guide §2 links it; its SAP/BC rows now say alpha + link. Nav: one entry. BIMCompiler #492 MERGED; deployed by
+  `safe_gh_deploy.sh` (dry run: exactly the 2 pointer pages shrank → blessed by name with ALLOW_SHRINK paths=; guard PASS; canaries 200); live pages fetched back
+  (MigrationGuide 200, its SAP section + sap_agent.zip link present, ERPUserGuide links it 4×, screenshot 200).
+- **ZH film:** `~/Videos/How_to_escape_from_your_SAP_Business_One_ZH_rc1.mp4` — 204.9 s, −16.4 LUFS, peak −1.3, 57 caption pieces, end diagram 26/26 labels, caption band 15/15.
+  `scripts/film_sap_migration/lang_text.py` (zh) + `build_lang.py` (derived from the BC one: Noto CJK cards, Edge zh voices — CLOUD, house choice for zh — cached, 18 calls, 0 splits).
+  The films' end cards still point at the agent download / old guide URLs (pointer pages keep them working).
+
 ### ▶ RESUME HERE (2026-11-09c) — SAP alpha out; what is next
 **Live after #2774 merges** (check it landed; auto-merge on). Owner's frame: *"earnest effort POC … community can improve it. Release early update often."*
 **Next for SAP, in order:** a tester's run (closes CONN + the 10 INCONCLUSIVE rules) · `--sql` door: read `OACT` (account class) through SQLQueries (owner's DB-engine
-point; needs the drawer-number meaning from a source, not memory; an SQLQuery is a saved object = a write, so opt-in) · stock at a date · several price lists · user guide page
-`docs/SAPBusinessOneMigrationGuide.md` (BIMCompiler, safe_gh_deploy) · film language versions (EN rc1 done, §FILM-SAP).
+point; needs the drawer-number meaning from a source, not memory; an SQLQuery is a saved object = a write, so opt-in) · stock at a date · several price lists · film TH/MS when asked (EN + ZH rc1 done; guide = MigrationGuide.md §SAP, §GUIDE-CONSOLIDATED).
 **Still open from earlier:** §LAG · Odoo 16/18 field names · B3 balances/open documents (all sources) · twin PO.set length cut (generic) · bim-document plugin start failure
 (UNIQUE ad_window_access — seen again on the live page this session) → its lane.
