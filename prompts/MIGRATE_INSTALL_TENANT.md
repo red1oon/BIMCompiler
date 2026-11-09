@@ -835,3 +835,9 @@ Falsifier: the origin/main exporter on the same fixture = the FAIL/crash above. 
 - **Scratch Odoo:** `scripts/odoo_mock/make_odoo_messy.sh` rebuilds db `odoo_messy` (pg_dump of odoodemo + `odoo_messy_states.js`). It stays on the Odoo server; it does not touch odoodemo.
 - **Named, not done:** Odoo 16 / 18 field names (the export refuses them cleanly today) · `agent.js` (the one-order check) is http only · units can only be MAPPED, not created ·
   the twin's `PO.set` does not cut over-long text like legacy PO.set_Value (the export guarantees it for migrated rows; a generic twin fix is its own item) · scale (10k+ rows) unmeasured.
+
+### ▶ RESUME HERE (2026-11-09b) — hardening LIVE
+bim-ootb #2755 MERGED (CI fast-checks + e2e green), Pages serves sw v1019, the downloadable `odoo_agent.zip` carries the hardened export (fetched back and checked),
+`processes/RoleAccessUpdate.js` 200. Guide + method page LIVE (BIMCompiler #458, `safe_gh_deploy.sh` guard PASS, canaries 200; text fetched back).
+**Next, in order:** Odoo 16 / 18 field names (needs those Odoo images to measure, not guess) · B3 opening balances / open invoices / open orders · units: create a new ERP
+unit from the form · twin `PO.set` cut over-long text like legacy (generic, needs a sweep) · scale run (10k+ rows) · §LAG · bim-document plugin start failure → its lane.
