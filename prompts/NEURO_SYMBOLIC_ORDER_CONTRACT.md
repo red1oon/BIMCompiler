@@ -887,7 +887,7 @@ A phone tap, a barcode scan, a GPS check-in, a sensor reading or a till ring bec
   2. **The count is honest.** Coverage is X of N, and N is read from the app's own tables, never hand-picked: Viewer **1 of 64** actions, ERP **0 of 1,153** actions (§19.1, §19.4, §21.7).
   3. **The judge stays inside.** No AI inside the app; an edit that adds a new problem is undone and the reason goes back (§15.1). A clash means real shapes intersect beyond the tolerance, as the industry defines it, never just boxes (§20.2.9).
 - **Where it goes:** one door for every actor and every channel (screen, script, AI menu, email reply, phone tap, device event), and email as the spine of the ERP (§21). **Spec only, nothing built**; the film says so.
-- **Closing line, proposed (owner to approve):** *"Any AI may propose. Only the building decides."*
+- **Closing line (approved 2026-11-09, §22.7 item 4):** *"Any AI may propose. Only the building decides."*
 
 ### 22.2 The verbs done, with their real numbers (what the film may show)
 | Verb (where) | What it does | The example, from its witness | Proof it is the app's own answer | Source |
@@ -899,7 +899,7 @@ A phone tap, a barcode scan, a GPS check-in, a sensor reading or a till ring bec
 | `film_path_visibility(db)` (Viewer, command line) | says what each stretch of a film's camera path actually sees, without baking | public fixture: forward band sees lines **2/2**, markers **1/1**; the same band reversed sees **0/2**, **0/1** | the cinema engine's own camera at each sample; reversed band must go blind | §19.3, #2736, #2737 |
 | Inventories (not verbs, the denominators) | count what could be offered | Viewer: 96 entry points, **64** actions, 5 buttons showing the wrong key; ERP: **1,153** actions (702 document actions + 451 processes), 102 with code, 0 offered | an independent recount equals each generator; a planted break is caught | §19.1, §21.7 |
 
-**The honest beat this list gives (owner to approve):** the first Viewer verb exposed the Viewer's own wrong sum: it answered "200 box overlaps, 229 clashes, −29 cleared". The verb repeated the app faithfully, the witness flagged it, and the cause was two bugs in the app (a double count and a 200-row page cap), now fixed: 393 / 291 / 102. **A verb that repeats the app can only be as right as the app; the witness is what caught it.**
+**The honest beat this list gives (approved 2026-11-09, §22.7 item 4):** the first Viewer verb exposed the Viewer's own wrong sum: it answered "200 box overlaps, 229 clashes, −29 cleared". The verb repeated the app faithfully, the witness flagged it, and the cause was two bugs in the app (a double count and a 200-row page cap), now fixed: 393 / 291 / 102. **A verb that repeats the app can only be as right as the app; the witness is what caught it.**
 
 ### 22.3 Storyboard (about 180-210 s with the CLI chapter; PLAYBOOK C, same two voices as film 1)
 | # | Picture | Dialogue (F asks as a newcomer, M answers in one or two plain sentences) | Source |
@@ -918,7 +918,7 @@ A phone tap, a barcode scan, a GPS check-in, a sensor reading or a till ring bec
 | 11 PRIOR ART | One card: "published 9 November 2026 as a defensive disclosure, free for anyone" | M: "We published it, so nobody can lock it up." | `docs/AIProposerDefensiveDisclosure.md` |
 | 12 LIMITS | Honest-limits card: no strength or loads; the ERP verbs not offered yet; the benefit not measured yet (§20.3 protocol waits on a run); a pass never means safe | M says it plainly | §5, §20.3, §21.7 |
 | 12b THE DICTIONARY TO COME | One card, the phases of §22.6 as a ladder, today's rung lit ("Viewer 1 of 64 · ERP 0 of 1,153"); label **"planned, in this order; not built"** | F: "What comes next?" M: "More verbs, one list, the same judge. Each one proven before it is offered." | §22.6 |
-| 13 PROMISE | Title-style card with the closing line (§22.1) | M says it once | owner to approve |
+| 13 PROMISE | Title-style card with the closing line (§22.1) | M says it once | approved, §22.7 item 4 |
 | ch | Chapter card "How the command line works" (owner, 2026-11-09: *"will the new film show how the CLI works ?"*) | — | — |
 | 14a SETUP | Terminal, empty folder: `npm install puppeteer@24`, then `curl -O` of `edit_cli.js` from the live site; `ls` shows one file | F: "What do I install?" M: "One library and one file. Nothing else." | the guide's "Getting started" |
 | 14b MODELLER CLI | `node edit_cli.js --building HospitalGarage --lines` → the bays; then `--shift gx6 --move 1.824` → `"refused":true`, the reason, exit code 3 | F: "And I just type it?" M: "Exact numbers in, the building's own report out. Nothing is saved." | §17, §15.1 |
@@ -957,6 +957,7 @@ A phone tap, a barcode scan, a GPS check-in, a sensor reading or a till ring bec
 1. **Title:** the series is **"CLI for OOTB Kernel Trilogy"**; this film is **Part II: "More commands for your AI to be right"**. Film 1 ("Think Global, Act Local") is Part I. The §22 working title "Outside AI, Inside Judge" is retired.
 2. **Only what is new since Part I.** Part I already showed `edit_cli --lines`, `--shift`, the stop, the two-verb connector and the setup. Part II shows only: the Viewer CLI (`viewer_verbs.js counts`, `clashes`), the shape-checked overlap verdicts in an edit report (§20.2.10-11), `film_path_vis.js`, the connector's menu at 4 verbs, the two inventories (Viewer X of 64, ERP X of 1,153), the honest Viewer bug, the actor-layer design and the dictionary roadmap (§22.6). One recap shot at most; beats 3, 4, 14a and 14b of §22.3 are dropped or cut to that one recap.
 3. **Go for the scripts and the film:** build one demo script per new command, each run from an **empty folder** against the live site with only the files its beat downloads (W-FILM-NEURO2-CLI); once every script and the witness pass, the film is built from those runs' real stdout. Same pipeline and gates as Part I (`scripts/film_neuro/`: resolve, guard, record, fit, mux; CPU only, no GPU, no model calls; public fixtures only; English first).
+4. **APPROVED 2026-11-09 (owner: *"approve the closing line and the bug beat"*):** the closing line *"Any AI may propose. Only the building decides."* (§22.1, beat 13) and the honest Viewer-bug beat (§22.2, beat 7: −29, then 393 / 291 / 102, "the verb repeated the app; the test caught the app"). Neither is "owner to approve" any more.
 
 ## STATUS
 2026-11-06 spec. 2026-11-07: extracted (§3), fixes (§6), report (§8), CLI (§11), three proposer tests (§12), shift and hinge (§13, §14), public guide (§14.3). 2026-11-08: no paid model calls (§14.6), the stop on outside calls and the report on first use (§15), consolidated; film "Think Global, Act Local": plan (§16), the three pre-cut checks, English rc3 built (§16.7).
