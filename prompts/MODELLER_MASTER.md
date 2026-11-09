@@ -116,6 +116,15 @@ C3 lands with the REPLACE verb.
   - "Fit" frames far outliers, so frame on the op points instead.
   - `boq_charts.html` / `mep_report.html` need `bld=` = `elements_meta.building`, or they show "No data".
 
+**§WALK-REPORT-CARD follow-ups (2026-11-09, owner: "Re-anchor + host", "fix the rest ongoing").**
+- **Insight film cut** with the house chapter cards (FILM_NARRATION 2026-11-03 spec, card background measured `#0b0f17`). 96.7 s, 8 cards + 15 stills; every number from logs 62/68. Kept private.
+- **FIX MERGED: bim-ootb #2752 (`16b3c205`).** Borrowed band rows are re-anchored by storey order to this building's floors and placed only on a host. Source floors ship as the self-heal rules patch `modeller/patches/terminal_rules.db.sql`.
+  - W-BAND-REANCHOR 9/0.
+  - Private FP band heads 1,880 (939 floating) → 96, all inside.
+  - Public ARC residents unchanged (they state no storey elevations; the limit is stated in band spec §12).
+  - Spec + RESULT: bim-ootb `prompts/DISC_WALK_BAND_NO_HOST.md` §12.
+- **Next:** re-walk + re-shoot the private report on merged main, export included (with far fewer heads it may now fit).
+
 ## ▶ §RESUME 2026-11-09b — START HERE (steps 1-3 of §RESUME 2026-11-09 done; then read that block for steps 4-5)
 **Run on bim-ootb main `8541065f`, private set, local headless (software GL, no GPU). Every number is read from the saved run logs in the private walk folder (`41`→`42_page_run_chunked`, `45_carry_film_v3`).**
 1. ✅ **Page run, chunked copy:** walk ACMV + FP done, 3,507 ops, 554 drawn lines + 11 drawn markers. `§VIEWERDB §DRAWN-TABLES lines=554 markers=11 byBasis={void-middle:393, exposed-under-structure:102, on-roof-surface:59} offsetRows=4`. Export 7,531 elements, 192,434,176 bytes, written = expected (8 MB chunks; the old one-string copy timed out). Heap after build 3,004 MB.
