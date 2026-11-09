@@ -962,3 +962,46 @@ A phone tap, a barcode scan, a GPS check-in, a sensor reading or a till ring bec
 2026-11-06 spec. 2026-11-07: extracted (§3), fixes (§6), report (§8), CLI (§11), three proposer tests (§12), shift and hinge (§13, §14), public guide (§14.3). 2026-11-08: no paid model calls (§14.6), the stop on outside calls and the report on first use (§15), consolidated; film "Think Global, Act Local": plan (§16), the three pre-cut checks, English rc3 built (§16.7).
 **The gate, where it stands:** outside calls are stopped on new red (§15.1). The Java compile path stays log-only until its rules are proven against extracted buildings (`CompilationPipeline.java:1536`). When outside orders arrive at `PlacementRequest`, a gate there applies only to them, checks before any snap, and then the §7 measurement runs, at no cost (§14.6).
 **Open by design:** every row marked NONE in §3.1 and §3.5; snap cases S2–S5. G4-TAMPER reports 73 older violations (§6.3).
+
+## 23. FEEDBACK VERBS: turn the ad-hoc model probes into dictionary verbs (owner, 2026-11-09; written by the design lane, bim-compiler-8c, for the NEURO session to build)
+**Moved 2026-11-09 by the NEURO session:** written by the design lane (bim-compiler-8c) at 02:04 UTC into a stale untracked copy of this file, where it was numbered §21; on master §21 is the actor layer and §22 the Part II film, so it is §23 here, text unchanged apart from the section numbers. It is rung D4/D1-adjacent work in §22.6 (the verb dictionary).
+**Owner's words:** *"suggest new verbs to formalize so many scripts we been doing adhoc to obtain feedback from our model. Thus they should be verbalize into our dictionary so that they can be reused consistently"* · *"Search also many scripts strewn about thru out the project in our recent framework"* · *"Beef up the NEURO prompt so it can work on it. Your session remains to think tank the big stuff"*.
+**Why (measured, not argued):** in two days the design lane wrote about 40 one-off probes to ask the model the same kinds of question (does a route keep the file's grid, do two routes agree on the frame, is the walker better than random, why did an item find no floor, what layers hold what on a sheet, does a schedule pair with the model). Several gave WRONG answers first because the instrument was wrong, and each was found and fixed by hand: a slab's bounding box taken for its outline; a block's insert point taken for its position; `center_*` read after an export where it is defined differently (968 elements read > 1 cm off while their world boxes were identical); storeys matched by name across disciplines (they differ; elevations agree); a structure file in millimetres; a frame checked by coordinates instead of by GUID. A verb fixes the instrument once, so the next session gets the right answer the first time.
+### 23.1 Rules for a feedback verb (on top of §19's design: three layers, one `verbs.json`, a verb only calls an existing function)
+1. **Read only, family "measure".** No DB write, no GPU, no bake. A verb that would need one is not a feedback verb.
+2. **Logic lives in the owning module, not in the verb.** Where a probe's logic is not yet a shipped function, port it into the module that owns that question first (walker → `disc_walker.js`/`walk_node_harness.js`; sheets → `drawn_mains.js`/`dxf2bim`; frame → `common/georef_frame.js`; grid → `common/ifc_grid_read.js`; files → `common/file_store.js`; schedules/tables → `dxf2tables.js`), with its own witness; then the verb calls it.
+3. **One report shape for verbs and checkers:** the `AGENT_CALLABLE_CHECKERS.md` §3 fields: `verdict` (PASS | FAIL | INCONCLUSIVE | VACUOUS | NO-OP), `population`, `redControl`, `commit`, `input_sha256`, `findings[]`, plus the module's own `§` lines verbatim. A verb never prints PASS on an empty population.
+4. **Instrument rules baked in, never re-chosen by the caller:** a footprint is the element's real mesh outline, not its box; a block's position is its transformed geometry, not its insert point; positions after an export are judged on `element_world_bbox`; storeys across disciplines pair by elevation (±0.05 m, after unit scale), never by name; a frame is checked by GUID after the recorded-offset shift; two DBs are compared only on the same route, else the offset is stated.
+5. **Private sets:** verbs are generic; a private set runs locally only, and its numbers never reach a public file, PR, log or fixture (coordinates and sheet codes count; see the privacy memory).
+6. **Deletion budget:** each verb names the scripts it replaces; those are archived or deleted in the same PR (AD-LAYER law rule 4, applied to probes). A verb that adds without retiring is not done.
+### 23.2 Proposed catalogue (from the design lane's own probes; generic; the project-wide sweep adds to it, §23.3)
+| Verb | Answers | Base (shipped function to call or port) |
+|---|---|---|
+| `walk_placements(db, disc)` | what the walker places, by label (bound, unhosted, provisional, drawn, plan-only) and class | `walk_node_harness.walkLive` |
+| `walk_compare(db, disc, before_ref, after_ref)` | how a code change moved placements | `fleet_band_table.js` with `WALK_TREE` |
+| `walk_score(db, disc, key)` | is the walker better than random: nearest distance to an answer key (the file's authored services, or drawn terminals) vs random points in the same rooms; count per room | port of the design lane's §Y scorer |
+| `walk_explain(db, disc, ids)` | why an item has no host, floor, void or height: the floor outline under it, the structure above, the rule that fired | the walker's per-item `§WALK-EXPOSED-ITEM` lines + footprint test |
+| `walk_fleet(dir)` | the whole fleet's walk table | `fleet_band_table.js` |
+| `route_compare(ifc)` | do the Modeller open route and the Viewer import give the same building: offset, counts per class, carried tables | `ifc_open_db.js` + `import_worker.js` drivers (as W-ONE-FRAME) |
+| `frame_residual(db_a, db_b)` | do two DBs of one file coincide after the recorded-offset shift, by GUID | port (GUID match + offsets from `project_metadata`) |
+| `grid_check(db, ifc)` | is the stored grid the file's grid: per grid, axes, tags, storey, ends | `common/ifc_grid_read.js` |
+| `storey_pairs(db)` | which storeys of federated disciplines pair by elevation, which stay unpaired | `extract_ifc2db.js --federate` pairing |
+| `export_roundtrip(db)` | what survives export and re-open, X of N per class, storey, table | W-EXPORT-ROUNDTRIP base |
+| `sheet_census(dxf)` | layers by role, including inside block inserts; mirrored inserts; inserts at the origin; stacked copies | `drawn_mains.js` read path |
+| `sheet_fit(dxf, db)` | does a sheet fit the building grid: residual, tags, chosen grid | `DrawnMains` fit |
+| `drawn_read(db, dxf…)` | what the drawn-mains reader would record, dry run | `mains_to_db.js` without write |
+| `sheet_set(folder)` / `sheet_tables(dxf)` | the register vs the sheets held; schedules as tables | `dxf2setcheck.js`, `dxf2tables.js` (CLIs exist) |
+| `rule_test(rule, db, sheets)` | does a stated rule hold: thresholds fixed, control, INCONCLUSIVE on an empty population | port of the design lane's sieve tests (route, fabric, ceiling) |
+| `schedule_pair(db, table)` | which schedule rows pair with model elements; the size law found (a door's model size = leaf + frame on three sides: width +2k, height +k) | port of the schedule pairing probe |
+| `pset_profile(db or ifc)` | which properties a model fills, type-level vs instance-level, default flags | port of the property miner |
+| `legend_check(dxf, db, property)` | does a sheet legend's value per type equal the model property per type | port |
+| `assign_to_rooms(db, points)` | which room each point belongs to, by plan, vertical reach, boundary, above, remote | port of the room-assignment rules |
+| `overlay_frames(bake_log)` / `caption_facts(log)` | film checks: overlay objects per frame; the numbers a caption may say | readers of `§DRAWN-OVERLAY-FRAME`, `§WALK-*` lines |
+### 23.3 Project-wide inventory (PENDING: two read-only sweeps of bim-ootb and bim-compiler are running from the design lane; their clusters of duplicate probes land here)
+### 23.4 Order of work for the NEURO session
+1. **Generate the inventory, don't hand-list it** (like §19.1): every tracked script that opens a model and reports, with purpose, input, output tags, read-only, GPU; a witness that the list covers every such file.
+2. **Pick clusters by duplication:** the purpose measured by the most separate scripts goes first.
+3. **Port the logic into the owning module, then add the verb** to `verbs.json`, generated into `tools/list`, the script runner and the guide (§19 design point 2).
+4. **Witness each verb** as §19 says: the verb's answer = the module's own output for the same call; a red control; a falsifier that breaks it; plus one check per instrument rule in §23.1 point 4 (e.g. a block inserted at the origin with geometry 10 m away must report the geometry).
+5. **Retire what each verb replaces** (§23.1 point 6), with the count.
+**Questions go to the owner directly.** The design lane is available for design calls.
