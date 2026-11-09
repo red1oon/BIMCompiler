@@ -121,7 +121,9 @@ Cards: the house chapter cards (FILM_NARRATION 2026-11-03). Numbers only from `�
 7. **Wait budget.** Open + ACMV + FP walk on this set takes minutes. The recorder `jump()`s over each wait and logs it (`§FILM_JUMP`), so the film never pretends real time.
 
 **Not needed:** the Viewer bake (owner: "we can then do away with baking"); synthetic markers in the take (keep them for the report only).
-**First step next session:** answer item 5 (and item 3's build-or-not) with the owner; then build 1 (spec addendum first) → 2 (one PR each, witness first); then extend the recorder (4, 7); then one rehearsal take with every beat gated; then the take.
+**Owner rulings 2026-11-09 (asked this session):** item 5 → **film a neutral-name COPY** of the DB (storey/file names neutralised, logged mapping, data otherwise unchanged). Item 3 → **no section tool**: X-ray plus from-below framing only, zero new UI.
+**Item 1 built 2026-11-09:** bim-ootb branch `feat/outliner-typeset-zoom`, W-E2E-TYPESET-ZOOM 9/0 (RED on main 2/5). Spec + RESULT: `MODELLER_ZOOM_TO_SELECTION.md §TYPESET`. GAP 2 was real: after a walk the Walked Fixtures header sat at y=8159 px, off-screen; it now scrolls into view as rows are added. A mid-reveal type click lost most tints (62/102): fixed in the same PR.
+**First step next session (was):** answer item 5 (and item 3's build-or-not) with the owner; then build 1 (spec addendum first) → 2 (one PR each, witness first); then extend the recorder (4, 7); then one rehearsal take with every beat gated; then the take.
 
 ## §WALK-REPORT-CARD SPEC (2026-11-09, owner) — proof of work from the Modeller canvas; no Viewer bake
 > Owner: *"Can the FP sprinklers be walked into too? … just close up snap shots of the placed elements … begin with … a topology map of all the placed devices … Animation is not crucial … Important is proof of work. A report card giving engineers as much useful info as they be the judge."* · *"Showing the 4D5D HTML is one good shot to include."* · *"can we get good canvas view in Modeller during the walk?"* · *"we can then do away with baking."* · *"show how the Modeller icons features work where and how to bring about such."*

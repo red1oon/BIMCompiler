@@ -146,3 +146,40 @@ just because it compiles.
 - Do NOT deploy or push — commit on a fresh worktree branch cut from `origin/main`, suggest branch name
   `feat/modeller-zoom-to-selection`. Report back: exact diff, the Z-up adaptation you made and how you
   verified it produces a sensible frame (not just "it compiled"), full witness output, regression results.
+
+## §TYPESET — ADDENDUM 2026-11-09: a walked TYPE row selects + frames its whole set (Witness: W-E2E-TYPESET-ZOOM)
+> Owner, 2026-11-09: *"The elements created in the Outliner panel on left should be able to be seen to be populated and type set can be selected where the canvas should zoom to."* (MODELLER_MASTER §RESUME 2026-11-10, prep item 1.)
+
+**Issue (code read on bim-ootb `16b3c205`):** a Walked Fixtures class row (`dwc|<disc>|<cls>`, also `dwac|`, the disc group `dwg|`/`dwga|`, and the category header) selects and zooms NOTHING.
+- The click goes to `selectSubtree` / `selectGroup` (`modeller/bonsai_outliner.js:340-390`), which push only numeric featureIds. A `dwp|` leaf is skipped by design ("unresolvable leaf … SKIPPED, never guessed"), so the set is empty and the click is a logged no-op.
+- `zoomToSelection` (`modeller.html:1220`) reads `selBox()`, which is feature meshes only. Walked instances are InstancedMesh rows, outside that model.
+- GAP 2: the class row shows no count. Its label is the bare class name (`dw_instances_outliner.js:42`), though the module's own header (line 15) specifies `LightFixture (230)`.
+
+**Rule (one owner of framing, no second zoom):**
+1. `selectGroup` / `selectSubtree` collect `n.dwp` leaves next to the featureIds. ≥1 featureId → unchanged (`selectMany`). 0 featureIds and ≥1 walked leaf → `Bonsai.selectInstanceSet(leaves)`. Neither → the existing logged no-op.
+2. `selectInstanceSet` (modeller.html, beside `pickInstance`) is a replace-select: it clears the feature selection and any single instance pick, then for each leaf resolves its record → `_instRefMap()` twins and takes `refs[0]` (the same twin `frameInstanceRow` uses).
+   - An instance hidden by the eye (`im.userData.dwHidden`) is not tinted and not framed; it is counted as `hidden`.
+   - Each shown instance is tinted with the pick tint `0x4fc3f7` (`_instTint`, the existing per-instance tint that saves and restores the prior colour).
+   - Its world box is `geometry.boundingBox` × its instance matrix × `im.matrixWorld`. The union of those boxes is framed by the SAME `_fitDistForBox` + `_lerpCam` that `zoomToSelection` uses; that tail is factored into one `_zoomToBox(box, tag)` both call.
+3. Clearing: `clearInstPick()` also untints the set, so Escape, a feature pick and a new instance pick clear it with no new path.
+4. Log `§INSTSET-SELECT key=<row id> n=<leaves> tinted=<n> hidden=<n> unresolved=<n>` and the existing `§ZOOM-SEL fill …` line (tag `instset`).
+5. GAP 2: the class row label carries its count, `LightFixture (230)`, from the same fold (`byCls[cls].length`). No other label changes.
+
+**Witness W-E2E-TYPESET-ZOOM** (Duplex, production `discWalk('ELEC')`, real mouse click on the class row):
+- T1 SET-TINTED: every instance of the clicked class is tinted `0x4fc3f7`; count = the class's leaf count in `__dwWalks`. On main this reads 0 (the RED control, run first).
+- T2 FRAME-FILL: after the fly settles, `controls.target` = the union box centre ≤ 1e-3, and camera distance = the frustum-fit distance recomputed in the witness from the box size, FOV and aspect, ≤ 1e-3. All 8 projected corners lie inside NDC [-1, 1], and the larger projected extent is ≥ 0.8 (the box fills the frame).
+- T3 HIDDEN-EXCLUDED: hide one instance by its eye, click the class row again: that instance is not tinted, tinted = n − 1, and `§INSTSET-SELECT … hidden=1`. (Its exclusion from the frame is the same `hidden` branch in code; not separately asserted.)
+- T4 CLEAR: Escape restores every tinted instance's prior colour.
+- T5 COUNT-LABEL: every rendered class row's label ends `(<n>)` with n = its leaf count.
+- T6 FEATURE-PATH-UNCHANGED: a non-walked category click still goes through `selectMany` (`§OLGROUPSELECT … n>0`).
+- M1 (measurement, no pass/fail): after the walk, whether the Walked Fixtures header is in the DOM, expanded, and inside the Outliner's visible scroll window. If it is collapsed or off-screen, that is a follow-up fix with its own claim.
+- Regression: `witness_e2e_zoom_to_selection.js`, `witness_e2e_instpick.js`, `witness_e2e_instance_hide.js`.
+- **M1 MEASURED on main `16b3c205` (RED run, log `01_red_main`):** the header is present and expanded but at y = 8159 px while the Outliner view spans 84-822 px, so it is off-screen after a walk. GAP 2 is real. Rule 6 added: a category registered `revealOnGrow` scrolls its header into view when its leaf count rises in a paint (`§OL-REVEAL cat= leaves=`); Walked Fixtures registers it. Claim **T7 REVEAL-ON-WALK**: after the walk the header is inside the view and `§OL-REVEAL cat=dwinst` is logged.
+- RED run on main: T1 tinted 0/102, T2 target 11.5 m off, T3/T4/T5 fail, T6 passes (bomtree n=196). 2 PASS / 5 FAIL, as the issue predicts.
+- **Found while building (first fix run, log `02_green`):** a class row clicked DURING the §D64 build-up reveal tinted only 62 of 102. Cause: `_instTint` created the colour buffer at the live `im.count`, which the reveal grows from a few to the full set over ~9 s (measured, log `04_probe_ver`: 18/102 at 1.7 s, 102/102 at 9 s). Rule 7: the buffer is sized to the bucket capacity (`instanceMatrix.count`); a short one is grown with its values kept. Claim **T0 MID-REVEAL-TINT**: click while the reveal shows fewer than all; after it ends, every instance is tinted.
+- T2's corner test was replaced by an instance-centre test. Measured: the frustum-fit rule fits the box's projected extents, so a near AABB corner can land past NDC ±1 (extent 0.883 with a corner outside). The claim is now that every instance centre projects inside NDC and the box half-extent is ≥ 0.8.
+
+**RESULT 2026-11-09 (bim-ootb branch `feat/outliner-typeset-zoom`, local headless swiftshader):** W-E2E-TYPESET-ZOOM **9 PASS / 0 FAIL** (log `05_green`): T7 header at y 84 in view 84-822, `§OL-REVEAL cat=dwinst leaves=102`; T0 clicked at 18/102 shown → 102/102 tinted; T1 102/102; T2 Δtarget 8.9e-16, dist 18.6789 = recomputed 18.6789, 102/102 centres in NDC, extent 0.884; T3 101/102 with `hidden=1`; T4 0 left after Escape; T5 `FlowTerminal (102)`; T6 bomtree n=196 unchanged. RED on main: 2 PASS / 5 FAIL (log `01_red_main`). Logs in the session scratchpad `tsz/`.
+- **Regressions on the branch (logs `R_*`):** W-E2E-INSTHIDE 17/0, W-E2E-OL-GROUPSELECT 8/0, W-E2E-OLEYE 5/0, W-E2E-OLVIRT 5/0, band-no-host page exit 0. Two reds were **identical on main `16b3c205`** (logs `B_*`), so they were not caused by this change:
+  - W-E2E-INSTPICK P1 read the bucket counts mid-reveal (3,7,16,22,3,4 vs dwSub lengths). The witness now waits for the reveal to end: **8/0** (on main it stopped at 1/1).
+  - W-E2E-ZOOMSEL K5 (2nd-element end off by ~0.07 m) and K7 (camera drift 0.21-0.30 after deselect): **still open on main**, cause not traced. Not touched by this PR.
