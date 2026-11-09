@@ -597,7 +597,7 @@ it: it places that trade's elements at the **measured cadence** of a real coordi
 runs it can, gates the clashes, and **honestly refuses** when the building has nothing to hang the trade
 on. Nothing is invented — every placement uses a spacing/clearance rule *mined from a real IFC model*.
 
-![Walk · ELEC, X-ray reveal — 270 electrical fixtures placed across 6 storeys in SampleCastle; structure goes near-transparent glass and every fixture glows in its discipline colour through the shell](img/modeller/walk-fixtures.png)
+![Walk ALL on the Duplex, X-ray: 202 service elements glow through 196 near-transparent building elements. The Outliner rows read ACMV 19 placed, ELEC 102, PLB 18, FP 0 placed · 38 provisional](img/modeller/duplex-walk-all-xray.png)
 
 A normal (non-X-ray) view of this same walk is honestly near-empty: a real electrical outlet or light
 lives inside a room, not poking through an exterior wall, so from outside the sealed shell it's naturally
@@ -617,9 +617,9 @@ all, not a box:
 ![Close-up of a Duplex-walked ceiling fan — a real rule-mined LOD400 device mesh (motor housing, blades, mount stem), not a box stand-in](img/modeller/duplex-fixture-lod400-closeup.png)
 
 SampleCastle walks the *same* residential rule-set (it's a different building — see the table below). A
-walk now places a fixture only when it can seat a real extracted mesh for it (LOD400); where a fixture
-class has no mesh match, the walk **refuses** that placement and says so — it never stands a box in for
-the real shape.
+walk places a fixture only when it can seat a real extracted mesh for it (LOD400). Where a fixture class has
+no mesh match, the walk **refuses** that placement and says so; it never stands a box in for the real shape.
+Today that is why SampleHouse and SampleCastle get no electrical or plumbing devices (table below).
 
 **One engine, two standards.** A single walker drives every discipline; the discipline is just a data
 filter. It carries two measured rule-sets and auto-selects by building class:
@@ -637,27 +637,38 @@ figure traces to a witnessed `§`-log (no estimates).
 
 ### What a walk actually places
 
-Status-line results per discipline on the three residential buildings
-(`build/logs/witness_disc_walk_generalize.log`). *Placed* = elements seated; *chains* = runs linked
-end-to-end; the note is what the walk reported when a trade had nothing to route:
+**Walk ALL** on the three residential buildings, measured on a real Open → Walk ALL (Modeller sw v267,
+2026-11-09; the walk's own `§DISC-WALK` lines). *Placed* = devices seated with a real mesh; *provisional* =
+see below; *refused* = what the walk declined and why:
 
-| Building (storeys) | Discipline | Placed | Chains | Honesty note |
+| Building | Discipline | Placed | Provisional | What the walk reported |
 |---|---|---:|---:|---|
-| **SampleHouse** (3) | Fire-Protection | 55 | 0 | — |
-| | Electrical | 159 | 0 | — |
-| | Structure | 30 | 1 | members linked, no measured gap |
-| | Plumbing | 6 | 0 | ~no pipes in a small house → honest |
-| **Duplex** (5) | Fire-Protection | 303 | 0 | — |
-| | Electrical | 771 | 0 | — |
-| | Structure | 162 | 1 | members linked |
-| | Plumbing | 10 | 0 | sparse → honest |
-| **SampleCastle** (7) | Fire-Protection | 2 665 | 0 | — |
-| | Electrical | 8 123 | 0 | — |
-| | Structure | 1 836 | 1 | members linked |
-| | Plumbing | 14 | 0 | sparse → honest |
+| **SampleHouse** | HVAC (ACMV) | 0 | 0 | refused: 4 duct or pipe pieces with no main |
+| | Electrical | 0 | 0 | refused: no real mesh for any of 17 placements |
+| | Plumbing | 0 | 0 | refused: no real mesh for any of 7 |
+| | Fire-Protection | 0 | 0 | refused: no real mesh for any of 17 |
+| **Duplex** | HVAC (ACMV) | 19 | 0 | — |
+| | Electrical | 102 | 0 | 15 gated, 27 clashes flagged |
+| | Plumbing | 18 | 0 | 8 gated, 2 clashes flagged |
+| | Fire-Protection | 0 | 38 | sprinklers at borrowed spacing |
+| **SampleCastle** | HVAC (ACMV) | 0 | 0 | refused: 12 duct or pipe pieces with no main |
+| | Electrical | 0 | 0 | refused: no real mesh for any of 269 |
+| | Plumbing | 0 | 0 | refused: no real mesh for any of 72 |
+| | Fire-Protection | 0 | 126 | sprinklers at borrowed spacing |
 
-Counts scale with footprint because the **cadence is constant** — the same measured spacing tiles a bigger
-floor. Walking an *unknown* discipline returns **REFUSE — no measured rule** rather than guessing.
+The status line says the same: *Walk ALL — 4/4 disciplines · 139 placed · 38 provisional* on the Duplex.
+Structure is not part of Walk ALL; it keeps its own row. Walking an *unknown* discipline returns
+**REFUSE — no measured rule** rather than guessing.
+
+**Provisional devices.** Some devices are placed at a spacing *borrowed* from another building, because this
+building's own rules have none for that trade (the residential rules hold no sprinkler rule, so FP borrows
+the Terminal's). Their positions follow that borrowed spacing, so their count is not a claim about this
+building. They are drawn, flagged *provisional* in the Outliner row and the status line, and **left out of
+the placed totals**.
+
+> The tables in the next three sections quote logs written before the real-mesh-only rule above (the clash
+> and Duplex re-growth logs are dated 2026-06-28). They have not been re-run since; read them as that walker's
+> results, not today's counts.
 
 ### Why the right standard matters — clash collapse
 
@@ -719,13 +730,47 @@ It walks every absent **service** (ACMV, ELEC, PLB, FP) in turn. Structure and r
 it: on a large building they are tens of thousands of elements (Terminal's roof alone is 10,584 plates), so
 they keep their own rows and you walk them only when you want them. It works through exactly the same production path a single click uses —
 same rules, same gating, same honest refusal when a trade has nothing to hang on. The difference is the
-presentation: X-ray brackets the whole run so you can watch it land, and each discipline's placements
-flash amber and settle into their own trade colour just before they're committed, so you can see *which*
-trade just filled in rather than watching one undifferentiated wave.
+presentation: X-ray brackets the whole run so you can watch it land. Each discipline **builds up** after
+its walk is committed: its devices come on one by one over a few seconds, so you see *which* trade just
+filled in rather than one undifferentiated wave. On a big building the commit can take a few seconds; the
+build-up waits for it and then plays in full.
 
 X-ray is restored afterwards even if a discipline refuses part-way. On a very large building the
 per-element flash is dropped in favour of one batched hold-and-settle — the geometry committed is
 identical either way, only the reveal animation is coarser.
+
+### Find a walked type, and see one device up close
+
+After a walk, the Outliner's **Walked Fixtures** category scrolls into view. Each type row shows its count,
+e.g. *FlowTerminal (102)*.
+
+- **Click a type row**: every device of that type is selected (tinted) and the camera frames the whole set.
+  `Escape` clears it. A device you have hidden with its eye is left out.
+- **Click one device**: the camera frames it at a size you can see, from the side it **faces**: from below
+  for a ceiling device, from in front for a wall device. The close-up stays inside the space the device
+  faces.
+
+![Walked Fixtures, X-ray: the Electrical type row FlowTerminal (102) clicked on the Duplex; all 102 devices are selected and in frame](img/modeller/walked-fixtures-typeset.png)
+
+### Rules — read and edit what the walker uses
+
+The walker's rules are tables mined from real buildings: room schedules, placement bands, clearances,
+routing. Tap **Rules** (the `{ }` button) to see them as JSON, one section per table.
+
+![The Rules editor on the Duplex: duplex_rules.db, 12 tables, 364 rows; the header says the rules are shared by every residential building (SampleHouse, Duplex, SampleCastle)](img/modeller/rules-editor.png)
+
+1. Change a value (for example a device's height in a room schedule).
+2. **Save**, then walk that discipline again: the walk uses your value.
+3. **Download edits (JSON)** saves your changes (each cell, plus the same change as SQL) to send back.
+4. **Reset to shipped** removes your changes.
+
+Your edits are kept in this browser and applied every time the rules load. **The rules belong to a building
+type, not to one building**: the header names every building that uses them, and one edited cell changes
+all of them. The downloaded file carries `checkedOn: []`. Before an edit is contributed, a fleet check
+(`modeller/tests/rules_edit_fleet_check.js`) walks every building that reads that rules file with and without
+the edit, lists what moved, and fills `checkedOn`. That includes buildings of the other type: complex
+buildings read their room schedules from the residential rules, and residential buildings borrow sprinkler
+rules from the Terminal's.
 
 ### What a walk gives you now — pipes, one-step undo, and pipes that follow
 
