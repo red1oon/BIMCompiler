@@ -112,6 +112,39 @@ Order of the details: (1) one vocabulary entry · (2) naming and granularity · 
 | `erp.actions` | read | `verbs(ctx)` | to add |
 | `erp.complete` | posts | `dispatch` of DocAction CO, first on Sales Order, = legacy's Complete (§21.5 A5) | to add |
 
+**Detail 3, the line grammar (proposed 2026-11-09; the owner went on to the layers and the tiers without objecting, confirm on review):** `[name =] app.verb key=value …`, one command per line; `--` starts a comment (as BIM COBOL); a value with spaces is quoted; units come from the vocabulary, never the line (`move=1.824` is metres; `1824mm` is an error); an unknown verb or key is an error that names it; text that is not a command goes back as a question. The AI menu's JSON maps one to one (`{"verb":"modeller.try_shift","building":…,"line":…,"move":…}`). BIM COBOL's compiler scripts (78 verbs, sentence style) keep running unchanged as the compiler's own dialect; the door speaks only this grammar.
+
+**Detail 3a, the layer stack (owner, 2026-11-09: *"Is our JS code patterns conveniently designed for such scripting? Does it need or using a validation layer? Such separation layering is what i envisage in our one page framework big picture"*):**
+```
+ACTOR adapter   delivery + proof of sender
+DOOR  parse     the line grammar → verb + inputs
+      validate  against the vocabulary ONLY (verb known; inputs present, typed, in units, in range or list;
+                actor allowed; harm class within the sender's proof). ONE module, generated from verbs.json
+      bind      ctx {actor, key, role}, or the line stays a claim
+      call      the app's seam
+SEAM  per app   call(verb, inputs, ctx) → {ok, answer} | {rejected, why}
+ENGINE          domain checks (does gx6 exist, is the document state legal, role, owner) + the judge (report, stop, undo)
+REPLY           the engine's answer + what was not checked, back through the actor's delivery
+```
+**The rule between layers:** the door checks a line's *shape*; the engine checks its *meaning*; neither copies the other ("is `move` a number in metres" = door; "does gx6 exist" = engine, which already says "no grid line gx6").
+**Measured state of the code (bim-ootb origin/main, 2026-11-09):** ERP is already layered: `erp/erp_seam.js` exposes `read · dispatch · manifest · verbs · verify` (L6-21) and `dispatch` gates scope → role grant → rule guard → owner (L98-136) before the kernel, returning `{ok…}|{rejected, why}`. Viewer is nearly there: `viewer/find_ask.js` answers `{id, verdict OK|INCONCLUSIVE|VACUOUS, summary, value, evidence, sources}`, a missing precondition INCONCLUSIVE (L9, L68-74). **Modeller is the gap:** `window.__gridShift(id, delta)` (`modeller.html:2504`) mixes logic with the status bar and returns `null` on a refusal, its reason only on screen or console (L2507-2512), so `edit_cli` reads the page. The input-shape check exists three times by hand (`bim_mcp.js` `bad()`, `edit_cli.js` L29-35, `viewer_verbs.js`): the generated validator replaces and deletes all three (deletion budget).
+
+**The vocabulary's three tiers, DECIDED 2026-11-09 (owner: *"can we have more powerful vocab, ie what i seen since ADempiere to have JSR223 Callout"* · *"agree with A, it is getting more DSL domain specific language that is powerful"*):**
+| Tier | What | Written by | Example |
+|---|---|---|---|
+| 1 built-in verbs | one app function each (the POC set, detail 2) | developers, with a witness | `modeller.try_shift`, `erp.complete` |
+| 2 composed verbs | a named verb whose body is lines of other verbs in the door's grammar, stored as data | an admin or power user, as an AD_Rule is | `modeller.widen_bay` |
+| 3 rule hooks | dictionary rows attaching a rule to an ENGINE event (field change, before/after save, document action; on the BIM side, after an edit); the rule is a registered function, a ported process, or a tier-2 verb | an admin | "before Complete on a Sales Order, check the credit limit" |
+**The precedent, already in the Kernel ERP:** `erp/ad_rule.js` ports AD_Rule + AD_Table_ScriptValidator (legacy's JSR223 rule tables) as stage 3 of model validation, in legacy's order, the rule's return text a veto. **It never evaluates `AD_Rule.Script`:** `twin:<name>` resolves to a registry of ported, named functions and `twin:process:<name>` runs a ported AD_Process in the save's own transaction; groovy, beanshell, jython or javascript rules are reported NAMED-UNPORTED, never executed, never silently skipped (L11-14; owner decision `TEAM_REPLICATION_PLUGIN_STUDY.md` §10.7, 2026-10-27). `@script:` callouts are logged `§CALLOUT-UNPORTED-DEP` (`ad_callout.js:793`). `erp/ninja_rule.js` compiles closed business phrases to SQL from dictionary words only. **So JSR223's power is kept (rules as dictionary data, fired by the engine for every actor) without its risk (code from anyone).** No tier accepts code from an actor; an actor can only name a verb.
+
+**Tier 2, the DSL's first rules (option (a), decided):**
+- A composed verb is a `verbs.json` entry whose `body` is lines in the door's grammar. It declares its own `inputs`; its `harm` is the highest harm of its lines; its `actors` are those allowed by every line.
+- **Named results:** `bay = modeller.bay_width building={building} from=gx5 to=gx6` (a read verb), then a later line uses `{bay}`.
+- **Expressions, arithmetic only:** `{13 - bay}` with `+ - * /` and parentheses over named results and inputs; computed in BigDecimal (the project's number rule), never floating point; no functions, no strings built from code.
+- **Flow:** top to bottom; **it stops at the first refused or stopped line** and returns the record of every line run. No conditions or loops in the POC (option (b) later, on the owner's go).
+- **Every line goes through the door** (validate, bind, call, judge) exactly as if an actor had sent it; the composed verb gets no shortcut and no extra rights.
+- Example, the G4 request as one verb: `modeller.widen_bay building from to target` with body `bay = modeller.bay_width building={building} from={from} to={to}` · `modeller.try_shift building={building} line={to} move={target - bay}`.
+
 ## ▶ RESUME HERE (2026-11-08, late): film rc4 BUILT, a labelled scripted demo
 **Deliverable for the owner's posts:** `~/Videos/Think_Global_Act_Local_EN_rc4.mp4` (243.6 s) + `…_rc4_narration.txt`. It shows the AI using the app through the connector (§18): the menu the AI is handed (the connector's real `tools/list`), then **a scripted demo**: `scripts/film_neuro/mock_session.js` stands in for the AI (owner 2026-11-08: *"Can u just do a mocked up movie"*; earlier: mock an AI proposal in a sandbox, no model calls), sends brief G4 through the live connector to the real app, and every answer on screen is the app's own, from the connector's call log (`evidence/session_calls.jsonl`). The card says "A scripted demo: an AI's part, played by a test script", and the last box quotes the connector's own decline rule, not invented AI words.
 **Witnessed:** resolve 73 facts, 0 missing; guard PASS (80 numbers on cards, 15 spoken; plants caught; stills sha256 pinned); W-FILM-NEURO-LIVE SAME (panel = the connector's answer, 2,349 bytes); recorder layout 79/79, 0 console errors; fit 17/17 DETAIL, tone 0 WRONG; captions 20 clamped, 0 overlaps; frames 5,847 = the silent picture; longest silence 7.5 s (end card); −16.5 LUFS. Logs: `scripts/film_neuro/logs_rc4/`.
