@@ -926,3 +926,72 @@ per object with header rows); is a demo company (OEC Computers) published anywhe
 `scripts/odoo_mock/make_odoo_messy.sh`, drop after); everything pushed (bim-compiler branch fable/meshdb-livewire, 0 ahead).
 **Still open from earlier:** §LAG (Odoo timing) · Odoo 16/18 field names · B3 balances/open documents (both sources) · twin PO.set length cut (generic) · bim-document plugin start
 failure (UNIQUE ad_window_access) → its lane.
+
+### §SAP-MEASURE (2026-11-09c) — the open facts from ▶ RESUME, measured before choosing a door
+- **Product:** SAP Business One (decided 2026-06, `prompts/archive/FRONTEND_LANE_MASTER_OUTSTANDING_drained_2026-06-20.md:897`). Tenant 14 `erp/14-sap.db` = the /DMO/ flight PoC, not B1.
+- **Owner, 2026-11-09:** *"SAP DB was known to be open source long time ago."* — measured: SAP DB (ex-Adabas, bought from Software AG 1997) was GPL from Oct 2000, became MaxDB
+  2003 (dual GPL/commercial with MySQL AB), **closed source from 7.6 (2007)**. It is the DATABASE ENGINE, not an application: its source holds no ERP tables. B1 runs on
+  Microsoft SQL Server or SAP HANA, never on SAP DB/MaxDB. ⇒ it gives no B1 data model. (Sources: en.wikipedia.org/wiki/MaxDB; MySQL 5.1 ref guide §MaxDB history.)
+- **Published B1 model under an open licence — NONE FOUND.** GitHub `SAP-archive` B1 repos (scp-b1, b1-xo, b1-smile, b1-assistant-lite, smb-assistant-bot: Apache-2.0)
+  are integration samples, no schema. `SAP/ui-api-extension-for-sap-business-one-web-client` (Apache-2.0) = a VS Code extension. Third-party copies of the Service
+  Layer `$metadata`: `Xaypanya/b1-api-cookbook` `schemas/metadata.xml` 1.6 MB — **no licence**, dumped from an SAP server; `operator-ita/b1sl-python` (MIT) — its
+  `metadata_document.xml` is a 1.5 KB stub (2 EntityTypes), the 2.7 MB `service_layer_api_reference.html` is a copy of SAP's own reference. An MIT label from a
+  third party does not relicense SAP's text. Unlike BC (Microsoft publishes the app source, MIT) there is nothing to pin.
+- **The user's own export:** DTW (Data Transfer Workbench) templates + the demo company (OEC Computers) ship INSIDE the licensed B1 install; no public copy found.
+  Header layout of a DTW file is described inconsistently by the sources found (row 1 = DI API property names, row 2 = description — SAP community) — to be read from a real template.
+- **The model does exist on every B1 customer's own server:** Service Layer `GET /b1s/v1/$metadata` (OData). A tool the USER runs against THEIR licensed server reads the model
+  and the data there (the Odoo agent pattern: `npm install && node agent.js`), so nothing SAP-licensed ships from us.
+- ⇒ **The BC pattern's step 1 (pin a published model) and step 3 (fixture = the vendor's demo from its published source) cannot be done for B1.** ⛔ Door = owner's call (asked 2026-11-09c).
+
+### §SAP-SPEC — "Migrate from SAP Business One (alpha)", door = an agent on the user's OWN Service Layer (2026-11-09c)
+> Owner: door = *"Agent on their server"* · *"DB engine is powerful insight then to infer much"* · *"we doing a earnest effort POC, and not matching any production level. The
+> community can improve it. Release early update often."*
+**Scope = a POC, released early.** Masters only, current state (no history, no balances). What it cannot prove is said, not hidden.
+**Where the model comes from:** the user's own server, at run time — `GET /b1s/v1/$metadata` (guide §3.3). The agent checks every field the mapping reads against THAT metadata;
+a field the server lacks is named (`§SAP-FIELD missing`), never guessed. The field names in the mapping were read from SAP's published guide "Working with SAP Business One
+Service Layer" v1.26 and a $metadata copy (scratch only, not committed: no licence) — each one re-checked on the user's server by the agent.
+**DB-engine insight (owner):** the Service Layer is a layer over the company database tables (the guide prints its own SQL: `ORDR`, `OCRD`, `OITM`); its SQLQueries entity runs
+read SQL on an allow-listed table set (`b1s_sqltable.conf`, guide §4). The Service Layer's account record carries no asset/liability/equity class (only AccountType
+at_Revenues/at_Expenses/at_Other); the class lives in the account table. **POC: not read** (an SQLQuery is a saved object = a write on the customer's server, and the drawer numbers
+have no published source here) — balance-sheet accounts get the ERP default type and the summary says so. Next step for the community: `--sql` reading `OACT` via SQLQueries.
+**Agent** `erp/sap_agent/` (Node ≥18, no npm dependencies — built-in fetch): `node agent.js --url https://<server>:50000 --company <CompanyDB> --user <user>` (password asked, or
+`SAP_PASSWORD`; `--insecure` for B1's self-signed certificate) → POST Login (guide §3.1, B1SESSION cookie) → `$metadata` → `$count` per entity set → pages with
+`Prefer: odata.maxpagesize=100` following `odata.nextLink`/`@odata.nextLink` (guide §3.7) → `CompanyService_GetAdminInfo` (local currency, country) → Logout. Writes ONE file
+`sap_export.json` = { manifest: { server version, metadata sha256, per set: $count + rows read + fields read/missing }, sets: { … rows … } }. Read only (GET + Login/Logout).
+**Sets read:** UnitOfMeasurements · PaymentTermsTypes · ItemGroups · ChartOfAccounts · BusinessPartners (+BPAddresses, ContactEmployees) · Items (+ItemPrices,
+ItemWarehouseInfoCollection) · PriceLists · Warehouses · BinLocations · AdminInfo.
+**Converter** `erp/plugins/sap_migrate_convert.mjs` (pure) → the SAME 17-sheet Ninja workbook + manifest (imports BC's HEADERS/ORDER/uuid5/mask + a shared `finish()` for the
+length cuts and the book, moved out of BC's convert — one implementation). Rules: UoM Code→C_UOM (X12DE355 = InternationalSymbol, units confirmed on the form) · PaymentTermsTypes
+→C_PaymentTerm (NetDays = NumberOfAdditionalDays only when months = 0 and StartFrom = pdt_None, else named) · ItemGroups→M_Product_Category · ChartOfAccounts→C_ElementValue
+(at_Revenues→R, at_Expenses→E, at_Other→ERP default, named; ActiveAccount tNO→summary) · BusinessPartners: cCustomer→IsCustomer, cSupplier→IsVendor, cLid (lead)→refused, named;
+Frozen tYES / Valid tNO→inactive; BPAddresses→C_Location (UU = uuid5 `sap/bp/<CardCode>/<AddressType>/<AddressName>`) + C_BPartner_Location; ContactEmployees→AD_User ·
+Items→M_Product (itLabor/itTravel→S, else I; a non-inventory item (InventoryItem tNO) stays I, counted in a note; itFixedAssets→refused, named) + Mainsupplier→M_Product_PO (SupplierCatalogNo) · one sale price list = the user's chosen
+B1 PriceList (default: the first, named) in AdminInfo.LocalCurrency · Warehouses→M_Warehouse (+address, else AdminInfo country) · BinLocations→M_Locator, else one per warehouse ·
+ItemWarehouseInfoCollection.InStock>0 → opening stock **as of the export** (Service Layer gives stock now, not at a date — named in the summary).
+**Screen:** bundle `org.kernel.sap.migrate`, Id band 9544001-9544999, AD_Form "Migrate from SAP Business One (alpha)" under Data Import; drop `sap_export.json`; the Odoo form's
+plan/load. `§SAP-ALPHA` report, values masked.
+**Witness W-SAP-MIGRATE** (`erp/tests/witness_sap_migrate.js`): a local mock Service Layer (`erp/tests/sap_sl_mock.js`) serving a fixture made ONLY of the example records in SAP's
+guide (customer c1, items i001/i002, warehouse 01 …, each row citing its guide line) — tiny by design. Cases: AGENT (login cookie, paging followed, $count == rows, read-only:
+only GET + Login/Logout seen by the mock); FIELD (falsifier: the mock drops a field from its $metadata ⇒ named missing, column empty); CONVERT; LOAD (born tenant, gain ==
+prediction); ALPHA (no fixture value, mask falsifier); WIRING; **CONN = INCONCLUSIVE** (no real B1 here — a tester's run closes it). Odoo/BC witnesses re-run (regression).
+
+### §SAP RESULT (2026-11-09c) — bim-ootb #2774, W-SAP-MIGRATE 🟢 23/0 (10 rules ⚪ INCONCLUSIVE, CONN ⚪), W-SAP-MIGRATE-LIVE 🟢 11/0
+- **Shipped:** `erp/sap_agent/` (+ `sap_agent.zip`, offered in About ▸ DIY as "SAP B1 (alpha)", was "soon") · `plugins/sap_migrate{,_form,_convert}.mjs` (band 9544001-9544999) ·
+  `tests/sap_sl_mock.js` + `fixtures/sap_b1_guide/rows.json` (SAP guide examples only: customer c1, items i001/i002/i011, warehouse 01, one account — each cited §/page).
+- **Found by the run, fixed:** (1) a B1 item with no InventoryUOM was refused (c_uom_id mandatory) and, through the all-or-nothing loader, stopped the WHOLE load → legacy
+  ImportProduct.java:304-311 (client default unit): `C_UOM_ID>IsDefault` column added to the shared M_Product header (BC rows leave it blank); (2) a warehouse with no country and no
+  readable company country → refused in the converter with its reason, not left to fail the load; (3) **generic:** rows a converter refuses BEFORE the load were invisible on the
+  summary (BC's 78 bins too) → `odoo_migrate_form.withSourceRows()` adds them to their sheet row + converter notes as info rows; used by the BC and SAP forms.
+- **Shared, not copied:** BC's length rules + book moved to `finishBook()` (bc_migrate_convert.mjs), used by both converters.
+- Regression after the refactors and the merge of main: W-BC-MIGRATE 17/0, W-BC-MIGRATE-LIVE 11/0, W-ODOO-FORM 17/0, W-NINJA 31/0, W-PLUGIN-ID-BANDS 5/0, W-AGENT-ZIP-SYNC PASS,
+  sw precache audit 0 missing. sw v1024 (merge of main's v1023).
+- **INCONCLUSIVE, said so:** addresses, contacts, vendors/leads, payment terms, units by InternationalSymbol, item groups, price list + currency, bins, opening stock,
+  AccountType R/E — SAP's guide prints no record for them. A tester's `sap_export.json` (or their §SAP lines) judges them.
+
+### ▶ RESUME HERE (2026-11-09c) — SAP alpha out; what is next
+**Live after #2774 merges** (check it landed; auto-merge on). Owner's frame: *"earnest effort POC … community can improve it. Release early update often."*
+**Next for SAP, in order:** a tester's run (closes CONN + the 10 INCONCLUSIVE rules) · `--sql` door: read `OACT` (account class) through SQLQueries (owner's DB-engine
+point; needs the drawer-number meaning from a source, not memory; an SQLQuery is a saved object = a write, so opt-in) · stock at a date · several price lists · user guide page
+`docs/SAPBusinessOneMigrationGuide.md` (BIMCompiler, safe_gh_deploy) · film (copy `scripts/film_bc_migration/`).
+**Still open from earlier:** §LAG · Odoo 16/18 field names · B3 balances/open documents (all sources) · twin PO.set length cut (generic) · bim-document plugin start failure
+(UNIQUE ad_window_access — seen again on the live page this session) → its lane.
