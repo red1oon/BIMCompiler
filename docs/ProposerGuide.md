@@ -2,7 +2,7 @@
 
 **Let your AI operate a real BIM app, with exact numbers. The app makes each change, checks it, and tells your AI what changed, what was checked, and what was not.**
 
-Our BIM app, the Modeller, offers its actions as a short menu, each one described in plain words. Connect your AI to it, and the AI reads the menu, picks an action, fills in exact numbers, and gets the app's own verdict back. The app has no AI in it. **A change that adds new red is stopped:** it is undone and comes back with its report and the reason. Everything runs on your computer: no account, no server, nothing uploaded. Prefer to script it yourself? The same actions are a [command-line tool](#getting-started).
+Our BIM app, the Modeller, offers its actions as a short menu, each one described in plain words. Connect your AI to it, and the AI reads the menu, picks an action, fills in exact numbers, and gets the app's own verdict back. The app has no AI in it. **A change that adds new red is stopped:** it is undone and comes back with its report and the reason. Everything runs on your computer: no account, no server, nothing uploaded. Prefer to script it yourself? The same actions are a [command-line tool](#getting-started). Want one-line commands and small scripts through the same door? See the [Fast Script Guide](FastScriptGuide.md).
 
 !!! warning "What a good report does not mean"
     The report checks a short list of things, listed in [What is not checked](#what-is-not-checked). A report with no red **never means safe, compliant or good**. Nothing here checks load capacity, and a structural engineer has the last word.
