@@ -906,3 +906,23 @@ contains one); no live BC ⇒ the connection itself is INCONCLUSIVE, stated.
 - **ZH rc1** (owner: "Do the Mandarin version") `~/Videos/How_to_escape_from_your_Business_Central_ZH_rc1.mp4` — 235.2 s, −16.3 LUFS, peak −1.2, 70 caption pieces, end diagram 26/26 labels
   translated; `lang_text.py` (en + zh, every card string + turn) + `build_lang.py` (cards in Noto CJK, Edge zh voices cached/retried/split, captions packed by display width with a Latin
   word as one token — run 1 split "Busin|ess" and inside “…”, fixed). Known: a long Chinese line may still break between two characters of a word (no word segmentation).
+
+### ▶ RESUME HERE (2026-11-09, end of session) — next: SAP (owner: "will do SAP next")
+**Live now (all merged, fetched back from the live site):** Odoo hardening (bim-ootb #2755, §HARDEN) · Role Access Update port · "Migrate from Business Central (alpha)"
+(bim-ootb #2765, §BC-SPEC/§BC RESULT, sw v1021) · guides: OdooMigrationGuide, BusinessCentralMigrationGuide (BIMCompiler #458, #470, deployed by safe_gh_deploy, guard PASS).
+Films: Odoo EN rc5 / ZH / TH / MS; Business Central EN rc1 + ZH rc1 (`scripts/film_bc_migration/`, record.js → cards.py → build.py; build_lang.py for zh/th/ms).
+**The pattern a third source follows (copy the BC lane, do not invent a new one):**
+1. **Measure first what the vendor PUBLISHES** — licence + a machine-readable data model (BC: microsoft/BCApps, MIT, `.al` tables). Pin the commit; a generator writes
+   `erp/plugins/<src>_model.mjs`; the witness re-reads every field from the checkout (0 differ) — INCONCLUSIVE without the checkout, said so.
+2. **A door the user already has** (BC: its own RapidStart Excel export, format read from its source) → a converter to the SAME 17-sheet Ninja workbook + manifest →
+   the Odoo form's plan/load (bindProcess), own AD_Form/menu band (W-PLUGIN-ID-BANDS), labelled ALPHA, `§<SRC>-ALPHA` report with values masked.
+3. **Fixture = the vendor's own demo company extracted from its published source**, never typed; the live/connection case INCONCLUSIVE until a tester's file.
+4. Witnesses: node (model, package, convert, load gain==prediction, alpha no-leak + falsifiers) + live page (Playwright wiring); regression of the Odoo/BC witnesses.
+**SAP — open facts to MEASURE at the start (nothing below is verified yet):** which SAP product (memory: target = **SAP Business One**; tenant 14 "SAP Flights" in the
+picker is only a /DMO/ flight PoC, not B1); is any B1 data model published under an open licence (SDK / DI API / Service Layer docs are SAP-licensed, the Service Layer
+$metadata comes from a running server); what export the user already has (B1 "Export to Excel" of a grid? DTW templates — Data Transfer Workbench, B1's own migration tool, CSV
+per object with header rows); is a demo company (OEC Computers) published anywhere usable. Decide the door from those facts; if no open model exists, say so — do not guess one.
+**Housekeeping done:** worktrees /tmp/wt-odoo-harden, /tmp/wt-bc-migrate, /tmp/wt-erp-base, docs worktrees removed; scratch Odoo db odoo_messy dropped (rebuild:
+`scripts/odoo_mock/make_odoo_messy.sh`, drop after); everything pushed (bim-compiler branch fable/meshdb-livewire, 0 ahead).
+**Still open from earlier:** §LAG (Odoo timing) · Odoo 16/18 field names · B3 balances/open documents (both sources) · twin PO.set length cut (generic) · bim-document plugin start
+failure (UNIQUE ad_window_access) → its lane.
