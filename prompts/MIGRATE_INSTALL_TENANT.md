@@ -1011,6 +1011,29 @@ prediction); ALPHA (no fixture value, mask falsifier); WIRING; **CONN = INCONCLU
   `scripts/film_sap_migration/lang_text.py` (zh) + `build_lang.py` (derived from the BC one: Noto CJK cards, Edge zh voices — CLOUD, house choice for zh — cached, 18 calls, 0 splits).
   The films' end cards still point at the agent download / old guide URLs (pointer pages keep them working).
 
+### §B3-SCOUT — how to bring transactions in (2026-11-10, owner: *"closing books, B/F, then do phantom purchasing / sales as Adaxa Australia first suggested … Or use again my multi table
+Excel to bring in core Doc/Line master-detail? … scout for any documentation i have left around in the 2017~"* · *"we also need its consequences in Fact_Acct and material costing …
+Steven Sackett from Adaxa Australia's idea … Close the books, start anew with balances b/f"*)
+**Found (read, cited):**
+- **The cut-over method is written down, in full:** iDempiere wiki *Establish Opening Balances* (archived 2017-06-04; same page on the ADempiere wiki, archived 2011-05-26, last edited
+  2011-01-28; the archive does not show the author, so "Adaxa / Steven Sackett" is the owner's memory, not verified). Its method: pick the cut-over date → **import the trial balance as a
+  GL Journal**, but route every *document-controlled* account to a CLEARING account (AR Clearing, AP Clearing, Inventory Clearing, Bank Clearing) → then clear them with
+  **"a list of fake sales"** (open AR invoices, ONE line, charge *Opening Charge AR*, only the UNPAID amount) and **"a series of fake purchases"** (open AP invoices, charge *Opening
+  Charge AP*) → unallocated receipts / prepayments as payments → payments not yet cleared by the bank as payments on the Opening Charge → an opening bank reconciliation →
+  a **physical inventory count** for stock (product costs set first, never zero), its shrinkage cancelled against Inventory Clearing by a GL Journal → **proof: every clearing
+  account ends at zero**. Unmatched material (received not invoiced / invoiced not received) is done FIRST. Invoices may carry their real dates for an accurate aging.
+- **Owner's 2017 route** (red1.org forum t=1838 "Migrating Legacy Data", 2017-03-19, Rangsit): the Ninja CSV-zip importer extended "to handle master/detail documents"
+  (screenshot `InvoiceMasterDetailCSVs.png`, not archived); 2017-03-21: it "moves directly into its named table in DB via UPDATE or INSERT … no other validation besides inherent
+  DB constraints". 2019 *The Book of Ninja* ch. 8: raw legacy sheet → Master sheet → exact core-table sheets in queue order (C_Order / C_OrderLine named as core tables); t=1861
+  (2019): Data Map plugin, SynchMaster, Make Migrate Sheet, update mode. **Neither document completes a migrated document or posts it.**
+**Consequence (why it matters):** a document written straight into its table has no Fact_Acct and no cost detail — the books and the stock value would not follow. Replaying every
+historical transaction through DocAction would create them, but the results would differ from the old system's books (other costing, rounding, tax, account map) and must then be
+reconciled line by line. The cut-over method creates exactly the consequences needed (one journal + open items + one count), each through the ERP's own documents and posting.
+**Proposed B3 (awaiting owner):** the cut-over method, carried in the SAME Ninja workbook (new sheets: GL Journal = trial balance with clearing accounts; open AR/AP invoices with
+the Opening Charges; open payments; the physical inventory already exists) — loaded through the documents' own Complete + posting, never a bare INSERT. Witness: TB after ==
+source TB at the cut-over; every clearing account == 0; AR/AP open items == the source's open list; stock value == the source's valuation. Odoo first (measurable here:
+`account.move.line` balances at the date, `amount_residual` of open invoices). History stays optional/read-only.
+
 ### ▶ RESUME HERE (2026-11-09c) — SAP alpha out; what is next
 **Live after #2774 merges** (check it landed; auto-merge on). Owner's frame: *"earnest effort POC … community can improve it. Release early update often."*
 **Next for SAP, in order:** a tester's run (closes CONN + the 10 INCONCLUSIVE rules) · `--sql` door: read `OACT` (account class) through SQLQueries (owner's DB-engine
