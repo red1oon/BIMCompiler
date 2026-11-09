@@ -3369,13 +3369,16 @@
 <p>The AI's sums were right. What it did not know is this building's 12 m span limit; the app knows it, because it comes from the building itself. In our earlier test, an AI that only got a written report named that limit and still kept the 13 m bay (<a href="#what-we-measured">What we measured</a>). That is why the app, not the AI, has the last word.</p>
 <h2 id="connect-your-ai">Connect your AI<a class="headerlink" href="#connect-your-ai" title="Permanent link">&para;</a></h2>
 <p>This makes the app's actions a menu your AI can use by itself. It works with any AI app that supports MCP, the open standard that Claude, among others, uses to connect to tools.</p>
-<p><strong>1. Make a folder, install the browser engine, and download the two files.</strong></p>
+<p><strong>1. Make a folder, install the browser engine, and download the four files.</strong></p>
 <div class="highlight"><pre><span></span><code>mkdir<span class="w"> </span>proposer<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>proposer
 npm<span class="w"> </span>init<span class="w"> </span>-y
 npm<span class="w"> </span>install<span class="w"> </span>puppeteer@24
 curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/edit_cli.js
 curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/modeller/tools/bim_mcp.js
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/door.js
+curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/bim-ootb/common/door/verbs.json
 </code></pre></div>
+<p>Keep all four in the same folder: the connector hands every call to <code>door.js</code>, which reads the verb list from <code>verbs.json</code> and runs <code>edit_cli.js</code>. If one is missing, the connector says which and prints its <code>curl</code> line.</p>
 <p><strong>2. Add it to your AI app.</strong></p>
 <ul>
 <li><strong>Claude Code:</strong> <code>claude mcp add bim -- node "$PWD/bim_mcp.js"</code>, then start a new session.</li>
