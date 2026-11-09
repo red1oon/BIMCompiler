@@ -781,3 +781,37 @@ This measurement becomes the film's first UPDATE.
   (`§EDGE_SPLIT`), refuse (`§EDGE_FAIL`) if it has no space. Final TH run: 1 retry, no split.
 - ZH was sent to the owner's phone this session (RESUME item 1 closed). bim-ootb #2748 MERGED 2026-11-08T23:26Z (item 5 closed).
 - **Still open, in order:** §LAG (the film's first update) · report the bim-document plugin start failure to its lane (item 6).
+
+### §HARDEN-SPEC — real users' Odoo data, not the demo company (2026-11-09, owner: *"harden the migration process so that real users will find it easy"*)
+**Measured first** (bim-ootb origin/main 16b3c205, worktree `/tmp/wt-odoo-harden`, logs `.h/e_M*.log`): a scratch copy `odoo_messy` of odoodemo (pg_dump, so the
+recorded demo fixtures do not drift), then ONE real-world state at a time applied through Odoo's own ORM (`.h/messy.js`, every state is one Odoo itself accepts), export after each:
+| case | state Odoo allows | export.js today |
+|---|---|---|
+| M1 | a customer with a country and no street (Odoo pre-fills the country) | 🔴 FAIL `C_Location_ID>Address1="" matches 0` — C_Location is keyed on the street text |
+| M2 | two customers on the same street | 🔴 FAIL `Address1="1 Jalan Utama" matches 2` |
+| M3 | a contact whose company is archived | 💥 crash `Cannot read properties of undefined (reading 'ref')` (export.js:139 `val(par)`, the parent is not read: active_test) |
+| M4-M8 | duplicate product code · archived product with stock · a 2nd company · delivery address = parent's street · duplicate partner ref | not reached (M3 crashes first) |
+Base (unmodified copy) = 🟢 PASS, 17 sheets. **So the first real user almost certainly hits M1.**
+**Fixes, each generic (no per-record branch), each named in `manifest.patches`/`notes`:**
+- **H1 address identity = iDempiere's migration key.** `C_Location` has `C_Location_UU` (pilot dictionary; 2Pack resolves records by the UU column). Each exported address
+  gets `C_Location_UU` = UUIDv5(odoo namespace, `<db>/res.partner/<id>`) — deterministic, traceable to the Odoo row; `C_BPartner_Location` and `M_Warehouse` look it up with
+  `C_Location_ID>C_Location_UU`. No visible field carries an id. The street can be blank or repeated.
+- **H2 archived = inactive.** Odoo archive (`active=False`) is iDempiere's `IsActive=N`. Partners and products are read with `active_test:false`; archived ones are exported with
+  `IsActive=N`, so a contact of an archived company (M3), stock of an archived product (M5) and a vendor price of an archived vendor keep their parent. Counts use the same domain.
+- **H3 duplicate keys.** iDempiere refuses a repeated Value per tenant (`c_bpartner_value`, `m_product_value` unique indexes, pilot); Odoo does not. The lowest Odoo id keeps the
+  code; every other row gets `<code>-<odoo id>` (a named patch listing each one); every sheet that points at it uses the same final Value.
+- **H4 several companies.** With more than one `res.company` and no `--company`, the export stops BEFORE reading anything else and lists the companies (id, name) with the command
+  to run per company. With `--company <id>` every call carries Odoo's own `allowed_company_ids=[id]` context (Odoo's record rules then show what that company's user sees).
+- **H5 Odoo.sh / Odoo Online / any https server.** `--url https://mycompany.odoo.com` (or `--host` with a scheme): https via Node's `https`, default port 443. The password prompt
+  says "password or API key" (Odoo with 2-factor login needs an API key for external calls). Witness over a local TLS proxy (self-signed, `NODE_EXTRA_CA_CERTS`).
+- **H6 version check before reading.** `fields_get` on each model read; a field the export needs and the user's Odoo lacks ⇒ stop before anything is written:
+  `§ODOO-EXPORT FAIL version: Odoo <v> has no <model>.<field>` (export.js reads Odoo 17 names; 16/18 are named, not guessed). Node < 16 ⇒ a one-line refusal.
+- **H7 units from a list.** Generic renderer G-e: a string column may carry `options` ⇒ the text cell gets a `<datalist>` (legacy: a List/Table reference editor is a combobox).
+  The Odoo form offers the tenant's active C_UOM names. Typed text still allowed and still checked.
+- **H8 plugin started after the company was born.** Legacy: an admin runs **Role Access Update** (AD_Process 295, `RoleAccessUpdate.java` → `MRole.updateAccessRecords`).
+  The twin has `updateAccessRecords` (model_master.js:330) but not the process ⇒ port it (generic: every role, or one; ResetAccess); the guide names it.
+- **H9 guide:** `--url`, `--company`, API key, archived = inactive, renamed duplicates, Role Access Update.
+**Witness W-ODOO-MESSY** (`erp/tests/witness_odoo_messy.js`, replays fixture `odoo_messy` recorded via the A-MOCK proxy so CI needs no Odoo): export PASS on M1-M8; M1 address
+present with blank street; M2 two locations; M3 contact under an inactive BP; M4/M8 renamed rows listed in patches and every pointer uses the final Value; M5 stock line on an
+inactive product; M6 refusal lists 2 companies, `--company 1` passes; then the workbook through the Odoo form on a born tenant: gain == prediction on every sheet, refused 0.
+Falsifier: the origin/main exporter on the same fixture = the FAIL/crash above. INCONCLUSIVE when neither Odoo nor the fixture answers.
