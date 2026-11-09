@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" role="img" aria-labelledby="t d">
+<title id="t">Every actor speaks the same verbs to one door, and the app's own checks decide</title>
+<desc id="d">Four columns. Actor: an AI tool connection, a person at a terminal, a mailbox, a phone, a device. Channel: the verb vocabulary, one list. One door: the script engine, which parses, checks, binds, calls and replies. Engine: the app's own checks decide. The reply returns by the same route.</desc>
+<style>
+.bg{fill:#ffffff;stroke:#c9cdd4}
+.t{fill:#1b1f24}.s{fill:#4b5159}
+.box{fill:#f3f5f8;stroke:#8a8f98;stroke-width:1.25}
+.key{fill:#e3edff;stroke:#2f6fde;stroke-width:2}
+.dk{fill:#fff4e0;stroke:#b86e00;stroke-width:1.25}
+.ln{stroke:#6b717a;stroke-width:1.4;fill:none}
+.ar{fill:#6b717a}
+@media (prefers-color-scheme: dark){
+.bg{fill:#14181d;stroke:#3a4048}
+.t{fill:#eef1f5}.s{fill:#aab1bb}
+.box{fill:#1f252c;stroke:#6b7480}
+.key{fill:#1b2b4a;stroke:#6ea0ff}
+.dk{fill:#3a2a10;stroke:#e0a040}
+.ln{stroke:#9aa2ad}.ar{fill:#9aa2ad}
+}
+</style>
+<rect class="bg" x="1" y="1" width="798" height="418" rx="12"/>
+<text class="t" x="24" y="32" font-size="15" font-weight="600">Every actor speaks the same verbs to one door, and the app's own checks decide</text>
+<text class="s" x="104" y="66" text-anchor="middle" font-size="11.5" font-weight="600">1  ACTOR, and how it arrives</text>
+<text class="s" x="290" y="66" text-anchor="middle" font-size="11.5" font-weight="600">2  CHANNEL: the verbs</text>
+<text class="s" x="506" y="66" text-anchor="middle" font-size="11.5" font-weight="600">3  ONE DOOR: the script engine</text>
+<text class="s" x="702" y="66" text-anchor="middle" font-size="11.5" font-weight="600">4  ENGINE</text>
+<g>
+<rect class="box" x="24" y="82" width="160" height="48" rx="8"/><text class="t" x="104" y="102" text-anchor="middle" font-weight="600">AI</text><text class="s" x="104" y="119" text-anchor="middle" font-size="11.5">tool connection (MCP)</text>
+<rect class="box" x="24" y="140" width="160" height="48" rx="8"/><text class="t" x="104" y="160" text-anchor="middle" font-weight="600">Person</text><text class="s" x="104" y="177" text-anchor="middle" font-size="11.5">terminal or script file</text>
+<rect class="dk" x="24" y="198" width="160" height="48" rx="8"/><text class="t" x="104" y="218" text-anchor="middle" font-weight="600">Mailbox</text><text class="s" x="104" y="235" text-anchor="middle" font-size="11.5">planned, not built</text>
+<rect class="dk" x="24" y="256" width="160" height="48" rx="8"/><text class="t" x="104" y="276" text-anchor="middle" font-weight="600">Phone</text><text class="s" x="104" y="293" text-anchor="middle" font-size="11.5">planned, not built</text>
+<rect class="dk" x="24" y="314" width="160" height="48" rx="8"/><text class="t" x="104" y="334" text-anchor="middle" font-weight="600">Device</text><text class="s" x="104" y="351" text-anchor="middle" font-size="11.5">planned, not built</text>
+</g>
+<g class="ln"><path d="M184 106H204M184 164H204M184 222H204M184 280H204M184 338H204"/><path d="M204 106V338"/><path d="M204 222H226"/></g>
+<polygon class="ar" points="226,217 236,222 226,227"/>
+<rect class="box" x="236" y="140" width="108" height="164" rx="8"/>
+<text class="t" x="290" y="162" text-anchor="middle" font-weight="600">One list</text>
+<text class="s" x="290" y="182" text-anchor="middle" font-size="11.5">app.verb</text>
+<text class="s" x="290" y="198" text-anchor="middle" font-size="11.5">key=value</text>
+<text class="s" x="290" y="220" text-anchor="middle" font-size="11.5">name, inputs,</text>
+<text class="s" x="290" y="236" text-anchor="middle" font-size="11.5">units, harm,</text>
+<text class="s" x="290" y="252" text-anchor="middle" font-size="11.5">who may use it</text>
+<text class="s" x="290" y="282" text-anchor="middle" font-size="11.5">verbs.json</text>
+<g class="ln"><path d="M344 222H376"/></g><polygon class="ar" points="376,217 386,222 376,227"/>
+<rect class="key" x="386" y="110" width="240" height="224" rx="8"/>
+<text class="t" x="402" y="136" font-weight="600">The same engine for every actor</text>
+<text class="t" x="402" y="166" font-size="12">1  parse: the line is a listed verb</text>
+<text class="t" x="402" y="190" font-size="12">2  check: inputs fit the list</text>
+<text class="t" x="402" y="214" font-size="12">3  bind: who is asking, or a claim</text>
+<text class="t" x="402" y="238" font-size="12">4  call: the app's own function</text>
+<text class="t" x="402" y="262" font-size="12">5  reply: one envelope, same route</text>
+<text class="s" x="402" y="296" font-size="11.5">no AI reads the line; same lines,</text>
+<text class="s" x="402" y="312" font-size="11.5">same result; arithmetic is exact</text>
+<g class="ln"><path d="M626 222H656"/></g><polygon class="ar" points="656,217 666,222 656,227"/>
+<rect class="box" x="666" y="150" width="112" height="144" rx="8"/>
+<text class="t" x="722" y="174" text-anchor="middle" font-weight="600">The app</text>
+<text class="s" x="722" y="196" text-anchor="middle" font-size="11.5">its own checks</text>
+<text class="s" x="722" y="212" text-anchor="middle" font-size="11.5">decide</text>
+<text class="s" x="722" y="236" text-anchor="middle" font-size="11.5">pass: it stands</text>
+<text class="s" x="722" y="256" text-anchor="middle" font-size="11.5">new problem:</text>
+<text class="s" x="722" y="272" text-anchor="middle" font-size="11.5">undone, reason</text>
+<g class="ln"><path d="M722 294V382H506V334"/></g><polygon class="ar" points="501,344 506,334 511,344"/>
+<text class="s" x="400" y="404" text-anchor="middle" font-size="11.5">the reply goes back to the actor the same way it came: answer, status, and what was not checked</text>
+</svg>
