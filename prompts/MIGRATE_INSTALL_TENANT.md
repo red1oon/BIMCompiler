@@ -903,3 +903,6 @@ contains one); no live BC ⇒ the connection itself is INCONCLUSIVE, stated.
   "read, not guessed" (a real Customer.Table.al excerpt, 15 tables · 988 fields · 0 differ), Microsoft's own demo company (575 rows from the demo source), BC's export layout,
   "found by running it" (item without category; Refresh lost a typed date), the masked alpha report (916 values, 0 appear), next steps (tester file, cloud API, SQL Server, balances).
 - Facts voiced (this recording): 12 partners · 64 items · 284 accounts · 39 stock lines · 736 records one signed change set · verifyChain ok · offline save 0 requests.
+- **ZH rc1** (owner: "Do the Mandarin version") `~/Videos/How_to_escape_from_your_Business_Central_ZH_rc1.mp4` — 235.2 s, −16.3 LUFS, peak −1.2, 70 caption pieces, end diagram 26/26 labels
+  translated; `lang_text.py` (en + zh, every card string + turn) + `build_lang.py` (cards in Noto CJK, Edge zh voices cached/retried/split, captions packed by display width with a Latin
+  word as one token — run 1 split "Busin|ess" and inside “…”, fixed). Known: a long Chinese line may still break between two characters of a word (no word segmentation).
