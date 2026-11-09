@@ -131,6 +131,12 @@ C3 lands with the REPLACE verb.
   - **Residual for engineers:** 70 wall-hosted band devices (alarms), of which 13 are more than 3 m above the highest slab/roof top, 19 uncovered and 2 outside. Not traced; likely tall walls.
   - "After" film cut (106.2 s); report + zip kept private.
   - Instrument note: `boq_charts.html` needs `bld=` = `elements_meta.building`.
+- **Owner, 2026-11-09: "Examine the film, we cannot even see a single sprinkler."** Correct: the film's sprinkler stills showed no head.
+  - Measured cause: a head is 0.03 × 0.03 × 0.06 m, shot from 5 m, looking DOWN at its ceiling; a pendant head hangs under the ceiling.
+  - Fix (private `sprinkler_shots.js`, log 76): close-ups from BELOW the ceiling, at a distance computed from the head height and the 55° FOV. Each shot is witnessed by its projected px (88 px) and a ray-first-hit test; 9 of 10 VISIBLE.
+  - Overview and plan carry a stated 0.35 m marker per FP device.
+  - Film re-cut (120.2 s). A frame check on the final mp4 finds head pixels in the 3 close-up segments and markers in 2.
+  - **Rule kept: a shot claimed to show an element must log that element's projected size and an unobstructed ray. A crosshair at a point proves nothing about what is visible there.**
 
 ## ▶ §RESUME 2026-11-09b — START HERE (steps 1-3 of §RESUME 2026-11-09 done; then read that block for steps 4-5)
 **Run on bim-ootb main `8541065f`, private set, local headless (software GL, no GPU). Every number is read from the saved run logs in the private walk folder (`41`→`42_page_run_chunked`, `45_carry_film_v3`).**
