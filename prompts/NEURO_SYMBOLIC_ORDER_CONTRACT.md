@@ -213,6 +213,21 @@ A compiled model is an **artifact that carries its own dictionary**, as an objec
 - **W-OBJ-N:** the BIM vocabulary's N is generated from the dictionary and an independent count equals it. Issue: a hand-made N.
 - **W-OBJ-HOOK:** the edit gate fires as a hook on an element save and its veto undoes the save. Issue: the stop living outside the object engine.
 
+#### 0.5.9 Reflection and object orientation for the CLI scripting (owner, 2026-11-09: *"be aware the AD model is powerful for our CLI scripting, to get property reflection, OOP stuff"*)
+The dictionary is what lets a script **know** an object instead of guessing it.
+| OOP idea | From the dictionary | In the DSL (tier 2, §0.4) |
+|---|---|---|
+| **Reflection** | AD_Column (name, reference type, length, mandatory, read-only, min/max, list values), AD_Process_Para, the legal actions (`verbs(ctx)`) | a read verb `describe object=<kind or record>` returns its properties, processes and legal actions; an AI or a person learns the object from the model itself, never from code |
+| **Properties** | an object's columns | a named result holding an object exposes them by name: `{el.storey}`, `{room.name}`; an unknown property is an error that names it, never a guess |
+| **Navigation** | a column whose reference is a table or search reference points to its parent object | `{el.space.name}`, `{doc.project.name}`: follow references, nothing else |
+| **Types** | the column's reference type | numbers in BigDecimal, list values checked against the reference list, dates as dates; the door's validator and the object's save check use the same rules (§0.4 detail 3a) |
+| **Methods** | AD_Process rows bound to a table (the gear) and the DocAction family | `try_shift` on a grid line, `complete` on a document: an object's methods are listed by `describe` |
+| **Generic methods** | the object base | `find`, `read`, `update`, `attach`, `history`, `actions` on every object (tables → read/create/update/delete verbs, the owner's line in §LENS-REGISTER) |
+| **Events** | model validators and AD_Rule rows | hooks fire on save or action for every actor (tier 3) |
+| **Kinds (inheritance)** | a kind column (`ifc_class` on Element) as the discriminator | a process bound to Element applies to every kind; a kind may add its own processes; no kind-specific host code |
+| **Encapsulation** | properties and methods only through the dictionary | no raw SQL, no eval (§0.3 rule 6) |
+**One gap the BIM side adds:** legacy's AD_Column has **no unit**. Physical properties (positions, lengths, areas, depths) need one, because units come from the vocabulary, never the line (§0.4 detail 3). Open item 6: where a column's unit is stated (advice: an extension column on AD_Column for BIM tables, the ERP's own columns untouched).
+
 ## ▶ RESUME HERE (2026-11-08, late): film rc4 BUILT, a labelled scripted demo
 **Deliverable for the owner's posts:** `~/Videos/Think_Global_Act_Local_EN_rc4.mp4` (243.6 s) + `…_rc4_narration.txt`. It shows the AI using the app through the connector (§18): the menu the AI is handed (the connector's real `tools/list`), then **a scripted demo**: `scripts/film_neuro/mock_session.js` stands in for the AI (owner 2026-11-08: *"Can u just do a mocked up movie"*; earlier: mock an AI proposal in a sandbox, no model calls), sends brief G4 through the live connector to the real app, and every answer on screen is the app's own, from the connector's call log (`evidence/session_calls.jsonl`). The card says "A scripted demo: an AI's part, played by a test script", and the last box quotes the connector's own decline rule, not invented AI words.
 **Witnessed:** resolve 73 facts, 0 missing; guard PASS (80 numbers on cards, 15 spoken; plants caught; stills sha256 pinned); W-FILM-NEURO-LIVE SAME (panel = the connector's answer, 2,349 bytes); recorder layout 79/79, 0 console errors; fit 17/17 DETAIL, tone 0 WRONG; captions 20 clamped, 0 overlaps; frames 5,847 = the silent picture; longest silence 7.5 s (end card); −16.5 LUFS. Logs: `scripts/film_neuro/logs_rc4/`.
