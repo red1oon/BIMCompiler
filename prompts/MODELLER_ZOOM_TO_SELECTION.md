@@ -183,3 +183,29 @@ just because it compiles.
 - **Regressions on the branch (logs `R_*`):** W-E2E-INSTHIDE 17/0, W-E2E-OL-GROUPSELECT 8/0, W-E2E-OLEYE 5/0, W-E2E-OLVIRT 5/0, band-no-host page exit 0. Two reds were **identical on main `16b3c205`** (logs `B_*`), so they were not caused by this change:
   - W-E2E-INSTPICK P1 read the bucket counts mid-reveal (3,7,16,22,3,4 vs dwSub lengths). The witness now waits for the reveal to end: **8/0** (on main it stopped at 1/1).
   - W-E2E-ZOOMSEL K5 (2nd-element end off by ~0.07 m) and K7 (camera drift 0.21-0.30 after deselect): **still open on main**, cause not traced. Not touched by this PR.
+
+## §SINGLE-FRAME — ADDENDUM 2026-11-09: a walked leaf is framed at a size you can see, from below when it hangs under a ceiling (Witness: W-E2E-SINGLE-FRAME)
+> MODELLER_MASTER §RESUME 2026-11-10 prep item 2; owner on the film: *"When a walker is clicked, the visual effect is not shown"*, and *"we cannot even see a single sprinkler."*
+**Issue (code read, bim-ootb `09017997`):** `Bonsai.frameInstanceRow` (`modeller.html` ~1393) calls `_frameTo(point, 1.5)`: distance `max(1.5, 2) × 1.8 = 3.6 m` from ABOVE, whatever the element's size. Measured in the walk-film rehearsal (§FILM-WALK-BEFORE-AFTER, Duplex): FP heads at overview medianPx 0.9; the type-set frame 2.2 px. A head under its ceiling seen from above is hidden by the ceiling.
+**Rule (one framing owner: `_fitDistForBox` + `_lerpCam`, no third camera path):**
+1. The leaf's world box = its instance box (geometry box × instance matrix × `matrixWorld`, as §TYPESET).
+2. Distance = `_fitDistForBox(size) × CONTEXT`. `CONTEXT = 8` is a presentation constant (the element fills about 1/8 of the frame height, so the room around it stays in view: owner, *"maintaining canvas in frame for realism"*), floored so the camera stays beyond `camera.near × 4`.
+3. Direction: the iso direction `ZOOM_ISO_DIR` (1, −1, 1.3). When the record's `mount` is `BOTTOM` (it hangs under a ceiling or slab), the z component is flipped: (1, −1, −1.3), so the camera looks UP at it from inside the room.
+4. Still selects through `pickInstance` (unchanged). Log `§FRAME-LEAF disc= i= mount= dist= dir=up|down size=`.
+**Witness W-E2E-SINGLE-FRAME** (Duplex, production walk, real Outliner leaf click):
+- S1 SIZE: after the fly, the leaf's projected box height is in [1/16, 1/4] of the canvas height (RED on main: a 0.06-0.3 m device at 3.6 m).
+- S2 BELOW: for a `mount=BOTTOM` leaf, camera z < the element's z, and the first ray hit from the camera toward the element's centre is that instance (raycast on the scene).
+- S3 ABOVE: a non-BOTTOM leaf keeps the camera above (z > element z).
+- S4 TARGET: `controls.target` = the instance box centre ≤ 1e-3.
+- Regression: W-E2E-INSTPICK P4/P5, W-E2E-TYPESET-ZOOM, W-E2E-ZOOMSEL (K5/K7 already red on main).
+
+## §FACING — ADDENDUM 2026-11-09: the close-up stands in front of the device's mount face (the shim's anchor facing) (Witness: W-E2E-SINGLE-FRAME F1-F3)
+> Owner, 2026-11-09: *"recall an old strategy we did, Shim, anchor facing, depends on direction."*
+**Issue (measured, film rehearsal 2 on Duplex):** all 6 ELEC close-ups were skipped as `occluded=both`. Each ELEC fixture also has a signed folded mesh at the same spot (W-E2E-INSTPICK P2: "the instanced bucket is a decorative twin ... behind the folded mesh"), so the ray test's first hit was the device's own twin. The §SINGLE-FRAME side choice (mount BOTTOM → below, else above, ray test) ignored the facing the walker already knows.
+**Where facing is already decided (code read, `disc_walker.js`):** schedule walk `_schedFacing` / `_snapToWall` → `rot` = the wall normal INTO the room, for wall-anchored rows (`yaw` set only then). Shim host-bind: `mount` BOTTOM (hangs under), TOP (sits on), SIDE (pushed from the wall centreline to the room-side face along `perp`), CENTER.
+**Rule:**
+1. The walker writes `face = [nx, ny, nz]` on each placement where facing is decided: wall-anchored schedule rows `[cos rot, sin rot, 0]`; host-bind SIDE `[perp/|perp|, 0]`; BOTTOM `[0, 0, −1]`; TOP `[0, 0, 1]`. No facing → no `face` (never guessed). It is a new field only: positions, counts and commits are unchanged.
+2. `frameInstanceRow` stands in front of the face: horizontal face → direction `normalize(nx, ny, 0.35)` (in front, a little above); `face` down → the §SINGLE-FRAME from-below direction; `face` up or none → the iso direction from above.
+3. The ray test stays as a guard only. A first hit inside the device's own box (grown by 2 cm) counts as the device, which covers its folded twin. Blocked → the other side, logged.
+4. `§FRAME-LEAF … face=<nx,ny,nz|-> dir=front|up|down`.
+**Claims added to W-E2E-SINGLE-FRAME:** F1 every wall-anchored schedule placement carries `face` = `[cos rot, sin rot, 0]` (≤1e-9), every BOTTOM bind `[0,0,−1]`; F2 a wall-faced leaf's camera lies on the face side (dot(camera − centre, face) > 0) and its first ray hit is inside the device's box; F3 walk counts unchanged (`§DISC-WALK placed/provisional` equal to main's).

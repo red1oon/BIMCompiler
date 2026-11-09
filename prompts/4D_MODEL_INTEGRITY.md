@@ -2932,3 +2932,17 @@ vacuous PASS — PRIMAL LAW 4); (3) `cache_4d_run.js` per building: schedule out
   (3) PR with lines +/−; then update the §I ownership-table rows "does S support T?" / "which ONE thing supports T?" → owner cpm_schedule.js.
 - ⚠ Do NOT run the full suite (258 files, ~8 h measured) — the targeted 24 are the gate. ⚠ Some node witnesses spawn
   cli_silent_bake (a real bake): grep for it and exclude — one slipped through this session (crashed on load, no frames).
+
+## §SHIM-FACING — can the walker's shim mount face fix 4D placement? MEASURED 2026-11-09 (owner: *"This can solve 4D placement, to determine if something is hanging from ceiling or depend on below or wall is where that shim anchor is facing"*)
+**Re-read first: §E (proxies) and §I (owners).** "Does S support T" = `support_sweep.js` `_contactGraph` (bearing-below ∪ carrier-above ∪ embedded); "which one" = `_designatedSupport`; floating = `_midairAudit`. Nothing below re-derives them; numbers are from the persisted cache (`~/.cache/bim4d/<B>/1adc56735190_*`, `witness.log` `§TM_PLAYED_LAYER midairPlayed=` = `run.json` `playStats.midairPlayedGuids` length, checked equal for all four).
+**What "midair" is (code, `support_sweep.js:591` at origin/main):** `items[sIdx].s > items[i].s + 1` — the ELECTED support starts later than the element. It is a time-order judge, not "no support found". So §E's row "bearing-below only → ceiling-hung pipe read as floating" is already answered by `_contactGraph` (carrier-above is in it).
+**Shim rows (mined, `rule_shim`):** terminal_rules 17 rows, 5 with a class key (AirTerminal, LightFixture, FireSuppressionTerminal → BOTTOM of IfcCovering; Alarm, ElectricAppliance → SIDE of IfcWall); duplex_rules 15 rows, 3 with a class key (FlowFitting, FlowSegment, FlowTerminal → SIDE of IfcWall). No shim rows in `modeller/patches/*.sql`.
+| building | midair | with a class shim row | mount | of those, elected carrier-above |
+|---|---:|---:|---|---:|
+| Duplex | 257 | 232 | SIDE | 91 |
+| HHS_Office_Federated | 152 | 83 | SIDE | 11 |
+| Hospital | 539 | 6 | BOTTOM | 0 |
+| Terminal | 3,065 | 267 | 262 BOTTOM, 5 SIDE | 267 |
+(Election rebuilt from `run.json` bboxes with the shipped EPS/GAP/CELL by a read-only probe, scratchpad `shim4d/m2.py`; it reproduces the shipped midair set exactly on Duplex, HHS, Terminal, and 527/539 on Hospital.)
+**Verdict:** using the shim face as the support DIRECTION fixes ~0. On Terminal all 262 BOTTOM-mounted midair elements are already elected carrier-above; they are midair because the carrier is scheduled later. Coverage is also small: structural and segment/fitting classes have no class shim row; duplex_rules' SIDE rows cover duct, pipe and conduit alike, a poor match for ceiling-hung runs.
+**What the facing DOES give 4D (not built, owner's ruling — this is §C, still open):** a STATED "hangs from that host" relation instead of a geometric guess. A rule of the form *"a BOTTOM-mounted element's work follows its carrier's task"* would move those elements after the slab they hang from; on Terminal that is 262 of 3,065 midair (8.5%). It changes the programme (which task an element belongs to), so per §C/§J.4 it is a ruling, not a fix. For WALKED fixtures the walker already writes `host` + `mount` + (since §FACING) `face` on each placement; carrying them into the Viewer DB (`BIMOOTB_Walk` set) is the data path if the owner rules for it.

@@ -125,6 +125,36 @@ Cards: the house chapter cards (FILM_NARRATION 2026-11-03). Numbers only from `�
 **Item 1 built 2026-11-09:** bim-ootb branch `feat/outliner-typeset-zoom`, W-E2E-TYPESET-ZOOM 9/0 (RED on main 2/5). Spec + RESULT: `MODELLER_ZOOM_TO_SELECTION.md §TYPESET`. GAP 2 was real: after a walk the Walked Fixtures header sat at y=8159 px, off-screen; it now scrolls into view as rows are added. A mid-reveal type click lost most tints (62/102): fixed in the same PR.
 **First step next session (was):** answer item 5 (and item 3's build-or-not) with the owner; then build 1 (spec addendum first) → 2 (one PR each, witness first); then extend the recorder (4, 7); then one rehearsal take with every beat gated; then the take.
 
+## §FILM-WALK-BEFORE-AFTER SPEC (2026-11-09, owner) — the walk film shows what a walker does
+> Owner, 2026-11-09: *"It should show before and after a walker lays devices. User will be clueless how this walker works. When it says x-ray, there is no lip synch to the canvas. When a walker is clicked, the visual effect is not shown to appreciate the before changing to after. Just some glimpse is good enough. At the moment it is quite sketchy."*
+**Issue, measured in the recorders (code read):**
+- `scripts/film_modeller_trailer.js` cuts (`jump`) from the walk click until `§DISC-WALK-COMMIT`. The build-up reveal (§D64, `_dwRevealTick`, modeller.html ~4709) draws the devices in during that window (measured on Duplex: 18/102 shown at 1.7 s, 102/102 at 9 s). So the cut removes the before→after moment.
+- The X-ray beat is stamped (`§FILM_BEAT`) BEFORE the cursor glides to the icon, so its narration starts ~1 s before the canvas changes.
+- The 2026-11-09 films were stills cuts (canvas grabs), not a take.
+**Rule (one recorder, generic, no building name in it):** `scripts/film_modeller_walk.js <db|resident> <discs> <outDir>`, CDP screencast like the trailer, the same cursor overlay, clicks through the real UI.
+1. **Open:** Open icon → local row (or resident row) → cut over the load (`§FILM_JUMP`).
+2. **Per discipline, five beats, in this order:**
+   - **BEFORE** (≥ 2.5 s, uncut): X-ray ON, camera on the building overview. Line `§FILM_BEFORE disc= walked=0` read from `window.__dwWalks[disc]` (absent = 0).
+   - **CLICK:** the cursor glides to the Outliner row for that discipline and clicks; the ripple shows.
+   - **COMPUTE:** the cut starts at the click and ends at the FIRST frame of the reveal (`window.__dwRevealMeta[disc]` set, or `window.__dwReveal[disc].i > 0`). Never at the commit line.
+   - **REVEAL** (uncut, real time, until `§DW-REVEAL disc= done`): once a second `§FILM_REVEAL_FRAME disc= i= n=` from `window.__dwReveal[disc]`. The log must show i rising over ≥ 3 samples, or the beat says `§FILM_REVEAL VACUOUS`.
+   - **AFTER** (≥ 2.5 s, uncut): `§FILM_AFTER disc= placed= provisional=` copied from the walk's own `§DISC-WALK <disc> placed=` line.
+   - **GLIMPSE:** click that discipline's largest type row in Walked Fixtures (W-E2E-TYPESET-ZOOM: set highlight + frame), hold 2 s, Escape, back to the overview.
+3. **Sync rule ("lip sync"):** a beat whose words name a state change is stamped when that state's `§` line lands AND two frames have rendered, not before the click: `§FILM_SYNC beat= line= dt=` (dt = beat time − line time, must be ≥ 0 and < 0.5 s). X-ray: `§MODELLER xray on`. Walk: the reveal's first frame. Type glimpse: `§INSTSET-SELECT`.
+4. **Visibility (law of 2026-11-09):** at BEFORE/AFTER and in the glimpse, `§FILM_VIS disc= inFrame=<instances whose centre projects inside NDC> of=<n> medianPx=<projected size>`. A beat with inFrame=0 is not presented as showing devices.
+5. **Privacy (owner ruling, this session): the private take uses a neutral-name COPY.** Storey names → `Level <k>` by elevation order, building/project/file name → `Building A`, logged mapping, kept private. Room names stay (they drive the walk's space typing); this limit is stated to the owner. The walk on the copy must give the same `§DISC-WALK` placed/provisional counts as on the source (`§FILM_COPY-PARITY`).
+6. **Not in this film:** a Viewer bake, synthetic markers, a section tool (owner: none).
+**Witness:** the take's own log. Every beat present in order; every `§FILM_SYNC` dt in [0, 0.5); every REVEAL with rising i; every AFTER count = its `§DISC-WALK` line; `§FILM_PAGEERR n=0`. Rehearsal first on public Duplex (software GL), then the private copy on the real GPU on the owner's go.
+
+## §REANCHOR-NONFLOOR — FINDING 2026-11-09 (traces the walk report's floating wall alarms; generic, measured on the private set, numbers only)
+**Cause, read from the walk's own `§BAND-REANCHOR` line (private log 71) + code `disc_walker.js` `_reanchorCtx` (~L720-750):** the target ladder is EVERY declared storey elevation, grouped by tol (half the source's smallest floor-to-floor, here 2.0 m). The private set declares 7 groups, and 3 of them are reference levels, not floors: top of wall/parapet (~13.8-14.2 m), a level at 36.5 m, the top of a tall element (40 m). The source's 6 floors map by order, so source floors 4, 5 and the roof land on those three. Wall-hosted band alarms then bind to the tall walls that do exist there: the 13 "more than 3 m above the highest slab" in the report.
+**Measured per target group (private set):** contained IfcSlab/IfcRoof by IFC storey: ground 63, ~4-4.8 m 20, ~9-9.3 m 23, ~13.8 m **56 IfcRoof, 0 IfcSlab**, 36.5 m **0**, 40 m **98 IfcRoof, 0 IfcSlab**. Slab/roof tops within 0.5 m of the group: 43 / 17 / 14 / **0 / 0 / 0**. Within the 2.0 m tol: 66 / 34 / 22 / 88 / 0 / 0. So the answer depends on the test chosen.
+**Candidate rules (owner's call; §12 is the owner's "Re-anchor + host"):**
+- (a) A target level counts only if it CONTAINS an IfcSlab (IFC containment, no number). Here: ground, ~4 m, ~9 m. Source floors above the third have no target and are refused (counted `noTarget`).
+- (b) A level counts if a slab/roof top lies within a margin. Needs a stated margin: at 0.5 m it gives (a)'s answer, at the 2.0 m tol it keeps the parapet level.
+- (c) As today (every declared level).
+Advice: (a). It is data-only (IFC containment), refuses rather than floats, and leaves public residents unchanged (they state no storey elevations, so §12 is off for them). Not built.
+
 ## §WALK-REPORT-CARD SPEC (2026-11-09, owner) — proof of work from the Modeller canvas; no Viewer bake
 > Owner: *"Can the FP sprinklers be walked into too? … just close up snap shots of the placed elements … begin with … a topology map of all the placed devices … Animation is not crucial … Important is proof of work. A report card giving engineers as much useful info as they be the judge."* · *"Showing the 4D5D HTML is one good shot to include."* · *"can we get good canvas view in Modeller during the walk?"* · *"we can then do away with baking."* · *"show how the Modeller icons features work where and how to bring about such."*
 **Inputs:** a COPY of the walk input with `fp_sprinklered=yes`, set by the documented tool (`mains_to_db.js --sprinklered=yes`). Sprinkler heads are the walker's band placement: rule-placed, `Provisional=TRUE`, NOT drawn (the set holds no sprinkler sheet). They are labelled that way on every card. Source DB never written.
