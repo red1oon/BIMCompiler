@@ -145,6 +145,72 @@ REPLY           the engine's answer + what was not checked, back through the act
 - **Every line goes through the door** (validate, bind, call, judge) exactly as if an actor had sent it; the composed verb gets no shortcut and no extra rights.
 - Example, the G4 request as one verb: `modeller.widen_bay building from to target` with body `bay = modeller.bay_width building={building} from={from} to={to}` · `modeller.try_shift building={building} line={to} move={target - bay}`.
 
+### 0.5 DESIGN: the object layer — BIM as a compiled model of dictionary objects (owner, 2026-11-09)
+**Owner's words:** *"should we abstract even further by submitting BIM model to its own AD similar to our ERP so that it can has its own ORM?"* · *"As the … designer session is also applying a BIM model for its doc processing, where artifacts are attached, perhaps getting more object orientation can abstract further"* · *"this makes our BIM as a compiled model concept even more true. Write up and think thru the design stage first. POC is not a real question as this has a clear framework to rely on"*.
+**Status: DESIGN.** Nothing built from this section; build only on the owner's go, item by item.
+
+#### 0.5.1 The thesis
+A compiled model is an **artifact that carries its own dictionary**, as an object file carries its symbol table. The compiler already emits the building as rows (the WHERE database); with this layer it emits them **as dictionary objects**: each table registered, each column typed, each list a reference, each rule a row. Any app, and any actor through the one door, then works on **objects** through **one object engine**, the one the Kernel ERP already runs. The BIM side stops being "a database the apps know how to read" and becomes "a model that says what it is and what may be done to it".
+
+#### 0.5.2 What it rests on (already in the repos)
+- **The founding design (Feb 2026):** `docs/archive/METADATA_DRIVEN_ARCHITECTURE.md` v2.4, *"The iDempiere ERD Applied to Construction … A building is an order. Space is the product. The DSL is the order entry form."*; `docs/archive/BIM_APPLICATION_DICTIONARY.md`, *"The rules governing element placement are themselves data — not Java logic"*; `docs/archive/bim-dsl-dictionary.md`, *"vocabulary as data, behavior derived from type"*. Archived 2026-03-04 as stale, not rejected.
+- **A compile-time ORM:** `orm-core` (`BasePO`: `get_Value`/`set_Value`, load by id or value) and 28 generated `X_` classes (`X_M_BOM`, `X_AdBuildingGrid`, `X_AdRoomBoundary`, …), written because raw SQL kept breaking on column names (`orm-core/docs/BIMDAOTechnicalFramework.md` §1.1).
+- **The proof that a BIM artifact can be a dictionary object with zero host code:** `BIM_Document` (bim-ootb `erp/plugins/bim_document.mjs`; spec `ERP_IDEMPIERE_UX_PARITY.md` §BIMDOC-4/5; #2746, #2751, #2757). Everything is **dictionary data** in the plugin's manifest (AD_Table, AD_Column, AD_Window, tabs, reference lists, a DocType, a DocAction family on the common `ad_docfsm`), staged by the host, refcounted, removed on Stop; the physical table created IF NOT EXISTS; attachments, DocAction, revisions (the `Reversal_ID` pattern) and "Open in Modeller / Viewer" all come from the common engine; its witness checks that no table is named in host code.
+- **The runtime object engine:** the Kernel ERP: `erp/model_layer.js` (save, validation), `erp/ad_modelval.js` + `erp/ad_rule.js` (model validators and AD_Rule hooks, stage 3), `erp/ad_callout.js`, `erp/erp_seam.js` (`dispatch` as the only write path, signed op-log), the generic AD window (`idempiere.html`).
+- **The Modeller already writes ops:** a shift is emitted as `GEOM_GRID_MOVE` and `GEOM_MOVE` ops (`modeller.html` from L2504), the op-log shape the kernel uses.
+- **The mechanism to register foreign tables:** `docs/internal/AD_GEN_FROM_DICTIONARY_SPEC.md` (AD rows generated from another system's dictionary, rendered "with zero renderer changes").
+
+#### 0.5.3 The layer, defined
+**Dictionary:** AD_Table, AD_Column (type, length, mandatory, min/max, reference), AD_Reference and its lists, AD_Process (with its parameters) and AD_Rule rows, for the model's own tables. **Object base:** what every dictionary object inherits, as legacy's persistent objects do:
+| Behaviour | Comes from | On the BIM side |
+|---|---|---|
+| load **lazily**, one object only when a record is touched | the object base | 63,182 Hospital element rows stay rows until one is read or changed |
+| set → **shape checks** (type, mandatory, range, list) | AD_Column / AD_Reference | the door's validator and the object's own save check are the same generated rules (§0.4 detail 3a) |
+| save → **rule hooks** (model validators, AD_Rule) → **op** → signed op-log | `ad_modelval.js`, `ad_rule.js`, `dispatch` | "after an element or grid line moves, run the edit report and the gate" becomes a hook row |
+| **veto with undo** in a transaction | the save transaction | the stop (§15.1) is a veto; a `trial` verb is a transaction that is always rolled back (§0.4 detail 1) |
+| **attachments, notes, history** | AD_Attachment, the change log | a drawing sheet on the room it shows; who moved a grid line and the report that judged it |
+| **document actions** where the object is a document | DocType + `ad_docfsm` family | `BIM_Document` today; a design revision tomorrow |
+| a **generic window** | the AD window engine | any BIM table viewable and editable in the ERP's own UI with no new screen |
+
+#### 0.5.4 The object catalogue, first cut (from the WHERE database as it is, `Duplex_extracted.db`)
+| Object | Table(s) today | Key | Note |
+|---|---|---|---|
+| Building | `project_metadata`, `elements_meta.building` | building name | the parent; links to `BIM_Document` (its deliverables) and to the Project |
+| Storey, Space | `spatial_structure`, `rel_contained_in_space` | guid | containment is a parent link, as tab under tab |
+| Element | `elements_meta` + `element_transforms` (1:1) | guid | one object over two tables (open item 3) |
+| Geometry | `component_geometries`, `element_instances` | — | **payload, not objects**: mesh bytes referenced by an element, never loaded as rows of objects (PERF budget) |
+| Task, schedule | `tasks`, `task_elements`, `task_sequences`, `schedules` | id | the 4D objects; their judges stay the 4D engine (CLAUDE.md §I ownership table) |
+| Grid line | **none in the database** (the Modeller derives the grid; no IFC route keeps `IfcGridAxis`, per the Modeller lane) | — | must be compiled into the model as a table to become an object (open item 4) |
+| BIM document | `BIM_Document` (in the ERP database) | id | exists |
+
+#### 0.5.5 How it changes the framework
+- **ENGINE column gains one shared object layer** for both apps: the dictionary + the object base. The geometry judges (clash narrow phase, span gate, the edit gate, the 4D engine) stay app engine code, called as **processes and hooks bound to objects**; they are not rewritten.
+- **The vocabulary collapses into two kinds:** a handful of **generic object verbs** the same for every app (`find`, `read`, `actions`, `attach`, `history`, and the document actions such as `complete`), plus **dictionary processes bound to an object** (as an iDempiere process sits on a window's toolbar): `try_shift` is a process on the grid line, `clashes` and `film_path` read processes on the building, `counts` a read process on the building.
+- **N comes from the dictionary for both apps:** objects × their legal actions + processes, counted the way the ERP's 1,153 are (§21.7), never by scanning an app's code.
+- **Detail 7 (the engine binding per app) is answered by this layer:** every verb binds to an object and an action or a process, and the seam is the object engine's own `dispatch` for writes and its read path for reads. The missing Modeller seam (§0.4 detail 3a) becomes "the Modeller's actions are processes on its objects".
+
+#### 0.5.6 Rules this design keeps
+- **Registration is not instantiation (PERF budget):** registering a table describes it; nothing loads its rows. Bulk work (a shift moving 3,961 elements, a clash pass) stays set-based inside its process, never one object per row. Element tables are flagged high-volume (`AD_Table.IsHighVolume='Y'`, legacy's own flag; the window then asks for a query before showing rows).
+- **One object engine:** the Kernel ERP's JS engine at runtime. The compiler's Java `orm-core` stays the compile-time writer. **The dictionary rows are the contract between them:** one schema, generated, never hand-copied into either.
+- **Three Concerns never merge (CLAUDE.md BOM principle):** the dictionary describes the WHERE tables and holds the HOW rules; it never moves WHAT data into WHERE or the reverse.
+- **No host code for a BIM table** (AD-LAYER LAW), as `BIM_Document` already proves: dictionary data through the core plugin route, a witness that no table is named in host code.
+- **DB changes ship as migration SQL + the self-heal loader** (CLAUDE.md): the dictionary rows for the model tables are a patch, never a binary.
+- **No twin to legacy for BIM objects** (legacy has none), but the object base is the ERP's own, so the ERP's twin witnesses already cover the behaviour every BIM object inherits.
+
+#### 0.5.7 Open items, for the owner one at a time (each with advice)
+1. **Where the model's dictionary lives.** Advice: **inside the compiled model** (the WHERE database carries the AD rows for its own tables), so the artifact describes itself wherever it travels; the object engine reads the ERP's system dictionary and the model's own rows together.
+2. **Identity.** The model is keyed by IFC `guid` (text); legacy objects carry a numeric id and a `_UU` key. Advice: the guid **is** the object's UU key; a numeric id only where the engine needs one.
+3. **Element = one object over two tables** (`elements_meta` + `element_transforms`, 1:1). Advice: one object, the transform as its extension, as legacy extends a table; or merge them in the compiler's output.
+4. **Grid lines are not in the model.** Advice: the compiler writes them as a table (lines, axis, position in the building's frame, rotation), so a grid line is an object and `try_shift` a process on it.
+5. **The first objects to register.** Advice: Building, Storey, Space, Element, Grid line, linked to `BIM_Document`; schedules after.
+
+#### 0.5.8 Witnesses, written before any build (each names its issue)
+- **W-OBJ-REG:** registering the model's tables loads no rows (heap and row counts before and after). Issue: the dictionary turning into a memory cost.
+- **W-OBJ-ONE-PATH:** an element move through the object engine's `dispatch` gives the same op bytes as the Modeller's own move today. Issue: a second write path.
+- **W-OBJ-GENERIC:** an element gets an attachment, a note and a history entry with no host code naming its table. Issue: per-table special cases.
+- **W-OBJ-N:** the BIM vocabulary's N is generated from the dictionary and an independent count equals it. Issue: a hand-made N.
+- **W-OBJ-HOOK:** the edit gate fires as a hook on an element save and its veto undoes the save. Issue: the stop living outside the object engine.
+
 ## ▶ RESUME HERE (2026-11-08, late): film rc4 BUILT, a labelled scripted demo
 **Deliverable for the owner's posts:** `~/Videos/Think_Global_Act_Local_EN_rc4.mp4` (243.6 s) + `…_rc4_narration.txt`. It shows the AI using the app through the connector (§18): the menu the AI is handed (the connector's real `tools/list`), then **a scripted demo**: `scripts/film_neuro/mock_session.js` stands in for the AI (owner 2026-11-08: *"Can u just do a mocked up movie"*; earlier: mock an AI proposal in a sandbox, no model calls), sends brief G4 through the live connector to the real app, and every answer on screen is the app's own, from the connector's call log (`evidence/session_calls.jsonl`). The card says "A scripted demo: an AI's part, played by a test script", and the last box quotes the connector's own decline rule, not invented AI words.
 **Witnessed:** resolve 73 facts, 0 missing; guard PASS (80 numbers on cards, 15 spoken; plants caught; stills sha256 pinned); W-FILM-NEURO-LIVE SAME (panel = the connector's answer, 2,349 bytes); recorder layout 79/79, 0 console errors; fit 17/17 DETAIL, tone 0 WRONG; captions 20 clamped, 0 overlaps; frames 5,847 = the silent picture; longest silence 7.5 s (end card); −16.5 LUFS. Logs: `scripts/film_neuro/logs_rc4/`.
