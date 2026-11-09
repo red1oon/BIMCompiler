@@ -228,6 +228,40 @@ The dictionary is what lets a script **know** an object instead of guessing it.
 | **Encapsulation** | properties and methods only through the dictionary | no raw SQL, no eval (§0.3 rule 6) |
 **One gap the BIM side adds:** legacy's AD_Column has **no unit**. Physical properties (positions, lengths, areas, depths) need one, because units come from the vocabulary, never the line (§0.4 detail 3). Open item 6: where a column's unit is stated (advice: an extension column on AD_Column for BIM tables, the ERP's own columns untouched).
 
+#### 0.5.10 DECIDED 2026-11-09 (owner: *"Go along with your advice and insight"*): open items 1-6 as advised
+1. **The model's dictionary lives inside the compiled model:** the WHERE database carries the AD rows for its own tables; the object engine reads the ERP's system dictionary and the model's own rows together. The file describes itself wherever it travels.
+2. **Identity:** the IFC `guid` is the object's UU key; a numeric id only where the engine needs one.
+3. **Element** is one object over `elements_meta` + `element_transforms`, the transform its extension.
+4. **Grid lines are compiled into the model** as a table (line, axis, position in the building's frame, rotation), so a grid line is an object and `try_shift` a process on it.
+5. **First objects:** Building, Storey, Space, Element, Grid line, linked to `BIM_Document`; schedules after.
+6. **Units:** an extension column on AD_Column for BIM tables states each physical column's unit; the ERP's own columns are untouched.
+
+### 0.6 The remaining framework details, DRAFTED on the owner's delegation (*"Go along with your advice and insight"*, 2026-11-09); owner reviews
+**Detail 4, the actor table** (§0.3 rules 4-5: a From address is never proof; no fallback to an administrator; the harm class comes from the vocabulary):
+| Actor | Delivery adapter | Proof it can give | May use, unconfirmed | May use, with its proof |
+|---|---|---|---|---|
+| Human, screen or terminal | the app, `edit_cli`, the CLI | a local session; in the ERP, the login and its role | read | everything its role grants |
+| AI | its tool connection (`bim_mcp.js`, MCP over stdio) on the user's own machine | it runs as the local user | read | read + trial; **writes, posts and sends only when a human confirms** (the AI proposes, a person or the engine decides) |
+| Email | the post box / mailbox | a per-action token in the mail the system sent (reply link or subject), a known address; a signature where the stakes need it (SocialPlatformLens §6) | read (a plain mail is a claim) | token: writes; signature: posts and sends |
+| Mobile | the chat or push app | a per-device key (TEAMWORK) | read | what the device's role grants |
+| Device | the device bus | a per-device key | read | only the verbs whose `actors` list names that device class (a sensor posts a reading; it cannot Complete an invoice) |
+| Outside system | the legacy-compatible WS API | its credential bound to a role (legacy `ws_webservicetypeaccess`) | nothing | what that role grants |
+
+**Detail 5, the door's record:** every line gets a **request id** (sent by the actor, or assigned by the door) and is **recorded before it runs**: request id, actor, proof level, the line, verb and inputs, then the result, the op UUIDs it wrote and the time taken. A request id already answered is **answered from the record, never run twice** (§21.5 A6). Writes and posts ride the signed op-log as today; reads and trials are kept in a door journal, itself a dictionary table, so it is readable by the same verbs (`history`). Every line prints one `§DOOR` line (actor, verb, status, request id).
+**Detail 6, the reply envelope**, one shape for every actor; each adapter only renders it (an email body, the AI's tool result, terminal JSON):
+`{ request, verb, actor, status, answer, why, notChecked, ops, next, ms }`, where `status` is **ok · refused · claim · error · inconclusive** (the PRIMAL LAW's words: a check that judged nothing says inconclusive, never ok), `answer` is the engine's own (the edit report, the Viewer's Find answer, `dispatch`'s before/after), `why` the reason on refused or error, `notChecked` the engine's own list, `ops` the op UUIDs written, and `next` the legal next actions from `verbs(ctx)`. Today's three answer shapes map onto it without changing them: `edit_cli`'s `{ok, edits:[{refused, reason, report}]}`, Find/Ask's `{verdict OK|INCONCLUSIVE|VACUOUS, …}`, `dispatch`'s `{ok…}|{rejected, why}`.
+**Detail 7, the engine binding:** answered by the object layer (§0.5.5): a verb binds to an object and an action or process; writes go through the object engine's `dispatch`, reads through its read path.
+**Detail 8, the framework's own witnesses** (each names its issue, written before any build; with §0.5.8's W-OBJ-*):
+- **W-DOOR-SAME** (§21.5 A1): the same line through every actor adapter gives the same reply, apart from the actor and proof fields. Issue: an adapter that changes the result.
+- **W-DOOR-PROOF** (A2, A3): an unconfirmed claim cannot run a write; a spoofed mail stays a claim; the same mail with its token runs once. Issue: identity by From address.
+- **W-DOOR-DUP** (A6): a request id sent twice runs once. Issue: a duplicate mail double-acting.
+- **W-DOOR-SHAPE:** the door's validator and the object's save check are generated from the same dictionary rows and agree on every case. Issue: two copies of a rule drifting.
+- **W-VOCAB-FRESH:** every verb has an implementation and every dictionary action or process appears in the vocabulary's inventory, both ways. Issue: a dictionary that decays (the AppleScript lesson, §0.3 rule 1).
+- **W-VOCAB-NOESCAPE:** no verb in the vocabulary evaluates code, SQL or a shell line. Issue: an escape hatch that defeats the vocabulary (§0.3 rule 6).
+- **W-REPLY-HONEST:** a verb whose engine judged nothing replies `inconclusive`, never `ok`. Issue: a vacuous pass.
+
+**The design stage, complete:** framework §0 (four columns) · rules §0.3 · details 1-3a and the tiers §0.4 · the object layer and reflection §0.5 · details 4-8 §0.6. **Build order unchanged (§0):** vocabulary (D1) → the door (D4) → the object layer's first objects → the most-duplicated checks as processes (§23.3) → ERP verbs (D6) → the actor adapters with their proof (D7) → GPU verbs last (D8). Each step: its spec line here, the owner's go, its witnesses first.
+
 ## ▶ RESUME HERE (2026-11-08, late): film rc4 BUILT, a labelled scripted demo
 **Deliverable for the owner's posts:** `~/Videos/Think_Global_Act_Local_EN_rc4.mp4` (243.6 s) + `…_rc4_narration.txt`. It shows the AI using the app through the connector (§18): the menu the AI is handed (the connector's real `tools/list`), then **a scripted demo**: `scripts/film_neuro/mock_session.js` stands in for the AI (owner 2026-11-08: *"Can u just do a mocked up movie"*; earlier: mock an AI proposal in a sandbox, no model calls), sends brief G4 through the live connector to the real app, and every answer on screen is the app's own, from the connector's call log (`evidence/session_calls.jsonl`). The card says "A scripted demo: an AI's part, played by a test script", and the last box quotes the connector's own decline rule, not invented AI words.
 **Witnessed:** resolve 73 facts, 0 missing; guard PASS (80 numbers on cards, 15 spoken; plants caught; stills sha256 pinned); W-FILM-NEURO-LIVE SAME (panel = the connector's answer, 2,349 bytes); recorder layout 79/79, 0 console errors; fit 17/17 DETAIL, tone 0 WRONG; captions 20 clamped, 0 overlaps; frames 5,847 = the silent picture; longest silence 7.5 s (end card); −16.5 LUFS. Logs: `scripts/film_neuro/logs_rc4/`.
