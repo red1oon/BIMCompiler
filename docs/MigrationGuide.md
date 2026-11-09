@@ -159,6 +159,27 @@ recognised and which were **not** (for example a non-English caption), rows per 
 > guessed. Tested only against a local stand-in answering with the example records printed in SAP's guide *Working with SAP Business One Service Layer* (one customer,
 > three items, one warehouse, one account), **not yet on a real Business One**. Released early on purpose: please run it and send the report back.
 
+**Why this route (checked before it was built, 2026-11-09):**
+
+- **Business Central** could be read from source, because Microsoft publishes its application code under the MIT licence. **SAP Business One** has no such thing: no
+  openly licensed data model was found. SAP's sample repositories on GitHub are integration examples with no tables. The copies of the Service Layer model that people
+  have posted were dumped from SAP servers and carry no licence.
+- **SAP DB was open source** (GPL, October 2000 to 2007, later named MaxDB), but it is a **database engine**, not an application. Its source holds no business
+  tables, and Business One never ran on it: Business One runs on Microsoft SQL Server or SAP HANA.
+- What every Business One server **does** publish is its own model: the Service Layer's `$metadata`. A tool you run against **your** server reads it there, so nothing
+  SAP-licensed ships from us, and the field list is your server's own, version and add-ons included.
+- The engine point still helps: the Service Layer is a layer over the company database's tables (SAP's guide prints its own SQL: `OCRD`, `OITM`, `ORDR`). That is where
+  the one thing the Service Layer does not say, an account's asset, liability or equity class, can be read next.
+
+**What is proven so far** (witness logs, `erp/tests/witness_sap_migrate.js` and `witness_sap_migrate_live.js`):
+
+- The agent logs in, reads the model, counts each set and pages through it to the end. Every call is a read; the test server refuses any call without the session cookie.
+- When the test server lacks a field, the agent names it and does not ask for it.
+- On a new company, Process writes exactly what the summary predicted, in all 17 tables: 1 customer, 3 items and 1 account from SAP's examples, in one signed change set.
+  The refused warehouse shows on the summary with its reason. The alpha report contains none of the values. On the real page: 11 of 11 checks.
+- **Not judged yet (10 rules):** addresses, contacts, vendors and leads, payment terms, units by international code, item groups, price list and currency, bins, opening
+  stock, revenue and expense accounts. SAP's guide prints no record they apply to, so a real company's run judges them.
+
 **Before you start:** a computer with **Node.js 18 or newer** that can reach your **Service Layer** (no `npm install`: the agent has no dependencies). A Business One
 user that can read business partners, items, accounts and warehouses.
 
