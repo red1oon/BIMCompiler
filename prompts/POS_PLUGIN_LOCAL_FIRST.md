@@ -289,3 +289,7 @@ Read-only extraction (`TEAMWORK_FRAMEWORK.md` §41 agent A). Every line cites a 
 - Facts added from page text: `year2011` (p1 "September 11, 2011"), `guide_two` and `guide_three` (p23 "Click on 2 ... Hoe", "Click on 3 ... Rake-Bamboo"), `stacks3` (p50 "the 3 remotely located stacks"). `guard.js` learned "twenty eleven". **The total 57.00 is NOT spoken:** it exists only inside the screen image, not in the page text, so no fact could be read from `pdftotext` (the image on the card shows it).
 - Credits (card + voice): "the owner's own 2012 Openbravo POS -> ADempiere / iDempiere integration over ActiveMQ, the delayed EODA / SODA relay (copyleft RED1)". Ghintech is no longer named anywhere in the film.
 - Timing: +27.1 s. b0a 15.0 -> 18.5 s, b0b 13.6 -> 19.3 s, new b1p 14.9 s plus the existing 3.6 s chapter card; recorded beats re-timed by the same measured-start rule (`out/timeline.json`).
+
+## ⚠ AD-LAYER NOTE (owner, 2026-11-09)
+*"extra process lens should be avoided to comply for consistent maintainability. It is precisely the idea of legacy plugins to be adopting the AD."* · *"I know some earlier lens adoption broke that rule, but now is the opportunity to begin getting it right."*
+This file is cited by `erp/plugins/friendly_ops.mjs` (its "Receive payment" lens action). A payment taken from a lens must be the dictionary's own payment process re-presented, not behaviour living in the lens; see `ERP_FRIENDLY_OPS_LENS.md` ⚠ AD-LAYER NOTE and `ERP_IDEMPIERE_UX_PARITY.md` §LENS-REGISTER.
