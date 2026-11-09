@@ -901,7 +901,7 @@ A phone tap, a barcode scan, a GPS check-in, a sensor reading or a till ring bec
 
 **The honest beat this list gives (owner to approve):** the first Viewer verb exposed the Viewer's own wrong sum: it answered "200 box overlaps, 229 clashes, −29 cleared". The verb repeated the app faithfully, the witness flagged it, and the cause was two bugs in the app (a double count and a 200-row page cap), now fixed: 393 / 291 / 102. **A verb that repeats the app can only be as right as the app; the witness is what caught it.**
 
-### 22.3 Storyboard (about 150-180 s; PLAYBOOK C, same two voices as film 1)
+### 22.3 Storyboard (about 180-210 s with the CLI chapter; PLAYBOOK C, same two voices as film 1)
 | # | Picture | Dialogue (F asks as a newcomer, M answers in one or two plain sentences) | Source |
 |---|---|---|---|
 | 0 | Title card: kicker "the sequel to Think Global, Act Local"; "Outside AI," / (coral) "Inside Judge" | none | — |
@@ -918,12 +918,18 @@ A phone tap, a barcode scan, a GPS check-in, a sensor reading or a till ring bec
 | 11 PRIOR ART | One card: "published 9 November 2026 as a defensive disclosure, free for anyone" | M: "We published it, so nobody can lock it up." | `docs/AIProposerDefensiveDisclosure.md` |
 | 12 LIMITS | Honest-limits card: no strength or loads; the ERP verbs not offered yet; the benefit not measured yet (§20.3 protocol waits on a run); a pass never means safe | M says it plainly | §5, §20.3, §21.7 |
 | 13 PROMISE | Title-style card with the closing line (§22.1) | M says it once | owner to approve |
-| 14 HOW TO USE | The guide URL; "connect your AI" in one line | — | `docs/ProposerGuide.md` |
+| ch | Chapter card "How the command line works" (owner, 2026-11-09: *"will the new film show how the CLI works ?"*) | — | — |
+| 14a SETUP | Terminal, empty folder: `npm install puppeteer@24`, then `curl -O` of `edit_cli.js` from the live site; `ls` shows one file | F: "What do I install?" M: "One library and one file. Nothing else." | the guide's "Getting started" |
+| 14b MODELLER CLI | `node edit_cli.js --building HospitalGarage --lines` → the bays; then `--shift gx6 --move 1.824` → `"refused":true`, the reason, exit code 3 | F: "And I just type it?" M: "Exact numbers in, the building's own report out. Nothing is saved." | §17, §15.1 |
+| 14c VIEWER CLI | `node viewer_verbs.js counts --building Duplex` → 1,193; `clashes --building Duplex --a ARC --b MEP` → 393 / 291 / 102 | F: "Same for the Viewer?" M: "Same idea. Ask it a question, get the Viewer's own answer." | §19.4, §20.2.9 |
+| 14d CONNECT AN AI | `claude mcp add bim -- node bim_mcp.js` (the line printed in `bim_mcp.js`'s own header), then the `tools/list` reply: 4 verbs | F: "Where does the AI come in?" M: "You plug these same commands into your AI as its menu. It calls them; the building answers." | §18, §19.4 VV5 |
+| 14 HOW TO USE | The guide URL large on screen | — | `docs/ProposerGuide.md` |
 
 ### 22.4 Witnesses (each names its issue; written before any cut)
 - **W-FILM-NEURO2-FACTS:** the copied `guard.js`; every digit on a card or spoken maps to a row in §22.2 or a `§` line; a planted number must fail it. Issue: a number the repo cannot back.
 - **W-FILM-NEURO2-LIVE:** each verb shown is re-run fresh on main before the cut and its numbers equal §22.2; INCONCLUSIVE if any verb errors. Issue: the film showing an answer the product no longer gives (the clash numbers changed once already, 200 → 393).
 - **W-FILM-NEURO2-PUBLIC:** the private-name grep over every card, caption and evidence file is empty, and no evidence file comes from a private DB. Issue: a private set in a public film.
+- **W-FILM-NEURO2-CLI:** every command on screen in 14a-14d is run from an **empty folder** against the live site just before the cut, with only the files the beat says to download; the shot is rendered from that run's real stdout and exit code (never retyped, the §16.3 rule), and the guide's "Getting started" lines equal the commands shown. INCONCLUSIVE if a command needs a file the beat did not download. Issue: a CLI demo that only works inside our own checkout. **Open, to check first:** `viewer_verbs.js` is served live (HTTP 200, 2026-11-09) but needs `viewer_driver.js` beside it; whether a one-folder download works is unmeasured, so 14c may need a two-file download or a guide line.
 - **W-FILM-NEURO2-LABEL:** every AI-side shot carries "scripted client, no AI" or a recorded session's date and model. Issue: a scripted demo passed off as a real AI.
 
 ### 22.5 Waits on, and not in this film
