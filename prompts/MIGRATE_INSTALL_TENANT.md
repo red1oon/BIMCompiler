@@ -1169,6 +1169,26 @@ engine + template (export stays one file). Recommend: raw rows, like SAP. (2) §
 the open items named under A/B/C (stock VALUE: no source carries a cost → port ImportInventory :546-564; commitEx seam; ws_kernel model_journal; §IINV tag collision; seed c_activity
 and 2026 GL periods) · E4 sql connector · E5 DIY screen.
 
+**▶ LEAD BRIEF for the next session (owner 2026-11-10: resume on Fable 5.2 as the lead — "can tackle this complexity"; dispatched agents stay Sonnet unless the owner declares a
+free window, memory rule).** Read in this order, nothing else first: (1) this RESUME block · (2) §ENGINE-SPEC §0–§7 · (3) §ENGINE-D-SPEC + the A/B/C/D-BC result blocks after it ·
+(4) `erp/migrate/engine.mjs` header + `templates/sap-b1-10.json` (the template language by example) · (5) §B3-SCOUT (the cut-over method). Then:
+- **Turn 1: ask the owner the 2 ⛔ questions above** (one message, recommendation first). Do not build Odoo before (1) is answered; E3c below does not depend on either — start it while waiting.
+- **E3c spec (write it here FIRST, dated `### §E3C-SPEC`), then build:** new target sheets beside the 17 masters — Opening journal (`I_GLJournal`, TB at the cut-over, document-controlled
+  accounts → AR/AP/Inventory/Bank CLEARING), Open AR / Open AP (`I_Invoice`, one line, charge Opening Charge AR/AP, unpaid amount only, own DocumentNo + date, **DocTypeName carried**
+  — seed has no default ARI/API type), Open payments (`I_Payment`). Loaded in the form's stage 2 (`after(trx)`, the hook #2787 added) through ImportGLJournal 220 → batch Complete,
+  ImportInvoice 207 DocAction CO, ImportPayment 343 CO. The engine creates the 4 clearing accounts + 2 Opening Charges if absent (named in the summary). **Odoo first** (measurable:
+  `account.move.line` balances at the date, `amount_residual`). Witness claims (§ENGINE-SPEC §4): TB == source TB per account · every CLEARING account == 0 · OPEN AR/AP per partner ==
+  source · INCONCLUSIVE when nothing judged. Before building: open the cut-over GL period in the test tenant (seed 2026 periods are "never opened", B open item 4).
+- **How to work (what made this session land 5 PRs clean):** spec block here before code · each change in its own `/tmp/wt-*` worktree off fresh `origin/main` (`git worktree list`
+  first; never `git stash` — a foreign stash exists) · a converter moves onto a template ONLY with W-MIGRATE-ENGINE proving equality to the frozen hand converter (oracle in
+  `erp/tests/fixtures/*_convert_reference.mjs`, never edited to pass; a deliberate behaviour change goes in template AND oracle in the same commit, said in the PR) · new template
+  constructs = closed, named, validated at load (no eval) · DIFF generator keeps primary keys filled · Watchdog: read every agent's § lines in its log before marking ✅ here.
+- **Merge mechanics:** every PR bumps `erp/sw.js` CACHE_VERSION → after any sibling PR lands, `git merge origin/main`, keep BOTH precache additions, take max+1, re-run the witnesses,
+  push (auto-merge `--squash`). `ad_import_tables.js` conflicts the same way (keep both tables, both `ensure*` calls, both API entries). Push timeout ~90 s, no retry loops.
+- **Witness commands** (log to `/tmp/count_logs/`, read the log): `witness_migrate_engine.js` (`§MIGE verdict=PASS judged=30`) · `witness_sap_migrate.js` (24) · `witness_bc_migrate.js` (18) ·
+  `witness_odoo_form.js` (18) · `witness_ninja_migrate.js` (31) · `witness_import_{invoice,gljournal,inventory,payment,order,product}.js` (56/45/23/54/44/15).
+- **Public repos:** grep every diff/commit/PR body for the private names (memory `feedback_private_project_no_names_in_public`).
+
 ### ▶ (superseded) RESUME HERE (2026-11-10) — §ENGINE-SPEC is written; next session launches the lanes (§ENGINE-SPEC §7)
 Live: SAP B1 alpha (bim-ootb #2774) · one Migration User Guide (BIMCompiler #492, #494, deployed) · films SAP EN + ZH rc1 · §B3-SCOUT (the cut-over / open-items method, sourced) ·
 **§ENGINE-SPEC** (connector · JSON template · target · loader+verifier; the common thread §6; lanes §7). **First:** read §ENGINE-SPEC §0 (the measured DRAFTED-stock defect) and §6's
