@@ -347,6 +347,69 @@ The dictionary is what lets a script **know** an object instead of guessing it.
 
 
 **VERIFIED by the NEURO session, 2026-11-09, on bim-ootb main `4f9f8203` (the merge of this rung):** the two runs the build left open were re-run. **W-ATTACH-LIVE:** `§W-ATTACH-SUMMARY arms=10 PASS=10 FAIL=0 INCONCLUSIVE=0 → PASS`, red controls R-1 (a no-key tab shows no enabled button; the control with canHave forced true FAILS) and R-2 (a damaged archive is refused, not shown empty) both behaving, and C-1 (an attachment of cap+64 KB survives a reload, sha256 equal). The build's timeout was machine load, not the change. This matters because the ERP is served from main, so the changed attachment code was already live. **W-MCP-DOWNLOAD live:** the build's INCONCLUSIVE was the instrument (Node's fetch timing out on github.io's IPv6 address on a machine with no IPv6 route; curl fetched the same file over IPv4 in 0.8 s). With IPv4 first: `§WITNESS_MCP_DOWNLOAD pass=5 fail=0 inconclusive=0 verdict=PASS`; the witness now sets that itself (bim-ootb #2773). **Viewer users unaffected until upload:** `A._applyPendingPatch` (`viewer/scene.js:2111-2150`) fetches `patches/<db>.sql` beside the building's own URL (the bucket), and a patch that cannot apply falls back to the unpatched database (`§PATCH_APPLY_FAIL … using unpatched db`); the new Duplex patch reaches users only when the deploy flow uploads it.
+### 0.9 SPEC: email as an autoresponder, the Email actor built on the post box (owner, 2026-11-10; spec only, nothing built)
+**Owner's words:** *"to say Email is the spine is not entirely correct as it is just an actor. What i meant is that it is a killer app, its asynch and highly reliable engine acts as a good backup storage and data relay. Also its features such as embedding URLs and valid vetted scripts makes it secure agent. Try to spec how emails can be autoresponders. Use the adempiere gmail i given some weeks before when we did something with team relay"* · *"Basically the idea is to build a comprehensive suite of tools that the user can delight in, when using our BIM and ERP ootbs."*
+**Correction to §21's wording:** read "email as the spine" (§21 header, §21.3) as **email, the killer app the Email actor rides on**. In the framework it is an ACTOR whose delivery is a mailbox (§0). What email brings, and why it suits an autoresponder: it is **asynchronous** (a request waits safely until something answers it), **highly reliable** (store-and-forward, delivered worldwide), a **durable backup and data relay** (every mail kept in the user's own account, the earliest statement of this in `docs/DistributedERP.md` §5.2b, 2026-05-31), it can **embed URLs** (a reply carries one-click links for the next legal actions), and it carries **only vetted scripts** (the published vocabulary and its named composed verbs, never code), which together make it a secure agent.
+
+#### 0.9.1 What already exists (reuse, do not rebuild)
+- **The account:** `amazingerp@gmail.com`, created by the owner in 2017 for automation with the iDempiere engine (TEAMWORK history §12.13).
+- **The relay, deployed 2026-10-23:** the Apps Script **"BIM Team Postbox"** on that account (`build/comm/postbox/Code.gs`, 71 lines; `appsscript.json`, Gmail advanced service, web app executing as the account; scriptId and deployment in `build/comm/postbox/.clasp.json`; history §12.14). It has `setup()` (label `BIMTEAM`, a random secret, a 5-minute trigger), `doPost` (store a message under the label), `doGet` (list, get, board), `fileInbound()` (files `[BIMTEAM]` mails off the inbox). **The secret lives only in `~/.config/bim-teams/postbox.json` (mode 600), never in a repo.** Witness `W-GMAIL-LOG` PASS 5/0 (history §12.14). `clasp` is set up, so redeploys need no new consent unless the scopes change.
+- **Legacy's own mail path (the twin):** iDempiere sends through `org.compiere.util.EMail` with the client SMTP (`AD_SMTP`, Mail Template window 204) and turns a mailbox into Requests with `RequestEMailProcessor` over IMAP (`RequestEMailProcessor.java:58`, Request Processor window 203) (history §11.19).
+- **Gmail's own vacation responder is not the tool:** it cannot attach or link and answers each sender at most once every few days (history §11.19). The "autoresponder" is the Apps Script.
+- **Proof of sender, already ruled:** SocialPlatformLens §5-6 and §0.6 detail 4 (an unconfirmed mail is a claim, read only; a per-action token confirms; a signature for posts and sends). §0.3 rule 4: a From address is never proof; no fallback to an administrator.
+
+#### 0.9.2 The shape: the relay never decides; the door answers; the mailbox keeps everything
+```
+person / AI / device ──mail──► amazingerp@gmail.com ──► relay (Apps Script): file, receipt, queue
+                                                     ◄── door runner (the owner's machine or a browser tab):
+                                                         poll the queue → door lines (actor=email, proof) → envelope
+person ◄──reply in the same thread (answer, notChecked, next actions as one-click links, reports attached)── relay
+```
+- **The relay** (Apps Script) only files, acknowledges, queues, sends replies and checks link tokens. It runs no engine and decides nothing (§0 ONE DOOR: an adapter never decides).
+- **The door runner** is where the engine runs, on the owner's own device, as everything else does (local-first). It reads queued requests through `doGet`, runs each line through the door with `actor=email` and the proof level the relay recorded, and posts the reply envelope back through `doPost`. If no runner is online, requests wait in the mailbox: that is email's asynchrony doing its job.
+- **The mailbox is the durable log:** every request, receipt and reply stays under a label in the user's own account, so the door journal can be rebuilt from it (replay by request id is idempotent, §0.6 detail 5).
+
+#### 0.9.3 The autoresponder catalogue (what a mail can get back)
+| # | A mail that… | Gets back | Needs a runner online? | Proof needed |
+|---|---|---|---|---|
+| R1 | arrives with a request | a **receipt** at once: request id, "queued", what will happen | no (relay alone) | none |
+| R2 | asks `help` or names an unknown verb | **the vocabulary**: the verbs this actor may use, from `verbs.json` and `object.describe` | no (the relay holds a copy of the published vocabulary) | none |
+| R3 | asks a **read** verb (`viewer.counts`, `viewer.schedule_at`, `object.read`, `erp.find`) | the answer, notChecked, and the next legal actions as links | yes | none (read is open to a claim) |
+| R4 | asks a **trial** (`modeller.try_shift`, `modeller.widen_bay`) | the edit report attached, stopped or not and why; nothing saved | yes | a per-action token (an unconfirmed mail may only read, §0.6 detail 4) |
+| R5 | clicks a **next-action link** in a reply ("Approve", "Issue for construction", "Complete") | the action done, or refused with the reason | yes | the link's single-use token (writes); **a signature for posts and sends** (a signed bundle from an enrolled team device, TEAMWORK per-device keys) |
+| R6 | — (scheduled) | a **digest**: what changed since the last one, exceptions first ("the ERP comes to you", SocialPlatformLens) | yes | — (outbound to known recipients only) |
+| R7 | — (an event) | an **exception notice**: a stop, a refused action, a rule hook's veto | yes | — |
+| R8 | carries a **file** (DXF, IFC, PDF) | a receipt; the file becomes a `BIM_Document` attachment as a **claim** until confirmed by link | yes | token to attach (writes) |
+
+#### 0.9.4 How a mail becomes door lines (the grammar is the door's, §0.4 detail 3)
+- **Subject:** `[DOOR] <optional request id>`; plus-addressing names the app (e.g. `amazingerp+bim@gmail.com`, `amazingerp+erp@gmail.com`), so the action is named in the address, not guessed from the body (§0.3, the Request Tracker lesson).
+- **Body:** plain-text door lines, one per line, exactly the terminal's grammar (`viewer.counts building=Duplex`). Quoted reply text and signatures are cut by the relay before the lines (the first line that is not a door line ends the command block). **Free text that is not a door line is not an order:** it gets R2 (§21.1).
+- **Links:** each next-action link is `…/exec?r=<request id>&a=<verb line hash>&t=<token>`, the token an HMAC of (request id, line, expiry) under the relay's secret, **single-use, short expiry, bound to the one line it shows**. A forwarded or replayed link fails (W-MAIL-LINK).
+- **Attachments are data, never run:** a `.bimpack` (encrypted, history §11.19) or a model file is stored; nothing in a mail is ever executed. **Vetted scripts** = the vocabulary and its named composed verbs only (§0.3 rule 6: no escape-hatch verb).
+
+#### 0.9.5 Rules
+- **Never decide in the relay; never trust From; never fall back to an administrator** (§0.3 rule 4).
+- **Unconfirmed = read only; a token = writes; a signature = posts and sends** (§0.6 detail 4).
+- **The same request by mail and by terminal gives the same envelope**, apart from the actor and proof fields (A1). **A duplicate mail runs once** (A6, by request id and op UUID).
+- **Reply in the same thread**, plain text plus attachments; links only to the relay's own web app.
+- **Privacy:** mail leaves the device for the user's own Google account; that owner decision is still open in `prompts/NO_AI_INSIDE_WITNESS.md` (its ⛔ line) and binds this actor. Payloads that need it ride as encrypted `.bimpack` bundles, as the post box already does.
+- **Quotas:** a consumer Gmail account has daily send and trigger-runtime limits; take the exact figures from Google's Apps Script quota page at build time and record them here, never from memory.
+
+#### 0.9.6 Witnesses (written before any build; each names its issue)
+- **W-MAIL-RECEIPT:** a request mail gets its receipt with the request id, with no runner online. Issue: silence.
+- **W-MAIL-SAME (A1):** the same line by mail and by terminal gives the same envelope. Issue: the email adapter changing the result.
+- **W-MAIL-SPOOF (A3):** a mail from a forged address asking for a trial or a write stays a claim; nothing runs. Issue: identity by From.
+- **W-MAIL-LINK:** a next-action link works once, fails when replayed, forwarded or expired, and acts only on the line it shows. Issue: a link as a bearer key.
+- **W-MAIL-DUP (A6):** the same mail delivered twice runs once. Issue: double action.
+- **W-MAIL-QUEUE:** a request sent while no runner is online is answered when one comes online, in order. Issue: lost asynchronous requests.
+- **W-MAIL-DELIVER:** the existing `W-GMAIL-DELIVER` design (50 mails: delivered / spam / blocked, must be 50/0/0) applied to replies with attachments and links. Issue: replies landing in spam.
+
+#### 0.9.7 Build steps, each on the owner's go
+1. **Relay:** extend `Code.gs` with the `[DOOR]` filing, R1 receipts, R2 vocabulary replies, the reply sender and the link-token check; redeploy with `clasp` (the owner signs in if the scopes grow, e.g. `gmail.send`).
+2. **Email actor adapter + runner:** the door learns `actor=email` with its proof levels from the relay's record; a small runner on the owner's machine polls and answers (R3, R4).
+3. **Confirm links** (R5), then **digests and exceptions** (R6, R7), then **file intake** (R8).
+**What this adds to the suite:** a user who never opens the apps can still ask, try, approve and receive, from any mail client, with every answer judged by the same engine and kept in their own mailbox.
+
 ## ▶ RESUME HERE (2026-11-08, late): film rc4 BUILT, a labelled scripted demo
 **Deliverable for the owner's posts:** `~/Videos/Think_Global_Act_Local_EN_rc4.mp4` (243.6 s) + `…_rc4_narration.txt`. It shows the AI using the app through the connector (§18): the menu the AI is handed (the connector's real `tools/list`), then **a scripted demo**: `scripts/film_neuro/mock_session.js` stands in for the AI (owner 2026-11-08: *"Can u just do a mocked up movie"*; earlier: mock an AI proposal in a sandbox, no model calls), sends brief G4 through the live connector to the real app, and every answer on screen is the app's own, from the connector's call log (`evidence/session_calls.jsonl`). The card says "A scripted demo: an AI's part, played by a test script", and the last box quotes the connector's own decline rule, not invented AI words.
 **Witnessed:** resolve 73 facts, 0 missing; guard PASS (80 numbers on cards, 15 spoken; plants caught; stills sha256 pinned); W-FILM-NEURO-LIVE SAME (panel = the connector's answer, 2,349 bytes); recorder layout 79/79, 0 console errors; fit 17/17 DETAIL, tone 0 WRONG; captions 20 clamped, 0 overlaps; frames 5,847 = the silent picture; longest silence 7.5 s (end card); −16.5 LUFS. Logs: `scripts/film_neuro/logs_rc4/`.
@@ -1183,6 +1246,7 @@ Proposed, **one question for the owner (21.6 Q1)**. The owner's list mixes *who*
 - **One list, all channels:** `tools/list` for an AI, the email command vocabulary, the mobile cards' buttons and the script runner's keywords are generated from the same list (§19 design point 2).
 
 ### 21.3 Email as the spine (the owner's "ERP-less ERP")
+> **Wording corrected by the owner 2026-11-10 (§0.9):** email is the killer app the Email actor rides on (asynchronous, reliable, a durable backup and relay, links and vetted scripts), not the framework's spine. The autoresponder spec is §0.9.
 - **In:** an email to the ERP's address, or a reply to a mail it sent. Its subject or token names the document. The body or a button-link picks a listed verb (`Approve`, `Complete`, `Reject`). The adapter parses, binds (known address + per-action token; signature where the stakes need it), and dispatches.
 - **Out:** every engine answer is a mail: the result, the reason for a rejection, the next legal verbs as reply options, and reports as attachments (the report output the AD defines; never a new report engine).
 - **No panel needed** for the flow itself. The ERP window remains for reports and for setup. The SocialPlatformLens persona already lives this way; this section makes it the default door.
