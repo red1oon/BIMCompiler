@@ -1158,7 +1158,18 @@ logs (Watchdog Protocol) before marking ✅:
   (Lead session, not an agent: it is the design centre and the owner will adjust the template shape.)
 - after A–D: BC + Odoo templates (equality witnesses, deletion budget), the open-items sheets + clearing accounts (E3c, Odoo first), then E4 sql connector, E5 DIY screen.
 
-### ▶ RESUME HERE (2026-11-10) — START HERE: §ENGINE-SPEC is written; next session launches the lanes (§ENGINE-SPEC §7)
+### ▶ RESUME HERE (2026-11-10b) — START HERE: lanes A–D DONE + all merged; next = Odoo onto the engine (one owner question) → E3c open items
+**On bim-ootb main @e2b6c92f, sw v1029:** #2784 engine + SAP template · #2787 E1 opening stock CO (Odoo/BC) · #2788 ImportInvoice 207 · #2789 ImportGLJournal 220 + GL Journal DocAction ·
+#2790 BC template. Details + § lines: §ENGINE-D-SPEC and the A/B/C/D-BC blocks right after it (end of file). Witness to re-run first: `node erp/tests/witness_migrate_engine.js`
+(`§MIGE verdict=PASS judged=30`).
+**⛔ owner questions (2):** (1) **Odoo door:** SAP's agent writes RAW rows and the browser runs the template; Odoo's agent (export.js, 376 lines) maps inside the agent and ships a
+finished workbook. Moving Odoo onto the engine = either the agent ships raw rows (same as SAP; the agent zip shrinks, the template is editable in the browser) or the agent bundles the
+engine + template (export stays one file). Recommend: raw rows, like SAP. (2) §6: iDempiere raw `psql COPY` fast path vs the identity template.
+**Then, in order:** E3c open-items sheets (GL journal = TB with clearing accounts, open AR/AP on Opening Charges with DocTypeName, payments) on the merged 207/220 ports, Odoo first ·
+the open items named under A/B/C (stock VALUE: no source carries a cost → port ImportInventory :546-564; commitEx seam; ws_kernel model_journal; §IINV tag collision; seed c_activity
+and 2026 GL periods) · E4 sql connector · E5 DIY screen.
+
+### ▶ (superseded) RESUME HERE (2026-11-10) — §ENGINE-SPEC is written; next session launches the lanes (§ENGINE-SPEC §7)
 Live: SAP B1 alpha (bim-ootb #2774) · one Migration User Guide (BIMCompiler #492, #494, deployed) · films SAP EN + ZH rc1 · §B3-SCOUT (the cut-over / open-items method, sourced) ·
 **§ENGINE-SPEC** (connector · JSON template · target · loader+verifier; the common thread §6; lanes §7). **First:** read §ENGINE-SPEC §0 (the measured DRAFTED-stock defect) and §6's
 one open owner decision (iDempiere raw fast path vs identity template). Then launch lanes A, B, C as Sonnet agents in parallel; the lead session takes lane D.
@@ -1169,3 +1180,90 @@ one open owner decision (iDempiere raw fast path vs identity template). Then lau
 point; needs the drawer-number meaning from a source, not memory; an SQLQuery is a saved object = a write, so opt-in) · stock at a date · several price lists · film TH/MS when asked (EN + ZH rc1 done; guide = MigrationGuide.md §SAP, §GUIDE-CONSOLIDATED).
 **Still open from earlier:** §LAG · Odoo 16/18 field names · B3 balances/open documents (all sources) · twin PO.set length cut (generic) · bim-document plugin start failure
 (UNIQUE ad_window_access — seen again on the live page this session) → its lane.
+
+### §ENGINE-D-SPEC — E2 engine core, the lead session's lane (2026-11-10; written before the code)
+**Lanes A/B/C dispatched 2026-11-10 (Sonnet, own `/tmp/wt-lane{A,B,C}-*` worktrees, auto-merge PRs):** A = E1 opening stock via `I_Inventory` + ImportInventory CO · B = port ImportGLJournal 220 ·
+C = port ImportInvoice 207. Their results are recorded here by the lead after the Watchdog read of their § lines — nothing is ✅ before that.
+**What D builds (bim-ootb, `erp/migrate/`, pure ES module, browser + node, no I/O / clock / random):**
+- `engine.mjs` — `load(template)` validates (unknown operator, unknown block key, a reference to a sheet not yet produced, a `${VAR}` not declared = REFUSED at load, named);
+  `run(template, connector, variables)` → `{ book, manifest, provenance }` — the SAME triple the hand converters return, so the plan/load screen is untouched.
+- `connectors/export_json.mjs` — kind `export-json`: reads a file an agent already wrote (today `sap_export.json`); `describe()` = the agent's own manifest (fields read / missing
+  per set), `rows(set)`. The OData reading stays in the agent for now (it is the user's door, already witnessed); moving it into an `odata` connector is a later step, named.
+- `templates/sap-b1-10.json` — the SAP converter re-expressed as data.
+**Template shape — §ENGINE-SPEC §2, with three additions the SAP converter forces (each stated, the owner may adjust):**
+1. `entities` stays keyed by the target table, but a value may be a LIST of blocks — one sheet fed from two sources (C_Location ← partner addresses AND warehouses; M_Locator ←
+   warehouses AND bins; AD_User ← contact persons OR the card's own contact). Key order = evaluation order (JSON keeps it); a block reading a sheet later in the order is refused at load.
+2. Block keys (closed set): `from` (a source set, or `{ "of": <sheet>, "each": <child list>, "first": bool, "ifNone": {...} }` = the children of the source rows ANOTHER block
+   accepted — e.g. addresses only of partners that were not refused) · `where` (row not taken, uncounted — only where the converter skips silently today, e.g. an empty address)
+   · `refuse` `[{ "when": expr, "why": text }]` (counted into `manifest.refused`) · `fields` · `unique` (a column: second row with the same value not added) · `group`
+   `{ "by": [expr], "sort": true, "sum": { col: { "of": expr, "places": n } } }` · `pick` `{ "sortBy": expr, "prefer": expr }` (ONE row: the preferred, else the first) ·
+   `prov` (the provenance record) · `patches` / `notes` / `problems` (each `{ when?, rows?: expr, ... }`, emitted after the block in evaluation order).
+3. Expressions add `if[c,a,b]` · `in[x, [..]]` · `num` · `str` · `cut[x, n]` (JS slice) · `uuid5[x]` · `seq[name]` (a running counter, shared by name) · `exists[sheet, col, x]` ·
+   `out[sheet, col]` / `src[sheet, field]` (the first produced row / its source row) · `count[sheet]` · `countWhere[sheet, expr]` · `@name` (an export-level scalar, e.g. the
+   company's Country) · `%name` (a value the template computed once in `let`). Still no `eval`, no JS in a template.
+**Acceptance (W-MIGRATE-ENGINE, `erp/tests/witness_migrate_engine.js`, §MIGE lines):**
+- `LOAD` the template loads; each of 6 malformed templates (unknown op, unknown key, forward reference, undeclared variable, unknown sheet, bad `group`) is REFUSED with its name.
+- `GUIDE` on the guide fixture (`fixtures/sap_b1_guide`, through the mock Service Layer + agent, as W-SAP-MIGRATE does): engine book == `sap_migrate_convert.convert` book cell
+  for cell, AND manifest (patches, refused, notes, problems, sheets) and provenance equal.
+- `DIFF` the guide fixture prints almost no record (1 partner, 3 items, no address, price or stock), so GUIDE alone is scope-blind: a seeded differential run feeds BOTH
+  implementations the same N generated exports built only from the field names and SAP enum member names the converter itself reads (cLid, itFixedAssets, tYES, at_Other …)
+  — a test input for equality of two implementations, never shown as business data — and prints per-rule coverage (which converter branches were hit, INCONCLUSIVE for a
+  branch never hit). Every differing cell is printed (sheet, row, column, both values).
+- `MUTANT` one rule changed in a COPY of the template (e.g. the lead refusal removed) → DIFF must report a difference; a DIFF that cannot fail is not a witness.
+- **Only then** (deletion budget): `sap_migrate_convert.convert` becomes `run(template, exportJson(exp), opts)`; lines −/+ stated; W-SAP-MIGRATE re-run unchanged.
+**D ✅ BUILT (witness) 2026-11-10 — bim-ootb PR #2784 (auto-merge), branch `feat/migrate-engine-core`.** `erp/migrate/engine.mjs` (213) + `connectors/export_json.mjs` (25) +
+`template_loader.mjs` (10, fetch in the browser / file in node; precached, sw v1025) + `templates/sap-b1-10.json` (146). `plugins/sap_migrate_convert.mjs` −114/+11 = `run(TEMPLATE,
+exportJson(exp), {CUTOVER, PRICE_LIST})`; the hand converter is kept ONLY as the test oracle `erp/tests/fixtures/sap_convert_reference.mjs` (frozen, never edited to pass a diff).
+Log `/tmp/count_logs/migrate_engine.log`: `§MIGE-LOAD PASS judged=8` (6 malformed templates refused, each named) · `§MIGE-FIELD PASS` (30 `$Field`s ⊆ the agent's SETS) ·
+`§MIGE-GUIDE PASS judged=3` (book cell for cell, manifest, provenance) · `§MIGE-DIFF cases=400 cells=72539 differing_cases=0` · `§MIGE-COVER hit=32/32` · `§MIGE-MUTANT PASS judged=5`
+(each mutant caught) · `§MIGE verdict=PASS judged=18 failed=0`. W-SAP-MIGRATE log byte-identical before/after (`§SAPM-VERDICT PASS judged=23 failed=0 inconclusive=10`).
+Browser wiring (Playwright, wiring only): `§MIGE-BROWSER template=sap-b1-10 bpRows=1 problems=0 pageErrors=0 verdict=PASS`.
+**Named, found while re-expressing:** the hand converter splits its stock key on `|` (`k.split('|')`), so a warehouse or item code containing `|` would be cut — the template keys
+the group by the two values (correct); the generator avoids `|` so the two still agree. Not a live risk for B1 codes seen so far; fixed for free when the oracle retires.
+**Next (D continues):** `bc-w1.json` + an `excel` connector (BC RapidStart) == today's BC workbook on the Contoso fixture → delete bc_migrate_convert's mapping; then `odoo-17.json`.
+**A ✅ (witness, Odoo + BC) / SAP INCONCLUSIVE — 2026-11-10, bim-ootb PR #2787 (auto-merge), Watchdog-read by the lead.** §E1-SPEC (lane's): the converters and the Ninja workbook are
+UNCHANGED (M_Inventory + M_InventoryLine stay, the owner's format); the ONE shared loader (`odoo_migrate_form.mjs`, used by the Odoo, BC and SAP forms) rewrites the two sheets into
+one `I_Inventory` sheet loaded with the masters; then a generic form hook `after(trx)` (`AdFormGeneric.executeAfter`, its own Trx, called by the host after the stage-1 commit) runs
+ImportInventory 219 with DocAction=CO and throws, naming the reason, on any refused row or any document not CO. Cost: two commits instead of one (the process reads products/locators
+by SQL, ImportInventory.java:221-298, which cannot see the masters still pending in stage 1).
+BEFORE (origin/main): `§E1-STOCK-CHECK BC key=doc-CO FAIL got=[{"s":"DR","n":1}]` · `key=transaction FAIL m_transaction=0` · same for ODOO (2 DR). AFTER: BC `doc-CO OK` · `onhand OK
+(39 keys == sheet QtyCount, nothing else on hand)` · `transaction OK (39)` · `§BCM-VERDICT PASS judged=18`; ODOO the same with 26 keys, `§OF-VERDICT PASS judged=18`; browser host path
+`§OFL-VERDICT PASS judged=13`. Regressions: `§NM-VERDICT PASS judged=31`, `§IINV-ALL judged=23 failed=0 verdict=PASS`.
+**Still open (named, not done):** (1) **SAP stock** never loaded+completed in a tenant — `§SAPM-STOCK verdict=INCONCLUSIVE judged=0` (the guide fixture has no stock); only a sheet
+SHAPE check passes. (2) **Cost / Fact_Acct:** `§E1-COST … fact_acct rows now=0` — no source sheet carries a unit cost, so no cost adjustment and no books for the stock; the
+IsUpdateCosting refusal stays (ImportInventory.java:546-564 not ported). The guides' "opening stock" claim is now true for QUANTITIES (Odoo, BC), not for stock VALUE.
+**A MERGED** (#2787 on main @802d9514; the lead merged main into it after #2784 — sw v1026, every witness re-run PASS: `§MIGE PASS judged=18`, `§BCM-VERDICT PASS judged=18`, `§OF-VERDICT PASS judged=18`, `§NM-VERDICT PASS judged=31`).
+**B ✅ (witness) — ImportGLJournal 220 ported, bim-ootb PR #2789 (auto-merge), Watchdog-read by the lead.** `erp/processes/ImportGLJournal.js` (:65-91 prepare, the whole SQL phase :98-575,
+balance logs :577-614, Errors refusal :616-637, batch/journal/line loop :649-832, closing :834-844) + I_GLJournal (AD_Table 599, 70 cols) + **`erp/model_journal.js` NEW: the twin had
+NO GL Journal DocAction** (`processIt(gl_journal,CO)` = "no DocAction class registered") — ported from MJournal.java / MJournalBatch.java: Prepare, Complete, Close, Void (journal),
+Approve, Reject; Reverse + ReActivate NOT ported (engine answers "not implemented", named). Log `/tmp/count_logs/import_gljournal.log`: `§IGLJ-RESULT verdict=PASS judged=45 failed=0`
+(CO: Fact_Acct DR==CR==1000 over 2 rows, per account == the import rows, a 2nd Complete does not double-post · ERR: 9 legacy texts + `WARN=Zero Source Balance,` · UNBAL refused
+`@UnbalancedJornal@` · REFUSE: IsImportOnlyNoErrors=Y refuses the whole run). Mutants `§IGLJ-MUTANTS total=21 killed=21 survived=[]`. Regressions PASS: IMPORT-ORDER 44, IINV 23, IPAY 54,
+IPROD 15, RECUR 36, WGLJ. Note: ImportGLJournal itself has no DocAction parameter in legacy — it creates Drafted documents; the cut-over method completes the batch after the import.
+**Open on B (not accepted divergences — TWIN CARDINAL RULE, fix on the SQLite side):** (1) legacy commits the I_ErrorMsg marks (`commitEx` :616/:624) BEFORE refusing a run with
+`@Errors@=n`; the twin's one-Trx host drops them (`§PROC-UNPORTED ImportGLJournal commitEx()…`) — the user would not see WHICH rows failed. Same seam for every ported import that
+commits mid-run → a host-level fix (a process may commit its own Trx), not a per-process patch. (2) `model_journal` is not in `ws_kernel.js`'s core list → a WebServices-hosted
+Complete of a GL journal fails (one-word add, after #2789 lands). (3) FX pair is legacy's own: the import takes MAX(MultiplyRate) incl. an inactive rate (:301-312, 124.90) while
+posting uses active rates only (117.65) — both ports faithful (`§IGLJ-NOTE`); check against the real iDempiere before calling it a legacy bug. (4) Seed 2026 periods "never opened"
+— the witness pins 2006-11; a real cut-over at 2026-12-31 needs its GL period opened first (the cut-over runbook must say so).
+**C ✅ (witness) — ImportInvoice 207 ported, bim-ootb #2788 MERGED (main @5c29f602), Watchdog-read by the lead.** `erp/processes/ImportInvoice.js` (397): SQL phase :99-510, BP loop
+:515-640, invoice loop :651-802, closing :804-813, prepare :63-83. NAMED unported: new BPartner :546-553, new Location :577-593, new Contact :616-626 (`§PROC-UNPORTED` + "ERR=Not ported"
+then legacy's "ERR=No BPartner, "). Twin infrastructure it had to add: `MInvoice_beforeSaveNew` (MInvoice.beforeSave :1144-1283 for a process-saved header: currency, price list,
+payment term, doc type target, FX gate; cash-plan-line step NOT ported) + Doc_Invoice ARI charge line → C_Charge_Acct.Ch_Expense_Acct (DocLine.getAccount :447-461; before this an
+AR charge line answered "not ported", so open AR could not post at all). Log `/tmp/count_logs/import_invoice.log`: `§IINV-RESULT verdict=PASS judged=56 failed=0`; Opening Charge
+AR + AP: Fact_Acct balanced 161.12, Posted=Y, IsPaid=N, open 161.12 by an independent allocation oracle, DocumentNo copied; mutants `§IINV-MUTANTS total=23 killed=23 survived=[]`.
+**Open on C:** (1) the seed has NO default ARI/API doc type → a row without DocTypeName ends "ERR=No DocType, " — the open-items sheets MUST carry DocTypeName ('AR Invoice'/'AP
+Invoice'). (2) DocAction has no "no processing" mode (empty → PR → the invoice is IP, not posted) — the cut-over runs it with CO. (3) twin seed has no `c_activity` table
+(`§PROC-SQL-ERROR`, same as ImportPayment/GLJournal) — a seed gap. (4) **log-tag collision:** W-IMPORT-INVOICE prints `§IINV-*`, the SAME prefix as W-IMPORT-INVENTORY (`§IINV-ALL`) —
+a grep over both logs cannot tell them apart; rename the invoice witness tag (e.g. `§IINVC-`). (5) no mutant exercises the Trx savepoint around [setDocAction+processIt+saveEx].
+**B synced by the lead** after #2788: main merged into `feat/import-gljournal-220` (sw v1028, ad_import_tables keeps BOTH I_Invoice and I_GLJournal), re-run PASS: IGLJ 45 · IINV(invoice) 56
+· IINV(inventory) 23 · IMPORT 44 · IPAY 54 · IPROD 15. #2789 auto-merge armed.
+**D-BC ✅ BUILT (witness) 2026-11-10 — bim-ootb PR #2790 (auto-merge).** `bc_migrate_convert.mjs` −159/+10 = the engine on `templates/bc-w1.json` (198); reader + enumName moved
+verbatim to `connectors/bc_package.mjs`, target contract to `migrate/workbook.mjs`; hand converter kept only as the oracle `tests/fixtures/bc_convert_reference.mjs`. Engine +76/−23:
+block keys tag/sort/once/rename, refuse.silent, group.having; ops enum caption re replace trim gt lt len take any obj with lookup treeDepth row hasSet counter.
+Log `/tmp/count_logs/migrate_engine_bc.log`: `§MIGE-BC-GUIDE` Contoso ×2 cutovers 0 differing of 3,734 cells · `§MIGE-BC-DIFF cases=300 cells=630421 differing_cases=0` · `§MIGE-BC-COVER hit=34/34`
+· `§MIGE-BC-MUTANT judged=6 failed=0` · `§MIGE verdict=PASS judged=30`. The DIFF FOUND two real engine defects before passing (each fixed in the engine, not the oracle): refusals were counted
+per block (the converters count one line per sheet + reason); the field check credited a lookup's key fields to the wrong table.
+**Named:** the generator never blanks a primary key (`No.`, `Code`, `Customer No.`, `Item No.`): with a key missing the hand converter writes "undefined" into keys, the engine "" — not reachable
+from a BC export. Line budget so far: converters −273, engine+connectors+loader+workbook +385, templates +344 → the shrink comes with Odoo (export.js 376 lines, the agent side).
+**Next:** `odoo-17.json` (connector `odoo-xmlrpc` = export.js's reading half, runs in the agent) · then E3c open-items sheets on the merged 207/220 ports · E5 DIY screen (variables → form fields).
