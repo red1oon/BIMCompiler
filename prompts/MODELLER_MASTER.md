@@ -93,6 +93,17 @@ C3 lands with the REPLACE verb.
 - #2760 + #2762 the walk build-up runs on rendered time and is held until the walk's commit is done (W-E2E-REVEAL-CLOCK 5/0).
 - #2763 + #2764 walker rules readable/editable as JSON: toolbar "Rules" → the project's ONE JSON editor, now `common/settings_editor.js`; edits are cells re-applied on every open, Reset, Download (W-E2E-RULES-EDIT 7/0). Spec bim-ootb `prompts/MODELLER_RULES_EDITOR.md`.
 **Films:** `~/Videos/HVAC_FP_Walker_In_Action_narrated_EN_2026-11-09.mp4` (narrated EN, `FILM_NARRATION.md` §WALKER-FILM); silent take `~/Videos/Modeller_Walk_HVAC_FP_BeforeAfter_2026-11-09.mp4`. Recorder `scripts/film_modeller_walk.js` (spec §FILM-WALK-BEFORE-AFTER below). Private inputs (neutral-name copy, takes, narration parts) in the private walk folder `film_ba/`; never commit them.
+**New 2026-11-07: §EDIT-REPORT (row 41) slice 1 LIVE, one grid move (bim-ootb #2674, sw v233). Spec and RESULTS at the end of this file. Later slices need red1's go.** **The proposer-test lane built on it resumes from `NEURO_SYMBOLIC_ORDER_CONTRACT.md` ▶ RESUME HERE.** *(carried from `master`, 2026-11-07, merged into this file 2026-11-10)*
+**🤝 Design-lane inputs (handshake with the design / BIM Document lane, agreed 2026-11-10; this lane writes and keeps this block, the design lane adds one line here, or messages this lane, whenever it hands over a spec; specs stay in their own topic files; no project or client names):**
+- **§12 Project inputs pre-processor**, bim-ootb `prompts/DISC_WALK_DRAWN_INTEGRATION.md` §12 (spec, design lane 2026-11-10; build = this lane). **Order of trust:** model → issued document → owner-stated row → named code default → borrowed/generated (always provisional); a lower step never overrides a higher; two sources disagreeing = `§INPUTS-CONFLICT`, neither applied.
+- **One queue, in this order** (all under that order of trust):
+  a. SampleHouse rooms from its own IFC (`IfcSpace` ×4, already in `SampleHouse_extracted.db`) → a generated section of its self-heal patch. A `WalkerDoctrine.md` §14 defect ("rooms are auto-infused into every ARC": extract `IfcSpace` when present). First. Detail: §NO-MESH-RESIDENTIAL below.
+  b. The mesh miner (`build/project_rule_mesh_binding.py`) binds WITHIN the discipline the extraction records. A discipline with no real mesh for a class gets a gap row under (e), never a mesh from another discipline (`WalkerDoctrine.md` §11).
+  c. §12b `element_pset_native` in the shared extractor (standard non-`Common` sets + the authoring tool's own sets; `native_unit_map` / `native_prop_map` are data rows; an untyped value with no unit row → `value_si` NULL, `unit unknown`). Census: Revit electrical data only on Duplex, HHS Office and WBDG Office (8 of 122 source IFCs), so the circuit/load first consumer is witnessed on Duplex MEP.
+  d. §12a register gate: CO = placed, IP = provisional and out of totals, DR/RE = refused, no status = provisional. **Not blocked:** the tool path takes `--register=<json>`, so build and witness it now with a JSON fixture; only the later in-browser UI needs the BIM Document rows + the sha256 file-store route. The register EXPORT (ERP rows → JSON) is the ERP lane's job, not this lane's; the design lane says who takes it. The register's discipline codes (ARC, STR, MEP, ELE, FPR, CIV) map to walk disciplines through ONE data row set, never code.
+  e. §12c gap report `input_gap` / `§INPUTS-GAP`, reasons: `no rooms in model`, `no real mesh for class` (from a, b), `unit unknown` (§12b), `conflict` (§12a/b), plus §12c's own `not in model` / `no issued sheet`.
+- **Seams to keep (do not break from this lane):** (1) BIM Document "Open" → the Modeller's open route + `common/file_store.js` (bim-ootb #2747; §BIMDOC-OPEN in the archive); §12a's later UI fetches register bytes through the same route. (2) The object layer, BIMCompiler `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` §0.5 + §0.8 (deferred): "Modeller edits through the object engine" would change how every Modeller edit is written. Read it before changing the edit write path. Its dictionary patch is on the Viewer's `buildings/Duplex_extracted.db` (#2772/#2778), the same DB the mesh miner reads (rows added only; no conflict measured).
+- **⛔ Q9 (owner decides), SampleCastle has no rooms, a band row was measured from a MIX of devices:** design-lane advice now *proportional allocation*: the row's own source meshes are allocated in proportion to the measured mix (deterministic largest-remainder, stable order), so placed counts per mesh equal the row's mix. Each placement stays provisional (step 5), carries `meshFrom=<source guid>` and `mix=<k of N>`, is never shown or counted as an identified device, and stays out of totals. (Plain "in turn" was withdrawn: it gives each distinct mesh equal counts, which falsifies the measured mix.) If the owner wants no per-device claim at all: the doctrine fallback is the §11 bbox wireframe labelled with the mix.
 **4D answer (owner asked):** `4D_MODEL_INTEGRITY.md` §SHIM-FACING. The shim face does not fix "midair" (that is schedule ORDER: the elected support is scheduled later); it can feed a §C ruling.
 **⛔ Owner decisions open (ask one at a time):**
 1. §C: "a hung element's work follows its carrier's task" (262 of 3,065 midair on Terminal).
@@ -119,7 +130,7 @@ C3 lands with the REPLACE verb.
 - Rooms in the source IFCs: **SampleHouse 4 `IfcSpace`** (Living room, Bedroom, Entrance hall, +1; `internal/sources/Ifc4_SampleHouse.ifc`, also `bim-ootb/IFC/SampleHouse_ARC.ifc`), dropped by the extraction. **SampleCastle 0.**
 **Take (buildable):** (1) SampleHouse: recover its 4 rooms verbatim into its self-heal patch (precedent: `patches/Terminal_ARC.db.sql` restores 79 `spatial_structure` rows), so it walks from schedules with each device's own real mesh. (2) Fix the miner to bind within the discipline the extraction records; a class with no instance of that discipline gets no row (refuse).
 **▶ NEXT, buildable (take (1), SampleHouse rooms), measured 2026-11-10:** the 4 rooms are already extracted verbatim in `bim-ootb/modeller/SampleHouse_extracted.db` `spatial_structure` (Living room c=(−3.08,1.58,1.25) s=9.31×5.66×2.5; Bedroom; Entrance hall; Roof c.z=3.0); `SampleHouse_ARC.db` has no `spatial_structure` table. Room extents [−7.73,6.12]×[−1.25,4.41] line up with the ARC walls (x 6.24, y 4.55, y −1.22). Raw element centres differ between the two DBs (the extracted DB stores placement origins), so the witness must prove the frame, not assume it. Patch convention: `patches/SampleHouse_ARC.db.sql` is GENERATED ("regenerate, do not hand-edit", `scripts/gen_rel_fills_host_patch.py` + an aggregates section): add the rooms as a generated section (generator reads the extracted DB, `CREATE TABLE IF NOT EXISTS` + `INSERT OR IGNORE`), not a hand edit. Witness, RED on main: SampleHouse ELEC/PLB walk from schedules (`prov sched:space-schedule:*` > 0), every device inside its room box, `§DW-PRIM-LOD lod400` > 0, Duplex unchanged. Watch: space typing of "Living room / Bedroom / Entrance hall / Roof" against the residential schedule types (`typedNoSchedule` count in the log).
-**⛔ Owner question 9 (SampleCastle, no rooms in its IFC):** a band row was measured from a mix of devices. Which mesh does each placed device take? (a) the discipline's most common mesh for that class (every Level-2 light would be the pendant, but Level-1 wall devices would all be one receptacle); (b) the row's own source meshes in turn, reproducing the measured mix; (c) keep refusing. Advice: (b).
+**⛔ Owner question 9 (SampleCastle, no rooms in its IFC):** moved into the 🤝 Design-lane inputs block above (with the design lane's proportional-allocation advice; the earlier "(b) in turn" advice is withdrawn).
 
 **Buildable next, in order:**
 1. Re-measure the private wall-alarm residual on main (predicted: the 13 above-slab alarms now `noTarget`).
@@ -637,6 +648,7 @@ Format, one row per item, ranked most-blocking first:
 | 38 | O15 | **§GRID-SPAN-GATE — a grid drag must not stretch a structural bay past its span limit** (red1 2026-10-02: "columns have to bear load as industry stds. We cannot drag long leaving columns stretched out"; "those coloring is brilliant"; "display ie 'limit for this column. Add one more?' when user hovers over the red"). EXISTS, unwired: `str_walker.js:192-215` `SW_SPAN_RULES` (Eurocode-cited preliminary rules — STEEL max 18 m, depth≈L/20, δ≤L/360; RC max 12 m, depth≈L/12, δ≤L/250) + `swCheckGirder` → GREEN/ORANGE/RED, used today only by the STR walker tab (`str_walker_bridge.js:331`). `bonsai_gridmove.js`/`sdg_gate.js` have NO span check. BUILD: (1) during a gridline drag, colour every bay the drag widens/narrows with `swCheckGirder` live (no new thresholds — the table is the only source; material from the building's measured beam/column class, else ⛔ refuse to colour rather than guess); (2) ORANGE hover = the required preliminary depth (span/ratio); (3) RED hover = "Limit for this column span (<max> m, <material>). Add one more?" → one click inserts a column line at the bay midpoint, columns COPIED from the building's own existing column type/section (never invented); cancel keeps the drag refused at the limit; (4) every message carries "preliminary — the structural engineer confirms". Applies only where the grid comes from columns (column-framed); wall-bearing bays use no beam rule. | `str_walker.js` §REGULATORY HANDLER; `GRID_KINEMATICS_SANDBOX_PROOF.md` | witness: drag a Garage (real IfcColumn 140 / IfcBeam 195 in its ARC) gridline across the RC/steel limit → `§GRID-SPAN` lines show GREEN→ORANGE→RED at the exact table spans; hover text carries the limit; "Add one more" adds N columns == lines crossed, each a copy of the measured type, bay spans halve, colour returns GREEN; undo = one step (§ONE-GESTURE-ONE-UNDO); RED-first: today's main colours nothing | ✅ **DONE 2026-10-02** — bim-ootb #1803 (sw v73) + witness #1806; W-GRID-SPAN-GATE **20/0 vs LIVE**; see §GRID-SPAN-GATE RESULT |
 | 39 | O8 | **§THREADS — category/element threads on the history dotline + scoped undo along a glowing thread** (red1 2026-10-02). One log, many views: chips `+ Walls (4)` expand a per-type strip; tap → blue glow + "Undo: Walls only" → Ctrl+Z/Y travel that thread only; scoped undo APPENDS a revert (never erases); dependents cascade or are refused by name. Shared with Viewer/ERP via `common/history_bar.js` `categorize(entry)`. | `HISTORY_PARALLEL_TIMELINE.md` §THREADS (the spec) + §THREADS-STEP1 + §THREADS-STEP2-HOLD | 3 steps there, each RED-first | **step 1 ✅ / step 2 ⏸ HOLD (red1: ponder a better shape)** — step 1 = read-only category scrubber, LIVE (bim-ootb #1807 + follow-up), W-HISTORY-THREADS vs LIVE; step 2 on `wip/history-threads-scoped-undo`, no PR |
 | 40 | O3 | **§SCRIPTED-EDITS — HOLD until §THREADS steps 1-2 + §ADHOC-WF-BATCH exist** (red1 2026-10-02 brainstorm, sobered and agreed: "Keep scope in check, align well, or hold off"). Script = Find selector + existing Modeller action + target values ("Level 2 windows → 1.2 m wide"), run as a PENDING branch (preview → accept/discard), every step through the same gates as a manual edit (span gate, LOD400-or-refuse, conformity), optional budget gate on the §S8 cost Δ. Later, only if the library grows: constraint SEARCH over existing designs ("fits A×B, 2 rooms, 3 windows, 1 door, <10k") → pick → mould. OUT OF SCOPE: generative layout (inventing a plan from constraints) — conflicts with §STRATEGY "no original object making". | this row | — | ⏸ HOLD — do not build before its prerequisites |
+| 41 | O15 | **§EDIT-REPORT — after an edit, say what changed, what was checked, red ink before → after, and what was NOT checked** (red1 2026-11-07: "another wow feature"). Slice 1 = one grid move. Reports only. Slice 1 ✅ LIVE (bim-ootb #2674), RESULTS at the end of this file. Later slices need their own go. |
 
 ### STALE-CLAIMS — verified SHIPPED on origin/main; do NOT re-open (grep-verified 2026-07-30)
 - **O12 zoom-to-selection**: SHIPPED — `§ZOOM-SEL` (#711), `modeller.html:1057`, `witness_e2e_zoom_to_selection.js` exists. The triage's "small, well-specified" read was stale.
@@ -866,3 +878,116 @@ RED-first: on main the gate does not exist → G1 (grid column-derived) and ever
 Found by the dev-toolkit triage, `bim-ootb prompts/DEV_TOOLKIT_NO_AI.md` §7 (2026-10-06). Read from bim-ootb `origin/main` @ fb183ddf. Not fixed — this lane decides.
 - `navigator.storage.persist()` is called in `erp/erp_persist.js` and `viewer/scene.js`; no call in `modeller/`.
   Without it the browser may evict Modeller's local data (Safari ~7-day rule, `erp/DistributedERP.md:323`).
+
+## ▶ §EDIT-REPORT — SPEC 2026-11-07 (row 41). Written before any code. Nothing built.
+red1 2026-11-07: *"giving underlying proofs, report on what is been changed, checked, and how much red ink (clash, safety, structural) comparison. This by itself can be a new feature in our Modeller during authoring of grid or bay"* · *"it be another wow feature."*
+
+**The feature.** After an edit, the Modeller says what changed, what was checked, how the red ink moved before → after, and what was NOT checked. It reports only: the edit stands, the user decides (same spine as §GATE-1). A person dragging a grid is the first user; an outside proposer later reads the same record (`NEURO_SYMBOLIC_ORDER_CONTRACT.md` §7), with no AI in the runtime.
+
+**Slice 1: one grid move, nothing wider.** Column-derived grid on HospitalGarage, the §GRID-SPAN-GATE witness building.
+
+**Read 2026-11-07 at bim-ootb `cddb6188`; most is already there:**
+| Needed | Owner | State |
+|---|---|---|
+| What changed | `commitGridMove` (`modeller.html:2312`): delta, `res.commands`, `res.riders`, `res.verify` | Exists, only reaches `setStat` |
+| One undo step | §ONE-GESTURE-ONE-UNDO | Exists |
+| New clash, door-out, door-crush, clearance, abuts | `SdgGate.evaluate` via `_runGate`, already called on a grid commit (`:2325`) with a before-snapshot (`:2317`); result in `__lastGateDetail` | Exists, but **DELTA-only: it never counts what was already there** |
+| Span signal | `GridSpanGate.fold` + `check` | Exists, but `preview` covers only the bays touching the dragged line |
+| Refusal states | `Bonsai.gridspan.refused`, `§GRID-SPAN … skip` | Exists |
+| Report-composer pattern, verdict words | `reg_report.js` (composer takes numbers from owners; PASS / FINDINGS / INCONCLUSIVE) | Pattern to copy |
+| Beam and column rules | `viewer/structural_sanity.js` takes a `dbQuery` | **Not usable on a live edit:** a grid move is an op-log fold and I found no path that writes the moved boxes back to the tables it reads. Reaches users through the Regulatory Report |
+
+**To build (nothing else):**
+1. **`modeller/edit_report.js`: a PURE composer**, node-testable, dual export, no DOM. Takes the owners' numbers, returns one JSON object. No threshold of its own.
+2. **`SdgGate.pairsOver(boxes, moved, rel, opts)`: the one new count.** Moved elements vs every other, `penetration > clashTol`, skipping `related` pairs, using the SAME `penetration`, `CLASH_TOL` and `rel` as `evaluate`. Run on the before and after boxes. Without this there is no "before" number.
+3. **Span tally:** every piece through `GridSpanGate.fold` + `check`, at the fold before and after the op, counted by signal. Whole building, because `check` is arithmetic. Same material and measured depth both sides.
+4. **Wire at `commitGridMove`, on commit only, never per drag frame.** Emit `§EDIT_REPORT <json>`, set `window.__lastEditReport`, show a small panel beside the existing status. The panel only prints the JSON's values.
+
+**Shape** (numbers invented, to show the layout only):
+```
+Grid y8 moved +0.60 m · 1 change, can undo
+Changed: 12 recomposed, 3 riders · verify ok
+                                     Before  After
+Box overlap > 20 mm, moved elements     4      7    +3
+Beam spans over limit, whole building   9     10    +1   Preliminary — the structural engineer confirms.
+Beam spans needing depth check         21     20    −1
+New door-out / door-crush               —      0
+New clearance < 0.5 m                   —      2
+NOT checked: …one line, from step 0…
+```
+
+**Rules that keep it honest:**
+- **Like with like:** each row states its population and it must be the same on both sides, or the row prints INCONCLUSIVE with no delta.
+- **State the scope:** the overlap row covers moved elements only, and whole-scene is not claimed. It is a box overlap, so never label it "Clashes": it can disagree with the Viewer's Clash panel (`clash_rules.json` tolerances, mesh narrow phase).
+- **A refusal is shown, never a zero:** material unknown, wall-bearing or authored grid → that row says "not judged" and why.
+- **Baseline red is shown:** Garage already holds RED spans (§GRID-SPAN-GATE RESULT item 3, artefact girders), which is why Before is not zero.
+- **Words:** "structural checks", never "safety", "compliant" or "certified". An all-clear table is never summarised as "safe" or "OK".
+- **NOT checked is mandatory:** no NOT-checked line, no report.
+
+**Step 0, before any UI: W-EDIT-REPORT-COVERAGE.** `NEURO_SYMBOLIC_ORDER_CONTRACT.md` §3.1 measured the JAVA gates, not these. Inject the same defect classes (overlaps by class pair, floating column and beam, unit errors, unknown class, duplicate) into `SdgGate` and the span check. Print which fire. The NOT-checked line is generated from this table, never hand-written, and the witness pins it.
+
+**Witness W-EDIT-REPORT** (`modeller/tests/witness_edit_report.js`, real Open, real mouse, on the `witness_grid_span_gate.js` pattern). RED first: on main the report does not exist. Each proves a named issue:
+| Claim | Proves or disproves |
+|---|---|
+| Span row's Before/After equal an independent recount of the fold, and every reported bay's signal equals `check` | The table can be wrong |
+| Overlap row's rise never exceeds what `§GATE red=` flagged new, plus any worsened pair it counts | Report and gate disagree |
+| Ctrl+Z → a fresh recount equals Before; Ctrl+Y → equals After | Report does not follow undo |
+| Same drag twice from a fresh Open → byte-identical JSON | Not deterministic |
+| Drag under 0.05 m → no report, logged NO-OP | NO-OP reads as a pass |
+| Material refused → "not judged", no number | VACUOUS reads as zero |
+| Falsifier `EDIT_REPORT_BREAK=1` (the after-tally reuses the before boxes) must turn the witness RED | Witness cannot fail |
+Log heap and element count at the end of the composer (§PERF BUDGET); no new geometry, no second copy of buffers.
+
+**Not in slice 1:** reject gate (parked, `NEURO_SYMBOLIC_ORDER_CONTRACT.md` STATUS) · bay add, wall stretch, move · session total against the §SAVE-BASELINE · whole-scene overlaps (cost must be measured on Terminal first) · beam/column rules on a live edit · saving reports in the op-log · any new rule or threshold.
+
+**Queue after slice 1, each needing its own go:** bay add (`bay_add.js`) → other gestures → session total at Save → structural_sanity on a live edit.
+
+### §EDIT-REPORT STEP 0 RESULT 2026-11-07 (bim-ootb #2671, `modeller/tests/witness_edit_report_coverage.js`)
+`§EDIT_COVERAGE_SUMMARY defects=28 none=15 by_design=2 verdict=DISPROVED`. `pass=11 fail=0 ran=30`. Falsifier `EDIT_COV_BREAK=1`: `fail=4`, exit 1. Pure node, real data: `SdgGate` on the Duplex's 203 seeded solids and recovered edges (50 fills, 696 abuts), `GridSpanGate` on the Garage's own 17×29 lattice, 228 girders, RC, mixed, depth 0.535 m. Table: `modeller/edit_report_coverage.json`.
+| Defect | Java gates (`NEURO_SYMBOLIC_ORDER_CONTRACT.md` §3.1) | Live edit checks |
+|---|---|---|
+| Same-class overlap, door in slab, pipe in structure, pipe through wall | P06 / NONE / listed but passes / NONE | **RED, all four** |
+| Duplicate position | P05 + P06 | RED |
+| Column 50 m up, beam 200 m away | NONE | NONE |
+| 3100 m wall clear of the building | P02 | **NONE** |
+| 800 m wall clear of the building | NONE | NONE; RED only if it hits something |
+| 0.2 mm thick | P03 | **NONE** |
+| Unknown class | NONE | NONE: the gate receives boxes only |
+| Duplicate guid | schema | NONE (read): boxes are keyed by fid |
+**Only the live checks found:**
+- **⚠ A wall driven 0.300 m into a wall it abuts: NONE** (real pair 15/3). `related` pairs are never a clash, and a grid stretch is exactly the edit that does this. `pairsOver` as specified inherits it. **Open, owner's call: fix the gate, or only report it. Not changed.**
+- NaN coordinates and zero-size boxes: NONE, no throw.
+- An element changed but left off the `moved` list: NONE. The judged set is `res.commands` + `res.riders`.
+- A floating 30 m IfcBeam row: NONE on spans. Only girders the column walk derives are judged (228 before and after).
+- A line dragged past its neighbour: ORANGE, only from the longer bay; no crossing rule. Two lines on top of each other, span 0: NONE.
+- One material per building: on this mixed one, a steel girder at 15 m reads RED, inside its own 18 m limit.
+- Delta-only (E3) and the 20 mm tolerance (E1) are by design, not blind spots. E3 is why `pairsOver` is needed.
+**NOT-checked line today:** duplicate ids · elements changed outside the edit's own list · floating or unsupported elements · grid lines placed on top of each other · invalid coordinates · real beams: only girders walked from columns are span-checked · unknown element types · walls driven into a wall they already touch · wrong units or absurd sizes, unless they hit something · zero-size elements · load capacity · beam and column rules (Regulatory Report only).
+**Amendments to the spec above:** (1) the last two items have no row, because no live check looks at them; they are a constant in the witness, pinned, not generated from a verdict. (2) Twelve items is too long for a small panel: the panel shows a count that opens the list; the JSON and `§EDIT_REPORT` always carry all of them.
+**Not measured:** real meshes in a browser (this is node over folded boxes, the same arithmetic the page calls); Duplex and Garage only.
+
+### §ABUTS-DEEPEN — SPEC 2026-11-07 (red1: "Go with your advice"). Own PR, before slice 1.
+**Issue:** E2 above: `pairCheck` returns at once for any `related` pair, so a wall driven 0.3 m into a wall it abuts fires nothing, and a grid stretch is the edit that can do it.
+**Rule:** an ABUTS pair (in `rel.abuts`, and not a host/filling pair) is RED `abuts-clash` when `penA > clashTol` AND `penA > penB + clashTol`, the same "new or worsened" test the clash branch uses, same 20 mm, no new threshold. Host/filling pairs stay expected contact: a door sits inside its wall by construction. `related` itself is unchanged.
+**Why a new kind:** the toast prints it, Save blocks on it like any RED, and the report can name it apart from an ordinary overlap.
+**Witness:** `witness_sdg_gate.js` A9: driven in → RED; moved together → none; pulled apart → no `abuts-clash`; a door pushed further into its host → none. Coverage E2 goes RED and leaves the NOT-checked line. **Regression check:** the gate-dependent witnesses, node and E2E; any newly RED edit must be shown to be real, not waved through.
+
+### §ABUTS-DEEPEN RESULT 2026-11-07 (bim-ootb #2673)
+W-SDG-GATE 18/0, A9–A9g new. Coverage E2 → RED, `none=14`, and it left the NOT-checked line. **One edit in the regression set logs `abuts-clash`, and it is real:** SampleHouse `gx1` +1 m, W-E2E-STRETCH-RIDE. Wall 23's end goes x=6.12 → 7.12 through wall 22 (6.12..6.41), and wall 6 likewise. 1 RED on main, 3 now. RED blocks Save, so a model carrying this overlap from an edit made in that session blocks until it is resolved.
+**Corrected 2026-11-07: add a bay IS verified.** W-DXF-ADD-BAY 18/0 on main with this fix, its B7 gate check included; W-EDIT-RATES-LINK 4/0, W-DXF-GRID 4/0, W-DOOR-GAP 4/0. PR #2673's "not on this machine" was wrong: the 2026-11-06 cleanup moved the film workspace to `~/.cleanup_holding_2026-11-06/videos/dxf2bim_film_work`, so the default `~/Videos/dxf2bim_film_work/why/cli/marked` is empty. ⚠ Every shed witness needs `SHED_MARKED_DIR` (and `SHED_MARKED`, `SHED_RAW_DIR`) pointed there, and deleting that holding folder would remove their only input. W-BAY-RIDE 6/0 and W-CLIPBOARD 6/0 also pass. `witness_clipboard_keys` fails the same on clean main (K1 "no empty ground point"); the two `playwright` smokes cannot load the module, on either side.
+
+### §EDIT-REPORT SLICE 1 RESULT 2026-11-07 (bim-ootb #2674, sw v233)
+`modeller/edit_report.js`, `edit_report_panel.js`, `SdgGate.pairsOver`, `GridSpanGate.tally`, wired at `commitGridMove`. Witness `modeller/tests/witness_edit_report.js`: 42 pass, 0 fail across three sessions. Falsifier `EDIT_REPORT_BREAK=1`: 3 fails, exit 1. Regression set green. Live bytes match origin/main for all 7 files.
+**Measured, Garage gy8 +1.5 m:** spans over limit 91 → 91, needing a depth check 14 → 19, both equal to a recount from the walker's own lattice and the rule table. Box overlap 2 → 4 on 1 moved element against 864, equal to brute force. New: 2 overlaps, 1 driven into a touching wall. Ctrl+Z and Ctrl+Y recounts return to Before and After. Same edit from two fresh Opens: byte-identical JSON, 1,877 bytes. Cost 7.6 ms, 0 vertices.
+**SampleHouse gx1 +1 m:** "Driven into a wall it touches: 2", overlap 20 → 20, spans "Not judged: no column frame".
+**Spec amendments found while building (supersede the SPEC above where they differ):**
+1. A grid move can recompose no scene element. A clean 0 there would be a vacuous pass, so the overlap row and new rows print "not judged". Not in the spec's list; the first run showed it.
+2. The panel sits at top 62, right 62, inside the toolbar's corner: the toolbar runs along the top and down the right edge. Checked at 1280×860 only, list open, with the toolbar, status and history. **Not run on a phone-sized screen.**
+3. Gesture "Add one more" splits girders, so its span rows print INCONCLUSIVE, by the like-with-like rule. Composer pure-tested (W0c); that gesture was not driven end to end.
+**Observed, not investigated:** on Garage a real mouse drag of gy8 by +1.2 m after an undo recomposed 0 elements, while the hook at +1.5 m on a fresh Open recomposed 1. The report prints this honestly as not judged. Whether the 0 is right is a question for the grid-move lane.
+**Limits to keep in view:** on this building a grid move recomposes few scene elements, while the span row covers 228 girders; the overlap row's scope line says so. One building-wide material, so a mixed building can read a false RED (coverage SP7). The report is not in any user guide yet.
+
+**2026-11-07, bim-ootb #2685 (`NEURO_SYMBOLIC_ORDER_CONTRACT.md` §13):** the span row now names the limit, the material and the over-limit bays whose span changed, W-EDIT-REPORT R12. Fixed in the same PR: any `GEOM_MOVE` of a 3-axis placed element also turned it and changed its height, W-BLOCK-SHIFT A1, A2. ⚠ The live Save gate on a rotated building still uses world boxes, so a long member's box is metres wide; that question is the owner's (§13.6).
+
+**STATUS:** slice 1 shipped. Queue, each needing its own go: bay add → other gestures → session total at Save → structural_sanity on a live edit. A CLI call returning this JSON is red1's idea (2026-11-07), and needs the fold shown to run outside the browser first; §SCRIPTED-EDITS (row 40) stays on HOLD unless red1 lifts it.
+
