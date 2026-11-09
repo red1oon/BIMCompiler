@@ -1172,6 +1172,7 @@ The old finished-workbook path keeps working until then (a user's already-downlo
 identity template → compare with the raw copy table by table (rows, PKs after re-band, column values) on the pilot tenant. Retiring the fast path is a LATER, measured call (time
 and memory per 10k rows on both), not done here. Reason: the copy is already the identity and proven by counts; the witness adds the column-level proof without slowing the user.
 Order: E3c first (below), then Odoo (1), then the iDempiere falsifier (2).
+**▶ 2026-11-10c: §E3C-SPEC is WRITTEN (end of file) — measured facts, the five pieces, what is deliberately not built (bank, payments → E3d), witnesses. Build status is recorded under it.**
 **Then, in order:** E3c open-items sheets (GL journal = TB with clearing accounts, open AR/AP on Opening Charges with DocTypeName, payments) on the merged 207/220 ports, Odoo first ·
 the open items named under A/B/C (stock VALUE: no source carries a cost → port ImportInventory :546-564; commitEx seam; ws_kernel model_journal; §IINV tag collision; seed c_activity
 and 2026 GL periods) · E4 sql connector · E5 DIY screen.
@@ -1294,3 +1295,74 @@ per block (the converters count one line per sheet + reason); the field check cr
 **Named:** the generator never blanks a primary key (`No.`, `Code`, `Customer No.`, `Item No.`): with a key missing the hand converter writes "undefined" into keys, the engine "" — not reachable
 from a BC export. Line budget so far: converters −273, engine+connectors+loader+workbook +385, templates +344 → the shrink comes with Odoo (export.js 376 lines, the agent side).
 **Next:** `odoo-17.json` (connector `odoo-xmlrpc` = export.js's reading half, runs in the agent) · then E3c open-items sheets on the merged 207/220 ports · E5 DIY screen (variables → form fields).
+
+### §E3C-SPEC — open balances at the cut-over, Odoo first (2026-11-10c, lead session on Fable 5.2; written before any code)
+**Re-run first:** `/tmp/count_logs/migrate_engine_resume.log` → `§MIGE verdict=PASS judged=30 failed=0` (bim-ootb main @e2b6c92f+).
+**0. Measured before writing (2026-11-10; probes in the session scratchpad, read only):**
+- **Source (live odoodemo, Odoo 17.0, company 1, USD only):** 103 posted `account.move.line`; trial balance over 9 of 47 accounts, **sum 0.00**: 101401 bank (`asset_cash`) 12,444.87 ·
+  101402 −9,944.87 · 101403 12,842.50 · **121000 receivable 4,005.00** · 131000 1,749.15 · **211000 payable −13,410.15** · 251000 −2,197.50 · 400000 −17,150.00 · 600000 11,661.00.
+  Open documents (`amount_residual != 0`): 6 customer invoices +147,180.00 · 5 customer credit notes −143,175.00 (net **4,005.00** == the receivable account) · 6 vendor bills −14,066.92 ·
+  2 vendor credit notes +656.77 (net **−13,410.15** == the payable account). Per partner: AR Gemini 4,005 / Acme 0 (open invoices and credit notes that net to zero) / Azure 0; AP Azure −2,300 /
+  Ready Mat −11,110.15. Payments: 4, all reconciled → **0 unallocated receipts** (nothing to judge for payments on this source). No inventory account carries a balance.
+- **Target (a tenant born by the ported Initial Client Setup):** doc types GL Journal / AR Invoice / AR Credit Memo / AP Invoice / AP CreditMemo exist; GL category Manual exists; ONE tax
+  (Standard 9 %, not exempt); **0 charges, 0 bank accounts, 0 document-controlled accounts** (311 accounts); schema `AutoPeriodControl=Y`, history/future 2 days; 12 periods for 2026 and
+  **0 `C_PeriodControl` rows**. Legacy makes one period control per DocBaseType when a period is saved (MPeriod.afterSave, MPeriod.java:849-871; GardenWorld in the legacy DB: 10,464 rows
+  over 360 periods) → **twin gap** (TWIN CARDINAL RULE: fixed on the SQLite side, step 0 below). The twin's period gate (`model_trade.js` periodOpen :59-76): with auto control a date
+  must lie within today ± 2 days; without it the period control of that DocBaseType must be `O`. A cut-over in a past month is therefore refused until the user does what legacy asks:
+  untick Automatic Period Control and open the period (Period Status, AD_Process 167, ported).
+- **Engine:** the target contract is the fixed 17 sheets (`workbook.mjs` HEADERS/ORDER; SAP and BC are proven cell for cell against it, so it must not grow for them). `lookup` reads
+  PRODUCED sheets only — Odoo's rows point at each other by id (many2one), so a template for Odoo needs a lookup into a raw source set. Amounts arrive as floats (4646.779999…).
+**1. What E3c builds (five pieces, one implementation each).**
+- **(a) the agent's door** (`erp/odoo_agent/export.js`, door duties only — no mapping): beside the workbook it writes `odoo_export.json` (format `odoo-export-json-v1`, the
+  export-json connector's shape: `manifest.sets[set] = { count, fields_read, fields_missing, domain }`, `sets[set] = raw rows`). Sets: `account.account` (id, code, name, account_type,
+  reconcile) · `tb` = `account.move.line` `read_group` by `account_id`, domain posted + `date <= CUTOVER` (the source's own totals; Σ`__count` must equal `search_count` of the domain) ·
+  `open_lines` = `account.move.line`, posted, account type receivable/payable, `amount_residual != 0`, `date <= CUTOVER` (move_id, move_name, move_type, partner_id, account_id, date,
+  invoice_date, date_maturity, balance, amount_residual, amount_residual_currency, currency_id, company_currency_id, payment_id, ref) · `res.currency` of the company (name,
+  decimal_places) · `partner_keys` (id → the BP Value the workbook gave that partner's commercial partner, + held) — a **bridge** set: it exists only until the Odoo masters run on the
+  engine (next step), then the template looks the partner up in its own C_BPartner sheet and the set is deleted. Every field is checked with `fields_get` first (H6, as today).
+  The workbook, manifest.json and provenance.json are unchanged (a user's old download still loads).
+- **(b) the engine** (`erp/migrate/`): **optional open sheets** `OPEN_HEADERS` = `I_GLJournal`, `I_Invoice` (numbered after the 17, emitted ONLY when a template has an entity for them —
+  SAP/BC books stay byte-equal); new operators, closed and validated at load: `find[set, keyField, value, answerField]` (a row of a raw source set by key, indexed) and
+  `round[x, places]`; `group.sum` already exists (one open item per move = the sum of its open lines).
+- **(c) the template** `templates/odoo-17.json` — born with the open-items entities only (the 17 masters join it in the next step). Open items are ordinary `entities` blocks in the
+  same closed language — §ENGINE-SPEC §2's separate `openItems` sketch is dropped (one language, stated change). Variables: `CUTOVER`, `AR_CLEARING`, `AP_CLEARING`, `BANK_CLEARING`,
+  `INV_CLEARING` (account Values), `CHARGE_AR`, `CHARGE_AP`, `TAX_NONE`. valueMap `acctClass`: `asset_receivable`→AR, `liability_payable`→AP, `asset_cash`→BANK.
+  - `I_GLJournal` ← `tb`, one row per account with a non-zero balance: AccountValue = the account's code, or the class's clearing account; AmtSourceDr / AmtSourceCr = the balance by
+    sign, rounded to the currency's decimals; one batch + one journal (`OPEN-TB-<cutover>`), DocTypeName `GL Journal`, CategoryName `Manual`, PostingType `A`, DateAcct = CUTOVER.
+  - `I_Invoice` ← `open_lines` grouped by move, for move types out_invoice / in_invoice / out_refund / in_refund: DocumentNo = the move's name, DocTypeName `AR Invoice` /
+    `AP Invoice` / `AR Credit Memo` / `AP CreditMemo` (the document keeps its kind; legacy shows a credit memo's open amount negative by itself), BPartnerValue through `partner_keys`,
+    DateInvoiced = the invoice's own date (aging stays true), **DateAcct = CUTOVER**, ONE line: ChargeName = Opening Charge AR/AP, QtyOrdered 1, PriceActual = |unpaid amount|,
+    TaxIndicator = `${TAX_NONE}`. **Refused, counted and named** (never silently dropped): an open line of a move that is not an invoice (unallocated payment, manual entry on AR/AP),
+    a partner that is held (own company / internal user), a foreign-currency item — their total is exactly what the AR/AP clearing account must then still show.
+- **(d) the shared loader** (`plugins/odoo_migrate_form.mjs`, the ONE loader of every source form; nothing Odoo-specific):
+  - **refused before anything runs** (summary problem row): the cut-over period is not open for GLJ / ARI / API / ARC / APC — the text says to untick Automatic Period Control and
+    open the period (legacy's own step); the json and the workbook are not the same export (db, company, cut-over differ).
+  - **stage 1** (the existing one transaction): masters + the I_ rows through the Ninja loader + the **prerequisites**, created through the model only when absent and each named in
+    the summary: 4 clearing accounts (C_ElementValue) · tax category + tax *Opening Balance (no tax)* (0 %, exempt, TaxIndicator = `TAX_NONE`) · Opening Charge AR / AP on that
+    category, their `C_Charge_Acct.Ch_Expense_Acct` = the valid combination of AR / AP Clearing. That last link is the whole proof: the journal debits AR Clearing with the receivable
+    balance, each open invoice credits it through its charge → zero when everything came across.
+  - **stage 2** (`after`, own transaction, as E1): opening stock (as today) → ImportGLJournal 220 → Complete of the batch → ImportInvoice 207 with DocAction CO. A refused row keeps
+    its I_ErrorMsg and I_IsImported=N (legacy's own behaviour); the stage throws naming it; the masters stay.
+  - **(e) the verifier** (end of stage 2, every source; `§MIG-*` lines; INCONCLUSIVE when nothing was judged): `TB` Fact_Acct at the cut-over per account == the journal sheet, and
+    the receivable / payable classes == the tenant's own control accounts (the balance lands on the business partner group's receivable / payable account, not on the source's
+    account number — the account map) · `CLEAR` AR Clearing == 0 and AP Clearing == 0 (or == the named refused total) · `OPEN` open amount per partner (C_Invoice, not paid) == the
+    sheet · `BANK` / `INV` clearing reported with their amount and the state OPEN (below).
+**2. Not built in this pass — named, with the measured reason:**
+- **Bank:** the method clears Bank Clearing with an opening bank statement on a bank account. A born tenant has no bank account, no source sheet carries one, ImportBankStatement 221
+  is not ported. So the bank balance stays on Bank Clearing, reported `§MIG-CLEAR bank=OPEN amount=<source bank balance>` (an asserted value, not a PASS). → E3d: C_Bank / C_BankAccount
+  masters + 221 + the opening statement.
+- **Open payments (`I_Payment`, 343):** needs a bank account (same gap) and the demo has 0 unallocated lines — a witness would judge nothing. The lines are counted and refused with
+  their total (above), so the books still prove what is missing. → E3d with bank.
+- **Stock value:** no source carries a cost yet (A open item 2); Inventory Clearing reports OPEN with the source inventory-account balance (0 on the demo → INCONCLUSIVE).
+- **Foreign currency open items**, **due dates** where Odoo has a due date but no payment term (the ERP recomputes the due date from the term; counted in a note).
+**3. Witnesses (claims first; each names the issue it proves).**
+- `W-MIGRATE-ENGINE` cases `ODOO-OPEN-*` (issue: "the template maps the cut-over rows exactly"): on the RECORDED export (`fixtures/odoo_export_2026-11-10/`, written by the agent
+  from the live demo): journal sheet Σ Dr == Σ Cr; per account == an oracle computed straight from the raw `tb` rows (not through the engine); invoice sheet per move == an oracle
+  from the raw `open_lines`; refused == oracle; `find` / `round` / unknown-sheet malformed templates refused at load; mutants (class map entry removed, sign flipped, group removed,
+  refusal removed) each caught; SAP + BC cases unchanged (judged 30 → 30 + new).
+- `W-ODOO-FORM` case `OPENING` (issue: "the migrated tenant's books equal the source's at the cut-over"): tenant born, period opened the legacy way, Process → `TB` per account ==
+  source · `CLEAR` AR == 0, AP == 0 · `OPEN` per partner == source (Gemini 4,005.00 …) · every imported invoice CO, Posted, IsPaid=N · batch CO · prerequisites present and named ·
+  falsifiers: period not opened → refused before anything is written; one open line removed from the json → CLEAR names exactly that amount.
+- `W-GENESIS-*` (step 0): a born tenant has one `C_PeriodControl` per period × distinct DocBaseType, status `N` (MPeriod.java:849-871); Period Status 167 then opens them.
+**4. Order of work:** step 0 period controls (twin gap, own PR) · (a) agent + recorded fixture · (b)+(c) engine + template + W-MIGRATE-ENGINE · (d)+(e) loader + verifier + W-ODOO-FORM ·
+then Odoo masters onto the engine (decision 1), then the iDempiere falsifier (decision 2).
