@@ -16,6 +16,9 @@ real geometry_hash — a measured majority, never a synthesized or borrowed shap
 records how dominant it is; src_guids samples the real elements it came from. A class absent
 from the extraction gets NO row → the walker REFUSEs it honestly.
 
+DISCIPLINE (§MESHBIND-DISC, MODELLER_MASTER.md, 2026-11-10): instances are filtered by the discipline the
+extraction records (elements_meta.discipline == the rule row's disc); none = no row = walker REFUSEs.
+
 DISC MAPPING: (disc, ifc_class) pairs come from the rules DB's own rule_placement rows —
 the classes the walker can generate — never from a hand list.
 
@@ -63,12 +66,12 @@ def project(rules_db, bdb_path, log=print):
         row = bdb.execute(
             "SELECT ei.geometry_hash, COUNT(*) c,"
             " (SELECT COUNT(*) FROM element_instances e2"
-            "   JOIN elements_meta m2 ON m2.guid = e2.guid WHERE m2.ifc_class = ?) total,"
+            "   JOIN elements_meta m2 ON m2.guid = e2.guid WHERE m2.ifc_class = ? AND m2.discipline = ?) total,"
             " GROUP_CONCAT(ei.guid) guids"
             " FROM element_instances ei JOIN elements_meta em ON em.guid = ei.guid"
-            " WHERE em.ifc_class = ? AND ei.geometry_hash IS NOT NULL"
+            " WHERE em.ifc_class = ? AND em.discipline = ? AND ei.geometry_hash IS NOT NULL"
             " GROUP BY ei.geometry_hash ORDER BY c DESC, ei.geometry_hash LIMIT 1",
-            (cls, cls)).fetchone()
+            (cls, disc, cls, disc)).fetchone()
         if not row or not row[0]:
             absent.append(f"{disc}/{cls}")
             continue
