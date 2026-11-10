@@ -74,6 +74,19 @@ The step after moving the engine into the browser (WASM) is to give the **browse
 - **Witness:** T1-T6 run against the core with key names, so the same witness proves the terminal and the browser panes; one smoke per renderer.
 This keeps the doctrine (local first, minimal, safe, zero dependencies) and costs nothing now except discipline: **the first review of the spike checks that the core imports nothing from Node.**
 
+## 1c. Naming: the prefix is MIS, not ERP (owner, 2026-11-11)
+> *"and the prefix for such can be MIS. instead of ERP. This is to introduce the audience to the MIS concept in our AD rather than the heavy ERP."*
+**Rule.** What a person does with their own records at the terminal is called **MIS**: the front end is `common/door/mis.js` (it replaces the working name `ivr.js` used in this file), and the verbs are `mis.*`. **ERP** stays the word for a document's life (complete, void, close, reverse) and for the legacy tools. A person meets "MIS" first (a table of my own, listed, edited, loaded) and reaches "ERP" only when they need a document with a workflow: the light concept first, the heavy one later, on the same engine.
+| `mis.*` (records) | what it is | same engine call as |
+|---|---|---|
+| `mis.add_window` | a window and table from a sheet (MIS M2) | its own verb (was `erp.add_window` in the MIS file) |
+| `mis.list` `mis.read` `mis.describe` `mis.sum` `mis.group` | look | `erp.list` `erp.read` `erp.describe` `erp.sum` `erp.group` |
+| `mis.new` `mis.update` `mis.delete` | change one record | `erp.new`; `erp.update`, `erp.delete` (MIS M6) |
+| `mis.load` | many records from a CSV, with `dry=Y` | `erp.load` (MIS M5) |
+| `erp.complete` `erp.void` `erp.close` `erp.reverse` `erp.actions` | a document's life | stay `erp.*` |
+**One implementation, two names (AD-LAYER LAW 5: no second engine).** The new verbs are born as `mis.*`; for the verbs that already exist as `erp.*` the vocabulary gets an **alias entry**: `{"verb":"mis.list","alias":"erp.list"}`. The door resolves the alias to the same program call, harm class and actors (an alias may not change any of them: the door refuses a vocabulary where it does), the journal records the line as typed, `!help` shows both names ("`mis.list` (same as `erp.list`)"), the guide table lists the alias in the row of its original, and the AI connector menu is unchanged. Witness **W-DOOR-ALIAS** (V1a): an alias line and its original give the same answer (envelope equal but for `verb`); an AI's write through the alias is a claim exactly as through the original; a vocabulary whose alias differs in harm or inputs fails to load; falsifier: an alias that skips the claim for an AI.
+**Where it shows.** The guide's section is "Your own tables: MIS at the terminal"; the film, if the owner wants one, is about MIS ("make a table in a minute"), not ERP; the screen header of §1a reads `MIS`, and a document kind opened from it shows its ERP chips (Complete, Void, Reverse) only because the engine says they are legal. The word ERP does not disappear: it is the engine's name, the legacy twin's, and the document verbs'.
+
 ## 2. What exists (read 2026-11-11 from bim-ootb main; do not re-derive)
 | Need | Today |
 |---|---|
@@ -106,7 +119,7 @@ This keeps the doctrine (local first, minimal, safe, zero dependencies) and cost
 - **Falsifiers (each must make the witness FAIL):** IVR skips the confirm word (I5); IVR writes on a dry-run (I6); IVR pick off by one (I2); IVR edits a read-only column (I3).
 
 ## 5. Open questions for the owner (one at a time; the advice stands until overruled)
-1. **Name and place.** Advice: `common/door/ivr.js`, a front end beside `dotted.js`; `door.js --ivr` is the same thing by another door and is not needed.
+1. **Name and place.** Advice: `common/door/mis.js` (the MIS naming of §1c; first called `ivr.js`), a front end beside `dotted.js`; `door.js --ivr` is the same thing by another door and is not needed.
 2. **Delete scope.** Advice: masters and drafts only, never a processed document (as the window); everything else by Void or Reverse. 
 3. **Key style.** Advice: numbers pick a row, letters act (as COBOL and DOS screens did), both shown on the key line; no function keys (they are terminal-specific).
 4. **First kinds.** Advice: start generic (any kind) and prove it on three: Sales Order (documents: complete/void), Business Partner (a master: edit/delete/load), and a MIS table made by `erp.add_window` (the "new model on the fly" part, so the owner's whole chain is one demo).
@@ -117,7 +130,7 @@ This keeps the doctrine (local first, minimal, safe, zero dependencies) and cost
 
 ## 6. Work order (spec line first, witness with falsifier, one PR per step)
 - **V0 Measure, no code.** Which columns `erp.describe` lacks that the edit screen needs (display logic, read-only logic, the lookup list for a reference); what `GridTab.dataDelete` refuses, from the source; what the Migrate Excel Data loader reports per rejected row (for the preview).
-- **V1 The missing verbs** (MIS M5/M6): `erp.update`, `erp.delete`, `erp.load` with `dry=Y`; their witnesses; guide section.
+- **V1 The missing verbs** (MIS M5/M6), born under the MIS prefix: `mis.update`, `mis.delete`, `mis.load` with `dry=Y`; **V1a the alias mechanism** (`mis.list`, `mis.read`, `mis.describe`, `mis.sum`, `mis.group`, `mis.new` as aliases of their `erp.*` originals; W-DOOR-ALIAS); their witnesses; guide section "Your own tables: MIS at the terminal".
 - **V2 The list screen with the grid cursor and chips** (the spike of §1a first: T1-T3; then I1, I2, I9). The state machine is written before any renderer.
 - **V3 Edit and delete** (I3, I4, I5; the twin comparison against the window path).
 - **V4 Batch** (I6) and the saved session (I7).
@@ -126,4 +139,4 @@ This keeps the doctrine (local first, minimal, safe, zero dependencies) and cost
 **Not in scope without the owner's go:** curses or a full-screen UI, a mouse, themes, workflow approval screens, reports, translations, the email actor, the GPU.
 
 ## STATUS
-2026-11-11: spec written, nothing built; §1b (the browser gets the CLI too: renderer-agnostic core) and §1a (grid cursor, colored chips, hidden-mandatory via dry run, local-first doctrine, MIS demo) added the same day after the owner's two refinements. Depends on MIS M5/M6 and NEURO A6.
+2026-11-11: spec written, nothing built; §1c (the prefix is MIS, aliases over one engine); §1b (the browser gets the CLI too: renderer-agnostic core) and §1a (grid cursor, colored chips, hidden-mandatory via dry run, local-first doctrine, MIS demo) added the same day after the owner's two refinements. Depends on MIS M5/M6 and NEURO A6.
