@@ -46,11 +46,27 @@ try {
   const pk1 = door('pack', PK); if (pk1.status !== 'ok') throw new Error('erp.pack: ' + pk1.why);
   const pk2 = door('pack_again', PK); if (pk2.status !== 'ok') throw new Error('erp.pack again: ' + pk2.why);
   out.pack = { status: pk1.answer.status, again: pk2.answer.status, elements: pk1.answer.elements, records: pk1.answer.records, tables: pk1.answer.rows.AD_Table, columns: pk1.answer.rows.AD_Column, tabs: pk1.answer.rows.AD_Tab, processClasses: pk1.answer.classes.length, classes: pk1.answer.classes.map(c => c.split('.').pop()), sha: pk1.answer.sha256.slice(0, 16), sameSha: pk1.answer.sha256 === pk2.answer.sha256 };
+  // the 2Pack as legacy users know it: the real zip the verb just wrote (listing + the first lines of PackOut.xml)
+  const zipPath = path.join(__dirname, 'plugin/META-INF/2Pack_1.0.0.zip');
+  const zl = spawnSync('unzip', ['-l', zipPath], { encoding: 'utf8' }).stdout.split('\n').map(l => /^\s*(\d+)\s+\S+\s+\S+\s+(\S+)$/.exec(l)).filter(Boolean).map(x => ({ name: x[2], bytes: +x[1] }));
+  const xml = spawnSync('unzip', ['-p', zipPath, '*dict/PackOut.xml'], { encoding: 'utf8', maxBuffer: 1 << 28 }).stdout;
+  out.twopack = { zip: '2Pack_1.0.0.zip', files: zl, fileCount: zl.length, xmlLines: xml.split('\n').length - 1, excerpt: xml.split('\n').slice(0, 11).map(l => l.slice(0, 112)) };
+  out.pack.ms = pk1.ms;
   fs.rmSync(path.join(__dirname, 'plugin'), { recursive: true, force: true });
   // the workbook itself, read from the file (sheet order, rows per sheet, the first rows of two sheets)
   const XL = require(path.join(OOTB, 'erp/xlsx.mini.min.js')), wb = XL.read(fs.readFileSync(path.join(OOTB, 'erp/plugins/models/BIM_Document.xlsx')), { type: 'buffer', raw: true });
   const grid = (n) => XL.utils.sheet_to_json(wb.Sheets[n], { header: 1, raw: true, defval: '' });
   out.sheet = { file: 'BIM_Document.xlsx', count: wb.SheetNames.length, order: wb.SheetNames.map(n => ({ name: n, rows: grid(n).length - 1 })), column: { head: grid('AD_Column')[0].slice(0, 6), rows: grid('AD_Column').slice(1, 5).map(r => r.slice(0, 6)) } };
+  // by hand, in the legacy Application Dictionary: each window and process named here is READ on the pilot (legacy.query), not assumed
+  const HAND = [['window', 'Reference'], ['window', 'Table and Column'], ['window', 'Window, Tab and Field'], ['window', 'Menu'], ['window', 'Report and Process'], ['process', 'PackOut']];
+  out.manual = { steps: HAND.map(([k, n]) => { const r = door('hand_' + n.replace(/\W+/g, '_'), 'legacy.query table=' + (k === 'window' ? 'ad_window' : 'ad_process') + ' name="' + n + '" columns=name'); return { kind: k, name: n, found: r.status === 'ok' && r.answer.total >= 1 }; }) };
+  out.manual.windowsFound = out.manual.steps.filter(x => x.kind === 'window' && x.found).length; out.manual.allFound = out.manual.steps.every(x => x.found);
+  const rs = show('scripts/legacy_bimdoc_refresh.sh');
+  out.legacySteps = rs.split('\n').map(l => /^#   (\d) (\w+)\s+(.*)$/.exec(l)).filter(Boolean).map(x => ({ n: +x[1], name: x[2], what: x[3].slice(0, 70) })).length;
+  out.legacyStepNames = rs.split('\n').map(l => /^#   (\d) (\w+)\s/.exec(l)).filter(Boolean).map(x => x[2]);
+  const seedDump = path.join(os.homedir(), 'idempiere-pilot', 'server', 'data', 'seed', 'Adempiere_pg.dmp');
+  out.size = { twinDictionaryBytes: fs.statSync(path.join(OOTB, 'erp', 'ad_seed.db')).size, legacySeedDumpBytes: fs.existsSync(seedDump) ? fs.statSync(seedDump).size : null };
+  out.size.twinMB = (out.size.twinDictionaryBytes / 1e6).toFixed(1); out.size.legacyMB = out.size.legacySeedDumpBytes ? (out.size.legacySeedDumpBytes / 1e6).toFixed(1) : null;
   const ai = door('claim', 'erp.new kind=Order issotrx=Y c_doctypetarget_id=132 c_bpartner_id=112 salesrep_id=101', 'ai'); out.claim = { status: ai.status, why: String(ai.why || '').slice(0, 140) };
   out.verbs = JSON.parse(fs.readFileSync(path.join(OOTB, 'common/door/verbs.json'), 'utf8')).verbs.length;
   fs.mkdirSync(path.join(__dirname, 'out'), { recursive: true }); fs.writeFileSync(path.join(__dirname, 'out', 'facts.json'), JSON.stringify(out, null, 1));

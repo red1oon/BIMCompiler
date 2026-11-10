@@ -1,0 +1,17 @@
+§FACTS status ok legacy.status
+§FACTS new_order ok erp.new kind=Order issotrx=Y c_doctypetarget_id=132 c_bpartner_id=112 salesrep_id=101
+§FACTS new_line ok erp.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2
+§FACTS compare ok erp.compare kind=Order number=50000 legacy=50981
+§FACTS column ok erp.column kind=Order column=C_ConversionType_ID
+§FACTS where ok idempiere.where symbol=InvoiceRule in=CalloutOrder limit=3
+§FACTS witness ok witness.run name=door_help
+§FACTS pack ok erp.pack book=erp/plugins/models/BIM_Document.xlsx version=1.0.0 out=plugin/META-INF
+§FACTS pack_again ok erp.pack book=erp/plugins/models/BIM_Document.xlsx version=1.0.0 out=plugin/META-INF
+§FACTS hand_Reference ok legacy.query table=ad_window name="Reference" columns=name
+§FACTS hand_Table_and_Column ok legacy.query table=ad_window name="Table and Column" columns=name
+§FACTS hand_Window_Tab_and_Field ok legacy.query table=ad_window name="Window, Tab and Field" columns=name
+§FACTS hand_Menu ok legacy.query table=ad_window name="Menu" columns=name
+§FACTS hand_Report_and_Process ok legacy.query table=ad_window name="Report and Process" columns=name
+§FACTS hand_PackOut ok legacy.query table=ad_process name="PackOut" columns=name
+§FACTS claim claim erp.new kind=Order issotrx=Y c_doctypetarget_id=132 c_bpartner_id=112 salesrep_id=101
+§FACTS wrote out/facts.json verbs=38 compare=70/4/7 column114=114 where=20 witness=PASS/8 pack=written/unchanged elements=108 claim=claim twinScriptLines=83
