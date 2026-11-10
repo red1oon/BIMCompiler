@@ -1549,3 +1549,14 @@ time and memory per 10k rows on both).
 4. Named, any order: E3d bank + unallocated payments · stock value (Odoo `standard_price` is in the raw rows now) · a tenant born while bundles run gets plugin access only
    at the next start · SAP / BC open balances · ODOO-REF-MESSY INCONCLUSIVE (database gone) · DIFF does not generate a null posx/posy/posz.
 Baselines: `§MIGE verdict=PASS judged=82` · `§OB-VERDICT PASS judged=36` · `§PRA-VERDICT PASS judged=8` · `§GOC-VERDICT PASS judged=4` · OF 18 · OM 14 · NM 31 · BCM 18 · SAPM 24.
+
+**§2026-11-10i (lead; logs read):** #2808 (O3b) MERGED.
+- **O3c code ✅ BUILT (witness) — bim-ootb PR #2809 (auto-merge armed; Sonnet agent, Watchdog-read), branch `feat/odoo-agent-reads-only`, sw v1040.** `export.js` 441 → 178
+  lines (+34 / −297): reads only, writes `odoo_export/odoo_export.json`. Acceptance: a live re-run on the demo is BYTE-IDENTICAL to the committed fixture
+  (`…/scratchpad/acc/run.log`: `✓ every set read has as many rows as Odoo counted for it — 17 sets` · `🟢 ODOO-EXPORT PASS — odoo_export.json (19 sets, 344 rows)`; `tb` and
+  `account.group` are exempt from the row==count door check — one row per account / count only). `xlsx.mini.min.js` left the agent; zip 121,712 → 33,685 bytes. Witnesses
+  (`/tmp/count_logs/o3c_witness_*.log`): MIGE 82 · OB 36 · OF 18 · NM 31 · OM 14 · zip sync PASS. No witness in bim-ootb spawned `export.js`.
+- **O3c guide — BIMCompiler PR #512 (docs/migration-guide-odoo-one-file, off master, worktree `/tmp/wt-bc-guide`):** Odoo steps 3–4 = one file; new paragraph on open balances
+  (period to open, control accounts, `BANK-CLEAR`, what is not brought in). **NOT yet deployed:** publish with `scripts/safe_gh_deploy.sh` from that worktree only after #2809 is
+  fetched back live (copy `docs/glassbowl_data.db` in first — DOCS_DEPLOY_POLICY known guard trip), then fetch the page back.
+- **Still open from O3c:** the bim-compiler witnesses that run the old `export.js` for its workbook (`scripts/poc_sheet_contract.js`, `harden_*`) — not yet retired/repointed.
