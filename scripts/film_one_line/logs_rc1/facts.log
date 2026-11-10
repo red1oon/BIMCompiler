@@ -1,0 +1,28 @@
+§OBJECT open db=ad_seed-11c985a8c15ba51073a444a9900468a6.db dictionary=present
+§ERP snapshot=hit key=11c985a8c15ba51073a444a9900468a6 ms=1841
+§ERP boot db=ad_seed.db replayed_ops=0 oplog=/tmp/oneline_sb6kWK/ops.jsonl sql_functions=61
+§FACTS find status=ok erp.find kind=Order number=50000
+§FACTS actions status=ok erp.actions kind=Order id=1500004
+§FACTS complete status=ok erp.complete kind=Order id=1500004
+§OBJECT open db=ad_seed-11c985a8c15ba51073a444a9900468a6.db dictionary=present
+§ERP snapshot=hit key=11c985a8c15ba51073a444a9900468a6 ms=73
+§ERP boot db=ad_seed.db replayed_ops=17 oplog=/tmp/oneline_sb6kWK/ops.jsonl sql_functions=61
+§FACTS void_complete status=ok erp.complete kind=Order id=1500005
+§FACTS void status=ok erp.void kind=Order id=1500005
+§OBJECT open db=ad_seed-11c985a8c15ba51073a444a9900468a6.db dictionary=present
+§ERP snapshot=hit key=11c985a8c15ba51073a444a9900468a6 ms=71
+§ERP boot db=ad_seed.db replayed_ops=43 oplog=/tmp/oneline_sb6kWK/ops.jsonl sql_functions=61
+§FACTS close_complete status=ok erp.complete kind=Order id=1500006
+§FACTS close status=ok erp.close kind=Order id=1500006
+§OBJECT open db=ad_seed-11c985a8c15ba51073a444a9900468a6.db dictionary=present
+§ERP snapshot=hit key=11c985a8c15ba51073a444a9900468a6 ms=54
+§ERP boot db=ad_seed.db replayed_ops=68 oplog=/tmp/oneline_sb6kWK/ops.jsonl sql_functions=61
+§FACTS reverse_complete status=ok erp.complete kind=Order id=1500007
+§FACTS reverse status=ok erp.reverse kind=Order id=1500007
+§FACTS rooms viewer(Duplex).Room.count -> object.count building=Duplex kind=Room value=5
+§FACTS walk modeller(Duplex).walk(FP).count -> modeller.walk building=Duplex discipline=FP value=46
+§OBJECT open db=ad_seed-11c985a8c15ba51073a444a9900468a6.db dictionary=present
+§ERP snapshot=hit key=11c985a8c15ba51073a444a9900468a6 ms=70
+§ERP boot db=ad_seed.db replayed_ops=94 oplog=/tmp/oneline_sb6kWK/ops.jsonl sql_functions=61
+§FACTS script erp.find ok | erp.actions ok | erp.complete ok
+§FACTS wrote out/facts.json verbs=23 rooms=5 walk=46 order=50000
