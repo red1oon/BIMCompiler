@@ -8,12 +8,12 @@ const ZHL = process.env.FILM_LANG === 'zh';
 const NAME = ZHL ? { DR: '草稿', CO: '已完成', VO: '已作废', CL: '已关闭', RE: '已冲销', PR: '准备' } : { DR: 'Draft', CO: 'Completed', VO: 'Voided', CL: 'Closed', RE: 'Reversed', PR: 'Prepare' }, ACT = ZHL ? { CO: '完成', PR: '准备', VO: '作废', CL: '关闭', RC: '冲销' } : { CO: 'Complete', PR: 'Prepare', VO: 'Void', CL: 'Close', RC: 'Reverse' };
 // every on-screen text (the command lines and the diagram stay as they are: they are the product's own)
 const T = ZHL ? { kick: 'BIM + ERP &nbsp;·&nbsp; 开源', t1: 'ERP 脚本', t2: '跳过界面', tp: '人用起来快，AI 用起来更快。', today: '今天：完成一张订单要……', todayBody: '打开菜单 <span>→</span> 找到窗口 <span>→</span><br>找到记录 <span>→</span> 找到页签 <span>→</span><br>找到按钮 <span>→</span> 确认',
-  one: '一行命令', order: '订单', status: '状态', ask: '先问，再做', each: '每个动作都是一行', bld: '同一扇门，也能打开建筑模型', rooms: '个房间', walk: '个消防设备将被布置', script: '把几行写进文件，就是脚本', door: '人可以输入，AI 也用同样的命令。',
+  one: '一行命令', today2: (t, f) => '今天：一个订单窗口有 ' + t + ' 个页签、' + f + ' 个字段', label: '本地优先使用：安全 / 物理隔离', order: '订单', status: '状态', ask: '先问，再做', each: '每个动作都是一行', bld: '同一扇门，也能打开建筑模型', rooms: '个房间', walk: '个消防设备将被布置', script: '把几行写进文件，就是脚本', door: '人可以输入，AI 也用同样的命令。',
   othersH: '其他 ERP 提供什么？', rows: [['Odoo', '<code>odoo-bin shell</code>：给开发者的 Python 控制台'], ['ERPNext', '<code>bench execute</code>、<code>bench console</code>：运行 Python 函数或控制台'], ['Tryton', '<code>proteus</code>：用来写脚本的 Python 库'], ['NetSuite', 'SuiteCloud CLI：供开发者构建和部署项目的工具'], ['AI 连接器', '面向 Odoo、SAP、ERPNext：社区开发的通用记录读写工具']],
   foot: '它们都需要写代码，或者需要程序员。在这次查找中，我们没有找到一套人和 AI 都能直接输入的简短单据动作词汇。', src: '2026 年 11 月查阅各厂商官方页面和公开列表。这是一次查找，不是全面调查。未查 SAP 自有工具和 Dynamics 365。',
   closeBig: '一次一行', closeSub: '开源 &nbsp;·&nbsp; 目前 ' + F.verbs + ' 个动词' }
 : { kick: 'BIM + ERP &nbsp;·&nbsp; OPEN SOURCE', t1: 'ERP Scripting', t2: 'Skip the screens', tp: 'For fast humans, and even faster AI.', today: 'Today: to complete one order', todayBody: 'open the menu <span>→</span> find the window <span>→</span><br>find the record <span>→</span> find the tab <span>→</span><br>find the button <span>→</span> confirm',
-  one: 'One line', order: 'order', status: 'status', ask: 'Ask, then do', each: 'Each is one line', bld: 'The same door opens the building', rooms: 'rooms', walk: 'fire protection items would be placed', script: 'A few lines in a file are a script', door: 'People type it. An AI can use the same lines.',
+  one: 'One line', today2: (t, f) => 'Today: one order window has ' + t + ' tabs and ' + f + ' fields', label: 'Local First use is secured / air-gapped', order: 'order', status: 'status', ask: 'Ask, then do', each: 'Each is one line', bld: 'The same door opens the building', rooms: 'rooms', walk: 'fire protection items would be placed', script: 'A few lines in a file are a script', door: 'People type it. An AI can use the same lines.',
   othersH: 'What do other ERPs offer?', rows: [['Odoo', '<code>odoo-bin shell</code>: a Python console for developers'], ['ERPNext', '<code>bench execute</code>, <code>bench console</code>: run a Python function or console'], ['Tryton', '<code>proteus</code>: a Python library to script the server'], ['NetSuite', 'SuiteCloud CLI: a developer tool to build and deploy projects'], ['AI connectors', 'for Odoo, SAP, ERPNext: community-built, generic record tools']],
   foot: 'Each needs code or a programmer. In this search we did not find one short vocabulary of document actions that a person and an AI both type.', src: 'Looked up November 2026 from the vendors\' own pages and public listings. A search, not a survey. SAP\'s own tools and Dynamics 365 were not checked.',
   closeBig: 'One line at a time', closeSub: 'Open source &nbsp;·&nbsp; ' + F.verbs + ' verbs today' };
@@ -30,34 +30,51 @@ h1{font-size:46px;color:#7dd3fc;font-weight:700;margin-bottom:34px}
 .plain{font-size:60px;line-height:1.5;margin-top:60px} .plain span{color:#94a3b8}
 table{border-collapse:collapse;width:100%;font-size:32px} td{padding:13px 18px;border-bottom:1px solid #334155;vertical-align:top} td:first-child{color:#7dd3fc;font-weight:700;white-space:nowrap} .foot{font-size:32px;color:#fbbf24;margin-top:26px;line-height:1.4} .src{font-size:22px;color:#64748b;margin-top:12px}
 .file{background:#111827;border:2px dashed #475569;border-radius:14px;padding:22px 30px;font-family:'DejaVu Sans Mono',monospace;font-size:34px;line-height:1.5;margin-bottom:26px} .file i{color:#94a3b8;font-style:normal;font-size:26px}
+.cur{display:inline-block;width:20px;height:40px;background:#4ade80;vertical-align:-6px;margin-left:2px} .lab{position:absolute;right:0;bottom:0;border:2px solid #4ade80;color:#4ade80;border-radius:10px;padding:10px 24px;font-size:28px;font-weight:700} .shot{display:block;margin:0 auto;height:620px;border-radius:12px;border:2px solid #334155}
 ${extra || ''}</style></head><body><div class="area">${inner}</div></body></html>`;
-const term = (rows) => '<div class="term">' + rows.join('') + '</div>';
-const cmd = (s) => '<div class="cmd">' + esc(s) + '</div>', ans = (h) => '<div class="ans">' + h + '</div>', dim = (s) => '<div class="dim">' + esc(s) + '</div>';
+const S = require('./out/shots.json'), SHOT = 'data:image/png;base64,' + fs.readFileSync(path.join(__dirname, 'out', 'shots', 'erp_so.png')).toString('base64');
+const ans = (h) => '<div class="ans">' + h + '</div>', dim = (s) => '<div class="dim">' + esc(s) + '</div>';
 const st = (c) => '<b>' + c + '</b> ' + NAME[c];
-const more = (v) => [cmd(L(v)), ans(T.order + ' ' + F[v].number + ' &nbsp; ' + st(F[v].before.docStatus) + ' → ' + st(F[v].after.docStatus))];
 const svg = fs.readFileSync(path.join(__dirname, '..', '..', 'docs', 'figs', 'one_door.svg'), 'utf8').replace(/<\?xml[^>]*>/, '');
+const LABEL = '<div class="lab">' + T.label + '</div>';
+const acts = F.actions.map(a => '<b>' + a + '</b> ' + ACT[a]).join(' &nbsp;·&nbsp; ');
+const moved = (num, x) => T.order + ' ' + num + ' &nbsp; ' + st(x.before.docStatus) + ' → ' + st(x.after.docStatus);
+const fileBox = '<div class="file"><i>order.txt</i><br>' + F.script.text.split('\n').map(esc).join('<br>') + '</div>';
+// the command beats: steps typed one after another. cpf = characters per film frame (24 fps): 0.5 = two frames a character.
+const TERM = {
+  find: { h: T.one, cpf: 0.5, steps: [{ cmd: L('find'), after: [ans(T.order + ' <b>' + F.find.number + '</b> &nbsp; ' + T.status + ' ' + st(F.find.docStatus))] }] },
+  do: { h: T.ask, cpf: 1, steps: [{ cmd: L('actions'), after: [ans(acts)] }, { cmd: L('complete'), after: [ans(moved(F.order.number, F.complete))] }] },
+  more: { h: T.each, cpf: 2, steps: ['void', 'close', 'reverse'].map(v => ({ cmd: L(v), after: [ans(moved(F[v].number, F[v]))] })) },
+  building: { h: T.bld, cpf: 1, steps: [{ cmd: L('rooms'), after: [ans('<b>' + F.rooms + '</b> ' + T.rooms), dim('= ' + F.lines.rooms.doorLine)] }, { cmd: L('walk'), after: [ans('<b>' + F.walk + '</b> ' + T.walk), dim('= ' + F.lines.walk.doorLine)] }] },
+  script: { h: T.script, cpf: 1, pre: fileBox, steps: [{ cmd: 'door --script order.txt', after: [ans(F.script.statuses.map(s => esc(s.replace(' ok', '')) + ' <b>ok</b>').join(' &nbsp;·&nbsp; ')), ans(T.status + ' ' + st(F.script.after.docStatus))] }] }
+};
+const termPage = (b, s, k, done) => page('<h1>' + b.h + '</h1>' + (b.pre || '') + '<div class="term">' + b.steps.slice(0, s + 1).map((x, i) => i < s ? '<div class="cmd">' + esc(x.cmd) + '</div>' + x.after.join('')
+  : '<div class="cmd">' + esc(x.cmd.slice(0, k)) + (done ? '' : '<span class="cur"></span>') + '</div>' + (done ? x.after.join('') : '')).join('') + '</div>' + LABEL);
+// every state of a command beat: {html, frames} — frames null = shares the beat's remaining time (the answer is on screen)
+function termStates(b) {
+  const out = [{ html: termPage(b, 0, 0, false), frames: 18 }];
+  b.steps.forEach((x, s) => { const stepK = b.cpf >= 1 ? b.cpf : 1, fr = b.cpf >= 1 ? 1 : Math.round(1 / b.cpf);
+    for (let k = stepK; k < x.cmd.length; k += stepK) out.push({ html: termPage(b, s, k, false), frames: fr });
+    out.push({ html: termPage(b, s, x.cmd.length, false), frames: 6 }); out.push({ html: termPage(b, s, x.cmd.length, true), frames: null }); });
+  return out;
+}
+const still = (html) => [{ html, frames: null }];
 const cards = {
   // the opening chapter card, house style (PLAYBOOK C: plain #0b0f17, kicker coral 34, title line 1 off-white 120, line 2 coral, one plain line 40; silent, 3.6 s)
-  title: [page('<div class="ch"><div class="k">' + T.kick + '</div><div class="t1">' + T.t1 + '</div><div class="t2">' + T.t2 + '</div><div class="p">' + T.tp + '</div></div>', 'body{background:#0b0f17} .ch{text-align:center;margin-top:120px} .k{font-size:34px;color:#FF6B78;letter-spacing:4px;font-weight:700} .t1{font-size:120px;font-weight:700;color:#F3EEE8;margin-top:50px;line-height:1.1} .t2{font-size:120px;font-weight:700;color:#FF6B78;line-height:1.15} .p{font-size:40px;color:#F3EEE8;margin-top:56px}')],
-  screens: [page('<h1>' + T.today + '</h1><div class="plain">' + T.todayBody + '</div>')],
-  find: [page('<h1>' + T.one + '</h1>' + term([cmd(L('find'))])),
-    page('<h1>' + T.one + '</h1>' + term([cmd(L('find')), ans(T.order + ' <b>' + F.find.number + '</b> &nbsp; ' + T.status + ' ' + st(F.find.docStatus))]))],
-  do: [page('<h1>' + T.ask + '</h1>' + term([cmd(L('actions')), ans(F.actions.map(a => '<b>' + a + '</b> ' + ACT[a]).join(' &nbsp;·&nbsp; '))])),
-    page('<h1>' + T.ask + '</h1>' + term([cmd(L('actions')), ans(F.actions.map(a => '<b>' + a + '</b> ' + ACT[a]).join(' &nbsp;·&nbsp; ')), cmd(L('complete')), ans(T.order + ' ' + F.order.number + ' &nbsp; ' + st(F.complete.before.docStatus) + ' → ' + st(F.complete.after.docStatus))]))],
-  more: [page('<h1>' + T.each + '</h1>' + term(more('void'))), page('<h1>' + T.each + '</h1>' + term(more('void').concat(more('close')))), page('<h1>' + T.each + '</h1>' + term(more('void').concat(more('close'), more('reverse'))))],
-  building: [page('<h1>' + T.bld + '</h1>' + term([cmd(L('rooms')), ans('<b>' + F.rooms + '</b> ' + T.rooms), dim('= ' + F.lines.rooms.doorLine)])),
-    page('<h1>' + T.bld + '</h1>' + term([cmd(L('rooms')), ans('<b>' + F.rooms + '</b> ' + T.rooms), dim('= ' + F.lines.rooms.doorLine), cmd(L('walk')), ans('<b>' + F.walk + '</b> ' + T.walk), dim('= ' + F.lines.walk.doorLine)]))],
-  script: [page('<h1>' + T.script + '</h1><div class="file"><i>order.txt</i><br>' + F.script.text.split('\n').map(esc).join('<br>') + '</div>'),
-    page('<h1>' + T.script + '</h1><div class="file"><i>order.txt</i><br>' + F.script.text.split('\n').map(esc).join('<br>') + '</div>' + term([cmd('door --script order.txt'), ans(F.script.statuses.map(s => esc(s.replace(' ok', '')) + ' <b>ok</b>').join(' &nbsp;·&nbsp; ')), ans(T.status + ' ' + st(F.script.after.docStatus))]))],
-  door: [page('<h1>' + T.door + '</h1><div style="background:#fff;border-radius:16px;padding:10px;height:620px;display:flex;justify-content:center">' + svg.replace('<svg', '<svg style="height:100%;width:auto"') + '</div>')],
-  others: [page('<h1>' + T.othersH + '</h1><table>' + T.rows.map(r => '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>').join('') + '</table><div class="foot">' + T.foot + '</div><div class="src">' + T.src + '</div>')],
-  close: [page('<div class="big" style="font-size:110px;margin-top:150px">' + T.closeBig + '</div><div class="sub">' + T.closeSub + '</div><div class="sub" style="color:#7dd3fc;font-size:38px;margin-top:60px">red1oon.github.io/BIMCompiler/FastScriptGuide</div>')]
+  title: still(page('<div class="ch"><div class="k">' + T.kick + '</div><div class="t1">' + T.t1 + '</div><div class="t2">' + T.t2 + '</div><div class="p">' + T.tp + '</div></div>', 'body{background:#0b0f17} .ch{text-align:center;margin-top:120px} .k{font-size:34px;color:#FF6B78;letter-spacing:4px;font-weight:700} .t1{font-size:120px;font-weight:700;color:#F3EEE8;margin-top:50px;line-height:1.1} .t2{font-size:120px;font-weight:700;color:#FF6B78;line-height:1.15} .p{font-size:40px;color:#F3EEE8;margin-top:56px}')),
+  screens: still(page('<h1>' + T.today2(S.tabs, S.fields) + '</h1><img class="shot" src="' + SHOT + '">')),
+  find: termStates(TERM.find), do: termStates(TERM.do), more: termStates(TERM.more), building: termStates(TERM.building), script: termStates(TERM.script),
+  door: still(page('<h1>' + T.door + '</h1><div style="background:#fff;border-radius:16px;padding:10px;height:620px;display:flex;justify-content:center">' + svg.replace('<svg', '<svg style="height:100%;width:auto"') + '</div>')),
+  others: still(page('<h1>' + T.othersH + '</h1><table>' + T.rows.map(r => '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>').join('') + '</table><div class="foot">' + T.foot + '</div><div class="src">' + T.src + '</div>')),
+  close: still(page('<div class="big" style="font-size:110px;margin-top:150px">' + T.closeBig + '</div><div class="sub">' + T.closeSub + '</div><div class="sub" style="color:#7dd3fc;font-size:38px;margin-top:60px">red1oon.github.io/BIMCompiler/FastScriptGuide</div>'))
 };
 (async () => {
   const b = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-gpu', '--window-size=1920,1080'] }), pg = await b.newPage(); await pg.setViewport({ width: 1920, height: 1080 });
-  const plan = {};
-  for (const id of Object.keys(cards)) { plan[id] = []; for (let i = 0; i < cards[id].length; i++) { const f = path.join(out, id + '_' + (i + 1) + '.png'); await pg.setContent(cards[id][i], { waitUntil: 'load' });
-    const over = await pg.evaluate(() => { const a = document.querySelector('.area'); return Math.max(0, a.scrollHeight - a.clientHeight); });
-    await pg.screenshot({ path: f }); plan[id].push(path.basename(f)); console.log('§CARD ' + path.basename(f) + ' overflow_px=' + over + (over ? ' TOO-TALL' : '')); } }
-  await b.close(); fs.writeFileSync(path.join(out, 'plan.json'), JSON.stringify(plan, null, 1)); console.log('§CARDS_DONE beats=' + Object.keys(plan).length + ' stills=' + Object.values(plan).reduce((s, x) => s + x.length, 0));
+  const plan = {}; let n = 0, tall = 0;
+  for (const id of Object.keys(cards)) { plan[id] = []; let worst = 0;
+    for (let i = 0; i < cards[id].length; i++) { const name = id + '_' + String(i + 1).padStart(3, '0') + '.png'; await pg.setContent(cards[id][i].html, { waitUntil: 'load' });
+      const over = await pg.evaluate(() => { const a = document.querySelector('.area'), t = document.querySelector('.term'), l = document.querySelector('.lab'); const clash = t && l ? Math.max(0, t.getBoundingClientRect().bottom - l.getBoundingClientRect().top) : 0; return Math.max(a.scrollHeight - a.clientHeight, clash, 0); });
+      worst = Math.max(worst, over); await pg.screenshot({ path: path.join(out, name) }); plan[id].push({ file: name, frames: cards[id][i].frames }); n++; }
+    if (worst) tall++; console.log('§CARD beat=' + id + ' stills=' + cards[id].length + ' overflow_px=' + worst + (worst ? ' TOO-TALL' : '')); }
+  await b.close(); fs.writeFileSync(path.join(out, 'plan.json'), JSON.stringify(plan, null, 1)); console.log('§CARDS_DONE beats=' + Object.keys(plan).length + ' stills=' + n + ' too_tall=' + tall);
 })().catch(e => { console.error('§CARDS_FAIL ' + (e && e.stack || e)); process.exit(1); });
