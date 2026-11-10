@@ -8,7 +8,7 @@ Scope: SPEC + WITNESSES for the one door (the verb vocabulary and the CLI script
 - `prompts/archive/NEURO_SYMBOLIC_ORDER_CONTRACT_full_2026-11-08_to_2026-11-10.md` (1,953 lines: every design, build and film section of 2026-11-08 to 11-10)
 - `prompts/archive/NEURO_SYMBOLIC_ORDER_CONTRACT_full_2026-11-06_to_2026-11-08.md` (the original contract, the proposer tests)
 
-## ▶ RESUME HERE (2026-11-10, after the triage)
+## ▶ RESUME HERE (2026-11-10, after the triage; A1 built, next = A2 then A7 guide regenerate)
 1. Read §STATE (what is live), then §TRIAGE (the order of work). Then the item's own spec in §R.V, or `prompts/ERP_MIS_WINDOW_FROM_CSV.md` for the MIS items.
 2. **§R.4 binds every session and every agent brief.** bim-ootb's bot merges a PR the moment its checks pass: push only finished, witnessed work.
 3. Four questions wait for the owner (§TRIAGE B). Each has an advised answer: work on the advice unless overruled.
@@ -32,7 +32,7 @@ Witness counts are the last recorded runs (archive, each section's RESULT); only
 **A. Next, no owner input needed (top to bottom):**
 | # | Item | Why here | Spec |
 |---|---|---|---|
-| A1 | Lists, sums, CSV; results as a terminal list or `> file`; `!help` | all read-only, nothing blocks them, and every later item is easier to use and to check with them | §R.V items 5, 9, 10 |
+| A1 | ✅ **BUILT 2026-11-10** (bim-ootb #2832 merged `691f4fc3`; #2836 `erp.list/sum/group` + `object.list/sum/group` auto-merge armed): `!help`, `--list`/`--csv`/`--out`, script `> file` / `>> file`, row verbs. W-DOOR-HELP 8/0, W-DOOR-OUT 10/0, W-DOOR-ROWS 12/0, falsifiers fail as designed. **Left in A1:** `.sum(column)` and `.list` in the dotted front end; default output stays JSON (owner question B4 open); the published guide table is stale until A7 | Lists, sums, CSV; results as a terminal list or `> file`; `!help` | all read-only, nothing blocks them, and every later item is easier to use and to check with them | §R.V items 5, 9, 10 |
 | A2 | Create by one line answering the Document No; "the one I just made" | needs the legacy pilot for the twin check | §R.V items 2, 3 |
 | A3 | MIS: a window from `table.csv`, load by CSV | its M0 is half answered already; M1 to M5 need none of A2 | §R.V item 8 → `prompts/ERP_MIS_WINDOW_FROM_CSV.md` |
 | A4 | Composite verbs (`erp.sell`, `erp.cancel`, `erp.status`) | need A2 | §R.V item 4 |
