@@ -1560,3 +1560,17 @@ Baselines: `§MIGE verdict=PASS judged=82` · `§OB-VERDICT PASS judged=36` · `
   (period to open, control accounts, `BANK-CLEAR`, what is not brought in). **NOT yet deployed:** publish with `scripts/safe_gh_deploy.sh` from that worktree only after #2809 is
   fetched back live (copy `docs/glassbowl_data.db` in first — DOCS_DEPLOY_POLICY known guard trip), then fetch the page back.
 - **Still open from O3c:** the bim-compiler witnesses that run the old `export.js` for its workbook (`scripts/poc_sheet_contract.js`, `harden_*`) — not yet retired/repointed.
+
+**§2026-11-10j — O3 CLOSED (lead; logs read, live fetched back):**
+- **#2809 MERGED and LIVE:** the page serves sw `v1040`; the downloaded `odoo_agent.zip` (33,739 bytes, 9 files) holds the reads-only `export.js` (0 mentions of the workbook);
+  `plugins/odoo_migrate_convert.mjs` live carries `hasMasters`; the live template has no `partner_keys`.
+- **Guide ✅ PUBLISHED:** BIMCompiler #512 merged to master (its one check, `system-is-real`, was still pending — a docs-only change) and deployed with
+  `scripts/safe_gh_deploy.sh` (`/tmp/count_logs/docs_deploy.log`: `§GUARD result=PASS` on the dry run, `§STEP6 all canaries 200`, `§DEPLOY-DONE`); the live
+  `MigrationGuide/` page fetched back carries `odoo_export.json` and `BANK-CLEAR`.
+- **bim-compiler witnesses of the old agent** (logs `build/erp/logs_migrate_2026-11-10/`): `poc_odoo_owndb.js` REPOINTED — `§G demo export files=["odoo_export.json"]
+  byte-identical to the recorded fixture=true` · `🟢 W-ODOO-OWNDB PASS` (before: 2 ✗ on the workbook files). `poc_sheet_contract.js` and `poc_odoo_messy.js` print
+  `verdict=INCONCLUSIVE — SUPERSEDED` (exit 3) against a reads-only agent, naming the witnesses that carry their claims now.
+- **O3 line budget:** agent `export.js` 441 → 178 (−297 / +34); zip 121,712 → 33,685 bytes; engine +91 over O2/E3c; template 0 → 242 lines of data; the hand mapping survives only
+  as the test oracle `erp/tests/fixtures/odoo_convert_reference.mjs`.
+- **Not redone (named):** the Odoo films still show two files being picked.
+**NEXT = the iDempiere falsifier (§IDEMPIERE-FALSIFIER-SPEC), then the named items of RESUME HERE 2026-11-10h point 4.**

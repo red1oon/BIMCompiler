@@ -13,6 +13,12 @@
 var cp = require('child_process'), fs = require('fs'), path = require('path'), os = require('os'), crypto = require('crypto');
 var ROOT = path.join(__dirname, '..');
 var EXPORT = process.argv[2] || '/tmp/wt-odoo-v3/erp/odoo_agent/export.js';
+// ── SUPERSEDED 2026-11-10 (bim-ootb #2809, prompts/MIGRATE_INSTALL_TENANT.md §ODOO-ENGINE-SPEC O3c): the Odoo agent no longer writes the workbook this witness judges — it only
+//   reads and writes odoo_export.json; the mapping is DATA in the browser (migrate/templates/odoo-17.json). Its claims (every sheet complete against the AD-mandatory columns and lookups) are carried by ODOO-REF (the frozen mapping == the recorded workbook) + ODOO-GUIDE / ODOO-DIFF (the template == the frozen mapping) + W-OPEN-BALANCES JSON-ONLY (the loaded tenant).
+//   Against a reads-only agent this witness has nothing to judge and says so (INCONCLUSIVE, exit 3) instead of failing or passing.
+(function () { try { var _ag = EXPORT; if (!/odoo_migration\.xlsx/.test(require('fs').readFileSync(_ag, 'utf8'))) {
+  console.log('§SHEET-CONTRACT verdict=INCONCLUSIVE — SUPERSEDED: ' + _ag + ' writes odoo_export.json only; see W-MIGRATE-ENGINE ODOO-REF / ODOO-GUIDE / ODOO-DIFF (bim-ootb erp/tests/witness_migrate_engine.js)'); process.exit(3); } } catch (e) {} })();
+
 var XLSX = require(path.join(path.dirname(EXPORT), '..', 'xlsx.mini.min.js'));
 var AD = process.env.AD_SEED || path.join(process.env.HOME, 'bim-ootb/erp/ad_seed.db');
 var CONTRACT = JSON.parse(fs.readFileSync(path.join(ROOT, 'build/erp/sheet_contract.json'), 'utf8'));

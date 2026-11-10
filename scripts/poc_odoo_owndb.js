@@ -77,19 +77,22 @@ delete process.env.ODOO_PASSWORD;
   await new Promise(function (r) { m.on('exit', r); m.kill('SIGTERM'); });
   var calls = Object.values(JSON.parse(fs.readFileSync(FIX, 'utf8')).answers).map(function (a) { return a.call; });
   L('§F ' + line(F.out, /§ODOO-EXPORT target[^\n]*/) + ' | proxied calls=' + calls.length + ' exit=' + F.code);
-  ok(F.code === 0 && /host=localhost:8070/.test(F.out) && calls.length >= 30 && fs.existsSync(path.join(T, 'f', 'odoo_export', 'manifest.json')), 'flags reach the RPC: --port 8070 sent every call (' + calls.length + ') through the proxy and the export completed');
+  ok(F.code === 0 && /host=localhost:8070/.test(F.out) && calls.length >= 30 && fs.existsSync(path.join(T, 'f', 'odoo_export', 'odoo_export.json'))   /* since bim-ootb #2809 the agent writes ONE file, the raw rows */, 'flags reach the RPC: --port 8070 sent every call (' + calls.length + ') through the proxy and the export completed');
   // a login WITHOUT accounting rights (demo): Odoo refuses a read → the export says which, in plain words, and leaves NOTHING behind
   var H = run('export.js', ['--login', 'demo'], 'demo\n', {}, d('h'));
   var left = fs.readdirSync(path.join(T, 'h'));
   L('§H exit=' + H.code + ' ' + line(H.out, /§ODOO-EXPORT FAIL access[^.]*/) + ' | left=' + JSON.stringify(left));
   ok(H.code === 1 && /FAIL access: the Odoo user cannot read/.test(H.out) && /Odoo says:/.test(H.out) && left.length === 0, 'a login without the rights → plain refusal naming the Odoo record type, exit 1, no half-written export left');
 
-  var G = run('export.js', ['--cutover', '2026-11-08'], '', {}, d('g'));
-  var hg = hashDir(path.join(T, 'g', 'odoo_export'));
-  // §HARDEN-SPEC (2026-11-09) changed the export ON PURPOSE (login's company only, C_Location_UU, archived = inactive, cut keys): was fdbde73d75c0d07b (#2715)
-  L('§G demo export sha=' + hg + ' (after §HARDEN-SPEC: bf33a79179e2b052)');
-  ok(G.code === 0 && hg === 'bf33a79179e2b052', 'demo export files byte-identical to the §HARDEN-SPEC export judged by W-SHEET-CONTRACT');
-
+  // Since bim-ootb #2809 (2026-11-10, prompts/MIGRATE_INSTALL_TENANT.md §ODOO-ENGINE-SPEC O3c) the agent only READS: it writes odoo_export.json (raw rows); the mapping is the
+  //   browser's (migrate/templates/odoo-17.json, proven equal to the old workbook by W-MIGRATE-ENGINE ODOO-REF / ODOO-GUIDE). The old pinned workbook hash (bf33a79179e2b052)
+  //   cannot hold any more; the demo path's proof is now: the export at the recorded cut-over is byte-identical to the fixture those witnesses judge.
+  var REC = path.join(AG, '..', 'tests', 'fixtures', 'odoo_export_2026-11-10', 'odoo_export.json');
+  var G = run('export.js', ['--cutover', '2026-11-10'], '', {}, d('g'));
+  var gf = path.join(T, 'g', 'odoo_export', 'odoo_export.json'), same = fs.existsSync(gf) && fs.existsSync(REC) && fs.readFileSync(gf).equals(fs.readFileSync(REC));
+  var only = fs.existsSync(path.join(T, 'g', 'odoo_export')) ? fs.readdirSync(path.join(T, 'g', 'odoo_export')) : [];
+  L('§G demo export files=' + JSON.stringify(only) + ' byte-identical to the recorded fixture=' + same + (fs.existsSync(REC) ? '' : ' (fixture not found at ' + REC + ')'));
+  ok(G.code === 0 && same && only.length === 1, 'demo export = ONE file, byte-identical to the recorded odoo_export.json the engine witnesses judge (fixtures/odoo_export_2026-11-10)');
   L('\n' + (fails ? '🔴 W-ODOO-OWNDB FAIL (' + fails + ')' : '🟢 W-ODOO-OWNDB PASS'));
   fs.writeFileSync(path.join(ROOT, 'build/erp/logs_migrate_2026-11-08/poc_odoo_owndb.log'), log.join('\n'));
   process.exit(fails ? 1 : 0);

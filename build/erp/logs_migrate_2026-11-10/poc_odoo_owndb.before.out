@@ -1,0 +1,21 @@
+══ W-ODOO-OWNDB — point the agent at your own Odoo (/home/red1/bim-ootb/erp/odoo_agent) ══
+§ORACLE latest invoiced order=S00023 of 1 invoiced orders
+§A §ODOO-AGENT target db=odoodemo host=localhost:8069 login=admin demo=Y password=demo-default | exit=0
+  ✓ demo path unchanged: no flags → odoodemo, no password prompt, order S00023, PASS
+§B §ODOO-AGENT target db=odoodemo host=localhost:8069 login=demo demo=N password=prompt | picked=S00023 | exit=0
+  ✓ own login by FLAG: the agent asked for the password in the terminal and logged in
+  ✓ no --so on a non-demo target → picks the latest invoiced order of THAT Odoo (S00023 == oracle S00023)
+§B2 admin --so latest picked=S00030 oracle=S00030 of 4 | exit=0
+  ✓ --so latest picks the newest invoiced order among 4 (S00030)
+§C exit=1 §ODOO-AGENT FAIL auth
+  ✓ a wrong password is refused by Odoo → exit 1, nothing written
+  ✓ --password on the command line is refused (it would sit in the shell history)
+  ✓ ODOO_PASSWORD in the environment → no prompt (unattended runs still work)
+§F §ODOO-EXPORT target db=odoodemo host=localhost:8070 login=admin demo=Y password=demo-default | proxied calls=59 exit=0
+  ✗ FAIL: flags reach the RPC: --port 8070 sent every call (59) through the proxy and the export completed
+§H exit=1 §ODOO-EXPORT FAIL access: the Odoo user cannot read Account Group (account | left=[]
+  ✓ a login without the rights → plain refusal naming the Odoo record type, exit 1, no half-written export left
+§G demo export sha=46bb51f83b581936 (after §HARDEN-SPEC: bf33a79179e2b052)
+  ✗ FAIL: demo export files byte-identical to the §HARDEN-SPEC export judged by W-SHEET-CONTRACT
+
+🔴 W-ODOO-OWNDB FAIL (2)

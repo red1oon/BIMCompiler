@@ -10,6 +10,12 @@
 'use strict';
 var fs = require('fs'), path = require('path'), cp = require('child_process'), crypto = require('crypto'), os = require('os'), https = require('https'), http = require('http');
 var ROOT = path.join(__dirname, '..'), AG = process.argv[2] || '/tmp/wt-odoo-harden/erp/odoo_agent', OLD = process.argv[3] || '';
+// ── SUPERSEDED 2026-11-10 (bim-ootb #2809, prompts/MIGRATE_INSTALL_TENANT.md §ODOO-ENGINE-SPEC O3c): the Odoo agent no longer writes the workbook this witness judges — it only
+//   reads and writes odoo_export.json; the mapping is DATA in the browser (migrate/templates/odoo-17.json). The messy cases (shared street, no street, archived company,
+//   repeated and over-long codes, several companies) are generated and judged against the frozen hand mapping by W-MIGRATE-ENGINE ODOO-DIFF (69/69 branches); the scratch
+//   database odoo_messy itself was dropped 2026-11-09 (ODOO-REF-MESSY is INCONCLUSIVE for that reason). Against a reads-only agent this witness says INCONCLUSIVE (exit 3).
+(function () { try { var _ag = path.join(AG, 'export.js'); if (!/odoo_migration\.xlsx/.test(fs.readFileSync(_ag, 'utf8'))) {
+  console.log('§ODOO-MESSY-EXPORT verdict=INCONCLUSIVE — SUPERSEDED: ' + _ag + ' writes odoo_export.json only; see W-MIGRATE-ENGINE ODOO-DIFF (bim-ootb erp/tests/witness_migrate_engine.js)'); process.exit(3); } } catch (e) {} })();
 var MOCK = path.join(__dirname, 'odoo_mock', 'odoo_rpc_mock.js'), FIX = path.join(ROOT, 'build/erp/odoo_fixture/odoo_messy_2026-11-09.json');
 var LOAD_FIX = path.join(AG, '..', 'tests', 'fixtures', 'odoo_export_messy_2026-11-09');
 var LOGF = path.join(ROOT, 'build/erp/logs_migrate_2026-11-09/poc_odoo_messy.log'), log = [], fails = 0, judged = 0;
