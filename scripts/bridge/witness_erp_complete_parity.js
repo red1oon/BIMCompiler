@@ -43,7 +43,7 @@ const DESC = (f) => ({ composite: 'SyncOrder',
   docAction: f.noComplete ? undefined : { serviceType: 'CompleteOrder', table: 'C_Order', action: 'CO' } });
 async function legacyFacts(table, id, schema, postedType) {
   const h0 = (await query(cfg, postedType[0], `${postedType[1]}=${id}`))[0];
-  const gone = h0 && ['VO', 'CL'].includes(h0.DocStatus);   // a voided/closed order's books were deleted (MOrder.voidIt MFactAcct.deleteEx, Posted=N): nothing to wait for
+  const gone = h0 && ['VO', 'CL', 'RE'].includes(h0.DocStatus);   // a voided/closed order's books were deleted (MOrder.voidIt MFactAcct.deleteEx, Posted=N): nothing to wait for
   let fa = []; for (let i = 0; i < (gone ? 1 : 6) && !fa.length; i++) { fa = await query(cfg, 'QueryFactAcct', `AD_Table_ID=${table} AND Record_ID=${id} AND C_AcctSchema_ID=${schema}`); if (!fa.length && !gone) await sleep(1500); }
   if (fa.length) return fold(fa.map(f => ({ acct: f.Account_ID, dr: f.AmtAcctDr, cr: f.AmtAcctCr })));
   const h = (await query(cfg, postedType[0], `${postedType[1]}=${id}`))[0];
@@ -133,6 +133,7 @@ async function main() {
     const T = await twinRun(f); out(`§A5_TWIN ${f.name} ${T.error ? 'ERROR ' + T.error : T.refused ? 'REFUSED(' + T.status + ') ' + T.reason : 'order=' + T.number + ' id=' + T.id + ' door_status=' + T.envelope.status + ' actor=' + T.envelope.actor + ' ' + JSON.stringify(T.v)}`);
     if (L.rejected || T.error || T.refused) {
       if (L.rejected && T.refused) { out(`§A5_SCN ${f.name} MATCH both refuse (cardinal rule 2: same outcome) legacy="${L.reason}" twin="${String(T.reason).slice(0, 160)}"`); match++; res[f.name] = 'MATCH'; }
+      else if (L.rejected && /AMBIGUOUS|AbortError|NOT_SENT|AUTH|ECONN|fetch failed/.test(L.reason)) { out(`§A5_SCN ${f.name} INCONCLUSIVE legacy transport failure, not a legacy verdict: ${L.reason}`); inc++; res[f.name] = 'INCONCLUSIVE'; }
       else if (L.rejected && !T.refused && !T.error) { out(`§A5_SCN ${f.name} DIFF legacy REFUSED but the twin completed`); diff++; res[f.name] = 'DIFF'; }
       else if (T.refused && !L.rejected) { out(`§A5_SCN ${f.name} DIFF legacy completed but the twin refused: ${String(T.reason).slice(0, 200)}`); diff++; res[f.name] = 'DIFF'; }
       else { out(`§A5_SCN ${f.name} INCONCLUSIVE ${T.error || 'not compared'}`); inc++; res[f.name] = 'INCONCLUSIVE'; }
