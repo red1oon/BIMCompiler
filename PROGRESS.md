@@ -6,6 +6,9 @@ record the agent + its last finding in `prompts/AGENT_QUEUE.md` §MID-FLIGHT →
 past the reset → resume by `SendMessage` to the agent id (never re-dispatch fresh) → tell the user.
 Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 
+## 🚪 Neuro-symbolic ORDER door — 2026-11-10
+**Done:** A1 (`!help`, `--list/--csv/--out`, `> file`, `erp|object .list/.sum/.group`), A7 (guide live, 71/0). **Built, HELD:** `erp.new` (bim-ootb #2843 draft) pending the legacy twin check. **Next:** `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` ▶ RESUME HERE.
+
 ## 🤝 Teamwork comm layer (no DB/app server, just a data relay) — POC done 2026-10-23; frame + 3 apps + 6 films 2026-10-24
 **State 2026-10-26 (all live on bim-ootb main):** FL-8 G-4 complete — compile refusal (E1), every device refuses a non-executor's DocAction (E3, #2395), DocAction list honours Document Action Access + the executor map (E2, #2396); G-8 offline statement signer + `publishStatement` (#2401); G-7 translation rules judged by the keys at publish time (#2404); Team guide updated (#2404). G-6 decided (UPS plan BESIDE the office plan, chosen at founding), build spec §38.14. Full log + counts: `prompts/TEAMWORK_FRAMEWORK.md` §38.2–§38.14 (history §0–§37).
 **2026-10-28:** Team Phase 2.1-2.4 + 2.6 + G-1..G-3 DONE + LIVE (bim-ootb #2412, #2420, sw v923): observe-only plugin grant, core conflict message, numbering left the comm engine, Team OUT on the bus, received rows fire replica rules, legacy Import Orders port — W-POS-CHAIN 13/0 (a till ticket becomes ONE completed order at head office and returns). **Next session:** agents A–G per `prompts/TEAMWORK_FRAMEWORK.md` §41 (Import Payment, W-HQ-CLERK, role executors, G-6, Micro Finance on GardenWorld §40, I_POSSales); POS = standalone Unicenta-style till + kitchen, spec `prompts/POS_PLUGIN_LOCAL_FIRST.md`.
