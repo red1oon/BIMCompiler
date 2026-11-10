@@ -33,8 +33,8 @@ This is the only step that differs per source. See [Odoo](#odoo), [Business Cent
    (**Migrate from Odoo**, **Migrate from Business Central (alpha)** or **Migrate from SAP Business One (alpha)**).
 2. Still as System: menu **Initial Tenant Setup** → fill in the company details → **Create tenant**. It is set up the way iDempiere's Initial Client Setup sets one
    up (trees, accounting, a default partner group and tax category, the standard warehouse). The new company appears on the login screen.
-3. **Created the company before starting the plugins?** Still as System, run **Role Access Update** (System Admin → General Rules → Security → Role Access Update)
-   with *Reset Access* = **No**: the same process iDempiere uses after installing a plugin. Every role then gets the new screens its level allows.
+3. Every company's roles get the migration screens when the plugins start (as iDempiere does after installing a plugin). **Created the company while the plugins
+   were already running?** Reload the page once: the plugins start again and the new company's roles are included.
 
 ![The new company on the login screen](img/odoo_migration/login_newco.jpg)
 
@@ -43,13 +43,17 @@ This is the only step that differs per source. See [Odoo](#odoo), [Business Cent
 1. Log in as your new company's administrator → menu **Data Import → Migrate from …** (your source).
 2. Pick the file(s) from Step 1, and the **cut-over date** where the form asks for one. The browser reads them on your machine.
 3. **Units:** where the source's units have no ERP code, pick the ERP unit for each from the list in its cell (for example Units → `Each`, Hours → `Hour`). When the
-   source gives an international code, the matching ERP unit is suggested.
+   source gives an international code, the matching ERP unit is suggested. **A unit the ERP does not have?** Leave *ERP unit* empty and type a short code (up to 4
+   characters) in **New unit code**: the unit is created with that code and its products use it.
 
    ![The files picked, the units asked](img/odoo_migration/form_units.jpg)
 
 4. Press **Refresh**. The **summary** is a dry run of the real import: for every table, how many rows the source has, how many will import, how many would be
    refused and why, including rows the conversion itself could not use ("not in the file: …"). Notes about your data are listed under the tables. Nothing is written
    yet. Untick what you do not want; a table another ticked table needs stays ticked.
+   **Already there:** a new company starts with a few records of its own (the payment term *Immediate*, a *Standard* partner, category and price list, its chart of
+   accounts). A row of yours with the same key is counted under *Already there* and not loaded; your other rows use the company's own record. A key that appears
+   twice in your own data is still refused: fix it in the source.
 
    ![The summary, before anything is written](img/odoo_migration/form_summary.jpg)
 
