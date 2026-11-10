@@ -67,6 +67,29 @@ def mine(rules_db, bdb_path, log=print):
     return out
 
 
+# run pieces are not devices (the walker's own _MAIN_PIECE_CLASSES): their mix rows are written, their meshes are not shipped
+RUN_PIECES = ("IfcPipeSegment", "IfcPipeFitting", "IfcDuctSegment", "IfcDuctFitting", "IfcFlowSegment", "IfcFlowFitting")
+GEO_DDL = "CREATE TABLE IF NOT EXISTS component_geometries (geometry_hash TEXT PRIMARY KEY, vertices BLOB, faces BLOB, building TEXT);"
+
+
+def meshes(rows, bdb_path, log=print):
+    """The real mesh payloads of the DEVICE mix rows, byte-verbatim from the extraction (the page resolves a walk mesh from the
+    opened building's geometry, then from the rules DB itself, then from the rules' source building: modeller.html _dwResolveMeshes)."""
+    bdb = sqlite3.connect("file:" + bdb_path + "?mode=ro", uri=True)
+    want = sorted({r[3] for r in rows if r[1] not in RUN_PIECES})
+    out, missing = [], []
+    for h in want:
+        g = bdb.execute("SELECT vertices, faces FROM component_geometries WHERE geometry_hash = ?", (h,)).fetchone()
+        if not g or g[0] is None or g[1] is None:
+            missing.append(h)
+            continue
+        out.append((h, bytes(g[0]), bytes(g[1])))
+    bdb.close()
+    log(f"§PLACEMENT-MIX meshes: device hashes={len(want)} shipped={len(out)} missing={len(missing)} {missing[:5]} "
+        f"bytes={sum(len(v) + len(f) for _, v, f in out)} (rows only, no new geometry: byte-verbatim)")
+    return out
+
+
 def main():
     a = [x for x in sys.argv[1:] if not x.startswith("--")]
     sql_out = None
@@ -86,6 +109,13 @@ def main():
              DDL, "DELETE FROM rule_placement_mix;"]
         for r in rows:
             L.append(f"INSERT INTO rule_placement_mix ({cols}) VALUES (" + ",".join(q(v) for v in r) + ");")
+        geo = meshes(rows, a[1])
+        if geo:
+            L.append("-- the device meshes the mix names, byte-verbatim from the same extraction (a walk mesh is resolved from the rules DB when the opened building does not hold it)")
+            L.append(GEO_DDL)
+            src_b = os.path.basename(a[1]).replace("_extracted.db", "")
+            for h, v, f in geo:
+                L.append(f"INSERT OR REPLACE INTO component_geometries (geometry_hash, vertices, faces, building) VALUES ('{h}', X'{v.hex()}', X'{f.hex()}', '{src_b}');")
         with open(sql_out, "w") as fh:
             fh.write("\n".join(L) + "\n")
         print(f"§PLACEMENT-MIX wrote {sql_out} ({len(rows)} rows)")
