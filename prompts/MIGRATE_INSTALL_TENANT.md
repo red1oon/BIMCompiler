@@ -1704,3 +1704,27 @@ unit-not-carried 12->2` (the 2 = units no product uses, which the form drops) ·
     `BANK_STATEMENT_POST_WITH_DATE_FROM_LINE` paths (coded, unwitnessed) · reverseCorrect / reverseAccrual answer false as legacy (no reversal exists) · getSummary unwitnessed.
   - **Twin corrected against the Java:** the statement line's period check also runs when DateAcct CHANGES (MBankStatementLine :174), not only on a new line.
   - **For lane E3d:** GardenWorld posts to TWO accounting schemas (101 and 200000, the second in another currency) — judge per schema; a born tenant has one.
+
+**§2026-11-10s (lead; logs read):** #2825 (lane BS) MERGED.
+- **Lane IB ✅ BUILT (witness) — bim-ootb PR #2826 (auto-merge armed; Sonnet agent, Watchdog-read), branch `feat/import-bankstatement-221`, sw v1046 (merged main with BS).**
+  `erp/processes/ImportBankStatement.js` (243) + `I_BankStatement` physical table (`ad_import_tables.js`). `/tmp/count_logs/ib_main.log` **`§IBS-RESULT verdict=PASS judged=51
+  failed=0`** · `ib_mutants.log` `§IBS-MUTANTS … total=36 killed=36 survived=[]`. Regressions: IGLJ 45 · IINV 56 · IPAY 54 · IINV(inventory) 23 · IMPORT 44 · OB 36.
+  - **Legacy facts the migration must respect (asserted in the witness):** 221 does NOT resolve names — `ChargeName`, payment / invoice numbers, `BPartnerValue` are never read:
+    the caller fills the IDs (`C_Charge_ID`, `C_BankAccount_ID` or `BankAccountNo`). No DocAction parameter: statements are created Drafted. Lines are numbered 10, 20 … by
+    the process. A different StatementDate does not open a new statement when both Names are equal.
+  - **The opening-balance row (witnessed, 12,444.87 on one charge line):** `I_IsImported=N`, the org, the account (`C_BankAccount_ID` or `BankAccountNo`), `StatementDate`,
+    `StatementLineDate`, `StmtAmt = ChargeAmt = X`, `C_Charge_ID`; TrxAmt / InterestAmt left empty (the SQL makes them 0). Result: one Drafted statement, Beginning = the
+    account's CurrentBalance, Difference = X.
+  - **Duplicate to remove in lane E3d (one implementation per responsibility):** the port sets the statement's doc type (CMB) and ending balance INLINE (MBankStatement.beforeSave
+    :258-273) because no hook was registered when it was written; lane BS has since registered that hook (`model_bankstatement.js`). The inline copy is guarded (only when the
+    doc type is still empty) so nothing is double-set, but it must go.
+  - Named: `commitEx()` :364 is a no-op in the one-transaction host (printed `§PROC-UNPORTED`); the amount comparison is rounded to 6 decimals (SQLite REAL).
+- **Lane E3d plan (lead), concrete:** (1) agent: raw sets `account.journal` (bank / cash: name, code, type, default_account_id, bank_account_id, bank_id, currency_id) +
+  `res.partner.bank` / `res.bank` of those journals; re-record the fixture. (2) contract: master sheets `C_Bank` (Name, RoutingNo) and `C_BankAccount` (C_Bank_ID>Name,
+  AccountNo, Name?, C_Currency_ID>ISO_Code, BankAccountType, CurrentBalance 0) — a journal with no bank → a bank named after the company (a named PATCH); AccountNo = the
+  journal's code when Odoo has no account number (named PATCH). (3) open sheet `I_BankStatement` (BankAccountNo, StatementDate = StatementLineDate = cut-over, StmtAmt =
+  ChargeAmt = the journal account's trial-balance amount, `C_Charge_ID>Name` = *Opening Charge Bank*) for each bank / cash journal whose account has a balance. (4) loader:
+  the prerequisites step must run BEFORE the Ninja load (the sheet looks the charge up by name), creates *Opening Charge Bank* → Bank Clearing; stage 2 runs 221, then
+  Complete of each statement, then the verifier's BANK line becomes a judged check (`balance == 0.00`), and the tenant's bank asset account per bank account == the source.
+  (5) the period gate also for `CMB`. (6) W-OPEN-BALANCES case BANK + ODOO-OPEN oracle / variants / mutants for the new entities. (7) remove the inline beforeSave copy from
+  the 221 port. Unallocated payments (`I_Payment`): template + DIFF only; the load is INCONCLUSIVE on this source (0 rows).
