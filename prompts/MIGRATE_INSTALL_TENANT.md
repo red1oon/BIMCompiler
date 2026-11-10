@@ -1740,21 +1740,30 @@ shared-code changes before it merges). It waits for #2826 (lane IB) to merge fir
 Memory to read before touching the guide: `feedback_user_guide_quality_bar.md`, `feedback_propose_before_editing_docs.md` (structure / tone = propose first; a factual
 correction = just fix), `feedback_docs_deploy_landmine.md` (publish ONLY with `scripts/safe_gh_deploy.sh`, from a worktree off master, `docs/glassbowl_data.db` copied in).
 
-**0. First, close what is in flight (Watchdog — nothing is ✅ until its § lines are read):** Lane E3d (bank) — Sonnet agent, worktree `/tmp/wt-e3d`, branch
-`feat/migrate-e3d-bank`, a DRAFT PR on bim-ootb: read its log lines (`/tmp/count_logs/e3d_*.log`), review its changes to `workbook.mjs` / `open_balances.mjs` /
-`odoo_migrate_form.mjs` / `ImportBankStatement.js`, then merge or send it back. If no PR exists, the agent did not finish: rebuild from the plan in §2026-11-10s.
+**0. First (2 minutes): Lane E3d (bank) was Watchdog-read by the lead at the end of the 2026-11-10 session and its PR — bim-ootb #2829 — marked ready with auto-merge
+armed.** Check it MERGED (`gh pr view 2829`), then FETCH THE LIVE PAGE (`sw.js` ≥ v1047; `plugins/open_balances.mjs` contains `§MIG-BANK`) and prune `/tmp/wt-e3d`.
+What the lead read (`/tmp/count_logs/e3d_*.log`): `§MIGE-ODOO-OPEN recorded: … banks=1 bank_accounts=2 statements=1 statement_total=12444.87 left_BANK=0.00
+sheets=18I_GLJournal:9,19I_Invoice:19,20C_Bank:1,21C_BankAccount:2,22I_BankStatement:1` · `§MIGE-ODOO-GEN cases=300 differing_cases=0 cover=13/13` · open-balance mutants 17/17
+· **`§MIGE verdict=PASS judged=89`** (SAP 400 / BC 300 cases 0 differing) · shipped `§MIG-CLEAR BANK account=BANK-CLEAR balance=0.00 expected=0.00 verdict=PASS` ·
+`§MIG-BANK statements=1/1 … BNK1@11100=12444.87 verdict=PASS` · `§MIG-VERIFY verdict=PASS judged=9` · falsifier `BANK clearing BANK-CLEAR is 100.00, expected 0.00` ·
+**`§OB-VERDICT PASS judged=43`** (12 cases) · `§IDF-VERDICT PASS` · `§OFL-VERDICT PASS judged=13` · IBS 51 + 36/36 mutants (the inline `beforeSave` copy is gone).
+**Facts it found, for the review:** ImportBankStatement 221 finds the account by AccountNo AND the own bank's RoutingNo / SwiftCode (not AccountNo alone) — so `C_Bank.RoutingNo`
+is a named PATCH (a dash, variable `BANK_ROUTING`) and `IsOwnBank=Y` is written in the sheet (the twin does not apply that dictionary default for `c_bank` — a twin gap to
+check); AccountNo falls back to the journal code (named PATCH); a cash journal becomes a bank account of type B. **Not witnessed:** two journals sharing one account; a bank
+journal whose account is not of the cash type (it keeps its line in the opening journal, no statement). The guide does not yet say the bank balance is now brought in — its
+"waits on `BANK-CLEAR`" sentence becomes wrong the moment #2829 is live: fix that sentence first (a factual correction).
 
 **1. Where the feature stands (all LIVE unless said; bim-ootb sw v1044+, the two bank ports merged after it):**
 | piece | state | proof (re-run before trusting) |
 |---|---|---|
-| ONE engine, mapping as data — SAP B1, Business Central, Odoo 17 | live; SAP + BC alpha (never run on a real company) | `witness_migrate_engine.js` `§MIGE verdict=PASS judged=82` |
+| ONE engine, mapping as data — SAP B1, Business Central, Odoo 17 | live; SAP + BC alpha (never run on a real company) | `witness_migrate_engine.js` `§MIGE verdict=PASS judged=89` (82 before #2829) |
 | Odoo agent reads only → `odoo_export.json`, one file to pick | live | live re-run byte-identical to the fixture; bim-compiler `scripts/poc_odoo_owndb.js` `🟢 W-ODOO-OWNDB PASS` |
-| Open balances at the cut-over (Odoo): opening journal + open invoices, books checked against the source | live | `witness_open_balances.js` `§OB-VERDICT PASS judged=36` |
+| Open balances at the cut-over (Odoo): opening journal + open invoices, books checked against the source | live | `witness_open_balances.js` `§OB-VERDICT PASS judged=43` (36 before #2829) |
 | "Already there" rows skipped; a source unit kept with a code | live | `witness_already_there.js` `§AT-VERDICT PASS judged=9` |
 | A started plugin reaches every tenant's roles | live | `witness_plugin_role_access.js` `§PRA-VERDICT PASS judged=8` |
 | iDempiere identity falsifier (engine + loader vs the source rows) | merged, test-side | `witness_idempiere_falsifier.js` `§IDF-VERDICT PASS` (145 columns, 477 rows; ~2.5 min) |
 | Bank statement Complete + ImportBankStatement 221 | merged | `§BST-RESULT PASS judged=41` · `§IBS-RESULT PASS judged=51` |
-| Bank balance at the cut-over (Bank Clearing → 0) | **in flight (E3d)** | — |
+| Bank balance at the cut-over: bank + bank-account masters, one opening statement per journal, Bank Clearing → 0 | merging (#2829) — verify live | `§OB-VERDICT PASS judged=43` · `§MIGE verdict=PASS judged=89` |
 Other baselines: OF 18 · OM 14 · NM 31 · BCM 18 · SAPM 24 · IINV 56 · IGLJ 45 · IPAY 54 · GOC 4 · OFL 13 (browser wiring).
 
 **2. THE REVIEW (do this before any new build; write the findings HERE as a dated `§REVIEW-<date>` block: each finding = what was measured, the evidence line, the fix or the
