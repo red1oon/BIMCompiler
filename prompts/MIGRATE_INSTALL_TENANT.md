@@ -1574,3 +1574,25 @@ Baselines: `§MIGE verdict=PASS judged=82` · `§OB-VERDICT PASS judged=36` · `
   as the test oracle `erp/tests/fixtures/odoo_convert_reference.mjs`.
 - **Not redone (named):** the Odoo films still show two files being picked.
 **NEXT = the iDempiere falsifier (§IDEMPIERE-FALSIFIER-SPEC), then the named items of RESUME HERE 2026-11-10h point 4.**
+
+**§2026-11-10k — iDempiere falsifier: first run ADJUDICATED (lead; `/tmp/count_logs/idf_run.log` read) — bim-ootb draft PR #2811, branch `feat/idempiere-falsifier`.**
+Built by a Sonnet agent to §IDEMPIERE-FALSIFIER-SPEC: connector `tenant-rows`, GENERATED `idempiere-identity.json` (26 lookups resolved from the dictionary, `§IDF-GEN PASS`),
+recorded fixtures for GardenWorld (128 KB) and the pilot (25 KB), `witness_idempiere_falsifier.js`. `§IDF-COUNT` PASS on both; two falsifiers caught (a template field swapped →
+that column named; a source row dropped → the sheet named).
+- **The falsification claim HOLDS:** on every row that loads, every column the 17-sheet contract carries equals the source — whole sheets equal: C_Location 33/33 (7 of 7
+  columns), C_BPartner_Location 16/16, AD_User 6/6, M_PriceList_Version 6/6, M_Warehouse 11/11, M_Locator 11/11 (GardenWorld), C_ElementValue 55/55 (pilot); M_Product 13 of 13
+  columns on its 49 loaded rows. **No engine defect and no loader defect found.**
+- **What does NOT come across is the import CONTRACT's reach, not a mapping error — ruled per class:**
+  | class | ruling | measured |
+  |---|---|---|
+  | `contract-default-only` | the sheet can only say "the tenant's default" group / tax category (generator: `Y` when the row is the default, else blank — accepted) | BP group: 14 of 17 GardenWorld partners land on the default group · pilot: 4 of 5 products REFUSED (non-default tax category → mandatory empty) |
+  | `unit-not-carried` | FORM GAP: a source unit can only be mapped to an existing unit, never kept (`odoo_migrate_form.mjs` filters the C_UOM sheet; `mapUom` supports `x12de355` but the form offers no such answer) | 6 units, 6 products of 4 units with no twin unit |
+  | `key-already-in-tenant` | LEGACY RULE (unique index): refusal is right; but the loader is all-or-nothing, so ONE such key refuses a real migration | 311 of 379 accounts, Immediate, Standard category / partner / price list; pilot also its warehouse + locator |
+  | `import-inventory-renumbers` | LEGACY RULE (ImportInventory.java:392-398): the document gets its own number and description | 1 header |
+  | `header-without-lines` | contract: the I_Inventory rewrite is one row per line | 2 headers |
+  | `cascade` | a child of a refused parent | product prices / vendor rows / stock lines of the above |
+- **Follow-up sent to the agent:** the witness reports two verdicts — `§IDF-COLUMNS` (the claim) and `§IDF-COVERAGE` (every row not loaded attributed to ONE class by a
+  computed rule, the totals pinned; an unattributable loss = FAIL, with its own falsifier) — and merges only if `§IDF-VERDICT` is PASS under that.
+- **New named items from the falsifier (for the generic "any ERP" engine):** (1) the form must be able to KEEP a source unit (code asked from the user); (2) a source key the
+  tenant already holds — today it refuses the whole file: show it as "already there" and skip, or update? (owner's Ninja semantics: F7 all-or-nothing; a design call);
+  (3) BP group / tax category beyond "default" need their own sheets in the contract.
