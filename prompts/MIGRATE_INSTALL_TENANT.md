@@ -1538,7 +1538,7 @@ time and memory per 10k rows on both).
   `§MIGE-ODOO-OPEN-MUTANT verdict=PASS judged=10` · `§MIGE verdict=PASS judged=82`; `/tmp/count_logs/o3b_open_balances.log` `§OB-VERDICT PASS judged=36`. **Found by a surviving
   mutant:** with the lookup inside the template a held partner would still be refused but under "no business partner" — the oracle now checks the refusal REASON too.
 
-### ▶ RESUME HERE (2026-11-10h) — supersedes 2026-11-10d
+### ▶ (superseded by RESUME HERE 2026-11-10l at the END of the file) RESUME HERE (2026-11-10h)
 1. Check #2808 landed; fetch the live `sw.js` (v1039).
 2. **O3c — the agent cut (USER-VISIBLE, do as ONE change set):** `export.js` loses its mapping half and writes only `odoo_export.json` (lines −/+ stated); agent README + form
    texts; `docs/MigrationGuide.md` §Odoo (bim-compiler → `scripts/safe_gh_deploy.sh`, never bare mkdocs): the user picks ONE file; retire or repoint the bim-compiler witnesses
@@ -1596,3 +1596,24 @@ that column named; a source row dropped → the sheet named).
 - **New named items from the falsifier (for the generic "any ERP" engine):** (1) the form must be able to KEEP a source unit (code asked from the user); (2) a source key the
   tenant already holds — today it refuses the whole file: show it as "already there" and skip, or update? (owner's Ninja semantics: F7 all-or-nothing; a design call);
   (3) BP group / tax category beyond "default" need their own sheets in the contract.
+
+**§2026-11-10l — iDempiere falsifier ✅ BUILT (witness) — bim-ootb PR #2811 ready, auto-merge armed (lead read `/tmp/count_logs/idf_final.log`):**
+`§IDF-COLUMNS PASS sheets_judged=26 columns_judged=141 rows_compared=459` (only the ruled columns differ: BP group 14 rows; the Import Inventory number / description / line
+header, 1 row each) · `§IDF-COVERAGE-VERDICT PASS` — every row not loaded attributed by a computed rule and PINNED: GardenWorld `key-already-in-tenant` 315 · `unit-not-carried`
+12 · `cascade:unit-not-carried` 8 · `header-without-lines` 2; pilot `contract-default-only` 4 · `cascade:contract-default-only` 13 · `key-already-in-tenant` 6 · three
+falsifiers caught (`§IDF-FALSIFY-COLUMN`, `-ROW`, `-UNATTRIBUTED`: a C_Location row dropped from the book → named as fitting no class, with its dependent row) ·
+**`§IDF-VERDICT PASS columns=PASS coverage=PASS`**. Pilot C_UOM and M_Product_PO: INCONCLUSIVE (no source row). Test-side only (no shipped file, no sw bump).
+
+### ▶ RESUME HERE (2026-11-10l) — supersedes 2026-11-10h. The three jobs dictated for 2026-11-10 are DONE: E3c · Odoo onto the engine (O1–O3) · the iDempiere falsifier.
+1. Check bim-ootb #2811 landed (`gh pr view 2811`); prune `/tmp/wt-idf` when merged and clean.
+2. **⛔ ONE owner decision (from the falsifier, class `key-already-in-tenant`):** a source row whose key the tenant already holds (e.g. a payment term "Immediate", a partner
+   "Standard") is refused by the unique index, and because the loader is all-or-nothing (F7) the whole migration is refused. Options: (a) keep as is — the user unticks or
+   renames in the source; (b) show such a row as "already there", skip it and load the rest (lead's recommendation: the summary already lists every refusal before Process);
+   (c) update the existing row (the Ninja IsActive=Y update mode). Nothing is changed until he says.
+3. Then, in order: the form KEEPS a source unit (asks its code; `mapUom` already supports it) · E3d bank (C_Bank / C_BankAccount masters, ImportBankStatement 221, the opening
+   statement → Bank Clearing to zero) + unallocated payments (343) · stock value (Odoo `standard_price` is in the raw rows; ImportInventory.java:546-564 to port) · BP group /
+   tax category sheets in the contract · SAP / BC open balances (the loader and verifier are source-neutral) · the older list: commitEx seam for imports, `model_journal` in
+   `ws_kernel.js`, §IINV tag collision, seed `c_activity`, E4 sql connector, E5 DIY screen.
+4. Known and named: a tenant born while bundles run gets plugin access at the next start · ODOO-REF-MESSY INCONCLUSIVE (database gone) · the Odoo films show two files.
+Baselines: `§MIGE verdict=PASS judged=82` · `§OB-VERDICT PASS judged=36` · `§IDF-VERDICT PASS` (141 columns, 459 rows) · `§PRA-VERDICT PASS judged=8` · `§GOC-VERDICT PASS
+judged=4` · OF 18 · OM 14 · NM 31 · BCM 18 · SAPM 24 · bim-compiler `🟢 W-ODOO-OWNDB PASS`. Live: bim-ootb sw v1040; guide published.
