@@ -1158,7 +1158,7 @@ logs (Watchdog Protocol) before marking ✅:
   (Lead session, not an agent: it is the design centre and the owner will adjust the template shape.)
 - after A–D: BC + Odoo templates (equality witnesses, deletion budget), the open-items sheets + clearing accounts (E3c, Odoo first), then E4 sql connector, E5 DIY screen.
 
-### ▶ RESUME HERE (2026-11-10b) — START HERE: lanes A–D DONE + all merged; next = E3c open items → Odoo onto the engine → iDempiere falsifier (no questions pending)
+### ▶ (superseded by RESUME HERE 2026-11-10d at the END of the file) RESUME HERE (2026-11-10b) — lanes A–D DONE + all merged; next = E3c open items → Odoo onto the engine → iDempiere falsifier (no questions pending)
 **On bim-ootb main @e2b6c92f, sw v1029:** #2784 engine + SAP template · #2787 E1 opening stock CO (Odoo/BC) · #2788 ImportInvoice 207 · #2789 ImportGLJournal 220 + GL Journal DocAction ·
 #2790 BC template. Details + § lines: §ENGINE-D-SPEC and the A/B/C/D-BC blocks right after it (end of file). Witness to re-run first: `node erp/tests/witness_migrate_engine.js`
 (`§MIGE verdict=PASS judged=30`).
@@ -1444,3 +1444,27 @@ exists after Start; a MANUAL role and a role whose level does not admit it have 
 (or the gap is named with its cause); Stop removes every row the start added (counts back to the start); a second Start adds no duplicate; falsifier: the pass disabled → the born
 tenant's admin has no row. Regressions: W-ODOO-FORM / W-BC-MIGRATE / W-SAP-MIGRATE / W-NINJA-MIGRATE (their "access rows for roles 0 and 102" checks restated as "role 0 and 102 have
 access", since the count now follows the roles), W-OPEN-BALANCES, browser W-ODOO-FORM-LIVE.
+
+**§2026-11-10d STATUS (lead session; logs read):**
+- **O1 ✅ MERGED — bim-ootb #2794** (Sonnet agent, Watchdog-read): `export.js` writes the 16 raw master sets into `odoo_export.json`; oracle `erp/tests/fixtures/odoo_convert_reference.mjs`
+  (296 lines, the mapping half moved verbatim). `/tmp/count_logs/o1_migrate_engine.log`: `§MIGE-ODOO-REF … sheets=17 rows=309 book_diffs=0 manifest_diffs=0 provenance_diffs=0` ·
+  `§MIGE-ODOO-REF verdict=PASS judged=7` (3 falsifiers caught) · `§MIGE-ODOO-REF-MESSY verdict=INCONCLUSIVE (database not on this Odoo)` — the `odoo_messy` database was dropped
+  2026-11-09, so the second recorded export cannot be re-recorded · `§MIGE verdict=PASS judged=58`. The re-run reproduced the three committed files byte for byte. Agent's notes for
+  O2: each set read "archived too" carries `archived_too: true` in its manifest entry; `res.country` / `res.country.state` hold only the rows partners reference; the product read
+  now carries `product_tmpl_id` (one RPC fewer — the old recorded replay of the messy database may no longer match the call set, untested).
+- **§PLUGIN-ROLE-ACCESS ✅ BUILT (witness) — bim-ootb PR #2795 (auto-merge armed), branch `fix/plugin-role-access`, sw v1034.** `plugin_registry.js` stageRoleAccess (+30) + the
+  hand `[102, 11]` rows out of the four migrate bundles. `/tmp/count_logs/plugin_role_access.log`: `§PRA-X-OF-N X=48 N=48 roles=16 (non-manual active=14) records=4 missing=0
+  unexpected=0` · `§PRA-BORN after-start … records_at_birth=0/4 records_after_next_start=4/4` · `§PRA-VERDICT PASS judged=8 failed=0`. **Added to the spec while building:** a
+  bundle that SHIPS access rows beyond the login role keeps its explicit list — found by W-POS-SALES, whose claim is "exactly the clerk's role" (`§POSS-RESULT PASS judged=43`
+  after the rule). Regressions PASS (24 witnesses, list in the PR); `witness_team_releases` and `witness_pos_sales_live` hit the 400-500 s cap with no failure line — not concluded.
+- **Live:** the site served sw `v1033` with `plugins/open_balances.mjs` = 200 (E3c + O1 deployed, fetched back). Plugins start only as System Administrator (role 0,
+  `plugin_registry.js` mayWrite) — legacy's rule, confirmed with the owner on the live page ("ok works").
+
+### ▶ RESUME HERE (2026-11-10d) — supersedes 2026-11-10b/c
+1. **Check #2795 landed** (`gh pr view 2795`); then fetch the live page's `sw.js` (v1034) — a green pipeline is not a deployed feature.
+2. **O2 (lead): the 17 master entities into `templates/odoo-17.json`** — §ODOO-ENGINE-SPEC step 2. Oracle = `tests/fixtures/odoo_convert_reference.mjs` (never edited to pass);
+   witnesses ODOO-GUIDE / ODOO-DIFF / ODOO-MUTANT in `witness_migrate_engine.js` (now 58). Then delete the bridge set `partner_keys` (open items look the partner up in the
+   template's own C_BPartner sheet). Then **O3** the cut (the form builds the book from `odoo_export.json`; `export.js` loses its mapping half), then the **iDempiere falsifier**.
+3. Small named items, any order: `witness_odoo_messy.js` (2 fails on main since #2787 — make it run stage 2) · `model_layer.js` trailing-UPDATE without `idCol` on a table with
+   no single key column · E3d bank + unallocated payments · stock value · a tenant born while bundles run gets its plugin access only at the next start.
+Baselines: `§MIGE verdict=PASS judged=58` · `§OB-VERDICT PASS judged=31` · `§PRA-VERDICT PASS judged=8` · OF 18 · NM 31 · BCM 18 · SAPM 24.
