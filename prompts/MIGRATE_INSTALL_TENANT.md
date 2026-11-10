@@ -1646,3 +1646,34 @@ with that code and its products point at it; without a code the run is still ref
   Regressions: OF 18 · OM 14 · OB 36 · NM 31 · BCM 18 · SAPM 24 · IDF PASS · IINV 56 · POSS 43 · GOC 4 · OFL 13 (unit check restated: 6 answer cells).
 - **Follow-ups queued:** the falsifier re-pinned so the LOADER does the skipping (class `already-there`) and units without an ERP equivalent are kept with a code · the guide:
   two sentences (already there; new unit code) → `scripts/safe_gh_deploy.sh`. Then the E3d bank spec.
+
+**§2026-11-10o (lead; live fetched back):** #2822 MERGED and LIVE (sw `v1044`; the live `odoo_migrate_form.mjs` carries the already-there pass and `newcode`). Guide: BIMCompiler
+#529 merged + deployed (`/tmp/count_logs/docs_deploy2.log` `§GUARD result=PASS`, `§STEP6 all canaries 200`; the live page carries "New unit code" and "Already there"; the Role
+Access Update step replaced by what the plugin start now does). Falsifier re-pin (the LOADER skips, units kept with their code): sent back to the Sonnet agent, result pending.
+
+### §E3D-SPEC — the bank balance and unallocated payments at the cut-over (2026-11-10o; written before any code)
+**Why:** after E3c the source's bank balance waits on `BANK-CLEAR` (demo: 12,444.87) and the books are not finished until someone clears it by hand; unallocated receipts and
+payments are refused with their total left on the AR / AP clearing accounts. The cut-over method (§B3-SCOUT): unallocated receipts / prepayments = payments; the bank balance =
+an OPENING BANK STATEMENT; proof = Bank Clearing ends at zero.
+**0. Measured (2026-11-10):**
+- **Source (live odoodemo):** `account.journal` — 1 bank journal *Bank* BNK1 (account 101401, balance 12,444.87; no `res.partner.bank` attached, no bank named) + 1 cash journal
+  *Cash* CSH1 (101501, no balance); suspense 101402 (−9,944.87: 8 statement lines, all unreconciled); *Outstanding Receipts* 101403 (12,842.50 = 4 posted payments not yet
+  matched to a statement line, all reconciled to invoices). 0 unallocated receipts (E3c measurement stands) → the payment half has NOTHING to judge on this source.
+- **Target:** a born tenant has 0 `C_BankAccount`. The twin has the POSTING of a bank statement (`model_post.js` Doc_BankStatement, `witness_post_bankstatement.js`) and line
+  helpers (`model_trade.js` :582-625) but **NO bank statement DocAction** (no `registerDocAction('c_bankstatement')`: a statement cannot be Completed) and **ImportBankStatement
+  (AD_Process 221, 540 Java lines) is not ported**; `I_BankStatement` (AD_Table 600) is in the dictionary. ImportPayment 343 is ported. Legacy `MBankStatement.java` = 804 lines.
+**1. Pieces (each its own witness; lanes can run in parallel):**
+- **Lane BS — port the bank statement DocAction** (`MBankStatement.java` prepareIt / completeIt / voidIt / closeIt, + `MBankStatementLine` beforeSave/afterSave already partly in
+  `model_trade.js`): `erp/model_bankstatement.js`, registered for `c_bankstatement`; W-BANKSTATEMENT (Complete posts through the existing Doc_BankStatement; a line with a
+  CHARGE and no payment posts Dr bank asset / Cr the charge's account; period gate CMB; void; the legacy texts). Verbatim, citing Java lines; NAMED where not ported.
+- **Lane IB — port ImportBankStatement 221** verbatim (`erp/processes/ImportBankStatement.js` + `I_BankStatement` physical table via `ad_import_tables.js`, as 207 / 220 were):
+  W-IMPORT-BANKSTATEMENT (X of N process parameters, the SQL phase's legacy error texts, statement + lines made, payment / charge / BP resolution, rerun, delete-old, mutants).
+- **Lane E3d (lead, after BS + IB land):** (a) masters: sheets `C_Bank` + `C_BankAccount` in the contract (from Odoo `account.journal` type bank/cash + `res.partner.bank` /
+  `res.bank` when present; a journal without a bank → a bank row named after the journal, a named PATCH) — the agent ships the raw sets; (b) prerequisite: charge *Opening
+  Charge Bank* whose account IS Bank Clearing; (c) open sheet `I_BankStatement`: ONE statement per bank account at the cut-over, ONE line = the account's balance on that charge
+  → Complete: Dr the tenant's bank asset account / Cr Bank Clearing → `§MIG-CLEAR BANK … balance=0.00 verdict=PASS` replaces `state=OPEN`; (d) `I_Payment` for unallocated
+  receipts / payments (343, DocAction CO) — judged only on a source that has some (the demo has 0: a seeded DIFF proves the template, the load stays INCONCLUSIVE, said so).
+  The amounts Odoo holds on *Outstanding Receipts / Payments* and the suspense account stay plain accounts in the opening journal (E3c) — NAMED: payments in transit are not
+  re-created as documents.
+- **Witness W-OPEN-BALANCES gains case BANK:** Bank Clearing == 0.00; the tenant's bank asset account == the source bank balance per bank account; the statement Completed and
+  Posted; falsifier: the bank journal's balance changed in the export → the clearing account names the difference.
