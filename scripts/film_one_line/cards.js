@@ -25,7 +25,8 @@ const st = (c) => '<b>' + c + '</b> ' + NAME[c];
 const more = (v) => [cmd(L(v)), ans('order ' + F[v].number + ' &nbsp; ' + st(F[v].before.docStatus) + ' → ' + st(F[v].after.docStatus))];
 const svg = fs.readFileSync(path.join(__dirname, '..', '..', 'docs', 'figs', 'one_door.svg'), 'utf8').replace(/<\?xml[^>]*>/, '');
 const cards = {
-  title: [page('<div class="big">One line</div><div class="sub">Script your ERP and your building, a line at a time</div>')],
+  // the opening chapter card, house style (PLAYBOOK C: plain #0b0f17, kicker coral 34, title line 1 off-white 120, line 2 coral, one plain line 40; silent, 3.6 s)
+  title: [page('<div class="ch"><div class="k">BIM + ERP &nbsp;·&nbsp; OPEN SOURCE</div><div class="t1">ERP Scripting</div><div class="t2">Skip the screens</div><div class="p">For fast humans, and even faster AI.</div></div>', 'body{background:#0b0f17} .ch{text-align:center;margin-top:120px} .k{font-size:34px;color:#FF6B78;letter-spacing:4px;font-weight:700} .t1{font-size:120px;font-weight:700;color:#F3EEE8;margin-top:50px;line-height:1.1} .t2{font-size:120px;font-weight:700;color:#FF6B78;line-height:1.15} .p{font-size:40px;color:#F3EEE8;margin-top:56px}')],
   screens: [page('<h1>Today: to complete one order</h1><div class="plain">open the menu <span>→</span> find the window <span>→</span><br>find the record <span>→</span> find the tab <span>→</span><br>find the button <span>→</span> confirm</div>')],
   find: [page('<h1>One line</h1>' + term([cmd(L('find'))])),
     page('<h1>One line</h1>' + term([cmd(L('find')), ans('order <b>' + F.find.number + '</b> &nbsp; status ' + st(F.find.docStatus))]))],
