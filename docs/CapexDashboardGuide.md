@@ -14,6 +14,7 @@
 > **What it changes on your iDempiere:** no change to iDempiere's code or tables. The dashboard needs only read-only setup data.
 > Sending a Project Order *from a BIM model* into iDempiere is a separate thing: that is one standard plugin. How it, the drawings
 > filed against the project and this dashboard fit together is the next chapter.
+> BIM Document (the drawings) is part of Kernel-ERP today; on your own iDempiere it needs a pack and a plugin: see *Installing it*.
 
 **Who reads what.** **Project manager:** *The dashboard page*, *The Home tab* and *What moves the numbers*.
 **Administrator:** *Changing it* and *Installing it*. Everyone: *Three places*, *What it does not do yet* and *Troubleshooting*.
@@ -466,6 +467,27 @@ address to open on your data.
 !!! warning "The file holds your project figures"
     Whoever can open the page can read them. Serve it only where you would show them.
 
+### BIM Document on your own iDempiere (not built yet)
+
+Today BIM Document runs in Kernel-ERP. To have it on your iDempiere server it takes two parts, kept apart:
+
+1. **A 2Pack file (metadata only).** The table `BIM_Document` and its columns, the lists (discipline, file kind, the four states), the
+   window, the BIM Document tabs in the Project window, the menu entry, and the names of the two processes (Export Register and Open). The
+   physical table is created by the pack itself when it is missing. It does not contain program code.
+2. **A plugin (OSGi component) with the Java in its `src` folder.** What a pack cannot hold: the model class, the document-action rules
+   (a deliverable needs a task; an older revision cannot be issued after a newer one; issuing a newer revision supersedes the older),
+   and the two process classes. A pack that names a class the server does not have is reported as *class not on the server*.
+
+How the metadata gets in is your choice, as in any iDempiere installation: **rows in the pack's `PackOut.xml`** (the dictionary itself),
+**SQL statements inside `PackOut.xml`** (a database type is stated per statement), or **a SQL migration script** under the
+`migration` folder, as the dashboard's read types already do. A pack version is applied once and never changed: a changed pack gets a new
+version. Start the database first, apply the pack, then check the rows on the server.
+
+*Open in Modeller / Viewer* will be a plain download of the attachment on your server, because the browser file store it uses in
+Kernel-ERP does not exist on the server side.
+
+A server without it is not an error: the dashboard's document figures say **no data** there.
+
 ### The twin
 
 Install the bundle `capex/plugin/capex_dashboard.mjs` in **Plugins & Releases**: it brings the same goal rows as the scripts above. To bring your
@@ -484,10 +506,15 @@ for GardenWorld: a tenant other than that needs its tenant in the twin first, wh
 
 | Topic | Today |
 |---|---|
-| Forecast Cost at Completion | No agreed formula: says *definition pending* |
+| Forecast Cost at Completion | No agreed formula: says *definition pending*. A proposal is under *For review* |
 | Procurement Risks, Handover | No agreed definition: says *definition pending* |
-| Project Stage | Shows the Standard Phase. How your stages map onto `C_Phase` is not agreed |
+| Project Stage | Shows the Standard Phase. How your stages map onto `C_Phase` is not agreed. A proposal is under *For review* |
 | Payment-based progress | Not in the ERP |
+| Project drop-down | Not built. One project is chosen by adding `&project=<Value>` to the page address. Planned: a fourth filter whose blank choice is **All Projects** |
+| Document figures | Not built. Planned: a tile *issued for construction / deliverables*, from BIM Document. On a server that does not have BIM Document it will say **no data** |
+| BIM Document on your own iDempiere | Not built. It runs in Kernel-ERP today. See *Installing it* below |
+| A revised model | Sending a revised model again adds nothing today (a second send changes nothing). Planned: it arrives as a new version of the schedule, the first one kept as the baseline |
+| Register button | The register is exported and used by a tool; there is no button yet |
 | Project Stage, Physical vs Spent, project lists on the Home tab | Page only, not goals |
 | Other currencies on the Home tab | No money goal covers them until you add one. The page shows each currency it finds |
 
