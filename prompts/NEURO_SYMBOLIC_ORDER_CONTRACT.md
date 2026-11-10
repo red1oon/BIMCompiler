@@ -38,7 +38,7 @@ Witness counts are the last recorded runs (archive, each section's RESULT); only
 | A4 | Composite verbs (`erp.sell`, `erp.cancel`, `erp.status`) | need A2 | §R.V item 4 |
 | A5 | Measure terminal against tab; the ERP install set; guide section "Install on your machine" | the claim "the terminal relieves the browser" is not measured | §R.V item 11 |
 | A6 | Role applied to anything that lists | lists show data | §R.V item 6 |
-| A7 | Regenerate and redeploy the guide after each batch | already stale (STATE) | §R.V item 7 |
+| A7 | ✅ **DONE 2026-11-10 for the A1 batch** (guide sections 'Lists, sums and groups', 'Choose how the answer is shown', 'Ask the door'; W-FAST-SCRIPT-GUIDE 66/0 local, 71/0 on the served page; BIMCompiler #542). Deploy note: `safe_gh_deploy.sh` ABORTED on `glassbowl_data.db` (live, untracked by the NO-LFS rule, used by glassbowl.html/sw.js); fix = `git show origin/gh-pages:glassbowl_data.db > docs/glassbowl_data.db` into the deploy worktree, untracked, then redeploy. Repeat A7 after every verb batch | Regenerate and redeploy the guide after each batch | already stale (STATE) | §R.V item 7 |
 | A8 | ⛔ Shipment cost difference, then Invoice and Payment, X of N each time | blocks only the count and the sell-to-invoice chain | archive §0.12c |
 
 **B. Waiting on the owner (one at a time; advice stands until overruled):**
