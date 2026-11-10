@@ -11,6 +11,7 @@ Scope: SPEC ONLY for "the ERP's AD framework as an MIS": one line adds a window 
 **Parent lane:** `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` (the one door, the verb vocabulary; §R.V is the running work order). This file is that lane's item 8. Laws that bind: AD-LAYER LAW (one generic engine, zero per-window code, X of N), TWIN CARDINAL RULE, PRIMAL LAW (witness, never eyes), no paid model calls, NEURO §R.4 (worktrees, environment, hygiene).
 
 ## ▶ RESUME HERE (next session)
+**Naming (owner, 2026-11-11):** the verbs of this lane are offered under the **`mis.` prefix** (`mis.add_window`, `mis.load`, `mis.update`, `mis.delete`; read verbs as aliases of the `erp.*` originals), so the audience meets the light MIS concept first; one engine, one implementation. Rule and alias mechanism: `prompts/CLI_ERP_IVR.md` §1c. Where this file says `erp.add_window`, `erp.load`, `erp.update`, `erp.delete`, read `mis.*`.
 Start at §5 step M0: three of its six questions are answered in §7 (read it first); finish (a), (e), (f), no code. Then M1 onward, top to bottom. Three questions for the owner are in §6, each with an advised answer: work on the advice unless overruled. Place in the whole lane's order: NEURO §TRIAGE item A3.
 
 ## 1. The idea in one paragraph
