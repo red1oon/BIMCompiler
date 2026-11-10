@@ -108,6 +108,42 @@ async function twinRun(f) {
     books_inv_p: factsSt(318, inv, 'c_invoice_id', C.schema.primary), books_inv_s2: factsSt(318, inv, 'c_invoice_id', C.schema.second) } };
 }
 
+
+// ── Shipment (M_InOut) Complete: the next trade-cycle document (follow-up E). Legacy: a completed Standard Order, a DRAFT shipment keyed with the same facts (SyncOrder without a doc action), then
+//    set_docaction CO through the pilot's Pilot_setDocAction_M_InOut. Twin: the draft order completed by the door, a draft shipment keyed into the op-log, then `erp.complete kind=<dictionary name> id=` through the door.
+const SHIPDESC = (f) => ({ composite: 'SyncOrder',
+  header: { serviceType: 'Pilot_createData_M_InOut', table: 'M_InOut', fields: { AD_Org_ID: { const: C.org }, C_DocType_ID: { const: C.dt.mmShipment }, MovementType: { const: 'C-' }, IsSOTrx: { const: 'Y' }, C_Order_ID: { path: 'order' }, C_BPartner_ID: { const: f.bp }, C_BPartner_Location_ID: { const: f.loc }, M_Warehouse_ID: { const: C.wh }, MovementDate: { path: 'date' }, DateAcct: { path: 'date' } } },
+  lines: { serviceType: 'Pilot_createData_M_InOutLine', table: 'M_InOutLine', parent: 'M_InOut_ID', from: 'lines', lineNo: { col: 'Line', step: 10 }, fields: { AD_Org_ID: { const: C.org }, C_OrderLine_ID: { path: 'ol' }, M_Product_ID: { path: 'product' }, M_Locator_ID: { const: C.locator }, MovementQty: { path: 'qty' }, QtyEntered: { path: 'qty' } } } });
+async function legacyShip(f) {
+  const s = await store.open(), uid = 'a5s-' + Date.now() + '-' + f.name;
+  s.enqueue(uid, 'doc', { lines: [{ product: f.product, qty: f.qty }] }); await drain(cfg, s, { doc: DESC(f), ship: SHIPDESC(f) }, { log: () => {} });
+  if (s.get(uid).state !== 'CONFIRMED') return { rejected: true, reason: 'order: ' + (s.get(uid).error || s.get(uid).state || '').slice(0, 160) };
+  const oid = s.idmap(uid).find(x => x.tbl === 'C_Order').server_id, ols = await query(cfg, 'QueryCOrderLine', `C_Order_ID=${oid}`);
+  const u2 = uid + '-sh'; s.enqueue(u2, 'ship', { order: oid, date: today + ' 00:00:00', lines: ols.map(l => ({ ol: l.C_OrderLine_ID, product: l.M_Product_ID, qty: Number(l.QtyOrdered) })) }); await drain(cfg, s, { doc: DESC(f), ship: SHIPDESC(f) }, { log: () => {} });
+  if (s.get(u2).state !== 'CONFIRMED') return { rejected: true, reason: 'shipment: ' + (s.get(u2).error || s.get(u2).state || '').slice(0, 160) };
+  const sid = s.idmap(u2).find(x => x.tbl === 'M_InOut').server_id, pre = (await query(cfg, 'QueryMInOut', `M_InOut_ID=${sid}`))[0];
+  if (pre.DocStatus !== 'DR') return { rejected: true, reason: 'the shipment was not left Drafted: ' + pre.DocStatus };
+  try { await ad.docAction(cfg, 'Pilot_setDocAction_M_InOut', 'M_InOut', sid, 'CO'); } catch (e) { return { rejected: true, reason: 'CO: ' + String(e.message).slice(0, 200) }; }
+  let h = (await query(cfg, 'QueryMInOut', `M_InOut_ID=${sid}`))[0]; for (let i = 0; i < 8 && h.DocStatus === 'CO' && !['Y', 'E'].includes(h.Posted) && h.Posted !== true; i++) { await sleep(1500); h = (await query(cfg, 'QueryMInOut', `M_InOut_ID=${sid}`))[0]; }
+  const ls = await query(cfg, 'QueryMInOutLine', `M_InOut_ID=${sid}`), ol = await query(cfg, 'QueryCOrderLine', `C_Order_ID=${oid}`);
+  return { id: sid, number: h.DocumentNo, v: { docstatus: h.DocStatus, docaction: String(h.DocAction), processed: String(h.Processed === true ? 'Y' : h.Processed), lines: ls.map(l => `${l.M_Product_ID}:${Number(l.MovementQty)}`).sort().join('|'),
+    ol_qty: ol.map(l => `${l.M_Product_ID}:${Number(l.QtyOrdered)}/${Number(l.QtyReserved || 0)}/${Number(l.QtyDelivered || 0)}/${Number(l.QtyInvoiced || 0)}`).sort().join('|'),
+    books_p: await legacyFacts(319, sid, C.schema.primary, ['QueryMInOut', 'M_InOut_ID']), books_s2: await legacyFacts(319, sid, C.schema.second, ['QueryMInOut', 'M_InOut_ID']) } };
+}
+async function twinShip(f) {
+  const d = await DRAFT.draftOrder({ oplog: path.join(TMP, 'twin.ops.jsonl') }, { bp: f.bp, loc: f.loc, product: f.product, qty: f.qty + (BREAK ? 1 : 0), doctype: f.doctype, day: today + ' 00:00:00' });
+  let r = await door('erp.complete kind=Order number=' + d.number); if (!r.env || r.env.status !== 'ok') return { error: 'order complete: ' + (r.env ? r.env.why : r.err).slice(0, 200) };
+  const sh = await DRAFT.draftShipment({ oplog: path.join(TMP, 'twin.ops.jsonl') }, { orderId: d.id, day: today + ' 00:00:00' });
+  r = await door('erp.complete kind="Shipment/Receipt" id=' + sh.id);
+  if (!r.env) return { error: 'door gave no envelope: ' + (r.err || r.out).slice(0, 300) };
+  if (r.env.status !== 'ok') return { refused: true, status: r.env.status, reason: r.env.why };
+  const O = await ERP.boot({ oplog: path.join(TMP, 'twin.ops.jsonl') }), q = (x, p) => O.rows(x, p);
+  const h = q('SELECT * FROM m_inout WHERE m_inout_id=?', [sh.id])[0], ls = q('SELECT * FROM m_inoutline WHERE m_inout_id=?', [sh.id]), ol = q('SELECT * FROM c_orderline WHERE c_order_id=?', [d.id]);
+  const fx = (sch) => fold(q('SELECT account_id AS acct, amtacctdr AS dr, amtacctcr AS cr FROM fact_acct WHERE ad_table_id=319 AND record_id=? AND c_acctschema_id=?', [sh.id, sch]));
+  return { id: sh.id, number: sh.number, envelope: r.env, v: { docstatus: h.docstatus, docaction: String(h.docaction), processed: String(h.processed), lines: ls.map(l => `${l.m_product_id}:${Number(l.movementqty)}`).sort().join('|'),
+    ol_qty: ol.map(l => `${l.m_product_id}:${Number(l.qtyordered)}/${Number(l.qtyreserved || 0)}/${Number(l.qtydelivered || 0)}/${Number(l.qtyinvoiced || 0)}`).sort().join('|'), books_p: fx(C.schema.primary), books_s2: fx(C.schema.second) } };
+}
+
 async function main() {
   out(`§A5 start ooTB=${OOTB} base=${cfg.base} day=${today} break=${BREAK ? 1 : 0} tmp=${TMP}`);
   try { const b = (await query(cfg, 'QueryCBPartner', `C_BPartner_ID=112`))[0]; if (!b) throw new Error('QueryCBPartner 112 returned no row'); }
@@ -145,11 +181,22 @@ async function main() {
     out(`§A5_SCN ${f.name} ${d ? 'DIFF' : 'MATCH'} compared=${keys.length} diffs=${d} nonEmptyBooks=${books.length}${books.length ? '' : ' (this document class books nothing on either side: books compared as none==none, not as proof of posting)'}`);
     d ? diff++ : match++; res[f.name] = d ? 'DIFF' : 'MATCH';
   }
-  for (const A of ACTS) {   // one pair line per action: counted in X only when EVERY scenario of that action MATCHes (and at least one was judged)
+  for (const A of ACTS.filter(a => a !== 'SHIP')) {   // one pair line per action: counted in X only when EVERY scenario of that action MATCHes (and at least one was judged)
     const mine = SCN.filter(s => s.action === A), rs = mine.map(s => res[s.name]);
     const v = !mine.length ? 'INCONCLUSIVE' : rs.every(x => x === 'MATCH') ? 'MATCH' : rs.includes('DIFF') ? 'DIFF' : 'INCONCLUSIVE';
     const o = {}; mine.forEach(s => { o[s.name] = res[s.name]; });
     out(`§A5_PAIR table=C_Order action=${A} verdict=${v} scenarios=${JSON.stringify(o)}`);
+  }
+  if (ACTS.includes('SHIP')) {   // pair M_InOut CO
+    const sc = [{ name: 'SHIP-STD-137x2', product: C.prod.mulch, qty: 2, bp: C.customer, loc: C.customerLoc, doctype: C.dt.std }, { name: 'SHIP-STD-137x1', product: C.prod.mulch, qty: 1, bp: C.customer, loc: C.customerLoc, doctype: C.dt.std }], rs = {};
+    for (const f of sc) {
+      const L = await legacyShip(f); out(`§A5_LEGACY ${f.name} ${L.rejected ? 'REJECTED ' + L.reason : 'ship=' + L.number + ' id=' + L.id + ' ' + JSON.stringify(L.v)}`);
+      const T = await twinShip(f); out(`§A5_TWIN ${f.name} ${T.error ? 'ERROR ' + T.error : T.refused ? 'REFUSED ' + T.reason : 'ship=' + T.number + ' id=' + T.id + ' ' + JSON.stringify(T.v)}`);
+      if (L.rejected || T.error || T.refused) { const tr = L.rejected && /AMBIGUOUS|AbortError|NOT_SENT|AUTH|ECONN|fetch failed/.test(L.reason); out(`§A5_SCN ${f.name} ${L.rejected && T.refused ? 'MATCH both refuse' : 'INCONCLUSIVE'} legacy=${L.reason || 'ok'} twin=${T.error || T.reason || 'ok'}${tr ? ' (transport)' : ''}`); rs[f.name] = L.rejected && T.refused ? 'MATCH' : 'INCONCLUSIVE'; if (rs[f.name] === 'MATCH') match++; else inc++; continue; }
+      let d = 0; const keys = Object.keys(L.v); for (const k of keys) { const ok = L.v[k] === T.v[k]; if (!ok) d++; out(`§A5_CMP ${f.name} ${k} ${ok ? 'MATCH' : 'DIFF'} legacy=${L.v[k]} twin=${T.v[k]}`); }
+      const nb = keys.filter(k => /^books_/.test(k)).map(k => L.v[k]).filter(x => x !== 'none').length; out(`§A5_SCN ${f.name} ${d ? 'DIFF' : 'MATCH'} compared=${keys.length} diffs=${d} nonEmptyBooks=${nb}`); d ? diff++ : match++; rs[f.name] = d ? 'DIFF' : 'MATCH';
+    }
+    const v = Object.values(rs).every(x => x === 'MATCH') ? 'MATCH' : Object.values(rs).includes('DIFF') ? 'DIFF' : 'INCONCLUSIVE'; out(`§A5_PAIR table=M_InOut action=CO verdict=${v} scenarios=${JSON.stringify(rs)}`);
   }
   const verdict = !SCN.length || (match + diff === 0) ? 'INCONCLUSIVE' : diff ? 'FAIL' : inc ? 'PASS-with-INCONCLUSIVE' : 'PASS';
   out(`§A5_VERDICT ${verdict} judged=${match + diff} match=${match} diff=${diff} inconclusive=${inc}${BREAK ? ' (A5_BREAK=1 falsifier: a DIFF is the expected result)' : ''}`);
