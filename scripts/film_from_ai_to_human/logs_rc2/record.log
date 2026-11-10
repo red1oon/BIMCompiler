@@ -1,0 +1,10 @@
+§FILM_CUE beat=title t=0.000 frames=86 typing=0 answer_hold_frames=86 x1
+§FILM_CUE beat=intro t=3.583 frames=198 typing=0 answer_hold_frames=198 x1
+§FILM_CUE beat=twin t=11.833 frames=351 typing=71 answer_hold_frames=280 x1
+§FILM_CUE beat=column t=26.458 frames=269 typing=55 answer_hold_frames=214 x1
+§FILM_CUE beat=where t=37.667 frames=203 typing=81 answer_hold_frames=122 x1
+§FILM_CUE beat=status t=46.125 frames=99 typing=36 answer_hold_frames=63 x1
+§FILM_CUE beat=witness t=50.250 frames=197 typing=49 answer_hold_frames=148 x1
+§FILM_CUE beat=claim t=58.458 frames=206 typing=91 answer_hold_frames=115 x1
+§FILM_CUE beat=close t=67.042 frames=206 typing=0 answer_hold_frames=206 x1
+§FILM_DONE dur=75.625 frames=1815 planned=1815

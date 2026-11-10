@@ -1,0 +1,13 @@
+§GUARD OK   beat=twin before.twin.lines=83 expects "83" spoken "eighty three"
+§GUARD OK   beat=twin compare.cells.match=70 expects "70" spoken "seventy"
+§GUARD OK   beat=twin compare.cells.diff=4 expects "4" spoken "four"
+§GUARD OK   beat=twin compare.cells.nullVsDefault=7 expects "7" spoken "seven"
+§GUARD OK   beat=column column.legacyDefaultId=114 expects "114" spoken "one hundred fourteen"
+§GUARD OK   beat=where where.total=20 expects "20" spoken "twenty"
+§GUARD OK   beat=status status.verdict="UP" expects "UP" spoken "up"
+§GUARD OK   beat=witness witness.pass=8 expects "8" spoken "eight"
+§GUARD OK   beat=witness witness.fail=0 expects "0" spoken "none failed"
+§GUARD OK   beat=claim claim.status="claim" expects "claim" spoken "waits"
+§GUARD OK   beat=close verbs=37 expects "37" spoken "thirty seven"
+§GUARD proof-talk or "first/novel" in the voice: none
+§GUARD_VERDICT PASS facts=11 bad=0

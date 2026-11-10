@@ -1,0 +1,122 @@
+{
+ "made": "2026-11-10T21:42:47.120Z",
+ "ootb": "3e62bb8e",
+ "lines": {
+  "status": {
+   "line": "legacy.status",
+   "status": "ok"
+  },
+  "new_order": {
+   "line": "erp.new kind=Order issotrx=Y c_doctypetarget_id=132 c_bpartner_id=112 salesrep_id=101",
+   "status": "ok"
+  },
+  "new_line": {
+   "line": "erp.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2",
+   "status": "ok"
+  },
+  "compare": {
+   "line": "erp.compare kind=Order number=50000 legacy=50981",
+   "status": "ok"
+  },
+  "column": {
+   "line": "erp.column kind=Order column=C_ConversionType_ID",
+   "status": "ok"
+  },
+  "where": {
+   "line": "idempiere.where symbol=InvoiceRule in=CalloutOrder limit=3",
+   "status": "ok"
+  },
+  "witness": {
+   "line": "witness.run name=door_help",
+   "status": "ok"
+  },
+  "claim": {
+   "line": "erp.new kind=Order issotrx=Y c_doctypetarget_id=132 c_bpartner_id=112 salesrep_id=101",
+   "status": "claim"
+  }
+ },
+ "before": {
+  "twin": {
+   "file": "scripts/bridge/witness_erp_new_twin.js",
+   "lines": 83,
+   "head": [
+    "#!/usr/bin/env node",
+    "// ⚠ DO NOT REMOVE — W-ERP-NEW-TWIN (spec: prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md §R.V item 2 / triage A2, \"Not done",
+    "// READ THE LOG after every run: §ERPNEW_TWIN lines are the product. Exit code is not evidence."
+   ],
+   "logDiffs": 13
+  },
+  "column": {
+   "source": "typed by the assistant on 11 November 2026",
+   "cmd": "docker exec postgres psql -U adempiere -d idempiere_pilot -x -c \"select c.columnname,c.defaultvalue,c.ad_val_rule_id,c.ad_reference_id from ad_column c join ad_table t using(ad_table_id) where t.tablename='C_Order' and c.columnname='C_ConversionType_ID'\""
+  },
+  "where": {
+   "source": "typed by the assistant on 11 November 2026",
+   "cmd": "grep -n \"INVOICERULE\\|\\\"InvoiceRule\\\"\\|IsDiscountPrinted\\|C_ConversionType_ID\" $F | head -20"
+  },
+  "witness": {
+   "source": "typed by the assistant on 11 November 2026",
+   "cmd": "grep -E \"❌|^§WITNESS\" ~/.cache/bim_bridge/a7c_witness.log | cut -c1-220"
+  },
+  "status": {
+   "source": "typed by the assistant on 11 November 2026",
+   "cmd": "docker ps --format '{{.Names}}'; curl -s -o /dev/null -w \"pilot %{http_code}\\n\" http://localhost:8088/webui/"
+  }
+ },
+ "status": {
+  "verdict": "UP",
+  "summary": "legacy UP: postgres ready, pilot up"
+ },
+ "compare": {
+  "twinNumber": "50000",
+  "legacyNumber": "50981",
+  "cells": {
+   "match": 70,
+   "diff": 4,
+   "nullVsDefault": 7,
+   "onlyTwin": 0,
+   "onlyLegacy": 0,
+   "skipped": 13
+  },
+  "diffs": [
+   "amountrefunded: 0 |  (NULL-VS-DEFAULT)",
+   "amounttendered: 0 |  (NULL-VS-DEFAULT)",
+   "c_conversiontype_id: 114 |  (DIFF)",
+   "copyfrom: N |  (NULL-VS-DEFAULT)",
+   "docaction: CO | PR (DIFF)",
+   "invoicerule: D | I (DIFF)",
+   "isdiscountprinted: Y | N (DIFF)",
+   "processedon: 0 |  (NULL-VS-DEFAULT)",
+   "shippingrateinquiry: N |  (NULL-VS-DEFAULT)",
+   "volume: 0 |  (NULL-VS-DEFAULT)",
+   "weight: 0 |  (NULL-VS-DEFAULT)"
+  ],
+  "summary": "c_order 50000 vs legacy 50981: 70 cells match, 4 differ, 7 legacy NULL vs a twin default"
+ },
+ "column": {
+  "verdict": "DIFFERENT",
+  "legacyDefaultId": 114,
+  "legacyFilledBy": "the login default: the C_ConversionType row with IsDefault=Y (id 114)",
+  "twinNote": "table C_ConversionType is not in this dictionary slice"
+ },
+ "where": {
+  "total": 20,
+  "files": 1,
+  "hits": [
+   "CalloutOrder.java:50  *\t\t- InvoiceRule/DeliveryRule/PaymentRule",
+   "CalloutOrder.java:131  mTab.setValue (\"InvoiceRule\", X_C_Order.INVOICERULE_Immediate);",
+   "CalloutOrder.java:133  mTab.setValue (\"InvoiceRule\", X_C_Order.INVOICERULE_AfterDelivery);"
+  ]
+ },
+ "witness": {
+  "verdict": "PASS",
+  "pass": 8,
+  "fail": 0,
+  "name": "door_help"
+ },
+ "claim": {
+  "status": "claim",
+  "why": "actor ai has proof \"local-user\", which allows read/trial verbs; erp.new is writes. Held as a claim, not run. A person confirms it with: door"
+ },
+ "verbs": 37
+}
