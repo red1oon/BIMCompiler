@@ -1,0 +1,10 @@
+§GUARD OK   beat=find order.number="50000" expects "50000" spoken "fifty thousand"
+§GUARD OK   beat=find find.docStatus="DR" expects "DR" spoken "draft"
+§GUARD OK   beat=do complete.after.docStatus="CO" expects "CO" spoken "completed"
+§GUARD OK   beat=more void.after.docStatus="VO" expects "VO" spoken "void"
+§GUARD OK   beat=more close.after.docStatus="CL" expects "CL" spoken "close"
+§GUARD OK   beat=more reverse.after.docStatus="RE" expects "RE" spoken "reverse"
+§GUARD OK   beat=building rooms=5 expects 5 spoken "five"
+§GUARD OK   beat=building walk=46 expects 46 spoken "forty six"
+§GUARD proof-talk or "first/novel" in the voice: none
+§GUARD_VERDICT PASS facts=8 bad=0

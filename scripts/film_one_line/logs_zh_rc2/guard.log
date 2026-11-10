@@ -1,0 +1,10 @@
+§GUARD OK   beat=find order.number="50000" expects "50000" spoken "五万"
+§GUARD OK   beat=find find.docStatus="DR" expects "DR" spoken "草稿"
+§GUARD OK   beat=do complete.after.docStatus="CO" expects "CO" spoken "完成"
+§GUARD OK   beat=more void.after.docStatus="VO" expects "VO" spoken "作废"
+§GUARD OK   beat=more close.after.docStatus="CL" expects "CL" spoken "关闭"
+§GUARD OK   beat=more reverse.after.docStatus="RE" expects "RE" spoken "冲销"
+§GUARD OK   beat=building rooms=5 expects 5 spoken "五个"
+§GUARD OK   beat=building walk=46 expects 46 spoken "四十六"
+§GUARD proof-talk or "first/novel" in the voice: none
+§GUARD_VERDICT PASS facts=8 bad=0

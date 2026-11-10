@@ -10,7 +10,8 @@ FTAG=en; FARG=1.15; [ "$FILM_LANG" = zh ] && { FIT=../../prompts/film_narration_
 export CUDA_VISIBLE_DEVICES=""
 [ -n "$SKIP_FACTS" ] || node facts.js > out/facts.log 2>&1 || { echo "§FACTS_FAIL see out/facts.log"; exit 3; }
 node guard.js > out/guard.log 2>&1 || { echo "§GUARD_FAIL see out/guard.log"; exit 3; }
-node cards.js out/cards > out/cards.log 2>&1; grep -q TOO-TALL out/cards.log && { echo "§CARD_TOO_TALL see out/cards.log"; exit 3; }
+[ -n "$SKIP_SHOTS" ] || node shots.js > out/shots.log 2>&1 || { echo "§SHOT_FAIL see out/shots.log"; exit 3; }
+rm -rf out/cards; node cards.js out/cards > out/cards.log 2>&1; grep -q TOO-TALL out/cards.log && { echo "§CARD_TOO_TALL see out/cards.log"; exit 3; }
 node tsv.js measure out/work > out/tsv_measure.log 2>&1
 cp $HEAD out/work/fm/ass_head.txt; (cd out/work/fm && rm -f *.wav && FILM_SEC=400 $PY ../../../$FIT ../narration_en.tsv m $FARG > ../../fit_measure.log 2>&1)
 node ../film_terms/beatmin.js out/fit_measure.log out/beatmin.json > out/beatmin.log 2>&1

@@ -1,0 +1,11 @@
+§FILM_CUE beat=title t=0.000 frames=86 typing=0 answer_hold_frames=86 x1
+§FILM_CUE beat=screens t=3.583 frames=140 typing=0 answer_hold_frames=140 x1
+§FILM_CUE beat=find t=9.417 frames=187 typing=86 answer_hold_frames=101 x1
+§FILM_CUE beat=do t=17.208 frames=244 typing=95 answer_hold_frames=74 x2
+§FILM_CUE beat=more t=27.375 frames=167 typing=81 answer_hold_frames=28 x3
+§FILM_CUE beat=building t=34.333 frames=216 typing=84 answer_hold_frames=66 x2
+§FILM_CUE beat=script t=43.333 frames=132 typing=46 answer_hold_frames=86 x1
+§FILM_CUE beat=door t=48.833 frames=170 typing=0 answer_hold_frames=170 x1
+§FILM_CUE beat=others t=55.917 frames=305 typing=0 answer_hold_frames=305 x1
+§FILM_CUE beat=close t=68.625 frames=189 typing=0 answer_hold_frames=189 x1
+§FILM_DONE dur=76.500 frames=1836 planned=1836
