@@ -1692,3 +1692,15 @@ unit-not-carried 12->2` (the 2 = units no product uses, which the form drops) ·
   lookups — it now loads the 311 already-there accounts too, and a book with already-there rows is loaded TWICE (savepoint, roll back, load again), in the dry run and in the
   run. Not a defect; for a large source it doubles the load time when such rows exist. Cheaper design if it ever matters: find the held keys by one query per unique index
   before loading instead of loading to find them.
+
+**§2026-11-10r (lead; logs read):** #2823 (falsifier re-pin) MERGED.
+- **Lane BS ✅ BUILT (witness) — bim-ootb PR #2825 (auto-merge armed; Sonnet agent, Watchdog-read), branch `feat/bankstatement-docaction`, sw v1045.** `erp/model_bankstatement.js`
+  (221): MBankStatement DocAction (prepareIt, completeIt incl. payments reconciled + `C_BankAccount.CurrentBalance`, voidIt, closeIt, reActivateIt, approve / reject; the two
+  reverse actions answer false as the Java does) + the statement / line model hooks; loaded in `idempiere.html`, `sw.js`, `ws_kernel.js`. `/tmp/count_logs/bs_witness.log`:
+  **`§BST-RESULT verdict=PASS judged=41 failed=0`** · `bs_witness_mut.log` `§BST-MUTANTS … total=25 killed=25 survived=[]`. The case the migration needs — `CHARGE`: one
+  +1000.00 line on a charge, no payment → bank asset (508) Dr 1000 / the charge's account (702) Cr 1000, balanced per accounting schema, CurrentBalance +1000, a second Complete
+  does not post again. Regressions: post_bankstatement 4/4 · IPAY 54 · IINV 56 · IGLJ 45 · OB 36 · POSS 43.
+  - **Named, not ported / not witnessed:** unlockIt / invalidateIt (no such engine action) · deposit-batch branches (coded, the seed has no `C_DepositBatch`) · the
+    `BANK_STATEMENT_POST_WITH_DATE_FROM_LINE` paths (coded, unwitnessed) · reverseCorrect / reverseAccrual answer false as legacy (no reversal exists) · getSummary unwitnessed.
+  - **Twin corrected against the Java:** the statement line's period check also runs when DateAcct CHANGES (MBankStatementLine :174), not only on a new line.
+  - **For lane E3d:** GardenWorld posts to TWO accounting schemas (101 and 200000, the second in another currency) — judge per schema; a born tenant has one.
