@@ -3143,7 +3143,7 @@ How it works and what is proven: <a href="../OdooMigration/">Moving from Odoo �
 </tbody>
 </table>
 <p><strong>What moves (all sources):</strong> master data and opening stock, at a cut-over date: customers and vendors with contacts and addresses, products, units, categories,
-payment terms, prices, the chart of accounts, warehouses and locators. <strong>Not yet:</strong> balances, open invoices and open orders, and closed history.</p>
+payment terms, prices, the chart of accounts, warehouses and locators. From <strong>Odoo</strong> also the open balances at the cut-over (trial balance and open invoices). <strong>Not yet:</strong> open orders and closed history; balances and open invoices from the other sources.</p>
 <p><strong>Alpha</strong> means the route was built from what the vendor publishes, and has not yet run on a real company's data. Every alpha run writes an <strong>alpha report</strong>: counts
 and field names only, with every value masked. Please send it back. That is what turns an alpha into a tested route.</p>
 <hr />
@@ -3206,18 +3206,31 @@ node<span class="w"> </span>export.js<span class="w"> </span>--host<span class="
 <li><strong>Several companies in one Odoo?</strong> The export moves the company your login opens on, and ends by printing the command for each other company (<code>--company 2</code> …).
      Each one becomes its own ERP company.</li>
 <li><strong>Your Odoo version</strong> is checked first: the export is written for Odoo 17; on another version it stops, names the field it misses and writes nothing.</li>
-<li>When it ends with <strong>PASS</strong> you have <code>odoo_export/</code> with <code>odoo_migration.xlsx</code> (one sheet per ERP table), <code>manifest.json</code> (how many rows Odoo has of each: the proof
-   nothing was dropped) and <code>provenance.json</code> (each row → its Odoo record). If it ends with FAIL, nothing is written and it says why.</li>
-<li>In Step 3, pick <code>odoo_migration.xlsx</code> <strong>and</strong> <code>manifest.json</code>. Odoo's units have no ERP code: pick each one.</li>
+<li>When it ends with <strong>PASS</strong> you have <code>odoo_export/odoo_export.json</code>: your Odoo rows as Odoo returned them, read only, each set with the number of rows Odoo
+   counted (the proof nothing was dropped). If it ends with FAIL, nothing is written and it says why.</li>
+<li>In Step 3, pick <code>odoo_export.json</code>. The ERP turns the rows into its own tables on your screen and shows the summary before anything is written. Odoo's units have
+   no ERP code: pick each one. <em>(An export made by an older agent — <code>odoo_migration.xlsx</code> and <code>manifest.json</code> — still loads: pick those two.)</em></li>
 </ol>
-<p><strong>What the export settles for you</strong> (listed in <code>manifest.json</code>): <strong>archived</strong> customers, products and locations come along <strong>inactive</strong>; <strong>repeated codes</strong>: the older
+<p><strong>What the move settles for you</strong> (shown on the summary): <strong>archived</strong> customers, products and locations come along <strong>inactive</strong>; <strong>repeated codes</strong>: the older
 keeps it, the other becomes <code>CODE-&lt;odoo id&gt;</code>; a code longer than the ERP field is shortened and keeps <code>~&lt;odoo id&gt;</code>; an address with <strong>no country</strong> gets your Odoo
 company's country.</p>
 <p><img alt="Odoo's own Customers screen, before the move" src="../img/odoo_migration/odoo_contacts.jpg" /></p>
 <p><strong>Refused in the export:</strong> <strong>"FAIL auth"</strong>: check the login, the password (an API key with a 2-step code) and <code>--db</code> · <strong>"FAIL access: the Odoo user cannot read …"</strong>:
 use an administrator · <strong>"FAIL version: Odoo … has no …"</strong>: this Odoo version is not supported yet · <strong>"FAIL company: no company with id …"</strong>: it lists the companies;
 run again with one of their ids.</p>
-<p><strong>Not moved yet:</strong> balances and the trial balance at the cut-over, open invoices and orders, lots and serial numbers (stock is summed per product and location),
+<p><strong>Open balances at the cut-over (Odoo).</strong> The same file carries your trial balance and every open customer and vendor invoice and credit note at the <code>--cutover</code>
+date. The ERP brings them in as <strong>one opening journal</strong> and <strong>one document per open invoice</strong> (its own number and date, the unpaid amount, no tax), completes and
+posts them, and then checks its books against your Odoo rows: each account's balance, the open amount per partner, and two clearing accounts that must end at zero.
+If anything differs it says which account and by how much.</p>
+<ul>
+<li><strong>Open the period first.</strong> The cut-over date's period must be open, and today's too if you migrate later than the cut-over. On a new company: untick <em>Automatic
+  Period Control</em> on the Accounting Schema, then open the period (Calendar Year and Period → Open/Close All). The summary tells you when this is missing.</li>
+<li><strong>Where the amounts land.</strong> Receivables and payables land on the ERP's own customer and vendor accounts; every other account keeps its Odoo number.</li>
+<li><strong>Your bank balance waits on the account <code>BANK-CLEAR</code></strong> until you enter your opening bank statement — that step is not built yet.</li>
+<li><strong>Not brought in:</strong> payments not yet matched to an invoice, manual journal entries on the receivable or payable account, and open items in a foreign currency. The
+  summary counts them, and their total stays on the clearing account.</li>
+</ul>
+<p><strong>Not moved yet:</strong> open orders, stock <strong>value</strong> (quantities move, costs do not), lots and serial numbers (stock is summed per product and location),
 vendor price breaks, instalment payment terms, closed history. Odoo apps outside trade and accounting (manufacturing, HR, POS …) arrive as plugins.</p>
 <hr />
 <h2 id="business-central-alpha">Business Central (alpha)<a class="headerlink" href="#business-central-alpha" title="Permanent link">&para;</a></h2>
