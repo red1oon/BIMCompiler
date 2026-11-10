@@ -1331,6 +1331,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#create-a-record-erpnew" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create a record: erp.new
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#choose-how-the-answer-is-shown-and-keep-it" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1598,7 +1609,7 @@
   <span class="md-ellipsis">
     
   
-    CAPEX Dashboard — for iDempiere users
+    BIM → ERP and CAPEX Dashboard — for iDempiere users
   
 
     
@@ -3301,6 +3312,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#create-a-record-erpnew" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create a record: erp.new
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#choose-how-the-answer-is-shown-and-keep-it" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3430,7 +3452,7 @@ curl<span class="w"> </span>-O<span class="w"> </span>https://red1oon.github.io/
 <p>One line, one verb, <code>key=value</code> pairs with no spaces around the <code>=</code>. Ask the HospitalGarage for its grid:</p>
 <!-- run: lines cut=700 -->
 <div class="highlight"><pre><span></span><code>$ node door.js &#39;modeller.lines building=HospitalGarage&#39;
-{&quot;request&quot;:&quot;d-mwahocs2-2047379-1&quot;,&quot;verb&quot;:&quot;modeller.lines&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;,&quot;answer&quot;:{&quot;ok&quot;:true,&quot;building&quot;:&quot;HospitalGarage&quot;,&quot;edits&quot;:[],&quot;ms&quot;:76582,&quot;model&quot;:{&quot;grid_source&quot;:&quot;column-derived&quot;,&quot;system&quot;:&quot;column-framed&quot;,&quot;material&quot;:&quot;RC&quot;,&quot;mixed&quot;:true,&quot;girders&quot;:228,&quot;rotation_deg&quot;:-2,&quot;frame&quot;:&quot;building&quot;,&quot;lines&quot;:[{&quot;id&quot;:&quot;gx0&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:128.131,&quot;world&quot;:132.184},{&quot;id&quot;:&quot;gx1&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:129.223,&quot;world&quot;:133.277},{&quot;id&quot;:&quot;gx2&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:133.277,&quot;world&quot;:137.334},{&quot;id&quot;:&quot;gx3&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:133.795,&quot;world&quot;:137.851},{&quot;id&quot;:&quot;gx4&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:134.811,&quot;world&quot;:138.868},{&quot;id&quot;:&quot;gx5&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:145.987,&quot;world&quot;:150.051},{&quot;id&quot;:&quot;gx6&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:157.163,&quot;world&quot;:161.234},{&quot;id&quot;:&quot;gx7…
+{&quot;request&quot;:&quot;d-mwb4bnoy-2300084-1&quot;,&quot;verb&quot;:&quot;modeller.lines&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;,&quot;answer&quot;:{&quot;ok&quot;:true,&quot;building&quot;:&quot;HospitalGarage&quot;,&quot;edits&quot;:[],&quot;ms&quot;:19520,&quot;model&quot;:{&quot;grid_source&quot;:&quot;column-derived&quot;,&quot;system&quot;:&quot;column-framed&quot;,&quot;material&quot;:&quot;RC&quot;,&quot;mixed&quot;:true,&quot;girders&quot;:228,&quot;rotation_deg&quot;:-2,&quot;frame&quot;:&quot;building&quot;,&quot;lines&quot;:[{&quot;id&quot;:&quot;gx0&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:128.131,&quot;world&quot;:132.184},{&quot;id&quot;:&quot;gx1&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:129.223,&quot;world&quot;:133.277},{&quot;id&quot;:&quot;gx2&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:133.277,&quot;world&quot;:137.334},{&quot;id&quot;:&quot;gx3&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:133.795,&quot;world&quot;:137.851},{&quot;id&quot;:&quot;gx4&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:134.811,&quot;world&quot;:138.868},{&quot;id&quot;:&quot;gx5&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:145.987,&quot;world&quot;:150.051},{&quot;id&quot;:&quot;gx6&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;pos&quot;:157.163,&quot;world&quot;:161.234},{&quot;id&quot;:&quot;gx7…
 </code></pre></div>
 <p>It opens the Modeller and the building, so it takes 10 to 40 seconds. What you see is one line of JSON, an <strong>envelope</strong>. Only the start is shown here; the grid has more lines than fit. The answer is the app's own, unchanged, inside <code>answer</code>. Here <code>gx5</code> is at 145.987 m and <code>gx6</code> at 157.163 m on the building's own grid. <code>status</code> is <code>ok</code>.</p>
 <div class="admonition note">
@@ -3446,9 +3468,9 @@ exit 3
 <p>The exit code is the first answer: <code>0</code> means ok, <code>3</code> means the app gave an answer that is not a plain yes (refused, held or inconclusive), <code>1</code> means an error and <code>2</code> means a wrong command. Now look inside the file. The whole request comes first, then its two steps, each with its own envelope:</p>
 <!-- run: widen_steps cut=200 -->
 <div class="highlight"><pre><span></span><code>$ grep -o &#39;&quot;request&quot;:&quot;[^&quot;]*&quot;,&quot;verb&quot;:&quot;[^&quot;]*&quot;,&quot;actor&quot;:&quot;[^&quot;]*&quot;,&quot;status&quot;:&quot;[^&quot;]*&quot;&#39; widen.json
-&quot;request&quot;:&quot;d-mwahq05k-2048306-1&quot;,&quot;verb&quot;:&quot;modeller.widen_bay&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;refused&quot;
-&quot;request&quot;:&quot;d-mwahq05k-2048306-1.1&quot;,&quot;verb&quot;:&quot;modeller.lines&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;
-&quot;request&quot;:&quot;d-mwahq05k-2048306-1.2&quot;,&quot;verb&quot;:&quot;modeller.try_shift&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;refused&quot;
+&quot;request&quot;:&quot;d-mwb4c2w9-2300566-1&quot;,&quot;verb&quot;:&quot;modeller.widen_bay&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;refused&quot;
+&quot;request&quot;:&quot;d-mwb4c2w9-2300566-1.1&quot;,&quot;verb&quot;:&quot;modeller.lines&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;
+&quot;request&quot;:&quot;d-mwb4c2w9-2300566-1.2&quot;,&quot;verb&quot;:&quot;modeller.try_shift&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;refused&quot;
 </code></pre></div>
 <p>The first step read the grid. It found the bay now:</p>
 <!-- run: widen_read -->
@@ -3544,7 +3566,7 @@ exit 0
 <p>The last row is deliberate. Text that matches no verb is <strong>never guessed at</strong>:</p>
 <!-- run: question -->
 <div class="highlight"><pre><span></span><code>$ node door.js &#39;please widen the bay&#39;
-{&quot;request&quot;:&quot;d-mwahshxf-2050867-1&quot;,&quot;verb&quot;:null,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;refused&quot;,&quot;answer&quot;:{&quot;question&quot;:&quot;I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type !help.&quot;,&quot;verbs&quot;:[&quot;modeller.lines&quot;,&quot;modeller.try_shift&quot;,&quot;viewer.counts&quot;,&quot;viewer.clashes&quot;,&quot;viewer.film_path&quot;,&quot;viewer.schedule_at&quot;,&quot;viewer.schedule_compare&quot;,&quot;modeller.widen_bay&quot;,&quot;modeller.walk&quot;,&quot;object.describe&quot;,&quot;object.read&quot;,&quot;object.history&quot;,&quot;object.update&quot;,&quot;object.attach&quot;,&quot;object.count&quot;,&quot;object.list&quot;,&quot;object.sum&quot;,&quot;object.group&quot;,&quot;erp.find&quot;,&quot;erp.actions&quot;,&quot;erp.describe&quot;,&quot;erp.read&quot;,&quot;erp.list&quot;,&quot;erp.sum&quot;,&quot;erp.group&quot;,&quot;erp.complete&quot;,&quot;erp.void&quot;,&quot;erp.close&quot;,&quot;erp.reverse&quot;]},&quot;why&quot;:&quot;not a command: \&quot;please widen the bay\&quot;&quot;,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:0}
+{&quot;request&quot;:&quot;d-mwb4l525-2304741-1&quot;,&quot;verb&quot;:null,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;refused&quot;,&quot;answer&quot;:{&quot;question&quot;:&quot;I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type !help.&quot;,&quot;verbs&quot;:[&quot;modeller.lines&quot;,&quot;modeller.try_shift&quot;,&quot;viewer.counts&quot;,&quot;viewer.clashes&quot;,&quot;viewer.film_path&quot;,&quot;viewer.schedule_at&quot;,&quot;viewer.schedule_compare&quot;,&quot;modeller.widen_bay&quot;,&quot;modeller.walk&quot;,&quot;object.describe&quot;,&quot;object.read&quot;,&quot;object.history&quot;,&quot;object.update&quot;,&quot;object.attach&quot;,&quot;object.count&quot;,&quot;object.list&quot;,&quot;object.sum&quot;,&quot;object.group&quot;,&quot;erp.find&quot;,&quot;erp.actions&quot;,&quot;erp.describe&quot;,&quot;erp.read&quot;,&quot;erp.list&quot;,&quot;erp.sum&quot;,&quot;erp.group&quot;,&quot;erp.new&quot;,&quot;erp.complete&quot;,&quot;erp.void&quot;,&quot;erp.close&quot;,&quot;erp.reverse&quot;]},&quot;why&quot;:&quot;not a command: \&quot;please widen the bay\&quot;&quot;,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:0}
 </code></pre></div>
 <h2 id="reading-the-reply">Reading the reply<a class="headerlink" href="#reading-the-reply" title="Permanent link">&para;</a></h2>
 <p>Every line, from every actor, gets the same envelope. Read these in order.</p>
@@ -3596,7 +3618,7 @@ exit 0
 <p><strong>error.</strong> The line itself is wrong: a missing input, an unknown verb, a value of the wrong kind. Nothing ran.</p>
 <!-- run: error -->
 <div class="highlight"><pre><span></span><code>$ node door.js &#39;modeller.lines&#39;
-{&quot;request&quot;:&quot;d-mwahsi1i-2050877-1&quot;,&quot;verb&quot;:&quot;modeller.lines&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;error&quot;,&quot;answer&quot;:null,&quot;why&quot;:&quot;missing input: building&quot;,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:2}
+{&quot;request&quot;:&quot;d-mwb4l54g-2304751-1&quot;,&quot;verb&quot;:&quot;modeller.lines&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;error&quot;,&quot;answer&quot;:null,&quot;why&quot;:&quot;missing input: building&quot;,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:1}
 </code></pre></div>
 <p><strong>claim.</strong> The line is understood, but the actor has no proof that allows it, so the door <strong>holds it and does not run it</strong>. This is the safety rule for an AI, and it comes from the verb, not from the actor. See <a href="#what-is-a-claim">What is a claim</a>.</p>
 <!-- run: claim -->
@@ -3606,21 +3628,21 @@ exit 0
 <p><strong>inconclusive.</strong> The app could not judge, and says so. It is never turned into an <code>ok</code>. Here the Viewer has no clash rule for the pair ARC and ZZZ. This one needs a checkout:</p>
 <!-- run: inconclusive -->
 <div class="highlight"><pre><span></span><code>$ node common/door/door.js &#39;viewer.clashes building=Duplex discA=ARC discB=ZZZ&#39;
-{&quot;request&quot;:&quot;d-mwahsi9x-2050898-1&quot;,&quot;verb&quot;:&quot;viewer.clashes&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;inconclusive&quot;,&quot;answer&quot;:null,&quot;why&quot;:&quot;the Viewer could not answer (exit 1): the Viewer says INCONCLUSIVE: no rule for ARC/ZZZ in clash_rules.json&quot;,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:17842}
+{&quot;request&quot;:&quot;d-mwb4l594-2304771-1&quot;,&quot;verb&quot;:&quot;viewer.clashes&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;inconclusive&quot;,&quot;answer&quot;:null,&quot;why&quot;:&quot;the Viewer could not answer (exit 1): the Viewer says INCONCLUSIVE: no rule for ARC/ZZZ in clash_rules.json&quot;,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:7256}
 </code></pre></div>
 <h3 id="what-is-a-claim">What is a claim<a class="headerlink" href="#what-is-a-claim" title="Permanent link">&para;</a></h3>
 <p>Each verb has a <strong>harm class</strong>: <code>read</code> (changes nothing), <code>trial</code> (a change made on a throwaway copy, judged, never saved), <code>writes</code>, <code>posts</code> or <code>sends</code>. The class is written once, in the verb list, so no actor can talk its way around it.</p>
 <p>Each actor has a proof. A person at the terminal is trusted for every class. An <strong>AI</strong> is trusted for <code>read</code> and <code>trial</code> only: it may look and it may try, but a <code>writes</code>, <code>posts</code> or <code>sends</code> verb from an AI is held as a claim, as the <code>object.update</code> line above was. An actor with no proof at all, such as a mail from an unknown sender, may read and nothing else:</p>
 <!-- run: claim_email -->
 <div class="highlight"><pre><span></span><code>$ node door.js --actor email --request mail-0 &#39;modeller.try_shift building=HospitalGarage line=gx6 move=1.824&#39;
-{&quot;request&quot;:&quot;mail-0&quot;,&quot;verb&quot;:&quot;modeller.try_shift&quot;,&quot;actor&quot;:&quot;email&quot;,&quot;status&quot;:&quot;claim&quot;,&quot;answer&quot;:null,&quot;why&quot;:&quot;actor email has proof \&quot;none\&quot;, which allows read verbs; modeller.try_shift is trial. Held as a claim, not run. A person confirms it with: door.js --confirm mail-0&quot;,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:2}
+{&quot;request&quot;:&quot;mail-0&quot;,&quot;verb&quot;:&quot;modeller.try_shift&quot;,&quot;actor&quot;:&quot;email&quot;,&quot;status&quot;:&quot;claim&quot;,&quot;answer&quot;:null,&quot;why&quot;:&quot;actor email has proof \&quot;none\&quot;, which allows read verbs; modeller.try_shift is trial. Held as a claim, not run. A person confirms it with: door.js --confirm mail-0&quot;,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:1}
 </code></pre></div>
 <p>A held claim is not run, not queued and not lost: it is in the journal, under its request id. The door does not confirm anything on anyone's behalf.</p>
 <h3 id="confirm-a-claim">Confirm a claim<a class="headerlink" href="#confirm-a-claim" title="Permanent link">&para;</a></h3>
 <p>A person lets a held claim through <strong>by its request id</strong>, so the line that runs is exactly the line that was proposed. Nobody re-types it. Here a mail asks for a trial move and is held:</p>
 <!-- run: confirm_claim -->
 <div class="highlight"><pre><span></span><code>$ node door.js --journal claims.jsonl --actor email --request mail-1 &#39;modeller.try_shift building=HospitalGarage line=gx6 move=0.824&#39;
-{&quot;request&quot;:&quot;mail-1&quot;,&quot;verb&quot;:&quot;modeller.try_shift&quot;,&quot;actor&quot;:&quot;email&quot;,&quot;status&quot;:&quot;claim&quot;,&quot;answer&quot;:null,&quot;why&quot;:&quot;actor email has proof \&quot;none\&quot;, which allows read verbs; modeller.try_shift is trial. Held as a claim, not run. A person confirms it with: door.js --confirm mail-1&quot;,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:2}
+{&quot;request&quot;:&quot;mail-1&quot;,&quot;verb&quot;:&quot;modeller.try_shift&quot;,&quot;actor&quot;:&quot;email&quot;,&quot;status&quot;:&quot;claim&quot;,&quot;answer&quot;:null,&quot;why&quot;:&quot;actor email has proof \&quot;none\&quot;, which allows read verbs; modeller.try_shift is trial. Held as a claim, not run. A person confirms it with: door.js --confirm mail-1&quot;,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:1}
 </code></pre></div>
 <p><code>--claims</code> lists what is being held:</p>
 <!-- run: confirm_list -->
@@ -3645,7 +3667,7 @@ exit 0
 <p>A verb can also ask the model itself what it holds. <code>object.describe</code> is <strong>reflection</strong>: it reads the model's own dictionary and says which properties a kind of object has, which child tabs, and which generic methods are legal for it. It reads dictionary rows only; no element is opened. It needs a checkout, and a building whose model carries its own dictionary (the Duplex does).</p>
 <!-- run: describe cut=520 -->
 <div class="highlight"><pre><span></span><code>$ node common/door/door.js &#39;object.describe building=Duplex kind=Element&#39;
-{&quot;request&quot;:&quot;d-mwaht9d3-2052092-1&quot;,&quot;verb&quot;:&quot;object.describe&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;,&quot;answer&quot;:{&quot;kind&quot;:&quot;Element&quot;,&quot;table&quot;:&quot;elements_meta&quot;,&quot;uu&quot;:&quot;3027c2ed-8cb6-5ccb-ae8c-fd7df2eca264&quot;,&quot;key&quot;:&quot;elements_meta_uu&quot;,&quot;highVolume&quot;:true,&quot;properties&quot;:[{&quot;name&quot;:&quot;guid&quot;,&quot;label&quot;:&quot;GUID&quot;,&quot;type&quot;:&quot;string&quot;,&quot;mandatory&quot;:true,&quot;updateable&quot;:false,&quot;key&quot;:false,&quot;parent&quot;:false,&quot;length&quot;:255},{&quot;name&quot;:&quot;ifc_class&quot;,&quot;label&quot;:&quot;IFC Class&quot;,&quot;type&quot;:&quot;list&quot;,&quot;mandatory&quot;:false,&quot;updateable&quot;:true,&quot;key&quot;:false,&quot;parent&quot;:false,&quot;length&quot;:255,&quot;values&quot;:[&quot;IfcBeam&quot;,&quot;IfcCo…
+{&quot;request&quot;:&quot;d-mwb4lkv7-2305335-1&quot;,&quot;verb&quot;:&quot;object.describe&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;,&quot;answer&quot;:{&quot;kind&quot;:&quot;Element&quot;,&quot;table&quot;:&quot;elements_meta&quot;,&quot;uu&quot;:&quot;3027c2ed-8cb6-5ccb-ae8c-fd7df2eca264&quot;,&quot;key&quot;:&quot;elements_meta_uu&quot;,&quot;highVolume&quot;:true,&quot;properties&quot;:[{&quot;name&quot;:&quot;guid&quot;,&quot;label&quot;:&quot;GUID&quot;,&quot;type&quot;:&quot;string&quot;,&quot;mandatory&quot;:true,&quot;updateable&quot;:false,&quot;key&quot;:false,&quot;parent&quot;:false,&quot;length&quot;:255},{&quot;name&quot;:&quot;ifc_class&quot;,&quot;label&quot;:&quot;IFC Class&quot;,&quot;type&quot;:&quot;list&quot;,&quot;mandatory&quot;:false,&quot;updateable&quot;:true,&quot;key&quot;:false,&quot;parent&quot;:false,&quot;length&quot;:255,&quot;values&quot;:[&quot;IfcBeam&quot;,&quot;IfcCo…
 </code></pre></div>
 <p>Which methods may an <code>Element</code> use?</p>
 <!-- run: describe_methods -->
@@ -3657,17 +3679,17 @@ exit 0
 <p><code>object.count</code> answers "how many": how many records of a kind the model holds. The Duplex names its rooms as the kind <code>Room</code>. It needs a checkout.</p>
 <!-- run: count_rooms -->
 <div class="highlight"><pre><span></span><code>$ node common/door/door.js &#39;object.count building=Duplex kind=Room&#39;
-{&quot;request&quot;:&quot;d-mwahtafi-2052136-1&quot;,&quot;verb&quot;:&quot;object.count&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;,&quot;answer&quot;:{&quot;kind&quot;:&quot;Room&quot;,&quot;table&quot;:&quot;model_room&quot;,&quot;filters&quot;:[],&quot;count&quot;:5,&quot;population&quot;:5,&quot;verdict&quot;:&quot;OK&quot;,&quot;summary&quot;:&quot;5 Room&quot;},&quot;why&quot;:null,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:385}
+{&quot;request&quot;:&quot;d-mwb4llay-2305379-1&quot;,&quot;verb&quot;:&quot;object.count&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;,&quot;answer&quot;:{&quot;kind&quot;:&quot;Room&quot;,&quot;table&quot;:&quot;model_room&quot;,&quot;filters&quot;:[],&quot;count&quot;:5,&quot;population&quot;:5,&quot;verdict&quot;:&quot;OK&quot;,&quot;summary&quot;:&quot;5 Room&quot;},&quot;why&quot;:null,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:206}
 </code></pre></div>
 <p>Add <code>column=value</code> to narrow the count. The column must be a property of the kind (<code>object.describe</code> lists them), and the answer keeps the <strong>population</strong>, the number before narrowing:</p>
 <!-- run: count_storey -->
 <div class="highlight"><pre><span></span><code>$ node common/door/door.js &#39;object.count building=Duplex kind=Room storey=&quot;Level 1&quot;&#39;
-{&quot;request&quot;:&quot;d-mwahtawg-2052156-1&quot;,&quot;verb&quot;:&quot;object.count&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;,&quot;answer&quot;:{&quot;kind&quot;:&quot;Room&quot;,&quot;table&quot;:&quot;model_room&quot;,&quot;filters&quot;:[{&quot;column&quot;:&quot;storey&quot;,&quot;value&quot;:&quot;Level 1&quot;}],&quot;count&quot;:2,&quot;population&quot;:5,&quot;verdict&quot;:&quot;OK&quot;,&quot;summary&quot;:&quot;2 Room where storey = Level 1 (of 5)&quot;},&quot;why&quot;:null,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:489}
+{&quot;request&quot;:&quot;d-mwb4llj9-2305400-1&quot;,&quot;verb&quot;:&quot;object.count&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;,&quot;answer&quot;:{&quot;kind&quot;:&quot;Room&quot;,&quot;table&quot;:&quot;model_room&quot;,&quot;filters&quot;:[{&quot;column&quot;:&quot;storey&quot;,&quot;value&quot;:&quot;Level 1&quot;}],&quot;count&quot;:2,&quot;population&quot;:5,&quot;verdict&quot;:&quot;OK&quot;,&quot;summary&quot;:&quot;2 Room where storey = Level 1 (of 5)&quot;},&quot;why&quot;:null,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:204}
 </code></pre></div>
 <p>A column the kind does not have is an error that names it and lists the real ones. It is never read as "no match":</p>
 <!-- run: count_badcol cut=330 -->
 <div class="highlight"><pre><span></span><code>$ node common/door/door.js &#39;object.count building=Duplex kind=Room floor=1&#39;
-{&quot;request&quot;:&quot;d-mwahtbeq-2052176-1&quot;,&quot;verb&quot;:&quot;object.count&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;error&quot;,&quot;answer&quot;:null,&quot;why&quot;:&quot;the object engine could not answer (exit 1): kind Room has no property \&quot;floor\&quot; (its properties: guid, type, name, parent_guid, object_type, predefined_type, center_x, center_y, center_z, size_x, size_y, size_z, room_gu…
+{&quot;request&quot;:&quot;d-mwb4llrc-2305423-1&quot;,&quot;verb&quot;:&quot;object.count&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;error&quot;,&quot;answer&quot;:null,&quot;why&quot;:&quot;the object engine could not answer (exit 1): kind Room has no property \&quot;floor\&quot; (its properties: guid, type, name, parent_guid, object_type, predefined_type, center_x, center_y, center_z, size_x, size_y, size_z, room_gu…
 </code></pre></div>
 <p>A model with no room at all does not answer <code>0</code>. It answers <code>inconclusive</code>, because nothing was counted. A zero you can trust is a narrowed count inside a population that is not empty.</p>
 <h2 id="what-the-walker-would-place-modellerwalk">What the walker would place: <code>modeller.walk</code><a class="headerlink" href="#what-the-walker-would-place-modellerwalk" title="Permanent link">&para;</a></h2>
@@ -3744,7 +3766,7 @@ exit 0
 <p>The door itself does not read the dotted form. Sent raw, it comes back as a question and nothing runs:</p>
 <!-- run: dotted_raw cut=230 -->
 <div class="highlight"><pre><span></span><code>$ node common/door/door.js &#39;viewer(Duplex).Room.count&#39;
-{&quot;request&quot;:&quot;d-mwahtdf5-2052290-1&quot;,&quot;verb&quot;:null,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;refused&quot;,&quot;answer&quot;:{&quot;question&quot;:&quot;I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type !help.&quot;,&quot;verbs&quot;:[&quot;modeller.li…
+{&quot;request&quot;:&quot;d-mwb4lmqx-2305537-1&quot;,&quot;verb&quot;:null,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;refused&quot;,&quot;answer&quot;:{&quot;question&quot;:&quot;I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type !help.&quot;,&quot;verbs&quot;:[&quot;modeller.li…
 </code></pre></div>
 <p><strong>Limits.</strong> No arithmetic and no second step inside a phrase; use a script with named results for that. Kinds are read from the Viewer's model, and only the Duplex carries a dictionary today. The dotted form is not offered to an AI: its menu is the verb list, so there is one way for it to be right.</p>
 <h2 id="lists-sums-and-groups-erplist-erpsum-erpgroup">Lists, sums and groups: <code>erp.list</code>, <code>erp.sum</code>, <code>erp.group</code><a class="headerlink" href="#lists-sums-and-groups-erplist-erpsum-erpgroup" title="Permanent link">&para;</a></h2>
@@ -3781,6 +3803,26 @@ CL         2
 shown 4 of 4
 </code></pre></div>
 <p>A kind with no records at all does not answer <code>0</code> or an empty list. It answers <code>inconclusive</code>, because nothing was judged.</p>
+<h2 id="create-a-record-erpnew">Create a record: <code>erp.new</code><a class="headerlink" href="#create-a-record-erpnew" title="Permanent link">&para;</a></h2>
+<p><code>erp.new</code> makes a record the way the ERP's own window makes it. You name the kind and the columns you know; the engine fills the rest the way the window does (defaults, the choices a partner brings with it, the Document No from the sequence). A column the dictionary does not have is refused and the reply lists the real ones. A mandatory column still empty after that is refused by name, and nothing is written. The reply starts with <code>number</code>: the Document No, which is what you use next.</p>
+<p>A Sales or Purchase document needs <code>issotrx=Y</code> or <code>N</code>. A partner or product may be given by name; a name that matches no record, or more than one, is refused. A line names its document by number:</p>
+<!-- run: new_order -->
+<div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_new.ops; BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js &#39;erp.new kind=Order issotrx=Y c_doctypetarget_id=132 c_bpartner_id=112 salesrep_id=101&#39;
+{&quot;request&quot;:&quot;d-mwb4lnmc-2305608-1&quot;,&quot;verb&quot;:&quot;erp.new&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;,&quot;answer&quot;:{&quot;number&quot;:&quot;50000&quot;,&quot;kind&quot;:&quot;Order&quot;,&quot;table&quot;:&quot;c_order&quot;,&quot;id&quot;:1500004,&quot;docStatus&quot;:&quot;DR&quot;,&quot;given&quot;:[&quot;IsSOTrx&quot;,&quot;C_DocTypeTarget_ID&quot;,&quot;C_BPartner_ID&quot;,&quot;SalesRep_ID&quot;],&quot;defaulted&quot;:52,&quot;record&quot;:{&quot;c_order_id&quot;:1500004,&quot;ad_client_id&quot;:11,&quot;ad_org_id&quot;:11,&quot;isactive&quot;:&quot;Y&quot;,&quot;created&quot;:null,&quot;createdby&quot;:null,&quot;updated&quot;:null,&quot;updatedby&quot;:null,&quot;issotrx&quot;:&quot;Y&quot;,&quot;documentno&quot;:&quot;50000&quot;,&quot;docstatus&quot;:&quot;DR&quot;,&quot;docaction&quot;:&quot;CO&quot;,&quot;processing&quot;:&quot;N&quot;,&quot;processed&quot;:&quot;N&quot;,&quot;c_doctype_id&quot;:0,&quot;c_doctypetarget_id&quot;:132,&quot;description&quot;:null,&quot;isapproved&quot;:&quot;N&quot;,&quot;iscreditapproved&quot;:&quot;N&quot;,&quot;isdelivered&quot;:&quot;N&quot;,&quot;isinvoiced&quot;:&quot;N&quot;,&quot;isprinted&quot;:&quot;N&quot;,&quot;istransferred&quot;:&quot;N&quot;,&quot;isselected&quot;:&quot;N&quot;,&quot;salesrep_id&quot;:101,&quot;dateordered&quot;:&quot;2026-11-10 00:00:00&quot;,&quot;datepromised&quot;:&quot;2026-11-10 00:00:00&quot;,&quot;dateprinted&quot;:null,&quot;dateacct&quot;:&quot;2026-11-10 00:00:00&quot;,&quot;c_bpartner_id&quot;:112,&quot;c_bpartner_location_id&quot;:108,&quot;poreference&quot;:null,&quot;isdiscountprinted&quot;:&quot;Y&quot;,&quot;c_currency_id&quot;:100,&quot;paymentrule&quot;:&quot;P&quot;,&quot;c_paymentterm_id&quot;:105,&quot;invoicerule&quot;:&quot;D&quot;,&quot;deliveryrule&quot;:&quot;A&quot;,&quot;freightcostrule&quot;:&quot;I&quot;,&quot;freightamt&quot;:0,&quot;deliveryviarule&quot;:&quot;P&quot;,&quot;m_shipper_id&quot;:null,&quot;c_charge_id&quot;:null,&quot;chargeamt&quot;:0,&quot;priorityrule&quot;:&quot;5&quot;,&quot;totallines&quot;:0,&quot;grandtotal&quot;:0,&quot;m_warehouse_id&quot;:103,&quot;m_pricelist_id&quot;:101,&quot;istaxincluded&quot;:&quot;N&quot;,&quot;c_campaign_id&quot;:null,&quot;c_project_id&quot;:null,&quot;c_activity_id&quot;:null,&quot;posted&quot;:&quot;N&quot;,&quot;c_payment_id&quot;:null,&quot;c_cashline_id&quot;:null,&quot;sendemail&quot;:&quot;N&quot;,&quot;ad_user_id&quot;:null,&quot;copyfrom&quot;:&quot;N&quot;,&quot;isselfservice&quot;:&quot;N&quot;,&quot;ad_orgtrx_id&quot;:null,&quot;user1_id&quot;:null,&quot;user2_id&quot;:null,&quot;c_conversiontype_id&quot;:114,&quot;bill_bpartner_id&quot;:112,&quot;bill_location_id&quot;:108,&quot;bill_user_id&quot;:null,&quot;pay_bpartner_id&quot;:null,&quot;pay_location_id&quot;:null,&quot;ref_order_id&quot;:null,&quot;isdropship&quot;:&quot;N&quot;,&quot;volume&quot;:0,&quot;weight&quot;:0,&quot;ordertype&quot;:null,&quot;c_pos_id&quot;:null,&quot;amounttendered&quot;:0,&quot;amountrefunded&quot;:0,&quot;link_order_id&quot;:null,&quot;m_freightcategory_id&quot;:null,&quot;dropship_bpartner_id&quot;:null,&quot;dropship_location_id&quot;:null,&quot;dropship_user_id&quot;:null,&quot;promotioncode&quot;:null,&quot;c_ordersource_id&quot;:null,&quot;processedon&quot;:0,&quot;ispayschedulevalid&quot;:&quot;N&quot;,&quot;c_cashplanline_id&quot;:null,&quot;c_order_uu&quot;:null,&quot;shippingrateinquiry&quot;:&quot;N&quot;,&quot;ispriviledgedrate&quot;:&quot;N&quot;,&quot;c_opportunity_id&quot;:null,&quot;quotationorder_id&quot;:null,&quot;c_department_id&quot;:null,&quot;c_costcenter_id&quot;:null},&quot;ops&quot;:[{&quot;op_type&quot;:&quot;CRUD_UPDATE&quot;,&quot;table&quot;:&quot;ad_sequence&quot;},{&quot;op_type&quot;:&quot;CRUD_CREATE&quot;,&quot;table&quot;:&quot;c_order&quot;}]},&quot;why&quot;:null,&quot;notChecked&quot;:[],&quot;ops&quot;:[{&quot;op_type&quot;:&quot;CRUD_UPDATE&quot;,&quot;table&quot;:&quot;ad_sequence&quot;},{&quot;op_type&quot;:&quot;CRUD_CREATE&quot;,&quot;table&quot;:&quot;c_order&quot;}],&quot;next&quot;:[],&quot;ms&quot;:2486}
+</code></pre></div>
+<!-- run: new_line -->
+<div class="highlight"><pre><span></span><code>$ BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js &#39;erp.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2&#39;
+{&quot;request&quot;:&quot;d-mwb4lplv-2305637-1&quot;,&quot;verb&quot;:&quot;erp.new&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;,&quot;answer&quot;:{&quot;number&quot;:null,&quot;kind&quot;:&quot;Sales Order Line&quot;,&quot;table&quot;:&quot;c_orderline&quot;,&quot;id&quot;:120002710,&quot;docStatus&quot;:null,&quot;given&quot;:[&quot;M_Product_ID&quot;,&quot;QtyEntered&quot;,&quot;C_Order_ID&quot;],&quot;defaulted&quot;:31,&quot;record&quot;:{&quot;c_orderline_id&quot;:120002710,&quot;ad_client_id&quot;:11,&quot;ad_org_id&quot;:11,&quot;isactive&quot;:&quot;Y&quot;,&quot;created&quot;:null,&quot;createdby&quot;:null,&quot;updated&quot;:null,&quot;updatedby&quot;:null,&quot;c_order_id&quot;:1500004,&quot;line&quot;:10,&quot;c_bpartner_id&quot;:112,&quot;c_bpartner_location_id&quot;:108,&quot;dateordered&quot;:&quot;2026-11-10 00:00:00&quot;,&quot;datepromised&quot;:&quot;2026-11-10 00:00:00&quot;,&quot;datedelivered&quot;:null,&quot;dateinvoiced&quot;:null,&quot;description&quot;:null,&quot;m_product_id&quot;:137,&quot;m_warehouse_id&quot;:103,&quot;c_uom_id&quot;:100,&quot;qtyordered&quot;:2,&quot;qtyreserved&quot;:0,&quot;qtydelivered&quot;:0,&quot;qtyinvoiced&quot;:0,&quot;m_shipper_id&quot;:null,&quot;c_currency_id&quot;:100,&quot;pricelist&quot;:3,&quot;priceactual&quot;:3,&quot;pricelimit&quot;:2.7,&quot;linenetamt&quot;:6,&quot;discount&quot;:0,&quot;freightamt&quot;:0,&quot;c_charge_id&quot;:null,&quot;c_tax_id&quot;:104,&quot;s_resourceassignment_id&quot;:null,&quot;ref_orderline_id&quot;:null,&quot;m_attributesetinstance_id&quot;:0,&quot;isdescription&quot;:&quot;N&quot;,&quot;processed&quot;:&quot;N&quot;,&quot;qtyentered&quot;:2,&quot;priceentered&quot;:3,&quot;c_project_id&quot;:null,&quot;pricecost&quot;:0,&quot;qtylostsales&quot;:0,&quot;c_projectphase_id&quot;:null,&quot;c_projecttask_id&quot;:null,&quot;rrstartdate&quot;:null,&quot;rramt&quot;:0,&quot;c_campaign_id&quot;:null,&quot;c_activity_id&quot;:null,&quot;user1_id&quot;:null,&quot;user2_id&quot;:null,&quot;ad_orgtrx_id&quot;:null,&quot;link_orderline_id&quot;:null,&quot;pp_cost_collector_id&quot;:null,&quot;m_promotion_id&quot;:null,&quot;c_orderline_uu&quot;:null,&quot;createshipment&quot;:&quot;N&quot;,&quot;createproduction&quot;:&quot;N&quot;,&quot;c_department_id&quot;:null,&quot;c_costcenter_id&quot;:null},&quot;ops&quot;:[{&quot;op_type&quot;:&quot;CRUD_CREATE&quot;,&quot;table&quot;:&quot;c_orderline&quot;},{&quot;op_type&quot;:&quot;CRUD_UPDATE&quot;,&quot;table&quot;:&quot;c_order&quot;}]},&quot;why&quot;:null,&quot;notChecked&quot;:[],&quot;ops&quot;:[{&quot;op_type&quot;:&quot;CRUD_CREATE&quot;,&quot;table&quot;:&quot;c_orderline&quot;},{&quot;op_type&quot;:&quot;CRUD_UPDATE&quot;,&quot;table&quot;:&quot;c_order&quot;}],&quot;next&quot;:[],&quot;ms&quot;:2797}
+</code></pre></div>
+<p>The order is a draft until someone completes it. Because the line was given the order's number, the order's totals follow without a second step: <code>totallines</code> and <code>grandtotal</code> in the record below are the line's amount (6). The list of the order's own lines is not filled in by <code>erp.read</code>.</p>
+<!-- run: new_read -->
+<div class="highlight"><pre><span></span><code>$ BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js --list &#39;erp.read kind=Order number=50000&#39;
+kind: Order
+uu: 1500004
+record: {&quot;c_order_id&quot;:1500004,&quot;ad_client_id&quot;:11,&quot;ad_org_id&quot;:11,&quot;isactive&quot;:&quot;Y&quot;,&quot;created&quot;:null,&quot;createdby&quot;:null,&quot;updated&quot;:null,&quot;updatedby&quot;:null,&quot;issotrx&quot;:&quot;Y&quot;,&quot;documentno&quot;:&quot;50000&quot;,&quot;docstatus&quot;:&quot;DR&quot;,&quot;docaction&quot;:&quot;CO&quot;,&quot;processing&quot;:&quot;N&quot;,&quot;processed&quot;:&quot;N&quot;,&quot;c_doctype_id&quot;:0,&quot;c_doctypetarget_id&quot;:132,&quot;description&quot;:null,&quot;isapproved&quot;:&quot;N&quot;,&quot;iscreditapproved&quot;:&quot;N&quot;,&quot;isdelivered&quot;:&quot;N&quot;,&quot;isinvoiced&quot;:&quot;N&quot;,&quot;isprinted&quot;:&quot;N&quot;,&quot;istransferred&quot;:&quot;N&quot;,&quot;isselected&quot;:&quot;N&quot;,&quot;salesrep_id&quot;:101,&quot;dateordered&quot;:&quot;2026-11-10 00:00:00&quot;,&quot;datepromised&quot;:&quot;2026-11-10 00:00:00&quot;,&quot;dateprinted&quot;:null,&quot;dateacct&quot;:&quot;2026-11-10 00:00:00&quot;,&quot;c_bpartner_id&quot;:112,&quot;c_bpartner_location_id&quot;:108,&quot;poreference&quot;:null,&quot;isdiscountprinted&quot;:&quot;Y&quot;,&quot;c_currency_id&quot;:100,&quot;paymentrule&quot;:&quot;P&quot;,&quot;c_paymentterm_id&quot;:105,&quot;invoicerule&quot;:&quot;D&quot;,&quot;deliveryrule&quot;:&quot;A&quot;,&quot;freightcostrule&quot;:&quot;I&quot;,&quot;freightamt&quot;:0,&quot;deliveryviarule&quot;:&quot;P&quot;,&quot;m_shipper_id&quot;:null,&quot;c_charge_id&quot;:null,&quot;chargeamt&quot;:0,&quot;priorityrule&quot;:&quot;5&quot;,&quot;totallines&quot;:6,&quot;grandtotal&quot;:6,&quot;m_warehouse_id&quot;:103,&quot;m_pricelist_id&quot;:101,&quot;istaxincluded&quot;:&quot;N&quot;,&quot;c_campaign_id&quot;:null,&quot;c_project_id&quot;:null,&quot;c_activity_id&quot;:null,&quot;posted&quot;:&quot;N&quot;,&quot;c_payment_id&quot;:null,&quot;c_cashline_id&quot;:null,&quot;sendemail&quot;:&quot;N&quot;,&quot;ad_user_id&quot;:null,&quot;copyfrom&quot;:&quot;N&quot;,&quot;isselfservice&quot;:&quot;N&quot;,&quot;ad_orgtrx_id&quot;:null,&quot;user1_id&quot;:null,&quot;user2_id&quot;:null,&quot;c_conversiontype_id&quot;:114,&quot;bill_bpartner_id&quot;:112,&quot;bill_location_id&quot;:108,&quot;bill_user_id&quot;:null,&quot;pay_bpartner_id&quot;:null,&quot;pay_location_id&quot;:null,&quot;ref_order_id&quot;:null,&quot;isdropship&quot;:&quot;N&quot;,&quot;volume&quot;:0,&quot;weight&quot;:0,&quot;ordertype&quot;:null,&quot;c_pos_id&quot;:null,&quot;amounttendered&quot;:0,&quot;amountrefunded&quot;:0,&quot;link_order_id&quot;:null,&quot;m_freightcategory_id&quot;:null,&quot;dropship_bpartner_id&quot;:null,&quot;dropship_location_id&quot;:null,&quot;dropship_user_id&quot;:null,&quot;promotioncode&quot;:null,&quot;c_ordersource_id&quot;:null,&quot;processedon&quot;:0,&quot;ispayschedulevalid&quot;:&quot;N&quot;,&quot;c_cashplanline_id&quot;:null,&quot;c_order_uu&quot;:null,&quot;shippingrateinquiry&quot;:&quot;N&quot;,&quot;ispriviledgedrate&quot;:&quot;N&quot;,&quot;c_opportunity_id&quot;:null,&quot;quotationorder_id&quot;:null,&quot;c_department_id&quot;:null,&quot;c_costcenter_id&quot;:null}
+children: [{&quot;kind&quot;:&quot;Sales Order Line&quot;,&quot;rows&quot;:[]},{&quot;kind&quot;:&quot;Order Tax&quot;,&quot;rows&quot;:[]},{&quot;kind&quot;:&quot;Order Payment Schedule&quot;,&quot;rows&quot;:[]},{&quot;kind&quot;:&quot;Estimated Landed Cost&quot;,&quot;rows&quot;:[]}]
+</code></pre></div>
+<p><code>erp.new</code> is a <code>writes</code> verb. A person at the terminal runs it. An AI's <code>erp.new</code> is held as a claim and nothing is written until a person confirms it (see "What is a claim"). These blocks use a scratch op-log (<code>/tmp/fast_guide_new.ops</code>, emptied first), so running them does not touch your own data.</p>
 <h2 id="choose-how-the-answer-is-shown-and-keep-it">Choose how the answer is shown, and keep it<a class="headerlink" href="#choose-how-the-answer-is-shown-and-keep-it" title="Permanent link">&para;</a></h2>
 <p>The reply is the JSON envelope unless you ask otherwise. Three switches show the rows of an answer as something a person or a spreadsheet can read; the envelope is still what the door records:</p>
 <ul>
@@ -4043,6 +4085,14 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <td>a bim-ootb checkout</td>
 </tr>
 <tr>
+<td><code>erp.new</code></td>
+<td>Create a record</td>
+<td><code>kind</code>, further <code>column=value</code> filters (optional)</td>
+<td>writes</td>
+<td>human, ai</td>
+<td>a bim-ootb checkout</td>
+</tr>
+<tr>
 <td><code>erp.complete</code></td>
 <td>Complete a document</td>
 <td><code>kind</code>, <code>id</code> (optional), <code>number</code> (optional), <code>role</code> (optional)</td>
@@ -4078,7 +4128,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 </table>
 <!-- /GEN:verbs -->
 
-<p><strong>Coverage today.</strong> The list is small on purpose: 29 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 11 ERP verbs. So this is a start, not the whole menu.</p>
+<p><strong>Coverage today.</strong> The list is small on purpose: 30 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 12 ERP verbs. So this is a start, not the whole menu.</p>
 <h2 id="what-is-not-checked">What is not checked<a class="headerlink" href="#what-is-not-checked" title="Permanent link">&para;</a></h2>
 <p>A reply lists what its check did not cover. For the Modeller's edit report the list is:</p>
 <!-- run: notchecked cut=520 -->

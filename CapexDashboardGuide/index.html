@@ -27,7 +27,7 @@
     
     
       
-        <title>CAPEX Dashboard — for iDempiere users - BIM Intent Compiler</title>
+        <title>BIM → ERP and CAPEX Dashboard — for iDempiere users - BIM Intent Compiler</title>
       
     
     
@@ -87,7 +87,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#capex-dashboard-guide-for-idempiere-users" class="md-skip">
+        <a href="#bim-erp-and-the-capex-dashboard-guide-for-idempiere-users" class="md-skip">
           Skip to content
         </a>
       
@@ -121,7 +121,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              CAPEX Dashboard — for iDempiere users
+              BIM → ERP and CAPEX Dashboard — for iDempiere users
             
           </span>
         </div>
@@ -1317,7 +1317,7 @@
   <span class="md-ellipsis">
     
   
-    CAPEX Dashboard — for iDempiere users
+    BIM → ERP and CAPEX Dashboard — for iDempiere users
   
 
     
@@ -1335,7 +1335,7 @@
   <span class="md-ellipsis">
     
   
-    CAPEX Dashboard — for iDempiere users
+    BIM → ERP and CAPEX Dashboard — for iDempiere users
   
 
     
@@ -1359,6 +1359,45 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#from-the-bim-model-to-the-dashboard-the-whole-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From the BIM model to the dashboard (the whole flow)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="From the BIM model to the dashboard (the whole flow)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bim-document-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BIM Document fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#for-review-three-definitions-we-propose-not-yet-agreed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For review: three definitions we propose (not yet agreed)
+      
+    </span>
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#three-places-one-set-of-figures" class="md-nav__link">
@@ -1665,6 +1704,17 @@
     <span class="md-ellipsis">
       
         The page
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bim-document-on-your-own-idempiere-not-built-yet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BIM Document on your own iDempiere (not built yet)
       
     </span>
   </a>
@@ -3252,6 +3302,45 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#from-the-bim-model-to-the-dashboard-the-whole-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From the BIM model to the dashboard (the whole flow)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="From the BIM model to the dashboard (the whole flow)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bim-document-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BIM Document fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#for-review-three-definitions-we-propose-not-yet-agreed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For review: three definitions we propose (not yet agreed)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#three-places-one-set-of-figures" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3563,6 +3652,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#bim-document-on-your-own-idempiere-not-built-yet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BIM Document on your own iDempiere (not built yet)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#the-twin" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3631,7 +3731,7 @@
   
 
 
-<h1 id="capex-dashboard-guide-for-idempiere-users">CAPEX Dashboard — Guide for iDempiere Users<a class="headerlink" href="#capex-dashboard-guide-for-idempiere-users" title="Permanent link">&para;</a></h1>
+<h1 id="bim-erp-and-the-capex-dashboard-guide-for-idempiere-users">BIM → ERP and the CAPEX Dashboard — Guide for iDempiere Users<a class="headerlink" href="#bim-erp-and-the-capex-dashboard-guide-for-idempiere-users" title="Permanent link">&para;</a></h1>
 <blockquote>
 <p><strong>⚠ DEMONSTRATOR — NOT OFFICIAL.</strong> Every screenshot and figure comes from a <strong>local GardenWorld test server</strong>
 (iDempiere 13) holding test projects, some of them repeat test runs. Treat every number as a sample
@@ -3646,10 +3746,118 @@
 </ul>
 <blockquote>
 <p><strong>What it changes on your iDempiere:</strong> no change to iDempiere's code or tables. The dashboard needs only read-only setup data.
-Sending a Project Order <em>from a BIM model</em> into iDempiere is a separate thing: that is one standard plugin.</p>
+Sending a Project Order <em>from a BIM model</em> into iDempiere is a separate thing: that is one standard plugin. How it, the drawings
+filed against the project and this dashboard fit together is the next chapter.
+BIM Document (the drawings) is part of Kernel-ERP today; on your own iDempiere it needs a pack and a plugin: see <em>Installing it</em>.</p>
 </blockquote>
 <p><strong>Who reads what.</strong> <strong>Project manager:</strong> <em>The dashboard page</em>, <em>The Home tab</em> and <em>What moves the numbers</em>.
 <strong>Administrator:</strong> <em>Changing it</em> and <em>Installing it</em>. Everyone: <em>Three places</em>, <em>What it does not do yet</em> and <em>Troubleshooting</em>.</p>
+<hr />
+<hr />
+<h2 id="from-the-bim-model-to-the-dashboard-the-whole-flow">From the BIM model to the dashboard (the whole flow)<a class="headerlink" href="#from-the-bim-model-to-the-dashboard-the-whole-flow" title="Permanent link">&para;</a></h2>
+<p>One project, four places. Each hands the next the same project:</p>
+<ol>
+<li><strong>The model becomes a Project Order.</strong> In the Modeller or Viewer, select parts and send them: the order's phases and cost lines are
+   the model's own, and the order is keyed by the model's name. A second send adds nothing.</li>
+<li><strong>Drawings and model files are filed against the project: BIM Document.</strong> A <em>deliverable</em> sits under one task of the project, with a
+   <strong>revision</strong> and a state: <strong>Draft</strong>, <strong>Issued for review</strong>, <strong>Issued for construction</strong>, <strong>Superseded</strong>. Issuing a newer revision for
+   construction makes the older one Superseded; an older revision cannot be issued after a newer one. The Project window shows, per task
+   and phase, how many deliverables are issued for construction.</li>
+<li><strong>The register decides what a walker may read.</strong> The project's register (every deliverable at its latest revision, plus the superseded
+   ones: number, revision, state, discipline, file kind, the file's <code>sha256</code>) is exported from the BIM Document. A sheet <em>issued for
+   construction</em> is used as placed; <em>issued for review</em> as provisional and left out of totals; Draft and Superseded sheets are refused.
+   This runs from a tool today; there is no button yet.</li>
+<li><strong>This dashboard reads the same Project Order.</strong> Its <strong>BIM</strong> button appears when the project's building file is found, by the project's
+   value (the model's name). It does not show document counts yet.</li>
+</ol>
+<h3 id="bim-document-fields">BIM Document fields<a class="headerlink" href="#bim-document-fields" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Project, Phase, Task</td>
+<td>Where the deliverable sits. The task is required</td>
+</tr>
+<tr>
+<td>Deliverable no</td>
+<td>The sheet or model number. Revisions of one deliverable share it</td>
+</tr>
+<tr>
+<td>Revision</td>
+<td>A number. The highest revision is the current one</td>
+</tr>
+<tr>
+<td>Document status</td>
+<td>Draft (DR), Issued for review (IP), Issued for construction (CO), Superseded (RE)</td>
+</tr>
+<tr>
+<td>Superseded by</td>
+<td>Set on the older revision when a newer one is issued for construction</td>
+</tr>
+<tr>
+<td>Discipline, File kind</td>
+<td>What the sheet covers (for example architecture, structure, services) and its format (IFC, DXF, ...)</td>
+</tr>
+<tr>
+<td>Attachment <code>sha256</code></td>
+<td>The fingerprint of the attached file, so a register row can be checked against the file it names</td>
+</tr>
+<tr>
+<td>Issued (on a task or phase)</td>
+<td>Number of deliverables whose current revision is Issued for construction. Computed, never typed</td>
+</tr>
+<tr>
+<td>Earned hours</td>
+<td>Hours budget of those issued deliverables. Computed</td>
+</tr>
+<tr>
+<td>Hours booked</td>
+<td>Time-and-expense hours booked on the task. Computed</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="for-review-three-definitions-we-propose-not-yet-agreed">For review: three definitions we propose (not yet agreed)<a class="headerlink" href="#for-review-three-definitions-we-propose-not-yet-agreed" title="Permanent link">&para;</a></h2>
+<p>Three of the design's tiles have no formula we could verify. These are our proposals, built the iDempiere way, so you can say whether
+they are what you have in mind. <strong>Until you confirm, the page prints them as ours.</strong> Each is a Performance Measure row, so changing one
+is editing a row, not code.</p>
+<table>
+<thead>
+<tr>
+<th>Tile</th>
+<th>Proposed definition</th>
+<th>Why this</th>
+<th>Question for you</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Project Stage</strong></td>
+<td>A Project Type "CAPEX" whose standard phases are your five stages (Concept, Initiation, Planning, Execution, Closing). The stage is the project's own <em>Standard Phase</em>.</td>
+<td>It is how iDempiere holds a project's stage, with no new column. The stock Standard Phase rows are sales steps and are not used</td>
+<td>Are these the five names, in this order?</td>
+</tr>
+<tr>
+<td><strong>Committed Cost: contract and verified</strong></td>
+<td><strong>Contract</strong> = completed purchase orders on the project. <strong>Verified</strong> = delivery recorded against the project (completed Project Issues).</td>
+<td>The project's <code>CommittedAmt</code> is typed by hand and a purchase order never fills it, so the contract figure is computed from the orders. A completed Project Issue adds its cost to the project's balance, so verified overlaps <em>Actual Cost</em></td>
+<td>Is "verified" delivery, or invoice?</td>
+</tr>
+<tr>
+<td><strong>Forecast Cost at Completion</strong></td>
+<td>EAC = Spent + (Approved Budget − Done) ÷ CPI, where CPI = Done ÷ Spent</td>
+<td>The usual form when past cost performance continues. <em>Spent</em>, <em>Done</em> and <em>Approved Budget</em> are already on this page. With Spent or Done at zero the tile says <strong>no data</strong>, not a number</td>
+<td>Is this your formula, or plain Budget ÷ CPI?</td>
+</tr>
+</tbody>
+</table>
+<p><em>Order of work:</em> Project Stage first (data only), then the committed split, then the forecast, because the forecast needs the actual cost
+to be settled.</p>
 <hr />
 <h2 id="three-places-one-set-of-figures">Three places, one set of figures<a class="headerlink" href="#three-places-one-set-of-figures" title="Permanent link">&para;</a></h2>
 <p>These are different screens over the same kind of rows. They are not one HTML page shown three times.</p>
@@ -4459,6 +4667,23 @@ address to open on your data.</p>
 <p class="admonition-title">The file holds your project figures</p>
 <p>Whoever can open the page can read them. Serve it only where you would show them.</p>
 </div>
+<h3 id="bim-document-on-your-own-idempiere-not-built-yet">BIM Document on your own iDempiere (not built yet)<a class="headerlink" href="#bim-document-on-your-own-idempiere-not-built-yet" title="Permanent link">&para;</a></h3>
+<p>Today BIM Document runs in Kernel-ERP. To have it on your iDempiere server it takes two parts, kept apart:</p>
+<ol>
+<li><strong>A 2Pack file (metadata only).</strong> The table <code>BIM_Document</code> and its columns, the lists (discipline, file kind, the four states), the
+   window, the BIM Document tabs in the Project window, the menu entry, and the names of the two processes (Export Register and Open). The
+   physical table is created by the pack itself when it is missing. It does not contain program code.</li>
+<li><strong>A plugin (OSGi component) with the Java in its <code>src</code> folder.</strong> What a pack cannot hold: the model class, the document-action rules
+   (a deliverable needs a task; an older revision cannot be issued after a newer one; issuing a newer revision supersedes the older),
+   and the two process classes. A pack that names a class the server does not have is reported as <em>class not on the server</em>.</li>
+</ol>
+<p>How the metadata gets in is your choice, as in any iDempiere installation: <strong>rows in the pack's <code>PackOut.xml</code></strong> (the dictionary itself),
+<strong>SQL statements inside <code>PackOut.xml</code></strong> (a database type is stated per statement), or <strong>a SQL migration script</strong> under the
+<code>migration</code> folder, as the dashboard's read types already do. A pack version is applied once and never changed: a changed pack gets a new
+version. Start the database first, apply the pack, then check the rows on the server.</p>
+<p><em>Open in Modeller / Viewer</em> will be a plain download of the attachment on your server, because the browser file store it uses in
+Kernel-ERP does not exist on the server side.</p>
+<p>A server without it is not an error: the dashboard's document figures say <strong>no data</strong> there.</p>
 <h3 id="the-twin">The twin<a class="headerlink" href="#the-twin" title="Permanent link">&para;</a></h3>
 <p>Install the bundle <code>capex/plugin/capex_dashboard.mjs</code> in <strong>Plugins &amp; Releases</strong>: it brings the same goal rows as the scripts above. To bring your
 rows in, run the same job with this exact file name beside the app:</p>
@@ -4478,7 +4703,7 @@ for GardenWorld: a tenant other than that needs its tenant in the twin first, wh
 <tbody>
 <tr>
 <td>Forecast Cost at Completion</td>
-<td>No agreed formula: says <em>definition pending</em></td>
+<td>No agreed formula: says <em>definition pending</em>. A proposal is under <em>For review</em></td>
 </tr>
 <tr>
 <td>Procurement Risks, Handover</td>
@@ -4486,11 +4711,31 @@ for GardenWorld: a tenant other than that needs its tenant in the twin first, wh
 </tr>
 <tr>
 <td>Project Stage</td>
-<td>Shows the Standard Phase. How your stages map onto <code>C_Phase</code> is not agreed</td>
+<td>Shows the Standard Phase. How your stages map onto <code>C_Phase</code> is not agreed. A proposal is under <em>For review</em></td>
 </tr>
 <tr>
 <td>Payment-based progress</td>
 <td>Not in the ERP</td>
+</tr>
+<tr>
+<td>Project drop-down</td>
+<td>Not built. One project is chosen by adding <code>&amp;project=&lt;Value&gt;</code> to the page address. Planned: a fourth filter whose blank choice is <strong>All Projects</strong></td>
+</tr>
+<tr>
+<td>Document figures</td>
+<td>Not built. Planned: a tile <em>issued for construction / deliverables</em>, from BIM Document. On a server that does not have BIM Document it will say <strong>no data</strong></td>
+</tr>
+<tr>
+<td>BIM Document on your own iDempiere</td>
+<td>Not built. It runs in Kernel-ERP today. See <em>Installing it</em> below</td>
+</tr>
+<tr>
+<td>A revised model</td>
+<td>Sending a revised model again adds nothing today (a second send changes nothing). Planned: it arrives as a new version of the schedule, the first one kept as the baseline</td>
+</tr>
+<tr>
+<td>Register button</td>
+<td>The register is exported and used by a tool; there is no button yet</td>
 </tr>
 <tr>
 <td>Project Stage, Physical vs Spent, project lists on the Home tab</td>
