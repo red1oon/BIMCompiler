@@ -565,8 +565,18 @@ How the metadata gets in is your choice, as in any iDempiere installation:
 or **a SQL migration script** under the plugin's `migration` folder, as the dashboard's read types already do. A pack version is applied once and
 never changed: a changed pack gets a new version. Start the database first, apply the pack, then check the rows on the server.
 
-*Status:* the plugin compiles against iDempiere 13. The pack is generated from the Kernel-ERP model by a verb another session is building, and
-the document types per client (`DocBaseType` BIM) are not yet created by the plugin. It has not yet been run on a server.
+*Status:* installed and tested on a real iDempiere 13 server (a test instance on the developer's machine). The pack and the `I_`/`X_` classes are generated from one
+Excel data-model workbook. The document types per client (`DocBaseType` BIM) are not yet created by the plugin, and the Project window's project-level BIM Document
+tab is not built yet.
+
+#### Try it: the BIM Document test instance
+
+`scripts/legacy_bimdoc_refresh.sh` (in the bim-compiler repository) rebuilds a test instance from iDempiere's base seed in about two minutes: it creates a fresh
+database, imports the seed, applies the newer migration scripts, installs the plugin and starts the server, then reads the rows back. The instance is
+`~/idempiere-bimdoc`, at `http://localhost:8108/webui`; start and stop it with the `start.sh` and `stop.sh` beside it. `scripts/legacy_bimdoc_witness.sh` then runs the
+checks inside the server (a document issued for construction supersedes the older revision, an older revision cannot be issued after a newer one, the register file,
+a task-less deliverable refused) and rolls its changes back. Do not use iDempiere's own `ImportIdempiere.sh` on a database server shared with other databases: it drops
+the shared `adempiere` role.
 
 ### The BIM Document model (what is in the plugin)
 

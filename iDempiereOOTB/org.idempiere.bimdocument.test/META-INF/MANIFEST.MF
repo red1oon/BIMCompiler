@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: iDempiere BIM Document witness (TEST)
+Bundle-SymbolicName: org.idempiere.bimdocument.test
+Bundle-Version: 13.0.0.qualifier
+Bundle-Vendor: iDempiere Community
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Require-Bundle: org.adempiere.base;bundle-version="13.0.0",
+ org.idempiere.bimdocument;bundle-version="13.0.0"
+Import-Package: org.eclipse.osgi.framework.console,
+ org.osgi.framework;version="1.10.0",
+ org.osgi.service.component;version="1.5.0"
+Service-Component: OSGI-INF/*.xml
+Automatic-Module-Name: org.idempiere.bimdocument.test

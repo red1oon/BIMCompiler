@@ -14,5 +14,4 @@ Import-Package: org.osgi.framework;version="1.10.0",
 Export-Package: org.kernel.bim.model,
  org.kernel.bim.process
 Service-Component: OSGI-INF/*.xml
-Bundle-ActivationPolicy: lazy
 Automatic-Module-Name: org.idempiere.bimdocument
