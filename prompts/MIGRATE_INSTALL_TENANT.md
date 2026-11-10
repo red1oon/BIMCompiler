@@ -1617,3 +1617,21 @@ falsifiers caught (`§IDF-FALSIFY-COLUMN`, `-ROW`, `-UNATTRIBUTED`: a C_Location
 4. Known and named: a tenant born while bundles run gets plugin access at the next start · ODOO-REF-MESSY INCONCLUSIVE (database gone) · the Odoo films show two files.
 Baselines: `§MIGE verdict=PASS judged=82` · `§OB-VERDICT PASS judged=36` · `§IDF-VERDICT PASS` (141 columns, 459 rows) · `§PRA-VERDICT PASS judged=8` · `§GOC-VERDICT PASS
 judged=4` · OF 18 · OM 14 · NM 31 · BCM 18 · SAPM 24 · bim-compiler `🟢 W-ODOO-OWNDB PASS`. Live: bim-ootb sw v1040; guide published.
+
+### §ALREADY-THERE-SPEC + §KEEP-UNIT-SPEC (2026-11-10m; owner: *"Explain again in simple from iDempiere POV what is 'key already in the tenant'? Proceed with your advice"* — option (b))
+**A. A source row whose key the tenant already holds is SKIPPED as "already there", the rest loads.** iDempiere POV: Initial Client Setup gives a new client its chart of
+accounts and the rows "Standard" (partner, category, price list, warehouse) and "Immediate" (payment term); each key is unique per client (a database unique index). A migrated
+row with the same key is refused by that index — correctly — and because the Ninja loader is all-or-nothing (F7) the whole migration was refused (falsifier: 315 GardenWorld rows).
+- **Where:** the shared form loader (`plugins/odoo_migrate_form.mjs`), NOT the Ninja process — its all-or-nothing rule stays for everything else.
+- **How (no hand key list):** the model's own unique check (`model_layer.js` uniqueError, the dictionary's `ad_ddl_unique`) says who holds the key: one extra log line
+  `§MODEL-UNIQUE table=… key=(…)=(…) held_by=tenant|this-load` beside the unchanged legacy error text. The form loads once inside a savepoint; rows refused ONLY for a key held
+  by the TENANT are taken out of the book, the savepoint is rolled back and the load runs again. A key repeated inside the file itself (`held_by=this-load`) is still a refusal.
+- **Seen by the user before Process:** the sheet's row says "n already in this tenant — kept as they are, not loaded" (column *Already there*); rows pointing at such a key
+  (a product in category "Standard") use the tenant's row. **Not done:** comparing or updating the existing row (option c).
+- Also fixed on the way: the form's refusal parser lost every refusal whose text has two lines (the unique error's "Detail:" line) — the sheet showed 0 refused.
+**B. A source unit can be KEPT as a new unit.** The unit row gains an editable *New unit code* (the UoM's X12DE355 code, mandatory in legacy, up to 4 characters): filled and no
+ERP unit chosen → the unit is created with that code (`mapUom` `{ x12de355 }`, already there) and its products use it; an ERP unit chosen wins; neither = the question stays.
+**Witness:** W-IDEMPIERE-FALSIFIER re-pinned (the `key-already-in-tenant` rows become class `already-there`: skipped, existing row compared; the loader no longer needs the
+harness to take them out) + W-ODOO-FORM cases `ALREADY` (a workbook whose payment term is renamed "Immediate": before = whole run refused; now = that one row shown as already
+there, everything else loads, summary == result; a key repeated INSIDE the file is still refused) and `KEEP-UNIT` (a unit with no ERP equivalent + a code → the unit exists
+with that code and its products point at it; without a code the run is still refused).
