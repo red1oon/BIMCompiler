@@ -173,7 +173,7 @@ The last row is deliberate. Text that matches no verb is **never guessed at**:
 <!-- run: question -->
 ```text
 $ node door.js 'please widen the bay'
-{"request":"d-mwb4l525-2304741-1","verb":null,"actor":"human","status":"refused","answer":{"question":"I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type !help.","verbs":["modeller.lines","modeller.try_shift","viewer.counts","viewer.clashes","viewer.film_path","viewer.schedule_at","viewer.schedule_compare","modeller.widen_bay","modeller.walk","object.describe","object.read","object.history","object.update","object.attach","object.count","object.list","object.sum","object.group","erp.find","erp.actions","erp.describe","erp.read","erp.list","erp.sum","erp.group","erp.new","erp.complete","erp.void","erp.close","erp.reverse"]},"why":"not a command: \"please widen the bay\"","notChecked":[],"ops":[],"next":[],"ms":0}
+{"request":"d-mwb7nify-2354956-1","verb":null,"actor":"human","status":"refused","answer":{"question":"I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type !help.","verbs":["modeller.lines","modeller.try_shift","viewer.counts","viewer.clashes","viewer.film_path","viewer.schedule_at","viewer.schedule_compare","modeller.widen_bay","modeller.walk","object.describe","object.read","object.history","object.update","object.attach","object.count","object.list","object.sum","object.group","erp.find","erp.actions","erp.describe","erp.read","erp.list","erp.sum","erp.group","erp.new","erp.complete","erp.void","erp.close","erp.reverse","witness.run","witness.last","legacy.status","legacy.query","erp.column","erp.compare","idempiere.where"]},"why":"not a command: \"please widen the bay\"","notChecked":[],"ops":[],"next":[],"ms":0}
 ```
 
 ## Reading the reply
@@ -526,6 +526,54 @@ Who may run it: human, ai
 Example: erp.find kind=Order number=50000
 ```
 
+## For developers: check the twin against legacy
+
+These verbs are for the person who keeps the ERP twin equal to the real iDempiere. They need a bim-ootb checkout, and for the first four the legacy test stack running (a docker Postgres and the pilot server) and the iDempiere source beside it. When a part is missing they answer `inconclusive` and say which part: they never answer an empty list or "same" for something they could not look at.
+
+`legacy.status` asks whether the stack is up. It starts nothing; when something is down it prints the commands that start it:
+
+<!-- run: legacy_status -->
+```text
+$ node common/door/door.js --list 'legacy.status'
+verdict: UP
+postgres: {"container":"postgres","database":"idempiere_pilot","state":"ready"}
+pilot: {"url":"http://localhost:8088/webui/","http":200,"state":"up"}
+summary: legacy UP: postgres ready, pilot up
+next: []
+```
+
+`erp.column` answers "who fills this column", from the twin's dictionary and legacy's side by side: the column default, the validation rule, the field default, and the login default (iDempiere puts the `IsDefault` row of a referenced table into the context at login). When the two sides disagree it says `DIFFERENT` and which part:
+
+<!-- run: column_docaction -->
+```text
+$ node common/door/door.js --list 'erp.column kind=Order column=DocAction'
+kind: Order
+table: C_Order
+column: DocAction
+twin: {"found":true,"table":"C_Order","column":"DocAction","reference":28,"mandatory":"Y","updateable":"Y","defaultValue":"CO","validationRule":null,"fieldDefaults":[],"loginDefault":null,"filledBy":"the column default CO"}
+legacy: {"found":true,"table":"C_Order","column":"DocAction","reference":28,"mandatory":"Y","updateable":"Y","defaultValue":"CO","validationRule":null,"fieldDefaults":[],"loginDefault":null,"filledBy":"the column default CO"}
+differs: []
+verdict: SAME
+notChecked: []
+summary: C_Order.DocAction: SAME; twin fills it by the column default CO; legacy by the column default CO
+```
+
+`idempiere.where` finds a name in the iDempiere source and answers the file, the line and the line's text, so a claim about legacy behaviour can quote where it comes from. It shows 25 lines unless `limit` says otherwise and always gives the total; `in=callout` keeps only files whose path contains that text:
+
+<!-- run: where_invoicerule -->
+```text
+$ node common/door/door.js --list 'idempiere.where symbol=InvoiceRule in=CalloutOrder limit=2'
+symbol: InvoiceRule
+hits: [{"file":"org.adempiere.base.callout/src/org/compiere/model/CalloutOrder.java","line":50,"text":"*\t\t- InvoiceRule/DeliveryRule/PaymentRule"},{"file":"org.adempiere.base.callout/src/org/compiere/model/CalloutOrder.java","line":131,"text":"mTab.setValue (\"InvoiceRule\", X_C_Order.INVOICERULE_Immediate);"}]
+shown: 2
+total: 20
+files: 1
+verdict: OK
+summary: InvoiceRule: 20 lines in 1 files (showing 2)
+```
+
+Three more verbs sit beside these. `legacy.query table=c_order ad_client_id=11 limit=5` reads rows from a legacy table (read only; the table and every column are checked against legacy's dictionary, and the total is always given). `erp.compare kind=Order number=50000 legacy=50981` reads one record on the twin and the matching one on legacy and compares them cell for cell; a cell where legacy is empty and the twin holds a default is labelled `NULL-VS-DEFAULT` and nothing is said about why. `witness.run name=erp_new` runs a witness from the tree, keeps its whole log, and answers its own verdict line (PASS, FAIL or INCONCLUSIVE); a witness that prints no verdict line is an error, because an exit code is not evidence, and `witness.last` reads the last recorded run without running it again.
+
 ## Viewer questions from a plain download
 
 Two Viewer verbs, `viewer.counts` and `viewer.clashes`, also work without a checkout. Put two more files beside the four:
@@ -583,9 +631,16 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `erp.void` | Void a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
 | `erp.close` | Close a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
 | `erp.reverse` | Reverse - Correct a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | posts | human, ai | a bim-ootb checkout |
+| `witness.run` | Run a witness and read its verdict | `name` | trial | human, ai | a bim-ootb checkout |
+| `witness.last` | Read the last recorded witness run | `name` | read | human, ai | a bim-ootb checkout |
+| `legacy.status` | Is the legacy test stack up | none | read | human, ai | a bim-ootb checkout |
+| `legacy.query` | Read rows of a legacy table | `table`, `columns` (optional), `sort` (optional), `limit` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `erp.column` | Who fills a column: twin and legacy side by side | `kind`, `column` | read | human, ai | a bim-ootb checkout |
+| `erp.compare` | Compare one record on the twin and on legacy | `kind`, `number`, `legacy` (optional) | read | human, ai | a bim-ootb checkout |
+| `idempiere.where` | Find a name in the iDempiere source | `symbol`, `in` (optional), `limit` (optional) | read | human, ai | a bim-ootb checkout |
 <!-- /GEN:verbs -->
 
-**Coverage today.** The list is small on purpose: 30 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 12 ERP verbs. So this is a start, not the whole menu.
+**Coverage today.** The list is small on purpose: 37 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 14 ERP verbs. So this is a start, not the whole menu.
 
 ## What is not checked
 
