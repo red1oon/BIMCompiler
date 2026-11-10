@@ -3156,8 +3156,8 @@ and field names only, with every value masked. Please send it back. That is what
    (<strong>Migrate from Odoo</strong>, <strong>Migrate from Business Central (alpha)</strong> or <strong>Migrate from SAP Business One (alpha)</strong>).</li>
 <li>Still as System: menu <strong>Initial Tenant Setup</strong> → fill in the company details → <strong>Create tenant</strong>. It is set up the way iDempiere's Initial Client Setup sets one
    up (trees, accounting, a default partner group and tax category, the standard warehouse). The new company appears on the login screen.</li>
-<li><strong>Created the company before starting the plugins?</strong> Still as System, run <strong>Role Access Update</strong> (System Admin → General Rules → Security → Role Access Update)
-   with <em>Reset Access</em> = <strong>No</strong>: the same process iDempiere uses after installing a plugin. Every role then gets the new screens its level allows.</li>
+<li>Every company's roles get the migration screens when the plugins start (as iDempiere does after installing a plugin). <strong>Created the company while the plugins
+   were already running?</strong> Reload the page once: the plugins start again and the new company's roles are included.</li>
 </ol>
 <p><img alt="The new company on the login screen" src="../img/odoo_migration/login_newco.jpg" /></p>
 <h3 id="step-3-migrate-in-the-erp">Step 3 — Migrate, in the ERP<a class="headerlink" href="#step-3-migrate-in-the-erp" title="Permanent link">&para;</a></h3>
@@ -3165,13 +3165,17 @@ and field names only, with every value masked. Please send it back. That is what
 <li>Log in as your new company's administrator → menu <strong>Data Import → Migrate from …</strong> (your source).</li>
 <li>Pick the file(s) from Step 1, and the <strong>cut-over date</strong> where the form asks for one. The browser reads them on your machine.</li>
 <li><strong>Units:</strong> where the source's units have no ERP code, pick the ERP unit for each from the list in its cell (for example Units → <code>Each</code>, Hours → <code>Hour</code>). When the
-   source gives an international code, the matching ERP unit is suggested.</li>
+   source gives an international code, the matching ERP unit is suggested. <strong>A unit the ERP does not have?</strong> Leave <em>ERP unit</em> empty and type a short code (up to 4
+   characters) in <strong>New unit code</strong>: the unit is created with that code and its products use it.</li>
 </ol>
 <p><img alt="The files picked, the units asked" src="../img/odoo_migration/form_units.jpg" /></p>
 <ol>
 <li>Press <strong>Refresh</strong>. The <strong>summary</strong> is a dry run of the real import: for every table, how many rows the source has, how many will import, how many would be
    refused and why, including rows the conversion itself could not use ("not in the file: …"). Notes about your data are listed under the tables. Nothing is written
-   yet. Untick what you do not want; a table another ticked table needs stays ticked.</li>
+   yet. Untick what you do not want; a table another ticked table needs stays ticked.
+   <strong>Already there:</strong> a new company starts with a few records of its own (the payment term <em>Immediate</em>, a <em>Standard</em> partner, category and price list, its chart of
+   accounts). A row of yours with the same key is counted under <em>Already there</em> and not loaded; your other rows use the company's own record. A key that appears
+   twice in your own data is still refused: fix it in the source.</li>
 </ol>
 <p><img alt="The summary, before anything is written" src="../img/odoo_migration/form_summary.jpg" /></p>
 <ol>
