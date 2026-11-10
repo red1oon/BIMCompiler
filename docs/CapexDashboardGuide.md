@@ -1,4 +1,4 @@
-# CAPEX Dashboard — Guide for iDempiere Users
+# BIM → ERP and the CAPEX Dashboard — Guide for iDempiere Users
 
 > **⚠ DEMONSTRATOR — NOT OFFICIAL.** Every screenshot and figure comes from a **local GardenWorld test server**
 > (iDempiere 13) holding test projects, some of them repeat test runs. Treat every number as a sample
@@ -12,10 +12,64 @@
 - **The Performance panel on the twin's Home tab**: the same goals in Kernel-ERP, the SQLite twin of iDempiere that runs in a browser.
 
 > **What it changes on your iDempiere:** no change to iDempiere's code or tables. The dashboard needs only read-only setup data.
-> Sending a Project Order *from a BIM model* into iDempiere is a separate thing: that is one standard plugin.
+> Sending a Project Order *from a BIM model* into iDempiere is a separate thing: that is one standard plugin. How it, the drawings
+> filed against the project and this dashboard fit together is the next chapter.
 
 **Who reads what.** **Project manager:** *The dashboard page*, *The Home tab* and *What moves the numbers*.
 **Administrator:** *Changing it* and *Installing it*. Everyone: *Three places*, *What it does not do yet* and *Troubleshooting*.
+
+---
+
+---
+
+## From the BIM model to the dashboard (the whole flow)
+
+One project, four places. Each hands the next the same project:
+
+1. **The model becomes a Project Order.** In the Modeller or Viewer, select parts and send them: the order's phases and cost lines are
+   the model's own, and the order is keyed by the model's name. A second send adds nothing.
+2. **Drawings and model files are filed against the project: BIM Document.** A *deliverable* sits under one task of the project, with a
+   **revision** and a state: **Draft**, **Issued for review**, **Issued for construction**, **Superseded**. Issuing a newer revision for
+   construction makes the older one Superseded; an older revision cannot be issued after a newer one. The Project window shows, per task
+   and phase, how many deliverables are issued for construction.
+3. **The register decides what a walker may read.** The project's register (every deliverable at its latest revision, plus the superseded
+   ones: number, revision, state, discipline, file kind, the file's `sha256`) is exported from the BIM Document. A sheet *issued for
+   construction* is used as placed; *issued for review* as provisional and left out of totals; Draft and Superseded sheets are refused.
+   This runs from a tool today; there is no button yet.
+4. **This dashboard reads the same Project Order.** Its **BIM** button appears when the project's building file is found, by the project's
+   value (the model's name). It does not show document counts yet.
+
+### BIM Document fields
+
+| Field | Means |
+|---|---|
+| Project, Phase, Task | Where the deliverable sits. The task is required |
+| Deliverable no | The sheet or model number. Revisions of one deliverable share it |
+| Revision | A number. The highest revision is the current one |
+| Document status | Draft (DR), Issued for review (IP), Issued for construction (CO), Superseded (RE) |
+| Superseded by | Set on the older revision when a newer one is issued for construction |
+| Discipline, File kind | What the sheet covers (for example architecture, structure, services) and its format (IFC, DXF, ...) |
+| Attachment `sha256` | The fingerprint of the attached file, so a register row can be checked against the file it names |
+| Issued (on a task or phase) | Number of deliverables whose current revision is Issued for construction. Computed, never typed |
+| Earned hours | Hours budget of those issued deliverables. Computed |
+| Hours booked | Time-and-expense hours booked on the task. Computed |
+
+---
+
+## For review: three definitions we propose (not yet agreed)
+
+Three of the design's tiles have no formula we could verify. These are our proposals, built the iDempiere way, so you can say whether
+they are what you have in mind. **Until you confirm, the page prints them as ours.** Each is a Performance Measure row, so changing one
+is editing a row, not code.
+
+| Tile | Proposed definition | Why this | Question for you |
+|---|---|---|---|
+| **Project Stage** | A Project Type "CAPEX" whose standard phases are your five stages (Concept, Initiation, Planning, Execution, Closing). The stage is the project's own *Standard Phase*. | It is how iDempiere holds a project's stage, with no new column. The stock Standard Phase rows are sales steps and are not used | Are these the five names, in this order? |
+| **Committed Cost: contract and verified** | **Contract** = completed purchase orders on the project. **Verified** = delivery recorded against the project (completed Project Issues). | The project's `CommittedAmt` is typed by hand and a purchase order never fills it, so the contract figure is computed from the orders. A completed Project Issue adds its cost to the project's balance, so verified overlaps *Actual Cost* | Is "verified" delivery, or invoice? |
+| **Forecast Cost at Completion** | EAC = Spent + (Approved Budget − Done) ÷ CPI, where CPI = Done ÷ Spent | The usual form when past cost performance continues. *Spent*, *Done* and *Approved Budget* are already on this page. With Spent or Done at zero the tile says **no data**, not a number | Is this your formula, or plain Budget ÷ CPI? |
+
+*Order of work:* Project Stage first (data only), then the committed split, then the forecast, because the forecast needs the actual cost
+to be settled.
 
 ---
 
