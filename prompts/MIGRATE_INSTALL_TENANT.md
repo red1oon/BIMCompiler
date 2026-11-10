@@ -1682,3 +1682,13 @@ an OPENING BANK STATEMENT; proof = Bank Clearing ends at zero.
 `test/idempiere-falsifier-repin`) · Lane BS bank statement DocAction (`/tmp/wt-e3d-bs`, `feat/bankstatement-docaction`, W-BANKSTATEMENT) · Lane IB ImportBankStatement 221
 (`/tmp/wt-e3d-ib`, `feat/import-bankstatement-221`, W-IMPORT-BANKSTATEMENT). Next for the lead once BS + IB are merged: Lane E3d of §E3D-SPEC (bank masters sheets, *Opening
 Charge Bank*, the `I_BankStatement` open sheet, W-OPEN-BALANCES case BANK).
+
+**§2026-11-10q — falsifier RE-PINNED ✅ (witness) — bim-ootb PR #2823 (auto-merge armed; lead read `/tmp/count_logs/idf_repin.log`):** the harness no longer removes anything —
+the LOADER skips (`§IDF-ALREADY … loader_summary == witness_rule` on both tenants: 311 accounts + 4 on GardenWorld, 6 on the pilot) and keeps units with the source's own code
+(Mililiter→ml, kilogram→Kg, litre→L, milligram→mg). `§IDF-REPIN GardenWorld already-there 315->315 · cascade:unit-not-carried 8->0 · header-without-lines 2->2 ·
+unit-not-carried 12->2` (the 2 = units no product uses, which the form drops) · pilot unchanged · `§IDF-COLUMNS PASS sheets_judged=27 columns_judged=145 rows_compared=477`
+(C_UOM now judged, 4 of 4 columns; all 55 products, 29 vendor rows, 114 prices of GardenWorld load) · three falsifiers caught · `§IDF-VERDICT PASS`.
+- **Measured cost (named):** the run went 15 s → 2 m 20 s. Profile (`node --cpu-prof`): 140 s, of which ~70 % inside SQLite (wasm + its `read`), i.e. the loader's own per-row
+  lookups — it now loads the 311 already-there accounts too, and a book with already-there rows is loaded TWICE (savepoint, roll back, load again), in the dry run and in the
+  run. Not a defect; for a large source it doubles the load time when such rows exist. Cheaper design if it ever matters: find the held keys by one query per unique index
+  before loading instead of loading to find them.
