@@ -1702,6 +1702,32 @@ A phone tap, a barcode scan, a GPS check-in, a sensor reading or a till ring bec
 3. **Go for the scripts and the film:** build one demo script per new command, each run from an **empty folder** against the live site with only the files its beat downloads (W-FILM-NEURO2-CLI); once every script and the witness pass, the film is built from those runs' real stdout. Same pipeline and gates as Part I (`scripts/film_neuro/`: resolve, guard, record, fit, mux; CPU only, no GPU, no model calls; public fixtures only; English first).
 4. **APPROVED 2026-11-09 (owner: *"approve the closing line and the bug beat"*):** the closing line *"Any AI may propose. Only the building decides."* (§22.1, beat 13) and the honest Viewer-bug beat (§22.2, beat 7: −29, then 393 / 291 / 102, "the verb repeated the app; the test caught the app"). Neither is "owner to approve" any more.
 
+## 24. FILM "One line" (owner, 2026-11-10: *"Keep the film simple without our witness checking stuff. Just make it easy to understand that we done CLI scripting which is something novel"* · *"Then a last card to say what other ERPs does this. Do the film"*)
+**Go given 2026-11-10.** English first; two voices (Kokoro, local CPU; no paid call, no GPU, no bake); PLAYBOOK C picture rules (dark cards, bottom 230 px free for captions, chapter-free). Build: `scripts/film_one_line/` (bim-compiler). Output `~/Videos/One_Line_EN_rc1.mp4`, never overwritten.
+**The one idea:** you type one short line and the ERP or the building model does it and answers; a few lines in a file are a script; a person or an AI uses the same lines. **No proof talk in the voice** (no witness, parity or falsifier words). Every command on screen is still a real run: `facts.js` runs each line through the door on bim-ootb main and the cards print its real answer (`out/facts.json`); a number spoken must be in that file (`guard.js`).
+**Storyboard (about 90 s):**
+| # | Picture | Idea spoken |
+|---|---|---|
+| 1 screens | a plain card: an ERP window is many screens and buttons | business software is full of screens; every task is a hunt for the right button |
+| 2 find | terminal: `erp.find kind=Order number=<n>` and its answer | what if you could just say it: one line, the app answers |
+| 3 do | `erp.actions`, then `erp.complete`; status Draft → Completed | ask what may be done, then do it; the same engine as the screen, without the screen |
+| 4 more | `erp.void`, `erp.close`, `erp.reverse`, each on its own order | void it, close it, reverse it: each is one line |
+| 5 building | `viewer(Duplex).Room.count` → the room count; `modeller(Duplex).walk(FP).count` → the count | the same door opens the building |
+| 6 script | three lines in a file, run together | a few lines in a file are a script anyone can read |
+| 7 door | the one-door diagram (`docs/figs/one_door.svg`) | people type it; an AI can use it too; one door, one small vocabulary |
+| 8 others | the last card (below) | what other ERPs offer |
+| 9 close | the guide's address | one line at a time |
+**The last card, "What do other ERPs offer?" (looked up 2026-11-10; a search, not a survey; the card says so):**
+| System | What it offers | Source |
+|---|---|---|
+| Odoo | `odoo-bin shell`: a Python console for developers, with full database access | odoo.com developer CLI page; github.com/odoo/documentation pull 15325 |
+| ERPNext (Frappe) | `bench execute` and `bench console`: run a Python function or open a Python console | docs.frappe.io/framework/user/en/bench/reference/execute |
+| Tryton | `proteus`: a Python library to script the server as a client | pypi.org/project/proteus |
+| NetSuite | SuiteCloud CLI: a developer's tool to build and deploy projects | docs.oracle.com NetSuite SuiteCloud CLI reference |
+| AI connectors (Odoo, SAP, ERPNext) | community-built; generic create, read, update, delete on records | glama.ai and pypi.org listings found by the search |
+Card footer: *"Each needs code or a programmer. In this search we did not find one short vocabulary of document actions that a person and an AI both type."* **Not on the card because not checked:** SAP's own tools, Dynamics 365 Business Central, Oracle Fusion. **The words "first" and "novel" are not spoken or shown**; the card states what was found.
+**Checks (numbers, per PLAYBOOK C §5; not spoken in the film):** `guard.js` every figure in the narration is in `facts.json`; fit log all beats DETAIL, 0 WRONG; frames of the muxed film = the silent picture's; silences ≥ 4 s none longer than about 7 s; loudness about −16 LUFS; the bottom 230 px of every card equals the background.
+
 ## STATUS
 2026-11-06 spec. 2026-11-07: extracted (§3), fixes (§6), report (§8), CLI (§11), three proposer tests (§12), shift and hinge (§13, §14), public guide (§14.3). 2026-11-08: no paid model calls (§14.6), the stop on outside calls and the report on first use (§15), consolidated; film "Think Global, Act Local": plan (§16), the three pre-cut checks, English rc3 built (§16.7).
 **The gate, where it stands:** outside calls are stopped on new red (§15.1). The Java compile path stays log-only until its rules are proven against extracted buildings (`CompilationPipeline.java:1536`). When outside orders arrive at `PlacementRequest`, a gate there applies only to them, checks before any snap, and then the §7 measurement runs, at no cost (§14.6).
