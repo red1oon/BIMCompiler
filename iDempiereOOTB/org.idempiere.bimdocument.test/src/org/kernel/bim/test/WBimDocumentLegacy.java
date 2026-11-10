@@ -1,0 +1,80 @@
+/** W-BIMDOC-LEGACY L2/L3: the BIM Document model class and processes, run on a REAL iDempiere database (never the twin).
+ *  Spec: bim-compiler prompts/ERP_IDEMPIERE_UX_PARITY.md §BIMDOC-LEGACY. Run inside the live server: console command "bimdocwitness" (scripts/legacy_bimdoc_witness.sh sends it).
+ *  ISSUES: (L2a) completing a revision supersedes the older one and points "Superseded By" at it; (L2b) an older revision cannot be issued after a newer one is issued for construction;
+ *  (L2c) a deliverable with no task is refused; (L2d) only prepare and complete are offered; (L3) Export Register lists every deliverable's current revision plus the superseded ones, with a sha256
+ *  only when a file is attached. Everything is created in one transaction that is ROLLED BACK: the database is left as it was. */
+package org.kernel.bim.test;
+
+import java.io.File;
+import java.io.PrintStream;
+import java.nio.file.Files;
+import java.util.*;
+import org.compiere.model.*;
+import org.compiere.process.*;
+import org.compiere.util.*;
+import org.kernel.bim.model.MBIMDocument;
+import org.kernel.bim.process.BIMDocumentRegisterExport;
+
+public class WBimDocumentLegacy {
+	static int pass = 0, fail = 0;
+	static PrintStream out;
+	static void chk (String n, boolean ok, String m) { out.println("  " + (ok ? "PASS " : "✗ FAIL ") + n + " " + m); if (ok) pass++; else fail++; }
+	public static boolean run (PrintStream o) throws Exception {
+		out = o; pass = 0; fail = 0;
+		Properties ctx = Env.getCtx();
+		Env.setContext (ctx, Env.AD_CLIENT_ID, 11); Env.setContext (ctx, Env.AD_ORG_ID, 11); Env.setContext (ctx, Env.AD_USER_ID, 100); Env.setContext (ctx, Env.AD_ROLE_ID, 102);
+		String trxName = Trx.createTrxName ("bimdoc");
+		Trx trx = Trx.get (trxName, true);
+		try {
+			trx.start();
+			int dtId = DB.getSQLValue (trxName, "SELECT C_DocType_ID FROM C_DocType WHERE DocBaseType='BIM' AND AD_Client_ID=11 AND IsActive='Y'");
+			if (dtId <= 0) {   // the plugin does not make document types per client yet (the twin does): this run makes one, inside the transaction
+				MDocType dt = new MDocType (ctx, 0, trxName); dt.setAD_Org_ID (0); dt.setName ("BIM Document"); dt.setPrintName ("BIM Document"); dt.setDocBaseType ("BIM");
+				dt.setGL_Category_ID (DB.getSQLValue (trxName, "SELECT GL_Category_ID FROM GL_Category WHERE AD_Client_ID=11 AND IsActive='Y' ORDER BY GL_Category_ID")); dt.saveEx(); dtId = dt.get_ID();
+			}
+			MProject prj = new MProject (ctx, 0, trxName); prj.setAD_Org_ID (11); prj.setName ("BIMDOC witness"); prj.setValue ("BIMDOC_W"); prj.setC_Currency_ID (100); prj.saveEx();
+			MProjectPhase ph = new MProjectPhase (prj); ph.setName ("Phase 1"); ph.saveEx();
+			MProjectTask tk = new MProjectTask (ph); tk.setName ("Task 1"); tk.saveEx();
+			out.println ("L2 document rules, project=" + prj.get_ID() + " task=" + tk.get_ID() + " doctype=" + dtId);
+			chk ("L0 the model class serves the table: " + I(MBIMDocument.class), MTable.get (ctx, "BIM_Document").getAD_Table_ID() > 0 && MTable.get (ctx, "BIM_Document").getColumns (false).length >= 25, "columns=" + MTable.get (ctx, "BIM_Document").getColumns (false).length);
+			MBIMDocument r1 = doc (ctx, trxName, dtId, prj, ph, tk, "A-101", 1, "Plan level 1");
+			boolean ok1 = r1.processIt (DocAction.ACTION_Complete); r1.saveEx();
+			chk ("L2 rev 1 issued for construction", ok1 && "CO".equals (r1.getDocStatus()), "status=" + r1.getDocStatus() + " msg=" + r1.getProcessMsg());
+			MBIMDocument r2 = doc (ctx, trxName, dtId, prj, ph, tk, "A-101", 2, "Plan level 1 rev B");
+			boolean ok2 = r2.processIt (DocAction.ACTION_Complete); r2.saveEx(); r1 = new MBIMDocument (ctx, r1.get_ID(), trxName);
+			chk ("L2a completing rev 2 sets rev 1 to Superseded and its Superseded By points at rev 2", ok2 && "CO".equals (r2.getDocStatus()) && "RE".equals (r1.getDocStatus()) && r1.getReversal_ID() == r2.get_ID() && r1.isProcessed(),
+				"rev1=" + r1.getDocStatus() + " by=" + r1.getReversal_ID() + " rev2=" + r2.getDocStatus() + "(" + r2.get_ID() + ")");
+			MBIMDocument old = doc (ctx, trxName, dtId, prj, ph, tk, "A-101", 1, "Plan level 1 late rev 1 copy");
+			boolean okOld = old.processIt (DocAction.ACTION_Prepare);
+			chk ("L2b an older revision cannot be issued after a newer one is issued for construction", !okOld || "IN".equals (old.getDocStatus()), "status=" + old.getDocStatus() + " msg=" + old.getProcessMsg());
+			String[] opts = new String[20]; int n = r2.customizeValidActions ("DR", null, null, null, MBIMDocument.Table_ID, new String[0], opts, 0);
+			List<String> offered = new ArrayList<>(Arrays.asList (opts).subList (0, n));
+			chk ("L2d a draft offers only Issue for review (PR) and Issue for construction (CO)", offered.equals (Arrays.asList ("PR", "CO")), offered.toString());
+			MBIMDocument c = doc (ctx, trxName, dtId, prj, ph, tk, "C-301", 1, "Elevation");
+			c.setFileKind ("DXF"); c.setDiscipline ("ARC"); c.saveEx();
+			out.println ("L3 register");
+			ProcessInfo pi = new ProcessInfo ("Export Register", 0); pi.setRecord_ID (r2.get_ID()); pi.setTable_ID (MBIMDocument.Table_ID);
+			BIMDocumentRegisterExport proc = new BIMDocumentRegisterExport();
+			boolean ran = proc.startProcess (ctx, pi, trx);
+			File f = pi.getExportFile();
+			String json = f != null && f.exists() ? new String (Files.readAllBytes (f.toPath()), "UTF-8") : "";
+			int rows = json.split ("\\{\"no\"", -1).length - 1;
+			chk ("L3 the register is a JSON file of the project: A-101 rev 1 (RE) + rev 2 (CO) + C-301 rev 1 (DR) + the late A-101 copy is not a deliverable of its own", ran && f != null && json.contains ("\"no\":\"A-101\",\"rev\":1,\"status\":\"RE\"") && json.contains ("\"no\":\"A-101\",\"rev\":2,\"status\":\"CO\"") && json.contains ("\"no\":\"C-301\""), "ran=" + ran + " rows=" + rows + " file=" + (f == null ? null : f.getName()));
+			chk ("L3b no attachment means sha256 null, never invented", json.contains ("\"sha256\":null") && !json.matches ("(?s).*\"sha256\":\"[0-9a-f]{64}\".*"), "");
+			out.println (json);
+			// last: a failed insert aborts the PostgreSQL transaction, so nothing may follow it
+			String why = ""; boolean refused = false;
+			try { doc (ctx, trxName, dtId, prj, ph, null, "B-201", 1, "Section A"); } catch (Exception e) { refused = true; why = String.valueOf (e.getMessage()); }
+			chk ("L2c a deliverable with no task is refused (the column is mandatory)", refused && why.toLowerCase().contains ("c_projecttask_id"), why.length() > 120 ? why.substring (0, 120) : why);
+		} catch (Throwable t) { t.printStackTrace (out); fail++; }
+		finally { trx.rollback(); trx.close(); }
+		out.println ("§W-BIMDOC-LEGACY " + (fail == 0 && pass > 0 ? "PASS" : fail > 0 ? "FAIL" : "INCONCLUSIVE") + " pass=" + pass + " fail=" + fail + " (transaction rolled back)");
+		return fail == 0 && pass > 0;
+	}
+	static String I (Class<?> c) { return c.getName(); }
+	static MBIMDocument doc (Properties ctx, String trxName, int dtId, MProject prj, MProjectPhase ph, MProjectTask tk, String no, int rev, String name) {
+		MBIMDocument d = new MBIMDocument (ctx, 0, trxName); d.setAD_Org_ID (11); d.setC_DocType_ID (dtId); d.setC_Project_ID (prj.get_ID()); d.setC_ProjectPhase_ID (ph.get_ID());
+		if (tk != null) d.setC_ProjectTask_ID (tk.get_ID());
+		d.setDeliverableNo (no); d.setRevision (rev); d.setName (name); d.saveEx(); return d;
+	}
+}
