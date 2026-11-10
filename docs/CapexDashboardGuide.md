@@ -14,7 +14,7 @@
 > **What it changes on your iDempiere:** no change to iDempiere's code or tables. The dashboard needs only read-only setup data.
 > Sending a Project Order *from a BIM model* into iDempiere is a separate thing: that is one standard plugin. How it, the drawings
 > filed against the project and this dashboard fit together is the next chapter.
-> BIM Document (the drawings) is part of Kernel-ERP today; on your own iDempiere it needs a pack and a plugin: see *Installing it*.
+> BIM Document (the drawings) is part of Kernel-ERP today; on your own iDempiere it needs a pack and a plugin: see *Installing it* and the *Developer's note*.
 
 **Who reads what.** **Project manager:** *The dashboard page*, *The Home tab* and *What moves the numbers*.
 **Administrator:** *Changing it* and *Installing it*. Everyone: *Three places*, *What it does not do yet* and *Troubleshooting*.
@@ -81,7 +81,7 @@ These are different screens over the same kind of rows. They are not one HTML pa
 | | Dashboard page | iDempiere Home tab | Twin Home tab |
 |---|---|---|---|
 | **What you see** | Seven tiles, five panels, project lists | Performance dials, one per goal | The same dials as iDempiere, on purpose |
-| **What defines the figures** | Formulas in code (`capex/tiles.js`) | `PA_Goal` and `PA_Measure` rows | The same rows |
+| **What defines the figures** | Formulas built into the page | `PA_Goal` and `PA_Measure` rows | The same rows |
 | **What calculates them** | The page, in the browser | iDempiere | The twin's goal engine, running the same SQL |
 | **Where its data comes from** | A file written by a small job | Your iDempiere | A copy of your iDempiere's rows, in the browser |
 | **Change a formula without code** | No | Yes, in the stock windows | Yes, in the same stock windows |
@@ -90,8 +90,8 @@ These are different screens over the same kind of rows. They are not one HTML pa
 ### Rich or editable: today you choose
 
 A goal is one number on a dial, so the Home tabs cannot draw a stage pipeline, a Physical vs Spent panel or a project list. The page can,
-because it is not limited to what a goal expresses. But the page is the part you cannot change without a developer: its layout is in
-`index.html` and `dash.css`, and its formulas are in `tiles.js`. **There is no editor for the page.** On it you can only change the filters
+because it is not limited to what a goal expresses. But the page is the part you cannot change without a developer: its layout and
+formulas are built into it. **There is no editor for the page.** On it you can only change the filters
 and the data source, and its tiles do not click through to records: the one link out is the **BIM** button.
 
 The windows under *Changing it* edit a goal's numbers and SQL. They do not change how anything looks. Where a figure appears on both,
@@ -409,96 +409,15 @@ measure. To add a currency, copy an existing pair and change `C_Currency_ID` in 
 
 ## Installing it
 
-### The Home tab goals
+Your administrator installs it once; nothing is installed on a user's computer. What gets installed, in order:
 
-For an administrator with database access. On the test server these were applied with `psql`, in name order, followed by
-`update_sequences`.
+1. **The dashboard's read access** on your iDempiere (data only, no program code): the read-only web-service types and a user allowed to use them.
+2. **The Home tab goals** (data only), if you want the Performance panel.
+3. **BIM Document**, if you want drawings filed against projects: a metadata pack and one plugin (a `.jar`) on the server.
 
-| Script | Adds |
-|---|---|
-| `202611031900_CAPEX-R0.sql` | The first measure: Approved Budget (USD) |
-| `202611032000_CAPEX-G2.sql` | The count and sum measures |
-| `202611032100_CAPEX-G3.sql` | A goal for each of them |
-| `202611032200_CAPEX-G4.sql` | The health, schedule and budget measures, and their goals |
-| `202611041000_CAPEX-G7.sql` | The targets and the gray colour schema |
+Kernel-ERP needs no installation: its Home tab goals and BIM Document are built in, and start or stop from **Plugins & Releases**.
 
-They are in the bim-ootb repository, under `capex/legacy/migration/iD13/postgresql/`, in iDempiere's own migration format.
-The first statement of each registers it in the migration log. Most carry a `Restore` line at the top that removes what they
-added. Goals calculate themselves the first time a Home tab shows them.
-
-!!! warning "These scripts are written for GardenWorld"
-    They set `AD_Client_ID = 11`, the currencies USD (100) and BDT (322), and this test server's target figures. **Do not run them
-    on your own tenant.** Render your own from them instead, as below.
-
-### For your own tenant
-
-`capex/tools/site_migration.js` writes your tenant's two scripts from the shipped ones. It never connects to your server.
-
-1. `node capex/tools/site_migration.js --preflight <AD_Client_ID>` prints a read-only SQL. Run it with `psql -qtA` and save the line it prints as `preflight.json`.
-   It reports your roles, the currencies your projects hold and your next free ids.
-2. `node capex/tools/site_migration.js preflight.json --role <AD_Role_ID> --out <folder>`. Add `--targets <file>` to state your plan,
-   for example `{"budget":{"USD":1000},"activeProjects":3}`.
-3. Apply the two scripts with `psql` in name order, run `update_sequences()`, and restart the server.
-
-A goal with no target stated goes on the gray schema, so another company's numbers can never reach you. It refuses, and says why, if no role
-is given, if your projects hold no currency yet, or if these types or goals are already there.
-
-Tested on a second tenant of a test server, through to that tenant's real Home tab. It has not been run on a real site.
-
-### The page
-
-The page is plain files (`capex/index.html` and what it loads), with no server of its own and nothing to install in iDempiere's
-code. Your iDempiere needs a read-only **web-service read type** for each of the 8 tables it reads, and a user allowed to use them.
-These come in one migration script, `202611042300_CAPEX-WS-READ.sql`, under `capex/legacy/ws/migration/iD13/postgresql/`, for GardenWorld.
-For your own tenant, *For your own tenant* above writes it. Restart the server afterwards. The write types in `capex/legacy/ws_testserver/`
-are for a test server only: do not install them on yours.
-
-A small job beside your server reads iDempiere and writes the file the page opens:
-
-```
-BRIDGE_BASE=https://your-server BRIDGE_USER=... BRIDGE_PASS=... BRIDGE_CLIENT=... BRIDGE_ROLE=... BRIDGE_ORG=... BRIDGE_WH=... \
-  node capex/tools/legacy_snapshot.js
-```
-
-It writes `capex/legacy_snapshot.json`. The password stays with the job: the file and the browser never hold it, and nothing is
-written to iDempiere. Run it on a schedule. The page shows what the last run saw. Add `?source=legacy` to the page's
-address to open on your data.
-
-!!! warning "The file holds your project figures"
-    Whoever can open the page can read them. Serve it only where you would show them.
-
-### BIM Document on your own iDempiere (not built yet)
-
-Today BIM Document runs in Kernel-ERP. To have it on your iDempiere server it takes two parts, kept apart:
-
-1. **A 2Pack file (metadata only).** The table `BIM_Document` and its columns, the lists (discipline, file kind, the four states), the
-   window, the BIM Document tabs in the Project window, the menu entry, and the names of the two processes (Export Register and Open). The
-   physical table is created by the pack itself when it is missing. It does not contain program code.
-2. **A plugin (OSGi component) with the Java in its `src` folder.** What a pack cannot hold: the model class, the document-action rules
-   (a deliverable needs a task; an older revision cannot be issued after a newer one; issuing a newer revision supersedes the older),
-   and the two process classes. A pack that names a class the server does not have is reported as *class not on the server*.
-
-How the metadata gets in is your choice, as in any iDempiere installation: **rows in the pack's `PackOut.xml`** (the dictionary itself),
-**SQL statements inside `PackOut.xml`** (a database type is stated per statement), or **a SQL migration script** under the
-`migration` folder, as the dashboard's read types already do. A pack version is applied once and never changed: a changed pack gets a new
-version. Start the database first, apply the pack, then check the rows on the server.
-
-*Open in Modeller / Viewer* will be a plain download of the attachment on your server, because the browser file store it uses in
-Kernel-ERP does not exist on the server side.
-
-A server without it is not an error: the dashboard's document figures say **no data** there.
-
-### The twin
-
-Install the bundle `capex/plugin/capex_dashboard.mjs` in **Plugins & Releases**: it brings the same goal rows as the scripts above. To bring your
-rows in, run the same job with this exact file name beside the app:
-
-```
-node capex/tools/legacy_snapshot.js capex/site_copy.json
-```
-
-That name makes the job keep every column. The twin copies the file in at each start. It does not write to iDempiere, and the bundle is built
-for GardenWorld: a tenant other than that needs its tenant in the twin first, which has not been built.
+The steps, the scripts and the plugin's contents are in the **Developer's note** at the end of this guide.
 
 ---
 
@@ -512,7 +431,7 @@ for GardenWorld: a tenant other than that needs its tenant in the twin first, wh
 | Payment-based progress | Not in the ERP |
 | Project drop-down | Not built. One project is chosen by adding `&project=<Value>` to the page address. Planned: a fourth filter whose blank choice is **All Projects** |
 | Document figures | Not built. Planned: a tile *issued for construction / deliverables*, from BIM Document. On a server that does not have BIM Document it will say **no data** |
-| BIM Document on your own iDempiere | Not built. It runs in Kernel-ERP today. See *Installing it* below |
+| BIM Document on your own iDempiere | The plugin's source is written and compiles against iDempiere 13; it has not yet been installed and checked on a server. It runs in Kernel-ERP today |
 | A revised model | Sending a revised model again adds nothing today (a second send changes nothing). Planned: it arrives as a new version of the schedule, the first one kept as the baseline |
 | Register button | The register is exported and used by a tool; there is no button yet |
 | Project Stage, Physical vs Spent, project lists on the Home tab | Page only, not goals |
@@ -559,3 +478,123 @@ Not checked: a site larger than this test server. If the job stops, the copy jus
 ---
 
 Related guides: [Kernel-ERP User Guide](ERPUserGuide.md) · [Distributed ERP](DistributedERP.md).
+
+---
+
+## Developer's note
+
+For the person who installs and extends it. Nothing here is needed to *use* the dashboard.
+
+### How to install
+
+#### The Home tab goals
+
+For an administrator with database access. On the test server these were applied with `psql`, in name order, followed by
+`update_sequences`.
+
+| Script | Adds |
+|---|---|
+| `202611031900_CAPEX-R0.sql` | The first measure: Approved Budget (USD) |
+| `202611032000_CAPEX-G2.sql` | The count and sum measures |
+| `202611032100_CAPEX-G3.sql` | A goal for each of them |
+| `202611032200_CAPEX-G4.sql` | The health, schedule and budget measures, and their goals |
+| `202611041000_CAPEX-G7.sql` | The targets and the gray colour schema |
+
+They are in the bim-ootb repository, under `capex/legacy/migration/iD13/postgresql/`, in iDempiere's own migration format.
+The first statement of each registers it in the migration log. Most carry a `Restore` line at the top that removes what they
+added. Goals calculate themselves the first time a Home tab shows them.
+
+!!! warning "These scripts are written for GardenWorld"
+    They set `AD_Client_ID = 11`, the currencies USD (100) and BDT (322), and this test server's target figures. **Do not run them
+    on your own tenant.** Render your own from them instead, as below.
+
+#### For your own tenant
+
+`capex/tools/site_migration.js` writes your tenant's two scripts from the shipped ones. It never connects to your server.
+
+1. `node capex/tools/site_migration.js --preflight <AD_Client_ID>` prints a read-only SQL. Run it with `psql -qtA` and save the line it prints as `preflight.json`.
+   It reports your roles, the currencies your projects hold and your next free ids.
+2. `node capex/tools/site_migration.js preflight.json --role <AD_Role_ID> --out <folder>`. Add `--targets <file>` to state your plan,
+   for example `{"budget":{"USD":1000},"activeProjects":3}`.
+3. Apply the two scripts with `psql` in name order, run `update_sequences()`, and restart the server.
+
+A goal with no target stated goes on the gray schema, so another company's numbers can never reach you. It refuses, and says why, if no role
+is given, if your projects hold no currency yet, or if these types or goals are already there.
+
+Tested on a second tenant of a test server, through to that tenant's real Home tab. It has not been run on a real site.
+
+#### The page
+
+The page is plain files (`capex/index.html` and what it loads), with no server of its own and nothing to install in iDempiere's
+code. Your iDempiere needs a read-only **web-service read type** for each of the 8 tables it reads, and a user allowed to use them.
+These come in one migration script, `202611042300_CAPEX-WS-READ.sql`, under `capex/legacy/ws/migration/iD13/postgresql/`, for GardenWorld.
+For your own tenant, *For your own tenant* above writes it. Restart the server afterwards. The write types in `capex/legacy/ws_testserver/`
+are for a test server only: do not install them on yours.
+
+A small job beside your server reads iDempiere and writes the file the page opens:
+
+```
+BRIDGE_BASE=https://your-server BRIDGE_USER=... BRIDGE_PASS=... BRIDGE_CLIENT=... BRIDGE_ROLE=... BRIDGE_ORG=... BRIDGE_WH=... \
+  node capex/tools/legacy_snapshot.js
+```
+
+It writes `capex/legacy_snapshot.json`. The password stays with the job: the file and the browser never hold it, and nothing is
+written to iDempiere. Run it on a schedule. The page shows what the last run saw. Add `?source=legacy` to the page's
+address to open on your data.
+
+!!! warning "The file holds your project figures"
+    Whoever can open the page can read them. Serve it only where you would show them.
+
+#### In Kernel-ERP
+
+Nothing is installed by hand. The Home tab goals and BIM Document are built in: open **Plugins & Releases** to start or stop them. A stopped one
+stays stopped.
+
+#### BIM Document on your own iDempiere
+
+Two parts, kept apart (metadata is data; code is code):
+
+1. **A 2Pack file: metadata only.** The table `BIM_Document` and its columns, the lists (discipline, file kind, the four states), the window,
+   the BIM Document tabs in the Project window, the menu entry, and the two process rows (they carry class *names*). The pack creates the
+   physical table when it is missing (`ColumnElementHandler`). It holds no program code.
+2. **An OSGi plugin, `org.idempiere.bimdocument`, with the Java in its `src` folder.** Source: `iDempiereOOTB/org.idempiere.bimdocument/` in the
+   bim-compiler repository. Install it like any iDempiere plugin. A pack that names a class the server does not have is reported as *class not on the server*.
+
+How the metadata gets in is your choice, as in any iDempiere installation:
+**rows in the pack's `PackOut.xml`** (the dictionary itself); **SQL statements inside `PackOut.xml`** (a database type is stated per statement);
+or **a SQL migration script** under the plugin's `migration` folder, as the dashboard's read types already do. A pack version is applied once and
+never changed: a changed pack gets a new version. Start the database first, apply the pack, then check the rows on the server.
+
+*Status:* the plugin compiles against iDempiere 13. The pack is generated from the Kernel-ERP model by a verb another session is building, and
+the document types per client (`DocBaseType` BIM) are not yet created by the plugin. It has not yet been run on a server.
+
+### The BIM Document model (what is in the plugin)
+
+| Class (package `org.kernel.bim`) | What it is |
+|---|---|
+| `model.I_BIM_Document` | The interface: the table name, every column name as a constant, a getter and setter for each. The table id is read from the dictionary, never typed (it differs per database) |
+| `model.X_BIM_Document` | The persistent class, in the shape iDempiere's own model generator writes (`extends PO implements I_BIM_Document, I_Persistent`). Plain getters and setters, no rules |
+| `model.MBIMDocument` | The model class: the document rules, below |
+| `model.BIMDocumentModelFactory` | Tells iDempiere that `BIM_Document` is served by `MBIMDocument` |
+| `process.BIMDocumentRegisterExport` | Export Register |
+| `process.BIMDocumentOpen` | Open |
+| `process.BIMDocumentProcessFactory` | Tells iDempiere which class serves each process row |
+
+**What `MBIMDocument` updates, and when.** It is the document-action class (`DocAction`), so the stock Document Action field drives it. Only two actions are offered:
+
+| Action | Checks | What it changes |
+|---|---|---|
+| **Issue for review** (prepare) | The deliverable has a number and a title; it hangs under a project task; no newer revision is already Issued for construction. Otherwise the document goes *Invalid* and says why | Status becomes Issued for review |
+| **Issue for construction** (complete) | The same checks, if it was not prepared first | Status becomes Issued for construction and the document is closed to further action. **Every older revision of the same deliverable that was Issued for construction or for review is set to Superseded**, its *Superseded By* points to this revision, and it is closed. Nothing else is touched |
+
+Void, close, reverse and re-activate are not offered: a deliverable is replaced by a newer revision, not undone. The log carries
+`§BIMDOC-SUPERSEDE` for each older revision changed, `§BIMDOC-ISSUED`, and `§BIMDOC-CHAIN` with the project's issued count before and after.
+
+**What the processes update.** Neither changes any data.
+
+| Process | Reads | Gives |
+|---|---|---|
+| Export Register | Every active document of the selected document's project | A `.json` file: each deliverable's current revision plus every superseded revision, with number, revision, status, discipline, file kind, name and the attached file's `sha256` (null when nothing is attached). The walkers read this file |
+| Open | The attached file of the document's file kind | The file as a download, with its `sha256`. Refuses when there is no file kind or no attachment of that kind. (Kernel-ERP opens the Modeller or Viewer instead, because it has a browser file store; a server has none) |
+
+The Project window's *Issued*, *Earned hours* and *Hours booked* columns are computed from the table by their own SQL: no class writes them.
