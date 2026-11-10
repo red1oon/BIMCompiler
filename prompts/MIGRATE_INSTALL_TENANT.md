@@ -1460,7 +1460,7 @@ access", since the count now follows the roles), W-OPEN-BALANCES, browser W-ODOO
 - **Live:** the site served sw `v1033` with `plugins/open_balances.mjs` = 200 (E3c + O1 deployed, fetched back). Plugins start only as System Administrator (role 0,
   `plugin_registry.js` mayWrite) — legacy's rule, confirmed with the owner on the live page ("ok works").
 
-### ▶ RESUME HERE (2026-11-10d) — supersedes 2026-11-10b/c
+### ▶ (superseded by RESUME HERE 2026-11-10h at the END of the file) RESUME HERE (2026-11-10d)
 1. **Check #2795 landed** (`gh pr view 2795`); then fetch the live page's `sw.js` (v1034) — a green pipeline is not a deployed feature.
 2. **O2 (lead): the 17 master entities into `templates/odoo-17.json`** — §ODOO-ENGINE-SPEC step 2. Oracle = `tests/fixtures/odoo_convert_reference.mjs` (never edited to pass);
    witnesses ODOO-GUIDE / ODOO-DIFF / ODOO-MUTANT in `witness_migrate_engine.js` (now 58). Then delete the bridge set `partner_keys` (open items look the partner up in the
@@ -1530,3 +1530,22 @@ time and memory per 10k rows on both).
   `odoo_export.json` — USER-VISIBLE (one file to pick instead of two): the same PR set must update `docs/MigrationGuide.md` (bim-compiler, `scripts/safe_gh_deploy.sh`), the agent
   README and the form texts; the bim-compiler witnesses that run `export.js` for its workbook (`poc_sheet_contract.js`, the `harden_*` set) are superseded by ODOO-REF / ODOO-GUIDE
   and must be retired or repointed in the same change; the films still show two files (named, not redone).
+
+**§2026-11-10h (lead; logs read):** #2806 (O3a) MERGED.
+- **O3b ✅ BUILT (witness) — bim-ootb PR #2808 (auto-merge armed), branch `feat/odoo-drop-partner-keys`, sw v1039.** Template: `bpValue` / `held` from the template's own partner
+  mapping (`oPartner` → `pBpKey` / `pHeld`); `partner_keys` gone from `export.js`, the fixture (live re-run byte-identical apart from that set; workbook / manifest / provenance
+  unchanged) and both witness oracles (they read the frozen hand mapping). `/tmp/count_logs/o3b_migrate_engine.log` `§MIGE-ODOO-GEN cases=300 differing_cases=0 cover=8/8` ·
+  `§MIGE-ODOO-OPEN-MUTANT verdict=PASS judged=10` · `§MIGE verdict=PASS judged=82`; `/tmp/count_logs/o3b_open_balances.log` `§OB-VERDICT PASS judged=36`. **Found by a surviving
+  mutant:** with the lookup inside the template a held partner would still be refused but under "no business partner" — the oracle now checks the refusal REASON too.
+
+### ▶ RESUME HERE (2026-11-10h) — supersedes 2026-11-10d
+1. Check #2808 landed; fetch the live `sw.js` (v1039).
+2. **O3c — the agent cut (USER-VISIBLE, do as ONE change set):** `export.js` loses its mapping half and writes only `odoo_export.json` (lines −/+ stated); agent README + form
+   texts; `docs/MigrationGuide.md` §Odoo (bim-compiler → `scripts/safe_gh_deploy.sh`, never bare mkdocs): the user picks ONE file; retire or repoint the bim-compiler witnesses
+   that run `export.js` for its workbook (`scripts/poc_sheet_contract.js`, the `harden_*` set — their claims live in ODOO-REF / ODOO-GUIDE / ODOO-DIFF now); the recorded 11-10
+   workbook / manifest / provenance files STAY as the frozen record ODOO-REF judges against; W-ODOO-FORM / W-NINJA-MIGRATE keep the 11-09 workbook fixture = the "older download
+   still loads" proof. The films still show two files — named, not redone.
+3. **iDempiere falsifier** — §IDEMPIERE-FALSIFIER-SPEC (GardenWorld is the richer source).
+4. Named, any order: E3d bank + unallocated payments · stock value (Odoo `standard_price` is in the raw rows now) · a tenant born while bundles run gets plugin access only
+   at the next start · SAP / BC open balances · ODOO-REF-MESSY INCONCLUSIVE (database gone) · DIFF does not generate a null posx/posy/posz.
+Baselines: `§MIGE verdict=PASS judged=82` · `§OB-VERDICT PASS judged=36` · `§PRA-VERDICT PASS judged=8` · `§GOC-VERDICT PASS judged=4` · OF 18 · OM 14 · NM 31 · BCM 18 · SAPM 24.
