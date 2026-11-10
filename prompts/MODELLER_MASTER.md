@@ -1017,3 +1017,19 @@ INCONCLUSIVE, never PASS, if the walk placed nothing.
 **Measured, differs from the spec:** PLB still places nothing. `typedNoSchedule=3`: none of the three typed rooms has a PLB schedule (this IFC has no bathroom or kitchen space), so PLB falls to the measured bands and is refused for no mesh (7). That is a gap row for queue item (e) (`no real mesh for class`), not a defect of this item; the witness states it instead of failing.
 **Not traced:** on main the opened SampleHouse already shows a `spatial_structure` table with 3 space rows that the walker does not use.
 **▶ RESUME, left before merge:** (1) bump `modeller/sw.js` CACHE_VERSION (v268 → next) in the same PR; (2) run the neighbours that open SampleHouse (W-RULES-CLASS marked it VACUOUS before: it may now judge; the Outliner and room-move read the new rooms) and read their logs; (3) PR, merge, fetch the live patch back; (4) the user guide's line that SampleHouse refuses ELEC is now false. Then queue item (b), the mesh miner by discipline. Queue item (d) meets the ERP lane at `ERP_IDEMPIERE_UX_PARITY.md` §REGISTER-EXPORT (spec written, not built).
+
+## §MINER-DISC — SPEC 2026-11-10: the mesh miner binds within the discipline the extraction records (queue item b; written before code)
+**Issue:** `build/project_rule_mesh_binding.py` picks the most frequent mesh of a CLASS and ignores the discipline the extraction records. On the residential rules that would give PLB fixtures an electrical mesh (`WalkerDoctrine.md` §11).
+**Measured 2026-11-10 (bim-ootb `buildings/*_extracted.db`, `modeller/*_rules.db`):**
+- Duplex: `IfcFlowTerminal` ELEC 81 / PLB 14 / MEP 10; `IfcFlowController` 14, `IfcFlowFitting` 358, `IfcFlowSegment` 427 all labelled `MEP`. The rules claim `IfcFlowTerminal`, `IfcFlowController`, `IfcFlowFitting`, `IfcFlowSegment` for two or three disciplines each.
+- Terminal: 13 shipped bindings. 8 classes carry their rule's own discipline (ACMV, FP, ELEC, STR). **5 do not**: `IfcDuctFitting` 713, `IfcDuctSegment` 568, `IfcPipeSegment` 3,821, `IfcValve` 111 are all labelled the generic `MEP`, and the rule discipline `roof` binds `IfcPlate`, labelled `STR` (33,324). A strict "label must equal the rule's discipline" would drop those 5 and Terminal's ducts, pipes, valves and roof plates would be refused.
+**Rule (the design reading taken here; the owner may override):**
+1. A (discipline, class) pair binds to the most frequent mesh among the class's instances the extraction labels with THAT discipline.
+2. If there is none, it may bind from the class's other instances only when exactly ONE rule discipline claims the class and no instance of the class is labelled with a different rule discipline. The class then belongs to nobody else, so no mesh is borrowed across disciplines. Logged `§MESHBIND-PROJ FALLBACK`, and `provenance` says `sole-claimant`.
+3. Otherwise no row: the walker refuses, and the pair is listed for the gap report (queue item e, `no real mesh for class`).
+`n_total` counts the population actually used. An extraction with no `discipline` column: every pair goes through step 2 or 3 and the log says so.
+**Not in this step:** shipping a binding table to `duplex_rules.db`. That changes the SampleHouse and SampleCastle band walks and is governed by the Q9 ruling (proportional allocation, provisional); it is built with that item.
+**Witness W-MESHBIND-DISC (`scripts/witness_meshbind_discipline.py`, scratch copies only, nothing shipped):**
+- M1 Terminal: re-mined bindings equal the 13 shipped rows (class, mesh, n_of, n_total); 5 of them by the sole-claimant step.
+- M2 Duplex: every binding's mesh belongs to an instance labelled with the binding's discipline or is a logged sole-claimant; a class claimed by two disciplines with no own-label instances gets no row.
+- M3 red control: the miner as on `origin/master` gives at least one Duplex binding whose mesh comes from an instance of another rule discipline.
