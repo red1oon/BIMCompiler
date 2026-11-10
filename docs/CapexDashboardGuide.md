@@ -432,7 +432,7 @@ The steps, the scripts and the plugin's contents are in the **Developer's note**
 | Project drop-down | Not built. One project is chosen by adding `&project=<Value>` to the page address. Planned: a fourth filter whose blank choice is **All Projects** |
 | Document figures | Not built. Planned: a tile *issued for construction / deliverables*, from BIM Document. On a server that does not have BIM Document it will say **no data** |
 | BIM Document on your own iDempiere | The plugin's source is written and compiles against iDempiere 13; it has not yet been installed and checked on a server. It runs in Kernel-ERP today |
-| A revised model | Sending a revised model again adds nothing today (a second send changes nothing). Planned: it arrives as a new version of the schedule, the first one kept as the baseline |
+| A revised model | Sending a revised model again adds nothing today (a second send changes nothing). Planned: it arrives as a new, version-tagged order that replaces the old one (the project is still in alpha, so no baseline is kept) |
 | Register button | The register is exported and used by a tool; there is no button yet |
 | Project Stage, Physical vs Spent, project lists on the Home tab | Page only, not goals |
 | Other currencies on the Home tab | No money goal covers them until you add one. The page shows each currency it finds |

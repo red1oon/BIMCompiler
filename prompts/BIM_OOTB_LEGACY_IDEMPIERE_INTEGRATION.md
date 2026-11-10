@@ -18,6 +18,8 @@
 
 # Integrate BIM OOTB/ERP to legacy iDempiere
 
+> **SCOPE NOTE 2026-11-11 (so nobody reads §0 below as a ban on every Java plugin).** The 2026-09-09 rule "no Java OSGi plugin" is the rule for THIS lane: the PUSH bridge (BIM selection -> Project Order over REST). It stands. Separately, the **BIM Document** module (drawings and model files filed against a project, with revisions) IS a Java OSGi plugin on a real iDempiere, by the owner's ruling of 2026-11-11 (a 2Pack is metadata only; model classes, the document action and the processes live in the component's `src`): `iDempiereOOTB/org.idempiere.bimdocument/`, spec `ERP_IDEMPIERE_UX_PARITY.md` §BIMDOC-LEGACY, installed and witnessed on the local test instance. The CAPEX dashboard (TASK 1, bim-ootb `prompts/CAPEX_DASHBOARD.md` ▶ RESUME HERE) is neither: no plugin, read-only web-service types.
+
 ## §0 Why this lane, and why it's small
 
 User directive (2026-09-09): keep it minimal — no Java OSGi plugin, no server-side build, no touching
