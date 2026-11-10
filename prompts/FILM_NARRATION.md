@@ -1858,3 +1858,163 @@ Witness: 42/42 clicks on target, 0 PAGEERR; numbers spoken match the run's §ERP
 - **Truth checks before narrating:** building type is chosen automatically from the building (`common/walk_rules.js`: residential / farm / complex), so the voice says "the rules follow the building type", not "you select". "Editable JSON" was NOT true; it was closed first (bim-ootb #2763 the rules editor in the shared JSON editor, #2764 it loads the rules first; W-E2E-RULES-EDIT 7/0), then shot.
 - **Script:** `prompts/film_narration_walker_hvac_fp_en.tsv` (11 rows, numbers from the take's § lines). Fit Kokoro 1.15: 11/11 DETAIL, 0 WRONG tone, one row ×1.03. Witness: frames = silent cut; silences ≤ 6.83 s inside the film (the 7.7 s tail is the silent closing card); ebur128 I −17.0 LUFS.
 - **Not done:** other languages; the closing card's comparison is the project's own novelty (FILM_NARRATION §10 item 5 "Walkers fill missing trades from measured rules"), stated without numbers.
+
+## ▶ SPEC (NOT RECORDED) — sequel film "Migrating Legacy Accounting" (all ERPs, common screens ROTATE per stage) — written 2026-11-11
+# ⚠ DO NOT REMOVE — SCOPE: spec only. No capture, no render, no bake, no GPU, no paid model call has been run for this section. Read the log after every future run; exit code is not evidence.
+**Owner brief (2026-11-10):** a sequel to the stale migration films, about the OLD ACCOUNTING: the same stages for Odoo, Microsoft Dynamics (Business Central), SAP Business One and iDempiere, the common screens ROTATING among
+them stage by stage "so the viewer sees peculiar treatment where any exists". **Sources read for this spec (every fact below traces to one):** `prompts/MIGRATE_INSTALL_TENANT.md` §LEDGER / §FACTS / §B3-SCOUT /
+§IDEMPIERE-OPEN-SPEC (+ RESULT) / §SAP-BC-OPEN-SPEC (+ RESULT) / §REVIEW-R1R2 / §RECOVER; `docs/MigrationGuide.md` (origin/master); `~/Videos/How_to_escape_from_your_Odoo_EN_rc5_narration.txt`;
+`scripts/film_odoo_migration/{record.js,build.py,cards.sh}`; film6 (`scripts/film_replication_engine/film6/script6.md`, `FILM_EVT.md`); PLAYBOOK + PLAYBOOK C above. Numbers below are copied from those files; any value I could not find is `OPEN-QUESTION`.
+
+### 0. What the stale films are, and how they were captured (the documented path)
+- Stale = `~/Videos/How_to_escape_from_your_{Odoo EN rc5/MS/TH/ZH, SAP_Business_One EN/ZH}_*.mp4` (+ BC EN/ZH per §LEDGER). They show masters + opening stock only ("Balances, open invoices … come in the next update of this film", the EN Odoo narration's last line). No open balances, no refusal, no recovery.
+- Capture path = `scripts/film_<erp>_migration/record.js` (headless Chromium via bim-ootb's playwright, `--disable-gpu`, 1280x720 at scale 1.5, a local http server on a bim-ootb tree, real Odoo on `localhost:8069` for the Odoo shots) → writes `out/rec/*.png` + `facts.json`, each fact printed as `§FILMREC FACT k=v src=<§ line or DOM>` → `cards.sh` (plain cards) → `build.py` (Kokoro voice, numbers filled from `facts.json`; the build FAILS if a fact is missing; refuses to overwrite) → `build_lang.py` (+ `lang_text.py`) for other languages. Stills of the REAL page, never a clip (PLAYBOOK C picture rules). CPU only.
+- **This sequel reuses that path and PLAYBOOK C's layout**: before/after in the first 25 s, show-then-prove, one real event near the end, honest-limits card, plain-dark chapter cards 3.6 s (silent, no persistent tags), closing card. F asks / M explains, layman lingo.
+
+### 1. Stages, and which ERP leads each (rotation)
+Rule of rotation: at every stage ONE ERP is the LEAD screen (full beat); the other three get a short CUT-IN (2-6 s still + one caption) ONLY where the §SPEC peculiarity table names a real difference. Every ERP leads at least once. Where an ERP's own form is not wired yet (see §4) the lead falls back to the Odoo form (the only wired one) and the beat is marked `FALLBACK`.
+| # | stage (chapter card) | LEAD (target) | CUT-INS | peculiar treatment shown (source) |
+|---|---|---|---|---|
+| 1 | **Get it out, read only** | SAP B1 (the agent, `--cutover`, Service Layer GET + Login/Logout only) | Odoo `export.js --cutover` (rows counted); iDempiere `open_reader.js` (`default_transaction_read_only=on`); BC = the user's own Excel configuration package, no program at all | each reads in its OWN vocabulary: Odoo `account.move.line`, iDempiere `Fact_Acct`, SAP `JournalEntries`, BC `G/L Entry` (§SPEC facts 1) |
+| 2 | **The template maps it** | Business Central (`bc-w1-open.json`) | iDempiere identity template (the falsifier); Odoo `odoo-17.json` | BC has no ready "amount left" in the file: it is re-derived from the Detailed Ledger Entries (B-spec fact 2, "remaining at D = SUM of `Amount (LCY)` … Excluded from calculation = false"); iDempiere's template is the identity (raw `psql COPY` stays production) |
+| 3 | **Summary before Process** | iDempiere (FALLBACK: Odoo form) | Odoo period-gate row; SAP "no address" row | "Already there" rows (the new company starts with its own records); period must be open; refusals counted BEFORE anything is written (guide Step 3.4) |
+| 4a | **Open invoices vs the source's books** | Odoo (`amount_residual`) | SAP B1 (`DocTotal - PaidToDate`), BC (`Remaining Amt. (LCY)` re-derived), iDempiere (`invoiceOpen(C_Invoice_ID,0)`) | the same question, four different fields; credit notes carry the sign differently (iDempiere negative from the function, sheet carries `abs()`) |
+| 4b | **Trial balance and the clearing accounts** | iDempiere (`Fact_Acct`, posted, `DateAcct <= D`) | SAP (`JournalEntries`, not `ChartOfAccounts.Balance`: that one is as of now), BC (`G/L Entry`), Odoo | control accounts route to ONE clearing account per class; every clearing account must end at 0.00 or at a NAMED leftover |
+| 4c | **Bank** | BC (`Bank Account Ledger Entry` sum) | iDempiere (`CurrentBalance`, statement-reconciled only), SAP (GL balance of the house bank's account), Odoo (journal balance) | iDempiere: payments not yet on a statement stay on Bank Clearing, named `bank-uncleared`; SAP cannot separate them (S8 UNCLEAR) |
+| 5 | **A refusal, and the recovery** | Odoo (live page: F2 / §RECOVER) | iDempiere + SAP + BC: the foreign-currency leftover | Odoo: the books check names the amount; correct file → same company. Foreign currency is NOT brought in (iDempiere P3, SAP S3, BC B3) and stays visible on the clearing account |
+| 6 | **The books** | Odoo or iDempiere twin tenant (FALLBACK Odoo) | none | trial balance of the new company equals the source's; clearing accounts at their stated values |
+Order is the owner's, mapped 1:1 to "agent/export - template mapping - summary before Process - open balances vs source books - a refusal and the recovery - books/trial balance". Stage 4 is split into three beats (a/b/c) because the three source facts (open items, trial balance, bank) are different witnessed claims.
+
+### 2. Per beat: the ON-SCREEN FACT and the witness that proves it (PRIMAL LAW: no eyeball check; no screenshot is evidence)
+Each on-screen number is a `§FILMREC FACT <id>` printed by the future `record.js` from the page/log value, and must equal the cited witness value (the build refuses a fact missing or unequal). Values in `[ ]` are the ones in the repo today; they are NOT retyped into the film, they are re-read at build. Fact ids are PROPOSED names (to be created).
+| beat | on-screen fact (what the viewer reads) | proving line / value (today) | fact id (proposed) | status |
+|---|---|---|---|---|
+| 1.1 Odoo export | the agent's PASS line and "rows counted per set" | `poc_odoo_owndb.js` `W-ODOO-OWNDB PASS`; guide: "ends with PASS … each set with the number of rows Odoo counted" | `odoo_agent_pass`, `odoo_set_counts` | Odoo only; the `--cutover` run with open sets: OPEN-QUESTION whether the shipped agent prints a per-set count line for the open sets (not read) |
+| 1.2 SAP agent read-only | "calls: GET + Login/Logout only" + `--password` refused (exit 2) | `§SBO-VERDICT` SAP-READER (read-only: mock saw only GET + Login/Logout; `--password` exit 2) `[SAP-READER 10]` | `sap_read_only`, `sap_agent_calls` | ALPHA; test-supplied mock (`§SBO-CONN` INCONCLUSIVE) |
+| 1.3 iDempiere reader | read-only session; client 11, schema 101, "20 accounts" | `§IDO-READ` counts; `§IDO-VERDICT PASS judged=31` (TB 20 accounts, sums 0) | `ido_tb_accounts`, `ido_tb_sum` | reader merged as draft PR #2837; form not wired |
+| 1.4 BC | package file picked, no program run | guide row "BC: Excel export (a configuration package)"; B10 refusal names a missing table | `bc_package_tables` | ALPHA |
+| 2.1 BC template | the "remaining" column is computed from detailed entries, label "worked out from the detailed entries" | `§SBO-VERDICT` BC-READER 8, BC-DATE 2: an earlier cut-over gives a DIFFERENT, oracle-equal open set and no frozen problem `[BC-DATE 2]` | `bc_remaining_rule`, `bc_open_at_d` | ALPHA. Whether a real RapidStart package carries FlowFields: OPEN-QUESTION (spec says UNCLEAR) |
+| 2.2 iDempiere identity template | "same columns in, same columns out": columns / rows compared | `§IDF-VERDICT PASS` `[145 columns, 477 rows, 3 falsifiers]` | `idf_columns`, `idf_rows` | proven on a legacy DB (test-side witness, ~2.5 min) |
+| 3.1 summary (lead) | per-table: source rows / will import / already there / refused, nothing written | `§ODOO-FORM summary ok=… will=[…]` (existing film fact `summary_line`); iDempiere "already-there" `[GardenWorld 315]` from the falsifier classes | `sum_will`, `sum_already`, `sum_refused` | Odoo form wired; iDempiere form DEPENDS-ON-WIRING |
+| 3.2 period gate | ONE problem row; Process says "Not migrated"; 12 row counts unchanged | `§JRN-VERDICT PASS judged=34` (period-gate case); R1 text "a company whose year is not the cut-over's gets ONE problem row" | `gate_problem_rows`, `gate_counts_unchanged` | Odoo form, wired |
+| 4a.1 Odoo open invoices | open amounts AR / AP and the document count | R1: `19 open documents, … AR 4,005.00 / AP 13,410.15 = the raw amount_residual net; §MIG-VERIFY PASS` (cut-over 2026-11-10 fixture); `§OB-VERDICT PASS judged=43` | `odoo_open_docs`, `odoo_ar_open`, `odoo_ap_open` | wired. Data = Odoo 17 demo-company export fixture, not a customer's books |
+| 4a.2 cut-in: SAP / BC / iDempiere | the field name that carries "amount left" in each, and one caption; sign of a credit note | S spec fact 2 (`DocTotal - PaidToDate`), B spec fact 2, P spec fact 2 (`invoiceOpen`); sign convention "invoice > 0, credit note < 0 on BOTH sides" | `open_field_<erp>` | field names = cited spec text; values of SAP/BC = TEST-SUPPLIED |
+| 4b.1 iDempiere TB (lead) | TB per account from `Fact_Acct`; sum 0.00; AR 430.36 = 161.12 brought in + 269.24 left | RESULT: `AR 430.36 = 161.12 brought in + 269.24 foreign-currency invoice 100000 (EUR) left on AR-CLEAR`, AP -6949.00 and Bank 148.00 clear to 0.00 | `ido_ar_total`, `ido_ar_in`, `ido_ar_left`, `ido_ap_clear`, `ido_bank_clear` | GardenWorld sample, schema 101, on a legacy iDempiere DB; reader draft PR #2837 (merged? OPEN-QUESTION, RESULT says draft) |
+| 4b.2 Odoo books | 9 trial-balance lines → 6 plain accounts equal the raw balances; AR/AP/Bank Clearing 0.00 | R1 (as 4a.1) | `odoo_tb_lines`, `odoo_plain_accounts`, `odoo_clear_zero` | wired |
+| 4b.3 SAP / BC cut-in | the clearing line "left" and its parts (foreign 270 + no address 80 - on-account 150 = 200.00) | `§SBO-VERDICT PASS judged=69`: `AR-CLEAR 200.00 (foreign 270 + no address 80 - on-account 150), AP-CLEAR 0.00` | `sbo_ar_left`, `sbo_ar_parts` | ALPHA, TEST-SUPPLIED ledger, labelled on screen |
+| 4c.1 BC bank | bank ledger sum at D → one opening statement | B-spec fact 3; `BANK-CLEAR 320.00 (EUR bank)` is the foreign-bank leftover in the fixture | `bc_bank_sum`, `sbo_bank_left` | ALPHA |
+| 4c.2 iDempiere bank | `CurrentBalance` (148.00 in the sample result) vs GL; difference named `bank-uncleared` | RESULT "Bank 148.00 clear to 0.00"; cited `MBankStatement.java:452` | `ido_bank_current`, `ido_bank_gl_diff` | the `bank-uncleared` amount in GardenWorld: OPEN-QUESTION (RESULT gives only the cleared case) |
+| 4c.3 Odoo bank | each journal becomes a bank account; routing "-" (dash) and account no = journal code; BANK-CLEAR 0 | guide Odoo "Open balances"; `§OB-VERDICT` (bank, #2829) | `odoo_bank_clear` | wired. The dash is a SHOWN limitation, not hidden |
+| 5.1 refusal (Odoo) | the form says the amount left on AR Clearing (2002.50) and that nothing was imported for the journal/invoices; masters stay | R2 F2: "stage 2 is refused and NAMES `2002.50` on AR Clearing … journal/invoice/Fact_Acct = 0, masters stay" | `rf_amount`, `rf_masters_kept` | NOTE: F2's *silent hand-finish* defect was fixed by §RECOVER; the film shows the AFTER |
+| 5.2 recovery | corrected file processed again in the SAME company; pending rows replaced; books re-checked; clearing 0.00; repeat says "Nothing to do: all N rows … already in this company" | `§REC-VERDICT PASS judged=17` (REPEAT 5, SECOND 2, RESUME 5, HANDFIN 3); journey `§JRN-VERDICT PASS judged=34` | `rc_resume_ok`, `rc_nothing_to_do`, `rc_clear_after` | wired. §RECOVER branch `feat/migrate-recover` was a DRAFT PR when written: merge/deploy state OPEN-QUESTION (verify live `sw.js` + file before capture) |
+| 5.3 foreign currency left visible | iDempiere 269.24 (EUR invoice) on AR-CLEAR; SAP/BC 270 foreign in the 200.00 | as 4b.1 / 4b.3 | (same ids) | foreign-currency conversion NOT built (P3/S3/B3) — shown as a limit, never "fixed" |
+| 6.1 books | trial balance of the new company equals the source (plain accounts exact; AR/AP control + clearing = class total) | R1 + `§MIG-VERIFY PASS judged=9`; iDempiere LOAD 4; Odoo `§OB-VERDICT` | `books_verify_judged`, `books_verify_verdict` | wired for Odoo |
+| 6.2 "can it trade?" (optional, R5) | a migrated open invoice receives a payment and the partner's open amount goes to zero | R5 asks for this witness; I found NO result line for it | — | **OPEN-QUESTION / not witnessed: do not film until a witness exists** |
+**Verdict rules for the future take (as the Odoo/DoOnce films):** `0 §PAGEERR`; every beat has its `§FILMREC FACT` and it equals the cited witness; every voiced digit is a fact (film6 `script6_check.js` style: a planted-number control must fail); a verdict that judged nothing prints `INCONCLUSIVE`, never PASS; frames = silent picture; silences ≥ 4 s ≤ ~7 s; ebur128 ≈ −16 LUFS; the subtitle band (bottom 230 px) is empty of picture content (numeric check, PLAYBOOK C).
+
+### 3. Honest-framing rules (binding on every card, caption and spoken line)
+1. **Odoo and iDempiere = proven on real source SYSTEMS, with public sample companies:** Odoo 17 demo-company export (+ the generated messy variants, ODOO-DIFF 300 cases) and iDempiere's GardenWorld on a legacy iDempiere database. Say "Odoo's demo company" and "iDempiere's sample company" — never "a customer's books" and never "production-proven". The film must not claim a real company has been migrated: none has been (OPEN-QUESTION: the owner's pilot data is private; do not show or name it).
+2. **SAP Business One and Business Central = ALPHA.** The lead of any SAP/BC beat carries a persistent corner label "ALPHA · test-supplied ledger" and the closing limits card says: "built from the vendor's published field names; run only on rows we supplied; never on a real company; connection check inconclusive by construction" (`§SBO-CONN verdict=INCONCLUSIVE`, `§SAP-ALPHA` / `§BC-ALPHA`). SAP/BC numbers come from the invented fixture (`gen_sapbc_open_fixture.js`) and must never be voiced as findings about SAP or BC behaviour.
+3. **Every UNCLEAR row stays UNCLEAR on screen or off screen**: P11/P12 (P&L at mid-year, split payment terms), S8, S11-S13, S15, B7, B9, FlowFields. Not in the voice at all unless a limits card lists it.
+4. **Named limits shown, not hidden:** foreign-currency open items stay on the clearing account; unallocated/on-account payments, stock VALUE (quantities move, cost does not), open orders, closed history, lots/serials are NOT moved; the bank routing number is a dash; one company holds one cut-over.
+5. **No bug-as-story** (PLAYBOOK C addendum): F1/F2 were found and FIXED in §RECOVER; the film shows the product as shipped. Beat 5 shows a refusal that is *designed* (the books check) and the recovery as shipped. Verify the fix is live before capture.
+6. **Names:** public repo. No private client/site/project names, no `JELAPANG` (say "Civil Works" only if ever needed; not needed here), no pilot-client rows on screen (the falsifier's second dataset is a private pilot: use GardenWorld only), no personal names in voice or cards. The "Adaxa / Steven Sackett" attribution in §B3-SCOUT is the owner's memory and UNVERIFIED: the method is credited only as "the iDempiere wiki's *Establish Opening Balances* method" (archived 2017-06-04 / ADempiere 2011-05-26). Every commit/PR/message for this film is grepped for private names first (memory: `feedback_private_project_no_names_in_public`).
+7. "Twin" claims: the SQLite ERP is a twin of legacy iDempiere (CLAUDE.md cardinal rule); never say "better than" legacy; say "the same books".
+
+### 4. Capture feasibility per beat (today = 2026-11-11)
+| screen | exists today? | note |
+|---|---|---|
+| Odoo: agent run, Migrate-from-Odoo form (one file, units, summary, Process, open balances, period gate, refusal, recovery, books) | YES, live (sw v1047+; §RECOVER merge/deploy to be verified) | `record.js` for Odoo exists but is STALE (two-file path, no open balances): must be rewritten to pick `odoo_export.json` and read `§MIG-VERIFY`/`§OB-*`; the journey witness `witness_migration_journey.js` already drives the whole path and is the model for it (~6 min, `SLOW=1`) |
+| Odoo itself (contacts, invoices, `amount_residual`) | local Odoo on `localhost:8069` (as the old record.js) | OPEN-QUESTION: is the local Odoo + demo DB still up on this machine? not checked |
+| iDempiere source side: reader output, `§IDO-*` | reader + template + witness exist (draft PR #2837); NO form | DEPENDS-ON-WIRING (another agent is wiring the non-Odoo forms right now). Until then only terminal/§-log stills are possible, which are NOT "screens" the viewer can follow: use the Odoo form as FALLBACK and a card for the iDempiere facts |
+| SAP B1 form / BC form with open balances | readers + templates + witness exist (draft PR #2839); NO form wired, no `sw.js` wiring (RESULT: "Not done: form / `sw.js` wiring") | DEPENDS-ON-WIRING. The stale SAP/BC films show the masters-only forms |
+| Legacy iDempiere's own screens as the "source" (Fact_Acct view, Invoice window) | OPEN-QUESTION: no capture path found; the twin's own windows can show the *target* | do not invent: a source-side still needs a running legacy iDempiere (`~/idempiere-dev-setup`) — not checked |
+| Cards, charts (rotation grid, "what moves / what stays" table) | buildable now (ImageMagick/HTML, PLAYBOOK C) | validate any chart palette with the dataviz validator; bottom 230 px empty |
+**Minimum shippable version today (no wiring needed):** Odoo leads stages 1, 3, 4a, 4b, 5, 6 on the real form; iDempiere / SAP / BC appear as CARD cut-ins built from the cited witness values (labelled "from our checks, not a screen of that system"). Full rotation = after the wiring agent lands the three forms, then re-capture only the FALLBACK beats (same `record.js`, different leaf).
+**Languages plan:** EN first (Kokoro af_heart / am_michael, speed 1.15 per PLAYBOOK, local CPU, deterministic). Then ZH, TH, MS (the Odoo film languages; Edge TTS per PLAYBOOK voices table; Malay/Thai/Chinese ~20-40 % longer: trim, 4 beats fell to SHORT in a past MS fit). Cards re-drawn per language with ImageMagick (CJK via `-font Noto-Sans-CJK-SC-Bold`, never ffmpeg drawtext), ZH captions split at ≤ 20 chars. SAP/BC variants: EN + ZH only, as before (OPEN-QUESTION whether the owner wants more). `A-I` rule for MS irrelevant (no "AI" in this script — and the project says no AI inside). Edge TTS sends the script text to Microsoft's cloud, unofficial: **OPEN-QUESTION for the owner** under the "no paid model calls / confirmed-free only" standing rule (past films used it; it is free but not a "confirmed" service in writing).
+
+### 5. Narration script draft (EN) — F asks, M explains; layman lingo; NO digit typed (every number is `{fact:id}` spelled out by the build, as film6)
+Voice rules from the playbook: F asks what a newcomer would ask; questions are real questions (wh-questions must not rise; re-word if the tone check says WRONG); one or two plain sentences per answer; honest limits in the voice; no jargon ("opening balances", not "ImportGLJournal"); ZH/TH/MS keep the same ids and turn counts.
+```
+T  [card: title "Moving your old books" / subtitle "Opening balances, from four systems" / tag "SAMPLE COMPANIES · ALPHA ROUTES LABELLED"]
+F: I moved my customers and products last time. What about the money I am owed?
+M: That is the hard part. The books have to match the old system to the cent, or nobody trusts the new ones.
+F: Four systems, one film?
+M: Four. Odoo, Business Central, SAP Business One and iDempiere. We rotate the screens, so you see where each one does it its own way.
+
+[chapter card 1 · Get it out, read only]
+M: SAP first. A small program next to your SAP asks its own interface, and the check shows it made {fact:sap_agent_calls} read calls and wrote nothing. [ALPHA label]
+F: And Odoo?
+M: The same idea. It reads, counts the rows it found, and says PASS only when nothing was dropped.
+F: Business Central has no program?
+M: No. You export its configuration package, an Excel file. We only read it.
+F: And iDempiere?
+M: Read-only too. The session cannot write, by setting, not by promise.
+
+[chapter card 2 · The template maps it]
+F: How does a Business Central row become a row here?
+M: Through a template, a plain file you can read. One thing is special. Business Central does not hand over "amount still owed". We work it out from its detailed entries, as of the cut-over day. [ALPHA label]
+F: Ask for an earlier day, and?
+M: A different answer, the right one for that day. The check compares it with the entries.
+F: And the iDempiere template?
+M: It changes nothing. {fact:idf_columns} columns in, the same {fact:idf_columns} out, over {fact:idf_rows} rows.
+
+[chapter card 3 · Before anything is written]
+F: Can I see what it will do first?
+M: Yes. Row counts per table, how many are already there, how many would be refused and why. Nothing is written yet.
+F: Already there?
+M: A new company starts with a few records of its own. Your row with the same key is skipped, not loaded twice.
+F: What if the year is not open?
+M: One red row says so, and Process says "Not migrated". The company is untouched: {fact:gate_counts_unchanged} tables, same counts.
+
+[chapter card 4 · Does it match the old books?]
+F: Who is owed what?
+M: Odoo says "amount residual" for each open invoice. Here are {fact:odoo_open_docs} open documents: customers owe {fact:odoo_ar_open}, suppliers are owed {fact:odoo_ap_open}. Same as Odoo's own rows.
+F: Do the others say it the same way?
+M: Each its own way. SAP: total minus paid. Business Central: what is left on the entry. iDempiere: a function that returns what is open. [cut-ins, ALPHA labels on SAP, BC]
+F: And the trial balance?
+M: iDempiere keeps it in the posting table. We read the posted lines up to the cut-over day. {fact:ido_tb_accounts} accounts, adding up to nothing, as they must.
+F: Where does the customer money go?
+M: Into one holding account. Each open invoice then takes its amount off. Customers owed {fact:ido_ar_total}; {fact:ido_ar_in} came across as invoices.
+F: And the rest?
+M: {fact:ido_ar_left} stays on the holding account. It is an invoice in euros. We do not convert currencies yet, so it is left in sight, not guessed.
+F: And the bank?
+M: Business Central: the sum of the bank ledger. iDempiere: the balance of the completed statements only; money not yet on a statement stays on the bank holding account, with a name. Odoo: each bank journal becomes a bank account; the routing number is a dash, which you correct afterwards.
+
+[chapter card 5 · When it says no]
+F: What if a document is missing?
+M: Then it refuses, and it says by how much. Here {fact:rf_amount} is stuck on the receivables holding account. Your masters stay; the invoices and the journal are not written.
+F: Do I start again with a new company?
+M: No. Fix the file, run it again in the same company. It replaces what was waiting, loads the rest and checks the books again.
+F: And running the same file twice?
+M: "Nothing to do. All rows are already in this company."
+
+[chapter card 6 · The books]
+M: The result: plain accounts equal the old balances, the holding accounts end at {fact:odoo_clear_zero} or at the amount we named. The check judged {fact:books_verify_judged} things, and none failed.
+
+[limits card, 6 s, silent]  CARD: "ALPHA: SAP Business One and Business Central were built from the vendors' published field names and run on rows we supplied, never a real company. Not moved yet: payments on account, stock value, foreign currency, open orders, history."
+F: So can I switch tomorrow?
+M: Odoo and iDempiere, on their sample companies, yes for the balances. SAP and Business Central: please try the alpha and send the report back; it has no values in it.
+[closing card, 7 s silent: contacts as in PLAYBOOK C; no personal or client names]
+```
+Spoken-length control: first fit with Kokoro 1.15; target ≤ 8:00 (existing Odoo film 2:40; this one has ~3x the stages). Any beat falling to SHORT is trimmed, not widened. Script check: no digit and no spelled cardinal typed in a spoken line (film6 `script6_check.js` rule), verified by running it on this TSV before voicing.
+
+### 6. Cost / time estimate (ESTIMATES from the shape of past builds, NOT measured for this film; all CPU, no GPU lock, no paid API)
+| item | estimate |
+|---|---|
+| rewrite `record.js` (Odoo path, one file + open balances + refusal + recovery; reads `§MIG-VERIFY`, `§OB-*`, `§REC-*` into `facts.json`) | 1 working session; each take of the journey is ~6 min of machine time (the journey witness's own run time) |
+| iDempiere/SAP/BC fact cards + cut-in cards (HTML/ImageMagick) | 0.5 session |
+| TSV + fit EN (Kokoro, CPU), 2-3 trim rounds, mux + witness | 0.5 session; each fit/mux minutes on CPU (PLAYBOOK: mux ~3-5 min) |
+| ZH + TH + MS (Edge cloud TTS, translated cards, caption split) | 0.5 session per language; machine minutes each |
+| re-capture of the FALLBACK beats after the three forms are wired | 0.5 session + the wiring agent's merge (not in this estimate) |
+| tokens | OPEN-QUESTION (no number honestly derivable; the stale films' cost is not recorded). Mostly mechanical once `record.js` exists |
+Gates before any capture: (1) owner approves this chapter list (the §REVIEW note says "chapter list awaits owner approval"); (2) the §RECOVER branch is merged and the LIVE page fetched (per CLAUDE.md "a green pipeline is not a deployed feature"); (3) the wiring agent's forms either landed or the FALLBACK edition is chosen; (4) private-name grep of the TSV, cards and commits.
+
+### 7. OPEN-QUESTIONS (owner or a read I did not make) — none is guessed above
+1. Approve the 6-stage list and the rotation table (§1)? Prefer the minimum-shippable Odoo-led edition now, or wait for the three forms?
+2. Is Edge TTS acceptable for ZH/TH/MS under the no-paid-model-calls rule (§4)?
+3. Is the §RECOVER branch (`feat/migrate-recover`, DRAFT when written) merged and live? Is iDempiere PR #2837 / SAP-BC PR #2839 merged (both DRAFT in their RESULT lines)?
+4. Is there a witness for "a migrated tenant can trade" (R5)? None found: beat 6.2 stays out until there is.
+5. The `bank-uncleared` amount for GardenWorld (RESULT gives only the cleared case); the per-set count line of the Odoo agent's open sets; whether a legacy iDempiere instance can be captured as the *source* screen.
+6. Is the local Odoo (`localhost:8069`, demo DB) still available to re-record the source-side shots?
+7. SAP/BC language set (EN + ZH as before, or more)? Length cap (this draft aims at ≤ 8 min)?
