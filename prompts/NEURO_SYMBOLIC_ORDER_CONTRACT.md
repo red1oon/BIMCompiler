@@ -8,10 +8,11 @@ Scope: SPEC + WITNESSES for the one door (the verb vocabulary and the CLI script
 - `prompts/archive/NEURO_SYMBOLIC_ORDER_CONTRACT_full_2026-11-08_to_2026-11-10.md` (1,953 lines: every design, build and film section of 2026-11-08 to 11-10)
 - `prompts/archive/NEURO_SYMBOLIC_ORDER_CONTRACT_full_2026-11-06_to_2026-11-08.md` (the original contract, the proposer tests)
 
-## ▶ RESUME HERE (2026-11-10, after the triage; A1 built, next = A2 then A7 guide regenerate)
-1. Read §STATE (what is live), then §TRIAGE (the order of work). Then the item's own spec in §R.V, or `prompts/ERP_MIS_WINDOW_FROM_CSV.md` for the MIS items.
-2. **§R.4 binds every session and every agent brief.** bim-ootb's bot merges a PR the moment its checks pass: push only finished, witnessed work.
-3. Four questions wait for the owner (§TRIAGE B). Each has an advised answer: work on the advice unless overruled.
+## ▶ RESUME HERE (2026-11-10 close: A1, A7 done; A2 built and HELD)
+1. **Do first: the A2 legacy twin check, then merge bim-ootb #2843 (draft, auto-merge OFF).** `erp.new` is built and witnessed (W-ERP-NEW 9/0) but the twin rule says it is not offered until a legacy comparison runs. Recipe is in the A2 row of §TRIAGE. Start the pilot if down: `docker start postgres`; `~/idempiere-pilot/start.sh`; wait for http://localhost:8088/webui/ = 200 then sleep 10 (it was UP at close). Create the same document on legacy through the bridge `so` composite (`scripts/bridge/cycle_o2c.js` DESC.so, `client_ctx.js`) with the columns erp.new ended with; compare header and line cell for cell. Settle the PaymentRule difference (window path `P`, hand draft and bridge `B`). Then undraft and merge #2843, and do A7 again (guide table now lacks `erp.new`; add a "Create a record" section).
+2. Then §TRIAGE A3 (MIS window from CSV), A4 (composites; `erp.sell` now has its create verb), item 3 (`last` / `{o}`), A5, A6. Dotted `.sum(column)` / `.list` and the default-output switch (owner question B4) are still open.
+3. **§R.4 binds every session and every agent brief.** Docs deploy: `safe_gh_deploy.sh` aborts on the live `glassbowl_data.db` unless `git show origin/gh-pages:glassbowl_data.db > docs/glassbowl_data.db` is placed (untracked) in the deploy worktree first. A docs deploy needs a FULL worktree (about 1.9 GB; disk was 13 GB free).
+4. Merged this session: bim-ootb #2832 (`!help`, `--list/--csv/--out`, `> file`), #2836 (`erp|object .list/.sum/.group`), #2840 (guide generator); BIMCompiler #542 (guide), #543, #544 (this file). Witnesses to re-run at next start: W-DOOR-HELP 8/0, W-DOOR-OUT 10/0, W-DOOR-ROWS 12/0, W-ERP-NEW 9/0, W-ERP-VERBS-DOOR 42/0 (12 verbs after #2843), W-FAST-SCRIPT-GUIDE 71/0 live.
 
 ## STATE (read from bim-ootb main `f60e2752`, 2026-11-10; re-read `common/door/verbs.json` before quoting a count)
 | What | Now | Proof |
