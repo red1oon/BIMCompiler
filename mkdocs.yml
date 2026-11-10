@@ -114,7 +114,7 @@ nav:
       - "DXF2BIM — format contract (marks, outputs, registry, codes; generated)": DXF2BIM_FORMAT.md
       - "Kernel-ERP User Guide": ERPUserGuide.md
       - "uniCenta-style Till & Kitchen Screen": TillUserGuide.md
-      - "CAPEX Dashboard — for iDempiere users": CapexDashboardGuide.md
+      - "BIM → ERP and CAPEX Dashboard — for iDempiere users": CapexDashboardGuide.md
       - "Kernel-ERP — Your First Setup": ERP_FirstSetup.md
       - "Migration User Guide (Odoo · Business Central · SAP Business One)": MigrationGuide.md
       - "Moving from Odoo — how it works, what is proven": OdooMigration.md

@@ -932,13 +932,7 @@ Any IFC you open works: the order is keyed by the model's own name (the Duplex r
 
 ### After the order: documents, the dashboard, and the walker
 
-The Project Order is the hub; three other places hang off it.
-
-1. **Drawings and model files: BIM Document (ERP app).** Each sheet or model file is a *deliverable* under one task of the project, with a revision and a state: **Draft**, **Issued for review**, **Issued for construction**, or **Superseded**. When you issue a newer revision for construction, the older one becomes Superseded; you cannot issue an older revision after a newer one is already issued. The Project window shows how many deliverables each task and phase has issued for construction. **Open in Modeller / Viewer** (under the gear) opens the attached IFC or DXF in the matching app. **Export Register** writes the project's register: every deliverable at its latest revision plus the superseded ones, each with number, revision, state, discipline, file kind and the file's `sha256`.
-2. **Walkers read the register.** When a walk is given the register, a sheet issued for construction is used as placed; one issued for review is used as *provisional* and left out of totals; Draft and Superseded sheets are refused; a sheet with no state is provisional. This runs from the `project_inputs.js` tool today; there is no button for it yet.
-3. **The CAPEX dashboard** reads the same Project Order (planned, committed and invoiced amounts, phases). A project's **BIM** button appears when its building file is found, matched by the project's value (the model's name). The dashboard does not show document counts yet.
-
-Order of events for one revision: *push the model → attach and issue the drawings → export the register → walk with it → read the dashboard.* A revised model pushed again adds nothing today (the push is idempotent); see the versions note in `BIMtoProject.md` §E.
+The drawings filed against the order (BIM Document), the register the walkers read, and the CAPEX dashboard are described in one place: [BIM → ERP and the CAPEX Dashboard](CapexDashboardGuide.md#from-the-bim-model-to-the-dashboard-the-whole-flow).
 
 ---
 
