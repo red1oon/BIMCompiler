@@ -991,3 +991,29 @@ W-SDG-GATE 18/0, A9–A9g new. Coverage E2 → RED, `none=14`, and it left the N
 
 **STATUS:** slice 1 shipped. Queue, each needing its own go: bay add → other gestures → session total at Save → structural_sanity on a live edit. A CLI call returning this JSON is red1's idea (2026-11-07), and needs the fold shown to run outside the browser first; §SCRIPTED-EDITS (row 40) stays on HOLD unless red1 lifts it.
 
+
+## §SH-ROOMS — SPEC 2026-11-10: SampleHouse walks from its own rooms (Design-lane queue item a; written before code)
+**Issue:** SampleHouse gets no ELEC/PLB devices because it walks measured bands, whose mesh needs `rule_mesh_binding` (absent from `duplex_rules.db`). Its source IFC states 4 `IfcSpace`; the shipped `modeller/SampleHouse_ARC.db` has no `spatial_structure` table, so the walker never sees them (`WalkerDoctrine.md` §14: extract `IfcSpace` when present).
+**Measured 2026-11-10 (bim-ootb `bf7cfe6d`):**
+- Rooms, verbatim in `modeller/SampleHouse_extracted.db` `spatial_structure`: 1 building, 2 storeys (Ground Floor, Roof), 4 spaces with box. Source `IFC/SampleHouse_ARC.ifc` `IFCSPACE` LongName: `Living room`, `Bedroom`, `Entrance hall`, `Roof` (the extracted rows' `object_type` is empty; the walker reads the room type from `object_type`, `disc_walker.js spacesOf`, as stamped for Duplex by `stamp_space_longnames.py`).
+- Frame: ground rooms span x [−7.73, 6.12], y [−1.25, 4.41], z [0, 2.5]; the ARC DB's plates and members span x from −7.71/−7.75, y [−1.24/−1.26, 4.44], z from 0. Same frame to about 2 cm. The witness asserts it, it is not assumed.
+- Types the residential rules know (`rule_space_type` / `rule_space_alias`): `LIVING_ROOM`→LIVING, `BEDROOM`. `Entrance hall` and `Roof` have no exact row; what the word rule makes of them is read from the log, not predicted.
+- The loader (`str_walker_outliner.js _applyPendingPatch`) runs `modeller/patches/<db>.sql` on the fetched bytes at every open.
+**Build:**
+1. `scripts/gen_spatial_rooms_patch.py` (bim-compiler, new): `--extracted <X_extracted.db> --ifc <source.ifc> --target <X_ARC.db> --out <patch.sql>`. Copies the `spatial_structure` rows of the extracted DB whose guid the IFC itself carries (a row the IFC does not carry is reported and left out); `object_type` of a space = the IFC's LongName, verbatim; nothing computed. Writes one marked section (`-- >>> spatial_structure` … `-- <<< spatial_structure`), replacing an earlier one, leaving the other generated sections alone. `CREATE TABLE IF NOT EXISTS` + `INSERT OR IGNORE` on the guid key. Prints `§ROOMS-PATCH rooms= storeys= named= frame: rooms=[…] target=[…]`. A building with no space writes nothing (SampleCastle: 0).
+2. bim-ootb: the regenerated `modeller/patches/SampleHouse_ARC.db.sql`, modeller sw bump. No walker code change is expected; if one is needed it is specced here first.
+**Witness W-SH-ROOMS (`modeller/tests/witness_sh_rooms.js`, the e2e harness, real open + real walk), RED on main:**
+- S1 the opened SampleHouse holds 4 `IfcSpace` rooms (`§DW-SPACE-SOURCE` or the table count) equal to the IFC's own count.
+- S2 frame: every ground room box lies inside the ARC elements' own envelope (tolerance printed).
+- S3 ELEC and PLB walk from schedules: placements with `prov` `sched:space-schedule:*` > 0, and every such device lies inside the box of a room (x, y, z).
+- S4 real meshes only: `§DW-PRIM-LOD` lod400 > 0 and no box fallback; refusals are printed, not hidden.
+- S5 typing, reported as measured: rooms typed / `typedNoSchedule` / untyped by name (`Roof` is expected to get nothing; if it gets devices that is a FAIL).
+- S6 Duplex unchanged: its ELEC/PLB/ACMV counts equal main's (control run on main in the same session).
+INCONCLUSIVE, never PASS, if the walk placed nothing.
+
+## §SH-ROOMS RESULT + ▶ RESUME NOTE — 2026-11-10 (queue item a: built and witnessed, NOT merged)
+**Built:** `scripts/gen_spatial_rooms_patch.py` (bim-compiler); bim-ootb branch `feat/samplehouse-rooms`: the regenerated `modeller/patches/SampleHouse_ARC.db.sql` (+16 lines: `§ROOMS-PATCH rows=7 storeys=2 rooms=4 ifcSpaces=4 named=4 notInIfc=0`, regeneration byte-stable) and `modeller/tests/witness_sh_rooms.js`. No walker code changed.
+**W-SH-ROOMS on the patch: 8 PASS / 0.** S1 opened=4 = the IFC's 4. S2 3 ground rooms inside the ARC envelope (tol 0.05 m). S3/S4 ELEC `placed=21`, all `sched:space-schedule`, all inside a room (Living room 11, Bedroom 7, Entrance hall 3), 21 of 21 with a mesh, `§DW-PRIM-LOD lod400=21`. S5 Roof gets nothing; typing `exact=1 alias=1 word=1 none=1`. S6 Duplex 102 / 18 / 19. **On main: 3 FAIL** (ELEC refused, 17 placements with no mesh, 0 placed).
+**Measured, differs from the spec:** PLB still places nothing. `typedNoSchedule=3`: none of the three typed rooms has a PLB schedule (this IFC has no bathroom or kitchen space), so PLB falls to the measured bands and is refused for no mesh (7). That is a gap row for queue item (e) (`no real mesh for class`), not a defect of this item; the witness states it instead of failing.
+**Not traced:** on main the opened SampleHouse already shows a `spatial_structure` table with 3 space rows that the walker does not use.
+**▶ RESUME, left before merge:** (1) bump `modeller/sw.js` CACHE_VERSION (v268 → next) in the same PR; (2) run the neighbours that open SampleHouse (W-RULES-CLASS marked it VACUOUS before: it may now judge; the Outliner and room-move read the new rooms) and read their logs; (3) PR, merge, fetch the live patch back; (4) the user guide's line that SampleHouse refuses ELEC is now false. Then queue item (b), the mesh miner by discipline. Queue item (d) meets the ERP lane at `ERP_IDEMPIERE_UX_PARITY.md` §REGISTER-EXPORT (spec written, not built).
