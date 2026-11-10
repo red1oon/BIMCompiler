@@ -801,6 +801,91 @@ backup**, and a **teaching sample** — versionable in git, not a DB dump or an 
 
 ---
 
+### Getting plugins running — what starts by itself, what you switch on, and what depends on what
+
+A plugin is one file (a bundle) that adds windows, processes or rules to the ERP while it runs. Nothing
+is installed on a server: each browser keeps its own list of plugins and their state.
+
+**Where to look.** Two doors open the same list:
+
+- the **Plugins & Releases** link on the login screen (beside *System Monitor*): the list in the layout
+  iDempiere administrators know from the OSGi console (Id, Name, Version, Status, Actions);
+- the **Plugin Engine** pill (🔌) in the bottom bar.
+
+**Who may change it.** Every role can see the list. Only the **System Administrator** role gets the
+Install, Start, Stop and Uninstall buttons (log in as *SuperUser / System*). Other roles see
+*Read-only* above the list.
+
+**What you have to do, by plugin:**
+
+| Plugin | State on a first visit | What you do |
+|---|---|---|
+| Ninja Excel Report | starts by itself | nothing |
+| Ninja (model from Excel) | starts by itself | nothing |
+| BIM Document (project deliverables) | starts by itself | nothing; its window is in the menu and as a tab under Project → Task |
+| Ninja data migration (Migrate Excel Data) | installed, **stopped** | **Start** it before any migration |
+| Migrate from Odoo | installed, stopped | Start *Ninja data migration* first, then Start this one |
+| Migrate from Business Central (alpha) | installed, stopped | same: *Ninja data migration* first |
+| Migrate from SAP Business One (alpha) | installed, stopped | same: *Ninja data migration* first |
+| Web Services (ADInterface) | installed, stopped | Start it when you want the web service endpoints |
+| POS integration (head office) | installed, stopped | Start it at head office only |
+| Micro Finance lens (home page) | installed, stopped | Start it if you use it |
+| Friendly operations | not installed, offered in the list | Install, then Start |
+
+The three that start by themselves do so **once per browser**. After that your own choice is kept: a
+plugin you stop or uninstall is not brought back on the next visit. Clearing the site's data starts
+the first visit again.
+
+**Do I need Ninja switched on before the others?** Mostly no, and it helps to know there are three
+different Ninja plugins:
+
+- **Ninja (model from Excel)** builds a module from a workbook. No other shipped plugin needs it.
+- **Ninja Excel Report** turns a workbook into a report. No other plugin needs it.
+- **Ninja data migration** loads master data and opening balances from a workbook. **The three
+  "Migrate from …" plugins do need this one.**
+
+Why: each migration plugin is only a reader. It reads the other system's export and turns it into the
+same 17-sheet workbook; the loading into the books is done by one loader, the Ninja data migration
+process. There is one loader on purpose, so a migration from Odoo, Business Central or SAP is checked
+by the same code and cannot drift apart. If the loader is stopped, the migration form opens but tells
+you: *Start the plugin "Ninja data migration" first*. Nothing is loaded until you do.
+
+BIM Document, Web Services, POS integration, Friendly operations and the Micro Finance lens stand on
+their own. They need no Ninja plugin.
+
+**If a plugin does not appear or will not start.** Open *Plugins & Releases* and read its Status:
+*Active* is running, *Resolved* is stopped (press Start), *Installed* has never been started. A start
+that fails undoes itself completely and names the reason in the browser console on a line beginning
+`§PLUGIN-START-FAILED`.
+
+#### For developers — what a plugin must and must not do
+
+- **One file, three exports:** `manifest`, `activate(ctx)`, `deactivate(ctx)`. A worked example and the
+  full contract are in bim-ootb `erp/plugins/README.md`.
+- **Dictionary rows go in the manifest** (`manifest.dictionary`: tables, columns, windows, tabs, fields,
+  processes, menu). The host stages them when the plugin starts and removes them when it stops. Give
+  them ids in your own band; the shipped bands are checked by the witness W-PLUGIN-ID-BANDS.
+- **Do not write access rows for your own window, process or form.** When a plugin starts, the host
+  gives every active, non-manual role its access by the record's access level, the way legacy's pack-in
+  does (`PackInHandler.updateRoleAccess`). A plugin that also inserted its own `AD_Window_Access` rows
+  hit the unique key and failed to start (this happened to BIM Document in November 2026). If you ship
+  access rows for a role other than the login role, the host treats your list as explicit and adds
+  nothing.
+- **Declare what you need.** `manifest.requires = { 'other.plugin.id': '>=1.0.0' }` makes the host refuse
+  the start with a clear message until that plugin is active. The three migration plugins do not
+  declare the loader today; they check for it when the form opens and say so there. Either way, tell
+  the user.
+- **Actions belong in the dictionary, not in a side panel.** A record action is an `AD_Process` behind
+  a Button column, so it appears under the gear, gets a process log and role access, and is counted by
+  the tools that read the dictionary. The witness W-PLUGIN-AD-ACTIONS fails a bundle that registers
+  actions any other way.
+- **A process that produces a file** hands it back with `this.processUI.download(name, bytes, mime)`.
+- **Which plugins start by themselves** is two lists in `erp/plugin_overlay.js`: `BUILTINS` (installed
+  and started once) and `INSTALL_ONLY` (installed, left stopped). Offers shown in the list are
+  `PluginOffers` in `erp/osgi_console.js`.
+- **Prove it in a page.** Start your plugin in a real browser run and read the log. A plugin can pass
+  every headless check and still fail to start in the page.
+
 ## 10. Warehouse Walk
 
 The **Warehouse** pill (box icon ◫) on the iDempiere bottom bar opens the GardenWorld warehouse

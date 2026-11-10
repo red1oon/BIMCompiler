@@ -619,7 +619,7 @@ all, not a box:
 SampleCastle walks the *same* residential rule-set (it's a different building — see the table below). A
 walk places a fixture only when it can seat a real extracted mesh for it (LOD400). Where a fixture class has
 no mesh match, the walk **refuses** that placement and says so; it never stands a box in for the real shape.
-Today that is why SampleHouse and SampleCastle get no electrical or plumbing devices (table below).
+Today that is why SampleCastle gets no electrical or plumbing devices, and SampleHouse no plumbing ones (table below). SampleHouse's electrical devices are placed since 2026-11-10: its source IFC states four rooms, the Modeller now reads them, and a device placed from a room schedule carries its own real mesh.
 
 **One engine, two standards.** A single walker drives every discipline; the discipline is just a data
 filter. It carries two measured rule-sets and auto-selects by building class:
@@ -644,8 +644,8 @@ see below; *refused* = what the walk declined and why:
 | Building | Discipline | Placed | Provisional | What the walk reported |
 |---|---|---:|---:|---|
 | **SampleHouse** | HVAC (ACMV) | 0 | 0 | refused: 4 duct or pipe pieces with no main |
-| | Electrical | 0 | 0 | refused: no real mesh for any of 17 placements |
-| | Plumbing | 0 | 0 | refused: no real mesh for any of 7 |
+| | Electrical | 21 | 0 | from its own 4 rooms: Living room 11, Bedroom 7, Entrance hall 3; the Roof space gets none (re-measured 2026-11-10, sw v269) |
+| | Plumbing | 0 | 0 | refused: no real mesh for any of 7; none of its rooms has a plumbing schedule (the file has no bathroom or kitchen space) |
 | | Fire-Protection | 0 | 0 | refused: no real mesh for any of 17 |
 | **Duplex** | HVAC (ACMV) | 19 | 0 | — |
 | | Electrical | 102 | 0 | 15 gated, 27 clashes flagged |
