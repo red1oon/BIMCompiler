@@ -1364,6 +1364,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#for-developers-check-the-twin-against-legacy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For developers: check the twin against legacy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#viewer-questions-from-a-plain-download" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3345,6 +3356,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#for-developers-check-the-twin-against-legacy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        For developers: check the twin against legacy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#viewer-questions-from-a-plain-download" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3566,7 +3588,7 @@ exit 0
 <p>The last row is deliberate. Text that matches no verb is <strong>never guessed at</strong>:</p>
 <!-- run: question -->
 <div class="highlight"><pre><span></span><code>$ node door.js &#39;please widen the bay&#39;
-{&quot;request&quot;:&quot;d-mwb4l525-2304741-1&quot;,&quot;verb&quot;:null,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;refused&quot;,&quot;answer&quot;:{&quot;question&quot;:&quot;I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type !help.&quot;,&quot;verbs&quot;:[&quot;modeller.lines&quot;,&quot;modeller.try_shift&quot;,&quot;viewer.counts&quot;,&quot;viewer.clashes&quot;,&quot;viewer.film_path&quot;,&quot;viewer.schedule_at&quot;,&quot;viewer.schedule_compare&quot;,&quot;modeller.widen_bay&quot;,&quot;modeller.walk&quot;,&quot;object.describe&quot;,&quot;object.read&quot;,&quot;object.history&quot;,&quot;object.update&quot;,&quot;object.attach&quot;,&quot;object.count&quot;,&quot;object.list&quot;,&quot;object.sum&quot;,&quot;object.group&quot;,&quot;erp.find&quot;,&quot;erp.actions&quot;,&quot;erp.describe&quot;,&quot;erp.read&quot;,&quot;erp.list&quot;,&quot;erp.sum&quot;,&quot;erp.group&quot;,&quot;erp.new&quot;,&quot;erp.complete&quot;,&quot;erp.void&quot;,&quot;erp.close&quot;,&quot;erp.reverse&quot;]},&quot;why&quot;:&quot;not a command: \&quot;please widen the bay\&quot;&quot;,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:0}
+{&quot;request&quot;:&quot;d-mwb7nify-2354956-1&quot;,&quot;verb&quot;:null,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;refused&quot;,&quot;answer&quot;:{&quot;question&quot;:&quot;I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type !help.&quot;,&quot;verbs&quot;:[&quot;modeller.lines&quot;,&quot;modeller.try_shift&quot;,&quot;viewer.counts&quot;,&quot;viewer.clashes&quot;,&quot;viewer.film_path&quot;,&quot;viewer.schedule_at&quot;,&quot;viewer.schedule_compare&quot;,&quot;modeller.widen_bay&quot;,&quot;modeller.walk&quot;,&quot;object.describe&quot;,&quot;object.read&quot;,&quot;object.history&quot;,&quot;object.update&quot;,&quot;object.attach&quot;,&quot;object.count&quot;,&quot;object.list&quot;,&quot;object.sum&quot;,&quot;object.group&quot;,&quot;erp.find&quot;,&quot;erp.actions&quot;,&quot;erp.describe&quot;,&quot;erp.read&quot;,&quot;erp.list&quot;,&quot;erp.sum&quot;,&quot;erp.group&quot;,&quot;erp.new&quot;,&quot;erp.complete&quot;,&quot;erp.void&quot;,&quot;erp.close&quot;,&quot;erp.reverse&quot;,&quot;witness.run&quot;,&quot;witness.last&quot;,&quot;legacy.status&quot;,&quot;legacy.query&quot;,&quot;erp.column&quot;,&quot;erp.compare&quot;,&quot;idempiere.where&quot;]},&quot;why&quot;:&quot;not a command: \&quot;please widen the bay\&quot;&quot;,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:0}
 </code></pre></div>
 <h2 id="reading-the-reply">Reading the reply<a class="headerlink" href="#reading-the-reply" title="Permanent link">&para;</a></h2>
 <p>Every line, from every actor, gets the same envelope. Read these in order.</p>
@@ -3857,6 +3879,42 @@ Harm: read (reads only)
 Who may run it: human, ai
 Example: erp.find kind=Order number=50000
 </code></pre></div>
+<h2 id="for-developers-check-the-twin-against-legacy">For developers: check the twin against legacy<a class="headerlink" href="#for-developers-check-the-twin-against-legacy" title="Permanent link">&para;</a></h2>
+<p>These verbs are for the person who keeps the ERP twin equal to the real iDempiere. They need a bim-ootb checkout, and for the first four the legacy test stack running (a docker Postgres and the pilot server) and the iDempiere source beside it. When a part is missing they answer <code>inconclusive</code> and say which part: they never answer an empty list or "same" for something they could not look at.</p>
+<p><code>legacy.status</code> asks whether the stack is up. It starts nothing; when something is down it prints the commands that start it:</p>
+<!-- run: legacy_status -->
+<div class="highlight"><pre><span></span><code>$ node common/door/door.js --list &#39;legacy.status&#39;
+verdict: UP
+postgres: {&quot;container&quot;:&quot;postgres&quot;,&quot;database&quot;:&quot;idempiere_pilot&quot;,&quot;state&quot;:&quot;ready&quot;}
+pilot: {&quot;url&quot;:&quot;http://localhost:8088/webui/&quot;,&quot;http&quot;:200,&quot;state&quot;:&quot;up&quot;}
+summary: legacy UP: postgres ready, pilot up
+next: []
+</code></pre></div>
+<p><code>erp.column</code> answers "who fills this column", from the twin's dictionary and legacy's side by side: the column default, the validation rule, the field default, and the login default (iDempiere puts the <code>IsDefault</code> row of a referenced table into the context at login). When the two sides disagree it says <code>DIFFERENT</code> and which part:</p>
+<!-- run: column_docaction -->
+<div class="highlight"><pre><span></span><code>$ node common/door/door.js --list &#39;erp.column kind=Order column=DocAction&#39;
+kind: Order
+table: C_Order
+column: DocAction
+twin: {&quot;found&quot;:true,&quot;table&quot;:&quot;C_Order&quot;,&quot;column&quot;:&quot;DocAction&quot;,&quot;reference&quot;:28,&quot;mandatory&quot;:&quot;Y&quot;,&quot;updateable&quot;:&quot;Y&quot;,&quot;defaultValue&quot;:&quot;CO&quot;,&quot;validationRule&quot;:null,&quot;fieldDefaults&quot;:[],&quot;loginDefault&quot;:null,&quot;filledBy&quot;:&quot;the column default CO&quot;}
+legacy: {&quot;found&quot;:true,&quot;table&quot;:&quot;C_Order&quot;,&quot;column&quot;:&quot;DocAction&quot;,&quot;reference&quot;:28,&quot;mandatory&quot;:&quot;Y&quot;,&quot;updateable&quot;:&quot;Y&quot;,&quot;defaultValue&quot;:&quot;CO&quot;,&quot;validationRule&quot;:null,&quot;fieldDefaults&quot;:[],&quot;loginDefault&quot;:null,&quot;filledBy&quot;:&quot;the column default CO&quot;}
+differs: []
+verdict: SAME
+notChecked: []
+summary: C_Order.DocAction: SAME; twin fills it by the column default CO; legacy by the column default CO
+</code></pre></div>
+<p><code>idempiere.where</code> finds a name in the iDempiere source and answers the file, the line and the line's text, so a claim about legacy behaviour can quote where it comes from. It shows 25 lines unless <code>limit</code> says otherwise and always gives the total; <code>in=callout</code> keeps only files whose path contains that text:</p>
+<!-- run: where_invoicerule -->
+<div class="highlight"><pre><span></span><code>$ node common/door/door.js --list &#39;idempiere.where symbol=InvoiceRule in=CalloutOrder limit=2&#39;
+symbol: InvoiceRule
+hits: [{&quot;file&quot;:&quot;org.adempiere.base.callout/src/org/compiere/model/CalloutOrder.java&quot;,&quot;line&quot;:50,&quot;text&quot;:&quot;*\t\t- InvoiceRule/DeliveryRule/PaymentRule&quot;},{&quot;file&quot;:&quot;org.adempiere.base.callout/src/org/compiere/model/CalloutOrder.java&quot;,&quot;line&quot;:131,&quot;text&quot;:&quot;mTab.setValue (\&quot;InvoiceRule\&quot;, X_C_Order.INVOICERULE_Immediate);&quot;}]
+shown: 2
+total: 20
+files: 1
+verdict: OK
+summary: InvoiceRule: 20 lines in 1 files (showing 2)
+</code></pre></div>
+<p>Three more verbs sit beside these. <code>legacy.query table=c_order ad_client_id=11 limit=5</code> reads rows from a legacy table (read only; the table and every column are checked against legacy's dictionary, and the total is always given). <code>erp.compare kind=Order number=50000 legacy=50981</code> reads one record on the twin and the matching one on legacy and compares them cell for cell; a cell where legacy is empty and the twin holds a default is labelled <code>NULL-VS-DEFAULT</code> and nothing is said about why. <code>witness.run name=erp_new</code> runs a witness from the tree, keeps its whole log, and answers its own verdict line (PASS, FAIL or INCONCLUSIVE); a witness that prints no verdict line is an error, because an exit code is not evidence, and <code>witness.last</code> reads the last recorded run without running it again.</p>
 <h2 id="viewer-questions-from-a-plain-download">Viewer questions from a plain download<a class="headerlink" href="#viewer-questions-from-a-plain-download" title="Permanent link">&para;</a></h2>
 <p>Two Viewer verbs, <code>viewer.counts</code> and <code>viewer.clashes</code>, also work without a checkout. Put two more files beside the four:</p>
 <div class="highlight"><pre><span></span><code>curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_verbs.js
@@ -4124,11 +4182,67 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
 </tr>
+<tr>
+<td><code>witness.run</code></td>
+<td>Run a witness and read its verdict</td>
+<td><code>name</code></td>
+<td>trial</td>
+<td>human, ai</td>
+<td>a bim-ootb checkout</td>
+</tr>
+<tr>
+<td><code>witness.last</code></td>
+<td>Read the last recorded witness run</td>
+<td><code>name</code></td>
+<td>read</td>
+<td>human, ai</td>
+<td>a bim-ootb checkout</td>
+</tr>
+<tr>
+<td><code>legacy.status</code></td>
+<td>Is the legacy test stack up</td>
+<td>none</td>
+<td>read</td>
+<td>human, ai</td>
+<td>a bim-ootb checkout</td>
+</tr>
+<tr>
+<td><code>legacy.query</code></td>
+<td>Read rows of a legacy table</td>
+<td><code>table</code>, <code>columns</code> (optional), <code>sort</code> (optional), <code>limit</code> (optional), further <code>column=value</code> filters (optional)</td>
+<td>read</td>
+<td>human, ai</td>
+<td>a bim-ootb checkout</td>
+</tr>
+<tr>
+<td><code>erp.column</code></td>
+<td>Who fills a column: twin and legacy side by side</td>
+<td><code>kind</code>, <code>column</code></td>
+<td>read</td>
+<td>human, ai</td>
+<td>a bim-ootb checkout</td>
+</tr>
+<tr>
+<td><code>erp.compare</code></td>
+<td>Compare one record on the twin and on legacy</td>
+<td><code>kind</code>, <code>number</code>, <code>legacy</code> (optional)</td>
+<td>read</td>
+<td>human, ai</td>
+<td>a bim-ootb checkout</td>
+</tr>
+<tr>
+<td><code>idempiere.where</code></td>
+<td>Find a name in the iDempiere source</td>
+<td><code>symbol</code>, <code>in</code> (optional), <code>limit</code> (optional)</td>
+<td>read</td>
+<td>human, ai</td>
+<td>a bim-ootb checkout</td>
+</tr>
 </tbody>
 </table>
 <!-- /GEN:verbs -->
 
-<p><strong>Coverage today.</strong> The list is small on purpose: 30 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 12 ERP verbs. So this is a start, not the whole menu.</p>
+<p><strong>Coverage today.</strong> The list is small on purpose: 37 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 14 ERP verbs. So this is a start, not the whole menu.</p>
 <h2 id="what-is-not-checked">What is not checked<a class="headerlink" href="#what-is-not-checked" title="Permanent link">&para;</a></h2>
 <p>A reply lists what its check did not cover. For the Modeller's edit report the list is:</p>
 <!-- run: notchecked cut=520 -->
