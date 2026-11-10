@@ -43,6 +43,28 @@ Rules: numbers pick a row, single letters are actions; Enter keeps a value, `-` 
 **Batch (`[L]` or the line `erp.load file=suppliers.csv table=C_BPartner dry=Y`):** a **preview** first: `120 rows: 114 ok, 6 rejected` with the row number and reason of each rejection; `[C] commit  [Q] quit`; the rejected rows are written to `suppliers.rejected.csv` (never silently dropped); commit loads the 114 and prints their keys. A loaded file is the same shape `erp.list --csv` writes (round trip, MIS W-MIS-ROUNDTRIP).
 **Every session is a script:** `ivr.js … > session.door` records the lines it ran; running that file with `door.js --script` repeats the session and an AI can read it. `--dry` prints the lines and runs nothing. `!help` works on every screen.
 
+## 1a. The terminal screen: a grid cursor with colored action chips (owner, 2026-11-11, two messages; supersedes the key-letter style of §1 on a terminal, §1 stays as the line mode)
+> *"i prefer UDC to be on the right as colored codes so the user can >><> to each and enter for ease without remembering which or what to do next."* · *"The idea is always similar to WASM local first, minimalist, simple, safe, and now MIS as the killer angle which Compiere AD first debut overlooked."* · and before it: *"it lists and gives a pointer where Up/Down keys can traverse it … D (to delete, a popup for Y/N) and C (to insert, where the user tabs through and types). The mandatory fields are hidden and managed in the backend."*
+```
+Business Partners                                  shown 1-6 of 42      [ + New ]
+   Value     Name              Group        Credit                    
+ > 100001    Standard          Customers      0.00                 [U Edit] [D Delete] [C Copy]
+   100002    Joe Block         Customers    250.00                 [U Edit] [D Delete] [C Copy]
+   100003    Seed Farm Inc.    Vendors        0.00                 [U Edit] [D Delete] [C Copy]
+   ...
+ ↑↓ row   ←→ chip   Enter run   Esc back          the line it will run: erp.update kind=BPartner number=100001 …
+```
+**How it moves.** Up/Down moves the row pointer; Left/Right (or Tab) moves the highlight along that row's chips; Enter runs the highlighted chip; Esc backs out. There is nothing to remember: the chips are on screen, in the row. A header chip `[ + New ]` starts a blank record.
+**The chips are the engine's, not a fixed set.** For a master record: U, D, C. For a document the chips come from `erp.actions` (a draft: `[C Complete] [V Void] [D Delete]`; a completed order: `[V Void] [R Reverse]` and no Delete): the screen shows only what is legal now, an illegal one is dimmed, never hidden-and-forgotten. This is how "without remembering what to do next" is kept honest.
+**Colors are never the only signal** (colorblind users, monochrome terminals, a pipe): each chip carries its letter and its word, and the highlight is reverse video. `--plain` gives the line mode of §1 with no color at all.
+**C is "Copy", per row, and `[ + New ]` is the blank form:** the iDempiere window has both (`GridTab.dataNew(boolean copy)`, L1151): copy takes the row's values, blank takes only the defaults. (Open question 5.)
+**Forms (U, C, + New): Tab goes field to field, Enter on the last field saves after a one-line summary; Esc cancels everything, nothing was written.** A lookup field is a type-ahead list (the heaviest part of the build; V3).
+**Mandatory fields are hidden only when the backend can fill them.** Today `erp.new` on an order is given 4 columns and the engine defaults 52 more (defaults, callouts, the Document No), but a mandatory column with no default (the sales rep of a partner that has none) is refused by name. So the form asks a **dry run** first (`erp.new … dry=Y`, new in V1: "what is still empty after your defaults and callouts?") and shows ONLY those fields; every other column sits behind a `[ More ]` chip; after the save the screen says what the backend filled (`52 filled by the engine: …`), so nothing is magic and the journal shows it.
+**Local first, minimalist, safe (the same doctrine as the WASM twin).** The same engine runs in the page and at the terminal (Node and sql.js already do), so the terminal ERP needs no server and works offline; data lives in the local op-log; nothing is written until a chip is run, a delete needs its Y/N popup (or the word DELETE in line mode), every write is one journalled door line; **zero dependencies** (Node's own raw key input and ANSI codes; no library) is the advice and keeps the door's rule. 
+**The MIS chain is the demo:** one line adds a window from a sheet (`erp.add_window`, MIS M2), and the new table is immediately listed with its own U / D / C chips and a CSV load: a person makes a table in a minute and works it with no developer, which is the end-user reach the owner says the first Application Dictionary (Compiere's debut) did not give (the owner's observation, not a claim measured here).
+**How it is built so it can be proved (PRIMAL LAW: no human looks at a screen).** One pure state machine: `(state, key) -> (state, door line or none, screen lines)`. The witness feeds key sequences (`Down Down Right Right Enter`), asserts the screen text (cursor row, highlighted chip) and the ONE door line produced, and runs one real pseudo-terminal smoke (the ANSI bytes). The line mode of §1 uses the same machine with a different renderer, so an AI and a pipe get the same lines. Added claims: **T1** Right-Right-Enter on row n runs the third chip of row n and nothing else; **T2** the chips shown equal the engine's legal actions for that row (a completed order has no Delete chip); **T3** Esc anywhere writes nothing (op count unchanged); **T4** a form shows exactly the mandatory-without-default columns (dry run) and no others; **T5** the screen after a save lists the columns the backend filled, equal to the answer's `defaulted` set; **T6** the same key sequence gives the same door lines in line mode. Falsifiers: Enter runs the chip left of the highlight (T1); a completed order shows Delete (T2); Esc saves (T3); a defaulted column is asked (T4).
+**First spike (the smallest thing that settles the tech, one session):** the list screen over `erp.list` with the row pointer, the three chips and the Y/N popup for D, driven by the state machine and T1-T3; no forms yet.
+
 ## 2. What exists (read 2026-11-11 from bim-ootb main; do not re-derive)
 | Need | Today |
 |---|---|
@@ -79,11 +101,13 @@ Rules: numbers pick a row, single letters are actions; Enter keeps a value, `-` 
 2. **Delete scope.** Advice: masters and drafts only, never a processed document (as the window); everything else by Void or Reverse. 
 3. **Key style.** Advice: numbers pick a row, letters act (as COBOL and DOS screens did), both shown on the key line; no function keys (they are terminal-specific).
 4. **First kinds.** Advice: start generic (any kind) and prove it on three: Sales Order (documents: complete/void), Business Partner (a master: edit/delete/load), and a MIS table made by `erp.add_window` (the "new model on the fly" part, so the owner's whole chain is one demo).
+5. **C on a row.** Advice: C means Copy (as the window's `dataNew(copy)`), with a separate `[ + New ]` for a blank form. The owner's words were "C (to insert)"; is a copy-from-this-row chip what is wanted, or only a blank insert?
+6. **Undo.** The op-log can replay and show history. Advice: offer no undo chip in v1 (delete asks first); decide later whether a `[ Z Undo last ]` is wanted.
 
 ## 6. Work order (spec line first, witness with falsifier, one PR per step)
 - **V0 Measure, no code.** Which columns `erp.describe` lacks that the edit screen needs (display logic, read-only logic, the lookup list for a reference); what `GridTab.dataDelete` refuses, from the source; what the Migrate Excel Data loader reports per rejected row (for the preview).
 - **V1 The missing verbs** (MIS M5/M6): `erp.update`, `erp.delete`, `erp.load` with `dry=Y`; their witnesses; guide section.
-- **V2 The list and pick screens** (`ivr.js` read-only: I1, I2, I9).
+- **V2 The list screen with the grid cursor and chips** (the spike of §1a first: T1-T3; then I1, I2, I9). The state machine is written before any renderer.
 - **V3 Edit and delete** (I3, I4, I5; the twin comparison against the window path).
 - **V4 Batch** (I6) and the saved session (I7).
 - **V5 Role** (I8; needs A6).
@@ -91,4 +115,4 @@ Rules: numbers pick a row, single letters are actions; Enter keeps a value, `-` 
 **Not in scope without the owner's go:** curses or a full-screen UI, a mouse, themes, workflow approval screens, reports, translations, the email actor, the GPU.
 
 ## STATUS
-2026-11-11: spec written, nothing built. Depends on MIS M5/M6 and NEURO A6.
+2026-11-11: spec written, nothing built; §1a (grid cursor, colored chips, hidden-mandatory via dry run, local-first doctrine, MIS demo) added the same day after the owner's two refinements. Depends on MIS M5/M6 and NEURO A6.
