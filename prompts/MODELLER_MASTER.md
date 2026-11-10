@@ -83,6 +83,35 @@ is ours" ⇒ aligned; move it from ⛔ to the queue after the catalog rebind.
 **Queue impact:** C1+C2 join row 14 (catalog rebind) and move up — they are live no-box violations, ahead of §SLOPE-HANDLES.
 C3 lands with the REPLACE verb.
 
+## ▶ §RESUME 2026-11-10b — START HERE (written at the close of the 2026-11-10 stint; the block below it, 2026-11-09c, is the session before and still holds the owner's open decisions and the older "Buildable next" list)
+**State at close (bim-ootb main after #2827, modeller sw v272; BIMCompiler master after #532). Every item below is merged and was verified at its merged head; the live site was fetched back at v272.**
+**The Design-lane queue a → e is done, and the Q9 ruling is built:**
+| Item | What it does now | PR | Witness (run it, read its log) |
+|---|---|---|---|
+| a. SampleHouse rooms | walks from its own 4 `IfcSpace` rooms: ELEC 21 placed with real meshes | bim-ootb #2797 | `modeller/tests/witness_sh_rooms.js` 8/0 |
+| b. Mesh miner by discipline | binds a mesh within the discipline the extraction records | BIMCompiler #509 | `scripts/witness_meshbind_discipline.py` 3/0 |
+| c. Native property sets | the extractor keeps the authoring tool's own sets (`element_pset_native`); the ELEC walk logs the model's circuits | #2800 | `witness_pset_native.js` 5/0, `witness_native_circuits.js` 5/0 |
+| d. Register gate | `modeller/tools/project_inputs.js --register=<json>`: CO read, IP provisional, DR / RE refused, no row provisional | #2807 | `witness_drawn_walk.js` (I arms) |
+| e. Gap report, slice 1 | `input_gap` + `§INPUTS-GAP` from the same tool (`--walk-rules=`) | #2814 | `witness_drawn_walk.js` (G arms) 101/0 in all |
+| Q9 band mix | a band device takes one of its rule row's own source meshes, in the measured mix, provisional | #2824, BIMCompiler #531 | `witness_band_mix.js` 10/0, `witness_e2e_band_mix.js` 3/0 (real page) |
+| W-E2E-WALK-IFCOPEN G5 | was red on main: the arm counted placed devices only; the op log grows by placed + provisional + runs | #2827 | 20/0 |
+Specs and results: §SH-ROOMS, §MINER-DISC, §BAND-MIX, ▶ §QUEUE-STATE in this file; §12a / §12b / §12c BUILD + RESULT in bim-ootb `prompts/DISC_WALK_DRAWN_INTEGRATION.md`.
+**The ERP side of the same hand-over is merged too** (`ERP_IDEMPIERE_UX_PARITY.md`): the BIM Document register export (bim-ootb #2813) writes the JSON the register gate reads. **Not yet run end to end:** the gate's witness uses a hand-written register of the same shape, not a file exported from the ERP.
+**▶ NEXT, in this order:**
+1. **Read bim-ootb `prompts/DISC_WALK_DRAWN_INTEGRATION.md` §12d** (the triage of what a Revit-exported IFC states that can guide placement, by discipline; measured, nothing built). Its first spec to write is R1 `device.kind`, then R2 `system.type`, then R3 `space.type`. It lists the owner decisions each needs.
+2. **One end-to-end run of the hand-over:** export a register from the ERP (BIM Document gear → Export Register), feed that file to `project_inputs.js`, walk. A witness arm, no new product code expected.
+3. **A Modeller button for the pre-processor** (today the tool is the only way in). UI: get the owner's go first.
+4. **W-PROJECT-INPUTS I-4** (order of trust between a model value and a sheet value): blocked on a definition, see §12d's last paragraph.
+5. The older list in §RESUME 2026-11-09c below ("Buildable next" 1-4 and the ⛔ owner decisions 1-7) is unchanged, except its item 4: W-E2E-WALK-IFCOPEN is now green.
+**Review of this stint: what to keep doing, what went wrong (read before starting):**
+- **A node witness is not the end of the chain.** The band mix passed 10 of 10 in node while the real page placed nothing: (1) the served geometry did not hold the meshes ("hash unresolved"), (2) the browser's sql.js failed on a 1.9 MB patch as one string. Both were found only because a real Open + walk was run before the PR. Do that for every walker change.
+- **A sweep that passes on main is scope-blind.** Twice a new witness passed on untouched main where it should fail (the ERP AutoNew sweep judged rows from a line main can drop; a gap arm judged only one side). Always run the new witness on main first.
+- **A new fixture path can hide a real defect as a pile of reds.** The gap report's first version threw on an older table shape and wrote nothing, so every register arm went red at once. Read the first red, not the count.
+- **Things that bite a fresh worktree:** `buildings/*_extracted.db` and `docs/glassbowl_data.db` are not in git: read the extraction from `~/bim-ootb/buildings/`, and copy `glassbowl_data.db` into a docs worktree before `safe_gh_deploy.sh` or the guard aborts. `erp/sw.js` and `modeller/sw.js` conflict on almost every sync: keep both notes, take the higher version.
+- **GitHub Pages lags and sometimes errors** ("Page build failed" several times on 2026-11-10; a later push went through). Fetch the live file back before saying something is live.
+- **Counts that changed and why (do not "fix" them back):** SampleCastle ELEC 253 mesh-less devices (all refused) → 88 provisional with meshes (the band walk at the measured density replaces the older tiling path); SampleHouse ELEC 0 → 21; SampleHouse PLB still 0 (it has rooms and none has a plumbing schedule, so it never reaches the band mix).
+- **Still red on main, untraced:** W-BAND-NO-HOST P3 (43/1); W-PACKOUT O6 (ERP).
+
 ## ▶ §RESUME 2026-11-09c — START HERE (the one entry point; older resume blocks are archived, see the note below the specs)
 **State at close, 2026-11-10 (bim-ootb main `d6054ce0`, modeller sw v268).** Every item below was merged, then verified at its merged head.
 **Landed this session (bim-ootb):**
