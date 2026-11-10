@@ -1677,3 +1677,8 @@ an OPENING BANK STATEMENT; proof = Bank Clearing ends at zero.
   re-created as documents.
 - **Witness W-OPEN-BALANCES gains case BANK:** Bank Clearing == 0.00; the tenant's bank asset account == the source bank balance per bank account; the statement Completed and
   Posted; falsifier: the bank journal's balance changed in the export → the clearing account names the difference.
+
+**§2026-11-10p — in flight (three Sonnet agents; nothing below is ✅ until the lead reads their § lines):** falsifier re-pin (`/tmp/wt-idf2`, branch
+`test/idempiere-falsifier-repin`) · Lane BS bank statement DocAction (`/tmp/wt-e3d-bs`, `feat/bankstatement-docaction`, W-BANKSTATEMENT) · Lane IB ImportBankStatement 221
+(`/tmp/wt-e3d-ib`, `feat/import-bankstatement-221`, W-IMPORT-BANKSTATEMENT). Next for the lead once BS + IB are merged: Lane E3d of §E3D-SPEC (bank masters sheets, *Opening
+Charge Bank*, the `I_BankStatement` open sheet, W-OPEN-BALANCES case BANK).
