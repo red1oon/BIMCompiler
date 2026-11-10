@@ -13,6 +13,8 @@
 #   5 start   the instance; wait for Incremental2PackActivator to say the pack is installed
 #   6 verify  SQL counts: table, columns, physical columns, virtual columns, window, tabs, processes + class names, menu place
 # Usage: scripts/legacy_bimdoc_refresh.sh            (all steps)     STOP_ONLY=1 scripts/legacy_bimdoc_refresh.sh   (step 1 only)
+#        BREAK=nosupersede scripts/legacy_bimdoc_refresh.sh   (FALSIFIER: the bundle without the supersede rule; legacy_bimdoc_witness.sh must then FAIL L2a and L3; run it again without BREAK afterwards)
+# Never `pkill -f` a pattern that appears in your own command line (it kills the shell): kill by PID.
 set -uo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PILOT="${PILOT:-$HOME/idempiere-pilot}"; INST="${INST:-$HOME/idempiere-bimdoc}"; DB="${DB:-idempiere_bimdoc}"
@@ -41,7 +43,7 @@ pgrep -f "[i]dempiere-bimdoc/server/plugins/org.eclipse.equinox.launcher" >/dev/
 say "stop instance down"; [ "${STOP_ONLY:-}" = 1 ] && exit 0
 
 # 2 seed --------------------------------------------------------------------------------------------------
-docker exec "$PG" dropdb -U adempiere --if-exists "$DB" 2>&1 | head -2
+docker exec "$PG" dropdb -U adempiere --if-exists --force "$DB" 2>&1 | head -2   # --force: a stray server connection must not wedge a refresh (seen 2026-11-11)
 docker exec "$PG" createdb -U adempiere -T template0 -E UNICODE -O adempiere "$DB" 2>&1 | head -2
 docker exec "$PG" psql -U adempiere -d "$DB" -tAc "ALTER ROLE adempiere SET search_path TO adempiere, pg_catalog" >/dev/null 2>&1
 docker exec -i "$PG" psql -q -U adempiere -d "$DB" < "$INST/server/data/seed/Adempiere_pg.dmp" > "$INST/import.log" 2>&1
@@ -55,7 +57,12 @@ say "sync migration-scripts=$(psqlq 'select count(*) from ad_migrationscript') s
 VER="13.0.0.$(date +%Y%m%d%H%M)"; NAME="org.idempiere.bimdocument_$VER"; DEST="$INST/server/plugins/$NAME"
 rm -rf "$INST/server/plugins"/org.idempiere.bimdocument_*; mkdir -p "$DEST"
 CP="$(ls "$INST"/server/plugins/*.jar | tr '\n' ':')"
-javac -Xlint:-options -d "$DEST" -cp "$CP" -source 17 -target 17 $(find "$BUNDLE_SRC/src" -name '*.java') 2>&1 | head -20
+SRCDIR="$BUNDLE_SRC/src"
+if [ "${BREAK:-}" = nosupersede ]; then   # FALSIFIER: the same bundle WITHOUT the supersede rule; the witness must FAIL L2a
+  SRCDIR="$(mktemp -d)"; cp -r "$BUNDLE_SRC/src/." "$SRCDIR/"; sed -i 's/if (!live || o.getRevision() >= getRevision())/if (true)/' "$SRCDIR/org/kernel/bim/model/MBIMDocument.java"
+  grep -q "if (true)" "$SRCDIR/org/kernel/bim/model/MBIMDocument.java" || { say "REFUSED BREAK=nosupersede did not change the source"; exit 2; }; say "BREAK nosupersede: the supersede loop is disabled in this build"
+fi
+javac -Xlint:-options -d "$DEST" -cp "$CP" -source 17 -target 17 $(find "$SRCDIR" -name '*.java') 2>&1 | head -20
 cp -r "$BUNDLE_SRC/META-INF" "$BUNDLE_SRC/OSGI-INF" "$DEST/"; sed -i "s/^Bundle-Version: .*/Bundle-Version: $VER/" "$DEST/META-INF/MANIFEST.MF"
 BI="$INST/server/configuration/org.eclipse.equinox.simpleconfigurator/bundles.info"; sed -i '/^org.idempiere.bimdocument,/d' "$BI"
 echo "org.idempiere.bimdocument,$VER,plugins/$NAME/,4,true" >> "$BI"
