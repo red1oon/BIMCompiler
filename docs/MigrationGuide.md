@@ -14,7 +14,7 @@
 | **iDempiere** | the iDempiere agent (`node migrate_agent.js --masters`) writes `ad_masters.db` | see [the ERP guide, §2](ERPUserGuide.md#2-bring-your-data-in-the-diy-box-help-run-it-yourself) | — |
 
 **What moves (all sources):** master data and opening stock, at a cut-over date: customers and vendors with contacts and addresses, products, units, categories,
-payment terms, prices, the chart of accounts, warehouses and locators. **Not yet:** balances, open invoices and open orders, and closed history.
+payment terms, prices, the chart of accounts, warehouses and locators. From **Odoo** also the open balances at the cut-over (trial balance and open invoices). **Not yet:** open orders and closed history; balances and open invoices from the other sources.
 
 **Alpha** means the route was built from what the vendor publishes, and has not yet run on a real company's data. Every alpha run writes an **alpha report**: counts
 and field names only, with every value masked. Please send it back. That is what turns an alpha into a tested route.
@@ -90,11 +90,12 @@ Key) and use it as the password.
    - **Several companies in one Odoo?** The export moves the company your login opens on, and ends by printing the command for each other company (`--company 2` …).
      Each one becomes its own ERP company.
    - **Your Odoo version** is checked first: the export is written for Odoo 17; on another version it stops, names the field it misses and writes nothing.
-3. When it ends with **PASS** you have `odoo_export/` with `odoo_migration.xlsx` (one sheet per ERP table), `manifest.json` (how many rows Odoo has of each: the proof
-   nothing was dropped) and `provenance.json` (each row → its Odoo record). If it ends with FAIL, nothing is written and it says why.
-4. In Step 3, pick `odoo_migration.xlsx` **and** `manifest.json`. Odoo's units have no ERP code: pick each one.
+3. When it ends with **PASS** you have `odoo_export/odoo_export.json`: your Odoo rows as Odoo returned them, read only, each set with the number of rows Odoo
+   counted (the proof nothing was dropped). If it ends with FAIL, nothing is written and it says why.
+4. In Step 3, pick `odoo_export.json`. The ERP turns the rows into its own tables on your screen and shows the summary before anything is written. Odoo's units have
+   no ERP code: pick each one. *(An export made by an older agent — `odoo_migration.xlsx` and `manifest.json` — still loads: pick those two.)*
 
-**What the export settles for you** (listed in `manifest.json`): **archived** customers, products and locations come along **inactive**; **repeated codes**: the older
+**What the move settles for you** (shown on the summary): **archived** customers, products and locations come along **inactive**; **repeated codes**: the older
 keeps it, the other becomes `CODE-<odoo id>`; a code longer than the ERP field is shortened and keeps `~<odoo id>`; an address with **no country** gets your Odoo
 company's country.
 
@@ -104,7 +105,19 @@ company's country.
 use an administrator · **"FAIL version: Odoo … has no …"**: this Odoo version is not supported yet · **"FAIL company: no company with id …"**: it lists the companies;
 run again with one of their ids.
 
-**Not moved yet:** balances and the trial balance at the cut-over, open invoices and orders, lots and serial numbers (stock is summed per product and location),
+**Open balances at the cut-over (Odoo).** The same file carries your trial balance and every open customer and vendor invoice and credit note at the `--cutover`
+date. The ERP brings them in as **one opening journal** and **one document per open invoice** (its own number and date, the unpaid amount, no tax), completes and
+posts them, and then checks its books against your Odoo rows: each account's balance, the open amount per partner, and two clearing accounts that must end at zero.
+If anything differs it says which account and by how much.
+
+- **Open the period first.** The cut-over date's period must be open, and today's too if you migrate later than the cut-over. On a new company: untick *Automatic
+  Period Control* on the Accounting Schema, then open the period (Calendar Year and Period → Open/Close All). The summary tells you when this is missing.
+- **Where the amounts land.** Receivables and payables land on the ERP's own customer and vendor accounts; every other account keeps its Odoo number.
+- **Your bank balance waits on the account `BANK-CLEAR`** until you enter your opening bank statement — that step is not built yet.
+- **Not brought in:** payments not yet matched to an invoice, manual journal entries on the receivable or payable account, and open items in a foreign currency. The
+  summary counts them, and their total stays on the clearing account.
+
+**Not moved yet:** open orders, stock **value** (quantities move, costs do not), lots and serial numbers (stock is summed per product and location),
 vendor price breaks, instalment payment terms, closed history. Odoo apps outside trade and accounting (manufacturing, HR, POS …) arrive as plugins.
 
 ---
