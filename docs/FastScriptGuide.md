@@ -456,7 +456,7 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `erp.close` | undefined a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
 <!-- /GEN:verbs -->
 
-**Coverage today.** The list is small on purpose: 22 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1156 documents and processes, and the door offers 7 ERP verbs. So this is a start, not the whole menu.
+**Coverage today.** The list is small on purpose: 22 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 7 ERP verbs. So this is a start, not the whole menu.
 
 ## What is not checked
 
