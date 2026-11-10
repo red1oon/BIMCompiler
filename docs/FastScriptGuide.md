@@ -450,6 +450,31 @@ shown 4 of 4
 
 A kind with no records at all does not answer `0` or an empty list. It answers `inconclusive`, because nothing was judged.
 
+## Create a record: `erp.new`
+
+`erp.new` makes a record the way the ERP's own window makes it. You name the kind and the columns you know; the engine fills the rest the way the window does (defaults, the choices a partner brings with it, the Document No from the sequence). A column the dictionary does not have is refused and the reply lists the real ones. A mandatory column still empty after that is refused by name, and nothing is written. The reply starts with `number`: the Document No, which is what you use next.
+
+A Sales or Purchase document needs `issotrx=Y` or `N`. A partner or product may be given by name; a name that matches no record, or more than one, is refused. A line names its document by number:
+
+<!-- run: new_order -->
+```text
+$ rm -f /tmp/fast_guide_new.ops; BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js 'erp.new kind=Order issotrx=Y c_doctypetarget_id=132 c_bpartner_id=112 salesrep_id=101'
+```
+
+<!-- run: new_line -->
+```text
+$ BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js 'erp.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2'
+```
+
+The order is a draft until someone completes it. Because the line was given the order's number, the order's totals follow without a second step:
+
+<!-- run: new_read -->
+```text
+$ BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js --list 'erp.read kind=Order number=50000'
+```
+
+`erp.new` is a `writes` verb. A person at the terminal runs it. An AI's `erp.new` is held as a claim and nothing is written until a person confirms it (see "What is a claim"). These blocks use a scratch op-log (`/tmp/fast_guide_new.ops`, emptied first), so running them does not touch your own data.
+
 ## Choose how the answer is shown, and keep it
 
 The reply is the JSON envelope unless you ask otherwise. Three switches show the rows of an answer as something a person or a spreadsheet can read; the envelope is still what the door records:
