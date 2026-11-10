@@ -1,6 +1,7 @@
 # org.idempiere.bimdocument — BIM Document for a real iDempiere server
 
-OSGi component (Java). The dictionary rows (table, columns, lists, window, tabs, menu, process rows) are NOT here: they come as a 2Pack (metadata only).
+OSGi component (Java). The dictionary rows (table, columns, lists, window, tabs, menu, process rows) are in `META-INF/2Pack_1.0.0.zip` (metadata only; `Incremental2PackActivator` applies it once).
+The pack and the `I_`/`X_` classes are GENERATED from one data-model workbook (`bim-ootb erp/plugins/models/BIM_Document.xlsx`): `node erp/tools/xlsx_pack.js <workbook> --version 1.0.0 --out <bundle>/META-INF --java <bundle>/src --package org.kernel.bim.model`. Do not edit them by hand; change the workbook and bump the pack version.
 This bundle holds what a pack cannot: the model classes and the process classes.
 
 | File | What |

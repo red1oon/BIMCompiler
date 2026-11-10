@@ -1,12 +1,14 @@
 /******************************************************************************
  * Copyright (C) 2025-2026 Redhuan D. Oon <red1org@gmail.com>                 *
  * SPDX-License-Identifier: GPL-2.0-only                                      *
- * Same shape as iDempiere's generated model classes (GenerateModel).         *
+ * Generated from the ERP data-model workbook by erp/tools/xlsx_pack.js,      *
+ * in the shape of iDempiere's own generated model classes. DO NOT EDIT.      *
  *****************************************************************************/
 package org.kernel.bim.model;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.util.Properties;
 import org.compiere.model.I_Persistent;
 import org.compiere.model.PO;
@@ -16,7 +18,7 @@ import org.compiere.util.Env;
 @org.adempiere.base.Model(table="BIM_Document")
 public class X_BIM_Document extends PO implements I_BIM_Document, I_Persistent
 {
-	private static final long serialVersionUID = 20261111L;
+	private static final long serialVersionUID = 1L;
 
 	/** Standard Constructor */
 	public X_BIM_Document (Properties ctx, int BIM_Document_ID, String trxName)
@@ -38,7 +40,7 @@ public class X_BIM_Document extends PO implements I_BIM_Document, I_Persistent
 	{
 		super (ctx, rs, trxName);
 	}
-	/** AccessLevel @return 3 - Client - Org */
+	/** AccessLevel @return 3 */
 	protected int get_AccessLevel()
 	{
 		return accessLevel.intValue();
@@ -50,7 +52,7 @@ public class X_BIM_Document extends PO implements I_BIM_Document, I_Persistent
 	}
 	public String toString()
 	{
-		return new StringBuilder ("X_BIM_Document[").append(get_ID()).append(",DeliverableNo=").append(getDeliverableNo()).append(",Revision=").append(getRevision()).append("]").toString();
+		return new StringBuilder ("X_BIM_Document[").append(get_ID()).append(",DeliverableNo=").append(getDeliverableNo()).append(",Name=").append(getName()).append("]").toString();
 	}
 	/** Set BIM Document */
 	public void setBIM_Document_ID (int v)

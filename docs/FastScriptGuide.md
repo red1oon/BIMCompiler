@@ -574,6 +574,21 @@ summary: InvoiceRule: 20 lines in 1 files (showing 2)
 
 Three more verbs sit beside these. `legacy.query table=c_order ad_client_id=11 limit=5` reads rows from a legacy table (read only; the table and every column are checked against legacy's dictionary, and the total is always given). `erp.compare kind=Order number=50000 legacy=50981` reads one record on the twin and the matching one on legacy and compares them cell for cell; a cell where legacy is empty and the twin holds a default is labelled `NULL-VS-DEFAULT` and nothing is said about why. `witness.run name=erp_new` runs a witness from the tree, keeps its whole log, and answers its own verdict line (PASS, FAIL or INCONCLUSIVE); a witness that prints no verdict line is an error, because an exit code is not evidence, and `witness.last` reads the last recorded run without running it again.
 
+### Make a plugin for a legacy iDempiere (OSGi and 2Pack)
+
+For the person who puts an ERP data model on a real iDempiere server. The data model is a workbook (Excel): one sheet per Application Dictionary table (`AD_Table`, `AD_Column`, `AD_Window`, `AD_Tab`, `AD_Field`, `AD_Menu`, and so on), one row per record, the first row the AD column names, and a `Key` column that names each row. A cell that points at another row of the workbook reads `ref:<Key>`; one that points at a row the server already has reads `existing:AD_Table:C_ProjectTask`. A sheet `Plugin` carries the plugin id, version and description. The worked example is the BIM Document model, `erp/plugins/models/BIM_Document.xlsx` in the `bim-ootb` repository.
+
+Two things are made from the one workbook, and they are kept apart:
+
+| Made | What it holds | Where it goes |
+|---|---|---|
+| **The 2Pack zip** | Metadata only: the dictionary rows, and the class *names* of any process. No program code. A pack version is applied once and never changed, so the same version with different rows is refused | The plugin's `META-INF` folder, where iDempiere's own pack activator picks it up when the plugin starts |
+| **The Java model classes** | `I_<Table>` and `X_<Table>` for each table the workbook creates, in the shape iDempiere's own generator writes | The plugin's `src` folder |
+
+What the workbook cannot make is the rules: the document action of the table, and any process's code. Those are written by hand in the plugin's `src` folder, as in any iDempiere plugin.
+
+Today this is one script: `node erp/tools/xlsx_pack.js <workbook.xlsx> --version 1.0.0 --out <plugin>/META-INF --java <plugin>/src --package <java package>`. It prints a `§XLSX-PACK` line for each file it writes. The two door verbs for it, `erp.pack` (just the zip) and `erp.legacy_plugin` (start the test database, make the zip, apply it on the legacy server, check the rows there), are specified in the NEURO contract and **not built yet**, so they are not in the table below.
+
 ## Viewer questions from a plain download
 
 Two Viewer verbs, `viewer.counts` and `viewer.clashes`, also work without a checkout. Put two more files beside the four:

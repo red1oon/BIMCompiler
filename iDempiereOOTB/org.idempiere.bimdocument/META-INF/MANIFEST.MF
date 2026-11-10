@@ -6,7 +6,9 @@ Bundle-Version: 13.0.0.qualifier
 Bundle-Vendor: iDempiere Community
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version>=17))"
-Require-Bundle: org.adempiere.base;bundle-version="13.0.0"
+Require-Bundle: org.adempiere.base;bundle-version="13.0.0",
+ org.adempiere.plugin.utils;bundle-version="13.0.0"
+Bundle-Activator: org.adempiere.plugin.utils.Incremental2PackActivator
 Import-Package: org.osgi.framework;version="1.10.0",
  org.osgi.service.component;version="1.5.0"
 Export-Package: org.kernel.bim.model,
