@@ -1477,3 +1477,25 @@ Baselines: `§MIGE verdict=PASS judged=58` · `§OB-VERDICT PASS judged=31` · `
 - **Small items a + b ✅ BUILT (witness) — bim-ootb PR #2798 (auto-merge armed):** `Trx.groupOps` trailing UPDATE names `<table>_uu` for a table without a single key column —
   `/tmp/count_logs/sf_groupops.log` `§GOC-VERDICT PASS judged=4 failed=0` (falsifier throws the old "no such column: c_charge_acct_id"); `witness_odoo_messy.js` runs stage 2 —
   `/tmp/count_logs/sf_odoo_messy.log` `§OM-AFTER ok=true … Opening stock completed: 1 inventory document(s), 25 line(s)` · `§OM-VERDICT PASS judged=14 failed=0` (was FAIL 2).
+
+### §IDEMPIERE-FALSIFIER-SPEC — iDempiere through the engine on an IDENTITY template, as the falsifier of engine + loader (2026-11-10e; owner decision 2; written before any code — build AFTER O2/O3, it touches `engine.mjs`)
+**Decided (RESUME 2026-11-10b):** the raw `psql COPY` fast path (`erp/idempiere_agent/migrate_agent.js`) STAYS the production path; this adds a witness, not a second loader.
+**Why it is a falsifier:** every other source is judged against an oracle we wrote (a hand converter). Here the oracle is the source itself — the target IS iDempiere, so
+iDempiere → engine → Ninja loader → twin tenant must give back the source rows. A mapping, lookup, default or length error anywhere in engine or loader shows as a difference.
+**Measured (2026-11-10, legacy postgres):** GardenWorld (`idempiere`, client 11): C_BPartner 18 · M_Product 55 · M_ProductPrice 114 · C_BPartner_Location 16 · M_InventoryLine 1.
+Pilot (`idempiere_pilot`, client 1000000): C_ElementValue 55 · C_BPartner 6 · C_Location 8 · M_Product 5 · M_PriceList_Version 3 · M_ProductPrice 9 · M_Inventory 3 /
+M_InventoryLine 5 · **C_UOM 0 · M_Product_PO 0** (a sheet with no source row judges nothing → INCONCLUSIVE for that sheet, named). GardenWorld is the richer source; both are run.
+**Pieces:**
+- **Connector `sqlite-tenant`** (test side only for now): `rows(table)` = the rows of ONE tenant from the agent's own output DB (`ad_masters_*.db`, the raw copy), `model` =
+  its columns (PRAGMA). Read only. No new agent code: the falsifier reads what the production path already wrote.
+- **Template `idempiere-identity.json`, GENERATED, not typed:** from `workbook.mjs` HEADERS — a plain column = `"$<column>"`; a lookup `X_ID>Alt` = `find[<table of X>, <key>, $X_ID,
+  Alt]` (the table by the loader's own rule: column minus `_ID`, else the column's reference key table, read from the dictionary); the Line-finds-header-by-DocumentNo rule the
+  same way. A generator script writes it; the witness regenerates and requires byte equality with the committed file (a hand edit is caught).
+- **Run:** tenant born by the ported Initial Client Setup → engine(identity template, source rows) → the shared form loader (stage 1 + stage 2) → compare with the SOURCE rows.
+**Witness `W-IDEMPIERE-FALSIFIER` (`erp/tests/witness_idempiere_falsifier.js`, §IDF lines), per sheet, X of N columns from HEADERS:** row count == source (minus rows the
+summary refused, each named) · for every sheet column the loaded row's value == the source row's (a lookup compared by the looked-up key, not the re-banded id) · rows matched by
+the sheet's natural key (Value / Name / DocumentNo / UU). **Expected, named differences are found by the run, not assumed** — e.g. units map to System units, a tenant's own
+defaults (BP group, tax category, element) resolve to the BORN tenant's rows, opening stock becomes a Completed document. Each such class must be explained by a legacy rule or
+it is a defect to fix on the engine / loader side. Falsifiers: one template field swapped → the witness names that column; one source row dropped → the count check names the sheet.
+**Not in scope:** columns outside the 17 sheets (the fast path carries every column; the import contract does not), transactions, retiring the fast path (a later, measured call:
+time and memory per 10k rows on both).
