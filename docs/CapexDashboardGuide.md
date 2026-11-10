@@ -146,7 +146,7 @@ real rows read from the test server, the date held at 4 Nov 2026 so it matches t
 
 1. **Left menu.** *Dashboard* is this view. The others are below. The red badge on *Approval Pending* is that count.
 2. **Data source** (bottom left). **B · Legacy iDempiere** is your server's data, from the job's file. **A · SQLite ERP DB** is the stock sample database shipped with the page: not your data, and not the twin's copy in your browser.
-3. **Filters.** *Org*, *Category* (`ProjectCategory`) and *Status*. Status starts on **Active Projects**. To look at one project, add `&project=<Value>` to the page address (the page then shows *Project: <Value>* beside the filters); there is no project drop-down yet. That changes the money
+3. **Filters.** *Org*, *Category* (`ProjectCategory`) and *Status*. Status starts on **Active Projects**. A fourth filter, **Project**, picks one project: its first choice is **All Projects**, and it lists only the projects the other three filters let through (change Status and a project that no longer fits drops out and the choice goes back to All Projects). A page address with `&project=<Value>` opens with that project already chosen. That changes the money
    tiles, as explained under *Page and Home tab: why a figure can differ*.
 4. **Last Updated.** The newest `C_Project.Updated` in the data, never the clock. An old date means old data.
 5. **The ƒ line** under each tile states its formula in iDempiere columns, so anyone can check it in SQL.
@@ -429,7 +429,6 @@ The steps, the scripts and the plugin's contents are in the **Developer's note**
 | Procurement Risks, Handover | No agreed definition: says *definition pending* |
 | Project Stage | Shows the Standard Phase. How your stages map onto `C_Phase` is not agreed. A proposal is under *For review* |
 | Payment-based progress | Not in the ERP |
-| Project drop-down | Not built. One project is chosen by adding `&project=<Value>` to the page address. Planned: a fourth filter whose blank choice is **All Projects** |
 | Document figures | Not built. Planned: a tile *issued for construction / deliverables*, from BIM Document. On a server that does not have BIM Document it will say **no data** |
 | BIM Document on your own iDempiere | The plugin's source is written and compiles against iDempiere 13; it has not yet been installed and checked on a server. It runs in Kernel-ERP today |
 | A revised model | Sending a revised model again adds nothing today (a second send changes nothing). Planned: it arrives as a new, version-tagged order that replaces the old one (the project is still in alpha, so no baseline is kept) |
