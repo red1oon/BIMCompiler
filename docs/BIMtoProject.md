@@ -330,3 +330,18 @@ this). A pretty workbook with a wrong subtotal is a failed report.
 **Witness — `W-PROJ-REPORT`:** `§PROJ_REPORT type=<boq|claim|vo|evm|sched|asset> rows=<n>
 total=<bd> golden=<bd> match=<bool> cur=<CUR> pack=<name>` — `match=true` (total == golden to the
 cent); currency + pack stamped in the title block; every section subtotal sums to the grand total.
+
+---
+
+## §E — VERSIONS: three kinds, and how they meet (2026-11-11, measured against the code; PROPOSED rules marked)
+
+| Kind | Where | State |
+|---|---|---|
+| **Document revision** | `BIM_Document` (`erp/plugins/bim_document.mjs`): per (project, deliverable no) a `Revision`; the latest wins; completing a newer revision sets the older to **Superseded** (`DocStatus RE`, `Reversal_ID` = "Superseded By"); issuing an older revision after a newer one is Issued for construction is refused | BUILT, witnessed (W-BIMDOC) |
+| **Schedule version** `planned` / `actual` | §D above | PAPER: no `version=actual` code found in `viewer/` (2026-11-11) |
+| **Model version** | the push is keyed by the model's name; a second Generate adds nothing (idempotent) | BUILT, but a revised model has no way to arrive as a NEW version |
+
+**Gaps (proposed, owner's go before code):**
+1. **Revised model.** Because the push is idempotent, a revised model re-pushed adds nothing, and a delete-and-re-issue overwrites. The §D fence "never overwrite the planned baseline" is not yet enforceable. PROPOSED: the first push is `planned r1` and is frozen; a later push of a changed model is a new schedule version `planned r2` (same `C_Project`, new phases/lines tagged by version), never an edit of r1. Variation Orders already exist for committed orders (guide: "Issue Variation Order"); a version is the schedule side of the same event.
+2. **Which revision a walk used.** SHEETS are already covered: the walker gate (`project_inputs.js`, `DISC_WALK_DRAWN_INTEGRATION.md` §12a) compares the register row's `sha256` with the sheet file, stores `drawn_sheet_status(sheet_number, revision, status, basis)` in the building DB, and stamps each drawn piece `prov='drawn:<no>/<rev>'`. NOT covered: (a) a walk is not re-judged when the register changes later (a newer revision issued for construction after the walk); (b) the IFC MODEL itself has no stamp: the extraction keeps the source file NAME (`project_metadata.source_file`), not a content hash (to verify). PROPOSED: the extraction stores the source file's sha256 so "the model matches the issued document" is two hashes compared (order of trust, §12 step 1 vs 2), and a re-run of the gate against a fresh register reports `§INPUTS-STALE` for any walk whose stamped revision is no longer the latest issued.
+3. **Project to building** is today a file-name convention: the dashboard looks for `<C_Project.Value>_extracted.db` (`capex/dash.js` `probeBim`) and the push keys the order by the model's name. It works while the two names agree and breaks silently when a project is renamed.

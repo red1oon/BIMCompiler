@@ -91,7 +91,7 @@ real rows read from the test server, the date held at 4 Nov 2026 so it matches t
 
 1. **Left menu.** *Dashboard* is this view. The others are below. The red badge on *Approval Pending* is that count.
 2. **Data source** (bottom left). **B · Legacy iDempiere** is your server's data, from the job's file. **A · SQLite ERP DB** is the stock sample database shipped with the page: not your data, and not the twin's copy in your browser.
-3. **Filters.** *Org*, *Category* (`ProjectCategory`) and *Status*. Status starts on **Active Projects**. That changes the money
+3. **Filters.** *Org*, *Category* (`ProjectCategory`) and *Status*. Status starts on **Active Projects**. To look at one project, add `&project=<Value>` to the page address (the page then shows *Project: <Value>* beside the filters); there is no project drop-down yet. That changes the money
    tiles, as explained under *Page and Home tab: why a figure can differ*.
 4. **Last Updated.** The newest `C_Project.Updated` in the data, never the clock. An old date means old data.
 5. **The ƒ line** under each tile states its formula in iDempiere columns, so anyone can check it in SQL.
@@ -144,7 +144,7 @@ the projects are test pushes of one building, so the amounts themselves mean not
 ### The other views
 
 **Projects** lists each project: Value, Name, Org, Currency, Planned, Actual, Committed, Standard Phase. The **BIM** button appears only when
-that project's building file is found, and opens it in the BIM viewer.
+that project's building file is found, and opens it in the BIM viewer. The file is found by name: `<project Value>_extracted.db`, the same name the BIM push uses for the Project Order. The drawings and models filed against the project (BIM Document) are not shown here yet; see the Modeller guide, *After the order*.
 
 ![Projects view: one row per active project](img/capex/capex_page_projects.png)
 
