@@ -1372,6 +1372,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="For developers: check the twin against legacy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#make-a-plugin-for-a-legacy-idempiere-osgi-and-2pack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Make a plugin for a legacy iDempiere (OSGi and 2Pack)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3364,6 +3381,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="For developers: check the twin against legacy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#make-a-plugin-for-a-legacy-idempiere-osgi-and-2pack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Make a plugin for a legacy iDempiere (OSGi and 2Pack)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3588,7 +3622,7 @@ exit 0
 <p>The last row is deliberate. Text that matches no verb is <strong>never guessed at</strong>:</p>
 <!-- run: question -->
 <div class="highlight"><pre><span></span><code>$ node door.js &#39;please widen the bay&#39;
-{&quot;request&quot;:&quot;d-mwb7nify-2354956-1&quot;,&quot;verb&quot;:null,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;refused&quot;,&quot;answer&quot;:{&quot;question&quot;:&quot;I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type !help.&quot;,&quot;verbs&quot;:[&quot;modeller.lines&quot;,&quot;modeller.try_shift&quot;,&quot;viewer.counts&quot;,&quot;viewer.clashes&quot;,&quot;viewer.film_path&quot;,&quot;viewer.schedule_at&quot;,&quot;viewer.schedule_compare&quot;,&quot;modeller.widen_bay&quot;,&quot;modeller.walk&quot;,&quot;object.describe&quot;,&quot;object.read&quot;,&quot;object.history&quot;,&quot;object.update&quot;,&quot;object.attach&quot;,&quot;object.count&quot;,&quot;object.list&quot;,&quot;object.sum&quot;,&quot;object.group&quot;,&quot;erp.find&quot;,&quot;erp.actions&quot;,&quot;erp.describe&quot;,&quot;erp.read&quot;,&quot;erp.list&quot;,&quot;erp.sum&quot;,&quot;erp.group&quot;,&quot;erp.new&quot;,&quot;erp.complete&quot;,&quot;erp.void&quot;,&quot;erp.close&quot;,&quot;erp.reverse&quot;,&quot;witness.run&quot;,&quot;witness.last&quot;,&quot;legacy.status&quot;,&quot;legacy.query&quot;,&quot;erp.column&quot;,&quot;erp.compare&quot;,&quot;idempiere.where&quot;]},&quot;why&quot;:&quot;not a command: \&quot;please widen the bay\&quot;&quot;,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:0}
+{&quot;request&quot;:&quot;d-mwb8j6xe-2387161-1&quot;,&quot;verb&quot;:null,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;refused&quot;,&quot;answer&quot;:{&quot;question&quot;:&quot;I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type !help.&quot;,&quot;verbs&quot;:[&quot;modeller.lines&quot;,&quot;modeller.try_shift&quot;,&quot;viewer.counts&quot;,&quot;viewer.clashes&quot;,&quot;viewer.film_path&quot;,&quot;viewer.schedule_at&quot;,&quot;viewer.schedule_compare&quot;,&quot;modeller.widen_bay&quot;,&quot;modeller.walk&quot;,&quot;object.describe&quot;,&quot;object.read&quot;,&quot;object.history&quot;,&quot;object.update&quot;,&quot;object.attach&quot;,&quot;object.count&quot;,&quot;object.list&quot;,&quot;object.sum&quot;,&quot;object.group&quot;,&quot;erp.find&quot;,&quot;erp.actions&quot;,&quot;erp.describe&quot;,&quot;erp.read&quot;,&quot;erp.list&quot;,&quot;erp.sum&quot;,&quot;erp.group&quot;,&quot;erp.new&quot;,&quot;erp.complete&quot;,&quot;erp.void&quot;,&quot;erp.close&quot;,&quot;erp.reverse&quot;,&quot;witness.run&quot;,&quot;witness.last&quot;,&quot;legacy.status&quot;,&quot;legacy.query&quot;,&quot;erp.column&quot;,&quot;erp.compare&quot;,&quot;idempiere.where&quot;,&quot;erp.pack&quot;]},&quot;why&quot;:&quot;not a command: \&quot;please widen the bay\&quot;&quot;,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:0}
 </code></pre></div>
 <h2 id="reading-the-reply">Reading the reply<a class="headerlink" href="#reading-the-reply" title="Permanent link">&para;</a></h2>
 <p>Every line, from every actor, gets the same envelope. Read these in order.</p>
@@ -3915,6 +3949,32 @@ verdict: OK
 summary: InvoiceRule: 20 lines in 1 files (showing 2)
 </code></pre></div>
 <p>Three more verbs sit beside these. <code>legacy.query table=c_order ad_client_id=11 limit=5</code> reads rows from a legacy table (read only; the table and every column are checked against legacy's dictionary, and the total is always given). <code>erp.compare kind=Order number=50000 legacy=50981</code> reads one record on the twin and the matching one on legacy and compares them cell for cell; a cell where legacy is empty and the twin holds a default is labelled <code>NULL-VS-DEFAULT</code> and nothing is said about why. <code>witness.run name=erp_new</code> runs a witness from the tree, keeps its whole log, and answers its own verdict line (PASS, FAIL or INCONCLUSIVE); a witness that prints no verdict line is an error, because an exit code is not evidence, and <code>witness.last</code> reads the last recorded run without running it again.</p>
+<h3 id="make-a-plugin-for-a-legacy-idempiere-osgi-and-2pack">Make a plugin for a legacy iDempiere (OSGi and 2Pack)<a class="headerlink" href="#make-a-plugin-for-a-legacy-idempiere-osgi-and-2pack" title="Permanent link">&para;</a></h3>
+<p>For the person who puts an ERP data model on a real iDempiere server. The data model is a workbook (Excel): one sheet per Application Dictionary table (<code>AD_Table</code>, <code>AD_Column</code>, <code>AD_Window</code>, <code>AD_Tab</code>, <code>AD_Field</code>, <code>AD_Menu</code>, and so on), one row per record, the first row the AD column names, and a <code>Key</code> column that names each row. A cell that points at another row of the workbook reads <code>ref:&lt;Key&gt;</code>; one that points at a row the server already has reads <code>existing:AD_Table:C_ProjectTask</code>. A sheet <code>Plugin</code> carries the plugin id, version and description. The worked example is the BIM Document model, <code>erp/plugins/models/BIM_Document.xlsx</code> in the <code>bim-ootb</code> repository.</p>
+<p>Two things are made from the one workbook, and they are kept apart:</p>
+<table>
+<thead>
+<tr>
+<th>Made</th>
+<th>What it holds</th>
+<th>Where it goes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>The 2Pack zip</strong></td>
+<td>Metadata only: the dictionary rows, and the class <em>names</em> of any process. No program code. A pack version is applied once and never changed, so the same version with different rows is refused</td>
+<td>The plugin's <code>META-INF</code> folder, where iDempiere's own pack activator picks it up when the plugin starts</td>
+</tr>
+<tr>
+<td><strong>The Java model classes</strong></td>
+<td><code>I_&lt;Table&gt;</code> and <code>X_&lt;Table&gt;</code> for each table the workbook creates, in the shape iDempiere's own generator writes</td>
+<td>The plugin's <code>src</code> folder</td>
+</tr>
+</tbody>
+</table>
+<p>What the workbook cannot make is the rules: the document action of the table, and any process's code. Those are written by hand in the plugin's <code>src</code> folder, as in any iDempiere plugin.</p>
+<p>The door verb <code>erp.pack book=&lt;workbook.xlsx&gt; version=&lt;x.y.z&gt; out=&lt;plugin&gt;/META-INF</code> writes just the zip, and answers its sha256, the rows per dictionary table and the names of the process classes it points at. Run again with the same version and the same rows it answers <code>unchanged</code>; the same version with an edited workbook is refused, because a released pack is never changed. Add <code>java=&lt;plugin&gt;/src package=&lt;java package&gt;</code> and the Java model classes are written too. A person runs it; an AI's call is held as a claim until a person confirms. The script underneath is still <code>node erp/tools/xlsx_pack.js</code>, which prints a <code>§XLSX-PACK</code> line for each file it writes. The second verb, <code>erp.legacy_plugin</code> (start the test database, make the zip, apply it on the legacy server, check the rows there), is specified in the NEURO contract and <strong>not built yet</strong>: applying a plugin changes a legacy server, so it waits for a decision on which server. It is not in the table below.</p>
 <h2 id="viewer-questions-from-a-plain-download">Viewer questions from a plain download<a class="headerlink" href="#viewer-questions-from-a-plain-download" title="Permanent link">&para;</a></h2>
 <p>Two Viewer verbs, <code>viewer.counts</code> and <code>viewer.clashes</code>, also work without a checkout. Put two more files beside the four:</p>
 <div class="highlight"><pre><span></span><code>curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_verbs.js
@@ -4238,11 +4298,19 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
 </tr>
+<tr>
+<td><code>erp.pack</code></td>
+<td>Make the 2Pack zip from a data-model workbook</td>
+<td><code>book</code>, <code>version</code>, <code>out</code> (optional), <code>java</code> (optional), <code>package</code> (optional)</td>
+<td>writes</td>
+<td>human, ai</td>
+<td>a bim-ootb checkout</td>
+</tr>
 </tbody>
 </table>
 <!-- /GEN:verbs -->
 
-<p><strong>Coverage today.</strong> The list is small on purpose: 37 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 14 ERP verbs. So this is a start, not the whole menu.</p>
+<p><strong>Coverage today.</strong> The list is small on purpose: 38 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 15 ERP verbs. So this is a start, not the whole menu.</p>
 <h2 id="what-is-not-checked">What is not checked<a class="headerlink" href="#what-is-not-checked" title="Permanent link">&para;</a></h2>
 <p>A reply lists what its check did not cover. For the Modeller's edit report the list is:</p>
 <!-- run: notchecked cut=520 -->
