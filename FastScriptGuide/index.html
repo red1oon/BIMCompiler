@@ -3622,7 +3622,7 @@ exit 0
 <p>The last row is deliberate. Text that matches no verb is <strong>never guessed at</strong>:</p>
 <!-- run: question -->
 <div class="highlight"><pre><span></span><code>$ node door.js &#39;please widen the bay&#39;
-{&quot;request&quot;:&quot;d-mwb8j6xe-2387161-1&quot;,&quot;verb&quot;:null,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;refused&quot;,&quot;answer&quot;:{&quot;question&quot;:&quot;I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type !help.&quot;,&quot;verbs&quot;:[&quot;modeller.lines&quot;,&quot;modeller.try_shift&quot;,&quot;viewer.counts&quot;,&quot;viewer.clashes&quot;,&quot;viewer.film_path&quot;,&quot;viewer.schedule_at&quot;,&quot;viewer.schedule_compare&quot;,&quot;modeller.widen_bay&quot;,&quot;modeller.walk&quot;,&quot;object.describe&quot;,&quot;object.read&quot;,&quot;object.history&quot;,&quot;object.update&quot;,&quot;object.attach&quot;,&quot;object.count&quot;,&quot;object.list&quot;,&quot;object.sum&quot;,&quot;object.group&quot;,&quot;erp.find&quot;,&quot;erp.actions&quot;,&quot;erp.describe&quot;,&quot;erp.read&quot;,&quot;erp.list&quot;,&quot;erp.sum&quot;,&quot;erp.group&quot;,&quot;erp.new&quot;,&quot;erp.complete&quot;,&quot;erp.void&quot;,&quot;erp.close&quot;,&quot;erp.reverse&quot;,&quot;witness.run&quot;,&quot;witness.last&quot;,&quot;legacy.status&quot;,&quot;legacy.query&quot;,&quot;erp.column&quot;,&quot;erp.compare&quot;,&quot;idempiere.where&quot;,&quot;erp.pack&quot;]},&quot;why&quot;:&quot;not a command: \&quot;please widen the bay\&quot;&quot;,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:0}
+{&quot;request&quot;:&quot;d-mwbb7xxz-2475632-1&quot;,&quot;verb&quot;:null,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;refused&quot;,&quot;answer&quot;:{&quot;question&quot;:&quot;I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type !help.&quot;,&quot;verbs&quot;:[&quot;modeller.lines&quot;,&quot;modeller.try_shift&quot;,&quot;viewer.counts&quot;,&quot;viewer.clashes&quot;,&quot;viewer.film_path&quot;,&quot;viewer.schedule_at&quot;,&quot;viewer.schedule_compare&quot;,&quot;modeller.widen_bay&quot;,&quot;modeller.walk&quot;,&quot;object.describe&quot;,&quot;object.read&quot;,&quot;object.history&quot;,&quot;object.update&quot;,&quot;object.attach&quot;,&quot;object.count&quot;,&quot;object.list&quot;,&quot;object.sum&quot;,&quot;object.group&quot;,&quot;erp.find&quot;,&quot;erp.actions&quot;,&quot;erp.describe&quot;,&quot;erp.read&quot;,&quot;erp.list&quot;,&quot;erp.sum&quot;,&quot;erp.group&quot;,&quot;erp.new&quot;,&quot;erp.complete&quot;,&quot;erp.void&quot;,&quot;erp.close&quot;,&quot;erp.reverse&quot;,&quot;witness.run&quot;,&quot;witness.last&quot;,&quot;legacy.status&quot;,&quot;legacy.query&quot;,&quot;erp.column&quot;,&quot;erp.compare&quot;,&quot;idempiere.where&quot;,&quot;erp.pack&quot;,&quot;legacy.up&quot;,&quot;legacy.refresh&quot;,&quot;legacy.witness&quot;,&quot;legacy.check&quot;,&quot;erp.legacy_plugin&quot;]},&quot;why&quot;:&quot;not a command: \&quot;please widen the bay\&quot;&quot;,&quot;notChecked&quot;:[],&quot;ops&quot;:[],&quot;next&quot;:[],&quot;ms&quot;:0}
 </code></pre></div>
 <h2 id="reading-the-reply">Reading the reply<a class="headerlink" href="#reading-the-reply" title="Permanent link">&para;</a></h2>
 <p>Every line, from every actor, gets the same envelope. Read these in order.</p>
@@ -3974,7 +3974,19 @@ summary: InvoiceRule: 20 lines in 1 files (showing 2)
 </tbody>
 </table>
 <p>What the workbook cannot make is the rules: the document action of the table, and any process's code. Those are written by hand in the plugin's <code>src</code> folder, as in any iDempiere plugin.</p>
-<p>The door verb <code>erp.pack book=&lt;workbook.xlsx&gt; version=&lt;x.y.z&gt; out=&lt;plugin&gt;/META-INF</code> writes just the zip, and answers its sha256, the rows per dictionary table and the names of the process classes it points at. Run again with the same version and the same rows it answers <code>unchanged</code>; the same version with an edited workbook is refused, because a released pack is never changed. Add <code>java=&lt;plugin&gt;/src package=&lt;java package&gt;</code> and the Java model classes are written too. A person runs it; an AI's call is held as a claim until a person confirms. The script underneath is still <code>node erp/tools/xlsx_pack.js</code>, which prints a <code>§XLSX-PACK</code> line for each file it writes. The second verb, <code>erp.legacy_plugin</code> (start the test database, make the zip, apply it on the legacy server, check the rows there), is specified in the NEURO contract and <strong>not built yet</strong>: applying a plugin changes a legacy server, so it waits for a decision on which server. It is not in the table below.</p>
+<p>The door verb <code>erp.pack book=&lt;workbook.xlsx&gt; version=&lt;x.y.z&gt; out=&lt;plugin&gt;/META-INF</code> writes just the zip, and answers its sha256, the rows per dictionary table and the names of the process classes it points at. Run again with the same version and the same rows it answers <code>unchanged</code>; the same version with an edited workbook is refused, because a released pack is never changed. Add <code>java=&lt;plugin&gt;/src package=&lt;java package&gt;</code> and the Java model classes are written too. A person runs it; an AI's call is held as a claim until a person confirms. The script underneath is still <code>node erp/tools/xlsx_pack.js</code>, which prints a <code>§XLSX-PACK</code> line for each file it writes. The second verb, <code>erp.legacy_plugin book=&lt;workbook.xlsx&gt; version=&lt;x.y.z&gt;</code>, is the whole route on the local legacy test instance in one line. It runs five lines, and the first one that is not ok stops it: <code>legacy.up</code> (start the shared docker Postgres if it is stopped), <code>erp.pack</code> (make the zip), <code>legacy.refresh</code> (rebuild the test database from the base seed, install the plugin, start the server and wait until the pack is installed, about two minutes), <code>legacy.check</code> (read every row of the workbook back from the test database by SQL) and <code>legacy.witness</code> (run the in-server check over the server's console and answer its verdict and counts). Every step can be run alone. The instance, its database and the scripts are fixed: nothing is taken from the caller, and the pilot's databases are refused. A person runs it; an AI's call is held as a claim until a person confirms.</p>
+<p><code>legacy.check</code> is the read-only one, and it answers how many rows of each kind were found against how many the workbook holds:</p>
+<!-- run: legacy_check -->
+<div class="highlight"><pre><span></span><code>$ node common/door/door.js --list &#39;legacy.check book=erp/plugins/models/BIM_Document.xlsx&#39;
+database: idempiere_bimdoc
+book: erp/plugins/models/BIM_Document.xlsx
+checks: [{&quot;what&quot;:&quot;AD_Table rows&quot;,&quot;expected&quot;:1,&quot;found&quot;:1,&quot;ok&quot;:true},{&quot;what&quot;:&quot;physical tables&quot;,&quot;expected&quot;:1,&quot;found&quot;:1,&quot;ok&quot;:true},{&quot;what&quot;:&quot;AD_Column rows&quot;,&quot;expected&quot;:32,&quot;found&quot;:32,&quot;ok&quot;:true},{&quot;what&quot;:&quot;AD_Window rows&quot;,&quot;expected&quot;:1,&quot;found&quot;:1,&quot;ok&quot;:true},{&quot;what&quot;:&quot;AD_Tab rows&quot;,&quot;expected&quot;:2,&quot;found&quot;:2,&quot;ok&quot;:true},{&quot;what&quot;:&quot;AD_Menu rows&quot;,&quot;expected&quot;:1,&quot;found&quot;:1,&quot;ok&quot;:true},{&quot;what&quot;:&quot;AD_Process rows with the same class name&quot;,&quot;expected&quot;:2,&quot;found&quot;:2,&quot;ok&quot;:true},{&quot;what&quot;:&quot;AD_Reference rows&quot;,&quot;expected&quot;:4,&quot;found&quot;:4,&quot;ok&quot;:true}]
+pack: {&quot;compared&quot;:false,&quot;note&quot;:&quot;no version given: the installed pack was not compared with a fresh one&quot;}
+missing: []
+verdict: ALL-FOUND
+summary: test DB idempiere_bimdoc: ALL-FOUND (8/8 kinds of row); no version given: the installed pack was not compared with a fresh one
+</code></pre></div>
+<p>Give it <code>version=&lt;x.y.z&gt;</code> as well and it compares the 2Pack installed in the plugin with the pack just made from the workbook, and says plainly when they differ: the refresh installs the plugin bundle as it is committed, so the two can drift apart until the bundle is rebuilt.</p>
 <h2 id="viewer-questions-from-a-plain-download">Viewer questions from a plain download<a class="headerlink" href="#viewer-questions-from-a-plain-download" title="Permanent link">&para;</a></h2>
 <p>Two Viewer verbs, <code>viewer.counts</code> and <code>viewer.clashes</code>, also work without a checkout. Put two more files beside the four:</p>
 <div class="highlight"><pre><span></span><code>curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_verbs.js
@@ -4306,11 +4318,51 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
 </tr>
+<tr>
+<td><code>legacy.up</code></td>
+<td>Start the shared docker Postgres for the legacy test stack</td>
+<td>none</td>
+<td>writes</td>
+<td>human, ai</td>
+<td>a bim-ootb checkout</td>
+</tr>
+<tr>
+<td><code>legacy.refresh</code></td>
+<td>Refresh the legacy test instance from the base seed</td>
+<td>none</td>
+<td>writes</td>
+<td>human, ai</td>
+<td>a bim-ootb checkout</td>
+</tr>
+<tr>
+<td><code>legacy.witness</code></td>
+<td>Run the in-server witness on the legacy test instance</td>
+<td>none</td>
+<td>trial</td>
+<td>human, ai</td>
+<td>a bim-ootb checkout</td>
+</tr>
+<tr>
+<td><code>legacy.check</code></td>
+<td>Check a workbook's rows in the legacy test database</td>
+<td><code>book</code>, <code>version</code> (optional)</td>
+<td>read</td>
+<td>human, ai</td>
+<td>a bim-ootb checkout</td>
+</tr>
+<tr>
+<td><code>erp.legacy_plugin</code></td>
+<td>Put a data-model plugin on the legacy test instance and check it there</td>
+<td><code>book</code>, <code>version</code></td>
+<td>writes</td>
+<td>human, ai</td>
+<td>a bim-ootb checkout</td>
+</tr>
 </tbody>
 </table>
 <!-- /GEN:verbs -->
 
-<p><strong>Coverage today.</strong> The list is small on purpose: 38 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 15 ERP verbs. So this is a start, not the whole menu.</p>
+<p><strong>Coverage today.</strong> The list is small on purpose: 43 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 16 ERP verbs. So this is a start, not the whole menu.</p>
 <h2 id="what-is-not-checked">What is not checked<a class="headerlink" href="#what-is-not-checked" title="Permanent link">&para;</a></h2>
 <p>A reply lists what its check did not cover. For the Modeller's edit report the list is:</p>
 <!-- run: notchecked cut=520 -->

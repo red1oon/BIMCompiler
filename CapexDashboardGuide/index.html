@@ -1788,6 +1788,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#try-it-the-bim-document-test-instance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Try it: the BIM Document test instance
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3768,6 +3779,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#try-it-the-bim-document-test-instance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Try it: the BIM Document test instance
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -4723,7 +4745,7 @@ measure. To add a currency, copy an existing pair and change <code>C_Currency_ID
 </tr>
 <tr>
 <td>A revised model</td>
-<td>Sending a revised model again adds nothing today (a second send changes nothing). Planned: it arrives as a new version of the schedule, the first one kept as the baseline</td>
+<td>Sending a revised model again adds nothing today (a second send changes nothing). Planned: it arrives as a new, version-tagged order that replaces the old one (the project is still in alpha, so no baseline is kept)</td>
 </tr>
 <tr>
 <td>Register button</td>
@@ -4915,8 +4937,16 @@ stays stopped.</p>
 <strong>rows in the pack's <code>PackOut.xml</code></strong> (the dictionary itself); <strong>SQL statements inside <code>PackOut.xml</code></strong> (a database type is stated per statement);
 or <strong>a SQL migration script</strong> under the plugin's <code>migration</code> folder, as the dashboard's read types already do. A pack version is applied once and
 never changed: a changed pack gets a new version. Start the database first, apply the pack, then check the rows on the server.</p>
-<p><em>Status:</em> the plugin compiles against iDempiere 13. The pack is generated from the Kernel-ERP model by a verb another session is building, and
-the document types per client (<code>DocBaseType</code> BIM) are not yet created by the plugin. It has not yet been run on a server.</p>
+<p><em>Status:</em> installed and tested on a real iDempiere 13 server (a test instance on the developer's machine). The pack and the <code>I_</code>/<code>X_</code> classes are generated from one
+Excel data-model workbook. The document types per client (<code>DocBaseType</code> BIM) are not yet created by the plugin, and the Project window's project-level BIM Document
+tab is not built yet.</p>
+<h4 id="try-it-the-bim-document-test-instance">Try it: the BIM Document test instance<a class="headerlink" href="#try-it-the-bim-document-test-instance" title="Permanent link">&para;</a></h4>
+<p><code>scripts/legacy_bimdoc_refresh.sh</code> (in the bim-compiler repository) rebuilds a test instance from iDempiere's base seed in about two minutes: it creates a fresh
+database, imports the seed, applies the newer migration scripts, installs the plugin and starts the server, then reads the rows back. The instance is
+<code>~/idempiere-bimdoc</code>, at <code>http://localhost:8108/webui</code>; start and stop it with the <code>start.sh</code> and <code>stop.sh</code> beside it. <code>scripts/legacy_bimdoc_witness.sh</code> then runs the
+checks inside the server (a document issued for construction supersedes the older revision, an older revision cannot be issued after a newer one, the register file,
+a task-less deliverable refused) and rolls its changes back. Do not use iDempiere's own <code>ImportIdempiere.sh</code> on a database server shared with other databases: it drops
+the shared <code>adempiere</code> role.</p>
 <h3 id="the-bim-document-model-what-is-in-the-plugin">The BIM Document model (what is in the plugin)<a class="headerlink" href="#the-bim-document-model-what-is-in-the-plugin" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
