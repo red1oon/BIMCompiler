@@ -1,4 +1,5 @@
 # ⚠ DO NOT REMOVE — Migrate ACTUALLY installs a loadable tenant (Client 12 Odoo + 13 iDempiere)
+# ▶ CURRENT ENTRY POINT (2026-11-10): the LAST block of this file, "RESUME HERE (2026-11-10u)" — review + harden the migration feature and its guide. The header below is history.
 # STATUS: STALE HEADER — P0/P1/P2 Odoo done 2026-06-05→06; P1-iDempiere, said BLOCKED below, was actually
 #   UNBLOCKED+SHIPPED (PK re-band 2026-06-11 + idempiere_agent.zip via a DIFFERENT lane, ABOUT_BOX_CONSOLIDATE.md,
 #   by 2026-06-19) — this file was never updated to say so. See `§2026-07-22 AUDIT` at the bottom for current
@@ -1604,7 +1605,7 @@ header, 1 row each) · `§IDF-COVERAGE-VERDICT PASS` — every row not loaded at
 falsifiers caught (`§IDF-FALSIFY-COLUMN`, `-ROW`, `-UNATTRIBUTED`: a C_Location row dropped from the book → named as fitting no class, with its dependent row) ·
 **`§IDF-VERDICT PASS columns=PASS coverage=PASS`**. Pilot C_UOM and M_Product_PO: INCONCLUSIVE (no source row). Test-side only (no shipped file, no sw bump).
 
-### ▶ RESUME HERE (2026-11-10l) — supersedes 2026-11-10h. The three jobs dictated for 2026-11-10 are DONE: E3c · Odoo onto the engine (O1–O3) · the iDempiere falsifier.
+### ▶ (superseded by RESUME HERE 2026-11-10u at the END of the file) RESUME HERE (2026-11-10l) — The three jobs dictated for 2026-11-10 are DONE: E3c · Odoo onto the engine (O1–O3) · the iDempiere falsifier.
 1. Check bim-ootb #2811 landed (`gh pr view 2811`); prune `/tmp/wt-idf` when merged and clean.
 2. **⛔ ONE owner decision (from the falsifier, class `key-already-in-tenant`):** a source row whose key the tenant already holds (e.g. a payment term "Immediate", a partner
    "Standard") is refused by the unique index, and because the loader is all-or-nothing (F7) the whole migration is refused. Options: (a) keep as is — the user unticks or
@@ -1732,3 +1733,81 @@ unit-not-carried 12->2` (the 2 = units no product uses, which the form drops) ·
 **§2026-11-10t — in flight:** Lane E3d (bank masters, *Opening Charge Bank*, the `I_BankStatement` open sheet, the verifier's judged BANK lines, the inline-beforeSave removal)
 DISPATCHED to a Sonnet agent against the plan of §2026-11-10s — worktree `/tmp/wt-e3d`, branch `feat/migrate-e3d-bank`, DRAFT PR (the lead reads its § lines and reviews the
 shared-code changes before it merges). It waits for #2826 (lane IB) to merge first. Unallocated payments are out of that task (0 on the demo).
+
+### ▶ RESUME HERE (2026-11-10u) — NEW SESSION: REVIEW + HARDEN the migration feature and its user guide (owner: *"review and harden the migration feature and user guide to be highly resourceful and viable important feature of our project. Resume new session"*). Supersedes 2026-11-10l.
+**Read in this order, nothing else first:** this block · `§E3C-SPEC` + `§E3C BUILD STATUS` · `§ODOO-ENGINE-SPEC` · the status blocks `§2026-11-10f … t` (short, in order) ·
+`§IDEMPIERE-FALSIFIER-SPEC` + `§2026-11-10k/l/q` · `§ALREADY-THERE-SPEC` · `§E3D-SPEC` + `§2026-11-10r/s/t`. Guide: `docs/MigrationGuide.md` on **master** (not on this branch).
+Memory to read before touching the guide: `feedback_user_guide_quality_bar.md`, `feedback_propose_before_editing_docs.md` (structure / tone = propose first; a factual
+correction = just fix), `feedback_docs_deploy_landmine.md` (publish ONLY with `scripts/safe_gh_deploy.sh`, from a worktree off master, `docs/glassbowl_data.db` copied in).
+
+**0. First, close what is in flight (Watchdog — nothing is ✅ until its § lines are read):** Lane E3d (bank) — Sonnet agent, worktree `/tmp/wt-e3d`, branch
+`feat/migrate-e3d-bank`, a DRAFT PR on bim-ootb: read its log lines (`/tmp/count_logs/e3d_*.log`), review its changes to `workbook.mjs` / `open_balances.mjs` /
+`odoo_migrate_form.mjs` / `ImportBankStatement.js`, then merge or send it back. If no PR exists, the agent did not finish: rebuild from the plan in §2026-11-10s.
+
+**1. Where the feature stands (all LIVE unless said; bim-ootb sw v1044+, the two bank ports merged after it):**
+| piece | state | proof (re-run before trusting) |
+|---|---|---|
+| ONE engine, mapping as data — SAP B1, Business Central, Odoo 17 | live; SAP + BC alpha (never run on a real company) | `witness_migrate_engine.js` `§MIGE verdict=PASS judged=82` |
+| Odoo agent reads only → `odoo_export.json`, one file to pick | live | live re-run byte-identical to the fixture; bim-compiler `scripts/poc_odoo_owndb.js` `🟢 W-ODOO-OWNDB PASS` |
+| Open balances at the cut-over (Odoo): opening journal + open invoices, books checked against the source | live | `witness_open_balances.js` `§OB-VERDICT PASS judged=36` |
+| "Already there" rows skipped; a source unit kept with a code | live | `witness_already_there.js` `§AT-VERDICT PASS judged=9` |
+| A started plugin reaches every tenant's roles | live | `witness_plugin_role_access.js` `§PRA-VERDICT PASS judged=8` |
+| iDempiere identity falsifier (engine + loader vs the source rows) | merged, test-side | `witness_idempiere_falsifier.js` `§IDF-VERDICT PASS` (145 columns, 477 rows; ~2.5 min) |
+| Bank statement Complete + ImportBankStatement 221 | merged | `§BST-RESULT PASS judged=41` · `§IBS-RESULT PASS judged=51` |
+| Bank balance at the cut-over (Bank Clearing → 0) | **in flight (E3d)** | — |
+Other baselines: OF 18 · OM 14 · NM 31 · BCM 18 · SAPM 24 · IINV 56 · IGLJ 45 · IPAY 54 · GOC 4 · OFL 13 (browser wiring).
+
+**2. THE REVIEW (do this before any new build; write the findings HERE as a dated `§REVIEW-<date>` block: each finding = what was measured, the evidence line, the fix or the
+question). The owner wants the feature "resourceful and viable" — judge it as a stranger who must move a real company, not as its author.**
+- **R1 — the whole journey on the LIVE page, by a witness, not by eyes (PRIMAL LAW):** System starts the plugins → Initial Tenant Setup → log in as the new company's admin →
+  the menu leaf is there → pick `odoo_export.json` → units → summary → Process → stage 2 → the books. Today `witness_odoo_form_live.js` proves WIRING on the older two-file
+  path only. Missing: a live-page witness of the one-file path with open balances that reads the tenant's rows back (counts, `§MIG-VERIFY`), and of the period-gate refusal.
+  X of N: N = the steps of the guide's "same three steps"; each step either has a witness line or is named as unwitnessed.
+- **R2 — a second run and a failed run:** what does a user do after stage 2 refuses (the masters are loaded, the documents are not)? Is "run Import GL Journal / Import
+  Invoice again" reachable for that tenant's role, and does it finish the job, or is the tenant stuck half-migrated? A second Process on the same file; a second file for the
+  same tenant (a later cut-over, or the other Odoo company); the already-there pass on a re-run. Witness each; state the rule in the guide.
+- **R3 — size and time (memory `feedback_erp_perf_claims.md`: measured, never guessed):** the loader's per-row cost and the DOUBLE load when already-there rows exist
+  (§2026-11-10q: 15 s → 2 m 20 s on 379 accounts). Measure rows/second and heap at 1k / 10k / 50k source rows (generated from the recorded rows, as ODOO-DIFF does), in node and
+  in the browser; say where it stops being usable; fix the cheap things (find the held keys by one query per unique index before loading; one dry run reused by Process).
+- **R4 — sources we have never seen:** SAP B1 and Business Central are ALPHA — no run on a real company (`CONN` INCONCLUSIVE by construction). Odoo 16 / 18 field names.
+  Odoo with several companies, a foreign-currency company, lots / serials, multi-step payment terms. The messy scratch database was dropped (ODOO-REF-MESSY INCONCLUSIVE):
+  rebuild it on the local Odoo and re-record, so the messy cases are judged on rows Odoo really returned and not only on generated variants. Each = a row in a
+  "tested on / not tested on" table that the guide shows honestly.
+- **R5 — the books, end to end:** after E3d the cut-over method still lacks unallocated payments (343), stock VALUE (Odoo `standard_price` is in the raw rows; ImportInventory
+  :546-564), foreign-currency open items, and open balances for SAP / BC. After a migration can the tenant actually TRADE — complete a sales order, invoice it, receive the
+  payment against a migrated open invoice, and do the books still balance? One witness that does exactly that on a migrated tenant (the migrated open invoice gets allocated,
+  the partner's open amount goes to zero) proves the migration is usable, not only loadable.
+- **R6 — the contract's reach (from the falsifier, §2026-11-10k):** partner group and tax category beyond "default" (a non-default tax category REFUSES the product), unused
+  units dropped, opening-stock headers without lines, document numbers. Decide per item: carry it (new sheet / column), or say plainly in the guide that it is not carried.
+- **R7 — refusal texts and the summary:** every refusal a user can meet (collect them: `grep -n "problems.push\|throw new Error" erp/plugins/odoo_migrate_form.mjs
+  erp/plugins/open_balances.mjs erp/plugins/*migrate*.mjs erp/odoo_agent/export.js`) says what happened AND what to do, in plain words, and each has a witness line that
+  triggers it. X of N over that list. The refusal parser already lost two-line refusals once (§2026-11-10n) — look for the same class elsewhere.
+- **R8 — privacy and safety claims the guide makes:** the password is never a flag, never stored; the browser never reaches the source system; nothing is written to the source;
+  the alpha report masks every value. Each claim → the witness that proves it, or it is removed from the guide.
+- **R9 — witness hygiene:** one command that runs the migration lane's witnesses and prints one line each (the list in §1 + the import ports + `poc_agent_zip_sync.js`), with
+  logs under `/tmp/count_logs/`; the slow ones (falsifier 2.5 min) flagged. Any witness that passes without judging (INCONCLUSIVE counted as PASS) is a defect.
+
+**3. THE GUIDE (`docs/MigrationGuide.md`, master) — PROPOSE the structure to the owner first, then write:** it is correct today for the one-file Odoo flow, open balances,
+already-there rows, new unit code, role access. What a "resourceful" guide still lacks, to propose:
+- a **"what moves / what does not" table per source** (masters · opening stock quantities · stock value · trial balance · open invoices · bank · unallocated payments · open
+  orders · history), each cell = moved / not yet / not planned, with the tested-on column of R4;
+- a **cut-over checklist** — before (close the period in the old system, pick the date, who has the logins), during (the three steps), after (open the period, enter the opening
+  bank statement or see it done, check the clearing accounts, first documents) — and **"how do I know it worked"**: the checks the form already runs, in the user's words;
+- **troubleshooting**: one row per refusal text of R7 → what it means → what to do;
+- **screenshots and films are stale**: they show two files being picked and no open balances — retake by the documented capture path, never by hand-editing; say which are stale
+  until then;
+- a short **"for the iDempiere user"** box: what Initial Client Setup already put in the company (why rows are "already there"), periods, clearing accounts, Opening Charges —
+  and a **glossary** for the reader who has never seen iDempiere;
+- the DIY template story (the owner's original ask, §ENGINE-SPEC: *"JSON template that users can adjust"*): how to copy a template, change a variable or a field, and what the
+  engine refuses — E5 (the DIY screen) is not built; the guide must not promise it.
+
+**4. Named and still open (carry forward; none is an accepted divergence):** unallocated payments · stock value · foreign-currency open items · SAP / BC open balances · BP
+group / tax category sheets · a tenant born while bundles run gets plugin access at the next start · the already-there double load (R3) · `commitEx` seam for imports ·
+`model_journal` in `ws_kernel.js`'s core list · the §IINV log-tag collision (invoice vs inventory witnesses) · seed `c_activity` · E4 sql connector · E5 DIY screen · option (c)
+"update the existing row" was NOT built (the owner chose skip) · the inline `MBankStatement.beforeSave` copy in the 221 port (E3d removes it — check).
+
+**5. How to work (what kept this lane clean):** spec block here before code · each change in its own `/tmp/wt-*` worktree off fresh `origin/main` (`git worktree list` first,
+never `git stash`) · agents = Sonnet, briefed with the oracle rule ("expected values from the raw rows or a cited legacy rule, never from the code under test"), DRAFT PR when
+the result needs adjudication · the lead reads every agent's § lines before marking ✅ · `sw.js` conflicts: keep both notes, max + 1 · after a merge FETCH THE LIVE PAGE
+(`sw.js` version, the changed file) — Pages lags by minutes and has shown transient "Page build failed" · bim-compiler pushes go to this branch
+(`fable/meshdb-livewire`); the guide goes to master through a PR + the guarded deploy.
