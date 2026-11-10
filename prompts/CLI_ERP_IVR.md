@@ -65,6 +65,15 @@ Business Partners                                  shown 1-6 of 42      [ + New 
 **How it is built so it can be proved (PRIMAL LAW: no human looks at a screen).** One pure state machine: `(state, key) -> (state, door line or none, screen lines)`. The witness feeds key sequences (`Down Down Right Right Enter`), asserts the screen text (cursor row, highlighted chip) and the ONE door line produced, and runs one real pseudo-terminal smoke (the ANSI bytes). The line mode of §1 uses the same machine with a different renderer, so an AI and a pipe get the same lines. Added claims: **T1** Right-Right-Enter on row n runs the third chip of row n and nothing else; **T2** the chips shown equal the engine's legal actions for that row (a completed order has no Delete chip); **T3** Esc anywhere writes nothing (op count unchanged); **T4** a form shows exactly the mandatory-without-default columns (dry run) and no others; **T5** the screen after a save lists the columns the backend filled, equal to the answer's `defaulted` set; **T6** the same key sequence gives the same door lines in line mode. Falsifiers: Enter runs the chip left of the highlight (T1); a completed order shows Delete (T2); Esc saves (T3); a defaulted column is asked (T4).
 **First spike (the smallest thing that settles the tech, one session):** the list screen over `erp.list` with the row pointer, the three chips and the Y/N popup for D, driven by the state machine and T1-T3; no forms yet.
 
+## 1b. Strategy and the one constraint it adds: the browser gets the CLI too (owner, 2026-11-11)
+> *"This can be our big quantum leap after Bonsai to WASM, where even the Browser is given a CLI alternative."*
+The step after moving the engine into the browser (WASM) is to give the **browser a CLI front end as well**: the same ERP, a terminal-style pane beside (or instead of) the windows. This is the reason the screen logic must be built as **one pure state machine with no Node-only calls**:
+- **Core** (`state, key -> state, door line, screen`): plain JavaScript, no `fs`, no `process`, no `child_process`, no terminal escape codes; it runs unchanged in Node and in the page.
+- **Renderers** are thin and replaceable: (a) the terminal renderer (ANSI, raw key input), (b) the browser renderer (a `<pre>`/canvas grid in the page, keys from the keyboard), (c) the line renderer of §1 (pipes, screen readers, the AI). Each takes the screen as a grid of cells (character + style) and returns key names (`Up`, `Right`, `Enter`, `Esc`, `Tab`, a character).
+- **The door line** is the only way the core acts: in Node it goes to `door.js`; in the page it goes to the same door logic over the page's engine (the twin already runs in both places).
+- **Witness:** T1-T6 run against the core with key names, so the same witness proves the terminal and the browser panes; one smoke per renderer.
+This keeps the doctrine (local first, minimal, safe, zero dependencies) and costs nothing now except discipline: **the first review of the spike checks that the core imports nothing from Node.**
+
 ## 2. What exists (read 2026-11-11 from bim-ootb main; do not re-derive)
 | Need | Today |
 |---|---|
@@ -101,8 +110,10 @@ Business Partners                                  shown 1-6 of 42      [ + New 
 2. **Delete scope.** Advice: masters and drafts only, never a processed document (as the window); everything else by Void or Reverse. 
 3. **Key style.** Advice: numbers pick a row, letters act (as COBOL and DOS screens did), both shown on the key line; no function keys (they are terminal-specific).
 4. **First kinds.** Advice: start generic (any kind) and prove it on three: Sales Order (documents: complete/void), Business Partner (a master: edit/delete/load), and a MIS table made by `erp.add_window` (the "new model on the fly" part, so the owner's whole chain is one demo).
-5. **C on a row.** Advice: C means Copy (as the window's `dataNew(copy)`), with a separate `[ + New ]` for a blank form. The owner's words were "C (to insert)"; is a copy-from-this-row chip what is wanted, or only a blank insert?
-6. **Undo.** The op-log can replay and show history. Advice: offer no undo chip in v1 (delete asks first); decide later whether a `[ Z Undo last ]` is wanted.
+5. ✅ **C on a row: DECIDED by the owner's delegation (2026-11-11: "answer for me as u know my direction").** C is "Copy": a new record that starts from the pointed row's values; `[ + New ]` at the header is the blank form with only the backend's defaults. Both open the same Tab-through form. Why: it keeps one meaning per chip, it matches the owner's "insert where the user tabs through and types", it makes the per-row chip useful (a copy beats retyping a similar partner), and the window has both (`dataNew(copy)`). Revisit after the first real use.
+6. ✅ **Undo: DECIDED the same way: no undo chip in v1.** Delete already asks Y/N and every write is a journalled op; a `[ Z Undo last ]` can follow once the op-log's history is shown to be safe to rewind. 
+
+**Stance (owner, 2026-11-11): this is still a POC; we see how it goes as we progress.** Success of the POC = the §1a spike works end to end on one kind with T1-T3, and the owner can drive it without being told what to press. Nothing here is a promise beyond that.
 
 ## 6. Work order (spec line first, witness with falsifier, one PR per step)
 - **V0 Measure, no code.** Which columns `erp.describe` lacks that the edit screen needs (display logic, read-only logic, the lookup list for a reference); what `GridTab.dataDelete` refuses, from the source; what the Migrate Excel Data loader reports per rejected row (for the preview).
@@ -115,4 +126,4 @@ Business Partners                                  shown 1-6 of 42      [ + New 
 **Not in scope without the owner's go:** curses or a full-screen UI, a mouse, themes, workflow approval screens, reports, translations, the email actor, the GPU.
 
 ## STATUS
-2026-11-11: spec written, nothing built; §1a (grid cursor, colored chips, hidden-mandatory via dry run, local-first doctrine, MIS demo) added the same day after the owner's two refinements. Depends on MIS M5/M6 and NEURO A6.
+2026-11-11: spec written, nothing built; §1b (the browser gets the CLI too: renderer-agnostic core) and §1a (grid cursor, colored chips, hidden-mandatory via dry run, local-first doctrine, MIS demo) added the same day after the owner's two refinements. Depends on MIS M5/M6 and NEURO A6.
