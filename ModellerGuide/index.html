@@ -4646,7 +4646,7 @@ all, not a box:</p>
 <p>SampleCastle walks the <em>same</em> residential rule-set (it's a different building — see the table below). A
 walk places a fixture only when it can seat a real extracted mesh for it (LOD400). Where a fixture class has
 no mesh match, the walk <strong>refuses</strong> that placement and says so; it never stands a box in for the real shape.
-Today that is why SampleHouse and SampleCastle get no electrical or plumbing devices (table below).</p>
+Today that is why SampleCastle gets no electrical or plumbing devices, and SampleHouse no plumbing ones (table below). SampleHouse's electrical devices are placed since 2026-11-10: its source IFC states four rooms, the Modeller now reads them, and a device placed from a room schedule carries its own real mesh.</p>
 <p><strong>One engine, two standards.</strong> A single walker drives every discipline; the discipline is just a data
 filter. It carries two measured rule-sets and auto-selects by building class:</p>
 <table>
@@ -4702,16 +4702,16 @@ see below; <em>refused</em> = what the walk declined and why:</p>
 <tr>
 <td></td>
 <td>Electrical</td>
+<td style="text-align: right;">21</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">0</td>
-<td>refused: no real mesh for any of 17 placements</td>
+<td>from its own 4 rooms: Living room 11, Bedroom 7, Entrance hall 3; the Roof space gets none (re-measured 2026-11-10, sw v269)</td>
 </tr>
 <tr>
 <td></td>
 <td>Plumbing</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">0</td>
-<td>refused: no real mesh for any of 7</td>
+<td>refused: no real mesh for any of 7; none of its rooms has a plumbing schedule (the file has no bathroom or kitchen space)</td>
 </tr>
 <tr>
 <td></td>
