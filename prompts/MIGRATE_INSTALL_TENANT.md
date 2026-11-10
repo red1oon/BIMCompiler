@@ -1728,3 +1728,7 @@ unit-not-carried 12->2` (the 2 = units no product uses, which the form drops) ·
   Complete of each statement, then the verifier's BANK line becomes a judged check (`balance == 0.00`), and the tenant's bank asset account per bank account == the source.
   (5) the period gate also for `CMB`. (6) W-OPEN-BALANCES case BANK + ODOO-OPEN oracle / variants / mutants for the new entities. (7) remove the inline beforeSave copy from
   the 221 port. Unallocated payments (`I_Payment`): template + DIFF only; the load is INCONCLUSIVE on this source (0 rows).
+
+**§2026-11-10t — in flight:** Lane E3d (bank masters, *Opening Charge Bank*, the `I_BankStatement` open sheet, the verifier's judged BANK lines, the inline-beforeSave removal)
+DISPATCHED to a Sonnet agent against the plan of §2026-11-10s — worktree `/tmp/wt-e3d`, branch `feat/migrate-e3d-bank`, DRAFT PR (the lead reads its § lines and reviews the
+shared-code changes before it merges). It waits for #2826 (lane IB) to merge first. Unallocated payments are out of that task (0 on the demo).
