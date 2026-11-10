@@ -1643,6 +1643,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Send it to ERP — Project Order, variant, VO">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#after-the-order-documents-the-dashboard-and-the-walker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        After the order: documents, the dashboard, and the walker
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -4035,6 +4052,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Send it to ERP — Project Order, variant, VO">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#after-the-order-documents-the-dashboard-and-the-walker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        After the order: documents, the dashboard, and the walker
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -5122,6 +5156,14 @@ version: <a href="../ModellerFirstSteps/#part-2-see-what-your-edit-costs-and-sen
 </ul>
 <p>The Viewer reads the same store: the same parts folded from the Viewer give the same planned amount and find the existing order.
 Any IFC you open works: the order is keyed by the model's own name (the Duplex resident keeps its measured Viewer label).</p>
+<h3 id="after-the-order-documents-the-dashboard-and-the-walker">After the order: documents, the dashboard, and the walker<a class="headerlink" href="#after-the-order-documents-the-dashboard-and-the-walker" title="Permanent link">&para;</a></h3>
+<p>The Project Order is the hub; three other places hang off it.</p>
+<ol>
+<li><strong>Drawings and model files: BIM Document (ERP app).</strong> Each sheet or model file is a <em>deliverable</em> under one task of the project, with a revision and a state: <strong>Draft</strong>, <strong>Issued for review</strong>, <strong>Issued for construction</strong>, or <strong>Superseded</strong>. When you issue a newer revision for construction, the older one becomes Superseded; you cannot issue an older revision after a newer one is already issued. The Project window shows how many deliverables each task and phase has issued for construction. <strong>Open in Modeller / Viewer</strong> (under the gear) opens the attached IFC or DXF in the matching app. <strong>Export Register</strong> writes the project's register: every deliverable at its latest revision plus the superseded ones, each with number, revision, state, discipline, file kind and the file's <code>sha256</code>.</li>
+<li><strong>Walkers read the register.</strong> When a walk is given the register, a sheet issued for construction is used as placed; one issued for review is used as <em>provisional</em> and left out of totals; Draft and Superseded sheets are refused; a sheet with no state is provisional. This runs from the <code>project_inputs.js</code> tool today; there is no button for it yet.</li>
+<li><strong>The CAPEX dashboard</strong> reads the same Project Order (planned, committed and invoiced amounts, phases). A project's <strong>BIM</strong> button appears when its building file is found, matched by the project's value (the model's name). The dashboard does not show document counts yet.</li>
+</ol>
+<p>Order of events for one revision: <em>push the model → attach and issue the drawings → export the register → walk with it → read the dashboard.</em> A revised model pushed again adds nothing today (the push is idempotent); see the versions note in <code>BIMtoProject.md</code> §E.</p>
 <hr />
 <h2 id="export-db-ifc-reports-bcf-issue-2d-drawings">Export — .db, IFC, reports, BCF issue, 2D drawings<a class="headerlink" href="#export-db-ifc-reports-bcf-issue-2d-drawings" title="Permanent link">&para;</a></h2>
 <p>Tap the <strong>Export</strong> pill. The menu offers:</p>

@@ -3811,7 +3811,7 @@ real rows read from the test server, the date held at 4 Nov 2026 so it matches t
 <ol>
 <li><strong>Left menu.</strong> <em>Dashboard</em> is this view. The others are below. The red badge on <em>Approval Pending</em> is that count.</li>
 <li><strong>Data source</strong> (bottom left). <strong>B · Legacy iDempiere</strong> is your server's data, from the job's file. <strong>A · SQLite ERP DB</strong> is the stock sample database shipped with the page: not your data, and not the twin's copy in your browser.</li>
-<li><strong>Filters.</strong> <em>Org</em>, <em>Category</em> (<code>ProjectCategory</code>) and <em>Status</em>. Status starts on <strong>Active Projects</strong>. That changes the money
+<li><strong>Filters.</strong> <em>Org</em>, <em>Category</em> (<code>ProjectCategory</code>) and <em>Status</em>. Status starts on <strong>Active Projects</strong>. To look at one project, add <code>&amp;project=&lt;Value&gt;</code> to the page address (the page then shows <em>Project: <Value></em> beside the filters); there is no project drop-down yet. That changes the money
    tiles, as explained under <em>Page and Home tab: why a figure can differ</em>.</li>
 <li><strong>Last Updated.</strong> The newest <code>C_Project.Updated</code> in the data, never the clock. An old date means old data.</li>
 <li><strong>The ƒ line</strong> under each tile states its formula in iDempiere columns, so anyone can check it in SQL.</li>
@@ -3958,7 +3958,7 @@ the projects are test pushes of one building, so the amounts themselves mean not
 </table>
 <h3 id="the-other-views">The other views<a class="headerlink" href="#the-other-views" title="Permanent link">&para;</a></h3>
 <p><strong>Projects</strong> lists each project: Value, Name, Org, Currency, Planned, Actual, Committed, Standard Phase. The <strong>BIM</strong> button appears only when
-that project's building file is found, and opens it in the BIM viewer.</p>
+that project's building file is found, and opens it in the BIM viewer. The file is found by name: <code>&lt;project Value&gt;_extracted.db</code>, the same name the BIM push uses for the Project Order. The drawings and models filed against the project (BIM Document) are not shown here yet; see the Modeller guide, <em>After the order</em>.</p>
 <p><img alt="Projects view: one row per active project" src="../img/capex/capex_page_projects.png" /></p>
 <p><strong>Budget &amp; Cost</strong> lists Planned, Committed, Invoiced and Actual per project.</p>
 <p><img alt="Budget and Cost view" src="../img/capex/capex_page_budget.png" /></p>

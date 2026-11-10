@@ -2330,6 +2330,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#e-versions-three-kinds-and-how-they-meet-2026-11-11-measured-against-the-code-proposed-rules-marked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §E — VERSIONS: three kinds, and how they meet (2026-11-11, measured against the code; PROPOSED rules marked)
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3233,6 +3244,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#e-versions-three-kinds-and-how-they-meet-2026-11-11-measured-against-the-code-proposed-rules-marked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        §E — VERSIONS: three kinds, and how they meet (2026-11-11, measured against the code; PROPOSED rules marked)
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -3610,6 +3632,38 @@ this). A pretty workbook with a wrong subtotal is a failed report.</p>
 <p><strong>Witness — <code>W-PROJ-REPORT</code>:</strong> <code>§PROJ_REPORT type=&lt;boq|claim|vo|evm|sched|asset&gt; rows=&lt;n&gt;
 total=&lt;bd&gt; golden=&lt;bd&gt; match=&lt;bool&gt; cur=&lt;CUR&gt; pack=&lt;name&gt;</code> — <code>match=true</code> (total == golden to the
 cent); currency + pack stamped in the title block; every section subtotal sums to the grand total.</p>
+<hr />
+<h2 id="e-versions-three-kinds-and-how-they-meet-2026-11-11-measured-against-the-code-proposed-rules-marked">§E — VERSIONS: three kinds, and how they meet (2026-11-11, measured against the code; PROPOSED rules marked)<a class="headerlink" href="#e-versions-three-kinds-and-how-they-meet-2026-11-11-measured-against-the-code-proposed-rules-marked" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Where</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Document revision</strong></td>
+<td><code>BIM_Document</code> (<code>erp/plugins/bim_document.mjs</code>): per (project, deliverable no) a <code>Revision</code>; the latest wins; completing a newer revision sets the older to <strong>Superseded</strong> (<code>DocStatus RE</code>, <code>Reversal_ID</code> = "Superseded By"); issuing an older revision after a newer one is Issued for construction is refused</td>
+<td>BUILT, witnessed (W-BIMDOC)</td>
+</tr>
+<tr>
+<td><strong>Schedule version</strong> <code>planned</code> / <code>actual</code></td>
+<td>§D above</td>
+<td>PAPER: no <code>version=actual</code> code found in <code>viewer/</code> (2026-11-11)</td>
+</tr>
+<tr>
+<td><strong>Model version</strong></td>
+<td>the push is keyed by the model's name; a second Generate adds nothing (idempotent)</td>
+<td>BUILT, but a revised model has no way to arrive as a NEW version</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Gaps (proposed, owner's go before code):</strong>
+1. <strong>Revised model.</strong> Because the push is idempotent, a revised model re-pushed adds nothing, and a delete-and-re-issue overwrites. The §D fence "never overwrite the planned baseline" is not yet enforceable. PROPOSED: the first push is <code>planned r1</code> and is frozen; a later push of a changed model is a new schedule version <code>planned r2</code> (same <code>C_Project</code>, new phases/lines tagged by version), never an edit of r1. Variation Orders already exist for committed orders (guide: "Issue Variation Order"); a version is the schedule side of the same event.
+2. <strong>Which revision a walk used.</strong> SHEETS are already covered: the walker gate (<code>project_inputs.js</code>, <code>DISC_WALK_DRAWN_INTEGRATION.md</code> §12a) compares the register row's <code>sha256</code> with the sheet file, stores <code>drawn_sheet_status(sheet_number, revision, status, basis)</code> in the building DB, and stamps each drawn piece <code>prov='drawn:&lt;no&gt;/&lt;rev&gt;'</code>. NOT covered: (a) a walk is not re-judged when the register changes later (a newer revision issued for construction after the walk); (b) the IFC MODEL itself has no stamp: the extraction keeps the source file NAME (<code>project_metadata.source_file</code>), not a content hash (to verify). PROPOSED: the extraction stores the source file's sha256 so "the model matches the issued document" is two hashes compared (order of trust, §12 step 1 vs 2), and a re-run of the gate against a fresh register reports <code>§INPUTS-STALE</code> for any walk whose stamped revision is no longer the latest issued.
+3. <strong>Project to building</strong> is today a file-name convention: the dashboard looks for <code>&lt;C_Project.Value&gt;_extracted.db</code> (<code>capex/dash.js</code> <code>probeBim</code>) and the push keys the order by the model's name. It works while the two names agree and breaks silently when a project is renamed.</p>
 
 
 

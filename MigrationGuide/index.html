@@ -3192,7 +3192,9 @@ then sends only its signed changes through a relay (a post box, not a server). S
 <li><strong>"Answer the unit(s)"</strong>: a unit a product uses has no ERP unit picked yet (Step 3.3).</li>
 <li><strong>"The manifest is for … / Sheet … has N rows; the manifest says M"</strong>: the files do not belong together. Pick them from the same export.</li>
 <li><strong>"… ambiguous"</strong>: a lookup matches two rows in your company (for example two price-list discount schemas of type P). Today the run is refused.</li>
-<li><strong>A second Process is refused</strong>: the data is already there (unique names and codes).</li>
+<li><strong>Process again on the same file</strong> says <em>Nothing to do: all rows are already in this company</em>; nothing is loaded twice.</li>
+<li><strong>A refused second stage (the opening balances)</strong> can be fixed in place: correct the source, export again, and Process the new file in the same company. The ERP replaces the rows the refused run left waiting, loads the rest, and checks its books again; a journal left in <em>Drafted</em> is completed. You do not need a new company.</li>
+<li><strong>A different cut-over file in a company that already has opening balances</strong> is refused in plain words (it names the cause and what to do). One company holds one cut-over; a later cut-over, or the other Odoo company, goes into its own ERP company.</li>
 </ul>
 <hr />
 <h2 id="odoo">Odoo<a class="headerlink" href="#odoo" title="Permanent link">&para;</a></h2>
