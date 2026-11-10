@@ -619,7 +619,7 @@ all, not a box:
 SampleCastle walks the *same* residential rule-set (it's a different building — see the table below). A
 walk places a fixture only when it can seat a real extracted mesh for it (LOD400). Where a fixture class has
 no mesh match, the walk **refuses** that placement and says so; it never stands a box in for the real shape.
-Today that is why SampleCastle gets no electrical or plumbing devices, and SampleHouse no plumbing ones (table below). SampleHouse's electrical devices are placed since 2026-11-10: its source IFC states four rooms, the Modeller now reads them, and a device placed from a room schedule carries its own real mesh.
+Today that is why SampleHouse gets no plumbing devices (table below). SampleCastle has no rooms in its file, so its devices come from the measured bands: since 2026-11-10 each band device takes one of the real meshes its rule row was measured from, in the measured mix, and is always *provisional* (drawn and flagged, never counted as placed). SampleHouse's electrical devices are placed since 2026-11-10: its source IFC states four rooms, the Modeller now reads them, and a device placed from a room schedule carries its own real mesh.
 
 **One engine, two standards.** A single walker drives every discipline; the discipline is just a data
 filter. It carries two measured rule-sets and auto-selects by building class:
@@ -652,15 +652,15 @@ see below; *refused* = what the walk declined and why:
 | | Plumbing | 18 | 0 | 8 gated, 2 clashes flagged |
 | | Fire-Protection | 0 | 38 | sprinklers at borrowed spacing |
 | **SampleCastle** | HVAC (ACMV) | 0 | 0 | refused: 12 duct or pipe pieces with no main |
-| | Electrical | 0 | 0 | refused: no real mesh for any of 269 |
-| | Plumbing | 0 | 0 | refused: no real mesh for any of 72 |
+| | Electrical | 0 | 88 | band devices with the meshes of their rule row's own source elements, in the measured mix (re-measured 2026-11-10, sw v272) |
+| | Plumbing | 0 | 21 | same: band devices in the measured mix |
 | | Fire-Protection | 0 | 126 | sprinklers at borrowed spacing |
 
 The status line says the same: *Walk ALL — 4/4 disciplines · 139 placed · 38 provisional* on the Duplex.
 Structure is not part of Walk ALL; it keeps its own row. Walking an *unknown* discipline returns
 **REFUSE — no measured rule** rather than guessing.
 
-**Provisional devices.** Some devices are placed at a spacing *borrowed* from another building, because this
+**Provisional devices.** Two kinds. A building with no rooms gets its devices from measured bands: their count follows the measured density and each takes a mesh from the mix its rule row was measured from, so neither its position nor which device it is can be claimed for this building. And some devices are placed at a spacing *borrowed* from another building, because this
 building's own rules have none for that trade (the residential rules hold no sprinkler rule, so FP borrows
 the Terminal's). Their positions follow that borrowed spacing, so their count is not a claim about this
 building. They are drawn, flagged *provisional* in the Outliner row and the status line, and **left out of
