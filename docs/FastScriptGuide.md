@@ -45,7 +45,7 @@ One line, one verb, `key=value` pairs with no spaces around the `=`. Ask the Hos
 <!-- run: lines cut=700 -->
 ```text
 $ node door.js 'modeller.lines building=HospitalGarage'
-{"request":"d-mwaaouv8-1868796-1","verb":"modeller.lines","actor":"human","status":"ok","answer":{"ok":true,"building":"HospitalGarage","edits":[],"ms":88272,"model":{"grid_source":"column-derived","system":"column-framed","material":"RC","mixed":true,"girders":228,"rotation_deg":-2,"frame":"building","lines":[{"id":"gx0","axis":"x","pos":128.131,"world":132.184},{"id":"gx1","axis":"x","pos":129.223,"world":133.277},{"id":"gx2","axis":"x","pos":133.277,"world":137.334},{"id":"gx3","axis":"x","pos":133.795,"world":137.851},{"id":"gx4","axis":"x","pos":134.811,"world":138.868},{"id":"gx5","axis":"x","pos":145.987,"world":150.051},{"id":"gx6","axis":"x","pos":157.163,"world":161.234},{"id":"gx7…
+{"request":"d-mwahocs2-2047379-1","verb":"modeller.lines","actor":"human","status":"ok","answer":{"ok":true,"building":"HospitalGarage","edits":[],"ms":76582,"model":{"grid_source":"column-derived","system":"column-framed","material":"RC","mixed":true,"girders":228,"rotation_deg":-2,"frame":"building","lines":[{"id":"gx0","axis":"x","pos":128.131,"world":132.184},{"id":"gx1","axis":"x","pos":129.223,"world":133.277},{"id":"gx2","axis":"x","pos":133.277,"world":137.334},{"id":"gx3","axis":"x","pos":133.795,"world":137.851},{"id":"gx4","axis":"x","pos":134.811,"world":138.868},{"id":"gx5","axis":"x","pos":145.987,"world":150.051},{"id":"gx6","axis":"x","pos":157.163,"world":161.234},{"id":"gx7…
 ```
 
 It opens the Modeller and the building, so it takes 10 to 40 seconds. What you see is one line of JSON, an **envelope**. Only the start is shown here; the grid has more lines than fit. The answer is the app's own, unchanged, inside `answer`. Here `gx5` is at 145.987 m and `gx6` at 157.163 m on the building's own grid. `status` is `ok`.
@@ -68,9 +68,9 @@ The exit code is the first answer: `0` means ok, `3` means the app gave an answe
 <!-- run: widen_steps cut=200 -->
 ```text
 $ grep -o '"request":"[^"]*","verb":"[^"]*","actor":"[^"]*","status":"[^"]*"' widen.json
-"request":"d-mwaaqr6f-1869862-1","verb":"modeller.widen_bay","actor":"human","status":"refused"
-"request":"d-mwaaqr6f-1869862-1.1","verb":"modeller.lines","actor":"human","status":"ok"
-"request":"d-mwaaqr6f-1869862-1.2","verb":"modeller.try_shift","actor":"human","status":"refused"
+"request":"d-mwahq05k-2048306-1","verb":"modeller.widen_bay","actor":"human","status":"refused"
+"request":"d-mwahq05k-2048306-1.1","verb":"modeller.lines","actor":"human","status":"ok"
+"request":"d-mwahq05k-2048306-1.2","verb":"modeller.try_shift","actor":"human","status":"refused"
 ```
 
 The first step read the grid. It found the bay now:
@@ -142,8 +142,8 @@ A script runs top to bottom and **stops at the first line that is not ok**. Here
 <!-- run: script_status -->
 ```text
 $ grep -o '"request":"[^"]*","verb":"[^"]*","actor":"[^"]*","status":"[^"]*"' bay.json
-"request":"d-mwaare89-1870585-2","verb":"modeller.lines","actor":"human","status":"ok"
-"request":"d-mwaarp8z-1870585-3","verb":"modeller.try_shift","actor":"human","status":"ok"
+"request":"d-mwahro91-2049711-2","verb":"modeller.lines","actor":"human","status":"ok"
+"request":"d-mwahs1lf-2049711-3","verb":"modeller.try_shift","actor":"human","status":"ok"
 ```
 
 At exactly 12 m the app finds no new problem: the count of beam spans over the limit stays where it was.
@@ -173,7 +173,7 @@ The last row is deliberate. Text that matches no verb is **never guessed at**:
 <!-- run: question -->
 ```text
 $ node door.js 'please widen the bay'
-{"request":"d-mwaas1i4-1871292-1","verb":null,"actor":"human","status":"refused","answer":{"question":"I could not read that as a command. A command is app.verb key=value … Which one do you mean?","verbs":["modeller.lines","modeller.try_shift","viewer.counts","viewer.clashes","viewer.film_path","viewer.schedule_at","viewer.schedule_compare","modeller.widen_bay","modeller.walk","object.describe","object.read","object.history","object.update","object.attach","object.count","erp.find","erp.actions","erp.describe","erp.read","erp.complete","erp.void","erp.close","erp.reverse"]},"why":"not a command: \"please widen the bay\"","notChecked":[],"ops":[],"next":[],"ms":0}
+{"request":"d-mwahshxf-2050867-1","verb":null,"actor":"human","status":"refused","answer":{"question":"I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type !help.","verbs":["modeller.lines","modeller.try_shift","viewer.counts","viewer.clashes","viewer.film_path","viewer.schedule_at","viewer.schedule_compare","modeller.widen_bay","modeller.walk","object.describe","object.read","object.history","object.update","object.attach","object.count","object.list","object.sum","object.group","erp.find","erp.actions","erp.describe","erp.read","erp.list","erp.sum","erp.group","erp.complete","erp.void","erp.close","erp.reverse"]},"why":"not a command: \"please widen the bay\"","notChecked":[],"ops":[],"next":[],"ms":0}
 ```
 
 ## Reading the reply
@@ -202,7 +202,7 @@ The five statuses, each from a real run:
 <!-- run: error -->
 ```text
 $ node door.js 'modeller.lines'
-{"request":"d-mwaas1lv-1871302-1","verb":"modeller.lines","actor":"human","status":"error","answer":null,"why":"missing input: building","notChecked":[],"ops":[],"next":[],"ms":2}
+{"request":"d-mwahsi1i-2050877-1","verb":"modeller.lines","actor":"human","status":"error","answer":null,"why":"missing input: building","notChecked":[],"ops":[],"next":[],"ms":2}
 ```
 
 **claim.** The line is understood, but the actor has no proof that allows it, so the door **holds it and does not run it**. This is the safety rule for an AI, and it comes from the verb, not from the actor. See [What is a claim](#what-is-a-claim).
@@ -210,7 +210,7 @@ $ node door.js 'modeller.lines'
 <!-- run: claim -->
 ```text
 $ node door.js --actor ai --request ai-1 'object.update building=Duplex kind=Element uu=abc column=Name value=x'
-{"request":"ai-1","verb":"object.update","actor":"ai","status":"claim","answer":null,"why":"actor ai has proof \"local-user\", which allows read/trial verbs; object.update is writes. Held as a claim, not run. A person confirms it with: door.js --confirm ai-1","notChecked":[],"ops":[],"next":[],"ms":2}
+{"request":"ai-1","verb":"object.update","actor":"ai","status":"claim","answer":null,"why":"actor ai has proof \"local-user\", which allows read/trial verbs; object.update is writes. Held as a claim, not run. A person confirms it with: door.js --confirm ai-1","notChecked":[],"ops":[],"next":[],"ms":1}
 ```
 
 **inconclusive.** The app could not judge, and says so. It is never turned into an `ok`. Here the Viewer has no clash rule for the pair ARC and ZZZ. This one needs a checkout:
@@ -218,7 +218,7 @@ $ node door.js --actor ai --request ai-1 'object.update building=Duplex kind=Ele
 <!-- run: inconclusive -->
 ```text
 $ node common/door/door.js 'viewer.clashes building=Duplex discA=ARC discB=ZZZ'
-{"request":"d-mwaas1tq-1871322-1","verb":"viewer.clashes","actor":"human","status":"inconclusive","answer":null,"why":"the Viewer could not answer (exit 1): the Viewer says INCONCLUSIVE: no rule for ARC/ZZZ in clash_rules.json","notChecked":[],"ops":[],"next":[],"ms":21028}
+{"request":"d-mwahsi9x-2050898-1","verb":"viewer.clashes","actor":"human","status":"inconclusive","answer":null,"why":"the Viewer could not answer (exit 1): the Viewer says INCONCLUSIVE: no rule for ARC/ZZZ in clash_rules.json","notChecked":[],"ops":[],"next":[],"ms":17842}
 ```
 
 ### What is a claim
@@ -230,7 +230,7 @@ Each actor has a proof. A person at the terminal is trusted for every class. An 
 <!-- run: claim_email -->
 ```text
 $ node door.js --actor email --request mail-0 'modeller.try_shift building=HospitalGarage line=gx6 move=1.824'
-{"request":"mail-0","verb":"modeller.try_shift","actor":"email","status":"claim","answer":null,"why":"actor email has proof \"none\", which allows read verbs; modeller.try_shift is trial. Held as a claim, not run. A person confirms it with: door.js --confirm mail-0","notChecked":[],"ops":[],"next":[],"ms":1}
+{"request":"mail-0","verb":"modeller.try_shift","actor":"email","status":"claim","answer":null,"why":"actor email has proof \"none\", which allows read verbs; modeller.try_shift is trial. Held as a claim, not run. A person confirms it with: door.js --confirm mail-0","notChecked":[],"ops":[],"next":[],"ms":2}
 ```
 
 A held claim is not run, not queued and not lost: it is in the journal, under its request id. The door does not confirm anything on anyone's behalf.
@@ -284,7 +284,7 @@ A verb can also ask the model itself what it holds. `object.describe` is **refle
 <!-- run: describe cut=520 -->
 ```text
 $ node common/door/door.js 'object.describe building=Duplex kind=Element'
-{"request":"d-mwaasush-1872742-1","verb":"object.describe","actor":"human","status":"ok","answer":{"kind":"Element","table":"elements_meta","uu":"3027c2ed-8cb6-5ccb-ae8c-fd7df2eca264","key":"elements_meta_uu","highVolume":true,"properties":[{"name":"guid","label":"GUID","type":"string","mandatory":true,"updateable":false,"key":false,"parent":false,"length":255},{"name":"ifc_class","label":"IFC Class","type":"list","mandatory":false,"updateable":true,"key":false,"parent":false,"length":255,"values":["IfcBeam","IfcCo…
+{"request":"d-mwaht9d3-2052092-1","verb":"object.describe","actor":"human","status":"ok","answer":{"kind":"Element","table":"elements_meta","uu":"3027c2ed-8cb6-5ccb-ae8c-fd7df2eca264","key":"elements_meta_uu","highVolume":true,"properties":[{"name":"guid","label":"GUID","type":"string","mandatory":true,"updateable":false,"key":false,"parent":false,"length":255},{"name":"ifc_class","label":"IFC Class","type":"list","mandatory":false,"updateable":true,"key":false,"parent":false,"length":255,"values":["IfcBeam","IfcCo…
 ```
 
 Which methods may an `Element` use?
@@ -304,7 +304,7 @@ An unknown kind is an error that lists the kinds the model has, so a wrong guess
 <!-- run: count_rooms -->
 ```text
 $ node common/door/door.js 'object.count building=Duplex kind=Room'
-{"request":"d-mwaasvkf-1872791-1","verb":"object.count","actor":"human","status":"ok","answer":{"kind":"Room","table":"model_room","filters":[],"count":5,"population":5,"verdict":"OK","summary":"5 Room"},"why":null,"notChecked":[],"ops":[],"next":[],"ms":362}
+{"request":"d-mwahtafi-2052136-1","verb":"object.count","actor":"human","status":"ok","answer":{"kind":"Room","table":"model_room","filters":[],"count":5,"population":5,"verdict":"OK","summary":"5 Room"},"why":null,"notChecked":[],"ops":[],"next":[],"ms":385}
 ```
 
 Add `column=value` to narrow the count. The column must be a property of the kind (`object.describe` lists them), and the answer keeps the **population**, the number before narrowing:
@@ -312,7 +312,7 @@ Add `column=value` to narrow the count. The column must be a property of the kin
 <!-- run: count_storey -->
 ```text
 $ node common/door/door.js 'object.count building=Duplex kind=Room storey="Level 1"'
-{"request":"d-mwaasvyn-1872811-1","verb":"object.count","actor":"human","status":"ok","answer":{"kind":"Room","table":"model_room","filters":[{"column":"storey","value":"Level 1"}],"count":2,"population":5,"verdict":"OK","summary":"2 Room where storey = Level 1 (of 5)"},"why":null,"notChecked":[],"ops":[],"next":[],"ms":330}
+{"request":"d-mwahtawg-2052156-1","verb":"object.count","actor":"human","status":"ok","answer":{"kind":"Room","table":"model_room","filters":[{"column":"storey","value":"Level 1"}],"count":2,"population":5,"verdict":"OK","summary":"2 Room where storey = Level 1 (of 5)"},"why":null,"notChecked":[],"ops":[],"next":[],"ms":489}
 ```
 
 A column the kind does not have is an error that names it and lists the real ones. It is never read as "no match":
@@ -320,7 +320,7 @@ A column the kind does not have is an error that names it and lists the real one
 <!-- run: count_badcol cut=330 -->
 ```text
 $ node common/door/door.js 'object.count building=Duplex kind=Room floor=1'
-{"request":"d-mwaaswbs-1872838-1","verb":"object.count","actor":"human","status":"error","answer":null,"why":"the object engine could not answer (exit 1): kind Room has no property \"floor\" (its properties: guid, type, name, parent_guid, object_type, predefined_type, center_x, center_y, center_z, size_x, size_y, size_z, room_gu…
+{"request":"d-mwahtbeq-2052176-1","verb":"object.count","actor":"human","status":"error","answer":null,"why":"the object engine could not answer (exit 1): kind Room has no property \"floor\" (its properties: guid, type, name, parent_guid, object_type, predefined_type, center_x, center_y, center_z, size_x, size_y, size_z, room_gu…
 ```
 
 A model with no room at all does not answer `0`. It answers `inconclusive`, because nothing was counted. A zero you can trust is a narrowed count inside a population that is not empty.
@@ -400,10 +400,100 @@ The door itself does not read the dotted form. Sent raw, it comes back as a ques
 <!-- run: dotted_raw cut=230 -->
 ```text
 $ node common/door/door.js 'viewer(Duplex).Room.count'
-{"request":"d-mwaasy0g-1872973-1","verb":null,"actor":"human","status":"refused","answer":{"question":"I could not read that as a command. A command is app.verb key=value … Which one do you mean?","verbs":["modeller.lines","modell…
+{"request":"d-mwahtdf5-2052290-1","verb":null,"actor":"human","status":"refused","answer":{"question":"I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type !help.","verbs":["modeller.li…
 ```
 
 **Limits.** No arithmetic and no second step inside a phrase; use a script with named results for that. Kinds are read from the Viewer's model, and only the Duplex carries a dictionary today. The dotted form is not offered to an AI: its menu is the verb list, so there is one way for it to be right.
+
+## Lists, sums and groups: `erp.list`, `erp.sum`, `erp.group`
+
+`count` answers "how many". Three more read-only verbs answer "which ones", "how much" and "how many of each". They take any kind of the ERP's dictionary (and the same three exist for a building's model as `object.list`, `object.sum`, `object.group`). They need a checkout.
+
+`erp.list` shows rows. Every column, filter and sort is checked against the dictionary, so a wrong name is an error that lists the real ones. Add `column=value` to narrow the list. The list shows at most 50 rows unless `limit` says otherwise (up to 1000), and the answer always carries the **total**, so a short list is never mistaken for the whole. Page through a long one with `offset`:
+
+<!-- run: list_orders -->
+```text
+$ node common/door/door.js --list 'erp.list kind=Order docstatus=CO limit=3 columns=DocumentNo,DocStatus,GrandTotal sort=-DocumentNo'
+DocumentNo  DocStatus  GrandTotal
+80001       CO         100.7
+80001       CO         100.7
+800002      CO         2160
+shown 3 of 14
+```
+
+`erp.sum` adds a number column up exactly. Decimals are added as decimals, never as floating point, so money does not drift. `erp.group` counts the records for each value of a column, most common first:
+
+<!-- run: sum_orders -->
+```text
+$ node common/door/door.js --list 'erp.sum kind=Order column=GrandTotal docstatus=CO'
+kind: Order
+table: C_Order
+column: GrandTotal
+filters: [{"column":"DocStatus","value":"CO"}]
+n: 14
+sum: 19505.9
+population: 44
+verdict: OK
+summary: 19505.9 = sum of GrandTotal over 14 Order
+```
+
+<!-- run: group_orders -->
+```text
+$ node common/door/door.js --list 'erp.group kind=Order by=DocStatus'
+DocStatus  count
+IP         22
+CO         14
+DR         6
+CL         2
+shown 4 of 4
+```
+
+A kind with no records at all does not answer `0` or an empty list. It answers `inconclusive`, because nothing was judged.
+
+## Choose how the answer is shown, and keep it
+
+The reply is the JSON envelope unless you ask otherwise. Three switches show the rows of an answer as something a person or a spreadsheet can read; the envelope is still what the door records:
+
+- `--list`: an aligned table, ending `shown N of TOTAL`. A reply that is one record shows `field: value` lines.
+- `--csv`: the rows as CSV (RFC 4180: a cell with a comma, a quote or a new line is quoted; numbers are exactly as the engine returned them).
+- `--out FILE` writes the chosen form to a file in the current folder instead of the screen. A line that is refused, held or inconclusive writes no file and says so.
+
+<!-- run: csv_orders -->
+```text
+$ node common/door/door.js --csv 'erp.list kind=Order docstatus=CO limit=3 columns=DocumentNo,DocStatus,GrandTotal sort=-DocumentNo'
+DocumentNo,DocStatus,GrandTotal
+80001,CO,100.7
+80001,CO,100.7
+800002,CO,2160
+```
+
+In a script, end a line with `> file` to send that line's answer to a file in the script's folder (`>> file` adds to it). The form follows the name: `.csv` is CSV, `.json` is the envelope, anything else is the list. A path that leaves the script's folder is refused.
+
+These switches live in a fifth file, `render.js`; put it beside `door.js` when you use them from a download:
+
+```text
+curl -O https://red1oon.github.io/bim-ootb/common/door/render.js
+```
+
+## Ask the door: `!help`
+
+Type `!help` to see the common commands, each as a line you can run. `!help erp` lists every verb of one app, `!help erp.find` shows one verb whole (what it does, each input, what it may change, who may run it), and `!help all` lists everything. Help is generated from the same verb list as the table below, reads nothing, runs nothing and is not recorded in the journal.
+
+<!-- run: help_verb -->
+```text
+$ node common/door/door.js '!help erp.find'
+erp.find — Find a document
+
+Find a document by its number, the way a window's Find does (DocumentNo, else Name or Value). Returns every match with its key, DocStatus and DocAction. Nothing is changed. Kinds: any document table of the dictionary (34).
+
+Inputs:
+  kind (required, string) e.g. Order — The kind of document, as the dictionary names it (an AD_Table with a DocAction column), e.g. "Order". 34 kinds exist; an unknown kind or a table that is not a document is refused naming the reason.
+  number (required, string) e.g. 50000 — The document number (DocumentNo) as shown in the window; if two documents carry it, name one with id.
+
+Harm: read (reads only)
+Who may run it: human, ai
+Example: erp.find kind=Order number=50000
+```
 
 ## Viewer questions from a plain download
 
@@ -447,17 +537,23 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `object.update` | Change one property of an object | `building`, `kind`, `uu`, `column`, `value` | writes | human, ai | a bim-ootb checkout |
 | `object.attach` | Attach a file or note to an object | `building`, `kind`, `uu`, `file` (optional), `text` (optional) | writes | human, ai | a bim-ootb checkout |
 | `object.count` | Count the records of a kind | `building`, `kind`, further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `object.list` | List records of a kind | `building`, `kind`, `columns` (optional), `sort` (optional), `limit` (optional), `offset` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `object.sum` | Add up a column | `building`, `kind`, `column`, further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `object.group` | Count by a column | `building`, `kind`, `by`, further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
 | `erp.find` | Find a document | `kind`, `number` | read | human, ai | a bim-ootb checkout |
 | `erp.actions` | What can be done to a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | read | human, ai | a bim-ootb checkout |
 | `erp.describe` | Describe a kind of ERP record | `kind` | read | human, ai | a bim-ootb checkout |
-| `erp.read` | Read an ERP record | `kind`, `id` | read | human, ai | a bim-ootb checkout |
-| `erp.complete` | undefined a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | posts | human, ai | a bim-ootb checkout |
-| `erp.void` | undefined a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
-| `erp.close` | undefined a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
-| `erp.reverse` | undefined a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | posts | human, ai | a bim-ootb checkout |
+| `erp.read` | Read an ERP record | `kind`, `id` (optional), `number` (optional) | read | human, ai | a bim-ootb checkout |
+| `erp.list` | List records | `kind`, `columns` (optional), `sort` (optional), `limit` (optional), `offset` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `erp.sum` | Add up a column | `kind`, `column`, further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `erp.group` | Count by a column | `kind`, `by`, further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `erp.complete` | Complete a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | posts | human, ai | a bim-ootb checkout |
+| `erp.void` | Void a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
+| `erp.close` | Close a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
+| `erp.reverse` | Reverse - Correct a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | posts | human, ai | a bim-ootb checkout |
 <!-- /GEN:verbs -->
 
-**Coverage today.** The list is small on purpose: 23 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 8 ERP verbs. So this is a start, not the whole menu.
+**Coverage today.** The list is small on purpose: 29 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 11 ERP verbs. So this is a start, not the whole menu.
 
 ## What is not checked
 
