@@ -1468,3 +1468,12 @@ access", since the count now follows the roles), W-OPEN-BALANCES, browser W-ODOO
 3. Small named items, any order: `witness_odoo_messy.js` (2 fails on main since #2787 — make it run stage 2) · `model_layer.js` trailing-UPDATE without `idCol` on a table with
    no single key column · E3d bank + unallocated payments · stock value · a tenant born while bundles run gets its plugin access only at the next start.
 Baselines: `§MIGE verdict=PASS judged=58` · `§OB-VERDICT PASS judged=31` · `§PRA-VERDICT PASS judged=8` · OF 18 · NM 31 · BCM 18 · SAPM 24.
+
+**§2026-11-10e (lead, after the owner's "Go"):** #2795 MERGED and fetched back live (sw v1034, `plugin_registry.js` carries the pass, no hand role row in the Odoo bundle).
+- **O2 DISPATCHED** to a Sonnet agent — worktree `/tmp/wt-odoo-o2`, branch `feat/odoo-template-masters`. The lead's definition of "equal" (the engine's HEADERS are a superset of
+  the Odoo oracle's for some sheets, e.g. M_Product's two `…>IsDefault` columns): every oracle column present and cell-equal, row order equal, every engine-only column blank;
+  manifest equal on sheets / source_counts / patches / renamed / held / notes / self_check_fails + the scalars; provenance equal. It opens a DRAFT PR if anything is not equal.
+  Nothing is ✅ until the lead reads its `§MIGE-ODOO-GUIDE / -DIFF / -COVER / -MUTANT` lines and reviews every construct it added to `engine.mjs`.
+- **Small items a + b ✅ BUILT (witness) — bim-ootb PR #2798 (auto-merge armed):** `Trx.groupOps` trailing UPDATE names `<table>_uu` for a table without a single key column —
+  `/tmp/count_logs/sf_groupops.log` `§GOC-VERDICT PASS judged=4 failed=0` (falsifier throws the old "no such column: c_charge_acct_id"); `witness_odoo_messy.js` runs stage 2 —
+  `/tmp/count_logs/sf_odoo_messy.log` `§OM-AFTER ok=true … Opening stock completed: 1 inventory document(s), 25 line(s)` · `§OM-VERDICT PASS judged=14 failed=0` (was FAIL 2).
