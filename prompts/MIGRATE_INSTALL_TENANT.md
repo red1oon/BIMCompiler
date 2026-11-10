@@ -1635,3 +1635,14 @@ ERP unit chosen → the unit is created with that code (`mapUom` `{ x12de355 }`,
 harness to take them out) + W-ODOO-FORM cases `ALREADY` (a workbook whose payment term is renamed "Immediate": before = whole run refused; now = that one row shown as already
 there, everything else loads, summary == result; a key repeated INSIDE the file is still refused) and `KEEP-UNIT` (a unit with no ERP equivalent + a code → the unit exists
 with that code and its products point at it; without a code the run is still refused).
+
+**§2026-11-10n (lead; logs read):** #2811 (falsifier) MERGED.
+- **§ALREADY-THERE + §KEEP-UNIT ✅ BUILT (witness) — bim-ootb PR #2822 (auto-merge armed), branch `feat/migrate-already-there-keep-unit`, sw v1044.** `odoo_migrate_form.mjs`
+  `load()` = `loadOnce` inside a savepoint + the already-there pass; `model_layer.js` uniqueError adds the log line `§MODEL-UNIQUE … held_by=tenant|this-load` (error text
+  unchanged); unit rows gain *New unit code*. `/tmp/count_logs/at_already_there.log`: `§AT-ALREADY … C_PaymentTerm={"infile":11,"will":10,"already":1,"refused":0,…}` ·
+  `run stage1=true stage2=true` · `§AT-REPEAT … "refused":1 … duplicate key … stage1=false` · `§AT-KEEP-UNIT … made=[{"name":"Units","c":"ZZ1"}] products_using_it=45` ·
+  **`§AT-VERDICT PASS judged=9 failed=0`**. BEFORE (same witness, `AT_ERP=~/bim-ootb/erp` on main, `at_already_there.before.log`): `run stage1=false … Nothing migrated: 1 row
+  error(s)` and the summary showed `"refused":0` — the refusal parser lost every two-line refusal (fixed). The payment term's unique key is its NAME (`c_paymentterm_name`).
+  Regressions: OF 18 · OM 14 · OB 36 · NM 31 · BCM 18 · SAPM 24 · IDF PASS · IINV 56 · POSS 43 · GOC 4 · OFL 13 (unit check restated: 6 answer cells).
+- **Follow-ups queued:** the falsifier re-pinned so the LOADER does the skipping (class `already-there`) and units without an ERP equivalent are kept with a code · the guide:
+  two sentences (already there; new unit code) → `scripts/safe_gh_deploy.sh`. Then the E3d bank spec.
