@@ -173,7 +173,7 @@ The last row is deliberate. Text that matches no verb is **never guessed at**:
 <!-- run: question -->
 ```text
 $ node door.js 'please widen the bay'
-{"request":"d-mwb8j6xe-2387161-1","verb":null,"actor":"human","status":"refused","answer":{"question":"I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type !help.","verbs":["modeller.lines","modeller.try_shift","viewer.counts","viewer.clashes","viewer.film_path","viewer.schedule_at","viewer.schedule_compare","modeller.widen_bay","modeller.walk","object.describe","object.read","object.history","object.update","object.attach","object.count","object.list","object.sum","object.group","erp.find","erp.actions","erp.describe","erp.read","erp.list","erp.sum","erp.group","erp.new","erp.complete","erp.void","erp.close","erp.reverse","witness.run","witness.last","legacy.status","legacy.query","erp.column","erp.compare","idempiere.where","erp.pack"]},"why":"not a command: \"please widen the bay\"","notChecked":[],"ops":[],"next":[],"ms":0}
+{"request":"d-mwbb7xxz-2475632-1","verb":null,"actor":"human","status":"refused","answer":{"question":"I could not read that as a command. A command is app.verb key=value … Which one do you mean? Type !help.","verbs":["modeller.lines","modeller.try_shift","viewer.counts","viewer.clashes","viewer.film_path","viewer.schedule_at","viewer.schedule_compare","modeller.widen_bay","modeller.walk","object.describe","object.read","object.history","object.update","object.attach","object.count","object.list","object.sum","object.group","erp.find","erp.actions","erp.describe","erp.read","erp.list","erp.sum","erp.group","erp.new","erp.complete","erp.void","erp.close","erp.reverse","witness.run","witness.last","legacy.status","legacy.query","erp.column","erp.compare","idempiere.where","erp.pack","legacy.up","legacy.refresh","legacy.witness","legacy.check","erp.legacy_plugin"]},"why":"not a command: \"please widen the bay\"","notChecked":[],"ops":[],"next":[],"ms":0}
 ```
 
 ## Reading the reply
@@ -587,7 +587,23 @@ Two things are made from the one workbook, and they are kept apart:
 
 What the workbook cannot make is the rules: the document action of the table, and any process's code. Those are written by hand in the plugin's `src` folder, as in any iDempiere plugin.
 
-The door verb `erp.pack book=<workbook.xlsx> version=<x.y.z> out=<plugin>/META-INF` writes just the zip, and answers its sha256, the rows per dictionary table and the names of the process classes it points at. Run again with the same version and the same rows it answers `unchanged`; the same version with an edited workbook is refused, because a released pack is never changed. Add `java=<plugin>/src package=<java package>` and the Java model classes are written too. A person runs it; an AI's call is held as a claim until a person confirms. The script underneath is still `node erp/tools/xlsx_pack.js`, which prints a `§XLSX-PACK` line for each file it writes. The second verb, `erp.legacy_plugin` (start the test database, make the zip, apply it on the legacy server, check the rows there), is specified in the NEURO contract and **not built yet**: applying a plugin changes a legacy server, so it waits for a decision on which server. It is not in the table below.
+The door verb `erp.pack book=<workbook.xlsx> version=<x.y.z> out=<plugin>/META-INF` writes just the zip, and answers its sha256, the rows per dictionary table and the names of the process classes it points at. Run again with the same version and the same rows it answers `unchanged`; the same version with an edited workbook is refused, because a released pack is never changed. Add `java=<plugin>/src package=<java package>` and the Java model classes are written too. A person runs it; an AI's call is held as a claim until a person confirms. The script underneath is still `node erp/tools/xlsx_pack.js`, which prints a `§XLSX-PACK` line for each file it writes. The second verb, `erp.legacy_plugin book=<workbook.xlsx> version=<x.y.z>`, is the whole route on the local legacy test instance in one line. It runs five lines, and the first one that is not ok stops it: `legacy.up` (start the shared docker Postgres if it is stopped), `erp.pack` (make the zip), `legacy.refresh` (rebuild the test database from the base seed, install the plugin, start the server and wait until the pack is installed, about two minutes), `legacy.check` (read every row of the workbook back from the test database by SQL) and `legacy.witness` (run the in-server check over the server's console and answer its verdict and counts). Every step can be run alone. The instance, its database and the scripts are fixed: nothing is taken from the caller, and the pilot's databases are refused. A person runs it; an AI's call is held as a claim until a person confirms.
+
+`legacy.check` is the read-only one, and it answers how many rows of each kind were found against how many the workbook holds:
+
+<!-- run: legacy_check -->
+```text
+$ node common/door/door.js --list 'legacy.check book=erp/plugins/models/BIM_Document.xlsx'
+database: idempiere_bimdoc
+book: erp/plugins/models/BIM_Document.xlsx
+checks: [{"what":"AD_Table rows","expected":1,"found":1,"ok":true},{"what":"physical tables","expected":1,"found":1,"ok":true},{"what":"AD_Column rows","expected":32,"found":32,"ok":true},{"what":"AD_Window rows","expected":1,"found":1,"ok":true},{"what":"AD_Tab rows","expected":2,"found":2,"ok":true},{"what":"AD_Menu rows","expected":1,"found":1,"ok":true},{"what":"AD_Process rows with the same class name","expected":2,"found":2,"ok":true},{"what":"AD_Reference rows","expected":4,"found":4,"ok":true}]
+pack: {"compared":false,"note":"no version given: the installed pack was not compared with a fresh one"}
+missing: []
+verdict: ALL-FOUND
+summary: test DB idempiere_bimdoc: ALL-FOUND (8/8 kinds of row); no version given: the installed pack was not compared with a fresh one
+```
+
+Give it `version=<x.y.z>` as well and it compares the 2Pack installed in the plugin with the pack just made from the workbook, and says plainly when they differ: the refresh installs the plugin bundle as it is committed, so the two can drift apart until the bundle is rebuilt.
 
 ## Viewer questions from a plain download
 
@@ -654,9 +670,14 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `erp.compare` | Compare one record on the twin and on legacy | `kind`, `number`, `legacy` (optional) | read | human, ai | a bim-ootb checkout |
 | `idempiere.where` | Find a name in the iDempiere source | `symbol`, `in` (optional), `limit` (optional) | read | human, ai | a bim-ootb checkout |
 | `erp.pack` | Make the 2Pack zip from a data-model workbook | `book`, `version`, `out` (optional), `java` (optional), `package` (optional) | writes | human, ai | a bim-ootb checkout |
+| `legacy.up` | Start the shared docker Postgres for the legacy test stack | none | writes | human, ai | a bim-ootb checkout |
+| `legacy.refresh` | Refresh the legacy test instance from the base seed | none | writes | human, ai | a bim-ootb checkout |
+| `legacy.witness` | Run the in-server witness on the legacy test instance | none | trial | human, ai | a bim-ootb checkout |
+| `legacy.check` | Check a workbook's rows in the legacy test database | `book`, `version` (optional) | read | human, ai | a bim-ootb checkout |
+| `erp.legacy_plugin` | Put a data-model plugin on the legacy test instance and check it there | `book`, `version` | writes | human, ai | a bim-ootb checkout |
 <!-- /GEN:verbs -->
 
-**Coverage today.** The list is small on purpose: 38 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 15 ERP verbs. So this is a start, not the whole menu.
+**Coverage today.** The list is small on purpose: 43 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 16 ERP verbs. So this is a start, not the whole menu.
 
 ## What is not checked
 
