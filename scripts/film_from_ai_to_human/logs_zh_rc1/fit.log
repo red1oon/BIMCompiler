@@ -1,0 +1,18 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT intro cue=3.88 room=7.36 dur=6.46 -> DETAIL slack=+0.90 detailDur=6.46 words=5
+§NARR_FIT twin cue=11.84 room=15.82 dur=14.93 -> DETAIL slack=+0.89 detailDur=14.93 words=5
+§NARR_FIT column cue=28.26 room=10.90 dur=10.02 -> DETAIL slack=+0.88 detailDur=10.02 words=3
+§NARR_FIT where cue=39.76 room=8.36 dur=7.44 -> DETAIL slack=+0.92 detailDur=7.44 words=3
+§NARR_FIT status cue=48.72 room=4.98 dur=4.07 -> DETAIL slack=+0.91 detailDur=4.07 words=2
+§NARR_FIT witness cue=54.30 room=9.82 dur=8.91 -> DETAIL slack=+0.91 detailDur=8.91 words=3
+§NARR_FIT sheet cue=64.72 room=9.86 dur=8.94 -> DETAIL slack=+0.92 detailDur=8.94 words=3
+§NARR_FIT diagram cue=75.17 room=9.20 dur=8.31 -> DETAIL slack=+0.89 detailDur=8.31 words=4
+§NARR_FIT pack cue=84.97 room=7.69 dur=6.81 -> DETAIL slack=+0.88 detailDur=6.81 words=2
+§NARR_FIT twopack cue=93.26 room=10.65 dur=9.73 -> DETAIL slack=+0.92 detailDur=9.73 words=4
+§NARR_FIT again cue=104.51 room=8.90 dur=8.01 -> DETAIL slack=+0.89 detailDur=8.01 words=3
+§NARR_FIT manual cue=114.01 room=10.77 dur=9.87 -> DETAIL slack=+0.90 detailDur=9.87 words=3
+§NARR_FIT twinlight cue=125.38 room=10.57 dur=9.65 -> DETAIL slack=+0.92 detailDur=9.65 words=3
+§NARR_FIT claim cue=136.55 room=8.86 dur=7.95 -> DETAIL slack=+0.91 detailDur=7.95 words=4
+§NARR_FIT close cue=146.01 room=9.48 dur=8.60 -> DETAIL slack=+0.88 detailDur=8.60 words=3
