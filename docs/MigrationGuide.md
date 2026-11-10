@@ -111,13 +111,16 @@ run again with one of their ids.
 
 **Open balances at the cut-over (Odoo).** The same file carries your trial balance and every open customer and vendor invoice and credit note at the `--cutover`
 date. The ERP brings them in as **one opening journal** and **one document per open invoice** (its own number and date, the unpaid amount, no tax), completes and
-posts them, and then checks its books against your Odoo rows: each account's balance, the open amount per partner, and two clearing accounts that must end at zero.
+posts them, and then checks its books against your Odoo rows: each account's balance, the open amount per partner, the bank balance per bank account, and three
+clearing accounts that must end at zero.
 If anything differs it says which account and by how much.
 
 - **Open the period first.** The cut-over date's period must be open, and today's too if you migrate later than the cut-over. On a new company: untick *Automatic
   Period Control* on the Accounting Schema, then open the period (Calendar Year and Period → Open/Close All). The summary tells you when this is missing.
 - **Where the amounts land.** Receivables and payables land on the ERP's own customer and vendor accounts; every other account keeps its Odoo number.
-- **Your bank balance waits on the account `BANK-CLEAR`** until you enter your opening bank statement — that step is not built yet.
+- **Your bank and cash balances come in as opening bank statements.** Each Odoo bank or cash journal becomes a bank account in the ERP, and its balance at the
+  cut-over is entered as one completed opening statement. The clearing account `BANK-CLEAR` must end at zero, and the form checks that. Odoo has no bank routing
+  number: the bank is created with a dash there, and the account number is the journal's code when Odoo holds none. Correct both on the Bank window afterwards.
 - **Not brought in:** payments not yet matched to an invoice, manual journal entries on the receivable or payable account, and open items in a foreign currency. The
   summary counts them, and their total stays on the clearing account.
 
