@@ -1518,3 +1518,15 @@ time and memory per 10k rows on both).
 - **Next = O3 the cut (lead):** the form builds the whole book from `odoo_export.json` (workbook optional; an old download still loads), open items look the partner up in the
   template's own C_BPartner sheet and `partner_keys` goes, `export.js` loses its mapping half (−/+ stated), fixtures + W-ODOO-FORM / W-NINJA-MIGRATE / W-ODOO-MESSY move to the
   engine path, zip rebuilt. Then the iDempiere falsifier (§IDEMPIERE-FALSIFIER-SPEC).
+
+**§2026-11-10g (lead; logs read):** #2802 (O2) MERGED (main @8d0cfe79).
+- **O3a ✅ BUILT (witness) — bim-ootb PR #2806 (auto-merge armed), branch `feat/odoo-form-engine-path`, sw v1038.** `plugins/odoo_migrate_convert.mjs` `convert()` + `hasMasters()`;
+  `odoo_migrate_form.mjs` plan(): `odoo_export.json` alone → the engine's book (a set shorter than Odoo's count is refused first); a workbook + manifest.json loads as before.
+  `/tmp/count_logs/o3_open_balances.log`: `§OB-JSON-ONLY tables workbook_path={…} engine_path={…}` identical on 17 of 17 · `same-books OK` (11 accounts + open per partner) ·
+  `§OB-VERDICT PASS judged=36 failed=0`. Regressions: OF 18 (empty-form check restated: one line names both ways) · OM 14 · NM 31 · BCM 18 · SAPM 24 · MIGE 82 · OFL 13.
+- **O3b plan (next, in this order):** (1) template: `bpValue` = `key[bpKey, commercial partner of $partner_id]`, `held` = the template's own `pHeld` on that partner row; delete the
+  set `partner_keys` from `export.js`, the fixture and the two witness oracles (they take the partner Value from the frozen reference converter's C_BPartner provenance instead;
+  the "held" variant becomes "the partner is an internal user's" via `res.users`). (2) **O3c the agent cut:** `export.js` loses the mapping half and writes only
+  `odoo_export.json` — USER-VISIBLE (one file to pick instead of two): the same PR set must update `docs/MigrationGuide.md` (bim-compiler, `scripts/safe_gh_deploy.sh`), the agent
+  README and the form texts; the bim-compiler witnesses that run `export.js` for its workbook (`poc_sheet_contract.js`, the `harden_*` set) are superseded by ODOO-REF / ODOO-GUIDE
+  and must be retired or repointed in the same change; the films still show two files (named, not redone).
