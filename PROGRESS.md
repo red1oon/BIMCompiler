@@ -6,8 +6,8 @@ record the agent + its last finding in `prompts/AGENT_QUEUE.md` §MID-FLIGHT →
 past the reset → resume by `SendMessage` to the agent id (never re-dispatch fresh) → tell the user.
 Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 
-## 🚪 Neuro-symbolic ORDER door — 2026-11-10
-**Done:** A1 (`!help`, `--list/--csv/--out`, `> file`, `erp|object .list/.sum/.group`), A7 (guide live, 71/0). **Built, HELD:** `erp.new` (bim-ootb #2843 draft) pending the legacy twin check. **Next:** `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` ▶ RESUME HERE.
+## 🚪 Neuro-symbolic ORDER door — 2026-11-11
+**Done:** A1, A2 (`erp.new` merged, twin check explained), A7 (guide live at 38 verbs), item 12 (`erp.pack`; `erp.legacy_plugin` with `legacy.up/refresh/witness/check`, W-LEGACY-PLUGIN PASS 8/0 against a real refresh), item 13 rows 1-6 (`witness.run/last`, `legacy.status/query`, `erp.column`, `erp.compare`, `idempiere.where`), film "From AI to Human" EN rc4. **Next:** `prompts/NEURO_SYMBOLIC_ORDER_CONTRACT.md` ▶ RESUME HERE (merge the legacy-plugin PR, repeat A7, then item 13 rows 7-10 and the cookbook verbs).
 
 ## 🤝 Teamwork comm layer (no DB/app server, just a data relay) — POC done 2026-10-23; frame + 3 apps + 6 films 2026-10-24
 **State 2026-10-26 (all live on bim-ootb main):** FL-8 G-4 complete — compile refusal (E1), every device refuses a non-executor's DocAction (E3, #2395), DocAction list honours Document Action Access + the executor map (E2, #2396); G-8 offline statement signer + `publishStatement` (#2401); G-7 translation rules judged by the keys at publish time (#2404); Team guide updated (#2404). G-6 decided (UPS plan BESIDE the office plan, chosen at founding), build spec §38.14. Full log + counts: `prompts/TEAMWORK_FRAMEWORK.md` §38.2–§38.14 (history §0–§37).
