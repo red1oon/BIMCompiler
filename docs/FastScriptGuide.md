@@ -45,7 +45,7 @@ One line, one verb, `key=value` pairs with no spaces around the `=`. Ask the Hos
 <!-- run: lines cut=700 -->
 ```text
 $ node door.js 'modeller.lines building=HospitalGarage'
-{"request":"d-mw9qe1qa-1404047-1","verb":"modeller.lines","actor":"human","status":"ok","answer":{"ok":true,"building":"HospitalGarage","edits":[],"ms":51409,"model":{"grid_source":"column-derived","system":"column-framed","material":"RC","mixed":true,"girders":228,"rotation_deg":-2,"frame":"building","lines":[{"id":"gx0","axis":"x","pos":128.131,"world":132.184},{"id":"gx1","axis":"x","pos":129.223,"world":133.277},{"id":"gx2","axis":"x","pos":133.277,"world":137.334},{"id":"gx3","axis":"x","pos":133.795,"world":137.851},{"id":"gx4","axis":"x","pos":134.811,"world":138.868},{"id":"gx5","axis":"x","pos":145.987,"world":150.051},{"id":"gx6","axis":"x","pos":157.163,"world":161.234},{"id":"gx7…
+{"request":"d-mwa762am-1776636-1","verb":"modeller.lines","actor":"human","status":"ok","answer":{"ok":true,"building":"HospitalGarage","edits":[],"ms":13579,"model":{"grid_source":"column-derived","system":"column-framed","material":"RC","mixed":true,"girders":228,"rotation_deg":-2,"frame":"building","lines":[{"id":"gx0","axis":"x","pos":128.131,"world":132.184},{"id":"gx1","axis":"x","pos":129.223,"world":133.277},{"id":"gx2","axis":"x","pos":133.277,"world":137.334},{"id":"gx3","axis":"x","pos":133.795,"world":137.851},{"id":"gx4","axis":"x","pos":134.811,"world":138.868},{"id":"gx5","axis":"x","pos":145.987,"world":150.051},{"id":"gx6","axis":"x","pos":157.163,"world":161.234},{"id":"gx7…
 ```
 
 It opens the Modeller and the building, so it takes 10 to 40 seconds. What you see is one line of JSON, an **envelope**. Only the start is shown here; the grid has more lines than fit. The answer is the app's own, unchanged, inside `answer`. Here `gx5` is at 145.987 m and `gx6` at 157.163 m on the building's own grid. `status` is `ok`.
@@ -68,9 +68,9 @@ The exit code is the first answer: `0` means ok, `3` means the app gave an answe
 <!-- run: widen_steps cut=200 -->
 ```text
 $ grep -o '"request":"[^"]*","verb":"[^"]*","actor":"[^"]*","status":"[^"]*"' widen.json
-"request":"d-mw9qf5lq-1404580-1","verb":"modeller.widen_bay","actor":"human","status":"refused"
-"request":"d-mw9qf5lq-1404580-1.1","verb":"modeller.lines","actor":"human","status":"ok"
-"request":"d-mw9qf5lq-1404580-1.2","verb":"modeller.try_shift","actor":"human","status":"refused"
+"request":"d-mwa76d1o-1777002-1","verb":"modeller.widen_bay","actor":"human","status":"refused"
+"request":"d-mwa76d1o-1777002-1.1","verb":"modeller.lines","actor":"human","status":"ok"
+"request":"d-mwa76d1o-1777002-1.2","verb":"modeller.try_shift","actor":"human","status":"refused"
 ```
 
 The first step read the grid. It found the bay now:
@@ -142,8 +142,8 @@ A script runs top to bottom and **stops at the first line that is not ok**. Here
 <!-- run: script_status -->
 ```text
 $ grep -o '"request":"[^"]*","verb":"[^"]*","actor":"[^"]*","status":"[^"]*"' bay.json
-"request":"d-mw9qghbx-1405398-2","verb":"modeller.lines","actor":"human","status":"ok"
-"request":"d-mw9qgqzc-1405398-3","verb":"modeller.try_shift","actor":"human","status":"ok"
+"request":"d-mwa76zao-1777696-2","verb":"modeller.lines","actor":"human","status":"ok"
+"request":"d-mwa77ave-1777696-3","verb":"modeller.try_shift","actor":"human","status":"ok"
 ```
 
 At exactly 12 m the app finds no new problem: the count of beam spans over the limit stays where it was.
@@ -173,7 +173,7 @@ The last row is deliberate. Text that matches no verb is **never guessed at**:
 <!-- run: question -->
 ```text
 $ node door.js 'please widen the bay'
-{"request":"d-mw9qh1gz-1406025-1","verb":null,"actor":"human","status":"refused","answer":{"question":"I could not read that as a command. A command is app.verb key=value … Which one do you mean?","verbs":["modeller.lines","modeller.try_shift","viewer.counts","viewer.clashes","viewer.film_path","viewer.schedule_at","viewer.schedule_compare","modeller.widen_bay","object.describe","object.read","object.history","object.update","object.attach"]},"why":"not a command: \"please widen the bay\"","notChecked":[],"ops":[],"next":[],"ms":0}
+{"request":"d-mwa77o77-1778433-1","verb":null,"actor":"human","status":"refused","answer":{"question":"I could not read that as a command. A command is app.verb key=value … Which one do you mean?","verbs":["modeller.lines","modeller.try_shift","viewer.counts","viewer.clashes","viewer.film_path","viewer.schedule_at","viewer.schedule_compare","modeller.widen_bay","modeller.walk","object.describe","object.read","object.history","object.update","object.attach","object.count","erp.find","erp.actions","erp.describe","erp.read","erp.complete","erp.void","erp.close"]},"why":"not a command: \"please widen the bay\"","notChecked":[],"ops":[],"next":[],"ms":0}
 ```
 
 ## Reading the reply
@@ -202,15 +202,15 @@ The five statuses, each from a real run:
 <!-- run: error -->
 ```text
 $ node door.js 'modeller.lines'
-{"request":"d-mw9qh1ke-1406036-1","verb":"modeller.lines","actor":"human","status":"error","answer":null,"why":"missing input: building","notChecked":[],"ops":[],"next":[],"ms":1}
+{"request":"d-mwa77oaz-1778443-1","verb":"modeller.lines","actor":"human","status":"error","answer":null,"why":"missing input: building","notChecked":[],"ops":[],"next":[],"ms":1}
 ```
 
 **claim.** The line is understood, but the actor has no proof that allows it, so the door **holds it and does not run it**. This is the safety rule for an AI, and it comes from the verb, not from the actor. See [What is a claim](#what-is-a-claim).
 
-<!-- run: claim cut=420 -->
+<!-- run: claim -->
 ```text
-$ node door.js --actor ai 'object.update building=Duplex kind=Element uu=abc column=Name value=x'
-{"request":"d-mw9qh1ok-1406048-1","verb":"object.update","actor":"ai","status":"claim","answer":null,"why":"actor ai has proof \"local-user\", which allows read/trial verbs; object.update is writes. Held as a claim, not run.","notChecked":[],"ops":[],"next":[],"ms":1}
+$ node door.js --actor ai --request ai-1 'object.update building=Duplex kind=Element uu=abc column=Name value=x'
+{"request":"ai-1","verb":"object.update","actor":"ai","status":"claim","answer":null,"why":"actor ai has proof \"local-user\", which allows read/trial verbs; object.update is writes. Held as a claim, not run. A person confirms it with: door.js --confirm ai-1","notChecked":[],"ops":[],"next":[],"ms":2}
 ```
 
 **inconclusive.** The app could not judge, and says so. It is never turned into an `ok`. Here the Viewer has no clash rule for the pair ARC and ZZZ. This one needs a checkout:
@@ -218,7 +218,7 @@ $ node door.js --actor ai 'object.update building=Duplex kind=Element uu=abc col
 <!-- run: inconclusive -->
 ```text
 $ node common/door/door.js 'viewer.clashes building=Duplex discA=ARC discB=ZZZ'
-{"request":"d-mw9qh1sd-1406058-1","verb":"viewer.clashes","actor":"human","status":"inconclusive","answer":null,"why":"the Viewer could not answer (exit 1): the Viewer says INCONCLUSIVE: no rule for ARC/ZZZ in clash_rules.json","notChecked":[],"ops":[],"next":[],"ms":11885}
+{"request":"d-mwa77ok3-1778463-1","verb":"viewer.clashes","actor":"human","status":"inconclusive","answer":null,"why":"the Viewer could not answer (exit 1): the Viewer says INCONCLUSIVE: no rule for ARC/ZZZ in clash_rules.json","notChecked":[],"ops":[],"next":[],"ms":11184}
 ```
 
 ### What is a claim
@@ -227,13 +227,51 @@ Each verb has a **harm class**: `read` (changes nothing), `trial` (a change made
 
 Each actor has a proof. A person at the terminal is trusted for every class. An **AI** is trusted for `read` and `trial` only: it may look and it may try, but a `writes`, `posts` or `sends` verb from an AI is held as a claim, as the `object.update` line above was. An actor with no proof at all, such as a mail from an unknown sender, may read and nothing else:
 
-<!-- run: claim_email cut=420 -->
+<!-- run: claim_email -->
 ```text
-$ node door.js --actor email 'modeller.try_shift building=HospitalGarage line=gx6 move=1.824'
-{"request":"d-mw9qhb20-1406296-1","verb":"modeller.try_shift","actor":"email","status":"claim","answer":null,"why":"actor email has proof \"none\", which allows read verbs; modeller.try_shift is trial. Held as a claim, not run.","notChecked":[],"ops":[],"next":[],"ms":2}
+$ node door.js --actor email --request mail-0 'modeller.try_shift building=HospitalGarage line=gx6 move=1.824'
+{"request":"mail-0","verb":"modeller.try_shift","actor":"email","status":"claim","answer":null,"why":"actor email has proof \"none\", which allows read verbs; modeller.try_shift is trial. Held as a claim, not run. A person confirms it with: door.js --confirm mail-0","notChecked":[],"ops":[],"next":[],"ms":2}
 ```
 
-A held claim is not run, not queued and not lost: it is in the journal. To act on it, a person sends the same line as themselves. The door does not confirm anything on anyone's behalf.
+A held claim is not run, not queued and not lost: it is in the journal, under its request id. The door does not confirm anything on anyone's behalf.
+
+### Confirm a claim
+
+A person lets a held claim through **by its request id**, so the line that runs is exactly the line that was proposed. Nobody re-types it. Here a mail asks for a trial move and is held:
+
+<!-- run: confirm_claim -->
+```text
+$ node door.js --journal claims.jsonl --actor email --request mail-1 'modeller.try_shift building=HospitalGarage line=gx6 move=0.824'
+{"request":"mail-1","verb":"modeller.try_shift","actor":"email","status":"claim","answer":null,"why":"actor email has proof \"none\", which allows read verbs; modeller.try_shift is trial. Held as a claim, not run. A person confirms it with: door.js --confirm mail-1","notChecked":[],"ops":[],"next":[],"ms":1}
+```
+
+`--claims` lists what is being held:
+
+<!-- run: confirm_list -->
+```text
+$ node door.js --journal claims.jsonl --claims | grep -o '"actor":"[a-z]*","line":"[^"]*","verb":"[^"]*","harm":"[a-z]*"'
+"actor":"email","line":"modeller.try_shift building=HospitalGarage line=gx6 move=0.824","verb":"modeller.try_shift","harm":"trial"
+```
+
+`--confirm` runs the recorded line, as you, once:
+
+<!-- run: confirm_run cut=200 -->
+```text
+$ node door.js --journal claims.jsonl --confirm mail-1
+{"request":"mail-1#confirmed","verb":"modeller.try_shift","actor":"human","status":"ok","answer":{"ok":true,"building":"HospitalGarage","edits":[{"tag":"EDIT_REPORT","version":1,"change":{"kind":"bloc…
+```
+
+The reply is the ordinary one, and it names the claim it confirmed. Asking again runs nothing: the door answers from its record.
+
+<!-- run: confirm_again -->
+```text
+$ node door.js --journal claims.jsonl --confirm mail-1 | grep -o '"confirms":"[^"]*"'
+"confirms":"mail-1"
+```
+
+Three rules hold. Only a person at the terminal may confirm: `--actor ai --confirm …` is refused and the claim stays held. The app still decides at the moment of confirming, so a line that has become wrong since it was proposed is refused with the app's reason. And an AI's tool connection has no confirm command at all.
+
+**What this does not prove.** The door trusts whoever is at the local terminal. An AI that is allowed to run shell commands on your machine could type `--confirm` itself, just as it could type a line as you. Keep an AI's access to its tool connection if that matters.
 
 ## Use the door from a script of your own
 
@@ -246,7 +284,7 @@ A verb can also ask the model itself what it holds. `object.describe` is **refle
 <!-- run: describe cut=520 -->
 ```text
 $ node common/door/door.js 'object.describe building=Duplex kind=Element'
-{"request":"d-mw9qhb5q-1406306-1","verb":"object.describe","actor":"human","status":"ok","answer":{"kind":"Element","table":"elements_meta","uu":"3027c2ed-8cb6-5ccb-ae8c-fd7df2eca264","key":"elements_meta_uu","highVolume":true,"properties":[{"name":"guid","label":"GUID","type":"string","mandatory":true,"updateable":false,"key":false,"parent":false,"length":255},{"name":"ifc_class","label":"IFC Class","type":"list","mandatory":false,"updateable":true,"key":false,"parent":false,"length":255,"values":["IfcBeam","IfcCo…
+{"request":"d-mwa78aap-1779191-1","verb":"object.describe","actor":"human","status":"ok","answer":{"kind":"Element","table":"elements_meta","uu":"3027c2ed-8cb6-5ccb-ae8c-fd7df2eca264","key":"elements_meta_uu","highVolume":true,"properties":[{"name":"guid","label":"GUID","type":"string","mandatory":true,"updateable":false,"key":false,"parent":false,"length":255},{"name":"ifc_class","label":"IFC Class","type":"list","mandatory":false,"updateable":true,"key":false,"parent":false,"length":255,"values":["IfcBeam","IfcCo…
 ```
 
 Which methods may an `Element` use?
@@ -259,6 +297,134 @@ $ node common/door/door.js 'object.describe building=Duplex kind=Element' | grep
 
 An unknown kind is an error that lists the kinds the model has, so a wrong guess teaches the right name.
 
+## Count things: `object.count`
+
+`object.count` answers "how many": how many records of a kind the model holds. The Duplex names its rooms as the kind `Room`. It needs a checkout.
+
+<!-- run: count_rooms -->
+```text
+$ node common/door/door.js 'object.count building=Duplex kind=Room'
+{"request":"d-mwa78b4f-1779241-1","verb":"object.count","actor":"human","status":"ok","answer":{"kind":"Room","table":"model_room","filters":[],"count":5,"population":5,"verdict":"OK","summary":"5 Room"},"why":null,"notChecked":[],"ops":[],"next":[],"ms":370}
+```
+
+Add `column=value` to narrow the count. The column must be a property of the kind (`object.describe` lists them), and the answer keeps the **population**, the number before narrowing:
+
+<!-- run: count_storey -->
+```text
+$ node common/door/door.js 'object.count building=Duplex kind=Room storey="Level 1"'
+{"request":"d-mwa78bis-1779270-1","verb":"object.count","actor":"human","status":"ok","answer":{"kind":"Room","table":"model_room","filters":[{"column":"storey","value":"Level 1"}],"count":2,"population":5,"verdict":"OK","summary":"2 Room where storey = Level 1 (of 5)"},"why":null,"notChecked":[],"ops":[],"next":[],"ms":350}
+```
+
+A column the kind does not have is an error that names it and lists the real ones. It is never read as "no match":
+
+<!-- run: count_badcol cut=330 -->
+```text
+$ node common/door/door.js 'object.count building=Duplex kind=Room floor=1'
+{"request":"d-mwa78bwt-1779290-1","verb":"object.count","actor":"human","status":"error","answer":null,"why":"the object engine could not answer (exit 1): kind Room has no property \"floor\" (its properties: guid, type, name, parent_guid, object_type, predefined_type, center_x, center_y, center_z, size_x, size_y, size_z, room_gu…
+```
+
+A model with no room at all does not answer `0`. It answers `inconclusive`, because nothing was counted. A zero you can trust is a narrowed count inside a population that is not empty.
+
+## What the walker would place: `modeller.walk`
+
+The Modeller has a *walker* that places the fittings of one discipline (sprinklers, lights, outlets) by rules measured from real buildings. `modeller.walk` is a **dry run** of it: it says what the walker would place and changes nothing. The model file is the same, byte for byte, afterwards, and the answer says so. It needs a checkout. The full reply is long, so this shows its main numbers:
+
+<!-- run: walk_fp -->
+```text
+$ node common/door/door.js 'modeller.walk building=Duplex discipline=FP' | grep -o '"rules":"[^"]*"\|"count":[0-9]*,"placed":[0-9]*,"provisional":[0-9]*\|"byClass":{[^}]*}\|"modelUnchanged":[a-z]*'
+"rules":"duplex_rules.db"
+"count":46,"placed":0,"provisional":46
+"byClass":{"IfcFireSuppressionTerminal":45,"IfcAlarm":1}
+"modelUnchanged":true
+```
+
+`count` is everything the walk would place. `provisional` are positions the walker itself marks as not final, for example a fitting with no ceiling found above it. `rules` is the rule set the building's class uses: a house walks the residential rules. A walk that places nothing answers `inconclusive` with the walker's reason.
+
+## The dotted form, for people
+
+The same questions can be typed as one dotted phrase: **where it is, then what to take**. It is a shorthand for people at a terminal. It is not a second language: the tool turns the phrase into one door line, shows you that line, and sends only that line through the door. It needs a checkout.
+
+`--compile` shows the door line and runs nothing:
+
+<!-- run: dotted_compile -->
+```text
+$ node common/door/dotted.js --compile 'viewer(Duplex).Room.count'
+{"dotted":"viewer(Duplex).Room.count","lines":["object.count building=Duplex kind=Room"],"field":"count"}
+```
+
+Without `--compile` it runs, and `value` is the field you asked for:
+
+<!-- run: dotted_value -->
+```text
+$ node common/door/dotted.js 'viewer(Duplex).Room.count' | grep -o '"value":[0-9]*'
+"value":5
+```
+
+There are two shapes, and one verb call per phrase:
+
+| Shape | Example | Becomes the door line |
+|---|---|---|
+| `app(model).Kind.measure` | `viewer(Duplex).Room.count` | `object.count building=Duplex kind=Room` |
+| `app(model).Kind[column=value].measure` | `viewer(Duplex).Room[storey="Level 1"].count` | `object.count building=Duplex kind=Room storey="Level 1"` |
+| `app(model).method(inputs).field` | `modeller(Duplex).walk(FP).count` | `modeller.walk building=Duplex discipline=FP`, then reads `count` |
+| the same, inputs by name | `viewer(Duplex).schedule_at(day=5).counts.placed` | `viewer.schedule_at building=Duplex day=5`, then reads `counts.placed` |
+
+<!-- run: dotted_filter -->
+```text
+$ node common/door/dotted.js --compile 'viewer(Duplex).Room[storey="Level 1"].count'
+{"dotted":"viewer(Duplex).Room[storey=\"Level 1\"].count","lines":["object.count building=Duplex kind=Room storey=\"Level 1\""],"field":"count"}
+```
+
+<!-- run: dotted_walk -->
+```text
+$ node common/door/dotted.js --compile 'modeller(Duplex).walk(FP).count'
+{"dotted":"modeller(Duplex).walk(FP).count","lines":["modeller.walk building=Duplex discipline=FP"],"field":"count"}
+```
+
+<!-- run: dotted_sched -->
+```text
+$ node common/door/dotted.js --compile 'viewer(Duplex).schedule_at(day=5).counts.placed'
+{"dotted":"viewer(Duplex).schedule_at(day=5).counts.placed","lines":["viewer.schedule_at building=Duplex day=5"],"field":"counts.placed"}
+```
+
+Every name comes from the verb list: a *method* is a verb of that app, a *measure* is a count verb, a *field* is one the verb says it returns. A wrong name is an error that lists the right ones:
+
+<!-- run: dotted_bad -->
+```text
+$ node common/door/dotted.js 'viewer(Duplex).Room.sum'
+{"dotted":"viewer(Duplex).Room.sum","error":"unknown measure \"sum\" (measures: count)"}
+```
+
+The door itself does not read the dotted form. Sent raw, it comes back as a question and nothing runs:
+
+<!-- run: dotted_raw cut=230 -->
+```text
+$ node common/door/door.js 'viewer(Duplex).Room.count'
+{"request":"d-mwa78dsq-1779427-1","verb":null,"actor":"human","status":"refused","answer":{"question":"I could not read that as a command. A command is app.verb key=value … Which one do you mean?","verbs":["modeller.lines","modell…
+```
+
+**Limits.** No arithmetic and no second step inside a phrase; use a script with named results for that. Kinds are read from the Viewer's model, and only the Duplex carries a dictionary today. The dotted form is not offered to an AI: its menu is the verb list, so there is one way for it to be right.
+
+## Viewer questions from a plain download
+
+Two Viewer verbs, `viewer.counts` and `viewer.clashes`, also work without a checkout. Put two more files beside the four:
+
+```text
+curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_verbs.js
+curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
+```
+
+With no page files on your disk, the tool opens the live Viewer page with the building the site serves, in a hidden browser on the processor, and asks the Viewer's own Find panel. `page` in the answer says which page was used:
+
+<!-- run: viewer_flat -->
+```text
+$ node door.js 'viewer.counts building=Duplex' | grep -o '"summary":"[^"]*"\|"page":"[a-z]*"'
+"summary":"1119 elements: MEP 904, ARC 196, STR 19"
+"page":"live"
+```
+
+It takes about half a minute. The numbers are the served building's, so they can differ from an older copy in a checkout. The schedule verbs, `viewer.film_path`, the object verbs and `modeller.walk` still need a checkout; the table says which.
+
 ## The verbs
 
 This table is **generated from the vocabulary file** (`common/door/verbs.json`) and a test checks that it matches, verb for verb. It is the same list the AI's tool menu is built from. *Harm* is explained above; *Needs* says which of the two downloads runs the verb.
@@ -268,20 +434,29 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 |---|---|---|---|---|---|
 | `modeller.lines` | Read the grid | `building` | read | human, ai | the 4-file download |
 | `modeller.try_shift` | Try shifting a grid line | `building`, `line`, `move` (metres) | trial | human, ai | the 4-file download |
-| `viewer.counts` | Count elements | `building`, `by` (optional) | read | human, ai | a bim-ootb checkout |
-| `viewer.clashes` | List clashes between two disciplines | `building`, `discA`, `discB` | read | human, ai | a bim-ootb checkout |
+| `viewer.counts` | Count elements | `building`, `by` (optional) | read | human, ai | the 4 files + the 2 Viewer files |
+| `viewer.clashes` | List clashes between two disciplines | `building`, `discA`, `discB` | read | human, ai | the 4 files + the 2 Viewer files |
 | `viewer.film_path` | Film path visibility | `db`, `path` (optional) | read | human, ai | a bim-ootb checkout |
 | `viewer.schedule_at` | Schedule state at a day | `building`, `day` (day number) | read | human, ai | a bim-ootb checkout |
 | `viewer.schedule_compare` | Schedule engine against its reference | `building`, `shift_hours` (hours) (optional) | read | human, ai | a bim-ootb checkout |
 | `modeller.widen_bay` | Widen a bay to a target width | `building`, `from`, `to`, `target` (metres) | trial | human, ai | the 4-file download |
+| `modeller.walk` | What the walker would place | `building`, `discipline` | read | human, ai | a bim-ootb checkout |
 | `object.describe` | Describe an object kind | `building`, `kind`, `uu` (optional) | read | human, ai | a bim-ootb checkout |
 | `object.read` | Read an object | `building`, `kind`, `uu` | read | human, ai | a bim-ootb checkout |
 | `object.history` | History of an object | `building`, `kind`, `uu` | read | human, ai | a bim-ootb checkout |
 | `object.update` | Change one property of an object | `building`, `kind`, `uu`, `column`, `value` | writes | human, ai | a bim-ootb checkout |
 | `object.attach` | Attach a file or note to an object | `building`, `kind`, `uu`, `file` (optional), `text` (optional) | writes | human, ai | a bim-ootb checkout |
+| `object.count` | Count the records of a kind | `building`, `kind`, further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `erp.find` | Find a document | `kind`, `number` | read | human, ai | a bim-ootb checkout |
+| `erp.actions` | What can be done to a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | read | human, ai | a bim-ootb checkout |
+| `erp.describe` | Describe a kind of ERP record | `kind` | read | human, ai | a bim-ootb checkout |
+| `erp.read` | Read an ERP record | `kind`, `id` | read | human, ai | a bim-ootb checkout |
+| `erp.complete` | undefined a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | posts | human, ai | a bim-ootb checkout |
+| `erp.void` | undefined a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
+| `erp.close` | undefined a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
 <!-- /GEN:verbs -->
 
-**Coverage today.** The list is small on purpose: 13 verbs cover the Modeller's grid edits, a few Viewer questions, the schedule, and generic object reading and writing. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1156 documents and processes, and the door offers no ERP verb yet. So this is a start, not the whole menu.
+**Coverage today.** The list is small on purpose: 22 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1156 documents and processes, and the door offers 7 ERP verbs. So this is a start, not the whole menu.
 
 ## What is not checked
 
