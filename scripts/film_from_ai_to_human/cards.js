@@ -42,6 +42,9 @@ const TERM = {
     steps: [{ cmd: doorLine('status'), after: [ans(esc(F.status.summary).replace('UP', '<b>UP</b>'))] }] },
   witness: { h: T.after, cpf: 1, pre: box('before: ' + B.witness.source, [B.witness.cmd], true),
     steps: [{ cmd: doorLine('witness'), after: [ans(esc(F.witness.name) + ' &nbsp; <b>' + F.witness.verdict + '</b> &nbsp;·&nbsp; <b>' + F.witness.pass + '</b> checks, ' + F.witness.fail + ' failed'), dim('the whole log is kept; witness.last reads it again')] }] },
+  pack: { h: T.after, cpf: 1.5, pre: box('before: ' + B.pack.source, [cut(B.pack.cmd, 118), cut(B.pack.cmd.slice(118), 118)], true),
+    steps: [{ cmd: doorLine('pack'), after: [ans('<b>' + F.pack.status + '</b> &nbsp;·&nbsp; <b>' + F.pack.elements + '</b> elements &nbsp;·&nbsp; <b>' + F.pack.processClasses + '</b> process classes named'), dim(F.pack.classes.join('   '))] }] },
+  again: { h: T.after, cpf: 1.5, steps: [{ cmd: doorLine('pack_again'), after: [ans('<b>' + F.pack.again + '</b> &nbsp;·&nbsp; same sha256 ' + F.pack.sha + '…'), dim('a released pack is never changed: the same version with other rows is refused')] }] },
   claim: { h: T.after, cpf: 1.5, steps: [{ cmd: 'door --actor ai ' + doorLine('claim'), after: [ans('<b>' + F.claim.status + '</b>: held for a person, nothing written'), dim(F.claim.why)] }] }
 };
 
@@ -55,11 +58,15 @@ function termStates(b) {
     out.push({ html: termPage(b, s, x.cmd.length, false), frames: 6 }); out.push({ html: termPage(b, s, x.cmd.length, true), frames: null }); });
   return out;
 }
+const SH = F.sheet, shTabs = SH.order.map((x, i) => '<span class="tab' + (x.name === 'AD_Column' ? ' on' : '') + '"><i>' + (i + 1) + '</i> ' + esc(x.name) + ' <u>' + x.rows + '</u></span>').join('');
+const shGrid = '<table class="sg"><tr>' + SH.column.head.map(h => '<th>' + esc(h) + '</th>').join('') + '</tr>' + SH.column.rows.map(r => '<tr>' + r.map(v => '<td>' + esc(cut(v, 34)) + '</td>').join('') + '</tr>').join('') + '</table>';
+const sheetCard = page('<h1>' + esc(SH.file) + ' &nbsp;·&nbsp; ' + SH.count + ' sheets, left to right</h1><div class="tabs">' + shTabs + '</div>' + shGrid + '<div class="dim" style="margin:22px 0 0 0">one row per record · first column Key · a cell reads ref:&lt;Key&gt; to point at a row of an earlier sheet</div>' + LABEL,
+  '.tabs{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:26px} .tab{background:#1e293b;border:2px solid #334155;border-radius:10px;padding:8px 16px;font-family:"DejaVu Sans Mono",monospace;font-size:24px;color:#cbd5e1} .tab i{font-style:normal;color:#fbbf24;font-weight:700} .tab u{text-decoration:none;color:#94a3b8;font-size:20px} .tab.on{background:#0b0f17;border-color:#4ade80;color:#F3EEE8} table.sg{width:100%;font-size:25px;font-family:"DejaVu Sans Mono",monospace} table.sg th{text-align:left;color:#7dd3fc;padding:10px 14px;border-bottom:2px solid #475569} table.sg td{padding:10px 14px;color:#F3EEE8}');
 const still = (html) => [{ html, frames: null }];
 const cards = {
   title: still(page('<div class="ch"><div class="k">' + T.kick + '</div><div class="t1">' + T.t1 + '</div><div class="t2">' + T.t2 + '</div><div class="p">' + T.tp + '</div></div>', 'body{background:#0b0f17} .ch{text-align:center;margin-top:120px} .k{font-size:34px;color:#FF6B78;letter-spacing:4px;font-weight:700} .t1{font-size:120px;font-weight:700;margin-top:34px} .t2{font-size:120px;font-weight:700;color:#FF6B78;margin-top:6px} .p{font-size:40px;color:#94a3b8;margin-top:56px}')),
   intro: still(page('<div class="plain" style="margin-top:150px">' + T.intro1 + '<br><span>' + T.intro2 + '</span></div>')),
-  twin: termStates(TERM.twin), column: termStates(TERM.column), where: termStates(TERM.where), status: termStates(TERM.status), witness: termStates(TERM.witness), claim: termStates(TERM.claim),
+  twin: termStates(TERM.twin), column: termStates(TERM.column), where: termStates(TERM.where), status: termStates(TERM.status), witness: termStates(TERM.witness), sheet: still(sheetCard), pack: termStates(TERM.pack), again: termStates(TERM.again), claim: termStates(TERM.claim),
   close: still(page('<div class="big" style="font-size:110px;margin-top:150px">' + T.closeBig + '</div><div class="sub">' + T.closeSub + '</div><div class="sub" style="color:#7dd3fc;font-size:38px;margin-top:60px">red1oon.github.io/BIMCompiler/FastScriptGuide</div>'))
 };
 (async () => {

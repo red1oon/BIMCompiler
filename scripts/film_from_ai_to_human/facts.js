@@ -27,6 +27,7 @@ try {
   out.before.where = { source: typed, cmd: "grep -n \"INVOICERULE\\|\\\"InvoiceRule\\\"\\|IsDiscountPrinted\\|C_ConversionType_ID\" $F | head -20" };
   out.before.witness = { source: typed, cmd: "grep -E \"❌|^§WITNESS\" ~/.cache/bim_bridge/a7c_witness.log | cut -c1-220" };
   out.before.status = { source: typed, cmd: "docker ps --format '{{.Names}}'; curl -s -o /dev/null -w \"pilot %{http_code}\\n\" http://localhost:8088/webui/" };
+  out.before.pack = { source: 'the script, before the verb (Fast Script Guide)', cmd: 'node erp/tools/xlsx_pack.js erp/plugins/models/BIM_Document.xlsx --version 1.0.0 --out plugin/META-INF --java plugin/src --package org.kernel.bim.model' };
   // ---- AFTER (real runs)
   const st = door('status', 'legacy.status'); if (st.status !== 'ok' || st.answer.verdict !== 'UP') throw new Error('the legacy stack is not UP: ' + JSON.stringify(st.answer && st.answer.summary));
   out.status = { verdict: st.answer.verdict, summary: st.answer.summary };
@@ -40,8 +41,18 @@ try {
   out.where = { total: wh.answer.total, files: wh.answer.files, hits: wh.answer.hits.map(x => x.file.split('/').pop() + ':' + x.line + '  ' + x.text.slice(0, 70)) };
   const wr = door('witness', 'witness.run name=door_help'); if (wr.status !== 'ok') throw new Error('witness.run: ' + wr.why);
   out.witness = { verdict: wr.answer.verdict, pass: wr.answer.pass, fail: wr.answer.fail, name: wr.answer.name };
+  const packOut = 'plugin/META-INF'; fs.rmSync(path.join(__dirname, 'plugin'), { recursive: true, force: true });   // the folder the film shows; removed after the run
+  const PK = 'erp.pack book=erp/plugins/models/BIM_Document.xlsx version=1.0.0 out=' + packOut;
+  const pk1 = door('pack', PK); if (pk1.status !== 'ok') throw new Error('erp.pack: ' + pk1.why);
+  const pk2 = door('pack_again', PK); if (pk2.status !== 'ok') throw new Error('erp.pack again: ' + pk2.why);
+  out.pack = { status: pk1.answer.status, again: pk2.answer.status, elements: pk1.answer.elements, records: pk1.answer.records, tables: pk1.answer.rows.AD_Table, columns: pk1.answer.rows.AD_Column, tabs: pk1.answer.rows.AD_Tab, processClasses: pk1.answer.classes.length, classes: pk1.answer.classes.map(c => c.split('.').pop()), sha: pk1.answer.sha256.slice(0, 16), sameSha: pk1.answer.sha256 === pk2.answer.sha256 };
+  fs.rmSync(path.join(__dirname, 'plugin'), { recursive: true, force: true });
+  // the workbook itself, read from the file (sheet order, rows per sheet, the first rows of two sheets)
+  const XL = require(path.join(OOTB, 'erp/xlsx.mini.min.js')), wb = XL.read(fs.readFileSync(path.join(OOTB, 'erp/plugins/models/BIM_Document.xlsx')), { type: 'buffer', raw: true });
+  const grid = (n) => XL.utils.sheet_to_json(wb.Sheets[n], { header: 1, raw: true, defval: '' });
+  out.sheet = { file: 'BIM_Document.xlsx', count: wb.SheetNames.length, order: wb.SheetNames.map(n => ({ name: n, rows: grid(n).length - 1 })), column: { head: grid('AD_Column')[0].slice(0, 6), rows: grid('AD_Column').slice(1, 5).map(r => r.slice(0, 6)) } };
   const ai = door('claim', 'erp.new kind=Order issotrx=Y c_doctypetarget_id=132 c_bpartner_id=112 salesrep_id=101', 'ai'); out.claim = { status: ai.status, why: String(ai.why || '').slice(0, 140) };
   out.verbs = JSON.parse(fs.readFileSync(path.join(OOTB, 'common/door/verbs.json'), 'utf8')).verbs.length;
   fs.mkdirSync(path.join(__dirname, 'out'), { recursive: true }); fs.writeFileSync(path.join(__dirname, 'out', 'facts.json'), JSON.stringify(out, null, 1));
-  L('wrote out/facts.json verbs=' + out.verbs + ' compare=' + out.compare.cells.match + '/' + out.compare.cells.diff + '/' + out.compare.cells.nullVsDefault + ' column114=' + out.column.legacyDefaultId + ' where=' + out.where.total + ' witness=' + out.witness.verdict + '/' + out.witness.pass + ' claim=' + out.claim.status + ' twinScriptLines=' + out.before.twin.lines);
+  L('wrote out/facts.json verbs=' + out.verbs + ' compare=' + out.compare.cells.match + '/' + out.compare.cells.diff + '/' + out.compare.cells.nullVsDefault + ' column114=' + out.column.legacyDefaultId + ' where=' + out.where.total + ' witness=' + out.witness.verdict + '/' + out.witness.pass + ' pack=' + out.pack.status + '/' + out.pack.again + ' elements=' + out.pack.elements + ' claim=' + out.claim.status + ' twinScriptLines=' + out.before.twin.lines);
 } catch (e) { console.error('§FACTS_FAIL ' + (e && e.stack || e)); process.exit(1); }
