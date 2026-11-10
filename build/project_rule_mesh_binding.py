@@ -57,25 +57,62 @@ def project(rules_db, bdb_path, log=print):
             n_of INTEGER, n_total INTEGER, provenance TEXT, src_guids TEXT,
             PRIMARY KEY (disc, ifc_class));
     """)
-    n, absent = 0, []
+    n, absent, fallback = 0, [], []
     src_name = os.path.basename(bdb_path)
-    for disc, cls in pairs:
-        row = bdb.execute(
+    # §MINER-DISC (prompts/MODELLER_MASTER.md): bind WITHIN the discipline the extraction records (WalkerDoctrine §11).
+    has_disc = any(r[1] == "discipline" for r in bdb.execute("PRAGMA table_info(elements_meta)").fetchall())
+    rule_discs = {d for (d, _) in pairs}
+    claimants = {}
+    for d, c in pairs:
+        claimants.setdefault(c, set()).add(d)
+    if not has_disc:
+        log(f"§MESHBIND-PROJ {src_name} records no discipline: only sole-claimant classes can bind")
+
+    def mode(cls, where, args):
+        return bdb.execute(
             "SELECT ei.geometry_hash, COUNT(*) c,"
-            " (SELECT COUNT(*) FROM element_instances e2"
-            "   JOIN elements_meta m2 ON m2.guid = e2.guid WHERE m2.ifc_class = ?) total,"
+            " (SELECT COUNT(*) FROM element_instances e2 JOIN elements_meta em ON em.guid = e2.guid"
+            f"   WHERE em.ifc_class = ? {where}) total,"
             " GROUP_CONCAT(ei.guid) guids"
             " FROM element_instances ei JOIN elements_meta em ON em.guid = ei.guid"
-            " WHERE em.ifc_class = ? AND ei.geometry_hash IS NOT NULL"
+            f" WHERE em.ifc_class = ? AND ei.geometry_hash IS NOT NULL {where}"
             " GROUP BY ei.geometry_hash ORDER BY c DESC, ei.geometry_hash LIMIT 1",
-            (cls, cls)).fetchone()
+            (cls, *args, cls, *args)).fetchone()
+
+    for disc, cls in pairs:
+        how = "own-discipline"
+        row = mode(cls, "AND em.discipline = ?", (disc,)) if has_disc else None
+        if not row or not row[0]:
+            # step 2: exactly one rule discipline claims the class, and the rule's OWN measured elements (rule_placement.src_guids)
+            # are instances of it here: the population is the instances carrying those elements' recorded discipline(s).
+            labels = set()
+            if len(claimants[cls]) == 1:
+                for (guids,) in cur.execute("SELECT src_guids FROM rule_placement WHERE disc = ? AND ifc_class = ? AND src_guids IS NOT NULL",
+                                            (disc, cls)).fetchall():
+                    for g in (guids or "").split(","):
+                        if not g.strip():
+                            continue
+                        r = bdb.execute("SELECT " + ("discipline" if has_disc else "''") + " FROM elements_meta WHERE ifc_class = ? AND guid LIKE '%'||?",
+                                        (cls, g.strip())).fetchone()
+                        if r:
+                            labels.add(r[0])
+            if labels and has_disc:
+                lab = sorted(x for x in labels if x is not None)
+                row, how = mode(cls, "AND em.discipline IN (%s)" % ",".join("?" * len(lab)), tuple(lab)), "sole-claimant"
+            elif labels:
+                row, how = mode(cls, "", ()), "sole-claimant"
+            else:
+                row = None
         if not row or not row[0]:
             absent.append(f"{disc}/{cls}")
             continue
         ghash, n_of, n_total, guids = row
+        if how == "sole-claimant":
+            fallback.append(f"{disc}/{cls}")
+            log(f"§MESHBIND-PROJ FALLBACK {disc}/{cls}: no instance labelled {disc}; sole claimant, bound within the label(s) of its own measured elements {sorted(labels)}, {n_total} instances")
         cur.execute("INSERT INTO rule_mesh_binding VALUES (?,?,?,?,?,?,?)",
                     (disc, cls, ghash, n_of, n_total,
-                     f"measured:mode-of-real-instances:{src_name}",
+                     f"measured:mode-of-real-instances:{src_name}" + (":sole-claimant" if how == "sole-claimant" else ""),
                      ",".join((guids or "").split(",")[:5])))
         n += 1
     # z-datum offset: rules-band frame → the extraction's CURRENT frame, measured from each
@@ -126,6 +163,7 @@ def project(rules_db, bdb_path, log=print):
     con.commit()
     log(f"§MESHBIND-PROJ {os.path.basename(rules_db)} ← {src_name}: {n} class bindings "
         f"from {len(pairs)} (disc,ifc_class) pairs"
+        + (f" ({len(fallback)} sole-claimant)" if fallback else "")
         + (f"; NO-REAL-MESH (walker must REFUSE): {absent}" if absent else ""))
     con.close()
     bdb.close()
