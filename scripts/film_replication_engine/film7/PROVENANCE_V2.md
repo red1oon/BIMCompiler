@@ -23,3 +23,6 @@
 
 ## Update 3 (product tree cb0bf359, sw v1057): the complete sales cycle through the real windows
 record_v2_order.js on the Odoo-migrated tenant: Sales Order window (header, price list now offered, one line, docstatus CO), Generate Shipments (AD_Process 118) and Generate Invoices (119) through their process forms, then the Payment window for the new invoice. Asserted from tenant rows (order.log): order total == invoice total == payment amount, invoice Completed + Posted then paid, Fact_Acct dr == cr. Facts ord_* (verify_v2 `sale-cycle-asserts`). The earlier "price list not offered" finding is superseded (fixed, #2873).
+
+## Update 4 (one continuous run, one tenant)
+The two "books balance" totals differed because the migrated-invoice payment (iDempiere tenant, 34 lines) and the sale (Odoo tenant, 58 lines) ran on two different companies. Now ONE run on the Odoo-migrated tenant (record_v2_order.js): pay a migrated invoice through the Payment window, then the full sale. verify_v2 `books-continuity`: books after the moved payment + the sale's own legs == books after the cycle, every total dr=cr. Seen while driving: both payments get DocumentNo 10000007 (document sequence not advanced after the first payment): possible twin defect, not filmed.

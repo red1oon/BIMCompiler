@@ -130,8 +130,17 @@ var FORMS = { odoo: { id: 9542001, cls: 'org.kernel.odoo.MigrateFromOdoo' }, bc:
     async function tb(prefix) { var ok = await pg.evaluate(function (p) { var b = Array.prototype.slice.call(document.querySelectorAll('button, [role=button]')).filter(function (x) { return (x.getAttribute('title') || '').indexOf(p) === 0 && !x.disabled; })[0]; if (!b) return false; b.click(); return true; }, prefix); await sleep(2500); return ok; }
     async function status() { return pg.evaluate(function () { var t = []; document.querySelectorAll('.idmp-toast, [class*=toast], [class*=status], #idmp-status').forEach(function (e) { var x = (e.innerText || '').trim(); if (x) t.push(x.slice(0, 200)); }); return t.slice(-4); }); }
     var TC = T.clientId, rowsOf = async function (sql, p) { return Q(pg, sql, p || [TC]); };
-    // ---- books + partner open amount after the payment (numbers from the tenant rows) ----
-    var bal = await rowsOf('SELECT SUM(amtacctdr) AS dr, SUM(amtacctcr) AS cr, count(*) AS n FROM fact_acct WHERE ad_client_id=?'); say('§FILMREC ORDER books-after-payment ' + J(bal));
+    // ---- 1: pay a MIGRATED open customer invoice through the Payment window (same tenant, same run as the sale below) ----
+    var mi = (await rowsOf("SELECT i.documentno AS no, i.grandtotal AS t, bp.name AS bp FROM c_invoice i JOIN c_doctype dt ON dt.c_doctype_id=i.c_doctype_id JOIN c_bpartner bp ON bp.c_bpartner_id=i.c_bpartner_id WHERE i.ad_client_id=? AND dt.docbasetype='ARI' AND i.ispaid='N' AND i.grandtotal>0 AND i.docstatus='CO' ORDER BY i.grandtotal LIMIT 1"))[0];
+    say('§FILMREC ORDER mig-invoice ' + J(mi)); var books00 = (await rowsOf('SELECT SUM(amtacctdr) AS dr, SUM(amtacctcr) AS cr, count(*) AS n, MIN(fact_acct_id) AS mx FROM fact_acct WHERE ad_client_id=?'))[0]; say('§FILMREC ORDER books-before-mpay ' + J([books00]));
+    await openForm(pg, 235); await sleep(5000); await pg.screenshot({ path: path.join(OUT, 'trade_00_payment_window.png') }); say('§FILMREC ORDER mpay-new ' + await tb('New'));
+    say('§FILMREC ORDER m-doctype ' + await setCol('c_doctype_id', 'AR Receipt')); say('§FILMREC ORDER m-bp ' + await setCol('c_bpartner_id', mi.bp)); await sleep(1500);
+    say('§FILMREC ORDER m-invoice ' + await setCol('c_invoice_id', mi.no)); await sleep(1500); say('§FILMREC ORDER m-amt ' + await setCol('payamt', String(mi.t))); say('§FILMREC ORDER m-bank ' + await setCol('c_bankaccount_id', '', 'first')); await sleep(1000);
+    say('§FILMREC ORDER m-save ' + await tb('Save')); say('§FILMREC ORDER m-complete ' + await setCol('docstatus', 'CO')); say('§FILMREC ORDER m-save2 ' + await tb('Save')); say('§FILMREC ORDER m-status ' + J(await status()));
+    await pg.screenshot({ path: path.join(OUT, 'trade_03m_payment_completed.png') });
+    say('§FILMREC ORDER mpay-after ' + J(await rowsOf("SELECT p.documentno AS no, p.docstatus AS s, p.payamt AS amt, p.isallocated AS alloc, p.posted AS pos FROM c_payment p WHERE p.ad_client_id=? ORDER BY p.c_payment_id DESC LIMIT 1")));
+    say('§FILMREC ORDER minv-after ' + J(await rowsOf("SELECT documentno AS no, ispaid AS paid, grandtotal AS t FROM c_invoice WHERE ad_client_id=? AND documentno=?", [T.clientId, mi.no])));
+    var books0 = (await rowsOf('SELECT SUM(amtacctdr) AS dr, SUM(amtacctcr) AS cr, count(*) AS n, MIN(fact_acct_id) AS mx FROM fact_acct WHERE ad_client_id=?'))[0]; say('§FILMREC ORDER books-after-mpay ' + J([books0]));
     // ---- sales order through the Sales Order window ----
     var cols = async function () { return pg.evaluate(function () { return Array.prototype.slice.call(document.querySelectorAll('#idmp-content [data-col]:not(span)')).map(function (e) { return e.getAttribute('data-col') + (e.tagName === 'SELECT' ? '(' + e.options.length + ')' : '') + (e.getAttribute('data-ad-required') ? '*' : ''); }).join(','); }); };
     say('§FILMREC ORDER pricelists ' + J(await rowsOf('SELECT m_pricelist_id AS id, name, issopricelist AS so, c_currency_id AS cur, isactive AS act FROM m_pricelist WHERE ad_client_id=?'))); say('§FILMREC ORDER bp-pl ' + J(await rowsOf('SELECT c_bpartner_id AS id, name, m_pricelist_id AS pl FROM c_bpartner WHERE ad_client_id=?')));
@@ -156,7 +165,7 @@ var FORMS = { odoo: { id: 9542001, cls: 'org.kernel.odoo.MigrateFromOdoo' }, bc:
     await pg.screenshot({ path: path.join(OUT, 'trade_14_order_completed.png') });
     say('§FILMREC ORDER o-orders2 ' + J(await rowsOf('SELECT documentno AS no, docstatus AS s, grandtotal AS t FROM c_order WHERE ad_client_id=? ORDER BY c_order_id DESC LIMIT 2')));
     async function runProcLeaf(id, shotName, sets) {
-      await openForm(pg, id); await sleep(4000);
+      for (var tryN = 0; tryN < 3; tryN++) { await openForm(pg, id); try { await pg.waitForSelector('#idmp-content [data-proc-param]', { timeout: 15000 }); break; } catch (e) { say('§FILMREC ORDER proc ' + id + ' params not rendered, retry ' + tryN); } } await sleep(1500);
       var ctl = await pg.evaluate(function () { return Array.prototype.slice.call(document.querySelectorAll('#idmp-content [data-proc-param]')).map(function (e) { return e.getAttribute('data-proc-param') + ':' + e.tagName + (e.tagName === 'SELECT' ? '(' + Array.prototype.map.call(e.options, function (o) { return o.value + '=' + o.text; }).slice(0, 5).join('|') + ')' : '=' + e.value); }); });
       say('§FILMREC ORDER proc ' + id + ' params=' + J(ctl));
       for (var k of Object.keys(sets || {})) { var sel = '#idmp-content [data-proc-param="' + k + '"]'; try { var isSel = await pg.$eval(sel, function (e) { return e.tagName === 'SELECT'; }); if (isSel) { var ov = await pg.$eval(sel, function (e, w) { var o = Array.prototype.slice.call(e.options).filter(function (x) { return x.value === w || x.text.indexOf(w) >= 0; })[0]; return o ? o.value : null; }, sets[k]); if (ov != null) await pg.selectOption(sel, ov); } else await pg.fill(sel, sets[k]); say('§FILMREC ORDER proc-set ' + k + '=' + sets[k]); } catch (e) { say('§FILMREC ORDER proc-set-FAIL ' + k + ' ' + e.message.slice(0, 80)); } }
@@ -179,6 +188,8 @@ var FORMS = { odoo: { id: 9542001, cls: 'org.kernel.odoo.MigrateFromOdoo' }, bc:
     await pg.screenshot({ path: path.join(OUT, 'trade_23_newpayment_completed.png') });
     say('§FILMREC ORDER newpay-after ' + J(await rowsOf("SELECT p.documentno AS no, p.docstatus AS s, p.payamt AS amt, p.isallocated AS alloc, p.posted AS pos, p.c_invoice_id AS inv FROM c_payment p WHERE p.ad_client_id=? ORDER BY p.c_payment_id DESC LIMIT 2")));
     say('§FILMREC ORDER newinv-paid ' + J(await rowsOf("SELECT documentno AS no, ispaid AS paid, grandtotal AS t FROM c_invoice WHERE ad_client_id=? AND documentno='100000'")));
+    var legs = (await rowsOf('SELECT SUM(amtacctdr) AS dr, SUM(amtacctcr) AS cr, count(*) AS n FROM fact_acct WHERE ad_client_id=? AND fact_acct_id<?', [T.clientId, books0.mx]))[0];
+    say('§FILMREC ORDER books-legs ' + J([legs])); var r2 = function (x) { return Math.round(x * 100); }; say('§FILMREC ORDER books-arith ' + (r2(books0.dr) + r2(legs.dr) === r2((await rowsOf('SELECT SUM(amtacctdr) AS dr FROM fact_acct WHERE ad_client_id=?'))[0].dr) ? 'OK' : 'MISMATCH') + ' before_mpay_plus_legs');
     say('§FILMREC ORDER books-after-cycle ' + J(await rowsOf('SELECT SUM(amtacctdr) AS dr, SUM(amtacctcr) AS cr, count(*) AS n FROM fact_acct WHERE ad_client_id=?')));
   } catch (e) { say('§FILMREC CRASH ' + (e && e.stack || e)); process.exitCode = 1; }
   await browser.close(); server.close();

@@ -29,7 +29,10 @@ chk('legacy-bank-equals-witness', net('11100') == money(F['ido_bank_total']['val
 chk('legacy-ar-equals-witness', net('12110') == money(F['ido_ar_total']['value']), f"screen net={net('12110')} cents vs §IDO-SOURCE {F['ido_ar_total']['value']}")
 tw = open(f'{B}/twin2.log').read(); m = re.search(r'RV_OpenItem: (\d+) open item\(s\).*?grandtotal openamt .*? ([\d.]+) ([\d.]+) 100 ', tw)
 chk('aging-screen-equals-witness', bool(m) and m.group(1) == '1' and money(m.group(3)) == money(F['ido_ar_in']['value']), f"open items screen: count={m and m.group(1)} openamt={m and m.group(3)} vs §MIG-OPEN AR {F['ido_ar_in']['value']}")
-chk('payment-ui-asserts', F['pay_ui_paid']['value'] == 'Y' and money(F['pay_ui_amt']['value']) == money(F['ido_ar_in']['value']), f"payment through the window {F['pay_ui_amt']['value']} == migrated receivable {F['ido_ar_in']['value']}; invoice paid={F['pay_ui_paid']['value']}; books dr=cr={F['pay_ui_books']['value']}")
+ol = open(f'{B}/order.log').read(); c = lambda s: round(float(s) * 100)
+bm = re.search(r'ORDER books-after-mpay \[\{"dr":([\d.]+),"cr":([\d.]+)', ol); bl = re.search(r'ORDER books-legs \[\{"dr":([\d.]+),"cr":([\d.]+)', ol); ba = re.search(r'ORDER books-after-cycle \[\{"dr":([\d.]+),"cr":([\d.]+)', ol)
+chk('books-continuity', bool(bm and bl and ba) and c(bm.group(1)) == c(bm.group(2)) and c(bl.group(1)) == c(bl.group(2)) and c(ba.group(1)) == c(ba.group(2)) and c(bm.group(1)) + c(bl.group(1)) == c(ba.group(1)) and 'books-arith OK' in ol, f"books after the moved payment {bm and bm.group(1)} + the sale's legs {bl and bl.group(1)} == books after the cycle {ba and ba.group(1)}; every total dr=cr; same tenant, same run")
+chk('moved-payment-asserts', F['mpay_paid']['value'] == 'Y', f"moved invoice paid via the window, amount {F['mpay_amt']['value']}")
 chk('sale-cycle-asserts', F['ord_inv_total']['value'] == F['ord_total']['value'] == F['ord_pay_amt']['value'] and F['ord_inv_paid']['value'] == 'Y', f"order {F['ord_total']['value']} == invoice {F['ord_inv_total']['value']} == payment {F['ord_pay_amt']['value']}; invoice paid={F['ord_inv_paid']['value']}; books dr=cr={F['ord_books']['value']}")
 sys.argv = ['verify7.py', B]
 try: runpy.run_path(os.path.join(HERE, 'verify7.py'), run_name='__main__')

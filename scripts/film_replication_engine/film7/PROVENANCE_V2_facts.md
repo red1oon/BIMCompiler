@@ -5,6 +5,7 @@ Every number on a card or in the voice is `{fact:id}` in `beats7.py`, resolved b
 
 | fact | value | beats | source (file:line) | § line |
 |---|---|---|---|---|
+| books_before_sale | 364231.08 | sale_paid, trade | order.log:17 | `§FILMREC ORDER books-after-mpay [{"dr":364231.08,"cr":364231.08,"n":53,"mx":-1061}]` |
 | ido_ap_total | -6949.00 | legacy_bank | mig_idempiere_open.log:1 | `§IDO-SOURCE db=idempiere_test client=11 cutover=2026-11-10 currency=USD tb_accounts=20 tb_sum=0.00 AR=430.36 AP=-6949.00 BANK=148.00 open_docs=6 broug` |
 | ido_ar_in | 161.12 | aging, twin_books | mig_idempiere_open.log:54 | `shipped> §MIG-OPEN documents=5/5 partners=3 differing=0 not_ok=0 AR=161.12 AP=-6949.00 verdict=PASS` |
 | ido_ar_left | 269.24 | twin_books | mig_idempiere_open.log:50 | `shipped> §MIG-CLEAR AR account=AR-CLEAR balance=269.24 expected=269.24 verdict=PASS` |
@@ -12,17 +13,17 @@ Every number on a card or in the voice is `{fact:id}` in `beats7.py`, resolved b
 | ido_bank_total | 148.00 | legacy_bank | mig_idempiere_open.log:1 | `§IDO-SOURCE db=idempiere_test client=11 cutover=2026-11-10 currency=USD tb_accounts=20 tb_sum=0.00 AR=430.36 AP=-6949.00 BANK=148.00 open_docs=6 broug` |
 | ido_tb_accounts | 20 | legacy_bank | mig_idempiere_open.log:1 | `§IDO-SOURCE db=idempiere_test client=11 cutover=2026-11-10 currency=USD tb_accounts=20 tb_sum=0.00 AR=430.36 AP=-6949.00 BANK=148.00 open_docs=6 broug` |
 | ido_verify_judged | 9 | process | record.log:110 | `§FILMREC FACT ido_verify_line="§MIG-VERIFY verdict=PASS judged=9 failed=0" src=§MIG-VERIFY` |
+| mpay_amt | 2002.50 | trade | order.log:15 | `§FILMREC ORDER mpay-after [{"no":"10000007","s":"CO","amt":2002.5,"alloc":"Y","pos":"Y"}]` |
 | odoo_ap_open | 13410.15 | odoo | record.log:39 | `§FILMREC FACT odoo_ap_open="13410.15" src=sum of the tenant open invoices (AP)` |
 | odoo_ar_open | 4005.00 | odoo | record.log:38 | `§FILMREC FACT odoo_ar_open="4005.00" src=sum of the tenant open invoices (AR, credit notes negative)` |
 | odoo_open_docs | 19 | odoo | record.log:37 | `§FILMREC FACT odoo_open_docs=19 src=c_invoice rows of the tenant` |
 | oi_judged | 19 | aging | mig_openitems.log:33 | `§OPENITEMS-VERDICT PASS judged=19 failed=0` |
-| ord_books | 360376.88 | sale_paid | order.log:67 | `§FILMREC ORDER books-after-cycle [{"dr":360376.87999999995,"cr":360376.87999999995,"n":58}]` |
-| ord_inv_total | 43.60 | sale_ship_inv | order.log:53 | `§FILMREC ORDER inv-after [{"no":"100000","s":"CO","p":"Y","t":43.6,"o":-1044,"paid":"N","id":-1092}]` |
-| ord_pay_amt | 43.60 | sale_paid | order.log:65 | `§FILMREC ORDER newpay-after [{"no":"10000007","s":"CO","amt":43.6,"alloc":"Y","pos":"Y","inv":-1092}]` |
-| ord_total | 43.60 | sale_order | order.log:43 | `§FILMREC ORDER o-orders2 [{"no":"50000","s":"CO","t":43.6}]` |
-| pay_ui_amt | 161.12 | trade | trade.log:23 | `§FILMREC TRADE payments-after [{"no":"10000007","s":"CO","amt":161.12,"alloc":"Y","p":"Y","inv":-161}]` |
-| pay_ui_books | 17656.44 | trade | trade.log:25 | `§FILMREC TRADE books-after-payment [{"dr":17656.44,"cr":17656.44,"n":34}]` |
+| ord_books | 364381.88 | sale_paid | order.log:84 | `§FILMREC ORDER books-after-cycle [{"dr":364381.87999999995,"cr":364381.87999999995,"n":62}]` |
+| ord_inv_total | 43.60 | sale_ship_inv | order.log:68 | `§FILMREC ORDER inv-after [{"no":"100000","s":"CO","p":"Y","t":43.6,"o":-1064,"paid":"N","id":-1112}]` |
+| ord_pay_amt | 43.60 | sale_paid | order.log:80 | `§FILMREC ORDER newpay-after [{"no":"10000007","s":"CO","amt":2002.5,"alloc":"Y","pos":"Y","inv":-844},{"no":"10000007","s":"CO","amt":43.6,"alloc":"Y"` |
+| ord_total | 43.60 | sale_order | order.log:57 | `§FILMREC ORDER o-orders2 [{"no":"50000","s":"CO","t":43.6}]` |
 | rf_amount | 2002.50 | refusal | record.log:53 | `§FILMREC FACT rf_amount="2002.50" src=amount_residual of the removed open invoice INV/2026/00007` |
+| sale_legs | 150.80 | sale_paid | order.log:82 | `§FILMREC ORDER books-legs [{"dr":150.8,"cr":150.8,"n":9}]` |
 | sap_term_calls | 8 | sap | term_sap.txt:16 | `§SAP-AGENT done calls=8 read_only=Y sets=9 rows=13` |
 | sbo_ar_left | 200.00 | sapbc | mig_sapbc_open.log:100 | `shipped> §MIG-CLEAR AR account=AR-CLEAR balance=200.00 expected=200.00 verdict=PASS` |
 
