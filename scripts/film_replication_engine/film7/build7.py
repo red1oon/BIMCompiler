@@ -56,16 +56,17 @@ def label(text, out, size, color, bold=True, width=None):
     args = ['-background', 'none', '-fill', color, '-font', FONTB if bold else FONT, '-pointsize', str(size)]
     args += (['-size', f'{width}x', 'caption:' + text] if width else ['label:' + text]); convert(*args, out)
 def card_base(path, bg): convert('-size', '1920x1080', f'xc:{bg}', path)
-def chapter(name, d):
+def chapter(name, d):   # plain chapter card (PLAYBOOK C): kicker coral 34, line 1 off-white 120, line 2 coral 120, one plain line 40, DejaVu, no backdrop; empty parts are skipped
     p = f'{IMG}/{name}.png'; card_base(p, BG_CARD)
     if d.get('small'):
         label(d['kicker'], f'{IMG}/_k.png', 34, CORAL); label(d['l1'] + ' ' + d['l2'], f'{IMG}/_a.png', 80, OFF); label(d['line'], f'{IMG}/_c.png', 38, OFF, False, 1500)
-        convert(p, f'{IMG}/_k.png', '-gravity', 'North', '-geometry', '+0+200', '-composite', f'{IMG}/_a.png', '-gravity', 'North', '-geometry', '+0+300', '-composite', f'{IMG}/_c.png', '-gravity', 'North', '-geometry', '+0+450', '-composite', p)
-    else:
-        label(d['kicker'], f'{IMG}/_k.png', 34, CORAL); label(d['l1'], f'{IMG}/_a.png', 120, OFF); label(d['l2'], f'{IMG}/_b.png', 120, CORAL); label(d['line'], f'{IMG}/_c.png', 40, OFF, False)
-        convert(p, f'{IMG}/_k.png', '-gravity', 'North', '-geometry', '+0+230', '-composite', f'{IMG}/_a.png', '-gravity', 'North', '-geometry', '+0+310', '-composite', f'{IMG}/_b.png', '-gravity', 'North', '-geometry', '+0+450', '-composite', f'{IMG}/_c.png', '-gravity', 'North', '-geometry', '+0+640', '-composite', p)
-        if d.get('tag'):
-            label(d['tag'], f'{IMG}/_t.png', 30, SKY); convert(p, f'{IMG}/_t.png', '-gravity', 'North', '-geometry', '+0+780', '-composite', p)
+        convert(p, f'{IMG}/_k.png', '-gravity', 'North', '-geometry', '+0+200', '-composite', f'{IMG}/_a.png', '-gravity', 'North', '-geometry', '+0+300', '-composite', f'{IMG}/_c.png', '-gravity', 'North', '-geometry', '+0+450', '-composite', p); return p
+    parts = [(d.get('kicker'), 34, CORAL, True, 230), (d.get('l1'), 120, OFF, True, 310), (d.get('l2'), 120, CORAL, True, 450), (d.get('line'), 40, OFF, False, 640)]
+    for k, (t, sz, col, bold, y) in enumerate(parts):
+        if not t: continue
+        label(t, f'{IMG}/_p{k}.png', sz, col, bold); convert(p, f'{IMG}/_p{k}.png', '-gravity', 'North', '-geometry', f'+0+{y}', '-composite', p)
+    if d.get('tag'):
+        label(d['tag'], f'{IMG}/_t.png', 30, SKY); convert(p, f'{IMG}/_t.png', '-gravity', 'North', '-geometry', '+0+780', '-composite', p)
     return p
 def alpha_label(p):
     label(beats7.ALPHA, f'{IMG}/_al.png', 32, CORAL); convert(p, f'{IMG}/_al.png', '-gravity', 'NorthEast', '-geometry', '+90+98', '-composite', p)
@@ -179,7 +180,7 @@ def plan_frames():
     for i, (kind, name, d) in enumerate(its):
         if kind == 'card': items.append((name, round(d['dur'] * FPS), 'card'))
         else:
-            nxt = its[i + 1][1] if i + 1 < len(its) else ''; extra = 0.15 if nxt in ('limits', 'closing') else 1.6   # a beat before a designed-silent card keeps almost no tail (silence <= ~7 s)
+            nxt = its[i + 1][1] if i + 1 < len(its) else ''; extra = 0.15 if nxt in ('limits', 'closing', 'closing_card') else 1.6   # a beat before a designed-silent card keeps almost no tail (silence <= ~7 s)
             items.append((name, math.ceil((dur[name] + 0.3 + extra) * FPS), 'beat'))   # speech + PAD 0.3 + slack
     return items
 

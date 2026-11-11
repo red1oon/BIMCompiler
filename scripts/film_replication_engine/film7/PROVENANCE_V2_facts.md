@@ -6,7 +6,7 @@ Every number on a card or in the voice is `{fact:id}` in `beats7.py`, resolved b
 | fact | value | beats | source (file:line) | § line |
 |---|---|---|---|---|
 | ido_ap_total | -6949.00 | legacy_bank | mig_idempiere_open.log:1 | `§IDO-SOURCE db=idempiere_test client=11 cutover=2026-11-10 currency=USD tb_accounts=20 tb_sum=0.00 AR=430.36 AP=-6949.00 BANK=148.00 open_docs=6 broug` |
-| ido_ar_in | 161.12 | twin_books | mig_idempiere_open.log:54 | `shipped> §MIG-OPEN documents=5/5 partners=3 differing=0 not_ok=0 AR=161.12 AP=-6949.00 verdict=PASS` |
+| ido_ar_in | 161.12 | aging, twin_books | mig_idempiere_open.log:54 | `shipped> §MIG-OPEN documents=5/5 partners=3 differing=0 not_ok=0 AR=161.12 AP=-6949.00 verdict=PASS` |
 | ido_ar_left | 269.24 | twin_books | mig_idempiere_open.log:50 | `shipped> §MIG-CLEAR AR account=AR-CLEAR balance=269.24 expected=269.24 verdict=PASS` |
 | ido_ar_total | 430.36 | legacy_ar | mig_idempiere_open.log:1 | `§IDO-SOURCE db=idempiere_test client=11 cutover=2026-11-10 currency=USD tb_accounts=20 tb_sum=0.00 AR=430.36 AP=-6949.00 BANK=148.00 open_docs=6 broug` |
 | ido_bank_total | 148.00 | legacy_bank | mig_idempiere_open.log:1 | `§IDO-SOURCE db=idempiere_test client=11 cutover=2026-11-10 currency=USD tb_accounts=20 tb_sum=0.00 AR=430.36 AP=-6949.00 BANK=148.00 open_docs=6 broug` |
@@ -15,6 +15,7 @@ Every number on a card or in the voice is `{fact:id}` in `beats7.py`, resolved b
 | odoo_ap_open | 13410.15 | odoo | record.log:39 | `§FILMREC FACT odoo_ap_open="13410.15" src=sum of the tenant open invoices (AP)` |
 | odoo_ar_open | 4005.00 | odoo | record.log:38 | `§FILMREC FACT odoo_ar_open="4005.00" src=sum of the tenant open invoices (AR, credit notes negative)` |
 | odoo_open_docs | 19 | odoo | record.log:37 | `§FILMREC FACT odoo_open_docs=19 src=c_invoice rows of the tenant` |
+| oi_judged | 19 | aging | mig_openitems.log:33 | `§OPENITEMS-VERDICT PASS judged=19 failed=0` |
 | rf_amount | 2002.50 | refusal | record.log:53 | `§FILMREC FACT rf_amount="2002.50" src=amount_residual of the removed open invoice INV/2026/00007` |
 | sap_term_calls | 8 | sap | term_sap.txt:16 | `§SAP-AGENT done calls=8 read_only=Y sets=9 rows=13` |
 | sbo_ar_left | 200.00 | sapbc | mig_sapbc_open.log:100 | `shipped> §MIG-CLEAR AR account=AR-CLEAR balance=200.00 expected=200.00 verdict=PASS` |

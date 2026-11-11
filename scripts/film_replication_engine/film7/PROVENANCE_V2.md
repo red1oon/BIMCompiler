@@ -9,3 +9,10 @@
 - Twin: forms (record.log), Trial Balance report run (twin.log), Payment and Receipt / Sales Order windows (opened, blank new record; NOT driven to a payment/order through the UI: that needs a generic window-edit driver that does not exist yet; the trade is witnessed at model level, §TRD-VERDICT).
 - SAP: real agent CLI output rendered from the actual process (term_shot.js; the on-screen "calls=8" is the terminal's own line, fact sap_term_calls). BC: no program exists; only its form (alpha).
 - Placeholder not rendered: `aging` (twin Open Items (Aging), another worker's port).
+
+## Update (cards, aging, BC, trade finding)
+- Cards: owner's exception, exactly two, silent holds (opening 3.6 s, closing 5.0 s, fades 0.4 s, PLAYBOOK C look); closing wording is one line `CLOSING_TEXT` in beats_v2.py, swap + `build_v2.py closing <dir>`.
+- Aging beat: twin Open Items (Aging) run, 1 open item 161.12 = §MIG-OPEN AR (verify_v2 asserts); report checked `§OPENITEMS-VERDICT` (mig_openitems.log).
+- BC: the form reading its Excel package (the real route; no program exists). ALPHA.
+- Trade through the windows (record_v2_trade.js, generic window-edit driver: New, fill by AD column, Save, docstatus): the Payment window REJECTS Save: "Mandatory: C_BankAccount_ID". Cause: ad_modelval.js:626 `Number(r.c_bankaccount_id) > 0`, a faithful port of MPayment.java:696 `getC_BankAccount_ID() <= 0`, but the migrated tenant's rows are in the twin's local negative id space (bank accounts -80/-78/-76, invoices -161...), so every locally created bank account fails the legacy test. Defect for the twin owner, not a driver gap; not filmed (not "as shipped" story).
+- Odoo's own screens: needs a login to the local Odoo (:8069); not attempted under the "no further logins" instruction. Dropped.
