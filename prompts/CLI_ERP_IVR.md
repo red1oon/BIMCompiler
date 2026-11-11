@@ -202,5 +202,17 @@ Each candidate carries its **reason** (`table`, `column`, `list value`, `lookup:
 - **D4 the vocabulary:** `mis.update`/`mis.delete` are generated entries, harm `writes`, actors human+ai; an ai's line is a claim exactly as `mis.new`'s; no table named in `erp_cli.js` (V5).
 
 
+## 13. V1d spec: `mis.load` (M5; 2026-11-11, before the witness)
+**Line:** `mis.load kind=K file=x.csv [dry=Y|N]` (`dry` defaults to Y; harm `writes`; the verb names `kind` like every `mis.*`, the MIS file's working name was `table=`). It runs the Migrate Excel Data process AS IT IS (`org.idempiere.ninja.process.MigrateExcelData`, via `AP.runJava`, one CSV = one sheet named after the kind's table); it adds no loader of its own (§0 of the MIS file: one loader at the door). The CSV is read by the host's SheetJS with `raw: true`. Update mode (a raw UPDATE with no model events) is NOT offered: `mis.update` is the update (MIS question 3, advice stands).
+**All or nothing (the loader's F7), so the preview is honest:** dry=Y writes nothing to the ERP; it answers `rows`, `ok`, and `rejected:[{row, why}]` (row = the data row, the first line after the header is 1; the loader counts the header as row 1), and writes `<file>.rejected.csv` (bad lines + `rejected_because`) and `<file>.ok.csv` (the good lines) beside the file only when there are rejects. dry=N loads; with any rejected line it is refused, nothing written, and says to load `*.ok.csv`. A failure that names no line (a header that is not a column of the table) is refused with the loader's own text.
+**Claims (witness W-MIS-LOAD; each names its issue; falsifiers `LOAD_BREAK=`):**
+- **L1 the preview is exact.** rows = ok + rejected; the rejected rows are exactly the lines whose lookup cannot resolve (independent: the CSV builder knows which it broke), each reason names the column and the value; `<file>.rejected.csv` holds exactly those lines and `.ok.csv` exactly the others. Falsifier `LOAD_BREAK=skiprejects` (no files written) must FAIL it. VACUOUS if the CSV has no bad line.
+- **L2 a dry run writes nothing:** the op-log length and the kind's row count are unchanged. Falsifier `LOAD_BREAK=dryrunwrites` must FAIL it.
+- **L3 commit refuses while any line is rejected:** nothing written (all or nothing), the refusal names the count.
+- **L4 loading `.ok.csv` inserts exactly its rows,** each reached through the model layer (the tree node and accounts the window's save adds are in the group), and `007` arrives as `007`.
+- **L5 round trip:** `mis.list ... --csv` of the loaded rows, with the unique column renamed, loads back with the same names, including a name that holds a comma (header names and quoting round-trip).
+- **L6 refusals:** not a .csv, unreadable file, a header that is not a column (the loader's text), an empty file. An AI's `mis.load` is a claim, nothing written.
+
+
 ## STATUS
 2026-11-11: spec written; V0 measured (§8), nothing built, next V1 = extend `mis.describe` then M5/M6; §1d (type assist from the AD, shared with the browser Find panel); §1c (the prefix is MIS, aliases over one engine); §1b (the browser gets the CLI too: renderer-agnostic core) and §1a (grid cursor, colored chips, hidden-mandatory via dry run, local-first doctrine, MIS demo) added the same day after the owner's two refinements. Depends on MIS M5/M6 and NEURO A6.
