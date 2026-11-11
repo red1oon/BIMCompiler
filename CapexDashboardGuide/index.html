@@ -4119,7 +4119,7 @@ real rows read from the test server, the date held at 4 Nov 2026 so it matches t
 <ol>
 <li><strong>Left menu.</strong> <em>Dashboard</em> is this view. The others are below. The red badge on <em>Approval Pending</em> is that count.</li>
 <li><strong>Data source</strong> (bottom left). <strong>B · Legacy iDempiere</strong> is your server's data, from the job's file. <strong>A · SQLite ERP DB</strong> is the stock sample database shipped with the page: not your data, and not the twin's copy in your browser.</li>
-<li><strong>Filters.</strong> <em>Org</em>, <em>Category</em> (<code>ProjectCategory</code>) and <em>Status</em>. Status starts on <strong>Active Projects</strong>. To look at one project, add <code>&amp;project=&lt;Value&gt;</code> to the page address (the page then shows <em>Project: <Value></em> beside the filters); there is no project drop-down yet. That changes the money
+<li><strong>Filters.</strong> <em>Org</em>, <em>Category</em> (<code>ProjectCategory</code>) and <em>Status</em>. Status starts on <strong>Active Projects</strong>. A fourth filter, <strong>Project</strong>, picks one project: its first choice is <strong>All Projects</strong>, and it lists only the projects the other three filters let through (change Status and a project that no longer fits drops out and the choice goes back to All Projects). A page address with <code>&amp;project=&lt;Value&gt;</code> opens with that project already chosen. That changes the money
    tiles, as explained under <em>Page and Home tab: why a figure can differ</em>.</li>
 <li><strong>Last Updated.</strong> The newest <code>C_Project.Updated</code> in the data, never the clock. An old date means old data.</li>
 <li><strong>The ƒ line</strong> under each tile states its formula in iDempiere columns, so anyone can check it in SQL.</li>
@@ -4730,10 +4730,6 @@ measure. To add a currency, copy an existing pair and change <code>C_Currency_ID
 <tr>
 <td>Payment-based progress</td>
 <td>Not in the ERP</td>
-</tr>
-<tr>
-<td>Project drop-down</td>
-<td>Not built. One project is chosen by adding <code>&amp;project=&lt;Value&gt;</code> to the page address. Planned: a fourth filter whose blank choice is <strong>All Projects</strong></td>
 </tr>
 <tr>
 <td>Document figures</td>

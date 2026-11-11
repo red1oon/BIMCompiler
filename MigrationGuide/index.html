@@ -1489,6 +1489,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#idempiere-opening-balances" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        iDempiere (opening balances)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#business-central-alpha" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3058,6 +3069,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#idempiere-opening-balances" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        iDempiere (opening balances)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#business-central-alpha" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3119,32 +3141,35 @@ How it works and what is proven: <a href="../OdooMigration/">Moving from Odoo �
 <tr>
 <td><strong>Odoo 17</strong></td>
 <td>the Odoo agent reads your Odoo and writes <code>odoo_export/</code></td>
-<td><strong>tested</strong> on Odoo 17's demo company</td>
+<td><strong>tested</strong> on Odoo 17's demo company: masters, opening stock <strong>with its cost</strong>, trial balance, open invoices and bank</td>
 <td><em>How to escape from your Odoo</em></td>
 </tr>
 <tr>
 <td><strong>Dynamics 365 Business Central</strong></td>
-<td>Business Central's own Excel export (a configuration package)</td>
-<td><strong>alpha</strong>: tested on Microsoft's demo company, not yet on a real company's file</td>
+<td>Business Central's own Excel export (a configuration package), masters and, with the ledger tables added, the opening balances</td>
+<td><strong>alpha</strong>: tested on Microsoft's demo company and on test-supplied ledgers, never run on a real company</td>
 <td><em>How to escape from your Business Central</em></td>
 </tr>
 <tr>
 <td><strong>SAP Business One</strong></td>
-<td>the SAP agent reads your Service Layer and writes <code>sap_export.json</code></td>
-<td><strong>alpha</strong>: tested only on the example records in SAP's own guide</td>
+<td>the SAP agent reads your Service Layer and writes <code>sap_export.json</code> (masters) and, with <code>--cutover</code>, <code>sap_open.json</code> (opening balances)</td>
+<td><strong>alpha</strong>: tested only on the example records in SAP's own guide and on test-supplied ledgers, never run on a real company</td>
 <td><em>How to escape from your SAP Business One</em></td>
 </tr>
 <tr>
 <td><strong>iDempiere</strong></td>
-<td>the iDempiere agent (<code>node migrate_agent.js --masters</code>) writes <code>ad_masters.db</code></td>
-<td>see <a href="../ERPUserGuide/#2-bring-your-data-in-the-diy-box-help-run-it-yourself">the ERP guide, §2</a></td>
+<td>opening balances: the iDempiere agent's <code>open_reader.js</code> writes <code>idempiere_open.json</code>. Masters and metadata: <code>node migrate_agent.js --masters</code> writes <code>ad_masters.db</code>, see <a href="../ERPUserGuide/#2-bring-your-data-in-the-diy-box-help-run-it-yourself">the ERP guide, §2</a></td>
+<td><strong>tested</strong> on the GardenWorld client of a local iDempiere: the balances. Not yet on a real company's books</td>
 <td>—</td>
 </tr>
 </tbody>
 </table>
 <p><strong>What moves (all sources):</strong> master data and opening stock, at a cut-over date: customers and vendors with contacts and addresses, products, units, categories,
-payment terms, prices, the chart of accounts, warehouses and locators. From <strong>Odoo</strong> also the open balances at the cut-over (trial balance and open invoices). <strong>Not yet:</strong> open orders and closed history; balances and open invoices from the other sources.</p>
-<p><strong>Alpha</strong> means the route was built from what the vendor publishes, and has not yet run on a real company's data. Every alpha run writes an <strong>alpha report</strong>: counts
+payment terms, prices, the chart of accounts, warehouses and locators. <strong>Opening balances at the cut-over</strong> come from <strong>Odoo</strong> and <strong>iDempiere</strong> (tested) and from <strong>SAP Business One</strong> and <strong>Business Central</strong>
+(alpha): the trial balance as one opening journal, every open customer and vendor invoice, and the bank balances (see <em>Opening balances, every source</em> below).
+<strong>Not yet:</strong> open orders and closed history, from any source.</p>
+<p><strong>Alpha</strong> means the route was built from what the vendor publishes, and has not yet run on a real company's data. This holds for the <strong>SAP Business One</strong> and <strong>Business Central</strong> routes as a whole,
+<strong>including their opening balances</strong>: those were tested only on ledgers made for the test, and must not be run on a real company until a tester's run has closed that gap. Every alpha run writes an <strong>alpha report</strong>: counts
 and field names only, with every value masked. Please send it back. That is what turns an alpha into a tested route.</p>
 <hr />
 <h2 id="the-same-three-steps-for-every-source">The same three steps for every source<a class="headerlink" href="#the-same-three-steps-for-every-source" title="Permanent link">&para;</a></h2>
@@ -3153,9 +3178,10 @@ and field names only, with every value masked. Please send it back. That is what
 <h3 id="step-2-your-own-company-in-the-erp-and-the-plugins-once">Step 2 — Your own company in the ERP, and the plugins (once)<a class="headerlink" href="#step-2-your-own-company-in-the-erp-and-the-plugins-once" title="Permanent link">&para;</a></h3>
 <ol>
 <li>Log in as <strong>System</strong> → <strong>Plugins &amp; Releases</strong> → press <strong>Start</strong> on <strong>Ninja data migration (Migrate Excel Data)</strong> and on the migration for your source
-   (<strong>Migrate from Odoo</strong>, <strong>Migrate from Business Central (alpha)</strong> or <strong>Migrate from SAP Business One (alpha)</strong>).</li>
+   (<strong>Migrate from Odoo</strong>, <strong>Migrate from iDempiere (opening balances)</strong>, <strong>Migrate from Business Central (alpha)</strong> or <strong>Migrate from SAP Business One (alpha)</strong>).</li>
 <li>Still as System: menu <strong>Initial Tenant Setup</strong> → fill in the company details → <strong>Create tenant</strong>. It is set up the way iDempiere's Initial Client Setup sets one
-   up (trees, accounting, a default partner group and tax category, the standard warehouse). The new company appears on the login screen.</li>
+   up (trees, accounting, a default partner group and tax category, the standard warehouse). The new company appears on the login screen. It holds <strong>no sample invoice</strong>: the
+   only invoices it will have are the ones in your file.</li>
 <li>Every company's roles get the migration screens when the plugins start (as iDempiere does after installing a plugin). <strong>Created the company while the plugins
    were already running?</strong> Reload the page once: the plugins start again and the new company's roles are included.</li>
 </ol>
@@ -3187,6 +3213,14 @@ and field names only, with every value masked. Please send it back. That is what
 edited and saved with the network cut, and the page made 0 network requests). To share with colleagues, open the <strong>Team</strong> panel and press <strong>Start a team</strong>; each device
 then sends only its signed changes through a relay (a post box, not a server). See the <a href="https://red1oon.github.io/bim-ootb/erp/team_guide.html">team guide</a>.</p>
 <p><img alt="Saved with the internet off" src="../img/odoo_migration/offline_saved.jpg" /></p>
+<p><strong>Opening balances, every source.</strong> One mechanism serves all four: the trial balance goes in as <strong>one opening journal</strong>, each open invoice or credit note as its own document (the unpaid
+amount), each bank or cash balance as one opening bank statement. Stage 2 completes them and then checks the ERP's books against the source's rows (account by account, the open amount per partner, the bank
+balance per account); the three clearing accounts must end at zero, or the form says which one is off and by how much. <strong>Not brought in, from any source:</strong> open items in a <strong>foreign currency</strong> and payments
+<strong>not yet matched to an invoice</strong>; they stay on the clearing accounts and the summary counts them.</p>
+<p><strong>Your stock keeps its cost (Odoo).</strong> The unit cost Odoo holds (<code>standard_price</code>) comes across with the opening stock through a Cost Adjustment, so the first shipment after the move
+posts at that cost. In the witnessed run, a shipment of 3 units at Odoo's cost of 14.00 posted 42.00 to cost of goods sold and to the inventory asset, and each of the 21 costed products had exactly its Odoo cost.</p>
+<p><strong>A migrated company can trade.</strong> On the migrated company the test paid a migrated open customer invoice (it shows paid, the partner's open balance falls by the amount, the books stay balanced), ran a
+new sales order through shipment, invoice and payment on the migrated products, customers and price list, and paid a migrated vendor bill (witness <code>witness_migration_trade.js</code>, 26 of 26 checks).</p>
 <p><strong>Refused in the ERP (all sources):</strong></p>
 <ul>
 <li><strong>"Answer the unit(s)"</strong>: a unit a product uses has no ERP unit picked yet (Step 3.3).</li>
@@ -3238,9 +3272,29 @@ If anything differs it says which account and by how much.</p>
   number: the bank is created with a dash there, and the account number is the journal's code when Odoo holds none. Correct both on the Bank window afterwards.</li>
 <li><strong>Not brought in:</strong> payments not yet matched to an invoice, manual journal entries on the receivable or payable account, and open items in a foreign currency. The
   summary counts them, and their total stays on the clearing account.</li>
+<li><strong>Stock cost.</strong> The opening stock carries Odoo's cost (see <em>Your stock keeps its cost</em> above).</li>
 </ul>
-<p><strong>Not moved yet:</strong> open orders, stock <strong>value</strong> (quantities move, costs do not), lots and serial numbers (stock is summed per product and location),
+<p><strong>Not moved yet:</strong> open orders, lots and serial numbers (stock is summed per product and location),
 vendor price breaks, instalment payment terms, closed history. Odoo apps outside trade and accounting (manufacturing, HR, POS …) arrive as plugins.</p>
+<hr />
+<h2 id="idempiere-opening-balances">iDempiere (opening balances)<a class="headerlink" href="#idempiere-opening-balances" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>Tested against a local legacy iDempiere (the GardenWorld client): the ERP's books matched that iDempiere's trial balance account by account, its open invoices per partner and its bank balances
+(witness <code>witness_idempiere_open.js</code>, 45 of 45 checks). <strong>Not yet run on a real company's books.</strong> The master-data route is separate, see <a href="../ERPUserGuide/#2-bring-your-data-in-the-diy-box-help-run-it-yourself">the ERP guide, §2</a>.</p>
+</blockquote>
+<p><strong>Before you start:</strong> a computer with <strong>Node.js</strong> that can read your iDempiere's Postgres (directly, or through its Docker container). <strong>Freeze the books at the cut-over date first:</strong> the reader refuses with
+<code>source-not-frozen</code> when the books hold postings after that date, because an invoice's open amount is read as of today.</p>
+<ol>
+<li>Download <code>idempiere_agent.zip</code> from the ERP (<strong>About → DIY</strong>, the iDempiere agent) and unzip it.</li>
+<li>Run (the password is never a flag; set <code>PGPASSWORD</code>):
+   <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>idempiere_agent
+<span class="nv">PGPASSWORD</span><span class="o">=</span>...<span class="w"> </span>node<span class="w"> </span>open_reader.js<span class="w"> </span>--cutover<span class="w"> </span><span class="m">2026</span>-12-31<span class="w"> </span>--db<span class="w"> </span>idempiere<span class="w"> </span>--client<span class="w"> </span><span class="m">11</span>
+</code></pre></div>
+   Use <code>--container NAME</code> for a Postgres in Docker, or <code>--host</code> and <code>--port</code>. It reads one client and its primary accounting schema, and writes <strong><code>idempiere_open.json</code></strong>.</li>
+<li>Step 2 above, then in the ERP: <strong>Data Import → Migrate from iDempiere (opening balances)</strong>. Pick <code>idempiere_open.json</code>, read the summary (what comes across, what is refused and why, what stays on the clearing accounts), press <strong>Process</strong>.
+   The same file is a whole migration of the balances: the accounts, partners and bank accounts the documents need are created with it.</li>
+</ol>
+<p>Open the cut-over period first, as under Odoo. <strong>Not moved:</strong> other accounting schemas of the client (named in the summary), foreign-currency open items and unmatched payments (see above).</p>
 <hr />
 <h2 id="business-central-alpha">Business Central (alpha)<a class="headerlink" href="#business-central-alpha" title="Permanent link">&para;</a></h2>
 <blockquote>
@@ -3342,7 +3396,11 @@ MIT licence): every table, field, length and option it reads, and the exact layo
 company's country; a location with no address → the company address; an item with no category → your company's default category (as iDempiere's own product import
 does); text longer than the ERP field is cut the way iDempiere cuts it, a cut code keeps <code>~&lt;n&gt;</code>; stock with no location → a warehouse named <code>BC-NOLOC</code>; a bin whose
 location is not in the package is refused, and listed.</p>
-<p><strong>Not yet:</strong> balances, open documents, price list lines and discounts, item variants and lot numbers, dimensions.</p>
+<p><strong>Opening balances (alpha).</strong> Add the ledger tables to the same package: <strong>17</strong> G/L Entry, <strong>21</strong> Cust. Ledger Entry, <strong>25</strong> Vendor Ledger Entry, <strong>271</strong> Bank Account Ledger Entry, and the tables they need:
+<strong>270</strong> Bank Account, <strong>92</strong> Customer Posting Group, <strong>93</strong> Vendor Posting Group, <strong>277</strong> Bank Account Posting Group, <strong>379</strong> Detailed Cust. Ledg. Entry, <strong>380</strong> Detailed Vendor Ledg. Entry (with the tables above).
+If the package carries any ledger table but lacks one of these, the form names the missing tables and reads <strong>no</strong> balances; nothing is guessed. The open amount of each invoice is the sum of its detailed entries up to the
+cut-over date, so the file needs no frozen books. The balances then load as for every source (see <em>Opening balances, every source</em>). Tested only on test-supplied ledgers (<code>witness_sapbc_open.js</code>), <strong>never on a real Business Central</strong>.</p>
+<p><strong>Not yet:</strong> open orders, price list lines and discounts, item variants and lot numbers, dimensions, closed history.</p>
 <p><strong>Alpha report:</strong> lines starting with <code>§BC-ALPHA</code> in the browser console (F12 → Console): the tables your file held and their row counts, which column headers were
 recognised and which were <strong>not</strong> (for example a non-English caption), rows per ERP table, what was refused and why, every value masked as <code>"…"</code>.</p>
 <hr />
@@ -3392,6 +3450,11 @@ node<span class="w"> </span>agent.js<span class="w"> </span>--url<span class="w"
 <li>In Step 3, pick <code>sap_export.json</code> and set the <strong>cut-over date</strong>. Optionally type the Business One <strong>price list number</strong> to load (blank = the lowest number).</li>
 </ol>
 <p><img alt="The file the agent wrote, and the cut-over date" src="../img/sap_migration/form_file.jpg" /></p>
+<p><strong>Opening balances (alpha, never run on a real company).</strong> Run the agent again with <code>--cutover 2026-12-31</code> (add <code>--openfile NAME</code> to rename): it also writes <strong><code>sap_open.json</code></strong>, the trial balance, the open invoices
+and credit notes (<code>DocTotal - PaidToDate</code>) and the house-bank balances, read with GET only. <code>PaidToDate</code> is as of today, so the agent raises <code>source-not-frozen</code> when the books hold postings after the cut-over:
+freeze them first. In <strong>Migrate from SAP Business One (alpha)</strong> pick <code>sap_open.json</code> (alone it brings the balances and the accounts, partners and price list they need), and <code>sap_export.json</code> as well for the master data,
+and set the same cut-over date; a different date, or another source's file, is named as one problem and nothing loads. Documents in a foreign currency, partners without an address and payments on account are not brought in.
+Tested only against a mock Service Layer with test-supplied rows (<code>witness_sapbc_open.js</code>: 97 of 97 checks, and it prints the real-company check as INCONCLUSIVE).</p>
 <p><strong>What it reads:</strong> units of measure, payment terms, item groups, chart of accounts, business partners (with addresses and contact persons), items (with prices and
 stock per warehouse), price lists, warehouses, bin locations.</p>
 <p><strong>What it settles for you</strong> (in the summary): a <strong>lead</strong> (card type L) is not a customer or vendor and is refused, counted; a <strong>frozen</strong> or not-valid partner or item
@@ -3404,7 +3467,8 @@ country cannot be read, is refused with its reason rather than stopping the load
 <li><strong>Balance-sheet accounts</strong> get the ERP default type: the Service Layer's account record says revenue, expense or <em>other</em>, not asset, liability or equity. That class
   lives in the company database's account table; reading it is the next step.</li>
 <li><strong>Stock</strong> is the stock <strong>now</strong> (the Service Layer gives no stock at a date), dated at the cut-over.</li>
-<li><strong>One</strong> sale price list per run. No balances, open documents or history.</li>
+<li><strong>One</strong> sale price list per run. No open orders or history.</li>
+<li><strong>Opening balances are a second, opt-in file, and alpha.</strong> See below.</li>
 </ul>
 <p><strong>Alpha report:</strong> the agent's own <code>§SAP-AGENT</code> / <code>§SAP-FIELD</code> lines, and the <code>§SAP-ALPHA</code> lines in the browser console (F12 → Console) after Refresh: the sets your server
 gave, their counts, the fields it lacked, rows per ERP table, refusals, every value masked. Copy and send them.</p>
