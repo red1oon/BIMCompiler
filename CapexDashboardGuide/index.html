@@ -3940,11 +3940,11 @@ is editing a row, not code.</p>
 <td><strong>Project Stage</strong></td>
 <td>A Project Type "CAPEX" whose standard phases are your five stages (Concept, Initiation, Planning, Execution, Closing). The stage is the project's own <em>Standard Phase</em>.</td>
 <td>It is how iDempiere holds a project's stage, with no new column. The stock Standard Phase rows are sales steps and are not used</td>
-<td>Are these the five names, in this order?</td>
+<td>Are these the five names, in this order? <strong>Built, labelled proposed:</strong> the Project Type and its five stages are installed as data (a migration script), the same rows on iDempiere and on the twin.</td>
 </tr>
 <tr>
 <td><strong>Committed Cost: contract and verified</strong></td>
-<td><strong>Contract</strong> = completed purchase orders on the project. <strong>Verified</strong> = delivery recorded against the project (completed Project Issues).</td>
+<td><strong>Contract</strong> = completed purchase orders on the project. <strong>Verified</strong> = the actual cost (<code>ProjectBalanceAmt</code>) of projects that have at least one completed Project Issue.</td>
 <td>The project's <code>CommittedAmt</code> is typed by hand and a purchase order never fills it, so the contract figure is computed from the orders. A completed Project Issue adds its cost to the project's balance, so verified overlaps <em>Actual Cost</em></td>
 <td>Is "verified" delivery, or invoice?</td>
 </tr>
@@ -3952,7 +3952,7 @@ is editing a row, not code.</p>
 <td><strong>Forecast Cost at Completion</strong></td>
 <td>EAC = Spent + (Approved Budget − Done) ÷ CPI, where CPI = Done ÷ Spent</td>
 <td>The usual form when past cost performance continues. <em>Spent</em>, <em>Done</em> and <em>Approved Budget</em> are already on this page. With Spent or Done at zero the tile says <strong>no data</strong>, not a number</td>
-<td>Is this your formula, or plain Budget ÷ CPI?</td>
+<td>Is this your formula, or plain Budget ÷ CPI? <strong>Built, labelled proposed:</strong> the page tile shows the figure per currency (active projects with Spent and Done above zero), and the Home has a matching goal <em>CAPEX Forecast Cost at Completion USD (proposed)</em> whose value was checked equal on iDempiere and on the twin.</td>
 </tr>
 </tbody>
 </table>
@@ -4068,14 +4068,14 @@ refresh another's stored value. On iDempiere it does, because there is one datab
 <tr>
 <td>Forecast Cost at Completion</td>
 <td>A figure</td>
-<td><em>definition pending</em></td>
-<td>No formula has been stated</td>
+<td>Our proposed figure, labelled <em>proposed</em></td>
+<td>No formula has been stated; see <em>For review</em></td>
 </tr>
 <tr>
 <td>Committed Cost</td>
 <td>Split into verified and contract</td>
-<td>Committed, with invoiced under it</td>
-<td>No column for that split has been stated</td>
+<td>Committed, with invoiced under it, and our proposed contract and verified lines</td>
+<td>No column for that split has been stated; see <em>For review</em></td>
 </tr>
 <tr>
 <td>Project Stage</td>
@@ -4159,12 +4159,17 @@ real rows read from the test server, the date held at 4 Nov 2026 so it matches t
 <tr>
 <td>Committed Cost</td>
 <td>USD 1,347,462.62, BDT 1,000.00 (invoiced USD 8.10, BDT 0.00)</td>
-<td>Sum of <code>CommittedAmt</code>, with <code>InvoicedAmt</code> under it</td>
+<td>Sum of <code>CommittedAmt</code>, with <code>InvoicedAmt</code> under it. Two further lines, <em>contract (proposed)</em> and <em>verified (proposed; overlaps Actual Cost)</em>, show <strong>no data (not installed)</strong> until the purchase-order and project-issue web-service types are registered</td>
 </tr>
 <tr>
-<td>Forecast Cost at Completion</td>
-<td>definition pending</td>
-<td>No formula agreed yet</td>
+<td>Forecast Cost at Completion (proposed)</td>
+<td>the figure of the proposal under <em>For review</em>, per currency, or <strong>no data</strong> when no active project has both Spent and Done above zero</td>
+<td>Per active project: Spent + (Approved Budget − Done) ÷ CPI, with CPI = Done ÷ Spent. Summed per currency. Not agreed yet</td>
+</tr>
+<tr>
+<td>BIM Documents issued for construction</td>
+<td>issued / deliverables, for example 3 / 6</td>
+<td>Counts each deliverable at its latest revision; <em>issued</em> means that revision is Issued for construction. Says <strong>no data (BIM Document not installed on this server)</strong> where the plugin is not installed, and <strong>no data</strong> for a project with no deliverables</td>
 </tr>
 <tr>
 <td>Projects Completed this year</td>
@@ -4717,7 +4722,7 @@ measure. To add a currency, copy an existing pair and change <code>C_Currency_ID
 <tbody>
 <tr>
 <td>Forecast Cost at Completion</td>
-<td>No agreed formula: says <em>definition pending</em>. A proposal is under <em>For review</em></td>
+<td>Shows our proposed figure, labelled <em>proposed</em>, until you confirm the formula (<em>For review</em>)</td>
 </tr>
 <tr>
 <td>Procurement Risks, Handover</td>
@@ -4725,7 +4730,7 @@ measure. To add a currency, copy an existing pair and change <code>C_Currency_ID
 </tr>
 <tr>
 <td>Project Stage</td>
-<td>Shows the Standard Phase. How your stages map onto <code>C_Phase</code> is not agreed. A proposal is under <em>For review</em></td>
+<td>Shows the project's Standard Phase. The five CAPEX stages are installed as a Project Type (proposed); a project shows them once you set its Standard Phase to one of them. <em>For review</em></td>
 </tr>
 <tr>
 <td>Payment-based progress</td>
@@ -4733,7 +4738,7 @@ measure. To add a currency, copy an existing pair and change <code>C_Currency_ID
 </tr>
 <tr>
 <td>Document figures</td>
-<td>Not built. Planned: a tile <em>issued for construction / deliverables</em>, from BIM Document. On a server that does not have BIM Document it will say <strong>no data</strong></td>
+<td>The tile <em>BIM Documents issued for construction</em> is on the page. Not yet shown: <em>Issued for review</em> as a separate count</td>
 </tr>
 <tr>
 <td>BIM Document on your own iDempiere</td>
