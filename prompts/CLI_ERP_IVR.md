@@ -210,9 +210,9 @@ Each candidate carries its **reason** (`table`, `column`, `list value`, `lookup:
 - **L2 a dry run writes nothing:** the op-log length and the kind's row count are unchanged. Falsifier `LOAD_BREAK=dryrunwrites` must FAIL it.
 - **L3 commit refuses while any line is rejected:** nothing written (all or nothing), the refusal names the count.
 - **L4 loading `.ok.csv` inserts exactly its rows,** each reached through the model layer (the tree node and accounts the window's save adds are in the group), and `007` arrives as `007`.
-- **L5 round trip:** `mis.list ... --csv` of the loaded rows, with the unique column renamed, loads back with the same names, including a name that holds a comma (header names and quoting round-trip).
+- **L5 round trip:** `mis.list ... names=Y --csv` (a lookup column written as the name of the record, as the window's grid shows it and the loader reads it; without `names=Y` the key is written) of the loaded rows, with the unique column renamed, loads back with the same names, including a name that holds a comma (header names and quoting round-trip).
 - **L6 refusals:** not a .csv, unreadable file, a header that is not a column (the loader's text), an empty file. An AI's `mis.load` is a claim, nothing written.
 
 
 ## STATUS
-2026-11-11: spec written; V0 measured (§8), nothing built, next V1 = extend `mis.describe` then M5/M6; §1d (type assist from the AD, shared with the browser Find panel); §1c (the prefix is MIS, aliases over one engine); §1b (the browser gets the CLI too: renderer-agnostic core) and §1a (grid cursor, colored chips, hidden-mandatory via dry run, local-first doctrine, MIS demo) added the same day after the owner's two refinements. Depends on MIS M5/M6 and NEURO A6.
+2026-11-11: spec written; V0 measured (§8); BUILT in bim-ootb: describe columns (§9, #2863), composed vocabulary + MIS aliases (§10-11, #2864), mis.update/mis.delete (§12, #2866), mis.load + list names=Y (§13); next V2 the list screen (mis.js); §1d (type assist from the AD, shared with the browser Find panel); §1c (the prefix is MIS, aliases over one engine); §1b (the browser gets the CLI too: renderer-agnostic core) and §1a (grid cursor, colored chips, hidden-mandatory via dry run, local-first doctrine, MIS demo) added the same day after the owner's two refinements. Depends on MIS M5/M6 and NEURO A6.
