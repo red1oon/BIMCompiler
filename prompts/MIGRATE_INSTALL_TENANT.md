@@ -146,7 +146,7 @@ Excel to bring in core Doc/Line master-detail? … scout for any documentation i
 Steven Sackett from Adaxa Australia's idea … Close the books, start anew with balances b/f"*)
 **Found (read, cited):**
 - **The cut-over method is written down, in full:** iDempiere wiki *Establish Opening Balances* (archived 2017-06-04; same page on the ADempiere wiki, archived 2011-05-26, last edited
-  2011-01-28; the archive does not show the author, so "Adaxa / Steven Sackett" is the owner's memory, not verified). Its method: pick the cut-over date → **import the trial balance as a
+  2011-01-28; the archive does not show the author, so "Adaxa / Steven Sackett" is the owner's own statement, confirmed by them 2026-11-11: *"Steven Sackett of Adaxa Australia"* - the film credits it as theirs, not as read from the archive). Its method: pick the cut-over date → **import the trial balance as a
   GL Journal**, but route every *document-controlled* account to a CLEARING account (AR Clearing, AP Clearing, Inventory Clearing, Bank Clearing) → then clear them with
   **"a list of fake sales"** (open AR invoices, ONE line, charge *Opening Charge AR*, only the UNPAID amount) and **"a series of fake purchases"** (open AP invoices, charge *Opening
   Charge AP*) → unallocated receipts / prepayments as payments → payments not yet cleared by the bank as payments on the Opening Charge → an opening bank reconciliation →
