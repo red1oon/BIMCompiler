@@ -5,7 +5,7 @@
 const fs = require('fs'), path = require('path');
 const B = process.argv[2], CUT = Number(process.argv[3]), LOGS = '/tmp/count_logs', spec = JSON.parse(fs.readFileSync(path.join(__dirname, 'facts7_spec.json'), 'utf8')).facts, out = {}; let bad = 0;
 for (const f of spec) {
-  const p = f.file === 'record' ? path.join(B, 'record.log') : f.file === 'prep' ? path.join(B, 'prep.log') : path.join(LOGS, f.file);
+  const p = f.file === 'record' ? path.join(B, 'record.log') : f.file === 'term' ? path.join(B, 'term', 'term_sap.txt') : f.file === 'prep' ? path.join(B, 'prep.log') : path.join(LOGS, f.file);
   if (!fs.existsSync(p)) { console.log('§FILM-MA-FACT MISSING-LOG ' + f.id + ' ' + p); bad++; continue; }
   const mt = fs.statSync(p).mtimeMs / 1000; if (mt < CUT) { console.log('§FILM-MA-FACT STALE ' + f.id + ' ' + f.file + ' mtime<cutoff'); bad++; continue; }
   const lines = fs.readFileSync(p, 'utf8').split('\n'), re = new RegExp(f.re); let hit = -1, m;

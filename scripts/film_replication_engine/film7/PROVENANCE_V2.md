@@ -3,3 +3,9 @@
 - Legacy-side figures (beat `legacy_books`): numbers from `§IDO-SOURCE` (logs/mig_idempiere_open.log via facts7.resolved.json: ido_tb_accounts, ido_ar_total, ido_ap_total, ido_bank_total) until the legacy screen is captured.
 - Twin side: twin Trial Balance report run (logs/twin_v2.log `TWINSCREEN twin_trial_balance RUN`): bank 148.00, receivable 161.12, payable -6949.00, "balanced=true" (equal to ido_bank_total / ido_ar_in / ido_ap_total). Legacy-vs-twin books are witnessed by `§IDO-CHECK case=LOAD key=books-are-the-source`.
 - Dropped as screens (not illustrated): twin "Open Items (Aging)" (process classname blank, not ported: `Failed to create new process instance`), Odoo/SAP/BC vendor screens (none witnessed against ours), trade flow (witness is Node-level; the twin has Payment and Receipt (235) and Sales Order (129) windows but no UI driver is built).
+
+## Built v2 (EN_v2.mp4, 163.7 s, 12 beats, 0 cards) — what is a real screen
+- Legacy iDempiere Account Viewer (test instance :8108, GardenWorld, read only, GardenAdmin demo user): legacy_ar / legacy_bank stills. verify_v2 asserts the on-screen subtotals (bank 248.00-100.00, receivable 581.41-151.05) equal the witnessed §IDO-SOURCE bank/AR; PASS.
+- Twin: forms (record.log), Trial Balance report run (twin.log), Payment and Receipt / Sales Order windows (opened, blank new record; NOT driven to a payment/order through the UI: that needs a generic window-edit driver that does not exist yet; the trade is witnessed at model level, §TRD-VERDICT).
+- SAP: real agent CLI output rendered from the actual process (term_shot.js; the on-screen "calls=8" is the terminal's own line, fact sap_term_calls). BC: no program exists; only its form (alpha).
+- Placeholder not rendered: `aging` (twin Open Items (Aging), another worker's port).

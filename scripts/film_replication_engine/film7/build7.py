@@ -70,17 +70,22 @@ def chapter(name, d):
 def alpha_label(p):
     label(beats7.ALPHA, f'{IMG}/_al.png', 32, CORAL); convert(p, f'{IMG}/_al.png', '-gravity', 'NorthEast', '-geometry', '+90+98', '-composite', p)
 def comp_shot(name, f, lab, alpha, strip=None):
+    hmax = 600 if strip else 680
     p = f'{IMG}/{name}.png'; card_base(p, BG_COMP); label(lab, f'{IMG}/_l.png', 42, SKY)
-    convert(p, f'{IMG}/_l.png', '-gravity', 'NorthWest', '-geometry', '+110+100', '-composite', '(', f'{REC}/{f}', *crop_args(f), '-resize', '1600x680', ')', '-gravity', 'North', '-geometry', '+0+165', '-composite', p)
+    convert(p, f'{IMG}/_l.png', '-gravity', 'NorthWest', '-geometry', '+110+100', '-composite', '(', f'{REC}/{f}', *crop_args(f), '-resize', f'1600x{hmax}', ')', '-gravity', 'North', '-geometry', '+0+165', '-composite', p)
     if strip:
-        guard_digits(strip, name); h = int(sh('convert', f'{REC}/{f}', *crop_args(f), '-resize', '1600x680', '-format', '%h', 'info:')); y = 165 + h + 28
-        if y > 790: sys.exit(f'§FILM-MA-GUARD strip overflow {name} y={y}')
+        guard_digits(strip, name); h = int(sh('convert', f'{REC}/{f}', *crop_args(f), '-resize', f'1600x{hmax}', '-format', '%h', 'info:')); y = 165 + h + 28
+        if y > 800: sys.exit(f'§FILM-MA-GUARD strip overflow {name} y={y}')
         label(expand(strip, shown), f'{IMG}/_st.png', 44, SKY); convert(p, f'{IMG}/_st.png', '-gravity', 'North', '-geometry', f'+0+{y}', '-composite', p)
     if alpha: alpha_label(p)
-def comp_two(name, fa, la, fb, lb, alpha):
+def comp_two(name, fa, la, fb, lb, alpha, strip=None):
     p = f'{IMG}/{name}.png'; card_base(p, BG_COMP)
     for k, (f, l, x) in enumerate([(fa, la, 50), (fb, lb, 970)]):
         label(l, f'{IMG}/_l{k}.png', 32, SKY); convert(p, f'{IMG}/_l{k}.png', '-gravity', 'NorthWest', '-geometry', f'+{x}+165', '-composite', '(', f'{REC}/{f}', *crop_args(f), '-resize', '900x', ')', '-gravity', 'NorthWest', '-geometry', f'+{x}+240', '-composite', p)
+    if strip:
+        guard_digits(strip, name); h = max(int(sh('convert', f'{REC}/{f}', *crop_args(f), '-resize', '900x', '-format', '%h', 'info:')) for f in (fa, fb)); y = 240 + h + 28
+        if y > 800: sys.exit(f'§FILM-MA-GUARD strip overflow {name} y={y}')
+        label(expand(strip, shown), f'{IMG}/_st.png', 44, SKY); convert(p, f'{IMG}/_st.png', '-gravity', 'North', '-geometry', f'+0+{y}', '-composite', p)
     if alpha: alpha_label(p)
 def comp_card(name, lines, alpha):
     p = f'{IMG}/{name}.png'; card_base(p, BG_COMP); y = 150; parts = []
@@ -112,7 +117,9 @@ def comp_books(name, lab):
 def crop_args(f):   # crop window from the recorder's DOM rects (pane / message / problem row), never hand-picked pixels
     jp = f'{REC}/{f[:-4]}.json'
     if not os.path.exists(jp): return []
-    j = json.load(open(jp)); pane, msg, prob = j['pane'], j.get('msg'), j.get('prob'); name = f[:-4]
+    j = json.load(open(jp))
+    if 'crop' in j: return ['-crop', j['crop'], '+repage']
+    pane, msg, prob = j['pane'], j.get('msg'), j.get('prob'); name = f[:-4]
     x = max(0, pane['x']); w = min(1920 - x, 1130)
     if re.search(r'(done|refused|refusal|recovered|repeat)$', name) and msg:
         y0 = max(0, msg['y'] - 110); y1 = min(1080, msg['y'] + msg['h'] + 12); w = min(1920 - x, pane['w'] + 20)
@@ -130,7 +137,7 @@ def assets():
             chapter(name, d); continue
         im = d['image']; a = d.get('alpha', False)
         if im[0] == 'shot': comp_shot(name, im[1], im[2], a, d.get('strip'))
-        elif im[0] == 'two': comp_two(name, im[1], im[2], im[3], im[4], a)
+        elif im[0] == 'two': comp_two(name, im[1], im[2], im[3], im[4], a, d.get('strip'))
         elif im[0] == 'card': comp_card(name, im[1], a)
         elif im[0] == 'books': comp_books(name, im[1])
         elif im[0] == 'hold': shutil.copy(f'{IMG}/limits.png', f'{IMG}/{name}.png')
@@ -200,9 +207,9 @@ def fit():
     print(out.stdout[-3000:])
 
 def mux():
-    P = json.load(open(f'{B}/plan_video.json')); W = f'{B}/fit1'; outp = f'{B}/Migrating_Legacy_Accounting_EN.mp4'
+    P = json.load(open(f'{B}/plan_video.json')); W = f'{B}/fit1'; outp = os.environ.get('FILM_OUT', f'{B}/Migrating_Legacy_Accounting_EN.mp4')
     env = dict(os.environ, FILM_SEC=str(P['frames'] / P['fps']))
     r = subprocess.run(['python3', f'{PROMPTS}/film_narration_mux.py', 'film', f'{B}/silent.mp4', outp], cwd=W, env=env, capture_output=True, text=True)
     open(f'{B}/mux.log', 'w').write(r.stdout + r.stderr); print(r.stdout[-800:], r.stderr[-800:])
 
-{'assets': assets, 'measure': measure, 'video': video, 'fit': fit, 'mux': mux}[STAGE]()
+if __name__ == '__main__': {'assets': assets, 'measure': measure, 'video': video, 'fit': fit, 'mux': mux}[STAGE]()

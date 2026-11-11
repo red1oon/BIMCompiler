@@ -10,7 +10,7 @@ def chk(key, ok, info=''):
     print(f"§FILM-MA-CHECK {key} {'OK' if ok else 'FAIL'} {info}")
 def run(*a): return subprocess.run(a, capture_output=True, text=True)
 FACTS = json.load(open(f'{B}/facts7.resolved.json'))
-P = json.load(open(f'{B}/plan_video.json')); OUT = f'{B}/Migrating_Legacy_Accounting_EN.mp4'
+P = json.load(open(f'{B}/plan_video.json')); OUT = os.environ.get('FILM_OUT', f'{B}/Migrating_Legacy_Accounting_EN.mp4')
 # A. every placeholder is a resolved fact with a src line
 used = set()
 for kind, name, d in beats7.ITEMS:
@@ -19,7 +19,7 @@ for kind, name, d in beats7.ITEMS:
 for f in sorted(used):
     chk(f'fact:{f}', f in FACTS and bool(FACTS[f].get('src')), FACTS.get(f, {}).get('src', 'MISSING'))
 # provenance file lists every used fact
-prov = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'PROVENANCE7.md')).read() if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'PROVENANCE7.md')) else ''
+prov = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.environ.get('PROV_FILE', 'PROVENANCE7.md'))).read() if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.environ.get('PROV_FILE', 'PROVENANCE7.md'))) else ''
 chk('provenance-covers-facts', all(f in prov for f in used), f'{len(used)} facts')
 # B. typed digits: none in voiced lines; planted control must be caught
 rx = lambda t: bool(re.search(r'\d', re.sub(r'\{[^}]*\}', '', t)))

@@ -38,6 +38,7 @@
   {"id":"ido_verify_judged","file":"record","re":"§FILMREC FACT ido_verify_line=\"§MIG-VERIFY verdict=PASS judged=(\\d+)","kind":"int"},
   {"id":"sap_verify_judged","file":"record","re":"§FILMREC FACT sap_verify_line=\"§MIG-VERIFY verdict=PASS judged=(\\d+)","kind":"int"},
   {"id":"bc_verify_judged","file":"record","re":"§FILMREC FACT bc_verify_line=\"§MIG-VERIFY verdict=PASS judged=(\\d+)","kind":"int"},
+  {"id":"sap_term_calls","file":"term","re":"§SAP-AGENT done calls=(\\d+) read_only=Y","kind":"int"},
   {"id":"pageerr","file":"record","re":"§FILMREC FACT pageerr=(\\d+)","kind":"int"}
  ]
 }
