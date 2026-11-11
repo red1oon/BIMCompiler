@@ -1,0 +1,54 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT intro cue=0.00 room=998.70 dur=6.07 -> DETAIL slack=+992.63 detailDur=6.07 words=8
+§NARR_FIT twin cue=0.00 room=998.70 dur=10.89 -> DETAIL slack=+987.81 detailDur=10.89 words=10
+§EDGE_RETRY attempt=1 voice=th-TH-PremwadeeNeural text="ค่านี้มาจากไหน"
+§EDGE_RETRY attempt=2 voice=th-TH-PremwadeeNeural text="ค่านี้มาจากไหน"
+§EDGE_RETRY attempt=3 voice=th-TH-PremwadeeNeural text="ค่านี้มาจากไหน"
+§EDGE_RETRY attempt=4 voice=th-TH-PremwadeeNeural text="ค่านี้มาจากไหน"
+§EDGE_RETRY attempt=5 voice=th-TH-PremwadeeNeural text="ค่านี้มาจากไหน"
+§EDGE_CALL voice=th-TH-PremwadeeNeural rate=+3% chars=14 -> c5de3d210e
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=23 -> 8eac36e324
+§EDGE_CALL voice=th-TH-NiwatNeural rate=-3% chars=81 -> 03e7e573a1
+§NARR_FIT column cue=0.00 room=998.70 dur=8.61 -> DETAIL slack=+990.09 detailDur=8.61 words=5
+§EDGE_RETRY attempt=1 voice=th-TH-PremwadeeNeural text="แล้วในซอร์สโค้ดอยู่ตรงไหน"
+§EDGE_RETRY attempt=2 voice=th-TH-PremwadeeNeural text="แล้วในซอร์สโค้ดอยู่ตรงไหน"
+§EDGE_RETRY attempt=3 voice=th-TH-PremwadeeNeural text="แล้วในซอร์สโค้ดอยู่ตรงไหน"
+§EDGE_RETRY attempt=4 voice=th-TH-PremwadeeNeural text="แล้วในซอร์สโค้ดอยู่ตรงไหน"
+§EDGE_RETRY attempt=5 voice=th-TH-PremwadeeNeural text="แล้วในซอร์สโค้ดอยู่ตรงไหน"
+§EDGE_RETRY attempt=6 voice=th-TH-PremwadeeNeural text="แล้วในซอร์สโค้ดอยู่ตรงไหน"
+§EDGE_RETRY attempt=7 voice=th-TH-PremwadeeNeural text="แล้วในซอร์สโค้ดอยู่ตรงไหน"
+§EDGE_RETRY attempt=8 voice=th-TH-PremwadeeNeural text="แล้วในซอร์สโค้ดอยู่ตรงไหน"
+Traceback (most recent call last):
+  File "/tmp/wt-th/scripts/film_from_ai_to_human/out/work/fm/../../../../../prompts/film_narration_fit_edge.py", line 143, in <module>
+    aud,mk=say(parse(de),base); d=len(aud)/SR; pick='DETAIL'; d_detail=d
+           ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/wt-th/scripts/film_from_ai_to_human/out/work/fm/../../../../../prompts/film_narration_fit_edge.py", line 134, in say
+    a,info=voice(txt,who,sp)
+           ^^^^^^^^^^^^^^^^^
+  File "/tmp/wt-th/scripts/film_from_ai_to_human/out/work/fm/../../../../../prompts/film_narration_fit_edge.py", line 118, in voice
+    a=trim(tts(c,VOX[who],sp*SPK[who]))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/wt-th/scripts/film_from_ai_to_human/out/work/fm/../../../../../prompts/film_narration_fit_edge.py", line 58, in tts
+    try: asyncio.run(asyncio.wait_for(edge_tts.Communicate(txt,voice,rate=rate).save(mp),30)); break
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/tasks.py", line 520, in wait_for
+    return await fut
+           ^^^^^^^^^
+  File "~/.local/share/film_narration/venv/lib/python3.12/site-packages/edge_tts/communicate.py", line 613, in save
+    async for message in self.stream():
+  File "~/.local/share/film_narration/venv/lib/python3.12/site-packages/edge_tts/communicate.py", line 588, in stream
+    async for message in self.__stream():
+  File "~/.local/share/film_narration/venv/lib/python3.12/site-packages/edge_tts/communicate.py", line 562, in __stream
+    raise NoAudioReceived(
+edge_tts.exceptions.NoAudioReceived: No audio was received. Please verify that your parameters are correct.
