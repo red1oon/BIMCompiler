@@ -1,0 +1,5 @@
+# PROVENANCE v2 (prep, legacy screens pending)
+- Credit sentence (beat `method`): owner's statement 2026-11-11; method as in the iDempiere wiki "Establish Opening Balances" (prompts/MIGRATE_INSTALL_TENANT.md §B3-SCOUT). Source note, not a witness value.
+- Legacy-side figures (beat `legacy_books`): numbers from `§IDO-SOURCE` (logs/mig_idempiere_open.log via facts7.resolved.json: ido_tb_accounts, ido_ar_total, ido_ap_total, ido_bank_total) until the legacy screen is captured.
+- Twin side: twin Trial Balance report run (logs/twin_v2.log `TWINSCREEN twin_trial_balance RUN`): bank 148.00, receivable 161.12, payable -6949.00, "balanced=true" (equal to ido_bank_total / ido_ar_in / ido_ap_total). Legacy-vs-twin books are witnessed by `§IDO-CHECK case=LOAD key=books-are-the-source`.
+- Dropped as screens (not illustrated): twin "Open Items (Aging)" (process classname blank, not ported: `Failed to create new process instance`), Odoo/SAP/BC vendor screens (none witnessed against ours), trade flow (witness is Node-level; the twin has Payment and Receipt (235) and Sales Order (129) windows but no UI driver is built).
