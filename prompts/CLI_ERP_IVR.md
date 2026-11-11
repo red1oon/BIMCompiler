@@ -186,5 +186,21 @@ Each candidate carries its **reason** (`table`, `column`, `list value`, `lookup:
 - **Claims (witness W-VOCAB-COMPOSE, each names its issue; falsifiers named):** **C1** composed == verbs.json (issue: a hand edit or a stale generated file). **C2** a name claimed by two sources is refused (falsifier `COMPOSE_BREAK=nodup`). **C3** the four renamed hand verbs and every hand entry survive a regeneration, in the same order (issue: the wipe). **C4** a tampered alias (harm changed) makes the door refuse to load (falsifier `DOOR_BREAK=noaliascheck`). **C5** `erp.describe kind=Order` and `mis.describe kind=Order` give the same envelope but for `verb`; an AI's `erp.new` and `mis.new` are both claims/held alike. **C6** populations stated: aliases N, hand M, generated K; VACUOUS if any is 0.
 
 
+## 12. V1c spec: `mis.update` and `mis.delete` (2026-11-11, before the code; M6 of the MIS file)
+**Lines:** `mis.update kind=K (id=|number=) column=value ...` and `mis.delete kind=K (id=|number=)`. Both are `writes`, generated from the dictionary like `mis.new` (no table named). Each runs the WINDOW's path, never a raw UPDATE/DELETE.
+- **Update** = open the kind's own tab, load the record, apply each given column as an edit in the order given (callouts fire, `GridTab.setValue` / `processCallout`), refuse a column the window would not let a person edit (`GridField.isEditable` L443-L585: tab or field read-only; not `IsUpdateable` on a saved record; the tab's link column; `ReadOnlyLogic`; a `Processed='Y'` record unless `IsAlwaysUpdateable`), refuse a mandatory column left empty, then `ML.save(tx, table, row, changes)` with the changed columns (the edits plus what their callouts derived), persisted as ONE group. No change at all = NO-OP, said so, nothing written (PO.save `!is_Changed`, model_layer L392).
+- **Delete** = the window's Delete: the tab must allow it (tab not read-only, table deleteable), then `ML.run(.., {timing:'DELETE', id})` (GridTable.dataDelete L2163-2231: refuses `Processed='Y'` with CannotDeleteTrx, model/validator vetoes, dependent records `fkOnDelete`, cascades per the dictionary FK rule), persisted as one group. The refusal carries the engine's own reason text.
+**Claims (witness W-MIS-CRUD; each names its issue; each can say NO-OP / VACUOUS; falsifiers `MIS_BREAK=`):**
+- **U1 only the named columns change.** After `mis.update` of a Draft order's Description, the stored row equals the row before except Description, Updated, UpdatedBy. Issue: an edit that touches other columns.
+- **U2 callouts fire as in the window.** `mis.update c_bpartner_id=<other>` on a Draft order moves the same derived columns (price list, bill-to) that `mis.new` with that partner derives (same engine, independent path). Falsifier `MIS_BREAK=nocallouts` must FAIL it.
+- **U3 a column the window would not edit is refused** naming the column and the rule, nothing written (op count unchanged): a not-updateable column, and any column of a Completed document. Falsifier `MIS_BREAK=noeditcheck` must FAIL it.
+- **U4 mandatory cleared is refused,** nothing written.
+- **U5 no change = NO-OP,** said so, op count unchanged.
+- **D1 a Draft document is deleted** with its lines (cascade per the dictionary): row and child rows gone, one CRUD_DELETE group.
+- **D2 a Completed document is not deleted:** refused with the engine's text (CannotDeleteTrx), nothing written. Falsifier `MIS_BREAK=noprocessed` must FAIL it.
+- **D3 a referenced master is refused with the reason,** nothing written (the partner of a document).
+- **D4 the vocabulary:** `mis.update`/`mis.delete` are generated entries, harm `writes`, actors human+ai; an ai's line is a claim exactly as `mis.new`'s; no table named in `erp_cli.js` (V5).
+
+
 ## STATUS
 2026-11-11: spec written; V0 measured (§8), nothing built, next V1 = extend `mis.describe` then M5/M6; §1d (type assist from the AD, shared with the browser Find panel); §1c (the prefix is MIS, aliases over one engine); §1b (the browser gets the CLI too: renderer-agnostic core) and §1a (grid cursor, colored chips, hidden-mandatory via dry run, local-first doctrine, MIS demo) added the same day after the owner's two refinements. Depends on MIS M5/M6 and NEURO A6.
