@@ -481,6 +481,182 @@ children: [{"kind":"Sales Order Line","rows":[]},{"kind":"Order Tax","rows":[]},
 
 `erp.new` is a `writes` verb. A person at the terminal runs it. An AI's `erp.new` is held as a claim and nothing is written until a person confirms it (see "What is a claim"). These blocks use a scratch op-log (`/tmp/fast_guide_new.ops`, emptied first), so running them does not touch your own data.
 
+## Work with any table: the `mis.*` verbs
+
+**MIS is the base. ERP is MIS plus a document's life.** Listing, reading, creating, changing, deleting and loading records is the same on every table of the dictionary, a customer, a product, a table you made yourself. Those verbs are called `mis.*`. What only a document has (complete, void, close, reverse) stays `erp.*`. The older names `erp.list`, `erp.read`, `erp.describe`, `erp.sum`, `erp.group` and `erp.new` still work: each is an old name for its `mis.*` verb and gives the same answer, so a script you wrote earlier does not change.
+
+Every `mis.*` verb that writes does what the ERP's own window does. It does not edit the database underneath. Defaults and callouts run, the checks run, a refusal says why, and nothing is written when anything is refused.
+
+**What is still missing?** `mis.new … dry=Y` runs everything but the save and writes nothing. It answers which mandatory columns are still empty after the defaults, so you know what to give:
+
+<!-- run: mis_dry cut=330 -->
+```text
+$ rm -f /tmp/fast_guide_mis.ops; BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list 'mis.new kind=C_BPartner dry=Y'
+dry: true
+kind: Business Partner
+table: c_bpartner
+mandatory: ["Value","Name"]
+needs: []
+given: []
+defaulted: 32
+filled: ["ad_client_id","ad_org_id","c_bp_group_id","iscustomer","isvendor","isemployee","isprospect","issalesrep","so_creditlimit","totalopenbalance","istaxexempt","ispotaxexempt","issummary","isactive","c_paymentterm_id","m_pricelist_id","flatdiscount","c_dunning_id","shelflifeminpct","ismanufacturer","is1099vendor","documentc…
+ops: []
+```
+
+**Create, change, read.** A column that holds another record may be given by its name. `mis.list … names=Y` shows such columns as names, the way the window's grid does:
+
+<!-- run: mis_new cut=330 -->
+```text
+$ BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list 'mis.new kind=C_BPartner Value=GD100 Name="Guide Partner One"'
+number: Guide Partner One
+kind: Business Partner
+table: c_bpartner
+id: 1600010
+docStatus: 
+given: ["Value","Name"]
+defaulted: 32
+filled: ["ad_client_id","ad_org_id","c_bp_group_id","iscustomer","isvendor","isemployee","isprospect","issalesrep","so_creditlimit","totalopenbalance","istaxexempt","ispotaxexempt","issummary","isactive","c_paymentterm_id","m_pricelist_id","flatdiscount","c_dunning_id","shelflifeminpct","ismanufacturer","is1099vendor","documentc…
+record: {"c_bpartner_id":1600010,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":null,"createdby":null,"updated":null,"updatedby":null,"value":"GD100","name":"Guide Partner One","name2":null,"description":null,"issummary":"N","c_bp_group_id":103,"isonetime":"N","isprospect":"N","isvendor":"N","iscustomer":"N","isemploy…
+ops: [{"op_type":"CRUD_CREATE","table":"c_bpartner"},{"op_type":"CRUD_CREATE","table":"ad_treenodebp"},{"op_type":"CRUD_CREATE","table":"c_bp_customer_acct"},{"op_type":"CRUD_CREATE","table":"c_bp_customer_acct"},{"op_type":"CRUD_CREATE","table":"c_bp_vendor_acct"},{"op_type":"CRUD_CREATE","table":"c_bp_vendor_acct"}]
+```
+
+<!-- run: mis_update cut=330 -->
+```text
+$ BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list 'mis.update kind=C_BPartner number="Guide Partner One" description="first supplier"' | grep -E '^(noop|given|changed|derived):'
+noop: false
+given: ["Description"]
+changed: ["description"]
+derived: []
+```
+
+<!-- run: mis_list -->
+```text
+$ BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list 'mis.list kind=C_BPartner value=GD100 columns=Value,Name,Description,C_BP_Group_ID names=Y'
+Value  Name               Description     C_BP_Group_ID
+GD100  Guide Partner One  first supplier  Standard Customers
+shown 1 of 1
+```
+
+`mis.update` sends only the columns you give; giving the values a record already has changes nothing and the answer says `noop`. A column the window would not let a person edit (a read-only field, or any column of a completed document) is refused, and the answer names the rule. Clear a column with the value `<null>`.
+
+**Delete.** `mis.delete` is the window's Delete. It refuses what the window refuses, with the engine's own words, and writes nothing. The standard partner is used by other records:
+
+<!-- run: mis_refuse cut=300 -->
+```text
+$ BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list 'mis.delete kind=C_BPartner id=112'
+refused: true
+reason: Business Partner Standard is not deleted: Record not deleted - dependent record found; nothing was written
+```
+
+<!-- run: mis_delete cut=300 -->
+```text
+$ BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list 'mis.delete kind=C_BPartner number="Guide Partner One"' | grep -E '^(gone|opSummary):'
+gone: true
+opSummary: {"delete:c_bp_customer_acct":2,"delete:c_bp_vendor_acct":2,"delete:c_bpartner":1,"delete:ad_treenodebp":1}
+```
+
+**Load many from a CSV.** `mis.load` reads a `.csv` (the first line is the column names, one record per line) and runs the ERP's own Migrate Excel Data process on it. That process is all or nothing, so `mis.load` first **checks** (`dry=Y`, the default) and writes nothing: it counts the lines and names each bad one. Next to your file it writes `….rejected.csv` (the bad lines and why) and `….ok.csv` (the good ones):
+
+<!-- run: mis_load cut=330 -->
+```text
+$ printf 'Value,Name,C_BP_Group_ID\nGD201,Guide Two,Standard Customers\nGD202,Guide Three,Nowhere\n' > /tmp/fast_guide_mis.csv; rm -f /tmp/fast_guide_mis.rejected.csv /tmp/fast_guide_mis.ok.csv; BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list 'mis.load kind=C_BPartner file=/tmp/fast_guide_mis.csv'
+kind: Business Partner
+table: c_bpartner
+file: /tmp/fast_guide_mis.csv
+rows: 2
+ok: 1
+rejected: [{"row":2,"why":["C_BP_Group_ID: no C_BP_Group with Name=\"Nowhere\""]}]
+unplaced: []
+dry: true
+loaded: false
+files: {"rejected":"/tmp/fast_guide_mis.rejected.csv","ok":"/tmp/fast_guide_mis.ok.csv"}
+summary: Nothing migrated: 1 row error(s). c_bpartner row 3 C_BP_Group_ID: no C_BP_Group with Name="Nowhere"
+```
+
+<!-- run: mis_rejected -->
+```text
+$ cat /tmp/fast_guide_mis.rejected.csv
+Value,Name,C_BP_Group_ID,rejected_because
+GD202,Guide Three,Nowhere,"C_BP_Group_ID: no C_BP_Group with Name=""Nowhere"""
+```
+
+Loading the original with `dry=N` is refused while any line is bad. Fix the bad lines, or load the good ones, which is a separate all-or-nothing load:
+
+<!-- run: mis_load_ok cut=330 -->
+```text
+$ BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list 'mis.load kind=C_BPartner dry=N file=/tmp/fast_guide_mis.ok.csv'
+kind: Business Partner
+table: c_bpartner
+file: /tmp/fast_guide_mis.ok.csv
+rows: 1
+ok: 1
+rejected: []
+unplaced: []
+dry: false
+loaded: true
+files: {}
+summary: No worksheets : 1(C_BPartner = 1 records) 
+ops: 6
+opSummary: {"create:c_bpartner":1,"create:ad_treenodebp":1,"create:c_bp_customer_acct":2,"create:c_bp_vendor_acct":2}
+keys: [1600010]
+```
+
+An AI's `mis.new`, `mis.update`, `mis.delete` or `mis.load` is held as a claim, like `erp.new`: nothing is written until a person confirms it. Updating existing records in bulk is not offered; use `mis.update` for each, so the window's checks run.
+
+## Work at the terminal: `mis.js`
+
+If you would rather pick than type, `mis.js` shows a list with a pointer. It is a front end only: every key compiles into **one** of the door lines above, runs through the same door (journalled, claim-checked), and the screen prints the line before it runs. Up and Down move the pointer. Left and Right move along the buttons on the pointed row (`[U Edit] [D Delete] [C Copy]` for a record; for a document, the actions the engine allows now, such as `[C Complete] [V Void]`, and no Delete once it is completed). Enter runs the highlighted button. `+` starts a new record, Delete asks `y/N`, and Esc backs out and writes nothing.
+
+At a terminal it draws with arrow keys. With `--plain` it reads key names from a pipe, so a script, a screen reader and an AI see exactly what a person sees:
+
+<!-- run: mis_screen cut=150 -->
+```text
+$ printf 'Down Right Esc\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/mis.js kind=C_BPartner name=Standard limit=3 --plain 2>/dev/null
+-> mis.describe kind=C_BPartner
+-> mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Name2 names=Y limit=3 offset=0 name=Standard
+C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]
+   C_BPartner_ID  Value     Name      Name2
+ > 112            Standard  Standard        >[U Edit]< [D Delete] [C Copy]
+   1300112        Standard  Standard       
+the line it will run: mis.read kind=C_BPartner id=112
+ Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
+key Down
+C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]
+   C_BPartner_ID  Value     Name      Name2
+   112            Standard  Standard       
+ > 1300112        Standard  Standard        >[U Edit]< [D Delete] [C Copy]
+the line it will run: mis.read kind=C_BPartner id=1300112
+ Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
+key Right
+C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]
+   C_BPartner_ID  Value     Name      Name2
+   112            Standard  Standard       
+ > 1300112        Standard  Standard        [U Edit] >[D Delete]< [C Copy]
+the line it will run: mis.delete kind=C_BPartner id=1300112
+ Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
+key Esc
+C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]
+   C_BPartner_ID  Value     Name      Name2
+   112            Standard  Standard       
+ > 1300112        Standard  Standard        [U Edit] >[D Delete]< [C Copy]
+the line it will run: mis.delete kind=C_BPartner id=1300112
+ Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
+```
+
+A form asks only for what the engine cannot fill (the dry run above). Typing fills the field, Tab or Enter moves on, and Enter on the last field shows the one line it will run. A line that starts with `=` is typed text. Here the whole session, reduced to the door lines it ran:
+
+<!-- run: mis_form cut=200 -->
+```text
+$ printf '+\n=GD300\nTab\n=Guide Four\nEnter\ny\nEsc\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/mis.js kind=C_BPartner value=GD300 --plain 2>/dev/null | grep '^->'
+-> mis.describe kind=C_BPartner
+-> mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Name2 names=Y limit=10 offset=0 value=GD300
+-> mis.new kind=C_BPartner dry=Y
+-> mis.new kind=C_BPartner Value=GD300 Name="Guide Four"
+-> mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Name2 names=Y limit=10 offset=0 value=GD300
+```
+
+Edit works the same way: it shows only the columns the window lets a person edit, with lookups as names, and sends only what you changed. Copy starts a new record from the pointed one, so you must change what must be unique (a duplicate is refused and your typing is kept). Set `MIS_SESSION_FILE=session.door` and a terminal session records the lines it ran, one per line, as a script you can read and run again.
+
 ## Choose how the answer is shown, and keep it
 
 The reply is the JSON envelope unless you ask otherwise. Three switches show the rows of an answer as something a person or a spreadsheet can read; the envelope is still what the door records:
@@ -650,34 +826,47 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `object.list` | List records of a kind | `building`, `kind`, `columns` (optional), `sort` (optional), `limit` (optional), `offset` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
 | `object.sum` | Add up a column | `building`, `kind`, `column`, further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
 | `object.group` | Count by a column | `building`, `kind`, `by`, further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
-| `erp.find` | Find a document | `kind`, `number` | read | human, ai | a bim-ootb checkout |
-| `erp.actions` | What can be done to a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | read | human, ai | a bim-ootb checkout |
-| `erp.describe` | Describe a kind of ERP record | `kind` | read | human, ai | a bim-ootb checkout |
-| `erp.read` | Read an ERP record | `kind`, `id` (optional), `number` (optional) | read | human, ai | a bim-ootb checkout |
-| `erp.list` | List records | `kind`, `columns` (optional), `sort` (optional), `limit` (optional), `offset` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
-| `erp.sum` | Add up a column | `kind`, `column`, further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
-| `erp.group` | Count by a column | `kind`, `by`, further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
-| `erp.new` | Create a record | `kind`, further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
-| `erp.complete` | Complete a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | posts | human, ai | a bim-ootb checkout |
-| `erp.void` | Void a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
-| `erp.close` | Close a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
-| `erp.reverse` | Reverse - Correct a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | posts | human, ai | a bim-ootb checkout |
 | `witness.run` | Run a witness and read its verdict | `name` | trial | human, ai | a bim-ootb checkout |
 | `witness.last` | Read the last recorded witness run | `name` | read | human, ai | a bim-ootb checkout |
 | `legacy.status` | Is the legacy test stack up | none | read | human, ai | a bim-ootb checkout |
 | `legacy.query` | Read rows of a legacy table | `table`, `columns` (optional), `sort` (optional), `limit` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
-| `erp.column` | Who fills a column: twin and legacy side by side | `kind`, `column` | read | human, ai | a bim-ootb checkout |
-| `erp.compare` | Compare one record on the twin and on legacy | `kind`, `number`, `legacy` (optional) | read | human, ai | a bim-ootb checkout |
+| `mis.column` | Who fills a column: twin and legacy side by side | `kind`, `column` | read | human, ai | a bim-ootb checkout |
+| `legacy.compare` | Compare one record on the twin and on legacy | `kind`, `number`, `legacy` (optional) | read | human, ai | a bim-ootb checkout |
 | `idempiere.where` | Find a name in the iDempiere source | `symbol`, `in` (optional), `limit` (optional) | read | human, ai | a bim-ootb checkout |
-| `erp.pack` | Make the 2Pack zip from a data-model workbook | `book`, `version`, `out` (optional), `java` (optional), `package` (optional) | writes | human, ai | a bim-ootb checkout |
+| `mis.pack` | Make the 2Pack zip from a data-model workbook | `book`, `version`, `out` (optional), `java` (optional), `package` (optional) | writes | human, ai | a bim-ootb checkout |
 | `legacy.up` | Start the shared docker Postgres for the legacy test stack | none | writes | human, ai | a bim-ootb checkout |
 | `legacy.refresh` | Refresh the legacy test instance from the base seed | none | writes | human, ai | a bim-ootb checkout |
 | `legacy.witness` | Run the in-server witness on the legacy test instance | none | trial | human, ai | a bim-ootb checkout |
 | `legacy.check` | Check a workbook's rows in the legacy test database | `book`, `version` (optional) | read | human, ai | a bim-ootb checkout |
-| `erp.legacy_plugin` | Put a data-model plugin on the legacy test instance and check it there | `book`, `version` | writes | human, ai | a bim-ootb checkout |
+| `legacy.plugin` | Put a data-model plugin on the legacy test instance and check it there | `book`, `version` | writes | human, ai | a bim-ootb checkout |
+| `erp.find` | Find a document | `kind`, `number` | read | human, ai | a bim-ootb checkout |
+| `erp.actions` | What can be done to a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | read | human, ai | a bim-ootb checkout |
+| `erp.complete` | Complete a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | posts | human, ai | a bim-ootb checkout |
+| `erp.void` | Void a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
+| `erp.close` | Close a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
+| `erp.reverse` | Reverse - Correct a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | posts | human, ai | a bim-ootb checkout |
+| `mis.describe` | Describe a kind of ERP record | `kind` | read | human, ai | a bim-ootb checkout |
+| `mis.read` | Read an ERP record | `kind`, `id` (optional), `number` (optional) | read | human, ai | a bim-ootb checkout |
+| `mis.list` | List records | `kind`, `columns` (optional), `sort` (optional), `limit` (optional), `offset` (optional), `names` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `mis.sum` | Add up a column | `kind`, `column`, further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `mis.group` | Count by a column | `kind`, `by`, further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `mis.new` | Create a record | `kind`, `dry` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
+| `mis.update` | Change a record | `kind`, `id` (optional), `number` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
+| `mis.delete` | Delete a record | `kind`, `id` (optional), `number` (optional) | writes | human, ai | a bim-ootb checkout |
+| `mis.load` | Load records from a CSV | `kind`, `file`, `dry` (optional) | writes | human, ai | a bim-ootb checkout |
+| `erp.column` | Who fills a column: twin and legacy side by side (old name of mis.column) | `kind`, `column` | read | human, ai | a bim-ootb checkout |
+| `erp.compare` | Compare one record on the twin and on legacy (old name of legacy.compare) | `kind`, `number`, `legacy` (optional) | read | human, ai | a bim-ootb checkout |
+| `erp.pack` | Make the 2Pack zip from a data-model workbook (old name of mis.pack) | `book`, `version`, `out` (optional), `java` (optional), `package` (optional) | writes | human, ai | a bim-ootb checkout |
+| `erp.legacy_plugin` | Put a data-model plugin on the legacy test instance and check it there (old name of legacy.plugin) | `book`, `version` | writes | human, ai | a bim-ootb checkout |
+| `erp.describe` | Describe a kind of ERP record (old name of mis.describe) | `kind` | read | human, ai | a bim-ootb checkout |
+| `erp.read` | Read an ERP record (old name of mis.read) | `kind`, `id` (optional), `number` (optional) | read | human, ai | a bim-ootb checkout |
+| `erp.list` | List records (old name of mis.list) | `kind`, `columns` (optional), `sort` (optional), `limit` (optional), `offset` (optional), `names` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `erp.sum` | Add up a column (old name of mis.sum) | `kind`, `column`, further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `erp.group` | Count by a column (old name of mis.group) | `kind`, `by`, further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `erp.new` | Create a record (old name of mis.new) | `kind`, `dry` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
 <!-- /GEN:verbs -->
 
-**Coverage today.** The list is small on purpose: 43 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 16 ERP verbs. So this is a start, not the whole menu.
+**Coverage today.** The list is small on purpose: 46 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 6 ERP verbs for a document's life and 11 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.
 
 ## What is not checked
 
