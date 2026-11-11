@@ -40,6 +40,43 @@ One project, four places. Each hands the next the same project:
 4. **This dashboard reads the same Project Order.** Its **BIM** button appears when the project's building file is found, by the project's
    value (the model's name). It does not show document counts yet.
 
+## Where every number comes from (the sources, and how they come together)
+
+A figure on the dashboard is never typed on the page. It is made from five sources, in this order. If a source is missing, the tile says
+**no data** and names why; it never shows zero.
+
+| Step | Source | What it gives | Where you can change it |
+|---|---|---|---|
+| 1 | **The model** (the building's IFC, read once) | every element with its class and its size (length, area, volume taken from the element's bounding box) | the model itself. Elements with no size of their own (a roof or curtain wall made of parts) are priced through their parts; elements with no geometry at all are listed, not priced |
+| 2 | **The rates table** (one price per material class) | a unit price for each class | the rates table. The shipped tables are *examples* (for instance a 2024 US table): a cost from them is quantity-true to the model, but it is not an estimate until you load your own rates |
+| 3 | **The programme** (the 4D schedule) | which elements are built in which phase, and each phase's start and end date | the 4D template and rules |
+| 4 | **The Project Order** (project, phases, tasks, lines) | the planned amount: quantity x price per line, summed to tasks, phases and the project | it is computed from steps 1-3; edit the inputs, not the order |
+| 5 | **Real documents in iDempiere** | what has actually happened: a phase ticked complete, material issued to the project (a *Project Issue*), a completed *purchase order* on the project | the stock windows: tick the phase, issue material, complete the order |
+
+Steps 1-4 are the **plan**; step 5 is **what happened**. Each tile compares the two, or reports one of them:
+
+| Tile | Plan side | Actual side |
+|---|---|---|
+| Approved Budget | sum of the project's planned amounts (steps 1-4) | |
+| Actual Cost | | the project's balance, which iDempiere builds from completed Project Issues |
+| Committed Cost: contract | | completed purchase orders on the project (proposed) |
+| Committed Cost: verified | | the actual cost of projects that have a completed Project Issue (proposed; it overlaps Actual Cost) |
+| Forecast Cost at Completion | budget, and the value of the phases ticked complete | the project's balance (proposed) |
+| Physical vs Spent | the value of the phases ticked complete against the plan | spent against the plan |
+| Budget Status | planned amount | the project's balance |
+| Schedule, Project Health | each phase's dates and planned amount (step 3-4) | which phases are ticked complete, and the project's balance |
+| Project Stage | | the project's own Standard Phase (empty until it is set) |
+| BIM Documents issued for construction | | the BIM Document register (empty until sheets are filed) |
+
+**Two rules keep the sources honest.** (1) The page only reads. Every actual figure is a document a person completed in iDempiere, so it can
+be traced to a window. (2) Money is shown per currency and never added across currencies.
+
+**What to check before you trust a figure (known limits, under review):** the *Actual Cost* and the *Budget* must be on the same basis. If
+the material issued to the project is priced from stock costs that have nothing to do with the rates table, a project can read "72 % built,
+0.08 % spent", and the forecast and health tiles then follow that gap; they are only as meaningful as the pairing. The *Project Health* tile
+currently counts a phase as planned-to-date only once its end date has passed, so a long phase that is half way through counts as nothing
+planned yet. Both are being reviewed against the specification.
+
 ### BIM Document fields
 
 | Field | Means |
