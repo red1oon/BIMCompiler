@@ -72,16 +72,27 @@ then sends only its signed changes through a relay (a post box, not a server). S
 
 ![Saved with the internet off](img/odoo_migration/offline_saved.jpg)
 
+**The big picture of a cut-over.** Master data moves easily: customers, vendors, products, prices and the chart of accounts are lists, and a list can be copied. Accounting is more intricate, because it carries the events of the previous calendar year forward as **balances and open items**: what each account stood at on the cut-over date, and every invoice still waiting to be paid or collected. **Closed history stays in the old system**; the new company starts from the cut-over date.
+
 **Opening balances, every source.** One mechanism serves all four: the trial balance goes in as **one opening journal**, each open invoice or credit note as its own document (the unpaid
 amount), each bank or cash balance as one opening bank statement. Stage 2 completes them and then checks the ERP's books against the source's rows (account by account, the open amount per partner, the bank
-balance per account); the three clearing accounts must end at zero, or the form says which one is off and by how much. **Not brought in, from any source:** open items in a **foreign currency** and payments
+balance per account); the three clearing accounts must end at zero, or the form says which one is off and by how much.
+The method behind it, an opening journal through clearing accounts and then one phantom sale or purchase per open item, comes from Steven Sackett of Adaxa Australia; the iDempiere wiki page *Establish Opening Balances* describes it. We are grateful to him for it. **Not brought in, from any source:** open items in a **foreign currency** and payments
 **not yet matched to an invoice**; they stay on the clearing accounts and the summary counts them.
+
+**What a unit of stock is worth.** The value of stock is its on-hand quantity multiplied by its cost, and the cost depends on the costing method of the company: Standard, Average PO or Average Invoice. Odoo's `standard_price` becomes that cost through a Cost Adjustment (the way iDempiere's Import Inventory does it, `ImportInventory.java:524-572`). FIFO and LIFO layers, and the history of an average cost, are not carried across; the product starts from one cost.
 
 **Your stock keeps its cost (Odoo).** The unit cost Odoo holds (`standard_price`) comes across with the opening stock through a Cost Adjustment, so the first shipment after the move
 posts at that cost. In the witnessed run, a shipment of 3 units at Odoo's cost of 14.00 posted 42.00 to cost of goods sold and to the inventory asset, and each of the 21 costed products had exactly its Odoo cost.
 
-**A migrated company can trade.** On the migrated company the test paid a migrated open customer invoice (it shows paid, the partner's open balance falls by the amount, the books stay balanced), ran a
-new sales order through shipment, invoice and payment on the migrated products, customers and price list, and paid a migrated vendor bill (witness `witness_migration_trade.js`, 26 of 26 checks).
+**A migrated company can trade.** Proven on the Odoo fixture, the one source whose migrated company was traded. In a migrated company, saving a **Payment** against a migrated invoice works: the payment saves against the migrated bank account, partner and invoice and completes, the invoice shows paid, the partner's open balance falls by the amount, and the books stay balanced (witness `witness_migration_paysave.js`, 14 of 14 checks). A **new sales order** then runs the whole cycle on the migrated products, customers and price list: in the Sales Order window the Price List offers the company's own list, the order header and line save and the order completes; Generate Shipments takes the stock down; Generate Invoices makes a completed, posted invoice at the migrated price; the payment settles it, and the books balance (`witness_lookup_idlaw.js`, 22 of 22 checks). The ledger-level run also paid a migrated open customer invoice, a partial receipt and a migrated vendor bill (`witness_migration_trade.js`, 26 of 26 checks).
+**Not proven:** the same trading on a company migrated from iDempiere, SAP Business One or Business Central (their routes load the balances; only the Odoo company was then traded), and purchase-side trading beyond paying a migrated vendor bill.
+
+**Document numbers are the company's own.** A migrated company starts its own sequences instead of borrowing GardenWorld's: the first payments are numbered 1000000, 1000001 and so on (all payments, receipts and payments out, share one series), and the orders and invoices start from their own document-type sequences (in the witnessed run 50000 and 100000), each number distinct and in step. GardenWorld's own sequences do not move while another company numbers documents (witness `witness_docno.js`).
+
+**Reports show only your company.** The Trial Balance and the financial statements read the logged-in company's accounts and amounts only; another company in the same database does not appear in them, and a posting in another company does not change them (witness `witness_repscope.js`).
+
+**Open Items and Aging.** The **Open Items (Aging)** report exists in the ERP (process 145, with Aging, process 238). Its figures matched iDempiere's own open-item view for the same client, row by row, at every aging boundary (witness `witness_openitems.js`, 19 of 19 checks). Two cases are **refused by name rather than guessed**: open items reckoned by the **accounting date**, and items **converted into another currency**; they are neither shown nor claimed.
 
 **Refused in the ERP (all sources):**
 
