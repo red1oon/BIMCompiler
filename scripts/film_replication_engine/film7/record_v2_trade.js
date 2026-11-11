@@ -127,7 +127,7 @@ var FORMS = { odoo: { id: 9542001, cls: 'org.kernel.odoo.MigrateFromOdoo' }, bc:
       if (info.tag === 'SELECT') { var o = info.opts.filter(function (x) { return mode === 'first' ? x[0] !== '' : (x[1].indexOf(want) >= 0 || x[0] === want); })[0]; if (!o) return 'NOOPT ' + J(info.opts.slice(0, 8)); await pg.selectOption(sel, o[0]); await sleep(700); return 'SEL ' + o[1] + ' now=' + await pg.$eval(sel, function (e) { return e.value; }); }
       if (info.type === 'checkbox') { await pg.setChecked(sel, !!want); return 'CHK'; } await pg.fill(sel, String(want)); await pg.press(sel, 'Tab'); await sleep(500); return 'VAL ' + await pg.$eval(sel, function (e) { return e.value; });
     }
-    async function tb(prefix) { var ok = await pg.evaluate(function (p) { var b = Array.prototype.slice.call(document.querySelectorAll('#idmp-content button')).filter(function (x) { return (x.getAttribute('title') || '').indexOf(p) === 0; })[0]; if (!b) return false; b.click(); return true; }, prefix); await sleep(2500); return ok; }
+    async function tb(prefix) { var ok = await pg.evaluate(function (p) { var b = Array.prototype.slice.call(document.querySelectorAll('button, [role=button]')).filter(function (x) { return (x.getAttribute('title') || '').indexOf(p) === 0 && !x.disabled; })[0]; if (!b) return false; b.click(); return true; }, prefix); await sleep(2500); return ok; }
     async function status() { return pg.evaluate(function () { var t = []; document.querySelectorAll('.idmp-toast, [class*=toast], [class*=status], #idmp-status').forEach(function (e) { var x = (e.innerText || '').trim(); if (x) t.push(x.slice(0, 200)); }); return t.slice(-4); }); }
     var TC = T.clientId, rowsOf = async function (sql, p) { return Q(pg, sql, p || [TC]); };
     var inv0 = await rowsOf("SELECT c_invoice_id AS id, documentno AS no, grandtotal AS t, ispaid AS paid, c_bpartner_id AS bp FROM c_invoice WHERE ad_client_id=? AND docstatus='CO' ORDER BY c_invoice_id");
@@ -140,14 +140,37 @@ var FORMS = { odoo: { id: 9542001, cls: 'org.kernel.odoo.MigrateFromOdoo' }, bc:
     say('§FILMREC TRADE payamt ' + await setCol('payamt', '161.12')); say('§FILMREC TRADE bank ' + await setCol('c_bankaccount_id', '5678')); await sleep(1000);
     say('§FILMREC TRADE payamt-after-invoice ' + await pg.evaluate(function () { var e = document.querySelector('#idmp-content input[data-col="payamt"]'); return e && e.value; }));
     await pg.screenshot({ path: path.join(OUT, 'trade_01_payment_filled.png') });
-    say('§FILMREC TRADE save ' + await tb('Save (')); say('§FILMREC TRADE status ' + J(await status()));
+    say('§FILMREC TRADE save ' + await tb('Save')); say('§FILMREC TRADE status ' + J(await status()));
     logs.filter(function (l) { return /§AD-MODELVAL|Mandatory|§MODEL-ERR|§SAVE/.test(l); }).slice(-6).forEach(function (l) { say('§FILMREC TRADE pagelog ' + l.slice(0, 400)); });
     await pg.screenshot({ path: path.join(OUT, 'trade_02_payment_saved.png') });
     say('§FILMREC TRADE docstatus-options ' + await pg.evaluate(function () { var e = document.querySelector('#idmp-content select[data-col="docstatus"]'); return e ? Array.prototype.map.call(e.options, function (x) { return x.value + '=' + x.text; }).join(' ; ') + ' cur=' + e.value + ' disabled=' + e.disabled : 'none'; }));
-    say('§FILMREC TRADE complete-set ' + await setCol('docstatus', 'CO')); say('§FILMREC TRADE save2 ' + await tb('Save (')); say('§FILMREC TRADE status2 ' + J(await status()));
+    say('§FILMREC TRADE complete-set ' + await setCol('docstatus', 'CO')); say('§FILMREC TRADE save2 ' + await tb('Save')); say('§FILMREC TRADE status2 ' + J(await status()));
     await pg.screenshot({ path: path.join(OUT, 'trade_03_payment_completed.png') });
     say('§FILMREC TRADE payments-after ' + J(await rowsOf('SELECT documentno AS no, docstatus AS s, payamt AS amt, isallocated AS alloc, posted AS p, c_invoice_id AS inv FROM c_payment WHERE ad_client_id=?')));
     say('§FILMREC TRADE invoice-after ' + J(await rowsOf("SELECT documentno AS no, ispaid AS paid FROM c_invoice WHERE ad_client_id=? AND c_invoice_id IN (SELECT c_invoice_id FROM c_invoice WHERE ad_client_id=?)", [TC, TC])));
+    // ---- books + partner open amount after the payment (numbers from the tenant rows) ----
+    var bal = await rowsOf('SELECT SUM(amtacctdr) AS dr, SUM(amtacctcr) AS cr, count(*) AS n FROM fact_acct WHERE ad_client_id=?'); say('§FILMREC TRADE books-after-payment ' + J(bal));
+    // ---- sales order through the Sales Order window ----
+    var cols = async function () { return pg.evaluate(function () { return Array.prototype.slice.call(document.querySelectorAll('#idmp-content [data-col]:not(span)')).map(function (e) { return e.getAttribute('data-col') + (e.tagName === 'SELECT' ? '(' + e.options.length + ')' : '') + (e.getAttribute('data-ad-required') ? '*' : ''); }).join(','); }); };
+    say('§FILMREC TRADE pricelists ' + J(await rowsOf('SELECT m_pricelist_id AS id, name, issopricelist AS so, c_currency_id AS cur, isactive AS act FROM m_pricelist WHERE ad_client_id=?'))); say('§FILMREC TRADE bp-pl ' + J(await rowsOf('SELECT c_bpartner_id AS id, name, m_pricelist_id AS pl FROM c_bpartner WHERE ad_client_id=?')));
+    await openForm(pg, 129); await sleep(5000); await pg.screenshot({ path: path.join(OUT, 'trade_10_order_window.png') });
+    say('§FILMREC TRADE order-new ' + await tb('New')); say('§FILMREC TRADE order-cols ' + await cols());
+    say('§FILMREC TRADE o-doctype ' + await setCol('c_doctypetarget_id', 'Standard')); say('§FILMREC TRADE o-bp ' + await setCol('c_bpartner_id', 'Joe Block')); await sleep(1500);
+    say('§FILMREC TRADE o-bploc ' + await setCol('c_bpartner_location_id', '', 'first')); say('§FILMREC TRADE o-wh ' + await setCol('m_warehouse_id', '', 'first')); say('§FILMREC TRADE o-pl ' + await setCol('m_pricelist_id', '', 'first'));
+    await pg.screenshot({ path: path.join(OUT, 'trade_11_order_filled.png') });
+    say('§FILMREC TRADE o-save ' + await tb('Save')); say('§FILMREC TRADE o-status ' + J(await status()));
+    logs.filter(function (l) { return /§AD-MODELVAL-LIVE table=c_order .*REJECT|Mandatory/.test(l); }).slice(-3).forEach(function (l) { say('§FILMREC TRADE o-pagelog ' + l.slice(0, 300)); });
+    say('§FILMREC TRADE o-orders ' + J(await rowsOf('SELECT documentno AS no, docstatus AS s, grandtotal AS t, c_bpartner_id AS bp FROM c_order WHERE ad_client_id=? ORDER BY c_order_id DESC LIMIT 3')));
+    var clickTab = async function (t) { try { await pg.getByText(t, { exact: true }).first().click({ timeout: 8000, force: true }); await sleep(2500); return true; } catch (e) { return 'ERR ' + e.message.slice(0, 80); } };
+    say('§FILMREC TRADE tab-line ' + await clickTab('Order Line')); say('§FILMREC TRADE line-cols ' + await cols()); await pg.screenshot({ path: path.join(OUT, 'trade_12_order_line_tab.png') });
+    say('§FILMREC TRADE line-tb ' + J(await pg.evaluate(function () { return Array.prototype.slice.call(document.querySelectorAll('button, [role=button], .idmp-tbb')).map(function (b) { return (b.getAttribute('title') || '') + (b.disabled ? '[dis]' : ''); }).filter(function (x) { return x; }).slice(0, 30); })));
+    say('§FILMREC TRADE line-new ' + await tb('New')); say('§FILMREC TRADE l-prod ' + await setCol('m_product_id', '', 'first')); say('§FILMREC TRADE l-qty ' + await setCol('qtyentered', '2')); await sleep(1500);
+    say('§FILMREC TRADE l-price ' + await pg.evaluate(function () { var e = document.querySelector('#idmp-content input[data-col="priceentered"]'); return e && e.value; }));
+    say('§FILMREC TRADE l-save ' + await tb('Save')); say('§FILMREC TRADE l-status ' + J(await status())); await pg.screenshot({ path: path.join(OUT, 'trade_13_order_line_saved.png') });
+    say('§FILMREC TRADE o-lines ' + J(await rowsOf('SELECT count(*) AS n, SUM(linenetamt) AS net FROM c_orderline WHERE ad_client_id=?')));
+    say('§FILMREC TRADE tab-order ' + await clickTab('Order')); say('§FILMREC TRADE o-complete ' + await setCol('docstatus', 'CO')); say('§FILMREC TRADE o-save2 ' + await tb('Save')); say('§FILMREC TRADE o-status2 ' + J(await status()));
+    await pg.screenshot({ path: path.join(OUT, 'trade_14_order_completed.png') });
+    say('§FILMREC TRADE o-orders2 ' + J(await rowsOf('SELECT documentno AS no, docstatus AS s, grandtotal AS t FROM c_order WHERE ad_client_id=? ORDER BY c_order_id DESC LIMIT 2')));
   } catch (e) { say('§FILMREC CRASH ' + (e && e.stack || e)); process.exitCode = 1; }
   await browser.close(); server.close();
 })();

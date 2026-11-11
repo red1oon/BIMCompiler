@@ -29,6 +29,7 @@ chk('legacy-bank-equals-witness', net('11100') == money(F['ido_bank_total']['val
 chk('legacy-ar-equals-witness', net('12110') == money(F['ido_ar_total']['value']), f"screen net={net('12110')} cents vs §IDO-SOURCE {F['ido_ar_total']['value']}")
 tw = open(f'{B}/twin2.log').read(); m = re.search(r'RV_OpenItem: (\d+) open item\(s\).*?grandtotal openamt .*? ([\d.]+) ([\d.]+) 100 ', tw)
 chk('aging-screen-equals-witness', bool(m) and m.group(1) == '1' and money(m.group(3)) == money(F['ido_ar_in']['value']), f"open items screen: count={m and m.group(1)} openamt={m and m.group(3)} vs §MIG-OPEN AR {F['ido_ar_in']['value']}")
+chk('payment-ui-asserts', F['pay_ui_paid']['value'] == 'Y' and money(F['pay_ui_amt']['value']) == money(F['ido_ar_in']['value']), f"payment through the window {F['pay_ui_amt']['value']} == migrated receivable {F['ido_ar_in']['value']}; invoice paid={F['pay_ui_paid']['value']}; books dr=cr={F['pay_ui_books']['value']}")
 sys.argv = ['verify7.py', B]
 try: runpy.run_path(os.path.join(HERE, 'verify7.py'), run_name='__main__')
 except SystemExit as e: rc = e.code

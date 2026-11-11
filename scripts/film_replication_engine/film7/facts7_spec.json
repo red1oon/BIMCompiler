@@ -40,6 +40,9 @@
   {"id":"bc_verify_judged","file":"record","re":"§FILMREC FACT bc_verify_line=\"§MIG-VERIFY verdict=PASS judged=(\\d+)","kind":"int"},
   {"id":"sap_term_calls","file":"term","re":"§SAP-AGENT done calls=(\\d+) read_only=Y","kind":"int"},
   {"id":"oi_judged","file":"mig_openitems.log","re":"^§OPENITEMS-VERDICT PASS judged=(\\d+)","kind":"int"},
+  {"id":"pay_ui_amt","file":"trade","re":"TRADE payments-after \\[\\{\"no\":\"\\d+\",\"s\":\"CO\",\"amt\":([\\d.]+),\"alloc\":\"Y\",\"p\":\"Y\"","kind":"money"},
+  {"id":"pay_ui_paid","file":"trade","re":"TRADE invoice-after \\[\\{\"no\":\"200002\",\"paid\":\"(Y)\"","kind":"text"},
+  {"id":"pay_ui_books","file":"trade","re":"TRADE books-after-payment \\[\\{\"dr\":([\\d.]+),\"cr\":\\1,","kind":"money"},
   {"id":"pageerr","file":"record","re":"§FILMREC FACT pageerr=(\\d+)","kind":"int"}
  ]
 }
