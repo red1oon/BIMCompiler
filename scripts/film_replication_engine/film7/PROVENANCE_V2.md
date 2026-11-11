@@ -26,3 +26,9 @@ record_v2_order.js on the Odoo-migrated tenant: Sales Order window (header, pric
 
 ## Update 4 (one continuous run, one tenant)
 The two "books balance" totals differed because the migrated-invoice payment (iDempiere tenant, 34 lines) and the sale (Odoo tenant, 58 lines) ran on two different companies. Now ONE run on the Odoo-migrated tenant (record_v2_order.js): pay a migrated invoice through the Payment window, then the full sale. verify_v2 `books-continuity`: books after the moved payment + the sale's own legs == books after the cycle, every total dr=cr. Seen while driving: both payments get DocumentNo 10000007 (document sequence not advanced after the first payment): possible twin defect, not filmed.
+
+## Source note: stock value (for later; NOT in the narration)
+Valuation = on-hand quantity x the cost of the accounting schema's costing method (Standard / AveragePO / AverageInv; M_Cost CurrentCostPrice x M_StorageOnHand). Carried for Odoo through a Cost Adjustment from standard_price (ImportInventory.java:524-572). Not carried: layered (FIFO/LIFO) cost queues and the average-cost running history.
+
+## Opening beat
+`bigpicture` carries the owner's sentence verbatim (2026-11-11), right after the opening chapter card.

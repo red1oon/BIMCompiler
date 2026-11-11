@@ -6,6 +6,9 @@ ALPHA = "ALPHA · test-supplied ledger"
 ITEMS = [
  # the owner's two chapter cards (explicit exception to "no cards"): ONE opening, ONE closing, silent holds (PLAYBOOK C: 3.6 s plain dark card, 0.4 s fades, no voice over a card)
  ("card", "part2", dict(dur=3.6, kicker="Part II of Leaving Others for Kernel ERP", l1="Migrating", l2="Accounting", line="")),
+ ("beat", "bigpicture", dict(image=("shot", "legacy_ar.png", "Moving your old books · legacy iDempiere, Account Viewer (read only)"), src="owner's sentence, verbatim (2026-11-11)",
+   short="M: Migration can bring over all the master data, but accounting is more intricate, as events are brought over from previous Calendar Year.",
+   detail="M: Migration can bring over all the master data, but accounting is more intricate, as events are brought over from previous Calendar Year.")),
  ("beat", "legacy_ar", dict(image=("shot", "legacy_ar.png", "Moving your old books · legacy iDempiere, Account Viewer (read only)"), strip="customers owed, net: {ido_ar_total}", src="legacy screen + §IDO-SOURCE AR (mig_idempiere_open.log)",
    short="F: This is the old books? | M: A legacy iDempiere, read only. Customers owed {fact:ido_ar_total}.",
    detail="F: This is the old books? | M: A legacy iDempiere, read only, in its own Account Viewer. Customers owe {fact:ido_ar_total} net.")),
