@@ -48,8 +48,10 @@ chk('silence-longest<=7.5', (max(sil) if sil else 0) <= 7.5, f'longest={max(sil)
 # F. loudness
 eb = run('ffmpeg', '-hide_banner', '-nostats', '-i', OUT, '-af', 'ebur128=peak=true', '-vn', '-f', 'null', '-').stderr; I = float(re.findall(r'I:\s+(-?[\d.]+) LUFS', eb)[-1]); chk('loudness', abs(I + 16) <= 1.5, f'I={I} LUFS')
 # G. forbidden names (voice, captions, beat table, build scripts)
-FORB = re.compile(r'jebel|jelapang|minaret|adaxa|sackett|pilot', re.I); scanned = [f'{B}/fit1/film.tsv', f'{B}/fit1/film.ass', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'beats7.py')]
-for s in scanned: chk(f'no-forbidden:{os.path.basename(s)}', not FORB.search(open(s).read()), 'jebel|jelapang|minaret|adaxa|sackett|pilot')
+# forbidden terms live in an UNTRACKED file (<builddir>/forbidden.txt: the owner's private-name rule + the Civil Works naming rule): this public script spells none of them
+FT = [t.strip() for t in open(f'{B}/forbidden.txt').read().split() if t.strip()]; chk('forbidden-list-loaded', len(FT) > 0, f'{len(FT)} terms')
+FORB = re.compile('|'.join(map(re.escape, FT)), re.I); scanned = [f'{B}/fit1/film.tsv', f'{B}/fit1/film.ass', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'beats7.py')]
+for s in scanned: chk(f'no-forbidden:{os.path.basename(s)}', not FORB.search(open(s).read()), 'forbidden.txt terms')
 # H. subtitle band empty on every beat picture
 bad = 0
 for kind, n, d in beats7.ITEMS:
