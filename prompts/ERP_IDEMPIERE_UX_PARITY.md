@@ -95,3 +95,37 @@ Each line is a pointer, not a claim that it is still open: other lanes have work
 - **2026-10-02 → 10-07:** §FS first-setup journey, §MD master-detail, §GT the GridTab layer (one tab contract for every window), §GT-NINJA, §CP core callouts and processes verbatim, §MD-UPSTREAM + §BIM-CRUD, §PROJ-VARIANCE.
 - **2026-10-17 → 11-05:** §GRID-CLICK, §FIND-LF, §DEL (toolbar Delete = `GridTable.dataDelete` + `PO.delete`, FK rules, MProjectLine), §GRID-CLICK-2.
 - **2026-11-08 → 11-10, the BIM Document:** §ATT attachments, §BIMDOC … §BIMDOC-5 design and rulings (states Draft → Issued for review → Issued for construction → Superseded), §PROJ-CAT, §BIMDOC-FILM, build results, §BIMDOC-OPEN, §BIMDOC-FEEDBACK (FB1–FB7), §BIMDOC-ADPASS, the Fable stint block, §FB3, §FB4, §REGISTER-EXPORT, §FB7, §BIMDOC-START-BROKEN, §PLUGIN-GUIDE.
+
+## §OPENITEMS-SPEC — Open Items / Aging in the twin (2026-11-11, before code; witness `erp/tests/witness_openitems.js`, `§OPENITEMS-*`)
+**Finding first (EXTRACTED, not assumed):** the twin is NOT without an Aging report. `AD_Process 238 RV_T_Aging` (`org.compiere.process.Aging`, report view 137 `T_Aging`) is ported in `erp/ad_process.js`
+(`openItems` + `agingFold`, `registerAging`, shipped as §FS2l in `ERP_FIRST_SETUP_GUIDE.md`) and `?process=238` shows it. What was missing: (a) **`AD_Process 145 "Open Items (Aging)"`** (report view 117 over
+`RV_OpenItem`, params below) had no handler (absent-handler); (b) the only witness of 238 is a live-page one on GardenWorld whose oracle is a hand model, no mutants, not in the migration lane;
+(c) `DateAcct=Y` (`RV_OpenItemToDate`/`invoiceOpenToDate`) and `ConvertAmountsInCurrency_ID` (`currencyConvertInvoice`) are refused by name. (c) stays refused, named, and printed as `§OPENITEMS-COVERAGE`.
+
+**Legacy, read (`~/idempiere-dev-setup/idempiere`, DB `idempiere_test` via `docker exec postgres psql`):**
+- Process 238 `Aging.java:103-261` (prepare :62-96, doIt :103-261): params `StatementDate, DateAcct, IsSOTrx(default Y in the AD row is `Y`), C_Currency_ID (ignored), ConvertAmountsInCurrency_ID, C_BP_Group_ID, AD_Org_ID,
+  C_BPartner_ID, IsListInvoices`. Reads `RV_OpenItem oi JOIN C_BPartner` `WHERE oi.IsSOTrx=?` [+ BPartner, else BP group; + Org], `ORDER BY C_BPartner_ID, C_Currency_ID, C_Invoice_ID`. `DaysDue = oi.DaysDue +
+  daysBetween(today, StatementDate)` (:204-205). One `T_Aging` row per (BP, currency) — or per (invoice, pay schedule) when IsListInvoices — filled by `MAging.add` (`MAging.java:157-235`).
+- Buckets (`MAging.add`): `daysDue<=0` -> `DueAmt` (+`Due0` if ==0; `Due0_7` if >=-7; `Due0_30` >=-30; `Due1_7` -7..-1; `Due8_30` -30..-8; `Due31_60` -60..-31; `Due31_Plus` <=-31; `Due61_90`; `Due61_Plus`;
+  `Due91_Plus` <=-91); `daysDue>=1` -> `PastDueAmt` (+`PastDue1_7` <=7; `PastDue1_30` <=30; `PastDue8_30` 8..30; `PastDue31_60`; `PastDue31_Plus`; `PastDue61_90`; `PastDue61_Plus`; `PastDue91_Plus` >=91). The amount bucketed is
+  `OpenAmt`; `InvoicedAmt` sums `GrandTotal`; `DaysDue` of the row = integer average (`m_daysDueSum/m_noItems`); `DueDate` = earliest.
+- Output columns = `T_Aging` (live `information_schema`): `C_BPartner_ID C_Currency_ID C_Invoice_ID C_InvoicePaySchedule_ID C_BP_Group_ID AD_Org_ID StatementDate DueDate DaysDue IsListInvoices IsSOTrx InvoicedAmt OpenAmt`
+  + the 20 bucket columns above + Project/Campaign/Activity/DateAcct/ConvertAmountsInCurrency_ID.
+- `RV_OpenItem` (live `pg_get_viewdef`): `RV_C_Invoice` x `C_PaymentTerm` (no valid pay schedule: `DueDate=paymentTermDueDate`, `DaysDue=paymentTermDueDays(term, dateinvoiced, now)`, `GrandTotal`, `OpenAmt=invoiceOpen(inv,0)`)
+  UNION x `C_InvoicePaySchedule` (valid schedule: `DaysDue=daysBetween(now, ips.duedate)`, `GrandTotal=ips.dueamt`, `OpenAmt=invoiceOpen(inv, ips)`); both `IsPaid='N' AND invoiceOpen<>0 AND DocStatus IN ('CO','CL')`.
+  `invoiceOpen` (live `pg_get_functiondef`): `C_Invoice_v` GrandTotal (sign by credit memo multiplier: credit memos come back NEGATIVE; AP multiplier on allocations) minus active allocations in invoice currency;
+  split terms consume allocations schedule by schedule in DueDate order; `|x|<10^-prec` -> 0; round to currency precision.
+- Process 145 `Open Items (Aging)`, no classname, `AD_ReportView 117` -> view `RV_OpenItem`; params `C_BPartner_ID (200163 search), IsSOTrx (default Y), InvoiceCollectionType (list 394), DaysDue (range, -99999..99999)`.
+  Output = the `RV_OpenItem` rows (per invoice / per schedule) satisfying the params. No bucketing.
+
+**Twin design (AD-LAYER: mechanism, not a window):** both reports are `AD_Process` rows dispatched by the one runner (`ad_process.dispatch` -> `REGISTRY`); no window/table branch. 238 already is. 145 gets a handler in the same
+registry, resolved by the generic report-view rule in `resolveClassname` (`isReport`, blank classname, a view process) and reading the SAME `openItems()` (the `RV_OpenItem` transcription) 238 reads: ONE open-items implementation.
+Filters = the AD_Process_Para columns of the row (`C_BPartner_ID`, `IsSOTrx`, `InvoiceCollectionType`, `DaysDue` range) applied to `RV_OpenItem` columns.
+
+**Witness (oracle = legacy `idempiere_test`, client 11, its OWN SQL: `rv_openitem` + a SQL CASE port of the bucket table, never the twin's code):**
+1. SOURCE: legacy reachable, `rv_openitem` non-empty. 2. OI: twin `openItems` == legacy `rv_openitem` per invoice/schedule (`openamt`, `daysdue`, `duedate`, `grandtotal`). 3. AGING: twin process 238 rows per partner/currency, all
+20 buckets + open + invoiced, at the legacy's `current_date` and two other statement dates, IsListInvoices Y/N, BP and group filters. 4. P145: twin process 145 rows == `rv_openitem` filtered by each param.
+5. MUTANT (each must FAIL the same comparator): bucket boundary shifted by a day; one open item dropped; a credit-memo sign flipped. 6. VACUOUS control: a partner without open items must print INCONCLUSIVE, not PASS.
+COVERAGE printed: GardenWorld has no credit memo among open items / no foreign-currency one / no IsDueFixed term; those rules are ported and read, not witnessed there (named, not hidden). Migrated cut-over tenants (Odoo,
+iDempiere): their open items are ordinary posted invoices, so the same comparator applies; the per-tenant oracle (source's open list) is `witness_open_balances` / `witness_idempiere_open`'s `OPEN` case, run through the same `openItems` — follow-on, not claimed.
+Verdict line: `§OPENITEMS-VERDICT PASS|FAIL|INCONCLUSIVE judged=N failed=M`.
