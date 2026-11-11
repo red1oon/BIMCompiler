@@ -65,9 +65,9 @@ is editing a row, not code.
 
 | Tile | Proposed definition | Why this | Question for you |
 |---|---|---|---|
-| **Project Stage** | A Project Type "CAPEX" whose standard phases are your five stages (Concept, Initiation, Planning, Execution, Closing). The stage is the project's own *Standard Phase*. | It is how iDempiere holds a project's stage, with no new column. The stock Standard Phase rows are sales steps and are not used | Are these the five names, in this order? |
-| **Committed Cost: contract and verified** | **Contract** = completed purchase orders on the project. **Verified** = delivery recorded against the project (completed Project Issues). | The project's `CommittedAmt` is typed by hand and a purchase order never fills it, so the contract figure is computed from the orders. A completed Project Issue adds its cost to the project's balance, so verified overlaps *Actual Cost* | Is "verified" delivery, or invoice? |
-| **Forecast Cost at Completion** | EAC = Spent + (Approved Budget − Done) ÷ CPI, where CPI = Done ÷ Spent | The usual form when past cost performance continues. *Spent*, *Done* and *Approved Budget* are already on this page. With Spent or Done at zero the tile says **no data**, not a number | Is this your formula, or plain Budget ÷ CPI? |
+| **Project Stage** | A Project Type "CAPEX" whose standard phases are your five stages (Concept, Initiation, Planning, Execution, Closing). The stage is the project's own *Standard Phase*. | It is how iDempiere holds a project's stage, with no new column. The stock Standard Phase rows are sales steps and are not used | Are these the five names, in this order? **Built, labelled proposed:** the Project Type and its five stages are installed as data (a migration script), the same rows on iDempiere and on the twin. |
+| **Committed Cost: contract and verified** | **Contract** = completed purchase orders on the project. **Verified** = the actual cost (`ProjectBalanceAmt`) of projects that have at least one completed Project Issue. | The project's `CommittedAmt` is typed by hand and a purchase order never fills it, so the contract figure is computed from the orders. A completed Project Issue adds its cost to the project's balance, so verified overlaps *Actual Cost* | Is "verified" delivery, or invoice? | **Built as two Home goals, labelled proposed:** *CAPEX Contract Committed USD (proposed)* and *CAPEX Verified Cost USD (proposed)*, checked equal on iDempiere and on the twin. They are not yet tiles on the page: that needs iDempiere to expose purchase orders and project issues to the page, which we have not been asked to do. |
+| **Forecast Cost at Completion** | EAC = Spent + (Approved Budget − Done) ÷ CPI, where CPI = Done ÷ Spent | The usual form when past cost performance continues. *Spent*, *Done* and *Approved Budget* are already on this page. With Spent or Done at zero the tile says **no data**, not a number | Is this your formula, or plain Budget ÷ CPI? **Built, labelled proposed:** the page tile shows the figure per currency (active projects with Spent and Done above zero), and the Home has a matching goal *CAPEX Forecast Cost at Completion USD (proposed)* whose value was checked equal on iDempiere and on the twin. |
 
 *Order of work:* Project Stage first (data only), then the committed split, then the forecast, because the forecast needs the actual cost
 to be settled.
@@ -123,7 +123,7 @@ The page follows an executive dashboard a client prototyped. We have seen one sc
 
 | | That design | This page | Why |
 |---|---|---|---|
-| Forecast Cost at Completion | A figure | *definition pending* | No formula has been stated |
+| Forecast Cost at Completion | A figure | Our proposed figure, labelled *proposed* | No formula has been stated; see *For review* |
 | Committed Cost | Split into verified and contract | Committed, with invoiced under it | No column for that split has been stated |
 | Project Stage | The client's own five stages | The Standard Phase names | How those stages map to `C_Phase` is not agreed |
 | Money | One currency, in large units | Each currency separately, in full | Never added together |
@@ -164,7 +164,8 @@ Money is shown **per currency**, never added together.
 | Approved Budget | USD 24,982,203.77, BDT 15,139,265.67 | Sum of `PlannedAmt` |
 | Actual Cost | USD 342.59, BDT 7.97 | Sum of `ProjectBalanceAmt`, also as % of plan |
 | Committed Cost | USD 1,347,462.62, BDT 1,000.00 (invoiced USD 8.10, BDT 0.00) | Sum of `CommittedAmt`, with `InvoicedAmt` under it |
-| Forecast Cost at Completion | definition pending | No formula agreed yet |
+| Forecast Cost at Completion (proposed) | the figure of the proposal under *For review*, per currency, or **no data** when no active project has both Spent and Done above zero | Per active project: Spent + (Approved Budget − Done) ÷ CPI, with CPI = Done ÷ Spent. Summed per currency. Not agreed yet |
+| BIM Documents issued for construction | issued / deliverables, for example 3 / 6 | Counts each deliverable at its latest revision; *issued* means that revision is Issued for construction. Says **no data (BIM Document not installed on this server)** where the plugin is not installed, and **no data** for a project with no deliverables |
 | Projects Completed this year | 1 | `Processed = Y` with `DateFinish` in this year |
 
 ### The panels
@@ -425,11 +426,11 @@ The steps, the scripts and the plugin's contents are in the **Developer's note**
 
 | Topic | Today |
 |---|---|
-| Forecast Cost at Completion | No agreed formula: says *definition pending*. A proposal is under *For review* |
+| Forecast Cost at Completion | Shows our proposed figure, labelled *proposed*, until you confirm the formula (*For review*) |
 | Procurement Risks, Handover | No agreed definition: says *definition pending* |
-| Project Stage | Shows the Standard Phase. How your stages map onto `C_Phase` is not agreed. A proposal is under *For review* |
+| Project Stage | Shows the project's Standard Phase. The five CAPEX stages are installed as a Project Type (proposed); a project shows them once you set its Standard Phase to one of them. *For review* |
 | Payment-based progress | Not in the ERP |
-| Document figures | Not built. Planned: a tile *issued for construction / deliverables*, from BIM Document. On a server that does not have BIM Document it will say **no data** |
+| Document figures | The tile *BIM Documents issued for construction* is on the page. Not yet shown: *Issued for review* as a separate count |
 | BIM Document on your own iDempiere | The plugin's source is written and compiles against iDempiere 13; it has not yet been installed and checked on a server. It runs in Kernel-ERP today |
 | A revised model | Sending a revised model again adds nothing today (a second send changes nothing). Planned: it arrives as a new, version-tagged order that replaces the old one (the project is still in alpha, so no baseline is kept) |
 | Register button | The register is exported and used by a tool; there is no button yet |
