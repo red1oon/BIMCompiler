@@ -1,194 +1,504 @@
-# ⚠ DO NOT REMOVE — Migrate ACTUALLY installs a loadable tenant (Client 12 Odoo + 13 iDempiere)
-# STATUS: STALE HEADER — P0/P1/P2 Odoo done 2026-06-05→06; P1-iDempiere, said BLOCKED below, was actually
-#   UNBLOCKED+SHIPPED (PK re-band 2026-06-11 + idempiere_agent.zip via a DIFFERENT lane, ABOUT_BOX_CONSOLIDATE.md,
-#   by 2026-06-19) — this file was never updated to say so. See `§2026-07-22 AUDIT` at the bottom for current
-#   state + the REAL remaining gaps (offline/network dependency of the install flow, doc coverage). Originally
-#   captured 2026-06-05 as PLAN/not-started (stale, kept for history below).
-# SCOPE: today the Migrate dialogs are real VERIFY/PREVIEW flows, not INSTALL flows — going through them
-#   does NOT leave you with logged-in Client 12 (Odoo) + Client 13 (iDempiere). Close that gap.
-#   Spec-first · §-log first · NON-INVENT · delegate-to-install (browser never touches the source DB).
+# ⚠ DO NOT REMOVE — MIGRATION ENGINE lane: move a company from another ERP into the browser ERP (Odoo 17 tested; SAP Business One and Business Central alpha; iDempiere by raw copy)
+# SCOPE: the agent the user runs on his own system (reads only) · ONE engine with the mapping as a JSON template · the shared form loader (summary before Process, all or
+#   nothing, "already there") · open balances at the cut-over (journal, open invoices, bank) checked against the source · the user guide (`docs/MigrationGuide.md`, master).
+#   Code lives in `~/bim-ootb/erp` (`migrate/`, `plugins/*migrate*`, `plugins/open_balances.mjs`, `odoo_agent/`, `processes/Import*.js`); this file is its spec + state.
+# READ THE LOG AFTER EVERY RUN — the exit code is not evidence; a verdict that judged nothing is INCONCLUSIVE, never PASS. Spec block here BEFORE code. Non-invent.
+# TRIAGED 2026-11-10: 1,822 lines → this file. Nothing was deleted: the full history (2026-06-05 → 2026-11-10) is verbatim in
+#   `prompts/archive/MIGRATE_INSTALL_TENANT_full_2026-06-05_to_2026-11-10.md`; §ARCHIVE-INDEX at the end maps every removed section to its line there.
 
-## ▶ THE GAP (observed by user, verified 2026-06-05)
-The optics imply "migrate → tenant"; the wiring stops at "migrate → verified fold / master-data preview".
-- **Odoo flow** (`erp_picker.js` Odoo sub-flow): download `odoo_agent.js` → it pulls SO S00023 LIVE, folds
-  the O2C chain, emits `odoo_chain.json`; browser RE-FOLDS → `§ODOO-MIGRATE-BROWSER mapped=5/5 newVerbs=[]
-  glDr==glCr chainOk`. **Verifies a transaction fold. Does NOT install a Client-12 tenant.**
-- **iDempiere flow** (`migrate_showme.js` MigrateShowMe): points a local agent at the user's iDempiere
-  Docker Postgres (`db=idempiere user=adempiere`, PG :5432) — **master/metadata BROWSE only. No Client 13.**
-- **Client 12 "Odoo" exists only as a PRE-BAKED shard** (`gen_ad_odoo.js` → `12-odoo.db`) loaded via the URL
-  `?shard=12-odoo.db` — NOT produced by clicking the dialog. **Client 13 does not exist anywhere.**
-- Default login shows only **Client 11 (GardenWorld)** (base `ad_seed.db`).
+### ▶ RESUME HERE (2026-11-10v) — NEW SESSION: REVIEW + HARDEN the migration feature and its user guide (owner: *"review and harden the migration feature and user guide to be highly resourceful and viable important feature of our project. Resume new session"*)
+**Read in this order, nothing else first:** this block · `§LEDGER` (what shipped, with its witness) · `§FACTS` (legacy facts and rulings this lane paid for — do not
+re-derive them) · `§B3-SCOUT` (the cut-over method) · `§ENGINE-SPEC` (the design; its stale parts are marked). Depth on any shipped piece = the archive, by `§ARCHIVE-INDEX`.
+Guide: `docs/MigrationGuide.md` on **master** (not on this branch).
+Memory to read before touching the guide: `feedback_user_guide_quality_bar.md`, `feedback_propose_before_editing_docs.md` (structure / tone = propose first; a factual
+correction = just fix), `feedback_docs_deploy_landmine.md` (publish ONLY with `scripts/safe_gh_deploy.sh`, from a worktree off master, `docs/glassbowl_data.db` copied in).
 
-## ▶ THE TARGET
-Going through Migrate(Odoo) and Migrate(iDempiere) leaves the user with **Client 11 GardenWorld + 12 Odoo +
-13 iDempiere** as real, loadable tenants in the login/client switcher — each its own AD frame + data, all
-NON-INVENT (every row a recorded source row), delegate-to-install (the browser never connects to the source).
+**0. Nothing is in flight.** Every PR of 2026-11-10 is merged; the live page was fetched at sw `v1047` with `plugins/open_balances.mjs` carrying `§MIG-BANK`; the guide's bank
+sentence was corrected (BIMCompiler #537, deployed through the guard — re-fetch the page once to confirm it is served: it must say "opening bank statements"). All
+`/tmp/wt-*` worktrees of this lane are pruned. Start by re-running the baselines of §1 (the exit code is not evidence; read the § lines).
 
-## ▶ NAMED DEPENDENCY — POSTING CONFIG (discovered 2026-06-10, → `prompts/MIGRATE_POSTING_CONFIG.md`)
-A migrated tenant must carry RESOLVABLE POSTING CONFIG or every GL view (the Posting-Preview drawer,
-Accts-Posted panel) renders `coverage:absent`. **Proven gap:** `12-odoo.db` (Client 12) has docs (`c_order=27`,
-`c_invoice=1`) but NO posting config — `c_bp_customer_acct`/`m_product_category_acct`/`c_validcombination`/
-`c_elementvalue` ALL ABSENT. iDempiere (13) = extract must pull them (easy); Odoo (12) = the Odoo-fold must MAP its
-CoA + partner/product account properties (real work). Owns its own resume card; feeds `prompts/POSTING_PREVIEW_PANEL.md`.
-**↑ NOW SUBSUMED by the full-frame card →** `prompts/MIGRATE_FULL_MODEL_FRAME.md` (2026-06-10): posting config is
-1 of 4 frame items. The accounting view is AD-gated as of #235 (v628) — surfaces only where the AD `Posted` Button
-field (ref 28) exists — so a migrated tenant must ALSO carry the AD posting-document frame (the `Posted` field) +
-doc-types, not just the config. ACCEPTANCE BAR for THIS install: a migrated Client 12/13 fits frame items 1–4 and
-the DEPLOYED AD-gated view renders `coverage:complete` + balanced (`§FRAME-FIT`).
+**1. Where the feature stands (all LIVE, bim-ootb sw v1047):**
+| piece | state | proof (re-run before trusting) |
+|---|---|---|
+| ONE engine, mapping as data — SAP B1, Business Central, Odoo 17 | live; SAP + BC alpha (never run on a real company) | `witness_migrate_engine.js` `§MIGE verdict=PASS judged=89` |
+| Odoo agent reads only → `odoo_export.json`, one file to pick | live | live re-run byte-identical to the fixture; bim-compiler `scripts/poc_odoo_owndb.js` `🟢 W-ODOO-OWNDB PASS` |
+| Open balances at the cut-over (Odoo): opening journal + open invoices, books checked against the source | live | `witness_open_balances.js` `§OB-VERDICT PASS judged=43` |
+| "Already there" rows skipped; a source unit kept with a code | live | `witness_already_there.js` `§AT-VERDICT PASS judged=9` |
+| A started plugin reaches every tenant's roles | live | `witness_plugin_role_access.js` `§PRA-VERDICT PASS judged=8` |
+| iDempiere identity falsifier (engine + loader vs the source rows) | merged, test-side | `witness_idempiere_falsifier.js` `§IDF-VERDICT PASS` (145 columns, 477 rows; ~2.5 min) |
+| Bank statement Complete + ImportBankStatement 221 | merged | `§BST-RESULT PASS judged=41` · `§IBS-RESULT PASS judged=51` |
+| Bank balance at the cut-over: bank + bank-account masters, one opening statement per journal, Bank Clearing → 0 | live (#2829) | `§OB-VERDICT PASS judged=43` · `§MIGE verdict=PASS judged=89` |
+Other baselines: OF 18 · OM 14 · NM 31 · BCM 18 · SAPM 24 · IINV 56 · IGLJ 45 · IPAY 54 · GOC 4 · OFL 13 (browser wiring).
 
-## ▶ RESUME (2026-06-10) — "migrate must pull Odoo data IN FULL; list the gap to tackle later" (user directive)
-**Directive:** we welcome Odoo users → Install/Migrate must get their data **in full**; wherever it can't, that IS the
-GAP — enumerate it and list to tackle later. Today migrate pulls only **one** SO chain (S00023 O2C); P2 persists
-Client 12 with `products=35 orders=27` (`poc_odoo_records_show.js`) — far short of "in full."
+**2. THE REVIEW (do this before any new build; write the findings HERE as a dated `§REVIEW-<date>` block: each finding = what was measured, the evidence line, the fix or the
+question). The owner wants the feature "resourceful and viable" — judge it as a stranger who must move a real company, not as its author.**
+- **R1 — the whole journey on the LIVE page, by a witness, not by eyes (PRIMAL LAW):** System starts the plugins → Initial Tenant Setup → log in as the new company's admin →
+  the menu leaf is there → pick `odoo_export.json` → units → summary → Process → stage 2 → the books. Today `witness_odoo_form_live.js` proves WIRING on the older two-file
+  path only. Missing: a live-page witness of the one-file path with open balances that reads the tenant's rows back (counts, `§MIG-VERIFY`), and of the period-gate refusal.
+  X of N: N = the steps of the guide's "same three steps"; each step either has a witness line or is named as unwitnessed.
+- **R2 — a second run and a failed run:** what does a user do after stage 2 refuses (the masters are loaded, the documents are not)? Is "run Import GL Journal / Import
+  Invoice again" reachable for that tenant's role, and does it finish the job, or is the tenant stuck half-migrated? A second Process on the same file; a second file for the
+  same tenant (a later cut-over, or the other Odoo company); the already-there pass on a re-run. Witness each; state the rule in the guide.
+- **R3 — size and time (memory `feedback_erp_perf_claims.md`: measured, never guessed):** the loader's per-row cost and the DOUBLE load when already-there rows exist
+  (§FACTS "Costs measured": 15 s → 2 m 20 s on 379 accounts). Measure rows/second and heap at 1k / 10k / 50k source rows (generated from the recorded rows, as ODOO-DIFF does), in node and
+  in the browser; say where it stops being usable; fix the cheap things (find the held keys by one query per unique index before loading; one dry run reused by Process).
+- **R4 — sources we have never seen:** SAP B1 and Business Central are ALPHA — no run on a real company (`CONN` INCONCLUSIVE by construction). Odoo 16 / 18 field names.
+  Odoo with several companies, a foreign-currency company, lots / serials, multi-step payment terms. The messy scratch database was dropped (ODOO-REF-MESSY INCONCLUSIVE):
+  rebuild it on the local Odoo and re-record, so the messy cases are judged on rows Odoo really returned and not only on generated variants. Each = a row in a
+  "tested on / not tested on" table that the guide shows honestly.
+- **R5 — the books, end to end:** the cut-over method still lacks unallocated payments (343), stock VALUE (Odoo `standard_price` is in the raw rows; ImportInventory
+  :546-564), foreign-currency open items, and open balances for SAP / BC. After a migration can the tenant actually TRADE — complete a sales order, invoice it, receive the
+  payment against a migrated open invoice, and do the books still balance? One witness that does exactly that on a migrated tenant (the migrated open invoice gets allocated,
+  the partner's open amount goes to zero) proves the migration is usable, not only loadable.
+- **R6 — the contract's reach (from the falsifier, §FACTS "Rulings"):** partner group and tax category beyond "default" (a non-default tax category REFUSES the product), unused
+  units dropped, opening-stock headers without lines, document numbers. Decide per item: carry it (new sheet / column), or say plainly in the guide that it is not carried.
+- **R7 — refusal texts and the summary:** every refusal a user can meet (collect them: `grep -n "problems.push\|throw new Error" erp/plugins/odoo_migrate_form.mjs
+  erp/plugins/open_balances.mjs erp/plugins/*migrate*.mjs erp/odoo_agent/export.js`) says what happened AND what to do, in plain words, and each has a witness line that
+  triggers it. X of N over that list. The refusal parser already lost two-line refusals once (§FACTS "Defect classes met") — look for the same class elsewhere.
+- **R8 — privacy and safety claims the guide makes:** the password is never a flag, never stored; the browser never reaches the source system; nothing is written to the source;
+  the alpha report masks every value. Each claim → the witness that proves it, or it is removed from the guide.
+- **R9 — witness hygiene:** one command that runs the migration lane's witnesses and prints one line each (the list in §1 + the import ports + `poc_agent_zip_sync.js`), with
+  logs under `/tmp/count_logs/`; the slow ones (falsifier 2.5 min) flagged. Any witness that passes without judging (INCONCLUSIVE counted as PASS) is a defect.
 
-**Live source (how to bring it up):** Odoo 17 `odoodemo` @ `localhost:8069` (admin/admin, JSON-RPC `/jsonrpc`). It is a
-**stopped docker pair** — `docker start odoo-db odoo` (db first), then poll `curl -s -o/dev/null -w '%{http_code}'
-localhost:8069/web/login` until `200` (~10s). Survey via `execute_kw` — copy the rpc helper from
-`~/bim-ootb/erp/odoo_agent/agent.js` (READ-ONLY; ~/bim-ootb is hook-blocked).
+**3. THE GUIDE (`docs/MigrationGuide.md`, master) — PROPOSE the structure to the owner first, then write:** it is correct today for the one-file Odoo flow, open balances,
+already-there rows, new unit code, role access. What a "resourceful" guide still lacks, to propose:
+- a **"what moves / what does not" table per source** (masters · opening stock quantities · stock value · trial balance · open invoices · bank · unallocated payments · open
+  orders · history), each cell = moved / not yet / not planned, with the tested-on column of R4;
+- a **cut-over checklist** — before (close the period in the old system, pick the date, who has the logins), during (the three steps), after (open the period, enter the opening
+  bank statement or see it done, check the clearing accounts, first documents) — and **"how do I know it worked"**: the checks the form already runs, in the user's words;
+- **troubleshooting**: one row per refusal text of R7 → what it means → what to do;
+- **screenshots and films are stale**: they show two files being picked and no open balances — retake by the documented capture path, never by hand-editing; say which are stale
+  until then;
+- a short **"for the iDempiere user"** box: what Initial Client Setup already put in the company (why rows are "already there"), periods, clearing accounts, Opening Charges —
+  and a **glossary** for the reader who has never seen iDempiere;
+- the DIY template story (the owner's original ask, §ENGINE-SPEC: *"JSON template that users can adjust"*): how to copy a template, change a variable or a field, and what the
+  engine refuses — E5 (the DIY screen) is not built; the guide must not promise it.
 
-**In progress (2026-06-10):** a FULL live survey → **`build/erp/odoo_survey.{js,log,json}`** = the authoritative Odoo
-data inventory (real `search_count` per model) + the migrate-coverage GAP (split **extraction-gap** = pullable-but-not-
-pulled vs **fold-gap** = engine-can't-fold-yet) + a prioritized tackle-later list. The gap list is being consolidated
-into `docs/MigrateComparisonPaper.md ## GAP ANALYSIS` (3-col capability map **iDempiere | Odoo | OOTB**) + cross-ref
-`docs/ERP_COVERAGE_MATRIX.md`.
+**4. Named and still open (carry forward; none is an accepted divergence):** the bank patches (routing number = a dash, account number = the journal code: the user corrects them; two journals on one
+account and a bank journal on a non-cash account are unwitnessed) · `C_Bank.IsOwnBank` dictionary default not applied by the twin (written in the sheet — check the default
+engine) · unallocated payments · stock value · foreign-currency open items · SAP / BC open balances · BP
+group / tax category sheets · a tenant born while bundles run gets plugin access at the next start · the already-there double load (R3) · `commitEx` seam for imports ·
+`model_journal` in `ws_kernel.js`'s core list · the §IINV log-tag collision (invoice vs inventory witnesses) · seed `c_activity` · E4 sql connector · E5 DIY screen · option (c)
+"update the existing row" was NOT built (the owner chose skip).
 
-**NEXT (resume HERE):**
-1. Read `build/erp/odoo_survey.json` (the gap inventory) — start from the top of the prioritized list.
-2. Extend the Odoo extractor (`odoo_agent`) from one-SO-chain → **FULL pull**: master data (partners / products / COA /
-   taxes / journals) + **all** documents (every SO/PO/invoice/payment/picking/journal entry) + accounting
-   (`account.move`/`account.move.line`). Delegate-to-install stays — the browser never touches Odoo; the agent emits the file.
-3. Every added extraction = a §-witness: **records pulled == live `search_count`** (non-invent proof).
-4. **Fold-gaps** (capability our engine can't yet fold even if pulled) route to the ERP coverage matrix / FOLD lane —
-   NOT the extractor.
-**GUARDRAIL:** NON-INVENT — every migrated row traces to a real Odoo record; never synthesize rows to "fill" the tenant.
+**5. How to work (what kept this lane clean):** spec block here before code · each change in its own `/tmp/wt-*` worktree off fresh `origin/main` (`git worktree list` first,
+never `git stash`) · agents = Sonnet, briefed with the oracle rule ("expected values from the raw rows or a cited legacy rule, never from the code under test"), DRAFT PR when
+the result needs adjudication · the lead reads every agent's § lines before marking ✅ · `sw.js` conflicts: keep both notes, max + 1 · after a merge FETCH THE LIVE PAGE
+(`sw.js` version, the changed file) — Pages lags by minutes and has shown transient "Page build failed" · bim-compiler pushes go to this branch
+(`fable/meshdb-livewire`); the guide goes to master through a PR + the guarded deploy.
 
-## ✅ P0 — DONE (2026-06-05, bim-ootb PR #154, auto-merge). Witnesses: fresh-dir `§ODOO-AGENT PASS`
-##   (unzip→npm install→node agent.js vs live odoodemo→odoo_chain.json) + browser `§ERP-PICKER PASS` /
-##   `§MIGRATE-INSTR clear=Y selfsufficient=Y design=staged` / `§PICKER-STAGED lock=Y steps=3 dl=odoo_agent.zip
-##   drop=Y` / `§ODOO-MIGRATE-BROWSER mapped=5/5 chainOk=Y` (0 pageErrors). Box screenshot = staged panel.
-##   Shipped: `erp/odoo_agent.zip` (self-sufficient bundle) + `erp/tools/build_odoo_agent_zip.sh` + redesigned
-##   `_renderOdoo` (🔒 banner + 3 staged steps + copy-cmd + validating drop-zone); removed broken lone odoo_agent.js.
-##   ⛔ NOTE iDempiere sub-flow (migrate_showme.js) was ALREADY staged (4 steps, copy-cmd, file stream) — P0's
-##   self-sufficiency fix targets only the Odoo agent. migrate_agent.js still ships lone (npm install
-##   better-sqlite3) — apply the same bundle pattern if/when iDempiere P1 is unblocked.
-## ▶ P0 — QUICK WIN (do FIRST; small, ships alone): the dialog INSTRUCTIONS must be unmistakable
-User feedback (2026-06-05): *"browser cannot touch the docker, so it has to be run by the user natively —
-instructions should have been clear."* Today the Migrate copy half-says it and the download is unrunnable.
-Fix the COPY + the artifact so a fresh user succeeds without the repo:
-- **State the doctrine up front, in the dialog:** "🔒 The browser cannot reach your Docker/Postgres/Odoo.
-  YOU run the agent **natively** on that machine; it writes a file you then load back here." (Both Odoo and
-  iDempiere sub-flows.)
-- **Ship a SELF-SUFFICIENT artifact**, not a lone `odoo_agent.js` that `require`s 3 missing siblings
-  (`sql.js`, `./erp_kernel`, `./odoo_adapter`) → today `node odoo_agent.js` from ~/Downloads ERRORS. Options:
-  a folder/zip (`agent.js` + `package.json` + vendored adapter) with `npm i && node agent.js`, OR an inlined
-  single-file agent. Exact, copy-pasteable: prereqs, `npm i`, the run command, the produced file path.
-- **For iDempiere:** the agent is **Node + `pg`** against the user's iDempiere Postgres (`:5432 db=idempiere`)
-  — state creds are entered/kept locally; the browser never connects.
-- **Redesign the box itself** (user: *"that box should be more well designed too"*). Today it's plain
-  stacked text + a green button + a bare `Browse…`. Make it a proper guided panel: a clear title + the 🔒
-  doctrine banner; **numbered steps as visual stages** (1 download · 2 run natively · 3 load back) with state
-  (pending/done check per step); the run command in a copy-button code block; a real drop-zone/file-picker for
-  the produced file with validation feedback (✓ parsed N events / ✗ wrong file); consistent with the pill/
-  overlay design language (it's reached from the ⬇ Install / 🔌 Migrate pills). Keep it honest — show what
-  loaded (client, tables, rows) after a successful load.
-- Witness `§MIGRATE-INSTR clear=Y selfsufficient=Y design=staged` (fresh-dir run succeeds; box shows staged steps).
+### §LEDGER — what shipped, with its witness (2026-11-08 → 2026-11-10; one line each; the full spec + result of every row is in the archive, see §ARCHIVE-INDEX)
+| when | piece | bim-ootb PR | witness line (re-run before trusting) |
+|---|---|---|---|
+| 11-08/09 | Odoo agent the user runs on his own Odoo; own-DB flags; hardening on messy data | #2715 #2723 #2732 #2755 | bim-compiler `scripts/poc_odoo_owndb.js` `🟢 W-ODOO-OWNDB PASS` |
+| 11-09 | Ninja multi-sheet loader (the owner's MigrateExcelData) as a plugin | #2734 | `witness_ninja_migrate.js` `§NM-VERDICT PASS judged=31` |
+| 11-09 | "Migrate from Odoo" form on the ONE generic form engine: summary before Process, locks, units | #2743 | `witness_odoo_form.js` `§OF-VERDICT PASS judged=18` · browser `witness_odoo_form_live.js` `§OFL 13` |
+| 11-09 | Business Central (alpha, from Microsoft's published model) · SAP Business One (alpha, agent on the user's Service Layer) | #2765 · #2774 | `§BCM-VERDICT PASS judged=18` · `§SAPM-VERDICT PASS judged=24` (10 rules INCONCLUSIVE; CONN INCONCLUSIVE by construction) |
+| 11-10 | ONE engine, mapping as data: SAP + BC templates equal to their hand converters; opening stock Completed (E1); ImportInvoice 207, ImportGLJournal 220 + GL Journal DocAction | #2784 #2787 #2788 #2789 #2790 | `§MIGE` (see below) · `§IINV-RESULT 56` · `§IGLJ-RESULT 45` |
+| 11-10 | Genesis twin gaps: a born tenant's period controls; its accounting-schema elements | #2791 · #2792 | `witness_period_control.js` `§PC-VERDICT PASS` · `witness_schema_elements.js` `§SE-VERDICT PASS` |
+| 11-10 | E3c open balances at the cut-over (Odoo): opening journal + open invoices / credit notes, books checked against the source | #2793 | `witness_open_balances.js` (now 43, see bank) |
+| 11-10 | A started plugin's forms reach every tenant's non-manual roles (legacy pack-in rule) | #2795 | `witness_plugin_role_access.js` `§PRA-VERDICT PASS judged=8` (X=48 of N=48) |
+| 11-10 | Odoo onto the engine: raw door + frozen oracle (O1) · 17 master entities (O2) · form loads `odoo_export.json` alone (O3a) · bridge set removed (O3b) · agent reads only, 441 → 178 lines (O3c) | #2794 · #2802 · #2806 · #2808 · #2809 | `witness_migrate_engine.js` ODOO-REF / -GUIDE / -DIFF (300 cases, 69/69 branches) / -MUTANT |
+| 11-10 | groupOps trailing UPDATE on a table without a single key column; W-ODOO-MESSY runs stage 2 | #2798 | `witness_groupops_composite.js` `§GOC-VERDICT PASS judged=4` · `§OM-VERDICT PASS judged=14` |
+| 11-10 | iDempiere identity falsifier (engine + loader vs the SOURCE rows; GardenWorld + pilot) and its re-pin | #2811 · #2823 | `witness_idempiere_falsifier.js` `§IDF-VERDICT PASS` — 145 columns, 477 rows, 3 falsifiers; ~2.5 min |
+| 11-10 | "Already there" rows skipped instead of refusing the run; a source unit kept with a code | #2822 | `witness_already_there.js` `§AT-VERDICT PASS judged=9` |
+| 11-10 | Bank statement DocAction (MBankStatement) · ImportBankStatement 221 | #2825 · #2826 | `§BST-RESULT PASS judged=41` (25/25 mutants) · `§IBS-RESULT PASS judged=51` (36/36) |
+| 11-10 | E3d bank balance at the cut-over: bank + bank-account masters, one opening statement per journal, Bank Clearing → 0.00 | #2829 | **`§OB-VERDICT PASS judged=43`** · **`§MIGE verdict=PASS judged=89`** |
+| 11-10 | Guide (`docs/MigrationGuide.md`, master, guarded deploy): one file to pick; open balances; already there + new unit code; role access at plugin start; bank | BIMCompiler #512 #529 #537 | the live page fetched back after each deploy |
+Films (EN / ZH / TH / MS for Odoo, EN + ZH for BC and SAP) were cut on 11-09/10 and are now STALE: they show two files being picked and no open balances.
 
-## ▶ P0-IMPL (spec, 2026-06-05) — what shipped
-**Self-sufficient artifact = a ZIP bundle.** Replace the lone broken `odoo_agent.js` download (fails fresh-dir:
-`Cannot find module 'sql.js'` then `./erp_kernel`/`./odoo_adapter`) with `bim-ootb/erp/odoo_agent.zip`, built from
-source folder `bim-ootb/erp/odoo_agent/` (committed, readable): `agent.js` (OUT→`./odoo_chain.json` in cwd, not the
-repo build dir) + vendored `erp_kernel.js` + `odoo_adapter.js` (both already self-contained — no sibling requires,
-only `sql.js` external) + `package.json` (`sql.js ^1.14.1`, `start: node agent.js`) + `README.md` (🔒 doctrine + steps).
-Run = `npm install && node agent.js`. Rebuild via `bim-ootb/erp/tools/build_odoo_agent_zip.sh`.
-**Box redesign (`_renderOdoo`):** 🔒 doctrine banner up front + 3 numbered staged steps with per-step done-state
-(① download bundle · ② run natively, copy-button command · ③ drop `odoo_chain.json`, parse feedback ✓N events/✗wrong file),
-in the pill/overlay language. Then the existing ERPKernel re-fold table.
-**Witness:** `§MIGRATE-INSTR clear=Y selfsufficient=Y design=staged` (dialog open) + fresh-dir `§ODOO-AGENT PASS`
-(zip → npm i → node agent.js → odoo_chain.json vs live odoodemo) + browser `§ODOO-MIGRATE-BROWSER` round-trip.
+### §FACTS — legacy facts and rulings this lane paid for (each was measured; do not re-derive, do not contradict without re-measuring)
+**Legacy iDempiere, as the twin now does it:**
+- A new client's `C_PeriodControl` rows come from the LAST step of Initial Client Setup (MSetup.java:853-858 → DocumentTypeVerify.java:130-197), not from MPeriod.afterSave (the
+  periods are saved before the doc types exist). Its `C_AcctSchema_Element` rows: MSetup.java:556-660 (OO, AC, PR, BP on the pilot). Both were missing in the twin and are fixed.
+- The period gate: Automatic Period Control = today ± history/future days; otherwise the period control of that DocBaseType must be `O`. Legacy dates a GL journal BATCH today
+  (MJournalBatch.beforeSave :948-961) and Complete tests that period too — a migration later than the cut-over needs TODAY's period open as well as the cut-over's, and a
+  calendar year that contains today. ImportGLJournal's "WARN=Period Closed" reads the control rows directly and is only a warning.
+- ImportGLJournal has no DocAction (Drafted; the batch is Completed after). ImportInvoice's DocAction has no "do nothing" value (run it with CO). ImportBankStatement resolves NO
+  names (the row carries `C_Charge_ID` and the account), finds the account by AccountNo AND the own bank's RoutingNo / SwiftCode, creates Drafted statements, numbers lines 10, 20.
+- A payment term's unique key is its NAME (`c_paymentterm_name`), not its Value. A unique-index refusal is correct; it is the loader's all-or-nothing that made it fatal.
+- Role access for a packed-in form: PackInHandler.updateRoleAccess (:522-536) → MRole.updateAccessRecords for every active role with IsManual='N'; the record's own afterSave
+  gives the login role. Only the System Administrator (AD_Role_ID 0) starts plugins (`plugin_registry.js` mayWrite).
+- The open-balance arithmetic: the journal puts the receivable / payable / bank balance on a CLEARING account; each open document (or opening statement) takes it off through a
+  charge whose account IS that clearing account → zero when everything came across. Receivables / payables land on the tenant's OWN control accounts (12110 / 21100 from the
+  partner group), the bank on its bank asset account (11100) — the trial-balance claim is per class there, per account everywhere else.
+**Rulings (owner or lead, dated):**
+- 11-10 owner: Odoo = the agent ships RAW rows, the browser maps (`odoo-17.json`). iDempiere = the raw `psql COPY` path stays production; the identity template is its falsifier.
+- 11-10 owner: a source row whose key the tenant already holds is SKIPPED as "already there" (not updated, not fatal). A key repeated inside the file is still refused.
+- 11-10 lead, from the falsifier (classes computed by rule, totals PINNED in the witness): `already-there` (GardenWorld 315, pilot 6) · `contract-default-only` — the 17-sheet
+  contract can only say "the tenant's default" partner group / tax category (14 of 17 partners land on the default group; a non-default tax category REFUSES the product:
+  pilot 4 + 13 cascade) · `unit-not-carried` (2 units no product uses) · `header-without-lines` (2) · `import-inventory-renumbers` (the document gets its own number).
+  **No engine or loader mapping defect was found.**
+- A plugin that SHIPS access rows beyond the login role keeps its explicit list (the POS integration: the clerk's role only).
+- A witness oracle takes its expected values from the RAW rows or a cited legacy rule, never from the code under test; a hand converter kept as an oracle is never edited to pass.
+**Costs measured:** a book with already-there rows is loaded TWICE (savepoint, roll back, load again), in the summary and in the run: the falsifier went 15 s → 2 m 20 s on 379
+accounts, ~70 % inside SQLite. GitHub Pages lags a merge by minutes and has shown transient "Page build failed" — always fetch the live file.
+**Defect classes met (look for siblings in the review):** a refusal with two lines of text was lost by the form's parser (summary showed 0 refused) · a witness that never ran
+stage 2 kept "passing" its other checks · a mutant that survived because a refusal changed its REASON but not its count · a hand role list per plugin.
 
-## ✅ P2 (Odoo) — DONE (2026-06-06, bim-ootb PR #156, merged, sw v585). INSTALL now PERSISTS the merged tenant:
-##   `idempiere.html` writes the shard-in result back to IDB (`idbPut('ad_seed_v13', db.export().buffer)`) when rows
-##   merged + seed is the real ad_seed.db → Odoo **Client 12 survives a plain reload with NO `?shard=` param**.
-##   Witnesses: `tests/poc_client12_resident.js` BEFORE resident=N → AFTER `§C12-RESIDENT persistedToIDB=Y
-##   survivesReload=Y resident=Y` (0 pageErrors); `tests/poc_odoo_records_show.js §ODOO-RECORDS products=35 orders=27
-##   showable=Y` (real records render in AD UI). STILL OPEN: P2 driven from the dialog success-path (today persist
-##   fires on shard-in load); P3 login client-switcher (list 11/12, pick→role-scoped login); P1-iDempiere emitter
-##   (exists as `migrate_pg_to_sqlite.js`, GW-pull default). SAP target = **B1** (see FRONTEND_LANE_MASTER session state).
+> **Stale parts of the two reference sections below (kept verbatim; read them with this note):** §ENGINE-SPEC's status line ("awaiting the owner's read") — it was adopted and
+> built; its §2 `openItems` sketch — dropped: open balances are ordinary `entities` (`OPEN_HEADERS` in `workbook.mjs`); §0's "Not ported: 207, 220 … 221" — all three are
+> ported; §3's table — the bank row is built (`I_BankStatement`), payments are not; §5 E1–E3 and §7 lanes A–D — done; §6's owner decision — decided (raw copy stays, identity =
+> falsifier). Still ahead from it: E4 the sql connector, E5 the DIY screen, stock value, the STOCK check of §4.
 
-## ▶ THREE PIECES (phased; each ends with a §-witness)
-1. **A tenant-shard EMITTER per source** (parallel to `gen_ad_odoo.js`/`odoo_agent.js`):
-   - Odoo: already have it — `gen_ad_odoo.js` → `12-odoo.db` (Client 12, 7-field, 35 products + 26 orders).
-   - **iDempiere: NEW `idempiere_agent.js`** (Node + `pg`) the user runs against their iDempiere PG (:5432,
-     `db=idempiere`) → emits **`13-idempiere.db`** = their tenant re-keyed to Client 13 (System(0) frame +
-     AD client/org/role/user/access + master/trx), 7-field enforced. Witness `§GEN-AD-IDMP PASS client13.* …`.
-   - Decision (user owns): WHICH iDempiere tenant → Client 13 (GardenWorld is Client 11 already; pick the
-     user's own tenant, or re-key GW as a 2nd copy). Needs PG creds (user-supplied; delegate-to-install).
-2. **Migrate flow INSTALLS the shard** (not just verifies): on `Browse…`/agent-done, merge the shard into the
-   live db (the existing `?shard=` SHARD-IN path) AND persist it (IDB) so it survives reload + register the
-   new `AD_Client`. Witness `§MIGRATE-INSTALL client=<n> tables=… rows=… persisted=Y`.
-3. **Login CLIENT SWITCHER** lists all installed tenants (11/12/13) → pick → role-scoped login. (A switcher
-   existed in `ad_ui.js showMenu` but was removed in the pill-registry cleanup; re-add as a proper picker.)
-   Witness `§CLIENT-SWITCH clients=[11,12,13] pick=13 login=ok`.
+### §B3-SCOUT — how to bring transactions in (2026-11-10, owner: *"closing books, B/F, then do phantom purchasing / sales as Adaxa Australia first suggested … Or use again my multi table
+Excel to bring in core Doc/Line master-detail? … scout for any documentation i have left around in the 2017~"* · *"we also need its consequences in Fact_Acct and material costing …
+Steven Sackett from Adaxa Australia's idea … Close the books, start anew with balances b/f"*)
+**Found (read, cited):**
+- **The cut-over method is written down, in full:** iDempiere wiki *Establish Opening Balances* (archived 2017-06-04; same page on the ADempiere wiki, archived 2011-05-26, last edited
+  2011-01-28; the archive does not show the author, so "Adaxa / Steven Sackett" is the owner's own statement, confirmed by them 2026-11-11: *"Steven Sackett of Adaxa Australia"* - the film credits it as theirs, not as read from the archive). Its method: pick the cut-over date → **import the trial balance as a
+  GL Journal**, but route every *document-controlled* account to a CLEARING account (AR Clearing, AP Clearing, Inventory Clearing, Bank Clearing) → then clear them with
+  **"a list of fake sales"** (open AR invoices, ONE line, charge *Opening Charge AR*, only the UNPAID amount) and **"a series of fake purchases"** (open AP invoices, charge *Opening
+  Charge AP*) → unallocated receipts / prepayments as payments → payments not yet cleared by the bank as payments on the Opening Charge → an opening bank reconciliation →
+  a **physical inventory count** for stock (product costs set first, never zero), its shrinkage cancelled against Inventory Clearing by a GL Journal → **proof: every clearing
+  account ends at zero**. Unmatched material (received not invoiced / invoiced not received) is done FIRST. Invoices may carry their real dates for an accurate aging.
+- **Owner's 2017 route** (red1.org forum t=1838 "Migrating Legacy Data", 2017-03-19, Rangsit): the Ninja CSV-zip importer extended "to handle master/detail documents"
+  (screenshot `InvoiceMasterDetailCSVs.png`, not archived); 2017-03-21: it "moves directly into its named table in DB via UPDATE or INSERT … no other validation besides inherent
+  DB constraints". 2019 *The Book of Ninja* ch. 8: raw legacy sheet → Master sheet → exact core-table sheets in queue order (C_Order / C_OrderLine named as core tables); t=1861
+  (2019): Data Map plugin, SynchMaster, Make Migrate Sheet, update mode. **Neither document completes a migrated document or posts it.**
+**Consequence (why it matters):** a document written straight into its table has no Fact_Acct and no cost detail — the books and the stock value would not follow. Replaying every
+historical transaction through DocAction would create them, but the results would differ from the old system's books (other costing, rounding, tax, account map) and must then be
+reconciled line by line. The cut-over method creates exactly the consequences needed (one journal + open items + one count), each through the ERP's own documents and posting.
+**Proposed B3 (awaiting owner):** the cut-over method, carried in the SAME Ninja workbook (new sheets: GL Journal = trial balance with clearing accounts; open AR/AP invoices with
+the Opening Charges; open payments; the physical inventory already exists) — loaded through the documents' own Complete + posting, never a bare INSERT. Witness: TB after ==
+source TB at the cut-over; every clearing account == 0; AR/AP open items == the source's open list; stock value == the source's valuation. Odoo first (measurable here:
+`account.move.line` balances at the date, `amount_residual` of open invoices). History stays optional/read-only.
 
-## ▶ GUARDRAILS / NOTES
-- **Delegate-to-install:** browser can't reach Postgres (no PG driver/CORS) — iDempiere migration MUST be a
-  local agent the user runs (like `odoo_agent.js`), emitting a file the browser loads. NON-INVENT.
-- iDempiere IS the AD reference (GardenWorld = its own demo = Client 11) — "migrating iDempiere" = re-keying
-  a real iDempiere tenant to a free client id (13) so it coexists. Reuse `gen_ad_odoo.js` stamp7/clone/ins.
-- Sequence honestly: P1 (emitter) → P2 (install+persist) → P3 (switcher). Each shippable alone.
-- **Honesty:** "tenant installed + loadable" ≠ "all of iDempiere migrated" — state the table/row coverage.
+### §ENGINE-SPEC — ONE migration engine for any ERP, driven by a JSON template the user adjusts (2026-11-10, owner: *"Spec an abstract engine that can migrate basically
+any ERP system. Abstract out some JSON template that users can adjust some variable setting ie DB, field XX or adjust.."*; B3 = *"Proceed as you recommended"* folded in)
+**Status: SPEC, awaiting the owner's read before any code** (design talk one detail at a time — the template shape is his to adjust).
 
-## ▶ DEPENDENCY (user-owned, blocks P1 for iDempiere)
-iDempiere PG connection (host/port/db/user/password) + which tenant → Client 13. Until then P1-Odoo is done,
-P1-iDempiere is BLOCKED. P2/P3 can proceed on Odoo (Client 12) alone as the proof.
+**0. Measured before writing (2026-11-10):**
+- Three sources today = three hand-written converters with the SAME target: Odoo (`erp/odoo_agent/export.js`, agent, XML-RPC), Business Central (`plugins/bc_migrate_convert.mjs`,
+  RapidStart Excel, model from the published `.al`), SAP B1 (`erp/sap_agent/agent.js` + `plugins/sap_migrate_convert.mjs`, Service Layer OData). Already shared: the 17-sheet
+  Ninja workbook (`HEADERS`/`ORDER`), `finishBook` (lengths), `mask`/alpha report, the Odoo form's plan/load, `withSourceRows`. What differs per source is ONLY: how rows are
+  read, which source field feeds which target column, the value maps (CardType cCustomer→IsCustomer), and a handful of named rules.
+- **DEFECT found (shipped):** the Ninja loader saves rows through the model but never runs a DocAction — like the owner's Java (`MigrateExcelData.java`, no processIt). So the
+  "opening stock" every source loads stays a **Drafted** physical inventory: BC demo run probe = `m_inventory docstatus=DR`, `m_storageonhand=0`, `m_transaction=0`, `fact_acct=0`.
+  Guides/films say "opening stock" — the document is there, the stock and its books are not. Legacy's own route completes it: `ImportInventory.java` DocAction parameter
+  (:122, processIt :383/:461) + a Cost Adjustment document when the row carries a cost (:546-564). The twin HAS that port (`erp/processes/ImportInventory.js`, AD_Process 219,
+  W-IMPORT-INVENTORY: "DocAction CO completes; storage moves"; "NODA → header stays Drafted").
+- Legacy import processes in the seed: 194 BPartner · 196 Product · 197 Account · 206 Order · **207 Invoice** · 219 Inventory · **220 GLJournal** · 221 BankStatement · 343 Payment.
+  Ported in the twin: 194 (ad_process.js), 196, 206, 219, 343 (`erp/processes/`). **Not ported: 207 ImportInvoice (815 lines), 220 ImportGLJournal (847), 197, 221.**
+- The cut-over method (§B3-SCOUT, wiki *Establish Opening Balances*) needs exactly: a GL journal (220), open invoices on Opening Charges (207), payments (343), a physical
+  inventory + cost adjustment (219) — all legacy import processes, each with its own DocAction.
 
-## §2026-07-22 AUDIT — user asked "how is the installer now, does ERPUserGuide document it running offline"
+**1. The engine = four parts, one implementation each.**
+```
+ SOURCE ──connector──▶ rows + the source's own model ──template (JSON)──▶ TARGET sheets ──loader──▶ tenant ──verifier──▶ §MIG lines + alpha report
+```
+- **Connector** (how rows are read — the only code that knows a vendor's protocol). Kinds: `odoo-xmlrpc` · `odata` (SAP Service Layer, BC cloud API, any OData) · `excel` (BC
+  RapidStart, a user's own sheets, the owner's raw→Master→core layout) · `csv` · `sql` (postgres / mssql / hana / mysql, READ ONLY — the owner's "DB engine" door: the
+  catalog gives tables, columns, types, lengths). Every connector does the same 3 things: `describe()` = the source's own model (fields_get / `$metadata` / information_schema /
+  sheet headers / a pinned published model like `bc_model.mjs`), `count(entity)`, `rows(entity, fields, filter)` paged. Runs in the user's agent (node) or in the browser (excel/csv).
+- **Template** (JSON, the user's to adjust — §2). Says WHAT to read and HOW it maps. No code in it.
+- **Target** = the iDempiere import contract, unchanged for every source: the 17 master sheets (`HEADERS`) + the **open-items sheets** (§3).
+- **Loader + verifier** = the twin's existing pieces: the Ninja loader for masters; the PORTED legacy import processes, run with **DocAction = CO**, for documents; then the
+  checks of §4. The engine never INSERTs a document behind the model (the 2017 Ninja route's limit, §B3-SCOUT).
 
-**Correcting the stale header above:** iDempiere P1 did ship. `erp/idempiere_agent.zip` (Node + Docker-CLI `psql`
-+ better-sqlite3, mirrors `odoo_agent.zip`) exists, is precached, and has its own dialog→persist witness
-(`W-INSTALL-IDMP`, `erp/tests/poc_install_idmp.js` — reload survives 8/8 orders, guarded re-install, preview
-balanced — see [[project_new_client_mgmt]]). PK-collision root cause (un-banded GardenWorld ids silently dropped
-by `INSERT OR IGNORE`) was fixed via a 13-family `CL*100000` re-band in `gen_ad_idmp.sh`. So: **P0/P1/P2 done for
-BOTH Odoo (12) and iDempiere (13)**, P3 switcher done (`project_new_client_mgmt` "P3 LOGIN CLIENT SWITCHER").
-Treat this file's earlier "PLAN/BLOCKED" framing as historical, not current.
+**2. The template (one file per source system/version; ships with the engine, the user copies and edits it).**
+```json
+{ "template": "sap-b1-10", "version": 1, "source": "SAP Business One 10 (Service Layer)",
+  "connector": { "kind": "odata", "url": "${URL}", "login": { "CompanyDB": "${COMPANY}", "UserName": "${USER}", "Password": "${PASSWORD}" }, "pageSize": 100 },
+  "variables": { "URL": "https://myserver:50000/b1s/v1", "COMPANY": "SBODEMOUS", "USER": "manager", "CUTOVER": "2026-12-31", "PRICE_LIST": "1",
+                 "AR_CLEARING": "AR-CLEAR", "AP_CLEARING": "AP-CLEAR", "INV_CLEARING": "INV-CLEAR" },
+  "valueMaps": { "bpRole": { "cCustomer": "C", "cSupplier": "V", "cLid": "@refuse:a lead, not a customer or vendor" },
+                 "yes":    { "tYES": "Y", "tNO": "N" } },
+  "entities": {
+    "C_BPartner": { "from": "BusinessPartners", "key": "CardCode",
+      "fields": { "Value": "$CardCode", "Name": { "first": ["$CardName", "$CardCode"] }, "TaxID": "$FederalTaxID",
+                  "IsCustomer": { "eq": [{ "map": ["bpRole", "$CardType"] }, "C"] }, "IsVendor": { "eq": [{ "map": ["bpRole", "$CardType"] }, "V"] },
+                  "IsActive": { "not": { "map": ["yes", "$Frozen"] } } },
+      "rules": ["bp-default-group"] },
+    "C_Location": { "from": "BusinessPartners.BPAddresses", "key": ["^CardCode", "AddressType", "AddressName"], "fields": { "Address1": "$Street", "City": "$City" } }
+  },
+  "openItems": { "trialBalance": { "from": "sql:OACT", "account": "$AcctCode", "balance": "$CurrTotal", "documentControlled": { "AR": "${AR_CLEARING}", "AP": "${AP_CLEARING}" } },
+                 "arInvoices": { "from": "Invoices", "filter": "DocumentStatus eq 'bost_Open'", "partner": "$CardCode", "documentNo": "$DocNum",
+                                 "date": "$DocDate", "openAmount": { "sub": ["$DocTotal", "$PaidToDate"] } } }
+}
+```
+- **Variables** (`${NAME}`): connection (server, database, user — the PASSWORD is never stored: asked at run time, or an environment variable), cut-over date, clearing
+  account values, which price list … The DIY screen fills them; the file keeps the rest.
+- **Field expressions** — a closed, side-effect-free set, evaluated by ONE evaluator (no `eval`, no JS in a template; a template is data, it can be shared/reviewed/signed):
+  `"$Field"` · `"^Field"` (the parent row's field) · literal · `first[]` (first non-empty) · `map[mapName, expr]` · `eq` / `not` / `and` / `or` · `concat[]` · `sub` / `add` / `mul` ·
+  `date[expr, format]` · `lookup[entity, key]` (a row the template already produced) · `sum[entity, expr, groupBy]` (stock per item+warehouse). An unknown operator = the template
+  is refused at load, naming it. `@refuse:<reason>` as a value = that row is refused with that reason (shown on the summary, as `withSourceRows` does).
+- **Rules** = NAMED, implemented once in the engine, each citing the legacy line it copies (no rule invented in a template): `bp-default-group` (ImportBPartner.java:129-132),
+  `product-default-category` (ImportProduct.java:213-221), `product-default-uom` (:304-311), `product-default-taxcategory` (:415), `vendor-product-no` (:393-394),
+  `location-uu` (UUIDv5 of the source key), `key-cut` (`~<n>`), `po-set-cut` (PO.java:1079-1082), `locator-z` (m_location_where), `country-from-company`.
+- **Field check:** before reading, every `$Field` a template uses is checked against `describe()` — a field the source lacks is NAMED (`§MIG-FIELD missing`) and its column
+  stays empty (SAP's §SAP-FIELD, generalised). A template for the wrong version is caught here, not by a wrong load.
+- **One template per source+version**, in `erp/migrate/templates/`: `odoo-17.json`, `bc-w1.json`, `sap-b1-10.json` first (the three converters re-expressed), then any ERP whose
+  connector exists: e.g. a `sql` template for a home-grown system = the tables and columns typed by the user, nothing else.
 
-**Three DIFFERENT "install" concepts exist in this codebase — don't conflate them in future work:**
-1. **This one** — migrate a legacy Odoo/iDempiere/SAP/Oracle/Dynamics tenant into the app (delegate-agent zip
-   run natively → produces a `.db` shard → browser `fetch()`s + merges + persists it to IndexedDB).
-2. **Genesis** ("birth a new tenant from scratch", `prompts/SYSTEM_ADMIN_LANE.md`) — pure in-memory op-log fold,
-   no network fetch needed. Already offline-capable by construction. Not this lane's concern.
-3. **Self-host installer** (`common/about_diy.js`, generates `bim-ootb-install.sh`/`.bat`) — installs the WHOLE
-   APP on a fresh machine (git zip + `python -m http.server`). Unrelated to tenant install; don't merge scope.
+**3. Open items = the cut-over method (§B3-SCOUT) as target sheets, loaded by the LEGACY import processes with DocAction CO.**
+| sheet | legacy table → process | holds | DocAction |
+|---|---|---|---|
+| Opening journal | `I_GLJournal` → ImportGLJournal (220, **to port**) | the trial balance at the cut-over; document-controlled accounts (AR, AP, inventory, bank in transit) go to the CLEARING accounts | CO |
+| Open AR invoices | `I_Invoice` → ImportInvoice (207, **to port**) | one line per invoice, charge *Opening Charge AR*, only the UNPAID amount, its own number/date (aging stays true), no tax | CO |
+| Open AP invoices | `I_Invoice` → ImportInvoice | the same with *Opening Charge AP*; supplier credit notes = negative open items | CO |
+| Open payments | `I_Payment` → ImportPayment (343, ported) | unallocated receipts / prepayments; not-yet-cleared payments on the Opening Charge | CO |
+| Opening stock | `I_Inventory` → ImportInventory (219, ported) | product + locator + QtyCount + CurrentCostPrice (the cost adjustment first, never zero) | CO |
+The engine creates (if absent) the four clearing accounts and the two Opening Charges from the template's variables, the way an implementer would by hand (prerequisites of
+the wiki method), and lists them in the summary. Unmatched material (received-not-invoiced) is NAMED as not yet handled, not silently skipped.
 
-**ERPUserGuide.md (docs/ERPUserGuide.md) coverage of this flow, as it reads today:**
-- §"Initial Tenant Setup" (lines 99-122) documents Genesis (concept 2 above), marked (LIVE).
-- §2 "Bring your data in — the DIY box" (lines 140-224) documents THIS flow (concept 1): describes the
-  delegate-to-install doctrine ("the browser never connects to your database") and the 5-tenant table
-  (12 Odoo real / 13 iDempiere real / 14-16 SAP/Oracle/Dynamics marked PoC, agents "on the roadmap").
-- **Gap found: nowhere does the guide state whether this flow works offline-after-download.** The guide's
-  "runs fully offline"/"offline-first" claims (lines 5-6, 51, 227-253) are scoped to the general engine and to
-  the initial app-boot seed load (§11) — not to fetching a tenant shard `.db` or downloading an agent zip. It
-  neither claims nor disclaims offline behavior for this specific flow — a silent gap, not a wrong claim.
-- **Code-confirmed reality (the gap the guide should state honestly):** `sw.js` (bim-ootb/erp/) deliberately
-  excludes ALL `.db` files from the service worker (`if (url.endsWith('.db')) return;`, ~line 182) — so
-  `12-odoo.db`/`13-idempiere.db`/etc. always hit the network, no offline fallback. The agent `.zip`s are not in
-  `PRECACHE_ASSETS` either — first download needs network (subsequent ones may hit the browser HTTP cache, but
-  the app does nothing to guarantee it). By contrast the app shell + Genesis + the base demo tenant (GardenWorld)
-  ARE fully offline-capable once cached. **So: the "install a migrated tenant" flow is NOT offline-capable
-  today, unlike the rest of the app — and nothing in code or docs currently says so either way.**
+**4. The verifier (built in; the same for every source; prints `§MIG-*` lines; PRIMAL LAW #4: INCONCLUSIVE when nothing was judged).**
+- `COUNT` source `count()` == rows read == rows in the sheets + refused (non-invent, today's manifest).
+- `TB` the tenant's trial balance at the cut-over (Fact_Acct) == the source trial balance, account by account (through the template's account map).
+- `CLEAR` every clearing account's balance == 0 after all open items are completed. A non-zero clearing account names the difference — the method's own proof.
+- `OPEN` the tenant's open AR / AP (C_Invoice not paid) == the source's open list, per partner and in total.
+- `STOCK` on-hand per product+warehouse == the source quantities; stock value == the source valuation.
+- `ALPHA` the report a tester sends back: counts, field names, refusals — every value masked (today's).
 
-**NEXT TASK for a future session (spec, not yet built):**
-1. Confirm intent with user: should shard-`.db` fetch + agent-`.zip` first-download be made offline-capable
-   (add both to `sw.js` PRECACHE_ASSETS — cheap, since the 5 shard files + 2 zips are static and small), or is
-   "needs network once to install a new tenant, offline after" an acceptable/intended line to hold? Either
-   answer is fine — the bug is that neither is currently written down anywhere.
-2. Once decided, update `docs/ERPUserGuide.md` §2 with an explicit, honest line (e.g. "downloading a tenant
-   shard or agent needs a network connection once; after that, the installed tenant works fully offline like
-   the rest of the app" — verify that second half against `installShard()`'s IndexedDB persistence before
-   asserting it).
-3. `docs/LegacyMigrationJourney.md`, named in the OLD `archive/NEW_CLIENT_MGMT.md` STOP CONDITION as "the
-   one-page direction," **does not exist** (confirmed by search, 2026-07-22) — either write it or strike the
-   requirement; don't let a future session assume it exists because an old backlog card names it.
-4. Not urgent, but worth a look while in this area: `TRILOGY_STALE_CODE_AUDIT.md` flags `erp/idempiere_agent.zip`
-   as a tracked BINARY duplicating the tracked SOURCE dir `erp/idempiere_agent/` (same pattern as `odoo_agent.zip`)
-   — a DB/binary-distribution-policy flag already on record there, not new, just adjacent to this area.
+**5. Order of work (each step ends with a witness; nothing ships witness-less).**
+- **E1 fix the shipped defect first:** opening stock through `I_Inventory` + ImportInventory DocAction CO (all three sources); witness: storage on hand == the sheet, Fact_Acct
+  rows present, the films'/guides' "opening stock" claim becomes true (re-check the BC demo: m_storageonhand > 0).
+- **E2 engine core:** template schema + validator (refuses unknown operators/fields), evaluator, rules registry, the excel/csv connector; **acceptance = the SAP B1 template
+  re-produces `sap_migrate_convert.mjs`'s workbook cell for cell** on the guide fixture; then BC (`bc-w1.json` == today's BC workbook on the Contoso fixture, 575 rows), then
+  Odoo (`odoo-17.json` == export.js on the recorded fixture). Deletion budget: each converter's mapping code is REMOVED once its template matches (lines −/+ stated).
+- **E3 open items:** port ImportGLJournal (220) and ImportInvoice (207) verbatim (twin rule), the open-items sheets, the clearing accounts + Opening Charges; Odoo first
+  (measurable here: `account.move.line` balances at the date, `amount_residual`), witnesses TB / CLEAR / OPEN / STOCK.
+- **E4 the sql connector** (the owner's DB-engine door): read-only catalog + rows; first use = SAP B1's account class from `OACT` (the gap §SAP-MEASURE names) — needs a
+  published source for the class numbers, else it stays a template VARIABLE the user fills.
+- **E5 the DIY screen:** pick a template, fill its variables (form fields generated from `variables`), run, read the summary — the same plan/load screen as today.
+**Not in scope:** closed history (optional, read-only, never posted), non-core modules (they arrive as plugins), writing to any source system.
+
+**6. The common thread of the four exercises (owner: *"that are of common thread in the 3 exercises we done (4th if we consider iDempiere itself)"*) — measured, it is what the engine abstracts:**
+| | Odoo 17 | Business Central | SAP Business One | iDempiere (itself) |
+|---|---|---|---|---|
+| where the MODEL is read | the live server (`fields_get`, export.js version check) | Microsoft's published `.al` source, pinned (MIT) | the user's server `$metadata` | its own dictionary (AD_Table / AD_Column) |
+| the door the user already has | agent, XML-RPC | the user's own RapidStart Excel export | agent, Service Layer (OData) | agent, `psql COPY` (`erp/idempiere_agent/migrate_agent.js`) |
+| connector kind | `odoo-xmlrpc` | `excel` | `odata` | `sql` |
+| mapping today | hand code (export.js) | hand code (bc_migrate_convert) | hand code (sap_migrate_convert) | **identity** — same tables, PKs re-banded |
+| target today | 17-sheet workbook → Ninja loader | same | same | **raw copy** into `ad_masters.db` (bypasses the workbook and the loader) |
+| proof today | live `search_count` manifest + recorded replay | model == source (0 differ) + Microsoft's demo | `$count` == rows, read only, guide fixture | counts per table |
+The thread, in six words each: **(1) the model is READ, never typed** (`describe()`); **(2) the user's OWN door**, read only; **(3) ONE target** (the iDempiere import
+contract); **(4) the SAME named legacy rules**; **(5) counts prove nothing was dropped or made up** (+ the masked alpha report); **(6) all or nothing, summary == result**.
+**iDempiere is the engine's best falsifier:** its template is the IDENTITY (every target column = the same source column), so iDempiere → engine → twin tenant must equal the
+source tenant, table by table — a round trip any mapping error breaks. ⛔ Owner decision (E2): keep iDempiere's raw `psql COPY` fast path as is, or move it onto the identity
+template through the same loader (one implementation, but slower) — both are stated; not decided here.
+
+**7. Next session = parallel lanes (owner: *"once spec we resume in new session where u may launch agents to speed up"*).** Agents = Sonnet (memory rule), each in its OWN
+`/tmp/wt-*` worktree off fresh `origin/main` (check `git worktree list` first; no `git stash`), each lane = spec § above + its witness, PR with auto-merge, lead session verifies
+logs (Watchdog Protocol) before marking ✅:
+- **Lane A — E1** opening stock via `I_Inventory` + ImportInventory DocAction CO, all three sources (small, ship first; it fixes a shipped claim).
+- **Lane B — E3a** port ImportGLJournal (220) verbatim + `I_GLJournal` + W-IMPORT-GLJOURNAL (independent of everything else).
+- **Lane C — E3b** port ImportInvoice (207) verbatim + `I_Invoice` + W-IMPORT-INVOICE (independent).
+- **Lane D — E2** engine core: template schema + validator + evaluator + rules registry + excel/csv connector; acceptance = SAP B1 template == sap_migrate_convert output.
+  (Lead session, not an agent: it is the design centre and the owner will adjust the template shape.)
+- after A–D: BC + Odoo templates (equality witnesses, deletion budget), the open-items sheets + clearing accounts (E3c, Odoo first), then E4 sql connector, E5 DIY screen.
+
+### §ARCHIVE-INDEX — everything removed from this file on 2026-11-10 is verbatim in `prompts/archive/MIGRATE_INSTALL_TENANT_full_2026-06-05_to_2026-11-10.md` (line numbers of that file)
+§2026-07-22 AUDIT :149 · §2026-11-08 PLAN :200 · §B0-SPEC :265 · §A-MOCK spec :302 · §B1-SPEC :316 · §B2a-SPEC :342 · §A3-LEDGER :364 · §PANEL-LINK :385 · §OWN-DB-SPEC :395 · §OWN-DB RESULT :414 · §B4-SPEC :430 · §NINJA-MIGRATE study :449 · §NINJA-DECISION :478 · §SHEET-CONTRACT :492 · §NINJA-LEGACY-INSTALL plan :512 · §EXPORTER-V3-SPEC :528 · §EXPORTER-V3 RESULT :570 · §NINJA-LOADER-SPEC :591 · §NINJA-LOADER RESULT :630 · §G1-SPEC :653 · §G1 RESULT :673 · §B4-IMPL-SPEC :692 · §B4 RESULT :715 · §LAG-SPEC :730 · §FILM rc4 :751 · §FILM-LANG RESULT :778 · §HARDEN-SPEC :789 · §HARDEN RESULT :823 · §BC-SPEC :849 · §BC RESULT :883 · §FILM-BC rc1 :901 · §SAP-MEASURE :934 · §SAP-SPEC :950 · §SAP RESULT :982 · §FILM-SAP rc1 :995 · §GUIDE-CONSOLIDATED + §FILM-SAP ZH :1006 · §B3-SCOUT :1018 · §ENGINE-SPEC :1041 · §ENGINE-D-SPEC :1216 · §E3C-SPEC :1303 · §ODOO-ENGINE-SPEC :1408 · §PLUGIN-ROLE-ACCESS-SPEC :1432 · §2026-11-10d STATUS (lead session; logs read): :1452 · §2026-11-10e (lead, after the owner's "Go"): #2795 MERGED and fetched  :1476 · §IDEMPIERE-FALSIFIER-SPEC :1485 · §2026-11-10f (lead; logs read): :1507 · §2026-11-10g (lead; logs read): #2802 (O2) MERGED (main @8d0cfe79). :1526 · §2026-11-10h (lead; logs read): #2806 (O3a) MERGED. :1538 · §2026-11-10i (lead; logs read): #2808 (O3b) MERGED. :1557 · §2026-11-10j :1568 · §2026-11-10k :1582 · §2026-11-10l :1604 · §ALREADY-THERE-SPEC + §KEEP-UNIT-SPEC :1625 · §2026-11-10n (lead; logs read): #2811 (falsifier) MERGED. :1643 · §2026-11-10o (lead; live fetched back): #2822 MERGED and LIVE (sw `v10 :1654 · §E3D-SPEC :1658 · §2026-11-10p :1685 · §2026-11-10q :1690 · §2026-11-10r (lead; logs read): #2823 (falsifier re-pin) MERGED. :1700 · §2026-11-10s (lead; logs read): #2825 (lane BS) MERGED. :1712 · §2026-11-10t :1736
+
+### §REVIEW-2026-11-10 (session v)
+- **R9 DONE:** `erp/tests/run_migration_lane.sh` (bim-ootb #2833) — 17 witnesses, all PASS on main (MIGE 89, OB 43, AT 9, PRA 8, SAPM 24, BCM 18, OF 18, OM 14, IPROD 15, IINV 56, IPAY 54, IMPORT 44, IGLJ 45, IBS 51, BST 41, WBST 4). `SLOW=1` adds the falsifier. Logs `/tmp/count_logs/mig_*.log`.
+- **GAP (owner, 2026-11-10):** a LEGACY iDempiere source also carries old accounting/GL. It must be migrated by the §B3-SCOUT cut-over method (Adaxa phantom sales/purchases: opening TB journal via clearing accounts + single-line open AR/AP invoices + unallocated payments + bank + count). The iDempiere agent today copies masters only; open balances exist for Odoo only. NEXT BUILD after R1/R2: iDempiere (then SAP/BC) open-balances readers feeding the same open-items sheets, witnessed vs the source's `Fact_Acct` / open-item views.
+- **Sequel film "Migrating Legacy Accounting"** (all ERPs, common screens rotated per stage): material sufficient for Odoo; iDempiere/SAP/BC need the open-balances readers above first. Chapter list awaits owner approval.
+
+### §IDEMPIERE-OPEN-SPEC (2026-11-10, lane: iDempiere legacy-GL cut-over; spec written BEFORE the reader, the template and the witness)
+**Why:** a LEGACY iDempiere source carries old accounting. The target side (open sheets I_GLJournal / I_Invoice / C_Bank / C_BankAccount / I_BankStatement, `plugins/open_balances.mjs` §MIG-TB/CLEAR/OPEN/BANK) is ERP-neutral and built; only the SOURCE side is new.
+Nothing in Odoo / SAP / BC changes. Code: `erp/idempiere_agent/open_reader.js` (read-only psql) → `idempiere_open.json` (`idempiere-open-json-v1`) → `erp/migrate/templates/idempiere-open.json` (engine) → the same sheets as `odoo-17.json`. Witness: `erp/tests/witness_idempiere_open.js` (`§IDO-*`).
+**The three neutral facts, at cut-over date D, for one client and ONE accounting schema (`AD_ClientInfo.C_AcctSchema1_ID`, the primary):**
+1. **Trial balance** — `Fact_Acct` (PostingType `A`, i.e. posted, `DateAcct <= D`, that client + schema) summed `AmtAcctDr - AmtAcctCr` per `C_ElementValue`. Each account is classed `AR` / `AP` / `BANK` / plain.
+2. **Open items** — `C_Invoice` `DocStatus IN (CO,CL)`, `IsPaid='N'`, `DateAcct <= D`; amount = the legacy PG function `invoiceOpen(C_Invoice_ID, 0)` (GrandTotal x CM multiplier minus allocations, in invoice currency; credit memos come back negative; the sheet carries `abs()`, the document type carries the sign). Per partner, per document type (`DocBaseType` ARI/ARC/API/APC).
+3. **Bank balances** — per active `C_BankAccount`: `CurrentBalance`. Cited: only `MBankStatement.completeIt` moves it (`MBankStatement.java:452`, reversed :542/:712), so it is the STATEMENT-reconciled balance; payments not yet on a statement are in the GL bank account but not in it.
+**Account classes (which accounts are document-controlled):** AR = `C_Receivable_Acct` of `C_BP_Group_Acct` + `C_BP_Customer_Acct` + `C_AcctSchema_Default`; AP = `V_Liability_Acct` of `C_BP_Group_Acct` + `C_BP_Vendor_Acct` + `C_AcctSchema_Default`; BANK = `B_Asset_Acct` of `C_BankAccount_Acct` (via `C_ValidCombination.Account_ID`). An account in two classes = the reader refuses (problem), never guesses. Everything else is plain and is CARRIED in the opening journal under its own account value.
+**Peculiarities, each CARRIED or a named rule (nothing silent). `left` = the amount that stays on that clearing account = TB(class) minus what the brought-in items take off it; the witness expects CLEAR == left exactly (0.00 when nothing is left):**
+| # | peculiarity | rule | amount |
+|---|---|---|---|
+| P1 | several control accounts (e.g. 12110 AR Trade; 21100 AP Trade + 21101 Tree Farm Payable, per BP group) | every account of a class routes to that class's ONE clearing account; the twin's own control accounts take the postings | carried |
+| P2 | unallocated payments / receipts (`B_UnallocatedCash`, 11130) and prepayments | plain accounts: CARRIED in the journal on their own account value. Partner-level detail of the payment is NOT brought in (named `unallocated-carried-on-account`) | carried (0 left) |
+| P3 | invoice in another currency than the schema | `notBroughtIn` "foreign currency": the control account holds its CONVERTED amount (`Fact_Acct` of that invoice on the control account); no ImportInvoice currency conversion is ported | left on AR/AP clearing = that converted amount |
+| P4 | completed invoice not Posted (`Posted<>'Y'`) | `notBroughtIn` "not posted": its amount is not in the TB, so it is neither in the journal nor taken off clearing | 0 (named) |
+| P5 | open amount with the wrong sign for its type (over-allocated invoice / odd credit memo) | `notBroughtIn` "sign reversed" | left on clearing |
+| P6 | a second accounting schema (the sample GardenWorld has 101 USD + 200000 EUR) | only the primary schema moves; the others are NAMED with their TB size in the manifest (`other_schemas`) | not moved |
+| P7 | bank account in another currency / not a bank (cash book `C_CashBook`, `CB_Asset`) | foreign bank account: no statement, named. Cash books are NOT read yet (named), their asset account is plain, CARRIED | left on Bank clearing for foreign |
+| P8 | GL bank account vs `CurrentBalance` (payments not yet on a statement) | statement amount = `CurrentBalance`; difference to the GL bank accounts stays on Bank Clearing, NAMED `bank-uncleared` (wiki: "payments not yet cleared" — not brought in yet) | left on Bank clearing |
+| P9 | inventory / stock value (14120, 21190 Not invoiced receipts, 51400 Inventory Clearing) | plain: CARRIED as GL balances; quantities / M_Storage / cost are NOT brought in (named `stock-not-brought-in`; the opening-stock count is a separate sheet this reader does not fill) | carried |
+| P10 | source activity after D (facts, invoices, allocations dated > D) | invoiceOpen has NO date parameter: open amounts are as of NOW. So the source must be frozen at D; the reader counts postings after D and raises a PROBLEM `source-not-frozen` with the counts — TB is still cut at D | problem |
+| P11 | P&L accounts at a mid-year cut-over | carried as they are (the wiki says nothing about year-end close). **UNCLEAR: whether legacy expects P&L closed to retained earnings before the cut-over — not decided here.** | carried |
+| P12 | payment terms with schedules (C_PaySchedule) | only `Value`/`NetDays` of the term is carried; schedules are named in the manifest. **UNCLEAR: how legacy ages an invoice with a split term in the open-item list** | note |
+**Reader rules:** read-only (`default_transaction_read_only=on`, only SELECT), password via `PGPASSWORD` environment (never a flag, never logged), one JSON per run; `§IDO-READ` lines print counts. No source write, ever.
+**Witness spec (`§IDO-*`; expected values come from independent SQL on the legacy DB or from a cited rule, never from the reader/template/loader):**
+- `TB` reader TB == oracle SQL (different query path: per `C_ValidCombination` join, schema, date) per account; sum == 0; AND after the load into a born twin tenant, plain accounts == source exactly, AR/AP/BANK control + clearing == source class total.
+- `CLEAR` each clearing account == its `left` (oracle: Fact_Acct of the foreign invoice, bank GL minus CurrentBalance) — 0.00 where nothing is left.
+- `OPEN` per partner+side, the twin's open documents == `invoiceOpen` summed by an oracle query; each document keeps number/date/type.
+- `BANK` twin bank account CurrentBalance == source `CurrentBalance`, asset account posting == it.
+- `MUTANT` flip one amount in the reader's JSON, drop one open item, drop one TB account: each MUST make the matching check FAIL (a witness that cannot fail is no witness).
+- `FROZEN` an earlier cut-over (before later postings) must produce problem `source-not-frozen` with counts equal to the oracle's.
+- verdict `§IDO-VERDICT PASS judged=N failed=0`; `INCONCLUSIVE` when nothing was judged.
+
+**§IDEMPIERE-OPEN RESULT (2026-11-10; bim-ootb draft PR #2837, branch feat/idempiere-open-balances; log /tmp/count_logs/idempiere_open.log read):** `§IDO-VERDICT PASS judged=31 failed=0` (SOURCE 3, READER 8, FROZEN 1, SHEETS 8, LOAD 4, MUTANT 7). GardenWorld client 11, schema 101: TB 20 accounts sums 0; AR 430.36 = 161.12 brought in + 269.24 foreign-currency invoice 100000 (EUR) left on AR-CLEAR (P3, named refusal); AP -6949.00 and Bank 148.00 clear to 0.00; loader `§MIG-VERIFY PASS judged=9`. Mutants (flip amount, drop item, drop account, wrong class) fail the comparators; flip/drop run through a REAL load pass the loader (self-consistent) but are caught by the oracle (AP-CLEAR -200.00 / 7.00). Coverage gaps (specified, not witnessed): credit memos, partly paid invoices, foreign bank account, cash books. UNCLEAR (not guessed): P11 P&L close before cut-over; P12 split payment terms; whether CurrentBalance is maintained on every legacy path (only MBankStatement.java:452/542/712 write it). Template also needs C_Location/C_BPartner_Location (ImportInvoice "No BP Location") and a sales M_PriceList (ImportInvoice "No PriceList") from the source invoices. Not yet wired to a form / sw.js.
+
+### §SAP-BC-OPEN-SPEC (2026-11-10, lane: open-balances cut-over for SAP Business One + Business Central; spec written BEFORE the readers, templates and witness)
+**Why:** `§IDEMPIERE-OPEN-SPEC` showed the target side (I_GLJournal, I_Invoice, C_Bank/C_BankAccount/I_BankStatement, clearing + Opening Charges, `plugins/open_balances.mjs` §MIG-*) is ERP-neutral. Only the SOURCE side differs. SAP B1 and BC are ALPHA (masters only, mock-tested, `CONN` INCONCLUSIVE by construction): this lane adds their open-balances READER and template, **never a claim of real-company validation**. Nothing in Odoo / iDempiere / the existing SAP+BC masters path changes (`SAPM 24` · `BCM 18` · `MIGE 89` · `OB 43` stay green).
+**Design (same as iDempiere):** a read-only reader turns the vendor's own ledger into the ONE neutral shape `{ manifest, sets: { tb, open_items, partner_locations, banks } }` (row fields identical to `idempiere_open.json`), a template (`sap-b1-10-open.json`, `bc-w1-open.json`; format `sap-b1-open-json-v1` / `bc-open-json-v1`) turns it into the SAME open sheets as `odoo-17.json`. Code: `erp/sap_agent/open_reader.js` (+ `--cutover` in `agent.js`, writes `sap_open.json`), `erp/migrate/connectors/bc_open.mjs` (pure, browser+node, reads the package tables), `erp/plugins/{sap,bc}_open_convert.mjs`. Witness `erp/tests/witness_sapbc_open.js` (`§SBO-*`). Sign convention of `open_amount`: invoice > 0, credit note < 0 on BOTH sides (template `signBad` then flags a wrong-signed item).
+**Oracle (honest):** there is no SAP or BC here. The vendors' documents give the FIELD NAMES, not data. The fixtures are TEST-SUPPLIED rows (not vendor examples), shaped by the vendor schemas; the oracle is an independent aggregation over those raw mock rows (different code path from the reader), plus the books of the twin after the load. What this can prove: reader + template + loader are arithmetically faithful to a ledger that has the vendor's shape. What it CANNOT prove: that a real Business One / BC returns that shape, or any behaviour listed UNCLEAR below.
+
+**Sources cited (the same ones the existing mocks use):** SAP: "Working with SAP Business One Service Layer" v1.26 (login §3.1, `$metadata` §3.3, paging §3.7) + a `$metadata` copy of it (scratch only, not committed: no licence) - every field below was looked up there and is re-checked against the user's own `$metadata` at run time (`§SAP-FIELD`, as `agent.js` does). BC: Microsoft `BCApps` (MIT) @ `616174f6`, `src/Layers/W1/BaseApp`; the tables are added to the pinned model by `erp/tools/gen_bc_model.js` (17 G/L Entry, 21 Cust. Ledger Entry, 25 Vendor Ledger Entry, 379/380 Detailed Cust./Vendor Ledg. Entry, 270 Bank Account, 271 Bank Account Ledger Entry, 92 Customer Posting Group, 93 Vendor Posting Group, 277 Bank Account Posting Group), so the `MODEL` witness re-checks every added field against the `.al`.
+
+#### SAP Business One (Service Layer) - the three facts at cut-over date D
+1. **Trial balance** = `JournalEntries` (entity `JournalEntry`, key `JdtNum`) lines `JournalEntryLines` (`AccountCode`, `Debit`, `Credit`) with `ReferenceDate <= D`, summed `Debit - Credit` per `AccountCode`, names/type from `ChartOfAccounts` (`Code`, `Name`, `AccountType`). Local currency = `CompanyService_GetAdminInfo.LocalCurrency` (the agent already calls it). `ChartOfAccounts.Balance` is NOT used (it is as of now, not D); it is read only for the cross-check note `tb-vs-chart-balance`.
+2. **Open items** = `Invoices` (ARI), `CreditNotes` (ARC), `PurchaseInvoices` (API), `PurchaseCreditNotes` (APC) (all entity `Document`): `DocumentStatus = bost_Open`, `Cancelled = tNO` and `CancelStatus = csNo`, `DocDate <= D`; open (local currency) = `DocTotal - PaidToDate`; partner = `CardCode`/`CardName`/`FederalTaxID` (+ first `BPAddresses` row for the location). `PaidToDate` is as of NOW (no date parameter) - same limit as iDempiere `invoiceOpen`.
+3. **Bank balances** = `HouseBankAccounts` (`BankCode`, `AccNo`, `GLAccount`) with the GL balance of `GLAccount` at D (sum of the same journal lines); bank name/swift from `Banks` (`BankName`, `SwiftNo`). The Service Layer exposes no statement-reconciled balance, so the bank statement amount IS the GL balance (see S8).
+**Account classes:** AR = `DebitorAccount` of every `BusinessPartners` row with `CardType = cCustomer`; AP = `DebitorAccount` of every `cSupplier` row; BANK = `HouseBankAccounts.GLAccount`. An account in two classes, or a BP with an empty `DebitorAccount`, is a PROBLEM (named), never a guess.
+| # | peculiarity | rule | amount |
+|---|---|---|---|
+| S1 | several control accounts | every account of a class routes to that class's ONE clearing account | carried |
+| S2 | on-account (unallocated) incoming/outgoing payments | in B1 they post to the BP control account, so the control account holds them but no open invoice does: NOT brought in (no payment sheet), named `unapplied-payment-on-account`; amount = TB(class) minus what the items take off, cross-checked per partner against `BusinessPartners.CurrentAccountBalance` (note `bp-balance-differs`, counts only) | left on AR/AP clearing |
+| S3 | document in a foreign currency (`DocCurrency` not the local currency) | `notBroughtIn` "foreign currency" | left on clearing (the converted amount the control account holds) |
+| S4 | completed document without a journal (`TransNum` empty) | `notBroughtIn` "not posted" | 0 (not in the TB) |
+| S5 | wrong sign / over-paid | `notBroughtIn` "sign reversed" | left |
+| S6 | no `BPAddresses` row for the partner | `notBroughtIn` "no address" (legacy ImportInvoice needs a BP location, "No BP Location") - a reason, never an invented address | left |
+| S7 | house bank account whose GL account is in another currency than local (`ChartOfAccounts.AcctCurrency`) or two house accounts on one GL account | foreign: no statement, named; shared GL account: PROBLEM `bank-gl-shared` | left on Bank clearing |
+| S8 | payments not yet reconciled to a bank statement | cannot be separated through the Service Layer: the GL balance is moved as the statement. **UNCLEAR whether `BankPages` / reconciliation state could separate them - not read** | 0 |
+| S9 | stock value (inventory, GR/IR accounts) | plain accounts CARRIED in the journal; quantities/cost NOT brought in (`stock-not-brought-in`) | carried |
+| S10 | activity after D (journal lines, documents dated > D) | open amounts are as of now: reader counts them and raises PROBLEM `source-not-frozen` with the counts; TB is still cut at D | problem |
+| S11 | cancelled documents (`Cancelled`, `CancelStatus`) | excluded from open items; both original and cancelling journal sit in the TB and net. **UNCLEAR how B1 links them (`StornoDate`, `OriginalJournal`) - the net-zero is assumed from the TB itself, not verified** | 0 |
+| S12 | BP lines in a journal: **UNCLEAR whether `JournalEntryLine.AccountCode` is the control account and `ShortName` the CardCode (assumed) or the reverse.** The reader sums by `AccountCode`; an `AccountCode` that is not in `ChartOfAccounts` raises PROBLEM `unknown-account` (so the opposite case fails loudly, not silently) | | problem |
+| S13 | how `DocCurrency` spells the local currency (the guide's own example prints `"$"`): **UNCLEAR** - the reader treats empty or `LocalCurrency` as local, anything else as foreign (conservative: the amount is left on clearing, named) | | left |
+| S14 | P&L accounts at a mid-year cut-over; split payment terms | as `§IDEMPIERE-OPEN-SPEC` P11/P12 - UNCLEAR, not decided | carried |
+| S15 | `CurrentAccountBalance` sign (`AdminInfo.CreditBalancewithMinusSign`) | used only for the S2 note; **UNCLEAR** exact sign convention per BP type - note compares absolute values only | note |
+
+#### Business Central - the three facts at cut-over date D (rows = a RapidStart package, the existing `bc-package` door)
+1. **Trial balance** = `G/L Entry` (17): `Amount` summed per `G/L Account No.` with `Posting Date <= D`; account names/type from `G/L Account` (15). (Debit/Credit Amount fields exist but are not read.)
+2. **Open items** = `Cust. Ledger Entry` (21) and `Vendor Ledger Entry` (25) with `Posting Date <= D`; remaining at D = SUM of `Detailed Cust./Vendor Ledg. Entry` (379/380) `Amount (LCY)` for that `Entry No.` with `Posting Date <= D` and `Excluded from calculation = false`. This is exactly the FlowField `Remaining Amt. (LCY)` (CustLedgerEntry.Table.al:174-181) re-derived from real table fields because **UNCLEAR whether a RapidStart package carries FlowFields** (the pinned `.al` has no FlowField handling in `ConfigExcelExchange`; not relied on). Open at D = remaining <> 0, so BC's open state IS date-exact (no frozen-source problem for BC); the `Open` flag (field 36) is only cross-checked now. `Document Type`: Invoice -> ARI/API, Credit Memo -> ARC/APC; Payment, Refund, Finance Charge Memo, Reminder, blank -> `other`.
+3. **Bank balances** = `Bank Account` (270) `Balance` is the sum of `Bank Account Ledger Entry` (271) `Amount` per `Bank Account No.` (BankAccount.Table.al:445-452); read as that sum with `Posting Date <= D`. GL account of a bank account = `Bank Account Posting Group` (277) `G/L Account No.`.
+**Account classes:** AR = `Customer Posting Group` (92) `Receivables Account`; AP = `Vendor Posting Group` (93) `Payables Account`; BANK = `Bank Acc. Posting Group` -> (277) `G/L Account No.`; only the posting groups actually used by a customer / vendor / bank account in the package count. Two classes on one account = PROBLEM.
+| # | peculiarity | rule | amount |
+|---|---|---|---|
+| B1 | several posting groups / control accounts | all route to the class's ONE clearing account | carried |
+| B2 | open payment / refund / finance charge / reminder entries (document type other than Invoice, Credit Memo) | not brought in (no payment sheet): `notBroughtIn` "other document type", their remaining stays in the control account | left on AR/AP clearing |
+| B3 | `Currency Code` not blank (blank = LCY; LCY code from `General Ledger Setup` (98) `LCY Code`) | `notBroughtIn` "foreign currency"; the LCY remaining (`Amount (LCY)`) stays | left |
+| B4 | wrong sign for its type | `notBroughtIn` "sign reversed" | left |
+| B5 | no address on Customer/Vendor (`Address`, `City`, `Post Code`, `Country/Region Code` all empty) | `notBroughtIn` "no address" | left |
+| B6 | bank account with a `Currency Code` | foreign: no statement, named | left on Bank clearing |
+| B7 | bank ledger vs GL (manual GL postings on the bank account, or entries not yet reconciled: field `Open`, `Statement Status`) | statement amount = bank ledger sum; any GL-vs-ledger difference stays on Bank clearing, named `bank-gl-differs`. **UNCLEAR whether to separate unreconciled entries** | left |
+| B8 | stock value | plain, carried; quantities/cost not brought in | carried |
+| B9 | dimensions, VAT entries, `Reversed` G/L entries | G/L Entry sum includes reversed pairs (both rows exist); dimensions/VAT not carried (named). **UNCLEAR whether reversed entries should be excluded - they net to 0 by construction, not verified** | carried |
+| B10 | package missing a table the reader needs (17, 21, 379, 25, 380, 270, 271, 92, 93, 277, 98, 15) | PROBLEM naming the missing table, nothing guessed | problem |
+| B11 | P&L accounts mid-year, payment terms | as iDempiere P11/P12: UNCLEAR | carried |
+
+**Template/manifest rules (both):** `left[AR|AP|BANK] = TB(class) -/+ what the brought-in items/statements take off` (same arithmetic as `idempiere-open.json`); the witness expects the clearing account to hold exactly that, computed from the raw rows (foreign first), 0.00 where nothing is left. `sap-b1-10-open.json` / `bc-w1-open.json` are separate files so the existing masters templates and their witnesses stay byte-identical.
+**Reader rules:** read-only (SAP: GET + Login/Logout only, same `read_only` manifest flag; BC: pure function over the file, no I/O); password never a flag (`--password` -> exit 2; `SAP_PASSWORD` env); the masked alpha report (`§SAP-ALPHA`, `§BC-ALPHA`) is unchanged and gets no new value (open sheets add counts only).
+**Witness spec (`§SBO-*`; expected values from independent aggregation of the mock's raw rows, never from reader/template/loader):**
+- `SOURCE` mock rows: TB balanced (sum 0); fixture contains a foreign invoice, a no-address partner, an on-account payment, a partly paid invoice, a credit note, a foreign bank - else INCONCLUSIVE.
+- `READER` per ERP: TB == oracle per account and sums 0; classes; open items == oracle per document (number, kind, partner, currency, date, |open|); banks == oracle; read-only (SAP: mock saw only GET + Login/Logout; `--password` exit 2; BC: no I/O imports); missing-field handling (SAP `§SAP-FIELD`: drop `PaidToDate` from the mock's `$metadata` -> named, not asked).
+- `FROZEN` (SAP) cut-over before later postings -> `source-not-frozen` with the oracle's counts. (BC) an earlier cut-over gives a DIFFERENT, still oracle-equal open set (an invoice paid after D is open at D) and no frozen problem.
+- `SHEETS` journal balanced, plain accounts exact, clearing line == class total, invoice sheet == brought-in set, each peculiarity present in the fixture is a NAMED refusal and `manifest.left` == the oracle's leftover.
+- `LOAD` born tenant, the shared loader: stages complete, `§MIG-VERIFY PASS`, twin books vs oracle (plain exact, control+clearing == class total, each clearing == leftover, OPEN per partner, bank).
+- `MUTANT` flip one amount, drop one open item, drop one TB account, wrong class: each MUST fail the matching comparator (flip/drop also through a REAL load: the loader is self-consistent and passes, the oracle comparator must fail).
+- verdict `§SBO-VERDICT PASS judged=N failed=0`; `INCONCLUSIVE` when nothing was judged. `§SBO-CONN verdict=INCONCLUSIVE` always (no real SAP/BC). Not witnessed by construction: real Service Layer / real BC package shape, every UNCLEAR row above, the form/sw.js wiring (not done in this lane, as for iDempiere).
+
+**§SAP-BC-OPEN RESULT (2026-11-10; bim-ootb draft PR #2839, branch feat/sapbc-open-balances; log /tmp/count_logs/sapbc_open.log read):** `§SBO-VERDICT PASS judged=69 failed=0` (SOURCE 6, SAP-READER 10, SAP-FROZEN 2, BC-READER 8, BC-DATE 2, SAP-SHEETS 8, BC-SHEETS 8, UNTOUCHED 2, MODEL 1, SAP-LOAD 4, BC-LOAD 4, SAP-MUTANT 7, BC-MUTANT 7). Both loads: `§MIG-VERIFY PASS judged=9`, AR-CLEAR 200.00 (foreign 270 + no address 80 - on-account 150), AP-CLEAR 0.00, BANK-CLEAR 320.00 (EUR bank), each equal to the leftover stated from the documents. Flip/drop through a REAL load pass the loader (self-consistent) and fail the oracle (AR-CLEAR 800.00 / 193.00). `run_migration_lane.sh` all PASS afterwards: MIGE 89, OB 43, SAPM 24, BCM 18 (the BCM MODEL case re-checks the 10 added tables against the `.al`), OF 18, OM 14, AT 9, PRA 8, import ports unchanged; `sap_agent.zip` rebuilt (W-AGENT-ZIP-SYNC PASS). **`§SBO-CONN` INCONCLUSIVE by construction.** The oracle is a TEST-SUPPLIED ledger (`erp/tools/gen_sapbc_open_fixture.js`, invented values, vendor field names), so what is proven is reader + template + loader arithmetic on a vendor-shaped ledger, never a real company. Weak spot named: the SAP oracle's per-document open amount is the same `DocTotal - PaidToDate` rule the reader uses; its independent leg is the per-partner journal-vs-documents tie (`sap-gl-ties-docs`) and `ChartOfAccounts.Balance`. Unwitnessed (specified only): docs numbered alike across kinds, `bank-gl-shared`, `control-account-unknown`, `unknown-account`, an unposted document, a wrong-signed open amount, `DocCurrency` spelling (S13), and every UNCLEAR row (S8 S11 S12 S13 S15 B7 B9, and whether a RapidStart package carries FlowFields, which is why BC remaining is re-derived from the detailed entries). Not done: form / `sw.js` wiring (as for iDempiere); currency decimals assumed 2 for SAP (named note).
+### §REVIEW-R1R2 (2026-11-10, session w) — R1 (the whole journey on the live page) + R2 (second / failed run), by assertion
+Witness: bim-ootb `erp/tests/witness_migration_journey.js` (draft PR, branch `feat/migration-journey-witness`), added to `erp/tests/run_migration_lane.sh` under `SLOW=1` (~6 min). Real `idempiere.html`, headless Chromium, no
+screenshots, page clock fixed to the cut-over day (`2026-11-10`). Expected values come from the raw rows of `odoo_export.json` (trial balance, open_lines) and the legacy rules cited in each check. Log: `/tmp/count_logs/mig_migration_journey.log`.
+Verdict `§JRN-VERDICT FAIL judged=30 failed=2` — the 2 failures are finding F1 (a real defect, not a flaky check).
+**R1, X of N (N=12 = the guide's "same three steps", Step 2 and 3 split into their numbered actions):** 10 WITNESSED, 2 `UNWITNESSED`: S1 (the agent reading Odoo — witnessed elsewhere: `poc_odoo_owndb`, byte-identical live re-run) and S3.6
+(opening the Business Partner / Product windows from the menu; the ROWS are asserted, the window is not driven). Read back from the tenant: accounts +47 +3 clearing; 9 trial-balance lines → 6 plain accounts equal the raw balances, books sum 0.00; AR/AP/Bank Clearing 0.00;
+19 open documents, all Completed + Posted + unpaid; open amount AR 4,005.00 / AP 13,410.15 = the raw `amount_residual` net; `§MIG-VERIFY PASS`. Period gate on the page: a company whose year is not the cut-over's gets ONE problem row, Process says "Not migrated", 12 row counts unchanged.
+**Findings (each = measured, evidence line, fix or question):**
+- **F1 (BLOCKER — the guide's own path is broken after a reload).** Phase 1 (no reload) completes stage 2. Phase 2 reloads the page (the guide asks for a reload when the company is created with the plugins running; a user returning on any later day does the same) and the same file is refused:
+  `The opening journal was not imported: 9 row(s) refused (ERR=Invalid CurrencyType, ERR=No ConversionType, WARN=Period Closed)`. Evidence: `§PROC-SQL-ERROR ... more than one row returned by a subquery used as an expression :: ImportGLJournal Set CurrencyType from Value`; `§JRN-DUP`: after the reload
+  16 System tables hold every row TWICE (`c_conversiontype 8/4`, `ad_message 4198/2099`, `ad_infowindow`, `ad_workflow`, `m_costqueue` …; fresh page: none). Cause read, not fixed: `patches/ad_seed.db.sql:584` creates `c_conversiontype` with NO primary key, `:849` fills it with `INSERT OR IGNORE` (dedups nothing without a key);
+  `idempiere.html` (~:1161) re-applies the patch on EVERY load, cache hit included; a born company persists the patched DB to the cache (`_persistBundle`), so the next load doubles the rows. Probe `/tmp/count_logs/dup_probe.js`: 4 → birth → reload → 8. Reach is wider than migration: any scalar subquery on those tables. Question for the fix owner: add the PKs/unique indexes in the patch, or guard the patch with a "already applied" marker.
+  Also: the refusal text blames the Period ("Period Closed") although the cause is the duplicate seed row — the message misleads (R7).
+- **F2 (the refused stage 2 leaves the tenant half-migrated and the way out is not the one the text names).** Falsifier (one open invoice missing, agent count also 20): stage 1 commits, stage 2 is refused and NAMES `2002.50` on AR Clearing (guide claim witnessed), journal/invoice/Fact_Acct = 0, masters stay, the 9/18/1/25 import rows stay pending, the admin role holds process 220/207/221 + their windows + menu leaves.
+  Running Import GL Journal + Import Invoice by hand DOES import (18 invoices, journal batch left Drafted `DR`) but nothing re-runs the cut-over check: AR Clearing stays −2002.50 and nothing says so. Processing the CORRECTED file on that tenant is refused whole (see F3). The only clean way out is a new company; neither the refusal text nor the guide says so. Question: should Process on a tenant with pending I_ rows resume (import only the rows not yet imported, then verify)?
+- **F3 (a repeated Process / second file is refused whole, tenant unchanged — but the text is unreadable).** (b) second Process, same file: `Nothing migrated: 10 row error(s). 07C_BPartner_Location row 2 C_Location_ID>C_Location_UU: 2 C_Location rows have C_Location_UU=… (ambiguous)`; 12 table counts identical before/after, books untouched (witnessed). Not "already migrated".
+  (d) the re-run SUMMARY: `ok=false`, already=216, will=0, refused=12 — "already there" is counted, but the refused rows are the ambiguous C_Location/C_Bank lookups, so the summary also never says "nothing to do". (c) a second file for the same company (the other Odoo company, new partners/products/documents, same chart): refused whole the same way (8 row errors). So "each other company becomes its own ERP company" (guide) is the ONLY supported route and a second file into one tenant (a later cut-over) is not; the guide should say it.
+- **F4 (a demo invoice in every new company).** Initial Tenant Setup (`renderGenesisWizard`) appends a "G7 sample invoice" (Completed, unpaid, 109.00) to every company; legacy Initial Client Setup makes none. It sits in the migrated company's invoice window beside the real open items (`§JRN-STRAY`).
+- **F5 (UI quirk, headless).** The Plugins & Releases pane stays floating over the next screen until its × is pressed (it intercepted clicks on the wizard and on log-out). A user can close it; noted because it blocks a scripted guide walk.
+**Guide wording to fix (from F1–F3):** after "reload once" say that a reload currently breaks Open balances (until F1 is fixed); "A second Process is refused" → say a second file for the same company is not supported yet and a refused stage 2 means a new company.
+
+### §RECOVER (2026-11-10, session x) — a failed / repeated cut-over is recoverable, twin-faithful (F2 F3 F4 of §REVIEW-R1R2)
+Code: bim-ootb `feat/migrate-recover` (DRAFT PR), worktree `/tmp/wt-recover`. Witness: `erp/tests/witness_migration_recover.js` (node, ~25 s; `ERP_DIR=<old checkout>` = the mutant) + the R2 cases of `witness_migration_journey.js` rewritten to assert the new behaviour. Logs `/tmp/count_logs/mig_migration_recover.log`, `recover_step0.log` (before), `recover_step1.log`.
+**STEP 0 (measured on main `ee41d86d`, before any change):** F1 fixed (`§JRN-DUP after the reload: 0`). F3 REMAINS and was NOT a downstream symptom: second Process -> `C_Location_UU: 2 C_Location rows have ...` (the C_Location sheet is loaded again: the twin had no unique index on `c_location_uu`). F2 REMAINS (corrected file refused whole; hand-finished tenant: journal `DR`, AR Clearing -2002.50, silent). F4 REMAINS (`§JRN-STRAY` 109.00).
+**Legacy oracle (read, not guessed):** `pg_indexes` on `idempiere_test`: `c_location_uu_idx`, `c_bpartner_location_uu_idx` ... are UNIQUE (901 `<table>_uu_idx`); `ad_ddl_unique` carried none (a hashed base file, so not edited: the `import_invoice` base-hash check fails if it is). `MSetup.java` has 0 `MInvoice` (it makes doc types only). Import* act on `I_IsImported='N'` rows only (ImportInvoice / ImportGLJournal).
+**What changed (generic, no per-window branch):**
+- `model_layer.js uniqueError`: the `<table>_uu` column is a unique key (derived from the column, not the hashed list). GLOBAL, as legacy (coordinator ruling 2026-11-10: no per-client scope). The loader salts every `*_UU` value of a file with the target client (`saltUU` in odoo_migrate_form.mjs): same tenant = same UUs (a repeat matches), another tenant = distinct; case MULTI of witness_migration_recover (20 judged).
+- `plugins/open_balances.mjs`: `heldState` / `resume` — pending (N) staging rows of an earlier refused run are REPLACED by the file now processed; imported (Y) rows = already there (a file whose every document number is already imported loads only the rest); a DIFFERENT cut-over file is refused in the summary and on Process in plain words naming cause + action ("already has an opening balance ... different cut-over ... migrate this file into a new company"). `complete()` with nothing pending re-checks the books of what is imported (Completes a Drafted journal, `verify`), so a hand-finished tenant is REPORTED. Refusal text now says "Process the corrected file again (the pending import rows are replaced) or finish by hand and Process again".
+- `plugins/odoo_migrate_form.mjs load()`: `heldByIdentifier` — a master row whose AD identifier columns (`AD_Column.IsIdentifier`) the sheet supplies, plus every resolvable lookup, equal exactly ONE row of the tenant is "already there" (C_Bank, C_BankAccount, C_BPartner_Location have no unique index); opening stock (I_Inventory) by count; run says "Nothing to do: all N rows ... already in this company".
+- `idempiere.html renderGenesisWizard`: the appended G7 sample invoice is removed (-9 +3 lines).
+- Guards: `witness_open_balances` RERUN now expects "Nothing to do"; `witness_sapbc_open` / `witness_idempiere_open` PR-time `git diff origin/main` guards no longer list `open_balances.mjs`.
+**Evidence:** `§REC-VERDICT PASS judged=17` (NOSAMPLE 2, REPEAT 5, SECOND 2, RESUME 5, HANDFIN 3). MUTANT (`ERP_DIR=~/bim-ootb/erp`, old code): `§REC-VERDICT FAIL judged=17 failed=10`, all five cases FAIL. Journey `§JRN-VERDICT PASS judged=34` (R2 cases rewritten); lane (SLOW=1) all PASS except `sapbc_open` MODEL (stale PR-time guard, fails on main too); `idempiere_falsifier` PASS with NODE_PATH=~/bim-ootb/node_modules (sql.js not in a fresh worktree); `poc_genesis_sysadmin_live` 4 FAIL identical on main (plugin_registry/semver_strict load order, pre-existing). Host: `idempiere.html` form Process now runs stage 2 even when stage 1 wrote nothing (repeat re-verifies).
+**RESOLVED:** the BLOCKED per-client question was answered (global index, salt per tenant); the falsifier / messy / idempiere_open / sapbc_open witnesses compare through `saltUUValue`.
+**Remaining / not done:** (1) two-file workbook path (`witness_odoo_form` RERUN, `§OF-GAP`): a repeat re-loads 2 C_Location rows - stored C_Location_UU there is not the sheet's, cause unread;  `witness_sapbc_open` MODEL `old-tables-unchanged` fails on main too (a PR-time guard of the BC lane: demands "ledger tables added"); the guide wording (second Process / refused stage 2 / reload) still to be changed on master `docs/MigrationGuide.md`; `genesis.html` (standalone page) still appends its own sample invoice (its posting witness `witness_genesis_real_poster` depends on it; separate decision).
+
+### §WIRE-SPEC (2026-11-11, session y) — the three open-balances readers wired into the user's flow by ONE generic mechanism; §OF-GAP closed with a number (written BEFORE the code)
+Code: bim-ootb `feat/migrate-wire` (DRAFT PR), worktree `/tmp/wt-wire`. Witnesses extended: `witness_idempiere_open.js`, `witness_sapbc_open.js` (LOAD/MUTANT now through the REAL form module), `witness_odoo_form.js` (RERUN/`§OF-GAP`). Logs `/tmp/count_logs/mig_*.log`.
+**Measured before the spec (main `ba1c7400`):** only Odoo has a menu leaf + form that picks the file, shows the summary, Processes, runs stage 2 and verifies. SAP (9544001) and BC (9543001) have forms for the MASTERS only: their open-balances readers
+(`sap_agent/open_reader.js`, `migrate/connectors/bc_open.mjs`) are reachable only from the witness's test-side form (`org.test.SapOpen` ...); iDempiere has NO form, no bundle, and none of the six new files is in `sw.js` PRECACHE.
+`odoo_migrate_form.plan()` finds its open file with Odoo's own `isExport` / `openBalances` (odoo_migrate_convert.mjs) - a per-source branch inside the shared planner.
+**Design (one mechanism, data not branches):**
+1. `plugins/open_sources.mjs` (NEW): the list of open-balance templates is DATA (`odoo-17`, `idempiere-open`, `sap-b1-10-open`, `bc-w1-open`); a file is an open file when its `manifest.format` is a template's `connector.format`. `detect(files)`, `convert(data)` (the ONE engine, the file's own template), `sheets(conv, hasBase)`.
+   Rule (one, for every source): with a base book (masters from a workbook / the engine) only the OPEN sheets (`OPEN_ORDER`) of the open file are added (as Odoo's two-file path does today); with NO base book the open file's non-empty sheets ARE the book (open-only: the accounts, partners, locations, price list the open documents need are in the template's own output).
+2. `odoo_migrate_form.plan()` asks `open_sources.detect` instead of Odoo's `isExport`; adds the open-only entry (no workbook, no masters). The summary (sheets, refused-before-load, `ℹ` notes incl. foreign-currency amounts left on clearing, will-create), Process, stage 2 (`OB.complete`) and `§MIG-VERIFY` are the existing, shared ones.
+3. Source forms stay thin converters: iDempiere (NEW bundle 9545001, class `org.kernel.idempiere.MigrateFromIdempiere`, picks `idempiere_open.json`); SAP form also accepts `sap_open.json` (with `sap_export.json` = masters + open; alone = open-only); BC form reads the open set from the SAME package it already reads (when the package carries the ledger tables 17/21/25/271) and hands it on as an open file. A mismatch between the form's cut-over date and the open file's is ONE problem row (shared helper), never a silent pick.
+4. Plugin bundles: one `plugins/migrate_bundle.mjs` makes the manifest of a migrate form from data (id, form id, class, texts, seqno); odoo/sap/bc/idempiere bundles are 6-line callers (the three 36-line copies are deleted).
+5. Delete: `sap_open_convert.mjs`, `idempiere_open_convert.mjs`, `bc_open_convert.mjs` (19+19+21, replaced by `open_sources.mjs`), Odoo's `isExport`/`openBalances` branch in the planner. Add to `sw.js` PRECACHE the files that were never in it; `plugin_overlay.js` INSTALL_ONLY gets the iDempiere bundle. NOT touched: `genesis.html`, the Plugins pane, `poc_genesis_sysadmin_live`.
+6. Agents: `--cutover` already writes the file the form picks (`sap_open.json`, `idempiere_open.json`); READMEs say "drop it on <form name>"; zips rebuilt (`build_agent_zips.js`, `poc_agent_zip_sync.js`).
+**§OF-GAP (item 2) - cause to be measured and cited in the RESULT below, fix generic like #2844's `heldByIdentifier`; closes with `moved=0`.**
+**Witness spec (`§WIRE-*`, expected values from the oracle of the existing witnesses - independent SQL on the legacy DB / raw mock rows - never from the code under test):** per source, through `AF.read` (the summary exactly as `idempiere.html` calls it) -> `AF.execute` (Process) -> `AF.executeAfter` (stage 2) -> `§MIG-VERIFY`: PLUG (bundle starts, dictionary row, menu leaf, access) · PICK (empty = what to pick; a file of ANOTHER source = one named problem) · SUMMARY (sheets will == the file, `ℹ` row names the foreign/no-address refusal, nothing written) · RUN (twin books == the oracle: plain exact, clearing == leftover, OPEN per partner, bank) · REPEAT ("Nothing to do"/"Already migrated") · MUTANT (flip an amount / drop an open item through the form: loader passes, the oracle comparator FAILS; an unfrozen source: a problem row, Process refuses, tenant unchanged). Guide-step list: N steps per source printed `WITNESSED` or `UNWITNESSED` (`§WIRE-STEPS`). `INCONCLUSIVE` when nothing judged.
+Not witnessed by construction (said, not hidden): a real browser click-through of the three new forms (the live-page `witness_migration_journey` drives Odoo only), a real SAP / BC (CONN stays INCONCLUSIVE), every UNCLEAR row of the earlier specs.
+
+**§WIRE RESULT (2026-11-11; bim-ootb draft PR #2849, branch feat/migrate-wire, sw v1051; lane `SLOW=1` all PASS, logs `/tmp/count_logs/mig_*.log` read):** `§IDO-VERDICT PASS judged=45` · `§SBO-VERDICT PASS judged=97` · `§OF-VERDICT PASS judged=21` · journey `§JRN-VERDICT PASS judged=34` · MIGE 89 · OB 43 · SAPM 24 · BCM 18 · REC 20 · IDF PASS.
+- Mechanism: `plugins/open_sources.mjs` (sources = template names; `detect` by `manifest.format`); planner has open-only mode; rule = open sheets always, other sheets only for a table the base book holds no data row for. iDempiere form (bundle 9545001) new; SAP form takes `sap_open.json` (+ `sap_export.json`); BC form derives the open set from the same package when it holds ledger tables 17/21/25/271. Lines (non-zip erp): +468 / -254. Deleted: `sap_open_convert`, `idempiere_open_convert`, `bc_open_convert` (59), the three 36-line bundle copies (-102), Odoo's `isExport/openBalances` planner branch, the test-side `org.test.*` forms.
+- BUG FOUND by wiring (real, shipped): SAP and BC forms' `after` planned stage 2 from the RAW pick, so `open` was empty and the books were never verified against the source (BC repeat returned ''). Fixed: `after` converts first.
+- §OF-GAP CAUSE (cited): `C_Location`'s only `AD_Column.IsIdentifier` is `City`; the harness sheet has no `C_Location_UU`; two of nine file rows share "Tracy"; `heldByIdentifier` (odoo_migrate_form.mjs) skipped a row only when exactly ONE tenant row matched, "Tracy" matched TWO -> reloaded (12->14). Fix: tenant count == file count for that signature = already there. `§OF-GAP repeat moved=0 C_Location 12->12`; mutant (old rule) FAILS 3 checks; no-guess check (tenant holds 1 of 2 -> +2 loaded) passes.
+- Steps (printed `§WIRE-STEPS`): iDempiere 11/12 witnessed; SAP 8/11; BC 7/10. UNWITNESSED: real browser click-through of the three forms; real SAP / BC (CONN); SAP masters+balances picked together in one run (no consistent fixture); real BC export.
+- Guards updated on purpose: `witness_sapbc_open` UNTOUCHED no longer lists `odoo_migrate_convert.mjs` / `idempiere_agent` (both changed by this work). The old "MODEL fails on main" did not reproduce in a worktree (PASS).
+- BLOCKED questions: none.
+## §TRADE-SPEC (2026-11-11) — R5: a MIGRATED tenant can TRADE (witness `erp/tests/witness_migration_trade.js`, bim-ootb branch feat/migrate-trade)
+**ISSUE it proves/disproves:** the Odoo one-file fixture loads (journey/recover witnesses) — but can the migrated company then receive a payment against a MIGRATED open invoice, complete a NEW order->shipment->invoice->payment with the migrated products/partners/price list, and pay a migrated open vendor bill, with the books still balancing? Shipped document-action paths only (`ML.newPO/save/processIt`, `MPayment.allocateIt`); no bare INSERTs. Harness copied from `witness_migration_recover.js` (birth -> Process both stages on the fixture).
+**Expected values come from the fixture raw rows + legacy rules, never from the code under test:**
+- Raw `open_moves.amount_residual`: Gemini Furniture INV/2026/00006 = 2002.50 and INV/2026/00007 = 2002.50 (partner open 4005.00); Acme INV/2026/00004 = 22137.50; Ready Mat BILL/2026/06/0002 = 6596.40 and BILL/2026/10/0002 = 4513.75 (vendor open 11110.15); Office Chair `list_price` 70, `standard_price` 55; opening on-hand per quant.
+- Legacy posting (Doc_Payment.java createFacts :121-175; Doc_AllocationHdr.java :293-360, :731-757): AR receipt = Dr BankInTransit / Cr UnallocatedCash; allocation of that payment to an invoice = Dr UnallocatedCash / Cr C_Receivable (no discount/writeoff) => NET Dr BankInTransit X, Cr Receivable X, UnallocatedCash 0. AP payment = Dr PaymentSelect / Cr BankInTransit, allocation Dr V_Liability / Cr PaymentSelect => NET Dr Liability X, Cr BankInTransit X. Invoice (Doc_Invoice) ARI: Dr Receivable grand, Cr Revenue lines, Cr TaxDue tax. Account ids are read from the tenant's own config rows (c_bp_group_acct, c_bankaccount_acct, m_product_acct) - the lookup is data, the amounts are the assertion.
+- Open amount (invoice) = GrandTotal - sum(completed allocation lines) re-derived by SQL; IsPaid per MInvoice.testAllocation (open = 0).
+**Cases (every check prints `§TRD-CHECK case=.. key=.. OK|FAIL`, verdict `§TRD-VERDICT PASS judged=N failed=0`, INCONCLUSIVE if judged=0):**
+- ARPAY: pay Gemini INV/00006 in full -> invoice IsPaid=Y, open 0; partner open 4005.00 -> 2002.50; net Fact_Acct delta: Receivable -2002.50, BankInTransit +2002.50, UnallocatedCash 0; trial balance sum 0.00 per schema. PARTIAL: pay 1000.00 on Acme INV/00004 -> open 21137.50, IsPaid=N.
+- SALES: a NEW standard order (Odoo list price list, Office Chair x3, Gemini) -> complete -> shipment (on-hand 3 lower) -> invoice -> payment; line net = 3 x 70.00 = 210.00 (raw list_price), invoice Dr Receivable = grand, Cr revenue = 210.00; payment allocated (IsPaid=Y); trial balance 0.00 per schema before and after.
+- APPAY: pay Ready Mat BILL/06/0002 in full via AP payment -> open 0, vendor open -11110.15 -> -4513.75 (raw BILL/10/0002), net Dr Liability / Cr BankInTransit 6596.40, TB 0.
+- MUTANT: `MUT=wronginv` allocates the Gemini payment to the other invoice (INV/00007) and `MUT=unbal` drops one fact leg; both must FAIL ARPAY/TB. Nothing judged -> INCONCLUSIVE.
+If a step refuses: report what refuses (file:line), fix generically + legacy-faithfully if small (AD-LAYER LAW), else BLOCKED with the one question.
+**RESULT (2026-11-11, bim-ootb draft PR #2848):** `§TRD-VERDICT PASS judged=23 failed=0 blocked=1` (SETUP 2, ARPAY 9, SALES 7, APPAY 5). Mutants: `MUT=wronginv` FAIL 2, `MUT=unbal` FAIL 5, old `model_post.js` FAIL APPAY.
+- ARPAY/SALES/APPAY all work on the migrated tenant through the shipped paths (payment saved Draft, then DocAction CO -> allocateIt -> allocation CO; Generate Shipments 118 / Generate Invoices 119). Gemini 4005.00 -> 2002.50, Ready Mat -11110.15 -> -4513.75, new invoice 47.40 + 4.27 tax from raw list_price 15.80, on-hand 18 -> 15.
+- DEFECT FIXED (generic, legacy-faithful): `model_post.js` c_payment AP leg posted Dr UnallocatedCash; Doc_Payment.java:144-166 posts Dr PaymentSelect (and the allocation clears through PaymentSelect, Doc_AllocationHdr :731-757), so every allocated vendor payment left Dr Unallocated / Cr PaymentSelect standing. Hidden in GardenWorld because both accounts are one combination. sw v1050.
+- ⛔ BLOCKED (`§TRD-BLOCKED case=COST`): the shipment of a migrated stocked item completes but posts E "No Costs for Storage Box" (legacy Doc_InOut gives the same): the cut-over loads no M_Cost / cost element (born tenant has none; raw `standard_price` 14.00 unused). QUESTION: may the migration create the Standard-costing M_Cost rows from standard_price (Costing Inventory document, ImportInventory.java:524-572, IsUpdateCosting currently named not-ported), or is stock value out of R5 scope? Once fixed the check becomes an ordinary judged one (COGS 3 x 14.00 = 42.00).
+- Observations, not fixed: (1) born tenant has no C_BP_Group_Acct (MBPGroup.afterSave) so migrated partners get no C_BP_Customer/Vendor_Acct; posting still works via model_post `vc()` falling back to C_AcctSchema_Default; adding the rows to genesis.js makes `witness_genesis_real_poster` G4 stale (genesis_dict regen needed). (2) A payment created and completed in ONE Trx cannot post its allocation ("account not resolvable": the poster reads the payment by SQL and a new row is not yet stored); the UI saves then completes, the witness does the same. (3) migrated payment terms carry no C_PaySchedule rows (all `sched=0`). (4) Order created by `ML.newPO` needs C_PaymentTerm_ID and Bill_BPartner_ID set (the window callouts do this).
+
+**UPDATE (2026-11-11, same PR #2848, owner answers applied):** `§TRD-VERDICT PASS judged=26 failed=0 blocked=0` (+COST 2, +ONETRX 1). 
+- STOCK VALUE (was BLOCKED): legacy route = Import Inventory `IsUpdateCosting` -> a Cost Adjustment document (ImportInventory.java:524-572; MCost.get, MInventory CostingMethod, MInventoryLine NewCostPrice, completed at :471-485), now ported in `processes/ImportInventory.js`. Odoo `standard_price` rides from the template's existing M_InventoryLine provenance as a `CurrentCostPrice` column (`plugins/odoo_migrate_convert.mjs` convert(); the 17-sheet format has no cost column and the template is unchanged); stage 2 (`odoo_migrate_form.mjs completeOpeningStock`) passes the tenant's schema / cost type / Standard element / Cost Adjustment doctype. Only the current odoo_export.json-alone flow carries cost (the older workbook path does not). Witness: all 21 costed products' M_Cost == raw standard_price; shipment posts Dr COGS 42.00 / Cr Inventory 42.00 (3 x 14.00); old code FAILs COST. `witness_open_balances` JSON-ONLY subtracts the one Cost Adjustment document; `witness_import_inventory` REFUSE case now expects legacy's "Accounting Schema required!".
+- BORN TENANT = legacy MSetup: `genesis.js` adds C_BP_Group_Acct + C_BP_Vendor_Acct (MBPGroup/MBPartner afterSave insert_Accounting, MBPartner.java:989-990) and the Standard Costing M_CostElement (MAcctSchema.beforeSave checkCosting :577-600 -> MCostElement.getMaterialCostElement). G4 was only STALE (not encoding a divergence): `genesis_dict.js` regenerated.
+- ONE-TRX payment: legacy posts on the completing connection, so it sees the new payment; the twin's allocation poster read it by SQL. Fixed in `model_post.js` payAcct (trx.get). ONETRX case; old code FAILs it.
+### §CLOSEOUT (2026-11-11, session y) - SPEC (written BEFORE code): F4 remainder, poc_genesis_sysadmin_live 4 FAIL, F5
+Code: bim-ootb `fix/migrate-closeout` (DRAFT PR), worktree `/tmp/wt-closeout1`. Logs `/tmp/count_logs/co_*.log`. Baseline measured on main `ba1c7400` before any change.
+**(1) F4 remainder - `erp/genesis.html` appends a "G7 sample invoice" (109.00) to the install bundle.** Legacy oracle: `MSetup.java` has 0 `MInvoice`/`MOrder` (it creates doc types, GL categories, defaults, accounting schema; `createDocType` :973). Claim: the bundle handed to idempiere.html contains NO c_invoice/c_invoiceline/c_invoicetax row and no group labelled "sample invoice"; the installed tenant has 0 c_invoice rows. The page's posting PREVIEW (Genesis.postSampleInvoice on a scratch posting db, never committed, `witness_genesis_real_poster` G1-G5) is a poster-parity demonstration on a throwaway db, not a company row, and stays. Dependents: `poc_genesis_resident_live` asserted "$109 invoice scoped to client 17" and "groups=7" - those assertions were satisfied BY the invoice (the second also stale: born groups=8 since #2791/#2792, handoff was 9); they proved the demo row exists, not that a company installs. Replace with: invoice rows in the new client == 0 (legacy), receivable account 12110 still resolves via c_elementvalue (the chain the poster uses), handoff groups == born groups.
+**(2) `poc_genesis_sysadmin_live` 4 FAIL (read from `co_base_poc_genesis_sysadmin_live.log`).**
+ a. "7 oracle rows" - `§SYSTEM-TENANT ensure rows=1` with `insert-fail ... UNIQUE`: the seed already carries the System tenant (AD_Org/AD_Role/AD_User_Roles), the ensure is idempotent. The test asserted an insert COUNT, an implementation detail; the claim is "the System(0) login surface exists". Assert rows present (ad_client 0, ad_role 0, ad_user_roles role 0) against legacy `idempiere_test` counts.
+ b. "5 demo tenants at the front door (0)" - `login-step0 tenants=7 demos=0`: Odoo/iDempiere/SAP Flights/Oracle Scott/Dynamics Cronus are now RESIDENT tenants (clients 12-16), not `.idmp-login-demo` tiles. Claim kept (all 5 listed at the front door), asserted over resident+demo names.
+ c. "GardenWorld 18 BPartners" - the page shows 24; legacy `idempiere_test` = 18. The 6 extra (EMP001, EMP002, BP-TEN-1/5/6, BP-OWN-1; created 2026-07-03, from #645 HBA seed baked in ad_seed.db) are a seed divergence from legacy, NOT a leak from the birth. Test fix: compare GardenWorld count BEFORE vs AFTER the birth (the cross-leak claim), plus INFO line with seed-vs-legacy (24 vs 18) so the divergence stays visible. Removal of the 6 rows is a TWIN-rule item (affects the HBA demo) - raised as ONE question, not done here.
+ d. "zero page errors: plugin_registry.js needs common/comm/semver_strict.js" - harness cause: idempiere.html loads `../common/comm/semver_strict.js`, the test server is rooted at `erp/` so the file 404s. Fix in the 3 genesis tests' static server (fall back to the repo root for `/common/*`), as the journey witness already serves from the repo root.
+**(3) F5 - Plugins & Releases pane.** Owner `erp/plugin_release.js` (`open`/`close`), opened by the sign-in link `#idmp-release-link` (idempiere.html:7842). It is a modal (`#pr-root` fixed inset:0 z-index 1400 + backdrop); it has x and backdrop-click only, so it survives login and logout and covers the next screen. Design intent (it is a modal over the sign-in page): it belongs to the screen that opened it. Fix: close on Escape (standard modal), and the host closes it on screen change (`doLogin`, logout -> `showLogin`). One place each, no per-window code. Witness `erp/tests/witness_release_pane_dismiss.js`: numeric, no screenshots - (A) open from the link: `#pr-root` rect == viewport, `elementFromPoint` at the Log In button centre is inside `#pr-root` (so the test can see the interception); (B) Escape -> `#pr-root` absent and elementFromPoint at the same point is the button; (C) reopen, log in -> `#pr-root` absent, elementFromPoint at the header Log out button centre and at the menu root is NOT inside `#pr-root`; (D) reopen on the logged-in page, log out -> absent. MUTANT: `ERP_DIR=` old checkout must FAIL B, C, D. Verdict `§RELDISMISS-VERDICT`, INCONCLUSIVE if a control point cannot be located.
+**Run list:** `run_migration_lane.sh` (SLOW=1), `poc_agent_zip_sync.js` if agent files change (none expected), sw.js max+1 keeping both notes.
+**§CLOSEOUT RESULT (2026-11-11; bim-ootb draft PR #2847, sw v1050; logs /tmp/count_logs/co_*.log read):** (1) `genesis.html` bundle = `born.groups` only; resident test: handoff == born groups, 0 invoices / 0 lines (mutant old genesis.html: 2 FAIL). (2) `poc_genesis_sysadmin_live` 16/0 (was 12/4): causes a-d above fixed in the tests/harness as specified, System surface counts 1/1/2 equal legacy `idempiere_test`; resident 13/0, wizard 7/0, `witness_genesis_real_poster` PASS. (3) `witness_release_pane_dismiss.js` `§RELDISMISS-VERDICT PASS judged=7`; old code `FAIL judged=7 failed=3` (B C D). Lane SLOW=1 all PASS, `§JRN-VERDICT PASS judged=34`, agent-zip sync PASS. **OPEN (one question, twin rule): GardenWorld in `ad_seed.db` has 24 BPartners, legacy 18 - 6 non-legacy rows (EMP001/002, BP-TEN-1/5/6, BP-OWN-1, #645 HBA seed). Remove them via a patch (breaks the HBA Construction demo until it ships as a plugin)?** The tests now log this as `§GW-SEED-INFO`.
+
+### §HBA-SEED-SPEC (2026-11-11, session y; coordinator ruling: remove, plugin first) - GardenWorld BPartners == legacy 18
+Code: bim-ootb `fix/hba-seed-plugin` (DRAFT PR), worktree `/tmp/wt-hbaseed`. Witness `erp/tests/witness_hba_seed_plugin.js`, log `/tmp/count_logs/hba_seed.log`. Oracle: legacy `idempiere_test` GardenWorld (client 11) C_BPartner = 18 (read, psql).
+Measured: `ad_seed.db` GW = 24; the 6 extra (EMP001/002 ids 1001/1002, BP-TEN-1/5/6, BP-OWN-1 ids 1600006-9) carry UU `hba-bp-*` from scripts/seed_hba_erp.js (#645). Rows hanging on them (all `hba-%` UU): AD_User 2, S_Resource 2 (ad_user_id), S_ResourceAssignment 7, S_ResourceUnavailable 6, HR_Employee 2, HR_Movement 7, C_Subscription 4 (36 rows with the 6 BPs). Other HBA rows (products, BOM, HR_Concept..., M_Warehouse) do not reference a partner and are out of this item.
+Design (no host special case, no binary edit): (1) `plugins/hba_demo.mjs` (GENERATED by `erp/tools/gen_hba_demo_plugin.js`, rows copied from the seed) = `manifest.dictionary` the plugin host stages refcounted (`dict.insert`); installed NOT started (plugin_overlay INSTALL_ONLY). (2) boot overlay `ad_hba_seed_overlay.js` deletes the `hba-%` cluster, child first, outside the hashed patches (a patch line would change the Team base hash: idempiere.html comment at the AdRule overlay). The raw file stays: the Viewer HBA lens reads it directly and is unaffected.
+Claims: P1 page boot: GW C_BPartner == 18 and 0 `hba-%` rows in the 8 cluster tables. P2 start the plugin: the 8 tables hold exactly the raw seed's counts (6/2/2/7/6/2/7/4, from the raw `ad_seed.db` via sqlite3), the 6 partners by Value, 24 in GW, every FK resolves (employee/movement/subscription partner exists, resource user exists, assignment/unavailable resource exists). P3 stop: back to 18, 0 rows. P4 start, persist, reload: rows restored (24), then 18 base after the overlay on the second boot for a stopped plugin. P5 generator `--check` SAME. MUTANT: `AdHbaSeedOverlay.ensure` skipped (old erp) -> P1 FAIL; plugin with a row dropped -> P2 FAIL. Then `poc_genesis_sysadmin_live` / resident restore `GardenWorld == 18` (GW_SEED and `§GW-SEED-INFO` deleted).
+**§HBA-SEED RESULT (2026-11-11; bim-ootb draft PR from fix/hba-seed-plugin, sw v1051; logs /tmp/count_logs/hba_seed*.log read):** `§HBASEED-VERDICT PASS judged=10` (P1 base page GW BPartners 18 + 0 cluster rows; P2 plugin started = raw-seed counts 6/2/2/7/6/2/7/4, 6 partners by Value, 24, 0 dangling FK; P3 Stop -> 18; P4 persisted start survives reload; P5 generator SAME). Mutant (old erp): FAIL 4; FK falsifier: FAIL P2c. `poc_genesis_sysadmin_live` 16/0 and resident 13/0 assert GardenWorld == legacy 18 (GW_SEED / `§GW-SEED-INFO` deleted). Lane: all PASS; `open_balances` and `migration_recover` showed NOJUDGE only because the lane's grep hits NUL bytes in a shared log ("binary file matches"; another session writes /tmp/count_logs concurrently) - run alone they PASS (OB-VERDICT judged=43, REC-VERDICT judged=20). Not touched: the raw `ad_seed.db` file (Viewer HBA lens reads it directly, unaffected); other HBA rows with no partner link (products, BOM, HR_Concept, M_Warehouse...) still in the base seed - separate twin-divergence item if wanted.
+
+### §PAYSAVE-SPEC (2026-11-11) - a MIGRATED tenant cannot Save a Payment in the page: "Mandatory: C_BankAccount_ID" (written BEFORE code)
+Code: bim-ootb `fix/migrate-paysave` (DRAFT PR), worktree `/tmp/wt-paysave`. Witness `erp/tests/witness_migration_paysave.js` (`§PAYSAVE-VERDICT`), added to `run_migration_lane.sh`. Found by the film trade driver (film7) on the live page.
+**Measured cause (read, not guessed):**
+- The check is `erp/ad_modelval.js:626` `Number(r.c_bankaccount_id) > 0`, a faithful port of `MPayment.java:696` (`getC_BankAccount_ID() <= 0`, `~/idempiere-dev-setup/idempiere`). Legacy ids are positive, so `<= 0` means "no value".
+- The migrated rows are NOT a leftover placeholder. In the PAGE every row created through the op log (migration forms, windows, processes - one law, not a loader quirk) gets the synthetic pk `-opId`: `crud_core.js:450` (`listTip`), FKs resolved to `-(nextId+ix)` at commit by `crud_overlay.js _resolveOpRefs` (:2985-3010), `idempiere.html:1482`, `crud_overlay.js:830,928,2924`. The `{{opref:N}}` / `#new:` placeholder IS replaced at commit - by a negative number. So every C_Bank / C_BankAccount (and every partner, invoice, ... the migration writes) is negative in the page.
+- Earlier lanes hit the same law at two other `>0`/`<0` sites and fixed it by treating a negative id that IS a row of the referenced table as a value: FS-13 `ad_modelval.js:284` (`!= 0`) and #2099 `ad_callout.js sessionRow` (:694-708; ERP_FRIENDLY_OPS_LENS.md §34). The Payment hooks were never swept: the 47 `_id) > 0` checks of `ad_modelval.js` all see a session-created FK as "not set".
+**Why `§TRD-VERDICT PASS (26)` did not catch it (the instrument, not the model vs window path):** the trade witness runs on the HEADLESS kernel `erp/ws_kernel.js`, whose `newId` (:45) gives POSITIVE ids (max, 1000001...). It even hard-codes `c_bankaccount_id: 1000001`. Same model path (ML.save runs the same `ad_modelval` hooks the window runs), different id law, so the page's negative ids were never exercised. A witness over the wrong id law is scope-blind.
+**Fix (generic, one owner, no per-table branch; the `> 0` rule is NOT loosened):** `ad_modelval.js` gets ONE helper `idSet(col, v)`: positive = set (legacy); negative = set ONLY when it is a row of the table the column references (the tip-shadowed reader the hooks run under; same rule as `sessionRow`); 0 / null / a negative that is no row = not set (still "Mandatory"). The `Number(x.<col>_id) > 0` FK checks of the hook blocks call it. A bare negative or a deleted row stays rejected.
+**Witness (§PAYSAVE, expected values from raw rows + legacy, never from the code under test):** `ws_kernel.js` gets the page's law behind `WS_ID_LAW=synthetic` (`newId` negative, unique, like `-opId`); the witness migrates the Odoo fixture under it and prints per table the count of negative ids left in committed rows (`§PAYSAVE-NEG`, informational = the law, judged: every bank row negative, so the premise is real, else INCONCLUSIVE). Then PAYSAVE: Save a Payment (draft) with a MIGRATED bank account + migrated partner + migrated open invoice through the model/validation path, complete it (allocate), and assert rows: invoice IsPaid=Y / open 0, partner open 4005.00 -> 2002.50 (raw `open_moves.amount_residual`), Fact_Acct Dr BankInTransit / Cr Receivable 2002.50 net, trial balance 0.00. MUTANTS: `MUT=oldcheck` (the plain `> 0`) FAILS PAYSAVE with "Mandatory: C_BankAccount_ID"; `MUT=ghost` (a negative id that is no row) must still be REFUSED (check passes only if refused); positive-law run must still pass. Verdict `§PAYSAVE-VERDICT PASS judged=N failed=0`, `INCONCLUSIVE` if nothing judged.
+**Negative-id census (every table the migration writes):** per-table count printed by the witness and quoted in the RESULT below. The id law itself (a durable synthetic pk per op) is left as is: it is the op-log identity every page window uses, and changing it rewrites persisted FKs; named here as the thing a positive-id law would have to migrate.
