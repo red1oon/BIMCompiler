@@ -27,7 +27,7 @@ voiced = [d[k] for kind, n, d in beats7.ITEMS if kind == 'beat' for k in ('short
 chk('no-typed-digit-in-voice', not any(rx(t) for t in voiced), f'{len(voiced)} lines')
 chk('planted-number-control', rx('M: we moved 42 invoices') and not rx('M: we moved {fact:odoo_open_docs} invoices'), 'planted digit caught, placeholder passes')
 # C. audio fits video
-fit = open(f'{B}/fit.log').read(); rows = re.findall(r'§NARR_FIT (\S+) cue=(\S+) room=(\S+) dur=(\S+) -> (\S+) slack=(\S+)', fit)
+fit = open(f'{B}/fit.log').read(); rows = re.findall(r'§NARR_FIT (\S+) cue=(\S+) room=(\S+) dur=(\S+) -> (.+?) slack=(\S+)', fit)
 nb = sum(1 for k, _, _ in beats7.ITEMS if k == 'beat')
 chk('fit-rows', len(rows) == nb, f'{len(rows)}/{nb}')
 for r in rows: chk(f'fit:{r[0]}', r[4].startswith('DETAIL') and float(r[5]) >= 0, f'pick={r[4]} dur={r[3]} room={r[2]} slack={r[5]}')
@@ -60,5 +60,5 @@ for kind, n, d in beats7.ITEMS:
 chk('subtitle-band-empty', bad == 0, f'{nb} pictures, nonblank={bad}')
 # I. page errors / sources
 chk('pageerr', FACTS['pageerr']['value'] == '0', 'pageerror events in the recording')
-print(f"§FILM-MA-VERDICT {'INCONCLUSIVE' if not judged else 'FAIL' if fails else 'PASS'} judged={judged} failed={fails}")
+print(f"§FILM-MA-VERDICT{os.environ.get('VERDICT_SUFFIX','')} {'INCONCLUSIVE' if not judged else 'FAIL' if fails else 'PASS'} judged={judged} failed={fails}")
 sys.exit(0 if judged and not fails else 1)

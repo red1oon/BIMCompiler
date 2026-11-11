@@ -2,7 +2,11 @@
 # ⚠ DO NOT REMOVE — v2 verdict: verify7's checks on the v2 beat table PLUS (a) 0 card frames, (b) the legacy Account Viewer figures on screen equal the witnessed §IDO-SOURCE values. usage: verify_v2.py <v2builddir>
 import sys, os, re, json, types, runpy
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE); B = sys.argv[1]
-import beats_v2
+import importlib; LANG = os.environ.get('LANG_FILM', 'en')
+if LANG == 'en': import beats_v2; _EN = beats_v2
+else:
+    import beats_v2_lang as _BL, types as _t; _a, _it, _cl, _cfg = _BL.build(LANG); beats_v2 = _t.SimpleNamespace(ALPHA=_a, ITEMS=_it, CLOSING_TEXT=_cl)
+    _EN = importlib.import_module('beats_v2')   # EN table, for the translation-integrity checks below
 ad = types.ModuleType('beats7'); ad.ALPHA = beats_v2.ALPHA; ad.ITEMS = [i for i in beats_v2.ITEMS if not i[2].get('waits')]; sys.modules['beats7'] = ad
 j = f = 0
 def chk(k, ok, info=''):
@@ -20,7 +24,17 @@ sw = list(ad.ITEMS); sw[0], sw[-1] = sw[-1], sw[0]; chk('mutant-swapped-cards-fa
 chk('mutant-no-opening-fails', not gate(ad.ITEMS[1:]), 'missing opening card is rejected')
 chk('only-real-screens', all(i[2]['image'][0] in ('shot', 'two') for i in ad.ITEMS if i[0] == 'beat'), 'beat images: shot/two of real captures only')
 chk('card-segments-only-two', sorted(n[:-4] for n in os.listdir(f'{B}/seg') if re.match(r'(part2|closing_card|title|ch\d|limits|closing)', n)) == ['closing_card', 'part2'], 'seg dir')
-chk('closing-text-verbatim', beats_v2.CLOSING_TEXT == 'A healthy ERP is one that you can take out.' and ' '.join([ad.ITEMS[-1][2]['l1'], ad.ITEMS[-1][2]['l2']]) == beats_v2.CLOSING_TEXT, beats_v2.CLOSING_TEXT)
+chk('closing-text-verbatim', beats_v2.CLOSING_TEXT == (_EN.CLOSING_TEXT if LANG == 'en' else _BL.T[LANG]['closing'][0] + ' ' + _BL.T[LANG]['closing'][1]) and (LANG != 'en' or beats_v2.CLOSING_TEXT == 'A healthy ERP is one that you can take out.') and ' '.join([ad.ITEMS[-1][2]['l1'], ad.ITEMS[-1][2]['l2']]) == beats_v2.CLOSING_TEXT, beats_v2.CLOSING_TEXT)
+# (a2) translation integrity (non-EN): same ids/order/images/src, same placeholders per field, same turn count, no EN text left in a voiced line
+if LANG != 'en':
+    ph = lambda t: sorted(re.findall(r'\{(?:fact:)?([a-z0-9_]+)\}', t or ''))
+    chk('lang-same-ids-order', [i[1] for i in beats_v2.ITEMS] == [i[1] for i in _EN.ITEMS], f'{len(beats_v2.ITEMS)} items')
+    for (k1, n1, d1), (k2, n2, d2) in zip(beats_v2.ITEMS, _EN.ITEMS):
+        if k1 != 'beat': continue
+        same = all(ph(d1.get(f)) == ph(d2.get(f)) for f in ('short', 'detail', 'strip')) and d1['src'] == d2['src'] and d1['image'][1::2] == d2['image'][1::2] if d1['image'][0] == 'two' else all(ph(d1.get(f)) == ph(d2.get(f)) for f in ('short', 'detail', 'strip')) and d1['src'] == d2['src'] and d1['image'][1] == d2['image'][1]
+        turns = [len(d1[f].split(' | ')) for f in ('short', 'detail')] == [len(d2[f].split(' | ')) for f in ('short', 'detail')]
+        chk(f'lang-same-facts:{n1}', same and turns, f'placeholders {ph(d2["detail"])} + strip {ph(d2.get("strip"))}; turns equal={turns}')
+    chk('mutant-dropped-placeholder-caught', ph('M: x {fact:a}') != ph('M: x'), 'a translation that drops a fact is rejected')
 # (b) legacy screen == witnessed figures
 F = json.load(open(f'{B}/facts7.resolved.json')); t = open(f'{B}/rec/legacy_result.txt').read(); money = lambda s: round(float(s.replace(',', '')) * 100)
 def net(acct):
@@ -38,4 +52,4 @@ sys.argv = ['verify7.py', B]
 try: runpy.run_path(os.path.join(HERE, 'verify7.py'), run_name='__main__')
 except SystemExit as e: rc = e.code
 else: rc = 0
-print(f"§FILM-MA-V2-EXTRA judged={j} failed={f}"); sys.exit(1 if (f or rc) else 0)
+print(f"§FILM-MA-V2-EXTRA{os.environ.get('VERDICT_SUFFIX','')} judged={j} failed={f}"); sys.exit(1 if (f or rc) else 0)

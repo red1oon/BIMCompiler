@@ -6,7 +6,7 @@
 # Clips cached in ~/.local/share/film_narration/cache_edge/<sha1>.wav keyed on (text, voice, rate%).
 import sys,re,os,hashlib,asyncio,subprocess,numpy as np,soundfile as sf,parselmouth,edge_tts
 from parselmouth.praat import call
-src,tag,LANG=sys.argv[1],sys.argv[2],sys.argv[3]; base=1.0
+src,tag,LANG=sys.argv[1],sys.argv[2],sys.argv[3]; base=float(__import__('os').environ.get('FIT_BASE','1.0'))  # FIT_BASE<1 slows the voice (Thai)
 # optional 4th arg: caption tsv (id <TAB> "F: … | M: …") — English captions over native audio, turn-for-turn
 CAP={l.split('\t')[0]:[x.strip()[2:].strip() for x in l.rstrip('\n').split('\t')[1].split(' | ')] for l in open(sys.argv[4])} if len(sys.argv)>4 else None
 CFG={'ms':dict(VOX={'F':'ms-MY-YasminNeural','M':'ms-MY-OsmanNeural'},
@@ -143,7 +143,7 @@ for l in open(src):
     aud,mk=say(parse(de),base); d=len(aud)/SR; pick='DETAIL'; d_detail=d
     if d>room:
         sp=base*d/room
-        if sp<=base*1.10: aud,mk=say(parse(de),sp*1.01); d=len(aud)/SR; pick=f'DETAIL x{sp/base:.3f}'
+        if sp<=base*float(os.environ.get('FIT_MAXSPEED','1.10')): aud,mk=say(parse(de),sp*1.01); d=len(aud)/SR; pick=f'DETAIL x{sp/base:.3f}'   # FIT_MAXSPEED=1.0 -> no speed-up (Thai)
     if d>room:
         aud,mk=say(parse(sh),base); d=len(aud)/SR; pick='SHORT'
         if d>room: pick='SKIP'
