@@ -16,12 +16,15 @@ Every number on a card or in the voice is `{fact:id}` in `beats7.py`, resolved b
 | odoo_ar_open | 4005.00 | odoo | record.log:38 | `§FILMREC FACT odoo_ar_open="4005.00" src=sum of the tenant open invoices (AR, credit notes negative)` |
 | odoo_open_docs | 19 | odoo | record.log:37 | `§FILMREC FACT odoo_open_docs=19 src=c_invoice rows of the tenant` |
 | oi_judged | 19 | aging | mig_openitems.log:33 | `§OPENITEMS-VERDICT PASS judged=19 failed=0` |
+| ord_books | 360376.88 | sale_paid | order.log:67 | `§FILMREC ORDER books-after-cycle [{"dr":360376.87999999995,"cr":360376.87999999995,"n":58}]` |
+| ord_inv_total | 43.60 | sale_ship_inv | order.log:53 | `§FILMREC ORDER inv-after [{"no":"100000","s":"CO","p":"Y","t":43.6,"o":-1044,"paid":"N","id":-1092}]` |
+| ord_pay_amt | 43.60 | sale_paid | order.log:65 | `§FILMREC ORDER newpay-after [{"no":"10000007","s":"CO","amt":43.6,"alloc":"Y","pos":"Y","inv":-1092}]` |
+| ord_total | 43.60 | sale_order | order.log:43 | `§FILMREC ORDER o-orders2 [{"no":"50000","s":"CO","t":43.6}]` |
 | pay_ui_amt | 161.12 | trade | trade.log:23 | `§FILMREC TRADE payments-after [{"no":"10000007","s":"CO","amt":161.12,"alloc":"Y","p":"Y","inv":-161}]` |
 | pay_ui_books | 17656.44 | trade | trade.log:25 | `§FILMREC TRADE books-after-payment [{"dr":17656.44,"cr":17656.44,"n":34}]` |
 | rf_amount | 2002.50 | refusal | record.log:53 | `§FILMREC FACT rf_amount="2002.50" src=amount_residual of the removed open invoice INV/2026/00007` |
 | sap_term_calls | 8 | sap | term_sap.txt:16 | `§SAP-AGENT done calls=8 read_only=Y sets=9 rows=13` |
 | sbo_ar_left | 200.00 | sapbc | mig_sapbc_open.log:100 | `shipped> §MIG-CLEAR AR account=AR-CLEAR balance=200.00 expected=200.00 verdict=PASS` |
-| trd_judged | 26 | trade | mig_migration_trade.log:46 | `§TRD-VERDICT PASS judged=26 failed=0 blocked=0 cases=["PASS","PASS","PASS","PASS","PASS","PASS"]` |
 
 ## Non-numeric facts (names, treatments) — cited spec text, not log values
 - Source-table names (Odoo account.move.line, iDempiere Fact_Acct, SAP JournalEntries, BC G/L Entry), amount-left fields (amount_residual, DocTotal minus PaidToDate, Remaining Amt. (LCY), invoiceOpen) and bank treatments: spec §1/§2 of prompts/FILM_NARRATION.md (branch prompts/film-migrating-accounting), each from the MIGRATE_INSTALL_TENANT.md spec sections it cites.
