@@ -1,0 +1,25 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT intro cue=3.88 room=8.86 dur=7.97 -> DETAIL slack=+0.89 words=28
+§NARR_TONE intro#2 F YN rose=5.0st endDelta=+2.0st want=rise OK "Can an E R P still work like that?"
+§NARR_FIT list cue=13.34 room=9.65 dur=8.74 -> DETAIL slack=+0.91 words=29
+§NARR_FIT keys cue=23.59 room=10.49 dur=9.58 -> DETAIL slack=+0.91 words=31
+§NARR_TONE keys#0 F WH rose=0st endDelta=-8.3st want=fall OK "What does a key do?"
+§NARR_FIT new cue=34.67 room=8.11 dur=7.22 -> DETAIL slack=+0.89 words=22
+§NARR_TONE new#0 F YN rose=5.0st endDelta=+2.7st want=rise OK "And a new partner?"
+§NARR_FIT edit cue=43.38 room=5.70 dur=4.80 -> DETAIL slack=+0.90 words=14
+§NARR_TONE edit#0 F YN rose=5.0st endDelta=+2.0st want=rise OK "And an edit?"
+§NARR_FIT delete cue=49.67 room=8.82 dur=7.91 -> DETAIL slack=+0.91 words=25
+§NARR_TONE delete#0 F YN rose=11.0st endDelta=+0.8st want=rise OK "Can I delete the standard partner?"
+§NARR_FIT load cue=59.09 room=9.82 dur=8.92 -> DETAIL slack=+0.90 words=31
+§NARR_TONE load#0 F WH rose=0st endDelta=-4.7st want=fall OK "What about a list in a file?"
+§NARR_FIT ai cue=69.51 room=7.40 dur=6.48 -> DETAIL slack=+0.92 words=23
+§NARR_TONE ai#0 F YN rose=5.0st endDelta=+3.8st want=rise OK "Can an A I use it?"
+§NARR_FIT legacy cue=77.51 room=9.07 dur=8.17 -> DETAIL slack=+0.90 words=24
+§NARR_TONE legacy#0 F YN rose=5.0st endDelta=+3.8st want=rise OK "And the real iDempiere?"
+§NARR_FIT onedoor cue=87.17 room=14.16 dur=13.25 -> DETAIL slack=+0.91 words=39
+§NARR_TONE onedoor#0 F WH rose=0st endDelta=-6.6st want=fall OK "Who can talk to it?"
+§NARR_FIT light cue=101.92 room=9.03 dur=8.14 -> DETAIL slack=+0.89 words=22
+§NARR_TONE light#0 F WH rose=0st endDelta=-5.5st want=fall OK "How big is it?"
+§NARR_FIT close cue=111.55 room=6.40 dur=5.49 -> DETAIL slack=+0.91 words=17

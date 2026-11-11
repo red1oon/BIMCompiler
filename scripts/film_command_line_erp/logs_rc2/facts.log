@@ -1,0 +1,42 @@
+§DOOR request=d-mwbwnvvo-3330081-1 actor=human verb=legacy.status status=ok ms=213
+§FACTS status ok legacy.status
+§DOOR request=d-mwbwnw1o-3330081-1 actor=human verb=mis.describe status=ok ms=334
+§DOOR request=d-mwbwnwb0-3330081-2 actor=human verb=mis.list status=ok ms=269
+§FACTS session list keys=3 screens=4 door_lines=2
+§DOOR request=d-mwbwnwil-3330081-1 actor=human verb=mis.new status=ok ms=2371
+§FACTS newdry ok mis.new kind=C_BPartner dry=Y
+§DOOR request=d-mwbwnych-3330081-1 actor=human verb=mis.describe status=ok ms=307
+§DOOR request=d-mwbwnyl1-3330081-2 actor=human verb=mis.list status=ok ms=272
+§DOOR request=d-mwbwnysn-3330081-3 actor=human verb=mis.new status=ok ms=2360
+§DOOR request=d-mwbwo0m9-3330081-4 actor=human verb=mis.new status=ok ms=2596
+§DOOR request=d-mwbwo2me-3330081-5 actor=human verb=mis.list status=ok ms=287
+§FACTS session new keys=7 screens=8 door_lines=5
+§DOOR request=d-mwbwo2ug-3330081-1 actor=human verb=mis.describe status=ok ms=319
+§DOOR request=d-mwbwo33c-3330081-2 actor=human verb=mis.list status=ok ms=269
+§DOOR request=d-mwbwo3av-3330081-3 actor=human verb=mis.read status=ok ms=334
+§FACTS session editprobe keys=1 screens=2 door_lines=3
+§DOOR request=d-mwbwo3k8-3330081-1 actor=human verb=mis.describe status=ok ms=318
+§DOOR request=d-mwbwo3t3-3330081-2 actor=human verb=mis.list status=ok ms=273
+§DOOR request=d-mwbwo40p-3330081-3 actor=human verb=mis.read status=ok ms=320
+§DOOR request=d-mwbwo49q-3330081-4 actor=human verb=mis.update status=ok ms=2498
+§DOOR request=d-mwbwo675-3330081-5 actor=human verb=mis.list status=ok ms=328
+§FACTS session edit keys=19 screens=20 door_lines=5
+§DOOR request=d-mwbwo6gc-3330081-1 actor=human verb=mis.describe status=ok ms=345
+§DOOR request=d-mwbwo6py-3330081-2 actor=human verb=mis.list status=ok ms=305
+§DOOR request=d-mwbwo6yh-3330081-3 actor=human verb=mis.delete status=refused ms=862 why="Business Partner Standard is not deleted: Record not deleted - dependent record found; nothing was written"
+§DOOR request=d-mwbwo7mf-3330081-4 actor=human verb=mis.list status=ok ms=288
+§FACTS session delete keys=4 screens=5 door_lines=4
+§DOOR request=d-mwbwo7uj-3330081-1 actor=human verb=mis.load status=ok ms=2859
+§FACTS load_preview ok mis.load kind=C_BPartner file=/tmp/cle_XIC44P/film_partners.csv
+§DOOR request=d-mwbwoa20-3330081-1 actor=human verb=mis.load status=ok ms=2805
+§FACTS load_ok ok mis.load kind=C_BPartner dry=N file=/tmp/cle_XIC44P/film_partners.ok.csv
+§DOOR request=film-ai actor=ai verb=mis.new status=claim ms=0
+§FACTS ai claim mis.new kind=C_BPartner Value=FILMAI Name="Asked by an AI"
+§FACTS confirm ok by human
+§DOOR request=d-mwbwoefw-3330081-1 actor=human verb=mis.new status=ok ms=2903
+§FACTS new_order ok mis.new kind=Order issotrx=Y c_doctypetarget_id=132 c_bpartner_id=112 salesrep_id=101
+§DOOR request=d-mwbwogom-3330081-1 actor=human verb=mis.new status=ok ms=2952
+§FACTS new_line ok mis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2
+§DOOR request=d-mwbwoiyo-3330081-1 actor=human verb=erp.compare status=ok ms=680
+§FACTS compare ok erp.compare kind=Order number=50000 legacy=50981
+§FACTS wrote out/facts.json list.total=113 new=2/32 edit.changed=1 load=2/1/1 ai=claim>ok compare=70/4 built=AI,Person planned=Mailbox,Phone,Device core=216 verbs=46

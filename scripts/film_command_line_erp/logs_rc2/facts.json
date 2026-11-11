@@ -1,0 +1,299 @@
+{
+ "made": "2026-11-11T09:17:14.891Z",
+ "ootb": "94b5d60b",
+ "lines": {
+  "status": {
+   "line": "legacy.status",
+   "status": "ok"
+  },
+  "newdry": {
+   "line": "mis.new kind=C_BPartner dry=Y",
+   "status": "ok"
+  },
+  "load_preview": {
+   "line": "mis.load kind=C_BPartner file=/tmp/cle_XIC44P/film_partners.csv",
+   "status": "ok"
+  },
+  "load_ok": {
+   "line": "mis.load kind=C_BPartner dry=N file=/tmp/cle_XIC44P/film_partners.ok.csv",
+   "status": "ok"
+  },
+  "ai": {
+   "line": "mis.new kind=C_BPartner Value=FILMAI Name=\"Asked by an AI\"",
+   "status": "claim"
+  },
+  "new_order": {
+   "line": "mis.new kind=Order issotrx=Y c_doctypetarget_id=132 c_bpartner_id=112 salesrep_id=101",
+   "status": "ok"
+  },
+  "new_line": {
+   "line": "mis.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2",
+   "status": "ok"
+  },
+  "compare": {
+   "line": "erp.compare kind=Order number=50000 legacy=50981",
+   "status": "ok"
+  }
+ },
+ "legacy": {
+  "verdict": "UP",
+  "summary": "legacy UP: postgres ready, pilot up"
+ },
+ "list": {
+  "kind": "C_BPartner",
+  "total": 113,
+  "shown": 4,
+  "screens": [
+   {
+    "key": "start",
+    "text": "C_BPartner   shown 1-4 of 113   [+ New]\n   C_BPartner_ID  Value        Name              Name2                 \n > 112            Standard     Standard                                 >[U Edit]< [D Delete] [C Copy]\n   113            GardenAdmin  GardenAdmin BP                          \n   114            TreeFarm     Tree Farm Inc.                          \n   117            C&W          C&W Construction  Unlimited Projects Co~\nthe line it will run: mis.read kind=C_BPartner id=112\n Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit"
+   },
+   {
+    "key": "Down",
+    "text": "C_BPartner   shown 1-4 of 113   [+ New]\n   C_BPartner_ID  Value        Name              Name2                 \n   112            Standard     Standard                                \n > 113            GardenAdmin  GardenAdmin BP                           >[U Edit]< [D Delete] [C Copy]\n   114            TreeFarm     Tree Farm Inc.                          \n   117            C&W          C&W Construction  Unlimited Projects Co~\nthe line it will run: mis.read kind=C_BPartner id=113\n Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit"
+   },
+   {
+    "key": "Right",
+    "text": "C_BPartner   shown 1-4 of 113   [+ New]\n   C_BPartner_ID  Value        Name              Name2                 \n   112            Standard     Standard                                \n > 113            GardenAdmin  GardenAdmin BP                           [U Edit] >[D Delete]< [C Copy]\n   114            TreeFarm     Tree Farm Inc.                          \n   117            C&W          C&W Construction  Unlimited Projects Co~\nthe line it will run: mis.delete kind=C_BPartner id=113\n Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit"
+   },
+   {
+    "key": "Esc",
+    "text": "C_BPartner   shown 1-4 of 113   [+ New]\n   C_BPartner_ID  Value        Name              Name2                 \n   112            Standard     Standard                                \n > 113            GardenAdmin  GardenAdmin BP                           [U Edit] >[D Delete]< [C Copy]\n   114            TreeFarm     Tree Farm Inc.                          \n   117            C&W          C&W Construction  Unlimited Projects Co~\nthe line it will run: mis.delete kind=C_BPartner id=113\n Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit"
+   }
+  ]
+ },
+ "keys": {
+  "lines": 2,
+  "moves": 2,
+  "session": [
+   "mis.describe kind=C_BPartner",
+   "mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Name2 names=Y limit=4 offset=0"
+  ],
+  "willRun": "mis.delete kind=C_BPartner id=113"
+ },
+ "new": {
+  "mandatory": 2,
+  "mandatoryNames": [
+   "Value",
+   "Name"
+  ],
+  "defaulted": 32,
+  "filled": 32,
+  "lines": [
+   "mis.describe kind=C_BPartner",
+   "mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Name2 names=Y limit=10 offset=0 value=FILM001",
+   "mis.new kind=C_BPartner dry=Y",
+   "mis.new kind=C_BPartner Value=FILM001 Name=\"Film Partner\"",
+   "mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Name2 names=Y limit=10 offset=0 value=FILM001"
+  ],
+  "screens": [
+   {
+    "key": "start",
+    "text": "C_BPartner (value=FILM001)   shown 0-0 of 0   [+ New]\n   C_BPartner_ID  Value  Name  Name2\n Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit"
+   },
+   {
+    "key": "+",
+    "text": "New C_BPartner   (Esc cancels everything, nothing is written)\n > * Search Key [_]\n   * Name       []\nhelp: A search key allows you a fast method of finding a particular record. If you leave the search key empty, the system auto\n type to fill   Tab/Enter next field   Enter on the last field saves   Esc cancel"
+   },
+   {
+    "key": "=FILM001",
+    "text": "New C_BPartner   (Esc cancels everything, nothing is written)\n > * Search Key [FILM001_]\n   * Name       []\nhelp: A search key allows you a fast method of finding a particular record. If you leave the search key empty, the system auto\n type to fill   Tab/Enter next field   Enter on the last field saves   Esc cancel"
+   },
+   {
+    "key": "Tab",
+    "text": "New C_BPartner   (Esc cancels everything, nothing is written)\n   * Search Key [FILM001]\n > * Name       [_]\nhelp: The name of an entity (record) is used as an default search option in addition to the search key. The name is up to 60 c\n type to fill   Tab/Enter next field   Enter on the last field saves   Esc cancel"
+   },
+   {
+    "key": "=Film Partner",
+    "text": "New C_BPartner   (Esc cancels everything, nothing is written)\n   * Search Key [FILM001]\n > * Name       [Film Partner_]\nhelp: The name of an entity (record) is used as an default search option in addition to the search key. The name is up to 60 c\n type to fill   Tab/Enter next field   Enter on the last field saves   Esc cancel"
+   },
+   {
+    "key": "Enter",
+    "text": "New C_BPartner   (Esc cancels everything, nothing is written)\n   * Search Key [FILM001]\n > * Name       [Film Partner]\nthe line it will run: mis.new kind=C_BPartner Value=FILM001 Name=\"Film Partner\"\nSave? [y/N]\n y saves   any other key goes back   Esc cancel"
+   },
+   {
+    "key": "y",
+    "text": "C_BPartner (value=FILM001)   shown 1-1 of 1   [+ New]\n   C_BPartner_ID  Value    Name          Name2\n > 1600010        FILM001  Film Partner        >[U Edit]< [D Delete] [C Copy]\nthe line it will run: mis.read kind=C_BPartner id=1600010\ncreated Film Partner: 32 columns filled by the engine (ad_client_id, ad_org_id, c_bp_group_id, iscustomer, isvendor, isemployee, +26 more)\n Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit"
+   },
+   {
+    "key": "Esc",
+    "text": "C_BPartner (value=FILM001)   shown 1-1 of 1   [+ New]\n   C_BPartner_ID  Value    Name          Name2\n > 1600010        FILM001  Film Partner        >[U Edit]< [D Delete] [C Copy]\nthe line it will run: mis.read kind=C_BPartner id=1600010\ncreated Film Partner: 32 columns filled by the engine (ad_client_id, ad_org_id, c_bp_group_id, iscustomer, isvendor, isemployee, +26 more)\n Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit"
+   }
+  ]
+ },
+ "edit": {
+  "fields": 15,
+  "line": "mis.update kind=C_BPartner id=1600010 Name=\"Film Partner Ltd\"",
+  "changed": 1,
+  "screens": [
+   {
+    "key": "start",
+    "text": "C_BPartner (value=FILM001)   shown 1-1 of 1   [+ New]\n   C_BPartner_ID  Value    Name          Name2\n > 1600010        FILM001  Film Partner        >[U Edit]< [D Delete] [C Copy]\nthe line it will run: mis.read kind=C_BPartner id=1600010\n Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit"
+   },
+   {
+    "key": "Enter",
+    "text": "Edit C_BPartner FILM001   (Esc cancels everything, nothing is written)\n > * Search Key                [FILM001_]\n   * Name                      [Film Partner]\n     Name 2                    []\n     Description               []\n     Tax ID                    []\n     NAICS/SIC                 []\n     Credit Status             [O]\n   * Customer                  [N]\n     Rating                    []\n     Sales Representative      []\n     Potential Life Time Value [0]\n   * Credit Limit              [0]\n   * Vendor                    [N]\n   * Employee                  [N]\n   ... 1 more\nhelp: A search key allows you a fast method of finding a particular record. If you leave the search key empty, the system auto\n type to fill   Tab/Enter next field   Enter on the last field saves   Esc cancel"
+   },
+   {
+    "key": "Tab",
+    "text": "Edit C_BPartner FILM001   (Esc cancels everything, nothing is written)\n   * Search Key                [FILM001]\n > * Name                      [Film Partner_]\n     Name 2                    []\n     Description               []\n     Tax ID                    []\n     NAICS/SIC                 []\n     Credit Status             [O]\n   * Customer                  [N]\n     Rating                    []\n     Sales Representative      []\n     Potential Life Time Value [0]\n   * Credit Limit              [0]\n   * Vendor                    [N]\n   * Employee                  [N]\n   ... 1 more\nhelp: The name of an entity (record) is used as an default search option in addition to the search key. The name is up to 60 c\n type to fill   Tab/Enter next field   Enter on the last field saves   Esc cancel"
+   },
+   {
+    "key": "=Film Partner Ltd",
+    "text": "Edit C_BPartner FILM001   (Esc cancels everything, nothing is written)\n   * Search Key                [FILM001]\n > * Name                      [Film Partner Ltd_]\n     Name 2                    []\n     Description               []\n     Tax ID                    []\n     NAICS/SIC                 []\n     Credit Status             [O]\n   * Customer                  [N]\n     Rating                    []\n     Sales Representative      []\n     Potential Life Time Value [0]\n   * Credit Limit              [0]\n   * Vendor                    [N]\n   * Employee                  [N]\n   ... 1 more\nhelp: The name of an entity (record) is used as an default search option in addition to the search key. The name is up to 60 c\n type to fill   Tab/Enter next field   Enter on the last field saves   Esc cancel"
+   },
+   {
+    "key": "Enter",
+    "text": "Edit C_BPartner FILM001   (Esc cancels everything, nothing is written)\n   * Search Key                [FILM001]\n   * Name                      [Film Partner Ltd]\n >   Name 2                    [_]\n     Description               []\n     Tax ID                    []\n     NAICS/SIC                 []\n     Credit Status             [O]\n   * Customer                  [N]\n     Rating                    []\n     Sales Representative      []\n     Potential Life Time Value [0]\n   * Credit Limit              [0]\n   * Vendor                    [N]\n   * Employee                  [N]\n   ... 1 more\n type to fill   Tab/Enter next field   Enter on the last field saves   Esc cancel"
+   },
+   {
+    "key": "Enter",
+    "text": "Edit C_BPartner FILM001   (Esc cancels everything, nothing is written)\n   * Search Key                [FILM001]\n   * Name                      [Film Partner Ltd]\n     Name 2                    []\n >   Description               [_]\n     Tax ID                    []\n     NAICS/SIC                 []\n     Credit Status             [O]\n   * Customer                  [N]\n     Rating                    []\n     Sales Representative      []\n     Potential Life Time Value [0]\n   * Credit Limit              [0]\n   * Vendor                    [N]\n   * Employee                  [N]\n   ... 1 more\nhelp: A description is limited to 255 characters.\n type to fill   Tab/Enter next field   Enter on the last field saves   Esc cancel"
+   },
+   {
+    "key": "Enter",
+    "text": "Edit C_BPartner FILM001   (Esc cancels everything, nothing is written)\n   * Search Key                [FILM001]\n   * Name                      [Film Partner Ltd]\n     Name 2                    []\n     Description               []\n >   Tax ID                    [_]\n     NAICS/SIC                 []\n     Credit Status             [O]\n   * Customer                  [N]\n     Rating                    []\n     Sales Representative      []\n     Potential Life Time Value [0]\n   * Credit Limit              [0]\n   * Vendor                    [N]\n   * Employee                  [N]\n   ... 1 more\nhelp: The Tax ID field identifies the legal Identification number of this Entity.\n type to fill   Tab/Enter next field   Enter on the last field saves   Esc cancel"
+   },
+   {
+    "key": "Enter",
+    "text": "Edit C_BPartner FILM001   (Esc cancels everything, nothing is written)\n   * Search Key                [FILM001]\n   * Name                      [Film Partner Ltd]\n     Name 2                    []\n     Description               []\n     Tax ID                    []\n >   NAICS/SIC                 [_]\n     Credit Status             [O]\n   * Customer                  [N]\n     Rating                    []\n     Sales Representative      []\n     Potential Life Time Value [0]\n   * Credit Limit              [0]\n   * Vendor                    [N]\n   * Employee                  [N]\n   ... 1 more\nhelp: The NAICS/SIC identifies either of these codes that may be applicable to this Business Partner.\n type to fill   Tab/Enter next field   Enter on the last field saves   Esc cancel"
+   },
+   {
+    "key": "Enter",
+    "text": "Edit C_BPartner FILM001   (Esc cancels everything, nothing is written)\n   * Search Key                [FILM001]\n   * Name                      [Film Partner Ltd]\n     Name 2                    []\n     Description               []\n     Tax ID                    []\n     NAICS/SIC                 []\n >   Credit Status             [O_]\n   * Customer                  [N]\n     Rating                    []\n     Sales Representative      []\n     Potential Life Time Value [0]\n   * Credit Limit              [0]\n   * Vendor                    [N]\n   * Employee                  [N]\n   ... 1 more\nhelp: Credit Management is inactive if Credit Status is No Credit Check, Credit Stop or if the Credit Limit is 0. If active, t\n type to fill   Tab/Enter next field   Enter on the last field saves   Esc cancel"
+   },
+   {
+    "key": "Enter",
+    "text": "Edit C_BPartner FILM001   (Esc cancels everything, nothing is written)\n   * Name                      [Film Partner Ltd]\n     Name 2                    []\n     Description               []\n     Tax ID                    []\n     NAICS/SIC                 []\n     Credit Status             [O]\n > * Customer                  [N_]\n     Rating                    []\n     Sales Representative      []\n     Potential Life Time Value [0]\n   * Credit Limit              [0]\n   * Vendor                    [N]\n   * Employee                  [N]\n   * Sales Representative      [N]\nhelp: The Customer checkbox indicates if this Business Partner is a customer. If it is select additional fields will display w\n type to fill   Tab/Enter next field   Enter on the last field saves   Esc cancel"
+   },
+   {
+    "key": "Enter",
+    "text": "Edit C_BPartner FILM001   (Esc cancels everything, nothing is written)\n   * Name                      [Film Partner Ltd]\n     Name 2                    []\n     Description               []\n     Tax ID                    []\n     NAICS/SIC                 []\n     Credit Status             [O]\n   * Customer                  [N]\n >   Rating                    [_]\n     Sales Representative      []\n     Potential Life Time Value [0]\n   * Credit Limit              [0]\n   * Vendor                    [N]\n   * Employee                  [N]\n   * Sales Representative      [N]\nhelp: The Rating is used to differentiate the importance\n type to fill   Tab/Enter next field   Enter on the last field saves   Esc cancel"
+   },
+   {
+    "key": "Enter",
+    "text": "Edit C_BPartner FILM001   (Esc cancels everything, nothing is written)\n   * Name                      [Film Partner Ltd]\n     Name 2                    []\n     Description               []\n     Tax ID                    []\n     NAICS/SIC                 []\n     Credit Status             [O]\n   * Customer                  [N]\n     Rating                    []\n >   Sales Representative      [_]\n     Potential Life Time Value [0]\n   * Credit Limit              [0]\n   * Vendor                    [N]\n   * Employee                  [N]\n   * Sales Representative      [N]\nhelp: The Sales Representative indicates the Sales Rep for this Region. Any Sales Rep must be a valid internal user.\n type to fill   Tab/Enter next field   Enter on the last field saves   Esc cancel"
+   },
+   {
+    "key": "Enter",
+    "text": "Edit C_BPartner FILM001   (Esc cancels everything, nothing is written)\n   * Name                      [Film Partner Ltd]\n     Name 2                    []\n     Description               []\n     Tax ID                    []\n     NAICS/SIC                 []\n     Credit Status             [O]\n   * Customer                  [N]\n     Rating                    []\n     Sales Representative      []\n >   Potential Life Time Value [0_]\n   * Credit Limit              [0]\n   * Vendor                    [N]\n   * Employee                  [N]\n   * Sales Representative      [N]\nhelp: The Potential Life Time Value is the anticipated revenue in primary accounting currency to be generated by the Business \n type to fill   Tab/Enter next field   Enter on the last field saves   Esc cancel"
+   },
+   {
+    "key": "Enter",
+    "text": "Edit C_BPartner FILM001   (Esc cancels everything, nothing is written)\n   * Name                      [Film Partner Ltd]\n     Name 2                    []\n     Description               []\n     Tax ID                    []\n     NAICS/SIC                 []\n     Credit Status             [O]\n   * Customer                  [N]\n     Rating                    []\n     Sales Representative      []\n     Potential Life Time Value [0]\n > * Credit Limit              [0_]\n   * Vendor                    [N]\n   * Employee                  [N]\n   * Sales Representative      [N]\nhelp: The Credit Limit indicates the total amount allowed \"on account\" in primary accounting currency. If the Credit Limit is \n type to fill   Tab/Enter next field   Enter on the last field saves   Esc cancel"
+   },
+   {
+    "key": "Enter",
+    "text": "Edit C_BPartner FILM001   (Esc cancels everything, nothing is written)\n   * Name                      [Film Partner Ltd]\n     Name 2                    []\n     Description               []\n     Tax ID                    []\n     NAICS/SIC                 []\n     Credit Status             [O]\n   * Customer                  [N]\n     Rating                    []\n     Sales Representative      []\n     Potential Life Time Value [0]\n   * Credit Limit              [0]\n > * Vendor                    [N_]\n   * Employee                  [N]\n   * Sales Representative      [N]\nhelp: The Vendor checkbox indicates if this Business Partner is a Vendor. If it is selected, additional fields will display wh\n type to fill   Tab/Enter next field   Enter on the last field saves   Esc cancel"
+   },
+   {
+    "key": "Enter",
+    "text": "Edit C_BPartner FILM001   (Esc cancels everything, nothing is written)\n   * Name                      [Film Partner Ltd]\n     Name 2                    []\n     Description               []\n     Tax ID                    []\n     NAICS/SIC                 []\n     Credit Status             [O]\n   * Customer                  [N]\n     Rating                    []\n     Sales Representative      []\n     Potential Life Time Value [0]\n   * Credit Limit              [0]\n   * Vendor                    [N]\n > * Employee                  [N_]\n   * Sales Representative      [N]\nhelp: The Employee checkbox indicates if this Business Partner is an Employee. If it is selected, additional fields will displ\n type to fill   Tab/Enter next field   Enter on the last field saves   Esc cancel"
+   },
+   {
+    "key": "Enter",
+    "text": "Edit C_BPartner FILM001   (Esc cancels everything, nothing is written)\n   * Name                      [Film Partner Ltd]\n     Name 2                    []\n     Description               []\n     Tax ID                    []\n     NAICS/SIC                 []\n     Credit Status             [O]\n   * Customer                  [N]\n     Rating                    []\n     Sales Representative      []\n     Potential Life Time Value [0]\n   * Credit Limit              [0]\n   * Vendor                    [N]\n   * Employee                  [N]\n > * Sales Representative      [N_]\nhelp: The Sales Rep checkbox indicates if this business partner is a sales representative. A sales representative may also be \n type to fill   Tab/Enter next field   Enter on the last field saves   Esc cancel"
+   },
+   {
+    "key": "Enter",
+    "text": "Edit C_BPartner FILM001   (Esc cancels everything, nothing is written)\n   * Name                      [Film Partner Ltd]\n     Name 2                    []\n     Description               []\n     Tax ID                    []\n     NAICS/SIC                 []\n     Credit Status             [O]\n   * Customer                  [N]\n     Rating                    []\n     Sales Representative      []\n     Potential Life Time Value [0]\n   * Credit Limit              [0]\n   * Vendor                    [N]\n   * Employee                  [N]\n > * Sales Representative      [N]\nthe line it will run: mis.update kind=C_BPartner id=1600010 Name=\"Film Partner Ltd\"\nSave? [y/N]\n y saves   any other key goes back   Esc cancel"
+   },
+   {
+    "key": "y",
+    "text": "C_BPartner (value=FILM001)   shown 1-1 of 1   [+ New]\n   C_BPartner_ID  Value    Name              Name2\n > 1600010        FILM001  Film Partner Ltd        >[U Edit]< [D Delete] [C Copy]\nthe line it will run: mis.read kind=C_BPartner id=1600010\nsaved: changed name\n Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit"
+   },
+   {
+    "key": "Esc",
+    "text": "C_BPartner (value=FILM001)   shown 1-1 of 1   [+ New]\n   C_BPartner_ID  Value    Name              Name2\n > 1600010        FILM001  Film Partner Ltd        >[U Edit]< [D Delete] [C Copy]\nthe line it will run: mis.read kind=C_BPartner id=1600010\nsaved: changed name\n Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit"
+   }
+  ]
+ },
+ "delete": {
+  "screens": [
+   {
+    "key": "start",
+    "text": "C_BPartner (c_bpartner_id=112)   shown 1-1 of 1   [+ New]\n   C_BPartner_ID  Value     Name      Name2\n > 112            Standard  Standard        >[U Edit]< [D Delete] [C Copy]\nthe line it will run: mis.read kind=C_BPartner id=112\n Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit"
+   },
+   {
+    "key": "Right",
+    "text": "C_BPartner (c_bpartner_id=112)   shown 1-1 of 1   [+ New]\n   C_BPartner_ID  Value     Name      Name2\n > 112            Standard  Standard        [U Edit] >[D Delete]< [C Copy]\nthe line it will run: mis.delete kind=C_BPartner id=112\n Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit"
+   },
+   {
+    "key": "Enter",
+    "text": "C_BPartner (c_bpartner_id=112)   shown 1-1 of 1   [+ New]\n   C_BPartner_ID  Value     Name      Name2\n > 112            Standard  Standard        [U Edit] >[D Delete]< [C Copy]\nDelete C_BPartner Standard? [y/N]\n Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit"
+   },
+   {
+    "key": "y",
+    "text": "C_BPartner (c_bpartner_id=112)   shown 1-1 of 1   [+ New]\n   C_BPartner_ID  Value     Name      Name2\n > 112            Standard  Standard        >[U Edit]< [D Delete] [C Copy]\nthe line it will run: mis.read kind=C_BPartner id=112\nmis.delete refused: Business Partner Standard is not deleted: Record not deleted - dependent record found; nothing was written\n Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit"
+   },
+   {
+    "key": "Esc",
+    "text": "C_BPartner (c_bpartner_id=112)   shown 1-1 of 1   [+ New]\n   C_BPartner_ID  Value     Name      Name2\n > 112            Standard  Standard        >[U Edit]< [D Delete] [C Copy]\nthe line it will run: mis.read kind=C_BPartner id=112\nmis.delete refused: Business Partner Standard is not deleted: Record not deleted - dependent record found; nothing was written\n Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit"
+   }
+  ],
+  "refused": true
+ },
+ "load": {
+  "rows": 2,
+  "ok": 1,
+  "rejected": 1,
+  "why": "C_BP_Group_ID: no C_BP_Group with Name=\"Nowhere\"",
+  "loaded": true,
+  "keys": 1,
+  "csv": [
+   "Value,Name,C_BP_Group_ID",
+   "FILM101,Film Two,Standard Customers",
+   "FILM102,Film Three,Nowhere"
+  ],
+  "rejectedCsv": [
+   "Value,Name,C_BP_Group_ID,rejected_because",
+   "FILM102,Film Three,Nowhere,\"C_BP_Group_ID: no C_BP_Group with Name=\"\"Nowhere\"\"\""
+  ]
+ },
+ "ai": {
+  "line": "mis.new kind=C_BPartner Value=FILMAI Name=\"Asked by an AI\"",
+  "status": "claim",
+  "why": "actor ai has proof \"local-user\", which allows read/trial verbs; mis.new is writes. Held as a claim, not run. A person confirms it with: door.js --confirm film-a",
+  "confirmStatus": "ok",
+  "confirmedBy": "human",
+  "number": "Asked by an AI"
+ },
+ "compare": {
+  "twinNumber": "50000",
+  "legacyNumber": "50981",
+  "match": 70,
+  "diff": 4,
+  "nullVsDefault": 7,
+  "summary": "c_order 50000 vs legacy 50981: 70 cells match, 4 differ, 7 legacy NULL vs a twin default"
+ },
+ "onedoor": {
+  "title": "Every actor speaks the same verbs to one door, and the app's own checks decide",
+  "built": [
+   "AI",
+   "Person"
+  ],
+  "planned": [
+   "Mailbox",
+   "Phone",
+   "Device"
+  ],
+  "caveat": "planned, not built",
+  "stages": [
+   "1  ACTOR, and how it arrives",
+   "2  CHANNEL: the verbs",
+   "3  ONE DOOR: the script engine",
+   "4  ENGINE"
+  ]
+ },
+ "light": {
+  "coreFile": "common/door/mis_core.js",
+  "coreLines": 216,
+  "coreBytes": 20233,
+  "coreRequires": 0,
+  "driverFile": "common/door/mis.js",
+  "driverLines": 62,
+  "driverRequires": 5
+ },
+ "verbs": 46,
+ "misVerbs": 11
+}
