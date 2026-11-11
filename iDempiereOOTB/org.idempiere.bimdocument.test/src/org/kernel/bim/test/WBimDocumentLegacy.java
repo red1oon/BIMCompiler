@@ -62,6 +62,13 @@ public class WBimDocumentLegacy {
 			chk ("L3 the register is a JSON file of the project: A-101 rev 1 (RE) + rev 2 (CO) + C-301 rev 1 (DR) + the late A-101 copy is not a deliverable of its own", ran && f != null && json.contains ("\"no\":\"A-101\",\"rev\":1,\"status\":\"RE\"") && json.contains ("\"no\":\"A-101\",\"rev\":2,\"status\":\"CO\"") && json.contains ("\"no\":\"C-301\""), "ran=" + ran + " rows=" + rows + " file=" + (f == null ? null : f.getName()));
 			chk ("L3b no attachment means sha256 null, never invented", json.contains ("\"sha256\":null") && !json.matches ("(?s).*\"sha256\":\"[0-9a-f]{64}\".*"), "");
 			out.println (json);
+			// §BIMDOC-PROJTAB P1-P3 on the real dictionary: the level-1 Project tab, its legacy link resolution (GridWindow.initTab: the IsParent column equal to the parent tab's key), and the rows it would show
+			int pTab = DB.getSQLValue (trxName, "SELECT COUNT(*) FROM AD_Tab t JOIN AD_Table x ON x.AD_Table_ID=t.AD_Table_ID WHERE x.TableName='BIM_Document' AND t.AD_Window_ID=130 AND t.TabLevel=1 AND t.SeqNo=17 AND t.IsActive='Y'");
+			chk ("P1 the Project window (130) carries a level-1 BIM Document tab at seq 17", pTab == 1, "tabs=" + pTab);
+			int pPar = DB.getSQLValue (trxName, "SELECT COUNT(*) FROM AD_Column c JOIN AD_Table x ON x.AD_Table_ID=c.AD_Table_ID WHERE x.TableName='BIM_Document' AND c.IsParent='Y' AND c.ColumnName IN ('C_Project_ID','C_ProjectTask_ID')");
+			chk ("P2 C_Project_ID and C_ProjectTask_ID are both IsParent, so each tab level links by its own parent key", pPar == 2, "parents=" + pPar);
+			int pAll = DB.getSQLValue (trxName, "SELECT COUNT(*) FROM BIM_Document WHERE C_Project_ID=?", prj.get_ID()), pTasks = DB.getSQLValue (trxName, "SELECT COUNT(*) FROM BIM_Document d JOIN C_ProjectTask k ON k.C_ProjectTask_ID=d.C_ProjectTask_ID JOIN C_ProjectPhase h ON h.C_ProjectPhase_ID=k.C_ProjectPhase_ID WHERE h.C_Project_ID=?", prj.get_ID());
+			chk ("P3 every deliverable of the project is reachable from the project tab (rows by project == rows by its tasks, and > 0)", pAll > 0 && pAll == pTasks, "byProject=" + pAll + " byTasks=" + pTasks);
 			// last: a failed insert aborts the PostgreSQL transaction, so nothing may follow it
 			String why = ""; boolean refused = false;
 			try { doc (ctx, trxName, dtId, prj, ph, null, "B-201", 1, "Section A"); } catch (Exception e) { refused = true; why = String.valueOf (e.getMessage()); }
