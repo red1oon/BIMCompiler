@@ -151,3 +151,76 @@ Each item follows one task you would do by hand.
 4. **A** `scripts/bump.js` + task (½ day). Prove with `audit_sw_precache` before/after
 5. **C** generated `types/app-surface.d.ts` (½–1 day)
 6. Then G2/G3 from §3. **D** only if the owner picks one function to work on by hand.
+
+---
+
+## §8 SPEC: build steps 1–5 of §7 (owner, 2026-11-13: *"Proceed but be careful not to break ongoing sessions work, ask the other session what it thinks first."*)
+**Coordination:** asked bim-compiler-c3 and -5c. c3 had no objection. Its next PR (CAPEX §5.66 PR B) bumps `erp/sw.js` CACHE_VERSION
+and `goal_engine.js?v=`, and the agreed rule is *keep the `const CACHE_VERSION = '…';` line exact, take the higher version, drop
+the long trailing comment*. No reply from 5c at write time. One PR in bim-ootb, branch `chore/editor-tidy`, worktree `/tmp/wt-editor-tidy`
+off `origin/main` @ `c2de4dea`. The shared checkout is not touched.
+
+| Step | Issue it fixes | Change | Witness: what fails before and passes after |
+|---|---|---|---|
+| S1 | **W-ED-LONGLINE**: `erp/sw.js:13` is 234,833 chars, so VS Code stops colouring it and it is unreadable by hand | Move the trailing comment of line 13 *verbatim* to `erp/SW_VERSION_HISTORY.md` (moved, not deleted). Line 13 becomes `const CACHE_VERSION = 'v1062';   // bump on each deploy; history: SW_VERSION_HISTORY.md`. CACHE_VERSION is **not** bumped (no precached asset changes) | (a) longest line in `erp/sw.js` ≤ 2,000 chars, before = 234,833. (b) `node --check erp/sw.js`. (c) every erp witness that reads `sw.js` (the scratchpad list) gives the **same exit code** before and after. Any change means that witness was matching comment text, and it gets reported, not hidden |
+| S2 | **W-ED-SEARCHNOISE**: 7 generated one-line data files flood search and diffs | New `.vscode/settings.json`: `search.exclude` + `files.readonlyInclude` for those 7 files. `.gitattributes`: `linguist-generated` for the same 7 | `git check-attr linguist-generated` gives `set` for all 7, `unspecified` before |
+| S3 | **W-ED-JSCONFIG**: modeller/common/capex/teams/bim are not indexed, so F12 can't jump across files there | Add them to `include`. Add `**/lib/**` (+ minified/vendored) to `exclude` | TypeScript LS probe: resolve-definition for a sample of cross-file globals used in modeller/common. Before: 0 resolved. After: >0, with `§ED_JSCONFIG files= resolved=/sampled=`. Sample is 0 → INCONCLUSIVE |
+| S4 | **W-ED-TASKS**: no editor way to run a witness and keep its log | `.vscode/tasks.json`: add "Run this witness (log → logs/)" (`node ${file}` piped to `logs/<name>.log`, then the last 20 lines) | the task JSON parses. A dry run of the command line on one witness writes the log file and exits with the same code as running the witness directly |
+| S5 | **W-BUMP**: a precached file edited by hand without bumping `?v=` + `CACHE_VERSION` is silently served stale | `scripts/bump.js <file…> [--write] [--root DIR]`. For each target file, find every tracked `.html` whose `src=`/`href=` resolves to it and add 1 to its `?v=N`. Add 1 to the `CACHE_VERSION` of each `sw.js` sitting in the folder of a changed html. Warn if the file is missing from that sw's `PRECACHE_ASSETS`. List `?v=` mentions in `.js` loaders (e.g. `viewer/main.js modules[]`) as *check by hand*. **Dry run by default**, and `--write` applies. Never touches anything else | `scripts/tests/witness_bump.js` on a temp copy: the exact expected diff (html `?v=` +1, sw +1, nothing else byte-changed). Unknown file → exit 2 and nothing written. Dry run → nothing written. Prints `§BUMP` lines |
+
+### §8.1 S3 RESULT + S6 SPEC — why F12 fails, measured (2026-11-13)
+- **S3 alone barely helps.** `§ED_JSCONFIG` before: indexed 1,474, sampled 13 cross-file globals, resolved 0 (all 13 not indexed).
+  After adding modeller/common/capex/teams/bim: indexed 2,342, all 13 now indexed, **resolved 1**. Probe and logs: scratchpad `ls_probe.js`, `ls_before.log`, `ls_after.log`.
+  Instrument check: `setupScene` in `viewer/main.js:14` → `viewer/scene.js` (`§LS_ONE`), so the probe can succeed when the code allows it.
+- **Cause:** **557 of 855** production files end with the UMD tail `if (typeof module…) module.exports = X`. TypeScript then treats the
+  file as a CommonJS module, so `X` is **not** a global to the editor (erp 242/300, modeller 103/146, common 41/52, viewer 121/290).
+  Only viewer's 55 `function setupX(A)` files are true globals. On top of that, `types/erp-globals.d.ts` declares the ERP globals
+  as `any`, which sends F12 to the `.d.ts` line (`ADParser` → `types/erp-globals.d.ts:13`) and gives members no target at all.
+- **Fix proven on one:** `declare var ADParser: typeof import("../erp/ad_parser.js")` gives `ADParser.init` @ `erp/ad_ui.js` →
+  **`erp/ad_parser.js:525`** (was `none`) (`§LS_MEMBER`, scratchpad `lsm_before.log` / `lsm_after.log`; the trial edit was restored).
+
+| Step | Issue | Change | Witness |
+|---|---|---|---|
+| S6 | **W-ED-TYPES**: F12 / hover / autocomplete are dead on every UMD global (`ADParser.init` → none) | `scripts/gen_global_types.js` → `types/globals.gen.d.ts` (generated, do-not-edit header): for each production file with `module.exports = NAME` or `(root\|window\|g\|self\|globalThis).NAME = factory()`, where `NAME` is read as `NAME.` in another production file, emit `declare var NAME: typeof import("../<file>")`. Remove those names' `any` lines from `erp-globals.d.ts` (they would clash). Editor-only: no page loads `types/` | `scripts/tests/witness_global_types.js`: for every generated global, take its first `NAME.member(` use in another file and resolve the member. Before: resolved/sampled from the current types. After: resolved/sampled from the generated types. Prints `§ED_TYPES globals= sampled= resolved_before= resolved_after=`, INCONCLUSIVE if sampled=0. Needs TypeScript as a parser-only dep (`TSLIB=` path, as `split_closure.js` does) |
+
+---
+
+## §9 RESULT — S1–S6 built, bim-ootb PR #2904 (2026-11-13)
+Branch `chore/editor-tidy`, worktree `/tmp/wt-editor-tidy`. Logs in session scratchpad (`before.txt`/`after2.txt`, `ls_*.log`,
+`wtypes.log`, `wbump.log`, `audit2.log`).
+| Step | Witness line | Result |
+|---|---|---|
+| S1 | `§ED_LONGLINE erp/sw.js max_line=456` (was 234,833) · `readers=24 same_exit=24` (14 pass, 10 already failing before the change, none changed) | ✅ (witness) |
+| S2 | `git check-attr linguist-generated` set on 7 files (was 0) · settings JSON parses | ✅ (witness) |
+| S3 | `§ED_JSCONFIG indexed 1,474 → 2,342` | ✅ indexing. Alone it gives F12 for only 1/13 globals; S6 is the real fix |
+| S4 | `§ED_TASKS json_ok tasks=6` · task exit = direct exit on a PASS (0) and a FAIL (1) witness | ✅ (witness) |
+| S5 | `§BUMP_W_VERDICT PASS judged=4 failed=0` · real-tree dry run predicted c3's `goal_engine.js?v=1→2`, `v1062→v1063` exactly, wrote 0 | ✅ (witness) |
+| S6 | `§ED_TYPES sampled=44 resolved_before=0 resolved_after=27 verdict=PASS` · `§ED_TYPES_GEN emitted=109 editor_blind=4` | ✅ (witness). **17/44 still miss**: exported inside a UMD wrapper function TypeScript can't follow (e.g. `Dxf2Bim.run`, `ScheduleEngine.compute`). Fixing those needs a small code change per file (top-level `var X = factory(); module.exports = X`), which touches running code, so it was **not done**. That's an owner decision |
+Gates: `tests/audit_sw_precache.js` 268/268, 0 unlisted · `npx eslint viewer modeller` 0 errors.
+**Conflict:** c3's #2903 landed first and bumped line 13 to v1063. Resolved as agreed: v1063 + short comment, and the v1063 note was
+moved verbatim to `SW_VERSION_HISTORY.md`. After the merge, the 24 readers still exit the same and the audit still passes.
+**Instrument errors caught on the way (do not repeat):** (1) the first sample of "globals" was generic local names (`update`,
+`column`), 0/41 meaningless. Fixed by sampling from `eslint.globals.json`. (2) The witness sampled uses inside comments, which always come back as none.
+Fixed by blanking comments with offsets kept (CodeScrapBook §10 R9 class). The first blanking pass used `skipTrivia=true`, which is the wrong flag: comments are skipped, not
+returned. (3) "a wrapped export is unfixable" was a guess, refuted by the data (24 resolved). TypeScript now decides per global.
+
+## §10 FOUND IN THE HEAVY-CODING PROMPTS (owner, 2026-11-13: *"do your own review by examining more prompts/# that does heavy coding"*)
+Read: MIGRATE_INSTALL_TENANT, MODELLER_MASTER, 4D_MODEL_INTEGRITY, ERP_IDEMPIERE_UX_PARITY, SQLiteIDEMPIERE, FINANCIALS_GROUNDING,
+LOD400_UPGRADER, bim-ootb CAPEX_DASHBOARD, DXF2BIM_ARCHITECT_REVIEW, DISC_WALK_DRAWN_INTEGRATION. Grep for trap/duplicate/stale/override/CACHE_VERSION, then the hit lines read.
+1. **Stale copies across the two repos are the biggest by-hand trap.** Measured: same-named JS in both repos, **462 bim-compiler copies
+   identical, 329 diverged**: `build/scriptor` 132, `deploy/dev` 80, `deploy/live` 53, `deploy/sandbox` 19, `build/erp` 18. The prompts keep
+   hitting it: DXF2BIM R7-6 (12 stale reader copies in `deploy/dev`, specs still naming them), ERP_IDEMPIERE_UX_PARITY §739–772 ("shipped ⊃
+   copy" / "copy AHEAD"). With both repos open, Ctrl+P and search offer the stale copy first as often as not. **Proposed, not built:**
+   a bim-compiler `.vscode/settings.json` that hides `build/scriptor/**`, `deploy/live/**`, `deploy/sandbox/**` from search/quick-open and
+   makes `deploy/live/**` read-only in the editor (the PRIME RULE "never touch production", enforced by the editor). Editor-only, ~1 h.
+2. **"Who owns this?" is answered only for 4D.** `4D_MODEL_INTEGRITY §I` ownership table (one owner per question, duplicates flagged:
+   `support_sweep.js:432` vs `cpm_schedule.js:126`). Other lanes found duplicates after the fact: `modeller/routewalker.js` vs
+   `viewer/routewalker.js` (MODELLER_MASTER:76), `erp/pa_engine.js` vs `erp/overlay/goal_engine.js` (CAPEX §5.18, deleted), `ERPKernel`
+   published by `erp/erp_kernel.js` AND `erp/odoo_agent/erp_kernel.js`. Also `Bonsai` ×3 and `ERP` ×4 publishers
+   (`globals.gen.d.ts` header, now listed automatically on every regeneration).
+3. **Version knobs beyond sw.js:** `_GANTT_CACHE_VERSION` (4D §, `time_machine.js`) is a second hand-bumped cache key. `bump.js` doesn't
+   cover it. A by-hand 4D edit needs it bumped too, or users keep a stale cached schedule.
+4. **Line refs rot after splits** (DEV_TOOLKIT: cite by FUNCTION NAME). Prompts are full of `file:line` that the 2026-10 splits moved.
+   That's fine for history, but when you open a cited line by hand and it's wrong, search for the function name.
+5. **Not editor issues, recorded so they aren't mistaken for one:** legacy test-DB writes (MIGRATE landmine), CI never green (MODELLER
+   §310), PA_Goal 30-min staleness (CAPEX). These are runtime/oracle traps; their lanes already list them.
