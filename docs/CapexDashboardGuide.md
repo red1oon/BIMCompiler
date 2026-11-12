@@ -94,6 +94,46 @@ planned yet. Since 2026-11-12 *Project Health* also never reads Green while a ph
 
 ---
 
+## The formulas behind the figures, and what data to prepare
+
+Every figure is built from **five working quantities** per project. If you prepare these five well, every tile follows. They use the standard earned-value names, with the plain name this page uses beside them.
+
+| Working quantity | Plain name on the page | Formula | Where it lives in iDempiere | What you prepare |
+|---|---|---|---|---|
+| **Budget** (BAC) | Approved Budget | the sum of the project's planned amounts | `C_Project.PlannedAmt`, which iDempiere rolls up from the project lines (quantity x price) | The plan: phases, and lines with quantity and price, in the project's currency. A project with no planned amount has no budget figures |
+| **Planned to date** (PV) | Due | the planned amounts of the phases whose **End Date has passed** | `C_ProjectPhase.PlannedAmt` where `EndDate` is today or earlier | **Start Date and End Date on every phase.** A phase with no dates counts as nothing planned yet |
+| **Done** (EV) | Done | the planned amounts of the phases **ticked complete** | `C_ProjectPhase.PlannedAmt` where `IsComplete` = Y | **Tick the phase when it is finished.** It is all or nothing: a phase half built counts as nothing until it is ticked |
+| **Spent** (AC) | Actual Cost | the cost of the material issued to the project | `C_Project.ProjectBalanceAmt`, which each completed Project Issue adds to | **Issue the material to the project** with a Project Issue and complete it. Cost that is never issued to the project (for example a vendor invoice that did not become a Project Issue) is not in Spent |
+| **Committed** | Committed Cost: contract | the totals of completed purchase orders on the project | `C_Order` (purchase, completed) with the project set | Complete the purchase order with the **Project** filled in on the order. An order with no project is not counted |
+
+From these, the page works out the rest. The ƒ line under each tile shows the same in iDempiere columns.
+
+| Figure | Formula | Reads as |
+|---|---|---|
+| **Schedule index** (SPI) | Done ÷ Planned to date | 1 or above: at least as much finished as the dates asked for. Below 1: behind |
+| **Cost index** (CPI) | Done ÷ Spent, when Spent is above zero | 1 or above: each unit spent has earned at least a unit. Below 1: over cost |
+| **Project Health** | **Green**: every index at least 0.9 **and** no overdue phase. **Red**: every index below 0.9. **Amber**: anything else. (The cost index counts only where Spent is above zero.) | A phase is *overdue* when it is not ticked and its End Date has passed, so such a project is never Green |
+| **Schedule** tile | **Delayed**: a phase not ticked past its End Date. **At risk**: SPI below 0.9. **No schedule**: no phase with both dates. Otherwise **On time** | |
+| **Budget Status** | **Not started**: Spent is zero or empty. **Over**: Spent is above the planned amount. Otherwise **Within** | |
+| **Physical vs Spent** | Physical = Done ÷ all planned amounts of the phases; Spent = Spent ÷ the planned amount of the project | Compares how much is built with how much is spent |
+| **Forecast at completion** (proposed) | EAC = Spent + (Budget − Done) ÷ CPI | What the project will cost if the cost performance so far **continues** |
+
+Only the **0.9** threshold is the client's; the rest of the Health rule is ours and is marked provisional until you confirm it. The three definitions under *For review* are proposals; the page says so.
+
+**What the forecast can and cannot tell you.** The cost index is a single figure for the project **so far**: it adds everything spent and everything done up to today. So the forecast assumes the rest of the project will cost what the part so far did. It cannot show whether cost performance is getting better or worse, because iDempiere keeps **no completion date on a phase**: it records that a phase is ticked, not when. Cost over time can be rebuilt from dated documents (Project Issues, invoices, payments); earned value over time cannot. If you want a trend or a time-phased planned value, say so: it needs either iDempiere's change log switched on for the phase's *Is Complete*, or a completion date added to the phase through the BIM Document module. Two other textbook forms exist: **Budget ÷ CPI**, and **Spent + (Budget − Done)** when overruns are not expected to continue. Which one is yours is a question for you under *For review*; changing it is editing one Performance Measure row.
+
+**Check before you rely on a figure (what to prepare):**
+
+1. **Plan on every project:** phases, lines with quantity and price, one currency per project.
+2. **Dates on every phase** (Start and End). Without them Schedule says *No schedule* and Health has nothing planned to compare.
+3. **Tick phases the day they finish.** Done, Health, Physical and the forecast all move only when you do.
+4. **Issue material to the project and complete the issue.** Spent is only what was issued. If the cost the stock carries has nothing to do with the rates behind the plan, Spent and Budget are not on one basis and the forecast and Health follow that gap (the page warns *basis differs* when they diverge by more than a factor of two).
+5. **Set the Project on purchase orders** and complete them. For the Supply chain card also complete the receipts, invoices and payments with the Project and the Order filled in.
+6. **Set the Project Category** if you want that filter to work, and the project's **Standard Phase** (from the CAPEX Project Type) if you want the Stage tile to.
+7. **Keep one currency per project.** Money is shown per currency and never added across currencies.
+
+When something is missing the tile says **no data**, never zero, and the page says what is missing.
+
 ## How the dashboard connects to the data
 
 The page holds no data of its own and writes nothing. It is pointed at one **source**, reads that source's rows, and works every figure out in your browser. You can see which source it is on at the bottom left (*Data source*).
