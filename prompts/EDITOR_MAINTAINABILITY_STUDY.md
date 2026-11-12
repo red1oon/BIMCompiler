@@ -266,3 +266,26 @@ a one-time `npm i` that an air-gapped dev machine may not have. VS Code already 
 per-file `// @ts-check` + JSDoc (comments; the browser ignores them). **Dropped:** Prettier (an npm tool, not needed: formatting is
 already consistent). ES modules: native to the browser, no tool, but they change load order and globals at run time, so **not
 recommended** (runtime risk to the kernel). File by file, only if the owner asks.
+
+## §14 SPEC — conveniences + no-install + keep the lazy-loading strategy (owner, 2026-11-13: *"Proceed"*; mid-turn: *"in the same also look at or retain its fast perf lazy loading strategy"*)
+One bim-ootb PR, branch `chore/editor-conveniences`, worktree `/tmp/wt-editor-conv` off `origin/main` @ `6fdcf25a`. Nothing reaches the browser (§13).
+**The lazy-loading strategy as it stands (read, not changed):** the viewer's Find/navigate parts (`find_erp_push`, `find_ask*`, `nf_*`,
+`navigate_find`, `room_graph`, …) load on first use from `viewer/main.js` `modules[]` (`'nf_room.js?v=1'` …) and are **NOT precached
+on purpose** (`viewer/sw.js:753`, v1078: network-first online, no boot bytes). ERP/modeller lazy parts ARE precached for the air gap
+but load on demand in the page (`erp/sw.js:408-421`, `modeller/sw.js:59-139`). None of §14 changes what loads, when, or what is cached.
+| Step | Issue | Change | Witness |
+|---|---|---|---|
+| N1 | **W-ED-NOTSDEP**: the types generator/witness asked for `npm i typescript`, which an air-gapped dev machine may not have | `scripts/lib/find_ts.js`: `$TSLIB` → local package → **VS Code's bundled copy**. The tools only help VS Code users, and VS Code always ships TypeScript | `§ED_NOTSDEP found=vscode:… v6.0.3` with no npm package present. Generator output **byte-identical** under npm 5.6.3 vs VS Code 6.0.3. Witness PASS on VS Code's copy (`resolved 0→27/44`) |
+| N2 | **W-BUMP-LAZY**: `bump.js` (#2904) exits 2 for a lazy module (it looks only at `.html`), and its "not precached, offline users will not get it" WARN pushes toward precaching a file that is lazy on purpose | Also bump string literals `'<path>?v=N'` in `.js` loaders (path resolved from the loader's folder), bump the sw of the loader's folder (the loader itself is precached, as `main.js` is). The not-precached line becomes a neutral NOTE citing the lazy rule. Never adds anything to PRECACHE | `witness_bump.js` C5: lazy `nf_room.js` → `main.js` exactly 1 line `?v=` +1, `viewer/sw.js` +1, `viewer.html` unchanged, exit 0, NOTE not WARN. C1–C4 still PASS |
+| N3 | **W-ED-EDITORCONFIG**: no shared editor settings | `.editorconfig` describing **only the measured current style** (no reformat): see N3 measurement | the share of files that already match each rule (must be ≥ majority, otherwise the rule is left out) |
+| N4 | **W-ED-LAUNCH**: no breakpoint debugging from VS Code | `.vscode/launch.json`: Chrome on `localhost:8000` for viewer/ERP/modeller (uses the existing *Serve repo* task) + "Node: this witness" | JSON parses; every launched URL's file exists. **Not run in a browser** (no browser/GPU runs without the owner's go). The SW-bypass question stays DEV_TOOLKIT spike S0 |
+| N5 | **W-ED-NPMTEST**: no `npm test` | `package.json` `"test": "node tests/run_witness_suite.js"` (headless class only, its default; browser witnesses stay behind `--browser`) | `npm test` exit == direct runner exit; baseline log `logs/witness_suite_baseline.log` |
+
+### §14 RESULT — bim-ootb PR #2908 (2026-11-13)
+| Step | Witness line | Result |
+|---|---|---|
+| N1 | `§ED_NOTSDEP found=vscode:/snap/code/current/…/typescript.js v6.0.3` (no npm package in the repo) · output identical npm 5.6.3 vs VS Code 6.0.3 · `§ED_TYPES … resolved_before=0 resolved_after=27 verdict=PASS` on VS Code's copy | ✅ (witness) |
+| N2 | `§BUMP_W C5-lazy-module-kept-lazy PASS lazy=viewer/find_erp_push.js main_lines=1 page_lines=1 sw_lines=1 precache_unchanged=true note=true warn=false` · `§BUMP_W_VERDICT PASS judged=5` · real-tree dry run `nf_room.js` → `main.js` 1→2, `viewer.html` `main.js?v=61→62`, `viewer/sw.js` v1709→v1710, NOTE only | ✅ (witness). Also found: `erp/goal_engine.js` is loaded by `capex/index.html` too (no sw there, NOTE) |
+| N3 | measured: JS 2,819 files step 2 / 115 step 4 / 138 too short; py 42/43 4-space; CRLF 1/3,072; no-final-newline 0/3,072; trailing-space 19 files → indent not forced (detected per file), no trimming | ✅ (measurement). Note: VS Code does not read `.editorconfig` natively, so the same rules are in `.vscode/settings.json` |
+| N4 | `§ED_LAUNCH json_ok configs=4 urls_exist=3 missing=[]` | ✅ static only. **Not run in a browser** (owner rule). SW-bypass launch stays DEV_TOOLKIT spike S0 |
+| N5 | `§ED_NPMTEST npm_exit=0 direct_exit=0 same=yes` (`--filter 4d_template_reached`) | ✅ (witness). Full headless suite = 279 witnesses (38 browser ones skipped by default), baseline run to `~/bim-ootb/logs/witness_suite_baseline.log` |
