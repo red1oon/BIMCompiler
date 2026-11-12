@@ -11,7 +11,7 @@
   stock windows.
 - **The Performance panel on the twin's Home tab**: the same goals in Kernel-ERP, the SQLite twin of iDempiere that runs in a browser.
 
-> **What it changes on your iDempiere:** no change to iDempiere's code or tables. The dashboard needs only read-only setup data.
+> **What it changes on your iDempiere:** no change to iDempiere's code or tables for the dashboard, which needs only read-only setup data. The optional BIM Document plugin adds its own table, and two date columns (`BIM_StartDate`, `BIM_EndDate`) to the Project Task, for the Schedule tab's task bars.
 > Sending a Project Order *from a BIM model* into iDempiere is a separate thing: that is one standard plugin. How it, the drawings
 > filed against the project and this dashboard fit together is the next chapter.
 > BIM Document (the drawings) is part of Kernel-ERP today; on your own iDempiere it needs a pack and a plugin: see *Installing it* and the *Developer's note*.
@@ -36,9 +36,9 @@ One project, four places. Each hands the next the same project:
 3. **The register decides what a walker may read.** The project's register (every deliverable at its latest revision, plus the superseded
    ones: number, revision, state, discipline, file kind, the file's `sha256`) is exported from the BIM Document. A sheet *issued for
    construction* is used as placed; *issued for review* as provisional and left out of totals; Draft and Superseded sheets are refused.
-   This runs from a tool today; there is no button yet.
+   It is exported by the **Export Register** process, under the gear of a document in the BIM Document window; the Modeller reads the exported file.
 4. **This dashboard reads the same Project Order.** Its **BIM** button appears when the project's building file is found, by the project's
-   value (the model's name). It does not show document counts yet.
+   value (the model's name). The *BIM Documents issued for construction* tile and the project page's **Documents** tab show the counts.
 
 ## Where every number comes from (the sources, and how they come together)
 
@@ -94,6 +94,97 @@ planned yet. Since 2026-11-12 *Project Health* also never reads Green while a ph
 
 ---
 
+## The formulas behind the figures, and what data to prepare
+
+Every figure is built from **five working quantities** per project. If you prepare these five well, every tile follows. They use the standard earned-value names, with the plain name this page uses beside them.
+
+| Working quantity | Plain name on the page | Formula | Where it lives in iDempiere | What you prepare |
+|---|---|---|---|---|
+| **Budget** (BAC) | Approved Budget | the sum of the project's planned amounts | `C_Project.PlannedAmt`, which iDempiere rolls up from the project lines (quantity x price) | The plan: phases, and lines with quantity and price, in the project's currency. A project with no planned amount has no budget figures |
+| **Planned to date** (PV) | Due | the planned amounts of the phases whose **End Date has passed** | `C_ProjectPhase.PlannedAmt` where `EndDate` is today or earlier | **Start Date and End Date on every phase.** A phase with no dates counts as nothing planned yet |
+| **Done** (EV) | Done | the planned amounts of the phases **ticked complete** | `C_ProjectPhase.PlannedAmt` where `IsComplete` = Y | **Tick the phase when it is finished.** It is all or nothing: a phase half built counts as nothing until it is ticked |
+| **Spent** (AC) | Actual Cost | the cost of the material issued to the project | `C_Project.ProjectBalanceAmt`, which each completed Project Issue adds to | **Issue the material to the project** with a Project Issue and complete it. Cost that is never issued to the project (for example a vendor invoice that did not become a Project Issue) is not in Spent |
+| **Committed** | Committed Cost: contract | the totals of completed purchase orders on the project | `C_Order` (purchase, completed) with the project set | Complete the purchase order with the **Project** filled in on the order. An order with no project is not counted |
+
+**The abbreviations, in full, and where each one comes from.** One table, so you can read any formula in this guide or on the page.
+
+| Short | Long form | On this page | Source in iDempiere |
+|---|---|---|---|
+| **BAC** | Budget at Completion | Approved Budget | `C_Project.PlannedAmt` (rolled up from `C_ProjectLine`) |
+| **PV** | Planned Value | Due, "planned to date" | `C_ProjectPhase.PlannedAmt` where `EndDate` is today or earlier |
+| **EV** | Earned Value | Done | `C_ProjectPhase.PlannedAmt` where `IsComplete` = Y |
+| **AC** | Actual Cost | Spent, Actual Cost | `C_Project.ProjectBalanceAmt` (completed `C_ProjectIssue`) |
+| **SPI** | Schedule Performance Index = EV ÷ PV | the schedule index | worked out from EV and PV |
+| **CPI** | Cost Performance Index = EV ÷ AC | the cost index | worked out from EV and AC |
+| **EAC** | Estimate at Completion = AC + (BAC − EV) ÷ CPI | Forecast Cost at Completion (proposed) | worked out from the above |
+| **PO** | Purchase Order | Committed Cost: contract, Procurement | `C_Order` with `IsSOTrx` = N |
+| **WS** | Web Service | the read access in *Installing it* | iDempiere's standard web services |
+| **PA** | Performance Analysis | the Home tab goals | `PA_Measure`, `PA_MeasureCalc`, `PA_Goal` |
+| **BIM** | Building Information Model | the model a project order is made from | the building's IFC file |
+
+From these, the page works out the rest. The ƒ line under each tile shows the same in iDempiere columns.
+
+| Figure | Formula | Reads as |
+|---|---|---|
+| **Schedule index** (SPI) | Done ÷ Planned to date | 1 or above: at least as much finished as the dates asked for. Below 1: behind |
+| **Cost index** (CPI) | Done ÷ Spent, when Spent is above zero | 1 or above: each unit spent has earned at least a unit. Below 1: over cost |
+| **Project Health** | **Green**: every index at least 0.9 **and** no overdue phase. **Red**: every index below 0.9. **Amber**: anything else. (The cost index counts only where Spent is above zero.) | A phase is *overdue* when it is not ticked and its End Date has passed, so such a project is never Green |
+| **Schedule** tile | **Delayed**: a phase not ticked past its End Date. **At risk**: SPI below 0.9. **No schedule**: no phase with both dates. Otherwise **On time** | |
+| **Budget Status** | **Not started**: Spent is zero or empty. **Over**: Spent is above the planned amount. Otherwise **Within** | |
+| **Physical vs Spent** | Physical = Done ÷ all planned amounts of the phases; Spent = Spent ÷ the planned amount of the project | Compares how much is built with how much is spent |
+| **Forecast at completion** (proposed) | EAC = Spent + (Budget − Done) ÷ CPI | What the project will cost if the cost performance so far **continues** |
+
+Only the **0.9** threshold is the client's; the rest of the Health rule is ours and is marked provisional until you confirm it. The three definitions under *For review* are proposals; the page says so.
+
+**What the forecast can and cannot tell you.** The cost index is a single figure for the project **so far**: it adds everything spent and everything done up to today. So the forecast assumes the rest of the project will cost what the part so far did. It cannot show whether cost performance is getting better or worse, because iDempiere keeps **no completion date on a phase**: it records that a phase is ticked, not when. Cost over time can be rebuilt from dated documents (Project Issues, invoices, payments); earned value over time cannot. If you want a trend or a time-phased planned value, say so: it needs either iDempiere's change log switched on for the phase's *Is Complete*, or a completion date added to the phase through the BIM Document module. Two other textbook forms exist: **Budget ÷ CPI**, and **Spent + (Budget − Done)** when overruns are not expected to continue. Which one is yours is a question for you under *For review*; changing it is editing one Performance Measure row.
+
+**Check before you rely on a figure (what to prepare):**
+
+1. **Plan on every project:** phases, lines with quantity and price, one currency per project.
+2. **Dates on every phase** (Start and End). Without them Schedule says *No schedule* and Health has nothing planned to compare.
+3. **Tick phases the day they finish.** Done, Health, Physical and the forecast all move only when you do.
+4. **Issue material to the project and complete the issue.** Spent is only what was issued. If the cost the stock carries has nothing to do with the rates behind the plan, Spent and Budget are not on one basis and the forecast and Health follow that gap (the page warns *basis differs* when they diverge by more than a factor of two).
+5. **Set the Project on purchase orders** and complete them. For the Supply chain card also complete the receipts, invoices and payments with the Project and the Order filled in.
+6. **Set the Project Category** if you want that filter to work, and the project's **Standard Phase** (from the CAPEX Project Type) if you want the Stage tile to.
+7. **Keep one currency per project.** Money is shown per currency and never added across currencies.
+
+When something is missing the tile says **no data**, never zero, and the page says what is missing.
+
+## How the dashboard connects to the data
+
+The page holds no data of its own and writes nothing. It is pointed at one **source**, reads that source's rows, and works every figure out in your browser. You can see which source it is on at the bottom left (*Data source*).
+
+| Source | What it is | When you use it |
+|---|---|---|
+| **B · Legacy iDempiere** | Your iDempiere's own rows, read through its **standard web services** with a read-only role. A small job beside the server reads them and writes the file the page opens (the job and the file are in the Developer's note). | Production: the figures are your server's, as of the last job run |
+| **A · SQLite ERP DB** | The rows of a **Kernel-ERP twin**: the same tables as iDempiere, held in the browser. The page can open the twin's own store, for example the one that holds the film's test projects. | Trying the whole flow without an iDempiere server, or showing it |
+
+Either way the page asks for the same tables, and a figure means the same thing on both. A difference between the two is a defect, not a feature.
+
+**What it reads, and what you need for each part.** The first row is the dashboard itself; every row after it is optional, and a missing one never shows as zero: the tile or card says **no data (not installed)** and names what is missing.
+
+| It shows | It reads | Needed on iDempiere |
+|---|---|---|
+| Projects, phases, tasks, lines, organisations, currencies, approvals | `C_Project`, `C_ProjectPhase`, `C_ProjectTask`, `C_ProjectLine`, `AD_Org`, `C_Phase`, `C_Currency`, `AD_WF_Activity` | the read-only access in *Installing it*, step 1 |
+| Actual cost, *Committed: verified* | completed **Project Issues** (`C_ProjectIssue`) | the *Q4* read types (optional) |
+| *Committed: contract*, open purchase orders | purchase orders on the project (`C_Order`) | the same optional read types |
+| The **Supply chain** card on the project page (see below) | receipts (`M_InOut`), vendor invoices (`C_Invoice`), payments (`C_Payment`) | three more optional read types |
+| Task bars on the **Schedule** tab | each task's start and end date, which the BIM Document module adds to a Project Task | BIM Document installed, and the date columns on the task read type |
+| BIM documents issued for construction | the BIM Document register (`BIM_Document`) | BIM Document installed |
+
+**One use case, followed through: a purchase order from order to payment.** Take a project whose order was pushed from a building model.
+
+1. The **plan** is the Project Order: phases and lines with their planned amounts. This is **Approved Budget**. Task dates, where the module is installed, come from the same programme as the phases and give the bars on the Schedule tab.
+2. Someone raises a **purchase order** on the project. While it is a draft it counts under *open purchase orders*; once completed it is **Committed Cost: contract**.
+3. The goods arrive: a **receipt** on the order. The order's stage on the project page becomes *Received*.
+4. Material is **issued to the project** (a completed Project Issue). The stock goes down by the quantity and the project's balance goes up by its cost: that is **Actual Cost** and **Spent**. On a Kernel-ERP twin a Project Issue completes the way it does on iDempiere, and reversing it puts both back.
+5. The supplier's **invoice** arrives and is completed: the stage becomes *Invoiced*.
+6. A **payment** is made against the invoice: the stage becomes *Paid* once the payments cover the invoice, and *Invoiced* while they do not.
+
+Steps 3, 5 and 6 are shown in one place only, the **Supply chain** card at the top of the project's **Procurement** tab. It has a strip of four counts (Ordered, Received, Invoiced, Paid) and one row per purchase order, with its received count and its invoiced and paid amounts. It is a drill-in, so the glance and the left menu stay as they are. Each document in the card opens its own record in the system the figures came from (iDempiere's own page for that record, or the matching window of the twin). The stages are **proposed**, like the Procurement Risks view: they come from completed documents only, a document in another currency is counted and flagged and never converted, and a receipt, invoice or payment that names no order is counted on a line under the table instead of being added to an order.
+
+**Two honest limits.** The page shows the rows of its source as of the last read (the job's last run, or the store it opened); it does not refresh itself. And a twin can show a different *Spent* from iDempiere's for the same project when receipts have moved the product's average cost in one and not the other: the issue itself behaves the same on both, which was checked on the test server, but the cost it takes depends on the stock history.
+
 ## For review: three definitions we propose (not yet agreed)
 
 Three of the design's tiles have no formula we could verify. These are our proposals, built the iDempiere way, so you can say whether
@@ -120,16 +211,15 @@ These are different screens over the same kind of rows. They are not one HTML pa
 | **What you see** | Seven tiles, five panels, project lists | Performance dials, one per goal | The same dials as iDempiere, on purpose |
 | **What defines the figures** | Formulas built into the page | `PA_Goal` and `PA_Measure` rows | The same rows |
 | **What calculates them** | The page, in the browser | iDempiere | The twin's goal engine, running the same SQL |
-| **Where its data comes from** | A file written by a small job | Your iDempiere | A copy of your iDempiere's rows, in the browser |
+| **Where its data comes from** | A file written by a small job, or a twin's own store | Your iDempiere | A copy of your iDempiere's rows, in the browser |
 | **Change a formula without code** | No | Yes, in the stock windows | Yes, in the same stock windows |
-| **Change the look without code** | No | No | No |
+| **Change the look without code** | Yes: the Layout and Skin selects | No | No |
 
 ### Rich or editable: today you choose
 
 A goal is one number on a dial, so the Home tabs cannot draw a stage pipeline, a Physical vs Spent panel or a project list. The page can,
 because it is not limited to what a goal expresses. But the page is the part you cannot change without a developer: its layout and
-formulas are built into it. **There is no editor for the page.** On it you can only change the filters
-and the data source, and its tiles do not click through to records: the one link out is the **BIM** button.
+formulas are built into it. **There is no editor for the page.** On it you can change the filters, the data source and, by choosing a Layout and Skin, how it looks (never what it says). Its tiles and rows click through to the projects behind them and on to a project page, and each project and each document of the Supply chain card has a link out to its record in the ERP.
 
 The windows under *Changing it* edit a goal's numbers and SQL. They do not change how anything looks. Where a figure appears on both,
 the checks under *How it was checked* keep the two formulas in agreement.
@@ -165,7 +255,7 @@ The page follows an executive dashboard a client prototyped. We have seen one sc
 | Project Stage | The client's own five stages | The Standard Phase names | How those stages map to `C_Phase` is not agreed |
 | Money | One currency, in large units | Each currency separately, in full | Never added together |
 | Explaining a tile | An information mark | The formula printed on the tile | So anyone can check it in SQL |
-| Tiles | Icons and progress bars | Plain text | Not built |
+| Tiles | Icons and progress bars | The Executive layout draws meters and a coloured health bar; the Classic layout is plain text | Both are built; you choose under *Choosing a look* |
 | Data | Described as live | The last run of the job | See *Installing it* |
 
 The figures themselves come from different data, so they will not match.
@@ -182,7 +272,7 @@ real rows read from the test server, the date held at 4 Nov 2026 so it matches t
 ### How to read it
 
 1. **Left menu.** *Dashboard* is this view. The others are below. The red badge on *Approval Pending* is that count.
-2. **Data source** (bottom left). **B · Legacy iDempiere** is your server's data, from the job's file. **A · SQLite ERP DB** is the stock sample database shipped with the page: not your data, and not the twin's copy in your browser.
+2. **Data source** (bottom left). **B · Legacy iDempiere** is your server's data, from the job's file. **A · SQLite ERP DB** is a Kernel-ERP store: by default the stock sample database shipped with the page (not your data), or a twin's own store when the page is opened on one. See *How the dashboard connects to the data*.
 3. **Filters.** *Org*, *Category* (`ProjectCategory`) and *Status*. Status starts on **Active Projects**. A fourth filter, **Project**, picks one project: its first choice is **All Projects**, and it lists only the projects the other three filters let through (change Status and a project that no longer fits drops out and the choice goes back to All Projects). A page address with `&project=<Value>` opens with that project already chosen. That changes the money
    tiles, as explained under *Page and Home tab: why a figure can differ*.
 4. **Last Updated.** The newest `C_Project.Updated` in the data, never the clock. An old date means old data.
@@ -208,7 +298,7 @@ Money is shown **per currency**, never added together.
 
 ### The panels
 
-These work per project, from its **Phase** tab, with three amounts:
+These work per project, from its **Phase** tab, with three amounts (the full set of formulas and the data to prepare is under *The formulas behind the figures*):
 
 - **Due** (PV) = planned amount of phases whose End Date has passed.
 - **Done** (EV) = planned amount of phases marked Complete.
@@ -256,9 +346,9 @@ Click a project code in any list (or a bubble, or a row under *Needs attention*)
 | Tab | Shows |
 |---|---|
 | **Overview** | Approved, Spent, Due against Done, the forecast warning if Spent and Done are not on one basis, and **In plain words**: sentences made from the project's own rows, for example *Substructure is overdue: it ended 2026-09-22 and is not ticked complete*. If nothing is flagged it says so |
-| **Schedule** | The phases as bars against a *today* line (Complete, In progress, Overdue, To come) and the same phases as a table |
+| **Schedule** | The phases as bars against a *today* line (Complete, In progress, Overdue, To come) and the same phases as a table. Under them, a **Tasks** card with one bar per task where the server has task dates (BIM Document installed); otherwise it says *no task dates on this server* and draws nothing |
 | **Cost** | Each phase's planned and committed amount, a total row, and the project's committed and invoiced amounts from its lines |
-| **Procurement** | The project's purchase orders and which are still open. *no data (not installed)* where purchase orders cannot be read |
+| **Procurement** | The **Supply chain** card (proposed): per purchase order, received, invoiced and paid, with a strip of four counts, each document one click from its record; then the project's purchase orders and which are still open. *no data (not installed)* where they cannot be read |
 | **Documents** | The BIM deliverables at their latest revision and how many are issued for construction. *no data (not installed)* without the BIM Document module |
 
 The tabs can be used from the keyboard: Left and Right move between them, Home and End jump to the first and last.
@@ -508,13 +598,13 @@ The steps, the scripts and the plugin's contents are in the **Developer's note**
 | Topic | Today |
 |---|---|
 | Forecast Cost at Completion | Shows our proposed figure, labelled *proposed*, until you confirm the formula (*For review*) |
-| Procurement Risks, Handover | No agreed definition: says *definition pending* |
+| Procurement Risks, Handover | Show our proposed definitions, labelled *proposed*, until you confirm them |
 | Project Stage | Shows the project's Standard Phase. The five CAPEX stages are installed as a Project Type (proposed); a project shows them once you set its Standard Phase to one of them. *For review* |
 | Payment-based progress | Not in the ERP |
 | Document figures | The tile *BIM Documents issued for construction* is on the page. Not yet shown: *Issued for review* as a separate count |
-| BIM Document on your own iDempiere | The plugin's source is written and compiles against iDempiere 13; it has not yet been installed and checked on a server. It runs in Kernel-ERP today |
-| A revised model | Sending a revised model again adds nothing today (a second send changes nothing). Planned: it arrives as a new, version-tagged order that replaces the old one (the project is still in alpha, so no baseline is kept) |
-| Register button | The register is exported and used by a tool; there is no button yet |
+| BIM Document on your own iDempiere | The plugin's source is written and compiles against iDempiere 13; it has been installed and checked on a real iDempiere 13 test instance (see the Developer's note), not yet on a client's server. It runs in Kernel-ERP today |
+| A revised model | Sending a revised model again adds nothing today (a second send changes nothing). On Kernel-ERP a revised model arrives as a new, version-tagged order that replaces the old one (the project is still in alpha, so no baseline is kept). Whether a push to your iDempiere may delete the old order is still to be decided |
+| Register in the Modeller | The register is exported by *Export Register* in the BIM Document window; a button in the Modeller itself is not built |
 | Project Stage, Physical vs Spent, project lists on the Home tab | Page only, not goals |
 | Other currencies on the Home tab | No money goal covers them until you add one. The page shows each currency it finds |
 
@@ -535,6 +625,11 @@ the test server all 261 are on **Business Partner**, not on project documents.
 - A goal's stored value behaves the same on iDempiere and the twin: the caption holds inside the refresh interval, and moves after it, in three steps compared exactly.
 - The read types, built from their script alone on a clean server, each answered a real call. A write through a read type is refused.
 - A real edit in iDempiere reached the twin after the next job and reload, changing exactly one row, and was undone.
+
+- The **Supply chain** card equals a separate count from the raw rows for a set of awkward cases (a draft order, a part payment, a payment tied only through its invoice, a document in another currency, an unlinked receipt, another project's documents), and the three read types it needs return the same rows on the test server.
+- **Task dates** written from the 4D programme equal the programme's own tasks one by one, each phase's window equals the span of its tasks, and the Schedule tab draws exactly those bars. On the test server the dates come back through the standard read type.
+- A **Project Issue** on Kernel-ERP moves the project's balance and the stock by the same amounts as the same issue on iDempiere (checked on the test server); reversing it restores both.
+- The dashboard opened on a Kernel-ERP store built through the twin's own operations shows totals equal to separate sums over that store's rows.
 
 Not checked: a site larger than this test server. If the job stops, the copy just goes quietly out of date.
 
@@ -627,6 +722,10 @@ address to open on your data.
 !!! warning "The file holds your project figures"
     Whoever can open the page can read them. Serve it only where you would show them.
 
+The optional read types come in their own migration scripts, one folder each, so a site installs only what it uses: `capex/legacy/ws/q4/` (`QueryCOrder`, `QueryCProjectIssue`), `capex/legacy/ws/bimdoc/` (`QueryBIMDocument`, and the task-date columns added to `QueryCProjectTask` and `BridgeCreateCProjectTask`), and `capex/legacy/ws/chain/` (`QueryMInOut`, `QueryCInvoice`, `QueryCPayment`: the Supply chain card). Each script does nothing where its table or column is absent, finds columns by name, and is safe to run twice; restart the server afterwards, because web-service types are cached.
+
+To open the page on a twin's own store instead of the job's file, add `?db=/path/to/store.db` to its address. `node capex/tools/twin_mockchain.js` builds the film's 12-project store through the twin's own model layer (projects, issues, purchase orders, and for each completed order a receipt, a vendor invoice and a payment) and exports it; the page's *A · SQLite ERP DB* then reads that file.
+
 #### In Kernel-ERP
 
 Nothing is installed by hand. The Home tab goals and BIM Document are built in: open **Plugins & Releases** to start or stop them. A stopped one
@@ -648,8 +747,7 @@ or **a SQL migration script** under the plugin's `migration` folder, as the dash
 never changed: a changed pack gets a new version. Start the database first, apply the pack, then check the rows on the server.
 
 *Status:* installed and tested on a real iDempiere 13 server (a test instance on the developer's machine). The pack and the `I_`/`X_` classes are generated from one
-Excel data-model workbook. The document types per client (`DocBaseType` BIM) are not yet created by the plugin, and the Project window's project-level BIM Document
-tab is not built yet.
+Excel data-model workbook. The four document types (`DocBaseType` BIM: Drawing, Model, Specification, Report) come from a migration script, and the Project window has a project-level BIM Document tab.
 
 #### Try it: the BIM Document test instance
 
