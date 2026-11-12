@@ -224,3 +224,30 @@ LOD400_UPGRADER, bim-ootb CAPEX_DASHBOARD, DXF2BIM_ARCHITECT_REVIEW, DISC_WALK_D
    That's fine for history, but when you open a cited line by hand and it's wrong, search for the function name.
 5. **Not editor issues, recorded so they aren't mistaken for one:** legacy test-DB writes (MIGRATE landmine), CI never green (MODELLER
    §310), PA_Goal 30-min staleness (CAPEX). These are runtime/oracle traps; their lanes already list them.
+
+## §11 SPEC — bim-compiler editor settings: hide the stale copies (owner, 2026-11-13: *"yes proceed"* on §10.1)
+**Issue W-ED-XREPO:** with both repos open, search and Ctrl+P offer out-of-date copies of bim-ootb modules (329 diverged).
+**Where they are (measured, `xrepo_copies.txt`):** `build/scriptor/*/_kw_old/**` = 437 copies across 13 dated run snapshots. The
+originals beside them stay visible (`build/scriptor/*.js`, `treatments/` 5, `film_v4/` 3, `perf_review_20261101/` 4 probes).
+Also `deploy/live/**` (production snapshot, 35 diff + 18 locales; last touched 2026-08-04) and `deploy/sandbox/**` (19 diff,
+last touched 2026-05-19). **`deploy/dev/` stays visible.** It is the dev target (CLAUDE.md PRIME RULE). Its 55 diverged copies are
+a real sync question for the DXF2BIM/viewer lanes (DXF2BIM R7-6), not something to hide.
+**Change:** `.vscode/settings.json` (`search.exclude` + `files.exclude`-free, so the file tree still shows them; `files.readonlyInclude`
+for `deploy/live/**`). `.gitignore`: `.vscode/` → `.vscode/*` + `!.vscode/settings.json` (other personal .vscode files stay ignored).
+**Witness:** of the 329 diverged + 462 identical copies, the count that the search.exclude globs hide (minimatch, same semantics as
+VS Code) vs. the count of ORIGINAL (non-copy) files hidden. Pass = most diverged copies hidden AND 0 originals outside
+deploy/live|sandbox hidden. `§ED_XREPO hidden_diff= hidden_same= visible_diff= originals_hidden=`.
+
+## §12 RESULT §11 + what is left vs. mainstream VS Code expectations (2026-11-13)
+**§11 DONE:** bim-compiler PR #596 merged (`90684efbe`), check `system-is-real` SUCCESS. `§ED_XREPO hidden_diff=204 hidden_same=316
+js_originals_hidden_outside_deploy=0 verdict=PASS`. c3 had no objection. 5c was gone (unreachable) by then.
+**Owner question:** *"did u detect much room for dev editability improvement? … VSC friendly is something i think u know what the devs in the world prefers"*
+Measured over 856 production files (bim-ootb `6fc6b8dd`):
+| Mainstream expectation | Here | Room | Cost / risk |
+|---|---|---|---|
+| Files say what they use (`import`/`export`) → F12, rename, find-references just work | **1** file uses ES modules. Script order + window globals + the `A`/`APP` object (1,676 fields) | **Largest.** #2904 patched F12 for 27/44 UMD globals. `A.x` fields still have no F12 | Weeks, touches running code. Only file-by-file behind witnesses. Not recommended as a sweep |
+| Types from JSDoc + `// @ts-check` (the standard no-build route) | 0 files `@ts-check`, 54 with any `@param` | Large, and the cheapest structural step: opt-in per file, no runtime change | Hours per file. Start with files you edit by hand most |
+| Files < ~500 lines, functions < ~100 | 159 files >500, 67 >1,000. 29 functions ≥400 lines | Large. Hurts reading more than navigation | Real refactor (split-generator method, protected lanes excluded) |
+| `npm test` runs the checks | `package.json` has only `lint`. Witnesses in 5 folders | Medium | `npm test` → `tests/run_witness_suite.js`: 1 h, no risk |
+| Shared formatting (`.editorconfig`/Prettier) | none (0 tab-indented files, so it's consistent anyway) | Small | `.editorconfig` only, 15 min. **Never mass-reformat** (one giant diff that collides with every open lane) |
+| Debug in the editor (`launch.json`, breakpoints) | none | Medium for by-hand bug-hunting | 1 h. DEV_TOOLKIT S0 spike already specced |
