@@ -235,6 +235,34 @@ the projects are test pushes of one building, so the amounts themselves mean not
 | Standard | Material issued, no budget | Budget Over, Overrun |
 | HHS_VIEWER_PUSH_..730 | Finish Date entered, then Close Project | Closed, Completed this year. Not Active any more |
 
+### Choosing a look: Layout and Skin
+
+Two selects in the header change how the page looks, never what it says. Every number comes from the same calculation in every look, for both the Kernel ERP and legacy iDempiere.
+
+| Choice | Options | What changes |
+|---|---|---|
+| **Layout** | *Classic* (the default: tiles and panels) | The tiles and panels described above |
+| | *Executive* | Four large tiles with meters (Approved budget, Spent so far, Forecast, Project health as one coloured bar), a **portfolio map**, a **Needs attention** list and the stage bars |
+| **Skin** | *Light*, *Dark* | Colours only |
+
+The choice is remembered in your browser. It can also be set in the address (`?theme=executive&skin=dark`).
+
+**The portfolio map** (Executive layout) draws one bubble per active project that has a planned amount. Left to right is how many days behind schedule the project is (its longest overdue phase); bottom to top is how much of its budget is spent; the colour is its health. Hover or Tab to a bubble to see its figures and the reason it is amber or red; click it to open the project. Bubble size shows the planned amount, but only when all plotted projects share one currency (amounts in different currencies are never compared). Projects with no planned amount are counted under the map as *not plotted*. **Table view** shows the same projects as a table.
+
+### The project page
+
+Click a project code in any list (or a bubble, or a row under *Needs attention*) and the project opens on its own page, in five narrow tabs. **Open in iDempiere** at the top right opens the same record in the ERP, and **‹ Dashboard** brings you back.
+
+| Tab | Shows |
+|---|---|
+| **Overview** | Approved, Spent, Due against Done, the forecast warning if Spent and Done are not on one basis, and **In plain words**: sentences made from the project's own rows, for example *Substructure is overdue: it ended 2026-09-22 and is not ticked complete*. If nothing is flagged it says so |
+| **Schedule** | The phases as bars against a *today* line (Complete, In progress, Overdue, To come) and the same phases as a table |
+| **Cost** | Each phase's planned and committed amount, a total row, and the project's committed and invoiced amounts from its lines |
+| **Procurement** | The project's purchase orders and which are still open. *no data (not installed)* where purchase orders cannot be read |
+| **Documents** | The BIM deliverables at their latest revision and how many are issued for construction. *no data (not installed)* without the BIM Document module |
+
+The tabs can be used from the keyboard: Left and Right move between them, Home and End jump to the first and last.
+
 ### The other views
 
 **Projects** lists each project: Value, Name, Org, Currency, Planned, Actual, Committed, Standard Phase. The **BIM** button appears only when
