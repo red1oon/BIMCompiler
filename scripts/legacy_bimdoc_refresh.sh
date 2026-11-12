@@ -82,6 +82,12 @@ say "bundle $NAME classes=$(find "$DEST" -name '*.class' | wc -l) pack=$(ls "$DE
 for i in $(seq 1 90); do grep -q "Incremental2PackActivator.packIn: org.idempiere.bimdocument .* installed" "$INST/server.log" && break; sleep 4; done
 say "start $(grep -h 'Incremental2PackActivator.packIn' "$INST/server.log" | cut -c1-140 | tr '\n' '|')"
 
+# 5b component migration scripts (the document types, T3): the bundle's own migration/postgresql/*.sql, in name order, each in one transaction against this instance's DB only
+for f in $(ls "$BUNDLE_SRC"/migration/postgresql/*.sql 2>/dev/null | sort); do
+  r=$( (echo "SET search_path=adempiere;"; cat "$f") | docker exec -i "$PG" psql -U adempiere -d "$DB" -v ON_ERROR_STOP=1 -qtA --single-transaction 2>&1 | grep -E "ERROR|registered" | head -2 | tr '\n' ' ')
+  say "migration $(basename "$f") $r"
+done
+
 # 6 verify ------------------------------------------------------------------------------------------------
 TID="$(psqlq "select ad_table_id from ad_table where tablename='BIM_Document'" | tr -d ' ')"
 say "verify table=$TID columns=$(psqlq "select count(*) from ad_column where ad_table_id=${TID:-0}") physical=$(psqlq "select count(*) from information_schema.columns where table_name='bim_document'") virtual=$(psqlq "select count(*) from ad_column where ad_table_id in (select ad_table_id from ad_table where tablename in ('C_ProjectTask','C_ProjectPhase')) and columnname like 'BIM%' and columnsql is not null")"
