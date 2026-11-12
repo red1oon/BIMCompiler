@@ -3,6 +3,10 @@
 **Date:** 2026-11-13 · **Measured on:** bim-ootb `origin/main` @ `c421a957` (#2901), bim-compiler `origin/master` @ `66191f9c0`.
 **Why this file exists:** the owner was given an outside "Editor-Maintainability Refactor Audit" prompt to hand to Fable.
 Owner, 2026-11-13: *"Dont run in Fable yet.. just study and write up or gather from prompts/# specs concerning this area."*
+**Who it is for (owner, 2026-11-13):** *"review the code for dev editor friendliness ie myself when i need to manually handle
+the code without further Vibe assistance."* The reader is **the owner, editing by hand in VS Code with no AI**, not a new hire.
+So the test for each item: *does this stop me finding, reading, changing or checking code by hand?* **Read §7 first**:
+it is the hands-on list. §1–§6 are the first pass on the outside prompt.
 
 ---
 
@@ -70,3 +74,80 @@ G1, G3, G7 and G8 together take under a day and touch no running code.
 ## §6 If it is dispatched later
 Do not send the outside prompt as written. Send §3 as the work list: G1 → G3 → G7 → G8 first (no runtime risk), then G2, then
 G6 (witness verdicts the same before and after). Add one task, the §4 schema-agreement check. Model per standing rule: Sonnet, not Fable.
+
+---
+
+## §7 HANDS-ON: what stops the owner editing by hand (measured 2026-11-13, same commits as above)
+Probe: `scratchpad/fnlen.js` (espree, the same parser ESLint uses) over **788 production files / 280,870 lines** in
+viewer/erp/modeller/common (lib/, tests, witnesses, probes excluded). Logs: `fnlen.log` (all functions), `fnlen_inner.log`
+(wrapper closures removed). `§EDIT_STUDY parse_fail=0`.
+
+Each item follows one task you would do by hand.
+
+### A. "I change one file — what else must I touch, or users get the old code?"  ← the biggest hand-editing trap
+- Every shipped `.js` is listed in an HTML page with a `?v=` tag (**247** in `viewer/viewer.html`, **221** in `erp/idempiere.html`),
+  is precached in a service worker, and the worker's `CACHE_VERSION` must go up (`viewer/sw.js:260` v1709, `erp/sw.js:13` v1062,
+  `modeller/sw.js:28` v272). Forget one, and the browser serves the old file with no error message.
+- A checker exists (`tests/audit_sw_precache.js`, tag ↔ precache), but **there is no "bump" command**: no script under
+  `scripts/` does the `?v=` + `CACHE_VERSION` edit. By hand, that's 3 edits in 2–3 files for a one-line fix.
+- **Fix:** one `scripts/bump.js <file>` (rewrites `?v=`, bumps the right `CACHE_VERSION`, runs `audit_sw_precache`) + a
+  `.vscode/tasks.json` entry. Effort ½ day. Risk: low, touches the deploy path, so prove it with `audit_sw_precache` before/after.
+
+### B. "I open a file and the editor chokes"
+- **`erp/sw.js` line 13 is one 234,833-character comment**: the change log of every `CACHE_VERSION` bump, written into the
+  code. VS Code stops colouring long lines (default `editor.maxTokenizationLineLength` = 20,000), and the file you must edit on
+  every ERP deploy is 280 KB. `modeller/sw.js:28` already follows the right rule ("per-change detail is the git commit
+  message"); erp/viewer don't. **Fix:** move the text to `CHANGELOG.md`/git, leave `const CACHE_VERSION = 'v1062';`. 30 min, no risk.
+- Data written as JS on one line: `erp/genesis_dict.js:3` (196,831 chars), `erp/fk_rules.js:2` (143,773), `erp/team_plan.js:2`
+  (76,514), `erp/genesis_seed.js:7`, `erp/team_plan_pos.js:2`, `erp/ad_official_indexes.js:5`. These are generated data,
+  not code. **Fix:** list them under `search.exclude` / `files.readonlyInclude` in a committed `.vscode/settings.json`
+  (none exists today) and `linguist-generated` in `.gitattributes` (no entry today), so search results and diffs aren't
+  full of them. 1 h, no risk.
+
+### C. "Where is this defined?"
+- True globals (`setupScene`, `ADParser` …) → F12 works inside `erp/` + `viewer/` only (G1: modeller/common are not indexed).
+- Fields on the shared object (`APP.camera`, written as `A.camera`) → **F12 can't follow them** (VIEWER_FILE_SPLIT_PLAN fact 3:
+  0 of 495 found). The by-hand route is `internal/APP_SURFACE.md` (1,676 fields, `file:line`). It is a document, not an
+  editor action. **Fix:** a VS Code task "Find APP field" that greps `APP_SURFACE.md` for the word under the cursor, or a
+  generated `types/app-surface.d.ts` declaring `A`/`APP` fields with `@see file:line` JSDoc. The second gives real hover/F12.
+  Effort ½–1 day, no runtime risk (editor-only files). Regenerate with `gen_app_surface.js`.
+
+### D. "This function is too long to hold in my head"
+- 62 functions are ≥1,000 lines, but most are the **whole-file closure** (`setupScene` 3,848 = all of `scene.js`). The
+  Outline panel still lists the inner functions, so this costs little.
+- **Real single functions that are too long** (wrapper closures removed; `fnlen_inner.log`): 27 functions ≥400 lines, plus 2
+  that fill nearly a whole part file:
+  `fx_cinema_path_plan.js:14 _cinemaPathPlan` **2,823** · `maxq_start.js:11 start` **2,663** (both film code, protected lane) ·
+  `panels.js:1320` (anon) 1,255 · `import_worker.js:125 onmessage` 1,048 · `dxf2bim/ifc_extract_core.js:169 extractToDb` 997 ·
+  `tm_gantt_build.js:28 injectGantt` 992 · `common/comm/comm_store.js:100 open` 969 · `tm_render.js:19 renderAtTime` 961 ·
+  `common/room_graph.js:308 buildGraph` 889 · `streaming.js:1539 _getMaterial` 762 · `schedule_gate.js:484 computeSchedule` 654.
+- Splitting these is real refactoring with runtime risk, so it is NOT on the quick list. If done, use the split-generator
+  method (byte-identical gates) and do one at a time behind its witness. `computeSchedule`/`renderAtTime`/`injectGantt` are
+  the 4D lane you would touch most.
+
+### E. "The comments: help or noise?"
+- 27.0% of production lines are comments (75,735). **4.9% (13,630 lines) are history comments**: dates, PR numbers and
+  `§`-spec references explaining *why it changed*, not *what it does*. CLAUDE.md §AD-LAYER rule 7 already says
+  *"Fix history goes in the prompts file, not in code comments."* The `§TAG` pointers are useful (they link code to its
+  spec); the dated stories are what makes a by-hand read slow. No action proposed. This is a habit to keep for new code, not a sweep.
+
+### F. "How do I check my change without Claude?"
+- Runners exist but aren't wired into the editor: `tests/run_witness_suite.js`, `modeller/tests/run_all_witnesses.js`.
+  ERP: `bim-compiler/build/erp/run_witness.sh`. `.vscode/tasks.json` has only *Serve* + *Lint viewer*.
+- 636 files hard-code `/home/red1` (G6). For you on this machine that is fine. It matters only for a second machine or a
+  second person.
+- **Fix:** add tasks "Run witness for this file" (`node ${file}` → log under `logs/`, show the last lines) + "Run suite".
+  1 h, no risk. This is the by-hand version of the Log Mandate.
+
+### G. "Which spec covers this code?"
+- 70 prompts files / 16,932 lines in bim-ootb, **354 / 122,690 in bim-compiler**. Code → spec goes through `§TAG` (grep it).
+  Spec → code has no index. DEV_TOOLKIT_NO_AI §5.3 *T4 Spec hover* (`§TAG` → its paragraph) is the designed answer;
+  it is parked and has no code yet.
+
+### Owner hand-editing order (cheapest first, none touch running code except A)
+1. **B** sw.js comment out + `.vscode/settings.json` + `.gitattributes` (≈1.5 h)
+2. **G1** add modeller/common/capex/teams/bim to `jsconfig.json` (1 h)
+3. **F** witness tasks in `.vscode/tasks.json` (1 h)
+4. **A** `scripts/bump.js` + task (½ day). Prove with `audit_sw_precache` before/after
+5. **C** generated `types/app-surface.d.ts` (½–1 day)
+6. Then G2/G3 from §3. **D** only if the owner picks one function to work on by hand.
