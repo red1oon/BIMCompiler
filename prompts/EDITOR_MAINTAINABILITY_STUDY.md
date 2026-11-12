@@ -289,3 +289,12 @@ but load on demand in the page (`erp/sw.js:408-421`, `modeller/sw.js:59-139`). N
 | N3 | measured: JS 2,819 files step 2 / 115 step 4 / 138 too short; py 42/43 4-space; CRLF 1/3,072; no-final-newline 0/3,072; trailing-space 19 files → indent not forced (detected per file), no trimming | ✅ (measurement). Note: VS Code does not read `.editorconfig` natively, so the same rules are in `.vscode/settings.json` |
 | N4 | `§ED_LAUNCH json_ok configs=4 urls_exist=3 missing=[]` | ✅ static only. **Not run in a browser** (owner rule). SW-bypass launch stays DEV_TOOLKIT spike S0 |
 | N5 | `§ED_NPMTEST npm_exit=0 direct_exit=0 same=yes` (`--filter 4d_template_reached`) | ✅ (witness). Full headless suite = 279 witnesses (38 browser ones skipped by default), baseline run to `~/bim-ootb/logs/witness_suite_baseline.log` |
+
+### §15 RESULT (2026-11-13) — tracker issue BIMCompiler #597
+`docs/DeveloperGuide.md` (13 sections, 0–12). Owner additions during the turn, all in: preamble for newcomers (§0) · FOSS
+issue-first flow (§10, plus `CONTRIBUTING.md` flow line) · what breaks maintainability or speed (§9.1/§9.2, from `CLAUDE.md` PERF
+BUDGET + `docs/BrowserScaleBenchmark.md`) · high-level picture of parts and the 8 code patterns with real excerpts (§1) ·
+recommended refactoring (§11), with the full work order for a later session in `prompts/REFACTOR_FOR_READERS.md` (owner: *"spec out
+the requirement, and later a Fable model which i shall launch once well prompted to solve"*).
+Checks: `§DG_PATHS named=75 missing=0` (re-run after the last edit) · `mkdocs build` exit 0, no warning for these pages · mermaid block rendered ·
+0 private-name hits. One claim corrected before publish: `_GANTT_CACHE_VERSION` lives in `viewer/tm_dash.js:688`, not `tm_lifecycle_api.js`.
