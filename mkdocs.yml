@@ -115,6 +115,7 @@ nav:
       - "Kernel-ERP User Guide": ERPUserGuide.md
       - "uniCenta-style Till & Kitchen Screen": TillUserGuide.md
       - "BIM → ERP and CAPEX Dashboard — for iDempiere users": CapexDashboardGuide.md
+      - "CAPEX UAT Guide — step-by-step test script": CapexUATGuide.md
       - "Kernel-ERP — Your First Setup": ERP_FirstSetup.md
       - "Migration User Guide (Odoo · Business Central · SAP Business One)": MigrationGuide.md
       - "Moving from Odoo — how it works, what is proven": OdooMigration.md
