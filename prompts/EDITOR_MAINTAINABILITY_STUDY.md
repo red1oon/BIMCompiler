@@ -251,3 +251,18 @@ Measured over 856 production files (bim-ootb `6fc6b8dd`):
 | `npm test` runs the checks | `package.json` has only `lint`. Witnesses in 5 folders | Medium | `npm test` → `tests/run_witness_suite.js`: 1 h, no risk |
 | Shared formatting (`.editorconfig`/Prettier) | none (0 tab-indented files, so it's consistent anyway) | Small | `.editorconfig` only, 15 min. **Never mass-reformat** (one giant diff that collides with every open lane) |
 | Debug in the editor (`launch.json`, breakpoints) | none | Medium for by-hand bug-hunting | 1 h. DEV_TOOLKIT S0 spike already specced |
+
+## §13 MINIMALISM GUARD (owner, 2026-11-13: *"be aware of our minimalist approach where we are pure SQLite WASM resisting any forks, or TS that can overload its lightweight kernel local first air gapped handling"*)
+**Rule for every item in this file:** nothing may reach the browser or add a runtime dependency. Editor help lives only in files no page
+loads (`.vscode/`, `jsconfig.json`, `types/*.d.ts`, `scripts/`, `// @ts-check` comments). **Never:** `.ts` source files, a compile/bundle
+step, a forked or extra runtime library, TypeScript (or anything else) in `package.json` `dependencies`.
+**Verified for #2904 (bim-ootb `6fc6b8dd`):** no sw.js precaches and no html loads any new file. The only sw.js hits are my comment on
+`erp/sw.js:13` and an unrelated `modeller/sw.js:128` `pdf2dxf/types/*.json`. `package.json` unchanged (`dependencies` = `sql.js` only).
+**One dev-machine dependency added:** `scripts/gen_global_types.js` (filter step) and `scripts/tests/witness_global_types.js` use
+the TypeScript npm package as a parser on the developer's machine, the same as `scripts/split_closure.js` already does. Ships nowhere, but needs
+a one-time `npm i` that an air-gapped dev machine may not have. VS Code already contains TypeScript for its own JS help, so
+`@ts-check` and the `.d.ts` files need nothing installed.
+**§12 re-ranked under this rule:** OK = `.editorconfig` (plain text), `launch.json` (VS Code only), `npm test` → existing node runner,
+per-file `// @ts-check` + JSDoc (comments; the browser ignores them). **Dropped:** Prettier (an npm tool, not needed: formatting is
+already consistent). ES modules: native to the browser, no tool, but they change load order and globals at run time, so **not
+recommended** (runtime risk to the kernel). File by file, only if the owner asks.
