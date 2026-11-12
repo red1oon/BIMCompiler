@@ -106,6 +106,22 @@ Every figure is built from **five working quantities** per project. If you prepa
 | **Spent** (AC) | Actual Cost | the cost of the material issued to the project | `C_Project.ProjectBalanceAmt`, which each completed Project Issue adds to | **Issue the material to the project** with a Project Issue and complete it. Cost that is never issued to the project (for example a vendor invoice that did not become a Project Issue) is not in Spent |
 | **Committed** | Committed Cost: contract | the totals of completed purchase orders on the project | `C_Order` (purchase, completed) with the project set | Complete the purchase order with the **Project** filled in on the order. An order with no project is not counted |
 
+**The abbreviations, in full, and where each one comes from.** One table, so you can read any formula in this guide or on the page.
+
+| Short | Long form | On this page | Source in iDempiere |
+|---|---|---|---|
+| **BAC** | Budget at Completion | Approved Budget | `C_Project.PlannedAmt` (rolled up from `C_ProjectLine`) |
+| **PV** | Planned Value | Due, "planned to date" | `C_ProjectPhase.PlannedAmt` where `EndDate` is today or earlier |
+| **EV** | Earned Value | Done | `C_ProjectPhase.PlannedAmt` where `IsComplete` = Y |
+| **AC** | Actual Cost | Spent, Actual Cost | `C_Project.ProjectBalanceAmt` (completed `C_ProjectIssue`) |
+| **SPI** | Schedule Performance Index = EV ÷ PV | the schedule index | worked out from EV and PV |
+| **CPI** | Cost Performance Index = EV ÷ AC | the cost index | worked out from EV and AC |
+| **EAC** | Estimate at Completion = AC + (BAC − EV) ÷ CPI | Forecast Cost at Completion (proposed) | worked out from the above |
+| **PO** | Purchase Order | Committed Cost: contract, Procurement | `C_Order` with `IsSOTrx` = N |
+| **WS** | Web Service | the read access in *Installing it* | iDempiere's standard web services |
+| **PA** | Performance Analysis | the Home tab goals | `PA_Measure`, `PA_MeasureCalc`, `PA_Goal` |
+| **BIM** | Building Information Model | the model a project order is made from | the building's IFC file |
+
 From these, the page works out the rest. The ƒ line under each tile shows the same in iDempiere columns.
 
 | Figure | Formula | Reads as |
