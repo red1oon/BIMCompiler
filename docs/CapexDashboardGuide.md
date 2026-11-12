@@ -75,7 +75,7 @@ be traced to a window. (2) Money is shown per currency and never added across cu
 the material issued to the project is priced from stock costs that have nothing to do with the rates table, a project can read "72 % built,
 0.08 % spent", and the forecast and health tiles then follow that gap; they are only as meaningful as the pairing. The *Project Health* tile
 currently counts a phase as planned-to-date only once its end date has passed, so a long phase that is half way through counts as nothing
-planned yet. Both are being reviewed against the specification.
+planned yet. Since 2026-11-12 *Project Health* also never reads Green while a phase is overdue (it reads Amber), so it can no longer disagree with the *Schedule* tile's Delayed count. How "due" is counted (end date passed, or spread over the phase's dates) is still being reviewed against the specification.
 
 ### BIM Document fields
 
@@ -201,7 +201,7 @@ Money is shown **per currency**, never added together.
 | Approved Budget | USD 24,982,203.77, BDT 15,139,265.67 | Sum of `PlannedAmt` |
 | Actual Cost | USD 342.59, BDT 7.97 | Sum of `ProjectBalanceAmt`, also as % of plan |
 | Committed Cost | USD 1,347,462.62, BDT 1,000.00 (invoiced USD 8.10, BDT 0.00) | Sum of `CommittedAmt`, with `InvoicedAmt` under it. Two further lines, *contract (proposed)* and *verified (proposed; overlaps Actual Cost)*, show **no data (not installed)** until the purchase-order and project-issue web-service types are registered |
-| Forecast Cost at Completion (proposed) | the figure of the proposal under *For review*, per currency, or **no data** when no active project has both Spent and Done above zero | Per active project: Spent + (Approved Budget − Done) ÷ CPI, with CPI = Done ÷ Spent. Summed per currency. Not agreed yet |
+| Forecast Cost at Completion (proposed) | the figure of the proposal under *For review*, per currency, or **no data** when no active project has both Spent and Done above zero | Per active project: Spent + (Approved Budget − Done) ÷ CPI, with CPI = Done ÷ Spent. Summed per currency. Not agreed yet. Under the figure the page prints **basis differs** when, on any project in it, Done ÷ Spent is below 0.5 or above 2: Spent and Done are then not measured on one basis, and the forecast is an alarm, not a result |
 | BIM Documents issued for construction | issued / deliverables, for example 3 / 6 | Counts each deliverable at its latest revision; *issued* means that revision is Issued for construction. Says **no data (BIM Document not installed on this server)** where the plugin is not installed, and **no data** for a project with no deliverables |
 | Projects Completed this year | 1 | `Processed = Y` with `DateFinish` in this year |
 
@@ -215,7 +215,7 @@ These work per project, from its **Phase** tab, with three amounts:
 
 | Panel | Sample shows | What it means |
 |---|---|---|
-| Project Health | Green 1, Amber 1, Red 1, No EVM data 6 | **No EVM data**: nothing due yet. **Green**: Done is at least 90% of Due, and of Spent if there is any. **Red**: below 90% on all of them. **Amber**: mixed |
+| Project Health | Green 0, Amber 2, Red 1, No EVM data 6 | **No EVM data**: nothing due yet. **Green**: Done is at least 90% of Due, and of Spent if there is any, **and no phase is overdue** (not Complete, End Date before today). **Red**: below 90% on all of them. **Amber**: mixed, or the figures say Green but a phase is overdue |
 | Project Stage | (no phase) 8, First Product Presentation 1 | Count by the project's Standard Phase (`C_Phase_ID`). Your own stages are not mapped onto this yet |
 | Physical vs Spent | Physical USD 20%, BDT 0%. Spent 0% (the amounts spent are tiny) | **Physical** = Done as a share of all phases' planned amount. **Spent** = `ProjectBalanceAmt` as a share of `PlannedAmt`. Payment-based progress is not in the ERP |
 | Schedule Performance | On Time 2, Delayed 1, At Risk 2, No schedule data 4, Average Delay 180 days | **No schedule data**: no phase with both dates. **At Risk**: Done is under 90% of Due. **Delayed**: a phase not Complete is past its End Date. Average Delay is over At Risk and Delayed projects |
@@ -226,7 +226,7 @@ the projects are test pushes of one building, so the amounts themselves mean not
 
 | Project | What was done in iDempiere | Where it lands |
 |---|---|---|
-| HHS_VIEWER_PUSH_..840 | All phases past due. 5 of 6 marked Complete | Health Green, Schedule Delayed |
+| HHS_VIEWER_PUSH_..840 | All phases past due. 5 of 6 marked Complete | Health Amber (the sixth phase is overdue), Schedule Delayed |
 | HHS_VIEWER_PUSH_..809 | All phases past due. Smallest marked Complete, material issued | Health Amber, At Risk, Budget Within |
 | SHED | One phase past due, not Complete | Health Red, At Risk |
 | HHS_PLUGIN_POC | Marked Commitment, Committed Amount on a line, one sales invoice | Committed Cost, Invoiced |
@@ -335,8 +335,8 @@ when projects are added, "of 9" stays 9 until someone changes it.
 | Goal | A project counts here when |
 |---|---|
 | Health No EVM data | Nothing is due yet |
-| Health Green | Something is due, Done ≥ 90% of Due, and Spent is 0 or Done ≥ 90% of Spent |
-| Health Amber | Something is due, Spent is above 0, and only one of those two tests passes |
+| Health Green | Something is due, Done ≥ 90% of Due, Spent is 0 or Done ≥ 90% of Spent, and no phase is overdue (a phase that is not Complete and whose End Date is before today) |
+| Health Amber | Something is due, Spent is above 0, and only one of those two tests passes; or both pass but a phase is overdue |
 | Health Red | Something is due, Done < 90% of Due, and Spent is 0 or Done < 90% of Spent |
 | Schedule No schedule data | No phase has both a Start and End Date |
 | Schedule At Risk | Has dated phases, something is due, and Done < 90% of Due |
@@ -374,7 +374,7 @@ Three things that may surprise you:
 - **Close Project does not set the Finish Date.** Without one, the project counts as Closed but not as Completed this Year.
 - **Actual Cost is in your accounting currency, whatever the project's.** Issue to Project adds the product's cost without converting it. On the test server, a BDT project shows 7.97, which is the USD cost. If you run projects in another currency, read that tile knowing this.
 
-**A measured example.** On the test server, ticking **Complete** on SHED's one overdue phase moved five goals. It was then undone.
+**A measured example** (taken before the overdue rule above; the Health Green line would now also depend on the other phases). On the test server, ticking **Complete** on SHED's one overdue phase moved five goals. It was then undone.
 
 | Home tab caption | Before | After |
 |---|---|---|
@@ -535,6 +535,7 @@ For an administrator with database access. On the test server these were applied
 | `202611032000_CAPEX-G2.sql` | The count and sum measures |
 | `202611032100_CAPEX-G3.sql` | A goal for each of them |
 | `202611032200_CAPEX-G4.sql` | The health, schedule and budget measures, and their goals |
+| `202611121000_CAPEX-S2-HEALTH-OVERDUE.sql` | Health Green and Amber also look at overdue phases |
 | `202611041000_CAPEX-G7.sql` | The targets and the gray colour schema |
 
 They are in the bim-ootb repository, under `capex/legacy/migration/iD13/postgresql/`, in iDempiere's own migration format.
