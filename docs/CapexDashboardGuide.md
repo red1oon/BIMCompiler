@@ -246,8 +246,23 @@ that project's building file is found, and opens it in the BIM viewer. The file 
 
 ![Budget and Cost view](img/capex/capex_page_budget.png)
 
-**Approval Pending** shows the count, 261 in the sample. **Procurement Risks** and **Handover** say *definition pending*: no agreed
-definition or source yet.
+**Approval Pending** shows how many workflow approvals are waiting for someone to act (`AD_WF_Activity`, state *Waiting*, not processed), 261 in the sample. The red badge on the menu is the same number.
+
+**Procurement Risks (proposed)** shows where buying may go wrong. Our proposal, until the client says otherwise:
+
+| Line | Meaning |
+|---|---|
+| Open purchase orders | Purchase orders on the filtered projects that are not Completed, Closed, Voided or Reversed: how many, and their total per currency |
+| Over-committed projects | Active projects whose Committed Amount is above their Planned Amount |
+| Budget, nothing ordered | Active projects with a Planned Amount and no purchase order at all |
+
+The first and last need purchase orders to be readable on the server; where they are not, the line says **no data (not installed)**, never 0.
+
+**Handover (proposed)** shows how close projects are to being handed over: **Ready for handover** (active projects with phases, every phase ticked Complete), **Handed over** (closed projects), and the drawings issued for construction, as on the dashboard.
+
+Every count on these two views opens the projects behind it, like the dashboard's. Both views say *proposed* because the definitions are ours (question Q6 to the client).
+
+**One sentence under every page.** Each view starts with a plain sentence saying what it is for, so a first-time reader does not need this guide to open it.
 
 ### Page and Home tab: why a figure can differ
 
