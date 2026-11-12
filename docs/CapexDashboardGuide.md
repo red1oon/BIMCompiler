@@ -94,6 +94,41 @@ planned yet. Since 2026-11-12 *Project Health* also never reads Green while a ph
 
 ---
 
+## How the dashboard connects to the data
+
+The page holds no data of its own and writes nothing. It is pointed at one **source**, reads that source's rows, and works every figure out in your browser. You can see which source it is on at the bottom left (*Data source*).
+
+| Source | What it is | When you use it |
+|---|---|---|
+| **B · Legacy iDempiere** | Your iDempiere's own rows, read through its **standard web services** with a read-only role. A small job beside the server reads them and writes the file the page opens (the job and the file are in the Developer's note). | Production: the figures are your server's, as of the last job run |
+| **A · SQLite ERP DB** | The rows of a **Kernel-ERP twin**: the same tables as iDempiere, held in the browser. The page can open the twin's own store, for example the one that holds the film's test projects. | Trying the whole flow without an iDempiere server, or showing it |
+
+Either way the page asks for the same tables, and a figure means the same thing on both. A difference between the two is a defect, not a feature.
+
+**What it reads, and what you need for each part.** The first row is the dashboard itself; every row after it is optional, and a missing one never shows as zero: the tile or card says **no data (not installed)** and names what is missing.
+
+| It shows | It reads | Needed on iDempiere |
+|---|---|---|
+| Projects, phases, tasks, lines, organisations, currencies, approvals | `C_Project`, `C_ProjectPhase`, `C_ProjectTask`, `C_ProjectLine`, `AD_Org`, `C_Phase`, `C_Currency`, `AD_WF_Activity` | the read-only access in *Installing it*, step 1 |
+| Actual cost, *Committed: verified* | completed **Project Issues** (`C_ProjectIssue`) | the *Q4* read types (optional) |
+| *Committed: contract*, open purchase orders | purchase orders on the project (`C_Order`) | the same optional read types |
+| The **Supply chain** card on the project page (see below) | receipts (`M_InOut`), vendor invoices (`C_Invoice`), payments (`C_Payment`) | three more optional read types |
+| Task bars on the **Schedule** tab | each task's start and end date, which the BIM Document module adds to a Project Task | BIM Document installed, and the date columns on the task read type |
+| BIM documents issued for construction | the BIM Document register (`BIM_Document`) | BIM Document installed |
+
+**One use case, followed through: a purchase order from order to payment.** Take a project whose order was pushed from a building model.
+
+1. The **plan** is the Project Order: phases and lines with their planned amounts. This is **Approved Budget**. Task dates, where the module is installed, come from the same programme as the phases and give the bars on the Schedule tab.
+2. Someone raises a **purchase order** on the project. While it is a draft it counts under *open purchase orders*; once completed it is **Committed Cost: contract**.
+3. The goods arrive: a **receipt** on the order. The order's stage on the project page becomes *Received*.
+4. Material is **issued to the project** (a completed Project Issue). The stock goes down by the quantity and the project's balance goes up by its cost: that is **Actual Cost** and **Spent**. On a Kernel-ERP twin a Project Issue completes the way it does on iDempiere, and reversing it puts both back.
+5. The supplier's **invoice** arrives and is completed: the stage becomes *Invoiced*.
+6. A **payment** is made against the invoice: the stage becomes *Paid* once the payments cover the invoice, and *Invoiced* while they do not.
+
+Steps 3, 5 and 6 are shown in one place only, the **Supply chain** card at the top of the project's **Procurement** tab. It has a strip of four counts (Ordered, Received, Invoiced, Paid) and one row per purchase order, with its received count and its invoiced and paid amounts. It is a drill-in, so the glance and the left menu stay as they are. Each document in the card opens its own record in the system the figures came from (iDempiere's own page for that record, or the matching window of the twin). The stages are **proposed**, like the Procurement Risks view: they come from completed documents only, a document in another currency is counted and flagged and never converted, and a receipt, invoice or payment that names no order is counted on a line under the table instead of being added to an order.
+
+**Two honest limits.** The page shows the rows of its source as of the last read (the job's last run, or the store it opened); it does not refresh itself. And a twin can show a different *Spent* from iDempiere's for the same project when receipts have moved the product's average cost in one and not the other: the issue itself behaves the same on both, which was checked on the test server, but the cost it takes depends on the stock history.
+
 ## For review: three definitions we propose (not yet agreed)
 
 Three of the design's tiles have no formula we could verify. These are our proposals, built the iDempiere way, so you can say whether
@@ -182,7 +217,7 @@ real rows read from the test server, the date held at 4 Nov 2026 so it matches t
 ### How to read it
 
 1. **Left menu.** *Dashboard* is this view. The others are below. The red badge on *Approval Pending* is that count.
-2. **Data source** (bottom left). **B · Legacy iDempiere** is your server's data, from the job's file. **A · SQLite ERP DB** is the stock sample database shipped with the page: not your data, and not the twin's copy in your browser.
+2. **Data source** (bottom left). **B · Legacy iDempiere** is your server's data, from the job's file. **A · SQLite ERP DB** is a Kernel-ERP store: by default the stock sample database shipped with the page (not your data), or a twin's own store when the page is opened on one. See *How the dashboard connects to the data*.
 3. **Filters.** *Org*, *Category* (`ProjectCategory`) and *Status*. Status starts on **Active Projects**. A fourth filter, **Project**, picks one project: its first choice is **All Projects**, and it lists only the projects the other three filters let through (change Status and a project that no longer fits drops out and the choice goes back to All Projects). A page address with `&project=<Value>` opens with that project already chosen. That changes the money
    tiles, as explained under *Page and Home tab: why a figure can differ*.
 4. **Last Updated.** The newest `C_Project.Updated` in the data, never the clock. An old date means old data.
@@ -256,9 +291,9 @@ Click a project code in any list (or a bubble, or a row under *Needs attention*)
 | Tab | Shows |
 |---|---|
 | **Overview** | Approved, Spent, Due against Done, the forecast warning if Spent and Done are not on one basis, and **In plain words**: sentences made from the project's own rows, for example *Substructure is overdue: it ended 2026-09-22 and is not ticked complete*. If nothing is flagged it says so |
-| **Schedule** | The phases as bars against a *today* line (Complete, In progress, Overdue, To come) and the same phases as a table |
+| **Schedule** | The phases as bars against a *today* line (Complete, In progress, Overdue, To come) and the same phases as a table. Under them, a **Tasks** card with one bar per task where the server has task dates (BIM Document installed); otherwise it says *no task dates on this server* and draws nothing |
 | **Cost** | Each phase's planned and committed amount, a total row, and the project's committed and invoiced amounts from its lines |
-| **Procurement** | The project's purchase orders and which are still open. *no data (not installed)* where purchase orders cannot be read |
+| **Procurement** | The **Supply chain** card (proposed): per purchase order, received, invoiced and paid, with a strip of four counts, each document one click from its record; then the project's purchase orders and which are still open. *no data (not installed)* where they cannot be read |
 | **Documents** | The BIM deliverables at their latest revision and how many are issued for construction. *no data (not installed)* without the BIM Document module |
 
 The tabs can be used from the keyboard: Left and Right move between them, Home and End jump to the first and last.
@@ -626,6 +661,10 @@ address to open on your data.
 
 !!! warning "The file holds your project figures"
     Whoever can open the page can read them. Serve it only where you would show them.
+
+The optional read types come in their own migration scripts, one folder each, so a site installs only what it uses: `capex/legacy/ws/q4/` (`QueryCOrder`, `QueryCProjectIssue`), `capex/legacy/ws/bimdoc/` (`QueryBIMDocument`, and the task-date columns added to `QueryCProjectTask` and `BridgeCreateCProjectTask`), and `capex/legacy/ws/chain/` (`QueryMInOut`, `QueryCInvoice`, `QueryCPayment`: the Supply chain card). Each script does nothing where its table or column is absent, finds columns by name, and is safe to run twice; restart the server afterwards, because web-service types are cached.
+
+To open the page on a twin's own store instead of the job's file, add `?db=/path/to/store.db` to its address. `node capex/tools/twin_mockchain.js` builds the film's 12-project store through the twin's own model layer (projects, issues, purchase orders, and for each completed order a receipt, a vendor invoice and a payment) and exports it; the page's *A · SQLite ERP DB* then reads that file.
 
 #### In Kernel-ERP
 
