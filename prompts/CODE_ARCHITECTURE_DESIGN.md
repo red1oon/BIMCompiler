@@ -213,6 +213,39 @@ at Check, (c) a fake "live" server returning an old `CACHE_VERSION` makes Fetch 
 OPEN DECISION 5 (F): does Fetch back run a headless browser for the boot `§` lines, or only HTTP + version + hash? Proposal: HTTP + version + hash by
 default. Headless is a button the owner enables.
 
+### F.3 What advanced teams built, adapted here + a "what will this cost if deployed" monitor   (owner: *"suggest things that advanced devs have done in tools that can help here"* · *"with monitors that can tell its perf impact if deployed"*)
+
+Well-known tools, named as **prior art to copy the idea from, not to install** (each would be a new dependency; the adaptation is a small
+dev-side script or an X0 feature). The descriptions are general knowledge, not measured here.
+
+| Prior art (what it does there) | The idea | Adapted here |
+|---|---|---|
+| **size-limit / bundlesize**: fail a PR whose JS grows past a budget, and comment the delta | a size budget per entry point | **boot-bytes and precache-bytes per app**, computed from the manifest (B) or, until then, from page tags + `PRECACHE_ASSETS`. The PR shows `viewer boot +12 KB · precache +0`. Over budget = red |
+| **Import Cost** (VS Code: size shown next to each import) | see the cost while typing | CodeLens on line 1: `boot · 84 KB · every user pays this at start` vs `lazy (find) · 0 at start` |
+| **bundle analyzer treemaps** | see where the bytes are | treemap of each app's boot bytes by folder/family (viewer `fx_*`, `tm_*`, …) |
+| **Chrome DevTools Coverage** (JS loaded but never run) | find code that should not be at boot | a headless boot of each app (owner's go) lists boot files that ran **zero** functions, as candidates for the lazy list |
+| **Lighthouse CI**: run a page per PR, assert budgets (load time, blocking time), keep history | measured budgets per PR | for the ERP shell (no WebGL, cheap): time to `§INIT`, using the browser's built-in `performance.mark/measure` (today **0** files use them; add marks, no library) |
+| **continuous benchmarking with bisect** (e.g. the Rust compiler's perf site, Chromium's perf dashboard): run fixed benchmarks on each commit, flag regressions, bisect to the commit | a perf history per commit | the `§` heap/verts lines the PERF BUDGET already asks for, collected per commit for fixed reference buildings into a JSON history (DEV_TOOLKIT T21 Perf-budget history); a jump flags and names the commit range |
+| **Danger.js / PR bots**: rules that comment on a PR ("changed X without Y") | project laws as PR checks | a plain-node CI step: `sw.js` changed without `CACHE_VERSION` · lazy module added to precache · `Date.now` in a core file · new global missing from `eslint.globals.json`. Reuses W-CORE-PURE, `audit_sw_precache.js`, the manifest checks |
+| **CODEOWNERS** (GitHub asks the owner to review paths they own) | route a change to its owner | generated from the owner table (D): each lane's files list the session/person to ask, so the X0 panel says "ask <owner> before editing" |
+| **mutation testing (Stryker)**: change the code on purpose, check that a test fails | prove tests can fail | automated red controls: flip one comparison in the module a witness PROVES (E) and check the witness goes red (DEV_TOOLKIT T14/T25) |
+| **preview/canary deploys** (a per-PR preview URL before production) | see it live before users do | `deploy/dev/` already exists as the dev target (`CLAUDE.md` PRIME RULE). The Ship panel's "Preview" step publishes there and runs Fetch back against it before the `main` merge |
+| **real-user monitoring** | perf from real users | **not adopted: the app is local-first and air-gapped, so no phone-home.** Instead a local *flight recorder*: the user can export their own `§PERF` lines on request |
+
+**The perf-impact monitor ("what will this cost if deployed"):** shown in the PR and in the X0 panel *before* merge, in three tiers:
+1. **Static, always (no browser, deterministic):** boot bytes and precache bytes per app, diff vs `main`; files moved between boot and lazy;
+   new geometry passes without a cost `§` line.
+2. **Model estimate, always:** for a change that adds geometry, the vertex delta on the reference buildings (from the cached runs, like
+   `~/.cache/bim4d/`) times the measured fit **heap ≈ 0.173 GB per million vertices** (`docs/BrowserScaleBenchmark.md`, r = 0.997 over 3 buildings, "treat as
+   indicative"). Shown as an estimated peak heap per building, against a phone line (the PERF BUDGET's *unverified* ~0.6 GB / ~4 M verts per tab).
+3. **Measured, only with the owner's go:** headless boot of the reference pages on the PR build vs `main`: time to `§INIT`, `performance.memory` heap,
+   draw calls, verts. A regression beyond the threshold (OPEN DECISION 6) flags the PR, and the history (above) bisects it. Never run beside a live
+   session's GPU work.
+**Witness `W-PERF-IMPACT`:** fixture PRs where (a) a boot script is added → boot bytes rise by exactly that file's size, (b) a lazy module is moved to
+boot → flagged, (c) a planted +1 M-vertex pass → estimate rises by ≈ 0.17 GB. **Red control:** a change with no cost must show zero delta.
+**OPEN DECISION 6 (F):** the budgets: per-app boot-bytes ceiling, allowed heap growth per PR, `§INIT` time regression threshold, and which reference
+buildings (proposal: the three in `BrowserScaleBenchmark.md`, named by role, not by client).
+
 **AI assistance is the developer's choice, never required** (owner: *"it can allow code-assist on user choice as there are those plugins for
 that, but at least make it resourceful"*). Every feature above works with no AI, no network and no account. That is the point of the
 extension: the project's knowledge (patterns, owners, rules, proofs) is **in the tool, not in an assistant's head**. For a developer who *chooses*
@@ -274,4 +307,4 @@ second session is free). C is long and best done slowly, module by module, after
 | C | named APP parts | open: 2 decisions |
 | D | owner table | open: 2 decisions |
 | E | proof map | open: 2 decisions |
-| F | VS Code extension (X0 Navigator + Run & Ship panel + DEV_TOOLKIT pack); AI optional | open: 5 decisions |
+| F | VS Code extension (X0 Navigator + Run & Ship + perf-impact monitor + DEV_TOOLKIT pack); AI optional | open: 6 decisions |
