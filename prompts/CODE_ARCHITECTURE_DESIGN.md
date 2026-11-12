@@ -192,6 +192,27 @@ itself**: it only reads the generated files, so it cannot drift from the code.
 | Core-purity squiggle: `Date.now()` in a core file | "Am I breaking determinism?" | W-CORE-PURE rule (A3) | A |
 | Lazy/boot badge in the status bar for the open file | "Will this load at start?" | manifest (B) | B |
 
+### F.2 Run & Ship: localhost, commit, deploy, fetch back from github.io   (owner: *"The VSC tool aid can help control launch in localhost or deploy and fetch etc"* · *"helps commit to github and run from the standard project URL github.io/"*)
+
+The full loop a developer runs by hand today, as a panel of stepped commands. Each step prints a `§` line and stops on the first failure.
+**It calls the project's existing scripts and never re-implements them** (DEV_TOOLKIT T26 Ship Runner's own rule).
+
+| Step | What the panel does | Uses (existing) | Facts it relies on (measured 2026-11-13) |
+|---|---|---|---|
+| **Run local** | start the static server, open the chosen app (Viewer / ERP / Modeller) in Chrome with the debugger attached; show which `CACHE_VERSION` the tab is running vs the disk | `.vscode/tasks.json` *Serve repo*, `.vscode/launch.json`; DEV_TOOLKIT T2 Version Doctor for the tab version | precached files are cache-first, so the panel warns "tab is on v1709, disk is v1710: reload / Update on reload" |
+| **Check** | lint, precache audit, the witnesses for the changed files (proof map, part E), bump if a precached file changed | `npx eslint viewer modeller`, `tests/audit_sw_precache.js`, `scripts/bump.js`, `npm test -- --filter …` | |
+| **Issue + commit + PR** | FOSS flow: pick or open the tracker issue, branch from fresh `main` in a worktree, commit with a conventional title, push, open the PR with `Fixes #N` and the `§` evidence pasted in | `git`, `gh` (the developer's own login) | `docs/DeveloperGuide.md` §10. **Respects the PUSH PAUSE switch** in `CLAUDE.md`: if paused, it stops after the local commit |
+| **Deploy** | bim-ootb: merge the PR. **GitHub Pages serves `main` directly** (`/` root, legacy build), so merged = deployed. Docs site (BIMCompiler): `scripts/safe_gh_deploy.sh` only, dry run first. Building DBs: object storage per `deploy/OCI_UPLOAD.md` §RULES (every upload with `--content-type`) | `gh pr merge`, `scripts/safe_gh_deploy.sh`, `oci` | never bare `mkdocs gh-deploy` (`CLAUDE.md` §Docs deploy) |
+| **Fetch back** | wait for Pages, then fetch from the **project URL** (`https://red1oon.github.io/bim-ootb/<app>/…`, docs `https://red1oon.github.io/BIMCompiler/…`): HTTP 200 for each changed file, live `CACHE_VERSION` == `main`, live bytes == committed bytes (hash), and the page's boot `§` lines from a headless check if the owner allows | `curl`/fetch; the DEV_TOOLKIT T26 steps 7–10 | today live == main for all three apps (viewer v1709, erp v1064, modeller v272). A green pipeline is not a deployed feature: always fetch (bim-ootb `prompts/AGENT_QUEUE.md`) |
+| **Open live** | open the github.io URL of the app being worked on, the same way users reach it | | |
+
+Rules for F.2: no step runs without the developer pressing it. Deploy and push steps show what they will do and ask first. Headless browser checks only
+with the owner's go (GPU/VRAM contention with a live session is a known crash, memory `feedback_gpu_vram_contention_crashes_user_tab`).
+Witness `W-SHIP-PANEL` (node, fixtures): a sandbox repo where (a) a planted syntax error stops at Check, (b) a precached file changed without a bump stops
+at Check, (c) a fake "live" server returning an old `CACHE_VERSION` makes Fetch back FAIL. **Red control:** compare against a wrong hash, which must FAIL.
+OPEN DECISION 5 (F): does Fetch back run a headless browser for the boot `§` lines, or only HTTP + version + hash? Proposal: HTTP + version + hash by
+default. Headless is a button the owner enables.
+
 **AI assistance is the developer's choice, never required** (owner: *"it can allow code-assist on user choice as there are those plugins for
 that, but at least make it resourceful"*). Every feature above works with no AI, no network and no account. That is the point of the
 extension: the project's knowledge (patterns, owners, rules, proofs) is **in the tool, not in an assistant's head**. For a developer who *chooses*
@@ -253,4 +274,4 @@ second session is free). C is long and best done slowly, module by module, after
 | C | named APP parts | open: 2 decisions |
 | D | owner table | open: 2 decisions |
 | E | proof map | open: 2 decisions |
-| F | VS Code extension (X0 Navigator + DEV_TOOLKIT pack); AI optional | open: 4 decisions |
+| F | VS Code extension (X0 Navigator + Run & Ship panel + DEV_TOOLKIT pack); AI optional | open: 5 decisions |
