@@ -187,6 +187,7 @@ real rows read from the test server, the date held at 4 Nov 2026 so it matches t
    tiles, as explained under *Page and Home tab: why a figure can differ*.
 4. **Last Updated.** The newest `C_Project.Updated` in the data, never the clock. An old date means old data.
 5. **The ƒ line** under each tile states its formula in iDempiere columns, so anyone can check it in SQL.
+6. **Click any number to see the projects behind it.** The page stays one screen for a glance; clicking a tile (Total, Active, Approved Budget, Actual Cost, Committed Cost, Forecast, Completed) or a row of a panel (a Health, Schedule or Budget bucket, a Stage) opens a side panel on the right. It lists the projects that make that number, each with Approved, Spent, Due, Done and its Health, Schedule and Budget bucket. The count at the top of the panel is always the number you clicked, and for money tiles the listed amounts add up to the tile. Click a project code to open that project in iDempiere itself (its Phase tab, documents and schedule). **Esc** or **×** closes the panel. The *BIM Documents* tile counts deliverables, not projects, so it has no project list.
 
 A tile with nothing to judge says **no data**, not 0%. A tile with no agreed formula says **definition pending**, not a guess.
 
