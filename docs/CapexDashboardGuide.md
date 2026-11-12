@@ -235,6 +235,34 @@ the projects are test pushes of one building, so the amounts themselves mean not
 | Standard | Material issued, no budget | Budget Over, Overrun |
 | HHS_VIEWER_PUSH_..730 | Finish Date entered, then Close Project | Closed, Completed this year. Not Active any more |
 
+### Choosing a look: Layout and Skin
+
+Two selects in the header change how the page looks, never what it says. Every number comes from the same calculation in every look, for both the Kernel ERP and legacy iDempiere.
+
+| Choice | Options | What changes |
+|---|---|---|
+| **Layout** | *Classic* (the default: tiles and panels) | The tiles and panels described above |
+| | *Executive* | Four large tiles with meters (Approved budget, Spent so far, Forecast, Project health as one coloured bar), a **portfolio map**, a **Needs attention** list and the stage bars |
+| **Skin** | *Light*, *Dark* | Colours only |
+
+The choice is remembered in your browser. It can also be set in the address (`?theme=executive&skin=dark`).
+
+**The portfolio map** (Executive layout) draws one bubble per active project that has a planned amount. Left to right is how many days behind schedule the project is (its longest overdue phase); bottom to top is how much of its budget is spent; the colour is its health. Hover or Tab to a bubble to see its figures and the reason it is amber or red; click it to open the project. Bubble size shows the planned amount, but only when all plotted projects share one currency (amounts in different currencies are never compared). Projects with no planned amount are counted under the map as *not plotted*. **Table view** shows the same projects as a table.
+
+### The project page
+
+Click a project code in any list (or a bubble, or a row under *Needs attention*) and the project opens on its own page, in five narrow tabs. **Open in iDempiere** at the top right opens the same record in the ERP, and **‹ Dashboard** brings you back.
+
+| Tab | Shows |
+|---|---|
+| **Overview** | Approved, Spent, Due against Done, the forecast warning if Spent and Done are not on one basis, and **In plain words**: sentences made from the project's own rows, for example *Substructure is overdue: it ended 2026-09-22 and is not ticked complete*. If nothing is flagged it says so |
+| **Schedule** | The phases as bars against a *today* line (Complete, In progress, Overdue, To come) and the same phases as a table |
+| **Cost** | Each phase's planned and committed amount, a total row, and the project's committed and invoiced amounts from its lines |
+| **Procurement** | The project's purchase orders and which are still open. *no data (not installed)* where purchase orders cannot be read |
+| **Documents** | The BIM deliverables at their latest revision and how many are issued for construction. *no data (not installed)* without the BIM Document module |
+
+The tabs can be used from the keyboard: Left and Right move between them, Home and End jump to the first and last.
+
 ### The other views
 
 **Projects** lists each project: Value, Name, Org, Currency, Planned, Actual, Committed, Standard Phase. The **BIM** button appears only when
@@ -246,8 +274,23 @@ that project's building file is found, and opens it in the BIM viewer. The file 
 
 ![Budget and Cost view](img/capex/capex_page_budget.png)
 
-**Approval Pending** shows the count, 261 in the sample. **Procurement Risks** and **Handover** say *definition pending*: no agreed
-definition or source yet.
+**Approval Pending** shows how many workflow approvals are waiting for someone to act (`AD_WF_Activity`, state *Waiting*, not processed), 261 in the sample. The red badge on the menu is the same number.
+
+**Procurement Risks (proposed)** shows where buying may go wrong. Our proposal, until the client says otherwise:
+
+| Line | Meaning |
+|---|---|
+| Open purchase orders | Purchase orders on the filtered projects that are not Completed, Closed, Voided or Reversed: how many, and their total per currency |
+| Over-committed projects | Active projects whose Committed Amount is above their Planned Amount |
+| Budget, nothing ordered | Active projects with a Planned Amount and no purchase order at all |
+
+The first and last need purchase orders to be readable on the server; where they are not, the line says **no data (not installed)**, never 0.
+
+**Handover (proposed)** shows how close projects are to being handed over: **Ready for handover** (active projects with phases, every phase ticked Complete), **Handed over** (closed projects), and the drawings issued for construction, as on the dashboard.
+
+Every count on these two views opens the projects behind it, like the dashboard's. Both views say *proposed* because the definitions are ours (question Q6 to the client).
+
+**One sentence under every page.** Each view starts with a plain sentence saying what it is for, so a first-time reader does not need this guide to open it.
 
 ### Page and Home tab: why a figure can differ
 
