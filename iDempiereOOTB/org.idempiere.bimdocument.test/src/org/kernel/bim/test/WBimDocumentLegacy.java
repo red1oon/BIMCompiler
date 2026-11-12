@@ -27,11 +27,10 @@ public class WBimDocumentLegacy {
 		Trx trx = Trx.get (trxName, true);
 		try {
 			trx.start();
-			int dtId = DB.getSQLValue (trxName, "SELECT C_DocType_ID FROM C_DocType WHERE DocBaseType='BIM' AND AD_Client_ID=11 AND IsActive='Y'");
-			if (dtId <= 0) {   // the plugin does not make document types per client yet (the twin does): this run makes one, inside the transaction
-				MDocType dt = new MDocType (ctx, 0, trxName); dt.setAD_Org_ID (0); dt.setName ("BIM Document"); dt.setPrintName ("BIM Document"); dt.setDocBaseType ("BIM");
-				dt.setGL_Category_ID (DB.getSQLValue (trxName, "SELECT GL_Category_ID FROM GL_Category WHERE AD_Client_ID=11 AND IsActive='Y' ORDER BY GL_Category_ID")); dt.saveEx(); dtId = dt.get_ID();
-			}
+			int dtId = DB.getSQLValue (trxName, "SELECT C_DocType_ID FROM C_DocType WHERE DocBaseType='BIM' AND AD_Client_ID=11 AND IsActive='Y' AND Name='BIM Drawing'");   // made by migration/postgresql/202611121100_BIMDOC-DOCTYPES.sql (T3): this run no longer makes one
+			int nTypes = DB.getSQLValue (trxName, "SELECT COUNT(*) FROM C_DocType WHERE DocBaseType='BIM' AND AD_Client_ID=11 AND IsActive='Y'"), nSeq = DB.getSQLValue (trxName, "SELECT COUNT(DISTINCT DocNoSequence_ID) FROM C_DocType WHERE DocBaseType='BIM' AND AD_Client_ID=11 AND IsActive='Y' AND DocNoSequence_ID IS NOT NULL");
+			String names = DB.getSQLValueString (trxName, "SELECT string_agg(Name,',' ORDER BY Name) FROM C_DocType WHERE DocBaseType='BIM' AND AD_Client_ID=11 AND IsActive='Y'");
+			chk ("L4 the four document types of FB6 exist under DocBaseType BIM, each with its own sequence: " + names, nTypes == 4 && nSeq == 4 && "BIM Drawing,BIM Model,BIM Report,BIM Specification".equals (names) && dtId > 0, "types=" + nTypes + " sequences=" + nSeq);
 			MProject prj = new MProject (ctx, 0, trxName); prj.setAD_Org_ID (11); prj.setName ("BIMDOC witness"); prj.setValue ("BIMDOC_W"); prj.setC_Currency_ID (100); prj.saveEx();
 			MProjectPhase ph = new MProjectPhase (prj); ph.setName ("Phase 1"); ph.saveEx();
 			MProjectTask tk = new MProjectTask (ph); tk.setName ("Task 1"); tk.saveEx();
