@@ -11,7 +11,7 @@
   stock windows.
 - **The Performance panel on the twin's Home tab**: the same goals in Kernel-ERP, the SQLite twin of iDempiere that runs in a browser.
 
-> **What it changes on your iDempiere:** no change to iDempiere's code or tables. The dashboard needs only read-only setup data.
+> **What it changes on your iDempiere:** no change to iDempiere's code or tables for the dashboard, which needs only read-only setup data. The optional BIM Document plugin adds its own table, and two date columns (`BIM_StartDate`, `BIM_EndDate`) to the Project Task, for the Schedule tab's task bars.
 > Sending a Project Order *from a BIM model* into iDempiere is a separate thing: that is one standard plugin. How it, the drawings
 > filed against the project and this dashboard fit together is the next chapter.
 > BIM Document (the drawings) is part of Kernel-ERP today; on your own iDempiere it needs a pack and a plugin: see *Installing it* and the *Developer's note*.
@@ -36,9 +36,9 @@ One project, four places. Each hands the next the same project:
 3. **The register decides what a walker may read.** The project's register (every deliverable at its latest revision, plus the superseded
    ones: number, revision, state, discipline, file kind, the file's `sha256`) is exported from the BIM Document. A sheet *issued for
    construction* is used as placed; *issued for review* as provisional and left out of totals; Draft and Superseded sheets are refused.
-   This runs from a tool today; there is no button yet.
+   It is exported by the **Export Register** process, under the gear of a document in the BIM Document window; the Modeller reads the exported file.
 4. **This dashboard reads the same Project Order.** Its **BIM** button appears when the project's building file is found, by the project's
-   value (the model's name). It does not show document counts yet.
+   value (the model's name). The *BIM Documents issued for construction* tile and the project page's **Documents** tab show the counts.
 
 ## Where every number comes from (the sources, and how they come together)
 
@@ -211,16 +211,15 @@ These are different screens over the same kind of rows. They are not one HTML pa
 | **What you see** | Seven tiles, five panels, project lists | Performance dials, one per goal | The same dials as iDempiere, on purpose |
 | **What defines the figures** | Formulas built into the page | `PA_Goal` and `PA_Measure` rows | The same rows |
 | **What calculates them** | The page, in the browser | iDempiere | The twin's goal engine, running the same SQL |
-| **Where its data comes from** | A file written by a small job | Your iDempiere | A copy of your iDempiere's rows, in the browser |
+| **Where its data comes from** | A file written by a small job, or a twin's own store | Your iDempiere | A copy of your iDempiere's rows, in the browser |
 | **Change a formula without code** | No | Yes, in the stock windows | Yes, in the same stock windows |
-| **Change the look without code** | No | No | No |
+| **Change the look without code** | Yes: the Layout and Skin selects | No | No |
 
 ### Rich or editable: today you choose
 
 A goal is one number on a dial, so the Home tabs cannot draw a stage pipeline, a Physical vs Spent panel or a project list. The page can,
 because it is not limited to what a goal expresses. But the page is the part you cannot change without a developer: its layout and
-formulas are built into it. **There is no editor for the page.** On it you can only change the filters
-and the data source, and its tiles do not click through to records: the one link out is the **BIM** button.
+formulas are built into it. **There is no editor for the page.** On it you can change the filters, the data source and, by choosing a Layout and Skin, how it looks (never what it says). Its tiles and rows click through to the projects behind them and on to a project page, and each project and each document of the Supply chain card has a link out to its record in the ERP.
 
 The windows under *Changing it* edit a goal's numbers and SQL. They do not change how anything looks. Where a figure appears on both,
 the checks under *How it was checked* keep the two formulas in agreement.
@@ -256,7 +255,7 @@ The page follows an executive dashboard a client prototyped. We have seen one sc
 | Project Stage | The client's own five stages | The Standard Phase names | How those stages map to `C_Phase` is not agreed |
 | Money | One currency, in large units | Each currency separately, in full | Never added together |
 | Explaining a tile | An information mark | The formula printed on the tile | So anyone can check it in SQL |
-| Tiles | Icons and progress bars | Plain text | Not built |
+| Tiles | Icons and progress bars | The Executive layout draws meters and a coloured health bar; the Classic layout is plain text | Both are built; you choose under *Choosing a look* |
 | Data | Described as live | The last run of the job | See *Installing it* |
 
 The figures themselves come from different data, so they will not match.
@@ -299,7 +298,7 @@ Money is shown **per currency**, never added together.
 
 ### The panels
 
-These work per project, from its **Phase** tab, with three amounts:
+These work per project, from its **Phase** tab, with three amounts (the full set of formulas and the data to prepare is under *The formulas behind the figures*):
 
 - **Due** (PV) = planned amount of phases whose End Date has passed.
 - **Done** (EV) = planned amount of phases marked Complete.
@@ -599,13 +598,13 @@ The steps, the scripts and the plugin's contents are in the **Developer's note**
 | Topic | Today |
 |---|---|
 | Forecast Cost at Completion | Shows our proposed figure, labelled *proposed*, until you confirm the formula (*For review*) |
-| Procurement Risks, Handover | No agreed definition: says *definition pending* |
+| Procurement Risks, Handover | Show our proposed definitions, labelled *proposed*, until you confirm them |
 | Project Stage | Shows the project's Standard Phase. The five CAPEX stages are installed as a Project Type (proposed); a project shows them once you set its Standard Phase to one of them. *For review* |
 | Payment-based progress | Not in the ERP |
 | Document figures | The tile *BIM Documents issued for construction* is on the page. Not yet shown: *Issued for review* as a separate count |
-| BIM Document on your own iDempiere | The plugin's source is written and compiles against iDempiere 13; it has not yet been installed and checked on a server. It runs in Kernel-ERP today |
-| A revised model | Sending a revised model again adds nothing today (a second send changes nothing). Planned: it arrives as a new, version-tagged order that replaces the old one (the project is still in alpha, so no baseline is kept) |
-| Register button | The register is exported and used by a tool; there is no button yet |
+| BIM Document on your own iDempiere | The plugin's source is written and compiles against iDempiere 13; it has been installed and checked on a real iDempiere 13 test instance (see the Developer's note), not yet on a client's server. It runs in Kernel-ERP today |
+| A revised model | Sending a revised model again adds nothing today (a second send changes nothing). On Kernel-ERP a revised model arrives as a new, version-tagged order that replaces the old one (the project is still in alpha, so no baseline is kept). Whether a push to your iDempiere may delete the old order is still to be decided |
+| Register in the Modeller | The register is exported by *Export Register* in the BIM Document window; a button in the Modeller itself is not built |
 | Project Stage, Physical vs Spent, project lists on the Home tab | Page only, not goals |
 | Other currencies on the Home tab | No money goal covers them until you add one. The page shows each currency it finds |
 
@@ -626,6 +625,11 @@ the test server all 261 are on **Business Partner**, not on project documents.
 - A goal's stored value behaves the same on iDempiere and the twin: the caption holds inside the refresh interval, and moves after it, in three steps compared exactly.
 - The read types, built from their script alone on a clean server, each answered a real call. A write through a read type is refused.
 - A real edit in iDempiere reached the twin after the next job and reload, changing exactly one row, and was undone.
+
+- The **Supply chain** card equals a separate count from the raw rows for a set of awkward cases (a draft order, a part payment, a payment tied only through its invoice, a document in another currency, an unlinked receipt, another project's documents), and the three read types it needs return the same rows on the test server.
+- **Task dates** written from the 4D programme equal the programme's own tasks one by one, each phase's window equals the span of its tasks, and the Schedule tab draws exactly those bars. On the test server the dates come back through the standard read type.
+- A **Project Issue** on Kernel-ERP moves the project's balance and the stock by the same amounts as the same issue on iDempiere (checked on the test server); reversing it restores both.
+- The dashboard opened on a Kernel-ERP store built through the twin's own operations shows totals equal to separate sums over that store's rows.
 
 Not checked: a site larger than this test server. If the job stops, the copy just goes quietly out of date.
 
@@ -743,8 +747,7 @@ or **a SQL migration script** under the plugin's `migration` folder, as the dash
 never changed: a changed pack gets a new version. Start the database first, apply the pack, then check the rows on the server.
 
 *Status:* installed and tested on a real iDempiere 13 server (a test instance on the developer's machine). The pack and the `I_`/`X_` classes are generated from one
-Excel data-model workbook. The document types per client (`DocBaseType` BIM) are not yet created by the plugin, and the Project window's project-level BIM Document
-tab is not built yet.
+Excel data-model workbook. The four document types (`DocBaseType` BIM: Drawing, Model, Specification, Report) come from a migration script, and the Project window has a project-level BIM Document tab.
 
 #### Try it: the BIM Document test instance
 
