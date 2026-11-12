@@ -1,0 +1,371 @@
+---
+description: Developer guide for BIM Compiler and bim-ootb — what is unusual about this codebase and why, how to set up with no build, how the browser app loads, how to find, change and prove things, and what not to add.
+---
+
+# Developer Guide
+
+*As of 2026-11-13 · for a developer who will read or change the code by hand · replaces the April 2026 guide (now in `docs/archive/DEVELOPER_GUIDE.md`)*
+
+---
+
+## 0. Read this first: what is unusual here
+
+This codebase is different from most web projects, and the differences are on purpose. If you open it expecting a normal
+JavaScript app, several things will look broken when they are not. Ten things to know before you change a line:
+
+| # | What you will notice | Why it is like this | What it means for you |
+|---|---|---|---|
+| 1 | **No framework, no build step, no bundler.** The `.js` files you edit are the files the browser runs. | The app must work offline and air-gapped, from a static folder, for years. Nothing to compile means nothing to break. | Save the file, reload the page. There is no `npm run build`. Do not add one. |
+| 2 | **No `import`/`export`.** One production file uses ES modules. Files are plain `<script>` tags. | Same reason: plain scripts load from any static host, with no tooling. | **The order of `<script>` tags in the HTML page is the dependency graph.** Move a tag above what it needs and the app breaks with an "undefined" error. `viewer/viewer.html` (247 tags) and `erp/idempiere.html` (205) are the closest thing to a build manifest. |
+| 3 | **One shared object, two spellings.** Viewer modules are `function setupX(A) { A.camera = … }`; other code reads the same object as `APP.camera`. | Every module gets the app object handed in, no registry. | `grep "APP.camera ="` finds nothing. Look it up in `internal/APP_SURFACE.md` (bim-ootb): 1,676 fields, each with the `file:line` that defines it. |
+| 4 | **Most files end with a UMD tail**: `if (typeof module …) module.exports = X`. | The same file runs in the browser *and* in Node, so witnesses can test it without a browser. | Do not remove the tail. Your editor sees these files as modules, so "go to definition" needs the generated `types/globals.gen.d.ts` (§4). |
+| 5 | **The database is SQLite running inside the browser tab** (sql.js, WebAssembly). There is no server. | Local-first: the user's data lives with the user. | Reading and writing data is SQL against a file in memory. "The backend" is a `.db` file. |
+| 6 | **A service worker caches files for offline use.** Precached files are served cache-first. | Air-gapped use. | **After you edit a precached file, the browser keeps serving the old one** until its `?v=` and the worker's `CACHE_VERSION` go up. Run `node scripts/bump.js <file> --write` (§5.1). |
+| 7 | **Some parts load only when first used** (the viewer's Find/navigate parts, from a list in `viewer/main.js`). They are not precached, on purpose. | Fast start: no bytes spent on features you have not opened. | Keep it that way. Never add a lazy module to the precache list to "fix" a warning. `bump.js` handles lazy lists for you. |
+| 8 | **Proof is a log line, not a screenshot.** Code prints `§TAG` lines (`console.log('§CLASH_FILM …')`); about 9,300 distinct tags. | A value you can read back is evidence; a picture is not. | When you claim something works, show the `§` line that proves it. Exit code 0 is not evidence. Read the log. |
+| 9 | **Tests are called witnesses**, and each one names the issue it proves or disproves. About 1,350 witness files. | A test that passes without telling you whether the problem is solved is not a test. | A witness must be able to say FAIL and INCONCLUSIVE (nothing was judged), not only PASS. Start new ones from `witness_kit/contract.js`. |
+| 10 | **Data changes ship as SQL, not as database files.** | A small text patch is reviewable and reaches a live user without a binary ever moving. | Never commit a `.db`. Write a patch (`migration/*.sql`, or `<app>/patches/*.sql`) **and** make sure the app's loader applies it on load (§5.3). |
+
+Two more habits run through every file:
+
+- **Spec before code.** Most important files open with a `# ⚠ DO NOT REMOVE — SPEC (W-NAME)` block: scope, rules R1..Rn, and the
+  witness that proves each rule. Read the header and you know the file without reading the body. Example: `viewer/db_resolve.js`.
+- **Extract, don't invent.** Values come from the source model (IFC), the database, or the legacy system being mirrored. No
+  made-up numbers, no defaults dressed up as data.
+- **It is free and open source (MIT), and changes go through the tracker.** Open an issue first, then a pull request that
+  links it. See §10.
+
+---
+
+## 1. The picture: parts and patterns
+
+### 1.1 The parts
+
+```mermaid
+flowchart LR
+  subgraph Browser["One browser tab, no server"]
+    P["HTML page<br/>viewer.html / idempiere.html / modeller.html<br/>(script order = dependency order)"]
+    L["Lazy loader lists<br/>viewer/main.js modules[]"]
+    V["Viewer modules<br/>function setupX(A)"]
+    S["Shared services (UMD)<br/>erp/ common/ modeller/"]
+    APP[("APP object<br/>(read APP.x, written A.x)")]
+    DB[("SQLite in WASM (sql.js)<br/>building DB / ERP DB + op-log")]
+    SW["Service worker<br/>offline cache"]
+  end
+  P --> V
+  P --> S
+  P -. "first use" .-> L --> V
+  V <--> APP
+  S <--> APP
+  V --> DB
+  S --> DB
+  SW -. "serves files" .-> P
+  W["Witnesses in Node<br/>load the same .js files"] -. "prove" .-> S
+  C["BIMCompiler (Java/Python)<br/>extract IFC, mine rules, compile BOM"] -- ".db files + SQL patches" --> DB
+```
+
+**bim-ootb folders, by role** (file counts 2026-11-13):
+
+| Folder | Role |
+|---|---|
+| `viewer/` (926) | The BIM viewer: scene, streaming, panels, tools, 4D schedule ("time machine", `tm_*`), film/camera (`cpe_*`, `fx_*`, `maxq_*`), Find (`nf_*`, lazy) |
+| `erp/` (1,063) | Kernel-ERP: dictionary parser (`ad_*`), windows (`crud_*`), models (`model_*`), processes, posting, op-log (`kernel_ops.js`), migration readers |
+| `modeller/` (717) | The Modeller (assemble and hand off): walkers, DXF to BIM (`dxf2bim/`), rules editor |
+| `common/` (269) | Shared by more than one app: room graph, history bar, the relay layer (`common/comm/`), file store |
+| `capex/`, `teams/`, `hr_bim_asset/` | Add-on apps and overlays: CAPEX dashboard, Teams collaboration overlay, HR/tenancy module |
+| `bim/`, `geomapping/`, `readiness/`, `standards/`, `schema/` | Tools and data: IFC utility knife, IFC-to-BOM geomapping, readiness toolkit, jurisdiction packs, the building DB schema |
+| `buildings/` | Building DB patches and analysis (the full DBs are served from object storage) |
+| `witness/`, `witness_kit/`, `tests/`, `*/tests/` | Witnesses and the shared witness contract |
+| `scripts/` | Developer tools: `bump.js`, generators, split tooling. Never loaded by a page |
+
+### 1.2 The patterns: learn these eight and you can read any file
+
+| # | Pattern | What it looks like (real code) | Example |
+|---|---|---|---|
+| 1 | **Viewer module**: a function that receives the shared object and hangs its parts on it | `async function setupScene(A) {` … `A.camera = camera;` | `viewer/scene.js:8`, `:163` |
+| 2 | **Shared service (UMD)**: one closure, published to the browser *and* to Node | `(function (global) {` … `global.CpmSchedule = API;` `if (typeof module !== 'undefined' && module.exports) module.exports = API;` | `viewer/cpm_schedule.js:44`, `:935-937` |
+| 3 | **Spec header**: the file's contract, with the witness that proves it | `// # ⚠ DO NOT REMOVE — SPEC (W-DB-404-OCI-RETRY)` `// SCOPE: one pure decision — …` `// WHY: …` | `viewer/db_resolve.js:6-14` |
+| 4 | **`§` log line**: the proof that code ran, with the values | `console.log('§TAG key=value …')`, about 9,300 distinct tags | any production file |
+| 5 | **Lazy loader list**: parts fetched on first use, not at boot | `var modules = [ 'find_erp_push.js?v=5', … 'nf_room.js?v=1', … 'navigate_find.js?v=65' ]` | `viewer/main.js` (Find/navigate) |
+| 6 | **Dictionary-driven ERP**: windows, tabs and fields read from the iDempiere dictionary, not hand-coded | `// ad_parser.js — iDempiere Application Dictionary parser for SQLite` `// Reads AD_Menu, AD_Window, AD_Tab, AD_Field, AD_Column from SQLite.` | `erp/ad_parser.js`, then `erp/crud_*.js` |
+| 7 | **Op-log**: every change is a hash-chained operation, so history can be replayed and checked | `function commitOp(db, opType, params, inputGuids, outputGuid, opUuid, ts) {` | `erp/kernel_ops.js:79` |
+| 8 | **Self-heal patch**: a shipped DB is fixed by a SQL patch the page applies on load | `A._applyPendingPatch = async function(buf, url) {` + `buildings/patches/*.sql` | `viewer/scene.js:2111` |
+
+Most files are pattern 1 or 2, with a 3 at the top, printing 4s.
+
+---
+
+## 2. The two repositories
+
+| Repo | What it is | Language | Where to start |
+|---|---|---|---|
+| **bim-ootb** | The browser app: **Viewer**, **Modeller**, and the **Kernel-ERP** (an iDempiere-compatible ERP). This is what users run. | Plain JavaScript, sql.js (SQLite WASM), Three.js | `viewer/viewer.html`, `erp/idempiere.html`, `modeller/modeller.html` |
+| **BIMCompiler** (this repo) | The compiler and the lab: IFC extraction, rule mining, BOM compilation and the proof gates; specs (`prompts/`), docs (`docs/`), scripts. | Java 17, Python, SQLite, shell | `docs/ArchitectureOverview.md`, `prompts/` |
+
+The browser app was split out of this repo in May 2026. Since then bim-ootb is where the product changes; this repo holds the
+compiler, the specs and the docs site.
+
+**Size, measured 2026-11-13 (bim-ootb):** 856 production `.js` files, 286,724 lines (vendored libraries, tests and witnesses
+not counted). You will not read it all; §6 says what to read first.
+
+**⚠ Copies.** This repo still holds old copies of many bim-ootb files (under `build/scriptor/*/_kw_old/`, `deploy/live/`,
+`deploy/sandbox/`, `deploy/dev/`). 329 of them differ from the real file. **bim-ootb is the source.** The committed
+`.vscode/settings.json` hides most of these copies from search, and makes `deploy/live/` (the production snapshot) read-only.
+
+---
+
+## 3. Set up — there is nothing to build
+
+1. Clone **bim-ootb** (and BIMCompiler if you need the compiler or the specs). One clone of each.
+2. Open the folder in **VS Code**. The repo ships its editor setup: `jsconfig.json`, `types/`, `.vscode/settings.json`,
+   `.vscode/tasks.json`, `.vscode/launch.json`, `.editorconfig`.
+3. Serve it: task **Serve repo (http://localhost:8000)**, or `python3 -m http.server 8000` in the repo root.
+4. Open `http://localhost:8000/viewer/viewer.html` (or `erp/idempiere.html`, `modeller/modeller.html`).
+5. To debug with breakpoints: Run ▸ **Viewer in Chrome** (also ERP, Modeller, and **Node: this witness / script**).
+
+`npm install` is needed only for the lint check (`eslint`, a dev tool) and is never needed by the app.
+The app's only runtime dependency is `sql.js`, which is already vendored.
+
+**Editor tasks** (Terminal ▸ Run Task):
+
+| Task | Does |
+|---|---|
+| Run this witness (full log → logs/) | `node <current file>`; full output to `logs/<name>.log`, last 20 lines and the exit code on screen |
+| Run viewer witness suite | the headless witness suite (also `npm test`) |
+| Lint as CI does | `npx eslint viewer modeller`: the `no-undef` check that catches a missing global |
+| Regenerate editor indexes | `APP_SURFACE.md` and `types/globals.gen.d.ts` |
+
+---
+
+## 4. Finding things
+
+| You want | Do this |
+|---|---|
+| Where a function or global is defined | **F12** works for true globals (`setupScene` → `viewer/scene.js`) and, through `types/globals.gen.d.ts`, for about 6 in 10 UMD globals' members (`ADParser.init` → `erp/ad_parser.js`). The rest: search for `X = ` or `function X`. |
+| Where an `APP.x` / `A.x` field is set | `internal/APP_SURFACE.md`. Its "phantom" list (171 fields read in production but never written) is a list of dead guards. Check before relying on one. |
+| What a `§TAG` means | Search the tag. The code that prints it is the definition, and its spec is usually named in the same file's header. |
+| What a spec section says (`§S59`, `W-BUMP`) | Search `prompts/` in both repos for the section or witness name. |
+| A file cited as `file:line` in an old prompt | Line numbers drift (the big files were split in 2026-10). **Search for the function name instead.** |
+| Which page loads a file | Search the HTML pages for the file name; for lazy parts, `viewer/main.js` `modules[]`. |
+
+Search hides vendored libraries and six generated one-line data files (`erp/genesis_dict.js`, `erp/fk_rules.js`, …). Those
+files open read-only. Edit the generator named on their first line instead.
+
+---
+
+## 5. Changing things
+
+### 5.1 Any edit to a file the browser loads
+
+```
+edit  →  node scripts/bump.js <file>           (dry run: shows what it will change)
+      →  node scripts/bump.js <file> --write   (page ?v= +1, loader list ?v= +1 for lazy parts, CACHE_VERSION +1)
+      →  node tests/audit_sw_precache.js        (precache list and pages agree)
+      →  npx eslint viewer modeller             (no undefined globals)
+      →  run the witness for what you changed, READ ITS LOG
+```
+
+There are three service workers, each with its own `CACHE_VERSION`: `viewer/sw.js`, `erp/sw.js`, `modeller/sw.js`. Put the
+reason for a bump in the commit message, not in the `sw.js` line. The 4D schedule also has its own cache key,
+`_GANTT_CACHE_VERSION` in `viewer/tm_dash.js`. If you change how a schedule is built, bump it by hand (`bump.js` does not).
+
+### 5.2 Adding a new browser file
+
+Add its `<script src="name.js?v=1">` in the right place in the page (order matters, §0 #2), add it to that app's
+`PRECACHE_ASSETS` in `sw.js` **unless it is lazy on purpose**, bump `CACHE_VERSION`, and add any new shared global name to
+`eslint.globals.json`.
+
+### 5.3 Changing data
+
+- **Rules, patterns, schema** (small, regenerable DBs such as `duplex_rules.db`, `terminal_rules.db`): a `migration/*.sql` script
+  (append-only; never edit an old migration), or regenerate with the mining scripts.
+- **A fix to a shipped building DB:** a SQL patch plus the self-heal loader that applies it when the page loads
+  (Viewer: `A._applyPendingPatch` in `viewer/scene.js` + `buildings/patches/*.sql`; Modeller: `str_walker_outliner.js`).
+  **The patch and the loader are one task**: a patch nobody applies is not done.
+- **A full rebuilt building DB** goes to object storage, never git.
+- Never commit a `.db` file. Git LFS is switched off.
+
+### 5.4 ERP windows: one generic engine, never per-window code
+
+The ERP user interface is one engine driven by the iDempiere Application Dictionary (`ad_seed.db`), the way iDempiere itself works. A
+fault on one window is fixed in the generic layer (with the iDempiere class it ports cited), never with `if (table === 'c_order')`.
+"It works" means *X of N dictionary windows pass*, not one happy path. Where behaviour is in doubt, the real iDempiere is the
+oracle. The SQLite kernel must behave like legacy iDempiere, look and feel included.
+
+### 5.5 Big files
+
+The largest viewer files were split in 2026-10 by a generator that keeps every statement byte-identical
+(`scripts/split_closure.js`, checked by `scripts/split_verify.js`). The film/camera files (`effects`, `cinema_path_editor`,
+`cinema_maxq` families) are a protected lane: only small helper extraction there. Still long and worth care: 29 functions of
+400+ lines, for example `_cinemaPathPlan` (2,823 lines), `injectGantt`, `renderAtTime`, `computeSchedule`.
+
+---
+
+## 6. Proving it
+
+- **Witnesses** live in `viewer/tests/`, `erp/tests/`, `modeller/tests/`, `tests/`, `witness/` and `scripts/tests/`. Run one with
+  `node <file>` (or the editor task) and **read the log**. `npm test` runs the headless suite (`tests/run_witness_suite.js`;
+  browser witnesses only with `--browser`, report-only because they are timing-sensitive).
+- **New witness:** start from `witness_kit/contract.js` and the example
+  `viewer/tests/witness_tm_schedule_output_of_truth.js`. Name the issue. Make it able to print FAIL and INCONCLUSIVE. Add a
+  red control (a case that must fail) so you know it can.
+- **Visual behaviour** (camera paths, positions, motion) is proven from numbers read off the real objects and `§` lines, never from
+  how a screenshot looks.
+
+**First reading, about two evenings.** The first three are the reading path in bim-ootb `prompts/SESSION_OPENER_READ_AND_REVIEW.md` §B;
+the last two are added here: `witness_kit/contract.js` → the op-log hash chain in `erp/kernel_ops.js` (`stableStringify` → `commitOp`) →
+`erp/ad_parser.js` → `viewer/db_resolve.js` (a model spec header) → `viewer/main.js` (boot + lazy lists).
+`internal/CodeScrapBook.md` is the long-form version of this section.
+
+---
+
+## 7. The compiler side (this repo)
+
+What the April guide described is still here, and it is still the compiler. The details are in `docs/archive/DEVELOPER_GUIDE.md`:
+
+| Part | Where | Run |
+|---|---|---|
+| Java modules: `DAGCompiler`, `BIM_COBOL` (verbs), `ORMSandbox`, `TopologyMaker`, `orm-core` | repo root, `pom.xml` | `mvn compile -q`, `./scripts/run_tests.sh` |
+| Proof gates G1–G6 (compiler reconstruction truth) | `RosettaStoneGateTest.java` | `./scripts/run_RosettaStones.sh classify_sh.yaml`. **Local discipline: no CI runs these.** |
+| Headless smoke subset | `.github/workflows/ci.yml` | `scripts/system_is_real.sh` |
+| Pre-commit hook | `.git/hooks/pre-commit` | gates: block library · compile check · tamper seal · data integrity |
+| Migrations | `migration/` (186 files) | append-only |
+| Schema reference | `docs/internal/DATA_MODEL.md`, `docs/internal/SQLite3D_Schema.md` | |
+| Walker rules (which rules DB a building class walks) | `docs/internal/WalkerDoctrine.md` | locked, read before walker work |
+
+The core idea still holds: **a building is a Bill of Materials.** One parent, N children, each with a quantity, recursively
+(building → floor → room → furniture). WHAT (orders, categories, products), HOW (BOMs, attribute sets, validation) and WHERE
+(the output DB) are kept apart. Positions are computed by verbs, never typed in.
+
+---
+
+## 8. Traps that have cost real time
+
+| Trap | What happens | Do instead |
+|---|---|---|
+| Edited a precached file, reloaded, "nothing changed" | Service worker served the old file | `bump.js` (§5.1), or DevTools ▸ Application ▸ "Update on reload" while debugging |
+| Opened the copy instead of the source | 329 stale copies in this repo | Edit in bim-ootb. Check the path before you save |
+| Trusted a `file:line` from an old prompt | Lines moved in the 2026-10 splits | Search for the function name |
+| A grep count that looked like a finding | Comments and words inside words match too (`TODO` inside *METODOLOGI*) | Check that the hits are code before acting |
+| A green witness that judged nothing | Empty population reads as 0 = PASS | Make it print INCONCLUSIVE when nothing was judged |
+| Two copies of one responsibility | Duplicates drift (`ERPKernel` is published by two files; `modeller/routewalker.js` vs `viewer/routewalker.js`) | Find the owner first. The 4D lane keeps an ownership table in `prompts/4D_MODEL_INTEGRITY.md` §I |
+| History written into code comments | Slow to read (about 5% of comment lines are dated change stories; one `sw.js` comment had grown to 234,833 characters on one line) | History goes in the commit message and `prompts/`; comments say what the code does now |
+| Witness paths assume one machine | Many witnesses hard-code the author's home folder | Expect to adjust paths on a new machine; a shared resolver is an open item |
+
+---
+
+## 9. What not to add, and what breaks maintainability or speed
+
+The app is deliberately small: pure SQLite WASM, local-first, air-gapped capable. Editor help is fine **only** where no page loads it.
+
+| Fine (editor/dev only) | Not fine (reaches the app or adds a dependency) |
+|---|---|
+| `jsconfig.json`, `types/*.d.ts`, `.vscode/`, `.editorconfig` | `.ts` source files, a compile or bundle step |
+| `// @ts-check` and JSDoc comments (the browser ignores them) | TypeScript, a framework, or any new library in `package.json` `dependencies` |
+| Scripts under `scripts/` (bump, generators, witnesses) | A forked or extra runtime library |
+| | Mass reformatting (one huge diff that collides with every open branch) |
+
+The editor tools that need a TypeScript parser use the copy that ships inside VS Code (`scripts/lib/find_ts.js`), so nothing extra
+is installed. ES modules are native to browsers, but switching to them changes load order at run time, so only file by file,
+behind a witness, and only when asked.
+
+
+### 9.1 Changes that break maintainability
+
+| Change | Why it hurts | Do instead |
+|---|---|---|
+| A second implementation of something that already has an owner (a second schedule formula, a second master-detail engine, a "quick" copy of a helper) | The two drift apart and disagree; nobody knows which one runs | Find the owner and call it. The 4D ownership table (`prompts/4D_MODEL_INTEGRITY.md` §I) is the model |
+| Per-window or per-table special cases in the ERP (`if (table === 'c_order')`) | Every new window needs new code; the generic engine rots | Fix the generic layer, cite the iDempiere class it ports, count *X of N* windows |
+| A new shared global without adding it to `eslint.globals.json` | The `no-undef` gate goes red, or a typo becomes a silent `undefined` | Add the name in the same change; regenerate `types/globals.gen.d.ts` |
+| Removing a file's UMD tail, or moving a `<script>` tag | The Node witnesses can no longer load the file / the page breaks on an undefined global | Keep the tail; respect load order (§0 #2) |
+| Editing a generated file (`erp/genesis_dict.js`, `internal/APP_SURFACE.md`, `types/globals.gen.d.ts`, …) or a copy in this repo | Overwritten on the next regeneration / edits the wrong file | Edit the generator named on line 1 / edit bim-ootb |
+| Writing change history into code comments | Slow to read; one comment grew to 234,833 characters on one line | Commit message and `prompts/`; comments say what the code does now |
+| Growing an already long function (29 functions are 400+ lines) | Harder to read and to witness | Add a small named function beside it; split only with the byte-identical method (§5.5) |
+| Hard-coded personal paths, invented values, defaults dressed up as data | Fails on another machine / breaks *extract, don't invent* | Paths from config; values from a named source |
+| A witness that cannot fail (no red control, PASS on an empty set) | Green forever, proves nothing | INCONCLUSIVE when nothing was judged; one case that must fail |
+| Mass reformat, rename sweep (e.g. `A` → `APP` across the tree), big multi-purpose PRs | One giant diff that collides with every open branch | One module at a time, behind its witness |
+
+### 9.2 Changes that break speed or memory
+
+Measured, not guessed (`docs/BrowserScaleBenchmark.md`): in one tab the limit is **memory, not drawing speed**. The heap grows about
+**0.17 GB per million vertices** (fit over three large models). A render pass costs about 6 ms on a laptop GPU while the largest
+model peaks at 3.4–3.8 GB. Phones have far less room per tab.
+
+| Change | Why it hurts | Do instead |
+|---|---|---|
+| Adding a script to the page's boot list for a feature most users do not open | Every user pays for it on every start | Lazy-load it from the loader list on first use (the viewer's Find/navigate parts are the pattern) |
+| Precaching a lazy module "to fix a warning" | Bigger install, slower first load, for a part that is lazy on purpose | Leave it out of `PRECACHE_ASSETS` unless it must work offline. `bump.js` only ever prints a NOTE for it |
+| Anything that delays the first paint of the ERP shell | The shell must appear instantly from cache (`erp/sw.js` header: stale-while-revalidate for pages) | Do the work after first paint |
+| Adding geometry (welds, clones, outlines, pre-warm meshes) without counting it | Memory is the limit, and it is measured per vertex, not per element | State the vertices / heap added in a `§` line at the end of the pass |
+| Keeping a second copy of a big buffer in JavaScript (vertices, normals, a whole DB) | Doubles the memory for that data | Typed-array views and on-demand reads |
+| Rewriting the whole database to save a small change | Cost grows with model size | Save deltas |
+| Assuming "hidden" or "far away" frees memory | Level-of-detail and occlusion save drawing work, not memory: nothing is disposed | Design new geometry paths so off-screen parts can be released; streaming is the growth path, not more RAM |
+| A heavy pass with no cost line | The next person cannot tell what it costs | End it with a `§` line: heap (`performance.memory`) and vertices |
+
+---
+
+## 10. Contributing: issue first, then a pull request
+
+This is a FOSS project under the MIT licence, and it is *author-decided*: anyone may copy, change and redistribute it, and the
+author decides what enters the main line (bim-ootb `GOVERNANCE.md`, after SQLite's "open-source but not open-contribution").
+A change is considered only if every test still passes and **no test or check is removed or weakened**. A change that breaks a
+principle (local first, the legacy-iDempiere twin including look and feel, one generic dictionary engine, a test before a claim)
+is declined, whoever asks.
+
+**The flow:**
+
+1. **Open an issue on the tracker first**, in the repo you would change
+   ([bim-ootb issues](https://github.com/red1oon/bim-ootb/issues) for the app, [BIMCompiler issues](https://github.com/red1oon/BIMCompiler/issues)
+   for the compiler and docs). Say what is wrong or missing, how to reproduce it, and the **source** for any value (IFC file,
+   legacy record, published rate). Paste the `§` log line that shows the problem. One issue, one problem.
+2. **Wait for the author's go** on anything beyond a small fix. The issue is where scope is agreed, before code is written.
+3. **Fork, and branch from the latest `main`/`master`:** `fix/<thing>`, `feat/<thing>`, `docs/<thing>`.
+4. **Spec first.** For a new rule or behaviour, write the spec block (§0) and the witness claim before the code.
+5. **One small change per pull request**, then run the witness for that area and read its log. Before you push, also run the
+   gates in §5.1 (`bump.js` if you changed a browser file, `audit_sw_precache.js`, `eslint`).
+6. **Open the pull request** with `Fixes #<issue>` in the body. Fill in the template: what changed, the source, the `§` log
+   lines that prove it, and lines added/removed. Commit titles use the conventional types the release notes are built from:
+   `feat:`, `fix:`, `perf:`, `docs:`, `refactor:`, `revert:`.
+7. **CI must be green**, and the author reviews and merges. Do not merge your own change into the main line.
+
+**Easy first contributions** need no engine knowledge: a rate template for your country, a test building, a product catalogue, a
+locale. The list is in `CONTRIBUTING.md` (BIMCompiler). **Avoid:** invented data, pull requests that do several things,
+touching `deploy/live/`, adding a dependency (§9). No CLA is needed.
+
+---
+
+## 11. Recommended refactoring (when you are in a file anyway)
+
+None of these is a sweep. Each is one file or one module at a time, behind its witness, and none adds a dependency (§9). Ranked by
+how much it helps a reader for how little risk. The full work order, written for a later session to carry out, is
+`prompts/REFACTOR_FOR_READERS.md` (this repo).
+
+| # | Refactor | What it buys | Risk | How to prove it |
+|---|---|---|---|---|
+| 1 | **`// @ts-check` + JSDoc** on the files you edit most (today 0 files have `@ts-check`, 54 have any JSDoc) | Autocomplete, hover docs and red squiggles in that file. Comments only: the browser sees nothing | None at run time | The file's witness unchanged; no unintended new red in VS Code |
+| 2 | **Move the export to the top level** for the UMD globals F12 cannot follow (17 of 44 sampled, e.g. `Dxf2Bim`, `ScheduleEngine`): `var X = (function(){ … return api; })(); if (typeof module …) module.exports = X;` | F12 and find-references start working for that global | Low: same object, same name | `scripts/tests/witness_global_types.js` resolves one more; the file's own witness unchanged |
+| 3 | **One owner per responsibility**: retire the duplicates the type generator lists (`ERPKernel` in two files; `Bonsai` ×3 and `ERP` ×4 publishers; `modeller/routewalker.js` vs `viewer/routewalker.js`) | One place to read and fix | Medium: callers may rely on a copy's differences | Diff the copies first; witness every caller; the deleted lines are part of the change |
+| 4 | **Clear the phantom fields**: 171 `APP.x` fields read in production but never written (`internal/APP_SURFACE.md`) | Dead guards gone; fewer "where is this set?" hunts | Low per field | The phantom count goes down; the file's witness unchanged |
+| 5 | **Split the longest functions** with the byte-identical method: `injectGantt` (992 lines), `renderAtTime` (961), `_getMaterial` (762), `computeSchedule` (654) | Readable units, each with a name | Medium: shared closure variables | `scripts/split_closure.js` + `split_verify.js` (every statement identical, in order); 4D: the cached run identical |
+| 6 | **Rename `A` to `APP` in one module** (`viewer/scene.js` first, 606 sites) | grep finds definitions again | Low per module, high as a sweep | `APP_SURFACE.md` field and phantom counts identical before and after |
+| 7 | **One path resolver for witnesses** instead of hard-coded home folders | Witnesses run on a second machine | Medium: touches the proof chain | Every converted witness gives the same verdict before and after |
+| 8 | **A rule for where new witnesses go** (today six folders) | Fewer places to look | None for the rule; moving files is a change (CI and scripts name some files) | Every reference updated in the same change |
+
+**Not recommended:** a framework, a bundler, `.ts` files, converting the tree to ES modules in one go, or a repo-wide reformat.
+Each one either reaches the app or produces a diff nobody can review.
+
+---
+
+## 12. Where to read next
+
+| If you will work on | Read |
+|---|---|
+| The whole system, as an outside reviewer | [Architecture Overview](ArchitectureOverview.md) |
+| The ERP fold engine | [Fold Engine Black Book](FoldEngineBlackBook.html) |
+| The viewer's module layout | [Viewer Component Model](ViewerComponentModel.html) |
+| How the in-browser database works | [How the Database Works](SQLiteWasmArchitectureActual.html) |
+| Code navigation, measured | `internal/CodeScrapBook.md`, `internal/APP_SURFACE.md` (bim-ootb) |
+| Editor setup and why each piece exists | `prompts/EDITOR_MAINTAINABILITY_STUDY.md` (this repo) |
+
+**Sources.** Every path above is in [BIMCompiler](https://github.com/red1oon/BIMCompiler) or [bim-ootb](https://github.com/red1oon/bim-ootb).
+Counts were measured on 2026-11-13 (bim-ootb `main` @ `cc9988c2`, BIMCompiler `master` @ `90684efbe`).

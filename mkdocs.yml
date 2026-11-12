@@ -124,6 +124,7 @@ nav:
       - "Teams Overlay — Collaboration & Optics": TeamsOverlayGuide.md
 
   - Go Deeper:
+      - "Developer Guide (read first if you will change the code)": DeveloperGuide.md
       - "Architecture Overview (for reviewers)": ArchitectureOverview.md
       - "Fold Engine Black Book (dev manual)": FoldEngineBlackBook.html
       - "The Holy Grail (editable rules, live)": HolyGrail.md
