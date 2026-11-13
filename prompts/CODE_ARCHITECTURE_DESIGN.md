@@ -490,12 +490,47 @@ Files: `devtools/vscode/x0-navigator/` = `package.json` (no dependencies) · `ex
   pieces and assert `devtools/` adds 0 rows. The class is still open for any other test file: a small item for `gen_app_surface.js`'s owner.
 - **Not proven by a witness:** how VS Code itself draws the hovers and follows the `file://…#L<line>` links. `§X0_ACTIVATE` drives the real
   providers through a stub of the `vscode` calls, not through VS Code. The taghover witness ran against the local bim-compiler checkout.
-**OPEN DECISION F-10 (new, from FINDING 1):** how is `internal/APP_SURFACE.md` kept fresh? (a) a CI step that regenerates it and fails the PR when
+**DECISION F-10 — ANSWERED 2026-11-13: (b), after a measurement overturned the proposal** (see DECISIONS and §F.5). The question was: how is `internal/APP_SURFACE.md` kept fresh? (a) a CI step that regenerates it and fails the PR when
 the committed copy differs; (b) X0 regenerates it in memory on demand and the committed file stops being the source; (c) leave it manual
 (the stale guard already prevents wrong jumps). Proposal: (a). It is one node step, no browser, and it also keeps the file honest for readers
 who do not use VS Code.
 
+### §F.5 X0 keeps its own fresh APP index — BUILD SPEC (F-10; owner, 2026-11-13: *"Go with your advice."*)
+
+**Why (b) and not the proposed (a):** measured on bim-ootb `main` before building, by regenerating the index at each of the last 40
+first-parent commits (2026-11-12 → 13): **26 of 39 merges change `internal/APP_SURFACE.md`** (any edit above a write site shifts its line
+number). A CI check that fails a PR whose committed copy differs would make about two PRs in three regenerate and commit a ~1,900-line generated
+file, and concurrent PRs would then conflict on it: a second `sw.js`-style conflict magnet (`CLAUDE.md` §Concurrent branches). (a) is withdrawn.
+
+**Scope:** `devtools/vscode/x0-navigator/` only. No change to `scripts/gen_app_surface.js` (it already takes `APPSURF_ROOT` / `APPSURF_OUT`),
+none to CI, none to the committed `internal/APP_SURFACE.md`, which stays as a readable snapshot for people without VS Code.
+- **`lib/surface_refresh.js`** (pure node, no `vscode`): `refresh(root, outDir)` runs the repo's own generator as a child process
+  (`process.execPath`, with `ELECTRON_RUN_AS_NODE=1` so it also works inside VS Code) with `APPSURF_ROOT=root`, `APPSURF_OUT=outDir`. It
+  resolves to `{ file, ms, line }` (the generator's own `§APP_SURFACE` line) or rejects. One run at a time: a request made during a run is
+  served by one follow-up run, never a pile.
+- **`lib/app_surface_index.js`** `loadSurface(root, file)`: an optional index file; source lines are still resolved against `root`.
+- **`extension.js`:** `outDir` = VS Code's own storage folder for the extension (`context.storageUri`, else `globalStorageUri`), never a path
+  inside the repo. Refresh on activation and 2 s after a `.js`/`.mjs`/`.html` save. The fresh copy is used once it exists; until then, and if
+  the generator fails, the committed copy is used. The stale guard stays in both cases, so the worst case is still "index stale", never a wrong jump.
+- **Witness `W-X0-FRESH`** (`tests/witness_x0_fresh.js`, node). Issue it proves or disproves: *"a field moved since the index was committed
+  shows 'index stale' instead of its definition"*.
+  1. Fixture repo in a temp folder (the real generator + `scripts/lib/js_scan.js` copied in, one module that writes a field): generate the
+     "committed" index, then insert a line above the write. **Red control (the defect):** the committed index resolves the field as `stale`.
+  2. `refresh()` into a separate folder → the field resolves as `definition` at the NEW line, and that line mentions the field.
+  3. The fixture's committed index is byte-identical before and after (the refresh never writes into the repo).
+  4. Real repo: `refresh()` into a temp folder → every written field resolves (`real_stale=0`), and the tracked `internal/APP_SURFACE.md` has
+     the same hash before and after.
+  5. Two overlapping `refresh()` calls → at most 2 generator runs.
+  Line: `§X0_FRESH before=stale after=definition line_ok=Y committed_untouched=Y real_fields= real_stale=0 runs= gen_ms= verdict=`.
+  The generator missing → INCONCLUSIVE.
+- **`§X0_ACTIVATE`** keeps `definition=1 hover=2` and adds `fresh=Y`: after activation the providers answer from a copy in the stubbed storage folder.
+- **Done when:** `§X0_FRESH … verdict=PASS`, the four slice-1 lines still PASS, PR merged on bim-ootb `main` and re-run there.
+
 **DECISIONS:**
+- 2026-11-13, owner, on F-10 (how the APP index is kept fresh; recommendation given: (a) a failing CI check): *"Go with your advice."*
+  → before building, the measurement in §F.5 (26 of 39 merges change the file) showed (a) would create a conflict magnet. The advice was
+  changed to (b), X0 keeps its own fresh copy, and that was built under the same go. **The owner approved (a) by name, so this switch is
+  the session's call and is theirs to reverse.**
 - 2026-11-13, owner, on F-8 (own providers or a TypeScript language-service plugin; recommendation: own providers): *"advice me and proceed"*.
   → advised own providers (pure node modules, witnessed directly; the plugin can follow if find-references/rename are wanted) and built that.
 - 2026-11-13, owner (#604): *"GO with your insight"*, in reply to the proposal: "make F's source-reading features the Fable session's first task".
