@@ -1,8 +1,8 @@
-§FILM_PLAN {"root":"/tmp/film-ws/bim-ootb","def":{"field":"db","file":"/tmp/film-ws/bim-ootb/viewer/cost_panel.js","line":67,"col":22},"phantom":{"field":"toggleGridOverlay","file":"/tmp/film-ws/bim-ootb/viewer/grid_assembler.js","line":82,"col":34},"probe":{"file":"/tmp/film-ws/bim-ootb/viewer/cost_panel.js","line":68,"col":17,"name":"createPanel"},"sceneFile":"/tmp/film-ws/bim-ootb/viewer/scene.js","lens":{"file":"/tmp/film-ws/bim-ootb/scripts/gen_app_surface.js","line":143,"tag":"§APP_SURFACE"},"write":{"file":"/tmp/film-ws/bim-ootb/viewer/city.js","line":717,"writes":14,"reads":704},"tag
-§FILM_REAL_LOG §LOG_STAMP commit=3d525bba62e4 dirty=0 branch=HEAD at=2026-11-13T18:07:09.109Z cmd=node scripts/gen_app_surface.js
-§FILM_REAL_LOG §APP_SURFACE files=3250 fields=1693 alias_only=1321 phantom=282
-§FILM_BUILTIN_READY mode=before ready=Y seconds=2.1 probe=createPanel() resolved_to=viewer/cost_panel.js:24
-§FILM_STILL name=i1_explorer geometry=1440x900+240+90 bytes=257928
+§FILM_PLAN {"root":"/tmp/wt-x0-realvsc-25513","def":{"field":"db","file":"/tmp/wt-x0-realvsc-25513/viewer/cost_panel.js","line":67,"col":22},"phantom":{"field":"closeSunglass","file":"/tmp/wt-x0-realvsc-25513/viewer/main.js","line":357,"col":30},"probe":{"file":"/tmp/wt-x0-realvsc-25513/viewer/cost_panel.js","line":68,"col":17,"name":"createPanel"},"sceneFile":"/tmp/wt-x0-realvsc-25513/viewer/scene.js","lens":{"file":"/tmp/wt-x0-realvsc-25513/scripts/gen_app_surface.js","line":161,"tag":"§APP_SURFACE"},"write":{"file":"/tmp/wt-x0-realvsc-25513/viewer/city.js","line":717,"writes":14,"reads":8
+§FILM_REAL_LOG §LOG_STAMP commit=3b7cd756db32 dirty=0 branch=HEAD at=2026-11-13T22:19:58.083Z cmd=node scripts/gen_app_surface.js
+§FILM_REAL_LOG §APP_SURFACE files=3252 fields=1856 alias_only=1595 phantom=171 untied=11
+§FILM_BUILTIN_READY mode=before ready=Y seconds=1.9 probe=createPanel() resolved_to=viewer/cost_panel.js:24
+§FILM_STILL name=i1_explorer geometry=1440x900+240+90 bytes=259469
 §FILM_SHOT name=i1_explorer mode=before file="viewer/scene.js" folders=33
 §FILM_STILL name=b1_line geometry=1440x900+240+90 bytes=204237
 §FILM_SHOT name=b1_line mode=before file="viewer/cost_panel.js" line=67 text="if (!APP || !APP.db || !gridData) return;" defs=[] hover="```typescript any ```"
@@ -10,34 +10,34 @@
 §FILM_SHOT name=b2_f12_nothing mode=before asked_on="viewer/cost_panel.js:67" builtin_defs=0 after_file="viewer/cost_panel.js" after_line=67 moved=false
 §FILM_STILL name=b3_search_tests_only geometry=1440x900+240+90 bytes=253649
 §FILM_SHOT name=b3_search_tests_only mode=before query="APP.db =" in="viewer" lines_counted_by_node=9 files=["viewer/tests/witness_needle_persist_key.js","viewer/tests/witness_one_kernel_ops.js"] all_in_tests=true
-§FILM_X0 active=true fresh="§APP_SURFACE files=3250 fields=1693 alias_only=1321 phantom=282" gen_ms=3208 vscode=1.146.0
-§FILM_STILL name=a1_hover geometry=1440x900+240+90 bytes=204148
-§FILM_SHOT name=a1_hover mode=after file="viewer/cost_panel.js" line=67 text="if (!APP || !APP.db || !gridData) return;" defs=["viewer/city.js:717"] hover="**APP.db** written at [viewer/city.js:717](file:///tmp/film-ws/bim-ootb/viewer/city.js#L717) · 14 writes · 704 reads | ```typescript any ```"
-§FILM_STILL name=a2_jumped geometry=1440x900+240+90 bytes=269522
+§FILM_X0 active=true fresh="§APP_SURFACE files=3252 fields=1856 alias_only=1595 phantom=171 untied=11" gen_ms=2565 vscode=1.146.0
+§FILM_STILL name=a1_hover geometry=1440x900+240+90 bytes=204477
+§FILM_SHOT name=a1_hover mode=after file="viewer/cost_panel.js" line=67 text="if (!APP || !APP.db || !gridData) return;" defs=["viewer/city.js:717"] hover="**APP.db** written at [viewer/city.js:717](file:///tmp/wt-x0-realvsc-25513/viewer/city.js#L717) · 14 writes · 851 reads | ```typescript any ```"
+§FILM_STILL name=a2_jumped geometry=1440x900+240+90 bytes=269521
 §FILM_SHOT name=a2_jumped mode=after file="viewer/city.js" line=717 text="A.db = A.cityBuildingDbs[archetype].db;"
-§FILM_STILL name=p1_phantom geometry=1440x900+240+90 bytes=149799
-§FILM_SHOT name=p1_phantom mode=after file="viewer/grid_assembler.js" line=82 text="log('§GRID_ASSEMBLE OK — APP.toggleGridOverlay ready');" defs=[] hover="**APP.toggleGridOverlay** PHANTOM — read, never written (first read `tests/specs/28-grid-overlay-init.spec.js:25`)"
-§FILM_STILL name=u1_unknown geometry=1440x900+240+90 bytes=52822
-§FILM_SHOT name=u1_unknown mode=after file="../../claude-1000/-home-red1-bim-compiler/967898c2-4d29-41b0-8c8a-b2dc29b600aa/scratchpad/wt-film-zh/scripts/film_ide_x0/out/scratch.js" line=1 text="var value = APP.notARealField;" defs=[] hover="```typescript any ```"
-§FILM_STILL name=t1_tag geometry=1440x900+240+90 bytes=366868
-§FILM_SHOT name=t1_tag mode=after file="viewer/schedule_gate.js" line=1014 text="if (_hc) console.log('§HOSTED_BEFORE_HOST hostedTotal=' + _hc.hostedTotal +" defs=[] hover="**§HOSTED_BEFORE_HOST** - [bim-compiler prompts/4D_SCHEDULE_ARCHITECTURE_REDESIGN.md:500](file:///home/red1/bim-compiler/prompts/4D_SCHEDULE_ARCHITECTURE_REDESIGN.md#L500) — §OG_HANG_BAND/§OG_HANG_UNBOUND die with their pass; §HOSTED_BEFORE_HOST's IfcCovering pool rides - [bim-compiler prompts/4D_SCHEDULE_PERFECTION.md:1896](file:///home/red1/bim-compiler/prompts/4D_SCHEDULE_PERFECTION.md#L1896) —"
-§FILM_STILL name=t2_fake_tag geometry=1440x900+240+90 bytes=58716
-§FILM_SHOT name=t2_fake_tag mode=after file="../../claude-1000/-home-red1-bim-compiler/967898c2-4d29-41b0-8c8a-b2dc29b600aa/scratchpad/wt-film-zh/scripts/film_ide_x0/out/scratch.js" line=2 text="console.log('§NOT_A_REAL_TAG done');" defs=[] hover="**§NOT_A_REAL_TAG** no spec found"
-§FILM_STILL name=r1_check geometry=1440x900+240+90 bytes=273677
+§FILM_STILL name=p1_phantom geometry=1440x900+240+90 bytes=308655
+§FILM_SHOT name=p1_phantom mode=after file="viewer/main.js" line=357 text="window.closeSunglass = APP.closeSunglass;" defs=[] hover="**APP.closeSunglass** PHANTOM — read, never written (first read `viewer/main.js:357`)"
+§FILM_STILL name=u1_unknown geometry=1440x900+240+90 bytes=46906
+§FILM_SHOT name=u1_unknown mode=after file="../wt-docs-fig-25513/scripts/film_ide_x0/out/scratch.js" line=1 text="var value = APP.notARealField;" defs=[] hover="```typescript any ```"
+§FILM_STILL name=t1_tag geometry=1440x900+240+90 bytes=366236
+§FILM_SHOT name=t1_tag mode=after file="viewer/schedule_gate.js" line=1014 text="if (_hc) console.log('§HOSTED_BEFORE_HOST hostedTotal=' + _hc.hostedTotal +" defs=[] hover="**§HOSTED_BEFORE_HOST** - [bim-compiler prompts/4D_SCHEDULE_ARCHITECTURE_REDESIGN.md:500](file:///tmp/wt-docs-fig-25513/prompts/4D_SCHEDULE_ARCHITECTURE_REDESIGN.md#L500) — §OG_HANG_BAND/§OG_HANG_UNBOUND die with their pass; §HOSTED_BEFORE_HOST's IfcCovering pool rides - [bim-compiler prompts/4D_SCHEDULE_PERFECTION.md:1896](file:///tmp/wt-docs-fig-25513/prompts/4D_SCHEDULE_PERFECTION.md#L1896) — §"
+§FILM_STILL name=t2_fake_tag geometry=1440x900+240+90 bytes=51458
+§FILM_SHOT name=t2_fake_tag mode=after file="../wt-docs-fig-25513/scripts/film_ide_x0/out/scratch.js" line=2 text="console.log('§NOT_A_REAL_TAG done');" defs=[] hover="**§NOT_A_REAL_TAG** no spec found"
+§FILM_STILL name=r1_check geometry=1440x900+240+90 bytes=275646
 §FILM_SHOT name=r1_check mode=after lines=6 syntax="§SHIP_SYNTAX files=0 verdict=PASS vs=origin/main" audit="§SHIP_AUDIT verdict=PASS §SW_AUDIT_SUMMARY 268 found, 0 missing, 0 known-missing, 268 total" last="§SHIP_CHECK verdict=PASS steps=3"
-§FILM_STILL name=r2_cost geometry=1440x900+240+90 bytes=273583
+§FILM_STILL name=r2_cost geometry=1440x900+240+90 bytes=275606
 §FILM_SHOT name=r2_cost mode=after status="viewer: start-up · 234 KB" viewer="§DEPLOY_COST app=viewer boot_files=256 boot_bytes=11926454 boot_delta=0 precache_files=268 precache_bytes=14808917 precache_delta=0 pages=5 moved_to_boot=0 new_boot=0 not_plain_strings=0 vs=origin/main" apps=3
-§FILM_STILL name=r3_lens geometry=1440x900+240+90 bytes=168113
-§FILM_SHOT name=r3_lens mode=after file="scripts/gen_app_surface.js" line=143 lenses=1 title="last: §APP_SURFACE files=3250 fields=1693 alias_only=1321 phantom=282   ·   gen_app_surface.log @ 3d525bb" lens_line=143
+§FILM_STILL name=r3_lens geometry=1440x900+240+90 bytes=181982
+§FILM_SHOT name=r3_lens mode=after file="scripts/gen_app_surface.js" line=161 lenses=1 title="last: §APP_SURFACE files=3252 fields=1856 alias_only=1595 phantom=171 untied=11   ·   gen_app_surface.log @ 3b7cd75" lens_line=161
 §FILM_STILL name=e0_write_before geometry=1440x900+240+90 bytes=263206
 §FILM_SHOT name=e0_write_before mode=after file="viewer/city.js" line=717 text="A.db = A.cityBuildingDbs[archetype].db;"
 §FILM_STILL name=e1_write_moved geometry=1440x900+240+90 bytes=264482
 §FILM_SHOT name=e1_write_moved mode=after file="viewer/city.js" now_line=718 text="A.db = A.cityBuildingDbs[archetype].db;" saved=true
-§FILM_STILL name=e2_right_after_save geometry=1440x900+240+90 bytes=204320
+§FILM_STILL name=e2_right_after_save geometry=1440x900+240+90 bytes=204322
 §FILM_SHOT name=e2_right_after_save mode=after file="viewer/cost_panel.js" line=67 text="if (!APP || !APP.db || !gridData) return;" defs=[] hover="**APP.db** index stale — hover again in a few seconds, or run \"X0 Navigator: Rebuild indexes\" | ```typescript any ```"
-§FILM_STILL name=e3_knows_new_line geometry=1440x900+240+90 bytes=204666
-§FILM_SHOT name=e3_knows_new_line mode=after seconds_after_first_ask=2.5 refresh_runs=2 file="viewer/cost_panel.js" line=67 text="if (!APP || !APP.db || !gridData) return;" defs=["viewer/city.js:718"] hover="**APP.db** written at [viewer/city.js:718](file:///tmp/film-ws/bim-ootb/viewer/city.js#L718) · 14 writes · 704 reads | ```typescript any ```"
-§FILM_STILL name=l1_log_stamp geometry=1440x900+240+90 bytes=228760
-§FILM_SHOT name=l1_log_stamp mode=after task="Run this witness (full log -> logs/)" exit=0 log="logs/witness_x0_appdef.log" line1="§LOG_STAMP commit=3d525bba62e4 dirty=1 branch=HEAD at=2026-11-13T18:09:37.812Z cmd=devtools/vscode/x0-navigator/tests/witness_x0_appdef.js dirty_files=viewer/city.js" last="§X0_APPDEF rows=1693 sampled=34 resolved=29 phantoms=5 line_matches=34 verdict=PASS"
+§FILM_STILL name=e3_knows_new_line geometry=1440x900+240+90 bytes=204668
+§FILM_SHOT name=e3_knows_new_line mode=after seconds_after_first_ask=3.5 refresh_runs=2 file="viewer/cost_panel.js" line=67 text="if (!APP || !APP.db || !gridData) return;" defs=["viewer/city.js:718"] hover="**APP.db** written at [viewer/city.js:718](file:///tmp/wt-x0-realvsc-25513/viewer/city.js#L718) · 14 writes · 851 reads | ```typescript any ```"
+§FILM_STILL name=l1_log_stamp geometry=1440x900+240+90 bytes=251721
+§FILM_SHOT name=l1_log_stamp mode=after task="Run this witness (full log -> logs/)" exit=0 log="logs/witness_x0_appdef.log" line1="§LOG_STAMP commit=3b7cd756db32 dirty=1 branch=HEAD at=2026-11-13T22:21:19.180Z cmd=devtools/vscode/x0-navigator/tests/witness_x0_appdef.js dirty_files=viewer/city.js" last="§X0_APPDEF rows=1856 sampled=38 resolved=34 phantoms=4 line_matches=38 verdict=PASS"
 §FILM_WS_CHANGED  M viewer/city.js
 §FILM_SHOOT stills=18 errors=0

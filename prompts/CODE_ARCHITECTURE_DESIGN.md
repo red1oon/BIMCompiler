@@ -1076,10 +1076,38 @@ Owner, 2026-11-14: *"Implement the MCP or Claude Code role in the VSC since it i
   `spec`), the corrected PHANTOM step (picture kept, with a dated note; a true phantom named), `context_for_file`, and "Seeing what a session
   uses". **The docs SITE is not redeployed by this PR** (`scripts/safe_gh_deploy.sh` not run): the live guide still shows the old text. The
   PHANTOM picture `figs/x0/05_phantom.png` needs a new capture in a real VS Code (owner's go).
-- **NEXT, in order:** (1) redeploy the docs site with `scripts/safe_gh_deploy.sh` (dry run first). (2) the real-VS-Code run (`realvsc`
-  harness) for the new command and hover line, and the new PHANTOM picture: needs the owner's go. (3) §F.15 step 1 (bake stamp): its two
-  open points go to the owner first. (4) §F.15 step 3 (the rule as a standalone page). Blocked on the owner: F-1, F-2, F-6, F-7, and the
+- **NEXT, in order (updated at §F.17):** (1) §F.15 step 1 (bake stamp): its two open points go to the owner first. (2) §F.15 step 3 (the rule
+  as a standalone page). (3) the 11 untied fields and the film's phantom still (§F.17). Blocked on the owner: F-1, F-2, F-6, F-7, and the
   token for F-12 step 2. Part A (A0) is still the first unstarted part of the design itself.
+
+### §F.17 The real-VS-Code run, and what it uncovered: half the "phantoms" were live — ✅ DONE 2026-11-14 (owner: *"Go"*)
+
+The owner's *"Go"* answered the three items that waited on it: the real-VS-Code run, the new PHANTOM picture, the docs redeploy.
+- **Real VS Code, new features (bim-ootb #2971 / PR #2972, merged).** `realvsc/` now runs *Context for this file* and reads the tag hover's
+  last-value line inside VS Code 1.146.0: `§X0_REALVSC vscode=1.146.0 active=Y fresh=Y def=Y hover=Y phantom=Y unknown_silent=Y tag=Y
+  fake_tag=Y commands=Y cost=Y check=Y status=Y lens=Y last_value=Y last_value_red=Y context=Y builtin_ready=Y builtin_defs=0 verdict=PASS`.
+  The command's text equals the lib's block, the clipboard holds it, one markdown editor opens beside.
+- **FINDING 1: a red control that had stopped being one.** Four witnesses used the tag `ZZ_NOT_A_TAG` as "no spec names this". THIS file
+  quotes that name (§F.4), so with a current bim-compiler beside bim-ootb the hover found a spec place: `fake_tag=N verdict=FAIL`. It had
+  passed only where the bim-compiler copy was old or absent. Fixed in #2972: a per-run suffix. **Do not write a witness's made-up name in a spec.**
+- **FINDING 2 (the large one): 138 of 281 phantoms had a writer** (bim-ootb #2974 / PR #2975, merged). Re-taking the PHANTOM picture, the
+  planner chose `APP.focusElement`; `viewer/nf_panel_search.js:884` sets it. Measured with the repo's tokenizer: of 281 fields indexed as
+  "read, never written", 138 have an `A.x =` write in production code, in the split-file parts (`function* __split_x(NF, A, …)`, 21 files)
+  and `navigate_*.js` (`function init(A, nav)`). `BINDS_A` did not know those forms. #2961 had fixed one instance; this closes the class:
+  **R5c** the gate accepts both forms; **R11** a phantom that still has a same-named production write through a local name the gate cannot
+  tie is listed in a second table with its site, and the hover / facts server say `PHANTOM?` and name the line.
+  `§APP_SURFACE files=3251 fields=1856 alias_only=1595 phantom=171 untied=11` (was fields=1696 alias_only=1325 phantom=281).
+  Read in production and never written: **107** (was reported as 171/172). `§APP_SURFACE_W … R5c, R11, R11-RED, R5c-real PASS · ALL PASS` ·
+  `§X0_APPDEF_ALL rows=1856 … phantom=171 phantom_table=171 untied=11` · real VS Code `verdict=PASS`.
+  **Numbers in this file that this supersedes:** P1's "1,688 fields, 1,321 written only as `A.x`, 172 read in production but never written"
+  → 1,856 / 1,595 / 107. Part C's phantom work list is 107 (+11 to check), not 172.
+- **The picture:** `docs/figs/x0/05_phantom.png` retaken (`scripts/film_ide_x0/shoot.sh`, 18 stills, 0 errors): `§FILM_SHOT name=p1_phantom …
+  file="viewer/main.js" line=357 … hover="**APP.closeSunglass** PHANTOM — read, never written (first read `viewer/main.js:357`)"`. That field
+  has one mention in production code, the read. `plan.js` now skips untied phantoms. Guide step 5, its tables and item 4 of §11 corrected.
+- **Still open from this:** the 11 untied fields are four more binding forms (`var A = A_ref` in `find_ask.js`, `A = app` in
+  `cpe_freeze_perf.js` / `grid_scissors.js`, `var app = TMS.A()` in `tm_panel.js`). Not chased by regex on purpose: the proper tie is the
+  parser (which name holds the shared object), a Part C question. The film "Editing Real Code" shows `toggleGridOverlay` as its phantom:
+  wrong since #2961; a recut needs that one still and line.
 
 ---
 

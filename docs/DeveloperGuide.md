@@ -153,7 +153,7 @@ The app's only runtime dependency is `sql.js`, which is already vendored.
 | You want | Do this |
 |---|---|
 | Where a function or global is defined | **F12** works for true globals (`setupScene` → `viewer/scene.js`) and, through `types/globals.gen.d.ts`, for about 6 in 10 UMD globals' members (`ADParser.init` → `erp/ad_parser.js`). The rest: search for `X = ` or `function X`. |
-| Where an `APP.x` / `A.x` field is set | With X0 Navigator (§4.1): **F12** or hover on the field. Without it: `internal/APP_SURFACE.md`. Its "phantom" list (171 fields read in production but never written) is a list of dead guards. Check before relying on one. |
+| Where an `APP.x` / `A.x` field is set | With X0 Navigator (§4.1): **F12** or hover on the field. Without it: `internal/APP_SURFACE.md`. Its "phantom" list (107 fields read in production but never written, counted 2026-11-14; 11 more are flagged "untied write" and are probably live) is a list of dead guards. Check before relying on one. |
 | What a `§TAG` means | With X0 Navigator (§4.1): hover the tag. Without it: search the tag. The code that prints it is the definition, and its spec is usually named in the same file's header. |
 | What a spec section says (`§S59`, `W-BUMP`) | Search `prompts/` in both repos for the section or witness name. |
 | A file cited as `file:line` in an old prompt | Line numbers drift (the big files were split in 2026-10). **Search for the function name instead.** |
@@ -200,6 +200,7 @@ folder its `extensions.json` does not list, so nothing loads and nothing warns y
 | It shows | Meaning | What to do |
 |---|---|---|
 | `PHANTOM — read, never written`, and F12 does nothing | no code sets this field: the guard can never be true, or its writer was removed | do not rely on the field; see §11 item 4 |
+| `PHANTOM? — no writer the index can tie …`, with a `file:line` | the index found no writer it can prove, but that line assigns a field of this name through a local name it could not tie to the shared object | probably live: read that line. It is a gap in the index, not a dead field |
 | nothing at all on an `APP.x` | the field is not in the index (new and unsaved, or `A` is an unrelated local in this file) | save the file and hover again |
 | `index stale`, and F12 does nothing | the line the index points at no longer mentions the field | hover again in a few seconds, or run **X0 Navigator: Rebuild indexes** |
 | `no spec found` on a `§TAG` | no file in `prompts/` or `docs/` names the tag | the code that prints it is all there is: read that |
@@ -225,14 +226,14 @@ code writes that field as `A.db`.
 
 ![After F12: viewer/city.js line 717, A.db = …](figs/x0/04_jumped_to_the_write.png)
 
-**5. A field nothing sets says so.** `PHANTOM` means the field is read but never written: do not rely on it. A true one to try: `_applyViewFilter`
-(read in `viewer/panels.js`, written nowhere).
+**5. A field nothing sets says so.** `PHANTOM` means the field is read but never written: do not rely on it. Here line 357 copies a
+function that no code ever defines.
 
-![Hover on APP.toggleGridOverlay: PHANTOM, read, never written](figs/x0/05_phantom.png)
+![Hover on APP.closeSunglass: PHANTOM, read, never written (first read viewer/main.js:357)](figs/x0/05_phantom.png)
 
-*The picture is from 2026-11-13. The field in it was a wrong answer: `viewer/grid_overlay.js` does set it, in a file that says
-`var A = APP;`, a form the index did not read. Fixed 2026-11-14 (bim-ootb #2961); that field now jumps to its line. The hover looks the same
-on a true phantom.*
+*Picture retaken 2026-11-14. Until that day the index missed files that had been split into parts, and called about half of these fields
+phantom when they were written (bim-ootb #2961, #2974). The count went from 281 to 171; where the index still cannot be sure it now says
+`PHANTOM?` and names the line to read.*
 
 **6. Hover a `§TAG`.** You get the spec pages that name it (headings first) and the code line that prints it.
 
@@ -552,7 +553,7 @@ how much it helps a reader for how little risk. The full work order, written for
 | 1 | **`// @ts-check` + JSDoc** on the files you edit most (today 0 files have `@ts-check`, 54 have any JSDoc) | Autocomplete, hover docs and red squiggles in that file. Comments only: the browser sees nothing | None at run time | The file's witness unchanged; no unintended new red in VS Code |
 | 2 | **Move the export to the top level** for the UMD globals F12 cannot follow (17 of 44 sampled, e.g. `Dxf2Bim`, `ScheduleEngine`): `var X = (function(){ … return api; })(); if (typeof module …) module.exports = X;` | F12 and find-references start working for that global | Low: same object, same name | `scripts/tests/witness_global_types.js` resolves one more; the file's own witness unchanged |
 | 3 | **One owner per responsibility**: retire the duplicates the type generator lists (`ERPKernel` in two files; `Bonsai` ×3 and `ERP` ×4 publishers; `modeller/routewalker.js` vs `viewer/routewalker.js`) | One place to read and fix | Medium: callers may rely on a copy's differences | Diff the copies first; witness every caller; the deleted lines are part of the change |
-| 4 | **Clear the phantom fields**: 171 `APP.x` fields read in production but never written (`internal/APP_SURFACE.md`) | Dead guards gone; fewer "where is this set?" hunts | Low per field | The phantom count goes down; the file's witness unchanged |
+| 4 | **Clear the phantom fields**: 107 `APP.x` fields read in production but never written (recounted 2026-11-14 after the index fix, bim-ootb #2974) (`internal/APP_SURFACE.md`) | Dead guards gone; fewer "where is this set?" hunts | Low per field | The phantom count goes down; the file's witness unchanged |
 | 5 | **Split the longest functions** with the byte-identical method: `injectGantt` (992 lines), `renderAtTime` (961), `_getMaterial` (762), `computeSchedule` (654) | Readable units, each with a name | Medium: shared closure variables | `scripts/split_closure.js` + `split_verify.js` (every statement identical, in order); 4D: the cached run identical |
 | 6 | **Rename `A` to `APP` in one module** (`viewer/scene.js` first, 606 sites) | grep finds definitions again | Low per module, high as a sweep | `APP_SURFACE.md` field and phantom counts identical before and after |
 | 7 | **One path resolver for witnesses** instead of hard-coded home folders | Witnesses run on a second machine | Medium: touches the proof chain | Every converted witness gives the same verdict before and after |
