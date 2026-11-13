@@ -1,0 +1,11 @@
+b01	guide B1-b picture	M: The Shed, as the client drew it.	F: A floor plan. Is this where the software starts? | M: It is where the client starts. The Shed, as they drew it. Before anyone accepts the software, it has to be tested on drawings like this one.
+b02	owner brief	M: A User Acceptance Test, done independently.	M: Part of any software project completion is a User Acceptance Test, done independently. | F: Not by the A.I. that built it? | M: No. By a qualified, C.T.F.L. certified company. Audited, and signed.
+b03	live guide page	M: The U.A.T. Guide. One button prints it.	F: So what do the testers follow? | M: The U.A.T. Guide. Each step says what to do, and what to confirm on screen, with a box to tick. One button prints it.
+b04	page.pdf of the live page	M: It prints as a plain document.	M: It prints as a plain document. One chapter starts on a new page, every table is ruled, and every picture is labelled.
+b05	pdfinfo Pages=22; saved PDF p1	M: Check the first page first.	F: And this is a saved copy? | M: Yes, twenty-two pages. Check the first page before anything else: what you need, and who does which chapter.
+b06	saved PDF floor plan page	M: Chapter B uses your own Shed drawings.	M: Chapter B uses your own Shed drawings. First the floor plan on its own, labelled, so the tester knows it is their building.
+b07	saved PDF step table	M: Do. Confirm. Then tick, by hand.	M: Every step has three parts. Do. Confirm on screen. Then tick pass, or fail, by hand.
+b08	saved PDF notes line + known limits	M: Write differences on the notes line.	F: What if something differs? | M: Write it on the notes line. And read the known limits. Do not fail a step on something that is not built yet.
+b09	saved PDF sign-off page	M: The last page is the sign off.	M: The last page is the sign off. Tester, date, passed out of total, and a signature, for each chapter.
+b10	guide p1, A2, A3	M: Test independently, and keep the signed sheets.	F: What should the company keep in mind? | M: Test independently. Use the test client, not live data. The test dates are fixed, so the colours drift with the calendar. And keep the signed sheets. They are your acceptance record.
+b11	closing card	M: The contact is on screen.	M: These are the standards such software has to comply with. | F: And who do we ask? | M: The contact is on screen.
