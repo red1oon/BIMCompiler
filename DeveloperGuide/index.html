@@ -1810,6 +1810,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#42-working-with-an-ai-assistant-in-vs-code-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Working with an AI assistant in VS Code (optional)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3323,6 +3334,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#42-working-with-an-ai-assistant-in-vs-code-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Working with an AI assistant in VS Code (optional)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3955,6 +3977,64 @@ a lookup misses after you saved a file. One run takes about 4 seconds in the bac
 nothing to commit and nothing to conflict on. <strong>Do not regenerate and commit <code>APP_SURFACE.md</code> in an unrelated PR</strong> for X0's sake.</p>
 <p>For bim-compiler specs to show in a <code>§TAG</code> hover, keep the two clones side by side (<code>bim-ootb/</code> next to <code>bim-compiler/</code>), or set
 <code>bimDevtools.compilerRoot</code>. Its witnesses (node only, no VS Code needed) are listed in its <code>README.md</code>.</p>
+<h3 id="42-working-with-an-ai-assistant-in-vs-code-optional">4.2 Working with an AI assistant in VS Code (optional)<a class="headerlink" href="#42-working-with-an-ai-assistant-in-vs-code-optional" title="Permanent link">&para;</a></h3>
+<p>Nothing in this project needs an AI assistant, and X0 Navigator never calls one. If you choose to use one, this is how it fits. The facts
+about Claude Code are from its documentation (code.claude.com/docs, read 2026-11-14).</p>
+<p><strong>Two kinds of help, often used together.</strong> An <em>autocomplete</em> assistant (GitHub Copilot's original style) suggests the next lines as grey
+text while you type. An <em>agent</em> (Claude Code) has no grey-text completion: you describe a task, it reads files, runs commands and proposes
+edits across files, and you approve them.</p>
+<p><strong>Claude Code in VS Code, two ways.</strong> (1) The <em>Claude Code</em> extension (Extensions view; VS Code 1.94 or later): a chat panel, your
+selection and open file shared with it, <code>Alt+K</code> to insert a reference such as <code>@file.js#5-10</code>, proposed edits as side-by-side diffs with
+Accept / Reject, a plan you can comment on, and "rewind code to here" on earlier messages. (2) The <code>claude</code> command in VS Code's own
+terminal panel: with the extension installed it connects to the editor by itself, sees your selection and the Problems panel, and opens its
+diffs in the editor. The terminal has every command; the panel has a subset.</p>
+<p><strong>Staying in control: the habits that matter here.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Habit</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ask for a plan before code on anything larger than a small fix, and read it</td>
+<td>The cheapest place to stop a wrong approach</td>
+</tr>
+<tr>
+<td>Read every diff before you accept it</td>
+<td>The diff is the truth; the summary is a claim</td>
+</tr>
+<tr>
+<td>One bounded task per session, on its own branch</td>
+<td>A session that wanders is hard to review and hard to undo</td>
+</tr>
+<tr>
+<td>Make it prove the change: a witness, a <code>§</code> line, the log read</td>
+<td>"Done" without a log line is not done (§6)</td>
+</tr>
+<tr>
+<td>Select the code, then say "this"</td>
+<td>The selection travels with your message: no describing where</td>
+</tr>
+<tr>
+<td>Keep project rules in <code>CLAUDE.md</code>, not in your head</td>
+<td>Every new session reads it; a rule only said once is forgotten</td>
+</tr>
+<tr>
+<td>Rewind instead of arguing</td>
+<td>When an edit went wrong, go back to the checkpoint and restate the task</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Give the assistant this project's facts (off by default).</strong> <code>devtools/mcp/x0-facts/</code> is a small local server that answers from the same
+code X0 Navigator uses: where an <code>APP</code> field is set, what a <code>§TAG</code> means, how a file is loaded, what a change costs, the last provable
+logged value, and the pre-ship check. It is read-only, calls no model and opens no network connection.</p>
+<ul>
+<li>On, from the bim-ootb folder: <code>claude mcp add x0-facts --scope local -- node devtools/mcp/x0-facts/server.js</code> (you, this project only).</li>
+<li>Off: <code>claude mcp remove x0-facts --scope local</code>. Inside a session, <code>/mcp</code> shows it and switches it for that session.</li>
+<li>When no assistant starts it, no process runs. X0 Navigator works the same with it on or off.</li>
+</ul>
 <hr />
 <h2 id="5-changing-things">5. Changing things<a class="headerlink" href="#5-changing-things" title="Permanent link">&para;</a></h2>
 <h3 id="51-any-edit-to-a-file-the-browser-loads">5.1 Any edit to a file the browser loads<a class="headerlink" href="#51-any-edit-to-a-file-the-browser-loads" title="Permanent link">&para;</a></h3>
