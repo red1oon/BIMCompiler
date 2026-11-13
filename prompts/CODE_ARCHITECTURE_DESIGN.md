@@ -683,6 +683,28 @@ two-voice dialogue, chapter cards as their own silent 3.6 s segments, bottom 230
   not asked; the playbook default is taken (English first, ~2.5 min, Kokoro voices, local CPU) and other languages follow the English cut.
 - **Witness of the film itself** (PLAYBOOK step 5): frames = the silent picture's, silences ≥ 4 s at most ~7 s, loudness ≈ −16 LUFS, a guard
   that every digit on a card or in the voice is a fact from a named `§` line.
+- **RESULT 2026-11-13 — English cut v4: `~/Videos/Editing_Real_Code_EN_AFTER_2026-11-13_v4.mp4`** (147.2 s, 3,533 frames, 1920×1080, 12.4 MB).
+  Pipeline: `scripts/film_ide_x0/` (`shoot.sh` + `plan.js` + `shots_suite.js` → 14 stills of the real VS Code 1.146.0; `build.py` → cards,
+  voice, mux). Logs committed: `out/shots.log`, `out/build.log`. **Stills, not screen video:** each state is one still held for its speech
+  (PLAYBOOK C "static holds"); the editor's transitions are instant, so nothing is lost and timing follows the voice.
+  - **What the real editor reported (all in `shots.log`):** BEFORE (no X0; built-in support ready after 2.1 s): F12 on `APP.db` → 0
+    definitions, "No definition found"; a text search for `APP.db =` in `viewer/` → **9 lines in 2 files, all tests** (the first draft assumed
+    0: corrected from the measurement, and the storyboard's "0 results" is superseded). AFTER: hover `written at viewer/city.js:717 · 14
+    writes · 704 reads`; F12 lands on `viewer/city.js:717`; phantom `APP.toggleGridOverlay`; a made-up field gets no X0 text; a made-up tag
+    `no spec found`. **The one real event:** a line inserted above the write and saved → the next hover says `index stale` → **3.5 s** later
+    `viewer/city.js:718` (`refresh_runs=2`). **Log stamp:** the witness task's log line 1 is
+    `§LOG_STAMP commit=47bcac4be180 dirty=1 … dirty_files=viewer/city.js`: it names the file edited on camera, unprompted.
+  - **Witness of the film:** `§FILM_GUARD spoken_numbers=11 mismatches=[] false_flags=[] verdict=PASS` · `§FILM_SILENT frames=3533
+    planned=3533 OK` · `§FILM_FIT beats=9 detail=9 other=[] tone_ok=12 tone_wrong=0` · longest silence 5.57 s (bar ≤ ~7 s) · loudness
+    −17.1 LUFS (target ≈ −16) · caption band empty on every editor frame (mean 0.104575 = background). One wording was changed for
+    intonation ("Where is this database set?": the first wording rose, measured).
+  - **Layout checks made by the session on contact sheets (layout only, not evidence):** pop-up notifications cleared before each still;
+    the editor's menu strip cropped; a 1440×640 band around the cursor enlarged ×1.33 for legibility; pictures switch on the measured start
+    of the spoken turn (v3 switched late in the "code moves" beat).
+  - **Known, left as is:** the built-in hover adds a line `(loading...) any` under X0's text in one still (VS Code's own TypeScript, real);
+    the "(waits for stamped logs)" row on the roadmap card restates §F.6. The opening card's "2D thru to 7D" is the owner's line and is not
+    voiced or measured. Still not exercised: a click on a link inside the hover (§F.9 Part 1 note): the film uses F12, not the link.
+  - **Open:** the owner's review of the cut; other languages (the pipeline takes a translated TSV + cards; not started).
 
 **DECISIONS:**
 - 2026-11-13, owner, on FILM-1 (is storyboard v1 right?): *"Opening Chapter Title, "Editing Real Code" - BIM-ERP is Open Source, for anyone
@@ -759,7 +781,7 @@ After it, start A0 and B0, and ask A-1 while they run.
 | C | named APP parts | open: 2 decisions |
 | D | owner table | open: 2 decisions |
 | E | proof map | open: 2 decisions · `paths.js` ready to start |
-| F | VS Code extension (X0 Navigator + Run & Ship + perf-impact monitor + DEV_TOOLKIT pack); AI optional | **§F.4 X0 slice 1 ✅ DONE (witness)** (bim-ootb PR #2922) · **§F.5 fresh index ✅** (PR #2925) · §F.0 Z1–Z3 ✅ (PR #2919) · **§F.7 log stamp ✅** (PR #2928) · §F.8 nested-checkout fix ✅ (PR #2931) · **§F.9 real-VS-Code witness ✅** (PR #2933); IDE film: storyboard v1 awaits the owner (FILM-1) · F-9 CLOSED "not next" (§F.6) · open: 5 decisions (F-1, F-2, F-3, F-6, F-7) |
+| F | VS Code extension (X0 Navigator + Run & Ship + perf-impact monitor + DEV_TOOLKIT pack); AI optional | **§F.4 X0 slice 1 ✅ DONE (witness)** (bim-ootb PR #2922) · **§F.5 fresh index ✅** (PR #2925) · §F.0 Z1–Z3 ✅ (PR #2919) · **§F.7 log stamp ✅** (PR #2928) · §F.8 nested-checkout fix ✅ (PR #2931) · **§F.9 real-VS-Code witness ✅** (PR #2933) · IDE film "Editing Real Code" English cut v4 built, awaits the owner's review · F-9 CLOSED "not next" (§F.6) · open: 5 decisions (F-1, F-2, F-3, F-6, F-7) |
 
 ## §VET — 2026-11-13 vetting pass (issue #602), against bim-ootb `main` @ `a7c329e5`
 
