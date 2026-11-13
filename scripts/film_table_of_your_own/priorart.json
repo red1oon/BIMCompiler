@@ -1,16 +1,53 @@
 {
  "note": "Every line of the film's last card comes from here. 'learned' = a source this lane READ (path:line in the local iDempiere or Ninja source tree). 'nearby' = a page fetched on 2026-11-14 by a read-only web search; the six-part reading of each is in bim-compiler prompts/FILM_COMMAND_LINE_ERP.md. Nothing is on the card without an entry here.",
  "learned": [
-  { "line": "Compiere / iDempiere Application Dictionary", "took": "one engine runs any window from dictionary rows", "source": "idempiere/org.adempiere.base/src/org/compiere/model/GridWindowVO.java:203" },
-  { "line": "red1's Ninja plugin (org.red1.ninja)", "took": "the column grammar and the stager; it already reads a sheet's header", "source": "org.red1.ninja/src/org/ninja/utils/NewEmptyTable.java:95" },
-  { "line": "iDempiere core: fields, access, list values", "took": "which fields show, who gets access, how a wrong list value is refused", "source": "idempiere/org.adempiere.base.process/src/org/compiere/process/TabCreateFields.java:99" },
-  { "line": "iDempiere grid CSV importer", "took": "the idea of a file of rejected rows", "source": "idempiere/org.adempiere.base/src/org/adempiere/impexp/GridTabCSVImporter.java:90" }
+  {
+   "line": "Compiere / iDempiere Application Dictionary",
+   "took": "one engine runs any window from dictionary rows",
+   "source": "idempiere/org.adempiere.base/src/org/compiere/model/GridWindowVO.java:203",
+   "took_zh": "一个引擎，凭字典里的行运行任何窗口"
+  },
+  {
+   "line": "red1's Ninja plugin (org.red1.ninja)",
+   "took": "the column grammar and the stager; it already reads a sheet's header",
+   "source": "org.red1.ninja/src/org/ninja/utils/NewEmptyTable.java:95",
+   "took_zh": "列的语法和建表程序；它本来就会读表格的表头"
+  },
+  {
+   "line": "iDempiere core: fields, access, list values",
+   "took": "which fields show, who gets access, how a wrong list value is refused",
+   "source": "idempiere/org.adempiere.base.process/src/org/compiere/process/TabCreateFields.java:99",
+   "took_zh": "显示哪些字段、谁获得访问权、错误的列表值如何被拒绝"
+  },
+  {
+   "line": "iDempiere grid CSV importer",
+   "took": "the idea of a file of rejected rows",
+   "source": "idempiere/org.adempiere.base/src/org/adempiere/impexp/GridTabCSVImporter.java:90",
+   "took_zh": "把被拒绝的行写成一个文件的想法"
+  }
  ],
  "nearby": [
-  { "line": "iDempiere: Create Window, Tab & Field from Table (v8.2)", "does": "makes the window from a table that already exists, in the web client", "source": "https://docs.idempiere.org/docs/new-features/v8.2/create-window-tab-field-from-table" },
-  { "line": "frappe_commander: new-doctype", "does": "one command makes a DocType, fields as flags; records are used in the web desk", "source": "https://github.com/esafwan/frappe_commander" },
-  { "line": "sqlite-utils with VisiData", "does": "a CSV becomes a table and rows are edited in a terminal; no form, lists, roles", "source": "https://sqlite-utils.datasette.io/en/stable/cli.html" }
+  {
+   "line": "iDempiere: Create Window, Tab & Field from Table (v8.2)",
+   "does": "makes the window from a table that already exists, in the web client",
+   "source": "https://docs.idempiere.org/docs/new-features/v8.2/create-window-tab-field-from-table",
+   "does_zh": "在网页端，从一张已存在的表生成窗口"
+  },
+  {
+   "line": "frappe_commander: new-doctype",
+   "does": "one command makes a DocType, fields as flags; records are used in the web desk",
+   "source": "https://github.com/esafwan/frappe_commander",
+   "does_zh": "一条命令建一个 DocType，字段写成参数；记录在网页端使用"
+  },
+  {
+   "line": "sqlite-utils with VisiData",
+   "does": "a CSV becomes a table and rows are edited in a terminal; no form, lists, roles",
+   "source": "https://sqlite-utils.datasette.io/en/stable/cli.html",
+   "does_zh": "CSV 变成表，在终端里编辑行；没有表单、列表、角色"
+  }
  ],
  "found": "In the pages we read, no single tool had all of it.",
- "notSearched": "Not searched: Compiere's own tooling, Tryton, OFBiz, dBASE-style screens."
+ "notSearched": "Not searched: Compiere's own tooling, Tryton, OFBiz, dBASE-style screens.",
+ "found_zh": "在我们读过的网页里，没有一个工具具备全部功能。",
+ "notSearched_zh": "未检索：Compiere 自带工具、Tryton、OFBiz、dBASE 式界面。"
 }
