@@ -122,8 +122,9 @@ not counted). You will not read it all; §6 says what to read first.
 3. Serve it: task **Serve repo (http://localhost:8000)**, or `python3 -m http.server 8000` in the repo root.
 4. Open `http://localhost:8000/viewer/viewer.html` (or `erp/idempiere.html`, `modeller/modeller.html`).
 5. To debug with breakpoints: Run ▸ **Viewer in Chrome** (also ERP, Modeller, and **Node: this witness / script**).
-6. Optional, recommended: install the repo's own VS Code extension, **X0 Navigator** (§4.1). One command, works offline:
-   `ln -s "$PWD/devtools/vscode/x0-navigator" ~/.vscode/extensions/bim-devtools.x0-navigator-0.1.0`, then reload VS Code.
+6. Optional, recommended: install the repo's own VS Code add-on, **X0 Navigator** (§4.1). Two commands from the bim-ootb folder,
+   offline, no npm: `node devtools/vscode/pack.js`, then `code --install-extension devtools/vscode/dist/x0-navigator-0.1.0.vsix`.
+   Reload VS Code.
 
 `npm install` is needed only for the lint check (`eslint`, a dev tool) and is never needed by the app.
 The app's only runtime dependency is `sql.js`, which is already vendored.
@@ -156,7 +157,20 @@ files open read-only. Edit the generator named on their first line instead.
 ### 4.1 X0 Navigator: the repo's own VS Code extension
 
 It lives in bim-ootb `devtools/vscode/x0-navigator/`. It is plain JavaScript with no dependencies and no build step, it never
-calls a model or the network, and no page loads it. Install: §3 step 6. It answers two questions from the repo's own files:
+calls a model or the network, and no page loads it. It answers two questions from the repo's own files (table below).
+
+**Install it** (proven in VS Code 1.146.0 by `devtools/vscode/x0-navigator/tests/realvsc/install.js`):
+
+1. In the bim-ootb folder: `node devtools/vscode/pack.js`. It writes `devtools/vscode/dist/x0-navigator-0.1.0.vsix` (plain node, no npm, no internet).
+2. `code --install-extension devtools/vscode/dist/x0-navigator-0.1.0.vsix`. No `code` command? In VS Code: Extensions view ▸ `…` ▸
+   **Install from VSIX…** and pick that file. (`node devtools/vscode/pack.js --install` does steps 1 and 2.)
+3. Reload VS Code (**Developer: Reload Window**).
+4. Check: open any `viewer/*.js` and hover a field such as `APP.db`. The hover starts with `written at`.
+
+After you pull changes to the add-on, run steps 1–3 again (the installed copy is a copy). Remove it with
+`code --uninstall-extension bim-devtools.x0-navigator`. **Do not symlink the folder into `~/.vscode/extensions/`:** VS Code ignores a
+folder its `extensions.json` does not list, so nothing loads and nothing warns you (this guide said to symlink until 2026-11-13).
+
 
 | You do | You get | Read from |
 |---|---|---|

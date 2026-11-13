@@ -706,7 +706,39 @@ two-voice dialogue, chapter cards as their own silent 3.6 s segments, bottom 230
     voiced or measured. Still not exercised: a click on a link inside the hover (§F.9 Part 1 note): the film uses F12, not the link.
   - **Open:** the owner's review of the cut; other languages (the pipeline takes a translated TSV + cards; not started).
 
+### §F.10 FINDING + FIX 2026-11-13 — the documented install did not load (bim-ootb #2938 / PR #2939) ✅
+
+Owner, after the film's v4: *"But how does the dev installs this addon? At least tell in the user guide URL."* Checking that question, the
+session ran the documented install for the first time: a symlink into `~/.vscode/extensions/`. **With an existing `extensions.json` there
+(the normal case; the owner's own is `[]`) VS Code 1.146.0 does not load it** (`getExtension` undefined). It loads only when the folder has no
+registry file at all. Every earlier witness used `--extensionDevelopmentPath`, so the install path was scope-blind (the second such miss in
+this lane, after §F.8). The README and the Developer Guide had carried the wrong command for some hours.
+**Fix:** bim-ootb `devtools/vscode/pack.js` (plain node, no npm, deterministic bytes; `tests/` left out) writes a standard `.vsix`; install
+with VS Code's own `code --install-extension`. This also settles how DEV_TOOLKIT §10's `.vsix` is built without `npx vsce`.
+**Witness on merged `main` (`447b3b3d`):** `§X0_INSTALL vscode=1.146.0 packed_files=6 vsix_bytes=13168 cli_install=Y found=Y fresh=Y hover=Y
+symlink_with_registry_found=N verdict=PASS`: packs → installs through the real `code` CLI into a temp extensions folder that already has a
+registry file → the real VS Code has it, activates it, refreshes its index and answers a hover → red control: the old symlink is not loaded.
+**Docs corrected the same day:** bim-ootb `x0-navigator/README.md` and `docs/DeveloperGuide.md` §3 step 6 + §4.1 "Install it".
+**Not proven:** Windows and macOS (the packer is plain node and the installer is VS Code's own, but only Linux was run).
+
+### §F.11 FILM on hold + change list (owner, 2026-11-13)
+
+The owner reviewed English cut v4 and asked for changes, then put the recut on hold until the three "not built yet" items exist. **Do not
+recut before that.** The change list for the next cut, in the owner's words:
+1. *"Why the opening title is not same color tone as CH 1? Do it as CH 0. Just replace that starting part. The rest is good."* → the opening
+   card takes the chapter-card style: kicker `CHAPTER 0`, title in the two tones, the owner's line under it.
+2. *"how does the dev installs this addon? At least tell in the user guide URL."* → the closing card names the Developer Guide URL
+   (`red1oon.github.io/BIMCompiler/DeveloperGuide/`, §4.1 "Install it"); the install itself is now proven (§F.10).
+3. *"have a better intro ie show the VSC panel, shows its project src tree, 'Developers can use Visual Studio Code to edit our sourcecode
+   where we enhanced it.."* → a new first beat after the Chapter 0 card: the real VS Code window with the Explorer open on the project's
+   folders, that sentence as the opening narration. `shots_suite.js` needs one more still (Explorer visible) for it.
+4. *"Hold off. Can we finish those 3 not yet done before cutting it completed?"* → the roadmap card's three items (Run and ship panel,
+   cost-if-deployed monitor, values beside the code) get built first; the card and the "limits" beat then change from "not built yet" to
+   showing them. The stills must be reshot anyway (the worktree they came from is gone; `shoot.sh` reshoots in about two minutes).
+
 **DECISIONS:**
+- 2026-11-13, owner, after watching cut v4: the four messages quoted in §F.11 (Chapter 0 style · tell the install · a better intro ·
+  hold the cut until the three unbuilt items are done). → film on hold; install defect found and fixed (§F.10).
 - 2026-11-13, owner, on FILM-1 (is storyboard v1 right?): *"Opening Chapter Title, "Editing Real Code" - BIM-ERP is Open Source, for anyone
   to work on 2D thru to 7D on single platform"*. → row 0 is now that card, verbatim; the film is titled "Editing Real Code". The session
   reads the silence on rows 1–13 as approval; the owner can still cut or reorder before the final mux.
@@ -781,7 +813,7 @@ After it, start A0 and B0, and ask A-1 while they run.
 | C | named APP parts | open: 2 decisions |
 | D | owner table | open: 2 decisions |
 | E | proof map | open: 2 decisions · `paths.js` ready to start |
-| F | VS Code extension (X0 Navigator + Run & Ship + perf-impact monitor + DEV_TOOLKIT pack); AI optional | **§F.4 X0 slice 1 ✅ DONE (witness)** (bim-ootb PR #2922) · **§F.5 fresh index ✅** (PR #2925) · §F.0 Z1–Z3 ✅ (PR #2919) · **§F.7 log stamp ✅** (PR #2928) · §F.8 nested-checkout fix ✅ (PR #2931) · **§F.9 real-VS-Code witness ✅** (PR #2933) · IDE film "Editing Real Code" English cut v4 built, awaits the owner's review · F-9 CLOSED "not next" (§F.6) · open: 5 decisions (F-1, F-2, F-3, F-6, F-7) |
+| F | VS Code extension (X0 Navigator + Run & Ship + perf-impact monitor + DEV_TOOLKIT pack); AI optional | **§F.4 X0 slice 1 ✅ DONE (witness)** (bim-ootb PR #2922) · **§F.5 fresh index ✅** (PR #2925) · §F.0 Z1–Z3 ✅ (PR #2919) · **§F.7 log stamp ✅** (PR #2928) · §F.8 nested-checkout fix ✅ (PR #2931) · **§F.9 real-VS-Code witness ✅** (PR #2933) · §F.10 install fix ✅ (PR #2939) · IDE film "Editing Real Code": cut v4 reviewed, **ON HOLD** until the three unbuilt items exist (§F.11 change list) · F-9 CLOSED "not next" (§F.6) · open: 5 decisions (F-1, F-2, F-3, F-6, F-7) |
 
 ## §VET — 2026-11-13 vetting pass (issue #602), against bim-ootb `main` @ `a7c329e5`
 
