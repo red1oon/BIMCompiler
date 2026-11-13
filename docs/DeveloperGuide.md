@@ -138,6 +138,14 @@ The app's only runtime dependency is `sql.js`, which is already vendored.
 | Lint as CI does | `npx eslint viewer modeller`: the `no-undef` check that catches a missing global |
 | Regenerate editor indexes | the committed `internal/APP_SURFACE.md` and `types/globals.gen.d.ts`. X0 Navigator does not need this: it keeps its own fresh copy (§4.1) |
 
+**Editor snippets** (type the word, press Tab; `.vscode/witness.code-snippets`):
+
+| Type | You get |
+|---|---|
+| `witness` | a new witness built on `witness_kit/contract.js`. Unedited it FAILs, so it cannot pass by accident |
+| `slog` | one log line in the repo's form: `console.log('§TAG key=' + value);` |
+| `spec` | the `⚠ DO NOT REMOVE — SPEC (W-NAME)` header a new script opens with (comment lines only) |
+
 ---
 
 ## 4. Finding things
@@ -184,6 +192,8 @@ folder its `extensions.json` does not list, so nothing loads and nothing warns y
 | Explorer side bar ▸ **Run & Ship** (4 steps, also as commands) | *Run local*: the serve task plus each app's URL and cache version on disk. *Check*: `node --check` on the JS that differs from `origin/main`, the precache audit, and the bump rule. *Cost if deployed*: see next row. *Fetch back*: is the live site on `main`'s versions and commit? | the repo's own scripts and git; Fetch back reads the live site (the only step that uses the network) |
 | Status bar, and command **Cost if deployed** | `viewer: start-up · 103 KB` for the open file; the command prints, per app, start-up and offline-cache bytes of your tree against `origin/main` | each `sw.js` cache list and the pages' script tags |
 | A grey line above code that prints a `§TAG` | `last: <the line a saved log holds for that tag> · <log> @ <commit>`; click it to open the log | `logs/*.log` whose first line is a `§LOG_STAMP` (§6) |
+| Hover a `§TAG` on the line that prints it | the same hover, ending in `last value: <line> — <log>:<line> @ <commit>`, or `last value not shown: <reason>` (`no stamped log found` · `tag not in any stamped log` · `file changed since the log` · `file was dirty when the log was made`) | the same stamped logs; the grey line stays silent without proof, the hover says why |
+| Command **X0 Navigator: Context for this file** | one block of markdown about the open file, opened beside the code and copied: its header comment, how it reaches a user and the bump command, the `APP` fields set in it, each `§TAG` it prints with its spec place and last provable value | all the indexes above. X0 calls no model: you paste the block where you like (§4.2) |
 
 **It never guesses.** Each answer below is on purpose:
 
@@ -215,9 +225,14 @@ code writes that field as `A.db`.
 
 ![After F12: viewer/city.js line 717, A.db = …](figs/x0/04_jumped_to_the_write.png)
 
-**5. A field nothing sets says so.** `PHANTOM` means the field is read but never written: do not rely on it.
+**5. A field nothing sets says so.** `PHANTOM` means the field is read but never written: do not rely on it. A true one to try: `_applyViewFilter`
+(read in `viewer/panels.js`, written nowhere).
 
 ![Hover on APP.toggleGridOverlay: PHANTOM, read, never written](figs/x0/05_phantom.png)
+
+*The picture is from 2026-11-13. The field in it was a wrong answer: `viewer/grid_overlay.js` does set it, in a file that says
+`var A = APP;`, a form the index did not read. Fixed 2026-11-14 (bim-ootb #2961); that field now jumps to its line. The hover looks the same
+on a true phantom.*
 
 **6. Hover a `§TAG`.** You get the spec pages that name it (headings first) and the code line that prints it.
 
@@ -320,11 +335,18 @@ small edits by hand; run *Check* before every commit. (3) Give the agent the wid
 
 **Give the assistant this project's facts (off by default).** `devtools/mcp/x0-facts/` is a small local server that answers from the same
 code X0 Navigator uses: where an `APP` field is set, what a `§TAG` means, how a file is loaded, what a change costs, the last provable
-logged value, and the pre-ship check. It is read-only, calls no model and opens no network connection.
+logged value, the pre-ship check, and `context_for_file`: all of that for one file in a single answer (the same block as the editor command
+*Context for this file*). It is read-only, calls no model and opens no network connection.
 
 - On, from the bim-ootb folder: `claude mcp add x0-facts --scope local -- node devtools/mcp/x0-facts/server.js` (you, this project only).
 - Off: `claude mcp remove x0-facts --scope local`. Inside a session, `/mcp` shows it and switches it for that session.
 - When no assistant starts it, no process runs. X0 Navigator works the same with it on or off.
+
+**Seeing what a session uses** (Claude Code documentation, read 2026-11-14). In the VS Code panel: the prompt box shows how full the
+context window is, and `/usage` opens an *Account & usage* dialog (plan users see usage bars; API-key users see the session's cost and
+tokens). In the terminal: `/usage` (also typed `/cost`) shows session cost and plan limits, and `/context` shows what fills the context
+window, item by item. A terminal status line can show cost and context percentage all the time (`statusLine` in the settings). Not
+documented: a status line inside the VS Code panel.
 ---
 
 ## 5. Changing things
