@@ -1188,7 +1188,7 @@ bim-ootb `7b030057` and `8b161835`; `build.py` → cards, voice, mux). Logs comm
 - **Counts, measured by `plan.js` from the two indexes:** phantom 281 → 171; **130** old phantoms now resolve to a write; 11 untied.
 - **The guard earned its place once:** the first build FAILED (`false_flags=['v_ok']`) because the shot log had cut the hover's last-value
   line; fixed in the shot driver, not in the guard.
-- **A product fault found by filming, fixed before the shoot (bim-ootb #2979-class, PR #2981, merged):** on a line whose tag has five spec
+- **A product fault found by filming, fixed before the shoot (bim-ootb #2980 / PR #2981, merged):** on a line whose tag has five spec
   places the hover's `last value` line sat under the fold. It now comes right under the tag's name (`§X0_ACTIVATE … verdict=PASS`, real VS
   Code `last_value=Y … verdict=PASS`). The stills show the product as merged.
 - **Not done:** other languages; the owner's review of the cut (title, chapter names and wording are the session's first draft).
