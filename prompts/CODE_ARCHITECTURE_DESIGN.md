@@ -732,11 +732,12 @@ recut before that.** The change list for the next cut, in the owner's words:
 3. *"have a better intro ie show the VSC panel, shows its project src tree, 'Developers can use Visual Studio Code to edit our sourcecode
    where we enhanced it.."* → a new first beat after the Chapter 0 card: the real VS Code window with the Explorer open on the project's
    folders, that sentence as the opening narration. `shots_suite.js` needs one more still (Explorer visible) for it.
-4. *"Hold off. Can we finish those 3 not yet done before cutting it completed?"* → the roadmap card's three items (Run and ship panel,
+4. *"Hold off. Can we finish those 3 not yet done before cutting it completed?"* → **first versions built (§F.12)**; the roadmap card's three items (Run and ship panel,
    cost-if-deployed monitor, values beside the code) get built first; the card and the "limits" beat then change from "not built yet" to
-   showing them. The stills must be reshot anyway (the worktree they came from is gone; `shoot.sh` reshoots in about two minutes).
+   showing them, each with what it does not do yet (§F.12 lists it). The closing card's "No network" must become "no network unless
+   you press Fetch back". The stills must be reshot anyway (the worktree they came from is gone; `shoot.sh` reshoots in about two minutes).
 
-### §F.12 The three "not built yet" items — FIRST VERSIONS (owner, 2026-11-13: *"OK first version, then next session for the next"*)
+### §F.12 The three "not built yet" items — FIRST VERSIONS · ✅ DONE 2026-11-13 (owner, 2026-11-13: *"OK first version, then next session for the next"*)
 
 Scope rule for all three: bim-ootb `devtools/vscode/x0-navigator/` only (plain JS, no npm, nothing a page loads); logic in `lib/*.js` with
 no `vscode` import, each with a node witness and a red control; then one run in the real VS Code. JavaScript is read with a PARSER (VS
@@ -777,6 +778,46 @@ changed without a bump stops at Check; (c) a live site on an older `CACHE_VERSIO
 not `main`'s → FAIL; **red control:** a clean, bumped, matching fixture passes every step.
 **Not in v1:** issue + commit + PR, deploy/merge, the byte-for-byte compare of live files, any headless browser step, opening Chrome.
 Fetch back is the ONE step that uses the network, and only when pressed: the film's "No network" line must say so.
+
+**RESULT 2026-11-13 — all three first versions merged on bim-ootb `main`, re-run there (`143edeef`), logs read. ✅ DONE (witness).**
+- **F.12a Cost if deployed** — #2943 / PR #2944. `§PERF_IMPACT new_boot_exact=Y moved_to_boot=Y red_zero=Y real_apps=3 real_boot_bytes=25186696
+  real_precache_bytes=33181099 real=Y verdict=PASS`. Real numbers (raw bytes, all pages of an app together): viewer 256 start-up scripts /
+  11.9 MB, 268 cached files / 14.8 MB; erp 250 / 5.3 MB, 398 / 9.1 MB; modeller 61 / 7.9 MB, 156 / 9.3 MB. Fixture: a 793-byte new start-up
+  script → `boot_delta=+793` exactly. Parser = VS Code's own TypeScript via the repo's `scripts/lib/find_ts.js` (`lib/js_facts.js`).
+- **F.12b Values beside the code** — #2945 / PR #2946. `§LENS shown=Y hidden_changed=Y hidden_dirty=Y unstamped_ignored=Y verdict=PASS`.
+  The reasons it hides a value are named (`file changed since the log` · `file was dirty when the log was made` · `stamp does not name its
+  dirty files`). This checkout's `logs/` held 1 stamped log and 3 unstamped ones: few lenses today, as §F.6 predicted.
+- **F.12c Run and ship** — #2947 / PR #2948. `§SHIP_PANEL syntax_stops=Y bump_stops=Y old_live_fails=Y wrong_sha_fails=Y red_clean=Y
+  red_bumped=Y red_live_match=Y no_stamp_inconclusive=Y real_run=Y real_check=Y verdict=PASS`. The Explorer side bar has a *Run & Ship* list
+  of 4 steps (Run local · Check · Cost if deployed · Fetch back). The live site is derived from the git remote, the apps from the tree.
+- **All three inside the real VS Code:** `§X0_REALVSC vscode=1.146.0 active=Y fresh=Y def=Y hover=Y phantom=Y unknown_silent=Y tag=Y fake_tag=Y
+  commands=Y cost=Y check=Y status=Y lens=Y builtin_ready=Y builtin_defs=0 seconds=22.9 verdict=PASS` (*Cost if deployed* and *Check* run as VS
+  Code commands, the CodeLens through VS Code's own provider call, 6 commands known). `§X0_ACTIVATE definition=1 hover=2 commands=6 fresh=Y
+  checks_failed=0 verdict=PASS` · `§X0_ISOLATION precache=0 minify=0 tags=0 … verdict=PASS`.
+- **Not exercised in VS Code:** *Run local* (it would start a web server) and *Fetch back* (network) were run from node only; what the side-bar
+  list, the status-bar note and the grey lens line LOOK like. **Spec deviations:** Fetch back returns INCONCLUSIVE, not PASS, when the versions
+  match but the live site carries no deploy stamp, and FAIL when the stamp is unreadable (both added after the findings below).
+
+### §F.13 FINDINGS from the first real Fetch back — the live site was wrong twice (2026-11-13) — one FIXED, one OPEN for the owner
+
+Run against the real site while testing F.12c. Neither was known; both are deploy faults, not X0 faults.
+1. **A PR merged by CI's bot is not deployed properly (OPEN).** bim-ootb Pages has two publishers: GitHub's plain branch build
+   (`build_type=legacy`, branch `main`) and the workflow *Deploy to GitHub Pages* (stamps `erp/version.json`, builds the agent zips, minifies).
+   `ci.yml`'s last step enables auto-merge with the workflow token, and **a merge made that way starts no workflow** (GitHub does not run
+   workflows for pushes made with the workflow token). Measured 11:12 UTC after three such merges (#2939, #2944, #2946): live `viewer/sw.js`
+   141,833 bytes = the repo's file byte for byte (not minified), `erp/version.json` **404**. The same PRs merged with auto-merge enabled by a
+   user account (#2948, #2951) ran the workflow, and the site was right again 1–2 minutes later. **So today, whether a merge is deployed
+   properly depends on who enabled auto-merge.** Sessions in this lane now enable it themselves (`gh pr merge --auto --squash` right after
+   `gh pr create`). The durable fix is the owner's: **OPEN DECISION F-12** — (a) turn the plain branch build off (Pages source = GitHub Actions
+   only), so a bot merge leaves the last good deploy in place instead of publishing a raw tree; (b) make CI merge with a token that does start
+   workflows; (c) leave it and rely on sessions. Proposal: (a), then *Fetch back* in CI as the check that it holds.
+2. **`erp/version.json` was invalid JSON (FIXED, bim-ootb #2950 / PR #2951).** The stamp step copied every `(#N)` of the merged commit's
+   subject into `pr`; a subject naming an issue and a PR gave `"pr":2947⏎2948`. Live after the deploy of `9e8d3454`. Fix: take the last
+   `(#N)`. `§DEPLOY_VERSION_JSON two_numbers=Y one_number=Y no_number=Y red_invalid_without_fix=Y verdict=PASS` (the witness runs the
+   workflow's own shell lines; red control = the lines without the fix). Live after the fix (`143edeef`):
+   `{"version":"v1.88.0","build":"v1073","sha":"143edeef","pr":2951,"date":"2026-11-13"}` and
+   `§SHIP_FETCH site=https://red1oon.github.io/bim-ootb vs=origin/main verdict=PASS`.
+   Not checked: which page reads `erp/version.json` and what it showed while the file was broken or missing.
 
 **DECISIONS:**
 - 2026-11-13, owner, on "first versions of the three, or complete as specified?" (recommendation: first versions): *"OK first version, then
@@ -820,7 +861,7 @@ first, as §F.4, the next session's bounded task**; A0 runs in parallel if a sec
 | E | `witness_kit/paths.js` (no behaviour change; witness: the same suite verdicts before and after) | E-1 the `PROVES:` header format | |
 | F | §F.4 ✅ · §F.5 ✅ · §F.7 log stamp ✅ · §F.8 ✅. Nothing else in F starts without a decision | F-6 bump on save: automatic or a prompt | it is F's next slice by the written order |
 
-Ask the owner **one decision per message, with the recommendation** (START HERE 2). 19 decisions are open (STATUS: F-8, F-9, F-10, F-11 answered). Next session: A0.
+Ask the owner **one decision per message, with the recommendation** (START HERE 2). 20 decisions are open (STATUS: F-8, F-9, F-10, F-11 answered; F-12 added). Next session: per the owner, the complete versions of the three F.12 items (needs F-1, F-2, F-6, F-7) and the film recut (§F.11); ask F-12 first, it is a live-site fault.
 After it, start A0 and B0, and ask A-1 while they run.
 
 ## §M — re-measure before quoting
@@ -857,7 +898,7 @@ After it, start A0 and B0, and ask A-1 while they run.
 | C | named APP parts | open: 2 decisions |
 | D | owner table | open: 2 decisions |
 | E | proof map | open: 2 decisions · `paths.js` ready to start |
-| F | VS Code extension (X0 Navigator + Run & Ship + perf-impact monitor + DEV_TOOLKIT pack); AI optional | **§F.4 X0 slice 1 ✅ DONE (witness)** (bim-ootb PR #2922) · **§F.5 fresh index ✅** (PR #2925) · §F.0 Z1–Z3 ✅ (PR #2919) · **§F.7 log stamp ✅** (PR #2928) · §F.8 nested-checkout fix ✅ (PR #2931) · **§F.9 real-VS-Code witness ✅** (PR #2933) · §F.10 install fix ✅ (PR #2939) · IDE film "Editing Real Code": cut v4 reviewed, **ON HOLD** until the three unbuilt items exist (§F.11 change list) · F-9 CLOSED "not next" (§F.6) · open: 5 decisions (F-1, F-2, F-3, F-6, F-7) |
+| F | VS Code extension (X0 Navigator + Run & Ship + perf-impact monitor + DEV_TOOLKIT pack); AI optional | **§F.4 X0 slice 1 ✅ DONE (witness)** (bim-ootb PR #2922) · **§F.5 fresh index ✅** (PR #2925) · §F.0 Z1–Z3 ✅ (PR #2919) · **§F.7 log stamp ✅** (PR #2928) · §F.8 nested-checkout fix ✅ (PR #2931) · **§F.9 real-VS-Code witness ✅** (PR #2933) · §F.10 install fix ✅ (PR #2939) · **§F.12 first versions of Run and ship, cost monitor, values beside the code ✅** (PRs #2944, #2946, #2948) · §F.13 deploy findings (one fixed #2951, **F-12 open**) · IDE film "Editing Real Code": cut v4 reviewed, **ON HOLD** until the three unbuilt items exist (§F.11 change list) · F-9 CLOSED "not next" (§F.6) · open: 6 decisions (F-1, F-2, F-3, F-6, F-7, F-12) |
 
 ## §VET — 2026-11-13 vetting pass (issue #602), against bim-ootb `main` @ `a7c329e5`
 
