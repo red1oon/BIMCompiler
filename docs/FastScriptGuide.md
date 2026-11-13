@@ -459,13 +459,13 @@ A Sales or Purchase document needs `issotrx=Y` or `N`. A partner or product may 
 <!-- run: new_order -->
 ```text
 $ rm -f /tmp/fast_guide_new.ops; BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js 'erp.new kind=Order issotrx=Y c_doctypetarget_id=132 c_bpartner_id=112 salesrep_id=101'
-{"request":"d-mwb4lnmc-2305608-1","verb":"erp.new","actor":"human","status":"ok","answer":{"number":"50000","kind":"Order","table":"c_order","id":1500004,"docStatus":"DR","given":["IsSOTrx","C_DocTypeTarget_ID","C_BPartner_ID","SalesRep_ID"],"defaulted":52,"record":{"c_order_id":1500004,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":null,"createdby":null,"updated":null,"updatedby":null,"issotrx":"Y","documentno":"50000","docstatus":"DR","docaction":"CO","processing":"N","processed":"N","c_doctype_id":0,"c_doctypetarget_id":132,"description":null,"isapproved":"N","iscreditapproved":"N","isdelivered":"N","isinvoiced":"N","isprinted":"N","istransferred":"N","isselected":"N","salesrep_id":101,"dateordered":"2026-11-10 00:00:00","datepromised":"2026-11-10 00:00:00","dateprinted":null,"dateacct":"2026-11-10 00:00:00","c_bpartner_id":112,"c_bpartner_location_id":108,"poreference":null,"isdiscountprinted":"Y","c_currency_id":100,"paymentrule":"P","c_paymentterm_id":105,"invoicerule":"D","deliveryrule":"A","freightcostrule":"I","freightamt":0,"deliveryviarule":"P","m_shipper_id":null,"c_charge_id":null,"chargeamt":0,"priorityrule":"5","totallines":0,"grandtotal":0,"m_warehouse_id":103,"m_pricelist_id":101,"istaxincluded":"N","c_campaign_id":null,"c_project_id":null,"c_activity_id":null,"posted":"N","c_payment_id":null,"c_cashline_id":null,"sendemail":"N","ad_user_id":null,"copyfrom":"N","isselfservice":"N","ad_orgtrx_id":null,"user1_id":null,"user2_id":null,"c_conversiontype_id":114,"bill_bpartner_id":112,"bill_location_id":108,"bill_user_id":null,"pay_bpartner_id":null,"pay_location_id":null,"ref_order_id":null,"isdropship":"N","volume":0,"weight":0,"ordertype":null,"c_pos_id":null,"amounttendered":0,"amountrefunded":0,"link_order_id":null,"m_freightcategory_id":null,"dropship_bpartner_id":null,"dropship_location_id":null,"dropship_user_id":null,"promotioncode":null,"c_ordersource_id":null,"processedon":0,"ispayschedulevalid":"N","c_cashplanline_id":null,"c_order_uu":null,"shippingrateinquiry":"N","ispriviledgedrate":"N","c_opportunity_id":null,"quotationorder_id":null,"c_department_id":null,"c_costcenter_id":null},"ops":[{"op_type":"CRUD_UPDATE","table":"ad_sequence"},{"op_type":"CRUD_CREATE","table":"c_order"}]},"why":null,"notChecked":[],"ops":[{"op_type":"CRUD_UPDATE","table":"ad_sequence"},{"op_type":"CRUD_CREATE","table":"c_order"}],"next":[],"ms":2486}
+{"request":"d-mwepvphd-75275-1","verb":"erp.new","actor":"human","status":"ok","answer":{"number":"50000","kind":"Order","table":"c_order","id":1500004,"docStatus":"DR","given":["IsSOTrx","C_DocTypeTarget_ID","C_BPartner_ID","SalesRep_ID"],"defaulted":52,"filled":["ad_client_id","ad_org_id","documentno","isselfservice","dateordered","datepromised","bill_bpartner_id","c_bpartner_location_id","bill_location_id","deliveryrule","priorityrule","m_warehouse_id","isdropship","deliveryviarule","freightcostrule","freightamt","ispriviledgedrate","shippingrateinquiry","invoicerule","m_pricelist_id","c_currency_id","c_conversiontype_id","isdiscountprinted","chargeamt","paymentrule","c_paymentterm_id","totallines","grandtotal","docstatus","c_doctype_id","ispayschedulevalid","copyfrom","docaction","posted","isdelivered","dateacct","amountrefunded","isapproved","processed","processing","istaxincluded","isinvoiced","isselected","isprinted","sendemail","istransferred","iscreditapproved","isactive","processedon","amounttendered","volume","weight"],"record":{"c_order_id":1500004,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":null,"createdby":null,"updated":null,"updatedby":null,"issotrx":"Y","documentno":"50000","docstatus":"DR","docaction":"CO","processing":"N","processed":"N","c_doctype_id":0,"c_doctypetarget_id":132,"description":null,"isapproved":"N","iscreditapproved":"N","isdelivered":"N","isinvoiced":"N","isprinted":"N","istransferred":"N","isselected":"N","salesrep_id":101,"dateordered":"2026-11-13 00:00:00","datepromised":"2026-11-13 00:00:00","dateprinted":null,"dateacct":"2026-11-13 00:00:00","c_bpartner_id":112,"c_bpartner_location_id":108,"poreference":null,"isdiscountprinted":"Y","c_currency_id":100,"paymentrule":"P","c_paymentterm_id":105,"invoicerule":"D","deliveryrule":"A","freightcostrule":"I","freightamt":0,"deliveryviarule":"P","m_shipper_id":null,"c_charge_id":null,"chargeamt":0,"priorityrule":"5","totallines":0,"grandtotal":0,"m_warehouse_id":103,"m_pricelist_id":101,"istaxincluded":"N","c_campaign_id":null,"c_project_id":null,"c_activity_id":null,"posted":"N","c_payment_id":null,"c_cashline_id":null,"sendemail":"N","ad_user_id":null,"copyfrom":"N","isselfservice":"N","ad_orgtrx_id":null,"user1_id":null,"user2_id":null,"c_conversiontype_id":114,"bill_bpartner_id":112,"bill_location_id":108,"bill_user_id":null,"pay_bpartner_id":null,"pay_location_id":null,"ref_order_id":null,"isdropship":"N","volume":0,"weight":0,"ordertype":null,"c_pos_id":null,"amounttendered":0,"amountrefunded":0,"link_order_id":null,"m_freightcategory_id":null,"dropship_bpartner_id":null,"dropship_location_id":null,"dropship_user_id":null,"promotioncode":null,"c_ordersource_id":null,"processedon":0,"ispayschedulevalid":"N","c_cashplanline_id":null,"c_order_uu":null,"shippingrateinquiry":"N","ispriviledgedrate":"N","c_opportunity_id":null,"quotationorder_id":null,"c_department_id":null,"c_costcenter_id":null},"ops":[{"op_type":"CRUD_UPDATE","table":"ad_sequence"},{"op_type":"CRUD_CREATE","table":"c_order"}]},"why":null,"notChecked":[],"ops":[{"op_type":"CRUD_UPDATE","table":"ad_sequence"},{"op_type":"CRUD_CREATE","table":"c_order"}],"next":[],"ms":2808}
 ```
 
 <!-- run: new_line -->
 ```text
 $ BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js 'erp.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2'
-{"request":"d-mwb4lplv-2305637-1","verb":"erp.new","actor":"human","status":"ok","answer":{"number":null,"kind":"Sales Order Line","table":"c_orderline","id":120002710,"docStatus":null,"given":["M_Product_ID","QtyEntered","C_Order_ID"],"defaulted":31,"record":{"c_orderline_id":120002710,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":null,"createdby":null,"updated":null,"updatedby":null,"c_order_id":1500004,"line":10,"c_bpartner_id":112,"c_bpartner_location_id":108,"dateordered":"2026-11-10 00:00:00","datepromised":"2026-11-10 00:00:00","datedelivered":null,"dateinvoiced":null,"description":null,"m_product_id":137,"m_warehouse_id":103,"c_uom_id":100,"qtyordered":2,"qtyreserved":0,"qtydelivered":0,"qtyinvoiced":0,"m_shipper_id":null,"c_currency_id":100,"pricelist":3,"priceactual":3,"pricelimit":2.7,"linenetamt":6,"discount":0,"freightamt":0,"c_charge_id":null,"c_tax_id":104,"s_resourceassignment_id":null,"ref_orderline_id":null,"m_attributesetinstance_id":0,"isdescription":"N","processed":"N","qtyentered":2,"priceentered":3,"c_project_id":null,"pricecost":0,"qtylostsales":0,"c_projectphase_id":null,"c_projecttask_id":null,"rrstartdate":null,"rramt":0,"c_campaign_id":null,"c_activity_id":null,"user1_id":null,"user2_id":null,"ad_orgtrx_id":null,"link_orderline_id":null,"pp_cost_collector_id":null,"m_promotion_id":null,"c_orderline_uu":null,"createshipment":"N","createproduction":"N","c_department_id":null,"c_costcenter_id":null},"ops":[{"op_type":"CRUD_CREATE","table":"c_orderline"},{"op_type":"CRUD_UPDATE","table":"c_order"}]},"why":null,"notChecked":[],"ops":[{"op_type":"CRUD_CREATE","table":"c_orderline"},{"op_type":"CRUD_UPDATE","table":"c_order"}],"next":[],"ms":2797}
+{"request":"d-mwepvrsp-75321-1","verb":"erp.new","actor":"human","status":"ok","answer":{"number":null,"kind":"Sales Order Line","table":"c_orderline","id":120002710,"docStatus":null,"given":["M_Product_ID","QtyEntered","C_Order_ID"],"defaulted":31,"filled":["ad_client_id","ad_org_id","c_bpartner_id","c_bpartner_location_id","datepromised","dateordered","line","m_warehouse_id","m_attributesetinstance_id","c_uom_id","qtyordered","qtydelivered","qtyreserved","qtyinvoiced","priceentered","priceactual","pricelist","freightamt","c_tax_id","discount","linenetamt","qtylostsales","processed","createshipment","createproduction","rramt","pricecost","pricelimit","c_currency_id","isactive","isdescription"],"record":{"c_orderline_id":120002710,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":null,"createdby":null,"updated":null,"updatedby":null,"c_order_id":1500004,"line":10,"c_bpartner_id":112,"c_bpartner_location_id":108,"dateordered":"2026-11-13 00:00:00","datepromised":"2026-11-13 00:00:00","datedelivered":null,"dateinvoiced":null,"description":null,"m_product_id":137,"m_warehouse_id":103,"c_uom_id":100,"qtyordered":2,"qtyreserved":0,"qtydelivered":0,"qtyinvoiced":0,"m_shipper_id":null,"c_currency_id":100,"pricelist":3,"priceactual":3,"pricelimit":2.7,"linenetamt":6,"discount":0,"freightamt":0,"c_charge_id":null,"c_tax_id":104,"s_resourceassignment_id":null,"ref_orderline_id":null,"m_attributesetinstance_id":0,"isdescription":"N","processed":"N","qtyentered":2,"priceentered":3,"c_project_id":null,"pricecost":0,"qtylostsales":0,"c_projectphase_id":null,"c_projecttask_id":null,"rrstartdate":null,"rramt":0,"c_campaign_id":null,"c_activity_id":null,"user1_id":null,"user2_id":null,"ad_orgtrx_id":null,"link_orderline_id":null,"pp_cost_collector_id":null,"m_promotion_id":null,"c_orderline_uu":null,"createshipment":"N","createproduction":"N","c_department_id":null,"c_costcenter_id":null},"ops":[{"op_type":"CRUD_CREATE","table":"c_orderline"},{"op_type":"CRUD_UPDATE","table":"c_order"}]},"why":null,"notChecked":[],"ops":[{"op_type":"CRUD_CREATE","table":"c_orderline"},{"op_type":"CRUD_UPDATE","table":"c_order"}],"next":[],"ms":2917}
 ```
 
 The order is a draft until someone completes it. Because the line was given the order's number, the order's totals follow without a second step: `totallines` and `grandtotal` in the record below are the line's amount (6). The list of the order's own lines is not filled in by `erp.read`.
@@ -475,7 +475,7 @@ The order is a draft until someone completes it. Because the line was given the 
 $ BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js --list 'erp.read kind=Order number=50000'
 kind: Order
 uu: 1500004
-record: {"c_order_id":1500004,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":null,"createdby":null,"updated":null,"updatedby":null,"issotrx":"Y","documentno":"50000","docstatus":"DR","docaction":"CO","processing":"N","processed":"N","c_doctype_id":0,"c_doctypetarget_id":132,"description":null,"isapproved":"N","iscreditapproved":"N","isdelivered":"N","isinvoiced":"N","isprinted":"N","istransferred":"N","isselected":"N","salesrep_id":101,"dateordered":"2026-11-10 00:00:00","datepromised":"2026-11-10 00:00:00","dateprinted":null,"dateacct":"2026-11-10 00:00:00","c_bpartner_id":112,"c_bpartner_location_id":108,"poreference":null,"isdiscountprinted":"Y","c_currency_id":100,"paymentrule":"P","c_paymentterm_id":105,"invoicerule":"D","deliveryrule":"A","freightcostrule":"I","freightamt":0,"deliveryviarule":"P","m_shipper_id":null,"c_charge_id":null,"chargeamt":0,"priorityrule":"5","totallines":6,"grandtotal":6,"m_warehouse_id":103,"m_pricelist_id":101,"istaxincluded":"N","c_campaign_id":null,"c_project_id":null,"c_activity_id":null,"posted":"N","c_payment_id":null,"c_cashline_id":null,"sendemail":"N","ad_user_id":null,"copyfrom":"N","isselfservice":"N","ad_orgtrx_id":null,"user1_id":null,"user2_id":null,"c_conversiontype_id":114,"bill_bpartner_id":112,"bill_location_id":108,"bill_user_id":null,"pay_bpartner_id":null,"pay_location_id":null,"ref_order_id":null,"isdropship":"N","volume":0,"weight":0,"ordertype":null,"c_pos_id":null,"amounttendered":0,"amountrefunded":0,"link_order_id":null,"m_freightcategory_id":null,"dropship_bpartner_id":null,"dropship_location_id":null,"dropship_user_id":null,"promotioncode":null,"c_ordersource_id":null,"processedon":0,"ispayschedulevalid":"N","c_cashplanline_id":null,"c_order_uu":null,"shippingrateinquiry":"N","ispriviledgedrate":"N","c_opportunity_id":null,"quotationorder_id":null,"c_department_id":null,"c_costcenter_id":null}
+record: {"c_order_id":1500004,"ad_client_id":11,"ad_org_id":11,"isactive":"Y","created":null,"createdby":null,"updated":null,"updatedby":null,"issotrx":"Y","documentno":"50000","docstatus":"DR","docaction":"CO","processing":"N","processed":"N","c_doctype_id":0,"c_doctypetarget_id":132,"description":null,"isapproved":"N","iscreditapproved":"N","isdelivered":"N","isinvoiced":"N","isprinted":"N","istransferred":"N","isselected":"N","salesrep_id":101,"dateordered":"2026-11-13 00:00:00","datepromised":"2026-11-13 00:00:00","dateprinted":null,"dateacct":"2026-11-13 00:00:00","c_bpartner_id":112,"c_bpartner_location_id":108,"poreference":null,"isdiscountprinted":"Y","c_currency_id":100,"paymentrule":"P","c_paymentterm_id":105,"invoicerule":"D","deliveryrule":"A","freightcostrule":"I","freightamt":0,"deliveryviarule":"P","m_shipper_id":null,"c_charge_id":null,"chargeamt":0,"priorityrule":"5","totallines":6,"grandtotal":6,"m_warehouse_id":103,"m_pricelist_id":101,"istaxincluded":"N","c_campaign_id":null,"c_project_id":null,"c_activity_id":null,"posted":"N","c_payment_id":null,"c_cashline_id":null,"sendemail":"N","ad_user_id":null,"copyfrom":"N","isselfservice":"N","ad_orgtrx_id":null,"user1_id":null,"user2_id":null,"c_conversiontype_id":114,"bill_bpartner_id":112,"bill_location_id":108,"bill_user_id":null,"pay_bpartner_id":null,"pay_location_id":null,"ref_order_id":null,"isdropship":"N","volume":0,"weight":0,"ordertype":null,"c_pos_id":null,"amounttendered":0,"amountrefunded":0,"link_order_id":null,"m_freightcategory_id":null,"dropship_bpartner_id":null,"dropship_location_id":null,"dropship_user_id":null,"promotioncode":null,"c_ordersource_id":null,"processedon":0,"ispayschedulevalid":"N","c_cashplanline_id":null,"c_order_uu":null,"shippingrateinquiry":"N","ispriviledgedrate":"N","c_opportunity_id":null,"quotationorder_id":null,"c_department_id":null,"c_costcenter_id":null}
 children: [{"kind":"Sales Order Line","rows":[]},{"kind":"Order Tax","rows":[]},{"kind":"Order Payment Schedule","rows":[]},{"kind":"Estimated Landed Cost","rows":[]}]
 ```
 
@@ -603,6 +603,29 @@ keys: [1600010]
 
 An AI's `mis.new`, `mis.update`, `mis.delete` or `mis.load` is held as a claim, like `erp.new`: nothing is written until a person confirms it. Updating existing records in bulk is not offered; use `mis.update` for each, so the window's checks run.
 
+### See and change records as a role
+
+Every `mis.*` verb takes `role=`, the id of a role of the ERP. **Without a role nothing is filtered:** you see every record of every client. With a role you get what that role gets in the window it is granted: the records of its own client and organisations, and only the records and columns its access rows allow. The totals count only those records. The role is stated on the line. It is not a sign-in.
+
+<!-- run: mis_role -->
+```text
+$ for r in '' ' role=103' ' role=12000'; do BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list "mis.sum kind=C_Order column=GrandTotal$r" | grep -E '^(n|sum):' | tr '\n' ' '; echo; done
+n: 43 sum: 74936.76 
+n: 8 sum: 9914.07 
+n: 27 sum: 55108.62
+```
+
+A record outside the role's records answers exactly as a record that does not exist. A column the role may only read cannot be changed. A kind the role has no window for is refused; role 103 has no window that shows Tax:
+
+<!-- run: mis_role_refuse cut=200 -->
+```text
+$ BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list 'mis.list kind=C_Tax role=103'
+refused: true
+reason: role 103 (GardenWorld User) is not granted a window that shows Tax (AD_Window_Access)
+```
+
+Five rules are not judged yet, and a role that uses one of them is refused instead of half-checked: a personal lock on a record, a table validation rule, a role whose organisations come from the user, a role with a summary organisation in an organisation tree, and "dependent entities" record access. `mis.load` takes no role.
+
 ## Work at the terminal: `mis.js`
 
 If you would rather pick than type, `mis.js` shows a list with a pointer. It is a front end only: every key compiles into **one** of the door lines above, runs through the same door (journalled, claim-checked), and the screen prints the line before it runs. Up and Down move the pointer. Left and Right move along the buttons on the pointed row (`[U Edit] [D Delete] [C Copy]` for a record; for a document, the actions the engine allows now, such as `[C Complete] [V Void]`, and no Delete once it is completed). Enter runs the highlighted button. `+` starts a new record, Delete asks `y/N`, and Esc backs out and writes nothing.
@@ -614,34 +637,36 @@ At a terminal it draws with arrow keys. With `--plain` it reads key names from a
 $ printf 'Down Right Esc\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/mis.js kind=C_BPartner name=Standard limit=3 --plain 2>/dev/null
 -> mis.describe kind=C_BPartner
 -> mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Name2 names=Y limit=3 offset=0 name=Standard
-C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]
+C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]   no role: nothing is filtered
    C_BPartner_ID  Value     Name      Name2
  > 112            Standard  Standard        >[U Edit]< [D Delete] [C Copy]
    1300112        Standard  Standard       
 the line it will run: mis.read kind=C_BPartner id=112
  Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
 key Down
-C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]
+C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]   no role: nothing is filtered
    C_BPartner_ID  Value     Name      Name2
    112            Standard  Standard       
  > 1300112        Standard  Standard        >[U Edit]< [D Delete] [C Copy]
 the line it will run: mis.read kind=C_BPartner id=1300112
  Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
 key Right
-C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]
+C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]   no role: nothing is filtered
    C_BPartner_ID  Value     Name      Name2
    112            Standard  Standard       
  > 1300112        Standard  Standard        [U Edit] >[D Delete]< [C Copy]
 the line it will run: mis.delete kind=C_BPartner id=1300112
  Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
 key Esc
-C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]
+C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]   no role: nothing is filtered
    C_BPartner_ID  Value     Name      Name2
    112            Standard  Standard       
  > 1300112        Standard  Standard        [U Edit] >[D Delete]< [C Copy]
 the line it will run: mis.delete kind=C_BPartner id=1300112
  Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
 ```
+
+Add `role=103` to the command and every line the screen sends carries that role; the head line names it. With no role the head line says that nothing is filtered.
 
 A form asks only for what the engine cannot fill (the dry run above). Typing fills the field, Tab or Enter moves on, and Enter on the last field shows the one line it will run. A line that starts with `=` is typed text. Here the whole session, reduced to the door lines it ran:
 
@@ -845,25 +870,25 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `erp.void` | Void a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
 | `erp.close` | Close a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
 | `erp.reverse` | Reverse - Correct a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | posts | human, ai | a bim-ootb checkout |
-| `mis.describe` | Describe a kind of ERP record | `kind` | read | human, ai | a bim-ootb checkout |
-| `mis.read` | Read an ERP record | `kind`, `id` (optional), `number` (optional) | read | human, ai | a bim-ootb checkout |
-| `mis.list` | List records | `kind`, `columns` (optional), `sort` (optional), `limit` (optional), `offset` (optional), `names` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
-| `mis.sum` | Add up a column | `kind`, `column`, further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
-| `mis.group` | Count by a column | `kind`, `by`, further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
-| `mis.new` | Create a record | `kind`, `dry` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
-| `mis.update` | Change a record | `kind`, `id` (optional), `number` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
-| `mis.delete` | Delete a record | `kind`, `id` (optional), `number` (optional) | writes | human, ai | a bim-ootb checkout |
+| `mis.describe` | Describe a kind of ERP record | `kind`, `role` (optional) | read | human, ai | a bim-ootb checkout |
+| `mis.read` | Read an ERP record | `kind`, `id` (optional), `number` (optional), `role` (optional) | read | human, ai | a bim-ootb checkout |
+| `mis.list` | List records | `kind`, `columns` (optional), `sort` (optional), `limit` (optional), `offset` (optional), `names` (optional), `role` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `mis.sum` | Add up a column | `kind`, `column`, `role` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `mis.group` | Count by a column | `kind`, `by`, `role` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `mis.new` | Create a record | `kind`, `dry` (optional), `role` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
+| `mis.update` | Change a record | `kind`, `id` (optional), `number` (optional), `role` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
+| `mis.delete` | Delete a record | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
 | `mis.load` | Load records from a CSV | `kind`, `file`, `dry` (optional) | writes | human, ai | a bim-ootb checkout |
 | `erp.column` | Who fills a column: twin and legacy side by side (old name of mis.column) | `kind`, `column` | read | human, ai | a bim-ootb checkout |
 | `erp.compare` | Compare one record on the twin and on legacy (old name of legacy.compare) | `kind`, `number`, `legacy` (optional) | read | human, ai | a bim-ootb checkout |
 | `erp.pack` | Make the 2Pack zip from a data-model workbook (old name of mis.pack) | `book`, `version`, `out` (optional), `java` (optional), `package` (optional) | writes | human, ai | a bim-ootb checkout |
 | `erp.legacy_plugin` | Put a data-model plugin on the legacy test instance and check it there (old name of legacy.plugin) | `book`, `version` | writes | human, ai | a bim-ootb checkout |
-| `erp.describe` | Describe a kind of ERP record (old name of mis.describe) | `kind` | read | human, ai | a bim-ootb checkout |
-| `erp.read` | Read an ERP record (old name of mis.read) | `kind`, `id` (optional), `number` (optional) | read | human, ai | a bim-ootb checkout |
-| `erp.list` | List records (old name of mis.list) | `kind`, `columns` (optional), `sort` (optional), `limit` (optional), `offset` (optional), `names` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
-| `erp.sum` | Add up a column (old name of mis.sum) | `kind`, `column`, further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
-| `erp.group` | Count by a column (old name of mis.group) | `kind`, `by`, further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
-| `erp.new` | Create a record (old name of mis.new) | `kind`, `dry` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
+| `erp.describe` | Describe a kind of ERP record (old name of mis.describe) | `kind`, `role` (optional) | read | human, ai | a bim-ootb checkout |
+| `erp.read` | Read an ERP record (old name of mis.read) | `kind`, `id` (optional), `number` (optional), `role` (optional) | read | human, ai | a bim-ootb checkout |
+| `erp.list` | List records (old name of mis.list) | `kind`, `columns` (optional), `sort` (optional), `limit` (optional), `offset` (optional), `names` (optional), `role` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `erp.sum` | Add up a column (old name of mis.sum) | `kind`, `column`, `role` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `erp.group` | Count by a column (old name of mis.group) | `kind`, `by`, `role` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `erp.new` | Create a record (old name of mis.new) | `kind`, `dry` (optional), `role` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
 <!-- /GEN:verbs -->
 
 **Coverage today.** The list is small on purpose: 46 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 6 ERP verbs for a document's life and 11 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.
