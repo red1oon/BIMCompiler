@@ -650,7 +650,7 @@ table: AST_Asset
 window: {"id":7100001,"name":"AST Asset"}
 columns: ["Name","PurchaseDate","Cost","Condition","IsInsured"]
 lists: [{"column":"Condition","values":["GOOD","FAIR","POOR"]}]
-ops: 46
+ops: 47
 ```
 
 The new kind works with every `mis.*` verb at once, and with `mis.js`. A mandatory column is asked for, a default is filled, and a value outside the sheet's list is refused:
@@ -667,7 +667,100 @@ Tractor  1200.5  GOOD
 shown 1 of 1
 ```
 
-The types are String, Quantity, Amount, YesNo, Date, DateTime, Text and List. A column whose name ends in `_ID` is a lookup to that table, and one that starts with `Is` is a yes/no. A detail table under a master is not built yet.
+The types are String, Quantity, Amount, YesNo, Date, DateTime, Text and List. A column whose name ends in `_ID` is a lookup to that table, and one that starts with `Is` is a yes/no. A detail table under a master comes with a workbook: the next section.
+
+## A whole workbook in one line: `ninja.exec`
+
+One table from a `.csv` is the small case. A **Ninja workbook** holds many tables at once, says which table sits under which, and can carry their first rows. One line makes all of it.
+
+The workbook is an ordinary spreadsheet file (`.xlsx` or `.xls`):
+
+| Sheet | What it holds |
+|---|---|
+| `1_RO_ModelHeader` | the name of the whole set, in the first cell under `Name` |
+| `2_RO_ModelMaker` | one row per table: `Master` (the table it sits under, or empty), `Name` (the table), `ColumnSet` (its columns, separated by commas) |
+| a sheet named exactly after a table | rows to load: row 1 holds the column names |
+
+In `ColumnSet` a plain name is text. A prefix gives another type: `D#` a date, `A#` an amount, `Q#` a quantity, `T#` a long text, `Y#` a yes/no, and `L#Name=a/b/c` a list of fixed values. A table whose `Master` is another table of the workbook becomes a tab of that table's window.
+
+A practice workbook ships with the door: `common/door/samples/Ninja_Practice.xlsx` (a patient, the patient's visits, the medicines of a visit, and a room). `dry=Y` reads it, says what it would make and writes nothing:
+
+<!-- run: nx_dry cut=230 -->
+```text
+$ cp common/door/samples/Ninja_Practice.xlsx . ; rm -f /tmp/fast_guide_ninja.ops; BIM_OBJECT_OPLOG=/tmp/fast_guide_ninja.ops node common/door/door.js --list 'ninja.exec file=Ninja_Practice.xlsx dry=Y' | grep -E '^(bundle|tables|dataSheets|skipped|dry):'
+bundle: Practice
+tables: [{"table":"PR_Patient","master":null,"columns":4,"lists":["BloodGroup"]},{"table":"PR_Visit","master":"PR_Patient","columns":5,"lists":[]},{"table":"PR_Medicine","master":"PR_Visit","columns":3,"lists":[]},{"table":"PR_Roo…
+dataSheets: [{"sheet":"PR_Patient","rows":3},{"sheet":"PR_Room","rows":2}]
+skipped: []
+dry: true
+```
+
+Without `dry=Y` the same line makes it: the windows, the tabs, the list, the menu entries, the role access, and then the rows of the data sheets. Run it a second time and it writes nothing:
+
+<!-- run: nx_run cut=230 -->
+```text
+$ cp common/door/samples/Ninja_Practice.xlsx . ; D='BIM_OBJECT_OPLOG=/tmp/fast_guide_ninja.ops node common/door/door.js --list'; eval "$D 'ninja.exec file=Ninja_Practice.xlsx'" | grep -E '^(windows|detailTabs|dataSheets|ops):'; eval "$D 'ninja.exec file=Ninja_Practice.xlsx'" | grep -E '^(alreadyStaged|ops|summary):'
+dataSheets: [{"sheet":"PR_Patient","rows":3,"loaded":3,"ops":3},{"sheet":"PR_Room","rows":2,"loaded":2,"ops":2}]
+windows: [{"id":7100001,"name":"PR Patient"},{"id":7100004,"name":"PR Room"}]
+detailTabs: 2
+ops: 129
+alreadyStaged: true
+ops: 0
+summary: this workbook is already staged (4 tables); nothing was written
+```
+
+Every table works with the `mis.*` verbs at once. A record under a master names the master's id (`mis.read` of the master then shows what sits under it), and a value outside a list is refused:
+
+<!-- run: nx_use cut=200 -->
+```text
+$ D='BIM_OBJECT_OPLOG=/tmp/fast_guide_ninja.ops node common/door/door.js --list'; eval "$D 'mis.list kind=PR_Patient'"; eval "$D 'mis.new kind=PR_Visit Name=Checkup PR_Patient_ID=1 Fee=50'" | grep -E '^(number|id):'; eval "$D 'mis.new kind=PR_Medicine Name=Paracetamol PR_Visit_ID=1 Qty=10'" | grep -E '^(number|id):'; eval "$D 'mis.list kind=PR_Visit columns=Name,Fee,PR_Patient_ID'"; eval "$D 'mis.update kind=PR_Patient id=1 BloodGroup=Z'" | grep reason; rm -f Ninja_Practice.xlsx
+PR_Patient_ID  Name
+1              Aminah
+2              Boon
+3              Chandra
+shown 3 of 3
+number: Checkup
+id: 1
+number: Paracetamol
+id: 1
+Name     Fee  PR_Patient_ID
+Checkup  50   1
+shown 1 of 1
+reason: BloodGroup Invalid value - Z - Reference_ID=200277 - A - AB - B - O; nothing was written
+```
+
+What it refuses, with nothing written: a table name that already exists (rename it in the sheet), a second workbook that names tables another workbook made, and a `ColumnSet` with a prefix it does not know. A sheet whose name is not exactly a table's name is skipped and named in the answer. The answer's `notChecked` lists what was not judged.
+
+## Cheatsheet: practise the MIS lines
+
+Everything here is practice on **your own copy**: the first line names a file that keeps what you do, and nothing reaches a real company's books. Delete that file to start again from nothing. Run the lines from the folder that holds `common/` (a `bim-ootb` checkout).
+
+| Step | Type this | What you get |
+|---|---|---|
+| Set up | `export BIM_OBJECT_OPLOG=~/practice.ops` | every line below now keeps its work in that file |
+| Start over | `rm -f ~/practice.ops` | an empty practice again |
+| Shorten the typing | `alias d='node common/door/door.js --list'` | then a line is `d '<verb> <inputs>'` |
+| Ask what exists | `d '!help all'` | every verb with its inputs |
+| Make four tables | `cp common/door/samples/Ninja_Practice.xlsx . ; d 'ninja.exec file=Ninja_Practice.xlsx'` | patients, visits, medicines, rooms, with 3 patients and 2 rooms loaded |
+| Try before making | `d 'ninja.exec file=Ninja_Practice.xlsx dry=Y'` | what it would make; nothing written |
+| Make one table | `d 'mis.add_window file=AST_Asset.csv'` | one window from a `.csv` of its columns (section above) |
+| List | `d 'mis.list kind=PR_Patient'` | the rows |
+| List some columns | `d 'mis.list kind=PR_Visit columns=Name,Fee'` | only those columns |
+| What can it hold | `d 'mis.describe kind=PR_Patient'` | its columns, types and lists |
+| Add | `d 'mis.new kind=PR_Patient Name=Devi BloodGroup=O'` | a new record and its id |
+| Add under a master | `d 'mis.new kind=PR_Visit Name=Checkup PR_Patient_ID=1 Fee=50'` | a visit of patient 1 |
+| Add one level further | `d 'mis.new kind=PR_Medicine Name=Paracetamol PR_Visit_ID=1 Qty=10'` | a medicine of visit 1 |
+| Read one with what is under it | `d 'mis.read kind=PR_Patient id=1'` | the patient and the visits |
+| Change | `d 'mis.update kind=PR_Patient id=1 BloodGroup=AB'` | the changed record |
+| See a refusal | `d 'mis.update kind=PR_Patient id=1 BloodGroup=Z'` | refused: `Z` is not in the list |
+| Delete | `d 'mis.delete kind=PR_Room id=2'` | the record is gone |
+| Add up | `d 'mis.sum kind=PR_Visit column=Fee'` | the total |
+| Count by a column | `d 'mis.group kind=PR_Patient by=BloodGroup'` | a count per value |
+| Load many rows | `d 'mis.load kind=PR_Room file=rooms.csv'` | a preview; add `dry=N` to load |
+| Work on a screen | `node common/door/mis.js kind=PR_Patient` | a list you move in with the keys; `+` adds, Enter edits |
+| As another role | add `role=102` to a line | what that role may see and do |
+
+A workbook of your own: copy the practice file, change the rows of `2_RO_ModelMaker` to your tables (a prefix of your own, such as `MY_`, keeps them apart from the tables that are already there), and run `ninja.exec` on it with `dry=Y` first. The lines of this table are the verbs shown run in the sections above; the table itself is not re-run by this page's test, the grey blocks are.
 
 ## Work at the terminal: `mis.js`
 
@@ -923,6 +1016,7 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `mis.delete` | Delete a record | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
 | `mis.load` | Load records from a CSV | `kind`, `file`, `dry` (optional) | writes | human, ai | a bim-ootb checkout |
 | `mis.add_window` | Add a window from a CSV | `file`, `table` (optional), `workflow` (optional), `dry` (optional), `master` (optional) | writes | human, ai | a bim-ootb checkout |
+| `ninja.exec` | Run a Ninja workbook | `file`, `dry` (optional), `data` (optional) | writes | human, ai | a bim-ootb checkout |
 | `erp.column` | Who fills a column: twin and legacy side by side (old name of mis.column) | `kind`, `column` | read | human, ai | a bim-ootb checkout |
 | `erp.compare` | Compare one record on the twin and on legacy (old name of legacy.compare) | `kind`, `number`, `legacy` (optional) | read | human, ai | a bim-ootb checkout |
 | `erp.pack` | Make the 2Pack zip from a data-model workbook (old name of mis.pack) | `book`, `version`, `out` (optional), `java` (optional), `package` (optional) | writes | human, ai | a bim-ootb checkout |
@@ -935,7 +1029,7 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `erp.new` | Create a record (old name of mis.new) | `kind`, `dry` (optional), `role` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
 <!-- /GEN:verbs -->
 
-**Coverage today.** The list is small on purpose: 47 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 6 ERP verbs for a document's life and 12 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.
+**Coverage today.** The list is small on purpose: 48 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 6 ERP verbs for a document's life and 12 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.
 
 ## What is not checked
 
