@@ -1008,7 +1008,7 @@ the editor answer from the same code. It never calls a model and opens no networ
 - 2026-11-13, owner (#604): *"GO with your insight"*, in reply to the proposal: "make F's source-reading features the Fable session's first task".
   → §F.4 X0 slice 1 runs first, before A0. F-4/F-5 were already answered by DEV_TOOLKIT §8/§10 (above), so no question was needed.
 
-### §F.15 Values beside the code — the next three small steps (F-13) · RECORDED 2026-11-14, NOT built, NOT specced
+### §F.15 Values beside the code — the next three small steps (F-13) · steps 1 and 2 ✅ BUILT 2026-11-14 (step 2: §F.16; step 1: RESULT below); step 3 open
 
 **Where it came from.** The owner brought an outside prompt (DeepSeek's, 2026-11-14) for a "canvas runtime hover": show, on a canvas/WebGL
 line, the value it last printed, only when a stamped log proves the printing file unchanged. Assessed against the code: **that rule is §F.12b,
@@ -1039,6 +1039,28 @@ tab, pixel readback, webview, second network path or new dependency (§RULES).
 **DECISIONS**
 - 2026-11-14, owner: *"ok"*, to the recommendation above (do not run the outside prompt; record the three steps as one F decision, step 1 first).
   → reading: recorded as F-13, order 1 → 2 → 3. No go to build yet; step 1's spec and its two open points come to the owner first.
+- 2026-11-14, owner, on step 1's open point (should the lens also read logs outside the repo, in `~/.cache/bim4d/`; recommendation: yes,
+  read-only, through a setting listing extra log folders with that cache as the default): *"Follow your yes advice."* → built, below.
+
+**STEP 1 — RESULT 2026-11-14 (bim-ootb #2976 / PR #2977).** The second open point (what a bake log records about dirty files) was read
+before building, and it changed the step:
+- **Measured:** `~/.cache/bim4d/` holds 166 `.log` files (2.0 MB, largest 0.4 MB). Only **3** carry `§CLI_BAKE_ENV … commit=` (§F.6 counted
+  51 of 66 on 2026-11-13: the cache has turned over), the line sits on line 5 behind a wrapper's lines, and it records **no dirty count**
+  (`cli_silent_bake.js:300-301`: `git rev-parse --short HEAD`, nothing else). So the lens's second proof cannot be met from any existing
+  bake log. "Accept the bake's own line as a stamp" would have lit up nothing, or shown unprovable values. **Not built.**
+- **Built instead:** (1) `lens_index.scanLogs` reads several folders with sub-folders (depth 5, 4 MB per file) and accepts a `§LOG_STAMP`
+  within the first 20 lines, with or without a leading timestamp; the three proofs are unchanged. (2) Setting `bimDevtools.extraLogDirs`
+  (default `["~/.cache/bim4d"]`), facts server `--extra-logs <dir,dir|none>`; read-only. (3) `cli_silent_bake.js` writes the standard
+  stamp (`scripts/log_stamp.js`) right after `§CLI_BAKE_ENV`, inside try/catch: one added statement, nothing else in the bake changed.
+- **Witness:** `§LENS shown=Y hidden_changed=Y hidden_dirty=Y unstamped_ignored=Y explain_shown=Y explain_hidden=Y explain_absent=Y
+  extra_dir=Y extra_changed=Y bake_env_not_a_stamp=Y caps=Y bake_stamps=Y verdict=PASS` (the red control: a bake log with only its own
+  commit line gives no value; `bake_stamps` reads the bake script with the parser: one `stampLine` call, inside a try block).
+  `§X0_ACTIVATE`, `§X0_CONTEXT`, `§X0_APPDEF`, `§X0_ISOLATION`, `§X0_MCP tools=7` all PASS; `§SHIP_CHECK verdict=PASS`.
+- **Merged; re-run on `main` @ `9468d73a`:** `§LENS … verdict=PASS`, `§X0_ACTIVATE`, `§X0_CONTEXT`, `§X0_APPDEF`, `§X0_MCP` PASS; Fetch back `live_sha=9468d73a … verdict=PASS`.
+- **Honest state:** `§LENS_REAL_EXTRA dirs=2 stamped=0 unstamped=172 … ms=14`. Nothing new lights up today. **Not run: a bake** (owner's
+  go). The first bake after the merge writes the stamp; its canvas values then become provable while the printing file stays unchanged.
+- **Not done, same idea:** `scripts/cache_4d_run.js` (the 4D `witness.log` files in the same cache) writes no `§LOG_STAMP` either; its
+  folder name is a code key over 11 files (§F.6), a different proof. Left for a decision, not assumed.
 
 ### §F.16 Context for this file (F-3 (a)) + the false-PHANTOM fix + the hover reason — ✅ BUILT 2026-11-14 (bim-ootb #2964, #2966, #2968, #2970, all merged)
 
@@ -1076,8 +1098,8 @@ Owner, 2026-11-14: *"Implement the MCP or Claude Code role in the VSC since it i
   `spec`), the corrected PHANTOM step (picture kept, with a dated note; a true phantom named), `context_for_file`, and "Seeing what a session
   uses". **The docs SITE is not redeployed by this PR** (`scripts/safe_gh_deploy.sh` not run): the live guide still shows the old text. The
   PHANTOM picture `figs/x0/05_phantom.png` needs a new capture in a real VS Code (owner's go).
-- **NEXT, in order (updated at §F.17):** (1) §F.15 step 1 (bake stamp): its two open points go to the owner first. (2) §F.15 step 3 (the rule
-  as a standalone page). (3) the 11 untied fields and the film's phantom still (§F.17). Blocked on the owner: F-1, F-2, F-6, F-7, and the
+- **NEXT, in order (updated after §F.15 step 1):** (1) the first real bake after bim-ootb #2977: read its log for the `§LOG_STAMP` line and
+  check a lens lights up (owner's go for the bake). (2) §F.15 step 3 (the rule as a standalone page). (3) the 11 untied fields and the film's phantom still (§F.17). Blocked on the owner: F-1, F-2, F-6, F-7, and the
   token for F-12 step 2. Part A (A0) is still the first unstarted part of the design itself.
 
 ### §F.17 The real-VS-Code run, and what it uncovered: half the "phantoms" were live — ✅ DONE 2026-11-14 (owner: *"Go"*)
