@@ -113,3 +113,8 @@ cross-app: `tests/`). **Do not move existing files** in this item.
 | 6 | A → APP, one module | open |
 | 7 | witness path resolver | open |
 | 8 | witness folder rule | open |
+
+---
+**2026-11-13 — superseded in part by `prompts/CODE_ARCHITECTURE_DESIGN.md` (issue #599).** That file holds the higher-level design that removes the
+causes these items patch. Items 4 (phantoms) and 6 (`A` → `APP`) are absorbed by its part C, item 3 (one owner) by part D, and items 7–8 (witness paths and
+folders) by part E. **Items 1, 2 and 5 stay here.** Before starting 3, 4, 6, 7 or 8, check that file's STATUS: if its part is decided, work it there.
