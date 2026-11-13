@@ -28,7 +28,9 @@ Background and every measurement this file cites: `prompts/EDITOR_MAINTAINABILIT
    `origin/main` (bim-ootb shared checkout is hook-blocked). Run `git worktree list` first and reuse one if it fits.
 5. **FOSS flow per PR:** a tracker issue (what, baseline, witness), then branch, one small PR `Fixes #N`, conventional title, CI green, merged
    and verified on `main` before the next (`docs/DeveloperGuide.md` §10; own sessions may merge their own verified PRs).
-6. **Order:** A → B → D → E → F → C (reasons in §ORDER). Status table at the end.
+6. **Order:** A → B → D → E → F → C (reasons in §ORDER). Status table at the end. **Exception (owner, 2026-11-13, #604):** the NEXT session's
+   one bounded task is **§F.4 X0 slice 1** (source-reading features of the VS Code plugin). It needs no owner decision. If a second session is
+   free, it runs A0 in parallel.
 7. **Where to start (§READY):** each part's first step that needs NO owner decision. Run that while the first decision is with the owner.
 
 ## RULES (any break = stop that part)
@@ -250,6 +252,11 @@ in a witness that the map lists.
 (X1 §-Lens, X2 Live Doctor, X3 Maps, X4 Rules, X5 Workflow, X6 Witness & Ship) on 3 engines (E1 log parser, E2 live-tab bridge, E3 static parser), a
 symptom playbook (§3), first slice (§6), admin decisions (§10). It is about **runtime debugging** without AI. Its spikes S0/S2 come first.
 
+**Decisions already taken there, binding here (do not re-ask):** §8 layout: source in `bim-ootb/devtools/vscode/`, one folder per extension
+(`x1-slens/` … `x6-witness-ship/`, shared `engines/`), and `pack/` = an Extension Pack. §10: name *BIM DevTools*, pack id `bim-devtools`,
+distributed as a `.vsix` attached to GitHub Releases (Open VSX / Marketplace only after the first slice is witnessed). So X0 is one more folder,
+`x0-navigator/`, inside that pack.
+
 **What this design adds: a code-structure extension, "X0 Navigator"**, built on the data parts A–E produce. It holds **no knowledge of the codebase
 itself**: it only reads the generated files, so it cannot drift from the code.
 
@@ -334,27 +341,77 @@ an AI assistant plugin (any of the existing ones), X0 makes that assistant bette
 OPEN DECISION F-3: register assistant tools at all (off by default), or only the "Context for this file" command? Proposal: start with the
 command only. It works with every assistant and needs no API surface that may change.
 
-**Shape:** one extension pack, plain JavaScript using only the `vscode` API (no npm dependencies, no compile step), in `bim-ootb/devtools/` (the
-folder DEV_TOOLKIT chose). **Install without a marketplace or internet:** symlink/copy the folder into `~/.vscode/extensions/` (works air-gapped).
-Optional `.vsix` packaging only if the owner wants it (it needs the `vsce` tool, a dev-side dependency).
-**Order inside F:** X0's "now" rows first (APP field F12, `§TAG` hover, bump on save). They need nothing else and give the most daily help. Then
-DEV_TOOLKIT's first slice (§6). Then the rows that wait on B/D/E.
+**Shape:** per DEV_TOOLKIT §8/§10 (above): one Extension Pack of separate extensions, plain JavaScript using only the `vscode` API (no npm
+dependencies, no compile step), in `bim-ootb/devtools/vscode/`. **Install:** a developer working from the repo symlinks the folder into
+`~/.vscode/extensions/` (works air-gapped, no internet). Releases ship the `.vsix` on GitHub Releases, built with `npx @vscode/vsce package`.
+`vsce` runs through `npx` on the release machine only and is never a repo dependency.
+**Order inside F:** §F.4 X0 slice 1 first (APP field F12/hover, `§TAG` hover). It needs no decision and gives the most daily help. Then the
+bump prompt (after F-6). Then DEV_TOOLKIT's first slice (its §6, after its spikes S0/S2). Then the rows that wait on B/D/E.
 **OPEN DECISIONS (all of F, in reading order):** F-1 Fetch back headless or HTTP only (§F.2) · F-2 the perf budgets (§F.3) · F-3 assistant tools or
-the "Context for this file" command only (above) · F-4 one extension pack (X0 + X1–X6) or separate extensions? Proposal: one pack, features
-switchable · F-5 folder install only, or also `.vsix`? Proposal: folder only (no `vsce` dependency) · F-6 "bump on save" automatic or a prompt?
+the "Context for this file" command only (above) · ~~F-4 one pack or separate extensions~~ and ~~F-5 folder install or `.vsix`~~: **answered** by
+DEV_TOOLKIT §8/§10, 2026-10-06 (separate extensions in one Extension Pack; `.vsix` on GitHub Releases, folder symlink for repo developers).
+The 2026-11-13 draft listed them as open, and the first vetting pass even proposed "folder only", against §10. Corrected under #604 · F-6 "bump on save" automatic or a prompt?
 Proposal: a prompt (a quick-fix), never silent · F-7 a hosted per-PR preview, and where (§F.3)? Proposal: none for now; Run local on the PR branch.
 **Witnesses:** each feature has a node test that runs its provider against fixture files (no VS Code needed for the logic: a small fixture-side
 stub of the `vscode` API calls the provider uses, no npm), e.g. W-X0-APPDEF: for
 20 sampled `APP.x` reads, the provider returns the `APP_SURFACE.md` definition line (red control: a phantom field → "no definition", not a wrong one).
-**DECISIONS:** *(none yet)*
+
+### §F.4 X0 slice 1 — BUILD SPEC (the next session's task; owner, 2026-11-13: *"GO with your insight"*, #604)
+
+**Scope:** two read-only features, nothing else. A new extension folder `bim-ootb/devtools/vscode/x0-navigator/`. Open a bim-ootb tracker issue
+first, then one PR `Fixes #N`. Nothing outside `devtools/` changes. Nothing in it loads in a page: `devtools/` is not in any `PRECACHE_ASSETS`,
+not in `scripts/minify_pages.js` `INCLUDE_DIRS`, and no page tags it. Check all three in the PR (`§X0_ISOLATION precache=0 minify=0 tags=0`).
+
+**Layout:** `package.json` (`name: x0-navigator`, `publisher: bim-devtools`, `engines.vscode`, `main: extension.js`,
+`activationEvents: ["onLanguage:javascript"]`, **no `dependencies`**) · `extension.js` (thin glue: registers providers, reads settings) ·
+`lib/app_surface_index.js` and `lib/tag_index.js` (pure node modules, no `vscode` import, so witnesses run them directly) · `tests/`.
+
+**X0-1 `APP.x` go-to-definition + hover.**
+- **Input:** bim-ootb `internal/APP_SURFACE.md` (generated by `scripts/gen_app_surface.js`, task *"Regenerate editor indexes"*). Parse the
+  `## All fields` table (`field | written at | writes | reads`) and the `## Phantom fields` table (`field | first read site | prod?`).
+  Parse by table header, never by line number.
+- **Trigger:** the word under the cursor is the property of a member expression whose object is `APP`, `A` or `app` (the three spellings,
+  `gen_app_surface.js` R5/R6).
+- **Definition:** return the `written at` location. **Hover:** `written at <file:line> · <writes> writes · <reads> reads`. For a phantom:
+  `PHANTOM — read, never written (first read <file:line>)`, and no definition. For a field not in the index: nothing at all (never a guess).
+- **Stale guard:** before jumping, read the target line. If it does not contain `.<field>` the hover says `index stale — run "Regenerate
+  editor indexes"` and no jump is offered. A wrong jump is worse than none.
+- **Witness `W-X0-APPDEF`** (`tests/witness_x0_appdef.js`, built from `witness_kit/contract.js`, node only): parse the real `APP_SURFACE.md`;
+  take a fixed sample (every 50th row of `All fields`, sorted by name); for each, resolve and read the source line. Print
+  `§X0_APPDEF rows= sampled= resolved= line_matches= verdict=`. PASS needs `line_matches == sampled`. **Red controls:** a phantom field → no
+  location; a made-up field → none; a fixture index whose line is shifted by one → `stale`, never a jump. `rows=0` → INCONCLUSIVE.
+
+**X0-2 `§TAG` hover** (= DEV_TOOLKIT T4, its §5.3).
+- **Index:** every `§[A-Z][A-Z0-9_]+` in `prompts/*.md` and `docs/**/*.md` of bim-ootb, and of bim-compiler when the setting
+  `bimDevtools.compilerRoot` points to it (default: a sibling folder `../bim-compiler`; never a hard-coded home path). Each hit is kept as
+  `file:line` + the nearest heading above it.
+- **Hover** on a `§TAG` inside JS (strings and comments included: this is a lookup, not a code claim): up to 5 spec places, places where the tag
+  sits in a heading first, then `printed by:` up to 5 `.js` lines that contain it. A tag with no spec place says `no spec found` (DEV_TOOLKIT
+  §5.3), never silence.
+- **Witness `§DEVTK_SPEC`** (`tests/witness_x0_taghover.js`, name taken from DEV_TOOLKIT §5.3): `§HOSTED_BEFORE_HOST` resolves to a list that
+  contains bim-compiler `prompts/4D_MODEL_INTEGRITY.md` (one mention, line 1347 on 2026-11-13: assert by file, not by line); a made-up
+  `§ZZ_NOT_A_TAG` → `no spec found`. Print `§DEVTK_SPEC tags= files= known_hit=Y|N fake_none=Y|N verdict=`. bim-compiler root not found →
+  INCONCLUSIVE, not PASS.
+
+**Glue check `§X0_ACTIVATE`** (node, with a fixture-side stub of the `vscode` calls used): `activate()` registers exactly 1 definition provider
+and 2 hover providers for `javascript` → `§X0_ACTIVATE definition=1 hover=2`. This proves wiring without anyone opening VS Code
+(PRIMAL LAW 1: the owner's eyes are not the test).
+
+**Not in slice 1:** bump prompt (F-6), CodeLens, badges, owner warnings, Run & Ship, perf monitor, `.vsix` release.
+**Done when:** `§X0_APPDEF … verdict=PASS`, `§DEVTK_SPEC … verdict=PASS`, `§X0_ACTIVATE definition=1 hover=2`, `§X0_ISOLATION precache=0
+minify=0 tags=0`, each red control FAILs as specified, PR merged on bim-ootb `main` and verified there.
+
+**DECISIONS:**
+- 2026-11-13, owner (#604): *"GO with your insight"*, in reply to the proposal: "make F's source-reading features the Fable session's first task".
+  → §F.4 X0 slice 1 runs first, before A0. F-4/F-5 were already answered by DEV_TOOLKIT §8/§10 (above), so no question was needed.
 
 ---
 
 ## §ORDER — why A → B → D → E → F → C
 
 A is the only part tied to correctness (replay, posting dates), and A0 is cheap and settles a real question. B removes a whole class of stale-file
-mistakes and is the data source for D, E and half of F. D and E are small once B exists. F's first features need nothing (start them in parallel if a
-second session is free). C is long and best done slowly, module by module, after B/D make ownership visible.
+mistakes and is the data source for D, E and half of F. D and E are small once B exists. F's first features need nothing. **Owner, 2026-11-13: they go
+first, as §F.4, the next session's bounded task**; A0 runs in parallel if a second session is free. C is long and best done slowly, module by module, after B/D make ownership visible.
 
 ## §READY — what a fresh session can start with no owner decision (vetted 2026-11-13)
 
@@ -365,10 +422,10 @@ second session is free). C is long and best done slowly, module by module, after
 | C | nothing; waits on B and D | C-1 part names + owners | |
 | D | nothing new; the multi-publisher list already exists (`types/globals.gen.d.ts`) | D-1 where the questions list lives | needs B's `owner` field |
 | E | `witness_kit/paths.js` (no behaviour change; witness: the same suite verdicts before and after) | E-1 the `PROVES:` header format | |
-| F | nothing until F-4 and F-5 are answered (pack shape, install) | F-4 one pack or several | the "now" rows (APP-field F12, `§TAG` hover, bump prompt) need only F-4/F-5 |
+| F | **§F.4 X0 slice 1: the next session's task** (owner, 2026-11-13). F-4/F-5 already answered by DEV_TOOLKIT §8/§10 | F-6 bump prompt | it is the next X0 feature after slice 1 |
 
-Ask the owner **one decision per message, with the recommendation** (START HERE 2). 21 decisions are open (STATUS). A useful pace is: start A0 and
-B0, and ask A-1 while they run.
+Ask the owner **one decision per message, with the recommendation** (START HERE 2). 19 decisions are open (STATUS). Next session: build §F.4.
+After it, start A0 and B0, and ask A-1 while they run.
 
 ## §M — re-measure before quoting
 
@@ -403,7 +460,7 @@ B0, and ask A-1 while they run.
 | C | named APP parts | open: 2 decisions |
 | D | owner table | open: 2 decisions |
 | E | proof map | open: 2 decisions · `paths.js` ready to start |
-| F | VS Code extension (X0 Navigator + Run & Ship + perf-impact monitor + DEV_TOOLKIT pack); AI optional | open: 7 decisions (F-1…F-7) |
+| F | VS Code extension (X0 Navigator + Run & Ship + perf-impact monitor + DEV_TOOLKIT pack); AI optional | **§F.4 X0 slice 1 = next task, specced** · open: 5 decisions (F-1, F-2, F-3, F-6, F-7) |
 
 ## §VET — 2026-11-13 vetting pass (issue #602), against bim-ootb `main` @ `a7c329e5`
 
