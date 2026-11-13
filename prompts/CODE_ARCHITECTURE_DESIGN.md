@@ -454,6 +454,27 @@ keystroke; (4) **never guess**: "no definition" beats a wrong jump.
   INCONCLUSIVE, as specced. `tests/audit_sw_precache.js` unchanged (268 found, 0 missing). Not checked by a witness: that VS Code itself
   accepts `kind: "file"` and shows the entries (the regexes and the task command are what the witness runs).
 
+**Z4 build spec — two more snippets, `slog` and `spec`** (bim-ootb #2962; owner, 2026-11-14: *"yes if u find it practical"*, to: "add two
+snippets … `slog` for a `§` log line and `spec` for the `⚠ DO NOT REMOVE` header; leave the rest unbuilt").
+- **Where it came from:** an outside suggestion (DeepSeek's, 2026-11-14) to move repeated template typing from an AI session into the editor,
+  with a new X0 command + library + witness for log insertion. Assessed: the insertion is a fixed template, so a snippet does it with no
+  extension code. **Not built from that list, on purpose:** a witness skeleton pre-filled from a file's functions (guesses what to test),
+  bump on save (Check already catches a missing bump; a run on every save is noise), log convert/strip (no measured need yet). "Say why a
+  value is hidden" is §F.15 step 2.
+- **`slog`** (scope `javascript`): one line, `console.log('§TAG key=' + value);`, tab stops on TAG, key, value.
+- **`spec`** (scope `javascript`): comment lines only: `// # ⚠ DO NOT REMOVE — SPEC (W-NAME), <spec file §section>`, then `ISSUE`, `WHAT`,
+  `USE`, `LOG` (the `§` line it prints + "Read the log after every run"). No code line, so inserting it into a browser file changes nothing.
+- **Witness** `§EZC_LOG_SNIPPETS` in `scripts/tests/witness_editor_zero_code.js`, issue it proves or disproves: *"a hand-typed log line or
+  header drifts from the `§` and DO NOT REMOVE conventions"*. Expand `slog` with its defaults, run it in node with `value` defined → stdout is
+  exactly one line starting with `§`. Expand `spec` → every line is a `//` comment, line 1 carries the marker and `SPEC (W-`, the block names
+  the log rule. Red control: the `slog` body with the `§` removed must be judged NOT a § line. A missing snippet = FAIL.
+- **Done when:** `§EZC_LOG_SNIPPETS … verdict=PASS`, `§EZC checks=4`, merged on bim-ootb `main`. Not checked by a witness: that VS Code
+  offers the prefixes in its completion list.
+- **RESULT 2026-11-14 — bim-ootb #2962 / PR #2963.** Built as specced. `node scripts/tests/witness_editor_zero_code.js --layout-root ~/bim-ootb`
+  (log read): `§EZC_SLOG_RUN exit=0 out="§TAG key=7"` · `§EZC_SLOG_RED exit=0 out="TAG key=7"` · `§EZC_SPEC_HEADER lines=5 all_comment=true
+  marker=true log_rule=true` · `§EZC_LOG_SNIPPETS slog_prints=Y red_not_section=Y spec_lines=5 spec_header=Y verdict=PASS` · `§EZC checks=4
+  verdict=PASS`; Z1–Z3 still PASS; `§SW_AUDIT_SUMMARY 268 found, 0 missing` unchanged.
+
 ### §F.4 X0 slice 1 — BUILD SPEC · ✅ DONE 2026-11-13 (bim-ootb #2920 / PR #2922; owner, 2026-11-13: *"GO with your insight"*, #604)
 
 **Scope:** two read-only features, nothing else. A new extension folder `bim-ootb/devtools/vscode/x0-navigator/`. Open a bim-ootb tracker issue
