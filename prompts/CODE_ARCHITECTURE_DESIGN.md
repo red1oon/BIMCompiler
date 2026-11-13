@@ -30,7 +30,7 @@ Background and every measurement this file cites: `prompts/EDITOR_MAINTAINABILIT
    and verified on `main` before the next (`docs/DeveloperGuide.md` §10; own sessions may merge their own verified PRs).
 6. **Order:** A → B → D → E → F → C (reasons in §ORDER). Status table at the end. **Exception (owner, 2026-11-13, #604), now spent:** §F.4 X0 slice 1 ran
    first and is **✅ DONE** (bim-ootb #2920 / PR #2922, result in §F.4). The order is back to A → B → D → E → F → C, so the NEXT session starts
-   **A0** (§READY) and asks **A-1**. §F.5 (F-10, X0's own fresh index) is also ✅ DONE (PR #2925). **F-9** was pre-checked (§F.6): the measured answer is "not next"; the owner closes it. §F.0 Z1–Z3 are built (PR #2919).
+   **A0** (§READY) and asks **A-1**. §F.5 (F-10, X0's own fresh index) is also ✅ DONE (PR #2925). **F-9** is CLOSED "not next" (§F.6); the log stamp it needs first is built (§F.7). §F.0 Z1–Z3 are built (PR #2919).
 7. **Where to start (§READY):** each part's first step that needs NO owner decision. Run that while the first decision is with the owner.
 
 ## RULES (any break = stop that part)
@@ -576,7 +576,7 @@ logs are saved: the witness suite runner and the "Run this witness" task. With t
 unchanged since the stamped commit, and coverage grows by itself as witnesses are re-run. That stamp is a new decision (**F-11**, not yet asked).
 F's next slice then falls back to the order already written: the bump prompt (after F-6), then DEV_TOOLKIT's own first slice.
 
-### §F.7 Every saved log says which code made it — BUILD SPEC (F-11; owner, 2026-11-13: *"Go with your advice."*)
+### §F.7 Every saved log says which code made it — BUILD SPEC · ✅ DONE 2026-11-13 (bim-ootb #2927 / PR #2928) (F-11; owner, 2026-11-13: *"Go with your advice."*)
 
 **Issue:** a saved log cannot be tied to the code that produced it (§F.6: a commit stamp in 2 of 77 bim-ootb log files).
 **Scope (bim-ootb, dev-side only, nothing reaches a page):**
@@ -596,6 +596,27 @@ F's next slice then falls back to the order already written: the bump prompt (af
 - **Not in scope:** stamping the 4,000 older logs, other log writers (bake already stamps; bim-compiler's `build/erp/logs*` writers are other
   lanes'), and §-Lens itself.
 - **Done when:** `§LOG_STAMP_W … verdict=PASS`, `§EZC_MATCHER … verdict=PASS`, PR merged on `main` and re-run there.
+
+**RESULT 2026-11-13 — bim-ootb #2927 / PR #2928, squash `2c1e7c94`. ✅ DONE (witness).** Built as specced (5 files, +133 / −2). On merged `main`:
+`§LOG_STAMP_W clean=Y dirty_seen=Y untracked_ignored=Y nogit=Y task_first_line=Y suite_first_line=Y verdict=PASS` · `§EZC checks=3
+verdict=PASS` · CI green · precache audit 268 found, 0 missing. A real line: `§LOG_STAMP commit=047140a365bd dirty=3 branch=feat/log-stamp
+at=2026-11-13T09:05:22.648Z cmd=witness_log_stamp dirty_files=…`. One spec detail added: the task calls
+`${workspaceFolder}/scripts/log_stamp.js`, so `witness_editor_zero_code.js` Z2 now substitutes `${workspaceFolder}` too.
+**Still open for §-Lens (F-9 stays closed until these hold):** only logs saved from now on carry the stamp; re-run
+`scripts/code_arch/lens_precheck.js` after a few weeks of witness runs and decide from its numbers, not from this section.
+
+### §F.8 FINDING + FIX 2026-11-13 — a nested checkout was indexed as source (bim-ootb #2930 / PR #2931) ✅
+
+Found while re-measuring a number for the Developer Guide: on the shared bim-ootb checkout (one agent worktree under `.claude/worktrees/`)
+`scripts/gen_app_surface.js` scanned 4,874 files instead of ~3,225, and **1,082 index rows cited the copy** as the place a field is written.
+X0's fresh index (§F.5) is made by that generator, so F12 opened the stale copy, and the stale guard cannot catch it (the copy's line does
+mention the field). **Fix (generator rule R10):** the walk skips any sub-folder that holds a `.git` entry. Proof: clean tree's index
+byte-identical before/after (`files=3228 fields=1693`); shared checkout rows citing `.claude/` **1082 → 0**; on merged `main` (`a43eecc7`)
+`§X0_FRESH before=stale after=definition line_ok=Y committed_untouched=Y nested_rows=0 real_fields=1693 real_stale=0 runs=2 gen_ms=4405
+verdict=PASS` (red control: the same folder without its `.git` entry IS indexed); `§APP_SURFACE_W ALL PASS`.
+**Lesson for every F feature:** the slice-1 witnesses ran only in a clean `/tmp` worktree, so they were scope-blind to the checkout a
+developer actually opens. A dev-tool witness must also run against a checkout that looks like a working one (untracked files, nested worktrees).
+**Developer Guide updated the same day** (`docs/DeveloperGuide.md` §3 step 6, §4 rows, new §4.1 X0 Navigator, §6 log stamp, §8 trap).
 
 **DECISIONS:**
 - 2026-11-13, owner, on F-10 (how the APP index is kept fresh; recommendation given: (a) a failing CI check): *"Go with your advice."*
@@ -628,9 +649,9 @@ first, as §F.4, the next session's bounded task**; A0 runs in parallel if a sec
 | C | nothing; waits on B and D | C-1 part names + owners | |
 | D | nothing new; the multi-publisher list already exists (`types/globals.gen.d.ts`) | D-1 where the questions list lives | needs B's `owner` field |
 | E | `witness_kit/paths.js` (no behaviour change; witness: the same suite verdicts before and after) | E-1 the `PROVES:` header format | |
-| F | §F.4 X0 slice 1 ✅ (PR #2922) · §F.5 fresh index ✅ (PR #2925). Nothing else in F starts without a decision | F-9 §-Lens next, or DEV_TOOLKIT's first slice | it picks F's next slice |
+| F | §F.4 ✅ · §F.5 ✅ · §F.7 log stamp ✅ · §F.8 ✅. Nothing else in F starts without a decision | F-6 bump on save: automatic or a prompt | it is F's next slice by the written order |
 
-Ask the owner **one decision per message, with the recommendation** (START HERE 2). 20 decisions are open (STATUS: F-8 and F-10 answered). Next session: A0. F-9 has a measured answer waiting for the owner (§F.6).
+Ask the owner **one decision per message, with the recommendation** (START HERE 2). 19 decisions are open (STATUS: F-8, F-9, F-10, F-11 answered). Next session: A0.
 After it, start A0 and B0, and ask A-1 while they run.
 
 ## §M — re-measure before quoting
@@ -667,7 +688,7 @@ After it, start A0 and B0, and ask A-1 while they run.
 | C | named APP parts | open: 2 decisions |
 | D | owner table | open: 2 decisions |
 | E | proof map | open: 2 decisions · `paths.js` ready to start |
-| F | VS Code extension (X0 Navigator + Run & Ship + perf-impact monitor + DEV_TOOLKIT pack); AI optional | **§F.4 X0 slice 1 ✅ DONE (witness)** (bim-ootb PR #2922) · **§F.5 fresh index ✅** (PR #2925) · §F.0 Z1–Z3 ✅ (PR #2919) · open: 6 decisions (F-1, F-2, F-3, F-6, F-7, F-9; F-9 pre-check measured, §F.6: proposal now "not next"; F-11 log stamp not yet asked) |
+| F | VS Code extension (X0 Navigator + Run & Ship + perf-impact monitor + DEV_TOOLKIT pack); AI optional | **§F.4 X0 slice 1 ✅ DONE (witness)** (bim-ootb PR #2922) · **§F.5 fresh index ✅** (PR #2925) · §F.0 Z1–Z3 ✅ (PR #2919) · **§F.7 log stamp ✅** (PR #2928) · §F.8 nested-checkout fix ✅ (PR #2931) · F-9 CLOSED "not next" (§F.6) · open: 5 decisions (F-1, F-2, F-3, F-6, F-7) |
 
 ## §VET — 2026-11-13 vetting pass (issue #602), against bim-ootb `main` @ `a7c329e5`
 
