@@ -3895,6 +3895,21 @@ folder its <code>extensions.json</code> does not list, so nothing loads and noth
 <td>up to 5 places in <code>prompts/</code> and <code>docs/</code> of both repos that name the tag (headings first), then up to 5 lines of code that print it</td>
 <td>the specs and the source</td>
 </tr>
+<tr>
+<td>Explorer side bar ▸ <strong>Run &amp; Ship</strong> (4 steps, also as commands)</td>
+<td><em>Run local</em>: the serve task plus each app's URL and cache version on disk. <em>Check</em>: <code>node --check</code> on the JS that differs from <code>origin/main</code>, the precache audit, and the bump rule. <em>Cost if deployed</em>: see next row. <em>Fetch back</em>: is the live site on <code>main</code>'s versions and commit?</td>
+<td>the repo's own scripts and git; Fetch back reads the live site (the only step that uses the network)</td>
+</tr>
+<tr>
+<td>Status bar, and command <strong>Cost if deployed</strong></td>
+<td><code>viewer: start-up · 103 KB</code> for the open file; the command prints, per app, start-up and offline-cache bytes of your tree against <code>origin/main</code></td>
+<td>each <code>sw.js</code> cache list and the pages' script tags</td>
+</tr>
+<tr>
+<td>A grey line above code that prints a <code>§TAG</code></td>
+<td><code>last: &lt;the line a saved log holds for that tag&gt; · &lt;log&gt; @ &lt;commit&gt;</code>; click it to open the log</td>
+<td><code>logs/*.log</code> whose first line is a <code>§LOG_STAMP</code> (§6)</td>
+</tr>
 </tbody>
 </table>
 <p><strong>It never guesses.</strong> Each answer below is on purpose:</p>
@@ -3929,6 +3944,11 @@ folder its <code>extensions.json</code> does not list, so nothing loads and noth
 </tr>
 </tbody>
 </table>
+<p><strong>The last three rows are first versions (2026-11-13). What they do not do yet:</strong> Run &amp; Ship does not commit, open a PR, merge or deploy,
+and runs no browser. Cost counts raw bytes (not minified), all of an app's pages together, with no budget. The grey value line appears only
+when the log names its commit and the file that prints the tag is unchanged since; otherwise it shows nothing, so expect few at first.
+<em>Fetch back</em> answers INCONCLUSIVE when the live site carries no deploy stamp, and FAIL when a version or the commit differs: right after a
+merge, wait a minute or two and press it again.</p>
 <p><strong>The index looks after itself.</strong> The committed <code>internal/APP_SURFACE.md</code> is only a snapshot: about two merges in three move its line
 numbers (26 of 39, measured 2026-11-13). X0 runs the generator into VS Code's own storage folder when it starts, and again when
 a lookup misses after you saved a file. One run takes about 4 seconds in the background. It never writes inside the repo, so there is
@@ -4106,6 +4126,16 @@ the last two are added here: <code>witness_kit/contract.js</code> → the op-log
 <td>A copy of the tree inside the tree (an agent worktree under <code>.claude/worktrees/</code>, a nested clone)</td>
 <td>A tool that walks folders reads the copy as source. <code>gen_app_surface.js</code> once put 1,082 rows pointing into such a copy, so F12 opened the stale file</td>
 <td>A dev tool skips any sub-folder that holds a <code>.git</code> entry, and its witness also runs on a checkout that looks like a working one, not only a clean one</td>
+</tr>
+<tr>
+<td>A PR auto-merged by CI's bot (bim-ootb)</td>
+<td>The <em>Deploy to GitHub Pages</em> workflow does not start for a merge made with the workflow's own token. Only GitHub's plain branch build publishes: raw files, no <code>erp/version.json</code>. Seen live 2026-11-13</td>
+<td>Enable auto-merge yourself right after opening the PR (<code>gh pr merge &lt;n&gt; --auto --squash</code>), then press <strong>Fetch back</strong> (§4.1) a minute or two after the merge: it must say PASS</td>
+</tr>
+<tr>
+<td>Two numbers in a squash title, <code>… (#issue) (#pr)</code></td>
+<td>Until 2026-11-13 the deploy wrote both into <code>erp/version.json</code> and the file was not valid JSON</td>
+<td>Fixed in the workflow (it takes the last number). Put <code>Fixes #N</code> in the PR body, not in the title</td>
 </tr>
 </tbody>
 </table>
