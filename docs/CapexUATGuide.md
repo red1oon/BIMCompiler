@@ -195,7 +195,7 @@ An elevation or the section opened on its own shows nothing: it has to stand on 
 
 ![Tick Complete, then press Convert](img/uat/uat_b2_convert_button.png)
 
-*Picture B2-d · **Shed · tick Complete, then press Convert***
+*Picture B2-d · **Shed · tick Complete, then press Convert**, in the 2D Drawings panel*
 
 ![The Shed converted to a 3D model](img/uat/uat_b2_converted.png)
 
