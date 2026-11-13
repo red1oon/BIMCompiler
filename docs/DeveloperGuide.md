@@ -231,7 +231,7 @@ function that no code ever defines.
 
 ![Hover on APP.closeSunglass: PHANTOM, read, never written (first read viewer/main.js:357)](figs/x0/05_phantom.png)
 
-*Picture retaken 2026-11-14. Until that day the index missed files that had been split into parts, and called about half of these fields
+*Picture retaken 2026-11-14. Until that day the index missed files that had been split into parts, and called 130 of these fields
 phantom when they were written (bim-ootb #2961, #2974). The count went from 281 to 171; where the index still cannot be sure it now says
 `PHANTOM?` and names the line to read.*
 
