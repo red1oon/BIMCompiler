@@ -177,6 +177,9 @@ folder its `extensions.json` does not list, so nothing loads and nothing warns y
 | **F12** on `APP.camera` (also `A.x` / `app.x` in a file that binds that name) | a jump to the line where the field is written | the APP field index made by `scripts/gen_app_surface.js` |
 | Hover the same field | `written at <file:line> · N writes · N reads` | the same index |
 | Hover a `§TAG` in any `.js` file | up to 5 places in `prompts/` and `docs/` of both repos that name the tag (headings first), then up to 5 lines of code that print it | the specs and the source |
+| Explorer side bar ▸ **Run & Ship** (4 steps, also as commands) | *Run local*: the serve task plus each app's URL and cache version on disk. *Check*: `node --check` on the JS that differs from `origin/main`, the precache audit, and the bump rule. *Cost if deployed*: see next row. *Fetch back*: is the live site on `main`'s versions and commit? | the repo's own scripts and git; Fetch back reads the live site (the only step that uses the network) |
+| Status bar, and command **Cost if deployed** | `viewer: start-up · 103 KB` for the open file; the command prints, per app, start-up and offline-cache bytes of your tree against `origin/main` | each `sw.js` cache list and the pages' script tags |
+| A grey line above code that prints a `§TAG` | `last: <the line a saved log holds for that tag> · <log> @ <commit>`; click it to open the log | `logs/*.log` whose first line is a `§LOG_STAMP` (§6) |
 
 **It never guesses.** Each answer below is on purpose:
 
@@ -186,6 +189,12 @@ folder its `extensions.json` does not list, so nothing loads and nothing warns y
 | nothing at all on an `APP.x` | the field is not in the index (new and unsaved, or `A` is an unrelated local in this file) | save the file and hover again |
 | `index stale`, and F12 does nothing | the line the index points at no longer mentions the field | hover again in a few seconds, or run **X0 Navigator: Rebuild indexes** |
 | `no spec found` on a `§TAG` | no file in `prompts/` or `docs/` names the tag | the code that prints it is all there is: read that |
+
+**The last three rows are first versions (2026-11-13). What they do not do yet:** Run & Ship does not commit, open a PR, merge or deploy,
+and runs no browser. Cost counts raw bytes (not minified), all of an app's pages together, with no budget. The grey value line appears only
+when the log names its commit and the file that prints the tag is unchanged since; otherwise it shows nothing, so expect few at first.
+*Fetch back* answers INCONCLUSIVE when the live site carries no deploy stamp, and FAIL when a version or the commit differs: right after a
+merge, wait a minute or two and press it again.
 
 **The index looks after itself.** The committed `internal/APP_SURFACE.md` is only a snapshot: about two merges in three move its line
 numbers (26 of 39, measured 2026-11-13). X0 runs the generator into VS Code's own storage folder when it starts, and again when
@@ -304,6 +313,8 @@ The core idea still holds: **a building is a Bill of Materials.** One parent, N 
 | Witness paths assume one machine | Many witnesses hard-code the author's home folder | Expect to adjust paths on a new machine; a shared resolver is an open item |
 | A saved log with no `§LOG_STAMP` line | Its values look current but may come from code that has since changed. Measured 2026-11-13: almost no saved log said which code made it | Read line 1 of the log (§6). No stamp, an old commit, or the printing file listed as dirty: re-run the witness |
 | A copy of the tree inside the tree (an agent worktree under `.claude/worktrees/`, a nested clone) | A tool that walks folders reads the copy as source. `gen_app_surface.js` once put 1,082 rows pointing into such a copy, so F12 opened the stale file | A dev tool skips any sub-folder that holds a `.git` entry, and its witness also runs on a checkout that looks like a working one, not only a clean one |
+| A PR auto-merged by CI's bot (bim-ootb) | The *Deploy to GitHub Pages* workflow does not start for a merge made with the workflow's own token. Only GitHub's plain branch build publishes: raw files, no `erp/version.json`. Seen live 2026-11-13 | Enable auto-merge yourself right after opening the PR (`gh pr merge <n> --auto --squash`), then press **Fetch back** (§4.1) a minute or two after the merge: it must say PASS |
+| Two numbers in a squash title, `… (#issue) (#pr)` | Until 2026-11-13 the deploy wrote both into `erp/version.json` and the file was not valid JSON | Fixed in the workflow (it takes the last number). Put `Fixes #N` in the PR body, not in the title |
 
 ---
 
