@@ -3914,7 +3914,7 @@ The app's only runtime dependency is <code>sql.js</code>, which is already vendo
 </tr>
 <tr>
 <td>Where an <code>APP.x</code> / <code>A.x</code> field is set</td>
-<td>With X0 Navigator (§4.1): <strong>F12</strong> or hover on the field. Without it: <code>internal/APP_SURFACE.md</code>. Its "phantom" list (171 fields read in production but never written) is a list of dead guards. Check before relying on one.</td>
+<td>With X0 Navigator (§4.1): <strong>F12</strong> or hover on the field. Without it: <code>internal/APP_SURFACE.md</code>. Its "phantom" list (107 fields read in production but never written, counted 2026-11-14; 11 more are flagged "untied write" and are probably live) is a list of dead guards. Check before relying on one.</td>
 </tr>
 <tr>
 <td>What a <code>§TAG</code> means</td>
@@ -4019,6 +4019,11 @@ folder its <code>extensions.json</code> does not list, so nothing loads and noth
 <td>do not rely on the field; see §11 item 4</td>
 </tr>
 <tr>
+<td><code>PHANTOM? — no writer the index can tie …</code>, with a <code>file:line</code></td>
+<td>the index found no writer it can prove, but that line assigns a field of this name through a local name it could not tie to the shared object</td>
+<td>probably live: read that line. It is a gap in the index, not a dead field</td>
+</tr>
+<tr>
 <td>nothing at all on an <code>APP.x</code></td>
 <td>the field is not in the index (new and unsaved, or <code>A</code> is an unrelated local in this file)</td>
 <td>save the file and hover again</td>
@@ -4046,12 +4051,12 @@ code writes that field as <code>A.db</code>.</p>
 <p><img alt="Hover on APP.db: written at viewer/city.js:717, 14 writes, 704 reads" src="../figs/x0/03_hover_written_at.png" /></p>
 <p><strong>4. F12 jumps to that line.</strong></p>
 <p><img alt="After F12: viewer/city.js line 717, A.db = …" src="../figs/x0/04_jumped_to_the_write.png" /></p>
-<p><strong>5. A field nothing sets says so.</strong> <code>PHANTOM</code> means the field is read but never written: do not rely on it. A true one to try: <code>_applyViewFilter</code>
-(read in <code>viewer/panels.js</code>, written nowhere).</p>
-<p><img alt="Hover on APP.toggleGridOverlay: PHANTOM, read, never written" src="../figs/x0/05_phantom.png" /></p>
-<p><em>The picture is from 2026-11-13. The field in it was a wrong answer: <code>viewer/grid_overlay.js</code> does set it, in a file that says
-<code>var A = APP;</code>, a form the index did not read. Fixed 2026-11-14 (bim-ootb #2961); that field now jumps to its line. The hover looks the same
-on a true phantom.</em></p>
+<p><strong>5. A field nothing sets says so.</strong> <code>PHANTOM</code> means the field is read but never written: do not rely on it. Here line 357 copies a
+function that no code ever defines.</p>
+<p><img alt="Hover on APP.closeSunglass: PHANTOM, read, never written (first read viewer/main.js:357)" src="../figs/x0/05_phantom.png" /></p>
+<p><em>Picture retaken 2026-11-14. Until that day the index missed files that had been split into parts, and called about half of these fields
+phantom when they were written (bim-ootb #2961, #2974). The count went from 281 to 171; where the index still cannot be sure it now says
+<code>PHANTOM?</code> and names the line to read.</em></p>
 <p><strong>6. Hover a <code>§TAG</code>.</strong> You get the spec pages that name it (headings first) and the code line that prints it.</p>
 <p><img alt="Hover on §HOSTED_BEFORE_HOST: five spec places in bim-compiler prompts, then &quot;printed by: viewer/schedule_gate.js:1014&quot;" src="../figs/x0/06_tag_hover.png" /></p>
 <p>A tag that no spec names says <code>no spec found</code>:</p>
@@ -4600,7 +4605,7 @@ how much it helps a reader for how little risk. The full work order, written for
 </tr>
 <tr>
 <td>4</td>
-<td><strong>Clear the phantom fields</strong>: 171 <code>APP.x</code> fields read in production but never written (<code>internal/APP_SURFACE.md</code>)</td>
+<td><strong>Clear the phantom fields</strong>: 107 <code>APP.x</code> fields read in production but never written (recounted 2026-11-14 after the index fix, bim-ootb #2974) (<code>internal/APP_SURFACE.md</code>)</td>
 <td>Dead guards gone; fewer "where is this set?" hunts</td>
 <td>Low per field</td>
 <td>The phantom count goes down; the file's witness unchanged</td>
