@@ -15,6 +15,30 @@ W, H, BAND, FPS = 1920, 1080, 230, 24
 BG, CARD_BG = (15, 23, 42), (11, 15, 23)
 WHITE, CORAL, SKY, GREY, RED, YEL = (243, 238, 232), (255, 107, 120), (125, 211, 252), (148, 163, 184), (232, 55, 44), (250, 204, 21)
 FB, FR = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
+LANG = os.environ.get('FILM_LANG', 'en')   # en | zh. Every text the film draws comes from STR[LANG]; a missing key throws (no English left in a translated film). The product's own pages stay as they are.
+CJK_B, CJK_R, CJK_IX = '/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc', '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc', 2   # index 2 = Simplified Chinese
+STR = {'en': {
+  'sponsor': 'Sponsored by', 'ch_k': 'CHAPTER 0', 'ch_1': 'UAT', 'ch_2': "or it doesn't work", 'ch_3': 'User Acceptance Test',
+  'st_1': 'Part of any software project completion is a', 'st_2': 'User Acceptance Test, done independently.', 'st_3': 'Not by AI.', 'st_4': 'By a qualified CTFL company.', 'st_5': 'Audited and signed.', 'st_6': 'CTFL = Certified Tester Foundation Level (ISTQB)',
+  'pr_h': 'Print this guide / Save as PDF', 'pr_n': "the page's own print layout", 'saved': 'Your saved copy · Downloads / ', 'page': 'page %d of %d',
+  'h05': 'First check: what you need, and who does what', 'h06': 'Chapter B: your own Shed drawings, each one labelled', 'h6ba': 'The nine sheets, standing in place', 'h6bb': 'The 3D Shed they become',
+  'h07': 'Every step: Do · Confirm · tick Pass or Fail by hand', 'h08a': 'What differs goes on the Notes line', 'h08b': 'Known limits: do not fail a step on these', 'hd1a': 'Chapter D: the dashboard, checked tile by tile', 'h09': 'The last page: sign-off for each chapter',
+  'note_h': 'What the user company should note', 'note': ['Test independently: not the developer, not the AI', 'Use the GardenWorld test client, never live data', 'Test dates are set for 13 November 2026: the colours drift with the calendar',
+           'What differs goes on the Notes line; do not fail a known limit', 'Keep the signed sheets: they are your acceptance record'],
+  'std_h': 'Software standards such software has to comply with', 'std': ['Software testing', 'Product quality model', 'Software life cycle processes', 'Certified testers · acceptance testing', 'Information management using BIM', 'Open BIM data', 'Information security', 'Quality management'],
+  'ct_1': 'For further information', 'ct_3': 'SYSNOVA (UK / Bangladesh)', 'looks': ['Classic · Light', 'Classic · Dark', 'Executive · Light', 'Executive · Dark'], 'dash': 'The dashboard · on the sample data'},
+ 'zh': {
+  'sponsor': '赞助', 'ch_k': '第 0 章', 'ch_1': 'UAT', 'ch_2': '否则就不算能用', 'ch_3': '用户验收测试（User Acceptance Test）',
+  'st_1': '任何软件项目要算完成，都少不了', 'st_2': '独立进行的用户验收测试。', 'st_3': '不是由 AI 来测。', 'st_4': '由具备 CTFL 资质的公司来测。', 'st_5': '经过审核，并且签字。', 'st_6': 'CTFL = 认证测试工程师基础级（ISTQB）',
+  'pr_h': '打印本指南 / 另存为 PDF', 'pr_n': '页面自带的打印版式', 'saved': '你保存的副本 · Downloads / ', 'page': '第 %d 页，共 %d 页',
+  'h05': '先看：需要准备什么，谁做哪一章', 'h06': 'B 章：你们自己的棚屋图纸，每张都有标注', 'h6ba': '九张图纸，立在各自的位置上', 'h6bb': '它们变成的三维棚屋',
+  'h07': '每一步：操作 · 确认 · 亲手勾选通过或不通过', 'h08a': '不一样的地方写在备注栏', 'h08b': '已知限制：不要因此判为不通过', 'hd1a': 'D 章：仪表盘，逐个方块检查', 'h09': '最后一页：每一章的签署',
+  'note_h': '使用方公司应注意的事项', 'note': ['独立测试：不是开发者，也不是 AI', '使用 GardenWorld 测试客户端，绝不用正式数据', '测试日期设定为 2026 年 11 月 13 日：颜色会随日历变化',
+           '不一样的地方写在备注栏；已知限制不判为不通过', '保存好签过字的页：那是你们的验收记录'],
+  'std_h': '这类软件必须符合的软件标准', 'std': ['软件测试', '产品质量模型', '软件生命周期过程', '认证测试人员 · 验收测试', '使用 BIM 的信息管理', '开放的 BIM 数据', '信息安全', '质量管理'],
+  'ct_1': '如需进一步了解', 'ct_3': 'SYSNOVA（英国 / 孟加拉国）', 'looks': ['经典 · 浅色', '经典 · 深色', '高管版 · 浅色', '高管版 · 深色'], 'dash': '仪表盘 · 示例数据'}}
+if LANG not in STR or set(STR[LANG]) != set(STR['en']): raise SystemExit('§FILM_FAIL STR[%s] is missing keys: %s' % (LANG, sorted(set(STR['en']) - set(STR.get(LANG, {})))))
+L = STR[LANG]
 LOGF = open(os.path.join(WORK, 'build.log'), 'w')
 
 
@@ -30,7 +54,7 @@ def run(cmd, **kw):
 
 
 def font(bold, size):
-    return ImageFont.truetype(FB if bold else FR, size)
+    return ImageFont.truetype(CJK_B if bold else CJK_R, size, index=CJK_IX) if LANG == 'zh' else ImageFont.truetype(FB if bold else FR, size)
 
 
 def canvas(bg=BG):
@@ -43,8 +67,8 @@ def text_c(d, y, s, f, fill):   # centred line
 
 def wrap(d, s, f, maxw):
     out, cur = [], ''
-    for wd in s.split():
-        t = (cur + ' ' + wd).strip()
+    for wd in (list(s) if LANG == 'zh' else s.split()):   # Chinese wraps between characters
+        t = (cur + wd) if LANG == 'zh' else (cur + ' ' + wd).strip()
         if d.textlength(t, font=f) <= maxw: cur = t
         else: out.append(cur); cur = wd
     if cur: out.append(cur)
@@ -115,7 +139,7 @@ def pdf_still(name, n, heading, anchor, marks, note, picture=False):
     d.rectangle((zx - 3, zy - 3, zx + PW + 2, zy + PH + 2), outline=YEL, width=3); z = PW / 612.0
     for a, b, c, e in rows:
         d.rounded_rectangle((zx + a * z - 8, zy + (b - y0) * z - 7, zx + c * z + 8, zy + (e - y0) * z + 7), radius=8, outline=RED, width=5)
-    pn = 'page %d of %d' % (n, NPAGES); d.text((W - 60 - d.textlength(pn, font=font(True, 26)), 78), pn, font=font(True, 26), fill=YEL)
+    pn = L['page'] % (n, NPAGES); d.text((W - 60 - d.textlength(pn, font=font(True, 26)), 78), pn, font=font(True, 26), fill=YEL)
     im.save(os.path.join(WORK, name + '.png'))
     log('§FILM_PDF still=%s page=%d anchor=%s window_pt=%.0f..%.0f boxes=%d band_clear=%s' % (name, n, anchor, y0, y1, len(rows), band_ok(im, BG)))
     if not rows: log('§FILM_FAIL %s: nothing was marked' % name); sys.exit(1)
@@ -127,17 +151,17 @@ P_STEPS = find_page(r'B2 · Open all nine sheets')
 P_NOTES = find_page(r'Notes \(chapter B\)')
 P_LIMITS = find_page(r'Known limits')
 P_SIGN = find_page(r'Sign-off')
-SAVED = 'Your saved copy · Downloads / ' + os.path.basename(PDF)[:44] + '….pdf'
-pdf_still('s05', P_FIRST, 'First check: what you need, and who does what', r'^need$', [(['What', 'you', 'need'], 0), (['Who', 'does', 'what'], 0)], SAVED)
-pdf_still('s06', P_PLAN, 'Chapter B: your own Shed drawings, each one labelled', r'^B1-b$', [(['Picture', 'B1-b'], 5)], SAVED, True)
+SAVED = L['saved'] + os.path.basename(PDF)[:44] + '….pdf'
+pdf_still('s05', P_FIRST, L['h05'], r'^need$', [(['What', 'you', 'need'], 0), (['Who', 'does', 'what'], 0)], SAVED)
+pdf_still('s06', P_PLAN, L['h06'], r'^B1-b$', [(['Picture', 'B1-b'], 5)], SAVED, True)
 P_ARR = find_page(r'Picture B2-b'); P_3D = find_page(r'Picture B2-e'); P_DASH = find_page(r'Read Total Projects')   # the chapter's step table (the heading text alone also appears in page 1's who-does-what table)
-pdf_still('s6ba', P_ARR, 'The nine sheets, standing in place', r'^B2-b$', [(['Picture', 'B2-b'], 9)], SAVED, True)
-pdf_still('s6bb', P_3D, 'The 3D Shed they become', r'^B2-e$', [(['Picture', 'B2-e'], 8)], SAVED, True)
-pdf_still('sd1a', P_DASH, 'Chapter D: the dashboard, checked tile by tile', r'^D3$', [(['D1'], 3), (['D2'], 3), (['D3'], 4), (['D8'], 4)], SAVED)
-pdf_still('s07', P_STEPS, 'Every step: Do · Confirm · tick Pass or Fail by hand', r'^Confirm$', [(['Confirm', 'on', 'screen'], 0), (['Result'], 0), (['☐', 'Pass', '☐', 'Fail'], 0)], SAVED)
-pdf_still('s08a', P_NOTES, 'What differs goes on the Notes line', r'^Notes$', [(['Notes', '(chapter', 'B):'], 1)], SAVED)
-pdf_still('s08b', P_LIMITS, 'Known limits: do not fail a step on these', r'^limits$', [(['Known', 'limits'], 7)], SAVED)
-pdf_still('s09', P_SIGN, 'The last page: sign-off for each chapter', r'^Sign-off$', [(['Sign-off'], 0), (['Tester'], 0), (['Date'], 0), (['Passed'], 2), (['Signature'], 0)], SAVED)
+pdf_still('s6ba', P_ARR, L['h6ba'], r'^B2-b$', [(['Picture', 'B2-b'], 9)], SAVED, True)
+pdf_still('s6bb', P_3D, L['h6bb'], r'^B2-e$', [(['Picture', 'B2-e'], 8)], SAVED, True)
+pdf_still('sd1a', P_DASH, L['hd1a'], r'^D3$', [(['D1'], 3), (['D2'], 3), (['D3'], 4), (['D8'], 4)], SAVED)
+pdf_still('s07', P_STEPS, L['h07'], r'^Confirm$', [(['Confirm', 'on', 'screen'], 0), (['Result'], 0), (['☐', 'Pass', '☐', 'Fail'], 0)], SAVED)
+pdf_still('s08a', P_NOTES, L['h08a'], r'^Notes$', [(['Notes', '(chapter', 'B):'], 1)], SAVED)
+pdf_still('s08b', P_LIMITS, L['h08b'], r'^limits$', [(['Known', 'limits'], 7)], SAVED)
+pdf_still('s09', P_SIGN, L['h09'], r'^Sign-off$', [(['Sign-off'], 0), (['Tester'], 0), (['Date'], 0), (['Passed'], 2), (['Signature'], 0)], SAVED)
 # s08 = the two halves side by side would shrink both: the beat shows the Notes line first, then Known limits (two stills, one beat)
 
 # ── 3 composed stills and cards ──────────────────────────────────────────────────────────────────────────────────────────
@@ -148,27 +172,20 @@ def logo_plate(h):   # the sponsor's logo on a white plate (its colours are made
     lg = logo.resize((round(logo.width * h / logo.height), h), Image.LANCZOS); pl = Image.new('RGB', (lg.width + 36, lg.height + 24), (255, 255, 255)); pl.paste(lg, (18, 12), lg); return pl
 
 
-# b01 preamble: the Shed floor plan, the guide's own picture
-plan = Image.open(os.path.join(REPO, 'docs/img/uat/uat_b1_sheet_0_floor_plan.png')).convert('RGB')
-im = canvas(); d = ImageDraw.Draw(im); p = fit_into(plan, 1800, 735); im.paste(p, ((W - p.width) // 2, 105))
-d.text((60, 40), 'Sponsored by', font=font(False, 26), fill=GREY); im.paste(logo_plate(52), (250, 18))
-d.text((W - 60 - d.textlength('CAPEX UAT Guide · the film', font=font(True, 28)), 40), 'CAPEX UAT Guide · the film', font=font(True, 28), fill=SKY)
-im.save(os.path.join(WORK, 's01.png')); log('§FILM_STILL s01 floor_plan=%dx%d band_clear=%s' % (plan.width, plan.height, band_ok(im, BG)))
-
 # chapter card (silent, plain dark)
 im = canvas(CARD_BG); d = ImageDraw.Draw(im)
-text_c(d, 300, 'CHAPTER 0', font(True, 34), CORAL); text_c(d, 370, 'UAT', font(True, 150), WHITE); text_c(d, 560, "or it doesn't work", font(True, 96), CORAL)
-text_c(d, 720, 'User Acceptance Test', font(False, 40), WHITE)
-d.text((60, 40), 'Sponsored by', font=font(False, 26), fill=GREY); im.paste(logo_plate(52), (250, 18)); im.save(os.path.join(WORK, 'c00.png'))
+text_c(d, 300, L['ch_k'], font(True, 34), CORAL); text_c(d, 370, L['ch_1'], font(True, 150), WHITE); text_c(d, 560, L['ch_2'], font(True, 96), CORAL)
+text_c(d, 720, L['ch_3'], font(False, 40), WHITE)
+d.text((60, 40), L['sponsor'], font=font(False, 26), fill=GREY); im.paste(logo_plate(52), (250, 18)); im.save(os.path.join(WORK, 'c00.png'))
 
 # b02 the owner's sentence
 im = canvas(CARD_BG); d = ImageDraw.Draw(im)
-text_c(d, 150, 'Part of any software project completion is a', font(False, 50), WHITE)
-text_c(d, 225, 'User Acceptance Test, done independently.', font(True, 62), WHITE)
-text_c(d, 380, 'Not by AI.', font(True, 84), CORAL)
-text_c(d, 520, 'By a qualified CTFL company.', font(True, 62), WHITE)
-text_c(d, 610, 'Audited and signed.', font(True, 62), SKY)
-text_c(d, 760, 'CTFL = Certified Tester Foundation Level (ISTQB)', font(False, 30), GREY)
+text_c(d, 150, L['st_1'], font(False, 50), WHITE)
+text_c(d, 225, L['st_2'], font(True, 62), WHITE)
+text_c(d, 380, L['st_3'], font(True, 84), CORAL)
+text_c(d, 520, L['st_4'], font(True, 62), WHITE)
+text_c(d, 610, L['st_5'], font(True, 62), SKY)
+text_c(d, 760, L['st_6'], font(False, 30), GREY)
 im.save(os.path.join(WORK, 's02.png')); log('§FILM_STILL s02 band_clear=%s' % band_ok(im, CARD_BG))
 
 # b03 the live guide page, the Print button ringed
@@ -185,19 +202,18 @@ def page_still(src, dst, heading=None):
 
 DIAG = ['uat_b1_sheet_0_floor_plan', 'uat_b1_sheet_3_beam_layout', 'uat_b1_sheet_4_foundation_layout', 'uat_b1_nine_opened', 'uat_b1_arranged', 'uat_b1_arranged_top', 'uat_b2_convert_button', 'uat_b2_converted']
 ok = [page_still('site_' + k + '.png', 'q_%d.png' % i) for i, k in enumerate(DIAG)]; log('§FILM_STILL site_diagrams=%d band_clear_all=%s' % (len(ok), all(ok)))
-LOOKS = [('classic', 'light', 'Classic · Light'), ('classic', 'dark', 'Classic · Dark'), ('executive', 'light', 'Executive · Light'), ('executive', 'dark', 'Executive · Dark')]
+LOOKS = [('classic', 'light', L['looks'][0]), ('classic', 'dark', L['looks'][1]), ('executive', 'light', L['looks'][2]), ('executive', 'dark', L['looks'][3])]
 ok = [page_still('dash_%s_%s.png' % (a_, b_), 't_%d.png' % i, c_) for i, (a_, b_, c_) in enumerate(LOOKS)]; log('§FILM_STILL dashboard_looks=%d band_clear_all=%s' % (len(ok), all(ok)))
-page_still('dash_classic_light.png', 'sd1b.png', 'The dashboard · on the sample data')
+page_still('dash_classic_light.png', 'sd1b.png', L['dash'])
 
 # b04 background of the scrolled print layout
-im = canvas(); d = ImageDraw.Draw(im); d.text((60, 28), 'Print this guide / Save as PDF', font=font(True, 40), fill=SKY)
-d.text((60, 80), "the page's own print layout", font=font(False, 24), fill=GREY); d.rectangle((407, 107, 1513, 853 - 3), outline=YEL, width=3)
+im = canvas(); d = ImageDraw.Draw(im); d.text((60, 28), L['pr_h'], font=font(True, 40), fill=SKY)
+d.text((60, 80), L['pr_n'], font=font(False, 24), fill=GREY); d.rectangle((407, 107, 1513, 853 - 3), outline=YEL, width=3)
 im.save(os.path.join(WORK, 's04_bg.png'))
 
 # b10 what the user company should note (each line from the guide's own text)
-NOTE = ['Test independently: not the developer, not the AI', 'Use the GardenWorld test client, never live data', 'Test dates are set for 13 November 2026: the colours drift with the calendar',
-        'What differs goes on the Notes line; do not fail a known limit', 'Keep the signed sheets: they are your acceptance record']
-im = canvas(CARD_BG); d = ImageDraw.Draw(im); text_c(d, 70, 'What the user company should note', font(True, 60), SKY); y = 210
+NOTE = L['note']
+im = canvas(CARD_BG); d = ImageDraw.Draw(im); text_c(d, 70, L['note_h'], font(True, 60), SKY); y = 210
 for i, s in enumerate(NOTE):
     d.ellipse((150, y + 4, 206, y + 60), fill=CORAL); n = str(i + 1); d.text((178 - d.textlength(n, font=font(True, 36)) / 2, y + 10), n, font=font(True, 36), fill=CARD_BG)
     for ln in wrap(d, s, font(False, 44), 1500): d.text((240, y + 4), ln, font=font(False, 44), fill=WHITE); y += 58
@@ -205,28 +221,31 @@ for i, s in enumerate(NOTE):
 im.save(os.path.join(WORK, 's10.png')); log('§FILM_STILL s10 lines=%d last_y=%d band_clear=%s' % (len(NOTE), y, band_ok(im, CARD_BG)))
 
 # b11 closing: the standards, the sponsor, the contact
-STD = [('ISO/IEC/IEEE 29119', 'Software testing'), ('ISO/IEC 25010', 'Product quality model'), ('ISO/IEC/IEEE 12207', 'Software life cycle processes'), ('ISTQB CTFL', 'Certified testers · acceptance testing'),
-       ('ISO 19650', 'Information management using BIM'), ('ISO 16739 (IFC)', 'Open BIM data'), ('ISO/IEC 27001', 'Information security'), ('ISO 9001', 'Quality management')]
-im = canvas(CARD_BG); d = ImageDraw.Draw(im); text_c(d, 96, 'Software standards such software has to comply with', font(True, 50), SKY)   # y=96: the voice credit line is drawn in the top 80 px of the last seconds
+STD = list(zip(['ISO/IEC/IEEE 29119', 'ISO/IEC 25010', 'ISO/IEC/IEEE 12207', 'ISTQB CTFL', 'ISO 19650', 'ISO 16739 (IFC)', 'ISO/IEC 27001', 'ISO 9001'], L['std']))
+im = canvas(CARD_BG); d = ImageDraw.Draw(im); text_c(d, 96, L['std_h'], font(True, 50), SKY)   # y=96: the voice credit line is drawn in the top 80 px of the last seconds
 for i, (a, b) in enumerate(STD):
     x = 150 if i < 4 else 1000; y = 200 + (i % 4) * 104
     d.text((x, y), a, font=font(True, 40), fill=WHITE); d.text((x, y + 52), b, font=font(False, 30), fill=GREY)
 pl = logo_plate(76); im.paste(pl, (150, 652))
-CONTACT = ['For further information', 'Redhuan D. OON, CTFL  ·  red1org@gmail.com', 'SYSNOVA (UK / Bangladesh)']
+CONTACT = [L['ct_1'], 'Redhuan D. OON, CTFL  ·  red1org@gmail.com', L['ct_3']]
 d.text((150 + pl.width + 50, 640), CONTACT[0], font=font(False, 30), fill=GREY); d.text((150 + pl.width + 50, 682), CONTACT[1], font=font(True, 44), fill=WHITE); d.text((150 + pl.width + 50, 742), CONTACT[2], font=font(True, 36), fill=SKY)
 cw = max(d.textlength(CONTACT[1], font=font(True, 44)), d.textlength(CONTACT[2], font=font(True, 36))) + 150 + pl.width + 50
 log('§FILM_STILL s11 contact_right_edge=%d frame=%d inside=%s' % (cw, W, cw <= W - 60))
 im.save(os.path.join(WORK, 's11.png')); log('§FILM_STILL s11 standards=%d band_clear=%s' % (len(STD), band_ok(im, CARD_BG)))
 
 # ── 4 voices, pass 1: measure every beat ────────────────────────────────────────────────────────────────────────────────
-BEATS = [l.rstrip('\n').split('\t') for l in open(os.path.join(HERE, 'beats_en.tsv')) if l.strip()]
+BEATS = [l.rstrip('\n').split('\t') for l in open(os.path.join(HERE, 'beats_%s.tsv' % LANG)) if l.strip()]
 
 
 def fit(tag, rows, film_sec):
     fd = os.path.join(WORK, tag); os.makedirs(fd, exist_ok=True)
     open(os.path.join(fd, 'ass_head.txt'), 'w').write(open(os.path.join(REPO, 'prompts/film_narration_ass_head.txt')).read())
     open(os.path.join(fd, tag + '.tsv'), 'w').write(''.join('%s\t%.3f\t%.3f\t%s\t%s\t%s\n' % r for r in rows))
-    out = run([VENV, os.path.join(REPO, 'prompts/film_narration_fit_kokoro_v3.py'), tag + '.tsv', tag, '1.15'], cwd=fd, env=dict(os.environ, FILM_SEC=str(film_sec)))
+    # English = Kokoro, local. Mandarin = Microsoft Edge neural voices (cloud; the script text is sent there, clips are cached): FILM_NARRATION.md PLAYBOOK
+    cmd = [VENV, os.path.join(REPO, 'prompts/film_narration_fit_kokoro_v3.py'), tag + '.tsv', tag, '1.15'] if LANG == 'en' else [VENV, os.path.join(REPO, 'prompts/film_narration_fit_edge.py'), tag + '.tsv', tag, LANG]
+    out = run(cmd, cwd=fd, env=dict(os.environ, FILM_SEC=str(film_sec)))
+    if LANG == 'zh' and tag == 'fit2':   # captions cut at Chinese punctuation, at most 20 characters a piece (owner 2026-11-02)
+        sp = run(['python3', os.path.join(REPO, 'prompts/film_zh_caption_split.py'), os.path.join(fd, tag + '.ass'), os.path.join(fd, tag + '_split.ass'), '20']); os.replace(os.path.join(fd, tag + '_split.ass'), os.path.join(fd, tag + '.ass')); log(sp.strip()[:200])
     open(os.path.join(fd, 'fit.log'), 'w').write(out); return fd, out
 
 
@@ -301,9 +320,9 @@ picks = re.findall(r'§NARR_FIT (\S+) .*? -> (\S+)', o2); wrong = len(re.findall
 log('§FILM_VOICE pass2 detail=%d of %d not_detail=%s tone_wrong=%d' % (sum(1 for _, p in picks if p == 'DETAIL'), len(BEATS), json.dumps([x for x in picks if x[1] != 'DETAIL']), wrong))
 for l in o2.split('\n'):
     if l.startswith('§NARR_FIT') or 'WRONG' in l: log('  ' + l[:200])
-OUT = os.environ.get('FILM_OUT'); rc = 3
+OUT = os.environ.get('FILM_OUT'); rc = 3 if LANG == 'en' else 1
 while not OUT:
-    c = os.path.join(HOME, 'Videos', 'CAPEX_UAT_Guide_film_EN_2026-11-14_rc%d.mp4' % rc)
+    c = os.path.join(HOME, 'Videos', 'CAPEX_UAT_Guide_film_%s_2026-11-14_rc%d.mp4' % (LANG.upper(), rc))
     if not os.path.exists(c): OUT = c
     rc += 1
 run(['python3', os.path.join(REPO, 'prompts/film_narration_mux.py'), 'fit2', SILENT, OUT], cwd=fd2, env=dict(os.environ, FILM_SEC='%.3f' % TOTAL))

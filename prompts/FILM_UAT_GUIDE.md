@@ -50,3 +50,12 @@ caption band); the highlight boxes come from `pdftotext -bbox` word boxes. One c
 - **One reword from the log:** "And at the end of all that ticking?" ended falling where a yes/no question must rise (`§NARR_TONE … WRONG`); it is now "And what is at the end of all that ticking?".
 - **Two instrument slips, each stopped by its own FAIL line:** the dashboard chapter was looked up by its heading, which also appears in page 1's who-does-what table (now looked up by its first step); a three-word mark spanned a wrapped table cell (the step numbers are marked instead).
 - rc2 is kept beside rc3 (the earlier order, with the floor-plan preamble).
+
+## 4 MANDARIN zh rc1 (2026-11-14; owner: *"Need not fix film which is well done. Do a Mandarin version."*)
+`FILM_LANG=zh python3 scripts/film_uat_guide/build.py <work>` → `~/Videos/CAPEX_UAT_Guide_film_ZH_2026-11-14_rc1.mp4` (not pushed). Same order and pictures as EN rc3.
+- **Everything the film draws is translated** from one table (`STR[LANG]` in `build.py`; a missing key stops the build): the chapter card, the owner's sentence, every heading, the page labels, the note card, the standards' descriptions, the contact labels, the four look labels. The product's own pages (the guide, the PDF, the dashboard) stay as they are. Chinese text is drawn with Noto Sans CJK SC (PIL), never through ffmpeg `drawtext`.
+- **Voices:** Microsoft Edge zh-CN Xiaoxiao / Yunxi (cloud: the script text is sent there; the contact address is not in it). The credit line says so in Chinese.
+- **RESULT (`build_zh_rc1.log` read):** **189.08 s, 4,538 frames = the picture's 4,538**, 14 of 14 beats DETAIL, 0 tone WRONG, −17.2 LUFS, silences ≥ 4 s: 4.11 / 4.72 / 6.75 / 6.27 s. Captions split at Chinese punctuation: 25 lines → 49 pieces, longest 23 characters (`§ZH_CAPTIONS`; the bar is 20, the splitter cuts only at punctuation). The dashboard's numbers are the same in all four looks.
+- Mandarin runs longer than English (189 s against 168 s): the build measures every beat's voice first and sizes its picture from that, so nothing was trimmed.
+- **Not re-run:** the English build after the table refactor (the EN strings are the same literals moved into `STR['en']`; the unused floor-plan preamble still was removed).
+- The translation was not reviewed by a native speaker.
