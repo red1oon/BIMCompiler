@@ -167,6 +167,10 @@ calls a model or the network, and no page loads it. It answers two questions fro
 3. Reload VS Code (**Developer: Reload Window**).
 4. Check: open any `viewer/*.js` and hover a field such as `APP.db`. The hover starts with `written at`.
 
+![The Extensions view after the install: "BIM DevTools: X0 Navigator", publisher bim-devtools](figs/x0/00_installed.png)
+
+*After step 3, the Extensions view (filter `@installed X0`) lists it.*
+
 After you pull changes to the add-on, run steps 1–3 again (the installed copy is a copy). Remove it with
 `code --uninstall-extension bim-devtools.x0-navigator`. **Do not symlink the folder into `~/.vscode/extensions/`:** VS Code ignores a
 folder its `extensions.json` does not list, so nothing loads and nothing warns you (this guide said to symlink until 2026-11-13).
@@ -189,6 +193,65 @@ folder its `extensions.json` does not list, so nothing loads and nothing warns y
 | nothing at all on an `APP.x` | the field is not in the index (new and unsaved, or `A` is an unrelated local in this file) | save the file and hover again |
 | `index stale`, and F12 does nothing | the line the index points at no longer mentions the field | hover again in a few seconds, or run **X0 Navigator: Rebuild indexes** |
 | `no spec found` on a `§TAG` | no file in `prompts/` or `docs/` names the tag | the code that prints it is all there is: read that |
+
+#### What you see, step by step
+
+Every picture below is the real editor (VS Code 1.146), recorded on this repo as shipped. Nothing is a mock-up.
+
+**1. The plain editor.** The project opens like any folder: the tree on the left, the code on the right.
+
+![VS Code with the bim-ootb folders in the Explorer and viewer/scene.js open](figs/x0/01_editor.png)
+
+**2. Before: the editor cannot say where a field is set.** Go to Definition (F12) on `APP.db` answers "No definition found", because the
+code writes that field as `A.db`.
+
+![F12 on APP.db without the add-on: "No definition found for 'db'"](figs/x0/02_before_no_definition.png)
+
+**3. With X0 Navigator: hover.** The same line now says where the field is written, and how often it is written and read.
+
+![Hover on APP.db: written at viewer/city.js:717, 14 writes, 704 reads](figs/x0/03_hover_written_at.png)
+
+**4. F12 jumps to that line.**
+
+![After F12: viewer/city.js line 717, A.db = …](figs/x0/04_jumped_to_the_write.png)
+
+**5. A field nothing sets says so.** `PHANTOM` means the field is read but never written: do not rely on it.
+
+![Hover on APP.toggleGridOverlay: PHANTOM, read, never written](figs/x0/05_phantom.png)
+
+**6. Hover a `§TAG`.** You get the spec pages that name it (headings first) and the code line that prints it.
+
+![Hover on §HOSTED_BEFORE_HOST: five spec places in bim-compiler prompts, then "printed by: viewer/schedule_gate.js:1014"](figs/x0/06_tag_hover.png)
+
+A tag that no spec names says `no spec found`:
+
+![Hover on a made-up tag: "no spec found"](figs/x0/07_no_spec_found.png)
+
+**7. The code moved? It refuses a wrong jump, then catches up.** A line was added above the write and the file saved. The next hover
+says `index stale`; a few seconds later the same hover gives the new line.
+
+![Right after the save: "index stale, hover again in a few seconds"](figs/x0/08_index_stale.png)
+
+![A few seconds later: written at viewer/city.js:718](figs/x0/09_new_line.png)
+
+**8. Which code made this log?** A log saved by *Run this witness* starts with a `§LOG_STAMP` line. Here it names the commit, and
+`viewer/city.js` as the one file that had been edited.
+
+![A saved witness log: line 1 is §LOG_STAMP with commit, dirty=1 and dirty_files=viewer/city.js](figs/x0/10_log_stamp.png)
+
+**9. Run & Ship.** The list sits at the bottom of the Explorer side bar. *Check* prints its three steps in the *X0 Navigator* output.
+
+![The Run & Ship list (Run local, Check, Cost if deployed, Fetch back) and the output of Check: syntax, audit, bump, verdict PASS](figs/x0/11_run_and_ship_check.png)
+
+**10. Cost if deployed.** The output lists start-up and offline-cache bytes per app; the status bar (bottom right) says how the open
+file reaches a user: `viewer: start-up · 234 KB`.
+
+![Cost if deployed output, and the status bar note "viewer: start-up · 234 KB"](figs/x0/12_cost_if_deployed.png)
+
+**11. The value beside the code.** The grey line above line 143 is what that line last printed, with the log and commit it came from.
+It appears only when that can be proven.
+
+![A grey line above console.log: "last: §APP_SURFACE files=… fields=1693 …", with the log name and commit](figs/x0/13_value_beside_code.png)
 
 **The last three rows are first versions (2026-11-13). What they do not do yet:** Run & Ship does not commit, open a PR, merge or deploy,
 and runs no browser. Cost counts raw bytes (not minified), all of an app's pages together, with no budget. The grey value line appears only
@@ -231,6 +294,29 @@ diffs in the editor. The terminal has every command; the panel has a subset.
 | Select the code, then say "this" | The selection travels with your message: no describing where |
 | Keep project rules in `CLAUDE.md`, not in your head | Every new session reads it; a rule only said once is forgotten |
 | Rewind instead of arguing | When an edit went wrong, go back to the checkpoint and restate the task |
+
+**Writing the code yourself in VS Code, or letting the agent write it? An honest comparison.**
+
+| | Mostly by agent ("vibe") | Mostly by hand in VS Code, agent as helper |
+|---|---|---|
+| Speed on a well-described task | Fast: many files, tests and docs in one go | Slower, one edit at a time |
+| How well you know your own code | It fades: you approve more than you read | It grows: you learn where things are and why |
+| Control over what changes | Only as good as your review of each diff | Direct: nothing changes that you did not type or accept |
+| Cost | Paid per use, and long sessions cost the most | The editor and the add-on cost nothing to run |
+| Same answer twice? | No. The same request can give different code | Yes for the tools here: an index lookup, a check, a byte count give the same answer every time |
+| When it goes wrong | Plausible-looking mistakes, found late | Your own mistakes, usually found at once |
+| Tedious, wide work (rename in 40 files, write a witness, draft a spec) | Its best use | Slow and error-prone by hand |
+
+**The three worries, plainly.** *Losing control:* an agent does what it is allowed to do, so the limits are yours to set: it asks before
+it edits, changes arrive as diffs, work stays on a branch and merges only through a pull request with checks. *Runaway cost:* cost follows
+session length and the number of helpers started, so keep tasks small, start a new session for a new task, and let free deterministic
+tools answer what they can (the facts server and X0's commands cost nothing). *Results that vary:* true of the model, not of code. This
+project's answer is to make the model's work checkable by things that do not vary: a parser, a witness with a red control, a `§` line in
+a log, a commit hash. A result that passes those can be trusted on that evidence, whoever typed it.
+
+**A path that keeps you in charge.** (1) Read and navigate in VS Code with X0 Navigator until you can find anything yourself. (2) Make
+small edits by hand; run *Check* before every commit. (3) Give the agent the wide or tedious jobs, one at a time, with a plan first.
+(4) Review every diff as if a new colleague wrote it. (5) Keep what you learn in `CLAUDE.md`, so the next session starts from it.
 
 **Give the assistant this project's facts (off by default).** `devtools/mcp/x0-facts/` is a small local server that answers from the same
 code X0 Navigator uses: where an `APP` field is set, what a `§TAG` means, how a file is loaded, what a change costs, the last provable
