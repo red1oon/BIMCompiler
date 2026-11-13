@@ -28,9 +28,9 @@ Background and every measurement this file cites: `prompts/EDITOR_MAINTAINABILIT
    `origin/main` (bim-ootb shared checkout is hook-blocked). Run `git worktree list` first and reuse one if it fits.
 5. **FOSS flow per PR:** a tracker issue (what, baseline, witness), then branch, one small PR `Fixes #N`, conventional title, CI green, merged
    and verified on `main` before the next (`docs/DeveloperGuide.md` §10; own sessions may merge their own verified PRs).
-6. **Order:** A → B → D → E → F → C (reasons in §ORDER). Status table at the end. **Exception (owner, 2026-11-13, #604):** the NEXT session's
-   one bounded task is **§F.4 X0 slice 1** (source-reading features of the VS Code plugin). Ask **F-8** first (it shapes X0-1 only; build X0-2
-   while waiting). If a second session is free, it runs A0 in parallel. §F.0 Z1–Z3 (zero-code wins) are built (bim-ootb PR #2919, result in §F.0).
+6. **Order:** A → B → D → E → F → C (reasons in §ORDER). Status table at the end. **Exception (owner, 2026-11-13, #604), now spent:** §F.4 X0 slice 1 ran
+   first and is **✅ DONE** (bim-ootb #2920 / PR #2922, result in §F.4). The order is back to A → B → D → E → F → C, so the NEXT session starts
+   **A0** (§READY) and asks **A-1**. Before that, ask **F-9** once (it decides whether §-Lens jumps ahead). §F.0 Z1–Z3 are built (PR #2919).
 7. **Where to start (§READY):** each part's first step that needs NO owner decision. Run that while the first decision is with the owner.
 
 ## RULES (any break = stop that part)
@@ -412,7 +412,7 @@ keystroke; (4) **never guess**: "no definition" beats a wrong jump.
   INCONCLUSIVE, as specced. `tests/audit_sw_precache.js` unchanged (268 found, 0 missing). Not checked by a witness: that VS Code itself
   accepts `kind: "file"` and shows the entries (the regexes and the task command are what the witness runs).
 
-### §F.4 X0 slice 1 — BUILD SPEC (the next session's task; owner, 2026-11-13: *"GO with your insight"*, #604)
+### §F.4 X0 slice 1 — BUILD SPEC · ✅ DONE 2026-11-13 (bim-ootb #2920 / PR #2922; owner, 2026-11-13: *"GO with your insight"*, #604)
 
 **Scope:** two read-only features, nothing else. A new extension folder `bim-ootb/devtools/vscode/x0-navigator/`. Open a bim-ootb tracker issue
 first, then one PR `Fixes #N`. Nothing outside `devtools/` changes. Nothing in it loads in a page: `devtools/` is not in any `PRECACHE_ASSETS`,
@@ -453,7 +453,7 @@ not in `scripts/minify_pages.js` `INCLUDE_DIRS`, and no page tags it. Check all 
 and 2 hover providers for `javascript` → `§X0_ACTIVATE definition=1 hover=2`. This proves wiring without anyone opening VS Code
 (PRIMAL LAW 1: the owner's eyes are not the test).
 
-**OPEN DECISION F-8 (before X0-1 is built; X0-2 does not wait):** build X0-1 as X0's own definition/hover providers (this spec), or as a
+**DECISION F-8 — ANSWERED 2026-11-13: own providers** (see DECISIONS). The question was: build X0-1 as X0's own definition/hover providers (this spec), or as a
 **TypeScript language-service plugin** (`typescriptServerPlugins` in `package.json`, no npm), the way Vue and Angular teach the editor links that
 exist only at runtime? The plugin also gives find-references and rename for `A.x`/`APP.x`; it is more machinery and harder to witness without the
 TS server. Proposal: own providers for slice 1 (pure node modules, witnessed directly); the plugin later if find-references/rename are wanted.
@@ -464,7 +464,40 @@ logs like `~/.cache/bim4d/` and `logs/`) to right after slice 1, ahead of DEV_TO
 **Done when:** `§X0_APPDEF … verdict=PASS`, `§DEVTK_SPEC … verdict=PASS`, `§X0_ACTIVATE definition=1 hover=2`, `§X0_ISOLATION precache=0
 minify=0 tags=0`, each red control FAILs as specified, PR merged on bim-ootb `main` and verified there.
 
+**RESULT 2026-11-13 — bim-ootb #2920 / PR #2922, squash `d7ca9eb3` on `main`. ✅ DONE (witness).** Built as specced, own providers (F-8).
+Files: `devtools/vscode/x0-navigator/` = `package.json` (no dependencies) · `extension.js` · `lib/app_surface_index.js` · `lib/tag_index.js` ·
+`README.md` (symlink install) · `tests/witness_x0_{appdef,taghover,activate,isolation}.js`. Re-run on merged `main`, logs read:
+- `§X0_APPDEF rows=1693 sampled=34 resolved=29 phantoms=5 line_matches=34 verdict=PASS` · whole index, for information:
+  `§X0_APPDEF_ALL rows=1693 fields=1693 definition=1411 stale=0 phantom=282 phantom_table=282`
+- `§DEVTK_SPEC tags=4346 files=719 known_hit=Y fake_none=Y verdict=PASS` (index of both repos builds in ~0.5 s: `§X0_TAG_INDEX … build_ms=461`)
+- `§X0_ACTIVATE definition=1 hover=2 commands=1 checks_failed=0 verdict=PASS`
+- `§X0_ISOLATION precache=0 minify=0 tags=0 sw_files=4 html_files=82 deps=0 red=Y verdict=PASS` · CI green · `audit_sw_precache` 268 found, 0 missing.
+- Red controls all behave: sample shifted one line → FAIL; phantom → no location; made-up field → nothing; shifted fixture index → `stale`;
+  spec places without `4D_MODEL_INTEGRITY.md` → FAIL; made-up tag → `no spec found`; planted precache/minify/page-tag hits each count 1;
+  no bim-compiler root → INCONCLUSIVE.
+- **How the spec was read (three places it did not say):** (1) the sample is every 50th row of ALL rows, so it holds phantoms; a phantom has no
+  definition and is judged at its `first read site` line instead (`line_matches == sampled` still required). (2) bare `A.x` / `app.x` trigger only
+  in a document that binds the name: the generator's own R5/R6 regexes, copied verbatim, and the witness FAILs if they drift from
+  `scripts/gen_app_surface.js`. `window.APP.x` counts, as it does in the generator. (3) `printed by:` lists log calls outside tests first,
+  then other code, then tests.
+- **FINDING 1, the committed index was stale:** the first witness run FAILED (`line_matches=30` of 34; whole index 109 of 1405 written fields
+  pointing at a line that no longer mentions the field). `internal/APP_SURFACE.md` was last generated 2026-11-09 and nothing regenerates or checks
+  it when source moves. Fixed in the same PR by regenerating (the one change outside `devtools/`; `tests/witness_app_surface.js` ALL PASS). It
+  **will drift again**: until something keeps it fresh, the stale guard turns those fields into "index stale", not into wrong jumps.
+  → new **OPEN DECISION F-10** below.
+- **FINDING 2, the generator indexes string literals:** a witness that quoted a god-object access in a string put 3 fake fields into the real
+  index (R9 strips comments, not strings; R8 excludes only the generator and its own witness). The X0 witnesses now assemble such sample text from
+  pieces and assert `devtools/` adds 0 rows. The class is still open for any other test file: a small item for `gen_app_surface.js`'s owner.
+- **Not proven by a witness:** how VS Code itself draws the hovers and follows the `file://…#L<line>` links. `§X0_ACTIVATE` drives the real
+  providers through a stub of the `vscode` calls, not through VS Code. The taghover witness ran against the local bim-compiler checkout.
+**OPEN DECISION F-10 (new, from FINDING 1):** how is `internal/APP_SURFACE.md` kept fresh? (a) a CI step that regenerates it and fails the PR when
+the committed copy differs; (b) X0 regenerates it in memory on demand and the committed file stops being the source; (c) leave it manual
+(the stale guard already prevents wrong jumps). Proposal: (a). It is one node step, no browser, and it also keeps the file honest for readers
+who do not use VS Code.
+
 **DECISIONS:**
+- 2026-11-13, owner, on F-8 (own providers or a TypeScript language-service plugin; recommendation: own providers): *"advice me and proceed"*.
+  → advised own providers (pure node modules, witnessed directly; the plugin can follow if find-references/rename are wanted) and built that.
 - 2026-11-13, owner (#604): *"GO with your insight"*, in reply to the proposal: "make F's source-reading features the Fable session's first task".
   → §F.4 X0 slice 1 runs first, before A0. F-4/F-5 were already answered by DEV_TOOLKIT §8/§10 (above), so no question was needed.
 
@@ -485,9 +518,9 @@ first, as §F.4, the next session's bounded task**; A0 runs in parallel if a sec
 | C | nothing; waits on B and D | C-1 part names + owners | |
 | D | nothing new; the multi-publisher list already exists (`types/globals.gen.d.ts`) | D-1 where the questions list lives | needs B's `owner` field |
 | E | `witness_kit/paths.js` (no behaviour change; witness: the same suite verdicts before and after) | E-1 the `PROVES:` header format | |
-| F | **§F.4 X0 slice 1: the next session's task** (owner, 2026-11-13). X0-2 needs no decision. F-4/F-5 already answered by DEV_TOOLKIT §8/§10 | F-8 providers or TS plugin | it shapes X0-1 |
+| F | §F.4 X0 slice 1 ✅ DONE (PR #2922). Nothing else in F starts without a decision | F-9 §-Lens next, or DEV_TOOLKIT's first slice | it picks F's next slice |
 
-Ask the owner **one decision per message, with the recommendation** (START HERE 2). 21 decisions are open (STATUS). Next session: build §F.4.
+Ask the owner **one decision per message, with the recommendation** (START HERE 2). 21 decisions are open (STATUS: F-8 answered, F-10 added). Next session: A0, and ask F-9.
 After it, start A0 and B0, and ask A-1 while they run.
 
 ## §M — re-measure before quoting
@@ -523,7 +556,7 @@ After it, start A0 and B0, and ask A-1 while they run.
 | C | named APP parts | open: 2 decisions |
 | D | owner table | open: 2 decisions |
 | E | proof map | open: 2 decisions · `paths.js` ready to start |
-| F | VS Code extension (X0 Navigator + Run & Ship + perf-impact monitor + DEV_TOOLKIT pack); AI optional | **§F.4 X0 slice 1 = next task, specced** · §F.0 Z1–Z3 ✅ (PR #2919) · open: 7 decisions (F-1, F-2, F-3, F-6, F-7, F-8, F-9) |
+| F | VS Code extension (X0 Navigator + Run & Ship + perf-impact monitor + DEV_TOOLKIT pack); AI optional | **§F.4 X0 slice 1 ✅ DONE (witness)** (bim-ootb PR #2922) · §F.0 Z1–Z3 ✅ (PR #2919) · open: 7 decisions (F-1, F-2, F-3, F-6, F-7, F-9, F-10) |
 
 ## §VET — 2026-11-13 vetting pass (issue #602), against bim-ootb `main` @ `a7c329e5`
 
