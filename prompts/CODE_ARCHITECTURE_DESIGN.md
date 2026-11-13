@@ -1040,6 +1040,25 @@ tab, pixel readback, webview, second network path or new dependency (§RULES).
 - 2026-11-14, owner: *"ok"*, to the recommendation above (do not run the outside prompt; record the three steps as one F decision, step 1 first).
   → reading: recorded as F-13, order 1 → 2 → 3. No go to build yet; step 1's spec and its two open points come to the owner first.
 
+### §F.16 Context for this file (F-3 (a)) + the false-PHANTOM fix — BUILT 2026-11-14, PRs open at session cut-off (usage limit)
+
+Owner, 2026-11-14: *"Implement the MCP or Claude Code role in the VSC since it is specd and whatever is still outstanding while i go thru the cheatsheet."*
+- **bim-ootb #2961 / PR #2964 (auto-merge on, checks green when last seen, NOT confirmed merged):** `BINDS_A` also accepts `var|let|const A = APP`
+  (generator + X0's verbatim copy). `§APP_SURFACE` fields 1693 → 1696, phantom 282 → 281; `§APP_SURFACE_W … R5b / R5b-RED / R5b-real PASS`, ALL PASS.
+  Still to do: replace the Developer Guide §4.1 step 5 PHANTOM example and picture (`toggleGridOverlay` is no longer one; a true one: `_applyViewFilter`).
+- **bim-ootb #2965 / PR #2966 (auto-merge on, CI running, NOT confirmed merged):** `lib/file_context.js` (no `vscode` import) builds one markdown
+  block per file: header comment · how it reaches a user + the bump command · APP fields whose write site is in it · each § tag it prints with spec
+  place and last provable value or the named reason. Command *X0 Navigator: Context for this file* (opens beside, copies); facts-server tool
+  `context_for_file` (7 tools now). New `lens_index.explain`: every printed tag gets a state (shown / hidden + why / absent + why).
+  `§X0_CONTEXT header=Y load=Y fields=Y tags=Y changed_hidden=Y unstamped_no_value=Y empty_says_none=Y missing_file=Y no_index_inconclusive=Y
+  real_files=6 real_same=6 verdict=PASS` · `§X0_MCP tools=7 … context=Y … verdict=PASS` · `§X0_ACTIVATE … commands=7 … verdict=PASS`.
+  **Not run:** the command in a real VS Code (`realvsc` harness). **Not in v1:** owner, witnesses, rules that apply (parts D, E).
+- **NEXT session, in order:** (1) confirm #2964 and #2966 merged, run Fetch back, re-run the witnesses on `main`; remove bim-ootb worktree
+  `/tmp/wt-snippets-slog-25513` (this lane's; check clean + pushed first, never `--force`). (2) §F.15 step 2: put `lens_index.explain`'s reason in the
+  `§TAG` hover (the function exists; only the glue + witness are missing). (3) Developer Guide: §4.1 PHANTOM example, the new command, `slog`/`spec`
+  snippets, `context_for_file`. (4) §F.15 step 1 (bake stamp): two open points go to the owner first. (5) the owner's VS Code token-counter question
+  is still unanswered (check the Claude Code docs). Blocked on the owner: F-1, F-2, F-6, F-7, and the token for F-12 step 2.
+
 ---
 
 ## §ORDER — why A → B → D → E → F → C
