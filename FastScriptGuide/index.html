@@ -4132,32 +4132,32 @@ reason: role 103 (GardenWorld User) is not granted a window that shows Tax (AD_W
 <!-- run: mis_screen cut=150 -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;Down Right Esc\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/mis.js kind=C_BPartner name=Standard limit=3 --plain 2&gt;/dev/null
 -&gt; mis.describe kind=C_BPartner
--&gt; mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Name2 names=Y limit=3 offset=0 name=Standard
+-&gt; mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Logo_ID,C_BP_Group_ID names=Y limit=3 offset=0 name=Standard
 C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]   no role: nothing is filtered
-   C_BPartner_ID  Value     Name      Name2
- &gt; 112            Standard  Standard        &gt;[U Edit]&lt; [D Delete] [C Copy]
-   1300112        Standard  Standard       
+   C_BPartner_ID  Value     Name      Logo_ID  C_BP_Group_ID     
+ &gt; 112            Standard  Standard           Standard Customers &gt;[U Edit]&lt; [D Delete] [C Copy]
+   1300112        Standard  Standard           Standard Customers
 the line it will run: mis.read kind=C_BPartner id=112
  Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
 key Down
 C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]   no role: nothing is filtered
-   C_BPartner_ID  Value     Name      Name2
-   112            Standard  Standard       
- &gt; 1300112        Standard  Standard        &gt;[U Edit]&lt; [D Delete] [C Copy]
+   C_BPartner_ID  Value     Name      Logo_ID  C_BP_Group_ID     
+   112            Standard  Standard           Standard Customers
+ &gt; 1300112        Standard  Standard           Standard Customers &gt;[U Edit]&lt; [D Delete] [C Copy]
 the line it will run: mis.read kind=C_BPartner id=1300112
  Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
 key Right
 C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]   no role: nothing is filtered
-   C_BPartner_ID  Value     Name      Name2
-   112            Standard  Standard       
- &gt; 1300112        Standard  Standard        [U Edit] &gt;[D Delete]&lt; [C Copy]
+   C_BPartner_ID  Value     Name      Logo_ID  C_BP_Group_ID     
+   112            Standard  Standard           Standard Customers
+ &gt; 1300112        Standard  Standard           Standard Customers [U Edit] &gt;[D Delete]&lt; [C Copy]
 the line it will run: mis.delete kind=C_BPartner id=1300112
  Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
 key Esc
 C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]   no role: nothing is filtered
-   C_BPartner_ID  Value     Name      Name2
-   112            Standard  Standard       
- &gt; 1300112        Standard  Standard        [U Edit] &gt;[D Delete]&lt; [C Copy]
+   C_BPartner_ID  Value     Name      Logo_ID  C_BP_Group_ID     
+   112            Standard  Standard           Standard Customers
+ &gt; 1300112        Standard  Standard           Standard Customers [U Edit] &gt;[D Delete]&lt; [C Copy]
 the line it will run: mis.delete kind=C_BPartner id=1300112
  Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
 </code></pre></div>
@@ -4166,10 +4166,10 @@ the line it will run: mis.delete kind=C_BPartner id=1300112
 <!-- run: mis_form cut=200 -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;+\n=GD300\nTab\n=Guide Four\nEnter\ny\nEsc\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/mis.js kind=C_BPartner value=GD300 --plain 2&gt;/dev/null | grep &#39;^-&gt;&#39;
 -&gt; mis.describe kind=C_BPartner
--&gt; mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Name2 names=Y limit=10 offset=0 value=GD300
+-&gt; mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Logo_ID,C_BP_Group_ID names=Y limit=10 offset=0 value=GD300
 -&gt; mis.new kind=C_BPartner dry=Y
 -&gt; mis.new kind=C_BPartner Value=GD300 Name=&quot;Guide Four&quot;
--&gt; mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Name2 names=Y limit=10 offset=0 value=GD300
+-&gt; mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Logo_ID,C_BP_Group_ID names=Y limit=10 offset=0 value=GD300
 </code></pre></div>
 <p>Edit works the same way: it shows only the columns the window lets a person edit, with lookups as names, and sends only what you changed. Copy starts a new record from the pointed one, so you must change what must be unique (a duplicate is refused and your typing is kept). Set <code>MIS_SESSION_FILE=session.door</code> and a terminal session records the lines it ran, one per line, as a script you can read and run again.</p>
 <h2 id="choose-how-the-answer-is-shown-and-keep-it">Choose how the answer is shown, and keep it<a class="headerlink" href="#choose-how-the-answer-is-shown-and-keep-it" title="Permanent link">&para;</a></h2>
@@ -4676,6 +4676,14 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <td>a bim-ootb checkout</td>
 </tr>
 <tr>
+<td><code>mis.add_window</code></td>
+<td>Add a window from a CSV</td>
+<td><code>file</code>, <code>table</code> (optional), <code>workflow</code> (optional), <code>dry</code> (optional), <code>master</code> (optional)</td>
+<td>writes</td>
+<td>human, ai</td>
+<td>a bim-ootb checkout</td>
+</tr>
+<tr>
 <td><code>erp.column</code></td>
 <td>Who fills a column: twin and legacy side by side (old name of mis.column)</td>
 <td><code>kind</code>, <code>column</code></td>
@@ -4759,7 +4767,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 </table>
 <!-- /GEN:verbs -->
 
-<p><strong>Coverage today.</strong> The list is small on purpose: 46 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 6 ERP verbs for a document's life and 11 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.</p>
+<p><strong>Coverage today.</strong> The list is small on purpose: 47 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 6 ERP verbs for a document's life and 12 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.</p>
 <h2 id="what-is-not-checked">What is not checked<a class="headerlink" href="#what-is-not-checked" title="Permanent link">&para;</a></h2>
 <p>A reply lists what its check did not cover. For the Modeller's edit report the list is:</p>
 <!-- run: notchecked cut=520 -->
