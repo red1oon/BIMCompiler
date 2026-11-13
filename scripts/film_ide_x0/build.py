@@ -6,7 +6,30 @@
 import os, re, sys, json, subprocess, shutil
 H = os.path.dirname(os.path.abspath(__file__)); O = os.path.join(H, 'out'); W = os.path.join(O, 'work'); P = os.path.join(H, '..', '..', 'prompts')
 PY = os.path.expanduser('~/.local/share/film_narration/venv/bin/python')
-FPS = 24; BG = '#0f172a'; CARD_BG = '#0b0f17'; CORAL = '#FF6B78'; OFF = '#F3EEE8'; SKY = '#7dd3fc'; FONT = 'DejaVu-Sans'; FONTB = 'DejaVu-Sans-Bold'
+LANG = os.environ.get('FILM_LANG', 'en')        # en (Kokoro, local) | zh (Mandarin: Edge voices, per prompts/FILM_NARRATION.md PLAYBOOK C)
+FPS = 24; BG = '#0f172a'; CARD_BG = '#0b0f17'; CORAL = '#FF6B78'; OFF = '#F3EEE8'; SKY = '#7dd3fc'
+FONT, FONTB = ('Noto-Sans-CJK-SC', 'Noto-Sans-CJK-SC-Bold') if LANG == 'zh' else ('DejaVu-Sans', 'DejaVu-Sans-Bold')
+# Every on-screen text of the cards, per language. The editor's own screens stay as the product shows them.
+TXT = {
+ 'en': dict(open_line='BIM-ERP is Open Source, for anyone to work on 2D thru to 7D on single platform',      # the owner's words, verbatim
+   chapter='CHAPTER %d', title=('Editing', 'Real Code'), ch=[('It never', 'guesses'), ('What does this', 'tag mean?'), ('It stays current', 'by itself'), ('Which code', 'made this log?'), ('Run it. Check it.', 'Ship it.')],
+   idea_h='One object, two names', idea=[('The code writes it as', 'A.db = …\n(a short name)'), ('and reads it as', 'APP.db\n(a long name)'), ('So a search for', '"APP.db ="\nmisses the real line'),
+     ("The project's script writes an index", '%s fields, each with the line that sets it'), ('The editor add-on only reads it', 'no knowledge of its own, so it cannot drift')],
+   idea_f='%s of the %s fields are written only under the short name',
+   lim_h='What it does not do yet', lim=[('Run & Ship', 'it does not commit, open a pull request, merge or deploy for you; no browser step'), ('Cost if deployed', 'raw bytes only: not minified, no budget, no memory estimate'),
+     ('Values beside the code', 'only logs that name their code; few lines light up until more are saved')], lim_f='First versions. Proven in one editor version, on Linux: VS Code %s',
+   close1='No AI inside   ·   No dependencies   ·   Network only when you press Fetch back', close2='Install it in two commands. The steps are in the Developer Guide, section 4.1:',
+   close3='source:  github.com/red1oon/bim-ootb   ·   devtools/vscode/x0-navigator', close4='Every screen is the real editor, recorded as shipped. Every number comes from its own log.'),
+ 'zh': dict(open_line='BIM-ERP 是开源的，任何人都能在同一个平台上完成从 2D 到 7D 的工作',
+   chapter='第 %d 章', title=('编辑', '真实代码'), ch=[('它从不', '猜测'), ('这个标记', '是什么意思？'), ('它自己', '保持最新'), ('这份日志', '出自哪份代码？'), ('运行。检查。', '发布。')],
+   idea_h='一个对象，两个名字', idea=[('代码写入时用', 'A.db = …\n（短名字）'), ('读取时用', 'APP.db\n（长名字）'), ('所以搜索', '“APP.db =”\n找不到真正的那一行'),
+     ('项目自己的脚本生成一份索引', '%s 个字段，每个都带有赋值所在的行'), ('编辑器插件只读取它', '它自己不存任何知识，所以不会走样')],
+   idea_f='其中 %s 个字段（共 %s 个）只用短名字写入',
+   lim_h='它现在还不能做的事', lim=[('运行与发布（Run & Ship）', '不会替你提交、发起合并请求、合并或部署；没有浏览器步骤'), ('部署代价（Cost if deployed）', '只统计原始字节：未压缩，没有预算，没有内存估算'),
+     ('代码旁的值', '只认写明了代码版本的日志；日志存得多了，才会亮起更多行')], lim_f='第一版。已在一个编辑器版本、Linux 上验证：VS Code %s',
+   close1='内部没有 AI   ·   没有依赖   ·   只在你按下 Fetch back（取回核对）时联网', close2='两条命令即可安装。步骤见开发者指南第 4.1 节：',
+   close3='源码： github.com/red1oon/bim-ootb   ·   devtools/vscode/x0-navigator', close4='每个画面都是真实的编辑器，按发布状态录制。每个数字都来自它自己的日志。'),
+}[LANG]
 os.makedirs(W, exist_ok=True)
 LOG = open(os.path.join(O, 'build.log'), 'w')
 def log(s):
@@ -68,51 +91,49 @@ def chapter(key, kicker, t1, t2, line, size=120):
 def box(x, y, w, h, title, body):
     return ['-fill', '#16223b', '-stroke', SKY, '-strokewidth', '3', '-draw', 'roundrectangle %d,%d %d,%d 18,18' % (x, y, x + w, y + h), '-stroke', 'none',
             '-font', FONTB, '-pointsize', '34', '-fill', SKY, '-annotate', '+%d+%d' % (x + 28, y + 60), title,
-            '-font', FONT, '-pointsize', '30', '-fill', OFF, '-annotate', '+%d+%d' % (x + 28, y + 108), body]
+            '-font', FONT, '-pointsize', '30', '-fill', OFF, '-annotate', '+%d+%d' % (x + 28, y + (98 if LANG == 'zh' else 108)), body]
 def arrow(x, y): return ['-font', FONTB, '-pointsize', '70', '-fill', CORAL, '-annotate', '+%d+%d' % (x, y), '→']
 def card_idea():
-    a = ['-size', '1920x1080', 'xc:' + BG, '-gravity', 'northwest', '-font', FONTB, '-pointsize', '46', '-fill', SKY, '-annotate', '+120+110', 'One object, two names']
-    a += box(120, 230, 480, 250, 'The code writes it as', 'A.db = …\n(a short name)') + arrow(625, 320)
-    a += box(720, 230, 480, 250, 'and reads it as', 'APP.db\n(a long name)') + arrow(1225, 320)
-    a += box(1320, 230, 480, 250, 'So a search for', '"APP.db ="\nmisses the real line')
-    a += box(120, 540, 780, 190, "The project's script writes an index", '%s fields, each with the line that sets it' % format(F['fields'], ','))
-    a += arrow(925, 600) + box(1020, 540, 780, 190, 'The editor add-on only reads it', 'no knowledge of its own, so it cannot drift')
-    a += ['-font', FONT, '-pointsize', '30', '-fill', '#94a3b8', '-annotate', '+120+775', '%s of the %s fields are written only under the short name' % (format(F['alias_only'], ','), format(F['fields'], ','))]
+    I = TXT['idea']
+    a = ['-size', '1920x1080', 'xc:' + BG, '-gravity', 'northwest', '-font', FONTB, '-pointsize', '46', '-fill', SKY, '-annotate', '+120+110', TXT['idea_h']]
+    a += box(120, 230, 480, 250, I[0][0], I[0][1]) + arrow(625, 320)
+    a += box(720, 230, 480, 250, I[1][0], I[1][1]) + arrow(1225, 320)
+    a += box(1320, 230, 480, 250, I[2][0], I[2][1])
+    a += box(120, 540, 780, 190, I[3][0], I[3][1] % format(F['fields'], ','))
+    a += arrow(925, 600) + box(1020, 540, 780, 190, I[4][0], I[4][1])
+    a += ['-font', FONT, '-pointsize', '30', '-fill', '#94a3b8', '-annotate', '+120+775', TXT['idea_f'] % (format(F['alias_only'], ','), format(F['fields'], ','))]
     return conv(a, os.path.join(W, 'c_idea.png'))
 def card_limits():
-    a = ['-size', '1920x1080', 'xc:' + BG, '-gravity', 'northwest', '-font', FONTB, '-pointsize', '46', '-fill', CORAL, '-annotate', '+120+110', 'What it does not do yet']
-    rows = [('Run & Ship', 'it does not commit, open a pull request, merge or deploy for you; no browser step'),
-            ('Cost if deployed', 'raw bytes only: not minified, no budget, no memory estimate'),
-            ('Values beside the code', 'only logs that name their code; few lines light up until more are saved')]
+    a = ['-size', '1920x1080', 'xc:' + BG, '-gravity', 'northwest', '-font', FONTB, '-pointsize', '46', '-fill', CORAL, '-annotate', '+120+110', TXT['lim_h']]
     y = 220
-    for t, b in rows: a += box(120, y, 1680, 160, t, b); y += 185
-    a += ['-font', FONT, '-pointsize', '30', '-fill', '#94a3b8', '-annotate', '+120+790', 'First versions. Proven in one editor version, on Linux: VS Code %s' % F['vscode']]
+    for t, b in TXT['lim']: a += box(120, y, 1680, 160, t, b); y += 185
+    a += ['-font', FONT, '-pointsize', '30', '-fill', '#94a3b8', '-annotate', '+120+790', TXT['lim_f'] % F['vscode']]
     return conv(a, os.path.join(W, 'c_limits.png'))
 def card_close():
-    a = ['-size', '1920x1080', 'xc:' + CARD_BG, '-gravity', 'north', '-font', FONTB, '-pointsize', '84', '-fill', OFF, '-annotate', '+0+110', 'Editing', '-fill', CORAL, '-annotate', '+0+215', 'Real Code',
-         '-pointsize', '36', '-fill', OFF, '-annotate', '+0+365', 'No AI inside   ·   No dependencies   ·   Network only when you press Fetch back',
-         '-font', FONT, '-pointsize', '36', '-fill', OFF, '-annotate', '+0+460', 'Install it in two commands. The steps are in the Developer Guide, section 4.1:',
+    a = ['-size', '1920x1080', 'xc:' + CARD_BG, '-gravity', 'north', '-font', FONTB, '-pointsize', '84', '-fill', OFF, '-annotate', '+0+110', TXT['title'][0], '-fill', CORAL, '-annotate', '+0+215', TXT['title'][1],
+         '-pointsize', '36', '-fill', OFF, '-annotate', '+0+365', TXT['close1'],
+         '-font', FONT, '-pointsize', '36', '-fill', OFF, '-annotate', '+0+460', TXT['close2'],
          '-font', FONTB, '-pointsize', '40', '-fill', SKY, '-annotate', '+0+525', 'red1oon.github.io/BIMCompiler/DeveloperGuide',
-         '-font', FONT, '-pointsize', '32', '-fill', SKY, '-annotate', '+0+610', 'source:  github.com/red1oon/bim-ootb   ·   devtools/vscode/x0-navigator',
-         '-fill', '#94a3b8', '-pointsize', '28', '-annotate', '+0+700', 'Every screen is the real editor, recorded as shipped. Every number comes from its own log.']
+         '-font', FONT, '-pointsize', '32', '-fill', SKY, '-annotate', '+0+610', TXT['close3'],
+         '-fill', '#94a3b8', '-pointsize', '28', '-annotate', '+0+700', TXT['close4']]
     return conv(a, os.path.join(W, 'c_close.png'))
 
-OPEN_LINE = 'BIM-ERP is Open Source, for anyone to work on 2D thru to 7D on single platform'      # the owner's words, verbatim
+CH = lambda n: chapter('ch%d' % n, TXT['chapter'] % n, TXT['ch'][n - 1][0], TXT['ch'][n - 1][1], '')
 SEGS = [   # (kind, key, [(picture, (turn, plus seconds))])   a beat's picture changes when that spoken turn starts (measured), never by guess
- ('card', 'open', [(chapter('open', 'CHAPTER 0', 'Editing', 'Real Code', OPEN_LINE), 1)]),
+ ('card', 'open', [(chapter('open', TXT['chapter'] % 0, TXT['title'][0], TXT['title'][1], TXT['open_line']), 1)]),
  ('beat', 'intro', [(still('i1_explorer'), (0, 0))]),
  ('beat', 'before', [(still('b1_line'), (0, 0)), (still('b2_f12_nothing'), (1, 1.0)), (still('b3_search_tests_only'), (2, 0))]),
  ('beat', 'idea', [(card_idea(), (0, 0))]),
  ('beat', 'after', [(still('a1_hover'), (0, 0)), (still('a2_jumped'), (3, 0))]),
- ('card', 'ch_guess', [(chapter('ch_guess', 'CHAPTER 1', 'It never', 'guesses', ''), 1)]),
+ ('card', 'ch_guess', [(CH(1), 1)]),
  ('beat', 'guess', [(still('p1_phantom'), (0, 0)), (still('u1_unknown'), (2, 0))]),
- ('card', 'ch_tag', [(chapter('ch_tag', 'CHAPTER 2', 'What does this', 'tag mean?', ''), 1)]),
+ ('card', 'ch_tag', [(CH(2), 1)]),
  ('beat', 'tag', [(still('t1_tag'), (0, 0)), (still('t2_fake_tag'), (2, 0))]),
- ('card', 'ch_fresh', [(chapter('ch_fresh', 'CHAPTER 3', 'It stays current', 'by itself', ''), 1)]),
+ ('card', 'ch_fresh', [(CH(3), 1)]),
  ('beat', 'fresh', [(still('e0_write_before'), (0, 0)), (still('e1_write_moved'), (0, 1.1)), (still('e2_right_after_save'), (1, 0)), (still('e3_knows_new_line'), (3, 1.0))]),
- ('card', 'ch_stamp', [(chapter('ch_stamp', 'CHAPTER 4', 'Which code', 'made this log?', ''), 1)]),
+ ('card', 'ch_stamp', [(CH(4), 1)]),
  ('beat', 'stamp', [(still('l1_log_stamp'), (0, 0))]),
- ('card', 'ch_ship', [(chapter('ch_ship', 'CHAPTER 5', 'Run it. Check it.', 'Ship it.', ''), 1)]),
+ ('card', 'ch_ship', [(CH(5), 1)]),
  ('beat', 'ship', [(still('r1_check'), (0, 0)), (still('r2_cost'), (2, 0)), (still('r3_lens'), (4, 0))]),
  ('beat', 'limits', [(card_limits(), (0, 0))]),
  ('beat', 'close', [(card_close(), (0, 0))]),
@@ -120,11 +141,12 @@ SEGS = [   # (kind, key, [(picture, (turn, plus seconds))])   a beat's picture c
 CARD_S = {'open': 5.0}; CARD_DEF = 3.6; TAIL = 1.4; CLOSE_TAIL = 3.5
 
 # ── 3. measure each beat's speech (a fit with unlimited room), then set the picture to it ──
-rows = [l.rstrip('\n').split('\t') for l in open(os.path.join(H, 'narration_en.tsv.src')) if l.strip()]
+rows = [l.rstrip('\n').split('\t') for l in open(os.path.join(H, 'narration_%s.tsv.src' % LANG)) if l.strip()]
 shutil.copy(os.path.join(P, 'film_narration_ass_head.txt'), os.path.join(W, 'ass_head.txt'))
 def fit(tsv_rows, tag, film_sec):
     open(os.path.join(W, tag + '.tsv'), 'w').write(''.join('\t'.join(r) + '\n' for r in tsv_rows))
-    r = subprocess.run([PY, os.path.join(P, 'film_narration_fit_kokoro_v3.py'), tag + '.tsv', tag, '1.15'], cwd=W, capture_output=True, text=True,
+    cmd = [PY, os.path.join(P, 'film_narration_fit_kokoro_v3.py'), tag + '.tsv', tag, '1.15'] if LANG == 'en' else [PY, os.path.join(P, 'film_narration_fit_edge.py'), tag + '.tsv', tag, LANG]
+    r = subprocess.run(cmd, cwd=W, capture_output=True, text=True,
                        env=dict(os.environ, FILM_SEC=str(film_sec)))
     open(os.path.join(W, tag + '_fit.log'), 'w').write(r.stdout + r.stderr)
     if r.returncode != 0: log('§FILM_BUILD_FAIL fit ' + r.stderr[-500:]); sys.exit(1)
@@ -174,13 +196,16 @@ if got != TOTAL: sys.exit(1)
 
 # ── 4. fit at the real cues, then mux ──
 final = [[r[0], '%.3f' % cues[r[0]][0], '%.3f' % cues[r[0]][1], r[1], r[2], r[3]] for r in rows]
-open(os.path.join(H, 'narration_en.tsv'), 'w').write(''.join('\t'.join(r) + '\n' for r in final))
-out = fit(final, 'en', TOTAL / FPS)
+open(os.path.join(H, 'narration_%s.tsv' % LANG), 'w').write(''.join('\t'.join(r) + '\n' for r in final))
+out = fit(final, LANG, TOTAL / FPS)
 fits = re.findall(r'§NARR_FIT (\S+) .*?-> (\S+)', out); tones = re.findall(r'§NARR_TONE .*? (OK|WRONG|INCONCLUSIVE) ', out)
 log('§FILM_FIT beats=%d detail=%d other=%s tone_ok=%d tone_wrong=%d tone_inconclusive=%d' % (len(fits), sum(1 for _, p in fits if p == 'DETAIL'),
     [f for f in fits if f[1] != 'DETAIL'], tones.count('OK'), tones.count('WRONG'), tones.count('INCONCLUSIVE')))
 for l in out.split('\n'):
     if 'WRONG' in l: log('  ' + l)
+if LANG == 'zh':   # PLAYBOOK C: Mandarin captions are cut into short pieces at Chinese punctuation before the mux
+    r = subprocess.run([sys.executable, os.path.join(P, 'film_zh_caption_split.py'), 'zh.ass', 'zh_split.ass', '20'], cwd=W, capture_output=True, text=True)
+    log(r.stdout.strip() or r.stderr[-300:]); shutil.copy(os.path.join(W, 'zh_split.ass'), os.path.join(W, 'zh.ass'))
 OUT = os.path.abspath(sys.argv[1])
-r = subprocess.run([sys.executable, os.path.join(P, 'film_narration_mux.py'), 'en', silent, OUT], cwd=W, capture_output=True, text=True, env=dict(os.environ, FILM_SEC='%.3f' % (TOTAL / FPS)))
+r = subprocess.run([sys.executable, os.path.join(P, 'film_narration_mux.py'), LANG, silent, OUT], cwd=W, capture_output=True, text=True, env=dict(os.environ, FILM_SEC='%.3f' % (TOTAL / FPS)))
 log(r.stdout.strip() or r.stderr[-300:])

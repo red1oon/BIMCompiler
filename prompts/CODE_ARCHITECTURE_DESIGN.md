@@ -736,6 +736,19 @@ a log written on camera by the repo's own stamper and generator) and a card "Wha
 detail=11 other=[] tone_ok=16 tone_wrong=0` · longest silence 5.58 s · −17.1 LUFS · caption band empty on the new stills (0.104575).
 The one real event this take: `index stale` → 2.4 s → `viewer/city.js:718`. **Open:** the owner's review of v5; other languages.
 The film file is local only (owner rule: films are never pushed, only their scripts); pipeline in `scripts/film_ide_x0/`.
+**Mandarin cut, 2026-11-14 (owner: *"Film is good. Do Mandarin version and drop it in remote-control here for my mobile."*):**
+`~/Videos/Editing_Real_Code_ZH_AFTER_2026-11-14_v5.mp4`, 212.4 s, 5,097 frames, sent to the owner's device (English v5 too). `FILM_LANG=zh
+python3 build.py`: narration `narration_zh.tsv.src` (same beats, turns and sources as English), every card translated, Edge voices zh-CN
+Xiaoxiao / Yunxi (the playbook's Mandarin voices; the script text goes to Microsoft's service), captions cut at Chinese punctuation, CJK
+drawn with Noto Sans CJK SC. `§FILM_GUARD spoken_numbers=12 mismatches=[] verdict=PASS` · `§FILM_SILENT frames=5097 planned=5097 OK` ·
+`§FILM_FIT beats=11 detail=11` · `§ZH_CAPTIONS in=38 out=64 longest_chars=35` (the longest piece holds the Latin words "Visual Studio
+Code") · longest silence 5.57 s · −16.8 LUFS · font selected: NotoSansCJKsc. A rebuild from the committed sources gave the same 5,097
+frames. **Not checked by a Mandarin speaker:** the translation's wording and the voices' tones. The editor's own screens stay in English.
+**Lost and redone:** the first worktree (`/tmp/wt-film-zh`) vanished mid-task with uncommitted work (not the hourly janitor: its log has
+no line for it; cause not found). Redone from the session's scratch folder, committed and pushed after each step.
+**Developer Guide, same day (owner: *"should have nice screenshots of the VSC steps"*):** §4.1 now has 14 pictures of the real editor
+(`docs/figs/x0/`, under 1 MB, cropped from the film's stills plus one of the Extensions view after a real `.vsix` install), as an 11-step
+"What you see"; §4.2 gained an agent-versus-by-hand comparison, the three worries (control, cost, varying results) and a learning path.
 
 *(the change list as it was written on 2026-11-13, kept for the record)*
 
