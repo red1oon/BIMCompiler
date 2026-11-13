@@ -819,7 +819,40 @@ Run against the real site while testing F.12c. Neither was known; both are deplo
    `§SHIP_FETCH site=https://red1oon.github.io/bim-ootb vs=origin/main verdict=PASS`.
    Not checked: which page reads `erp/version.json` and what it showed while the file was broken or missing.
 
+### §F.14 A local facts server for any AI assistant (MCP) — BUILD SPEC (F-3 answered (b); owner, 2026-11-14: *"Both."* → the Claude + VS Code pair)
+
+The owner asked how Claude Code and VS Code work together (*"I hear of co-pilot method but wonder what is Claude's method"*). Answer given
+from the Claude Code docs: no inline autocomplete; an agent with an editor extension (selection and diagnostics shared, diffs in the editor);
+the documented way to give it a project's own tools is an MCP server. Recommendation: install the extension, then build the facts server.
+The owner chose both, and asked: *"can it be toggle control ie ON/OFF?"* → yes, and **OFF is the default** (below).
+**Done the same day:** the Claude Code extension installed in the owner's VS Code (`anthropic.claude-code` v2.1.323, via `code --install-extension`).
+
+**Scope:** bim-ootb `devtools/mcp/x0-facts/` (one folder: `server.js`, `README.md`, `tests/`). Plain node, **no npm**: the MCP wire format
+(JSON-RPC 2.0, one JSON message per line on stdin/stdout) is spoken by hand. It reuses X0 Navigator's `lib/` modules, so the assistant and
+the editor answer from the same code. It never calls a model and opens no network connection; nothing a page loads changes.
+- **Tools (all read-only):** `where_is_field_set {field}` (the APP index, fresh copy, stale guard; phantom and unknown say so, never a guess) ·
+  `what_is_tag {tag}` (spec places + the code that prints it; `no spec found`) · `how_is_file_loaded {file}` (start-up / offline cache / not
+  loaded at start) · `cost_if_deployed {base?}` (the `§DEPLOY_COST` lines) · `last_logged_value {file}` (the provable values only, and why the
+  others are hidden) · `ship_check {base?}` (syntax, precache audit, bump rule). **Not offered:** Fetch back (network), anything that writes.
+- **ON/OFF:** nothing is committed that turns it on. No `.mcp.json` in the repo (it would prompt every session of every developer).
+  ON = `claude mcp add x0-facts --scope local -- node devtools/mcp/x0-facts/server.js` (this developer, this project only).
+  OFF = `claude mcp remove x0-facts --scope local`. Inside a session, `/mcp` shows and switches it. When no assistant starts it, no process runs.
+- **Witness `W-X0-MCP`** (`tests/witness_x0_mcp.js`, node): starts the real server as a child process and speaks the protocol to it.
+  `initialize` → a result naming the server; `tools/list` → the 6 tools, each with an input schema; each tool called on the real repo and
+  compared with the lib's own answer (a written field → its `file:line`, and that line mentions the field; a phantom → says PHANTOM; a made-up
+  field → "not in the index"; a known tag → a spec place; a made-up tag → `no spec found`). **Red controls:** an unknown tool → an error
+  result, not a crash; a line that is not JSON → a JSON-RPC error and the server keeps answering; the server's source imports no network
+  module (read with the parser). `§X0_MCP tools= field= phantom= unknown= tag= fake_tag= cost= loaded= lens= check= bad_tool_error= bad_json_survives= network_modules=0 verdict=`.
+- **One check with a real client:** `claude mcp add` in a throw-away project folder, `claude mcp list` must report the server connected, then
+  `claude mcp remove`. No model call is made by any of this.
+- **Done when:** `§X0_MCP … verdict=PASS`, the real client reports it connected, PR merged on `main` (auto-merge enabled by the session
+  itself, then Fetch back PASS: §F.13).
+
 **DECISIONS:**
+- 2026-11-14, owner, on F-3 (which assistant help; proposal (a) now, (b) next): asked how Claude and VS Code work together, was advised to
+  install the Claude Code extension and build the local facts server, replied *"Both."* (clarified on request: the Claude + VS Code pair,
+  not the Pages pair) and asked *"can it be toggle control ie ON/OFF?"* → **F-3 = (b), built now, OFF by default** (§F.14). (a) "Context for
+  this file" and (c) are not built. **F-12 (Pages) is still open: nothing was changed on the live site.**
 - 2026-11-13, owner, on "first versions of the three, or complete as specified?" (recommendation: first versions): *"OK first version, then
   next session for the next"*. → §F.12. The complete versions and the film recut are the next session's.
 - 2026-11-13, owner, after watching cut v4: the four messages quoted in §F.11 (Chapter 0 style · tell the install · a better intro ·
