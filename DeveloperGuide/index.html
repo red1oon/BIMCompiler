@@ -1796,6 +1796,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="4. Finding things">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-x0-navigator-the-repos-own-vs-code-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 X0 Navigator: the repo's own VS Code extension
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3292,6 +3309,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="4. Finding things">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-x0-navigator-the-repos-own-vs-code-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 X0 Navigator: the repo's own VS Code extension
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3752,6 +3786,8 @@ not counted). You will not read it all; §6 says what to read first.</p>
 <li>Serve it: task <strong>Serve repo (http://localhost:8000)</strong>, or <code>python3 -m http.server 8000</code> in the repo root.</li>
 <li>Open <code>http://localhost:8000/viewer/viewer.html</code> (or <code>erp/idempiere.html</code>, <code>modeller/modeller.html</code>).</li>
 <li>To debug with breakpoints: Run ▸ <strong>Viewer in Chrome</strong> (also ERP, Modeller, and <strong>Node: this witness / script</strong>).</li>
+<li>Optional, recommended: install the repo's own VS Code extension, <strong>X0 Navigator</strong> (§4.1). One command, works offline:
+   <code>ln -s "$PWD/devtools/vscode/x0-navigator" ~/.vscode/extensions/bim-devtools.x0-navigator-0.1.0</code>, then reload VS Code.</li>
 </ol>
 <p><code>npm install</code> is needed only for the lint check (<code>eslint</code>, a dev tool) and is never needed by the app.
 The app's only runtime dependency is <code>sql.js</code>, which is already vendored.</p>
@@ -3766,7 +3802,7 @@ The app's only runtime dependency is <code>sql.js</code>, which is already vendo
 <tbody>
 <tr>
 <td>Run this witness (full log → logs/)</td>
-<td><code>node &lt;current file&gt;</code>; full output to <code>logs/&lt;name&gt;.log</code>, last 20 lines and the exit code on screen</td>
+<td><code>node &lt;current file&gt;</code>; full output to <code>logs/&lt;name&gt;.log</code>, last 20 lines and the exit code on screen. Line 1 of the log is a <code>§LOG_STAMP</code> (§6)</td>
 </tr>
 <tr>
 <td>Run viewer witness suite</td>
@@ -3778,7 +3814,7 @@ The app's only runtime dependency is <code>sql.js</code>, which is already vendo
 </tr>
 <tr>
 <td>Regenerate editor indexes</td>
-<td><code>APP_SURFACE.md</code> and <code>types/globals.gen.d.ts</code></td>
+<td>the committed <code>internal/APP_SURFACE.md</code> and <code>types/globals.gen.d.ts</code>. X0 Navigator does not need this: it keeps its own fresh copy (§4.1)</td>
 </tr>
 </tbody>
 </table>
@@ -3798,11 +3834,11 @@ The app's only runtime dependency is <code>sql.js</code>, which is already vendo
 </tr>
 <tr>
 <td>Where an <code>APP.x</code> / <code>A.x</code> field is set</td>
-<td><code>internal/APP_SURFACE.md</code>. Its "phantom" list (171 fields read in production but never written) is a list of dead guards. Check before relying on one.</td>
+<td>With X0 Navigator (§4.1): <strong>F12</strong> or hover on the field. Without it: <code>internal/APP_SURFACE.md</code>. Its "phantom" list (171 fields read in production but never written) is a list of dead guards. Check before relying on one.</td>
 </tr>
 <tr>
 <td>What a <code>§TAG</code> means</td>
-<td>Search the tag. The code that prints it is the definition, and its spec is usually named in the same file's header.</td>
+<td>With X0 Navigator (§4.1): hover the tag. Without it: search the tag. The code that prints it is the definition, and its spec is usually named in the same file's header.</td>
 </tr>
 <tr>
 <td>What a spec section says (<code>§S59</code>, <code>W-BUMP</code>)</td>
@@ -3820,6 +3856,73 @@ The app's only runtime dependency is <code>sql.js</code>, which is already vendo
 </table>
 <p>Search hides vendored libraries and six generated one-line data files (<code>erp/genesis_dict.js</code>, <code>erp/fk_rules.js</code>, …). Those
 files open read-only. Edit the generator named on their first line instead.</p>
+<h3 id="41-x0-navigator-the-repos-own-vs-code-extension">4.1 X0 Navigator: the repo's own VS Code extension<a class="headerlink" href="#41-x0-navigator-the-repos-own-vs-code-extension" title="Permanent link">&para;</a></h3>
+<p>It lives in bim-ootb <code>devtools/vscode/x0-navigator/</code>. It is plain JavaScript with no dependencies and no build step, it never
+calls a model or the network, and no page loads it. Install: §3 step 6. It answers two questions from the repo's own files:</p>
+<table>
+<thead>
+<tr>
+<th>You do</th>
+<th>You get</th>
+<th>Read from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F12</strong> on <code>APP.camera</code> (also <code>A.x</code> / <code>app.x</code> in a file that binds that name)</td>
+<td>a jump to the line where the field is written</td>
+<td>the APP field index made by <code>scripts/gen_app_surface.js</code></td>
+</tr>
+<tr>
+<td>Hover the same field</td>
+<td><code>written at &lt;file:line&gt; · N writes · N reads</code></td>
+<td>the same index</td>
+</tr>
+<tr>
+<td>Hover a <code>§TAG</code> in any <code>.js</code> file</td>
+<td>up to 5 places in <code>prompts/</code> and <code>docs/</code> of both repos that name the tag (headings first), then up to 5 lines of code that print it</td>
+<td>the specs and the source</td>
+</tr>
+</tbody>
+</table>
+<p><strong>It never guesses.</strong> Each answer below is on purpose:</p>
+<table>
+<thead>
+<tr>
+<th>It shows</th>
+<th>Meaning</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PHANTOM — read, never written</code>, and F12 does nothing</td>
+<td>no code sets this field: the guard can never be true, or its writer was removed</td>
+<td>do not rely on the field; see §11 item 4</td>
+</tr>
+<tr>
+<td>nothing at all on an <code>APP.x</code></td>
+<td>the field is not in the index (new and unsaved, or <code>A</code> is an unrelated local in this file)</td>
+<td>save the file and hover again</td>
+</tr>
+<tr>
+<td><code>index stale</code>, and F12 does nothing</td>
+<td>the line the index points at no longer mentions the field</td>
+<td>hover again in a few seconds, or run <strong>X0 Navigator: Rebuild indexes</strong></td>
+</tr>
+<tr>
+<td><code>no spec found</code> on a <code>§TAG</code></td>
+<td>no file in <code>prompts/</code> or <code>docs/</code> names the tag</td>
+<td>the code that prints it is all there is: read that</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The index looks after itself.</strong> The committed <code>internal/APP_SURFACE.md</code> is only a snapshot: about two merges in three move its line
+numbers (26 of 39, measured 2026-11-13). X0 runs the generator into VS Code's own storage folder when it starts, and again when
+a lookup misses after you saved a file. One run takes about 4 seconds in the background. It never writes inside the repo, so there is
+nothing to commit and nothing to conflict on. <strong>Do not regenerate and commit <code>APP_SURFACE.md</code> in an unrelated PR</strong> for X0's sake.</p>
+<p>For bim-compiler specs to show in a <code>§TAG</code> hover, keep the two clones side by side (<code>bim-ootb/</code> next to <code>bim-compiler/</code>), or set
+<code>bimDevtools.compilerRoot</code>. Its witnesses (node only, no VS Code needed) are listed in its <code>README.md</code>.</p>
 <hr />
 <h2 id="5-changing-things">5. Changing things<a class="headerlink" href="#5-changing-things" title="Permanent link">&para;</a></h2>
 <h3 id="51-any-edit-to-a-file-the-browser-loads">5.1 Any edit to a file the browser loads<a class="headerlink" href="#51-any-edit-to-a-file-the-browser-loads" title="Permanent link">&para;</a></h3>
@@ -3867,6 +3970,13 @@ oracle. The SQLite kernel must behave like legacy iDempiere, look and feel inclu
   red control (a case that must fail) so you know it can.</li>
 <li><strong>Visual behaviour</strong> (camera paths, positions, motion) is proven from numbers read off the real objects and <code>§</code> lines, never from
   how a screenshot looks.</li>
+<li><strong>A saved log says which code made it.</strong> The witness task and the suite runner (<code>npm test</code>) start every log with one line:
+  <code>§LOG_STAMP commit=&lt;hash&gt; dirty=&lt;n&gt; branch=… at=&lt;time&gt; cmd=…</code>, plus <code>dirty_files=…</code> when 1 to 10 tracked files differ from the commit
+  (<code>scripts/log_stamp.js</code>). <strong>Before you trust a value in a saved log, read that line:</strong> if the commit is old, or the file that prints
+  the value is in <code>dirty_files</code>, re-run the witness instead. A log without the line (anything saved before 2026-11-13, or by another
+  tool) cannot be tied to code. Measured that day: saved logs held about a quarter of the <code>§TAG</code>s the code prints, and almost none
+  said which code produced them. When you save a log yourself, put the stamp first:
+  <code>node scripts/log_stamp.js &lt;what you ran&gt; &gt; logs/x.log; node &lt;file&gt; &gt;&gt; logs/x.log 2&gt;&amp;1</code>.</li>
 </ul>
 <p><strong>First reading, about two evenings.</strong> The first three are the reading path in bim-ootb <code>prompts/SESSION_OPENER_READ_AND_REVIEW.md</code> §B;
 the last two are added here: <code>witness_kit/contract.js</code> → the op-log hash chain in <code>erp/kernel_ops.js</code> (<code>stableStringify</code> → <code>commitOp</code>) →
@@ -3974,6 +4084,16 @@ the last two are added here: <code>witness_kit/contract.js</code> → the op-log
 <td>Witness paths assume one machine</td>
 <td>Many witnesses hard-code the author's home folder</td>
 <td>Expect to adjust paths on a new machine; a shared resolver is an open item</td>
+</tr>
+<tr>
+<td>A saved log with no <code>§LOG_STAMP</code> line</td>
+<td>Its values look current but may come from code that has since changed. Measured 2026-11-13: almost no saved log said which code made it</td>
+<td>Read line 1 of the log (§6). No stamp, an old commit, or the printing file listed as dirty: re-run the witness</td>
+</tr>
+<tr>
+<td>A copy of the tree inside the tree (an agent worktree under <code>.claude/worktrees/</code>, a nested clone)</td>
+<td>A tool that walks folders reads the copy as source. <code>gen_app_surface.js</code> once put 1,082 rows pointing into such a copy, so F12 opened the stale file</td>
+<td>A dev tool skips any sub-folder that holds a <code>.git</code> entry, and its witness also runs on a checkout that looks like a working one, not only a clean one</td>
 </tr>
 </tbody>
 </table>

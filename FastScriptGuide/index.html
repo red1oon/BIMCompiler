@@ -1352,6 +1352,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Work with any table: the mis.* verbs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#see-and-change-records-as-a-role" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See and change records as a role
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3441,6 +3458,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Work with any table: the mis.* verbs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#see-and-change-records-as-a-role" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See and change records as a role
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3968,18 +4002,18 @@ shown 4 of 4
 <p>A Sales or Purchase document needs <code>issotrx=Y</code> or <code>N</code>. A partner or product may be given by name; a name that matches no record, or more than one, is refused. A line names its document by number:</p>
 <!-- run: new_order -->
 <div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_new.ops; BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js &#39;erp.new kind=Order issotrx=Y c_doctypetarget_id=132 c_bpartner_id=112 salesrep_id=101&#39;
-{&quot;request&quot;:&quot;d-mwb4lnmc-2305608-1&quot;,&quot;verb&quot;:&quot;erp.new&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;,&quot;answer&quot;:{&quot;number&quot;:&quot;50000&quot;,&quot;kind&quot;:&quot;Order&quot;,&quot;table&quot;:&quot;c_order&quot;,&quot;id&quot;:1500004,&quot;docStatus&quot;:&quot;DR&quot;,&quot;given&quot;:[&quot;IsSOTrx&quot;,&quot;C_DocTypeTarget_ID&quot;,&quot;C_BPartner_ID&quot;,&quot;SalesRep_ID&quot;],&quot;defaulted&quot;:52,&quot;record&quot;:{&quot;c_order_id&quot;:1500004,&quot;ad_client_id&quot;:11,&quot;ad_org_id&quot;:11,&quot;isactive&quot;:&quot;Y&quot;,&quot;created&quot;:null,&quot;createdby&quot;:null,&quot;updated&quot;:null,&quot;updatedby&quot;:null,&quot;issotrx&quot;:&quot;Y&quot;,&quot;documentno&quot;:&quot;50000&quot;,&quot;docstatus&quot;:&quot;DR&quot;,&quot;docaction&quot;:&quot;CO&quot;,&quot;processing&quot;:&quot;N&quot;,&quot;processed&quot;:&quot;N&quot;,&quot;c_doctype_id&quot;:0,&quot;c_doctypetarget_id&quot;:132,&quot;description&quot;:null,&quot;isapproved&quot;:&quot;N&quot;,&quot;iscreditapproved&quot;:&quot;N&quot;,&quot;isdelivered&quot;:&quot;N&quot;,&quot;isinvoiced&quot;:&quot;N&quot;,&quot;isprinted&quot;:&quot;N&quot;,&quot;istransferred&quot;:&quot;N&quot;,&quot;isselected&quot;:&quot;N&quot;,&quot;salesrep_id&quot;:101,&quot;dateordered&quot;:&quot;2026-11-10 00:00:00&quot;,&quot;datepromised&quot;:&quot;2026-11-10 00:00:00&quot;,&quot;dateprinted&quot;:null,&quot;dateacct&quot;:&quot;2026-11-10 00:00:00&quot;,&quot;c_bpartner_id&quot;:112,&quot;c_bpartner_location_id&quot;:108,&quot;poreference&quot;:null,&quot;isdiscountprinted&quot;:&quot;Y&quot;,&quot;c_currency_id&quot;:100,&quot;paymentrule&quot;:&quot;P&quot;,&quot;c_paymentterm_id&quot;:105,&quot;invoicerule&quot;:&quot;D&quot;,&quot;deliveryrule&quot;:&quot;A&quot;,&quot;freightcostrule&quot;:&quot;I&quot;,&quot;freightamt&quot;:0,&quot;deliveryviarule&quot;:&quot;P&quot;,&quot;m_shipper_id&quot;:null,&quot;c_charge_id&quot;:null,&quot;chargeamt&quot;:0,&quot;priorityrule&quot;:&quot;5&quot;,&quot;totallines&quot;:0,&quot;grandtotal&quot;:0,&quot;m_warehouse_id&quot;:103,&quot;m_pricelist_id&quot;:101,&quot;istaxincluded&quot;:&quot;N&quot;,&quot;c_campaign_id&quot;:null,&quot;c_project_id&quot;:null,&quot;c_activity_id&quot;:null,&quot;posted&quot;:&quot;N&quot;,&quot;c_payment_id&quot;:null,&quot;c_cashline_id&quot;:null,&quot;sendemail&quot;:&quot;N&quot;,&quot;ad_user_id&quot;:null,&quot;copyfrom&quot;:&quot;N&quot;,&quot;isselfservice&quot;:&quot;N&quot;,&quot;ad_orgtrx_id&quot;:null,&quot;user1_id&quot;:null,&quot;user2_id&quot;:null,&quot;c_conversiontype_id&quot;:114,&quot;bill_bpartner_id&quot;:112,&quot;bill_location_id&quot;:108,&quot;bill_user_id&quot;:null,&quot;pay_bpartner_id&quot;:null,&quot;pay_location_id&quot;:null,&quot;ref_order_id&quot;:null,&quot;isdropship&quot;:&quot;N&quot;,&quot;volume&quot;:0,&quot;weight&quot;:0,&quot;ordertype&quot;:null,&quot;c_pos_id&quot;:null,&quot;amounttendered&quot;:0,&quot;amountrefunded&quot;:0,&quot;link_order_id&quot;:null,&quot;m_freightcategory_id&quot;:null,&quot;dropship_bpartner_id&quot;:null,&quot;dropship_location_id&quot;:null,&quot;dropship_user_id&quot;:null,&quot;promotioncode&quot;:null,&quot;c_ordersource_id&quot;:null,&quot;processedon&quot;:0,&quot;ispayschedulevalid&quot;:&quot;N&quot;,&quot;c_cashplanline_id&quot;:null,&quot;c_order_uu&quot;:null,&quot;shippingrateinquiry&quot;:&quot;N&quot;,&quot;ispriviledgedrate&quot;:&quot;N&quot;,&quot;c_opportunity_id&quot;:null,&quot;quotationorder_id&quot;:null,&quot;c_department_id&quot;:null,&quot;c_costcenter_id&quot;:null},&quot;ops&quot;:[{&quot;op_type&quot;:&quot;CRUD_UPDATE&quot;,&quot;table&quot;:&quot;ad_sequence&quot;},{&quot;op_type&quot;:&quot;CRUD_CREATE&quot;,&quot;table&quot;:&quot;c_order&quot;}]},&quot;why&quot;:null,&quot;notChecked&quot;:[],&quot;ops&quot;:[{&quot;op_type&quot;:&quot;CRUD_UPDATE&quot;,&quot;table&quot;:&quot;ad_sequence&quot;},{&quot;op_type&quot;:&quot;CRUD_CREATE&quot;,&quot;table&quot;:&quot;c_order&quot;}],&quot;next&quot;:[],&quot;ms&quot;:2486}
+{&quot;request&quot;:&quot;d-mwepvphd-75275-1&quot;,&quot;verb&quot;:&quot;erp.new&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;,&quot;answer&quot;:{&quot;number&quot;:&quot;50000&quot;,&quot;kind&quot;:&quot;Order&quot;,&quot;table&quot;:&quot;c_order&quot;,&quot;id&quot;:1500004,&quot;docStatus&quot;:&quot;DR&quot;,&quot;given&quot;:[&quot;IsSOTrx&quot;,&quot;C_DocTypeTarget_ID&quot;,&quot;C_BPartner_ID&quot;,&quot;SalesRep_ID&quot;],&quot;defaulted&quot;:52,&quot;filled&quot;:[&quot;ad_client_id&quot;,&quot;ad_org_id&quot;,&quot;documentno&quot;,&quot;isselfservice&quot;,&quot;dateordered&quot;,&quot;datepromised&quot;,&quot;bill_bpartner_id&quot;,&quot;c_bpartner_location_id&quot;,&quot;bill_location_id&quot;,&quot;deliveryrule&quot;,&quot;priorityrule&quot;,&quot;m_warehouse_id&quot;,&quot;isdropship&quot;,&quot;deliveryviarule&quot;,&quot;freightcostrule&quot;,&quot;freightamt&quot;,&quot;ispriviledgedrate&quot;,&quot;shippingrateinquiry&quot;,&quot;invoicerule&quot;,&quot;m_pricelist_id&quot;,&quot;c_currency_id&quot;,&quot;c_conversiontype_id&quot;,&quot;isdiscountprinted&quot;,&quot;chargeamt&quot;,&quot;paymentrule&quot;,&quot;c_paymentterm_id&quot;,&quot;totallines&quot;,&quot;grandtotal&quot;,&quot;docstatus&quot;,&quot;c_doctype_id&quot;,&quot;ispayschedulevalid&quot;,&quot;copyfrom&quot;,&quot;docaction&quot;,&quot;posted&quot;,&quot;isdelivered&quot;,&quot;dateacct&quot;,&quot;amountrefunded&quot;,&quot;isapproved&quot;,&quot;processed&quot;,&quot;processing&quot;,&quot;istaxincluded&quot;,&quot;isinvoiced&quot;,&quot;isselected&quot;,&quot;isprinted&quot;,&quot;sendemail&quot;,&quot;istransferred&quot;,&quot;iscreditapproved&quot;,&quot;isactive&quot;,&quot;processedon&quot;,&quot;amounttendered&quot;,&quot;volume&quot;,&quot;weight&quot;],&quot;record&quot;:{&quot;c_order_id&quot;:1500004,&quot;ad_client_id&quot;:11,&quot;ad_org_id&quot;:11,&quot;isactive&quot;:&quot;Y&quot;,&quot;created&quot;:null,&quot;createdby&quot;:null,&quot;updated&quot;:null,&quot;updatedby&quot;:null,&quot;issotrx&quot;:&quot;Y&quot;,&quot;documentno&quot;:&quot;50000&quot;,&quot;docstatus&quot;:&quot;DR&quot;,&quot;docaction&quot;:&quot;CO&quot;,&quot;processing&quot;:&quot;N&quot;,&quot;processed&quot;:&quot;N&quot;,&quot;c_doctype_id&quot;:0,&quot;c_doctypetarget_id&quot;:132,&quot;description&quot;:null,&quot;isapproved&quot;:&quot;N&quot;,&quot;iscreditapproved&quot;:&quot;N&quot;,&quot;isdelivered&quot;:&quot;N&quot;,&quot;isinvoiced&quot;:&quot;N&quot;,&quot;isprinted&quot;:&quot;N&quot;,&quot;istransferred&quot;:&quot;N&quot;,&quot;isselected&quot;:&quot;N&quot;,&quot;salesrep_id&quot;:101,&quot;dateordered&quot;:&quot;2026-11-13 00:00:00&quot;,&quot;datepromised&quot;:&quot;2026-11-13 00:00:00&quot;,&quot;dateprinted&quot;:null,&quot;dateacct&quot;:&quot;2026-11-13 00:00:00&quot;,&quot;c_bpartner_id&quot;:112,&quot;c_bpartner_location_id&quot;:108,&quot;poreference&quot;:null,&quot;isdiscountprinted&quot;:&quot;Y&quot;,&quot;c_currency_id&quot;:100,&quot;paymentrule&quot;:&quot;P&quot;,&quot;c_paymentterm_id&quot;:105,&quot;invoicerule&quot;:&quot;D&quot;,&quot;deliveryrule&quot;:&quot;A&quot;,&quot;freightcostrule&quot;:&quot;I&quot;,&quot;freightamt&quot;:0,&quot;deliveryviarule&quot;:&quot;P&quot;,&quot;m_shipper_id&quot;:null,&quot;c_charge_id&quot;:null,&quot;chargeamt&quot;:0,&quot;priorityrule&quot;:&quot;5&quot;,&quot;totallines&quot;:0,&quot;grandtotal&quot;:0,&quot;m_warehouse_id&quot;:103,&quot;m_pricelist_id&quot;:101,&quot;istaxincluded&quot;:&quot;N&quot;,&quot;c_campaign_id&quot;:null,&quot;c_project_id&quot;:null,&quot;c_activity_id&quot;:null,&quot;posted&quot;:&quot;N&quot;,&quot;c_payment_id&quot;:null,&quot;c_cashline_id&quot;:null,&quot;sendemail&quot;:&quot;N&quot;,&quot;ad_user_id&quot;:null,&quot;copyfrom&quot;:&quot;N&quot;,&quot;isselfservice&quot;:&quot;N&quot;,&quot;ad_orgtrx_id&quot;:null,&quot;user1_id&quot;:null,&quot;user2_id&quot;:null,&quot;c_conversiontype_id&quot;:114,&quot;bill_bpartner_id&quot;:112,&quot;bill_location_id&quot;:108,&quot;bill_user_id&quot;:null,&quot;pay_bpartner_id&quot;:null,&quot;pay_location_id&quot;:null,&quot;ref_order_id&quot;:null,&quot;isdropship&quot;:&quot;N&quot;,&quot;volume&quot;:0,&quot;weight&quot;:0,&quot;ordertype&quot;:null,&quot;c_pos_id&quot;:null,&quot;amounttendered&quot;:0,&quot;amountrefunded&quot;:0,&quot;link_order_id&quot;:null,&quot;m_freightcategory_id&quot;:null,&quot;dropship_bpartner_id&quot;:null,&quot;dropship_location_id&quot;:null,&quot;dropship_user_id&quot;:null,&quot;promotioncode&quot;:null,&quot;c_ordersource_id&quot;:null,&quot;processedon&quot;:0,&quot;ispayschedulevalid&quot;:&quot;N&quot;,&quot;c_cashplanline_id&quot;:null,&quot;c_order_uu&quot;:null,&quot;shippingrateinquiry&quot;:&quot;N&quot;,&quot;ispriviledgedrate&quot;:&quot;N&quot;,&quot;c_opportunity_id&quot;:null,&quot;quotationorder_id&quot;:null,&quot;c_department_id&quot;:null,&quot;c_costcenter_id&quot;:null},&quot;ops&quot;:[{&quot;op_type&quot;:&quot;CRUD_UPDATE&quot;,&quot;table&quot;:&quot;ad_sequence&quot;},{&quot;op_type&quot;:&quot;CRUD_CREATE&quot;,&quot;table&quot;:&quot;c_order&quot;}]},&quot;why&quot;:null,&quot;notChecked&quot;:[],&quot;ops&quot;:[{&quot;op_type&quot;:&quot;CRUD_UPDATE&quot;,&quot;table&quot;:&quot;ad_sequence&quot;},{&quot;op_type&quot;:&quot;CRUD_CREATE&quot;,&quot;table&quot;:&quot;c_order&quot;}],&quot;next&quot;:[],&quot;ms&quot;:2808}
 </code></pre></div>
 <!-- run: new_line -->
 <div class="highlight"><pre><span></span><code>$ BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js &#39;erp.new kind=C_OrderLine order=50000 m_product_id=137 qtyentered=2&#39;
-{&quot;request&quot;:&quot;d-mwb4lplv-2305637-1&quot;,&quot;verb&quot;:&quot;erp.new&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;,&quot;answer&quot;:{&quot;number&quot;:null,&quot;kind&quot;:&quot;Sales Order Line&quot;,&quot;table&quot;:&quot;c_orderline&quot;,&quot;id&quot;:120002710,&quot;docStatus&quot;:null,&quot;given&quot;:[&quot;M_Product_ID&quot;,&quot;QtyEntered&quot;,&quot;C_Order_ID&quot;],&quot;defaulted&quot;:31,&quot;record&quot;:{&quot;c_orderline_id&quot;:120002710,&quot;ad_client_id&quot;:11,&quot;ad_org_id&quot;:11,&quot;isactive&quot;:&quot;Y&quot;,&quot;created&quot;:null,&quot;createdby&quot;:null,&quot;updated&quot;:null,&quot;updatedby&quot;:null,&quot;c_order_id&quot;:1500004,&quot;line&quot;:10,&quot;c_bpartner_id&quot;:112,&quot;c_bpartner_location_id&quot;:108,&quot;dateordered&quot;:&quot;2026-11-10 00:00:00&quot;,&quot;datepromised&quot;:&quot;2026-11-10 00:00:00&quot;,&quot;datedelivered&quot;:null,&quot;dateinvoiced&quot;:null,&quot;description&quot;:null,&quot;m_product_id&quot;:137,&quot;m_warehouse_id&quot;:103,&quot;c_uom_id&quot;:100,&quot;qtyordered&quot;:2,&quot;qtyreserved&quot;:0,&quot;qtydelivered&quot;:0,&quot;qtyinvoiced&quot;:0,&quot;m_shipper_id&quot;:null,&quot;c_currency_id&quot;:100,&quot;pricelist&quot;:3,&quot;priceactual&quot;:3,&quot;pricelimit&quot;:2.7,&quot;linenetamt&quot;:6,&quot;discount&quot;:0,&quot;freightamt&quot;:0,&quot;c_charge_id&quot;:null,&quot;c_tax_id&quot;:104,&quot;s_resourceassignment_id&quot;:null,&quot;ref_orderline_id&quot;:null,&quot;m_attributesetinstance_id&quot;:0,&quot;isdescription&quot;:&quot;N&quot;,&quot;processed&quot;:&quot;N&quot;,&quot;qtyentered&quot;:2,&quot;priceentered&quot;:3,&quot;c_project_id&quot;:null,&quot;pricecost&quot;:0,&quot;qtylostsales&quot;:0,&quot;c_projectphase_id&quot;:null,&quot;c_projecttask_id&quot;:null,&quot;rrstartdate&quot;:null,&quot;rramt&quot;:0,&quot;c_campaign_id&quot;:null,&quot;c_activity_id&quot;:null,&quot;user1_id&quot;:null,&quot;user2_id&quot;:null,&quot;ad_orgtrx_id&quot;:null,&quot;link_orderline_id&quot;:null,&quot;pp_cost_collector_id&quot;:null,&quot;m_promotion_id&quot;:null,&quot;c_orderline_uu&quot;:null,&quot;createshipment&quot;:&quot;N&quot;,&quot;createproduction&quot;:&quot;N&quot;,&quot;c_department_id&quot;:null,&quot;c_costcenter_id&quot;:null},&quot;ops&quot;:[{&quot;op_type&quot;:&quot;CRUD_CREATE&quot;,&quot;table&quot;:&quot;c_orderline&quot;},{&quot;op_type&quot;:&quot;CRUD_UPDATE&quot;,&quot;table&quot;:&quot;c_order&quot;}]},&quot;why&quot;:null,&quot;notChecked&quot;:[],&quot;ops&quot;:[{&quot;op_type&quot;:&quot;CRUD_CREATE&quot;,&quot;table&quot;:&quot;c_orderline&quot;},{&quot;op_type&quot;:&quot;CRUD_UPDATE&quot;,&quot;table&quot;:&quot;c_order&quot;}],&quot;next&quot;:[],&quot;ms&quot;:2797}
+{&quot;request&quot;:&quot;d-mwepvrsp-75321-1&quot;,&quot;verb&quot;:&quot;erp.new&quot;,&quot;actor&quot;:&quot;human&quot;,&quot;status&quot;:&quot;ok&quot;,&quot;answer&quot;:{&quot;number&quot;:null,&quot;kind&quot;:&quot;Sales Order Line&quot;,&quot;table&quot;:&quot;c_orderline&quot;,&quot;id&quot;:120002710,&quot;docStatus&quot;:null,&quot;given&quot;:[&quot;M_Product_ID&quot;,&quot;QtyEntered&quot;,&quot;C_Order_ID&quot;],&quot;defaulted&quot;:31,&quot;filled&quot;:[&quot;ad_client_id&quot;,&quot;ad_org_id&quot;,&quot;c_bpartner_id&quot;,&quot;c_bpartner_location_id&quot;,&quot;datepromised&quot;,&quot;dateordered&quot;,&quot;line&quot;,&quot;m_warehouse_id&quot;,&quot;m_attributesetinstance_id&quot;,&quot;c_uom_id&quot;,&quot;qtyordered&quot;,&quot;qtydelivered&quot;,&quot;qtyreserved&quot;,&quot;qtyinvoiced&quot;,&quot;priceentered&quot;,&quot;priceactual&quot;,&quot;pricelist&quot;,&quot;freightamt&quot;,&quot;c_tax_id&quot;,&quot;discount&quot;,&quot;linenetamt&quot;,&quot;qtylostsales&quot;,&quot;processed&quot;,&quot;createshipment&quot;,&quot;createproduction&quot;,&quot;rramt&quot;,&quot;pricecost&quot;,&quot;pricelimit&quot;,&quot;c_currency_id&quot;,&quot;isactive&quot;,&quot;isdescription&quot;],&quot;record&quot;:{&quot;c_orderline_id&quot;:120002710,&quot;ad_client_id&quot;:11,&quot;ad_org_id&quot;:11,&quot;isactive&quot;:&quot;Y&quot;,&quot;created&quot;:null,&quot;createdby&quot;:null,&quot;updated&quot;:null,&quot;updatedby&quot;:null,&quot;c_order_id&quot;:1500004,&quot;line&quot;:10,&quot;c_bpartner_id&quot;:112,&quot;c_bpartner_location_id&quot;:108,&quot;dateordered&quot;:&quot;2026-11-13 00:00:00&quot;,&quot;datepromised&quot;:&quot;2026-11-13 00:00:00&quot;,&quot;datedelivered&quot;:null,&quot;dateinvoiced&quot;:null,&quot;description&quot;:null,&quot;m_product_id&quot;:137,&quot;m_warehouse_id&quot;:103,&quot;c_uom_id&quot;:100,&quot;qtyordered&quot;:2,&quot;qtyreserved&quot;:0,&quot;qtydelivered&quot;:0,&quot;qtyinvoiced&quot;:0,&quot;m_shipper_id&quot;:null,&quot;c_currency_id&quot;:100,&quot;pricelist&quot;:3,&quot;priceactual&quot;:3,&quot;pricelimit&quot;:2.7,&quot;linenetamt&quot;:6,&quot;discount&quot;:0,&quot;freightamt&quot;:0,&quot;c_charge_id&quot;:null,&quot;c_tax_id&quot;:104,&quot;s_resourceassignment_id&quot;:null,&quot;ref_orderline_id&quot;:null,&quot;m_attributesetinstance_id&quot;:0,&quot;isdescription&quot;:&quot;N&quot;,&quot;processed&quot;:&quot;N&quot;,&quot;qtyentered&quot;:2,&quot;priceentered&quot;:3,&quot;c_project_id&quot;:null,&quot;pricecost&quot;:0,&quot;qtylostsales&quot;:0,&quot;c_projectphase_id&quot;:null,&quot;c_projecttask_id&quot;:null,&quot;rrstartdate&quot;:null,&quot;rramt&quot;:0,&quot;c_campaign_id&quot;:null,&quot;c_activity_id&quot;:null,&quot;user1_id&quot;:null,&quot;user2_id&quot;:null,&quot;ad_orgtrx_id&quot;:null,&quot;link_orderline_id&quot;:null,&quot;pp_cost_collector_id&quot;:null,&quot;m_promotion_id&quot;:null,&quot;c_orderline_uu&quot;:null,&quot;createshipment&quot;:&quot;N&quot;,&quot;createproduction&quot;:&quot;N&quot;,&quot;c_department_id&quot;:null,&quot;c_costcenter_id&quot;:null},&quot;ops&quot;:[{&quot;op_type&quot;:&quot;CRUD_CREATE&quot;,&quot;table&quot;:&quot;c_orderline&quot;},{&quot;op_type&quot;:&quot;CRUD_UPDATE&quot;,&quot;table&quot;:&quot;c_order&quot;}]},&quot;why&quot;:null,&quot;notChecked&quot;:[],&quot;ops&quot;:[{&quot;op_type&quot;:&quot;CRUD_CREATE&quot;,&quot;table&quot;:&quot;c_orderline&quot;},{&quot;op_type&quot;:&quot;CRUD_UPDATE&quot;,&quot;table&quot;:&quot;c_order&quot;}],&quot;next&quot;:[],&quot;ms&quot;:2917}
 </code></pre></div>
 <p>The order is a draft until someone completes it. Because the line was given the order's number, the order's totals follow without a second step: <code>totallines</code> and <code>grandtotal</code> in the record below are the line's amount (6). The list of the order's own lines is not filled in by <code>erp.read</code>.</p>
 <!-- run: new_read -->
 <div class="highlight"><pre><span></span><code>$ BIM_OBJECT_OPLOG=/tmp/fast_guide_new.ops node common/door/door.js --list &#39;erp.read kind=Order number=50000&#39;
 kind: Order
 uu: 1500004
-record: {&quot;c_order_id&quot;:1500004,&quot;ad_client_id&quot;:11,&quot;ad_org_id&quot;:11,&quot;isactive&quot;:&quot;Y&quot;,&quot;created&quot;:null,&quot;createdby&quot;:null,&quot;updated&quot;:null,&quot;updatedby&quot;:null,&quot;issotrx&quot;:&quot;Y&quot;,&quot;documentno&quot;:&quot;50000&quot;,&quot;docstatus&quot;:&quot;DR&quot;,&quot;docaction&quot;:&quot;CO&quot;,&quot;processing&quot;:&quot;N&quot;,&quot;processed&quot;:&quot;N&quot;,&quot;c_doctype_id&quot;:0,&quot;c_doctypetarget_id&quot;:132,&quot;description&quot;:null,&quot;isapproved&quot;:&quot;N&quot;,&quot;iscreditapproved&quot;:&quot;N&quot;,&quot;isdelivered&quot;:&quot;N&quot;,&quot;isinvoiced&quot;:&quot;N&quot;,&quot;isprinted&quot;:&quot;N&quot;,&quot;istransferred&quot;:&quot;N&quot;,&quot;isselected&quot;:&quot;N&quot;,&quot;salesrep_id&quot;:101,&quot;dateordered&quot;:&quot;2026-11-10 00:00:00&quot;,&quot;datepromised&quot;:&quot;2026-11-10 00:00:00&quot;,&quot;dateprinted&quot;:null,&quot;dateacct&quot;:&quot;2026-11-10 00:00:00&quot;,&quot;c_bpartner_id&quot;:112,&quot;c_bpartner_location_id&quot;:108,&quot;poreference&quot;:null,&quot;isdiscountprinted&quot;:&quot;Y&quot;,&quot;c_currency_id&quot;:100,&quot;paymentrule&quot;:&quot;P&quot;,&quot;c_paymentterm_id&quot;:105,&quot;invoicerule&quot;:&quot;D&quot;,&quot;deliveryrule&quot;:&quot;A&quot;,&quot;freightcostrule&quot;:&quot;I&quot;,&quot;freightamt&quot;:0,&quot;deliveryviarule&quot;:&quot;P&quot;,&quot;m_shipper_id&quot;:null,&quot;c_charge_id&quot;:null,&quot;chargeamt&quot;:0,&quot;priorityrule&quot;:&quot;5&quot;,&quot;totallines&quot;:6,&quot;grandtotal&quot;:6,&quot;m_warehouse_id&quot;:103,&quot;m_pricelist_id&quot;:101,&quot;istaxincluded&quot;:&quot;N&quot;,&quot;c_campaign_id&quot;:null,&quot;c_project_id&quot;:null,&quot;c_activity_id&quot;:null,&quot;posted&quot;:&quot;N&quot;,&quot;c_payment_id&quot;:null,&quot;c_cashline_id&quot;:null,&quot;sendemail&quot;:&quot;N&quot;,&quot;ad_user_id&quot;:null,&quot;copyfrom&quot;:&quot;N&quot;,&quot;isselfservice&quot;:&quot;N&quot;,&quot;ad_orgtrx_id&quot;:null,&quot;user1_id&quot;:null,&quot;user2_id&quot;:null,&quot;c_conversiontype_id&quot;:114,&quot;bill_bpartner_id&quot;:112,&quot;bill_location_id&quot;:108,&quot;bill_user_id&quot;:null,&quot;pay_bpartner_id&quot;:null,&quot;pay_location_id&quot;:null,&quot;ref_order_id&quot;:null,&quot;isdropship&quot;:&quot;N&quot;,&quot;volume&quot;:0,&quot;weight&quot;:0,&quot;ordertype&quot;:null,&quot;c_pos_id&quot;:null,&quot;amounttendered&quot;:0,&quot;amountrefunded&quot;:0,&quot;link_order_id&quot;:null,&quot;m_freightcategory_id&quot;:null,&quot;dropship_bpartner_id&quot;:null,&quot;dropship_location_id&quot;:null,&quot;dropship_user_id&quot;:null,&quot;promotioncode&quot;:null,&quot;c_ordersource_id&quot;:null,&quot;processedon&quot;:0,&quot;ispayschedulevalid&quot;:&quot;N&quot;,&quot;c_cashplanline_id&quot;:null,&quot;c_order_uu&quot;:null,&quot;shippingrateinquiry&quot;:&quot;N&quot;,&quot;ispriviledgedrate&quot;:&quot;N&quot;,&quot;c_opportunity_id&quot;:null,&quot;quotationorder_id&quot;:null,&quot;c_department_id&quot;:null,&quot;c_costcenter_id&quot;:null}
+record: {&quot;c_order_id&quot;:1500004,&quot;ad_client_id&quot;:11,&quot;ad_org_id&quot;:11,&quot;isactive&quot;:&quot;Y&quot;,&quot;created&quot;:null,&quot;createdby&quot;:null,&quot;updated&quot;:null,&quot;updatedby&quot;:null,&quot;issotrx&quot;:&quot;Y&quot;,&quot;documentno&quot;:&quot;50000&quot;,&quot;docstatus&quot;:&quot;DR&quot;,&quot;docaction&quot;:&quot;CO&quot;,&quot;processing&quot;:&quot;N&quot;,&quot;processed&quot;:&quot;N&quot;,&quot;c_doctype_id&quot;:0,&quot;c_doctypetarget_id&quot;:132,&quot;description&quot;:null,&quot;isapproved&quot;:&quot;N&quot;,&quot;iscreditapproved&quot;:&quot;N&quot;,&quot;isdelivered&quot;:&quot;N&quot;,&quot;isinvoiced&quot;:&quot;N&quot;,&quot;isprinted&quot;:&quot;N&quot;,&quot;istransferred&quot;:&quot;N&quot;,&quot;isselected&quot;:&quot;N&quot;,&quot;salesrep_id&quot;:101,&quot;dateordered&quot;:&quot;2026-11-13 00:00:00&quot;,&quot;datepromised&quot;:&quot;2026-11-13 00:00:00&quot;,&quot;dateprinted&quot;:null,&quot;dateacct&quot;:&quot;2026-11-13 00:00:00&quot;,&quot;c_bpartner_id&quot;:112,&quot;c_bpartner_location_id&quot;:108,&quot;poreference&quot;:null,&quot;isdiscountprinted&quot;:&quot;Y&quot;,&quot;c_currency_id&quot;:100,&quot;paymentrule&quot;:&quot;P&quot;,&quot;c_paymentterm_id&quot;:105,&quot;invoicerule&quot;:&quot;D&quot;,&quot;deliveryrule&quot;:&quot;A&quot;,&quot;freightcostrule&quot;:&quot;I&quot;,&quot;freightamt&quot;:0,&quot;deliveryviarule&quot;:&quot;P&quot;,&quot;m_shipper_id&quot;:null,&quot;c_charge_id&quot;:null,&quot;chargeamt&quot;:0,&quot;priorityrule&quot;:&quot;5&quot;,&quot;totallines&quot;:6,&quot;grandtotal&quot;:6,&quot;m_warehouse_id&quot;:103,&quot;m_pricelist_id&quot;:101,&quot;istaxincluded&quot;:&quot;N&quot;,&quot;c_campaign_id&quot;:null,&quot;c_project_id&quot;:null,&quot;c_activity_id&quot;:null,&quot;posted&quot;:&quot;N&quot;,&quot;c_payment_id&quot;:null,&quot;c_cashline_id&quot;:null,&quot;sendemail&quot;:&quot;N&quot;,&quot;ad_user_id&quot;:null,&quot;copyfrom&quot;:&quot;N&quot;,&quot;isselfservice&quot;:&quot;N&quot;,&quot;ad_orgtrx_id&quot;:null,&quot;user1_id&quot;:null,&quot;user2_id&quot;:null,&quot;c_conversiontype_id&quot;:114,&quot;bill_bpartner_id&quot;:112,&quot;bill_location_id&quot;:108,&quot;bill_user_id&quot;:null,&quot;pay_bpartner_id&quot;:null,&quot;pay_location_id&quot;:null,&quot;ref_order_id&quot;:null,&quot;isdropship&quot;:&quot;N&quot;,&quot;volume&quot;:0,&quot;weight&quot;:0,&quot;ordertype&quot;:null,&quot;c_pos_id&quot;:null,&quot;amounttendered&quot;:0,&quot;amountrefunded&quot;:0,&quot;link_order_id&quot;:null,&quot;m_freightcategory_id&quot;:null,&quot;dropship_bpartner_id&quot;:null,&quot;dropship_location_id&quot;:null,&quot;dropship_user_id&quot;:null,&quot;promotioncode&quot;:null,&quot;c_ordersource_id&quot;:null,&quot;processedon&quot;:0,&quot;ispayschedulevalid&quot;:&quot;N&quot;,&quot;c_cashplanline_id&quot;:null,&quot;c_order_uu&quot;:null,&quot;shippingrateinquiry&quot;:&quot;N&quot;,&quot;ispriviledgedrate&quot;:&quot;N&quot;,&quot;c_opportunity_id&quot;:null,&quot;quotationorder_id&quot;:null,&quot;c_department_id&quot;:null,&quot;c_costcenter_id&quot;:null}
 children: [{&quot;kind&quot;:&quot;Sales Order Line&quot;,&quot;rows&quot;:[]},{&quot;kind&quot;:&quot;Order Tax&quot;,&quot;rows&quot;:[]},{&quot;kind&quot;:&quot;Order Payment Schedule&quot;,&quot;rows&quot;:[]},{&quot;kind&quot;:&quot;Estimated Landed Cost&quot;,&quot;rows&quot;:[]}]
 </code></pre></div>
 <p><code>erp.new</code> is a <code>writes</code> verb. A person at the terminal runs it. An AI's <code>erp.new</code> is held as a claim and nothing is written until a person confirms it (see "What is a claim"). These blocks use a scratch op-log (<code>/tmp/fast_guide_new.ops</code>, emptied first), so running them does not touch your own data.</p>
@@ -4077,6 +4111,21 @@ opSummary: {&quot;create:c_bpartner&quot;:1,&quot;create:ad_treenodebp&quot;:1,&
 keys: [1600010]
 </code></pre></div>
 <p>An AI's <code>mis.new</code>, <code>mis.update</code>, <code>mis.delete</code> or <code>mis.load</code> is held as a claim, like <code>erp.new</code>: nothing is written until a person confirms it. Updating existing records in bulk is not offered; use <code>mis.update</code> for each, so the window's checks run.</p>
+<h3 id="see-and-change-records-as-a-role">See and change records as a role<a class="headerlink" href="#see-and-change-records-as-a-role" title="Permanent link">&para;</a></h3>
+<p>Every <code>mis.*</code> verb takes <code>role=</code>, the id of a role of the ERP. <strong>Without a role nothing is filtered:</strong> you see every record of every client. With a role you get what that role gets in the window it is granted: the records of its own client and organisations, and only the records and columns its access rows allow. The totals count only those records. The role is stated on the line. It is not a sign-in.</p>
+<!-- run: mis_role -->
+<div class="highlight"><pre><span></span><code>$ for r in &#39;&#39; &#39; role=103&#39; &#39; role=12000&#39;; do BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list &quot;mis.sum kind=C_Order column=GrandTotal$r&quot; | grep -E &#39;^(n|sum):&#39; | tr &#39;\n&#39; &#39; &#39;; echo; done
+n: 43 sum: 74936.76 
+n: 8 sum: 9914.07 
+n: 27 sum: 55108.62
+</code></pre></div>
+<p>A record outside the role's records answers exactly as a record that does not exist. A column the role may only read cannot be changed. A kind the role has no window for is refused; role 103 has no window that shows Tax:</p>
+<!-- run: mis_role_refuse cut=200 -->
+<div class="highlight"><pre><span></span><code>$ BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/door.js --list &#39;mis.list kind=C_Tax role=103&#39;
+refused: true
+reason: role 103 (GardenWorld User) is not granted a window that shows Tax (AD_Window_Access)
+</code></pre></div>
+<p>Five rules are not judged yet, and a role that uses one of them is refused instead of half-checked: a personal lock on a record, a table validation rule, a role whose organisations come from the user, a role with a summary organisation in an organisation tree, and "dependent entities" record access. <code>mis.load</code> takes no role.</p>
 <h2 id="work-at-the-terminal-misjs">Work at the terminal: <code>mis.js</code><a class="headerlink" href="#work-at-the-terminal-misjs" title="Permanent link">&para;</a></h2>
 <p>If you would rather pick than type, <code>mis.js</code> shows a list with a pointer. It is a front end only: every key compiles into <strong>one</strong> of the door lines above, runs through the same door (journalled, claim-checked), and the screen prints the line before it runs. Up and Down move the pointer. Left and Right move along the buttons on the pointed row (<code>[U Edit] [D Delete] [C Copy]</code> for a record; for a document, the actions the engine allows now, such as <code>[C Complete] [V Void]</code>, and no Delete once it is completed). Enter runs the highlighted button. <code>+</code> starts a new record, Delete asks <code>y/N</code>, and Esc backs out and writes nothing.</p>
 <p>At a terminal it draws with arrow keys. With <code>--plain</code> it reads key names from a pipe, so a script, a screen reader and an AI see exactly what a person sees:</p>
@@ -4084,34 +4133,35 @@ keys: [1600010]
 <div class="highlight"><pre><span></span><code>$ printf &#39;Down Right Esc\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/mis.js kind=C_BPartner name=Standard limit=3 --plain 2&gt;/dev/null
 -&gt; mis.describe kind=C_BPartner
 -&gt; mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Name2 names=Y limit=3 offset=0 name=Standard
-C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]
+C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]   no role: nothing is filtered
    C_BPartner_ID  Value     Name      Name2
  &gt; 112            Standard  Standard        &gt;[U Edit]&lt; [D Delete] [C Copy]
    1300112        Standard  Standard       
 the line it will run: mis.read kind=C_BPartner id=112
  Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
 key Down
-C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]
+C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]   no role: nothing is filtered
    C_BPartner_ID  Value     Name      Name2
    112            Standard  Standard       
  &gt; 1300112        Standard  Standard        &gt;[U Edit]&lt; [D Delete] [C Copy]
 the line it will run: mis.read kind=C_BPartner id=1300112
  Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
 key Right
-C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]
+C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]   no role: nothing is filtered
    C_BPartner_ID  Value     Name      Name2
    112            Standard  Standard       
  &gt; 1300112        Standard  Standard        [U Edit] &gt;[D Delete]&lt; [C Copy]
 the line it will run: mis.delete kind=C_BPartner id=1300112
  Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
 key Esc
-C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]
+C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]   no role: nothing is filtered
    C_BPartner_ID  Value     Name      Name2
    112            Standard  Standard       
  &gt; 1300112        Standard  Standard        [U Edit] &gt;[D Delete]&lt; [C Copy]
 the line it will run: mis.delete kind=C_BPartner id=1300112
  Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
 </code></pre></div>
+<p>Add <code>role=103</code> to the command and every line the screen sends carries that role; the head line names it. With no role the head line says that nothing is filtered.</p>
 <p>A form asks only for what the engine cannot fill (the dry run above). Typing fills the field, Tab or Enter moves on, and Enter on the last field shows the one line it will run. A line that starts with <code>=</code> is typed text. Here the whole session, reduced to the door lines it ran:</p>
 <!-- run: mis_form cut=200 -->
 <div class="highlight"><pre><span></span><code>$ printf &#39;+\n=GD300\nTab\n=Guide Four\nEnter\ny\nEsc\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/mis.js kind=C_BPartner value=GD300 --plain 2&gt;/dev/null | grep &#39;^-&gt;&#39;
@@ -4556,7 +4606,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <tr>
 <td><code>mis.describe</code></td>
 <td>Describe a kind of ERP record</td>
-<td><code>kind</code></td>
+<td><code>kind</code>, <code>role</code> (optional)</td>
 <td>read</td>
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
@@ -4564,7 +4614,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <tr>
 <td><code>mis.read</code></td>
 <td>Read an ERP record</td>
-<td><code>kind</code>, <code>id</code> (optional), <code>number</code> (optional)</td>
+<td><code>kind</code>, <code>id</code> (optional), <code>number</code> (optional), <code>role</code> (optional)</td>
 <td>read</td>
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
@@ -4572,7 +4622,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <tr>
 <td><code>mis.list</code></td>
 <td>List records</td>
-<td><code>kind</code>, <code>columns</code> (optional), <code>sort</code> (optional), <code>limit</code> (optional), <code>offset</code> (optional), <code>names</code> (optional), further <code>column=value</code> filters (optional)</td>
+<td><code>kind</code>, <code>columns</code> (optional), <code>sort</code> (optional), <code>limit</code> (optional), <code>offset</code> (optional), <code>names</code> (optional), <code>role</code> (optional), further <code>column=value</code> filters (optional)</td>
 <td>read</td>
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
@@ -4580,7 +4630,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <tr>
 <td><code>mis.sum</code></td>
 <td>Add up a column</td>
-<td><code>kind</code>, <code>column</code>, further <code>column=value</code> filters (optional)</td>
+<td><code>kind</code>, <code>column</code>, <code>role</code> (optional), further <code>column=value</code> filters (optional)</td>
 <td>read</td>
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
@@ -4588,7 +4638,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <tr>
 <td><code>mis.group</code></td>
 <td>Count by a column</td>
-<td><code>kind</code>, <code>by</code>, further <code>column=value</code> filters (optional)</td>
+<td><code>kind</code>, <code>by</code>, <code>role</code> (optional), further <code>column=value</code> filters (optional)</td>
 <td>read</td>
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
@@ -4596,7 +4646,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <tr>
 <td><code>mis.new</code></td>
 <td>Create a record</td>
-<td><code>kind</code>, <code>dry</code> (optional), further <code>column=value</code> filters (optional)</td>
+<td><code>kind</code>, <code>dry</code> (optional), <code>role</code> (optional), further <code>column=value</code> filters (optional)</td>
 <td>writes</td>
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
@@ -4604,7 +4654,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <tr>
 <td><code>mis.update</code></td>
 <td>Change a record</td>
-<td><code>kind</code>, <code>id</code> (optional), <code>number</code> (optional), further <code>column=value</code> filters (optional)</td>
+<td><code>kind</code>, <code>id</code> (optional), <code>number</code> (optional), <code>role</code> (optional), further <code>column=value</code> filters (optional)</td>
 <td>writes</td>
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
@@ -4612,7 +4662,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <tr>
 <td><code>mis.delete</code></td>
 <td>Delete a record</td>
-<td><code>kind</code>, <code>id</code> (optional), <code>number</code> (optional)</td>
+<td><code>kind</code>, <code>id</code> (optional), <code>number</code> (optional), <code>role</code> (optional)</td>
 <td>writes</td>
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
@@ -4660,7 +4710,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <tr>
 <td><code>erp.describe</code></td>
 <td>Describe a kind of ERP record (old name of mis.describe)</td>
-<td><code>kind</code></td>
+<td><code>kind</code>, <code>role</code> (optional)</td>
 <td>read</td>
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
@@ -4668,7 +4718,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <tr>
 <td><code>erp.read</code></td>
 <td>Read an ERP record (old name of mis.read)</td>
-<td><code>kind</code>, <code>id</code> (optional), <code>number</code> (optional)</td>
+<td><code>kind</code>, <code>id</code> (optional), <code>number</code> (optional), <code>role</code> (optional)</td>
 <td>read</td>
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
@@ -4676,7 +4726,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <tr>
 <td><code>erp.list</code></td>
 <td>List records (old name of mis.list)</td>
-<td><code>kind</code>, <code>columns</code> (optional), <code>sort</code> (optional), <code>limit</code> (optional), <code>offset</code> (optional), <code>names</code> (optional), further <code>column=value</code> filters (optional)</td>
+<td><code>kind</code>, <code>columns</code> (optional), <code>sort</code> (optional), <code>limit</code> (optional), <code>offset</code> (optional), <code>names</code> (optional), <code>role</code> (optional), further <code>column=value</code> filters (optional)</td>
 <td>read</td>
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
@@ -4684,7 +4734,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <tr>
 <td><code>erp.sum</code></td>
 <td>Add up a column (old name of mis.sum)</td>
-<td><code>kind</code>, <code>column</code>, further <code>column=value</code> filters (optional)</td>
+<td><code>kind</code>, <code>column</code>, <code>role</code> (optional), further <code>column=value</code> filters (optional)</td>
 <td>read</td>
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
@@ -4692,7 +4742,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <tr>
 <td><code>erp.group</code></td>
 <td>Count by a column (old name of mis.group)</td>
-<td><code>kind</code>, <code>by</code>, further <code>column=value</code> filters (optional)</td>
+<td><code>kind</code>, <code>by</code>, <code>role</code> (optional), further <code>column=value</code> filters (optional)</td>
 <td>read</td>
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
@@ -4700,7 +4750,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <tr>
 <td><code>erp.new</code></td>
 <td>Create a record (old name of mis.new)</td>
-<td><code>kind</code>, <code>dry</code> (optional), further <code>column=value</code> filters (optional)</td>
+<td><code>kind</code>, <code>dry</code> (optional), <code>role</code> (optional), further <code>column=value</code> filters (optional)</td>
 <td>writes</td>
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
