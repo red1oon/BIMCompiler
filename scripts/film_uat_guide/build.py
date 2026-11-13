@@ -87,14 +87,14 @@ def words(n):
     return [(float(a), float(b), float(c), float(d), re.sub(r'&amp;', '&', t)) for a, b, c, d, t in re.findall(r'<word xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">(.*?)</word>', x)]
 
 
-def pdf_still(name, n, heading, anchor, marks, note):
+def pdf_still(name, n, heading, anchor, marks, note, picture=False):
     """left: the whole page (the zoom window framed); right: the window enlarged, the marked words boxed (boxes = pdftotext word boxes)."""
     run(['pdftoppm', '-png', '-r', '170', '-f', str(n), '-l', str(n), '-singlefile', PDF, os.path.join(WORK, 'pg%d' % n)])
     pg = Image.open(os.path.join(WORK, 'pg%d.png' % n)).convert('RGB'); sc = pg.width / 612.0; ws = words(n)
     PW, PH = 1210, 720; win_h = 612.0 * PH / PW
     an = [w for w in ws if re.search(anchor, w[4])]
     if not an: log('§FILM_FAIL page %d has no word matching %s' % (n, anchor)); sys.exit(1)
-    cy = (an[0][1] + an[0][3]) / 2; y0 = max(0, min(792 - win_h, cy - win_h * 0.32)); y1 = y0 + win_h
+    cy = (an[0][1] + an[0][3]) / 2; y0 = max(0, min(792 - win_h, (an[0][3] + 14 - win_h) if picture else (cy - win_h * 0.32))); y1 = y0 + win_h   # picture=True: the caption sits at the bottom of the window, the picture above it
     rows = []   # a mark is a PHRASE: consecutive words on one line (plus `extend` more words of that line), boxed as one; a loose word elsewhere on the page is never marked
     for toks, extend in marks:
         found = 0
@@ -129,7 +129,11 @@ P_LIMITS = find_page(r'Known limits')
 P_SIGN = find_page(r'Sign-off')
 SAVED = 'Your saved copy · Downloads / ' + os.path.basename(PDF)[:44] + '….pdf'
 pdf_still('s05', P_FIRST, 'First check: what you need, and who does what', r'^need$', [(['What', 'you', 'need'], 0), (['Who', 'does', 'what'], 0)], SAVED)
-pdf_still('s06', P_PLAN, 'Chapter B: your own Shed drawings, each one labelled', r'^B1-b$', [(['Picture', 'B1-b'], 5)], SAVED)
+pdf_still('s06', P_PLAN, 'Chapter B: your own Shed drawings, each one labelled', r'^B1-b$', [(['Picture', 'B1-b'], 5)], SAVED, True)
+P_ARR = find_page(r'Picture B2-b'); P_3D = find_page(r'Picture B2-e'); P_DASH = find_page(r'Read Total Projects')   # the chapter's step table (the heading text alone also appears in page 1's who-does-what table)
+pdf_still('s6ba', P_ARR, 'The nine sheets, standing in place', r'^B2-b$', [(['Picture', 'B2-b'], 9)], SAVED, True)
+pdf_still('s6bb', P_3D, 'The 3D Shed they become', r'^B2-e$', [(['Picture', 'B2-e'], 8)], SAVED, True)
+pdf_still('sd1a', P_DASH, 'Chapter D: the dashboard, checked tile by tile', r'^D3$', [(['D1'], 3), (['D2'], 3), (['D3'], 4), (['D8'], 4)], SAVED)
 pdf_still('s07', P_STEPS, 'Every step: Do · Confirm · tick Pass or Fail by hand', r'^Confirm$', [(['Confirm', 'on', 'screen'], 0), (['Result'], 0), (['☐', 'Pass', '☐', 'Fail'], 0)], SAVED)
 pdf_still('s08a', P_NOTES, 'What differs goes on the Notes line', r'^Notes$', [(['Notes', '(chapter', 'B):'], 1)], SAVED)
 pdf_still('s08b', P_LIMITS, 'Known limits: do not fail a step on these', r'^limits$', [(['Known', 'limits'], 7)], SAVED)
@@ -154,7 +158,8 @@ im.save(os.path.join(WORK, 's01.png')); log('§FILM_STILL s01 floor_plan=%dx%d b
 # chapter card (silent, plain dark)
 im = canvas(CARD_BG); d = ImageDraw.Draw(im)
 text_c(d, 300, 'CHAPTER 0', font(True, 34), CORAL); text_c(d, 370, 'UAT', font(True, 150), WHITE); text_c(d, 560, "or it doesn't work", font(True, 96), CORAL)
-text_c(d, 720, 'User Acceptance Test', font(False, 40), WHITE); im.save(os.path.join(WORK, 'c00.png'))
+text_c(d, 720, 'User Acceptance Test', font(False, 40), WHITE)
+d.text((60, 40), 'Sponsored by', font=font(False, 26), fill=GREY); im.paste(logo_plate(52), (250, 18)); im.save(os.path.join(WORK, 'c00.png'))
 
 # b02 the owner's sentence
 im = canvas(CARD_BG); d = ImageDraw.Draw(im)
@@ -169,6 +174,20 @@ im.save(os.path.join(WORK, 's02.png')); log('§FILM_STILL s02 band_clear=%s' % b
 # b03 the live guide page, the Print button ringed
 im = canvas(); top = Image.open(os.path.join(WORK, 'guide_top.png')).convert('RGB'); top = fit_into(top, W, H - BAND); im.paste(top, ((W - top.width) // 2, 0))
 im.save(os.path.join(WORK, 's03.png')); log('§FILM_STILL s03 guide_top=%dx%d band_clear=%s' % (top.width, top.height, band_ok(im, BG)))
+
+# rc3: the guide page at each of its diagrams (quick scroll), and the dashboard in its looks
+def page_still(src, dst, heading=None):
+    im = canvas(); pic = Image.open(os.path.join(WORK, src)).convert('RGB'); pic = fit_into(pic, W, H - BAND); im.paste(pic, ((W - pic.width) // 2, 0))
+    if heading:
+        dd = ImageDraw.Draw(im); tw = dd.textlength(heading, font=font(True, 34)); dd.rounded_rectangle((W - tw - 90, 772, W - 30, 832), radius=12, fill=(18, 38, 58)); dd.text((W - tw - 60, 782), heading, font=font(True, 34), fill=WHITE)
+    im.save(os.path.join(WORK, dst)); return band_ok(im, BG)
+
+
+DIAG = ['uat_b1_sheet_0_floor_plan', 'uat_b1_sheet_3_beam_layout', 'uat_b1_sheet_4_foundation_layout', 'uat_b1_nine_opened', 'uat_b1_arranged', 'uat_b1_arranged_top', 'uat_b2_convert_button', 'uat_b2_converted']
+ok = [page_still('site_' + k + '.png', 'q_%d.png' % i) for i, k in enumerate(DIAG)]; log('§FILM_STILL site_diagrams=%d band_clear_all=%s' % (len(ok), all(ok)))
+LOOKS = [('classic', 'light', 'Classic · Light'), ('classic', 'dark', 'Classic · Dark'), ('executive', 'light', 'Executive · Light'), ('executive', 'dark', 'Executive · Dark')]
+ok = [page_still('dash_%s_%s.png' % (a_, b_), 't_%d.png' % i, c_) for i, (a_, b_, c_) in enumerate(LOOKS)]; log('§FILM_STILL dashboard_looks=%d band_clear_all=%s' % (len(ok), all(ok)))
+page_still('dash_classic_light.png', 'sd1b.png', 'The dashboard · on the sample data')
 
 # b04 background of the scrolled print layout
 im = canvas(); d = ImageDraw.Draw(im); d.text((60, 28), 'Print this guide / Save as PDF', font=font(True, 40), fill=SKY)
@@ -217,7 +236,7 @@ log('§FILM_VOICE pass1 beats=%d dur=%s' % (len(DUR), json.dumps(DUR)))
 if len(DUR) != len(BEATS): log('§FILM_FAIL pass 1 did not voice every beat'); sys.exit(1)
 
 # ── 5 the silent picture: one segment per beat, each a whole number of frames ───────────────────────────────────────
-LEAD = {'b01': 2.5}; TAIL = {'b11': 5.0}
+LEAD = {}; TAIL = {'b11': 5.0, 'b06': 2.0, 'b6b': 3.0, 'bd1': 5.0}   # rc3: longer on the illustrated parts, longest on the dashboard (the prize)
 segs, cues, t = [], {}, 0.0   # (file, frames)
 
 
@@ -236,19 +255,40 @@ def scroll_seg(name, sec):
     log('§FILM_SCROLL travel_px=%d seconds=%.2f' % (travel, D)); return o, n
 
 
+def chain_seg(name, pngs, holds, trans, kind, sec):
+    """stills shown one after another: each held `holds[i]` s, joined by a `trans` s move (slideup = a quick scroll, fade = a look change); the last one holds to the end of `sec`."""
+    n = int(round(sec * FPS)); D = n / FPS; o = os.path.join(WORK, name + '.mp4'); holds = list(holds); used = sum(holds[:-1]) + trans * (len(pngs) - 1); holds[-1] = max(holds[-1], D - used)
+    cmd = ['ffmpeg', '-hide_banner', '-y']; fc = []; off = 0.0
+    for k, png in enumerate(pngs):
+        cmd += ['-loop', '1', '-framerate', str(FPS), '-t', '%.3f' % (holds[k] + trans + 0.2), '-i', png]
+    prev = '[0:v]'
+    for k in range(1, len(pngs)):
+        off += holds[k - 1] + (trans if k > 1 else 0); lab = '[x%d]' % k
+        fc.append('%s[%d:v]xfade=transition=%s:duration=%.2f:offset=%.3f%s' % (prev, k, kind, trans, off, lab)); prev = lab
+    fc.append('%sfade=t=in:st=0:d=0.3,fade=t=out:st=%.3f:d=0.4,format=yuv420p[v]' % (prev, D - 0.4))
+    run(cmd + ['-filter_complex', ';'.join(fc), '-map', '[v]', '-frames:v', str(n), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '16', '-r', str(FPS), o])
+    log('§FILM_CHAIN %s stills=%d hold_each=%.2f move=%.2f kind=%s last_hold=%.2f seconds=%.2f' % (name, len(pngs), holds[0], trans, kind, holds[-1], D)); return o, n
+
+
 def add(seg):
     global t
     segs.append(seg); t += seg[1] / FPS
 
 
+add(still_seg('v_c00', os.path.join(WORK, 'c00.png'), 3.6))   # rc3: the film's zero second is the chapter card
 for b in BEATS:
     i = b[0]; lead = LEAD.get(i, 0.5); sec = lead + DUR[i] + 1.2 + TAIL.get(i, 0.0); start = t
     if i == 'b04': add(scroll_seg('v_' + i, max(sec, 8.0)))
+    elif i == 'bq1': add(chain_seg('v_bq1', [os.path.join(WORK, 's03.png')] + [os.path.join(WORK, 'q_%d.png' % k) for k in range(len(DIAG))], [0.9] + [0.5] * len(DIAG), 0.28, 'slideup', sec))
+    elif i == 'bt1': add(chain_seg('v_bt1', [os.path.join(WORK, 't_%d.png' % k) for k in range(len(LOOKS))], [2.2] * len(LOOKS), 0.35, 'fade', sec))
     elif i == 'b08':
         h = sec / 2; add(still_seg('v_b08a', os.path.join(WORK, 's08a.png'), h)); add(still_seg('v_b08b', os.path.join(WORK, 's08b.png'), h))
+    elif i == 'b6b':
+        h = sec / 2; add(still_seg('v_b6ba', os.path.join(WORK, 's6ba.png'), h)); add(still_seg('v_b6bb', os.path.join(WORK, 's6bb.png'), h))
+    elif i == 'bd1':
+        add(still_seg('v_bd1a', os.path.join(WORK, 'sd1a.png'), 4.5)); add(still_seg('v_bd1b', os.path.join(WORK, 'sd1b.png'), sec - 4.5))
     else: add(still_seg('v_' + i, os.path.join(WORK, 's' + i[1:] + '.png'), sec))
     cues[i] = (start + lead, t - 0.1)
-    if i == 'b01': add(still_seg('v_c00', os.path.join(WORK, 'c00.png'), 3.6))
 open(os.path.join(WORK, 'concat.txt'), 'w').write(''.join("file '%s'\n" % s[0] for s in segs))
 SILENT = os.path.join(WORK, 'silent.mp4'); run(['ffmpeg', '-hide_banner', '-y', '-f', 'concat', '-safe', '0', '-i', os.path.join(WORK, 'concat.txt'), '-c', 'copy', SILENT])
 FRAMES = sum(s[1] for s in segs); TOTAL = FRAMES / FPS
@@ -261,7 +301,7 @@ picks = re.findall(r'§NARR_FIT (\S+) .*? -> (\S+)', o2); wrong = len(re.findall
 log('§FILM_VOICE pass2 detail=%d of %d not_detail=%s tone_wrong=%d' % (sum(1 for _, p in picks if p == 'DETAIL'), len(BEATS), json.dumps([x for x in picks if x[1] != 'DETAIL']), wrong))
 for l in o2.split('\n'):
     if l.startswith('§NARR_FIT') or 'WRONG' in l: log('  ' + l[:200])
-OUT = os.environ.get('FILM_OUT'); rc = 1
+OUT = os.environ.get('FILM_OUT'); rc = 3
 while not OUT:
     c = os.path.join(HOME, 'Videos', 'CAPEX_UAT_Guide_film_EN_2026-11-14_rc%d.mp4' % rc)
     if not os.path.exists(c): OUT = c
