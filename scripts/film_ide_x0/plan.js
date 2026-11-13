@@ -20,7 +20,7 @@ function findRead(pred) {
   return null;
 }
 const def = findRead(f => !f.phantom && f.as === 'A' && S.resolve(index, f.name).kind === 'definition');
-const phantom = findRead(f => f.phantom);
+const phantom = findRead(f => f.phantom && !f.untied);   // a phantom the index flags "untied write" is not a clean example (bim-ootb #2974)
 const want = S.resolve(index, def.field);
 // A call of a function declared in the same file: VS Code's own JavaScript support resolves that by itself, so the film can
 // wait until it is READY before showing that it finds nothing for the field.
