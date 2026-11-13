@@ -60,6 +60,15 @@ async function builtinReady() {
 async function before() {
   await tidy();
   await builtinReady();
+  // the intro: the plain editor, the project's folders open in the Explorer
+  let intro = await open(PLAN.sceneFile, 1, 0);
+  await vscode.commands.executeCommand('workbench.view.explorer');
+  await vscode.commands.executeCommand('workbench.files.action.collapseExplorerFolders').then(() => {}, () => {});
+  await vscode.commands.executeCommand('workbench.files.action.focusFilesExplorer').then(() => {}, () => {});
+  await vscode.commands.executeCommand('list.focusFirst').then(() => {}, () => {});
+  await sleep(1500);
+  await shoot('i1_explorer', { file: rel(intro.document.uri.fsPath), folders: fs.readdirSync(PLAN.root, { withFileTypes: true }).filter(e => e.isDirectory() && !e.name.startsWith('.') && e.name !== 'node_modules').length });
+  await tidy();
   const d = PLAN.def;
   let ed = await open(d.file, d.line, d.col);
   await shoot('b1_line', await facts(ed));
@@ -106,6 +115,30 @@ async function after() {
   ed = await open(PLAN.scratch, 2, PLAN.scratchTagCol);
   await vscode.commands.executeCommand('editor.action.showHover'); await sleep(1500);
   await shoot('t2_fake_tag', await facts(ed));
+
+  // §F.12 first versions, BEFORE the code is edited (so the checks run on a clean tree)
+  ed = await open(PLAN.sceneFile, 1, 0);
+  await vscode.commands.executeCommand('workbench.view.explorer');
+  await vscode.commands.executeCommand('workbench.files.action.collapseExplorerFolders').then(() => {}, () => {});
+  await vscode.commands.executeCommand('workbench.files.action.focusFilesExplorer').then(() => {}, () => {});
+  await vscode.commands.executeCommand('list.focusFirst').then(() => {}, () => {});
+  await vscode.commands.executeCommand('x0RunShip.focus').then(() => {}, () => {});
+  const chk = await vscode.commands.executeCommand('x0Navigator.shipCheck');
+  await sleep(1800);
+  await shoot('r1_check', { lines: chk.length, syntax: chk.find(l => /SHIP_SYNTAX/.test(l)), audit: chk.find(l => /SHIP_AUDIT/.test(l)), last: chk[chk.length - 1] });
+  await vscode.commands.executeCommand('workbench.output.action.clearOutput').then(() => {}, () => {});
+  ed = await open(PLAN.sceneFile, 1, 0);
+  const costLines = await vscode.commands.executeCommand('x0Navigator.costIfDeployed');
+  await sleep(1800);
+  await shoot('r2_cost', { status: api.statusText(ed.document), viewer: costLines.find(l => /DEPLOY_COST app=viewer/.test(l)), apps: costLines.filter(l => /DEPLOY_COST app=/.test(l)).length });
+  await tidy();
+  if (PLAN.lens) {
+    ed = await open(PLAN.lens.file, PLAN.lens.line, 2);
+    await sleep(2500);
+    const cl = await vscode.commands.executeCommand('vscode.executeCodeLensProvider', ed.document.uri, 200);
+    const mine = (cl || []).filter(l => l.command && l.command.command === 'x0Navigator.openLogLine');
+    await shoot('r3_lens', { file: rel(PLAN.lens.file), line: PLAN.lens.line, lenses: mine.length, title: mine[0] ? mine[0].command.title : null, lens_line: mine[0] ? mine[0].range.start.line + 1 : null });
+  }
 
   // The one real event: move the write one line down, save, ask again.
   const w = PLAN.write;                                        // the file:line the index gave for the field

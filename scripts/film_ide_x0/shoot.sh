@@ -41,9 +41,15 @@ JSON
   wait $cpid 2>/dev/null   # only the editor: a bare `wait` would also wait for Xvfb, forever
   rm -rf "$prof"
 }
+# A REAL saved log for the "values beside the code" shot: the repo's own stamper, then the repo's own index generator
+# (its output goes to a scratch folder, so the tree stays clean). The lens will show this log's own summary line.
+mkdir -p "$WS/logs"
+( cd "$WS" && node scripts/log_stamp.js "node scripts/gen_app_surface.js" > logs/gen_app_surface.log && APPSURF_OUT="$OUT/appsurf" node scripts/gen_app_surface.js >> logs/gen_app_surface.log )
+sed 's/^/§FILM_REAL_LOG /' "$WS/logs/gen_app_surface.log" >> "$OUT/shots.log"
 run before "$HERE/before_ext"
 run after "$WS/devtools/vscode/x0-navigator"
 kill $XPID 2>/dev/null
 git -C "$WS" status --short | sed 's/^/§FILM_WS_CHANGED /' >> "$OUT/shots.log"
 git -C "$WS" checkout -q -- . 2>/dev/null
+rm -f "$WS/logs/gen_app_surface.log" "$WS/logs/witness_x0_appdef.log"; rmdir "$WS/logs" 2>/dev/null
 echo "§FILM_SHOOT stills=$(ls "$OUT/stills" | wc -l) errors=$(grep -c FILM_ERROR "$OUT/shots.log")" | tee -a "$OUT/shots.log"

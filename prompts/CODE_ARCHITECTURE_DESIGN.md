@@ -721,7 +721,23 @@ registry file → the real VS Code has it, activates it, refreshes its index and
 **Docs corrected the same day:** bim-ootb `x0-navigator/README.md` and `docs/DeveloperGuide.md` §3 step 6 + §4.1 "Install it".
 **Not proven:** Windows and macOS (the packer is plain node and the installer is VS Code's own, but only Linux was run).
 
-### §F.11 FILM on hold + change list (owner, 2026-11-13)
+### §F.11 FILM — change list (owner, 2026-11-13) · ✅ RECUT DONE 2026-11-14: `~/Videos/Editing_Real_Code_EN_AFTER_2026-11-14_v5.mp4`
+
+**RESULT (owner, 2026-11-14: *"Yes was left hanging that good film, like to see it finished"*).** English cut v5: 187.9 s, 4,510 frames,
+1920×1080, 15.7 MB; 18 stills of the real VS Code 1.146.0 (reshot from a worktree named `bim-ootb`). All four changes below are in:
+(1) the opening card is `CHAPTER 0` in the chapter style, the owner's line under it; (2) the closing card names the Developer Guide URL and
+section 4.1 for the install; (3) a new first beat shows the editor with the project's folders in the Explorer, opening on the owner's sentence
+*"Developers can use Visual Studio Code to edit our source code, where we enhanced it."*; (4) the "not built yet" card is replaced by
+`CHAPTER 5 · Run it. Check it. Ship it.` (three real stills: the *Run & Ship* list with a passing Check, *Cost if deployed* with the status-bar
+note `viewer: start-up · 234 KB`, the grey value line `last: §APP_SURFACE files=3249 fields=1693 … · gen_app_surface.log @ 4ed4e86` made from
+a log written on camera by the repo's own stamper and generator) and a card "What it does not do yet". The closing line is now "No AI inside
+· No dependencies · Network only when you press Fetch back".
+`§FILM_GUARD spoken_numbers=12 mismatches=[] false_flags=[] verdict=PASS` · `§FILM_SILENT frames=4510 planned=4510 OK` · `§FILM_FIT beats=11
+detail=11 other=[] tone_ok=16 tone_wrong=0` · longest silence 5.58 s · −17.1 LUFS · caption band empty on the new stills (0.104575).
+The one real event this take: `index stale` → 2.4 s → `viewer/city.js:718`. **Open:** the owner's review of v5; other languages.
+The film file is local only (owner rule: films are never pushed, only their scripts); pipeline in `scripts/film_ide_x0/`.
+
+*(the change list as it was written on 2026-11-13, kept for the record)*
 
 The owner reviewed English cut v4 and asked for changes, then put the recut on hold until the three "not built yet" items exist. **Do not
 recut before that.** The change list for the next cut, in the owner's words:
@@ -819,7 +835,71 @@ Run against the real site while testing F.12c. Neither was known; both are deplo
    `§SHIP_FETCH site=https://red1oon.github.io/bim-ootb vs=origin/main verdict=PASS`.
    Not checked: which page reads `erp/version.json` and what it showed while the file was broken or missing.
 
+**§F.13 STATUS 2026-11-14 — F-12 answered, NOT yet applied; the live site is currently on the plain build.**
+The owner's answer to F-12 was *"Both."* (step 1: Pages source = GitHub Actions only; step 2: CI merges with a token that starts workflows),
+confirmed in words: *"My 'both' answer was meant for that. Anyway proceed."* What happened:
+- **Step 1 was NOT done.** `gh api -X PUT repos/red1oon/bim-ootb/pages -f build_type=workflow` was refused by the session's permission guard
+  ("Destructive or Unwanted Actions"). The session did not look for another route. **The owner must do it:** GitHub ▸ Settings ▸ Pages ▸
+  Build and deployment ▸ Source = "GitHub Actions" (or run that command himself).
+- **Step 2 cannot start:** the repo has no secrets (`gh secret list` empty). It needs a fine-grained token (this repo; Contents and Pull
+  requests read/write) saved as a repo secret, then `ci.yml`'s auto-merge step pointed at it. Not prepared as a PR: an edit that names a
+  secret which does not exist would silently stop auto-merge (`|| true`).
+- **The race, measured again, and it also loses under a user merge:** for `4ed4e86f` (PR #2958, auto-merge enabled by the session, merged as
+  the owner) *Deploy to GitHub Pages* finished 17:29:03 UTC and *pages build and deployment* 17:29:08 → the plain build published last:
+  `erp/version.json` 404, `§SHIP_FETCH … verdict=INCONCLUSIVE`. Same for `a3d70137` (PR #2955). So "enable auto-merge yourself" (§F.13.1) is
+  NOT a reliable workaround: only step 1 is. A re-run of the deploy workflow alone, to restore the site, was also refused by the permission
+  guard. **State left: the site works but serves raw, unminified files and no `erp/version.json`.** It will flip again on the next push.
+- Done: the stale note in `deploy-pages.yml` is corrected (bim-ootb #2957 / PR #2958).
+- **To restore now (owner):** Actions ▸ *Deploy to GitHub Pages* ▸ latest run ▸ Re-run all jobs; then X0 ▸ Run & Ship ▸ Fetch back must say PASS.
+
+### §F.14 A local facts server for any AI assistant (MCP) — BUILD SPEC · ✅ DONE 2026-11-14 (bim-ootb #2954 / PR #2955) (F-3 answered (b); owner, 2026-11-14: *"Both."* → the Claude + VS Code pair)
+
+The owner asked how Claude Code and VS Code work together (*"I hear of co-pilot method but wonder what is Claude's method"*). Answer given
+from the Claude Code docs: no inline autocomplete; an agent with an editor extension (selection and diagnostics shared, diffs in the editor);
+the documented way to give it a project's own tools is an MCP server. Recommendation: install the extension, then build the facts server.
+The owner chose both, and asked: *"can it be toggle control ie ON/OFF?"* → yes, and **OFF is the default** (below).
+**Done the same day:** the Claude Code extension installed in the owner's VS Code (`anthropic.claude-code` v2.1.323, via `code --install-extension`).
+
+**Scope:** bim-ootb `devtools/mcp/x0-facts/` (one folder: `server.js`, `README.md`, `tests/`). Plain node, **no npm**: the MCP wire format
+(JSON-RPC 2.0, one JSON message per line on stdin/stdout) is spoken by hand. It reuses X0 Navigator's `lib/` modules, so the assistant and
+the editor answer from the same code. It never calls a model and opens no network connection; nothing a page loads changes.
+- **Tools (all read-only):** `where_is_field_set {field}` (the APP index, fresh copy, stale guard; phantom and unknown say so, never a guess) ·
+  `what_is_tag {tag}` (spec places + the code that prints it; `no spec found`) · `how_is_file_loaded {file}` (start-up / offline cache / not
+  loaded at start) · `cost_if_deployed {base?}` (the `§DEPLOY_COST` lines) · `last_logged_value {file}` (the provable values only, and why the
+  others are hidden) · `ship_check {base?}` (syntax, precache audit, bump rule). **Not offered:** Fetch back (network), anything that writes.
+- **ON/OFF:** nothing is committed that turns it on. No `.mcp.json` in the repo (it would prompt every session of every developer).
+  ON = `claude mcp add x0-facts --scope local -- node devtools/mcp/x0-facts/server.js` (this developer, this project only).
+  OFF = `claude mcp remove x0-facts --scope local`. Inside a session, `/mcp` shows and switches it. When no assistant starts it, no process runs.
+- **Witness `W-X0-MCP`** (`tests/witness_x0_mcp.js`, node): starts the real server as a child process and speaks the protocol to it.
+  `initialize` → a result naming the server; `tools/list` → the 6 tools, each with an input schema; each tool called on the real repo and
+  compared with the lib's own answer (a written field → its `file:line`, and that line mentions the field; a phantom → says PHANTOM; a made-up
+  field → "not in the index"; a known tag → a spec place; a made-up tag → `no spec found`). **Red controls:** an unknown tool → an error
+  result, not a crash; a line that is not JSON → a JSON-RPC error and the server keeps answering; the server's source imports no network
+  module (read with the parser). `§X0_MCP tools= field= phantom= unknown= tag= fake_tag= cost= loaded= lens= check= bad_tool_error= bad_json_survives= network_modules=0 verdict=`.
+- **One check with a real client:** `claude mcp add` in a throw-away project folder, `claude mcp list` must report the server connected, then
+  `claude mcp remove`. No model call is made by any of this.
+- **Done when:** `§X0_MCP … verdict=PASS`, the real client reports it connected, PR merged on `main` (auto-merge enabled by the session
+  itself, then Fetch back PASS: §F.13).
+- **RESULT 2026-11-14 — bim-ootb #2954 / PR #2955 (`a3d70137`). ✅ DONE (witness).** `§X0_MCP tools=6 init=Y field=Y phantom=Y unknown=Y
+  tag=Y fake_tag=Y cost=Y loaded=Y lens=Y check=Y bad_tool_error=Y bad_json_survives=Y network_modules=0 verdict=PASS`. **Real client:** in a
+  throw-away folder, `claude mcp add … --scope local` then `claude mcp list` → `x0-facts-witness: … ✔ Connected` (Claude Code 2.1.323), then
+  removed. An empty project record for that temp folder is left in the owner's `~/.claude.json` (no server in it). Caught before the PR: two
+  description strings in `server.js` quoted a god-object access and put a fake field `APP.x` into the index (the §F.4 FINDING 2 class);
+  reworded, index back to 1,693 fields. **Not exercised:** a model actually choosing and calling the tools in a conversation; the owner has not
+  turned it on (`claude mcp add x0-facts --scope local -- node devtools/mcp/x0-facts/server.js` from the bim-ootb folder).
+  The "Fetch back PASS" part of *Done when* did not hold: see §F.13 status below (the plain build published last again).
+
 **DECISIONS:**
+- 2026-11-14, owner, on F-12 (how bot-merged PRs are handled; recommendation: turn the plain branch build off, then a token for CI):
+  *"Advice on that how"* → the two steps were laid out; *"Both."*; then, when the session had read that as the Claude + VS Code pair:
+  *"My 'both' answer was meant for that. Anyway proceed."* → **F-12 = both steps.** Neither is applied yet (§F.13 STATUS): step 1 was
+  refused by the session's permission guard, step 2 waits for a token only the owner can create.
+- 2026-11-14, owner, on the film: *"The last film which i asked to put the CH 0 card, is it to be done on this?"* → *"Yes was left hanging
+  that good film, like to see it finished"* → recut v5 built the same day (§F.11).
+- 2026-11-14, owner, on F-3 (which assistant help; proposal (a) now, (b) next): asked how Claude and VS Code work together, was advised to
+  install the Claude Code extension and build the local facts server, replied *"Both."* (clarified on request: the Claude + VS Code pair,
+  not the Pages pair) and asked *"can it be toggle control ie ON/OFF?"* → **F-3 = (b), built now, OFF by default** (§F.14). (a) "Context for
+  this file" and (c) are not built. **F-12 (Pages) is still open: nothing was changed on the live site.**
 - 2026-11-13, owner, on "first versions of the three, or complete as specified?" (recommendation: first versions): *"OK first version, then
   next session for the next"*. → §F.12. The complete versions and the film recut are the next session's.
 - 2026-11-13, owner, after watching cut v4: the four messages quoted in §F.11 (Chapter 0 style · tell the install · a better intro ·
@@ -861,7 +941,7 @@ first, as §F.4, the next session's bounded task**; A0 runs in parallel if a sec
 | E | `witness_kit/paths.js` (no behaviour change; witness: the same suite verdicts before and after) | E-1 the `PROVES:` header format | |
 | F | §F.4 ✅ · §F.5 ✅ · §F.7 log stamp ✅ · §F.8 ✅. Nothing else in F starts without a decision | F-6 bump on save: automatic or a prompt | it is F's next slice by the written order |
 
-Ask the owner **one decision per message, with the recommendation** (START HERE 2). 20 decisions are open (STATUS: F-8, F-9, F-10, F-11 answered; F-12 added). Next session: per the owner, the complete versions of the three F.12 items (needs F-1, F-2, F-6, F-7) and the film recut (§F.11); ask F-12 first, it is a live-site fault.
+Ask the owner **one decision per message, with the recommendation** (START HERE 2). 18 decisions are open (STATUS: F-3, F-8, F-9, F-10, F-11, F-12 answered). Next session: FIRST read §F.13 STATUS (the live site is on the plain build until the owner switches the Pages source), then the complete versions of the three F.12 items (needs F-1, F-2, F-6, F-7). The film recut is done (§F.11).
 After it, start A0 and B0, and ask A-1 while they run.
 
 ## §M — re-measure before quoting
@@ -898,7 +978,7 @@ After it, start A0 and B0, and ask A-1 while they run.
 | C | named APP parts | open: 2 decisions |
 | D | owner table | open: 2 decisions |
 | E | proof map | open: 2 decisions · `paths.js` ready to start |
-| F | VS Code extension (X0 Navigator + Run & Ship + perf-impact monitor + DEV_TOOLKIT pack); AI optional | **§F.4 X0 slice 1 ✅ DONE (witness)** (bim-ootb PR #2922) · **§F.5 fresh index ✅** (PR #2925) · §F.0 Z1–Z3 ✅ (PR #2919) · **§F.7 log stamp ✅** (PR #2928) · §F.8 nested-checkout fix ✅ (PR #2931) · **§F.9 real-VS-Code witness ✅** (PR #2933) · §F.10 install fix ✅ (PR #2939) · **§F.12 first versions of Run and ship, cost monitor, values beside the code ✅** (PRs #2944, #2946, #2948) · §F.13 deploy findings (one fixed #2951, **F-12 open**) · IDE film "Editing Real Code": cut v4 reviewed, **ON HOLD** until the three unbuilt items exist (§F.11 change list) · F-9 CLOSED "not next" (§F.6) · open: 6 decisions (F-1, F-2, F-3, F-6, F-7, F-12) |
+| F | VS Code extension (X0 Navigator + Run & Ship + perf-impact monitor + DEV_TOOLKIT pack); AI optional | **§F.4 X0 slice 1 ✅ DONE (witness)** (bim-ootb PR #2922) · **§F.5 fresh index ✅** (PR #2925) · §F.0 Z1–Z3 ✅ (PR #2919) · **§F.7 log stamp ✅** (PR #2928) · §F.8 nested-checkout fix ✅ (PR #2931) · **§F.9 real-VS-Code witness ✅** (PR #2933) · §F.10 install fix ✅ (PR #2939) · **§F.12 first versions of Run and ship, cost monitor, values beside the code ✅** (PRs #2944, #2946, #2948) · §F.13 deploy findings (one fixed #2951; **F-12 answered "both" but NOT applied: step 1 needs the owner's own hand, step 2 his token**) · **§F.14 facts server (MCP) ✅** (PR #2955) · IDE film "Editing Real Code": **recut v5 done 2026-11-14** (§F.11), awaits the owner's review · F-9 CLOSED "not next" (§F.6) · open: 4 decisions (F-1, F-2, F-6, F-7); F-3 and F-12 answered |
 
 ## §VET — 2026-11-13 vetting pass (issue #602), against bim-ootb `main` @ `a7c329e5`
 
