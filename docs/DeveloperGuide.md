@@ -122,6 +122,8 @@ not counted). You will not read it all; §6 says what to read first.
 3. Serve it: task **Serve repo (http://localhost:8000)**, or `python3 -m http.server 8000` in the repo root.
 4. Open `http://localhost:8000/viewer/viewer.html` (or `erp/idempiere.html`, `modeller/modeller.html`).
 5. To debug with breakpoints: Run ▸ **Viewer in Chrome** (also ERP, Modeller, and **Node: this witness / script**).
+6. Optional, recommended: install the repo's own VS Code extension, **X0 Navigator** (§4.1). One command, works offline:
+   `ln -s "$PWD/devtools/vscode/x0-navigator" ~/.vscode/extensions/bim-devtools.x0-navigator-0.1.0`, then reload VS Code.
 
 `npm install` is needed only for the lint check (`eslint`, a dev tool) and is never needed by the app.
 The app's only runtime dependency is `sql.js`, which is already vendored.
@@ -130,10 +132,10 @@ The app's only runtime dependency is `sql.js`, which is already vendored.
 
 | Task | Does |
 |---|---|
-| Run this witness (full log → logs/) | `node <current file>`; full output to `logs/<name>.log`, last 20 lines and the exit code on screen |
+| Run this witness (full log → logs/) | `node <current file>`; full output to `logs/<name>.log`, last 20 lines and the exit code on screen. Line 1 of the log is a `§LOG_STAMP` (§6) |
 | Run viewer witness suite | the headless witness suite (also `npm test`) |
 | Lint as CI does | `npx eslint viewer modeller`: the `no-undef` check that catches a missing global |
-| Regenerate editor indexes | `APP_SURFACE.md` and `types/globals.gen.d.ts` |
+| Regenerate editor indexes | the committed `internal/APP_SURFACE.md` and `types/globals.gen.d.ts`. X0 Navigator does not need this: it keeps its own fresh copy (§4.1) |
 
 ---
 
@@ -142,14 +144,42 @@ The app's only runtime dependency is `sql.js`, which is already vendored.
 | You want | Do this |
 |---|---|
 | Where a function or global is defined | **F12** works for true globals (`setupScene` → `viewer/scene.js`) and, through `types/globals.gen.d.ts`, for about 6 in 10 UMD globals' members (`ADParser.init` → `erp/ad_parser.js`). The rest: search for `X = ` or `function X`. |
-| Where an `APP.x` / `A.x` field is set | `internal/APP_SURFACE.md`. Its "phantom" list (171 fields read in production but never written) is a list of dead guards. Check before relying on one. |
-| What a `§TAG` means | Search the tag. The code that prints it is the definition, and its spec is usually named in the same file's header. |
+| Where an `APP.x` / `A.x` field is set | With X0 Navigator (§4.1): **F12** or hover on the field. Without it: `internal/APP_SURFACE.md`. Its "phantom" list (171 fields read in production but never written) is a list of dead guards. Check before relying on one. |
+| What a `§TAG` means | With X0 Navigator (§4.1): hover the tag. Without it: search the tag. The code that prints it is the definition, and its spec is usually named in the same file's header. |
 | What a spec section says (`§S59`, `W-BUMP`) | Search `prompts/` in both repos for the section or witness name. |
 | A file cited as `file:line` in an old prompt | Line numbers drift (the big files were split in 2026-10). **Search for the function name instead.** |
 | Which page loads a file | Search the HTML pages for the file name; for lazy parts, `viewer/main.js` `modules[]`. |
 
 Search hides vendored libraries and six generated one-line data files (`erp/genesis_dict.js`, `erp/fk_rules.js`, …). Those
 files open read-only. Edit the generator named on their first line instead.
+
+### 4.1 X0 Navigator: the repo's own VS Code extension
+
+It lives in bim-ootb `devtools/vscode/x0-navigator/`. It is plain JavaScript with no dependencies and no build step, it never
+calls a model or the network, and no page loads it. Install: §3 step 6. It answers two questions from the repo's own files:
+
+| You do | You get | Read from |
+|---|---|---|
+| **F12** on `APP.camera` (also `A.x` / `app.x` in a file that binds that name) | a jump to the line where the field is written | the APP field index made by `scripts/gen_app_surface.js` |
+| Hover the same field | `written at <file:line> · N writes · N reads` | the same index |
+| Hover a `§TAG` in any `.js` file | up to 5 places in `prompts/` and `docs/` of both repos that name the tag (headings first), then up to 5 lines of code that print it | the specs and the source |
+
+**It never guesses.** Each answer below is on purpose:
+
+| It shows | Meaning | What to do |
+|---|---|---|
+| `PHANTOM — read, never written`, and F12 does nothing | no code sets this field: the guard can never be true, or its writer was removed | do not rely on the field; see §11 item 4 |
+| nothing at all on an `APP.x` | the field is not in the index (new and unsaved, or `A` is an unrelated local in this file) | save the file and hover again |
+| `index stale`, and F12 does nothing | the line the index points at no longer mentions the field | hover again in a few seconds, or run **X0 Navigator: Rebuild indexes** |
+| `no spec found` on a `§TAG` | no file in `prompts/` or `docs/` names the tag | the code that prints it is all there is: read that |
+
+**The index looks after itself.** The committed `internal/APP_SURFACE.md` is only a snapshot: about two merges in three move its line
+numbers (26 of 39, measured 2026-11-13). X0 runs the generator into VS Code's own storage folder when it starts, and again when
+a lookup misses after you saved a file. One run takes about 4 seconds in the background. It never writes inside the repo, so there is
+nothing to commit and nothing to conflict on. **Do not regenerate and commit `APP_SURFACE.md` in an unrelated PR** for X0's sake.
+
+For bim-compiler specs to show in a `§TAG` hover, keep the two clones side by side (`bim-ootb/` next to `bim-compiler/`), or set
+`bimDevtools.compilerRoot`. Its witnesses (node only, no VS Code needed) are listed in its `README.md`.
 
 ---
 
@@ -211,6 +241,13 @@ The largest viewer files were split in 2026-10 by a generator that keeps every s
   red control (a case that must fail) so you know it can.
 - **Visual behaviour** (camera paths, positions, motion) is proven from numbers read off the real objects and `§` lines, never from
   how a screenshot looks.
+- **A saved log says which code made it.** The witness task and the suite runner (`npm test`) start every log with one line:
+  `§LOG_STAMP commit=<hash> dirty=<n> branch=… at=<time> cmd=…`, plus `dirty_files=…` when 1 to 10 tracked files differ from the commit
+  (`scripts/log_stamp.js`). **Before you trust a value in a saved log, read that line:** if the commit is old, or the file that prints
+  the value is in `dirty_files`, re-run the witness instead. A log without the line (anything saved before 2026-11-13, or by another
+  tool) cannot be tied to code. Measured that day: saved logs held about a quarter of the `§TAG`s the code prints, and almost none
+  said which code produced them. When you save a log yourself, put the stamp first:
+  `node scripts/log_stamp.js <what you ran> > logs/x.log; node <file> >> logs/x.log 2>&1`.
 
 **First reading, about two evenings.** The first three are the reading path in bim-ootb `prompts/SESSION_OPENER_READ_AND_REVIEW.md` §B;
 the last two are added here: `witness_kit/contract.js` → the op-log hash chain in `erp/kernel_ops.js` (`stableStringify` → `commitOp`) →
@@ -251,6 +288,8 @@ The core idea still holds: **a building is a Bill of Materials.** One parent, N 
 | Two copies of one responsibility | Duplicates drift (`ERPKernel` is published by two files; `modeller/routewalker.js` vs `viewer/routewalker.js`) | Find the owner first. The 4D lane keeps an ownership table in `prompts/4D_MODEL_INTEGRITY.md` §I |
 | History written into code comments | Slow to read (about 5% of comment lines are dated change stories; one `sw.js` comment had grown to 234,833 characters on one line) | History goes in the commit message and `prompts/`; comments say what the code does now |
 | Witness paths assume one machine | Many witnesses hard-code the author's home folder | Expect to adjust paths on a new machine; a shared resolver is an open item |
+| A saved log with no `§LOG_STAMP` line | Its values look current but may come from code that has since changed. Measured 2026-11-13: almost no saved log said which code made it | Read line 1 of the log (§6). No stamp, an old commit, or the printing file listed as dirty: re-run the witness |
+| A copy of the tree inside the tree (an agent worktree under `.claude/worktrees/`, a nested clone) | A tool that walks folders reads the copy as source. `gen_app_surface.js` once put 1,082 rows pointing into such a copy, so F12 opened the stale file | A dev tool skips any sub-folder that holds a `.git` entry, and its witness also runs on a checkout that looks like a working one, not only a clean one |
 
 ---
 
