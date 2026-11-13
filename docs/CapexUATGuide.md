@@ -1,5 +1,23 @@
 # CAPEX UAT Guide — from 2D drawings to the dashboard
 
+<div class="uat-noprint" markdown="0"><button type="button" class="md-button md-button--primary" onclick="window.print()">🖨 Print this guide / Save as PDF</button>
+<span style="margin-left:.6em;font-size:.8em">Print it, tick the boxes by hand, sign the last page and hand it in. In the print dialog choose <b>Save as PDF</b> to keep a file.</span></div>
+<style>
+@media print {
+  .md-header, .md-tabs, .md-sidebar, .md-footer, .md-top, .md-source, .uat-noprint, .md-content__button, .headerlink { display: none !important; }
+  .md-main__inner, .md-content, .md-content__inner, .md-grid { margin: 0 !important; padding: 0 !important; max-width: none !important; }
+  .md-typeset { font-size: 10.5pt; }
+  .md-typeset table:not([class]) { display: table; width: 100%; font-size: 9pt; }
+  .md-typeset table:not([class]) th, .md-typeset table:not([class]) td { border: 1px solid #555; padding: 3pt 5pt; }
+  .md-typeset tr, .md-typeset img, .md-typeset figure { break-inside: avoid; page-break-inside: avoid; }
+  .md-typeset h2 { break-before: page; page-break-before: always; }
+  .md-typeset h3 { break-after: avoid; }
+  .md-typeset img { max-width: 100%; max-height: 105mm; }
+  a[href]::after { content: none !important; }
+  @page { margin: 14mm 12mm; }
+}
+</style>
+
 A hands-on test script for the testers of the pilot client (Sysnova). Each step says what to **do**, what you should **see**, and has a box to tick.
 Work top to bottom: every chapter uses what the one before produced. Write anything that differs on the **Notes** line at the end of each chapter.
 
@@ -14,7 +32,7 @@ Dates in the test data are set for **13 November 2026**. Testing well after that
 | Your iDempiere, with its **GardenWorld** client and a GardenWorld Admin login | your server |
 | The test-data pack | [202611131200_GardenWorld_CAPEXTestData.zip](https://github.com/red1oon/bim-ootb/raw/main/capex/plugin/testdata_2pack/202611131200_GardenWorld_CAPEXTestData.zip) |
 | The dashboard's scripts for iDempiere | listed in chapter A2, all in the [bim-ootb repository](https://github.com/red1oon/bim-ootb/tree/main/capex/legacy) |
-| A set of 2D drawings (.dxf) | the sample sets named in the [DXF2BIM guide](DXF2BIMGuide.md), or your own |
+| The **Shed** drawing set: nine 2D sheets (.dxf) with their settings written in | the nine `…_marked.dxf` files supplied for this test, listed in chapter B1 |
 
 **Who does what**
 
@@ -52,7 +70,7 @@ All scripts are iDempiere migration scripts (PostgreSQL), written for the **Gard
 | [`capex/legacy/ws/q4`](https://github.com/red1oon/bim-ootb/tree/main/capex/legacy/ws/q4/migration/iD13/postgresql) | `202611111400_CAPEX-WS-Q4.sql` | Reading purchase orders and project issues |
 | [`capex/legacy/ws/chain`](https://github.com/red1oon/bim-ootb/tree/main/capex/legacy/ws/chain/migration/iD13/postgresql) | `202611121700_CAPEX-WS-CHAIN.sql` | Reading receipts, vendor invoices and payments (the supply-chain view) |
 | [`capex/legacy/ws/pacalc`](https://github.com/red1oon/bim-ootb/tree/main/capex/legacy/ws/pacalc/migration/iD13/postgresql) | `202611131400_CAPEX-WS-PACALC.sql` | Reading the dashboard's own formulas (Performance Analysis measures) from your server |
-| [`capex/legacy/migration`](https://github.com/red1oon/bim-ootb/tree/main/capex/legacy/migration/iD13/postgresql) | every script, in name order (`202611031900_CAPEX-R0.sql` … `202611131500_CAPEX-RETIRE-FIXED-CURRENCY.sql`) | The dashboard's formulas as Performance Analysis measures, the Home tab goals, their targets and colours. Money goals show the currency of your login |
+| [`capex/legacy/migration`](https://github.com/red1oon/bim-ootb/tree/main/capex/legacy/migration/iD13/postgresql) | every script, in name order (`202611031900_CAPEX-R0.sql` … `202611141000_CAPEX-FORECAST-PROJECTS.sql`) | The dashboard's formulas as Performance Analysis measures, the Home tab goals, their targets and colours. Money goals show the currency of your login |
 | BIM Document plugin | see [Installing it](CapexDashboardGuide.md#installing-it) | Drawings filed against projects (optional for this test) |
 
 | # | Do | Confirm on screen | Result |
@@ -92,34 +110,102 @@ GardenWorld already has what the exercise needs. Check it before chapter C:
 
 ---
 
-## B · BIM: from 2D drawings to a priced model
+## B · BIM: the Shed, from 2D drawings to a priced model
 
-### B1 · Open the drawings in the Modeller
+This chapter uses **your own Shed drawing set**: the single-storey farm shed, drawn as nine 2D sheets. You will see each drawing on its own first, then the nine arranged in place, then the 3D model built from them.
 
-Full detail: [DXF2BIM guide](DXF2BIMGuide.md#step-by-step-in-the-modeller).
+The pictures were taken from the real Modeller with these same nine files. The label at the top of each picture and the red ring around a button were added for this guide; in the canvas-only pictures the drawing lines are shown at full strength so that they print clearly.
 
-![The 2D Drawings panel and the metadata editor with a standard set loaded](img/dxf2bim/import_sheets.jpg)
+**The nine sheets** (open the `…_marked.dxf` copies: they carry the levels, heights and layer meanings the Modeller needs)
+
+| Sheet file | What it is | Role the Modeller shows |
+|---|---|---|
+| `0_FLOOR_PLAN_marked.dxf` | Floor plan | PLAN |
+| `3_BEAM_LAYOUT_marked.dxf` | Beam layout | PLAN |
+| `4_FOUNDATION_LAYOUT_marked.dxf` | Foundation layout | PLAN |
+| `1N_ELEV_NORTH_marked.dxf` | North elevation | ELEV |
+| `1S_ELEV_SOUTH_marked.dxf` | South elevation | ELEV |
+| `2_ELEV_WEST_marked.dxf` | West elevation | ELEV |
+| `7_ELEV_EAST_marked.dxf` | East elevation | ELEV |
+| `8_SECTION_AA_TRUSS_marked.dxf` | Section A-A, the roof truss | SECTION |
+| `5_DETAILS_marked.dxf` | Details and general notes | NOTES |
+
+### B1 · Get to know the drawings: one sheet at a time
+
+Open [the Modeller](https://red1oon.github.io/bim-ootb/modeller/modeller.html). The drawings are opened from **📂 Open → Open 2D drawings (.dxf)…**
+
+![Where to click: Open, then Open 2D drawings (.dxf)](img/uat/uat_b1_open_menu.png)
+
+*Picture B1-a · Modeller: Open ▸ Open 2D drawings (.dxf)*
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| B1.1 | Open [the Modeller](https://red1oon.github.io/bim-ootb/modeller/modeller.html). **📂 Open → Open 2D drawings (.dxf)…** and select **all** sheets of the set at once | The **2D Drawings** panel lists each sheet with its role | ☐ Pass ☐ Fail |
-| B1.2 | Watch the sheets arrange themselves; press **Arrange** in the panel to play it again | Plans sit at their levels, elevations on their faces, the section on its cut | ☐ Pass ☐ Fail |
-| B1.3 | Press **Metadata** | The **Drawing metadata** panel opens: Sheets, Units, Layers, Tags, Exclude areas, Wall tops, Verdict | ☐ Pass ☐ Fail |
-| B1.4 | Confirm the **Units**, map any unmapped **Layers**, tick the yellow rows you agree with | Every value shows where it came from (*from file*, *from model*, *you*) | ☐ Pass ☐ Fail |
-| B1.5 | Read the **Verdict** | *Qualifies*. If not, click an item: the canvas zooms to what is missing | ☐ Pass ☐ Fail |
+| B1.1 | **📂 Open → Open 2D drawings (.dxf)…** and select **only** `0_FLOOR_PLAN_marked.dxf` | The Shed **floor plan** is drawn on the canvas, as in picture B1-b: the long rectangle of the shed with its grid lines and column marks | ☐ Pass ☐ Fail |
+| B1.2 | Fold the **2D Drawings** panel away (the fold button in its title bar) and close the **Drawing metadata** panel (✕) to see the whole drawing. Turn the mouse wheel to zoom, drag to move | You recognise your own floor plan | ☐ Pass ☐ Fail |
 
-![The metadata editor: units confirmed, layers mapped, verdict Qualifies](img/dxf2bim/editor_std.jpg)
+![Shed floor plan on its own](img/uat/uat_b1_sheet_0_floor_plan.png)
 
-### B2 · Convert, and open the model
+*Picture B1-b · **Shed · Floor plan** · sheet `0_FLOOR_PLAN.dxf`, on its own*
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| B2.1 | **Save marked copies** | One `<name>_marked.dxf` per sheet is downloaded, with your metadata written in | ☐ Pass ☐ Fail |
-| B2.2 | **Convert** | Walls, slabs, roof, doors and glazing are built from the drawings | ☐ Pass ☐ Fail |
-| B2.3 | **Export → Viewer database (.db)** | A `.db` file is downloaded | ☐ Pass ☐ Fail |
-| B2.4 | Open the [front door](https://red1oon.github.io/bim-ootb/index.html), **Buildings / IFC**, open the `.db` | The Viewer shows the same building; orbit with the mouse | ☐ Pass ☐ Fail |
+| B1.3 | Reload the page. Open **only** `3_BEAM_LAYOUT_marked.dxf` | The **beam layout** is drawn, as in picture B1-c | ☐ Pass ☐ Fail |
+| B1.4 | Reload the page. Open **only** `4_FOUNDATION_LAYOUT_marked.dxf` | The **foundation layout** is drawn, as in picture B1-d | ☐ Pass ☐ Fail |
 
-![The converted model](img/dxf2bim/converted.jpg)
+![Shed beam layout on its own](img/uat/uat_b1_sheet_3_beam_layout.png)
+
+*Picture B1-c · **Shed · Beam layout** · sheet `3_BEAM_LAYOUT.dxf`, on its own*
+
+![Shed foundation layout on its own](img/uat/uat_b1_sheet_4_foundation_layout.png)
+
+*Picture B1-d · **Shed · Foundation layout** · sheet `4_FOUNDATION_LAYOUT.dxf`, on its own*
+
+An elevation or the section opened on its own shows nothing: it has to stand on a plan. You will see them in the next step, standing in place.
+
+### B2 · Open all nine sheets: the drawings arrange themselves
+
+| # | Do | Confirm on screen | Result |
+|---|---|---|---|
+| B2.1 | Reload the page. **📂 Open → Open 2D drawings (.dxf)…** and select **all nine** `…_marked.dxf` files at once | The **2D Drawings** panel is titled **9 SHEETS** and lists each file with its role: three PLAN rows, four ELEV rows, the section and the NOTES sheet (picture B2-a) | ☐ Pass ☐ Fail |
+| B2.2 | Read the top of the **Drawing metadata** panel | The green badge reads **Qualifies** | ☐ Pass ☐ Fail |
+| B2.3 | Watch the sheets move into place. Press **Arrange** in the panel to play it again | The plans lie on the ground; each elevation stands on the side it shows; the section stands across the shed (picture B2-b) | ☐ Pass ☐ Fail |
+| B2.4 | Fold the **2D Drawings** panel away, close the **Drawing metadata** panel (✕), and orbit with the mouse | You can see the floor plan you looked at in B1 lying flat, with the four elevations standing around it | ☐ Pass ☐ Fail |
+
+![The nine Shed sheets opened: the 2D Drawings panel and the Drawing metadata panel](img/uat/uat_b1_nine_opened.png)
+
+*Picture B2-a · **Shed · all nine sheets opened**: the list of sheets with their roles, and the verdict **Qualifies***
+
+![The nine Shed sheets arranged in place](img/uat/uat_b1_arranged.png)
+
+*Picture B2-b · **Shed · the nine 2D sheets arranged in place**: plans flat, elevations and section standing*
+
+![The arranged Shed sheets seen from above](img/uat/uat_b1_arranged_top.png)
+
+*Picture B2-c · **Shed · the arranged sheets seen from above**: the floor plan again, now with the other sheets around it*
+
+### B2b · Convert the drawings to the 3D Shed
+
+| # | Do | Confirm on screen | Result |
+|---|---|---|---|
+| B2.5 | Unfold the **2D Drawings** panel and tick **Complete the building (floor slab, roof)** | The box is ticked | ☐ Pass ☐ Fail |
+| B2.6 | Press **Convert** (ringed in picture B2-d) | The Shed is built in 3D: columns, walls, beams, the roof on its trusses, doors and fans (picture B2-e) | ☐ Pass ☐ Fail |
+| B2.7 | Orbit around the model | It is the same shed as your drawings: same length, same number of bays | ☐ Pass ☐ Fail |
+| B2.8 | **Export → Viewer database (.db)** (ringed in picture B2-f) | A `.db` file is downloaded | ☐ Pass ☐ Fail |
+| B2.9 | Open the [front door](https://red1oon.github.io/bim-ootb/index.html), **Buildings / IFC**, open the `.db` | The Viewer shows the same Shed; orbit with the mouse | ☐ Pass ☐ Fail |
+
+![Tick Complete, then press Convert](img/uat/uat_b2_convert_button.png)
+
+*Picture B2-d · **Shed · tick Complete, then press Convert***
+
+![The Shed converted to a 3D model](img/uat/uat_b2_converted.png)
+
+*Picture B2-e · **Shed · converted to a 3D model** (511 parts when these pictures were taken)*
+
+![Export, Viewer database](img/uat/uat_b2_export_menu.png)
+
+*Picture B2-f · Modeller: Export ▸ Viewer database (.db)*
+
+Full detail of every panel: [DXF2BIM guide](DXF2BIMGuide.md#step-by-step-in-the-modeller).
 
 ### B3 · Fit the 4D schedule and the 5D rates to your local scene
 
@@ -251,6 +337,6 @@ Open the dashboard on your data: `/capex/index.html?source=legacy` on the server
 | Chapter | Tester | Date | Passed / total | Signature |
 |---|---|---|---|---|
 | A · Set up | | | / 16 | |
-| B · BIM | | | / 19 | |
+| B · BIM | | | / 23 | |
 | C · ERP | | | / 8 | |
 | D · Dashboard | | | / 9 | |
