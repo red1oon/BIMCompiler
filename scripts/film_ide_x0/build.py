@@ -37,12 +37,15 @@ F = {
  'stale_seen': 'index stale' in shots['e2_right_after_save'], 'catch_up_s': float(num(r'seconds_after_first_ask=([\d.]+)', shots['e3_knows_new_line'])),
  'phantom_seen': 'PHANTOM' in shots['p1_phantom'], 'unknown_silent': not re.search(r'written at|PHANTOM|index stale', shots['u1_unknown']),
  'fake_tag': 'no spec found' in shots['t2_fake_tag'], 'stamp_dirty_file': 'dirty_files=viewer/city.js' in shots['l1_log_stamp'],
+ 'check_pass': 'SHIP_CHECK verdict=PASS steps=3' in shots['r1_check'], 'status_kb': int(num(r'viewer: start-up · (\d+) KB', shots['r2_cost'])),
+ 'cost_apps': int(num(r'apps=(\d+)', shots['r2_cost'])), 'lens_shown': int(num(r'lenses=(\d+)', shots['r3_lens'])) == 1 and 'gen_app_surface.log @' in shots['r3_lens'],
+ 'intro_folders': int(num(r'folders=(\d+)', shots['i1_explorer'])),
 }
 log('§FILM_FACTS ' + json.dumps(F))
 # The voice says these in words; each is checked against the measured fact, so a reshoot that changes a number FAILS here, not on screen.
-SAID = {'search_lines': 9, 'search_files': 2, 'def_line': 717, 'jump_line': 717, 'writes': 14, 'reads': 704, 'phantom': 282, 'new_line': 718, 'builtin_defs': 0}
+SAID = {'search_lines': 9, 'search_files': 2, 'def_line': 717, 'jump_line': 717, 'writes': 14, 'reads': 704, 'phantom': 282, 'new_line': 718, 'builtin_defs': 0, 'status_kb': 234}
 bad = [k for k, v in SAID.items() if F[k] != v]
-flags = [k for k in ('search_all_tests', 'stale_seen', 'phantom_seen', 'unknown_silent', 'fake_tag', 'stamp_dirty_file') if not F[k]]
+flags = [k for k in ('search_all_tests', 'stale_seen', 'phantom_seen', 'unknown_silent', 'fake_tag', 'stamp_dirty_file', 'check_pass', 'lens_shown') if not F[k]]
 if not (1300 <= F['alias_only'] < 1400): bad.append('alias_only (voice: "more than thirteen hundred")')
 if not (1.0 <= F['catch_up_s'] <= 9.0): bad.append('catch_up_s (voice: "a few seconds")')
 log('§FILM_GUARD spoken_numbers=%d mismatches=%s false_flags=%s verdict=%s' % (len(SAID) + 2, bad, flags, 'PASS' if not bad and not flags else 'FAIL'))
@@ -50,7 +53,7 @@ if bad or flags: sys.exit(1)
 
 # ── 2. pictures ──
 def conv(args, out): run(['convert'] + args + [out]); return out
-CROP_Y = {'t1_tag': 60, 'l1_log_stamp': 24, 'b3_search_tests_only': 24, 'u1_unknown': 24, 't2_fake_tag': 24}   # default: the band around the cursor line
+CROP_Y = {'t1_tag': 60, 'l1_log_stamp': 24, 'b3_search_tests_only': 24, 'u1_unknown': 24, 't2_fake_tag': 24, 'i1_explorer': 24, 'r1_check': 260, 'r2_cost': 260}   # default: the band around the cursor line
 def still(name):   # the real editor window: a 1440x640 band of it, enlarged to fill the top 850 px; the bottom 230 px stay empty for captions
     src = os.path.join(O, 'stills', name + '.png')
     return conv(['-size', '1920x1080', 'xc:' + BG, '(', src, '-crop', '1440x640+0+%d' % CROP_Y.get(name, 142), '+repage', '-resize', '1912x850', ')',
@@ -76,26 +79,28 @@ def card_idea():
     a += arrow(925, 600) + box(1020, 540, 780, 190, 'The editor add-on only reads it', 'no knowledge of its own, so it cannot drift')
     a += ['-font', FONT, '-pointsize', '30', '-fill', '#94a3b8', '-annotate', '+120+775', '%s of the %s fields are written only under the short name' % (format(F['alias_only'], ','), format(F['fields'], ','))]
     return conv(a, os.path.join(W, 'c_idea.png'))
-def card_roadmap():
-    a = ['-size', '1920x1080', 'xc:' + BG, '-gravity', 'northwest', '-font', FONTB, '-pointsize', '46', '-fill', CORAL, '-annotate', '+120+110', 'Not built yet']
-    rows = [('Run and ship panel', 'serve locally, check, commit, deploy, fetch back: one stepped panel'),
-            ('Cost-if-deployed monitor', 'what a change adds to start-up size and memory, before it is merged'),
-            ('Values beside the code', 'the last logged value next to the line that printed it (waits for stamped logs)')]
+def card_limits():
+    a = ['-size', '1920x1080', 'xc:' + BG, '-gravity', 'northwest', '-font', FONTB, '-pointsize', '46', '-fill', CORAL, '-annotate', '+120+110', 'What it does not do yet']
+    rows = [('Run & Ship', 'it does not commit, open a pull request, merge or deploy for you; no browser step'),
+            ('Cost if deployed', 'raw bytes only: not minified, no budget, no memory estimate'),
+            ('Values beside the code', 'only logs that name their code; few lines light up until more are saved')]
     y = 220
     for t, b in rows: a += box(120, y, 1680, 160, t, b); y += 185
-    a += ['-font', FONT, '-pointsize', '30', '-fill', '#94a3b8', '-annotate', '+120+790', 'Proven so far in one editor version: VS Code %s' % F['vscode']]
-    return conv(a, os.path.join(W, 'c_roadmap.png'))
+    a += ['-font', FONT, '-pointsize', '30', '-fill', '#94a3b8', '-annotate', '+120+790', 'First versions. Proven in one editor version, on Linux: VS Code %s' % F['vscode']]
+    return conv(a, os.path.join(W, 'c_limits.png'))
 def card_close():
-    a = ['-size', '1920x1080', 'xc:' + CARD_BG, '-gravity', 'north', '-font', FONTB, '-pointsize', '84', '-fill', OFF, '-annotate', '+0+170', 'Editing Real Code',
-         '-pointsize', '50', '-fill', CORAL, '-annotate', '+0+330', 'No AI inside  ·  No network  ·  No dependencies',
-         '-font', FONT, '-pointsize', '38', '-fill', OFF, '-annotate', '+0+470', 'X0 Navigator: an editor add-on that reads what the project already wrote down',
-         '-pointsize', '34', '-fill', SKY, '-annotate', '+0+580', 'github.com/red1oon/bim-ootb   ·   devtools/vscode/x0-navigator',
-         '-fill', '#94a3b8', '-pointsize', '28', '-annotate', '+0+680', 'Every screen is the real editor, recorded as shipped. Every number comes from its own log.']
+    a = ['-size', '1920x1080', 'xc:' + CARD_BG, '-gravity', 'north', '-font', FONTB, '-pointsize', '84', '-fill', OFF, '-annotate', '+0+110', 'Editing', '-fill', CORAL, '-annotate', '+0+215', 'Real Code',
+         '-pointsize', '36', '-fill', OFF, '-annotate', '+0+365', 'No AI inside   ·   No dependencies   ·   Network only when you press Fetch back',
+         '-font', FONT, '-pointsize', '36', '-fill', OFF, '-annotate', '+0+460', 'Install it in two commands. The steps are in the Developer Guide, section 4.1:',
+         '-font', FONTB, '-pointsize', '40', '-fill', SKY, '-annotate', '+0+525', 'red1oon.github.io/BIMCompiler/DeveloperGuide',
+         '-font', FONT, '-pointsize', '32', '-fill', SKY, '-annotate', '+0+610', 'source:  github.com/red1oon/bim-ootb   ·   devtools/vscode/x0-navigator',
+         '-fill', '#94a3b8', '-pointsize', '28', '-annotate', '+0+700', 'Every screen is the real editor, recorded as shipped. Every number comes from its own log.']
     return conv(a, os.path.join(W, 'c_close.png'))
 
 OPEN_LINE = 'BIM-ERP is Open Source, for anyone to work on 2D thru to 7D on single platform'      # the owner's words, verbatim
 SEGS = [   # (kind, key, [(picture, (turn, plus seconds))])   a beat's picture changes when that spoken turn starts (measured), never by guess
- ('card', 'open', [(chapter('open', '', 'Editing Real Code', '', OPEN_LINE, 130), 1)]),
+ ('card', 'open', [(chapter('open', 'CHAPTER 0', 'Editing', 'Real Code', OPEN_LINE), 1)]),
+ ('beat', 'intro', [(still('i1_explorer'), (0, 0))]),
  ('beat', 'before', [(still('b1_line'), (0, 0)), (still('b2_f12_nothing'), (1, 1.0)), (still('b3_search_tests_only'), (2, 0))]),
  ('beat', 'idea', [(card_idea(), (0, 0))]),
  ('beat', 'after', [(still('a1_hover'), (0, 0)), (still('a2_jumped'), (3, 0))]),
@@ -107,7 +112,9 @@ SEGS = [   # (kind, key, [(picture, (turn, plus seconds))])   a beat's picture c
  ('beat', 'fresh', [(still('e0_write_before'), (0, 0)), (still('e1_write_moved'), (0, 1.1)), (still('e2_right_after_save'), (1, 0)), (still('e3_knows_new_line'), (3, 1.0))]),
  ('card', 'ch_stamp', [(chapter('ch_stamp', 'CHAPTER 4', 'Which code', 'made this log?', ''), 1)]),
  ('beat', 'stamp', [(still('l1_log_stamp'), (0, 0))]),
- ('beat', 'limits', [(card_roadmap(), (0, 0))]),
+ ('card', 'ch_ship', [(chapter('ch_ship', 'CHAPTER 5', 'Run it. Check it.', 'Ship it.', ''), 1)]),
+ ('beat', 'ship', [(still('r1_check'), (0, 0)), (still('r2_cost'), (2, 0)), (still('r3_lens'), (4, 0))]),
+ ('beat', 'limits', [(card_limits(), (0, 0))]),
  ('beat', 'close', [(card_close(), (0, 0))]),
 ]
 CARD_S = {'open': 5.0}; CARD_DEF = 3.6; TAIL = 1.4; CLOSE_TAIL = 3.5

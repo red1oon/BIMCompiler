@@ -204,6 +204,41 @@ nothing to commit and nothing to conflict on. **Do not regenerate and commit `AP
 For bim-compiler specs to show in a `§TAG` hover, keep the two clones side by side (`bim-ootb/` next to `bim-compiler/`), or set
 `bimDevtools.compilerRoot`. Its witnesses (node only, no VS Code needed) are listed in its `README.md`.
 
+
+### 4.2 Working with an AI assistant in VS Code (optional)
+
+Nothing in this project needs an AI assistant, and X0 Navigator never calls one. If you choose to use one, this is how it fits. The facts
+about Claude Code are from its documentation (code.claude.com/docs, read 2026-11-14).
+
+**Two kinds of help, often used together.** An *autocomplete* assistant (GitHub Copilot's original style) suggests the next lines as grey
+text while you type. An *agent* (Claude Code) has no grey-text completion: you describe a task, it reads files, runs commands and proposes
+edits across files, and you approve them.
+
+**Claude Code in VS Code, two ways.** (1) The *Claude Code* extension (Extensions view; VS Code 1.94 or later): a chat panel, your
+selection and open file shared with it, `Alt+K` to insert a reference such as `@file.js#5-10`, proposed edits as side-by-side diffs with
+Accept / Reject, a plan you can comment on, and "rewind code to here" on earlier messages. (2) The `claude` command in VS Code's own
+terminal panel: with the extension installed it connects to the editor by itself, sees your selection and the Problems panel, and opens its
+diffs in the editor. The terminal has every command; the panel has a subset.
+
+**Staying in control: the habits that matter here.**
+
+| Habit | Why |
+|---|---|
+| Ask for a plan before code on anything larger than a small fix, and read it | The cheapest place to stop a wrong approach |
+| Read every diff before you accept it | The diff is the truth; the summary is a claim |
+| One bounded task per session, on its own branch | A session that wanders is hard to review and hard to undo |
+| Make it prove the change: a witness, a `§` line, the log read | "Done" without a log line is not done (§6) |
+| Select the code, then say "this" | The selection travels with your message: no describing where |
+| Keep project rules in `CLAUDE.md`, not in your head | Every new session reads it; a rule only said once is forgotten |
+| Rewind instead of arguing | When an edit went wrong, go back to the checkpoint and restate the task |
+
+**Give the assistant this project's facts (off by default).** `devtools/mcp/x0-facts/` is a small local server that answers from the same
+code X0 Navigator uses: where an `APP` field is set, what a `§TAG` means, how a file is loaded, what a change costs, the last provable
+logged value, and the pre-ship check. It is read-only, calls no model and opens no network connection.
+
+- On, from the bim-ootb folder: `claude mcp add x0-facts --scope local -- node devtools/mcp/x0-facts/server.js` (you, this project only).
+- Off: `claude mcp remove x0-facts --scope local`. Inside a session, `/mcp` shows it and switches it for that session.
+- When no assistant starts it, no process runs. X0 Navigator works the same with it on or off.
 ---
 
 ## 5. Changing things

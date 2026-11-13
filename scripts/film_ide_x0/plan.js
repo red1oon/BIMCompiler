@@ -41,6 +41,10 @@ const probe = findProbe(def.file);
 const KNOWN = SEC + 'HOSTED_BEFORE_HOST';
 const pr = (T.buildPrinterIndex(ROOT).tags.get(KNOWN) || []).find(x => x.rank === 0);
 const tagText = fs.readFileSync(pr.abs, 'utf8').split('\n')[pr.line - 1];
+// §F.12 shots: a page script (for the cost note) and the line of the repo's own index generator that prints its summary tag
+const sceneFile = path.join(ROOT, 'viewer', 'scene.js');
+const LENS_TAG = SEC + 'APP_SURFACE';
+const lp = (T.buildPrinterIndex(ROOT).tags.get(LENS_TAG) || []).find(x => x.rank === 0 && x.file === 'scripts/gen_app_surface.js');
 const scratch = path.join(OUT, 'scratch.js');
 const l1 = 'var value = ' + G + '.notARealField;', l2 = "console.log('" + SEC + "NOT_A_REAL_TAG done');";
 fs.mkdirSync(OUT, { recursive: true });
@@ -58,7 +62,7 @@ let hits = 0; const hitFiles = new Set();
 })(path.join(ROOT, 'viewer'));
 const hitList = Array.from(hitFiles).sort();
 const hitsInTests = hitList.every(f => /(^|\/)tests?\//.test(f));
-console.log(JSON.stringify({ root: ROOT, def, phantom, probe, write: { file: path.join(ROOT, want.file), line: want.line, writes: want.writes, reads: want.reads },
+console.log(JSON.stringify({ root: ROOT, def, phantom, probe, sceneFile, lens: lp ? { file: lp.abs, line: lp.line, tag: LENS_TAG } : null, write: { file: path.join(ROOT, want.file), line: want.line, writes: want.writes, reads: want.reads },
   tag: { name: KNOWN, file: pr.abs, line: pr.line, col: tagText.indexOf(KNOWN) + 3 }, scratch, scratchFieldCol: l1.indexOf('notARealField') + 2,
   scratchTagCol: l2.indexOf(SEC) + 3, searchQuery: q, searchHits: hits, searchFiles: hitList, searchAllInTests: hitsInTests, witness: path.join(ROOT, 'devtools/vscode/x0-navigator/tests/witness_x0_appdef.js'),
   index: { fields: index.fields.size, phantoms: index.phantoms } }));
