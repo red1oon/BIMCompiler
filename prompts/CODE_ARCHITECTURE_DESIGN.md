@@ -618,7 +618,64 @@ verdict=PASS` (red control: the same folder without its `.git` entry IS indexed)
 developer actually opens. A dev-tool witness must also run against a checkout that looks like a working one (untracked files, nested worktrees).
 **Developer Guide updated the same day** (`docs/DeveloperGuide.md` §3 step 6, §4 rows, new §4.1 X0 Navigator, §6 log stamp, §8 trap).
 
+### §F.9 X0 in a REAL VS Code + the IDE film — SPEC (owner, 2026-11-13: *"Can we do a film for such IDE usage?"* → *"Go"*)
+
+**Why the check comes before the film:** every X0 witness so far drives the providers through a stub of the `vscode` calls (§F.4 "Not proven").
+A film of a tool that was never run in the real editor would be staged. So: prove it in VS Code with numbers, then film the same scripted run.
+
+**Part 1 — witness `W-X0-REALVSC`** (bim-ootb `devtools/vscode/x0-navigator/tests/realvsc/`, issue first, one PR).
+- **How:** VS Code's own extension-test mode, no npm: `code --extensionDevelopmentPath=<x0> --extensionTestsPath=<suite.js>
+  --user-data-dir=<temp> --extensions-dir=<temp> --disable-gpu <bim-ootb root>`, under `xvfb-run` (its own virtual display: no window on the
+  owner's screen, no GPU, so no contention with a live tab). The temp profile means the owner's VS Code settings and extensions are not touched.
+- **`suite.js`** (runs INSIDE VS Code, real `vscode` API) opens a real source file and asks VS Code itself, through
+  `vscode.executeDefinitionProvider` / `vscode.executeHoverProvider`, what a user would get. It writes one JSON result file; `run.js` (plain
+  node) launches VS Code, waits, reads the file and prints the `§` lines.
+- **Checks, each a number:**
+  1. the extension is active and its first refresh finished **inside VS Code** (closes §F.5 "Not proven": `ELECTRON_RUN_AS_NODE`), and the
+     providers then read a copy in VS Code's storage folder, not the committed file;
+  2. F12 on a written field (taken from the index, first by name) → among VS Code's results there is the index's `file:line`, and that line
+     mentions the field;
+  3. hover on it → a hover whose text has `written at`;
+  4. a phantom → hover has `PHANTOM`, and no result points anywhere from X0 (results from VS Code's own TypeScript are counted separately);
+  5. a made-up field → no X0 hover (**red control**);
+  6. a `§TAG` known to the specs → hover names it and lists spec places; a made-up tag → `no spec found`;
+  7. **the "before" number for the film:** how many definition results VS Code's built-in JavaScript support gives for the same field
+     without X0's (expected 0 for a field written only as `A.x`; reported, whatever it is).
+- **Line:** `§X0_REALVSC vscode=<version> active=Y fresh=Y def=Y hover=Y phantom=Y unknown_silent=Y tag=Y fake_tag=Y builtin_defs=<n> verdict=`.
+  VS Code or `xvfb-run` missing, or VS Code exits without a result file → INCONCLUSIVE with the reason, never PASS.
+- **Not in CI** (no VS Code on the runner): a local witness, like the browser ones. `README.md` says so.
+
+**Part 2 — the film: "Find it. Trust it." — an editor that knows this codebase** (PLAYBOOK C in `prompts/FILM_NARRATION.md`: explainer layout,
+two-voice dialogue, chapter cards as their own silent 3.6 s segments, bottom 230 px kept for captions, every spoken number from a `§` line).
+- **Footage:** the same scripted VS Code session, recorded off the virtual display with `ffmpeg x11grab` (CPU only), driven by real editor
+  commands (`editor.action.showHover`, `editor.action.revealDefinition`, a task run). The product as shipped: no fix made for the camera.
+- **Storyboard v1 (for the owner's review; nothing is recorded before the owner says the storyboard is right):**
+
+| # | Segment | Picture | F asks → M answers (gist) | Numbers from |
+|---|---|---|---|---|
+| 0 | Title card | "Find it. Trust it." | (silent) | |
+| 1 | **Before** | F12 on `APP.camera`: nothing useful. Search `APP.camera =`: 0 results | "Where is this set?" → "The editor cannot say. The same object is written under another name." | `builtin_defs` (§X0_REALVSC); `alias_only` (§APP_SURFACE) |
+| 2 | The idea, one plain card | one object, two spellings → an index made by the repo's own script → the editor reads it | "So who knows?" → "The repo does. The tool only reads what the repo already wrote down." | |
+| 3 | **After** | same line, F12 jumps to the write site; hover: `written at … · N writes · N reads` | "That fast?" → "It is a lookup, not a search." | §X0_APPDEF |
+| 4 | Chapter card: "It never guesses" | (silent) | | |
+| 5 | Show, then prove | phantom hover; made-up field: nothing; a moved line: `index stale` | "Why not just show its best guess?" → "A wrong jump costs more than no jump." | phantom count (§APP_SURFACE) |
+| 6 | Chapter card: "What does this tag mean?" | (silent) | | |
+| 7 | `§TAG` hover | hover a `§TAG` in a log call: spec places, then the code that prints it; a made-up tag: `no spec found` | "And these marks in the logs?" → "Each one is a rule. Hover, and you get the page that states it." | §DEVTK_SPEC tags, files |
+| 8 | Chapter card: "It stays current by itself" | (silent) | | |
+| 9 | One real event | add a line above a write, save, hover again: the new line number. A/B close-ups side by side | "I just moved it. Does it know?" → "It re-reads the code in the background, about four seconds." | §X0_FRESH gen_ms |
+| 10 | Chapter card: "Which code made this log?" | (silent) | | |
+| 11 | Log stamp | run *Run this witness*; the saved log opens; line 1 highlighted | "Can I trust yesterday's log?" → "Read its first line. It names the code that made it." | §LOG_STAMP, §LOG_STAMP_W |
+| 12 | Honest limits + roadmap, one card labelled "not built yet" | Run & Ship panel · cost-if-deployed monitor · values beside the code (waits for stamped logs) | "What can it not do yet?" → the list, plainly | §F.6 (26.8%) |
+| 13 | Closing card | no AI inside, no network, no dependencies; where to get it | (silent, credits) | §X0_ISOLATION deps=0 |
+
+- **Open for the owner, one at a time:** FILM-1 the storyboard above (order, what to cut); then FILM-2 length and language(s) (default: English
+  first, ~2.5 min, Kokoro voices); then FILM-3 the title.
+- **Witness of the film itself** (PLAYBOOK step 5): frames = the silent picture's, silences ≥ 4 s at most ~7 s, loudness ≈ −16 LUFS, a guard
+  that every digit on a card or in the voice is a fact from a named `§` line.
+
 **DECISIONS:**
+- 2026-11-13, owner: *"Can we do a film for such IDE usage?"* → answered yes, after a check in a real VS Code. *"Go"* → §F.9: the check is
+  built first; the film's storyboard waits for the owner's review (FILM-1).
 - 2026-11-13, owner, on F-10 (how the APP index is kept fresh; recommendation given: (a) a failing CI check): *"Go with your advice."*
   → before building, the measurement in §F.5 (26 of 39 merges change the file) showed (a) would create a conflict magnet. The advice was
   changed to (b), X0 keeps its own fresh copy, and that was built under the same go. **The owner approved (a) by name, so this switch is
