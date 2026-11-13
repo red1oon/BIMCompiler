@@ -41,8 +41,8 @@ your work by eye (PRIMAL LAW): this is him learning his tool, which is different
   publish at all). Step 2 (CI merges with a token) still waits for the owner's token; the repo has no secrets.
 - **Then, when he asks:** the complete versions of the three F.12 items (need F-1, F-2, F-6, F-7); a Mandarin speaker's check of the ZH
   film; other film languages. Part A (A0) is still the first unstarted part of the design itself.
-- **Working habits this session paid for:** commit and push after every step (a `/tmp/wt-*` worktree vanished mid-task with uncommitted
-  work; use the session scratch folder for worktrees); enable auto-merge yourself right after `gh pr create`; one `(#N)` in a PR title;
+- **Working habits this session paid for:** commit and push after every step (another session force-removed a `/tmp/wt-*` worktree of this one, with uncommitted
+  work in it, mistaking the path for its own; use the session scratch folder for worktrees); enable auto-merge yourself right after `gh pr create`; one `(#N)` in a PR title;
   after any bim-ootb merge run Fetch back; a dev tool's witness must also run on a checkout that looks like a working one and through the
   real install path (§F.8, §F.10).
 
@@ -776,8 +776,9 @@ drawn with Noto Sans CJK SC. `§FILM_GUARD spoken_numbers=12 mismatches=[] verdi
 `§FILM_FIT beats=11 detail=11` · `§ZH_CAPTIONS in=38 out=64 longest_chars=35` (the longest piece holds the Latin words "Visual Studio
 Code") · longest silence 5.57 s · −16.8 LUFS · font selected: NotoSansCJKsc. A rebuild from the committed sources gave the same 5,097
 frames. **Not checked by a Mandarin speaker:** the translation's wording and the voices' tones. The editor's own screens stay in English.
-**Lost and redone:** the first worktree (`/tmp/wt-film-zh`) vanished mid-task with uncommitted work (not the hourly janitor: its log has
-no line for it; cause not found). Redone from the session's scratch folder, committed and pushed after each step.
+**Lost and redone:** the first worktree (`/tmp/wt-film-zh`) vanished mid-task with uncommitted work. Cause, reported afterwards by the
+session that did it (bim-compiler-2b): it had used the same path earlier, took the re-created folder for its own leftover at closeout and
+ran `git worktree remove --force` on it. Not the janitor. Lesson for any session: a path you used before may now be someone else's. Redone from the session's scratch folder, committed and pushed after each step.
 **Developer Guide, same day (owner: *"should have nice screenshots of the VSC steps"*):** §4.1 now has 14 pictures of the real editor
 (`docs/figs/x0/`, under 1 MB, cropped from the film's stills plus one of the Extensions view after a real `.vsix` install), as an 11-step
 "What you see"; §4.2 gained an agent-versus-by-hand comparison, the three worries (control, cost, varying results) and a learning path.
