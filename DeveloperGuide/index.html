@@ -3875,6 +3875,29 @@ The app's only runtime dependency is <code>sql.js</code>, which is already vendo
 </tr>
 </tbody>
 </table>
+<p><strong>Editor snippets</strong> (type the word, press Tab; <code>.vscode/witness.code-snippets</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>You get</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>witness</code></td>
+<td>a new witness built on <code>witness_kit/contract.js</code>. Unedited it FAILs, so it cannot pass by accident</td>
+</tr>
+<tr>
+<td><code>slog</code></td>
+<td>one log line in the repo's form: <code>console.log('§TAG key=' + value);</code></td>
+</tr>
+<tr>
+<td><code>spec</code></td>
+<td>the <code>⚠ DO NOT REMOVE — SPEC (W-NAME)</code> header a new script opens with (comment lines only)</td>
+</tr>
+</tbody>
+</table>
 <hr />
 <h2 id="4-finding-things">4. Finding things<a class="headerlink" href="#4-finding-things" title="Permanent link">&para;</a></h2>
 <table>
@@ -3968,6 +3991,16 @@ folder its <code>extensions.json</code> does not list, so nothing loads and noth
 <td><code>last: &lt;the line a saved log holds for that tag&gt; · &lt;log&gt; @ &lt;commit&gt;</code>; click it to open the log</td>
 <td><code>logs/*.log</code> whose first line is a <code>§LOG_STAMP</code> (§6)</td>
 </tr>
+<tr>
+<td>Hover a <code>§TAG</code> on the line that prints it</td>
+<td>the same hover, ending in <code>last value: &lt;line&gt; — &lt;log&gt;:&lt;line&gt; @ &lt;commit&gt;</code>, or <code>last value not shown: &lt;reason&gt;</code> (<code>no stamped log found</code> · <code>tag not in any stamped log</code> · <code>file changed since the log</code> · <code>file was dirty when the log was made</code>)</td>
+<td>the same stamped logs; the grey line stays silent without proof, the hover says why</td>
+</tr>
+<tr>
+<td>Command <strong>X0 Navigator: Context for this file</strong></td>
+<td>one block of markdown about the open file, opened beside the code and copied: its header comment, how it reaches a user and the bump command, the <code>APP</code> fields set in it, each <code>§TAG</code> it prints with its spec place and last provable value</td>
+<td>all the indexes above. X0 calls no model: you paste the block where you like (§4.2)</td>
+</tr>
 </tbody>
 </table>
 <p><strong>It never guesses.</strong> Each answer below is on purpose:</p>
@@ -4013,8 +4046,12 @@ code writes that field as <code>A.db</code>.</p>
 <p><img alt="Hover on APP.db: written at viewer/city.js:717, 14 writes, 704 reads" src="../figs/x0/03_hover_written_at.png" /></p>
 <p><strong>4. F12 jumps to that line.</strong></p>
 <p><img alt="After F12: viewer/city.js line 717, A.db = …" src="../figs/x0/04_jumped_to_the_write.png" /></p>
-<p><strong>5. A field nothing sets says so.</strong> <code>PHANTOM</code> means the field is read but never written: do not rely on it.</p>
+<p><strong>5. A field nothing sets says so.</strong> <code>PHANTOM</code> means the field is read but never written: do not rely on it. A true one to try: <code>_applyViewFilter</code>
+(read in <code>viewer/panels.js</code>, written nowhere).</p>
 <p><img alt="Hover on APP.toggleGridOverlay: PHANTOM, read, never written" src="../figs/x0/05_phantom.png" /></p>
+<p><em>The picture is from 2026-11-13. The field in it was a wrong answer: <code>viewer/grid_overlay.js</code> does set it, in a file that says
+<code>var A = APP;</code>, a form the index did not read. Fixed 2026-11-14 (bim-ootb #2961); that field now jumps to its line. The hover looks the same
+on a true phantom.</em></p>
 <p><strong>6. Hover a <code>§TAG</code>.</strong> You get the spec pages that name it (headings first) and the code line that prints it.</p>
 <p><img alt="Hover on §HOSTED_BEFORE_HOST: five spec places in bim-compiler prompts, then &quot;printed by: viewer/schedule_gate.js:1014&quot;" src="../figs/x0/06_tag_hover.png" /></p>
 <p>A tag that no spec names says <code>no spec found</code>:</p>
@@ -4153,12 +4190,18 @@ small edits by hand; run <em>Check</em> before every commit. (3) Give the agent 
 (4) Review every diff as if a new colleague wrote it. (5) Keep what you learn in <code>CLAUDE.md</code>, so the next session starts from it.</p>
 <p><strong>Give the assistant this project's facts (off by default).</strong> <code>devtools/mcp/x0-facts/</code> is a small local server that answers from the same
 code X0 Navigator uses: where an <code>APP</code> field is set, what a <code>§TAG</code> means, how a file is loaded, what a change costs, the last provable
-logged value, and the pre-ship check. It is read-only, calls no model and opens no network connection.</p>
+logged value, the pre-ship check, and <code>context_for_file</code>: all of that for one file in a single answer (the same block as the editor command
+<em>Context for this file</em>). It is read-only, calls no model and opens no network connection.</p>
 <ul>
 <li>On, from the bim-ootb folder: <code>claude mcp add x0-facts --scope local -- node devtools/mcp/x0-facts/server.js</code> (you, this project only).</li>
 <li>Off: <code>claude mcp remove x0-facts --scope local</code>. Inside a session, <code>/mcp</code> shows it and switches it for that session.</li>
 <li>When no assistant starts it, no process runs. X0 Navigator works the same with it on or off.</li>
 </ul>
+<p><strong>Seeing what a session uses</strong> (Claude Code documentation, read 2026-11-14). In the VS Code panel: the prompt box shows how full the
+context window is, and <code>/usage</code> opens an <em>Account &amp; usage</em> dialog (plan users see usage bars; API-key users see the session's cost and
+tokens). In the terminal: <code>/usage</code> (also typed <code>/cost</code>) shows session cost and plan limits, and <code>/context</code> shows what fills the context
+window, item by item. A terminal status line can show cost and context percentage all the time (<code>statusLine</code> in the settings). Not
+documented: a status line inside the VS Code panel.</p>
 <hr />
 <h2 id="5-changing-things">5. Changing things<a class="headerlink" href="#5-changing-things" title="Permanent link">&para;</a></h2>
 <h3 id="51-any-edit-to-a-file-the-browser-loads">5.1 Any edit to a file the browser loads<a class="headerlink" href="#51-any-edit-to-a-file-the-browser-loads" title="Permanent link">&para;</a></h3>
