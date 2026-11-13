@@ -15,6 +15,23 @@ const OUT = path.resolve(process.argv[2]), URL = process.argv[3] || 'https://red
   await p.screenshot({ path: path.join(OUT, 'guide_top.png') });
   await p.evaluate(() => { const d = document.getElementById('film-ring'); if (d) d.remove(); });
   await p.emulateMedia({ media: 'print' }); await p.pdf({ path: path.join(OUT, 'print.pdf'), format: 'A4', printBackground: true });
+  await p.emulateMedia({ media: 'screen' });
+  // rc3: the guide's own diagrams, each centred in the page as a reader scrolling would see it (the page itself, not the image file)
+  const DIAG = ['uat_b1_sheet_0_floor_plan', 'uat_b1_sheet_3_beam_layout', 'uat_b1_sheet_4_foundation_layout', 'uat_b1_nine_opened', 'uat_b1_arranged', 'uat_b1_arranged_top', 'uat_b2_convert_button', 'uat_b2_converted'], seen = [];
+  for (const k of DIAG) { const y = await p.evaluate(k => { const e = document.querySelector('img[src*="' + k + '"]'); if (!e) return null; const r = e.getBoundingClientRect(), y = Math.max(0, window.scrollY + r.top - (window.innerHeight - r.height) / 2); window.scrollTo(0, y); return Math.round(y); }, k);
+    if (y == null) continue; await p.waitForTimeout(350); await p.screenshot({ path: path.join(OUT, 'site_' + k + '.png') }); seen.push(k + '@' + y); }
+  console.log('§FILM_SHOT site_diagrams=' + seen.length + ' of ' + DIAG.length + ' ' + JSON.stringify(seen));
+  // rc3: the prize, the dashboard on the guide's sample data, in its two layouts and two skins (the numbers must be the same in all four)
+  const DASH = 'https://red1oon.github.io/bim-ootb/capex/index.html?snapshot=sample/pilot_snapshot.json&source=legacy&today=2026-11-04', flats = {};
+  const dp = await b.newPage({ viewport: { width: 1600, height: 708 }, deviceScaleFactor: 1.2 });
+  for (const [th, sk] of [['classic', 'light'], ['classic', 'dark'], ['executive', 'light'], ['executive', 'dark']]) {
+    await dp.goto(DASH + '&theme=' + th + '&skin=' + sk + '&film=' + Date.now(), { waitUntil: 'load' }); await dp.waitForFunction(() => window.__capex && window.__capex.rendered, null, { timeout: 60000 }); await dp.waitForTimeout(900);
+    const r = await dp.evaluate(() => ({ flat: window.__capex.flat, pa: window.__capex.pa, skin: document.body.getAttribute('data-skin') })); flats[th + '_' + sk] = JSON.stringify(r.flat);
+    await dp.screenshot({ path: path.join(OUT, 'dash_' + th + '_' + sk + '.png') });
+    console.log('§FILM_SHOT dashboard theme=' + th + ' skin=' + sk + ' body_skin=' + r.skin + ' pa=' + JSON.stringify(r.pa) + ' total_projects=' + r.flat.total_projects + ' approved_budget=' + r.flat.approved_budget + ' health=' + JSON.stringify(r.flat.health)); }
+  const same = Object.values(flats).every(v => v === Object.values(flats)[0]);
+  console.log('§FILM_SHOT dashboard looks=' + Object.keys(flats).length + ' numbers_same_in_all=' + same);
+  if (!same || seen.length !== DIAG.length) { console.log('§FILM_SHOT FAIL a diagram is missing or the numbers differ between looks'); await b.close(); process.exit(1); }
   const title = await p.title();
   console.log('§FILM_SHOT url=' + URL + ' title=' + JSON.stringify(title) + ' button=' + JSON.stringify(box) + ' pageerrors=' + errs.length + ' print_pdf_kb=' + Math.round(fs.statSync(path.join(OUT, 'print.pdf')).size / 1024));
   await b.close(); process.exit(box && !errs.length ? 0 : 1);
