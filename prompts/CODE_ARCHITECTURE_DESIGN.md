@@ -644,6 +644,17 @@ A film of a tool that was never run in the real editor would be staged. So: prov
 - **Line:** `§X0_REALVSC vscode=<version> active=Y fresh=Y def=Y hover=Y phantom=Y unknown_silent=Y tag=Y fake_tag=Y builtin_defs=<n> verdict=`.
   VS Code or `xvfb-run` missing, or VS Code exits without a result file → INCONCLUSIVE with the reason, never PASS.
 - **Not in CI** (no VS Code on the runner): a local witness, like the browser ones. `README.md` says so.
+- **RESULT 2026-11-13 — bim-ootb #2932 / PR #2933 (`521aaf79`) + README PR #2935. ✅ DONE (witness).** Re-run on merged `main`:
+  `§X0_REALVSC vscode=1.146.0 active=Y fresh=Y def=Y hover=Y phantom=Y unknown_silent=Y tag=Y fake_tag=Y builtin_ready=Y builtin_defs=0
+  seconds=12.7 verdict=PASS`. What it settles: VS Code 1.146.0 loads and activates X0; the index refresh **finished inside VS Code's own
+  runtime** in ~2.6 s (`ms=2569`, `ms=2665`) and the providers then read VS Code's storage folder (closes §F.5 "Not proven"); F12 on
+  `APP.db` in `viewer/cost_panel.js:67` → `viewer/city.js:717`; **VS Code's built-in JavaScript support, confirmed ready by a probe (a local
+  function call resolved in 0.3 s), gave 0 definitions for the same field**, which is the film's "before" number. Without `--go` the
+  witness prints INCONCLUSIVE and starts nothing.
+  **Still not proven by a witness:** what the hover popup LOOKS like and that a click on a `file://…#L<line>` link inside it opens that
+  line. The witness reads the hover's text through VS Code's API; it does not click. The film's capture run (Part 2) is where that gets
+  exercised, and the recorder must log the opened file and line as numbers.
+  One slip, corrected: PR #2933's description claimed a README paragraph that had not applied; the text was fixed and PR #2935 added it.
 
 **Part 2 — the film: "Find it. Trust it." — an editor that knows this codebase** (PLAYBOOK C in `prompts/FILM_NARRATION.md`: explainer layout,
 two-voice dialogue, chapter cards as their own silent 3.6 s segments, bottom 230 px kept for captions, every spoken number from a `§` line).
@@ -745,7 +756,7 @@ After it, start A0 and B0, and ask A-1 while they run.
 | C | named APP parts | open: 2 decisions |
 | D | owner table | open: 2 decisions |
 | E | proof map | open: 2 decisions · `paths.js` ready to start |
-| F | VS Code extension (X0 Navigator + Run & Ship + perf-impact monitor + DEV_TOOLKIT pack); AI optional | **§F.4 X0 slice 1 ✅ DONE (witness)** (bim-ootb PR #2922) · **§F.5 fresh index ✅** (PR #2925) · §F.0 Z1–Z3 ✅ (PR #2919) · **§F.7 log stamp ✅** (PR #2928) · §F.8 nested-checkout fix ✅ (PR #2931) · F-9 CLOSED "not next" (§F.6) · open: 5 decisions (F-1, F-2, F-3, F-6, F-7) |
+| F | VS Code extension (X0 Navigator + Run & Ship + perf-impact monitor + DEV_TOOLKIT pack); AI optional | **§F.4 X0 slice 1 ✅ DONE (witness)** (bim-ootb PR #2922) · **§F.5 fresh index ✅** (PR #2925) · §F.0 Z1–Z3 ✅ (PR #2919) · **§F.7 log stamp ✅** (PR #2928) · §F.8 nested-checkout fix ✅ (PR #2931) · **§F.9 real-VS-Code witness ✅** (PR #2933); IDE film: storyboard v1 awaits the owner (FILM-1) · F-9 CLOSED "not next" (§F.6) · open: 5 decisions (F-1, F-2, F-3, F-6, F-7) |
 
 ## §VET — 2026-11-13 vetting pass (issue #602), against bim-ootb `main` @ `a7c329e5`
 
