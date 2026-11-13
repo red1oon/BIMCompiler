@@ -987,6 +987,38 @@ the editor answer from the same code. It never calls a model and opens no networ
 - 2026-11-13, owner (#604): *"GO with your insight"*, in reply to the proposal: "make F's source-reading features the Fable session's first task".
   → §F.4 X0 slice 1 runs first, before A0. F-4/F-5 were already answered by DEV_TOOLKIT §8/§10 (above), so no question was needed.
 
+### §F.15 Values beside the code — the next three small steps (F-13) · RECORDED 2026-11-14, NOT built, NOT specced
+
+**Where it came from.** The owner brought an outside prompt (DeepSeek's, 2026-11-14) for a "canvas runtime hover": show, on a canvas/WebGL
+line, the value it last printed, only when a stamped log proves the printing file unchanged. Assessed against the code: **that rule is §F.12b,
+already built** (`lib/lens_index.js`, PR #2946), and it covers every `§TAG`, canvas ones included. A canvas-only hover would add a filter, not an
+ability. So the prompt is NOT run. The owner agreed to record what is worth keeping (*"ok"*, 2026-11-14, to: "record these three as one new F
+decision, item 2 first").
+
+**Measured 2026-11-14 (bim-ootb `main` @ `34c74ba5`):**
+- `~/bim-ootb/logs/` holds 1 `.log`, 0 with a `§LOG_STAMP` on line 1. The lens has nothing to show in that checkout. The gap is coverage (§F.6), not the editor feature.
+- Canvas values are printed in browser and bake runs. Those logs are not written by the *Run this witness* task, so they carry no `§LOG_STAMP`.
+  Bake logs carry their own commit line (`§CLI_BAKE_ENV … commit=`, `cli_silent_bake.js:301`; 51 of 66 bake/page logs, §F.6).
+- Tag names matching `CAM|MAT|MESH|SCENE|DRAW|VERT|FRAME|PIXEL|COLOR|COLOUR|CULL|FRUST` in `viewer/*.js` + `modeller/*.js`: about 285 of about 6,258.
+  **Upper bound only:** a text search over raw source (comments and strings included), not the parser. Re-measure with espree before quoting.
+
+**The three steps, in this order (each its own issue + PR, each needs a spec section here first):**
+1. **Accept the bake logs' own stamp.** Let `lens_index.js` treat `§CLI_BAKE_ENV … commit=` as a stamp, under the same three proofs (commit named,
+   printing file not dirty at the time, file unchanged since). Open points for the spec: which folders it reads (`~/.cache/bim4d/` was "not yet"
+   in §F.12b), and what a bake log says about dirty files (not read yet). This is the step that brings canvas values in.
+2. **Named reasons instead of silence.** Where the lens shows nothing today, say why: `no stamped log`, `file changed since the log`, `file was
+   dirty when the log was made`. Open point: on the grey line, or only in a hover (a line on every tag would be noise).
+3. **The rule as a standalone page.** About one page in `docs/DeveloperGuide.md` (and usable outside this repo): show a logged value only when the
+   printing code is unchanged since the commit the log names and was not dirty then; otherwise a named reason, never a guess. Minimum a project
+   must emit: a stamp line, a tag on the printing line, a saved log. Prior art named plainly; the mechanism is not new.
+
+**Left out on purpose:** a canvas-only allowlist (the lens needs none), the "why is this invisible?" static check (no data behind it), any live
+tab, pixel readback, webview, second network path or new dependency (§RULES).
+
+**DECISIONS**
+- 2026-11-14, owner: *"ok"*, to the recommendation above (do not run the outside prompt; record the three steps as one F decision, step 1 first).
+  → reading: recorded as F-13, order 1 → 2 → 3. No go to build yet; step 1's spec and its two open points come to the owner first.
+
 ---
 
 ## §ORDER — why A → B → D → E → F → C
