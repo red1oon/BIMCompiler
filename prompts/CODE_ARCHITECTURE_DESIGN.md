@@ -39,6 +39,16 @@ your work by eye (PRIMAL LAW): this is him learning his tool, which is different
   deploy after it (`34c74ba5`): `§SHIP_FETCH … live_sha=34c74ba5 … verdict=PASS`, live `viewer/sw.js` 10,039 bytes (minified).
   **Still to confirm over the next few merges:** that no raw build overwrites it any more, and what a CI-bot merge now does (expected: no
   publish at all). Step 2 (CI merges with a token) still waits for the owner's token; the repo has no secrets.
+- **2026-11-14, later session: the dry run became a self-paced sheet.** Owner: *"Give me a VSCcheatsheet.txt that i can begin launching
+  VSC and follows step by step"*. Written to `~/VSCcheatsheet.txt` (outside both repos; 20 steps: own worktree `~/bim-ootb-dryrun` + install ·
+  find · run and check · one hand edit and undo · Claude Code in the terminal). File:line facts checked against bim-ootb `main` @ `34c74ba5`;
+  `witness_x0_appdef.js` run (`§X0_APPDEF rows=1693 … verdict=PASS`, phantom=282). **Not run:** anything inside VS Code; the sheet's step 12
+  (Check objects to an edited `city.js` with no bump) is a reading of the bump rule, not observed; its Claude Code commands (double Esc /
+  `/rewind`, `/cost`, `/context`) were not re-checked against the docs. The panel token-counter question is STILL unanswered. Next: his
+  report of what differed from the sheet, step by step.
+- **Bug found while checking (bim-ootb #2961, open):** `scripts/gen_app_surface.js:57` `BINDS_A` does not accept `var A = APP;`, so
+  `viewer/grid_overlay.js:1583` `A.toggleGridOverlay = …` is indexed as PHANTOM. `docs/DeveloperGuide.md` §4.1 step 5 and its picture use that
+  field as the PHANTOM example: replace both when #2961 is fixed (a true phantom: `_applyViewFilter`, read at `viewer/panels.js:2532`).
 - **Then, when he asks:** the complete versions of the three F.12 items (need F-1, F-2, F-6, F-7); a Mandarin speaker's check of the ZH
   film; other film languages. Part A (A0) is still the first unstarted part of the design itself.
 - **Working habits this session paid for:** commit and push after every step (another session force-removed a `/tmp/wt-*` worktree of this one, with uncommitted
