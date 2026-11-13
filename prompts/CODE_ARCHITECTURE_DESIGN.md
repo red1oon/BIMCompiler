@@ -656,15 +656,15 @@ A film of a tool that was never run in the real editor would be staged. So: prov
   exercised, and the recorder must log the opened file and line as numbers.
   One slip, corrected: PR #2933's description claimed a README paragraph that had not applied; the text was fixed and PR #2935 added it.
 
-**Part 2 — the film: "Find it. Trust it." — an editor that knows this codebase** (PLAYBOOK C in `prompts/FILM_NARRATION.md`: explainer layout,
+**Part 2 — the film: "Editing Real Code"** (owner's title, 2026-11-13; the working title "Find it. Trust it." is dropped) (PLAYBOOK C in `prompts/FILM_NARRATION.md`: explainer layout,
 two-voice dialogue, chapter cards as their own silent 3.6 s segments, bottom 230 px kept for captions, every spoken number from a `§` line).
 - **Footage:** the same scripted VS Code session, recorded off the virtual display with `ffmpeg x11grab` (CPU only), driven by real editor
   commands (`editor.action.showHover`, `editor.action.revealDefinition`, a task run). The product as shipped: no fix made for the camera.
-- **Storyboard v1 (for the owner's review; nothing is recorded before the owner says the storyboard is right):**
+- **Storyboard v2 (v1 + the owner's opening card, 2026-11-13). The owner changed row 0 and nothing else, read as: the rest stands.**
 
 | # | Segment | Picture | F asks → M answers (gist) | Numbers from |
 |---|---|---|---|---|
-| 0 | Title card | "Find it. Trust it." | (silent) | |
+| 0 | Opening chapter card (owner's words, verbatim) | title **"Editing Real Code"**; line under it: *"BIM-ERP is Open Source, for anyone to work on 2D thru to 7D on single platform"* | (silent) | owner's text, not a measured claim: no number from it is repeated in the voice |
 | 1 | **Before** | F12 on `APP.camera`: nothing useful. Search `APP.camera =`: 0 results | "Where is this set?" → "The editor cannot say. The same object is written under another name." | `builtin_defs` (§X0_REALVSC); `alias_only` (§APP_SURFACE) |
 | 2 | The idea, one plain card | one object, two spellings → an index made by the repo's own script → the editor reads it | "So who knows?" → "The repo does. The tool only reads what the repo already wrote down." | |
 | 3 | **After** | same line, F12 jumps to the write site; hover: `written at … · N writes · N reads` | "That fast?" → "It is a lookup, not a search." | §X0_APPDEF |
@@ -679,12 +679,15 @@ two-voice dialogue, chapter cards as their own silent 3.6 s segments, bottom 230
 | 12 | Honest limits + roadmap, one card labelled "not built yet" | Run & Ship panel · cost-if-deployed monitor · values beside the code (waits for stamped logs) | "What can it not do yet?" → the list, plainly | §F.6 (26.8%) |
 | 13 | Closing card | no AI inside, no network, no dependencies; where to get it | (silent, credits) | §X0_ISOLATION deps=0 |
 
-- **Open for the owner, one at a time:** FILM-1 the storyboard above (order, what to cut); then FILM-2 length and language(s) (default: English
-  first, ~2.5 min, Kokoro voices); then FILM-3 the title.
+- **FILM-1 storyboard: answered** (row 0 replaced, see DECISIONS). **FILM-3 title: answered** by the same words. **FILM-2 length and language(s):**
+  not asked; the playbook default is taken (English first, ~2.5 min, Kokoro voices, local CPU) and other languages follow the English cut.
 - **Witness of the film itself** (PLAYBOOK step 5): frames = the silent picture's, silences ≥ 4 s at most ~7 s, loudness ≈ −16 LUFS, a guard
   that every digit on a card or in the voice is a fact from a named `§` line.
 
 **DECISIONS:**
+- 2026-11-13, owner, on FILM-1 (is storyboard v1 right?): *"Opening Chapter Title, "Editing Real Code" - BIM-ERP is Open Source, for anyone
+  to work on 2D thru to 7D on single platform"*. → row 0 is now that card, verbatim; the film is titled "Editing Real Code". The session
+  reads the silence on rows 1–13 as approval; the owner can still cut or reorder before the final mux.
 - 2026-11-13, owner: *"Can we do a film for such IDE usage?"* → answered yes, after a check in a real VS Code. *"Go"* → §F.9: the check is
   built first; the film's storyboard waits for the owner's review (FILM-1).
 - 2026-11-13, owner, on F-10 (how the APP index is kept fresh; recommendation given: (a) a failing CI check): *"Go with your advice."*
