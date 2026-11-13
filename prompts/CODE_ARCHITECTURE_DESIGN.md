@@ -1104,6 +1104,13 @@ The owner's *"Go"* answered the three items that waited on it: the real-VS-Code 
 - **The picture:** `docs/figs/x0/05_phantom.png` retaken (`scripts/film_ide_x0/shoot.sh`, 18 stills, 0 errors): `§FILM_SHOT name=p1_phantom …
   file="viewer/main.js" line=357 … hover="**APP.closeSunglass** PHANTOM — read, never written (first read `viewer/main.js:357`)"`. That field
   has one mention in production code, the read. `plan.js` now skips untied phantoms. Guide step 5, its tables and item 4 of §11 corrected.
+- **Docs site redeployed** (`scripts/safe_gh_deploy.sh`, dry run first): `§GUARD result=PASS — new build is a superset` (live=545, new=545),
+  `gh-pages d1905b10c..b2fd1c1c1`, `§STEP6 all canaries 200`. Fetched back: the live Developer Guide carries `closeSunglass`, the `PHANTOM?`
+  row, *Context for this file*, `slog`, "Seeing what a session uses", and no `toggleGridOverlay`; live `figs/x0/05_phantom.png` = 63,727
+  bytes = the committed file. **Trap met on the way:** the first dry run ABORTED (`§GUARD-DELETE … glassbowl_data.db`): that file is live
+  but gitignored (`*.db`), so a clean worktree lacks it. Restored for the build from the live tree itself
+  (`git show origin/gh-pages:glassbowl_data.db > docs/glassbowl_data.db`), not blessed as a deletion. A docs deploy from any clean
+  worktree needs that step.
 - **Still open from this:** the 11 untied fields are four more binding forms (`var A = A_ref` in `find_ask.js`, `A = app` in
   `cpe_freeze_perf.js` / `grid_scissors.js`, `var app = TMS.A()` in `tm_panel.js`). Not chased by regex on purpose: the proper tie is the
   parser (which name holds the shared object), a Part C question. The film "Editing Real Code" shows `toggleGridOverlay` as its phantom:
