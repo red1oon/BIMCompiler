@@ -1112,7 +1112,7 @@ The owner's *"Go"* answered the three items that waited on it: the real-VS-Code 
 - **FINDING 1: a red control that had stopped being one.** Four witnesses used the tag `ZZ_NOT_A_TAG` as "no spec names this". THIS file
   quotes that name (§F.4), so with a current bim-compiler beside bim-ootb the hover found a spec place: `fake_tag=N verdict=FAIL`. It had
   passed only where the bim-compiler copy was old or absent. Fixed in #2972: a per-run suffix. **Do not write a witness's made-up name in a spec.**
-- **FINDING 2 (the large one): 138 of 281 phantoms had a writer** (bim-ootb #2974 / PR #2975, merged). Re-taking the PHANTOM picture, the
+- **FINDING 2 (the large one): 130 of 281 phantoms had a writer** *(first written as "138", from a looser text count; the index's own before/after sets give 130 revived, measured by `scripts/film_ide_x0_2/plan.js`, §F.18)* (bim-ootb #2974 / PR #2975, merged). Re-taking the PHANTOM picture, the
   planner chose `APP.focusElement`; `viewer/nf_panel_search.js:884` sets it. Measured with the repo's tokenizer: of 281 fields indexed as
   "read, never written", 138 have an `A.x =` write in production code, in the split-file parts (`function* __split_x(NF, A, …)`, 21 files)
   and `navigate_*.js` (`function init(A, nav)`). `BINDS_A` did not know those forms. #2961 had fixed one instance; this closes the class:
@@ -1137,6 +1137,61 @@ The owner's *"Go"* answered the three items that waited on it: the real-VS-Code 
   `cpe_freeze_perf.js` / `grid_scissors.js`, `var app = TMS.A()` in `tm_panel.js`). Not chased by regex on purpose: the proper tie is the
   parser (which name holds the shared object), a Part C question. The film "Editing Real Code" shows `toggleGridOverlay` as its phantom:
   wrong since #2961; a recut needs that one still and line.
+
+### §F.18 FILM 2 — "Editing Real Code, part 2: It said dead. It was alive." — SPEC + storyboard (owner, 2026-11-14)
+
+Owner, 2026-11-14: *"Good for a sequel?"* → proposed: a sequel whose spine is the tool catching its own wrong answer (§F.17), and to
+correct the first film's phantom still. *"Past film is OK as it delivers the idea. This one again is a conceptual idea. Proceed. Dry run
+can be later"*. → reading: **the first film is NOT recut** (its `toggleGridOverlay` still stays; §F.17's "a recut needs that one still" is
+withdrawn). The sequel is a concept film, built now; the owner's hands-on dry run is not a precondition.
+**The idea in one line:** a tool earns trust by saying which of three things it knows: *right* · *not sure, read this line* · *nothing sets it*.
+**Rules (same as §F.9 Part 2 / FILM_NARRATION PLAYBOOK C):** every picture is the real VS Code on a private virtual display (no GPU);
+nothing is staged; every number on a card or in the voice is read from `out/shots.log` and checked by `§FILM_GUARD` before a frame is
+drawn; no model call (the assistant chapter shows the REAL local facts server answering over its real protocol, not a chat); Kokoro voices
+on local CPU; the film file is never pushed, only its scripts (`scripts/film_ide_x0_2/`) and logs.
+**How "before" is real, not re-enacted:** VS Code is run twice, on two checkouts of bim-ootb: the commit before the index fix (`7b030057`)
+and today's `main`. `plan.js` compares the two indexes and derives the places: a field the old index called phantom and the new one
+resolves, read on the SAME line in both trees (a public name first); an "untied" field; the print line of the generator's own summary tag.
+
+| # | Segment | Picture (real editor unless "card") | Gist (F asks → M answers) | Numbers from |
+|---|---|---|---|---|
+| 0 | Opening card | "It said dead. / It was alive." · *A tool that says when it is not sure* | (silent) | — |
+| 1 | dead | OLD run: hover on the field → `PHANTOM — read, never written` | "So this is dead code?" → "That is what it said. It was wrong." | `§FILM_X0 mode=old phantom=` |
+| 2 | why | card: the form the index knew → files cut into parts → a form it did not read | "How can a lookup be wrong?" | `§FILM_PLAN counts` |
+| 3 | alive | NEW run, same line: `written at …`; F12 lands on the write | "How many came back?" | `counts.revived`, `§FILM_X0 mode=new phantom=` |
+| 4 | Chapter 1 card: Not sure is an answer | (silent) | | |
+| 5 | unsure | hover `PHANTOM?` naming a line; then that line | "Could it be wrong again?" → "Yes. So it learned a third answer." | `untied=` |
+| 6 | Chapter 2 card: One file, one page | (silent) | | |
+| 7 | context | the command *Context for this file*: the page opens beside the code | "I am new to this file." | `c1_context copied= beside=` |
+| 8 | Chapter 3 card: Why is there no value? | (silent) | | |
+| 9 | value | one print line, three states: no stamped log → a real log just saved → the file edited | "What did it last print?" | the three `last=` texts |
+| 10 | Chapter 4 card: The assistant gets the same facts | (silent) | | |
+| 11 | facts | card: two real questions to the facts server and its real answers | "Does the tool call the AI?" → "Never." | `§FILM_MCP tools= a1= a2=` |
+| 12 | limits | card: what it does not do yet | "What is still not done?" | `untied=`, §F.15/§F.16 not-in-v1 |
+| 13 | close | card: the three answers; where to get it | (two closing lines) | `§FILM_GUARD` |
+
+**Witness of the film** (PLAYBOOK step 5): `§FILM_GUARD … verdict=PASS`; `§FILM_SILENT frames == planned`; `§FILM_FIT` every beat voiced;
+the mux's own duration / loudness line. **Session's choices, the owner's to change:** the title and chapter names; English only for now.
+**RESULT 2026-11-14 — English cut v1: `~/Videos/Editing_Real_Code_2_EN_AFTER_2026-11-14_v1.mp4`** (150.5 s, 3,612 frames, 1920×1080, 24 fps).
+Pipeline `scripts/film_ide_x0_2/` (`shoot.sh` + `plan.js` + `shots_suite.js` + `mcp_ask.js` → 9 stills of the real VS Code 1.146.0 on
+bim-ootb `7b030057` and `8b161835`; `build.py` → cards, voice, mux). Logs committed: `out/shots.log`, `out/build.log`.
+- `§FILM_GUARD spoken_numbers=5 mismatches=[] false_flags=[] verdict=PASS` · `§FILM_SILENT frames=3612 planned=3612 OK` ·
+  `§FILM_FIT beats=9 detail=9 other=[] tone_ok=12 tone_wrong=0 tone_inconclusive=0` · `§MUX rc=0 clips=9`. Measured on the file:
+  loudness −17.1 LUFS, peak −1.4 dBFS, longest silence 5.6 s (the chapter cards).
+- **What the real editor reported (`shots.log`):** OLD: `**APP.stillExit** PHANTOM — read, never written` at `viewer/gi_still.js:1184`.
+  NEW, same line: `written at viewer/fx_still_refine.js:1358 · 1 writes · 3 reads`, and F12 lands on `A.stillExit = _stillExit;`.
+  `PHANTOM?` on `APP.askRun` naming `viewer/find_ask.js:390`. *Context for this file* on `viewer/fx_still_refine.js`: 173 lines, copied,
+  one editor beside (27 fields, 58 tags). One print line, three states: `last value not shown: no stamped log found` → after the repo's own
+  stamper + generator ran: `last value: §APP_SURFACE files=3254 fields=1856 alias_only=1595 phantom=171 untied=11 — gen_app_surface.log:2
+  @ 8b16183` → after an edit and save: `last value not shown: file changed since the log`. Facts server: `§FILM_MCP server=x0-facts tools=7`,
+  the same two answers as the hovers.
+- **Counts, measured by `plan.js` from the two indexes:** phantom 281 → 171; **130** old phantoms now resolve to a write; 11 untied.
+- **The guard earned its place once:** the first build FAILED (`false_flags=['v_ok']`) because the shot log had cut the hover's last-value
+  line; fixed in the shot driver, not in the guard.
+- **A product fault found by filming, fixed before the shoot (bim-ootb #2979-class, PR #2981, merged):** on a line whose tag has five spec
+  places the hover's `last value` line sat under the fold. It now comes right under the tag's name (`§X0_ACTIVATE … verdict=PASS`, real VS
+  Code `last_value=Y … verdict=PASS`). The stills show the product as merged.
+- **Not done:** other languages; the owner's review of the cut (title, chapter names and wording are the session's first draft).
 
 ---
 
