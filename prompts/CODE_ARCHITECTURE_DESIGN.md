@@ -29,8 +29,8 @@ Background and every measurement this file cites: `prompts/EDITOR_MAINTAINABILIT
 5. **FOSS flow per PR:** a tracker issue (what, baseline, witness), then branch, one small PR `Fixes #N`, conventional title, CI green, merged
    and verified on `main` before the next (`docs/DeveloperGuide.md` §10; own sessions may merge their own verified PRs).
 6. **Order:** A → B → D → E → F → C (reasons in §ORDER). Status table at the end. **Exception (owner, 2026-11-13, #604):** the NEXT session's
-   one bounded task is **§F.4 X0 slice 1** (source-reading features of the VS Code plugin). It needs no owner decision. If a second session is
-   free, it runs A0 in parallel.
+   one bounded task is **§F.4 X0 slice 1** (source-reading features of the VS Code plugin). Ask **F-8** first (it shapes X0-1 only; build X0-2
+   while waiting). If a second session is free, it runs A0 in parallel. §F.0 Z1–Z3 (zero-code wins) are built (bim-ootb PR #2919, result in §F.0).
 7. **Where to start (§READY):** each part's first step that needs NO owner decision. Run that while the first decision is with the owner.
 
 ## RULES (any break = stop that part)
@@ -338,8 +338,9 @@ an AI assistant plugin (any of the existing ones), X0 makes that assistant bette
   settings. They answer from the same generated files, so the assistant gets facts, not guesses.
 - **Never:** the extension does not call a model, send code anywhere, or need an API key. No paid calls (standing rule). Anything an assistant does
   is the developer's own plugin, on their own account, by their own choice.
-OPEN DECISION F-3: register assistant tools at all (off by default), or only the "Context for this file" command? Proposal: start with the
-command only. It works with every assistant and needs no API surface that may change.
+OPEN DECISION F-3 (revised 2026-11-13, #606): which assistant help? (a) the "Context for this file" command only; (b) plus a **local MCP fact
+server** that answers the same questions from the same generated files for ANY assistant (Claude Code, Copilot, Cursor, Continue …), never
+calling a model; (c) VS Code's own chat-participant API, which only VS Code's chat uses. Proposal: (a) now, (b) next, drop (c).
 
 **Shape:** per DEV_TOOLKIT §8/§10 (above): one Extension Pack of separate extensions, plain JavaScript using only the `vscode` API (no npm
 dependencies, no compile step), in `bim-ootb/devtools/vscode/`. **Install:** a developer working from the repo symlinks the folder into
@@ -355,6 +356,61 @@ Proposal: a prompt (a quick-fix), never silent · F-7 a hosted per-PR preview, a
 **Witnesses:** each feature has a node test that runs its provider against fixture files (no VS Code needed for the logic: a small fixture-side
 stub of the `vscode` API calls the provider uses, no npm), e.g. W-X0-APPDEF: for
 20 sampled `APP.x` reads, the provider returns the `APP_SURFACE.md` definition line (red control: a phantom field → "no definition", not a wrong one).
+
+### §F.0 Zero-code editor wins + what other projects do (owner, 2026-11-13: *"Yes, and put in what can be built cheaply and without impact now"*, #606)
+
+The review that led here: VS Code helps most when project knowledge lives in plain repo files and the tools only read them. Well-known projects
+were surveyed from general knowledge (not measured here). What they teach, sorted by cost for this project:
+
+| Technique | Known from | Here | Cost / impact | State |
+|---|---|---|---|---|
+| Multi-root workspace (`.code-workspace`) | multi-repo projects | bim-ootb + bim-compiler in one window: search, F12 and `§TAG` lookups cross both | one JSON file, dev-side | **Z1, build now** |
+| Problem matchers on task output | compilers, linters | a witness's `FAIL` / `INCONCLUSIVE` / `VACUOUS` lines become clickable Problems entries | a few lines in `.vscode/tasks.json` | **Z2, build now** |
+| Snippets (`.code-snippets`) | most frameworks | a witness skeleton that follows `witness_kit/contract.js`, and cannot PASS unedited | one JSON file | **Z3, build now** |
+| Logpoints (log from the debugger, no code edit) | standard debugging | a `§` probe without editing or committing the file | built in; nothing to build | note it in `docs/DeveloperGuide.md` §6 when that doc is next edited |
+| JSON Schema for config files (`json.schemas`) | Kubernetes, GitHub Actions | autocomplete + squiggles in `pills.json`, `pills_idmp.json`, `crud_ops.json`, later the B manifests | per file: extract the schema FROM the committed files, witness that every committed copy validates (Ajv, already a dependency of `contract.js`), red control a mutated copy | cheap next (= DEV_TOOLKIT T18) |
+| Language-service plugin (Vue's Volar, Angular's language service) | frameworks whose links exist only at runtime | teach VS Code's TypeScript that `A.x` = `APP.x`: F12, find-references and rename all work | a `typescriptServerPlugins` entry in an extension; no npm | **decision F-8** |
+| Values from the last run beside the code (Wallaby, Quokka) | test runners | each `§` line's last logged value next to the code that printed it, read from saved logs | = DEV_TOOLKIT X1 §-Lens | **decision F-9** |
+| Facts server for any AI assistant (MCP) | assistants that read repo context files and MCP servers | "who owns X", "which witness proves this file" answered from the generated files, for any assistant; no model call | small local process | **F-3 revised** |
+| Tag tree in the sidebar (Todo Tree) | many repos | every `§TAG`, grouped by spec file | X0 feature, after slice 1 | later |
+| Guided code tours (CodeTour) | onboarding | "how a sale gets posted", step by step, stored in the repo | needs the CodeTour extension (developer's choice), or X0 reads the same `.tours/` files | later |
+| Boundary lint rules (Nx module boundaries, dependency-cruiser) | monorepos | "core may not call the clock" as a live squiggle | = A3 W-CORE-PURE as an ESLint rule | after A |
+| Dependency graph view | Nx, Madge | what loads what | from B's manifests | after B |
+| Test explorer + coverage display | Jest, Vitest, VS Code's own coverage view | run one witness from the editor, see its verdict beside it | from E's proof map | after E |
+
+Lessons that bind every F feature: (1) **generate the knowledge, never hard-code it in the tool**; (2) **prefer open standards** (language
+servers, JSON Schema, MCP) so VSCodium/Cursor/other editors benefit; (3) **stay light**: activate on demand, cache indexes, never rescan per
+keystroke; (4) **never guess**: "no definition" beats a wrong jump.
+
+**Z1–Z3 build spec** (bim-ootb, one tracker issue, one PR; dev-side files only, nothing reaches a page, no new dependency):
+- **Z1 `bim.code-workspace`** at the bim-ootb root: folders `.` (name `bim-ootb`) and `../bim-compiler` (name `bim-compiler`), no settings of its
+  own (each folder keeps its own `.vscode/settings.json`, incl. bim-compiler's stale-copy hiding from BIMCompiler #596). Open it with *File → Open
+  Workspace from File*. Plain folder opening keeps working as today.
+- **Z2 problem matchers** on the task *"Run this witness"*: after the tail, the task also prints the log's `FAIL`, `INCONCLUSIVE` and `VACUOUS`
+  lines (at most 20), each prefixed `<relative file>: `. Two matchers read them: `FAIL` → error, `INCONCLUSIVE|VACUOUS` → warning, `kind: file`
+  (the whole witness file, since witnesses print no line numbers). The tail and the full log in `logs/` stay as they are.
+- **Z3 `.vscode/witness.code-snippets`**, prefix `witness`: the file header (`WITNESS`, `ISSUE THIS PROVES OR DISPROVES`, `POPULATION`,
+  `Command`), `require` of `witness_kit/contract` (default path `../../witness_kit/contract`, the `<app>/tests/` place, part E), and a
+  `Witness(name)` chain with `population` / `schema` / `invariant` / `redControl`. The population starts EMPTY, so `contract.js` §W-EMPTY-POP
+  prints `FAIL population-nonempty` and exits 1: an unedited skeleton fails loud and can never PASS.
+- **Witness `W-EDITOR-ZERO-CODE`** (`scripts/tests/witness_editor_zero_code.js`, node, next to `witness_global_types.js`), one `§` line per issue:
+  - Z1 *"search and F12 cannot cross the two repos"*: parse the workspace (comments allowed), each folder resolves to a git checkout whose
+    `origin` is the expected repo → `§EZC_WORKSPACE folders=2 resolved= verdict=`. Red control: a copy with a wrong path → that folder unresolved.
+    No `../bim-compiler` on this machine → INCONCLUSIVE, not PASS.
+  - Z2 *"a failing witness is not clickable in Problems"*: run the task's own command (read from `tasks.json`, variables substituted) in a
+    temp folder on 3 fixture witnesses (one prints `  FAIL`, one `INCONCLUSIVE`, one passes), apply the two matcher regexes (also read from
+    `tasks.json`) → `§EZC_MATCHER fail_errors=1 inconclusive_warnings=1 pass_hits=0 verdict=`. Red control: the passing fixture must give 0.
+  - Z3 *"a new witness starts without the contract, or can PASS unedited"*: expand the snippet body (placeholders → their defaults) into a temp
+    `app/tests/` beside a link to the real `witness_kit`, run it → must exit non-zero and print no `fail=0` summary →
+    `§EZC_SNIPPET unedited_exit= unedited_pass=N verdict=`. Red control: the same skeleton with one real row filled in must PASS, proving the check
+    can see a PASS.
+- **Done when:** the three `§EZC_*` lines PASS on a machine with both repos, red controls behave, the PR is merged on bim-ootb `main`.
+- **RESULT 2026-11-13 — bim-ootb #2918 / PR #2919.** Built as specced. `node scripts/tests/witness_editor_zero_code.js --layout-root ~/bim-ootb`:
+  `§EZC_WORKSPACE folders=2 resolved=2 red_unresolved=Y verdict=PASS` · `§EZC_MATCHER fail_errors=1 inconclusive_warnings=1 pass_hits=0
+  exit_kept=Y verdict=PASS` · `§EZC_SNIPPET uses_contract=Y unedited_exit=1 unedited_pass=N filled_pass=Y verdict=PASS` · `§EZC checks=3
+  verdict=PASS`. Against `origin/main`'s files (before): all three FAIL, exit 1. From a `/tmp` worktree (no bim-compiler beside it): Z1
+  INCONCLUSIVE, as specced. `tests/audit_sw_precache.js` unchanged (268 found, 0 missing). Not checked by a witness: that VS Code itself
+  accepts `kind: "file"` and shows the entries (the regexes and the task command are what the witness runs).
 
 ### §F.4 X0 slice 1 — BUILD SPEC (the next session's task; owner, 2026-11-13: *"GO with your insight"*, #604)
 
@@ -397,6 +453,13 @@ not in `scripts/minify_pages.js` `INCLUDE_DIRS`, and no page tags it. Check all 
 and 2 hover providers for `javascript` → `§X0_ACTIVATE definition=1 hover=2`. This proves wiring without anyone opening VS Code
 (PRIMAL LAW 1: the owner's eyes are not the test).
 
+**OPEN DECISION F-8 (before X0-1 is built; X0-2 does not wait):** build X0-1 as X0's own definition/hover providers (this spec), or as a
+**TypeScript language-service plugin** (`typescriptServerPlugins` in `package.json`, no npm), the way Vue and Angular teach the editor links that
+exist only at runtime? The plugin also gives find-references and rename for `A.x`/`APP.x`; it is more machinery and harder to witness without the
+TS server. Proposal: own providers for slice 1 (pure node modules, witnessed directly); the plugin later if find-references/rename are wanted.
+**OPEN DECISION F-9:** move DEV_TOOLKIT X1 **§-Lens** (each `§` line's last logged value shown beside the code that printed it, read from saved
+logs like `~/.cache/bim4d/` and `logs/`) to right after slice 1, ahead of DEV_TOOLKIT's own first slice? Proposal: yes. It brings "read the log"
+(PRIMAL LAW 3) into the editor, which no other feature does.
 **Not in slice 1:** bump prompt (F-6), CodeLens, badges, owner warnings, Run & Ship, perf monitor, `.vsix` release.
 **Done when:** `§X0_APPDEF … verdict=PASS`, `§DEVTK_SPEC … verdict=PASS`, `§X0_ACTIVATE definition=1 hover=2`, `§X0_ISOLATION precache=0
 minify=0 tags=0`, each red control FAILs as specified, PR merged on bim-ootb `main` and verified there.
@@ -422,9 +485,9 @@ first, as §F.4, the next session's bounded task**; A0 runs in parallel if a sec
 | C | nothing; waits on B and D | C-1 part names + owners | |
 | D | nothing new; the multi-publisher list already exists (`types/globals.gen.d.ts`) | D-1 where the questions list lives | needs B's `owner` field |
 | E | `witness_kit/paths.js` (no behaviour change; witness: the same suite verdicts before and after) | E-1 the `PROVES:` header format | |
-| F | **§F.4 X0 slice 1: the next session's task** (owner, 2026-11-13). F-4/F-5 already answered by DEV_TOOLKIT §8/§10 | F-6 bump prompt | it is the next X0 feature after slice 1 |
+| F | **§F.4 X0 slice 1: the next session's task** (owner, 2026-11-13). X0-2 needs no decision. F-4/F-5 already answered by DEV_TOOLKIT §8/§10 | F-8 providers or TS plugin | it shapes X0-1 |
 
-Ask the owner **one decision per message, with the recommendation** (START HERE 2). 19 decisions are open (STATUS). Next session: build §F.4.
+Ask the owner **one decision per message, with the recommendation** (START HERE 2). 21 decisions are open (STATUS). Next session: build §F.4.
 After it, start A0 and B0, and ask A-1 while they run.
 
 ## §M — re-measure before quoting
@@ -460,7 +523,7 @@ After it, start A0 and B0, and ask A-1 while they run.
 | C | named APP parts | open: 2 decisions |
 | D | owner table | open: 2 decisions |
 | E | proof map | open: 2 decisions · `paths.js` ready to start |
-| F | VS Code extension (X0 Navigator + Run & Ship + perf-impact monitor + DEV_TOOLKIT pack); AI optional | **§F.4 X0 slice 1 = next task, specced** · open: 5 decisions (F-1, F-2, F-3, F-6, F-7) |
+| F | VS Code extension (X0 Navigator + Run & Ship + perf-impact monitor + DEV_TOOLKIT pack); AI optional | **§F.4 X0 slice 1 = next task, specced** · §F.0 Z1–Z3 ✅ (PR #2919) · open: 7 decisions (F-1, F-2, F-3, F-6, F-7, F-8, F-9) |
 
 ## §VET — 2026-11-13 vetting pass (issue #602), against bim-ootb `main` @ `a7c329e5`
 
