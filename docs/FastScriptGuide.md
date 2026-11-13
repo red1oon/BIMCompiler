@@ -636,32 +636,32 @@ At a terminal it draws with arrow keys. With `--plain` it reads key names from a
 ```text
 $ printf 'Down Right Esc\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/mis.js kind=C_BPartner name=Standard limit=3 --plain 2>/dev/null
 -> mis.describe kind=C_BPartner
--> mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Name2 names=Y limit=3 offset=0 name=Standard
+-> mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Logo_ID,C_BP_Group_ID names=Y limit=3 offset=0 name=Standard
 C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]   no role: nothing is filtered
-   C_BPartner_ID  Value     Name      Name2
- > 112            Standard  Standard        >[U Edit]< [D Delete] [C Copy]
-   1300112        Standard  Standard       
+   C_BPartner_ID  Value     Name      Logo_ID  C_BP_Group_ID     
+ > 112            Standard  Standard           Standard Customers >[U Edit]< [D Delete] [C Copy]
+   1300112        Standard  Standard           Standard Customers
 the line it will run: mis.read kind=C_BPartner id=112
  Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
 key Down
 C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]   no role: nothing is filtered
-   C_BPartner_ID  Value     Name      Name2
-   112            Standard  Standard       
- > 1300112        Standard  Standard        >[U Edit]< [D Delete] [C Copy]
+   C_BPartner_ID  Value     Name      Logo_ID  C_BP_Group_ID     
+   112            Standard  Standard           Standard Customers
+ > 1300112        Standard  Standard           Standard Customers >[U Edit]< [D Delete] [C Copy]
 the line it will run: mis.read kind=C_BPartner id=1300112
  Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
 key Right
 C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]   no role: nothing is filtered
-   C_BPartner_ID  Value     Name      Name2
-   112            Standard  Standard       
- > 1300112        Standard  Standard        [U Edit] >[D Delete]< [C Copy]
+   C_BPartner_ID  Value     Name      Logo_ID  C_BP_Group_ID     
+   112            Standard  Standard           Standard Customers
+ > 1300112        Standard  Standard           Standard Customers [U Edit] >[D Delete]< [C Copy]
 the line it will run: mis.delete kind=C_BPartner id=1300112
  Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
 key Esc
 C_BPartner (name=Standard)   shown 1-2 of 2   [+ New]   no role: nothing is filtered
-   C_BPartner_ID  Value     Name      Name2
-   112            Standard  Standard       
- > 1300112        Standard  Standard        [U Edit] >[D Delete]< [C Copy]
+   C_BPartner_ID  Value     Name      Logo_ID  C_BP_Group_ID     
+   112            Standard  Standard           Standard Customers
+ > 1300112        Standard  Standard           Standard Customers [U Edit] >[D Delete]< [C Copy]
 the line it will run: mis.delete kind=C_BPartner id=1300112
  Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit
 ```
@@ -674,10 +674,10 @@ A form asks only for what the engine cannot fill (the dry run above). Typing fil
 ```text
 $ printf '+\n=GD300\nTab\n=Guide Four\nEnter\ny\nEsc\n' | BIM_OBJECT_OPLOG=/tmp/fast_guide_mis.ops node common/door/mis.js kind=C_BPartner value=GD300 --plain 2>/dev/null | grep '^->'
 -> mis.describe kind=C_BPartner
--> mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Name2 names=Y limit=10 offset=0 value=GD300
+-> mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Logo_ID,C_BP_Group_ID names=Y limit=10 offset=0 value=GD300
 -> mis.new kind=C_BPartner dry=Y
 -> mis.new kind=C_BPartner Value=GD300 Name="Guide Four"
--> mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Name2 names=Y limit=10 offset=0 value=GD300
+-> mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Logo_ID,C_BP_Group_ID names=Y limit=10 offset=0 value=GD300
 ```
 
 Edit works the same way: it shows only the columns the window lets a person edit, with lookups as names, and sends only what you changed. Copy starts a new record from the pointed one, so you must change what must be unique (a duplicate is refused and your typing is kept). Set `MIS_SESSION_FILE=session.door` and a terminal session records the lines it ran, one per line, as a script you can read and run again.
