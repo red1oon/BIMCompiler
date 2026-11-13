@@ -736,7 +736,51 @@ recut before that.** The change list for the next cut, in the owner's words:
    cost-if-deployed monitor, values beside the code) get built first; the card and the "limits" beat then change from "not built yet" to
    showing them. The stills must be reshot anyway (the worktree they came from is gone; `shoot.sh` reshoots in about two minutes).
 
+### §F.12 The three "not built yet" items — FIRST VERSIONS (owner, 2026-11-13: *"OK first version, then next session for the next"*)
+
+Scope rule for all three: bim-ootb `devtools/vscode/x0-navigator/` only (plain JS, no npm, nothing a page loads); logic in `lib/*.js` with
+no `vscode` import, each with a node witness and a red control; then one run in the real VS Code. JavaScript is read with a PARSER (VS
+Code's own TypeScript, found by the repo's `scripts/lib/find_ts.js`), never a regex; no parser → that step prints INCONCLUSIVE.
+What each first version does NOT do is listed, so the film and the guide can say it plainly. **Complete versions = the next session**, and
+they need F-1, F-2, F-6, F-7 from the owner.
+
+**F.12a Cost if deployed (first version of §F.3 tier 1).** `lib/deploy_cost.js`. For every folder that has a service worker (`sw.js`):
+*offline-cache bytes* = the files named by string literals in its `PRECACHE_ASSETS`; *start-up bytes* = the local files loaded by `<script src>`
+in the `.html` pages that list names. Computed for the working tree and for a git ref (default `origin/main`), then compared.
+Line per app: `§DEPLOY_COST app= boot_files= boot_bytes= boot_delta= precache_files= precache_bytes= precache_delta= moved_to_boot= vs=`.
+In the editor: command *X0 Navigator: Cost if deployed* (prints the lines) and a status-bar note for the open file (`start-up · 84 KB` /
+`offline cache · 12 KB` / `not loaded at start`).
+Witness `W-PERF-IMPACT` (fixture repo, §F.3's own cases): (a) a new start-up script → `boot_delta` = exactly its size; (b) a file that was
+only in the cache list now also a page script → `moved_to_boot=1`; (c) **red control:** no change → every delta 0. Real repo: totals printed,
+deltas vs `HEAD` are 0 on a clean tree. **Not in v1:** minified sizes (raw bytes only: `esbuild` is not installed), budgets (F-2), the vertex /
+heap estimate (tier 2), anything measured in a browser (tier 3), lazy modules listed in `viewer/main.js`.
+
+**F.12b Values beside the code (first version of §-Lens, F-9).** `lib/lens_index.js`. Reads `logs/*.log` of the checkout. A log counts only if
+its first line is a `§LOG_STAMP` with a commit. For a line of code that prints a `§TAG`, the lens shows the LAST line of such a log that carries
+the tag, with the log's name and commit, **only when the printing file is unchanged since that commit** (`git diff --quiet <commit> -- <file>`,
+and the file is not in the stamp's `dirty_files`). Otherwise nothing: a value that cannot be proven current is not shown.
+In the editor: a CodeLens above the printing line.
+Witness `W-LENS` (temp git repo): stamped log + unchanged file → the value is shown; the file edited → hidden; the stamp lists the file as
+dirty → hidden; **red control:** the same log without a stamp → never shown. `§LENS shown= hidden_changed= hidden_dirty= unstamped_ignored= verdict=`.
+**Not in v1:** `~/.cache/bim4d/` and other log folders, history of values, browser logs. Expect few lenses at first (§F.6): only logs saved
+since the stamp exists.
+
+**F.12c Run and ship (first version of §F.2: Run local · Check · Fetch back).** `lib/ship.js`, steps as commands plus a small *Run & Ship*
+list in the Explorer side bar. Every step prints `§SHIP_*` lines to the *X0 Navigator* output and stops at the first failure.
+- *Run local:* starts the repo's own task *Serve repo* and prints each app's local URL and the `CACHE_VERSION` on disk.
+- *Check:* (1) `node --check` on the JS files changed vs `origin/main`; (2) the repo's `tests/audit_sw_precache.js`; (3) the bump rule: a file in
+  an app's `PRECACHE_ASSETS` changed while that app's `CACHE_VERSION` did not → FAIL naming the app.
+- *Fetch back:* HTTP only (the proposal of F-1; the owner has not ruled). For each app: the live `sw.js` `CACHE_VERSION` vs `origin/main`'s;
+  and the live `erp/version.json` `sha` vs `origin/main`'s commit. `§SHIP_FETCH app= live= main= match=`.
+Witness `W-SHIP-PANEL` (fixture repo + a fake "live" site, §F.2's own cases): (a) a planted syntax error stops at Check; (b) a precached file
+changed without a bump stops at Check; (c) a live site on an older `CACHE_VERSION` → Fetch back FAIL; (d) a live `version.json` whose `sha` is
+not `main`'s → FAIL; **red control:** a clean, bumped, matching fixture passes every step.
+**Not in v1:** issue + commit + PR, deploy/merge, the byte-for-byte compare of live files, any headless browser step, opening Chrome.
+Fetch back is the ONE step that uses the network, and only when pressed: the film's "No network" line must say so.
+
 **DECISIONS:**
+- 2026-11-13, owner, on "first versions of the three, or complete as specified?" (recommendation: first versions): *"OK first version, then
+  next session for the next"*. → §F.12. The complete versions and the film recut are the next session's.
 - 2026-11-13, owner, after watching cut v4: the four messages quoted in §F.11 (Chapter 0 style · tell the install · a better intro ·
   hold the cut until the three unbuilt items are done). → film on hold; install defect found and fixed (§F.10).
 - 2026-11-13, owner, on FILM-1 (is storyboard v1 right?): *"Opening Chapter Title, "Editing Real Code" - BIM-ERP is Open Source, for anyone
