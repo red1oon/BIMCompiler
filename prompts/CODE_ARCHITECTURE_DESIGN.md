@@ -576,11 +576,34 @@ logs are saved: the witness suite runner and the "Run this witness" task. With t
 unchanged since the stamped commit, and coverage grows by itself as witnesses are re-run. That stamp is a new decision (**F-11**, not yet asked).
 F's next slice then falls back to the order already written: the bump prompt (after F-6), then DEV_TOOLKIT's own first slice.
 
+### §F.7 Every saved log says which code made it — BUILD SPEC (F-11; owner, 2026-11-13: *"Go with your advice."*)
+
+**Issue:** a saved log cannot be tied to the code that produced it (§F.6: a commit stamp in 2 of 77 bim-ootb log files).
+**Scope (bim-ootb, dev-side only, nothing reaches a page):**
+- **`scripts/log_stamp.js`**: prints ONE line and exports `stampLine(cwd, label)`:
+  `§LOG_STAMP commit=<12 hex|none> dirty=<n> branch=<name> at=<ISO time> cmd=<label>` and, when `dirty` is 1–10, ` dirty_files=<a,b,…>`.
+  `dirty` = tracked files that differ from the commit (`git status --porcelain -uno`). Outside a git checkout: `commit=none dirty=?`, never a crash.
+  The word is `commit=` so `scripts/code_arch/lens_precheck.js` (§F.6) counts it without change.
+- **`tests/run_witness_suite.js`**: prints the stamp as its first line (so `npm test`, CI and the suite task all carry it).
+- **`.vscode/tasks.json` "Run this witness"**: the log starts with the stamp, then the witness output. Exit code, tail and the Z2 problem
+  matchers stay as they are.
+- **Witness `W-LOG-STAMP`** (`scripts/tests/witness_log_stamp.js`, node, temp git repo):
+  clean repo → `commit` = that repo's HEAD, `dirty=0`; edit a tracked file → `dirty=1` and the file is named (**red control: the stamp must
+  change when the code does**); an untracked file alone → still `dirty=0`; a folder that is no checkout → `commit=none`; the task's own
+  command (read from `tasks.json`) run on a fixture → line 1 of the saved log is the stamp and the witness's exit code is kept; the suite
+  runner's first output line is the stamp. `§LOG_STAMP_W clean= dirty_seen= untracked_ignored= nogit= task_first_line= suite_first_line= verdict=`.
+- `scripts/tests/witness_editor_zero_code.js` Z2 must still PASS (it runs the same task command).
+- **Not in scope:** stamping the 4,000 older logs, other log writers (bake already stamps; bim-compiler's `build/erp/logs*` writers are other
+  lanes'), and §-Lens itself.
+- **Done when:** `§LOG_STAMP_W … verdict=PASS`, `§EZC_MATCHER … verdict=PASS`, PR merged on `main` and re-run there.
+
 **DECISIONS:**
 - 2026-11-13, owner, on F-10 (how the APP index is kept fresh; recommendation given: (a) a failing CI check): *"Go with your advice."*
   → before building, the measurement in §F.5 (26 of 39 merges change the file) showed (a) would create a conflict magnet. The advice was
   changed to (b), X0 keeps its own fresh copy, and that was built under the same go. **The owner approved (a) by name, so this switch is
   the session's call and is theirs to reverse.**
+- 2026-11-13, owner, on F-9 (close as "not next") and F-11 (a stamp line on saved logs; recommendation: yes): *"Go with your advice. Update
+  the Developer Guide on this"*. → **F-9 CLOSED: §-Lens is not next.** F-11 = yes, spec §F.7. Developer Guide updated in the same pass.
 - 2026-11-13, owner, on F-9: *"what would you answer?"* → answered yes, with two checks first. *"Go, do the two checks first"* → measured in
   §F.6; both fail, so the answer is now "no, not next". **F-9 itself is still the owner's to close**; nothing was built.
 - 2026-11-13, owner, on F-8 (own providers or a TypeScript language-service plugin; recommendation: own providers): *"advice me and proceed"*.
