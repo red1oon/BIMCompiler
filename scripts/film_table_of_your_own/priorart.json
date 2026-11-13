@@ -1,0 +1,16 @@
+{
+ "note": "Every line of the film's last card comes from here. 'learned' = a source this lane READ (path:line in the local iDempiere or Ninja source tree). 'nearby' = a page fetched on 2026-11-14 by a read-only web search; the six-part reading of each is in bim-compiler prompts/FILM_COMMAND_LINE_ERP.md. Nothing is on the card without an entry here.",
+ "learned": [
+  { "line": "Compiere / iDempiere Application Dictionary", "took": "one engine runs any window from dictionary rows", "source": "idempiere/org.adempiere.base/src/org/compiere/model/GridWindowVO.java:203" },
+  { "line": "red1's Ninja plugin (org.red1.ninja)", "took": "the column grammar and the stager; it already reads a sheet's header", "source": "org.red1.ninja/src/org/ninja/utils/NewEmptyTable.java:95" },
+  { "line": "iDempiere core: fields, access, list values", "took": "which fields show, who gets access, how a wrong list value is refused", "source": "idempiere/org.adempiere.base.process/src/org/compiere/process/TabCreateFields.java:99" },
+  { "line": "iDempiere grid CSV importer", "took": "the idea of a file of rejected rows", "source": "idempiere/org.adempiere.base/src/org/adempiere/impexp/GridTabCSVImporter.java:90" }
+ ],
+ "nearby": [
+  { "line": "iDempiere: Create Window, Tab & Field from Table (v8.2)", "does": "makes the window from a table that already exists, in the web client", "source": "https://docs.idempiere.org/docs/new-features/v8.2/create-window-tab-field-from-table" },
+  { "line": "frappe_commander: new-doctype", "does": "one command makes a DocType, fields as flags; records are used in the web desk", "source": "https://github.com/esafwan/frappe_commander" },
+  { "line": "sqlite-utils with VisiData", "does": "a CSV becomes a table and rows are edited in a terminal; no form, lists, roles", "source": "https://sqlite-utils.datasette.io/en/stable/cli.html" }
+ ],
+ "found": "In the pages we read, no single tool had all of it.",
+ "notSearched": "Not searched: Compiere's own tooling, Tryton, OFBiz, dBASE-style screens."
+}

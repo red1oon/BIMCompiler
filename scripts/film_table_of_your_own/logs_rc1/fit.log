@@ -1,0 +1,19 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT sheet cue=3.88 room=12.24 dur=11.33 -> DETAIL slack=+0.91 words=39
+§NARR_TONE sheet#0 F YN rose=8.0st endDelta=+2.4st want=rise OK "Can the E R P hold them?"
+§NARR_FIT oneline cue=16.72 room=9.40 dur=8.49 -> DETAIL slack=+0.91 words=26
+§NARR_TONE oneline#0 F YN rose=5.0st endDelta=+1.9st want=rise OK "And then?"
+§NARR_FIT empty cue=26.72 room=4.94 dur=4.04 -> DETAIL slack=+0.90 words=13
+§NARR_FIT first cue=32.26 room=6.02 dur=5.13 -> DETAIL slack=+0.89 words=18
+§NARR_FIT refuse1 cue=38.88 room=5.57 dur=4.67 -> DETAIL slack=+0.90 words=17
+§NARR_TONE refuse1#0 F WH rose=0st endDelta=-4.0st want=fall OK "What if I leave the name out?"
+§NARR_FIT refuse2 cue=45.05 room=6.48 dur=5.58 -> DETAIL slack=+0.90 words=18
+§NARR_TONE refuse2#0 F YN rose=5.0st endDelta=+2.8st want=rise OK "And a condition that is not on my list?"
+§NARR_FIT stamp cue=52.13 room=4.65 dur=3.76 -> DETAIL slack=+0.89 words=13
+§NARR_TONE stamp#0 F WH rose=0st endDelta=-4.8st want=fall OK "Who made this record?"
+§NARR_FIT restart cue=57.38 room=5.24 dur=4.33 -> DETAIL slack=+0.91 words=15
+§NARR_FIT priorart cue=63.22 room=16.73 dur=15.84 -> DETAIL slack=+0.89 words=46
+§NARR_TONE priorart#0 F WH rose=0st endDelta=-2.3st want=fall OK "Where does this come from?"
+§NARR_FIT close cue=80.55 room=6.86 dur=5.96 -> DETAIL slack=+0.90 words=18

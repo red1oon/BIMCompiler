@@ -1,0 +1,17 @@
+§GUARD OK   beat=sheet sheet.columns=5 expect=5 spoken="five lines"
+§GUARD OK   beat=oneline add.standard=9 expect=9 spoken="nine columns"
+§GUARD OK   beat=oneline add.roles=12 expect=12 spoken="twelve roles"
+§GUARD OK   beat=first first.asked=1 expect=1 spoken="one field"
+§GUARD OK   beat=first first.filled=6 expect=6 spoken="six more"
+§GUARD OK   beat=refuse2 refuse2.valid.length=3 expect=3 spoken="three values"
+§GUARD OK   beat=restart restart.total=1 expect=1 spoken="one record"
+§GUARD proof talk or first/novel/unique: none
+§GUARD not-built N: named in the voice: none
+§GUARD prior art P OK   learned: "Compiere / iDempiere Application Dictionary" <- idempiere/org.adempiere.base/src/org/compiere/model/GridWindowVO.java:203 (file has 510 lines)
+§GUARD prior art P OK   learned: "red1's Ninja plugin (org.red1.ninja)" <- org.red1.ninja/src/org/ninja/utils/NewEmptyTable.java:95 (file has 404 lines)
+§GUARD prior art P OK   learned: "iDempiere core: fields, access, list values" <- idempiere/org.adempiere.base.process/src/org/compiere/process/TabCreateFields.java:99 (file has 250 lines)
+§GUARD prior art P OK   learned: "iDempiere grid CSV importer" <- idempiere/org.adempiere.base/src/org/adempiere/impexp/GridTabCSVImporter.java:90 (file has 1857 lines)
+§GUARD prior art P OK   nearby: "iDempiere: Create Window, Tab & Field from Table (v8.2)" <- https://docs.idempiere.org/docs/new-features/v8.2/create-window-tab-field-from-table (url)
+§GUARD prior art P OK   nearby: "frappe_commander: new-doctype" <- https://github.com/esafwan/frappe_commander (url)
+§GUARD prior art P OK   nearby: "sqlite-utils with VisiData" <- https://sqlite-utils.datasette.io/en/stable/cli.html (url)
+§GUARD_VERDICT PASS facts=7 prior_art_lines=7 bad=0
