@@ -1383,6 +1383,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#a-whole-workbook-in-one-line-ninjaexec" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A whole workbook in one line: ninja.exec
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheatsheet-practise-the-mis-lines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cheatsheet: practise the MIS lines
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#work-at-the-terminal-misjs" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3500,6 +3522,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#a-whole-workbook-in-one-line-ninjaexec" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A whole workbook in one line: ninja.exec
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheatsheet-practise-the-mis-lines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cheatsheet: practise the MIS lines
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#work-at-the-terminal-misjs" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4166,7 +4210,7 @@ table: AST_Asset
 window: {&quot;id&quot;:7100001,&quot;name&quot;:&quot;AST Asset&quot;}
 columns: [&quot;Name&quot;,&quot;PurchaseDate&quot;,&quot;Cost&quot;,&quot;Condition&quot;,&quot;IsInsured&quot;]
 lists: [{&quot;column&quot;:&quot;Condition&quot;,&quot;values&quot;:[&quot;GOOD&quot;,&quot;FAIR&quot;,&quot;POOR&quot;]}]
-ops: 46
+ops: 47
 </code></pre></div>
 <p>The new kind works with every <code>mis.*</code> verb at once, and with <code>mis.js</code>. A mandatory column is asked for, a default is filled, and a value outside the sheet's list is refused:</p>
 <!-- run: win_use cut=200 -->
@@ -4179,7 +4223,195 @@ Name     Cost    Condition
 Tractor  1200.5  GOOD
 shown 1 of 1
 </code></pre></div>
-<p>The types are String, Quantity, Amount, YesNo, Date, DateTime, Text and List. A column whose name ends in <code>_ID</code> is a lookup to that table, and one that starts with <code>Is</code> is a yes/no. A detail table under a master is not built yet.</p>
+<p>The types are String, Quantity, Amount, YesNo, Date, DateTime, Text and List. A column whose name ends in <code>_ID</code> is a lookup to that table, and one that starts with <code>Is</code> is a yes/no. A detail table under a master comes with a workbook: the next section.</p>
+<h2 id="a-whole-workbook-in-one-line-ninjaexec">A whole workbook in one line: <code>ninja.exec</code><a class="headerlink" href="#a-whole-workbook-in-one-line-ninjaexec" title="Permanent link">&para;</a></h2>
+<p>One table from a <code>.csv</code> is the small case. A <strong>Ninja workbook</strong> holds many tables at once, says which table sits under which, and can carry their first rows. One line makes all of it.</p>
+<p>The workbook is an ordinary spreadsheet file (<code>.xlsx</code> or <code>.xls</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Sheet</th>
+<th>What it holds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>1_RO_ModelHeader</code></td>
+<td>the name of the whole set, in the first cell under <code>Name</code></td>
+</tr>
+<tr>
+<td><code>2_RO_ModelMaker</code></td>
+<td>one row per table: <code>Master</code> (the table it sits under, or empty), <code>Name</code> (the table), <code>ColumnSet</code> (its columns, separated by commas)</td>
+</tr>
+<tr>
+<td>a sheet named exactly after a table</td>
+<td>rows to load: row 1 holds the column names</td>
+</tr>
+</tbody>
+</table>
+<p>In <code>ColumnSet</code> a plain name is text. A prefix gives another type: <code>D#</code> a date, <code>A#</code> an amount, <code>Q#</code> a quantity, <code>T#</code> a long text, <code>Y#</code> a yes/no, and <code>L#Name=a/b/c</code> a list of fixed values. A table whose <code>Master</code> is another table of the workbook becomes a tab of that table's window.</p>
+<p>A practice workbook ships with the door: <code>common/door/samples/Ninja_Practice.xlsx</code> (a patient, the patient's visits, the medicines of a visit, and a room). <code>dry=Y</code> reads it, says what it would make and writes nothing:</p>
+<!-- run: nx_dry cut=230 -->
+<div class="highlight"><pre><span></span><code>$ cp common/door/samples/Ninja_Practice.xlsx . ; rm -f /tmp/fast_guide_ninja.ops; BIM_OBJECT_OPLOG=/tmp/fast_guide_ninja.ops node common/door/door.js --list &#39;ninja.exec file=Ninja_Practice.xlsx dry=Y&#39; | grep -E &#39;^(bundle|tables|dataSheets|skipped|dry):&#39;
+bundle: Practice
+tables: [{&quot;table&quot;:&quot;PR_Patient&quot;,&quot;master&quot;:null,&quot;columns&quot;:4,&quot;lists&quot;:[&quot;BloodGroup&quot;]},{&quot;table&quot;:&quot;PR_Visit&quot;,&quot;master&quot;:&quot;PR_Patient&quot;,&quot;columns&quot;:5,&quot;lists&quot;:[]},{&quot;table&quot;:&quot;PR_Medicine&quot;,&quot;master&quot;:&quot;PR_Visit&quot;,&quot;columns&quot;:3,&quot;lists&quot;:[]},{&quot;table&quot;:&quot;PR_Roo…
+dataSheets: [{&quot;sheet&quot;:&quot;PR_Patient&quot;,&quot;rows&quot;:3},{&quot;sheet&quot;:&quot;PR_Room&quot;,&quot;rows&quot;:2}]
+skipped: []
+dry: true
+</code></pre></div>
+<p>Without <code>dry=Y</code> the same line makes it: the windows, the tabs, the list, the menu entries, the role access, and then the rows of the data sheets. Run it a second time and it writes nothing:</p>
+<!-- run: nx_run cut=230 -->
+<div class="highlight"><pre><span></span><code>$ cp common/door/samples/Ninja_Practice.xlsx . ; D=&#39;BIM_OBJECT_OPLOG=/tmp/fast_guide_ninja.ops node common/door/door.js --list&#39;; eval &quot;$D &#39;ninja.exec file=Ninja_Practice.xlsx&#39;&quot; | grep -E &#39;^(windows|detailTabs|dataSheets|ops):&#39;; eval &quot;$D &#39;ninja.exec file=Ninja_Practice.xlsx&#39;&quot; | grep -E &#39;^(alreadyStaged|ops|summary):&#39;
+dataSheets: [{&quot;sheet&quot;:&quot;PR_Patient&quot;,&quot;rows&quot;:3,&quot;loaded&quot;:3,&quot;ops&quot;:3},{&quot;sheet&quot;:&quot;PR_Room&quot;,&quot;rows&quot;:2,&quot;loaded&quot;:2,&quot;ops&quot;:2}]
+windows: [{&quot;id&quot;:7100001,&quot;name&quot;:&quot;PR Patient&quot;},{&quot;id&quot;:7100004,&quot;name&quot;:&quot;PR Room&quot;}]
+detailTabs: 2
+ops: 129
+alreadyStaged: true
+ops: 0
+summary: this workbook is already staged (4 tables); nothing was written
+</code></pre></div>
+<p>Every table works with the <code>mis.*</code> verbs at once. A record under a master names the master's id (<code>mis.read</code> of the master then shows what sits under it), and a value outside a list is refused:</p>
+<!-- run: nx_use cut=200 -->
+<div class="highlight"><pre><span></span><code>$ D=&#39;BIM_OBJECT_OPLOG=/tmp/fast_guide_ninja.ops node common/door/door.js --list&#39;; eval &quot;$D &#39;mis.list kind=PR_Patient&#39;&quot;; eval &quot;$D &#39;mis.new kind=PR_Visit Name=Checkup PR_Patient_ID=1 Fee=50&#39;&quot; | grep -E &#39;^(number|id):&#39;; eval &quot;$D &#39;mis.new kind=PR_Medicine Name=Paracetamol PR_Visit_ID=1 Qty=10&#39;&quot; | grep -E &#39;^(number|id):&#39;; eval &quot;$D &#39;mis.list kind=PR_Visit columns=Name,Fee,PR_Patient_ID&#39;&quot;; eval &quot;$D &#39;mis.update kind=PR_Patient id=1 BloodGroup=Z&#39;&quot; | grep reason; rm -f Ninja_Practice.xlsx
+PR_Patient_ID  Name
+1              Aminah
+2              Boon
+3              Chandra
+shown 3 of 3
+number: Checkup
+id: 1
+number: Paracetamol
+id: 1
+Name     Fee  PR_Patient_ID
+Checkup  50   1
+shown 1 of 1
+reason: BloodGroup Invalid value - Z - Reference_ID=200277 - A - AB - B - O; nothing was written
+</code></pre></div>
+<p>What it refuses, with nothing written: a table name that already exists (rename it in the sheet), a second workbook that names tables another workbook made, and a <code>ColumnSet</code> with a prefix it does not know. A sheet whose name is not exactly a table's name is skipped and named in the answer. The answer's <code>notChecked</code> lists what was not judged.</p>
+<h2 id="cheatsheet-practise-the-mis-lines">Cheatsheet: practise the MIS lines<a class="headerlink" href="#cheatsheet-practise-the-mis-lines" title="Permanent link">&para;</a></h2>
+<p>Everything here is practice on <strong>your own copy</strong>: the first line names a file that keeps what you do, and nothing reaches a real company's books. Delete that file to start again from nothing. Run the lines from the folder that holds <code>common/</code> (a <code>bim-ootb</code> checkout).</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Type this</th>
+<th>What you get</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Set up</td>
+<td><code>export BIM_OBJECT_OPLOG=~/practice.ops</code></td>
+<td>every line below now keeps its work in that file</td>
+</tr>
+<tr>
+<td>Start over</td>
+<td><code>rm -f ~/practice.ops</code></td>
+<td>an empty practice again</td>
+</tr>
+<tr>
+<td>Shorten the typing</td>
+<td><code>alias d='node common/door/door.js --list'</code></td>
+<td>then a line is <code>d '&lt;verb&gt; &lt;inputs&gt;'</code></td>
+</tr>
+<tr>
+<td>Ask what exists</td>
+<td><code>d '!help all'</code></td>
+<td>every verb with its inputs</td>
+</tr>
+<tr>
+<td>Make four tables</td>
+<td><code>cp common/door/samples/Ninja_Practice.xlsx . ; d 'ninja.exec file=Ninja_Practice.xlsx'</code></td>
+<td>patients, visits, medicines, rooms, with 3 patients and 2 rooms loaded</td>
+</tr>
+<tr>
+<td>Try before making</td>
+<td><code>d 'ninja.exec file=Ninja_Practice.xlsx dry=Y'</code></td>
+<td>what it would make; nothing written</td>
+</tr>
+<tr>
+<td>Make one table</td>
+<td><code>d 'mis.add_window file=AST_Asset.csv'</code></td>
+<td>one window from a <code>.csv</code> of its columns (section above)</td>
+</tr>
+<tr>
+<td>List</td>
+<td><code>d 'mis.list kind=PR_Patient'</code></td>
+<td>the rows</td>
+</tr>
+<tr>
+<td>List some columns</td>
+<td><code>d 'mis.list kind=PR_Visit columns=Name,Fee'</code></td>
+<td>only those columns</td>
+</tr>
+<tr>
+<td>What can it hold</td>
+<td><code>d 'mis.describe kind=PR_Patient'</code></td>
+<td>its columns, types and lists</td>
+</tr>
+<tr>
+<td>Add</td>
+<td><code>d 'mis.new kind=PR_Patient Name=Devi BloodGroup=O'</code></td>
+<td>a new record and its id</td>
+</tr>
+<tr>
+<td>Add under a master</td>
+<td><code>d 'mis.new kind=PR_Visit Name=Checkup PR_Patient_ID=1 Fee=50'</code></td>
+<td>a visit of patient 1</td>
+</tr>
+<tr>
+<td>Add one level further</td>
+<td><code>d 'mis.new kind=PR_Medicine Name=Paracetamol PR_Visit_ID=1 Qty=10'</code></td>
+<td>a medicine of visit 1</td>
+</tr>
+<tr>
+<td>Read one with what is under it</td>
+<td><code>d 'mis.read kind=PR_Patient id=1'</code></td>
+<td>the patient and the visits</td>
+</tr>
+<tr>
+<td>Change</td>
+<td><code>d 'mis.update kind=PR_Patient id=1 BloodGroup=AB'</code></td>
+<td>the changed record</td>
+</tr>
+<tr>
+<td>See a refusal</td>
+<td><code>d 'mis.update kind=PR_Patient id=1 BloodGroup=Z'</code></td>
+<td>refused: <code>Z</code> is not in the list</td>
+</tr>
+<tr>
+<td>Delete</td>
+<td><code>d 'mis.delete kind=PR_Room id=2'</code></td>
+<td>the record is gone</td>
+</tr>
+<tr>
+<td>Add up</td>
+<td><code>d 'mis.sum kind=PR_Visit column=Fee'</code></td>
+<td>the total</td>
+</tr>
+<tr>
+<td>Count by a column</td>
+<td><code>d 'mis.group kind=PR_Patient by=BloodGroup'</code></td>
+<td>a count per value</td>
+</tr>
+<tr>
+<td>Load many rows</td>
+<td><code>d 'mis.load kind=PR_Room file=rooms.csv'</code></td>
+<td>a preview; add <code>dry=N</code> to load</td>
+</tr>
+<tr>
+<td>Work on a screen</td>
+<td><code>node common/door/mis.js kind=PR_Patient</code></td>
+<td>a list you move in with the keys; <code>+</code> adds, Enter edits</td>
+</tr>
+<tr>
+<td>As another role</td>
+<td>add <code>role=102</code> to a line</td>
+<td>what that role may see and do</td>
+</tr>
+</tbody>
+</table>
+<p>A workbook of your own: copy the practice file, change the rows of <code>2_RO_ModelMaker</code> to your tables (a prefix of your own, such as <code>MY_</code>, keeps them apart from the tables that are already there), and run <code>ninja.exec</code> on it with <code>dry=Y</code> first. The lines of this table are the verbs shown run in the sections above; the table itself is not re-run by this page's test, the grey blocks are.</p>
 <h2 id="work-at-the-terminal-misjs">Work at the terminal: <code>mis.js</code><a class="headerlink" href="#work-at-the-terminal-misjs" title="Permanent link">&para;</a></h2>
 <p>If you would rather pick than type, <code>mis.js</code> shows a list with a pointer. It is a front end only: every key compiles into <strong>one</strong> of the door lines above, runs through the same door (journalled, claim-checked), and the screen prints the line before it runs. Up and Down move the pointer. Left and Right move along the buttons on the pointed row (<code>[U Edit] [D Delete] [C Copy]</code> for a record; for a document, the actions the engine allows now, such as <code>[C Complete] [V Void]</code>, and no Delete once it is completed). Enter runs the highlighted button. <code>+</code> starts a new record, Delete asks <code>y/N</code>, and Esc backs out and writes nothing.</p>
 <p>At a terminal it draws with arrow keys. With <code>--plain</code> it reads key names from a pipe, so a script, a screen reader and an AI see exactly what a person sees:</p>
@@ -4738,6 +4970,14 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <td>a bim-ootb checkout</td>
 </tr>
 <tr>
+<td><code>ninja.exec</code></td>
+<td>Run a Ninja workbook</td>
+<td><code>file</code>, <code>dry</code> (optional), <code>data</code> (optional)</td>
+<td>writes</td>
+<td>human, ai</td>
+<td>a bim-ootb checkout</td>
+</tr>
+<tr>
 <td><code>erp.column</code></td>
 <td>Who fills a column: twin and legacy side by side (old name of mis.column)</td>
 <td><code>kind</code>, <code>column</code></td>
@@ -4821,7 +5061,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 </table>
 <!-- /GEN:verbs -->
 
-<p><strong>Coverage today.</strong> The list is small on purpose: 47 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 6 ERP verbs for a document's life and 12 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.</p>
+<p><strong>Coverage today.</strong> The list is small on purpose: 48 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 6 ERP verbs for a document's life and 12 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.</p>
 <h2 id="what-is-not-checked">What is not checked<a class="headerlink" href="#what-is-not-checked" title="Permanent link">&para;</a></h2>
 <p>A reply lists what its check did not cover. For the Modeller's edit report the list is:</p>
 <!-- run: notchecked cut=520 -->
