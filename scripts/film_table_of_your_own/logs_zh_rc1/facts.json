@@ -1,0 +1,143 @@
+{
+ "made": "2026-11-13T17:14:39.587Z",
+ "ootb": "9c288d83",
+ "lines": {
+  "dry": {
+   "line": "mis.add_window file=AST_Asset.csv dry=Y",
+   "status": "ok"
+  },
+  "add": {
+   "line": "mis.add_window file=AST_Asset.csv",
+   "status": "ok"
+  },
+  "refuse1": {
+   "line": "mis.new kind=AST_Asset Cost=5",
+   "status": "refused"
+  },
+  "refuse2": {
+   "line": "mis.new kind=AST_Asset Name=Plough Condition=BAD",
+   "status": "refused"
+  },
+  "list": {
+   "line": "mis.list kind=AST_Asset columns=AST_Asset_ID,Name,Cost,Condition",
+   "status": "ok"
+  },
+  "read": {
+   "line": "mis.read kind=AST_Asset id=1",
+   "status": "ok"
+  },
+  "restart": {
+   "line": "mis.list kind=AST_Asset columns=Name,Cost,Condition",
+   "status": "ok"
+  }
+ },
+ "sheet": {
+  "file": "AST_Asset.csv",
+  "text": [
+   "Column,Type,Mandatory,Default,List",
+   "Name,String,Y,,",
+   "PurchaseDate,Date,,,",
+   "Cost,Amount,,,",
+   "Condition,List,,GOOD,\"GOOD=Good,FAIR=Fair,POOR=Poor\"",
+   "IsInsured,,,,"
+  ],
+  "columns": 5
+ },
+ "add": {
+  "table": "AST_Asset",
+  "window": "AST Asset",
+  "columns": [
+   "Name",
+   "PurchaseDate",
+   "Cost",
+   "Condition",
+   "IsInsured"
+  ],
+  "standard": 9,
+  "standardNames": [
+   "AST_Asset_ID",
+   "AST_Asset_UU",
+   "AD_Client_ID",
+   "AD_Org_ID",
+   "IsActive",
+   "Created",
+   "CreatedBy",
+   "Updated",
+   "UpdatedBy"
+  ],
+  "roles": 12,
+  "ops": 46,
+  "fields": 10,
+  "listValues": [
+   "GOOD",
+   "FAIR",
+   "POOR"
+  ]
+ },
+ "empty": {
+  "screen": "AST_Asset   shown 0-0 of 0   [+ New]   no role: nothing is filtered\n   AST_Asset_ID  Name  PurchaseDate  Cost\nno AST_Asset record yet: press + to make one\n Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit",
+  "says": true
+ },
+ "first": {
+  "asked": 1,
+  "filled": 6,
+  "line": "mis.new kind=AST_Asset Name=Tractor",
+  "screens": [
+   {
+    "key": "start",
+    "text": "AST_Asset   shown 0-0 of 0   [+ New]   no role: nothing is filtered\n   AST_Asset_ID  Name  PurchaseDate  Cost\nno AST_Asset record yet: press + to make one\n Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit"
+   },
+   {
+    "key": "+",
+    "text": "New AST_Asset   (Esc cancels everything, nothing is written)\n > * Name [_]\n type to fill   Tab/Enter next field   Enter on the last field saves   Esc cancel"
+   },
+   {
+    "key": "=Tractor",
+    "text": "New AST_Asset   (Esc cancels everything, nothing is written)\n > * Name [Tractor_]\n type to fill   Tab/Enter next field   Enter on the last field saves   Esc cancel"
+   },
+   {
+    "key": "Enter",
+    "text": "New AST_Asset   (Esc cancels everything, nothing is written)\n > * Name [Tractor]\nthe line it will run: mis.new kind=AST_Asset Name=Tractor\nSave? [y/N]\n y saves   any other key goes back   Esc cancel"
+   },
+   {
+    "key": "y",
+    "text": "AST_Asset   shown 1-1 of 1   [+ New]   no role: nothing is filtered\n   AST_Asset_ID  Name     PurchaseDate  Cost\n > 1             Tractor                0    >[U Edit]< [D Delete] [C Copy]\nthe line it will run: mis.read kind=AST_Asset id=1\ncreated Tractor: 6 columns filled by the engine (ad_client_id, ad_org_id, isactive, cost, condition, isinsured)\n Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit"
+   },
+   {
+    "key": "Esc",
+    "text": "AST_Asset   shown 1-1 of 1   [+ New]   no role: nothing is filtered\n   AST_Asset_ID  Name     PurchaseDate  Cost\n > 1             Tractor                0    >[U Edit]< [D Delete] [C Copy]\nthe line it will run: mis.read kind=AST_Asset id=1\ncreated Tractor: 6 columns filled by the engine (ad_client_id, ad_org_id, isactive, cost, condition, isinsured)\n Up/Down row   Left/Right chip   Enter run   + new   PageDown next   Esc quit"
+   }
+  ]
+ },
+ "refuse1": {
+  "why": "mandatory and still empty after the defaults and callouts: Name (give them as column=value)",
+  "names": true
+ },
+ "refuse2": {
+  "why": "Condition Invalid value - BAD - Reference_ID=200277 - FAIR - GOOD - POOR; nothing was written",
+  "valid": [
+   "FAIR",
+   "GOOD",
+   "POOR"
+  ]
+ },
+ "stamp": {
+  "created": "2026-11-14 01:14:47",
+  "createdby": 101,
+  "uu": "205213ba-5055-4785-9178-d9456de105da",
+  "name": "Tractor",
+  "condition": "GOOD"
+ },
+ "restart": {
+  "total": 1,
+  "rows": [
+   {
+    "Name": "Tractor",
+    "Cost": 0,
+    "Condition": "GOOD"
+   }
+  ],
+  "pid": 416095,
+  "ownPid": 415849
+ }
+}

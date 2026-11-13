@@ -8,9 +8,9 @@ const F = require('./out/facts.json'), N = require('./narr.js'), PA = require('.
 const get = (p) => p.split('.').reduce((o, k) => (o == null ? undefined : o[k]), F);
 N.beats.forEach(b => (b.says || []).forEach(([p, want, word]) => { n++; const got = get(p), ok = String(got) === String(want) && b.text.toLowerCase().indexOf(word) >= 0; if (!ok) bad++; console.log('§GUARD ' + (ok ? 'OK  ' : 'FAIL') + ' beat=' + b.id + ' ' + p + '=' + JSON.stringify(got) + ' expect=' + want + ' spoken="' + word + '"'); }));
 const voice = N.beats.map(b => b.text || '').join(' '), card = JSON.stringify(PA);
-const proof = /witness|falsif|parity|verified|proven|first ever|\bnovel\b|\bunique\b|\bthe first\b|nobody else|no one else/i, hit = N.beats.filter(b => b.text && proof.test(b.text)).map(b => b.id).concat(proof.test(PA.found + ' ' + PA.notSearched) ? ['priorart.json'] : []);
+const proof = /witness|falsif|parity|verified|proven|first ever|\bnovel\b|\bunique\b|\bthe first\b|nobody else|no one else|首创|首个|第一个|独一无二|唯一|没有人|无人能/i, hit = N.beats.filter(b => b.text && proof.test(b.text)).map(b => b.id).concat(proof.test([PA.found, PA.notSearched, PA.found_zh, PA.notSearched_zh].join(' ')) ? ['priorart.json'] : []);
 console.log('§GUARD proof talk or first/novel/unique: ' + (hit.join(',') || 'none')); if (hit.length) bad++;
-const notBuilt = /master=|detail tab|sign[- ]?in|log ?in|browser|legacy server|as a role|approval|workflow/i, nb = N.beats.filter(b => b.text && notBuilt.test(b.text)).map(b => b.id);
+const notBuilt = /master=|detail tab|sign[- ]?in|log ?in|browser|legacy server|as a role|approval|workflow|主从|明细页|登录|浏览器|审批|工作流/i, nb = N.beats.filter(b => b.text && notBuilt.test(b.text)).map(b => b.id);
 console.log('§GUARD not-built N: named in the voice: ' + (nb.join(',') || 'none')); if (nb.length) bad++;
 const roots = [path.join(os.homedir(), 'idempiere-dev-setup'), path.join(os.homedir(), 'Projects/red1_plugins')]; let pn = 0;
 ['learned', 'nearby'].forEach(k => (PA[k] || []).forEach(e => { pn++; let ok = false, how = '';
@@ -19,4 +19,6 @@ const roots = [path.join(os.homedir(), 'idempiere-dev-setup'), path.join(os.home
   if (!ok || !e.line || !(e.took || e.does)) bad++; console.log('§GUARD prior art P ' + (ok ? 'OK  ' : 'FAIL') + ' ' + k + ': "' + e.line + '" <- ' + e.source + ' (' + how + ')'); }));
 if (!pn) { bad++; console.log('§GUARD prior art P VACUOUS: no entry'); }
 if (/jelapang/i.test(JSON.stringify(F) + voice + card)) { bad++; console.log('§GUARD private name found'); }
+const zhMiss = N.lang === 'zh' ? ['learned', 'nearby'].reduce((m, k) => m.concat(PA[k].filter(e => !(e.took_zh || e.does_zh)).map(e => e.line)), []).concat(PA.found_zh && PA.notSearched_zh ? [] : ['found/notSearched']) : [];
+console.log('§GUARD language=' + N.lang + (N.lang === 'zh' ? ' prior-art lines without a Chinese text: ' + (zhMiss.join(',') || 'none') + '; beats with no CJK character: ' + (N.beats.filter(b => b.text && !/[\u4e00-\u9fff]/.test(b.text)).map(b => b.id).join(',') || 'none') : '')); if (zhMiss.length || (N.lang === 'zh' && N.beats.some(b => b.text && !/[\u4e00-\u9fff]/.test(b.text)))) bad++;
 console.log('§GUARD_VERDICT ' + (bad ? 'FAIL' : (n ? 'PASS' : 'INCONCLUSIVE')) + ' facts=' + n + ' prior_art_lines=' + pn + ' bad=' + bad); process.exit(bad ? 1 : (n ? 0 : 2));

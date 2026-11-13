@@ -4,25 +4,26 @@
 const fs = require('fs'), path = require('path'), os = require('os');
 const puppeteer = require(process.env.PUPPETEER_PATH || path.join(os.homedir(), 'bim-compiler', 'node_modules', 'puppeteer'));
 const F = require('./out/facts.json'), out = path.resolve(process.argv[2] || 'out/cards'); fs.mkdirSync(out, { recursive: true });
+const ZHL = process.env.FILM_LANG === 'zh', tr = (en, zh) => (ZHL ? zh : en);   // FILM_LANG=zh: every on-screen text of the film is Chinese; the product's own screens and commands stay as they are (PLAYBOOK, Mandarin)
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const cut = (s, n) => (String(s).length > n ? String(s).slice(0, n - 1) + '…' : String(s));
 const short = (s) => String(s).replace(/\/tmp\/toy_[A-Za-z0-9]+\//g, '…/');   // the scratch folder of the run is not the film's business
 const page = (inner, extra) => `<!doctype html><html><head><meta charset="utf-8"><style>
-*{box-sizing:border-box;margin:0;padding:0} body{width:1920px;height:1080px;background:#0f172a;color:#F3EEE8;font-family:'DejaVu Sans',sans-serif;overflow:hidden}
+*{box-sizing:border-box;margin:0;padding:0} body{width:1920px;height:1080px;background:#0f172a;color:#F3EEE8;font-family:'DejaVu Sans','Noto Sans CJK SC',sans-serif;overflow:hidden}
 .area{position:absolute;left:110px;right:110px;top:80px;height:750px}
 h1{font-size:44px;color:#7dd3fc;font-weight:700;margin-bottom:26px}
-.term{background:#0b0f17;border:2px solid #334155;border-radius:18px;padding:30px 38px;font-family:'DejaVu Sans Mono',monospace;font-size:36px;line-height:1.5}
+.term{background:#0b0f17;border:2px solid #334155;border-radius:18px;padding:30px 38px;font-family:'DejaVu Sans Mono','Noto Sans CJK SC',monospace;font-size:36px;line-height:1.5}
 .cmd{color:#F3EEE8;white-space:pre-wrap;word-break:break-all} .cmd:before{content:'> ';color:#4ade80}
 .ans{color:#fbbf24;margin:2px 0 18px 46px} .ans b{color:#7dd3fc;font-weight:700} .dim{color:#94a3b8;font-size:28px;margin:0 0 16px 46px}
-.scr{background:#0b0f17;border:2px solid #334155;border-radius:18px;padding:26px 30px;font-family:'DejaVu Sans Mono',monospace;font-size:25px;line-height:1.42;white-space:pre-wrap;word-break:break-all;color:#cbd5e1}
+.scr{background:#0b0f17;border:2px solid #334155;border-radius:18px;padding:26px 30px;font-family:'DejaVu Sans Mono','Noto Sans CJK SC',monospace;font-size:25px;line-height:1.42;white-space:pre-wrap;word-break:break-all;color:#cbd5e1}
 .scr .hd{color:#7dd3fc;font-weight:700} .scr .cur{color:#F3EEE8;background:#1e293b} .scr .hi{background:#4ade80;color:#0b0f17;font-weight:700} .scr .nt{color:#fbbf24} .scr .dm{color:#94a3b8} .scr .run{color:#4ade80}
 .plain{font-size:62px;line-height:1.5;margin-top:150px;text-align:center} .plain span{color:#94a3b8;font-size:46px}
-.file{background:#111827;border:2px dashed #475569;border-radius:14px;padding:20px 28px;font-family:'DejaVu Sans Mono',monospace;font-size:28px;line-height:1.45;margin-bottom:22px} .file i{color:#94a3b8;font-style:normal;font-size:24px}
+.file{background:#111827;border:2px dashed #475569;border-radius:14px;padding:20px 28px;font-family:'DejaVu Sans Mono','Noto Sans CJK SC',monospace;font-size:28px;line-height:1.45;margin-bottom:22px} .file i{color:#94a3b8;font-style:normal;font-size:24px}
 .cur2{display:inline-block;width:20px;height:38px;background:#4ade80;vertical-align:-6px;margin-left:2px}
 .lab{position:absolute;right:0;bottom:0;border:2px solid #fbbf24;color:#fbbf24;border-radius:10px;padding:8px 22px;font-size:26px;font-weight:700;letter-spacing:2px}
 .call{color:#4ade80;font-size:32px;margin:22px 0 0 8px} .call b{color:#F3EEE8}
 ${extra || ''}</style></head><body><div class="area">${inner}</div></body></html>`;
-const LABEL = '<div class="lab">PROTOTYPE</div>';
+const LABEL = '<div class="lab">' + (process.env.FILM_LANG === 'zh' ? '原型' : 'PROTOTYPE') + '</div>';
 const ans = (h) => '<div class="ans">' + h + '</div>', dim = (s) => '<div class="dim">' + esc(s) + '</div>';
 // a real mis.js plain screen, drawn: the pointed row, the highlighted button, the notes
 const scr = (text) => '<div class="scr"' + (text.split('\n').length > 15 ? ' style="font-size:21px;line-height:1.36;padding:18px 26px"' : '') + '>' + text.split('\n').map((l, i) => {
@@ -51,32 +52,32 @@ const CH = 'body{background:#0b0f17} .area{top:0;height:850px} .ch{text-align:ce
 const chap = (k, l1, l2, sub) => page('<div class="ch"><div class="k">' + esc(k) + '</div><div class="t1">' + esc(l1) + '</div><div class="t2">' + esc(l2) + '</div><div class="p">' + esc(sub) + '</div></div>', CH);
 const FS = F.first.screens, fForm = pick(FS, s => s.key === '+'), fTyped = pick(FS, s => /^=Tractor/.test(s.key)), fConfirm = pick(FS, s => /Save\?/.test(s.text)), fDone = pick(FS, s => s.key === 'y');
 const file = (name, lines) => '<div class="file"><i>' + esc(name) + '</i>\n' + lines.map((l, i) => '<div' + (i === 0 ? ' style="color:#7dd3fc"' : '') + '>' + esc(l) + '</div>').join('') + '</div>';
-const sheetCard = page('<h1>A sheet: one line for each column</h1>' + file(F.sheet.file, F.sheet.text) + '<div class="call"><b>' + F.sheet.columns + '</b> columns written by a person &nbsp;·&nbsp; only <b>Column</b> is required</div>' + LABEL, '.file{font-size:34px;line-height:1.6}');
+const sheetCard = page('<h1>' + tr('A sheet: one line for each column', '一张表格：每列一行') + '</h1>' + file(F.sheet.file, F.sheet.text) + '<div class="call">' + tr('<b>' + F.sheet.columns + '</b> columns written by a person &nbsp;·&nbsp; only <b>Column</b> is required', '<b>' + F.sheet.columns + '</b> 列由人填写 &nbsp;·&nbsp; 只有 <b>Column</b> 是必填') + '</div>' + LABEL, '.file{font-size:34px;line-height:1.6}');
 const TERM = {
-  oneline: { h: 'One line makes the window', cpf: 1.5, steps: [
-    { cmd: L.add.line, after: [ans('table <b>' + esc(F.add.table) + '</b> &nbsp;·&nbsp; window <b>' + esc(F.add.window) + '</b> &nbsp;·&nbsp; form, menu entry'), ans('<b>' + F.add.standard + '</b> columns added for you &nbsp;·&nbsp; <b>' + F.add.roles + '</b> roles given access'), dim('added: ' + cut(F.add.standardNames.join(', '), 96)), dim('no code written for it: the same engine runs every window')] }] },
-  refuse1: { h: 'A mandatory column is asked for', cpf: 1.5, steps: [
-    { cmd: L.refuse1.line, after: [ans('<b>refused</b>'), dim(cut(F.refuse1.why, 100)), dim('nothing was written')] }] },
-  refuse2: { h: 'A value outside the sheet\'s list is refused', cpf: 1.5, steps: [
-    { cmd: L.refuse2.line, after: [ans('<b>refused</b> &nbsp;·&nbsp; it accepts: <b>' + F.refuse2.valid.map(esc).join('</b>, <b>') + '</b>'), dim(cut(F.refuse2.why, 100))] }] },
-  stamp: { h: 'Who made it, and when', cpf: 1.5, steps: [
-    { cmd: L.read.line, after: [ans('name <b>' + esc(F.stamp.name) + '</b> &nbsp;·&nbsp; condition <b>' + esc(F.stamp.condition) + '</b>'), ans('created <b>' + esc(F.stamp.created) + '</b> &nbsp;·&nbsp; by user <b>' + esc(F.stamp.createdby) + '</b>'), dim('its own id: ' + F.stamp.uu), dim('the user is a stated default: sign-in is not built')] }] },
-  restart: { h: 'Close everything, come back', cpf: 1.5, steps: [
-    { cmd: L.restart.line, after: [ans('<b>' + F.restart.total + '</b> record &nbsp;·&nbsp; ' + F.restart.rows.map(r => esc(r.Name) + ', ' + esc(r.Condition)).join(' ; ')), dim('a separate process: the window and its rows are replayed from the log')] }] }
+  oneline: { h: tr('One line makes the window', '一行命令，建好窗口'), cpf: 1.5, steps: [
+    { cmd: L.add.line, after: [ans(tr('table', '表') + ' <b>' + esc(F.add.table) + '</b> &nbsp;·&nbsp; ' + tr('window', '窗口') + ' <b>' + esc(F.add.window) + '</b> &nbsp;·&nbsp; ' + tr('form, menu entry', '表单、菜单项')), ans(tr('<b>' + F.add.standard + '</b> columns added for you &nbsp;·&nbsp; <b>' + F.add.roles + '</b> roles given access', '自动添加 <b>' + F.add.standard + '</b> 个列 &nbsp;·&nbsp; <b>' + F.add.roles + '</b> 个角色获得访问权')), dim(tr('added: ', '自动添加：') + cut(F.add.standardNames.join(', '), 96)), dim(tr('no code written for it: the same engine runs every window', '没有为它写任何代码：同一个引擎运行每个窗口'))] }] },
+  refuse1: { h: tr('A mandatory column is asked for', '必填的列，必须给出'), cpf: 1.5, steps: [
+    { cmd: L.refuse1.line, after: [ans('<b>' + tr('refused', '已拒绝') + '</b>'), dim(cut(F.refuse1.why, 100)), dim(tr('nothing was written', '没有写入任何内容'))] }] },
+  refuse2: { h: tr('A value outside the sheet\'s list is refused', '列表之外的值会被拒绝'), cpf: 1.5, steps: [
+    { cmd: L.refuse2.line, after: [ans('<b>' + tr('refused', '已拒绝') + '</b> &nbsp;·&nbsp; ' + tr('it accepts:', '可接受：') + ' <b>' + F.refuse2.valid.map(esc).join('</b>, <b>') + '</b>'), dim(cut(F.refuse2.why, 100))] }] },
+  stamp: { h: tr('Who made it, and when', '谁建的，什么时候'), cpf: 1.5, steps: [
+    { cmd: L.read.line, after: [ans(tr('name', '名称') + ' <b>' + esc(F.stamp.name) + '</b> &nbsp;·&nbsp; ' + tr('condition', '状况') + ' <b>' + esc(F.stamp.condition) + '</b>'), ans(tr('created', '创建于') + ' <b>' + esc(F.stamp.created) + '</b> &nbsp;·&nbsp; ' + tr('by user', '用户') + ' <b>' + esc(F.stamp.createdby) + '</b>'), dim(tr('its own id: ', '它自己的标识：') + F.stamp.uu), dim(tr('the user is a stated default: sign-in is not built', '用户是声明的默认值：登录功能尚未构建'))] }] },
+  restart: { h: tr('Close everything, come back', '全部关掉，再回来'), cpf: 1.5, steps: [
+    { cmd: L.restart.line, after: [ans('<b>' + F.restart.total + '</b> ' + tr('record', '条记录') + ' &nbsp;·&nbsp; ' + F.restart.rows.map(r => esc(r.Name) + ', ' + esc(r.Condition)).join(' ; ')), dim(tr('a separate process: the window and its rows are replayed from the log', '独立的进程：窗口和记录从日志重放'))] }] }
 };
 const paCss = '.pa{display:flex;gap:34px;margin-top:4px} .pc{flex:1} .ph{font-size:26px;letter-spacing:2px;color:#94a3b8;margin-bottom:12px} .pi{background:#111827;border:2px solid #334155;border-radius:12px;padding:12px 18px;margin-bottom:10px} .pi b{display:block;font-size:25px;color:#7dd3fc;font-weight:700} .pi span{display:block;font-size:22px;color:#F3EEE8;margin-top:3px;line-height:1.3} .pi i{display:block;font-style:normal;font-size:16px;color:#94a3b8;margin-top:4px;font-family:"DejaVu Sans Mono",monospace;word-break:break-all} .pf{margin-top:8px;font-size:27px;color:#fbbf24} .pn{font-size:21px;color:#94a3b8;margin-top:4px} h1{margin-bottom:16px}';
-const pItem = (e) => '<div class="pi"><b>' + esc(e.line) + '</b><span>' + esc(e.took || e.does) + '</span><i>' + esc(/^https:/.test(e.source) ? e.source.replace(/^https:\/\//, '') : e.source.split('/')[0] + ' … ' + e.source.split('/').slice(-2).join('/')) + '</i></div>';
-const priorCard = page('<h1>Prior art: what this learned from</h1><div class="pa"><div class="pc"><div class="ph">READ IN THE SOURCE, AND USED</div>' + PA.learned.map(pItem).join('') + '</div><div class="pc"><div class="ph">NEARBY TOOLS, PAGES READ 2026-11-14</div>' + PA.nearby.map(pItem).join('')
-  + '<div class="pf">' + esc(PA.found) + '</div><div class="pn">' + esc(PA.notSearched) + '</div></div></div>', paCss);
+const pItem = (e) => '<div class="pi"><b>' + esc(e.line) + '</b><span>' + esc(tr(e.took || e.does, e.took_zh || e.does_zh)) + '</span><i>' + esc(/^https:/.test(e.source) ? e.source.replace(/^https:\/\//, '') : e.source.split('/')[0] + ' … ' + e.source.split('/').slice(-2).join('/')) + '</i></div>';
+const priorCard = page('<h1>' + tr('Prior art: what this learned from', '前人之作：这部作品学自哪里') + '</h1><div class="pa"><div class="pc"><div class="ph">' + tr('READ IN THE SOURCE, AND USED', '读过源码，并且采用') + '</div>' + PA.learned.map(pItem).join('') + '</div><div class="pc"><div class="ph">' + tr('NEARBY TOOLS, PAGES READ 2026-11-14', '相近的工具（2026-11-14 读过的网页）') + '</div>' + PA.nearby.map(pItem).join('')
+  + '<div class="pf">' + esc(tr(PA.found, PA.found_zh)) + '</div><div class="pn">' + esc(tr(PA.notSearched, PA.notSearched_zh)) + '</div></div></div>', paCss);
 const cards = {
-  cover: still(chap('COMMAND LINE ERP  ·  PART 2', 'A table of your own,', 'in one line', 'a spreadsheet\'s columns become a working window')),
+  cover: still(chap(tr('COMMAND LINE ERP  ·  PART 2', '命令行 ERP  ·  第二部'), tr('A table of your own,', '属于你自己的表，'), tr('in one line', '只需一行'), tr('a spreadsheet\'s columns become a working window', '电子表格的列，变成可用的窗口'))),
   sheet: still(sheetCard),
   oneline: termStates(TERM.oneline),
-  empty: still(scrCard('The new table, with no rows yet', F.empty.screen)),
-  first: [fForm, fTyped, fConfirm, fDone].map(s => ({ html: scrCard('The first record: the form asks only what the engine cannot fill', s.text), frames: null })),
+  empty: still(scrCard(tr('The new table, with no rows yet', '新建的表，还没有记录'), F.empty.screen)),
+  first: [fForm, fTyped, fConfirm, fDone].map(s => ({ html: scrCard(tr('The first record: the form asks only what the engine cannot fill', '第一条记录：表单只问引擎填不了的内容'), s.text), frames: null })),
   refuse1: termStates(TERM.refuse1), refuse2: termStates(TERM.refuse2), stamp: termStates(TERM.stamp), restart: termStates(TERM.restart),
   priorart: still(priorCard),
-  close: still(page('<div class="plain" style="margin-top:130px;font-size:80px">One sheet, one line,<br>a working window.</div><div style="text-align:center;font-size:44px;color:#FF6B78;margin-top:34px">a prototype &nbsp;·&nbsp; open source</div><div style="text-align:center;font-size:38px;color:#7dd3fc;margin-top:50px">red1oon.github.io/BIMCompiler/FastScriptGuide</div>'))
+  close: still(page('<div class="plain" style="margin-top:130px;font-size:80px">' + tr('One sheet, one line,<br>a working window.', '一张表格，一行命令，<br>一个可用的窗口。') + '</div><div style="text-align:center;font-size:44px;color:#FF6B78;margin-top:34px">' + tr('a prototype &nbsp;·&nbsp; open source', '原型 &nbsp;·&nbsp; 开源') + '</div><div style="text-align:center;font-size:38px;color:#7dd3fc;margin-top:50px">red1oon.github.io/BIMCompiler/FastScriptGuide</div>'))
 };
 (async () => {
   const b = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-gpu', '--window-size=1920,1080'] }), pg = await b.newPage(); await pg.setViewport({ width: 1920, height: 1080 });

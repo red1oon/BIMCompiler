@@ -1,0 +1,12 @@
+§FILM_CUE beat=cover t=0.000 frames=86 typing=0 answer_hold_frames=86 x1
+§FILM_CUE beat=sheet t=3.583 frames=372 typing=0 answer_hold_frames=372 x1
+§FILM_CUE beat=oneline t=19.083 frames=254 typing=45 answer_hold_frames=209 x1
+§FILM_CUE beat=empty t=29.667 frames=131 typing=0 answer_hold_frames=131 x1
+§FILM_CUE beat=first t=35.125 frames=186 typing=0 answer_hold_frames=46 x4
+§FILM_CUE beat=refuse1 t=42.875 frames=149 typing=43 answer_hold_frames=106 x1
+§FILM_CUE beat=refuse2 t=49.083 frames=176 typing=55 answer_hold_frames=121 x1
+§FILM_CUE beat=stamp t=56.417 frames=160 typing=42 answer_hold_frames=118 x1
+§FILM_CUE beat=restart t=63.083 frames=141 typing=57 answer_hold_frames=84 x1
+§FILM_CUE beat=priorart t=68.958 frames=450 typing=0 answer_hold_frames=450 x1
+§FILM_CUE beat=close t=87.708 frames=228 typing=0 answer_hold_frames=228 x1
+§FILM_DONE dur=97.208 frames=2333 planned=2333
