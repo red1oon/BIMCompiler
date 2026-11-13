@@ -1040,7 +1040,7 @@ tab, pixel readback, webview, second network path or new dependency (§RULES).
 - 2026-11-14, owner: *"ok"*, to the recommendation above (do not run the outside prompt; record the three steps as one F decision, step 1 first).
   → reading: recorded as F-13, order 1 → 2 → 3. No go to build yet; step 1's spec and its two open points come to the owner first.
 
-### §F.16 Context for this file (F-3 (a)) + the false-PHANTOM fix + the hover reason — ✅ BUILT 2026-11-14 (bim-ootb #2964, #2966, #2968; #2970 see below)
+### §F.16 Context for this file (F-3 (a)) + the false-PHANTOM fix + the hover reason — ✅ BUILT 2026-11-14 (bim-ootb #2964, #2966, #2968, #2970, all merged)
 
 Owner, 2026-11-14: *"Implement the MCP or Claude Code role in the VSC since it is specd and whatever is still outstanding while i go thru the cheatsheet."*
 - **bim-ootb #2961 / PR #2964 (merged):** `BINDS_A` also accepts `var|let|const A = APP`
@@ -1063,6 +1063,10 @@ Owner, 2026-11-14: *"Implement the MCP or Claude Code role in the VSC since it i
   On a line that prints a tag, the tag hover ends with `last value: … — log:line @ commit` or `last value not shown: <reason>`
   (`lens_index.hoverLine`). `§LENS … explain_shown=Y explain_hidden=Y explain_absent=Y verdict=PASS`; the registered hover read on a real
   printing line with an unstamped then a stamped probe log, both PASS (`§X0_ACTIVATE … checks_failed=0 verdict=PASS`). Not run: a real VS Code.
+- **#2970 merged; final re-run on `main` @ `7b030057` (logs read):** `§APP_SURFACE_W ALL PASS` · `§X0_APPDEF rows=1696 … verdict=PASS` ·
+  `§X0_CONTEXT … real_same=6 verdict=PASS` · `§LENS … explain_absent=Y verdict=PASS` · `§X0_ACTIVATE … commands=7 checks_failed=0 verdict=PASS` ·
+  `§X0_ISOLATION … deps=0 red=Y verdict=PASS` · `§X0_MCP tools=7 … context=Y … verdict=PASS`. Fetch back: `live_sha=7b030057 … match=Y`, `verdict=PASS`.
+  The owner's `~/VSCcheatsheet.txt` gained steps 21–24 for these (snippet, context command, hover reason, the facts-server tool).
 - **The owner's token-counter question, answered from the Claude Code docs (read 2026-11-14 by a docs agent; pages vs-code, costs, statusline,
   commands):** the VS Code panel's prompt box shows a context-window usage indicator; `/usage` opens an *Account & usage* dialog (plan users:
   usage bars; API-key users: session cost and tokens). Terminal: `/usage` (alias `/cost`), `/context` (per-item context use). The terminal status
