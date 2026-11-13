@@ -30,7 +30,7 @@ Background and every measurement this file cites: `prompts/EDITOR_MAINTAINABILIT
    and verified on `main` before the next (`docs/DeveloperGuide.md` §10; own sessions may merge their own verified PRs).
 6. **Order:** A → B → D → E → F → C (reasons in §ORDER). Status table at the end. **Exception (owner, 2026-11-13, #604), now spent:** §F.4 X0 slice 1 ran
    first and is **✅ DONE** (bim-ootb #2920 / PR #2922, result in §F.4). The order is back to A → B → D → E → F → C, so the NEXT session starts
-   **A0** (§READY) and asks **A-1**. Before that, ask **F-9** once (it decides whether §-Lens jumps ahead). §F.0 Z1–Z3 are built (PR #2919).
+   **A0** (§READY) and asks **A-1**. §F.5 (F-10, X0's own fresh index) is also ✅ DONE (PR #2925). Before that, ask **F-9** once (it decides whether §-Lens jumps ahead). §F.0 Z1–Z3 are built (PR #2919).
 7. **Where to start (§READY):** each part's first step that needs NO owner decision. Run that while the first decision is with the owner.
 
 ## RULES (any break = stop that part)
@@ -490,12 +490,62 @@ Files: `devtools/vscode/x0-navigator/` = `package.json` (no dependencies) · `ex
   pieces and assert `devtools/` adds 0 rows. The class is still open for any other test file: a small item for `gen_app_surface.js`'s owner.
 - **Not proven by a witness:** how VS Code itself draws the hovers and follows the `file://…#L<line>` links. `§X0_ACTIVATE` drives the real
   providers through a stub of the `vscode` calls, not through VS Code. The taghover witness ran against the local bim-compiler checkout.
-**OPEN DECISION F-10 (new, from FINDING 1):** how is `internal/APP_SURFACE.md` kept fresh? (a) a CI step that regenerates it and fails the PR when
+**DECISION F-10 — ANSWERED 2026-11-13: (b), after a measurement overturned the proposal** (see DECISIONS and §F.5). The question was: how is `internal/APP_SURFACE.md` kept fresh? (a) a CI step that regenerates it and fails the PR when
 the committed copy differs; (b) X0 regenerates it in memory on demand and the committed file stops being the source; (c) leave it manual
 (the stale guard already prevents wrong jumps). Proposal: (a). It is one node step, no browser, and it also keeps the file honest for readers
 who do not use VS Code.
 
+### §F.5 X0 keeps its own fresh APP index — BUILD SPEC · ✅ DONE 2026-11-13 (bim-ootb #2924 / PR #2925) (F-10; owner, 2026-11-13: *"Go with your advice."*)
+
+**Why (b) and not the proposed (a):** measured on bim-ootb `main` before building, by regenerating the index at each of the last 40
+first-parent commits (2026-11-12 → 13): **26 of 39 merges change `internal/APP_SURFACE.md`** (any edit above a write site shifts its line
+number). A CI check that fails a PR whose committed copy differs would make about two PRs in three regenerate and commit a ~1,900-line generated
+file, and concurrent PRs would then conflict on it: a second `sw.js`-style conflict magnet (`CLAUDE.md` §Concurrent branches). (a) is withdrawn.
+
+**Scope:** `devtools/vscode/x0-navigator/` only. No change to `scripts/gen_app_surface.js` (it already takes `APPSURF_ROOT` / `APPSURF_OUT`),
+none to CI, none to the committed `internal/APP_SURFACE.md`, which stays as a readable snapshot for people without VS Code.
+- **`lib/surface_refresh.js`** (pure node, no `vscode`): `refresh(root, outDir)` runs the repo's own generator as a child process
+  (`process.execPath`, with `ELECTRON_RUN_AS_NODE=1` so it also works inside VS Code) with `APPSURF_ROOT=root`, `APPSURF_OUT=outDir`. It
+  resolves to `{ file, ms, line }` (the generator's own `§APP_SURFACE` line) or rejects. One run at a time: a request made during a run is
+  served by one follow-up run, never a pile.
+- **`lib/app_surface_index.js`** `loadSurface(root, file)`: an optional index file; source lines are still resolved against `root`.
+- **`extension.js`:** `outDir` = VS Code's own storage folder for the extension (`context.storageUri`, else `globalStorageUri`), never a path
+  inside the repo. Refresh on activation and 2 s after a `.js`/`.mjs`/`.html` save *(built differently, see RESULT (1))*. The fresh copy is used once it exists; until then, and if
+  the generator fails, the committed copy is used. The stale guard stays in both cases, so the worst case is still "index stale", never a wrong jump.
+- **Witness `W-X0-FRESH`** (`tests/witness_x0_fresh.js`, node). Issue it proves or disproves: *"a field moved since the index was committed
+  shows 'index stale' instead of its definition"*.
+  1. Fixture repo in a temp folder (the real generator + `scripts/lib/js_scan.js` copied in, one module that writes a field): generate the
+     "committed" index, then insert a line above the write. **Red control (the defect):** the committed index resolves the field as `stale`.
+  2. `refresh()` into a separate folder → the field resolves as `definition` at the NEW line, and that line mentions the field.
+  3. The fixture's committed index is byte-identical before and after (the refresh never writes into the repo).
+  4. Real repo: `refresh()` into a temp folder → every written field resolves (`real_stale=0`), and the tracked `internal/APP_SURFACE.md` has
+     the same hash before and after.
+  5. Two overlapping `refresh()` calls → at most 2 generator runs.
+  Line: `§X0_FRESH before=stale after=definition line_ok=Y committed_untouched=Y real_fields= real_stale=0 runs= gen_ms= verdict=`.
+  The generator missing → INCONCLUSIVE.
+- **`§X0_ACTIVATE`** keeps `definition=1 hover=2` and adds `fresh=Y`: after activation the providers answer from a copy in the stubbed storage folder.
+- **Done when:** `§X0_FRESH … verdict=PASS`, the four slice-1 lines still PASS, PR merged on bim-ootb `main` and re-run there.
+
+**RESULT 2026-11-13 — bim-ootb #2924 / PR #2925, squash `fed5fe51` on `main`. ✅ DONE (witness).** `devtools/vscode/x0-navigator/` only
+(7 files, +265 / −20). Re-run on merged `main`, logs read:
+- `§X0_FRESH before=stale after=definition line_ok=Y committed_untouched=Y real_fields=1693 real_stale=0 runs=2 gen_ms=4627 verdict=PASS`
+- `§X0_ACTIVATE definition=1 hover=2 commands=1 fresh=Y checks_failed=0 verdict=PASS`
+- `§X0_APPDEF … line_matches=34 verdict=PASS` · `§DEVTK_SPEC … verdict=PASS` · `§X0_ISOLATION precache=0 minify=0 tags=0 … verdict=PASS` · CI green.
+- **Two changes from the spec above, both measured:** (1) **no refresh on save.** One generator run costs **~4.3 s and ~310 MB** in a child
+  process (`/usr/bin/time`, 2 runs), too much per save. A save only marks the copy dirty; the next lookup that finds a moved or unknown field
+  starts ONE run, and the lookup after it is right. The activate witness asserts it: a save plus a lookup that hits → 0 runs; a miss after a
+  save → exactly 1. (2) the stale hover now reads `index stale — hover again in a few seconds, or run "X0 Navigator: Rebuild indexes"` (the
+  §F.4 wording pointed at the task that writes the committed file, which X0 no longer reads once its own copy exists).
+- **Not proven by a witness:** that VS Code's own runtime runs the generator under `ELECTRON_RUN_AS_NODE=1` (the witness runs it under plain
+  node). If it does not, X0 falls back to the committed copy and the stale guard, i.e. slice-1 behaviour.
+- **Left as it is:** the committed `internal/APP_SURFACE.md` is still regenerated by hand and still drifts (it changed again within hours of
+  #2922). It is now only a snapshot for readers; whether to keep committing it at all is a question for its owner, not asked here.
+
 **DECISIONS:**
+- 2026-11-13, owner, on F-10 (how the APP index is kept fresh; recommendation given: (a) a failing CI check): *"Go with your advice."*
+  → before building, the measurement in §F.5 (26 of 39 merges change the file) showed (a) would create a conflict magnet. The advice was
+  changed to (b), X0 keeps its own fresh copy, and that was built under the same go. **The owner approved (a) by name, so this switch is
+  the session's call and is theirs to reverse.**
 - 2026-11-13, owner, on F-8 (own providers or a TypeScript language-service plugin; recommendation: own providers): *"advice me and proceed"*.
   → advised own providers (pure node modules, witnessed directly; the plugin can follow if find-references/rename are wanted) and built that.
 - 2026-11-13, owner (#604): *"GO with your insight"*, in reply to the proposal: "make F's source-reading features the Fable session's first task".
@@ -518,9 +568,9 @@ first, as §F.4, the next session's bounded task**; A0 runs in parallel if a sec
 | C | nothing; waits on B and D | C-1 part names + owners | |
 | D | nothing new; the multi-publisher list already exists (`types/globals.gen.d.ts`) | D-1 where the questions list lives | needs B's `owner` field |
 | E | `witness_kit/paths.js` (no behaviour change; witness: the same suite verdicts before and after) | E-1 the `PROVES:` header format | |
-| F | §F.4 X0 slice 1 ✅ DONE (PR #2922). Nothing else in F starts without a decision | F-9 §-Lens next, or DEV_TOOLKIT's first slice | it picks F's next slice |
+| F | §F.4 X0 slice 1 ✅ (PR #2922) · §F.5 fresh index ✅ (PR #2925). Nothing else in F starts without a decision | F-9 §-Lens next, or DEV_TOOLKIT's first slice | it picks F's next slice |
 
-Ask the owner **one decision per message, with the recommendation** (START HERE 2). 21 decisions are open (STATUS: F-8 answered, F-10 added). Next session: A0, and ask F-9.
+Ask the owner **one decision per message, with the recommendation** (START HERE 2). 20 decisions are open (STATUS: F-8 and F-10 answered). Next session: A0, and ask F-9.
 After it, start A0 and B0, and ask A-1 while they run.
 
 ## §M — re-measure before quoting
@@ -556,7 +606,7 @@ After it, start A0 and B0, and ask A-1 while they run.
 | C | named APP parts | open: 2 decisions |
 | D | owner table | open: 2 decisions |
 | E | proof map | open: 2 decisions · `paths.js` ready to start |
-| F | VS Code extension (X0 Navigator + Run & Ship + perf-impact monitor + DEV_TOOLKIT pack); AI optional | **§F.4 X0 slice 1 ✅ DONE (witness)** (bim-ootb PR #2922) · §F.0 Z1–Z3 ✅ (PR #2919) · open: 7 decisions (F-1, F-2, F-3, F-6, F-7, F-9, F-10) |
+| F | VS Code extension (X0 Navigator + Run & Ship + perf-impact monitor + DEV_TOOLKIT pack); AI optional | **§F.4 X0 slice 1 ✅ DONE (witness)** (bim-ootb PR #2922) · **§F.5 fresh index ✅** (PR #2925) · §F.0 Z1–Z3 ✅ (PR #2919) · open: 6 decisions (F-1, F-2, F-3, F-6, F-7, F-9) |
 
 ## §VET — 2026-11-13 vetting pass (issue #602), against bim-ootb `main` @ `a7c329e5`
 
