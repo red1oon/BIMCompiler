@@ -14,6 +14,38 @@ Background and every measurement this file cites: `prompts/EDITOR_MAINTAINABILIT
 
 ---
 
+## ▶▶ RESUME HERE FIRST (written 2026-11-14 at session close; supersedes item 6 below for the NEXT session)
+
+**The next session's one task, in the owner's words (2026-11-14):** *"i like to have a dry run with your help in my VSC, go thru some
+motions to see if i can grow into it. But do this in a new session."* → a hands-on walk-through with the owner in HIS VS Code. It is a
+teaching session, not a build session: one step per message, he does it, he says what he saw, then the next. Do not ask him to verify
+your work by eye (PRIMAL LAW): this is him learning his tool, which is different, but every claim about what a step should show comes from
+`docs/DeveloperGuide.md` §4.1's pictures and the witnesses, never from memory.
+- **State of his machine (verified 2026-11-14):** VS Code 1.146.0 (snap); the Claude Code extension `anthropic.claude-code` v2.1.323 IS
+  installed; **X0 Navigator is NOT installed in his own profile** (every test used temp profiles). First motion: from `~/bim-ootb`,
+  `node devtools/vscode/pack.js` then `code --install-extension devtools/vscode/dist/x0-navigator-0.1.0.vsix`, reload.
+  The facts server is OFF (turn on: `claude mcp add x0-facts --scope local -- node devtools/mcp/x0-facts/server.js` from `~/bim-ootb`).
+  `~/bim-ootb` is the shared checkout (edits there are hook-blocked for sessions): for the "make a small edit by hand" motion give him
+  his own worktree or branch first.
+- **Suggested motions** (guide §4.1 steps 1–11, then §4.2's path): open the folder · hover `APP.db` in `viewer/cost_panel.js` · F12 ·
+  hover a `§TAG` · Run & Ship ▸ Check · Cost if deployed · run a witness with the task and read line 1 of its log · then Claude Code in the
+  VS Code terminal: select code and ask about "this", ask for a plan, read one diff, rewind once. Keep each Claude step tiny (his worries:
+  losing control, cost, results that vary).
+- **He asked (unanswered in full):** *"Can the VSC has a status counter somewhere to show tokens consumed breakdown when Claude Code is
+  engaged?"* Told him: the terminal has `/cost`, `/context` and a configurable status line; whether the VS Code PANEL shows usage was NOT
+  verified. Check the Claude Code docs first (claude-code-guide agent), answer with the fact, and only then consider an X0 status-bar
+  counter as a new F decision (not built, not specced).
+- **Pages (§F.13): step 1 IS APPLIED** (2026-11-14 ~18:27 UTC, by the session on the owner's *"yes do it"*): `build_type=workflow`. First
+  deploy after it (`34c74ba5`): `§SHIP_FETCH … live_sha=34c74ba5 … verdict=PASS`, live `viewer/sw.js` 10,039 bytes (minified).
+  **Still to confirm over the next few merges:** that no raw build overwrites it any more, and what a CI-bot merge now does (expected: no
+  publish at all). Step 2 (CI merges with a token) still waits for the owner's token; the repo has no secrets.
+- **Then, when he asks:** the complete versions of the three F.12 items (need F-1, F-2, F-6, F-7); a Mandarin speaker's check of the ZH
+  film; other film languages. Part A (A0) is still the first unstarted part of the design itself.
+- **Working habits this session paid for:** commit and push after every step (a `/tmp/wt-*` worktree vanished mid-task with uncommitted
+  work; use the session scratch folder for worktrees); enable auto-merge yourself right after `gh pr create`; one `(#N)` in a PR title;
+  after any bim-ootb merge run Fetch back; a dev tool's witness must also run on a checkout that looks like a working one and through the
+  real install path (§F.8, §F.10).
+
 ## ▶ START HERE (fresh session)
 
 1. **Read, in order:** this file to the end · `docs/DeveloperGuide.md` §0, §1, §5, §9 · `prompts/EDITOR_MAINTAINABILITY_STUDY.md` §13 (minimalism
@@ -865,6 +897,15 @@ confirmed in words: *"My 'both' answer was meant for that. Anyway proceed."* Wha
 - Done: the stale note in `deploy-pages.yml` is corrected (bim-ootb #2957 / PR #2958).
 - **To restore now (owner):** Actions ▸ *Deploy to GitHub Pages* ▸ latest run ▸ Re-run all jobs; then X0 ▸ Run & Ship ▸ Fetch back must say PASS.
 
+**§F.13 UPDATE 2026-11-14 ~18:27 UTC — step 1 APPLIED.** The owner did not understand the instruction (*"Don't understand what is wtich source
+to Github Actions. Worry about complex and breaking"*); after a plain explanation (two publishers; turn the plain one off; one dropdown;
+reversible) he said *"On that Github Actions, yes do it"*. `gh api -X PUT repos/red1oon/bim-ootb/pages -f build_type=workflow` → the API
+now reports `build_type: workflow`; the site kept answering (HTTP 200). The next push (`34c74ba5`, another session's) was published by the
+workflow: `§SHIP_FETCH app=erp … match=Y · app=modeller … match=Y · app=viewer … match=Y · file=erp/version.json http=200
+live_sha=34c74ba5 main_sha=34c74ba546c2 match=Y · site=https://red1oon.github.io/bim-ootb vs=origin/main verdict=PASS`, live `viewer/sw.js`
+10,039 bytes. To undo: the same call with `build_type=legacy` (source branch `main`, path `/`), or Settings ▸ Pages ▸ Source.
+Not yet observed: several merges in a row, and a CI-bot merge, under the new setting.
+
 ### §F.14 A local facts server for any AI assistant (MCP) — BUILD SPEC · ✅ DONE 2026-11-14 (bim-ootb #2954 / PR #2955) (F-3 answered (b); owner, 2026-11-14: *"Both."* → the Claude + VS Code pair)
 
 The owner asked how Claude Code and VS Code work together (*"I hear of co-pilot method but wonder what is Claude's method"*). Answer given
@@ -991,7 +1032,7 @@ After it, start A0 and B0, and ask A-1 while they run.
 | C | named APP parts | open: 2 decisions |
 | D | owner table | open: 2 decisions |
 | E | proof map | open: 2 decisions · `paths.js` ready to start |
-| F | VS Code extension (X0 Navigator + Run & Ship + perf-impact monitor + DEV_TOOLKIT pack); AI optional | **§F.4 X0 slice 1 ✅ DONE (witness)** (bim-ootb PR #2922) · **§F.5 fresh index ✅** (PR #2925) · §F.0 Z1–Z3 ✅ (PR #2919) · **§F.7 log stamp ✅** (PR #2928) · §F.8 nested-checkout fix ✅ (PR #2931) · **§F.9 real-VS-Code witness ✅** (PR #2933) · §F.10 install fix ✅ (PR #2939) · **§F.12 first versions of Run and ship, cost monitor, values beside the code ✅** (PRs #2944, #2946, #2948) · §F.13 deploy findings (one fixed #2951; **F-12 answered "both" but NOT applied: step 1 needs the owner's own hand, step 2 his token**) · **§F.14 facts server (MCP) ✅** (PR #2955) · IDE film "Editing Real Code": **recut v5 done 2026-11-14** (§F.11), awaits the owner's review · F-9 CLOSED "not next" (§F.6) · open: 4 decisions (F-1, F-2, F-6, F-7); F-3 and F-12 answered |
+| F | VS Code extension (X0 Navigator + Run & Ship + perf-impact monitor + DEV_TOOLKIT pack); AI optional | **§F.4 X0 slice 1 ✅ DONE (witness)** (bim-ootb PR #2922) · **§F.5 fresh index ✅** (PR #2925) · §F.0 Z1–Z3 ✅ (PR #2919) · **§F.7 log stamp ✅** (PR #2928) · §F.8 nested-checkout fix ✅ (PR #2931) · **§F.9 real-VS-Code witness ✅** (PR #2933) · §F.10 install fix ✅ (PR #2939) · **§F.12 first versions of Run and ship, cost monitor, values beside the code ✅** (PRs #2944, #2946, #2948) · §F.13 deploy findings (one fixed #2951; **F-12: step 1 APPLIED 2026-11-14 (Pages source = GitHub Actions, Fetch back PASS); step 2 waits for the owner's token**) · **§F.14 facts server (MCP) ✅** (PR #2955) · IDE film "Editing Real Code": **recut v5 done 2026-11-14** (§F.11), awaits the owner's review · F-9 CLOSED "not next" (§F.6) · open: 4 decisions (F-1, F-2, F-6, F-7); F-3 and F-12 answered |
 
 ## §VET — 2026-11-13 vetting pass (issue #602), against bim-ootb `main` @ `a7c329e5`
 

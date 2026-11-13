@@ -64,3 +64,4 @@ LIVE on bim-ootb main: §52.1 resume-as-it-was (#2519, W-RESUME-AS-IT-WAS 7/0, s
 
 ## 📄 PDF→BIM (vector PDF to IFC, TB-LKTN house) — session 1 2026-11-04
 One command `scripts/pdf2bim/run_p1.sh` reproduces PDF -> 5 STD DXF sheets -> 58-element IFC4 (page 1). Emission + fidelity witnessed; lane acceptance blocked by 82 stated rows (6 reader gaps + 22 library stand-ins + 54 drawing-quality); migration CL006 makes the exact-size FD1 doors bindable. Read `prompts/PDF2BIM_VECTOR_PROBE.md` ▶ RESUME HERE.
+- 2026-11-14 · Code-design lane, part F (VS Code tooling): X0 Navigator + Run & Ship/cost/value-line first versions, facts server (MCP), log stamp, film "Editing Real Code" EN+ZH, Developer Guide §4.1/§4.2 with screenshots; bim-ootb Pages now published by the workflow only. Next: hands-on VS Code dry run with the owner → `prompts/CODE_ARCHITECTURE_DESIGN.md` ▶▶ RESUME HERE FIRST.
