@@ -211,7 +211,12 @@ with a planted `Date.now()` must make it FAIL. Prints `§CORE_PURE files= forbid
 (`scripts/bridge/run_all.sh`) unchanged.
 **Done when:** W-REPLAY-CLOCK `match=Y` on both time zones (or its bug fixed), W-CORE-PURE PASS on the agreed core list, `forbidden=0`, red control
 FAILs as it should.
-**DECISIONS:** *(none yet)*
+**DECISIONS:**
+- 2026-11-14, owner, on **A-1** (which files are "core"; recommendation: the list measured in §VET — ERP `erp/processes/*.js`,
+  `erp/callouts/*.js`, `ad_callout.js`, `doc_poster.js`, `model_*.js`, `rule_fold.js`, `crud_core.js` (112 files, 18 with calls); viewer
+  `cpm_schedule.js`, `schedule_*.js` and `common/room_graph.js`; `viewer/tm_core.js` left out; `erp/kernel_ops.js` left out as the place
+  that records the values): *"Yes"*. → **A-1 = that list.** Other geometry maths is not in it until the owner names files. A3's
+  `W-CORE-PURE` scans exactly this list. A-2 asked next.
 
 ---
 
@@ -1312,7 +1317,7 @@ After it, start A0 and B0, and ask A-1 while they run.
 ## STATUS
 | Part | What | State |
 |---|---|---|
-| A | pure core + Env (A0 replay-clock fact first) | **A0 ✅ DONE (witness): rows are replayed, match=Y in both zones** (bim-ootb PR #2997) · open: 4 decisions, A-1 asked 2026-11-14 |
+| A | pure core + Env (A0 replay-clock fact first) | **A0 ✅ DONE (witness): rows are replayed, match=Y in both zones** (bim-ootb PR #2997) · **A-1 answered 2026-11-14** (the core list) · open: A-2 (asked), A-3, A-4 |
 | B | manifest per app | open: 4 decisions · B0 ready to start |
 | C | named APP parts | open: 2 decisions |
 | D | owner table | open: 2 decisions |
