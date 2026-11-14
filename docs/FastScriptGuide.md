@@ -729,7 +729,36 @@ shown 1 of 1
 reason: BloodGroup Invalid value - Z - Reference_ID=200277 - A - AB - B - O; nothing was written
 ```
 
-What it refuses, with nothing written: a table name that already exists (rename it in the sheet), a second workbook that names tables another workbook made, and a `ColumnSet` with a prefix it does not know. A sheet whose name is not exactly a table's name is skipped and named in the answer. The answer's `notChecked` lists what was not judged.
+**A table that is already there.** When the workbook names a table the system already has, nothing is made twice. If the sheet gives that table a `Master`, the table is reused: the sheet's columns are added to it and it becomes a tab under that master. If the sheet gives it no `Master`, the row is left alone. The answer lists both (`reused`, `leftAlone`). This is what the Ninja of iDempiere does. A reused table keeps its own rules, so a record of it must still fill that table's own mandatory columns.
+
+A table shown in two windows is written through its own window unless you name the other one with `window=` (its name or its id). A refusal for a column that belongs to the other window tells you which window to name.
+
+What it refuses, with nothing written: a second workbook that names tables another workbook made, a workbook whose tables are all already there with no master, and a `ColumnSet` with a prefix it does not know. A sheet whose name is not exactly a table's name is skipped and named in the answer. The answer's `notChecked` lists what was not judged.
+
+### Give a table the document columns: `ninja.workflow`
+
+A feature can be switched on later, for one table, without touching the workbook. `ninja.workflow` gives a table the five document columns (`DocStatus`, `DocAction`, `Processed`, `DocumentNo`, `IsApproved`) with their lists and defaults, shows them on its tabs, and fills the records that are already there. It looks first and adds only what is missing, so a second run writes nothing:
+
+<!-- run: nx_wf cut=200 -->
+```text
+$ cp common/door/samples/Ninja_Practice.xlsx . ; rm -f /tmp/fast_guide_wf.ops; D='BIM_OBJECT_OPLOG=/tmp/fast_guide_wf.ops node common/door/door.js --list'; eval "$D 'ninja.exec file=Ninja_Practice.xlsx'" | grep -E '^ops:'; eval "$D 'mis.new kind=PR_Visit Name=Before PR_Patient_ID=1'" | grep -E '^number:'; eval "$D 'ninja.workflow table=PR_Visit'" | grep -E '^(added|fields|rowsFilled|ops):'; eval "$D 'ninja.workflow table=PR_Visit'" | grep -E '^(alreadyDone|ops):'; eval "$D 'mis.new kind=PR_Visit Name=After PR_Patient_ID=1'" | grep -E '^docStatus:'; eval "$D 'mis.list kind=PR_Visit columns=Name,DocStatus,DocAction,Processed'"; eval "$D 'erp.complete kind=PR_Visit id=1'" | grep reason; rm -f Ninja_Practice.xlsx
+ops: 129
+number: Before
+added: ["DocStatus","DocAction","Processed","DocumentNo","IsApproved"]
+fields: 5
+rowsFilled: 1
+ops: 11
+alreadyDone: true
+ops: 0
+docStatus: DR
+Name    DocStatus  DocAction  Processed
+Before  DR         CO         N
+After   DR         CO         N
+shown 2 of 2
+reason: Complete was not done: PR Visit has the document columns but no document class yet, so nothing says what Complete does on it (DocStatus stays DR)
+```
+
+It does not yet say what *Complete* does on such a table: the answer's `notMade` names what is still missing, and `erp.complete` is refused in plain words until then. A table that came with the system is refused.
 
 ## Cheatsheet: practise the MIS lines
 
@@ -759,8 +788,10 @@ Everything here is practice on **your own copy**: the first line names a file th
 | Load many rows | `d 'mis.load kind=PR_Room file=rooms.csv'` | a preview; add `dry=N` to load |
 | Work on a screen | `node common/door/mis.js kind=PR_Patient` | a list you move in with the keys; `+` adds, Enter edits |
 | As another role | add `role=102` to a line | what that role may see and do |
+| Give a table the document columns | `d 'ninja.workflow table=PR_Visit'` | a status on every visit (`DR`), old and new |
+| Work in another window | add `window=<name or id>` to `mis.new`, `mis.update` or `mis.delete` | the fields of that window's tab, for a table shown in two windows |
 
-A workbook of your own: copy the practice file, change the rows of `2_RO_ModelMaker` to your tables (a prefix of your own, such as `MY_`, keeps them apart from the tables that are already there), and run `ninja.exec` on it with `dry=Y` first. The lines of this table are the verbs shown run in the sections above; the table itself is not re-run by this page's test, the grey blocks are.
+A workbook of your own: copy the practice file, change the rows of `2_RO_ModelMaker` to your tables (a prefix of your own, such as `MY_`, keeps them apart from the tables that are already there; a name the system already has is reused, not made twice), and run `ninja.exec` on it with `dry=Y` first. The lines of this table are the verbs shown run in the sections above; the table itself is not re-run by this page's test, the grey blocks are.
 
 ## Work at the terminal: `mis.js`
 
@@ -1010,13 +1041,14 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `mis.read` | Read an ERP record | `kind`, `id` (optional), `number` (optional), `role` (optional) | read | human, ai | a bim-ootb checkout |
 | `mis.list` | List records | `kind`, `columns` (optional), `sort` (optional), `limit` (optional), `offset` (optional), `names` (optional), `role` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
 | `mis.sum` | Add up a column | `kind`, `column`, `role` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
-| `mis.group` | Count by a column | `kind`, `by`, `role` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
-| `mis.new` | Create a record | `kind`, `dry` (optional), `role` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
-| `mis.update` | Change a record | `kind`, `id` (optional), `number` (optional), `role` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
-| `mis.delete` | Delete a record | `kind`, `id` (optional), `number` (optional), `role` (optional) | writes | human, ai | a bim-ootb checkout |
+| `mis.group` | Count by a column | `kind`, `by`, `role` (optional), `window` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `mis.new` | Create a record | `kind`, `dry` (optional), `role` (optional), `window` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
+| `mis.update` | Change a record | `kind`, `id` (optional), `number` (optional), `role` (optional), `window` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
+| `mis.delete` | Delete a record | `kind`, `id` (optional), `number` (optional), `role` (optional), `window` (optional) | writes | human, ai | a bim-ootb checkout |
 | `mis.load` | Load records from a CSV | `kind`, `file`, `dry` (optional) | writes | human, ai | a bim-ootb checkout |
 | `mis.add_window` | Add a window from a CSV | `file`, `table` (optional), `workflow` (optional), `dry` (optional), `master` (optional) | writes | human, ai | a bim-ootb checkout |
 | `ninja.exec` | Run a Ninja workbook | `file`, `dry` (optional), `data` (optional) | writes | human, ai | a bim-ootb checkout |
+| `ninja.workflow` | Give a table the document columns | `table`, `dry` (optional) | writes | human, ai | a bim-ootb checkout |
 | `erp.column` | Who fills a column: twin and legacy side by side (old name of mis.column) | `kind`, `column` | read | human, ai | a bim-ootb checkout |
 | `erp.compare` | Compare one record on the twin and on legacy (old name of legacy.compare) | `kind`, `number`, `legacy` (optional) | read | human, ai | a bim-ootb checkout |
 | `erp.pack` | Make the 2Pack zip from a data-model workbook (old name of mis.pack) | `book`, `version`, `out` (optional), `java` (optional), `package` (optional) | writes | human, ai | a bim-ootb checkout |
@@ -1025,11 +1057,11 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `erp.read` | Read an ERP record (old name of mis.read) | `kind`, `id` (optional), `number` (optional), `role` (optional) | read | human, ai | a bim-ootb checkout |
 | `erp.list` | List records (old name of mis.list) | `kind`, `columns` (optional), `sort` (optional), `limit` (optional), `offset` (optional), `names` (optional), `role` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
 | `erp.sum` | Add up a column (old name of mis.sum) | `kind`, `column`, `role` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
-| `erp.group` | Count by a column (old name of mis.group) | `kind`, `by`, `role` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
-| `erp.new` | Create a record (old name of mis.new) | `kind`, `dry` (optional), `role` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
+| `erp.group` | Count by a column (old name of mis.group) | `kind`, `by`, `role` (optional), `window` (optional), further `column=value` filters (optional) | read | human, ai | a bim-ootb checkout |
+| `erp.new` | Create a record (old name of mis.new) | `kind`, `dry` (optional), `role` (optional), `window` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
 <!-- /GEN:verbs -->
 
-**Coverage today.** The list is small on purpose: 48 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 6 ERP verbs for a document's life and 12 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.
+**Coverage today.** The list is small on purpose: 49 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 6 ERP verbs for a document's life and 12 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.
 
 ## What is not checked
 
