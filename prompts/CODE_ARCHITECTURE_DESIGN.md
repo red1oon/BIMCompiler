@@ -21,7 +21,7 @@ matured."* → from here the lane continues in ordinary (non-Fable) sessions. Th
 holds the evidence, and the sections now live in the archive (START HERE 7). Nothing below is owed from memory: if a line here and a
 `§` section disagree, the section wins.
 
-**1. A-2 and A-3 ANSWERED 2026-11-14 (see Part A DECISIONS); next is A-4.** (Old text kept below for the wording.) The last message put this to the owner; ask it again, on its own:
+**1. A-2, A-3, A-4 ANSWERED 2026-11-14 (see Part A DECISIONS); next is A1 (build).** (Old text kept below for the wording.) The last message put this to the owner; ask it again, on its own:
 > Today the ERP code gets "now" and "today" from three objects that do not know about each other: the login context the callouts use
 > (it carries legacy's own `#Date`), the transaction's `env` (22 files read it), and the fixed-time object used when a company is born.
 > Which becomes the one source the core files ask? **Option 1 (recommended): extend the login context**, the other two become views of
@@ -264,7 +264,10 @@ FAILs as it should.
 - 2026-11-14, owner, on **A-3** (no date injected; advice given: core fails loudly with a `§` line, never falls back to the UTC day): *"Agreed"*.
   → **A-3 = core never falls back; a missing date fails loudly (`§` line). The EDGE records the session's local calendar day + instant + timezone
   offset in `SESSION_START` (the proposal in item 3 above, adds a field at `erp/kernel_ops.js:941`) and `today()` reads that day.** Settles bim-ootb
-  **#2996** (fix lands with A2; `erp/ws_kernel.js` is the ERP lane's file: ask that lane first). A-4 asked next.
+  **#2996** (fix lands with A2; `erp/ws_kernel.js` is the ERP lane's file: ask that lane first). A-4 answered below.
+- 2026-11-14, owner, on **A-4** (timing reads; advice given: Option 1, `Env.elapsed()`): standing delegation *"On question, advice me as u know better."*,
+  then *"continue what is pending"*. → **A-4 = Env.elapsed(); `performance.now()`/`Date.now()` are banned in core even inside a `§` call**, so
+  W-CORE-PURE stays a plain call ban with no data-flow analysis. All of Part A's decisions are now answered: A1, A2, A3 may proceed.
 
 ---
 
