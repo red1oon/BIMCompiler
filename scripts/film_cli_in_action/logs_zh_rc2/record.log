@@ -1,0 +1,13 @@
+§FILM_CUE beat=cover t=0.000 frames=86 typing=0 answer_hold_frames=86 x1
+§FILM_CUE beat=sheet t=3.583 frames=175 typing=39 answer_hold_frames=136 x1
+§FILM_CUE beat=oneline t=10.875 frames=219 typing=55 answer_hold_frames=164 x1
+§FILM_CUE beat=create t=20.000 frames=197 typing=70 answer_hold_frames=127 x1
+§FILM_CUE beat=create2 t=28.208 frames=197 typing=80 answer_hold_frames=117 x1
+§FILM_CUE beat=update t=36.417 frames=224 typing=76 answer_hold_frames=148 x1
+§FILM_CUE beat=refuse t=45.750 frames=290 typing=70 answer_hold_frames=220 x1
+§FILM_CUE beat=load t=57.833 frames=266 typing=65 answer_hold_frames=201 x1
+§FILM_CUE beat=delete t=68.917 frames=191 typing=61 answer_hold_frames=130 x1
+§FILM_CUE beat=sum t=76.875 frames=172 typing=56 answer_hold_frames=116 x1
+§FILM_CUE beat=close t=84.042 frames=215 typing=0 answer_hold_frames=215 x1
+§FILM_KEYS typed=374 returns=9
+§FILM_DONE dur=93.000 frames=2232 planned=2232
