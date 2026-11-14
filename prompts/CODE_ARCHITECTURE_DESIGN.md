@@ -390,7 +390,7 @@ dependencies, no compile step), in `bim-ootb/devtools/vscode/`. **Install:** a d
 `vsce` runs through `npx` on the release machine only and is never a repo dependency.
 **Order inside F:** §F.4 X0 slice 1 first (APP field F12/hover, `§TAG` hover). It needs no decision and gives the most daily help. Then the
 bump prompt (after F-6). Then DEV_TOOLKIT's first slice (its §6, after its spikes S0/S2). Then the rows that wait on B/D/E.
-**OPEN DECISIONS (all of F, in reading order):** F-1 Fetch back headless or HTTP only (§F.2) · F-2 the perf budgets (§F.3) · F-3 assistant tools or
+**OPEN DECISIONS (all of F, in reading order; F-6 answered 2026-11-14, §F.20):** F-1 Fetch back headless or HTTP only (§F.2) · F-2 the perf budgets (§F.3) · F-3 assistant tools or
 the "Context for this file" command only (above) · ~~F-4 one pack or separate extensions~~ and ~~F-5 folder install or `.vsix`~~: **answered** by
 DEV_TOOLKIT §8/§10, 2026-10-06 (separate extensions in one Extension Pack; `.vsix` on GitHub Releases, folder symlink for repo developers).
 The 2026-11-13 draft listed them as open, and the first vetting pass even proposed "folder only", against §10. Corrected under #604 · F-6 "bump on save" automatic or a prompt?
@@ -1098,9 +1098,9 @@ Owner, 2026-11-14: *"Implement the MCP or Claude Code role in the VSC since it i
   `spec`), the corrected PHANTOM step (picture kept, with a dated note; a true phantom named), `context_for_file`, and "Seeing what a session
   uses". **The docs SITE is not redeployed by this PR** (`scripts/safe_gh_deploy.sh` not run): the live guide still shows the old text. The
   PHANTOM picture `figs/x0/05_phantom.png` needs a new capture in a real VS Code (owner's go).
-- **NEXT, in order (updated at §F.19):** (1) owner decision **F-6** (bump: a quick-fix prompt, or automatic), then build it. (2) the first
-  real bake after bim-ootb #2977: read its log for the `§LOG_STAMP` line and check a lens lights up (owner's go for the bake). (3) the 11
-  untied fields (needs the parser; a Part C question). (4) Part A, step A0: the first unstarted part of the design itself, and what
+- **NEXT, in order (updated at §F.20; F-6 is answered and built):** (1) the first
+  real bake after bim-ootb #2977: read its log for the `§LOG_STAMP` line and check a lens lights up (owner's go for the bake). (2) the 11
+  untied fields (needs the parser; a Part C question). (3) Part A, step A0: the first unstarted part of the design itself, and what
   unlocks the rest of F's table. Blocked on the owner: F-1, F-2, F-7, and the token for F-12 step 2.
 
 ### §F.17 The real-VS-Code run, and what it uncovered: half the "phantoms" were live — ✅ DONE 2026-11-14 (owner: *"Go"*)
@@ -1216,6 +1216,24 @@ Taken from the Part F table as the rows that need no open decision and no part A
   - *Bump quick-fix:* waits for **F-6** (asked next). *Complete Run & Ship, budgets, preview:* wait for F-1, F-2, F-7.
   - *DEV_TOOLKIT first slice* (runtime debugging against a live tab): needs a browser run, so the owner's go.
 - **So Part F's unblocked work is now done.** What remains in F is behind an owner decision or behind parts A, B, D, E.
+
+### §F.20 One-click cache bump (F-6) — ✅ BUILT 2026-11-14 (bim-ootb #2986 / PR #2988)
+
+**DECISION F-6**, 2026-11-14, owner, to: "should the editor bump the cache version by itself, or offer it as a one-click fix that you
+accept? I recommend the one-click fix, never silent": *"go for one click"*.
+- **What it does:** a file in an app's offline-cache list that is saved (or opened), differs from `origin/main`, while that app's
+  `CACHE_VERSION` is unchanged, gets ONE warning on its first line (source *X0 Navigator*, code `x0.bump`). The quick fix offers
+  *Bump the cache version for this file* (the repo's own `scripts/bump.js <file> --write`) and *Show what the bump would change* (the dry
+  run). The palette command *X0 Navigator: Bump the cache version for this file* shows the dry run, then asks once. Nothing is written
+  without that click. `lib/ship.js`: `needsBump` (the *Check* step's rule for one file) and `bump` (runs the script, no re-implementation).
+- **Witness:** `§SHIP_PANEL … one_file_needs=Y one_file_red=Y dry_writes_nothing=Y applied=Y … verdict=PASS` (fixture: edited cached file →
+  `{app, version v7}`; dry run writes nothing; applied → `v8` and `?v=3→4`, no longer flagged, *Check* passes; red controls: the file before
+  the edit, and an edited file no cache list names, are not flagged) · `§X0_ACTIVATE … commands=8 … verdict=PASS` (two actions for X0's own
+  warning, none for another tool's) · real VS Code: `§X0_REALVSC … refs=Y bump=Y … verdict=PASS` (0 warnings before; 1 after edit and save;
+  2 quick fixes; the dry run names `CACHE_VERSION` and writes nothing; 0 once the edit is taken back). Merged; re-run on `main` @ `3499a688`: PASS.
+- **Not run:** the write action inside the real editor (it would edit `sw.js` and a page of the checkout under test); the write path is
+  witnessed on the fixture. **Not in it:** a lazy module that is not in any cache list gets no warning (it needs none: `bump.js` itself
+  only notes it); the per-app manifest (part B) would let the rule cover the lazy list too.
 
 ---
 
