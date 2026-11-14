@@ -4,11 +4,12 @@
 // the elected relation, and whether that slab is filed in the SAME task as the column. Read the log
 // after every run; it changes nothing. Owners CALLED (§I), loaded from bim-ootb origin/main via git show,
 // over the PERSISTED run.json + witness.log (PRIMAL LAW 5). Self-check: recount == playStats.midairPlayed.
-// usage: node scripts/probe_4d_column_midair.js <cacheDir> [...]
+// usage: node scripts/probe_4d_column_midair.js <cacheDir> [...]   (BIM_OOTB=~/bim-ootb, REF=origin/main)
 const fs=require('fs'),vm=require('vm'),path=require('path'),cp=require('child_process');
-const REPO=process.env.BIM_OOTB||(process.env.HOME+'/bim-ootb'); const src=f=>cp.execFileSync('git',['-C',REPO,'show','origin/main:viewer/'+f],{maxBuffer:1<<26}).toString();
+const REPO=process.env.BIM_OOTB||(process.env.HOME+'/bim-ootb'), REF=process.env.REF||'origin/main'; const src=f=>cp.execFileSync('git',['-C',REPO,'show',REF+':viewer/'+f],{maxBuffer:1<<26}).toString();
+console.log('§COL_MIDAIR_SRC judge=bim-ootb '+REF+'@'+cp.execFileSync('git',['-C',REPO,'rev-parse','--short',REF]).toString().trim());
 const ctx={console:{log(){}}}; ctx.global=ctx; ctx.window=ctx; vm.createContext(ctx);
-vm.runInContext(src('schedule_gate.js'),ctx); vm.runInContext(src('support_sweep.js'),ctx);
+vm.runInContext(src('schedule_gate.js'),ctx); vm.runInContext(src('cpm_schedule.js'),ctx); vm.runInContext(src('support_sweep.js'),ctx);   // cpm_schedule = the support-relation owner (§I.1a)
 const SG=ctx.ScheduleGate, SS=ctx.SupportSweep, EPS=SG.EPS, GAP=SG.GAP;
 const rel=(A,T)=>(A.bz<T.bz-EPS&&A.tz>=T.bz-GAP)?0:(A.bz<=T.bz+EPS&&A.tz>=T.tz-EPS)?1:2; const RN=['bearing-below','embedded','carrier-above'];
 const inc=(o,k)=>{o[k]=(o[k]||0)+1;}; const show=o=>Object.entries(o).sort((a,b)=>b[1]-a[1]).map(e=>e[0]+' '+e[1]).join(' · ')||'none';

@@ -13,7 +13,7 @@ const REPO = process.env.BIM_OOTB || path.join(process.env.HOME, 'bim-ootb'), RE
 const src = f => cp.execFileSync('git', ['-C', REPO, 'show', REF + ':viewer/' + f], { maxBuffer: 1 << 26 }).toString();
 const sha = cp.execFileSync('git', ['-C', REPO, 'rev-parse', '--short', REF]).toString().trim();
 const ctx = { console: { log() {} } }; ctx.global = ctx; ctx.window = ctx; vm.createContext(ctx);
-vm.runInContext(src('schedule_gate.js'), ctx); vm.runInContext(src('support_sweep.js'), ctx);
+vm.runInContext(src('schedule_gate.js'), ctx); vm.runInContext(src('cpm_schedule.js'), ctx); vm.runInContext(src('support_sweep.js'), ctx);   // cpm_schedule = the support-relation owner (§I.1a); support_sweep delegates to it
 const SG = ctx.ScheduleGate, SS = ctx.SupportSweep, EPS = SG.EPS, GAP = SG.GAP;
 // relation of an ALREADY-ELECTED support — the three clauses of _designatedSupport, read back, not a new test
 const rel = (A, T) => (A.bz < T.bz - EPS && A.tz >= T.bz - GAP) ? 0 : (A.bz <= T.bz + EPS && A.tz >= T.tz - EPS) ? 1 : 2;
