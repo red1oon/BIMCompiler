@@ -426,6 +426,7 @@ The largest viewer files were split in 2026-10 by a generator that keeps every s
 - **Witnesses** live in `viewer/tests/`, `erp/tests/`, `modeller/tests/`, `tests/`, `witness/` and `scripts/tests/`. Run one with
   `node <file>` (or the editor task) and **read the log**. `npm test` runs the headless suite (`tests/run_witness_suite.js`;
   browser witnesses only with `--browser`, report-only because they are timing-sensitive).
+- **What a witness is.** A plain Node script: `node erp/tests/witness_env_views.js`. No test runner, no build, no browser unless the witness drives one (those say so in their header). It works from any directory, prints `§` lines, and exits **0** on pass, **1** on fail, **2** on INCONCLUSIVE (nothing was judged). Two honest limits: the files carry a `#!/usr/bin/env node` line but are **not marked executable** (run them with `node`, not `./file`), and they are **not independent of the repo**: they `require` files in the checkout, and every witness built on `witness_kit/contract.js` needs the `ajv` package (`npm install` once). A film or a demo that shows the command shows only the lines that matter; a real run prints more and can take minutes.
 - **New witness:** start from `witness_kit/contract.js` and the example
   `viewer/tests/witness_tm_schedule_output_of_truth.js`. Name the issue. Make it able to print FAIL and INCONCLUSIVE. Add a
   red control (a case that must fail) so you know it can.
