@@ -3467,7 +3467,8 @@
 </style>
 
 <p>A hands-on test script for the testers of the pilot client (Sysnova). Each step says what to <strong>do</strong>, what you should <strong>see</strong>, and has a box to tick.
-Work top to bottom: every chapter uses what the one before produced. Write anything that differs on the <strong>Notes</strong> line at the end of each chapter.</p>
+<strong>A value is affirmed at its source, not trusted.</strong> Wherever a step gives a number, it also says <strong>Source:</strong> where the number is kept (a record, a field, a formula) and what to open to see it there. Open that source, read the value yourself, and tick <em>Pass</em> only if it matches. A figure on the dashboard is never the evidence: the rows behind it are.</p>
+<p>Work top to bottom: every chapter uses what the one before produced. Write anything that differs on the <strong>Notes</strong> line at the end of each chapter.</p>
 <p>Dates in the test data are set for <strong>13 November 2026</strong>. Testing well after that day still works, but the colours on the dashboard (on time, late, over budget) drift with the calendar.</p>
 <p><strong>What you need</strong></p>
 <table>
@@ -3736,13 +3737,13 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tr>
 <td>A3.2</td>
 <td>Open the <strong>Project</strong> window, search Value <code>TD_%</code></td>
-<td>12 projects, for example <em>TD_RIVERSIDE – Riverside Tower (test data)</em></td>
+<td>12 projects, for example <em>TD_RIVERSIDE – Riverside Tower (test data)</em> <strong>Source:</strong> the pack file itself holds 12 <code>C_Project</code> records; the window’s record count (status bar) is the count in your database</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>A3.3</td>
 <td>Open <em>TD_RIVERSIDE</em>, tab <strong>Phase</strong></td>
-<td>5 phases with dates; the first 3 are ticked <strong>Complete</strong></td>
+<td>5 phases with dates; the first 3 are ticked <strong>Complete</strong> <strong>Source:</strong> the <strong>Phase</strong> tab’s own <em>Complete</em> tick boxes (the pack set them); count them yourself</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -3786,7 +3787,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tr>
 <td>A4.2</td>
 <td><strong>Product</strong> window: search Value <code>PWD-%</code>, then open <em>PWD-04.2 Brick masonry</em></td>
-<td>10 products in category <em>Construction</em>. <em>PWD-04.2</em>: unit <strong>M3</strong>, stocked, price <strong>68.1167</strong> on the <em>Purchase</em> price list (tab <strong>Price</strong>; 8,174 BDT ÷ 120), and a <strong>Standard</strong> cost of 68.1167 (tab <strong>Costs</strong>)</td>
+<td>10 products in category <em>Construction</em>. <em>PWD-04.2</em>: unit <strong>M3</strong>, stocked, price <strong>68.1167</strong> on the <em>Purchase</em> price list (tab <strong>Price</strong>; 8,174 BDT ÷ 120), and a <strong>Standard</strong> cost of 68.1167 (tab <strong>Costs</strong>) <strong>Source:</strong> the product’s <strong>Description</strong> field names it: <em>PWD SoR 2022 item 04.2, page …, 8174 BDT/M3 = 68.1167 USD at 120</em>. That is the Public Works Department Schedule of Rates item; read the rate and the item number there and divide by 120 yourself</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -3944,7 +3945,19 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tr>
 <td>B2.2</td>
 <td>Read the top of the <strong>Drawing metadata</strong> panel</td>
-<td>The green badge reads <strong>Qualifies</strong></td>
+<td>The green badge reads <strong>Qualifies</strong>. Under it a line reads <strong>MISSING SHEETS · no list … INCONCLUSIVE</strong>: that is expected, because these nine files carry no list of the sheets a set should have, so the Modeller cannot count missing ones; it does not stop <strong>Convert</strong>. The <strong>SHEETS</strong> list shows each sheet with its role: three <strong>PLAN</strong>, four <strong>ELEV</strong>, one <strong>SECTION</strong>, one <strong>NOTES</strong></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B2.2b</td>
+<td>Below the sheets, find the yellow block <strong>ALL DEFAULTS</strong>. It says <strong>14 yellow in 1 group</strong>. Click the <strong>▸</strong> on the group to open it, and read the 14 rows. Each row is one setting the Modeller applied because the drawings do not state it: its name and value (for example <em>building.type = General</em>, <em>fan.blades = 4</em>, <em>bodies.pair_max_width = 0.5</em>), then a sentence saying what it does. Click a row to see its evidence on the sheet. To see a whole sheet with its markings drawn on it, press <strong>Sheet</strong> on the sheet’s card; <strong>Esc</strong> (or the ✕) closes it</td>
+<td>You have read all 14 rows and agree with each value for <strong>your</strong> shed. Look hardest at the rows that end in <strong>[guess]</strong>: <em>fan.depth 0.3</em>, <em>fan.housing_wall 0.02</em>, <em>net.thickness 0.005</em> and <em>section.spacing = column pitch</em> are the Modeller’s assumptions, not something your drawings say. Write any value you do not accept on the <strong>Notes</strong> line. <strong>Source:</strong> each row names its own source in its sentence; the drawing is the evidence you click</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B2.2c</td>
+<td>Press <strong>Accept all</strong> (the button above the group; no key is needed)</td>
+<td>The yellow count falls from <strong>14</strong> to <strong>3</strong>. The three that stay listed are <em>panel.thickness_inherited = 35</em>, <em>section.bar.size = 7 bars</em> and <em>section.plate.thickness</em>: they are inferred from the geometry and the panel says the defaults stay applied and <strong>Convert is not held up by them</strong>. The <strong>✓ Keep this value</strong> button at the right of each of them does not clear them (measured with these nine sheets). The badge stays <strong>Qualifies</strong></td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -4304,7 +4317,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tr>
 <td>C1.1</td>
 <td><strong>Purchase Order</strong> window, <strong>New</strong>. Header: <strong>Business Partner</strong> <em>Seed Farm Inc.</em> (or any vendor), <strong>Price List</strong> <em>Purchase</em>, <strong>Warehouse</strong> <em>HQ Warehouse</em>, <strong>Project</strong> the test project (the field sits in the header). Save. Tab <strong>PO Line</strong>, <strong>New</strong>: <strong>Product</strong> the table's product, <strong>Quantity</strong> from the table; leave the price as the price list gives it. Save</td>
-<td>The line price is the product's standard cost (for example 68.1167 for <em>PWD-04.2</em>). The order's <strong>Total Lines</strong> = quantity × price (for example 29 × 68.1167 = 1,975.38) and <strong>Grand Total</strong> is the same (the tax rate is 0)</td>
+<td>The line price is the product's standard cost (for example 68.1167 for <em>PWD-04.2</em>). The order's <strong>Total Lines</strong> = quantity × price (for example 29 × 68.1167 = 1,975.38) and <strong>Grand Total</strong> is the same (the tax rate is 0). <strong>Source:</strong> the price is the product’s <strong>Price</strong> tab, <em>Purchase</em> list (A4.2); multiply it by the quantity yourself</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -4393,7 +4406,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tr>
 <td>C4.4</td>
 <td>Back in the <strong>Project</strong> window, look at <strong>Project Balance</strong> in the header</td>
-<td>It rose by <em>quantity × standard cost</em>: <em>TD_RIVERSIDE</em> 3 × 68.1167 = <strong>204.35</strong>, <em>TD_BRIDGE</em> 5 × 115.525 = <strong>577.63</strong>, <em>TD_DATAHALL</em> 178 × 1.075 = <strong>191.35</strong>. A project that issues nothing stays at 0</td>
+<td>It rose by <em>quantity × standard cost</em>: <em>TD_RIVERSIDE</em> 3 × 68.1167 = <strong>204.35</strong>, <em>TD_BRIDGE</em> 5 × 115.525 = <strong>577.63</strong>, <em>TD_DATAHALL</em> 178 × 1.075 = <strong>191.35</strong>. A project that issues nothing stays at 0 <strong>Source:</strong> the quantity is on the issue line (C4.3) and the cost is the product’s <strong>Standard</strong> cost on its <strong>Costs</strong> tab; multiply them yourself and compare with <strong>Project Balance</strong></td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
@@ -4438,31 +4451,31 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tr>
 <td>D1</td>
 <td>Read <strong>Total Projects</strong> and <strong>Active Projects</strong></td>
-<td><strong>14</strong> and <strong>14</strong> on a fresh GardenWorld: the 12 test projects plus GardenWorld's own <em>Standard</em> and <em>Landscape</em> (plus any of your own)</td>
+<td><strong>14</strong> and <strong>14</strong> on a fresh GardenWorld: the 12 test projects plus GardenWorld's own <em>Standard</em> and <em>Landscape</em> (plus any of your own). <strong>Step into the source:</strong> click the number: the side panel lists the projects behind it, and its row count is the figure. <strong>ƒ formula</strong> under the tile shows the measure (D7)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>D2</td>
 <td>Read <strong>Approved Budget</strong></td>
-<td>The sum of the planned amounts, per currency: <strong>USD 4,667.80</strong> (the 12 test projects 4,067.80 plus <em>Landscape</em> 600.00)</td>
+<td>The sum of the planned amounts, per currency: <strong>USD 4,667.80</strong> (the 12 test projects 4,067.80 plus <em>Landscape</em> 600.00). <strong>Step into the source:</strong> click the number; add the <strong>Approved</strong> column of the panel yourself. Press <strong>ERP ↗</strong> on a project: iDempiere’s <strong>Project</strong> window shows the same figure in <strong>Planned Amount</strong>, and it equals the sum of <strong>Planned Amount</strong> on the <strong>Phase</strong> tab</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>D2b</td>
 <td>Read the <strong>Budget</strong> tile (Within / Over / Not started)</td>
-<td><strong>Over</strong> lists <em>TD_CARPARK</em> (Spent 457.59 against a plan of 330.00) and <em>TD_DATAHALL</em> (191.35 against 181.50), plus GardenWorld’s own <em>Standard</em> project if it is still there; the other 7 projects with issues are <strong>Within</strong>; <strong>Not started</strong> is 4: <em>TD_OFFICE</em>, <em>TD_SUBSTATION</em>, <em>TD_WAREHOUSE</em> and GardenWorld’s <em>Landscape</em>. The three counts read <strong>Within 7, Over 3, Not started 4</strong></td>
+<td><strong>Over</strong> lists <em>TD_CARPARK</em> (Spent 457.59 against a plan of 330.00) and <em>TD_DATAHALL</em> (191.35 against 181.50), plus GardenWorld’s own <em>Standard</em> project if it is still there; the other 7 projects with issues are <strong>Within</strong>; <strong>Not started</strong> is 4: <em>TD_OFFICE</em>, <em>TD_SUBSTATION</em>, <em>TD_WAREHOUSE</em> and GardenWorld’s <em>Landscape</em>. The three counts read <strong>Within 7, Over 3, Not started 4</strong> <strong>Step into the source:</strong> click <strong>Total Projects</strong> and read each project’s <strong>Spent</strong>, <strong>Approved</strong> and <strong>Budget</strong> columns: <em>Over</em> is Spent above Approved, <em>Not started</em> is Spent 0</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>D3</td>
 <td>Read <strong>Actual Cost</strong> (Spent)</td>
-<td>It rose by what you issued in C4: <strong>2,020.45</strong> over the 12 test projects. With GardenWorld’s own <em>Standard</em> project (137.70) the tile reads <strong>USD 2,158.15</strong>, <strong>46 %</strong> of plan</td>
+<td>It rose by what you issued in C4: <strong>2,020.45</strong> over the 12 test projects. With GardenWorld’s own <em>Standard</em> project (137.70) the tile reads <strong>USD 2,158.15</strong>, <strong>46 %</strong> of plan. <strong>Step into the source:</strong> click the number and add the <strong>Spent</strong> column; each project’s <strong>Spent</strong> is <strong>Project Balance</strong> in iDempiere’s <strong>Project</strong> window (C4.4)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>D4</td>
 <td>Open <strong>Procurement Risks</strong> in the left menu. Then open a test project's page (D5) and its <strong>Procurement</strong> tab</td>
-<td>Left menu: <em>Open purchase orders</em> = the 5 you left Drafted, <strong>USD 6,738.39</strong> in total. Project page: the <strong>Supply chain</strong> card shows that project's order at the stage you took it to (<em>TD_SUBSTATION</em> Ordered, <em>TD_DATAHALL</em> Received, <em>TD_BRIDGE</em> Invoiced, <em>TD_RIVERSIDE</em> and <em>TD_SCHOOL</em> Paid) and lists its receipt, invoice and payment</td>
+<td>Left menu: <em>Open purchase orders</em> = the 5 you left Drafted, <strong>USD 6,738.39</strong> in total. Project page: the <strong>Supply chain</strong> card shows that project's order at the stage you took it to (<em>TD_SUBSTATION</em> Ordered, <em>TD_DATAHALL</em> Received, <em>TD_BRIDGE</em> Invoiced, <em>TD_RIVERSIDE</em> and <em>TD_SCHOOL</em> Paid) and lists its receipt, invoice and payment <strong>Step into the source:</strong> each document number in the Supply chain card is a record number: open that receipt, invoice or payment in iDempiere (<strong>Material Receipt</strong>, <strong>Purchase Invoice and Credit/Debit Note</strong>, <strong>Payment and Receipt</strong>) and read its status and amount</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -4474,7 +4487,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tr>
 <td>D6</td>
 <td>On the project page of <em>TD_RIVERSIDE</em>, open the tabs</td>
-<td>Overview: Approved <strong>371.25</strong>, 5 phases. The Schedule tab draws the 5 phase bars with the pack’s dates, the first 3 <em>Complete</em></td>
+<td>Overview: Approved <strong>371.25</strong>, 5 phases. The Schedule tab draws the 5 phase bars with the pack’s dates, the first 3 <em>Complete</em> <strong>Source:</strong> the project’s <strong>Phase</strong> tab in iDempiere (<em>Planned Amount</em>, start and end dates, <em>Complete</em>); read them there and compare</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -4530,7 +4543,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <td>B · BIM</td>
 <td></td>
 <td></td>
-<td>/ 23</td>
+<td>/ 25</td>
 <td></td>
 </tr>
 <tr>
