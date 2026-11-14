@@ -8,8 +8,10 @@ const fs = require('fs'), path = require('path'), os = require('os'), http = req
 const OOTB = process.env.OOTB;
 if (!OOTB || !/GRID_BREAK/.test(fs.readFileSync(path.join(OOTB, 'common/door/erp_cli.js'), 'utf8'))) { console.error('§FACTS_FAIL set OOTB to a bim-ootb checkout at main that has the grid-flag fix (#2998)'); process.exit(2); }
 const puppeteer = require(process.env.PUPPETEER_PATH || path.join(os.homedir(), 'bim-compiler', 'node_modules', 'puppeteer'));
-const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cia_')), OUT = path.join(__dirname, 'out'), ERP = path.join(OUT, 'erp'); fs.mkdirSync(ERP, { recursive: true });
+const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cia_')), OUT = path.join(__dirname, process.env.OUTD || 'out'), ERP = path.join(OUT, 'erp'); fs.mkdirSync(ERP, { recursive: true });
 process.env.BIM_OBJECT_OPLOG = path.join(dir, 'ops.jsonl'); process.env.ERP_OPIMAGE = 'off'; process.chdir(dir);   // the lines read their files from the folder they are run from
+const LANGC = { en: 'en_US', zh: 'zh_CN', th: 'th_TH' }[process.env.FILM_LANG || 'en'];
+let NAMEPOS = 0; try { const e = require('./out/facts.json'); NAMEPOS = e.states.s2.head.indexOf('Name'); } catch (x) { /* English run: 'Name' is found by its text */ }   // check P: a translated header is read at the English run's position of Name
 const L = (m) => console.log('§FACTS ' + m);
 const out = { made: new Date().toISOString(), ootb: spawnSync('git', ['-C', OOTB, 'rev-parse', '--short', 'HEAD'], { encoding: 'utf8' }).stdout.trim(), lines: {}, states: {} };
 const { createDoor } = require(path.join(OOTB, 'common/door/door.js')), E = require(path.join(OOTB, 'common/door/erp_cli.js'));
@@ -26,18 +28,19 @@ async function state(id, win, note) {   // the door's database now -> a file -> 
   const w = process.stderr.write; process.stderr.write = () => true; let O; try { O = await E.boot({}); } finally { process.stderr.write = w; }
   const file = 'film_' + (++nImg) + '.db'; fs.writeFileSync(path.join(dir, file), Buffer.from(O.db.export()));
   const pg = await browser.newPage(); await pg.setViewport(VIEW); const errs = []; pg.on('pageerror', e => errs.push(String(e.message).slice(0, 160)));
-  await pg.goto('http://localhost:' + srv.address().port + '/erp/idempiere.html?lang=en_US&seed=' + file + '&login=101' + (win ? '&window=' + win : ''), { waitUntil: 'networkidle0', timeout: 120000 });
+  await pg.goto('http://localhost:' + srv.address().port + '/erp/idempiere.html?lang=' + LANGC + '&seed=' + file + '&login=101' + (win ? '&window=' + win : ''), { waitUntil: 'networkidle0', timeout: 120000 });
   await pg.waitForFunction(() => document.querySelector('#idmp-tree') && document.querySelector('#idmp-tree').children.length > 0, { timeout: 60000 });
   if (win) await pg.waitForFunction(() => /Record \d+ of \d+|No records|0 of 0/i.test(document.body.innerText) || document.querySelectorAll('table th').length > 2, { timeout: 60000 }).catch(() => {});
   await new Promise(r => setTimeout(r, 1500));
+  const sc = await pg.evaluate((lg) => { const t = (document.querySelector('#idmp-tree') || document.body).innerText, re = lg === 'zh_CN' ? /[\u4e00-\u9fff]/g : lg === 'th_TH' ? /[\u0e00-\u0e7f]/g : /[a-z]/gi; return { chars: (t.match(re) || []).length, sample: t.split('\n').filter(x => x.trim()).slice(0, 12).join(' / ').slice(0, 220) }; }, LANGC);
   const dom = await pg.evaluate(() => { const tb = Array.from(document.querySelectorAll('table')).filter(t => t.querySelectorAll('th').length > 2)[0]; if (!tb) return { grid: false, who: (document.body.innerText.match(/GardenWorld[^\n]*/) || [''])[0] };
     const head = Array.from(tb.querySelectorAll('th')).map(x => x.innerText.trim()).filter(Boolean), rows = Array.from(tb.querySelectorAll('tbody tr')).map(tr => Array.from(tr.querySelectorAll('td')).map(td => td.innerText.trim())).filter(r => r.join('').length > 0);
     return { grid: true, head, rows, who: (document.body.innerText.match(/GardenWorld[^\n]*/) || [''])[0], status: (document.body.innerText.match(/Record \d+ of \d+/) || [''])[0] }; });
   await pg.screenshot({ path: path.join(ERP, id + '.png') }); await pg.close();
-  const st = { file: 'erp/' + id + '.png', window: win || null, note, pageErrors: errs, who: dom.who, grid: dom.grid, head: dom.head || [], status: dom.status || '' };
-  if (dom.grid) { const ni = dom.head.indexOf('Name'), off = dom.rows.length && dom.rows[0].length > dom.head.length ? dom.rows[0].length - dom.head.length : 0; st.names = dom.rows.map(r => r[ni + off]).filter(x => x != null); st.rows = st.names.length; st.cells = dom.rows.map(r => r.slice(off)); }
+  const st = { file: 'erp/' + id + '.png', window: win || null, note, pageErrors: errs, who: dom.who, grid: dom.grid, scriptChars: sc.chars, head: dom.head || [], status: dom.status || '' };
+  if (dom.grid) { const ni = dom.head.indexOf('Name') >= 0 ? dom.head.indexOf('Name') : NAMEPOS, off = dom.rows.length && dom.rows[0].length > dom.head.length ? dom.rows[0].length - dom.head.length : 0; st.names = dom.rows.map(r => r[ni + off]).filter(x => x != null); st.rows = st.names.length; st.cells = dom.rows.map(r => r.slice(off)); }
   if (win) { const j = await createDoor({}).runLine('mis.list kind=' + K + ' columns=Name limit=50', { actor: 'human' }); st.door = j.status === 'ok' ? j.answer.rows.map(r => r.Name) : []; st.same = dom.grid && JSON.stringify(st.names.slice().sort()) === JSON.stringify(st.door.slice().sort()); }
-  out.states[id] = st; L('state ' + id + ' window=' + (win || '-') + ' grid=' + dom.grid + (dom.grid ? ' head=' + dom.head.join('|') + ' rows=' + st.rows + ' names=' + st.names.join(',') : '') + (win ? ' door=' + st.door.join(',') + ' same=' + st.same : '') + ' page_errors=' + errs.length + ' who="' + dom.who + '"');
+  out.states[id] = st; L('state ' + id + ' window=' + (win || '-') + ' grid=' + dom.grid + (dom.grid ? ' head=' + dom.head.join('|') + ' rows=' + st.rows + ' names=' + st.names.join(',') : '') + (win ? ' door=' + st.door.join(',') + ' same=' + st.same : '') + ' page_chars_in_' + LANGC + '=' + sc.chars + ' sample="' + sc.sample + '" page_errors=' + errs.length + ' who="' + dom.who + '"');
   return st;
 }
 (async () => {
@@ -62,10 +65,10 @@ async function state(id, win, note) {   // the door's database now -> a file -> 
   await browser.close(); srv.close();
   // check P: every state with a window shows in its grid exactly the names the door lists on the same data; the page reported no error
   const withWin = Object.keys(out.states).filter(k => out.states[k].window), same = withWin.filter(k => out.states[k].same), errs = Object.keys(out.states).reduce((n, k) => n + out.states[k].pageErrors.length, 0), noGrid = withWin.filter(k => !out.states[k].grid);
-  out.pane = { states: withWin.length, same: same.length, pageErrors: errs, noGrid };
+  const noLang = Object.keys(out.states).filter(k => out.states[k].scriptChars === 0); out.pane = { noLang, states: withWin.length, same: same.length, pageErrors: errs, noGrid };
   ['s1', 's2', 's3', 's4', 's6', 's7'].forEach(k => { out[k] = { rows: out.states[k].rows }; });
   fs.writeFileSync(path.join(OUT, 'facts.json'), JSON.stringify(out, null, 1));
-  const verdict = !withWin.length ? 'INCONCLUSIVE' : (noGrid.length ? 'INCONCLUSIVE' : (same.length === withWin.length && errs === 0 ? 'PASS' : 'FAIL'));
+  const verdict = !withWin.length ? 'INCONCLUSIVE' : (noGrid.length || noLang.length ? 'INCONCLUSIVE' : (same.length === withWin.length && errs === 0 ? 'PASS' : 'FAIL'));
   L('PANE_VERDICT ' + verdict + ' the grid of the page names the same rows as the door on ' + same.length + ' of ' + withWin.length + ' states; page_errors=' + errs + (noGrid.length ? ' no grid on: ' + noGrid.join(',') : ''));
   L('wrote out/facts.json add.ops=' + out.add.ops + ' gridColumns=' + out.add.gridColumns + ' rows s1..s7=' + ['s1', 's2', 's3', 's4', 's6', 's7'].map(k => out[k].rows).join('/') + ' update.shown=' + out.update.shown + ' refuse.valid=' + out.refuse.valid.join('/') + ' load=' + out.load.loaded + '/' + out.load.rows + ' sum=' + out.sum.sum + ' over ' + out.sum.n);
   if (verdict !== 'PASS') process.exit(verdict === 'FAIL' ? 1 : 2);

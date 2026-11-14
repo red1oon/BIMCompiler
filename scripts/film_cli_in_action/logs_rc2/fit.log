@@ -1,0 +1,15 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT sheet cue=5.51 room=4.86 dur=3.95 -> DETAIL slack=+0.91 words=12
+§NARR_FIT oneline cue=13.26 room=6.07 dur=5.15 -> DETAIL slack=+0.92 words=18
+§NARR_FIT create cue=22.84 room=3.49 dur=2.60 -> DETAIL slack=+0.89 words=10
+§NARR_FIT create2 cue=30.26 room=3.27 dur=2.39 -> DETAIL slack=+0.88 words=6
+§NARR_FIT update cue=37.30 room=4.78 dur=3.88 -> DETAIL slack=+0.90 words=13
+§NARR_FIT refuse cue=45.59 room=7.07 dur=6.15 -> DETAIL slack=+0.92 words=19
+§NARR_TONE refuse#0 F YN rose=5.0st endDelta=+2.8st want=rise OK "And a condition that is not on my list?"
+§NARR_FIT load cue=55.97 room=5.02 dur=4.12 -> DETAIL slack=+0.90 words=16
+§NARR_FIT delete cue=64.13 room=4.32 dur=3.41 -> DETAIL slack=+0.91 words=11
+§NARR_FIT sum cue=71.38 room=3.32 dur=2.41 -> DETAIL slack=+0.91 words=9
+§NARR_TONE sum#0 F WH rose=0st endDelta=-5.9st want=fall OK "What is it all worth?"
+§NARR_FIT close cue=75.30 room=7.90 dur=7.01 -> DETAIL slack=+0.89 words=23
