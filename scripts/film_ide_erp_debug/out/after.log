@@ -1,0 +1,16 @@
+§LOG_STAMP commit=f4b725f07c5d dirty=1 branch=HEAD at=2026-11-14T10:53:56.118Z cmd=node erp/tests/witness_replay_clock.js dirty_files=erp/ws_kernel.js
+  §REPLAY_CLOCK_LIVE tz=UTC clock=2026-11-10T10:00:00.000Z groups=4 ops=54 tables=22 rows=1991 steps={"order":{"ok":true,"error":null,"ops":7},"ship":{"ok":true,"error":null,"ops":29},"invoice":{"ok":true,"error":null,"ops":10},"import":{"ok":true,"error":null,"ops":8,"order":{"documentno":"A0-REPLAY-CLOCK-1","dateordered":"2026-11-10 00:00:00","dateacct":"2026-11-10 00:00:00","docstatus":"IP"}}} invoice={"documentno":"100001","dateinvoiced":"2026-11-10 00:00:00","dateacct":"2026-11-10 00:00:00","created":"2026-11-10 10:00:59"}
+  §REPLAY_CLOCK_REPLAY tz=UTC clock=2026-11-13T00:30:00.000Z invoice={"documentno":"100001","dateinvoiced":"2026-11-10 00:00:00","dateacct":"2026-11-10 00:00:00","created":"2026-11-10 10:00:59"} differing_tables=[]
+  §REPLAY_CLOCK_RERUN tz=UTC rerun={"ok":true,"error":null,"ops":10} invoice={"documentno":"100001","dateinvoiced":"2026-11-13 00:00:00","dateacct":"2026-11-13 00:00:00","created":"2026-11-13 00:30:55"} differing_tables=["ad_sequence","c_bpartner","c_invoice","c_invoiceline","c_invoicetax","c_orderline","fact_acct"]
+  §REPLAY_CLOCK_SESSION_DAY tz=UTC local_clock=2026-11-13 00:30 session_day=2026-11-13 same=Y (information: the day a NEW document would get at that moment; not judged here)
+§REPLAY_CLOCK ops=54 liveHash=99cb215d892f55c8 replayHash=99cb215d892f55c8 tz=UTC match=Y
+  §REPLAY_CLOCK_LIVE tz=Asia/Kuala_Lumpur clock=2026-11-10T02:00:00.000Z groups=4 ops=54 tables=22 rows=1991 steps={"order":{"ok":true,"error":null,"ops":7},"ship":{"ok":true,"error":null,"ops":29},"invoice":{"ok":true,"error":null,"ops":10},"import":{"ok":true,"error":null,"ops":8,"order":{"documentno":"A0-REPLAY-CLOCK-1","dateordered":"2026-11-10 00:00:00","dateacct":"2026-11-10 00:00:00","docstatus":"IP"}}} invoice={"documentno":"100001","dateinvoiced":"2026-11-10 00:00:00","dateacct":"2026-11-10 00:00:00","created":"2026-11-10 10:00:59"}
+  §REPLAY_CLOCK_REPLAY tz=Asia/Kuala_Lumpur clock=2026-11-12T16:30:00.000Z invoice={"documentno":"100001","dateinvoiced":"2026-11-10 00:00:00","dateacct":"2026-11-10 00:00:00","created":"2026-11-10 10:00:59"} differing_tables=[]
+  §REPLAY_CLOCK_RERUN tz=Asia/Kuala_Lumpur rerun={"ok":true,"error":null,"ops":10} invoice={"documentno":"100001","dateinvoiced":"2026-11-13 00:00:00","dateacct":"2026-11-13 00:00:00","created":"2026-11-13 00:30:55"} differing_tables=["ad_sequence","c_bpartner","c_invoice","c_invoiceline","c_invoicetax","c_orderline","fact_acct"]
+  §REPLAY_CLOCK_SESSION_DAY tz=Asia/Kuala_Lumpur local_clock=2026-11-13 00:30 session_day=2026-11-13 same=Y (information: the day a NEW document would get at that moment; not judged here)
+§REPLAY_CLOCK ops=54 liveHash=e81778473503f343 replayHash=e81778473503f343 tz=Asia/Kuala_Lumpur match=Y
+  PASS population-nonempty (2 rows)
+  PASS schema-valid (all 2 rows)
+  PASS the replay on a later day gives the same rows as the live run, in every time zone
+  PASS redControl-detected (witness can fail)
+§WITNESS_REPLAY_CLOCK pass=4 fail=0 ran=2

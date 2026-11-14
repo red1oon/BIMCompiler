@@ -1,0 +1,26 @@
+§FILM_GUARD OK   wrong says "half past midnight" <- clock.time expected 00:30 got 00:30
+§FILM_GUARD OK   wrong says "the thirteenth" <- clock.localDay expected 2026-11-13 got 2026-11-13
+§FILM_GUARD OK   wrong says "the twelfth" <- old.invoiceDay expected 2026-11-12 got 2026-11-12
+§FILM_GUARD OK   hover says "names the spec" <- hover.names_spec expected Y got Y
+§FILM_GUARD OK   hover says "the line that prints it" <- hover.names_printer expected Y got Y
+§FILM_GUARD OK   find says "seventy-nine" <- def.line expected 79 got 79
+§FILM_GUARD OK   find says "U T C string" <- old.next_line_utc expected Y got Y
+§FILM_GUARD OK   fix says "thirty" <- typed.0 expected 30 got 30
+§FILM_GUARD OK   fix says "thirty-nine" <- typed.1 expected 39 got 39
+§FILM_GUARD OK   proof says "both zones say same" <- after.same_y expected 2 got 2
+§FILM_GUARD OK   proof says "the thirteenth" <- new.invoiceDay expected 2026-11-13 got 2026-11-13
+§FILM_GUARD OK   close says "two lines in" <- diff.ins expected 2 got 2
+§FILM_GUARD OK   close says "two out" <- diff.del expected 2 got 2
+§FILM_GUARD OK   close says "section five point six" <- guide.section expected 5.6 got 5.6
+§FILM_GUARD OK   before: the Kuala Lumpur line says same=N and the UTC line same=Y
+§FILM_GUARD OK   after: both lines say same=Y and the witness passes
+§FILM_GUARD OK   the typed text is in the file and the old text is gone
+§FILM_GUARD OK   the typed fix is the size of the merged fix (bim-ootb #3010: +2/-2)
+§FILM_GUARD OK   no shoot step reported an error
+§FILM_GUARD OK   facts.js verdict PASS (page == kernel row, OLD = UTC day, NEW = local day)
+§FILM_GUARD OK   every still the cards need exists
+§FILM_GUARD OK   the page pictures exist
+§FILM_GUARD OK   not said: the add-on shows no last value for this tag
+§FILM_GUARD OK   not said: the page is opened on data written earlier, not linked live
+§FILM_GUARD OK   not said: the witness line is information, not a failed test
+§FILM_GUARD VERDICT PASS
