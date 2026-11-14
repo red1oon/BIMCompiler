@@ -1,3 +1,26 @@
+# ▶ RESUME 4D — START HERE (the owner types **"resume 4D"**; this block is the whole hand-over, 2026-11-14)
+
+**Job:** end the hanging beams and columns in the Time Machine build-up. The rules are reviewed, the
+numbers are measured, the five decisions (D1–D5) are MADE. **Implement; do not re-ask them.**
+
+1. Read, in this file, from `origin/master`: **§E** (proxies) → **§I** (owners) → **§Q.1–§Q.3** (rules,
+   numbers, gaps) → **§Q.6** (D1–D4, order of work, gates, predictions) → **§Q.7** (columns, D5).
+   Re-read §E and §I before each new measurement (CLAUDE.md PRIMAL LAW 0a).
+2. **Order of work, one `bim-ootb` PR each:** step 0 (land §I.1a, one owner for the support relation)
+   → **D2** → **D5** → **D1** → **D3** → **D4**.
+3. **Every step, before and after:** `cache_4d_run.js --force` for Hospital, Terminal, Duplex, HHS;
+   then `node scripts/probe_4d_beam_midair.js <cacheDirs>` and `node scripts/probe_4d_column_midair.js
+   <cacheDirs>` (this repo). Paste the `§BEAM_MIDAIR` / `§COL_MIDAIR` blocks into §Q.6 / §Q.7.
+4. **A red gate or a failed prediction stops that step** and goes to the owner with the log line.
+   It is never re-baselined away.
+5. **Binding rules:** bim-ootb work in a `/tmp/wt-*` worktree (`git worktree list` first); no bakes,
+   GPU or browser runs without the owner's go; agents on Sonnet; results go in §Q.6 / §Q.7 only;
+   the witness, never the owner's eyes, is the test.
+
+**Status (update this line as steps land):** step 0 ☐ · D2 ☐ · D5 ☐ · D1 ☐ · D3 ☐ · D4 ☐
+
+---
+
 # ⁇ THE QUESTION THIS FILE OPENS WITH
 
 ## **What is wrong with Claude Code in modelling the solution?**
