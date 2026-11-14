@@ -1,0 +1,10 @@
+§CARD beat=cover stills=1 overflow_px=0 (full card)
+§CARD beat=open stills=47 overflow_px=0 erp_picture=1920x537 typed=44 before=s0 after=s1
+§CARD beat=convert stills=16 overflow_px=0 erp_picture=1920x537 typed=13 before=s1 after=s2
+§CARD beat=addbay_high stills=24 overflow_px=0 erp_picture=1920x537 typed=21 before=s2 after=s3
+§CARD beat=undo stills=13 overflow_px=0 erp_picture=1920x537 typed=10 before=s3 after=s4
+§CARD beat=addbay_low stills=23 overflow_px=0 erp_picture=1920x537 typed=20 before=s4 after=s5
+§CARD beat=refuse stills=28 overflow_px=0 erp_picture=1920x537 typed=25 before=s5 after=s5
+§CARD beat=close stills=1 overflow_px=0 (full card)
+§CARD beat=priorart stills=1 overflow_px=0 (full card)
+§CARDS_DONE beats=9 stills=154 too_tall=0 key_stills=133 return_stills=6
