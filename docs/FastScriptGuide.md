@@ -774,6 +774,28 @@ reason: Complete was not done: PR Visit has the document columns but no document
 
 It does not yet say what *Complete* does on such a table: the answer's `notMade` names what is still missing, and `erp.complete` is refused in plain words until then. A table that came with the system is refused.
 
+### Undo a bundle, and write one back as a workbook: `ninja.rollback`, `ninja.export`
+
+Two lines close the loop on a workbook. `ninja.rollback bundle=<name>` switches off everything one workbook made (its windows, tabs, fields, columns, tables and menu entries, and the bundle's own menu node) in one group of the log. As in the older Ninja, a table that holds records blocks it, and it names the table and its record count; `dry=Y` says what would go off. A table that came with the system keeps itself and loses only what the bundle added to it (a tab on Business Partner goes, Business Partner stays). Run twice, the second writes nothing; `ninja.exec` on the same workbook afterwards brings the bundle back. `ninja.export` writes a bundle, a window or a table back as a workbook that `ninja.exec` reads: tables, `Master` links, columns with their types and the values of each list. Edit the sheet and run it again, or carry the model to another machine as a file. It writes the model only, never rows; a file that exists is never overwritten; one selector (`bundle=`, `window=` or `table=`) is required.
+
+<!-- run: nx_rb cut=200 -->
+```text
+$ cp common/door/samples/Ninja_Practice.xlsx . ; rm -f /tmp/fast_guide_rb.ops Practice_out.xlsx; D='BIM_OBJECT_OPLOG=/tmp/fast_guide_rb.ops node common/door/door.js --list'; eval "$D 'ninja.exec file=Ninja_Practice.xlsx data=N'" | grep -E '^ops:'; eval "$D 'ninja.export bundle=Practice file=Practice_out.xlsx'" | grep -E '^(file|lists|summary):'; eval "$D 'ninja.rollback bundle=Practice dry=Y'" | grep -E '^(dry|wouldSwitchOff):'; eval "$D 'ninja.rollback bundle=Practice'" | grep -E '^(ops|summary):'; eval "$D 'ninja.rollback bundle=Practice'" | grep -E '^(alreadyDone|ops):'; eval "$D 'ninja.export bundle=Practice file=Practice_out.xlsx'" | grep reason; rm -f Ninja_Practice.xlsx Practice_out.xlsx
+ops: 151
+file: Practice_out.xlsx
+lists: 1
+summary: wrote the model of 5 tables to Practice_out.xlsx
+dry: true
+wouldSwitchOff: 119
+ops: 119
+summary: Practice is rolled back: 119 dictionary rows switched off
+ops: 0
+alreadyDone: true
+reason: Practice_out.xlsx exists already and is never overwritten. Nothing was written
+```
+
+Not carried by the export: validation rules and callouts (the stager never wrote them into the model). A rollback switches rows off, it does not delete them, so the log keeps its history.
+
 ## Cheatsheet: practise the MIS lines
 
 Everything here is practice on **your own copy**: the first line names a file that keeps what you do, and nothing reaches a real company's books. Delete that file to start again from nothing. Run the lines from the folder that holds `common/` (a `bim-ootb` checkout).
@@ -804,6 +826,8 @@ Everything here is practice on **your own copy**: the first line names a file th
 | As another role | add `role=102` to a line | what that role may see and do |
 | Add under a table of the system | `d 'mis.new kind=PR_Referral Name=Checkup C_BPartner_ID=112'` | a referral on business partner 112 (a tab of the Business Partner window) |
 | Give a table the document columns | `d 'ninja.workflow table=PR_Visit'` | a status on every visit (`DR`), old and new |
+| Undo a workbook's bundle | `d 'ninja.rollback bundle=Practice'` | everything it made is off (blocked while a table holds records); `dry=Y` first |
+| Write a bundle back as a workbook | `d 'ninja.export bundle=Practice file=Practice_out.xlsx'` | the model, to edit and run again |
 | Work in another window | add `window=<name or id>` to `mis.new`, `mis.update` or `mis.delete` | the fields of that window's tab, for a table shown in two windows |
 
 **Speed.** After a big workbook the door keeps an image of what the op-log has made, so a later line does not apply every op again; it is used only while your op-log file still begins exactly as it did, and `ERP_OPIMAGE=off` switches it off.
@@ -1066,6 +1090,8 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `mis.add_window` | Add a window from a CSV | `file`, `table` (optional), `workflow` (optional), `dry` (optional), `master` (optional) | writes | human, ai | a bim-ootb checkout |
 | `ninja.exec` | Run a Ninja workbook | `file`, `dry` (optional), `data` (optional) | writes | human, ai | a bim-ootb checkout |
 | `ninja.workflow` | Give a table the document columns | `table`, `dry` (optional) | writes | human, ai | a bim-ootb checkout |
+| `ninja.rollback` | Undo a Ninja bundle | `bundle`, `dry` (optional) | writes | human, ai | a bim-ootb checkout |
+| `ninja.export` | Write a Ninja bundle back as a workbook | `bundle` (optional), `window` (optional), `table` (optional), `file` | writes | human, ai | a bim-ootb checkout |
 | `erp.column` | Who fills a column: twin and legacy side by side (old name of mis.column) | `kind`, `column` | read | human, ai | a bim-ootb checkout |
 | `erp.compare` | Compare one record on the twin and on legacy (old name of legacy.compare) | `kind`, `number`, `legacy` (optional) | read | human, ai | a bim-ootb checkout |
 | `erp.pack` | Make the 2Pack zip from a data-model workbook (old name of mis.pack) | `book`, `version`, `out` (optional), `java` (optional), `package` (optional) | writes | human, ai | a bim-ootb checkout |
@@ -1078,7 +1104,7 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `erp.new` | Create a record (old name of mis.new) | `kind`, `dry` (optional), `role` (optional), `window` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
 <!-- /GEN:verbs -->
 
-**Coverage today.** The list is small on purpose: 49 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 6 ERP verbs for a document's life and 12 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.
+**Coverage today.** The list is small on purpose: 51 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 6 ERP verbs for a document's life and 12 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.
 
 ## What is not checked
 
