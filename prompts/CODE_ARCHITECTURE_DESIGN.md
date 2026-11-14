@@ -60,6 +60,17 @@ Two films: `~/Videos/Editing_Real_Code_EN_AFTER_2026-11-14_v5.mp4` (the owner: i
   later. When he reports, steps 21–26 are the first time a person uses the 2026-11-14 features: what differs from the sheet is a finding.
 - **Sequel film:** his review of the cut (title, chapter names and wording are a first draft); other languages.
 
+**4b. Film 3 plan (owner, 2026-11-14: split screen, VSC above, the real ERP window below; ENGLISH ONLY for now; house style = `prompts/FILM_NARRATION.md`
+HOUSE STYLE, scripts in a new `scripts/film_ide_erp_debug/`, film never pushed).** Owner: *"Yes, and do English only for now"*, then *"The other scenarios are good so keep note for later"*.
+- **Scenario 1 (the film): "The invoice dated yesterday" = bim-ootb #2996.** 00:30 local at +08, an order shipped and invoiced; ERP window shows DateInvoiced = the 12th,
+  `§REPLAY_CLOCK_SESSION_DAY … same=N`. In VSC: hover the `§` tag, F12 on `env` to `ws_kernel.js:80` (`toISOString()` = UTC day), Find All References (the producers of "now"),
+  fix, Run local, window shows the 13th, `same=Y`. **Cannot be filmed until the A2 fix is made AND checked against the legacy oracle** (twin rule). No staged fix.
+- **Scenario 2 (later): "Replay can't lie"** = the A0 witness: replay a day's journal 3 days later, hash equal in both zones; plant a re-run of the process, the invoice date
+  moves and the hash breaks; the ERP window shows the same books before and after (red-control story).
+- **Scenario 3 (later, candidate): "A posting that won't balance"**: take a REAL posting-preview defect from the ERP lane's `§` logs (never invented), trace the red `§` line, fix, the
+  ledger below balances.
+Every number on screen comes from a `§` line. Order: A1/A2 build first, then Scenario 1.
+
 **5. Open, no owner needed, not started.**
 - **bim-ootb #2996** (the headless kernel's session day is the UTC day; `§REPLAY_CLOCK_SESSION_DAY tz=Asia/Kuala_Lumpur … same=N`). Not
   checked against the legacy oracle yet; it is `erp/ws_kernel.js`, the ERP lane's file: ask that lane before editing. Fix under A-3.
