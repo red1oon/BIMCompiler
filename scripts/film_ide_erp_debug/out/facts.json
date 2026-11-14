@@ -1,0 +1,64 @@
+{
+ "made": "2026-11-14T10:47:15.654Z",
+ "tz": "Asia/Kuala_Lumpur",
+ "commits": {
+  "old": "f4b725f0",
+  "neu": "614bb121"
+ },
+ "states": {
+  "old": {
+   "commit": "f4b725f0",
+   "localDay": "2026-11-13",
+   "utcDay": "2026-11-12",
+   "sessionDay": "2026-11-12",
+   "kernelInvoice": {
+    "c_invoice_id": 1300110,
+    "documentno": "100001",
+    "dateinvoiced": "2026-11-12 00:00:00",
+    "dateacct": "2026-11-12 00:00:00",
+    "created": "2026-11-12 16:30:06",
+    "grandtotal": 185.25,
+    "docstatus": "CO"
+   },
+   "page": {
+    "png": "out/page_old.png",
+    "docNo": "100001",
+    "dateInvoiced": "2026-11-12",
+    "dateOrdered": "2026-11-12",
+    "grandTotal": "185.25",
+    "status": "CO",
+    "errors": []
+   },
+   "same": true
+  },
+  "new": {
+   "commit": "614bb121",
+   "localDay": "2026-11-13",
+   "utcDay": "2026-11-12",
+   "sessionDay": "2026-11-13",
+   "kernelInvoice": {
+    "c_invoice_id": 1300110,
+    "documentno": "100001",
+    "dateinvoiced": "2026-11-13 00:00:00",
+    "dateacct": "2026-11-13 00:00:00",
+    "created": "2026-11-13 00:30:06",
+    "grandtotal": 185.25,
+    "docstatus": "CO"
+   },
+   "page": {
+    "png": "out/page_new.png",
+    "docNo": "100001",
+    "dateInvoiced": "2026-11-13",
+    "dateOrdered": "2026-11-13",
+    "grandTotal": "185.25",
+    "status": "CO",
+    "errors": []
+   },
+   "same": true
+  }
+ },
+ "checks": {
+  "P": true,
+  "B": true
+ }
+}

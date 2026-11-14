@@ -1,0 +1,5 @@
+§FACTS state old commit=f4b725f0 tz=Asia/Kuala_Lumpur local_clock=2026-11-13T00:30:00 sessionDay=2026-11-12 kernel_row.dateinvoiced=2026-11-12 00:00:00 kernel_row.created=2026-11-12 16:30:06 page.docNo=100001 page.dateInvoiced=2026-11-12 page.grandTotal=185.25 pageErrors=0 same=Y
+§FACTS state new commit=614bb121 tz=Asia/Kuala_Lumpur local_clock=2026-11-13T00:30:00 sessionDay=2026-11-13 kernel_row.dateinvoiced=2026-11-13 00:00:00 kernel_row.created=2026-11-13 00:30:06 page.docNo=100001 page.dateInvoiced=2026-11-13 page.grandTotal=185.25 pageErrors=0 same=Y
+§FACTS CHECK_P page == kernel row in both states: PASS
+§FACTS CHECK_B OLD invoice is on the UTC day (2026-11-12) not the local day (2026-11-13), NEW on the local day: PASS
+§FACTS VERDICT PASS
