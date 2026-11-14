@@ -211,6 +211,12 @@ prompts file, not chat-only). Brief — a reviewable strategy, not a design doc.
 6. **Open questions for red1** — one line each.
 
 
+## ▶ HOUSE STYLE FOR ALL FUTURE FILMS (owner, 2026-11-14: "make a note that all future films be made with such split screen and key effects")
+Every new film is made in the style of **CLI in Action** (`scripts/film_cli_in_action/`, prompts/FILM_COMMAND_LINE_ERP.md CH 0):
+1. **Split screen, top and bottom:** the terminal strip above, each line TYPED character by character; the real application window below, captured on the data that line produced (never a drawing; never claimed to be live-linked). No long opening explanation: cover card, then the first line is typed.
+2. **Real keyboard sounds on the typing** (real recorded presses, never synthesised: eklee / qubodup, OpenGameArt "Single Key Press Sounds", CC BY 3.0, folder `~/.local/share/film_narration/keys_eklee/`, credited on the end card): the line is typed first with only the key sounds, the voice starts after the return key. Check **K2** (`k2.py`) must PASS: no voice over the typing, key track audible.
+3. Build from `scripts/film_cli_in_action/` (copy it; `FILM_LANG=en|zh|th`, one out folder per language, the lower frame captured in that language). A film that is not about a terminal still gets the two frames and the typed-line-plus-key-sounds beat structure where a command is shown.
+
 ## ▶ PLAYBOOK — "make a narrated / dialogue film" (read this first; written 2026-10-03 after 7 films shipped)
 **What red1 likes (settled, don't re-ask):** a LIVELY two-voice DIALOGUE (F asks/reacts, M explains), not a monologue
 readout. Every pause filled where the picture allows. Questions must sound like questions (measured, §NARR_TONE).
