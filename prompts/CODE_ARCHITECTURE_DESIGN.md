@@ -21,7 +21,7 @@ matured."* → from here the lane continues in ordinary (non-Fable) sessions. Th
 holds the evidence, and the sections now live in the archive (START HERE 7). Nothing below is owed from memory: if a line here and a
 `§` section disagree, the section wins.
 
-**1. The one thing waiting: decision A-2, ASKED and NOT answered.** The last message put this to the owner; ask it again, on its own:
+**1. A-2 ANSWERED 2026-11-14 (Option 1, see Part A DECISIONS); next is A-3.** (Old text kept below for the wording.) The last message put this to the owner; ask it again, on its own:
 > Today the ERP code gets "now" and "today" from three objects that do not know about each other: the login context the callouts use
 > (it carries legacy's own `#Date`), the transaction's `env` (22 files read it), and the fixed-time object used when a company is born.
 > Which becomes the one source the core files ask? **Option 1 (recommended): extend the login context**, the other two become views of
@@ -257,6 +257,10 @@ FAILs as it should.
   `cpm_schedule.js`, `schedule_*.js` and `common/room_graph.js`; `viewer/tm_core.js` left out; `erp/kernel_ops.js` left out as the place
   that records the values): *"Yes"*. → **A-1 = that list.** Other geometry maths is not in it until the owner names files. A3's
   `W-CORE-PURE` scans exactly this list. A-2 asked next.
+- 2026-11-14, owner, on **A-2** (one source for "now"/"today"; recommendation: Option 1, extend the login context): *"U git admin, manage
+  commits question. On question, advice me as u know better."* → delegated to the recommendation (rule at the end of this file: "follow the
+  advice" is his answer). **A-2 = Option 1: the login context (carries legacy's `#Date`) is the one source; the transaction's `env` and the
+  fixed-time object used at company birth become views of it.** A1 may start. A-3 asked next.
 
 ---
 
