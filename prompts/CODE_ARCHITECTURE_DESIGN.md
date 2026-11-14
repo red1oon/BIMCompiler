@@ -21,7 +21,7 @@ matured."* → from here the lane continues in ordinary (non-Fable) sessions. Th
 holds the evidence, and the sections now live in the archive (START HERE 7). Nothing below is owed from memory: if a line here and a
 `§` section disagree, the section wins.
 
-**1. A-2 ANSWERED 2026-11-14 (Option 1, see Part A DECISIONS); next is A-3.** (Old text kept below for the wording.) The last message put this to the owner; ask it again, on its own:
+**1. A-2 and A-3 ANSWERED 2026-11-14 (see Part A DECISIONS); next is A-4.** (Old text kept below for the wording.) The last message put this to the owner; ask it again, on its own:
 > Today the ERP code gets "now" and "today" from three objects that do not know about each other: the login context the callouts use
 > (it carries legacy's own `#Date`), the transaction's `env` (22 files read it), and the fixed-time object used when a company is born.
 > Which becomes the one source the core files ask? **Option 1 (recommended): extend the login context**, the other two become views of
@@ -260,7 +260,11 @@ FAILs as it should.
 - 2026-11-14, owner, on **A-2** (one source for "now"/"today"; recommendation: Option 1, extend the login context): *"U git admin, manage
   commits question. On question, advice me as u know better."* → delegated to the recommendation (rule at the end of this file: "follow the
   advice" is his answer). **A-2 = Option 1: the login context (carries legacy's `#Date`) is the one source; the transaction's `env` and the
-  fixed-time object used at company birth become views of it.** A1 may start. A-3 asked next.
+  fixed-time object used at company birth become views of it.** A1 may start. A-3 answered below.
+- 2026-11-14, owner, on **A-3** (no date injected; advice given: core fails loudly with a `§` line, never falls back to the UTC day): *"Agreed"*.
+  → **A-3 = core never falls back; a missing date fails loudly (`§` line). The EDGE records the session's local calendar day + instant + timezone
+  offset in `SESSION_START` (the proposal in item 3 above, adds a field at `erp/kernel_ops.js:941`) and `today()` reads that day.** Settles bim-ootb
+  **#2996** (fix lands with A2; `erp/ws_kernel.js` is the ERP lane's file: ask that lane first). A-4 asked next.
 
 ---
 
