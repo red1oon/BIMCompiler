@@ -37,6 +37,24 @@ Dates in the test data are set for **13 November 2026**. Testing well after that
 
 The nine Shed sheets are the pilot client's own work, so its testers may use them. Any other drawing set goes through the same way once its sheets carry their settings (levels, datums and layer meanings), which the Modeller's **Drawing metadata** panel records.
 
+**Where to find each window.** Every window and process below is in iDempiere's left-hand menu; open the folder and click the entry, or type the name in the menu's **Search** box. A new record is made with the **New** button in the toolbar, saved with **Save**, and a document is finished with its **Document Action** button (choose **Complete**, then **OK**).
+
+| Name used in this guide | Menu path |
+|---|---|
+| Pack In | Application Dictionary ▸ Application Packaging ▸ Pack In |
+| Accounting Schema | Performance Analysis and Accounting ▸ Accounting Rules ▸ Accounting Schema |
+| Performance Measure Calculation | Performance Analysis and Accounting ▸ Performance Measurement ▸ Performance Measure Calculation |
+| Business Partner | Partner Relations ▸ Business Partner Rules ▸ Business Partner |
+| Product | Material Management and Pricing ▸ Material Management Rules ▸ Product |
+| Warehouse and Locators | Material Management and Pricing ▸ Material Management Rules ▸ Warehouse and Locators |
+| Project | Project Management ▸ Project |
+| Issue to Project (a process) | Project Management ▸ Issue to Project |
+| Project (Lines/Issues) | Project Management ▸ Project (Lines/Issues) |
+| Purchase Order | Requisition-to-Invoice (Purchasing) ▸ Purchase Order |
+| Material Receipt | Requisition-to-Invoice (Purchasing) ▸ Material Receipt |
+| Purchase Invoice and Credit/Debit Note | Requisition-to-Invoice (Purchasing) ▸ Purchase Invoice and Credit/Debit Note |
+| Payment and Receipt | Open Items (Financial Movements and Aging) ▸ Payment and Receipt |
+
 **Who does what**
 
 | Chapter | Who |
@@ -92,7 +110,7 @@ The pack goes to the client named in its file name (**GardenWorld**), and is pac
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| A3.1 | Put the zip in an empty folder on the server and run `utils/RUN_ApplyPackInFromFolder.sh <folder>`, or use the **Pack In** window logged in as GardenWorld Admin | The run prints *Successful application of …CAPEXTestData.zip*, `Error=false` and ends with *Done*. The log also prints a `java.lang.Exception` trace for each planned line (*MProduct.loadPO: NO Data found*): these do not stop the run, and the rows are checked in A3.2 to A3.4 | ☐ Pass ☐ Fail |
+| A3.1 | Put the zip in an empty folder on the server and run `utils/RUN_ApplyPackInFromFolder.sh <folder>`, or use the **Pack In** window logged in as GardenWorld Admin (choose the zip, then run it) | The run prints *Successful application of …CAPEXTestData.zip*, `Error=false` and ends with *Done*. The log also prints a `java.lang.Exception` trace for each planned line (*MProduct.loadPO: NO Data found*): these do not stop the run, and the rows are checked in A3.2 to A3.4 | ☐ Pass ☐ Fail |
 | A3.2 | Open the **Project** window, search Value `TD_%` | 12 projects, for example *TD_RIVERSIDE – Riverside Tower (test data)* | ☐ Pass ☐ Fail |
 | A3.3 | Open *TD_RIVERSIDE*, tab **Phase** | 5 phases with dates; the first 3 are ticked **Complete** | ☐ Pass ☐ Fail |
 | A3.4 | Look at the project’s **Currency** | The currency of GardenWorld’s *Purchase* price list. The pack sets no currency: iDempiere takes it from the price list, so it follows your setup | ☐ Pass ☐ Fail |
@@ -105,9 +123,9 @@ GardenWorld already has the vendor, the warehouse and the locator; the products 
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| A4.1 | **Business Partner** window: find a vendor | At least one partner with *Vendor* ticked | ☐ Pass ☐ Fail |
-| A4.2 | **Product** window: search Value `PWD-%`, then open *PWD-04.2 Brick masonry* | 10 products in category *Construction*. *PWD-04.2*: unit **M3**, stocked, price **68.1167** on the *Purchase* price list (8,174 BDT ÷ 120), and a **Standard** cost of 68.1167 | ☐ Pass ☐ Fail |
-| A4.3 | **Warehouse & Locators**: *HQ Warehouse* | It has the locator *Default HQ Locator*, where you receive and issue | ☐ Pass ☐ Fail |
+| A4.1 | **Business Partner** window: find a vendor (for example *Seed Farm Inc.*, the one this guide uses) | At least one partner with *Vendor* ticked | ☐ Pass ☐ Fail |
+| A4.2 | **Product** window: search Value `PWD-%`, then open *PWD-04.2 Brick masonry* | 10 products in category *Construction*. *PWD-04.2*: unit **M3**, stocked, price **68.1167** on the *Purchase* price list (tab **Price**; 8,174 BDT ÷ 120), and a **Standard** cost of 68.1167 (tab **Costs**) | ☐ Pass ☐ Fail |
+| A4.3 | **Warehouse and Locators** window: open *HQ Warehouse*, tab **Locator** | It has the locator *Default HQ Locator*, where you receive and issue | ☐ Pass ☐ Fail |
 | A4.4 | **Product** window: *Test material A (test data)* | The pack’s product exists, in category *TD Materials (test data)* | ☐ Pass ☐ Fail |
 
 **Notes (chapter A):** ______________________________________________
@@ -249,7 +267,7 @@ Do this in the **Viewer**, on the Shed you opened in B2.9. (In the Modeller, **E
 
 ## C · ERP: the hands-on exercise (GardenWorld Admin)
 
-Use the 12 test projects. The table says, per project, what to make. The products are the **Construction** products of A3.6 (**not** GardenWorld's own); use any GardenWorld vendor, the *Purchase* price list and *HQ Warehouse*. Do not type a price: the order line takes it from the price list, which is the product's standard cost. On each document, set **Project** to the test project (and the phase, where the window asks).
+Use the 12 test projects. The table says, per project, what to make. The products are the **Construction** products of A3.6 (**not** GardenWorld's own); use any GardenWorld vendor, the *Purchase* price list and *HQ Warehouse*. Do not type a price: the order line takes it from the price list, which is the product's standard cost. On each document, set **Project** to the test project (the windows do not ask for a phase).
 
 | Product | Name | Unit | Standard cost (USD) |
 |---|---|---|---|
@@ -278,36 +296,44 @@ The products cost at **Standard**: a receipt at any price leaves a product's cos
 
 ### C1 · Purchase orders
 
+Make one order per row of the table that has a purchase order, with the quantity it states.
+
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| C1.1 | **Purchase Order** window, new: a vendor, *Purchase* price list, *HQ Warehouse*, **Project** = the test project. Line: the product and quantity from the table; leave the price as the price list gives it | The line net amount = quantity × the product's standard cost (for example 29 × 68.1167 = 1,975.38) | ☐ Pass ☐ Fail |
-| C1.2 | **Complete** the orders marked *complete*; leave the others **Drafted** | Status *Completed* / *Drafted* | ☐ Pass ☐ Fail |
+| C1.1 | **Purchase Order** window, **New**. Header: **Business Partner** *Seed Farm Inc.* (or any vendor), **Price List** *Purchase*, **Warehouse** *HQ Warehouse*, **Project** the test project (the field sits in the header). Save. Tab **PO Line**, **New**: **Product** the table's product, **Quantity** from the table; leave the price as the price list gives it. Save | The line price is the product's standard cost (for example 68.1167 for *PWD-04.2*). The order's **Total Lines** = quantity × price (for example 29 × 68.1167 = 1,975.38) and **Grand Total** is the same (the tax rate is 0) | ☐ Pass ☐ Fail |
+| C1.2 | **Document Action ▸ Complete ▸ OK** on the orders the table marks *complete*; leave the others as they are | Document status *Completed* on those, *Drafted* on the others | ☐ Pass ☐ Fail |
 
 ### C2 · Material receipt
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| C2.1 | For each completed order that goes to *Received* or further: **Material Receipt** window, create from the order, locator *Default HQ Locator*, **Complete** | The receipt is *Completed*; the product’s on-hand quantity rose and its **Standard** cost did not change | ☐ Pass ☐ Fail |
+| C2.1 | For each completed order whose *How far* is *Received*, *Half paid* or *Paid in full*: **Material Receipt** window, **New**. Header: **Business Partner** the same vendor, **Project** the test project. Press **Create lines from**, choose the purchase order, tick its line, **OK**. On the **Receipt Line** tab check the **Locator** is *Default HQ Locator*. Save, then **Document Action ▸ Complete ▸ OK** | The receipt is *Completed* and carries the order's product and quantity. The product’s on-hand quantity rose (menu entry **Storage per Product**: type the name in the menu’s Search box), and in the **Product** window, tab **Costs**, its **Standard** cost did not change | ☐ Pass ☐ Fail |
 
 ### C3 · Vendor invoice and payment
 
+Only *Half paid* and *Paid in full* orders (TD_BRIDGE, TD_RIVERSIDE, TD_SCHOOL).
+
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| C3.1 | For *Half paid* and *Paid in full*: **Invoice (Vendor)**, create from the order, **Complete** | The invoice is *Completed*, linked to the order and the project | ☐ Pass ☐ Fail |
-| C3.2 | **Payment** window: pay the invoice in full (*Paid in full*) or half its total (*Half paid*), **Complete** | The invoice shows paid / partly paid | ☐ Pass ☐ Fail |
+| C3.1 | **Purchase Invoice and Credit/Debit Note** window, **New**. Header: **Target Document Type** *AP Invoice*, **Business Partner** the same vendor, **Project** the test project. Press **Create lines from**, choose the purchase order (or its receipt), tick the line, **OK**. Save, then **Document Action ▸ Complete ▸ OK** | The invoice is *Completed*; its **Grand Total** equals the order's | ☐ Pass ☐ Fail |
+| C3.2 | **Payment and Receipt** window, **New**. **Document Type** *AP Payment*, **Business Partner** the same vendor, **Invoice** the invoice you just made (the amount fills in; the **Project** field disappears once an invoice is chosen, that is normal), **Bank Account** *MoneyBank 1234*, **Tender type** *Check*. For *Half paid* change **Payment amount** to half the invoice total. Save, then **Document Action ▸ Complete ▸ OK** | The payment is *Completed*. On the invoice, **Paid** is ticked for *Paid in full*; for *Half paid* it is not, and the open amount is the other half | ☐ Pass ☐ Fail |
 
 ### C4 · Issue materials to site
 
+This is done in two parts, once per test project that has an issue in the table (nine projects). The pack's projects are category *General*, and iDempiere refuses to issue material to a General project (*Project not Work Order or Asset*), so each project is first set to the **Work Order (Job)** type.
+
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| C4.1 | **Project** window, the test project: issue the quantity in the last column from *Default HQ Locator* (**Issue to Project**), **Complete** | The issue is *Completed* | ☐ Pass ☐ Fail |
-| C4.2 | Look at the project header | **Spent** (project balance) rose by *quantity × standard cost*: *TD_RIVERSIDE* 3 × 68.1167 = **204.35**, *TD_BRIDGE* 5 × 115.525 = **577.63**, *TD_DATAHALL* 178 × 1.075 = **191.35**. A project that issues nothing stays at 0 | ☐ Pass ☐ Fail |
+| C4.1 | **Project** window, open the test project. Press **Set Project Type**, choose **Work Order (Job)**, **OK** | The message says *OK*. The project's phases are still there (the Phase tab still lists them) and the **Set Project Type** button no longer accepts another type | ☐ Pass ☐ Fail |
+| C4.2 | Menu **Project Management ▸ Issue to Project**. **Project** the test project, **Locator** *Default HQ Locator*, **Product** the table's product, **Movement Quantity** from the last column, **Movement Date** today. Leave **Shipment/Receipt**, **Expense Report** and **Project Line** empty. **OK** | The message says *Created 1* | ☐ Pass ☐ Fail |
+| C4.3 | **Project (Lines/Issues)** window, find the project, tab **Issues** | One issue line with the product and quantity, **Document Status** *Completed* | ☐ Pass ☐ Fail |
+| C4.4 | Back in the **Project** window, look at **Project Balance** in the header | It rose by *quantity × standard cost*: *TD_RIVERSIDE* 3 × 68.1167 = **204.35**, *TD_BRIDGE* 5 × 115.525 = **577.63**, *TD_DATAHALL* 178 × 1.075 = **191.35**. A project that issues nothing stays at 0 | ☐ Pass ☐ Fail |
 
 ### C5 · Tick a phase
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| C5.1 | On a test project, tick one more phase **Complete** and save | The phase stays ticked; that project’s *Done* on the dashboard rises (chapter D) | ☐ Pass ☐ Fail |
+| C5.1 | **Project** window, a test project (for example *TD_DEPOT*), tab **Phase**: tick **Complete** on the next phase that is not ticked, **Save** | The phase stays ticked (for *TD_DEPOT* 2 of 4 now); that project's *Done* on the dashboard rises (chapter D) | ☐ Pass ☐ Fail |
 
 **Notes (chapter C):** ______________________________________________
 
@@ -321,21 +347,21 @@ The dashboard reads a file that a small read job writes from your iDempiere. Run
 BRIDGE_BASE=http://<your-idempiere>:<port> node capex/tools/legacy_snapshot.js
 ```
 
-It ends with a line `§DASH_LEGACY_SNAPSHOT … projects=<n> … unavailable=[]`. Then open `/capex/index.html?source=legacy` on the server that holds that copy (see [How the dashboard connects to the data](CapexDashboardGuide.md#how-the-dashboard-connects-to-the-data)). Every tile is described in [The dashboard page](CapexDashboardGuide.md#the-dashboard-page).
+It writes the file `capex/legacy_snapshot.json` inside your copy of the repository (the folder from A1.1, next to `index.html`), and ends with a line `§DASH_LEGACY_SNAPSHOT … projects=14 … unavailable=[]` (14 on a fresh GardenWorld). Then open `/capex/index.html?source=legacy` on the server that holds that copy (see [How the dashboard connects to the data](CapexDashboardGuide.md#how-the-dashboard-connects-to-the-data)). Every tile is described in [The dashboard page](CapexDashboardGuide.md#the-dashboard-page).
 
 ![The dashboard](img/capex/capex_page_dashboard.png)
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| D1 | Read **Total Projects** and **Active Projects** | The 12 test projects are counted (plus any of your own) | ☐ Pass ☐ Fail |
-| D2 | Read **Approved Budget** | The sum of the planned amounts, per currency | ☐ Pass ☐ Fail |
-| D2b | Read the **Budget** tile (Within / Over / Not started) | **Over** lists *TD_CARPARK* (Spent 457.59 against a plan of 330.00) and *TD_DATAHALL* (191.35 against 181.50), plus GardenWorld’s own *Standard* project if it is still there; the other test projects with issues are **Within**; *TD_OFFICE*, *TD_SUBSTATION* and *TD_WAREHOUSE* are **Not started** | ☐ Pass ☐ Fail |
-| D3 | Read **Actual Cost** (Spent) | It rose by what you issued in C4: **2,020.45** over the 12 test projects (plus any Spent your own projects already carry) | ☐ Pass ☐ Fail |
-| D4 | Open **Procurement Risks** in the left menu. Then open a test project's page (D5) and its **Procurement** tab | Left menu: *Open purchase orders* = the 5 you left Drafted, with their total. Project page: the **Supply chain** card shows that project's order at the stage you took it to (*TD_SUBSTATION* Ordered, *TD_DATAHALL* Received, *TD_BRIDGE* Invoiced, *TD_RIVERSIDE* and *TD_SCHOOL* Paid) and lists its receipt, invoice and payment | ☐ Pass ☐ Fail |
+| D1 | Read **Total Projects** and **Active Projects** | **14** and **14** on a fresh GardenWorld: the 12 test projects plus GardenWorld's own *Standard* and *Landscape* (plus any of your own) | ☐ Pass ☐ Fail |
+| D2 | Read **Approved Budget** | The sum of the planned amounts, per currency: **USD 4,667.80** (the 12 test projects 4,067.80 plus *Landscape* 600.00) | ☐ Pass ☐ Fail |
+| D2b | Read the **Budget** tile (Within / Over / Not started) | **Over** lists *TD_CARPARK* (Spent 457.59 against a plan of 330.00) and *TD_DATAHALL* (191.35 against 181.50), plus GardenWorld’s own *Standard* project if it is still there; the other 7 projects with issues are **Within**; **Not started** is 4: *TD_OFFICE*, *TD_SUBSTATION*, *TD_WAREHOUSE* and GardenWorld’s *Landscape*. The three counts read **Within 7, Over 3, Not started 4** | ☐ Pass ☐ Fail |
+| D3 | Read **Actual Cost** (Spent) | It rose by what you issued in C4: **2,020.45** over the 12 test projects. With GardenWorld’s own *Standard* project (137.70) the tile reads **USD 2,158.15**, **46 %** of plan | ☐ Pass ☐ Fail |
+| D4 | Open **Procurement Risks** in the left menu. Then open a test project's page (D5) and its **Procurement** tab | Left menu: *Open purchase orders* = the 5 you left Drafted, **USD 6,738.39** in total. Project page: the **Supply chain** card shows that project's order at the stage you took it to (*TD_SUBSTATION* Ordered, *TD_DATAHALL* Received, *TD_BRIDGE* Invoiced, *TD_RIVERSIDE* and *TD_SCHOOL* Paid) and lists its receipt, invoice and payment | ☐ Pass ☐ Fail |
 | D5 | Click a number on a tile | The drill panel lists the projects behind it; click a project to open its page | ☐ Pass ☐ Fail |
 | D6 | On the project page of *TD_RIVERSIDE*, open the tabs | Overview: Approved **371.25**, 5 phases. The Schedule tab draws the 5 phase bars with the pack’s dates, the first 3 *Complete* | ☐ Pass ☐ Fail |
 | D7 | Open **ƒ formula** under a tile | The formula is shown; it is the same Performance Analysis measure your iDempiere holds (A2.3) | ☐ Pass ☐ Fail |
-| D8 | Change **Layout** and **Skin** | The look changes; the numbers do not | ☐ Pass ☐ Fail |
+| D8 | Change **Layout** (top bar) to *Executive* and **Skin** to *Dark*, then back to *Classic* and *Light* | The look changes. *Executive* shows fewer, re-labelled tiles (*Actual Cost* becomes *Spent so far*) with the same figures (4,667.80 approved, 2,158.15 spent); *Classic* shows them all again | ☐ Pass ☐ Fail | ☐ Pass ☐ Fail |
 | D9 | Log in to iDempiere again and read the **Home** tab | The CAPEX goals show the same counts as the dashboard tiles, money in your login’s currency. A goal that has a target (for example *Health Green*, *Schedule On Time*, *Actual Cost*) shows its percentage of the target on the Home tab, not the count | ☐ Pass ☐ Fail |
 
 **Notes (chapter D):** ______________________________________________
@@ -356,5 +382,5 @@ It ends with a line `§DASH_LEGACY_SNAPSHOT … projects=<n> … unavailable=[]`
 |---|---|---|---|---|
 | A · Set up | | | / 17 | |
 | B · BIM | | | / 23 | |
-| C · ERP | | | / 8 | |
+| C · ERP | | | / 10 | |
 | D · Dashboard | | | / 10 | |
