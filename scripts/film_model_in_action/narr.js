@@ -10,5 +10,6 @@ exports.beats = [
   { id: 'undo', text: 'F: Take it back. | M: Undo. The count returns to four hundred forty-four.', says: [['add.undoTo', '444', 'four hundred forty-four']] },
   { id: 'addbay_low', text: 'F: And at the other end? | M: Same bay. This time the gate shows orange, and it says so.', says: [] },
   { id: 'refuse', text: 'F: Which end is sideways? | M: Refused. It is high or low.', says: [] },
-  { id: 'close', text: 'M: A drawing, three lines, one more bay, with its cost. A prototype, and open source. | F: The guide has every line.', says: [] }
+  { id: 'close', text: 'M: A drawing, three lines, one more bay, with its cost. A prototype, and open source. | F: The guide has every line.', says: [] },
+  { id: 'priorart', hold: 13, text: 'M: Others made the parts. These are the ideas we learn from. | F: In the pages we read, we did not find them together in one tool.', says: [] }
 ];
