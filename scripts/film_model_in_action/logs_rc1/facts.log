@@ -1,0 +1,12 @@
+§FACTS open ok model.open sheets=marked type="Farming Shed"
+§FACTS convert ok model.convert
+§FACTS addbay_high ok model.addbay end=high
+§FACTS undo ok model.undo
+§FACTS addbay_low ok model.addbay end=low
+§FACTS refuse refused model.addbay end=sideways why=end= is high or low (the end of the building to lengthen)
+§FACTS close ok model.close
+§FACTS C {"copiesEqualGrowth":true,"costSum":true,"undoBack":true,"lowGrowth":true}
+§FACTS P (canvas = top 80%, panel = bottom 20%) diffs open=19.225% convert=10.815% bay=0.562% undo_vs_convert=0% undo_vs_convert_panel=11.014% bay_vs_convert_panel=11.014% bay_low=0.241% refuse_unchanged=0% refuse_unchanged_panel=4.691% sizes 1920x537
+§FACTS PANE_VERDICT PASS answersAgree=true canvasMoved=true undoRestoresPicture=true refuseLeavesPicture=true pageErrors=0
+§FACTS wrote out/facts.json sheets=9 bodies=445 elements=444 copies=29 costHigh=15898 costLow=16320 gateLow=⚠ 8 ORANGE
+done
