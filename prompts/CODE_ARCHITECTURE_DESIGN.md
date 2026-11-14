@@ -163,6 +163,31 @@ injected date, replay the log under a different wall clock (fake `Date`), compar
   `poc_kernel.js`, `poc_longtail.js`) and `prompts/KERNEL_COMMITGROUP.md` item F. The witness runs against **bim-ootb's** `erp/kernel_ops.js`,
   not the older bim-compiler `build/erp/` copy (P4).
 
+**A0 RESULT 2026-11-14 — bim-ootb #2995 / PR #2997. ✅ DONE (witness): the rows are replayed, not the process.** (owner, 2026-11-14: *"Proceed"*)
+- **Run:** seed company (client 11), shipped paths only (`ML.newPO/save/processIt`, `AP.runInTrx`, the kernel's own `inTrx` → commit → journal),
+  clock fixed at 2026-11-10 10:00 local in a child process: a new order completed (7 ops), shipped by process 118 (29), invoiced by process 119
+  with NO DateInvoiced (10: it took the session's date), and one undated `I_Order` row imported by process 206 (8). 4 journal groups, 54 ops,
+  22 tables, 1,991 rows hashed. A second child with the clock at 2026-11-13 00:30 local loads a fresh kernel and applies the journal with the
+  kernel's own `replay()` (`erp/ws_kernel.js:99`).
+- `§REPLAY_CLOCK ops=54 liveHash=4f32f7549452eda5 replayHash=4f32f7549452eda5 tz=UTC match=Y` ·
+  `§REPLAY_CLOCK ops=54 liveHash=48b1cd5ebacad0ad replayHash=48b1cd5ebacad0ad tz=Asia/Kuala_Lumpur match=Y` ·
+  `§WITNESS_REPLAY_CLOCK pass=4 fail=0 ran=2` (through `witness_kit/contract.js`).
+- **Red control, real:** the same replay with the invoice group RE-RUN instead of applied: `invoice={"dateinvoiced":"2026-11-13 …"}`, 7 tables
+  differ (`ad_sequence, c_bpartner, c_invoice, c_invoiceline, c_invoicetax, c_orderline, fact_acct`), match=N, `redControl-detected`.
+  The first run of the witness, whose order set-up was broken, printed `§REPLAY_CLOCK_VERDICT INCONCLUSIVE`, not PASS.
+- **So:** the wall-clock fallbacks in the processes are **tidy-up (A2), not a replay bug**. No A1 "fix first" is needed for replay.
+  Scope of the claim: the headless kernel's journal and `replay()` (`ws_kernel.js`), the path a process writes through. The page's own op
+  log fold (`erp/kernel_ops.js` `replayOps`) was read (§A0 code-read lead) but not driven by this witness.
+- **Two things the run showed that the spec did not ask about:**
+  1. **The session day is the UTC day (bim-ootb #2996, open, not fixed).** `§REPLAY_CLOCK_SESSION_DAY tz=Asia/Kuala_Lumpur local_clock=2026-11-13
+     00:30 session_day=2026-11-12 same=N` (UTC: `same=Y`). `erp/ws_kernel.js:80` cuts the day from `toISOString()`. In the red-control run the
+     invoice made at 00:30 local on the 13th was dated the 12th. This is the "local day, never the UTC day" fact above, still true of the
+     headless kernel; legacy dates by the server's local day. It is decision **A-3**'s subject. Not checked against the legacy oracle yet.
+  2. **The hash differs from run to run** (`bc95…` then `4f32…` for UTC): the kernel's `uuid()` is `crypto.randomUUID()` (`ws_kernel.js:82`), so
+     two live runs never give the same rows. Live == replay holds inside a run because the ids are recorded in the ops. This is the P3 "IDs
+     minted in many places" item, for the Env's `newId()`, not a replay fault.
+- Merged; re-run on bim-ootb `main` @ `abecbbb8`: match=Y in both zones, `pass=4 fail=0`. Not in CI (needs the local `sql.js` path the other ERP witnesses use). Run: `node erp/tests/witness_replay_clock.js`.
+
 **Steps:** A1 the Env object (one owner file; name per decision A-2), taking its date from the login context the way legacy does · A2 move
 each core file's clock/ID reads onto it, one file per PR, posting/parity witnesses identical before/after · A3 **scan witness `W-CORE-PURE`**: an
 AST scan of the core file list that fails on any forbidden call outside the Env owner and the `§` log helper. **Red control:** a copied core verb
@@ -1098,10 +1123,11 @@ Owner, 2026-11-14: *"Implement the MCP or Claude Code role in the VSC since it i
   `spec`), the corrected PHANTOM step (picture kept, with a dated note; a true phantom named), `context_for_file`, and "Seeing what a session
   uses". **The docs SITE is not redeployed by this PR** (`scripts/safe_gh_deploy.sh` not run): the live guide still shows the old text. The
   PHANTOM picture `figs/x0/05_phantom.png` needs a new capture in a real VS Code (owner's go).
-- **NEXT, in order (updated at §F.20; F-6 is answered and built):** (1) the first
-  real bake after bim-ootb #2977: read its log for the `§LOG_STAMP` line and check a lens lights up (owner's go for the bake). (2) the 11
-  untied fields (needs the parser; a Part C question). (3) Part A, step A0: the first unstarted part of the design itself, and what
-  unlocks the rest of F's table. Blocked on the owner: F-1, F-2, F-7, and the token for F-12 step 2.
+- **NEXT, in order (updated after A0, 2026-11-14):** (1) owner decision **A-1** (which files are "core"), asked; then A-2, A-3, A-4 one at
+  a time; A1 (the Env object) starts when A-2 is answered. (2) bim-ootb #2996 (the headless kernel's session day is the UTC day): fix under
+  A-3, with the legacy oracle consulted. (3) B0 (the manifest generator in check mode) needs no decision and can run beside the A decisions.
+  (4) the first real bake after bim-ootb #2977 (owner's go). (5) the 11 untied fields (parser). Blocked on the owner: F-1, F-2, F-7, and the
+  token for F-12 step 2.
 
 ### §F.17 The real-VS-Code run, and what it uncovered: half the "phantoms" were live — ✅ DONE 2026-11-14 (owner: *"Go"*)
 
@@ -1286,7 +1312,7 @@ After it, start A0 and B0, and ask A-1 while they run.
 ## STATUS
 | Part | What | State |
 |---|---|---|
-| A | pure core + Env (A0 replay-clock fact first) | open: 4 decisions · A0 ready to start (§READY) |
+| A | pure core + Env (A0 replay-clock fact first) | **A0 ✅ DONE (witness): rows are replayed, match=Y in both zones** (bim-ootb PR #2997) · open: 4 decisions, A-1 asked 2026-11-14 |
 | B | manifest per app | open: 4 decisions · B0 ready to start |
 | C | named APP parts | open: 2 decisions |
 | D | owner table | open: 2 decisions |
