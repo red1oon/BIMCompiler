@@ -3950,20 +3950,20 @@
 </tr>
 <tr>
 <td>B2.2b</td>
-<td>Below the sheets, find the yellow block <strong>ALL DEFAULTS</strong>. It says <strong>14 yellow in 1 group</strong>. Click the <strong>▸</strong> on the group to open it, and read the 14 rows. Each row is one setting the Modeller applied because the drawings do not state it: its name and value (for example <em>building.type = General</em>, <em>fan.blades = 4</em>, <em>bodies.pair_max_width = 0.5</em>), then a sentence saying what it does. Click a row to see its evidence on the sheet. To see a whole sheet with its markings drawn on it, press <strong>Sheet</strong> on the sheet’s card; <strong>Esc</strong> (or the ✕) closes it</td>
-<td>You have read all 14 rows and agree with each value for <strong>your</strong> shed. Look hardest at the rows that end in <strong>[guess]</strong>: <em>fan.depth 0.3</em>, <em>fan.housing_wall 0.02</em>, <em>net.thickness 0.005</em> and <em>section.spacing = column pitch</em> are the Modeller’s assumptions, not something your drawings say. Write any value you do not accept on the <strong>Notes</strong> line. <strong>Source:</strong> each row names its own source in its sentence; the drawing is the evidence you click</td>
+<td>Below the sheets, find the yellow block <strong>ALL DEFAULTS</strong>. It says <strong>14 yellow in 1 group</strong>. Click the <strong>▸</strong> on the group to open it and read the 14 rows. Each row is one setting the Modeller applied because the drawings do not state it: its name and value (for example <em>building.type = General</em>, <em>fan.blades = 4</em>, <em>bodies.pair_max_width = 0.5</em>), then a sentence saying what it does. These rows are conventions, so clicking one does <strong>not</strong> jump to a place on the sheet. To see a whole sheet with its markings drawn on it, press <strong>Sheet</strong> on a sheet’s card; <strong>Esc</strong> (or the ✕) closes it again</td>
+<td>You have read all 14 rows and agree with each value for <strong>your</strong> shed. Ten rows end in <strong>[guess]</strong>, the Modeller’s assumptions: <em>building.type</em>, <em>column.top_under_beam</em>, <em>fan.blades</em>, <em>fan.depth</em>, <em>fan.housing_wall</em>, <em>net.thickness</em>, <em>panel.plane</em>, <em>profile.angle_heel</em>, <em>profile.angle_mesh</em> and <em>section.spacing</em>. Read those hardest. Write any value you do not accept on the <strong>Notes</strong> line. <strong>Source:</strong> each row’s own sentence says where the value comes from</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>B2.2c</td>
-<td>Do nothing to the yellow rows yet. <strong>Arrange runs by itself</strong> when the sheets open (B2.3), and <strong>Convert</strong> (B2.6) works with the 14 rows still open. Optional: press <strong>Accept all</strong> (the button above the group; no key is needed) to mark them as yours</td>
-<td>The panel itself says <em>the defaults stay applied and Convert is not held up by them</em>. If you press <strong>Accept all</strong>, the yellow count falls from <strong>14</strong> to <strong>3</strong>; the three that stay listed are <em>panel.thickness_inherited = 35</em>, <em>section.bar.size = 7 bars</em> and <em>section.plate.thickness</em> (inferred from the geometry; <strong>✓ Keep this value</strong> does not clear them). Either way the badge stays <strong>Qualifies</strong> and Convert gives the same result (B2.6)</td>
+<td>Do nothing to the yellow rows yet: <strong>Convert</strong> (B2.6) works with the 14 rows still open. Optional: press <strong>Accept all</strong> (the button above the group; no key is needed) to mark them as yours</td>
+<td>The panel itself says <em>the defaults stay applied and Convert is not held up by them</em>. After <strong>Accept all</strong> the yellow count falls from <strong>14</strong> to <strong>3</strong>; the three that stay listed are <em>panel.thickness_inherited = 35</em>, <em>section.bar.size = 7 bars</em> and <em>section.plate.thickness</em>. They are assumptions the drawing-reading modules make themselves, so <strong>✓ Keep this value</strong> on them does not clear them. Either way the badge stays <strong>Qualifies</strong> and Convert gives the same result (B2.6)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>B2.3</td>
-<td>Watch the sheets move into place. Press <strong>Arrange</strong> in the panel to play it again</td>
-<td>The plans lie on the ground; each elevation stands on the side it shows; the section stands across the shed (picture B2-b)</td>
+<td>These nine sheets carry every value, so they open <strong>already in place</strong>: the Modeller does not replay anything on opening. Press <strong>Arrange</strong> in the panel to watch them move into place</td>
+<td>The status line counts <strong>Step 1/46 … Step 46/46</strong> (one step per setting, the last is <em>@CUT</em>). The plans lie on the ground; each elevation stands on the side it shows; the section stands across the shed (picture B2-b). The details sheet is not placed (it is notes only)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -3993,7 +3993,7 @@
 <tbody>
 <tr>
 <td>B2.5</td>
-<td>Wait until the Arrange replay has ended (the panel's status line stops counting <em>Step n/46</em>), or press <strong>Esc</strong> to stop it. Unfold the <strong>2D Drawings</strong> panel and tick <strong>Complete the building (floor slab, roof)</strong></td>
+<td>If you pressed <strong>Arrange</strong>, wait until the status line stops counting <em>Step n/46</em> (or press <strong>Esc</strong> to stop it). Unfold the <strong>2D Drawings</strong> panel and tick <strong>Complete the building (floor slab, roof)</strong></td>
 <td>The box is ticked</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
