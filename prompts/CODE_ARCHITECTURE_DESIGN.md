@@ -21,7 +21,7 @@ matured."* → from here the lane continues in ordinary (non-Fable) sessions. Th
 holds the evidence, and the sections now live in the archive (START HERE 7). Nothing below is owed from memory: if a line here and a
 `§` section disagree, the section wins.
 
-**1. A-2, A-3, A-4 ANSWERED 2026-11-14 (see Part A DECISIONS); next is A1 (build).** (Old text kept below for the wording.) The last message put this to the owner; ask it again, on its own:
+**1. A-2, A-3, A-4 ANSWERED 2026-11-14 (see Part A DECISIONS); A1 ✅ DONE (witness) 2026-11-14, bim-ootb PR #3007 (`Env.stamp`/`Env.modelEnv` in `erp/ad_callout.js`, +41/-0; `§WITNESS_ENV_VIEWS pass=6 fail=0`, ws_kernel at +08 `KNOWN-DIFF #2996`; A0 witness re-run match=Y). Next is A2 (move each core file's clock/ID reads onto it, one file per PR; the ws_kernel `env()` goes first = the #2996 fix, check legacy's date first).** (Old text kept below for the wording.) The last message put this to the owner; ask it again, on its own:
 > Today the ERP code gets "now" and "today" from three objects that do not know about each other: the login context the callouts use
 > (it carries legacy's own `#Date`), the transaction's `env` (22 files read it), and the fixed-time object used when a company is born.
 > Which becomes the one source the core files ask? **Option 1 (recommended): extend the login context**, the other two become views of
