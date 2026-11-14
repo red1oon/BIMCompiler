@@ -683,7 +683,7 @@ The workbook is an ordinary spreadsheet file (`.xlsx` or `.xls`):
 
 In `ColumnSet` a plain name is text. A prefix gives another type: `D#` a date, `A#` an amount, `Q#` a quantity, `T#` a long text, `Y#` a yes/no, and `L#Name=a/b/c` a list of fixed values. A table whose `Master` is another table of the workbook becomes a tab of that table's window.
 
-A practice workbook ships with the door: `common/door/samples/Ninja_Practice.xlsx` (a patient, the patient's visits, the medicines of a visit, and a room). `dry=Y` reads it, says what it would make and writes nothing:
+A practice workbook ships with the door: `common/door/samples/Ninja_Practice.xlsx` (a patient, the patient's visits, the medicines of a visit, a room, and a referral that sits under Business Partner). `dry=Y` reads it, says what it would make and writes nothing:
 
 <!-- run: nx_dry cut=230 -->
 ```text
@@ -702,11 +702,11 @@ Without `dry=Y` the same line makes it: the windows, the tabs, the list, the men
 $ cp common/door/samples/Ninja_Practice.xlsx . ; D='BIM_OBJECT_OPLOG=/tmp/fast_guide_ninja.ops node common/door/door.js --list'; eval "$D 'ninja.exec file=Ninja_Practice.xlsx'" | grep -E '^(windows|detailTabs|dataSheets|ops):'; eval "$D 'ninja.exec file=Ninja_Practice.xlsx'" | grep -E '^(alreadyStaged|ops|summary):'
 dataSheets: [{"sheet":"PR_Patient","rows":3,"loaded":3,"ops":3},{"sheet":"PR_Room","rows":2,"loaded":2,"ops":2}]
 windows: [{"id":7100001,"name":"PR Patient"},{"id":7100004,"name":"PR Room"}]
-detailTabs: 2
-ops: 129
+detailTabs: 3
+ops: 151
 alreadyStaged: true
 ops: 0
-summary: this workbook is already staged (4 tables); nothing was written
+summary: this workbook is already staged (5 tables); nothing was written
 ```
 
 Every table works with the `mis.*` verbs at once. A record under a master names the master's id (`mis.read` of the master then shows what sits under it), and a value outside a list is refused:
@@ -733,7 +733,21 @@ reason: BloodGroup Invalid value - Z - Reference_ID=200277 - A - AB - B - O; not
 
 A table shown in two windows is written through its own window unless you name the other one with `window=` (its name or its id). A refusal for a column that belongs to the other window tells you which window to name.
 
-What it refuses, with nothing written: a second workbook that names tables another workbook made, a workbook whose tables are all already there with no master, and a `ColumnSet` with a prefix it does not know. A sheet whose name is not exactly a table's name is skipped and named in the answer. The answer's `notChecked` lists what was not judged.
+**A tab on a window that is already there.** A `Master` does not have to be a table of the workbook. Name a table the system already has and your table becomes a tab of THAT table's window, after the tabs that are there, with no window or menu entry of its own. The practice workbook does it with one row: `PR_Referral`, whose `Master` is `C_BPartner`, so a referral is a tab of the Business Partner window. This is the Ninja of iDempiere's rule too:
+
+<!-- run: nx_att cut=200 -->
+```text
+$ cp common/door/samples/Ninja_Practice.xlsx . ; rm -f /tmp/fast_guide_att.ops; D='BIM_OBJECT_OPLOG=/tmp/fast_guide_att.ops node common/door/door.js --list'; eval "$D 'ninja.exec file=Ninja_Practice.xlsx'" | grep -E '^(attached|detailTabs):'; eval "$D 'mis.new kind=PR_Referral Name=Checkup C_BPartner_ID=112'" | grep -E '^(number|id):'; eval "$D 'mis.list kind=PR_Referral columns=Name,C_BPartner_ID names=Y'"; rm -f Ninja_Practice.xlsx
+attached: [{"table":"PR_Referral","master":"C_BPartner","window":"Business Partner","windowId":123}]
+detailTabs: 3
+number: Checkup
+id: 1
+Name     C_BPartner_ID
+Checkup  Standard
+shown 1 of 1
+```
+
+What it refuses, with nothing written: a second workbook that names tables another workbook made, a workbook whose tables are all already there with no master, a `Master` that is neither in the workbook nor a table with a window here, and a `ColumnSet` with a prefix it does not know. A sheet whose name is not exactly a table's name is skipped and named in the answer. The answer's `notChecked` lists what was not judged.
 
 ### Give a table the document columns: `ninja.workflow`
 
@@ -742,7 +756,7 @@ A feature can be switched on later, for one table, without touching the workbook
 <!-- run: nx_wf cut=200 -->
 ```text
 $ cp common/door/samples/Ninja_Practice.xlsx . ; rm -f /tmp/fast_guide_wf.ops; D='BIM_OBJECT_OPLOG=/tmp/fast_guide_wf.ops node common/door/door.js --list'; eval "$D 'ninja.exec file=Ninja_Practice.xlsx'" | grep -E '^ops:'; eval "$D 'mis.new kind=PR_Visit Name=Before PR_Patient_ID=1'" | grep -E '^number:'; eval "$D 'ninja.workflow table=PR_Visit'" | grep -E '^(added|fields|rowsFilled|ops):'; eval "$D 'ninja.workflow table=PR_Visit'" | grep -E '^(alreadyDone|ops):'; eval "$D 'mis.new kind=PR_Visit Name=After PR_Patient_ID=1'" | grep -E '^docStatus:'; eval "$D 'mis.list kind=PR_Visit columns=Name,DocStatus,DocAction,Processed'"; eval "$D 'erp.complete kind=PR_Visit id=1'" | grep reason; rm -f Ninja_Practice.xlsx
-ops: 129
+ops: 151
 number: Before
 added: ["DocStatus","DocAction","Processed","DocumentNo","IsApproved"]
 fields: 5
@@ -770,7 +784,7 @@ Everything here is practice on **your own copy**: the first line names a file th
 | Start over | `rm -f ~/practice.ops` | an empty practice again |
 | Shorten the typing | `alias d='node common/door/door.js --list'` | then a line is `d '<verb> <inputs>'` |
 | Ask what exists | `d '!help all'` | every verb with its inputs |
-| Make four tables | `cp common/door/samples/Ninja_Practice.xlsx . ; d 'ninja.exec file=Ninja_Practice.xlsx'` | patients, visits, medicines, rooms, with 3 patients and 2 rooms loaded |
+| Make five tables | `cp common/door/samples/Ninja_Practice.xlsx . ; d 'ninja.exec file=Ninja_Practice.xlsx'` | patients, visits, medicines, rooms and referrals, with 3 patients and 2 rooms loaded |
 | Try before making | `d 'ninja.exec file=Ninja_Practice.xlsx dry=Y'` | what it would make; nothing written |
 | Make one table | `d 'mis.add_window file=AST_Asset.csv'` | one window from a `.csv` of its columns (section above) |
 | List | `d 'mis.list kind=PR_Patient'` | the rows |
@@ -788,8 +802,11 @@ Everything here is practice on **your own copy**: the first line names a file th
 | Load many rows | `d 'mis.load kind=PR_Room file=rooms.csv'` | a preview; add `dry=N` to load |
 | Work on a screen | `node common/door/mis.js kind=PR_Patient` | a list you move in with the keys; `+` adds, Enter edits |
 | As another role | add `role=102` to a line | what that role may see and do |
+| Add under a table of the system | `d 'mis.new kind=PR_Referral Name=Checkup C_BPartner_ID=112'` | a referral on business partner 112 (a tab of the Business Partner window) |
 | Give a table the document columns | `d 'ninja.workflow table=PR_Visit'` | a status on every visit (`DR`), old and new |
 | Work in another window | add `window=<name or id>` to `mis.new`, `mis.update` or `mis.delete` | the fields of that window's tab, for a table shown in two windows |
+
+**Speed.** After a big workbook the door keeps an image of what the op-log has made, so a later line does not apply every op again; it is used only while your op-log file still begins exactly as it did, and `ERP_OPIMAGE=off` switches it off.
 
 A workbook of your own: copy the practice file, change the rows of `2_RO_ModelMaker` to your tables (a prefix of your own, such as `MY_`, keeps them apart from the tables that are already there; a name the system already has is reused, not made twice), and run `ninja.exec` on it with `dry=Y` first. The lines of this table are the verbs shown run in the sections above; the table itself is not re-run by this page's test, the grey blocks are.
 
