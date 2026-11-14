@@ -1782,7 +1782,7 @@ edits made during the day, which are now history, not the plan)
 **Everything below "The decision that gated everything" down to "State, honestly" describes
 mid-session state and is superseded by this block. Read this first.**
 
-➡ **'resume 4D' = implement §Q.6 (ORDER OF WORK, step 0 first). Hanging beams during build-up (Time Machine): read §Q (2026-11-14) — the rules, reviewed against
+➡ **'resume 4D' = implement §Q.6 + §Q.7 (ORDER OF WORK: 0, D2, D5, D1, D3, D4). Hanging beams during build-up (Time Machine): read §Q (2026-11-14) — the rules, reviewed against
 the shipped code and the persisted runs. It corrects §M.3/§M.5's reading of the beam population.**
 
 ## ✅ Live in production right now — verified merged, not just opened
@@ -2212,7 +2212,7 @@ owner's, with that caveat, and the pool split below is exactly that caveat measu
   them (MEP Final). The diffuser is banded into "Architecture Envelope" (day ~30). That is §E row 1
   ("a pipe bears a wall") — the election, not the schedule, is the defect; §E's ruling *"anything that
   hangs within a well formed room is no issue"* already covers them.
-- **Structural elected support: 237** *(was headed "Indefensible structural, the real population" — withdrawn 2026-11-14 for the beam share, see §Q.2/§Q.3; the column, footing, wall and slab shares below were NOT re-examined and keep their original reading)*. Named: **IfcColumn on IfcSlab 68** — a column
+- **Structural elected support: 237** *(was headed "Indefensible structural, the real population" — withdrawn 2026-11-14 for the beam share, see §Q.2/§Q.3; the column, footing, wall and slab shares below were NOT re-examined and keep their original reading)*. Named: **IfcColumn on IfcSlab 68** *(attributed 2026-11-14, §Q.7: 57 stand on a lowest-floor slab filed in their own task, 11 elected the slab above)* — a column
   appears 0.5–14.2 d (median 4.3 d) **before the slab it stands on**; **IfcBeam 123** (embedded
   beam←beam 47, bearing beam←beam 45, carrier-above beam←slab 29 = §S2's overhead-slab election — re-measured 2026-11-14, same 123 / 47 / 45 / 29, attributed in §Q);
   IfcFooting←IfcFooting embedded 11; IfcWallStandardCase 15; **IfcSlab 2** — two roof slabs 144 d
@@ -3148,7 +3148,7 @@ ceilings are the only things that hang, and they hang from finished structure.
 0. **Land §I.1a first** (`refactor/contactgraph-one-owner`, its own RESUME block above) so every
    rule below is changed once, not twice. If it cannot land, change both twins in one commit and
    keep `§CPM_PARITY` green.
-1. **D2** → 2. **D1** → 3. **D3** → 4. **D4**. Smallest and safest first; D4 last because it moves
+1. **D2** → 1b. **D5 (§Q.7, columns on their floor slab)** → 2. **D1** → 3. **D3** → 4. **D4**. Smallest and safest first; D4 last because it moves
    the most times.
 - **Every step:** `cache_4d_run.js --force` for Hospital, Terminal, Duplex, HHS before and after;
   `node scripts/probe_4d_beam_midair.js <cacheDirs>` (bim-compiler) before and after; paste both
@@ -3173,9 +3173,65 @@ ceilings are the only things that hang, and they hang from finished structure.
   - **Done =** midair IfcBeam on the played layer is 0 on Hospital and Duplex and ≤ 4 on Terminal,
     under the D4 judge, with all five gates green. A prediction that fails is recorded as failed,
     with the log line, and the step stops for the owner.
-- **Out of scope here:** columns before their slab (68, §M.3), mullions before glazing, MEP — not
+- **Out of scope here:** ~~columns before their slab (68, §M.3)~~ (now measured and decided — §Q.7, D5), mullions before glazing, MEP — not
   re-examined in §Q, so not decided. Clinic, LTU, JKR get measured at the end, not tuned for.
 - **Standing rules that bind the implementing session:** work in a `/tmp/wt-*` worktree of
   bim-ootb (check `git worktree list` first); no bakes, GPU or browser runs without the owner's
   go; agents on Sonnet; findings and results go in THIS section only; push and merge own verified
   PRs; the witness, never the owner's eyes, is the test.
+
+## §Q.7 COLUMNS BEFORE THE SLAB THEY STAND ON — MEASURED 2026-11-14 (owner: *"Do floor slabs comes on first before columns and beams?"* … *"Measure those too"*)
+Instrument: `scripts/probe_4d_column_midair.js` → `§COL_MIDAIR` (same owners, same persisted runs,
+self-check MATCH on all four). Played layer. Re-read §E and §I first.
+
+**Practice, stated once:** the slab a column STANDS ON is built before it; the slab a column HOLDS UP
+is built after it. R1's "column 2, beam 3, slab 4" is true only of the slab on top.
+
+| | Hospital | Terminal | HHS | Duplex |
+|---|---:|---:|---:|---:|
+| IfcColumn · midair | 604 · **80** | 158 · **5** | 257 · **3** | 0 — VACUOUS |
+| column standing on a slab (bearing ← IfcSlab): elected · midair | 60 · **57** | 86 · **0** | 178 · **3** | — |
+| … that slab is in the SAME task as the column: n · midair | 58 · **57** | 0 · 0 | 178 · 3 | — |
+| … that slab is in an EARLIER task: n · midair | 2 · 0 | 86 · 0 | 0 · 0 | — |
+| … days the column leads its slab, p50 · max | 4.0 · 7.0 | — | 0.0 · 0.1 | — |
+| other midair columns | carrier-above ← slab 11 · ← beam 2 · bearing ← beam 10 | carrier-above ← proxy 4 · bearing ← railing 1 | none | — |
+| solve path (`§CELL_GATE`) | CELL | CELL | GRAPH | GRAPH |
+
+**§M.3's "IfcColumn on IfcSlab 68" is this: 57 standing on a slab + 11 that elected the slab above.**
+
+**What the numbers say:**
+- **It is one place, not a general defect: the LOWEST floor.** All 58 Hospital same-task pairs are in
+  `Superstructure_Level_1`. A floor slab normally lands in the level below its columns (Terminal:
+  85 of 86 pairs have the slab in a lower band, 0 midair). At the bottom there is no level below, so
+  the slab and the columns on it share the first Superstructure task, and R1 runs columns (2) before
+  slab (4).
+- **`groundworkSlabs` already handles the slab-on-grade case and works** — Hospital's 2 reclassified
+  slabs are the 2 "earlier task" pairs, 0 midair; Terminal reclassified 233. The 58 are a lowest-level
+  slab that rule does not claim (not examined why — it is not a slab bearing on grade only).
+- **The same shape passes on the GRAPH path:** HHS has 178 same-task pairs and 3 midair, because R6b
+  enforces the elected edge. Hospital is on the CELL path, where that edge is REFUSED and not
+  enforced (`refusedE1=1296`). So the missing rule is in R6a, not in the election.
+- **The datum is NOT the cause — hypothesis measured and rejected.** Hospital bands on the mid-wall
+  `center_z` ladder (§L's still-stale shipped datum). Re-banding the 60 pairs on the logged
+  `§STOREY_DATUM_FLOOR` floor values changes nothing: 60 of 60 same band either way (HHS 178 of 178).
+- **11 + 2 (Hospital) and 4 + 1 (Terminal) are D2's population** — a column that "hangs" from the
+  slab or beam above, or "bears" on a railing. D2 already decides them.
+- **Hospital's 10 columns bearing on a beam** (of 12 elected) — a column landing on a transfer beam;
+  beam is sequence 3, after the column. Counted, NOT decided here.
+
+### D5 — The floor a column stands on comes first, whatever its class sequence. ADOPTED (advice, same instruction as D1–D4).
+- **Rule (R6a only):** inside one level, a slab that is the elected bearing-below support of a
+  structural element of that same level is that level's FLOOR. It is filed in a cell that runs
+  before sequence 2 of that level. Its phase, task, trade and rate do not change — the task grid and
+  the Gantt bars are untouched; only the order inside the first Superstructure bar moves.
+- It is the elected edge read as extraction, the way §S47.3's hang filing already reads it — not a
+  new relation and not a class rule.
+- **Order of work:** D5 goes after D2 and before D1 → **0, D2, D5, D1, D3, D4**. Same per-step
+  measurements and the same five gates as §Q.6, with `probe_4d_column_midair.js` added to every step.
+- **PREDICTIONS, written before any run:**
+  - after D2: Hospital carrier-above columns 13 → **0** midair; Terminal midair columns 5 → **0**.
+  - after D5: Hospital column-on-slab midair 57 → **0**; HHS and Terminal unchanged (3 and 0).
+  - **Done, added to §Q.6's bar:** midair IfcColumn on the played layer ≤ 10 on Hospital (the
+    transfer-beam columns, undecided), 0 on Terminal, ≤ 3 on HHS, under the D4 judge.
+- **Left open, named:** the 10 transfer-beam columns; why `groundworkSlabs` does not claim the
+  Level 1 slab; Clinic, LTU, JKR not measured.
