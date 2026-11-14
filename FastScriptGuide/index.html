@@ -4284,7 +4284,7 @@ shown 1 of 1
 </tbody>
 </table>
 <p>In <code>ColumnSet</code> a plain name is text. A prefix gives another type: <code>D#</code> a date, <code>A#</code> an amount, <code>Q#</code> a quantity, <code>T#</code> a long text, <code>Y#</code> a yes/no, and <code>L#Name=a/b/c</code> a list of fixed values. A table whose <code>Master</code> is another table of the workbook becomes a tab of that table's window.</p>
-<p>A practice workbook ships with the door: <code>common/door/samples/Ninja_Practice.xlsx</code> (a patient, the patient's visits, the medicines of a visit, and a room). <code>dry=Y</code> reads it, says what it would make and writes nothing:</p>
+<p>A practice workbook ships with the door: <code>common/door/samples/Ninja_Practice.xlsx</code> (a patient, the patient's visits, the medicines of a visit, a room, and a referral that sits under Business Partner). <code>dry=Y</code> reads it, says what it would make and writes nothing:</p>
 <!-- run: nx_dry cut=230 -->
 <div class="highlight"><pre><span></span><code>$ cp common/door/samples/Ninja_Practice.xlsx . ; rm -f /tmp/fast_guide_ninja.ops; BIM_OBJECT_OPLOG=/tmp/fast_guide_ninja.ops node common/door/door.js --list &#39;ninja.exec file=Ninja_Practice.xlsx dry=Y&#39; | grep -E &#39;^(bundle|tables|dataSheets|skipped|dry):&#39;
 bundle: Practice
@@ -4298,11 +4298,11 @@ dry: true
 <div class="highlight"><pre><span></span><code>$ cp common/door/samples/Ninja_Practice.xlsx . ; D=&#39;BIM_OBJECT_OPLOG=/tmp/fast_guide_ninja.ops node common/door/door.js --list&#39;; eval &quot;$D &#39;ninja.exec file=Ninja_Practice.xlsx&#39;&quot; | grep -E &#39;^(windows|detailTabs|dataSheets|ops):&#39;; eval &quot;$D &#39;ninja.exec file=Ninja_Practice.xlsx&#39;&quot; | grep -E &#39;^(alreadyStaged|ops|summary):&#39;
 dataSheets: [{&quot;sheet&quot;:&quot;PR_Patient&quot;,&quot;rows&quot;:3,&quot;loaded&quot;:3,&quot;ops&quot;:3},{&quot;sheet&quot;:&quot;PR_Room&quot;,&quot;rows&quot;:2,&quot;loaded&quot;:2,&quot;ops&quot;:2}]
 windows: [{&quot;id&quot;:7100001,&quot;name&quot;:&quot;PR Patient&quot;},{&quot;id&quot;:7100004,&quot;name&quot;:&quot;PR Room&quot;}]
-detailTabs: 2
-ops: 129
+detailTabs: 3
+ops: 151
 alreadyStaged: true
 ops: 0
-summary: this workbook is already staged (4 tables); nothing was written
+summary: this workbook is already staged (5 tables); nothing was written
 </code></pre></div>
 <p>Every table works with the <code>mis.*</code> verbs at once. A record under a master names the master's id (<code>mis.read</code> of the master then shows what sits under it), and a value outside a list is refused:</p>
 <!-- run: nx_use cut=200 -->
@@ -4323,12 +4323,23 @@ reason: BloodGroup Invalid value - Z - Reference_ID=200277 - A - AB - B - O; not
 </code></pre></div>
 <p><strong>A table that is already there.</strong> When the workbook names a table the system already has, nothing is made twice. If the sheet gives that table a <code>Master</code>, the table is reused: the sheet's columns are added to it and it becomes a tab under that master. If the sheet gives it no <code>Master</code>, the row is left alone. The answer lists both (<code>reused</code>, <code>leftAlone</code>). This is what the Ninja of iDempiere does. A reused table keeps its own rules, so a record of it must still fill that table's own mandatory columns.</p>
 <p>A table shown in two windows is written through its own window unless you name the other one with <code>window=</code> (its name or its id). A refusal for a column that belongs to the other window tells you which window to name.</p>
-<p>What it refuses, with nothing written: a second workbook that names tables another workbook made, a workbook whose tables are all already there with no master, and a <code>ColumnSet</code> with a prefix it does not know. A sheet whose name is not exactly a table's name is skipped and named in the answer. The answer's <code>notChecked</code> lists what was not judged.</p>
+<p><strong>A tab on a window that is already there.</strong> A <code>Master</code> does not have to be a table of the workbook. Name a table the system already has and your table becomes a tab of THAT table's window, after the tabs that are there, with no window or menu entry of its own. The practice workbook does it with one row: <code>PR_Referral</code>, whose <code>Master</code> is <code>C_BPartner</code>, so a referral is a tab of the Business Partner window. This is the Ninja of iDempiere's rule too:</p>
+<!-- run: nx_att cut=200 -->
+<div class="highlight"><pre><span></span><code>$ cp common/door/samples/Ninja_Practice.xlsx . ; rm -f /tmp/fast_guide_att.ops; D=&#39;BIM_OBJECT_OPLOG=/tmp/fast_guide_att.ops node common/door/door.js --list&#39;; eval &quot;$D &#39;ninja.exec file=Ninja_Practice.xlsx&#39;&quot; | grep -E &#39;^(attached|detailTabs):&#39;; eval &quot;$D &#39;mis.new kind=PR_Referral Name=Checkup C_BPartner_ID=112&#39;&quot; | grep -E &#39;^(number|id):&#39;; eval &quot;$D &#39;mis.list kind=PR_Referral columns=Name,C_BPartner_ID names=Y&#39;&quot;; rm -f Ninja_Practice.xlsx
+attached: [{&quot;table&quot;:&quot;PR_Referral&quot;,&quot;master&quot;:&quot;C_BPartner&quot;,&quot;window&quot;:&quot;Business Partner&quot;,&quot;windowId&quot;:123}]
+detailTabs: 3
+number: Checkup
+id: 1
+Name     C_BPartner_ID
+Checkup  Standard
+shown 1 of 1
+</code></pre></div>
+<p>What it refuses, with nothing written: a second workbook that names tables another workbook made, a workbook whose tables are all already there with no master, a <code>Master</code> that is neither in the workbook nor a table with a window here, and a <code>ColumnSet</code> with a prefix it does not know. A sheet whose name is not exactly a table's name is skipped and named in the answer. The answer's <code>notChecked</code> lists what was not judged.</p>
 <h3 id="give-a-table-the-document-columns-ninjaworkflow">Give a table the document columns: <code>ninja.workflow</code><a class="headerlink" href="#give-a-table-the-document-columns-ninjaworkflow" title="Permanent link">&para;</a></h3>
 <p>A feature can be switched on later, for one table, without touching the workbook. <code>ninja.workflow</code> gives a table the five document columns (<code>DocStatus</code>, <code>DocAction</code>, <code>Processed</code>, <code>DocumentNo</code>, <code>IsApproved</code>) with their lists and defaults, shows them on its tabs, and fills the records that are already there. It looks first and adds only what is missing, so a second run writes nothing:</p>
 <!-- run: nx_wf cut=200 -->
 <div class="highlight"><pre><span></span><code>$ cp common/door/samples/Ninja_Practice.xlsx . ; rm -f /tmp/fast_guide_wf.ops; D=&#39;BIM_OBJECT_OPLOG=/tmp/fast_guide_wf.ops node common/door/door.js --list&#39;; eval &quot;$D &#39;ninja.exec file=Ninja_Practice.xlsx&#39;&quot; | grep -E &#39;^ops:&#39;; eval &quot;$D &#39;mis.new kind=PR_Visit Name=Before PR_Patient_ID=1&#39;&quot; | grep -E &#39;^number:&#39;; eval &quot;$D &#39;ninja.workflow table=PR_Visit&#39;&quot; | grep -E &#39;^(added|fields|rowsFilled|ops):&#39;; eval &quot;$D &#39;ninja.workflow table=PR_Visit&#39;&quot; | grep -E &#39;^(alreadyDone|ops):&#39;; eval &quot;$D &#39;mis.new kind=PR_Visit Name=After PR_Patient_ID=1&#39;&quot; | grep -E &#39;^docStatus:&#39;; eval &quot;$D &#39;mis.list kind=PR_Visit columns=Name,DocStatus,DocAction,Processed&#39;&quot;; eval &quot;$D &#39;erp.complete kind=PR_Visit id=1&#39;&quot; | grep reason; rm -f Ninja_Practice.xlsx
-ops: 129
+ops: 151
 number: Before
 added: [&quot;DocStatus&quot;,&quot;DocAction&quot;,&quot;Processed&quot;,&quot;DocumentNo&quot;,&quot;IsApproved&quot;]
 fields: 5
@@ -4376,9 +4387,9 @@ reason: Complete was not done: PR Visit has the document columns but no document
 <td>every verb with its inputs</td>
 </tr>
 <tr>
-<td>Make four tables</td>
+<td>Make five tables</td>
 <td><code>cp common/door/samples/Ninja_Practice.xlsx . ; d 'ninja.exec file=Ninja_Practice.xlsx'</code></td>
-<td>patients, visits, medicines, rooms, with 3 patients and 2 rooms loaded</td>
+<td>patients, visits, medicines, rooms and referrals, with 3 patients and 2 rooms loaded</td>
 </tr>
 <tr>
 <td>Try before making</td>
@@ -4466,6 +4477,11 @@ reason: Complete was not done: PR Visit has the document columns but no document
 <td>what that role may see and do</td>
 </tr>
 <tr>
+<td>Add under a table of the system</td>
+<td><code>d 'mis.new kind=PR_Referral Name=Checkup C_BPartner_ID=112'</code></td>
+<td>a referral on business partner 112 (a tab of the Business Partner window)</td>
+</tr>
+<tr>
 <td>Give a table the document columns</td>
 <td><code>d 'ninja.workflow table=PR_Visit'</code></td>
 <td>a status on every visit (<code>DR</code>), old and new</td>
@@ -4477,6 +4493,7 @@ reason: Complete was not done: PR Visit has the document columns but no document
 </tr>
 </tbody>
 </table>
+<p><strong>Speed.</strong> After a big workbook the door keeps an image of what the op-log has made, so a later line does not apply every op again; it is used only while your op-log file still begins exactly as it did, and <code>ERP_OPIMAGE=off</code> switches it off.</p>
 <p>A workbook of your own: copy the practice file, change the rows of <code>2_RO_ModelMaker</code> to your tables (a prefix of your own, such as <code>MY_</code>, keeps them apart from the tables that are already there; a name the system already has is reused, not made twice), and run <code>ninja.exec</code> on it with <code>dry=Y</code> first. The lines of this table are the verbs shown run in the sections above; the table itself is not re-run by this page's test, the grey blocks are.</p>
 <h2 id="work-at-the-terminal-misjs">Work at the terminal: <code>mis.js</code><a class="headerlink" href="#work-at-the-terminal-misjs" title="Permanent link">&para;</a></h2>
 <p>If you would rather pick than type, <code>mis.js</code> shows a list with a pointer. It is a front end only: every key compiles into <strong>one</strong> of the door lines above, runs through the same door (journalled, claim-checked), and the screen prints the line before it runs. Up and Down move the pointer. Left and Right move along the buttons on the pointed row (<code>[U Edit] [D Delete] [C Copy]</code> for a record; for a document, the actions the engine allows now, such as <code>[C Complete] [V Void]</code>, and no Delete once it is completed). Enter runs the highlighted button. <code>+</code> starts a new record, Delete asks <code>y/N</code>, and Esc backs out and writes nothing.</p>
