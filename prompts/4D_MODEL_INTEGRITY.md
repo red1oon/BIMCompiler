@@ -1782,7 +1782,7 @@ edits made during the day, which are now history, not the plan)
 **Everything below "The decision that gated everything" down to "State, honestly" describes
 mid-session state and is superseded by this block. Read this first.**
 
-➡ **Hanging beams during build-up (Time Machine): read §Q (2026-11-14) — the rules, reviewed against
+➡ **'resume 4D' = implement §Q.6 (ORDER OF WORK, step 0 first). Hanging beams during build-up (Time Machine): read §Q (2026-11-14) — the rules, reviewed against
 the shipped code and the persisted runs. It corrects §M.3/§M.5's reading of the beam population.**
 
 ## ✅ Live in production right now — verified merged, not just opened
@@ -3064,7 +3064,7 @@ prompts/STRUCTURAL_SANITY.md` `floating_member` (its T9 notes on beam-to-beam fr
 - **Clinic** — §M.3 recorded "IfcBeam 388, 159 of them carrier-above ← slab" on 2026-09-04. By Gap 1
   that 159 is the same mechanism, but it was not re-measured here.
 
-## §Q.5 THE DECISIONS THIS LEAVES WITH THE OWNER — one at a time, none taken here
+## §Q.5 THE DECISIONS THIS LEAVES WITH THE OWNER — ✅ all four answered 2026-11-14, see §Q.6
 These are §J.4's three questions, asked for beams. Until they are answered every beam number is a
 report, not a defect count.
 1. **Is a wall that carries a beam or a slab Superstructure work?** (Gap 2. The template's `_open`
@@ -3081,3 +3081,101 @@ report, not a defect count.
 3. **What orders beam against beam?** (Gap 3. §J.4 question 1 — at what granularity precedence
    binds — and question 3 — which relation carries it.)
 4. **Does "supported" mean the support has STARTED or has FINISHED?** (§Q.4 first bullet.)
+
+## §Q.6 ▶ RESUME 4D — THE FOUR DECISIONS, ADVISED AND ADOPTED AS THE SPEC (2026-11-14)
+> **Owner, 2026-11-14:** *"use your learning of how construction works and advice me the decisions"* …
+> *"a new session just has to type 'resume 4D' and it will implement as spec'd."*
+> The four answers below are Claude's advice from construction practice, recorded as the spec on that
+> instruction. The owner may strike any one; a struck decision stops its step only, not the others.
+
+**The one principle behind all four — how a floor is actually built:** load goes DOWN. Vertical
+bearers first (columns and bearing walls), then the main beams that land on them, then the beams
+that land on those, then the slab. Structure never hangs from what it carries. Services and
+ceilings are the only things that hang, and they hang from finished structure.
+
+### D1 — A wall that is the ONLY thing under a beam or slab is structure. ADOPTED: yes.
+- **Practice:** a bearing wall goes up with the frame of its level, before the floor above. An
+  infill wall or partition is built after the frame and merely touches the soffit above it.
+- **So contact alone must not promote a wall** — every full-height partition touches a slab. The
+  extracted fact that separates them is NECESSITY: *a structural element (R3 pool) rests on this
+  wall and has no bearing-below contact inside the pool.* Where a beam also lands on a column, the
+  wall under it stays Envelope.
+- **Rule:** `bearingWalls(els)` — one shared definition beside `groundworkSlabs(els)`
+  (`schedule_gate.js`, same pattern: geometry reclassifies, §GROUNDWORK_SLAB is the precedent).
+  A wall it returns takes `phase='Superstructure'`, `sequence=2` (it is a vertical bearer, like a
+  column). Its trade/resource and rate are NOT changed. Walls only — a pipe or railing under a
+  beam is §E row 1 and is never promoted.
+- **Not a class whitelist:** BIMEyes §S3 measured "all walls into the pool" at +207 contradictions
+  on HHS. This rule admits only the walls something structural needs.
+
+### D2 — May structure above outrank what is below? ADOPTED: no, for structural elements.
+- **Practice:** a beam never hangs from its slab. A duct does hang from the slab.
+- **Rule (R5, both twins or the single owner):** when T is itself in the pool, carrier-above is
+  NOT eligible, and only pool contacts are eligible (after D1 a bearing wall is one). If none
+  exists T has no elected support and is **counted and named** on a `§STRUCT_NO_SUPPORT` line —
+  a model gap, never hidden and never called midair. When T is NOT in the pool (services,
+  ceilings, fit-out) the election is unchanged, pool override included.
+- The "761 vs 1" figure (BIMEyes §S3 gate) is not relied on: this rule does not move the pool for
+  non-structural T, which is what that figure justified.
+
+### D3 — Beam against beam. ADOPTED: main beams before the beams they carry; a tie is one lift.
+- **Practice:** girders spanning bearer to bearer go first, secondary beams frame into them after.
+  In a cast floor the beams of one bay are poured together — no order exists to get wrong.
+- **Rule, election:** an embedded contact S may be elected for T only if S itself has an elected
+  bearing-below support. If no embedded contact qualifies (the mutual, same-depth case) T has no
+  elected support from that relation: the pair is one lift and is not judged against each other.
+- **Rule, order (R6a `cpm_schedule.js:831`):** inside a cell, members sort by SUPPORT RANK first
+  (0 = elected support is outside the cell or none; n+1 = elected support has rank n), then `bz`,
+  then guid. Answers §J.4 q1 and q3 for structure: precedence binds per ELEMENT inside a
+  (level, sequence) cell and is carried by the bearing relation; across cells the product order
+  stands as it is.
+
+### D4 — "Supported" means the support is FINISHED. ADOPTED for bearing and hanging; cast-in stays together.
+- **Practice:** nothing is landed on a half-built column. A cast-in or same-pour item goes in WITH
+  its host.
+- **Rule:** bearing-below and carrier-above are finish-to-start; embedded stays start-to-start.
+  It applies in the SAME change to the edge (R6b `:228-230`), the cell packing (a member may not
+  start before its in-cell elected support ends) and the judge (R8 `:591`: midair ⇔ the elected
+  support's END is after the element's start, for the two FS relations). Curing time is not
+  modelled — no data, none invented.
+- This is what makes the picture right: the scrubber draws a finished element solid, so a beam
+  can only appear once its column is solid. It answers §Q.4's first unknown.
+- ⚠ BIMEyes §S13/§S14 measured fleet-wide FS on the full contact SET at a stacking cost
+  (piles ≥ 20). This is NOT that: one elected edge per element, as today. Stacking is still a
+  gate below.
+
+### ORDER OF WORK — each step is one PR in `bim-ootb`, measured before and after
+0. **Land §I.1a first** (`refactor/contactgraph-one-owner`, its own RESUME block above) so every
+   rule below is changed once, not twice. If it cannot land, change both twins in one commit and
+   keep `§CPM_PARITY` green.
+1. **D2** → 2. **D1** → 3. **D3** → 4. **D4**. Smallest and safest first; D4 last because it moves
+   the most times.
+- **Every step:** `cache_4d_run.js --force` for Hospital, Terminal, Duplex, HHS before and after;
+  `node scripts/probe_4d_beam_midair.js <cacheDirs>` (bim-compiler) before and after; paste both
+  `§BEAM_MIDAIR` blocks into this section. The probe's relation read-back must follow the
+  election if D2/D3 change its shape — fix the probe in the same step, never let it MISMATCH.
+- **Gates on every step (a red gate stops the step, it is not re-baselined away):**
+  1. `§BEAM_MIDAIR` self-check MATCH on all four buildings.
+  2. Played-layer midair for every NON-beam class does not rise (per-class, from the same run).
+  3. Stacking: no pile ≥ 20 at one instant on the played layer (BIMEyes §S14.2's measure).
+  4. The Gantt-edit chain stays as it was: `witness_gantt_edit_coherence`,
+     `witness_gantt_lock_integrity`, `witness_tm_edit_exception`, `witness_midair_zero`
+     (a moved baseline needs a written, measured reason in this section).
+  5. Programme length (`§AUTHOR_TPL totalDays`) reported before and after; a rise is reported,
+     not hidden. D4 is expected to lengthen it — say by how much.
+- **PREDICTIONS, written before any run — falsifiable:**
+  - after D2: carrier-above-elected beams 30 / 26 / 4 → **0** on Hospital / Terminal / Duplex.
+  - after D1+D2: Duplex midair beams 8 → **0**; Hospital and Terminal wall-borne beams no longer
+    midair (15 and 15).
+  - after D3: Hospital embedded ← beam midair 47 → **0**, bearing ← beam 45 → **≤ 5**;
+    Terminal embedded 29 → **0**.
+  - after D4: column-borne beams stay at 0 / ≤ 4 under the FINISH test.
+  - **Done =** midair IfcBeam on the played layer is 0 on Hospital and Duplex and ≤ 4 on Terminal,
+    under the D4 judge, with all five gates green. A prediction that fails is recorded as failed,
+    with the log line, and the step stops for the owner.
+- **Out of scope here:** columns before their slab (68, §M.3), mullions before glazing, MEP — not
+  re-examined in §Q, so not decided. Clinic, LTU, JKR get measured at the end, not tuned for.
+- **Standing rules that bind the implementing session:** work in a `/tmp/wt-*` worktree of
+  bim-ootb (check `git worktree list` first); no bakes, GPU or browser runs without the owner's
+  go; agents on Sonnet; findings and results go in THIS section only; push and merge own verified
+  PRs; the witness, never the owner's eyes, is the test.
