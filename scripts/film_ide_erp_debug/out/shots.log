@@ -1,0 +1,43 @@
+§FILM_PLAN commits old=f4b725f0 new=614bb121 {"old":"/tmp/wt-f3-old","neu":"/tmp/wt-f3-new","kernel":"erp/ws_kernel.js","witness":"erp/tests/witness_replay_clock.js","tag":"§REPLAY_CLOCK_SESSION_DAY","tagPlace":{"rel":"erp/tests/witness_replay_clock.js","line":151,"col":14},"call":{"line":86,"col":16},"def":{"line":79,"text":"function env(s) {   // the session of the WS login, like Env"},"frags":[{"old":"const d = new Date(clock), day = d.toISOString().slice(0, 10);","neu":"const st = A.Env.stamp(clock);","line":80,"col":19,"newLine":80},{"old":"date: day + ' 00:00:00', now: d.toISOString().slice(0, 19).replace('T', ' ')","neu":"date: st.day + ' 00:00:00', now: st.now","line":81,"col":79,"newLine":81}]}
+§FILM_REAL_LOG before   §REPLAY_CLOCK_SESSION_DAY tz=UTC local_clock=2026-11-13 00:30 session_day=2026-11-13 same=Y|  §REPLAY_CLOCK_SESSION_DAY tz=Asia/Kuala_Lumpur local_clock=2026-11-13 00:30 session_day=2026-11-12 same=N|§WITNESS_REPLAY_CLOCK pass=4 fail=0 ran=2|
+§FILM_X0 active=true fresh="§APP_SURFACE files=3266 fields=1860 alias_only=1596 phantom=174 untied=11" vscode=1.146.0
+§FILM_STILL name=h1_tag_before geometry=1440x900+240+90 bytes=308383
+§FILM_SHOT name=h1_tag_before file="erp/tests/witness_replay_clock.js" line=151 last="" hover="**§REPLAY_CLOCK_SESSION_DAY** - [bim-compiler prompts/CODE_ARCHITECTURE_DESIGN.md:64](file:///home/red1/bim-compiler/prompts/CODE_ARCHITECTURE_DESIGN.md#L64) — ▶▶ RESUME HERE FIRST (rewritten 2026-11-14 at the close of the long Fable session; replaces every earlier resume block) - [bim-compiler prom"
+§FILM_STILL name=f1_call geometry=1440x900+240+90 bytes=319912
+§FILM_SHOT name=f1_call file="erp/ws_kernel.js" line=86 text="const e0 = env(session), std = { now: e0.now, user: e0.user, client: e0.client, "
+§FILM_STILL name=f2_landed geometry=1440x900+240+90 bytes=320331
+§FILM_SHOT name=f2_landed file="erp/ws_kernel.js" line=86 text="const e0 = env(session), std = { now: e0.now, user: e0.user, client: e0.client, " expectLine=79
+§FILM_STILL name=t0a_deleted geometry=1440x900+240+90 bytes=327225
+§FILM_SHOT name=t0a_deleted line=80 typed=0 of=30
+§FILM_STILL name=t0b_half geometry=1440x900+240+90 bytes=329652
+§FILM_SHOT name=t0b_half line=80 typed=15 of=30 text="clock += 1000; const st = A.En"
+§FILM_STILL name=t0c_typed geometry=1440x900+240+90 bytes=332128
+§FILM_SHOT name=t0c_typed line=80 typed=30 of=30 text="clock += 1000; const st = A.Env.stamp(clock);"
+§FILM_STILL name=t1a_deleted geometry=1440x900+240+90 bytes=331321
+§FILM_SHOT name=t1a_deleted line=81 typed=0 of=39
+§FILM_STILL name=t1b_half geometry=1440x900+240+90 bytes=333819
+§FILM_SHOT name=t1b_half line=81 typed=19 of=39 text="return { client: s.clientId, org: s.orgId, user: s.userId, role: s.roleId, date: st.day + ' 00, nowMillis: clock, session: sessionTok.get(s) || (sessionTok.set("
+§FILM_STILL name=t1c_typed geometry=1440x900+240+90 bytes=312452
+§FILM_SHOT name=t1c_typed line=81 typed=39 of=39 text="return { client: s.clientId, org: s.orgId, user: s.userId, role: s.roleId, date: st.day + ' 00:00:00', now: st.now, nowMillis: clock, session: sessionTok.get(s)"
+§FILM_TYPED lines=80,81 fragments_in_file=true old_gone=true
+§FILM_STILL name=s1_saved geometry=1440x900+240+90 bytes=312759
+§FILM_SHOT name=s1_saved file="erp/ws_kernel.js" saved=true
+§FILM_REAL_LOG after   §REPLAY_CLOCK_SESSION_DAY tz=UTC local_clock=2026-11-13 00:30 session_day=2026-11-13 same=Y|  §REPLAY_CLOCK_SESSION_DAY tz=Asia/Kuala_Lumpur local_clock=2026-11-13 00:30 session_day=2026-11-13 same=Y|§WITNESS_REPLAY_CLOCK pass=4 fail=0 ran=2|
+§FILM_STILL name=h2_tag_after geometry=1440x900+240+90 bytes=308227
+§FILM_SHOT name=h2_tag_after file="erp/tests/witness_replay_clock.js" line=151 last="" hover="**§REPLAY_CLOCK_SESSION_DAY** - [bim-compiler prompts/CODE_ARCHITECTURE_DESIGN.md:64](file:///home/red1/bim-compiler/prompts/CODE_ARCHITECTURE_DESIGN.md#L64) — ▶▶ RESUME HERE FIRST (rewritten 2026-11-14 at the close of the long Fable session; replaces every earlier resume block) - [bim-compiler prom"
+§FILM_WS_CHANGED  M erp/ws_kernel.js
+§FILM_DIFF  1 file changed, 2 insertions(+), 2 deletions(-)
+§FILM_SHOOT stills=11 errors=0
+§FILM_PLAN commits old=f4b725f0 new=614bb121 {"old":"/tmp/wt-f3-old","neu":"/tmp/wt-f3-new","kernel":"erp/ws_kernel.js","witness":"erp/tests/witness_replay_clock.js","tag":"§REPLAY_CLOCK_SESSION_DAY","tagPlace":{"rel":"erp/tests/witness_replay_clock.js","line":151,"col":14},"call":{"line":86,"col":16},"def":{"line":79,"text":"function env(s) {   // the session of the WS login, like Env"},"frags":[{"old":"const d = new Date(clock), day = d.toISOString().slice(0, 10);","neu":"const st = A.Env.stamp(clock);","line":80,"col":19,"newLine":80},{"old":"date: day + ' 00:00:00', now: d.toISOString().slice(0, 19).replace('T', ' ')","neu":"date: st.day + ' 00:00:00', now: st.now","line":81,"col":79,"newLine":81}]}
+§FILM_X0 active=true fresh="§APP_SURFACE files=3266 fields=1860 alias_only=1596 phantom=174 untied=11" vscode=1.146.0
+§FILM_DEFS count=1 waited_ms=35 at=erp/ws_kernel.js:79
+§FILM_STILL name=f1_call geometry=1440x900+240+90 bytes=322942
+§FILM_SHOT name=f1_call file="erp/ws_kernel.js" line=86 text="const e0 = env(session), std = { now: e0.now, user: e0.user, client: e0.client, "
+§FILM_STILL name=f2_landed geometry=1440x900+240+90 bytes=322006
+§FILM_SHOT name=f2_landed file="erp/ws_kernel.js" line=79 text="function env(s) {   // the session of the WS login, like Env.getCtx() for the re" expectLine=79
+§FILM_SHOOT stills=11 errors=0
+§FILM_PLAN commits old=f4b725f0 new=614bb121 {"old":"/tmp/wt-f3-old","neu":"/tmp/wt-f3-new","kernel":"erp/ws_kernel.js","witness":"erp/tests/witness_replay_clock.js","tag":"§REPLAY_CLOCK_SESSION_DAY","tagPlace":{"rel":"erp/tests/witness_replay_clock.js","line":151,"col":14},"call":{"line":86,"col":16},"def":{"line":79,"text":"function env(s) {   // the session of the WS login, like Env"},"frags":[{"old":"const d = new Date(clock), day = d.toISOString().slice(0, 10);","neu":"const st = A.Env.stamp(clock);","line":80,"col":19,"newLine":80},{"old":"date: day + ' 00:00:00', now: d.toISOString().slice(0, 19).replace('T', ' ')","neu":"date: st.day + ' 00:00:00', now: st.now","line":81,"col":79,"newLine":81}]}
+§FILM_X0 active=true fresh="§APP_SURFACE files=3266 fields=1860 alias_only=1596 phantom=174 untied=11" vscode=1.146.0
+§FILM_STILL name=h1_tag_before geometry=1440x900+240+90 bytes=308383
+§FILM_SHOT name=h1_tag_before file="erp/tests/witness_replay_clock.js" line=151 last="" hover="**§REPLAY_CLOCK_SESSION_DAY** - [bim-compiler prompts/CODE_ARCHITECTURE_DESIGN.md:64](file:///home/red1/bim-compiler/prompts/CODE_ARCHITECTURE_DESIGN.md#L64) — ▶▶ RESUME HERE FIRST (rewritten 2026-11-14 at the close of the long Fable session; replaces every earlier resume block) - [bim-compiler prompts/CODE_ARCHITECTURE_DESIGN.md:222](file:///home/red1/bim-compiler/prompts/CODE_ARCHITECTURE_DESIGN.md#L222) — PART A — A pure core with one Env handed in (fixes P3, half of P4) printed by: - [erp/tests/witness_replay_clock.js:16](file:///tmp/wt-f3-old/erp/tests/witness_replay_clock.js#L16) - [erp/tests/witness_replay_clock.js:151](file:///tmp/wt-f3-old/erp/tests/witness_replay_clock.js#L151)"
+§FILM_SHOOT stills=11 errors=0

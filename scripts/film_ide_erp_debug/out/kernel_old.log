@@ -1,0 +1,5 @@
+§CALLOUT-UNPORTED-DEP MProductPricing.checkVendorBreak needs M_ProductPriceVendorBreak (no such table: M_ProductPriceVendorBreak) → DB.getSQLValue -1
+§LOGINCTX build client=11 org=11 role=102 user=100 wh= day=2026-11-12 keys=50 ms=0
+§CALLOUT-UNPORTED-DEP MTax.getPostals needs bundle table C_TaxPostal (no such table: c_taxpostal) → no postals
+§EXPORTSAFE-REBIND n=1 names=core-udf
+KR_RESULT {"tz":"Asia/Kuala_Lumpur","local":"2026-11-13T00:30:00","localDay":"2026-11-13","utcDay":"2026-11-12","sessionDay":"2026-11-12","steps":{"order":true,"ship":true,"invoice":true},"errors":[],"invoice":{"c_invoice_id":1300110,"documentno":"100001","dateinvoiced":"2026-11-12 00:00:00","dateacct":"2026-11-12 00:00:00","created":"2026-11-12 16:30:06","grandtotal":185.25,"docstatus":"CO"},"db":"/tmp/wt-film3-build/scripts/film_ide_erp_debug/out/kernel_old.db","bytes":30904320}
