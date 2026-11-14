@@ -471,9 +471,9 @@ Paths are `~/bim-ootb/viewer/` unless stated. Line numbers are `origin/main` @ `
 
 | the question | OWNER — call this | never |
 |---|---|---|
-| **does S support T?** (bearing-below ∪ carrier-above ∪ embedded) | `support_sweep.js:384` `_contactGraph(items)` → `{contacts, grounded, orphans, ok}` | write a bbox/Z-band test inline. ⚠ **2 more copies exist — see §I.1** |
+| **does S support T?** (bearing-below ∪ carrier-above ∪ embedded) | `support_sweep.js:391` `_contactGraph(items)` → `{contacts, grounded, orphans, ok, groundConnected…}` *(line re-verified 2026-11-14 @ bim-ootb `cbb22300`; was `:384`)* | write a bbox/Z-band test inline. ⚠ **CORRECTED 2026-11-14: ONE more full copy exists, not two** — `cpm_schedule.js:61` `contactGraph`, the copy the SOLVE runs on, held equal by `§CPM_PARITY` (§I.1). The single-owner collapse (§I.1a) is **still unmerged** (branch `refactor/contactgraph-one-owner`, no PR). The third site (`auditFloating`'s wall pool) is a *different, bounded* test, kept on purpose (§I.5d). ⚠ The embedded clause is **symmetric** for two boxes of equal height — see §Q.3 |
 | **does T rest on soil?** (ground exemption) | `schedule_gate.js:1210` — `T.seq !== 1`. Substructure legitimately rests on unmodeled soil | use `grounded[i]` for this. It is **footprint-local** and answers a *different* question — see §I.2 |
-| **which ONE thing supports T?** | `support_sweep.js:432` `_designatedSupport(items, G)` | elect a support yourself. §A: the election is the defect |
+| **which ONE thing supports T?** | `support_sweep.js:502` `_designatedSupport(items, G)` (twin: `cpm_schedule.js:163`) *(lines re-verified 2026-11-14; was `:432`)*. **What it does, stated here because this row never said it:** preference bearing-below → embedded → carrier-above, **but a contact inside `supportPool` replaces the unrestricted winner whatever its relation** (`:535`, §S26.2 *"structure outranks contact"*) — so a pool element ABOVE beats a non-pool element BELOW. Measured consequence for beams: §Q.2 | elect a support yourself. §A: the election is the defect |
 | **what phase/trade is this element?** | `schedule_author.js` `matchNameOverride()` → `matchRule()`, tables in **`rates.js`** | read `rates/sequence_rules.json` — it is a MIRROR, never executed (§G.0) |
 | **how long does it take?** | `schedule_author.js:78` `_installSecs(cls, rule, laborRates, realQty, lengthRatio)` | hand-roll it. `time_machine.js:4494` `getInstallSecs` already delegates here; its local fallback is documented as a divergence risk |
 | **what is the task grid?** | `schedule_author.js:425` `instantiateTemplate(...)` from **`rates/4D_template.json`** | derive phases from what the elements did. §B: an envelope cannot constrain what drew it |
@@ -510,7 +510,7 @@ but every failure is now `storeyViolations` (construction-sequence ordering acro
 different defect class entirely, untouched by this section's fix. See §I.3+ for that.
 
 ---
-<details><summary>Original write-up (2026-08-27), for history — the defect it describes is fixed, above</summary>
+<details><summary>Original write-up (2026-08-27), for history — ⚠ CORRECTED 2026-11-14: only the DISAGREEMENT between copies 1 and 2 is closed. The missing upper bound it describes is STILL the shipped formula in both (`support_sweep.js:417`, `cpm_schedule.js:88`: `S.bz < T.bz - EPS && S.tz >= T.bz - GAP`, no top bound) — deliberately, per §I.5d ("port nothing"). Do not read this block as "the bound was added".</summary>
 
 Verified 2026-08-27, not inferred — all three carry the same comment text, so they were copied:
 
@@ -1782,6 +1782,9 @@ edits made during the day, which are now history, not the plan)
 **Everything below "The decision that gated everything" down to "State, honestly" describes
 mid-session state and is superseded by this block. Read this first.**
 
+➡ **Hanging beams during build-up (Time Machine): read §Q (2026-11-14) — the rules, reviewed against
+the shipped code and the persisted runs. It corrects §M.3/§M.5's reading of the beam population.**
+
 ## ✅ Live in production right now — verified merged, not just opened
 All seven confirmed `MERGED` on `bim-ootb` (checked via `gh pr view` against the actual repo, not
 recalled from chat): **#1552** storey datum is the floor · **#1554** W-PERS split-mode blind spot
@@ -1791,10 +1794,11 @@ LevelDeriver wired, flag OFF · **#1557** elevation deploy-gap closed for Hospit
 proof. `bim-ootb`'s `deploy-pages.yml` auto-publishes on merge to `main` — no separate manual step
 like this repo's docs, so all seven are live on the public site, not just merged to git.
 
-**⚠ Loose end, not yet closed**: `bim-ootb` PR **#1551** is still open and stale — it carries an
-OLDER, pre-correction version of `buildings/patches/Duplex_extracted.db.sql` that #1557 already
-superseded with the correct DROP+CREATE form. Nobody has closed it. Do that before it confuses a
-future session into thinking it's still live work.
+**⚠ Loose end — CORRECTED 2026-11-14:** `bim-ootb` PR **#1551** is **not open**. `gh pr view 1551` →
+`MERGED 2026-09-02` (*"§STOREY_DATUM + §TPL_LADDER_BRIDGE — DAY-0 integrity to zero"*). The earlier text
+here said it was open, stale, and carried an older `buildings/patches/Duplex_extracted.db.sql` than
+#1557's. **Not re-checked in this pass:** which form of that patch file `main` now carries — verify
+before relying on it; do not go looking for an open PR to close.
 
 ## ⛔ Explicitly NOT done, don't assume otherwise
 - **The Schedule Editor (`viewer/schedule_editor_ui.js`) has had ZERO commits and zero verification
@@ -2178,7 +2182,7 @@ individual bars up to 105× shorter than the physics span of the elements they c
 programme length (`§CELL_RUN makespanDays`, `§CREW_DAY spanD`, `§AUTHOR_TPL totalDays`) and no row says
 which one IS the programme — row added in §M.6.
 
-## §M.3 Q3 — MIDAIR GOVERNANCE — **539 on Hospital META (played), of which ~22 (4 %) are ceiling-hung terminals; 302 (56 %) are the judge electing a non-structural neighbour; 237 are structural and indefensible.**
+## §M.3 Q3 — MIDAIR GOVERNANCE — **539 on Hospital META (played), of which ~22 (4 %) are ceiling-hung terminals; 302 (56 %) are the judge electing a non-structural neighbour; 237 have a structural elected support.** ⚠ **CORRECTED 2026-11-14 (§Q): "indefensible" is withdrawn for the 123 beams — 30 of them are the election choosing the slab the beam CARRIES, and 47 are a direction the rule cannot determine. The counts stand; the verdict on them does not.**
 
 Owner called, not re-derived: `SupportSweep.midairAudit` + its own `designatedSupport` election over the
 persisted PLAYED items (CITED `support_sweep.js:500`, `:432`; `schedule_gate.js:1375 supportPool`).
@@ -2208,9 +2212,9 @@ owner's, with that caveat, and the pool split below is exactly that caveat measu
   them (MEP Final). The diffuser is banded into "Architecture Envelope" (day ~30). That is §E row 1
   ("a pipe bears a wall") — the election, not the schedule, is the defect; §E's ruling *"anything that
   hangs within a well formed room is no issue"* already covers them.
-- **Indefensible structural, the real population: 237.** Named: **IfcColumn on IfcSlab 68** — a column
+- **Structural elected support: 237** *(was headed "Indefensible structural, the real population" — withdrawn 2026-11-14 for the beam share, see §Q.2/§Q.3; the column, footing, wall and slab shares below were NOT re-examined and keep their original reading)*. Named: **IfcColumn on IfcSlab 68** — a column
   appears 0.5–14.2 d (median 4.3 d) **before the slab it stands on**; **IfcBeam 123** (embedded
-  beam←beam 47, bearing beam←beam 45, carrier-above beam←slab 29 = §S2's overhead-slab election);
+  beam←beam 47, bearing beam←beam 45, carrier-above beam←slab 29 = §S2's overhead-slab election — re-measured 2026-11-14, same 123 / 47 / 45 / 29, attributed in §Q);
   IfcFooting←IfcFooting embedded 11; IfcWallStandardCase 15; **IfcSlab 2** — two roof slabs 144 d
   before the blockwork walls under them; IfcMember←IfcPlate 54 (mullions before their glazing).
 - Same-task offenders (416) are the CELL solve's own representability gap — `§CELL_GATE … REFUSED=1296`
@@ -2270,7 +2274,7 @@ ruling therefore holds only for L3/L4/L5's single plates, and only for the REVEA
    `laborRates: {}`) and asserts no delta. Fix: pass `template:` + the G-COH-10 guard into both; add the
    SupportSweep global, real rates and a `schedule_start` delta assertion to `edit_coherence`; replace
    `undo_dot_spawn`/`whatif_authored_sync` in CLAUDE.md's chain list. ~1 PR, witness-only.
-2. **🔴 `§TM_PLAYED_LAYER … midair=N` reports the WRONG LAYER's number** — clause-4 defect in the
+2. **✅ INSTRUMENT HALF FIXED — bim-ootb PR #1652 (`765c4804`, §TM_PLAYED_LAYER_MIDAIR): the line now prints `midairPlayed=` (owner, this layer) AND `midairCpmDisplay=` side by side; verified in the persisted `witness.log` of 2026-11-09 (Hospital `midairPlayed=539 … midairCpmDisplay=583`, Duplex `257 … 0`, HHS `152 … 0`). The RULING half — may cross-task tiling reorder a support pair — is still open (BLOCKED (b) below).** Original finding, for the trail: **🔴 `§TM_PLAYED_LAYER … midair=N` reports the WRONG LAYER's number** — clause-4 defect in the
    instrument this lane reads first. CITED `scripts/lib/tm_played_layer.js:171` `midair: dt && dt.midair`
    — the CPM-DISPLAY judge's count, printed on the line that says *"these are the instants kernel_ops
    carries"*. Owner re-judged on those instants: Hospital META **539** (line says 583), extracted 495
@@ -2285,7 +2289,7 @@ ruling therefore holds only for L3/L4/L5's single plates, and only for the REVEA
    Hospital cache number since #1641 is on the 20-label INFERRED grid. Fix: `cache_4d_run.js` resolves
    `_meta.db` first (the `resolveDbFile` rule the probe already has, minus the 0-byte trap) and prints
    `dbFile=` on `§CACHE_BUILT`; until then read `~/.cache/bim4d_meta/`.
-4. **🟠 Midair governance: 237 structural offenders are real** (68 columns before their slab, 123
+4. **🟠 Midair governance: 237 offenders have a structural elected support** *("are real" withdrawn 2026-11-14 for the 123 beams — §Q: 0 of 793 column-borne beams are midair; the 123 are beam↔beam and the slab-above election)* (68 columns before their slab, 123
    beams, 2 roof slabs 144 d early), and **302 verdicts are the election's §E proxy failure** (a
    ceiling tile / pipe / plate elected as support). Fix is the lane's D1 (§S14/§S9): judge on the
    contact SET with §E containment, not on one elected box — no scheduling change moves the 237 until
@@ -2310,7 +2314,7 @@ BLOCKED (user decisions, not measurements): (a) the productivity constant for If
 |---|---|---|
 | **how long is the programme?** | ⛔ **NO OWNER.** Three lines each print a length from one run — `§CELL_RUN makespanDays` (the DAG solve, Hospital META 447.0), `§CREW_DAY spanD` (360.3), `§AUTHOR_TPL totalDays` (the authored grid the panel and film show, 334) — and nothing says which is the contract. Add the row when ruled | quote one of the three as "the schedule length" without naming the line |
 | **does the persisted run represent the DB the viewer loads?** | `run.json.dbFile` (`cache_4d_run.js` writes it) — READ IT. Today it is `_extracted.db` by construction (`:95`,`:113`); the viewer loads `_meta.db` for Hospital/Clinic (§I.6, `streaming.js §DB_SPLIT_DETECT`) | assume `~/.cache/bim4d/Hospital` is the viewer's Hospital; it is not since #1641 |
-| **midair ON THE PLAYED INSTANTS?** | `SupportSweep.midairAudit(items with s/e = play map)` — as `probe_tm_reveal_shipped.js` `judge()` does (`§TM_REVEAL_JUDGE … map=CANDIDATE-tiled`) | read `§TM_PLAYED_LAYER midair=` for it — that field is `dt.midair`, the CPM-display count (`tm_played_layer.js:171`) |
+| **midair ON THE PLAYED INSTANTS?** | `SupportSweep.midairAudit(items with s/e = play map)` — as `probe_tm_reveal_shipped.js` `judge()` does (`§TM_REVEAL_JUDGE … map=CANDIDATE-tiled`) | ~~read `§TM_PLAYED_LAYER midair=` for it~~ — **CORRECTED 2026-11-14:** since bim-ootb PR #1652 the line carries `midairPlayed=` (this layer, the owner's count — read THIS) and `midairCpmDisplay=` (the other layer). The old single `midair=` field no longer exists |
 
 ---
 
@@ -2921,7 +2925,7 @@ cpm_schedule loaded too (test-only change).
 vacuous PASS — PRIMAL LAW 4); (3) `cache_4d_run.js` per building: schedule outputs identical before/after.
 **Deletion budget:** expect ≈ −150 lines in support_sweep.js (two bodies + duplicated doctrine comment kept once, in cpm).
 
-### §I.1a RESUME (2026-10-06 session close) — patch PUSHED, NOT verified, NO PR
+### §I.1a RESUME (2026-10-06 session close) — patch PUSHED, NOT verified, NO PR *(re-checked 2026-11-14: unchanged — branch `origin/refactor/contactgraph-one-owner` exists, `gh pr list --head` returns none, `main` still carries both full copies)*
 - Branch **bim-ootb `refactor/contactgraph-one-owner`** @ dcdc6b3e (worktree /tmp/wt-contactgraph): the prepared patch, committed as WIP.
 - **Baseline taken on origin/main @ c6038f93 BEFORE the patch** — the 24 witnesses that touch support_sweep/cpm_schedule
   (exit codes; 10 green, 12 red, 2 inconclusive ON MAIN already): witness_4d_template_instantiation.js=0 · witness_civil_mixed_programme.js=2 · witness_civil_phase.js=1 · witness_crosstask_judge_parity.js=0 · witness_curtain_wall_opening.js=1 · witness_day0_attribution.js=1 · witness_day0_integrity.js=1 · witness_gantt_lock_integrity.js=1 · witness_gantt_og_grid_perf.js=0 · witness_gantt_props_epoch.js=1 · witness_gantt_refold_yield.js=0 · witness_ground_connected.js=0 · witness_hosted_before_host.js=1 · witness_kernel_ops_sched_version.js=1 · witness_midair_zero.js=1 · witness_og_guard_bearing_bound.js=0 · witness_retyped_constants.js=0 · witness_s50_cell_engine.js=1 · witness_s55_identity_vs_cell.js=1 · witness_storey_datum_frame.js=0 · witness_tm_played_layer_midair.js=2 · witness_tm_reveal_within_bar.js=0 · witness_tpl_model_three_producers.js=0 · witness_zone_display_authoring.js=1 · 
@@ -2939,3 +2943,141 @@ vacuous PASS — PRIMAL LAW 4); (3) `cache_4d_run.js` per building: schedule out
 (start + min sDays / max eDays), one C_ProjectTask per 4D task and each line's phase come from the owner. Without a programme: classify() phases, NO dates, note `NO_4D_SCHEDULE` (the classify
 duplicate remains on that path only). Witness `capex/tests/witness_fold_one_schedule.js` (HHS: was → 2028-05-24, now 2026-11-01 → 2026-12-24 = the 4D day 0-53). No 4D code changed.
 Measured on the way, NOT a 4D defect: Duplex 4D schedules 1,119 of 1,190 sized elements; the other 71 are IfcOpeningElement 50 + IfcSpace 21 (not built work).
+
+## §SHIM-FACING — can the walker's shim mount face fix 4D placement? MEASURED 2026-11-09 (owner: *"This can solve 4D placement, to determine if something is hanging from ceiling or depend on below or wall is where that shim anchor is facing"*)
+**Re-read first: §E (proxies) and §I (owners).** "Does S support T" = `support_sweep.js` `_contactGraph` (bearing-below ∪ carrier-above ∪ embedded); "which one" = `_designatedSupport`; floating = `_midairAudit`. Nothing below re-derives them; numbers are from the persisted cache (`~/.cache/bim4d/<B>/1adc56735190_*`, `witness.log` `§TM_PLAYED_LAYER midairPlayed=` = `run.json` `playStats.midairPlayedGuids` length, checked equal for all four).
+**What "midair" is (code, `support_sweep.js:591` at origin/main):** `items[sIdx].s > items[i].s + 1` — the ELECTED support starts later than the element. It is a time-order judge, not "no support found". So §E's row "bearing-below only → ceiling-hung pipe read as floating" is already answered by `_contactGraph` (carrier-above is in it).
+**Shim rows (mined, `rule_shim`):** terminal_rules 17 rows, 5 with a class key (AirTerminal, LightFixture, FireSuppressionTerminal → BOTTOM of IfcCovering; Alarm, ElectricAppliance → SIDE of IfcWall); duplex_rules 15 rows, 3 with a class key (FlowFitting, FlowSegment, FlowTerminal → SIDE of IfcWall). No shim rows in `modeller/patches/*.sql`.
+| building | midair | with a class shim row | mount | of those, elected carrier-above |
+|---|---:|---:|---|---:|
+| Duplex | 257 | 232 | SIDE | 91 |
+| HHS_Office_Federated | 152 | 83 | SIDE | 11 |
+| Hospital | 539 | 6 | BOTTOM | 0 |
+| Terminal | 3,065 | 267 | 262 BOTTOM, 5 SIDE | 267 |
+(Election rebuilt from `run.json` bboxes with the shipped EPS/GAP/CELL by a read-only probe, scratchpad `shim4d/m2.py`; it reproduces the shipped midair set exactly on Duplex, HHS, Terminal, and 527/539 on Hospital.)
+**Verdict:** using the shim face as the support DIRECTION fixes ~0. On Terminal all 262 BOTTOM-mounted midair elements are already elected carrier-above; they are midair because the carrier is scheduled later. Coverage is also small: structural and segment/fitting classes have no class shim row; duplex_rules' SIDE rows cover duct, pipe and conduit alike, a poor match for ceiling-hung runs.
+**What the facing DOES give 4D (not built, owner's ruling — this is §C, still open):** a STATED "hangs from that host" relation instead of a geometric guess. A rule of the form *"a BOTTOM-mounted element's work follows its carrier's task"* would move those elements after the slab they hang from; on Terminal that is 262 of 3,065 midair (8.5%). It changes the programme (which task an element belongs to), so per §C/§J.4 it is a ruling, not a fix. For WALKED fixtures the walker already writes `host` + `mount` + (since §FACING) `face` on each placement; carrying them into the Viewer DB (`BIMOOTB_Walk` set) is the data path if the owner rules for it.
+
+# §Q HANGING BEAMS DURING BUILD-UP — THE RULES, REVIEWED (2026-11-14, user: *"we have never fully solved the hanging beams problem during build up construction in Time Machine. Look at the rules and review them first."* then *"Correct the specs and do not fix anything."*)
+
+```
+⛔ SPEC ONLY. No code changed, no witness changed, no baseline re-locked. Re-read §E and §I first.
+Every number is the OWNER's (SupportSweep.contactGraph / designatedSupport / midairAudit,
+ScheduleGate.supportPool, bim-ootb origin/main @ cbb22300) over the PERSISTED runs (PRIMAL LAW 5).
+Instrument: bim-compiler scripts/probe_4d_beam_midair.js  →  §BEAM_MIDAIR lines.
+Self-check on every building: recount == playStats.midairPlayed (539 / 3065 / 257 / 152 — all MATCH).
+```
+
+## §Q.0 WHAT THIS SECTION CORRECTS
+- **§M.3 / §M.5 item 4 called the 123 Hospital beams "structural and indefensible / real".** That
+  reading is withdrawn (edited in place). The count reproduces exactly; the verdict was never checked
+  against which relation the election had chosen. It is checked below.
+- **§I never said what the election does.** The row named the owner and stopped. The rule that
+  produces most of the beam verdicts (`:535`, pool outranks relation) was in no spec.
+- **§I.1 read as if the bearing upper bound had been added.** It was not (edited in place).
+- **§SHIM-FACING existed only on branch `fable/meshdb-livewire`.** `master`'s copy of this file did
+  not have it, while `MODELLER_MASTER.md:115` on `master` points at it. Restored above, verbatim.
+- **Not corrected, because it was never claimed here:** nothing in this file says the beam problem
+  is solved. `4D_SCHEDULE_PERFECTION.md:4209` carries the acceptance sentence (*"no midair MEPs or
+  beams"*); no section of any 4D prompt file records it as met.
+
+## §Q.1 THE RULES THAT DECIDE WHEN A BEAM APPEARS — as shipped, one row each
+Paths `~/bim-ootb/viewer/`, lines at `origin/main` @ `cbb22300`.
+
+| # | rule | where | what it says about a beam |
+|---|---|---|---|
+| R1 | class sequence | `rates.js:291-293`, `:327-328` | column **2**, beam **3**, slab **4** — all `Superstructure`. Wall / WallStandardCase **5** — `Architecture Envelope` |
+| R2 | declared programme | `rates/4D_template.json` `within_level` (`:119`) | one Superstructure task per level; **superstructure → architecture_envelope, FS**. So every wall of a level is declared AFTER every beam and slab of that level. The template's own `_open` note (`:89`) names the gap: *ifc_class cannot tell a skin wall from a partition* — nor a bearing wall |
+| R3 | support pool | `schedule_gate.js:1391` `supportPool` | `seq <= 4` ∪ promoted roof slab ∪ `IfcStairFlight`. **Walls are not in it** |
+| R4 | contact | `support_sweep.js:417-419` (twin `cpm_schedule.js:88-90`) | bbox XY overlap, then bearing-below ∪ carrier-above ∪ embedded. Carrier-above has no upper bound (kept on purpose, §DAY_GAP_TAIL). **Embedded is symmetric when two boxes have the same base and top** |
+| R5 | election | `support_sweep.js:502-539` | bearing-below, else embedded, else carrier-above — **then the best contact inside R3's pool replaces that winner, whatever its relation** (`:535`). Tie → smaller `\|Δbz\|`, then guid |
+| R6a | solve, CELL path (Hospital, Terminal) | `cpm_schedule.js:789`, `:794-799`, `:831` | cell = (level, **class sequence**, location). Cells run level → sequence → location. Inside a cell: members by (`bz`, guid). **The elected support is not an edge here** — `§CELL_RUN … refusedE1=N (NOT enforced)` |
+| R6b | solve, GRAPH path (Duplex, HHS) | `cpm_schedule.js:228-230` | E1 = ONE edge from the elected support, **start-to-start** |
+| R7 | what plays | `tm_sched_xray.js:1064` `_tmTilePlayWithinTasks`, called from `tm_gantt_build.js:624` (§I row "where inside its bar does it PLAY?" still says `time_machine.js` — that file has since been split; the verb is unchanged) | each task re-tiled in CPM order; this is the layer the scrubber and the film read |
+| R8 | the judge | `support_sweep.js:591` | midair ⇔ the ELECTED support **starts** more than 1 ms after the element starts. It is a time-order test on one elected box, not "nothing holds it" |
+
+**What these rules do order correctly, measured:** a beam whose elected support is a column.
+Hospital **0 of 793** midair. Terminal **4 of 222**. R1 (2 before 3) + R6a carries it. *The frame
+going up column-then-beam is not where the hanging comes from.*
+
+## §Q.2 MEASURED — every beam, by the relation the election chose (PLAYED layer)
+
+| | Hospital (`_meta`, codeKey `2b46745cdc59`, built 11-09) | Terminal (`_meta`, `1adc56735190`, built 11-07) | Duplex (`_extracted`, `2b46745cdc59`, built 11-09) |
+|---|---:|---:|---:|
+| IfcBeam, total · with no elected support | 1,970 · 0 | 432 · 0 | 8 · 0 |
+| **midair beams** | **123** | **77** | **8** |
+| … same task as the elected support · other task | 120 · 3 | 39 · 38 | 0 · 8 |
+| … days before the elected support, p50 · p90 · max | 1.0 · 4.8 · 149.6 | 1.3 · 24.5 · 37.2 | 0.9 · 1.3 · 1.5 |
+| bearing ← **IfcColumn**: elected · midair | 793 · **0** | 222 · **4** | 0 · 0 |
+| bearing ← IfcBeam: elected · midair | 1,073 · 45 | 72 · 1 | 0 · 0 |
+| embedded ← IfcBeam: elected · midair | 73 · **47** | 67 · **29** | 0 · 0 |
+| … of those, both boxes same base and top (≤ EPS) | 73 of 73 | 67 of 67 | — |
+| **carrier-above elected** (slab / plate / beam / member overhead): elected · midair | 30 · **30** | 26 · **26** | 4 · **4** |
+| … of those, has a bearing-below contact the election passed over | 29 | 22 | 4 |
+| … what that passed-over contact is | WallStandardCase 14 · Wall 1 · Pipe 6 · Stair 3 · Railing 3 · Duct 2 | Wall 15 · Pipe 2 · Duct 2 · Railing 2 · Proxy 1 | WallStandardCase 4 |
+| … it starts LATER than the beam · already started | 26 · 3 | 14 · 8 | 4 · 0 |
+| other midair beams | bearing ← Wall 1 | bearing ← IfcMember 16 · ← StairFlight 1 | bearing ← WallStandardCase 4 |
+
+HHS_Office_Federated: **0 IfcBeam — VACUOUS**, nothing judged. Clinic, LTU, JKR: not run (no
+current persisted run was read); do not extend these numbers to them.
+⚠ Terminal's cache is an older `codeKey` than the other three. Its recount still equals its own
+persisted `midairPlayed`, so the table is internally consistent, but it is not the same code state.
+
+## §Q.3 WHAT THE NUMBERS SAY ABOUT THE RULES — three gaps, none of them "the frame"
+
+**Gap 1 — the election picks the slab the beam carries (R5 `:535` against R1).** A beam that has a
+bearing-below contact outside the pool and a pool element overhead is given the overhead element as
+its support. R1 puts that slab (4) after the beam (3), so R8 calls the beam midair **every time, by
+construction: 30 of 30, 26 of 26, 4 of 4.** These are not beams with nothing under them — 29 / 22 / 4
+have something under them that the election was not allowed to choose. This is BIMEyes §S2's
+"elects a slab 3 m overhead", now with its mechanism named and counted for beams.
+
+**Gap 2 — the thing really under those beams is declared to come later (R1 + R2 + R3).** For 15
+(Hospital), 15 (Terminal) and 4 + 4 (Duplex) beams, the contact beneath is a **wall**. A wall is
+sequence 5, Architecture Envelope, and R2 declares that phase after Superstructure. So even an
+election that chose the wall would still find the beam first: 26 of 29, 14 of 22, 4 of 4 of the
+passed-over contacts do start later. **This is the one place a beam is genuinely drawn before what
+it sits on, and it is a CLASSIFICATION fact (§B "CLASSIFY"), not a solver fact.** The remaining
+passed-over contacts (pipe, duct, railing, stair) are §E row 1 — a box that happens to be below.
+
+**Gap 3 — beam on beam has no rule that gives a direction (R1 + R4 + R6a).** Two beams share
+sequence 3 and a level, so R6a files them in one cell and orders them by `bz` then guid; R6b gives
+them one start-to-start edge. Where the two boxes have the same depth, R4's embedded clause holds in
+BOTH directions (73 of 73, 67 of 67), so which beam "supports" which is the tie-break, not physics —
+and 47 of 73 / 29 of 67 come out midair. Where one beam is deeper (bearing ← beam) it is 45 of 1,073
+and 1 of 72. Which is the primary and which the secondary is **not known to any rule here**; a
+bounding box cannot say it. Prior art that already tests beam ENDS, not boxes: `bim-ootb
+prompts/STRUCTURAL_SANITY.md` `floating_member` (its T9 notes on beam-to-beam free ends and
+`framing_dz_m`). It is a model-quality check, not a 4D owner — named as the place to look, not wired.
+
+## §Q.4 WHAT IS NOT KNOWN — do not fill these in
+- **Whether a passing beam still LOOKS hung.** R6b and R8 are both start-to-start: a beam passes
+  once its column has STARTED. The on-screen rule (§I row "is it on screen at cursor?") draws an
+  element as `placed` only when it has ENDED, `frontier` while it is in progress. Nothing measures beams that are on screen while their support is still only `frontier`.
+  BIMEyes §S13 measured finish-to-start as the better semantic and §S14 withdrew its headline; the
+  question was never brought back to beams.
+- **Hospital's three cross-task beams and the 149.6-day maximum** — not attributed.
+- **Terminal's 16 beams bearing on `IfcMember`** — same sequence (3), not examined.
+- **The `sched` map in `run.json`** — recounting midair on it does NOT reproduce
+  `midairCpmDisplay` (Hospital 439 vs 583). It is therefore not the CPM-display layer, and nothing
+  in this section is read from it. Which layer it is belongs in §I's "where inside its task?" row.
+- **Clinic** — §M.3 recorded "IfcBeam 388, 159 of them carrier-above ← slab" on 2026-09-04. By Gap 1
+  that 159 is the same mechanism, but it was not re-measured here.
+
+## §Q.5 THE DECISIONS THIS LEAVES WITH THE OWNER — one at a time, none taken here
+These are §J.4's three questions, asked for beams. Until they are answered every beam number is a
+report, not a defect count.
+1. **Is a wall that carries a beam or a slab Superstructure work?** (Gap 2. The template's `_open`
+   note already admits `ifc_class` cannot tell. A class whitelist is the §E mistake — 438 glazing
+   panels. What EXTRACTED fact marks a bearing wall is the question. Already measured, BIMEyes §S7:
+   IFC authors no vertical support relation at all, and `Pset LoadBearing` *"changes eligibility, not
+   direction"* (coverage 54.1 % on Duplex, 71.7 % on SampleHouse). BIMEyes §S3 also
+   measured the pool variant `shipped ∪ IfcWall*`: HHS bearing 3332 → 3761 for +207 contradictions.)
+2. **May a pool element above outrank a non-pool element below?** (Gap 1. §S26.2 added the pool
+   override to stop a pipe "bearing" a wall, and measured that pool-ONLY election is worse. ⚠ Its
+   justification figure, Duplex "761 vs 1", **does not reproduce from shipped code** — BIMEyes §S3's
+   standing gate: resolve or retract it before the pool or the override moves. The beam cases are the
+   cost of the form the override took.)
+3. **What orders beam against beam?** (Gap 3. §J.4 question 1 — at what granularity precedence
+   binds — and question 3 — which relation carries it.)
+4. **Does "supported" mean the support has STARTED or has FINISHED?** (§Q.4 first bullet.)
