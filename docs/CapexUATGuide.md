@@ -124,7 +124,7 @@ GardenWorld already has the vendor, the warehouse and the locator; the products 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
 | A4.1 | **Business Partner** window: find a vendor (for example *Seed Farm Inc.*, the one this guide uses) | At least one partner with *Vendor* ticked | ☐ Pass ☐ Fail |
-| A4.2 | **Product** window: search Value `PWD-%`, then open *PWD-04.2 Brick masonry* | 10 products in category *Construction*. *PWD-04.2*: unit **M3**, stocked, price **68.1167** on the *Purchase* price list (8,174 BDT ÷ 120), and a **Standard** cost of 68.1167 | ☐ Pass ☐ Fail |
+| A4.2 | **Product** window: search Value `PWD-%`, then open *PWD-04.2 Brick masonry* | 10 products in category *Construction*. *PWD-04.2*: unit **M3**, stocked, price **68.1167** on the *Purchase* price list (tab **Price**; 8,174 BDT ÷ 120), and a **Standard** cost of 68.1167 (tab **Costs**) | ☐ Pass ☐ Fail |
 | A4.3 | **Warehouse and Locators** window: open *HQ Warehouse*, tab **Locator** | It has the locator *Default HQ Locator*, where you receive and issue | ☐ Pass ☐ Fail |
 | A4.4 | **Product** window: *Test material A (test data)* | The pack’s product exists, in category *TD Materials (test data)* | ☐ Pass ☐ Fail |
 
@@ -307,7 +307,7 @@ Make one order per row of the table that has a purchase order, with the quantity
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| C2.1 | For each completed order whose *How far* is *Received*, *Half paid* or *Paid in full*: **Material Receipt** window, **New**. Header: **Business Partner** the same vendor, **Project** the test project. Press **Create lines from**, choose the purchase order, tick its line, **OK**. On the **Receipt Line** tab check the **Locator** is *Default HQ Locator*. Save, then **Document Action ▸ Complete ▸ OK** | The receipt is *Completed* and carries the order's product and quantity. In the **Product** window the product's on-hand quantity rose (open the product's **Storage** or use *Inventory On Hand*), and its **Standard** cost did not change | ☐ Pass ☐ Fail |
+| C2.1 | For each completed order whose *How far* is *Received*, *Half paid* or *Paid in full*: **Material Receipt** window, **New**. Header: **Business Partner** the same vendor, **Project** the test project. Press **Create lines from**, choose the purchase order, tick its line, **OK**. On the **Receipt Line** tab check the **Locator** is *Default HQ Locator*. Save, then **Document Action ▸ Complete ▸ OK** | The receipt is *Completed* and carries the order's product and quantity. The product’s on-hand quantity rose (menu entry **Storage per Product**: type the name in the menu’s Search box), and in the **Product** window, tab **Costs**, its **Standard** cost did not change | ☐ Pass ☐ Fail |
 
 ### C3 · Vendor invoice and payment
 
