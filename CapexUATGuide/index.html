@@ -3559,14 +3559,14 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 </tr>
 <tr>
 <td>A1.3</td>
-<td>Open <code>http://&lt;your-server&gt;:8080/index.html</code></td>
-<td>The front door opens: Buildings / IFC, Modeller, ERP</td>
+<td>Open <code>http://&lt;your-server&gt;:8080/index.html</code>. On a first visit the page is a picture with two pills: click the <strong>red</strong> one</td>
+<td>Three doors appear under <em>choose your door</em>. Hold the pointer on each to read its name: <strong>Buildings / IFC</strong>, <strong>BIM Modeller</strong>, <strong>ERP</strong></td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>A1.4</td>
 <td>Open <code>/capex/index.html</code> on your server</td>
-<td>The dashboard opens on its built-in data</td>
+<td>The dashboard opens on its built-in sample store (3 projects). The computed tiles read <strong>no data (CAPEX PA rows not installed)</strong>: that is correct until the page reads your iDempiere (chapter D)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
@@ -3639,7 +3639,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 </tr>
 <tr>
 <td>A2.3</td>
-<td>Open the window <strong>Measure Calculation</strong></td>
+<td>Open the window <strong>Performance Measure Calculation</strong></td>
 <td>Rows named <em>CAPEX …</em> are there; their SQL can be read and edited here. This is where the dashboard’s formulas live</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
@@ -3662,7 +3662,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tr>
 <td>A3.1</td>
 <td>Put the zip in an empty folder on the server and run <code>utils/RUN_ApplyPackInFromFolder.sh &lt;folder&gt;</code>, or use the <strong>Pack In</strong> window logged in as GardenWorld Admin</td>
-<td>The run ends with <em>Done</em> and no exception</td>
+<td>The run prints <em>Successful application of …CAPEXTestData.zip</em>, <code>Error=false</code> and ends with <em>Done</em>. The log also prints a <code>java.lang.Exception</code> trace for each planned line (<em>MProduct.loadPO: NO Data found</em>): these do not stop the run, and the rows are checked in A3.2 to A3.4</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -3686,7 +3686,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tr>
 <td>A3.5</td>
 <td>Pack the same zip in a second time</td>
-<td>No new projects: the pack updates the same rows</td>
+<td>No new projects: still 12. The folder run says the pack is <em>already installed</em> and skips it</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
@@ -3808,7 +3808,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tr>
 <td>B1.1</td>
 <td><strong>📂 Open → Open 2D drawings (.dxf)…</strong> and select <strong>only</strong> <code>0_FLOOR_PLAN_marked.dxf</code></td>
-<td>The Shed <strong>floor plan</strong> is drawn on the canvas, as in picture B1-b: the long rectangle of the shed with its grid lines and column marks</td>
+<td>The Shed <strong>floor plan</strong> is drawn on the canvas, as in picture B1-b: the long rectangle of the shed with its grid lines and column marks. The badge in the <strong>Drawing metadata</strong> panel reads <strong>Blocked</strong> for one sheet on its own: that is expected, one sheet is not yet a building</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -3906,7 +3906,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tbody>
 <tr>
 <td>B2.5</td>
-<td>Unfold the <strong>2D Drawings</strong> panel and tick <strong>Complete the building (floor slab, roof)</strong></td>
+<td>Wait until the Arrange replay has ended (the panel's status line stops counting <em>Step n/46</em>), or press <strong>Esc</strong> to stop it. Unfold the <strong>2D Drawings</strong> panel and tick <strong>Complete the building (floor slab, roof)</strong></td>
 <td>The box is ticked</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
@@ -3919,7 +3919,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tr>
 <td>B2.7</td>
 <td>Orbit around the model</td>
-<td>It is the same shed as your drawings: same length, same number of bays</td>
+<td>It is the shed as these sheets draw it: one row of columns on each grid line of the floor plan (14 lines along the length, 4 across)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -3930,8 +3930,8 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 </tr>
 <tr>
 <td>B2.9</td>
-<td>Open the <a href="https://red1oon.github.io/bim-ootb/index.html">front door</a>, <strong>Buildings / IFC</strong>, open the <code>.db</code></td>
-<td>The Viewer shows the same Shed; orbit with the mouse</td>
+<td>Open the <a href="https://red1oon.github.io/bim-ootb/index.html">front door</a>, <strong>Buildings / IFC</strong>, then the card <strong>Blank Viewer · Open your own .db file</strong>. In the blank Viewer press <strong>Ctrl+O</strong> (Open Building) and choose the <code>.db</code></td>
+<td>The status line reads <strong>DONE — SHED 511 elements</strong>, the same count as the Convert; orbit with the mouse</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
@@ -3962,7 +3962,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tr>
 <td><strong>4D Schedule Template</strong></td>
 <td><strong>Settings → Edit Project JSON → 4D Schedule Template</strong></td>
-<td>lengthen one phase (for example <em>superstructure</em>) by a few days</td>
+<td>add waiting days after one phase: in <strong>dependencies → within_level</strong>, raise <code>lag_days</code> of the <em>superstructure</em> rows by 5. (A phase has no length of its own to type: its length is worked out from the parts and the crews)</td>
 </tr>
 <tr>
 <td><strong>4D Sequence &amp; Labour Rules</strong></td>
@@ -3989,7 +3989,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 </tr>
 <tr>
 <td>B3.2</td>
-<td>Make the rate edit and the duration edit above. Your copy is saved in this browser as you type</td>
+<td>Make the rate edit and the lag edit above. Your copy is saved in this browser as you type</td>
 <td>The form keeps your value; a list shown as JSON text must stay valid JSON</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
@@ -4007,8 +4007,8 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 </tr>
 <tr>
 <td>B3.5</td>
-<td>Open <strong>Time Machine</strong> (key <strong>T</strong>) and play the schedule</td>
-<td>The finish date moved by about the days you added; the bars play in order</td>
+<td>Open <strong>Time Machine</strong> (key <strong>T</strong>). Press <strong>Jump to start</strong>, then <strong>Build</strong></td>
+<td>The finish date moved by the days you added (5 on each edited row); the day counter and the <em>placed</em> count rise as the parts go up in order</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -4021,7 +4021,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 </table>
 <p><img alt="The Inspect drawer: Measure, Clash, X-Ray, Section, Time Machine, 4D / 5D" src="../img/viewer/pill-inspect-drawer.png" /></p>
 <h3 id="b4-send-the-model-to-the-erp-as-a-project-order">B4 · Send the model to the ERP as a Project Order<a class="headerlink" href="#b4-send-the-model-to-the-erp-as-a-project-order" title="Permanent link">&para;</a></h3>
-<p>Full detail: <a href="../ModellerGuide/#send-it-to-erp-project-order-variant-vo">Send it to ERP</a>.</p>
+<p>Do this in the <strong>Viewer</strong>, on the Shed you opened in B2.9. (In the Modeller, <strong>ERP ▸ Project Order</strong> prices a building that was <em>opened</em> from a database; for a model made from drawings it tells you to use this route.) Full detail: <a href="../ModellerGuide/#send-it-to-erp-project-order-variant-vo">Send it to ERP</a>.</p>
 <table>
 <thead>
 <tr>
@@ -4034,32 +4034,30 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tbody>
 <tr>
 <td>B4.1</td>
-<td>Select parts of the model, click <strong>ERP ▸ Project Order</strong> (bottom-left)</td>
-<td>The panel prices the parts and offers <strong>Generate Project Order</strong></td>
+<td>Open the <strong>Find</strong> panel and click one group of parts in its list (for example a column type)</td>
+<td>The panel shows the group's cost and the button <strong>› ERP</strong></td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>B4.2</td>
-<td><strong>Generate Project Order</strong></td>
-<td>The order appears with its planned amount and <strong>Open in ERP ↗</strong></td>
+<td>Press <strong>› ERP</strong></td>
+<td>The status line reads <em>Project Order: 1 lines · contract …  (saved)</em> and a link <strong>open ↗</strong> appears</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>B4.3</td>
-<td>Generate again</td>
-<td>Nothing new is added: the order is keyed by the model’s name</td>
+<td>Press <strong>› ERP</strong> again</td>
+<td><em>Project Order: 0 lines</em>: nothing new is added, the order is keyed by the model's name (<strong>SHED</strong>)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>B4.4</td>
-<td><strong>Open in ERP ↗</strong></td>
-<td>The ERP opens on the project, with phases and lines from the model</td>
+<td>Click <strong>open ↗</strong>. On the Kernel ERP sign-in page choose <strong>GardenAdmin</strong>, then <strong>Log In</strong></td>
+<td>The ERP opens on the project <strong>SHED</strong> (<em>BIM: SHED</em>) with its planned amount; its <strong>Phase</strong>, <strong>Task</strong> and <strong>Project Line</strong> tabs hold the rows from the model</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
 </table>
-<p><img alt="Before generating" src="../img/modeller/first-steps-s9-1-read-not-generated.png" /></p>
-<p><img alt="After generating" src="../img/modeller/first-steps-s9-2-generated.png" /></p>
 <p><strong>Notes (chapter B):</strong> <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong>____</p>
 <hr />
 <h2 id="c-erp-the-hands-on-exercise-gardenworld-admin">C · ERP: the hands-on exercise (GardenWorld Admin)<a class="headerlink" href="#c-erp-the-hands-on-exercise-gardenworld-admin" title="Permanent link">&para;</a></h2>
@@ -4174,6 +4172,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 </tr>
 </tbody>
 </table>
+<p>Buying <em>Rake Bamboo</em> at the table's prices raises its average cost. The issues in C4 are then costed well above its starting cost, and most test projects end <strong>over budget</strong> on the dashboard. With this table that is the expected picture.</p>
 <h3 id="c1-purchase-orders">C1 · Purchase orders<a class="headerlink" href="#c1-purchase-orders" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -4290,7 +4289,10 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <p><strong>Notes (chapter C):</strong> <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong>____</p>
 <hr />
 <h2 id="d-the-dashboard">D · The dashboard<a class="headerlink" href="#d-the-dashboard" title="Permanent link">&para;</a></h2>
-<p>Open the dashboard on your data: <code>/capex/index.html?source=legacy</code> on the server where the dashboard's read job runs (see <a href="../CapexDashboardGuide/#how-the-dashboard-connects-to-the-data">How the dashboard connects to the data</a>). Every tile is described in <a href="../CapexDashboardGuide/#the-dashboard-page">The dashboard page</a>.</p>
+<p>The dashboard reads a file that a small read job writes from your iDempiere. Run the job first, and again whenever you want fresh figures (it needs Node.js; the full line with user, password, tenant and role is in the <a href="../CapexDashboardGuide/#developers-note">Developer's note</a>):</p>
+<div class="highlight"><pre><span></span><code>BRIDGE_BASE=http://&lt;your-idempiere&gt;:&lt;port&gt; node capex/tools/legacy_snapshot.js
+</code></pre></div>
+<p>It ends with a line <code>§DASH_LEGACY_SNAPSHOT … projects=&lt;n&gt; … unavailable=[]</code>. Then open <code>/capex/index.html?source=legacy</code> on the server that holds that copy (see <a href="../CapexDashboardGuide/#how-the-dashboard-connects-to-the-data">How the dashboard connects to the data</a>). Every tile is described in <a href="../CapexDashboardGuide/#the-dashboard-page">The dashboard page</a>.</p>
 <p><img alt="The dashboard" src="../img/capex/capex_page_dashboard.png" /></p>
 <table>
 <thead>
@@ -4322,8 +4324,8 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 </tr>
 <tr>
 <td>D4</td>
-<td>Open <strong>Procurement</strong> in the left menu</td>
-<td>Open purchase orders = the ones you left Drafted; the supply-chain strip shows Ordered / Received / Invoiced / Paid as you made them</td>
+<td>Open <strong>Procurement Risks</strong> in the left menu. Then open a test project's page (D5) and its <strong>Procurement</strong> tab</td>
+<td>Left menu: <em>Open purchase orders</em> = the 5 you left Drafted, with their total. Project page: the <strong>Supply chain</strong> card shows that project's order at the stage you took it to (<em>TD_SUBSTATION</em> Ordered, <em>TD_DATAHALL</em> Received, <em>TD_BRIDGE</em> Invoiced, <em>TD_RIVERSIDE</em> and <em>TD_SCHOOL</em> Paid) and lists its receipt, invoice and payment</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -4334,8 +4336,8 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 </tr>
 <tr>
 <td>D6</td>
-<td>On the project page, open the tabs</td>
-<td>The Schedule tab draws the phase bars with the pack’s dates</td>
+<td>On the project page of <em>TD_RIVERSIDE</em>, open the tabs</td>
+<td>Overview: Approved <strong>371.25</strong>, 5 phases. The Schedule tab draws the 5 phase bars with the pack’s dates, the first 3 <em>Complete</em></td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -4352,8 +4354,8 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 </tr>
 <tr>
 <td>D9</td>
-<td>iDempiere <strong>Home</strong> tab</td>
-<td>The CAPEX goals show the same counts as the dashboard tiles, money in your login’s currency</td>
+<td>Log in to iDempiere again and read the <strong>Home</strong> tab</td>
+<td>The CAPEX goals show the same counts as the dashboard tiles, money in your login’s currency. A goal that has a target (for example <em>Health Green</em>, <em>Schedule On Time</em>, <em>Actual Cost</em>) shows its percentage of the target on the Home tab, not the count</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
