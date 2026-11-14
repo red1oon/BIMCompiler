@@ -17,7 +17,7 @@ numbers are measured, the five decisions (D1–D5) are MADE. **Implement; do not
    GPU or browser runs without the owner's go; agents on Sonnet; results go in §Q.6 / §Q.7 only;
    the witness, never the owner's eyes, is the test.
 
-**Status (update this line as steps land):** step 0 ☐ · D2 ☐ · D5 ☐ · D1 ☐ · D3 ☐ · D4 ☐
+**Status (update this line as steps land):** step 0 ✅ (bim-ootb #3018, 2026-11-14) · D2 ⛔ red gate 2, owner ruling (§Q.6 RESULTS) · D5 ⛔ red gate 2 + rule gap, owner ruling (§Q.7 RESULTS) · D1 ☐ · D3 ☐ · D4 ☐ — D1/D3/D4 not started: they build on D2/D5
 
 ---
 
@@ -494,9 +494,9 @@ Paths are `~/bim-ootb/viewer/` unless stated. Line numbers are `origin/main` @ `
 
 | the question | OWNER — call this | never |
 |---|---|---|
-| **does S support T?** (bearing-below ∪ carrier-above ∪ embedded) | `support_sweep.js:391` `_contactGraph(items)` → `{contacts, grounded, orphans, ok, groundConnected…}` *(line re-verified 2026-11-14 @ bim-ootb `cbb22300`; was `:384`)* | write a bbox/Z-band test inline. ⚠ **CORRECTED 2026-11-14: ONE more full copy exists, not two** — `cpm_schedule.js:61` `contactGraph`, the copy the SOLVE runs on, held equal by `§CPM_PARITY` (§I.1). The single-owner collapse (§I.1a) is **still unmerged** (branch `refactor/contactgraph-one-owner`, no PR). The third site (`auditFloating`'s wall pool) is a *different, bounded* test, kept on purpose (§I.5d). ⚠ The embedded clause is **symmetric** for two boxes of equal height — see §Q.3 |
+| **does S support T?** (bearing-below ∪ carrier-above ∪ embedded) | ✅ **2026-11-14, §I.1a landed (#3018): ONE owner `cpm_schedule.js` `contactGraph`; `support_sweep.js` `_contactGraph` delegates.** Older text: `support_sweep.js:391` `_contactGraph(items)` → `{contacts, grounded, orphans, ok, groundConnected…}` *(line re-verified 2026-11-14 @ bim-ootb `cbb22300`; was `:384`)* | write a bbox/Z-band test inline. ⚠ **CORRECTED 2026-11-14: ONE more full copy exists, not two** — `cpm_schedule.js:61` `contactGraph`, the copy the SOLVE runs on, held equal by `§CPM_PARITY` (§I.1). The single-owner collapse (§I.1a) is **still unmerged** (branch `refactor/contactgraph-one-owner`, no PR). The third site (`auditFloating`'s wall pool) is a *different, bounded* test, kept on purpose (§I.5d). ⚠ The embedded clause is **symmetric** for two boxes of equal height — see §Q.3 |
 | **does T rest on soil?** (ground exemption) | `schedule_gate.js:1210` — `T.seq !== 1`. Substructure legitimately rests on unmodeled soil | use `grounded[i]` for this. It is **footprint-local** and answers a *different* question — see §I.2 |
-| **which ONE thing supports T?** | `support_sweep.js:502` `_designatedSupport(items, G)` (twin: `cpm_schedule.js:163`) *(lines re-verified 2026-11-14; was `:432`)*. **What it does, stated here because this row never said it:** preference bearing-below → embedded → carrier-above, **but a contact inside `supportPool` replaces the unrestricted winner whatever its relation** (`:535`, §S26.2 *"structure outranks contact"*) — so a pool element ABOVE beats a non-pool element BELOW. Measured consequence for beams: §Q.2 | elect a support yourself. §A: the election is the defect |
+| **which ONE thing supports T?** | ✅ **2026-11-14: ONE owner `cpm_schedule.js` `designatedSupport` (#3018); `support_sweep.js` delegates.** Older text: `support_sweep.js:502` `_designatedSupport(items, G)` (twin: `cpm_schedule.js:163`) *(lines re-verified 2026-11-14; was `:432`)*. **What it does, stated here because this row never said it:** preference bearing-below → embedded → carrier-above, **but a contact inside `supportPool` replaces the unrestricted winner whatever its relation** (`:535`, §S26.2 *"structure outranks contact"*) — so a pool element ABOVE beats a non-pool element BELOW. Measured consequence for beams: §Q.2 | elect a support yourself. §A: the election is the defect |
 | **what phase/trade is this element?** | `schedule_author.js` `matchNameOverride()` → `matchRule()`, tables in **`rates.js`** | read `rates/sequence_rules.json` — it is a MIRROR, never executed (§G.0) |
 | **how long does it take?** | `schedule_author.js:78` `_installSecs(cls, rule, laborRates, realQty, lengthRatio)` | hand-roll it. `time_machine.js:4494` `getInstallSecs` already delegates here; its local fallback is documented as a divergence risk |
 | **what is the task grid?** | `schedule_author.js:425` `instantiateTemplate(...)` from **`rates/4D_template.json`** | derive phases from what the elements did. §B: an envelope cannot constrain what drew it |
@@ -2948,6 +2948,7 @@ cpm_schedule loaded too (test-only change).
 vacuous PASS — PRIMAL LAW 4); (3) `cache_4d_run.js` per building: schedule outputs identical before/after.
 **Deletion budget:** expect ≈ −150 lines in support_sweep.js (two bodies + duplicated doctrine comment kept once, in cpm).
 
+### ✅ §I.1a LANDED 2026-11-14 — bim-ootb PR #3018 (merged 039d2e2e). Before/after on Hospital, Terminal, Duplex, HHS: `run.json` identical (volatile keys stripped), `witness.log` differs only in `§GEO_ORDER orderMs`, 0 `§SS_CPM_MISSING`; 29 targeted witnesses/probes give the same exit-code set and identical normalised §-lines. One probe changed: `probe_edit_legality_judges.js` now patches the owner's bytes. **Owner of "does S support T?" / "which ONE thing supports T?" = `cpm_schedule.js` `contactGraph` / `designatedSupport`; `SupportSweep.*` are delegating aliases.** The RESUME block below is history.
 ### §I.1a RESUME (2026-10-06 session close) — patch PUSHED, NOT verified, NO PR *(re-checked 2026-11-14: unchanged — branch `origin/refactor/contactgraph-one-owner` exists, `gh pr list --head` returns none, `main` still carries both full copies)*
 - Branch **bim-ootb `refactor/contactgraph-one-owner`** @ dcdc6b3e (worktree /tmp/wt-contactgraph): the prepared patch, committed as WIP.
 - **Baseline taken on origin/main @ c6038f93 BEFORE the patch** — the 24 witnesses that touch support_sweep/cpm_schedule
@@ -3203,6 +3204,22 @@ ceilings are the only things that hang, and they hang from finished structure.
   go; agents on Sonnet; findings and results go in THIS section only; push and merge own verified
   PRs; the witness, never the owner's eyes, is the test.
 
+### §Q.6 RESULTS — D2, 2026-11-14 (bim-ootb branch `fix/4d-d2-struct-no-carrier`, pushed, NO PR — held on gate 2)
+Rule as spec'd, in the single owner (`cpm_schedule.js designatedSupport`, §D2_STRUCT_NO_CARRIER; `§STRUCT_NO_SUPPORT` printed on every call).
+Before = origin/main code (`codeKey 2b46745cdc59`); after = `ba70485e411e`. Instruments `probe_4d_beam_midair.js`, `probe_4d_column_midair.js` (now take `REF=`, load `cpm_schedule.js`), `probe_4d_step_gates.js` (new: gates 2, 3 and 5 from the persisted runs). Self-check MATCH on all four, before and after.
+```
+§BEAM_MIDAIR carrier-above-elected beams   Hospital 30 -> 0   Terminal 26 -> 0   Duplex 4 -> 0        PREDICTION MET
+             midair beams                  123 -> 89          77 -> 41           8 -> 0 (8 now noElectedSupport — walls, D1's job)
+§COL_MIDAIR  Hospital carrier-above cols   13 -> 0 midair     Terminal midair cols 5 -> 0          PREDICTION MET
+§STEP_GATE   midairPlayed  Hospital 539 -> 486 · Terminal 3065 -> 2393 · Duplex 257 -> 247 · HHS 152 -> 144
+             stack piles>=20  0 -> 0 on all four (GREEN) · totalDays 339/102/12/53 unchanged · CELL/GRAPH paths unchanged
+§STRUCT_NO_SUPPORT  Hospital 46 · Terminal 671 · Duplex 9 · HHS 32
+⛔ gate 2  Terminal IfcPipeSegment 587 -> 590 RED   (IfcDuctFitting 140 -> 137 on the same run; non-beam MEP net 0)
+```
+**The +3, traced (read-only `newmid.js`):** three pipes in `TASK_MEP_Rough_in_Aras_Jalan` hang from ONE beam (`2dEJAAEyDAlQ$4dg_s$NrS`) in a different level's task, `TASK_Superstructure_03_SECOND_FLOOR_LEVEL`. Before the change the beam already started only 0.02 d (~30 min) ahead of them. D2 re-packed that Superstructure bar and the beam moved 0.06 d later. The pipes themselves did not move. This is a cross-task near miss in the task grid, not the D2 rule; the same shape recurs in D5 (one window).
+**Owner question (D2):** does gate 2 hold for a cross-task element whose lead over its support was already under an hour, or is D2 merged with these 3 named? It is not re-baselined here.
+**Terminal's 671 `§STRUCT_NO_SUPPORT` need a look before merge** (structural T with no pool contact below or embedded; the 2,711 `Metal Deck` IfcPlate roof sheets of §GROUND_CONNECTED are the likely bulk — not yet broken down).
+
 ## §Q.7 COLUMNS BEFORE THE SLAB THEY STAND ON — MEASURED 2026-11-14 (owner: *"Do floor slabs comes on first before columns and beams?"* … *"Measure those too"*)
 Instrument: `scripts/probe_4d_column_midair.js` → `§COL_MIDAIR` (same owners, same persisted runs,
 self-check MATCH on all four). Played layer. Re-read §E and §I first.
@@ -3256,5 +3273,15 @@ is built after it. R1's "column 2, beam 3, slab 4" is true only of the slab on t
   - after D5: Hospital column-on-slab midair 57 → **0**; HHS and Terminal unchanged (3 and 0).
   - **Done, added to §Q.6's bar:** midair IfcColumn on the played layer ≤ 10 on Hospital (the
     transfer-beam columns, undecided), 0 on Terminal, ≤ 3 on HHS, under the D4 judge.
+- **RESULTS 2026-11-14 (bim-ootb branch `fix/4d-d5-floor-slab-first`, stacked on step 0, NOT on D2; pushed, NO PR).** Code: `cpm_schedule.js solveCells` §D5_FLOOR_SLAB, with the reported cell key (Gantt §S51 grouping) left on the slab's own sequence. Before = step 0 (`dad59a8a799a`). Self-check MATCH on all four in every run. Duplex and HHS are on the GRAPH path, so D5 never runs there: 0 change, as predicted.
+  | variant | Hospital col-on-slab midair | Hospital IfcColumn / IfcBeam midair | gate 2 |
+  |---|---:|---:|---|
+  | **A, as spec'd** (`3a23454453ec`) | 57 → **0** ✅ | 80 → 23 / 123 → 110 | ⛔ Hospital IfcSlab 2 → 4 · Terminal IfcSlab 17 → 19, IfcWindow 37 → 38 |
+  | A + "a slab held by same-level structure is not a floor" (`eef07a90d24c`) | 57 → 55 ⛔ prediction fails | 80 → 78 / 123 → 110 | ⛔ Terminal IfcWindow 37 → 38 |
+  | **B: the floor's same-level holder goes first** (`9d4c4f1a7eac`, branch tip) | 57 → **0** ✅ | 80 → **23** / 123 → **110** | ⛔ Terminal IfcWindow 37 → 38 only |
+  Stack piles ≥ 20 stay at 0, totalDays stay at 339 / 102, and the CELL gate % is unchanged in all three variants.
+  **Why A fails:** the 2 new midair slabs are Hospital's Level-1 floor slabs, and they REST ON a Level-1 column that has no support (a pier under the slab). A moved them ahead of that pier, 13.8 d and 5.5 d earlier. In Terminal, 2 Substructure slabs were moved ahead of the beam carrying them. The spec's own line *"the slab a column HOLDS UP is built after it"* covers this case, but one sequence slot cannot express pier → slab → column. B adds that one hop: the holder takes trd 1.25, the floor trd 1.5 (`§D5_FLOOR_SLAB … holdersMovedFirst=` Hospital 1, Terminal 8).
+  **The window:** `2QeSWZ57r0ZhANP_aR8HvN` in `TASK_Architecture_Envelope_Ceiling_Level_Kedai` hangs from a beam in `TASK_Superstructure_02_FIRST_FLOOR_LEVEL`. That beam moved 0.17 d later inside its own bar; lead before ≈ 0.10 d. It is the same cross-task near-miss shape as D2's 3 pipes.
+  **Owner questions (D5):** (1) adopt variant B (one hop beyond the spec'd rule) or keep A? (2) the same gate-2 question as D2, for this one window.
 - **Left open, named:** the 10 transfer-beam columns; why `groundworkSlabs` does not claim the
   Level 1 slab; Clinic, LTU, JKR not measured.
