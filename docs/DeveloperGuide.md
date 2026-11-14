@@ -191,6 +191,7 @@ folder its `extensions.json` does not list, so nothing loads and nothing warns y
 | Hover a `§TAG` in any `.js` file | up to 5 places in `prompts/` and `docs/` of both repos that name the tag (headings first), then up to 5 lines of code that print it | the specs and the source |
 | Explorer side bar ▸ **Run & Ship** (4 steps, also as commands) | *Run local*: the serve task plus each app's URL and cache version on disk. *Check*: `node --check` on the JS that differs from `origin/main`, the precache audit, and the bump rule. *Cost if deployed*: see next row. *Fetch back*: is the live site on `main`'s versions and commit? | the repo's own scripts and git; Fetch back reads the live site (the only step that uses the network) |
 | Status bar, and command **Cost if deployed** | `viewer: start-up · 103 KB` for the open file; the command prints, per app, start-up and offline-cache bytes of your tree against `origin/main` | each `sw.js` cache list and the pages' script tags |
+| **Shift+F12** (Find All References) on the same field | every place the field is written and read, under any of its spellings; VS Code's own JavaScript support cannot give this, because the object is written under one name and read under another | every site the repo's generator recorded, kept beside X0's own fresh index (nothing added to the repo) |
 | A grey line above code that prints a `§TAG` | `last: <the line a saved log holds for that tag> · <log> @ <commit>`; click it to open the log | `logs/*.log` whose first line is a `§LOG_STAMP` (§6) |
 | Hover a `§TAG` on the line that prints it | the same hover, ending in `last value: <line> — <log>:<line> @ <commit>`, or `last value not shown: <reason>` (`no stamped log found` · `tag not in any stamped log` · `file changed since the log` · `file was dirty when the log was made`) | the same stamped logs; the grey line stays silent without proof, the hover says why |
 | Command **X0 Navigator: Context for this file** | one block of markdown about the open file, opened beside the code and copied: its header comment, how it reaches a user and the bump command, the `APP` fields set in it, each `§TAG` it prints with its spec place and last provable value | all the indexes above. X0 calls no model: you paste the block where you like (§4.2) |
@@ -422,6 +423,39 @@ The largest viewer files were split in 2026-10 by a generator that keeps every s
 the last two are added here: `witness_kit/contract.js` → the op-log hash chain in `erp/kernel_ops.js` (`stableStringify` → `commitOp`) →
 `erp/ad_parser.js` → `viewer/db_resolve.js` (a model spec header) → `viewer/main.js` (boot + lazy lists).
 `internal/CodeScrapBook.md` is the long-form version of this section.
+
+### 6.1 The logged-value rule (usable in any project)
+
+A tool that shows "the value this line last printed" beside the code is useful only if the value still belongs to the code on screen.
+A debugger knows that because the process is live. A saved log does not, so the rule has to supply it:
+
+> **Show a logged value only when the code that printed it is unchanged since the commit the log names, and was not edited when the log
+> was made. Otherwise show a named reason. Never a guess.**
+
+What a project must emit to use it, and nothing more:
+
+| Piece | Form here | Why |
+|---|---|---|
+| A stamp near the top of each saved log | `§LOG_STAMP commit=<hash> dirty=<n> … [dirty_files=a,b]` (`scripts/log_stamp.js`) | names the code, and says which tracked files differed from that commit |
+| A tag on the line that prints | `console.log('§TAG …')` | ties a log line to one line of code |
+| The log kept on disk | `logs/*.log`, or a folder named in a setting | the evidence itself |
+
+The three proofs, in order, and what the reader is told when one fails:
+
+| Proof | If it fails |
+|---|---|
+| A stamped log carries the tag | `no stamped log found`, or `tag not in any stamped log` |
+| The printing file was not edited when the log was made (the stamp must list the edited files to prove it) | `file was dirty when the log was made`, or `stamp does not name its dirty files` |
+| The printing file is unchanged since the stamp's commit (`git diff --quiet <commit> -- <file>`) | `file changed since the log` |
+
+Two things the rule refuses on purpose. A line that names only a commit is not a stamp: without the edited-files count the second
+proof cannot be made (this is why a bake's own commit line is not accepted, and the bake now writes the stamp). And a value is never
+shown "probably current": the reason is shown instead.
+
+**What is and is not new.** Showing run-time values in the editor is established (live-process tools do it), and so are frame-capture and
+log viewers. Those tools get freshness for free from a running process, or do not claim it. The piece here is the provenance check on
+an offline log. It is a few lines of code (`devtools/vscode/x0-navigator/lib/lens_index.js`: `parseStamp`, `whyNot`, `explain`), has
+no dependency, and its witness (`witness_x0_lens.js`) holds a red control for every refusal above.
 
 ---
 

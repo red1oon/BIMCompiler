@@ -1098,9 +1098,10 @@ Owner, 2026-11-14: *"Implement the MCP or Claude Code role in the VSC since it i
   `spec`), the corrected PHANTOM step (picture kept, with a dated note; a true phantom named), `context_for_file`, and "Seeing what a session
   uses". **The docs SITE is not redeployed by this PR** (`scripts/safe_gh_deploy.sh` not run): the live guide still shows the old text. The
   PHANTOM picture `figs/x0/05_phantom.png` needs a new capture in a real VS Code (owner's go).
-- **NEXT, in order (updated after §F.15 step 1):** (1) the first real bake after bim-ootb #2977: read its log for the `§LOG_STAMP` line and
-  check a lens lights up (owner's go for the bake). (2) §F.15 step 3 (the rule as a standalone page). (3) the 11 untied fields and the film's phantom still (§F.17). Blocked on the owner: F-1, F-2, F-6, F-7, and the
-  token for F-12 step 2. Part A (A0) is still the first unstarted part of the design itself.
+- **NEXT, in order (updated at §F.19):** (1) owner decision **F-6** (bump: a quick-fix prompt, or automatic), then build it. (2) the first
+  real bake after bim-ootb #2977: read its log for the `§LOG_STAMP` line and check a lens lights up (owner's go for the bake). (3) the 11
+  untied fields (needs the parser; a Part C question). (4) Part A, step A0: the first unstarted part of the design itself, and what
+  unlocks the rest of F's table. Blocked on the owner: F-1, F-2, F-7, and the token for F-12 step 2.
 
 ### §F.17 The real-VS-Code run, and what it uncovered: half the "phantoms" were live — ✅ DONE 2026-11-14 (owner: *"Go"*)
 
@@ -1192,6 +1193,29 @@ bim-ootb `7b030057` and `8b161835`; `build.py` → cards, voice, mux). Logs comm
   places the hover's `last value` line sat under the fold. It now comes right under the tag's name (`§X0_ACTIVATE … verdict=PASS`, real VS
   Code `last_value=Y … verdict=PASS`). The stills show the product as merged.
 - **Not done:** other languages; the owner's review of the cut (title, chapter names and wording are the session's first draft).
+
+### §F.19 Find All References + the logged-value rule page — ✅ BUILT 2026-11-14 (owner: *"continue on the VSC roadmap if any"*)
+
+Taken from the Part F table as the rows that need no open decision and no part A–E data.
+- **Find All References (row 1 of the table; bim-ootb #2983 / PR #2985).** The generator gains **R12**: with `APPSURF_SITES=1` and a private
+  `APPSURF_OUT` it also writes every write and read site as `APP_SITES.json` (default runs and the committed index are unchanged). X0's
+  refresher sets that flag, so the site list sits beside its own fresh index (0.9 MB in VS Code's storage, no extra run). New
+  `lib/app_refs.js` + a `ReferenceProvider` (Shift+F12, References view, peek) + facts-server tool `where_is_field_used` (8 tools).
+  A site whose line no longer mentions the field is dropped and counted. `§X0_REFS fields=62 counts_agree=Y sites=389 lines_ok=Y
+  phantom_reads_only=Y unknown=Y moved_line_dropped=Y no_list_no_guess=Y verdict=PASS` · real VS Code: `refs=Y refs_red=Y … verdict=PASS`
+  (the `db` field: VS Code returns 812 places, all 812 sites of the index among them) · `§X0_MCP tools=8 … used=Y … verdict=PASS`.
+  Caught before the PR: a tool description spelled the object's three names out and added a fake field to the index (the §F.4 FINDING 2
+  class, third time): reworded. Merged; re-run on `main` @ `acdeef2b` PASS, Fetch back `live_sha=acdeef2b … verdict=PASS`. `witness_x0_appdef.js` was run before the PR, as §F.16's lesson says.
+- **§F.15 step 3, the rule as a page:** `docs/DeveloperGuide.md` §6.1 "The logged-value rule (usable in any project)": the rule, the three
+  pieces a project must emit, the three proofs with their named reasons, what it refuses on purpose, and what is and is not new.
+- **Looked at and NOT built, with the reason:**
+  - *Lazy/boot badge.* The status bar already says start-up / offline cache / not loaded at start. "Lazy, loaded on demand" needs the lazy
+    list, which today is a local array inside `viewer/main.js`. Reading that one file by name would put knowledge of the codebase into the
+    extension. It waits for the manifest (part B), as the table says.
+  - *CodeLens on line 1, witnesses for this file, owner warning, core-purity squiggle:* wait for B, D, E, A as the table says.
+  - *Bump quick-fix:* waits for **F-6** (asked next). *Complete Run & Ship, budgets, preview:* wait for F-1, F-2, F-7.
+  - *DEV_TOOLKIT first slice* (runtime debugging against a live tab): needs a browser run, so the owner's go.
+- **So Part F's unblocked work is now done.** What remains in F is behind an owner decision or behind parts A, B, D, E.
 
 ---
 
