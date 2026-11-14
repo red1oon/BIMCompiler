@@ -1924,6 +1924,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="6. Proving it">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-the-logged-value-rule-usable-in-any-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 The logged-value rule (usable in any project)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3465,6 +3482,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="6. Proving it">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-the-logged-value-rule-usable-in-any-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 The logged-value rule (usable in any project)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3987,6 +4021,11 @@ folder its <code>extensions.json</code> does not list, so nothing loads and noth
 <td>each <code>sw.js</code> cache list and the pages' script tags</td>
 </tr>
 <tr>
+<td><strong>Shift+F12</strong> (Find All References) on the same field</td>
+<td>every place the field is written and read, under any of its spellings; VS Code's own JavaScript support cannot give this, because the object is written under one name and read under another</td>
+<td>every site the repo's generator recorded, kept beside X0's own fresh index (nothing added to the repo)</td>
+</tr>
+<tr>
 <td>A grey line above code that prints a <code>§TAG</code></td>
 <td><code>last: &lt;the line a saved log holds for that tag&gt; · &lt;log&gt; @ &lt;commit&gt;</code>; click it to open the log</td>
 <td><code>logs/*.log</code> whose first line is a <code>§LOG_STAMP</code> (§6)</td>
@@ -4268,6 +4307,70 @@ oracle. The SQLite kernel must behave like legacy iDempiere, look and feel inclu
 the last two are added here: <code>witness_kit/contract.js</code> → the op-log hash chain in <code>erp/kernel_ops.js</code> (<code>stableStringify</code> → <code>commitOp</code>) →
 <code>erp/ad_parser.js</code> → <code>viewer/db_resolve.js</code> (a model spec header) → <code>viewer/main.js</code> (boot + lazy lists).
 <code>internal/CodeScrapBook.md</code> is the long-form version of this section.</p>
+<h3 id="61-the-logged-value-rule-usable-in-any-project">6.1 The logged-value rule (usable in any project)<a class="headerlink" href="#61-the-logged-value-rule-usable-in-any-project" title="Permanent link">&para;</a></h3>
+<p>A tool that shows "the value this line last printed" beside the code is useful only if the value still belongs to the code on screen.
+A debugger knows that because the process is live. A saved log does not, so the rule has to supply it:</p>
+<blockquote>
+<p><strong>Show a logged value only when the code that printed it is unchanged since the commit the log names, and was not edited when the log
+was made. Otherwise show a named reason. Never a guess.</strong></p>
+</blockquote>
+<p>What a project must emit to use it, and nothing more:</p>
+<table>
+<thead>
+<tr>
+<th>Piece</th>
+<th>Form here</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A stamp near the top of each saved log</td>
+<td><code>§LOG_STAMP commit=&lt;hash&gt; dirty=&lt;n&gt; … [dirty_files=a,b]</code> (<code>scripts/log_stamp.js</code>)</td>
+<td>names the code, and says which tracked files differed from that commit</td>
+</tr>
+<tr>
+<td>A tag on the line that prints</td>
+<td><code>console.log('§TAG …')</code></td>
+<td>ties a log line to one line of code</td>
+</tr>
+<tr>
+<td>The log kept on disk</td>
+<td><code>logs/*.log</code>, or a folder named in a setting</td>
+<td>the evidence itself</td>
+</tr>
+</tbody>
+</table>
+<p>The three proofs, in order, and what the reader is told when one fails:</p>
+<table>
+<thead>
+<tr>
+<th>Proof</th>
+<th>If it fails</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A stamped log carries the tag</td>
+<td><code>no stamped log found</code>, or <code>tag not in any stamped log</code></td>
+</tr>
+<tr>
+<td>The printing file was not edited when the log was made (the stamp must list the edited files to prove it)</td>
+<td><code>file was dirty when the log was made</code>, or <code>stamp does not name its dirty files</code></td>
+</tr>
+<tr>
+<td>The printing file is unchanged since the stamp's commit (<code>git diff --quiet &lt;commit&gt; -- &lt;file&gt;</code>)</td>
+<td><code>file changed since the log</code></td>
+</tr>
+</tbody>
+</table>
+<p>Two things the rule refuses on purpose. A line that names only a commit is not a stamp: without the edited-files count the second
+proof cannot be made (this is why a bake's own commit line is not accepted, and the bake now writes the stamp). And a value is never
+shown "probably current": the reason is shown instead.</p>
+<p><strong>What is and is not new.</strong> Showing run-time values in the editor is established (live-process tools do it), and so are frame-capture and
+log viewers. Those tools get freshness for free from a running process, or do not claim it. The piece here is the provenance check on
+an offline log. It is a few lines of code (<code>devtools/vscode/x0-navigator/lib/lens_index.js</code>: <code>parseStamp</code>, <code>whyNot</code>, <code>explain</code>), has
+no dependency, and its witness (<code>witness_x0_lens.js</code>) holds a red control for every refusal above.</p>
 <hr />
 <h2 id="7-the-compiler-side-this-repo">7. The compiler side (this repo)<a class="headerlink" href="#7-the-compiler-side-this-repo" title="Permanent link">&para;</a></h2>
 <p>What the April guide described is still here, and it is still the compiler. The details are in <code>docs/archive/DEVELOPER_GUIDE.md</code>:</p>
