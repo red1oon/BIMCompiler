@@ -402,6 +402,25 @@ The largest viewer files were split in 2026-10 by a generator that keeps every s
 
 ---
 
+### 5.6 The clock rule: time, dates and ids in ERP code
+
+**The rule (owner decisions A-2, A-3, A-4, 2026-11-14).** Code that calculates (ERP processes, callouts, posting, the op-log fold, the schedule maths) never asks the machine for the time. The **shell** (the page, the service worker, the web-service kernel) reads the clock once, and everything else asks the transaction's env. Replaying a recorded operation must give the same rows on any day, in any time zone; a hidden `new Date()` breaks that quietly.
+
+| You need | Ask | Never |
+|---|---|---|
+| the session's day (what legacy calls `#Date`) | `trx.env.date` (the login context's `#Date` is the source) | `new Date().toISOString().slice(0, 10)` |
+| a time stamp for a new row | `A.Env.nowStamp(trx.env)` (the local wall-clock string) | `new Date()` |
+| milliseconds | `A.Env.nowMs(trx.env)` | `Date.now()` |
+| the local day of an instant you were given | `A.Env.stamp(ms).day` (also `.now`, `.millis`) | cutting the day out of `toISOString()` |
+| a transaction env, in the shell | `A.Env.modelEnv(loginContext, { nowMs, uuid, perfMs })` | building the object by hand |
+
+`A` is `X.A` (`AdCallout`) inside a process. If the env has no clock the call **throws and logs `§ENV_NO_DATE`**: that is the design, the core never falls back to a wall clock.
+
+**The day is the LOCAL day, never the UTC day.** Legacy dates by the server's local day (the reference: iDempiere's web-service login sets `#Date` from the JVM's local time). `toISOString()` is UTC, so between local midnight and the zone offset the date comes out as *yesterday*. That was bim-ootb #2996: the headless kernel dated an invoice made at 00:30 in a +08 zone the 12th instead of the 13th. Test any date change at **00:30 in a +08 zone**; a test that only runs in UTC proves nothing here.
+
+**Prove it:** `node erp/tests/witness_core_clock_reads.js` scans the files already migrated for a clock call and must print `clockReads=0` on every line, ending `§WITNESS_CORE_CLOCK_READS … fail=0`; `node erp/tests/witness_env_views.js` checks the day in UTC and Asia/Kuala_Lumpur (`§ENV_VIEWS … same=Y`); `node erp/tests/witness_replay_clock.js` replays a journal three days later (`§REPLAY_CLOCK … match=Y`). Both new witnesses carry a red control: a planted clock read must make them fail.
+**Where it stands:** the migration is in progress, one file per pull request, and the files still to do are listed in `prompts/CODE_ARCHITECTURE_DESIGN.md` Part A (timing reads and a few id sources remain). Until it is finished, a file not in the witness's list may still read the clock; do not add new reads to any file under `erp/processes/`, `erp/callouts/`, `erp/model_*.js` or the schedule maths.
+
 ## 6. Proving it
 
 - **Witnesses** live in `viewer/tests/`, `erp/tests/`, `modeller/tests/`, `tests/`, `witness/` and `scripts/tests/`. Run one with
@@ -484,6 +503,7 @@ The core idea still holds: **a building is a Bill of Materials.** One parent, N 
 
 | Trap | What happens | Do instead |
 |---|---|---|
+| A date taken from `toISOString().slice(0, 10)` or `new Date()` in ERP code | The UTC day, or today's wall clock: wrong near midnight, and a replay on another day gives other rows (#2996) | `trx.env.date`, `A.Env.nowStamp(trx.env)` (§5.6); test at 00:30 in a +08 zone |
 | Edited a precached file, reloaded, "nothing changed" | Service worker served the old file | `bump.js` (§5.1), or DevTools ▸ Application ▸ "Update on reload" while debugging |
 | Opened the copy instead of the source | 329 stale copies in this repo | Edit in bim-ootb. Check the path before you save |
 | Trusted a `file:line` from an old prompt | Lines moved in the 2026-10 splits | Search for the function name |
