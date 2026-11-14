@@ -55,8 +55,8 @@ The Modeller, the Viewer, the Kernel ERP and the dashboard are plain web files: 
 |---|---|---|---|
 | A1.1 | Copy the repository: `git clone https://github.com/red1oon/bim-ootb` | A folder `bim-ootb` with `index.html`, `modeller/`, `erp/`, `capex/` | ☐ Pass ☐ Fail |
 | A1.2 | Serve the folder with any static web server, for example `python3 -m http.server 8080` inside it | The server says it is listening | ☐ Pass ☐ Fail |
-| A1.3 | Open `http://<your-server>:8080/index.html` | The front door opens: Buildings / IFC, Modeller, ERP | ☐ Pass ☐ Fail |
-| A1.4 | Open `/capex/index.html` on your server | The dashboard opens on its built-in data | ☐ Pass ☐ Fail |
+| A1.3 | Open `http://<your-server>:8080/index.html`. On a first visit the page is a picture with two pills: click the **red** one | Three doors appear under *choose your door*. Hold the pointer on each to read its name: **Buildings / IFC**, **BIM Modeller**, **ERP** | ☐ Pass ☐ Fail |
+| A1.4 | Open `/capex/index.html` on your server | The dashboard opens on its built-in sample store (3 projects). The computed tiles read **no data (CAPEX PA rows not installed)**: that is correct until the page reads your iDempiere (chapter D) | ☐ Pass ☐ Fail |
 
 The large building databases are not stored in the repository. To open the sample buildings from your own server, ask us for the files and place them as the [Viewer guide](BIMUserGuide.md#run-it-on-your-own-machine) says.
 
@@ -77,7 +77,7 @@ All scripts are iDempiere migration scripts (PostgreSQL), written for the **Gard
 |---|---|---|---|
 | A2.1 | Apply the scripts above, run `update_sequences()`, restart iDempiere | Each script ends without an error; the server comes back | ☐ Pass ☐ Fail |
 | A2.2 | Log in as GardenWorld Admin, open the **Home** tab | The Performance panel shows CAPEX goals, for example *CAPEX Total Projects*, *CAPEX Approved Budget* | ☐ Pass ☐ Fail |
-| A2.3 | Open the window **Measure Calculation** | Rows named *CAPEX …* are there; their SQL can be read and edited here. This is where the dashboard’s formulas live | ☐ Pass ☐ Fail |
+| A2.3 | Open the window **Performance Measure Calculation** | Rows named *CAPEX …* are there; their SQL can be read and edited here. This is where the dashboard’s formulas live | ☐ Pass ☐ Fail |
 
 Each script carries a **Restore** line at its top that removes what it adds.
 
@@ -89,11 +89,11 @@ The pack goes to the client named in its file name (**GardenWorld**), and is pac
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| A3.1 | Put the zip in an empty folder on the server and run `utils/RUN_ApplyPackInFromFolder.sh <folder>`, or use the **Pack In** window logged in as GardenWorld Admin | The run ends with *Done* and no exception | ☐ Pass ☐ Fail |
+| A3.1 | Put the zip in an empty folder on the server and run `utils/RUN_ApplyPackInFromFolder.sh <folder>`, or use the **Pack In** window logged in as GardenWorld Admin | The run prints *Successful application of …CAPEXTestData.zip*, `Error=false` and ends with *Done*. The log also prints a `java.lang.Exception` trace for each planned line (*MProduct.loadPO: NO Data found*): these do not stop the run, and the rows are checked in A3.2 to A3.4 | ☐ Pass ☐ Fail |
 | A3.2 | Open the **Project** window, search Value `TD_%` | 12 projects, for example *TD_RIVERSIDE – Riverside Tower (test data)* | ☐ Pass ☐ Fail |
 | A3.3 | Open *TD_RIVERSIDE*, tab **Phase** | 5 phases with dates; the first 3 are ticked **Complete** | ☐ Pass ☐ Fail |
 | A3.4 | Look at the project’s **Currency** | The currency of GardenWorld’s *Purchase* price list. The pack sets no currency: iDempiere takes it from the price list, so it follows your setup | ☐ Pass ☐ Fail |
-| A3.5 | Pack the same zip in a second time | No new projects: the pack updates the same rows | ☐ Pass ☐ Fail |
+| A3.5 | Pack the same zip in a second time | No new projects: still 12. The folder run says the pack is *already installed* and skips it | ☐ Pass ☐ Fail |
 
 ### A4 · ERP model setup, where needed
 
@@ -140,7 +140,7 @@ Open [the Modeller](https://red1oon.github.io/bim-ootb/modeller/modeller.html). 
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| B1.1 | **📂 Open → Open 2D drawings (.dxf)…** and select **only** `0_FLOOR_PLAN_marked.dxf` | The Shed **floor plan** is drawn on the canvas, as in picture B1-b: the long rectangle of the shed with its grid lines and column marks | ☐ Pass ☐ Fail |
+| B1.1 | **📂 Open → Open 2D drawings (.dxf)…** and select **only** `0_FLOOR_PLAN_marked.dxf` | The Shed **floor plan** is drawn on the canvas, as in picture B1-b: the long rectangle of the shed with its grid lines and column marks. The badge in the **Drawing metadata** panel reads **Blocked** for one sheet on its own: that is expected, one sheet is not yet a building | ☐ Pass ☐ Fail |
 | B1.2 | Fold the **2D Drawings** panel away (the fold button in its title bar) and close the **Drawing metadata** panel (✕) to see the whole drawing. Turn the mouse wheel to zoom, drag to move | You recognise your own floor plan | ☐ Pass ☐ Fail |
 
 ![Shed floor plan on its own](img/uat/uat_b1_sheet_0_floor_plan.png)
@@ -187,11 +187,11 @@ An elevation or the section opened on its own shows nothing: it has to stand on 
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| B2.5 | Unfold the **2D Drawings** panel and tick **Complete the building (floor slab, roof)** | The box is ticked | ☐ Pass ☐ Fail |
+| B2.5 | Wait until the Arrange replay has ended (the panel's status line stops counting *Step n/46*), or press **Esc** to stop it. Unfold the **2D Drawings** panel and tick **Complete the building (floor slab, roof)** | The box is ticked | ☐ Pass ☐ Fail |
 | B2.6 | Press **Convert** (ringed in picture B2-d) | The Shed is built in 3D: columns, walls, beams, the roof on its trusses, doors and fans (picture B2-e) | ☐ Pass ☐ Fail |
-| B2.7 | Orbit around the model | It is the same shed as your drawings: same length, same number of bays | ☐ Pass ☐ Fail |
+| B2.7 | Orbit around the model | It is the shed as these sheets draw it: one row of columns on each grid line of the floor plan (14 lines along the length, 4 across) | ☐ Pass ☐ Fail |
 | B2.8 | **Export → Viewer database (.db)** (ringed in picture B2-f) | A `.db` file is downloaded | ☐ Pass ☐ Fail |
-| B2.9 | Open the [front door](https://red1oon.github.io/bim-ootb/index.html), **Buildings / IFC**, open the `.db` | The Viewer shows the same Shed; orbit with the mouse | ☐ Pass ☐ Fail |
+| B2.9 | Open the [front door](https://red1oon.github.io/bim-ootb/index.html), **Buildings / IFC**, then the card **Blank Viewer · Open your own .db file**. In the blank Viewer press **Ctrl+O** (Open Building) and choose the `.db` | The status line reads **DONE — SHED 511 elements**, the same count as the Convert; orbit with the mouse | ☐ Pass ☐ Fail |
 
 ![Tick Complete, then press Convert](img/uat/uat_b2_convert_button.png)
 
@@ -214,34 +214,30 @@ The schedule and the cost come from reference files the Viewer ships with. You e
 | Reference | Open it from | Example edit for this test |
 |---|---|---|
 | **5D Rate Pack** (the active pack, for example `cidb2024_my`) | **Settings → Edit Project JSON → 5D Rate Pack** | raise the rate of one material (for example walls) by 10 % |
-| **4D Schedule Template** | **Settings → Edit Project JSON → 4D Schedule Template** | lengthen one phase (for example *superstructure*) by a few days |
+| **4D Schedule Template** | **Settings → Edit Project JSON → 4D Schedule Template** | add waiting days after one phase: in **dependencies → within_level**, raise `lag_days` of the *superstructure* rows by 5. (A phase has no length of its own to type: its length is worked out from the parts and the crews) |
 | **4D Sequence & Labour Rules** | **Settings → Edit Project JSON → 4D Sequence & Labour Rules** | change one trade’s crew size |
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
 | B3.1 | Note the Viewer’s total cost (Find panel: `total cost`) and the schedule’s finish date (**Time Machine**, key **T**) | Write both down: ________ / ________ | ☐ Pass ☐ Fail |
-| B3.2 | Make the rate edit and the duration edit above. Your copy is saved in this browser as you type | The form keeps your value; a list shown as JSON text must stay valid JSON | ☐ Pass ☐ Fail |
+| B3.2 | Make the rate edit and the lag edit above. Your copy is saved in this browser as you type | The form keeps your value; a list shown as JSON text must stay valid JSON | ☐ Pass ☐ Fail |
 | B3.3 | **Reload the Viewer tab**, so it reads your copies | The building opens again | ☐ Pass ☐ Fail |
 | B3.4 | Read the total cost again | It moved in the direction of your rate edit | ☐ Pass ☐ Fail |
-| B3.5 | Open **Time Machine** (key **T**) and play the schedule | The finish date moved by about the days you added; the bars play in order | ☐ Pass ☐ Fail |
+| B3.5 | Open **Time Machine** (key **T**). Press **Jump to start**, then **Build** | The finish date moved by the days you added (5 on each edited row); the day counter and the *placed* count rise as the parts go up in order | ☐ Pass ☐ Fail |
 | B3.6 | **⬇ Download** your edited files, then **Reset** them | You keep your copies as files; the Viewer is back on the shipped references | ☐ Pass ☐ Fail |
 
 ![The Inspect drawer: Measure, Clash, X-Ray, Section, Time Machine, 4D / 5D](img/viewer/pill-inspect-drawer.png)
 
 ### B4 · Send the model to the ERP as a Project Order
 
-Full detail: [Send it to ERP](ModellerGuide.md#send-it-to-erp-project-order-variant-vo).
+Do this in the **Viewer**, on the Shed you opened in B2.9. (In the Modeller, **ERP ▸ Project Order** prices a building that was *opened* from a database; for a model made from drawings it tells you to use this route.) Full detail: [Send it to ERP](ModellerGuide.md#send-it-to-erp-project-order-variant-vo).
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| B4.1 | Select parts of the model, click **ERP ▸ Project Order** (bottom-left) | The panel prices the parts and offers **Generate Project Order** | ☐ Pass ☐ Fail |
-| B4.2 | **Generate Project Order** | The order appears with its planned amount and **Open in ERP ↗** | ☐ Pass ☐ Fail |
-| B4.3 | Generate again | Nothing new is added: the order is keyed by the model’s name | ☐ Pass ☐ Fail |
-| B4.4 | **Open in ERP ↗** | The ERP opens on the project, with phases and lines from the model | ☐ Pass ☐ Fail |
-
-![Before generating](img/modeller/first-steps-s9-1-read-not-generated.png)
-
-![After generating](img/modeller/first-steps-s9-2-generated.png)
+| B4.1 | Open the **Find** panel and click one group of parts in its list (for example a column type) | The panel shows the group's cost and the button **› ERP** | ☐ Pass ☐ Fail |
+| B4.2 | Press **› ERP** | The status line reads *Project Order: 1 lines · contract …  (saved)* and a link **open ↗** appears | ☐ Pass ☐ Fail |
+| B4.3 | Press **› ERP** again | *Project Order: 0 lines*: nothing new is added, the order is keyed by the model's name (**SHED**) | ☐ Pass ☐ Fail |
+| B4.4 | Click **open ↗**. On the Kernel ERP sign-in page choose **GardenAdmin**, then **Log In** | The ERP opens on the project **SHED** (*BIM: SHED*) with its planned amount; its **Phase**, **Task** and **Project Line** tabs hold the rows from the model | ☐ Pass ☐ Fail |
 
 **Notes (chapter B):** ______________________________________________
 
@@ -265,6 +261,8 @@ Use the 12 test projects. The table says, per project, what to make. Use **Rake 
 | TD_OFFICE | Office Fit-out | 0 of 3 | — | — | — |
 | TD_WAREHOUSE | Warehouse 3 | 0 of 3 | leave in Draft: 8 × Rake Bamboo @ 80 | — | — |
 | TD_PLAZA | Plaza | 3 of 3 | — | — | 12 × Rake Bamboo |
+
+Buying *Rake Bamboo* at the table's prices raises its average cost. The issues in C4 are then costed well above its starting cost, and most test projects end **over budget** on the dashboard. With this table that is the expected picture.
 
 ### C1 · Purchase orders
 
@@ -305,7 +303,13 @@ Use the 12 test projects. The table says, per project, what to make. Use **Rake 
 
 ## D · The dashboard
 
-Open the dashboard on your data: `/capex/index.html?source=legacy` on the server where the dashboard's read job runs (see [How the dashboard connects to the data](CapexDashboardGuide.md#how-the-dashboard-connects-to-the-data)). Every tile is described in [The dashboard page](CapexDashboardGuide.md#the-dashboard-page).
+The dashboard reads a file that a small read job writes from your iDempiere. Run the job first, and again whenever you want fresh figures (it needs Node.js; the full line with user, password, tenant and role is in the [Developer's note](CapexDashboardGuide.md#developers-note)):
+
+```
+BRIDGE_BASE=http://<your-idempiere>:<port> node capex/tools/legacy_snapshot.js
+```
+
+It ends with a line `§DASH_LEGACY_SNAPSHOT … projects=<n> … unavailable=[]`. Then open `/capex/index.html?source=legacy` on the server that holds that copy (see [How the dashboard connects to the data](CapexDashboardGuide.md#how-the-dashboard-connects-to-the-data)). Every tile is described in [The dashboard page](CapexDashboardGuide.md#the-dashboard-page).
 
 ![The dashboard](img/capex/capex_page_dashboard.png)
 
@@ -314,12 +318,12 @@ Open the dashboard on your data: `/capex/index.html?source=legacy` on the server
 | D1 | Read **Total Projects** and **Active Projects** | The 12 test projects are counted (plus any of your own) | ☐ Pass ☐ Fail |
 | D2 | Read **Approved Budget** | The sum of the planned amounts, per currency | ☐ Pass ☐ Fail |
 | D3 | Read **Actual Cost** (Spent) | It rose by what you issued in C4 | ☐ Pass ☐ Fail |
-| D4 | Open **Procurement** in the left menu | Open purchase orders = the ones you left Drafted; the supply-chain strip shows Ordered / Received / Invoiced / Paid as you made them | ☐ Pass ☐ Fail |
+| D4 | Open **Procurement Risks** in the left menu. Then open a test project's page (D5) and its **Procurement** tab | Left menu: *Open purchase orders* = the 5 you left Drafted, with their total. Project page: the **Supply chain** card shows that project's order at the stage you took it to (*TD_SUBSTATION* Ordered, *TD_DATAHALL* Received, *TD_BRIDGE* Invoiced, *TD_RIVERSIDE* and *TD_SCHOOL* Paid) and lists its receipt, invoice and payment | ☐ Pass ☐ Fail |
 | D5 | Click a number on a tile | The drill panel lists the projects behind it; click a project to open its page | ☐ Pass ☐ Fail |
-| D6 | On the project page, open the tabs | The Schedule tab draws the phase bars with the pack’s dates | ☐ Pass ☐ Fail |
+| D6 | On the project page of *TD_RIVERSIDE*, open the tabs | Overview: Approved **371.25**, 5 phases. The Schedule tab draws the 5 phase bars with the pack’s dates, the first 3 *Complete* | ☐ Pass ☐ Fail |
 | D7 | Open **ƒ formula** under a tile | The formula is shown; it is the same Performance Analysis measure your iDempiere holds (A2.3) | ☐ Pass ☐ Fail |
 | D8 | Change **Layout** and **Skin** | The look changes; the numbers do not | ☐ Pass ☐ Fail |
-| D9 | iDempiere **Home** tab | The CAPEX goals show the same counts as the dashboard tiles, money in your login’s currency | ☐ Pass ☐ Fail |
+| D9 | Log in to iDempiere again and read the **Home** tab | The CAPEX goals show the same counts as the dashboard tiles, money in your login’s currency. A goal that has a target (for example *Health Green*, *Schedule On Time*, *Actual Cost*) shows its percentage of the target on the Home tab, not the count | ☐ Pass ☐ Fail |
 
 **Notes (chapter D):** ______________________________________________
 
