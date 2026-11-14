@@ -233,6 +233,22 @@ each core file's clock/ID reads onto it, one file per PR, posting/parity witness
 AST scan of the core file list that fails on any forbidden call outside the Env owner and the `§` log helper. **Red control:** a copied core verb
 with a planted `Date.now()` must make it FAIL. Prints `§CORE_PURE files= forbidden= verdict=`.
 
+**A1 SPEC (2026-11-14; decisions A-2/A-3/A-4 answered; additive, NO caller changes, so no behaviour change).** Measured producers of the trx env /
+"now" in bim-ootb `main` (`git grep -n` on `nowMillis`, `toISOString`, `getTimezoneOffset`): (1) `erp/ws_kernel.js:78-82` `env(s)`: clock +1000 ms per call, day = `toISOString().slice(0,10)`
+= **UTC day** (#2996); (2) `erp/crud_overlay.js:1902` `_modelEnv()`: local day, local stamp, `nowMillis = Date.now()`; (3) `erp/genesis.js:729`: fixed
+`D` at 09:00, deterministic `uuid`; (4) `erp/plugin_overlay.js:114` `_localNow()`: local stamp; (5) `erp/ad_callout.js:840` `RUNTIME.now`: local wall clock as
+UTC ms. **Build (all in `erp/ad_callout.js` `Env`, the login context, per A-2):**
+- `Env.stamp(ms)` → `{ day:'YYYY-MM-DD', now:'YYYY-MM-DD HH:MM:SS', millis }` from LOCAL calendar fields (one implementation of what (2), (4), (5) each spell out).
+- `Env.modelEnv(ctx, edge)` → the trx env object `{client, org, user, role, date, now, nowMillis, uuid, elapsed, …}`. `ctx` is the login context (`#AD_Client_ID`,
+  `#AD_Org_ID`, `#AD_User_ID`, `#AD_Role_ID`, `#Date`); `edge` is what the shell injects once: `{ nowMs(), uuid(), perfMs() }` (the ONLY places a clock/RNG may be called).
+  `date` = ctx `#Date` when set (A-3: legacy's session date), else the edge's local day; if neither exists it **throws** and prints `§ENV_NO_DATE` (A-3: core never falls back).
+- `env.elapsed(t0)` / `env.perfMs()` = A-4's timing seam (reads `edge.perfMs`).
+**Witness W-ENV-VIEWS** (`erp/tests/witness_env_views.js`, node, `witness_kit/contract.js`): with a fixed injected clock, for `TZ=UTC` and `TZ=Asia/Kuala_Lumpur` at 00:30
+local, compare `Env.modelEnv` field by field with `_modelEnv()` (2), the genesis env (3) and `ws_kernel env()` (1). Prints `§ENV_VIEWS producer= field= same=Y|N`.
+(1) is EXPECTED `same=N` on `date` in +08 (#2996, the UTC-day defect) and is reported as `KNOWN-DIFF #2996`, not PASS; A2 fixes it after a legacy-oracle check.
+**Red control:** a copy of `_modelEnv` with `toISOString()` must give `same=N` at +08. **INCONCLUSIVE** if fewer than 3 producers were compared. Not-a-test warning: equality
+on UTC only proves nothing, which is why +08 00:30 is mandatory.
+
 **OPEN DECISIONS (ask one at a time):**
 1. Which files are "core"? Proposal (measured in §VET): ERP `erp/processes/*.js`, `erp/callouts/*.js`, `ad_callout.js`, `doc_poster.js`,
    `model_*.js`, `rule_fold.js`, `crud_core.js` (112 files, 18 with calls, 25 calls), with `erp/kernel_ops.js` as the **minting point** (it records
