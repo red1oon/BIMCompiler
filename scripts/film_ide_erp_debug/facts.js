@@ -13,7 +13,8 @@ for (const [id, tree] of [['old', OLD], ['new', NEW]]) {
   const db = path.join(OUT, 'kernel_' + id + '.db'), png = path.join(OUT, 'page_' + id + '.png');
   const k = grab(run('kernel_run.js', [tree, db], { TZ }), 'KR_RESULT');
   if (!k.invoice || !k.steps.order || !k.steps.ship || !k.steps.invoice) { L('FAIL ' + id + ' the kernel did not make an invoice ' + JSON.stringify(k.errors)); process.exit(1); }
-  const p = grab(run('page_shot.js', [NEW, db, USER, WIN, png], { PS_RECORD: String(k.invoice.c_invoice_id) }), 'PS_RESULT');
+  let p = grab(run('page_shot.js', [NEW, db, USER, WIN, png], { PS_RECORD: String(k.invoice.c_invoice_id) }), 'PS_RESULT');
+  if (!(p.fields || {})['Date Invoiced']) { L('retry ' + id + ': the page showed no Date Invoiced the first time'); p = grab(run('page_shot.js', [NEW, db, USER, WIN, png], { PS_RECORD: String(k.invoice.c_invoice_id) }), 'PS_RESULT'); }
   const f = p.fields || {}, pageDate = f['Date Invoiced'], rowDay = String(k.invoice.dateinvoiced).slice(0, 10);
   out.states[id] = { commit: out.commits[id === 'old' ? 'old' : 'neu'], localDay: k.localDay, utcDay: k.utcDay, sessionDay: k.sessionDay, kernelInvoice: k.invoice, page: { png: path.relative(__dirname, png), docNo: f['Document No'], dateInvoiced: pageDate, dateOrdered: f['Date Ordered'], grandTotal: f['Grand Total'], status: f['Status'], errors: p.pageErrors }, same: pageDate === rowDay };
   L('state ' + id + ' commit=' + out.states[id].commit + ' tz=' + TZ + ' local_clock=' + k.local + ' sessionDay=' + k.sessionDay + ' kernel_row.dateinvoiced=' + k.invoice.dateinvoiced + ' kernel_row.created=' + k.invoice.created + ' page.docNo=' + f['Document No'] + ' page.dateInvoiced=' + pageDate + ' page.grandTotal=' + f['Grand Total'] + ' pageErrors=' + p.pageErrors.length + ' same=' + (pageDate === rowDay ? 'Y' : 'N'));

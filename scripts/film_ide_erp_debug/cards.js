@@ -31,7 +31,8 @@ const typed = (before, cmd, lines, after, st1, st2) => { const s = [{ html: fram
   s.push({ html: frame(termHtml(cmd, cmd.length, false, ''), before, st1), frames: 8, key: 'r' }); s.push({ html: frame(termHtml(cmd, cmd.length, true, lines), after, st2), frames: null }); return s; };
 const E = (name, html, frames, key) => ({ name, html, frames, key });
 const cards = {};
-cards.cover = [{ html: full('<div class="ch"><div class="k">EDITING REAL CODE  ·  PART 3</div><div class="t1">The invoice<br>dated yesterday</div><div class="s">One real bug in the ERP kernel: found in VS Code, fixed, checked.</div><div class="c">bim-ootb #2996 → #3010 · English</div></div>'), frames: null }];
+const CO = '<span style="color:#FF6B78">', CE = '</span>';   // the two tones: off-white and the film's coral
+cards.cover = [{ html: full('<div class="ch"><div class="k">CH 0</div><div class="t1">VSC ' + CO + 'Hot Edit' + CE + '</div><div class="s">inbuilt tools for ERP/BIM developers</div><div class="c">Example: the invoice dated yesterday · bim-ootb #2996 → #3010 · English</div></div>'), frames: null }];
 cards.wrong = typed(OLD, CMD, lineHtml('before.log'), OLD, 'the invoice, before the fix', 'the invoice, before the fix');
 cards.hover = [{ html: frame(vsc('h1_tag_before'), OLD, 'hover on the tag in the test'), frames: null }];
 cards.find = [{ html: frame(vsc('f1_call'), OLD, 'F12 on the call of env()'), frames: null }, { html: frame(vsc('f2_landed'), OLD, 'it lands on function env'), frames: null }];
@@ -41,7 +42,12 @@ cards.find = [{ html: frame(vsc('f1_call'), OLD, 'F12 on the call of env()'), fr
     hold(a, 12); for (let k = 0; k < half; k++) hold(a, 1, 'k'); hold(b, 6); for (let k = half; k < f.neu.length; k++) hold(b, 1, 'k'); hold(c, 10); });
   s.push({ html: frame(vsc('s1_saved'), OLD, 'saved (Ctrl+S)'), frames: 8, key: 'r' }); s.push({ html: frame(vsc('s1_saved'), OLD, 'saved'), frames: null }); cards.fix = s; }
 cards.proof = typed(OLD, CMD, lineHtml('after.log'), NEW, 'the invoice, before the fix', 'the same steps on the fixed code');
-cards.close = [{ html: full('<div class="ch" style="margin-top:210px"><div class="t1" style="font-size:88px">Two lines in,<br>two lines out.</div><div class="s">The check that found it now guards it.</div><div class="c">Key sounds: eklee and qubodup, OpenGameArt "Single Key Press Sounds", CC BY 3.0 · pictures: the real VS Code and the real ERP page</div></div>'), frames: null }];
+cards.close = [{ html: full('<div class="ch" style="margin-top:300px"><div class="t1" style="font-size:96px">Two lines in,<br>' + CO + 'two lines out.' + CE + '</div><div class="s">The check that found it now guards it.</div></div>'), frames: null }];
+{ const PA = require('./priorart.json'), row = i => '<div class="pr"><div class="pn">' + esc(i.name) + '</div><div class="pd">' + esc(i.does) + '</div><div class="pt">' + esc(i.took) + '</div></div>';
+  const css = `<style>.pa{margin:46px 70px 0;} .pa h1{font-size:54px;color:#F3EEE8} .pa h1 span{color:#FF6B78} .ph,.pr{display:grid;grid-template-columns:420px 640px 1fr;gap:26px} .ph{font-size:20px;color:#94a3b8;letter-spacing:2px;margin:26px 0 8px;text-transform:uppercase}
+    .pr{padding:14px 0;border-top:1px solid #334155;font-size:25px;line-height:1.3} .pn{color:#7dd3fc;font-weight:700} .pd{color:#cbd5e1} .pt{color:#fbbf24} .pg{margin-top:26px;font-size:30px;color:#F3EEE8} .pg b{color:#7dd3fc} .cr{margin-top:14px;font-size:19px;color:#94a3b8}</style>`;
+  cards.priorart = [{ html: full(css + '<div class="pa"><h1>Prior art: <span>what this learned from</span></h1><div class="ph"><div>source we read</div><div>what it does</div><div>what we took</div></div>' + PA.items.map(row).join('') +
+    '<div class="pg">Every step, with the tools: <b>' + esc(PA.guide.url) + '</b> &nbsp;·&nbsp; ' + esc(PA.guide.sections) + '</div><div class="cr">Key sounds: eklee and qubodup, OpenGameArt "Single Key Press Sounds", CC BY 3.0 · pictures: the real VS Code and the real ERP page</div></div>'), frames: null }]; }
 const order = require('./narr.js').beats.map(b => b.id);
 (async () => {
   const br = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-gpu', '--allow-file-access-from-files', '--window-size=1920,1080'] }), pg = await br.newPage(); await pg.setViewport({ width: 1920, height: 1080 });

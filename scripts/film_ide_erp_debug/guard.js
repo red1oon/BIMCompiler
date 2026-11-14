@@ -29,6 +29,13 @@ const must = [['before: the Kuala Lumpur line says same=N and the UTC line same=
   ['every still the cards need exists', ['h1_tag_before', 'f1_call', 'f2_landed', 't0a_deleted', 't0b_half', 't0c_typed', 't1a_deleted', 't1b_half', 't1c_typed', 's1_saved'].every(n => fs.existsSync(path.join(OUT, 'stills', n + '.png')))],
   ['the page pictures exist', ['old', 'new'].every(i => fs.existsSync(path.join(OUT, 'page_' + i + '.png')))]];
 must.forEach(([t, ok]) => { if (!ok) bad++; L((ok ? 'OK   ' : 'FAIL ') + t); });
+// P prior art: every row names a file this lane read; the text must be ON that cited line (read from the file, not from memory); nothing else is on the card
+const PA = require('./priorart.json'), os = require('os'), cp = require('child_process');
+const readLine = w => { try { if (w.file) { const f = w.file.replace(/^~/, os.homedir()); return fs.readFileSync(f, 'utf8').split('\n')[w.line - 1]; }
+  const root = w.repo === 'bim-ootb' ? path.join(os.homedir(), 'bim-ootb') : path.join(__dirname, '..', '..'), ref = w.repo === 'bim-ootb' ? 'origin/main' : 'origin/master';
+  return cp.execFileSync('git', ['-C', root, 'show', ref + ':' + w.path], { encoding: 'utf8', maxBuffer: 1 << 26 }).split('\n')[w.line - 1]; } catch (e) { return null; } };
+PA.items.forEach(it => { const l = readLine(it.where), ok = l != null && l.indexOf(it.where.text) >= 0; if (!ok) bad++; L((ok ? 'OK   ' : 'FAIL ') + 'prior art "' + it.name + '" <- ' + (it.where.file || it.where.repo + ':' + it.where.path) + ':' + it.where.line + (ok ? '' : ' text not on that line: ' + it.where.text)); });
+{ const ok = PA.items.length >= 3 && PA.items.every(i => i.does && i.took && i.where) && /^https:\/\/red1oon\.github\.io\/BIMCompiler\/DeveloperGuide\/$/.test(PA.guide.url); if (!ok) bad++; L((ok ? 'OK   ' : 'FAIL ') + 'prior art card: ' + PA.items.length + ' rows, each with what it does and what we took, and the Developer Guide link'); }
 // not-said: the film must not claim what the pictures do not show
 const said = N.beats.map(b => b.text || '').join(' ');
 [[/last value/i, 'the add-on shows no last value for this tag'], [/\blive\b|linked|real.?time/i, 'the page is opened on data written earlier, not linked live'], [/\bFAIL(s|ed)?\b/, 'the witness line is information, not a failed test']].forEach(([re, why]) => { const hit = re.test(said); if (hit) bad++; L((hit ? 'FAIL ' : 'OK   ') + 'not said: ' + why); });

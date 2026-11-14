@@ -20,6 +20,11 @@
 §FILM_GUARD OK   facts.js verdict PASS (page == kernel row, OLD = UTC day, NEW = local day)
 §FILM_GUARD OK   every still the cards need exists
 §FILM_GUARD OK   the page pictures exist
+§FILM_GUARD OK   prior art "iDempiere, web-service login" <- ~/idempiere-dev-setup/idempiere/org.idempiere.webservices/WEB-INF/src/org/idempiere/adinterface/CompiereService.java:283
+§FILM_GUARD OK   prior art "iDempiere, InvoiceGenerate" <- ~/idempiere-dev-setup/idempiere/org.adempiere.base.process/src/org/compiere/process/InvoiceGenerate.java:135
+§FILM_GUARD OK   prior art "this repo's editor study" <- bim-compiler:prompts/EDITOR_MAINTAINABILITY_STUDY.md:91
+§FILM_GUARD OK   prior art "this repo's dev-toolkit plan" <- bim-ootb:prompts/DEV_TOOLKIT_NO_AI.md:17
+§FILM_GUARD OK   prior art card: 4 rows, each with what it does and what we took, and the Developer Guide link
 §FILM_GUARD OK   not said: the add-on shows no last value for this tag
 §FILM_GUARD OK   not said: the page is opened on data written earlier, not linked live
 §FILM_GUARD OK   not said: the witness line is information, not a failed test

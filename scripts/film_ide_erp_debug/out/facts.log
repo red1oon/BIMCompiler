@@ -3,3 +3,4 @@
 §FACTS CHECK_P page == kernel row in both states: PASS
 §FACTS CHECK_B OLD invoice is on the UTC day (2026-11-12) not the local day (2026-11-13), NEW on the local day: PASS
 §FACTS VERDICT PASS
+facts exit=0
