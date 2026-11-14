@@ -31,8 +31,11 @@ Dates in the test data are set for **13 November 2026**. Testing well after that
 | The BIM apps | the public site [red1oon.github.io/bim-ootb](https://red1oon.github.io/bim-ootb/index.html), or your own copy (chapter A1) |
 | Your iDempiere, with its **GardenWorld** client and a GardenWorld Admin login | your server |
 | The test-data pack | [202611131200_GardenWorld_CAPEXTestData.zip](https://github.com/red1oon/bim-ootb/raw/main/capex/plugin/testdata_2pack/202611131200_GardenWorld_CAPEXTestData.zip) |
+| The construction-products script (10 materials at standard cost) | [202611141500_CAPEX-TD-CONSTRUCTION-PRODUCTS.sql](https://github.com/red1oon/bim-ootb/blob/main/capex/plugin/testdata_2pack/202611141500_CAPEX-TD-CONSTRUCTION-PRODUCTS.sql) |
 | The dashboard's scripts for iDempiere | listed in chapter A2, all in the [bim-ootb repository](https://github.com/red1oon/bim-ootb/tree/main/capex/legacy) |
 | The **Shed** drawing set: nine 2D sheets (.dxf) with their settings written in | the nine `…_marked.dxf` files supplied for this test, listed in chapter B1 |
+
+The nine Shed sheets are the pilot client's own work, so its testers may use them. Any other drawing set goes through the same way once its sheets carry their settings (levels, datums and layer meanings), which the Modeller's **Drawing metadata** panel records.
 
 **Who does what**
 
@@ -83,7 +86,7 @@ Each script carries a **Restore** line at its top that removes what it adds.
 
 ### A3 · Load the test data (GardenWorld)
 
-The pack holds **12 projects** (Value `TD_…`, names ending *(test data)*) with **42 phases**, **84 tasks**, **84 planned lines**, some phases already ticked complete, and **2 test products**. It holds **no documents**: you make the orders, receipts, invoices, payments and issues yourself in chapter C. The data can stay in GardenWorld after the test.
+The pack holds **12 projects** (Value `TD_…`, names ending *(test data)*) with **42 phases**, **84 tasks**, **84 planned lines**, some phases already ticked complete, and **2 test products**. It holds **no documents** and none of the construction materials: those come from the script in A3.6: you make the orders, receipts, invoices, payments and issues yourself in chapter C. The data can stay in GardenWorld after the test.
 
 The pack goes to the client named in its file name (**GardenWorld**), and is packed in by that client's administrator.
 
@@ -94,15 +97,16 @@ The pack goes to the client named in its file name (**GardenWorld**), and is pac
 | A3.3 | Open *TD_RIVERSIDE*, tab **Phase** | 5 phases with dates; the first 3 are ticked **Complete** | ☐ Pass ☐ Fail |
 | A3.4 | Look at the project’s **Currency** | The currency of GardenWorld’s *Purchase* price list. The pack sets no currency: iDempiere takes it from the price list, so it follows your setup | ☐ Pass ☐ Fail |
 | A3.5 | Pack the same zip in a second time | No new projects: still 12. The folder run says the pack is *already installed* and skips it | ☐ Pass ☐ Fail |
+| A3.6 | Apply the products script with `psql` (it can be applied twice: the second run adds nothing), then **restart iDempiere**: the accounting schema is kept in memory. The script makes 10 **Construction** products at the Schedule of Rates prices and sets GardenWorld's primary accounting schema (*GardenWorld US/A/US Dollar*) to **Standard** costing, because iDempiere costs a project issue by the *schema's* method. Its first lines hold the **Restore** line | The script ends without an error. **Accounting Schema** window: *GardenWorld US/A/US Dollar*, **Costing Method** *Standard* | ☐ Pass ☐ Fail |
 
 ### A4 · ERP model setup, where needed
 
-GardenWorld already has what the exercise needs. Check it before chapter C:
+GardenWorld already has the vendor, the warehouse and the locator; the products come from A3.6. Check them before chapter C:
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
 | A4.1 | **Business Partner** window: find a vendor | At least one partner with *Vendor* ticked | ☐ Pass ☐ Fail |
-| A4.2 | **Product** window: *Rake Bamboo* | It exists, is stocked, and has a price on the *Purchase* price list | ☐ Pass ☐ Fail |
+| A4.2 | **Product** window: search Value `PWD-%`, then open *PWD-04.2 Brick masonry* | 10 products in category *Construction*. *PWD-04.2*: unit **M3**, stocked, price **68.1167** on the *Purchase* price list (8,174 BDT ÷ 120), and a **Standard** cost of 68.1167 | ☐ Pass ☐ Fail |
 | A4.3 | **Warehouse & Locators**: *HQ Warehouse* | It has the locator *Default HQ Locator*, where you receive and issue | ☐ Pass ☐ Fail |
 | A4.4 | **Product** window: *Test material A (test data)* | The pack’s product exists, in category *TD Materials (test data)* | ☐ Pass ☐ Fail |
 
@@ -245,37 +249,45 @@ Do this in the **Viewer**, on the Shed you opened in B2.9. (In the Modeller, **E
 
 ## C · ERP: the hands-on exercise (GardenWorld Admin)
 
-Use the 12 test projects. The table says, per project, what to make. Use **Rake Bamboo** as the product, any GardenWorld vendor, the *Purchase* price list and *HQ Warehouse*. On each document, set **Project** to the test project (and the phase, where the window asks).
+Use the 12 test projects. The table says, per project, what to make. The products are the **Construction** products of A3.6 (**not** GardenWorld's own); use any GardenWorld vendor, the *Purchase* price list and *HQ Warehouse*. Do not type a price: the order line takes it from the price list, which is the product's standard cost. On each document, set **Project** to the test project (and the phase, where the window asks).
+
+| Product | Name | Unit | Standard cost (USD) |
+|---|---|---|---|
+| PWD-04.2 | Brick masonry | M3 | 68.1167 |
+| PWD-07.2.2 | RC 1:2:4 column | M3 | 115.5250 |
+| PWD-08.1.2 | Reinforcement bar Grade 400 | KG | 0.8333 |
+| PWD-10.6 | Steel section | KG | 1.0750 |
+| PWD-10.21 | Profiled metal roofing | M2 | 4.8167 |
 
 | Project | Name | Phases ticked (from the pack) | Purchase orders | How far the completed order goes | Issue to the project |
 |---|---|---|---|---|---|
-| TD_RIVERSIDE | Riverside Tower | 3 of 5 | complete: 40 × Rake Bamboo @ 50; leave in Draft: 10 × Rake Bamboo @ 50 | Paid in full | 30 × Rake Bamboo |
-| TD_DEPOT | North Depot | 1 of 4 | leave in Draft: 12 × Rake Bamboo @ 70 | — | 10 × Rake Bamboo |
-| TD_BRIDGE | Bridge Deck | 2 of 4 | complete: 20 × Rake Bamboo @ 120; leave in Draft: 30 × Rake Bamboo @ 120 | Half paid | 80 × Rake Bamboo |
-| TD_CLINIC | Clinic Wing | 2 of 4 | — | — | 15 × Rake Bamboo |
-| TD_DATAHALL | Data Hall | 1 of 3 | complete: 30 × Rake Bamboo @ 60; leave in Draft: 20 × Rake Bamboo @ 60 | Received | 25 × Rake Bamboo |
-| TD_SUBSTATION | Substation | 1 of 3 | complete: 5 × Rake Bamboo @ 100 | Ordered only | — |
-| TD_CARPARK | Car Park | 2 of 3 | — | — | 60 × Rake Bamboo |
-| TD_SCHOOL | School Block | 3 of 4 | complete: 25 × Rake Bamboo @ 45 | Paid in full | 35 × Rake Bamboo |
-| TD_PUMP | Pump Station | 1 of 3 | — | — | 5 × Rake Bamboo |
+| TD_RIVERSIDE | Riverside Tower | 3 of 5 | complete: 29 M3 PWD-04.2; leave in Draft: 7 M3 PWD-04.2 | Paid in full | 3 M3 PWD-04.2 |
+| TD_DEPOT | North Depot | 1 of 4 | leave in Draft: 1,008 KG PWD-08.1.2 | — | 92 KG PWD-08.1.2 |
+| TD_BRIDGE | Bridge Deck | 2 of 4 | complete: 21 M3 PWD-07.2.2; leave in Draft: 31 M3 PWD-07.2.2 | Half paid | 5 M3 PWD-07.2.2 |
+| TD_CLINIC | Clinic Wing | 2 of 4 | — | — | 107 KG PWD-10.6 |
+| TD_DATAHALL | Data Hall | 1 of 3 | complete: 1,674 KG PWD-10.6; leave in Draft: 1,116 KG PWD-10.6 | Received | 178 KG PWD-10.6 |
+| TD_SUBSTATION | Substation | 1 of 3 | complete: 104 M2 PWD-10.21 | Ordered only | — |
+| TD_CARPARK | Car Park | 2 of 3 | — | — | 95 M2 PWD-10.21 |
+| TD_SCHOOL | School Block | 3 of 4 | complete: 1,350 KG PWD-08.1.2 | Paid in full | 321 KG PWD-08.1.2 |
+| TD_PUMP | Pump Station | 1 of 3 | — | — | 36 KG PWD-10.6 |
 | TD_OFFICE | Office Fit-out | 0 of 3 | — | — | — |
-| TD_WAREHOUSE | Warehouse 3 | 0 of 3 | leave in Draft: 8 × Rake Bamboo @ 80 | — | — |
-| TD_PLAZA | Plaza | 3 of 3 | — | — | 12 × Rake Bamboo |
+| TD_WAREHOUSE | Warehouse 3 | 0 of 3 | leave in Draft: 133 M2 PWD-10.21 | — | — |
+| TD_PLAZA | Plaza | 3 of 3 | — | — | 110 KG PWD-08.1.2 |
 
-Buying *Rake Bamboo* at the table's prices raises its average cost. The issues in C4 are then costed well above its starting cost, and most test projects end **over budget** on the dashboard. With this table that is the expected picture.
+The products cost at **Standard**: a receipt at any price leaves a product's cost where it is, and every issue raises the project's **Spent** by *quantity × standard cost*. With this table the projects spread across the dashboard's Budget colours (chapter D) instead of all turning red. Five projects (*TD_DEPOT*, *TD_CLINIC*, *TD_CARPARK*, *TD_PUMP*, *TD_PLAZA*) issue a product that was never received, so its on-hand quantity goes negative. GardenWorld allows that; a warehouse that does not allow negative stock refuses those issues.
 
 ### C1 · Purchase orders
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| C1.1 | **Purchase Order** window, new: a vendor, *Purchase* price list, *HQ Warehouse*, **Project** = the test project. Line: Rake Bamboo, quantity and price as in the table | The order total = quantity × price | ☐ Pass ☐ Fail |
+| C1.1 | **Purchase Order** window, new: a vendor, *Purchase* price list, *HQ Warehouse*, **Project** = the test project. Line: the product and quantity from the table; leave the price as the price list gives it | The line net amount = quantity × the product's standard cost (for example 29 × 68.1167 = 1,975.38) | ☐ Pass ☐ Fail |
 | C1.2 | **Complete** the orders marked *complete*; leave the others **Drafted** | Status *Completed* / *Drafted* | ☐ Pass ☐ Fail |
 
 ### C2 · Material receipt
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| C2.1 | For each completed order that goes to *Received* or further: **Material Receipt** window, create from the order, locator *Default HQ Locator*, **Complete** | The receipt is *Completed*; the product’s on-hand quantity rose | ☐ Pass ☐ Fail |
+| C2.1 | For each completed order that goes to *Received* or further: **Material Receipt** window, create from the order, locator *Default HQ Locator*, **Complete** | The receipt is *Completed*; the product’s on-hand quantity rose and its **Standard** cost did not change | ☐ Pass ☐ Fail |
 
 ### C3 · Vendor invoice and payment
 
@@ -289,7 +301,7 @@ Buying *Rake Bamboo* at the table's prices raises its average cost. The issues i
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
 | C4.1 | **Project** window, the test project: issue the quantity in the last column from *Default HQ Locator* (**Issue to Project**), **Complete** | The issue is *Completed* | ☐ Pass ☐ Fail |
-| C4.2 | Look at the project header | **Spent** (project balance) rose by the issued material’s cost | ☐ Pass ☐ Fail |
+| C4.2 | Look at the project header | **Spent** (project balance) rose by *quantity × standard cost*: *TD_RIVERSIDE* 3 × 68.1167 = **204.35**, *TD_BRIDGE* 5 × 115.525 = **577.63**, *TD_DATAHALL* 178 × 1.075 = **191.35**. A project that issues nothing stays at 0 | ☐ Pass ☐ Fail |
 
 ### C5 · Tick a phase
 
@@ -317,7 +329,8 @@ It ends with a line `§DASH_LEGACY_SNAPSHOT … projects=<n> … unavailable=[]`
 |---|---|---|---|
 | D1 | Read **Total Projects** and **Active Projects** | The 12 test projects are counted (plus any of your own) | ☐ Pass ☐ Fail |
 | D2 | Read **Approved Budget** | The sum of the planned amounts, per currency | ☐ Pass ☐ Fail |
-| D3 | Read **Actual Cost** (Spent) | It rose by what you issued in C4 | ☐ Pass ☐ Fail |
+| D2b | Read the **Budget** tile (Within / Over / Not started) | **Over** lists *TD_CARPARK* (Spent 457.59 against a plan of 330.00) and *TD_DATAHALL* (191.35 against 181.50), plus GardenWorld’s own *Standard* project if it is still there; the other test projects with issues are **Within**; *TD_OFFICE*, *TD_SUBSTATION* and *TD_WAREHOUSE* are **Not started** | ☐ Pass ☐ Fail |
+| D3 | Read **Actual Cost** (Spent) | It rose by what you issued in C4: **2,020.45** over the 12 test projects (plus any Spent your own projects already carry) | ☐ Pass ☐ Fail |
 | D4 | Open **Procurement Risks** in the left menu. Then open a test project's page (D5) and its **Procurement** tab | Left menu: *Open purchase orders* = the 5 you left Drafted, with their total. Project page: the **Supply chain** card shows that project's order at the stage you took it to (*TD_SUBSTATION* Ordered, *TD_DATAHALL* Received, *TD_BRIDGE* Invoiced, *TD_RIVERSIDE* and *TD_SCHOOL* Paid) and lists its receipt, invoice and payment | ☐ Pass ☐ Fail |
 | D5 | Click a number on a tile | The drill panel lists the projects behind it; click a project to open its page | ☐ Pass ☐ Fail |
 | D6 | On the project page of *TD_RIVERSIDE*, open the tabs | Overview: Approved **371.25**, 5 phases. The Schedule tab draws the 5 phase bars with the pack’s dates, the first 3 *Complete* | ☐ Pass ☐ Fail |
@@ -334,13 +347,14 @@ It ends with a line `§DASH_LEGACY_SNAPSHOT … projects=<n> … unavailable=[]`
 - **Proposed figures.** *Forecast*, *Procurement Risks* and *Handover* use definitions we proposed; they await your confirmation.
 - **Postings in the Kernel ERP.** Project issues complete but are not yet posted to the books in the browser-based Kernel ERP; in your iDempiere they post as usual.
 - **Task dates.** Task dates are kept by the BIM Document plugin; without it, the Schedule tab draws phases only.
+- **Standard costing is a PostgreSQL iDempiere set-up.** The products script, and the change of GardenWorld’s accounting schema to Standard costing, are not available in the browser-based Kernel ERP. Applying the script changes how *all* GardenWorld products are costed on that server, so apply it on a test copy, not on a live GardenWorld.
 - **This pack in the Kernel ERP.** Loading this test pack into the browser-based Kernel ERP (rather than into your iDempiere) is not available yet.
 
 ## Sign-off
 
 | Chapter | Tester | Date | Passed / total | Signature |
 |---|---|---|---|---|
-| A · Set up | | | / 16 | |
+| A · Set up | | | / 17 | |
 | B · BIM | | | / 23 | |
 | C · ERP | | | / 8 | |
-| D · Dashboard | | | / 9 | |
+| D · Dashboard | | | / 10 | |
