@@ -3509,6 +3509,69 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 </tbody>
 </table>
 <p>The nine Shed sheets are the pilot client's own work, so its testers may use them. Any other drawing set goes through the same way once its sheets carry their settings (levels, datums and layer meanings), which the Modeller's <strong>Drawing metadata</strong> panel records.</p>
+<p><strong>Where to find each window.</strong> Every window and process below is in iDempiere's left-hand menu; open the folder and click the entry, or type the name in the menu's <strong>Search</strong> box. A new record is made with the <strong>New</strong> button in the toolbar, saved with <strong>Save</strong>, and a document is finished with its <strong>Document Action</strong> button (choose <strong>Complete</strong>, then <strong>OK</strong>).</p>
+<table>
+<thead>
+<tr>
+<th>Name used in this guide</th>
+<th>Menu path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pack In</td>
+<td>Application Dictionary ▸ Application Packaging ▸ Pack In</td>
+</tr>
+<tr>
+<td>Accounting Schema</td>
+<td>Performance Analysis and Accounting ▸ Accounting Rules ▸ Accounting Schema</td>
+</tr>
+<tr>
+<td>Performance Measure Calculation</td>
+<td>Performance Analysis and Accounting ▸ Performance Measurement ▸ Performance Measure Calculation</td>
+</tr>
+<tr>
+<td>Business Partner</td>
+<td>Partner Relations ▸ Business Partner Rules ▸ Business Partner</td>
+</tr>
+<tr>
+<td>Product</td>
+<td>Material Management and Pricing ▸ Material Management Rules ▸ Product</td>
+</tr>
+<tr>
+<td>Warehouse and Locators</td>
+<td>Material Management and Pricing ▸ Material Management Rules ▸ Warehouse and Locators</td>
+</tr>
+<tr>
+<td>Project</td>
+<td>Project Management ▸ Project</td>
+</tr>
+<tr>
+<td>Issue to Project (a process)</td>
+<td>Project Management ▸ Issue to Project</td>
+</tr>
+<tr>
+<td>Project (Lines/Issues)</td>
+<td>Project Management ▸ Project (Lines/Issues)</td>
+</tr>
+<tr>
+<td>Purchase Order</td>
+<td>Requisition-to-Invoice (Purchasing) ▸ Purchase Order</td>
+</tr>
+<tr>
+<td>Material Receipt</td>
+<td>Requisition-to-Invoice (Purchasing) ▸ Material Receipt</td>
+</tr>
+<tr>
+<td>Purchase Invoice and Credit/Debit Note</td>
+<td>Requisition-to-Invoice (Purchasing) ▸ Purchase Invoice and Credit/Debit Note</td>
+</tr>
+<tr>
+<td>Payment and Receipt</td>
+<td>Open Items (Financial Movements and Aging) ▸ Payment and Receipt</td>
+</tr>
+</tbody>
+</table>
 <p><strong>Who does what</strong></p>
 <table>
 <thead>
@@ -3666,7 +3729,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tbody>
 <tr>
 <td>A3.1</td>
-<td>Put the zip in an empty folder on the server and run <code>utils/RUN_ApplyPackInFromFolder.sh &lt;folder&gt;</code>, or use the <strong>Pack In</strong> window logged in as GardenWorld Admin</td>
+<td>Put the zip in an empty folder on the server and run <code>utils/RUN_ApplyPackInFromFolder.sh &lt;folder&gt;</code>, or use the <strong>Pack In</strong> window logged in as GardenWorld Admin (choose the zip, then run it)</td>
 <td>The run prints <em>Successful application of …CAPEXTestData.zip</em>, <code>Error=false</code> and ends with <em>Done</em>. The log also prints a <code>java.lang.Exception</code> trace for each planned line (<em>MProduct.loadPO: NO Data found</em>): these do not stop the run, and the rows are checked in A3.2 to A3.4</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
@@ -3716,19 +3779,19 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tbody>
 <tr>
 <td>A4.1</td>
-<td><strong>Business Partner</strong> window: find a vendor</td>
+<td><strong>Business Partner</strong> window: find a vendor (for example <em>Seed Farm Inc.</em>, the one this guide uses)</td>
 <td>At least one partner with <em>Vendor</em> ticked</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>A4.2</td>
 <td><strong>Product</strong> window: search Value <code>PWD-%</code>, then open <em>PWD-04.2 Brick masonry</em></td>
-<td>10 products in category <em>Construction</em>. <em>PWD-04.2</em>: unit <strong>M3</strong>, stocked, price <strong>68.1167</strong> on the <em>Purchase</em> price list (8,174 BDT ÷ 120), and a <strong>Standard</strong> cost of 68.1167</td>
+<td>10 products in category <em>Construction</em>. <em>PWD-04.2</em>: unit <strong>M3</strong>, stocked, price <strong>68.1167</strong> on the <em>Purchase</em> price list (tab <strong>Price</strong>; 8,174 BDT ÷ 120), and a <strong>Standard</strong> cost of 68.1167 (tab <strong>Costs</strong>)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>A4.3</td>
-<td><strong>Warehouse &amp; Locators</strong>: <em>HQ Warehouse</em></td>
+<td><strong>Warehouse and Locators</strong> window: open <em>HQ Warehouse</em>, tab <strong>Locator</strong></td>
 <td>It has the locator <em>Default HQ Locator</em>, where you receive and issue</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
@@ -4072,7 +4135,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <p><strong>Notes (chapter B):</strong> <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong>____</p>
 <hr />
 <h2 id="c-erp-the-hands-on-exercise-gardenworld-admin">C · ERP: the hands-on exercise (GardenWorld Admin)<a class="headerlink" href="#c-erp-the-hands-on-exercise-gardenworld-admin" title="Permanent link">&para;</a></h2>
-<p>Use the 12 test projects. The table says, per project, what to make. The products are the <strong>Construction</strong> products of A3.6 (<strong>not</strong> GardenWorld's own); use any GardenWorld vendor, the <em>Purchase</em> price list and <em>HQ Warehouse</em>. Do not type a price: the order line takes it from the price list, which is the product's standard cost. On each document, set <strong>Project</strong> to the test project (and the phase, where the window asks).</p>
+<p>Use the 12 test projects. The table says, per project, what to make. The products are the <strong>Construction</strong> products of A3.6 (<strong>not</strong> GardenWorld's own); use any GardenWorld vendor, the <em>Purchase</em> price list and <em>HQ Warehouse</em>. Do not type a price: the order line takes it from the price list, which is the product's standard cost. On each document, set <strong>Project</strong> to the test project (the windows do not ask for a phase).</p>
 <table>
 <thead>
 <tr>
@@ -4227,6 +4290,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 </table>
 <p>The products cost at <strong>Standard</strong>: a receipt at any price leaves a product's cost where it is, and every issue raises the project's <strong>Spent</strong> by <em>quantity × standard cost</em>. With this table the projects spread across the dashboard's Budget colours (chapter D) instead of all turning red. Five projects (<em>TD_DEPOT</em>, <em>TD_CLINIC</em>, <em>TD_CARPARK</em>, <em>TD_PUMP</em>, <em>TD_PLAZA</em>) issue a product that was never received, so its on-hand quantity goes negative. GardenWorld allows that; a warehouse that does not allow negative stock refuses those issues.</p>
 <h3 id="c1-purchase-orders">C1 · Purchase orders<a class="headerlink" href="#c1-purchase-orders" title="Permanent link">&para;</a></h3>
+<p>Make one order per row of the table that has a purchase order, with the quantity it states.</p>
 <table>
 <thead>
 <tr>
@@ -4239,14 +4303,14 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tbody>
 <tr>
 <td>C1.1</td>
-<td><strong>Purchase Order</strong> window, new: a vendor, <em>Purchase</em> price list, <em>HQ Warehouse</em>, <strong>Project</strong> = the test project. Line: the product and quantity from the table; leave the price as the price list gives it</td>
-<td>The line net amount = quantity × the product's standard cost (for example 29 × 68.1167 = 1,975.38)</td>
+<td><strong>Purchase Order</strong> window, <strong>New</strong>. Header: <strong>Business Partner</strong> <em>Seed Farm Inc.</em> (or any vendor), <strong>Price List</strong> <em>Purchase</em>, <strong>Warehouse</strong> <em>HQ Warehouse</em>, <strong>Project</strong> the test project (the field sits in the header). Save. Tab <strong>PO Line</strong>, <strong>New</strong>: <strong>Product</strong> the table's product, <strong>Quantity</strong> from the table; leave the price as the price list gives it. Save</td>
+<td>The line price is the product's standard cost (for example 68.1167 for <em>PWD-04.2</em>). The order's <strong>Total Lines</strong> = quantity × price (for example 29 × 68.1167 = 1,975.38) and <strong>Grand Total</strong> is the same (the tax rate is 0)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>C1.2</td>
-<td><strong>Complete</strong> the orders marked <em>complete</em>; leave the others <strong>Drafted</strong></td>
-<td>Status <em>Completed</em> / <em>Drafted</em></td>
+<td><strong>Document Action ▸ Complete ▸ OK</strong> on the orders the table marks <em>complete</em>; leave the others as they are</td>
+<td>Document status <em>Completed</em> on those, <em>Drafted</em> on the others</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
@@ -4264,13 +4328,14 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tbody>
 <tr>
 <td>C2.1</td>
-<td>For each completed order that goes to <em>Received</em> or further: <strong>Material Receipt</strong> window, create from the order, locator <em>Default HQ Locator</em>, <strong>Complete</strong></td>
-<td>The receipt is <em>Completed</em>; the product’s on-hand quantity rose and its <strong>Standard</strong> cost did not change</td>
+<td>For each completed order whose <em>How far</em> is <em>Received</em>, <em>Half paid</em> or <em>Paid in full</em>: <strong>Material Receipt</strong> window, <strong>New</strong>. Header: <strong>Business Partner</strong> the same vendor, <strong>Project</strong> the test project. Press <strong>Create lines from</strong>, choose the purchase order, tick its line, <strong>OK</strong>. On the <strong>Receipt Line</strong> tab check the <strong>Locator</strong> is <em>Default HQ Locator</em>. Save, then <strong>Document Action ▸ Complete ▸ OK</strong></td>
+<td>The receipt is <em>Completed</em> and carries the order's product and quantity. The product’s on-hand quantity rose (menu entry <strong>Storage per Product</strong>: type the name in the menu’s Search box), and in the <strong>Product</strong> window, tab <strong>Costs</strong>, its <strong>Standard</strong> cost did not change</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
 </table>
 <h3 id="c3-vendor-invoice-and-payment">C3 · Vendor invoice and payment<a class="headerlink" href="#c3-vendor-invoice-and-payment" title="Permanent link">&para;</a></h3>
+<p>Only <em>Half paid</em> and <em>Paid in full</em> orders (TD_BRIDGE, TD_RIVERSIDE, TD_SCHOOL).</p>
 <table>
 <thead>
 <tr>
@@ -4283,19 +4348,20 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tbody>
 <tr>
 <td>C3.1</td>
-<td>For <em>Half paid</em> and <em>Paid in full</em>: <strong>Invoice (Vendor)</strong>, create from the order, <strong>Complete</strong></td>
-<td>The invoice is <em>Completed</em>, linked to the order and the project</td>
+<td><strong>Purchase Invoice and Credit/Debit Note</strong> window, <strong>New</strong>. Header: <strong>Target Document Type</strong> <em>AP Invoice</em>, <strong>Business Partner</strong> the same vendor, <strong>Project</strong> the test project. Press <strong>Create lines from</strong>, choose the purchase order (or its receipt), tick the line, <strong>OK</strong>. Save, then <strong>Document Action ▸ Complete ▸ OK</strong></td>
+<td>The invoice is <em>Completed</em>; its <strong>Grand Total</strong> equals the order's</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>C3.2</td>
-<td><strong>Payment</strong> window: pay the invoice in full (<em>Paid in full</em>) or half its total (<em>Half paid</em>), <strong>Complete</strong></td>
-<td>The invoice shows paid / partly paid</td>
+<td><strong>Payment and Receipt</strong> window, <strong>New</strong>. <strong>Document Type</strong> <em>AP Payment</em>, <strong>Business Partner</strong> the same vendor, <strong>Invoice</strong> the invoice you just made (the amount fills in; the <strong>Project</strong> field disappears once an invoice is chosen, that is normal), <strong>Bank Account</strong> <em>MoneyBank 1234</em>, <strong>Tender type</strong> <em>Check</em>. For <em>Half paid</em> change <strong>Payment amount</strong> to half the invoice total. Save, then <strong>Document Action ▸ Complete ▸ OK</strong></td>
+<td>The payment is <em>Completed</em>. On the invoice, <strong>Paid</strong> is ticked for <em>Paid in full</em>; for <em>Half paid</em> it is not, and the open amount is the other half</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
 </table>
 <h3 id="c4-issue-materials-to-site">C4 · Issue materials to site<a class="headerlink" href="#c4-issue-materials-to-site" title="Permanent link">&para;</a></h3>
+<p>This is done in two parts, once per test project that has an issue in the table (nine projects). The pack's projects are category <em>General</em>, and iDempiere refuses to issue material to a General project (<em>Project not Work Order or Asset</em>), so each project is first set to the <strong>Work Order (Job)</strong> type.</p>
 <table>
 <thead>
 <tr>
@@ -4308,14 +4374,26 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tbody>
 <tr>
 <td>C4.1</td>
-<td><strong>Project</strong> window, the test project: issue the quantity in the last column from <em>Default HQ Locator</em> (<strong>Issue to Project</strong>), <strong>Complete</strong></td>
-<td>The issue is <em>Completed</em></td>
+<td><strong>Project</strong> window, open the test project. Press <strong>Set Project Type</strong>, choose <strong>Work Order (Job)</strong>, <strong>OK</strong></td>
+<td>The message says <em>OK</em>. The project's phases are still there (the Phase tab still lists them) and the <strong>Set Project Type</strong> button no longer accepts another type</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>C4.2</td>
-<td>Look at the project header</td>
-<td><strong>Spent</strong> (project balance) rose by <em>quantity × standard cost</em>: <em>TD_RIVERSIDE</em> 3 × 68.1167 = <strong>204.35</strong>, <em>TD_BRIDGE</em> 5 × 115.525 = <strong>577.63</strong>, <em>TD_DATAHALL</em> 178 × 1.075 = <strong>191.35</strong>. A project that issues nothing stays at 0</td>
+<td>Menu <strong>Project Management ▸ Issue to Project</strong>. <strong>Project</strong> the test project, <strong>Locator</strong> <em>Default HQ Locator</em>, <strong>Product</strong> the table's product, <strong>Movement Quantity</strong> from the last column, <strong>Movement Date</strong> today. Leave <strong>Shipment/Receipt</strong>, <strong>Expense Report</strong> and <strong>Project Line</strong> empty. <strong>OK</strong></td>
+<td>The message says <em>Created 1</em></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>C4.3</td>
+<td><strong>Project (Lines/Issues)</strong> window, find the project, tab <strong>Issues</strong></td>
+<td>One issue line with the product and quantity, <strong>Document Status</strong> <em>Completed</em></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>C4.4</td>
+<td>Back in the <strong>Project</strong> window, look at <strong>Project Balance</strong> in the header</td>
+<td>It rose by <em>quantity × standard cost</em>: <em>TD_RIVERSIDE</em> 3 × 68.1167 = <strong>204.35</strong>, <em>TD_BRIDGE</em> 5 × 115.525 = <strong>577.63</strong>, <em>TD_DATAHALL</em> 178 × 1.075 = <strong>191.35</strong>. A project that issues nothing stays at 0</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
@@ -4333,8 +4411,8 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tbody>
 <tr>
 <td>C5.1</td>
-<td>On a test project, tick one more phase <strong>Complete</strong> and save</td>
-<td>The phase stays ticked; that project’s <em>Done</em> on the dashboard rises (chapter D)</td>
+<td><strong>Project</strong> window, a test project (for example <em>TD_DEPOT</em>), tab <strong>Phase</strong>: tick <strong>Complete</strong> on the next phase that is not ticked, <strong>Save</strong></td>
+<td>The phase stays ticked (for <em>TD_DEPOT</em> 2 of 4 now); that project's <em>Done</em> on the dashboard rises (chapter D)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
@@ -4345,7 +4423,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <p>The dashboard reads a file that a small read job writes from your iDempiere. Run the job first, and again whenever you want fresh figures (it needs Node.js; the full line with user, password, tenant and role is in the <a href="../CapexDashboardGuide/#developers-note">Developer's note</a>):</p>
 <div class="highlight"><pre><span></span><code>BRIDGE_BASE=http://&lt;your-idempiere&gt;:&lt;port&gt; node capex/tools/legacy_snapshot.js
 </code></pre></div>
-<p>It ends with a line <code>§DASH_LEGACY_SNAPSHOT … projects=&lt;n&gt; … unavailable=[]</code>. Then open <code>/capex/index.html?source=legacy</code> on the server that holds that copy (see <a href="../CapexDashboardGuide/#how-the-dashboard-connects-to-the-data">How the dashboard connects to the data</a>). Every tile is described in <a href="../CapexDashboardGuide/#the-dashboard-page">The dashboard page</a>.</p>
+<p>It writes the file <code>capex/legacy_snapshot.json</code> inside your copy of the repository (the folder from A1.1, next to <code>index.html</code>), and ends with a line <code>§DASH_LEGACY_SNAPSHOT … projects=14 … unavailable=[]</code> (14 on a fresh GardenWorld). Then open <code>/capex/index.html?source=legacy</code> on the server that holds that copy (see <a href="../CapexDashboardGuide/#how-the-dashboard-connects-to-the-data">How the dashboard connects to the data</a>). Every tile is described in <a href="../CapexDashboardGuide/#the-dashboard-page">The dashboard page</a>.</p>
 <p><img alt="The dashboard" src="../img/capex/capex_page_dashboard.png" /></p>
 <table>
 <thead>
@@ -4360,31 +4438,31 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tr>
 <td>D1</td>
 <td>Read <strong>Total Projects</strong> and <strong>Active Projects</strong></td>
-<td>The 12 test projects are counted (plus any of your own)</td>
+<td><strong>14</strong> and <strong>14</strong> on a fresh GardenWorld: the 12 test projects plus GardenWorld's own <em>Standard</em> and <em>Landscape</em> (plus any of your own)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>D2</td>
 <td>Read <strong>Approved Budget</strong></td>
-<td>The sum of the planned amounts, per currency</td>
+<td>The sum of the planned amounts, per currency: <strong>USD 4,667.80</strong> (the 12 test projects 4,067.80 plus <em>Landscape</em> 600.00)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>D2b</td>
 <td>Read the <strong>Budget</strong> tile (Within / Over / Not started)</td>
-<td><strong>Over</strong> lists <em>TD_CARPARK</em> (Spent 457.59 against a plan of 330.00) and <em>TD_DATAHALL</em> (191.35 against 181.50), plus GardenWorld’s own <em>Standard</em> project if it is still there; the other test projects with issues are <strong>Within</strong>; <em>TD_OFFICE</em>, <em>TD_SUBSTATION</em> and <em>TD_WAREHOUSE</em> are <strong>Not started</strong></td>
+<td><strong>Over</strong> lists <em>TD_CARPARK</em> (Spent 457.59 against a plan of 330.00) and <em>TD_DATAHALL</em> (191.35 against 181.50), plus GardenWorld’s own <em>Standard</em> project if it is still there; the other 7 projects with issues are <strong>Within</strong>; <strong>Not started</strong> is 4: <em>TD_OFFICE</em>, <em>TD_SUBSTATION</em>, <em>TD_WAREHOUSE</em> and GardenWorld’s <em>Landscape</em>. The three counts read <strong>Within 7, Over 3, Not started 4</strong></td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>D3</td>
 <td>Read <strong>Actual Cost</strong> (Spent)</td>
-<td>It rose by what you issued in C4: <strong>2,020.45</strong> over the 12 test projects (plus any Spent your own projects already carry)</td>
+<td>It rose by what you issued in C4: <strong>2,020.45</strong> over the 12 test projects. With GardenWorld’s own <em>Standard</em> project (137.70) the tile reads <strong>USD 2,158.15</strong>, <strong>46 %</strong> of plan</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
 <td>D4</td>
 <td>Open <strong>Procurement Risks</strong> in the left menu. Then open a test project's page (D5) and its <strong>Procurement</strong> tab</td>
-<td>Left menu: <em>Open purchase orders</em> = the 5 you left Drafted, with their total. Project page: the <strong>Supply chain</strong> card shows that project's order at the stage you took it to (<em>TD_SUBSTATION</em> Ordered, <em>TD_DATAHALL</em> Received, <em>TD_BRIDGE</em> Invoiced, <em>TD_RIVERSIDE</em> and <em>TD_SCHOOL</em> Paid) and lists its receipt, invoice and payment</td>
+<td>Left menu: <em>Open purchase orders</em> = the 5 you left Drafted, <strong>USD 6,738.39</strong> in total. Project page: the <strong>Supply chain</strong> card shows that project's order at the stage you took it to (<em>TD_SUBSTATION</em> Ordered, <em>TD_DATAHALL</em> Received, <em>TD_BRIDGE</em> Invoiced, <em>TD_RIVERSIDE</em> and <em>TD_SCHOOL</em> Paid) and lists its receipt, invoice and payment</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -4407,8 +4485,8 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 </tr>
 <tr>
 <td>D8</td>
-<td>Change <strong>Layout</strong> and <strong>Skin</strong></td>
-<td>The look changes; the numbers do not</td>
+<td>Change <strong>Layout</strong> (top bar) to <em>Executive</em> and <strong>Skin</strong> to <em>Dark</em>, then back to <em>Classic</em> and <em>Light</em></td>
+<td>The look changes. <em>Executive</em> shows fewer, re-labelled tiles (<em>Actual Cost</em> becomes <em>Spent so far</em>) with the same figures (4,667.80 approved, 2,158.15 spent); <em>Classic</em> shows them all again</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -4459,7 +4537,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <td>C · ERP</td>
 <td></td>
 <td></td>
-<td>/ 8</td>
+<td>/ 10</td>
 <td></td>
 </tr>
 <tr>
