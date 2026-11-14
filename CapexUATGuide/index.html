@@ -3495,6 +3495,10 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <td><a href="https://github.com/red1oon/bim-ootb/raw/main/capex/plugin/testdata_2pack/202611131200_GardenWorld_CAPEXTestData.zip">202611131200_GardenWorld_CAPEXTestData.zip</a></td>
 </tr>
 <tr>
+<td>The construction-products script (10 materials at standard cost)</td>
+<td><a href="https://github.com/red1oon/bim-ootb/blob/main/capex/plugin/testdata_2pack/202611141500_CAPEX-TD-CONSTRUCTION-PRODUCTS.sql">202611141500_CAPEX-TD-CONSTRUCTION-PRODUCTS.sql</a></td>
+</tr>
+<tr>
 <td>The dashboard's scripts for iDempiere</td>
 <td>listed in chapter A2, all in the <a href="https://github.com/red1oon/bim-ootb/tree/main/capex/legacy">bim-ootb repository</a></td>
 </tr>
@@ -3504,6 +3508,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 </tr>
 </tbody>
 </table>
+<p>The nine Shed sheets are the pilot client's own work, so its testers may use them. Any other drawing set goes through the same way once its sheets carry their settings (levels, datums and layer meanings), which the Modeller's <strong>Drawing metadata</strong> panel records.</p>
 <p><strong>Who does what</strong></p>
 <table>
 <thead>
@@ -3647,7 +3652,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 </table>
 <p>Each script carries a <strong>Restore</strong> line at its top that removes what it adds.</p>
 <h3 id="a3-load-the-test-data-gardenworld">A3 · Load the test data (GardenWorld)<a class="headerlink" href="#a3-load-the-test-data-gardenworld" title="Permanent link">&para;</a></h3>
-<p>The pack holds <strong>12 projects</strong> (Value <code>TD_…</code>, names ending <em>(test data)</em>) with <strong>42 phases</strong>, <strong>84 tasks</strong>, <strong>84 planned lines</strong>, some phases already ticked complete, and <strong>2 test products</strong>. It holds <strong>no documents</strong>: you make the orders, receipts, invoices, payments and issues yourself in chapter C. The data can stay in GardenWorld after the test.</p>
+<p>The pack holds <strong>12 projects</strong> (Value <code>TD_…</code>, names ending <em>(test data)</em>) with <strong>42 phases</strong>, <strong>84 tasks</strong>, <strong>84 planned lines</strong>, some phases already ticked complete, and <strong>2 test products</strong>. It holds <strong>no documents</strong> and none of the construction materials: those come from the script in A3.6: you make the orders, receipts, invoices, payments and issues yourself in chapter C. The data can stay in GardenWorld after the test.</p>
 <p>The pack goes to the client named in its file name (<strong>GardenWorld</strong>), and is packed in by that client's administrator.</p>
 <table>
 <thead>
@@ -3689,10 +3694,16 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <td>No new projects: still 12. The folder run says the pack is <em>already installed</em> and skips it</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
+<tr>
+<td>A3.6</td>
+<td>Apply the products script with <code>psql</code> (it can be applied twice: the second run adds nothing), then <strong>restart iDempiere</strong>: the accounting schema is kept in memory. The script makes 10 <strong>Construction</strong> products at the Schedule of Rates prices and sets GardenWorld's primary accounting schema (<em>GardenWorld US/A/US Dollar</em>) to <strong>Standard</strong> costing, because iDempiere costs a project issue by the <em>schema's</em> method. Its first lines hold the <strong>Restore</strong> line</td>
+<td>The script ends without an error. <strong>Accounting Schema</strong> window: <em>GardenWorld US/A/US Dollar</em>, <strong>Costing Method</strong> <em>Standard</em></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
 </tbody>
 </table>
 <h3 id="a4-erp-model-setup-where-needed">A4 · ERP model setup, where needed<a class="headerlink" href="#a4-erp-model-setup-where-needed" title="Permanent link">&para;</a></h3>
-<p>GardenWorld already has what the exercise needs. Check it before chapter C:</p>
+<p>GardenWorld already has the vendor, the warehouse and the locator; the products come from A3.6. Check them before chapter C:</p>
 <table>
 <thead>
 <tr>
@@ -3711,8 +3722,8 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 </tr>
 <tr>
 <td>A4.2</td>
-<td><strong>Product</strong> window: <em>Rake Bamboo</em></td>
-<td>It exists, is stocked, and has a price on the <em>Purchase</em> price list</td>
+<td><strong>Product</strong> window: search Value <code>PWD-%</code>, then open <em>PWD-04.2 Brick masonry</em></td>
+<td>10 products in category <em>Construction</em>. <em>PWD-04.2</em>: unit <strong>M3</strong>, stocked, price <strong>68.1167</strong> on the <em>Purchase</em> price list (8,174 BDT ÷ 120), and a <strong>Standard</strong> cost of 68.1167</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -4061,7 +4072,49 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <p><strong>Notes (chapter B):</strong> <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong>____</p>
 <hr />
 <h2 id="c-erp-the-hands-on-exercise-gardenworld-admin">C · ERP: the hands-on exercise (GardenWorld Admin)<a class="headerlink" href="#c-erp-the-hands-on-exercise-gardenworld-admin" title="Permanent link">&para;</a></h2>
-<p>Use the 12 test projects. The table says, per project, what to make. Use <strong>Rake Bamboo</strong> as the product, any GardenWorld vendor, the <em>Purchase</em> price list and <em>HQ Warehouse</em>. On each document, set <strong>Project</strong> to the test project (and the phase, where the window asks).</p>
+<p>Use the 12 test projects. The table says, per project, what to make. The products are the <strong>Construction</strong> products of A3.6 (<strong>not</strong> GardenWorld's own); use any GardenWorld vendor, the <em>Purchase</em> price list and <em>HQ Warehouse</em>. Do not type a price: the order line takes it from the price list, which is the product's standard cost. On each document, set <strong>Project</strong> to the test project (and the phase, where the window asks).</p>
+<table>
+<thead>
+<tr>
+<th>Product</th>
+<th>Name</th>
+<th>Unit</th>
+<th>Standard cost (USD)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PWD-04.2</td>
+<td>Brick masonry</td>
+<td>M3</td>
+<td>68.1167</td>
+</tr>
+<tr>
+<td>PWD-07.2.2</td>
+<td>RC 1:2:4 column</td>
+<td>M3</td>
+<td>115.5250</td>
+</tr>
+<tr>
+<td>PWD-08.1.2</td>
+<td>Reinforcement bar Grade 400</td>
+<td>KG</td>
+<td>0.8333</td>
+</tr>
+<tr>
+<td>PWD-10.6</td>
+<td>Steel section</td>
+<td>KG</td>
+<td>1.0750</td>
+</tr>
+<tr>
+<td>PWD-10.21</td>
+<td>Profiled metal roofing</td>
+<td>M2</td>
+<td>4.8167</td>
+</tr>
+</tbody>
+</table>
 <table>
 <thead>
 <tr>
@@ -4078,25 +4131,25 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <td>TD_RIVERSIDE</td>
 <td>Riverside Tower</td>
 <td>3 of 5</td>
-<td>complete: 40 × Rake Bamboo @ 50; leave in Draft: 10 × Rake Bamboo @ 50</td>
+<td>complete: 29 M3 PWD-04.2; leave in Draft: 7 M3 PWD-04.2</td>
 <td>Paid in full</td>
-<td>30 × Rake Bamboo</td>
+<td>3 M3 PWD-04.2</td>
 </tr>
 <tr>
 <td>TD_DEPOT</td>
 <td>North Depot</td>
 <td>1 of 4</td>
-<td>leave in Draft: 12 × Rake Bamboo @ 70</td>
+<td>leave in Draft: 1,008 KG PWD-08.1.2</td>
 <td>—</td>
-<td>10 × Rake Bamboo</td>
+<td>92 KG PWD-08.1.2</td>
 </tr>
 <tr>
 <td>TD_BRIDGE</td>
 <td>Bridge Deck</td>
 <td>2 of 4</td>
-<td>complete: 20 × Rake Bamboo @ 120; leave in Draft: 30 × Rake Bamboo @ 120</td>
+<td>complete: 21 M3 PWD-07.2.2; leave in Draft: 31 M3 PWD-07.2.2</td>
 <td>Half paid</td>
-<td>80 × Rake Bamboo</td>
+<td>5 M3 PWD-07.2.2</td>
 </tr>
 <tr>
 <td>TD_CLINIC</td>
@@ -4104,21 +4157,21 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <td>2 of 4</td>
 <td>—</td>
 <td>—</td>
-<td>15 × Rake Bamboo</td>
+<td>107 KG PWD-10.6</td>
 </tr>
 <tr>
 <td>TD_DATAHALL</td>
 <td>Data Hall</td>
 <td>1 of 3</td>
-<td>complete: 30 × Rake Bamboo @ 60; leave in Draft: 20 × Rake Bamboo @ 60</td>
+<td>complete: 1,674 KG PWD-10.6; leave in Draft: 1,116 KG PWD-10.6</td>
 <td>Received</td>
-<td>25 × Rake Bamboo</td>
+<td>178 KG PWD-10.6</td>
 </tr>
 <tr>
 <td>TD_SUBSTATION</td>
 <td>Substation</td>
 <td>1 of 3</td>
-<td>complete: 5 × Rake Bamboo @ 100</td>
+<td>complete: 104 M2 PWD-10.21</td>
 <td>Ordered only</td>
 <td>—</td>
 </tr>
@@ -4128,15 +4181,15 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <td>2 of 3</td>
 <td>—</td>
 <td>—</td>
-<td>60 × Rake Bamboo</td>
+<td>95 M2 PWD-10.21</td>
 </tr>
 <tr>
 <td>TD_SCHOOL</td>
 <td>School Block</td>
 <td>3 of 4</td>
-<td>complete: 25 × Rake Bamboo @ 45</td>
+<td>complete: 1,350 KG PWD-08.1.2</td>
 <td>Paid in full</td>
-<td>35 × Rake Bamboo</td>
+<td>321 KG PWD-08.1.2</td>
 </tr>
 <tr>
 <td>TD_PUMP</td>
@@ -4144,7 +4197,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <td>1 of 3</td>
 <td>—</td>
 <td>—</td>
-<td>5 × Rake Bamboo</td>
+<td>36 KG PWD-10.6</td>
 </tr>
 <tr>
 <td>TD_OFFICE</td>
@@ -4158,7 +4211,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <td>TD_WAREHOUSE</td>
 <td>Warehouse 3</td>
 <td>0 of 3</td>
-<td>leave in Draft: 8 × Rake Bamboo @ 80</td>
+<td>leave in Draft: 133 M2 PWD-10.21</td>
 <td>—</td>
 <td>—</td>
 </tr>
@@ -4168,11 +4221,11 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <td>3 of 3</td>
 <td>—</td>
 <td>—</td>
-<td>12 × Rake Bamboo</td>
+<td>110 KG PWD-08.1.2</td>
 </tr>
 </tbody>
 </table>
-<p>Buying <em>Rake Bamboo</em> at the table's prices raises its average cost. The issues in C4 are then costed well above its starting cost, and most test projects end <strong>over budget</strong> on the dashboard. With this table that is the expected picture.</p>
+<p>The products cost at <strong>Standard</strong>: a receipt at any price leaves a product's cost where it is, and every issue raises the project's <strong>Spent</strong> by <em>quantity × standard cost</em>. With this table the projects spread across the dashboard's Budget colours (chapter D) instead of all turning red. Five projects (<em>TD_DEPOT</em>, <em>TD_CLINIC</em>, <em>TD_CARPARK</em>, <em>TD_PUMP</em>, <em>TD_PLAZA</em>) issue a product that was never received, so its on-hand quantity goes negative. GardenWorld allows that; a warehouse that does not allow negative stock refuses those issues.</p>
 <h3 id="c1-purchase-orders">C1 · Purchase orders<a class="headerlink" href="#c1-purchase-orders" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -4186,8 +4239,8 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tbody>
 <tr>
 <td>C1.1</td>
-<td><strong>Purchase Order</strong> window, new: a vendor, <em>Purchase</em> price list, <em>HQ Warehouse</em>, <strong>Project</strong> = the test project. Line: Rake Bamboo, quantity and price as in the table</td>
-<td>The order total = quantity × price</td>
+<td><strong>Purchase Order</strong> window, new: a vendor, <em>Purchase</em> price list, <em>HQ Warehouse</em>, <strong>Project</strong> = the test project. Line: the product and quantity from the table; leave the price as the price list gives it</td>
+<td>The line net amount = quantity × the product's standard cost (for example 29 × 68.1167 = 1,975.38)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -4212,7 +4265,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tr>
 <td>C2.1</td>
 <td>For each completed order that goes to <em>Received</em> or further: <strong>Material Receipt</strong> window, create from the order, locator <em>Default HQ Locator</em>, <strong>Complete</strong></td>
-<td>The receipt is <em>Completed</em>; the product’s on-hand quantity rose</td>
+<td>The receipt is <em>Completed</em>; the product’s on-hand quantity rose and its <strong>Standard</strong> cost did not change</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
@@ -4262,7 +4315,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <tr>
 <td>C4.2</td>
 <td>Look at the project header</td>
-<td><strong>Spent</strong> (project balance) rose by the issued material’s cost</td>
+<td><strong>Spent</strong> (project balance) rose by <em>quantity × standard cost</em>: <em>TD_RIVERSIDE</em> 3 × 68.1167 = <strong>204.35</strong>, <em>TD_BRIDGE</em> 5 × 115.525 = <strong>577.63</strong>, <em>TD_DATAHALL</em> 178 × 1.075 = <strong>191.35</strong>. A project that issues nothing stays at 0</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 </tbody>
@@ -4317,9 +4370,15 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
+<td>D2b</td>
+<td>Read the <strong>Budget</strong> tile (Within / Over / Not started)</td>
+<td><strong>Over</strong> lists <em>TD_CARPARK</em> (Spent 457.59 against a plan of 330.00) and <em>TD_DATAHALL</em> (191.35 against 181.50), plus GardenWorld’s own <em>Standard</em> project if it is still there; the other test projects with issues are <strong>Within</strong>; <em>TD_OFFICE</em>, <em>TD_SUBSTATION</em> and <em>TD_WAREHOUSE</em> are <strong>Not started</strong></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
 <td>D3</td>
 <td>Read <strong>Actual Cost</strong> (Spent)</td>
-<td>It rose by what you issued in C4</td>
+<td>It rose by what you issued in C4: <strong>2,020.45</strong> over the 12 test projects (plus any Spent your own projects already carry)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -4367,6 +4426,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <li><strong>Proposed figures.</strong> <em>Forecast</em>, <em>Procurement Risks</em> and <em>Handover</em> use definitions we proposed; they await your confirmation.</li>
 <li><strong>Postings in the Kernel ERP.</strong> Project issues complete but are not yet posted to the books in the browser-based Kernel ERP; in your iDempiere they post as usual.</li>
 <li><strong>Task dates.</strong> Task dates are kept by the BIM Document plugin; without it, the Schedule tab draws phases only.</li>
+<li><strong>Standard costing is a PostgreSQL iDempiere set-up.</strong> The products script, and the change of GardenWorld’s accounting schema to Standard costing, are not available in the browser-based Kernel ERP. Applying the script changes how <em>all</em> GardenWorld products are costed on that server, so apply it on a test copy, not on a live GardenWorld.</li>
 <li><strong>This pack in the Kernel ERP.</strong> Loading this test pack into the browser-based Kernel ERP (rather than into your iDempiere) is not available yet.</li>
 </ul>
 <h2 id="sign-off">Sign-off<a class="headerlink" href="#sign-off" title="Permanent link">&para;</a></h2>
@@ -4385,7 +4445,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <td>A · Set up</td>
 <td></td>
 <td></td>
-<td>/ 16</td>
+<td>/ 17</td>
 <td></td>
 </tr>
 <tr>
@@ -4406,7 +4466,7 @@ Work top to bottom: every chapter uses what the one before produced. Write anyth
 <td>D · Dashboard</td>
 <td></td>
 <td></td>
-<td>/ 9</td>
+<td>/ 10</td>
 <td></td>
 </tr>
 </tbody>
