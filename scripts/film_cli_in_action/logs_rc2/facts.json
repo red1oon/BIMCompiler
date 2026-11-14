@@ -1,0 +1,461 @@
+{
+ "made": "2026-11-14T06:10:29.364Z",
+ "ootb": "132afa5c",
+ "lines": {
+  "add": {
+   "line": "mis.add_window file=AST_Asset.csv",
+   "status": "ok"
+  },
+  "create": {
+   "line": "mis.new kind=AST_Asset Name=Tractor Cost=1200.50",
+   "status": "ok"
+  },
+  "create2": {
+   "line": "mis.new kind=AST_Asset Name=Plough Cost=300 Condition=FAIR",
+   "status": "ok"
+  },
+  "update": {
+   "line": "mis.update kind=AST_Asset number=Plough Condition=POOR",
+   "status": "ok"
+  },
+  "refuse": {
+   "line": "mis.new kind=AST_Asset Name=Roller Condition=BAD",
+   "status": "refused"
+  },
+  "load": {
+   "line": "mis.load kind=AST_Asset file=more.csv dry=N",
+   "status": "ok"
+  },
+  "delete": {
+   "line": "mis.delete kind=AST_Asset number=Plough",
+   "status": "ok"
+  },
+  "sum": {
+   "line": "mis.sum kind=AST_Asset column=Cost",
+   "status": "ok"
+  },
+  "list": {
+   "line": "mis.list kind=AST_Asset columns=Name,Cost,Condition",
+   "status": "ok"
+  }
+ },
+ "states": {
+  "s0": {
+   "file": "erp/s0.png",
+   "window": null,
+   "note": "the ERP menu before anything is made",
+   "pageErrors": [],
+   "who": "GardenWorld · GardenWorld Admin · HQ",
+   "grid": false,
+   "head": [],
+   "status": ""
+  },
+  "s1": {
+   "file": "erp/s1.png",
+   "window": 7100001,
+   "note": "the new window, no row yet",
+   "pageErrors": [],
+   "who": "GardenWorld · GardenWorld Admin · HQ",
+   "grid": true,
+   "head": [
+    "IsActive",
+    "Name",
+    "PurchaseDate",
+    "Cost",
+    "Condition",
+    "IsInsured"
+   ],
+   "status": "",
+   "names": [],
+   "rows": 0,
+   "cells": [
+    [
+     "No records"
+    ]
+   ],
+   "door": [],
+   "same": true
+  },
+  "s2": {
+   "file": "erp/s2.png",
+   "window": 7100001,
+   "note": "one row",
+   "pageErrors": [],
+   "who": "GardenWorld · GardenWorld Admin · HQ",
+   "grid": true,
+   "head": [
+    "IsActive",
+    "Name",
+    "PurchaseDate",
+    "Cost",
+    "Condition",
+    "IsInsured"
+   ],
+   "status": "Record 1 of 1",
+   "names": [
+    "Tractor"
+   ],
+   "rows": 1,
+   "cells": [
+    [
+     "Y",
+     "Tractor",
+     "",
+     "1200.5",
+     "Good",
+     "N"
+    ]
+   ],
+   "door": [
+    "Tractor"
+   ],
+   "same": true
+  },
+  "s3": {
+   "file": "erp/s3.png",
+   "window": 7100001,
+   "note": "two rows",
+   "pageErrors": [],
+   "who": "GardenWorld · GardenWorld Admin · HQ",
+   "grid": true,
+   "head": [
+    "IsActive",
+    "Name",
+    "PurchaseDate",
+    "Cost",
+    "Condition",
+    "IsInsured"
+   ],
+   "status": "Record 1 of 2",
+   "names": [
+    "Plough",
+    "Tractor"
+   ],
+   "rows": 2,
+   "cells": [
+    [
+     "Y",
+     "Plough",
+     "",
+     "300",
+     "Fair",
+     "N"
+    ],
+    [
+     "Y",
+     "Tractor",
+     "",
+     "1200.5",
+     "Good",
+     "N"
+    ]
+   ],
+   "door": [
+    "Tractor",
+    "Plough"
+   ],
+   "same": true
+  },
+  "s4": {
+   "file": "erp/s4.png",
+   "window": 7100001,
+   "note": "Plough reads Poor",
+   "pageErrors": [],
+   "who": "GardenWorld · GardenWorld Admin · HQ",
+   "grid": true,
+   "head": [
+    "IsActive",
+    "Name",
+    "PurchaseDate",
+    "Cost",
+    "Condition",
+    "IsInsured"
+   ],
+   "status": "Record 1 of 2",
+   "names": [
+    "Plough",
+    "Tractor"
+   ],
+   "rows": 2,
+   "cells": [
+    [
+     "Y",
+     "Plough",
+     "",
+     "300",
+     "Poor",
+     "N"
+    ],
+    [
+     "Y",
+     "Tractor",
+     "",
+     "1200.5",
+     "Good",
+     "N"
+    ]
+   ],
+   "door": [
+    "Tractor",
+    "Plough"
+   ],
+   "same": true
+  },
+  "s6": {
+   "file": "erp/s6.png",
+   "window": 7100001,
+   "note": "the loaded rows",
+   "pageErrors": [],
+   "who": "GardenWorld · GardenWorld Admin · HQ",
+   "grid": true,
+   "head": [
+    "IsActive",
+    "Name",
+    "PurchaseDate",
+    "Cost",
+    "Condition",
+    "IsInsured"
+   ],
+   "status": "Record 1 of 5",
+   "names": [
+    "Harrow",
+    "Seeder",
+    "Trailer",
+    "Plough",
+    "Tractor"
+   ],
+   "rows": 5,
+   "cells": [
+    [
+     "Y",
+     "Harrow",
+     "",
+     "450",
+     "Good",
+     ""
+    ],
+    [
+     "Y",
+     "Seeder",
+     "",
+     "980",
+     "Fair",
+     ""
+    ],
+    [
+     "Y",
+     "Trailer",
+     "",
+     "2100",
+     "Good",
+     ""
+    ],
+    [
+     "Y",
+     "Plough",
+     "",
+     "300",
+     "Poor",
+     "N"
+    ],
+    [
+     "Y",
+     "Tractor",
+     "",
+     "1200.5",
+     "Good",
+     "N"
+    ]
+   ],
+   "door": [
+    "Tractor",
+    "Plough",
+    "Harrow",
+    "Seeder",
+    "Trailer"
+   ],
+   "same": true
+  },
+  "s7": {
+   "file": "erp/s7.png",
+   "window": 7100001,
+   "note": "one row fewer",
+   "pageErrors": [],
+   "who": "GardenWorld · GardenWorld Admin · HQ",
+   "grid": true,
+   "head": [
+    "IsActive",
+    "Name",
+    "PurchaseDate",
+    "Cost",
+    "Condition",
+    "IsInsured"
+   ],
+   "status": "Record 1 of 4",
+   "names": [
+    "Harrow",
+    "Seeder",
+    "Trailer",
+    "Tractor"
+   ],
+   "rows": 4,
+   "cells": [
+    [
+     "Y",
+     "Harrow",
+     "",
+     "450",
+     "Good",
+     ""
+    ],
+    [
+     "Y",
+     "Seeder",
+     "",
+     "980",
+     "Fair",
+     ""
+    ],
+    [
+     "Y",
+     "Trailer",
+     "",
+     "2100",
+     "Good",
+     ""
+    ],
+    [
+     "Y",
+     "Tractor",
+     "",
+     "1200.5",
+     "Good",
+     "N"
+    ]
+   ],
+   "door": [
+    "Tractor",
+    "Harrow",
+    "Seeder",
+    "Trailer"
+   ],
+   "same": true
+  }
+ },
+ "sheet": {
+  "file": "AST_Asset.csv",
+  "text": [
+   "Column,Type,Mandatory,Default,List",
+   "Name,String,Y,,",
+   "PurchaseDate,Date,,,",
+   "Cost,Amount,,,",
+   "Condition,List,,GOOD,\"GOOD=Good,FAIR=Fair,POOR=Poor\"",
+   "IsInsured,,,,"
+  ],
+  "columns": 5
+ },
+ "more": {
+  "file": "more.csv",
+  "text": [
+   "Name,Cost,Condition",
+   "Harrow,450,GOOD",
+   "Seeder,980,FAIR",
+   "Trailer,2100,GOOD"
+  ],
+  "rows": 3
+ },
+ "add": {
+  "table": "AST_Asset",
+  "window": "AST Asset",
+  "windowId": 7100001,
+  "columns": [
+   "Name",
+   "PurchaseDate",
+   "Cost",
+   "Condition",
+   "IsInsured"
+  ],
+  "ops": 47,
+  "roles": 12,
+  "gridColumns": 6
+ },
+ "create": {
+  "number": "Tractor",
+  "filled": 5
+ },
+ "update": {
+  "changed": [
+   "condition"
+  ],
+  "shown": "Poor"
+ },
+ "refuse": {
+  "why": "Condition Invalid value - BAD - Reference_ID=200277 - FAIR - GOOD - POOR; nothing was written",
+  "valid": [
+   "FAIR",
+   "GOOD",
+   "POOR"
+  ]
+ },
+ "load": {
+  "rows": 3,
+  "loaded": 3
+ },
+ "del": {
+  "gone": true,
+  "name": "Plough"
+ },
+ "sum": {
+  "n": 4,
+  "sum": "4730.5"
+ },
+ "list": {
+  "rows": [
+   {
+    "Name": "Tractor",
+    "Cost": 1200.5,
+    "Condition": "GOOD"
+   },
+   {
+    "Name": "Harrow",
+    "Cost": 450,
+    "Condition": "GOOD"
+   },
+   {
+    "Name": "Seeder",
+    "Cost": 980,
+    "Condition": "FAIR"
+   },
+   {
+    "Name": "Trailer",
+    "Cost": 2100,
+    "Condition": "GOOD"
+   }
+  ],
+  "total": 4
+ },
+ "pane": {
+  "states": 6,
+  "same": 6,
+  "pageErrors": 0,
+  "noGrid": []
+ },
+ "s1": {
+  "rows": 0
+ },
+ "s2": {
+  "rows": 1
+ },
+ "s3": {
+  "rows": 2
+ },
+ "s4": {
+  "rows": 2
+ },
+ "s6": {
+  "rows": 5
+ },
+ "s7": {
+  "rows": 4
+ }
+}

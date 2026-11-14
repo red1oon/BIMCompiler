@@ -1,0 +1,12 @@
+§GUARD OK   beat=sheet sheet.columns=5 expect=5 spoken="五行"
+§GUARD OK   beat=oneline add.gridColumns=6 expect=6 spoken="六列"
+§GUARD OK   beat=create2 s3.rows=2 expect=2 spoken="两条"
+§GUARD OK   beat=refuse refuse.valid.length=3 expect=3 spoken="三个值"
+§GUARD OK   beat=load load.loaded=3 expect=3 spoken="三行"
+§GUARD OK   beat=load s6.rows=5 expect=5 spoken="五行"
+§GUARD OK   beat=delete s7.rows=4 expect=4 spoken="四行"
+§GUARD language=zh beats with no CJK character: none
+§GUARD proof talk or first/novel/unique: none
+§GUARD not-said N (live link, or a thing not built), named in the voice: none
+§GUARD pane P (from facts.js): the page's grid names the door's rows on 6 of 6 states, page errors 0
+§GUARD_VERDICT PASS facts=7 bad=0
