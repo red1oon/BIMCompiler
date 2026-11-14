@@ -1391,6 +1391,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="A whole workbook in one line: ninja.exec">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#give-a-table-the-document-columns-ninjaworkflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Give a table the document columns: ninja.workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3530,6 +3547,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="A whole workbook in one line: ninja.exec">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#give-a-table-the-document-columns-ninjaworkflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Give a table the document columns: ninja.workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -4287,7 +4321,29 @@ Checkup  50   1
 shown 1 of 1
 reason: BloodGroup Invalid value - Z - Reference_ID=200277 - A - AB - B - O; nothing was written
 </code></pre></div>
-<p>What it refuses, with nothing written: a table name that already exists (rename it in the sheet), a second workbook that names tables another workbook made, and a <code>ColumnSet</code> with a prefix it does not know. A sheet whose name is not exactly a table's name is skipped and named in the answer. The answer's <code>notChecked</code> lists what was not judged.</p>
+<p><strong>A table that is already there.</strong> When the workbook names a table the system already has, nothing is made twice. If the sheet gives that table a <code>Master</code>, the table is reused: the sheet's columns are added to it and it becomes a tab under that master. If the sheet gives it no <code>Master</code>, the row is left alone. The answer lists both (<code>reused</code>, <code>leftAlone</code>). This is what the Ninja of iDempiere does. A reused table keeps its own rules, so a record of it must still fill that table's own mandatory columns.</p>
+<p>A table shown in two windows is written through its own window unless you name the other one with <code>window=</code> (its name or its id). A refusal for a column that belongs to the other window tells you which window to name.</p>
+<p>What it refuses, with nothing written: a second workbook that names tables another workbook made, a workbook whose tables are all already there with no master, and a <code>ColumnSet</code> with a prefix it does not know. A sheet whose name is not exactly a table's name is skipped and named in the answer. The answer's <code>notChecked</code> lists what was not judged.</p>
+<h3 id="give-a-table-the-document-columns-ninjaworkflow">Give a table the document columns: <code>ninja.workflow</code><a class="headerlink" href="#give-a-table-the-document-columns-ninjaworkflow" title="Permanent link">&para;</a></h3>
+<p>A feature can be switched on later, for one table, without touching the workbook. <code>ninja.workflow</code> gives a table the five document columns (<code>DocStatus</code>, <code>DocAction</code>, <code>Processed</code>, <code>DocumentNo</code>, <code>IsApproved</code>) with their lists and defaults, shows them on its tabs, and fills the records that are already there. It looks first and adds only what is missing, so a second run writes nothing:</p>
+<!-- run: nx_wf cut=200 -->
+<div class="highlight"><pre><span></span><code>$ cp common/door/samples/Ninja_Practice.xlsx . ; rm -f /tmp/fast_guide_wf.ops; D=&#39;BIM_OBJECT_OPLOG=/tmp/fast_guide_wf.ops node common/door/door.js --list&#39;; eval &quot;$D &#39;ninja.exec file=Ninja_Practice.xlsx&#39;&quot; | grep -E &#39;^ops:&#39;; eval &quot;$D &#39;mis.new kind=PR_Visit Name=Before PR_Patient_ID=1&#39;&quot; | grep -E &#39;^number:&#39;; eval &quot;$D &#39;ninja.workflow table=PR_Visit&#39;&quot; | grep -E &#39;^(added|fields|rowsFilled|ops):&#39;; eval &quot;$D &#39;ninja.workflow table=PR_Visit&#39;&quot; | grep -E &#39;^(alreadyDone|ops):&#39;; eval &quot;$D &#39;mis.new kind=PR_Visit Name=After PR_Patient_ID=1&#39;&quot; | grep -E &#39;^docStatus:&#39;; eval &quot;$D &#39;mis.list kind=PR_Visit columns=Name,DocStatus,DocAction,Processed&#39;&quot;; eval &quot;$D &#39;erp.complete kind=PR_Visit id=1&#39;&quot; | grep reason; rm -f Ninja_Practice.xlsx
+ops: 129
+number: Before
+added: [&quot;DocStatus&quot;,&quot;DocAction&quot;,&quot;Processed&quot;,&quot;DocumentNo&quot;,&quot;IsApproved&quot;]
+fields: 5
+rowsFilled: 1
+ops: 11
+alreadyDone: true
+ops: 0
+docStatus: DR
+Name    DocStatus  DocAction  Processed
+Before  DR         CO         N
+After   DR         CO         N
+shown 2 of 2
+reason: Complete was not done: PR Visit has the document columns but no document class yet, so nothing says what Complete does on it (DocStatus stays DR)
+</code></pre></div>
+<p>It does not yet say what <em>Complete</em> does on such a table: the answer's <code>notMade</code> names what is still missing, and <code>erp.complete</code> is refused in plain words until then. A table that came with the system is refused.</p>
 <h2 id="cheatsheet-practise-the-mis-lines">Cheatsheet: practise the MIS lines<a class="headerlink" href="#cheatsheet-practise-the-mis-lines" title="Permanent link">&para;</a></h2>
 <p>Everything here is practice on <strong>your own copy</strong>: the first line names a file that keeps what you do, and nothing reaches a real company's books. Delete that file to start again from nothing. Run the lines from the folder that holds <code>common/</code> (a <code>bim-ootb</code> checkout).</p>
 <table>
@@ -4409,9 +4465,19 @@ reason: BloodGroup Invalid value - Z - Reference_ID=200277 - A - AB - B - O; not
 <td>add <code>role=102</code> to a line</td>
 <td>what that role may see and do</td>
 </tr>
+<tr>
+<td>Give a table the document columns</td>
+<td><code>d 'ninja.workflow table=PR_Visit'</code></td>
+<td>a status on every visit (<code>DR</code>), old and new</td>
+</tr>
+<tr>
+<td>Work in another window</td>
+<td>add <code>window=&lt;name or id&gt;</code> to <code>mis.new</code>, <code>mis.update</code> or <code>mis.delete</code></td>
+<td>the fields of that window's tab, for a table shown in two windows</td>
+</tr>
 </tbody>
 </table>
-<p>A workbook of your own: copy the practice file, change the rows of <code>2_RO_ModelMaker</code> to your tables (a prefix of your own, such as <code>MY_</code>, keeps them apart from the tables that are already there), and run <code>ninja.exec</code> on it with <code>dry=Y</code> first. The lines of this table are the verbs shown run in the sections above; the table itself is not re-run by this page's test, the grey blocks are.</p>
+<p>A workbook of your own: copy the practice file, change the rows of <code>2_RO_ModelMaker</code> to your tables (a prefix of your own, such as <code>MY_</code>, keeps them apart from the tables that are already there; a name the system already has is reused, not made twice), and run <code>ninja.exec</code> on it with <code>dry=Y</code> first. The lines of this table are the verbs shown run in the sections above; the table itself is not re-run by this page's test, the grey blocks are.</p>
 <h2 id="work-at-the-terminal-misjs">Work at the terminal: <code>mis.js</code><a class="headerlink" href="#work-at-the-terminal-misjs" title="Permanent link">&para;</a></h2>
 <p>If you would rather pick than type, <code>mis.js</code> shows a list with a pointer. It is a front end only: every key compiles into <strong>one</strong> of the door lines above, runs through the same door (journalled, claim-checked), and the screen prints the line before it runs. Up and Down move the pointer. Left and Right move along the buttons on the pointed row (<code>[U Edit] [D Delete] [C Copy]</code> for a record; for a document, the actions the engine allows now, such as <code>[C Complete] [V Void]</code>, and no Delete once it is completed). Enter runs the highlighted button. <code>+</code> starts a new record, Delete asks <code>y/N</code>, and Esc backs out and writes nothing.</p>
 <p>At a terminal it draws with arrow keys. With <code>--plain</code> it reads key names from a pipe, so a script, a screen reader and an AI see exactly what a person sees:</p>
@@ -4924,7 +4990,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <tr>
 <td><code>mis.group</code></td>
 <td>Count by a column</td>
-<td><code>kind</code>, <code>by</code>, <code>role</code> (optional), further <code>column=value</code> filters (optional)</td>
+<td><code>kind</code>, <code>by</code>, <code>role</code> (optional), <code>window</code> (optional), further <code>column=value</code> filters (optional)</td>
 <td>read</td>
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
@@ -4932,7 +4998,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <tr>
 <td><code>mis.new</code></td>
 <td>Create a record</td>
-<td><code>kind</code>, <code>dry</code> (optional), <code>role</code> (optional), further <code>column=value</code> filters (optional)</td>
+<td><code>kind</code>, <code>dry</code> (optional), <code>role</code> (optional), <code>window</code> (optional), further <code>column=value</code> filters (optional)</td>
 <td>writes</td>
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
@@ -4940,7 +5006,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <tr>
 <td><code>mis.update</code></td>
 <td>Change a record</td>
-<td><code>kind</code>, <code>id</code> (optional), <code>number</code> (optional), <code>role</code> (optional), further <code>column=value</code> filters (optional)</td>
+<td><code>kind</code>, <code>id</code> (optional), <code>number</code> (optional), <code>role</code> (optional), <code>window</code> (optional), further <code>column=value</code> filters (optional)</td>
 <td>writes</td>
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
@@ -4948,7 +5014,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <tr>
 <td><code>mis.delete</code></td>
 <td>Delete a record</td>
-<td><code>kind</code>, <code>id</code> (optional), <code>number</code> (optional), <code>role</code> (optional)</td>
+<td><code>kind</code>, <code>id</code> (optional), <code>number</code> (optional), <code>role</code> (optional), <code>window</code> (optional)</td>
 <td>writes</td>
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
@@ -4973,6 +5039,14 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <td><code>ninja.exec</code></td>
 <td>Run a Ninja workbook</td>
 <td><code>file</code>, <code>dry</code> (optional), <code>data</code> (optional)</td>
+<td>writes</td>
+<td>human, ai</td>
+<td>a bim-ootb checkout</td>
+</tr>
+<tr>
+<td><code>ninja.workflow</code></td>
+<td>Give a table the document columns</td>
+<td><code>table</code>, <code>dry</code> (optional)</td>
 <td>writes</td>
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
@@ -5044,7 +5118,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <tr>
 <td><code>erp.group</code></td>
 <td>Count by a column (old name of mis.group)</td>
-<td><code>kind</code>, <code>by</code>, <code>role</code> (optional), further <code>column=value</code> filters (optional)</td>
+<td><code>kind</code>, <code>by</code>, <code>role</code> (optional), <code>window</code> (optional), further <code>column=value</code> filters (optional)</td>
 <td>read</td>
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
@@ -5052,7 +5126,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <tr>
 <td><code>erp.new</code></td>
 <td>Create a record (old name of mis.new)</td>
-<td><code>kind</code>, <code>dry</code> (optional), <code>role</code> (optional), further <code>column=value</code> filters (optional)</td>
+<td><code>kind</code>, <code>dry</code> (optional), <code>role</code> (optional), <code>window</code> (optional), further <code>column=value</code> filters (optional)</td>
 <td>writes</td>
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
@@ -5061,7 +5135,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 </table>
 <!-- /GEN:verbs -->
 
-<p><strong>Coverage today.</strong> The list is small on purpose: 48 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 6 ERP verbs for a document's life and 12 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.</p>
+<p><strong>Coverage today.</strong> The list is small on purpose: 49 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 6 ERP verbs for a document's life and 12 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.</p>
 <h2 id="what-is-not-checked">What is not checked<a class="headerlink" href="#what-is-not-checked" title="Permanent link">&para;</a></h2>
 <p>A reply lists what its check did not cover. For the Modeller's edit report the list is:</p>
 <!-- run: notchecked cut=520 -->
