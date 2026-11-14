@@ -15,6 +15,7 @@ const srv = http.createServer((q, r) => { const u = decodeURIComponent(q.url.spl
   await pg.waitForFunction(() => document.querySelector('#idmp-tree') && document.querySelector('#idmp-tree').children.length > 0, { timeout: 60000 });
   await pg.waitForFunction(() => /Record \d+ of \d+|No records|0 of 0/i.test(document.body.innerText) || document.querySelectorAll('table th').length > 2, { timeout: 60000 }).catch(() => {});
   await new Promise(r => setTimeout(r, 2000));
+  if (process.env.PS_RECORD) { const seen = await pg.waitForFunction(() => Array.from(document.querySelectorAll('label')).some(l => /Date Invoiced/.test(l.innerText) && l.querySelector('input') && l.querySelector('input').value), { timeout: 60000 }).then(() => true, () => false); console.log('PS_WAIT form_field_seen=' + seen); await new Promise(r => setTimeout(r, 1200)); }
   for (const c of (process.env.PS_CLICKS || '').split(',').filter(Boolean)) {   // toolbar buttons by the start of their own title (e.g. 'ReQuery', 'Grid Toggle')
     const ok = await pg.evaluate(t => { const b = Array.from(document.querySelectorAll('[title]')).find(e => e.offsetParent && e.getAttribute('title').indexOf(t) === 0); if (b) b.click(); return !!b; }, c);
     console.log('PS_CLICK ' + c + ' found=' + ok); await new Promise(r => setTimeout(r, 2500));

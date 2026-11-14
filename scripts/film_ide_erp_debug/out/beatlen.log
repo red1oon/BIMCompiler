@@ -5,4 +5,5 @@
 §BEATLEN beat=fix voice=6.88 typing=5.54 -> 12.42 (typing 5.54 + gap 0.3 + voice 5.38 + tail 1.2)
 §BEATLEN beat=proof voice=7.64 typing=2.50 -> 10.14 (typing 2.50 + gap 0.3 + voice 6.14 + tail 1.2)
 §BEATLEN beat=close voice=8.07 typing=0.00 -> 8.07
+§BEATLEN beat=priorart voice=0 typing=0.00 -> hold from narr.js
 §BEATLEN_DONE beats=6 total=58.3s

@@ -5,5 +5,6 @@
 §FILM_CUE beat=fix t=31.292 frames=298 typing=133 answer_hold_frames=165 x1
 §FILM_CUE beat=proof t=43.708 frames=243 typing=60 answer_hold_frames=183 x1
 §FILM_CUE beat=close t=53.833 frames=194 typing=0 answer_hold_frames=194 x1
+§FILM_CUE beat=priorart t=61.917 frames=336 typing=0 answer_hold_frames=336 x1
 §FILM_KEYS typed=145 returns=3
-§FILM_DONE dur=61.917 frames=1486 planned=1486
+§FILM_DONE dur=75.917 frames=1822 planned=1822

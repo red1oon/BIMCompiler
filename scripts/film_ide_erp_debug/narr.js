@@ -15,7 +15,8 @@ const EN = [
   { id: 'proof', text: 'F: Run it again. | M: Both zones say same, yes. And the page, opened on the new data, says the thirteenth.',
     says: [['after.same_y', '2', 'both zones say same'], ['new.invoiceDay', '2026-11-13', 'the thirteenth']] },
   { id: 'close', text: 'M: Two lines in, two lines out. The check that found it now guards it. | F: It is in the guide, section five point six.',
-    says: [['diff.ins', '2', 'two lines in'], ['diff.del', '2', 'two out'], ['guide.section', '5.6', 'section five point six']] }
+    says: [['diff.ins', '2', 'two lines in'], ['diff.del', '2', 'two out'], ['guide.section', '5.6', 'section five point six']] },
+  { id: 'priorart', hold: 14 }
 ];
 exports.lang = 'en';
 exports.beats = EN;

@@ -35,10 +35,8 @@ exports.run = async function () {
   try {
     const ext = vscode.extensions.getExtension('bim-devtools.x0-navigator'), api = await ext.activate(), fresh = await api.whenFresh();
     log(SEC + 'FILM_X0 active=' + ext.isActive + ' fresh=' + JSON.stringify(fresh && fresh.line) + ' vscode=' + vscode.version); await tidy();
-    // 1. the hover on the tag: the REAL stamped log (before.log, written by shoot.sh from a real run of the witness on this very tree)
-    if (want('h1')) await hoverShot('h1_tag_before', PLAN.tagPlace.rel, PLAN.tagPlace.line, PLAN.tagPlace.col);
     // 2. F12 on the call of env(): the editor's own Go to Definition (waits until the language service answers: it starts slowly on a big folder)
-    let ed = await open(PLAN.kernel, PLAN.call.line, PLAN.call.col);
+    let ed = await open(PLAN.kernel, PLAN.call.line, PLAN.call.col);   // FIRST file opened: the language service answers F12 only then (measured: after opening the witness file first it never answered in 120 s)
     if (want('f')) {
       let defs = [], t0 = Date.now();
       while (Date.now() - t0 < 120000) { defs = await vscode.commands.executeCommand('vscode.executeDefinitionProvider', ed.document.uri, ed.selection.active) || []; if (defs.length) break; await sleep(2000); }
@@ -48,6 +46,8 @@ exports.run = async function () {
       const dl = ed.selection.active.line + 1;
       await shoot('f2_landed', { file: relOf(ed.document.uri.fsPath), line: dl, text: ed.document.lineAt(dl - 1).text.trim().slice(0, 80), expectLine: PLAN.def.line });
     }
+    // 1. the hover on the tag: the REAL stamped log (before.log, written by shoot.sh from a real run of the witness on this very tree)
+    if (want('h1')) await hoverShot('h1_tag_before', PLAN.tagPlace.rel, PLAN.tagPlace.line, PLAN.tagPlace.col);
     if (!want('t')) { fs.writeFileSync(path.join(OUT, 'done.fix'), 'x'); return; }
     // 3. the fix, typed. Fragment i: select the old text on its line, delete it, type the new text key by key; stills at the start, half way and the end.
     ed = await open(PLAN.kernel, PLAN.frags[0].line, 0);

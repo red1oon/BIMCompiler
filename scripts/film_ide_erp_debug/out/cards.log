@@ -5,4 +5,5 @@
 §CARD beat=fix entries=77 overflow_px=0
 §CARD beat=proof entries=41 overflow_px=0
 §CARD beat=close entries=1 overflow_px=0
-§CARDS_DONE beats=7 stills=54 too_tall=0 key_cues=145 return_cues=3
+§CARD beat=priorart entries=1 overflow_px=0
+§CARDS_DONE beats=8 stills=55 too_tall=0 key_cues=145 return_cues=3
