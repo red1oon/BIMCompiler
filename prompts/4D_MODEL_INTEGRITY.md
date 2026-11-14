@@ -17,7 +17,7 @@ numbers are measured, the five decisions (D1–D5) are MADE. **Implement; do not
    GPU or browser runs without the owner's go; agents on Sonnet; results go in §Q.6 / §Q.7 only;
    the witness, never the owner's eyes, is the test.
 
-**Status (update this line as steps land):** step 0 ✅ (bim-ootb #3018, 2026-11-14) · D2 ⛔ red gate 2, owner ruling (§Q.6 RESULTS) · D5 ⛔ red gate 2 + rule gap, owner ruling (§Q.7 RESULTS) · D1 ☐ · D3 ☐ · D4 ☐ — D1/D3/D4 not started: they build on D2/D5
+**Status (update this line as steps land):** step 0 ✅ (#3018) · D2 ✅ (#3022) · D5 ✅ (variant B, #3023) · D1 ☐ NEXT · D3 ☐ · D4 ☐ — owner rulings 2026-11-14: D2/D5 merged with their cross-level near misses NAMED (§Q.6/§Q.7 RESULTS); D5 = variant B. Open, named: §Q.8.
 
 ---
 
@@ -3217,8 +3217,8 @@ Before = origin/main code (`codeKey 2b46745cdc59`); after = `ba70485e411e`. Inst
 ⛔ gate 2  Terminal IfcPipeSegment 587 -> 590 RED   (IfcDuctFitting 140 -> 137 on the same run; non-beam MEP net 0)
 ```
 **The +3, traced (read-only `newmid.js`):** three pipes in `TASK_MEP_Rough_in_Aras_Jalan` hang from ONE beam (`2dEJAAEyDAlQ$4dg_s$NrS`) in a different level's task, `TASK_Superstructure_03_SECOND_FLOOR_LEVEL`. Before the change the beam already started only 0.02 d (~30 min) ahead of them. D2 re-packed that Superstructure bar and the beam moved 0.06 d later. The pipes themselves did not move. This is a cross-task near miss in the task grid, not the D2 rule; the same shape recurs in D5 (one window).
-**Owner question (D2):** does gate 2 hold for a cross-task element whose lead over its support was already under an hour, or is D2 merged with these 3 named? It is not re-baselined here.
-**Terminal's 671 `§STRUCT_NO_SUPPORT` need a look before merge** (structural T with no pool contact below or embedded; the 2,711 `Metal Deck` IfcPlate roof sheets of §GROUND_CONNECTED are the likely bulk — not yet broken down).
+**Owner ruling 2026-11-14:** *merge, name them* — gate 2 stays strict for everything else; the cross-level near miss is its own item (§Q.8 item 1). D2 MERGED as bim-ootb #3022.
+**Terminal's 671 `§STRUCT_NO_SUPPORT`, broken down (read-only `nosup.js`):** 600 `IfcPlate Metal Deck` roof sheets (contacts: other deck plates above, pipes/proxies/walls below — the §GROUND_CONNECTED data finding) · 36 `IfcMember Assembled Stair` · 30 IfcBeam on walls (D1's population) · 7 IfcColumn on proxies/walls/windows · 2 SHS members.
 
 ## §Q.7 COLUMNS BEFORE THE SLAB THEY STAND ON — MEASURED 2026-11-14 (owner: *"Do floor slabs comes on first before columns and beams?"* … *"Measure those too"*)
 Instrument: `scripts/probe_4d_column_midair.js` → `§COL_MIDAIR` (same owners, same persisted runs,
@@ -3282,6 +3282,36 @@ is built after it. R1's "column 2, beam 3, slab 4" is true only of the slab on t
   Stack piles ≥ 20 stay at 0, totalDays stay at 339 / 102, and the CELL gate % is unchanged in all three variants.
   **Why A fails:** the 2 new midair slabs are Hospital's Level-1 floor slabs, and they REST ON a Level-1 column that has no support (a pier under the slab). A moved them ahead of that pier, 13.8 d and 5.5 d earlier. In Terminal, 2 Substructure slabs were moved ahead of the beam carrying them. The spec's own line *"the slab a column HOLDS UP is built after it"* covers this case, but one sequence slot cannot express pier → slab → column. B adds that one hop: the holder takes trd 1.25, the floor trd 1.5 (`§D5_FLOOR_SLAB … holdersMovedFirst=` Hospital 1, Terminal 8).
   **The window:** `2QeSWZ57r0ZhANP_aR8HvN` in `TASK_Architecture_Envelope_Ceiling_Level_Kedai` hangs from a beam in `TASK_Superstructure_02_FIRST_FLOOR_LEVEL`. That beam moved 0.17 d later inside its own bar; lead before ≈ 0.10 d. It is the same cross-task near-miss shape as D2's 3 pipes.
-  **Owner questions (D5):** (1) adopt variant B (one hop beyond the spec'd rule) or keep A? (2) the same gate-2 question as D2, for this one window.
+  **Owner ruling 2026-11-14:** variant B; merge with the window named. MERGED as #3023, rebuilt on top of D2 and re-measured there (before = D2 #3022 `ba70485e411e`, after = D2+D5 `9098b76bb1ef`, self-check MATCH on all four):
+  ```
+  §COL_MIDAIR  Hospital IfcColumn midair 63 -> 6 · column-on-slab 57 -> 0 · Terminal 0 -> 0 · HHS 3 -> 3        DONE BAR for columns MET (≤10 / 0 / ≤3)
+  §STEP_GATE   midairPlayed Hospital 486 -> 429 · Terminal 2393 -> 2395 · Duplex 247 = · HHS 144 =
+               stack piles>=20 0 -> 0 · totalDays 339/102/12/53 unchanged · CELL gate % unchanged
+               gate 2: Terminal IfcWindow 37 -> 39 — 2QeSWZ57r0ZhANP_aR8HvN and its neighbour …HgI, both in
+               TASK_Architecture_Envelope_Ceiling_Level_Kedai, hanging from beams 0x6OwzZ2v21RpwVfHqBQ0f/…0C in
+               TASK_Superstructure_02_FIRST_FLOOR_LEVEL (lead ≈ 0.1 d before). Same shape and same task pair as the ruled window;
+               taken under the same ruling and named (§Q.8 item 1).
+  ```
+  Gate 4: same result as D2 on all four witnesses (and see §Q.8 item 2).
 - **Left open, named:** the 10 transfer-beam columns; why `groundworkSlabs` does not claim the
   Level 1 slab; Clinic, LTU, JKR not measured.
+
+## §Q.8 OPEN AFTER D2 + D5 — named, not fixed (2026-11-14)
+1. **Cross-level near misses (gate 2's only reds, merged by owner ruling).** 5 elements, all Terminal: 3 IfcPipeSegment
+   (`2EWQkj7Z9F_BZghmRaKVaW`, `…VaH`, `…Vej`; `TASK_MEP_Rough_in_Aras_Jalan` ← beam in `TASK_Superstructure_03_SECOND_FLOOR_LEVEL`)
+   and 2 IfcWindow (`2QeSWZ57r0ZhANP_aR8HvN`, `…HgI`; `TASK_Architecture_Envelope_Ceiling_Level_Kedai` ← beams in
+   `TASK_Superstructure_02_FIRST_FLOOR_LEVEL`). An element in one level's task hangs from a beam in ANOTHER level's
+   Superstructure task with < 0.1 d lead, so any re-pack of that bar tips it. The template grid has no edge between those two
+   tasks. It is a task-grid question (§J.4 q1), not D1–D5.
+2. **⛔ Gate 4 is half-vacuous ON MAIN.** `witness_gantt_lock_integrity` (`G-LI-2a _buildXrayElements yields real geometry (n=0)`)
+   and `witness_midair_zero` (`W-MZ <bld> element build produced nothing`, all 7 buildings) build ZERO elements in their sliced
+   sandbox, before and after every step. Their sandbox silences `console.log`, so the cause is hidden (`_buildXrayElements` now
+   lives in `tm_sched_xray.js`). The judging half of gate 4 is `witness_gantt_edit_coherence` (11 PASS, real Duplex data) and
+   `witness_tm_edit_exception` (23/0). Both are unchanged on every step. Repair those two witnesses before D4, which moves the most times.
+3. **D1 — design note before implementing.** `tm_sched_xray.js _promoteRoofLoadPath` already demotes a roof slab carried only by
+   walls to Architecture seq 8 (§4D_WALLS_BEFORE_ROOF). Such a slab is still in `supportPool` (IfcSlab seq > 4), so D1's
+   `bearingWalls` will promote the walls under every roof as well. That is right for bearing-wall construction (Duplex), but
+   it is a wider population than §Q.2's 15/15/8 beam walls, so it has to be measured, not assumed. Use the wall-at-its-top bound
+   that §S64 already applies to walls (`S.top_z <= T.base_z + GAP`, `auditFloating`'s wall pool). Without it, every full-height
+   wall that XY-overlaps a beam reads as its bearer (§I.1's missing upper bound).
+
