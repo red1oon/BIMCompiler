@@ -1,0 +1,6 @@
+# ⚠ DO NOT REMOVE — the per-language lines the i18n hook adds to a page (prompts/DOCS_I18N.md §6b, §6d V1). {en} = the English page's URL.
+# One line per case; a language gets its row when its first page is built. Wording of each row is drafted in the session (owner: no review, §6b).
+es:   # Latin-American Spanish (es-419); the plugin locale is es (DOCS_I18N.md §6d)
+  not_translated: 'Esta página aún no está traducida; se muestra en inglés. <a href="{en}">Página en inglés</a>.'
+  translated: 'Traducida de la página en inglés; la página en inglés es la referencia. <a href="{en}">Ver en inglés</a>.'
+  stale: 'La página en inglés cambió después de esta traducción, así que puede estar desactualizada. <a href="{en}">Ver en inglés</a>.'

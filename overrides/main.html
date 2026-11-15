@@ -1,0 +1,10 @@
+{#- ⚠ DO NOT REMOVE — the translated site's per-page lines (prompts/DOCS_I18N.md §3, §6b; set by hooks/i18n_pages.py). -#}
+{% extends "base.html" %}
+{% block extrahead %}
+  {{ super() }}
+  {% if page and page.meta and page.meta.i18n_noindex %}<meta name="robots" content="noindex">{% endif %}
+{% endblock %}
+{% block content %}
+  {% if page and page.meta and page.meta.i18n_note %}<p class="i18n-note"><small>{{ page.meta.i18n_note }}</small></p>{% endif %}
+  {{ super() }}
+{% endblock %}
