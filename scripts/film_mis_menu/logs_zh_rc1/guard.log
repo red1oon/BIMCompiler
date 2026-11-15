@@ -1,0 +1,10 @@
+§GUARD OK   beat=still1 still1.rows.length=3 expect=3 spoken="三个组"
+§GUARD OK   beat=still1 states.s1.records=3 expect=3 spoken="同样三个"
+§GUARD OK   beat=still2 still2.windowRows=4 expect=4 spoken="显示四个"
+§GUARD OK   beat=menu menu.windows=294 expect=294 spoken="二百九十四个窗口"
+§GUARD OK   beat=find find.items=11 expect=11 spoken="十一个条目"
+§GUARD language=zh beats with no CJK character: none
+§GUARD proof talk or first/novel/unique: none
+§GUARD not-said N (live link, or a thing not built), named in the voice: none
+§GUARD pane P (from facts.js): the page's record count = the door's on 3 of 3 states, page errors 0; the menu: door entries 471 all on the page, page-only entries not in the dictionary: ["BIM Document"] menuSame=true
+§GUARD_VERDICT PASS facts=5 bad=0

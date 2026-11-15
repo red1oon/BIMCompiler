@@ -1,0 +1,11 @@
+§FILM_CUE beat=cover t=0.000 frames=86 typing=0 answer_hold_frames=86 x1
+§FILM_CUE beat=still1 t=3.583 frames=289 typing=74 answer_hold_frames=215 x1
+§FILM_CUE beat=still2 t=15.625 frames=233 typing=86 answer_hold_frames=147 x1
+§FILM_CUE beat=menu t=25.333 frames=274 typing=33 answer_hold_frames=241 x1
+§FILM_CUE beat=find t=36.750 frames=210 typing=54 answer_hold_frames=156 x1
+§FILM_CUE beat=open t=45.500 frames=203 typing=22 answer_hold_frames=181 x1
+§FILM_CUE beat=back t=53.958 frames=174 typing=34 answer_hold_frames=140 x1
+§FILM_CUE beat=close t=61.208 frames=204 typing=0 answer_hold_frames=204 x1
+§FILM_CUE beat=end t=69.708 frames=216 typing=0 answer_hold_frames=216 x1
+§FILM_KEYS typed=136 returns=7
+§FILM_DONE dur=78.708 frames=1889 planned=1889
