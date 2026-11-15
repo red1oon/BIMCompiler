@@ -562,6 +562,8 @@ shown 1 of 1
 
 `mis.update` sends only the columns you give; giving the values a record already has changes nothing and the answer says `noop`. A column the window would not let a person edit (a read-only field, or any column of a completed document) is refused, and the answer names the rule. Clear a column with the value `<null>`.
 
+**A column that points at another record** (a business partner, a product, a warehouse) must name a record that exists and that your company may use. `mis.new` checks every such column and `mis.update` the ones you change, and a wrong one is refused with the legacy ERP's own words, for example `Cannot save record in C_Order: Foreign ID 999999 not found in C_BPartner_ID`, or `Cross tenant ID … not allowed in …` for a record of another company. A value outside a lookup's validation rule (the list a window would offer) is NOT refused: the legacy ERP saves it too, since the rule only decides what the window offers.
+
 **Delete.** `mis.delete` is the window's Delete. It refuses what the window refuses, with the engine's own words, and writes nothing. The standard partner is used by other records:
 
 <!-- run: mis_refuse cut=300 -->
