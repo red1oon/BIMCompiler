@@ -340,6 +340,29 @@ $ node common/door/door.js 'modeller.walk building=Duplex discipline=FP' | grep 
 
 `count` is everything the walk would place. `provisional` are positions the walker itself marks as not final, for example a fitting with no ceiling found above it. `rules` is the rule set the building's class uses: a house walks the residential rules. A walk that places nothing answers `inconclusive` with the walker's reason.
 
+## Keep a Modeller open between lines: `model.open`, `model.convert`, `model.addbay`, `model.undo`, `model.close`
+
+These five lines drive ONE Modeller page kept open in the background (headless, on the CPU, no graphics card), so each line acts on what the line before left. `model.open sheets=<folder or a.dxf,b.dxf> type="Farming Shed"` opens the 2D sheets, `model.convert` makes the 3D model (the page's own Convert), `model.addbay end=high|low` adds one bay at that end of a repeating-bay building, `model.undo` takes the last change back, and `model.close` stops the page. The page does all the work with its own functions; the line presses what a person presses and prints the page's own answer. Nothing is saved: closing drops the model. They need a `bim-ootb` checkout, and the folder you run them from holds the session (a file `.model_session.json`; the port listens on this machine only and every request carries a one-time token).
+
+Rules you will meet: a line before `model.open` is refused ("no session: model.open first"), and so is a second `model.open`, a second `model.convert`, and `model.addbay` before Convert. A bay is offered only when the building type declares one (Farming Shed does); with no `type=` the bay is refused, saying the type declares no rule. The sheets must carry their markings: plain sheets of a drawing do not pass the gate. Each line takes a few seconds (here: open about 6 s, convert 3 s, a bay 3 s; on a bigger set of sheets convert took up to 15 s).
+
+The block below copies a folder of 9 marked sheets of a shed, named by `SHED_SHEETS`, into `shed/`, and runs the lines one after the other; set `SHED_SHEETS` to your own folder of marked `.dxf` sheets.
+
+<!-- run: model_ses cut=200 -->
+```text
+$ rm -rf shed; mkdir shed; cp "$SHED_SHEETS"/*.dxf shed/; D='node common/door/door.js --list'; eval "$D 'model.convert'" | grep -E '^error:'; eval "$D 'model.open sheets=shed type=\"Farming Shed\"'" | grep -E '^summary:'; eval "$D model.convert" | grep -E '^summary:'; eval "$D 'model.addbay end=high'" | grep -E '^(copies_by_class|summary):'; eval "$D model.undo" | grep -E '^summary:'; eval "$D model.close" | grep -E '^closed:'; eval "$D model.undo" | grep -E '^error:'; rm -rf shed .model_session.json
+error: no session in this folder: model.open first
+summary: 9 sheets open, 445 bodies read (4 left out), the gate is open
+summary: 444 elements made; add-a-bay is offered for Farming Shed
+copies_by_class: {"IfcColumn":2,"IfcBeam":2,"IfcFooting":2,"IfcWall":2,"IfcMember":12,"IfcPlate":9}
+summary: one bay added at the high end (29 copies, pitch 3.0480 m), the gate is clean, cost 15898 USD (10722 added, 5176 changed)
+summary: undone: 473 -> 444 elements
+closed: true
+error: no session in this folder: model.open first
+```
+
+`model.addbay end=low` adds the bay at the other end (a different hinge, the same 29 copies). Not checked by these lines: the cost against an independent count (a separate test does that), and more than one session in one folder.
+
 ## The dotted form, for people
 
 The same questions can be typed as one dotted phrase: **where it is, then what to take**. It is a shorthand for people at a terminal. It is not a second language: the tool turns the phrase into one door line, shows you that line, and sends only that line through the door. It needs a checkout.
@@ -749,6 +772,24 @@ shown 1 of 1
 
 What it refuses, with nothing written: a second workbook that names tables another workbook made, a workbook whose tables are all already there with no master, a `Master` that is neither in the workbook nor a table with a window here, and a `ColumnSet` with a prefix it does not know. A sheet whose name is not exactly a table's name is skipped and named in the answer. The answer's `notChecked` lists what was not judged.
 
+### One table from a plain CSV: `ninja.exec file=<Table>.csv`
+
+A `.csv` instead of a workbook is ONE table whose header is the model, read the way the older Ninja reads one. The table is the file's name (`table=` names another). Each header cell takes its type from its name, by the first rule that fits: it contains `Date` → a date; `Qty` → a quantity; `Amount` → an amount; it starts with `Is` or `In` → Yes/No (so `Income` is Yes/No too, as in the older Ninja); it ends with `_ID` → a lookup, whose cells are the Name of the record; it holds `=` and `/` (`Plan=Basic/Gold`) → a list; anything else → text. A cell such as `C_BPartner_ID>Value` or `Code=X` makes the column before the `>` or `=`. The lines are the rows. The table and its rows are made together: if one line does not load, nothing is made and the answer names the line. A line whose first two columns are there already is skipped, so the same file run again writes nothing, and a file with more lines adds only the new ones. On a table that is there already, the file only adds lines, and a header that is not a column of it is refused.
+
+<!-- run: nx_csv cut=200 -->
+```text
+$ printf 'Name,Join Date,Visits Qty,Fee Amount,IsMember,Plan=Basic/Gold\nAmir,2026-01-05,2,50,Y,Ba\nBea,2026-01-06,1,80,N,Go\n' > CL_Client.csv; rm -f /tmp/fast_guide_csv.ops; D='BIM_OBJECT_OPLOG=/tmp/fast_guide_csv.ops node common/door/door.js --list'; eval "$D 'ninja.exec file=CL_Client.csv'" | grep -E '^(tables|dataSheets):'; eval "$D 'mis.list kind=CL_Client columns=Name,JoinDate,VisitsQty,FeeAmount,IsMember,Plan'"; eval "$D 'ninja.exec file=CL_Client.csv'" | grep -E '^(ops|summary):'; printf 'Cara,2026-01-07,3,50,N,Ba\n' >> CL_Client.csv; eval "$D 'ninja.exec file=CL_Client.csv'" | grep -E '^summary:'; rm -f CL_Client.csv
+tables: [{"table":"CL_Client","master":null,"columns":6,"lists":["Plan"]}]
+dataSheets: [{"sheet":"CL_Client","rows":2,"loaded":2,"ops":2}]
+Name  JoinDate             VisitsQty  FeeAmount  IsMember  Plan
+Amir  2026-01-05 00:00:00  2          50         Y         Ba
+Bea   2026-01-06 00:00:00  1          80         N         Go
+shown 2 of 2
+ops: 0
+summary: every line of CL_Client.csv is there already (2 skipped); nothing was written
+summary: 1 line loaded into CL_Client, 2 skipped (already there)
+```
+
 ### Give a table the document columns: `ninja.workflow`
 
 A feature can be switched on later, for one table, without touching the workbook. `ninja.workflow` gives a table the five document columns (`DocStatus`, `DocAction`, `Processed`, `DocumentNo`, `IsApproved`) with their lists and defaults, shows them on its tabs, and fills the records that are already there. It looks first and adds only what is missing, so a second run writes nothing:
@@ -796,6 +837,54 @@ reason: Practice_out.xlsx exists already and is never overwritten. Nothing was w
 
 Not carried by the export: validation rules and callouts (the stager never wrote them into the model). A rollback switches rows off, it does not delete them, so the log keeps its history.
 
+## The records under one record, and a sheet against the table: `master=`, `mis.diff`
+
+`master=Table/record` on `mis.list`, `mis.sum` or `mis.group` keeps only the rows under that record, the rows a tab under it shows: `mis.list kind=PR_Visit master=PR_Patient/Aminah` is the visits of Aminah. The record after the slash is an id, or a Document No, Name or Value, read as `mis.update number=` reads it. The answer is the same as the plain filter `PR_Patient_ID=1`. A table that is not a tab under the master is refused with the reason, and so is a record that does not exist or a name two records share (then give the id). A record with nothing under it is a true zero, not an empty question.
+
+`mis.diff kind=<table> file=<sheet.csv>` compares a sheet with the table before you load it, and writes nothing. Each line of the sheet is matched by its Document No, else Name, else Value (`key=` names another column), and the answer sorts them: `new` (no record has that key), `changed` (a column differs; the stored value and the sheet's are both shown), `same`, and `missing` (active records the sheet does not mention). A key repeated in the sheet, a key that matches several records and a line with no key are named apart and not compared. A number is equal as a number (`1200.50` and `1200.5`), a date equals the stored date, and a lookup cell is compared by the name of the record the stored id points at. Whether `mis.load` would find that name is not asked here: `mis.load dry=Y` does that.
+
+<!-- run: mis_md cut=200 -->
+```text
+$ cp common/door/samples/Ninja_Practice.xlsx . ; printf 'Name,BloodGroup\nAminah,A\nBoon,B\nDevi,O\n' > patients.csv; rm -f /tmp/fast_guide_md.ops; D='BIM_OBJECT_OPLOG=/tmp/fast_guide_md.ops node common/door/door.js --list'; eval "$D 'ninja.exec file=Ninja_Practice.xlsx'" | grep -E '^ops:'; eval "$D 'mis.update kind=PR_Patient number=Aminah BloodGroup=A'" | grep -E '^changed:'; for v in 'Name=Checkup PR_Patient_ID=1 Fee=50' 'Name=Follow-up PR_Patient_ID=1 Fee=30' 'Name=Checkup PR_Patient_ID=2 Fee=50'; do eval "$D 'mis.new kind=PR_Visit $v'" | grep -E '^id:'; done; eval "$D 'mis.list kind=PR_Visit master=PR_Patient/Aminah columns=Name,Fee'"; eval "$D 'mis.sum kind=PR_Visit column=Fee master=PR_Patient/1'" | grep -E '^summary:'; eval "$D 'mis.group kind=PR_Visit by=Name master=PR_Patient/2'"; eval "$D 'mis.list kind=PR_Visit master=PR_Room/1'" | grep -E '^reason:'; eval "$D 'mis.diff kind=PR_Patient file=patients.csv'" | grep -E '^(new|changed|missing|ops|summary):'; rm -f Ninja_Practice.xlsx patients.csv
+ops: 151
+changed: ["bloodgroup"]
+id: 1
+id: 2
+id: 3
+Name       Fee
+Checkup    50
+Follow-up  30
+shown 2 of 2
+summary: 80 = sum of Fee over 2 PR Visit
+Name     count
+Checkup  1
+shown 1 of 1
+reason: PR Visit is not a detail of PR Room: it has no link column PR_Room_ID (the parent link of a tab). Nothing was listed
+new: [{"row":3,"key":"Devi"}]
+changed: [{"row":2,"key":"Boon","changes":[{"column":"BloodGroup","table":"","sheet":"B"}]}]
+missing: ["Chandra"]
+ops: 0
+summary: 1 new, 1 changed, 1 the same, 1 in the table and not in the file; nothing was written
+```
+
+Not compared by `mis.diff`: a column of the table that the sheet does not name. The key is one column. A master two levels up (the patient of a medicine) is refused: it is not the medicine's tab parent.
+
+### A file of MIS lines, tried first: `--script … --dry`
+
+A set-up you want to repeat (a workbook, its first records, a check) is a file of lines run with `--script`, as in [A script](#a-script-several-lines-a-named-result): it stops at the first line that is not ok, and the lines after it are not run. Add `--dry` to try the whole file first. The file then runs on a throw-away copy of your op-log (`BIM_OBJECT_OPLOG` must name it) and of the files of this folder, so a later line sees what an earlier line made, exactly as in the real run, and gets the real run's answer. At the end the copy is deleted: your op-log, your files and the journal are as before. Files in subfolders are not copied. A line that acts outside the op-log (a Modeller session, a legacy server, a pack) cannot be held back, so in a dry run it is refused and the file stops there.
+
+<!-- run: script_dry cut=200 -->
+```text
+$ cp common/door/samples/Ninja_Practice.xlsx . ; printf -- '-- the tables, a patient, a visit of hers, and the fees under her\nninja.exec file=Ninja_Practice.xlsx data=N\nmis.new kind=PR_Patient Name=Devi BloodGroup=O\nmis.new kind=PR_Visit Name=Checkup PR_Patient_ID=1 Fee=50\nmis.sum kind=PR_Visit column=Fee master=PR_Patient/Devi\n' > setup.door; rm -f /tmp/fast_guide_dry.ops; export BIM_OBJECT_OPLOG=/tmp/fast_guide_dry.ops; node common/door/door.js --list --script setup.door --dry | grep -E '^(tablesMade|id|summary):'; test -e /tmp/fast_guide_dry.ops && echo 'op-log: written' || echo 'op-log: not written'; node common/door/door.js --list --script setup.door | grep -E '^summary:'; echo "op-log: $(wc -l < /tmp/fast_guide_dry.ops) ops"; rm -f Ninja_Practice.xlsx setup.door
+tablesMade: 5
+id: 1
+id: 1
+summary: 50 = sum of Fee over 1 PR Visit
+op-log: not written
+summary: 50 = sum of Fee over 1 PR Visit
+op-log: 153 ops
+```
+
 ## Cheatsheet: practise the MIS lines
 
 Everything here is practice on **your own copy**: the first line names a file that keeps what you do, and nothing reaches a real company's books. Delete that file to start again from nothing. Run the lines from the folder that holds `common/` (a `bim-ootb` checkout).
@@ -828,6 +917,11 @@ Everything here is practice on **your own copy**: the first line names a file th
 | Give a table the document columns | `d 'ninja.workflow table=PR_Visit'` | a status on every visit (`DR`), old and new |
 | Undo a workbook's bundle | `d 'ninja.rollback bundle=Practice'` | everything it made is off (blocked while a table holds records); `dry=Y` first |
 | Write a bundle back as a workbook | `d 'ninja.export bundle=Practice file=Practice_out.xlsx'` | the model, to edit and run again |
+| Under one record | `d 'mis.list kind=PR_Visit master=PR_Patient/1'` | the visits of patient 1 only; also on `mis.sum` and `mis.group` |
+| Compare a sheet before loading | `d 'mis.diff kind=PR_Patient file=patients.csv'` | new, changed, same and missing lines; nothing written |
+| Keep a Modeller open | `d 'model.open sheets=shed type="Farming Shed"'` then `d model.convert`, `d 'model.addbay end=high'`, `d model.undo`, `d model.close` | the 2D sheets made 3D, one bay added and taken back; each line a few seconds |
+| Try a whole file first | `node common/door/door.js --list --script setup.door --dry` | every line's real answer; nothing kept (needs `BIM_OBJECT_OPLOG`) |
+| One table from a CSV | `d 'ninja.exec file=CL_Client.csv'` | the table from the header, its lines loaded; run again, only new lines load |
 | Work in another window | add `window=<name or id>` to `mis.new`, `mis.update` or `mis.delete` | the fields of that window's tab, for a table shown in two windows |
 
 **Speed.** After a big workbook the door keeps an image of what the op-log has made, so a later line does not apply every op again; it is used only while your op-log file still begins exactly as it did, and `ERP_OPIMAGE=off` switches it off.
@@ -1072,6 +1166,11 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `legacy.witness` | Run the in-server witness on the legacy test instance | none | trial | human, ai | a bim-ootb checkout |
 | `legacy.check` | Check a workbook's rows in the legacy test database | `book`, `version` (optional) | read | human, ai | a bim-ootb checkout |
 | `legacy.plugin` | Put a data-model plugin on the legacy test instance and check it there | `book`, `version` | writes | human, ai | a bim-ootb checkout |
+| `model.open` | Open 2D sheets in the Modeller | `sheets`, `type` (optional) | trial | human, ai | a bim-ootb checkout |
+| `model.convert` | Convert the open sheets to a 3D model | none | trial | human, ai | a bim-ootb checkout |
+| `model.addbay` | Add a bay to the model | `end` | trial | human, ai | a bim-ootb checkout |
+| `model.undo` | Undo the last model change | none | trial | human, ai | a bim-ootb checkout |
+| `model.close` | Close the Modeller session | none | trial | human, ai | a bim-ootb checkout |
 | `erp.find` | Find a document | `kind`, `number` | read | human, ai | a bim-ootb checkout |
 | `erp.actions` | What can be done to a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | read | human, ai | a bim-ootb checkout |
 | `erp.complete` | Complete a document | `kind`, `id` (optional), `number` (optional), `role` (optional) | posts | human, ai | a bim-ootb checkout |
@@ -1088,8 +1187,9 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `mis.delete` | Delete a record | `kind`, `id` (optional), `number` (optional), `role` (optional), `window` (optional) | writes | human, ai | a bim-ootb checkout |
 | `mis.load` | Load records from a CSV | `kind`, `file`, `dry` (optional) | writes | human, ai | a bim-ootb checkout |
 | `mis.add_window` | Add a window from a CSV | `file`, `table` (optional), `workflow` (optional), `dry` (optional), `master` (optional) | writes | human, ai | a bim-ootb checkout |
-| `ninja.exec` | Run a Ninja workbook | `file`, `dry` (optional), `data` (optional) | writes | human, ai | a bim-ootb checkout |
+| `ninja.exec` | Run a Ninja workbook | `file`, `dry` (optional), `data` (optional), `table` (optional) | writes | human, ai | a bim-ootb checkout |
 | `ninja.workflow` | Give a table the document columns | `table`, `dry` (optional) | writes | human, ai | a bim-ootb checkout |
+| `mis.diff` | Compare a CSV with the table | `kind`, `file`, `key` (optional) | read | human, ai | a bim-ootb checkout |
 | `ninja.rollback` | Undo a Ninja bundle | `bundle`, `dry` (optional) | writes | human, ai | a bim-ootb checkout |
 | `ninja.export` | Write a Ninja bundle back as a workbook | `bundle` (optional), `window` (optional), `table` (optional), `file` | writes | human, ai | a bim-ootb checkout |
 | `erp.column` | Who fills a column: twin and legacy side by side (old name of mis.column) | `kind`, `column` | read | human, ai | a bim-ootb checkout |
@@ -1104,7 +1204,7 @@ This table is **generated from the vocabulary file** (`common/door/verbs.json`) 
 | `erp.new` | Create a record (old name of mis.new) | `kind`, `dry` (optional), `role` (optional), `window` (optional), further `column=value` filters (optional) | writes | human, ai | a bim-ootb checkout |
 <!-- /GEN:verbs -->
 
-**Coverage today.** The list is small on purpose: 51 verbs cover the Modeller's grid edits and its walker, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 6 ERP verbs for a document's life and 12 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.
+**Coverage today.** The list is small on purpose: 57 verbs cover the Modeller's grid edits, its walker and a Modeller kept open between lines, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 6 ERP verbs for a document's life and 13 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.
 
 ## What is not checked
 
