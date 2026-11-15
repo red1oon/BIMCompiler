@@ -6,19 +6,33 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Browser-native IFC viewer and local-first ERP kernel — drop an IFC file, view a BIM model in 3D, run a serverless event-sourced ERP. No install, no server, MIT-licensed.">
+        <meta name="description" content="浏览器原生的 IFC 查看器和本地优先的 ERP 内核——拖入一个 IFC 文件，就能在 3D 中查看 BIM 模型，并运行无服务器、基于事件溯源的 ERP。无需安装，无需服务器，MIT 许可。">
       
       
         <meta name="author" content="Redhuan D. Oon">
       
       
-        <link rel="canonical" href="https://red1oon.github.io/BIMCompiler/./">
+        <link rel="canonical" href="https://red1oon.github.io/BIMCompiler/zh/">
       
       
       
         <link rel="next" href="USER_GUIDE/">
       
       
+        
+          <link rel="alternate" href="/BIMCompiler/" hreflang="en">
+        
+          <link rel="alternate" href="/BIMCompiler/es/" hreflang="es">
+        
+          <link rel="alternate" href="/BIMCompiler/fr/" hreflang="fr">
+        
+          <link rel="alternate" href="/BIMCompiler/de/" hreflang="de">
+        
+          <link rel="alternate" href="/BIMCompiler/id/" hreflang="id">
+        
+          <link rel="alternate" href="/BIMCompiler/ja/" hreflang="ja">
+        
+          <link rel="alternate" href="/BIMCompiler/zh/" hreflang="zh">
         
       
       
@@ -69,7 +83,7 @@
     
     
   
-  <meta name="robots" content="noindex">
+  
 
   </head>
   
@@ -160,6 +174,62 @@
     
       <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="选择当前语言">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="/BIMCompiler/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="/BIMCompiler/es/" hreflang="es" class="md-select__link">
+              Español (Latinoamérica)
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="/BIMCompiler/fr/" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="/BIMCompiler/de/" hreflang="de" class="md-select__link">
+              Deutsch
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="/BIMCompiler/id/" hreflang="id" class="md-select__link">
+              Bahasa Indonesia
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="/BIMCompiler/ja/" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="/BIMCompiler/zh/" hreflang="zh" class="md-select__link">
+              简体中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
     
     
       
@@ -3158,10 +3228,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#the-three-apps-you-actually-open" class="md-nav__link">
+  <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The three apps you actually open
+        你真正会打开的三个应用
       
     </span>
   </a>
@@ -3169,10 +3239,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-headline-ideas" class="md-nav__link">
+  <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The headline ideas
+        核心理念
       
     </span>
   </a>
@@ -3180,10 +3250,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#documentation-map" class="md-nav__link">
+  <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Documentation map
+        文档地图
       
     </span>
   </a>
@@ -3203,7 +3273,7 @@
               
               <article class="md-content__inner md-typeset">
                 
-  <p class="i18n-note"><small>本页尚未翻译，以英文显示。<a href="https://red1oon.github.io/BIMCompiler/./">英文页面</a>。</small></p>
+  <p class="i18n-note"><small>译自英文页面；以英文页面为准。<a href="https://red1oon.github.io/BIMCompiler/./">查看英文</a>。</small></p>
   
                   
   
@@ -3215,233 +3285,233 @@
 
 
 <h1 id="bim-intent-compiler">BIM Intent Compiler<a class="headerlink" href="#bim-intent-compiler" title="Permanent link">&para;</a></h1>
-<p><strong>Construction = BOM + (x, y, z).</strong> One formula that unifies geometry, procurement, scheduling, compliance, and cost — the way E=mc² unified mass and energy. Five domains that the industry treats as separate tools, separate vendors, separate budgets — unified in a formula an inch long.</p>
-<p>It reads a BOM and produces verified 3D coordinates — the same way an <a href="MANIFESTO/">ERP system</a> explodes a manufacturing BOM into work orders. The output renders live in the <a href="https://red1oon.github.io/bim-ootb/">BIM OOTB browser viewer</a> — no install, no server, two DBs, one browser. <a href="ShipYard/">Domain-agnostic</a> — buildings, bridges, <a href="ShipYard/">ships</a>, tunnels. <strong>Nothing invented. No AI, no LLM inside. Pure arithmetic. Deterministic.</strong></p>
+<p><strong>Construction = BOM + (x, y, z)。</strong> 一个公式，统一了几何、采购、进度、合规与成本——就像 E=mc² 统一了质量与能量。业界把这五个领域当作不同的工具、不同的供应商、不同的预算——而它们被统一在一个一英寸长的公式里。</p>
+<p>它读取一份 BOM，生成经过验证的 3D 坐标——就像 <a href="MANIFESTO/">ERP 系统</a>把制造 BOM 展开成工单一样。输出会实时显示在 <a href="https://red1oon.github.io/bim-ootb/">BIM OOTB 浏览器查看器</a>中——无需安装，无需服务器，两个数据库，一个浏览器。<a href="ShipYard/">不限领域</a>——建筑、桥梁、<a href="ShipYard/">船舶</a>、隧道。<strong>不虚构任何东西。内部没有 AI，没有 LLM。纯算术。结果确定。</strong></p>
 <div style="max-width: 640px; margin: 28px auto; padding: 22px 32px; background: #d32f2f12; border: 2px solid #d32f2f; border-radius: 6px; text-align: center;">
-<div style="font-size: 1.15em; font-weight: 700; color: #d32f2f; letter-spacing: 0.3px;">🚀 New here? Start with the User Guide.</div>
-<div style="margin-top: 8px; color: #455a64;">One browser — <b>view</b> a building · <b>author</b> geometry · <b>run</b> the ERP.</div>
-<div style="margin-top: 14px;"><a href="USER_GUIDE/" style="display:inline-block; padding:9px 22px; background:#d32f2f; color:#fff; border-radius:4px; text-decoration:none; font-weight:700;">📖 Open the User Guide →</a></div>
+<div style="font-size: 1.15em; font-weight: 700; color: #d32f2f; letter-spacing: 0.3px;">🚀 第一次来？请先看用户指南。</div>
+<div style="margin-top: 8px; color: #455a64;">一个浏览器——<b>查看</b>建筑 · <b>编写</b>几何 · <b>运行</b> ERP。</div>
+<div style="margin-top: 14px;"><a href="USER_GUIDE/" style="display:inline-block; padding:9px 22px; background:#d32f2f; color:#fff; border-radius:4px; text-decoration:none; font-weight:700;">📖 打开用户指南 →</a></div>
 </div>
 
 <div style="max-width: 620px; margin: 32px auto; padding: 24px 40px; background: #263238; border-left: 4px solid #ff9800; text-align: center; border-radius: 4px;">
-<span style="font-size: 1.3em; line-height: 1.7; color: #eceff1; letter-spacing: 0.3px;">"What <b style="color: #ff9800;">AUTODESK</b>, <b style="color: #ff9800;">PRIMAVERA</b> and <b style="color: #ff9800;">SAP</b> should have done<br>together long ago — <i>but I couldn't wait.</i>"</span>
+<span style="font-size: 1.3em; line-height: 1.7; color: #eceff1; letter-spacing: 0.3px;">“<b style="color: #ff9800;">AUTODESK</b>、<b style="color: #ff9800;">PRIMAVERA</b> 和 <b style="color: #ff9800;">SAP</b> 早就该一起做的事<br>——<i>可我等不及了。</i>”</span>
 <br><span style="font-size: 0.75em; letter-spacing: 1.5px; text-transform: uppercase; color: #78909c; margin-top: 12px; display: inline-block;">Redhuan D. Oon · ADempiere 2006 · iDempiere 2010 · BIM Compiler 2025</span>
 </div>
 
-<p>Every existing tool starts with geometry and extracts quantities downstream — draw first, count second. This compiler inverts the direction: the Bill of Materials is the source of truth, and geometry is the compiled output. Procurement doesn't follow design. Design follows procurement.</p>
+<p>现有的每一种工具都从几何入手，再向下游提取工程量——先画，后数。这个编译器把方向反过来：物料清单（BOM）是事实的来源，几何是编译出来的输出。采购不跟着设计走。设计跟着采购走。</p>
 <table>
 <thead>
 <tr>
 <th></th>
-<th>Draw first, count second</th>
-<th>Count first, draw second</th>
+<th>先画，后数</th>
+<th>先数，后画</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>Source of truth</strong></td>
-<td>3D model (Revit, ArchiCAD)</td>
-<td>Bill of Materials</td>
+<td><strong>事实的来源</strong></td>
+<td>3D 模型（Revit、ArchiCAD）</td>
+<td>物料清单</td>
 </tr>
 <tr>
-<td><strong>Quantities</strong></td>
-<td>Extracted after design</td>
-<td>Inherent — the BOM IS the quantity</td>
+<td><strong>工程量</strong></td>
+<td>设计之后再提取</td>
+<td>与生俱来——BOM 就是工程量</td>
 </tr>
 <tr>
-<td><strong>Change a wall</strong></td>
-<td>Redraw → re-extract QTO → re-estimate</td>
-<td>Change one BOM line → recompile</td>
+<td><strong>改一面墙</strong></td>
+<td>重画 → 重新提取工程量 → 重新估算</td>
+<td>改一行 BOM → 重新编译</td>
 </tr>
 <tr>
-<td><strong>Compliance</strong></td>
-<td>Separate checker (Solibri)</td>
-<td>Same rule engine</td>
+<td><strong>合规</strong></td>
+<td>另一个检查器（Solibri）</td>
+<td>同一个规则引擎</td>
 </tr>
 <tr>
-<td><strong>Cost</strong></td>
-<td>Separate estimator</td>
-<td>Same BOM × price list</td>
+<td><strong>成本</strong></td>
+<td>另一个估算工具</td>
+<td>同一份 BOM × 价目表</td>
 </tr>
 <tr>
-<td><strong>Schedule</strong></td>
-<td>Separate tool (Primavera)</td>
-<td>BOM tree topological sort</td>
+<td><strong>进度</strong></td>
+<td>另一个工具（Primavera）</td>
+<td>BOM 树的拓扑排序</td>
 </tr>
 <tr>
-<td><strong>Proof</strong></td>
-<td>Visual inspection</td>
-<td>Deterministic — every element traces to a source</td>
+<td><strong>证明</strong></td>
+<td>目视检查</td>
+<td>结果确定——每个构件都可追溯到来源</td>
 </tr>
 </tbody>
 </table>
-<p>Built on <a href="https://idempiere.org/">iDempiere</a> ERP conventions and <a href="https://www.sqlite.org/">SQLite</a>, rendered browser-native with Three.js. From Kuala Lumpur, Malaysia — where BIM is <a href="StrategicIndustryPositioning/">mandated</a> for all projects ≥ RM10M from July 2025. It is the Creator, <a href="mailto:red1org@gmail.com">Redhuan D. Oon</a>'s gift to the world.</p>
+<p>基于 <a href="https://idempiere.org/">iDempiere</a> ERP 的约定和 <a href="https://www.sqlite.org/">SQLite</a> 构建，用 Three.js 在浏览器中原生渲染。来自马来西亚吉隆坡——自 2025 年七月起，那里要求所有价值不低于 RM10M 的项目使用 <a href="StrategicIndustryPositioning/">BIM</a>。这是创作者 <a href="mailto:red1org@gmail.com">Redhuan D. Oon</a> 送给世界的礼物。</p>
 <hr />
-<h2 id="the-three-apps-you-actually-open">The three apps you actually open<a class="headerlink" href="#the-three-apps-you-actually-open" title="Permanent link">&para;</a></h2>
+<h2 id="_1">你真正会打开的三个应用<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
 <div class="grid cards">
 <ul>
 <li>
 <p><strong>🧱 BIM Viewer</strong></p>
 <hr />
-<p>Drop your own IFC → extracted to SQLite right in the browser; merge disciplines, fly-through, clash matrix, 4D/5D time-machine — all on the same file. Desktop and mobile, works offline.</p>
-<p><a href="BIMUserGuide/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Viewer Guide</a> · <a href="https://red1oon.github.io/bim-ootb/#buildings">Open</a></p>
+<p>拖入你自己的 IFC → 直接在浏览器里提取成 SQLite；合并各专业、漫游、碰撞矩阵、4D/5D 时间机——全都在同一个文件上。桌面和手机都能用，可离线工作。</p>
+<p><a href="BIMUserGuide/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Viewer 指南</a> · <a href="https://red1oon.github.io/bim-ootb/#buildings">打开</a></p>
 </li>
 <li>
 <p><strong>✏️ DAGeVu Modeller</strong></p>
 <hr />
-<p>Author B-rep geometry — insert library parts, sketch, extrude, sweep, edit the <strong>3D Grid</strong> — where the signed op-log <em>is</em> the feature tree.</p>
-<p><a href="ModellerGuide/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Modeller Guide</a> · <a href="https://red1oon.github.io/bim-ootb/modeller/modeller.html">Open</a></p>
+<p>编写 B-rep 几何——插入库中零件、草图、拉伸、扫掠、编辑 <strong>3D 网格</strong>——其中带签名的操作日志<em>就是</em>特征树。</p>
+<p><a href="ModellerGuide/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Modeller 指南</a> · <a href="https://red1oon.github.io/bim-ootb/modeller/modeller.html">打开</a></p>
 </li>
 <li>
 <p><strong>📊 Kernel-ERP</strong></p>
 <hr />
-<p>Real iDempiere in the browser — POS, financial statements, the full Application Dictionary from SQLite. No Java, no server, no install.</p>
-<p><a href="ERPUserGuide/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Kernel-ERP Guide</a> · <a href="TillUserGuide/">Till &amp; Kitchen (uniCenta twin)</a> · <a href="ERPUserGuide/#other-views-of-the-same-log-the-lens-family">All the lenses</a> · <a href="https://red1oon.github.io/bim-ootb/erp/erp.html">Open</a></p>
+<p>浏览器里的真正 iDempiere——POS、财务报表，以及来自 SQLite 的完整应用字典。没有 Java，没有服务器，无需安装。</p>
+<p><a href="ERPUserGuide/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Kernel-ERP 指南</a> · <a href="TillUserGuide/">收银台与厨房（uniCenta 孪生）</a> · <a href="ERPUserGuide/#other-views-of-the-same-log-the-lens-family">所有视角</a> · <a href="https://red1oon.github.io/bim-ootb/erp/erp.html">打开</a></p>
 </li>
 </ul>
 </div>
 <hr />
-<h2 id="the-headline-ideas">The headline ideas<a class="headerlink" href="#the-headline-ideas" title="Permanent link">&para;</a></h2>
+<h2 id="_2">核心理念<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <figure style="float: right; margin: -8px 0 8px 20px; max-width: 280px; text-align: center;">
-  <img src="assets/images/GeneralTall.png" alt="Multi-storey building compiled from BOM — 6 disciplines colour-coded" width="280">
-  <figcaption style="font-size: 0.75em; color: #666; margin-top: 4px;">Compiled from BOM. Colour = discipline (STR, ARC, ELEC, FP, ACMV, SP).</figcaption>
+  <img src="assets/images/GeneralTall.png" alt="由 BOM 编译出的多层建筑——6 个专业用颜色区分" width="280">
+  <figcaption style="font-size: 0.75em; color: #666; margin-top: 4px;">由 BOM 编译而成。颜色 = 专业（STR、ARC、ELEC、FP、ACMV、SP）。</figcaption>
 </figure>
 
 <div class="grid cards">
 <ul>
 <li>
-<p><strong>Clash Detection — In the Browser</strong></p>
+<p><strong>碰撞检测——在浏览器里</strong></p>
 <hr />
-<p>Discipline-pair rules, fly-to visualization, live tolerance slider, in-viewer review workflow. Tens of thousands of elements, zero server.</p>
-<p><a href="CLASH_DETECTION/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Clash Detection</a></p>
+<p>按专业配对的规则、飞到碰撞处的可视化、实时的容差滑块、查看器内的审查流程。数万个构件，零服务器。</p>
+<p><a href="CLASH_DETECTION/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> 碰撞检测</a></p>
 </li>
 <li>
-<p><strong>Kernel-ERP — a Fold over a Signed Op-Log</strong></p>
+<p><strong>Kernel-ERP——对带签名操作日志的一次折叠</strong></p>
 <hr />
-<p>C_Order, C_OrderLine, M_Product, M_BOM — folded from the <a href="https://idempiere.org/">iDempiere</a> oracle. State is a deterministic fold over a signed operation log; even an <code>AD_Process</code> is re-derived as a replay, not a method.</p>
-<p><a href="../FoldEngineBlackBook.html"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Black Book</a> · <a href="../ERPConceptRosetta.html"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Cross-ERP Rosetta (incl. SAP / ACDOCA)</a> · <a href="MANIFESTO/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> ERP world view</a></p>
+<p>C_Order、C_OrderLine、M_Product、M_BOM——都是从 <a href="https://idempiere.org/">iDempiere</a> 这个参照标准折叠而来。状态是对带签名操作日志的确定性折叠；就连 <code>AD_Process</code> 也是作为一次重放重新推导出来的，而不是一个方法。</p>
+<p><a href="../FoldEngineBlackBook.html"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> 黑皮书</a> · <a href="../ERPConceptRosetta.html"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> 跨 ERP 罗塞塔（含 SAP / ACDOCA）</a> · <a href="MANIFESTO/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> ERP 世界观</a></p>
 </li>
 <li>
-<p><strong>Enterprise Security — No Server Required</strong></p>
+<p><strong>企业级安全——无需服务器</strong></p>
 <hr />
-<p>Cryptographic verification with no central server: HMAC attestation, Ed25519 identity signing, SHA-256 transport integrity. Your data never leaves your browser.</p>
-<p><a href="EnterpriseAuthentication/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Security Architecture</a></p>
+<p>没有中央服务器的密码学验证：HMAC 证明、Ed25519 身份签名、SHA-256 传输完整性。你的数据从不离开你的浏览器。</p>
+<p><a href="EnterpriseAuthentication/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> 安全架构</a></p>
 </li>
 <li>
-<p><strong>Editable Business Rules, Live</strong></p>
+<p><strong>可编辑的业务规则，实时生效</strong></p>
 <hr />
-<p>The Holy Grail — change a rule, watch the model and the ERP re-fold. Spatial ERP where <a href="SpatialERP_OOTB/">every record has a place</a>.</p>
-<p><a href="HolyGrail/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> The Holy Grail</a> · <a href="SpatialERP_OOTB/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Spatial ERP</a></p>
+<p>圣杯——改一条规则，看着模型和 ERP 重新折叠。空间 ERP，<a href="SpatialERP_OOTB/">每条记录都有位置</a>。</p>
+<p><a href="HolyGrail/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> 圣杯</a> · <a href="SpatialERP_OOTB/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> 空间 ERP</a></p>
 </li>
 </ul>
 </div>
 <div style="clear: right;"></div>
 
 <hr />
-<h2 id="documentation-map">Documentation map<a class="headerlink" href="#documentation-map" title="Permanent link">&para;</a></h2>
+<h2 id="_3">文档地图<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>I want to…</th>
-<th>Start here</th>
+<th>我想要……</th>
+<th>从这里开始</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>Get going (everyone starts here)</strong></td>
-<td><a href="USER_GUIDE/">📖 <strong>User Guide</strong></a></td>
+<td><strong>快速上手（大家都从这里开始）</strong></td>
+<td><a href="USER_GUIDE/">📖 <strong>用户指南</strong></a></td>
 </tr>
 <tr>
-<td>View a building in the browser</td>
-<td><a href="BIMUserGuide/">BIM Viewer Guide</a></td>
+<td>在浏览器里查看建筑</td>
+<td><a href="BIMUserGuide/">BIM Viewer 指南</a></td>
 </tr>
 <tr>
-<td>Author geometry</td>
-<td><a href="ModellerGuide/">DAGeVu Modeller Guide</a></td>
+<td>编写几何</td>
+<td><a href="ModellerGuide/">DAGeVu Modeller 指南</a></td>
 </tr>
 <tr>
-<td>Turn 2D drawings (DXF) into a 3D BIM model</td>
-<td><a href="DXF2BIMGuide/">2D Drawings → BIM (DXF2BIM)</a></td>
+<td>把 2D 图纸（DXF）变成 3D BIM 模型</td>
+<td><a href="DXF2BIMGuide/">2D 图纸 → BIM（DXF2BIM）</a></td>
 </tr>
 <tr>
-<td>Get civil-works reports from a road IFC set</td>
-<td><a href="CivilWorksGuide/">Civil Works — Step by Step</a></td>
+<td>从道路 IFC 文件集得到土木工程报告</td>
+<td><a href="CivilWorksGuide/">土木工程——分步指南</a></td>
 </tr>
 <tr>
-<td>Collaborate on a surface (who-did-what, chat)</td>
-<td><a href="TeamsOverlayGuide/">Teams Overlay</a></td>
+<td>在同一个界面上协作（谁做了什么、聊天）</td>
+<td><a href="TeamsOverlayGuide/">团队叠加层</a></td>
 </tr>
 <tr>
-<td>See what shipped recently</td>
-<td><a href="WhatsNew/">What's New</a></td>
+<td>看看最近发布了什么</td>
+<td><a href="WhatsNew/">最新动态</a></td>
 </tr>
 <tr>
-<td>Run the browser ERP</td>
-<td><a href="ERPUserGuide/">Kernel-ERP User Guide</a></td>
+<td>运行浏览器版 ERP</td>
+<td><a href="ERPUserGuide/">Kernel-ERP 用户指南</a></td>
 </tr>
 <tr>
-<td>Drive the apps with one-line commands (you or an AI)</td>
-<td><a href="FastScriptGuide/">Fast Script Guide</a></td>
+<td>用一行命令驱动这些应用（你自己或 AI）</td>
+<td><a href="FastScriptGuide/">Fast Script 指南</a></td>
 </tr>
 <tr>
-<td>Move a company in from Odoo, Business Central or SAP Business One</td>
-<td><a href="MigrationGuide/">Migration User Guide</a> · <a href="OdooMigration/">how the Odoo move works</a></td>
+<td>把公司从 Odoo、Business Central 或 SAP Business One 迁进来</td>
+<td><a href="MigrationGuide/">迁移用户指南</a> · <a href="OdooMigration/">Odoo 迁移是怎么做的</a></td>
 </tr>
 <tr>
-<td>Run a till and kitchen screen</td>
-<td><a href="TillUserGuide/">Till &amp; Kitchen User Guide</a></td>
+<td>运行收银台和厨房屏</td>
+<td><a href="TillUserGuide/">收银台与厨房用户指南</a></td>
 </tr>
 <tr>
-<td>See a building become a project order and a CAPEX dashboard</td>
-<td><a href="CapexDashboardGuide/">BIM → ERP and the CAPEX Dashboard</a> · <a href="CapexUATGuide/">CAPEX UAT Guide</a></td>
+<td>看一栋建筑变成项目订单和 CAPEX 仪表板</td>
+<td><a href="CapexDashboardGuide/">BIM → ERP 与 CAPEX 仪表板</a> · <a href="CapexUATGuide/">CAPEX UAT 指南</a></td>
 </tr>
 <tr>
-<td>Let an outside AI propose changes to the Modeller</td>
-<td><a href="ProposerGuide/">AI Proposer Guide</a> · <a href="AIProposerDefensiveDisclosure/">Defensive disclosure</a></td>
+<td>让外部 AI 向 Modeller 提出修改建议</td>
+<td><a href="ProposerGuide/">AI 提议者指南</a> · <a href="AIProposerDefensiveDisclosure/">防御性披露</a></td>
 </tr>
 <tr>
-<td>Read or change the code</td>
-<td><a href="DeveloperGuide/">Developer Guide</a></td>
+<td>阅读或修改代码</td>
+<td><a href="DeveloperGuide/">开发者指南</a></td>
 </tr>
 <tr>
-<td>Try the prototypes (proofs of concept, sample data only)</td>
-<td><a href="HalalTrace/">Halal track &amp; trace</a> · <a href="../halal/">open it</a> · <a href="../RetailScaleStory.html">Retail at scale</a> · <a href="../glassbowl_gravity.html">Glassbowl Gravity</a> · <a href="../bim_architecture_viz.html">Architecture tour</a></td>
+<td>试用原型（概念验证，仅限示例数据）</td>
+<td><a href="HalalTrace/">清真溯源</a> · <a href="../halal/">打开</a> · <a href="../RetailScaleStory.html">大规模零售</a> · <a href="../glassbowl_gravity.html">Glassbowl Gravity</a> · <a href="../bim_architecture_viz.html">架构之旅</a></td>
 </tr>
 <tr>
-<td>Understand the ERP world view</td>
-<td><a href="MANIFESTO/">MANIFESTO — read first</a></td>
+<td>了解 ERP 世界观</td>
+<td><a href="MANIFESTO/">MANIFESTO——请先读</a></td>
 </tr>
 <tr>
-<td>Compare to other tools</td>
-<td><a href="FeatureComparison/">Feature Comparison</a> · <a href="MigrateComparisonPaper/">Migrate &amp; Compare (ERP)</a></td>
+<td>与其他工具比较</td>
+<td><a href="FeatureComparison/">功能对比</a> · <a href="MigrateComparisonPaper/">迁移与对比（ERP）</a></td>
 </tr>
 <tr>
-<td>See where this sits in the industry</td>
-<td><a href="StrategicIndustryPositioning/">Strategic Positioning</a></td>
+<td>看看它在行业中的位置</td>
+<td><a href="StrategicIndustryPositioning/">战略定位</a></td>
 </tr>
 <tr>
-<td>Understand how it was built</td>
-<td><a href="VibeProgramming/">Vibe Programming — AI + Domain Expertise</a></td>
+<td>了解它是怎么做出来的</td>
+<td><a href="VibeProgramming/">Vibe Programming——AI + 领域专长</a></td>
 </tr>
 <tr>
-<td>Author geometry as a fold</td>
-<td><a href="ModellerKernelFold/">DAGeVu Modeller — Geometry as a Fold</a></td>
+<td>把几何当作折叠来编写</td>
+<td><a href="ModellerKernelFold/">DAGeVu Modeller——作为折叠的几何</a></td>
 </tr>
 <tr>
-<td>Walk to any element indoors</td>
-<td><a href="RouteTemplate/">Find &amp; Navigate — Indoor Wayfinding</a></td>
+<td>在室内走到任意构件</td>
+<td><a href="RouteTemplate/">查找与导航——室内寻路</a></td>
 </tr>
 <tr>
-<td>Distributed / offline ERP</td>
-<td><a href="DistributedERP/">Distributed ERP</a></td>
+<td>分布式 / 离线 ERP</td>
+<td><a href="DistributedERP/">分布式 ERP</a></td>
 </tr>
 <tr>
-<td>Go beyond buildings</td>
-<td><a href="ShipYard/">Beyond Buildings — ShipYard</a></td>
+<td>超越建筑</td>
+<td><a href="ShipYard/">超越建筑——ShipYard</a></td>
 </tr>
 <tr>
-<td>Contribute</td>
-<td><a href="CONTRIBUTING/">Contribute — start here</a></td>
+<td>参与贡献</td>
+<td><a href="CONTRIBUTING/">参与贡献——从这里开始</a></td>
 </tr>
 </tbody>
 </table>

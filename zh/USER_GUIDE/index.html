@@ -6,13 +6,13 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="BIM OOTB user guide — view IFC buildings in 3D, author geometry, and run the Kernel-ERP, all client-side in one browser tab with zero install.">
+        <meta name="description" content="BIM OOTB 用户指南——在 3D 中查看 IFC 建筑、编写几何，并运行 Kernel-ERP，全部在客户端的一个浏览器标签页里完成，零安装。">
       
       
         <meta name="author" content="Redhuan D. Oon">
       
       
-        <link rel="canonical" href="https://red1oon.github.io/BIMCompiler/USER_GUIDE/">
+        <link rel="canonical" href="https://red1oon.github.io/BIMCompiler/zh/USER_GUIDE/">
       
       
         <link rel="prev" href="../">
@@ -21,6 +21,20 @@
         <link rel="next" href="../BIMToolsGuide/">
       
       
+        
+          <link rel="alternate" href="../../USER_GUIDE/" hreflang="en">
+        
+          <link rel="alternate" href="../../es/USER_GUIDE/" hreflang="es">
+        
+          <link rel="alternate" href="../../fr/USER_GUIDE/" hreflang="fr">
+        
+          <link rel="alternate" href="../../de/USER_GUIDE/" hreflang="de">
+        
+          <link rel="alternate" href="../../id/USER_GUIDE/" hreflang="id">
+        
+          <link rel="alternate" href="../../ja/USER_GUIDE/" hreflang="ja">
+        
+          <link rel="alternate" href="./" hreflang="zh">
         
       
       
@@ -71,7 +85,7 @@
     
     
   
-  <meta name="robots" content="noindex">
+  
 
   </head>
   
@@ -92,7 +106,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#bim-ootb-user-guide" class="md-skip">
+        <a href="#bim-ootb" class="md-skip">
           跳转至
         </a>
       
@@ -162,6 +176,62 @@
     
       <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="选择当前语言">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../USER_GUIDE/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../es/USER_GUIDE/" hreflang="es" class="md-select__link">
+              Español (Latinoamérica)
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../fr/USER_GUIDE/" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../de/USER_GUIDE/" hreflang="de" class="md-select__link">
+              Deutsch
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../id/USER_GUIDE/" hreflang="id" class="md-select__link">
+              Bahasa Indonesia
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../ja/USER_GUIDE/" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="zh" class="md-select__link">
+              简体中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
     
     
       
@@ -587,10 +657,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#pick-a-surface" class="md-nav__link">
+  <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Pick a surface
+        选择一个界面
       
     </span>
   </a>
@@ -598,10 +668,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#each-app-is-its-own-address" class="md-nav__link">
+  <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Each app is its own address
+        每个应用都有自己的地址
       
     </span>
   </a>
@@ -609,10 +679,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#working-as-a-team" class="md-nav__link">
+  <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Working as a team
+        作为团队协作
       
     </span>
   </a>
@@ -620,10 +690,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#also-on-the-front-door" class="md-nav__link">
+  <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Also on the front door
+        前门上的其他入口
       
     </span>
   </a>
@@ -3247,10 +3317,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#pick-a-surface" class="md-nav__link">
+  <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Pick a surface
+        选择一个界面
       
     </span>
   </a>
@@ -3258,10 +3328,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#each-app-is-its-own-address" class="md-nav__link">
+  <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Each app is its own address
+        每个应用都有自己的地址
       
     </span>
   </a>
@@ -3269,10 +3339,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#working-as-a-team" class="md-nav__link">
+  <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Working as a team
+        作为团队协作
       
     </span>
   </a>
@@ -3280,10 +3350,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#also-on-the-front-door" class="md-nav__link">
+  <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Also on the front door
+        前门上的其他入口
       
     </span>
   </a>
@@ -3303,7 +3373,7 @@
               
               <article class="md-content__inner md-typeset">
                 
-  <p class="i18n-note"><small>本页尚未翻译，以英文显示。<a href="https://red1oon.github.io/BIMCompiler/USER_GUIDE/">英文页面</a>。</small></p>
+  <p class="i18n-note"><small>译自英文页面；以英文页面为准。<a href="https://red1oon.github.io/BIMCompiler/USER_GUIDE/">查看英文</a>。</small></p>
   
                   
 
@@ -3312,123 +3382,123 @@
   
 
 
-<h1 id="bim-ootb-user-guide">BIM OOTB — User Guide<a class="headerlink" href="#bim-ootb-user-guide" title="Permanent link">&para;</a></h1>
-<p>One browser. <strong>View</strong> a building · <strong>author</strong> geometry · <strong>run</strong> the ERP. Zero install, all client-side.</p>
+<h1 id="bim-ootb">BIM OOTB——用户指南<a class="headerlink" href="#bim-ootb" title="Permanent link">&para;</a></h1>
+<p>一个浏览器。<strong>查看</strong>建筑 · <strong>编写</strong>几何 · <strong>运行</strong> ERP。零安装，全部在客户端。</p>
 <div class="admonition privacy">
-<p class="admonition-title">🔒 Data Security Guarantee</p>
-<p><strong>There is no AI and no LLM in this app. Your data never leaves your browser.</strong> Any file you drop
-into the app stays inside your browser's own IndexedDB and kernel, protected by standard browser
-security — and you save it back to your own machine, when and where you choose. Every IFC you drop,
-every building you open, every ERP edit stays client-side on your own device — nothing is uploaded to
-us, and no model is fed your data. The landing page and the Viewer page run a simple visit counter
-(GoatCounter) — it counts page visits (the page address may be included), never reads or sends a file's contents, and does nothing offline; the ERP has none. A few optional features you trigger yourself — share links (TinyURL), QR
-codes (qrserver.com) and the update check (GitHub) — call that public service and send it only the URL
-or request that feature needs, never your file. Every result is deterministic
-and traces to a line of open code you can read.</p>
-<p><a href="../EnterpriseAuthentication/"><strong>Read the full guarantee — how the trust model works →</strong></a> · want to
-run it fully cut off from the network once installed? <a href="../OFFLINE_INSTALL_GUIDE/"><strong>Fully Offline / Air-Gapped Install
-guide →</strong></a></p>
+<p class="admonition-title">🔒 数据安全保证</p>
+<p><strong>这个应用里没有 AI，也没有 LLM。你的数据从不离开你的浏览器。</strong> 你拖入应用的任何文件，
+都留在浏览器自己的 IndexedDB 和内核之中，受标准浏览器安全机制保护——
+而且由你决定何时、存到哪里，把它存回你自己的机器。你拖入的每个 IFC、
+打开的每栋建筑、做的每次 ERP 编辑，都只留在你自己设备的客户端——没有任何东西上传给
+我们，也没有任何模型会拿到你的数据。着陆页和 Viewer 页面运行一个简单的访问计数器
+（GoatCounter）——它只统计页面访问次数（可能包含页面地址），从不读取或发送文件内容，离线时也不工作；ERP 里没有这个计数器。你自己触发的少数可选功能——分享链接（TinyURL）、二维码
+（qrserver.com）和更新检查（GitHub）——会调用对应的公共服务，只发送该功能所需的网址
+或请求，绝不发送你的文件。每个结果都是确定的，
+并且可追溯到一行你能读到的开源代码。</p>
+<p><a href="../EnterpriseAuthentication/"><strong>阅读完整的保证——信任模型如何运作 →</strong></a> · 想在安装之后
+完全断开网络运行？<a href="../OFFLINE_INSTALL_GUIDE/"><strong>完全离线 / 物理隔离安装
+指南 →</strong></a></p>
 </div>
-<p><img alt="The Matrix landing — choose your door" src="../../assets/matrix_landing.png" /></p>
-<p>Start at the <strong><a href="https://red1oon.github.io/bim-ootb/">front door → red1oon.github.io/bim-ootb</a></strong> — the
-Matrix landing (red / blue → round selector). Pick a door, or jump straight to any app by its URL below.
-<strong>Bookmark any of them</strong>; press <strong>Home</strong> on any surface to come back to the front door. On a return visit
-the landing shows the compact <code>⋯</code> launcher; <strong>refresh</strong> for the full round selector again.</p>
-<p><strong>Just need a quick IFC chore?</strong> Upgrade to IFC4.3, pull one item out into its own IFC, split by storey, or check a model's health — drop a file, it runs. <strong><a href="../BIMToolsGuide/">BIM Tools — User Manual →</a></strong></p>
-<p>New here recently? Check <strong><a href="../WhatsNew/">What's New</a></strong> for a running log of shipped changes.</p>
-<h2 id="pick-a-surface">Pick a surface<a class="headerlink" href="#pick-a-surface" title="Permanent link">&para;</a></h2>
+<p><img alt="Matrix 着陆页——选择你的入口" src="../../assets/matrix_landing.png" /></p>
+<p>从<strong><a href="https://red1oon.github.io/bim-ootb/">前门 → red1oon.github.io/bim-ootb</a></strong> 开始——
+Matrix 着陆页（红 / 蓝 → 圆形选择器）。选一个入口，或者直接用下面的网址跳到任意应用。
+<strong>给它们中的任何一个加书签</strong>；在任何界面上按 <strong>Home</strong> 都能回到前门。再次访问时，
+着陆页会显示精简的 <code>⋯</code> 启动器；<strong>刷新</strong>即可再次看到完整的圆形选择器。</p>
+<p><strong>只是想快速处理一件 IFC 的小事？</strong> 升级到 IFC4.3、把某一项单独拉出来做成自己的 IFC、按楼层拆分，或者检查模型是否健康——拖入文件，它就会运行。<strong><a href="../BIMToolsGuide/">BIM 工具——用户手册 →</a></strong></p>
+<p>最近才来？请看 <strong><a href="../WhatsNew/">最新动态</a></strong>，那里持续记录已发布的改动。</p>
+<h2 id="_1">选择一个界面<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
 <div class="grid cards">
 <ul>
 <li>
 <p><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-5px"><path d="M3 3h18v18H3z"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg> <strong>BIM Viewer</strong></p>
-<p><strong>Drop your own IFC</strong> → extracted to SQLite right in the browser; merge disciplines, fly-through, clash matrix, 4D/5D time-machine, ERP Project Order — all on the same file. Desktop and mobile, works offline.</p>
-<p><em>Front door → the <strong>Buildings / IFC</strong> icon (above)</em> · <a href="https://red1oon.github.io/bim-ootb/#buildings">Open</a> · <a href="../BIMUserGuide/">Guide</a> · <a href="../CivilWorksGuide/">Civil Works (road models)</a></p>
+<p><strong>拖入你自己的 IFC</strong> → 直接在浏览器里提取成 SQLite；合并各专业、漫游、碰撞矩阵、4D/5D 时间机、ERP 项目订单——全都在同一个文件上。桌面和手机都能用，可离线工作。</p>
+<p><em>前门 → <strong>Buildings / IFC</strong> 图标（见上）</em> · <a href="https://red1oon.github.io/bim-ootb/#buildings">打开</a> · <a href="../BIMUserGuide/">指南</a> · <a href="../CivilWorksGuide/">土木工程（道路模型）</a></p>
 </li>
 <li>
 <p><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-5px"><path d="M8 19a4 4 0 0 1-2.24-7.32A3.5 3.5 0 0 1 9 6.03V6a3 3 0 1 1 6 0v.04a3.5 3.5 0 0 1 3.24 5.65A4 4 0 0 1 16 19Z"/><path d="M12 19v3"/></svg> <strong>DAGeVu Modeller</strong></p>
-<p>Author B-rep geometry — insert library parts, sketch, extrude, sweep — where the signed op-log <em>is</em> the feature tree. Early/WIP; desktop.</p>
-<p><em>Front door → the <strong>BIM Modeller</strong> icon (above)</em> · <a href="https://red1oon.github.io/bim-ootb/modeller/modeller.html">Open</a> · <a href="../ModellerGuide/">Guide</a> · <a href="../ProposerGuide/">AI Proposer Guide</a> · <a href="../DXF2BIMGuide/">2D drawings → BIM (DXF2BIM)</a></p>
+<p>编写 B-rep 几何——插入库中零件、草图、拉伸、扫掠——其中带签名的操作日志<em>就是</em>特征树。早期 / 开发中；桌面。</p>
+<p><em>前门 → <strong>BIM Modeller</strong> 图标（见上）</em> · <a href="https://red1oon.github.io/bim-ootb/modeller/modeller.html">打开</a> · <a href="../ModellerGuide/">指南</a> · <a href="../ProposerGuide/">AI 提议者指南</a> · <a href="../DXF2BIMGuide/">2D 图纸 → BIM（DXF2BIM）</a></p>
 </li>
 <li>
 <p><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-5px"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg> <strong>Kernel-ERP</strong></p>
-<p>Real iDempiere in the browser — POS, financial statements, the full Application Dictionary from SQLite. No Java, no server, no install.</p>
-<p><em>Front door → the <strong>ERP</strong> icon (above)</em> · <a href="https://red1oon.github.io/bim-ootb/erp/erp.html">Open</a> · <a href="../ERPUserGuide/">Guide</a> · <a href="../TillUserGuide/">Till &amp; Kitchen (POS, uniCenta twin)</a> · <a href="../ERPUserGuide/#other-views-of-the-same-log-the-lens-family">Other lenses</a> · <a href="../MigrationGuide/">Migrate from Odoo / Business Central</a> · <a href="../FastScriptGuide/">Command line (Fast Script)</a> · <a href="../TeamsOverlayGuide/">Teams overlay</a></p>
+<p>浏览器里的真正 iDempiere——POS、财务报表，以及来自 SQLite 的完整应用字典。没有 Java，没有服务器，无需安装。</p>
+<p><em>前门 → <strong>ERP</strong> 图标（见上）</em> · <a href="https://red1oon.github.io/bim-ootb/erp/erp.html">打开</a> · <a href="../ERPUserGuide/">指南</a> · <a href="../TillUserGuide/">收银台与厨房（POS，uniCenta 孪生）</a> · <a href="../ERPUserGuide/#other-views-of-the-same-log-the-lens-family">其他视角</a> · <a href="../MigrationGuide/">从 Odoo / Business Central 迁移</a> · <a href="../FastScriptGuide/">命令行（Fast Script）</a> · <a href="../TeamsOverlayGuide/">团队叠加层</a></p>
 </li>
 </ul>
 </div>
 <blockquote>
-<p><strong>ERP practitioners</strong> — implementers, power users, developers, and other ERP projects — start with
-<strong><a href="../MigrateComparisonPaper/">Migrate &amp; Compare</a></strong>: how Kernel-ERP folds a live iDempiere (and Odoo)
-tenant onto one signed op-log, what stands comparison with a legacy stack, and the honest gaps.</p>
+<p><strong>ERP 从业者</strong>——实施顾问、高级用户、开发者，以及其他 ERP 项目——请先看
+<strong><a href="../MigrateComparisonPaper/">迁移与对比</a></strong>：Kernel-ERP 如何把一个在线的 iDempiere（以及 Odoo）
+租户折叠到一份带签名的操作日志上，哪些方面经得起与传统系统的比较，以及坦白的差距。</p>
 </blockquote>
-<h2 id="each-app-is-its-own-address">Each app is its own address<a class="headerlink" href="#each-app-is-its-own-address" title="Permanent link">&para;</a></h2>
-<p>Every app is a separate page with its own address. Opening one loads only that app, not the others, so a
-small job stays small. The till, for example, never loads the 3D viewer.</p>
+<h2 id="_2">每个应用都有自己的地址<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>每个应用都是一个独立的页面，有自己的地址。打开一个，只加载那一个应用，不加载其他的，所以
+小任务就保持小。比如收银台，从不加载 3D 查看器。</p>
 <table>
 <thead>
 <tr>
-<th>App</th>
-<th>Address</th>
-<th>Downloaded on a first visit</th>
+<th>应用</th>
+<th>地址</th>
+<th>首次访问下载量</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Front door</td>
+<td>前门</td>
 <td><a href="https://red1oon.github.io/bim-ootb/">red1oon.github.io/bim-ootb</a></td>
-<td>about 0.1 MB</td>
+<td>约 0.1 MB</td>
 </tr>
 <tr>
 <td>BIM Viewer</td>
 <td><a href="https://red1oon.github.io/bim-ootb/viewer/viewer.html">…/viewer/viewer.html</a></td>
-<td>about 3 MB, plus the building you open</td>
+<td>约 3 MB，外加你打开的建筑</td>
 </tr>
 <tr>
 <td>DAGeVu Modeller</td>
 <td><a href="https://red1oon.github.io/bim-ootb/modeller/modeller.html">…/modeller/modeller.html</a></td>
-<td>about 1.3 MB</td>
+<td>约 1.3 MB</td>
 </tr>
 <tr>
-<td>ERP start page (bubbles)</td>
+<td>ERP 起始页（气泡）</td>
 <td><a href="https://red1oon.github.io/bim-ootb/erp/erp.html">…/erp/erp.html</a></td>
-<td>about 0.1 MB</td>
+<td>约 0.1 MB</td>
 </tr>
 <tr>
-<td>ERP forms (the iDempiere look)</td>
+<td>ERP 表单（iDempiere 外观）</td>
 <td><a href="https://red1oon.github.io/bim-ootb/erp/idempiere.html">…/erp/idempiere.html</a></td>
-<td>about 1.4 MB, plus about 7 MB for the ERP's database</td>
+<td>约 1.4 MB，外加 ERP 数据库的约 7 MB</td>
 </tr>
 <tr>
-<td>Till · Kitchen screen</td>
+<td>收银台 · 厨房屏</td>
 <td><a href="https://red1oon.github.io/bim-ootb/erp/till.html">…/erp/till.html</a> · <a href="https://red1oon.github.io/bim-ootb/erp/kitchen.html">…/erp/kitchen.html</a></td>
-<td>about 0.1 MB · under 0.1 MB</td>
+<td>约 0.1 MB · 不到 0.1 MB</td>
 </tr>
 </tbody>
 </table>
-<p>The ERP forms page saves its database in your browser after the first visit, so later visits don't
-download it again. <em>Sizes counted 2026-11-08 from the published files (compressed, as sent over the network).</em></p>
-<h2 id="working-as-a-team">Working as a team<a class="headerlink" href="#working-as-a-team" title="Permanent link">&para;</a></h2>
-<p>Several people — or several of your own devices — can work on the same records (orders in the ERP, the building
-in the Modeller) with <strong>no database server and no application server</strong>. Press the <strong>Team</strong> pill (the two heads;
-in the Modeller, the Team icon) and <strong>Turn on team mode</strong>; the first device <strong>Starts a team</strong>, the others <strong>Join</strong>
-and are approved there, and everyone presses <strong>Visit</strong> to send their changes and fetch the others'. A ready-made
-trial place lets you try one full cycle without setting anything up.</p>
-<p><a href="https://red1oon.github.io/bim-ootb/erp/team_guide.html"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Team guide</a> ·
-<a href="../TermsHowToVerify/">How to verify the terms</a> ·
-<a href="../TeamsOverlayGuide/">Teams overlay (ALPHA demonstrator: who-did-what dots, chat, graphs)</a></p>
-<h2 id="also-on-the-front-door">Also on the front door<a class="headerlink" href="#also-on-the-front-door" title="Permanent link">&para;</a></h2>
+<p>ERP 表单页在首次访问之后，会把它的数据库保存在你的浏览器里，所以之后再访问就不用
+重新下载。<em>大小统计于 2026-11-08，来自已发布的文件（压缩后，即网络上实际传输的大小）。</em></p>
+<h2 id="_3">作为团队协作<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>几个人——或者你自己的几台设备——可以在<strong>没有数据库服务器、也没有应用服务器</strong>的情况下，处理同一批记录（ERP 里的订单、Modeller 里的建筑）。
+按下 <strong>Team</strong> 药丸按钮（两个人头；
+在 Modeller 里是 Team 图标），再按<strong>开启团队模式</strong>；第一台设备<strong>创建团队</strong>，其他设备<strong>加入</strong>，
+并在那里获得批准，然后每个人按下 <strong>Visit</strong>，发送自己的改动并取回别人的改动。
+一个现成的试用场所，让你不用做任何设置就能试一遍完整的周期。</p>
+<p><a href="https://red1oon.github.io/bim-ootb/erp/team_guide.html"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> 团队指南</a> ·
+<a href="../TermsHowToVerify/">如何核实条款</a> ·
+<a href="../TeamsOverlayGuide/">团队叠加层（ALPHA 演示：谁做了什么的圆点、聊天、图表）</a></p>
+<h2 id="_4">前门上的其他入口<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
 <div class="grid cards">
 <ul>
 <li>
 <p><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-5px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg> <strong>About &amp; Install</strong></p>
-<p>What BIM OOTB is, and how to keep it. It's a <strong>frictionless PWA</strong> — your browser can <em>install</em> it (add to home screen) so it runs <strong>offline, no server</strong>. The same box has a <strong>Run it yourself (DIY)</strong> tab: download a one-step install script + README to self-host the whole stack on your own machine.</p>
-<p><em>Front door → the <strong>About</strong> icon (above)</em> · <a href="../SYSTEMS_INSTALLER_GUIDE/">Self-host guide</a> ·
-<a href="../OFFLINE_INSTALL_GUIDE/">Fully offline / air-gapped install</a></p>
+<p>BIM OOTB 是什么，以及怎样留住它。它是一个<strong>零摩擦的 PWA</strong>——你的浏览器可以<em>安装</em>它（添加到主屏幕），让它<strong>离线运行，无需服务器</strong>。同一个窗口里还有一个<strong>自己运行</strong>（DIY）标签页：下载一个一步到位的安装脚本和 README，把整套系统部署到你自己的机器上。</p>
+<p><em>前门 → <strong>About</strong> 图标（见上）</em> · <a href="../SYSTEMS_INSTALLER_GUIDE/">自托管指南</a> ·
+<a href="../OFFLINE_INSTALL_GUIDE/">完全离线 / 物理隔离安装</a></p>
 </li>
 <li>
 <p><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-5px"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg> <strong>Clear Cache</strong></p>
-<p>Resets to the start screen. Clears only the <strong>in-browser building data</strong> — cached buildings and any IFC scene you dropped in but never saved to a <code>.db</code> — and returns you to the red / blue gate. <strong>Keeps</strong> the installed app, its offline data, and any <code>.db</code> file you saved yourself.</p>
-<p><em>Front door → the <strong>Trash</strong> icon (above)</em></p>
+<p>重置到起始画面。只清除<strong>浏览器内的建筑数据</strong>——缓存的建筑，以及你拖入但从未存成 <code>.db</code> 的任何 IFC 场景——并带你回到红 / 蓝入口。<strong>保留</strong>已安装的应用、它的离线数据，以及你自己保存的任何 <code>.db</code> 文件。</p>
+<p><em>前门 → <strong>Trash</strong> 图标（见上）</em></p>
 </li>
 </ul>
 </div>

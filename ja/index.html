@@ -6,19 +6,33 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Browser-native IFC viewer and local-first ERP kernel — drop an IFC file, view a BIM model in 3D, run a serverless event-sourced ERP. No install, no server, MIT-licensed.">
+        <meta name="description" content="ブラウザで動く IFC ビューアと、ローカルファースト ERP カーネルです。IFC ファイルをドロップして BIM モデルを 3D で見て、サーバーレスでイベントソース型の ERP を動かせます。インストールもサーバーも不要で、MIT ライセンスです。">
       
       
         <meta name="author" content="Redhuan D. Oon">
       
       
-        <link rel="canonical" href="https://red1oon.github.io/BIMCompiler/./">
+        <link rel="canonical" href="https://red1oon.github.io/BIMCompiler/ja/">
       
       
       
         <link rel="next" href="USER_GUIDE/">
       
       
+        
+          <link rel="alternate" href="/BIMCompiler/" hreflang="en">
+        
+          <link rel="alternate" href="/BIMCompiler/es/" hreflang="es">
+        
+          <link rel="alternate" href="/BIMCompiler/fr/" hreflang="fr">
+        
+          <link rel="alternate" href="/BIMCompiler/de/" hreflang="de">
+        
+          <link rel="alternate" href="/BIMCompiler/id/" hreflang="id">
+        
+          <link rel="alternate" href="/BIMCompiler/ja/" hreflang="ja">
+        
+          <link rel="alternate" href="/BIMCompiler/zh/" hreflang="zh">
         
       
       
@@ -69,7 +83,7 @@
     
     
   
-  <meta name="robots" content="noindex">
+  
 
   </head>
   
@@ -160,6 +174,62 @@
     
       <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="言語切り替え">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="/BIMCompiler/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="/BIMCompiler/es/" hreflang="es" class="md-select__link">
+              Español (Latinoamérica)
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="/BIMCompiler/fr/" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="/BIMCompiler/de/" hreflang="de" class="md-select__link">
+              Deutsch
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="/BIMCompiler/id/" hreflang="id" class="md-select__link">
+              Bahasa Indonesia
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="/BIMCompiler/ja/" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="/BIMCompiler/zh/" hreflang="zh" class="md-select__link">
+              简体中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
     
     
       
@@ -3158,10 +3228,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#the-three-apps-you-actually-open" class="md-nav__link">
+  <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The three apps you actually open
+        実際に開く三つのアプリ
       
     </span>
   </a>
@@ -3169,10 +3239,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-headline-ideas" class="md-nav__link">
+  <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The headline ideas
+        主な考え方
       
     </span>
   </a>
@@ -3180,10 +3250,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#documentation-map" class="md-nav__link">
+  <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Documentation map
+        ドキュメントマップ
       
     </span>
   </a>
@@ -3203,7 +3273,7 @@
               
               <article class="md-content__inner md-typeset">
                 
-  <p class="i18n-note"><small>このページはまだ翻訳されていません。英語のまま表示しています。<a href="https://red1oon.github.io/BIMCompiler/./">英語のページ</a>。</small></p>
+  <p class="i18n-note"><small>英語のページから翻訳したものです。基準は英語のページです。<a href="https://red1oon.github.io/BIMCompiler/./">英語で見る</a>。</small></p>
   
                   
   
@@ -3215,233 +3285,233 @@
 
 
 <h1 id="bim-intent-compiler">BIM Intent Compiler<a class="headerlink" href="#bim-intent-compiler" title="Permanent link">&para;</a></h1>
-<p><strong>Construction = BOM + (x, y, z).</strong> One formula that unifies geometry, procurement, scheduling, compliance, and cost — the way E=mc² unified mass and energy. Five domains that the industry treats as separate tools, separate vendors, separate budgets — unified in a formula an inch long.</p>
-<p>It reads a BOM and produces verified 3D coordinates — the same way an <a href="MANIFESTO/">ERP system</a> explodes a manufacturing BOM into work orders. The output renders live in the <a href="https://red1oon.github.io/bim-ootb/">BIM OOTB browser viewer</a> — no install, no server, two DBs, one browser. <a href="ShipYard/">Domain-agnostic</a> — buildings, bridges, <a href="ShipYard/">ships</a>, tunnels. <strong>Nothing invented. No AI, no LLM inside. Pure arithmetic. Deterministic.</strong></p>
+<p><strong>Construction = BOM + (x, y, z)</strong>。この一つの式が、ジオメトリ、調達、スケジュール、コンプライアンス、コストをひとつにまとめます。E=mc² が質量とエネルギーをひとつにしたのと同じです。業界が別々のツール、別々のベンダー、別々の予算で扱ってきた五つの領域を、一インチほどの式でひとつにします。</p>
+<p>BOM を読み取り、検証済みの 3D 座標を出力します。<a href="MANIFESTO/">ERP システム</a>が製造 BOM を作業指示に展開するのと同じ方法です。出力は <a href="https://red1oon.github.io/bim-ootb/">BIM OOTB ブラウザビューア</a>にそのまま描画されます。インストールもサーバーも不要で、DB が二つ、ブラウザがひとつです。<a href="ShipYard/">特定の分野に限りません</a>。建物、橋、<a href="ShipYard/">船</a>、トンネルを扱えます。<strong>何も作り話はありません。内部に AI も LLM もありません。純粋な算術で、決定的です。</strong></p>
 <div style="max-width: 640px; margin: 28px auto; padding: 22px 32px; background: #d32f2f12; border: 2px solid #d32f2f; border-radius: 6px; text-align: center;">
-<div style="font-size: 1.15em; font-weight: 700; color: #d32f2f; letter-spacing: 0.3px;">🚀 New here? Start with the User Guide.</div>
-<div style="margin-top: 8px; color: #455a64;">One browser — <b>view</b> a building · <b>author</b> geometry · <b>run</b> the ERP.</div>
-<div style="margin-top: 14px;"><a href="USER_GUIDE/" style="display:inline-block; padding:9px 22px; background:#d32f2f; color:#fff; border-radius:4px; text-decoration:none; font-weight:700;">📖 Open the User Guide →</a></div>
+<div style="font-size: 1.15em; font-weight: 700; color: #d32f2f; letter-spacing: 0.3px;">🚀 はじめての方は、ユーザーガイドからどうぞ。</div>
+<div style="margin-top: 8px; color: #455a64;">ひとつのブラウザで、建物を<b>見て</b>、ジオメトリを<b>作り</b>、ERP を<b>動かします</b>。</div>
+<div style="margin-top: 14px;"><a href="USER_GUIDE/" style="display:inline-block; padding:9px 22px; background:#d32f2f; color:#fff; border-radius:4px; text-decoration:none; font-weight:700;">📖 ユーザーガイドを開く →</a></div>
 </div>
 
 <div style="max-width: 620px; margin: 32px auto; padding: 24px 40px; background: #263238; border-left: 4px solid #ff9800; text-align: center; border-radius: 4px;">
-<span style="font-size: 1.3em; line-height: 1.7; color: #eceff1; letter-spacing: 0.3px;">"What <b style="color: #ff9800;">AUTODESK</b>, <b style="color: #ff9800;">PRIMAVERA</b> and <b style="color: #ff9800;">SAP</b> should have done<br>together long ago — <i>but I couldn't wait.</i>"</span>
+<span style="font-size: 1.3em; line-height: 1.7; color: #eceff1; letter-spacing: 0.3px;">「<b style="color: #ff9800;">AUTODESK</b> と <b style="color: #ff9800;">PRIMAVERA</b> と <b style="color: #ff9800;">SAP</b> が、とっくの昔に<br>力を合わせてやるべきだったこと。 — <i>でも、私は待てませんでした。</i>」</span>
 <br><span style="font-size: 0.75em; letter-spacing: 1.5px; text-transform: uppercase; color: #78909c; margin-top: 12px; display: inline-block;">Redhuan D. Oon · ADempiere 2006 · iDempiere 2010 · BIM Compiler 2025</span>
 </div>
 
-<p>Every existing tool starts with geometry and extracts quantities downstream — draw first, count second. This compiler inverts the direction: the Bill of Materials is the source of truth, and geometry is the compiled output. Procurement doesn't follow design. Design follows procurement.</p>
+<p>既存のツールはどれも、ジオメトリから始めて、数量を後から取り出します。先に描き、後から数えます。このコンパイラは向きを逆にします。部材表（BOM）が唯一の真実の源で、ジオメトリはコンパイルされた出力です。調達は設計に従いません。設計が調達に従います。</p>
 <table>
 <thead>
 <tr>
 <th></th>
-<th>Draw first, count second</th>
-<th>Count first, draw second</th>
+<th>先に描き、後から数える</th>
+<th>先に数え、後から描く</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>Source of truth</strong></td>
-<td>3D model (Revit, ArchiCAD)</td>
-<td>Bill of Materials</td>
+<td><strong>真実の源</strong></td>
+<td>3D モデル（Revit、ArchiCAD）</td>
+<td>部材表（BOM）</td>
 </tr>
 <tr>
-<td><strong>Quantities</strong></td>
-<td>Extracted after design</td>
-<td>Inherent — the BOM IS the quantity</td>
+<td><strong>数量</strong></td>
+<td>設計の後に取り出す</td>
+<td>最初から備わっている。BOM そのものが数量</td>
 </tr>
 <tr>
-<td><strong>Change a wall</strong></td>
-<td>Redraw → re-extract QTO → re-estimate</td>
-<td>Change one BOM line → recompile</td>
+<td><strong>壁を変更する</strong></td>
+<td>描き直す → QTO を取り出し直す → 見積もり直す</td>
+<td>BOM の一行を変える → 再コンパイル</td>
 </tr>
 <tr>
-<td><strong>Compliance</strong></td>
-<td>Separate checker (Solibri)</td>
-<td>Same rule engine</td>
+<td><strong>コンプライアンス</strong></td>
+<td>別のチェッカー（Solibri）</td>
+<td>同じルールエンジン</td>
 </tr>
 <tr>
-<td><strong>Cost</strong></td>
-<td>Separate estimator</td>
-<td>Same BOM × price list</td>
+<td><strong>コスト</strong></td>
+<td>別の積算ツール</td>
+<td>同じ BOM × 価格表</td>
 </tr>
 <tr>
-<td><strong>Schedule</strong></td>
-<td>Separate tool (Primavera)</td>
-<td>BOM tree topological sort</td>
+<td><strong>スケジュール</strong></td>
+<td>別のツール（Primavera）</td>
+<td>BOM ツリーのトポロジカルソート</td>
 </tr>
 <tr>
-<td><strong>Proof</strong></td>
-<td>Visual inspection</td>
-<td>Deterministic — every element traces to a source</td>
+<td><strong>証明</strong></td>
+<td>目視確認</td>
+<td>決定的。すべての要素が出どころにたどれる</td>
 </tr>
 </tbody>
 </table>
-<p>Built on <a href="https://idempiere.org/">iDempiere</a> ERP conventions and <a href="https://www.sqlite.org/">SQLite</a>, rendered browser-native with Three.js. From Kuala Lumpur, Malaysia — where BIM is <a href="StrategicIndustryPositioning/">mandated</a> for all projects ≥ RM10M from July 2025. It is the Creator, <a href="mailto:red1org@gmail.com">Redhuan D. Oon</a>'s gift to the world.</p>
+<p><a href="https://idempiere.org/">iDempiere</a> ERP の規約と <a href="https://www.sqlite.org/">SQLite</a> の上に作られ、Three.js でブラウザネイティブに描画されます。マレーシアのクアラルンプール発です。ここでは 2025年七月から、RM10M 以上のすべてのプロジェクトで BIM が<a href="StrategicIndustryPositioning/">義務化</a>されています。これは、作者である <a href="mailto:red1org@gmail.com">Redhuan D. Oon</a> から世界への贈り物です。</p>
 <hr />
-<h2 id="the-three-apps-you-actually-open">The three apps you actually open<a class="headerlink" href="#the-three-apps-you-actually-open" title="Permanent link">&para;</a></h2>
+<h2 id="_1">実際に開く三つのアプリ<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
 <div class="grid cards">
 <ul>
 <li>
 <p><strong>🧱 BIM Viewer</strong></p>
 <hr />
-<p>Drop your own IFC → extracted to SQLite right in the browser; merge disciplines, fly-through, clash matrix, 4D/5D time-machine — all on the same file. Desktop and mobile, works offline.</p>
-<p><a href="BIMUserGuide/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Viewer Guide</a> · <a href="https://red1oon.github.io/bim-ootb/#buildings">Open</a></p>
+<p>あなたの IFC をドロップすると、ブラウザの中でそのまま SQLite に取り出されます。分野の統合、フライスルー、衝突マトリクス、4D/5D タイムマシンがあり、すべて同じファイルの上で使えます。デスクトップでもモバイルでも、オフラインで動きます。</p>
+<p><a href="BIMUserGuide/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Viewer ガイド</a> · <a href="https://red1oon.github.io/bim-ootb/#buildings">開く</a></p>
 </li>
 <li>
 <p><strong>✏️ DAGeVu Modeller</strong></p>
 <hr />
-<p>Author B-rep geometry — insert library parts, sketch, extrude, sweep, edit the <strong>3D Grid</strong> — where the signed op-log <em>is</em> the feature tree.</p>
-<p><a href="ModellerGuide/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Modeller Guide</a> · <a href="https://red1oon.github.io/bim-ootb/modeller/modeller.html">Open</a></p>
+<p>B-rep ジオメトリを作ります。ライブラリの部品を挿入し、スケッチし、押し出し、スイープし、<strong>3D グリッド</strong>を編集します。署名付きの op-log が、そのままフィーチャツリーです。</p>
+<p><a href="ModellerGuide/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Modeller ガイド</a> · <a href="https://red1oon.github.io/bim-ootb/modeller/modeller.html">開く</a></p>
 </li>
 <li>
 <p><strong>📊 Kernel-ERP</strong></p>
 <hr />
-<p>Real iDempiere in the browser — POS, financial statements, the full Application Dictionary from SQLite. No Java, no server, no install.</p>
-<p><a href="ERPUserGuide/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Kernel-ERP Guide</a> · <a href="TillUserGuide/">Till &amp; Kitchen (uniCenta twin)</a> · <a href="ERPUserGuide/#other-views-of-the-same-log-the-lens-family">All the lenses</a> · <a href="https://red1oon.github.io/bim-ootb/erp/erp.html">Open</a></p>
+<p>ブラウザで動く本物の iDempiere です。POS、財務諸表、SQLite から読み込まれるアプリケーション辞書の全体があります。Java もサーバーもインストールも不要です。</p>
+<p><a href="ERPUserGuide/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Kernel-ERP ガイド</a> · <a href="TillUserGuide/">レジとキッチン（uniCenta のツイン）</a> · <a href="ERPUserGuide/#other-views-of-the-same-log-the-lens-family">すべてのレンズ</a> · <a href="https://red1oon.github.io/bim-ootb/erp/erp.html">開く</a></p>
 </li>
 </ul>
 </div>
 <hr />
-<h2 id="the-headline-ideas">The headline ideas<a class="headerlink" href="#the-headline-ideas" title="Permanent link">&para;</a></h2>
+<h2 id="_2">主な考え方<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <figure style="float: right; margin: -8px 0 8px 20px; max-width: 280px; text-align: center;">
-  <img src="assets/images/GeneralTall.png" alt="Multi-storey building compiled from BOM — 6 disciplines colour-coded" width="280">
-  <figcaption style="font-size: 0.75em; color: #666; margin-top: 4px;">Compiled from BOM. Colour = discipline (STR, ARC, ELEC, FP, ACMV, SP).</figcaption>
+  <img src="assets/images/GeneralTall.png" alt="BOM からコンパイルされた複数階の建物。6 つの分野を色分けしています" width="280">
+  <figcaption style="font-size: 0.75em; color: #666; margin-top: 4px;">BOM からコンパイルされたものです。色は分野を表します（STR、ARC、ELEC、FP、ACMV、SP）。</figcaption>
 </figure>
 
 <div class="grid cards">
 <ul>
 <li>
-<p><strong>Clash Detection — In the Browser</strong></p>
+<p><strong>衝突検出 — ブラウザの中で</strong></p>
 <hr />
-<p>Discipline-pair rules, fly-to visualization, live tolerance slider, in-viewer review workflow. Tens of thousands of elements, zero server.</p>
-<p><a href="CLASH_DETECTION/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Clash Detection</a></p>
+<p>分野の組み合わせごとのルール、該当箇所へ飛ぶ可視化、その場で動かせる許容値スライダー、ビューア内のレビューワークフローがあります。数万の要素を、サーバーなしで扱います。</p>
+<p><a href="CLASH_DETECTION/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> 衝突検出</a></p>
 </li>
 <li>
-<p><strong>Kernel-ERP — a Fold over a Signed Op-Log</strong></p>
+<p><strong>Kernel-ERP — 署名付き op-log の上のフォールド</strong></p>
 <hr />
-<p>C_Order, C_OrderLine, M_Product, M_BOM — folded from the <a href="https://idempiere.org/">iDempiere</a> oracle. State is a deterministic fold over a signed operation log; even an <code>AD_Process</code> is re-derived as a replay, not a method.</p>
-<p><a href="../FoldEngineBlackBook.html"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Black Book</a> · <a href="../ERPConceptRosetta.html"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Cross-ERP Rosetta (incl. SAP / ACDOCA)</a> · <a href="MANIFESTO/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> ERP world view</a></p>
+<p>C_Order、C_OrderLine、M_Product、M_BOM は、<a href="https://idempiere.org/">iDempiere</a> のオラクルからフォールドされます。状態は、署名付きの操作ログの上の決定的なフォールドです。<code>AD_Process</code> でさえ、メソッドではなくリプレイとして導き直されます。</p>
+<p><a href="../FoldEngineBlackBook.html"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> ブラックブック</a> · <a href="../ERPConceptRosetta.html"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> ERP 間ロゼッタ（SAP / ACDOCA を含む）</a> · <a href="MANIFESTO/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> ERP の世界観</a></p>
 </li>
 <li>
-<p><strong>Enterprise Security — No Server Required</strong></p>
+<p><strong>エンタープライズセキュリティ — サーバーは不要</strong></p>
 <hr />
-<p>Cryptographic verification with no central server: HMAC attestation, Ed25519 identity signing, SHA-256 transport integrity. Your data never leaves your browser.</p>
-<p><a href="EnterpriseAuthentication/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Security Architecture</a></p>
+<p>中央サーバーなしの暗号による検証です。HMAC 認証、Ed25519 による本人署名、SHA-256 による転送の完全性を備えます。あなたのデータがブラウザの外に出ることはありません。</p>
+<p><a href="EnterpriseAuthentication/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> セキュリティアーキテクチャ</a></p>
 </li>
 <li>
-<p><strong>Editable Business Rules, Live</strong></p>
+<p><strong>編集できるビジネスルール、その場で</strong></p>
 <hr />
-<p>The Holy Grail — change a rule, watch the model and the ERP re-fold. Spatial ERP where <a href="SpatialERP_OOTB/">every record has a place</a>.</p>
-<p><a href="HolyGrail/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> The Holy Grail</a> · <a href="SpatialERP_OOTB/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Spatial ERP</a></p>
+<p>聖杯です。ルールを変えると、モデルと ERP が再びフォールドされるのを見られます。<a href="SpatialERP_OOTB/">すべてのレコードに場所がある</a>、空間 ERP です。</p>
+<p><a href="HolyGrail/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> 聖杯</a> · <a href="SpatialERP_OOTB/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> 空間 ERP</a></p>
 </li>
 </ul>
 </div>
 <div style="clear: right;"></div>
 
 <hr />
-<h2 id="documentation-map">Documentation map<a class="headerlink" href="#documentation-map" title="Permanent link">&para;</a></h2>
+<h2 id="_3">ドキュメントマップ<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>I want to…</th>
-<th>Start here</th>
+<th>目的</th>
+<th>ここから</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>Get going (everyone starts here)</strong></td>
-<td><a href="USER_GUIDE/">📖 <strong>User Guide</strong></a></td>
+<td><strong>始める（全員ここから）</strong></td>
+<td><a href="USER_GUIDE/">📖 <strong>ユーザーガイド</strong></a></td>
 </tr>
 <tr>
-<td>View a building in the browser</td>
-<td><a href="BIMUserGuide/">BIM Viewer Guide</a></td>
+<td>ブラウザで建物を見る</td>
+<td><a href="BIMUserGuide/">BIM Viewer ガイド</a></td>
 </tr>
 <tr>
-<td>Author geometry</td>
-<td><a href="ModellerGuide/">DAGeVu Modeller Guide</a></td>
+<td>ジオメトリを作る</td>
+<td><a href="ModellerGuide/">DAGeVu Modeller ガイド</a></td>
 </tr>
 <tr>
-<td>Turn 2D drawings (DXF) into a 3D BIM model</td>
-<td><a href="DXF2BIMGuide/">2D Drawings → BIM (DXF2BIM)</a></td>
+<td>2D 図面（DXF）を 3D の BIM モデルにする</td>
+<td><a href="DXF2BIMGuide/">2D 図面 → BIM（DXF2BIM）</a></td>
 </tr>
 <tr>
-<td>Get civil-works reports from a road IFC set</td>
-<td><a href="CivilWorksGuide/">Civil Works — Step by Step</a></td>
+<td>道路 IFC セットから土木工事のレポートを得る</td>
+<td><a href="CivilWorksGuide/">土木工事 — ステップごとに</a></td>
 </tr>
 <tr>
-<td>Collaborate on a surface (who-did-what, chat)</td>
-<td><a href="TeamsOverlayGuide/">Teams Overlay</a></td>
+<td>ひとつの画面で共同作業する（誰が何をしたか、チャット）</td>
+<td><a href="TeamsOverlayGuide/">チームオーバーレイ</a></td>
 </tr>
 <tr>
-<td>See what shipped recently</td>
-<td><a href="WhatsNew/">What's New</a></td>
+<td>最近リリースされたものを見る</td>
+<td><a href="WhatsNew/">新着情報</a></td>
 </tr>
 <tr>
-<td>Run the browser ERP</td>
-<td><a href="ERPUserGuide/">Kernel-ERP User Guide</a></td>
+<td>ブラウザの ERP を動かす</td>
+<td><a href="ERPUserGuide/">Kernel-ERP ユーザーガイド</a></td>
 </tr>
 <tr>
-<td>Drive the apps with one-line commands (you or an AI)</td>
-<td><a href="FastScriptGuide/">Fast Script Guide</a></td>
+<td>一行のコマンドでアプリを操作する（あなたでも AI でも）</td>
+<td><a href="FastScriptGuide/">Fast Script ガイド</a></td>
 </tr>
 <tr>
-<td>Move a company in from Odoo, Business Central or SAP Business One</td>
-<td><a href="MigrationGuide/">Migration User Guide</a> · <a href="OdooMigration/">how the Odoo move works</a></td>
+<td>Odoo、Business Central、SAP Business One から会社を移行する</td>
+<td><a href="MigrationGuide/">移行ユーザーガイド</a> · <a href="OdooMigration/">Odoo の移行のしくみ</a></td>
 </tr>
 <tr>
-<td>Run a till and kitchen screen</td>
-<td><a href="TillUserGuide/">Till &amp; Kitchen User Guide</a></td>
+<td>レジとキッチン画面を動かす</td>
+<td><a href="TillUserGuide/">レジ・キッチン ユーザーガイド</a></td>
 </tr>
 <tr>
-<td>See a building become a project order and a CAPEX dashboard</td>
-<td><a href="CapexDashboardGuide/">BIM → ERP and the CAPEX Dashboard</a> · <a href="CapexUATGuide/">CAPEX UAT Guide</a></td>
+<td>建物がプロジェクト注文と CAPEX ダッシュボードになるのを見る</td>
+<td><a href="CapexDashboardGuide/">BIM → ERP と CAPEX ダッシュボード</a> · <a href="CapexUATGuide/">CAPEX UAT ガイド</a></td>
 </tr>
 <tr>
-<td>Let an outside AI propose changes to the Modeller</td>
-<td><a href="ProposerGuide/">AI Proposer Guide</a> · <a href="AIProposerDefensiveDisclosure/">Defensive disclosure</a></td>
+<td>外部の AI に Modeller への変更を提案させる</td>
+<td><a href="ProposerGuide/">AI Proposer ガイド</a> · <a href="AIProposerDefensiveDisclosure/">防衛的開示</a></td>
 </tr>
 <tr>
-<td>Read or change the code</td>
-<td><a href="DeveloperGuide/">Developer Guide</a></td>
+<td>コードを読む、または変更する</td>
+<td><a href="DeveloperGuide/">開発者ガイド</a></td>
 </tr>
 <tr>
-<td>Try the prototypes (proofs of concept, sample data only)</td>
-<td><a href="HalalTrace/">Halal track &amp; trace</a> · <a href="../halal/">open it</a> · <a href="../RetailScaleStory.html">Retail at scale</a> · <a href="../glassbowl_gravity.html">Glassbowl Gravity</a> · <a href="../bim_architecture_viz.html">Architecture tour</a></td>
+<td>プロトタイプを試す（概念実証、サンプルデータのみ）</td>
+<td><a href="HalalTrace/">ハラール トラック＆トレース</a> · <a href="../halal/">開く</a> · <a href="../RetailScaleStory.html">大規模リテール</a> · <a href="../glassbowl_gravity.html">Glassbowl Gravity</a> · <a href="../bim_architecture_viz.html">アーキテクチャツアー</a></td>
 </tr>
 <tr>
-<td>Understand the ERP world view</td>
-<td><a href="MANIFESTO/">MANIFESTO — read first</a></td>
+<td>ERP の世界観を理解する</td>
+<td><a href="MANIFESTO/">MANIFESTO — 最初にお読みください</a></td>
 </tr>
 <tr>
-<td>Compare to other tools</td>
-<td><a href="FeatureComparison/">Feature Comparison</a> · <a href="MigrateComparisonPaper/">Migrate &amp; Compare (ERP)</a></td>
+<td>ほかのツールと比べる</td>
+<td><a href="FeatureComparison/">機能比較</a> · <a href="MigrateComparisonPaper/">移行と比較（ERP）</a></td>
 </tr>
 <tr>
-<td>See where this sits in the industry</td>
-<td><a href="StrategicIndustryPositioning/">Strategic Positioning</a></td>
+<td>業界のどこに位置するかを見る</td>
+<td><a href="StrategicIndustryPositioning/">戦略的ポジショニング</a></td>
 </tr>
 <tr>
-<td>Understand how it was built</td>
-<td><a href="VibeProgramming/">Vibe Programming — AI + Domain Expertise</a></td>
+<td>どう作られたかを知る</td>
+<td><a href="VibeProgramming/">バイブプログラミング — AI とドメインの専門知識</a></td>
 </tr>
 <tr>
-<td>Author geometry as a fold</td>
-<td><a href="ModellerKernelFold/">DAGeVu Modeller — Geometry as a Fold</a></td>
+<td>ジオメトリをフォールドとして作る</td>
+<td><a href="ModellerKernelFold/">DAGeVu Modeller — フォールドとしてのジオメトリ</a></td>
 </tr>
 <tr>
-<td>Walk to any element indoors</td>
-<td><a href="RouteTemplate/">Find &amp; Navigate — Indoor Wayfinding</a></td>
+<td>屋内のどの要素にも歩いて行く</td>
+<td><a href="RouteTemplate/">検索とナビゲーション — 屋内ウェイファインディング</a></td>
 </tr>
 <tr>
-<td>Distributed / offline ERP</td>
-<td><a href="DistributedERP/">Distributed ERP</a></td>
+<td>分散 / オフラインの ERP</td>
+<td><a href="DistributedERP/">分散 ERP</a></td>
 </tr>
 <tr>
-<td>Go beyond buildings</td>
-<td><a href="ShipYard/">Beyond Buildings — ShipYard</a></td>
+<td>建物の先へ</td>
+<td><a href="ShipYard/">建物を超えて — ShipYard</a></td>
 </tr>
 <tr>
-<td>Contribute</td>
-<td><a href="CONTRIBUTING/">Contribute — start here</a></td>
+<td>貢献する</td>
+<td><a href="CONTRIBUTING/">貢献 — ここから</a></td>
 </tr>
 </tbody>
 </table>

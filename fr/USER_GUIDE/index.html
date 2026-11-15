@@ -6,13 +6,13 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="BIM OOTB user guide — view IFC buildings in 3D, author geometry, and run the Kernel-ERP, all client-side in one browser tab with zero install.">
+        <meta name="description" content="Guide de l'utilisateur de BIM OOTB — voyez des bâtiments IFC en 3D, créez de la géométrie et exécutez le Kernel-ERP, le tout côté client dans un seul onglet de navigateur, sans installation.">
       
       
         <meta name="author" content="Redhuan D. Oon">
       
       
-        <link rel="canonical" href="https://red1oon.github.io/BIMCompiler/USER_GUIDE/">
+        <link rel="canonical" href="https://red1oon.github.io/BIMCompiler/fr/USER_GUIDE/">
       
       
         <link rel="prev" href="../">
@@ -21,6 +21,20 @@
         <link rel="next" href="../BIMToolsGuide/">
       
       
+        
+          <link rel="alternate" href="../../USER_GUIDE/" hreflang="en">
+        
+          <link rel="alternate" href="../../es/USER_GUIDE/" hreflang="es">
+        
+          <link rel="alternate" href="./" hreflang="fr">
+        
+          <link rel="alternate" href="../../de/USER_GUIDE/" hreflang="de">
+        
+          <link rel="alternate" href="../../id/USER_GUIDE/" hreflang="id">
+        
+          <link rel="alternate" href="../../ja/USER_GUIDE/" hreflang="ja">
+        
+          <link rel="alternate" href="../../zh/USER_GUIDE/" hreflang="zh">
         
       
       
@@ -71,7 +85,7 @@
     
     
   
-  <meta name="robots" content="noindex">
+  
 
   </head>
   
@@ -92,7 +106,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#bim-ootb-user-guide" class="md-skip">
+        <a href="#bim-ootb-guide-de-lutilisateur" class="md-skip">
           Aller au contenu
         </a>
       
@@ -162,6 +176,62 @@
     
       <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Sélectionner la langue">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../USER_GUIDE/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../es/USER_GUIDE/" hreflang="es" class="md-select__link">
+              Español (Latinoamérica)
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../de/USER_GUIDE/" hreflang="de" class="md-select__link">
+              Deutsch
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../id/USER_GUIDE/" hreflang="id" class="md-select__link">
+              Bahasa Indonesia
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../ja/USER_GUIDE/" hreflang="ja" class="md-select__link">
+              日本語
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../zh/USER_GUIDE/" hreflang="zh" class="md-select__link">
+              简体中文
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
     
     
       
@@ -587,10 +657,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#pick-a-surface" class="md-nav__link">
+  <a href="#choisissez-une-surface" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Pick a surface
+        Choisissez une surface
       
     </span>
   </a>
@@ -598,10 +668,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#each-app-is-its-own-address" class="md-nav__link">
+  <a href="#chaque-application-a-sa-propre-adresse" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Each app is its own address
+        Chaque application a sa propre adresse
       
     </span>
   </a>
@@ -609,10 +679,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#working-as-a-team" class="md-nav__link">
+  <a href="#travailler-en-equipe" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Working as a team
+        Travailler en équipe
       
     </span>
   </a>
@@ -620,10 +690,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#also-on-the-front-door" class="md-nav__link">
+  <a href="#aussi-sur-la-porte-dentree" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Also on the front door
+        Aussi sur la porte d'entrée
       
     </span>
   </a>
@@ -3247,10 +3317,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#pick-a-surface" class="md-nav__link">
+  <a href="#choisissez-une-surface" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Pick a surface
+        Choisissez une surface
       
     </span>
   </a>
@@ -3258,10 +3328,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#each-app-is-its-own-address" class="md-nav__link">
+  <a href="#chaque-application-a-sa-propre-adresse" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Each app is its own address
+        Chaque application a sa propre adresse
       
     </span>
   </a>
@@ -3269,10 +3339,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#working-as-a-team" class="md-nav__link">
+  <a href="#travailler-en-equipe" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Working as a team
+        Travailler en équipe
       
     </span>
   </a>
@@ -3280,10 +3350,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#also-on-the-front-door" class="md-nav__link">
+  <a href="#aussi-sur-la-porte-dentree" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Also on the front door
+        Aussi sur la porte d'entrée
       
     </span>
   </a>
@@ -3303,7 +3373,7 @@
               
               <article class="md-content__inner md-typeset">
                 
-  <p class="i18n-note"><small>Cette page n'est pas encore traduite ; elle s'affiche en anglais. <a href="https://red1oon.github.io/BIMCompiler/USER_GUIDE/">Page en anglais</a>.</small></p>
+  <p class="i18n-note"><small>Traduit de la page anglaise ; la page anglaise fait référence. <a href="https://red1oon.github.io/BIMCompiler/USER_GUIDE/">Voir en anglais</a>.</small></p>
   
                   
 
@@ -3312,127 +3382,127 @@
   
 
 
-<h1 id="bim-ootb-user-guide">BIM OOTB — User Guide<a class="headerlink" href="#bim-ootb-user-guide" title="Permanent link">&para;</a></h1>
-<p>One browser. <strong>View</strong> a building · <strong>author</strong> geometry · <strong>run</strong> the ERP. Zero install, all client-side.</p>
+<h1 id="bim-ootb-guide-de-lutilisateur">BIM OOTB — Guide de l'utilisateur<a class="headerlink" href="#bim-ootb-guide-de-lutilisateur" title="Permanent link">&para;</a></h1>
+<p>Un seul navigateur. <strong>Voir</strong> un bâtiment · <strong>créer</strong> de la géométrie · <strong>exécuter</strong> l'ERP. Sans installation, entièrement côté client.</p>
 <div class="admonition privacy">
-<p class="admonition-title">🔒 Data Security Guarantee</p>
-<p><strong>There is no AI and no LLM in this app. Your data never leaves your browser.</strong> Any file you drop
-into the app stays inside your browser's own IndexedDB and kernel, protected by standard browser
-security — and you save it back to your own machine, when and where you choose. Every IFC you drop,
-every building you open, every ERP edit stays client-side on your own device — nothing is uploaded to
-us, and no model is fed your data. The landing page and the Viewer page run a simple visit counter
-(GoatCounter) — it counts page visits (the page address may be included), never reads or sends a file's contents, and does nothing offline; the ERP has none. A few optional features you trigger yourself — share links (TinyURL), QR
-codes (qrserver.com) and the update check (GitHub) — call that public service and send it only the URL
-or request that feature needs, never your file. Every result is deterministic
-and traces to a line of open code you can read.</p>
-<p><a href="../EnterpriseAuthentication/"><strong>Read the full guarantee — how the trust model works →</strong></a> · want to
-run it fully cut off from the network once installed? <a href="../OFFLINE_INSTALL_GUIDE/"><strong>Fully Offline / Air-Gapped Install
-guide →</strong></a></p>
+<p class="admonition-title">🔒 Garantie de sécurité des données</p>
+<p><strong>Cette application ne contient ni IA ni LLM. Vos données ne quittent jamais votre navigateur.</strong> Tout fichier que vous déposez
+dans l'application reste dans l'IndexedDB et le noyau propres à votre navigateur, protégés par la sécurité
+standard du navigateur — et vous le réenregistrez sur votre propre machine, quand et où vous le choisissez. Chaque IFC que vous déposez,
+chaque bâtiment que vous ouvrez, chaque modification de l'ERP reste côté client, sur votre propre appareil — rien n'est envoyé
+chez nous, et aucun modèle n'est alimenté avec vos données. La page d'accueil et la page du Viewer exécutent un simple compteur de visites
+(GoatCounter) — il compte les visites de pages (l'adresse de la page peut être incluse), ne lit ni n'envoie jamais le contenu d'un fichier, et ne fait rien hors ligne ; l'ERP n'en a aucun. Quelques fonctions facultatives que vous déclenchez vous-même — liens de partage (TinyURL), codes
+QR (qrserver.com) et vérification des mises à jour (GitHub) — appellent ce service public et ne lui envoient que l'URL
+ou la requête dont cette fonction a besoin, jamais votre fichier. Chaque résultat est déterministe
+et remonte à une ligne de code ouvert que vous pouvez lire.</p>
+<p><a href="../EnterpriseAuthentication/"><strong>Lire la garantie complète — comment fonctionne le modèle de confiance →</strong></a> · vous voulez
+l'exécuter totalement coupé du réseau une fois installé ? <a href="../OFFLINE_INSTALL_GUIDE/"><strong>Guide d'installation entièrement hors ligne / isolée
+→</strong></a></p>
 </div>
-<p><img alt="The Matrix landing — choose your door" src="../../assets/matrix_landing.png" /></p>
-<p>Start at the <strong><a href="https://red1oon.github.io/bim-ootb/">front door → red1oon.github.io/bim-ootb</a></strong> — the
-Matrix landing (red / blue → round selector). Pick a door, or jump straight to any app by its URL below.
-<strong>Bookmark any of them</strong>; press <strong>Home</strong> on any surface to come back to the front door. On a return visit
-the landing shows the compact <code>⋯</code> launcher; <strong>refresh</strong> for the full round selector again.</p>
-<p><strong>Just need a quick IFC chore?</strong> Upgrade to IFC4.3, pull one item out into its own IFC, split by storey, or check a model's health — drop a file, it runs. <strong><a href="../BIMToolsGuide/">BIM Tools — User Manual →</a></strong></p>
-<p>New here recently? Check <strong><a href="../WhatsNew/">What's New</a></strong> for a running log of shipped changes.</p>
-<h2 id="pick-a-surface">Pick a surface<a class="headerlink" href="#pick-a-surface" title="Permanent link">&para;</a></h2>
+<p><img alt="La page d'accueil Matrix — choisissez votre porte" src="../../assets/matrix_landing.png" /></p>
+<p>Commencez par la <strong><a href="https://red1oon.github.io/bim-ootb/">porte d'entrée → red1oon.github.io/bim-ootb</a></strong> — la
+page d'accueil Matrix (rouge / bleu → sélecteur rond). Choisissez une porte, ou allez directement à n'importe quelle application par son URL ci-dessous.
+<strong>Mettez-les en favoris</strong> ; appuyez sur <strong>Home</strong> sur n'importe quelle surface pour revenir à la porte d'entrée. Lors d'une visite suivante,
+la page d'accueil affiche le lanceur compact <code>⋯</code> ; <strong>actualisez</strong> pour retrouver le sélecteur rond complet.</p>
+<p><strong>Vous avez juste une petite tâche IFC à faire ?</strong> Passez en IFC4.3, extrayez un élément dans son propre IFC, découpez par niveau, ou vérifiez la santé d'un modèle — déposez un fichier, c'est exécuté. <strong><a href="../BIMToolsGuide/">BIM Tools — Manuel de l'utilisateur →</a></strong></p>
+<p>Vous êtes arrivé récemment ? Consultez <strong><a href="../WhatsNew/">Nouveautés</a></strong> pour un journal continu des changements livrés.</p>
+<h2 id="choisissez-une-surface">Choisissez une surface<a class="headerlink" href="#choisissez-une-surface" title="Permanent link">&para;</a></h2>
 <div class="grid cards">
 <ul>
 <li>
 <p><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-5px"><path d="M3 3h18v18H3z"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg> <strong>BIM Viewer</strong></p>
-<p><strong>Drop your own IFC</strong> → extracted to SQLite right in the browser; merge disciplines, fly-through, clash matrix, 4D/5D time-machine, ERP Project Order — all on the same file. Desktop and mobile, works offline.</p>
-<p><em>Front door → the <strong>Buildings / IFC</strong> icon (above)</em> · <a href="https://red1oon.github.io/bim-ootb/#buildings">Open</a> · <a href="../BIMUserGuide/">Guide</a> · <a href="../CivilWorksGuide/">Civil Works (road models)</a></p>
+<p><strong>Déposez votre propre IFC</strong> → extrait vers SQLite directement dans le navigateur ; fusion des disciplines, visite en vol, matrice de conflits, machine à remonter le temps 4D/5D, ordre de projet ERP — le tout sur le même fichier. Sur ordinateur et sur mobile, fonctionne hors ligne.</p>
+<p><em>Porte d'entrée → l'icône <strong>Buildings / IFC</strong> (ci-dessus)</em> · <a href="https://red1oon.github.io/bim-ootb/#buildings">Ouvrir</a> · <a href="../BIMUserGuide/">Guide</a> · <a href="../CivilWorksGuide/">Travaux de génie civil (modèles de routes)</a></p>
 </li>
 <li>
 <p><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-5px"><path d="M8 19a4 4 0 0 1-2.24-7.32A3.5 3.5 0 0 1 9 6.03V6a3 3 0 1 1 6 0v.04a3.5 3.5 0 0 1 3.24 5.65A4 4 0 0 1 16 19Z"/><path d="M12 19v3"/></svg> <strong>DAGeVu Modeller</strong></p>
-<p>Author B-rep geometry — insert library parts, sketch, extrude, sweep — where the signed op-log <em>is</em> the feature tree. Early/WIP; desktop.</p>
-<p><em>Front door → the <strong>BIM Modeller</strong> icon (above)</em> · <a href="https://red1oon.github.io/bim-ootb/modeller/modeller.html">Open</a> · <a href="../ModellerGuide/">Guide</a> · <a href="../ProposerGuide/">AI Proposer Guide</a> · <a href="../DXF2BIMGuide/">2D drawings → BIM (DXF2BIM)</a></p>
+<p>Créez de la géométrie B-rep — insérez des pièces de bibliothèque, esquissez, extrudez, balayez — où l'op-log signé <em>est</em> l'arbre des fonctionnalités. Précoce / en cours ; ordinateur.</p>
+<p><em>Porte d'entrée → l'icône <strong>BIM Modeller</strong> (ci-dessus)</em> · <a href="https://red1oon.github.io/bim-ootb/modeller/modeller.html">Ouvrir</a> · <a href="../ModellerGuide/">Guide</a> · <a href="../ProposerGuide/">Guide du proposeur d'IA</a> · <a href="../DXF2BIMGuide/">Dessins 2D → BIM (DXF2BIM)</a></p>
 </li>
 <li>
 <p><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-5px"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg> <strong>Kernel-ERP</strong></p>
-<p>Real iDempiere in the browser — POS, financial statements, the full Application Dictionary from SQLite. No Java, no server, no install.</p>
-<p><em>Front door → the <strong>ERP</strong> icon (above)</em> · <a href="https://red1oon.github.io/bim-ootb/erp/erp.html">Open</a> · <a href="../ERPUserGuide/">Guide</a> · <a href="../TillUserGuide/">Till &amp; Kitchen (POS, uniCenta twin)</a> · <a href="../ERPUserGuide/#other-views-of-the-same-log-the-lens-family">Other lenses</a> · <a href="../MigrationGuide/">Migrate from Odoo / Business Central</a> · <a href="../FastScriptGuide/">Command line (Fast Script)</a> · <a href="../TeamsOverlayGuide/">Teams overlay</a></p>
+<p>Le vrai iDempiere dans le navigateur — caisse, états financiers, le Dictionnaire d'applications complet depuis SQLite. Sans Java, sans serveur, sans installation.</p>
+<p><em>Porte d'entrée → l'icône <strong>ERP</strong> (ci-dessus)</em> · <a href="https://red1oon.github.io/bim-ootb/erp/erp.html">Ouvrir</a> · <a href="../ERPUserGuide/">Guide</a> · <a href="../TillUserGuide/">Caisse et cuisine (POS, jumeau d'uniCenta)</a> · <a href="../ERPUserGuide/#other-views-of-the-same-log-the-lens-family">Autres vues</a> · <a href="../MigrationGuide/">Migrer depuis Odoo / Business Central</a> · <a href="../FastScriptGuide/">Ligne de commande (Fast Script)</a> · <a href="../TeamsOverlayGuide/">Teams overlay</a></p>
 </li>
 </ul>
 </div>
 <blockquote>
-<p><strong>ERP practitioners</strong> — implementers, power users, developers, and other ERP projects — start with
-<strong><a href="../MigrateComparisonPaper/">Migrate &amp; Compare</a></strong>: how Kernel-ERP folds a live iDempiere (and Odoo)
-tenant onto one signed op-log, what stands comparison with a legacy stack, and the honest gaps.</p>
+<p><strong>Praticiens de l'ERP</strong> — intégrateurs, utilisateurs avancés, développeurs et autres projets ERP — commencez par
+<strong><a href="../MigrateComparisonPaper/">Migrer et comparer</a></strong> : comment le Kernel-ERP replie un tenant iDempiere (et Odoo) en direct
+sur un seul op-log signé, ce qui soutient la comparaison avec une pile existante, et les lacunes, en toute honnêteté.</p>
 </blockquote>
-<h2 id="each-app-is-its-own-address">Each app is its own address<a class="headerlink" href="#each-app-is-its-own-address" title="Permanent link">&para;</a></h2>
-<p>Every app is a separate page with its own address. Opening one loads only that app, not the others, so a
-small job stays small. The till, for example, never loads the 3D viewer.</p>
+<h2 id="chaque-application-a-sa-propre-adresse">Chaque application a sa propre adresse<a class="headerlink" href="#chaque-application-a-sa-propre-adresse" title="Permanent link">&para;</a></h2>
+<p>Chaque application est une page distincte avec sa propre adresse. En ouvrir une ne charge que cette application, pas les autres, si bien qu'une
+petite tâche reste petite. La caisse, par exemple, ne charge jamais la visionneuse 3D.</p>
 <table>
 <thead>
 <tr>
-<th>App</th>
-<th>Address</th>
-<th>Downloaded on a first visit</th>
+<th>Application</th>
+<th>Adresse</th>
+<th>Téléchargé lors d'une première visite</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Front door</td>
+<td>Porte d'entrée</td>
 <td><a href="https://red1oon.github.io/bim-ootb/">red1oon.github.io/bim-ootb</a></td>
-<td>about 0.1 MB</td>
+<td>environ 0.1 Mo</td>
 </tr>
 <tr>
 <td>BIM Viewer</td>
 <td><a href="https://red1oon.github.io/bim-ootb/viewer/viewer.html">…/viewer/viewer.html</a></td>
-<td>about 3 MB, plus the building you open</td>
+<td>environ 3 Mo, plus le bâtiment que vous ouvrez</td>
 </tr>
 <tr>
 <td>DAGeVu Modeller</td>
 <td><a href="https://red1oon.github.io/bim-ootb/modeller/modeller.html">…/modeller/modeller.html</a></td>
-<td>about 1.3 MB</td>
+<td>environ 1.3 Mo</td>
 </tr>
 <tr>
-<td>ERP start page (bubbles)</td>
+<td>Page de démarrage de l'ERP (bulles)</td>
 <td><a href="https://red1oon.github.io/bim-ootb/erp/erp.html">…/erp/erp.html</a></td>
-<td>about 0.1 MB</td>
+<td>environ 0.1 Mo</td>
 </tr>
 <tr>
-<td>ERP forms (the iDempiere look)</td>
+<td>Formulaires de l'ERP (l'aspect iDempiere)</td>
 <td><a href="https://red1oon.github.io/bim-ootb/erp/idempiere.html">…/erp/idempiere.html</a></td>
-<td>about 1.4 MB, plus about 7 MB for the ERP's database</td>
+<td>environ 1.4 Mo, plus environ 7 Mo pour la base de données de l'ERP</td>
 </tr>
 <tr>
-<td>Till · Kitchen screen</td>
+<td>Caisse · Écran de cuisine</td>
 <td><a href="https://red1oon.github.io/bim-ootb/erp/till.html">…/erp/till.html</a> · <a href="https://red1oon.github.io/bim-ootb/erp/kitchen.html">…/erp/kitchen.html</a></td>
-<td>about 0.1 MB · under 0.1 MB</td>
+<td>environ 0.1 Mo · moins de 0.1 Mo</td>
 </tr>
 </tbody>
 </table>
-<p>The ERP forms page saves its database in your browser after the first visit, so later visits don't
-download it again. <em>Sizes counted 2026-11-08 from the published files (compressed, as sent over the network).</em></p>
-<h2 id="working-as-a-team">Working as a team<a class="headerlink" href="#working-as-a-team" title="Permanent link">&para;</a></h2>
-<p>Several people — or several of your own devices — can work on the same records (orders in the ERP, the building
-in the Modeller) with <strong>no database server and no application server</strong>. Press the <strong>Team</strong> pill (the two heads;
-in the Modeller, the Team icon) and <strong>Turn on team mode</strong>; the first device <strong>Starts a team</strong>, the others <strong>Join</strong>
-and are approved there, and everyone presses <strong>Visit</strong> to send their changes and fetch the others'. A ready-made
-trial place lets you try one full cycle without setting anything up.</p>
-<p><a href="https://red1oon.github.io/bim-ootb/erp/team_guide.html"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Team guide</a> ·
-<a href="../TermsHowToVerify/">How to verify the terms</a> ·
-<a href="../TeamsOverlayGuide/">Teams overlay (ALPHA demonstrator: who-did-what dots, chat, graphs)</a></p>
-<h2 id="also-on-the-front-door">Also on the front door<a class="headerlink" href="#also-on-the-front-door" title="Permanent link">&para;</a></h2>
+<p>La page des formulaires de l'ERP enregistre sa base de données dans votre navigateur après la première visite, si bien que les visites suivantes ne
+la téléchargent plus. <em>Tailles comptées le 2026-11-08 à partir des fichiers publiés (compressés, tels qu'envoyés sur le réseau).</em></p>
+<h2 id="travailler-en-equipe">Travailler en équipe<a class="headerlink" href="#travailler-en-equipe" title="Permanent link">&para;</a></h2>
+<p>Plusieurs personnes — ou plusieurs de vos propres appareils — peuvent travailler sur les mêmes enregistrements (des commandes dans l'ERP, le bâtiment
+dans le Modeller) <strong>sans serveur de base de données et sans serveur d'applications</strong>. Appuyez sur la pastille <strong>Team</strong> (les deux têtes ;
+dans le Modeller, l'icône Team) et sur <strong>Turn on team mode</strong> ; le premier appareil <strong>Starts a team</strong>, les autres <strong>Join</strong>
+et y sont approuvés, et chacun appuie sur <strong>Visit</strong> pour envoyer ses changements et récupérer ceux des autres. Un
+lieu d'essai prêt à l'emploi vous permet d'essayer un cycle complet sans rien configurer.</p>
+<p><a href="https://red1oon.github.io/bim-ootb/erp/team_guide.html"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"/></svg></span> Guide d'équipe</a> ·
+<a href="../TermsHowToVerify/">Comment vérifier les conditions</a> ·
+<a href="../TeamsOverlayGuide/">Teams overlay (démonstrateur ALPHA : points de qui a fait quoi, discussion, graphes)</a></p>
+<h2 id="aussi-sur-la-porte-dentree">Aussi sur la porte d'entrée<a class="headerlink" href="#aussi-sur-la-porte-dentree" title="Permanent link">&para;</a></h2>
 <div class="grid cards">
 <ul>
 <li>
-<p><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-5px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg> <strong>About &amp; Install</strong></p>
-<p>What BIM OOTB is, and how to keep it. It's a <strong>frictionless PWA</strong> — your browser can <em>install</em> it (add to home screen) so it runs <strong>offline, no server</strong>. The same box has a <strong>Run it yourself (DIY)</strong> tab: download a one-step install script + README to self-host the whole stack on your own machine.</p>
-<p><em>Front door → the <strong>About</strong> icon (above)</em> · <a href="../SYSTEMS_INSTALLER_GUIDE/">Self-host guide</a> ·
-<a href="../OFFLINE_INSTALL_GUIDE/">Fully offline / air-gapped install</a></p>
+<p><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-5px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg> <strong>À propos et installation</strong></p>
+<p>Ce qu'est BIM OOTB, et comment le conserver. C'est une <strong>PWA sans friction</strong> — votre navigateur peut l'<em>installer</em> (ajout à l'écran d'accueil) pour qu'elle s'exécute <strong>hors ligne, sans serveur</strong>. La même boîte contient un onglet <strong>Run it yourself (DIY)</strong> : téléchargez un script d'installation en une étape et un README pour héberger toute la pile sur votre propre machine.</p>
+<p><em>Porte d'entrée → l'icône <strong>About</strong> (ci-dessus)</em> · <a href="../SYSTEMS_INSTALLER_GUIDE/">Guide d'auto-hébergement</a> ·
+<a href="../OFFLINE_INSTALL_GUIDE/">Installation entièrement hors ligne / isolée</a></p>
 </li>
 <li>
-<p><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-5px"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg> <strong>Clear Cache</strong></p>
-<p>Resets to the start screen. Clears only the <strong>in-browser building data</strong> — cached buildings and any IFC scene you dropped in but never saved to a <code>.db</code> — and returns you to the red / blue gate. <strong>Keeps</strong> the installed app, its offline data, and any <code>.db</code> file you saved yourself.</p>
-<p><em>Front door → the <strong>Trash</strong> icon (above)</em></p>
+<p><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-5px"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg> <strong>Vider le cache</strong></p>
+<p>Revient à l'écran de départ. N'efface que les <strong>données de bâtiments dans le navigateur</strong> — les bâtiments en cache et toute scène IFC que vous avez déposée sans jamais l'enregistrer dans un <code>.db</code> — et vous ramène à la porte rouge / bleue. <strong>Conserve</strong> l'application installée, ses données hors ligne et tout fichier <code>.db</code> que vous avez enregistré vous-même.</p>
+<p><em>Porte d'entrée → l'icône <strong>Trash</strong> (ci-dessus)</em></p>
 </li>
 </ul>
 </div>
-<p><em>Copyright (c) 2025-2026 Redhuan D. Oon. MIT Licensed.</em></p>
+<p><em>Copyright (c) 2025-2026 Redhuan D. Oon. Licence MIT.</em></p>
 
 
 
