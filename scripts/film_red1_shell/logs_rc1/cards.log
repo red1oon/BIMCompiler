@@ -1,0 +1,16 @@
+§CARD beat=cover card
+§CARD beat=start stills=7 used_cols=7 used_rows=2 font=26px
+§CARD beat=help stills=7 used_cols=98 used_rows=32 font=20px
+§CARD beat=cd stills=13 used_cols=16 used_rows=3 font=26px
+§CARD beat=count stills=8 used_cols=56 used_rows=13 font=26px
+§CARD beat=clash stills=17 used_cols=61 used_rows=12 font=26px
+§CARD beat=ls stills=12 used_cols=214 used_rows=23 font=14px
+§CARD beat=menu stills=9 used_cols=47 used_rows=11 font=26px
+§CARD beat=pick stills=9 used_cols=61 used_rows=30 font=22px
+§CARD beat=element stills=14 used_cols=86 used_rows=4 font=26px
+§CARD beat=lsel stills=25 used_cols=132 used_rows=15 font=23px
+§CARD beat=group stills=15 used_cols=132 used_rows=25 font=23px
+§CARD beat=pwd stills=6 used_cols=132 used_rows=27 font=23px
+§CARD beat=exit stills=7 used_cols=132 used_rows=28 font=23px
+§CARD beat=end card
+§CARDS_DONE beats=15 pngs=134 too_small=0 key_stills=108 return_stills=14

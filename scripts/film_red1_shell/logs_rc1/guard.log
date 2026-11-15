@@ -1,0 +1,35 @@
+§GUARD OK   beat=help session.words=23 expect=23 spoken="twenty-three"
+§GUARD OK   beat=count count.total=1193 expect=1193 spoken="one thousand one hundred and ninety-three"
+§GUARD OK   beat=count count.sec=25 expect=25 spoken="twenty-five seconds"
+§GUARD OK   beat=clash clash1.bboxOverlaps=393 expect=393 spoken="three hundred and ninety-three"
+§GUARD OK   beat=clash clash1.meshClashes=291 expect=291 spoken="two hundred and ninety-one"
+§GUARD OK   beat=clash clash1.cleared=102 expect=102 spoken="one hundred and two"
+§GUARD OK   beat=ls ls.matched=4 expect=4 spoken="four of"
+§GUARD OK   beat=ls ls.of=393 expect=393 spoken="three hundred and ninety-three"
+§GUARD OK   beat=menu menu.n=5 expect=5 spoken="five"
+§GUARD OK   beat=pick pick.bboxOverlaps=45 expect=45 spoken="forty-five"
+§GUARD OK   beat=pick pick.meshClashes=18 expect=18 spoken="eighteen"
+§GUARD OK   beat=element element.props=9 expect=9 spoken="nine properties"
+§GUARD OK   beat=lsel lsel.shown=6 expect=6 spoken="six elements"
+§GUARD OK   beat=lsel lsel.spaces=4 expect=4 spoken="four bathroom spaces"
+§GUARD OK   beat=lsel lsel.tubs=2 expect=2 spoken="two bath tubs"
+§GUARD OK   beat=group group.groups=5 expect=5 spoken="five groups"
+§GUARD OK   beat=group group.level2=83 expect=83 spoken="eighty-three"
+§GUARD OK   beat=group group.unknown=1026 expect=1026 spoken="one thousand and twenty-six"
+§GUARD OK   beat=start number words spoken=2 covered by a fact=0 idiom=2
+§GUARD OK   beat=help number words spoken=3 covered by a fact=2 idiom=1
+§GUARD OK   beat=cd number words spoken=0 covered by a fact=0 idiom=0
+§GUARD OK   beat=count number words spoken=8 covered by a fact=8 idiom=0
+§GUARD OK   beat=clash number words spoken=11 covered by a fact=11 idiom=0
+§GUARD OK   beat=ls number words spoken=5 covered by a fact=5 idiom=0
+§GUARD OK   beat=menu number words spoken=1 covered by a fact=1 idiom=0
+§GUARD OK   beat=pick number words spoken=3 covered by a fact=3 idiom=0
+§GUARD OK   beat=element number words spoken=1 covered by a fact=1 idiom=0
+§GUARD OK   beat=lsel number words spoken=3 covered by a fact=3 idiom=0
+§GUARD OK   beat=group number words spoken=8 covered by a fact=7 idiom=1
+§GUARD OK   beat=pwd number words spoken=0 covered by a fact=0 idiom=0
+§GUARD OK   beat=exit number words spoken=1 covered by a fact=0 idiom=1
+§GUARD proof talk or first/novel/unique: none
+§GUARD not-said N (a live link to a browser, or a thing not built), named in the voice: none
+§GUARD facts verdict in facts.json: bad=0 missing=0
+§GUARD_VERDICT PASS facts=18 bad=0
