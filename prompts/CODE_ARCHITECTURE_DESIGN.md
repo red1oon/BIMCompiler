@@ -551,6 +551,26 @@ applied on *"yes do it"*) · F-13 *"ok"*, then *"Follow your yes advice."* · fi
   every pinned op hash / sha; shipped data grows); (b) a trace switch, OFF by default: when on (localhost dev only), each producer site records
   `handle → producer name` in a side map the overlay reads; ops and their hashes stay identical. **Recommendation: (b)**, the producer recorded as a
   NAME (e.g. `dxf2bodies.wallFromLines`) that the X0 index turns into file:line, so line numbers never go stale in data.
+- 2026-11-15, owner, on **F-15**: *"go with (b)"*. → **F-15 = a trace switch, OFF by default; producer recorded by NAME in a side map; ops unchanged.**
+
+**F.21 SLICE 1 SPEC — the trace (2026-11-15; no browser, no UI; the hover is slice 2).**
+- **One helper, no new file:** `Dxf2Prep.trace(key, el)` in `modeller/dxf2prep.js` (the module almost every producer already loads; it is on the
+  Modeller's lazy list `dxf_import_ui.js:14`, so nothing new is boot-loaded or precached). It returns `el`. When `globalThis.__DXF_TRACE` is a `Map`
+  it records `guid → key`; otherwise it does nothing (the OFF path is one `typeof` test). Producers wrap the object they push:
+  `els.push(P.trace('dxf2walls:wall', {...}))`. The key is a string literal `'<module>:<what>'`, so a parser finds the one line that made the element.
+  `dxf2bim/` (the shared library) is not edited: its elements are stamped where `dxf2bim_import.js` takes them in.
+- **CLI `--trace`** (`modeller/dxf2bim_cli.js`): sets the map before the run, writes `trace.json` `{guid: key}` beside `bodies.json`, and prints
+  `§DXF_TRACE elements=N traced=T untraced=U keys=K`, plus `§DXF_TRACE_UNTRACED guid= class= kind= handle=` for each element no producer claimed
+  (the gap list that says which site still needs a stamp). `bodies.json`, `ops.json`, `verdict.json` are NOT changed by the switch.
+- **Witness W-DXF-TRACE** (`modeller/tests/witness_dxf_trace.js`, node), on the CLI-marked shed set (`SHED_MARKED`; missing = INCONCLUSIVE):
+  T1 the switch changes no data: `bodies.json` + `ops.json` sha-256 identical with `--trace` off and on · T2 coverage: `untraced=0` over every
+  body (the shed: 512) · T3 every key resolves: an espree parse of `modeller/*.js` finds exactly ONE `trace('<key>', …)` call per key, printed as
+  `§DXF_TRACE_KEY key= bodies= at=<file>:<line>` (the resolver slice 2's hover uses) · T4 red control: the T2 judge run on the map with one key's
+  entries removed must report `untraced>0` · OFF run: `globalThis.__DXF_TRACE` stays undefined. **Issue proved:** an element on the canvas cannot
+  be traced to the code that built it; after: every body names one source line, and the switch leaves the model byte-identical.
+- **Input found 2026-11-15:** `~/Videos/dxf2bim_film_work/why/cli/marked` (the default of **39** `modeller/tests` witnesses) no longer exists, so those
+  witnesses SKIP / INCONCLUSIVE today. A leftover `/tmp/w_reg_report_2156169_b/marked` (2026-10-31, re-marked sheets) reproduces the known fact
+  `gate STRUCTURE ok=true bodies=512` (`--complete --pack pwd2024_bd`). Slice 1 runs on a copy of it; restoring the default folder is the owner's call.
 
 
 ---
