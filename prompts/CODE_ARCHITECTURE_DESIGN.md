@@ -20,6 +20,11 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **0. ✅ DONE 2026-11-15 (fourth session): F-18 answered, the provenance hover built and merged — §F.23 (bim-ootb #3064 + tooltip-in-window fix #3069); FILM 3 built (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3 STATUS, awaiting the owner's review); the default-key + truss findings handed to the DXF2BIM lane (bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` §D113, #3070). NEXT = the X0 "New witness for this file" command (§F.21 OPEN), or Part A's remaining A2 (item 2).** The text below is the original hand-over.
 
+**0b. 2026-11-16 SYNC with the CLI lane (`prompts/CLI_ERP_IVR.md`, the `red1` shell) and the message lane (`prompts/VOCAB_MESSAGE_CATALOG.md`).** Owner: *"with much happening on the CLI side and a new session doing translation messaging, do your 'resume VSC' to see if it needs updating besides continuing its pending roadmap"*. Since 2026-11-15, bim-ootb `main` (`8c3f0af6`) gained the `red1` shell (#3060-#3088), `vocab/words.json` + `vocab/messages.json` + `msg_core.js` (#3082) and the Student level (#3083/#3084). The VS Code tools knew none of it: `git grep` over `devtools/` finds 0 hits for `verbs.json`, `messages.json`, `words.json`, `vocab` or `msg_core`. What changes here:
+- **Part A, a real defect (CLI owner agreed, 2026-11-16: *"please do it from the code-design lane … object_cli's UTC is the defect"*):** `common/door/object_cli.js:212` stamps the model Trx `now` in **UTC** (`new Date().toISOString()`), but `common/door/erp_cli.js:26` stamps **LOCAL** time (the §20 rule, W-DOOR-STAMP, #2953). So `object.update` and `mis.update` write `Updated` on two different clocks. `erp_cli.js:26` is also a second local-day helper beside `crud_core.localDay` (`erp/crud_core.js:64`, which says it is "the ONE implementation"). Measured: `clock_probe.js <bim-ootb> 'common/door/*.js'` → `§CLOCK_PROBE files=18 with_calls=7 calls=58 parse_fail=0`. Most are ms timers or log-file names (fine at an edge). **Fix = A2 item "door stamp", one PR touching only those lines:** object_cli takes the one stamp, and erp_cli's `stamp()`/`today()` are built on `crud_core.localDay(Date.now())` plus the time. **Wait for the CLI session's go:** its agent is editing `erp_cli.js` (§29.6 P3a/P3b) and maybe `object_cli.js` near `applyOp`; it will message when those merge. Witnesses: W-DOOR-STAMP, a NEW claim that `object.update` and `mis.update` stamp the same clock (with a falsifier: put the UTC line back and it must FAIL), W-MIS-CRUD, W-ERP-VERBS, W-OBJ-COUNT.
+- **Part A3 scope:** `common/door/` is an EDGE: it reads the clock and hands `env` in, which is the Part A pattern. Its `*_core.js` files (`assist_core`, `draw_core`, `menu_core`, `msg_core`, `report_core`, `mis_core`) have zero clock reads (same probe) and are pure. W-CORE-PURE should list them as core and `door.js`/`*_cli.js`/`red1.js` as edge, and it should flag a second local-day implementation anywhere.
+- **Part F, a new decision F-19 (ask the owner, one message):** X0 Navigator support for the catalog and the verbs, dev-side only, nothing reaches the browser (§13 guard). Hovering a `t('key', …)` shows the English (and later the Student and other-language) text; F12 jumps to its `messages.json` line; while you edit, it warns about an unknown key or a `{n}` with no argument. Today `msg_core.js` throws only when the code runs. The same for a verb name, opening its `common/door/verbs.json` entry. **Recommendation: yes, built as one more X0 index (`lib/catalog_index.js`) that reads the JSON files, plus a witness with a red control (a made-up key must be flagged, a real key must not).** Asked the message session (bim-compiler-e9) whether it already has a key checker to reuse and whether the catalog shape is settled; answer pending.
+
 **0. THE NEXT SESSION'S JOB (owner 2026-11-15): the BIM side.** The ERP field hover shows a STACK of layers (§F.22); the BIM hover (§F.21 slice 2) shows only the builder line. Do for BIM what F.22 did for ERP, then remake the BIM film with layers (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3).
 - **Ask the owner first, one message (F-18), with this recommendation:** a body's layers, in the order they happened, each from data the body or the op already carries, never guessed: (1) the BUILDER (the trace key → its line, `devtools/hover/dxf_hover.js`) · (2) PASS-THROUGH stamps (the `a > b` chain the trace already keeps) · (3) each SIZE and its source (`size.*.source` on the body: `drawn` / `schedule` / `label` / `default` / `user` / `inherited`; `height_source`, `thick_source`), a `default` linked to its `dxf2defaults.js` row (the yellow default a user can change) · (4) CUTS that opened it (the `GEOM_CUT` ops whose provenance names this body) · (5) EDITS after Convert (the op log: moves / resizes of that fid) · (6) the evidence the converter attached (handle, layer, sheet, prov). Number keys / V open each layer's line, as the ERP hover does.
 - **Witness the same way F.22 was:** a denominator (every body of the shed: 512 bodies / 511 inserts), a red control per claim, and a check that each claim agrees with an independent source (the lesson of §F.22's two defects below). Then the film: same recipe as FILM 2.
@@ -39,7 +44,7 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 **3. Where each part stands.**
 | Part | State | Next step |
 |---|---|---|
-| A | A-1..A-5 ✅, A2 done for 15 files | remaining A2 (above) → A3 |
+| A | A-1..A-5 ✅, A2 done for 15 files | the door stamp (0b, on the CLI session's go), remaining A2 (above) → A3 |
 | B | not started | B0 needs no decision (§READY), then ask B-1 |
 | C, D | not started; wait on B | — |
 | E | not started | `witness_kit/paths.js` needs no decision (§READY), then ask E-1 |
@@ -49,7 +54,7 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **5. Films (never committed; scripts + logs are).** CH 0 · Immersive Software (`prompts/FILM_IMMERSIVE_SOFTWARE.md`, scripts `scripts/film_immersive_software/`, `scripts/film_erp_layers/`): film 1 the BIM hover `~/Videos/Immersive_Software_CH0_EN_AFTER_2026-11-15_v1.mp4` · film 2 the ERP field `~/Videos/Immersive_Software_CH0_ERP_Field_EN_AFTER_2026-11-15_v1.mp4` + Mandarin `_ZH_` (see the film file's status) · film 3 = BIM with layers (after 0). Both EN films were sent to the owner's phone (SendUserFile). Earlier CH 0 "VSC Hot Edit" films: `prompts/FILM_IDE_ERP_DEBUG.md`. Rebuild recipes are in each film file (removing a film worktree deletes its ignored pictures; the recipe recreates them).
 
-**6. Open with the owner.** F-18 ✅ (§F.23) · F-1 (Fetch back runs a headless browser?) · F-2 (size and speed budgets) · F-7 (hosted preview per PR) · F-12 step 2 (a deploy token only he can create) · a status-bar Bump button (suggested, not built) · the parity gate's default bridge path (above) · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun` not created) · a bake on his go (check a "last:" line after #2977).
+**6. Open with the owner.** F-18 ✅ (§F.23) · **F-19** (catalog + verb hover, 0b) · F-1 (Fetch back runs a headless browser?) · F-2 (size and speed budgets) · F-7 (hosted preview per PR) · F-12 step 2 (a deploy token only he can create) · a status-bar Bump button (suggested, not built) · the parity gate's default bridge path (above) · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun` not created) · a bake on his go (check a "last:" line after #2977).
 
 **7. Open, no owner needed.** 15 of 51 `ws_kernel.js` witnesses fail on unedited `main` (ERP lane's; list in the archive) · the Modeller runner on this machine: `§ALLWITNESS PASS=106 FAIL=10 SKIP=5 ENV=12 of 133` before the shed inputs were restored; inputs RESTORED 2026-11-15 to `~/Videos/dxf2bim_film_work/why/{raw,cli/marked}` (README there), and some witnesses need `SHED_RAW_DIR=~/Videos/dxf2bim_film_work/why/raw` set · 11 `PHANTOM?` fields (§F.17, a Part C question) · the 4D cache's `witness.log` has no `§LOG_STAMP` · bim-ootb #2974/#2975 texts still say "138 of 281" (true: 130).
 
@@ -830,7 +835,7 @@ A is the only part tied to correctness (replay, posting dates), and A0 is cheap 
 mistakes and is the data source for D, E and half of F. D and E are small once B exists. F's first features need nothing. **Owner, 2026-11-13: they go
 first, as §F.4, the next session's bounded task**; A0 runs in parallel if a second session is free. C is long and best done slowly, module by module, after B/D make ownership visible.
 
-## §READY — what a session can start with no owner decision (as of 2026-11-15)
+## §READY — what a session can start with no owner decision (as of 2026-11-16)
 
 | Part | Starts with no decision | Next decision to ask | Why that one |
 |---|---|---|---|
@@ -839,7 +844,7 @@ first, as §F.4, the next session's bounded task**; A0 runs in parallel if a sec
 | C | nothing; waits on B and D | C-1 part names + owners | |
 | D | nothing new; the multi-publisher list already exists (`types/globals.gen.d.ts`) | D-1 where the questions list lives | needs B's `owner` field |
 | E | `witness_kit/paths.js` (no behaviour change; witness: the same suite verdicts before and after) | E-1 the `PROVES:` header format | |
-| F | the three small PRs of ADVICE C | **F-18 (the BIM layered hover, RESUME 0)**, then F-1, F-2, F-7 | the owner named the BIM side as the next session's job |
+| F | the three small PRs of ADVICE C · the X0 "New witness for this file" command | **F-19 (catalog + verb hover, RESUME 0b)**, then F-1, F-2, F-7 | F-18 ✅ 2026-11-15; F-19 follows the CLI + message lanes (2026-11-16) |
 
 Ask the owner **one decision per message, with the recommendation** (START HERE 2). The recommendations are in each part and in ADVICE A.
 
@@ -871,7 +876,7 @@ Ask the owner **one decision per message, with the recommendation** (START HERE 
 - `prompts/archive/CODE_ARCHITECTURE_DESIGN_full_history_2026-11-13_to_2026-11-14.md`: this file before it was cut down. Every §F.n
   section, the §VET pass and all owner exchanges in full.
 
-## STATUS (2026-11-15; the RESUME block above is current)
+## STATUS (2026-11-16; the RESUME block above is current)
 
 | Part | What | State |
 |---|---|---|
@@ -880,6 +885,6 @@ Ask the owner **one decision per message, with the recommendation** (START HERE 
 | C | named APP parts | not started · open: C-1, C-2 |
 | D | owner table | not started · open: D-1, D-2 |
 | E | proof map | not started · `paths.js` ready · open: E-1, E-2 |
-| F | VS Code extension + facts server + the hovers | every unblocked row built (§F index) · §F.21 BIM trace + hover (#3043 #3047) · §F.22 ERP hover (#3055 #3057 #3059) · F-16 parity gate (#3050) · next: F-18 BIM layered hover · open: F-1, F-2, F-7, the F-12 step 2 token |
+| F | VS Code extension + facts server + the hovers | every unblocked row built (§F index) · §F.21 BIM trace + hover (#3043 #3047) · §F.22 ERP hover (#3055 #3057 #3059) · F-16 parity gate (#3050) · §F.23 BIM layered hover (#3064 #3069) · next: the X0 "New witness" command · open: F-19 (RESUME 0b), F-1, F-2, F-7, the F-12 step 2 token |
 
 **§VET** (the 2026-11-13 vetting pass of every claim in this file) is in the archive.
