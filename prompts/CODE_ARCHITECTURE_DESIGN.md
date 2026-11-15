@@ -18,7 +18,7 @@ Background and every measurement this file cites: `prompts/EDITOR_MAINTAINABILIT
 
 Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate, so new session when 'resume VSC' or 'resume software' gets the full context"* · *"update prompt also that new sesion will do up BIM side"*. This block is the whole hand-over; each section it names holds the evidence (older history: the archive, START HERE 7). If a line here and a `§` section disagree, the section wins. **Standing rules:** "ERP" = the Kernel ERP JavaScript in bim-ootb `erp/`; legacy iDempiere Java is a read-only oracle (cite file:line, never copy it in). Owner design talk: ONE detail per message, with a recommendation; record his answer in his words. Workers run on Sonnet. One heavy job at a time on this machine, `nice -n 19 ionice -c3` (two suites in parallel saturated it, a peer session asked to throttle, 2026-11-15).
 
-**0. ▶ IN PROGRESS 2026-11-15 (fourth session): F-18 answered and the provenance hover built — §F.23 (spec + RESULT); bim-ootb #3064 open, waiting for the page check (owner's go), then merge → FILM 3.** The text below is the original hand-over.
+**0. ✅ DONE 2026-11-15 (fourth session): F-18 answered, the provenance hover built and merged — §F.23 (bim-ootb #3064, W-BIM-LAYERS + W-DXF-HOVER H2b PASS). NEXT = FILM 3 (BIM with layers), then raise the unrecorded default keys with the DXF2BIM lane.** The text below is the original hand-over.
 
 **0. THE NEXT SESSION'S JOB (owner 2026-11-15): the BIM side.** The ERP field hover shows a STACK of layers (§F.22); the BIM hover (§F.21 slice 2) shows only the builder line. Do for BIM what F.22 did for ERP, then remake the BIM film with layers (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3).
 - **Ask the owner first, one message (F-18), with this recommendation:** a body's layers, in the order they happened, each from data the body or the op already carries, never guessed: (1) the BUILDER (the trace key → its line, `devtools/hover/dxf_hover.js`) · (2) PASS-THROUGH stamps (the `a > b` chain the trace already keeps) · (3) each SIZE and its source (`size.*.source` on the body: `drawn` / `schedule` / `label` / `default` / `user` / `inherited`; `height_source`, `thick_source`), a `default` linked to its `dxf2defaults.js` row (the yellow default a user can change) · (4) CUTS that opened it (the `GEOM_CUT` ops whose provenance names this body) · (5) EDITS after Convert (the op log: moves / resizes of that fid) · (6) the evidence the converter attached (handle, layer, sheet, prov). Number keys / V open each layer's line, as the ERP hover does.
@@ -49,7 +49,7 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **5. Films (never committed; scripts + logs are).** CH 0 · Immersive Software (`prompts/FILM_IMMERSIVE_SOFTWARE.md`, scripts `scripts/film_immersive_software/`, `scripts/film_erp_layers/`): film 1 the BIM hover `~/Videos/Immersive_Software_CH0_EN_AFTER_2026-11-15_v1.mp4` · film 2 the ERP field `~/Videos/Immersive_Software_CH0_ERP_Field_EN_AFTER_2026-11-15_v1.mp4` + Mandarin `_ZH_` (see the film file's status) · film 3 = BIM with layers (after 0). Both EN films were sent to the owner's phone (SendUserFile). Earlier CH 0 "VSC Hot Edit" films: `prompts/FILM_IDE_ERP_DEBUG.md`. Rebuild recipes are in each film file (removing a film worktree deletes its ignored pictures; the recipe recreates them).
 
-**6. Open with the owner.** F-18 ✅ (§F.23) · the go for the F.23 page check · F-1 (Fetch back runs a headless browser?) · F-2 (size and speed budgets) · F-7 (hosted preview per PR) · F-12 step 2 (a deploy token only he can create) · a status-bar Bump button (suggested, not built) · the parity gate's default bridge path (above) · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun` not created) · a bake on his go (check a "last:" line after #2977).
+**6. Open with the owner.** F-18 ✅ (§F.23) · F-1 (Fetch back runs a headless browser?) · F-2 (size and speed budgets) · F-7 (hosted preview per PR) · F-12 step 2 (a deploy token only he can create) · a status-bar Bump button (suggested, not built) · the parity gate's default bridge path (above) · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun` not created) · a bake on his go (check a "last:" line after #2977).
 
 **7. Open, no owner needed.** 15 of 51 `ws_kernel.js` witnesses fail on unedited `main` (ERP lane's; list in the archive) · the Modeller runner on this machine: `§ALLWITNESS PASS=106 FAIL=10 SKIP=5 ENV=12 of 133` before the shed inputs were restored; inputs RESTORED 2026-11-15 to `~/Videos/dxf2bim_film_work/why/{raw,cli/marked}` (README there), and some witnesses need `SHED_RAW_DIR=~/Videos/dxf2bim_film_work/why/raw` set · 11 `PHANTOM?` fields (§F.17, a Part C question) · the 4D cache's `witness.log` has no `§LOG_STAMP` · bim-ootb #2974/#2975 texts still say "138 of 281" (true: 130).
 
@@ -746,7 +746,11 @@ at a worktree on `origin/master` (e.g. `/tmp/wt-bridge`) until the default is de
 - **Issue proved:** *"why is this body this size, here, with this hole?"* needed reading six places by hand (the builder, the trace, the size record, the defaults file,
   the op log, the converter's props); after: hover it, the whole history in order, a key per layer.
 
-**F.23 RESULT (2026-11-15, node half): built, bim-ootb PR #3064 (`Fixes #3063`), branch `feat/bim-layered-hover`, NOT merged yet (waits for the page check below).**
+**F.23 RESULT (2026-11-15): built and merged, bim-ootb #3064 (`Fixes #3063`); re-run on `main` @ `ba7c880a`: `§BIM_LAYERS_W VERDICT PASS fail=0 inserts=511 cuts=2`.**
+- **Page check (owner's go 2026-11-15: *"yes, run hover check"*), on the branch:** W-DXF-HOVER `§DXF_HOVER_W VERDICT PASS fail=0`: H1 `keys=28 defaults=99 same=Y` · H2
+  `hovered=15 wrong=0 page_errors=0` · **H2b `nextId=1 hovered=15 counts_differ=0`** (the tooltip's six counts = Node `layersFor`; the sweep hit the joined north wall `#100`,
+  the one host with cuts) · H3 red control `claimed_a_line=0`. Not exercised on the page: layer 5 with a real edit (the sweep makes none; L5 judges it in Node) and the
+  OS handing `vscode://` to VS Code. CI on #3064: fast-checks + e2e-tests pass.
 - W-BIM-LAYERS on the branch: `§BIM_LAYERS_W VERDICT PASS fail=0 inserts=511 cuts=2`. L1 `inserts=511 wrong=0` · L2 synthetic chain `items=2`, `shed_chains=0 -> VACUOUS` ·
   L3 `wrong=0 by_source={"label":376,"default":122,"inherited":98,"drawn":25,"schedule":64}`, `default_sides linked=12 not_recorded=110` · L4 `cuts=2 listed_under_hosts=2` (the two
   D88B door gaps in the joined north wall `#100`, holding `#158`/`#159`) · L5 A/B/C exactly theirs · L6 `wrong=0` · K `keys_tried=3066 links=523 dangling=0` · red controls R1
@@ -755,8 +759,7 @@ at a worktree on `origin/master` (e.g. `/tmp/wt-bridge`) until the default is de
   `ifc.props.SourceLayer`. Kept as a lesson: check the oracle's shape before trusting a 510-of-511 failure.
 - Unchanged neighbours on the branch: W-DXF-TRACE `VERDICT PASS bodies=512 keys=12`, W-X0-APPDEF `verdict=PASS`.
 - Deviation from the spec: the page-shaped setup lives in ONE helper, `devtools/hover/tests/shed_ctx.js`, used by both witnesses (not a second copy of the commit mapping).
-- **Open: the page check** (W-DXF-HOVER with H2b, one headless CPU page). It needs the owner's go (RULES: no browser run without it); asked 2026-11-15. On a PASS: merge
-  #3064, re-run W-BIM-LAYERS on `main`, then FILM 3 (`prompts/FILM_IMMERSIVE_SOFTWARE.md`).
+- **Next: FILM 3** (BIM with layers, `prompts/FILM_IMMERSIVE_SOFTWARE.md`, same recipe as FILM 2) · raise the 110 unrecorded default keys with the DXF2BIM lane.
 
 ---
 
