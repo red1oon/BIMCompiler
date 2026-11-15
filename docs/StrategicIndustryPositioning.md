@@ -437,6 +437,20 @@ scales, stated plainly rather than smoothed over.
 
 ---
 
+## Next moves (2026-11-16): ideas that follow from the pattern so far
+
+The same pattern repeats through the work: one engine with many faces (the door verbs, the AD layer, pure cores a terminal and a browser both draw), and one habit of proof (witnesses with falsifiers, `§` logs, a legacy system as the oracle). These ideas follow from that. They are a judgment, not market research, and none has a named buyer yet.
+
+1. **Repeat the paid chain so it becomes an offer.** DXF drawing to BIM to ERP project order to dashboard has been delivered once. A second client on the same flow shows how many hours a repeat takes, and that number is the price. A natural buyer is a contractor or quantity-surveying firm that wants cost control without a heavy ERP. This is the most direct route to revenue.
+2. **A safe gateway for AI agents into ERP and BIM.** The door already has harm classes, claims for AI writes, a journal, and refusals that name the legal values. Companies fear letting AI agents write into an ERP; this layer answers that. Publish the verb grammar as a small open specification with an MCP connector. It is the idea closest to a product that works for any ERP.
+3. **Legacy-parity migration as a service.** The parallel-run method, with the legacy system as the oracle, gives a client a parity report they can read. Aim it at small and mid-size sites stuck on older Compiere, Adempiere or iDempiere installs: provable zero impact.
+4. **The witness discipline as a verification toolkit.** The OpenBIM readiness toolkit in a broader form: audit AI-built or vendor-built systems against `§`-tagged claims that each have a falsifier. It answers "how do I trust AI-written code?". It can be a paid review, a short course, or a template repository.
+5. **A handover kit.** Write down what one trained person needs to run a lane from its resume block. This lowers key-person risk and lets a second client be taken on without doubling the hours.
+
+**Order.** One paying lane (1), one product lane (2), with (3) and (4) as the sales story. The prototypes elsewhere in the project (pawn fintech, halal track and trace, POS, warehouse robotics) should wait until (1) has a second client: the hard part is finishing and selling one thing, not generating ideas.
+
+---
+
 ## Get involved
 
 The project is **open source (MIT)** and actively developed. Roadmap:
