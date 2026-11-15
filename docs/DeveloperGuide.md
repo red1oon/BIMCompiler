@@ -155,6 +155,7 @@ The app's only runtime dependency is `sql.js`, which is already vendored.
 | Where a function or global is defined | **F12** works for true globals (`setupScene` → `viewer/scene.js`) and, through `types/globals.gen.d.ts`, for about 6 in 10 UMD globals' members (`ADParser.init` → `erp/ad_parser.js`). The rest: search for `X = ` or `function X`. |
 | Where an `APP.x` / `A.x` field is set | With X0 Navigator (§4.1): **F12** or hover on the field. Without it: `internal/APP_SURFACE.md`. Its "phantom" list (107 fields read in production but never written, counted 2026-11-14; 11 more are flagged "untied write" and are probably live) is a list of dead guards. Check before relying on one. |
 | What a `§TAG` means | With X0 Navigator (§4.1): hover the tag. Without it: search the tag. The code that prints it is the definition, and its spec is usually named in the same file's header. |
+| Which code built a body on the Modeller canvas, or runs on an ERP field | The provenance hover (§4.3): hover it, press a number to open that line in VS Code. |
 | What a spec section says (`§S59`, `W-BUMP`) | Search `prompts/` in both repos for the section or witness name. |
 | A file cited as `file:line` in an old prompt | Line numbers drift (the big files were split in 2026-10). **Search for the function name instead.** |
 | Which page loads a file | Search the HTML pages for the file name; for lazy parts, `viewer/main.js` `modules[]`. |
@@ -353,6 +354,79 @@ tokens). In the terminal: `/usage` (also typed `/cost`) shows session cost and p
 window, item by item. A terminal status line can show cost and context percentage all the time (`statusLine` in the settings). Not
 documented: a status line inside the VS Code panel.
 ---
+
+### 4.3 The provenance hover: the code behind what you see on the page
+
+X0 Navigator (§4.1) works inside the editor. The provenance hover works the other way round: you point at something on the page and it
+tells you which code made it, then opens that line in VS Code. There are two: one for a body in the **Modeller**, one for a field in the **ERP**.
+Both live in bim-ootb `devtools/hover/` (part of BIM DevTools).
+
+**It is a developer tool.** You load it into one browser tab with a bookmark. No shipped page loads it, so users never see it. Reload the
+tab and it is gone. Nothing is guessed: when the data does not name a line, the tooltip says so and opens nothing.
+
+#### In the Modeller: a body's six layers
+
+1. In bim-ootb, run `node devtools/hover/gen_trace_index.js`. It prints `§DXF_HOVER_INDEX keys=28 defaults=99` (counted 2026-11-15) and writes
+   `devtools/hover/trace_index.json`. That file holds your machine's folder path, so it is git-ignored. Run it again after you edit a builder or
+   `modeller/element_defaults.json`.
+2. Serve the repo (VS Code task **Serve repo**, `http://localhost:8000`) and open `/modeller/modeller.html`.
+3. Make a bookmark whose address is:
+   `javascript:(function(){var s=document.createElement('script');s.src='/devtools/hover/dxf_hover.js?'+Date.now();document.head.appendChild(s)})()`
+   Click it **before** you Convert. The console prints `§DXF_HOVER installed index_keys=28 defaults=99`.
+4. Open the DXF sheets and press **Convert**.
+5. Hover a body. The tooltip shows a title line (class, feature id, DXF handle, layer, sheet, provenance), then six numbered layers in the order
+   they happened. Every layer is always listed; an empty one says `none`.
+6. Press a number **1-6** to open that layer's first line in VS Code (**Alt+1-6** while you are typing in a field). **V** opens the builder line.
+
+| Key | Layer | What it tells you |
+|---|---|---|
+| 1 | BUILDER | the line of code that built the body |
+| 2 | PASS-THROUGH | any later code that touched it |
+| 3 | SIZES | each size, its number, and where it came from (`label`, `drawn`, `schedule`, `inherited`, `default`, …). A default that records which one links its row in `modeller/element_defaults.json`, the setting a user can change |
+| 4 | CUTS | the openings cut into it and the fill each one holds; for a door, the opening it fills |
+| 5 | EDITS | moves, resizes and grid moves after Convert (an undone edit is not listed) |
+| 6 | EVIDENCE | the DXF handle, layer, sheet and provenance, and each drawn note or schedule row the converter attached |
+
+**A column whose top is a default.** Layer 3 says the top, 3.0988 m, is the default `column.top_under_beam`; key 3 opens
+`modeller/element_defaults.json` at that row.
+
+![The provenance hover on a column: six layers; in SIZES the top is a default, column.top_under_beam, element_defaults.json:5](figs/hover/01_column_sizes_default.png)
+
+**A wall with two door openings.** Layer 4 lists the two door-gap cuts and the door each one holds. Layer 1 names the line that joined the
+wall's two drawn pieces into one.
+
+![The provenance hover on the north wall: layer 4 lists two GEOM_CUT door gaps, each holding its door](figs/hover/02_wall_cuts.png)
+
+**When it does not know, it says so.** This truss bar's width is a default, but the body does not record which default. The tooltip says
+*which default is not recorded on the body* and key 3 opens nothing. On the sample shed, 110 of 122 default sizes are like this (counted
+2026-11-15); the DXF2BIM lane has the proposal to record them (bim-ootb `prompts/DXF2BIM_ARCHITECT_REVIEW.md` §D113).
+
+![The provenance hover on a truss bar: its width is a default, "which default is not recorded on the body"](figs/hover/03_bar_default_not_recorded.png)
+
+#### In the ERP: every layer of code behind a field
+
+1. Run `node devtools/hover/gen_erp_index.js` (writes the git-ignored `devtools/hover/erp_index.json`).
+2. Serve the repo, open `/erp/idempiere.html`, log in and open a window.
+3. Bookmark: `javascript:(function(){var s=document.createElement('script');s.src='/devtools/hover/erp_hover.js?'+Date.now();document.head.appendChild(s)})()`
+4. Hover a field. You get its layers in the order they fire: the field's dictionary row, then on change its callouts, then the picker's
+   validation rule, then on save the model hooks, doc action and validators, then the button's process. Each layer shows its owner, the
+   line that registered it, and the iDempiere Java file it was ported from. A layer with nothing registered says `UNPORTED`.
+5. Keys **1-9** open that layer's line in VS Code (**Alt+1-9** in a text field).
+
+#### If something looks wrong
+
+| You see | It means | Do this |
+|---|---|---|
+| *convert again (the trace is on now)* | the body was converted before you clicked the bookmark | Convert again |
+| *no trace key* | the code that built this body has no trace stamp | run `modeller/tests/witness_dxf_trace.js`; it lists such bodies |
+| *line not in the index* | the index is older than your edit | run the index command (step 1) again |
+| a number key does nothing | that layer names no line (data, or not recorded) | read the layer's text: it says why |
+| VS Code does not open | your system has no handler for `vscode://` links | on Linux, check `xdg-mime query default x-scheme-handler/vscode` |
+
+**What proves it** (bim-ootb, node unless marked): `devtools/hover/tests/witness_bim_layers.js` checks every body of the sample shed against a
+separate converter run (W-BIM-LAYERS); `devtools/hover/tests/witness_dxf_hover.js` moves a real mouse over the real Modeller page, headless,
+and checks the tooltip against the same answer and that it stays inside the window (W-DXF-HOVER); `devtools/hover/tests/witness_erp_hover.js`
+covers every field of every active ERP window (W-ERP-HOVER). Spec: bim-compiler `prompts/CODE_ARCHITECTURE_DESIGN.md` §F.21–§F.23.
 
 ## 5. Changing things
 
