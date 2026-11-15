@@ -135,6 +135,7 @@ Built on [iDempiere](https://idempiere.org/) ERP conventions and [SQLite](https:
 | See a building become a project order and a CAPEX dashboard | [BIM → ERP and the CAPEX Dashboard](CapexDashboardGuide.md) · [CAPEX UAT Guide](CapexUATGuide.md) |
 | Let an outside AI propose changes to the Modeller | [AI Proposer Guide](ProposerGuide.md) · [Defensive disclosure](AIProposerDefensiveDisclosure.md) |
 | Read or change the code | [Developer Guide](DeveloperGuide.md) |
+| Try the prototypes (proofs of concept, sample data only) | [Halal track & trace](HalalTrace.md) · [open it](halal/index.html) · [Retail at scale](RetailScaleStory.html) · [Glassbowl Gravity](glassbowl_gravity.html) · [Architecture tour](bim_architecture_viz.html) |
 | Understand the ERP world view | [MANIFESTO — read first](MANIFESTO.md) |
 | Compare to other tools | [Feature Comparison](FeatureComparison.md) · [Migrate & Compare (ERP)](MigrateComparisonPaper.md) |
 | See where this sits in the industry | [Strategic Positioning](StrategicIndustryPositioning.md) |

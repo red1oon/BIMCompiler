@@ -158,6 +158,14 @@ nav:
       - "Beyond Buildings": ShipYard.md
       - "Find & Navigate (wayfinding)": RouteTemplate.md
 
+  - Prototypes & Demos:
+      - "Halalan Thayiban — halal track & trace (paper)": HalalTrace.md
+      - "Halalan Thayiban — open the prototype (sample data)": halal/index.html
+      - "Glassbowl — the ERP engine as data": glassbowl.html
+      - "Glassbowl · Gravity": glassbowl_gravity.html
+      - "Retail at Scale — two messages a day (benchmark story)": RetailScaleStory.html
+      - "How it works — interactive architecture tour": bim_architecture_viz.html
+
   - History & Legacy:
       - "Project Chronology": PROJECT_CHRONOLOGY.md
       - "Vibe Programming — AI + Domain Expertise": VibeProgramming.md
