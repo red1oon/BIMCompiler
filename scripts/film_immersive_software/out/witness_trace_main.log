@@ -1,0 +1,24 @@
+§DXF_TRACE_W T1 off=71abc2f2876c2cd2,c3094dfc041da20c,e4c66baedcc3cf9d on=71abc2f2876c2cd2,c3094dfc041da20c,e4c66baedcc3cf9d exit_off=0 exit_on=0 identical=Y
+PASS T1 the trace switch changes no model file (bodies/ops/verdict sha-256 off == on)  bodies.json,ops.json,verdict.json
+§DXF_TRACE_W T2 bodies=512 untraced=0 cli="§DXF_TRACE elements=512 traced=512 untraced=0 keys=11"
+PASS T2 every body names the line that built it (untraced=0)
+§DXF_TRACE_W T2b inserts=511 inserts_untraced=0
+PASS T2b every INSERT the canvas shows names its line too (toOps joins wall pieces into new bodies)
+§DXF_TRACE_KEY key=dxf2bim_import:wall-line bodies=1 at=dxf2bim_import.js:716
+§DXF_TRACE_KEY key=dxf2bodies:body bodies=99 at=dxf2bodies.js:422
+§DXF_TRACE_KEY key=dxf2doors:doorswing bodies=4 at=dxf2doors.js:77
+§DXF_TRACE_KEY key=dxf2panels:fan bodies=13 at=dxf2panels.js:207
+§DXF_TRACE_KEY key=dxf2panels:net bodies=3 at=dxf2panels.js:178
+§DXF_TRACE_KEY key=dxf2panels:panel bodies=41 at=dxf2panels.js:158
+§DXF_TRACE_KEY key=dxf2section:bar bodies=156 at=dxf2section.js:89
+§DXF_TRACE_KEY key=dxf2section:member bodies=12 at=dxf2section.js:113
+§DXF_TRACE_KEY key=dxf2section:plate bodies=117 at=dxf2section.js:103
+§DXF_TRACE_KEY key=dxf2synth:column bodies=64 at=dxf2synth.js:62
+§DXF_TRACE_KEY key=dxf2synth:roof bodies=2 at=dxf2synth.js:88
+§DXF_TRACE_KEY key=dxf2synth:slab bodies=1 at=dxf2synth.js:46
+§DXF_TRACE_W T3 keys=12 resolved=12 stamp_sites=28 parser=espree
+PASS T3 every key resolves to exactly one source line
+§DXF_TRACE_W T4 red-control dropped=dxf2bodies:body untraced=99 (want 99)
+PASS T4 red control: the judge reports the bodies of a removed key
+PASS T5 off: trace returns the same body and installs nothing
+§DXF_TRACE_W VERDICT PASS bodies=512 keys=12 fail=0

@@ -42,9 +42,9 @@ X0 Navigator: F12 + hover on a field of the shared object · Find All References
 Film 1 `~/Videos/Editing_Real_Code_EN_AFTER_2026-11-14_v5.mp4` (owner: fine as it is) · Film 2 `~/Videos/Editing_Real_Code_2_EN_AFTER_2026-11-14_v1.mp4` (§F.18, not reviewed) · **Film 3 "The invoice dated yesterday"** (#2996 found and fixed in the editor, VS Code above, the real ERP page below): `~/Videos/Invoice_Dated_Yesterday_EN_AFTER_2026-11-14_v1.mp4` and **`_v2.mp4`** (75.9 s: adds the two-tone **CH 0 / VSC Hot Edit** cover and the **Prior art** last card with the Developer Guide link; `§FILM_GUARD` 30 OK incl. check P, `§K2_VERDICT PASS`). **The owner has not reviewed the cut.** Rebuild = two bim-ootb worktrees (`614bb121^`, `614bb121`), `node facts.js`, `./shoot.sh`, `./build.sh` (59 s; facts ~2 min, shoot ~3 min). Scenarios 2 and 3 are kept in the film spec. **Memory `project_vsc_hot_edit_film_revisit`: on any future real bug, try the VS Code tools first; it may be the next example.** Other languages: only if asked.
 
 **5. Open with the owner, none of it started.**
-- **F-16** ERP parity check before the bump (§F.21) · the X0 "New witness for this file" command (after slice 2) · **F-1** (Fetch back also runs a headless browser?) · **F-2** (size and speed budgets) · **F-7** (a hosted preview per pull request) · **F-12 step 2** (a token so CI-bot merges also deploy; only he can create it).
+- the X0 "New witness for this file" command (after slice 2, not started) · **F-1** (Fetch back also runs a headless browser?) · **F-2** (size and speed budgets) · **F-7** (a hosted preview per pull request) · **F-12 step 2** (a token so CI-bot merges also deploy; only he can create it).
 - **A status-bar Bump button** (he suggested it: *"Perhap a 'bump' button if hasn't done"*): not built; the light-bulb quick fix exists (cheatsheet step 26). Dev-side only, would need a `realvsc` witness.
-- **Hover in the app → jump VS Code (F-14 ANSWERED 2026-11-15: Modeller canvas first, for DXF → BIM accuracy, then BIM → ERP).** F-15 answered (trace switch); **slice 1 built, bim-ootb #3043** (`--trace`, W-DXF-TRACE); **slice 2 built, #3047** (hover → line → V opens VS Code). Open: F-16 (ERP parity before the bump), the X0 witness stub, §F.21.
+- **Hover in the app → jump VS Code (F-14 ANSWERED 2026-11-15: Modeller canvas first, for DXF → BIM accuracy, then BIM → ERP).** F-15 answered (trace switch); **slice 1 built, bim-ootb #3043** (`--trace`, W-DXF-TRACE); **slice 2 built, #3047** (hover → line → V opens VS Code). F-16 parity gate built (#3050). Film: `prompts/FILM_IMMERSIVE_SOFTWARE.md`. Open: the X0 witness stub, §F.21.
 - **A bake, on his go:** the first bake after bim-ootb #2977 writes a `§LOG_STAMP`; read its log and check that a "last:" line lights up.
 - **His hands-on dry run:** `~/VSCcheatsheet.txt` (now 29 steps; steps 27-29 = the clock rule), his own worktree `~/bim-ootb-dryrun`, not yet created. What differs from the sheet when he reports is a finding.
 
@@ -534,7 +534,7 @@ PR, deploy), budgets and a hosted preview wait for F-1, F-2, F-7. DEV_TOOLKIT's 
 later (a) too · F-4, F-5 by DEV_TOOLKIT §8/§10 · F-6 *"go for one click"* · F-8 *"advice me and proceed"* → own providers, no TypeScript
 plugin · F-9 closed "not next", then built as F.12b once logs were stamped · F-10 and F-11 *"Go with your advice."* · F-12 *"Both."* (step 1
 applied on *"yes do it"*) · F-13 *"ok"*, then *"Follow your yes advice."* · film 1 *"Past film is OK as it delivers the idea."* · film 2
-*"This one again is a conceptual idea. Proceed."* **Still open in F: F-1, F-2, F-7, F-16 (ERP parity before the bump, §F.21).**
+*"This one again is a conceptual idea. Proceed."* **Still open in F: F-1, F-2, F-7.**
 
 ### F.21 Hover in the app, jump VS Code to the code   (owner idea 2026-11-14; decision **F-14**; not built)
 - 2026-11-15, owner, on **F-14** (which surface first; advice given: the ERP window): *"About experimental browser hover, let's go for Modeller
@@ -651,6 +651,11 @@ applied on *"yes do it"*) · F-13 *"ok"*, then *"Follow your yes advice."* · fi
   P6 `--no-parity` without a reason → refused; with one → OVERRIDE, written · P7 0 verdicts → INCONCLUSIVE, blocked · P8 same tree twice → second `cached=Y`.
   Every row on a temp copy (`--root`, as W-BUMP does). One REAL row (opt-in `BUMP_PARITY_REAL=1`): the real bridge on this machine gives `verdict=PASS` with today's
   `known`. **Issue proved:** an ERP edit could be bumped (shipped to users) with no check that it still matches legacy iDempiere; after: a new mismatch stops it, visibly.
+**F-16 RESULT (2026-11-15): built and merged, bim-ootb #3050 (`Fixes #3049`, `f5367092`), by a Sonnet worker; its logs checked here.** W-BUMP-PARITY on main: `§BUMP_PARITY_W_VERDICT PASS judged=14
+failed=0 real_row=run`; the real row: `mode=block verdicts=14 new=[] known=[DD:FAIL,CTX:FAIL,DDS:HARNESS-FAIL] verdict=PASS`. Red controls: gate no-op'd → 11 rows FAIL; `known` ignored → 4 rows FAIL. The
+existing W-BUMP unchanged (`PASS judged=5 failed=0`). Added beyond the spec: `BUMP_PARITY_BRIDGE` / `BUMP_PARITY_HOME` env (the witness's stub bridge), a copy of the bridge output in the cache folder,
+`--no-parity` without a reason = usage error (exit 1). **Caveat:** the config's default bridge path is the shared `~/bim-compiler` checkout, which is usually on another branch; point `BUMP_PARITY_BRIDGE`
+at a worktree on `origin/master` (e.g. `/tmp/wt-bridge`) until the default is decided. Film of the hover: `prompts/FILM_IMMERSIVE_SOFTWARE.md`.
 
 
 ---
