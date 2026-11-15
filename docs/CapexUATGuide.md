@@ -36,6 +36,8 @@ Dates in the test data are set for **13 November 2026**. Testing well after that
 | The construction-products script (10 materials at standard cost) | [202611141500_CAPEX-TD-CONSTRUCTION-PRODUCTS.sql](https://github.com/red1oon/bim-ootb/blob/main/capex/plugin/testdata_2pack/202611141500_CAPEX-TD-CONSTRUCTION-PRODUCTS.sql) |
 | The dashboard's scripts for iDempiere | listed in chapter A2, all in the [bim-ootb repository](https://github.com/red1oon/bim-ootb/tree/main/capex/legacy) |
 | The **Shed** drawing set: nine 2D sheets as **DXF** files, one per sheet | exported from BricsCAD by your drafter as in chapter **B00** (a `.dwg` cannot be opened); chapter B0 then turns them into the nine `…_marked.dxf` files that chapters B1 onward open (a tester given the `…_marked.dxf` copies skips B00 and B0) |
+| The **reference pack** (to mark your run, chapter B5) | [Shed_UAT_pack_20261115.zip](https://objectstorage.ap-kulai-2.oraclecloud.com/n/ax3cp6tzwuy2/b/bim-ootb/o/uat/Shed_UAT_pack_20261115.zip): the nine sheets as B00 exports them, the supplied marked copies, the reference Viewer database and the expected values |
+| The **UAT Run Checker** | [check.html](https://red1oon.github.io/bim-ootb/capex/uat/check.html) in your browser: it reads your files locally, nothing is uploaded |
 
 The nine Shed sheets are the pilot client's own work, so its testers may use them. Any other drawing set goes through the same way once its sheets carry their settings (levels, datums and layer meanings), which the Modeller's **Drawing metadata** panel records.
 
@@ -196,6 +198,8 @@ The general *Section A-A* frame is not used in this test.
 
 ### B0 · From the drawings as drawn to the marked set
 
+*No export from your drafter yet?* The reference pack's `sheets/` folder holds the nine sheets exactly as B00 writes them; start B0 from those.
+
 The nine sheets as drawn carry no settings: the Modeller cannot tell which CAD layer is a column, how deep the footings go, or where the expansion joint is. In this step you tell it, in the **Drawing metadata** panel, and save the result as nine `…_marked.dxf` copies. Every value below is read from the drawings (the source is named in each row); nothing is invented. Type the numbers exactly as written.
 
 The panel has sections you open by clicking their title: **All defaults** (the yellow list), **Sheets** (one card per sheet), **Layers**, **Body heights**, **Exclude areas**. The badge at the top says **Blocked · n** (n things still missing) or **Qualifies**.
@@ -354,6 +358,19 @@ Do this in the **Viewer**, on the Shed you opened in B2.9. (In the Modeller, **E
 | B4.3 | Press **› ERP** again | *Project Order: 0 lines*: nothing new is added, the order is keyed by the model's name (**SHED**) | ☐ Pass ☐ Fail |
 | B4.4 | Click **open ↗**. On the Kernel ERP sign-in page choose **GardenAdmin**, then **Log In** | The ERP opens on the project **SHED** (*BIM: SHED*) with its planned amount; its **Phase**, **Task** and **Project Line** tabs hold the rows from the model | ☐ Pass ☐ Fail |
 
+### B5 · Mark your run against the reference pack
+
+The **UAT Run Checker** compares what your run produced with the run this guide was proven on, stage by stage. It reads your files in your browser; nothing is uploaded. Keep the files from B0.9 and B2.8 and the two lines from B2.9 and B3.1 for this step.
+
+| # | Do | Confirm on screen | Result |
+|---|---|---|---|
+| B5.1 | Download the **reference pack** (link in *What you need*) and open the [UAT Run Checker](https://red1oon.github.io/bim-ootb/capex/uat/check.html). In box **1** choose the pack's `.zip` | Under box 1: *Pack intact: 19 files checked, built 2026-11-15 …*. A damaged or wrong file is refused, and **Mark my run** stays off | ☐ Pass ☐ Fail |
+| B5.2 | In box **2** select your nine `…_marked.dxf` from B0.9 (all at once); in box **3** your `SHED_extracted.db` from B2.8; in box **4** paste the Viewer's status line from B2.9; in box **5** the total-cost line from B3.1 (before your rate edit) | The boxes hold your files and lines | ☐ Pass ☐ Fail |
+| B5.3 | Press **Mark my run** | One row per stage: **B0.9** marked sheets, **B2.8** Viewer database, **B2.9** status line, **B3.1** total cost, each **PASS**, **FAIL** or **NOT GIVEN**, with the reason under it. Your run reads **PASS** when all four pass. A tester who skipped B00 and B0 has no marked files: B0.9 reads NOT GIVEN and the run **PARTIAL PASS** | ☐ Pass ☐ Fail |
+| B5.4 | Press **Download result (uat_result.json)** and attach the file to this sign-off | The file is saved | ☐ Pass ☐ Fail |
+
+*Proven (witness W-UAT-CHECK, 2026-11-15) on the pack as it is served: a run equal to the proven one marks PASS on all four rows; a run whose B0.7 exclude box was skipped marks FAIL on all four (515 elements, USD 97,979); an empty form marks INCONCLUSIVE; a pack with one file changed is refused.*
+
 **Notes (chapter B):** ______________________________________________
 
 ---
@@ -474,6 +491,6 @@ It writes the file `capex/legacy_snapshot.json` inside your copy of the reposito
 | Chapter | Tester | Date | Passed / total | Signature |
 |---|---|---|---|---|
 | A · Set up | | | / 17 | |
-| B · BIM | | | / 39 (25 if you were given the marked copies and skipped B00 and B0) | |
+| B · BIM | | | / 43 (29 if you were given the marked copies and skipped B00 and B0) | |
 | C · ERP | | | / 10 | |
 | D · Dashboard | | | / 10 | |
