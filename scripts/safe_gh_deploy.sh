@@ -104,6 +104,8 @@ if [ -n "${GUARD_NEW_DIR:-}" ]; then
   _log "§STEP2 new tree = injected GUARD_NEW_DIR=$GUARD_NEW_DIR"
   _manifest_from_dir "$GUARD_NEW_DIR" > "$NEW_MAN"
 else
+  # the language chooser needs its plugin (prompts/DOCS_I18N.md §6d); a missing plugin aborts here, before any comparison, never a half build
+  python3 -c "import mkdocs_static_i18n" 2>/dev/null || _abort "mkdocs-static-i18n is not installed for this mkdocs: pip install --user mkdocs-static-i18n==1.3.1"
   _log "§STEP2 mkdocs build -> $WORK/site_new"
   ( cd "$REPO" && mkdocs build -q -d "$WORK/site_new" ) >>"$LOG" 2>&1 || _abort "mkdocs build failed"
   # Native `mkdocs gh-deploy` auto-creates .nojekyll on every publish (tells GitHub Pages not to
