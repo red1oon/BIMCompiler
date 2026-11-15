@@ -1,0 +1,9 @@
+§F0_SELFTEST flat200 endDelta=+0.0st expected=+0.0st OK
+§F0_SELFTEST rise200-280 endDelta=+2.7st expected=+2.8st OK
+§F0_SELFTEST fall220-160 endDelta=-2.8st expected=-2.9st OK
+§NARR_FIT setup cue=6.92 room=13.03 dur=12.13 -> DETAIL slack=+0.90 words=33
+§NARR_TONE setup#0 F WH rose=0st endDelta=+2.8st want=fall WRONG "How do I see the code behind an ERP field?"
+§NARR_FIT move1 cue=20.55 room=16.86 dur=15.94 -> DETAIL slack=+0.92 words=40
+§NARR_TONE move1#0 F WH rose=0st endDelta=-6.7st want=fall OK "What runs on it?"
+§NARR_FIT move2 cue=40.84 room=18.94 dur=18.03 -> DETAIL slack=+0.91 words=49
+§NARR_TONE move2#0 F WH rose=0st endDelta=-0.8st want=fall OK "And when it says a piece is missing?"

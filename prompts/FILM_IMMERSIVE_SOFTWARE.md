@@ -57,5 +57,14 @@ not the code that runs. Odoo's developer mode is a per-session switch (`?debug=1
 **Lesson for the card:** both name who owns a field; neither lists the code that fires on it in order. That list is what this hover adds, and it can because the twin keeps every layer in a
 registry with an owner and a rank.
 
+**FILM 2 STATUS (2026-11-15): BUILT, v1, awaiting the owner's review.** `~/Videos/Immersive_Software_CH0_ERP_Field_EN_AFTER_2026-11-15_v1.mp4` (1920x1080, 78.1 s, never committed). Scripts
+`scripts/film_erp_layers/` (`erp_shot.js` = the ERP page session). `§FACTS VERDICT PASS` · `§FILM_SHOOT stills=2 errors=0` (VS Code at `CalloutOrder.js:97` `prototype.docType` and `ad_callout.js:477`
+`prototype.dateAcct`) · `§FILM_GUARD VERDICT PASS` · `§CARDS_DONE beats=5 stills=92 too_tall=0` · voice 3/3 `DETAIL` · `§FILM_DONE frames=1874 planned=1874` · `§K2_VERDICT PASS`.
+Memory (one run each, forced GC, the Sales Order window open): with the tool 46.1 MB, without 47.0 MB; overlay 15.3 KB, index 65.2 KB (302 registrations).
+**Making it found TWO real defects in the merged hover (both fixed, both witnessed red→green):** (1) bim-ootb #3057: v1 read only the layered registry's `describe()` and called
+`CalloutEngine.dateAcct` (put in directly, `erp/ad_callout.js:512`) UNPORTED; #3055's `unported=213` was inflated, the truth is 199; new check E2b (red `false_unported=17` → 0); E2b's first
+version read the hover's own field and its red run PASSED (blind): rewritten to read the dictionary. (2) bim-ootb #3059: the key map wiped a number after an unlined layer (`[1]` on Target Document
+Type opened nothing); E4 now presses every number shown (red `tried=112 wrong_or_dead=9` → 0). Move 2 of the film is defect (1), shown as it happened.
+
 # FILM 3 (later) — the BIM film remade with layers
 Waits for a layered BIM tooltip (size sources, pass-through stamps, door cuts, edits after Convert; §F.22 records the BIM answer). Not started.

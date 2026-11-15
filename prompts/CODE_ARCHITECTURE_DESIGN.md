@@ -533,6 +533,12 @@ calls, and a check in the real editor (`tests/realvsc/`). The list is in `devtoo
   key 1 records the `vscode://` link. INCONCLUSIVE if E4 hovered 0 fields with layers.
 - **Issue proved:** *"what code runs when I touch this field?"* needed reading the dictionary and four registries by hand; after: hover it, the whole stack in order.
 
+**F.22 RESULT (2026-11-15): built and merged, bim-ootb #3055 + fixes #3057, #3059; re-run on `main` @ `b71c15fe`: `§ERP_HOVER_W VERDICT PASS fail=0`.** E2 over every active AD window field:
+`fields=12323 with_layers=3311 lines_resolved=6590 wrong_line=0 unresolved=0 unported=199 (distinct 169)`; E2b `false_unported=0`; E4 (Sales Order, real page) `same_as_node=33`, `keys tried=112
+wrong_or_dead=0`. Built beyond the spec: model validators are listed from the index before the page's first save (`crud_overlay.js:1968` installs them lazily); Alt+1-9 for a focused field;
+the Java citation is the one ON/just above a registration, or the file's own only when the class names match (v0 put `PO.java` on model hooks). **Corrections, said to the owner:** #3055's
+`unported=213` was wrong (real callouts called UNPORTED: CalloutEngine is put in directly); a dead key in the tooltip (#3059). Prior art and the film: `prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 2.
+
 ### §F index — what is built (one line each; the full section is in the archive under the same name)
 
 | § | What | bim-ootb PR | The line that proves it |
