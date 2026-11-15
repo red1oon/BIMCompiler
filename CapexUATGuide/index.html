@@ -1486,6 +1486,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#b00-for-the-drafter-export-the-nine-sheets-from-bricscad-as-dxf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B00 · For the drafter: export the nine sheets from BricsCAD as DXF
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#b0-from-the-drawings-as-drawn-to-the-marked-set" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3520,6 +3531,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#b00-for-the-drafter-export-the-nine-sheets-from-bricscad-as-dxf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B00 · For the drafter: export the nine sheets from BricsCAD as DXF
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#b0-from-the-drawings-as-drawn-to-the-marked-set" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3772,8 +3794,8 @@
 <td>listed in chapter A2, all in the <a href="https://github.com/red1oon/bim-ootb/tree/main/capex/legacy">bim-ootb repository</a></td>
 </tr>
 <tr>
-<td>The <strong>Shed</strong> drawing set: the nine 2D sheets (.dxf) as drawn</td>
-<td>the nine Shed <code>.dxf</code> files you hold; chapter B0 turns them into the nine <code>…_marked.dxf</code> files that chapters B1 onward open (a tester given the <code>…_marked.dxf</code> copies skips B0)</td>
+<td>The <strong>Shed</strong> drawing set: nine 2D sheets as <strong>DXF</strong> files, one per sheet</td>
+<td>exported from BricsCAD by your drafter as in chapter <strong>B00</strong> (a <code>.dwg</code> cannot be opened); chapter B0 then turns them into the nine <code>…_marked.dxf</code> files that chapters B1 onward open (a tester given the <code>…_marked.dxf</code> copies skips B00 and B0)</td>
 </tr>
 </tbody>
 </table>
@@ -4076,6 +4098,7 @@
 <hr />
 <h2 id="b-bim-the-shed-from-2d-drawings-to-a-priced-model">B · BIM: the Shed, from 2D drawings to a priced model<a class="headerlink" href="#b-bim-the-shed-from-2d-drawings-to-a-priced-model" title="Permanent link">&para;</a></h2>
 <p>This chapter uses <strong>your own Shed drawing set</strong>: the single-storey farm shed, drawn as nine 2D sheets. You will see each drawing on its own first, then the nine arranged in place, then the 3D model built from them.</p>
+<p><strong>The drawings are shortened, so the model is too.</strong> The real shed is <strong>410 ft × 50 ft</strong> (124.97 m × 15.24 m): 41 bays of 10 ft, grid lines 01 to 42. The drawings show only grids <strong>01–06</strong> and <strong>35–42</strong>, with the expansion joint drawn between 06 and 35; the length dimension is drawn 130 ft long and its text is written over to read <em>410'-0"</em>. The Modeller builds what is drawn: <strong>13 bays, 39.62 m long</strong>. Every quantity and cost in B2b to B4 is for those 13 bays, about a third of the real shed's length. The 50 ft width is drawn to scale.</p>
 <p>The pictures were taken from the real Modeller with these same nine files. The label at the top of each picture and the red ring around a button were added for this guide; in the canvas-only pictures the drawing lines are shown at full strength so that they print clearly.</p>
 <p><strong>The nine sheets.</strong> From B1 on you open the <code>…_marked.dxf</code> copies: they carry the levels, heights and layer meanings the Modeller needs. You make them yourself from the nine sheets as drawn in <strong>B0</strong>; the result is the same, mark for mark, as the copies supplied for this test.</p>
 <table>
@@ -4134,6 +4157,133 @@
 </tr>
 </tbody>
 </table>
+<h3 id="b00-for-the-drafter-export-the-nine-sheets-from-bricscad-as-dxf">B00 · For the drafter: export the nine sheets from BricsCAD as DXF<a class="headerlink" href="#b00-for-the-drafter-export-the-nine-sheets-from-bricscad-as-dxf" title="Permanent link">&para;</a></h3>
+<p><em>This step is for whoever holds the drawing in BricsCAD.</em> Send the testers <strong>DXF files, one per sheet</strong>, not the <code>.dwg</code>: the Modeller opens <code>.dxf</code> files only. BricsCAD writes a DXF with its <strong>DXFOUT</strong> command, whose options are <em>Entities</em> (which entities to export), <em>Binary</em> (leave it off: the file is then written as ASCII text), <em>Version</em>, and the number of decimal places (see the <a href="https://help.bricsys.com/en-us/document/command-reference/d/dxfout-command">BricsCAD help for DXFOUT</a>).</p>
+<p><strong>Settings</strong></p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Use</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File type</td>
+<td><strong>DXF, ASCII</strong> (text)</td>
+<td>A <strong>binary</strong> DXF is refused by the Modeller</td>
+</tr>
+<tr>
+<td>DXF version</td>
+<td><strong>2018</strong> (any of 2000, 2004, 2007, 2010, 2013, 2018 gives the same model)</td>
+<td><strong>R12</strong> is refused: it has no drawing units and no hatches, and the gable walls are hatches</td>
+</tr>
+<tr>
+<td>Files</td>
+<td><strong>one DXF per sheet</strong></td>
+<td>The whole drawing in one file gives no model: the Modeller cannot tell the sheets apart</td>
+</tr>
+<tr>
+<td>Drawing units</td>
+<td><strong>Inches</strong> (system variable <code>INSUNITS</code>; the Shed drawing already has it)</td>
+<td>A file without its units gives no model</td>
+</tr>
+<tr>
+<td>Decimal places</td>
+<td><strong>16</strong> (the most DXFOUT offers)</td>
+<td>keeps the coordinates as exact as in the drawing</td>
+</tr>
+<tr>
+<td>Position</td>
+<td><strong>as drawn</strong>: do not move, rotate or scale a sheet before exporting it</td>
+<td>B0 types levels and one box in the drawing's own coordinates</td>
+</tr>
+<tr>
+<td>Layers, dimensions, hatches</td>
+<td><strong>as drawn</strong>: do not explode, rename or merge them</td>
+<td>The Modeller reads the grid lines from the dimensions, the gable walls from the hatches, and each element type from its layer name (B0.4)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B00.1</td>
+<td>Open the Shed drawing in BricsCAD. Check that the drawing units are <strong>Inches</strong></td>
+<td><code>INSUNITS</code> reads 1 (Inches)</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B00.2</td>
+<td>For each row of the table below: type <strong>DXFOUT</strong>, choose <strong>Entities</strong>, select everything inside that sheet's frame (a window from one corner of the frame to the other), and confirm. Leave <strong>Binary</strong> off, choose version <strong>2018</strong> and <strong>16</strong> decimal places, and save under the file name in the table</td>
+<td>One <code>.dxf</code> file per row, nine in all</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B00.3</td>
+<td>Send the nine <code>.dxf</code> files to the testers</td>
+<td>The testers open them in B0.1, which is the check: <strong>All defaults</strong> must list <strong>34</strong> yellow rows, then <strong>113</strong> after B0.2. Other counts mean the export differs from the drawings this guide was proven on: check the settings above and export again</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Frame in the drawing (its title)</th>
+<th>Save as</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Shed Floor Plan</td>
+<td><code>0_FLOOR_PLAN.dxf</code></td>
+</tr>
+<tr>
+<td>Beam Lay out Plan</td>
+<td><code>3_BEAM_LAYOUT.dxf</code></td>
+</tr>
+<tr>
+<td>Foundation Lay out Plan</td>
+<td><code>4_FOUNDATION_LAYOUT.dxf</code></td>
+</tr>
+<tr>
+<td>North and South Elevation (one frame, two drawings): the <strong>upper</strong> drawing, North</td>
+<td><code>1N_ELEV_NORTH.dxf</code></td>
+</tr>
+<tr>
+<td>the same frame, the <strong>lower</strong> drawing, South</td>
+<td><code>1S_ELEV_SOUTH.dxf</code></td>
+</tr>
+<tr>
+<td>West Elevation</td>
+<td><code>2_ELEV_WEST.dxf</code></td>
+</tr>
+<tr>
+<td>East Elevation</td>
+<td><code>7_ELEV_EAST.dxf</code></td>
+</tr>
+<tr>
+<td>Section A-A (Truss Detail)</td>
+<td><code>8_SECTION_AA_TRUSS.dxf</code></td>
+</tr>
+<tr>
+<td>the details frame (footing, column and grade-beam casting ratios, long sections of the beams)</td>
+<td><code>5_DETAILS.dxf</code></td>
+</tr>
+</tbody>
+</table>
+<p>The general <em>Section A-A</em> frame is not used in this test.</p>
+<p><em>Proven by measurement (witness W-UAT-SHED-SOURCE, 2026-11-15) with files written in each DXF version by a DXF library, not by BricsCAD itself: ASCII 2000 to 2018 give the same model, 512 bodies, identical; R12, binary DXF, the whole drawing in one file, and a file without its units give no model. The settings above follow from that; the DXFOUT options are quoted from BricsCAD's help.</em></p>
 <h3 id="b0-from-the-drawings-as-drawn-to-the-marked-set">B0 · From the drawings as drawn to the marked set<a class="headerlink" href="#b0-from-the-drawings-as-drawn-to-the-marked-set" title="Permanent link">&para;</a></h3>
 <p>The nine sheets as drawn carry no settings: the Modeller cannot tell which CAD layer is a column, how deep the footings go, or where the expansion joint is. In this step you tell it, in the <strong>Drawing metadata</strong> panel, and save the result as nine <code>…_marked.dxf</code> copies. Every value below is read from the drawings (the source is named in each row); nothing is invented. Type the numbers exactly as written.</p>
 <p>The panel has sections you open by clicking their title: <strong>All defaults</strong> (the yellow list), <strong>Sheets</strong> (one card per sheet), <strong>Layers</strong>, <strong>Body heights</strong>, <strong>Exclude areas</strong>. The badge at the top says <strong>Blocked · n</strong> (n things still missing) or <strong>Qualifies</strong>.</p>
@@ -4149,8 +4299,8 @@
 <tbody>
 <tr>
 <td>B0.1</td>
-<td>Open <a href="https://red1oon.github.io/bim-ootb/modeller/modeller.html">the Modeller</a>. <strong>📂 Open → Open 2D drawings (.dxf)…</strong> and select <strong>all nine</strong> sheets as drawn: <code>0_FLOOR_PLAN.dxf</code>, <code>3_BEAM_LAYOUT.dxf</code>, <code>4_FOUNDATION_LAYOUT.dxf</code>, <code>1N_ELEV_NORTH.dxf</code>, <code>1S_ELEV_SOUTH.dxf</code>, <code>2_ELEV_WEST.dxf</code>, <code>7_ELEV_EAST.dxf</code>, <code>8_SECTION_AA_TRUSS.dxf</code>, <code>5_DETAILS.dxf</code></td>
-<td>The <strong>Drawing metadata</strong> panel opens. The badge reads <strong>Blocked · 58</strong>. <strong>All defaults</strong> lists <strong>34</strong> yellow rows: what the Modeller read from the files (units, sheet roles and names, grid lines)</td>
+<td>Open <a href="https://red1oon.github.io/bim-ootb/modeller/modeller.html">the Modeller</a>. <strong>📂 Open → Open 2D drawings (.dxf)…</strong> and select <strong>all nine</strong> sheets exported in B00: <code>0_FLOOR_PLAN.dxf</code>, <code>3_BEAM_LAYOUT.dxf</code>, <code>4_FOUNDATION_LAYOUT.dxf</code>, <code>1N_ELEV_NORTH.dxf</code>, <code>1S_ELEV_SOUTH.dxf</code>, <code>2_ELEV_WEST.dxf</code>, <code>7_ELEV_EAST.dxf</code>, <code>8_SECTION_AA_TRUSS.dxf</code>, <code>5_DETAILS.dxf</code></td>
+<td>The <strong>Drawing metadata</strong> panel opens. The badge reads <strong>Blocked</strong> with a number (58 or 99 on the two exports this guide was proven on: the number depends on how the sheets were cut and is not a check). <strong>All defaults</strong> lists <strong>34</strong> yellow rows: what the Modeller read from the files (units, sheet roles and names, grid lines)</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -4162,7 +4312,7 @@
 <tr>
 <td>B0.2b</td>
 <td>Press <strong>Accept all</strong></td>
-<td><strong>0</strong> yellow rows. The badge reads <strong>Blocked · 48</strong>. In <strong>Sheets</strong>, eight cards now show a role (3 PLAN, 4 ELEV, 1 SECTION); <code>5_DETAILS</code> is the notes sheet</td>
+<td><strong>0</strong> yellow rows. The badge still reads <strong>Blocked</strong> with a smaller number (48 or 89). In <strong>Sheets</strong>, eight cards now show a role (3 PLAN, 4 ELEV, 1 SECTION); <code>5_DETAILS</code> is the notes sheet</td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
 <tr>
@@ -4525,7 +4675,7 @@
 <tbody>
 <tr>
 <td>B3.1</td>
-<td>Note the Viewer’s total cost (Find panel: <code>total cost</code>) and the schedule’s finish date (<strong>Time Machine</strong>, key <strong>T</strong>)</td>
+<td>Note the Viewer’s total cost (Find panel: <code>total cost</code>; it is the cost of the 13 drawn bays, see the note at the top of chapter B) and the schedule’s finish date (<strong>Time Machine</strong>, key <strong>T</strong>)</td>
 <td>Write both down: <strong><em>_</em></strong><em> / <strong><em>_</em></strong></em></td>
 <td>☐ Pass ☐ Fail</td>
 </tr>
@@ -4998,7 +5148,7 @@
 <td>B · BIM</td>
 <td></td>
 <td></td>
-<td>/ 36 (25 if you were given the marked copies and skipped B0)</td>
+<td>/ 39 (25 if you were given the marked copies and skipped B00 and B0)</td>
 <td></td>
 </tr>
 <tr>
