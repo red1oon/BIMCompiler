@@ -1333,10 +1333,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#keep-a-modeller-open-between-lines-modelopen-modelconvert-modeladdbay-modelundo-modelclose" class="md-nav__link">
+  <a href="#keep-a-modeller-open-between-lines-modelopen-modelconvert-modeladdbay-modelundo-modelsave-modelclose" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Keep a Modeller open between lines: model.open, model.convert, model.addbay, model.undo, model.close
+        Keep a Modeller open between lines: model.open, model.convert, model.addbay, model.undo, model.save, model.close
       
     </span>
   </a>
@@ -1512,6 +1512,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Work at the terminal: mis.js">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-menu-on-a-screen-m-and-mismenu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The menu on a screen: /M and mis.menu
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3774,10 +3791,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#keep-a-modeller-open-between-lines-modelopen-modelconvert-modeladdbay-modelundo-modelclose" class="md-nav__link">
+  <a href="#keep-a-modeller-open-between-lines-modelopen-modelconvert-modeladdbay-modelundo-modelsave-modelclose" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Keep a Modeller open between lines: model.open, model.convert, model.addbay, model.undo, model.close
+        Keep a Modeller open between lines: model.open, model.convert, model.addbay, model.undo, model.save, model.close
       
     </span>
   </a>
@@ -3953,6 +3970,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Work at the terminal: mis.js">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-menu-on-a-screen-m-and-mismenu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The menu on a screen: /M and mis.menu
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -4364,19 +4398,24 @@ exit 0
 &quot;modelUnchanged&quot;:true
 </code></pre></div>
 <p><code>count</code> is everything the walk would place. <code>provisional</code> are positions the walker itself marks as not final, for example a fitting with no ceiling found above it. <code>rules</code> is the rule set the building's class uses: a house walks the residential rules. A walk that places nothing answers <code>inconclusive</code> with the walker's reason.</p>
-<h2 id="keep-a-modeller-open-between-lines-modelopen-modelconvert-modeladdbay-modelundo-modelclose">Keep a Modeller open between lines: <code>model.open</code>, <code>model.convert</code>, <code>model.addbay</code>, <code>model.undo</code>, <code>model.close</code><a class="headerlink" href="#keep-a-modeller-open-between-lines-modelopen-modelconvert-modeladdbay-modelundo-modelclose" title="Permanent link">&para;</a></h2>
-<p>These five lines drive ONE Modeller page kept open in the background (headless, on the CPU, no graphics card), so each line acts on what the line before left. <code>model.open sheets=&lt;folder or a.dxf,b.dxf&gt; type="Farming Shed"</code> opens the 2D sheets, <code>model.convert</code> makes the 3D model (the page's own Convert), <code>model.addbay end=high|low</code> adds one bay at that end of a repeating-bay building, <code>model.undo</code> takes the last change back, and <code>model.close</code> stops the page. The page does all the work with its own functions; the line presses what a person presses and prints the page's own answer. Nothing is saved: closing drops the model. They need a <code>bim-ootb</code> checkout, and the folder you run them from holds the session (a file <code>.model_session.json</code>; the port listens on this machine only and every request carries a one-time token).</p>
-<p>Rules you will meet: a line before <code>model.open</code> is refused ("no session: model.open first"), and so is a second <code>model.open</code>, a second <code>model.convert</code>, and <code>model.addbay</code> before Convert. A bay is offered only when the building type declares one (Farming Shed does); with no <code>type=</code> the bay is refused, saying the type declares no rule. The sheets must carry their markings: plain sheets of a drawing do not pass the gate. Each line takes a few seconds (here: open about 6 s, convert 3 s, a bay 3 s; on a bigger set of sheets convert took up to 15 s).</p>
+<h2 id="keep-a-modeller-open-between-lines-modelopen-modelconvert-modeladdbay-modelundo-modelsave-modelclose">Keep a Modeller open between lines: <code>model.open</code>, <code>model.convert</code>, <code>model.addbay</code>, <code>model.undo</code>, <code>model.save</code>, <code>model.close</code><a class="headerlink" href="#keep-a-modeller-open-between-lines-modelopen-modelconvert-modeladdbay-modelundo-modelsave-modelclose" title="Permanent link">&para;</a></h2>
+<p>These lines drive ONE Modeller page kept open in the background (headless, on the CPU, no graphics card), so each line acts on what the line before left. <code>model.open sheets=&lt;folder or a.dxf,b.dxf&gt; type="Farming Shed"</code> opens the 2D sheets, <code>model.convert</code> makes the 3D model (the page's own Convert), <code>model.addbay end=high|low</code> adds one bay at that end of a repeating-bay building, <code>model.undo</code> takes the last change back, and <code>model.close</code> stops the page. The page does all the work with its own functions; the line presses what a person presses and prints the page's own answer. The model lives in that page until you save it: <code>model.save</code> writes it to a <code>.db</code> file in this folder, and <code>model.close</code> saves first when the model changed and a save file is known. They need a <code>bim-ootb</code> checkout, and the folder you run them from holds the session (a file <code>.model_session.json</code>; the port listens on this machine only and every request carries a one-time token).</p>
+<p>Rules you will meet: a line before <code>model.open</code> is refused ("no session: model.open first"), and so is a second <code>model.open</code>, a second <code>model.convert</code>, and <code>model.addbay</code> before Convert. A bay is offered only when the building type declares one (Farming Shed does); with no <code>type=</code> the bay is refused, saying the type declares no rule. The sheets must carry their markings: plain sheets of a drawing do not pass the gate. Each line takes a few seconds (here: open about 6 s, convert 3 s, a bay 3 s; on a bigger set of sheets convert took up to 15 s). <strong>Saving:</strong> name the file once, on <code>model.open … file=shed.db</code> or on the first <code>model.save file=shed.db</code>. A save runs the page's own Save: the clash check first (a RED clash blocks the save, as it does on screen, and nothing is written), then the model is written as a native <code>.db</code>. On this shed a save takes about half a second, and the answer gives the time of each step. <code>model.close</code> with unsaved changes and no file is refused and the session stays open: save, or <code>model.close discard=Y</code> to drop the changes on purpose. A save before anything is made is refused, in the page's words.</p>
 <p>The block below copies a folder of 9 marked sheets of a shed, named by <code>SHED_SHEETS</code>, into <code>shed/</code>, and runs the lines one after the other; set <code>SHED_SHEETS</code> to your own folder of marked <code>.dxf</code> sheets.</p>
 <!-- run: model_ses cut=200 -->
-<div class="highlight"><pre><span></span><code>$ rm -rf shed; mkdir shed; cp &quot;$SHED_SHEETS&quot;/*.dxf shed/; D=&#39;node common/door/door.js --list&#39;; eval &quot;$D &#39;model.convert&#39;&quot; | grep -E &#39;^error:&#39;; eval &quot;$D &#39;model.open sheets=shed type=\&quot;Farming Shed\&quot;&#39;&quot; | grep -E &#39;^summary:&#39;; eval &quot;$D model.convert&quot; | grep -E &#39;^summary:&#39;; eval &quot;$D &#39;model.addbay end=high&#39;&quot; | grep -E &#39;^(copies_by_class|summary):&#39;; eval &quot;$D model.undo&quot; | grep -E &#39;^summary:&#39;; eval &quot;$D model.close&quot; | grep -E &#39;^closed:&#39;; eval &quot;$D model.undo&quot; | grep -E &#39;^error:&#39;; rm -rf shed .model_session.json
+<div class="highlight"><pre><span></span><code>$ rm -rf shed shed.db; mkdir shed; cp &quot;$SHED_SHEETS&quot;/*.dxf shed/; D=&#39;node common/door/door.js --list&#39;; eval &quot;$D &#39;model.convert&#39;&quot; | grep -E &#39;^error:&#39;; eval &quot;$D &#39;model.open sheets=shed type=\&quot;Farming Shed\&quot; file=shed.db&#39;&quot; | grep -E &#39;^summary:&#39;; eval &quot;$D model.save&quot; | grep -E &#39;^error:&#39;; eval &quot;$D model.convert&quot; | grep -E &#39;^summary:&#39;; eval &quot;$D model.save&quot; | grep -E &#39;^(file|bytes|elements):&#39;; eval &quot;$D &#39;model.addbay end=high&#39;&quot; | grep -E &#39;^(copies_by_class|summary):&#39;; eval &quot;$D model.undo&quot; | grep -E &#39;^summary:&#39;; eval &quot;$D model.close&quot; | grep -E &#39;^closed:&#39;; ls -l shed.db | awk &#39;{print &quot;shed.db bytes: &quot; $5}&#39;; eval &quot;$D model.undo&quot; | grep -E &#39;^error:&#39;; rm -rf shed shed.db .model_session.log
 error: no session in this folder: model.open first
 summary: 9 sheets open, 445 bodies read (4 left out), the gate is open
+error: author something first (the page&#39;s Save has nothing to save)
 summary: 444 elements made; add-a-bay is offered for Farming Shed
+file: shed.db
+bytes: 1298432
+elements: 444
 copies_by_class: {&quot;IfcColumn&quot;:2,&quot;IfcBeam&quot;:2,&quot;IfcFooting&quot;:2,&quot;IfcWall&quot;:2,&quot;IfcMember&quot;:12,&quot;IfcPlate&quot;:9}
 summary: one bay added at the high end (29 copies, pitch 3.0480 m), the gate is clean, cost 15898 USD (10722 added, 5176 changed)
 summary: undone: 473 -&gt; 444 elements
 closed: true
+shed.db bytes: 1343488
 error: no session in this folder: model.open first
 </code></pre></div>
 <p><code>model.addbay end=low</code> adds the bay at the other end (a different hinge, the same 29 copies). Not checked by these lines: the cost against an independent count (a separate test does that), and more than one session in one folder.</p>
@@ -4962,8 +5001,18 @@ op-log: 153 ops
 </tr>
 <tr>
 <td>Keep a Modeller open</td>
-<td><code>d 'model.open sheets=shed type="Farming Shed"'</code> then <code>d model.convert</code>, <code>d 'model.addbay end=high'</code>, <code>d model.undo</code>, <code>d model.close</code></td>
-<td>the 2D sheets made 3D, one bay added and taken back; each line a few seconds</td>
+<td><code>d 'model.open sheets=shed type="Farming Shed" file=shed.db'</code> then <code>d model.convert</code>, <code>d 'model.addbay end=high'</code>, <code>d model.undo</code>, <code>d model.close</code></td>
+<td>the 2D sheets made 3D, one bay added and taken back; each line a few seconds; close saves to shed.db</td>
+</tr>
+<tr>
+<td>Save the model now</td>
+<td><code>d model.save</code> (or <code>d 'model.save file=shed.db'</code> the first time)</td>
+<td>the clash check, then shed.db written; refused while a RED clash stands</td>
+</tr>
+<tr>
+<td>Close without saving</td>
+<td><code>d 'model.close discard=Y'</code></td>
+<td>the changes dropped on purpose (a plain close refuses when there is no save file)</td>
 </tr>
 <tr>
 <td>Try a whole file first</td>
@@ -4974,6 +5023,16 @@ op-log: 153 ops
 <td>One table from a CSV</td>
 <td><code>d 'ninja.exec file=CL_Client.csv'</code></td>
 <td>the table from the header, its lines loaded; run again, only new lines load</td>
+</tr>
+<tr>
+<td>The menu on a screen</td>
+<td><code>d /M</code> (or <code>d '/M role=102'</code>)</td>
+<td>the ERP menu; Enter opens a window's list, Esc goes back, <code>/</code> finds</td>
+</tr>
+<tr>
+<td>Find a menu entry</td>
+<td><code>d 'mis.menu role=102 find=partner'</code></td>
+<td>the entries whose name has "partner", with their folders</td>
 </tr>
 <tr>
 <td>Work in another window</td>
@@ -5030,6 +5089,40 @@ the line it will run: mis.delete kind=C_BPartner id=1300112
 -&gt; mis.list kind=C_BPartner columns=C_BPartner_ID,Value,Name,Logo_ID,C_BP_Group_ID names=Y limit=10 offset=0 value=GD300
 </code></pre></div>
 <p>Edit works the same way: it shows only the columns the window lets a person edit, with lookups as names, and sends only what you changed. Copy starts a new record from the pointed one, so you must change what must be unique (a duplicate is refused and your typing is kept). Set <code>MIS_SESSION_FILE=session.door</code> and a terminal session records the lines it ran, one per line, as a script you can read and run again.</p>
+<h3 id="the-menu-on-a-screen-m-and-mismenu">The menu on a screen: <code>/M</code> and <code>mis.menu</code><a class="headerlink" href="#the-menu-on-a-screen-m-and-mismenu" title="Permanent link">&para;</a></h3>
+<p><code>node common/door/door.js /M</code> (with the cheatsheet's alias, <code>d /M</code>) opens the ERP menu on the terminal, the same menu the browser ERP shows, with the same folders in the same order. Add a role (<code>d '/M role=102'</code>) and you see only what that role may open. Up and Down, or a number, pick an entry; Enter opens a folder, or a window's list screen (the <code>mis.js</code> screen above, on the table of the window's first tab); Esc goes back up, and from the top it quits; <code>/</code> finds an entry by name; <code>?</code> shows the keys. A process, report or form says that it opens in the browser ERP, and runs nothing. As everywhere on this page, the screen only types door lines for you, and it prints each one before it runs it (the <code>-&gt;</code> lines), so what you do on the screen you can also type, or put in a script.</p>
+<p>The menu itself is a door line, <code>mis.menu [role=] [find=]</code>. Here the screen is driven with typed keys (<code>--plain</code> reads them from the input), finding "partner" and opening the third match:</p>
+<!-- run: menu_screen cut=200 -->
+<div class="highlight"><pre><span></span><code>$ rm -f /tmp/fast_guide_menu.ops; printf &#39;/\n=partner\nEnter\n3\nEsc\nEsc\nq\n&#39; | BIM_OBJECT_OPLOG=/tmp/fast_guide_menu.ops node common/door/door.js &#39;/M role=102&#39; --plain | grep -E &#39;^(-&gt; |key |Menu|find|&gt; )&#39;
+-&gt; mis.menu role=102
+Menu   (role 102)   294 windows
+&gt; 1  ▸ System Admin
+key /
+Menu   (role 102)   294 windows
+&gt; 1  ▸ System Admin
+find: _   (Enter search, Esc cancel)
+key =partner
+Menu   (role 102)   294 windows
+&gt; 1  ▸ System Admin
+find: partner_   (Enter search, Esc cancel)
+key Enter
+-&gt; mis.menu find=partner role=102
+find &quot;partner&quot;   (role 102)   294 windows
+&gt; 1    System Admin &gt; Data &gt; Data Import &gt; Import Business Partner
+key 3
+-&gt; (open Business Partner Group: the list screen on C_BP_Group)
+-&gt; mis.describe kind=C_BP_Group role=102
+-&gt; mis.list kind=C_BP_Group columns=C_BP_Group_ID,Value,Name,Description names=Y limit=10 offset=0 role=102
+key Esc
+find &quot;partner&quot;   (role 102)   294 windows
+&gt; 3    Partner Relations &gt; Business Partner Rules &gt; Business Partner Group
+key Esc
+Menu   (role 102)   294 windows
+&gt; 1  ▸ System Admin
+key q
+Menu   (role 102)   294 windows
+&gt; 1  ▸ System Admin
+</code></pre></div>
 <h2 id="choose-how-the-answer-is-shown-and-keep-it">Choose how the answer is shown, and keep it<a class="headerlink" href="#choose-how-the-answer-is-shown-and-keep-it" title="Permanent link">&para;</a></h2>
 <p>The reply is the JSON envelope unless you ask otherwise. Three switches show the rows of an answer as something a person or a spreadsheet can read; the envelope is still what the door records:</p>
 <ul>
@@ -5416,7 +5509,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <tr>
 <td><code>model.open</code></td>
 <td>Open 2D sheets in the Modeller</td>
-<td><code>sheets</code>, <code>type</code> (optional)</td>
+<td><code>sheets</code>, <code>type</code> (optional), <code>file</code> (optional)</td>
 <td>trial</td>
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
@@ -5446,9 +5539,17 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <td>a bim-ootb checkout</td>
 </tr>
 <tr>
+<td><code>model.save</code></td>
+<td>Save the open model</td>
+<td><code>file</code> (optional)</td>
+<td>writes</td>
+<td>human, ai</td>
+<td>a bim-ootb checkout</td>
+</tr>
+<tr>
 <td><code>model.close</code></td>
 <td>Close the Modeller session</td>
-<td>none</td>
+<td><code>discard</code> (optional)</td>
 <td>trial</td>
 <td>human, ai</td>
 <td>a bim-ootb checkout</td>
@@ -5606,6 +5707,14 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 <td>a bim-ootb checkout</td>
 </tr>
 <tr>
+<td><code>mis.menu</code></td>
+<td>Read the menu</td>
+<td><code>role</code> (optional), <code>find</code> (optional)</td>
+<td>read</td>
+<td>human, ai</td>
+<td>a bim-ootb checkout</td>
+</tr>
+<tr>
 <td><code>ninja.rollback</code></td>
 <td>Undo a Ninja bundle</td>
 <td><code>bundle</code>, <code>dry</code> (optional)</td>
@@ -5705,7 +5814,7 @@ curl -O https://red1oon.github.io/bim-ootb/viewer/tools/viewer_driver.js
 </table>
 <!-- /GEN:verbs -->
 
-<p><strong>Coverage today.</strong> The list is small on purpose: 57 verbs cover the Modeller's grid edits, its walker and a Modeller kept open between lines, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 6 ERP verbs for a document's life and 13 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.</p>
+<p><strong>Coverage today.</strong> The list is small on purpose: 59 verbs cover the Modeller's grid edits, its walker and a Modeller kept open between lines, a few Viewer questions, the schedule, generic object reading, counting and writing, and the first ERP document verbs. The Viewer has 64 actions a person can press, and the door offers 5 Viewer verbs. The ERP has 1157 documents and processes, and the door offers 6 ERP verbs for a document's life and 14 MIS verbs that work on any table, and keeps 10 old names so earlier lines still run. So this is a start, not the whole menu.</p>
 <h2 id="what-is-not-checked">What is not checked<a class="headerlink" href="#what-is-not-checked" title="Permanent link">&para;</a></h2>
 <p>A reply lists what its check did not cover. For the Modeller's edit report the list is:</p>
 <!-- run: notchecked cut=520 -->
