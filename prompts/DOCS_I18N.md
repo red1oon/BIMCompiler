@@ -157,6 +157,46 @@ Cost of each English edit is now up to six translations: the staleness check (§
 **Found for the CLI session, not a translation issue:** the Indonesian draft notes that English line 441 says `erp.read` does not fill in the order's own lines, while the run block under it shows a `children` list.
 **Next:** §6c, the cross-language search vocabulary.
 
+## 6f. Keeping translations in step when the English changes (spec; owner 2026-11-16: *"think also about when changes are made how to make them traverse easily without redoing the translations"*)
+**Issue it removes:** today any edit of an English page marks every translation of it "out of date" (`source_sha`, §3), and the only remedy would be a full retranslation.
+- `FastScriptGuide.md` is regenerated from real runs (`gen_fast_script_guide.js --refresh`), so it changes often.
+- **Measured** on its last real edit (`93611da3b` → `89a01313d`, 143 lines inserted): 78 of the new lines are inside code blocks, which are never translated, and only 34 are prose.
+**The rule that makes it possible (new witness claim I11):** a translated page keeps the English page's LINE STRUCTURE. The body has the same number of lines; fence, comment and blank lines sit at the same positions; one English line becomes one translated line. All six `FastScriptGuide` pages already do (1,327 body lines each).
+**Tool: `scripts/guide/i18n_sync.js <Page> [--apply]`.** Per translated page:
+1. Recover the OLD English: the git version of `docs/<Page>.md` whose sha256 prefix equals the page's `source_sha`. Not found → it refuses, naming the hash; it never guesses.
+2. Diff old English → new English line by line (longest common subsequence).
+3. Classify each NEW English line:
+   - **kept:** unchanged, so the translated line at its old position is reused byte for byte;
+   - **carried:** a fence, code, comment or blank line, copied from the new English verbatim (no translation exists for it);
+   - **patched:** a changed prose line whose only difference is in code spans or numbers (same text once they are masked). The old→new tokens are substituted inside the translated line when each old token occurs in it exactly as often as in the old English line; otherwise the line is to-do;
+   - **to-do:** changed or new prose. The new English line is written in its place, and the line number, old English, new English and old translation go to `<Page>.<lang>.todo.json`.
+4. With `--apply` it writes the page. `source_sha` moves to the new English hash ONLY when there are 0 to-do lines; otherwise the page keeps its old hash, so it shows "out of date" until the to-do lines are translated (one small job, the lines only) and `--apply` runs again.
+**Claims, W-I18N-SYNC (`scripts/guide/witness_i18n_sync.js`, real git versions as fixtures; falsifier `SYNC_BREAK=`):**
+- **Y1 kept:** every line the diff marks unchanged carries its translation byte for byte (X of N).
+- **Y2 carried:** every fence, code, comment and blank line of the result equals the new English.
+- **Y3 patched:** each patched line has exactly the new English line's code spans and numbers.
+- **Y4 to-do is honest:** every changed prose line that is not token-only is listed and not silently kept. Falsifier `keepstale` (reuse the old translation for a changed line) FAILS it.
+- **Y5 the result is a valid page:** with the to-do lines still in English, the result passes W-DOCS-I18N I2-I5 and I11 against the NEW English.
+- **Y6 no work lost:** the to-do count is at most the number of changed prose lines, and stated (the saving against a full retranslation, X of N lines).
+
+**§6f RESULT (2026-11-16; logs read):** `scripts/guide/i18n_lines.js` is the one line reader, used by both the sync tool and the witness. Alongside it: `i18n_sync.js` and `witness_i18n_sync.js`.
+**W-I18N-SYNC 6/0**, on real git versions: the six `FastScriptGuide` translations (made from `276f5bede717d2ac`) synced to `93611da3b`, a real 143-line edit. Per language, 1,291 lines:
+- 949 carried, 321 kept, 5 patched (tokens swapped inside the translation), and 16 to translate.
+- In total, 96 of 7,746 lines are left to translate: **1.2% of a full retranslation**.
+- Falsifier `keepstale` FAILS Y4 and Y5.
+**I11 added to W-DOCS-I18N** (same line structure as the English). Falsifier `joinlines` FAILS it.
+**Found by the logs, fixed:**
+1. The one blank line after a translated page's front matter was counted as body line 1. The reader now treats it as part of the front matter, and the sync writes it back.
+2. `USER_GUIDE.es`/`.de` had joined two wrapped lines of the privacy admonition (107 against 108). They are split again at the same place; a wrapped line renders the same.
+3. `index.es`/`USER_GUIDE.es` had an unquoted `: ` in `description:`, so MkDocs silently dropped the whole front matter and the page showed "out of date". I6 caught it through the built page. The values are now quoted, and I6 also parses every translated front matter with Python `yaml`.
+4. Instrument errors in the witness: it looked for the home page at `<lang>/index/index.html` instead of `<lang>/index.html`, and it did not resolve site-absolute `/BIMCompiler/…` alternates.
+**More pages (owner: *"we use our intuition"*):** the home page `index.md` and `USER_GUIDE.md` in all six languages. These two put the chooser where every visitor arrives.
+**W-DOCS-I18N 8/0 on 18 translated pages** (3 pages × 6 languages). 414 fallback copies; 504 built pages, 21 with a chooser. Each of the 7 falsifiers FAILS its claim.
+**How an English edit reaches the translations now:**
+1. `node scripts/guide/i18n_sync.js <Page> --apply`
+2. Translate only the lines listed in `docs/<Page>.<lang>.todo.json`, one small job per language.
+3. Run `--apply` again: `source_sha` moves on and the "out of date" line goes.
+
 ## 7. Open, one question at a time (owner)
 1. ~~Reviewers~~: decided, none (§6b).
 2. ~~Pilot~~: decided, the CLI user guide `FastScriptGuide.md`, every language progressively (§6b).
