@@ -15,7 +15,7 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
 | P0 | Inventory and measurement (CLI strings ~235 in 10 files; Help duplication; derived-tip candidates) | docs only | DONE 2026-11-16, DOCS_I18N §4b-§4c |
 | **P1** | **Help read layer** over the dictionary: resolve Help/Description by level through element → column → field, derive a tip where none is written | new files in bim-ootb `erp/` only | BUILT 2026-11-16, W-HELP-CATALOG 5/0 (bim-ootb `feat/help-catalog`), see P1 RESULT |
 | P2 | `Msg` pass-through for CLI strings (no behavior change), then file by file; stable key per message; `explain <key>` | `common/door/*` | **P2a BUILT 2026-11-16** (`words_core.js`, W-MSG-CATALOG 4/0, see §3 RESULT); next file `door.js` (P2b) |
-| P3 | `tip` + worked example per word in `words.json`; hint lines on the most-hit refusals (person's terminal, level set) | `words.json`, door render | after P2 starts |
+| P3 | Student level for `help <word>` from the vocabulary (P3a); hint lines on the most-hit refusals (person's terminal, level set) (P3b) | `words_core.js`, `red1.js`, door render | **P3a BUILT 2026-11-16** (W-HELP-STUDENT 5/0, §4 RESULT; no `words.json` edit was needed); P3b after P2b |
 | P4 | Guides pull terms from the same keys at build time | `docs/`, MkDocs | after P2 |
 | P5 | Translations (six languages, `DOCS_I18N.md`), reviewer banner | catalog + docs | after P4 |
 
@@ -81,5 +81,59 @@ Background, measurements and prior art are in `prompts/DOCS_I18N.md` §4b-§4d (
 - `msg_core.js` and `messages.json` must join the door's flat download: `FILES`, `bim_mcp.js` `DL`, W-MCP-DOWNLOAD.
 - It also needs `match(text)`, so a person's terminal can find the key from the envelope's English `why` without a new envelope field.
 
+## 4. P3a spec: a Student level for `help <word>`, built from the vocabulary (bim-ootb `feat/help-student`)
+**Owner order 2026-11-16:** "Proceed" on the item ranked first in §4c: a tip and a worked example per word.
+**Issue it removes:** `help clash` gives one dry line (`clash: clash two disciplines …`) and a bare verb name. A learner is not told what the word does, what to type, what is taken from where they are, or which full line it becomes.
+**Source, never invented:** every fact in the Student block is already in the vocabulary.
+- `verbs.json` holds the verb's `description` and each input's `description`. It is the same text the AI connector reads, so a person and an AI get one vocabulary.
+- The word's own example (`ex` in `words.json`) is expanded by the expander itself into the line it runs. W-RED1-HELP H3 already runs every example.
+- Only the labels are new, and they go in the catalog as `words.student.*` keys.
+- No word, verb or input text is written by this lane, and `words.json` and `verbs.json` are not edited. The tip per word that §4c proposed as a new `words.json` key is NOT needed: the verb's description is the tip.
+**What a person sees at the Student level** (`help <word>` only; groups, the overview and the door's help are unchanged). After each form line of the short help, four lines are added:
+```
+clash: <the short help, unchanged>
+  in a building: clash ARC MEP   → viewer.clashes
+    what it does: <the verb's description from verbs.json>
+    you type: discA (<its description>) · discB (<its description>)
+    taken from where you are: building
+    e.g. in Duplex: viewer.clashes building=Duplex discA=ARC discB=MEP
+```
+- **"you type"** lists the form's own values in order. A form that needs none says so (a catalog key).
+- **"taken from where you are"** lists the inputs the place fills (building, kind, role), as the expander puts them on the line. Nothing → the line is left out.
+- **The sample place** is the one W-RED1-HELP already uses: Duplex for a building, Duplex/Element for a kind, Order for an ERP kind, none for anywhere.
+- **The worked line** is the example expanded in that place without a session. That needs one new option, `expand(st, toks, {plain: true})`, which skips the interactive pick and ask branches. An example the expander refuses gets no worked line and is counted.
+**The level is a person's setting, beside the language (§0):**
+- In a session, `level student` and `level short` (or `level` alone) set it. It is handled like `role` and kept in the session state. The prompt is unchanged.
+- `level xyz` is refused, with the legal values named.
+- One shot: `red1 --level student help clash`.
+- With no level set, every byte is as today. Help never goes through the door, so the envelope and the journal are untouched.
+**Files:** `words_core.js` (`helpText(topic, level)`, the `level` setting, the `plain` expand option), `vocab/messages.json` (new keys), `red1.js` (`helpOf` passes the level; the `--level` flag).
+**Claims, witness W-HELP-STUDENT (`common/door/tests/witness_help_student.js`; falsifier `STUDENT_BREAK=`):**
+- **S1 short unchanged.** Issue: the new level leaks into the default. For every topic (the overview, each group, each word, an unknown word), `helpText(t)` and `helpText(t, 'short')` equal the pre-change core (pinned `MSG_BASE`) byte for byte. W-RED1-HELP stays green unchanged.
+- **S2 every fact is sourced.** Issue: an invented or wrong tip. For every word form, recomputed independently from `verbs.json`:
+  - "what it does" is exactly the description of the verb the example expands to;
+  - "you type" names the form's values in order, each with exactly its input description;
+  - "taken from where you are" is exactly the verb's inputs among building, kind and role that the sample place supplies.
+  - Falsifier `swapdesc` (another verb's description) FAILS it.
+- **S3 the worked line replays.** Issue: an example that does not run. Each worked line passes the door's own validator and equals the line the session prints (`→ …`) for the same example in the same place. Falsifier `dropctx` (the building left off) FAILS it.
+- **S4 coverage stated.** X of N word forms have a block. Any form with no example, no description, or an example the expander refuses is named in the log, never counted as a pass. VACUOUS if N = 0.
+- **S5 the setting.** Issue: the level does not reach the person, or sticks. In one session, `level student`, `help clash`, `level`, `help clash` print the Student block and then the short text. A one-shot `--level student help clash` prints the same bytes as the session's Student block. `level xyz` is refused.
+**P3a RESULT (2026-11-16, bim-ootb #3083 `feat/help-student`; logs read):** W-HELP-STUDENT **5 pass / 0 fail**.
+- S1: default and `short` help equal the pre-change core (`78aa51b6`) on 30 of 30 topics.
+- S2: every fact of the 31 Student blocks equals `verbs.json`, recomputed apart from the core.
+- S3: 31 of 31 worked lines pass the door's validator and equal the line the shell prints for that example in that place.
+- S4: 31 of 31 forms have a block.
+- S5: `level student` then `help clash` in a session prints the one-shot `--level student` bytes (891 against 104 short); `level` goes back; `level xyz` is refused in the session and in a one shot (exit 2).
+- Falsifiers: `swapdesc` FAILs S2 (31 of 31 wrong); `dropctx` FAILs S2 and S3 (19 of 31).
+- Also green after merging `origin/main`: W-MSG-CATALOG 4/0, W-RED1-API/-ASSIST/-CD/-DRAW/-HELP/-LS/-MENU/-PAGE/-REPORT/-RUN/-SHELL/-WARM/-WELCOME/-WORDS and W-DOOR-HELP.
+- **Found by reading the logs, fixed:**
+  1. The `new` word's example is a placeholder, `new <Column>=<value>`, which the expander refuses as too many values. W-RED1-HELP H3 already rewrites such placeholders before running them. The rule now: a pair `<Key>=<value>` is read as `Key=value`, the shape the word's own help line shows (`new Column=value …`). The witness applies the same rule apart from the core.
+  2. W-MSG-CATALOG M3 caught `M(cond ? 'a' : 'b')`, where a key was chosen by a ternary and was invisible to the literal check. It is now two literal calls.
+  3. W-MSG-CATALOG M2 counted the 12 new keys as unreached. M2's scope is the P2a move, so the `words.level_*` and `words.student.*` keys are now named as handed to W-HELP-STUDENT.
+- Deletion budget: `words_core.js` + `red1.js` +38/-13. No literal was added, and `words.json` and `verbs.json` are untouched.
+- The CLI session cleared `red1.js` (help, argv) and `words_core.js` before the edit.
+**Open for the owner:** whether the greeting or the short `help` should mention `level student`, since today a person has to know it exists. Either change alters today's bytes, so it is the owner's call.
+**Not in P3a:** hint lines on refusals (P3b, needs P2b), Student text for groups and the overview, the ERP field Help (the P1 layer, separate), translations, and any mention of `level` in the greeting or the short help (that would change today's bytes; the owner decides).
+
 ## STATUS
-2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), bim-ootb PR #3082. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.
+2026-11-16: P1 built and witnessed (5/0), merged as bim-ootb #3079. P2a built and witnessed (W-MSG-CATALOG 4/0), merged as bim-ootb #3082. P3a built and witnessed (W-HELP-STUDENT 5/0), bim-ootb #3083. Depends on `prompts/DOCS_I18N.md`, `prompts/CLI_ERP_IVR.md` (CLI session owns), `prompts/ERP_UI_LOCALES.md`.
