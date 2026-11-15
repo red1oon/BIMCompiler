@@ -11,7 +11,9 @@
 //      or "out of date" when source_sha is not the English file's hash; every fallback copy shows "not translated yet", noindex and a canonical link to English.
 //   I7 ISSUE (the chooser links to a page that is not there): each built page lists, as hreflang alternates, exactly the languages its source exists in (none when
 //      only English), and every alternate href resolves to a built file.
-//   Falsifiers (DOCS_BREAK=): blockdigit (I2) · codespan (I3) · swapdigits (I4) · dropheading (I5) · noreview (I6) · addalt (I7).
+//   I11 ISSUE (an English edit can no longer be carried into the translation line by line, §6f): the translated body has as many lines as the English, with
+//      every fence, comment and blank line at the same position (scripts/guide/i18n_lines.js, the reader i18n_sync.js uses).
+//   Falsifiers (DOCS_BREAK=): joinlines (I11) · blockdigit (I2) · codespan (I3) · swapdigits (I4) · dropheading (I5) · noreview (I6) · addalt (I7).
 //   Run: node scripts/guide/witness_docs_i18n.js <built_site_dir> > build/witness_docs_i18n.log 2>&1
 'use strict';
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), cp = require('child_process'), os = require('os');
@@ -67,7 +69,8 @@ L('translated pages=' + pairs.length + ' ' + JSON.stringify(pairs.map(p => p.pag
 
 // ── I2-I6 per translated page ──
 if (!pairs.length) { ['I2', 'I3', 'I4', 'I5', 'I6'].forEach(i => incon(i, 'VACUOUS: no translated page')); }
-const bad = { I2: [], I3: [], I4: [], I5: [], I6: [] };
+const bad = { I2: [], I3: [], I4: [], I5: [], I6: [], I11: [] };
+const LN = require('./i18n_lines.js');
 pairs.forEach(p => {
   const id = p.page + '.' + p.lang;
   let trText = fs.readFileSync(p.tr, 'utf8');
@@ -77,6 +80,11 @@ pairs.forEach(p => {
   if (BRK === 'dropheading') trText = trText.replace(/\n## [^\n]*\n/, '\n');
   if (BRK === 'noreview') trText = trText.replace(/^review: .*\n/m, '');
   const E = split(fs.readFileSync(p.en, 'utf8')), T = split(trText);
+  if (BRK === 'joinlines') trText = trText.replace(/([^\n])\n([^\n])/, '$1 $2');
+  { const eb = LN.parse(fs.readFileSync(p.en, 'utf8')).body, tb = LN.parse(trText).body, ek = LN.kinds(eb), tk = LN.kinds(tb); let at = -1;
+    for (let q = 0; q < Math.max(ek.length, tk.length); q++) { const a1 = ek[q] === 'prose' ? 'p' : ek[q], b1 = tk[q] === 'prose' ? 'p' : tk[q]; if (a1 !== b1) { at = q; break; } }
+    L('I11 ' + id + ' body lines en=' + eb.length + ' tr=' + tb.length + (at >= 0 ? ' first structural difference at body line ' + (at + 1) + ' (en ' + ek[at] + ', tr ' + tk[at] + ')' : ' same structure'));
+    if (eb.length !== tb.length || at >= 0) bad.I11.push(id + ' en=' + eb.length + ' tr=' + tb.length + (at >= 0 ? ' at line ' + (at + 1) : '')); }
   // I2
   const nB = Math.max(E.blocks.length, T.blocks.length); let firstB = -1;
   for (let i = 0; i < nB; i++) if (E.blocks[i] !== T.blocks[i]) { firstB = i; break; }
@@ -92,7 +100,7 @@ pairs.forEach(p => {
   L('I4 ' + id + ' digit runs en=' + E.digits.length + ' tr=' + T.digits.length + ' diff=' + JSON.stringify(d4.slice(0, 8)));
   // I5 headings + the built page's links
   if (JSON.stringify(E.heads) !== JSON.stringify(T.heads)) bad.I5.push(id + ' headings en=' + JSON.stringify(E.heads) + ' tr=' + JSON.stringify(T.heads));
-  const built = path.join(SITE, p.lang, p.page, 'index.html');
+  const built = p.page === 'index' ? path.join(SITE, p.lang, 'index.html') : path.join(SITE, p.lang, p.page, 'index.html');   // the home page builds to <lang>/index.html
   if (!fs.existsSync(built)) bad.I5.push(id + ' not built at ' + path.relative(SITE, built));
   else {
     const html = fs.readFileSync(built, 'utf8'), ids = new Set(Array.from(html.matchAll(/\sid="([^"]+)"/g)).map(m => m[1])), main = (/<article[\s\S]*?<\/article>/.exec(html) || [html])[0];
@@ -114,6 +122,10 @@ pairs.forEach(p => {
     L('I6 ' + id + ' review=' + T.meta.review + ' source_sha=' + T.meta.source_sha + ' english=' + want + ' stale=' + stale + ' line shown=' + (html.indexOf(lineText) >= 0));
   }
 });
+// I6 the front matter of every translated page parses as YAML (python3 yaml, the parser MkDocs uses)
+{ const yr = cp.spawnSync('python3', ['-c', 'import sys,re,yaml\nfor p in sys.argv[1:]:\n s=open(p,encoding="utf-8").read(); m=re.match(r"^---\\n(.*?)\\n---\\n",s,re.S)\n try:\n  d=yaml.safe_load(m.group(1)); assert isinstance(d,dict) and d.get("review") and d.get("source_sha")\n except Exception as e: print(p, str(e).splitlines()[0][:80])'].concat(pairs.map(x => x.tr)), { encoding: 'utf8' });
+  const ybad = (yr.stdout || '').trim().split('\n').filter(Boolean); L('I6 front matter YAML judged=' + pairs.length + ' bad=' + JSON.stringify(ybad)); ybad.forEach(b => bad.I6.push('front matter not valid YAML: ' + path.basename(b.split(' ')[0])));
+  if (yr.status !== 0 && !ybad.length) incon('I6', 'python3 yaml unavailable: ' + (yr.stderr || '').slice(0, 80)); }
 // I6 the fallback copies
 let nFb = 0; const badFb = [];
 OTHER.forEach(lang => {
@@ -132,6 +144,7 @@ if (pairs.length) {
   chk('I2 every translated page keeps every fenced block and comment byte for byte (' + pairs.length + ' pages)', !bad.I2.length, bad.I2.slice(0, 2).join(' | '));
   chk('I3 every inline code span and § tag is kept (' + pairs.length + ' pages)', !bad.I3.length, bad.I3.slice(0, 2).join(' | '));
   chk('I4 every number in the prose is kept (' + pairs.length + ' pages)', !bad.I4.length, bad.I4.slice(0, 2).join(' | '));
+  chk('I11 every translated page keeps the English line structure, so an English edit can be carried line by line (' + pairs.length + ' pages)', !bad.I11.length, bad.I11.slice(0, 3).join(' | '));
   chk('I5 same headings per level, and every link and #anchor of the built page resolves (' + pairs.length + ' pages)', !bad.I5.length, bad.I5.slice(0, 2).join(' | '));
 }
 if (!pairs.length && !nFb) incon('I6', 'VACUOUS: no translated page and no fallback copy');
@@ -149,7 +162,7 @@ let n7 = 0, withAlt = 0; const bad7 = [];
   const wantShown = want.length > 1 ? want.slice().sort() : [];
   if (JSON.stringify(got) !== JSON.stringify(wantShown)) bad7.push((lang === DEF ? '' : lang + '/') + page + ' got=' + got.join(',') + ' want=' + wantShown.join(','));
   if (alts.length) withAlt++;
-  alts.forEach(a => { let t = path.resolve(path.dirname(p), a.href.replace(/^https?:\/\/[^/]+\/BIMCompiler\//, path.relative(path.dirname(p), SITE) + '/')); if (fs.existsSync(t) && fs.statSync(t).isDirectory()) t = path.join(t, 'index.html'); if (!fs.existsSync(t)) bad7.push(page + ' alternate ' + a.href + ' is not built'); });
+  alts.forEach(a => { let t = path.resolve(path.dirname(p), a.href.replace(/^(https?:\/\/[^/]+)?\/BIMCompiler\//, (path.relative(path.dirname(p), SITE) || '.') + '/')); if (fs.existsSync(t) && fs.statSync(t).isDirectory()) t = path.join(t, 'index.html'); if (!fs.existsSync(t)) bad7.push(page + ' alternate ' + a.href + ' is not built'); });
 }); })(SITE);
 L('I7 pages judged=' + n7 + ' with a chooser=' + withAlt + ' bad=' + JSON.stringify(bad7.slice(0, 6)));
 if (!n7) incon('I7', 'VACUOUS: no built page of docs/'); else chk('I7 every page lists exactly the languages it exists in, and every alternate link is built (' + n7 + ' pages, ' + withAlt + ' with a chooser)', !bad7.length, bad7.slice(0, 3).join(' | '));
