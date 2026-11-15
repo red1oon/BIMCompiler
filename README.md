@@ -36,7 +36,7 @@ The [film](https://youtu.be/hnLYNcRihzs) shows the two halves as one.
 
 | | |
 |:---|:---|
-| **35 buildings** compiled (126K elements largest) | **90K lines** of browser code (JS + HTML) |
+| **35 buildings** compiled (126K elements largest) | **~1.06M lines** of JS + HTML in 3,330 files, tests and witnesses included (measured 2026-11-15) |
 | **1M elements** federated in browser | **6 mathematical gates** prove every output |
 | **Multi-format import** — IFC, OBJ, DAE, GLB, FBX, STL | **Auto-classifies** mesh names to IFC schema |
 | **Clash detection** — R-tree spatial index, per-pair analysis | **18 languages** — localized from day one |
@@ -157,7 +157,9 @@ mvn compile -q                                        # Compile all modules
 
 **https://red1oon.github.io/BIMCompiler/**
 
-50 specs with full-text search, dark mode, and sidebar navigation. Live demos and the film are in [Live & Online](#live--online) above.
+73 pages with full-text search, dark mode, and sidebar navigation. Live demos and the film are in [Live & Online](#live--online) above.
+
+Where to start: the [User Guide](https://red1oon.github.io/BIMCompiler/USER_GUIDE/) for everyone; the [Fast Script Guide](https://red1oon.github.io/BIMCompiler/FastScriptGuide/) to drive the apps from the command line or with an AI; the [Migration User Guide](https://red1oon.github.io/BIMCompiler/MigrationGuide/) to move a company in from Odoo, Business Central or SAP Business One; the [Developer Guide](https://red1oon.github.io/BIMCompiler/DeveloperGuide/) to read or change the code.
 
 ## Project Structure
 
@@ -193,14 +195,16 @@ Led [ADempiere](https://www.adempierebr.com/User:Red1) (2006), paved the way for
 
 | | |
 |:---|:---|
-| **BIM OOTB (Browser)** | 331 files, ~311K lines (JS + HTML), 53 Playwright spec files |
+| **BIM OOTB (Browser)** | 3,330 JS + HTML files, ~1.06M lines tracked (app code about 2,600 files / 780K lines: viewer, modeller, erp, common, teams, capex; the rest is tests, witnesses, sandbox, scripts; `common/lib` holds third-party code), 53 Playwright spec files |
 | **Java Compiler** | 1,207 files, 278K lines across 10 Maven modules |
 | **Java Tests** | 201 test classes; gate baseline 382 PASS / 94 intentional RED / 1 SKIP |
-| **SQL** | 178 migration scripts (append-only) |
+| **SQL** | 365 migration scripts (append-only) |
 | **Databases** | 35 per-building single DBs (0.1-173 MB each) |
-| **Specifications** | 50 docs, governed by SystemContract.md |
+| **Documentation** | 73 published pages (the spec set is governed by SystemContract.md) |
 | **Buildings** | 35 compiled (34 extracted + 1 generative) |
 | **Scale** | 1,063,563 elements federated, 35 buildings, 6 disciplines |
+
+*Re-measured 2026-11-15: the BIM OOTB, SQL and documentation rows. The other rows (Java, tests, databases, buildings, scale) predate that and have not been re-measured.*
 
 ---
 

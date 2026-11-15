@@ -129,6 +129,12 @@ Built on [iDempiere](https://idempiere.org/) ERP conventions and [SQLite](https:
 | Collaborate on a surface (who-did-what, chat) | [Teams Overlay](TeamsOverlayGuide.md) |
 | See what shipped recently | [What's New](WhatsNew.md) |
 | Run the browser ERP | [Kernel-ERP User Guide](ERPUserGuide.md) |
+| Drive the apps with one-line commands (you or an AI) | [Fast Script Guide](FastScriptGuide.md) |
+| Move a company in from Odoo, Business Central or SAP Business One | [Migration User Guide](MigrationGuide.md) · [how the Odoo move works](OdooMigration.md) |
+| Run a till and kitchen screen | [Till & Kitchen User Guide](TillUserGuide.md) |
+| See a building become a project order and a CAPEX dashboard | [BIM → ERP and the CAPEX Dashboard](CapexDashboardGuide.md) · [CAPEX UAT Guide](CapexUATGuide.md) |
+| Let an outside AI propose changes to the Modeller | [AI Proposer Guide](ProposerGuide.md) · [Defensive disclosure](AIProposerDefensiveDisclosure.md) |
+| Read or change the code | [Developer Guide](DeveloperGuide.md) |
 | Understand the ERP world view | [MANIFESTO — read first](MANIFESTO.md) |
 | Compare to other tools | [Feature Comparison](FeatureComparison.md) · [Migrate & Compare (ERP)](MigrateComparisonPaper.md) |
 | See where this sits in the industry | [Strategic Positioning](StrategicIndustryPositioning.md) |
