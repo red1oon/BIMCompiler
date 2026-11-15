@@ -1,0 +1,13 @@
+{
+ "note": "Only sources this lane READ. A repo row names the file, the line and a text that must be on that line; a web row names the URL and the copy fetched into out/prior/ (2026-11-15) and a text that must be in that copy. guard.js check P fails a row whose text is not there. Nothing from memory.",
+ "items": [
+  { "name": "click-to-component (React)", "where": { "url": "https://github.com/ericclemmons/click-to-component", "saved": "out/prior/click_to_component_README.md", "text": "a Component in the browser to **instantly** goto the source in your editor" },
+    "does": "Option+Click a React component, the editor opens on its source", "took": "the same gesture for a BIM body: hover, then V" },
+  { "name": "its source map", "where": { "url": "https://github.com/ericclemmons/click-to-component", "saved": "out/prior/click_to_component_README.md", "text": "babel-plugin-transform-react-jsx-source" },
+    "does": "the line numbers come from a build step (a Babel plugin)", "took": "no build step here: a literal key at each builder, a parser finds the line" },
+  { "name": "VS Code, opening with URLs", "where": { "url": "https://code.visualstudio.com/docs/configure/command-line", "saved": "out/prior/vscode_command_line.html", "text": "Open a file to line and column" },
+    "does": "vscode://file/<path>:line opens a file at a line", "took": "the link V makes" },
+  { "name": "this Modeller's own hover label", "where": { "repo": "bim-ootb", "path": "modeller/edit_delta_ui.js", "line": 82, "text": "window.addEventListener('dagevu:hover'" },
+    "does": "an existing label listens to the canvas's own hover event", "took": "the same event: no second picking code" }
+ ]
+}

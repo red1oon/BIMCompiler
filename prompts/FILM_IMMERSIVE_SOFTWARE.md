@@ -25,4 +25,12 @@ House style: `prompts/FILM_NARRATION.md` "HOUSE STYLE FOR ALL FUTURE FILMS" (spl
 5. Output `~/Videos/Immersive_Software_CH0_EN_AFTER_<date>_v1.mp4`, never committed.
 
 ## STATUS
-2026-11-15: spec written; build started.
+2026-11-15: **BUILT, v1, awaiting the owner's review.** `~/Videos/Immersive_Software_CH0_EN_AFTER_2026-11-15_v1.mp4` (1920x1080, 70.9 s, never committed). Pipeline in `scripts/film_immersive_software/`:
+`facts.js` (`§FACTS VERDICT PASS`: index `keys=28`; CLI `bodies=512 inserts=511 untraced=0/0 assumed=252`, truss `stations=13 spacing_m=3.048`; three real Modeller sessions via `modeller_shot.js`, 0 page errors;
+the bar → `modeller/dxf2section.js:89` `assumed`, the joined wall → `modeller/dxf2bim_import.js:716`, on the OLD tree the same wall *no trace key*; V recorded `vscode://file/…:89` and `…:716`) → `shoot.sh`
+(real VS Code opened at those two links, `§FILM_SHOOT stills=2 errors=0`, the editor's own line text logged) → `build.sh` (`§FILM_GUARD VERDICT PASS`, 28 OK incl. check P on 4 prior-art rows; `§CARDS_DONE beats=5 stills=93 too_tall=0`;
+voice 3 of 3 `DETAIL`, 0 `WRONG`; `§FILM_DONE frames=1701 planned=1701`; `§K2_VERDICT PASS beats=2 bad=0 audible=True`). Logs: `out/*.log`, `out/facts.json` (committed); pictures, the CLI model output and the fetched pages are ignored.
+- **Memory, measured (one run each, forced GC):** heap after Convert with the tool 43.5 MB, without 43.7 MB (−0.2 MB: no measurable cost); the trace 513 entries, 20.6 KB as JSON; overlay 6.4 KB, index 1.6 KB.
+- **Found and fixed in the build:** v1's last card ran off the right edge (the card check measured height only); `cards.js` now also fails on any width overflow; the cut was rebuilt before anyone saw it.
+- **The wrong guid trap:** the first page session was given a beam pair whose guid contains `+` as "the joined wall"; the joined wall is the ONE insert whose guid is not a body (`facts.js` derives it that way now).
+- Rebuild: two bim-ootb worktrees (NEW = `origin/main`, OLD = NEW minus the one `_trace('dxf2bim_import:wall-line', …)` statement), `node devtools/hover/gen_trace_index.js` in each, then `node facts.js <NEW> <OLD> <first-run hover log> <hover log on main> <trace log on main>`, `./shoot.sh <NEW>`, `./build.sh`. The first-run log is committed as `out/witness_hover_first_run.log`.
