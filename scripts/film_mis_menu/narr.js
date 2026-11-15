@@ -24,5 +24,17 @@ const ZH = [
   { id: 'close', hold: 8.5, text: 'M: 屏幕上的每一个按键，都是一行你可以自己输入的命令。 | F: 这张卡片写着它的成本、怎样检查，以及是谁做的。', says: [] },
   { id: 'end', hold: 9 }
 ];
-exports.lang = { zh: 'zh' }[process.env.FILM_LANG] || 'en';
-exports.beats = { en: EN, zh: ZH }[exports.lang];
+// FILM_LANG=ms: the Malay narration, translated by the build session (2026-11-15), NOT reviewed by a native speaker. The same beats, the same facts; the spoken figure words are Malay.
+const MS = [
+  { id: 'cover', hold: 3.6 },
+  { id: 'still1', text: 'F: Arahan lama masih boleh guna? | M: Baris yang sama seperti dahulu. Tiga kumpulan, tiga yang sama dalam tetingkap di bawah.', says: [['still1.rows.length', '3', 'tiga kumpulan'], ['states.s1.records', '3', 'tiga yang sama']] },
+  { id: 'still2', text: 'F: Bagaimana dengan menulis? | M: Satu baris menambah satu kumpulan. Tetingkap menunjukkan empat.', says: [['still2.windowRows', '4', 'menunjukkan empat']] },
+  { id: 'menu', text: 'F: Sekarang, satu menu. | M: Slash M. Menu E R P itu sendiri, untuk peranan ini. Dua ratus sembilan puluh empat tetingkap.', says: [['menu.windows', '294', 'dua ratus sembilan puluh empat tetingkap']] },
+  { id: 'find', text: 'F: Di mana rakan niaga? | M: Slash, dan satu nama. Sebelas entri.', says: [['find.items', '11', 'sebelas entri']] },
+  { id: 'open', text: 'M: Nombor tiga membuka senarainya. Skrin menaip baris yang sama seperti yang anda taip.', says: [] },
+  { id: 'back', text: 'F: Dan untuk kembali? | M: Escape, dan escape. Menu semula.', says: [] },
+  { id: 'close', hold: 11, text: 'M: Setiap kekunci pada skrin ialah satu baris yang boleh anda taip sendiri. | F: Kad ini menunjukkan kosnya, cara ia disemak, dan siapa yang membuatnya.', says: [] },
+  { id: 'end', hold: 9 }
+];
+exports.lang = { zh: 'zh', ms: 'ms' }[process.env.FILM_LANG] || 'en';
+exports.beats = { en: EN, zh: ZH, ms: MS }[exports.lang];
