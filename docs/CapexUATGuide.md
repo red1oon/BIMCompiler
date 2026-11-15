@@ -15,6 +15,11 @@
   .md-typeset img { max-width: 100%; max-height: 105mm; }
   a[href]::after { content: none !important; }
   @page { margin: 14mm 12mm; }
+  .uat-sheet { break-before: page; page-break-before: always; break-after: page; page-break-after: always; font-size: 9pt; }
+  .uat-sheet table:not([class]) { font-size: 8pt; }
+  .uat-sheet table:not([class]) th, .uat-sheet table:not([class]) td { padding: 1.5pt 4pt; }
+  .uat-sheet p { margin: 3pt 0; }
+  .uat-sheet h2 { break-before: auto; page-break-before: auto; }
 }
 </style>
 
@@ -24,6 +29,44 @@ A hands-on test script for the testers of the pilot client (Sysnova). Each step 
 Work top to bottom: every chapter uses what the one before produced. Write anything that differs on the **Notes** line at the end of each chapter.
 
 Dates in the test data are set for **13 November 2026**. Testing well after that day still works, but the colours on the dashboard (on time, late, over budget) drift with the calendar.
+
+<div class="uat-sheet" markdown="1">
+
+## Checklist: who does what
+
+Three roles run this test. Tick a part when all its steps pass, and initial it.
+
+| Role | Who | Needs |
+|---|---|---|
+| **System Setup** | your iDempiere administrator | `psql` and a server restart, the GardenWorld Admin login, Node.js (D's read job) |
+| **BIM** | a BIM / QS tester; your **drafter** for B00 | a desktop browser; the drafter: BricsCAD |
+| **Project Mgmt Accounting** | a project / accounting user | the GardenWorld Admin login, a desktop browser |
+
+**Order:** System Setup first. BIM may start at once (public apps, not your iDempiere). Project Mgmt Accounting after A; D after C.
+
+| Part | Role | Done in | Needs first | Hands over | Steps | Done / initials |
+|---|---|---|---|---|---|---|
+| A1 · Own web copy (optional) | System Setup | web server | — | your copy of the apps | 4 | ☐ |
+| A2 · Install the dashboard | System Setup | `psql`, server restart | — | the dashboard's scripts in iDempiere | 3 | ☐ |
+| A3 · Load the test data | System Setup | Pack In, `psql` | A2 | 12 projects, 10 products | 6 | ☐ |
+| A4 · ERP model check | System Setup | iDempiere | A3 | vendor, stock, products | 4 | ☐ |
+| B00 · Export the sheets as DXF | BIM (drafter) | BricsCAD | the drawing | nine `.dxf` | 3 | ☐ |
+| B0 · To the marked set | BIM | Modeller | B00 or pack `sheets/` | nine `_marked.dxf` | 11 | ☐ |
+| B1 · The sheets one at a time | BIM | Modeller | B0 | — | 4 | ☐ |
+| B2 · Arrange and convert | BIM | Modeller, Viewer | B0 | `SHED_extracted.db` | 11 | ☐ |
+| B3 · 4D and 5D | BIM | Viewer | B2 | total cost, finish date | 6 | ☐ |
+| B4 · Project Order | BIM | Viewer, browser ERP | B2 | project **SHED** | 4 | ☐ |
+| B5 · Mark your run | BIM | Run Checker | B0.9 B2.8 B2.9 B3.1 | `uat_result.json` | 4 | ☐ |
+| C1 · Purchase orders | Project Mgmt Accounting | iDempiere | A3, A4 | orders | 2 | ☐ |
+| C2 · Material receipt | Project Mgmt Accounting | iDempiere | C1 | goods received | 1 | ☐ |
+| C3 · Invoice and payment | Project Mgmt Accounting | iDempiere | C2 | invoices, payments | 2 | ☐ |
+| C4 · Issue to site | Project Mgmt Accounting | iDempiere | A3 | project spending | 4 | ☐ |
+| C5 · Tick a phase | Project Mgmt Accounting | iDempiere | A3 | a phase completed | 1 | ☐ |
+| D · The dashboard | Project Mgmt Accounting | browser | C; read job (System Setup) | figures signed off | 10 | ☐ |
+
+Steps: A 17 · B 43 (29 if given the marked copies: skip B00, B0) · C 10 · D 10, as on the sign-off.
+
+</div>
 
 **What you need**
 
@@ -59,18 +102,11 @@ The nine Shed sheets are the pilot client's own work, so its testers may use the
 | Purchase Invoice and Credit/Debit Note | Requisition-to-Invoice (Purchasing) ▸ Purchase Invoice and Credit/Debit Note |
 | Payment and Receipt | Open Items (Financial Movements and Aging) ▸ Payment and Receipt |
 
-**Who does what**
-
-| Chapter | Who |
-|---|---|
-| A · Set up | your iDempiere administrator, once |
-| B · BIM: drawings to a priced model | a BIM / QS tester |
-| C · ERP: buying and issuing to site | an ERP tester, as GardenWorld Admin |
-| D · The dashboard | everyone |
+**Who does what:** see the checklist sheet above.
 
 ---
 
-## A · Set up (administrator, once)
+## A · Set up (System Setup, once)
 
 ### A1 · The BIM apps on your own server (optional)
 
@@ -136,7 +172,7 @@ GardenWorld already has the vendor, the warehouse and the locator; the products 
 
 ---
 
-## B · BIM: the Shed, from 2D drawings to a priced model
+## B · BIM: the Shed, from 2D drawings to a priced model (BIM)
 
 This chapter uses **your own Shed drawing set**: the single-storey farm shed, drawn as nine 2D sheets. You will see each drawing on its own first, then the nine arranged in place, then the 3D model built from them.
 
@@ -375,7 +411,7 @@ The **UAT Run Checker** compares what your run produced with the run this guide 
 
 ---
 
-## C · ERP: the hands-on exercise (GardenWorld Admin)
+## C · ERP: the hands-on exercise (Project Mgmt Accounting, as GardenWorld Admin)
 
 Use the 12 test projects. The table says, per project, what to make. The products are the **Construction** products of A3.6 (**not** GardenWorld's own); use any GardenWorld vendor, the *Purchase* price list and *HQ Warehouse*. Do not type a price: the order line takes it from the price list, which is the product's standard cost. On each document, set **Project** to the test project (the windows do not ask for a phase).
 
@@ -449,7 +485,7 @@ This is done in two parts, once per test project that has an issue in the table 
 
 ---
 
-## D · The dashboard
+## D · The dashboard (Project Mgmt Accounting; the read job: System Setup)
 
 The dashboard reads a file that a small read job writes from your iDempiere. Run the job first, and again whenever you want fresh figures (it needs Node.js; the full line with user, password, tenant and role is in the [Developer's note](CapexDashboardGuide.md#developers-note)):
 
@@ -488,9 +524,9 @@ It writes the file `capex/legacy_snapshot.json` inside your copy of the reposito
 
 ## Sign-off
 
-| Chapter | Tester | Date | Passed / total | Signature |
+| Chapter | Role / name | Date | Passed / total | Signature |
 |---|---|---|---|---|
-| A · Set up | | | / 17 | |
-| B · BIM | | | / 43 (29 if you were given the marked copies and skipped B00 and B0) | |
-| C · ERP | | | / 10 | |
-| D · Dashboard | | | / 10 | |
+| A · Set up | System Setup: | | / 17 | |
+| B · BIM | BIM: | | / 43 (29 if you were given the marked copies and skipped B00 and B0) | |
+| C · ERP | Project Mgmt Accounting: | | / 10 | |
+| D · Dashboard | Project Mgmt Accounting: | | / 10 | |
