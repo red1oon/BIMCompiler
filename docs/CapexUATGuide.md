@@ -35,7 +35,7 @@ Dates in the test data are set for **13 November 2026**. Testing well after that
 | The test-data pack | [202611131200_GardenWorld_CAPEXTestData.zip](https://github.com/red1oon/bim-ootb/raw/main/capex/plugin/testdata_2pack/202611131200_GardenWorld_CAPEXTestData.zip) |
 | The construction-products script (10 materials at standard cost) | [202611141500_CAPEX-TD-CONSTRUCTION-PRODUCTS.sql](https://github.com/red1oon/bim-ootb/blob/main/capex/plugin/testdata_2pack/202611141500_CAPEX-TD-CONSTRUCTION-PRODUCTS.sql) |
 | The dashboard's scripts for iDempiere | listed in chapter A2, all in the [bim-ootb repository](https://github.com/red1oon/bim-ootb/tree/main/capex/legacy) |
-| The **Shed** drawing set: nine 2D sheets (.dxf) with their settings written in | the nine `…_marked.dxf` files supplied for this test, listed in chapter B1 |
+| The **Shed** drawing set: the nine 2D sheets (.dxf) as drawn | the nine Shed `.dxf` files you hold; chapter B0 turns them into the nine `…_marked.dxf` files that chapters B1 onward open (a tester given the `…_marked.dxf` copies skips B0) |
 
 The nine Shed sheets are the pilot client's own work, so its testers may use them. Any other drawing set goes through the same way once its sheets carry their settings (levels, datums and layer meanings), which the Modeller's **Drawing metadata** panel records.
 
@@ -140,7 +140,7 @@ This chapter uses **your own Shed drawing set**: the single-storey farm shed, dr
 
 The pictures were taken from the real Modeller with these same nine files. The label at the top of each picture and the red ring around a button were added for this guide; in the canvas-only pictures the drawing lines are shown at full strength so that they print clearly.
 
-**The nine sheets** (open the `…_marked.dxf` copies: they carry the levels, heights and layer meanings the Modeller needs)
+**The nine sheets.** From B1 on you open the `…_marked.dxf` copies: they carry the levels, heights and layer meanings the Modeller needs. You make them yourself from the nine sheets as drawn in **B0**; the result is the same, mark for mark, as the copies supplied for this test.
 
 | Sheet file | What it is | Role the Modeller shows |
 |---|---|---|
@@ -153,6 +153,55 @@ The pictures were taken from the real Modeller with these same nine files. The l
 | `7_ELEV_EAST_marked.dxf` | East elevation | ELEV |
 | `8_SECTION_AA_TRUSS_marked.dxf` | Section A-A, the roof truss | SECTION |
 | `5_DETAILS_marked.dxf` | Details and general notes | NOTES |
+
+### B0 · From the drawings as drawn to the marked set
+
+The nine sheets as drawn carry no settings: the Modeller cannot tell which CAD layer is a column, how deep the footings go, or where the expansion joint is. In this step you tell it, in the **Drawing metadata** panel, and save the result as nine `…_marked.dxf` copies. Every value below is read from the drawings (the source is named in each row); nothing is invented. Type the numbers exactly as written.
+
+The panel has sections you open by clicking their title: **All defaults** (the yellow list), **Sheets** (one card per sheet), **Layers**, **Body heights**, **Exclude areas**. The badge at the top says **Blocked · n** (n things still missing) or **Qualifies**.
+
+| # | Do | Confirm on screen | Result |
+|---|---|---|---|
+| B0.1 | Open [the Modeller](https://red1oon.github.io/bim-ootb/modeller/modeller.html). **📂 Open → Open 2D drawings (.dxf)…** and select **all nine** sheets as drawn: `0_FLOOR_PLAN.dxf`, `3_BEAM_LAYOUT.dxf`, `4_FOUNDATION_LAYOUT.dxf`, `1N_ELEV_NORTH.dxf`, `1S_ELEV_SOUTH.dxf`, `2_ELEV_WEST.dxf`, `7_ELEV_EAST.dxf`, `8_SECTION_AA_TRUSS.dxf`, `5_DETAILS.dxf` | The **Drawing metadata** panel opens. The badge reads **Blocked · 58**. **All defaults** lists **34** yellow rows: what the Modeller read from the files (units, sheet roles and names, grid lines) | ☐ Pass ☐ Fail |
+| B0.2 | In **All defaults**, press **Accept stated + read** | The list grows to **113** yellow rows: the grid lines, level lines and roles that follow from the first ones | ☐ Pass ☐ Fail |
+| B0.2b | Press **Accept all** | **0** yellow rows. The badge reads **Blocked · 48**. In **Sheets**, eight cards now show a role (3 PLAN, 4 ELEV, 1 SECTION); `5_DETAILS` is the notes sheet | ☐ Pass ☐ Fail |
+| B0.3 | In **Sheets**, open any card. In its **Set** field replace `BUILD-NAME` with **SHED** and press Enter | Every sheet's **Set** reads **SHED** (typing it once fills all nine) | ☐ Pass ☐ Fail |
+| B0.4 | Open **Layers**. Under each heading, pick the meaning of each CAD layer from its list, as in the table below. Where the table says *one sheet only*, press the small arrow at the right of the layer's row (**Type this layer sheet by sheet**) and pick the meaning on that sheet's line only | After **PLAN · Col = column** the badge reads **Blocked · 1**; after **ELEV · Wall = panel** it reads **Qualifies**. When all ten are set, **All defaults** shows **14** yellow rows (sizes the Modeller assumes, such as the fan depth) | ☐ Pass ☐ Fail |
+| B0.4b | In **All defaults**, press **Accept all** | **0** yellow rows | ☐ Pass ☐ Fail |
+| B0.5 | Open **Body heights**. It lists **footing** and **beam** as waiting (no elevation shows them). Type **footing**: z0 `-1.4478`, z1 `-1.143`, **Add**. Type **beam**: z0 `3.098794`, z1 `3.352794`, **Add** | Two rows: `@BODYZ=footing,-1.4478,-1.143` and `@BODYZ=beam,3.098794,3.352794`. The badge still reads **Qualifies** | ☐ Pass ☐ Fail |
+| B0.6 | In **Sheets**, open each elevation and the section card in turn. Under **Level datums (@Z)**, type the height `0.6096` in the first box and the card's y (table below) in **y where drawn**, then **Add** | Each of the five cards lists a new `@Z=0.6096` row beside the two it read itself (`@Z=0` and the eave or ridge height). The badge still reads **Qualifies** | ☐ Pass ☐ Fail |
+| B0.7 | Open **Exclude areas**. Choose **3_BEAM_LAYOUT** in its list and press **Exclude area** (the button now reads **Drag a box**). On the canvas, zoom to the bay between grid **06** and grid **35**: the beam layout's **expansion joint** is the pair of close vertical lines (about 22 cm apart) running across all four rows A to D. Drag a box from above row A to below row D that holds both lines and the small break marks beside them: start about half a metre left of the left line (not more than 1 m: two short beam ends start 1.05 m to the left) and stop about 25 cm right of the right line. The break marks reach 18 cm out from the lines; the beams of the right-hand block start 37 cm right of the right line, so the box must stop before them. Press **Drag a box** again to leave the tool | **Exclude areas** lists one row, `3_BEAM_LAYOUT @EXCLUDE=…` with the box's four numbers. Without it the joint's two lines are read as four extra beams (B2b would then read 515 elements, not 511) | ☐ Pass ☐ Fail |
+| B0.8 | Read the top of the panel | The badge reads **Qualifies**; **All defaults** has **0** yellow rows | ☐ Pass ☐ Fail |
+| B0.9 | Press **Save marked copies** (at the foot of the panel) | Your browser downloads nine files named `0_FLOOR_PLAN_marked.dxf` … `5_DETAILS_marked.dxf`, the names used from B1 on. The panel says **Downloaded: …**; the files you opened are unchanged | ☐ Pass ☐ Fail |
+
+**B0.4 · the ten layer meanings**
+
+| Heading in Layers | CAD layer | Pick | Where it is read from |
+|---|---|---|---|
+| PLAN sheets | `Col` | column | the 12"×12" column squares on the plans |
+| PLAN sheets | `Fo` | footing | the F-1 footing outlines on the foundation layout |
+| PLAN sheets | `Dim` | beam, **3_BEAM_LAYOUT only** (one sheet only) | the B-1 / B-2 beam lines of the beam layout (on the other plans the layer is left unread) |
+| PLAN sheets | `Rod` | doorswing | the door arcs of the floor plan (`Rod` is on the floor plan only, so its row has no arrow) |
+| ELEV sheets | `Wall` | panel | the brick-wall hatches of the gable ends |
+| ELEV sheets | `Rod` | fan | the exhaust fans drawn on the elevations |
+| ELEV sheets | `Dim` | net | the zigzag nets above the low bays |
+| ELEV sheets | `Win` | door | the meaning the supplied set carries; it changes no element count in this test |
+| ELEV sheets | `0` | column, **1S_ELEV_SOUTH only** (one sheet only) | the columns drawn on the south elevation |
+| SECTION sheets | `Fo` | bar | the truss members of section A-A |
+
+**B0.6 · the five level datums** (`0.6096` m = 24 in, the plinth level *PL*: on every elevation the PL line is drawn 24 in above the ground line)
+
+| Card | y where drawn |
+|---|---|
+| `1S_ELEV_SOUTH` | `-4446.6` |
+| `1N_ELEV_NORTH` | `-3895.2` |
+| `2_ELEV_WEST` | `-4515.7264` |
+| `7_ELEV_EAST` | `-3766.442` |
+| `8_SECTION_AA_TRUSS` | `-3726.416` |
+
+**B0.5 · where the body heights come from.** Footing F-1 is 12 in thick, its top 45 in below the finished ground (z −1.143 m to −1.4478 m). The beams run from 122 in to 132 in above the ground (3.0988 m to 3.3528 m), as the section's lines give them; the elevations draw the beam soffit at 120 in, a 2 in difference the drawings leave open and this test does not settle.
+
+*Proven (witness W-UAT-B0, 2026-11-15): these steps, done in the real Modeller on the nine sheets as drawn, reach **Qualifies**, save nine copies equal mark for mark to the supplied `…_marked.dxf` set, and B2b's **Convert** then reads the same `Converted: 511 elements (0 door/window fills), 2 openings cut.` The datum y values are typed, not picked with the **Pick** button; picking was not part of the proof.*
 
 ### B1 · Get to know the drawings: one sheet at a time
 
@@ -385,6 +434,6 @@ It writes the file `capex/legacy_snapshot.json` inside your copy of the reposito
 | Chapter | Tester | Date | Passed / total | Signature |
 |---|---|---|---|---|
 | A · Set up | | | / 17 | |
-| B · BIM | | | / 25 | |
+| B · BIM | | | / 36 (25 if you were given the marked copies and skipped B0) | |
 | C · ERP | | | / 10 | |
 | D · Dashboard | | | / 10 | |
