@@ -6,6 +6,10 @@ record the agent + its last finding in `prompts/AGENT_QUEUE.md` §MID-FLIGHT →
 past the reset → resume by `SendMessage` to the agent id (never re-dispatch fresh) → tell the user.
 Full text and the reasoning: `prompts/AGENT_QUEUE.md` §RESUME_PROTOCOL.
 
+## 🧭 Software / VS Code lane — 2026-11-15 (session close) · **"resume software" / "resume VSC"**
+**Done (bim-ootb, all witnessed red→green, re-run on main):** core clock `Env.setEdge` (#3030 #3033) · DXF `--trace` + BIM canvas hover (#3043 #3047) · ERP field hover, every layer in firing order (#3055 + fixes #3057 #3059) · ERP legacy-parity gate in `bump.js` (#3050) · shed inputs restored · films CH 0 Immersive Software 1 (BIM) + 2 (ERP, EN + ZH), sent to the owner's phone.
+**Next:** the BIM side, a layered BIM tooltip (ask F-18 first), then the BIM film with layers. Everything: `prompts/CODE_ARCHITECTURE_DESIGN.md` ▶▶ RESUME HERE FIRST item 0; films `prompts/FILM_IMMERSIVE_SOFTWARE.md`.
+
 ## 🚪 Neuro-symbolic ORDER door + CLI-MIS lane — 2026-11-12 (session close)
 **Done:** MIS V0-V3 built and merged in bim-ootb main (#2863 #2864 #2866 #2867 #2868 #2871 #2872 #2875): `mis.*` is the base verb set (old `erp.list/read/…` are aliases; vocabulary is now composed), `mis.update/delete/load/new dry=Y`, the pure screen core + `mis.js`, New/Edit/Copy forms; tree-node delete fixed (`model_master.js`). Guide sections merged (bim-compiler #585), film "Command Line ERP" rc2 (118 s, #586, `~/Videos/Command_Line_ERP_EN_rc2.mp4`, email/phone/device only on the One Door page as "planned, not built"). Witnesses: W-ERP-VERBS-DOOR 46/0, W-VOCAB-COMPOSE 7/0, W-MIS-CRUD 10/0, W-MIS-LOAD 6/0, W-MIS-SCREEN 8/0, W-MIS-FORM 12/0. **Not done:** V5 role filter (A6), MIS M1-M4 (`mis.add_window`), the guide is NOT deployed to gh-pages, no Thai film (dropped). **Next:** `prompts/CLI_ERP_IVR.md` ▶ RESUME HERE (it lists the order, the traps, and every PR).
 
