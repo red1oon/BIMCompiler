@@ -1464,6 +1464,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#b0-from-the-drawings-as-drawn-to-the-marked-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B0 · From the drawings as drawn to the marked set
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#b1-get-to-know-the-drawings-one-sheet-at-a-time" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3263,6 +3274,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#b0-from-the-drawings-as-drawn-to-the-marked-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B0 · From the drawings as drawn to the marked set
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#b1-get-to-know-the-drawings-one-sheet-at-a-time" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3504,8 +3526,8 @@
 <td>listed in chapter A2, all in the <a href="https://github.com/red1oon/bim-ootb/tree/main/capex/legacy">bim-ootb repository</a></td>
 </tr>
 <tr>
-<td>The <strong>Shed</strong> drawing set: nine 2D sheets (.dxf) with their settings written in</td>
-<td>the nine <code>…_marked.dxf</code> files supplied for this test, listed in chapter B1</td>
+<td>The <strong>Shed</strong> drawing set: the nine 2D sheets (.dxf) as drawn</td>
+<td>the nine Shed <code>.dxf</code> files you hold; chapter B0 turns them into the nine <code>…_marked.dxf</code> files that chapters B1 onward open (a tester given the <code>…_marked.dxf</code> copies skips B0)</td>
 </tr>
 </tbody>
 </table>
@@ -3809,7 +3831,7 @@
 <h2 id="b-bim-the-shed-from-2d-drawings-to-a-priced-model">B · BIM: the Shed, from 2D drawings to a priced model<a class="headerlink" href="#b-bim-the-shed-from-2d-drawings-to-a-priced-model" title="Permanent link">&para;</a></h2>
 <p>This chapter uses <strong>your own Shed drawing set</strong>: the single-storey farm shed, drawn as nine 2D sheets. You will see each drawing on its own first, then the nine arranged in place, then the 3D model built from them.</p>
 <p>The pictures were taken from the real Modeller with these same nine files. The label at the top of each picture and the red ring around a button were added for this guide; in the canvas-only pictures the drawing lines are shown at full strength so that they print clearly.</p>
-<p><strong>The nine sheets</strong> (open the <code>…_marked.dxf</code> copies: they carry the levels, heights and layer meanings the Modeller needs)</p>
+<p><strong>The nine sheets.</strong> From B1 on you open the <code>…_marked.dxf</code> copies: they carry the levels, heights and layer meanings the Modeller needs. You make them yourself from the nine sheets as drawn in <strong>B0</strong>; the result is the same, mark for mark, as the copies supplied for this test.</p>
 <table>
 <thead>
 <tr>
@@ -3866,6 +3888,193 @@
 </tr>
 </tbody>
 </table>
+<h3 id="b0-from-the-drawings-as-drawn-to-the-marked-set">B0 · From the drawings as drawn to the marked set<a class="headerlink" href="#b0-from-the-drawings-as-drawn-to-the-marked-set" title="Permanent link">&para;</a></h3>
+<p>The nine sheets as drawn carry no settings: the Modeller cannot tell which CAD layer is a column, how deep the footings go, or where the expansion joint is. In this step you tell it, in the <strong>Drawing metadata</strong> panel, and save the result as nine <code>…_marked.dxf</code> copies. Every value below is read from the drawings (the source is named in each row); nothing is invented. Type the numbers exactly as written.</p>
+<p>The panel has sections you open by clicking their title: <strong>All defaults</strong> (the yellow list), <strong>Sheets</strong> (one card per sheet), <strong>Layers</strong>, <strong>Body heights</strong>, <strong>Exclude areas</strong>. The badge at the top says <strong>Blocked · n</strong> (n things still missing) or <strong>Qualifies</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Do</th>
+<th>Confirm on screen</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B0.1</td>
+<td>Open <a href="https://red1oon.github.io/bim-ootb/modeller/modeller.html">the Modeller</a>. <strong>📂 Open → Open 2D drawings (.dxf)…</strong> and select <strong>all nine</strong> sheets as drawn: <code>0_FLOOR_PLAN.dxf</code>, <code>3_BEAM_LAYOUT.dxf</code>, <code>4_FOUNDATION_LAYOUT.dxf</code>, <code>1N_ELEV_NORTH.dxf</code>, <code>1S_ELEV_SOUTH.dxf</code>, <code>2_ELEV_WEST.dxf</code>, <code>7_ELEV_EAST.dxf</code>, <code>8_SECTION_AA_TRUSS.dxf</code>, <code>5_DETAILS.dxf</code></td>
+<td>The <strong>Drawing metadata</strong> panel opens. The badge reads <strong>Blocked · 58</strong>. <strong>All defaults</strong> lists <strong>34</strong> yellow rows: what the Modeller read from the files (units, sheet roles and names, grid lines)</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B0.2</td>
+<td>In <strong>All defaults</strong>, press <strong>Accept stated + read</strong></td>
+<td>The list grows to <strong>113</strong> yellow rows: the grid lines, level lines and roles that follow from the first ones</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B0.2b</td>
+<td>Press <strong>Accept all</strong></td>
+<td><strong>0</strong> yellow rows. The badge reads <strong>Blocked · 48</strong>. In <strong>Sheets</strong>, eight cards now show a role (3 PLAN, 4 ELEV, 1 SECTION); <code>5_DETAILS</code> is the notes sheet</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B0.3</td>
+<td>In <strong>Sheets</strong>, open any card. In its <strong>Set</strong> field replace <code>BUILD-NAME</code> with <strong>SHED</strong> and press Enter</td>
+<td>Every sheet's <strong>Set</strong> reads <strong>SHED</strong> (typing it once fills all nine)</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B0.4</td>
+<td>Open <strong>Layers</strong>. Under each heading, pick the meaning of each CAD layer from its list, as in the table below. Where the table says <em>one sheet only</em>, press the small arrow at the right of the layer's row (<strong>Type this layer sheet by sheet</strong>) and pick the meaning on that sheet's line only</td>
+<td>After <strong>PLAN · Col = column</strong> the badge reads <strong>Blocked · 1</strong>; after <strong>ELEV · Wall = panel</strong> it reads <strong>Qualifies</strong>. When all ten are set, <strong>All defaults</strong> shows <strong>14</strong> yellow rows (sizes the Modeller assumes, such as the fan depth)</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B0.4b</td>
+<td>In <strong>All defaults</strong>, press <strong>Accept all</strong></td>
+<td><strong>0</strong> yellow rows</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B0.5</td>
+<td>Open <strong>Body heights</strong>. It lists <strong>footing</strong> and <strong>beam</strong> as waiting (no elevation shows them). Type <strong>footing</strong>: z0 <code>-1.4478</code>, z1 <code>-1.143</code>, <strong>Add</strong>. Type <strong>beam</strong>: z0 <code>3.098794</code>, z1 <code>3.352794</code>, <strong>Add</strong></td>
+<td>Two rows: <code>@BODYZ=footing,-1.4478,-1.143</code> and <code>@BODYZ=beam,3.098794,3.352794</code>. The badge still reads <strong>Qualifies</strong></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B0.6</td>
+<td>In <strong>Sheets</strong>, open each elevation and the section card in turn. Under <strong>Level datums (@Z)</strong>, type the height <code>0.6096</code> in the first box and the card's y (table below) in <strong>y where drawn</strong>, then <strong>Add</strong></td>
+<td>Each of the five cards lists a new <code>@Z=0.6096</code> row beside the two it read itself (<code>@Z=0</code> and the eave or ridge height). The badge still reads <strong>Qualifies</strong></td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B0.7</td>
+<td>Open <strong>Exclude areas</strong>. Choose <strong>3_BEAM_LAYOUT</strong> in its list and press <strong>Exclude area</strong> (the button now reads <strong>Drag a box</strong>). On the canvas, zoom to the bay between grid <strong>06</strong> and grid <strong>35</strong>: the beam layout's <strong>expansion joint</strong> is the pair of close vertical lines (about 22 cm apart) running across all four rows A to D. Drag a box from above row A to below row D that holds both lines and the small break marks beside them: start about half a metre left of the left line (not more than 1 m: two short beam ends start 1.05 m to the left) and stop about 25 cm right of the right line. The break marks reach 18 cm out from the lines; the beams of the right-hand block start 37 cm right of the right line, so the box must stop before them. Press <strong>Drag a box</strong> again to leave the tool</td>
+<td><strong>Exclude areas</strong> lists one row, <code>3_BEAM_LAYOUT @EXCLUDE=…</code> with the box's four numbers. Without it the joint's two lines are read as four extra beams (B2b would then read 515 elements, not 511)</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B0.8</td>
+<td>Read the top of the panel</td>
+<td>The badge reads <strong>Qualifies</strong>; <strong>All defaults</strong> has <strong>0</strong> yellow rows</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+<tr>
+<td>B0.9</td>
+<td>Press <strong>Save marked copies</strong> (at the foot of the panel)</td>
+<td>Your browser downloads nine files named <code>0_FLOOR_PLAN_marked.dxf</code> … <code>5_DETAILS_marked.dxf</code>, the names used from B1 on. The panel says <strong>Downloaded: …</strong>; the files you opened are unchanged</td>
+<td>☐ Pass ☐ Fail</td>
+</tr>
+</tbody>
+</table>
+<p><strong>B0.4 · the ten layer meanings</strong></p>
+<table>
+<thead>
+<tr>
+<th>Heading in Layers</th>
+<th>CAD layer</th>
+<th>Pick</th>
+<th>Where it is read from</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PLAN sheets</td>
+<td><code>Col</code></td>
+<td>column</td>
+<td>the 12"×12" column squares on the plans</td>
+</tr>
+<tr>
+<td>PLAN sheets</td>
+<td><code>Fo</code></td>
+<td>footing</td>
+<td>the F-1 footing outlines on the foundation layout</td>
+</tr>
+<tr>
+<td>PLAN sheets</td>
+<td><code>Dim</code></td>
+<td>beam, <strong>3_BEAM_LAYOUT only</strong> (one sheet only)</td>
+<td>the B-1 / B-2 beam lines of the beam layout (on the other plans the layer is left unread)</td>
+</tr>
+<tr>
+<td>PLAN sheets</td>
+<td><code>Rod</code></td>
+<td>doorswing</td>
+<td>the door arcs of the floor plan (<code>Rod</code> is on the floor plan only, so its row has no arrow)</td>
+</tr>
+<tr>
+<td>ELEV sheets</td>
+<td><code>Wall</code></td>
+<td>panel</td>
+<td>the brick-wall hatches of the gable ends</td>
+</tr>
+<tr>
+<td>ELEV sheets</td>
+<td><code>Rod</code></td>
+<td>fan</td>
+<td>the exhaust fans drawn on the elevations</td>
+</tr>
+<tr>
+<td>ELEV sheets</td>
+<td><code>Dim</code></td>
+<td>net</td>
+<td>the zigzag nets above the low bays</td>
+</tr>
+<tr>
+<td>ELEV sheets</td>
+<td><code>Win</code></td>
+<td>door</td>
+<td>the meaning the supplied set carries; it changes no element count in this test</td>
+</tr>
+<tr>
+<td>ELEV sheets</td>
+<td><code>0</code></td>
+<td>column, <strong>1S_ELEV_SOUTH only</strong> (one sheet only)</td>
+<td>the columns drawn on the south elevation</td>
+</tr>
+<tr>
+<td>SECTION sheets</td>
+<td><code>Fo</code></td>
+<td>bar</td>
+<td>the truss members of section A-A</td>
+</tr>
+</tbody>
+</table>
+<p><strong>B0.6 · the five level datums</strong> (<code>0.6096</code> m = 24 in, the plinth level <em>PL</em>: on every elevation the PL line is drawn 24 in above the ground line)</p>
+<table>
+<thead>
+<tr>
+<th>Card</th>
+<th>y where drawn</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>1S_ELEV_SOUTH</code></td>
+<td><code>-4446.6</code></td>
+</tr>
+<tr>
+<td><code>1N_ELEV_NORTH</code></td>
+<td><code>-3895.2</code></td>
+</tr>
+<tr>
+<td><code>2_ELEV_WEST</code></td>
+<td><code>-4515.7264</code></td>
+</tr>
+<tr>
+<td><code>7_ELEV_EAST</code></td>
+<td><code>-3766.442</code></td>
+</tr>
+<tr>
+<td><code>8_SECTION_AA_TRUSS</code></td>
+<td><code>-3726.416</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>B0.5 · where the body heights come from.</strong> Footing F-1 is 12 in thick, its top 45 in below the finished ground (z −1.143 m to −1.4478 m). The beams run from 122 in to 132 in above the ground (3.0988 m to 3.3528 m), as the section's lines give them; the elevations draw the beam soffit at 120 in, a 2 in difference the drawings leave open and this test does not settle.</p>
+<p><em>Proven (witness W-UAT-B0, 2026-11-15): these steps, done in the real Modeller on the nine sheets as drawn, reach </em><em>Qualifies</em><em>, save nine copies equal mark for mark to the supplied <code>…_marked.dxf</code> set, and B2b's </em><em>Convert</em><em> then reads the same <code>Converted: 511 elements (0 door/window fills), 2 openings cut.</code> The datum y values are typed, not picked with the </em><em>Pick</em><em> button; picking was not part of the proof.</em></p>
 <h3 id="b1-get-to-know-the-drawings-one-sheet-at-a-time">B1 · Get to know the drawings: one sheet at a time<a class="headerlink" href="#b1-get-to-know-the-drawings-one-sheet-at-a-time" title="Permanent link">&para;</a></h3>
 <p>Open <a href="https://red1oon.github.io/bim-ootb/modeller/modeller.html">the Modeller</a>. The drawings are opened from <strong>📂 Open → Open 2D drawings (.dxf)…</strong></p>
 <p><img alt="Where to click: Open, then Open 2D drawings (.dxf)" src="../img/uat/uat_b1_open_menu.png" /></p>
@@ -4543,7 +4752,7 @@
 <td>B · BIM</td>
 <td></td>
 <td></td>
-<td>/ 25</td>
+<td>/ 36 (25 if you were given the marked copies and skipped B0)</td>
 <td></td>
 </tr>
 <tr>
