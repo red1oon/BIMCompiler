@@ -42,9 +42,9 @@ X0 Navigator: F12 + hover on a field of the shared object · Find All References
 Film 1 `~/Videos/Editing_Real_Code_EN_AFTER_2026-11-14_v5.mp4` (owner: fine as it is) · Film 2 `~/Videos/Editing_Real_Code_2_EN_AFTER_2026-11-14_v1.mp4` (§F.18, not reviewed) · **Film 3 "The invoice dated yesterday"** (#2996 found and fixed in the editor, VS Code above, the real ERP page below): `~/Videos/Invoice_Dated_Yesterday_EN_AFTER_2026-11-14_v1.mp4` and **`_v2.mp4`** (75.9 s: adds the two-tone **CH 0 / VSC Hot Edit** cover and the **Prior art** last card with the Developer Guide link; `§FILM_GUARD` 30 OK incl. check P, `§K2_VERDICT PASS`). **The owner has not reviewed the cut.** Rebuild = two bim-ootb worktrees (`614bb121^`, `614bb121`), `node facts.js`, `./shoot.sh`, `./build.sh` (59 s; facts ~2 min, shoot ~3 min). Scenarios 2 and 3 are kept in the film spec. **Memory `project_vsc_hot_edit_film_revisit`: on any future real bug, try the VS Code tools first; it may be the next example.** Other languages: only if asked.
 
 **5. Open with the owner, none of it started.**
-- **F-15** (§F.21) · **F-1** (Fetch back also runs a headless browser?) · **F-2** (size and speed budgets) · **F-7** (a hosted preview per pull request) · **F-12 step 2** (a token so CI-bot merges also deploy; only he can create it).
+- **§F.21 slice 2 / X0 witness stub** (asked) · **F-1** (Fetch back also runs a headless browser?) · **F-2** (size and speed budgets) · **F-7** (a hosted preview per pull request) · **F-12 step 2** (a token so CI-bot merges also deploy; only he can create it).
 - **A status-bar Bump button** (he suggested it: *"Perhap a 'bump' button if hasn't done"*): not built; the light-bulb quick fix exists (cheatsheet step 26). Dev-side only, would need a `realvsc` witness.
-- **Hover in the app → jump VS Code (F-14 ANSWERED 2026-11-15: Modeller canvas first, for DXF → BIM accuracy, then BIM → ERP).** Measured gap and the next question **F-15** (where "which code made this element" is recorded; recommendation: a trace switch, OFF by default) are in **§F.21**.
+- **Hover in the app → jump VS Code (F-14 ANSWERED 2026-11-15: Modeller canvas first, for DXF → BIM accuracy, then BIM → ERP).** F-15 answered (trace switch); **slice 1 built, bim-ootb #3043** (`--trace`, W-DXF-TRACE); open: slice 2 hover + an X0 "New witness for this file" command, §F.21.
 - **A bake, on his go:** the first bake after bim-ootb #2977 writes a `§LOG_STAMP`; read its log and check that a "last:" line lights up.
 - **His hands-on dry run:** `~/VSCcheatsheet.txt` (now 29 steps; steps 27-29 = the clock rule), his own worktree `~/bim-ootb-dryrun`, not yet created. What differs from the sheet when he reports is a finding.
 
@@ -534,7 +534,7 @@ PR, deploy), budgets and a hosted preview wait for F-1, F-2, F-7. DEV_TOOLKIT's 
 later (a) too · F-4, F-5 by DEV_TOOLKIT §8/§10 · F-6 *"go for one click"* · F-8 *"advice me and proceed"* → own providers, no TypeScript
 plugin · F-9 closed "not next", then built as F.12b once logs were stamped · F-10 and F-11 *"Go with your advice."* · F-12 *"Both."* (step 1
 applied on *"yes do it"*) · F-13 *"ok"*, then *"Follow your yes advice."* · film 1 *"Past film is OK as it delivers the idea."* · film 2
-*"This one again is a conceptual idea. Proceed."* **Still open in F: F-1, F-2, F-7, F-15.**
+*"This one again is a conceptual idea. Proceed."* **Still open in F: F-1, F-2, F-7; §F.21 slice 2.**
 
 ### F.21 Hover in the app, jump VS Code to the code   (owner idea 2026-11-14; decision **F-14**; not built)
 - 2026-11-15, owner, on **F-14** (which surface first; advice given: the ERP window): *"About experimental browser hover, let's go for Modeller
@@ -571,6 +571,19 @@ applied on *"yes do it"*) · F-13 *"ok"*, then *"Follow your yes advice."* · fi
 - **Input found 2026-11-15:** `~/Videos/dxf2bim_film_work/why/cli/marked` (the default of **39** `modeller/tests` witnesses) no longer exists, so those
   witnesses SKIP / INCONCLUSIVE today. A leftover `/tmp/w_reg_report_2156169_b/marked` (2026-10-31, re-marked sheets) reproduces the known fact
   `gate STRUCTURE ok=true bodies=512` (`--complete --pack pwd2024_bd`). Slice 1 runs on a copy of it; restoring the default folder is the owner's call.
+
+**F.21 SLICE 1 RESULT (2026-11-15): built and merged, bim-ootb #3043 (`Fixes #3042`), re-run on `main` @ `f7cb6425`: `§DXF_TRACE_W VERDICT PASS bodies=512 keys=11 fail=0`.**
+- 27 builder lines in 14 modules stamped; `dxf2bim/` untouched (`dxf2bim_import.js` stamps what it takes in, through `_trace` → `Dxf2Prep.trace`). First key = the
+  builder; a later pass-through stamp is appended (`a > b`), never replaces it (0 such chains on the shed).
+- Model untouched: `bodies.json` / `ops.json` / `verdict.json` sha-256 identical on unedited main, the branch with the switch off, and on (`e4bca8a8…`, `62d4bc7b…`, `10591e3e…`).
+- Full runner before → after (same machine, same input): `§ALLWITNESS PASS=106 FAIL=10 SKIP=5 ENV=12 of 133` → `PASS=107 FAIL=10 SKIP=5 ENV=12 of 134`; every verdict and
+  FAIL line identical, +1 = `witness_dxf_trace`. The 10 FAILs and the ENV/SKIP-set drift are on unedited `main` (missing inputs; not this lane's).
+- **What it showed (shed):** 96 columns = 32 from `dxf2bodies.js:422` (20 drawn, 12 derived) + **64 synthesized by `dxf2synth.js:62`**; 144 of 168 members
+  (`dxf2section.js:89`) and 108 of 117 plates (`dxf2section.js:103`) are `assumed`. `dxf2bodies.js:422` alone builds 99 bodies (footings, 32 columns, beams): the
+  trace names that line, not the branch inside it (coarse there, by design; finer only when a real accuracy bug needs it).
+- **Machine load:** two runner suites in parallel saturated the machine (a peer session asked to throttle, 2026-11-15). Run ONE suite at a time, under `nice -n 19 ionice -c3`.
+- **OPEN (asked 2026-11-15, no answer yet):** slice 2 (the canvas hover → `vscode://file/<path>:<line>`, dev-only) build or skip? · a new X0 command "New witness for this
+  file" (a skeleton pre-filled from facts the index has: cited spec, `§` tags the file prints, the witnesses touching it; population + red control left empty so it FAILs until a person fills them).
 
 
 ---
