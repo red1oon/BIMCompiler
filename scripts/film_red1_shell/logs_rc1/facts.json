@@ -1,0 +1,155 @@
+{
+ "made": "2026-11-15T09:04:53.934Z",
+ "ootb": "254f73be",
+ "session": {
+  "words": 23
+ },
+ "help": {
+  "listed": 23
+ },
+ "count": {
+  "ms": 25054,
+  "total": 1193,
+  "rows": [
+   {
+    "disc": "MEP",
+    "n": 809
+   },
+   {
+    "disc": "ARC",
+    "n": 270
+   },
+   {
+    "disc": "ELEC",
+    "n": 81
+   },
+   {
+    "disc": "STR",
+    "n": 19
+   },
+   {
+    "disc": "PLB",
+    "n": 14
+   }
+  ],
+  "sec": 25
+ },
+ "clash1": {
+  "ms": 1965,
+  "sec": 2,
+  "discA": "ARC",
+  "discB": "MEP",
+  "toleranceM": 0.025,
+  "bboxOverlaps": 393,
+  "rtree": true,
+  "meshClashes": 291,
+  "contained": 156,
+  "unknown": 0,
+  "obbRejected": 76,
+  "triangleClear": 26,
+  "cleared": 102,
+  "screen": {
+   "box": 393,
+   "mesh": 291,
+   "contained": 156,
+   "cleared": 102,
+   "obb": 76,
+   "tri": 26,
+   "unknown": 0
+  }
+ },
+ "ls": {
+  "glob": "*Bath*",
+  "matched": 4,
+  "of": 393,
+  "held": true,
+  "heldLog": true,
+  "screenMatched": 4,
+  "screenOf": 393,
+  "widest": 214
+ },
+ "menu": {
+  "items": [
+   "MEP",
+   "ARC",
+   "ELEC",
+   "STR",
+   "PLB"
+  ],
+  "n": 5,
+  "title": "discA"
+ },
+ "pick": {
+  "discA": "ARC",
+  "discB": "STR",
+  "ms": 786,
+  "sec": 1,
+  "toleranceM": 0.025,
+  "bboxOverlaps": 45,
+  "rtree": true,
+  "meshClashes": 18,
+  "contained": 2,
+  "unknown": 0,
+  "obbRejected": 19,
+  "triangleClear": 8,
+  "cleared": 27,
+  "screen": {
+   "box": 45,
+   "mesh": 18
+  }
+ },
+ "element": {
+  "props": 9,
+  "prompt": ""
+ },
+ "lsel": {
+  "shown": 6,
+  "of": 6,
+  "rows": 6,
+  "spaces": 4,
+  "tubs": 2,
+  "ms": 631
+ },
+ "group": {
+  "groups": 5,
+  "total": 1193,
+  "rows": [
+   {
+    "storey": "Unknown",
+    "n": 1026
+   },
+   {
+    "storey": "Level 2",
+    "n": 83
+   },
+   {
+    "storey": "Level 1",
+    "n": 62
+   },
+   {
+    "storey": "T/FDN",
+    "n": 14
+   },
+   {
+    "storey": "Roof",
+    "n": 8
+   }
+  ],
+  "sum": 1193,
+  "unknown": 1026,
+  "level2": 83
+ },
+ "pwd": {
+  "building": "Duplex",
+  "kind": "Element"
+ },
+ "checks": {
+  "bad": 0,
+  "missing": 0,
+  "widest": 214,
+  "cols": 220,
+  "rows": 50,
+  "frames": 141,
+  "buildingsChecked": 9
+ }
+}
