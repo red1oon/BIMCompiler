@@ -644,6 +644,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#2026-11-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2026-11-15
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#2026-11-02" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3216,6 +3227,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#2026-11-15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2026-11-15
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#2026-11-02" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3504,6 +3526,33 @@
 <p>A running log of shipped, user-visible changes across the Modeller, Viewer, ERP/POS, and HBA facilities
 module. Internal engineering work (kernel hardening, data-model migrations, CI fixes) isn't listed here —
 only things you'd actually notice using the app. See each app's guide for full how-to detail.</p>
+<h2 id="2026-11-15">2026-11-15<a class="headerlink" href="#2026-11-15" title="Permanent link">&para;</a></h2>
+<p><em>Catch-up for 3–15 November, read from the merged change log. Each item names the guide that covers it.</em></p>
+<p><strong>Command line — the one door</strong> (<a href="../FastScriptGuide/">Fast Script Guide</a>)
+- <code>ninja.exec</code> stages a whole Ninja workbook in one line; <code>ninja.rollback</code> undoes one staged bundle,
+  <code>ninja.export</code> writes a bundle back as a workbook, <code>ninja.workflow</code> shows the document columns of a staged table.
+- <code>mis.add_window</code> makes a window from a CSV, <code>mis.diff</code> compares a CSV with the table without changing it, and
+  <code>mis.list</code> / <code>mis.sum</code> / <code>mis.group</code> take <code>master=Table/record</code> for the rows of one parent. A window made at the
+  terminal used to show an empty grid in the browser; it now shows its rows.
+- <code>model.open</code>, <code>convert</code>, <code>addbay</code>, <code>undo</code> and <code>close</code> drive the Modeller from a line, and <code>--script FILE --dry</code>
+  runs a whole file on a throw-away copy first.
+- A tab on any window: a master outside the sheet is looked up in the dictionary, as legacy Ninja does, and a table
+  the dictionary already holds is reused.</p>
+<p><strong>ERP</strong>
+- <strong>Attachments</strong> on every window's tab; large files go to the shared browser file store.
+- <strong>BIM Document</strong> window, with <strong>Open in Modeller / Viewer</strong> from the record.
+- <strong>Migrate from Odoo</strong> (a form in the ERP, hardened for a real company's data, not the demo) and <strong>Migrate from
+  Business Central (alpha)</strong>. One guide covers every source: <strong><a href="../MigrationGuide/">Migration User Guide</a></strong>.
+- Construction products at standard cost, and a payment now belongs to a project through its invoice, in the CAPEX
+  demonstrator (<strong><a href="../CapexDashboardGuide/">CAPEX guide</a></strong>, <strong><a href="../CapexUATGuide/">UAT guide</a></strong>; sample data, not official).</p>
+<p><strong>Modeller and Viewer</strong>
+- <strong>Keep</strong> and <strong>Accept all</strong> now clear the assumptions the reading modules raised on a 2D drawing set.
+- <strong>ERP ▸ Project Order</strong> on a model made in the Modeller now says why it cannot price and names the Viewer route.
+- Both IFC routes land a file in <strong>one local frame</strong> with the offset recorded, and the IFC's own grid is kept.
+- Walked devices that only borrow a density are marked <strong>provisional</strong> and left out of totals and quantities.</p>
+<p><strong>For developers</strong> (<a href="../DeveloperGuide/">Developer Guide</a>)
+- The VS Code helper (X0 Navigator): go to definition and hover for <code>APP.x</code>, the last value a tag logged, cost if
+  deployed, Find All References, a one-click cache bump, and an optional local read-only facts server for AI assistants.</p>
 <h2 id="2026-11-02">2026-11-02<a class="headerlink" href="#2026-11-02" title="Permanent link">&para;</a></h2>
 <p><strong>Modeller — 2D drawings to BIM</strong>
 - <strong>Properties panel on an opened building.</strong> Open a <code>.db</code> or <code>.ifc</code> and select a part to see its class,
