@@ -149,7 +149,11 @@ Cost of each English edit is now up to six translations: the staleness check (§
 **I8, deploy evidence:**
 - Spanish was published first: guard PASS 549 → 621 files, no `ALLOW_SHRINK`, canaries 200.
 - Fetched: `/es/FastScriptGuide/` returns 200 with `lang="es"`, the Spanish title and the "Traducida…" line. The English guide carries `hreflang="es"`. `/es/MANIFESTO/` shows "aún no está traducida", `noindex`, and no chooser.
-- The other five follow in the next publish; their I8 is recorded below when fetched.
+- **All six, second publish (2026-11-16, 23:29Z):** guard PASS 621 → 981 files, no `ALLOW_SHRINK`, canaries 200, `CapexUATGuide.pdf` live equals the checked print.
+  - GitHub Pages served the new tree about 30 s after the push. The first fetch, straight after the publish, still saw the old tree (404 on `/fr/`): a fetch right after a deploy is not evidence either way.
+  - Fetched each `/<lang>/FastScriptGuide/` for es, fr, de, id, ja and zh: HTTP 200, the right `<html lang>`, the translated title, 7 `hreflang` alternates, and the language's own "translated" line.
+  - The English guide lists all 7 `hreflang`.
+  - `/ja/MANIFESTO/` returns 200 with the Japanese "not translated yet" line, `noindex` and no chooser.
 **Found for the CLI session, not a translation issue:** the Indonesian draft notes that English line 441 says `erp.read` does not fill in the order's own lines, while the run block under it shows a `children` list.
 **Next:** §6c, the cross-language search vocabulary.
 
