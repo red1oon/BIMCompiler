@@ -14,60 +14,52 @@ Background and every measurement this file cites: `prompts/EDITOR_MAINTAINABILIT
 
 ---
 
-## ▶▶ RESUME HERE FIRST (rewritten 2026-11-14 at the close of the second session; **"resume software" lands here**)
+## ▶▶ RESUME HERE FIRST (rewritten 2026-11-15 at the close of the third session; **"resume software" and "resume VSC" land here**)
 
-Owner, closing: *"update prompt, to close session, new session will 'resume software'"*. Continues in ordinary (non-Fable) sessions. This block is the whole hand-over; each section it names holds the evidence (older sections are in the archive, START HERE 7). If a line here and a `§` section disagree, the section wins. **Standing rules heard this session:** "ERP" means the Kernel ERP JavaScript in bim-ootb `erp/`; legacy iDempiere Java is a read-only reference, it never enters the repos (cite file:line only). Decisions the owner delegates ("advise me as you know better", "follow the advice") are recorded in Part A's DECISIONS in his words.
+Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate, so new session when 'resume VSC' or 'resume software' gets the full context"* · *"update prompt also that new sesion will do up BIM side"*. This block is the whole hand-over; each section it names holds the evidence (older history: the archive, START HERE 7). If a line here and a `§` section disagree, the section wins. **Standing rules:** "ERP" = the Kernel ERP JavaScript in bim-ootb `erp/`; legacy iDempiere Java is a read-only oracle (cite file:line, never copy it in). Owner design talk: ONE detail per message, with a recommendation; record his answer in his words. Workers run on Sonnet. One heavy job at a time on this machine, `nice -n 19 ionice -c3` (two suites in parallel saturated it, a peer session asked to throttle, 2026-11-15).
 
-**1. Part A (the pure core), where it stands.** A-1 (the core list), A-2 (the login context is the one clock), A-3 (core never falls back; the day is the LOCAL day; the edge records it), A-4 (`Env.elapsed()` for timing) are ALL answered (Part A DECISIONS). Built, all merged and re-run on `main`:
-`Env.stamp / Env.modelEnv / Env.nowStamp / Env.nowMs` in `erp/ad_callout.js` (A1, bim-ootb #3007, `W-ENV-VIEWS`) · `ws_kernel.js` session day = local day (**#2996 fixed**, #3010; legacy oracle `CompiereService.java:281-283`) · `Import*` x7 + `ClientAcctProcessor` (#3013) · `InvoiceGenerate` + `InOutGenerate` (#3016) · `model_asi` + `doc_poster` + the ASI dialog's day (#3021) · `crud_core.localDay(ms)` + the two `ad_process` report handlers (#3026). The regex precursor `erp/tests/witness_core_clock_reads.js` scans 13 files (`clockReads=0` each, red control).
-**REMAINING for A2 (measured 2026-11-14), one PR each, callers read first:** ~~`processes/PackIn.js:39`~~ ✅ #3033 · ~~`rule_fold.js:94`~~ ✅ #3030 (A2-EDGE RESULT in Part A) · timing only, via `Env.elapsed`: `ad_callout.js:995`, `model_pa.js:23`, `viewer/cpm_schedule.js:862-918`, `viewer/schedule_gate.js:849/1007` (4D cache key: re-run `scripts/cache_4d_run.js` once), `common/room_graph.js:1692/1773`, `viewer/schedule_inject.js:55` · viewer: `schedule_author.js:3115/3448`, `schedule_sync.js:36` (`Math.random` tab id, edge or core?) · the EDGE producers `crud_overlay._modelEnv`, `plugin_overlay._localNow`, `genesis.js:729` LAST (crud_overlay returns before `_modelEnv` in node, so it needs a witness that can load it). Then **A3 `W-CORE-PURE`** (a real AST scan, replacing the hand list).
-**A-5 ANSWERED 2026-11-15** (owner: *"Go with your advice on Option 1."*): `Env.setEdge` installed once by the page; **A2-EDGE built: bim-ootb #3030 (rule_fold) + #3033 (PackIn)**, result in Part A. Next A2 item: the timing reads via `Env.elapsed`.
-**Method that worked for every file (keep):** list the witnesses that touch the file; BEFORE editing, save their verdict lines (3 lanes, `< /dev/null` on every `node`, **do not edit that worktree until the baseline finishes**); edit; compare after; investigate every diff (for browser witnesses mask ids and ordering, then diff again; a diff in one that fails on unedited `main` too is load, not you); change a witness only when the RULE itself changed (`W-LOCAL-TIME` C updated, D added in #3026), and say so in the PR.
+**0. THE NEXT SESSION'S JOB (owner 2026-11-15): the BIM side.** The ERP field hover shows a STACK of layers (§F.22); the BIM hover (§F.21 slice 2) shows only the builder line. Do for BIM what F.22 did for ERP, then remake the BIM film with layers (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3).
+- **Ask the owner first, one message (F-18), with this recommendation:** a body's layers, in the order they happened, each from data the body or the op already carries, never guessed: (1) the BUILDER (the trace key → its line, `devtools/hover/dxf_hover.js`) · (2) PASS-THROUGH stamps (the `a > b` chain the trace already keeps) · (3) each SIZE and its source (`size.*.source` on the body: `drawn` / `schedule` / `label` / `default` / `user` / `inherited`; `height_source`, `thick_source`), a `default` linked to its `dxf2defaults.js` row (the yellow default a user can change) · (4) CUTS that opened it (the `GEOM_CUT` ops whose provenance names this body) · (5) EDITS after Convert (the op log: moves / resizes of that fid) · (6) the evidence the converter attached (handle, layer, sheet, prov). Number keys / V open each layer's line, as the ERP hover does.
+- **Witness the same way F.22 was:** a denominator (every body of the shed: 512 bodies / 511 inserts), a red control per claim, and a check that each claim agrees with an independent source (the lesson of §F.22's two defects below). Then the film: same recipe as FILM 2.
+- **The accuracy item for the DXF→BIM lane (found by the trace, not yet raised there):** the truss is drawn once at cut AA and copied to 13 stations (`modeller/dxf2section.js:42-44`): 144/156 bars + 108/117 plates (252 bodies, ~half the model) are `assumed`, spaced by ONE default, `section.spacing` (= the column pitch) unless stated. The "64 synthesized columns" are NOT an issue (below-grade parts from the column schedule, §L29; corrected in §F.21).
 
-**2. Where each part stands.**
+**1. The hover family, built 2026-11-15 (all merged in bim-ootb, witnessed red → green, re-run on `main`; how to use: bim-ootb `devtools/hover/README.md`).**
+| What | PRs | Witness, line on `main` |
+|---|---|---|
+| `dxf2bim_cli.js --trace`: which line built each body (`Dxf2Prep.trace`, 27 stamps; model bytes unchanged) | #3043, #3047 | W-DXF-TRACE `VERDICT PASS bodies=512 keys=12` (T2b inserts 511/511) |
+| BIM canvas hover (Modeller): body → its builder line, **V** opens VS Code | #3047 | W-DXF-HOVER `VERDICT PASS` (real mouse sweep, red control) |
+| ERP field hover: every layer in firing order (dictionary → callouts → picker rule → model hooks / doc action / validators → process), owner@rank, Java origin; **Alt+1-9** opens a layer | #3055, #3057, #3059 | W-ERP-HOVER `VERDICT PASS`: `fields=12323 lines_resolved=6590 wrong_line=0 unported=199`, E2b `false_unported=0`, E4 `keys tried=112 wrong_or_dead=0` |
+| ERP legacy-parity gate in `scripts/bump.js` (F-16: block on a NEW mismatch, `scripts/bump_parity.json` mode block/warn/off, `--no-parity "<reason>"`) | #3050 | W-BUMP-PARITY `PASS judged=14 failed=0 real_row=run` |
+**Two defects the films found in merged code (keep the lessons):** (a) #3057: the ERP hover read only the layered registry's `describe()`, which misses classes put in directly (`erp/ad_callout.js:512` CalloutEngine) and called real callouts UNPORTED (213 claimed, 199 true); presence must be the ENGINE's own lookup (`getCallout :442`; processes JAVA + `registerHandler :76`). (b) #3059: the tooltip's key map wiped a number after a layer without a line. Both witnesses' first checks were BLIND (one read the hover's own field, one pressed only key 1 on one field): a check must judge from an independent source and over every case, and its red run must FAIL. **Parity-gate caveat:** its default bridge path is the shared `~/bim-compiler` checkout (usually on another branch); point `BUMP_PARITY_BRIDGE` at a worktree on `origin/master` (`/tmp/wt-bridge` exists for it). Today's known parity failures: `DD:FAIL`, `CTX:FAIL`, `DDS:HARNESS-FAIL`.
 
+**2. Part A (the pure core).** A-1..A-5 answered (Part A DECISIONS). Built and merged: `Env.stamp/modelEnv/nowStamp/nowMs` (#3007) · session day = local day (#2996 → #3010) · `Import*` x7 + `ClientAcctProcessor` (#3013) · `InvoiceGenerate` + `InOutGenerate` (#3016) · `model_asi` + `doc_poster` (#3021) · `crud_core.localDay` + report handlers (#3026) · **A-5 `Env.setEdge`**: `rule_fold.js` (#3030, W-RULE-FOLD-EDGE) + `processes/PackIn.js` (#3033). **Remaining A2, one PR each:** timing reads via `Env.elapsed` (`ad_callout.js:995`, `model_pa.js:23`, `viewer/cpm_schedule.js:862-918`, `viewer/schedule_gate.js:849/1007` (4D cache key: re-run `scripts/cache_4d_run.js` once), `common/room_graph.js:1692/1773`, `viewer/schedule_inject.js:55`) · viewer `schedule_author.js:3115/3448`, `schedule_sync.js:36` · the EDGE producers `crud_overlay._modelEnv`, `plugin_overlay._localNow`, `genesis.js:729` LAST · then **A3 `W-CORE-PURE`** (an AST scan replacing the hand list in `erp/tests/witness_core_clock_reads.js`, which now lists 15 files). **Method that worked (keep):** baseline the touching witnesses BEFORE editing (a second detached worktree), edit, compare, investigate every diff; `poc_gated_complete.js` / `poc_i4_reconcile.js` are stale (wait for `#pill-kanban`, fail on `main`): do not use them as before/after.
+
+**3. Where each part stands.**
 | Part | State | Next step |
 |---|---|---|
-| A | A0, A1 ✅; A-1..A-5 ✅; A2 done for 15 files (above) | the remaining A2 files (timing, viewer, edge producers) → A3 |
-| B | not started | **B0 needs no decision** (generator in check mode, no file changes, §READY). Then ask B-1 |
+| A | A-1..A-5 ✅, A2 done for 15 files | remaining A2 (above) → A3 |
+| B | not started | B0 needs no decision (§READY), then ask B-1 |
 | C, D | not started; wait on B | — |
-| E | not started | `witness_kit/paths.js` needs no decision (§READY). Then ask E-1 |
-| F | every row that needed no decision and no part A–E data is built (§F.4–§F.20) | nothing unblocked; see 4 |
+| E | not started | `witness_kit/paths.js` needs no decision (§READY), then ask E-1 |
+| F | §F index rows + §F.21 (BIM trace + hover) + §F.22 (ERP hover) + F-16 gate built | **the BIM layered hover (0)**, then the X0 "New witness for this file" command (§F.21 OPEN; a skeleton pre-filled from facts the index has, population + red control left empty so it FAILs until a person fills them) |
 
-**3. What Part F is today (bim-ootb `devtools/`, merged; the Developer Guide §4.1, §4.2, §5.6, §6, §6.1 is current and live).**
-X0 Navigator: F12 + hover on a field of the shared object · Find All References (§F.19) · `§TAG` hover with the last provable value or the named reason (§F.15, §F.16; **only for tags printed by a logging call**: a tag printed through a `say()` helper, like the replay-clock witness, gets the spec places and the "printed by" lines but no last value) · the grey "last:" line, which also reads `~/.cache/bim4d` · *Context for this file* · Run & Ship (Run local, Check, Cost if deployed, Fetch back) · the one-click cache bump on save (§F.20; a light-bulb quick fix) · snippets `witness`, `slog`, `spec`. Facts server `devtools/mcp/x0-facts/` (8 read-only tools, OFF by default). Real-editor witness: `tests/realvsc/run.js --go --compiler-root <bim-compiler>`.
-**Does a saved edit show in the browser right away? NO, measured 2026-11-14** (the service worker serves the old file; not even after `bump.js` for 3 reloads; only the browser's "Bypass for network", or a dev server answering `sw.js` with an empty worker plus `no-store`, shows it on the first reload): table in `prompts/FILM_IDE_ERP_DEBUG.md` "CH 0 v2 PLAN". The working hot server and its witness are PARKED at `~/.cache/bim_film3/hot_server_parked/` (owner: the VS Code answers are enough; not merged).
+**4. Part F's other tools (bim-ootb `devtools/`; Developer Guide §4.1, §4.2, §5.6, §6, §6.1 live).** X0 Navigator: F12 / hover / Find All References on shared-object fields, `§TAG` hover with the last provable value, *Context for this file*, Run & Ship, one-click cache bump, snippets `witness` / `slog` / `spec`; facts server `devtools/mcp/x0-facts/` (OFF by default). A saved edit does NOT show on a plain reload (service worker; measured 2026-11-14); the hot server is parked at `~/.cache/bim_film3/hot_server_parked/`.
 
-**4. The films (spec and every result: `prompts/FILM_IDE_ERP_DEBUG.md`, scripts `scripts/film_ide_erp_debug/`; films are never committed).**
-Film 1 `~/Videos/Editing_Real_Code_EN_AFTER_2026-11-14_v5.mp4` (owner: fine as it is) · Film 2 `~/Videos/Editing_Real_Code_2_EN_AFTER_2026-11-14_v1.mp4` (§F.18, not reviewed) · **Film 3 "The invoice dated yesterday"** (#2996 found and fixed in the editor, VS Code above, the real ERP page below): `~/Videos/Invoice_Dated_Yesterday_EN_AFTER_2026-11-14_v1.mp4` and **`_v2.mp4`** (75.9 s: adds the two-tone **CH 0 / VSC Hot Edit** cover and the **Prior art** last card with the Developer Guide link; `§FILM_GUARD` 30 OK incl. check P, `§K2_VERDICT PASS`). **The owner has not reviewed the cut.** Rebuild = two bim-ootb worktrees (`614bb121^`, `614bb121`), `node facts.js`, `./shoot.sh`, `./build.sh` (59 s; facts ~2 min, shoot ~3 min). Scenarios 2 and 3 are kept in the film spec. **Memory `project_vsc_hot_edit_film_revisit`: on any future real bug, try the VS Code tools first; it may be the next example.** Other languages: only if asked.
+**5. Films (never committed; scripts + logs are).** CH 0 · Immersive Software (`prompts/FILM_IMMERSIVE_SOFTWARE.md`, scripts `scripts/film_immersive_software/`, `scripts/film_erp_layers/`): film 1 the BIM hover `~/Videos/Immersive_Software_CH0_EN_AFTER_2026-11-15_v1.mp4` · film 2 the ERP field `~/Videos/Immersive_Software_CH0_ERP_Field_EN_AFTER_2026-11-15_v1.mp4` + Mandarin `_ZH_` (see the film file's status) · film 3 = BIM with layers (after 0). Both EN films were sent to the owner's phone (SendUserFile). Earlier CH 0 "VSC Hot Edit" films: `prompts/FILM_IDE_ERP_DEBUG.md`. Rebuild recipes are in each film file (removing a film worktree deletes its ignored pictures; the recipe recreates them).
 
-**5. Open with the owner, none of it started.**
-- the X0 "New witness for this file" command (after slice 2, not started) · **F-1** (Fetch back also runs a headless browser?) · **F-2** (size and speed budgets) · **F-7** (a hosted preview per pull request) · **F-12 step 2** (a token so CI-bot merges also deploy; only he can create it).
-- **A status-bar Bump button** (he suggested it: *"Perhap a 'bump' button if hasn't done"*): not built; the light-bulb quick fix exists (cheatsheet step 26). Dev-side only, would need a `realvsc` witness.
-- **Hover in the app → jump VS Code (F-14 ANSWERED 2026-11-15: Modeller canvas first, for DXF → BIM accuracy, then BIM → ERP).** F-15 answered (trace switch); **slice 1 built, bim-ootb #3043** (`--trace`, W-DXF-TRACE); **slice 2 built, #3047** (hover → line → V opens VS Code). F-16 parity gate built (#3050). Film: `prompts/FILM_IMMERSIVE_SOFTWARE.md`. Open: the X0 witness stub, §F.21.
-- **A bake, on his go:** the first bake after bim-ootb #2977 writes a `§LOG_STAMP`; read its log and check that a "last:" line lights up.
-- **His hands-on dry run:** `~/VSCcheatsheet.txt` (now 29 steps; steps 27-29 = the clock rule), his own worktree `~/bim-ootb-dryrun`, not yet created. What differs from the sheet when he reports is a finding.
+**6. Open with the owner.** F-18 (above, ask first) · F-1 (Fetch back runs a headless browser?) · F-2 (size and speed budgets) · F-7 (hosted preview per PR) · F-12 step 2 (a deploy token only he can create) · a status-bar Bump button (suggested, not built) · the parity gate's default bridge path (above) · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun` not created) · a bake on his go (check a "last:" line after #2977).
 
-**6. Open, no owner needed, not started.**
-- **15 of the 51 witnesses that load `ws_kernel.js` fail on unedited `main`** (not investigated; the ERP lane's): `acct_processor, branch_day_close, import_invoice, migration_recover, odoo_messy, pos_sales, role_access_update, already_there, bc_migrate, docvalue_wf, idempiere_falsifier, import_order (one case "TABLE"), import_payment, odoo_form, recurring`. Also `witness_udp_order` says `FAIL 93/137` on `main` (reads 75/137 under load) and `witness_docno` needs ~5 min alone (it times out when run in parallel). Compare before/after, never exit codes alone.
-- **11 "untied" fields** the index flags `PHANTOM?` (§F.17): do NOT add text patterns; tying them needs the parser, a Part C question.
-- **The 4D cache's `witness.log` files** carry no `§LOG_STAMP` (§F.15 step 1): left for a decision.
-- **bim-ootb issue #2974 and PR #2975 still say "138 of 281"**; the measured figure is 130 (those two GitHub texts are not corrected).
-- A possible add-on improvement: let the `§TAG` lens also read a tag printed through a `say()` helper (today it counts logging calls only).
+**7. Open, no owner needed.** 15 of 51 `ws_kernel.js` witnesses fail on unedited `main` (ERP lane's; list in the archive) · the Modeller runner on this machine: `§ALLWITNESS PASS=106 FAIL=10 SKIP=5 ENV=12 of 133` before the shed inputs were restored; inputs RESTORED 2026-11-15 to `~/Videos/dxf2bim_film_work/why/{raw,cli/marked}` (README there), and some witnesses need `SHED_RAW_DIR=~/Videos/dxf2bim_film_work/why/raw` set · 11 `PHANTOM?` fields (§F.17, a Part C question) · the 4D cache's `witness.log` has no `§LOG_STAMP` · bim-ootb #2974/#2975 texts still say "138 of 281" (true: 130).
 
-**7. Traps this lane has paid for (each cost a retraction, a false pass or a broken `main`).**
-- **A file under `devtools/` that spells the shared object's access out in a string becomes a fake field in the index** (three times): run `node devtools/vscode/x0-navigator/tests/witness_x0_appdef.js` before any PR that edits one there. CI does not run it.
-- **A scan that counts words inside strings:** `witness_core_clock_reads.js` counted the words "Date.now()" inside my own error message. Word messages without the call text.
-- **A witness that reads source patterns** (`W-LOCAL-TIME` C) breaks when call sites change on purpose: update it deliberately, never to make it pass.
-- **Shared state between a witness's rows** made `W-HOT` pass falsely (the plain row left its edit for the hot row): restore after each row and assert a clean start.
-- **`while read f; do node $f; done < list` swallows the list through stdin:** close it, `node $f < /dev/null`. **A wait loop on a log marker can match the PREVIOUS run's marker:** wait on the processes or on a newer file.
-- **Headless pages and language services start slowly:** wait for the field you read (`page_shot.js` does); shoot F12 BEFORE the tag hover (after opening the witness file first it never answered in 120 s).
-- **Stamp rule:** a log made with more than 10 edited files is refused; commit first, then run `realvsc`. **`*.log` is gitignored:** `git add -f` a log the spec says is committed.
-- **bim-compiler has no auto-merge** (`gh pr merge --squash` by hand, retry on a GitHub 504); bim-ootb has it (`--auto --squash`, then wait for `MERGED`, then re-run the witnesses on `main`).
-- **The local checkout of bim-compiler is on another branch** (`fable/meshdb-livewire`): read with `git show origin/master:…`, edit in a worktree off `origin/master`.
-- **Worktrees:** a unique `/tmp/wt-<task>` each, removed when clean and pushed; `git stash` is SHARED across worktrees (do not use it; compare with a second detached worktree); never `--force` a path another session may own. Removing the film build worktree deletes its ignored stills and databases: the rebuild recipe in 4 recreates them.
-- **Docs deploy from a clean worktree:** `git show origin/gh-pages:glassbowl_data.db > docs/glassbowl_data.db`, then `DRY_RUN=1 scripts/safe_gh_deploy.sh`, then the real one, then fetch the live page back and grep the new text.
-- **Measure before quoting** a number to the owner or in a PR body (a `§` line, with the command). I recommended the ASI dialog as a film example without checking that its change is invisible: check the visible effect first.
+**8. Traps this lane has paid for.**
+- **A registry's own summary is not the truth:** `describe()` missed directly-put classes (§F.22 defect a). Ask the code path that RUNS (the engine's lookup), and give the witness an independent source.
+- **A witness that reads the tool's own output to judge the tool is blind** (E2b v1); **a witness that tries one case is scope-blind** (E4 v1 key 1 only). Red-run every new check against the OLD code: it must FAIL.
+- **A text grep that globs a file twice inflates counts** (`erp/*.js` + `erp/model_*.js`); the parser count is the number.
+- **A devtools file that spells the shared object's access in a string becomes a fake field** in the X0 index: run `devtools/vscode/x0-navigator/tests/witness_x0_appdef.js` before a devtools PR.
+- **Headless pages:** wait for the field you read; a fresh browser context per session (a shared one timed out at Convert); the camera of the Modeller is inside a module (sweep with real mouse moves instead).
+- **`rm` with a relative glob after a `cd` is blocked by the safety check** (the whole command does not run, edits included): never chain a removal onto an edit.
+- `< /dev/null` on every `node` in a loop; wait on processes, not on a log marker from the previous run; `*.log` is gitignored (`git add -f` the logs a spec commits); bim-compiler has no auto-merge (merge by hand), bim-ootb does (`--auto --squash`, wait for MERGED, re-run on `main`); the bim-compiler checkout is on another branch (read `git show origin/master:…`, edit in a `/tmp/wt-*` worktree); never `git stash` (shared), never `--force` a worktree path.
+- **Measure before quoting** (a `§` line and its command); check the visible effect before choosing a film example.
 
 ## ▶ START HERE (fresh session)
 
@@ -759,16 +751,16 @@ A is the only part tied to correctness (replay, posting dates), and A0 is cheap 
 mistakes and is the data source for D, E and half of F. D and E are small once B exists. F's first features need nothing. **Owner, 2026-11-13: they go
 first, as §F.4, the next session's bounded task**; A0 runs in parallel if a second session is free. C is long and best done slowly, module by module, after B/D make ownership visible.
 
-## §READY — what a session can start with no owner decision (as of 2026-11-14)
+## §READY — what a session can start with no owner decision (as of 2026-11-15)
 
 | Part | Starts with no decision | Next decision to ask | Why that one |
 |---|---|---|---|
-| A | A0 ✅, A-1..A-5 ✅, A1 ✅ | none | the remaining A2 files (RESUME 1) |
+| A | A0 ✅, A-1..A-5 ✅, A1 ✅ | none | the remaining A2 files (RESUME 2) |
 | B | **B0: generator in check mode** (manifest built from today's files, regenerate, byte-compare; no file changes) | B-1 `?v=` numbers or hashes | B1 writes `?v=`; B0 does not |
 | C | nothing; waits on B and D | C-1 part names + owners | |
 | D | nothing new; the multi-publisher list already exists (`types/globals.gen.d.ts`) | D-1 where the questions list lives | needs B's `owner` field |
 | E | `witness_kit/paths.js` (no behaviour change; witness: the same suite verdicts before and after) | E-1 the `PROVES:` header format | |
-| F | the three small PRs of ADVICE C | F-1, F-2, F-7 | |
+| F | the three small PRs of ADVICE C | **F-18 (the BIM layered hover, RESUME 0)**, then F-1, F-2, F-7 | the owner named the BIM side as the next session's job |
 
 Ask the owner **one decision per message, with the recommendation** (START HERE 2). The recommendations are in each part and in ADVICE A.
 
@@ -800,15 +792,15 @@ Ask the owner **one decision per message, with the recommendation** (START HERE 
 - `prompts/archive/CODE_ARCHITECTURE_DESIGN_full_history_2026-11-13_to_2026-11-14.md`: this file before it was cut down. Every §F.n
   section, the §VET pass and all owner exchanges in full.
 
-## STATUS (2026-11-14)
+## STATUS (2026-11-15; the RESUME block above is current)
 
 | Part | What | State |
 |---|---|---|
-| A | pure core + Env | **A0 ✅** · **A-1..A-4 ✅** · **A1 ✅** (#3007) · **A2** done for 13 files (#3010 #3013 #3016 #3021 #3026), remaining listed in RESUME 1 · A-5 ✅ → A2-EDGE ✅ (#3030 #3033), then A3 |
+| A | pure core + Env | **A0 ✅** · **A-1..A-5 ✅** · **A1 ✅** (#3007) · **A2** done for 15 files (#3010 #3013 #3016 #3021 #3026 #3030 #3033), remaining listed in RESUME 2, then A3 |
 | B | manifest per app | not started · B0 ready · open: B-1 to B-4 |
 | C | named APP parts | not started · open: C-1, C-2 |
 | D | owner table | not started · open: D-1, D-2 |
 | E | proof map | not started · `paths.js` ready · open: E-1, E-2 |
-| F | VS Code extension + facts server | every unblocked row built (§F index) · open: F-1, F-2, F-7, the token for F-12 step 2 |
+| F | VS Code extension + facts server + the hovers | every unblocked row built (§F index) · §F.21 BIM trace + hover (#3043 #3047) · §F.22 ERP hover (#3055 #3057 #3059) · F-16 parity gate (#3050) · next: F-18 BIM layered hover · open: F-1, F-2, F-7, the F-12 step 2 token |
 
 **§VET** (the 2026-11-13 vetting pass of every claim in this file) is in the archive.
