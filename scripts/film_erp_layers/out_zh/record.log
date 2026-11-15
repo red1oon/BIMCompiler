@@ -1,0 +1,7 @@
+§FILM_CUE beat=cover t=0.000 frames=101 typing=0 answer_hold_frames=101 x1
+§FILM_CUE beat=setup t=4.208 frames=434 typing=58 answer_hold_frames=376 x1
+§FILM_CUE beat=move1 t=22.292 frames=512 typing=0 answer_hold_frames=256 x2
+§FILM_CUE beat=move2 t=43.625 frames=541 typing=68 answer_hold_frames=157 x3
+§FILM_CUE beat=close t=66.167 frames=432 typing=0 answer_hold_frames=432 x1
+§FILM_KEYS typed=82 returns=2
+§FILM_DONE dur=84.167 frames=2020 planned=2020

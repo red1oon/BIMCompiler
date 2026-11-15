@@ -3,7 +3,7 @@
 # on the NEW tree, opened at each link the overlay's V key made in the real page (facts.json). Run facts.js first. Read out/shots.log after every run.
 # Usage: shoot.sh <bim-ootb NEW tree>
 set -u
-NEW="$(cd "$1" && pwd)"; HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; OUT="$HERE/out"
+NEW="$(cd "$1" && pwd)"; HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; OUT="$HERE/${OUTD:-out}"   # OUTD=out_zh for the Mandarin build
 [ -s "$OUT/facts.json" ] || { echo "§FILM_SHOOT REFUSED: run facts.js first"; exit 2; }
 rm -rf "$OUT/stills" "$OUT/shots.log" "$OUT"/done.* "$OUT"/*.req "$OUT/profile_v"; mkdir -p "$OUT/stills"
 BIN="${VSCODE_BIN:-/snap/code/current/usr/share/code/code}"; DISP=":96"

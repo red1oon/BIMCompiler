@@ -66,5 +66,16 @@ Memory (one run each, forced GC, the Sales Order window open): with the tool 46.
 version read the hover's own field and its red run PASSED (blind): rewritten to read the dictionary. (2) bim-ootb #3059: the key map wiped a number after an unlined layer (`[1]` on Target Document
 Type opened nothing); E4 now presses every number shown (red `tried=112 wrong_or_dead=9` → 0). Move 2 of the film is defect (1), shown as it happened.
 
+**FILM 2 MANDARIN (2026-11-15, owner: *"Do Mandarin version and drop remote-control for mobile to share"*): BUILT.** `~/Videos/Immersive_Software_CH0_ERP_Field_ZH_AFTER_2026-11-15_v1.mp4`
+(1920x1080, 84.2 s). `FILM_LANG=zh OUTD=out_zh`: the ERP page opened with `?lang=zh_CN` (three fresh page sessions, `out_zh/facts.log` `VERDICT PASS`), Chinese narration in `narr.js` ZH and Chinese
+cards (`cards.js` `tr()`, Noto Sans CJK SC), Microsoft Edge TTS (free), `§FILM_GUARD VERDICT PASS`, `§CARDS_DONE too_tall=0`, `§FILM_DONE frames=2020 planned=2020`, voice 3/3 `DETAIL`,
+`§K2_VERDICT PASS`. **Translated by the build session, NOT reviewed by a native speaker** (said on the last card). The tooltip and code stay English (they are the tool's own text). Sent to the
+owner's phone with SendUserFile together with both English films (all under 5 MB, no mobile copy needed). Film 1 has no Mandarin version yet (only if asked).
+**Prior art checked 2026-11-15 for the owner's question "anyone else?" (searches + the pages read):** LocatorJS (github.com/infi-pc/locatorjs: Option/Alt-click a component → its code in the
+IDE; React/Preact/Solid, Vue/Svelte experimental) · click-to-component (README read, needs a Babel source plugin) · Chrome/Firefox DevTools Event Listeners pane (an element's handlers with file
+and line) · iDempiere technical info (owner only) · Odoo debug tooltip (field name, type, model) and the paid add-on **CML Field and Button Tooltip Plus** (apps.odoo.com, LGPL-3, $38.36 for v18:
+*"See the full list of modules that touch a field, from the original definition to every override"*, file via Python introspection; its page names no line numbers and no onchange/compute).
+Nothing found for a BIM body → the code that built it. Searches were three quick ones, not a survey.
+
 # FILM 3 (later) — the BIM film remade with layers
 Waits for a layered BIM tooltip (size sources, pass-through stamps, door cuts, edits after Convert; §F.22 records the BIM answer). Not started.

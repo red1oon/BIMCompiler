@@ -15,3 +15,10 @@ out/*.mp4
 out/*.wav
 out/prior/
 out/cli/
+out_zh/prior/
+out_zh/pages/
+out_zh/stills/
+out_zh/cards/
+out_zh/rec/
+out_zh/work/
+out_zh/profile_*/

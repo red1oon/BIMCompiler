@@ -16,7 +16,7 @@ const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/jav
   const br = await chromium.launch({ args: ['--no-sandbox', '--disable-gpu', '--enable-precise-memory-info', '--js-flags=--expose-gc'] }), cx = await br.newContext({ viewport: { width: 1920, height: 1080 }, serviceWorkers: 'block' }), pg = await cx.newPage();
   pg.on('console', m => { const t = m.text(); if (/^§ERP_HOVER /.test(t)) res.console.push(t); }); pg.on('pageerror', e => res.errors.push(String(e).slice(0, 160)));
   try {
-    await pg.goto('http://localhost:' + srv.address().port + '/erp/idempiere.html?lang=en_US', { waitUntil: 'networkidle', timeout: 180000 });
+    await pg.goto('http://localhost:' + srv.address().port + '/erp/idempiere.html?lang=' + (process.env.ES_LANG || 'en_US'), { waitUntil: 'networkidle', timeout: 180000 });
     await pg.waitForFunction(() => document.querySelector('#idmp-login-clients') && document.querySelector('#idmp-login-clients').children.length > 0, null, { timeout: 120000 });
     await pg.click("#idmp-login-clients .idmp-login-user:has(.nm:text-is('GardenWorld'))"); await pg.waitForSelector('#idmp-login-step1:visible');
     await pg.click("#idmp-login-users .idmp-login-user:has(.nm:text-is('GardenAdmin'))"); await pg.waitForSelector('#idmp-login-step2:visible'); await pg.click('#idmp-login-ok');
