@@ -18,6 +18,8 @@ Background and every measurement this file cites: `prompts/EDITOR_MAINTAINABILIT
 
 Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate, so new session when 'resume VSC' or 'resume software' gets the full context"* · *"update prompt also that new sesion will do up BIM side"*. This block is the whole hand-over; each section it names holds the evidence (older history: the archive, START HERE 7). If a line here and a `§` section disagree, the section wins. **Standing rules:** "ERP" = the Kernel ERP JavaScript in bim-ootb `erp/`; legacy iDempiere Java is a read-only oracle (cite file:line, never copy it in). Owner design talk: ONE detail per message, with a recommendation; record his answer in his words. Workers run on Sonnet. One heavy job at a time on this machine, `nice -n 19 ionice -c3` (two suites in parallel saturated it, a peer session asked to throttle, 2026-11-15).
 
+**0. ▶ IN PROGRESS 2026-11-15 (fourth session): F-18 answered and the provenance hover built — §F.23 (spec + RESULT); bim-ootb #3064 open, waiting for the page check (owner's go), then merge → FILM 3.** The text below is the original hand-over.
+
 **0. THE NEXT SESSION'S JOB (owner 2026-11-15): the BIM side.** The ERP field hover shows a STACK of layers (§F.22); the BIM hover (§F.21 slice 2) shows only the builder line. Do for BIM what F.22 did for ERP, then remake the BIM film with layers (`prompts/FILM_IMMERSIVE_SOFTWARE.md` FILM 3).
 - **Ask the owner first, one message (F-18), with this recommendation:** a body's layers, in the order they happened, each from data the body or the op already carries, never guessed: (1) the BUILDER (the trace key → its line, `devtools/hover/dxf_hover.js`) · (2) PASS-THROUGH stamps (the `a > b` chain the trace already keeps) · (3) each SIZE and its source (`size.*.source` on the body: `drawn` / `schedule` / `label` / `default` / `user` / `inherited`; `height_source`, `thick_source`), a `default` linked to its `dxf2defaults.js` row (the yellow default a user can change) · (4) CUTS that opened it (the `GEOM_CUT` ops whose provenance names this body) · (5) EDITS after Convert (the op log: moves / resizes of that fid) · (6) the evidence the converter attached (handle, layer, sheet, prov). Number keys / V open each layer's line, as the ERP hover does.
 - **Witness the same way F.22 was:** a denominator (every body of the shed: 512 bodies / 511 inserts), a red control per claim, and a check that each claim agrees with an independent source (the lesson of §F.22's two defects below). Then the film: same recipe as FILM 2.
@@ -47,7 +49,7 @@ Owner, closing 2026-11-15: *"get it well documented in the prompts/# consolidate
 
 **5. Films (never committed; scripts + logs are).** CH 0 · Immersive Software (`prompts/FILM_IMMERSIVE_SOFTWARE.md`, scripts `scripts/film_immersive_software/`, `scripts/film_erp_layers/`): film 1 the BIM hover `~/Videos/Immersive_Software_CH0_EN_AFTER_2026-11-15_v1.mp4` · film 2 the ERP field `~/Videos/Immersive_Software_CH0_ERP_Field_EN_AFTER_2026-11-15_v1.mp4` + Mandarin `_ZH_` (see the film file's status) · film 3 = BIM with layers (after 0). Both EN films were sent to the owner's phone (SendUserFile). Earlier CH 0 "VSC Hot Edit" films: `prompts/FILM_IDE_ERP_DEBUG.md`. Rebuild recipes are in each film file (removing a film worktree deletes its ignored pictures; the recipe recreates them).
 
-**6. Open with the owner.** F-18 (above, ask first) · F-1 (Fetch back runs a headless browser?) · F-2 (size and speed budgets) · F-7 (hosted preview per PR) · F-12 step 2 (a deploy token only he can create) · a status-bar Bump button (suggested, not built) · the parity gate's default bridge path (above) · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun` not created) · a bake on his go (check a "last:" line after #2977).
+**6. Open with the owner.** F-18 ✅ (§F.23) · the go for the F.23 page check · F-1 (Fetch back runs a headless browser?) · F-2 (size and speed budgets) · F-7 (hosted preview per PR) · F-12 step 2 (a deploy token only he can create) · a status-bar Bump button (suggested, not built) · the parity gate's default bridge path (above) · his hands-on dry run (`~/VSCcheatsheet.txt`, 29 steps; `~/bim-ootb-dryrun` not created) · a bake on his go (check a "last:" line after #2977).
 
 **7. Open, no owner needed.** 15 of 51 `ws_kernel.js` witnesses fail on unedited `main` (ERP lane's; list in the archive) · the Modeller runner on this machine: `§ALLWITNESS PASS=106 FAIL=10 SKIP=5 ENV=12 of 133` before the shed inputs were restored; inputs RESTORED 2026-11-15 to `~/Videos/dxf2bim_film_work/why/{raw,cli/marked}` (README there), and some witnesses need `SHED_RAW_DIR=~/Videos/dxf2bim_film_work/why/raw` set · 11 `PHANTOM?` fields (§F.17, a Part C question) · the 4D cache's `witness.log` has no `§LOG_STAMP` · bim-ootb #2974/#2975 texts still say "138 of 281" (true: 130).
 
@@ -685,6 +687,76 @@ existing W-BUMP unchanged (`PASS judged=5 failed=0`). Added beyond the spec: `BU
 `--no-parity` without a reason = usage error (exit 1). **Caveat:** the config's default bridge path is the shared `~/bim-compiler` checkout, which is usually on another branch; point `BUMP_PARITY_BRIDGE`
 at a worktree on `origin/master` (e.g. `/tmp/wt-bridge`) until the default is decided. Film of the hover: `prompts/FILM_IMMERSIVE_SOFTWARE.md`.
 
+
+### F.23 Hover a BIM body, see every layer behind it (the provenance hover)   (owner 2026-11-15; decision **F-18**)
+- 2026-11-15, asked F-18 with the recommendation (six layers in the order they happened, each from data the body or the op already carries; number keys / V open each
+  layer's line). Owner: *"Go with your take, on how coders will usually wish it"*. → **F-18 = the six layers, in that order, laid out the way a coder expects a hover:**
+  an identity title line first (class · fid · handle · layer · sheet · provenance), then the six numbered layers, **every layer row always shown** (an empty one says
+  `none`, so key 3 is always the sizes), each item with its `file:line` when one exists and NOTHING when none exists (never a guessed line). Keys **1-6** open the first
+  line of that layer (Alt+1-6 in a text field); **V** stays = the builder line (slice 2 behaviour kept).
+- Owner, same day, asked what such an IDE feature is called. Answer given: no one standard name; it is **origin tracking / provenance** (database "why-provenance"),
+  shown as **output-to-code navigation** (the Whyline, Ko & Myers 2008), closest to a graphics debugger's **pixel history** (RenderDoc / PIX), and the edits layer is a
+  small **omniscient (time-travel) debugging**. Working name in this file: **the provenance hover**.
+- **Measured 2026-11-15 (bim-ootb `main` @ `1b291137`, CLI `--complete --pack pwd2024_bd --trace` on the marked shed; `§DXF_TRACE elements=512 traced=512`, `inserts=511`):**
+  - Every body's `size` is an object of sides; a side is EITHER an object with a `source` (445 `{number,source}`, 170+18 `{drawn,number,class,rule,source[,align]}`,
+    41 `{number,source,text}`, 12 `{value,source,key,drawn}`) OR a plain value with no source (345 numbers, 74 strings, 39 nested: `profile`, `run`). Both `number` and
+    `value` name the number (`dxf2beams.js:84` `value`, `dxf2doors.js:78` `number`): the hover reads both and shows a side without a source as `(no source recorded)`.
+  - Sources seen: `label` 499, `default` 139, `inherited` 99, `schedule` 64, `drawn` 38. Every body also has `height_source` (`section` 285, `elevation` 110, `derived` 67,
+    `stated` 50). The source is free text in code (`dxf2beams.js:84` also writes `TOC label` / `plan level` / `split at the midpoint …`): shown as written, never bucketed.
+  - **Only ONE default-sourced kind records WHICH default it used:** `column.top` (12, `key: column.top_under_beam`). The other 127 `source: default` sides (`bar.w` 91,
+    `fan.depth` 13, `net.t` 3, `slab.t` 1, `roof.t` 2, …) carry no key: the hover says `default (which default is not recorded on the body)` for them and links nothing.
+    **Finding for the DXF2BIM lane (raise there, not fixed here: it changes the model files):** stamping the `key` where a builder calls `DF.use(<key>)` would let the
+    hover link every yellow default.
+  - The op (`GEOM_INSERT` parameters, survives a reload) carries `provenance.ifc.props.SizeBasis` (`"x:label y:label"`, 511/511) = the sides + sources, written by a second
+    code path (the IFC props writer); on the shed it agrees with `bodies.json` on 510/510 bodies that have one (the 511th insert is the joined wall line, which exists only
+    as an insert). The props also carry `NoteSource_*` (457) / `SchedSource_*` (128) = `sheet#handle` of each drawn note / schedule row the converter attached.
+  - Cuts: `toOps` returns `cuts` (`GEOM_CUT`, `dxf2bim_import.js:653`, `:727`); the page commits them with `parent = nextId + index` and `slide.fillingFid` = the fill's fid
+    (`dxf_import_ui.js:951-952`). The CLI's `ops.json` does not write them (inserts only).
+  - Edits: the ONE definition of "which ops edit fid X" is `EditDelta.netEdits` (`viewer/edit_delta.js:23`: `GEOM_MOVE`/`GEOM_SCALE`/`GEOM_ROTATE` `parent`, `GEOM_GRID_MOVE`
+    `commands[].featureId`). The hover calls it per op (`netEdits([op]).has(fid)`) rather than re-deriving it; a cut's own edits are `GEOM_CUT_MOVE` / `GEOM_CUT_RESIZE`
+    with `parent` = the host (`modeller/cut_move.js`). Only ops before the op-log cursor count (an undone edit is not shown).
+  - Pass-through (`a > b` in the trace map, `dxf2prep.js:222`): **0 chains on the shed.** The layer is built and judged on a synthetic chain; on the shed it is VACUOUS
+    and the witness says so.
+- **The six layers (`layersFor(fid, ctx)`, pure, the page and the node witness call the same function):**
+  1 **BUILDER** — the trace key's first part → its `file:line` (slice 2's `resolve`, reused, not copied).
+  2 **PASS-THROUGH** — each later key of the chain → its `file:line`.
+  3 **SIZES** — each side `name number source` (+ `text` / `rule` when present) from the body (`R.els`), else the op's `SizeBasis` (side + source, number from nothing:
+    not shown); `height  <height_source>`; a `default` side with a `key` → `modeller/element_defaults.json:<line of that key>` (the yellow row a user can change).
+  4 **CUTS** — every active `GEOM_CUT` whose `parent` is this fid (opening, its rule, the fill it holds) + every `GEOM_CUT_MOVE`/`RESIZE` on them; and, for a fill, the cut
+    whose `slide.fillingFid` is this fid (`fills the opening of #<host>`).
+  5 **EDITS** — every op before the cursor that `EditDelta.netEdits` says touches this fid: `#<op index> <op_type> <dx,dy,dz | fx,fy,fz | grid command>`.
+  6 **EVIDENCE** — `handle · layer · sheet · prov · run` + each `NoteSource_*` / `SchedSource_*` the converter attached (data, no code line).
+- **Index:** `gen_trace_index.js` also writes `defaults: {key: 'modeller/element_defaults.json:<line>'}`, from an espree parse of the JSON as an expression (a parser, not a
+  text search). One file, still git-ignored.
+- **Overlay:** `devtools/hover/dxf_hover.js` grows the layered tooltip (same bookmarklet; nothing shipped changes). If `window.EditDelta` is absent it loads
+  `/viewer/edit_delta.js` once (dev overlay only). Per new body: `§DXF_HOVER fid= guid= key= at= layers=b,p,s,c,e,v` (the count per layer).
+- **Witness W-BIM-LAYERS** (`devtools/hover/tests/witness_bim_layers.js`, node, no browser), on the marked shed in-process (`dxf2bim_cli.run`) + `toOps` + the page's
+  commit mapping, and the CLI `--trace` run in a SEPARATE process as the independent oracle:
+  L1 builder: for EVERY insert (denominator 511), layer 1 key = the oracle's `trace.json`, line = a fresh parse · L2 pass-through: synthetic `a > b > c` → 2 items, each
+  line = the parse; shed population printed (`chains=0 → VACUOUS`, not PASS) · L3 sizes: for every insert, layer 3's `side:source` list = the op's `SizeBasis` (second code
+  path) AND each number = the oracle's `bodies.json`; every `default` side with a key links a line of `element_defaults.json` that holds that key (read back), every one
+  without a key links nothing; counts printed by source · L4 cuts: over all inserts, Σ host cuts listed = `cuts.length` and each cut appears under exactly its host; each
+  fill names its host · L5 edits: synthetic ops appended (a `GEOM_MOVE` on A, a `GEOM_GRID_MOVE` command on B, a `GEOM_SCALE` on C, a fourth op past the cursor): A, B, C each
+  list exactly theirs, no other body lists any, the past-cursor op is listed nowhere · L6 evidence: handle / layer / sheet = the oracle's `bodies.json` for that guid ·
+  K keys: for every insert and key 1-6, the link is `vscode://file/<root>/<file>:<line>` of an existing line or absent, never a dangling one ·
+  **RED controls:** R1 slice 2's single-line `resolve` judged as if it were the layered hover → L3-L6 FAIL; R2 a corrupted `SizeBasis` on one op → L3 catches exactly that
+  body; R3 the cursor moved before the edits → L5 lists 0. INCONCLUSIVE (exit 2) if the shed is missing or 0 inserts were judged.
+  **Page check (W-DXF-HOVER, extended, ONE headless CPU page, `nice -n 19 ionice -c3`):** H2 also asserts, for every hovered body, the tooltip's six layer counts = the node
+  `layersFor` for that fid.
+- **Issue proved:** *"why is this body this size, here, with this hole?"* needed reading six places by hand (the builder, the trace, the size record, the defaults file,
+  the op log, the converter's props); after: hover it, the whole history in order, a key per layer.
+
+**F.23 RESULT (2026-11-15, node half): built, bim-ootb PR #3064 (`Fixes #3063`), branch `feat/bim-layered-hover`, NOT merged yet (waits for the page check below).**
+- W-BIM-LAYERS on the branch: `§BIM_LAYERS_W VERDICT PASS fail=0 inserts=511 cuts=2`. L1 `inserts=511 wrong=0` · L2 synthetic chain `items=2`, `shed_chains=0 -> VACUOUS` ·
+  L3 `wrong=0 by_source={"label":376,"default":122,"inherited":98,"drawn":25,"schedule":64}`, `default_sides linked=12 not_recorded=110` · L4 `cuts=2 listed_under_hosts=2` (the two
+  D88B door gaps in the joined north wall `#100`, holding `#158`/`#159`) · L5 A/B/C exactly theirs · L6 `wrong=0` · K `keys_tried=3066 links=523 dangling=0` · red controls R1
+  `L3_wrong=511 L4_wrong=511 L6_wrong=511`, R2 catches exactly the corrupted body, R3 `wrong=3`. `bodies_with_layer {"builder":511,"pass":0,"sizes":511,"cuts":3,"edits":0,"evidence":511}`.
+- Its first run FAILED L6 `wrong=510`: the judge read `layer` from `bodies.json`, which has no top-level layer (the hover was right). The judge now reads the oracle's
+  `ifc.props.SourceLayer`. Kept as a lesson: check the oracle's shape before trusting a 510-of-511 failure.
+- Unchanged neighbours on the branch: W-DXF-TRACE `VERDICT PASS bodies=512 keys=12`, W-X0-APPDEF `verdict=PASS`.
+- Deviation from the spec: the page-shaped setup lives in ONE helper, `devtools/hover/tests/shed_ctx.js`, used by both witnesses (not a second copy of the commit mapping).
+- **Open: the page check** (W-DXF-HOVER with H2b, one headless CPU page). It needs the owner's go (RULES: no browser run without it); asked 2026-11-15. On a PASS: merge
+  #3064, re-run W-BIM-LAYERS on `main`, then FILM 3 (`prompts/FILM_IMMERSIVE_SOFTWARE.md`).
 
 ---
 
