@@ -35,7 +35,7 @@ Dates in the test data are set for **13 November 2026**. Testing well after that
 | The test-data pack | [202611131200_GardenWorld_CAPEXTestData.zip](https://github.com/red1oon/bim-ootb/raw/main/capex/plugin/testdata_2pack/202611131200_GardenWorld_CAPEXTestData.zip) |
 | The construction-products script (10 materials at standard cost) | [202611141500_CAPEX-TD-CONSTRUCTION-PRODUCTS.sql](https://github.com/red1oon/bim-ootb/blob/main/capex/plugin/testdata_2pack/202611141500_CAPEX-TD-CONSTRUCTION-PRODUCTS.sql) |
 | The dashboard's scripts for iDempiere | listed in chapter A2, all in the [bim-ootb repository](https://github.com/red1oon/bim-ootb/tree/main/capex/legacy) |
-| The **Shed** drawing set: the nine 2D sheets (.dxf) as drawn | the nine Shed `.dxf` files you hold; chapter B0 turns them into the nine `…_marked.dxf` files that chapters B1 onward open (a tester given the `…_marked.dxf` copies skips B0) |
+| The **Shed** drawing set: nine 2D sheets as **DXF** files, one per sheet | exported from BricsCAD by your drafter as in chapter **B00** (a `.dwg` cannot be opened); chapter B0 then turns them into the nine `…_marked.dxf` files that chapters B1 onward open (a tester given the `…_marked.dxf` copies skips B00 and B0) |
 
 The nine Shed sheets are the pilot client's own work, so its testers may use them. Any other drawing set goes through the same way once its sheets carry their settings (levels, datums and layer meanings), which the Modeller's **Drawing metadata** panel records.
 
@@ -138,6 +138,8 @@ GardenWorld already has the vendor, the warehouse and the locator; the products 
 
 This chapter uses **your own Shed drawing set**: the single-storey farm shed, drawn as nine 2D sheets. You will see each drawing on its own first, then the nine arranged in place, then the 3D model built from them.
 
+**The drawings are shortened, so the model is too.** The real shed is **410 ft × 50 ft** (124.97 m × 15.24 m): 41 bays of 10 ft, grid lines 01 to 42. The drawings show only grids **01–06** and **35–42**, with the expansion joint drawn between 06 and 35; the length dimension is drawn 130 ft long and its text is written over to read *410'-0"*. The Modeller builds what is drawn: **13 bays, 39.62 m long**. Every quantity and cost in B2b to B4 is for those 13 bays, about a third of the real shed's length. The 50 ft width is drawn to scale.
+
 The pictures were taken from the real Modeller with these same nine files. The label at the top of each picture and the red ring around a button were added for this guide; in the canvas-only pictures the drawing lines are shown at full strength so that they print clearly.
 
 **The nine sheets.** From B1 on you open the `…_marked.dxf` copies: they carry the levels, heights and layer meanings the Modeller needs. You make them yourself from the nine sheets as drawn in **B0**; the result is the same, mark for mark, as the copies supplied for this test.
@@ -154,6 +156,44 @@ The pictures were taken from the real Modeller with these same nine files. The l
 | `8_SECTION_AA_TRUSS_marked.dxf` | Section A-A, the roof truss | SECTION |
 | `5_DETAILS_marked.dxf` | Details and general notes | NOTES |
 
+### B00 · For the drafter: export the nine sheets from BricsCAD as DXF
+
+*This step is for whoever holds the drawing in BricsCAD.* Send the testers **DXF files, one per sheet**, not the `.dwg`: the Modeller opens `.dxf` files only. BricsCAD writes a DXF with its **DXFOUT** command, whose options are *Entities* (which entities to export), *Binary* (leave it off: the file is then written as ASCII text), *Version*, and the number of decimal places (see the [BricsCAD help for DXFOUT](https://help.bricsys.com/en-us/document/command-reference/d/dxfout-command)).
+
+**Settings**
+
+| Setting | Use | Why |
+|---|---|---|
+| File type | **DXF, ASCII** (text) | A **binary** DXF is refused by the Modeller |
+| DXF version | **2018** (any of 2000, 2004, 2007, 2010, 2013, 2018 gives the same model) | **R12** is refused: it has no drawing units and no hatches, and the gable walls are hatches |
+| Files | **one DXF per sheet** | The whole drawing in one file gives no model: the Modeller cannot tell the sheets apart |
+| Drawing units | **Inches** (system variable `INSUNITS`; the Shed drawing already has it) | A file without its units gives no model |
+| Decimal places | **16** (the most DXFOUT offers) | keeps the coordinates as exact as in the drawing |
+| Position | **as drawn**: do not move, rotate or scale a sheet before exporting it | B0 types levels and one box in the drawing's own coordinates |
+| Layers, dimensions, hatches | **as drawn**: do not explode, rename or merge them | The Modeller reads the grid lines from the dimensions, the gable walls from the hatches, and each element type from its layer name (B0.4) |
+
+| # | Do | Confirm on screen | Result |
+|---|---|---|---|
+| B00.1 | Open the Shed drawing in BricsCAD. Check that the drawing units are **Inches** | `INSUNITS` reads 1 (Inches) | ☐ Pass ☐ Fail |
+| B00.2 | For each row of the table below: type **DXFOUT**, choose **Entities**, select everything inside that sheet's frame (a window from one corner of the frame to the other), and confirm. Leave **Binary** off, choose version **2018** and **16** decimal places, and save under the file name in the table | One `.dxf` file per row, nine in all | ☐ Pass ☐ Fail |
+| B00.3 | Send the nine `.dxf` files to the testers | The testers open them in B0.1, which is the check: **All defaults** must list **34** yellow rows, then **113** after B0.2. Other counts mean the export differs from the drawings this guide was proven on: check the settings above and export again | ☐ Pass ☐ Fail |
+
+| Frame in the drawing (its title) | Save as |
+|---|---|
+| Shed Floor Plan | `0_FLOOR_PLAN.dxf` |
+| Beam Lay out Plan | `3_BEAM_LAYOUT.dxf` |
+| Foundation Lay out Plan | `4_FOUNDATION_LAYOUT.dxf` |
+| North and South Elevation (one frame, two drawings): the **upper** drawing, North | `1N_ELEV_NORTH.dxf` |
+| the same frame, the **lower** drawing, South | `1S_ELEV_SOUTH.dxf` |
+| West Elevation | `2_ELEV_WEST.dxf` |
+| East Elevation | `7_ELEV_EAST.dxf` |
+| Section A-A (Truss Detail) | `8_SECTION_AA_TRUSS.dxf` |
+| the details frame (footing, column and grade-beam casting ratios, long sections of the beams) | `5_DETAILS.dxf` |
+
+The general *Section A-A* frame is not used in this test.
+
+*Proven by measurement (witness W-UAT-SHED-SOURCE, 2026-11-15) with files written in each DXF version by a DXF library, not by BricsCAD itself: ASCII 2000 to 2018 give the same model, 512 bodies, identical; R12, binary DXF, the whole drawing in one file, and a file without its units give no model. The settings above follow from that; the DXFOUT options are quoted from BricsCAD's help.*
+
 ### B0 · From the drawings as drawn to the marked set
 
 The nine sheets as drawn carry no settings: the Modeller cannot tell which CAD layer is a column, how deep the footings go, or where the expansion joint is. In this step you tell it, in the **Drawing metadata** panel, and save the result as nine `…_marked.dxf` copies. Every value below is read from the drawings (the source is named in each row); nothing is invented. Type the numbers exactly as written.
@@ -162,9 +202,9 @@ The panel has sections you open by clicking their title: **All defaults** (the y
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| B0.1 | Open [the Modeller](https://red1oon.github.io/bim-ootb/modeller/modeller.html). **📂 Open → Open 2D drawings (.dxf)…** and select **all nine** sheets as drawn: `0_FLOOR_PLAN.dxf`, `3_BEAM_LAYOUT.dxf`, `4_FOUNDATION_LAYOUT.dxf`, `1N_ELEV_NORTH.dxf`, `1S_ELEV_SOUTH.dxf`, `2_ELEV_WEST.dxf`, `7_ELEV_EAST.dxf`, `8_SECTION_AA_TRUSS.dxf`, `5_DETAILS.dxf` | The **Drawing metadata** panel opens. The badge reads **Blocked · 58**. **All defaults** lists **34** yellow rows: what the Modeller read from the files (units, sheet roles and names, grid lines) | ☐ Pass ☐ Fail |
+| B0.1 | Open [the Modeller](https://red1oon.github.io/bim-ootb/modeller/modeller.html). **📂 Open → Open 2D drawings (.dxf)…** and select **all nine** sheets exported in B00: `0_FLOOR_PLAN.dxf`, `3_BEAM_LAYOUT.dxf`, `4_FOUNDATION_LAYOUT.dxf`, `1N_ELEV_NORTH.dxf`, `1S_ELEV_SOUTH.dxf`, `2_ELEV_WEST.dxf`, `7_ELEV_EAST.dxf`, `8_SECTION_AA_TRUSS.dxf`, `5_DETAILS.dxf` | The **Drawing metadata** panel opens. The badge reads **Blocked** with a number (58 or 99 on the two exports this guide was proven on: the number depends on how the sheets were cut and is not a check). **All defaults** lists **34** yellow rows: what the Modeller read from the files (units, sheet roles and names, grid lines) | ☐ Pass ☐ Fail |
 | B0.2 | In **All defaults**, press **Accept stated + read** | The list grows to **113** yellow rows: the grid lines, level lines and roles that follow from the first ones | ☐ Pass ☐ Fail |
-| B0.2b | Press **Accept all** | **0** yellow rows. The badge reads **Blocked · 48**. In **Sheets**, eight cards now show a role (3 PLAN, 4 ELEV, 1 SECTION); `5_DETAILS` is the notes sheet | ☐ Pass ☐ Fail |
+| B0.2b | Press **Accept all** | **0** yellow rows. The badge still reads **Blocked** with a smaller number (48 or 89). In **Sheets**, eight cards now show a role (3 PLAN, 4 ELEV, 1 SECTION); `5_DETAILS` is the notes sheet | ☐ Pass ☐ Fail |
 | B0.3 | In **Sheets**, open any card. In its **Set** field replace `BUILD-NAME` with **SHED** and press Enter | Every sheet's **Set** reads **SHED** (typing it once fills all nine) | ☐ Pass ☐ Fail |
 | B0.4 | Open **Layers**. Under each heading, pick the meaning of each CAD layer from its list, as in the table below. Where the table says *one sheet only*, press the small arrow at the right of the layer's row (**Type this layer sheet by sheet**) and pick the meaning on that sheet's line only | After **PLAN · Col = column** the badge reads **Blocked · 1**; after **ELEV · Wall = panel** it reads **Qualifies**. When all ten are set, **All defaults** shows **14** yellow rows (sizes the Modeller assumes, such as the fan depth) | ☐ Pass ☐ Fail |
 | B0.4b | In **All defaults**, press **Accept all** | **0** yellow rows | ☐ Pass ☐ Fail |
@@ -294,7 +334,7 @@ The schedule and the cost come from reference files the Viewer ships with. You e
 
 | # | Do | Confirm on screen | Result |
 |---|---|---|---|
-| B3.1 | Note the Viewer’s total cost (Find panel: `total cost`) and the schedule’s finish date (**Time Machine**, key **T**) | Write both down: ________ / ________ | ☐ Pass ☐ Fail |
+| B3.1 | Note the Viewer’s total cost (Find panel: `total cost`; it is the cost of the 13 drawn bays, see the note at the top of chapter B) and the schedule’s finish date (**Time Machine**, key **T**) | Write both down: ________ / ________ | ☐ Pass ☐ Fail |
 | B3.2 | Make the rate edit and the lag edit above. Your copy is saved in this browser as you type | The form keeps your value; a list shown as JSON text must stay valid JSON | ☐ Pass ☐ Fail |
 | B3.3 | **Reload the Viewer tab**, so it reads your copies | The building opens again | ☐ Pass ☐ Fail |
 | B3.4 | Read the total cost again | It moved in the direction of your rate edit | ☐ Pass ☐ Fail |
@@ -434,6 +474,6 @@ It writes the file `capex/legacy_snapshot.json` inside your copy of the reposito
 | Chapter | Tester | Date | Passed / total | Signature |
 |---|---|---|---|---|
 | A · Set up | | | / 17 | |
-| B · BIM | | | / 36 (25 if you were given the marked copies and skipped B0) | |
+| B · BIM | | | / 39 (25 if you were given the marked copies and skipped B00 and B0) | |
 | C · ERP | | | / 10 | |
 | D · Dashboard | | | / 10 | |
