@@ -145,9 +145,25 @@ Real markets, short runway. Stated as targets — not yet shipped.
   windows and documents offline in the browser, exchanging signed changes through a passive
   post box, while head office keeps running legacy iDempiere unchanged. The legacy system is the
   oracle: the parallel run against legacy (`prompts/SQLiteIDEMPIERE.md`) is how it is judged, and a
-  difference it finds is fixed on our side, never accepted. *(Target: the parity run and a
-  one-branch week are not done; kill criterion — parity cannot reach every window/doctype, or the
-  iDempiere community will not run it.)*
+  difference it finds is fixed on our side, never accepted. *(Target: a one-branch week is not
+  done; the parity run itself exists and is measured — next bullet. Kill criterion — parity cannot
+  reach every window/doctype, or the iDempiere community will not run it.)*
+- **The parity runner — the baseline proof the fork is faithful, useful on its own.** The same
+  scenario is submitted, as a normal web-service user, to a live legacy iDempiere and to the SQLite
+  kernel; documents, books, stock, cost and refusals are compared, and every difference is a
+  numbered finding fixed on our side ([method](LegacyOracleAdapterSpec.md); code
+  `scripts/bridge/run_all.sh`). *Landed, measured on a local pilot with the GardenWorld seed
+  (run of 2026-10-12):* the shop-day suite matched **25 of 25** scenarios, negative controls
+  included, and **19 of the 34** dictionary document tables have a compared scenario. GardenWorld
+  synthetic data is the standing convention for testing anything new in iDempiere and it proves
+  the *stock* behaviour. *Not yet:* a run against a customer's own server, where customisations,
+  plugins, costing and tax set-up and real data volumes are untested, and a re-run per iDempiere
+  version (iDempiere 13 is a long-term-support release; older versions lose maintenance —
+  [release post](https://idempiere.org/?p=3658)). A design partner has offered a legacy server for
+  test runs — **planned, not run.** Such runs go against a restored copy or a throwaway client,
+  because the scenarios create documents. The runner is also what a migration or a plugin
+  vendor can point at *their own* iDempiere to prove a change behaves like the system they
+  already run.
 - **Touch-kitchen + self-order tabs + QR payment.** A self-order surface (URL-fetched remote
   ordering, QR payment display, payment-status fold returned by email) sits naturally on the
   same op-log. *(Not yet in code; the POS loop it rides is.)*
@@ -346,7 +362,9 @@ of this pipeline's merge gate rather than replace it.
 1. **Spatial compilation is solved — and hard to replicate.** Intent extraction, recompile,
    and a 0.002 mm round-trip across 21 buildings from 9 tools. Years of domain work.
 2. **BIM↔ERP over one signed op-log — unique.** Building → procurement order, ERP documents
-   reproduced to the cent. Requires rare BIM *and* manufacturing-ERP knowledge in one head.
+   reproduced to the cent on every scenario compared against a live legacy iDempiere (19 of 34
+   document tables, 2026-10-12 — the denominator matters). Requires rare BIM *and*
+   manufacturing-ERP knowledge in one head.
 3. **One generic dashboard for every data model.** AD-field-driven group-by/pivot/timeline —
    not a bespoke report per table.
 4. **Serverless / local-first by construction.** Each browser is its own server and no server we
@@ -391,6 +409,14 @@ compilation — or a to-the-cent ERP fold — to a GUI-first tool takes years.
    serverless plan compiler with a signed deferred-query catalog — but the searches were shallow (digests and
    excerpts, no patent-office search) and an independent clean-clone reproduction has not been done (§17 T8).
    We say "to our knowledge", never "first", and never "no other open-source project has this" as a fact.
+
+7. **Parity is measured on a stock dataset, in a small community.** Every parity number above is
+   from the GardenWorld seed on a local pilot. A customer's customisations and real data are
+   untested, and parity has to be re-run for each iDempiere version a client runs. The community
+   is also small: the project's own 2025 survey had 88 respondents, most common deployment 10–100
+   users, largest 40,000 ([survey](https://idempiere.org/blog/2025/05/28/idempiere-survey-2025-results/);
+   self-selected, so it describes respondents, not the whole base). Whether enough iDempiere shops
+   want this to sustain more than one or two clients is unproven.
 
 None of these block using or trying the project — they're the risks worth tracking as it
 scales, stated plainly rather than smoothed over.
