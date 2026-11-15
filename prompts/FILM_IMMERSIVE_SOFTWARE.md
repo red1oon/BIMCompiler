@@ -77,5 +77,35 @@ and line) · iDempiere technical info (owner only) · Odoo debug tooltip (field 
 *"See the full list of modules that touch a field, from the original definition to every override"*, file via Python introspection; its page names no line numbers and no onchange/compute).
 Nothing found for a BIM body → the code that built it. Searches were three quick ones, not a survey.
 
-# FILM 3 (later) — the BIM film remade with layers
-Waits for a layered BIM tooltip (size sources, pass-through stamps, door cuts, edits after Convert; §F.22 records the BIM answer). Not started.
+# FILM 3 — "CH 0 · Immersive Software: a body's history" (the BIM film remade with layers; owner 2026-11-15 *"proceed"* after F.23 merged)
+The tool: the provenance hover, `prompts/CODE_ARCHITECTURE_DESIGN.md` §F.23 (bim-ootb #3064). Same house style and pipeline (copy `scripts/film_immersive_software/` → `scripts/film_bim_layers/`).
+ONE bim-ootb tree (`origin/main`, has #3064): no OLD tree this time. Page sessions: the real Modeller, headless, CPU (SwiftShader), ONE at a time, `nice`; one with the overlay (targets,
+heap), one without (heap). Source of every number: the page session's own `§DXF_HOVER` lines and tooltip, the W-BIM-LAYERS log on `main`, the W-DXF-HOVER (H2b) log.
+
+| id | top | bottom (real Modeller, headless, CPU) | numbers from |
+|---|---|---|---|
+| cover | CH 0 · Immersive Software · *a body's history, in one hover* | — | — |
+| setup | typed `node devtools/hover/gen_trace_index.js` → its `§DXF_HOVER_INDEX keys=N defaults=M` line; the bookmarklet; `§DXF_HOVER installed` | the shed, converted | generator + page lines |
+| move1 "Why is this column this tall?" | the tooltip's own text (six layers), then VS Code at the line key **3** opened (`modeller/element_defaults.json`, the `column.top_under_beam` row) | the cursor on a column whose top is a default; the tooltip | page `§DXF_HOVER … layers=` line; key 3's recorded link |
+| move2 "Where did this hole come from?" | the tooltip: layer 4, two door cuts, each holding its door | the cursor on the joined north wall | page; W-BIM-LAYERS L4 `cuts=2` |
+| move3 "It says what it does not know" | terminal strip: W-BIM-LAYERS L3 lines (`by_source=…`, `default_sides linked=12 not_recorded=110`) | the cursor on a truss bar whose width is a default with no recorded key: *which default is not recorded on the body*, nothing linked | W-BIM-LAYERS log; page |
+| close | last card: memory (heap with / without the overlay after Convert, forced GC, one run each; overlay + index sizes), prior art (rows below, check P), credentials (#3043 #3047 #3064, W-BIM-LAYERS + W-DXF-HOVER verdicts) | — | facts.json |
+
+**Prior art for the card (fetched 2026-11-15 into `out/prior/`, check P reads them):** RenderDoc's Pixel History, *"shows all modifications that have happened to the texture since the start of the
+frame"* (renderdoc.org/docs/window/texture_viewer.html) → a body's layers in the order they happened · The Whyline (CMU), *"ask "Why did" and "Why didn't" questions about their program's
+output"* (cs.cmu.edu/~NatProg/whyline.html) → the hover answers "why this size", and says what it does not know · click-to-component, *"Option+Click a Component … goto the source"*, line numbers
+from a Babel plugin → no build step here · VS Code *"Open a file to line and column"* → the link each key makes.
+**Honest framing on screen:** a DEV tool loaded by a bookmarklet into a localhost tab; layer 5 (edits) is not shown on the page (the film makes no edit; W-BIM-LAYERS L5 judges it in Node).
+Output `~/Videos/Immersive_Software_CH0_BIM_Layers_EN_AFTER_<date>_v1.mp4`, never committed.
+
+**FILM 3 STATUS (2026-11-15): BUILT, v1, awaiting the owner's review.** `~/Videos/Immersive_Software_CH0_BIM_Layers_EN_AFTER_2026-11-15_v1.mp4` (1920x1080, 85.4 s, 5.2 MB, never committed).
+Scripts `scripts/film_bim_layers/` (bim-ootb tree `origin/main` @ `5e01bc3d`). `§FACTS VERDICT PASS` (index `keys=28 defaults=99`; CLI `bodies=512 inserts=511 untraced=0/0`; two real Modeller sessions,
+0 page errors; col `#22` `layers=1,0,4,0,0,5` key 3 → `element_defaults.json:5`; wall `#100` `layers=1,0,1,2,0,1` key 1 → `dxf2bim_import.js:716`; bar `#248` `layers=1,0,3,0,0,1` key 3 → nothing) ·
+`§FILM_SHOOT stills=2 errors=0` (VS Code on `"column.top_under_beam": {` and the wall-line `_trace`) · `§FILM_GUARD VERDICT PASS` (36 OK, incl. check P on 4 prior-art rows and "the lower band holds the
+whole tooltip") · `§CARDS_DONE beats=6 stills=96 too_tall=0` · voice 4/4 `DETAIL` · `§FILM_DONE frames=2050 planned=2050` · `§KEYS_VERDICT PASS` · `§K2_VERDICT PASS beats=2 bad=0 audible=True`.
+Memory (one run each, forced GC, after Convert): with the tool 45.5 MB, without 45.6 MB (−0.1 MB); overlay 15.7 KB, index 7.5 KB, the trace 513 entries.
+**Making it found TWO defects (both fixed, red → green, bim-ootb #3069 `Fixes #3068`):** (1) the six-layer tooltip (~300-415 px) was placed at cursor+14 with no clamp: the column's ran to y=1086 in a
+1080 page; it now flips above / left near an edge. (2) W-DXF-HOVER's `setViewport` sat inside a comment, so its page always ran at 800x600; new check H2c (every hovered tooltip inside the window):
+red on the old overlay `tip_out_of_window=4` of 14 at 1440x900, green `0`, `§DXF_HOVER_W VERDICT PASS fail=0` on main. Also logs `§DXF_HOVER edit_delta=Y` once the edits owner is loaded (seen in `out/ms_new.log`).
+**Card layout lesson:** the tooltip text in the top band first cut lines at 70 characters (it would have hidden `element_defaults.json:5`, move 1's point); `cards.js` now measures every tooltip line's width
+(the check failed at 18 px, passes at 17 px in 820 | 1000 px columns). Rebuild: `node facts.js <tree> <W-BIM-LAYERS log> <W-DXF-HOVER log>`, `./shoot.sh <tree>`, `./build.sh`.

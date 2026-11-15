@@ -1,0 +1,22 @@
+§DXF_HOVER_W H1 §DXF_HOVER_INDEX keys=28 defaults=99 root=/tmp/wt-ootb-film3 out=/tmp/wt-ootb-film3/devtools/hover/trace_index.json parse_keys=28 same=Y
+PASS H1 the index = a fresh parse, one line per key
+§DXF_HOVER_W oracle cli_exit=0 traced=513 §DXF_TRACE elements=512 traced=512 untraced=0 keys=11
+  §DXF_HOVER_W H2 fid=22 key=dxf2bodies:body at=modeller/dxf2bodies.js:422 oracle=dxf2bodies:body link=vscode://file/tmp/wt-ootb-film3/modeller/dxf2bodies.js:422
+  §DXF_HOVER_W H2 fid=38 key=dxf2bodies:body at=modeller/dxf2bodies.js:422 oracle=dxf2bodies:body link=vscode://file/tmp/wt-ootb-film3/modeller/dxf2bodies.js:422
+  §DXF_HOVER_W H2 fid=95 key=dxf2bodies:body at=modeller/dxf2bodies.js:422 oracle=dxf2bodies:body link=vscode://file/tmp/wt-ootb-film3/modeller/dxf2bodies.js:422
+  §DXF_HOVER_W H2 fid=100 key=dxf2bim_import:wall-line at=modeller/dxf2bim_import.js:716 oracle=dxf2bim_import:wall-line link=vscode://file/tmp/wt-ootb-film3/modeller/dxf2bim_import.js:716
+  §DXF_HOVER_W H2 fid=118 key=dxf2panels:panel at=modeller/dxf2panels.js:158 oracle=dxf2panels:panel link=vscode://file/tmp/wt-ootb-film3/modeller/dxf2panels.js:158
+  §DXF_HOVER_W H2 fid=139 key=dxf2panels:panel at=modeller/dxf2panels.js:158 oracle=dxf2panels:panel link=vscode://file/tmp/wt-ootb-film3/modeller/dxf2panels.js:158
+§DXF_HOVER_W H2 hovered=14 keys={"dxf2bodies:body":3,"dxf2bim_import:wall-line":1,"dxf2panels:panel":2,"dxf2section:bar":1,"dxf2section:member":3,"dxf2synth:column":2,"dxf2synth:roof":2} wrong=0 page_hover_lines=25 page_errors=0
+PASS H2 every hovered body shows its key = page map = Node CLI trace, its file:line = the index, and the V link  14 bodies, 7 keys
+  §DXF_HOVER_W H2b fid=22 page_counts=1,0,4,0,0,5 node_counts=1,0,4,0,0,5
+  §DXF_HOVER_W H2b fid=38 page_counts=1,0,4,0,0,3 node_counts=1,0,4,0,0,3
+  §DXF_HOVER_W H2b fid=95 page_counts=1,0,3,0,0,5 node_counts=1,0,3,0,0,5
+  §DXF_HOVER_W H2b fid=100 page_counts=1,0,1,2,0,1 node_counts=1,0,1,2,0,1
+§DXF_HOVER_W H2b nextId=1 hovered=14 counts_differ=0
+PASS H2b every hovered body: the tooltip layer counts = layersFor in Node  14 bodies
+§DXF_HOVER_W H2c hovered=14 tip_out_of_window=0 lowest_tip_bottom=862 of 900
+PASS H2c every hovered body: the tooltip is wholly inside the window
+§DXF_HOVER_W H3 red-control hovered=14 claimed_a_line=0
+PASS H3 red control: converted before the overlay -> every hovered body says convert again, 0 lines claimed
+§DXF_HOVER_W VERDICT PASS fail=0
