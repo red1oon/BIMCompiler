@@ -5,7 +5,7 @@
 'use strict';
 const fs = require('fs'), path = require('path'), os = require('os'), { spawnSync } = require('child_process');
 const [NEW, OLD, RED, MAIN] = process.argv.slice(2, 6).map(p => path.resolve(p)), PRS = String(process.argv[6] || '').split(',').filter(Boolean);
-const OUT = path.join(__dirname, 'out'), L = m => console.log('§FACTS ' + m); fs.mkdirSync(path.join(OUT, 'pages'), { recursive: true });
+const OUT = path.join(__dirname, process.env.OUTD || 'out'), L = m => console.log('§FACTS ' + m); fs.mkdirSync(path.join(OUT, 'pages'), { recursive: true });
 const env = Object.assign({}, process.env, { NODE_PATH: path.join(os.homedir(), 'bim-compiler', 'node_modules') });
 const fail = m => { L('FAIL ' + m); process.exit(1); };
 const F = { made: new Date().toISOString(), commits: {} };
@@ -16,7 +16,8 @@ const session = (name, tree, extra) => { const log = path.join(OUT, 'es2_' + nam
   if (!/^ES_RESULT /m.test(txt)) { const r = spawnSync('nice', ['-n', '19', process.execPath, path.join(__dirname, 'erp_shot.js'), tree, path.join(OUT, 'pages', name)], { env: Object.assign({}, env, extra), encoding: 'utf8', maxBuffer: 1 << 28, timeout: 2400000 }); txt = (r.stdout || '') + (r.stderr || ''); fs.writeFileSync(log, txt); L('session ' + name + ' ran'); }
   else L('session ' + name + ' reused');
   const m = /^ES_RESULT (.*)$/m.exec(txt); if (!m) fail('session ' + name + ' gave no ES_RESULT'); return JSON.parse(m[1]); };
-const N = session('new', NEW, { ES_OVERLAY: '1', ES_ALT: '1' }), P = session('plain', NEW, { ES_OVERLAY: '0' }), O = session('old', OLD, { ES_OVERLAY: '1', ES_ALT: '0' });
+const LANGC = { en: 'en_US', zh: 'zh_CN' }[process.env.FILM_LANG || 'en'];   // the lower frame is captured in the film's language (the ERP page's own ?lang=)
+const N = session('new', NEW, { ES_OVERLAY: '1', ES_ALT: '1', ES_LANG: LANGC }), P = session('plain', NEW, { ES_OVERLAY: '0', ES_LANG: LANGC }), O = session('old', OLD, { ES_OVERLAY: '1', ES_ALT: '0', ES_LANG: LANGC });
 const dt = N.targets.doctype, dn = N.targets.dateordered, dold = O.targets.dateordered; if (!dt || !dn || !dold) fail('a target was not hovered');
 const cb = dt.layers.find(l => l.kind === 'callout'), dA = dn.layers.find(l => /CalloutEngine\.dateAcct/.test(l.name)), dO = dold.layers.find(l => /CalloutEngine\.dateAcct/.test(l.name));
 F.doctype = { layers: dt.layers.length, callout: cb, alt1: dt.links['1'], alt1OpensCallout: !!(cb && cb.at && dt.links['1'] && dt.links['1'].endsWith('/' + cb.at)), text: dt.text, tip: dt.tip, point: dt.point, png: 'pages/new_doctype.png' };

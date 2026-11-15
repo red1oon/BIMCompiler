@@ -3,7 +3,7 @@
 // shows on that line. The film's numbers come from those lines, never from this script. Read shots.log after every run.
 'use strict';
 const fs = require('fs'), path = require('path'), vscode = require('vscode');
-const sleep = ms => new Promise(r => setTimeout(r, ms)), OUT = process.env.FILM_OUT, SEC = '§';
+const sleep = ms => new Promise(r => setTimeout(r, ms)), OUT = process.env.FILM_OUT, SEC = '§';   // FILM_OUT = the language's out folder (shoot.sh)
 const log = l => fs.appendFileSync(path.join(OUT, 'shots.log'), l + '\n');
 async function shoot(name, facts) {
   await vscode.commands.executeCommand('notifications.clearAll').then(() => {}, () => {}); await sleep(300);

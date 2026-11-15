@@ -2,7 +2,7 @@
 // (out/facts.json from the real pages and the witness logs, out/shots.log from the real VS Code) and FAILS if one is not as stated, if a picture is missing, if a prior-art row's text is not found where
 // it says (check P), or if the narration says something the pictures do not show (not-said list). READ out/guard.log.
 'use strict';
-const fs = require('fs'), path = require('path'), os = require('os'), N = require('./narr.js'), OUT = path.join(__dirname, 'out');
+const fs = require('fs'), path = require('path'), os = require('os'), N = require('./narr.js'), OUT = path.join(__dirname, process.env.OUTD || 'out');
 const F = JSON.parse(fs.readFileSync(path.join(OUT, 'facts.json'), 'utf8')), SH = fs.readFileSync(path.join(OUT, 'shots.log'), 'utf8');
 const shot = name => { const ls = SH.split('\n').filter(l => l.startsWith('§FILM_SHOT name=' + name + ' ')); return ls.length ? ls[ls.length - 1] : ''; };
 const lineOf = at => (/:(\d+)$/.exec(at || '') || [])[1] || null, vd = shot('v_doctype'), vt = shot('v_date'), cb = F.doctype.callout || {};
@@ -27,6 +27,6 @@ const readWhere = w => { try { if (w.saved) { let s = fs.readFileSync(path.join(
   return fs.readFileSync(w.file.replace(/^~/, os.homedir()), 'utf8').split('\n')[w.line - 1]; } catch (e) { return null; } };
 PA.items.forEach(it => { const t = readWhere(it.where), ok = t != null && t.indexOf(it.where.text) >= 0; if (!ok) bad++; L((ok ? 'OK   ' : 'FAIL ') + 'prior art "' + it.name + '" <- ' + (it.where.saved || it.where.file + ':' + it.where.line) + (ok ? '' : ' text not found: ' + it.where.text)); });
 const said = N.beats.map(b => b.text || '').join(' ');
-[[/\blive\b|real.?time/i, 'the page pictures are taken, not streamed'], [/every user|all users|nobody else/i, 'the claim is only that the shipped ERP never loads it'], [/faster|speed/i, 'no speed was measured']].forEach(([re, why]) => {
+[[/\blive\b|real.?time|实时|直播/i, 'the page pictures are taken, not streamed'], [/every user|all users|nobody else|所有用户|每个用户/i, 'the claim is only that the shipped ERP never loads it'], [/faster|speed|更快|速度/i, 'no speed was measured']].forEach(([re, why]) => {
   const hit = re.test(said); if (hit) bad++; L((hit ? 'FAIL ' : 'OK   ') + 'not said: ' + why); });
 L('VERDICT ' + (bad ? 'FAIL ' + bad : 'PASS')); process.exit(bad ? 1 : 0);
