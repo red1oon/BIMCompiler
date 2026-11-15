@@ -21,7 +21,7 @@ Scope: **SPEC and built-step ledger** for a CLI-based ERP front end ("IVR style"
 > ls *Duct*
   → (the detail rows, filtered)
 ```
-Next details, one at a time: (D3) what `cd` sets and shows; (D4) what `ls` lists; (D5) where wildcards live (one shared filter reader).
+**SUPERSEDED same day by §22 (the `red1` shell plan, owner D3 `red1`/`red1>`, POC replacement allowed; D4-D9 are recommendations for his review; film "Remember The Name - red1" BIM side, §22.13). NEXT = §22.11 build order, BIM steps first.**
 **Open items carried from this session (none blocks the design talk):** ⛔ owner Q1 (what Complete does on a Ninja workflow table; blocks `ninja.kanban`); ⛔ owner Q3 (which legacy Ninja types a token whose prefix and name disagree, `ERP_MIS_WINDOW_FROM_CSV.md` §12.15); the door loads no plugin, so the browser menu lists one window the door does not (`BIM Document`, §21 RESULT); `mis.new` on C_BP_Group took 6.6-6.9 s against <1 s for other lines (why: not measured); the Modeller's Save gate verdict on an added bay depends on save order (`MODEL_SESSION_LINES.md` §S2 finding, the Modeller lane's question); the browser ERP's `ms_MY` labels read Indonesian in places (`FILM_COMMAND_LINE_ERP.md` CH 2 status); the owner's question on browser control from the CLI as its own lane is still unasked. Films: CH 2 "MIS Menu Driven" EN rc1, ZH rc1, MS rc3 built (`FILM_COMMAND_LINE_ERP.md` CH 2).
 **Done this session (2026-11-15), all merged:** bim-ootb #3017 (lint fix), #3028 `--script --dry`, #3036 CSV-as-model, #3041 foreign-key parity fix (found against the legacy pilot), #3051 `model.save` + save on close, #3053 `/M` + `mis.menu`; bim-compiler #717 #722 #732 #733 #734 (guide, specs, film scripts). The FastScriptGuide is DEPLOYED with all of it (`scripts/safe_gh_deploy.sh`, guard PASS).
 
@@ -363,6 +363,106 @@ Each candidate carries its **reason** (`table`, `column`, `list value`, `lookup:
 **Claims (W-MIS-MENU):** U1 `mis.menu` (no role) gives the same tree as the page's own two functions on the same database: the same leaf count, folder count and window ids, in the same order (computed by the witness through `ADParser.getMenuTree` + `IdmpSession.scopeMenu` directly); U2 with `role=` the leaves are exactly those the role's grant rows allow (the windows of `accessibleWindows(role)` among the tree's window leaves), and a role with fewer grants sees fewer (two roles compared); U3 `find=` keeps only matching leaves, each with its folder path; U4 the screen: from `/M`, the keys Down, Enter on a folder, Enter on a window leaf run exactly `mis.menu …` and then `mis.list kind=<the first tab's table>` (the effects the pure core emits, as W-MIS-SCREEN reads them), and Esc returns to the menu without a line; U5 `/M` with an unknown role is refused naming it; U6 the vocabulary entry is generated, harm read.
 **Falsifiers:** `MENU_BREAK=noscope` (the role is ignored: must FAIL U2), `wrongtab` (a window leaf opens a kind other than its first tab's: must FAIL U4).
 **§21 RESULT (2026-11-15, bim-ootb #3053 merged):** W-MIS-MENU **6/0** against plain SQL (534 entries, 332 windows; role 102 sees 471, role 103 sees 312, each equal to its AD_Window/Process/Form_Access rows); falsifiers `noscope` FAILs U2, `wrongtab` FAILs U4 (the first version of U4 opened a one-tab window, so `wrongtab` could not show: the witness now opens a window with several tabs, a VACUOUS falsifier caught and fixed). Regressions equal: W-ERP-VERBS 46/0 (its hard-coded verb list gains `mis.menu`), W-MIS-SCREEN 8/0, W-MIS-FORM 12/0, W-MIS-ROLE 14/0, W-DOOR-STATIC 29/0, W-DOOR-LIST 5/0, W-DOOR-SCRIPT 5/0, W-VOCAB-COMPOSE 7/0. Found while wiring: `idmp_session.js` finds the MRole port only as `window.AdAccess` (L42), so in Node it fell back silently (`§ACCESS_GATE_MISSING … source=FALLBACK`); `mis.menu` lends it `erp/ad_access.js` for its calls, as the page loads it. **Found while filming (CH 2):** the browser's menu for role 102 has ONE entry more than the door's, `BIM Document` (menu id 9541001), a plugin window the page loads and the door does not (the door loads no plugin, `ERP_MIS_WINDOW_FROM_CSV.md` §2): every door entry is on the page, the page-only one is not in the dictionary. A door that loads the same plugins is not built.
+
+## 22. The `red1` shell: one light terminal for BIM and ERP (2026-11-15, PLAN + SPEC, nothing built; owner decisions D1-D3 below, defaults D4-D9 are RECOMMENDATIONS for his review)
+**Owner's words, 2026-11-15:** *"my vision is to go for minimal learning curve"* · *"go all the way to give a CLI helper so user has light alternative to work in without browser or mouse, where menu may spring up and even crude logical diagram in terminal to illustrate decision tree"* · *"i am thinking of branding my name 'red1' and the prompt comes out red1> … proceed and plan it all out as comprehensively covering what we doing so far, even replacing as we are still poc mode not yet official release."*
+
+### 22.1 Decided by the owner
+- **D1** a short word EXPANDS to an existing door line; the full line is PRINTED (`→ …`) before it runs; no new verbs for a short word.
+- **D2** SHELL-STYLE typing (verb first, few positional arguments, a `cd` context), not object chains (`bim.get.clash.sum` rejected).
+- **D3** the command is **`red1`**, its prompt **`red1>`**. POC mode: older spellings may be REPLACED, not kept beside (deletion budget, AD-LAYER LAW 4).
+
+### 22.2 What it is (one paragraph)
+`red1` is the person's face of the door. Three ways in, ONE engine (`door.js createDoor().runLine`, unchanged): (a) `red1` alone opens a session (`red1>` prompt, history, Tab completion, menus that open when a choice is missing, plain-text diagrams); (b) `red1 "clash ARC MEP"` runs one word-line and exits (scripts, cron, an AI); (c) `red1 -f lines.red1 [--dry]` runs a file (today's `--script`). A full door line (`app.verb key=value`, it has a dot) is accepted at the same prompt unchanged, so everything already written still runs. Nothing new reaches the browser; no new npm dependency (Node's own `readline` gives history and completion).
+
+### 22.3 Layers (one implementation per responsibility)
+| Layer | File | Pure? | Job |
+|---|---|---|---|
+| words | `common/door/vocab/words.json` (DATA, not code) | – | each short word: its door verb(s) per context, positional order, which context key fills which input |
+| expander | `common/door/words_core.js` | yes, `(state,input)->{state,effects,screen}` like `mis_core.js`/`menu_core.js` | word-line + context → ONE door line (or a menu to ask the missing value); never runs anything |
+| shell driver | `common/door/red1.js` (+ `package.json` `"bin": {"red1": …}`, `npm link` once) | no | readline loop, prints `→ line`, runs it through the door, draws the screen, keeps the session (context, last answer, history file) |
+| glob | `common/door/glob.js` | yes | ONE wildcard compiler: `*` `?` `[abc]` → a JS predicate AND an SQL `LIKE … ESCAPE` pair, from one parse |
+| draw | `common/door/draw_core.js` | yes | tables, the funnel, the tree; Unicode box lines with an ASCII fallback (`--ascii`, or a terminal that is not UTF-8) |
+| menus | `menu_core.js`, `mis_core.js` (exist) | yes | reused, not copied: a menu that "springs up" is `menu_core` fed the legal values |
+The page can later load the same pure cores (`words_core`, `draw_core`, `glob`) unchanged: one source for terminal and browser.
+
+### 22.4 The prompt and `cd` (D4, recommended)
+- Prompt: `red1>` with no context; `red1 Clinic>` in a building; `red1 Clinic/Wall>` in a kind of it; `red1 BPartner>` in an ERP kind. Role shown when set: `red1 [102] BPartner>`.
+- `cd <name>` resolves in this order and says which it took: a building (`viewer_verbs.resolveDb`'s list) → an ERP kind/window (`mis.describe`'s dictionary) → a kind inside the current building. Two hits = a pick menu, never a guess. `cd ..` up one, `cd` / `cd /` clears, `pwd` prints the context as door keys (`building=Clinic kind=Wall`).
+- `role 102` sets the role (§17) on every line after it.
+- The context ONLY fills an input the line did not give; a key typed on the line wins. The printed `→` line always carries every key, so it replays without the session.
+
+### 22.5 The first word table (D5, recommended; every word → existing verbs only)
+| word | in a building | in an ERP kind | expands to |
+|---|---|---|---|
+| `ls [glob] [col=glob …]` | kinds and counts; in a kind its elements | its records | `viewer.counts` / `object.list` / `mis.list` (+ D6 below) |
+| `count [kind]` | `object.count` / `viewer.counts by=storey` | `mis.list` total | |
+| `cat <id\|no>` / `show` | `object.read` | `mis.read` | |
+| `sum <col>` · `group <col>` | `object.sum/group` | `mis.sum/group` | |
+| `clash <A> <B>` | `viewer.clashes discA= discB=` | – | |
+| `grid` · `walk <disc>` | `modeller.lines` / `modeller.walk` | – | |
+| `day <n>` · `compare` | `viewer.schedule_at` / `viewer.schedule_compare` | – | |
+| `open` `bay` `undo` `save` `close` | `model.open/addbay/undo/save/close` | – | |
+| `new k=v …` · `set <id> k=v …` · `rm <id>` | – | `mis.new` / `mis.update` / `mis.delete` (rm asks y/N, as the list screen does) | |
+| `do <action> <no>` | – | `erp.complete/void/close/reverse` (the legal list from `erp.actions`) | |
+| `next <no>` | – | `erp.actions` drawn as a tree (22.8) | |
+| `load <file>` · `diff <file>` · `ninja <file>` | – | `mis.load` / `mis.diff` / `ninja.exec` | |
+| `menu` · `help [word]` · `?` · `history` · `exit` | session words: `menu` = `mis.menu` screen; `help` reads `words.json` + `verbs.json` (never a hand list) | | |
+| `dry <word-line>` | prefix: the line with `dry=Y` | | |
+Anything not in the table: type the full door line. A word may not shadow a verb's meaning in another app (W-RED1 R2 checks the table against `verbs.json`).
+
+### 22.6 What `ls` lists (D6, recommended)
+- After a summary word (`clash`, `count`, `day`), `ls` = the SAME door line with its detail flag (`viewer.clashes … rows=all`), printed. If the session holds an answer from that exact line it is served from it and marked `(answer of the line above, not re-run)`; else it runs. The printed line is always a real door line, so a script gets the same rows.
+- Otherwise `ls` lists the current context (22.5 row 1).
+- **Verb change needed:** `viewer.clashes` caps rows at 20 (`viewer_verbs.js` `pack(…, 20)`): add an input `rows=` (number or `all`) and return `rowsTotal` as today.
+- Output: a table sized to the terminal (`draw_core`), `--json`/`--csv`/`--out FILE` as the door's renderings (`render.js`), `| less`-like paging with Space/q when longer than the screen.
+
+### 22.7 Wildcards (D7, recommended)
+- Shell meaning: `*` any run, `?` one character, `[abc]` one of; case-insensitive (as people expect; legacy iDempiere's Find is case-insensitive on text); `\*` a literal star. A bare glob (`ls *Duct*`) matches the row's name/label column (`names` of `mis.list`, the element's Name in BIM); `col=glob` matches that column.
+- ONE place: `glob.js` compiles once; `object_cli.js filtersOf` (shared by `mis.list`/`object.list`/`count`) uses its SQL form (`LIKE ? ESCAPE '\'` with `lower()`), so limit/offset stay right; rows that come from an engine answer, not SQL (the Viewer's clash rows), use its JS form at the door's row reader (`render.js` rows). A witness proves both forms agree on a corpus.
+- A value with no wildcard stays an EXACT match, as today (backward compatible inside the engine).
+
+### 22.8 Menus that spring up, diagrams (D8, recommended)
+- **Missing value → a menu, not an error:** `clash` with no disciplines opens a pick list of the building's disciplines (from `viewer.counts by=discipline`); `do` with no action lists `erp.actions`' legal ones; `cd` with two hits lists both. The menu is `menu_core` fed those values; the chosen value completes the line, which is printed and run. In one-shot mode (`red1 "…"`) or `--actor ai` there is no menu: the missing value is the door's usual refusal naming the legal values.
+- **Diagrams, drawn from the answer only (never invented):** (1) `next <no>` draws the document's legal moves from `erp.actions` (`DR ─Complete→ CO ─Close→ CL`, `└─Void→ VO`); (2) `clash` draws its funnel from the answer's own fields (`bboxOverlaps → meshClashes / contained / cleared / unknown`); (3) `menu` draws the role's menu tree (`mis.menu`). A diagram is a rendering of the envelope; its numbers equal the envelope's (W-RED1 R6).
+- **Speed:** each `viewer.*`/`modeller.*` line today opens a fresh headless browser (10-40 s, `hand.json` descriptions). The session keeps ONE page open per building, as `model_session.js` already does for the Modeller; closed on `cd` away or `exit`. Honest note for the owner: "without browser" = no browser WINDOW; BIM answers still come from the real Viewer/Modeller page run headless (the twin's own engine), ERP lines need none.
+
+### 22.9 Replaced in POC mode (D9, recommended; each is a deletion with its witness moved, not a second path kept)
+| Today | Becomes | Why |
+|---|---|---|
+| `node common/door/door.js '…'` (the documented way) | `red1 '…'` (door.js stays the ENGINE module; only the face changes) | one name, D3 |
+| `door.js /M` | `menu` (and `red1 menu`) | one spelling |
+| `!help` | `help` / `?` | shell habit; `render.js isHelp` kept as the one reader |
+| `door.js --script FILE [--dry]` | `red1 -f FILE [--dry]` | |
+| `dotted.js` (`viewer(Duplex).Room.count`, NEURO §0.10.4) | RETIRED (D2 chose shell-style); its witness `witness_dotted.js` deleted; JS callers get a generated object face instead (22.10) | two people-grammars = drift |
+| `erp.describe/read/list/sum/group/new/column/pack/compare/legacy_plugin` (aliases of `mis.*`/`legacy.*`, §10) | removed from the vocabulary; `erp.find/actions/complete/void/close/reverse` stay (no `mis.` twin) | §10 "ERP gives way", POC allows the cut |
+Films already built are NOT rebuilt (a bake waits for the owner's go); their scripts note the old spelling. The FastScriptGuide is regenerated (`gen_fast_script_guide.js`) and redeployed only by `scripts/safe_gh_deploy.sh`.
+
+### 22.10 The JS face (single-source DSL, owner 2026-11-15 "std DSL that mainstream JS code can adopt")
+`require('<repo>/common/door/red1.js').api` = an object GENERATED at load from `verbs.json`: `api.viewer.clashes({building:'Clinic', discA:'ARC', discB:'MEP'})` → builds the canonical door line, runs it through the same `runLine`, returns the envelope. No hand-written method; a new verb appears with zero code. `api.words.run('clash ARC MEP', ctx)` runs a word-line.
+
+### 22.11 Build order (each step: spec section here → witness with falsifier → code → log read → PR; WORK-TO-ZERO)
+| Step | Builds | Witness (claims; falsifier must FAIL them) |
+|---|---|---|
+| R0 | `red1` bin + one-shot + `-f` + full door lines at a prompt; history file `~/.red1_history` | **W-RED1-SHELL**: S1 `red1 'mis.list kind=…'` envelope == `door.js` envelope (byte-equal minus ms); S2 a session line is journalled once like a door line; S3 `-f --dry` writes nothing. Falsifier `RED1_BREAK=twice` (journals twice) |
+| R1 | `words.json` + `words_core.js`, words of 22.5 without menus | **W-RED1-WORDS**: R1 every word in every context expands to a line the vocabulary's validator accepts; R2 no word maps to a verb outside its app column; R3 the printed `→` line, run alone with no session, gives the same envelope. Falsifier `WORDS_BREAK=dropkey` (context key not printed: R3 FAILS) |
+| R2 | `cd` / `pwd` / `role` + the prompt | **W-RED1-CD**: C1 resolution order + a two-hit menu; C2 a typed key beats the context; C3 `pwd` keys replay. Falsifier `CD_BREAK=ctxwins` |
+| R3 | `ls` after a summary + held answer + `viewer.clashes rows=` | **W-RED1-LS**: L1 the held-answer rows == a fresh run's rows; L2 rows=all count == `rowsTotal`. Falsifier `LS_BREAK=stale` (serves an answer of another line) |
+| R4 | `glob.js` + `filtersOf` + row reader | **W-GLOB**: G1 JS form and SQL form select the same rows on a corpus (seed tables + a building's names); G2 no wildcard = exact as before (W-ERP-VERBS, W-MIS-* unchanged); G3 `\*` literal. Falsifier `GLOB_BREAK=casesens` |
+| R5 | menus that spring up | **W-RED1-MENU**: M1 a missing value opens a menu whose items == the legal values the door names; M2 one-shot/ai gets the refusal, not a menu |
+| R6 | `draw_core` + `next` / clash funnel / menu tree | **W-RED1-DRAW**: D1 every number in a drawing == the envelope's; D2 `--ascii` has no byte > 127. Falsifier `DRAW_BREAK=off1` |
+| R7 | one open page per building in a session | **W-RED1-WARM**: second `count` in a session < 1/5 of the first's ms (measured, logged `§RED1_WARM`); answers equal |
+| R8 | 22.9 replacements + 22.10 JS face + guide regen | W-DOOR-* and the guide witness green with the new spellings; `witness_dotted.js` removed with `dotted.js`; **W-RED1-API**: every verb reachable as `api.app.verb`, envelope == the line's |
+Every step logs `§RED1_*` lines; read the log, not the exit code.
+
+### 22.12 Not in this plan (asked or parked elsewhere)
+Browser control from the CLI = its own lane (owner "yes, spec it", 2026-11-15; not specced yet). `ninja.kanban` blocked on Q1. Q3 (prefix wins) is a parser change in its own PR (`ERP_MIS_WINDOW_FROM_CSV.md` §12.15).
+
+### 22.13 The film: "Remember The Name - red1" (owner, 2026-11-15: *"Film, 'Remember The Name - red1' Shell for a new keyboard only ops.. (do it for the BIM side)"*)
+- **BIM side only.** It films the REAL shell, so it waits for the BIM steps of 22.11: R0, R1 (BIM words), R2 (`cd`), R3 (`ls` after `clash`), R4 (globs on BIM rows), R5 (a menu springing up for `clash` with no disciplines), R6 (the clash funnel), R7 (warm page, so the film does not sit through 40 s waits). ERP words are not needed for it.
+- **House style (binding):** split screen + REAL key sounds, voice AFTER the Return key (`feedback_films_split_screen_real_key_sounds.md`, `prompts/FILM_NARRATION.md` ▶ PLAYBOOK); top = the terminal typed, bottom = the real Viewer page on the same building after each line (as CH 0); the film never claims the two frames are linked live. English first; other languages only on the owner's word. Never pushed to GitHub, only its scripts (`scripts/film_red1_shell/`).
+- **Beat sheet (draft, numbers come from the run, none written here):** `red1` → `red1>` · `cd Clinic` · `count` · `clash ARC MEP` (the `→` line printed, the funnel drawn) · `ls *Duct*` (served from the held answer) · `clash` alone → the discipline menu springs up, pick by arrow keys · `day 30` · `help` · `exit`. Title card "Remember The Name", end card `red1`.
+- **The bake is a GPU/headless run:** it starts only on the owner's go once R0-R7 (BIM) are merged (`feedback_no_autonomous_bakes_without_permission.md`).
 
 ## STATUS
 2026-11-14: new rows stamped at the door, local clock (§20, W-DOOR-STAMP 6/0). 2026-11-13: list values checked at the door (§19, W-DOOR-LIST 5/0). 2026-11-13: V5 role filter BUILT (§17, W-MIS-ROLE 14/0); one tab picker (§18, W-MIS-TAB 3/0). 2026-11-11: spec written; V0 measured (§8); BUILT in bim-ootb: describe columns (§9, #2863), composed vocabulary + MIS aliases (§10-11, #2864), mis.update/mis.delete (§12, #2866), mis.load + list names=Y (§13); V2 list screen (§14, #2868), V3 forms New+Edit (§15); Copy + names + filled list (§16); next role (A6), guide + film; §1d (type assist from the AD, shared with the browser Find panel); §1c (the prefix is MIS, aliases over one engine); §1b (the browser gets the CLI too: renderer-agnostic core) and §1a (grid cursor, colored chips, hidden-mandatory via dry run, local-first doctrine, MIS demo) added the same day after the owner's two refinements. Depends on MIS M5/M6 and NEURO A6.
