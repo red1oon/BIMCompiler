@@ -974,6 +974,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="iDempiere Relationship">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-closely-the-kernel-matches-legacy-idempiere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How closely the kernel matches legacy iDempiere
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -3691,6 +3708,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="iDempiere Relationship">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-closely-the-kernel-matches-legacy-idempiere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How closely the kernel matches legacy iDempiere
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -4302,6 +4336,22 @@ tables from the PostgreSQL export coexist with the 5-table runtime
 model. When a user needs a feature served by a table not yet loaded
 (e.g., C_Commission), the manifest defines its structure and data is
 fetched on demand. See ERP.md §16.6.</p>
+<h4 id="how-closely-the-kernel-matches-legacy-idempiere">How closely the kernel matches legacy iDempiere<a class="headerlink" href="#how-closely-the-kernel-matches-legacy-idempiere" title="Permanent link">&para;</a></h4>
+<p>The kernel is checked against a <strong>live legacy iDempiere instance used as the oracle</strong>
+(<a href="../LegacyOracleAdapterSpec/">method</a>). The same scenario is run on both sides and compared:
+documents, books, stock, cost and refusals. What is and is not claimed:</p>
+<ul>
+<li><strong>Measured (run of 2026-10-12):</strong> the shop-day suite (a fresh client, sale to return) matched
+  <strong>25 of 25</strong> scenarios, with every negative control correctly failing. Across the whole suite,
+  <strong>19 of the 34</strong> dictionary document tables had at least one compared scenario.</li>
+<li><strong>Not claimed:</strong> the other 15 document tables are unmeasured, and known gaps are tracked in the
+  project's parity log (for example return reversal and void). "Matches legacy" holds only for the scenarios
+  that were run. It is not a claim of byte-identical behaviour across the whole system.</li>
+<li><strong>Version dependence:</strong> parity is established against one iDempiere build. iDempiere 13 is a
+  long-term-support release (<a href="https://idempiere.org/?p=3658">release post</a>) and the project
+  keeps moving, so the comparison has to be re-run against the version a client actually uses
+  before relying on it.</li>
+</ul>
 <h2 id="comparison">Comparison<a class="headerlink" href="#comparison" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -4358,7 +4408,7 @@ fetched on demand. See ERP.md §16.6.</p>
 </tr>
 <tr>
 <td>Max elements (smooth)</td>
-<td><strong>125K</strong></td>
+<td><strong>125K</strong>¹</td>
 <td>~50K (server tiles)</td>
 <td>~20K</td>
 <td>Server-rendered</td>
@@ -4456,6 +4506,7 @@ fetched on demand. See ERP.md §16.6.</p>
 </tr>
 </tbody>
 </table>
+<p>¹ <strong>Viewing and importing are different limits.</strong> 125K is a pre-extracted building database viewed from cache. In-browser IFC <em>import</em> is bounded by the wasm32 4 GB ceiling and fails at about 63,600 elements in a Web Worker (<a href="../ArchitectureOverview/">Architecture Overview</a>). A larger IFC is extracted once, natively, and then viewed in the browser. The browser is the viewer and the kernel, not the importer of very large models.</p>
 <h3 id="key-differences">Key Differences<a class="headerlink" href="#key-differences" title="Permanent link">&para;</a></h3>
 <p><strong>vs Autodesk APS</strong>: Autodesk requires a cloud pipeline — IFC uploads to their server, converts to a proprietary format (SVF2), and streams pre-processed tiles back. This takes minutes per model, costs per API call, and cannot function offline. BIM OOTB processes IFC once into SQLite and runs entirely from local cache thereafter.</p>
 <p><strong>vs IFC.js / ThatOpen Company</strong>: IFC.js parses IFC files in the browser using a WASM module at load time. This works for small models but becomes slow above 20K elements because it re-parses geometry on every page load. BIM OOTB pre-extracts geometry into a SQLite database with content-hash deduplication, so repeat visits load from cache without re-parsing.</p>
